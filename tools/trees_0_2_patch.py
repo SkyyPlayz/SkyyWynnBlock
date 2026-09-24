@@ -12,8 +12,10 @@ anchors, newline-agnostic; 0.1 stays untouched and its CRLF/LF line endings are 
    through tree:fn:bonus, 8 SOON placeholders ("Coming later": TreeCfg.EN baked false, state / pathOk / texts / buy / toggle gated).
  - Per-tree Dust rate dust.xpPerDust.<Tree> (defaults Acrobatics 2, Exploration 5, others the global dust.xpPerDust),
    TreeCalc.dustEarned(tree, xp), texts show the tree's own rate.
- - Bridge tree:names (setup / shutdown), 6 page tabs (96 px + 4 px gaps, labels 140 / 110 / 120), /tree acrobatics | exploration.
- - An existing 0.1 trees.properties gets the 0.2 lines appended once (TreeCfg.has02 / ADD02); same numbers as the code defaults.
+ - Bridge tree:names (setup / shutdown), 6 page tabs (88 px + 4 px gaps, labels 150 / 140 / 128), /tree acrobatics | exploration.
+ - An existing 0.1 trees.properties gets the 0.2 lines added once (TreeCfg.has02 / ADD02); same numbers as the code defaults.
+   Written like every other file of the mod: the whole new content to trees.properties.tmp, then an atomic move (TreeCfg.writeAtomic),
+   so a crash never leaves a half line (the default file of a first start uses the same path).
 Run:  python tools/trees_0_2_patch.py   then   python SkyyTrees/build_skyytrees_0.2.py   (NO --deploy: coordinated deploy)
 """
 import os
@@ -77,9 +79,13 @@ DERIVED from build_skyytrees_0.1.py by tools/trees_0_2_patch.py - edit the patch
   BRIDGE: new tree:names = "Mining,Foraging,Farming,Cooking,Acrobatics,Exploration" (put in setup, removed in shutdown) - SkyySkills
     0.4.1 and SkyyExploration show their Tree buttons from it. clearOne also takes back move:<uuid>["trees.acrobatics"].
   CONFIG: an existing trees.properties (written by 0.1) gets the 0.2 block (per-tree Dust rates + the Acrobatics / Exploration node
-    lines) appended ONCE, when it has no dust.xpPerDust.* / Acrobatics.* / Exploration.* key; it holds the same numbers as the
-    built-in defaults, so the trees work the same whether or not the append succeeds.
-  PAGE: 6 tabs of 96 px with 4 px gaps, level / tokens / Dust labels 140 / 110 / 120 (970 of the 972 px inner width). The Exploration
+    lines) added ONCE, when it has no dust.xpPerDust.* / Acrobatics.* / Exploration.* key; it holds the same numbers as the
+    built-in defaults, so the trees work the same whether or not the write succeeds. The old content + the block go to
+    trees.properties.tmp and then replace the file with an atomic move (TreeCfg.writeAtomic, the TreeStore.moveRetry pattern) - a
+    crash leaves either the old file or the full new one, never a torn line. The default file of a first start is written the same way.
+  PAGE: 6 tabs of 88 px with 4 px gaps, level / tokens / Dust labels 150 / 140 / 128 (970 of the 972 px inner width; sized from the
+    client font's own glyph advances, NunitoSans: "Exploration" at 12 bold ~66 px, "SkyySkills missing" at 14 ~123, "Tokens 121 of 121"
+    at 13 ~115 - a debug.extraTokens test - and "Dust 123,456,789" ~110). The Exploration
     tab's note: "Draft tree - Skyy designs the rest later - nothing here boosts Exploration XP", prefixed with "Exploration levels need
     SkyySkills 0.4.1" when the running SkyySkills publishes no Exploration level in skill:<uuid> (SkyySkills 0.4).
   COMMANDS: /tree acrobatics | exploration (3+ letter prefixes acr / exp work), help texts updated, same permission groups.
@@ -259,13 +265,33 @@ rep('''    en[i] = bool(p, k + "enabled", true);''', '''    en[i] = !@PKG@.TreeD
 rep_block('''M(cfg, r"""
 public static synchronized String load() {''', '''  return on + " of 48 nodes on, tiers " + tl[0] + "/" + tl[1] + "/" + tl[2] + "/" + tl[3] + "/" + tl[4] + "/" + tl[5] + ", 1 Dust per " + XP_PER_DUST + " XP" + (EXTRA_TOKENS > 0L || EXTRA_DUST > 0L ? " (DEBUG extra tokens/Dust on)" : "");
 }""")''', '''M(cfg, r"""
+public static void writeAtomic(byte[] data) throws java.io.IOException {
+  java.nio.file.Path tmp = FILE.resolveSibling(FILE.getFileName().toString() + ".tmp");
+  java.nio.file.Files.write(tmp, data, new java.nio.file.OpenOption[0]);
+  java.io.IOException last = null;
+  for (int i = 0; i < 5; i++) {
+    try {
+      java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      return;
+    } catch (java.nio.file.AtomicMoveNotSupportedException e) {
+      java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      return;
+    } catch (java.nio.file.FileSystemException e) {
+      last = e;
+    }
+    try { Thread.sleep(20L); } catch (InterruptedException ie) { }
+  }
+  try { java.nio.file.Files.deleteIfExists(tmp); } catch (Throwable x) { }
+  throw last;
+}""")
+M(cfg, r"""
 public static synchronized String load() {
   java.util.Properties p = new java.util.Properties();
   boolean loaded = false;
   try {
     java.nio.file.Files.createDirectories(FILE.getParent(), new java.nio.file.attribute.FileAttribute[0]);
     if (!java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0])) {
-      java.nio.file.Files.write(FILE, DEFAULTS.getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+      writeAtomic(DEFAULTS.getBytes("UTF-8"));
       info("wrote default " + FILE);
     }
     java.io.InputStream in = java.nio.file.Files.newInputStream(FILE, new java.nio.file.OpenOption[0]);
@@ -274,7 +300,12 @@ public static synchronized String load() {
   } catch (Throwable t) { warn("could not read trees.properties (built-in defaults used): " + t); }
   if (loaded && !has02(p)) {
     try {
-      java.nio.file.Files.write(FILE, ("\\n" + ADD02).getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.APPEND });
+      byte[] old = java.nio.file.Files.readAllBytes(FILE);
+      byte[] add = ("\\n" + ADD02).getBytes("UTF-8");
+      java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream(old.length + add.length);
+      bo.write(old, 0, old.length);
+      bo.write(add, 0, add.length);
+      writeAtomic(bo.toByteArray());
       info("added the SkyyTrees 0.2 lines (Acrobatics and Exploration trees, per-tree Dust rates) to " + FILE);
     } catch (Throwable t2) { warn("could not add the 0.2 lines to trees.properties (their built-in defaults apply anyway): " + t2); }
   }
@@ -359,7 +390,6 @@ public static void acroPost(java.util.UUID u, double[] v) {
   float sp = (float) r6(v[@I_RSPEED@] + v[@I_RSPEED2@] + v[@I_RSPEED3@]);
   float jp = (float) r6(v[@I_RJUMP@] + v[@I_RJUMP2@]);
   float fd = (float) r6(0.0 - (v[@I_RFALL@] + v[@I_RFALL2@]));
-  if (fd == 0.0f) fd = 0.0f;
   java.util.Map b = @PKG@.TreeStore.bridge();
   String k = "move:" + u.toString();
   Object o = b.get(k);
@@ -453,14 +483,15 @@ rep('''  if (tokA < 0L || dustA < 0L) return "Costs changed - your balance is ne
 ''')
 rep('''  return "Tokens unlock nodes - Dust (1 per " + @PKG@.TreeCfg.XP_PER_DUST + " XP) levels them up - a respec gives everything back";''',
     '''  return "Tokens unlock nodes - Dust (1 per " + @PKG@.TreeCfg.rate(t) + " XP) levels them up - a respec gives everything back";''')
-# header: 6 tabs of 96 px + 4 px gaps, labels 140 / 110 / 120 (970 of the 972 px inner width)
+# header: 6 tabs of 88 px + 4 px gaps, labels 150 / 140 / 128 (970 of the 972 px inner width)
+assert 6 * (88 + 4) + 150 + 140 + 128 == 970   # the root is 1000 wide with 14 px padding each side = 972
 rep(r'''"TextButton #SkyyTrTab" + i + " { Anchor: (Width: 108, Height: 32); Text: \""''',
-    r'''"TextButton #SkyyTrTab" + i + " { Anchor: (Width: 96, Height: 32); Text: \""''')
+    r'''"TextButton #SkyyTrTab" + i + " { Anchor: (Width: 88, Height: 32); Text: \""''')
 rep(r'''    b.appendInline("#SkyyTrHead", "Label { Anchor: (Width: 6, Height: 32); Text: \"\"; }");''',
     r'''    b.appendInline("#SkyyTrHead", "Label { Anchor: (Width: 4, Height: 32); Text: \"\"; }");''')
-rep('''"Label #SkyyTrLvl { Anchor: (Width: 170, Height: 32);''', '''"Label #SkyyTrLvl { Anchor: (Width: 140, Height: 32);''')
-rep('''"Label #SkyyTrTok { Anchor: (Width: 150, Height: 32);''', '''"Label #SkyyTrTok { Anchor: (Width: 110, Height: 32);''')
-rep('''"Label #SkyyTrDust { Anchor: (Width: 190, Height: 32);''', '''"Label #SkyyTrDust { Anchor: (Width: 120, Height: 32);''')
+rep('''"Label #SkyyTrLvl { Anchor: (Width: 170, Height: 32);''', '''"Label #SkyyTrLvl { Anchor: (Width: 150, Height: 32);''')
+rep('''"Label #SkyyTrTok { Anchor: (Width: 150, Height: 32);''', '''"Label #SkyyTrTok { Anchor: (Width: 140, Height: 32);''')
+rep('''"Label #SkyyTrDust { Anchor: (Width: 190, Height: 32);''', '''"Label #SkyyTrDust { Anchor: (Width: 128, Height: 32);''')
 rep('''  b.set("#SkyyTrNote.Text", note(d, t, lvl, tokA, dustA));''', '''  b.set("#SkyyTrNote.Text", note(u, d, t, lvl, tokA, dustA));''')
 # SOON cards: their own colours (spec 4.1: #1a1a24 / #8890a0); the selected card uses the hover colour like every state
 rep('''      int stt = @PKG@.TreeCalc.state(d, i, lvl, tokA);
@@ -505,6 +536,10 @@ for bad in ("new int[48]", "new boolean[48]", "respecAt = new long[4]", "new Obj
     assert bad not in s, "0.1 leftover: " + bad
 assert s.count("@PKG@.TreeDefs.soon(") == 19, s.count("@PKG@.TreeDefs.soon(")
 assert s.count("@PKG@.TreeFx.acroPost(u, v);") == 1 and s.count("public static void acroPost(") == 1
+# trees.properties is only ever written through TreeCfg.writeAtomic (tmp + atomic move): the default file and the 0.2 block
+assert s.count("public static void writeAtomic(") == 1 and s.count("writeAtomic(DEFAULTS.getBytes") == 1 and s.count("writeAtomic(bo.toByteArray())") == 1
+assert "StandardOpenOption.APPEND" not in s and "java.nio.file.Files.write(FILE," not in s and "fd = 0.0f;" not in s
+assert s.count("Width: 88, Height: 32") == 1 and s.count("#SkyyTrLvl { Anchor: (Width: 150,") == 1 and s.count("#SkyyTrTok { Anchor: (Width: 140,") == 1 and s.count("#SkyyTrDust { Anchor: (Width: 128,") == 1
 assert s.count('b.put("tree:names"') == 1 and s.count('b.remove("tree:names"') == 1
 assert s.count("remove(ACRO_SRC)") == 2 and s.count('putNZ(m, "dodge.acrobatics"') == 1
 assert s.count("registerSystem(") == 2   # one registerSystem per class, unchanged: TreeDmgSys + TreeTick

@@ -516,3 +516,13 @@ Files changed, in `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\`:
 - [ ] /rolls reroll on a sack, arrows or any non weapon/armor/tool: refused with a chat line.
 - [ ] Hold the rerolled Foraging sack, /rolls clear: the rolls and the display go away, the bag still works.
 - [ ] Relog, drop + pick up, chest in/out: the rolls and the display stay.
+
+## SkyyHud 0.3.7 (built + reviewed 2026-09-24, NOT deployed)
+- [ ] Reconnect: the HUD looks exactly like 0.3.6; old layouts unchanged.
+- [ ] /skyyhud -> Widgets / Settings -> Settings on a widget: page fits the screen; Color (13 swatches), Bold, Italic, Glow + Glow color, Preview, Reset style.
+- [ ] Gold + Italic ON + Glow ON: page preview and live HUD update, no disconnect. Try glow Black, Same, Aqua.
+- [ ] Glow ON at every size 50-200% and every snap position: widget stays in place, glow centred.
+- [ ] Editor: styled preview drawn; click/drag still selects and moves the widget. Reset style = old look.
+- [ ] /skyyhud export -> reset -> import <code> restores the style; same with profile save/load.
+- [ ] Zone widget: own island 'Your Island'; other profile's island 'Island' after switching; a friend's island 'Island'; hub shows the Hytale zone name (or 'Hub'); nothing runs into the next widget.
+- [ ] Client log: no "Failed to parse" / "Selected element not found".

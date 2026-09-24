@@ -76,8 +76,10 @@ Run:   python build_skyyhud_0.3.7.py            -> SkyyHud/SkyyHud-0.3.7.jar
                             regionName() translated with I18nModule.getMessage(lang, "server.map.region.<r>") exactly like the
                             vanilla /zone command (e.g. Zone1_Tier1 -> "Drifting Plains"), else zoneName() via server.map.zone.<z>,
                             else "Hub". Max 24 chars. Hub world = Skyy_SkyyIslands/hub.properties "world" (re-read every 15 s)
-                            or Universe.getDefaultWorld().
+                            or Universe.getDefaultWorld(). hubWorld() is static synchronized (tick + page threads).
       any other world    -> its name, cut to 18 chars + "..."
+      Fit (measured with the client's NunitoSans glyph advances, FontSize 12 bold, 180 px box; font and box scale together):
+      longest real names "Whisperfrost Frontiers" ~131 px, "First Gate of the Echo" ~124 px, 24-char cap ~145-160 px.
   - Settings page: 1500 x 790 (was 940 x 440), label column 200, the same 20/17 px fonts, a "Text style" header, the palette rows,
     Bold/Italic/Glow rows, a Preview row (the widget at its real HUD size on a dark and on a bright backdrop, text as when the page
     was opened - no periodic page updates) and "< Back" + "Reset style".
@@ -214,8 +216,11 @@ public static String pkey(java.util.UUID u) {
   } catch (Throwable t) { }
   return u.toString();
 }""", wid))
+# static synchronized: the 1 s HUD tick (scheduler thread) and page builds (SettingsPage.previewText) call this concurrently;
+# the Widgets.class monitor makes HUBW/HUBAT visible across threads and stops a caller from seeing HUBAT already refreshed while
+# HUBW is still the old value. It only reads one small file and takes no other lock (lock order HudMain -> Widgets.class only).
 wid.addMethod(CtNewMethod.make("""
-public static String hubWorld() {
+public static synchronized String hubWorld() {
   long now = System.currentTimeMillis();
   if (HUBAT != 0L && now - HUBAT < 15000L) return HUBW;
   HUBAT = now;

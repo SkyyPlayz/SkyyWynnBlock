@@ -22,9 +22,13 @@ DERIVED from build_skyytrees_0.1.py by tools/trees_0_2_patch.py - edit the patch
   BRIDGE: new tree:names = "Mining,Foraging,Farming,Cooking,Acrobatics,Exploration" (put in setup, removed in shutdown) - SkyySkills
     0.4.1 and SkyyExploration show their Tree buttons from it. clearOne also takes back move:<uuid>["trees.acrobatics"].
   CONFIG: an existing trees.properties (written by 0.1) gets the 0.2 block (per-tree Dust rates + the Acrobatics / Exploration node
-    lines) appended ONCE, when it has no dust.xpPerDust.* / Acrobatics.* / Exploration.* key; it holds the same numbers as the
-    built-in defaults, so the trees work the same whether or not the append succeeds.
-  PAGE: 6 tabs of 96 px with 4 px gaps, level / tokens / Dust labels 140 / 110 / 120 (970 of the 972 px inner width). The Exploration
+    lines) added ONCE, when it has no dust.xpPerDust.* / Acrobatics.* / Exploration.* key; it holds the same numbers as the
+    built-in defaults, so the trees work the same whether or not the write succeeds. The old content + the block go to
+    trees.properties.tmp and then replace the file with an atomic move (TreeCfg.writeAtomic, the TreeStore.moveRetry pattern) - a
+    crash leaves either the old file or the full new one, never a torn line. The default file of a first start is written the same way.
+  PAGE: 6 tabs of 88 px with 4 px gaps, level / tokens / Dust labels 150 / 140 / 128 (970 of the 972 px inner width; sized from the
+    client font's own glyph advances, NunitoSans: "Exploration" at 12 bold ~66 px, "SkyySkills missing" at 14 ~123, "Tokens 121 of 121"
+    at 13 ~115 - a debug.extraTokens test - and "Dust 123,456,789" ~110). The Exploration
     tab's note: "Draft tree - Skyy designs the rest later - nothing here boosts Exploration XP", prefixed with "Exploration levels need
     SkyySkills 0.4.1" when the running SkyySkills publishes no Exploration level in skill:<uuid> (SkyySkills 0.4).
   COMMANDS: /tree acrobatics | exploration (3+ letter prefixes acr / exp work), help texts updated, same permission groups.
@@ -865,13 +869,33 @@ public static void apply(java.util.Properties p) {
   MAX = mx; PER = pe; B = bb; BASE = ba; TOK = tk; EN = en; LIST = li;
 }""")
 M(cfg, r"""
+public static void writeAtomic(byte[] data) throws java.io.IOException {
+  java.nio.file.Path tmp = FILE.resolveSibling(FILE.getFileName().toString() + ".tmp");
+  java.nio.file.Files.write(tmp, data, new java.nio.file.OpenOption[0]);
+  java.io.IOException last = null;
+  for (int i = 0; i < 5; i++) {
+    try {
+      java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      return;
+    } catch (java.nio.file.AtomicMoveNotSupportedException e) {
+      java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      return;
+    } catch (java.nio.file.FileSystemException e) {
+      last = e;
+    }
+    try { Thread.sleep(20L); } catch (InterruptedException ie) { }
+  }
+  try { java.nio.file.Files.deleteIfExists(tmp); } catch (Throwable x) { }
+  throw last;
+}""")
+M(cfg, r"""
 public static synchronized String load() {
   java.util.Properties p = new java.util.Properties();
   boolean loaded = false;
   try {
     java.nio.file.Files.createDirectories(FILE.getParent(), new java.nio.file.attribute.FileAttribute[0]);
     if (!java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0])) {
-      java.nio.file.Files.write(FILE, DEFAULTS.getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+      writeAtomic(DEFAULTS.getBytes("UTF-8"));
       info("wrote default " + FILE);
     }
     java.io.InputStream in = java.nio.file.Files.newInputStream(FILE, new java.nio.file.OpenOption[0]);
@@ -880,7 +904,12 @@ public static synchronized String load() {
   } catch (Throwable t) { warn("could not read trees.properties (built-in defaults used): " + t); }
   if (loaded && !has02(p)) {
     try {
-      java.nio.file.Files.write(FILE, ("\n" + ADD02).getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.APPEND });
+      byte[] old = java.nio.file.Files.readAllBytes(FILE);
+      byte[] add = ("\n" + ADD02).getBytes("UTF-8");
+      java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream(old.length + add.length);
+      bo.write(old, 0, old.length);
+      bo.write(add, 0, add.length);
+      writeAtomic(bo.toByteArray());
       info("added the SkyyTrees 0.2 lines (Acrobatics and Exploration trees, per-tree Dust rates) to " + FILE);
     } catch (Throwable t2) { warn("could not add the 0.2 lines to trees.properties (their built-in defaults apply anyway): " + t2); }
   }
@@ -1413,7 +1442,6 @@ public static void acroPost(java.util.UUID u, double[] v) {
   float sp = (float) r6(v[@I_RSPEED@] + v[@I_RSPEED2@] + v[@I_RSPEED3@]);
   float jp = (float) r6(v[@I_RJUMP@] + v[@I_RJUMP2@]);
   float fd = (float) r6(0.0 - (v[@I_RFALL@] + v[@I_RFALL2@]));
-  if (fd == 0.0f) fd = 0.0f;
   java.util.Map b = @PKG@.TreeStore.bridge();
   String k = "move:" + u.toString();
   Object o = b.get(k);
@@ -2391,13 +2419,13 @@ public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
   b.appendInline((String) null, "Group #SkyyTrRoot { Anchor: (Width: 1000, Height: 660); Background: #0b1524(0.96); Padding: (Horizontal: 14, Vertical: 10); LayoutMode: Top; }");
   b.appendInline("#SkyyTrRoot", "Group #SkyyTrHead { Anchor: (Height: 36); LayoutMode: Left; }");
   for (int i = 0; i < @PKG@.TreeDefs.NT; i++) {
-    b.appendInline("#SkyyTrHead", "TextButton #SkyyTrTab" + i + " { Anchor: (Width: 96, Height: 32); Text: \"" + @PKG@.TreeDefs.TREES[i] + "\"; " + (i == t ? "@BTON@" : "@BTOFF@") + " }");
+    b.appendInline("#SkyyTrHead", "TextButton #SkyyTrTab" + i + " { Anchor: (Width: 88, Height: 32); Text: \"" + @PKG@.TreeDefs.TREES[i] + "\"; " + (i == t ? "@BTON@" : "@BTOFF@") + " }");
     ev.addEventBinding(@BT@.Activating, "#SkyyTrTab" + i, @EVD@.of("a", "trtab" + i));
     b.appendInline("#SkyyTrHead", "Label { Anchor: (Width: 4, Height: 32); Text: \"\"; }");
   }
-  b.appendInline("#SkyyTrHead", "Label #SkyyTrLvl { Anchor: (Width: 140, Height: 32); Text: \"\"; Style: (FontSize: 14, RenderBold: true, TextColor: " + col + ", HorizontalAlignment: End, VerticalAlignment: Center); }");
-  b.appendInline("#SkyyTrHead", "Label #SkyyTrTok { Anchor: (Width: 110, Height: 32); Text: \"\"; Style: (FontSize: 13, RenderBold: true, TextColor: #ffe08a, HorizontalAlignment: End, VerticalAlignment: Center); }");
-  b.appendInline("#SkyyTrHead", "Label #SkyyTrDust { Anchor: (Width: 120, Height: 32); Text: \"\"; Style: (FontSize: 13, RenderBold: true, TextColor: #c8a0ff, HorizontalAlignment: End, VerticalAlignment: Center); }");
+  b.appendInline("#SkyyTrHead", "Label #SkyyTrLvl { Anchor: (Width: 150, Height: 32); Text: \"\"; Style: (FontSize: 14, RenderBold: true, TextColor: " + col + ", HorizontalAlignment: End, VerticalAlignment: Center); }");
+  b.appendInline("#SkyyTrHead", "Label #SkyyTrTok { Anchor: (Width: 140, Height: 32); Text: \"\"; Style: (FontSize: 13, RenderBold: true, TextColor: #ffe08a, HorizontalAlignment: End, VerticalAlignment: Center); }");
+  b.appendInline("#SkyyTrHead", "Label #SkyyTrDust { Anchor: (Width: 128, Height: 32); Text: \"\"; Style: (FontSize: 13, RenderBold: true, TextColor: #c8a0ff, HorizontalAlignment: End, VerticalAlignment: Center); }");
   b.set("#SkyyTrLvl.Text", lvl < 0 ? "SkyySkills missing" : tn + " " + lvl);
   b.set("#SkyyTrTok.Text", "Tokens " + tokA + " of " + bal[0]);
   b.set("#SkyyTrDust.Text", "Dust " + @PKG@.TreeDefs.grp(dustA));
