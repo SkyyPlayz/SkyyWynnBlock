@@ -5,7 +5,8 @@ Run:   python build_skyyaccessories_0.4.3.py            -> SkyyAccessories/SkyyA
      tools/acc_0_4_3_patch.py:
      - Skyy_Accessory_Campfire_T1: recipe back (Bench_Campfire + 4 Copper Bars at a Workbench), equippable, Common, in acc:has:<uuid> and
        acc:fn:has again. Description "Quick inventory cooking: campfire dishes in /craft at 50% Cooking XP and 75% of your cooking
-       bonus" (SkyyCooking 0.1.1 cook:fn:campfire does the reduction; SkyySacks has to show + call it - 0.7.3 still treats it as retired).
+       bonus" (SkyyCooking 0.1.1 cook:fn:campfire does the reduction; SkyySacks 0.7.4's /craft Campfire tab shows + calls it - with
+       0.7.3, which still treats it as retired, it unlocks nothing).
      - Omni: covers the Campfire again; recipe = the 11 active top-tier bench accessories (0.4.2: 10).
      - Review fixes: the item text calls 50% / 75% the defaults; the bag page status line shows SkyyCooking's LIVE campfire factors
        while the Campfire accessory or the Omni is equipped (AccStore.campFactors / campLine); the 5 s tick logs one warning per
@@ -238,6 +239,10 @@ def _camp_defaults_check():
     if not m:   # 0.4.3 review fix: SkyyCooking IS here but changed shape - fail instead of silently skipping the check
         raise SystemExit("0.4.3: %s has no 'CAMP_BUFF_DEF, CAMP_XP_DEF = <buff>, <xp>' line any more - find SkyyCooking's campfire "
                          "defaults, update CAMP_*_PCT and this check (tools/acc_0_4_3_patch.py)" % os.path.basename(found[-1]))
+    # 0.4.3 review fix: the bag page / log read the LIVE factors from cook:fn:campfactors - the SkyyCooking build must still publish it
+    if 'b.put("cook:fn:campfactors"' not in txt or "Double buffFactor, Double xpFactor, Boolean enabled" not in txt:
+        raise SystemExit("0.4.3: %s no longer publishes cook:fn:campfactors -> Object[]{Double buffFactor, Double xpFactor, Boolean "
+                         "enabled} - update AccStore.campFactors and this check (tools/acc_0_4_3_patch.py)" % os.path.basename(found[-1]))
     buff, xp = int(round(float(m.group(1)) * 100)), int(round(float(m.group(2)) * 100))
     if (buff, xp) != (CAMP_BUFF_PCT, CAMP_XP_PCT):
         raise SystemExit("0.4.3: %s defaults are buff %d%% / XP %d%% but the Campfire accessory text says %d%% / %d%% - update CAMP_*_PCT"
@@ -841,13 +846,9 @@ public static void publishOnline() {{
 }}""", st_))
 
 # 0.4.3 review fix: SkyyCooking's LIVE Campfire accessory factors. The item text can only carry the defaults (CAMP_*_PCT), but a server
-# can change campfire.xpFactor / campfire.buffFactor in cooking.properties (+ /cookadmin reload). SkyyCooking 0.1.1 keeps them in the
-# public static volatile doubles CookCfg.CAMP_XP / CAMP_BUFF (package of its cook:fn:campfire object) and publishes no factor key, so
-# they are read by reflection through that object's class loader: read only, nothing is called, no dependency, never throws.
-# campFactors() -> {xpFactor, buffFactor} or null (SkyyCooking absent / pre-0.1.1 / fields not found). Any thread (volatile reads).
-st_.addField(CtField.make("public static volatile Object CF_OWNER;", st_))
-st_.addField(CtField.make("public static volatile java.lang.reflect.Field CF_XP;", st_))
-st_.addField(CtField.make("public static volatile java.lang.reflect.Field CF_BUFF;", st_))
+# can change campfire.xpFactor / campfire.buffFactor in cooking.properties (+ /cookadmin reload). SkyyCooking 0.1.1 publishes them as
+# cook:fn:campfactors = Function, apply(anything) -> Object[]{ Double buffFactor, Double xpFactor, Boolean enabled } (live, any thread,
+# no I/O). campFactors() -> {xpFactor, buffFactor, enabled 1/0} or null (SkyyCooking absent, or the key missing / changed shape).
 st_.addField(CtField.make('public static volatile String CF_SEEN = "";', st_))   # campCheck: last state logged (tick thread only)
 st_.addField(CtField.make("public static final double CAMP_XP_TEXT = %s;" % repr(CAMP_XP_PCT / 100.0), st_))
 st_.addField(CtField.make("public static final double CAMP_BUFF_TEXT = %s;" % repr(CAMP_BUFF_PCT / 100.0), st_))
@@ -855,27 +856,16 @@ st_.addField(CtField.make('public static final String CAMPFIRE_ID = "Skyy_Access
 st_.addMethod(CtNewMethod.make("""
 public static double[] campFactors() {
   try {
-    Object f = bridge().get("cook:fn:campfire");
-    if (f == null) return null;
-    if (f != CF_OWNER) {
-      CF_XP = null;
-      CF_BUFF = null;
-      CF_OWNER = f;
-      String n = f.getClass().getName();
-      Class c = Class.forName(n.substring(0, n.lastIndexOf('.') + 1) + "CookCfg", false, f.getClass().getClassLoader());
-      java.lang.reflect.Field fx = c.getField("CAMP_XP");
-      java.lang.reflect.Field fb = c.getField("CAMP_BUFF");
-      if (fx.getType() != Double.TYPE || fb.getType() != Double.TYPE) return null;
-      CF_XP = fx;
-      CF_BUFF = fb;
-    }
-    java.lang.reflect.Field x = CF_XP;
-    java.lang.reflect.Field b = CF_BUFF;
-    if (x == null || b == null) return null;
-    double xv = x.getDouble((Object) null);
-    double bv = b.getDouble((Object) null);
+    Object f = bridge().get("cook:fn:campfactors");
+    if (!(f instanceof java.util.function.Function)) return null;
+    Object r = ((java.util.function.Function) f).apply((Object) null);
+    if (!(r instanceof Object[])) return null;
+    Object[] a = (Object[]) r;
+    if (a.length < 3 || !(a[0] instanceof Number) || !(a[1] instanceof Number) || !(a[2] instanceof Boolean)) return null;
+    double bv = ((Number) a[0]).doubleValue();
+    double xv = ((Number) a[1]).doubleValue();
     if (!(xv >= 0.0 && xv <= 1.0 && bv >= 0.0 && bv <= 1.0)) return null;
-    return new double[] { xv, bv };
+    return new double[] { xv, bv, ((Boolean) a[2]).booleanValue() ? 1.0 : 0.0 };
   } catch (Throwable t) { return null; }
 }""", st_))
 st_.addMethod(CtNewMethod.make("""
@@ -884,19 +874,22 @@ public static String campPct(double v) {
   if (c % 10L == 0L) return String.valueOf(c / 10L) + "%";
   return String.valueOf(c / 10L) + "." + String.valueOf(c % 10L) + "%";
 }""", st_))
-# 5 s tick (AccTick, scheduler thread): one WARNING per distinct state - live factors that differ from the item text, or SkyyCooking
-# running with factors that cannot be read. Silent while they match the text or SkyyCooking (0.1.1+) is absent.
+# 5 s tick (AccTick, scheduler thread): one WARNING per distinct state - live factors that differ from the item text, graded cooking
+# turned off, or SkyyCooking running (cook:fn:campfire) without a readable cook:fn:campfactors. Silent while the live factors match
+# the text or SkyyCooking (0.1.1+) is absent. Checking every 5 s also catches /cookadmin reload.
 st_.addMethod(CtNewMethod.make("""
 public static void campCheck() {
   try {
     if (bridge().get("cook:fn:campfire") == null) return;
     double[] f = campFactors();
     String seen = "unreadable";
-    if (f != null) seen = (Math.abs(f[0] - CAMP_XP_TEXT) < 0.0005 && Math.abs(f[1] - CAMP_BUFF_TEXT) < 0.0005) ? "default" : campPct(f[0]) + " " + campPct(f[1]);
+    if (f != null && f[2] < 0.5) seen = "off";
+    else if (f != null) seen = (Math.abs(f[0] - CAMP_XP_TEXT) < 0.0005 && Math.abs(f[1] - CAMP_BUFF_TEXT) < 0.0005) ? "default" : campPct(f[0]) + " " + campPct(f[1]);
     if (seen.equals(CF_SEEN)) return;
     CF_SEEN = seen;
     if (seen.equals("default")) return;
-    if (f == null) warn("SkyyCooking runs, but its live Campfire accessory factors could not be read (CookCfg.CAMP_XP / CAMP_BUFF next to cook:fn:campfire - a newer SkyyCooking?). The Campfire Accessory item text shows the defaults " + campPct(CAMP_XP_TEXT) + " Cooking XP / " + campPct(CAMP_BUFF_TEXT) + " of the cooking bonus and the Accessory Bag page cannot show this server's numbers.");
+    if (f == null) warn("SkyyCooking runs (cook:fn:campfire), but its live Campfire accessory factors could not be read (cook:fn:campfactors missing or changed shape - expected Object[]{Double buffFactor, Double xpFactor, Boolean enabled}). The Campfire Accessory item text shows the defaults " + campPct(CAMP_XP_TEXT) + " Cooking XP / " + campPct(CAMP_BUFF_TEXT) + " of the cooking bonus and the Accessory Bag page cannot show this server's numbers.");
+    else if (seen.equals("off")) warn("graded cooking is off in cooking.properties (enabled=false): the Campfire accessory cooks plain dishes with no Cooking XP, but its item text says " + campPct(CAMP_XP_TEXT) + " Cooking XP / " + campPct(CAMP_BUFF_TEXT) + " of the cooking bonus. The Accessory Bag page says it is off.");
     else warn("cooking.properties sets the Campfire accessory to " + campPct(f[0]) + " Cooking XP and " + campPct(f[1]) + " of the cooking bonus (campfire.xpFactor / campfire.buffFactor), but the Campfire Accessory item text says the defaults " + campPct(CAMP_XP_TEXT) + " / " + campPct(CAMP_BUFF_TEXT) + ". The Accessory Bag page shows the live numbers; the item text only changes with a SkyyAccessories rebuild (CAMP_XP_PCT / CAMP_BUFF_PCT).");
   } catch (Throwable t) { }
 }""", st_))
@@ -907,10 +900,11 @@ public static String campLine(String[] s) {
     boolean on = false;
     if (s != null) for (int i = 0; i < s.length; i++) if (CAMPFIRE_ID.equals(s[i]) || com.skyy.accessories.AccDefs.OMNI.equals(s[i])) on = true;
     if (!on) return "";
-    if (bridge().get("cook:fn:campfire") == null) return "Campfire accessory - SkyyCooking is not running - campfire dishes in /craft come out plain with no Cooking XP";
+    if (bridge().get("cook:fn:campfire") == null) return "Campfire quick cook - SkyyCooking is not running - plain dishes and no Cooking XP";
     double[] f = campFactors();
     if (f == null) return "";
-    return "Campfire accessory on this server - campfire dishes in /craft at " + campPct(f[0]) + " Cooking XP and " + campPct(f[1]) + " of your cooking bonus";
+    if (f[2] < 0.5) return "Campfire quick cook - graded cooking is off on this server - plain dishes and no Cooking XP";
+    return "Campfire quick cook on this server - " + campPct(f[0]) + " Cooking XP and " + campPct(f[1]) + " of your cooking bonus";
   } catch (Throwable t) { return ""; }
 }""", st_))
 

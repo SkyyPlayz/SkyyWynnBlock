@@ -17,14 +17,14 @@ UN-RETIRE the Campfire bench accessory (Skyy_Accessory_Campfire_T1) ONLY:
       Double buffFactor, Double xpFactor, Boolean enabled}, the values cooking.properties + /cookadmin reload set) - no dependency, null
       without SkyyCooking 0.1.1 or when the key changes shape.
       * Accessory Bag page: while the Campfire accessory or the Omni is equipped, the status line (when no click result is showing)
-        says "Campfire accessory on this server - campfire dishes in /craft at X% Cooking XP and Y% of your cooking bonus" (live), or
+        says "Campfire quick cook on this server - X% Cooking XP and Y% of your cooking bonus" (live), or
         that graded cooking is off / SkyyCooking is not running (plain dishes, no Cooking XP). No new element, no layout change, no
         periodic update (the line is set when the page is built).
       * Server log: the 5 s tick (AccTick) warns ONCE per distinct state when the live factors differ from the item text (also after
         /cookadmin reload), when graded cooking is off, and when SkyyCooking runs (cook:fn:campfire) but cook:fn:campfactors cannot be
         read (so the check never switches itself off silently).
     - The build-time check fails hard when a SkyyCooking build script is found but its CAMP_BUFF_DEF / CAMP_XP_DEF line cannot be read
-      (only "no SkyyCooking build script at all" stays a printed note).
+      or it no longer publishes cook:fn:campfactors in that shape (only "no SkyyCooking build script at all" stays a printed note).
  3. AccDefs.isRetired is false for it again, so: Equip works (no page refusal, canEquipK / equipK guards off), rarityOf = 1 (Common,
     counts like any T1 accessory), it is published in acc:has:<uuid> again (AccDefs.benchList) and acc:fn:has answers true
     (AccStore.has). Copies owned or left in a bag since 0.4.2 simply work again: same item id, nothing to migrate.
@@ -40,10 +40,10 @@ UN-RETIRE the Campfire bench accessory (Skyy_Accessory_Campfire_T1) ONLY:
 Unchanged: Alchemy Bench T1-T4 and Cooking Bench stay retired exactly as in 0.4.2 (no recipe, refused on Equip with page + chat line,
 filtered from acc:has / acc:fn:has, grey "DOES NOTHING", listed last); every 0.4.2 / 0.4.1 behaviour (per-profile bags via pkey, one key
 per click, epoch republish, profile:busy / unknown-profile move block, page-key check, talismans, movement protocol) is untouched.
-NOT IN THIS MOD (pairing): the XP x0.5 / bonus x0.75 is SkyyCooking 0.1.1 (cook:fn:campfire), called by SkyySacks' /craft page.
-SkyySacks 0.7.3 still hard-codes the Campfire as retired (CraftPage.retiredBench) and as a timed table-only bench (tableOnly), so with
-Sacks 0.7.3 the equipped Campfire accessory unlocks nothing in /craft - it needs the SkyySacks build that shows its cook:campfire:ids
-recipes again and calls cook:fn:campfire.
+NOT IN THIS MOD (pairing): the XP x0.5 / bonus x0.75 is SkyyCooking 0.1.1 (cook:fn:campfire), called by SkyySacks 0.7.4's /craft
+Campfire tab (shown while acc:has lists Skyy_Accessory_Campfire_T<n> - the Omni's synthetic Campfire_T1 counts). SkyySacks 0.7.3 still
+hard-codes the Campfire as retired (CraftPage.retiredBench) and as a timed table-only bench (tableOnly), so with Sacks 0.7.3 the
+equipped Campfire accessory unlocks nothing in /craft. Deploy SkyyAccessories 0.4.3, SkyySacks 0.7.4 and SkyyCooking 0.1.1 together.
 Run:  python tools/acc_0_4_3_patch.py   then   python SkyyAccessories/build_skyyaccessories_0.4.3.py   (never --deploy from an agent)
 """
 import os
@@ -74,7 +74,8 @@ Run:   python build_skyyaccessories_0.4.3.py            -> SkyyAccessories/SkyyA
      tools/acc_0_4_3_patch.py:
      - Skyy_Accessory_Campfire_T1: recipe back (Bench_Campfire + 4 Copper Bars at a Workbench), equippable, Common, in acc:has:<uuid> and
        acc:fn:has again. Description "Quick inventory cooking: campfire dishes in /craft at 50% Cooking XP and 75% of your cooking
-       bonus" (SkyyCooking 0.1.1 cook:fn:campfire does the reduction; SkyySacks has to show + call it - 0.7.3 still treats it as retired).
+       bonus" (SkyyCooking 0.1.1 cook:fn:campfire does the reduction; SkyySacks 0.7.4's /craft Campfire tab shows + calls it - with
+       0.7.3, which still treats it as retired, it unlocks nothing).
      - Omni: covers the Campfire again; recipe = the 11 active top-tier bench accessories (0.4.2: 10).
      - Review fixes: the item text calls 50% / 75% the defaults; the bag page status line shows SkyyCooking's LIVE campfire factors
        while the Campfire accessory or the Omni is equipped (AccStore.campFactors / campLine); the 5 s tick logs one warning per
@@ -133,6 +134,10 @@ def _camp_defaults_check():
     if not m:   # 0.4.3 review fix: SkyyCooking IS here but changed shape - fail instead of silently skipping the check
         raise SystemExit("0.4.3: %s has no 'CAMP_BUFF_DEF, CAMP_XP_DEF = <buff>, <xp>' line any more - find SkyyCooking's campfire "
                          "defaults, update CAMP_*_PCT and this check (tools/acc_0_4_3_patch.py)" % os.path.basename(found[-1]))
+    # 0.4.3 review fix: the bag page / log read the LIVE factors from cook:fn:campfactors - the SkyyCooking build must still publish it
+    if 'b.put("cook:fn:campfactors"' not in txt or "Double buffFactor, Double xpFactor, Boolean enabled" not in txt:
+        raise SystemExit("0.4.3: %s no longer publishes cook:fn:campfactors -> Object[]{Double buffFactor, Double xpFactor, Boolean "
+                         "enabled} - update AccStore.campFactors and this check (tools/acc_0_4_3_patch.py)" % os.path.basename(found[-1]))
     buff, xp = int(round(float(m.group(1)) * 100)), int(round(float(m.group(2)) * 100))
     if (buff, xp) != (CAMP_BUFF_PCT, CAMP_XP_PCT):
         raise SystemExit("0.4.3: %s defaults are buff %d%% / XP %d%% but the Campfire accessory text says %d%% / %d%% - update CAMP_*_PCT"
@@ -210,11 +215,11 @@ public static String campLine(String[] s) {
     boolean on = false;
     if (s != null) for (int i = 0; i < s.length; i++) if (CAMPFIRE_ID.equals(s[i]) || com.skyy.accessories.AccDefs.OMNI.equals(s[i])) on = true;
     if (!on) return "";
-    if (bridge().get("cook:fn:campfire") == null) return "Campfire accessory - SkyyCooking is not running - campfire dishes in /craft come out plain with no Cooking XP";
+    if (bridge().get("cook:fn:campfire") == null) return "Campfire quick cook - SkyyCooking is not running - plain dishes and no Cooking XP";
     double[] f = campFactors();
     if (f == null) return "";
-    if (f[2] < 0.5) return "Campfire accessory - graded cooking is off on this server - campfire dishes in /craft come out plain with no Cooking XP";
-    return "Campfire accessory on this server - campfire dishes in /craft at " + campPct(f[0]) + " Cooking XP and " + campPct(f[1]) + " of your cooking bonus";
+    if (f[2] < 0.5) return "Campfire quick cook - graded cooking is off on this server - plain dishes and no Cooking XP";
+    return "Campfire quick cook on this server - " + campPct(f[0]) + " Cooking XP and " + campPct(f[1]) + " of your cooking bonus";
   } catch (Throwable t) { return ""; }
 }""", st_))
 

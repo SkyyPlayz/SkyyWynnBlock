@@ -41,9 +41,10 @@ Run:   python build_skyycooking_0.1.1.py            -> SkyyCooking/SkyyCooking-0
      THREAD: the player's world thread (SkyySacks' craft page handleDataEvent), after the materials were removed. No disk I/O, no ECS
       writes. The XP grant happens inside the call (skill:fn:addxp, which queues it on the world thread).
      XP: base = round(xp.<dish> x crafts x campfire.xpFactor) (defaults: Cooked Wildmeat 1,600 -> 800, Grilled Fish 2,000 -> 1,000,
-      Roast Vegetable 1,200 -> 600 per dish) -> this mod's maxXpPerMinute window (shared with bench cooking; over it the XP is dropped,
-      the dish still comes out graded) -> x xpMultiplier -> skill:fn:addxp(Object[]{UUID, "Cooking", Long, "cook:campfire:<dish>", pkey})
-      in parts of <= 400,000 (SkyySkills adds the Cooking tree Wisdom bonus there).
+      Roast Vegetable 1,200 -> 600 per dish) -> this mod's maxXpPerMinute window (shared with bench cooking): a batch pays the part that
+      still fits this minute and only the rest is dropped (Cook.allowXpPart - cross-check fix: a single "All" click of 1,876+ wildmeat
+      used to drop ALL its XP), the dishes always come out graded -> x xpMultiplier -> skill:fn:addxp(Object[]{UUID, "Cooking", Long,
+      "cook:campfire:<dish>", pkey}) in parts of <= 400,000 (SkyySkills adds the Cooking tree Wisdom bonus there).
      ONE XP SOURCE PER CRAFT (caller rule): a craft routed through cook:fn:campfire must NOT also be reported to skill:fn:craftxp - this
       call is its only Cooking XP. SkyySacks 0.7.4 does exactly that (no craftxp call for its Campfire tab). Do not rely on SkyySkills'
       RecipeXp.classify paying 0 for Campfire recipes (0.4 does, but it is another mod's table). SkyyCooking cannot probe craftxp at
@@ -73,8 +74,9 @@ Run:   python build_skyycooking_0.1.1.py            -> SkyyCooking/SkyyCooking-0
   call skill:fn:craftxp for these crafts.
  OTHER MODS (checked 2026-09-24): SkyyAccessories 0.4.3 un-retires Skyy_Accessory_Campfire_T1 (its tooltip numbers are build-checked
   against CAMP_BUFF_DEF / CAMP_XP_DEF below) and SkyySacks 0.7.4 adds the /craft Campfire tab that calls cook:fn:campfire exactly as
-  above (recipe id, finished crafts, settled key, creative flag; preview with crafts 0 for the row note; no craftxp for that tab). Open
-  follow-up for a later SkyySacks: its tab banner still says "50% ... 75%" literally - read cook:fn:campfactors instead.
+  above (recipe id, finished crafts, settled key, creative flag; preview with crafts 0 for the row note; no craftxp for that tab). Its
+  tab banner and SkyyAccessories 0.4.3's Accessory Bag line read the live factors from cook:fn:campfactors (cross-checked 2026-09-24:
+  names, argument array, return, thread and the x0.5 XP / x0.75 bonus end to end, offline with the three built jars).
 
 WHAT IT IS - research/Cooking-Skill-Spec.md, adapted to the orchestrator's decisions of 2026-09-24:
  (1) Cooking lives in its OWN mod (this one), so its ~450 generated assets can never break SkyySkills if they fail to load.
@@ -1514,6 +1516,25 @@ public static void campHint(java.util.UUID u, int g, int c) {
     tell(pr, s, true);
   } catch (Throwable t) { }
 }""")
+# cross-check fix: the part of `base` that still fits this minute's maxXpPerMinute window (the window allowXp keeps, same lock), booked;
+# the rest is dropped with one log line per minute. allowXp is all-or-nothing, which is right for one bench dish per Post but made one
+# big instant accessory batch (e.g. "All 2000" raw meat) pay no XP at all.
+Mk(ck, """
+public static synchronized long allowXpPart(java.util.UUID u, long base) {
+  if (base <= 0L) return 0L;
+  long cap = @PKG@.CookCfg.MAX_PER_MIN;
+  if (cap <= 0L) return base;
+  long now = System.currentTimeMillis();
+  long[] w = (long[]) RATE.get(u);
+  if (w == null) { w = new long[] { now, 0L, 0L }; RATE.put(u, w); }
+  if (now - w[0] >= 60000L) { w[0] = now; w[1] = 0L; }
+  long room = cap - w[1];
+  if (room < 0L) room = 0L;
+  long got = base < room ? base : room;
+  if (got < base && now - w[2] >= 60000L) { w[2] = now; @PKG@.CookCfg.warn("Cooking XP cap reached for " + u + " (" + cap + " base XP per minute, maxXpPerMinute) - a Campfire accessory batch paid " + got + " of " + base + " base XP, the dishes were still given"); }
+  w[1] = w[1] + got;
+  return got;
+}""")
 # THE campfire cook. null = not a campfire dish. Else Object[]{ String id to give, Integer bench Grade G, Integer campfire Grade c,
 # Long XP sent to SkyySkills, String why-plain or null }. crafts <= 0 = preview (no XP, no hint).
 Mk(ck, """
@@ -1560,7 +1581,8 @@ public static Object[] campfire(java.util.UUID u, String what, int crafts, Strin
   long sent = 0L;
   if (!preview) {
     long base = Math.round((double) @PKG@.CookCfg.xpFor(dish) * (double) n * @PKG@.CookCfg.CAMP_XP);
-    if (base > 0L && allowXp(u, base)) sent = sendXp(u, Math.round(base * @PKG@.CookCfg.XP_MULT), "cook:campfire:" + dish, key);
+    long paid = allowXpPart(u, base);
+    if (paid > 0L) sent = sendXp(u, Math.round(paid * @PKG@.CookCfg.XP_MULT), "cook:campfire:" + dish, key);
     campHint(u, g, c);
   }
   return new Object[] { id, Integer.valueOf(g), Integer.valueOf(c), Long.valueOf(sent), null };
@@ -1974,8 +1996,18 @@ _JInfo = jpype.JClass(PKG + ".CookCampInfoFn", loader=_ld)()
 _fx = _JInfo.apply(None)
 if abs(float(_fx[0]) - CAMP_BUFF_DEF) > 1e-12 or abs(float(_fx[1]) - CAMP_XP_DEF) > 1e-12 or not bool(_fx[2]):
     raise SystemExit("self-check 0.1.1: compiled cook:fn:campfactors returns %s, expected [%s, %s, true]" % (list(_fx), CAMP_BUFF_DEF, CAMP_XP_DEF))
+# cross-check fix: an accessory batch pays the XP that still fits the per-minute window (never all-or-nothing), then 0 until it resets
+_cap = int(_JCfg.MAX_PER_MIN)
+_uu = jpype.JClass("java.util.UUID").randomUUID()
+_parts = (int(_JCook.allowXpPart(_uu, _cap - 1000)), int(_JCook.allowXpPart(_uu, 5000)), int(_JCook.allowXpPart(_uu, 5000)), int(_JCook.allowXpPart(_uu, 0)))
+if _parts != (_cap - 1000, 1000, 0, 0):
+    raise SystemExit("self-check 0.1.1: compiled Cook.allowXpPart must pay what fits the %d/min window: got %s" % (_cap, _parts))
+_uu = jpype.JClass("java.util.UUID").randomUUID()
+if int(_JCook.allowXpPart(_uu, _cap + 800)) != _cap:
+    raise SystemExit("self-check 0.1.1: compiled Cook.allowXpPart drops a whole batch that is bigger than the window")
 print("compiled campfire mapping matches the Python mirror (buffFactor 0.75 / 0.5 / 0.25 / 0 / 1 / 0.9); bare dish ids refused; benchGrade "
-      "matches min(level/10, 10) + Master Chef (max Grade %d); cook:fn:campfactors = %s; cook:campfire:ids = %s" % (_mg, [str(x) for x in _fx], str(_JCfg.campList())))
+      "matches min(level/10, 10) + Master Chef (max Grade %d); cook:fn:campfactors = %s; cook:campfire:ids = %s; a batch over the %d XP/min "
+      "window pays the part that fits" % (_mg, [str(x) for x in _fx], str(_JCfg.campList()), _cap))
 
 jar = os.path.join(HERE, "SkyyCooking-%s.jar" % VERSION)
 B.assemble(jar, B.manifest("SkyyCooking", VERSION, "SkyWynn Cooking: dishes cooked at the Cooking Bench come out graded by your Cooking level (SkyySkills) - Grade = level / 10, heal and buffs x2 stronger and longer at level 50, x4 at 100, Grades 11-12 from the SkyyTrees Cooking tree; the Campfire dishes can be cooked at the Cooking Bench too, or instantly through the Campfire accessory in /craft (SkyySacks) as an emergency cook at 75% of the Grade bonus and 50% of the XP; Cooking XP goes to SkyySkills. /cooking. Zero dependencies (without SkyySkills food stays plain).", PKG + ".SkyyCookingPlugin"), OUT, files)

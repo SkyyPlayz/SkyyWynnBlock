@@ -460,3 +460,52 @@ Deploy the whole 17-mod set together (python tools/deploy_set.py, only after Sky
     - Each profile keeps its own tree nodes, Cooking level, bags and Furnace ledger.
     - XP never lands on the other profile.
 19. **Regression.** SkyyMenu buttons (Skills, Collections, Craft, Bags, Accessories, Bazaar, Island, Hub) still open their pages.
+
+## Campfire accessory back: SkyyCooking 0.1.1, SkyySacks 0.7.4, SkyyAccessories 0.4.3 (built + cross-checked 2026-09-24, NOT deployed)
+
+1. **Server log:** check for these ready lines, no `Skyy_Cook_` asset errors and no SkyyAccessories campfire warning.
+   - `[SkyyCooking] 0.1.1 ready ... Campfire accessory bridge cook:fn:campfire (Food_Wildmeat_Cooked,Food_Fish_Grilled,Food_Vegetable_Cooked)`
+   - `[SkyySacks] 0.7.4 ready ... Campfire accessory tab ...`
+   - `[SkyyAccessories] 0.4.3 ready ... Campfire accessory back ...`
+   - In `<world>/mods/Skyy_SkyyCooking/cooking.properties`, `campfire.buffFactor=0.75` and `campfire.xpFactor=0.5` each appear exactly once.
+2. **No accessory equipped:** `/craft` has no Campfire tab, and no cooked food appears in Crafting, Smithing, Farming, search or Collections.
+3. **Craft and equip the accessory:**
+   - At a Workbench, the Campfire Accessory recipe is 1 Campfire + 4 Copper Bars, and its tooltip does not say "(retired)".
+   - Craft it and equip it in `/accessories`.
+   - Reopen `/accessories`: the bottom line reads "Campfire quick cook on this server - 50% Cooking XP and 75% of your cooking bonus".
+4. **Campfire tab:** `/craft` shows it after Farming, with the orange line "Campfire accessory = emergency cook: 50% Cooking XP, 75% of your cooking bonus...", exactly 3 rows and no search row.
+5. **Main cook at Cooking 50** (rows say "comes out Grade 4"). Put 2 raw meat in the Farming bag only and press x10.
+   - Exactly 2 "Cooked Wildmeat (Grade 4)" land in storage and the bag drops by 2.
+   - The info line reads "crafted 2 of 10 x ... Grade 4 - extra materials were returned".
+   - You get +1,600 Cooking XP, once (no extra craft XP from SkyySkills), plus the one-time chat hint.
+   - The `crafts.log` line ends `campfire=Skyy_Cook_Food_Wildmeat_Cooked_G4`.
+6. **Bench comparison:** the same dish at a placed Cooking Bench comes out Grade 5. The Grade 4 tooltip numbers are about 1.74x plain; Grade 5 is 2.00x.
+7. **Other dishes:** 3 Grilled Fish give Grade 4 and 3,000 XP. Roast Vegetable pays 600 XP per dish.
+8. **Levels:** Cooking 0–19 gives "comes out plain", a plain dish and half XP. Cooking 20 gives Grade 1, Cooking 100 gives Grade 8, and Master Chef makes it Grade 9.
+9. **Creative mode:** the row says plain, and a craft gives a plain dish and 0 XP.
+10. **Live factors:**
+    - Set `campfire.xpFactor=0.25` and `campfire.buffFactor=0.6`, run `/cookadmin reload` and reopen `/craft`.
+    - The banner says "25% Cooking XP, 60% of your cooking bonus", the row says Grade 3, and 2 wildmeat pay 800 XP.
+    - The `/accessories` line shows 25% / 60%, and the log has one SkyyAccessories warning.
+    - Then set `enabled=false` and reload: the banner says graded cooking is switched off, and crafts give plain dishes with no XP.
+    - Put the defaults back.
+11. **Big batch (the fix):**
+    - With at least 2,000 raw meat in bags, press "All": every dish is Grade 4 and Cooking XP is about 1,500,000 (the per-minute cap).
+    - The log says "a Campfire accessory batch paid 1500000 of ... base XP".
+    - Another click within the minute still grades the dishes but pays no XP.
+12. **Unequip with the page open:** pressing Craft shows "equip the Campfire accessory in your accessory bag to cook here", the tab disappears and nothing is used.
+13. **Omni only:** the Campfire tab appears, and `/accessories` shows the campfire line.
+14. **Placed vanilla Campfire:** still plain food and no Cooking XP.
+15. **Profile switch with the page open:** you get the "your profile changed" or paused message. A profile without the accessory has no tab.
+16. **Retired accessories:** the Alchemy Bench and Cooking Bench accessories are still refused on Equip.
+17. **Optional, admin:** `/cookadmin campfire wildmeat_cooked 0` shows "bench Grade 5 -> campfire Grade 4" and "XP sent 0". Skip this if `/cookadmin` still prints nothing (the bug logged at 06:40).
+
+Files changed, in `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\`:
+- tools\cooking_0_1_1_patch.py
+- SkyyCooking\build_skyycooking_0.1.1.py
+- SkyyCooking\SkyyCooking-0.1.1.jar
+- tools\acc_0_4_3_patch.py
+- SkyyAccessories\build_skyyaccessories_0.4.3.py
+- SkyyAccessories\SkyyAccessories-0.4.3.jar
+- tools\deploy_set.py
+- SkyySacks\SkyySacks-0.7.4.jar (rebuilt, source unchanged)
