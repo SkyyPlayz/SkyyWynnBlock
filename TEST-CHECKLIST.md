@@ -342,3 +342,10 @@ None left. The 10,000 starter coins are a real feature (kept).
 - [ ] Keep hitting: at most one popup every 1.5 s, the chat line at most every 3 s.
 - [ ] With no class (fresh player, no SkyyProfiles), hit with a weapon: the popup title should be "Choose a class first".
 - [ ] Put a Kunai in the utility slot as a non-Assassin and hit: the popup text should mention the utility slot.
+
+## SkyyRolls 0.1.2 (built 2026-09-23 22:45, NOT deployed - needs Skyy's OK; admin-only test tool)
+- [ ] /rolls give mithril bow -> gives Weapon_Shortbow_Mithril with rolls (a real bow, not "Invalid Item").
+- [ ] /rolls give weapon_shortbow_mithril (any capitals) -> the same bow.
+- [ ] /rolls give iron sword -> gives nothing and suggests Weapon_Longsword_Iron, Weapon_Sword_Iron.
+- [ ] /rolls give (no name) -> the default copper longsword.
+- [ ] Metadata test (the point of the spike): /rolls read on the bow, relog, /rolls read again (same numbers), drop + pick up, chest in/out.
