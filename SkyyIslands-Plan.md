@@ -1,4 +1,38 @@
-# SkyyIslands — plan (research 2026-09-23, agent-verified against HytaleServer.jar)
+# SkyyIslands — plan
+*Design lock 2026-09-23 night. Engine notes below are from the 2026-09-23 spike and still stand.*
+
+## What the island is
+
+The private island is the **progression home** and free creative building. It is not a creative-only plot.
+
+On the island:
+- Minions (helpful, not mandatory — see `SkyyMinions-Plan.md`)
+- Upgrades and size tiers
+- Co-op (shared island). Multiplayer: other players can **share and visit** this island.
+- Free building. Building is not a gated mode. Progression systems still run here.
+- Some farming. **Most farming is in the Garden** (its own island). The private island is not the main farm.
+
+Teleport home stays. The hub is not this island.
+
+A **profile** owns this island. Swapping profile is a different island and different everything. Starting a new class starts a new profile and a new island from zero (`SkyyClasses-Plan.md`).
+
+## What the world spine is
+
+The main leveling path is a **zone island chain**, not hub + level-gated open-world zones.
+
+- One floating island per Hytale zone.
+- That island's biomes ramp difficulty as you cross it.
+- Finish a zone's island before the next unlocks.
+- Story-beat dungeons sit on this chain (`SkyyDungeons-Plan.md`). The chain is the spine; extra dungeons are not.
+
+**Hub** stays the shared spawn, gathering, and social point. `/hub` still leaves the private island for that town. The hub is not where you level through the zones.
+
+Parties and guilds are core-loop social systems (`SkyyGuilds-Plan.md`); they are not an islands feature, but the hub is where that gathering happens.
+
+Full loop: `SkyWynn-Master-Plan.md` Part 2B and Part 3. Rows: `SkyWynn-Decisions.md` 1.7, 3.1, 3.2, 3.3, 3.9, 7.1.
+
+## Engine notes (research 2026-09-23, agent-verified against HytaleServer.jar)
+
 Use the engine's own instances system: `com.hypixel.hytale.builtin.instances.InstancesPlugin`.
 - Template world shipped in the jar at `Server/Instances/SkyyIsland/` (instance.bson = WorldConfig, chunks/*.region.bin, resources/*.json)
   — the same layout EndlessLeveling uses for `Server/Instances/Archangels_Sanctum/`. Build the starter island once in creative, copy its folder.

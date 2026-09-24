@@ -1,6 +1,6 @@
 # PROJECT SKYWYNN — Hypixel SkyBlock × Wynncraft on Hytale
-### Master research + design plan — v0.1 (DRAFT FOR REVIEW — nothing built yet)
-*Researched & drafted 2026-09-21 by Skyy & Claude*
+### Master research + design plan — v0.3 (Part 2–3 locked to the 2026-09-23 night call, batches 1 and 2; Part 1 and Part 4 research kept)
+*Researched & drafted 2026-09-21 by Skyy & Claude. Progression, skills, phases, and locked decisions updated 2026-09-23 night (batch 2 added on top of batch 1).*
 
 ---
 
@@ -100,14 +100,14 @@
 | System | SkyBlock flavor | Wynncraft flavor | SkyWynn call (draft) |
 |---|---|---|---|
 | Skills/professions | 13 passive-leveled skills | 12 professions (gather+craft) | FUSE: one unified skill list (below) |
-| Dungeons | Catacombs floors, dungeon classes | Keyed dungeons + corrupted | Wynn-style keyed dungeons in world + floor-style endgame dungeon |
+| Dungeons | Catacombs floors, dungeon classes | Keyed dungeons + corrupted | Story beats through the zone island chain + one endgame capstone. Extra dungeons and raids are side content, not the spine. Slayers are core loop (batch 2), still not the spine |
 | Raids/boss fights | Kuudra, slayer bosses | 4 raids, boss altars | Boss altars (cheap) + slayers midgame + raids endgame |
 | Player market | Auction House + Bazaar | Trade Market | SkyBlock model wins: AH for uniques + Bazaar for commodities |
 | Enchanting | Table+books+anvil | (minimal; IDs instead) | SkyBlock enchanting |
 | Rarity tiers | Common→Divine | Normal→Mythic | One 7-tier ladder |
 | Pets | Pet menu, levels, perks | (minor) | SkyBlock pets |
 | Events | Mayors, festivals | World Events | BOTH: rotating "mayor" buffs + Wynn world events |
-| Parties/social | Co-op, parties | Parties, GUILDS+territory | Wynn guilds (PartyPro mod as base) |
+| Parties/social | Co-op, parties | Parties, GUILDS+territory | Parties + guilds (bank, XP, seasons) in the core loop; territory war later |
 | Exploration collectibles | Fairy Souls | Discoveries/caves | One system: "Echo Shards" (our name TBD) |
 | Mounts | Horse pets | Horses | Whatever Hytale mounts allow (Kazzy/Ancient Riders mods) |
 
@@ -123,44 +123,70 @@
 - Slayers, Bestiary, SkyBlock account levels, wardrobe/ender chest, profiles
 
 ### WYNNCRAFT-ONLY (we take)
-- **Classes (5) + Archetypes + Ability Trees + spell-cast combos**
+- **Classes (5) + Archetypes + Ability Trees** (casting is Hytale ability keys, not Wynn click-combos — locked 2026-09-21)
 - **Skill Points (5 stats) + gear requirements**
 - **Elements** (5) damage/defense matrix
 - **Identifications** (RNG rolled gear stats + re-roll sink)
 - **Powders** (socketables)
 - **Ingredient-based crafting** = Skyy's **SMITHING** skill (create + reforge gear) — fuse w/ SkyBlock reforge stones
-- **Hand-built level-gated open world + ~quests** (scaled down: Hytale-sized)
+- **Hand-built zone island chain** (one floating island per Hytale zone; biomes ramp difficulty as you cross it; finish that island before the next unlocks) + hub as the shared spawn. This replaces level-gated open-world zones as the spine. Quests scaled to Hytale.
 - Lootrunning, World Events, Guild territory (late roadmap)
 
 ### SKYY'S HOUSE RULES (from the brief)
-1. Progression is SkyBlock-style **multi-skill**: neglecting non-combat skills holds you back (soft requirement, not hard).
+1. Progression is SkyBlock-style **multi-skill** with a **soft gate that has a ceiling** (refined 2026-09-23): uneven progress is allowed, but drifting too far on one skill slows you until the others catch up. Not a hard "all skills advance together" rule, and not unlimited neglect.
 2. **Collections gate recipes**, but **money can bypass** most gates until ~end of midgame (purchasable unlocks priced steeply; endgame recipes = collection-locked, NO bypass).
 3. **Smithing** = new headline skill: Wynn-style crafting (materials + ingredients) + SkyBlock-style reforging, one discipline.
 4. Quick Craft but better: craft-from-storage (we already built vault→bench linking in SkyyHighPack — this is the prototype!).
 
 ---
 
-# PART 2 — THE MERGE DESIGN (draft)
+# PART 2 — THE MERGE DESIGN
+*Updated 2026-09-23 night to the voice-call locks. Where this part disagrees with a Part 1 "draft call," this part wins. Worksheet rows: `SkyWynn-Decisions.md`.*
 
 ## 2A. One unified skill list (SkyWynn Skills)
-**Gathering:** Farming • Mining • Foraging • Fishing
-**Combat:** Combat (weapon XP) + **Class Level** (Wynn-style char level driving ability points)
-**Artisan:** **Smithing** (weapons/armor craft + reforge) • Enchanting • Alchemy • Cooking
-**Meta:** Taming (pets) • Carpentry (furniture/quickcraft) • Exploration (discoveries/quests)
+SkyBlock's skill tree, kept ambitious, **plus** extras SkyBlock does not have. Trim later. Do not drop Smithing or Exploration in this pass.
 
-- Every skill: SkyBlock-style passive XP + level rewards (stats/coins/perks)
-- Class Level is Wynn's character level → Ability Points → class ability tree
-- Skills gate gear & zones SOFTLY (e.g., T4 pick needs Mining 16; zone mobs shred you without gear that needs your skills)
-- HOTM generalized: each gathering skill gets a mini token-tree at higher levels (Mining first)
+**Gathering:** Farming • Mining • Foraging • Fishing
+**Artisan:** **Smithing** (weapons/armor craft + reforge — keep) • Enchanting • Alchemy • Cooking (its own skill for now)
+**Life / meta:** Taming (pets) • Carpentry (furniture / quickcraft) • **Exploration** (discoveries, quests, caves — keep) • Hunting • Runecrafting (cosmetic) • Social (cosmetic)
+**Later, not the spine:** Dungeoneering (a skill, not the dungeon climb — see 2B)
+
+**Combat — no shared Combat skill.** Combat XP goes into the **per-weapon class skill** of the equipped class:
+- Archer → Archery (Shortbow, Crossbow)
+- Warrior → Swordsmanship (Sword, Longsword, Spear)
+- Mage → Sorcery (Staff)
+- Assassin → Assassination (Daggers, Kunai) — later phase
+- Shaman → that class's weapon skill — later phase; the name is set when Shaman is designed
+
+**Class Level** stays separate: Wynn-style character level → Ability Points → that class's ability tree. It is not a Combat skill.
+
+- Every skill: SkyBlock-style passive XP + level rewards (stats / coins / perks)
+- The class locks **combat only**. Gathering stays open for everyone.
+- **Soft gate with a ceiling:** uneven skill progress is allowed. Drift too far ahead on one skill and gains slow until the others catch up. Gear can still ask for a skill (a T4 pick wants Mining), but the world does not hard-lock you to a single pace, and neglecting a skill forever is not free.
+- HOTM generalized: each gathering skill has a mini token-tree **unlocked by that skill's own levels** (Mining levels open Mining's tree). Not location-locked. Mining can still be built first; the others stay on the list.
 
 ## 2B. Progression loop (the fusion pitch)
-1. Spawn in **Hub Town** (Wynn-style world) → tutorial quest → get **Private Island** (instanced)
-2. Quest through level-gated open-world zones (Wynn) while skills grow (SkyBlock)
-3. Collections unlock recipes → Smithing crafts your gear (ingredients from world content)
-4. Minions on your island automate materials you've personally reached in collections
-5. Coins (mob/quest/NPC/bazaar) can BUY most recipe unlocks until midgame wall
-6. Midgame: slayers, dungeons, first raid, accessory hunt, ability-tree archetypes come online
-7. Endgame: raids, lootruns, world events, guild territory, collection-locked divine crafts
+1. Spawn in **Hub Town**. It is the shared spawn, gathering, and social point — not the main leveling world. Tutorial quest, then the **private island**.
+2. The **private island** is the progression home **and** free creative building. Minions, island upgrades, co-op, and size tiers live here. Building is free. This is not a creative-only plot; the progression systems still run on the island. Minions are helpful AFK support, not required to move forward. Co-op is multiplayer: other players can **share and visit** the island.
+3. The **main leveling path is the island chain.** One floating island per Hytale zone. That island's biomes ramp difficulty as you cross it. Finish a zone's island before the next unlocks. This replaces hub + level-gated open-world zones as the spine.
+4. Collections unlock recipes → Smithing crafts your gear (ingredients from the chain and from the island). Combat XP from fighting on the chain goes into the equipped class's weapon skill, not a shared Combat skill.
+5. Launch classes are Archer, Warrior, and Mage. Assassin and Shaman come later. Gathering skills stay open no matter the class. A class is a **profile**: swapping profile is a different island and different everything, and a new class starts a new profile and a new island from zero.
+6. Coins (mob / quest / NPC / bazaar) can BUY most recipe unlocks until the midgame wall. Endgame recipes stay collection-locked.
+7. **Dungeons** on the way up are story beats woven through the island chain. After the last island there is **one** endgame capstone dungeon. Extra dungeons and raids are side content, not the spine. **Slayers are core loop** (batch 2): you do them as you play, and they are not the spine.
+8. **Parties and guilds** are in the core loop from early on (guild bank, guild XP, seasons). Guild territory war stays a later side system.
+9. Side / endgame after the capstone: raids, lootruns, world events, guild territory, mayor events, collection-locked divine crafts. Skill drift still hits the ceiling — you can specialise, and you cannot abandon the rest of the tree.
+
+### Also locked the same night (batch 2)
+These sit on the loop above. They do not replace it.
+
+- Death stays **10–25% coin loss**.
+- **Magic Bags / sacks** are core QoL. **Accessories and magical power** are core, not later-game.
+- Every item has **rarity and stats**. A **reforge swaps bonuses**. **Wynn's five elements** and **powders** are in; powders replace SkyBlock runes.
+- **Coin-bypass** of collection gates stays: coins buy unlocks early (steep prices, midgame wall, no endgame bypass).
+- **Most farming is in the Garden.** Some farming stays on the private island and on the zone islands.
+- **SkyWynn** is the quick name. The repo stays **SkyyWynnBlock**.
+- UI: best placeholders we can ship, refined as we go. No new buttons or custom UI on the **inventory screen**.
+- **Magic is an open thread.** Class abilities are not locked to Chapter 1 runes until we see how Hytale ships them. Powders-on-gear stay locked either way.
 
 ## 2C. Systems mapping to Hytale tech we ALREADY have proven
 | SkyWynn system | Proven foundation |
@@ -186,32 +212,65 @@
 2. **Auction House / Bazaar backends** (order books, listings, escrow) — UI we have; data layer is new
 3. **Collections tracker** (per-player per-item lifetime gather counts → unlock table) — Void Vault code is 70% of this
 4. **Minion entity AI** (place → animate → generate → store) — prop entity + timers, very buildable
-5. **Ability tree content** (the actual 5 classes × nodes — big DESIGN job more than code job)
+5. **Ability tree content** (Wynn's five — Warrior, Archer, Mage, Assassin, Shaman — × nodes; v1 is the first three. Big DESIGN job more than code job)
 6. **Identifications/reforge roll engine** — ItemStack metadata + our asset pipeline
-7. **The world itself** — zones, quests, NPCs (the long pole; Hytale prefab/creator tools + adventure-mode scripting)
+7. **The world itself** — hub (spawn / social) + the zone island chain, quests, NPCs (the long pole; Hytale prefab/creator tools + adventure-mode scripting)
 
-## 2E. Proposed build phases (each = playable milestone)
-- **P0 — Foundation spike (validate the 3 risky bets):** per-player instanced island world; coin ledger + one NPC shop; ItemStack metadata stat-roll survives save/reload. GO/NO-GO gate.
-- **P1 — Core loop:** unified skills (reuse RPGLeveling/MMOSkillTree where portable), collections tracker + recipe locks + coin bypass, vault→sacks, quickcraft v2
-- **P2 — Island life:** private island polish, first 8 minion types, minion upgrades, Garden-lite
+## 2E. Build phases (each = playable milestone)
+*Re-cut 2026-09-23 night. Parties and guilds are core, not P7. The world phase is the island chain, not hub + open zones.*
+
+- **P0 — Foundation spike:** per-player instanced island (the progression home and the creative building surface); coin ledger + one NPC shop; ItemStack metadata stat-roll survives save/reload. GO/NO-GO gate. (Part 4 adds an Encounter Manager spike once that tooling is in the build we ship.)
+- **P1 — Core loop:** the ambitious skill list with **no shared Combat skill** (launch weapon skills: Archery, Swordsmanship, Sorcery), soft gate with a ceiling, collections tracker + recipe locks + coin bypass, **Magic Bags / sacks** (core QoL), quickcraft v2. **Profiles** are the save and the class selector (new class = new profile and new island from zero). **Parties and guilds land here** (party play, plus guild membership / bank / XP / seasons). Territory war does not. **Accessories + magical power** are core here, not a later-game system. Core items start here too: every item has rarity and stats, reforges swap bonuses, Wynn's five elements and powders (powders replace SkyBlock runes). The P0 metadata spike is what makes the rolls survivable.
+- **P2 — Island life:** private island as progression home **plus** free creative building; co-op so players can share and visit; size tiers and upgrades; first minion types and minion upgrades. Minions help; they are not required to progress. **Garden** is where most farming happens; some farming stays on this island and on the zone islands.
 - **P3 — Economy:** Bazaar (order book) + Auction House on our UI framework, bank+interest
-- **P4 — Combat depth:** classes v1 (start with 3: Warrior/Archer/Mage), ability trees v1 (~25 nodes each), skill points, elements-lite
-- **P5 — Gear game:** Smithing (ingredients+crafting), reforging, identifications, powders, accessories+MP
-- **P6 — World:** hub + 3 zones, ~20 quests, 2 dungeons, slayers v1
-- **P7 — Endgame:** first raid, world events, lootrun-lite, guilds (PartyPro base), mayors/events
+- **P4 — Combat depth:** classes v1 (**Archer, Warrior, Mage**), per-weapon class skills, ability trees v1 (~25 nodes each), skill points, Wynn's five elements on gear. **Assassin and Shaman** are the follow-on for this track, not the launch set. No Berserker. **Magic implementation is open** — do not build class abilities as Chapter 1 rune gating until that thread closes. **Slayers** start in this combat loop; they are core, not side content.
+- **P5 — Gear game:** Smithing (ingredients+crafting) deepens the core ID / reforge / powder layer. Smithing stays; it is not trimmed. Accessories are already core in P1; this phase does not postpone them.
+- **P6 — Island chain (the leveling spine):** hub remains spawn / gathering / social. Zone islands, one per Hytale zone, with biome difficulty ramps and a finish-to-unlock rule. Quests. **Story-beat dungeons** woven through the chain. Slayers continue as core-loop fights along the way. Not hub + three open zones.
+- **P7 — Capstone and side content:** one endgame **capstone** dungeon after the last island. Extra dungeons, raids, world events, lootrun-lite, guild territory, mayors/events — side content, not the spine. Slayers are not in this pile.
 
 ---
 
-# PART 3 — DECISIONS (locked by Skyy, 2026-09-21)
+# PART 3 — DECISIONS
+
+## Locked 2026-09-21 (still in force unless a 2026-09-23 line replaces it)
 1. **Scale:** PUBLIC-ambition server. Economy must be exploit-proof from day one; Skyy plans to recruit a team to run it.
-2. **World:** probably HAND-BUILT zones. Near-term priority is getting all the mods working; a build team does the world.
-3. **Classes v1:** **Archer, Warrior, Mage**. Casting = **Hytale ability keys** (no click-combos).
-4. **Death penalty:** coin loss, **10%–25% of carried coins** (exact % / softeners TBD in the deep dive).
-5. **Name:** "SkyWynn" stays as placeholder.
+2. **World:** HAND-BUILT, mods first, a build team does the world. **Shape superseded 2026-09-23:** hub + zone island chain, not hub + open zones. Still hand-built.
+3. **Classes v1:** **Archer, Warrior, Mage**. Casting input = **Hytale ability keys** (no click-combos). **Extended 2026-09-23** — Assassin and Shaman later; combat-only; no Berserker. **Batch 2:** the magic system behind those keys is an open thread, not a rune lock. A new class is a new profile.
+4. **Death penalty:** coin loss, **10%–25% of carried coins**. Reaffirmed in batch 2. Softeners still open. In-game edit via `/deathpenalty` is the engineering lock in `HANDOFF.md`.
+5. **Name:** **SkyWynn** is the quick reference. The repo name stays **SkyyWynnBlock**.
 6. **Mod strategy:** leaning **clean-room our own systems**, using existing mods only as reference for how to do things in the engine. (Fits the public plan — no licensing mess.)
 7. **Favorite mods:** Skyy will get back to us after playtesting.
 
-**STATUS: NO BUILDING YET.** Next step is a thorough element-by-element dive — decide exactly what we take from each game and what we add that's ours. Worksheet: `SkyWynn-Decisions.md`.
+## Locked 2026-09-23 night (voice call — overrides draft Part 2)
+1. **Private island** = progression home (minions, upgrades, co-op, size tiers) **plus** free creative building. Not creative-only. Building is free; progression systems still live on the island.
+2. **Main leveling path** = **island chain**: one floating island per Hytale zone; each island's biomes ramp difficulty as you cross it; finish a zone's island before the next unlocks. This **replaces** hub + level-gated open-world zones as the spine. Hub town remains the shared spawn / gathering / social point.
+3. **Classes phased:** Archer, Warrior, Mage first; Assassin, Shaman later. Combat-only lock (the class locks the combat path; gathering stays open). Roster is Wynn's five — Warrior, Archer, Mage, Assassin, Shaman. No Berserker.
+4. **Per-weapon class skills. No shared Combat skill.** Combat XP goes into the weapon skill of the equipped class. Class Level (ability points) stays separate.
+5. **Skills list** = the full SkyBlock-style tree **plus** extras (Smithing, Exploration, Cooking, and the rest of section 2A). Keep the ambitious list; trim later. Do not drop Smithing or Exploration.
+6. **Minions** live on the private island. Helpful, **not mandatory**.
+7. **Dungeons** = story beats woven through the island chain **plus** one endgame **capstone** dungeon after the last island. Extra dungeons and raids are **side content**, not the spine. Slayers moved to the core loop in batch 2; they are still not the spine.
+8. **Guilds** are in the **core loop with parties** (not Phase 7). Territory war stays later.
+9. **Skill gating** = soft gate **with a ceiling**. Uneven progression is allowed; drifting too far slows you until you catch up.
+
+## Locked 2026-09-23 night, batch 2 (same call — does not replace batch 1)
+1. **Death penalty** stays **10–25%** coin loss.
+2. **Sacks / Magic Bags** stay, and they are **core QoL**.
+3. **Accessories + magical power** are **core**, not later-game.
+4. **IDs + reforges** are **core**. Every item has rarity and stats. Reforge swaps bonuses.
+5. **Wynn's five elements + powders.** Powders replace SkyBlock runes.
+6. **Co-op islands:** players can share and visit each other's private islands.
+7. **Slayers** are **core loop**, not side content.
+8. **HOTM-style mini-trees** come in, unlocked by that skill's levels, not by a location.
+9. **Garden:** some farming on the main islands; most farming is in the Garden.
+10. **Coin-bypass** of collections stays (early, steep, gone at the endgame wall).
+11. **Profiles** are full SkyBlock-style saves. A swap is a different island and different everything. A new class is a new profile and a new island from zero.
+12. **SkyWynn** is the short name. **SkyyWynnBlock** is the repo.
+13. **UI:** best placeholders, refined continuously. No buttons or custom UI on the inventory screen.
+14. **Magic system: open.** Wait on Hytale Chapter 1 runes before choosing the approach. Not locked.
+
+Worksheet: `SkyWynn-Decisions.md` (batch 1, then batch 2). Feature plans: `SkyyIslands-Plan.md`, `SkyyClasses-Plan.md`, `SkyySkills-Plan.md`, `SkyyMinions-Plan.md`, `SkyyDungeons-Plan.md`, `SkyyGuilds-Plan.md`, `SkyyAccessories-Plan.md`, `SkyySacks-Plan.md`.
+
+**STATUS:** Both call batches are written down. Mod builds already in progress are an engineering journal in `HANDOFF.md` (the SkyyClasses 0.1.1 spike still contains a Berserker row and a paid class switch; design uses Shaman and a new profile per class). Unmarked decision-sheet rows are still open. The magic rows 9.1, 9.2, 9.4, and 9.5 are open on purpose.
 
 *Sources: Hypixel wiki (wiki.hypixel.net — Skills, Auction House, Collections, Minions, Slayer, Crafting/Supercraft), Wynncraft wiki (wynncraft.wiki.gg — Ability Tree, Professions, Crafting, Raids, Lootrunning, World Events, Guilds, Version 2.1).*
 
@@ -229,10 +288,12 @@
 - Design intent (their words): RPG depth without funneling players into "a rigid, predefined class or archetype."
 - **Status in OUR files (checked Sep 21):** NOT in the current release server jar or Assets.zip (only old decorative rune textures). Skyy's pre-release install is stale (Aug 25). It arrives with the Update 7 waves / Chapter 1.
 
-### What this means for SkyWynn (the big rethink)
-1. **Build classes ON TOP of runes, not beside them.** Our Warrior/Archer/Mage should be implemented as *curated rune access*: your class + ability tree decide WHICH ability runes you can equip and WHICH modifier runes unlock. Nodes in the tree = modifier-rune unlocks + passives. This replaces the Spellbook/UnifiedMagicTheory mod route entirely — the engine gives us casting, targeting, VFX, netcode, and elemental reactions for free.
+### What this means for SkyWynn (Sep 21 reading — magic approach reopened)
+*Batch 2 (2026-09-23) leaves the magic system **open**. The notes below are the Sep 21 reading of this intel, not a lock. Gear elements and powders are locked separately (Wynn's five; powders replace SkyBlock runes). Do not treat "build classes on runes" or "adopt Hytale's elements instead of Wynn's" as the current decision.*
+
+1. **Build classes ON TOP of runes, not beside them.** *(Sep 21 suggestion. Open as of batch 2 — see Decisions 9.1.)* Our Warrior/Archer/Mage should be implemented as *curated rune access*: your class + ability tree decide WHICH ability runes you can equip and WHICH modifier runes unlock. Nodes in the tree = modifier-rune unlocks + passives. This replaces the Spellbook/UnifiedMagicTheory mod route entirely — the engine gives us casting, targeting, VFX, netcode, and elemental reactions for free.
 2. **Ability keys decision validated** — the engine is standardizing on E/R ability inputs; that's exactly the input scheme we chose. Zero custom input work.
-3. **Elements: adopt Hytale's, not Wynn's.** Engine reactions (water/lightning/fire/poison/wind/ice so far) become our element matrix. Wynn's 5-element gear math gets mapped onto whatever element set Hytale ships, so our gear buffs abilities the engine already knows how to combo.
+3. **Elements: adopt Hytale's, not Wynn's.** *(Superseded for gear by batch 2: Wynn's five elements + powders. Engine reactions stay useful research for the open magic thread.)* Engine reactions (water/lightning/fire/poison/wind/ice so far) are what Chapter 1 ships. Our gear matrix is Wynn's five until the magic thread says otherwise.
 4. **Runeforging ↔ Smithing collision (design around it now):** Hypixel plans rune find/craft progression later. Fold rune-crafting INTO our Smithing skill + collections (rune recipes gated by collections, like everything else) so when official Runeforging lands we wrap it instead of fighting it. Keep our rune-economy data separate from theirs so an official system doesn't corrupt ours.
 5. **Anti-class philosophy note:** Hypixel explicitly avoids rigid classes. We're ADDING classes on top of their classless system — fine for a server, but expect zero engine help for class restrictions; enforcement is ours (equip filters on runes/gear).
 
@@ -249,7 +310,7 @@
 | **Crafting rework** (fewer benches, in-world activities, evolving craft areas) | **Chapter 2** | Directly hits Smithing + Quickcraft-v2 plans. Don't over-invest in current bench APIs; keep bench-link logic portable. |
 | **Companions** (move-in homestead helpers doing chores on schedules) | Chapter 2 | OVERLAPS MINIONS. Differentiate now: our minions = island resource automation (SkyBlock role); companions = vanilla homestead chores. Maybe reskin: our "minions" could even BE companions with custom jobs when the tech lands. |
 | Cubic chunks / infinite height+depth | Tech rolling out now | Private sky-islands with real depth; 3D dungeon spaces. Servers explicitly encouraged to use it. |
-| WorldGen V2 (graph-based: procedural caves → dungeons, villages, rivers/roads) | In pre-release, evolving | Procedural lootrun caves + maybe generated wilderness between our hand-built zones. |
+| WorldGen V2 (graph-based: procedural caves → dungeons, villages, rivers/roads) | In pre-release, evolving | Procedural lootrun caves. Zone-island biomes are hand-built difficulty ramps on the island chain (Part 2B), not an open-world zone spine. |
 | Mod Browser (in-game, free mods, later creator rewards/teams) | Update 6 | Distribution channel for the SkyWynn client pack; creator-team + earnings features fit the "get a team" plan. |
 | Minigames + **shared server API libraries** ("simpler API for Hytale's server" from Hypixel) | 2–3 months | They're open-sourcing minigame code + server libs — potentially our server codebase's foundation. Watch closely. |
 | Spectator + Hardcore (moddable gamemode) | Update 6 (shipped) | Spectator for our raids/dungeons on death; hardcore mode = future SkyWynn ironman profiles. |
@@ -260,7 +321,9 @@
 | No enchantments planned for Chapter 1 (tooltip stats placeholder) | confirmed | Enchanting stays fully ours (SkyBlock model) — no collision soon. |
 
 ## 4C. Revised guidance (fold into decisions)
-- **P0 gains a 4th spike:** stand up the Encounter Manager with a custom encounter, and prototype one custom "rune-like" ability on the E/R inputs once Update 7 lands in release.
-- **P4 (Combat depth) gets cheaper and later-proof**: wait for the rune system to hit release before building class abilities; build the class/tree layer as rune gating.
+*The two rune-implementation bullets are research advice from Sep 21. Batch 2 leaves that choice open, so they are not build orders.*
+
+- **P0 gains a 4th spike:** stand up the Encounter Manager with a custom encounter, and prototype one custom "rune-like" ability on the E/R inputs once Update 7 lands in release. *(Prototype only if we are still learning the engine. It does not decide the magic system.)*
+- **P4 (Combat depth) gets cheaper and later-proof**: wait for the rune system to hit release before building class abilities; build the class/tree layer as rune gating. *(Not locked. Magic approach is the open thread.)*
 - **Hold Smithing's bench work loosely** until Chapter 2 crafting rework is visible.
 - **Timeline note:** Chapter 1 was estimated "2–3 months" from Jul 16 → Sep/Oct 2026. Update 7 Part 1 hit pre-release Sep 3; more waves weekly. Our current release install (0.6.8, Sep 21) does NOT have runes yet.

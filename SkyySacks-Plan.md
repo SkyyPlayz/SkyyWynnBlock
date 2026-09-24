@@ -1,5 +1,7 @@
 # SKYYSACKS — RESEARCH + BUILD PLAN
-*Standalone Hytale sack mod (SkyWynn's sack layer later). Researched from the community SkyBlock wiki 2026-09-22.*
+*Standalone Hytale sack mod. Researched from the community SkyBlock wiki 2026-09-22.*
+
+**Lock (2026-09-23 batch 2):** Magic Bags / sacks are **core QoL**, not an optional later feature (`SkyWynn-Decisions.md` 4.4). In play they are Magic Bags that open onto the pocket dimension (see `HANDOFF.md`). The research below is still the SkyBlock model this mod is built from.
 
 ## How SkyBlock sacks actually work (wiki-verified)
 - A sack doesn't hold items like a chest — **holding it grants per-item-type capacity in a per-player pool**. Multiple sacks of the same type = capacities ADD.
