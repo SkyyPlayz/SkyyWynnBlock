@@ -75,6 +75,13 @@ Batch 1 above stays. This list adds to it.
 - **Cooking: BUILD NOW next to Alchemy** - food you cook gets stronger and lasts longer with your Cooking level (x2 at level 50, x4 at level 100); skill-tree modifiers push it further. Condition: the engine must allow it.
 Full table: SkyySkills-Plan.md.
 
+### Exploration call (Skyy, 2026-09-24) - full detail in SkyyExploration-Plan.md
+- **Now:** Exploration boosts max Stamina a little per level + coins per level; XP from first opening world chests (+ chest luck = extra roll chance per level), map coverage (new chunks, no XP while flying), Hytale zone discovery; titles; Exploration AND Acrobatics each get their own skill tree (health bonus in the Exploration tree, a Stamina node in the Acrobatics tree; the rest of the Exploration tree is 'figure out later').
+- **Later (server):** discovery/secret spots, island arrival, dungeons, finder sense, Echo Shards (hand in 5 = backpack slots; half = no coin loss when falling into the void; all = creative flight on your private island), island %, zone hunt, town warps (starter town free, others via quests/scrolls), lootrun camps, map reveal.
+- **Rules:** Exploration is per profile (keep the map, lose the warps); one-time sources; no XP boosters; no /fly on the main exploration islands (teleport does not block); chain islands are SHARED worlds (only your island is private). Bags: each bag's main expansion will come from a collection in its field (e.g. Mining bag per Iron tier), Exploration gives slight boosts - a later bag restructure.
+- **Profiles (Skyy):** bank interest and everything in Skills are per profile.
+- **Future project:** a world gen 2 mod that generates the world as floating islands.
+
 The SkyyClasses 0.1.1 jar (below) was built earlier the same day with Berserker in the roster and Combat.<Class> skill keys. That is the spike. Design prose uses Shaman, per-weapon skills, and one class per profile. A later code pass realigns the jar; this note does not.
 
 Full rationale: `SkyWynn-Decisions.md` (rows 10.17–10.28 locked, plus the 2026-09-23 ✔ rows), `SkyWynn-Master-Plan.md`, `SkyWynn-QoL-Catalog.md`, `SkyWynn-Mod-Roster.md` (28 mods, tiers, build order).
@@ -141,8 +148,7 @@ Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 0. Exploration rewards: research running (what SkyBlock + Wynncraft give for exploring); Skyy picks the rewards from it.
 1. Deploy approval for the profiles set when it is built (SkyyProfiles 0.1 + the 8 per-profile versions).
 2. Endurance/Intelligence talismans: % of vanilla base (Stamina 10, Mana 0) is nearly useless - make them flat until armor adds base stats?
-4. Profiles, decide: each profile earns bank interest separately (N profiles = N x interest)? /skills quiet per profile or per player? Island visitors can no longer use blocks (chests, furnaces, crops, benches, beds) - OK?
-5. Exploration: pick the rewards (research/Exploration-Research.md section 4-5).
+4. Profiles: island visitors can no longer use blocks (chests, furnaces, crops, benches, beds) - OK? (bank + skills per profile: answered)
 3. Accessory power: six [SKYY?] questions in SkyyAccessories-Plan.md (AP values, bench accessories count?, class crystals, slot sources/prices, Mage crystal).
 
 ### Repository
@@ -321,3 +327,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-24 00:15: all research done and committed (research/: Exploration, Alchemy, Skill-Trees, Cooking, Smithing-Smelting, Collections). Build round started (workflow skywynn-skills-build-round, no deploy): SkyySkills 0.4 (Alchemy, Smithing row + smelting XP, Cooking row, Combat row retired, XP-grant bridge, Acrobatics fall rule, SkyyTrees hooks), NEW SkyyCooking 0.1 (graded dishes; split out of Skills so its ~450 generated assets cannot break Skills), NEW SkyyTrees 0.1 (Mining/Foraging/Farming + Cooking trees), SkyySacks 0.7.3 (search, Smithing + Farming tabs, no Alchemy tab, Furnace-tab Smithing XP), SkyyAccessories 0.4.2 (Alchemy/Cooking/Campfire bench accessories retired), SkyyCollections 0.2 (SkyBlock item collections). Orchestrator calls (flag to Skyy): Cooking in its own mod; Cooking XP pace = Alchemy's; Cooking gets a 4th tree; Campfire accessory retired; Smithing tab includes wood/crude tools too; smelting XP = 1.0x the ore's Mining XP.
 - 2026-09-24 01:45: build round finished (26 agents): SkyySkills 0.4, SkyyCooking 0.1, SkyyTrees 0.1, SkyySacks 0.7.3, SkyyAccessories 0.4.2, SkyyCollections 0.2 built -> 2 reviews each -> fixed; cross-mod check: no bridge mismatches, fixed a Smithing XP loss on big Furnace ledgers (Sacks sends <= 1000 units per call). All 17 set jars present (tools/deploy_set.py --check). Still for Skyy: Tree Feller reaches 32 blocks up (spec said 6; feller.maxHeight), Collections tier XP not boosted by Wisdom nodes, Salvage stays instant in /craft, Furnace/Tannery tab has a Refresh button instead of live updates.
 - 2026-09-24 01:55: whole-set static check of the 17 deploy jars: no shared Java packages; the only shared asset path is Server/Languages/en-US/server.lang (Sacks, Accessories, Menu, Cooking) - the live set already ships it from 3 Skyy mods + Skyys-Modpack + SkyyHighPack and names show, so Hytale merges lang files across packs (test plan step 2 re-checks). GitHub lint green on 0198e90. Everything Skyy asked for on 2026-09-23 is built except Exploration (waits for Skyy's picks, research/Exploration-Research.md sections 4-5) and the deploy (waits for Skyy's OK).
+- 2026-09-24 morning: Skyy's Exploration call (SkyyExploration-Plan.md) + 'bank and skills are all per profile'. Next round: SkyyExploration 0.1 (new), SkyySkills 0.4.1 (Exploration row), SkyyTrees 0.2 (Acrobatics + Exploration trees).

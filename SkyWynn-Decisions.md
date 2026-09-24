@@ -69,7 +69,7 @@ Added after batch 1. Batch 1 stays in force. Where a line below names a batch 1 
 | Archery, Swordsmanship, Sorcery | **NOW** (live) | Class weapon skills |
 | Smithing | **KEEP** | Leveled by reforging and adding powders, **and by smelting in the furnace** (vanilla Furnace + the SkyySacks Furnace tab) |
 | Alchemy | **BUILD NOW** | **Table use only**: the Alchemy Bench accessory is removed; the vanilla Alchemy Bench draws ingredients from your sacks |
-| Exploration | **ADD** | Research what SkyBlock and Wynncraft give for exploring first, then Skyy picks the rewards |
+| Exploration | **BUILD NOW** (SkyyExploration) | Skyy's call 2026-09-24 in SkyyExploration-Plan.md: stamina + coins per level, world chests, chest luck, map coverage, zone discovery, titles, its own tree; server-only parts later |
 | Skill tree per gathering skill | **YES** | Mining, Foraging, Farming (Fishing's tree waits with Fishing) |
 | Fishing | SHELF | |
 | Enchanting | SHELF | Hytale has no enchanting |
