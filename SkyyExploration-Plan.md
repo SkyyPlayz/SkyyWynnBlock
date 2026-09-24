@@ -17,6 +17,11 @@ Exploration is a SkyySkills skill (its own row) whose XP comes from the SkyyExpl
 | D3 | **Titles** (start with titles; cosmetics later) | Earned at Exploration milestones |
 | trees | **Exploration gets its own skill tree** (Q7 yes); **Acrobatics gets its own tree too** | Exploration tree: the health bonus (B4) lives here; the rest of the Exploration tree is "figure out later" (Skyy) - ship a small first draft. Acrobatics tree: a Stamina upgrade node |
 
+## Next (SkyyExploration 0.2): backbones for server content
+Skyy: build the backbone for the island checklist now; the checklist content itself waits for the server. Pack goal: 100% usable solo and in private multiplayer, prepared for server use.
+- **Island checklist backbone (C2):** a checklist per island/world, per profile, with a completion % on /explore; entry types: discovery spot, secret spot, world chest, Echo Shard (later), custom; entries defined in a config file + admin commands so a server builder fills it in.
+- **Discovery / secret spots backbone (A1/A2):** admin-placed named spots (position + radius + XP + secret flag), banner + sound on first arrival, feeding the checklist. Works on any world, including a private multiplayer world.
+
 ## Later (when the server is built)
 
 | Id | What | Skyy's notes |
