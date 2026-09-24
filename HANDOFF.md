@@ -154,6 +154,8 @@ Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 - SkyyProfiles: first-join welcome + profile 'Strawberry' created as Archer, existing data became profile 1.
 - SkyySkills 0.4 Smithing: vanilla Furnace bars pay +5 Smithing XP each, level-up coins paid.
 - SkyyCollections 0.2: migration message shown at join.
+- SkyyProfiles switch: new profile 'Zucchini' (Warrior) -> inventory saved with the old profile, new island created on first use, player lands there with an empty inventory (Menu item kept), 10,000 starter coins (Skyy: "thats amazing").
+- SkyyCooking: /cookadmin give works (it put the dishes in storage, not the hotbar - Skyy first missed them).
 - SkyySacks 0.7.3: the inline search TextField parses and works (search 'stick' -> 1 found in Crafting, Smithing and Farming); Crafting/Smithing/Farming/Furnace/Tannery tabs shown.
 
 ### Verified in game by Skyy (2026-09-23)
@@ -353,3 +355,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-24 06:25: Skyy said deploy -> tools/deploy_set.py --yes installed the 17-mod set (world config: exactly these 17 Skyy keys on, old versions off). Backup of the old Skyy jars + config.json in backups/deploy-20260924-0623/ (backups/ is git-ignored). Fixed deploy_set.py's server check (it matched its own PowerShell query; now java.exe only). Watcher bs5jiy9ms reports the first start's load errors + ready lines.
 - 2026-09-24 06:35: Skyy: 'all good so far' - profile creation, Smithing XP from the vanilla Furnace, level-up coins and the Collections migration seen in game; server log clean. Possible HUD overlap at top right ('default' drawn over another widget) - ask/check.
 - 2026-09-24 06:40: Skyy: search works. BUG: '/cookadmin give pie_meat 5' prints nothing and gives nothing (server log: 'executed command', no error). Static checks: execute signature matches AbstractPlayerCommand; engine hasPermission passes for an op; every code path in CookGiveCmd sends a chat line except 'Player component null'. Asked Skyy to run /cookadmin and /cooking to isolate.
+- 2026-09-24 06:45: Skyy verified the profile switch end to end. HUD: the world-name widget shows the raw island world name ('skyy-island-<uuid>...') which is long and runs into the next widget - show a friendly name ('Your Island', 'Hub', the profile name) -> SkyyHud 0.3.7 queued. Rolls: '/rolls reroll' works but nothing shows on the item; '/rolls clear' requested -> SkyyRolls 0.1.3 building.
