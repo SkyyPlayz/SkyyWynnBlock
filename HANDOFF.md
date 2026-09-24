@@ -105,26 +105,29 @@ Other proven facts: HUD attach = `new HudMain(pr).show()` on `PlayerReadyEvent` 
 
 ### Versions: live in the "HUD mod" test world vs newest built
 All mods are deployed TOGETHER as one set (Skyy 2026-09-23: "keep building and testing all the mods together at once").
-Nothing new deploys without Skyy's OK (the auto-mode permission check also refuses automatic deploys).
-| Mod | Live (deployed 2026-09-23 ~22:00) | Built, waiting for Skyy's deploy OK |
+Nothing new deploys without Skyy's OK. When Skyy says deploy (game closed): `python tools/deploy_set.py` (checks every jar, refuses while a
+server runs, installs the 17 jars below and flips the world config keys). `--check` only verifies the jars.
+| Mod | Live (deployed 2026-09-23 ~22:00) | Built, reviewed, waiting for Skyy's deploy OK |
 |---|---|---|
-| SkyyHud | 0.3.6 | - |
-| SkyySacks | 0.7.1 | 0.7.2 per-profile storage (0.7.3 planned: search, Smithing + Farming tabs, no Alchemy tab) |
+| SkyyHud | 0.3.6 | 0.3.6 (unchanged) |
+| SkyySacks | 0.7.1 | 0.7.3 = per-profile + search box + Crafting/Smithing/Farming tabs, no Alchemy tab, Furnace-tab Smithing XP |
 | SkyyCoins | 0.1.4 | 0.1.5 per-profile |
-| SkyyCollections | 0.1.4 | 0.1.5 per-profile (0.2 planned: SkyBlock-style item collections) |
-| SkyyParty | 0.1.2 | - |
+| SkyyCollections | 0.1.4 | 0.2 = SkyBlock item collections (~100), tiers + rewards, per-profile |
+| SkyyParty | 0.1.2 | 0.1.2 (unchanged) |
 | SkyyBank | 0.1.1 | 0.1.2 per-profile |
-| SkyyBazaar | 0.1.1 | - |
-| SkyyEssentials | 0.1 | - |
-| SkyyRolls | 0.1.1 | 0.1.2 /rolls give by name, any-case ids, never an unknown item |
-| SkyySkills | 0.3.1 | 0.3.2 per-profile (0.4 planned: Alchemy, Cooking, Smithing, Acrobatics fall rule, no shared Combat row) |
-| SkyyAccessories | 0.4 | 0.4.1 per-profile (0.4.2 planned: Alchemy + Cooking bench accessories removed) |
-| SkyyIslands | 0.4.3 | 0.4.4 island per profile |
-| SkyyClasses | 0.1.2 | 0.1.4 = 0.1.3 per-profile + blocked-weapon popup |
+| SkyyBazaar | 0.1.1 | 0.1.1 (unchanged) |
+| SkyyEssentials | 0.1 | 0.1 (unchanged) |
+| SkyyRolls | 0.1.1 | 0.1.2 /rolls give by name |
+| SkyySkills | 0.3.1 | 0.4 = per-profile + Alchemy + Smithing (smelting) + Cooking row + Acrobatics fall rule + trees hooks, Combat row retired |
+| SkyyAccessories | 0.4 | 0.4.2 = per-profile + Alchemy/Cooking/Campfire bench accessories retired |
+| SkyyIslands | 0.4.3 | 0.4.4 island per profile + visitors cannot use blocks |
+| SkyyClasses | 0.1.2 | 0.1.4 per-profile + blocked-weapon popup |
 | SkyyMenu | 0.1.1 (BUG: pages opened from it hang on Loading) | 0.1.2 fix + 1.4x bigger + info box above the icons |
 | SkyyProfiles | - | 0.1 NEW (profiles, class picked at creation, inventory swap, crash-safe) |
+| SkyyCooking | - | 0.1 NEW (graded dishes: x2 at Cooking 50, x4 at 100) |
+| SkyyTrees | - | 0.1 NEW (/tree: Mining, Foraging, Farming, Cooking skill trees) |
 HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death).
-The profiles set is integration-checked (2026-09-24 00:10); whole-set test plan at the end of TEST-CHECKLIST.md.
+Test order: TEST-CHECKLIST.md, the last two sections (profiles set, then this build round), riskiest first.
 Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 
 ### Verified in game by Skyy (2026-09-23)
@@ -316,3 +319,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-23 23:00: profiles workflow finished: SkyyProfiles 0.1 + Coins 0.1.5, Bank 0.1.2, Sacks 0.7.2, Skills 0.3.2, Collections 0.1.5, Accessories 0.4.1, Islands 0.4.4, Classes 0.1.3 all built -> cheap review -> fixed (28 agents). The adopters were written before SkyyProfiles existed, so an integration workflow now pins SkyyProfiles' real semantics (join window, publish order, threads), checks + fixes every adopter and walks join/create/switch/crash/quit with the whole set.
 - 2026-09-24 00:10: integration workflow finished (10 agents). SkyyProfiles semantics pinned in tools/PROFILES-CONTRACT.md (key Function correct from the first call, publish order, busy flag during crash recovery). Fixed in place (versions kept): Profiles (Windows save failures under concurrent admin scans; marker delete; first-join Create page timing vs hub routing, never replaces an open page), Coins (4 bugs), Bank (4), Sacks (profile:busy ignored = dupes during crash recovery; missing epoch; more), Skills (Windows save loss during /skills top scans; 2 more), Collections (cancelled breaks counted = visitor farming; 5 more), Accessories (Equip/Unequip ignored profile:busy), Islands (new GuardUse: non-members cannot use blocks on an island - chest griefing + cross-profile item leak), Classes (unplayable profile class). Every jar rebuilt, -Xverify:all + jpype harnesses pass, lint 0 fails. NOT tested in game. Warning: never uninstall SkyyProfiles once profiles exist.
 - 2026-09-24 00:15: all research done and committed (research/: Exploration, Alchemy, Skill-Trees, Cooking, Smithing-Smelting, Collections). Build round started (workflow skywynn-skills-build-round, no deploy): SkyySkills 0.4 (Alchemy, Smithing row + smelting XP, Cooking row, Combat row retired, XP-grant bridge, Acrobatics fall rule, SkyyTrees hooks), NEW SkyyCooking 0.1 (graded dishes; split out of Skills so its ~450 generated assets cannot break Skills), NEW SkyyTrees 0.1 (Mining/Foraging/Farming + Cooking trees), SkyySacks 0.7.3 (search, Smithing + Farming tabs, no Alchemy tab, Furnace-tab Smithing XP), SkyyAccessories 0.4.2 (Alchemy/Cooking/Campfire bench accessories retired), SkyyCollections 0.2 (SkyBlock item collections). Orchestrator calls (flag to Skyy): Cooking in its own mod; Cooking XP pace = Alchemy's; Cooking gets a 4th tree; Campfire accessory retired; Smithing tab includes wood/crude tools too; smelting XP = 1.0x the ore's Mining XP.
+- 2026-09-24 01:45: build round finished (26 agents): SkyySkills 0.4, SkyyCooking 0.1, SkyyTrees 0.1, SkyySacks 0.7.3, SkyyAccessories 0.4.2, SkyyCollections 0.2 built -> 2 reviews each -> fixed; cross-mod check: no bridge mismatches, fixed a Smithing XP loss on big Furnace ledgers (Sacks sends <= 1000 units per call). All 17 set jars present (tools/deploy_set.py --check). Still for Skyy: Tree Feller reaches 32 blocks up (spec said 6; feller.maxHeight), Collections tier XP not boosted by Wisdom nodes, Salvage stays instant in /craft, Furnace/Tannery tab has a Refresh button instead of live updates.

@@ -389,3 +389,74 @@ None left. The 10,000 starter coins are a real feature (kept).
 
 13. **On profile 2, log out on its island, wait 15 s, log back in.** Expect the hub, "Playing profile … (class)" and no Create page. The HUD shows profile 2's coins within 1 s. `/skills`, `/bank`, `/acc`, `/pd` and `/island info` all show profile 2 on the first try. The log shows no "profile switch" or "now uses … -p2" lines at login.
 14. **Graceful `/stop`, restart, and repeat step 13.** Same result.
+
+## Build round 2026-09-24: SkyySkills 0.4, SkyyCooking 0.1, SkyyTrees 0.1, SkyySacks 0.7.3, SkyyAccessories 0.4.2, SkyyCollections 0.2 (built, reviewed, cross-checked, NOT deployed)
+Deploy the whole 17-mod set together (python tools/deploy_set.py, only after Skyy says deploy). Riskiest first.
+
+1. **Server log.**
+   - Expect: `[SkyyCooking] 0.1 ready … SkyySkills found`.
+   - Expect: no asset errors naming `Skyy_Cook_`.
+   - Expect: `[SkyySkills] 0.4 ready … trees bridge on … SkyyTrees found`.
+   - Expect: `[SkyyTrees] 0.1 ready - /tree; 48 of 48 nodes on …; SkyySkills trees bridge found`.
+   - Expect: `[SkyySacks] 0.7.3 ready` and `config: craft page search box ON`.
+   - Expect: `[SkyyAccessories] 0.4.2 ready … (6 retired …)` and `[SkyyCollections] 0.2 ready` / `started - …`.
+2. **Cooking assets.** Run `/cookadmin give pie_meat 5`.
+   - Expect: "Meat Pie (Grade 5)" in Rare colour; tooltip 30% heal, 4% every 2 s, +30% max health, 12:00.
+   - Hover an Accessories item too: both mods' names show, not raw keys (three mods now ship `server.lang`).
+3. **Cooking Stats page.** Open `/skills` → Cooking → Stats.
+   - Expect: Grade lines from SkyyCooking.
+   - Expect: NO line "WARNING - graded dish assets are not loaded". If it shows, the asset pack failed; food stays plain.
+4. **Eating.**
+   - Grade 5 pie: regen 12:00 and +30% max health.
+   - Grade 10 pie, then a Grade 5 skewer: the pie's buffs stay.
+   - Two Grade 5 dishes stack in one slot; Grade 5 and Grade 6 do not.
+5. **New Cooking Bench recipes.** A placed Cooking Bench lists Cooked Wildmeat, Grilled Fish and Roast Vegetable.
+6. **Search box.** Open `/craft`.
+   - If the client disconnects with "Failed to parse or resolve document": set `craftSearch=false` in `Saves/HUD mod/mods/Skyy_SkyySacks/config.properties`, wait 10 s, reconnect. `/craft` must then open without the box.
+   - If it opens: type `iron sword`, press Enter. Expect results from Crafting, Smithing and Farming, and the text stays in the box.
+   - Search button: same result. Clear: back to normal.
+   - `/craft copper` opens already searching.
+7. **Vanilla Furnace.** Smelt copper ore, then take the bars out by dragging, by shift-click and by double-click.
+   - Expect: "+5 Smithing XP" per bar every time.
+   - Expect: charcoal pays 0.
+   - Expect: dragging a bar into the output slot is refused.
+8. **SkyySacks Furnace tab.** Queue copper ore.
+   - Expect: Smithing XP within about 1 s of each finished unit, and a `SMITHING …` line in crafts.log.
+   - Expect: Tannery pays nothing.
+9. **Cooking at the bench.**
+   - Cook Bread at Cooking 0 (ingredients from a bag): plain Bread and 12,900 Cooking XP (→ Cooking 10). The next Bread is "Bread (Grade 1)".
+   - Queue 5 Meat Skewers: 5 dishes and 5 × 5,250 XP, not 25×.
+   - Only a "Cooking XP" line appears, once per dish; no other skill gains XP.
+10. **Grade 5 and blocked cases.**
+    - `/skills xp cooking 55.2m`, then cook a Meat Pie: exactly one "Meat Pie (Grade 5)".
+    - Creative: plain pie, no XP.
+    - Placed Campfire: plain food, no XP.
+11. **SkyyTrees ↔ SkyySkills.**
+    - `/skills` shows a "Tree" button on Mining, Foraging, Farming and Cooking only; each opens its tree, and "< Skills" comes back.
+    - Buy Cooking Wisdom (tier I): the Cooking Stats page shows "Skill tree: +1% XP".
+12. **Master Chef.** `/skills xp cooking 111.7m` (level 60). Buy one node per tier up to Master Chef (9 tokens).
+    - Expect: dishes come out Grade 7; `/cooking` shows it.
+13. **Gathering nodes.**
+    - Mining Wisdom and Fortune: the block XP and "Double drop!" rate go up.
+    - Spread, Vein Burst and Tree Feller: extra blocks break and each pays XP.
+    - A block you placed is never broken by an ability; nothing breaks on another player's island.
+14. **Craft page tabs.** With Workbench, Weapon Bench, Farming Bench, Furnace and Tannery accessories equipped:
+    - Expect the tab bar: < Back to bags | Crafting | Smithing | Farming | Furnace | Tannery | Collections.
+    - Crude pickaxe on Smithing, torch on Crafting, copper hoe on Farming, salvage recipes on Crafting.
+    - No potions or cooked food anywhere, even with an old Alchemy, Cooking or Campfire accessory equipped.
+15. **Retired accessories.**
+    - The three retired items show "(retired)" in their names.
+    - Equip is refused with a chat line; an equipped old copy shows "DOES NOTHING"; Unequip works.
+    - The Omni recipe asks for 10 accessories, and the SkyyMenu tooltip says 10 bench accessories.
+16. **Collections.**
+    - Break cobblestone and wood and F-harvest crops: counts rise; the log shows "F-harvest pickups reach SkyyCollections".
+    - Tier rewards pay coins and exactly +500 / 2,500 XP, even with a Wisdom node.
+    - Collection-unlocked recipes show on the `/craft` Collections tab.
+17. **Acrobatics falls.**
+    - A safe drop pays 0.
+    - A fall that hurts and that you survive pays XP, more for bigger drops, at most 2,000 per landing.
+    - Landing in water or dying pays 0.
+18. **Profiles.** Switch to profile 2 and back.
+    - Each profile keeps its own tree nodes, Cooking level, bags and Furnace ledger.
+    - XP never lands on the other profile.
+19. **Regression.** SkyyMenu buttons (Skills, Collections, Craft, Bags, Accessories, Bazaar, Island, Hub) still open their pages.

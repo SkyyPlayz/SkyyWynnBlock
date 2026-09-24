@@ -1,0 +1,68 @@
+"""Deploy the whole SkyWynn test set to the "HUD mod" world in one step - ONLY after Skyy says "deploy".
+
+Usage (game closed):   python tools/deploy_set.py            -> shows the plan, asks for "yes"
+                       python tools/deploy_set.py --yes      -> no question (Skyy already said deploy)
+                       python tools/deploy_set.py --check    -> only checks that every jar exists
+
+It does exactly what each build script's --deploy block does (B.deploy + B.enable_in_world with disable_prefix="Skyy:"), for every mod
+in SET, using the jars that are ALREADY BUILT (it never rebuilds). It refuses to run while a Hytale server (HytaleServer.jar java
+process) is running, because replacing a mod jar under a running server can break it. Mods not in SET are left alone.
+"""
+import os, sys, subprocess
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import skyybuild as B
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+WORLD = "HUD mod"
+# (mod, version) - keep in sync with HANDOFF section 3 "Versions"
+SET = [
+    ("SkyyHud", "0.3.6"), ("SkyySacks", "0.7.3"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2"), ("SkyyParty", "0.1.2"),
+    ("SkyyBank", "0.1.2"), ("SkyyIslands", "0.4.4"), ("SkyyBazaar", "0.1.1"), ("SkyyRolls", "0.1.2"), ("SkyySkills", "0.4"),
+    ("SkyyAccessories", "0.4.2"), ("SkyyClasses", "0.1.4"), ("SkyyMenu", "0.1.2"), ("SkyyEssentials", "0.1"), ("SkyyProfiles", "0.1"),
+    ("SkyyCooking", "0.1"), ("SkyyTrees", "0.1"),
+]
+
+
+def server_running():
+    try:
+        out = subprocess.run(["powershell", "-NoProfile", "-Command",
+                              "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*HytaleServer*' } | Measure-Object | Select-Object -ExpandProperty Count"],
+                             capture_output=True, text=True, timeout=60).stdout.strip()
+        return out not in ("", "0")
+    except Exception as e:
+        print("could not check for a running server:", e)
+        return True
+
+
+def main():
+    missing = []
+    plan = []
+    for mod, ver in SET:
+        jar = os.path.join(ROOT, mod, "%s-%s.jar" % (mod, ver))
+        if not os.path.isfile(jar):
+            missing.append(jar)
+        plan.append((mod, ver, jar))
+    for mod, ver, jar in plan:
+        print("  %-16s %-6s %s" % (mod, ver, "OK" if os.path.isfile(jar) else "MISSING " + jar))
+    if missing:
+        print("STOP: %d jar(s) missing - build them first (python <build script>, no --deploy)." % len(missing))
+        return 1
+    if "--check" in sys.argv:
+        print("all %d jars present" % len(plan))
+        return 0
+    if server_running():
+        print("STOP: a Hytale server is running. Close the world / game first, then run this again.")
+        return 1
+    if "--yes" not in sys.argv:
+        if input("Deploy these %d mods to world '%s'? type yes: " % (len(plan), WORLD)).strip().lower() != "yes":
+            print("cancelled")
+            return 1
+    for mod, ver, jar in plan:
+        B.deploy(jar, mod + ".jar")
+        B.enable_in_world(WORLD, "Skyy:%s %s" % (ver, mod), disable_prefix="Skyy:")
+    print("deployed %d mods. Start the world and watch the server log for every '[Skyy...] ready' line." % len(plan))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
