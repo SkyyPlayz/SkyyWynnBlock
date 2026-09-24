@@ -23,7 +23,7 @@ SET = [
 ]
 # third-party mods that are part of the pack (enabled in the world by their manifest key; their files are NOT in this repo -
 # a server owner installs them from their authors, see PACK.md). Never disabled by this script.
-PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers"]
+PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees"]
 
 
 def server_running():
