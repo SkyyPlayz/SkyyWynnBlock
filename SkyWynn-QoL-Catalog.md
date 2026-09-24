@@ -46,7 +46,7 @@ No player installs anything; the QoL that takes Hypixel players 5 mods to get is
 - ✔ **Inventory buttons** (Firmament, hover-text ON, shown on ALL screens): a configurable strip of buttons around every inventory/menu — one click to open storage, wardrobe, crafting, AH, bazaar, etc. → SkyWynn: native **edge-button rail on our pages and other windows, player-configurable**. The inventory screen itself still waits (10.22)
 - ✔ **Radial menu** (Skyblocker): hold-key wheel for quick actions
 - ✔ **Item hotkeys** (Firmament): press a key to use/open a specific item from anywhere
-- ✔ **Wardrobe keybinds** (Firmament) + **custom wardrobe UI** + **loadouts** (SkyHanni) → SkyWynn **locked 2026-09-24**: wardrobe + loadouts, SkyBlock style (save a set, quick-swap). Placeholders on our pages. Nothing on the inventory screen (10.22). **Open:** armor only vs weapons, accessories, and HUD (`SkyyGear-Plan.md`)
+- ✔ **Wardrobe keybinds** (Firmament) + **custom wardrobe UI** + **loadouts** (SkyHanni) → SkyWynn **locked 2026-09-24**: wardrobe + loadouts, SkyBlock style (save a set, quick-swap). A loadout saves armor, the Equipment bar (necklace, cloak, ring, belt), and the selected Accessory Power buff. Pets join once pets exist. Placeholders on our pages. Nothing on the inventory screen (10.22). (`SkyyGear-Plan.md`)
 - ✔ **GFS — "get from sack"** (SkyHanni): pull materials from bulk storage via command/hotkey without opening anything
 - ✔ **Quick commands / command shortcuts** (Firmament + Skyblocker)
 - ✔ **Storage overlay** (Firmament + SkyHanni + Skyblocker): ALL storage pages (ender chest + backpacks) on one screen, searchable, click-through
@@ -103,7 +103,7 @@ No player installs anything; the QoL that takes Hypixel players 5 mods to get is
 7. **Prices + appraisals in tooltips** (we own the bazaar — live data is free)
 8. **Craftable-now list** + craft-from-storage + confirmations = Quickcraft v2
 9. **Rarity-tinted slots, slot-text numbers, live cooldown timers in tooltips**
-10. **Loadouts + wardrobe hotswap** — locked 2026-09-24 as placeholders on our pages, not on the inventory screen. What a loadout saves is still open
+10. **Loadouts + wardrobe hotswap** — locked 2026-09-24 as placeholders on our pages, not on the inventory screen. A loadout saves armor, Equipment (necklace, cloak, ring, belt), and the selected Accessory Power buff. Pets join once pets exist
 11. **Per-activity profit/drop trackers** + item pickup log as native HUD widgets
 12. **Player-movable HUD**: scoreboard, bars, trackers all draggable/scalable (our /packsettings window pattern, generalized)
 13. **Data API for client modders** (the HypixelModAPI lesson)

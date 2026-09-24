@@ -51,11 +51,18 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
    - Every **gear** item has a level requirement and a rarity tier (Wynn-style). This tightens the "many items will have level requirements" line in note 3 for gear. **Open:** which level type (skill vs class vs combat). The exact rarity list and colours are also open (not the Common→Divine ladder).
    - Higher Smithing level raises a **smithing rarity** stat, which raises the chance of crafting a higher-rarity item.
    - Higher rarity means a reforge can roll wider and higher. A reforge still swaps bonuses.
-   - Mobs drop **unidentified** weapons and armor. Identifying them reveals the rolled IDs. **Open:** where, how, and the cost.
+   - Mobs drop **unidentified** weapons and armor. Identifying them reveals the rolled IDs. Where, how, and that it costs coins were **locked later the same day** (change note 8). The cost formula stayed open.
    - Combat armor and weapons copy Wynncraft. Gathering gear is SkyBlock-style farming and foraging armor sets; mining armor is likely the same. The stat split in this sentence (Wynn skill points on combat gear, fortune/speed on gathering sets) was proposed here and **locked later the same day as a mix** (change note 7).
-   - **Wardrobe + loadouts** like Hypixel SkyBlock (save a set, quick-swap). Placeholders are fine. Nothing on the inventory screen (10.22). **Open:** what a loadout saves.
-   - Also still open: whether drops can reach the top rarities or some tiers are craft-only; powder slots and drops; bazaar vs auction house for rolled items.
+   - **Wardrobe + loadouts** like Hypixel SkyBlock (save a set, quick-swap). Placeholders are fine. Nothing on the inventory screen (10.22). What a loadout saves was **locked later the same day** (change note 8).
+   - Also still open at this note: powder slots and drops; bazaar vs auction house for rolled items. Whether drops can reach the top rarities was **locked later the same day** (change note 8): any rarity, with some sets drop-only and some craft-only.
 7. **Gear stats are a mix (same day, after note 6).** Locks rows 1.6 and 6.5. Replaces the "proposed, not locked" stat split in note 6. Weapons and armor carry Wynn's five skill points (Strength, Dexterity, Intelligence, Defence, Agility), with SkyBlock-style stats layered on top. Crit chance, crit damage, and fortune are in that layer. Gathering armor uses this same mix. **Open:** the exact stat list beyond these, and how each stat applies in Hytale combat. Does not change any jar.
+8. **SkyyGear, next pass (same day, after note 7).** Locks rows 5.3, 5.10, 5.11, 5.14, 5.16, 5.17, and 10.10. Detail in `SkyyGear-Plan.md`. Cross-check `SkyyAccessories-Plan.md`. Does not change any jar.
+   - **Identification.** For now a menu opened with `/identify`. Later that command is disabled and identification moves to an NPC, Wynncraft-style. It costs coins. Cost scales with the item's rarity and level. **Open:** the formula. The menu is a placeholder page, not the inventory screen (10.22).
+   - **Drops.** Mob drops can be any rarity. Some sets are drop-only. Some sets are craft-only.
+   - **Set bonuses.** A worn set has a set bonus (Wynncraft set bonuses, Hypixel Full Set Bonus). The sets and the numbers are not named here.
+   - **Equipment bar.** A separate bar next to armor: necklace, cloak, ring, belt. Working name **Equipment**. The name is not final. Placeholders on our pages. Not on the inventory screen (10.22). Not the accessory bag.
+   - **Loadouts save** armor, that Equipment bar, and the selected Accessory Power buff. Pets are included once pets exist.
+   - **Accessory Power.** Each accessory gives its own buff and also adds accessory power. Total power feeds one selectable buff. More power means a stronger buff. Locked examples: Warrior (strength as a damage modifier, plus a small amount of crit chance, crit damage, health, and defence) and Elementalist (all elemental damage types, and all elemental resistance). **Open:** the rest of the buff list, and the numbers. The crystal table in `SkyyAccessories-Plan.md` stays a draft.
 
 ---
 
@@ -152,19 +159,21 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 |---|---|---|---|---|
 | 5.1 | 7-tier rarity ladder (Common→Divine style) | fused | TAKE | ✔ MODIFY (2026-09-24) — every **gear** item has a rarity tier (and a level requirement). The Common→Divine ladder is **not** locked. **Open:** the list and colours (Wynn Normal/Unique/Rare/Legendary/Fabled/Mythic/Set vs SkyyRolls Common..Legendary) |
 | 5.2 | Recombobulator-style rarity upgrader | SkyBlock | TAKE (endgame sink) | |
-| 5.3 | Identifications (RNG rolled stats on dropped gear + re-roll sink) | Wynn | TAKE | ✔ Core — every item has stats. **2026-09-24:** mobs drop unidentified weapons and armor; identify to reveal the rolled IDs. **Open:** where, how, and the cost. SkyyRolls 0.1.3 shows rolls immediately (jar, not this rule) |
+| 5.3 | Identifications (RNG rolled stats on dropped gear + re-roll sink) | Wynn | TAKE | ✔ Core — every item has stats. **2026-09-24, change note 8:** mobs drop unidentified weapons and armor. For now a menu opened with `/identify`. Later the command is disabled and an NPC identifies, Wynncraft-style. Cost is coins, scaling with rarity and level. **Open:** the formula. SkyyRolls 0.1.3 shows rolls immediately (jar, not this rule). The menu stays off the inventory screen (10.22) |
 | 5.4 | Reforging (prefix via anvil + reforge stones) | SkyBlock | TAKE — folded into Smithing | ✔ Core — reforge swaps bonuses. Still folded into Smithing. **2026-09-24:** higher rarity = better reforge rolls (wider and higher range). How you get a reforge is still open |
 | 5.5 | Both 5.3 AND 5.4 on the same item? | — | DECIDE: drops get IDs, crafted gets reforges? both everywhere? | ✔ Both, on items in general. Stats stay on the item; reforge swaps the bonuses. Not a drops-versus-crafted split |
 | 5.6 | Ingredient-based crafting (materials + ingredients → custom stats) | Wynn | TAKE — the Smithing core | ✔ Smithing stays the craft. **2026-09-24:** smithing rarity (from Smithing level) raises the chance the craft lands a higher rarity |
 | 5.7 | Powders (elemental socketables T1–T6) | Wynn | TAKE | ✔ TAKE — powders replace SkyBlock runes |
 | 5.8 | Elements (5-element damage/defense matrix) | Wynn | TAKE "elements-lite" v1 | ✔ TAKE Wynn's five. Not elements-lite, and not a swap to Hytale's set (9.3) |
 | 5.9 | Enchanting (table + books + anvil + ultimates) | SkyBlock | TAKE | |
-| 5.10 | Accessories/talismans + Accessory Bag + Magical Power + tuning | SkyBlock | TAKE | ✔ **Core**, not later-game |
-| 5.11 | Set items (bonus for wearing the set) | Wynn | TAKE (cheap, fun) | |
+| 5.10 | Accessories/talismans + Accessory Bag + Magical Power + tuning | SkyBlock | TAKE | ✔ **Core**, not later-game. **Tightened 2026-09-24 (change note 8):** each accessory gives its own buff and adds accessory power. Total power feeds one selectable buff; more power, stronger buff. Locked examples: Warrior and Elementalist. **Open:** the full buff list and the numbers. Tuning and the crystal table in `SkyyAccessories-Plan.md` stay a draft. The selected buff is saved in a loadout (5.14) |
+| 5.11 | Set items (bonus for wearing the set) | Wynn | TAKE (cheap, fun) | ✔ LOCKED (2026-09-24, change note 8) — sets have a set bonus (Wynncraft set bonuses and Hypixel Full Set Bonus). Some sets are drop-only and some are craft-only (5.16). Bonus numbers are not set here |
 | 5.12 | Durability: only on crafted gear (Wynn) vs all gear vs none | Wynn | DECIDE — pack currently has durability-off mod! | |
 | 5.13 | Pets (leveling companions, rarity, pet items) | SkyBlock | TAKE | |
-| 5.14 | Wardrobe / Ender-chest / backpacks | SkyBlock | TAKE | ✔ **Wardrobe + loadouts** (2026-09-24) — save a gear set and quick-swap, SkyBlock style. Placeholders OK. Not on the inventory screen (10.22). **Open:** armor only vs weapons / accessories / HUD. Ender chest and backpacks are not part of this lock |
+| 5.14 | Wardrobe / Ender-chest / backpacks | SkyBlock | TAKE | ✔ **Wardrobe + loadouts** (2026-09-24, change note 8) — save a gear set and quick-swap, SkyBlock style. A loadout saves armor, the Equipment bar (5.17), and the selected Accessory Power buff (5.10). Pets join the save once pets exist. Placeholders OK. Not on the inventory screen (10.22). Ender chest and backpacks are not part of this lock |
 | 5.15 | Tomes & Aspects (raid-earned class modifiers) | Wynn | LATER (raids phase) | |
+| 5.16 | Mob drops can be any rarity; some sets drop-only, some craft-only | both | | ✔ LOCKED (2026-09-24, change note 8) — a mob drop can be any rarity. The split is by set, not by tier: some sets only drop, some sets only craft |
+| 5.17 | Equipment bar next to armor (necklace, cloak, ring, belt) | SkyBlock | | ✔ LOCKED (2026-09-24, change note 8) — separate bar beside armor. Working name **Equipment**; the name is not final. Placeholders on our pages. Not on the inventory screen (10.22). Not the accessory bag |
 
 ## 6. COMBAT & CLASSES
 
@@ -244,7 +253,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 10.7 | Live prices + full item appraisal in tooltips | TAKE (we own the bazaar data) | |
 | 10.8 | Craftable-now list + craft-from-storage + confirm guards (Quickcraft v2 spec) | TAKE | |
 | 10.9 | Rarity-tinted slots, slot-text numbers, tooltip cooldown timers | TAKE | |
-| 10.10 | Loadouts + wardrobe hot-swap (keybinds) | TAKE | ✔ LOCKED (2026-09-24) — wardrobe + loadouts, SkyBlock style. Placeholders on our pages. Nothing on the inventory screen (10.22). **Open:** what a loadout saves |
+| 10.10 | Loadouts + wardrobe hot-swap (keybinds) | TAKE | ✔ LOCKED (2026-09-24, change note 8) — wardrobe + loadouts, SkyBlock style. A loadout saves armor, Equipment (necklace, cloak, ring, belt), and the selected Accessory Power buff. Pets join once pets exist. Placeholders on our pages. Nothing on the inventory screen (10.22) |
 | 10.11 | Native profit/drop trackers + item pickup log HUD | TAKE | |
 | 10.12 | Fully draggable/scalable player HUD (scoreboard, bars, trackers) | TAKE — generalize /packsettings pattern | |
 | 10.13 | Radial quick-action menu (hold key → wheel) | DECIDE — depends on Hytale input support | |
@@ -274,4 +283,4 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 11.3 | ... | | |
 
 ---
-*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, and the stat mix of Wynn's five skill points plus SkyBlock stats on weapons and armor). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*
+*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, the stat mix of Wynn's five skill points plus SkyBlock stats on weapons and armor, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*

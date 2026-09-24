@@ -3,6 +3,8 @@
 
 **Lock (2026-09-23 batch 2):** the accessory bag and magical power are **core**, not a later-game system. They ship with the core loop (`SkyWynn-Master-Plan.md` P1, `SkyWynn-Decisions.md` 5.10). The numbers below are still a draft. Gear also has rarity and stats on every item, and a reforge swaps bonuses (rows 5.1, 5.3–5.5); that layer is core too, and it is not this bag.
 
+**Lock (2026-09-24, Decisions change note 8, `SkyyGear-Plan.md` lock 14):** each accessory gives its own buff and also adds accessory power. Total power feeds one selectable buff. More power means a stronger buff. Locked examples: **Warrior** (strength as a damage modifier, plus a small amount of crit chance, crit damage, health, and defence) and **Elementalist** (all elemental damage types, and all elemental resistance). More options are TBD. A loadout saves the selected buff, along with armor and the Equipment bar (necklace, cloak, ring, belt — working name Equipment, name not final). That bar is not this bag. The crystal table, the ln curve, tuning, AP-by-rarity, and the slot prices below stay a draft. They are not the locked buff list or the locked numbers.
+
 ## 1. Accessory Power (AP)
 Each accessory in the bag gives AP by rarity; only the best item per family counts (the bag already hands back lower tiers).
 
