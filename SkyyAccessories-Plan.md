@@ -1,5 +1,7 @@
 # SKYYACCESSORIES — ACCESSORY POWER + BAG SLOTS (proposal)
-*Drafted 2026-09-23. Based on Hypixel SkyBlock's Accessory Power (formerly "Magical Power"), adapted to our layer model. Nothing is built yet. Anything marked **[SKYY?]** needs your call.*
+*Drafted 2026-09-23. Based on Hypixel SkyBlock's Accessory Power (formerly "Magical Power"), adapted to our layer model. Anything marked **[SKYY?]** needs your call.*
+
+**Lock (2026-09-23 batch 2):** the accessory bag and magical power are **core**, not a later-game system. They ship with the core loop (`SkyWynn-Master-Plan.md` P1, `SkyWynn-Decisions.md` 5.10). The numbers below are still a draft. Gear also has rarity and stats on every item, and a reforge swaps bonuses (rows 5.1, 5.3–5.5); that layer is core too, and it is not this bag.
 
 ## 1. Accessory Power (AP)
 Each accessory in the bag gives AP by rarity; only the best item per family counts (the bag already hands back lower tiers).
@@ -24,10 +26,12 @@ AP gives no stats itself. It feeds two things, both in the accessory percent lay
 | Hawkeye | Archer | Damage 8%, Crit Chance 3%, Speed 3% |
 | Bulwark | Warrior | Health 10%, Defense 10%, Damage 4% |
 | Shadowstep | Assassin | Crit Damage 15%, Speed 4%, Health -3% |
-| Bloodrage | Berserker | Damage 12%, Health 5%, Defense -4% |
+| Bloodrage | Shaman (later) | Damage 12%, Health 5%, Defense -4% |
 | Arcane | Mage | Mana 15%, Ability Damage 6% |
 
 Negative stats follow your gear trade-off rule. Balanced is unlocked from the start; your class crystal unlocks at class skill 10. Later: "Stone" upgrades for 9 of a rare boss drop (like Hypixel's Stone Powers).
+
+Class crystals follow Wynn's five (Warrior, Archer, Mage, Assassin, Shaman — `SkyyClasses-Plan.md`). Bloodrage's class column was drafted as Berserker; the 2026-09-23 roster lock points it at Shaman, which is a later class. The numbers are still a draft.
 
 **Tuning points.** 1 point per 10 AP, spent in `/acc tune`, free reset. Per point: Health or Defense +0.25%, Damage +0.15%, Crit Chance +0.1%, Stamina or Mana +0.5%, Speed +0.1% (max +5% speed from tuning).
 
