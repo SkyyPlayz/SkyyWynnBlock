@@ -12,4 +12,6 @@ them in the world (PACK_THIRD_PARTY) but never copies their files.
 | Saplings From Trees (`Helios:Saplings From Trees`) | Helios | 1.0.4 | SaplingFromTrees-1.0.4.zip | Leaves of Ash, Azure, Beech, Birch, Cedar, Dry and Oak trees can drop their sapling (plus sapling recipes) - a sky island needs replantable trees (Skyy, 2026-09-24). Overrides the vanilla leaf item files; no other pack mod touches leaves. No dependencies. |
 
 Not included: "Endgame&QoL expansion - Crossbow Tiers" (adds Onyxium + Prisma crossbows) needs the large Endgame&QoL mod.
-Also not included (yet): SaplingOnLog (Helios; only tweaks two sapling items); Seed Drops (Familiar; crops drop seeds on harvest - offered to Skyy).
+Also not included (yet): SaplingOnLog (Helios; only tweaks two sapling items); Seed Drops (Familiar) - not needed, Hytale has its own seed system (Skyy, 2026-09-24).
+
+Saplings: vanilla already crafts 31 of the 33 saplings at the Farming Bench from Life Essence (5-35; Apple = concentrated essence + 4 apples); only Crystal and Poisoned have no recipe. Saplings From Trees adds leaf drops plus Oak sapling -> Ash / Azure / Beech / Birch / Cedar / Dry at the Farming Bench.
