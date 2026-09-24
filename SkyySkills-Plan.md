@@ -38,7 +38,7 @@ Level cap 100 for every skill is an existing engineering lock in `HANDOFF.md`. T
 | Runecrafting | SHELF | |
 | Social | SHELF | |
 | Dungeoneering | LATER | Already LATER (2.14) |
-| Cooking | not sorted yet | Skyy did not call it; ask |
+| Cooking | **BUILD NOW** (next to Alchemy) | Food you cook gets stronger AND lasts longer with your Cooking level: x2 at level 50, x4 at level 100; skill-tree modifiers can push it further. Only if the engine allows it (research running) |
 
 ## Combat XP
 

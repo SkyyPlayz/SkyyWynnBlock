@@ -9,7 +9,7 @@
   - /island, /island home and a profile switch (SkyyProfiles dispatches /island) go to the ACTIVE profile's island (created on first
     use). /island visit <player> goes to the target player's ACTIVE profile island. /island invite <player> adds the player (UUID, any
     of their profiles - co-op is social, like Party) to YOUR active profile's island. /island info reads the active profile's file and
-    shows "(profile <name>)" when SkyyProfiles publishes a name.
+    shows "(profile <name>)" only when SkyyProfiles publishes profile:name:<uuid> (no fallback to the numeric profile id).
   - Protection: in an island world the owner is the player whose ACTIVE profile key owns it; members (player UUIDs in that island's
     file) and skyyislands.admin may build. On one of your OTHER profiles your island treats you as a visitor (profiles are separate
     saves, blocks must not carry items between them) and the message says to switch to that profile.
@@ -212,13 +212,21 @@ public static java.util.UUID ownerUuid(String key) {
   if (key == null || key.length() < 36) return null;
   try { return java.util.UUID.fromString(key.substring(0, 36)); } catch (Throwable t) { return null; }
 }""", st_))
+# /island info label: ONLY the display name SkyyProfiles publishes (profile:name:<uuid>, same as SkyyCoins /balance); no fallback
+# to the numeric profile id, control chars stripped, capped at 32 chars. Empty when SkyyProfiles is absent or publishes no name.
 st_.addMethod(CtNewMethod.make("""
 public static String profileLabel(java.util.UUID u) {
   try {
-    java.util.Map b = bridge();
-    Object n = b.get("profile:name:" + u);
-    if (n == null) n = b.get("profile:" + u);
-    if (n != null && String.valueOf(n).trim().length() > 0) return " (profile " + String.valueOf(n).trim() + ")";
+    Object n = bridge().get("profile:name:" + u);
+    if (!(n instanceof String)) return "";
+    String raw = ((String) n).trim();
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < raw.length() && sb.length() < 32; i++) {
+      char c = raw.charAt(i);
+      if (c >= ' ' && c != 127) sb.append(c);
+    }
+    String nm = sb.toString().trim();
+    if (nm.length() > 0) return " (profile " + nm + ")";
   } catch (Throwable t) { }
   return "";
 }""", st_))

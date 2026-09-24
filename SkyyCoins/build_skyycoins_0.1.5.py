@@ -13,9 +13,12 @@ atomic file writes, logged I/O failures, ticker cancelled on shutdown, DEAD/GRAN
   straddles a profile switch. Starter coins per profile: a profile with no balance file gets 10,000 on its first tick (a new
   profile starts fresh; profile N >= 2 gets a "New profile" message). coins:fn:get/add/take act on the ACTIVE profile.
   coins:<uuid> stays keyed by UUID and always shows the ACTIVE profile (rule 3): CoinTick (1 s) remembers the last
-  profile:epoch:<uuid> per UUID and republishes on change; each op also re-resolves pkey afterwards and republishes if the profile
-  switched mid-op. /balance names the active profile (profile:name:<uuid>) when SkyyProfiles publishes one. Death state (DEAD)
-  stays per player. Nothing touches the inventory (rule 5).
+  profile:epoch:<uuid> per UUID and on a change flags that player's CoinTask (republish = true), which republishes on the player's
+  world thread - CoinTick itself never touches the balance files (review fix: no disk I/O or ledger lock on the shared scheduler
+  thread, same as 0.1.4); the epoch is only recorded once the flagged task is handed to a world, so a player without a world
+  yet is retried next tick. Each op also re-resolves pkey afterwards and republishes if the profile switched mid-op. /balance
+  names the active profile (profile:name:<uuid>) when SkyyProfiles publishes one. Death state (DEAD) stays per player. Nothing
+  touches the inventory (rule 5).
 0.1.4: (1) /balance (bal, coins, purse) and /pay <player> <amount> are open to ordinary players: their constructors call
   setPermissionGroups(new String[] { "hytale:Adventurer" }) (vanilla /help /who /ping pattern, same as SkyyEssentials 0.1).
   Before, CommandRegistry.registerCommand -> AbstractCommand.setOwner() gave them an auto node like
@@ -203,7 +206,8 @@ cs.addMethod(CtNewMethod.make("""
 public static synchronized void publishK(java.util.UUID u, String k) {
   bridge().put("coins:" + u.toString(), Long.valueOf(getK(u, k)));
 }""", cs))
-# coins:<uuid> = balance of the ACTIVE profile (PROFILES-CONTRACT rule 3); called by CoinTick when profile:epoch:<uuid> changes
+# coins:<uuid> = balance of the ACTIVE profile (PROFILES-CONTRACT rule 3); called by CoinTask (world thread, never the scheduler
+# thread: it may read the balance file and takes the ledger lock) when CoinTick flagged a profile:epoch:<uuid> change
 cs.addMethod(CtNewMethod.make("""
 public static void publish(java.util.UUID u) {
   try { publishK(u, pkey(u)); } catch (Throwable t) { warn("could not publish balance for " + u + ": " + t); }
@@ -313,9 +317,13 @@ public static void load() {{
   }} catch (Throwable t) {{ {PKG}.CoinStore.warn("could not load config: " + t); }}
 }}""", cfg))
 # ================= CoinTask (world thread) =================
+# The epoch republish runs right after the validity check and BEFORE the world check: it touches no components (pkey + balance
+# file + bridge only), so a task that lands on the old world's thread after a world switch still delivers it instead of dropping it.
 task.addInterface(pool.get("java.lang.Runnable"))
 task.addField(CtField.make(f"public {PR} pr;", task))
 task.addField(CtField.make("public java.util.UUID expectedWorld;", task))
+# set by CoinTick when profile:epoch:<uuid> changed: run() republishes coins:<uuid> for the active profile (off the scheduler thread)
+task.addField(CtField.make("public boolean republish;", task))
 task.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap DEAD = new java.util.concurrent.ConcurrentHashMap();", task))
 # DEAD is keyed by UUID (live player state); GRANTED by the profile key String (starter coins once per profile, rule 2)
 task.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap GRANTED = new java.util.concurrent.ConcurrentHashMap();", task))
@@ -324,6 +332,7 @@ task.addMethod(CtNewMethod.make(f"""
 public void run() {{
   try {{
     if (pr == null || !pr.isValid()) return;
+    if (this.republish) {PKG}.CoinStore.publish(pr.getUuid());
     java.util.UUID nowWorld = pr.getWorldUuid();
     if (nowWorld == null || !nowWorld.equals(this.expectedWorld)) return;
     {REF} r = pr.getReference();
@@ -361,7 +370,9 @@ public void run() {{
 # ================= CoinTick (scheduler thread -> dispatch per world) =================
 tick.addInterface(pool.get("java.lang.Runnable"))
 # last profile:epoch:<uuid> seen per UUID (PROFILES-CONTRACT rule 3): a change republishes coins:<uuid> for the new active profile.
-# Without SkyyProfiles the epoch key never exists and nothing happens.
+# Without SkyyProfiles the epoch key never exists and nothing happens. This runs on the SHARED scheduler thread, so it only DETECTS
+# the change and sets CoinTask.republish; the publish itself (file read + ledger lock) runs in CoinTask on the world thread.
+# EPOCH is updated only after w.execute() accepted the flagged task, so no world / a failed hand-off retries next tick.
 tick.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap EPOCH = new java.util.concurrent.ConcurrentHashMap();", tick))
 tick.addConstructor(CtNewConstructor.make("public CoinTick() { }", tick))
 tick.addMethod(CtNewMethod.make(f"""
@@ -377,21 +388,23 @@ public void run() {{
       java.util.UUID u = pr.getUuid();
       online.add(u);
       onlineKeys.add({PKG}.CoinStore.pkey(u));
-      try {{
-        Object ep = br.get("profile:epoch:" + u.toString());
-        Object last = EPOCH.get(u);
-        boolean changed = false;
-        if (ep != null) changed = !ep.equals(last); else changed = last != null;
-        if (changed) {{
-          if (ep != null) EPOCH.put(u, ep); else EPOCH.remove(u);
-          {PKG}.CoinStore.publish(u);
-        }}
-      }} catch (Throwable te) {{ {PKG}.CoinStore.warn("profile epoch check failed for " + u + ": " + te); }}
       java.util.UUID wu = pr.getWorldUuid();
       if (wu == null) continue;
       {WLD} w = {UNI}.get().getWorld(wu);
       if (w == null) continue;
-      w.execute(new {PKG}.CoinTask(pr, wu));
+      Object ep = null;
+      boolean changed = false;
+      try {{
+        ep = br.get("profile:epoch:" + u.toString());
+        Object last = EPOCH.get(u);
+        if (ep != null) changed = !ep.equals(last); else changed = last != null;
+      }} catch (Throwable te) {{ changed = false; {PKG}.CoinStore.warn("profile epoch check failed for " + u + ": " + te); }}
+      {PKG}.CoinTask ct = new {PKG}.CoinTask(pr, wu);
+      ct.republish = changed;
+      w.execute(ct);
+      if (changed) {{
+        if (ep != null) EPOCH.put(u, ep); else EPOCH.remove(u);
+      }}
     }}
     {PKG}.CoinTask.DEAD.keySet().retainAll(online);
     {PKG}.CoinTask.GRANTED.keySet().retainAll(onlineKeys);

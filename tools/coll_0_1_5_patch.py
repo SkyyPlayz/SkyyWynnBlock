@@ -11,6 +11,15 @@
           (so a milestone right after a switch compares against the new profile's unlocks). The pkey comparison is a safety
           net if SkyyProfiles bumps the epoch before its key function returns the new key. publish() is now synchronized so
           the last publish always sees the newest counts (tick thread vs world thread).
+          Review fix (epoch-before-key ordering): the contract does not say whether SkyyProfiles bumps profile:epoch:<uuid>
+          before or after profile:fn:key returns the new key. If the epoch moves first, the epoch-triggered publish still
+          computes for the OLD key (the bridge keeps the old profile's recipes until the next check saw the new key = up to
+          one more 5 s tick). Now: publish() re-reads pkey() after writing and recomputes (max 3 passes) if it changed
+          meanwhile, and when syncEpoch() republished for a moved epoch but the SAME pkey it published before, it arms
+          CollUnlocks.RECHECK (5 one-shot rechecks, 1 s apart, on HytaleServer.SCHEDULED_EXECUTOR via the new top-level
+          CollRecheck Runnable). A key flip inside that window is republished within ~1 s; after it the 5 s tick keeps
+          catching it (PUBKEY mismatch). syncEpoch()/recheck() are synchronized with publish() (one lock, CollUnlocks.class),
+          RECHECK is pruned with the other per-UUID maps and cleared on shutdown (pending rechecks become no-ops).
   rule 4  nothing applied to the live player.   rule 5  inventory never touched.   rule 6  n/a.
 Without SkyyProfiles: pkey = uuid, epoch absent (-1 every time) -> same files, same bridge output, same messages as 0.1.4.
 """
@@ -37,12 +46,23 @@ rep('''"""SkyyCollections 0.1.4 - build script
        republished when profile:epoch:<uuid> changes (or the active pkey differs from the last published one): checked every
        5 s by the saver tick (was 10 s; flush + first publish still every 2nd tick = 10 s) and before each counted block break.
        publish() is synchronized. Without SkyyProfiles: pkey = uuid, no epoch -> behaviour identical to 0.1.4.
+       Review fix: if SkyyProfiles bumps the epoch BEFORE its key function returns the new key, the epoch-triggered publish
+       would still be for the old profile until the next check. publish() now re-reads pkey() after writing (recomputes if
+       it moved, max 3 passes), and an epoch change with an unchanged pkey arms 5 fast rechecks (1 s apart, CollRecheck on
+       HytaleServer.SCHEDULED_EXECUTOR), so a late key flip is republished within ~1 s instead of up to one more 5 s tick.
        Derived by tools/coll_0_1_5_patch.py.
 0.1.4: command rules''')
 rep('''Run:   python build_skyycollections_0.1.4.py            -> SkyyCollections/SkyyCollections-0.1.4.jar
        python build_skyycollections_0.1.4.py --deploy   -> also''', '''Run:   python build_skyycollections_0.1.5.py            -> SkyyCollections/SkyyCollections-0.1.5.jar
        python build_skyycollections_0.1.5.py --deploy   -> also''')
 rep('VERSION = "0.1.4"', 'VERSION = "0.1.5"')
+# one-shot recheck Runnable (top-level class: javassist has no inner/anonymous classes)
+rep('''sav   = pool.makeClass(PKG + ".CollSaver")
+''', '''sav   = pool.makeClass(PKG + ".CollSaver")
+rck   = pool.makeClass(PKG + ".CollRecheck")
+''')
+rep('''for c in (store, unl, sysc, sav, ccmp, page, ulc, rlc, cmd, pl):''',
+    '''for c in (store, unl, rck, sysc, sav, ccmp, page, ulc, rlc, cmd, pl):''')
 
 # ---------------- CollStore: bridge() + contract pkey() (before every caller) ----------------
 rep('''public static void warn(String msg) {
@@ -154,6 +174,12 @@ public static java.util.Map bridge() {
 # per UUID: profile:epoch value (Long, -1 = absent) and pkey (String) the last publish was computed for
 unl.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap EPOCH = new java.util.concurrent.ConcurrentHashMap();", unl))
 unl.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap PUBKEY = new java.util.concurrent.ConcurrentHashMap();", unl))
+# per UUID: fast rechecks left (Integer) after an epoch change that still published for the SAME pkey (key function may lag)
+unl.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap RECHECK = new java.util.concurrent.ConcurrentHashMap();", unl))
+# CollRecheck: field + constructor now (CollUnlocks.scheduleRecheck constructs it); run() is added after CollUnlocks.recheck exists
+rck.addInterface(pool.get("java.lang.Runnable"))
+rck.addField(CtField.make("public java.util.UUID u;", rck))
+rck.addConstructor(CtNewConstructor.make("public CollRecheck(java.util.UUID u) { this.u = u; }", rck))
 unl.addMethod(CtNewMethod.make(f"""
 public static java.util.Map bridge() {{
   return {PKG}.CollStore.bridge();
@@ -181,31 +207,63 @@ rep('''public static int publish(java.util.UUID u) {{
 }}""", unl))
 ''', '''public static synchronized int publish(java.util.UUID u) {{
   try {{
-    long ep = epochOf(u);
-    String key = {PKG}.CollStore.pkey(u);
-    java.util.TreeSet ids = compute({PKG}.CollStore.countsKey(key));
-    StringBuilder sb = new StringBuilder();
-    java.util.Iterator it = ids.iterator();
-    while (it.hasNext()) {{ if (sb.length() > 0) sb.append(','); sb.append((String) it.next()); }}
-    bridge().put("coll:recipes:" + u.toString(), sb.toString());
-    PUBLISHED.put(u, Integer.valueOf(ids.size()));
-    EPOCH.put(u, Long.valueOf(ep));
-    PUBKEY.put(u, key);
-    return ids.size();
+    int n = 0;
+    for (int pass = 0; pass < 3; pass++) {{
+      long ep = epochOf(u);
+      String key = {PKG}.CollStore.pkey(u);
+      java.util.TreeSet ids = compute({PKG}.CollStore.countsKey(key));
+      StringBuilder sb = new StringBuilder();
+      java.util.Iterator it = ids.iterator();
+      while (it.hasNext()) {{ if (sb.length() > 0) sb.append(','); sb.append((String) it.next()); }}
+      bridge().put("coll:recipes:" + u.toString(), sb.toString());
+      PUBLISHED.put(u, Integer.valueOf(ids.size()));
+      EPOCH.put(u, Long.valueOf(ep));
+      PUBKEY.put(u, key);
+      n = ids.size();
+      if (key.equals({PKG}.CollStore.pkey(u))) break;
+    }}
+    return n;
   }} catch (Throwable t) {{ {PKG}.CollStore.warn("publish failed for " + u + ": " + t); return 0; }}
 }}""", unl))
-# republish an already-published player when the active profile changed (epoch bump, or a different pkey) since the last publish
+# one fast recheck of u in 1 s (CollRecheck -> recheck(u)); on failure the chain ends and the 5 s saver tick remains the backstop
 unl.addMethod(CtNewMethod.make(f"""
-public static boolean syncEpoch(java.util.UUID u) {{
+public static void scheduleRecheck(java.util.UUID u) {{
+  try {{
+    {HSV}.SCHEDULED_EXECUTOR.schedule(new {PKG}.CollRecheck(u), 1L, java.util.concurrent.TimeUnit.SECONDS);
+  }} catch (Throwable t) {{ RECHECK.remove(u); }}
+}}""", unl))
+# republish an already-published player when the active profile changed (epoch bump, or a different pkey) since the last publish.
+# Epoch moved but publish() still computed for the SAME pkey as before: SkyyProfiles may have bumped the epoch before its key
+# function returns the new key (the contract does not fix that order), or the epoch moved without a key change. Either way arm
+# 5 fast rechecks (1 s apart) so a late key flip is republished within ~1 s instead of on the next 5 s tick.
+unl.addMethod(CtNewMethod.make(f"""
+public static synchronized boolean syncEpoch(java.util.UUID u) {{
   try {{
     if (u == null || !PUBLISHED.containsKey(u)) return false;
     Long seen = (Long) EPOCH.get(u);
     String key = (String) PUBKEY.get(u);
-    if (seen != null && seen.longValue() == epochOf(u) && key != null && key.equals({PKG}.CollStore.pkey(u))) return false;
+    boolean epochMoved = seen == null || seen.longValue() != epochOf(u);
+    if (!epochMoved && key != null && key.equals({PKG}.CollStore.pkey(u))) return false;
     publish(u);
+    if (epochMoved && key != null && key.equals(PUBKEY.get(u))) {{
+      if (RECHECK.put(u, Integer.valueOf(5)) == null) scheduleRecheck(u);
+    }}
     return true;
   }} catch (Throwable t) {{ return false; }}
 }}""", unl))
+# CollRecheck target: one step of the fast-recheck chain (only one chain per UUID is ever pending)
+unl.addMethod(CtNewMethod.make("""
+public static synchronized void recheck(java.util.UUID u) {
+  try {
+    Object left = RECHECK.remove(u);
+    if (left == null || !PUBLISHED.containsKey(u)) return;
+    if (syncEpoch(u)) return;
+    int n = ((Integer) left).intValue() - 1;
+    if (n <= 0) return;
+    RECHECK.put(u, Integer.valueOf(n));
+    scheduleRecheck(u);
+  } catch (Throwable t) { RECHECK.remove(u); }
+}""", unl))
 unl.addMethod(CtNewMethod.make("""
 public static void checkEpochs() {
   try {
@@ -213,10 +271,15 @@ public static void checkEpochs() {
     while (it.hasNext()) syncEpoch((java.util.UUID) it.next());
   } catch (Throwable t) { }
 }""", unl))
+rck.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{ {PKG}.CollUnlocks.recheck(this.u); }} catch (Throwable t) {{ }}
+}}""", rck))
 ''')
 rep('''    PUBLISHED.keySet().retainAll(online);''', '''    PUBLISHED.keySet().retainAll(online);
     EPOCH.keySet().retainAll(online);
-    PUBKEY.keySet().retainAll(online);''')
+    PUBKEY.keySet().retainAll(online);
+    RECHECK.keySet().retainAll(online);''')
 
 # ---------------- CollSystem: sync before counting, so the milestone "+N recipes" compares against the new profile ----------------
 rep('''    java.util.UUID u = pr.getUuid();
@@ -243,6 +306,12 @@ public void run() {{
 rep('''scheduleAtFixedRate(new {PKG}.CollSaver(), 10L, 10L, java.util.concurrent.TimeUnit.SECONDS);''',
     '''scheduleAtFixedRate(new {PKG}.CollSaver(), 5L, 5L, java.util.concurrent.TimeUnit.SECONDS);''')
 rep('''ready - break blocks, /collections to view, unlocks auto=''', '''ready - break blocks, /collections to view, per-profile counts, unlocks auto=''')
+
+# ---------------- shutdown: pending fast rechecks become no-ops (recheck() returns when RECHECK has no entry) ----------------
+rep('''  try {{ if (this.saver != null) this.saver.cancel(false); }} catch (Throwable t) {{ }}
+''', '''  try {{ if (this.saver != null) this.saver.cancel(false); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.CollUnlocks.RECHECK.clear(); }} catch (Throwable t) {{ }}
+''')
 
 # ---------------- manifest ----------------
 rep('''Collection tiers unlock recipes for the SkyySacks craft page (auto rule + unlocks.properties).",''',

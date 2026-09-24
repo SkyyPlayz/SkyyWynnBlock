@@ -71,7 +71,7 @@ Batch 1 above stays. This list adds to it.
 - **Skills NOW:** Mining, Foraging, Farming, Acrobatics, the class weapon skills, **Alchemy (build it)**, **Exploration (add it: research SkyBlock + Wynncraft rewards first, Skyy picks)**, **Smithing kept** (leveled by reforging and adding powders).
 - **A skill tree per gathering skill: YES** (Mining, Foraging, Farming).
 - **Shelved / later:** Fishing, Enchanting (not in Hytale), Taming + pets, Carpentry (skip), Hunting (big SkyBlock feature, later project), Runecrafting, Social, Dungeoneering.
-- **Cooking:** not sorted yet.
+- **Cooking: BUILD NOW next to Alchemy** - food you cook gets stronger and lasts longer with your Cooking level (x2 at level 50, x4 at level 100); skill-tree modifiers push it further. Condition: the engine must allow it.
 Full table: SkyySkills-Plan.md.
 
 The SkyyClasses 0.1.1 jar (below) was built earlier the same day with Berserker in the roster and Combat.<Class> skill keys. That is the spike. Design prose uses Shaman, per-weapon skills, and one class per profile. A later code pass realigns the jar; this note does not.
@@ -133,7 +133,7 @@ Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 - SkyySkills 0.1: /skills page renders. HyperEssentials death crash diagnosed and removed.
 
 ### Open decisions for Skyy
-0. Exploration rewards: research running (what SkyBlock + Wynncraft give for exploring); Skyy picks the rewards from it. Cooking: now or shelf?
+0. Exploration rewards: research running (what SkyBlock + Wynncraft give for exploring); Skyy picks the rewards from it.
 1. Deploy approval for the profiles set when it is built (SkyyProfiles 0.1 + the 8 per-profile versions).
 2. Endurance/Intelligence talismans: % of vanilla base (Stamina 10, Mana 0) is nearly useless - make them flat until armor adds base stats?
 3. Accessory power: six [SKYY?] questions in SkyyAccessories-Plan.md (AP values, bench accessories count?, class crystals, slot sources/prices, Mage crystal).
@@ -296,3 +296,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-23 22:05: wrote tools/PROFILES-CONTRACT.md; workflow skywynn-profiles building SkyyProfiles 0.1 + per-profile versions of Coins, Bank, Sacks, Skills, Collections, Accessories, Islands, Classes (no deploy).
 - 2026-09-23 22:15: Skyy's focus call (HANDOFF section 1 'Focus call', SkyySkills-Plan.md table): build Alchemy, add Exploration after research, keep Smithing (reforge/powder XP), a tree per gathering skill; shelve Fishing, Enchanting, Taming/pets, Carpentry, Hunting, Runecrafting, Social, Dungeoneering. Cooking unsorted.
 - 2026-09-23 22:20: research workflow skywynn-skill-research started (no builds): research/Exploration-Research.md (what SkyBlock + Wynncraft give for exploring, what Hytale can detect, reward options for Skyy to pick), research/Alchemy-Skill-Spec.md (Alchemy skill + Smithing row + retiring the shared Combat row), research/Skill-Trees-Spec.md (Mining/Foraging/Farming trees). Each doc is checked by facts, engine and design-fit reviewers, then fixed.
+- 2026-09-23 22:30: Skyy: build Cooking next to Alchemy IF cooking level can raise the strength and duration of food you cook (x2 at 50, x4 at 100, more from skill-tree modifiers). Research workflow skywynn-cooking-research started -> research/Cooking-Skill-Spec.md.
