@@ -26,7 +26,8 @@ SET = [
 def server_running():
     try:
         out = subprocess.run(["powershell", "-NoProfile", "-Command",
-                              "Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -like '*HytaleServer*' } | Measure-Object | Select-Object -ExpandProperty Count"],
+                              # java.exe only: the query's own powershell command line contains the search text and would match itself
+                              "Get-CimInstance Win32_Process -Filter \"Name = 'java.exe'\" | Where-Object { $_.CommandLine -like '*HytaleServer*' } | Measure-Object | Select-Object -ExpandProperty Count"],
                              capture_output=True, text=True, timeout=60).stdout.strip()
         return out not in ("", "0")
     except Exception as e:

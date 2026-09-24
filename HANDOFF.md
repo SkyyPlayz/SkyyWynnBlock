@@ -124,9 +124,9 @@ Other proven facts: HUD attach = `new HudMain(pr).show()` on `PlayerReadyEvent` 
 
 ### Versions: live in the "HUD mod" test world vs newest built
 All mods are deployed TOGETHER as one set (Skyy 2026-09-23: "keep building and testing all the mods together at once").
-Nothing new deploys without Skyy's OK. When Skyy says deploy (game closed): `python tools/deploy_set.py` (checks every jar, refuses while a
+DEPLOYED 2026-09-24 06:25 (all 17 below; backup of the previous jars + config.json in backups/deploy-20260924-0623/, not in git). Nothing new deploys without Skyy's OK. Next time Skyy says deploy (game closed): `python tools/deploy_set.py` (checks every jar, refuses while a
 server runs, installs the 17 jars below and flips the world config keys). `--check` only verifies the jars.
-| Mod | Live (deployed 2026-09-23 ~22:00) | Built, reviewed, waiting for Skyy's deploy OK |
+| Mod | Was live until 2026-09-24 06:25 | LIVE since 2026-09-24 06:25 (Skyy: "deploy") |
 |---|---|---|
 | SkyyHud | 0.3.6 | 0.3.6 (unchanged) |
 | SkyySacks | 0.7.1 | 0.7.3 = per-profile + search box + Crafting/Smithing/Farming tabs, no Alchemy tab, Furnace-tab Smithing XP |
@@ -343,3 +343,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-24 morning: Skyy: island visitors -> copy SkyBlock plugins' island settings menu (research + SkyyIslands 0.5 build running); pack goal = 100% usable solo + private multiplayer, prepared for server use; build the island checklist backbone now (SkyyExploration 0.2 after 0.1). Later: a server-readiness audit (config docs, admin guide, multiplayer/performance checks).
 - 2026-09-24: Skyy feedback: Campfire accessory back (x0.5 Cooking XP, x0.75 skill buffs), Tree Feller = horizontal same-Y breaking, smelting-only Smithing XP confirmed. Feedback round: SkyyAccessories 0.4.3, SkyySacks 0.7.4, SkyyCooking 0.1.1 now; SkyyTrees Tree Feller rework after the exploration round's SkyyTrees 0.2 lands.
 - 2026-09-24: Skyy (testing live Sacks 0.7.1): bars should pool in the Mining bag; could not find the Combat bag (it exists; tab hidden without the bag). Queued SkyySacks 0.7.5.
+- 2026-09-24 06:25: Skyy said deploy -> tools/deploy_set.py --yes installed the 17-mod set (world config: exactly these 17 Skyy keys on, old versions off). Backup of the old Skyy jars + config.json in backups/deploy-20260924-0623/ (backups/ is git-ignored). Fixed deploy_set.py's server check (it matched its own PowerShell query; now java.exe only). Watcher bs5jiy9ms reports the first start's load errors + ready lines.
