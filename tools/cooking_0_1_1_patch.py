@@ -38,7 +38,8 @@ rep('''"""SkyyCooking 0.1 - build script (javassist via jpype). NEW mod, never d
 Run:   python build_skyycooking_0.1.py            -> SkyyCooking/SkyyCooking-0.1.jar
        python build_skyycooking_0.1.py --deploy   -> also copies to Mods/SkyyCooking.jar (ONLY with Skyy's OK - HANDOFF deploy rule)
 ''', '''"""SkyyCooking 0.1.1 - build script (javassist via jpype). DERIVED from build_skyycooking_0.1.py by tools/cooking_0_1_1_patch.py:
-edit the patch (or 0.1) and re-run it, not this file. 0.1 was never deployed.
+edit the patch (or 0.1) and re-run it, not this file. 0.1 is live (deployed with the 17-mod set 2026-09-24 06:25), so its
+cooking.properties gets the campfire.* lines appended once on the first 0.1.1 start.
 Run:   python build_skyycooking_0.1.1.py            -> SkyyCooking/SkyyCooking-0.1.1.jar
        python build_skyycooking_0.1.1.py --deploy   -> also copies to Mods/SkyyCooking.jar (ONLY with Skyy's OK - HANDOFF deploy rule)
 

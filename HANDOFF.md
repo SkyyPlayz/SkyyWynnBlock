@@ -153,7 +153,7 @@ Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 - All 17 mods load together with no errors (server log 06-24-04).
 - SkyyProfiles: first-join welcome + profile 'Strawberry' created as Archer, existing data became profile 1.
 - SkyySkills 0.4 Smithing: vanilla Furnace bars pay +5 Smithing XP each, level-up coins paid.
-- SkyyCollections 0.2: migration message shown at join.
+- SkyyCollections 0.2: migration message at join; /collections category page + per-category grid with ??? for undiscovered, progress and next reward (Skyy: "this is beautiful!"). Polish: 'Tier -' for tier 0 -> say 'No tier yet'.
 - SkyyProfiles switch: new profile 'Zucchini' (Warrior) -> inventory saved with the old profile, new island created on first use, player lands there with an empty inventory (Menu item kept), 10,000 starter coins (Skyy: "thats amazing").
 - SkyyCooking: /cookadmin give works (it put the dishes in storage, not the hotbar - Skyy first missed them).
 - SkyySacks 0.7.3: the inline search TextField parses and works (search 'stick' -> 1 found in Crafting, Smithing and Farming); Crafting/Smithing/Farming/Furnace/Tannery tabs shown.
