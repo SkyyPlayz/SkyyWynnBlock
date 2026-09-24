@@ -24,7 +24,7 @@ Level cap 100 for every skill is an existing engineering lock in `HANDOFF.md`. T
 | Archer, Warrior, Mage | **NOW** | Launch classes |
 | Assassin, Shaman | LATER | Stay greyed out |
 | Mining, Foraging, Farming | **NOW** (live) | Each gets its own skill tree |
-| Acrobatics | **NOW** (live) | Skyy's mcMMO skill |
+| Acrobatics | **NOW** (live) | Skyy's mcMMO skill. Fall XP (Skyy 2026-09-23): the further you fall WITHOUT dying the more XP - jumping from heights is a real grind; no XP for water or any fall whose damage is negated (safe no-damage drops pay nothing) |
 | Archery, Swordsmanship, Sorcery | **NOW** (live) | Class weapon skills |
 | Smithing | **KEEP** | Leveled by reforging and adding powders, **and by smelting in the furnace** (vanilla Furnace + the SkyySacks Furnace tab) |
 | Alchemy | **BUILD NOW** | **Table use only**: the Alchemy Bench accessory is removed; the vanilla Alchemy Bench draws ingredients from your sacks |

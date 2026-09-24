@@ -947,7 +947,9 @@ public static @IS@ stackOf(org.bson.BsonDocument d) {
   } catch (Throwable t) { }
   org.bson.BsonDocument meta = null;
   try { org.bson.BsonValue mv = (org.bson.BsonValue) d.get("meta"); if (mv != null && mv.isDocument()) meta = mv.asDocument(); } catch (Throwable t) { }
-  @IS@ s2 = new @IS@(id, qty, dblOf(d, "durability"), dblOf(d, "maxDurability"), intOf(d, "quality", 0), meta);
+  @IS@ s2 = null;
+  try { s2 = new @IS@(id, qty, dblOf(d, "durability"), dblOf(d, "maxDurability"), intOf(d, "quality", 0), meta); }
+  catch (Throwable t) { @PKG@.ProfCfg.warn("saved item " + id + " x" + qty + " cannot be rebuilt (unknown item?): " + t); return null; }
   try {
     org.bson.BsonValue a = (org.bson.BsonValue) d.get("overrideAnim");
     if (a != null && a.isBoolean() && a.asBoolean().getValue()) s2.setOverrideDroppedItemAnimation(true);
@@ -1034,7 +1036,7 @@ public static int[] loadInto(@ST@ st, @REF@ ref, @PLA@ player, org.bson.BsonDocu
       if (v == null || !v.isDocument()) { skipped++; continue; }
       org.bson.BsonDocument d = v.asDocument();
       @IS@ s = stackOf(d);
-      if (s == null) { skipped++; @PKG@.ProfCfg.warn("unreadable saved slot for " + u + ": " + d.toJson()); continue; }
+      if (s == null) { skipped++; @PKG@.ProfCfg.warn("unreadable saved slot for " + u + ": " + d.toJson()); @PKG@.ProfStore.log("LOST? " + u + " unreadable slot " + d.toJson()); continue; }
       if (@PKG@.ProfCfg.keep(s.getItemId()) && hasItem(st, ref, s.getItemId())) { skipped++; continue; }
       int slot = intOf(d, "slot", -1);
       boolean done = false;

@@ -1088,13 +1088,13 @@ public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
   b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_ACCENT);
   b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_TITLE);
   b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_HINT);
-  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_GRIDWRAP);
-  b.appendInline("#SkyyMGridWrap", @PKG@.MenuData.UI_GRID);
-  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_GAP);
   b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_INFOBOX);
   b.appendInline("#SkyyMInfoBox", @PKG@.MenuData.UI_INFONAME);
   b.appendInline("#SkyyMInfoBox", @PKG@.MenuData.UI_INFODESC);
   for (int i = 0; i < @PKG@.MenuData.UI_INFO.length; i++) b.appendInline("#SkyyMInfoBox", @PKG@.MenuData.UI_INFO[i]);
+  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_GAP);
+  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_GRIDWRAP);
+  b.appendInline("#SkyyMGridWrap", @PKG@.MenuData.UI_GRID);
   b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_STATUS);
   b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_FOOT);
   b.appendInline("#SkyyMFoot", @PKG@.MenuData.UI_LEAD);

@@ -10,6 +10,8 @@
    (teleports, chat-only commands flagged close) is it closed - CloseTask, same world-thread pattern as RefreshTask.
  - Page scaled up 1.4x (Skyy: "scale it up a bigger"): 84 px slots with 62 px icons, bigger fonts, buttons and info box. The page is
    ~952 px tall (the tallest that fits a 1080-high UI with margin) and 800 px wide.
+ - Info box moved ABOVE the icon grid (Skyy: a top-row tooltip went off the top of the screen; "lower the icons a little"). Tooltips
+   open above the hovered icon; the grid now starts ~420 px below the top of a 1080-high screen instead of ~150.
 """
 import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -80,6 +82,23 @@ rep('assert "Width" in UI["ROOT"]',
     "assert _tall <= PH, 'menu parts are %d px tall, page is %d' % (_tall, PH)" + LF +
     "assert 26 + 42 + 20 * INFO_LINES + 16 <= 266, 'info box too small for its lines'" + LF +
     'assert "Width" in UI["ROOT"]')
+
+# ---- Skyy: the tooltip of a top-row icon went off the top of the screen ("lower the icons on the screen a little").
+# Tooltips open ABOVE the hovered slot, so the info box moves above the grid: the icons sit ~270 px lower, the page height is unchanged.
+rep(LF.join(['  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_GRIDWRAP);',
+             '  b.appendInline("#SkyyMGridWrap", @PKG@.MenuData.UI_GRID);',
+             '  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_GAP);',
+             '  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_INFOBOX);',
+             '  b.appendInline("#SkyyMInfoBox", @PKG@.MenuData.UI_INFONAME);',
+             '  b.appendInline("#SkyyMInfoBox", @PKG@.MenuData.UI_INFODESC);',
+             '  for (int i = 0; i < @PKG@.MenuData.UI_INFO.length; i++) b.appendInline("#SkyyMInfoBox", @PKG@.MenuData.UI_INFO[i]);']),
+    LF.join(['  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_INFOBOX);',
+             '  b.appendInline("#SkyyMInfoBox", @PKG@.MenuData.UI_INFONAME);',
+             '  b.appendInline("#SkyyMInfoBox", @PKG@.MenuData.UI_INFODESC);',
+             '  for (int i = 0; i < @PKG@.MenuData.UI_INFO.length; i++) b.appendInline("#SkyyMInfoBox", @PKG@.MenuData.UI_INFO[i]);',
+             '  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_GAP);',
+             '  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_GRIDWRAP);',
+             '  b.appendInline("#SkyyMGridWrap", @PKG@.MenuData.UI_GRID);']))
 
 # ---- FIX: never close the menu before a page command
 rep('ref_ = pool.makeClass(PKG + ".RefreshTask")', 'ref_ = pool.makeClass(PKG + ".RefreshTask")' + LF + 'clo_ = pool.makeClass(PKG + ".CloseTask")')

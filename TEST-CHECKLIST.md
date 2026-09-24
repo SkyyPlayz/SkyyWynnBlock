@@ -328,3 +328,17 @@ None left. The 10,000 starter coins are a real feature (kept).
 - [ ] Unequip the Furnace accessory while items are still queued. The Furnace tab should stay with no Queue buttons and 'accessory not equipped (queued items still finish)', and should disappear once everything is collected.
 - [ ] Regression checks from 0.6.8: bag page tabs, Pick up all / Deposit all, the auto-sweep, crafting at a real workbench from bags, the Craftable-only toggle, and '< Back to bags'.
 - [ ] as an ordinary player (not op): /sacks, /pd, /bags, /craft and /recipes all open
+
+## SkyyMenu 0.1.2 (built 2026-09-23 22:40, NOT deployed - needs Skyy's OK)
+- [ ] Open the menu (right-click the SkyWynn Menu item). It should be clearly bigger (about 1.4x) with the info box ABOVE the icons.
+- [ ] Hover the top icon (Your Profile). The whole tooltip should be on screen.
+- [ ] Click Pocket Dimension, then click the Craft tab in the bag page. The craft page must open (0.1.1 hung on "Loading...").
+- [ ] From the menu open: Crafting (click Craftable only + a tab), Bazaar (click a product), HUD editor (select a widget), Collections, Skills. Every button must react.
+- [ ] From the menu use a teleport entry (Island / Hub / Spawn / a warp). The menu should close and you should teleport.
+- [ ] A keep-open entry (e.g. a bank action) should leave the menu open with a status line.
+
+## SkyyClasses 0.1.4 (built 2026-09-23 22:40, NOT deployed - needs Skyy's OK)
+- [ ] As an Archer, hit a mob with a sword. A popup (notification toast) should show the sword icon, "You can't use this weapon" and "Only Warriors can use ...". The hit does no damage.
+- [ ] Keep hitting: at most one popup every 1.5 s, the chat line at most every 3 s.
+- [ ] With no class (fresh player, no SkyyProfiles), hit with a weapon: the popup title should be "Choose a class first".
+- [ ] Put a Kunai in the utility slot as a non-Assassin and hit: the popup text should mention the utility slot.
