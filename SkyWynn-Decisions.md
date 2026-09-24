@@ -3,7 +3,7 @@
 *Fill the ☐ DECISION column: **TAKE** / **SKIP** / **MODIFY (how)** / **LATER (which phase)**.*
 *"Draft call" = Claude's suggestion from the master plan — overrule freely.*
 
-**Already locked (don't re-decide):** public server • hand-built world • Archer/Warrior/Mage first, Assassin and Shaman later (Wynn's five; no Berserker) • death = 10–25% coin loss • clean-room code • name **SkyWynn** (quick reference); repo name stays **SkyyWynnBlock** • the call locks below. Ability-key casting is the standing input note from 2026-09-21. The magic system behind it is an open thread (batch 2), not a lock.
+**Already locked (don't re-decide):** public server • hand-built world on the server (the zone island chain is hand-built shared worlds there; solo generation is the planned **SkyyWorldGen** mod, 2026-09-24) • Archer/Warrior/Mage first, Assassin and Shaman later (Wynn's five stay). **Berserker is back on the roster, status PENDING** (2026-09-24 — details and timing wait on a talk with the builder; not slotted before or after Assassin/Shaman) • default **6 profiles**, with in-game ways to raise the cap (method TBD) • coin-bypass of collections is **tiered** (early game and the first half of mid game; late game those items cannot be bought or sold) • many items have level requirements (which level type is open) • **Garden is parked**; farming stays on the main islands for now • death = 10–25% coin loss • clean-room code • name **SkyWynn** (quick reference); repo name stays **SkyyWynnBlock** • the call locks below, as tightened by the 2026-09-24 change notes. Ability-key casting is the standing input note from 2026-09-21. The magic system behind it is an open thread (batch 2), not a lock.
 
 ## Call lock notes (2026-09-23)
 
@@ -11,7 +11,7 @@ Voice call, night of 2026-09-23. These override older draft text in this sheet a
 
 1. **Private island** — easy to read the old 3.1 line as a creative plot only. Locked: it is the progression home (minions, upgrades, co-op, size tiers) **and** free creative building. Building is free; progression systems still live on the island.
 2. **Leveling spine** — 1.7 and 7.1 drafted hub + level-gated open-world zones as the path. Locked: an **island chain**. One floating island per Hytale zone; that island's biomes ramp difficulty as you cross it; finish the zone's island before the next unlocks. Hub town stays the shared spawn / gathering / social point, not the main leveling world.
-3. **Classes** — Archer / Warrior / Mage first was already locked; Assassin and Shaman were only "confirm later." Locked: both come later, and both are wanted. Roster is Wynn's five (Warrior, Archer, Mage, Assassin, Shaman). Drop Berserker and any other non-Wynn name. Combat-only lock: the class locks the combat path; gathering stays open for everyone.
+3. **Classes** — Archer / Warrior / Mage first was already locked; Assassin and Shaman were only "confirm later." Locked that night: both come later, and both are wanted. Roster that night was Wynn's five (Warrior, Archer, Mage, Assassin, Shaman). The "drop Berserker" sentence is **reversed 2026-09-24** (change notes): Berserker is back on the roster, status PENDING. Combat-only lock still holds: the class locks the combat path; gathering stays open for everyone.
 4. **Combat skill** — 2.5 drafted a shared Combat skill, separate from Class Level. Locked: **no shared Combat skill.** Skills are per weapon / per class. Combat XP goes into the weapon skill of the equipped class.
 5. **Skill list** — keep the full SkyBlock-style tree **plus** extras (Smithing, Exploration, and the other non-SkyBlock rows on this sheet). Do not drop Smithing or Exploration because SkyBlock lacked them. Trim later.
 6. **Minions** — 3.3 was TAKE with no word on whether they are required. Locked: they live on the private island and are helpful, **not mandatory**. Nice AFK help, not required to progress.
@@ -31,12 +31,22 @@ Added after batch 1. Batch 1 stays in force. Where a line below names a batch 1 
 6. **Co-op islands** — 3.2 was TAKE. Locked: multiplayer. Players can **share and visit** each other's private islands.
 7. **Slayers** — batch 1 had filed them with side content. Locked: **core loop**, not side content. They are still not the leveling spine (that stays the island chain).
 8. **HOTM-style mini-trees** — 2.13 stays on the list. Locked: bring them in, **tied to the skill itself** (Mining levels unlock Mining's tree, and the same pattern for the others). **Not location-locked.**
-9. **Garden** — 3.8 was LATER. Locked: fold farming in. Some farming on the main islands (private island and the zone chain); **most farming is in the Garden.**
-10. **Coin-bypass** — 1.2 reaffirmed. Players can buy collection unlocks with coins early, at steep prices, until the midgame wall. Endgame recipes stay collection-locked.
-11. **Profiles** — 1.8 was LATER; 1.9 drafted multiple class slots on one account. Locked: full SkyBlock-style profiles. Swapping profile means a different island and different everything. **Profiles are how you select a class.** A new class is a **new profile and a new island from zero.** The batch 1 roster, phase order, and combat-only lock still apply inside a profile.
+9. **Garden** — 3.8 was LATER. Locked that night: fold farming in, with most farming in the Garden. **Parked 2026-09-24** (change notes): the Garden is on the back burner. Farming stays on the main islands for now.
+10. **Coin-bypass** — 1.2 reaffirmed that night as early, steep, off at the endgame wall. **Tightened 2026-09-24** (change notes): coins bypass collections in the early game and the first half of mid game; toward late game those items cannot be bought or sold. Many items also have level requirements. Exact cutoff and level type are open.
+11. **Profiles** — 1.8 was LATER; 1.9 drafted multiple class slots on one account. Locked: full SkyBlock-style profiles. Swapping profile means a different island and different everything. **Profiles are how you select a class.** A new class is a **new profile and a new island from zero.** The batch 1 roster, phase order, and combat-only lock still apply inside a profile. **2026-09-24:** the default cap is **6** profiles (raised from 4). In-game ways to raise it higher are wanted; the method is TBD. SkyyProfiles 0.1 still caps at 4 (code follow-up).
 12. **Name** — **SkyWynn** is the quick reference. **SkyyWynnBlock** stays the repo name.
 13. **UI** — 10.22 was a full UI build freeze until NoesisGUI. Locked: build the **best placeholders possible** and keep refining them. **Exception:** do not add buttons or custom UI on the **inventory screen** (Hytale will change that UI). Wait on the inventory screen only. F5/F6/F7 and the other QoL rows stay locked.
 14. **Magic system** — **open, not locked.** Wait to see how Hytale Chapter 1 handles runes before choosing the magic approach. Rows 9.1 and 9.2 are that open thread. This does not reopen the class roster, the combat-only lock, or powders-on-gear.
+
+## Change notes (2026-09-24, America/Denver)
+
+Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that line. These notes do not change any jar. Code follow-ups live in `HANDOFF.md` and `DESIGN-STATUS.md`.
+
+1. **Profile cap.** Default cap raised from 4 to **6** profiles. There will be in-game ways to raise it higher. **Open:** the method is TBD (not chosen here). SkyyProfiles 0.1 still uses `DEF_MAX_PROFILES = 4`. That is a code follow-up, not this pass. Rows 1.8 and 1.9.
+2. **Berserker is back.** Reverses the 2026-09-23 "no Berserker" / "drop Berserker" lock. The owner wants Berserker on the class roster. **Status: PENDING.** The owner needs to talk with their builder before details or timing are locked. This note does not design Berserker (weapons, skill name, ability tree) and does not place it before or after Assassin or Shaman. SkyyClasses 0.1.4 has no Berserker (removed in 0.1.2, when `ALLOW_SWITCH` was set false). Putting it back is future code work. Row 6.1. The Bloodrage crystal was re-pointed from Berserker to Shaman on 2026-09-23; it may point back at Berserker, pending (`SkyyAccessories-Plan.md`).
+3. **Coin-bypass is tiered.** Tightens row 1.2 and batch 2 item 10. Coins can bypass collections in the **early game** and the **first half of mid game**. Toward late game you hit a wall: those items can no longer be bought or sold on the bazaar / market, so that progression has to be earned. **Also locked:** many items will have level requirements. **Open:** the exact cutoff per collection and per tier; which level type gates an item (skill vs class vs combat level). Code follow-up only: SkyyCollections 0.2 still sells bypass on the older per-curve walls (`bypass.walls` = Bulk through V, Standard through IV, Rare through III, Elite never). That is not this cutoff, and it does not take items off the market. SkyyBazaar 0.1.1 has no late-game sell wall.
+4. **Zone island chain, two ways to build it.** The spine stays the zone island chain (batch 1 item 2, row 7.1): one floating island per Hytale zone, biomes ramp as you cross it, finish it before the next unlocks. Hub stays spawn / social. **Much of the chain will be server-side** (hand-built shared worlds). For **solo** players, a new planned mod uses Hytale's World Gen 2 to auto-generate the world as flying islands split by zone. Placeholder name **SkyyWorldGen** (name TBD). Status: **planned, not started.** **Open:** research on whether World Gen 2 can do this. Do not treat that research as done.
+5. **Garden parked.** Reverses batch 2 item 9 and the "most farming is in the Garden" reading of row 3.8. The Garden (dedicated farming island) moves to the back burner. Farming stays on the main islands for now (the private island and the zone chain).
 
 ---
 
@@ -45,14 +55,14 @@ Added after batch 1. Batch 1 stays in force. Where a line below names a batch 1 
 | # | Element | From | Draft call | ☐ DECISION |
 |---|---|---|---|---|
 | 1.1 | Collections (self-gathered counts → recipe unlocks) | SkyBlock | TAKE — the backbone | |
-| 1.2 | Coin-bypass of collection gates until mid-game wall | Skyy's rule | TAKE — steep prices, endgame = no bypass | ✔ KEEP — coins buy collection unlocks early, steep prices, until the midgame wall. Endgame stays collection-locked |
+| 1.2 | Coin-bypass of collection gates until mid-game wall | Skyy's rule | TAKE — steep prices, endgame = no bypass | ✔ MODIFY (2026-09-24) — **tiered.** Coins bypass collections in the early game and the first half of mid game. Toward late game those items cannot be bought or sold (bazaar/market); that progression is earned. Many items also have level requirements. **Open:** exact cutoff per collection/tier; level type (skill vs class vs combat). The 2026-09-23 "until the midgame wall" line is the older wording |
 | 1.3 | Multi-skill soft-gating (neglect a skill → held back) | Skyy's rule | TAKE | ✔ Soft gate **with a ceiling**: uneven progress is allowed; drift too far and gains slow until you catch up. Not a hard togetherness gate, and not unlimited neglect |
 | 1.4 | SkyBlock account level (whole-profile number) | SkyBlock | TAKE (cheap, good goalpost) | |
 | 1.5 | Class Level (char level → ability points) | Wynn | TAKE | |
 | 1.6 | Skill Points (STR/DEX/INT/DEF/AGI) + gear SP requirements | Wynn | TAKE — but maybe 5 stats is a lot on top of skills+abilities? | |
 | 1.7 | Level-gated world zones | Wynn | TAKE | ✔ MODIFY — not the spine. Replaced by the zone island chain (7.1). Hub is spawn / social only |
-| 1.8 | Profiles (multiple saves per account) | SkyBlock | LATER — public server may not want it | ✔ TAKE — full SkyBlock-style profiles. A swap is a different island and different everything |
-| 1.9 | Multiple class slots per account | Wynn | TAKE (replaces 1.8?) | ✔ MODIFY — the profile is the class selector. A new class is a new profile and a new island from zero. Not several classes on one island. Roster and combat-only lock (6.1) still apply |
+| 1.8 | Profiles (multiple saves per account) | SkyBlock | LATER — public server may not want it | ✔ TAKE — full SkyBlock-style profiles. A swap is a different island and different everything. **Default cap 6** (2026-09-24, raised from 4). In-game ways to raise it higher; method TBD. SkyyProfiles 0.1 still caps at 4 |
+| 1.9 | Multiple class slots per account | Wynn | TAKE (replaces 1.8?) | ✔ MODIFY — the profile is the class selector. A new class is a new profile and a new island from zero. Not several classes on one island. Roster and combat-only lock (6.1) still apply. Default cap **6** profiles (1.8); raising it in game is TBD |
 
 ## 2. SKILLS (unified list — confirm each)
 
@@ -64,6 +74,7 @@ Added after batch 1. Batch 1 stays in force. Where a line below names a batch 1 
 |---|---|---|
 | Archer, Warrior, Mage | **NOW** | Launch classes |
 | Assassin, Shaman | LATER | Stay greyed out |
+| Berserker | **PENDING** | Owner wants it back (2026-09-24). Details and timing wait on a talk with the builder. Not placed before or after Assassin/Shaman. Not in SkyyClasses 0.1.4 |
 | Mining, Foraging, Farming | **NOW** (live) | Each gets its own skill tree |
 | Acrobatics | **NOW** (live) | Skyy's mcMMO skill. Fall XP (Skyy 2026-09-23): the further you fall WITHOUT dying the more XP - jumping from heights is a real grind; no XP for water or any fall whose damage is negated (safe no-damage drops pay nothing) |
 | Archery, Swordsmanship, Sorcery | **NOW** (live) | Class weapon skills |
@@ -109,7 +120,7 @@ Added after batch 1. Batch 1 stays in force. Where a line below names a batch 1 
 | 3.5 | Minion hoppers (auto-sell) | SkyBlock | TAKE — but watch economy inflation on public | |
 | 3.6 | Minion slots earned by crafting unique minions | SkyBlock | TAKE | |
 | 3.7 | Minion items count toward collections | SkyBlock | TAKE (bazaar-bought never counts) | |
-| 3.8 | Garden (dedicated farming island) | SkyBlock | LATER | ✔ TAKE — some farming on the main islands; most farming is in the Garden |
+| 3.8 | Garden (dedicated farming island) | SkyBlock | LATER | ✔ **PARKED** (2026-09-24) — back burner. Farming stays on the main islands for now (private island and the zone chain). The 2026-09-23 "most farming is in the Garden" lock is reversed |
 | 3.9 | Island upgrades/size tiers | SkyBlock | TAKE | ✔ Part of the progression home |
 
 ## 4. ECONOMY
@@ -150,7 +161,7 @@ Added after batch 1. Batch 1 stays in force. Where a line below names a batch 1 
 
 | # | Element | From | Draft call | ☐ DECISION |
 |---|---|---|---|---|
-| 6.1 | Archer / Warrior / Mage v1 (locked) — Assassin & Shaman | Wynn | LATER — confirm both wanted eventually | ✔ LOCKED — launch Archer, Warrior, Mage; Assassin and Shaman later. Roster is Wynn's five only (no Berserker). Combat-only lock; gathering stays open. Class choice is a new profile (1.9) |
+| 6.1 | Archer / Warrior / Mage v1 (locked) — Assassin & Shaman | Wynn | LATER — confirm both wanted eventually | ✔ LOCKED, **Berserker reopened 2026-09-24** — launch Archer, Warrior, Mage; Assassin and Shaman later. Wynn's five stay. **Berserker is back on the roster, status PENDING** (owner wants it; details and timing wait on a talk with the builder; not slotted vs Assassin/Shaman). Combat-only lock; gathering stays open. Class choice is a new profile (1.9). SkyyClasses 0.1.4 has no Berserker |
 | 6.2 | Archetypes (3 themed sub-builds per class) | Wynn | v1: 1–2 archetypes per class, 3rd later | |
 | 6.3 | Ability tree size: Wynn has 70+ nodes/class | Wynn | ~25 nodes/class v1 — enough? | |
 | 6.4 | Mana / intelligence resource for abilities | Wynn | TAKE | |
@@ -164,7 +175,7 @@ Added after batch 1. Batch 1 stays in force. Where a line below names a batch 1 
 
 | # | Element | From | Draft call | ☐ DECISION |
 |---|---|---|---|---|
-| 7.1 | Hub town + level-gated zones (hand-built, locked) | Wynn | v1 scope: hub + how many zones? (draft: 3) | ✔ MODIFY — hub stays shared spawn / gathering / social. Spine = one floating island per Hytale zone; biomes ramp difficulty across that island; finish it before the next unlocks |
+| 7.1 | Hub town + level-gated zones (hand-built, locked) | Wynn | v1 scope: hub + how many zones? (draft: 3) | ✔ MODIFY — hub stays shared spawn / gathering / social. Spine = one floating island per Hytale zone; biomes ramp difficulty across that island; finish it before the next unlocks. **2026-09-24:** much of the chain is server-side (hand-built shared worlds). Solo players get a planned mod, **SkyyWorldGen** (name TBD), using World Gen 2 to auto-generate flying islands split by zone. Planned, not started. World Gen 2 capability is an open research item |
 | 7.2 | Quests with XP/item/unlock rewards | Wynn | TAKE — v1 target ~20 quests | |
 | 7.3 | Cinematic main-quest arc | Wynn | LATER — v1 side-quests only? | |
 | 7.4 | Keyed dungeons in-world + corrupted hard modes | Wynn | TAKE | ✔ MODIFY — story beats woven through the island chain. Extra / corrupted dungeons are side content, not the spine |
@@ -254,4 +265,4 @@ Added after batch 1. Batch 1 stays in force. Where a line below names a batch 1 
 | 11.3 | ... | | |
 
 ---
-*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not reopen it.*
+*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, and they split how the island chain is built. Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*

@@ -21,7 +21,7 @@ Unchanged by the call, still the minion design:
 - Slots earned by crafting unique minions
 - Minion items count toward collections; bazaar-bought items never do
 
-The Garden is in (row 3.8): most farming happens there, and some farming stays on the private island and the zone islands. Minions are not the Garden, and they are still not required.
+The Garden is **parked** (row 3.8, 2026-09-24): it is not where farming happens for now. Farming stays on the private island and the zone islands. Minions are not a stand-in for the Garden, and they are still not required.
 
 ## What this plan does not decide
 

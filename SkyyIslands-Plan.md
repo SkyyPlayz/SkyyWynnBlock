@@ -10,11 +10,11 @@ On the island:
 - Upgrades and size tiers
 - Co-op (shared island). Multiplayer: other players can **share and visit** this island.
 - Free building. Building is not a gated mode. Progression systems still run here.
-- Some farming. **Most farming is in the Garden** (its own island). The private island is not the main farm.
+- Farming stays here for now. **The Garden is parked** (2026-09-24). The dedicated farming island is on the back burner, so the private island and the zone islands hold farming until that changes. The 2026-09-23 "most farming is in the Garden" line is reversed.
 
 Teleport home stays. The hub is not this island.
 
-A **profile** owns this island. Swapping profile is a different island and different everything. Starting a new class starts a new profile and a new island from zero (`SkyyClasses-Plan.md`).
+A **profile** owns this island. Swapping profile is a different island and different everything. Starting a new class starts a new profile and a new island from zero (`SkyyClasses-Plan.md`). The default cap is **6** profiles (2026-09-24, raised from 4). In-game ways to raise it are TBD. SkyyProfiles 0.1 still caps at 4.
 
 ## What the world spine is
 
@@ -26,6 +26,8 @@ The main leveling path is a **zone island chain**, not hub + level-gated open-wo
 - Story-beat dungeons sit on this chain (`SkyyDungeons-Plan.md`). The chain is the spine; extra dungeons are not.
 
 **Hub** stays the shared spawn, gathering, and social point. `/hub` still leaves the private island for that town. The hub is not where you level through the zones.
+
+**How the chain is built (2026-09-24).** Much of it will be **server-side**: hand-built shared worlds (the line below about chain islands as shared worlds still holds for a server). For **solo** players, a new planned mod, **SkyyWorldGen** (name TBD), uses Hytale's World Gen 2 to auto-generate the world as flying islands split by zone. Status: planned, not started. Whether World Gen 2 can do that is open research. The spine rules above do not change either way.
 
 Parties and guilds are core-loop social systems (`SkyyGuilds-Plan.md`); they are not an islands feature, but the hub is where that gathering happens.
 
@@ -71,4 +73,4 @@ Spike plan: `/island` (create or load + teleport), `/hub` (exitInstance), `/isla
   mob spawning, biome, ...): spec in research/Island-Settings-Spec.md, build = SkyyIslands 0.5.
 - Requested: /island reset (wipe + rebuild from the template with a fresh starter kit); resend chunks after the arrival re-tint.
 - Fixed in 0.4.5: the starter kit chest on new islands.
-- Chain islands will be SHARED worlds (like the SkyBlock hub / the Wynncraft world); only your own island is private.
+- Chain islands on a server will be SHARED worlds (like the SkyBlock hub / the Wynncraft world); only your own island is private. Solo generation of that same chain is the planned SkyyWorldGen mod (above), not a second spine.

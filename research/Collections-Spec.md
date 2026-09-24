@@ -2,6 +2,7 @@
 
 *Written 2026-09-23 by the research workflow (writer for "collections"). Research only: no build script, mod folder, save or game file was changed.*
 *Revised 2026-09-23 after the verifier reports: SkyBlock facts tightened (section 1), Parent-merge method (2.1), Bark and Scraper (2.3, 3.2), livestock-harvest gap (2.5), bench filter by id (4.3), 0.2 reward scope + ore line (4.3), bypass examples (4.4), leaderboard design (5.5), migration moved to `start()` (6).*
+*Design note 2026-09-24: the coin-bypass lock is now tiered (early game and the first half of mid game; toward late game those items cannot be bought or sold). Section 4.4's per-curve walls are what SkyyCollections 0.2 shipped, not the new lock. Exact cutoffs are open. This file is still a spec; it does not change the jar.*
 *Builds on SkyyCollections 0.1.5 (`SkyyCollections/build_skyycollections_0.1.5.py`, per-profile storage, built, not deployed). Suggested path: a new `tools/coll_0_2_patch.py` that generates `build_skyycollections_0.2.py` from 0.1.5, the same way the other mods are patched.*
 
 **Skyy's call (2026-09-23):** "for collections we track the items you collect, not the broken item. so we wouldn't track bushes, we would track fiber and sticks. logs (of the different types.) stone, copper, iron, berries, wheat etc." and "look at how hypixel skyblock does collections."
@@ -26,7 +27,7 @@
    - lump sums of gathering-skill XP through `skill:fn:addxp`
    - a collection score
 
-   Coin-bypass (a design lock) buys a tier's **recipe unlocks only**, at steep prices, and never past a per-curve wall.
+   Coin-bypass buys a tier's **recipe unlocks only**, at steep prices. **Design lock as of 2026-09-24:** that bypass is allowed in the early game and the first half of mid game. Toward late game those items can no longer be bought or sold (bazaar/market). The per-curve walls below (Bulk V / Standard IV / Rare III / Elite never) are what 0.2 shipped under the older lock, not the new cutoff. The exact cutoff per collection and tier is open. Many items will also have level requirements; which level type (skill vs class vs combat) is open.
 6. **The auto-unlock rule goes off by default.** With correct item counts, Plant Fiber at tier I would unlock up to 119 recipes. Recipes that ask for a resource type (113 recipes use `Wood_Trunk`) are invisible to it. VERIFIED from Assets.zip.
 7. **Migration:** old counts are converted only where the old block gives exactly one known item. Skyy's file becomes **Cobblestone 22, Ash Log 5**. Everything else (bushes, grass, gravel, the torch) cannot be converted and restarts at 0. The old files are kept in `counts-0.1/`. The migration runs in `start()`, after the game assets have loaded; in `setup()` every block lookup would fail (section 6). VERIFIED from Skyy's server log.
 
@@ -43,7 +44,7 @@ Summarised in my own words. The official wiki (wiki.hypixel.net) shut down in Ju
 - **Tiers:** each collection has about 9 to 12 numbered tiers. Every tier gives +4 SkyBlock XP. VERIFIED, re-fetched. Tiers also give one or more of: a recipe (a minion at tier I, then armor, sacks, accessories, utility items), a lump of skill XP at certain tiers, an NPC trade, an enchant-cost discount or a stat. VERIFIED.
 - **Co-op:** collections are shared by the whole co-op profile, and a recipe one member unlocks is unlocked for everyone. Skills stay per player. VERIFIED, re-fetched ([Co-op](https://hypixelskyblock.minecraft.wiki/w/Co-op)).
 - **Menu:** `/collections` or the SkyBlock Menu has three layers: category icons, then an item grid for the category, then one page per collection with its tier list. VERIFIED (research notes). The glass-pane colours (green done, yellow current, red locked) come from the research notes and were **not** re-confirmed. UNVERIFIED.
-- **Coin-bypass:** no SkyBlock source checked describes paying coins to skip a collection tier. UNVERIFIED (absence of evidence, not a positive source). The SkyWynn coin-bypass is Skyy's own design lock, and that lock is VERIFIED (`HANDOFF.md` batch 2 item 10).
+- **Coin-bypass:** no SkyBlock source checked describes paying coins to skip a collection tier. UNVERIFIED (absence of evidence, not a positive source). The SkyWynn coin-bypass is Skyy's own design. The 2026-09-23 wording ("early, steep, off at the endgame wall") is tightened on 2026-09-24: early game and the first half of mid game only, then a buy-and-sell wall. See `SkyWynn-Decisions.md` change notes and row 1.2.
 
 | Collection (category) | Tier thresholds | Reward shape (highlights) | Status |
 |---|---|---|---|
@@ -447,13 +448,17 @@ All UNVERIFIED `[SKYY?]`.
 - With correct item counts, Plant Fiber at tier I would unlock every recipe that uses fiber and has no other started input: up to 119 recipes. Sticks: 28, Tree Sap: 27.
 - `MaterialQuantity.getItemId()` is null for resource-type inputs (113 recipes take `ResourceTypeId: Wood_Trunk`), so the rule misses them anyway.
 
-### 4.4 Coin-bypass (design lock: "early, steep, off at the endgame wall")
+### 4.4 Coin-bypass
 
-The design lock is VERIFIED (`HANDOFF.md` batch 2 item 10; `SkyWynn-Decisions.md` 1.2). **Nothing is built yet.** VERIFIED: grep `bypass` → zero hits in any build script.
+**Current design lock (2026-09-24), not yet in the jar:** coins can bypass collections in the **early game** and the **first half of mid game**. Toward late game those items can no longer be **bought or sold** (bazaar/market), so that progression is earned. Many items will have level requirements. **Open:** the exact cutoff per collection and per tier, and which level type gates an item (skill vs class vs combat level). Do not treat the numbers in this section as that cutoff.
 
-**Rules:**
+**What SkyyCollections 0.2 actually shipped** (code follow-up, do not edit the jar from this spec): bypass is on, and it still uses the older per-curve walls (`bypass.walls=5,4,3,0`: Bulk through V, Standard through IV, Rare through III, Elite never). That is wider than "early + first half of mid," and it does not remove items from the bazaar. SkyyBazaar 0.1.1 has no late-game sell wall. The paragraph that used to say "nothing is built yet" is out of date: 0.2's bypass page is live (HANDOFF: Cobblestone "Buy tier III unlocks").
+
+The rules below are the **0.2 implementation** of the older lock. They stay here so the built behavior is documented. They are not the 2026-09-24 lock.
+
+**Rules (0.2, older lock):**
 - **What you buy:** only the next tier's **recipe unlocks**. Buying does not raise the count, does not pay that tier's coins/XP/score, and does not count for leaderboards. The tier shows as **BOUGHT** (amber). When the real count later passes the threshold, the tier becomes DONE and pays its normal rewards once, through `_paid`.
-- **Who can buy:** the collection must be discovered (at least 1 collected). Tiers go one at a time; the previous tier must be done or bought. The tier must be at or below the curve's **wall**: Bulk ≤ V, Standard ≤ IV, Rare ≤ III, Elite never `[SKYY?]`. A per-collection flag `nobypass` exists for future endgame lines.
+- **Who can buy:** the collection must be discovered (at least 1 collected). Tiers go one at a time; the previous tier must be done or bought. The tier must be at or below the curve's **wall**: Bulk ≤ V, Standard ≤ IV, Rare ≤ III, Elite never. Those numbers are the 0.2 config. They are not the 2026-09-24 cutoff (that one is open, above). A per-collection flag `nobypass` exists for lines that should never be buyable.
 - **Price:**
   ```
   price = max(500, ceil(missing × unit × 5))
@@ -677,7 +682,7 @@ Setup: deploy SkyyCollections 0.2 with the rest of the set. Watch the first join
 - [ ] **T14 Tier I:** `/collections give Wheat 50` (admin), or gather for real. You get the gold "COLLECTION UP Wheat I" line and +50 coins, and the Crude Sickle shows in /craft → Collections and crafts there without a Farming Bench. Then `/collections give Cobblestone 500` and craft Stone Brick from the Collections tab (a `StructuralCrafting` recipe, 4.3).
 - [ ] **T15 Skill XP:** at tier III you get "+500 Farming XP" if SkyySkills allows gathering skills in `bridge.addxp.skills`. Otherwise the log says it is owed and it pays after that change.
 - [ ] **T16 Page flow:** Farming card → grid (big text, icons, bars) → click Wheat → tier list with DONE/NEXT/LOCKED colours → Back → the same grid page → Home → Close. Click fast many times: every click responds and nothing sticks on Loading. Open it from the SkyWynn Menu too; if that hangs, it is the known SkyyMenu bug, not this page.
-- [ ] **T17 Coin-bypass:** with 5,000 coins and Iron at 30, click "Buy Tier II unlocks" once (confirm text), then again. Coins drop by the price, the tier shows BOUGHT, and Iron stays at 30. No coins or XP are paid for that tier until 100 are really gathered. You cannot buy past the wall (Standard IV).
+- [ ] **T17 Coin-bypass (tests SkyyCollections 0.2's older walls, not the 2026-09-24 tiered lock):** with 5,000 coins and Iron at 30, click "Buy Tier II unlocks" once (confirm text), then again. Coins drop by the price, the tier shows BOUGHT, and Iron stays at 30. No coins or XP are paid for that tier until 100 are really gathered. On 0.2 you cannot buy past the shipped wall (Standard IV). The 2026-09-24 rule (early + first half of mid game, then no buy and no sell) is not what this test checks, and it is not built.
 - [ ] **T18 Persistence:** restart the server. Counts, paid tiers and bought tiers remain.
 - [ ] **T19 Profiles** (once SkyyProfiles is deployed): switch profile. Counts belong to the new profile, and /craft → Collections follows within about 1 s.
 - [ ] **T20 Two players:** each has their own counts; A's breaks never move B's page.
@@ -698,7 +703,7 @@ Setup: deploy SkyyCollections 0.2 with the rest of the set. Watch the first join
 2. Rock grouping (Cobblestone, Sandstone ×3 colours, Shale, Slate, Basalt, Volcanic, Marble, Quartzite, Limestone), and Dirt not being a collection.
 3. The curve thresholds, the coin table and the skill XP lumps. Combat paying double coins instead of XP.
 4. Boom Powder and Wool in Combat (matching the bags) or in Farming.
-5. Coin-bypass walls (Bulk V / Standard IV / Rare III / Elite none) and the ×5 Bazaar price.
+5. Coin-bypass. The 0.2 walls (Bulk V / Standard IV / Rare III / Elite none) and the ×5 Bazaar price are what shipped. The 2026-09-24 lock replaces the wall with a tiered cutoff (early game + first half of mid game, then no buy and no sell) plus level requirements on many items. Exact cutoff per collection/tier, and skill vs class vs combat level, are open. Do not retune 0.2 from this line until those are answered.
 6. Whether the SkyySkills double drops count (via `coll:fn:add`, the SkyBlock-like choice).
 7. Classless kills count: yes by default.
 8. SkyySacks follow-up: Medium/Large bags only through collections.

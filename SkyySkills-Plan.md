@@ -13,7 +13,7 @@ Keep the full SkyBlock-style tree, **plus** extras. Trim later. Do not drop Smit
 
 **HOTM-style mini-trees** are in, and each one is **tied to its skill**. Mining levels unlock Mining's tree. The same pattern for the other gathering skills. They are not locked to a zone or a mine you have to stand in. Mining can still be the first tree we build (row 2.13).
 
-**Farming** stays a skill. Some of it happens on the private island and on the zone islands. **Most farming is in the Garden** (`SkyyIslands-Plan.md`).
+**Farming** stays a skill. It happens on the private island and on the zone islands. **The Garden is parked** (2026-09-24, `SkyyIslands-Plan.md`): the dedicated farming island is on the back burner, so it is not where farming lives for now.
 
 Level cap 100 for every skill is an existing engineering lock in `HANDOFF.md`. This plan does not retune per-level perks.
 
@@ -23,6 +23,7 @@ Level cap 100 for every skill is an existing engineering lock in `HANDOFF.md`. T
 |---|---|---|
 | Archer, Warrior, Mage | **NOW** | Launch classes |
 | Assassin, Shaman | LATER | Stay greyed out |
+| Berserker | **PENDING** | Owner wants it back (2026-09-24). Details and timing wait on a talk with the builder. Not placed before or after Assassin/Shaman. No weapon skill named here. Not in SkyyClasses 0.1.4 |
 | Mining, Foraging, Farming | **NOW** (live) | Each gets its own skill tree |
 | Acrobatics | **NOW** (live) | Skyy's mcMMO skill. Fall XP (Skyy 2026-09-23): the further you fall WITHOUT dying the more XP - jumping from heights is a real grind; no XP for water or any fall whose damage is negated (safe no-damage drops pay nothing) |
 | Archery, Swordsmanship, Sorcery | **NOW** (live) | Class weapon skills |
@@ -49,6 +50,7 @@ XP from fighting goes into the **weapon skill of the equipped class**:
 - Mage → Sorcery
 - Assassin → Assassination (later)
 - Shaman → that class's weapon skill (later; name set with the class)
+- Berserker → not named. Status PENDING (2026-09-24). Do not add a weapon skill until the owner locks the class with the builder
 
 Class Level (ability points) is not this skill. The `SkyySkills` 0.3 spike still stores per-class combat XP under `Combat.<Class>`. Those keys stand in for the weapon skills until a code pass renames them. There is still no single Combat skill that every class shares.
 

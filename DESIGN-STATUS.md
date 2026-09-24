@@ -1,4 +1,4 @@
-# SkyWynn - design status (2026-09-24)
+# SkyWynn - design status (2026-09-24, owner decisions the same day)
 
 A plain-language snapshot for planning sessions. SkyWynn is a Hytale server pack that blends Hypixel SkyBlock (private island, skills,
 collections, bags, bazaar, accessories) with Wynncraft (classes, a chain of zone islands, quests, dungeons). It is built as standalone
@@ -10,10 +10,15 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
 ## What a player can do (live now or in the next deploy)
 
 **Profiles and classes**
-- Up to 4 profiles per player, SkyBlock style. Each profile is a full separate save: its own class, island, inventory, coins, bank, bags,
+- Design default is **6 profiles** per player (2026-09-24, raised from 4), SkyBlock style. There will be in-game ways to raise that cap;
+  the method is not chosen yet. **Code follow-up:** SkyyProfiles 0.1 still caps at 4 (`DEF_MAX_PROFILES = 4`). Do not change the jar in a docs pass.
+- Each profile is a full separate save: its own class, island, inventory, coins, bank, bags,
   skills, collections, accessories and skill trees. Creating a profile is where you pick your class (Archer, Warrior or Mage), and it is locked.
 - Switching profiles swaps the inventory and sends you to that profile's island; it is crash-safe.
 - Classes lock the combat path only: each class can only fight with its own weapons (a popup shows the weapon and why). Gathering is open to all.
+- Launch classes in the jar: Archer, Warrior, Mage. Assassin and Shaman are later. **Berserker is back on the roster, status PENDING**
+  (owner wants it; details and timing wait on a talk with the builder — not placed before or after Assassin/Shaman).
+  **Code follow-up:** SkyyClasses 0.1.4 has no Berserker. 0.1.2+ already set `ALLOW_SWITCH=false` (the paid class switch is gone). Adding Berserker is future code, not a return to the 0.1.1 spike.
 
 **Islands**
 - A private island per profile (created on first `/island`), a shared hub, visiting and co-op invites. Visitors can look but not touch.
@@ -34,8 +39,12 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
   free respec. The Exploration tree is a first draft (most slots "coming later").
 
 **Collections (SkyBlock style, `/collections`)**
-- About 100 item collections (logs per wood type, stone, ores, crops, mob drops); tiers pay coins, skill XP and recipe unlocks; early tiers
-  can be bought with coins (the coin bypass).
+- About 100 item collections (logs per wood type, stone, ores, crops, mob drops); tiers pay coins, skill XP and recipe unlocks.
+- **Coin-bypass is tiered (2026-09-24):** coins can bypass collections in the early game and the first half of mid game. Toward late game
+  those items can no longer be bought or sold (bazaar/market), so that progression is earned. Many items will also have level requirements.
+  **Open:** the exact cutoff per collection and tier, and which level type gates an item (skill vs class vs combat level).
+  **Code follow-up:** SkyyCollections 0.2 still sells bypass on the older per-curve walls (Bulk through V, Standard through IV, Rare through III,
+  Elite never). That is not the new cutoff, and it does not take items off the market. SkyyBazaar 0.1.1 has no late-game sell wall.
 
 **Bags, crafting and economy**
 - Magic bags (Mining, Foraging, Farming, Combat) pool matching pickups; `/craft` crafts from inventory + bags with tabs Crafting, Smithing
@@ -64,7 +73,13 @@ Eventually every mod in the pack is SkyWynn's own; third-party mods (crossbow ti
 ## Later (needs the server / the island chain)
 Discovery and secret spots, island arrival, dungeons, Echo Shards (void shards; half = no coin loss when falling into the void, all = creative
 flight on your island), island completion, zone hunts, town warps (starter town free, others via quests / scrolls), lootrun camps, map reveal,
-cosmetics, Hunting, Fishing, Taming / pets, Dungeoneering, territory war, a world gen 2 floating-islands world.
+cosmetics, Hunting, Fishing, Taming / pets, Dungeoneering, territory war.
+
+**Island chain (2026-09-24).** The spine is unchanged: one floating island per zone. Much of it will be **server-side** (hand-built shared worlds).
+For **solo** players, a new mod is planned: **SkyyWorldGen** (name TBD). It would use Hytale's World Gen 2 to auto-generate the world as flying
+islands split by zone. Status: planned, not started. Whether World Gen 2 can do that is an open research item.
+
+**Garden is parked.** The dedicated farming island is on the back burner. Farming stays on the main islands (private island and the zone chain) for now.
 
 ## Open questions (Skyy + design)
 1. **Bags:** should the Mining bag upgrades come from the Cobblestone or the Iron collection? Which collection grows the Foraging, Farming and
@@ -80,6 +95,12 @@ cosmetics, Hunting, Fishing, Taming / pets, Dungeoneering, territory war, a worl
 7. **Exploration:** what else should level it past about level 25 (it is one-time only for now)? The rest of the Exploration tree.
 8. **Accessories:** Endurance / Intelligence talismans flat or percent; the accessory power questions in `SkyyAccessories-Plan.md`.
 9. **Classes:** Assassin and Shaman design (Shaman's weapons and skill name); the ability system waits on Hytale's Chapter 1 runes.
+   **Berserker** is a separate pending item (2026-09-24): the owner wants it back and needs to talk with the builder before any design or
+   timing. Do not invent it, and do not assume it ships before or after Assassin/Shaman.
+10. **Profile cap:** how does a player raise the cap above the new default of 6? (Method TBD. Code still enforces 4.)
+11. **Coin-bypass cutoff:** where, per collection and per tier, does the late-game wall start (no more buy or sell on the bazaar/market)?
+    Which level type gates items — skill, class, or combat level?
+12. **World Gen 2:** can it auto-generate a world of flying islands split by zone? That research gates SkyyWorldGen. Not started.
 
 ## Not yet seen in game (first things to watch in the next test)
 Rolls on item tooltips, the HUD glow and colours, Party and Guild widgets, the island starter kit fix, Exploration chests / titles / zones,

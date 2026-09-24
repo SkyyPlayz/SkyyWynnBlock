@@ -8,6 +8,7 @@ Dungeons on the way up are **story beats** woven through the **island chain** (`
 - The chain is one floating island per Hytale zone, with biomes that ramp difficulty as you cross it.
 - A zone's story-beat dungeon is part of crossing that island, not a separate leveling world.
 - Finish the zone's island before the next unlocks. The beat sits on that path.
+- **2026-09-24:** much of the chain is server-side (hand-built shared worlds). Solo players are planned to get the same chain from **SkyyWorldGen** (name TBD, not started), which would auto-generate flying islands split by zone with World Gen 2. That does not change the dungeon spine. World Gen 2 capability is still open research.
 
 After the **last** island there is **one** endgame **capstone** dungeon. That is the only dungeon that closes the spine. Row 7.5 (the floor-style / Catacombs-like dungeon) is this capstone, not a second climb.
 

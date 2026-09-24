@@ -1,4 +1,7 @@
 # SKYWYNN MOD ROSTER — every module we need, and what's buildable today
+
+> **Stale as of 2026-09-22.** Prefer `DESIGN-STATUS.md` and `HANDOFF.md` for what is built, what is locked, and current versions. The tiers and statuses below were not refreshed. One 2026-09-24 addition is recorded at the bottom so it is not only in the newer docs.
+
 *2026-09-22. Each ships standalone-capable (zero external deps, version-first names) and slots into the pack later.
 "NOW" = no dependency on the NoesisGUI UI rework, the rune system, Chapter 2 crafting rework, or the hand-built world.*
 
@@ -49,7 +52,7 @@
 | 25 | **SkyyQuests** | Quest engine + tracker (uses SkyyNav + engine Objectives system) + voiced NPCs |
 | 26 | **SkyyGuilds** | Guilds/territory (PartyPro reference; builds ON SkyyParty) |
 | 27 | **SkyyMayors** | Rotating elected global buffs + event calendar |
-| 28 | World/zones/hub | The hand-built world itself (build team) |
+| 28 | World/zones/hub | The hand-built world itself (build team). Server chain only — solo generation is SkyyWorldGen at the bottom (2026-09-24), not this row |
 
 ## Internal (not a mod): **SkyyCore**
 Shared code (player-data store, UI doc builder w/ the single-line rules, ledger API, config loader) — **shaded into every jar** per your no-external-deps rule. One codebase, zero runtime deps.
@@ -68,3 +71,13 @@ Shared code (player-data store, UI doc builder w/ the single-line rules, ledger 
 9. Re-evaluate the WAIT tier the moment Chapter 1 / NoesisGUI / runes hit release.
 
 *Everything in Tiers 1–2 is also a legitimately useful standalone public mod — each one is Mod Browser marketing for the server later.*
+
+---
+
+## Added 2026-09-24 (not part of the stale tier list above)
+
+| Mod | What | Status |
+|---|---|---|
+| **SkyyWorldGen** (name TBD) | Solo path for the zone island chain. Uses Hytale's World Gen 2 to auto-generate the world as flying islands split by zone. The server chain stays hand-built shared worlds. | **Planned, not started.** Whether World Gen 2 can do this is open research. See `SkyWynn-Decisions.md` change notes, `SkyyIslands-Plan.md`, `DESIGN-STATUS.md`. |
+
+Mods that exist in `HANDOFF.md` and are missing from the 2026-09-22 tables (Profiles, Guilds, Trees, Cooking, Exploration, and later versions of the mods above) are tracked there and in `DESIGN-STATUS.md`, not by rewriting this file.

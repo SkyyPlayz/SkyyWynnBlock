@@ -10,7 +10,7 @@ Our own gear line that replaces third-party item mods and carries SkyWynn's core
 ## What it covers
 | Line | Style | Ideas to design |
 |---|---|---|
-| Weapons | Wynncraft | Class weapons (Archer: shortbow, crossbow; Warrior: sword, longsword, spear; Mage: staff; later Assassin daggers/kunai, Shaman TBD), rolled IDs (damage, strength, crit, element damage), powder slots, rarity tiers, level / skill requirements |
+| Weapons | Wynncraft | Class weapons (Archer: shortbow, crossbow; Warrior: sword, longsword, spear; Mage: staff; later Assassin daggers/kunai, Shaman TBD; Berserker is PENDING as of 2026-09-24 and has no weapon list here), rolled IDs (damage, strength, crit, element damage), powder slots, rarity tiers, level requirements |
 | Tools | Hypixel SkyBlock | Pickaxes, axes, hoes (and later rods) with mining/foraging/farming speed and fortune, reforges, tool tiers tied to the zone islands |
 | Armor | Both | Sets with stats, rarity, reforges, element defence; set bonuses later |
 
@@ -38,5 +38,6 @@ Our own gear line that replaces third-party item mods and carries SkyWynn's core
 2. Rarity tiers and their colours (SkyyRolls today: Common to Legendary).
 3. How reforges are obtained and applied (a reforge bench? reforge stones from Mining/Combat?), and their cost.
 4. Powders: elements, tiers, how many slots per item, how they drop.
-5. Gear progression per zone island, and level / skill requirements.
-6. Whether rolled items can be sold on the bazaar (stackable items only today) or need an auction house.
+5. Gear progression per zone island. **Level requirements are locked (2026-09-24):** many items will have them. **Open:** which level type gates an item (skill vs class vs combat). Do not pick one in this draft.
+6. The late-game bazaar/market wall (2026-09-24): toward late game, items past the collection cutoff cannot be bought or sold. Which items, and how that meets an auction house, is still open.
+7. Whether rolled items can be sold on the bazaar (stackable items only today) or need an auction house. The sell wall in 6 is a separate lock: late-game collection items come off both buy and sell.

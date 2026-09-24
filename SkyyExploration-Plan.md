@@ -51,5 +51,8 @@ Skyy: build the backbone for the island checklist now; the checklist content its
 8. **No /fly on the main exploration islands**; teleporting does not block Exploration XP.
 9. **Shared worlds** like the SkyBlock hub and the Wynncraft world; only your own island is private.
 
-## Future project (Skyy)
-Use Hytale's world gen 2 system to make a mod that generates the world as a series of floating islands.
+## Future project (Skyy) — named 2026-09-24
+
+**SkyyWorldGen** (name TBD). Status: **planned, not started.**
+
+The zone island chain stays the leveling spine. Much of it will be server-side: hand-built shared worlds. This mod is the **solo** path. It uses Hytale's World Gen 2 to auto-generate the world as flying islands split by zone. Research on whether World Gen 2 can do that is an open item. Do not treat the generator as designed or as a replacement for the hand-built server chain.

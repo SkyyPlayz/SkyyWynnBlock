@@ -197,7 +197,7 @@ The key is the recipe's **primary output id**. This is base XP, before the globa
 
 ### 4.3 Time estimate (UNVERIFIED throughput)
 
-Assumed pace: about 1,800 plant items gathered per hour from a Garden patch with bags. That gives about 200 Lesser, 190 Small chains or 100 normal / Greater chains per hour (plant-limited).
+Assumed pace: about 1,800 plant items gathered per hour from a planted patch with bags. (The word "Garden" here was a SkyBlock-style patch, not a SkyWynn island. SkyWynn's Garden island is parked as of 2026-09-24; farming stays on the main islands.) That gives about 200 Lesser, 190 Small chains or 100 normal / Greater chains per hour (plant-limited).
 
 | To reach | Hours |
 |---|---|
