@@ -12,6 +12,9 @@ offline progress and an output slot (Skyy_SkyySacks/processing/<uuid>.properties
 carry the pkey; pool/exemption/processing/BagMirror caches keyed by the pkey String; sweep, pages, bench link and processing resolve
 the pkey once per run (a bench mirror keeps its key and is retired into its own pool on a switch); 3s settle window after a switch
 (no sweep, page item moves refused); ProcTask checks profile:epoch:<uuid> every second (flush saves, log, notice on an open page).
+Review fixes: the bench link uses settledKey and parks the mirror (bag materials off the open bench) while a switch settles; the craft
+page never builds a mirror for an unsettled key; world-thread pool saves go through SackPool.saveSoon (SackSaver thread); PROFILE log
+lines are queued (CraftLog.later) and written by the SackSaver.
 Derived by tools/sacks_0_7_2_patch.py. Without SkyyProfiles pkey = uuid = profile 1: same files, same behaviour.
 """
 import sys, os
@@ -1003,11 +1006,6 @@ public void run() {{
 
 sav.addInterface(pool.get("java.lang.Runnable"))
 sav.addConstructor(CtNewConstructor.make("public SackSaver() { }", sav))
-sav.addMethod(CtNewMethod.make(f"""
-public void run() {{
-  try {{ {PKG}.ProcStore.flushDirty(); }} catch (Throwable t) {{ }}
-  try {{ {PKG}.SackPool.flushDirty(); }} catch (Throwable t) {{ }}
-}}""", sav))
 
 cmp.addInterface(pool.get("java.util.Comparator"))
 cmp.addConstructor(CtNewConstructor.make("public CountCmp() { }", cmp))
@@ -1060,6 +1058,42 @@ public static synchronized void line(String k, String text) {
   } catch (Throwable t) { }
 }""", clog))
 
+# 0.7.2 review fix: log lines from world-thread hot paths (a profile switch, a retired or parked bench mirror) are queued here
+# (timestamped when queued) and written by the SackSaver on the scheduler thread - no file append inside a world-thread task.
+clog.addField(CtField.make("public static final java.util.concurrent.ConcurrentLinkedQueue PENDING = new java.util.concurrent.ConcurrentLinkedQueue();", clog))
+clog.addMethod(CtNewMethod.make("""
+public static void later(String k, String text) {
+  PENDING.offer(new java.util.Date().toString() + " " + k + " " + text + System.lineSeparator());
+}""", clog))
+clog.addMethod(CtNewMethod.make("""
+public static synchronized void drain() {
+  try {
+    Object o = PENDING.poll();
+    if (o == null) return;
+    StringBuilder sb = new StringBuilder();
+    while (o != null) { sb.append((String) o); o = PENDING.poll(); }
+    if (FILE == null) return;
+    java.nio.file.Files.createDirectories(FILE.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Files.write(FILE, sb.toString().getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND });
+  } catch (Throwable t) { }
+}""", clog))
+# SackSaver.run() (constructor added above): processing files, pool files, then the queued log lines - all on the scheduler thread.
+sav.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{ {PKG}.ProcStore.flushDirty(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.SackPool.flushDirty(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.CraftLog.drain(); }} catch (Throwable t) {{ }}
+}}""", sav))
+# 0.7.2 review fix: pool saves from world-thread code (Sacks page clicks, bench link, instant craft, mirror retire/park) mark the
+# key dirty and run the SackSaver on the scheduler thread right away (same pattern as CraftPage.saveSoon for processing); only
+# when the scheduler refuses the task (server shutting down) is it run inline.
+sp.addMethod(CtNewMethod.make(f"""
+public static void saveSoon(String k) {{
+  if (k != null) DIRTY.put(k, Boolean.TRUE);
+  try {{ {HSV}.SCHEDULED_EXECUTOR.execute(new {PKG}.SackSaver()); }}
+  catch (Throwable t) {{ new {PKG}.SackSaver().run(); }}
+}}""", sp))
+
 # CraftPage fields + constructor first (SacksPage references it)
 cpg.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap ONLY = new java.util.concurrent.ConcurrentHashMap();", cpg))
 cpg.addField(CtField.make("public String tab;", cpg))
@@ -1073,6 +1107,7 @@ cpg.addField(CtField.make("public long liveAt;", cpg))
 cpg.addField(CtField.make("public String[] fuelIds;", cpg))
 cpg.addField(CtField.make("public String key;", cpg))
 cpg.addField(CtField.make("public String noticeKey;", cpg))
+cpg.addField(CtField.make("public boolean settling;", cpg))
 cpg.addField(CtField.make("public static java.util.HashSet BENCHIDS;", cpg))
 cpg.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap ACCWARN = new java.util.concurrent.ConcurrentHashMap();", cpg))
 cpg.addConstructor(CtNewConstructor.make(f"""
@@ -1209,7 +1244,7 @@ public void handleDataEvent({REF} ref, {ST} st, String data) {{
       if (n == 0) continue;
       int added = {PKG}.SweepTask.withdraw(player, k, this.cells[i], n);
       this.info = added > 0 ? ("took " + added + " " + this.cells[i]) : "storage is full";
-      {PKG}.SackPool.save(k);
+      {PKG}.SackPool.saveSoon(k);
       rebuild();
       return;
     }}
@@ -1221,7 +1256,7 @@ public void handleDataEvent({REF} ref, {ST} st, String data) {{
         do {{ added = {PKG}.SweepTask.withdraw(player, k, this.cells[i], 64); total += added; guard++; }} while (added > 0 && guard < 64);
       }}
       this.info = total > 0 ? ("picked up " + total + " items") : "storage is full";
-      {PKG}.SackPool.save(k);
+      {PKG}.SackPool.saveSoon(k);
       rebuild();
       return;
     }}
@@ -1229,7 +1264,7 @@ public void handleDataEvent({REF} ref, {ST} st, String data) {{
       {PKG}.SackPool.clearExempt(k);
       int moved = {PKG}.SweepTask.sweep(player, k, this.cat, true);
       this.info = moved > 0 ? ("deposited " + moved + " items") : "nothing to deposit (or sack full)";
-      {PKG}.SackPool.save(k);
+      {PKG}.SackPool.saveSoon(k);
       rebuild();
       return;
     }}
@@ -1404,9 +1439,59 @@ public static {PKG}.BagMirror retireOther(java.util.UUID u, String k) {{
   {PKG}.BagMirror m = ({PKG}.BagMirror) MIRRORS.remove(old);
   if (m == null) return null;
   int c = m.sync();
-  if (c > 0) {PKG}.SackPool.save(old);
-  {PKG}.CraftLog.line(old, "PROFILE bench mirror retired - active key now " + k + " consumed=" + c);
+  {PKG}.CraftLog.later(old, "PROFILE bench mirror retired - active key now " + k + " consumed=" + c);
+  {PKG}.SackPool.saveSoon(old);
   return m;
+}}""", mir))
+# 0.7.2 review fix: drop everything the mirror offers (call sync() first - it accounts what the bench already took).
+mir.addMethod(CtNewMethod.make(f"""
+public void empty() {{
+  try {{ this.cont.clear(); }} catch (Throwable t) {{ }}
+  for (int i = 0; i < 36; i++) {{ this.slotIds[i] = null; this.slotQty[i] = 0; }}
+  this.sig = "";
+}}""", mir))
+mir.addMethod(CtNewMethod.make("""
+public boolean holds() {
+  for (int i = 0; i < 36; i++) if (this.slotIds[i] != null) return true;
+  return false;
+}""", mir))
+# 0.7.2 review fix (settle window): while SackPool.settledKey(u) is null CraftLinkTask calls only this. The player's last bench
+# mirror (LASTKEY) is synced into its OWN pool; if it still offers anything it is emptied, and every open bench it is attached to
+# gets setValid(false), which makes BenchWindow.getExtraResourcesSection() re-feed the vanilla nearby-chest resources
+# (CraftingManager.feedExtraResourcesSection; every MaterialContainerWindow is a BenchWindow); if no re-feed happened the emptied
+# mirror stays attached with no extra materials. An emptied mirror returns right away on the next 300ms runs (no repeat updates).
+# No key is fed and no mirror is rebuilt until the switch settles, so a bench cannot use bag items across profiles.
+mir.addMethod(CtNewMethod.make(f"""
+public static int park({WM} wm, java.util.List wins, java.util.UUID u) {{
+  String lk = (String) LASTKEY.get(u);
+  if (lk == null) return 0;
+  {PKG}.BagMirror m = ({PKG}.BagMirror) MIRRORS.get(lk);
+  if (m == null) return 0;
+  int consumed = m.sync();
+  if (consumed > 0) {PKG}.SackPool.saveSoon(lk);
+  if (!m.holds()) return consumed;
+  m.empty();
+  int parked = 0;
+  for (int i = 0; wins != null && i < wins.size(); i++) {{
+    Object w = wins.get(i);
+    if (!(w instanceof {MCW})) continue;
+    {MERS} sec = (({MCW}) w).getExtraResourcesSection();
+    if (sec == null) continue;
+    {IC} existing = sec.getItemContainer();
+    if (existing == null || (existing != m.combined && existing != m.cont)) continue;
+    parked++;
+    sec.setValid(false);
+    sec = (({MCW}) w).getExtraResourcesSection();
+    if (sec != null && !sec.isValid()) {{ sec.setExtraMaterials(new {IQ}[0]); sec.setValid(true); }}
+    if (wm != null) {{
+      try {{ wm.updateWindow(({WIN}) w); }} catch (Throwable t) {{ {PKG}.SackPool.warn("craft link: park updateWindow failed: " + t); }}
+    }}
+  }}
+  if (parked > 0) {{
+    {PKG}.SackPool.warn("craft link: profile switch settling - bag materials taken off " + parked + " open bench window(s) (key " + lk + ", consumed=" + consumed + ")");
+    {PKG}.CraftLog.later(lk, "PROFILE switch settling - bag materials taken off " + parked + " open bench window(s) consumed=" + consumed);
+  }}
+  return consumed;
 }}""", mir))
 mir.addMethod(CtNewMethod.make(f"""
 public {IQ}[] quantities() {{
@@ -1423,6 +1508,8 @@ public {IQ}[] quantities() {{
 }}""", mir))
 
 # ================= CraftLinkTask (world thread, every 300ms per player) =================
+# 0.7.2 review fix: the key comes from SackPool.settledKey. While a profile switch settles (null) the task only parks the mirror
+# (BagMirror.park) and returns: no retireOther, no rebuild, nothing fed to the bench for ANY key until the switch has settled.
 clt.addInterface(pool.get("java.lang.Runnable"))
 clt.addField(CtField.make(f"public {PR} pr;", clt))
 clt.addField(CtField.make("public java.util.UUID expectedWorld;", clt))
@@ -1441,7 +1528,14 @@ public void run() {{
     {PLA} p = ({PLA}) st.getComponent(r, {PLA}.getComponentType());
     if (p == null) return;
     java.util.UUID u = pr.getUuid();
-    String k = {PKG}.SackPool.pkey(u);
+    String k = {PKG}.SackPool.settledKey(u);
+    if (k == null) {{
+      {WM} wm0 = p.getWindowManager();
+      java.util.List wins0 = null;
+      if (wm0 != null) wins0 = wm0.getWindows();
+      {PKG}.BagMirror.park(wm0, wins0, u);
+      return;
+    }}
     {PKG}.BagMirror stale = {PKG}.BagMirror.retireOther(u, k);
     {WM} wm = p.getWindowManager();
     if (wm == null) return;
@@ -1479,11 +1573,11 @@ public void run() {{
         try {{ wm.updateWindow(({WIN}) w); {PKG}.SackPool.warn("craft link: fed " + m.quantities().length + " item types to " + w.getClass().getSimpleName() + " (existing=" + (existing == null ? "null" : existing.getClass().getSimpleName()) + ", consumed=" + consumed + ")"); }}
         catch (Throwable t) {{ {PKG}.SackPool.warn("craft link: updateWindow failed: " + t); }}
       }}
-      if (consumed > 0) {PKG}.SackPool.save(k);
+      if (consumed > 0) {PKG}.SackPool.saveSoon(k);
     }}
     if (!any) {{
       {PKG}.BagMirror m = ({PKG}.BagMirror) {PKG}.BagMirror.MIRRORS.get(k);
-      if (m != null) {{ int c = m.sync(); if (c > 0) {PKG}.SackPool.save(k); {PKG}.BagMirror.MIRRORS.remove(k); }}
+      if (m != null) {{ int c = m.sync(); if (c > 0) {PKG}.SackPool.saveSoon(k); {PKG}.BagMirror.MIRRORS.remove(k); }}
     }}
   }} catch (Throwable t) {{ {PKG}.SackPool.warn("craft link failed: " + t); }}
 }}""", clt))
@@ -1682,6 +1776,14 @@ public static {CIC} materials({PLA} p, String k) {{
   m.sync();
   m.rebuild({PKG}.SweepTask.caps(p.getInventory()));
   return new {CIC}(new {IC}[] {{ p.getInventory().getCombinedBackpackStorageHotbar(), m.cont }});
+}}""", cpg))
+# 0.7.2 review fix: counts for the page VIEW. While a profile switch settles (this.settling, set by build() from
+# SackPool.settledKey) only the inventory is counted and no BagMirror is built or synced for the not-yet-settled key; every
+# click that moves items calls materials(p, k) itself with the one settled key it checked.
+cpg.addMethod(CtNewMethod.make(f"""
+public {CIC} viewMats({PLA} p, String k) {{
+  if (this.settling) return new {CIC}(new {IC}[] {{ p.getInventory().getCombinedBackpackStorageHotbar() }});
+  return materials(p, k);
 }}""", cpg))
 cpg.addMethod(CtNewMethod.make(f"""
 public static int limit({CRR} r, {IC} c) {{
@@ -1998,7 +2100,7 @@ public void buildProc({UCB} b, {UEB} ev, {PLA} p, java.util.UUID u, String k) {{
   b.appendInline("#SkyyPOutRow", "TextButton #SkyyPCancel {{ Anchor: (Width: 150, Height: 34); Text: \\"Cancel queue\\"; " + bs + " }}");
   ev.addEventBinding({BT}.Activating, "#SkyyPCollect", {EVD}.of("a", "pcollect"));
   ev.addEventBinding({BT}.Activating, "#SkyyPCancel", {EVD}.of("a", "pcancel"));
-  {CIC} mats = materials(p, k);
+  {CIC} mats = viewMats(p, k);
   this.fuelIds = new String[4];
   if (view.needsFuel) {{
     b.appendInline("#SkyyPOutRow", "Label {{ Anchor: (Width: 8, Height: 34); Text: \\"\\"; }}");
@@ -2168,8 +2270,14 @@ public void build({REF} ref, {UCB} b, {UEB} ev, {ST} st) {{
   b.appendInline("#SkyyCraft", "Label {{ Anchor: (Height: 34); Text: \\"Crafting\\"; Style: (FontSize: 19, RenderBold: true, TextColor: #e6f2ff, HorizontalAlignment: Center, VerticalAlignment: Center); }}");
   this.liveOn = false;
   this.key = null;
+  this.settling = false;
   if (p == null) return;
-  String k = {PKG}.SackPool.pkey(u);
+  String k = {PKG}.SackPool.settledKey(u);
+  if (k == null) {{
+    this.settling = true;
+    k = {PKG}.SackPool.pkey(u);
+    if (this.info == null || this.info.length() == 0) this.info = "switching profiles - bag counts come back in a moment";
+  }} else if (this.info != null && this.info.startsWith("switching profiles")) this.info = "";
   this.key = k;
   this.tabs = buildTabs(p, u, k);
   boolean known = false;
@@ -2193,7 +2301,7 @@ public void build({REF} ref, {UCB} b, {UEB} ev, {ST} st) {{
   b.appendInline("#SkyyCraft", "Label {{ Anchor: (Height: 22); Text: \\"Materials are counted from your inventory and your magic bags.\\"; Style: (FontSize: 13, TextColor: #9fb8d0, HorizontalAlignment: Center); }}");
   if (this.tab != null && this.tab.startsWith("P:")) {{ buildProc(b, ev, p, u, k); return; }}
   java.util.ArrayList raw = this.tab == null ? new java.util.ArrayList() : recipesFor(this.tab, u);
-  {CIC} mats = materials(p, k);
+  {CIC} mats = viewMats(p, k);
   boolean only = Boolean.TRUE.equals(ONLY.get(u));
   java.util.ArrayList ent = new java.util.ArrayList();
   for (int i = 0; i < raw.size(); i++) {{
@@ -2326,7 +2434,7 @@ public void handleDataEvent({REF} ref, {ST} st, String data) {{
     }}
     {PKG}.BagMirror m = {PKG}.BagMirror.of(k);
     int consumed = m.sync();
-    if (consumed > 0) {PKG}.SackPool.save(k);
+    if (consumed > 0) {PKG}.SackPool.saveSoon(k);
     {MQ}[] outs = r.getOutputs();
     {MQ} outq = r.getPrimaryOutput();
     if ((outs == null || outs.length == 0) && outq != null) outs = new {MQ}[] {{ outq }};
@@ -2395,13 +2503,14 @@ ptk.addConstructor(CtNewConstructor.make(f"public ProcTask({PR} pr, java.util.UU
 # 0.7.2 profile contract rule 3: remember the last profile:epoch:<uuid> seen per player. SkyySacks publishes no per-player bridge
 # values, so "republish" = flush every dirty pool/processing file (the old profile's included) off the world thread right away and
 # log the switch; an open page built for another key is told in run(). Without SkyyProfiles the epoch stays 0: never fires.
+# Review fix: the log line is queued (CraftLog.later) BEFORE the SackSaver is scheduled, which writes it off the world thread.
 ptk.addMethod(CtNewMethod.make(f"""
 public static boolean epochCheck(java.util.UUID u, String k) {{
   long ep = {PKG}.SackPool.epoch(u);
   Long last = (Long) EPOCH.put(u, Long.valueOf(ep));
   if (last == null || last.longValue() == ep) return false;
+  {PKG}.CraftLog.later(k, "PROFILE epoch " + last + " -> " + ep + " - bags, furnace and tannery now use this key");
   try {{ {HSV}.SCHEDULED_EXECUTOR.execute(new {PKG}.SackSaver()); }} catch (Throwable t) {{ }}
-  {PKG}.CraftLog.line(k, "PROFILE epoch " + last + " -> " + ep + " - bags, furnace and tannery now use this key");
   return true;
 }}""", ptk))
 ptk.addMethod(CtNewMethod.make(f"""
@@ -2505,6 +2614,7 @@ protected void shutdown() {{
   try {{ if (this.procTicker != null) this.procTicker.cancel(false); }} catch (Throwable t) {{ }}
   try {{ {PKG}.ProcStore.flushDirty(); }} catch (Throwable t) {{ }}
   try {{ {PKG}.SackPool.flushDirty(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.CraftLog.drain(); }} catch (Throwable t) {{ }}
   super.shutdown();
 }}""", pl))
 

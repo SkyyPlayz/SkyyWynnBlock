@@ -105,25 +105,26 @@ Other proven facts: HUD attach = `new HudMain(pr).show()` on `PlayerReadyEvent` 
 
 ### Versions: live in the "HUD mod" test world vs newest built
 All mods are deployed TOGETHER as one set (Skyy 2026-09-23: "keep building and testing all the mods together at once").
-| Mod | Live (deployed 2026-09-23 ~22:00) | In progress |
+| Mod | Live (deployed 2026-09-23 ~22:00) | Profiles set: BUILT, not deployed (script + jar on disk) |
 |---|---|---|
 | SkyyHud | 0.3.6 | - |
-| SkyySacks | 0.7.1 | 0.7.2 per-profile storage |
-| SkyyCoins | 0.1.4 | 0.1.5 per-profile |
-| SkyyCollections | 0.1.4 | 0.1.5 per-profile |
+| SkyySacks | 0.7.1 | 0.7.2 per-profile storage (built) |
+| SkyyCoins | 0.1.4 | 0.1.5 per-profile (built) |
+| SkyyCollections | 0.1.4 | 0.1.5 per-profile (built) |
 | SkyyParty | 0.1.2 | - |
-| SkyyBank | 0.1.1 | 0.1.2 per-profile |
+| SkyyBank | 0.1.1 | 0.1.2 per-profile (built) |
 | SkyyBazaar | 0.1.1 | - |
 | SkyyEssentials | 0.1 | - |
 | SkyyRolls | 0.1.1 | - |
-| SkyySkills | 0.3.1 (Berserker slot -> Shaman placeholder) | 0.3.2 per-profile |
-| SkyyAccessories | 0.4 | 0.4.1 per-profile |
-| SkyyIslands | 0.4.3 | 0.4.4 island per profile |
-| SkyyClasses | 0.1.2 (Archer/Warrior/Mage; Assassin+Shaman later; no Berserker; class locked) | 0.1.3 profile class is authoritative |
+| SkyySkills | 0.3.1 (Berserker slot -> Shaman placeholder) | 0.3.2 per-profile (built; needs SkyyClasses 0.1.3+ next to SkyyProfiles) |
+| SkyyAccessories | 0.4 | 0.4.1 per-profile (built) |
+| SkyyIslands | 0.4.3 | 0.4.4 island per profile (built) |
+| SkyyClasses | 0.1.2 (Archer/Warrior/Mage; Assassin+Shaman later; no Berserker; class locked) | 0.1.3 profile class is authoritative (built) |
 | SkyyMenu | 0.1.1 | - |
-| SkyyProfiles | - | 0.1 NEW (profiles + class picked at creation + inventory swap) |
+| SkyyProfiles | - | 0.1 NOT BUILT YET - the only missing piece of the profiles set (profiles + class picked at creation + inventory swap) |
 HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death).
 **Deploy rule:** build without --deploy, deploy the whole set together once Skyy OKs; watch the first join in the server log.
+**Profiles-set pairing:** ship the whole right-hand column together with SkyyProfiles 0.1. Never ship SkyyClasses 0.1.2 next to SkyyProfiles: 0.1.2 never reads profile:class, so SkyySkills 0.3.2 pauses class combat XP for 10 s after every profile switch, then logs a warning and follows the old class file.
 Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 
 ### Verified in game by Skyy (2026-09-23)
@@ -298,5 +299,8 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-23 22:15: Skyy's focus call (HANDOFF section 1 'Focus call', SkyySkills-Plan.md table): build Alchemy, add Exploration after research, keep Smithing (reforge/powder XP), a tree per gathering skill; shelve Fishing, Enchanting, Taming/pets, Carpentry, Hunting, Runecrafting, Social, Dungeoneering. Cooking unsorted.
 - 2026-09-23 22:20: research workflow skywynn-skill-research started (no builds): research/Exploration-Research.md (what SkyBlock + Wynncraft give for exploring, what Hytale can detect, reward options for Skyy to pick), research/Alchemy-Skill-Spec.md (Alchemy skill + Smithing row + retiring the shared Combat row), research/Skill-Trees-Spec.md (Mining/Foraging/Farming trees). Each doc is checked by facts, engine and design-fit reviewers, then fixed.
 - 2026-09-23 22:30: Skyy: build Cooking next to Alchemy IF cooking level can raise the strength and duration of food you cook (x2 at 50, x4 at 100, more from skill-tree modifiers). Research workflow skywynn-cooking-research started -> research/Cooking-Skill-Spec.md.
-- 2026-09-23 22:40: first join with all 14 mods deployed together (server log 22-22-12): every mod ready, no load errors, no exceptions. Bank/Bazaar print 'coins bridge NOT found yet' at load (Coins loads after them; they look it up later).
-- 2026-09-23 22:45: Skyy: remove the Alchemy + Cooking bench accessories (table use only; tables draw from sacks) and give Smithing XP for furnace smelting. Confirmed in the jar: BenchWindow (and ProcessingBenchWindow, its subclass) implement MaterialContainerWindow, the window type the SkyySacks bag link feeds. Fixed tools/dev/cpgrep.py (its cpstrings.py parser module was missing from the repo).
+- 2026-09-23 22:24: first join with all 14 mods deployed together (server log 22-22-12): every mod ready, no load errors, no exceptions. Bank/Bazaar print 'coins bridge NOT found yet' at load (Coins loads after them; they look it up later).
+- 2026-09-23 22:25: Skyy: remove the Alchemy + Cooking bench accessories (table use only; tables draw from sacks) and give Smithing XP for furnace smelting. Confirmed in the jar: BenchWindow (and ProcessingBenchWindow, its subclass) implement MaterialContainerWindow, the window type the SkyySacks bag link feeds. Fixed tools/dev/cpgrep.py (its cpstrings.py parser module was missing from the repo).
+- 2026-09-23 late: SkyySkills 0.3.2 review fixes (rebuilt, NOT deployed; edit tools/skills_0_3_2_patch.py, then regenerate): the class-sync pause after a profile switch (class:<uuid> != profile:class:<uuid>) is now bounded - after 10 s it logs one warning and combat XP / the damage perk / the legacy Combat move follow class:<uuid> again; /skills top|stats help and the unknown-skill message say 'shaman' instead of the dead 'berserking'. Section 3 table: the profiles-set versions are all built (script + jar on disk); only SkyyProfiles 0.1 is missing; pairing note: SkyyClasses 0.1.3+ with SkyyProfiles.
+- 2026-09-23 22:30: Skyy testing live: class weapon lock WORKS (wants a popup warning on a blocked weapon); menu WORKS (wants it bigger); collections must count collected ITEMS (fibre, sticks, each log, stone, ores, berries, wheat), SkyBlock-style -> research workflow skywynn-collections-research. BUG: pages opened FROM the SkyWynn Menu hang on 'Loading...' at the first button (Sacks Craft tab, HUD editor, Craft page, Bazaar). Cause (PageManager bytecode): the menu sent setPage(None) and then ran the command, which opened the next page at once; the client's answer to the close arrives after that and the server dismisses the NEW page (handleEvent Dismiss -> customPage=null), so later clicks reach no page. Typed commands work. Also learned: PageManager drops every page click while customPageRequiredAcknowledgments != 0 (each open/update +1, each client ack -1).
+- 2026-09-23 22:36: built SkyyMenu 0.1.2 (tools/menu_0_1_2_patch.py): runs the command with the menu still open (a page command replaces it), CloseTask closes the menu ~150 ms later only if it is still the open page; page 1.4x bigger (84 px slots, 952 px tall). NOT deployed: waiting for Skyy's OK (world was running).

@@ -8,6 +8,12 @@
   creation. ClassTick (every 2 s on HytaleServer.SCHEDULED_EXECUTOR) republishes class:<uuid> + class:skill:<uuid> when
   profile:epoch:<uuid> changes (last epoch seen per UUID, forgotten on disconnect) or the published value drifts from the profile.
   Without SkyyProfiles everything behaves exactly like 0.1.2 (pkey = uuid, the tick returns at once).
+  Review fixes: the profile class is copied into a profile file only from a STEADY snapshot - the same (profile:epoch, pkey,
+  profile:class) seen for >= SYNC_STEADY_MS across checks AND re-read unchanged right before the write - so a check that lands in the
+  middle of a SkyyProfiles switch (pointer and class updated in separate steps) can never write one profile's class into another
+  profile's file. A profile:class naming a class that is not ENABLED here (Assassin, Shaman) is not authoritative (logged once, the class
+  file decides - never a silent unlock of a coming-soon class's weapons). ensure() is synchronized (load + first publish atomic, as
+  0.1.2's load was). /classadmin info reads one pkey and says whether the class comes from the profile or from the profile file.
 0.1.2 (design lock 2026-09-23 night): roster = Wynn's five - Archer, Warrior, Mage selectable; Assassin + Shaman 'coming later'; Berserker removed
   (axes/battleaxes/maces/clubs are unassigned now). Class switching is OFF (allowSwitch=false): a new class = a new profile (SkyyProfiles).
 0.1.1 (Skyy 2026-09-23): Mage ENABLED with staffs (skill Sorcery; wands + spellbooks stay unassigned); /class opened to every player (setPermissionGroups hytale:Adventurer).
@@ -142,6 +148,7 @@ MSG_THROTTLE_MS = 3000
 SHOT_WINDOW_MS = 10000      # a live projectile launched with a forbidden weapon blocks all of its shooter's damage for at most this long
 SHOT_PURGE_MS = 120000      # launch records older than this are purged when the table grows past SHOT_PURGE_AT (safety net)
 SHOT_PURGE_AT = 1024
+SYNC_STEADY_MS = 1500       # 0.1.3 review fix: the profile class is written into a profile file only after (epoch, pkey, class) held this long
 
 # =====================================================================================================================
 # rule table + checks against the vanilla Assets.zip (fail the build on a typo instead of a silent hole in game)
@@ -377,6 +384,16 @@ public static String profileClass(java.util.UUID u) {
   return null;
 }""")
 M(cfg, r"""
+public static String clean(String s, int max) {
+  if (s == null) return "";
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < s.length() && sb.length() < max; i++) {
+    char c = s.charAt(i);
+    if (c >= ' ' && c != 127) sb.append(c);
+  }
+  return sb.toString();
+}""")
+M(cfg, r"""
 public static long profileEpoch(java.util.UUID u) {
   Object o = bridge().get("profile:epoch:" + u.toString());
   return o instanceof Number ? ((Number) o).longValue() : -1L;
@@ -552,24 +569,30 @@ F(st_, "public static final java.util.concurrent.ConcurrentHashMap CLS = new jav
 F(st_, "public static final java.util.concurrent.ConcurrentHashMap SESSION = new java.util.concurrent.ConcurrentHashMap();")
 F(st_, "public static final java.util.concurrent.ConcurrentHashMap EPOCH = new java.util.concurrent.ConcurrentHashMap();")  # UUID -> last profile:epoch seen
 F(st_, "public static volatile boolean BADPROF = false;")
+# review fix: UUID -> last (epoch|pkey|profile class) snapshot seen by check() and when it was first seen (syncKey only on a steady one)
+F(st_, "public static final java.util.concurrent.ConcurrentHashMap SNAP = new java.util.concurrent.ConcurrentHashMap();")
+F(st_, "public static final java.util.concurrent.ConcurrentHashMap SNAPAT = new java.util.concurrent.ConcurrentHashMap();")
+F(st_, "public static final long SYNC_STEADY_MS = %dL;" % SYNC_STEADY_MS)
 M(st_, r"""
 public static int fileIndex(String k) {
   if (k == null) return -1;
   Object c = CLS.get(k);
   return c == null ? -1 : @PKG@.ClassDefs.indexOf((String) c);
 }""")
-# 0.1.3: profile:class:<uuid> is AUTHORITATIVE when present and a known class name; -1 = absent or unknown (-> the class file decides)
+# 0.1.3: profile:class:<uuid> is AUTHORITATIVE when present and a known, ENABLED class name; -1 = absent, unknown or a coming-soon
+# class (Assassin, Shaman: review fix - never a silent unlock of its weapons) -> the class file decides
 M(st_, r"""
 public static int profileIndex(java.util.UUID u) {
   if (u == null) return -1;
   String s = @PKG@.ClassCfg.profileClass(u);
   if (s == null) return -1;
   int i = @PKG@.ClassDefs.indexOf(s);
-  if (i < 0 && !BADPROF) {
+  if (i >= 0 && @PKG@.ClassDefs.ENABLED[i]) return i;
+  if (!BADPROF) {
     BADPROF = true;
-    @PKG@.ClassCfg.warn("profile:class:" + u + " = " + s + " is not a SkyyClasses class - using the class file instead (logged once)");
+    @PKG@.ClassCfg.warn("profile:class:" + u + " = " + @PKG@.ClassCfg.clean(s, 32) + (i < 0 ? " is not a SkyyClasses class" : " is not playable yet in SkyyClasses (coming soon)") + " - using the class file instead (logged once)");
   }
-  return i;
+  return -1;
 }""")
 M(st_, r"""
 public static boolean locked(java.util.UUID u) {
@@ -611,9 +634,11 @@ public static synchronized java.util.Properties loadKey(String k) {
   else CLS.remove(k);
   return p;
 }""")
-# first load of the active profile's file publishes (0.1.2 load() did the same)
+# first load of the active profile's file publishes (0.1.2 load() did the same). synchronized (review fix): the fresh test, the load and
+# the publish are one step, so two threads loading the same new pkey publish once. Safe under the lock: publishKey only reads bridge
+# values (no profile:fn:key call), and k is computed by the caller outside the lock.
 M(st_, r"""
-public static java.util.Properties ensure(java.util.UUID u, String k) {
+public static synchronized java.util.Properties ensure(java.util.UUID u, String k) {
   boolean fresh = !DATA.containsKey(k);
   java.util.Properties p = loadKey(k);
   if (fresh) publishKey(u, k);
@@ -675,7 +700,7 @@ public static void setClass(java.util.UUID u, int idx, boolean byPlayer, boolean
 # 0.1.3: copy the authoritative profile class into that profile's file (offline class:fn:get, /classadmin info, a start without SkyyProfiles)
 M(st_, r"""
 public static synchronized void syncKey(String k, int pi) {
-  if (pi < 0 || pi >= @PKG@.ClassDefs.NAMES.length) return;
+  if (pi < 0 || pi >= @PKG@.ClassDefs.NAMES.length || !@PKG@.ClassDefs.ENABLED[pi]) return;
   java.util.Properties p = loadKey(k);
   String n = @PKG@.ClassDefs.NAMES[pi];
   CLS.put(k, n);
@@ -686,7 +711,24 @@ public static synchronized void syncKey(String k, int pi) {
   if (p.getProperty("chosenAt") == null) p.setProperty("chosenAt", String.valueOf(System.currentTimeMillis()));
   saveKey(k);
 }""")
+# review fix: how long (ms) check() has seen exactly this (epoch|pkey|profile class) snapshot for u; 0 = new or changed. Map work only
+# (no bridge Function calls) -> safe under ClassStore's lock, and one atomic step for the two maps.
+M(st_, r"""
+public static synchronized long steadyFor(java.util.UUID u, String snap) {
+  long now = System.currentTimeMillis();
+  Object prev = SNAP.put(u, snap);
+  Long at = (Long) SNAPAT.get(u);
+  if (prev == null || at == null || !snap.equals(prev)) {
+    SNAPAT.put(u, Long.valueOf(now));
+    return 0L;
+  }
+  return now - at.longValue();
+}""")
 # 0.1.3 contract rule 3: republish class:<uuid> / class:skill:<uuid> when profile:epoch:<uuid> changed (or the published value drifted)
+# review fix: pkey and profile:class are two separate reads and SkyyProfiles may update them in separate steps during a switch. The
+# bridge publish self-heals on the next tick, a file write does not -> syncKey only runs when the snapshot (epoch, pkey, class) has held
+# for >= SYNC_STEADY_MS across checks AND a re-read right before the write still matches it (a mid-switch pair never reaches the disk;
+# a re-read that differs restarts the steady clock).
 M(st_, r"""
 public static void check(java.util.UUID u) {
   if (u == null) return;
@@ -696,7 +738,14 @@ public static void check(java.util.UUID u) {
   String k = @PKG@.ClassCfg.pkey(u);
   loadKey(k);
   int pi = profileIndex(u);
-  if (pi >= 0 && fileIndex(k) != pi) syncKey(k, pi);
+  long steady = steadyFor(u, e + "|" + k + "|" + pi);
+  if (pi >= 0 && fileIndex(k) != pi && steady >= SYNC_STEADY_MS) {
+    long e2 = @PKG@.ClassCfg.profileEpoch(u);
+    String k2 = @PKG@.ClassCfg.pkey(u);
+    int pi2 = profileIndex(u);
+    if (e2 == e && pi2 == pi && k.equals(k2)) syncKey(k, pi);
+    else steadyFor(u, e2 + "|" + k2 + "|" + pi2);   // a switch is under way: restart the steady clock from the newer snapshot
+  }
   int i = pi >= 0 ? pi : fileIndex(k);
   String want = null;
   if (i >= 0) want = @PKG@.ClassDefs.NAMES[i];
@@ -816,15 +865,23 @@ public static java.util.UUID resolve(String s) {
   }
   try { return java.util.UUID.fromString(s); } catch (Throwable t) { return null; }
 }""")
+# review fix: one pkey for the whole line (file, class, cooldown), and the trailing clause says where the class in force comes from
 M(st_, r"""
 public static String describe(java.util.UUID u) {
-  java.util.Properties p = load(u);
-  int ci = classIndex(u);
-  long left = cooldownLeft(u);
+  String k = @PKG@.ClassCfg.pkey(u);
+  java.util.Properties p = ensure(u, k);
+  int pi = profileIndex(u);
+  int ci = pi >= 0 ? pi : fileIndex(k);
+  long left = cooldownLeftKey(k);
   String prof = "";
   if (@PKG@.ClassCfg.profilesOn()) {
     String pt = @PKG@.ClassCfg.profileText(u);
-    prof = " | " + (pt.length() > 0 ? pt : "no active profile") + " file " + @PKG@.ClassCfg.pkey(u) + (locked(u) ? " - class locked by the profile" : " - the profile has no class");
+    String raw = pi >= 0 ? null : @PKG@.ClassCfg.profileClass(u);
+    String why = " - the profile has no class";
+    if (pi >= 0) why = " - class locked by the profile";
+    else if (raw != null) why = " - profile class " + @PKG@.ClassCfg.clean(raw, 32) + " is not playable in SkyyClasses" + (ci >= 0 ? " - using the class chosen for this profile file" : " - no class in this profile file");
+    else if (ci >= 0) why = " - class chosen for this profile file, not locked by SkyyProfiles";
+    prof = " | " + (pt.length() > 0 ? pt : "no active profile") + " file " + k + why;
   }
   return (ci < 0 ? "no class" : @PKG@.ClassDefs.NAMES[ci] + " (" + @PKG@.ClassDefs.SKILLS[ci] + ")")
     + " | switches " + num(p, "switches") + " | played " + p.getProperty("played", "-")
@@ -1269,6 +1326,8 @@ public void accept(Object ev) {
     @PKG@.ClassStore.SESSION.remove(u);
     @PKG@.ClassRules.WARNED.remove(u);
     @PKG@.ClassStore.EPOCH.remove(u);
+    @PKG@.ClassStore.SNAP.remove(u);
+    @PKG@.ClassStore.SNAPAT.remove(u);
   } catch (Throwable t) { }
 }""")
 

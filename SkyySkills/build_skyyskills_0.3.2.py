@@ -15,8 +15,15 @@
   movement source and the MAX modifiers from the new profile's levels. The class for combat is still class:<uuid> (SkyyClasses
   publishes the active profile's class); while profile:class:<uuid> is published and class:<uuid> does not match it yet (SkyyClasses
   has not caught up with a switch), no combat XP (one hint), no class damage perk and no legacy Combat migration, so nothing lands
-  in the wrong class slot. /skills top: one row per profile file, profile N >= 2 rows show "(profile N)", your rank is your active
-  profile's. The vanilla inventory is never touched for a switch (contract rule 5; double drops still go to the live inventory).
+  in the wrong class slot. That pause is BOUNDED: a mismatch still there after SkillClass.GRACE_MS (10 s; SkyyClasses 0.1.3
+  republishes every 2 s) fails open - one warning in the server log per player per switch, then combat XP, the damage perk and the
+  legacy move follow class:<uuid> again (0.3.1 behaviour), so SkyyClasses 0.1.2 (never reads profile:class) or a SkyyClasses bug
+  can never pause them forever. DEPLOY PAIRING: with SkyyProfiles, ship SkyyClasses 0.1.3+ (0.1.2 would make every profile switch
+  run on the class of the class file after the 10 s grace). /skills top: one row per profile file, profile N >= 2 rows show
+  "(profile N)", your rank is your active profile's. The vanilla inventory is never touched for a switch (contract rule 5; double
+  drops still go to the live inventory). The first read of a switched-to profile's file happens on the player's world thread in
+  that 1 s tick (same as PublishTask: the shared SCHEDULED_EXECUTOR never does player-file I/O); one small file per manual switch.
+  Skill args: "shaman" replaces the removed "berserking" in the /skills top|stats help and the unknown-skill message.
 0.3.1 (design lock 2026-09-23 night): the Berserker/Berserking class slot becomes the Shaman placeholder (Combat.Shaman, 'Shaman skill');
   slot count stays 10 so saved files and slot indices are unchanged. Old Combat.Berserker XP stays in the file, unread.
 Run:   python build_skyyskills_0.3.2.py            -> SkyySkills/SkyySkills-0.3.2.jar
@@ -1019,15 +1026,41 @@ public static int slot(java.util.UUID u) {
 # 0.3.2: false only while SkyyProfiles publishes the active profile's class (profile:class:<uuid>) and SkyyClasses' class:<uuid> does not
 # match it yet (right after a profile switch) - then nothing class-based may write into the (new) profile. No profile:class key (no
 # SkyyProfiles, or a profile without a class) = true, exactly the 0.3.1 behaviour.
+# BOUNDED (review fix): SINCE = UUID -> Long ms the current mismatch was first seen (Perks.tick asks every second, so it starts within
+# 1 s of a switch); after GRACE_MS it fails OPEN (true = class:<uuid> decides again, the 0.3.1 behaviour) and warns once per mismatch
+# (GAVEUP). A match, a new epoch (Perks.switched) or a disconnect (Acro.retainOnline) resets both, so every switch gets a fresh grace.
+scls.addField(CtField.make("public static final long GRACE_MS = 10000L;", scls))
+scls.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap SINCE = new java.util.concurrent.ConcurrentHashMap();", scls))
+scls.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap GAVEUP = new java.util.concurrent.ConcurrentHashMap();", scls))
+scls.addMethod(CtNewMethod.make("""
+public static void resync(java.util.UUID u) {
+  if (SINCE.isEmpty() && GAVEUP.isEmpty()) return;
+  SINCE.remove(u);
+  GAVEUP.remove(u);
+}""", scls))
+scls.addMethod(CtNewMethod.make(f"""
+public static boolean overdue(java.util.UUID u, String pc, String c) {{
+  long now = System.currentTimeMillis();
+  Object first = SINCE.putIfAbsent(u, Long.valueOf(now));
+  if (first == null) return false;
+  if (now - ((Long) first).longValue() < GRACE_MS) return false;
+  if (GAVEUP.putIfAbsent(u, Boolean.TRUE) == null) {{
+    {PKG}.SkillCfg.warn("class:" + u + " (SkyyClasses) is " + (c == null ? "not set" : c) + " but profile:class:" + u + " (SkyyProfiles) is " + pc
+      + " for " + (GRACE_MS / 1000L) + " s - SkyyClasses is not following the profile (SkyyProfiles needs SkyyClasses 0.1.3+). Combat XP, the class"
+      + " damage perk and the legacy Combat move follow class:" + u + " again for this player until the next profile switch.");
+  }}
+  return true;
+}}""", scls))
 scls.addMethod(CtNewMethod.make(f"""
 public static boolean consistent(java.util.UUID u) {{
   try {{
     Object o = {PKG}.SkillStore.bridge().get("profile:class:" + u.toString());
-    if (!(o instanceof String)) return true;
+    if (!(o instanceof String)) {{ resync(u); return true; }}
     String pc = ((String) o).trim();
-    if (pc.length() == 0) return true;
+    if (pc.length() == 0) {{ resync(u); return true; }}
     String c = className(u);
-    return c != null && c.equalsIgnoreCase(pc);
+    if (c != null && c.equalsIgnoreCase(pc)) {{ resync(u); return true; }}
+    return overdue(u, pc, c);
   }} catch (Throwable t) {{ return true; }}
 }}""", scls))
 # storage slot a /skills row shows: the Combat row = the current class's skill (legacy slot 3 without a class)
@@ -1145,7 +1178,7 @@ scls.addMethod(CtNewMethod.make(f"""
 public static int argSlot({PR} pr, String arg) {{
   int s = {PKG}.SkillDefs.indexOf(arg);
   if (s < 0) {{
-    pr.sendMessage({MSG}.raw("[Skills] Unknown skill. Use mining, foraging, farming, acrobatics, combat (your class skill) or a class skill: archery, swordsmanship, assassination, berserking, sorcery."));
+    pr.sendMessage({MSG}.raw("[Skills] Unknown skill. Use mining, foraging, farming, acrobatics, combat (your class skill) or a class skill: archery, swordsmanship, assassination, shaman, sorcery."));
     return -1;
   }}
   if (s == {PKG}.SkillDefs.COMBAT) {{ int c = slot(pr.getUuid()); if (c >= 0) return c; }}
@@ -1640,11 +1673,17 @@ public static boolean epochChanged(java.util.UUID u) {
 }""", perk))
 # world thread, right after an epoch change (AcroSys, before the flush / movement sync / perk tick of the same second): skill:<uuid>
 # now describes the new profile (data(u) resolves the new pkey; its file is loaded here on first use); the +XP line still pending
-# and the once-per-session hints belonged to the old profile.
+# and the once-per-session hints belonged to the old profile; the class-sync grace (SkillClass.SINCE / GAVEUP) starts over.
+# Review note (kept on purpose): that first load of the new profile's small players/<pkey>.properties is a synchronous read on this
+# world thread, exactly like PublishTask for a new session. It cannot move to the ticker (HytaleServer.SCHEDULED_EXECUTOR is ONE
+# thread shared by every mod - no player-file I/O there, 0.2 design), and deferring only this publish would not help: the flush /
+# movement sync / MAX modifiers of the same second read the new profile's levels anyway, and a non-blocking read would show level 0
+# for a moment (health MAX modifier drop). Profile switches are manual and rare; revisit only if they become frequent.
 perk.addMethod(CtNewMethod.make(f"""
 public static void switched(java.util.UUID u) {{
   {PKG}.SkillMsg.PEND.remove(u);
   {PKG}.SkillClass.TOLD.remove(u);
+  {PKG}.SkillClass.resync(u);
   {PKG}.SkillStore.publish(u);
   {PKG}.SkillCfg.info("profile switch: " + u + " now uses skills of " + {PKG}.SkillStore.pkey(u));
 }}""", perk))
@@ -1660,7 +1699,8 @@ public static void tick(java.util.UUID u, {PR} pr, {CB} cb, {REF} ref) {{
     String cn = cs < 0 ? "" : {PKG}.SkillDefs.CLASSES[cs - {PKG}.SkillDefs.CLASS0];
     Object last = LASTCLS.put(u, cn);
     boolean repub = last == null || !last.equals(cn);
-    if (cs >= 0 && {PKG}.SkillClass.consistent(u)) migrate(pr, u, cs);
+    boolean synced = {PKG}.SkillClass.consistent(u);
+    if (cs >= 0 && synced) migrate(pr, u, cs);
     if (repub) {PKG}.SkillStore.publish(u);
     int[] lv = levels(u);
     {ESM} m = ({ESM}) cb.getComponent(ref, {ESM}.getComponentType());
@@ -1862,6 +1902,8 @@ public static void retainOnline() {{
     {PKG}.Perks.LASTCLS.keySet().retainAll(online);
     {PKG}.Perks.DDMSG.keySet().retainAll(online);
     {PKG}.Perks.EPOCH.keySet().retainAll(online);
+    {PKG}.SkillClass.SINCE.keySet().retainAll(online);
+    {PKG}.SkillClass.GAVEUP.keySet().retainAll(online);
   }} catch (Throwable t) {{ }}
 }}""", acro))
 acro.addMethod(CtNewMethod.make("""
@@ -2931,7 +2973,7 @@ tcmd.addField(CtField.make(f"public {RA} skillArg;", tcmd))
 tcmd.addConstructor(CtNewConstructor.make(f"""
 public TopCmd() {{
   super("top", "Top 10 players of a skill: /skills top mining");
-  this.skillArg = withRequiredArg("skill", "mining | foraging | farming | acrobatics | combat (your class skill) | archery | swordsmanship | assassination | berserking | sorcery", {ATY}.STRING);
+  this.skillArg = withRequiredArg("skill", "mining | foraging | farming | acrobatics | combat (your class skill) | archery | swordsmanship | assassination | shaman | sorcery", {ATY}.STRING);
   setPermissionGroups(new String[] {{ "hytale:Adventurer" }});
 }}""", tcmd))
 tcmd.addMethod(CtNewMethod.make(f"""
@@ -2972,7 +3014,7 @@ scmd.addField(CtField.make(f"public {RA} skillArg;", scmd))
 scmd.addConstructor(CtNewConstructor.make(f"""
 public StatsCmd() {{
   super("stats", "Open the Stats page of a skill: /skills stats mining");
-  this.skillArg = withRequiredArg("skill", "mining | foraging | farming | acrobatics | combat (your class skill) | archery | swordsmanship | assassination | berserking | sorcery", {ATY}.STRING);
+  this.skillArg = withRequiredArg("skill", "mining | foraging | farming | acrobatics | combat (your class skill) | archery | swordsmanship | assassination | shaman | sorcery", {ATY}.STRING);
   setPermissionGroups(new String[] {{ "hytale:Adventurer" }});
 }}""", scmd))
 scmd.addMethod(CtNewMethod.make(f"""
