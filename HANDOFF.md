@@ -157,6 +157,7 @@ Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 - SkyyProfiles switch: new profile 'Zucchini' (Warrior) -> inventory saved with the old profile, new island created on first use, player lands there with an empty inventory (Menu item kept), 10,000 starter coins (Skyy: "thats amazing").
 - SkyyCooking: /cookadmin give works (it put the dishes in storage, not the hotbar - Skyy first missed them).
 - SkyyIslands 0.4.2 black-grass fix CONFIRMED: an old island's grass turns green after re-entering (/hub then /island).
+- SkyyCollections 0.2 Unlocked recipes page works (Copper Pickaxe from Cobblestone I; crafted in /craft Collections tab with materials, no bench accessory - matches SkyySacks 0.7.3, which only drops table-only recipes there).
 - SkyyCollections 0.2 per-collection tier page works (Cobblestone: Tier II of X, 113 collected, I+II DONE with rewards, III NEXT, coin bypass 'Buy tier III unlocks - 1370 coins').
 - SkyyCollections 0.2 counting works in game: Oak/Ash/Beech/Birch logs, sticks and tree sap count (Foraging page 1/3); tier I reward preview (e.g. Copper Hatchet recipe) shown. Check with the tree-fall fix whether logs from a FELLED tree are counted.
 - SkyyTrees 0.1: /tree page works in game (tiers, tokens, Dust, node detail, Level up).
