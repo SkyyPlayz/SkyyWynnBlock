@@ -1,0 +1,21 @@
+name: lint
+
+# Free checks on every push / pull request. The mods themselves are built on Skyy's PC (the build needs the game's
+# HytaleServer.jar, which is never committed), so this only runs tools/ci/lint.py - see its docstring for what it checks.
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: SkyWynn lint
+        run: python tools/ci/lint.py
