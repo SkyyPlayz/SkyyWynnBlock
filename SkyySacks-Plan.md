@@ -127,3 +127,7 @@ Keep crafting split into tabs. Tabs: < Back to bags | Crafting | Smithing | Farm
 - **Crafting**: everything else.
 - **Search**: a text box; Enter or the Search button filters Crafting + Smithing + Farming together by item name; a clear button resets it.
 Engine facts for the build (vanilla PluginListPage.ui / CommandListPage, 2026-09-23): an inline `TextField #Id { PlaceholderText: ...; PlaceholderStyle: (...); Anchor: (...); Padding: (...) }` is valid without a .ui template; the value is read with EventData.of("@SearchQuery", "#Id.Value"); binding types include ValueChanged and Validating (Enter). CustomUIPage.sendUpdate has no event builder, and page clicks are dropped while an update is unacknowledged, so search runs on Enter/button with a full rebuild (the TextField is rebuilt with Value = the query), not on every keystroke.
+
+## Bars + all bag tabs (Skyy, 2026-09-24)
+- Ingredient_Bar_* (smelted bars) pool into the Mining bag, like SkyBlock's Mining Sack. A Smithing bag may come later for reforge stones and powders.
+- The bags page shows all four tabs (Mining, Foraging, Farming, Combat); a bag you do not carry shows how to craft it instead of its items.
