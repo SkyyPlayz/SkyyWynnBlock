@@ -1,0 +1,1698 @@
+0: ldc #2 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType
+2: invokedynamic 1211
+7: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+10: invokedynamic 1220
+15: invokedynamic 1224
+20: invokedynamic 1225
+25: invokedynamic 1226
+30: invokestatic #1227 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec.builder((Ljava/lang/Class;Ljava/util/function/Supplier;Lcom/hypixel/hytale/codec/Codec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;Ljava/util/function/Function;)Lcom/hypixel/hytale/assetstore/codec/AssetBuilderCodec$Builder;)
+33: ldc_w #1233 = "The definition for a block in the game. Can only be defined within an **Item** and not standalone."
+36: invokevirtual #1235 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+39: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+42: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+45: dup
+46: ldc_w #1243 = "Group"
+49: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+52: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+55: invokedynamic 1248
+60: invokedynamic 1249
+65: invokedynamic 1250
+70: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+73: ldc_w #1255 = "Sets the group for this block. Used by **BlockSets**.
+
+A group of _"@Tech"_ will prevent physics from being automatically applied to the block."
+76: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+79: new #1262 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditor
+82: dup
+83: new #1264 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditor$TextField
+86: dup
+87: ldc_w #1266 = "BlockGroups"
+90: invokespecial #1268 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditor$TextField.<init>((Ljava/lang/String;)V)
+93: invokespecial #1269 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditor.<init>((Lcom/hypixel/hytale/codec/schema/metadata/ui/UIEditor$EditorComponent;)V)
+96: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+99: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+102: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+105: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+108: dup
+109: ldc_w #1279 = "BlockListAssetId"
+112: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+115: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+118: invokedynamic 1281
+123: invokedynamic 1282
+128: invokedynamic 1283
+133: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+136: getstatic #1284 = Field com.hypixel.hytale.server.core.asset.type.buildertool.config.BlockTypeListAsset.VALIDATOR_CACHE(Lcom/hypixel/hytale/codec/validation/ValidatorCache;)
+139: invokevirtual #1290 = Method com.hypixel.hytale.codec.validation.ValidatorCache.getValidator(()Lcom/hypixel/hytale/codec/validation/Validator;)
+142: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+145: ldc_w #1300 = "The name of a BlockList asset, for use  in builder tool brushes"
+148: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+151: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+154: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+157: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+160: dup
+161: ldc_w #1302 = "PrefabListAssetId"
+164: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+167: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+170: invokedynamic 1304
+175: invokedynamic 1305
+180: invokedynamic 1306
+185: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+188: getstatic #1307 = Field com.hypixel.hytale.server.core.asset.type.buildertool.config.PrefabListAsset.VALIDATOR_CACHE(Lcom/hypixel/hytale/codec/validation/ValidatorCache;)
+191: invokevirtual #1290 = Method com.hypixel.hytale.codec.validation.ValidatorCache.getValidator(()Lcom/hypixel/hytale/codec/validation/Validator;)
+194: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+197: ldc_w #1310 = "The name of a PrefabList asset, for use  in builder tool brushes"
+200: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+203: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+206: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+209: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+212: dup
+213: ldc_w #1312 = "DrawType"
+216: new #1314 = Class com.hypixel.hytale.codec.codecs.EnumCodec
+219: dup
+220: ldc #90 = Class com.hypixel.hytale.protocol.DrawType
+222: invokespecial #1316 = Method com.hypixel.hytale.codec.codecs.EnumCodec.<init>((Ljava/lang/Class;)V)
+225: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+228: invokedynamic 1317
+233: invokedynamic 1318
+238: invokedynamic 1319
+243: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+246: invokestatic #1320 = Method com.hypixel.hytale.codec.validation.Validators.nonNull(()Lcom/hypixel/hytale/codec/validation/Validator;)
+249: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+252: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+255: dup
+256: iconst_3
+257: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+260: dup
+261: iconst_0
+262: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+265: aastore
+266: dup
+267: iconst_1
+268: getstatic #1333 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.BLOCK_TEXTURES(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+271: aastore
+272: dup
+273: iconst_2
+274: getstatic #1336 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODEL_TEXTURES(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+277: aastore
+278: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+281: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+284: new #1342 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart
+287: dup
+288: ldc_w #1344 = "Rendering"
+291: invokespecial #1346 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart.<init>((Ljava/lang/String;)V)
+294: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+297: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+300: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+303: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+306: dup
+307: ldc_w #1347 = "Textures"
+310: new #1349 = Class com.hypixel.hytale.codec.codecs.array.ArrayCodec
+313: dup
+314: getstatic #1351 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockTypeTextures.CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+317: invokedynamic 1355
+322: invokespecial #1356 = Method com.hypixel.hytale.codec.codecs.array.ArrayCodec.<init>((Lcom/hypixel/hytale/codec/Codec;Ljava/util/function/IntFunction;)V)
+325: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+328: invokedynamic 1359
+333: invokedynamic 1360
+338: invokedynamic 1361
+343: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+346: new #1362 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle
+349: dup
+350: ldc_w #1364 = "Block Textures"
+353: invokespecial #1366 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle.<init>((Ljava/lang/String;)V)
+356: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+359: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+362: dup
+363: iconst_2
+364: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+367: dup
+368: iconst_0
+369: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+372: aastore
+373: dup
+374: iconst_1
+375: getstatic #1333 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.BLOCK_TEXTURES(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+378: aastore
+379: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+382: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+385: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+388: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+391: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+394: dup
+395: ldc_w #1367 = "TextureSideMask"
+398: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+401: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+404: invokedynamic 1369
+409: invokedynamic 1370
+414: invokedynamic 1371
+419: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+422: getstatic #1372 = Field com.hypixel.hytale.server.core.asset.common.CommonAssetValidator.TEXTURE_ITEM(Lcom/hypixel/hytale/server/core/asset/common/CommonAssetValidator;)
+425: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+428: new #1362 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle
+431: dup
+432: ldc_w #1378 = "Block Texture Side Mask"
+435: invokespecial #1366 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle.<init>((Ljava/lang/String;)V)
+438: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+441: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+444: dup
+445: iconst_2
+446: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+449: dup
+450: iconst_0
+451: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+454: aastore
+455: dup
+456: iconst_1
+457: getstatic #1333 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.BLOCK_TEXTURES(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+460: aastore
+461: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+464: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+467: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+470: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+473: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+476: dup
+477: ldc_w #1380 = "CubeShadingMode"
+480: new #1314 = Class com.hypixel.hytale.codec.codecs.EnumCodec
+483: dup
+484: ldc #75 = Class com.hypixel.hytale.protocol.ShadingMode
+486: invokespecial #1316 = Method com.hypixel.hytale.codec.codecs.EnumCodec.<init>((Ljava/lang/Class;)V)
+489: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+492: invokedynamic 1382
+497: invokedynamic 1383
+502: invokedynamic 1384
+507: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+510: invokestatic #1320 = Method com.hypixel.hytale.codec.validation.Validators.nonNull(()Lcom/hypixel/hytale/codec/validation/Validator;)
+513: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+516: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+519: dup
+520: iconst_1
+521: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+524: dup
+525: iconst_0
+526: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+529: aastore
+530: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+533: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+536: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+539: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+542: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+545: dup
+546: ldc_w #1385 = "CustomModelTexture"
+549: new #1349 = Class com.hypixel.hytale.codec.codecs.array.ArrayCodec
+552: dup
+553: getstatic #1387 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.CustomModelTexture.CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+556: invokedynamic 1388
+561: invokespecial #1356 = Method com.hypixel.hytale.codec.codecs.array.ArrayCodec.<init>((Lcom/hypixel/hytale/codec/Codec;Ljava/util/function/IntFunction;)V)
+564: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+567: invokedynamic 1389
+572: invokedynamic 1390
+577: invokedynamic 1391
+582: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+585: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+588: dup
+589: iconst_2
+590: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+593: dup
+594: iconst_0
+595: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+598: aastore
+599: dup
+600: iconst_1
+601: getstatic #1333 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.BLOCK_TEXTURES(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+604: aastore
+605: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+608: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+611: new #1362 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle
+614: dup
+615: ldc_w #1392 = "Block Model Textures"
+618: invokespecial #1366 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle.<init>((Ljava/lang/String;)V)
+621: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+624: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+627: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+630: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+633: dup
+634: ldc_w #1394 = "CustomModel"
+637: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+640: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+643: invokedynamic 1396
+648: invokedynamic 1397
+653: invokedynamic 1398
+658: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+661: getstatic #1399 = Field com.hypixel.hytale.server.core.asset.common.CommonAssetValidator.MODEL_ITEM(Lcom/hypixel/hytale/server/core/asset/common/CommonAssetValidator;)
+664: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+667: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+670: dup
+671: iconst_1
+672: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+675: dup
+676: iconst_0
+677: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+680: aastore
+681: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+684: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+687: new #1362 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle
+690: dup
+691: ldc_w #1402 = "Block Model"
+694: invokespecial #1366 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle.<init>((Ljava/lang/String;)V)
+697: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+700: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+703: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+706: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+709: dup
+710: ldc_w #1404 = "BlockBreakingDecalId"
+713: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+716: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+719: invokedynamic 1406
+724: invokedynamic 1407
+729: invokedynamic 1408
+734: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+737: ldc_w #1409 = "The block breaking decal defined here defines the decal asset that should be overlaid when this block is damaged"
+740: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+743: getstatic #1411 = Field com.hypixel.hytale.server.core.asset.type.blockbreakingdecal.config.BlockBreakingDecal.VALIDATOR_CACHE(Lcom/hypixel/hytale/codec/validation/ValidatorCache;)
+746: invokevirtual #1290 = Method com.hypixel.hytale.codec.validation.ValidatorCache.getValidator(()Lcom/hypixel/hytale/codec/validation/Validator;)
+749: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+752: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+755: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+758: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+761: dup
+762: ldc_w #1414 = "Material"
+765: new #1314 = Class com.hypixel.hytale.codec.codecs.EnumCodec
+768: dup
+769: ldc #99 = Class com.hypixel.hytale.protocol.BlockMaterial
+771: invokespecial #1316 = Method com.hypixel.hytale.codec.codecs.EnumCodec.<init>((Ljava/lang/Class;)V)
+774: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+777: invokedynamic 1416
+782: invokedynamic 1417
+787: invokedynamic 1418
+792: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+795: invokestatic #1320 = Method com.hypixel.hytale.codec.validation.Validators.nonNull(()Lcom/hypixel/hytale/codec/validation/Validator;)
+798: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+801: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+804: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+807: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+810: dup
+811: ldc_w #1419 = "Opacity"
+814: new #1314 = Class com.hypixel.hytale.codec.codecs.EnumCodec
+817: dup
+818: ldc #108 = Class com.hypixel.hytale.protocol.Opacity
+820: invokespecial #1316 = Method com.hypixel.hytale.codec.codecs.EnumCodec.<init>((Ljava/lang/Class;)V)
+823: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+826: invokedynamic 1421
+831: invokedynamic 1422
+836: invokedynamic 1423
+841: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+844: invokestatic #1320 = Method com.hypixel.hytale.codec.validation.Validators.nonNull(()Lcom/hypixel/hytale/codec/validation/Validator;)
+847: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+850: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+853: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+856: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+859: dup
+860: ldc_w #1424 = "RequiresAlphaBlending"
+863: getstatic #1426 = Field com.hypixel.hytale.codec.Codec.BOOLEAN(Lcom/hypixel/hytale/codec/codecs/simple/BooleanCodec;)
+866: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+869: invokedynamic 1430
+874: invokedynamic 1431
+879: invokedynamic 1432
+884: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+887: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+890: dup
+891: iconst_1
+892: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+895: dup
+896: iconst_0
+897: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+900: aastore
+901: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+904: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+907: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+910: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+913: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+916: dup
+917: ldc_w #1433 = "CustomModelScale"
+920: getstatic #1435 = Field com.hypixel.hytale.codec.Codec.FLOAT(Lcom/hypixel/hytale/codec/codecs/simple/FloatCodec;)
+923: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+926: invokedynamic 1439
+931: invokedynamic 1440
+936: invokedynamic 1441
+941: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+944: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+947: dup
+948: iconst_1
+949: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+952: dup
+953: iconst_0
+954: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+957: aastore
+958: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+961: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+964: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+967: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+970: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+973: dup
+974: ldc_w #1442 = "CustomModelAnimation"
+977: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+980: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+983: invokedynamic 1444
+988: invokedynamic 1445
+993: invokedynamic 1446
+998: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1001: getstatic #1447 = Field com.hypixel.hytale.server.core.asset.common.CommonAssetValidator.ANIMATION_ITEM_BLOCK(Lcom/hypixel/hytale/server/core/asset/common/CommonAssetValidator;)
+1004: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1007: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+1010: dup
+1011: iconst_1
+1012: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+1015: dup
+1016: iconst_0
+1017: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+1020: aastore
+1021: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+1024: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1027: new #1362 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle
+1030: dup
+1031: ldc_w #1450 = "Block Model Animation"
+1034: invokespecial #1366 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle.<init>((Ljava/lang/String;)V)
+1037: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1040: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1043: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1046: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1049: dup
+1050: ldc_w #1452 = "CustomModelAnimationSpeed"
+1053: getstatic #1435 = Field com.hypixel.hytale.codec.Codec.FLOAT(Lcom/hypixel/hytale/codec/codecs/simple/FloatCodec;)
+1056: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1059: invokedynamic 1454
+1064: invokedynamic 1455
+1069: invokedynamic 1456
+1074: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1077: fconst_0
+1078: invokestatic #1197 = Method java.lang.Float.valueOf((F)Ljava/lang/Float;)
+1081: invokestatic #1457 = Method com.hypixel.hytale.codec.validation.Validators.greaterThanOrEqual((Ljava/lang/Comparable;)Lcom/hypixel/hytale/codec/validation/Validator;)
+1084: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1087: ldc_w #1461 = float 100.0
+1090: invokestatic #1197 = Method java.lang.Float.valueOf((F)Ljava/lang/Float;)
+1093: invokestatic #1462 = Method com.hypixel.hytale.codec.validation.Validators.lessThan((Ljava/lang/Comparable;)Lcom/hypixel/hytale/codec/validation/Validator;)
+1096: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1099: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+1102: dup
+1103: iconst_1
+1104: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+1107: dup
+1108: iconst_0
+1109: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+1112: aastore
+1113: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+1116: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1119: new #1362 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle
+1122: dup
+1123: ldc_w #1465 = "Block Model Animation Speed"
+1126: invokespecial #1366 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle.<init>((Ljava/lang/String;)V)
+1129: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1132: ldc_w #1467 = "A multiplier for the playback speed of the block model animation. 1 is the authored speed."
+1135: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1138: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1141: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1144: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1147: dup
+1148: ldc_w #1469 = "Light"
+1151: getstatic #1471 = Field com.hypixel.hytale.server.core.codec.ProtocolCodecs.COLOR_LIGHT(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+1154: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1157: invokedynamic 1476
+1162: invokedynamic 1477
+1167: invokedynamic 1478
+1172: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1175: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+1178: dup
+1179: iconst_1
+1180: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+1183: dup
+1184: iconst_0
+1185: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+1188: aastore
+1189: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+1192: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1195: new #1362 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle
+1198: dup
+1199: ldc_w #1479 = "Block Light"
+1202: invokespecial #1366 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle.<init>((Ljava/lang/String;)V)
+1205: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1208: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1211: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1214: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1217: dup
+1218: ldc_w #1481 = "TickProcedure"
+1221: getstatic #1483 = Field com.hypixel.hytale.server.core.asset.type.blocktick.config.TickProcedure.CODEC(Lcom/hypixel/hytale/codec/lookup/CodecMapCodec;)
+1224: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1227: invokedynamic 1488
+1232: invokedynamic 1489
+1237: invokedynamic 1490
+1242: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1245: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1248: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1251: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1254: dup
+1255: ldc_w #1491 = "RandomTickProcedure"
+1258: getstatic #1493 = Field com.hypixel.hytale.server.core.asset.type.blocktick.config.RandomTickProcedure.CODEC(Lcom/hypixel/hytale/codec/lookup/CodecMapCodec;)
+1261: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1264: invokedynamic 1496
+1269: invokedynamic 1497
+1274: invokedynamic 1498
+1279: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1282: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1285: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1288: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1291: dup
+1292: ldc_w #1499 = "ConnectedBlockRuleSet"
+1295: getstatic #1501 = Field com.hypixel.hytale.server.core.universe.world.connectedblocks.ConnectedBlockRuleSet.CODEC(Lcom/hypixel/hytale/codec/lookup/CodecMapCodec;)
+1298: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1301: invokedynamic 1502
+1306: invokedynamic 1503
+1311: invokedynamic 1504
+1316: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1319: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1322: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1325: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1328: dup
+1329: ldc_w #1505 = "Effect"
+1332: new #1349 = Class com.hypixel.hytale.codec.codecs.array.ArrayCodec
+1335: dup
+1336: new #1314 = Class com.hypixel.hytale.codec.codecs.EnumCodec
+1339: dup
+1340: ldc_w #1209 = Class com.hypixel.hytale.protocol.ShaderType
+1343: invokespecial #1316 = Method com.hypixel.hytale.codec.codecs.EnumCodec.<init>((Ljava/lang/Class;)V)
+1346: invokedynamic 1507
+1351: invokespecial #1356 = Method com.hypixel.hytale.codec.codecs.array.ArrayCodec.<init>((Lcom/hypixel/hytale/codec/Codec;Ljava/util/function/IntFunction;)V)
+1354: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1357: invokedynamic 1508
+1362: invokedynamic 1509
+1367: invokedynamic 1510
+1372: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1375: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+1378: dup
+1379: iconst_1
+1380: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+1383: dup
+1384: iconst_0
+1385: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+1388: aastore
+1389: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+1392: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1395: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1398: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1401: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1404: dup
+1405: ldc_w #1511 = "TransitionTexture"
+1408: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+1411: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1414: invokedynamic 1513
+1419: invokedynamic 1514
+1424: invokedynamic 1515
+1429: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1432: getstatic #1372 = Field com.hypixel.hytale.server.core.asset.common.CommonAssetValidator.TEXTURE_ITEM(Lcom/hypixel/hytale/server/core/asset/common/CommonAssetValidator;)
+1435: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1438: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+1441: dup
+1442: iconst_2
+1443: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+1446: dup
+1447: iconst_0
+1448: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+1451: aastore
+1452: dup
+1453: iconst_1
+1454: getstatic #1333 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.BLOCK_TEXTURES(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+1457: aastore
+1458: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+1461: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1464: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1467: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1470: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1473: dup
+1474: ldc_w #1516 = "TransitionToGroups"
+1477: new #1349 = Class com.hypixel.hytale.codec.codecs.array.ArrayCodec
+1480: dup
+1481: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+1484: invokedynamic 1518
+1489: invokespecial #1356 = Method com.hypixel.hytale.codec.codecs.array.ArrayCodec.<init>((Lcom/hypixel/hytale/codec/Codec;Ljava/util/function/IntFunction;)V)
+1492: new #1262 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditor
+1495: dup
+1496: new #1264 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditor$TextField
+1499: dup
+1500: ldc_w #1266 = "BlockGroups"
+1503: invokespecial #1268 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditor$TextField.<init>((Ljava/lang/String;)V)
+1506: invokespecial #1269 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditor.<init>((Lcom/hypixel/hytale/codec/schema/metadata/ui/UIEditor$EditorComponent;)V)
+1509: invokevirtual #1519 = Method com.hypixel.hytale.codec.codecs.array.ArrayCodec.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/codecs/array/ArrayCodec;)
+1512: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1515: invokedynamic 1522
+1520: invokedynamic 1523
+1525: invokedynamic 1524
+1530: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1533: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+1536: dup
+1537: iconst_1
+1538: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+1541: dup
+1542: iconst_0
+1543: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+1546: aastore
+1547: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+1550: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1553: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1556: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1559: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1562: dup
+1563: ldc_w #1525 = "TransitionToTag"
+1566: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+1569: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1572: invokedynamic 1527
+1577: invokedynamic 1528
+1582: invokedynamic 1529
+1587: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1590: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+1593: dup
+1594: iconst_1
+1595: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+1598: dup
+1599: iconst_0
+1600: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+1603: aastore
+1604: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+1607: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1610: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1613: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1616: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1619: dup
+1620: ldc_w #1530 = "BlockParticleSetId"
+1623: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+1626: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1629: invokedynamic 1532
+1634: invokedynamic 1533
+1639: invokedynamic 1534
+1644: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1647: ldc_w #1535 = "The block particle set defined here defines which particles should be spawned when an entity interacts with this block (like when stepping on it for example"
+1650: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1653: getstatic #1537 = Field com.hypixel.hytale.server.core.asset.type.blockparticle.config.BlockParticleSet.VALIDATOR_CACHE(Lcom/hypixel/hytale/codec/validation/ValidatorCache;)
+1656: invokevirtual #1290 = Method com.hypixel.hytale.codec.validation.ValidatorCache.getValidator(()Lcom/hypixel/hytale/codec/validation/Validator;)
+1659: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1662: new #1342 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart
+1665: dup
+1666: ldc_w #1540 = "Particles"
+1669: invokespecial #1346 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart.<init>((Ljava/lang/String;)V)
+1672: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1675: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1678: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1681: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1684: dup
+1685: ldc_w #1542 = "ParticleColor"
+1688: getstatic #1544 = Field com.hypixel.hytale.server.core.codec.ProtocolCodecs.COLOR(Lcom/hypixel/hytale/server/core/codec/protocol/ColorCodec;)
+1691: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1694: invokedynamic 1548
+1699: invokedynamic 1549
+1704: invokedynamic 1550
+1709: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1712: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1715: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1718: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1721: dup
+1722: ldc_w #1551 = "TextureComputedColor"
+1725: getstatic #1544 = Field com.hypixel.hytale.server.core.codec.ProtocolCodecs.COLOR(Lcom/hypixel/hytale/server/core/codec/protocol/ColorCodec;)
+1728: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1731: invokedynamic 1553
+1736: invokedynamic 1554
+1741: invokedynamic 1555
+1746: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1749: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1752: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1755: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1758: dup
+1759: ldc_w #1540 = "Particles"
+1762: getstatic #1556 = Field com.hypixel.hytale.server.core.asset.type.model.config.ModelParticle.ARRAY_CODEC(Lcom/hypixel/hytale/codec/codecs/array/ArrayCodec;)
+1765: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1768: invokedynamic 1560
+1773: invokedynamic 1561
+1778: invokedynamic 1562
+1783: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1786: ldc_w #1563 = "The particles defined here will be spawned on top of blocks of this type placed in the world."
+1789: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1792: new #1362 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle
+1795: dup
+1796: ldc_w #1565 = "Block Particles"
+1799: invokespecial #1366 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIPropertyTitle.<init>((Ljava/lang/String;)V)
+1802: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1805: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+1808: dup
+1809: iconst_1
+1810: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+1813: dup
+1814: iconst_0
+1815: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+1818: aastore
+1819: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+1822: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1825: getstatic #1567 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIDefaultCollapsedState.UNCOLLAPSED(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIDefaultCollapsedState;)
+1828: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1831: invokestatic #1573 = Method com.hypixel.hytale.codec.validation.Validators.nonNullArrayElements(()Lcom/hypixel/hytale/codec/validation/validator/ArrayValidator;)
+1834: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1837: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1840: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1843: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1846: dup
+1847: ldc_w #1577 = "RandomRotation"
+1850: new #1314 = Class com.hypixel.hytale.codec.codecs.EnumCodec
+1853: dup
+1854: ldc #126 = Class com.hypixel.hytale.protocol.RandomRotation
+1856: invokespecial #1316 = Method com.hypixel.hytale.codec.codecs.EnumCodec.<init>((Ljava/lang/Class;)V)
+1859: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1862: invokedynamic 1579
+1867: invokedynamic 1580
+1872: invokedynamic 1581
+1877: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1880: new #1342 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart
+1883: dup
+1884: ldc_w #1582 = "Rotation"
+1887: invokespecial #1346 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart.<init>((Ljava/lang/String;)V)
+1890: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1893: invokestatic #1320 = Method com.hypixel.hytale.codec.validation.Validators.nonNull(()Lcom/hypixel/hytale/codec/validation/Validator;)
+1896: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1899: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1902: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1905: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1908: dup
+1909: ldc_w #1584 = "VariantRotation"
+1912: new #1314 = Class com.hypixel.hytale.codec.codecs.EnumCodec
+1915: dup
+1916: ldc #135 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.VariantRotation
+1918: invokespecial #1316 = Method com.hypixel.hytale.codec.codecs.EnumCodec.<init>((Ljava/lang/Class;)V)
+1921: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1924: invokedynamic 1586
+1929: invokedynamic 1587
+1934: invokedynamic 1588
+1939: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1942: invokestatic #1320 = Method com.hypixel.hytale.codec.validation.Validators.nonNull(()Lcom/hypixel/hytale/codec/validation/Validator;)
+1945: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1948: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1951: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1954: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+1957: dup
+1958: ldc_w #1589 = "FlipType"
+1961: new #1314 = Class com.hypixel.hytale.codec.codecs.EnumCodec
+1964: dup
+1965: ldc #143 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockFlipType
+1967: invokespecial #1316 = Method com.hypixel.hytale.codec.codecs.EnumCodec.<init>((Ljava/lang/Class;)V)
+1970: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+1973: invokedynamic 1591
+1978: invokedynamic 1592
+1983: invokedynamic 1593
+1988: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+1991: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+1994: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+1997: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2000: dup
+2001: ldc_w #1594 = "RotationYawPlacementOffset"
+2004: new #1314 = Class com.hypixel.hytale.codec.codecs.EnumCodec
+2007: dup
+2008: ldc #152 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.Rotation
+2010: invokespecial #1316 = Method com.hypixel.hytale.codec.codecs.EnumCodec.<init>((Ljava/lang/Class;)V)
+2013: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2016: invokedynamic 1596
+2021: invokedynamic 1597
+2026: invokedynamic 1598
+2031: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2034: invokestatic #1320 = Method com.hypixel.hytale.codec.validation.Validators.nonNull(()Lcom/hypixel/hytale/codec/validation/Validator;)
+2037: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2040: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2043: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2046: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2049: dup
+2050: ldc_w #1599 = "Seats"
+2053: getstatic #1601 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.mountpoints.RotatedMountPointsArray.CODEC(Lcom/hypixel/hytale/codec/Codec;)
+2056: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2059: invokedynamic 1604
+2064: invokedynamic 1605
+2069: invokedynamic 1606
+2074: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2077: new #1342 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart
+2080: dup
+2081: ldc_w #1607 = "Behaviour"
+2084: invokespecial #1346 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart.<init>((Ljava/lang/String;)V)
+2087: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2090: ldc_w #1609 = "The details of the seats on this block."
+2093: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2096: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2099: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2102: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2105: dup
+2106: ldc_w #1611 = "Beds"
+2109: getstatic #1601 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.mountpoints.RotatedMountPointsArray.CODEC(Lcom/hypixel/hytale/codec/Codec;)
+2112: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2115: invokedynamic 1613
+2120: invokedynamic 1614
+2125: invokedynamic 1615
+2130: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2133: ldc_w #1616 = "The details of the beds for this block."
+2136: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2139: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2142: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2145: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2148: dup
+2149: ldc_w #1618 = "MovementSettings"
+2152: getstatic #1620 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockMovementSettings.CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+2155: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2158: invokedynamic 1621
+2163: invokedynamic 1622
+2168: invokedynamic 1623
+2173: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2176: invokestatic #1320 = Method com.hypixel.hytale.codec.validation.Validators.nonNull(()Lcom/hypixel/hytale/codec/validation/Validator;)
+2179: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2182: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2185: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2188: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2191: dup
+2192: ldc_w #1624 = "Flags"
+2195: getstatic #1626 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockFlags.CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+2198: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2201: invokedynamic 1627
+2206: invokedynamic 1628
+2211: invokedynamic 1629
+2216: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2219: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2222: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2225: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2228: dup
+2229: ldc_w #1630 = "Bench"
+2232: getstatic #1632 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.bench.Bench.CODEC(Lcom/hypixel/hytale/codec/lookup/ObjectCodecMapCodec;)
+2235: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2238: invokedynamic 1635
+2243: invokedynamic 1636
+2248: invokedynamic 1637
+2253: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2256: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2259: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2262: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2265: dup
+2266: ldc_w #1638 = "Gathering"
+2269: getstatic #1640 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockGathering.CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+2272: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2275: invokedynamic 1641
+2280: invokedynamic 1642
+2285: invokedynamic 1643
+2290: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2293: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2296: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2299: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2302: dup
+2303: ldc_w #1644 = "PlacementSettings"
+2306: getstatic #1646 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockPlacementSettings.CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+2309: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2312: invokedynamic 1647
+2317: invokedynamic 1648
+2322: invokedynamic 1649
+2327: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2330: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2333: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2336: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2339: dup
+2340: ldc_w #1650 = "Farming"
+2343: getstatic #1652 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.farming.FarmingData.CODEC(Lcom/hypixel/hytale/codec/Codec;)
+2346: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2349: invokedynamic 1655
+2354: invokedynamic 1656
+2359: invokedynamic 1657
+2364: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2367: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2370: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2373: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2376: dup
+2377: ldc_w #1658 = "FallingBlockSettings"
+2380: getstatic #1660 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.fallingblocks.FallingBlockSettings.CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+2383: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2386: invokedynamic 1663
+2391: invokedynamic 1664
+2396: invokedynamic 1665
+2401: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2404: ldc_w #1666 = "Settings for blocks that can become falling block entities."
+2407: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2410: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2413: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2416: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2419: dup
+2420: ldc_w #1668 = "IsDoor"
+2423: getstatic #1426 = Field com.hypixel.hytale.codec.Codec.BOOLEAN(Lcom/hypixel/hytale/codec/codecs/simple/BooleanCodec;)
+2426: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2429: invokedynamic 1670
+2434: invokedynamic 1671
+2439: invokedynamic 1672
+2444: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2447: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2450: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2453: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2456: dup
+2457: ldc_w #1673 = "AllowsMultipleUsers"
+2460: getstatic #1426 = Field com.hypixel.hytale.codec.Codec.BOOLEAN(Lcom/hypixel/hytale/codec/codecs/simple/BooleanCodec;)
+2463: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2466: invokedynamic 1675
+2471: invokedynamic 1676
+2476: invokedynamic 1677
+2481: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2484: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2487: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2490: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2493: dup
+2494: ldc_w #1678 = "HitboxType"
+2497: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+2500: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2503: invokedynamic 1680
+2508: invokedynamic 1681
+2513: invokedynamic 1682
+2518: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2521: getstatic #1683 = Field com.hypixel.hytale.server.core.asset.type.blockhitbox.BlockBoundingBoxes.VALIDATOR_CACHE(Lcom/hypixel/hytale/codec/validation/ValidatorCache;)
+2524: invokevirtual #1290 = Method com.hypixel.hytale.codec.validation.ValidatorCache.getValidator(()Lcom/hypixel/hytale/codec/validation/Validator;)
+2527: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2530: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2533: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2536: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2539: dup
+2540: ldc_w #1684 = "InteractionHitboxType"
+2543: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+2546: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2549: invokedynamic 1686
+2554: invokedynamic 1687
+2559: invokedynamic 1688
+2564: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2567: getstatic #1683 = Field com.hypixel.hytale.server.core.asset.type.blockhitbox.BlockBoundingBoxes.VALIDATOR_CACHE(Lcom/hypixel/hytale/codec/validation/ValidatorCache;)
+2570: invokevirtual #1290 = Method com.hypixel.hytale.codec.validation.ValidatorCache.getValidator(()Lcom/hypixel/hytale/codec/validation/Validator;)
+2573: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2576: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2579: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2582: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2585: dup
+2586: ldc_w #1689 = "InteractionHint"
+2589: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+2592: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2595: invokedynamic 1691
+2600: invokedynamic 1692
+2605: invokedynamic 1693
+2610: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2613: ldc_w #1694 = "This property allows to specify custom text that will be displayed underneath the crosshair when the player aims at this block. The value of this property should be a reference to a translation. *{key}* will be replaced with the interaction input binding."
+2616: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2619: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2622: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2625: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2628: dup
+2629: ldc_w #1696 = "DamageToEntities"
+2632: getstatic #1698 = Field com.hypixel.hytale.codec.Codec.INTEGER(Lcom/hypixel/hytale/codec/codecs/simple/IntegerCodec;)
+2635: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2638: invokedynamic 1702
+2643: invokedynamic 1703
+2648: invokedynamic 1704
+2653: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2656: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2659: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2662: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2665: dup
+2666: ldc_w #1705 = "Interactions"
+2669: new #1707 = Class com.hypixel.hytale.codec.codecs.map.EnumMapCodec
+2672: dup
+2673: ldc_w #731 = Class com.hypixel.hytale.protocol.InteractionType
+2676: getstatic #1709 = Field com.hypixel.hytale.server.core.modules.interaction.interaction.config.RootInteraction.CHILD_ASSET_CODEC(Lcom/hypixel/hytale/assetstore/codec/ContainedAssetCodec;)
+2679: invokespecial #1713 = Method com.hypixel.hytale.codec.codecs.map.EnumMapCodec.<init>((Ljava/lang/Class;Lcom/hypixel/hytale/codec/Codec;)V)
+2682: invokevirtual #1716 = Method com.hypixel.hytale.codec.codecs.map.EnumMapCodec.allowNullValues(()Lcom/hypixel/hytale/codec/codecs/map/EnumMapCodec;)
+2685: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2688: invokedynamic 1720
+2693: invokedynamic 1721
+2698: invokedynamic 1722
+2703: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2706: ldc_w #1723 = "A null value removes the inherited interaction for that slot, so a block state can drop its parent's interaction entirely (e.g. a one-time switch becoming inert once turned on)."
+2709: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2712: getstatic #1725 = Field com.hypixel.hytale.server.core.modules.interaction.interaction.config.RootInteraction.VALIDATOR_CACHE(Lcom/hypixel/hytale/codec/validation/ValidatorCache;)
+2715: invokevirtual #1726 = Method com.hypixel.hytale.codec.validation.ValidatorCache.getMapValueValidator(()Lcom/hypixel/hytale/codec/validation/validator/MapValueValidator;)
+2718: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2721: new #1342 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart
+2724: dup
+2725: ldc_w #1705 = "Interactions"
+2728: invokespecial #1346 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart.<init>((Ljava/lang/String;)V)
+2731: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2734: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2737: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2740: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2743: dup
+2744: ldc_w #1730 = "BlockSoundSetId"
+2747: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+2750: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2753: invokedynamic 1732
+2758: invokedynamic 1733
+2763: invokedynamic 1734
+2768: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2771: ldc_w #1735 = "Sets the **BlockSoundSet** that will be used for this block for various events e.g. placement, breaking"
+2774: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2777: getstatic #1737 = Field com.hypixel.hytale.server.core.asset.type.blocksound.config.BlockSoundSet.VALIDATOR_CACHE(Lcom/hypixel/hytale/codec/validation/ValidatorCache;)
+2780: invokevirtual #1290 = Method com.hypixel.hytale.codec.validation.ValidatorCache.getValidator(()Lcom/hypixel/hytale/codec/validation/Validator;)
+2783: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2786: new #1342 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart
+2789: dup
+2790: ldc_w #1738 = "Sounds"
+2793: invokespecial #1346 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart.<init>((Ljava/lang/String;)V)
+2796: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2799: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2802: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2805: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2808: dup
+2809: ldc_w #1740 = "PhysicalMaterialId"
+2812: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+2815: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2818: invokedynamic 1742
+2823: invokedynamic 1743
+2828: invokedynamic 1744
+2833: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2836: ldc_w #1745 = "Sets the PhysicalMaterial of the block. Currently used primarily for acoustic properties."
+2839: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2842: getstatic #1747 = Field com.hypixel.hytale.server.core.asset.type.physicalmaterial.config.PhysicalMaterial.VALIDATOR_CACHE(Lcom/hypixel/hytale/codec/validation/ValidatorCache;)
+2845: invokevirtual #1290 = Method com.hypixel.hytale.codec.validation.ValidatorCache.getValidator(()Lcom/hypixel/hytale/codec/validation/Validator;)
+2848: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2851: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2854: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2857: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2860: dup
+2861: ldc_w #1748 = "SoundOcclusionOpacity"
+2864: getstatic #1435 = Field com.hypixel.hytale.codec.Codec.FLOAT(Lcom/hypixel/hytale/codec/codecs/simple/FloatCodec;)
+2867: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2870: invokedynamic 1750
+2875: invokedynamic 1751
+2880: invokedynamic 1752
+2885: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2888: ldc_w #1753 = "Scales per-source audio occlusion attenuation for this block. Multiplied with PhysicalMaterial AttenuationPerBlock. Set to 0, the material applies no attenuation. Set to 1 it applies the full specified attenuation. Can be set to values higher than 1 to increase attenuation until no sound penetrates."
+2891: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2894: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2897: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2900: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2903: dup
+2904: ldc_w #1755 = "AmbientSoundEventId"
+2907: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+2910: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2913: invokedynamic 1757
+2918: invokedynamic 1758
+2923: invokedynamic 1759
+2928: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2931: getstatic #1760 = Field com.hypixel.hytale.server.core.asset.type.soundevent.config.SoundEvent.VALIDATOR_CACHE(Lcom/hypixel/hytale/codec/validation/ValidatorCache;)
+2934: invokevirtual #1290 = Method com.hypixel.hytale.codec.validation.ValidatorCache.getValidator(()Lcom/hypixel/hytale/codec/validation/Validator;)
+2937: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2940: getstatic #1761 = Field com.hypixel.hytale.server.core.asset.type.soundevent.validator.SoundEventValidators.MONO(Lcom/hypixel/hytale/server/core/asset/type/soundevent/validator/SoundEventValidators$ChannelValidator;)
+2943: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2946: getstatic #1767 = Field com.hypixel.hytale.server.core.asset.type.soundevent.validator.SoundEventValidators.LOOPING(Lcom/hypixel/hytale/server/core/asset/type/soundevent/validator/SoundEventValidators$LoopValidator;)
+2949: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2952: ldc_w #1771 = "A looping ambient sound event that emits from this block when placed in the world or held in-hand."
+2955: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+2958: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+2961: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+2964: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+2967: dup
+2968: ldc_w #1773 = "ConditionalSounds"
+2971: new #1349 = Class com.hypixel.hytale.codec.codecs.array.ArrayCodec
+2974: dup
+2975: getstatic #1775 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.ConditionalBlockSound.CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+2978: invokedynamic 1776
+2983: invokespecial #1356 = Method com.hypixel.hytale.codec.codecs.array.ArrayCodec.<init>((Lcom/hypixel/hytale/codec/Codec;Ljava/util/function/IntFunction;)V)
+2986: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+2989: invokedynamic 1777
+2994: invokedynamic 1778
+2999: invokedynamic 1779
+3004: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3007: ldc_w #1780 = "An array of conditional ambient sounds. Each entry references a looping sound event and an AmbienceFX whose conditions determine when the sound plays from this block."
+3010: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3013: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3016: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3019: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3022: dup
+3023: ldc_w #1782 = "InteractionSoundEventId"
+3026: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+3029: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3032: invokedynamic 1784
+3037: invokedynamic 1785
+3042: invokedynamic 1786
+3047: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3050: getstatic #1760 = Field com.hypixel.hytale.server.core.asset.type.soundevent.config.SoundEvent.VALIDATOR_CACHE(Lcom/hypixel/hytale/codec/validation/ValidatorCache;)
+3053: invokevirtual #1290 = Method com.hypixel.hytale.codec.validation.ValidatorCache.getValidator(()Lcom/hypixel/hytale/codec/validation/Validator;)
+3056: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3059: getstatic #1761 = Field com.hypixel.hytale.server.core.asset.type.soundevent.validator.SoundEventValidators.MONO(Lcom/hypixel/hytale/server/core/asset/type/soundevent/validator/SoundEventValidators$ChannelValidator;)
+3062: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3065: getstatic #1787 = Field com.hypixel.hytale.server.core.asset.type.soundevent.validator.SoundEventValidators.ONESHOT(Lcom/hypixel/hytale/server/core/asset/type/soundevent/validator/SoundEventValidators$LoopValidator;)
+3068: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3071: ldc_w #1790 = "A oneshot sound event that plays upon interaction with this block."
+3074: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3077: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3080: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3083: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3086: dup
+3087: ldc_w #1792 = "Looping"
+3090: getstatic #1426 = Field com.hypixel.hytale.codec.Codec.BOOLEAN(Lcom/hypixel/hytale/codec/codecs/simple/BooleanCodec;)
+3093: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3096: invokedynamic 1794
+3101: invokedynamic 1795
+3106: invokedynamic 1796
+3111: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3114: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+3117: dup
+3118: iconst_1
+3119: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+3122: dup
+3123: iconst_0
+3124: getstatic #1329 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MODELS(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+3127: aastore
+3128: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+3131: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3134: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3137: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3140: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3143: dup
+3144: ldc_w #1797 = "SupportDropType"
+3147: getstatic #1799 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.SupportDropType.CODEC(Lcom/hypixel/hytale/codec/codecs/EnumCodec;)
+3150: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3153: invokedynamic 1802
+3158: invokedynamic 1803
+3163: invokedynamic 1804
+3168: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3171: new #1342 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart
+3174: dup
+3175: ldc_w #1805 = "Support"
+3178: invokespecial #1346 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart.<init>((Ljava/lang/String;)V)
+3181: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3184: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3187: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3190: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3193: dup
+3194: ldc_w #1807 = "MaxSupportDistance"
+3197: getstatic #1698 = Field com.hypixel.hytale.codec.Codec.INTEGER(Lcom/hypixel/hytale/codec/codecs/simple/IntegerCodec;)
+3200: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3203: invokedynamic 1809
+3208: invokedynamic 1810
+3213: invokedynamic 1811
+3218: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3221: iconst_0
+3222: invokestatic #762 = Method java.lang.Integer.valueOf((I)Ljava/lang/Integer;)
+3225: bipush 14
+3227: invokestatic #762 = Method java.lang.Integer.valueOf((I)Ljava/lang/Integer;)
+3230: invokestatic #1812 = Method com.hypixel.hytale.codec.validation.Validators.range((Ljava/lang/Comparable;Ljava/lang/Comparable;)Lcom/hypixel/hytale/codec/validation/Validator;)
+3233: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3236: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3239: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3242: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3245: dup
+3246: ldc_w #1816 = "SupportsRequiredFor"
+3249: new #1314 = Class com.hypixel.hytale.codec.codecs.EnumCodec
+3252: dup
+3253: ldc #117 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockSupportsRequiredForType
+3255: invokespecial #1316 = Method com.hypixel.hytale.codec.codecs.EnumCodec.<init>((Ljava/lang/Class;)V)
+3258: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3261: invokedynamic 1818
+3266: invokedynamic 1819
+3271: invokedynamic 1820
+3276: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3279: invokestatic #1320 = Method com.hypixel.hytale.codec.validation.Validators.nonNull(()Lcom/hypixel/hytale/codec/validation/Validator;)
+3282: invokevirtual #1296 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/Validator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3285: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3288: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3291: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3294: dup
+3295: ldc_w #1805 = "Support"
+3298: new #1821 = Class com.hypixel.hytale.codec.codecs.map.MergedEnumMapCodec
+3301: dup
+3302: ldc_w #511 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockFace
+3305: ldc_w #1823 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.MergedBlockFaces
+3308: invokedynamic 1825
+3313: invokedynamic 1826
+3318: new #1349 = Class com.hypixel.hytale.codec.codecs.array.ArrayCodec
+3321: dup
+3322: getstatic #1829 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.RequiredBlockFaceSupport.CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+3325: invokedynamic 1830
+3330: invokespecial #1356 = Method com.hypixel.hytale.codec.codecs.array.ArrayCodec.<init>((Lcom/hypixel/hytale/codec/Codec;Ljava/util/function/IntFunction;)V)
+3333: invokespecial #1831 = Method com.hypixel.hytale.codec.codecs.map.MergedEnumMapCodec.<init>((Ljava/lang/Class;Ljava/lang/Class;Ljava/util/function/Function;Ljava/util/function/BiFunction;Lcom/hypixel/hytale/codec/Codec;)V)
+3336: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3339: invokedynamic 1834
+3344: invokedynamic 1835
+3349: invokedynamic 1836
+3354: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3357: getstatic #1837 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.RequiredBlockFaceSupportValidator.INSTANCE(Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/RequiredBlockFaceSupportValidator;)
+3360: invokevirtual #1843 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.addValidator((Lcom/hypixel/hytale/codec/validation/LegacyValidator;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3363: ldc_w #1846 = "A set of "Required Support" conditions. If met, the block won't fall off from block physics checks.
+*If this field is empty the block is automatically considered supported.*
+"
+3366: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3369: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3372: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3375: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3378: dup
+3379: ldc_w #1848 = "Supporting"
+3382: new #1821 = Class com.hypixel.hytale.codec.codecs.map.MergedEnumMapCodec
+3385: dup
+3386: ldc_w #511 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockFace
+3389: ldc_w #1823 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.MergedBlockFaces
+3392: invokedynamic 1825
+3397: invokedynamic 1850
+3402: new #1349 = Class com.hypixel.hytale.codec.codecs.array.ArrayCodec
+3405: dup
+3406: getstatic #1851 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockFaceSupport.CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+3409: invokedynamic 1852
+3414: invokespecial #1356 = Method com.hypixel.hytale.codec.codecs.array.ArrayCodec.<init>((Lcom/hypixel/hytale/codec/Codec;Ljava/util/function/IntFunction;)V)
+3417: invokespecial #1831 = Method com.hypixel.hytale.codec.codecs.map.MergedEnumMapCodec.<init>((Ljava/lang/Class;Ljava/lang/Class;Ljava/util/function/Function;Ljava/util/function/BiFunction;Lcom/hypixel/hytale/codec/Codec;)V)
+3420: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3423: invokedynamic 1853
+3428: invokedynamic 1854
+3433: invokedynamic 1855
+3438: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3441: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3444: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3447: ldc_w #1856 = "The counter-party to "Support". This block offers supporting faces which can match the face requirements of adjacent/nearby blocks."
+3450: invokevirtual #1235 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3453: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3456: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3459: dup
+3460: ldc_w #1858 = "IgnoreSupportWhenPlaced"
+3463: getstatic #1426 = Field com.hypixel.hytale.codec.Codec.BOOLEAN(Lcom/hypixel/hytale/codec/codecs/simple/BooleanCodec;)
+3466: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3469: invokedynamic 1860
+3474: invokedynamic 1861
+3479: invokedynamic 1862
+3484: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3487: ldc_w #1863 = "Whether when this block is placed by a player that the support requirements should be ignored."
+3490: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3493: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3496: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3499: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3502: dup
+3503: ldc_w #1865 = "Aliases"
+3506: new #1349 = Class com.hypixel.hytale.codec.codecs.array.ArrayCodec
+3509: dup
+3510: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+3513: invokedynamic 1867
+3518: invokespecial #1356 = Method com.hypixel.hytale.codec.codecs.array.ArrayCodec.<init>((Lcom/hypixel/hytale/codec/Codec;Ljava/util/function/IntFunction;)V)
+3521: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3524: invokedynamic 1868
+3529: invokedynamic 1869
+3534: invokevirtual #1870 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.append((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3537: ldc_w #1874 = "Specifies the alternatives names (aliases) for a block type for use in command matching"
+3540: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3543: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3546: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3549: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3552: dup
+3553: ldc_w #1876 = "Tint"
+3556: getstatic #1878 = Field com.hypixel.hytale.server.core.codec.ProtocolCodecs.COLOR_ARRAY(Lcom/hypixel/hytale/codec/codecs/array/ArrayCodec;)
+3559: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3562: invokedynamic 1881
+3567: invokedynamic 1882
+3572: invokevirtual #1870 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.append((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3575: new #1342 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart
+3578: dup
+3579: ldc_w #1876 = "Tint"
+3582: invokespecial #1346 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart.<init>((Ljava/lang/String;)V)
+3585: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3588: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+3591: dup
+3592: iconst_1
+3593: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+3596: dup
+3597: iconst_0
+3598: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+3601: aastore
+3602: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+3605: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3608: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3611: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3614: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3617: dup
+3618: ldc_w #1886 = "TintUp"
+3621: getstatic #1878 = Field com.hypixel.hytale.server.core.codec.ProtocolCodecs.COLOR_ARRAY(Lcom/hypixel/hytale/codec/codecs/array/ArrayCodec;)
+3624: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3627: invokedynamic 1888
+3632: invokedynamic 1889
+3637: invokedynamic 1890
+3642: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3645: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+3648: dup
+3649: iconst_1
+3650: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+3653: dup
+3654: iconst_0
+3655: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+3658: aastore
+3659: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+3662: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3665: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3668: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3671: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3674: dup
+3675: ldc_w #1891 = "TintDown"
+3678: getstatic #1878 = Field com.hypixel.hytale.server.core.codec.ProtocolCodecs.COLOR_ARRAY(Lcom/hypixel/hytale/codec/codecs/array/ArrayCodec;)
+3681: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3684: invokedynamic 1893
+3689: invokedynamic 1894
+3694: invokedynamic 1895
+3699: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3702: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+3705: dup
+3706: iconst_1
+3707: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+3710: dup
+3711: iconst_0
+3712: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+3715: aastore
+3716: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+3719: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3722: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3725: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3728: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3731: dup
+3732: ldc_w #1896 = "TintNorth"
+3735: getstatic #1878 = Field com.hypixel.hytale.server.core.codec.ProtocolCodecs.COLOR_ARRAY(Lcom/hypixel/hytale/codec/codecs/array/ArrayCodec;)
+3738: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3741: invokedynamic 1898
+3746: invokedynamic 1899
+3751: invokedynamic 1900
+3756: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3759: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+3762: dup
+3763: iconst_1
+3764: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+3767: dup
+3768: iconst_0
+3769: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+3772: aastore
+3773: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+3776: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3779: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3782: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3785: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3788: dup
+3789: ldc_w #1901 = "TintSouth"
+3792: getstatic #1878 = Field com.hypixel.hytale.server.core.codec.ProtocolCodecs.COLOR_ARRAY(Lcom/hypixel/hytale/codec/codecs/array/ArrayCodec;)
+3795: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3798: invokedynamic 1903
+3803: invokedynamic 1904
+3808: invokedynamic 1905
+3813: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3816: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+3819: dup
+3820: iconst_1
+3821: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+3824: dup
+3825: iconst_0
+3826: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+3829: aastore
+3830: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+3833: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3836: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3839: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3842: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3845: dup
+3846: ldc_w #1906 = "TintWest"
+3849: getstatic #1878 = Field com.hypixel.hytale.server.core.codec.ProtocolCodecs.COLOR_ARRAY(Lcom/hypixel/hytale/codec/codecs/array/ArrayCodec;)
+3852: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3855: invokedynamic 1908
+3860: invokedynamic 1909
+3865: invokedynamic 1910
+3870: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3873: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+3876: dup
+3877: iconst_1
+3878: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+3881: dup
+3882: iconst_0
+3883: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+3886: aastore
+3887: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+3890: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3893: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3896: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3899: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3902: dup
+3903: ldc_w #1911 = "TintEast"
+3906: getstatic #1878 = Field com.hypixel.hytale.server.core.codec.ProtocolCodecs.COLOR_ARRAY(Lcom/hypixel/hytale/codec/codecs/array/ArrayCodec;)
+3909: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3912: invokedynamic 1913
+3917: invokedynamic 1914
+3922: invokedynamic 1915
+3927: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3930: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+3933: dup
+3934: iconst_1
+3935: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+3938: dup
+3939: iconst_0
+3940: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+3943: aastore
+3944: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+3947: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3950: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+3953: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+3956: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+3959: dup
+3960: ldc_w #1916 = "BiomeTint"
+3963: getstatic #1698 = Field com.hypixel.hytale.codec.Codec.INTEGER(Lcom/hypixel/hytale/codec/codecs/simple/IntegerCodec;)
+3966: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+3969: invokedynamic 1918
+3974: invokedynamic 1919
+3979: invokevirtual #1870 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.append((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+3982: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+3985: dup
+3986: iconst_1
+3987: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+3990: dup
+3991: iconst_0
+3992: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+3995: aastore
+3996: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+3999: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4002: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4005: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4008: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+4011: dup
+4012: ldc_w #1920 = "BiomeTintUp"
+4015: getstatic #1698 = Field com.hypixel.hytale.codec.Codec.INTEGER(Lcom/hypixel/hytale/codec/codecs/simple/IntegerCodec;)
+4018: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+4021: invokedynamic 1922
+4026: invokedynamic 1923
+4031: invokedynamic 1924
+4036: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4039: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+4042: dup
+4043: iconst_1
+4044: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+4047: dup
+4048: iconst_0
+4049: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+4052: aastore
+4053: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+4056: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4059: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4062: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4065: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+4068: dup
+4069: ldc_w #1925 = "BiomeTintDown"
+4072: getstatic #1698 = Field com.hypixel.hytale.codec.Codec.INTEGER(Lcom/hypixel/hytale/codec/codecs/simple/IntegerCodec;)
+4075: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+4078: invokedynamic 1927
+4083: invokedynamic 1928
+4088: invokedynamic 1929
+4093: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4096: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+4099: dup
+4100: iconst_1
+4101: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+4104: dup
+4105: iconst_0
+4106: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+4109: aastore
+4110: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+4113: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4116: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4119: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4122: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+4125: dup
+4126: ldc_w #1930 = "BiomeTintNorth"
+4129: getstatic #1698 = Field com.hypixel.hytale.codec.Codec.INTEGER(Lcom/hypixel/hytale/codec/codecs/simple/IntegerCodec;)
+4132: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+4135: invokedynamic 1932
+4140: invokedynamic 1933
+4145: invokedynamic 1934
+4150: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4153: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+4156: dup
+4157: iconst_1
+4158: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+4161: dup
+4162: iconst_0
+4163: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+4166: aastore
+4167: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+4170: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4173: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4176: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4179: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+4182: dup
+4183: ldc_w #1935 = "BiomeTintSouth"
+4186: getstatic #1698 = Field com.hypixel.hytale.codec.Codec.INTEGER(Lcom/hypixel/hytale/codec/codecs/simple/IntegerCodec;)
+4189: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+4192: invokedynamic 1937
+4197: invokedynamic 1938
+4202: invokedynamic 1939
+4207: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4210: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+4213: dup
+4214: iconst_1
+4215: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+4218: dup
+4219: iconst_0
+4220: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+4223: aastore
+4224: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+4227: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4230: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4233: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4236: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+4239: dup
+4240: ldc_w #1940 = "BiomeTintWest"
+4243: getstatic #1698 = Field com.hypixel.hytale.codec.Codec.INTEGER(Lcom/hypixel/hytale/codec/codecs/simple/IntegerCodec;)
+4246: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+4249: invokedynamic 1942
+4254: invokedynamic 1943
+4259: invokedynamic 1944
+4264: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4267: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+4270: dup
+4271: iconst_1
+4272: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+4275: dup
+4276: iconst_0
+4277: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+4280: aastore
+4281: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+4284: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4287: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4290: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4293: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+4296: dup
+4297: ldc_w #1945 = "BiomeTintEast"
+4300: getstatic #1698 = Field com.hypixel.hytale.codec.Codec.INTEGER(Lcom/hypixel/hytale/codec/codecs/simple/IntegerCodec;)
+4303: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+4306: invokedynamic 1947
+4311: invokedynamic 1948
+4316: invokedynamic 1949
+4321: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4324: new #1325 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches
+4327: dup
+4328: iconst_1
+4329: anewarray #1327 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache
+4332: dup
+4333: iconst_0
+4334: getstatic #1883 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches$ClientCache.MAP_GEOMETRY(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)
+4337: aastore
+4338: invokespecial #1339 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIRebuildCaches.<init>(([Lcom/hypixel/hytale/codec/schema/metadata/ui/UIRebuildCaches$ClientCache;)V)
+4341: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4344: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4347: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4350: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+4353: dup
+4354: ldc_w #1950 = "State"
+4357: getstatic #1952 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.StateData.CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+4360: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+4363: invokedynamic 1953
+4368: invokedynamic 1954
+4373: invokedynamic 1955
+4378: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4381: new #1342 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart
+4384: dup
+4385: ldc_w #1950 = "State"
+4388: invokespecial #1346 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart.<init>((Ljava/lang/String;)V)
+4391: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4394: getstatic #1567 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIDefaultCollapsedState.UNCOLLAPSED(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIDefaultCollapsedState;)
+4397: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4400: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4403: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4406: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+4409: dup
+4410: ldc_w #1956 = "BlockEntity"
+4413: new #1958 = Class com.hypixel.hytale.codec.store.StoredCodec
+4416: dup
+4417: getstatic #1960 = Field com.hypixel.hytale.server.core.universe.world.storage.ChunkStore.HOLDER_CODEC_KEY(Lcom/hypixel/hytale/codec/store/CodecKey;)
+4420: invokespecial #1966 = Method com.hypixel.hytale.codec.store.StoredCodec.<init>((Lcom/hypixel/hytale/codec/store/CodecKey;)V)
+4423: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+4426: invokedynamic 1969
+4431: invokedynamic 1970
+4436: invokedynamic 1971
+4441: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4444: new #1342 = Class com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart
+4447: dup
+4448: ldc_w #1972 = "Components"
+4451: invokespecial #1346 = Method com.hypixel.hytale.codec.schema.metadata.ui.UIEditorSectionStart.<init>((Ljava/lang/String;)V)
+4454: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4457: getstatic #1567 = Field com.hypixel.hytale.codec.schema.metadata.ui.UIDefaultCollapsedState.UNCOLLAPSED(Lcom/hypixel/hytale/codec/schema/metadata/ui/UIDefaultCollapsedState;)
+4460: invokevirtual #1272 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.metadata((Lcom/hypixel/hytale/codec/schema/metadata/Metadata;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4463: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4466: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4469: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+4472: dup
+4473: ldc_w #1974 = "Rail"
+4476: getstatic #1976 = Field com.hypixel.hytale.server.core.codec.ProtocolCodecs.RAIL_CONFIG_CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+4479: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+4482: invokedynamic 1979
+4487: invokedynamic 1980
+4492: invokedynamic 1981
+4497: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4500: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4503: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4506: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+4509: dup
+4510: ldc_w #1982 = "ExplosionConfig"
+4513: getstatic #1984 = Field com.hypixel.hytale.server.core.entity.ExplosionConfig.CODEC(Lcom/hypixel/hytale/codec/builder/BuilderCodec;)
+4516: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+4519: invokedynamic 1987
+4524: invokedynamic 1988
+4529: invokedynamic 1989
+4534: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4537: ldc_w #1990 = "The explosion config associated with this block."
+4540: invokevirtual #1257 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.documentation((Ljava/lang/String;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4543: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4546: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4549: new #1241 = Class com.hypixel.hytale.codec.KeyedCodec
+4552: dup
+4553: ldc_w #1992 = "ExplosionReactionState"
+4556: getstatic #1214 = Field com.hypixel.hytale.codec.Codec.STRING(Lcom/hypixel/hytale/codec/codecs/simple/StringCodec;)
+4559: invokespecial #1245 = Method com.hypixel.hytale.codec.KeyedCodec.<init>((Ljava/lang/String;Lcom/hypixel/hytale/codec/Codec;)V)
+4562: invokedynamic 1994
+4567: invokedynamic 1995
+4572: invokedynamic 1996
+4577: invokevirtual #1251 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.appendInherited((Lcom/hypixel/hytale/codec/KeyedCodec;Ljava/util/function/BiConsumer;Ljava/util/function/Function;Ljava/util/function/BiConsumer;)Lcom/hypixel/hytale/codec/builder/BuilderField$FieldBuilder;)
+4580: invokevirtual #1276 = Method com.hypixel.hytale.codec.builder.BuilderField$FieldBuilder.add(()Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4583: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4586: invokedynamic 1997
+4591: invokevirtual #2000 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.afterDecode((Ljava/util/function/Consumer;)Lcom/hypixel/hytale/codec/builder/BuilderCodec$BuilderBase;)
+4594: checkcast #1236 = Class com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder
+4597: invokevirtual #2004 = Method com.hypixel.hytale.assetstore.codec.AssetBuilderCodec$Builder.build(()Lcom/hypixel/hytale/assetstore/codec/AssetBuilderCodec;)
+4600: putstatic #2008 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.CODEC(Lcom/hypixel/hytale/assetstore/codec/AssetBuilderCodec;)
+4603: iconst_0
+4604: anewarray #733 = Class java.lang.String
+4607: putstatic #212 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.EMPTY_ALIAS_LIST([Ljava/lang/String;)
+4610: invokestatic #2011 = Method com.hypixel.hytale.server.core.asset.type.blocktype.config.StateData.addDefinitions(()V)
+4613: new #1291 = Class com.hypixel.hytale.codec.validation.ValidatorCache
+4616: dup
+4617: new #2014 = Class com.hypixel.hytale.assetstore.AssetKeyValidator
+4620: dup
+4621: invokedynamic 2016
+4626: invokespecial #2017 = Method com.hypixel.hytale.assetstore.AssetKeyValidator.<init>((Ljava/util/function/Supplier;)V)
+4629: invokespecial #2020 = Method com.hypixel.hytale.codec.validation.ValidatorCache.<init>((Lcom/hypixel/hytale/codec/validation/Validator;)V)
+4632: putstatic #2023 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.VALIDATOR_CACHE(Lcom/hypixel/hytale/codec/validation/ValidatorCache;)
+4635: iconst_1
+4636: anewarray #590 = Class com.hypixel.hytale.protocol.ModelTexture
+4639: dup
+4640: iconst_0
+4641: new #590 = Class com.hypixel.hytale.protocol.ModelTexture
+4644: dup
+4645: ldc_w #2024 = "BlockTextures/Unknown.png"
+4648: fconst_1
+4649: invokespecial #2026 = Method com.hypixel.hytale.protocol.ModelTexture.<init>((Ljava/lang/String;F)V)
+4652: aastore
+4653: putstatic #599 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.UNKNOWN_CUSTOM_MODEL_TEXTURE([Lcom/hypixel/hytale/protocol/ModelTexture;)
+4656: iconst_1
+4657: anewarray #570 = Class com.hypixel.hytale.protocol.BlockTextures
+4660: dup
+4661: iconst_0
+4662: new #570 = Class com.hypixel.hytale.protocol.BlockTextures
+4665: dup
+4666: ldc_w #2024 = "BlockTextures/Unknown.png"
+4669: ldc_w #2024 = "BlockTextures/Unknown.png"
+4672: ldc_w #2024 = "BlockTextures/Unknown.png"
+4675: ldc_w #2024 = "BlockTextures/Unknown.png"
+4678: ldc_w #2024 = "BlockTextures/Unknown.png"
+4681: ldc_w #2024 = "BlockTextures/Unknown.png"
+4684: fconst_1
+4685: invokespecial #2029 = Method com.hypixel.hytale.protocol.BlockTextures.<init>((Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;F)V)
+4688: aastore
+4689: putstatic #579 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.UNKNOWN_BLOCK_TEXTURES([Lcom/hypixel/hytale/protocol/BlockTextures;)
+4692: getstatic #2032 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockFace.DOWN(Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockFace;)
+4695: iconst_1
+4696: anewarray #503 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.RequiredBlockFaceSupport
+4699: dup
+4700: iconst_0
+4701: new #503 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.RequiredBlockFaceSupport
+4704: dup
+4705: ldc #161 = "Full"
+4707: invokespecial #2036 = Method com.hypixel.hytale.server.core.asset.type.blocktype.config.RequiredBlockFaceSupport.<init>((Ljava/lang/String;)V)
+4710: aastore
+4711: invokestatic #2037 = Method java.util.Map.of((Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/Map;)
+4714: putstatic #1022 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.REQUIRED_BOTTOM_FACE_SUPPORT(Ljava/util/Map;)
+4717: iconst_1
+4718: anewarray #527 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockFaceSupport
+4721: dup
+4722: iconst_0
+4723: getstatic #2041 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockFaceSupport.ALL(Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockFaceSupport;)
+4726: aastore
+4727: putstatic #2045 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.BLOCK_FACE_SUPPORT_ALL_ARRAY([Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockFaceSupport;)
+4730: new #884 = Class java.util.EnumMap
+4733: dup
+4734: ldc_w #511 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockFace
+4737: invokespecial #886 = Method java.util.EnumMap.<init>((Ljava/lang/Class;)V)
+4740: astore_0
+4741: getstatic #2048 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockFace.VALUES([Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockFace;)
+4744: astore_1
+4745: aload_1
+4746: arraylength
+4747: istore_2
+4748: iconst_0
+4749: istore_3
+4750: iload_3
+4751: iload_2
+4752: if_icmpge 4776
+4755: aload_1
+4756: iload_3
+4757: aaload
+4758: astore 4
+4760: aload_0
+4761: aload 4
+4763: getstatic #2045 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.BLOCK_FACE_SUPPORT_ALL_ARRAY([Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockFaceSupport;)
+4766: invokevirtual #2051 = Method java.util.EnumMap.put((Ljava/lang/Enum;Ljava/lang/Object;)Ljava/lang/Object;)
+4769: pop
+4770: iinc 3, 1
+4773: goto 4750
+4776: aload_0
+4777: invokestatic #1084 = Method java.util.Collections.unmodifiableMap((Ljava/util/Map;)Ljava/util/Map;)
+4780: putstatic #868 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.ALL_SUPPORTING_FACES(Ljava/util/Map;)
+4783: iconst_1
+4784: anewarray #1209 = Class com.hypixel.hytale.protocol.ShaderType
+4787: dup
+4788: iconst_0
+4789: getstatic #2054 = Field com.hypixel.hytale.protocol.ShaderType.None(Lcom/hypixel/hytale/protocol/ShaderType;)
+4792: aastore
+4793: putstatic #561 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.DEFAULT_SHADER_EFFECTS([Lcom/hypixel/hytale/protocol/ShaderType;)
+4796: new #2 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType
+4799: dup
+4800: invokespecial #2057 = Method com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.<init>(()V)
+4803: putstatic #2058 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.DEFAULT_BLOCK_TYPE(Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockType;)
+4806: new #2061 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType$1
+4809: dup
+4810: invokespecial #2063 = Method com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType$1.<init>(()V)
+4813: putstatic #2064 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.KEY_MEMORY_SERIALIZER(Lcom/hypixel/hytale/server/core/universe/world/chunk/section/palette/AbstractSectionPalette$KeyMemorySerializer;)
+4816: new #2068 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType$2
+4819: dup
+4820: invokespecial #2070 = Method com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType$2.<init>(()V)
+4823: putstatic #2071 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.KEY_MEMORY_DESERIALIZER(Lcom/hypixel/hytale/server/core/universe/world/chunk/section/palette/AbstractSectionPalette$KeyMemoryDeserializer;)
+4826: new #2075 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType$3
+4829: dup
+4830: ldc_w #2077 = "Empty"
+4833: invokespecial #2078 = Method com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType$3.<init>((Ljava/lang/String;)V)
+4836: putstatic #2079 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.EMPTY(Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockType;)
+4839: new #2081 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType$4
+4842: dup
+4843: ldc_w #2083 = "Unknown"
+4846: invokespecial #2085 = Method com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType$4.<init>((Ljava/lang/String;)V)
+4849: putstatic #1095 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.UNKNOWN(Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockType;)
+4852: new #2086 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType$5
+4855: dup
+4856: ldc_w #2088 = "Debug_Cube"
+4859: invokespecial #2090 = Method com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType$5.<init>((Ljava/lang/String;)V)
+4862: putstatic #2091 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.DEBUG_CUBE(Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockType;)
+4865: new #2094 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType$6
+4868: dup
+4869: ldc_w #2096 = "Debug_Model"
+4872: invokespecial #2098 = Method com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType$6.<init>((Ljava/lang/String;)V)
+4875: putstatic #2099 = Field com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.DEBUG_MODEL(Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockType;)
+4878: return
+
