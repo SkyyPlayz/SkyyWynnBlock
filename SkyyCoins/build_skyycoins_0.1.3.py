@@ -1,0 +1,389 @@
+"""SkyyCoins 0.1.3 - build script (javassist via jpype).
+Run:   python build_skyycoins_0.1.2.py            -> SkyyCoins/SkyyCoins-0.1.1.jar
+       python build_skyycoins_0.1.2.py --deploy   -> also copies to Mods/SkyyCoins.jar and enables it in the HUD mod world
+Fixes vs 0.1 (code review 2026-09-22): atomic /pay transfer (synchronized ledger), permission gates on
+/coinsgive and /deathpenalty, config range validation, world-thread re-check in the death task,
+atomic file writes, logged I/O failures, ticker cancelled on shutdown, DEAD/GRANTED maps pruned,
+/deathpenalty with no argument shows the current setting.
+0.1.3: publishes bridge FUNCTIONS (java.util.function.Function objects) so other Skyy mods can get/add/take coins with zero deps:
+  "coins:fn:get"  apply(UUID) -> Long balance
+  "coins:fn:add"  apply(Object[]{UUID, Long delta}) -> Long new balance (delta may be negative, clamps at 0)
+  "coins:fn:take" apply(Object[]{UUID, Long amount}) -> Boolean (false = not enough, nothing taken)
+0.1.2: publishes balances to the JVM bridge (System property "skyy.bridge", key "coins:<uuid>") so SkyyHud can show a Coins widget without a dependency.
+"""
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools"))
+import skyybuild as B
+
+VERSION = "0.1.3"
+HERE = os.path.dirname(os.path.abspath(__file__))
+J = B.start()
+pool, CtField, CtNewMethod, CtNewConstructor = J["pool"], J["CtField"], J["CtNewMethod"], J["CtNewConstructor"]
+OUT = B.class_out(HERE)
+
+JP  = "com.hypixel.hytale.server.core.plugin.JavaPlugin"
+JPI = "com.hypixel.hytale.server.core.plugin.JavaPluginInit"
+PR  = "com.hypixel.hytale.server.core.universe.PlayerRef"
+REF = "com.hypixel.hytale.component.Ref"
+ST  = "com.hypixel.hytale.component.Store"
+UNI = "com.hypixel.hytale.server.core.universe.Universe"
+WLD = "com.hypixel.hytale.server.core.universe.world.World"
+APC = "com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand"
+CTX = "com.hypixel.hytale.server.core.command.system.CommandContext"
+MSG = "com.hypixel.hytale.server.core.Message"
+HSV = "com.hypixel.hytale.server.core.HytaleServer"
+ATY = "com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes"
+RA  = "com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg"
+OA  = "com.hypixel.hytale.server.core.command.system.arguments.system.OptionalArg"
+DC  = "com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent"
+LOG = "com.hypixel.hytale.logger.HytaleLogger"
+
+for c, m in ((DC, "getComponentType"), (HSV, "SCHEDULED_EXECUTOR"), (CTX, "provided"),
+             ("com.hypixel.hytale.server.core.command.system.AbstractCommand", "requirePermission"),
+             ("com.hypixel.hytale.server.core.plugin.PluginBase", "shutdown")):
+    B.probe(pool, c, m)
+
+PKG = "com.skyy.coins"
+cs   = pool.makeClass(PKG + ".CoinStore")
+cfg  = pool.makeClass(PKG + ".CoinConfig")
+task = pool.makeClass(PKG + ".CoinTask")
+tick = pool.makeClass(PKG + ".CoinTick")
+bal  = pool.makeClass(PKG + ".BalanceCmd", pool.get(APC))
+pay  = pool.makeClass(PKG + ".PayCmd", pool.get(APC))
+give = pool.makeClass(PKG + ".GiveCmd", pool.get(APC))
+dp   = pool.makeClass(PKG + ".DeathPenaltyCmd", pool.get(APC))
+fn   = pool.makeClass(PKG + ".CoinFn")
+pl   = pool.makeClass(PKG + ".SkyyCoinsPlugin", pool.get(JP))
+
+# ================= CoinStore (synchronized ledger, atomic file writes) =================
+cs.addField(CtField.make("public static java.nio.file.Path DIR;", cs))
+cs.addField(CtField.make(f"public static {LOG} LOG;", cs))
+cs.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap BAL = new java.util.concurrent.ConcurrentHashMap();", cs))
+cs.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap LOADED = new java.util.concurrent.ConcurrentHashMap();", cs))
+cs.addMethod(CtNewMethod.make("""
+public static java.util.Map bridge() {
+  synchronized (java.lang.System.class) {
+    Object o = System.getProperties().get("skyy.bridge");
+    if (o == null) { o = new java.util.concurrent.ConcurrentHashMap(); System.getProperties().put("skyy.bridge", o); }
+    return (java.util.Map) o;
+  }
+}""", cs))
+cs.addMethod(CtNewMethod.make("""
+public static void warn(String msg) {
+  try { if (LOG != null) LOG.at(java.util.logging.Level.WARNING).log("[SkyyCoins] " + msg); } catch (Throwable t) { }
+}""", cs))
+cs.addMethod(CtNewMethod.make("""
+public static synchronized void load(java.util.UUID u) {
+  if (LOADED.containsKey(u)) return;
+  try {
+    java.nio.file.Path f = DIR.resolve(u.toString() + ".properties");
+    if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
+      java.util.Properties p = new java.util.Properties();
+      java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+      try { p.load(in); } finally { in.close(); }
+      String v = p.getProperty("balance");
+      if (v != null) BAL.put(u, Long.valueOf(Long.parseLong(v.trim())));
+    }
+    LOADED.put(u, Boolean.TRUE);
+    Long cur = (Long) BAL.get(u);
+    bridge().put("coins:" + u.toString(), cur == null ? Long.valueOf(0L) : cur);
+  } catch (Throwable t) { warn("could not load balance for " + u + ": " + t); }
+}""", cs))
+cs.addMethod(CtNewMethod.make("""
+public static synchronized boolean known(java.util.UUID u) {
+  load(u);
+  return BAL.containsKey(u);
+}""", cs))
+cs.addMethod(CtNewMethod.make("""
+public static synchronized long get(java.util.UUID u) {
+  load(u);
+  Long v = (Long) BAL.get(u);
+  return v == null ? 0L : v.longValue();
+}""", cs))
+cs.addMethod(CtNewMethod.make("""
+public static synchronized void set(java.util.UUID u, long v) {
+  if (v < 0L) v = 0L;
+  load(u);
+  BAL.put(u, Long.valueOf(v));
+  bridge().put("coins:" + u.toString(), Long.valueOf(v));
+  try {
+    java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
+    java.util.Properties p = new java.util.Properties();
+    p.setProperty("balance", String.valueOf(v));
+    java.nio.file.Path tmp = DIR.resolve(u.toString() + ".properties.tmp");
+    java.io.OutputStream out = java.nio.file.Files.newOutputStream(tmp, new java.nio.file.OpenOption[0]);
+    try { p.store(out, "SkyyCoins"); } finally { out.close(); }
+    java.nio.file.Files.move(tmp, DIR.resolve(u.toString() + ".properties"), new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+  } catch (Throwable t) { warn("could not save balance for " + u + ": " + t); }
+}""", cs))
+cs.addMethod(CtNewMethod.make("""
+public static synchronized long add(java.util.UUID u, long d) {
+  long v = get(u) + d;
+  if (v < 0L) v = 0L;
+  set(u, v);
+  return v;
+}""", cs))
+cs.addMethod(CtNewMethod.make("""
+public static synchronized boolean transfer(java.util.UUID from, java.util.UUID to, long amount) {
+  if (amount <= 0L) return false;
+  long have = get(from);
+  if (have < amount) return false;
+  set(from, have - amount);
+  add(to, amount);
+  return true;
+}""", cs))
+
+cs.addMethod(CtNewMethod.make("""
+public static synchronized boolean take(java.util.UUID u, long amount) {
+  if (amount <= 0L) return false;
+  long have = get(u);
+  if (have < amount) return false;
+  set(u, have - amount);
+  return true;
+}""", cs))
+
+# ================= CoinFn (bridge functions) =================
+fn.addInterface(pool.get("java.util.function.Function"))
+fn.addField(CtField.make("public String mode;", fn))
+fn.addConstructor(CtNewConstructor.make("public CoinFn(String mode) { this.mode = mode; }", fn))
+fn.addMethod(CtNewMethod.make(f"""
+public Object apply(Object arg) {{
+  try {{
+    if ("get".equals(mode)) {{
+      if (!(arg instanceof java.util.UUID)) return Long.valueOf(0L);
+      return Long.valueOf({PKG}.CoinStore.get((java.util.UUID) arg));
+    }}
+    Object[] a = (Object[]) arg;
+    java.util.UUID u = (java.util.UUID) a[0];
+    long n = ((Number) a[1]).longValue();
+    if ("add".equals(mode)) return Long.valueOf({PKG}.CoinStore.add(u, n));
+    if ("take".equals(mode)) return Boolean.valueOf({PKG}.CoinStore.take(u, n));
+    return null;
+  }} catch (Throwable t) {{ {PKG}.CoinStore.warn("bridge fn " + mode + " failed: " + t); return null; }}
+}}""", fn))
+
+# ================= CoinConfig =================
+cfg.addField(CtField.make("public static java.nio.file.Path FILE;", cfg))
+cfg.addField(CtField.make("public static volatile int MIN = 10;", cfg))
+cfg.addField(CtField.make("public static volatile int MAX = 25;", cfg))
+cfg.addMethod(CtNewMethod.make(f"""
+public static void save() {{
+  try {{
+    java.nio.file.Files.createDirectories(FILE.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    java.util.Properties p = new java.util.Properties();
+    p.setProperty("penaltyMin", String.valueOf(MIN));
+    p.setProperty("penaltyMax", String.valueOf(MAX));
+    java.io.OutputStream out = java.nio.file.Files.newOutputStream(FILE, new java.nio.file.OpenOption[0]);
+    try {{ p.store(out, "SkyyCoins config - death penalty percent range"); }} finally {{ out.close(); }}
+  }} catch (Throwable t) {{ {PKG}.CoinStore.warn("could not save config: " + t); }}
+}}""", cfg))
+
+cfg.addMethod(CtNewMethod.make(f"""
+public static void load() {{
+  try {{
+    if (!java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0])) {{ save(); return; }}
+    java.util.Properties p = new java.util.Properties();
+    java.io.InputStream in = java.nio.file.Files.newInputStream(FILE, new java.nio.file.OpenOption[0]);
+    try {{ p.load(in); }} finally {{ in.close(); }}
+    int mn = Integer.parseInt(p.getProperty("penaltyMin", "10").trim());
+    int mx = Integer.parseInt(p.getProperty("penaltyMax", "25").trim());
+    if (mn < 0) mn = 0;
+    if (mx > 100) mx = 100;
+    if (mn > mx) {{ {PKG}.CoinStore.warn("config penaltyMin > penaltyMax, using defaults 10-25"); mn = 10; mx = 25; }}
+    MIN = mn; MAX = mx;
+  }} catch (Throwable t) {{ {PKG}.CoinStore.warn("could not load config: " + t); }}
+}}""", cfg))
+# ================= CoinTask (world thread) =================
+task.addInterface(pool.get("java.lang.Runnable"))
+task.addField(CtField.make(f"public {PR} pr;", task))
+task.addField(CtField.make("public java.util.UUID expectedWorld;", task))
+task.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap DEAD = new java.util.concurrent.ConcurrentHashMap();", task))
+task.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap GRANTED = new java.util.concurrent.ConcurrentHashMap();", task))
+task.addConstructor(CtNewConstructor.make(f"public CoinTask({PR} pr, java.util.UUID w) {{ this.pr = pr; this.expectedWorld = w; }}", task))
+task.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{
+    if (pr == null || !pr.isValid()) return;
+    java.util.UUID nowWorld = pr.getWorldUuid();
+    if (nowWorld == null || !nowWorld.equals(this.expectedWorld)) return;
+    {REF} r = pr.getReference();
+    if (r == null) return;
+    {ST} st = r.getStore();
+    if (st == null) return;
+    java.util.UUID u = pr.getUuid();
+    if (GRANTED.putIfAbsent(u, Boolean.TRUE) == null && !{PKG}.CoinStore.known(u)) {{
+      {PKG}.CoinStore.set(u, 10000L);
+      pr.sendMessage({MSG}.raw("[SkyyCoins] Welcome! You received 10,000 starter coins. /balance to check."));
+    }}
+    Object death = st.getComponent(r, {DC}.getComponentType());
+    boolean wasDead = DEAD.containsKey(u);
+    if (death != null && !wasDead) {{
+      DEAD.put(u, Boolean.TRUE);
+      long balNow = {PKG}.CoinStore.get(u);
+      if (balNow > 0L) {{
+        int min = {PKG}.CoinConfig.MIN; int max = {PKG}.CoinConfig.MAX;
+        int pct = min >= max ? min : min + java.util.concurrent.ThreadLocalRandom.current().nextInt(max - min + 1);
+        long loss = balNow * (long) pct / 100L;
+        if (loss > 0L) {{
+          long after = {PKG}.CoinStore.add(u, -loss);
+          pr.sendMessage({MSG}.raw("You died and lost " + loss + " coins (" + pct + "%). Balance: " + after));
+        }}
+      }}
+    }} else if (death == null && wasDead) {{
+      DEAD.remove(u);
+    }}
+  }} catch (Throwable t) {{ {PKG}.CoinStore.warn("death task failed: " + t); }}
+}}""", task))
+
+# ================= CoinTick (scheduler thread -> dispatch per world) =================
+tick.addInterface(pool.get("java.lang.Runnable"))
+tick.addConstructor(CtNewConstructor.make("public CoinTick() { }", tick))
+tick.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{
+    java.util.HashSet online = new java.util.HashSet();
+    java.util.Iterator it = {UNI}.get().getPlayers().iterator();
+    while (it.hasNext()) {{
+      {PR} pr = ({PR}) it.next();
+      if (pr == null || !pr.isValid()) continue;
+      online.add(pr.getUuid());
+      java.util.UUID wu = pr.getWorldUuid();
+      if (wu == null) continue;
+      {WLD} w = {UNI}.get().getWorld(wu);
+      if (w == null) continue;
+      w.execute(new {PKG}.CoinTask(pr, wu));
+    }}
+    {PKG}.CoinTask.DEAD.keySet().retainAll(online);
+    {PKG}.CoinTask.GRANTED.keySet().retainAll(online);
+  }} catch (Throwable t) {{ }}
+}}""", tick))
+
+# ================= commands =================
+bal.addConstructor(CtNewConstructor.make("""
+public BalanceCmd() {
+  super("balance", "Check your coin balance");
+  addAliases(new String[] { "bal", "coins", "purse" });
+}""", bal))
+bal.addMethod(CtNewMethod.make(f"""
+protected void execute({CTX} ctx, {ST} store, {REF} ref, {PR} pr, {WLD} world) {{
+  pr.sendMessage({MSG}.raw("Balance: " + {PKG}.CoinStore.get(pr.getUuid()) + " coins"));
+}}""", bal))
+
+pay.addField(CtField.make(f"public {RA} targetArg;", pay))
+pay.addField(CtField.make(f"public {RA} amountArg;", pay))
+pay.addConstructor(CtNewConstructor.make(f"""
+public PayCmd() {{
+  super("pay", "Send coins to another player");
+  this.targetArg = withRequiredArg("player", "Player to pay", {ATY}.PLAYER_REF);
+  this.amountArg = withRequiredArg("amount", "Coins to send", {ATY}.INTEGER);
+}}""", pay))
+pay.addMethod(CtNewMethod.make(f"""
+protected void execute({CTX} ctx, {ST} store, {REF} ref, {PR} pr, {WLD} world) {{
+  try {{
+    Object t = ctx.get(this.targetArg);
+    Object a = ctx.get(this.amountArg);
+    if (t == null || a == null) {{ pr.sendMessage({MSG}.raw("Usage: /pay <player> <amount>")); return; }}
+    {PR} target = ({PR}) t;
+    long amount = (long) ((Integer) a).intValue();
+    if (amount <= 0L) {{ pr.sendMessage({MSG}.raw("Amount must be positive.")); return; }}
+    if (target.getUuid().equals(pr.getUuid())) {{ pr.sendMessage({MSG}.raw("You can't pay yourself.")); return; }}
+    if (!target.isValid()) {{ pr.sendMessage({MSG}.raw("That player is not online.")); return; }}
+    if (!{PKG}.CoinStore.transfer(pr.getUuid(), target.getUuid(), amount)) {{
+      pr.sendMessage({MSG}.raw("Not enough coins (balance: " + {PKG}.CoinStore.get(pr.getUuid()) + ")."));
+      return;
+    }}
+    pr.sendMessage({MSG}.raw("Paid " + amount + " coins to " + target.getUsername() + ". Balance: " + {PKG}.CoinStore.get(pr.getUuid())));
+    target.sendMessage({MSG}.raw(pr.getUsername() + " paid you " + amount + " coins. Balance: " + {PKG}.CoinStore.get(target.getUuid())));
+  }} catch (Throwable t2) {{
+    {PKG}.CoinStore.warn("/pay failed: " + t2);
+    pr.sendMessage({MSG}.raw("Pay failed. Usage: /pay <player> <amount>"));
+  }}
+}}""", pay))
+
+give.addField(CtField.make(f"public {RA} amountArg;", give))
+give.addConstructor(CtNewConstructor.make(f"""
+public GiveCmd() {{
+  super("coinsgive", "(admin) grant yourself coins");
+  requirePermission("skyycoins.admin");
+  this.amountArg = withRequiredArg("amount", "Coins to grant", {ATY}.INTEGER);
+}}""", give))
+give.addMethod(CtNewMethod.make(f"""
+protected void execute({CTX} ctx, {ST} store, {REF} ref, {PR} pr, {WLD} world) {{
+  try {{
+    Object a = ctx.get(this.amountArg);
+    if (a == null) return;
+    long amount = (long) ((Integer) a).intValue();
+    if (amount <= 0L) {{ pr.sendMessage({MSG}.raw("Amount must be positive.")); return; }}
+    long after = {PKG}.CoinStore.add(pr.getUuid(), amount);
+    pr.sendMessage({MSG}.raw("Granted " + amount + ". Balance: " + after));
+  }} catch (Throwable t) {{ {PKG}.CoinStore.warn("/coinsgive failed: " + t); }}
+}}""", give))
+
+dp.addField(CtField.make(f"public {OA} specArg;", dp))
+dp.addConstructor(CtNewConstructor.make(f"""
+public DeathPenaltyCmd() {{
+  super("deathpenalty", "(admin) Set death coin loss, e.g. 5% or 5%-10%; no argument shows the current setting");
+  requirePermission("skyycoins.admin");
+  this.specArg = withOptionalArg("percent", "e.g. 5% or 5%-10%", {ATY}.STRING);
+}}""", dp))
+dp.addMethod(CtNewMethod.make(f"""
+protected void execute({CTX} ctx, {ST} store, {REF} ref, {PR} pr, {WLD} world) {{
+  int cmin = {PKG}.CoinConfig.MIN; int cmax = {PKG}.CoinConfig.MAX;
+  String cur = cmin == cmax ? (cmin + "%") : (cmin + "%-" + cmax + "%");
+  try {{
+    if (!ctx.provided(this.specArg)) {{ pr.sendMessage({MSG}.raw("Death penalty is currently " + cur + " of carried coins. /deathpenalty 5% or /deathpenalty 5%-10% to change.")); return; }}
+    String s = String.valueOf(ctx.get(this.specArg)).trim().replace("%", "").replace(" ", "");
+    int min; int max;
+    int dash = s.indexOf('-');
+    if (dash >= 0) {{
+      min = Integer.parseInt(s.substring(0, dash));
+      max = Integer.parseInt(s.substring(dash + 1));
+    }} else {{
+      min = Integer.parseInt(s); max = min;
+    }}
+    if (min < 0 || max > 100 || min > max) {{ pr.sendMessage({MSG}.raw("Invalid range. Use 0-100, min <= max.")); return; }}
+    {PKG}.CoinConfig.MIN = min; {PKG}.CoinConfig.MAX = max;
+    {PKG}.CoinConfig.save();
+    pr.sendMessage({MSG}.raw("Death penalty set: " + (min == max ? (min + "%") : (min + "%-" + max + "%")) + " of carried coins."));
+  }} catch (Throwable t) {{
+    pr.sendMessage({MSG}.raw("Usage: /deathpenalty 5%  or  /deathpenalty 5%-10%   (currently " + cur + ")"));
+  }}
+}}""", dp))
+
+# ================= plugin =================
+pl.addField(CtField.make("public java.util.concurrent.ScheduledFuture ticker;", pl))
+pl.addConstructor(CtNewConstructor.make(f"public SkyyCoinsPlugin({JPI} init) {{ super(init); }}", pl))
+pl.addMethod(CtNewMethod.make(f"""
+public void setup() {{
+  {PKG}.CoinStore.LOG = getLogger();
+  {PKG}.CoinStore.DIR = getDataDirectory().resolveSibling("Skyy_SkyyCoins").resolve("balances");
+  {PKG}.CoinConfig.FILE = getDataDirectory().resolveSibling("Skyy_SkyyCoins").resolve("config.properties");
+  {PKG}.CoinConfig.load();
+  getCommandRegistry().registerCommand(new {PKG}.BalanceCmd());
+  getCommandRegistry().registerCommand(new {PKG}.PayCmd());
+  getCommandRegistry().registerCommand(new {PKG}.GiveCmd());
+  getCommandRegistry().registerCommand(new {PKG}.DeathPenaltyCmd());
+  {PKG}.CoinStore.bridge().put("coins:fn:get", new {PKG}.CoinFn("get"));
+  {PKG}.CoinStore.bridge().put("coins:fn:add", new {PKG}.CoinFn("add"));
+  {PKG}.CoinStore.bridge().put("coins:fn:take", new {PKG}.CoinFn("take"));
+  this.ticker = {HSV}.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new {PKG}.CoinTick(), 1L, 1L, java.util.concurrent.TimeUnit.SECONDS);
+  getLogger().at(java.util.logging.Level.INFO).log("[SkyyCoins] {VERSION} ready - /balance /pay /deathpenalty (current " + {PKG}.CoinConfig.MIN + "%-" + {PKG}.CoinConfig.MAX + "%)");
+}}""", pl))
+pl.addMethod(CtNewMethod.make("""
+protected void shutdown() {
+  try { if (this.ticker != null) this.ticker.cancel(false); } catch (Throwable t) { }
+  try { com.skyy.coins.CoinStore.bridge().remove("coins:fn:get"); com.skyy.coins.CoinStore.bridge().remove("coins:fn:add"); com.skyy.coins.CoinStore.bridge().remove("coins:fn:take"); } catch (Throwable t) { }
+  super.shutdown();
+}""", pl))
+
+for c in (cs, cfg, fn, task, tick, bal, pay, give, dp, pl):
+    c.writeFile(OUT)
+print("classes written")
+
+jar = os.path.join(HERE, "SkyyCoins-%s.jar" % VERSION)
+m = B.manifest("SkyyCoins", VERSION, "SkyWynn economy core: coin ledger, /balance, /pay, configurable death penalty (/deathpenalty 5% or 5%-10%), bridge functions for other Skyy mods. Zero dependencies.", PKG + ".SkyyCoinsPlugin")
+m["IncludesAssetPack"] = False
+B.assemble(jar, m, OUT)
+if "--deploy" in sys.argv:
+    B.deploy(jar, "SkyyCoins.jar")
+    B.enable_in_world("HUD mod", "Skyy:%s SkyyCoins" % VERSION, disable_prefix="Skyy:")

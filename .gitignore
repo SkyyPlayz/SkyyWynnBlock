@@ -1,0 +1,22 @@
+# Build output (rebuild with: python <Mod>/build_<mod>_<ver>.py)
+build_classes/
+__pycache__/
+*.pyc
+
+# Compiled mod jars are build output. Releases get the jar attached instead.
+*.jar
+# ...except the build tool itself (javassist, Apache-2.0 / MPL / LGPL - redistributable)
+!tools/javassist.jar
+
+# NEVER commit game files or other people's mods (not ours to redistribute):
+HytaleServer.jar
+Assets.zip
+UserData/
+Mods/
+
+# Editor / OS noise
+.vscode/
+.idea/
+*.swp
+Thumbs.db
+desktop.ini

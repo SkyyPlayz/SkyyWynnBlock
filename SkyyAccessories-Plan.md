@@ -1,0 +1,82 @@
+# SKYYACCESSORIES — ACCESSORY POWER + BAG SLOTS (proposal)
+*Drafted 2026-09-23. Based on Hypixel SkyBlock's Accessory Power (formerly "Magical Power"), adapted to our layer model. Nothing is built yet. Anything marked **[SKYY?]** needs your call.*
+
+## 1. Accessory Power (AP)
+Each accessory in the bag gives AP by rarity; only the best item per family counts (the bag already hands back lower tiers).
+
+| Rarity | Common | Uncommon | Rare | Epic | Legendary |
+|---|---|---|---|---|---|
+| AP | 3 | 5 | 8 | 12 | 16 |
+
+- Talisman families run Common to Legendary, as you decided.
+- Bench accessories: T1 Common, T2 Uncommon, T3 Rare, T4 Epic, T5 and up Legendary.
+- AP is a visible score: bag page header, `/acc power`, later a HUD widget.
+
+## 2. How power turns into stats (percent layer)
+AP gives no stats itself. It feeds two things, both in the accessory percent layer:
+**final = (default + skills + armor) x (1 + talisman % + crystal % + tuning %)**
+
+**Power Crystal.** Pick one, swap for free. Its stats "at x1.0" are multiplied by the **Power Multiplier M = ln(1 + AP / 100)**: fast early, flat later, never caps (Hypixel's curve shape, easier to tune).
+
+| Crystal | For | Stats at x1.0 |
+|---|---|---|
+| Balanced | everyone (starter) | Health 5%, Damage 3%, Defense 3%, Speed 1% |
+| Hawkeye | Archer | Damage 8%, Crit Chance 3%, Speed 3% |
+| Bulwark | Warrior | Health 10%, Defense 10%, Damage 4% |
+| Shadowstep | Assassin | Crit Damage 15%, Speed 4%, Health -3% |
+| Bloodrage | Berserker | Damage 12%, Health 5%, Defense -4% |
+| Arcane | Mage | Mana 15%, Ability Damage 6% |
+
+Negative stats follow your gear trade-off rule. Balanced is unlocked from the start; your class crystal unlocks at class skill 10. Later: "Stone" upgrades for 9 of a rare boss drop (like Hypixel's Stone Powers).
+
+**Tuning points.** 1 point per 10 AP, spent in `/acc tune`, free reset. Per point: Health or Defense +0.25%, Damage +0.15%, Crit Chance +0.1%, Stamina or Mana +0.5%, Speed +0.1% (max +5% speed from tuning).
+
+**Worked example: a Warrior with the Bulwark crystal, all tuning points in Health**
+
+| Bag | Contents | AP | M | Crystal gives | Tuning |
+|---|---|---|---|---|---|
+| 9 slots (start) | 3 Common, 4 Uncommon, 2 Rare | 45 | 0.37 | Health +3.7%, Def +3.7%, Dmg +1.5% | 4 pts = Health +1% |
+| 27 slots (mid) | 5 Uncommon, 12 Rare, 8 Epic, 2 Legendary | 249 | 1.25 | Health +12.5%, Def +12.5%, Dmg +5% | 24 pts = Health +6% |
+| 60 slots (max) | 15 Rare, 25 Epic, 20 Legendary | 740 | 2.13 | Health +21.3%, Def +21.3%, Dmg +8.5% | 74 pts = Health +18.5% |
+
+Health at max bag: 100 default HP, +60 flat from skills and armor, and a Legendary Vitality talisman at +10% gives 160 x (1 + 0.10 + 0.213 + 0.185) = **240 HP**.
+
+Health, Stamina, Mana and Speed can go live now; Damage, Defense and Crit are published for the future combat mod to apply.
+
+## 3. Bag slot progression
+Start **9** (today's bag), **max 60**, all sources stack:
+
+| Source | Slots | How you earn them |
+|---|---|---|
+| Collections (SkyyCollections) | +12 | +1 per 5 collection tiers reached (all collections combined) |
+| Skills (SkyySkills) | +20 | +1 at level 25/50/75/100 in Mining, Foraging, Farming, Acrobatics and your class skill |
+| Coins (SkyyCoins) | +16 | buy 2 slots at a time for 25k, 50k, 100k, 200k, 400k, 800k, 1.6M, 3.2M coins (6.4M total) |
+| Quests (later) | +3 | reward from a quest line |
+
+Unlocks are permanent (switching class never removes slots). Note: only **18 families exist today** (13 bench + 5 talisman), so slots past ~18 stay empty until we add more families.
+
+**How locked slots look.** After your unlocked slots comes one row of dark grey "LOCKED" cells, each showing its next requirement ("Mining 25", "Buy 25k"). Under the grid, an **Unlock progress** panel: "Collections 23/60 tiers - next slot at 25", "Skills 3/20 milestones", and a "Buy 2 slots - 25,000" button (click twice to confirm, like Bazaar Sell inventory). No hover info (hover updates crash the client).
+
+## 4. Build plan
+0.3 is already the movement-protocol build, so this starts at 0.4:
+- **0.4 - slots + AP:** rarity on every accessory (Quality field), AP + multiplier on the bag page, unlocks from the three live sources, locked cells, Buy button, bridge keys. Needs SkyyCollections 0.1.4 to publish total tiers.
+- **0.5 - crystals + tuning:** crystal picker and tuning pages, % modifiers for Health/Stamina/Mana, speed via the movement protocol, combat stats published.
+- **0.6+ - later:** enrichments (Legendary only, one small % stat per item, in item metadata like SkyyRolls), a rarity-upgrade item (Recombobulator), Stone crystals, tuning templates, quest slots, HUD AP widget, leaderboard.
+
+## 5. Open questions for Skyy
+1. **[SKYY?]** Keep Hypixel's AP values of 3/5/8/12/16?
+2. **[SKYY?]** Should bench accessories give AP?
+3. **[SKYY?]** Class-locked crystals, or free choice with a bonus for your own class?
+4. **[SKYY?]** 60-slot max, these sources, these coin prices?
+5. **[SKYY?]** Today's talismans give FLAT Health, Stamina and Mana, but the layer model says accessories give %. Convert them in 0.4 along with the rarity change?
+6. **[SKYY?]** Should the Arcane (Mage) crystal ship in 0.5?
+
+---
+## Technical notes
+- **Storage:** `bags/<uuid>.properties` gains `slotsUnlocked=` (highest ever, so items never get trapped), `slotsBought=`, `crystal=`, `tune.<Stat>=`; `slot9..slot59` once unlocked. Recomputed on page open and the 5 s tick.
+- **Bridge writes:** `acc:power:<uuid>` Integer; `acc:slots:<uuid>` "unlocked/60"; `acc:crystal:<uuid>` id; `acc:pct:<uuid>` Map stat->Double (the whole accessory percent layer); `acc:fn:power` Function(UUID)->Integer. `acc:has`, `acc:tal` and `acc:fn:has` are unchanged.
+- **Bridge reads (all optional):** `coll:tiers:<uuid>` (new), `skill:<uuid>` (exists), `class:<uuid>` (SkyyClasses), `coins:fn:take` (exists; refuse the purchase if it is missing or returns false).
+- **Stat application:**
+  - Health/Stamina/Mana: `StaticModifier(MAX, MULTIPLICATIVE)` keys `skyyacc_*_pct` (TerrariaAddons pattern). Verify it applies after ADDITIVE; if not, compute the % and post ADDITIVE.
+  - Speed widens the existing `move:<uuid>` pct source to talismans + crystal + tuning.
+  - Damage, Defense and Crit get one applier each, elected with `stat:owner:<stat>` (the fallDamage pattern).
