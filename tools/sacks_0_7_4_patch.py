@@ -76,7 +76,8 @@ rep('VERSION = "0.7.3"', 'VERSION = "0.7.4"')
 rep('BTP = "com.hypixel.hytale.protocol.BenchType"' + LF,
     'BTP = "com.hypixel.hytale.protocol.BenchType"' + LF
     + '# 0.7.4: the creative flag passed to cook:fn:campfire (SkyyCooking 0.1.1 reads the same enum)' + LF
-    + 'GM  = "com.hypixel.hytale.protocol.GameMode"' + LF)
+    + 'GM  = "com.hypixel.hytale.protocol.GameMode"' + LF
+    + CAMP_PCT_CHECK)
 rep('             (CTX, "getInputString"), (UCB, "set"), (MQ, "getItemId")):' + LF + '    B.probe(pool, c, m)' + LF,
     '             (CTX, "getInputString"), (UCB, "set"), (MQ, "getItemId")):' + LF + '    B.probe(pool, c, m)' + LF
     + '# 0.7.4: Campfire tab (creative flag for cook:fn:campfire, primary output swap)' + LF

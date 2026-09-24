@@ -1,0 +1,57 @@
+import jpype, os, sys
+JVM=r"C:\Users\SkyLo\AppData\Roaming\Hytale\install\release\package\jre\latest\bin\server\jvm.dll"
+SRV=r"C:\Users\SkyLo\AppData\Roaming\Hytale\install\release\package\game\latest\Server\HytaleServer.jar"
+JAR=os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "SkyyRolls", "SkyyRolls-0.1.3.jar"))
+jpype.startJVM(JVM, "--add-opens=java.base/java.lang=ALL-UNNAMED", "--add-opens=java.base/jdk.internal.misc=ALL-UNNAMED", classpath=[SRV, JAR, os.path.join(os.path.dirname(os.path.abspath(__file__)), "rolls013_cls")], convertStrings=True)
+J=jpype.JClass
+# fake empty Item asset store so ItemStack constructors work offline (getItem() -> Item.UNKNOWN)
+U=J("sun.misc.Unsafe"); f=U.class_.getDeclaredField("theUnsafe"); f.setAccessible(True); un=f.get(None)
+fs=un.allocateInstance(J("t.FakeStore").class_)
+AS=J("com.hypixel.hytale.assetstore.AssetStore")
+fm=AS.class_.getDeclaredField("assetMap"); fm.setAccessible(True); fm.set(fs, J("com.hypixel.hytale.assetstore.map.DefaultAssetMap")())
+ITEM=J("com.hypixel.hytale.server.core.asset.type.item.config.Item")
+fa=ITEM.class_.getDeclaredField("ASSET_STORE"); fa.setAccessible(True); fa.set(None, fs)
+R=J("com.skyy.rolls.Rolls")
+IS=J("com.hypixel.hytale.server.core.inventory.ItemStack")
+BD=J("org.bson.BsonDocument")
+for i in ["Weapon_Shortbow_Mithril","Weapon_Arrow_Crude","Weapon_Bomb_Popberry","Weapon_Dart_Tribal","Weapon_Grenade_Frag","Weapon_Spear_Iron",
+          "Weapon_Spellbook_Frost","Armor_Iron_Chest","Tool_Pickaxe_Iron","Skyy_Sack_Farming_Small","Ingredient_Bar_Iron","Weapon_Spirit_Bomb","Weapon_Sword_Thunderbolt", "Weapon_Crossbow_Bolt_Iron", None]:
+    print(i, "->", R.refuseId(i))
+print(R.qualityColor(95), R.qualityColor(75), R.qualityColor(40), R.qualityColor(5))
+C=J("com.hypixel.hytale.protocol.Color")
+print(R.hex(C(jpype.JByte(-117), jpype.JByte(0x33), jpype.JByte(-98))))
+# stack with old 0.1.2 rolls
+old=BD.parse('{"SkyyRolls": {"reforge": "Withered", "dmg": 24, "str": 12, "crit": 11, "quality": 68, "rolledAt": {"$numberLong": "1790000000000"}}, "Other": "keep"}')
+st=IS("Weapon_Shortbow_Mithril", 1, 150.0, 200.0, 4, old)
+print("hasRolls", R.hasRolls(st), "upToDate", R.upToDate(st), "refuse", R.refuse(st))
+print("describe:", R.describe(st))
+nu=R.withDisplay(st)
+print("same obj?", nu is st or nu.equals(st))
+print("json:", nu.getMetadata().toJson())
+print("upToDate after", R.upToDate(nu), "needsDisplay", R.needsDisplay(nu))
+print("describe:", R.describe(nu))
+print("dur", nu.getDurability(), nu.getMaxDurability(), nu.getQuantity(), nu.getQualityIndex())
+IDM=J("com.hypixel.hytale.server.core.asset.type.item.config.metadata.ItemDisplayMetadata")
+d=nu.getFromMetadataOrNull(IDM.KEYED_CODEC)
+print("decoded name:", d.getName().getRawText() if d.getName() else None, d.getName().getColor() if d.getName() else None)
+print("decoded desc children:", d.getDescription().getChildren().size())
+cl=R.cleared(nu)
+print("cleared:", cl.getMetadata().toJson() if cl.getMetadata() else None, cl.getDurability(), cl.getMaxDurability(), cl.getQuantity(), cl.getQualityIndex(), cl.getItemId())
+# an item that had a foreign ItemDisplay before
+foreign=BD.parse('{"ItemDisplay": {"Name": {"RawText": "Foreign"}}, "SkyyRolls": {"reforge": "Odd", "dmg": 0, "str": 3, "crit": 0, "quality": 95}}')
+f=IS("Armor_Iron_Chest", 1, 10.0, 10.0, 2, foreign)
+f2=R.withDisplay(f)
+print("f2:", f2.getMetadata().toJson())
+f3=R.withDisplay(R.applyRolls(f2))
+print("reroll keeps prev:", f3.getMetadata().get("SkyyRollsView").toJson())
+f4=R.cleared(f3)
+print("f4 cleared:", f4.getMetadata().toJson())
+# sack rolled by 0.1.2 only
+sack=IS("Skyy_Sack_Farming_Small", 1, 0.0, 0.0, 1, BD.parse('{"SkyyRolls": {"reforge": "Sharp", "dmg": 1, "str": 2, "crit": 3, "quality": 4, "rolledAt": 5}}'))
+print("sack needsDisplay", R.needsDisplay(sack), "refuse", R.refuse(sack))
+cs=R.cleared(sack)
+print("sack cleared metadata:", cs.getMetadata(), cs.getItemId(), cs.getQuantity())
+# Int64/double numbers survive
+odd=IS("Weapon_Sword_Iron", 1, 1.0, 1.0, 1, BD.parse('{"SkyyRolls": {"reforge": "Fast", "dmg": {"$numberLong": "7"}, "str": 2.0, "crit": 3, "quality": 50}}'))
+print("describe odd:", R.describe(odd))
+print("fresh roll:", R.roll().toJson())

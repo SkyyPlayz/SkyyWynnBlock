@@ -50,7 +50,9 @@ Run:   python build_skyycooking_0.1.1.py            -> SkyyCooking/SkyyCooking-0
  reused. The placed vanilla Campfire is unchanged (plain food, no XP). The Alchemy Bench and Cooking Bench accessories stay retired.
  Everything 0.1 does is unchanged.
  GRADE: G = the Grade a Cooking Bench guarantees right now = min(floor(Cooking level / 10), 10) + 1 if Master Chef (CMaster) >= 1,
-  clamped to maxGrade (the number cook:fn:grade and /cooking show). Target multiplier T = 1 + buffFactor x (M(G) - 1), M(g) = 2^(g/5).
+  clamped to maxGrade (the number cook:fn:grade and /cooking show). ONE helper computes it: Cook.benchGrade(level, tree) - used by
+  guaranteed() (cook:fn:grade), the bench roll(), /cooking, the Skills Stats page and campfire(), and the build runs the compiled one
+  against a Python mirror. Target multiplier T = 1 + buffFactor x (M(G) - 1), M(g) = 2^(g/5).
   The dish comes out at c = the highest Grade 0..G with M(c) <= T (the existing Grade whose multiplier does not exceed the target).
   No chance rolls (Gourmet, Signature Dish, ...) and no tree extras (Batch Cook, Frugal) through the accessory: the emergency cook gets
   the guaranteed Grade only. The 3 campfire dishes are T1 dishes and hit no effect cap, so M is their real heal / buff strength and
@@ -60,9 +62,14 @@ Run:   python build_skyycooking_0.1.1.py            -> SkyyCooking/SkyyCooking-0
  BRIDGE (new; published in setup, removed in shutdown):
   cook:fn:campfire   java.util.function.Function, apply(Object[] a) -> String or null
      a[0] java.util.UUID   the crafting player (required)
-     a[1] String           the CraftingRecipe id SkyySacks crafted (a Campfire-bench recipe, String.valueOf(recipe.getId())) OR the
-                           dish's output item id (one of cook:campfire:ids) (required). A Cooking Bench recipe id is NOT accepted.
-     a[2] Number           finished crafts (1 craft = 1 dish), required. >= 1 = a real craft: pays XP (at most 10,000 crafts per call).
+     a[1] String           the CraftingRecipe id SkyySacks crafted, String.valueOf(recipe.getId()) (required). It must be a
+                           Campfire-bench recipe (BenchRequirement Id "Campfire") whose primary output is in cook:campfire:ids. REFUSED
+                           (null = give the normal output): a bare dish id such as "Food_Wildmeat_Cooked" (it cannot prove the craft was
+                           a Campfire craft) and every Cooking Bench recipe, including this mod's Skyy_Cook_Recipe_Wildmeat / _Fish /
+                           _Vegetable (same dishes, full Grade and XP at a real Cooking Bench) - a Cooking Bench craft is never graded
+                           as an emergency cook. (Engine recipe ids of item recipes are "<ItemId>_Recipe_Generated_<n>", never a dish id.)
+     a[2] Number           finished crafts (1 craft = 1 dish), required. >= 1 = a real craft: pays XP (at most 10,000 crafts' XP per
+                           call; above that the extra crafts pay no XP and the log says so every 60 s - send big batches in parts).
                            <= 0 = PREVIEW: returns the id a craft would give now; no XP, no chat, no cap use.
      a[3] String           OPTIONAL expectKey = the profile key (pkey) the caller resolved when the craft started. null or absent = no
                            check. Different from the current key -> plain id and no XP.
@@ -75,30 +82,42 @@ Run:   python build_skyycooking_0.1.1.py            -> SkyyCooking/SkyyCooking-0
      XP: base = round(xp.<dish> x crafts x campfire.xpFactor) (defaults: Cooked Wildmeat 1,600 -> 800, Grilled Fish 2,000 -> 1,000,
       Roast Vegetable 1,200 -> 600 per dish) -> this mod's maxXpPerMinute window (shared with bench cooking; over it the XP is dropped,
       the dish still comes out graded) -> x xpMultiplier -> skill:fn:addxp(Object[]{UUID, "Cooking", Long, "cook:campfire:<dish>", pkey})
-      in parts of <= 400,000 (SkyySkills adds the Cooking tree Wisdom bonus there). SkyySkills 0.4's skill:fn:craftxp pays 0 for
-      Campfire recipes (RecipeXp.classify -> null), so SkyySacks may keep calling it for every craft: no double XP.
+      in parts of <= 400,000 (SkyySkills adds the Cooking tree Wisdom bonus there).
+     ONE XP SOURCE PER CRAFT (caller rule): a craft routed through cook:fn:campfire must NOT also be reported to skill:fn:craftxp - this
+      call is its only Cooking XP. SkyySacks 0.7.4 does exactly that (no craftxp call for its Campfire tab). Do not rely on SkyySkills'
+      RecipeXp.classify paying 0 for Campfire recipes (0.4 does, but it is another mod's table). SkyyCooking cannot probe craftxp at
+      start: it has no preview (crafts < 1 counts as 1) and would pay real XP.
      PLAIN id + NO XP (the bench rules): enabled=false; profile:busy:<uuid>; expectKey differs; creative (flag TRUE or read as Creative,
       unless creativeGrades=true); game mode unreadable and no flag passed; SkyySkills missing (no skill:fn:level).
      PLAIN id + XP: campfire Grade 0 (low Cooking level), the dish removed from graded=, or its Grade asset not loaded.
      CHAT: after a real craft, one hint per session (and again when the campfire Grade rises), only with messages=true.
-  cook:campfire:ids  String "Food_Wildmeat_Cooked,Food_Fish_Grilled,Food_Vegetable_Cooked" = the dish ids cook:fn:campfire accepts (every
-      vanilla Campfire recipe output, build-checked). SkyySacks shows exactly the Campfire-bench recipes whose primary output is listed.
+  cook:campfire:ids  String "Food_Wildmeat_Cooked,Food_Fish_Grilled,Food_Vegetable_Cooked" = the dishes cook:fn:campfire grades (every
+      vanilla Campfire recipe output, build-checked). It lists OUTPUT ids only, not benches: the Cooking Bench makes the same 3 dishes.
+      SkyySacks shows exactly the Campfire-bench recipes (BenchRequirement Id "Campfire") whose primary output is listed.
+  cook:fn:campfactors  java.util.function.Function, apply(anything) -> Object[]{ Double buffFactor, Double xpFactor, Boolean enabled } =
+      the LIVE campfire.buffFactor / campfire.xpFactor / enabled (after /cookadmin reload too), for a UI line such as SkyySacks' Campfire
+      tab banner, so it never shows stale percentages. Any thread, no I/O.
  CONFIG (cooking.properties; appended once to a 0.1 file that lacks both lines): campfire.buffFactor=0.75, campfire.xpFactor=0.5
   (each 0..1, clamped with a log line; /cookadmin reload re-reads them).
- COMMAND: /cookadmin campfire <dish> <count 0-64> (skyycooking.admin) runs the bridge the way /craft should call it (world thread,
-  creative flag read from the Player component and passed as a[4]) and gives count x the returned id (no materials used) + the XP;
-  count 0 = preview. Its chat line also says how the bridge reads the game mode WITHOUT a flag (creative / not creative /
-  unreadable). /cooking and the Skills Stats page show the campfire Grade and XP share.
+ COMMAND: /cookadmin campfire <dish> <count 0-64> (skyycooking.admin) looks up the vanilla Campfire recipe of that dish and runs the
+  bridge with that RECIPE id exactly the way /craft calls it (world thread, creative flag read from the Player component and passed as
+  a[4]) and gives count x the returned id (no materials used) + the XP; count 0 = preview. Its chat line also names the recipe id and
+  says how the bridge reads the game mode WITHOUT a flag (creative / not creative / unreadable). /cooking and the Skills Stats page
+  show the campfire Grade and XP share.
  RECOMMENDED CALL (SkyySacks craft page, after removing the materials, done = finished crafts):
   Object id = ((Function) bridge.get("cook:fn:campfire")).apply(new Object[] { u, String.valueOf(r.getId()), Integer.valueOf(done), k,
   Boolean.valueOf(p.getGameMode() == GameMode.Creative) });  -> give (String) id instead of the primary output id when it is a String,
-  else the normal output. Show only recipes whose primary output is in cook:campfire:ids (split on ","); absent key = SkyyCooking missing.
- NOT IN THIS MOD: SkyyAccessories has to un-retire Skyy_Accessory_Campfire_T1 and SkyySacks has to show its tab again (only the
-  cook:campfire:ids recipes) and call cook:fn:campfire for them. Until then nothing calls the bridge (test it with /cookadmin campfire).
+  else the normal output. Show only Campfire-bench recipes (BenchRequirement Id "Campfire") whose primary output is in
+  cook:campfire:ids (split on ","); absent key = SkyyCooking missing. Always pass the recipe id, never the bare output id, and do not
+  call skill:fn:craftxp for these crafts.
+ OTHER MODS (checked 2026-09-24): SkyyAccessories 0.4.3 un-retires Skyy_Accessory_Campfire_T1 (its tooltip numbers are build-checked
+  against CAMP_BUFF_DEF / CAMP_XP_DEF below) and SkyySacks 0.7.4 adds the /craft Campfire tab that calls cook:fn:campfire exactly as
+  above (recipe id, finished crafts, settled key, creative flag; preview with crafts 0 for the row note; no craftxp for that tab). Open
+  follow-up for a later SkyySacks: its tab banner still says "50% ... 75%" literally - read cook:fn:campfactors instead.
 ''')
 rep('''        cook:prefix     "Skyy_Cook_Food_" (SkyySacks catOf -> Farming bag; Bazaar)
 ''', '''        cook:prefix     "Skyy_Cook_Food_" (SkyySacks catOf -> Farming bag; Bazaar)
-        cook:fn:campfire / cook:campfire:ids   0.1.1 Campfire accessory - exact contract in the 0.1.1 section at the top
+        cook:fn:campfire / cook:campfire:ids / cook:fn:campfactors   0.1.1 Campfire accessory - exact contract in the 0.1.1 section at the top
 ''')
 rep(''' /cookadmin give <dish> <grade> (5 dishes, grade 0-12, dish = Food_Pie_Meat or pie_meat), /cookadmin reload: requirePermission''',
     ''' /cookadmin give <dish> <grade> (5 dishes, grade 0-12, dish = Food_Pie_Meat or pie_meat), /cookadmin campfire <dish> <count> (0.1.1),
@@ -109,7 +128,9 @@ rep(''' plain, no XP; second player eats your Grade 5 pie -> Grade 5 effects; fr
  campfire.* lines once; at Cooking 50 /cookadmin campfire wildmeat_cooked 0 -> "bench Grade 5 -> campfire Grade 4 ... would give
  Skyy_Cook_Food_Wildmeat_Cooked_G4" and no XP; /cookadmin campfire wildmeat_cooked 2 -> 2 x "Cooked Wildmeat (Grade 4)" + 1,600 Cooking XP
  (half of 2 x 1,600) + the one-time campfire chat hint; at Cooking 100 -> Grade 8; at Cooking 0-19 -> plain dish + half XP; creative ->
- plain + 0 XP; campfire.xpFactor=1.0 + /cookadmin reload -> full XP; placed Campfire still plain + no XP.
+ plain + 0 XP; campfire.xpFactor=1.0 + /cookadmin reload -> full XP; placed Campfire still plain + no XP. The /cookadmin campfire line
+ names the vanilla Campfire recipe id it passed (Food_<dish>_Recipe_Generated_<n>); a bare dish id or a Skyy_Cook_Recipe_* recipe id sent
+ to cook:fn:campfire returns null (normal output).
 ''')
 rep('VERSION = "0.1"', 'VERSION = "0.1.1"')
 

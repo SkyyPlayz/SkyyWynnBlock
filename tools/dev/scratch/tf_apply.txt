@@ -1,0 +1,240 @@
+== com.hypixel.hytale.builtin.blockphysics.BlockPhysicsSystems$Ticking lambda$tick$0 (Lcom/hypixel/hytale/server/core/universe/world/chunk/WorldChunk;Lcom/hypixel/hytale/builtin/blockphysics/BlockPhysicsSystems$CachedAccessor;IIII)Lcom/hypixel/hytale/server/core/asset/type/blocktick/BlockTickStrategy;
+0: aload_1
+1: getfield #126 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsSystems$CachedAccessor.selfPhysics(Lcom/hypixel/hytale/server/core/blocktype/component/BlockPhysics;)
+4: astore 6
+6: aload 6
+8: iload_2
+9: iload_3
+10: iload 4
+12: invokevirtual #130 = Method com.hypixel.hytale.server.core.blocktype.component.BlockPhysics.isDeco((III)Z)
+15: istore 7
+17: invokestatic #134 = Method com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.getAssetMap(()Lcom/hypixel/hytale/assetstore/map/BlockTypeAssetMap;)
+20: iload 5
+22: invokevirtual #140 = Method com.hypixel.hytale.assetstore.map.BlockTypeAssetMap.getAsset((I)Lcom/hypixel/hytale/assetstore/map/JsonAssetWithMap;)
+25: checkcast #135 = Class com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType
+28: astore 8
+30: aload 8
+32: ifnull 40
+35: iload 5
+37: ifne 44
+40: getstatic #146 = Field com.hypixel.hytale.server.core.asset.type.blocktick.BlockTickStrategy.IGNORED(Lcom/hypixel/hytale/server/core/asset/type/blocktick/BlockTickStrategy;)
+43: areturn
+44: iload 7
+46: ifeq 53
+49: getstatic #146 = Field com.hypixel.hytale.server.core.asset.type.blocktick.BlockTickStrategy.IGNORED(Lcom/hypixel/hytale/server/core/asset/type/blocktick/BlockTickStrategy;)
+52: areturn
+53: aload_0
+54: invokevirtual #152 = Method com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk.getWorld(()Lcom/hypixel/hytale/server/core/universe/world/World;)
+57: astore 9
+59: aload 9
+61: invokevirtual #156 = Method com.hypixel.hytale.server.core.universe.world.World.getEntityStore(()Lcom/hypixel/hytale/server/core/universe/world/storage/EntityStore;)
+64: invokevirtual #162 = Method com.hypixel.hytale.server.core.universe.world.storage.EntityStore.getStore(()Lcom/hypixel/hytale/component/Store;)
+67: astore 10
+69: aload_0
+70: invokevirtual #168 = Method com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk.getX(()I)
+73: iconst_5
+74: ishl
+75: iload_2
+76: ior
+77: istore 11
+79: iload_3
+80: istore 12
+82: aload_0
+83: invokevirtual #171 = Method com.hypixel.hytale.server.core.universe.world.chunk.WorldChunk.getZ(()I)
+86: iconst_5
+87: ishl
+88: iload 4
+90: ior
+91: istore 13
+93: aload_1
+94: getfield #172 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsSystems$CachedAccessor.selfBlockSection(Lcom/hypixel/hytale/server/core/universe/world/chunk/section/BlockSection;)
+97: iload_2
+98: iload_3
+99: iload 4
+101: invokevirtual #176 = Method com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection.getFiller((III)I)
+104: istore 14
+106: aload_1
+107: getfield #172 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsSystems$CachedAccessor.selfBlockSection(Lcom/hypixel/hytale/server/core/universe/world/chunk/section/BlockSection;)
+110: iload_2
+111: iload_3
+112: iload 4
+114: invokevirtual #180 = Method com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection.getRotationIndex((III)I)
+117: istore 15
+119: getstatic #183 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsSystems$1.$SwitchMap$com$hypixel$hytale$builtin$blockphysics$BlockPhysicsUtil$Result([I)
+122: aload 10
+124: aload_1
+125: aload_1
+126: getfield #189 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsSystems$CachedAccessor.selfSectionReference(Lcom/hypixel/hytale/component/Ref;)
+129: aload_1
+130: getfield #172 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsSystems$CachedAccessor.selfBlockSection(Lcom/hypixel/hytale/server/core/universe/world/chunk/section/BlockSection;)
+133: aload_1
+134: getfield #126 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsSystems$CachedAccessor.selfPhysics(Lcom/hypixel/hytale/server/core/blocktype/component/BlockPhysics;)
+137: aload_1
+138: getfield #193 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsSystems$CachedAccessor.selfFluidSection(Lcom/hypixel/hytale/server/core/universe/world/chunk/section/FluidSection;)
+141: iload 11
+143: iload 12
+145: iload 13
+147: aload 8
+149: iload 15
+151: iload 14
+153: invokestatic #197 = Method com.hypixel.hytale.builtin.blockphysics.BlockPhysicsUtil.applyBlockPhysics((Lcom/hypixel/hytale/component/ComponentAccessor;Lcom/hypixel/hytale/builtin/blockphysics/BlockPhysicsSystems$CachedAccessor;Lcom/hypixel/hytale/component/Ref;Lcom/hypixel/hytale/server/core/universe/world/chunk/section/BlockSection;Lcom/hypixel/hytale/server/core/blocktype/component/BlockPhysics;Lcom/hypixel/hytale/server/core/universe/world/chunk/section/FluidSection;IIILcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockType;II)Lcom/hypixel/hytale/builtin/blockphysics/BlockPhysicsUtil$Result;)
+156: invokevirtual #203 = Method com.hypixel.hytale.builtin.blockphysics.BlockPhysicsUtil$Result.ordinal(()I)
+159: iaload
+160: tableswitch {
+		default: 188
+		1: 198
+		2: 204
+		3: 210}
+188: new #208 = Class java.lang.MatchException
+191: dup
+192: aconst_null
+193: aconst_null
+194: invokespecial #210 = Method java.lang.MatchException.<init>((Ljava/lang/String;Ljava/lang/Throwable;)V)
+197: athrow
+198: getstatic #213 = Field com.hypixel.hytale.server.core.asset.type.blocktick.BlockTickStrategy.WAIT_FOR_ADJACENT_CHUNK_LOAD(Lcom/hypixel/hytale/server/core/asset/type/blocktick/BlockTickStrategy;)
+201: goto 213
+204: getstatic #146 = Field com.hypixel.hytale.server.core.asset.type.blocktick.BlockTickStrategy.IGNORED(Lcom/hypixel/hytale/server/core/asset/type/blocktick/BlockTickStrategy;)
+207: goto 213
+210: getstatic #216 = Field com.hypixel.hytale.server.core.asset.type.blocktick.BlockTickStrategy.SLEEP(Lcom/hypixel/hytale/server/core/asset/type/blocktick/BlockTickStrategy;)
+213: areturn
+
+== com.hypixel.hytale.builtin.blockphysics.BlockPhysicsUtil applyBlockPhysics (Lcom/hypixel/hytale/component/ComponentAccessor;Lcom/hypixel/hytale/builtin/blockphysics/BlockPhysicsSystems$CachedAccessor;Lcom/hypixel/hytale/component/Ref;Lcom/hypixel/hytale/server/core/universe/world/chunk/section/BlockSection;Lcom/hypixel/hytale/server/core/blocktype/component/BlockPhysics;Lcom/hypixel/hytale/server/core/universe/world/chunk/section/FluidSection;IIILcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockType;II)Lcom/hypixel/hytale/builtin/blockphysics/BlockPhysicsUtil$Result;
+0: iload 11
+2: ifeq 9
+5: getstatic #7 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsUtil$Result.VALID(Lcom/hypixel/hytale/builtin/blockphysics/BlockPhysicsUtil$Result;)
+8: areturn
+9: aload_1
+10: aload_3
+11: aload 4
+13: aload 5
+15: iload 6
+17: iload 7
+19: iload 8
+21: aload 9
+23: iload 10
+25: iload 11
+27: invokestatic #13 = Method com.hypixel.hytale.builtin.blockphysics.BlockPhysicsUtil.testBlockPhysics((Lcom/hypixel/hytale/builtin/blockphysics/BlockPhysicsSystems$CachedAccessor;Lcom/hypixel/hytale/server/core/universe/world/chunk/section/BlockSection;Lcom/hypixel/hytale/server/core/blocktype/component/BlockPhysics;Lcom/hypixel/hytale/server/core/universe/world/chunk/section/FluidSection;IIILcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockType;II)I)
+30: istore 12
+32: iload 12
+34: ifne 188
+37: aload_0
+38: invokeinterface #19 = Method com.hypixel.hytale.component.ComponentAccessor.getExternalData(()Ljava/lang/Object;)
+43: checkcast #25 = Class com.hypixel.hytale.server.core.universe.world.storage.EntityStore
+46: invokevirtual #27 = Method com.hypixel.hytale.server.core.universe.world.storage.EntityStore.getWorld(()Lcom/hypixel/hytale/server/core/universe/world/World;)
+49: astore 13
+51: aload 13
+53: invokevirtual #31 = Method com.hypixel.hytale.server.core.universe.world.World.getChunkStore(()Lcom/hypixel/hytale/server/core/universe/world/storage/ChunkStore;)
+56: invokevirtual #37 = Method com.hypixel.hytale.server.core.universe.world.storage.ChunkStore.getStore(()Lcom/hypixel/hytale/component/Store;)
+59: astore 14
+61: getstatic #43 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsUtil$1.$SwitchMap$com$hypixel$hytale$server$core$asset$type$blocktype$config$SupportDropType([I)
+64: aload 9
+66: invokevirtual #49 = Method com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType.getSupportDropType(()Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/SupportDropType;)
+69: invokevirtual #55 = Method com.hypixel.hytale.server.core.asset.type.blocktype.config.SupportDropType.ordinal(()I)
+72: iaload
+73: tableswitch {
+		default: 184
+		1: 100
+		2: 130
+		3: 160}
+100: new #61 = Class org.joml.Vector3i
+103: dup
+104: iload 6
+106: iload 7
+108: iload 8
+110: invokespecial #63 = Method org.joml.Vector3i.<init>((III)V)
+113: aload 9
+115: iload 11
+117: sipush 256
+120: aload_2
+121: aload_0
+122: aload 14
+124: invokestatic #68 = Method com.hypixel.hytale.server.core.modules.interaction.BlockHarvestUtils.naturallyRemoveBlockByPhysics((Lorg/joml/Vector3i;Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockType;IILcom/hypixel/hytale/component/Ref;Lcom/hypixel/hytale/component/ComponentAccessor;Lcom/hypixel/hytale/component/ComponentAccessor;)V)
+127: goto 184
+130: new #61 = Class org.joml.Vector3i
+133: dup
+134: iload 6
+136: iload 7
+138: iload 8
+140: invokespecial #63 = Method org.joml.Vector3i.<init>((III)V)
+143: aload 9
+145: iload 11
+147: sipush 2304
+150: aload_2
+151: aload_0
+152: aload 14
+154: invokestatic #68 = Method com.hypixel.hytale.server.core.modules.interaction.BlockHarvestUtils.naturallyRemoveBlockByPhysics((Lorg/joml/Vector3i;Lcom/hypixel/hytale/server/core/asset/type/blocktype/config/BlockType;IILcom/hypixel/hytale/component/Ref;Lcom/hypixel/hytale/component/ComponentAccessor;Lcom/hypixel/hytale/component/ComponentAccessor;)V)
+157: goto 184
+160: aload 13
+162: aload_0
+163: invokeinterface #19 = Method com.hypixel.hytale.component.ComponentAccessor.getExternalData(()Ljava/lang/Object;)
+168: checkcast #25 = Class com.hypixel.hytale.server.core.universe.world.storage.EntityStore
+171: invokevirtual #74 = Method com.hypixel.hytale.server.core.universe.world.storage.EntityStore.getStore(()Lcom/hypixel/hytale/component/Store;)
+174: iload 6
+176: iload 7
+178: iload 8
+180: invokestatic #75 = Method com.hypixel.hytale.builtin.fallingblocks.FallingBlock.fallBlock((Lcom/hypixel/hytale/server/core/universe/world/World;Lcom/hypixel/hytale/component/Store;III)Z)
+183: pop
+184: getstatic #81 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsUtil$Result.INVALID(Lcom/hypixel/hytale/builtin/blockphysics/BlockPhysicsUtil$Result;)
+187: areturn
+188: iload 12
+190: iconst_m1
+191: if_icmpne 198
+194: getstatic #7 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsUtil$Result.VALID(Lcom/hypixel/hytale/builtin/blockphysics/BlockPhysicsUtil$Result;)
+197: areturn
+198: iload 12
+200: bipush 253
+202: if_icmpne 209
+205: getstatic #84 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsUtil$Result.WAITING_CHUNK(Lcom/hypixel/hytale/builtin/blockphysics/BlockPhysicsUtil$Result;)
+208: areturn
+209: aload 4
+211: iload 6
+213: iload 7
+215: iload 8
+217: invokevirtual #87 = Method com.hypixel.hytale.server.core.blocktype.component.BlockPhysics.get((III)I)
+220: istore 13
+222: iload 12
+224: bipush 254
+226: if_icmpne 261
+229: iload 13
+231: ifeq 257
+234: aload 4
+236: iload 6
+238: iload 7
+240: iload 8
+242: iconst_0
+243: invokevirtual #93 = Method com.hypixel.hytale.server.core.blocktype.component.BlockPhysics.set((IIII)Z)
+246: pop
+247: aload_1
+248: iload 6
+250: iload 7
+252: iload 8
+254: invokevirtual #97 = Method com.hypixel.hytale.builtin.blockphysics.BlockPhysicsSystems$CachedAccessor.performBlockUpdate((III)V)
+257: getstatic #7 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsUtil$Result.VALID(Lcom/hypixel/hytale/builtin/blockphysics/BlockPhysicsUtil$Result;)
+260: areturn
+261: iload 13
+263: iload 12
+265: if_icmpne 285
+268: aload_1
+269: iload 6
+271: iload 7
+273: iload 8
+275: iload 12
+277: iconst_1
+278: isub
+279: invokevirtual #102 = Method com.hypixel.hytale.builtin.blockphysics.BlockPhysicsSystems$CachedAccessor.performBlockUpdate((IIII)V)
+282: goto 309
+285: aload 4
+287: iload 6
+289: iload 7
+291: iload 8
+293: iload 12
+295: invokevirtual #93 = Method com.hypixel.hytale.server.core.blocktype.component.BlockPhysics.set((IIII)Z)
+298: pop
+299: aload_1
+300: iload 6
+302: iload 7
+304: iload 8
+306: invokevirtual #97 = Method com.hypixel.hytale.builtin.blockphysics.BlockPhysicsSystems$CachedAccessor.performBlockUpdate((III)V)
+309: getstatic #7 = Field com.hypixel.hytale.builtin.blockphysics.BlockPhysicsUtil$Result.VALID(Lcom/hypixel/hytale/builtin/blockphysics/BlockPhysicsUtil$Result;)
+312: areturn
+

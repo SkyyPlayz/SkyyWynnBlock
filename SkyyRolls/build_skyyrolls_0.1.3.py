@@ -1,77 +1,4 @@
-r"""Derive SkyyRolls/build_skyyrolls_0.1.3.py from 0.1.2.
-0.1.3 (Skyy 2026-09-24 live test of 0.1.2: "/rolls reroll" wrote 'Withered ... dmg +24% str 12 crit 11 quality 68' into the metadata
-of a Mithril Shortbow but "item doesn't show what the reroll did"; and Skyy "accidentally rerolled my farming sack"):
-
-1. ROLLS ON THE TOOLTIP. The client never renders an unknown metadata key ("SkyyRolls" was invisible). It DOES know one key:
-   "ItemDisplay" = com.hypixel.hytale.server.core.asset.type.item.config.metadata.ItemDisplayMetadata {Name: Message, Description:
-   Message}. Evidence (2026-09-24, read-only):
-   - HytaleServer.jar 0.6.8: ItemDisplayMetadata.<clinit> = KeyedCodec "ItemDisplay" over a BuilderCodec with "Name" and
-     "Description" (both Message.CODEC = FormattedMessage fields RawText/MessageId/Params/Children/Bold/.../Color/Link);
-     ItemStack.getDisplayName()/getDisplayDescription() read it first and fall back to the item's translation; ItemStack.toPacket()
-     sends the whole metadata document as JSON (ItemWithAllMetadata.metadata), so the key reaches every client.
-   - HytaleClient.exe: the client's item stack has GetDisplayName/GetDisplayDescription and a ClientItemMetadata type whose
-     JSON properties are Adventure, CapturedEntity, ItemDisplay and Extra, with an ItemDisplayMetadata type of FormattedMessages
-     (System.Text.Json source-gen names Create_ItemDisplayMetadata / ItemDisplayMetadataPropInit). So the client parses
-     "ItemDisplay" out of the metadata JSON itself.
-   - SimpleEnchantments-1.2.0.jar (org.herolias - the same author as DynamicTooltipsLib, ServerVersion >=0.6.0-pre.13 <0.7.0, this
-     server is 0.6.8) shows its enchantments ONLY this way: NativeTooltipManager.writeDisplay = stack.withMetadata(
-     ItemDisplayMetadata.KEYED_CODEC, new ItemDisplayMetadata(name, description)); description = the item's own description
-     (Message.translation of getDescriptionTranslationKey, skipped when I18nModule.getMessage("en-US", key) is missing) + "\n" +
-     coloured Message.raw lines; it logs "Using native per-stack ItemDisplay metadata for enchantment tooltips". Copied here.
-   - DynamicTooltipsLib is NOT needed (it swaps per-player virtual item ids in packet filters; it is disabled in the HUD mod world).
-   What is written: Name = "<Reforge> <item name>" in the item's rarity colour (ItemQuality.getTextColor() of the stack's quality,
-   e.g. Epic #8b339e), Description = the item's vanilla description (if it has one), a blank line, then one line per roll:
-   Reforge, Damage, Strength, Crit, Roll Quality. Written by give and reroll; items that already carry SkyyRolls metadata get it
-   from /rolls read (held item) and from a join refresh (PlayerReadyEvent -> 3 s later on the player's world thread: hotbar,
-   storage, backpack, armor, utility, tools; skipped while SkyyProfiles' profile:busy:<uuid> is set; read-only when every
-   rolled item is already up to date).
-   Metadata stays backwards compatible: "SkyyRolls" keeps exactly {reforge, dmg, str, crit, quality, rolledAt}; new keys are
-   "ItemDisplay" (engine key) and "SkyyRollsView" {v, sig, prev?} = our marker: v = display version, sig = what the display was
-   built from (skip rewrites when unchanged), prev = an ItemDisplay that was on the item BEFORE we wrote ours (restored by clear).
-2. ONLY WEAPONS, ARMOR AND TOOLS: give and reroll refuse anything that is not Weapon_* / Armor_* / Tool_*, refuse Weapon_* ammo
-   (any id token Arrow, Bolt, Bomb, Dart, Grenade, Ammo, Bullet, Shell, Shuriken, Thrown - checked against Assets.zip and every
-   installed mod: Weapon_Arrow_*, Weapon_Bomb_*, Weapon_Dart_Tribal, Weapon_Grenade_Frag, Weapon_Spirit_Bomb, ...), and refuse any
-   Skyy item (id starting with Skyy, e.g. Skyy_Sack_*) by name, with a chat line saying why. Spears (stack 5/30), spellbooks and claws
-   are real weapons and stay rollable. /rolls give prefers a rollable match and only suggests rollable ids.
-3. /rolls clear (admin, auto node ...command.rolls.clear): removes "SkyyRolls" and our "SkyyRollsView" from the held item and our
-   "ItemDisplay" (or puts back the one that was there before), keeping item id, quantity, durability, max durability, quality and
-   every other metadata key (ItemStack.withMetadata(BsonDocument) = new ItemStack(itemId, quantity, durability, maxDurability,
-   qualityIndex, doc) - HytaleServer.jar bytecode). For Skyy's rerolled farming sack.
-4. Held-item fix: 0.1.2 read the hand with Inventory.getItemInHand() (the TOOLS section item while usingToolsItem) but wrote the
-   reroll into the HOTBAR slot - that could overwrite a hotbar item with a copy of the tools item. read/reroll/clear now read and
-   write the same container + slot (tools section when usingToolsItem, else the active hotbar slot).
-5. Numbers are read with isNumber()/asNumber() (0.1.2 getInt32 would throw on an Int64/Double after a save round trip).
-"""
-import os
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-src = os.path.join(ROOT, "SkyyRolls", "build_skyyrolls_0.1.2.py")
-dst = os.path.join(ROOT, "SkyyRolls", "build_skyyrolls_0.1.3.py")
-raw = open(src, encoding="utf8", newline="").read()
-CR, LF = chr(13), chr(10)
-NL = CR + LF if (CR + LF) in raw else LF
-s = raw.replace(CR + LF, LF)
-
-
-def rep(old, new):
-    global s
-    n = s.count(old)
-    assert n == 1, "anchor count %d: %s" % (n, old[:100])
-    s = s.replace(old, new, 1)
-
-
-rep('VERSION = "0.1.2"', 'VERSION = "0.1.3"')
-
-# ---------------- docstring ----------------
-rep('''"""SkyyRolls 0.1.1 - build script (javassist via jpype). P0 spike #3: prove ItemStack metadata survives save/reload.
-Run:   python build_skyyrolls_0.1.1.py            -> SkyyRolls/SkyyRolls-0.1.1.jar
-       python build_skyyrolls_0.1.1.py --deploy   -> also copies to Mods/SkyyRolls.jar and enables it in the HUD mod world
-Commands (ADMIN ONLY, see Permissions below):
-  /rolls                 same as /rolls read
-  /rolls read            prints the rolls on the item in your hand + the raw metadata JSON (shows what vanilla stores too)
-  /rolls reroll          replaces the item in your hand with the same item + fresh rolls (same slot)
-  /rolls give [itemId]   gives one item (default Weapon_Longsword_Copper) with random rolls stored in metadata key "SkyyRolls"
-                         {reforge: <name>, dmg: +%, str: n, crit: n, quality: 0..100, rolledAt: millis}''',
-    '''"""SkyyRolls 0.1.3 - build script (javassist via jpype). P0 spike #3: prove ItemStack metadata survives save/reload.
+"""SkyyRolls 0.1.3 - build script (javassist via jpype). P0 spike #3: prove ItemStack metadata survives save/reload.
 Run:   python build_skyyrolls_0.1.3.py            -> SkyyRolls/SkyyRolls-0.1.3.jar
        python build_skyyrolls_0.1.3.py --deploy   -> also copies to Mods/SkyyRolls.jar and enables it in the HUD mod world
 Commands (ADMIN ONLY, see Permissions below):
@@ -81,27 +8,84 @@ Commands (ADMIN ONLY, see Permissions below):
   /rolls reroll          replaces the item in your hand with the same item + fresh rolls (same slot) - weapons, armor, tools only
   /rolls give [itemId]   gives one item (default Weapon_Longsword_Copper) with random rolls stored in metadata key "SkyyRolls"
                          {reforge: <name>, dmg: +%, str: n, crit: n, quality: 0..100, rolledAt: millis} - weapons, armor, tools only
-  /rolls clear           removes the rolls (and the rolls tooltip) from the item in your hand, keeps everything else''')
-rep("0.1.2: /rolls give takes a plain name",
-    "0.1.3: the rolls are SHOWN on the item: native ItemDisplay metadata (Name = rarity-coloured '<Reforge> <item>', Description =" + LF +
-    "  vanilla description + one line per roll), written by give/reroll, by /rolls read and by a join refresh for older rolled items;" + LF +
-    "  only Weapon_* (no ammo) / Armor_* / Tool_* items can be given or rerolled (never Skyy_* items); new /rolls clear; hand read and" + LF +
-    "  write use the same slot. Evidence + details in tools/rolls_0_1_3_patch.py." + LF +
-    "0.1.2: /rolls give takes a plain name")
+  /rolls clear           removes the rolls (and the rolls tooltip) from the item in your hand, keeps everything else
+  The 0.1 flag forms still work: /rolls --action give|read|reroll [--item <itemId>]
+Test protocol: give -> read -> relog -> read again (must match) -> drop + pick up -> read -> put in a chest and take out -> read.
+API: ItemStack.withMetadata(String, BsonValue) returns a NEW stack; ItemStack.getMetadata() -> org.bson.BsonDocument;
+Inventory.getItemInHand(), getActiveHotbarSlot(), getHotbar().setItemStackForSlot(short, ItemStack).
 
-# ---------------- constants + probes ----------------
-rep('ITM = "com.hypixel.hytale.server.core.asset.type.item.config.Item"',
-    'ITM = "com.hypixel.hytale.server.core.asset.type.item.config.Item"' + LF +
-    'IDM = "com.hypixel.hytale.server.core.asset.type.item.config.metadata.ItemDisplayMetadata"' + LF +
-    'IQ  = "com.hypixel.hytale.server.core.asset.type.item.config.ItemQuality"' + LF +
-    'I18N = "com.hypixel.hytale.server.core.modules.i18n.I18nModule"' + LF +
-    'PCOL = "com.hypixel.hytale.protocol.Color"' + LF +
-    'TXN = "com.hypixel.hytale.server.core.inventory.transaction.Transaction"' + LF +
-    'HSV = "com.hypixel.hytale.server.core.HytaleServer"' + LF +
-    'UNI = "com.hypixel.hytale.server.core.universe.Universe"' + LF +
-    'PRE = "com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent"')
-rep('''             (AC, "setAllowsExtraArguments"), (CTX, "getInputString"), (ITM, "getAssetMap")):''',
-    '''             (AC, "setAllowsExtraArguments"), (CTX, "getInputString"), (ITM, "getAssetMap"),
+0.1.3: the rolls are SHOWN on the item: native ItemDisplay metadata (Name = rarity-coloured '<Reforge> <item>', Description =
+  vanilla description + one line per roll), written by give/reroll, by /rolls read and by a join refresh for older rolled items;
+  only Weapon_* (no ammo) / Armor_* / Tool_* items can be given or rerolled (never Skyy_* items); new /rolls clear; hand read and
+  write use the same slot. Evidence + details in tools/rolls_0_1_3_patch.py.
+0.1.2: /rolls give takes a plain name or any-case id ("/rolls give mithril bow", "/rolls give weapon_shortbow_mithril") and never
+  gives an unknown id (it suggests matches instead) - notes in tools/rolls_0_1_2_patch.py.
+0.1.1: positional arguments fixed. In 0.1 "give|read|reroll" and the item id were OPTIONAL args, and optional args are not
+  positional: AbstractCommand.acceptCall0 needs the number of positional tokens to EQUAL the number of required args (this
+  command never calls setAllowsExtraArguments), so "/rolls give" failed with server.commands.parsing.error.wrongNumberRequiredParameters
+  and only "/rolls --action give" worked. Now read / reroll / give are real subcommands (SkyyParty addSubCommand pattern) and
+  "give <itemId>" is a usage variant of give (SkyyEssentials TpAccept pattern: description-only constructor + withRequiredArg,
+  the parent calls addUsageVariant). Bytecode checks against HytaleServer.jar (2026-09-23):
+  - checkForExecutingSubcommands (called first by acceptCall0): if the first positional token names a subcommand
+    (getSubCommand: lower-cased name, then aliases) -> convertToSubCommand + that subcommand's acceptCall0. Otherwise
+    variantCommands.get(tokenCount) runs when this command's own required count differs. addUsageVariant keys variants by
+    their required-arg count (a duplicate count throws), so "give" (0) and "give <itemId>" (1) are picked by count.
+  - acceptCall0: only an AbstractCommandCollection refuses to run itself when a token is not a subcommand; this root is an
+    AbstractPlayerCommand with 0 required args, so "/rolls" alone reaches its own execute() (= read). The root keeps the 0.1
+    optional --action/--item args, so the old flag forms still work for free (flags are not positional tokens).
+  Rolls, messages and item handling are otherwise identical to 0.1.
+Permissions: SkyyRolls is a test spike and /rolls give creates items, so it stays ADMIN-ONLY on purpose: there is NO
+  setPermissionGroups(new String[] { "hytale:Adventurer" }) here (unlike the player commands in SkyyEssentials and the other
+  Skyy mods). AbstractCommand.setOwner() gives the root, every subcommand and the variant an auto node (plugin base
+  "<group>.<name>" lower-cased, spaces -> "_"; a subcommand appends ".<name>", a variant reuses its parent's node):
+  skyy.0.1.1_skyyrolls.command.rolls, ...command.rolls.read, ...command.rolls.reroll, ...command.rolls.give.
+  hasPermission() on a subcommand without permission groups also requires the parent's node. Default players
+  (hytale:Adventurer) have none of these; only "*" admins do. The version is part of the node, so it changes on every bump.
+"""
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools"))
+import skyybuild as B
+
+VERSION = "0.1.3"
+HERE = os.path.dirname(os.path.abspath(__file__))
+J = B.start()
+pool, CtField, CtNewMethod, CtNewConstructor = J["pool"], J["CtField"], J["CtNewMethod"], J["CtNewConstructor"]
+OUT = B.class_out(HERE)
+
+JP  = "com.hypixel.hytale.server.core.plugin.JavaPlugin"
+JPI = "com.hypixel.hytale.server.core.plugin.JavaPluginInit"
+PR  = "com.hypixel.hytale.server.core.universe.PlayerRef"
+REF = "com.hypixel.hytale.component.Ref"
+ST  = "com.hypixel.hytale.component.Store"
+WLD = "com.hypixel.hytale.server.core.universe.world.World"
+AC  = "com.hypixel.hytale.server.core.command.system.AbstractCommand"
+APC = "com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand"
+CTX = "com.hypixel.hytale.server.core.command.system.CommandContext"
+MSG = "com.hypixel.hytale.server.core.Message"
+ATY = "com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes"
+OA  = "com.hypixel.hytale.server.core.command.system.arguments.system.OptionalArg"
+RA  = "com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg"
+LOG = "com.hypixel.hytale.logger.HytaleLogger"
+PLA = "com.hypixel.hytale.server.core.entity.entities.Player"
+INV = "com.hypixel.hytale.server.core.inventory.Inventory"
+IC  = "com.hypixel.hytale.server.core.inventory.container.ItemContainer"
+IS  = "com.hypixel.hytale.server.core.inventory.ItemStack"
+BD  = "org.bson.BsonDocument"
+BV  = "org.bson.BsonValue"
+ITM = "com.hypixel.hytale.server.core.asset.type.item.config.Item"
+IDM = "com.hypixel.hytale.server.core.asset.type.item.config.metadata.ItemDisplayMetadata"
+IQ  = "com.hypixel.hytale.server.core.asset.type.item.config.ItemQuality"
+I18N = "com.hypixel.hytale.server.core.modules.i18n.I18nModule"
+PCOL = "com.hypixel.hytale.protocol.Color"
+TXN = "com.hypixel.hytale.server.core.inventory.transaction.Transaction"
+HSV = "com.hypixel.hytale.server.core.HytaleServer"
+UNI = "com.hypixel.hytale.server.core.universe.Universe"
+PRE = "com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent"
+
+for c, m in ((IS, "withMetadata"), (IS, "getMetadata"), (INV, "getItemInHand"), (INV, "getActiveHotbarSlot"), (INV, "getHotbar"),
+             (IC, "setItemStackForSlot"), (IC, "addItemStack"), (PLA, "getInventory"), (CTX, "provided"), (BD, "append"),
+             (AC, "addSubCommand"), (AC, "addUsageVariant"), (AC, "withRequiredArg"), (AC, "withOptionalArg"),
+             (AC, "setAllowsExtraArguments"), (CTX, "getInputString"), (ITM, "getAssetMap"),
              (IDM, "KEYED_CODEC"), (IDM, "KEY"), (IS, "getItem"), (IS, "getQualityIndex"), (IS, "getItemId"), (IS, "getQuantity"),
              (IS, "getDurability"), (IS, "getMaxDurability"), (IS, "isEmpty"),
              (ITM, "getTranslationKey"), (ITM, "getTranslationMessage"), (ITM, "getDescriptionTranslationKey"),
@@ -112,26 +96,34 @@ rep('''             (AC, "setAllowsExtraArguments"), (CTX, "getInputString"), (I
              (HSV, "SCHEDULED_EXECUTOR"), (UNI, "get"), (UNI, "getWorld"), (PR, "getWorldUuid"), (PR, "getReference"),
              (PR, "isValid"), (PR, "getUuid"), (PR, "getUsername"), (PR, "getComponentType"), (PRE, "getPlayerRef"), (WLD, "execute"),
              (REF, "isValid"), (REF, "getStore"), (BD, "containsKey"), (BD, "remove"), (BD, "clone"), (BV, "asNumber"),
-             ("com.hypixel.hytale.event.EventRegistry", "registerGlobal")):''')
+             ("com.hypixel.hytale.event.EventRegistry", "registerGlobal")):
+    B.probe(pool, c, m)
 
-# ---------------- classes ----------------
-rep('rrc = pool.makeClass(PKG + ".RollsRerollCmd", pool.get(APC))',
-    'rrc = pool.makeClass(PKG + ".RollsRerollCmd", pool.get(APC))' + LF +
-    'clc = pool.makeClass(PKG + ".RollsClearCmd", pool.get(APC))')
-rep('pl  = pool.makeClass(PKG + ".SkyyRollsPlugin", pool.get(JP))',
-    'rft = pool.makeClass(PKG + ".RollsRefreshTask")' + LF +
-    'rdy = pool.makeClass(PKG + ".RollsReady")' + LF +
-    'pl  = pool.makeClass(PKG + ".SkyyRollsPlugin", pool.get(JP))')
+PKG = "com.skyy.rolls"
+rl  = pool.makeClass(PKG + ".Rolls")
+rdc = pool.makeClass(PKG + ".RollsReadCmd", pool.get(APC))
+rrc = pool.makeClass(PKG + ".RollsRerollCmd", pool.get(APC))
+clc = pool.makeClass(PKG + ".RollsClearCmd", pool.get(APC))
+gvc = pool.makeClass(PKG + ".RollsGiveVariantCmd", pool.get(APC))
+gvr = pool.makeClass(PKG + ".RollsGiveCmd", pool.get(APC))
+cmd = pool.makeClass(PKG + ".RollsCmd", pool.get(APC))
+rft = pool.makeClass(PKG + ".RollsRefreshTask")
+rdy = pool.makeClass(PKG + ".RollsReady")
+pl  = pool.makeClass(PKG + ".SkyyRollsPlugin", pool.get(JP))
 
-# ---------------- Rolls: fields + display helpers (before roll(), which does not need them; applyRolls does) ----------------
-rep('''rl.addField(CtField.make('public static final String DEFAULT_ITEM = "Weapon_Longsword_Copper";', rl))''',
-    '''rl.addField(CtField.make('public static final String DEFAULT_ITEM = "Weapon_Longsword_Copper";', rl))
+# ================= Rolls (pure helpers) =================
+rl.addField(CtField.make(f"public static {LOG} LOG;", rl))
+rl.addField(CtField.make('public static final String[] REFORGES = new String[] { "Sharp", "Heroic", "Spicy", "Legendary", "Fabled", "Gentle", "Odd", "Fast", "Epic", "Withered" };', rl))
+rl.addField(CtField.make('public static final String DEFAULT_ITEM = "Weapon_Longsword_Copper";', rl))
 # 0.1.3: our marker key next to the engine's "ItemDisplay" key, its version, and the Weapon_* id tokens that mean ammo
 rl.addField(CtField.make('public static final String VIEW_KEY = "SkyyRollsView";', rl))
 rl.addField(CtField.make('public static final int VIEW_V = 1;', rl))
-rl.addField(CtField.make('public static final String[] AMMO = new String[] { "arrow", "arrows", "bolt", "bolts", "bomb", "bombs", "dart", "darts", "grenade", "grenades", "ammo", "bullet", "bullets", "shell", "shells", "shuriken", "shurikens", "thrown" };', rl))''')
-
-HELPERS = r'''rl.addMethod(CtNewMethod.make("""
+rl.addField(CtField.make('public static final String[] AMMO = new String[] { "arrow", "arrows", "bolt", "bolts", "bomb", "bombs", "dart", "darts", "grenade", "grenades", "ammo", "bullet", "bullets", "shell", "shells", "shuriken", "shurikens", "thrown" };', rl))
+rl.addMethod(CtNewMethod.make("""
+public static void warn(String msg) {
+  try { if (LOG != null) LOG.at(java.util.logging.Level.WARNING).log("[SkyyRolls] " + msg); } catch (Throwable t) { }
+}""", rl))
+rl.addMethod(CtNewMethod.make("""
 public static void info(String msg) {
   try { if (LOG != null) LOG.at(java.util.logging.Level.INFO).log("[SkyyRolls] " + msg); } catch (Throwable t) { }
 }""", rl))
@@ -318,74 +310,72 @@ public static {IS} withDisplay({IS} s) {{
     return s;
   }}
 }}""", rl))
-'''
-rep('''rl.addMethod(CtNewMethod.make(f"""
-public static {BD} roll() {{''', HELPERS + '''rl.addMethod(CtNewMethod.make(f"""
-public static {BD} roll() {{''')
-
-rep('''public static {IS} applyRolls({IS} base) {{
-  return base.withMetadata("SkyyRolls", ({BV}) roll());
-}}''', '''public static {IS} applyRolls({IS} base) {{
+rl.addMethod(CtNewMethod.make(f"""
+public static {BD} roll() {{
+  java.util.concurrent.ThreadLocalRandom r = java.util.concurrent.ThreadLocalRandom.current();
+  {BD} d = new {BD}();
+  d.append("reforge", new org.bson.BsonString(REFORGES[r.nextInt(REFORGES.length)]));
+  d.append("dmg", new org.bson.BsonInt32(r.nextInt(31)));
+  d.append("str", new org.bson.BsonInt32(r.nextInt(26)));
+  d.append("crit", new org.bson.BsonInt32(r.nextInt(16)));
+  d.append("quality", new org.bson.BsonInt32(r.nextInt(101)));
+  d.append("rolledAt", new org.bson.BsonInt64(System.currentTimeMillis()));
+  return d;
+}}""", rl))
+rl.addMethod(CtNewMethod.make(f"""
+public static {IS} applyRolls({IS} base) {{
   return withDisplay(base.withMetadata("SkyyRolls", ({BV}) roll()));
-}}''')
-
-rep('''  return d.getString("reforge", new org.bson.BsonString("?")).getValue() + " " + it.getItemId()
-    + "  dmg +" + d.getInt32("dmg", new org.bson.BsonInt32(0)).getValue() + "%"
-    + "  str " + d.getInt32("str", new org.bson.BsonInt32(0)).getValue()
-    + "  crit " + d.getInt32("crit", new org.bson.BsonInt32(0)).getValue()
-    + "  quality " + d.getInt32("quality", new org.bson.BsonInt32(0)).getValue();''',
-    '''  return str(d, "reforge") + " " + it.getItemId()
+}}""", rl))
+rl.addMethod(CtNewMethod.make(f"""
+public static String describe({IS} it) {{
+  if (it == null || it.isEmpty()) return "no item in hand";
+  {BD} md = it.getMetadata();
+  if (md == null) return it.getItemId() + ": no metadata at all";
+  {BV} v = md.get("SkyyRolls");
+  if (v == null || !v.isDocument()) return it.getItemId() + ": no rolls (metadata keys: " + md.keySet() + ")";
+  {BD} d = v.asDocument();
+  return str(d, "reforge") + " " + it.getItemId()
     + "  dmg +" + num(d, "dmg") + "%"
     + "  str " + num(d, "str")
     + "  crit " + num(d, "crit")
     + "  quality " + num(d, "quality")
-    + (upToDate(it) ? "  [shown on the tooltip]" : "  [not on the tooltip]");''')
-
-# resolve(): prefer (and only suggest) ids that can have rolls
-rep('''  java.util.ArrayList weapons = new java.util.ArrayList();''', '''  java.util.ArrayList good = new java.util.ArrayList();''')
-rep('''      if (all) {{ hits.add(id); if (id.startsWith("Weapon_")) weapons.add(id); }}''',
-    '''      if (all) {{ hits.add(id); if (refuseId(id) == null) good.add(id); }}''')
-rep('''  if (weapons.size() == 1) return (String) weapons.get(0);
-  java.util.Collections.sort(hits);
-  for (int i = 0; i < hits.size() && i < 8; i++) {{ if (sugg.length() > 0) sugg.append(", "); sugg.append((String) hits.get(i)); }}
-  if (hits.size() > 8) sugg.append(" ... (" + hits.size() + " matches)");''',
-    '''  if (good.size() == 1) return (String) good.get(0);
+    + (upToDate(it) ? "  [shown on the tooltip]" : "  [not on the tooltip]");
+}}""", rl))
+# 0.1.2: item name -> real item id (or null + suggestions)
+rl.addMethod(CtNewMethod.make(f"""
+public static String resolve(String q, StringBuilder sugg) {{
+  if (q == null) return null;
+  String t = q.trim();
+  if (t.length() == 0) return null;
+  try {{ if ({ITM}.getAssetMap().getAsset(t) != null) return t; }} catch (Throwable e) {{ }}
+  String norm = t.toLowerCase().replace(' ', '_');
+  String[] words = t.toLowerCase().replace('_', ' ').trim().split(" ");
+  java.util.ArrayList hits = new java.util.ArrayList();
+  java.util.ArrayList good = new java.util.ArrayList();
+  try {{
+    java.util.Iterator it = {ITM}.getAssetMap().getAssetMap().keySet().iterator();
+    while (it.hasNext()) {{
+      String id = String.valueOf(it.next());
+      if (id.length() == 0 || id.charAt(0) == '*') continue;
+      String low = id.toLowerCase();
+      if (low.equals(norm)) return id;
+      boolean all = true;
+      for (int i = 0; i < words.length; i++) {{ if (words[i].length() > 0 && low.indexOf(words[i]) < 0) {{ all = false; break; }} }}
+      if (all) {{ hits.add(id); if (refuseId(id) == null) good.add(id); }}
+    }}
+  }} catch (Throwable e) {{ warn("item lookup failed: " + e); return null; }}
+  if (hits.size() == 1) return (String) hits.get(0);
+  if (good.size() == 1) return (String) good.get(0);
   java.util.ArrayList show = hits;
   if (good.size() > 0) show = good;
   java.util.Collections.sort(show);
   for (int i = 0; i < show.size() && i < 8; i++) {{ if (sugg.length() > 0) sugg.append(", "); sugg.append((String) show.get(i)); }}
-  if (show.size() > 8) sugg.append(" ... (" + show.size() + " matches)");''')
-
-# ---------------- Rolls: hand slot, refresh, clear, and the actions ----------------
-OLD_ACTIONS = '''rl.addMethod(CtNewMethod.make(f"""
-public static void give({PR} pr, {INV} inv, String q) {{
-  StringBuilder sugg = new StringBuilder();
-  String id = resolve(q, sugg);
-  if (id == null) {{
-    pr.sendMessage({MSG}.raw("[Rolls] no item matches '" + q + "'" + (sugg.length() > 0 ? ". Did you mean: " + sugg : " - use an item id like Weapon_Shortbow_Mithril")));
-    return;
-  }}
-  {IS} it = applyRolls(new {IS}(id, 1));
-  Object tx = inv.getStorage().addItemStack(it);
-  pr.sendMessage({MSG}.raw("[Rolls] gave: " + describe(it) + "  (tx " + (tx == null ? "null" : tx.getClass().getSimpleName()) + ")"));
-  pr.sendMessage({MSG}.raw("[Rolls] raw: " + (it.getMetadata() == null ? "null" : it.getMetadata().toJson())));
+  if (show.size() > 8) sugg.append(" ... (" + show.size() + " matches)");
+  return null;
 }}""", rl))
-rl.addMethod(CtNewMethod.make(f"""
-public static void reroll({PR} pr, {INV} inv) {{
-  {IS} hand = inv.getItemInHand();
-  if (hand == null || hand.isEmpty()) {{ pr.sendMessage({MSG}.raw("[Rolls] hold an item first")); return; }}
-  {IS} fresh = applyRolls(hand);
-  Object tx = inv.getHotbar().setItemStackForSlot((short) inv.getActiveHotbarSlot(), fresh);
-  pr.sendMessage({MSG}.raw("[Rolls] rerolled: " + describe(fresh) + "  (tx " + (tx == null ? "null" : tx.getClass().getSimpleName()) + ")"));
-}}""", rl))
-rl.addMethod(CtNewMethod.make(f"""
-public static void read({PR} pr, {INV} inv) {{
-  {IS} hand = inv.getItemInHand();
-  pr.sendMessage({MSG}.raw("[Rolls] " + describe(hand)));
-  if (hand != null && !hand.isEmpty()) pr.sendMessage({MSG}.raw("[Rolls] raw: " + (hand.getMetadata() == null ? "null" : hand.getMetadata().toJson())));
-}}""", rl))'''
-
-NEW_ACTIONS = r'''# 0.1.3: the hand = the same container + slot for reading AND writing (Inventory.getItemInHand() returns the TOOLS item while
+# The three actions, moved out of the 0.1 RollsCmd.execute unchanged so the subcommands, the variant and the
+# legacy --action path all share them.
+# 0.1.3: the hand = the same container + slot for reading AND writing (Inventory.getItemInHand() returns the TOOLS item while
 # usingToolsItem, so writing the 0.1.2 way into the active hotbar slot could overwrite a different item)
 rl.addMethod(CtNewMethod.make(f"""
 public static {IC} handContainer({INV} inv) {{
@@ -528,34 +518,108 @@ public static void clear({PR} pr, {INV} inv) {{
   {BD} after = nu.getMetadata();
   pr.sendMessage({MSG}.raw("[Rolls] cleared the rolls from " + nu.getItemId() + " x" + nu.getQuantity() + " (durability " + nu.getDurability() + "/" + nu.getMaxDurability()
     + ", other metadata kept: " + (after == null ? "none" : String.valueOf(after.keySet())) + ")" + ok(tx)));
-}}""", rl))'''
-rep(OLD_ACTIONS, NEW_ACTIONS)
+}}""", rl))
+# action: "give" | "reroll" | "clear" | anything else = read (same fallback as 0.1). id is only used by give.
+rl.addMethod(CtNewMethod.make(f"""
+public static void run({ST} store, {REF} ref, {PR} pr, String action, String id) {{
+  try {{
+    {PLA} p = ({PLA}) store.getComponent(ref, {PLA}.getComponentType());
+    if (p == null || p.getInventory() == null) {{ pr.sendMessage({MSG}.raw("[Rolls] no player inventory")); return; }}
+    {INV} inv = p.getInventory();
+    if (action.equals("give")) {{ give(pr, inv, id); return; }}
+    if (action.equals("reroll")) {{ reroll(pr, inv); return; }}
+    if (action.equals("clear")) {{ clear(pr, inv); return; }}
+    read(pr, inv);
+  }} catch (Throwable t) {{
+    warn("/rolls failed: " + t);
+    pr.sendMessage({MSG}.raw("[Rolls] error: " + t));
+  }}
+}}""", rl))
 
-rep('''# action: "give" | "reroll" | anything else = read (same fallback as 0.1). id is only used by give.''',
-    '''# action: "give" | "reroll" | "clear" | anything else = read (same fallback as 0.1). id is only used by give.''')
-rep('''    if (action.equals("reroll")) {{ reroll(pr, inv); return; }}''',
-    '''    if (action.equals("reroll")) {{ reroll(pr, inv); return; }}
-    if (action.equals("clear")) {{ clear(pr, inv); return; }}''')
+EXEC = f"protected void execute({CTX} ctx, {ST} store, {REF} ref, {PR} pr, {WLD} world) {{"
 
-# ---------------- /rolls clear ----------------
-rep('''# ================= /rolls give <itemId>  (usage variant of give: description-only constructor) =================''',
-    '''# ================= /rolls clear (0.1.3) =================
+# ================= /rolls read =================
+rdc.addConstructor(CtNewConstructor.make('public RollsReadCmd() { super("read", "Show the rolls on the item in your hand"); }', rdc))
+rdc.addMethod(CtNewMethod.make(f"""
+{EXEC}
+  {PKG}.Rolls.run(store, ref, pr, "read", null);
+}}""", rdc))
+
+# ================= /rolls reroll =================
+rrc.addConstructor(CtNewConstructor.make('public RollsRerollCmd() { super("reroll", "Re-roll the item in your hand (same slot)"); }', rrc))
+rrc.addMethod(CtNewMethod.make(f"""
+{EXEC}
+  {PKG}.Rolls.run(store, ref, pr, "reroll", null);
+}}""", rrc))
+
+# ================= /rolls clear (0.1.3) =================
 clc.addConstructor(CtNewConstructor.make('public RollsClearCmd() { super("clear", "Remove the rolls from the item in your hand (keeps the item, durability and other data)"); }', clc))
 clc.addMethod(CtNewMethod.make(f"""
 {EXEC}
   {PKG}.Rolls.run(store, ref, pr, "clear", null);
 }}""", clc))
 
-# ================= /rolls give <itemId>  (usage variant of give: description-only constructor) =================''')
-rep('''  super("rolls", "SkyyRolls spike (admin): /rolls [read] | /rolls reroll | /rolls give [itemId]");
-  this.actionArg = withOptionalArg("action", "old 0.1 form: give | read | reroll", {ATY}.STRING);''',
-    '''  super("rolls", "SkyyRolls spike (admin): /rolls [read] | /rolls reroll | /rolls give [itemId] | /rolls clear");
-  this.actionArg = withOptionalArg("action", "old 0.1 form: give | read | reroll | clear", {ATY}.STRING);''')
-rep('''  addSubCommand(new {PKG}.RollsGiveCmd());''', '''  addSubCommand(new {PKG}.RollsGiveCmd());
-  addSubCommand(new {PKG}.RollsClearCmd());''')
+# ================= /rolls give <itemId>  (usage variant of give: description-only constructor) =================
+gvc.addField(CtField.make(f"public {RA} itemArg;", gvc))
+gvc.addConstructor(CtNewConstructor.make(f"""
+public RollsGiveVariantCmd() {{
+  super("Give this item with random rolls");
+  this.itemArg = withRequiredArg("itemId", "Item id, e.g. Weapon_Longsword_Copper", {ATY}.STRING);
+}}""", gvc))
+gvc.addMethod(CtNewMethod.make(f"""
+{EXEC}
+  Object v = ctx.get(this.itemArg);
+  String id = v == null ? "" : String.valueOf(v).trim();
+  if (id.length() == 0) id = {PKG}.Rolls.DEFAULT_ITEM;
+  {PKG}.Rolls.run(store, ref, pr, "give", id);
+}}""", gvc))
 
-# ---------------- join refresh (SkyyProfiles OpenTask/ProfReady pattern: scheduler delay -> hop to the player's world thread) ----------------
-REFRESH = r'''# ================= join refresh (0.1.3): rolled items from before 0.1.3 get their tooltip =================
+# ================= /rolls give =================
+gvr.addConstructor(CtNewConstructor.make(f"""
+public RollsGiveCmd() {{
+  super("give", "Give an item with random rolls: /rolls give [item name or id] (default Weapon_Longsword_Copper)");
+  setAllowsExtraArguments(true);
+}}""", gvr))
+gvr.addMethod(CtNewMethod.make(f"""
+{EXEC}
+  String line = "";
+  try {{ line = ctx.getInputString(); }} catch (Throwable t) {{ line = ""; }}
+  if (line == null) line = "";
+  String q = line.trim();
+  String low = q.toLowerCase();
+  int at = low.indexOf("give ");
+  if (at >= 0) q = q.substring(at + 5).trim();
+  else if (low.equals("give") || low.endsWith(" give")) q = "";
+  if (q.length() == 0) q = {PKG}.Rolls.DEFAULT_ITEM;
+  {PKG}.Rolls.run(store, ref, pr, "give", q);
+}}""", gvr))
+
+# ================= /rolls (root; alone = read; keeps the 0.1 --action/--item flags) =================
+cmd.addField(CtField.make(f"public {OA} actionArg;", cmd))
+cmd.addField(CtField.make(f"public {OA} itemArg;", cmd))
+cmd.addConstructor(CtNewConstructor.make(f"""
+public RollsCmd() {{
+  super("rolls", "SkyyRolls spike (admin): /rolls [read] | /rolls reroll | /rolls give [itemId] | /rolls clear");
+  this.actionArg = withOptionalArg("action", "old 0.1 form: give | read | reroll | clear", {ATY}.STRING);
+  this.itemArg = withOptionalArg("item", "old 0.1 form: item id for give (default Weapon_Longsword_Copper)", {ATY}.STRING);
+  addSubCommand(new {PKG}.RollsReadCmd());
+  addSubCommand(new {PKG}.RollsRerollCmd());
+  addSubCommand(new {PKG}.RollsGiveCmd());
+  addSubCommand(new {PKG}.RollsClearCmd());
+}}""", cmd))
+cmd.addMethod(CtNewMethod.make(f"""
+{EXEC}
+  try {{
+    String a = ctx.provided(this.actionArg) ? String.valueOf(ctx.get(this.actionArg)).trim().toLowerCase() : "read";
+    String id = ctx.provided(this.itemArg) ? String.valueOf(ctx.get(this.itemArg)).trim() : {PKG}.Rolls.DEFAULT_ITEM;
+    {PKG}.Rolls.run(store, ref, pr, a, id);
+  }} catch (Throwable t) {{
+    {PKG}.Rolls.warn("/rolls failed: " + t);
+    pr.sendMessage({MSG}.raw("[Rolls] error: " + t));
+  }}
+}}""", cmd))
+
+# ================= join refresh (0.1.3): rolled items from before 0.1.3 get their tooltip =================
 # PlayerReadyEvent (every world switch) -> 3 s later on the scheduler -> hop to the player's CURRENT world thread -> re-check the
 # world there -> skip while SkyyProfiles' profile:busy:<uuid> is set (crash recovery reloads the inventory) -> Rolls.refreshInventory.
 # Up to 15 tries, 2 s apart. Items that already show their rolls are only read.
@@ -619,17 +683,24 @@ public void accept(Object ev) {{
   }} catch (Throwable t) {{ {PKG}.Rolls.warn("ready handler failed: " + t); }}
 }}""", rdy))
 
-# ================= plugin ================='''
-rep('''# ================= plugin =================''', REFRESH)
-rep('''  getCommandRegistry().registerCommand(new {PKG}.RollsCmd());
-  getLogger().at(java.util.logging.Level.INFO).log("[SkyyRolls] {VERSION} ready - /rolls [read] | /rolls reroll | /rolls give [itemId] (admin only)");''',
-    '''  getCommandRegistry().registerCommand(new {PKG}.RollsCmd());
+# ================= plugin =================
+pl.addConstructor(CtNewConstructor.make(f"public SkyyRollsPlugin({JPI} init) {{ super(init); }}", pl))
+pl.addMethod(CtNewMethod.make(f"""
+public void setup() {{
+  {PKG}.Rolls.LOG = getLogger();
+  getCommandRegistry().registerCommand(new {PKG}.RollsCmd());
   getEventRegistry().registerGlobal({PRE}.class, new {PKG}.RollsReady());
-  getLogger().at(java.util.logging.Level.INFO).log("[SkyyRolls] {VERSION} ready - /rolls [read] | /rolls reroll | /rolls give [itemId] | /rolls clear (admin only); rolls shown on the item tooltip");''')
+  getLogger().at(java.util.logging.Level.INFO).log("[SkyyRolls] {VERSION} ready - /rolls [read] | /rolls reroll | /rolls give [itemId] | /rolls clear (admin only); rolls shown on the item tooltip");
+}}""", pl))
 
-rep('''for c in (rl, rdc, rrc, gvc, gvr, cmd, pl):''', '''for c in (rl, rdc, rrc, clc, gvc, gvr, cmd, rft, rdy, pl):''')
-rep('''"SkyWynn item rolls spike: random stats stored in ItemStack metadata (/rolls give|read|reroll). Zero dependencies."''',
-    '''"SkyWynn item rolls spike: random stats stored in ItemStack metadata and shown on the item tooltip (/rolls give|read|reroll|clear). Zero dependencies."''')
+for c in (rl, rdc, rrc, clc, gvc, gvr, cmd, rft, rdy, pl):
+    c.writeFile(OUT)
+print("classes written")
 
-open(dst, "w", encoding="utf8", newline="").write(s.replace(LF, NL))
-print("wrote", dst)
+jar = os.path.join(HERE, "SkyyRolls-%s.jar" % VERSION)
+m = B.manifest("SkyyRolls", VERSION, "SkyWynn item rolls spike: random stats stored in ItemStack metadata and shown on the item tooltip (/rolls give|read|reroll|clear). Zero dependencies.", PKG + ".SkyyRollsPlugin")
+m["IncludesAssetPack"] = False
+B.assemble(jar, m, OUT)
+if "--deploy" in sys.argv:
+    B.deploy(jar, "SkyyRolls.jar")
+    B.enable_in_world("HUD mod", "Skyy:%s SkyyRolls" % VERSION, disable_prefix="Skyy:")
