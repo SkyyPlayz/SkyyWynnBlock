@@ -17,6 +17,29 @@ Keep the full SkyBlock-style tree, **plus** extras. Trim later. Do not drop Smit
 
 Level cap 100 for every skill is an existing engineering lock in `HANDOFF.md`. This plan does not retune per-level perks.
 
+## Focus now vs back burner (Skyy, 2026-09-23 late)
+
+| Area | Call | Note |
+|---|---|---|
+| Archer, Warrior, Mage | **NOW** | Launch classes |
+| Assassin, Shaman | LATER | Stay greyed out |
+| Mining, Foraging, Farming | **NOW** (live) | Each gets its own skill tree |
+| Acrobatics | **NOW** (live) | Skyy's mcMMO skill |
+| Archery, Swordsmanship, Sorcery | **NOW** (live) | Class weapon skills |
+| Smithing | **KEEP** | Leveled by reforging and adding powders; its XP arrives with those systems |
+| Alchemy | **BUILD NOW** | |
+| Exploration | **ADD** | Research what SkyBlock and Wynncraft give for exploring first, then Skyy picks the rewards |
+| Skill tree per gathering skill | **YES** | Mining, Foraging, Farming (Fishing's tree waits with Fishing) |
+| Fishing | SHELF | |
+| Enchanting | SHELF | Hytale has no enchanting |
+| Taming + pets | LATER | |
+| Carpentry | SKIP | |
+| Hunting | LATER | Major SkyBlock feature, a big project of its own |
+| Runecrafting | SHELF | |
+| Social | SHELF | |
+| Dungeoneering | LATER | Already LATER (2.14) |
+| Cooking | not sorted yet | Skyy did not call it; ask |
+
 ## Combat XP
 
 XP from fighting goes into the **weapon skill of the equipped class**:

@@ -66,6 +66,14 @@ Batch 1 above stays. This list adds to it.
 13. **UI:** placeholders, refined continuously. Inventory screen is the only UI we skip.
 14. **Magic: open.** Wait on Chapter 1 runes. Do not treat "class abilities are engine runes" as locked.
 
+### Focus call (Skyy, 2026-09-23 late): what gets built now
+- **Classes:** Archer, Warrior, Mage now. Assassin and Shaman later.
+- **Skills NOW:** Mining, Foraging, Farming, Acrobatics, the class weapon skills, **Alchemy (build it)**, **Exploration (add it: research SkyBlock + Wynncraft rewards first, Skyy picks)**, **Smithing kept** (leveled by reforging and adding powders).
+- **A skill tree per gathering skill: YES** (Mining, Foraging, Farming).
+- **Shelved / later:** Fishing, Enchanting (not in Hytale), Taming + pets, Carpentry (skip), Hunting (big SkyBlock feature, later project), Runecrafting, Social, Dungeoneering.
+- **Cooking:** not sorted yet.
+Full table: SkyySkills-Plan.md.
+
 The SkyyClasses 0.1.1 jar (below) was built earlier the same day with Berserker in the roster and Combat.<Class> skill keys. That is the spike. Design prose uses Shaman, per-weapon skills, and one class per profile. A later code pass realigns the jar; this note does not.
 
 Full rationale: `SkyWynn-Decisions.md` (rows 10.17–10.28 locked, plus the 2026-09-23 ✔ rows), `SkyWynn-Master-Plan.md`, `SkyWynn-QoL-Catalog.md`, `SkyWynn-Mod-Roster.md` (28 mods, tiers, build order).
@@ -125,7 +133,7 @@ Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 - SkyySkills 0.1: /skills page renders. HyperEssentials death crash diagnosed and removed.
 
 ### Open decisions for Skyy
-0. Classes + skills focus: Skyy is sorting every class/skill into 'focus now' vs 'back burner' (list sent 2026-09-23 22:05).
+0. Exploration rewards: research running (what SkyBlock + Wynncraft give for exploring); Skyy picks the rewards from it. Cooking: now or shelf?
 1. Deploy approval for the profiles set when it is built (SkyyProfiles 0.1 + the 8 per-profile versions).
 2. Endurance/Intelligence talismans: % of vanilla base (Stamina 10, Mana 0) is nearly useless - make them flat until armor adds base stats?
 3. Accessory power: six [SKYY?] questions in SkyyAccessories-Plan.md (AP values, bench accessories count?, class crystals, slot sources/prices, Mage crystal).
@@ -286,3 +294,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-23 21:45: pulled Skyy's design-lock commit b2d4164 (plans for Classes/Skills/Islands/Minions/Dungeons/Guilds, Decisions + Master Plan re-cut). Impact: SkyyClasses 0.1.1 conflicts (Berserker, Assassin at launch, paid switch) -> do not deploy, realign as 0.1.2; SkyySkills 0.3 drop Berserking; profiles (new class = new profile + island) need a cross-mod storage change -> proposed SkyyProfiles; P1 core now also includes guilds, accessory power, item rarity/stats/reforges, elements + powders.
 - 2026-09-23 22:00: built SkyyClasses 0.1.2 (locked roster, class lock) + SkyySkills 0.3.1 (Shaman placeholder slot) and DEPLOYED THE WHOLE SET together (14 Skyy mods: Hud 0.3.6, Sacks 0.7.1, Coins 0.1.4, Collections 0.1.4, Party 0.1.2, Bank 0.1.1, Islands 0.4.3, Bazaar 0.1.1, Rolls 0.1.1, Skills 0.3.1, Accessories 0.4, Classes 0.1.2, Menu 0.1.1, Essentials 0.1). Join-log watcher running.
 - 2026-09-23 22:05: wrote tools/PROFILES-CONTRACT.md; workflow skywynn-profiles building SkyyProfiles 0.1 + per-profile versions of Coins, Bank, Sacks, Skills, Collections, Accessories, Islands, Classes (no deploy).
+- 2026-09-23 22:15: Skyy's focus call (HANDOFF section 1 'Focus call', SkyySkills-Plan.md table): build Alchemy, add Exploration after research, keep Smithing (reforge/powder XP), a tree per gathering skill; shelve Fishing, Enchanting, Taming/pets, Carpentry, Hunting, Runecrafting, Social, Dungeoneering. Cooking unsorted.

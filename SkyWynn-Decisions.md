@@ -58,6 +58,29 @@ Added after batch 1. Batch 1 stays in force. Where a line below names a batch 1 
 
 **List lock (2026-09-23):** full SkyBlock-style tree plus extras. Smithing and Exploration stay. Trim later. The exception is 2.5: no shared Combat skill.
 
+**Focus call (Skyy, 2026-09-23 late)** - which of the list gets built now. The list lock above still stands; shelved skills stay on the list.
+
+| Area | Call | Note |
+|---|---|---|
+| Archer, Warrior, Mage | **NOW** | Launch classes |
+| Assassin, Shaman | LATER | Stay greyed out |
+| Mining, Foraging, Farming | **NOW** (live) | Each gets its own skill tree |
+| Acrobatics | **NOW** (live) | Skyy's mcMMO skill |
+| Archery, Swordsmanship, Sorcery | **NOW** (live) | Class weapon skills |
+| Smithing | **KEEP** | Leveled by reforging and adding powders; its XP arrives with those systems |
+| Alchemy | **BUILD NOW** | |
+| Exploration | **ADD** | Research what SkyBlock and Wynncraft give for exploring first, then Skyy picks the rewards |
+| Skill tree per gathering skill | **YES** | Mining, Foraging, Farming (Fishing's tree waits with Fishing) |
+| Fishing | SHELF | |
+| Enchanting | SHELF | Hytale has no enchanting |
+| Taming + pets | LATER | |
+| Carpentry | SKIP | |
+| Hunting | LATER | Major SkyBlock feature, a big project of its own |
+| Runecrafting | SHELF | |
+| Social | SHELF | |
+| Dungeoneering | LATER | Already LATER (2.14) |
+| Cooking | not sorted yet | Skyy did not call it; ask |
+
 | # | Skill | Origin blend | Draft call | ☐ DECISION |
 |---|---|---|---|---|
 | 2.1 | Farming | both | TAKE | ✔ Kept on the ambitious list |
