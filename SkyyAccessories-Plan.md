@@ -87,3 +87,7 @@ Unlocks are permanent (switching class never removes slots). Note: only **18 fam
 
 ## Change (Skyy, 2026-09-23 late): alchemy and cooking are table-only
 Alchemy and Cooking are skills now, so their bench accessories go: no Alchemy Bench or Cooking Bench accessory, no Alchemy tab and no cooking recipes in /craft. You brew and cook at the real tables, and those tables draw ingredients from your sacks (the SkyySacks bag link already feeds every vanilla bench window). The Omni accessory stops counting them. Accessories already owned stay as items but do nothing (no recipe). Smelting in the furnace (vanilla Furnace and the SkyySacks Furnace tab) gives Smithing XP.
+
+## Change (Skyy, 2026-09-24): the Campfire accessory is BACK
+Quick inventory cooking through the /craft Campfire tab: 50% Cooking XP and 75% of the Cooking skill's bonus (an emergency cook).
+The Alchemy Bench and Cooking Bench accessories stay retired (table only). SkyyAccessories 0.4.3 + SkyySacks 0.7.4 + SkyyCooking 0.1.1.

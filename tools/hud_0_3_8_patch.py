@@ -72,6 +72,10 @@ Run:   python build_skyyhud_0.3.8.py            -> SkyyHud/SkyyHud-0.3.8.jar
   - Editor: previews show the real lines when you are in a party / guild, otherwise sample lines ('Party (sample)',
     '[SKY] Sample Guild'); the selection outline shows the full box. Settings page: an extra ON/OFF on the Background row for
     the widget option; the style preview shows the widget title.
+  - Review fixes (same day): /skyyhud profile save writes <name>.txt.tmp and moves it over <name>.txt (the layout file's
+    save() pattern), so a crash mid-write cannot leave a cut-off named layout; the party same-world check also accepts
+    SkyyParty's world name with commas turned into spaces; the Settings option hint label is 360 px wide (Background row =
+    1322 of the page's 1468 px inner width, was 1442).
 ''')
 rep('VERSION = "0.3.7"', 'VERSION = "0.3.8"')
 
@@ -282,7 +286,8 @@ public static String[] partyModelU(java.util.UUID me, String myWorld, boolean op
         for (int j = 6; j < p.length; j++) { if (j > 6) wb.append(','); wb.append(p[j]); }
         w = wb.toString().trim();
       }
-      boolean same = self || myWorld == null || w.length() == 0 || w.equals(myWorld);
+      // SkyyParty 0.1.3 writes the world name with commas turned into spaces: compare against both forms
+      boolean same = self || myWorld == null || w.length() == 0 || w.equals(myWorld) || w.equals(myWorld.replace(',', ' ').trim());
       if (same) {
         line = "HP " + hp + "/" + mhp;
         if (opt) {
@@ -666,7 +671,7 @@ rep(r'''  onOff(b, ev, "SkyySetRow2", "Background", "SkyySetBgOn", "SkyySetBgOff
     b.appendInline("#SkyySetRow2", "Label {{ Anchor: (Width: 8, Height: 44); Text: \\"\\"; }}");
     b.appendInline("#SkyySetRow2", "TextButton #SkyySetOptOff {{ Anchor: (Width: 104, Height: 44); Text: \\"OFF\\"; " + (l.opt ? bs : on) + " }}");
     b.appendInline("#SkyySetRow2", "Label {{ Anchor: (Width: 20, Height: 44); Text: \\"\\"; }}");
-    b.appendInline("#SkyySetRow2", "Label {{ Anchor: (Width: 480, Height: 44); Text: \\"" + (isP ? "shown only while you are in a party" : "shown only while you are in a guild") + "\\"; Style: (FontSize: 16, TextColor: #9fb8d0, VerticalAlignment: Center); }}");
+    b.appendInline("#SkyySetRow2", "Label {{ Anchor: (Width: 360, Height: 44); Text: \\"" + (isP ? "shown only while you are in a party" : "shown only while you are in a guild") + "\\"; Style: (FontSize: 16, TextColor: #9fb8d0, VerticalAlignment: Center); }}");
     ev.addEventBinding({BT}.Activating, "#SkyySetOptOn", {EVD}.of("a", "opton"));
     ev.addEventBinding({BT}.Activating, "#SkyySetOptOff", {EVD}.of("a", "optoff"));
   }}
@@ -675,6 +680,13 @@ rep(r'''    if (data.indexOf("\\"on\\"") >= 0) l.en = true;
 ''', r'''    if (data.indexOf("\\"opton\\"") >= 0) l.opt = true;
     else if (data.indexOf("\\"optoff\\"") >= 0) l.opt = false;
     else if (data.indexOf("\\"on\\"") >= 0) l.en = true;
+''')
+
+# ---------------- named layout profiles: atomic write (tmp + move, the LayoutStore.save pattern) ----------------
+rep('''    java.nio.file.Files.write(d.resolve(n + ".txt"), export(u).getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+''', '''    java.nio.file.Path tmp = d.resolve(n + ".txt.tmp");
+    java.nio.file.Files.write(tmp, export(u).getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+    java.nio.file.Files.move(tmp, d.resolve(n + ".txt"), new java.nio.file.CopyOption[] {{ java.nio.file.StandardCopyOption.REPLACE_EXISTING }});
 ''')
 
 # ---------------- manifest ----------------

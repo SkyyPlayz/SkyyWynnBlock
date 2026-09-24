@@ -120,34 +120,39 @@ Other proven facts: HUD attach = `new HudMain(pr).show()` on `PlayerReadyEvent` 
 
 ---
 
-## 3. CURRENT STATE (always kept current - last update 2026-09-23 20:45)
+## 3. CURRENT STATE (always kept current - last update 2026-09-24)
 
-### Versions: live in the "HUD mod" test world vs newest built
-All mods are deployed TOGETHER as one set (Skyy 2026-09-23: "keep building and testing all the mods together at once").
-DEPLOYED 2026-09-24 06:25 (all 17 below; backup of the previous jars + config.json in backups/deploy-20260924-0623/, not in git). Nothing new deploys without Skyy's OK. Next time Skyy says deploy (game closed): `python tools/deploy_set.py` (checks every jar, refuses while a
-server runs, installs the 17 jars below and flips the world config keys). `--check` only verifies the jars.
-| Mod | Was live until 2026-09-24 06:25 | LIVE since 2026-09-24 06:25 (Skyy: "deploy") |
+### Versions: live in the "HUD mod" test world vs the next deploy set
+All mods are deployed TOGETHER as one set (Skyy: "keep building and testing all the mods together at once"). Nothing deploys without Skyy's
+OK. When Skyy says deploy (game closed): `python tools/deploy_set.py` - it checks every jar, refuses while a server runs, installs the SET
+below, flips the world config keys and enables the third-party pack mods (PACK.md). `--check` only verifies the jars. Backups of what was
+replaced: backups/ (git-ignored).
+| Mod | LIVE (deployed 2026-09-24 06:25) | NEXT DEPLOY SET (built + reviewed, pinned in tools/deploy_set.py) |
 |---|---|---|
-| SkyyHud | 0.3.6 | 0.3.6 (unchanged) |
-| SkyySacks | 0.7.1 | 0.7.3 = per-profile + search box + Crafting/Smithing/Farming tabs, no Alchemy tab, Furnace-tab Smithing XP |
-| SkyyCoins | 0.1.4 | 0.1.5 per-profile |
-| SkyyCollections | 0.1.4 | 0.2 = SkyBlock item collections (~100), tiers + rewards, per-profile |
-| SkyyParty | 0.1.2 | 0.1.2 (unchanged) |
-| SkyyBank | 0.1.1 | 0.1.2 per-profile |
-| SkyyBazaar | 0.1.1 | 0.1.1 (unchanged) |
-| SkyyEssentials | 0.1 | 0.1 (unchanged) |
-| SkyyRolls | 0.1.1 | 0.1.2 /rolls give by name |
-| SkyySkills | 0.3.1 | 0.4 = per-profile + Alchemy + Smithing (smelting) + Cooking row + Acrobatics fall rule + trees hooks, Combat row retired |
-| SkyyAccessories | 0.4 | 0.4.2 = per-profile + Alchemy/Cooking/Campfire bench accessories retired |
-| SkyyIslands | 0.4.3 | 0.4.4 island per profile + visitors cannot use blocks |
-| SkyyClasses | 0.1.2 | 0.1.4 per-profile + blocked-weapon popup |
-| SkyyMenu | 0.1.1 (BUG: pages opened from it hang on Loading) | 0.1.2 fix + 1.4x bigger + info box above the icons |
-| SkyyProfiles | - | 0.1 NEW (profiles, class picked at creation, inventory swap, crash-safe) |
-| SkyyCooking | - | 0.1 NEW (graded dishes: x2 at Cooking 50, x4 at 100) |
-| SkyyTrees | - | 0.1 NEW (/tree: Mining, Foraging, Farming, Cooking skill trees) |
+| SkyyHud | 0.3.6 | 0.3.8 = per-widget colour/bold/italic/glow + friendly Zone name (0.3.7) + Party and Guild widgets |
+| SkyySacks | 0.7.3 | 0.7.4 = + Campfire tab (emergency cooking with the Campfire accessory) |
+| SkyyCoins | 0.1.5 | 0.1.5 |
+| SkyyCollections | 0.2 | 0.2 |
+| SkyyParty | 0.1.2 | 0.1.3 = kick/disband/promote, /party page, bridge data for the HUD |
+| SkyyBank | 0.1.2 | 0.1.2 |
+| SkyyIslands | 0.4.4 | 0.4.5 = starter-kit hotfix (chunk store) |
+| SkyyBazaar | 0.1.1 | 0.1.1 |
+| SkyyRolls | 0.1.2 | 0.1.3 = rolls shown on the item (native ItemDisplay), gear only, /rolls clear |
+| SkyySkills | 0.4 | 0.4.1 = + Exploration row (+0.1 max Stamina/level, no boosters), Tree buttons on Acrobatics + Exploration |
+| SkyyAccessories | 0.4.2 | 0.4.3 = Campfire accessory back |
+| SkyyClasses | 0.1.4 | 0.1.4 |
+| SkyyMenu | 0.1.2 | 0.1.2 |
+| SkyyEssentials | 0.1 | 0.1 |
+| SkyyProfiles | 0.1 | 0.1 |
+| SkyyCooking | 0.1 | 0.1.1 = campfire-accessory bridge (x0.75 bonus as a lower Grade, x0.5 XP) |
+| SkyyTrees | 0.1 | 0.2 = + Acrobatics tree (12 nodes) + Exploration draft tree |
+| SkyyExploration | - | 0.1 NEW = world chests, map coverage, zones, chest luck, titles, /explore |
+| SkyyGuilds | - | 0.1 NEW = guilds: ranks, /gc, guild bank, guild XP, seasons, /guild page |
+| third-party (PACK.md) | - | More Crossbow Tiers (Serj), Saplings From Trees (Helios) enabled by deploy_set |
+Deploy rule: SkyySkills 0.4.1 + SkyyTrees 0.2 + SkyyExploration 0.1 go together; never go back to Skills 0.4 once Exploration XP exists.
 HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death).
-Test order: TEST-CHECKLIST.md, the last two sections (profiles set, then this build round), riskiest first.
-Profile contract for every mod: tools/PROFILES-CONTRACT.md.
+Test order: TEST-CHECKLIST.md (newest sections at the bottom; tonight = the TWO-PLAYER TEST section).
+Profile contract for every mod: tools/PROFILES-CONTRACT.md. Design status for the design guy: DESIGN-STATUS.md.
 
 ### Verified in game by Skyy (2026-09-24, new set)
 - All 17 mods load together with no errors (server log 06-24-04).
@@ -264,14 +269,20 @@ Defaults that still hold: shields, tools, and fists usable by all; classless pla
 
 ## 4. WHAT TO DO NEXT (in order)
 
-1. **Skyy approves deploys** -> deploy the approved set, watch the first join in the server log (plugin load errors, 'already registered'),
-   then Skyy runs TEST-CHECKLIST.md (newest sections at the bottom). Fix what fails.
-2. **Finish the GitHub setup** (push to the private SkyyWynnBlock repo) - see the running log.
-3. **Skyy's open decisions** (section 3) -> SkyyAccessories 0.5 (accessory power + slot unlocks) and the Endurance/Intelligence values.
-4. **Islands**: confirm the grass tint fix, the reload-after-unload test, the starter chest, void respawn; then island upgrades.
-5. **HUD**: party widget (SkyyParty data), bank + skill widgets (bridge keys bank:<uuid>, skill:<uuid>).
-6. **Roster next** (SkyWynn-Mod-Roster.md): SkyyBazaar 0.2 (player buy/sell orders), SkyyAuctions (needs the Rolls metadata test),
-   SkyyMinions (islands), SkyyWardrobe, SkyyNav; armor/weapon stat items with tradeoffs (flat layer, signed values - movement protocol ready).
+1. **Tonight:** Skyy says deploy (game closed) -> `python tools/deploy_set.py`; the two-player test (TEST-CHECKLIST.md, TWO-PLAYER TEST).
+2. **Skyy's open decisions** (collected in DESIGN-STATUS.md "Open questions"): Mining bag upgrades from Cobblestone or Iron tiers; settings
+   menu refuse-vs-hide for party invites / tpa / private messages; tree-fall numbers; double jump tier II or III; campfire accessory extras;
+   island visitors' block use; Endurance/Intelligence talismans; accessory power questions.
+3. **Feedback round 2** (all specs written and verified; Claude usage was at 85% of the weekly limit on 2026-09-24, so Skyy decides when):
+   - SkyySkills 0.4.2 + SkyyCollections 0.2.1 + SkyyTrees 0.2.1: felled-tree crediting (research/Tree-Fall-Spec.md), Tree Feller same-Y
+     rework, Double Jump node (research/Double-Jump-Spec.md), Skills Stats page 1.5x, Collections 'No tier yet'.
+   - SkyySacks 0.7.5: smelted bars pool into the Mining bag; all four bag tabs always shown (+ the bag restructure once Skyy picks).
+   - SkyyIslands 0.5 (+0.5.1) from 0.4.5: island settings menu (research/Island-Settings-Spec.md - its last fix pass may have been cut off,
+     re-check), /island reset, chunk resend after the re-tint.
+   - SkyyMenu 0.2: player Settings menu + every mod's notification gates (research/Settings-Spec.md; answer its section-6 questions first).
+   - SkyyExploration 0.2: island checklist backbone + admin-placed discovery / secret spots.
+4. **Later / server:** everything in SkyyExploration-Plan.md "Later"; the world gen 2 floating-islands mod; a server-readiness audit
+   (config docs, admin guide, performance with many players).
 
 ## 5. DESIGN NOTES + DECISIONS (added during 2026-09-23; newest decisions win)
 
@@ -385,3 +396,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-24: research/Tree-Fall-Spec.md done + verified. Engine: only the player's own break fires BreakBlockEvent; the rest of the tree is removed later by physics with no event and no player. Design: SkyySkills 0.4.2 snapshots the natural tree at the break, watches those positions 5x/s and pays each log that turns to air to the feller (Foraging XP factor 1.0, double-drop roll, Collections via coll:fn:add source skills:felled, tree node rolls; skill:fn:felledBy bridge); explosions/fire excluded via a new EnvSys (EnvironmentBreakBlockEvent); placed/deco logs never fall or pay. SkyyCollections 0.2.1 only adds the skills:felled source. SkyyTrees 0.2.1 Tree Feller = same-Y logs (1/2/3/4 then the whole layer). Replaces the 'count walk-over pickups' idea. Skyy decisions listed in its [SKYY?] items (felled XP factor, leaf XP, feller curve/cooldown 5 s?, shared trees, double drops in Collections, apple/bamboo/ice trees missing from the tree tables, sapling-grown base).
 - 2026-09-24: research/Double-Jump-Spec.md done + verified: FEASIBLE on the server, but triggered by CROUCH in mid-air (copied from TerrariaAddons' Cloud in a Bottle), not the jump key (MovementStates.jumping = rising after a jump; the engine's own double jump is client-side armor ExtraJumpCount). Design: 'Double Jump' replaces Quick Dodge (tier II slot 5, 10 levels, 55% -> 100% of jump height, once per jump, 2 Stamina, 0 XP, off when falling fast enough to hurt). Build: SkyyTrees 0.2.1 node + SkyySkills 0.4.2 Acro.airJump (trigger switch crouch|jump|both). Its test 5.0 (2 min in game) settles the trigger first. Skyy: tier II or III (tier II = no tree dodge push before Acrobatics 45), double-jump boots as gear for the real jump key?, the numbers.
 - 2026-09-24: exploration round finished (17 agents): SkyyExploration 0.1 (world chests = drop list at chunk add, recorded before StashSystem clears it; map coverage per chunk (no XP flying/creative); zones per profile; chest luck; chat-prefix titles via a priority-30000 chat handler; /explore, /title, /exploreadmin; XP owed-ledger through skill:fn:addxp), SkyySkills 0.4.1 (Exploration slot 13, boosters bypassed, +0.1 max Stamina/level, Tree buttons on Acrobatics + Exploration), SkyyTrees 0.2 (Acrobatics tree 12 nodes, Exploration draft tree). Cross-check: no mismatches; 18 set jars pass -Xverify:all together; deploy_set pins Skills 0.4.1, Trees 0.2, + SkyyExploration 0.1 (18 jars). Needs in-game tests: chest capture ordering, chat prefix vs Skyys-Modpack's Essentials chat, flying flag under /fly. Old chests generated before install never count.
+- 2026-09-24: party + guild round finished: SkyyParty 0.1.3, SkyyGuilds 0.1, SkyyHud 0.3.8 built + reviewed; 35/35 contract checks in one JVM; friend-joins audit: every player command has hytale:Adventurer, invites by name work across worlds, PvP off in hub + islands. Found the starter-kit cause (Ref<ChunkStore> read through the entity store) -> built SkyyIslands 0.4.5 hotfix (world.getChunkStore().getStore()), pinned. Next deploy set = 19 jars (tools/deploy_set.py --check OK). HANDOFF sections 3-4 rewritten; DESIGN-STATUS.md added for Skyy's design partner.

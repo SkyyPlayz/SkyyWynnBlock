@@ -61,3 +61,11 @@ Uneven progression is allowed. You can push one skill ahead of the others.
 If you drift too far, that skill slows down until the rest catch up. The exact drift threshold is a tuning knob, not a number locked on the call.
 
 This is not a hard rule that every skill must advance together, and it is not unlimited neglect. Gear can still ask for a skill (a better pick wants Mining). The gate is the slowdown, not a wall that freezes the character.
+
+## Status 2026-09-24
+- Built: Mining, Foraging, Farming, Acrobatics (fall XP: bigger survived falls pay more; safe drops and water pay nothing), Archery /
+  Swordsmanship / Sorcery, Alchemy, Smithing (smelting only - mining never gives Smithing XP), Cooking (graded dishes, SkyyCooking mod),
+  Exploration (SkyyExploration mod, next deploy). The shared Combat row is retired.
+- Skill trees (SkyyTrees): Mining, Foraging, Farming, Cooking; next deploy adds Acrobatics (with max Stamina nodes) and a draft Exploration tree.
+- Next: felled trees pay per log (research/Tree-Fall-Spec.md), Tree Feller breaks sideways on the same height, a Double Jump node
+  (crouch in mid-air, research/Double-Jump-Spec.md), a bigger Stats page.

@@ -25,7 +25,7 @@ acceptCall0 then only needs tokens >= required - HytaleServer.jar bytecode, 2026
   /guild promote <player>         Leader: Member -> Officer
   /guild demote <player>          Leader: Officer -> Member
   /guild transfer <player>        Leader hands the guild over (repeat within 10 s); the old Leader becomes an Officer
-  /guild disband                  Leader, repeat within 10 s; the bank is paid into the Leader's purse FIRST (refused if that fails)
+  /guild disband                  Leader, repeat within 10 s; the bank is paid into the Leader's purse (refused if that fails)
   /guild info | /guild list       your guild in chat | the top 10 guilds by level
   /guild bank                     balance + the last 5 bank log lines
   /guild bank deposit <amount>    anyone in the guild; amount 500, 2k, 1.5m, all
@@ -42,7 +42,9 @@ EventData, rebuilt only after a click - never a periodic page update, never clos
   member rows (8 per page, Prev/Next) with an online dot, name, rank, guild XP they added, online/offline and the buttons your rank
   allows: Promote / Demote / Kick / Make leader (Kick and Make leader need a second click); an Invite TextField + button
   (Leader/Officer), an Amount TextField + Deposit (+ Withdraw for Leader/Officer), the last 3 bank log lines, Refresh, Leave guild
-  (second click confirms), Disband (Leader, second click). Text fields use the SkyySacks 0.7.3 search pattern (verified in game):
+  (second click confirms), Disband (Leader, second click). Enter in the Name / Invite box submits it; Enter in the Amount box only
+  keeps the amount and says which button to click (review fix: it never moves coins, since a Leader / Officer has two coin actions
+  on that one box and a Member's deposit cannot be undone by them). Text fields use the SkyySacks 0.7.3 search pattern (verified in game):
   EventData.of("a", action).append("@GInvite", "#SkyyGInvite.Value"), read back with jsonStr. Not in a guild: 1120 x 660 with the
   pending invite (Accept / Decline), a guild name TextField + Create guild, the rules and the commands.
 
@@ -93,10 +95,20 @@ THREADS: commands and page clicks run on the player's world thread (AbstractPlay
   pattern); XP reads on the member's own world thread. One registered command set, no ECS systems, no events (join / leave notices
   come from the tick's online set, so PlayerReadyEvent re-fires on world switches do not matter).
 
-UNVERIFIED (static + bare-JVM checks only; needs the 2-player test): the /guild page layout and the two TextFields on one page
-  (inline markup copied from verified SkyySacks / SkyySkills pages, but this exact page never ran on a client), Message.color on guild
-  chat lines (SkyyClasses uses it), the 8-row member list with per-row buttons, GREEDY names inside subcommands in game (bytecode only),
-  guild XP from real SkyySkills XP (the bare-JVM test used a fake skill:fn:xp), the online / offline notices.
+CHECKED in a bare JVM (2026-09-24, scratch harness, -Xverify:all on all 35 classes): create / name + tag rules, invite -> accept,
+  rank rules for kick / promote / demote / transfer / withdraw / tag, leader leave hand-over, last-member leave = disband with payout,
+  deposit / withdraw with a fake AND the real SkyyCoins 0.1.5 CoinFn (balance files, coins:<uuid> republish, unreadable purse = nothing
+  moves), rollback when coins:fn:add / take fail, refusal when the guild file cannot be written, coins conserved over the whole run,
+  guild XP from a fake skill:fn:xp (10%, fraction carry, profile switch = new baseline, level-fallback) and XpTask.total against the
+  REAL SkyySkills 0.4 and 0.4.1 SkillXpFn (Combat excluded, class skills + Exploration counted), level curve, seasons, reload from disk
+  keeps everything, disbanded files never load again, the page built with a fake PlayerRef in all four views (none + invite, Leader,
+  Officer, Member: right buttons only, 8 rows + Prev/Next, balanced inline markup, no underscore ids) and its clicks (Create, Accept,
+  Invite, Deposit / Withdraw, Kick + Sure?, Leave confirm, Refresh), the presence logic (online / offline notices, relog quiet), and
+  every command: hytale:Adventurer on all player commands and subcommands, skyyguilds.admin on /guildadmin and each subcommand.
+UNVERIFIED (needs the 2-player test): the /guild page on a real client (layout, the two TextFields on one page - inline markup copied
+  from the verified SkyySacks search box and SkyySkills rows, but this exact page never ran on a client), Message.color on guild chat
+  lines (SkyyClasses uses it), GREEDY names inside subcommands in game (bytecode only), guild XP from live skill XP in game, the online /
+  offline notices in game, chat delivery to a second player.
 """
 import sys, os, re
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools"))
@@ -1528,6 +1540,15 @@ public static synchronized String nameOfMember(java.util.UUID u, String target) 
   @PKG@.GMember m = g.member(target);
   return m == null ? "?" : m.name;
 }""")
+# the viewer's rank (2 Leader, 1 Officer, 0 Member), -1 = not in a guild
+M(gs, r"""
+public static synchronized int rankOf(java.util.UUID u) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return -1;
+  @PKG@.GMember m = g.member(us);
+  return m == null ? -1 : m.rank;
+}""")
 M(gs, r"""
 public static synchronized java.util.ArrayList memberList(String us) {
   @PKG@.Guild g = guildOf(us);
@@ -2083,6 +2104,7 @@ public void buildGuild(@UCB@ b, @UEB@ ev, java.util.UUID u, Object[] s) {
   b.appendInline("#SkyyGAct", "Label { Anchor: (Width: 8, Height: 40); Text: \"\"; }");
   b.appendInline("#SkyyGAct", "TextButton #SkyyGDep { Anchor: (Width: 136, Height: 40); Text: \"Deposit\"; " + gs + " }");
   ev.addEventBinding(@BT@.Activating, "#SkyyGDep", @EVD@.of("a", "deposit").append("@GAmount", "#SkyyGAmount.Value"));
+  ev.addEventBinding(@BT@.Validating, "#SkyyGAmount", @EVD@.of("a", "amount").append("@GAmount", "#SkyyGAmount.Value"), false);
   if (my >= 1) {
     b.appendInline("#SkyyGAct", "Label { Anchor: (Width: 8, Height: 40); Text: \"\"; }");
     b.appendInline("#SkyyGAct", "TextButton #SkyyGWd { Anchor: (Width: 136, Height: 40); Text: \"Withdraw\"; " + bs + " }");
@@ -2162,6 +2184,13 @@ public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
       keep = jsonStr(data, "@GAmount");
       res = a.equals("deposit") ? @PKG@.GuildStore.deposit(u, un, keep) : @PKG@.GuildStore.withdraw(u, un, keep);
       if (res != null && res.startsWith("-")) this.keepAmount = keep;
+    } else if (a.equals("amount")) {
+      keep = jsonStr(data, "@GAmount").trim();
+      if (keep.length() > 16) keep = keep.substring(0, 16);
+      this.keepAmount = keep;
+      boolean off = @PKG@.GuildStore.rankOf(u) >= 1;
+      if (keep.length() == 0) res = "=Type an amount (500, 2k, 1.5m or all), then click Deposit" + (off ? " or Withdraw." : ".");
+      else res = "=Click Deposit" + (off ? " or Withdraw" : "") + " to move " + keep + " coins. Enter alone never moves coins.";
     } else if (a.equals("leave")) {
       if (was.equals("leave")) res = @PKG@.GuildStore.leave(u, un, true);
       else { res = @PKG@.GuildStore.leaveWarning(u); if (res.startsWith("=")) { this.confirm = "leave"; this.confirmUntil = now + 10000L; } }

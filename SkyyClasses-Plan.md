@@ -42,3 +42,8 @@ P4 is Archer, Warrior, and Mage: weapon skills, a first ability tree, skill poin
 ## Spike vs this doc
 
 `SkyyClasses` 0.1.1 was built earlier on 2026-09-23 with Berserker (Berserking: Axe, Battleaxe, Mace, Club) as a fifth class, and weapon-skill XP stored as `Combat.<Class>`. The jar is unchanged by this doc. Design text uses Shaman instead, and does not hand Berserker's weapons to Shaman. HANDOFF section 1 records the same split.
+
+## Status 2026-09-24
+Built + verified in game: the class weapon lock (Archer, Warrior, Mage; Assassin + Shaman 'coming later'); the class is chosen when a profile is
+created (SkyyProfiles) and locked to that profile. 0.1.4 adds a popup with the weapon's icon when a blocked weapon is used. Modded crossbows
+(More Crossbow Tiers) count as Archer weapons automatically.

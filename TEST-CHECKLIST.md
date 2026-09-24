@@ -584,3 +584,44 @@ Files changed, in `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\`:
 - `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\SkyyExploration\SkyyExploration-0.1.jar`
 - `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\SkyySkills\SkyySkills-0.4.1.jar`
 - `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\SkyyTrees\SkyyTrees-0.2.jar`
+
+## TWO-PLAYER TEST (party, guild, widgets, islands): SkyyParty 0.1.3, SkyyGuilds 0.1, SkyyHud 0.3.8, SkyyIslands 0.4.5 - 2026-09-24 (S = Skyy, host; F = friend, ordinary player, first join)
+0. With the game closed and Skyy's OK, run `python tools/deploy_set.py`. Start the world and check the server log for `[SkyyParty] 0.1.3 ready`, `[SkyyGuilds] 0.1 ready` and no errors.
+1. **S alone (smoke test):** run `/skyyhud`. The editor should show "Party (sample)" and "[SKY] Sample Guild" at the left middle. Close it, then check `/party` opens the party page and `/guild` opens the Create guild page. **If anything disconnects here, stop: it's the HUD layout.**
+2. **F joins:** F lands in the hub and gets the 10,000 starter coins message and the SkyWynn Menu item. After about 2 s the Create Profile page opens: F picks a class and clicks Create profile. No second class picker should appear. Both type a normal chat line; each sees the other's.
+3. **F permissions:** `/balance`, `/skills` and `/party` all work, with no "no permission" message.
+4. **S invites from the page:** S opens `/party`, types F's name (the first letters are enough) and presses Enter. S's status line says "Invited F…"; F gets "[Party] S invited you… Type /party accept… runs out in 60 s".
+5. **F accepts:** F opens `/party`, sees the green box "S invited you (NN s left)" and clicks Accept. F gets "You joined S's party!" and S gets "[Party] F joined the party! (2/5)".
+6. **Party widget:** within about 1 s, both HUDs show at the left middle "Party (2)", "S (L)" with HP/ST, and F with HP/ST. F takes fall damage and S's HUD shows the new HP within about 1 s. In the page, after Refresh, both rows show bars, "Online" and "Hub (with you)".
+7. **Party chat:** each types `/pc hello`; both see "[Party] Name: hello".
+8. **F's island:** F types `/island` → "Creating your island…" and lands there. The chest should hold the starter kit (fixed in SkyyIslands 0.4.5 - if it is empty and the log shows `starter kit failed`, the fix did not work). On S's HUD, F's line turns grey: "HP x/y - Island". S's party page shows "F's island" and F's Zone widget shows "Your Island".
+9. **S visits:** S types `/island visit F` and gets "Visiting F's island - look, don't touch". Breaking a block, placing a block, opening the chest and picking up an item are all blocked with a message; doors still open. Now both are on the same island, so neither party line is grey.
+10. **Co-op:** F types `/island invite S` and S gets "gave you build rights". S can now break, place and open the chest. Both use `/hub` to go back.
+11. **Party leader actions:**
+    - S runs `/party promote F`: "(L)" moves to F, and only F sees Promote/Kick.
+    - F runs `/party kick S`: S is told, the party drops to one player and disbands, and both party widgets disappear.
+    - S runs `/party invite F` and F runs `/party decline`: S gets "declined".
+    - S invites again and F runs `/party accept`.
+12. **Guild create:** S opens `/guild`, types "Sky Wynners" and clicks Create guild. The page shows Level 1, Leader. The widget under the party widget shows "Sky Wynners / Lv 1 (0 / 100 XP) / Online 1/1 | Leader". Then S runs `/guild tag SKY` and the widget changes to "[SKY] Sky Wynners".
+13. **Guild invite:** S types F's exact name in the Invite box and clicks Invite. F gets "…Type /guild accept (or open /guild) within 5 minutes". F opens `/guild` and clicks Accept. Within about 5 s both widgets show "Online 2/2", F's shows "Member", and a names line shows "S, F".
+14. **Guild chat:** each types `/gc hi`; both see a coloured "[Guild] …" line.
+15. **Guild bank:**
+    - F types 500 in Amount; pressing Enter only shows a hint.
+    - F clicks Deposit: F's `/balance` drops 500, the bank shows 500 and a log line appears. F has no Withdraw button.
+    - S withdraws 200: S's purse goes up 200.
+16. **Ranks:** S promotes F on F's row. F's widget shows "Officer" and F now sees the Invite box and a Withdraw button. S then clicks Demote to put F back to Member.
+17. **Guild XP:**
+    - S runs `/guildadmin xp 500 Sky Wynners`: chat says "reached guild level 3!" and the widget shows "Lv 3 (150 / 400 XP)".
+    - F mines for about 30 s: guild XP goes up about 10 to 20 s later. It's 10% of skill XP, and the first 10 s check only records a starting point.
+18. **PvP:** hitting each other in the hub and on an island does no damage.
+19. **F disconnects and rejoins:**
+    - After F quits, S gets "[Party] F disconnected. The party has been disbanded." and the party widget goes. Within about 10 s S gets "[Guild] F went offline." and the widget shows "Online 1/2".
+    - When F rejoins, there's no Create Profile page and F gets a guild welcome line. The guild widget comes back; the party needs a new invite. F's island is still there.
+20. **Cleanup (optional):** S runs `/guild disband` twice within 10 s. The bank is paid into S's purse and the guild widget disappears for both.
+
+**Watch the server log for:** `party stats tick failed`, `guild page click failed`, `guild XP check failed` and `/party page failed`. The `starter kit failed` warning is expected.
+
+**If a widget disconnects someone:**
+- **Party widget:** just rejoin (a disconnect removes you from the party), run `/skyyhud`, hide Party, and continue.
+- **Guild widget, F kicked:** S runs `/guild kick F`, which works while F is offline. F rejoins and hides Guild in `/skyyhud`.
+- **Guild widget, S kicked:** with the world closed, in `Saves/HUD mod/mods/Skyy_SkyyHud/layouts/<S uuid>.properties`, set the line to `Guild=0,tl,8,444,100,1`.

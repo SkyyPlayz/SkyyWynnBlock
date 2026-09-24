@@ -9,6 +9,7 @@ check and expensive to get wrong:
   WARN  a command constructor in the newest build script has neither setPermissionGroups(...) nor requirePermission(...) - ordinary
         players cannot run it (HANDOFF "COMMAND RULES"); admin-only-by-design commands are listed in ADMIN_ONLY_OK
 Exit code 1 on any FAIL.
+Files checked = tracked + untracked-but-not-ignored (what `git add -A` would commit), so a new, not yet committed build script counts.
 """
 import os, re, sys, subprocess, py_compile
 
@@ -24,8 +25,12 @@ fails, warns = [], []
 
 
 def tracked_files():
+    # tracked files PLUS untracked ones that are not .gitignored = exactly what `git add -A` would commit, so a new build script
+    # (e.g. an untracked build_<mod>_<newer>.py) is checked locally before its first commit; in CI (clean checkout) this is the same as
+    # plain `git ls-files`
     try:
-        out = subprocess.run(["git", "ls-files"], cwd=ROOT, capture_output=True, text=True, check=True).stdout
+        out = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard"], cwd=ROOT, capture_output=True, text=True,
+                             check=True).stdout
         return [l.strip() for l in out.splitlines() if l.strip()]
     except Exception:
         res = []

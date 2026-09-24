@@ -91,3 +91,7 @@ selector; payload JSON keys: `SlotIndex` (target), `SourceSlotId`, `SourceItemGr
 `ItemStackId`. The engine does nothing itself for virtual grids: on Dropped, map SourceSlotId -> widget, SlotIndex -> grid cell ->
 anchor/offset, save, rebuild the page. `SlotMouseDragCompleted`/`SlotClickPressWhileDragging` give live hover during the drag.
 Window ids 0/-1 are invalid if the native path is ever used.
+
+## Status 2026-09-24
+SkyyHud 0.3.7: per-widget text colour (13), bold, italic and glow (faked - Hytale has no text glow) with a live preview; the Zone widget shows
+'Your Island' / 'Island' / the Hytale zone name / 'Hub' instead of raw world names. 0.3.8: Party and Guild widgets.

@@ -63,3 +63,12 @@ Spike plan: `/island` (create or load + teleport), `/hub` (exitInstance), `/isla
 - Still unverified: folder survives unload; addWorld reload keeps blocks; login while unloaded; void death. See TEST-CHECKLIST.md.
 
 0.4 (2026-09-23): chest filling = WorldChunk.getBlockComponentEntity(x,y,z) (live Ref; getBlockComponentHolder is a COPY) -> Store.getComponent(ref, ItemContainerBlock.getComponentType()) -> getItemContainer().addItemStack; must run on the world thread; the container exists right after setBlock. Void death = universal y<-32 kill (DamageCause.OUT_OF_WORLD), no per-world config; respawn = world DeathConfig RespawnController -> SpawnProvider.
+
+## Status 2026-09-24
+- Built + verified in game: one island PER PROFILE (a new profile gets a new island from zero), /hub, /island visit and invite, black-grass fix.
+- Visitors: can look, cannot break / place / pick up / use blocks (doors, trapdoors, gates still work). Skyy: make this an owner setting ->
+  an island SETTINGS MENU like the Minecraft SkyBlock plugins (per-role permission flags, visitors on/off, visitor limit, expel/ban, PvP,
+  mob spawning, biome, ...): spec in research/Island-Settings-Spec.md, build = SkyyIslands 0.5.
+- Requested: /island reset (wipe + rebuild from the template with a fresh starter kit); resend chunks after the arrival re-tint.
+- Fixed in 0.4.5: the starter kit chest on new islands.
+- Chain islands will be SHARED worlds (like the SkyBlock hub / the Wynncraft world); only your own island is private.
