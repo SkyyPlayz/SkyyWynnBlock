@@ -13,24 +13,24 @@ Hytale feasibility tags: **VERIFIED hook** (the engine piece exists and we know 
 
 | Feature | What you do | What you get | Tag |
 |---|---|---|---|
-| Fairy Souls | Find 289 hidden souls spread over every island. Hand them in 5 at a time to Tia the Fairy | +10 SkyBlock XP per batch of 5, plus a permanent backpack slot at 17 set batches. They used to give stats. That ended when SkyBlock Levels came in | VERIFIED |
+| Fairy Souls | Find 289 hidden souls spread over every island. Hand them in 5 at a time to Tia the Fairy | +10 SkyBlock XP per batch of 5 (570 XP at most), plus a permanent backpack slot at 17 set batches. They used to give stats. That ended when SkyBlock Levels came in | VERIFIED |
 | Area achievements (e.g. "Explorer") | Discover every area of the main island, or reach certain secret spots | Achievement points only (cosmetic lobby unlocks). No power | VERIFIED |
-| Fast travel / Travel Scrolls | Use a scroll item, or for some places just visit once (Crystal Hollows unlocks on the first visit) | A permanent warp in the Fast Travel menu and `/warp` | VERIFIED |
+| Fast travel / Travel Scrolls | Use a scroll item, or for some places just visit once (Crystal Hollows unlocks on the first visit) | A permanent warp in the Fast Travel menu and `/warp`, plus +15 SkyBlock XP per scroll (360 XP at most) | VERIFIED |
 | Spider's Den Relics | Find 28 relics in one zone. The Archaeologist gives you a compass that points to the nearest one | 10,000 coins each, +30,000 for all of them. A "rare relics" side quest was removed | VERIFIED |
-| Rift Enigma Souls | Collect orbs in the Rift dimension. Hand them in 4 at a time | Every batch upgrades one cloak (+2 Speed, +4 Mana Regen) and gives Motes (the Rift's currency) | VERIFIED; total count UNVERIFIED (one page says 40, another source says 52) |
+| Rift Enigma Souls | Collect orbs in the Rift dimension. Hand them in 4 at a time | Every batch upgrades one cloak (+2 Speed, +4% Mana Regen) and gives Motes (the Rift's currency). 52 souls in total, so 13 batches for a maxed cloak (+26 Speed, +52% Mana Regen) | VERIFIED |
 | Crystal Hollows / Glacite Mineshafts | Explore random mining caves, bring 5 crystals to the center, loot corpses in mineshafts | A big loot bundle, mining-tree XP and powder. Rare drops have a pity meter | VERIFIED (exact drop odds UNVERIFIED) |
-| Hoppity's Hunt (seasonal) | Find eggs that spawn at fixed spots on every island | Collectible rabbits that boost the event's economy | VERIFIED |
-| Museum | Donate gear you found | Small permanent SkyBlock XP per first donation | VERIFIED (milestone bonus numbers UNVERIFIED) |
+| Hoppity's Hunt (seasonal) | Find eggs that appear on every island at rotating spots, the same for everyone. A new egg shows up several times an hour and the oldest one disappears; an Egglocator item points to the nearest one | Collectible rabbits that boost the event's economy | VERIFIED |
+| Museum | Donate gear you found | Permanent SkyBlock XP per first donation, scaled to the item's value: about +1 for early gear up to about +25 for top endgame items. About 3,646 XP at most in total, the biggest of these pots | VERIFIED (milestone bonus numbers UNVERIFIED) |
 | Bestiary | Kill every mob type | Health, SkyBlock XP, combat XP | VERIFIED. This is really Hunting, which is shelved |
 
-**Takeaway:** in SkyBlock, only Fairy Souls feed the main level XP, and that caps at a small total. A player once suggested an Exploration skill on the forums, but no staff replied and it was never planned (VERIFIED).
+**Takeaway:** in SkyBlock, exploring feeds the main level XP only through a few one-time, capped side systems: Fairy Souls (570 XP at most), Travel Scrolls (360), Rift Timecharms (800) and the Museum (about 3,646). None of them is a leveling skill. A player once suggested an Exploration skill on the forums, but no staff replied and it was never planned (VERIFIED).
 
 ## 2. What Wynncraft gives for exploring
 
 | Feature | What you do | What you get | Tag |
 |---|---|---|---|
 | Territorial Discoveries | Walk into one of 400+ territories | One-time XP (about 0.78M total) | VERIFIED |
-| World Discoveries | Walk into one of 200+ named landmarks. A banner pops on screen | One-time XP, from 10 up to 4,000,000 depending on the area's level (about 8.4M total) | VERIFIED |
+| World Discoveries | Walk into one of roughly 150-180 named landmarks. A banner pops on screen | One-time XP, from 10 up to 4,000,000 depending on the area's level (about 8.4M total) | VERIFIED (XP); exact landmark count UNVERIFIED (counts of the wiki table differ, and it changes between game versions) |
 | Secret Discoveries | Solve a puzzle, a parkour route or a hidden lever, sometimes while carrying a quest item. Level-gated | The biggest pot: about 38.9M XP total | VERIFIED |
 | Discovery XP rule | - | XP-boost gear does **not** increase discovery XP, on purpose | VERIFIED |
 | Content Book | An item that lists everything you've found or finished, per level bracket | A completion checklist | VERIFIED |
@@ -52,15 +52,15 @@ I re-checked the key points in the jar and assets myself.
 | Entering a named zone | Hytale already shows a "zone discovered" banner and remembers it once per player. We can listen for that moment. The catch: it reads the world generator's zone map. The default world has only 5 names (Emerald Wilds, Howling Sands, Whisperfrost Frontiers, Devastated Lands, Oceans), split into about 28 regions. A hand-built island world just reports "Void" | VERIFIED hook (only useful on generated worlds) |
 | Entering OUR named spot | We keep a list of spots (a point plus a radius, or a box) per island. The per-second player check SkyySkills already runs tells us who is standing where | VERIFIED hook (the pieces are proven; the spot list is new) |
 | Show a Wynn-style banner and sound | The engine function behind the zone banner is one we can call ourselves | VERIFIED hook |
-| First arrival on an island | Island configs can carry their own discovery banner (the Forgotten Temple uses one). The engine remembers it once per island world per player | needs a test (each private island gets a new world id, so this only suits shared chain islands) |
+| First arrival on an island | Island configs can carry their own discovery banner (the Forgotten Temple uses one). The engine remembers it once per island world per player | needs a test (each private island gets a new world id, so this only suits chain islands if they are one shared world each. That is my inference: the design docs call the private island instanced but don't say yet how the chain works, see question 9) |
 | Biome changed | The engine updates your current biome every second. There is no event for it, so we'd check it ourselves | VERIFIED hook |
 | Near a structure or dungeon | Search tools exist for generated worlds, but you have to ask them. Nothing tells you "you're near one" | needs a test (hand-placed spots are simpler) |
 | Opening a chest the first time | The "used a block" event SkyySkills already listens to fires on chests. Chests a player placed are tagged, so we can tell them apart from world chests. There is no clean "opened" event. The installed Lootr mod shows how per-player chest loot works | needs a test |
 | Chunks explored (map coverage %) | The installed BetterMap mod already tracks each player's explored chunks. That's a pattern we can copy | needs a test |
 | Map markers revealed | The engine keeps a "revealed markers" list per player | needs a test (our map isn't built yet) |
-| Hytale Memories | A real lore-card collectible, but it only covers NPCs in one vanilla dungeon | VERIFIED, too narrow to build on |
+| Hytale Memories | A real collectible, but it is a creature log, not a places log: the engine records each creature type a player meets, plus the zone it was met in. About 330 NPC files in the game assets are flagged for it (undead, fish, birds, Kweebecs, goblins and more). That makes it a Hunting/Bestiary idea, and Hunting is shelved | needs a test (not an Exploration source) |
 | Respawn point / warp / teleporter set | All exist as engine pieces | VERIFIED hook (minor XP only) |
-| "Container opened" event, biome-discovery event, bestiary, "near a POI" push | Not in the engine | not possible (we work around them as above) |
+| "Container opened" event for ordinary chests, biome-discovery event, kill-count bestiary, "near a POI" push | Not in the engine. The one chest-opened event that exists only fires for quest treasure chests, and only players on that quest can open those chests. SkyWynn has no quest system wired to it, so it doesn't help with island chests | not possible (we work around them as above) |
 
 **Two design facts from this:**
 1. **Profiles:** Hytale's own "discovered" list is per account, not per profile. Profiles are full saves, so Exploration must keep its own per-profile record, like every other mod (profile contract).
@@ -77,7 +77,7 @@ Effort: S = a day or two, M = about a week with testing, L = a big project or bl
 |---|---|---|---|---|---|
 | A1 ★ | **Discovery spots**: named landmarks on every island, plus a few in the hub. A banner, a sound and one-time XP that scales with the island's tier | Wynn (World Discoveries) | Gives each chain island a reason to cross the whole thing, not just rush the exit. The hub gets starter spots so new players learn the system | VERIFIED hook | M (admin command to place spots; builders author the list) |
 | A2 ★ | **Secret discoveries**: hidden spots behind parkour, levers or puzzles. Bigger XP | Wynn (Secret Discoveries) | Pairs with Acrobatics (jump bonus opens routes). Rewards knowing an island well | VERIFIED hook (same system as A1) | M (mostly building work) |
-| A3 | **First arrival on island N**: a large one-time XP payout | Wynn / new | Matches "finish one island before the next unlocks" | needs a test; the chain isn't built yet | S once the chain exists |
+| A3 | **First arrival on island N**: a large one-time XP payout | Wynn / new | Matches "finish one island before the next unlocks" | needs a test; the chain isn't built yet, and whether chain islands are shared or per-profile worlds is still open (question 9) | S once the chain exists |
 | A4 | **World chests found**: first open of each world-placed chest gives XP | Wynn loot chests | Chests on islands become exploration targets. Lootr shows the per-player loot pattern | needs a test | M |
 | A5 | **Map coverage**: small XP per new chunk walked, capped per island | new (BetterMap pattern) | Rewards wandering. No XP while `/fly` is on | needs a test | M |
 | A6 | **Engine zone discovery** on any generated world (a resource world, say) | Hytale | Only matters if SkyWynn ever has a generated wilderness | VERIFIED hook | S |
@@ -127,6 +127,7 @@ Effort: S = a day or two, M = about a week with testing, L = a big project or bl
 6. **A name** for the collectible ("Echo Shards" is a placeholder).
 7. **Does Exploration get its own skill tree**, or only the gathering skills?
 8. **Should `/fly` or teleports block Exploration XP?**
+9. **Is each chain island one shared world that everyone visits, or a per-profile copy like the private island?** This changes how first-arrival XP (A3), arrival banners and warp unlocks (D1) get built. Either way Exploration keeps its own per-profile record.
 
 ---
 
@@ -138,17 +139,18 @@ Checked with `tools/dev/reflect.py`, `bc.py`, `bcfull.py`, `callers.py` and `cpg
 - Zone data comes from `server.worldgen.BiomeDataSystem` via `ChunkGenerator.getZoneBiomeResultAt`. The world must use the classic worldgen generator. Zone names live in `Assets.zip` `Server/World/Default/Zones/*/Zone.json` ("Discovery" block); the `Void` and `Flat` worlds have no zone name. VERIFIED.
 - Current zone and biome: `Player.getWorldMapTracker().getCurrentZone()` / `getCurrentBiomeName()`, updated at `UPDATE_SPEED` 1.0. VERIFIED.
 - Banner: `server.core.util.EventTitleUtil.showEventTitleToPlayer(PlayerRef, Message, Message, boolean[, String icon, float, float, float])`, plus `SoundUtil.playSoundEvent2d`. VERIFIED.
-- Instance discovery: `builtin.instances.event.DiscoverInstanceEvent` (+ `$Display`). Fired by `InstancesPlugin.onPlayerReady` → `showInstanceDiscovery`, gated by `PlayerConfigData.getDiscoveredInstances()` (world UUID) unless `AlwaysDisplay`. The config goes in `Server/Instances/<name>/config.json` "Discovery" (TitleKey, SubtitleKey, Icon, Major, ...); see `Forgotten_Temple`, `Defaults/CreativeHub`. VERIFIED.
+- Instance discovery: `builtin.instances.event.DiscoverInstanceEvent` (+ `$Display`). Fired by `InstancesPlugin.onPlayerReady` → `showInstanceDiscovery`, gated by `PlayerConfigData.getDiscoveredInstances()` (world UUID) unless `AlwaysDisplay`. The config block sits at `Plugin.Instance.Discovery` inside `Server/Instances/<name>/config.json` (next to `RemovalConditions` and `PreventReconnection`), with TitleKey, SubtitleKey, Display, AlwaysDisplay, Icon, Major, Duration, FadeInDuration, FadeOutDuration; see `Forgotten_Temple` (AlwaysDisplay true) and `Defaults/CreativeHub` (AlwaysDisplay false). VERIFIED.
 - Block use: `UseBlockEvent$Post`, subscribed via `EntityEventSystem`, as in SkyySkills 0.3.1. Placed-by tag: `server.core.modules.interaction.components.PlacedByInteractionComponent.getWhoPlacedUuid()`. Containers: `ItemContainerBlock` (`getDroplist()`). VERIFIED.
 - Map markers: `server.core.universe.world.worldmap.markers.DiscoverableMapMarkers.isRevealed/reveal/hide(Player, String)`. VERIFIED.
 - POI search: `builtin.locate.PrefabPatternSearchUtil`, `CaveDungeonSearchUtil`, `SpiralSearchUtil` (pull only). VERIFIED (from research notes).
-- Memories: `builtin.adventure.memories.*` (`PlayerMemories`, `MemoriesPlugin`). VERIFIED (research notes).
+- Memories: `builtin.adventure.memories.*` (`PlayerMemories` per player with a capacity, `MemoriesPlugin`, `registerMemoryProvider`). The only provider is `memories.npc.NPCMemoryProvider`: every spawnable NPC role whose asset sets `IsMemory` true (333 role files in `Server/NPC/Roles`, grouped by `MemoriesCategory`); `NPCMemory` keeps `getNpcRole`, `getFoundLocationZoneNameKey`, `getCapturedTimestamp`. VERIFIED (jar + assets). How the vanilla turn-in at the Forgotten Temple works is UNVERIFIED.
+- Quest chest event: `builtin.adventure.objectives.events.TreasureChestOpeningEvent` (`getChestUUID`, `getObjectiveUUID`, `getPlayerRef`), dispatched from `blockstates.TreasureChestBlock.onOpen`, called by `interactions.OpenTreasureContainerInteraction` only on a `TreasureChestBlock`; `canOpen` requires the player to be active in that chest's objective. VERIFIED.
 - Warps and respawn: `builtin.teleport.Warp`, `builtin.adventure.teleporter.component.Teleporter`, `RespawnEvent`, `PlayerRespawnPointData`. VERIFIED (research notes).
 - Mods to copy from (read-only): BetterMap 1.3.8 `dev.ninesliced.exploration.ExploredChunksTracker` (per-player explored chunks: `markChunkExplored`, `getExploredCount`); Lootr 0.3.12 (per-player world chests); ZiggfreedCommon `ZoneLocator` (reads the current zone). VERIFIED by reflection.
 
 ## Sources
 
-SkyBlock (community mirror; official wiki pages were not reachable during research):
+SkyBlock (community mirror; the official wiki.hypixel.net closed in July 2026 and now redirects to a forum notice):
 - https://hypixelskyblock.minecraft.wiki/w/Fairy_Souls
 - https://hypixelskyblock.minecraft.wiki/w/Achievements
 - https://hypixelskyblock.minecraft.wiki/w/Travel_Scrolls
@@ -160,7 +162,8 @@ SkyBlock (community mirror; official wiki pages were not reachable during resear
 - https://hypixelskyblock.minecraft.wiki/w/Bestiary
 - https://hypixelskyblock.minecraft.wiki/w/SkyBlock_Levels/Tasks
 - https://hypixel-skyblock.fandom.com/wiki/Glacite_Mineshafts
-- https://wiki.hypixel.net/Hoppity's_Hunt
+- https://hypixelskyblock.minecraft.wiki/w/Hoppity's_Hunt
+- https://hypixelskyblock.minecraft.wiki/w/Enigma_Cloak
 - https://hypixel.net/threads/new-skill-idea-exploration.6085811/
 
 Wynncraft:
