@@ -1,5 +1,5 @@
 # SKYWYNN — HANDOFF
-*Rewritten 2026-09-22 21:00, restructured 2026-09-23 20:45 (session 4): section 3 = current state (always current), section 6 = running log (append-only). Read this first; every other doc in this folder is detail. Owner: Skyy (skylordplayz@gmail.com).*
+*Rewritten 2026-09-22 21:00, restructured 2026-09-23 20:45 (session 4): section 3 = current state (always current), section 6 = running log (append-only). Read this first; every other doc in this folder is detail. Owner: Skyy (GitHub: SkyyPlayz).*
 
 ---
 
@@ -93,9 +93,9 @@ HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death - built
 3. Accessory power: six [SKYY?] questions in SkyyAccessories-Plan.md (AP values, bench accessories count?, class crystals, slot sources/prices, Mage crystal).
 
 ### Repository
-Git repo in this folder, branch main, pushed to https://github.com/SkyyPlayz/SkyyWynnBlock (remote origin). WARNING 2026-09-23 20:58: the repo was created PUBLIC - Skyy asked to switch it to Private (Settings > Danger Zone); verify with an anonymous API call (404 = private) before pushing more.
+Git repo in this folder, branch main, pushed to https://github.com/SkyyPlayz/SkyyWynnBlock (remote origin). The repo is PUBLIC on purpose (Skyy, 2026-09-23: free GitHub Actions CI; not worried about copying). So: never commit game files, other people's mods or personal data (emails, tokens).
 Commits use the GitHub noreply address 73867804+SkyyPlayz@users.noreply.github.com (repo-local git config) because Skyy's account blocks
-publishing his Gmail. Commit + push after each meaningful change (git add -A; git commit; git push).
+publishing their personal email. Commit + push after each meaningful change (git add -A; git commit; git push).
 .gitignore keeps out build_classes/, __pycache__/, all mod jars (build output) except tools/javassist.jar, and any game files/other mods.
 .gitattributes `* -text` keeps line endings byte-exact. Engine inspection helpers live in tools/dev/.
 
@@ -233,5 +233,6 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-23 afternoon: HUD 0.3.3-0.3.5 (live previews, fine controls, bigger pages), Sacks 0.6.2-0.6.8 (bigger pages, craft loss = backpack section, sorting, Combat bag, merged tabs) deployed.
 - 2026-09-23 evening: built without deploying (Skyy's new rule): SkyyMenu 0.1.1, SkyyClasses 0.1.1, SkyySkills 0.3, SkyyAccessories 0.4, SkyySacks 0.7.1, and the command-rule fixes (Hud 0.3.6, Coins 0.1.4, Collections 0.1.4, Party 0.1.2, Bank 0.1.1, Islands 0.4.3, Bazaar 0.1.1, Rolls 0.1.1). Accessory power plan written (SkyyAccessories-Plan.md).
 - 2026-09-23 20:45: git repo initialised (branch main) with .gitignore/.gitattributes/README; engine helpers copied to tools/dev; HANDOFF restructured (sections 3 and 6). GitHub remote SkyyWynnBlock: pending - gh CLI not installed, needs Skyy to sign in to GitHub.
-- 2026-09-23 20:55: pushed to the GitHub repo SkyyPlayz/SkyyWynnBlock (Skyy created it). First push was declined for exposing the private Gmail; the repo now commits as the GitHub noreply address.
+- 2026-09-23 20:55: pushed to the GitHub repo SkyyPlayz/SkyyWynnBlock (Skyy created it). First push was declined for exposing the account's private email; the repo now commits as the GitHub noreply address.
 - 2026-09-23 20:58: anonymous API check shows the repo is PUBLIC (created on GitHub's default). Asked Skyy to switch it to Private; further pushes held until then.
+- 2026-09-23 21:00: Skyy keeps the repo PUBLIC on purpose (free CI). Removed the personal email from HANDOFF line 2 (it is still in the first commit's history - rewriting history needs Skyy's OK). CI note: GitHub Actions cannot run the real builds (HytaleServer.jar cannot be uploaded); it can run syntax/rule checks.
