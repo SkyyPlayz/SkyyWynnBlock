@@ -17,7 +17,7 @@ MAX_BYTES = 5 * 1024 * 1024
 ALLOWED_JARS = {"tools/javassist.jar"}
 FORBIDDEN_NAMES = {"hytaleserver.jar", "assets.zip"}
 # commands that are admin-only on purpose (auto permission node, only "*" admins have it)
-ADMIN_ONLY_OK = {"SkyyRolls": {"rolls", "give", "read", "reroll"},
+ADMIN_ONLY_OK = {"SkyyRolls": {"rolls", "give", "read", "reroll", "clear"},
                  "SkyyClasses": {"set", "reset", "info", "reload"}}  # /classadmin subcommands (parent requires skyyclasses.admin)
 
 fails, warns = [], []

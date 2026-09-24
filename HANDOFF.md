@@ -159,6 +159,7 @@ Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 - SkyyIslands 0.4.2 black-grass fix CONFIRMED: an old island's grass turns green after re-entering (/hub then /island).
 - SkyyCollections 0.2 counting works in game: Oak/Ash/Beech/Birch logs, sticks and tree sap count (Foraging page 1/3); tier I reward preview (e.g. Copper Hatchet recipe) shown. Check with the tree-fall fix whether logs from a FELLED tree are counted.
 - SkyyTrees 0.1: /tree page works in game (tiers, tokens, Dust, node detail, Level up).
+- SkyyHud 0.3.6 editor works again with the new set (select widget, arrows, Size, Settings; Skyy: "this is beautiful!"). The Zone widget prints the raw island world name at top right -> friendly name in SkyyHud 0.3.7.
 - SkyyMenu 0.1.2 Hub + Island teleports work (menu closes, player teleports - the 0.1.2 close-after-command path).
 - SkyyMenu 0.1.2 Teleport view: a vanilla /warp set <name> warp ('fens') appears automatically with its world + coordinates.
 - SkyyMenu 0.1.2: bigger menu, info box above the icons, the top tooltip fits on screen (Skyy: "this is great too!").
