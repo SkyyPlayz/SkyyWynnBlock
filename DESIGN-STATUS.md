@@ -58,6 +58,9 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
 - **Bags**: smelted bars go in the Mining bag; all bag tabs always shown; bag sizes will come from collections.
 - **Exploration backbones**: an island checklist and admin-placed discovery spots, so a server only has to add content.
 
+## Direction: our own content
+Eventually every mod in the pack is SkyWynn's own; third-party mods (crossbow tiers, saplings) are stopgaps. A custom gear line is planned: Wynncraft-style weapons (rolled IDs, powders, elements), SkyBlock-style tools (reforges, fortune) and armor - built on the item rolls + tooltip system that works now, and the source of Smithing XP from reforging and powders. We rebuild features ourselves rather than copying other authors' files.
+
 ## Later (needs the server / the island chain)
 Discovery and secret spots, island arrival, dungeons, Echo Shards (void shards; half = no coin loss when falling into the void, all = creative
 flight on your island), island completion, zone hunts, town warps (starter town free, others via quests / scrolls), lootrun camps, map reveal,

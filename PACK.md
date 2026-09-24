@@ -1,5 +1,7 @@
 # SkyWynn pack contents
 
+> **Temporary:** Skyy's goal is that EVERY mod in the pack is our own. Each third-party mod below is a stopgap until we build our own version (our own items, stats and recipes - never copies of the author's files unless their license allows it).
+
 The SkyWynn pack = the Skyy* mods in this repo (built from their build scripts, deployed with `python tools/deploy_set.py`) plus the
 third-party mods below. Third-party mods are NOT stored in this repo: install them from their authors. `tools/deploy_set.py` enables
 them in the world (PACK_THIRD_PARTY) but never copies their files.
