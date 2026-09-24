@@ -1,7 +1,14 @@
 # Tree fall: felled-log crediting + Tree Feller rework (build spec)
 
 *Written 2026-09-24 by the research workflow skywynn-tree-fall-research. Research only: no build script, mod folder, game file or other doc was changed; scratch files under tools/dev/scratch/ were deleted.*
-*Targets (HANDOFF feedback round 2 queue): **SkyySkills 0.4.2** (on top of 0.4.1), **SkyyCollections 0.2.1** (on 0.2), **SkyyTrees 0.2.1** (on 0.2). Line numbers below are from `build_skyyskills_0.4.py`, `build_skyycollections_0.2.py` and `build_skyytrees_0.1.py`. Build through the `tools/*_patch.py` chain, not by editing generated scripts.*
+*Revised 2026-09-24 07:45 after review. The changes:*
+- *the trunk-file counts (1.2) and the `SupportDropType` wording (1.3) are corrected;*
+- *line citations are re-derived from the real patch bases and now come with anchors;*
+- *layer cells stay search nodes (2.3);*
+- *explosions and fire can no longer pay as felled (1.3 step 6, 2.4 `EnvSys`, 4.1, T17 / T18);*
+- *there is a TreeWood coverage gap for apple trees (2.2).*
+
+*Targets (HANDOFF feedback round 2 queue): **SkyySkills 0.4.2** (on top of 0.4.1), **SkyyCollections 0.2.1** (on 0.2), **SkyyTrees 0.2.1** (on 0.2). Line numbers below are from the actual patch bases `build_skyyskills_0.4.1.py`, `build_skyycollections_0.2.py` and `build_skyytrees_0.2.py` at git HEAD `a7360a0` (re-derived 2026-09-24 07:45). They drift every time another workflow regenerates those scripts (the Trees 0.2 lines moved by 28 between two checks this morning), so each hook also names a **code anchor**: the exact text the `tools/*_patch.py` `rep(old, new)` call asserts on. Match the anchor, never the number. Build through the `tools/*_patch.py` chain, not by editing generated scripts.*
 *Skyy's report (2026-09-24): "right now i only get xp for the log i break, so i break 1 log and the whole tree falls, then i only get 6 xp per tree. not a great tradeoff." Data point: one felled birch dropped 20 logs; Collections counted 1 and Foraging paid for 1 (HANDOFF log 07:25 / 07:26).*
 
 **Legend.** VERIFIED means one of these:
@@ -17,7 +24,7 @@ UNVERIFIED means design, inference, or not yet tested in game. `[SKYY?]` marks a
 ## 0. Verdict in plain words
 
 1. **The engine's tree fall cannot be hooked as an event.** VERIFIED. When you cut the base, only that one block fires `BreakBlockEvent`, which is the event SkyySkills and SkyyCollections listen to. The rest of the tree is removed later by the block-physics system, one block at a time. That system fires no event and knows no player. That is why you get 6 XP (one trunk) per tree.
-2. **The fix: take a snapshot of the tree at the moment you break it, then watch it fall.** Our break listener runs while the tree is still whole (VERIFIED order), so it records every natural log of that tree. A short watcher then checks those positions about 5 times a second. Each log that turns to air, and that nobody broke by hand, is paid to you as if you had broken it:
+2. **The fix: take a snapshot of the tree at the moment you break it, then watch it fall.** Our break listener runs while the tree is still whole (VERIFIED order), so it records every natural log of that tree. A short watcher then checks those positions about 5 times a second. Each log that turns to air, and that was not removed by a hand break, an explosion or fire (those fire their own events, VERIFIED; section 2.4), is paid to you as if you had broken it:
    - Foraging XP from the same table (6 per normal trunk);
    - a double-drop roll;
    - Collections count;
@@ -31,7 +38,7 @@ UNVERIFIED means design, inference, or not yet tested in game. `[SKYY?]` marks a
    This is why Skyy's **Tree Feller rework** (break the other logs on the same Y level) is exactly the right ability now.
 4. **Player-placed logs never pay, and vanilla never lets them fall.** VERIFIED. Placed logs and leaves are flagged "deco" by the engine, and the physics system skips deco blocks. We also skip anything in our placed-block tracker, and we only pay trees that touch natural leaves.
 5. **Where it is built:**
-   - **SkyySkills 0.4.2:** snapshot, watcher, XP, double drops, a "who felled this" bridge, and a new per-log listener map.
+   - **SkyySkills 0.4.2:** snapshot, watcher, XP, double drops, a guard so explosions and fire never pay as felled, a "who felled this" bridge, and a new per-log listener map.
    - **SkyyCollections 0.2.1:** accepts one more `coll:fn:add` source. That is a config default only; Collections 0.2 already works if the source is added by hand.
    - **SkyyTrees 0.2.1:** Tree Feller becomes same-Y only (level 1 = 1 log beside it, max = the whole layer). Felled logs also roll the per-log Foraging nodes.
 
@@ -62,7 +69,14 @@ Expected result for Skyy's birch: about 20 x 6 = **120 Foraging XP** instead of 
 
 ### 1.2 The support rules (JSON + engine semantics)
 
-**Trunk:** `Server/Item/Items/Wood/Oak/Wood_Oak_Trunk.json` is the parent of every other `Wood_<W>_Trunk`. 129 child files override only `Gathering.Breaking`. Maple sets `MaxSupportDistance` to 8. The trunk's own fields:
+**Trunk:** `Server/Item/Items/Wood/Oak/Wood_Oak_Trunk.json` is the root of every other trunk's `Parent` chain. Each `Wood_<W>_Trunk` names it directly, and most `_Trunk_Full` files name their own species' `_Trunk`. VERIFIED by following every `Parent` field in `Assets.zip`, 2026-09-24:
+- `Server/Item/Items/Wood/` holds **66** `*_Trunk` / `*_Trunk_Full` files (33 species x 2). Besides Oak's own trunk:
+  - **61** override only `Gathering.Breaking` (their own log);
+  - **4** have no `Gathering` override at all (Oak, Apple, Bamboo and Ice `_Trunk_Full`).
+- Apart from that they override only visuals (textures, colours). None overrides `Support`. Maple (`_Trunk` and `_Trunk_Full`) also sets `MaxSupportDistance` to 8.
+- For reference: 37 files name `Wood_Oak_Trunk` directly, and 74 trace back to it transitively. The 74 include 2 Bamboo `_Deco` blocks and 7 unrelated inheritors (3 `Plant_Fern_*_Trunk`, 4 `Debug_MusicEmitter_*`). A plain substring grep hits 357 files, mostly drop lists and recipes that only mention the id. The "129" in the first draft of this spec was wrong. Nothing below depended on it, because `FellDefs.WOOD` comes from `TreeWood.json` (2.2).
+
+The trunk's own fields:
 - `"Support": {"Down": [{"FaceType": "Full", "AllowSupportPropagation": false}], "Horizontal": [{"TagId": "Type=Trunk", "Support": "Ignored"}]}`
 - `"MaxSupportDistance": 5`
 - `"IgnoreSupportWhenPlaced": true`
@@ -105,7 +119,7 @@ The pack mod **Saplings From Trees** changes the Physics drop of Ash, Azure, Bee
 2. **The outcome.** When `testBlockPhysics` returns 0, `BlockType.getSupportDropType()` decides:
    - BREAK: `naturallyRemoveBlockByPhysics(pos, bt, rot, 256, sectionRef, ...)`;
    - DESTROY: the same call with `2304`;
-   - FALL: `FallingBlock.fallBlock`. No tree block declares `SupportDropType`; the earlier notes grepped all assets and found only 3 debug files.
+   - FALL: `FallingBlock.fallBlock`. No tree block declares `SupportDropType`. VERIFIED: in all of `Assets.zip` only 3 non-tree files declare it. Two are in `Item/Items/_Debug/` (`Debug_Falling_Barrel`, `Debug_Falling_Explosive`), and one is `Item/Items/MISC/Prototype_Spider_Cocoon_Falling`, a prototype item. No `Wood_*` or `Plant_Leaves_*` file declares it.
 3. **Drops.** `naturallyRemoveBlockByPhysics` picks the drops in this order, then calls `naturallyRemoveBlock` (flags `| 32`):
    - `Gathering.Physics` (quantity 1, ItemId, DropList);
    - else `Breaking` (Quantity, ItemId, DropList);
@@ -118,6 +132,16 @@ The pack mod **Saplings From Trees** changes the Physics drop of Ash, Azure, Bee
    - A thick trunk "counts up" the sideways distance for up to `MaxSupportDistance` passes per layer before that layer breaks. A tall 2x2 or 3x3 tree can take several seconds.
    - The watcher below is built for that; the in-game debug line measures it (test T14).
 5. **Child woods drop their own log.** UNVERIFIED but safe. `Gathering` is `appendInherited` on `BlockType`, but `Physics` inside `BlockGathering` is plain `append`, so Birch has no Physics entry and falls back to its own `Breaking` (a birch log). This matches Skyy's 20 birch logs. Our code copies the engine's selection at runtime, so it never depends on this.
+6. **Explosions and fire are not the cascade: they fire `EnvironmentBreakBlockEvent`.** VERIFIED in bytecode, 2026-09-24:
+   - **Explosions.** `ExplosionUtils.processTargetBlocks` calls the 9-argument `BlockHarvestUtils.performBlockDamage(Vector3i, ItemStack, ItemTool, float, int, boolean, Ref, ComponentAccessor, ComponentAccessor)`.
+     - That overload passes `null` for both entity refs to the 13-argument one, then on to `damageSingleBlock`.
+     - `damageSingleBlock` hands that null ref to `performBlockBreak` as the breaker.
+     - So step 3 of 1.1 runs: an **`EnvironmentBreakBlockEvent`** fires, **never a `BreakBlockEvent`**. Our break listeners never see a blast, and it happens before the removal.
+     - `ExplodeFallingBlockImpact` and the reactive `BlockExplosive` reach the same `ExplosionUtils` path.
+     - `Server/Item/Interactions/Explosions/Explode_Generic.json` breaks wood: `DamageBlocks: true`, `Woods` power 2, `BlockDamageRadius 3`, `BlockDropChance 0.4`. Vanilla has `Weapon_Bomb*` items. Which of them reach `Explode_Generic` is UNVERIFIED.
+   - **Fire.** `FireFluidTicker.applyBurnResult` calls `BlockOperations.setBlock` and then `Store.invoke(new EnvironmentBreakBlockEvent(pos, blockType))`.
+   - **The event.** `EnvironmentBreakBlockEvent extends EcsEvent`. It is not cancellable and has `getTargetBlock()` and `getBlockType()`. The engine listens to it with a `WorldEventSystem`: `TriggerVolumeBlockEventSystems$EnvironmentBlockBroken.handle(Store<EntityStore>, CommandBuffer<EntityStore>, EnvironmentBreakBlockEvent)`. `WorldEventSystem(Class)` is the constructor.
+   - **Consequence.** The physics cascade fires no event (step 3). So "this position turned to air and an `EnvironmentBreakBlockEvent` named it" is an exact test for "an explosion or fire took it, not the fall". Section 2.4 uses it.
 
 ### 1.4 Placed blocks, creative, protection
 
@@ -128,8 +152,8 @@ The pack mod **Saplings From Trees** changes the Physics drop of Ash, Azure, Bee
 ### 1.5 What our mods and the reference mods do today
 
 Our mods (VERIFIED):
-- **SkyySkills 0.4:** `BreakSys` (handler) defers `BreakTask` (world.execute). `BreakTask` does, in order: cancel check, `PlacedStore.remove`, XP from `SkillCfg.classifyBreak`, `Perks.breakDouble`, `SkillBonus.gather` (`skill:on:gather`). This runs only for the player's own `BreakBlockEvent`.
-  - XP table (xp.properties defaults, lines 452-465): `_Trunk` / `_Trunk_Full` 6 (special woods 3-30), `Plant_Leaves_` 1, `_Branch_*` 1, `_Roots` 2.
+- **SkyySkills 0.4 (and 0.4.1, the patch base):** `BreakSys` (handler) defers `BreakTask` (world.execute). `BreakTask` does, in order: cancel check, `PlacedStore.remove`, XP from `SkillCfg.classifyBreak`, `Perks.breakDouble`, `SkillBonus.gather` (`skill:on:gather`). This runs only for the player's own `BreakBlockEvent`. VERIFIED by diff: the `BreakSys` body, `BreakTask` and `HarvestTask` in 0.4.1 match 0.4 exactly. Only their line numbers moved, by about 140 lines, because of the Exploration code.
+  - XP table (xp.properties defaults; 0.4.1 lines 487-500, anchor `L.append("# ---------- Foraging ----------")`): `_Trunk` / `_Trunk_Full` 6 (special woods 3-30), `Plant_Leaves_` 1, `_Branch_*` 1, `_Roots` 2.
 - **SkyyCollections 0.2:** H1 `CollBreakSys` counts only `BreakBlockEvent` drops. Walk-over pickups never count.
 - **SkyyTrees 0.1 Tree Feller:**
   - search: a 26-neighbour flood, 6 across, 32 up;
@@ -173,6 +197,10 @@ A snapshot is attempted when **all** of these hold:
 Breaking leaves or roots never triggers a snapshot.
 
 **Tree ids.** `FellDefs.WOOD` / `FellDefs.LEAVES` are generated at build time from `Server/BlockTypeList/TreeWood.json` (183 ids, all `Wood_<W>_<Trunk|Trunk_Full|Branch_Short|Branch_Long|Branch_Corner|Roots>`) and `TreeLeaves.json` (44 `Plant_Leaves_*`). Both are VERIFIED. `family(id)` = the id without that suffix (e.g. `Wood_Wisteria_Wild`).
+- Coverage gap, VERIFIED 2026-09-24. Four trunk block files are missing from `TreeWood.json`: `Wood_Apple_Trunk`, `Wood_Apple_Trunk_Full`, `Wood_Bamboo_Trunk_Full` and `Wood_Ice_Trunk_Full`. No `Wood_Apple_*` id is in it at all, and `Plant_Leaves_Apple` is not in `TreeLeaves.json`.
+  - The apple fruit tree prefab (`Server/Prefabs/Trees/Fruit/Stage_2/Apple_Stage2_001`) is built from `Wood_Apple_Trunk`, `Wood_Apple_Branch_Long` / `_Short` and `Plant_Leaves_Apple`.
+  - So a felled apple tree pays nothing as written, even though its hand-broken trunk pays 6 XP through the suffix table.
+  - `[SKYY?]` should fruit trees pay when felled? If yes, the build adds those 4 trunk ids, the 2 Apple branch ids and `Plant_Leaves_Apple` to `FellDefs` by hand, next to the generated lists.
 
 ### 2.3 Snapshot rules
 
@@ -194,6 +222,14 @@ Breaking leaves or roots never triggers a snapshot.
   - trunks with `y == y0`. These go into the **layer** list: the other base logs of a thick tree. They only fall by being cut, so they are never claims.
 
   With UNDER, `y0` is the ground block's Y, so the seed trunk at `y0+1` is a claim.
+
+  **Layer cells are still search nodes.** The breadth-first search expands from a layer cell exactly as from any other accepted cell. Only its outcome differs: it goes to the layer list, not a claim. That way the first cut of a thick tree already records the wood above *every* base log, not only above the one that was cut. On a wide base (a flared 3x3 or 5x5), the log above a far corner is reachable only through other base logs. This matters because later breaks of layer logs reuse that first watch and skip the search (2.4). An incomplete first snapshot would silently leave logs unpaid in T6 / T7.
+
+  **What one claim set covers.** One connected body of same-family wood, found through the 26-neighbourhood, plus the leaves within 4 leaf steps of it (caps 256 wood, 384 leaves).
+  - Two same-species trees join into one set only when their wood touches: trunk, branch or root cells one block apart.
+  - A neighbour's canopy leaves within 4 steps can be claims too.
+  - Trees further apart are separate sets even inside `fell.radius`.
+  - A claim is only paid if that position really falls by physics during the watch (2.5), so claiming a neighbour that does not fall costs nothing. Explosions and fire are excluded (2.4, "Environment breaks").
 - **Leaf search** (always done for the natural-tree test; claims only when `fell.leaves=true`):
   - from every accepted wood cell, the 26 neighbours whose id is in `LEAVES`, natural, `y >= y0 - 1`;
   - then a search through leaves up to 4 leaf steps (their `MaxSupportDistance`), cap `fell.maxLeaves` (384);
@@ -232,9 +268,21 @@ These per-world maps are read and written on the world thread. Use `ConcurrentHa
    Otherwise keep the other player's claim.
 3. Put every layer key into `LAYER` -> `W`. Schedule the first poll.
 
+**Environment breaks (`EnvSys`, SkyySkills 0.4.2).** This closes the explosion and fire hole.
+- **Registration.** A `WorldEventSystem` for `EnvironmentBreakBlockEvent` (1.3 step 6), registered on the entity-store registry next to `BreakSys`.
+  - Explosions: `performBlockBreak` invokes the event on its entity-store accessor, the 11th parameter (`aload 10` before `ComponentAccessor.invoke(EcsEvent)`). VERIFIED.
+  - Fire: which store `FireFluidTicker`'s `Store.invoke` targets is UNVERIFIED. The engine's trigger-volume listener is an entity-store system, which suggests the same.
+- **Handler, on the world thread.** If `CLAIMS` holds the target key, `remove` it and count one `env` on that watch: no credit, and no `touch()`.
+- **Why it is exact.** Explosions fire the event before the block is removed, so the claim is gone before the next watch poll, which also runs on the world thread. VERIFIED order. Fire fires it right after its `setBlock`, inside the same call. That the fluid tick shares the world thread with our poll is UNVERIFIED. Fire that replaces a log with another block is already "replaced, no credit" (2.5) anyway. The physics cascade never fires this event, so real felled logs are untouched.
+- **What still pays.** Claimed logs that fall by physics *after* a blast took their support are still credited. They really fell, and hand-cutting that support would pay the same, so there is nothing to gain.
+- **What a blast itself pays.** A position the blast removes is not paid as felled, and it was never a hand break, so it pays nothing. That matches today, where bombs pay no Foraging XP. Collections would otherwise count 100% of re-rolled drops where `Explode_Generic` drops only 40%.
+- **Status.** Engine side VERIFIED (the engine's own `TriggerVolumeBlockEventSystems$EnvironmentBlockBroken` is exactly this kind of system). UNVERIFIED in our toolchain: it is our first `WorldEventSystem` (constructor `super(EnvironmentBreakBlockEvent.class)`, method `handle(Store, CommandBuffer, EcsEvent)`, no query). Test T17.
+- **If registration throws.** Warn once in the server log, and keep the fell feature off until the next restart, whatever `fell.enabled` says. `/skills reload` does not re-register systems. Then no unguarded watch ever runs.
+
 **Rules for Skyy (plain):**
 - A log that falls is paid to the player whose break took away its last support.
 - A log someone breaks by hand is paid to them as a hand break, never also as felled.
+- A log an explosion or fire removes is never paid as felled.
 - Nobody is paid twice for one log.
 
 ### 2.5 The watch (step 3)
@@ -245,7 +293,7 @@ For each unresolved claimed position, read `idx = BlockSection.get(x, y, z)` on 
 |---|---|---|
 | -1 | chunk not loaded | resolve, no credit ("lost") |
 | same index as the snapshot | still standing | wait |
-| 0 (empty; physics treats index 0 as nothing) | removed | resolve; `lastChange = now`; credit **only if** `CLAIMS.get(k) == this` (so not hand-broken, not taken over), then `CLAIMS.remove(k, this)` |
+| 0 (empty; physics treats index 0 as nothing) | removed | resolve; `lastChange = now`; credit **only if** `CLAIMS.get(k) == this` (so not hand-broken, not blown up or burnt (`EnvSys`), not taken over), then `CLAIMS.remove(k, this)` |
 | any other index | replaced | resolve, no credit |
 
 The watch ends when any of these is true:
@@ -258,7 +306,7 @@ On end:
 - release this watch's remaining `CLAIMS` / `LAYER` entries (`remove(k, this)`);
 - lower the player's watch count;
 - optional chat summary (2.9);
-- with `fell.debug`, one server-log line: player, world, claims, credited, hand, lost, other, duration in ms. It exists to measure the UNVERIFIED cascade timing.
+- with `fell.debug`, one server-log line: player, world, claims, credited, hand, env, lost, other, duration in ms. It exists to measure the UNVERIFIED cascade timing.
 
 ### 2.6 What one felled position pays (step 4, `FellCredit.one`)
 
@@ -288,7 +336,7 @@ A `rule == null` block (e.g. a wood set to `none`) still counts in Collections, 
 
 ### 2.7 Leaves
 
-- The XP table pays `Plant_Leaves_` 1 Foraging XP for a hand break. VERIFIED (line 453).
+- The XP table pays `Plant_Leaves_` 1 Foraging XP for a hand break. VERIFIED (0.4.1 line 488).
 - Felled leaves pay the same table x `fell.leafXpFactor` (default **1.0**, per this task's rule "no XP unless the table pays for them").
 - Set `fell.leaves=false` to stop crediting leaves at all. That also skips most of the snapshot reads, since leaves are the biggest part of a tree. `[SKYY?]`
 - No double drop (`doubleDropOnly=_Trunk`) and no nodes: `TreeGather` only rolls on `_Trunk` ids.
@@ -306,7 +354,7 @@ A `rule == null` block (e.g. a wood set to `none`) still counts in Collections, 
   - Argument: `Object[]{String world, Integer x, Integer y, Integer z}`.
   - Returns `Object[]{UUID owner, String pkey, Long atMillis, String state}`: state is `"falling"` (claimed by a live watch; atMillis = snapshot time) or `"felled"` (in `FELLED`); otherwise null.
   - For other mods (pickups, minions, logs, quests). Remove it in shutdown.
-- **Optional, recommended in the same build:** in `Perks.doubled`, also call `coll:fn:add` with the source `"skills:double"` for each double-drop stack. Collections 0.2 already accepts that source by default (line 270). A VERIFIED grep shows SkyySkills 0.4 never calls `coll:fn:add`, so double drops are not counted in Collections today, for hand breaks either. `[SKYY?]`
+- **Optional, recommended in the same build:** in `Perks.doubled`, also call `coll:fn:add` with the source `"skills:double"` for each double-drop stack. Collections 0.2 already accepts that source by default (line 270). A VERIFIED grep shows SkyySkills 0.4 and 0.4.1 never call `coll:fn:add`, so double drops are not counted in Collections today, for hand breaks either. `[SKYY?]`
 
 ### 2.9 Chat
 
@@ -339,9 +387,13 @@ Credit-at-fall is exactly the H1 model. `skill:fn:felledBy` keeps a pickup desig
 - `FellDrops`
 - `FellCredit`
 - `FelledByFn implements Function`
+- `EnvSys extends com.hypixel.hytale.component.system.WorldEventSystem` (2.4 "Environment breaks"). It is not an `event_system(...)` class: `WorldEventSystem` has `handle(Store, CommandBuffer, EcsEvent)` and no query, so it gets its own constructor and handle. Its body is `Fell.envBreak(worldName, getTargetBlock())` in a try/catch that warns once.
 - `SkillBonus.felled` (a method on the existing class)
 
-**Hook 1: `BreakSys` handler** (line ~3843). Insert after `w` is resolved and before `classifyBreak`:
+**Hook 1: `BreakSys` handler.**
+- Anchor: the body passed to `event_system(bsy, "BreakSys", BBE, f"""` (0.4.1 line 3985).
+- Insert the block below immediately before `    long[] rule = {PKG}.SkillCfg.classifyBreak(e.getBlockType());` (line 3995), which is after `w` is resolved.
+- Do not anchor on the `public void handle(int idx, ...)` inside `def event_system` (line 3979). That is the shared template for every event system.
 ```java
 Object fs = null; Object unclaimed = null;
 if (FellCfg.ENABLED && FellCfg.worldOk(w.getName()) && !SkillXp.creative(st, r)) {
@@ -358,7 +410,10 @@ if (FellCfg.ENABLED && FellCfg.worldOk(w.getName()) && !SkillXp.creative(st, r))
 - The early `return` for `rule == null && !IGNORE_PLACED` must not skip a `BreakTask` while `fs != null || unclaimed != null`.
 - Wrap all of this in its own try/catch that warns once. A snapshot failure must never stop the XP path.
 
-**Hook 2: `BreakTask.run`** (line ~3637):
+**Hook 2: `BreakTask.run`.**
+- Anchor: `btk.addMethod` (0.4.1 line 3775, `public void run()` at 3776).
+- Replace its first statement, `    if (this.ev.isCancelled()) return;` (line 3778), with the code below.
+- The two new fields and the new constructor go next to `public BreakTask({BBE} ev, java.util.UUID u, String world, long[] rule) {{` (line 3772).
 ```java
 if (this.ev.isCancelled()) { Fell.restore(this.world, this.ev, this.unclaimed); return; }
 if (this.fs != null) Fell.commit((FellSnap) this.fs);   // BEFORE XP and SkillBonus.gather (the Tree Feller breaks inside gather)
@@ -372,7 +427,7 @@ if (this.fs != null) Fell.commit((FellSnap) this.fs);   // BEFORE XP and SkillBo
 - Reading chunk sections inside the event handler is UNVERIFIED in play. The engine reads the same sections in the same call right after the event (1.1), and `SkillCfg.blockIdAt` uses this path from world tasks today. Test T1 checks it.
 - **Fallback if a handler read ever throws:** take the snapshot in `BreakTask` instead, and let the wood search step through up to 2 empty cells straight above the seed. A late snapshot can then still reach the rest of the tree.
 
-**The watch** (sketch; the HarvestTask hop pattern, VERIFIED at lines 3693-3725):
+**The watch** (sketch). It uses the HarvestTask hop pattern, VERIFIED in 0.4.1 at lines 3835-3864, anchor `htk.addMethod`:
 ```java
 public void run() {
   if (this.hop) { this.hop = false; try { this.w.execute(this); } catch (Throwable t) { Fell.end(this); } return; }
@@ -432,7 +487,10 @@ Clamps:
 - factors: 0-5
 
 **Setup and shutdown.**
-- In setup: `bridge().putIfAbsent("skill:on:felled", new ConcurrentHashMap())` and `bridge().put("skill:fn:felledBy", new FelledByFn())`.
+- In setup:
+  - `bridge().putIfAbsent("skill:on:felled", new ConcurrentHashMap())`;
+  - `bridge().put("skill:fn:felledBy", new FelledByFn())`;
+  - `getEntityStoreRegistry().registerSystem(new {PKG}.EnvSys())`, right after the `BreakSys` line (0.4.1 line 4939), in its own try/catch. A failure warns once and turns the fell feature off (2.4).
 - In shutdown: remove `skill:fn:felledBy` and end every live watch (release its claims). Leave the listener map in place, like `skill:on:gather`.
 
 **Small related fix, recommended.** `PlaceTask` records every placed position, including saplings. When a sapling grows into a tree, the base trunk may sit on that recorded position (UNVERIFIED), and then the hand-broken base of a replanted tree pays 0.
@@ -465,7 +523,7 @@ if (eff >= TreeCfg.MAX[i]) return (double) TreeCfg.FELLER_ALL; return TreeCfg.BA
 ```
 The page shows "every log on that level" at max (`%V` reads `FELLER_ALL` as "every").
 
-**`TreeAbil.feller`** (line 1591):
+**`TreeAbil.feller`.** Anchor `public static boolean feller(@PR@ pr, String wn, int x, int y, int z, String id, int max) {` (Trees 0.2 line 1805). VERIFIED by diff: the `TreeAbil` block from `flood` to `feller`, and `TreeFx.value`, are unchanged from 0.1. Other anchors: `flood(` 1686, `public static int breakList(` 1746, `public static double value(int i, int eff)` 1330, the `"FFeller"` node row 355.
 1. `l = flatFlood(w, wn, x, y, z, fam, max, TreeCfg.RADIUS, pf)`. This is a breadth-first search on the same Y only:
    - neighbour order `(1,0) (-1,0) (0,1) (0,-1)` first, then the four diagonals, so level 1 takes the log directly beside the cut;
    - `|dx|, |dz| <= RADIUS`;
@@ -533,7 +591,8 @@ The page shows "every log on that level" at max (`%V` reads `FELLER_ALL` as "eve
 | Creative | No snapshot. Creative with noPhysics also fells nothing (1.1). |
 | Profile switch mid-fall | pkey check at credit time; `coll:fn:add` `expectKey`. |
 | Spam trunk-adjacent breaks to load the server | `maxSnapshotsPerSecond`, `maxReads`, `maxWatchesPerPlayer`, `maxWatches`, and reuse of a live watch. |
-| Explosion or fire inside a live watch | A removal within the watch window is credited to the feller. That is minor and bounded by the tree. |
+| Explosion or fire inside a live watch (e.g. cut one log, then bomb the canopy) | Without a guard this was a real hole, not a minor one. One cut's claim set can be several touching same-species trees (2.3, up to 256 logs and 384 leaves). A blast has no breaker, so no hand-break path would unclaim it (1.3 step 6, VERIFIED), and Collections would count 100% of drops where `Explode_Generic` spawns 40%. Closed by `EnvSys`: explosions and fire fire `EnvironmentBreakBlockEvent`, which unclaims the position, so it is never paid as felled. Test T17. |
+| Two touching same-species trees | One snapshot can claim a neighbour tree whose wood touches the cut tree. It pays nothing unless the neighbour really falls during the watch (3 s quiet, 60 s max). Known limit: if another player fells that neighbour inside the window, their break lands on a claimed log (`bInOther`), and the neighbour's fall is paid to the first player. That is a wrong owner, never a double payment. Test T18. |
 | TreeHarvester-style silent breaks (not in the pack) | Silent `World.breakBlock` removals inside a watch count as felled, which is correct: the player cut that tree. |
 
 ### 4.2 Performance budget
@@ -590,6 +649,16 @@ The page shows "every log on that level" at max (`%V` reads `FELLER_ALL` as "eve
 
 **T16. Reload.** `/skills reload` after setting `fell.leaves=false`: leaves stop paying and logs still pay.
 
+**T17. Bomb inside a watch.** With `fell.debug=true`, break one base log of a 2x2 tree (nothing falls). Within 3 s, blow up its canopy with a block-damaging bomb (`Explode_Generic`; `Debug_Explosive` in creative is not valid, because creative pays nothing). Expect:
+- no Foraging XP and no Collections count for the blown-up blocks;
+- the debug line shows them under `env`, not `credited`;
+- logs that then fall by physics, because the blast took their support, still pay. They really fell, and cutting that support by hand would have paid the same;
+- the server log shows no `EnvSys` warning at startup.
+
+Repeat next to a dense same-species stand whose crowns touch.
+
+**T18. Touching trees, two accounts.** A cuts one of two touching same-species trees, and B fells the other within a few seconds. Note who gets the second tree's logs; see 4.1 for the known limit. Nobody may be paid twice.
+
 ---
 
 ## 6. Open choices for Skyy
@@ -600,6 +669,7 @@ The page shows "every log on that level" at max (`%V` reads `FELLER_ALL` as "eve
 4. Shared-tree rule: the player who removes the last support gets the fall (2.4). `[SKYY?]`
 5. Count double-drop items in Collections (`skills:double`, SkyySkills 0.4.2 one-liner, affects hand breaks too). `[SKYY?]`
 6. The sapling placed-tracker fix (3.1) so the base log of a replanted tree pays. `[SKYY?]`
+7. Apple fruit trees (and Bamboo / Ice `_Trunk_Full`) are not in the engine's tree lists, so a felled apple tree pays nothing. Add them by hand (2.2)? `[SKYY?]`
 
 ---
 
@@ -614,12 +684,27 @@ The page shows "every log on that level" at max (`%V` reads `FELLER_ALL` as "eve
 - `BlockPhysics.isDeco`, `get`, `IS_DECO_VALUE 15`;
 - `BlockPlaceUtils.tryPlaceBlock` (`markDeco` condition), `BlockType.canBePlacedAsDeco`;
 - `BlockType` codec (`Gathering`, `IgnoreSupportWhenPlaced` = `appendInherited`), `BlockGathering` codec (Physics / Breaking / Soft / Harvest / Tools = `append`, UseDefaultDropWhenPlaced = `appendInherited`);
-- `PlaceBlockEvent` / `BreakBlockEvent` API; `ChunkStore.getChunkSectionReferenceAtBlock`.
+- `PlaceBlockEvent` / `BreakBlockEvent` API; `ChunkStore.getChunkSectionReferenceAtBlock`;
+- explosions and fire:
+  - `ExplosionUtils.processTargetBlocks`, which calls `performBlockDamage`;
+  - the 9-argument `performBlockDamage`, which passes null entity refs;
+  - `damageSingleBlock`, which passes that null ref to `performBlockBreak` as the breaker;
+  - `ExplodeFallingBlockImpact` and `BlockExplosive`, which reach `ExplosionUtils`;
+  - `FireFluidTicker.applyBurnResult`: `setBlock`, then `Store.invoke(EnvironmentBreakBlockEvent)`;
+  - `EnvironmentBreakBlockEvent` (an `EcsEvent`: `getTargetBlock`, `getBlockType`);
+  - `WorldEventSystem(Class)`, `handle(Store, CommandBuffer, EcsEvent)`;
+  - `TriggerVolumeBlockEventSystems$EnvironmentBlockBroken`.
 
 **`Assets.zip`:**
 - `Wood_Oak_Trunk`, `Wood_Birch_Trunk`, `Wood_Birch_Trunk_Full`, `Wood_Oak_Trunk_Full`, `Wood_Oak_Branch_Long` / `Short` / `Corner`, `Wood_Oak_Roots`, `Plant_Leaves_Oak`, `Plant_Leaves_Birch`;
-- the 129 trunk files that override only Breaking; Maple `MaxSupportDistance 8`;
-- `Server/BlockTypeList/TreeWood.json` (183), `TreeLeaves.json` (44);
+- every `Parent` chain to `Wood_Oak_Trunk`, 2026-09-24:
+  - 37 direct and 74 transitive;
+  - 66 `Wood/*_Trunk(_Full)` files: 61 override only `Gathering.Breaking`, 4 have no `Gathering`, plus Oak itself;
+  - Maple `MaxSupportDistance 8`;
+- `SupportDropType`: 3 non-tree files (2 `_Debug`, 1 `MISC/Prototype_Spider_Cocoon_Falling`);
+- `Server/BlockTypeList/TreeWood.json` (183), `TreeLeaves.json` (44). Not in them: Apple trunk / branches / leaves, `Wood_Bamboo_Trunk_Full`, `Wood_Ice_Trunk_Full`;
+- `Server/Prefabs/Trees/Fruit/Stage_2/Apple_Stage2_001.prefab.json`;
+- `Server/Item/Interactions/Explosions/Explode_Generic.json` (`DamageBlocks`, `Woods` power 2, `BlockDropChance 0.4`);
 - `Server/Drops/Wood/Tree_Leaves.json`, `Tree_Leaves_Physics.json`, `Wood_Branch.json`.
 
 **Mods folder (read only):**
@@ -628,9 +713,22 @@ The page shows "every log on that level" at max (`%V` reads `FELLER_ALL` as "eve
 - `treeharvester` / `hybrid` and `MMOSkillTree-1.6.0.jar` constant pools.
 
 **Our scripts:**
-- `SkyySkills/build_skyyskills_0.4.py`: BreakSys 3843, BreakTask 3637, HarvestTask hop 3693-3725, PlacedStore 3497, classifyBreak 1582, blockIdAt 1558, `SkillBonus.gather` 2438, gain 2465, breakDouble 2888, XP table 452-465;
+Line numbers are at git HEAD `a7360a0`; match the anchors, not the numbers.
+- `SkyySkills/build_skyyskills_0.4.1.py` (patch base for 0.4.2):
+  - `event_system(bsy, "BreakSys"` 3985 (Hook 1 before `classifyBreak(e.getBlockType())` 3995);
+  - `btk.addMethod` / `BreakTask.run` 3775 / 3776 (cancel check 3778, constructor 3772);
+  - HarvestTask hop `htk.addMethod` 3835-3864;
+  - PlacedStore 3635;
+  - `classifyBreak` 1691, `blockIdAt` 1667, `SkillBonus.gather` 2563, `gain3` 2593, `Perks.doubled` 3000, `breakDouble` 3016;
+  - XP table 487-500;
+  - `registerSystem(new {PKG}.BreakSys())` 4939;
+  - the 0.4 lines were BreakSys 3843, BreakTask 3637, HarvestTask 3693-3725, and the same bodies;
 - `SkyyCollections/build_skyycollections_0.2.py`: docstring H1-H5, `bridge.add.sources` 270 / 854, `CollFn` add 2244, creditOne 1674;
-- `SkyyTrees/build_skyytrees_0.1.py`: node table 306, `TreeFx.value` 1144, flood 1472, breakList 1531, feller 1591, TreeGather 1690+, config 372-374 / 626 / 710-714;
+- `SkyyTrees/build_skyytrees_0.2.py` (patch base for 0.2.1):
+  - `"FFeller"` node row 355, `TreeFx.value` 1330, flood 1686, breakList 1746, feller 1805;
+  - TreeGather 1826+ (`boolean abil = !chained` 1902), `skill:on:gather` registration 1968;
+  - config defaults 455-457, decls 737, load 843-846, `has02` 819;
+  - the `TreeAbil` and `TreeFx` bodies match 0.1 by diff;
 - `SkyyIslands/build_skyyislands_0.4.4.py` GuardDamage / GuardBreak;
 - `tools/PROFILES-CONTRACT.md` pkey;
 - `tools/trees_0_2_patch.py` (0.2 leaves the Foraging tree unchanged).
