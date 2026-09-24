@@ -6,7 +6,7 @@
 Keep the full SkyBlock-style tree, **plus** extras. Trim later. Do not drop Smithing or Exploration because SkyBlock did not have them.
 
 **Gathering:** Farming, Mining, Foraging, Fishing
-**Artisan:** Smithing (ingredient crafting + reforging — headline, keep), Enchanting, Alchemy, Cooking (its own skill for now)
+**Artisan:** Smithing (ingredient crafting + reforging — headline, keep; Smithing level raises smithing rarity, 2026-09-24), Enchanting, Alchemy, Cooking (its own skill for now)
 **Life / meta:** Taming, Carpentry, Exploration (keep), Hunting, Runecrafting (cosmetic), Social (cosmetic)
 **Combat:** no shared Combat skill. See below.
 **Later, not the spine:** Dungeoneering as a skill (`SkyWynn-Decisions.md` 2.14). Dungeons themselves are story beats plus a capstone (`SkyyDungeons-Plan.md`), not a skill you have to grind to level.
@@ -27,7 +27,7 @@ Level cap 100 for every skill is an existing engineering lock in `HANDOFF.md`. T
 | Mining, Foraging, Farming | **NOW** (live) | Each gets its own skill tree |
 | Acrobatics | **NOW** (live) | Skyy's mcMMO skill. Fall XP (Skyy 2026-09-23): the further you fall WITHOUT dying the more XP - jumping from heights is a real grind; no XP for water or any fall whose damage is negated (safe no-damage drops pay nothing) |
 | Archery, Swordsmanship, Sorcery | **NOW** (live) | Class weapon skills |
-| Smithing | **KEEP** | Leveled by reforging and adding powders, **and by smelting in the furnace** (vanilla Furnace + the SkyySacks Furnace tab) |
+| Smithing | **KEEP** | Leveled by reforging and adding powders, **and by smelting in the furnace** (vanilla Furnace + the SkyySacks Furnace tab). **2026-09-24:** higher Smithing level = higher **smithing rarity**, which raises the chance of crafting a higher-rarity item. Not built |
 | Alchemy | **BUILD NOW** | **Table use only**: the Alchemy Bench accessory is removed; the vanilla Alchemy Bench draws ingredients from your sacks |
 | Exploration | **BUILD NOW** (SkyyExploration) | Skyy's call 2026-09-24 in SkyyExploration-Plan.md: stamina + coins per level, world chests, chest luck, map coverage, zone discovery, titles, its own tree; server-only parts later |
 | Skill tree per gathering skill | **YES** | Mining, Foraging, Farming (Fishing's tree waits with Fishing) |
@@ -56,6 +56,12 @@ Class Level (ability points) is not this skill. The `SkyySkills` 0.3 spike still
 
 Gathering skills do not care which class you are.
 
+## Smithing rarity (locked 2026-09-24)
+
+Smithing stays the headline craft skill. Smelting ore into bars still pays its XP, and mining still does not. Reforging and powders are still the later XP sources.
+
+A higher Smithing level also raises a **smithing rarity** stat. That stat increases the chance that a craft comes out at a higher rarity. It is an effect of the level, not a new way to gain XP. SkyySkills 0.4 does not have the stat. How big the chance is, and which rarities it can reach, are open (`SkyyGear-Plan.md`). A higher item rarity also lets a reforge roll wider and higher; that rule lives on the item, not in this skill's XP table.
+
 ## Soft gate with a ceiling
 
 Uneven progression is allowed. You can push one skill ahead of the others.
@@ -66,7 +72,7 @@ This is not a hard rule that every skill must advance together, and it is not un
 
 ## Status 2026-09-24
 - Built: Mining, Foraging, Farming, Acrobatics (fall XP: bigger survived falls pay more; safe drops and water pay nothing), Archery /
-  Swordsmanship / Sorcery, Alchemy, Smithing (smelting only - mining never gives Smithing XP), Cooking (graded dishes, SkyyCooking mod),
+  Swordsmanship / Sorcery, Alchemy, Smithing (smelting only - mining never gives Smithing XP; smithing rarity is locked and not built), Cooking (graded dishes, SkyyCooking mod),
   Exploration (SkyyExploration mod, next deploy). The shared Combat row is retired.
 - Skill trees (SkyyTrees): Mining, Foraging, Farming, Cooking; next deploy adds Acrobatics (with max Stamina nodes) and a draft Exploration tree.
 - Next: felled trees pay per log (research/Tree-Fall-Spec.md), Tree Feller breaks sideways on the same height, a Double Jump node

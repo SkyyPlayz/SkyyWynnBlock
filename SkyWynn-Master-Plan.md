@@ -104,7 +104,7 @@
 | Raids/boss fights | Kuudra, slayer bosses | 4 raids, boss altars | Boss altars (cheap) + slayers midgame + raids endgame |
 | Player market | Auction House + Bazaar | Trade Market | SkyBlock model wins: AH for uniques + Bazaar for commodities |
 | Enchanting | Table+books+anvil | (minimal; IDs instead) | SkyBlock enchanting |
-| Rarity tiers | Common→Divine | Normal→Mythic | One 7-tier ladder |
+| Rarity tiers | Common→Divine | Normal→Mythic | Every gear item has a tier (2026-09-24). The name list is open — this 7-tier ladder is not the lock |
 | Pets | Pet menu, levels, perks | (minor) | SkyBlock pets |
 | Events | Mayors, festivals | World Events | BOTH: rotating "mayor" buffs + Wynn world events |
 | Parties/social | Co-op, parties | Parties, GUILDS+territory | Parties + guilds (bank, XP, seasons) in the core loop; territory war later |
@@ -135,7 +135,7 @@
 ### SKYY'S HOUSE RULES (from the brief)
 1. Progression is SkyBlock-style **multi-skill** with a **soft gate that has a ceiling** (refined 2026-09-23): uneven progress is allowed, but drifting too far on one skill slows you until the others catch up. Not a hard "all skills advance together" rule, and not unlimited neglect.
 2. **Collections gate recipes**, but **money can bypass** gates in the **early game and the first half of mid game** (2026-09-24). Toward late game those items can no longer be bought or sold (bazaar/market), so that progression is earned. Many items also have level requirements. The exact cutoff per collection/tier, and which level type gates an item (skill vs class vs combat), are open. The older "until ~end of midgame, no endgame bypass" line is the 2026-09-23 wording.
-3. **Smithing** = new headline skill: Wynn-style crafting (materials + ingredients) + SkyBlock-style reforging, one discipline.
+3. **Smithing** = new headline skill: Wynn-style crafting (materials + ingredients) + SkyBlock-style reforging, one discipline. **2026-09-24:** a higher Smithing level raises a smithing rarity stat, which raises the chance of crafting a higher-rarity item.
 4. Quick Craft but better: craft-from-storage (we already built vault→bench linking in SkyyHighPack — this is the prototype!).
 
 ---
@@ -147,7 +147,7 @@
 SkyBlock's skill tree, kept ambitious, **plus** extras SkyBlock does not have. Trim later. Do not drop Smithing or Exploration in this pass.
 
 **Gathering:** Farming • Mining • Foraging • Fishing
-**Artisan:** **Smithing** (weapons/armor craft + reforge — keep) • Enchanting • Alchemy • Cooking (its own skill for now)
+**Artisan:** **Smithing** (weapons/armor craft + reforge — keep; Smithing level raises a smithing rarity stat that improves the chance of a higher-rarity craft, 2026-09-24) • Enchanting • Alchemy • Cooking (its own skill for now)
 **Life / meta:** Taming (pets) • Carpentry (furniture / quickcraft) • **Exploration** (discoveries, quests, caves — keep) • Hunting • Runecrafting (cosmetic) • Social (cosmetic)
 **Later, not the spine:** Dungeoneering (a skill, not the dungeon climb — see 2B)
 
@@ -182,7 +182,7 @@ These sit on the loop above. They do not replace it.
 
 - Death stays **10–25% coin loss**.
 - **Magic Bags / sacks** are core QoL. **Accessories and magical power** are core, not later-game.
-- Every item has **rarity and stats**. A **reforge swaps bonuses**. **Wynn's five elements** and **powders** are in; powders replace SkyBlock runes.
+- Every item has **rarity and stats**. A **reforge swaps bonuses**, and a higher rarity lets that reforge roll wider and higher (2026-09-24). **Every gear item** also has a level requirement. The rarity names and colours are not locked. **Wynn's five elements** and **powders** are in; powders replace SkyBlock runes. Mobs drop weapons and armor **unidentified**; identifying them reveals the rolled IDs (where, how, and cost are open). Combat armor and weapons copy Wynncraft. Gathering armor is SkyBlock-style farming and foraging sets (mining likely the same). Wardrobe + loadouts are in, as placeholders, not on the inventory screen. Proposed and not locked: combat gear uses Wynn skill points; gathering sets use SkyBlock stats (fortune, speed).
 - **Coin-bypass** is tiered (2026-09-24): early game and the first half of mid game only. Toward late game those items cannot be bought or sold. Many items have level requirements. The 2026-09-23 "midgame wall, no endgame bypass" line is the older wording.
 - **The Garden is parked** (2026-09-24). Farming stays on the private island and on the zone islands for now. The 2026-09-23 "most farming is in the Garden" lock is reversed.
 - **SkyWynn** is the quick name. The repo stays **SkyyWynnBlock**.
@@ -221,11 +221,11 @@ These sit on the loop above. They do not replace it.
 *Re-cut 2026-09-23 night. Parties and guilds are core, not P7. The world phase is the island chain, not hub + open zones.*
 
 - **P0 — Foundation spike:** per-player instanced island (the progression home and the creative building surface); coin ledger + one NPC shop; ItemStack metadata stat-roll survives save/reload. GO/NO-GO gate. (Part 4 adds an Encounter Manager spike once that tooling is in the build we ship.)
-- **P1 — Core loop:** the ambitious skill list with **no shared Combat skill** (launch weapon skills: Archery, Swordsmanship, Sorcery), soft gate with a ceiling, collections tracker + recipe locks + **tiered coin bypass** (early game and the first half of mid game; late-game items cannot be bought or sold — cutoff still open), **Magic Bags / sacks** (core QoL), quickcraft v2. **Profiles** are the save and the class selector (new class = new profile and new island from zero). **Default cap is 6** (2026-09-24; SkyyProfiles 0.1 still caps at 4). **Parties and guilds land here** (party play, plus guild membership / bank / XP / seasons). Territory war does not. **Accessories + magical power** are core here, not a later-game system. Core items start here too: every item has rarity and stats, reforges swap bonuses, Wynn's five elements and powders (powders replace SkyBlock runes). Many items will have level requirements (which level type is open). The P0 metadata spike is what makes the rolls survivable.
+- **P1 — Core loop:** the ambitious skill list with **no shared Combat skill** (launch weapon skills: Archery, Swordsmanship, Sorcery), soft gate with a ceiling, collections tracker + recipe locks + **tiered coin bypass** (early game and the first half of mid game; late-game items cannot be bought or sold — cutoff still open), **Magic Bags / sacks** (core QoL), quickcraft v2. **Profiles** are the save and the class selector (new class = new profile and new island from zero). **Default cap is 6** (2026-09-24; SkyyProfiles 0.1 still caps at 4). **Parties and guilds land here** (party play, plus guild membership / bank / XP / seasons). Territory war does not. **Accessories + magical power** are core here, not a later-game system. Core items start here too: every item has rarity and stats, reforges swap bonuses (higher rarity = a better roll range), Wynn's five elements and powders (powders replace SkyBlock runes). Every gear item has a level requirement (which level type is open) and a rarity tier (the name list is open). Unidentified weapon and armor drops, and wardrobe + loadouts, are locked in `SkyyGear-Plan.md` and are not built in this phase's jars. The P0 metadata spike is what makes the rolls survivable.
 - **P2 — Island life:** private island as progression home **plus** free creative building; co-op so players can share and visit; size tiers and upgrades; first minion types and minion upgrades. Minions help; they are not required to progress. **Farming stays on this island and on the zone islands.** The **Garden** (dedicated farming island) is **parked** (2026-09-24), not part of this phase.
 - **P3 — Economy:** Bazaar (order book) + Auction House on our UI framework, bank+interest
 - **P4 — Combat depth:** classes v1 (**Archer, Warrior, Mage**), per-weapon class skills, ability trees v1 (~25 nodes each), skill points, Wynn's five elements on gear. **Assassin and Shaman** are the follow-on for this track, not the launch set. **Berserker is PENDING** (2026-09-24): the owner wants it back, and it is not placed before or after Assassin/Shaman until the owner locks details with the builder. SkyyClasses 0.1.4 does not include it. **Magic implementation is open** — do not build class abilities as Chapter 1 rune gating until that thread closes. **Slayers** start in this combat loop; they are core, not side content.
-- **P5 — Gear game:** Smithing (ingredients+crafting) deepens the core ID / reforge / powder layer. Smithing stays; it is not trimmed. Accessories are already core in P1; this phase does not postpone them.
+- **P5 — Gear game:** Smithing (ingredients+crafting) deepens the core ID / reforge / powder layer. Smithing stays; it is not trimmed. A higher Smithing level raises **smithing rarity**, which raises the chance of crafting a higher rarity. Combat armor and weapons copy Wynncraft. Gathering gear is SkyBlock-style farming and foraging armor (mining likely the same). Mobs drop unidentified weapons and armor. Wardrobe + loadouts (save and quick-swap) live here as placeholders, not on the inventory screen. Accessories are already core in P1; this phase does not postpone them. Exact rarity names, identify cost, powder slot counts, and what a loadout saves are still open (`SkyyGear-Plan.md`).
 - **P6 — Island chain (the leveling spine):** hub remains spawn / gathering / social. Zone islands, one per Hytale zone, with biome difficulty ramps and a finish-to-unlock rule. Quests. **Story-beat dungeons** woven through the chain. Slayers continue as core-loop fights along the way. Not hub + three open zones. **2026-09-24:** much of this chain is server-side hand-built shared worlds. Solo players use the planned **SkyyWorldGen** mod (name TBD, not started) to auto-generate flying islands split by zone via World Gen 2. That capability is still an open research item.
 - **P7 — Capstone and side content:** one endgame **capstone** dungeon after the last island. Extra dungeons, raids, world events, lootrun-lite, guild territory, mayors/events — side content, not the spine. Slayers are not in this pile.
 
@@ -257,7 +257,7 @@ These sit on the loop above. They do not replace it.
 1. **Death penalty** stays **10–25%** coin loss.
 2. **Sacks / Magic Bags** stay, and they are **core QoL**.
 3. **Accessories + magical power** are **core**, not later-game.
-4. **IDs + reforges** are **core**. Every item has rarity and stats. Reforge swaps bonuses.
+4. **IDs + reforges** are **core**. Every item has rarity and stats. Reforge swaps bonuses. **Tightened 2026-09-24** (`SkyyGear-Plan.md`): every gear item has a level requirement and a rarity tier; higher rarity means a better reforge roll range; mobs drop unidentified weapons and armor; Smithing level feeds a smithing rarity stat; combat gear copies Wynncraft; gathering armor is SkyBlock-style; wardrobe + loadouts are in (placeholders, not on the inventory screen). Rarity names, level type, identify cost, and loadout contents stay open.
 5. **Wynn's five elements + powders.** Powders replace SkyBlock runes.
 6. **Co-op islands:** players can share and visit each other's private islands.
 7. **Slayers** are **core loop**, not side content.

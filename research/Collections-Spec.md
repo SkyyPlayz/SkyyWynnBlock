@@ -703,7 +703,7 @@ Setup: deploy SkyyCollections 0.2 with the rest of the set. Watch the first join
 2. Rock grouping (Cobblestone, Sandstone ×3 colours, Shale, Slate, Basalt, Volcanic, Marble, Quartzite, Limestone), and Dirt not being a collection.
 3. The curve thresholds, the coin table and the skill XP lumps. Combat paying double coins instead of XP.
 4. Boom Powder and Wool in Combat (matching the bags) or in Farming.
-5. Coin-bypass. The 0.2 walls (Bulk V / Standard IV / Rare III / Elite none) and the ×5 Bazaar price are what shipped. The 2026-09-24 lock replaces the wall with a tiered cutoff (early game + first half of mid game, then no buy and no sell) plus level requirements on many items. Exact cutoff per collection/tier, and skill vs class vs combat level, are open. Do not retune 0.2 from this line until those are answered.
+5. Coin-bypass. The 0.2 walls (Bulk V / Standard IV / Rare III / Elite none) and the ×5 Bazaar price are what shipped. The 2026-09-24 lock replaces the wall with a tiered cutoff (early game + first half of mid game, then no buy and no sell) plus level requirements on many items. Later the same day, every **gear** item got a level requirement (`SkyyGear-Plan.md`). Exact cutoff per collection/tier, and skill vs class vs combat level, are open. Do not retune 0.2 from this line until those are answered.
 6. Whether the SkyySkills double drops count (via `coll:fn:add`, the SkyBlock-like choice).
 7. Classless kills count: yes by default.
 8. SkyySacks follow-up: Medium/Large bags only through collections.

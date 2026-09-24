@@ -3,7 +3,7 @@
 *Fill the ☐ DECISION column: **TAKE** / **SKIP** / **MODIFY (how)** / **LATER (which phase)**.*
 *"Draft call" = Claude's suggestion from the master plan — overrule freely.*
 
-**Already locked (don't re-decide):** public server • hand-built world on the server (the zone island chain is hand-built shared worlds there; solo generation is the planned **SkyyWorldGen** mod, 2026-09-24) • Archer/Warrior/Mage first, Assassin and Shaman later (Wynn's five stay). **Berserker is back on the roster, status PENDING** (2026-09-24 — details and timing wait on a talk with the builder; not slotted before or after Assassin/Shaman) • default **6 profiles**, with in-game ways to raise the cap (method TBD) • coin-bypass of collections is **tiered** (early game and the first half of mid game; late game those items cannot be bought or sold) • many items have level requirements (which level type is open) • **Garden is parked**; farming stays on the main islands for now • death = 10–25% coin loss • clean-room code • name **SkyWynn** (quick reference); repo name stays **SkyyWynnBlock** • the call locks below, as tightened by the 2026-09-24 change notes. Ability-key casting is the standing input note from 2026-09-21. The magic system behind it is an open thread (batch 2), not a lock.
+**Already locked (don't re-decide):** public server • hand-built world on the server (the zone island chain is hand-built shared worlds there; solo generation is the planned **SkyyWorldGen** mod, 2026-09-24) • Archer/Warrior/Mage first, Assassin and Shaman later (Wynn's five stay). **Berserker is back on the roster, status PENDING** (2026-09-24 — details and timing wait on a talk with the builder; not slotted before or after Assassin/Shaman) • default **6 profiles**, with in-game ways to raise the cap (method TBD) • coin-bypass of collections is **tiered** (early game and the first half of mid game; late game those items cannot be bought or sold) • many items have level requirements, and every gear item has one (which level type is open) • **Garden is parked**; farming stays on the main islands for now • death = 10–25% coin loss • clean-room code • name **SkyWynn** (quick reference); repo name stays **SkyyWynnBlock** • the call locks below, as tightened by the 2026-09-24 change notes. Ability-key casting is the standing input note from 2026-09-21. The magic system behind it is an open thread (batch 2), not a lock.
 
 ## Call lock notes (2026-09-23)
 
@@ -47,6 +47,14 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 3. **Coin-bypass is tiered.** Tightens row 1.2 and batch 2 item 10. Coins can bypass collections in the **early game** and the **first half of mid game**. Toward late game you hit a wall: those items can no longer be bought or sold on the bazaar / market, so that progression has to be earned. **Also locked:** many items will have level requirements. **Open:** the exact cutoff per collection and per tier; which level type gates an item (skill vs class vs combat level). Code follow-up only: SkyyCollections 0.2 still sells bypass on the older per-curve walls (`bypass.walls` = Bulk through V, Standard through IV, Rare through III, Elite never). That is not this cutoff, and it does not take items off the market. SkyyBazaar 0.1.1 has no late-game sell wall.
 4. **Zone island chain, two ways to build it.** The spine stays the zone island chain (batch 1 item 2, row 7.1): one floating island per Hytale zone, biomes ramp as you cross it, finish it before the next unlocks. Hub stays spawn / social. **Much of the chain will be server-side** (hand-built shared worlds). For **solo** players, a new planned mod uses Hytale's World Gen 2 to auto-generate the world as flying islands split by zone. Placeholder name **SkyyWorldGen** (name TBD). Status: **planned, not started.** **Open:** research on whether World Gen 2 can do this. Do not treat that research as done.
 5. **Garden parked.** Reverses batch 2 item 9 and the "most farming is in the Garden" reading of row 3.8. The Garden (dedicated farming island) moves to the back burner. Farming stays on the main islands for now (the private island and the zone chain).
+6. **SkyyGear (same day, later).** Locked in `SkyyGear-Plan.md`. These tighten rows 5.1, 5.3, 5.4, 5.6, 5.14, and 10.10. They do not change any jar.
+   - Every **gear** item has a level requirement and a rarity tier (Wynn-style). This tightens the "many items will have level requirements" line in note 3 for gear. **Open:** which level type (skill vs class vs combat). The exact rarity list and colours are also open (not the Common→Divine ladder).
+   - Higher Smithing level raises a **smithing rarity** stat, which raises the chance of crafting a higher-rarity item.
+   - Higher rarity means a reforge can roll wider and higher. A reforge still swaps bonuses.
+   - Mobs drop **unidentified** weapons and armor. Identifying them reveals the rolled IDs. **Open:** where, how, and the cost.
+   - Combat armor and weapons copy Wynncraft. Gathering gear is SkyBlock-style farming and foraging armor sets; mining armor is likely the same. **Proposed, not locked:** combat gear uses Wynn's five skill points (Str/Dex/Int/Def/Agi); gathering sets use SkyBlock stats (fortune, speed).
+   - **Wardrobe + loadouts** like Hypixel SkyBlock (save a set, quick-swap). Placeholders are fine. Nothing on the inventory screen (10.22). **Open:** what a loadout saves.
+   - Also still open: whether drops can reach the top rarities or some tiers are craft-only; powder slots and drops; bazaar vs auction house for rolled items.
 
 ---
 
@@ -55,11 +63,11 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | # | Element | From | Draft call | ☐ DECISION |
 |---|---|---|---|---|
 | 1.1 | Collections (self-gathered counts → recipe unlocks) | SkyBlock | TAKE — the backbone | |
-| 1.2 | Coin-bypass of collection gates until mid-game wall | Skyy's rule | TAKE — steep prices, endgame = no bypass | ✔ MODIFY (2026-09-24) — **tiered.** Coins bypass collections in the early game and the first half of mid game. Toward late game those items cannot be bought or sold (bazaar/market); that progression is earned. Many items also have level requirements. **Open:** exact cutoff per collection/tier; level type (skill vs class vs combat). The 2026-09-23 "until the midgame wall" line is the older wording |
+| 1.2 | Coin-bypass of collection gates until mid-game wall | Skyy's rule | TAKE — steep prices, endgame = no bypass | ✔ MODIFY (2026-09-24) — **tiered.** Coins bypass collections in the early game and the first half of mid game. Toward late game those items cannot be bought or sold (bazaar/market); that progression is earned. Many items also have level requirements; **every gear item** has one (change note 6). **Open:** exact cutoff per collection/tier; level type (skill vs class vs combat). The 2026-09-23 "until the midgame wall" line is the older wording |
 | 1.3 | Multi-skill soft-gating (neglect a skill → held back) | Skyy's rule | TAKE | ✔ Soft gate **with a ceiling**: uneven progress is allowed; drift too far and gains slow until you catch up. Not a hard togetherness gate, and not unlimited neglect |
 | 1.4 | SkyBlock account level (whole-profile number) | SkyBlock | TAKE (cheap, good goalpost) | |
 | 1.5 | Class Level (char level → ability points) | Wynn | TAKE | |
-| 1.6 | Skill Points (STR/DEX/INT/DEF/AGI) + gear SP requirements | Wynn | TAKE — but maybe 5 stats is a lot on top of skills+abilities? | |
+| 1.6 | Skill Points (STR/DEX/INT/DEF/AGI) + gear SP requirements | Wynn | TAKE — but maybe 5 stats is a lot on top of skills+abilities? | **PROPOSED 2026-09-24, not locked** — combat gear would use these five; gathering sets would use SkyBlock stats (fortune, speed). Waiting on the owner. See SkyyGear-Plan.md |
 | 1.7 | Level-gated world zones | Wynn | TAKE | ✔ MODIFY — not the spine. Replaced by the zone island chain (7.1). Hub is spawn / social only |
 | 1.8 | Profiles (multiple saves per account) | SkyBlock | LATER — public server may not want it | ✔ TAKE — full SkyBlock-style profiles. A swap is a different island and different everything. **Default cap 6** (2026-09-24, raised from 4). In-game ways to raise it higher; method TBD. SkyyProfiles 0.1 still caps at 4 |
 | 1.9 | Multiple class slots per account | Wynn | TAKE (replaces 1.8?) | ✔ MODIFY — the profile is the class selector. A new class is a new profile and a new island from zero. Not several classes on one island. Roster and combat-only lock (6.1) still apply. Default cap **6** profiles (1.8); raising it in game is TBD |
@@ -78,7 +86,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | Mining, Foraging, Farming | **NOW** (live) | Each gets its own skill tree |
 | Acrobatics | **NOW** (live) | Skyy's mcMMO skill. Fall XP (Skyy 2026-09-23): the further you fall WITHOUT dying the more XP - jumping from heights is a real grind; no XP for water or any fall whose damage is negated (safe no-damage drops pay nothing) |
 | Archery, Swordsmanship, Sorcery | **NOW** (live) | Class weapon skills |
-| Smithing | **KEEP** | Leveled by reforging and adding powders, **and by smelting in the furnace** (vanilla Furnace + the SkyySacks Furnace tab) |
+| Smithing | **KEEP** | Leveled by reforging and adding powders, **and by smelting in the furnace** (vanilla Furnace + the SkyySacks Furnace tab). **2026-09-24:** a higher Smithing level raises a smithing rarity stat, which raises the chance of crafting a higher-rarity item. Not in SkyySkills 0.4 |
 | Alchemy | **BUILD NOW** | **Table use only**: the Alchemy Bench accessory is removed; the vanilla Alchemy Bench draws ingredients from your sacks |
 | Exploration | **BUILD NOW** (SkyyExploration) | Skyy's call 2026-09-24 in SkyyExploration-Plan.md: stamina + coins per level, world chests, chest luck, map coverage, zone discovery, titles, its own tree; server-only parts later |
 | Skill tree per gathering skill | **YES** | Mining, Foraging, Farming (Fishing's tree waits with Fishing) |
@@ -99,7 +107,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 2.3 | Foraging / Woodcutting | both | TAKE | ✔ Kept on the ambitious list |
 | 2.4 | Fishing | both | TAKE | ✔ Kept on the ambitious list |
 | 2.5 | Combat (weapon XP, separate from Class Level) | SkyBlock | TAKE | ✔ MODIFY — **no shared Combat skill.** Per-weapon class skills; combat XP goes into the equipped class's weapon skill. Class Level (1.5) stays separate |
-| 2.6 | **Smithing** (Wynn ingredient-crafting + SkyBlock reforging, one skill) | Skyy's invention | TAKE — headline feature | ✔ KEEP — do not drop |
+| 2.6 | **Smithing** (Wynn ingredient-crafting + SkyBlock reforging, one skill) | Skyy's invention | TAKE — headline feature | ✔ KEEP — do not drop. **2026-09-24:** Smithing level feeds a smithing rarity stat (higher level, better chance to craft a higher rarity). Smelting XP stays |
 | 2.7 | Enchanting | SkyBlock | TAKE | ✔ Kept on the ambitious list |
 | 2.8 | Alchemy (potions) | both | TAKE | ✔ Kept on the ambitious list |
 | 2.9 | Cooking (separate from Alchemy?) | Wynn | MERGE into Alchemy? or own skill | ✔ TAKE as its own skill for now; trim later if we merge it |
@@ -141,12 +149,12 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 
 | # | Element | From | Draft call | ☐ DECISION |
 |---|---|---|---|---|
-| 5.1 | 7-tier rarity ladder (Common→Divine style) | fused | TAKE | ✔ Core — every item has a rarity |
+| 5.1 | 7-tier rarity ladder (Common→Divine style) | fused | TAKE | ✔ MODIFY (2026-09-24) — every **gear** item has a rarity tier (and a level requirement). The Common→Divine ladder is **not** locked. **Open:** the list and colours (Wynn Normal/Unique/Rare/Legendary/Fabled/Mythic/Set vs SkyyRolls Common..Legendary) |
 | 5.2 | Recombobulator-style rarity upgrader | SkyBlock | TAKE (endgame sink) | |
-| 5.3 | Identifications (RNG rolled stats on dropped gear + re-roll sink) | Wynn | TAKE | ✔ Core — every item has stats |
-| 5.4 | Reforging (prefix via anvil + reforge stones) | SkyBlock | TAKE — folded into Smithing | ✔ Core — reforge swaps bonuses. Still folded into Smithing |
+| 5.3 | Identifications (RNG rolled stats on dropped gear + re-roll sink) | Wynn | TAKE | ✔ Core — every item has stats. **2026-09-24:** mobs drop unidentified weapons and armor; identify to reveal the rolled IDs. **Open:** where, how, and the cost. SkyyRolls 0.1.3 shows rolls immediately (jar, not this rule) |
+| 5.4 | Reforging (prefix via anvil + reforge stones) | SkyBlock | TAKE — folded into Smithing | ✔ Core — reforge swaps bonuses. Still folded into Smithing. **2026-09-24:** higher rarity = better reforge rolls (wider and higher range). How you get a reforge is still open |
 | 5.5 | Both 5.3 AND 5.4 on the same item? | — | DECIDE: drops get IDs, crafted gets reforges? both everywhere? | ✔ Both, on items in general. Stats stay on the item; reforge swaps the bonuses. Not a drops-versus-crafted split |
-| 5.6 | Ingredient-based crafting (materials + ingredients → custom stats) | Wynn | TAKE — the Smithing core | |
+| 5.6 | Ingredient-based crafting (materials + ingredients → custom stats) | Wynn | TAKE — the Smithing core | ✔ Smithing stays the craft. **2026-09-24:** smithing rarity (from Smithing level) raises the chance the craft lands a higher rarity |
 | 5.7 | Powders (elemental socketables T1–T6) | Wynn | TAKE | ✔ TAKE — powders replace SkyBlock runes |
 | 5.8 | Elements (5-element damage/defense matrix) | Wynn | TAKE "elements-lite" v1 | ✔ TAKE Wynn's five. Not elements-lite, and not a swap to Hytale's set (9.3) |
 | 5.9 | Enchanting (table + books + anvil + ultimates) | SkyBlock | TAKE | |
@@ -154,7 +162,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 5.11 | Set items (bonus for wearing the set) | Wynn | TAKE (cheap, fun) | |
 | 5.12 | Durability: only on crafted gear (Wynn) vs all gear vs none | Wynn | DECIDE — pack currently has durability-off mod! | |
 | 5.13 | Pets (leveling companions, rarity, pet items) | SkyBlock | TAKE | |
-| 5.14 | Wardrobe / Ender-chest / backpacks | SkyBlock | TAKE | |
+| 5.14 | Wardrobe / Ender-chest / backpacks | SkyBlock | TAKE | ✔ **Wardrobe + loadouts** (2026-09-24) — save a gear set and quick-swap, SkyBlock style. Placeholders OK. Not on the inventory screen (10.22). **Open:** armor only vs weapons / accessories / HUD. Ender chest and backpacks are not part of this lock |
 | 5.15 | Tomes & Aspects (raid-earned class modifiers) | Wynn | LATER (raids phase) | |
 
 ## 6. COMBAT & CLASSES
@@ -165,7 +173,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.2 | Archetypes (3 themed sub-builds per class) | Wynn | v1: 1–2 archetypes per class, 3rd later | |
 | 6.3 | Ability tree size: Wynn has 70+ nodes/class | Wynn | ~25 nodes/class v1 — enough? | |
 | 6.4 | Mana / intelligence resource for abilities | Wynn | TAKE | |
-| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | |
+| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | **PROPOSED 2026-09-24, not locked** — do not merge yet. Combat gear would use Wynn skill points (1.6); gathering sets would use SkyBlock stats such as fortune and speed. Waiting on the owner |
 | 6.6 | Healer/Tank dungeon-class variants (SkyBlock Catacombs style) | SkyBlock | SKIP? classes already cover roles | |
 | 6.7 | Slayers (spawn-a-boss quest chains + slayer XP) | SkyBlock | TAKE (midgame) | ✔ **Core loop**, not side content. Not the leveling spine (that stays the island chain) |
 | 6.8 | Boss altars (summon boss with materials) | Wynn | TAKE (cheap early bosses) | |
@@ -235,7 +243,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 10.7 | Live prices + full item appraisal in tooltips | TAKE (we own the bazaar data) | |
 | 10.8 | Craftable-now list + craft-from-storage + confirm guards (Quickcraft v2 spec) | TAKE | |
 | 10.9 | Rarity-tinted slots, slot-text numbers, tooltip cooldown timers | TAKE | |
-| 10.10 | Loadouts + wardrobe hot-swap (keybinds) | TAKE | |
+| 10.10 | Loadouts + wardrobe hot-swap (keybinds) | TAKE | ✔ LOCKED (2026-09-24) — wardrobe + loadouts, SkyBlock style. Placeholders on our pages. Nothing on the inventory screen (10.22). **Open:** what a loadout saves |
 | 10.11 | Native profit/drop trackers + item pickup log HUD | TAKE | |
 | 10.12 | Fully draggable/scalable player HUD (scoreboard, bars, trackers) | TAKE — generalize /packsettings pattern | |
 | 10.13 | Radial quick-action menu (hold key → wheel) | DECIDE — depends on Hytale input support | |
@@ -265,4 +273,4 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 11.3 | ... | | |
 
 ---
-*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, and they split how the island chain is built. Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*
+*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*

@@ -31,7 +31,7 @@ No player installs anything; the QoL that takes Hypixel players 5 mods to get is
 *(✔ = confirmed present in Skyy's configs)*
 
 ### A. INVENTORY CORE (the "changes how inventory works" part)
-- ✔ **Extra slots visible in inventory** (Skyblocker `skyblockInventoryScreen`): equipment/accessory slots shown right in the inventory screen → SkyWynn: native **gear + accessory + pet slots** in the inventory UI from day one
+- ✔ **Extra slots visible in inventory** (Skyblocker `skyblockInventoryScreen`): equipment/accessory slots shown right in the inventory screen → SkyWynn: native **gear + accessory + pet slots** on our own pages. **Not on the inventory screen** until that screen can change (Decisions 10.1 / 10.22)
 - ✔ **Slot locking** (Firmament): lock a slot so it can't be dropped/sold/misclicked; **item protection** (Skyblocker) marks whole items un-sellable/un-droppable
 - ✔ **One-key container sorting** (InventorySorter)
 - ✔ **Inventory search** (Skyblocker): type to highlight matching items across open UI
@@ -43,10 +43,10 @@ No player installs anything; the QoL that takes Hypixel players 5 mods to get is
 - ✔ **Focus mode** (SkyHanni): declutter items' names to essentials
 
 ### B. QUICK ACCESS (the "buttons for quick accessing things" part)
-- ✔ **Inventory buttons** (Firmament, hover-text ON, shown on ALL screens): a configurable strip of buttons around every inventory/menu — one click to open storage, wardrobe, crafting, AH, bazaar, etc. → SkyWynn: native **edge-button rail on every window, player-configurable**
+- ✔ **Inventory buttons** (Firmament, hover-text ON, shown on ALL screens): a configurable strip of buttons around every inventory/menu — one click to open storage, wardrobe, crafting, AH, bazaar, etc. → SkyWynn: native **edge-button rail on our pages and other windows, player-configurable**. The inventory screen itself still waits (10.22)
 - ✔ **Radial menu** (Skyblocker): hold-key wheel for quick actions
 - ✔ **Item hotkeys** (Firmament): press a key to use/open a specific item from anywhere
-- ✔ **Wardrobe keybinds** (Firmament) + **custom wardrobe UI** + **loadouts** (SkyHanni): full gear swaps in one press
+- ✔ **Wardrobe keybinds** (Firmament) + **custom wardrobe UI** + **loadouts** (SkyHanni) → SkyWynn **locked 2026-09-24**: wardrobe + loadouts, SkyBlock style (save a set, quick-swap). Placeholders on our pages. Nothing on the inventory screen (10.22). **Open:** armor only vs weapons, accessories, and HUD (`SkyyGear-Plan.md`)
 - ✔ **GFS — "get from sack"** (SkyHanni): pull materials from bulk storage via command/hotkey without opening anything
 - ✔ **Quick commands / command shortcuts** (Firmament + Skyblocker)
 - ✔ **Storage overlay** (Firmament + SkyHanni + Skyblocker): ALL storage pages (ender chest + backpacks) on one screen, searchable, click-through
@@ -94,8 +94,8 @@ No player installs anything; the QoL that takes Hypixel players 5 mods to get is
 ---
 
 ## Distilled: the SkyWynn "QoL bill of rights" (build-in from day one)
-1. Equipment/accessory/pet **slots in the inventory screen**, not hidden in menus
-2. **Button rail** on every window (storage, wardrobe, crafting, AH, bazaar, island) — configurable
+1. Equipment/accessory/pet **slots on our own pages** (the inventory screen waits — 10.1 / 10.22)
+2. **Button rail** on our pages and other windows (storage, wardrobe, crafting, AH, bazaar, island) — configurable. Not on the inventory screen (10.22)
 3. **Slot locking + item protection** as a first-class server feature (protects from OUR sell/drop UIs too)
 4. **Search everywhere**: inventory highlight-search, storage overlay search, AH/bazaar search with history
 5. **Sort button / sort key** on every container
@@ -103,7 +103,7 @@ No player installs anything; the QoL that takes Hypixel players 5 mods to get is
 7. **Prices + appraisals in tooltips** (we own the bazaar — live data is free)
 8. **Craftable-now list** + craft-from-storage + confirmations = Quickcraft v2
 9. **Rarity-tinted slots, slot-text numbers, live cooldown timers in tooltips**
-10. **Loadouts + wardrobe hotswap**
+10. **Loadouts + wardrobe hotswap** — locked 2026-09-24 as placeholders on our pages, not on the inventory screen. What a loadout saves is still open
 11. **Per-activity profit/drop trackers** + item pickup log as native HUD widgets
 12. **Player-movable HUD**: scoreboard, bars, trackers all draggable/scalable (our /packsettings window pattern, generalized)
 13. **Data API for client modders** (the HypixelModAPI lesson)
@@ -136,7 +136,7 @@ No player installs anything; the QoL that takes Hypixel players 5 mods to get is
 **Server-driven UI is first-class.** `CustomUIPage`/`InteractiveCustomUIPage` + `CustomUIHud` (our Void Vault and /packsettings already run on it). Event bindings include **`KeyDown`** and per-slot hover (`SlotMouseEntered/Exited`) — so:
 - **Hover-search hotkeys: fully server-side.** In OUR windows, the server knows the hovered slot and can listen for chosen keys. Keys are per-player rebindable in our settings (stored server-side). No client mod needed. NOT possible: global hotkeys in the open world or inside the vanilla E-screen.
 - **Vanilla inventory screen (E)**: client-built today; cannot be edited server-side. Plan: our own richer inventory page; re-evaluate replacing the E-screen after the NoesisGUI server-UI rework ships (1–2 mo).
-- **UI BUILD FREEZE (Skyy):** don't build UI layouts until the NoesisGUI rework lands. Locked layout preference for then: **all facility buttons live IN the inventory screen** (enchanting/anvil/AH/bank/bazaar/storage/wardrobe...), each opening its menu; hotbar-end menu is the fallback only if the E-screen can't be replaced.
+- **UI BUILD FREEZE (Skyy):** don't build UI layouts until the NoesisGUI rework lands. Locked layout preference for then: **all facility buttons live IN the inventory screen** (enchanting/anvil/AH/bank/bazaar/storage/wardrobe...), each opening its menu; hotbar-end menu is the fallback only if the E-screen can't be replaced. **Until then (10.22, and the 2026-09-24 wardrobe lock):** placeholders on our pages. Wardrobe and loadouts are locked now, and they stay off the inventory screen.
 - **HUD (Skyy, locked):** sidebar/HUD widgets (location, balance, quest info, skill bars, trackers) are server-composed per player → ship a Lunar-style **HUD edit mode**: every widget individually movable/scalable/toggleable; a few preset bundles offered, with "split bundle into individual widgets" always available. `CustomUIHud` z-order + per-player state makes this pure data.
 - **Vanilla HUD elements** (health, hotbar, crosshair) are NOT server-movable. A standalone client-side "Hytale HUD editor" mod (works on ANY server, Lunar-style) is feasible later via the official Mod Browser — good advertising for SkyWynn, but off the critical path until client-mod APIs stabilize.
 - **Skyy sign-offs (2026-09-22):** hover-search keys only need to work in inventory/menus (which is exactly what the engine allows) ✔ · custom HUD instead of vanilla-HUD editing is fine ✔ · **HUD layout sharing (export/import codes) is locked in** ✔

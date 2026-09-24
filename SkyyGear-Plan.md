@@ -1,27 +1,32 @@
-# SkyyGear - plan (draft, 2026-09-24)
-*Skyy's direction: every mod in the pack is eventually our own. With Wynncraft-style weapons and SkyBlock-style tools we will make a lot of
-our own custom tools, weapons and armor. Nothing here is built yet - this is the starting point for design sessions.*
+# SkyyGear - plan
+*Design lock 2026-09-24 (Skyy). Nothing here is built. Change note: `SkyWynn-Decisions.md`. Code follow-ups: `HANDOFF.md`, `DESIGN-STATUS.md`.*
 
-## Goal
-Our own gear line that replaces third-party item mods and carries SkyWynn's core item rules (design lock batch 2):
-- **IDs + reforges are core.** Every item has a rarity and stats. A reforge swaps the bonuses.
-- **Wynn's five elements + powders.** Powders replace SkyBlock runes. This is gear, not the (still open) magic system.
+Skyy's direction still holds: every mod in the pack is eventually our own. Combat armor and weapons copy Wynncraft. Gathering gear is SkyBlock-style. We rebuild features ourselves. Never copy another author's files (items, models, textures, code) unless their license allows it.
+
+## Locked (2026-09-24)
+
+1. **Level + rarity, Wynn-style.** Every gear item has a level requirement and a rarity tier. The exact rarity names and colours are not locked (open questions). Which level type the requirement uses (skill vs class vs combat) is still the earlier same-day question; this lock only says every gear item has one.
+2. **Smithing rarity.** A higher Smithing level raises a **smithing rarity** stat. That stat increases the chance of crafting a higher-rarity item. Smelting still pays Smithing XP (the existing SkyySkills lock). SkyySkills 0.4 does not have this stat.
+3. **Rarity sets reforge quality.** The higher an item's rarity, the better the rolls a reforge can give: a wider and higher roll range. A reforge still swaps the bonuses (batch 2). How you obtain and apply a reforge is still open.
+4. **Unidentified drops, Wynn-style.** Mobs drop unidentified weapons and armor. Identifying one reveals its rolled IDs. Where that happens, how, and what it costs are open. SkyyRolls 0.1.3 shows rolls on the item immediately; that is the jar, not this rule.
+5. **Combat armor and weapons** basically copy Wynncraft. Class weapons stay the ones already named in `SkyyClasses-Plan.md`. Berserker is still PENDING and has no weapon list.
+6. **Gathering gear** is SkyBlock-style: farming armor sets and foraging armor sets. Mining armor is likely the same kind of set. This note does not name the pieces.
+7. **Wardrobe + loadouts**, Hypixel SkyBlock style: save a gear set and quick-swap to it. **UI:** placeholders are fine. Nothing on the inventory screen yet (`SkyWynn-Decisions.md` 10.22). What a loadout saves is open.
 
 ## What it covers
-| Line | Style | Ideas to design |
+| Line | Style | Locked shape |
 |---|---|---|
-| Weapons | Wynncraft | Class weapons (Archer: shortbow, crossbow; Warrior: sword, longsword, spear; Mage: staff; later Assassin daggers/kunai, Shaman TBD; Berserker is PENDING as of 2026-09-24 and has no weapon list here), rolled IDs (damage, strength, crit, element damage), powder slots, rarity tiers, level requirements |
-| Tools | Hypixel SkyBlock | Pickaxes, axes, hoes (and later rods) with mining/foraging/farming speed and fortune, reforges, tool tiers tied to the zone islands |
-| Armor | Both | Sets with stats, rarity, reforges, element defence; set bonuses later |
+| Combat weapons and armor | Wynncraft | Copy Wynn's model. Class weapons: Archer shortbow/crossbow, Warrior sword/longsword/spear, Mage staff; later Assassin daggers/kunai; Shaman TBD; Berserker PENDING with no list. Every piece has a level requirement and a rarity. Mobs drop them unidentified. Rolled IDs show after identify. Powders and Wynn's five elements stay (batch 2); powder slot counts are open |
+| Gathering armor | Hypixel SkyBlock | Farming sets and foraging sets. Mining sets are likely the same idea. Proposed stats (not locked): fortune, speed |
+| Tools | Hypixel SkyBlock | Pickaxes, axes, hoes (rods later). Reforges, and tiers tied to the zone islands, are still to design. They are gear, so they carry a level requirement and a rarity |
 
 ## Built foundations we reuse
-- **SkyyRolls** (0.1.3): rolled stats stored on the item + shown on the item's own tooltip through the engine's native ItemDisplay metadata
-  (reforge name in the rarity colour, one line per stat). This becomes the ID / reforge system of the gear line.
-- **SkyyClasses**: weapon ownership by item-id prefix (e.g. every `Weapon_Crossbow_*` is an Archer weapon), so our own weapons slot in by name.
-- **SkyySkills Smithing**: reforging and adding powders are Smithing's planned XP sources (smelting already pays).
+- **SkyyRolls** (0.1.3): rolled stats stored on the item and shown on its tooltip (reforge name in the rarity colour, one line per stat). This is the ID / reforge foundation. It does not do unidentified drops, smithing rarity, or a rarity-based roll range.
+- **SkyyClasses**: weapon ownership by item-id prefix, so our own weapons slot in by name.
+- **SkyySkills Smithing**: smelting pays XP now. Reforging and powders are still the planned later XP sources. Smithing rarity is a new effect of the level, not a new XP source.
 - **SkyyTrees / SkyySkills perks**: tool bonuses can feed the same gathering hooks (breaking speed, double drops, fortune).
 - **SkyySacks /craft Smithing tab**: tools, weapons and armor already have their own crafting tab.
-- **SkyyCollections**: gear recipes can be unlocked by collection tiers (e.g. the Copper Pickaxe recipe at Cobblestone I).
+- **SkyyCollections**: gear recipes can be unlocked by collection tiers (the Copper Pickaxe recipe at Cobblestone I is the pattern).
 
 ## Third-party stopgaps to replace
 | Stopgap | Replace with |
@@ -29,15 +34,19 @@ Our own gear line that replaces third-party item mods and carries SkyWynn's core
 | More Crossbow Tiers (Serj) | our own crossbow line (own item ids, stats, recipes) |
 | Saplings From Trees (Helios) | our own leaf drops + sapling recipes (or keep until the Foraging rework) |
 
-**Rule:** rebuild each feature ourselves - our own item definitions, stats, recipes and (later) art. Never copy another author's files
-(items, models, textures, code) into our mods unless their license allows it; check each mod's license before reusing anything.
+## Proposed, not locked
+Awaiting owner confirm. Do not build from this paragraph.
 
-## Open design questions
-1. Which stats exist (Wynn-style: strength / dexterity / intelligence / defence / agility? SkyBlock-style: strength, crit chance, crit damage,
-   speed, fortune?), and how they apply in Hytale combat.
-2. Rarity tiers and their colours (SkyyRolls today: Common to Legendary).
-3. How reforges are obtained and applied (a reforge bench? reforge stones from Mining/Combat?), and their cost.
-4. Powders: elements, tiers, how many slots per item, how they drop.
-5. Gear progression per zone island. **Level requirements are locked (2026-09-24):** many items will have them. **Open:** which level type gates an item (skill vs class vs combat). Do not pick one in this draft.
-6. The late-game bazaar/market wall (2026-09-24): toward late game, items past the collection cutoff cannot be bought or sold. Which items, and how that meets an auction house, is still open.
-7. Whether rolled items can be sold on the bazaar (stackable items only today) or need an auction house. The sell wall in 6 is a separate lock: late-game collection items come off both buy and sell.
+- Combat gear uses Wynn's five skill points (Strength, Dexterity, Intelligence, Defence, Agility).
+- Gathering sets use SkyBlock stats (fortune, speed).
+
+## Open questions
+1. **Level type.** Every gear item has a level requirement. Which number gates it: skill, class, or combat level?
+2. **Rarity list and colours.** Wynn uses Normal / Unique / Rare / Legendary / Fabled / Mythic / Set. SkyyRolls today uses Common through Legendary. The old draft of a 7-tier Common→Divine ladder is not the lock.
+3. **Top rarities.** Can mob drops reach the top tiers, or are some tiers craft-only?
+4. **Identification.** Where it happens, how the player does it, and what it costs.
+5. **Reforge obtain.** A bench, reforge stones, or something else, and the cost. The roll-range rule above is locked either way.
+6. **Powders.** Wynn's five elements and "powders replace SkyBlock runes" stay locked. Still open: slots per item, tiers, and how they drop.
+7. **Loadout contents.** Armor only, or also weapons, accessories, and HUD?
+8. **Where rolled items sell.** Bazaar (stackable commodities today) or the auction house. Separate from that: the late-game wall still pulls some items off both buy and sell (Decisions 1.2). Which gear that hits is open.
+9. **Zone pacing.** How gear steps up across the island chain. Not numbered here.
