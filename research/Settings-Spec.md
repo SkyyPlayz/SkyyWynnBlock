@@ -91,6 +91,7 @@ public static void regSetting(String key, String label, String cat, boolean def,
 
 Rules for every gate:
 - **Gate only the `sendMessage` / popup call.** Never gate the work: payments, throttle timers, "told" latches, logs, XP, drops and cancels all run as before. This matters where a latch sits in the same condition (SkyySacks `fuelWarnOnce()`): keep the latch call first and put the setting check after `&&`, so the latch is still used.
+  **The one deliberate exception:** the three refusing General switches (`party.invites`, `tpa.requests`, `msg.private`, sections 1.1 and 3.11) stop the invite, request or message itself. That goes further than "chat notifications", so those three rows are built only after Skyy confirms the refuse behaviour (section 6, first `[SKYY?]`). Section 6 also gives the hide-only version to build if Skyy says no.
 - **Put the check before the message's own throttle timestamp** when the throttle exists only for that message (Classes `WARNED`/`POPPED`, Cooking `LAST`). A hidden line then does not use up the cooldown of a line that is shown.
 - **Admin master switches stay and win.** A line is sent only if the server config allows it AND the player's setting is on: `xp.properties feedback=`, `perk.doubleDropMessage=`, `cooking.properties messages=`.
 - Registration happens in the plugin's `setup()`, one `regSetting(...)` per key, with the exact label, category, default and help from section 2.
@@ -102,7 +103,7 @@ New classes in `com.skyy.menu`. They are listed in the order methods must be add
 | Class | Role |
 |---|---|
 | `MenuUtil` (existing) | + `atomicWrite(Path, byte[])`: copy `ProfCfg.atomicWrite` from `build_skyyprofiles_0.1.py` verbatim (tmp, fsync, `ATOMIC_MOVE`+`REPLACE_EXISTING`, fallback to plain replace, 5 x 20 ms retries on `FileSystemException`). |
-| `SetReg` | The registry. `DEFS` (`ConcurrentHashMap` key -> `Object[6]`), `ADMIN` (`HashMap` key -> `Boolean`, replaced wholesale), `validKey`, `clip`, `catIndex`, `register(Object)` (`synchronized`), `drain()`, `def(String)`, `info(String)`, `rank(String)`, `keysOf(int cat)`, `loadAdmin(boolean first)`. |
+| `SetReg` | The registry. Fields first (javassist: every field before the methods that use it): `DEFS` (`ConcurrentHashMap` key -> `Object[6]`), `WARNED` (`ConcurrentHashMap` key -> `Boolean`, the one-time "conflicting default" warning in `register`, like the SkyyClasses `ClassRules.WARNED` field), `ADMIN` (`volatile HashMap` key -> `Boolean`, replaced wholesale), `ADMIN_FILE` (`java.nio.file.Path`, set in `setup()`), `ADMIN_MTIME` (`volatile long`, the `lastModified` that `loadAdmin` last read). Then the methods: `validKey`, `clip`, `catIndex`, `register(Object)` (`synchronized`), `drain()`, `def(String)`, `info(String)`, `rank(String)`, `keysOf(int cat)`, `loadAdmin(boolean first)`. |
 | `SetStore` | Per-player values. `DIR`, `VALS` (`ConcurrentHashMap` uuid string -> `HashMap`, copy-on-write), `BROKEN` (uuid string -> `Long` time of the failed read), `DIRTY`, `NAMES`. Methods `fileOf`, `load` (`synchronized`), `isBroken`, `get`, `saveNow` (`synchronized`). |
 | `SetSaveTask` | `Runnable(String k)` -> `SetStore.saveNow(k)`. |
 | `SetStore` (cont.) | `saveSoon`, `set` (`synchronized`), `resetAll` (`synchronized`), `retryDirty`, `pruneOffline(java.util.Set onlineUuidStrings)`, `flushAll`. |
@@ -114,7 +115,13 @@ New classes in `com.skyy.menu`. They are listed in the order methods must be add
 Core Java (javassist-safe; `MenuData`/`MenuUtil`/`SetReg`/`SetStore` carry the `@PKG@.` prefix in the script):
 
 ```java
-// ---- SetReg
+// ---- SetReg fields (one CtField.make each, before any SetReg method)
+public static final java.util.concurrent.ConcurrentHashMap DEFS = new java.util.concurrent.ConcurrentHashMap();
+public static final java.util.concurrent.ConcurrentHashMap WARNED = new java.util.concurrent.ConcurrentHashMap();
+public static volatile java.util.HashMap ADMIN = new java.util.HashMap();
+public static java.nio.file.Path ADMIN_FILE = null;
+public static volatile long ADMIN_MTIME = -1L;
+// ---- SetReg methods
 public static boolean validKey(String k) {
   if (k == null || k.length() < 3 || k.length() > 48) return false;
   char c0 = k.charAt(0);
@@ -356,19 +363,20 @@ Label <= 40 characters. The help line shows under the label (<= 90 characters so
 | General | `party.members` | Party join, leave and leader | Steve joined, left, disconnected or is now the party leader | SkyyParty | Party #8, #9, #10, #11 (merged) |
 | General | `party.chat` | Party chat | [Party] lines from other members - your own lines always show | SkyyParty | Party #12 |
 | General | `tpa.requests` | Teleport requests | OFF: nobody can send you /tpa or /tpahere - they are told | SkyyEssentials | Ess #13 (refuses) |
-| General | `tpa.updates` | Teleport request updates | Denied, expired and cancelled requests - accepted ones always show | SkyyEssentials | Ess #15, #16, #17 (merged) |
+| General | `tpa.updates` | Teleport request updates | Denied, expired and cancelled requests - accepted ones always show | SkyyEssentials | Ess #15, #16, #17 + the `/tpacancel` notice to the target (merged; requests not yet accepted) |
 | General | `msg.private` | Private messages | OFF: /msg and /reply to you are refused and the sender is told | SkyyEssentials | Ess #18 (refuses) |
 
 Counts: Skills 5 (+2 planned), Collections 2, Sacks 2, Combat 2, Coins 3, Profiles 4 (+2 planned), Cooking 4, General 6. That is 28 now and 32 with the planned rows. The page shows 7 rows per tab page. No tab needs a second page, and the Prev/Next code is there for future keys.
 
-**Merges made (duplicates):** the four island-protection texts are one switch. Party join, leave, disconnect and leader change are one. Teleport denied, expired and offline-cancelled are one. The Collections tier-up header, reward lines and recipe count are one (they print as one block). The Cooking Grade-up and campfire hint are both "your Grade changed". The four cooking procs are one. Vein Burst and Tree Feller are one. The three "paid later" lines from Skills and Collections are one shared key.
+**Merges made (duplicates):** the four island-protection texts are one switch. Party join, leave, disconnect and leader change are one. Teleport denied, expired, offline-cancelled and `/tpacancel`-cancelled are one (all about a request that was never accepted). The Collections tier-up header, reward lines and recipe count are one (they print as one block). The Cooking Grade-up and campfire hint are both "your Grade changed". The four cooking procs are one. Vein Burst and Tree Feller are one. The three "paid later" lines from Skills and Collections are one shared key.
 
 ### 2.3 Never toggleable (always shown), and why
 
 | Message (mod #) | Why it cannot be switched off |
 |---|---|
-| **Replies to your own action:** every typed-command reply (usage, "no permission", errors), page status lines, Bazaar trade results (Bazaar), `/pay` sender line (Coins), `/tpa` sender lines, "Accepted..." (Ess #14), profile switch / create confirmations (Profiles #4, #6), class chosen (Classes #7), skill tree open failed (Skills #8), retired accessory click (Acc #6) | You just asked for it. Hiding it makes buttons and commands look broken. |
+| **Replies to your own action:** every typed-command reply (usage, "no permission", errors), page status lines, Bazaar trade results (Bazaar), `/pay` sender line (Coins), `/tpa` sender lines, "Accepted..." (Ess #14), profile switch / create confirmations (Profiles #4, #6), class chosen (Classes #7), skill tree open failed (Skills #8), retired accessory click (Acc #6), the `/island visit` reply "Visiting X's island - look, don't touch (they can /island invite you to build)." (Islands, `IslandCmd.visit`, already live in 0.4.4; it is **not** `islands.visitWelcome`, see 3.10) | You just asked for it. Hiding it makes buttons and commands look broken. |
 | Teleport accepted: "X accepted your request. Teleporting..." / "X accepted and is teleporting to you" (Ess #14) | It announces that you, or someone next to you, is about to move. |
+| How an accepted teleport ended: the mover's "[TPA] Teleporting to X." (`MoveTask.run`) and "[TPA] Teleport cancelled: <why>" to both players (`MoveTask.fail`, `ReadDestTask.fail`: a player went offline, the destination world closed, "is already teleporting" / "is changing worlds, try again" after 8 retries, "something went wrong") | It follows the always-shown "accepted... Teleporting..." line. Hidden, a player is told they are about to move and then nothing happens, which reads as a bug, and "try again" is something they must act on. `tpa.updates` covers only requests that were never accepted. |
 | Coins lost on death (Coins #2) | Something was taken from you. Silent coin loss reads as a bug. |
 | Admin changed or reset your class / profile class (Classes #5, #6, Profiles #12) | Your character changed without your action. |
 | Flight turned off because your permission was removed (Ess #19) | You might fall. It is also staff-only. |
@@ -400,7 +408,8 @@ Old per-profile quiet flags become one per-player setting. If profile 1 had `qui
 
 Every row lands on top of whatever version the running rounds produce (feedback round 2 already queues SkyySkills 0.4.2, SkyyTrees 0.2.1, SkyyCollections 0.2.1, SkyySacks 0.7.5, SkyyIslands 0.5.1). The version numbers below are "the next version of that mod". Line numbers refer to the newest scripts today and will shift, so the class.method and the quoted statement are the anchor. Each mod: add the helper (1.3) to the named class, register in `setup()`, gate the listed sends, and add nothing else.
 
-### 3.1 SkyySkills (next: 0.4.2, from `build_skyyskills_0.4.py`)
+### 3.1 SkyySkills (next: 0.4.2, from `build_skyyskills_0.4.1.py`)
+Line numbers below are from 0.4.1 (the Exploration row; same message set as 0.4, renumbered). Build on 0.4.1, never on 0.4: 0.4.1 says a player file with Exploration XP must never be saved by 0.4 again.
 Helper class: **`SkillStore`** (has the creating `bridge()`, `pkey`, `quiet`, `QUIET`, `DIRTY`). Skills needs a legacy fallback and the quiet move, so its helper differs from 1.3:
 ```java
 public static void moveQuiet(java.util.UUID u) {
@@ -433,15 +442,15 @@ Also add `regSetting` (1.3, mod `"SkyySkills"`).
 
 | Message | Site (today) | Change |
 |---|---|---|
-| +XP line (incl. Acrobatics, which calls `SkillMsg.note` from `Acro.flush`) | `SkillMsg.note` (~2283): `if ({PKG}.SkillStore.quiet(u)) return;` | -> `if (!{PKG}.SkillStore.notifyOn(u, "skills.xpGain")) return;` |
-| SKILL LEVEL UP + `next:` line | `SkillXp.gain3` (~2478-2490) | Before the loop: `boolean lvOn = {PKG}.SkillStore.notifyOn(u, "skills.levelUp");`. Wrap **only** the two `pr.sendMessage` calls in `if (lvOn)`. `shown += coins`, `SkillMsg.send(pr)` and `publish(u)` stay unconditional. |
-| Late payout line | `SkillXp.gain3` (~2493) | Condition becomes `paid != null && paid[2] > shown && {PKG}.SkillStore.notifyOn(u, "rewards.late")`. |
-| Combat XP hints (5 reasons) | `SkillClass.tellOnce` (~1827) | First line inside `try`: `if (!{PKG}.SkillStore.notifyOn(pr.getUuid(), "skills.combatHints")) return;` (before `claimTold`, so the hint can still show later in the session after switching it back on). |
-| Double drop | `Perks.doubled` (~2876): `if ({PKG}.SkillStore.quiet(u)) return;` | -> `if (!{PKG}.SkillStore.notifyOn(u, "skills.doubleDrop")) return;` (the drops were already given by `give` above; keep `PerkCfg.DD_MSG`). |
-| Extra potion | `Brew.extraPotion` (~2937): `if (what == null \|\| {PKG}.SkillStore.quiet(u)) return;` | -> `if (what == null \|\| !{PKG}.SkillStore.notifyOn(u, "skills.extraPotion")) return;` |
+| +XP line (incl. Acrobatics, which calls `SkillMsg.note` from `Acro.flush`) | `SkillMsg.note` (~2392): `if ({PKG}.SkillStore.quiet(u)) return;` | -> `if (!{PKG}.SkillStore.notifyOn(u, "skills.xpGain")) return;` |
+| SKILL LEVEL UP + `next:` line | `SkillXp.gain3` (~2606-2618) | Before the loop: `boolean lvOn = {PKG}.SkillStore.notifyOn(u, "skills.levelUp");`. Wrap **only** the two `pr.sendMessage` calls in `if (lvOn)`. `shown += coins`, `SkillMsg.send(pr)` and `publish(u)` stay unconditional. |
+| Late payout line | `SkillXp.gain3` (~2621) | Condition becomes `paid != null && paid[2] > shown && {PKG}.SkillStore.notifyOn(u, "rewards.late")`. |
+| Combat XP hints (5 reasons) | `SkillClass.tellOnce` (~1936) | First line inside `try`: `if (!{PKG}.SkillStore.notifyOn(pr.getUuid(), "skills.combatHints")) return;` (before `claimTold`, so the hint can still show later in the session after switching it back on). |
+| Double drop | `Perks.doubled` (~3004): `if ({PKG}.SkillStore.quiet(u)) return;` | -> `if (!{PKG}.SkillStore.notifyOn(u, "skills.doubleDrop")) return;` (the drops were already given by `give` above; keep `PerkCfg.DD_MSG`). |
+| Extra potion | `Brew.extraPotion` (~3065): `if (what == null \|\| {PKG}.SkillStore.quiet(u)) return;` | -> `if (what == null \|\| !{PKG}.SkillStore.notifyOn(u, "skills.extraPotion")) return;` |
 | Legacy Combat XP moved (Perks.migrate), tree-open errors (SkillBonus.openTree), command replies | - | no change (2.3) |
 
-`/skills quiet` (`QuietCmd.execute`, ~4628) becomes a shortcut when the registry exists:
+`/skills quiet` (`QuietCmd.execute`, ~4816) becomes a shortcut when the registry exists:
 ```java
 java.util.UUID u = pr.getUuid();
 Object f = {PKG}.SkillStore.bridge().get("settings:fn:set");
@@ -461,7 +470,8 @@ if (f instanceof java.util.function.Function) {
 ```
 `setup()`: register `skills.xpGain`, `skills.levelUp`, `skills.doubleDrop`, `skills.extraPotion`, `skills.combatHints` (category `skills`) and `rewards.late` (category `coins`), with the section 2.2 labels and help lines.
 
-### 3.2 SkyyTrees (next: 0.2.1, from `build_skyytrees_0.1.py` or the exploration round's 0.2)
+### 3.2 SkyyTrees (next: 0.2.1, from `build_skyytrees_0.2.py`)
+Line numbers below are from 0.2 (the Acrobatics + Exploration trees; same message lines as 0.1, renumbered).
 Helper class: **`TreeStore`** (creating `bridge()`, `pkey`, `data`, `dataK`, `dirty`, `TreeData.quiet`/`.bad`). Add `clearQuiet(TreeData d)` (`synchronized`: `if (!d.quiet) return false; d.quiet = false; return true;`), then:
 ```java
 public static void moveQuiet(java.util.UUID u) {
@@ -489,9 +499,9 @@ public static boolean notifyOn(java.util.UUID u, String key) {
 ```
 | Message | Site | Change |
 |---|---|---|
-| Tree bonus line | `TreeMsg.flush` (~1361): `if (@PKG@.TreeStore.data(u).quiet) return;` | -> `if (!@PKG@.TreeStore.notifyOn(u, "trees.bonus")) return;` (`take` already cleared the pending totals: correct, a hidden line is dropped, not queued) |
-| Vein Burst | `TreeAbil.vein` (~1587): `@PKG@.TreeMsg.say(pr, "Vein Burst! ...")` | wrap in `if (@PKG@.TreeStore.notifyOn(pr.getUuid(), "trees.abilities"))` |
-| Tree Feller | `TreeAbil.feller` (~1608) | same wrap. The horizontal rework in 0.2.1 keeps the same line. |
+| Tree bonus line | `TreeMsg.flush` (~1547): `if (@PKG@.TreeStore.data(u).quiet) return;` | -> `if (!@PKG@.TreeStore.notifyOn(u, "trees.bonus")) return;` (`take` already cleared the pending totals: correct, a hidden line is dropped, not queued) |
+| Vein Burst | `TreeAbil.vein` (~1773): `@PKG@.TreeMsg.say(pr, "Vein Burst! ...")` | wrap in `if (@PKG@.TreeStore.notifyOn(pr.getUuid(), "trees.abilities"))` |
+| Tree Feller | `TreeAbil.feller` (~1794) | same wrap. The horizontal rework in 0.2.1 keeps the same line. |
 
 `/tree quiet` (`TreeOps.quiet` / `TreeQuietCmd`): when `settings:fn:set` exists, flip `trees.bonus` (new value = `!notifyOn(u, "trees.bonus")`) and reply `[Trees] Tree bonus messages hidden/shown. More switches: /settings`. Otherwise today's code runs. `setup()`: register `trees.bonus`, `trees.abilities` (category `cooking`).
 
@@ -566,7 +576,7 @@ Helper class: **`BankStore`** (creating `bridge()`): 1.3 helper, mod `"SkyyBank"
 
 | Message | Site | Change |
 |---|---|---|
-| Interest | `BankTick.interest` loop (~491) | after `if (g == null) continue;` add `if (!{PKG}.BankStore.notifyOn(pr.getUuid(), "bank.interest")) continue;` |
+| Interest | `BankTick.interest`, the second loop (over `uni.getPlayers()`, ~491) | wrap only the send: `if ({PKG}.BankStore.notifyOn(pr.getUuid(), "bank.interest")) pr.sendMessage(...);`. **VERIFIED safe (0.1.2):** the payout happens earlier in the method. The first loop calls `BankStore.payInterest(key, ...)` for every account file, online or not, then `BankConfig.LAST` moves on and `BankConfig.save()` runs. Only after that does the loop over online players start, and all it does is send the "[Bank] You earned" line. So a player with the switch OFF still gets every coin. Do not move the gate into the first loop, `payInterest` or the `earned` map. |
 
 `setup()`: register `bank.interest` (category `coins`).
 
@@ -588,6 +598,7 @@ Helper class: **`IslandStore`** (its `bridge()` creates via `putIfAbsent`): 1.3 
 | Protection warnings (4 texts) | `GuardSystem` handle (~909-914, shared by GuardDamage / Break / Place / Pickup) and `GuardUse` | inside the 3 s throttle block, after `WARNED.put(...)`: wrap both sends in `if ({PKG}.IslandStore.notifyOn(u, "islands.protection"))`. `setCancelled(true)` stays unconditional. |
 | Hub on login | `RouteTask.run` (~801): `if ({PKG}.HubCmd.sendToHub(st, r, pr, w)) pr.sendMessage(...)` | **Keep the teleport call unconditional:** `boolean sent = {PKG}.HubCmd.sendToHub(st, r, pr, w); if (sent && {PKG}.IslandStore.notifyOn(pr.getUuid(), "islands.hubOnLogin")) pr.sendMessage(...);`. Do not put `notifyOn` first in the `&&`, or a player with the switch OFF is never routed. |
 | Build rights received | `IslandCmd` invite branch (~629): `target.sendMessage(...)` | `if ({PKG}.IslandStore.notifyOn(target.getUuid(), "islands.buildRights")) target.sendMessage(...)` |
+| "Visiting X's island - look, don't touch (they can /island invite you to build)." (live since 0.4.4) | `IslandCmd.visit` (~637), sent to the visitor right after `go(...)` | no change, always shown (2.3): it replies to the visitor's own `/island visit`. `islands.visitWelcome` is only the 0.5 `ArrivalTask` line, which fires on every arrival (also after a `/tpa`). Note for the 0.5 build: a `/island visit` visitor would then get both lines, so 0.5 may shorten this reply to "Visiting X's island." and leave the rules to the welcome line. That is SkyyIslands' call (Island-Settings-Spec), not a settings change. |
 | 0.5 visit ping (spec 4.7) | new `ArrivalTask` code | send to each receiver (owner + co-op) only when the island's `visit.notify=1` **and** `notifyOn(receiver, "islands.visitPing")` |
 | 0.5 visitor welcome line | new `ArrivalTask` code | `if (notifyOn(visitor, "islands.visitWelcome"))` |
 | Expelled / banned / "may not enter" reasons (0.5) | - | never gated: they explain why you were moved |
@@ -632,6 +643,8 @@ public static void broadcast(java.util.UUID anyMember, String msg, String key, j
 | Accepted | `EssStore.accept` | unchanged (2.3) |
 | Denied | `EssStore.deny` (~537) | `if (notifyOn(r.from, "tpa.updates")) sayTo(r.from, ...)` |
 | Expired / went offline | `EssStore.prune` (~453-458) | each `say(f, ...)` / `say(t, ...)` gets `notifyOn(<that player's uuid>, "tpa.updates")` (safe inside the `synchronized` prune: guarantee 2) |
+| `/tpacancel` notice to the target ("X cancelled their teleport request.") | `TpaCancelCmd` execute loop (~642): `{ES}.sayTo(r.to, ...)` | `if ({ES}.notifyOn(r.to, "tpa.updates")) {ES}.sayTo(r.to, ...);`. `cancelFrom` and the sender's "Cancelled N teleport request(s)." reply stay unconditional. |
+| After an accept: "Teleporting to X." and "Teleport cancelled: <why>" | `MoveTask.run` (~330), `MoveTask.fail` (~258-260), `ReadDestTask.fail` (~347-349), reached from both `hop()` and `run()` and from `retryLater` after 8 tries | unchanged, always shown (2.3). They are the outcome of an accepted teleport, not a request update, so `tpa.updates` does not cover them. |
 | Private message | `EssStore.pm` (~540), after the existing checks, before the two `say` calls | `if (!notifyOn(target.getUuid(), "msg.private")) { say(pr, target.getUsername() + " has private messages turned off.", ERR); return; }` (`LAST_PM` is not updated). `/reply` goes through `pm()` too. If the **sender** has their own PMs off, add after a successful send: `if (!notifyOn(pr.getUuid(), "msg.private")) say(pr, "(Your own private messages are off, so replies to you are refused - /settings)", INFO);` |
 | Fly disabled by permission (`FlyTask` mode 0) | - | unchanged (2.3) |
 
@@ -724,7 +737,7 @@ Fixed inline text uses only characters already proven inline (letters, digits, s
 - coins: `Always shown: coins you lose when you die, and your starter coins.`
 - profiles: `Always shown: profile setup, switch problems, crash repairs and items that did not fit back.`
 - cooking: `Everything on this tab can be switched off.`
-- general: `Always shown: accepted teleports, party disbanded, and replies to your own commands and clicks.`
+- general: `Always shown: accepted teleports and how they ended, party disbanded, and replies to your own commands and clicks.`
 
 Also `SET_ORDER` (section 2.2 keys, in order) and `SET_ROWS = 7`.
 
@@ -771,7 +784,7 @@ Copy the menu's existing checks to the new strings: balanced `{}`/`()`, no under
 
 ### 5.3 In game, two accounts (A = Skyy, B = second account; TEST-CHECKLIST multiplayer rule)
 1. A turns Party invites OFF. B `/party invite A` -> B is told "A is not taking party invites right now". No invite is pending (`/party accept` on A says none).
-2. A turns Teleport requests OFF. B `/tpa A` -> B is told. A sees nothing. Turn it back ON: `/tpa` works and B's cooldown was not used by the refusal.
+2. A turns Teleport requests OFF. B `/tpa A` -> B is told. A sees nothing. Turn it back ON: `/tpa` works and B's cooldown was not used by the refusal. Then A turns Teleport request updates OFF: B `/tpa A`, B `/tpacancel` -> A sees no "cancelled their teleport request" line. B `/tpa A`, A `/tpaccept` -> both still see the accepted lines and B sees "Teleporting to A." (always shown, 2.3).
 3. A turns Private messages OFF. B `/msg A hi` -> refused with the message. A `/msg B hi` works, and A gets the "(Your own private messages are off...)" note.
 4. Party chat OFF on A: B `/pc hi` -> A sees nothing, B sees their own line. `party.members` OFF on A: B leaves -> A sees nothing. If A becomes leader, A still sees "A is now the party leader".
 5. `coins.payReceived` OFF on A: B `/pay A 10` -> A sees no line, A's balance +10, B gets the normal reply.
@@ -783,7 +796,11 @@ Copy the menu's existing checks to the new strings: balanced `{}`/`()`, no under
 ## 6. Open points
 
 - `[SKYY?]` Settings icon: slot 51 (bottom row next to Close, SkyBlock's spot) or slot 25 (next to Mods)?
-- `[SKYY?]` Party invites / teleport requests / private messages **refuse** when OFF (Hypixel-style privacy) instead of just hiding the line. OK?
+- `[SKYY?]` **Answer before the build round.** Party invites / teleport requests / private messages **refuse** when OFF (Hypixel-style privacy) instead of just hiding the line. OK? This is the only place the spec gates the action and not just the message (1.3), and it goes further than "chat notifications". Do not build these three rows on a guess: if the round has to start without an answer, leave the three keys out of `regSetting` and `SET_ORDER` (25 switches until then) and add them in a follow-up. If Skyy says **hide only**, build these rows instead:
+  - `party.invites`: the invite is stored and the sender's "Invited X..." reply is unchanged. Only `target.sendMessage(... invited you to a party! ...)` in `InviteCmd.execute` (~173) gets `if ({PKG}.PartyStore.notifyOn(target.getUuid(), "party.invites"))`. Help line: `Party invites from other players - hidden invites still expire after 60 s`.
+  - `tpa.requests`: `tryAdd` and both sender replies are unchanged. Only the two `say(target, ...)` request lines in `EssStore.request` (~499, ~502) get `if (notifyOn(target.getUuid(), "tpa.requests"))`. Help line: `Incoming /tpa and /tpahere requests - you can still /tpaccept a hidden one`.
+  - `msg.private`: the sender's `[you -> X]` echo, `LAST_PM` and `/reply` are unchanged. Only `say(target, "[" + ... + " -> you] " + text, PM)` in `EssStore.pm` (~547) gets `if (notifyOn(target.getUuid(), "msg.private"))`. Drop the "(Your own private messages are off...)" note. Help line: `Private messages to you - the sender is not told you hid them`.
+  - In each case the refusal texts go, the three 2.2 help lines change as above, section 1.1's "Some General switches refuse..." sentence goes, and the 5.3 tests 1-3 become "A sees nothing, B's command works as normal".
 - `[SKYY?]` A staff bypass for the refusing switches (so an admin's `/msg` always arrives)?
 - `[SKYY?]` Anything in 2.3 Skyy wants switchable anyway (for example the "Playing profile" line is switchable, but the create-a-profile reminder is not)?
 - **Later (0.2.1+):** link rows (register with a `String` command in element 4 instead of a `Boolean`; the row shows one "Open" button that runs the command as the player without closing first): "HUD layout" -> `/skyyhud` (SkyyHud 0.3.7), "Island settings" -> `/island settings` (SkyyIslands 0.5.1), so Settings becomes the one place for every personal setting. Also a Wynncraft-style `/settings <key> on|off` for power users (needs a usage variant), and sound switches once any Skyy mod plays sounds.
