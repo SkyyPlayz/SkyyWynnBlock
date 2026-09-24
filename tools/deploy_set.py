@@ -17,7 +17,7 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.6"), ("SkyySacks", "0.7.4"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2"), ("SkyyParty", "0.1.2"),
-    ("SkyyBank", "0.1.2"), ("SkyyIslands", "0.4.4"), ("SkyyBazaar", "0.1.1"), ("SkyyRolls", "0.1.2"), ("SkyySkills", "0.4"),
+    ("SkyyBank", "0.1.2"), ("SkyyIslands", "0.4.4"), ("SkyyBazaar", "0.1.1"), ("SkyyRolls", "0.1.3"), ("SkyySkills", "0.4"),
     ("SkyyAccessories", "0.4.3"), ("SkyyClasses", "0.1.4"), ("SkyyMenu", "0.1.2"), ("SkyyEssentials", "0.1"), ("SkyyProfiles", "0.1"),
     ("SkyyCooking", "0.1.1"), ("SkyyTrees", "0.1"),
 ]

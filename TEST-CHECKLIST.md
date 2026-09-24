@@ -509,3 +509,10 @@ Files changed, in `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\`:
 - SkyyAccessories\SkyyAccessories-0.4.3.jar
 - tools\deploy_set.py
 - SkyySacks\SkyySacks-0.7.4.jar (rebuilt, source unchanged)
+
+## SkyyRolls 0.1.3 (built + reviewed 2026-09-24, NOT deployed; admin-only test tool)
+- [ ] /rolls give mithril bow: the item NAME reads "<Reforge> Mithril Shortbow" in its rarity colour and the tooltip lists Reforge, Damage, Strength, Crit, Roll Quality (engine ItemDisplay metadata - the SimpleEnchantments method; no DynamicTooltipsLib needed).
+- [ ] Items rolled before 0.1.3 (the Heroic / Withered bows) show their rolls about 3 s after joining.
+- [ ] /rolls reroll on a sack, arrows or any non weapon/armor/tool: refused with a chat line.
+- [ ] Hold the rerolled Foraging sack, /rolls clear: the rolls and the display go away, the bag still works.
+- [ ] Relog, drop + pick up, chest in/out: the rolls and the display stay.

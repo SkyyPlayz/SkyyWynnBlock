@@ -26,8 +26,13 @@ of a Mithril Shortbow but "item doesn't show what the reroll did"; and Skyy "acc
    storage, backpack, armor, utility, tools; skipped while SkyyProfiles' profile:busy:<uuid> is set; read-only when every
    rolled item is already up to date).
    Metadata stays backwards compatible: "SkyyRolls" keeps exactly {reforge, dmg, str, crit, quality, rolledAt}; new keys are
-   "ItemDisplay" (engine key) and "SkyyRollsView" {v, sig, prev?} = our marker: v = display version, sig = what the display was
-   built from (skip rewrites when unchanged), prev = an ItemDisplay that was on the item BEFORE we wrote ours (restored by clear).
+   "ItemDisplay" (engine key) and "SkyyRollsView" {v, sig, disp, prev?} = our marker: v = display version, sig = what the display
+   was built from, disp = fingerprint of the ItemDisplay we wrote (decoded + re-encoded through ItemDisplayMetadata's codec), prev =
+   the newest ItemDisplay that was not ours (restored by clear). A rewrite is skipped only while sig AND disp both match, so when
+   another mod writes ItemDisplay over ours (vanilla never writes it - no ItemDisplayMetadata constructor call in HytaleServer.jar;
+   Aetherhaven, Tamework, Hexcode, MMOSkillTree, ScarVoicePhones, SimpleEnchantments and TheArmory do, all disabled in the HUD mod
+   world), the next /rolls read or join refresh writes the rolls again, logs it, and keeps their ItemDisplay as prev; /rolls clear
+   leaves an ItemDisplay alone that is not ours.
 2. ONLY WEAPONS, ARMOR AND TOOLS: give and reroll refuse anything that is not Weapon_* / Armor_* / Tool_*, refuse Weapon_* ammo
    (any id token Arrow, Bolt, Bomb, Dart, Grenade, Ammo, Bullet, Shell, Shuriken, Thrown - checked against Assets.zip and every
    installed mod: Weapon_Arrow_*, Weapon_Bomb_*, Weapon_Dart_Tribal, Weapon_Grenade_Frag, Weapon_Spirit_Bomb, ...), and refuse any
@@ -82,6 +87,8 @@ Commands (ADMIN ONLY, see Permissions below):
   /rolls give [itemId]   gives one item (default Weapon_Longsword_Copper) with random rolls stored in metadata key "SkyyRolls"
                          {reforge: <name>, dmg: +%, str: n, crit: n, quality: 0..100, rolledAt: millis} - weapons, armor, tools only
   /rolls clear           removes the rolls (and the rolls tooltip) from the item in your hand, keeps everything else''')
+rep("  skyy.0.1.1_skyyrolls.command.rolls, ...command.rolls.read, ...command.rolls.reroll, ...command.rolls.give.",
+    "  skyy.0.1.3_skyyrolls.command.rolls, ...command.rolls.read, ...command.rolls.reroll, ...command.rolls.give, ...command.rolls.clear.")
 rep("  The 0.1 flag forms still work: /rolls --action give|read|reroll [--item <itemId>]",
     "  The 0.1 flag forms still work: /rolls --action give|read|reroll|clear [--item <itemId>]")
 rep("0.1.2: /rolls give takes a plain name",
@@ -114,7 +121,7 @@ rep('''             (AC, "setAllowsExtraArguments"), (CTX, "getInputString"), (I
              (HSV, "SCHEDULED_EXECUTOR"), (UNI, "get"), (UNI, "getWorld"), (PR, "getWorldUuid"), (PR, "getReference"),
              (PR, "isValid"), (PR, "getUuid"), (PR, "getUsername"), (PR, "getComponentType"), (PRE, "getPlayerRef"), (WLD, "execute"),
              (REF, "isValid"), (REF, "getStore"), (BD, "containsKey"), (BD, "remove"), (BD, "clone"), (BV, "asNumber"),
-             ("com.hypixel.hytale.event.EventRegistry", "registerGlobal")):''')
+             (IS, "getFromMetadataOrNull"), ("com.hypixel.hytale.event.EventRegistry", "registerGlobal")):''')
 
 # ---------------- classes ----------------
 rep('rrc = pool.makeClass(PKG + ".RollsRerollCmd", pool.get(APC))',
@@ -276,7 +283,33 @@ rl.addMethod(CtNewMethod.make(f"""
 public static String sig({IS} it, {BD} d) {{
   return VIEW_V + ":" + it.getItemId() + ":" + it.getQualityIndex() + ":" + Integer.toHexString(d.toJson().hashCode());
 }}""", rl))
-# true when the item's ItemDisplay was written by us from exactly these rolls (then nothing needs rewriting)
+# fingerprint of the stack's CURRENT ItemDisplay, decoded and re-encoded through the engine codec (so a save round trip that only
+# changes BSON number types is not a change); null = no ItemDisplay or one the codec cannot read
+rl.addMethod(CtNewMethod.make(f"""
+public static String dispHash({IS} s) {{
+  try {{
+    if (s == null || s.isEmpty()) return null;
+    Object o = s.getFromMetadataOrNull({IDM}.KEYED_CODEC);
+    if (o == null) return null;
+    {BD} md = s.withMetadata({IDM}.KEYED_CODEC, o).getMetadata();
+    {BV} v = md == null ? null : md.get({IDM}.KEY);
+    if (v == null || !v.isDocument()) return null;
+    return Integer.toHexString(v.asDocument().toJson().hashCode());
+  }} catch (Throwable t) {{ return null; }}
+}}""", rl))
+# true when the ItemDisplay on the stack is still the one we wrote (our marker's "disp" fingerprint matches). False when another
+# mod wrote or removed ItemDisplay after us (Aetherhaven, Tamework, Hexcode, MMOSkillTree, ScarVoicePhones, SimpleEnchantments and
+# TheArmory all write it; none is enabled in the HUD mod world today).
+rl.addMethod(CtNewMethod.make(f"""
+public static boolean ours({IS} s, {BD} view) {{
+  if (view == null) return false;
+  {BV} h = view.get("disp");
+  if (h == null || !h.isString()) return false;
+  String now = dispHash(s);
+  return now != null && now.equals(h.asString().getValue());
+}}""", rl))
+# true when the item's ItemDisplay was written by us from exactly these rolls AND nobody replaced it since (then nothing needs
+# rewriting)
 rl.addMethod(CtNewMethod.make(f"""
 public static boolean upToDate({IS} it) {{
   if (it == null || it.isEmpty()) return false;
@@ -286,9 +319,11 @@ public static boolean upToDate({IS} it) {{
   {BV} v = md.get(VIEW_KEY);
   if (r == null || !r.isDocument() || v == null || !v.isDocument()) return false;
   {BV} g = v.asDocument().get("sig");
-  return g != null && g.isString() && g.asString().getValue().equals(sig(it, r.asDocument()));
+  if (g == null || !g.isString() || !g.asString().getValue().equals(sig(it, r.asDocument()))) return false;
+  return ours(it, v.asDocument());
 }}""", rl))
-# writes ItemDisplay {Name, Description} + our SkyyRollsView marker (keeps "prev" = an ItemDisplay that was not ours).
+# writes ItemDisplay {Name, Description} + our SkyyRollsView marker {v, sig, disp, prev?}. prev = the newest ItemDisplay that was
+# not ours (the one before our first write, or one another mod wrote over ours since); /rolls clear puts it back.
 # On any failure the stack is returned unchanged (the rolls are still in "SkyyRolls").
 rl.addMethod(CtNewMethod.make(f"""
 public static {IS} withDisplay({IS} s) {{
@@ -302,18 +337,23 @@ public static {IS} withDisplay({IS} s) {{
     String col = rarityColor(s);
     {MSG} name = nameMsg(s, str(d, "reforge"), col);
     {MSG} desc = descMsg(s, d, col);
+    {BV} old = md.get(VIEW_KEY);
+    {BV} cur = md.get({IDM}.KEY);
+    {BV} keep = null;
+    if (old != null && old.isDocument() && ours(s, old.asDocument())) {{
+      {BV} p = old.asDocument().get("prev");
+      if (p != null && !p.isNull()) keep = p;
+    }} else if (cur != null && !cur.isNull()) {{
+      keep = cur;
+      if (old != null && old.isDocument()) info("another mod replaced the rolls tooltip on " + s.getItemId() + " - writing the rolls tooltip again (their tooltip is kept for /rolls clear)");
+    }}
+    {IS} out = s.withMetadata({IDM}.KEYED_CODEC, new {IDM}(name, desc));
     {BD} view = new {BD}();
     view.append("v", new org.bson.BsonInt32(VIEW_V));
     view.append("sig", new org.bson.BsonString(sig(s, d)));
-    {BV} old = md.get(VIEW_KEY);
-    if (old != null && old.isDocument()) {{
-      {BV} p = old.asDocument().get("prev");
-      if (p != null && !p.isNull()) view.append("prev", p);
-    }} else {{
-      {BV} cur = md.get({IDM}.KEY);
-      if (cur != null && !cur.isNull()) view.append("prev", cur);
-    }}
-    {IS} out = s.withMetadata({IDM}.KEYED_CODEC, new {IDM}(name, desc));
+    String h = dispHash(out);
+    if (h != null) view.append("disp", new org.bson.BsonString(h));
+    if (keep != null) view.append("prev", keep);
     return out.withMetadata(VIEW_KEY, ({BV}) view);
   }} catch (Throwable t) {{
     warn("could not write the rolls tooltip for " + (s == null ? "null" : s.getItemId()) + ": " + t);
@@ -451,8 +491,9 @@ public static int refreshInventory({INV} inv) {{
   n += refreshContainer(inv.getTools());
   return n;
 }}""", rl))
-# /rolls clear: drop SkyyRolls + our marker + our ItemDisplay (or restore the ItemDisplay that was there before us); everything
-# else stays - withMetadata(BsonDocument) keeps itemId, quantity, durability, maxDurability and qualityIndex (bytecode)
+# /rolls clear: drop SkyyRolls + our marker + our ItemDisplay (or restore the ItemDisplay that was there before us); an ItemDisplay
+# another mod wrote after us is left alone; everything else stays - withMetadata(BsonDocument) keeps itemId, quantity, durability,
+# maxDurability and qualityIndex (bytecode)
 rl.addMethod(CtNewMethod.make(f"""
 public static {IS} cleared({IS} it) {{
   {BD} md = it.getMetadata();
@@ -460,7 +501,7 @@ public static {IS} cleared({IS} it) {{
   {BD} c = ({BD}) md.clone();
   c.remove("SkyyRolls");
   {BV} view = ({BV}) c.remove(VIEW_KEY);
-  if (view != null && view.isDocument()) {{
+  if (view != null && view.isDocument() && ours(it, view.asDocument())) {{
     {BV} prev = view.asDocument().get("prev");
     if (prev != null && !prev.isNull()) c.append({IDM}.KEY, prev);
     else c.remove({IDM}.KEY);
@@ -560,7 +601,7 @@ rep('''  addSubCommand(new {PKG}.RollsGiveCmd());''', '''  addSubCommand(new {PK
 REFRESH = r'''# ================= join refresh (0.1.3): rolled items from before 0.1.3 get their tooltip =================
 # PlayerReadyEvent (every world switch) -> 3 s later on the scheduler -> hop to the player's CURRENT world thread -> re-check the
 # world there -> skip while SkyyProfiles' profile:busy:<uuid> is set (crash recovery reloads the inventory) -> Rolls.refreshInventory.
-# Up to 15 tries, 2 s apart. Items that already show their rolls are only read.
+# Up to 15 tries, 2 s apart; giving up is logged with the last reason. Items that already show their rolls are only read.
 rft.addInterface(pool.get("java.lang.Runnable"))
 rft.addField(CtField.make(f"public {PR} pr;", rft))
 rft.addField(CtField.make("public boolean onWorld;", rft))
@@ -572,34 +613,37 @@ public void later(long ms) {{
   this.onWorld = false;
   {HSV}.SCHEDULED_EXECUTOR.schedule(this, ms, java.util.concurrent.TimeUnit.MILLISECONDS);
 }}""", rft))
-rft.addMethod(CtNewMethod.make("""
-public void again() {
+rft.addMethod(CtNewMethod.make(f"""
+public void again(String why) {{
   this.tries = this.tries + 1;
-  if (this.tries < 15) later(2000L);
-}""", rft))
+  if (this.tries < 15) {{ later(2000L); return; }}
+  String who = "?";
+  try {{ who = this.pr.getUsername(); }} catch (Throwable t) {{ who = "?"; }}
+  {PKG}.Rolls.warn("tooltip refresh gave up for " + who + " after " + this.tries + " tries (" + why + "); /rolls read on a held item or a relog tries again");
+}}""", rft))
 rft.addMethod(CtNewMethod.make(f"""
 public void run() {{
   try {{
     if (this.pr == null || !this.pr.isValid()) return;
     if (!this.onWorld) {{
       java.util.UUID wu = this.pr.getWorldUuid();
-      if (wu == null) {{ again(); return; }}
+      if (wu == null) {{ again("player is in no world"); return; }}
       {WLD} w = {UNI}.get().getWorld(wu);
-      if (w == null) {{ again(); return; }}
+      if (w == null) {{ again("world " + wu + " is not loaded"); return; }}
       this.onWorld = true;
       this.hopWorld = wu;
       w.execute(this);
       return;
     }}
     java.util.UUID now = this.pr.getWorldUuid();
-    if (now == null || !now.equals(this.hopWorld)) {{ again(); return; }}
-    if ({PKG}.Rolls.busy(this.pr.getUuid())) {{ again(); return; }}
+    if (now == null || !now.equals(this.hopWorld)) {{ again("player changed world"); return; }}
+    if ({PKG}.Rolls.busy(this.pr.getUuid())) {{ again("SkyyProfiles profile:busy is still set"); return; }}
     {REF} r = this.pr.getReference();
-    if (r == null || !r.isValid()) {{ again(); return; }}
+    if (r == null || !r.isValid()) {{ again("player entity not ready"); return; }}
     {ST} st = r.getStore();
-    if (st == null) {{ again(); return; }}
+    if (st == null) {{ again("player entity not ready"); return; }}
     {PLA} p = ({PLA}) st.getComponent(r, {PLA}.getComponentType());
-    if (p == null || p.getInventory() == null) {{ again(); return; }}
+    if (p == null || p.getInventory() == null) {{ again("player inventory not ready"); return; }}
     int n = {PKG}.Rolls.refreshInventory(p.getInventory());
     if (n > 0) {PKG}.Rolls.info("tooltip refresh: " + n + " rolled item(s) of " + this.pr.getUsername() + " now show their rolls");
   }} catch (Throwable t) {{ {PKG}.Rolls.warn("tooltip refresh failed: " + t); }}
