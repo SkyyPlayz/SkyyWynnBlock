@@ -105,26 +105,26 @@ Other proven facts: HUD attach = `new HudMain(pr).show()` on `PlayerReadyEvent` 
 
 ### Versions: live in the "HUD mod" test world vs newest built
 All mods are deployed TOGETHER as one set (Skyy 2026-09-23: "keep building and testing all the mods together at once").
-| Mod | Live (deployed 2026-09-23 ~22:00) | Profiles set: BUILT, not deployed (script + jar on disk) |
+Nothing new deploys without Skyy's OK (the auto-mode permission check also refuses automatic deploys).
+| Mod | Live (deployed 2026-09-23 ~22:00) | Built, waiting for Skyy's deploy OK |
 |---|---|---|
 | SkyyHud | 0.3.6 | - |
-| SkyySacks | 0.7.1 | 0.7.2 per-profile storage (built) |
-| SkyyCoins | 0.1.4 | 0.1.5 per-profile (built) |
-| SkyyCollections | 0.1.4 | 0.1.5 per-profile (built) |
+| SkyySacks | 0.7.1 | 0.7.2 per-profile storage (0.7.3 planned: search, Smithing + Farming tabs, no Alchemy tab) |
+| SkyyCoins | 0.1.4 | 0.1.5 per-profile |
+| SkyyCollections | 0.1.4 | 0.1.5 per-profile (0.2 planned: SkyBlock-style item collections) |
 | SkyyParty | 0.1.2 | - |
-| SkyyBank | 0.1.1 | 0.1.2 per-profile (built) |
+| SkyyBank | 0.1.1 | 0.1.2 per-profile |
 | SkyyBazaar | 0.1.1 | - |
 | SkyyEssentials | 0.1 | - |
-| SkyyRolls | 0.1.1 | - |
-| SkyySkills | 0.3.1 (Berserker slot -> Shaman placeholder) | 0.3.2 per-profile (built; needs SkyyClasses 0.1.3+ next to SkyyProfiles) |
-| SkyyAccessories | 0.4 | 0.4.1 per-profile (built) |
-| SkyyIslands | 0.4.3 | 0.4.4 island per profile (built) |
-| SkyyClasses | 0.1.2 (Archer/Warrior/Mage; Assassin+Shaman later; no Berserker; class locked) | 0.1.3 profile class is authoritative (built) |
-| SkyyMenu | 0.1.1 | - |
-| SkyyProfiles | - | 0.1 (built; script committed since 64498dc/b84a071; crash-recovery review fix rebuilt 2026-09-23 22:57) - profiles + class picked at creation + inventory swap |
+| SkyyRolls | 0.1.1 | 0.1.2 /rolls give by name, any-case ids, never an unknown item |
+| SkyySkills | 0.3.1 | 0.3.2 per-profile (0.4 planned: Alchemy, Cooking, Smithing, Acrobatics fall rule, no shared Combat row) |
+| SkyyAccessories | 0.4 | 0.4.1 per-profile (0.4.2 planned: Alchemy + Cooking bench accessories removed) |
+| SkyyIslands | 0.4.3 | 0.4.4 island per profile |
+| SkyyClasses | 0.1.2 | 0.1.4 = 0.1.3 per-profile + blocked-weapon popup |
+| SkyyMenu | 0.1.1 (BUG: pages opened from it hang on Loading) | 0.1.2 fix + 1.4x bigger + info box above the icons |
+| SkyyProfiles | - | 0.1 NEW (profiles, class picked at creation, inventory swap, crash-safe) |
 HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death).
-**Deploy rule:** build without --deploy, deploy the whole set together once Skyy OKs; watch the first join in the server log.
-**Profiles-set pairing:** ship the whole right-hand column together with SkyyProfiles 0.1. Never ship SkyyClasses 0.1.2 next to SkyyProfiles: 0.1.2 never reads profile:class, so SkyySkills 0.3.2 pauses class combat XP for 10 s after every profile switch, then logs a warning and follows the old class file.
+Integration check of the profiles set running (workflow skywynn-profiles-integration) before it is offered for testing.
 Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 
 ### Verified in game by Skyy (2026-09-23)
@@ -311,3 +311,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-23 22:46: Skyy went to bed: 'do everything you can and ill test the mods tomorrow'. Deploy stays blocked until Skyy says so (the auto-mode permission check refused an automatic deploy at 22:37).
 - 2026-09-23 22:55: Skyy (craft page, Craftable only ON worked when opened by typing): add SEARCH; split the farming table back into a Farming tab; new SMITHING tab = tools, weapons, armor; everything else stays in Crafting. Plan + engine facts in SkyySacks-Plan.md 'Craft page tabs + search'. Goes into SkyySacks 0.7.3 (on top of the per-profile 0.7.2), with the Alchemy tab removed.
 - 2026-09-23 22:57: SkyyProfiles 0.1 review fix (rebuilt, NOT deployed; edited SkyyProfiles/build_skyyprofiles_0.1.py in place - never deployed, no patch script): crash recovery at join now loads the snapshot in rollbackMode like the live rollback (a slot the clear could not empty that already holds the identical stack is never given twice); if the clear could not verify every slot empty the recovery is logged RECOVER-INCOMPLETE, the marker becomes stage=failed with a note for the admin (check the 'could not empty' slots for duplicates, then delete switching/<uuid>.properties) and the player is told. Any stage=failed marker now refuses /profiles switch and create-and-switch until an admin deletes it (a new switch would overwrite the marker and the snapshots it points at). Repo note: the earlier stackOf hardening is already committed (b84a071); there was nothing left uncommitted for this mod before this fix. Lint green.
+- 2026-09-23 23:00: profiles workflow finished: SkyyProfiles 0.1 + Coins 0.1.5, Bank 0.1.2, Sacks 0.7.2, Skills 0.3.2, Collections 0.1.5, Accessories 0.4.1, Islands 0.4.4, Classes 0.1.3 all built -> cheap review -> fixed (28 agents). The adopters were written before SkyyProfiles existed, so an integration workflow now pins SkyyProfiles' real semantics (join window, publish order, threads), checks + fixes every adopter and walks join/create/switch/crash/quit with the whole set.
