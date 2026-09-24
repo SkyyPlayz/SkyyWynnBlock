@@ -70,12 +70,33 @@ Admin: /bankconfig (show), /bankconfig <percent> <minutes>, /bankconfig <percent
     "[Bank] You earned ..." message reports the player's active profile only.
   - Bridge "bank:<uuid>" stays keyed by UUID and always shows the ACTIVE profile (rule 3): loading or saving a key publishes only
     when that key is pkey(owner) (interest on an offline profile file no longer overwrites it). Epoch check: BankTick now runs
-    every 5 s; each run compares "profile:epoch:<uuid>" of every online player with the last epoch seen (BankStore.EPOCH, pruned
-    to online players) and republishes bank:<uuid> from the new profile on a change. The interest check runs on every 6th run
-    (30 s after start, then every 30 s: the 0.1.1 cadence). No epoch key (SkyyProfiles absent) -> the check does nothing.
+    every 1 s (integration check below; was 5 s); each run compares "profile:epoch:<uuid>" of every online player with the last
+    epoch seen (BankStore.EPOCH, pruned to online players) and republishes bank:<uuid> from the new profile on a change. The
+    interest check runs on every 30th run (30 s after start, then every 30 s: the 0.1.1 cadence). No epoch key (SkyyProfiles
+    absent) -> the check does nothing.
   - Review fix: the interest tick's "[Bank] You earned" loop now null-checks Universe.get() like epochs() does (payouts were
     already saved before it; only the messages were at risk).
   - Rule 4 n/a (no stats or movement in this mod); rule 5: the vanilla inventory is never touched.
+  Integration check against the pinned SkyyProfiles 0.1 semantics (tools/PROFILES-CONTRACT.md, 2026-09-23; fixed in place, still 0.1.2):
+  - Already right: caches keyed by the storage key, one key per transfer (the bank side never re-resolves), writes are synchronous
+    (no dirty data to flush at a switch), first sight of an epoch is a plain republish (baseline, no switch-like action), pkey is
+    called under the bank lock only (SkyyProfiles never calls out, SkyyCoins never calls the bank: no lock cycle), no disconnect
+    state besides EPOCH (pruned), bank:<uuid> kept after disconnect like SkyyProfiles' own keys. No item moves, so profile:busy
+    does not concern this mod.
+  - FIX interest lost a deposit: the interest loop read a balance (getKey) and wrote balance+gain (setKey) in two separate lock
+    holds, so a /bank deposit or withdraw on the world thread landing between them was overwritten (coins gone from the purse,
+    never booked). Now BankStore.payInterest(key, ...) compounds all due periods and writes once inside ONE lock hold.
+  - FIX an unreadable account file was overwritten: a failed read left the key unloaded with balance 0, and the next deposit or
+    setKey wrote 0 + n over the real balance (a transient Windows read failure would also do it: setKey's own loadKey then read the
+    old value and the stale 0 + n replaced it). Now setKey refuses to write a key it could not read, deposit/withdraw return 4
+    before any coins move, /bank says the account cannot be read, interest skips it, and bank:<uuid> is removed instead of
+    showing 0 (SkyyMenu then shows "not loaded yet").
+  - FIX stale bank:<uuid> after a switch for up to 5 s (SkyyMenu's Bank page and profile tooltip read it right after the switch
+    closes the profile page): the epoch check now runs every 1 s, like SkyyCoins' CoinTick. One player's failure no longer skips
+    the rest of the online list.
+  - Hardening: the atomic rename of an account file is retried 5 x 20 ms on a FileSystemException (Windows: a scanner or editor
+    holding the file; see replaceFile), the SkyyProfiles 0.1 pattern; before, one failure left the file stale and a restart lost
+    that deposit.
 """
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools"))
@@ -237,6 +258,33 @@ public static synchronized void loadKey(String k) {
     publishIfActive(k);
   } catch (Throwable t) { warn("could not load account " + k + ": " + t); }
 }""", bs))
+# integration check: ready(k) = the account is loaded (a missing file counts: balance 0). false = the file exists but cannot be read;
+# then nothing may write it (setKey), move coins through it (deposit/withdraw) or pay interest on it.
+bs.addMethod(CtNewMethod.make("""
+public static synchronized boolean ready(String k) {
+  loadKey(k);
+  return LOADED.containsKey(k);
+}""", bs))
+# integration check: Windows refuses to replace a file another handle has open (scanner, editor): retry the rename 5 x 20 ms
+# (SkyyProfiles 0.1 atomicWrite pattern) before the save counts as failed. Tested on the game JRE: a handle opened through NIO
+# gives AccessDeniedException, a java.io / non-share-delete handle (what scanners and editors use) gives a plain
+# FileSystemException (sharing violation), so every FileSystemException except a missing tmp file is retried.
+bs.addMethod(CtNewMethod.make("""
+public static void replaceFile(java.nio.file.Path tmp, java.nio.file.Path f) throws java.io.IOException {
+  java.io.IOException last = null;
+  for (int i = 0; i < 5; i++) {
+    try {
+      java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      return;
+    } catch (java.nio.file.NoSuchFileException e) {
+      throw e;
+    } catch (java.nio.file.FileSystemException e) {
+      last = e;
+    }
+    try { Thread.sleep(20L); } catch (InterruptedException ie) { }
+  }
+  throw last;
+}""", bs))
 bs.addMethod(CtNewMethod.make("""
 public static synchronized long getKey(String k) {
   loadKey(k);
@@ -246,7 +294,7 @@ public static synchronized long getKey(String k) {
 bs.addMethod(CtNewMethod.make("""
 public static synchronized void setKey(String k, long v) {
   if (v < 0L) v = 0L;
-  loadKey(k);
+  if (!ready(k)) { warn("account " + k + " could not be read, NOT overwriting it with " + v + " (fix or remove the file)"); return; }
   BAL.put(k, Long.valueOf(v));
   publishIfActive(k);
   try {
@@ -256,7 +304,7 @@ public static synchronized void setKey(String k, long v) {
     java.nio.file.Path tmp = DIR.resolve(k + ".properties.tmp");
     java.io.OutputStream out = java.nio.file.Files.newOutputStream(tmp, new java.nio.file.OpenOption[0]);
     try { p.store(out, "SkyyBank"); } finally { out.close(); }
-    java.nio.file.Files.move(tmp, DIR.resolve(k + ".properties"), new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+    replaceFile(tmp, DIR.resolve(k + ".properties"));
   } catch (Throwable t) { warn("could not save account " + k + ": " + t); }
 }""", bs))
 # UUID-level API (commands, interest message): the player's ACTIVE profile account.
@@ -268,11 +316,17 @@ bs.addMethod(CtNewMethod.make("""
 public static synchronized void set(java.util.UUID u, long v) {
   setKey(pkey(u), v);
 }""", bs))
+bs.addMethod(CtNewMethod.make("""
+public static synchronized boolean readable(java.util.UUID u) {
+  return ready(pkey(u));
+}""", bs))
 # republish bank:<uuid> from the active profile (epoch change)
 bs.addMethod(CtNewMethod.make("""
 public static synchronized void publish(java.util.UUID u) {
-  long v = getKey(pkey(u));
-  bridge().put("bank:" + u.toString(), Long.valueOf(v));
+  String k = pkey(u);
+  if (!ready(k)) { bridge().remove("bank:" + u.toString()); return; }
+  Long v = (Long) BAL.get(k);
+  bridge().put("bank:" + u.toString(), v == null ? Long.valueOf(0L) : v);
 }""", bs))
 # ---- transfers vs profile switches (review fix, see docstring "Transfers vs profile switches")
 # epoch(u): SkyyProfiles' switch counter for u (Long), null without SkyyProfiles.
@@ -294,13 +348,13 @@ public static void straddle(String op, java.util.UUID u, String k, Object e, lon
       + "). SkyyCoins resolved the purse side itself: if it had already switched, the new profile's purse moved instead of " + k + "'s.");
 }""", bs))
 # 1 = done, 0 = not enough / refused (nothing moved), 3 = switched before coins moved (nothing moved),
-# 2 = switched during the purse call (bank side booked on the start profile k, logged)
+# 2 = switched during the purse call (bank side booked on the start profile k, logged), 4 = account file unreadable (nothing moved)
 bs.addMethod(CtNewMethod.make("""
 public static synchronized int deposit(java.util.UUID u, long n) {
   if (n <= 0L) return 0;
   Object e = epoch(u);
   String k = pkey(u);
-  getKey(k);
+  if (!ready(k)) return 4;
   if (!sameProfile(u, k, e)) return 3;
   if (!purseTake(u, n)) return 0;
   boolean same = sameProfile(u, k, e);
@@ -314,6 +368,7 @@ public static synchronized int withdraw(java.util.UUID u, long n) {
   if (n <= 0L) return 0;
   Object e = epoch(u);
   String k = pkey(u);
+  if (!ready(k)) return 4;
   long have = getKey(k);
   if (!sameProfile(u, k, e)) return 3;
   if (have < n) return 0;
@@ -323,6 +378,23 @@ public static synchronized int withdraw(java.util.UUID u, long n) {
   if (same) return 1;
   straddle("withdraw", u, k, e, n);
   return 2;
+}""", bs))
+# integration check: interest for one account in ONE lock hold (the old read-then-write in two holds could overwrite a deposit or
+# withdraw landing in between). Same compounding as 0.1.1 (each period on min(balance, max)), one file write. Returns the gain.
+bs.addMethod(CtNewMethod.make("""
+public static synchronized long payInterest(String k, long due, int pct, long max) {
+  if (!ready(k)) return 0L;
+  long b = getKey(k);
+  long total = 0L;
+  for (long i = 0L; i < due; i++) {
+    long principal = b < max ? b : max;
+    long gain = principal * (long) pct / 100L;
+    if (gain <= 0L) break;
+    b = b + gain;
+    total = total + gain;
+  }
+  if (total > 0L) setKey(k, b);
+  return total;
 }""", bs))
 # every account file (all profiles, online or not) -> list of storage keys
 bs.addMethod(CtNewMethod.make("""
@@ -384,7 +456,7 @@ public static synchronized void load() {{
   }} catch (Throwable t) {{ {PKG}.BankStore.warn("could not load config: " + t); }}
 }}""", cfg))
 
-# ================= BankTick (scheduler thread, every 5s; interest every 6th run = every 30s) =================
+# ================= BankTick (scheduler thread, every 1s; interest every 30th run = every 30s) =================
 tick.addInterface(pool.get("java.lang.Runnable"))
 tick.addField(CtField.make("public int runs = 0;", tick))
 tick.addConstructor(CtNewConstructor.make("public BankTick() { }", tick))
@@ -402,15 +474,7 @@ public void interest() {{
     java.util.HashMap earned = new java.util.HashMap();
     for (int i = 0; i < accounts.size(); i++) {{
       String key = (String) accounts.get(i);
-      long total = 0L;
-      for (long k = 0L; k < due; k++) {{
-        long b = {PKG}.BankStore.getKey(key);
-        long principal = b < {PKG}.BankConfig.MAX_PRINCIPAL ? b : {PKG}.BankConfig.MAX_PRINCIPAL;
-        long gain = principal * (long) pct / 100L;
-        if (gain <= 0L) break;
-        {PKG}.BankStore.setKey(key, b + gain);
-        total += gain;
-      }}
+      long total = {PKG}.BankStore.payInterest(key, due, pct, {PKG}.BankConfig.MAX_PRINCIPAL);
       if (total > 0L) earned.put(key, Long.valueOf(total));
     }}
     {PKG}.BankConfig.LAST = {PKG}.BankConfig.LAST + due * interval;
@@ -447,7 +511,7 @@ public void epochs() {{
       Object seen = {PKG}.BankStore.EPOCH.get(u);
       if (seen != null && seen.equals(e)) continue;
       {PKG}.BankStore.EPOCH.put(u, e);
-      {PKG}.BankStore.publish(u);
+      try {{ {PKG}.BankStore.publish(u); }} catch (Throwable t) {{ {PKG}.BankStore.warn("could not republish bank:" + u + ": " + t); }}
     }}
     java.util.Iterator ks = {PKG}.BankStore.EPOCH.keySet().iterator();
     while (ks.hasNext()) {{
@@ -459,7 +523,7 @@ tick.addMethod(CtNewMethod.make("""
 public void run() {
   epochs();
   this.runs = this.runs + 1;
-  if (this.runs >= 6) {
+  if (this.runs >= 30) {
     this.runs = 0;
     interest();
   }
@@ -483,6 +547,7 @@ public static void run({PR} pr, String actionText, String amountText) {{
   java.util.UUID u = pr.getUuid();
   try {{
     if (!{PKG}.BankStore.coinsReady()) {{ pr.sendMessage({MSG}.raw("[Bank] SkyyCoins is not loaded, the bank cannot move coins.")); return; }}
+    if (!{PKG}.BankStore.readable(u)) {{ pr.sendMessage({MSG}.raw("[Bank] Your bank account file cannot be read right now, so nothing can move. Try again; if it keeps happening tell an admin (server log).")); return; }}
     if (actionText == null) {{
       pr.sendMessage({MSG}.raw("[Bank] Bank: " + {PKG}.BankStore.get(u) + " coins  |  Purse: " + {PKG}.BankStore.purse(u) + " coins"));
       pr.sendMessage({MSG}.raw("[Bank] Interest " + {PKG}.BankConfig.PERCENT + "% every " + {PKG}.BankConfig.MINUTES + " min (on up to " + {PKG}.BankConfig.MAX_PRINCIPAL + "). Bank coins are safe on death. /bank deposit|withdraw <amount|all>"));
@@ -504,6 +569,7 @@ public static void run({PR} pr, String actionText, String amountText) {{
     if (n <= 0L) {{ pr.sendMessage({MSG}.raw("[Bank] Nothing to " + (dep ? "deposit" : "withdraw") + ".")); return; }}
     int r = dep ? {PKG}.BankStore.deposit(u, n) : {PKG}.BankStore.withdraw(u, n);
     if (r == 3) {{ pr.sendMessage({MSG}.raw("[Bank] Your profile changed, nothing was moved. Try again.")); return; }}
+    if (r == 4) {{ pr.sendMessage({MSG}.raw("[Bank] Your bank account file cannot be read right now, nothing was moved. Try again; if it keeps happening tell an admin (server log).")); return; }}
     if (r == 2) {{ pr.sendMessage({MSG}.raw("[Bank] Your profile changed during this " + (dep ? "deposit: the " + n + " coins went into" : "withdrawal: the " + n + " coins came out of") + " the bank of the profile you started it on.")); return; }}
     if (dep) {{
       if (r != 1) {{ pr.sendMessage({MSG}.raw("[Bank] Not enough coins in your purse (" + {PKG}.BankStore.purse(u) + ").")); return; }}
@@ -686,7 +752,7 @@ public void setup() {{
   {PKG}.BankConfig.load();
   getCommandRegistry().registerCommand(new {PKG}.BankCmd());
   getCommandRegistry().registerCommand(new {PKG}.BankConfigCmd());
-  this.ticker = {HSV}.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new {PKG}.BankTick(), 5L, 5L, java.util.concurrent.TimeUnit.SECONDS);
+  this.ticker = {HSV}.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new {PKG}.BankTick(), 1L, 1L, java.util.concurrent.TimeUnit.SECONDS);
   getLogger().at(java.util.logging.Level.INFO).log("[SkyyBank] {VERSION} ready - /bank, interest " + {PKG}.BankConfig.PERCENT + "% every " + {PKG}.BankConfig.MINUTES + " min (coins bridge " + ({PKG}.BankStore.coinsReady() ? "found" : "NOT found yet") + ", profiles bridge " + ({PKG}.BankStore.bridge().get("profile:fn:key") instanceof java.util.function.Function ? "found" : "not found yet: one account per player") + ")");
 }}""", pl))
 pl.addMethod(CtNewMethod.make("""

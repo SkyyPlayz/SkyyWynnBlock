@@ -124,7 +124,7 @@ Nothing new deploys without Skyy's OK (the auto-mode permission check also refus
 | SkyyMenu | 0.1.1 (BUG: pages opened from it hang on Loading) | 0.1.2 fix + 1.4x bigger + info box above the icons |
 | SkyyProfiles | - | 0.1 NEW (profiles, class picked at creation, inventory swap, crash-safe) |
 HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death).
-Integration check of the profiles set running (workflow skywynn-profiles-integration) before it is offered for testing.
+The profiles set is integration-checked (2026-09-24 00:10); whole-set test plan at the end of TEST-CHECKLIST.md.
 Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 
 ### Verified in game by Skyy (2026-09-23)
@@ -138,6 +138,8 @@ Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 0. Exploration rewards: research running (what SkyBlock + Wynncraft give for exploring); Skyy picks the rewards from it.
 1. Deploy approval for the profiles set when it is built (SkyyProfiles 0.1 + the 8 per-profile versions).
 2. Endurance/Intelligence talismans: % of vanilla base (Stamina 10, Mana 0) is nearly useless - make them flat until armor adds base stats?
+4. Profiles, decide: each profile earns bank interest separately (N profiles = N x interest)? /skills quiet per profile or per player? Island visitors can no longer use blocks (chests, furnaces, crops, benches, beds) - OK?
+5. Exploration: pick the rewards (research/Exploration-Research.md section 4-5).
 3. Accessory power: six [SKYY?] questions in SkyyAccessories-Plan.md (AP values, bench accessories count?, class crystals, slot sources/prices, Mage crystal).
 
 ### Repository
@@ -312,3 +314,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-23 22:55: Skyy (craft page, Craftable only ON worked when opened by typing): add SEARCH; split the farming table back into a Farming tab; new SMITHING tab = tools, weapons, armor; everything else stays in Crafting. Plan + engine facts in SkyySacks-Plan.md 'Craft page tabs + search'. Goes into SkyySacks 0.7.3 (on top of the per-profile 0.7.2), with the Alchemy tab removed.
 - 2026-09-23 22:57: SkyyProfiles 0.1 review fix (rebuilt, NOT deployed; edited SkyyProfiles/build_skyyprofiles_0.1.py in place - never deployed, no patch script): crash recovery at join now loads the snapshot in rollbackMode like the live rollback (a slot the clear could not empty that already holds the identical stack is never given twice); if the clear could not verify every slot empty the recovery is logged RECOVER-INCOMPLETE, the marker becomes stage=failed with a note for the admin (check the 'could not empty' slots for duplicates, then delete switching/<uuid>.properties) and the player is told. Any stage=failed marker now refuses /profiles switch and create-and-switch until an admin deletes it (a new switch would overwrite the marker and the snapshots it points at). Repo note: the earlier stackOf hardening is already committed (b84a071); there was nothing left uncommitted for this mod before this fix. Lint green.
 - 2026-09-23 23:00: profiles workflow finished: SkyyProfiles 0.1 + Coins 0.1.5, Bank 0.1.2, Sacks 0.7.2, Skills 0.3.2, Collections 0.1.5, Accessories 0.4.1, Islands 0.4.4, Classes 0.1.3 all built -> cheap review -> fixed (28 agents). The adopters were written before SkyyProfiles existed, so an integration workflow now pins SkyyProfiles' real semantics (join window, publish order, threads), checks + fixes every adopter and walks join/create/switch/crash/quit with the whole set.
+- 2026-09-24 00:10: integration workflow finished (10 agents). SkyyProfiles semantics pinned in tools/PROFILES-CONTRACT.md (key Function correct from the first call, publish order, busy flag during crash recovery). Fixed in place (versions kept): Profiles (Windows save failures under concurrent admin scans; marker delete; first-join Create page timing vs hub routing, never replaces an open page), Coins (4 bugs), Bank (4), Sacks (profile:busy ignored = dupes during crash recovery; missing epoch; more), Skills (Windows save loss during /skills top scans; 2 more), Collections (cancelled breaks counted = visitor farming; 5 more), Accessories (Equip/Unequip ignored profile:busy), Islands (new GuardUse: non-members cannot use blocks on an island - chest griefing + cross-profile item leak), Classes (unplayable profile class). Every jar rebuilt, -Xverify:all + jpype harnesses pass, lint 0 fails. NOT tested in game. Warning: never uninstall SkyyProfiles once profiles exist.

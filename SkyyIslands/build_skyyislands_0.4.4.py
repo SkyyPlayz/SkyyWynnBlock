@@ -17,6 +17,20 @@
     runs every 5 s (SEEN pruning still every 10 s) and republishes when profile:epoch:<uuid> changes (last epoch per UUID in
     IslandStore.EPOCH, pruned on logout, so every login publishes once); IslandBuild republishes after creating an island.
   - Never touches the vanilla inventory (rule 5); the starter kit still goes into the new island's chest.
+  Integration pass against the pinned SkyyProfiles 0.1 semantics (2026-09-23, same version, fixed in place - this script is now
+  the source; tools/islands_0_4_4_patch.py only documents how the first draft was derived and no longer reproduces it):
+  - Nothing here caches per-profile data: every read resolves pkey(u) at the moment of use (right from the first call, also for
+    offline owners), so first sight at join needs no baseline logic; SeenTick only republishes island:<uuid> (first sight = publish).
+  - island:<uuid> publishes are serialized (IslandStore.PUB, never held across another mod's code; lock order PUB -> IslandStore) and
+    read the state inside the lock: before, a SeenTick publish that read "no island" could land its remove() after IslandBuild
+    published the new world, leaving the key missing until the next switch or relog.
+  - NEW GuardUse (UseBlockEvent$Pre, ICancellableEcsEvent - Aetherhaven TownTerritoryUseBlockSystem pattern): in an island world a
+    non-member may not USE blocks (chests, processing benches, crops, beds ...); doors, trapdoors and gates stay usable. This also
+    covers the owner standing on the island of ANOTHER of their profiles (after a switch the /island teleport to the new profile's
+    island takes seconds when that island is created; with islandOnSwitch=false they stay): before, they could open that profile's
+    chests and carry its items into the new profile's inventory, and any visitor could loot or F-harvest any island.
+    The guard base now cancels through ICancellableEcsEvent (UseBlockEvent$Pre is not a CancellableEcsEvent subclass).
+  - WARNED (message throttle) is pruned with SEEN at logout.
 
 0.4.3: COMMANDS FOR EVERYONE + POSITIONAL FORMS (engine facts re-verified against HytaleServer.jar bytecode 2026-09-23).
   Permissions: AbstractCommand.setOwner() gave /island and /hub the auto node "<plugin base>.command.<cmd>" (the version is part of
@@ -125,6 +139,10 @@ BBE = "com.hypixel.hytale.server.core.event.events.ecs.BreakBlockEvent"
 PBE = "com.hypixel.hytale.server.core.event.events.ecs.PlaceBlockEvent"
 PUE = "com.hypixel.hytale.server.core.event.events.ecs.InteractivelyPickupItemEvent"
 PRE = "com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent"
+UBE = "com.hypixel.hytale.server.core.event.events.ecs.UseBlockEvent"
+UBPRE = "com.hypixel.hytale.server.core.event.events.ecs.UseBlockEvent$Pre"
+ICE = "com.hypixel.hytale.component.system.ICancellableEcsEvent"
+BTY = "com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType"
 HSV = "com.hypixel.hytale.server.core.HytaleServer"
 R3F = "com.hypixel.hytale.math.vector.Rotation3f"
 
@@ -133,6 +151,7 @@ for c, m in ((INS, "spawnInstance"), (INS, "teleportPlayerToLoadingInstance"), (
              (CHU, "indexChunk"), (TC, "getTransform"), (TP, "createForPlayer"), (CTX, "provided"), (CEV, "setCancelled"), (EST, "getWorld"), (PR, "hasPermission"), (ICB, "getItemContainer"), (WCH, "getBlockComponentEntity"), (IC, "addItemStack"), (HSV, "SCHEDULED_EXECUTOR"), (PRE, "getPlayerRef"),
              ("com.hypixel.hytale.server.core.command.system.AbstractCommand", "requirePermission"),
              (AC, "setPermissionGroups"), (AC, "addSubCommand"), (AC, "withRequiredArg"), (AC, "addAliases"),
+             (UBPRE, "setCancelled"), (UBE, "getBlockType"), (UBE, "getInteractionType"), (BTY, "getInteractions"), (ICE, "setCancelled"),
              ("com.hypixel.hytale.server.core.plugin.PluginBase", "shutdown")):
     B.probe(pool, c, m)
 
@@ -161,6 +180,7 @@ g1 = pool.makeClass(PKG + ".GuardDamage", guard)
 g2 = pool.makeClass(PKG + ".GuardBreak", guard)
 g3 = pool.makeClass(PKG + ".GuardPlace", guard)
 g4 = pool.makeClass(PKG + ".GuardPickup", guard)
+g5 = pool.makeClass(PKG + ".GuardUse", guard)
 pl   = pool.makeClass(PKG + ".SkyyIslandsPlugin", pool.get(JP))
 
 # ================= IslandStore =================
@@ -171,6 +191,8 @@ st_.addField(CtField.make("public static final java.util.concurrent.ConcurrentHa
 st_.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap WARNED = new java.util.concurrent.ConcurrentHashMap();", st_))
 st_.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap SEEN = new java.util.concurrent.ConcurrentHashMap();", st_))
 st_.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap EPOCH = new java.util.concurrent.ConcurrentHashMap();", st_))
+# serializes island:<uuid> publishes (read + bridge write inside, so the last publish always carries the newest state)
+st_.addField(CtField.make("public static final Object PUB = new Object();", st_))
 st_.addField(CtField.make("public static final java.util.Set ISLAND_WORLDS = java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap());", st_))
 st_.addField(CtField.make("public static java.nio.file.Path HUB_FILE;", st_))
 st_.addField(CtField.make("public static volatile String HUB_WORLD;", st_))
@@ -326,15 +348,23 @@ public static String worldName(String key) {
   String s = read(key).getProperty("world");
   return s == null || s.trim().isEmpty() ? null : s.trim();
 }""", st_))
-# bridge island:<uuid> = world of the ACTIVE profile's island (UUID-keyed, contract rule 3); called outside the IslandStore lock
+# bridge island:<uuid> = world of the ACTIVE profile's island (UUID-keyed, contract rule 3). publishNow resolves pkey first (it may
+# take SkyyProfiles' store lock for a moment on a cache miss; it never calls back into us), then reads the island file (IslandStore
+# lock). publish() runs it under PUB so two publishes never interleave (SeenTick remove() landing after IslandBuild's put()).
+# Lock order: PUB -> IslandStore; nothing holding the IslandStore lock ever calls publish().
+st_.addMethod(CtNewMethod.make("""
+public static void publishNow(java.util.UUID u) {
+  try {
+    String key = pkey(u);
+    String w = worldName(key);
+    java.util.Map b = bridge();
+    if (w == null) b.remove("island:" + u); else b.put("island:" + u, w);
+  } catch (Throwable t) { }
+}""", st_))
 st_.addMethod(CtNewMethod.make("""
 public static void publish(java.util.UUID u) {
   if (u == null) return;
-  try {
-    java.util.Map b = bridge();
-    String w = worldName(pkey(u));
-    if (w == null) b.remove("island:" + u); else b.put("island:" + u, w);
-  } catch (Throwable t) { }
+  synchronized (PUB) { publishNow(u); }
 }""", st_))
 st_.addMethod(CtNewMethod.make("""
 public static synchronized void setWorldName(String key, String name) {
@@ -819,7 +849,7 @@ public void run() {{
     java.util.Iterator it = {UNI}.get().getPlayers().iterator();
     while (it.hasNext()) {{ {PR} pr = ({PR}) it.next(); if (pr != null && pr.isValid()) online.add(pr.getUuid()); }}
     this.runs = this.runs + 1;
-    if (this.runs % 2 == 0) {PKG}.IslandStore.SEEN.keySet().retainAll(online);
+    if (this.runs % 2 == 0) {{ {PKG}.IslandStore.SEEN.keySet().retainAll(online); {PKG}.IslandStore.WARNED.keySet().retainAll(online); }}
     {PKG}.IslandStore.EPOCH.keySet().retainAll(online);
     java.util.Map b = {PKG}.IslandStore.bridge();
     java.util.Iterator ou = online.iterator();
@@ -841,6 +871,19 @@ guard.addMethod(CtNewMethod.make(f"""
 public {QRY} getQuery() {{
   return com.hypixel.hytale.component.Archetype.empty();
 }}""", guard))
+# hooks the subclasses override (declared before handle(): javassist has no forward references)
+guard.addMethod(CtNewMethod.make(f"""
+public boolean exempt({EV} ev) {{
+  return false;
+}}""", guard))
+guard.addMethod(CtNewMethod.make("""
+public String visitorText() {
+  return "[Island] You can only build on islands you are a member of. Ask the owner for /island invite.";
+}""", guard))
+guard.addMethod(CtNewMethod.make("""
+public String otherProfileText() {
+  return "[Island] This island belongs to another of your profiles - switch to that profile to build here.";
+}""", guard))
 guard.addMethod(CtNewMethod.make(f"""
 public void handle(int idx, {ACH} chunk, {ST} st, {CB} buf, {EV} ev) {{
   try {{
@@ -850,6 +893,7 @@ public void handle(int idx, {ACH} chunk, {ST} st, {CB} buf, {EV} ev) {{
     if (w == null) return;
     String wn = w.getName();
     if (!{PKG}.IslandStore.isIslandWorld(wn)) return;
+    if (exempt(ev)) return;
     {REF} r = chunk.getReferenceTo(idx);
     if (r == null) return;
     {PR} pr = ({PR}) st.getComponent(r, {PR}.getComponentType());
@@ -861,19 +905,44 @@ public void handle(int idx, {ACH} chunk, {ST} st, {CB} buf, {EV} ev) {{
     boolean admin = false;
     try {{ admin = pr.hasPermission("skyyislands.admin"); }} catch (Throwable t) {{ }}
     if (admin) return;
-    if (ev instanceof {CEV}) (({CEV}) ev).setCancelled(true);
+    if (ev instanceof {ICE}) (({ICE}) ev).setCancelled(true);
     Long last = (Long) {PKG}.IslandStore.WARNED.get(u);
     long now = System.currentTimeMillis();
     if (last == null || now - last.longValue() > 3000L) {{
       {PKG}.IslandStore.WARNED.put(u, Long.valueOf(now));
-      if (u.equals({PKG}.IslandStore.ownerUuid(owner))) pr.sendMessage({MSG}.raw("[Island] This island belongs to another of your profiles - switch to that profile to build here."));
-      else pr.sendMessage({MSG}.raw("[Island] You can only build on islands you are a member of. Ask the owner for /island invite."));
+      if (u.equals({PKG}.IslandStore.ownerUuid(owner))) pr.sendMessage({MSG}.raw(otherProfileText()));
+      else pr.sendMessage({MSG}.raw(visitorText()));
     }}
   }} catch (Throwable t) {{ {PKG}.IslandStore.warn("guard failed: " + t); }}
 }}""", guard))
 
-for gc, gname, gev in ((g1, "GuardDamage", DBE), (g2, "GuardBreak", BBE), (g3, "GuardPlace", PBE), (g4, "GuardPickup", PUE)):
+for gc, gname, gev in ((g1, "GuardDamage", DBE), (g2, "GuardBreak", BBE), (g3, "GuardPlace", PBE), (g4, "GuardPickup", PUE), (g5, "GuardUse", UBPRE)):
     gc.addConstructor(CtNewConstructor.make(f"public {gname}() {{ super({gev}.class); }}", gc))
+# GuardUse: doors / trapdoors / gates stay usable for visitors (Aetherhaven TownTerritoryGuard.classifyUseBlock rule: the block's
+# root interaction for this use contains "Door" - vanilla Use = "Door" / "Door_Horizontal" - or the block id contains door/gate).
+# Everything else (Open_Container chests, Open_Processing_Bench furnaces, crop harvest, beds, benches) is members-only.
+g5.addMethod(CtNewMethod.make(f"""
+public boolean exempt({EV} ev) {{
+  try {{
+    if (!(ev instanceof {UBE})) return false;
+    {UBE} e = ({UBE}) ev;
+    {BTY} bt = e.getBlockType();
+    if (bt == null) return false;
+    java.util.Map im = bt.getInteractions();
+    Object rid = im == null ? null : im.get(e.getInteractionType());
+    if (rid != null && String.valueOf(rid).indexOf("Door") >= 0) return true;
+    String id = String.valueOf(bt.getId()).toLowerCase();
+    return id.indexOf("door") >= 0 || id.indexOf("gate") >= 0;
+  }} catch (Throwable t) {{ return false; }}
+}}""", g5))
+g5.addMethod(CtNewMethod.make("""
+public String visitorText() {
+  return "[Island] Visitors can look around but not use chests, benches or crops here. Ask the owner for /island invite.";
+}""", g5))
+g5.addMethod(CtNewMethod.make("""
+public String otherProfileText() {
+  return "[Island] This island belongs to another of your profiles - switch to that profile to use its chests and benches.";
+}""", g5))
 
 # ================= plugin =================
 pl.addField(CtField.make("public java.util.concurrent.ScheduledFuture ticker;", pl))
@@ -893,10 +962,11 @@ public void setup() {{
   getEntityStoreRegistry().registerSystem(new {PKG}.GuardBreak());
   getEntityStoreRegistry().registerSystem(new {PKG}.GuardPlace());
   getEntityStoreRegistry().registerSystem(new {PKG}.GuardPickup());
+  getEntityStoreRegistry().registerSystem(new {PKG}.GuardUse());
   this.ticker = {HSV}.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new {PKG}.SeenTick(), 5L, 5L, java.util.concurrent.TimeUnit.SECONDS);
   boolean tpl = false;
   try {{ tpl = {INS}.doesInstanceAssetExist("SkyyIsland"); }} catch (Throwable t) {{ }}
-  getLogger().at(java.util.logging.Level.INFO).log("[SkyyIslands] {VERSION} ready - /island [info|home|visit <player>|invite <player>] /hub /sethub (players: hytale:Adventurer), island protection on, one island per profile (hub " + ({PKG}.IslandStore.HUB_WORLD == null ? "NOT set - run /sethub" : "in " + {PKG}.IslandStore.HUB_WORLD) + ", " + {PKG}.IslandStore.ISLAND_WORLDS.size() + " island worlds known, template SkyyIsland " + (tpl ? "found" : "NOT FOUND - check Server/Instances in the jar") + ")");
+  getLogger().at(java.util.logging.Level.INFO).log("[SkyyIslands] {VERSION} ready - /island [info|home|visit <player>|invite <player>] /hub /sethub (players: hytale:Adventurer), island protection on (build, pickup, block use except doors), one island per profile (hub " + ({PKG}.IslandStore.HUB_WORLD == null ? "NOT set - run /sethub" : "in " + {PKG}.IslandStore.HUB_WORLD) + ", " + {PKG}.IslandStore.ISLAND_WORLDS.size() + " island worlds known, template SkyyIsland " + (tpl ? "found" : "NOT FOUND - check Server/Instances in the jar") + ")");
 }}""", pl))
 
 pl.addMethod(CtNewMethod.make("""
@@ -905,7 +975,7 @@ protected void shutdown() {
   super.shutdown();
 }""", pl))
 
-for c in (st_, fill, cfl, reln, relt, bld, icmd, iinf, ihom, ivis, iinv, hcmd, shub, rout, disp, rdy, seen, guard, g1, g2, g3, g4, pl):
+for c in (st_, fill, cfl, reln, relt, bld, icmd, iinf, ihom, ivis, iinv, hcmd, shub, rout, disp, rdy, seen, guard, g1, g2, g3, g4, g5, pl):
     c.writeFile(OUT)
 print("classes written")
 

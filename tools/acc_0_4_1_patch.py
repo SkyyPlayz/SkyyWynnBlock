@@ -19,6 +19,17 @@ working without it, zero dependencies):
  6. Rule 5: the vanilla inventory is never touched for a switch (SkyyProfiles swaps it). The bag page remembers the key it was built
     for; a click after a profile switch only rebuilds the page on the current profile's bag (no equip/unequip on a stale page).
  7. Rule 6: nothing else here is per player data.
+INTEGRATION PASS (2026-09-23, still 0.4.1 - checked against "Semantics of SkyyProfiles 0.1" at the end of PROFILES-CONTRACT.md):
+ 8. Semantics rule 5: bag Equip / Unequip move items between the live vanilla inventory and per-profile storage, so they are refused
+    (page message, nothing moved) while profile:busy:<uuid> is present (a pending crash recovery at join: the recovery reloads the
+    snapshot afterwards, so an equip would duplicate the item and an unequip would lose it). Also refused while SkyyProfiles is
+    installed (profile:fn:key present) but profile:epoch:<uuid> is absent for this online player: per the semantics that means the
+    players file is unreadable and the key function fell back to profile 1's key, so an equip/unequip would move items between
+    profiles. AccStore.moveBlock(u) answers both (null = go).
+ 9. Semantics rule 1 (one key per operation): the page resolves pkey ONCE per click (checked against the key it was drawn for) and
+    passes it to every store call of that click (canEquipK / equipK / unequipK / putK / stashK via giveBack), so the check, the move,
+    the hand-back and the undo of one click can never land in two different profiles' bags. The UUID-only store methods remain as
+    wrappers (pkey resolved once inside each).
 Run:  python tools/acc_0_4_1_patch.py   then   python SkyyAccessories/build_skyyaccessories_0.4.1.py   (never --deploy from an agent)
 """
 import os
@@ -54,6 +65,8 @@ Run:   python build_skyyaccessories_0.4.1.py            -> SkyyAccessories/SkyyA
        active key) changes - checked in the 5 s AccTick and the 1 s AccEffects sync; talisman stats, regen and the Speed movement
        source follow the new profile's bag through the same per-second sync (it reads through pkey).
      - The bag page rebuilds instead of acting when the profile changed since it was drawn. Vanilla inventory untouched.
+     - Integration pass: Equip/Unequip refused while profile:busy:<uuid> is set (pending crash recovery) or the player's profile
+       state is unknown (SkyyProfiles installed, no profile:epoch:<uuid>); one pkey per click for every store call of that click.
      - Without SkyyProfiles every key is the UUID: behaviour identical to 0.4.
 0.4 notes:
 0.4: RARITY TIERS''')
@@ -175,44 +188,109 @@ public static void save(java.util.UUID u) {
   saveK(u, pkey(u));
 }""", st_))''')
 
-# ---------------------------------------------------------------- equip / unequip / put / stash: resolve the key once
+# ---------------------------------------------------------------- canEquip / equip / unequip / put / stash: one key per operation
+# Integration pass: each is a K variant taking the storage key the CALLER resolved (the bag page resolves it once per click, semantics
+# rule 1), plus the UUID-only wrapper (pkey resolved once) added right after it (javassist: callee before caller).
+rep('''public static boolean canEquip(java.util.UUID u, String id) {{
+  synchronized (lock(u)) {{
+    String[] s = slots(u);''', '''public static boolean canEquipK(java.util.UUID u, String k, String id) {{
+  synchronized (lock(u)) {{
+    String[] s = slotsK(u, k);''')
+rep('''    for (int i = 0; i < s.length; i++) if (s[i] == null) return true;
+    return false;
+  }}
+}}""", st_))''', '''    for (int i = 0; i < s.length; i++) if (s[i] == null) return true;
+    return false;
+  }}
+}}""", st_))
+st_.addMethod(CtNewMethod.make("""
+public static boolean canEquip(java.util.UUID u, String id) {
+  return canEquipK(u, pkey(u), id);
+}""", st_))''')
 rep('''public static String equip(java.util.UUID u, String id) {{
   synchronized (lock(u)) {{
-    String[] s = slots(u);''', '''public static String equip(java.util.UUID u, String id) {{
+    String[] s = slots(u);''', '''public static String equipK(java.util.UUID u, String k, String id) {{
   synchronized (lock(u)) {{
-    String k = pkey(u);
     String[] s = slotsK(u, k);''')
 rep('''        String old = s[i]; s[i] = id; save(u); return old;''', '''        String old = s[i]; s[i] = id; saveK(u, k); return old;''')
-rep('''    for (int i = 0; i < s.length; i++) if (s[i] == null) {{ s[i] = id; save(u); return ""; }}''',
-    '''    for (int i = 0; i < s.length; i++) if (s[i] == null) {{ s[i] = id; saveK(u, k); return ""; }}''')
+rep('''    for (int i = 0; i < s.length; i++) if (s[i] == null) {{ s[i] = id; save(u); return ""; }}
+    return null;
+  }}
+}}""", st_))''',
+    '''    for (int i = 0; i < s.length; i++) if (s[i] == null) {{ s[i] = id; saveK(u, k); return ""; }}
+    return null;
+  }}
+}}""", st_))
+st_.addMethod(CtNewMethod.make("""
+public static String equip(java.util.UUID u, String id) {
+  return equipK(u, pkey(u), id);
+}""", st_))''')
 rep('''public static String unequip(java.util.UUID u, int idx) {
   synchronized (lock(u)) {
     String[] s = slots(u);
     if (idx < 0 || idx >= s.length || s[idx] == null) return null;
-    String id = s[idx]; s[idx] = null; save(u); return id;''', '''public static String unequip(java.util.UUID u, int idx) {
+    String id = s[idx]; s[idx] = null; save(u); return id;
+  }
+}""", st_))''', '''public static String unequipK(java.util.UUID u, String k, int idx) {
   synchronized (lock(u)) {
-    String k = pkey(u);
     String[] s = slotsK(u, k);
     if (idx < 0 || idx >= s.length || s[idx] == null) return null;
-    String id = s[idx]; s[idx] = null; saveK(u, k); return id;''')
+    String id = s[idx]; s[idx] = null; saveK(u, k); return id;
+  }
+}""", st_))
+st_.addMethod(CtNewMethod.make("""
+public static String unequip(java.util.UUID u, int idx) {
+  return unequipK(u, pkey(u), idx);
+}""", st_))''')
 rep('''public static void put(java.util.UUID u, int idx, String id) {
   synchronized (lock(u)) {
     String[] s = slots(u);
     if (idx < 0 || idx >= s.length) return;
-    s[idx] = id; save(u);''', '''public static void put(java.util.UUID u, int idx, String id) {
+    s[idx] = id; save(u);
+  }
+}""", st_))''', '''public static void putK(java.util.UUID u, String k, int idx, String id) {
   synchronized (lock(u)) {
-    String k = pkey(u);
     String[] s = slotsK(u, k);
     if (idx < 0 || idx >= s.length) return;
-    s[idx] = id; saveK(u, k);''')
+    s[idx] = id; saveK(u, k);
+  }
+}""", st_))
+st_.addMethod(CtNewMethod.make("""
+public static void put(java.util.UUID u, int idx, String id) {
+  putK(u, pkey(u), idx, id);
+}""", st_))''')
 rep('''public static boolean stash(java.util.UUID u, String id) {
   synchronized (lock(u)) {
     String[] s = slots(u);
-    for (int i = 0; i < s.length; i++) if (s[i] == null) { s[i] = id; save(u); return true; }''', '''public static boolean stash(java.util.UUID u, String id) {
+    for (int i = 0; i < s.length; i++) if (s[i] == null) { s[i] = id; save(u); return true; }
+    return false;
+  }
+}""", st_))''', '''public static boolean stashK(java.util.UUID u, String k, String id) {
   synchronized (lock(u)) {
-    String k = pkey(u);
     String[] s = slotsK(u, k);
-    for (int i = 0; i < s.length; i++) if (s[i] == null) { s[i] = id; saveK(u, k); return true; }''')
+    for (int i = 0; i < s.length; i++) if (s[i] == null) { s[i] = id; saveK(u, k); return true; }
+    return false;
+  }
+}""", st_))
+st_.addMethod(CtNewMethod.make("""
+public static boolean stash(java.util.UUID u, String id) {
+  return stashK(u, pkey(u), id);
+}""", st_))
+# Integration pass (semantics rule 5): null = item moves between the live inventory and this player's bag are safe right now, else the
+# reason shown on the page. profile:busy:<uuid> = the live inventory may not belong to the active profile (pending crash recovery at
+# join; a switch runs inside one world-thread task, so the page handler never sees that one). SkyyProfiles installed but no
+# profile:epoch:<uuid> for an online player = its players file is unreadable and pkey fell back to profile 1's key (or the join work
+# has not run yet): moving items now could carry them from one profile to another. Without SkyyProfiles both keys are absent -> null.
+st_.addMethod(CtNewMethod.make("""
+public static String moveBlock(java.util.UUID u) {
+  try {
+    java.util.Map b = bridge();
+    String us = u.toString();
+    if (b.get("profile:busy:" + us) != null) return "your profile is still loading - try again in a moment";
+    if (b.get("profile:fn:key") != null && b.get("profile:epoch:" + us) == null) return "your profile is not loaded - try again in a moment - tell an admin if this stays";
+  } catch (Throwable t) { }
+  return null;
+}""", st_))''')
 
 # ---------------------------------------------------------------- epoch check (rule 3) in the existing 5 s tick
 rep('''st_.addMethod(CtNewMethod.make(f"""
@@ -261,11 +339,26 @@ rep('''    {PLA} player = ({PLA}) st.getComponent(ref, {PLA}.getComponentType())
     if (player == null) return;
     for (int i = 0; i < {PKG}.AccStore.CAP; i++) {{''', '''    {PLA} player = ({PLA}) st.getComponent(ref, {PLA}.getComponentType());
     if (player == null) return;
-    if (this.key != null && !this.key.equals({PKG}.AccStore.pkey(u))) {{   // 0.4.1: profile switched since this page was drawn
+    String k = {PKG}.AccStore.pkey(u);   // integration pass: ONE storage key for everything this click does (semantics rule 1)
+    if (this.key != null && !this.key.equals(k)) {{   // 0.4.1: profile switched since this page was drawn
       this.info = "your profile changed - this is the bag of your current profile now";
       rebuild(); return;
     }}
+    String blk = {PKG}.AccStore.moveBlock(u);   // integration pass: profile:busy / unknown profile state -> move nothing
+    if (blk != null) {{ this.info = blk; rebuild(); return; }}
     for (int i = 0; i < {PKG}.AccStore.CAP; i++) {{''')
+# integration pass: every store call of the click uses that key k
+rep('''      String id = {PKG}.AccStore.unequip(u, i);''', '''      String id = {PKG}.AccStore.unequipK(u, k, i);''')
+rep('''{PKG}.AccStore.put(u, i, id);''', '''{PKG}.AccStore.putK(u, k, i, id);''')
+rep('''      if (!{PKG}.AccStore.canEquip(u, put)) {{''', '''      if (!{PKG}.AccStore.canEquipK(u, k, put)) {{''')
+rep('''      String res = {PKG}.AccStore.equip(u, put);''', '''      String res = {PKG}.AccStore.equipK(u, k, put);''')
+rep('''        int g = giveBack(player, u, id);''', '''        int g = giveBack(player, u, k, id);''')
+rep('''        int g = giveBack(player, u, res);''', '''        int g = giveBack(player, u, k, res);''')
+rep('''public static int giveBack({PLA} p, java.util.UUID u, String id) {{
+  if (giveOne(p, id)) return 0;
+  if ({PKG}.AccStore.stash(u, id)) return 1;''', '''public static int giveBack({PLA} p, java.util.UUID u, String k, String id) {{
+  if (giveOne(p, id)) return 0;
+  if ({PKG}.AccStore.stashK(u, k, id)) return 1;   // integration pass: the bag of the click's key k''')
 
 # ---------------------------------------------------------------- log line + manifest
 rep('''talismans in 5 rarities (percent layer on)" );''', '''talismans in 5 rarities (percent layer on), one bag per profile when SkyyProfiles runs" );''')

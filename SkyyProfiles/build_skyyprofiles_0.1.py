@@ -16,6 +16,10 @@ CREATE PROFILE page (Minecraft create-world style): class cards from the SkyyCla
   merged with a built-in fallback roster (Archer, Warrior, Mage selectable; Assassin, Shaman "coming later"); pick one, "Create profile".
   First join with no profile: the page opens ~openDelayMillis (2 s) after the first PlayerReadyEvent of the session (SkyyHud/SkyyClasses
   OpenTask pattern: world-thread hop + WorldMap channel gate) and creates profile "1" (legacy key = everything the player already has).
+  Cross-mod timeline pass: the open waits until the player has stayed in one world for 2 polls (re-checked on that world's thread),
+  waits up to 8 s while they stand in a skyy-island-* world (SkyyIslands routes island logins to the hub 1.5 s after the first
+  PlayerReadyEvent; a page opened just before that teleport is lost), never replaces an open custom page (SkyyMenu etc.: it waits;
+  a Profiles page the player opened with /profiles: done) and never opens over the respawn screen.
   A class the player already had in SkyyClasses 0.1.x (bridge class:<uuid>, else class:fn:get) is pre-selected. "Later" / Esc closes it;
   it re-opens on every login until profile 1 exists (promptEveryLogin=true) - /profiles or /profiles create opens it any time.
 PROFILES page (/profiles, alias /profile): a card per profile (class icon, name, class + combat skill, created, last played, ACTIVE),
@@ -38,15 +42,28 @@ SWITCH (world thread, one uninterrupted task, per-player BUSY guard):
      /inventory backpack command; a new profile starts at newProfileBackpack=0 like a new vanilla player). Each stack goes back to its
      slot with setItemStackForSlot(slot, stack, false) (verified by reading the slot); anything that cannot -> addOrDropItemStack into
      storage-hotbar-backpack (storage first).
-  6. players/<uuid>.properties: active=to, epoch+1, from.inv=1 (atomic). 7. delete the marker. 8. republish the bridge, close our page,
+  6. players/<uuid>.properties: active=to, epoch+1, from.inv=1 (atomic); profile:fn:key returns the new key from this instant.
+  7. the marker is KEPT 30 s (ClearLater), not deleted: the engine saves a player's inventory at most every 10 s (PlayerSavingSystems
+     TickingSystem), so a crash right after a switch would reload the PRE-switch inventory under the new profile (one profile duplicated,
+     the other lost). With the marker the next join rolls forward to the new profile's snapshot instead. A graceful stop (plugin
+     shutdown: the engine saves every online player) deletes pending markers at once; a rejoin inside the same JVM never recovers a
+     pending marker (PENDING). 8. republish the bridge, close our page,
      dispatch the player's own "/island" (CommandManager.get().handleCommand(playerRef, "island") - SkyyIslands 0.4.4 sends them to the
      ACTIVE profile's island, created on first use); without SkyyIslands -> the default world spawn (SkyyIslands HubCmd fallback calls).
+  profile:busy:<uuid> (Boolean) is present for the whole transaction (steps 1-8 run in ONE world-thread task, so only off-thread readers
+  can ever see it; it matters for crash recovery, below).
   Failure inside 4-6 -> immediate rollback (clear + reload the step-2 snapshot, marker removed). If even that fails the marker becomes
   stage=failed (never auto-applied; the snapshots stay on disk for an admin) and the player is told. While a stage=failed marker exists
   every switch / create-and-switch is refused (it would overwrite the snapshots the admin needs) until an admin deletes the marker.
   keepItems (config, default Skyy_Menu = the SkyyMenu item): never saved, never cleared - it stays on every profile (SkyyMenu gives its
   item once per PLAYER, so a new profile would otherwise have no menu item).
-CRASH SAFETY: a leftover marker at join (first PlayerReadyEvent of the session, files read off the world thread, applied on it):
+JOIN (PlayerConnectEvent - engine join thread, fired BEFORE the player is added to any world; registerGlobal like BetterMap/Essentials):
+  re-read players/<uuid>.properties in place (the cached copy is replaced, never dropped), note the username, repair a missing/invalid
+  active id (-> lowest profile), plan crash recovery, publish every per-player bridge key. So the very first thing any other mod can see
+  of a joining player already carries the right key and epoch. Fallback: the first PlayerReadyEvent of the session does the same when
+  the connect handler did not run. Chat messages (welcome, recovery result) wait for that first PlayerReadyEvent (NOTICE).
+CRASH SAFETY: a leftover marker at join (planned at PlayerConnectEvent, files read there; applied on the player's world thread as soon as
+  the entity is in a world - not after PlayerReadyEvent - while profile:busy:<uuid> is set so adopters leave the inventory alone):
   stage=saved + players file active == from -> ROLL BACK: clear, load inventories/<fromKey>.json (the snapshot the marker was written
   after). active == to -> ROLL FORWARD: clear, load the target snapshot (or empty for a new profile). Either way the live inventory becomes
   exactly the snapshot of the ACTIVE profile and the other profile's items stay in their file: no loss, no duplication.
@@ -54,15 +71,28 @@ CRASH SAFETY: a leftover marker at join (first PlayerReadyEvent of the session, 
   stack (same id + qty) counts as restored and is never given again. If the clear could not verify every slot empty, the recovery is NOT
   reported as clean: the marker becomes stage=failed with a note (which slots to check for duplicates = server log "could not empty"),
   the player is told and switching pauses until an admin deletes the marker.
+  A clean recovery keeps its marker 30 s too (same reason as switch step 7).
   stage=done -> just deleted. stage=failed -> reported (log + player), left for an admin.
+  Windows: a file open for reading cannot be replaced or deleted (AccessDeniedException, tested on the game JRE), so every players-file
+  read runs under the same lock as the writes, a marker is only read while no switch/clear of that player can run (BUSY), and atomic
+  moves / marker deletes retry 5x 20 ms before giving up (the atomic replace on any FileSystemException, not only AccessDeniedException:
+  another program holding the file can surface as a plain sharing-violation FileSystemException).
 ADMIN (perm skyyprofiles.admin): /profileadmin info <player|uuid>, /profileadmin setclass <player|uuid> <n> <class> (fix mistakes; bumps
   the epoch when it is the active profile), /profileadmin reload (config + re-read player files).
-BRIDGE (System.getProperties().get("skyy.bridge")), all per-player keys published on join and on every change, epoch LAST:
-  profile:fn:key          Function apply(UUID) -> storage key of the ACTIVE profile (loads offline players from disk, cached)
+BRIDGE (System.getProperties().get("skyy.bridge")), per-player keys published at PlayerConnectEvent and after every change, epoch LAST
+  (full semantics for adopters: tools/PROFILES-CONTRACT.md, "Semantics of SkyyProfiles 0.1"):
+  profile:fn:key          Function apply(UUID) -> storage key of the ACTIVE profile. Registered in setup(), never removed (valid
+                          through other mods' shutdown saves). Cache hit = one ConcurrentHashMap read, no lock, no I/O; first request
+                          for a player not cached yet (offline, or before the connect preload) reads the players file synchronously
+                          under the store lock. Never throws, never calls another mod. AUTHORITATIVE - the String keys below mirror it.
   profile:key:<uuid>      same String            profile:<uuid>        active id "1", "2", ... (absent = no profile yet)
   profile:class:<uuid>    locked class of the active profile (absent = none)   profile:name:<uuid>  its name
   profile:epoch:<uuid>    Long, +1 on every creation and switch (and admin setclass of the active profile); 0 = no profile yet
   profile:list:<uuid>     extra (not in contract v1): "1:Apple:Archer,2:Banana:Mage"
+  profile:busy:<uuid>     extra: Boolean.TRUE while the live vanilla inventory may not belong to the active profile (a switch, or a
+                          pending crash recovery at join). Adopters that move items between the inventory and per-profile storage skip.
+  Per-player keys are NOT removed on disconnect (they keep describing the player's active profile, which cannot change while offline
+  except by /profileadmin setclass, which republishes).
 SCHEMA (Skyy_SkyyProfiles/, everything keyed by player UUID; this mod owns the profile list):
   config.properties        maxProfiles, openDelayMillis, promptEveryLogin, combatSeconds, islandOnSwitch, perProfileBackpack,
                            newProfileBackpack, keepItems
@@ -164,6 +194,7 @@ T = {
     "BT":    "com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType",
     "PRE":   "com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent",
     "PDE":   "com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent",
+    "PCE":   "com.hypixel.hytale.server.core.event.events.player.PlayerConnectEvent",
     "INVC":  "com.hypixel.hytale.server.core.inventory.InventoryComponent",
     "HOT":   "com.hypixel.hytale.server.core.inventory.InventoryComponent$Hotbar",
     "STO":   "com.hypixel.hytale.server.core.inventory.InventoryComponent$Storage",
@@ -202,7 +233,7 @@ for c, m in ((T["PLA"], "getPageManager"), (T["PLA"], "getPlayerConnection"), (T
              (T["PAGE"], "rebuild"), (T["PAGE"], "onDismiss"), (T["PGE"], "None"), (T["HSV"], "SCHEDULED_EXECUTOR"),
              (T["UNI"], "getPlayers"), (T["UNI"], "getPlayer"), (T["UNI"], "getWorld"), (T["UNI"], "getDefaultWorld"),
              (T["PR"], "hasPermission"), (T["PR"], "getWorldUuid"), (T["PR"], "getReference"), (T["PR"], "getUsername"), (T["PR"], "isValid"),
-             (T["MSG"], "color"), (T["MSG"], "raw"), (T["PRE"], "getPlayerRef"), (T["PDE"], "getPlayerRef"),
+             (T["MSG"], "color"), (T["MSG"], "raw"), (T["PRE"], "getPlayerRef"), (T["PDE"], "getPlayerRef"), (T["PCE"], "getPlayerRef"),
              (AC, "addSubCommand"), (AC, "addAliases"), (AC, "requirePermission"), (AC, "setPermissionGroups"), (AC, "withRequiredArg"),
              (T["CMGR"], "get"), (T["CMGR"], "resolveCommand"), (T["CMGR"], "handleCommand"),
              (T["INVC"], "getInventory"), (T["HOT"], "getComponentType"), (T["STO"], "getComponentType"), (T["BAK"], "getComponentType"),
@@ -214,27 +245,32 @@ for c, m in ((T["PLA"], "getPageManager"), (T["PLA"], "getPlayerConnection"), (T
              (T["IS"], "getQualityIndex"), (T["IS"], "getMetadata"), (T["IS"], "getOverrideDroppedItemAnimation"),
              (T["IS"], "setOverrideDroppedItemAnimation"), (T["IS"], "withQuantity"), (T["IS"], "isEmpty"),
              (T["CODEC"], "encode"), (T["CODEC"], "decode"),
-             (T["TP"], "createForPlayer"), (T["TP"], "getComponentType"), (T["WLD"], "getWorldConfig"), (T["WLD"], "execute"),
+             (T["TP"], "createForPlayer"), (T["TP"], "getComponentType"), (T["WLD"], "getWorldConfig"), (T["WLD"], "execute"), (T["WLD"], "getName"),
              (T["DDC"], "getComponentType"), (T["DDC"], "getLastDamageTime"), (T["DDC"], "getLastCombatAction"),
              (T["DEATH"], "getComponentType"), (T["TR"], "getResourceType"), (T["TR"], "getNow"), (T["ST"], "getResource"),
              ("org.bson.BsonDocument", "parse"), ("org.bson.BsonDocument", "toJson"), ("org.bson.json.JsonWriterSettings", "builder"),
              ("org.bson.json.JsonMode", "EXTENDED"), ("org.bson.BsonValue", "asNumber"),
-             ("com.hypixel.hytale.server.core.plugin.PluginBase", "shutdown")):
+             ("com.hypixel.hytale.server.core.plugin.PluginBase", "shutdown"),
+             ("com.hypixel.hytale.event.EventRegistry", "registerGlobal")):
     B.probe(pool, c, m)
 
 cfg  = pool.makeClass(PKG + ".ProfCfg")
 ros  = pool.makeClass(PKG + ".ProfRoster")
 nam  = pool.makeClass(PKG + ".ProfNames")
 sto  = pool.makeClass(PKG + ".ProfStore")
+pub  = pool.makeClass(PKG + ".ProfPub")
 kfn  = pool.makeClass(PKG + ".KeyFn")
 inv  = pool.makeClass(PKG + ".ProfInv")
 sw   = pool.makeClass(PKG + ".ProfSwitch")
+clr  = pool.makeClass(PKG + ".ClearLater")
 page = pool.makeClass(PKG + ".ProfilePage", pool.get(T["PAGE"]))
 opn  = pool.makeClass(PKG + ".OpenTask")
 rec  = pool.makeClass(PKG + ".RecoverTask")
+pj   = pool.makeClass(PKG + ".ProfJoin")
 rtk  = pool.makeClass(PKG + ".ReadyTask")
 svt  = pool.makeClass(PKG + ".SaveTask")
 rdy  = pool.makeClass(PKG + ".ProfReady")
+pcon = pool.makeClass(PKG + ".ProfConnect")
 quit_ = pool.makeClass(PKG + ".ProfQuit")
 pcre = pool.makeClass(PKG + ".ProfCreateCmd", pool.get(T["APC"]))
 psw  = pool.makeClass(PKG + ".ProfSwitchCmd", pool.get(T["APC"]))
@@ -316,7 +352,12 @@ public static boolean keep(String id) {
   if (id == null || id.length() == 0) return false;
   return KEEP.indexOf("," + id + ",") >= 0;
 }""")
-# tmp file + fsync + atomic rename (falls back to a plain replace only where the file system cannot rename atomically)
+# tmp file + fsync + atomic rename (falls back to a plain replace only where the file system cannot rename atomically).
+# Windows refuses to replace a file another handle has open (AccessDeniedException for every in-JVM holder - FileInputStream,
+# FileOutputStream, RandomAccessFile, Files.newInputStream - re-tested on the game JRE 2026-09-23; another program holding the file or
+# the fresh .tmp - virus scanner, indexer, editor - can surface as a plain FileSystemException sharing violation instead, as SkyyBank's
+# integration test saw): the rename is retried 5x 20 ms on any FileSystemException before the write counts as failed
+# (AtomicMoveNotSupportedException, also a FileSystemException, is caught first and falls back to a plain replace).
 M(cfg, r"""
 public static void atomicWrite(java.nio.file.Path f, byte[] data) throws java.io.IOException {
   java.nio.file.Files.createDirectories(f.getParent(), new java.nio.file.attribute.FileAttribute[0]);
@@ -327,11 +368,20 @@ public static void atomicWrite(java.nio.file.Path f, byte[] data) throws java.io
     out.flush();
     out.getFD().sync();
   } finally { out.close(); }
-  try {
-    java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING });
-  } catch (java.nio.file.AtomicMoveNotSupportedException e) {
-    java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+  java.io.IOException last = null;
+  for (int i = 0; i < 5; i++) {
+    try {
+      java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      return;
+    } catch (java.nio.file.AtomicMoveNotSupportedException e) {
+      java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      return;
+    } catch (java.nio.file.FileSystemException e) {
+      last = e;
+    }
+    try { Thread.sleep(20L); } catch (InterruptedException ie) { }
   }
+  throw last;
 }""")
 M(cfg, r"""
 public static String readText(java.nio.file.Path f) throws java.io.IOException {
@@ -515,25 +565,76 @@ F(sto, "public static java.nio.file.Path LOGF;")
 F(sto, "public static final java.util.concurrent.ConcurrentHashMap DATA = new java.util.concurrent.ConcurrentHashMap();")
 F(sto, "public static final java.util.concurrent.ConcurrentHashMap SESSION = new java.util.concurrent.ConcurrentHashMap();")
 F(sto, "public static final java.util.concurrent.ConcurrentHashMap BUSY = new java.util.concurrent.ConcurrentHashMap();")
+# BROKEN: uuid -> Long time of the last failed read of players/<uuid>.properties (profile changes refused while present)
 F(sto, "public static final java.util.concurrent.ConcurrentHashMap BROKEN = new java.util.concurrent.ConcurrentHashMap();")
+# JOINED: PlayerConnectEvent handled this session (ReadyTask falls back to the join work when absent)
+F(sto, "public static final java.util.concurrent.ConcurrentHashMap JOINED = new java.util.concurrent.ConcurrentHashMap();")
+# NOTICE: one chat Message per player, held until the first PlayerReadyEvent of the session
+F(sto, "public static final java.util.concurrent.ConcurrentHashMap NOTICE = new java.util.concurrent.ConcurrentHashMap();")
+# PENDING: uuid -> Long token of a switch/recovery marker kept 30 s for the engine's player save (ClearLater); never recovered in this JVM
+F(sto, "public static final java.util.concurrent.ConcurrentHashMap PENDING = new java.util.concurrent.ConcurrentHashMap();")
+F(sto, "public static final java.util.concurrent.atomic.AtomicLong SEQ = new java.util.concurrent.atomic.AtomicLong();")
+# every players-file READ runs under the same monitor (ProfStore.class) as every write: on Windows an open reader makes a concurrent
+# atomic replace fail with AccessDeniedException (tested on the game JRE), which would fail a commit (= a switch rolls back)
 M(sto, r"""
-public static synchronized java.util.Properties load(java.util.UUID u) {
+public static synchronized java.util.Properties readPath(java.nio.file.Path f) throws java.io.IOException {
+  java.util.Properties p = new java.util.Properties();
+  if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
+    java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+    try { p.load(in); } finally { in.close(); }
+  }
+  return p;
+}""")
+# null = unreadable (BROKEN gets the time, warned once until a read works again); an empty Properties = no file yet (new player)
+M(sto, r"""
+public static java.util.Properties readFile(java.util.UUID u) {
+  try {
+    java.util.Properties p = readPath(DIR.resolve(u.toString() + ".properties"));
+    BROKEN.remove(u);
+    return p;
+  } catch (Throwable t) {
+    Object was = BROKEN.put(u, Long.valueOf(System.currentTimeMillis()));
+    if (was == null) @PKG@.ProfCfg.warn("could not read players/" + u + ".properties - profile changes for this player are blocked until it is fixed (re-read at every join, on /profileadmin reload, and every 2 s while asked for with no earlier good copy): " + t);
+    return null;
+  }
+}""")
+# cache miss: under the store lock. An unreadable file is NOT cached (retried at most every 2 s) - callers get an empty, uncached copy
+M(sto, r"""
+public static synchronized java.util.Properties loadSlow(java.util.UUID u) {
   java.util.Properties p = (java.util.Properties) DATA.get(u);
   if (p != null) return p;
-  p = new java.util.Properties();
-  try {
-    java.nio.file.Path f = DIR.resolve(u.toString() + ".properties");
-    if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
-      java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
-      try { p.load(in); } finally { in.close(); }
-    }
-    BROKEN.remove(u);
-  } catch (Throwable t) {
-    BROKEN.put(u, Boolean.TRUE);
-    @PKG@.ProfCfg.warn("could not read players/" + u + ".properties - profile changes for this player are blocked until it is fixed: " + t);
-  }
+  Long bad = (Long) BROKEN.get(u);
+  if (bad != null && System.currentTimeMillis() - bad.longValue() < 2000L) return new java.util.Properties();
+  p = readFile(u);
+  if (p == null) return new java.util.Properties();
   DATA.put(u, p);
   return p;
+}""")
+# hot path: a cached copy (every online player after PlayerConnectEvent) is one ConcurrentHashMap read - no lock, no I/O. Cached copies
+# are never mutated after they are cached (copy-on-write in create/setActive/..), so readers need no lock.
+M(sto, r"""
+public static java.util.Properties load(java.util.UUID u) {
+  java.util.Properties p = (java.util.Properties) DATA.get(u);
+  if (p != null) return p;
+  return loadSlow(u);
+}""")
+# join preload + /profileadmin reload: REPLACE the cached copy by the file (the entry is never dropped, so there is no moment where the
+# key function has to go to disk); an unreadable file keeps the last good copy (BROKEN still blocks changes until a read works)
+M(sto, r"""
+public static synchronized boolean reload(java.util.UUID u) {
+  java.util.Properties p = readFile(u);
+  if (p == null) return false;
+  DATA.put(u, p);
+  return true;
+}""")
+M(sto, r"""
+public static int reloadAll() {
+  java.util.HashSet s = new java.util.HashSet(DATA.keySet());
+  s.addAll(BROKEN.keySet());
+  int n = 0;
+  java.util.Iterator it = s.iterator();
+  while (it.hasNext()) { if (reload((java.util.UUID) it.next())) n++; }
+  return n;
 }""")
 M(sto, r"""
 public static boolean saveProps(java.util.UUID u, java.util.Properties q) {
@@ -593,12 +694,18 @@ M(sto, r"""
 public static String activeId(java.util.UUID u) {
   return activeOf(load(u));
 }""")
-# profile:fn:key - hot path for every Skyy mod: no lock on a cache hit
+# the profile whose key profile:fn:key returns: the active one; profiles but no valid "active" (hand edit) -> the lowest id, exactly what
+# the join repair then activates; no profile yet (or no readable file) -> null = profile 1's legacy key uuid.toString()
+M(sto, r"""
+public static String keyId(java.util.Properties p) {
+  if (p == null || p.isEmpty()) return null;
+  String a = activeOf(p);
+  return a != null ? a : lowestId(p);
+}""")
+# profile:fn:key - hot path for every Skyy mod (see load)
 M(sto, r"""
 public static String keyOf(java.util.UUID u) {
-  java.util.Properties p = (java.util.Properties) DATA.get(u);
-  if (p == null) p = load(u);
-  return keyFor(u, activeOf(p));
+  return keyFor(u, keyId(load(u)));
 }""")
 M(sto, r"""
 public static synchronized boolean create(java.util.UUID u, String id, String name, String cls, boolean makeActive) {
@@ -673,14 +780,17 @@ public static String listText(java.util.Properties p) {
   }
   return sb.toString();
 }""")
-# contract bridge keys; epoch goes LAST so a consumer that sees the new epoch also sees the new key/class/name
-M(sto, r"""
-public static void publish(java.util.UUID u) {
-  java.util.Map b = @PKG@.ProfCfg.bridge();
+# contract bridge keys; epoch goes LAST so a consumer that sees the new epoch also sees the new key/class/name.
+# One monitor (ProfPub.class, never held across disk I/O) and the state is read INSIDE it: publishes from different threads (join,
+# switch, admin) can no longer interleave and leave an older epoch/key over a newer one. No cached state (unreadable file and no
+# earlier good copy) -> nothing is published (a missing epoch is less wrong than a made-up "no profile").
+M(pub, r"""
+public static synchronized void publishLocked(java.util.UUID u, java.util.Map b) {
+  java.util.Properties p = (java.util.Properties) @PKG@.ProfStore.DATA.get(u);
+  if (p == null) return;
   String us = u.toString();
-  java.util.Properties p = load(u);
-  String a = activeOf(p);
-  b.put("profile:key:" + us, keyFor(u, a));
+  String a = @PKG@.ProfStore.keyId(p);
+  b.put("profile:key:" + us, @PKG@.ProfStore.keyFor(u, a));
   if (a == null) {
     b.remove("profile:" + us);
     b.remove("profile:class:" + us);
@@ -692,9 +802,33 @@ public static void publish(java.util.UUID u) {
     if (c.length() > 0) b.put("profile:class:" + us, c); else b.remove("profile:class:" + us);
     String n = p.getProperty("p." + a + ".name", "");
     if (n.length() > 0) b.put("profile:name:" + us, n); else b.remove("profile:name:" + us);
-    b.put("profile:list:" + us, listText(p));
+    b.put("profile:list:" + us, @PKG@.ProfStore.listText(p));
   }
-  b.put("profile:epoch:" + us, Long.valueOf(num(p, "epoch")));
+  b.put("profile:epoch:" + us, Long.valueOf(@PKG@.ProfStore.num(p, "epoch")));
+}""")
+M(sto, r"""
+public static void publish(java.util.UUID u) {
+  load(u);
+  @PKG@.ProfPub.publishLocked(u, @PKG@.ProfCfg.bridge());
+}""")
+# profile:busy:<uuid> = the live vanilla inventory may not belong to the active profile right now (switch running / recovery pending)
+M(sto, r"""
+public static void busy(java.util.UUID u, boolean on) {
+  try {
+    if (on) @PKG@.ProfCfg.bridge().put("profile:busy:" + u.toString(), Boolean.TRUE);
+    else @PKG@.ProfCfg.bridge().remove("profile:busy:" + u.toString());
+  } catch (Throwable t) { }
+}""")
+# chat for a joining player: held until the first PlayerReadyEvent of the session (ReadyTask sends it), sent at once when that already
+# happened. Put-then-check here, remove in ReadyTask: whichever side removes it sends it - never lost, never twice.
+M(sto, r"""
+public static void notice(@PR@ pr, @MSG@ m) {
+  java.util.UUID u = pr.getUuid();
+  NOTICE.put(u, m);
+  if (SESSION.containsKey(u)) {
+    Object o = NOTICE.remove(u);
+    if (o != null) pr.sendMessage((@MSG@) o);
+  }
 }""")
 M(sto, r"""
 public static String resolveId(java.util.UUID u, String arg) {
@@ -728,9 +862,7 @@ public static java.util.UUID resolve(String s) {
       java.util.Iterator it2 = ds.iterator();
       while (found == null && it2.hasNext()) {
         java.nio.file.Path f = (java.nio.file.Path) it2.next();
-        java.util.Properties q = new java.util.Properties();
-        java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
-        try { q.load(in); } finally { in.close(); }
+        java.util.Properties q = readPath(f);
         if (s.equalsIgnoreCase(q.getProperty("username", ""))) {
           String fn = f.getFileName().toString();
           found = java.util.UUID.fromString(fn.substring(0, fn.length() - 11));
@@ -1140,10 +1272,63 @@ public static boolean writeMarker(java.util.UUID u, String from, String to, Stri
 M(sw, r"""
 public static void clearMarker(java.util.UUID u) {
   java.nio.file.Path f = markerFile(u);
-  try { java.nio.file.Files.deleteIfExists(f); return; } catch (Throwable t) { @PKG@.ProfCfg.warn("could not delete " + f + " - marking it done: " + t); }
+  Throwable last = null;
+  for (int i = 0; i < 5; i++) {
+    try { java.nio.file.Files.deleteIfExists(f); return; } catch (Throwable t) { last = t; }
+    try { Thread.sleep(20L); } catch (InterruptedException ie) { }
+  }
+  @PKG@.ProfCfg.warn("could not delete " + f + " - marking it done: " + last);
   java.util.Properties m = new java.util.Properties();
   m.setProperty("stage", "done");
   storeMarker(u, m);
+}""")
+
+# ================= ClearLater: a finished switch / clean recovery keeps its marker 30 s =================
+# The engine saves a player's inventory at most every 10 s (PlayerSavingSystems$TickingSystem, only when something changed; the write
+# itself is async). A crash inside that window reloads the PRE-switch inventory while players/<uuid>.properties already says the new
+# profile: one profile's items duplicated, the other's lost. With the marker still there the next join rolls forward (clear + load the
+# active profile's snapshot) instead. 30 s = 3 save periods. Token (PENDING) = only the latest switch's clear may delete; a new switch
+# that writes its own marker drops the old token. The clear takes BUSY so it never runs beside a switch or a recovery of that player
+# (and never deletes a stage=failed marker). Plugin shutdown (graceful stop: the engine saves every online player) clears at once.
+clr.addInterface(pool.get("java.lang.Runnable"))
+F(clr, "public java.util.UUID u;")
+F(clr, "public long token;")
+F(clr, "public int tries;")
+C(clr, "public ClearLater(java.util.UUID u, long token) { this.u = u; this.token = token; this.tries = 0; }")
+M(clr, r"""
+public void run() {
+  try {
+    Object cur = @PKG@.ProfStore.PENDING.get(this.u);
+    if (cur == null || ((Long) cur).longValue() != this.token) return;
+    if (@PKG@.ProfStore.BUSY.putIfAbsent(this.u, Boolean.TRUE) != null) {
+      if (++this.tries < 600) @HSV@.SCHEDULED_EXECUTOR.schedule(this, 1000L, java.util.concurrent.TimeUnit.MILLISECONDS);
+      return;
+    }
+    try {
+      if (@PKG@.ProfStore.PENDING.remove(this.u, Long.valueOf(this.token))) {
+        java.util.Properties m = @PKG@.ProfSwitch.readMarker(this.u);
+        if (m != null && "saved".equals(m.getProperty("stage", ""))) @PKG@.ProfSwitch.clearMarker(this.u);
+      }
+    } catch (Throwable t) { @PKG@.ProfCfg.warn("could not clear the switch marker of " + this.u + ": " + t); }
+    @PKG@.ProfStore.BUSY.remove(this.u);
+  } catch (Throwable t) { @PKG@.ProfCfg.warn("marker clear failed: " + t); }
+}""")
+M(clr, r"""
+public static void arm(java.util.UUID u) {
+  long t = @PKG@.ProfStore.SEQ.incrementAndGet();
+  @PKG@.ProfStore.PENDING.put(u, Long.valueOf(t));
+  try { @HSV@.SCHEDULED_EXECUTOR.schedule(new @PKG@.ClearLater(u, t), 30000L, java.util.concurrent.TimeUnit.MILLISECONDS); }
+  catch (Throwable x) { @PKG@.ProfStore.PENDING.remove(u); @PKG@.ProfSwitch.clearMarker(u); }
+}""")
+M(clr, r"""
+public static int clearAllNow() {
+  java.util.ArrayList ks = new java.util.ArrayList(@PKG@.ProfStore.PENDING.keySet());
+  int n = 0;
+  for (int i = 0; i < ks.size(); i++) {
+    java.util.UUID u = (java.util.UUID) ks.get(i);
+    if (@PKG@.ProfStore.PENDING.remove(u) != null) { @PKG@.ProfSwitch.clearMarker(u); n++; }
+  }
+  return n;
 }""")
 M(sw, r"""
 public static void failMarker(java.util.UUID u) {
@@ -1228,6 +1413,7 @@ public static String switchLocked(@ST@ st, @REF@ ref, @PR@ pr, @PLA@ player, jav
   int saved = @PKG@.ProfInv.slotCount(cur);
   if (!@PKG@.ProfInv.write(fromKey, cur)) return "Could not save your current inventory - nothing was changed.";
   if (!writeMarker(u, from, to, fromKey, toKey, toHad)) return "Could not start the switch - nothing was changed.";
+  @PKG@.ProfStore.PENDING.remove(u);
   int[] res = null;
   try {
     if (!@PKG@.ProfInv.clearAll(st, ref)) {
@@ -1244,7 +1430,7 @@ public static String switchLocked(@ST@ st, @REF@ ref, @PR@ pr, @PLA@ player, jav
     boolean ok2 = rollback(st, ref, player, u, cur, "players file not saved");
     return ok2 ? "Could not save the profile change - the switch was cancelled and your items are back." : "The switch failed. Please relog - an admin may need to restore your items (server log).";
   }
-  clearMarker(u);
+  @PKG@.ClearLater.arm(u);
   @PKG@.ProfStore.publish(u);
   @PKG@.ProfStore.log("SWITCH " + u + " " + pr.getUsername() + " " + from + "->" + to + " saved=" + saved + " loaded=" + res[0] + " moved=" + res[1] + " skipped=" + res[2]);
   closeOurPage(ref, st, player);
@@ -1262,14 +1448,16 @@ public static String switchTo(@ST@ st, @REF@ ref, @PR@ pr, @PLA@ player, String 
   if (from == null) return "Create your first profile first (/profiles create).";
   if (to == null || !@PKG@.ProfStore.exists(p, to)) return "You have no such profile. /profiles list shows yours.";
   if (to.equals(from)) return "You are already on that profile.";
-  String mb = markerBlock(u);
-  if (mb != null) return mb;
   String why = refuse(st, ref, player);
   if (why != null) return why;
   if (@PKG@.ProfStore.BUSY.putIfAbsent(u, Boolean.TRUE) != null) return "A profile switch is already running.";
+  String mb = markerBlock(u);
+  if (mb != null) { @PKG@.ProfStore.BUSY.remove(u); return mb; }
   String r = null;
+  @PKG@.ProfStore.busy(u, true);
   try { r = switchLocked(st, ref, pr, player, u, p, from, to); }
   catch (Throwable t) { @PKG@.ProfCfg.warn("switch failed for " + u + ": " + t); r = "The switch failed: " + t.getMessage(); }
+  @PKG@.ProfStore.busy(u, false);
   @PKG@.ProfStore.BUSY.remove(u);
   return r;
 }""")
@@ -1293,11 +1481,11 @@ public static String createAndSwitch(@ST@ st, @REF@ ref, @PR@ pr, @PLA@ player, 
   java.util.Properties p = @PKG@.ProfStore.load(u);
   if (@PKG@.ProfStore.activeOf(p) == null) return createFirst(pr, cls, name);
   if (@PKG@.ProfStore.count(p) >= @PKG@.ProfCfg.MAX_PROFILES) return "All " + @PKG@.ProfCfg.MAX_PROFILES + " profile slots are used.";
+  if (@PKG@.ProfStore.BUSY.containsKey(u)) return "A profile switch is already running.";
   String mb = markerBlock(u);
   if (mb != null) return mb;
   String why = refuse(st, ref, player);
   if (why != null) return why;
-  if (@PKG@.ProfStore.BUSY.containsKey(u)) return "A profile switch is already running.";
   String id = @PKG@.ProfStore.nextId(p);
   if (id == null) return "No free profile id.";
   if (name == null || name.length() == 0 || @PKG@.ProfNames.used(p, name)) name = @PKG@.ProfNames.pick(p, null);
@@ -1311,6 +1499,7 @@ public static String createAndSwitch(@ST@ st, @REF@ ref, @PR@ pr, @PLA@ player, 
 # off the world thread at join: which snapshot must become the live inventory? null = nothing to do (or left for an admin)
 M(sw, r"""
 public static Object[] recoverPlan(java.util.UUID u) {
+  if (@PKG@.ProfStore.PENDING.containsKey(u)) return null;
   java.util.Properties m = readMarker(u);
   if (m == null) return null;
   String stage = m.getProperty("stage", "");
@@ -1346,7 +1535,7 @@ public static Object[] recoverPlan(java.util.UUID u) {
 # restored (never given a second time). clearAll not fully verified -> the marker becomes stage=failed with a note (an admin checks the
 # stuck slots for duplicates; switching is refused until the marker is deleted) instead of reporting a clean recovery.
 M(sw, r"""
-public static void recoverApply(@ST@ st, @REF@ ref, @PR@ pr, @PLA@ player, org.bson.BsonDocument doc, String which, String how) {
+public static boolean recoverApply(@ST@ st, @REF@ ref, @PR@ pr, @PLA@ player, org.bson.BsonDocument doc, String which, String how) {
   java.util.UUID u = pr.getUuid();
   boolean ok = @PKG@.ProfInv.clearAll(st, ref);
   int[] r = @PKG@.ProfInv.loadInto(st, ref, player, doc, u, true);
@@ -1357,13 +1546,14 @@ public static void recoverApply(@ST@ st, @REF@ ref, @PR@ pr, @PLA@ player, org.b
     @PKG@.ProfCfg.warn("crash recovery for " + u + " (" + how + ", profile " + which + ") could not empty every slot first - snapshot loaded without re-giving identical stuck stacks, marker set to failed for an admin");
     @PKG@.ProfStore.publish(u);
     @PKG@.ProfStore.log("RECOVER-INCOMPLETE " + u + " " + pr.getUsername() + " profile " + which + " " + how + " loaded=" + r[0] + " moved=" + r[1] + " skipped=" + r[2] + " (some slots could not be emptied - marker left as failed for an admin)");
-    pr.sendMessage(@MSG@.raw("[Profiles] Your last profile switch was interrupted by a server stop and could not be fully repaired - you are on " + name + " but some slots could not be emptied first. Profile switching is paused until an admin checks it. Please tell an admin.").color("#ff9d6b"));
-    return;
+    @PKG@.ProfStore.notice(pr, @MSG@.raw("[Profiles] Your last profile switch was interrupted by a server stop and could not be fully repaired - you are on " + name + " but some slots could not be emptied first. Profile switching is paused until an admin checks it. Please tell an admin.").color("#ff9d6b"));
+    return false;
   }
-  clearMarker(u);
+  @PKG@.ClearLater.arm(u);
   @PKG@.ProfStore.publish(u);
   @PKG@.ProfStore.log("RECOVER " + u + " " + pr.getUsername() + " profile " + which + " " + how + " loaded=" + r[0] + " moved=" + r[1] + " skipped=" + r[2]);
-  pr.sendMessage(@MSG@.raw("[Profiles] Your last profile switch was interrupted by a server stop. It was " + how + " - you are on " + name + " with its saved inventory.").color("#ffc800"));
+  @PKG@.ProfStore.notice(pr, @MSG@.raw("[Profiles] Your last profile switch was interrupted by a server stop. It was " + how + " - you are on " + name + " with its saved inventory.").color("#ffc800"));
+  return true;
 }""")
 
 # ================= ProfilePage: Profiles list (view 0) + Create Profile (view 1) =================
@@ -1680,16 +1870,33 @@ public static String open(@ST@ st, @REF@ ref, @PR@ pr, int view) {
 }""")
 
 # ================= OpenTask: first-join Create Profile page (SkyyHud/SkyyClasses pattern: delay, world-thread hop, WorldMap channel gate) =================
+# Cross-mod timeline pass (2026-09-23): every poll hops to the player's CURRENT world and re-checks on that thread that the player is
+# still there (a world switch between the hop and the run left us on the wrong world thread); the page only opens after the player has
+# been in the SAME world for 2 polls in a row (calm resets on a world change); while the player stands in a SkyyIslands island world
+# during the first ISLAND_WAIT_MS we wait (SkyyIslands routes a login inside an island world to the hub 1.5 s after the first
+# PlayerReadyEvent - a page opened just before that cross-world teleport is lost on the client and this login would show none);
+# a custom page that is already open is never replaced (the player opened /profiles themselves -> done; any other page, e.g. the
+# SkyyMenu page -> wait until it is closed); never opened over the respawn screen (DeathComponent). Gives up quietly after 240 polls
+# (2 min) - the welcome chat line already points to /profiles and the page comes back at the next login.
 opn.addInterface(pool.get("java.lang.Runnable"))
+F(opn, "public static final long ISLAND_WAIT_MS = 8000L;")
 F(opn, "public @PR@ pr;")
 F(opn, "public boolean onWorld;")
 F(opn, "public int calm;")
 F(opn, "public int tries;")
-C(opn, "public OpenTask(@PR@ pr) { this.pr = pr; this.onWorld = false; this.calm = 0; this.tries = 0; }")
+F(opn, "public java.util.UUID hopWorld;")
+F(opn, "public java.util.UUID lastWorld;")
+F(opn, "public long born;")
+C(opn, "public OpenTask(@PR@ pr) { this.pr = pr; this.onWorld = false; this.calm = 0; this.tries = 0; this.hopWorld = null; this.lastWorld = null; this.born = System.currentTimeMillis(); }")
 M(opn, r"""
 public void later(long ms) {
   this.onWorld = false;
   @HSV@.SCHEDULED_EXECUTOR.schedule(this, ms, java.util.concurrent.TimeUnit.MILLISECONDS);
+}""")
+M(opn, r"""
+public void again(boolean unsettled) {
+  if (unsettled) this.calm = 0;
+  if (++this.tries < 240) later(500L);
 }""")
 M(opn, r"""
 public void run() {
@@ -1697,21 +1904,32 @@ public void run() {
     if (pr == null || !pr.isValid()) return;
     if (!this.onWorld) {
       java.util.UUID wu = pr.getWorldUuid();
-      if (wu == null) { if (++this.tries < 240) later(500L); return; }
+      if (wu == null) { again(true); return; }
       @WLD@ w = @UNI@.get().getWorld(wu);
-      if (w == null) { if (++this.tries < 240) later(500L); return; }
+      if (w == null) { again(true); return; }
       this.onWorld = true;
+      this.hopWorld = wu;
       w.execute(this);
       return;
     }
     java.util.UUID u = pr.getUuid();
     if (@PKG@.ProfStore.activeId(u) != null) return;
+    java.util.UUID now = pr.getWorldUuid();
+    if (now == null || !now.equals(this.hopWorld)) { again(true); return; }
+    if (this.lastWorld == null || !this.lastWorld.equals(now)) { this.lastWorld = now; this.calm = 0; }
+    @WLD@ here = @UNI@.get().getWorld(now);
+    String wn = here == null ? null : here.getName();
+    if (wn != null && wn.startsWith("skyy-island-") && System.currentTimeMillis() - this.born < ISLAND_WAIT_MS) { again(true); return; }
     @REF@ r = pr.getReference();
-    if (r == null) { if (++this.tries < 240) later(500L); return; }
+    if (r == null) { again(true); return; }
     @ST@ st = r.getStore();
-    if (st == null) return;
+    if (st == null) { again(true); return; }
     @PLA@ player = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
-    if (player == null) { if (++this.tries < 240) later(500L); return; }
+    if (player == null) { again(true); return; }
+    if (st.getComponent(r, @DEATH@.getComponentType()) != null) { again(true); return; }
+    Object cp = player.getPageManager().getCustomPage();
+    if (cp instanceof @PKG@.ProfilePage) return;
+    if (cp != null) { again(true); return; }
     boolean writable = true;
     try {
       com.hypixel.hytale.server.core.io.PacketHandler ph = player.getPlayerConnection();
@@ -1719,13 +1937,15 @@ public void run() {
       writable = ch == null || ch.isWritable();
     } catch (Throwable t) { writable = true; }
     if (writable) this.calm++; else this.calm = 0;
-    if (this.calm < 2) { if (++this.tries < 240) later(500L); return; }
+    if (this.calm < 2) { again(false); return; }
     player.getPageManager().openCustomPage(r, st, new @PKG@.ProfilePage(pr, 1, true));
     @PKG@.ProfStore.markPrompted(u);
   } catch (Throwable t) { @PKG@.ProfCfg.warn("could not open the Create Profile page on join: " + t); }
 }""")
 
-# ================= RecoverTask: apply a crash-recovery plan on the player's world thread (retries until the player is in a world) =================
+# ================= RecoverTask: apply a crash-recovery plan on the player's world thread (started at PlayerConnectEvent; polls until the
+# player entity is in a world - it does NOT wait for PlayerReadyEvent, so other mods get as little time as possible with a live inventory
+# that belongs to another profile; profile:busy:<uuid> is set the whole time) =================
 rec.addInterface(pool.get("java.lang.Runnable"))
 F(rec, "public @PR@ pr;")
 F(rec, "public org.bson.BsonDocument doc;")
@@ -1733,6 +1953,7 @@ F(rec, "public String which;")
 F(rec, "public String how;")
 F(rec, "public boolean onWorld;")
 F(rec, "public int tries;")
+F(rec, "public java.util.UUID hopWorld;")
 C(rec, r"""
 public RecoverTask(@PR@ pr, org.bson.BsonDocument doc, String which, String how) {
   this.pr = pr; this.doc = doc; this.which = which; this.how = how; this.onWorld = false; this.tries = 0;
@@ -1744,8 +1965,8 @@ public void later(long ms) {
 }""")
 M(rec, r"""
 public void giveUp() {
-  if (pr != null) @PKG@.ProfStore.BUSY.remove(pr.getUuid());
-  @PKG@.ProfCfg.warn("crash recovery postponed for " + (pr == null ? "?" : String.valueOf(pr.getUuid())) + " - the marker stays for the next login");
+  if (pr != null) { @PKG@.ProfStore.busy(pr.getUuid(), false); @PKG@.ProfStore.BUSY.remove(pr.getUuid()); }
+  @PKG@.ProfCfg.warn("crash recovery postponed for " + (pr == null ? "?" : String.valueOf(pr.getUuid())) + " - the marker stays (retried at the first PlayerReadyEvent, else the next login)");
 }""")
 M(rec, r"""
 public void run() {
@@ -1754,22 +1975,65 @@ public void run() {
     if (!this.onWorld) {
       java.util.UUID wu = pr.getWorldUuid();
       @WLD@ w = wu == null ? null : @UNI@.get().getWorld(wu);
-      if (w == null) { if (++this.tries < 120) later(250L); else giveUp(); return; }
+      if (w == null) { if (++this.tries < 240) later(250L); else giveUp(); return; }
       this.onWorld = true;
+      this.hopWorld = wu;
       w.execute(this);
       return;
     }
+    java.util.UUID nowWorld = pr.getWorldUuid();
+    if (nowWorld == null || !nowWorld.equals(this.hopWorld)) { if (++this.tries < 240) later(250L); else giveUp(); return; }
     @REF@ r = pr.getReference();
     @ST@ st = r == null ? null : r.getStore();
     @PLA@ player = null;
     if (st != null) player = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
-    if (player == null) { if (++this.tries < 120) later(250L); else giveUp(); return; }
+    if (player == null) { if (++this.tries < 240) later(250L); else giveUp(); return; }
     @PKG@.ProfSwitch.recoverApply(st, r, pr, player, this.doc, this.which, this.how);
   } catch (Throwable t) { @PKG@.ProfCfg.warn("crash recovery failed for " + (pr == null ? "?" : String.valueOf(pr.getUuid())) + ": " + t); }
-  if (pr != null) @PKG@.ProfStore.BUSY.remove(pr.getUuid());
+  if (pr != null) { @PKG@.ProfStore.busy(pr.getUuid(), false); @PKG@.ProfStore.BUSY.remove(pr.getUuid()); }
 }""")
 
-# ================= ReadyTask: first ready of the session, OFF the world thread (disk I/O) =================
+# ================= ProfJoin: the join work - PlayerConnectEvent (engine join thread, before the player is in any world) =================
+# plan = recoverPlan result: { snapshot, profile id, "rolled back"|"finished" } -> RecoverTask; { null, null, "failed" } -> chat note
+M(pj, r"""
+public static void startRecover(@PR@ pr, Object[] plan) {
+  if (plan == null) return;
+  java.util.UUID u = pr.getUuid();
+  if (plan[0] == null) {
+    @PKG@.ProfStore.notice(pr, @MSG@.raw("[Profiles] A profile switch of yours failed earlier and needs an admin - your items are saved on the server. Profile switching is paused until then. Please tell an admin.").color("#ff9d6b"));
+    return;
+  }
+  if (@PKG@.ProfStore.BUSY.putIfAbsent(u, Boolean.TRUE) != null) return;
+  @PKG@.ProfStore.busy(u, true);
+  new @PKG@.RecoverTask(pr, (org.bson.BsonDocument) plan[0], (String) plan[1], (String) plan[2]).later(0L);
+}""")
+# order of bridge writes: (profile:busy:<uuid> when a recovery is pending) -> key, id, class, name, list -> epoch (publish)
+M(pj, r"""
+public static void prepare(@PR@ pr) {
+  java.util.UUID u = pr.getUuid();
+  @PKG@.ProfStore.reload(u);
+  if (@PKG@.ProfStore.BROKEN.containsKey(u)) { @PKG@.ProfStore.publish(u); return; }
+  @PKG@.ProfStore.noteLogin(u, pr.getUsername());
+  java.util.Properties p = @PKG@.ProfStore.load(u);
+  if (@PKG@.ProfStore.activeOf(p) == null && @PKG@.ProfStore.count(p) > 0) {
+    String low = @PKG@.ProfStore.lowestId(p);
+    @PKG@.ProfCfg.warn("player " + u + " has profiles but no valid active one - activating profile " + low);
+    @PKG@.ProfStore.setActive(u, null, low);
+  }
+  if (!@PKG@.ProfStore.BUSY.containsKey(u)) startRecover(pr, @PKG@.ProfSwitch.recoverPlan(u));
+  @PKG@.ProfStore.publish(u);
+}""")
+# first PlayerReadyEvent: a stage=saved marker nobody is working on (a connect-time recovery that gave up) gets another try
+M(pj, r"""
+public static void retryRecover(@PR@ pr) {
+  java.util.UUID u = pr.getUuid();
+  if (@PKG@.ProfStore.BUSY.containsKey(u) || @PKG@.ProfStore.PENDING.containsKey(u)) return;
+  java.util.Properties m = @PKG@.ProfSwitch.readMarker(u);
+  if (m == null || !"saved".equals(m.getProperty("stage", ""))) return;
+  startRecover(pr, @PKG@.ProfSwitch.recoverPlan(u));
+}""")
+
+# ================= ReadyTask: first ready of the session, OFF the world thread (messages; join work only as a fallback) =================
 rtk.addInterface(pool.get("java.lang.Runnable"))
 F(rtk, "public @PR@ pr;")
 C(rtk, "public ReadyTask(@PR@ pr) { this.pr = pr; }")
@@ -1778,28 +2042,15 @@ public void run() {
   try {
     if (pr == null || !pr.isValid()) return;
     java.util.UUID u = pr.getUuid();
-    @PKG@.ProfStore.DATA.remove(u);
+    if (@PKG@.ProfStore.JOINED.remove(u) == null) @PKG@.ProfJoin.prepare(pr);
+    else @PKG@.ProfJoin.retryRecover(pr);
+    Object note = @PKG@.ProfStore.NOTICE.remove(u);
+    if (note != null) pr.sendMessage((@MSG@) note);
     java.util.Properties p = @PKG@.ProfStore.load(u);
     if (@PKG@.ProfStore.BROKEN.containsKey(u)) {
       pr.sendMessage(@MSG@.raw("[Profiles] Your profile file could not be read - profile changes are blocked. Please tell an admin.").color("#ff9d6b"));
       return;
     }
-    @PKG@.ProfStore.noteLogin(u, pr.getUsername());
-    p = @PKG@.ProfStore.load(u);
-    if (@PKG@.ProfStore.activeOf(p) == null && @PKG@.ProfStore.count(p) > 0) {
-      String low = @PKG@.ProfStore.lowestId(p);
-      @PKG@.ProfCfg.warn("player " + u + " has profiles but no valid active one - activating profile " + low);
-      @PKG@.ProfStore.setActive(u, null, low);
-      p = @PKG@.ProfStore.load(u);
-    }
-    Object[] plan = @PKG@.ProfSwitch.recoverPlan(u);
-    if (plan != null && plan[0] != null) {
-      @PKG@.ProfStore.BUSY.put(u, Boolean.TRUE);
-      new @PKG@.RecoverTask(pr, (org.bson.BsonDocument) plan[0], (String) plan[1], (String) plan[2]).later(0L);
-    } else if (plan != null) {
-      pr.sendMessage(@MSG@.raw("[Profiles] A profile switch of yours failed earlier and needs an admin - your items are saved on the server. Profile switching is paused until then. Please tell an admin.").color("#ff9d6b"));
-    }
-    @PKG@.ProfStore.publish(u);
     String act = @PKG@.ProfStore.activeOf(p);
     if (act == null) {
       pr.sendMessage(@MSG@.raw("[Profiles] Welcome! Create your profile: you pick your class (" + @PKG@.ProfRoster.choiceText() + ") and it is locked to that profile. /profiles").color("#ffc800"));
@@ -1836,6 +2087,19 @@ public void accept(Object ev) {
     @HSV@.SCHEDULED_EXECUTOR.execute(new @PKG@.ReadyTask(pr));
   } catch (Throwable t) { @PKG@.ProfCfg.warn("ready handler failed: " + t); }
 }""")
+# PlayerConnectEvent: fired by Universe.addPlayer after the engine loaded the player's data, on the engine's join thread (a storage /
+# network thread, never a world thread) and BEFORE the player is added to any world - registerGlobal, as BetterMap and Essentials do.
+pcon.addInterface(pool.get("java.util.function.Consumer"))
+C(pcon, "public ProfConnect() { }")
+M(pcon, r"""
+public void accept(Object ev) {
+  try {
+    @PR@ pr = ((@PCE@) ev).getPlayerRef();
+    if (pr == null) return;
+    @PKG@.ProfJoin.prepare(pr);
+    @PKG@.ProfStore.JOINED.put(pr.getUuid(), Boolean.TRUE);
+  } catch (Throwable t) { @PKG@.ProfCfg.warn("connect handler failed (the first PlayerReadyEvent retries): " + t); }
+}""")
 quit_.addInterface(pool.get("java.util.function.Consumer"))
 C(quit_, "public ProfQuit() { }")
 M(quit_, r"""
@@ -1845,6 +2109,7 @@ public void accept(Object ev) {
     if (pr == null) return;
     java.util.UUID u = pr.getUuid();
     @PKG@.ProfStore.SESSION.remove(u);
+    @PKG@.ProfStore.JOINED.remove(u);
     @HSV@.SCHEDULED_EXECUTOR.execute(new @PKG@.SaveTask(u));
   } catch (Throwable t) { }
 }""")
@@ -1971,14 +2236,14 @@ M(arel, r"""
 protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
   if (!pr.hasPermission("skyyprofiles.admin")) { pr.sendMessage(@MSG@.raw("[Profiles] no permission (skyyprofiles.admin)")); return; }
   String c = @PKG@.ProfCfg.load();
-  @PKG@.ProfStore.DATA.clear();
-  @PKG@.ProfStore.BROKEN.clear();
+  int re = @PKG@.ProfStore.reloadAll();
   int n = 0;
   try {
     java.util.Iterator it = @UNI@.get().getPlayers().iterator();
     while (it.hasNext()) { @PR@ p = (@PR@) it.next(); if (p != null) { @PKG@.ProfStore.publish(p.getUuid()); n++; } }
   } catch (Throwable t) { }
-  pr.sendMessage(@MSG@.raw("[Profiles] reloaded (" + n + " online players republished): " + c));
+  pr.sendMessage(@MSG@.raw("[Profiles] reloaded (" + re + " cached player files re-read, " + n + " online players republished"
+    + (@PKG@.ProfStore.BROKEN.isEmpty() ? "" : ", " + @PKG@.ProfStore.BROKEN.size() + " UNREADABLE - see the server log") + "): " + c));
 }""")
 C(adm, r"""
 public ProfileAdminCmd() {
@@ -2019,17 +2284,24 @@ public void setup() {
   @PKG@.ProfCfg.bridge().put("profile:fn:key", new @PKG@.KeyFn());
   getCommandRegistry().registerCommand(new @PKG@.ProfilesCmd());
   getCommandRegistry().registerCommand(new @PKG@.ProfileAdminCmd());
+  getEventRegistry().registerGlobal(@PCE@.class, new @PKG@.ProfConnect());
   getEventRegistry().registerGlobal(@PRE@.class, new @PKG@.ProfReady());
   getEventRegistry().registerGlobal(@PDE@.class, new @PKG@.ProfQuit());
   getLogger().at(java.util.logging.Level.INFO).log("[SkyyProfiles] __VER__ ready - /profiles, /profileadmin; " + cfgText
     + (markers > 0 ? "; " + markers + " interrupted switch(es) will be finished or rolled back when those players join" : ""));
 }""".replace("__VER__", VERSION))
+# profile:fn:key stays registered on purpose (other mods' shutdown saves must still resolve the active profile). Graceful stop: the engine
+# saves every online player, so the switch markers kept for the engine save (ClearLater) are no longer needed.
 M(pl, r"""
 protected void shutdown() {
+  try {
+    int n = @PKG@.ClearLater.clearAllNow();
+    if (n > 0) @PKG@.ProfCfg.info("shutdown: cleared " + n + " switch marker(s) that were waiting for the engine's player save");
+  } catch (Throwable t) { }
   super.shutdown();
 }""")
 
-for c in (cfg, ros, nam, sto, kfn, inv, sw, page, opn, rec, rtk, svt, rdy, quit_, pcre, psw, plst, pcmd, ainf, acls, arel, adm, pl):
+for c in (cfg, ros, nam, sto, pub, kfn, inv, sw, clr, page, opn, rec, pj, rtk, svt, rdy, pcon, quit_, pcre, psw, plst, pcmd, ainf, acls, arel, adm, pl):
     c.writeFile(OUT)
 print("classes written")
 

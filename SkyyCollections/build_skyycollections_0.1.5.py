@@ -1,14 +1,23 @@
 """SkyyCollections 0.1.5 - build script
 0.1.5: per-profile storage (tools/PROFILES-CONTRACT.md). Counts are kept per SkyyProfiles profile: counts/<pkey>.properties,
        pkey = the contract helper (profile 1 = <uuid> = every existing file, profile N = <uuid>-pN); the count cache and the
-       dirty set are keyed by that pkey String. coll:recipes:<uuid> stays keyed by UUID (it describes the ACTIVE profile) and is
-       republished when profile:epoch:<uuid> changes (or the active pkey differs from the last published one): checked every
-       5 s by the saver tick (was 10 s; flush + first publish still every 2nd tick = 10 s) and before each counted block break.
-       publish() is synchronized. Without SkyyProfiles: pkey = uuid, no epoch -> behaviour identical to 0.1.4.
-       Review fix: if SkyyProfiles bumps the epoch BEFORE its key function returns the new key, the epoch-triggered publish
-       would still be for the old profile until the next check. publish() now re-reads pkey() after writing (recomputes if
-       it moved, max 3 passes), and an epoch change with an unchanged pkey arms 5 fast rechecks (1 s apart, CollRecheck on
-       HytaleServer.SCHEDULED_EXECUTOR), so a late key flip is republished within ~1 s instead of up to one more 5 s tick.
+       dirty set are keyed by that pkey String, so a switch just resolves to another entry and the old profile's unsaved
+       counts are flushed under their own key. coll:recipes:<uuid> stays keyed by UUID (it describes the ACTIVE profile) and
+       is republished when profile:epoch:<uuid> or the active pkey differs from the last publish. Without SkyyProfiles:
+       pkey = uuid, no epoch -> same files and bridge output as 0.1.4.
+       Integration check against the pinned SkyyProfiles 0.1 semantics (end of PROFILES-CONTRACT.md), fixed in place:
+       - Breaks are counted in a World.execute task and only when BreakBlockEvent.isCancelled() is still false (SkyySkills
+         pattern). Before, breaks cancelled by SkyyIslands' island protection still counted: visitors could farm collections
+         and recipe unlocks on someone else's island. The profile key is resolved when the block breaks.
+       - Saver tick 1 s (was 5 s): epoch/key check + first publish of players who just joined; flush every 10 s as before.
+         coll:recipes:<uuid> (SkyySacks Collections craft tab, SkyyMenu tooltip) follows a switch within ~1 s and appears
+         ~1 s after a join. The first publish of a session is the baseline; the first counted break publishes it first, so a
+         milestone's "+N recipe(s)" counts only new unlocks. The CollRecheck fast rechecks are gone (SkyyProfiles flips its
+         key function before it bumps the epoch, so a new epoch always comes with the new key).
+       - An unreadable counts file is no longer cached as empty (the next flush overwrote it = all counts of that profile
+         lost): retried every 2 s while needed, breaks meanwhile not counted, file left untouched, coll:recipes:<uuid>
+         removed until it reads. A failed save is retried at the next flush. Reads and writes share one lock (CollIO) and the
+         replace is retried 5x 20 ms. No disk I/O inside the publish or bump monitors.
        Derived by tools/coll_0_1_5_patch.py.
 0.1.4: command rules (engine-verified 2026-09-23). /collections (alias /coll) is open to every player (permission group
        hytale:Adventurer; before, only "*" admins held the auto node). "/collections unlocks" (alias recipes) and
@@ -63,11 +72,14 @@ BBE = "com.hypixel.hytale.server.core.event.events.ecs.BreakBlockEvent"
 QRY = "com.hypixel.hytale.component.query.Query"
 BTY = "com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType"
 LOG = "com.hypixel.hytale.logger.HytaleLogger"
+EST = "com.hypixel.hytale.server.core.universe.world.storage.EntityStore"
+CEV = "com.hypixel.hytale.component.system.CancellableEcsEvent"
 
 for c, m in ((CRR, "getInput"), (CRR, "getAssetMap"), (MQ, "getItemId"), (UNI, "getPlayers"), (PR, "hasPermission"), ("com.hypixel.hytale.server.core.command.system.CommandContext", "provided"),
              (BBE, "getBlockType"), (BTY, "getId"), (ACH, "getReferenceTo"), (HSV, "SCHEDULED_EXECUTOR"),
              ("com.hypixel.hytale.server.core.plugin.PluginBase", "shutdown"), ("com.hypixel.hytale.component.Archetype", "empty"),
-             (AC, "setPermissionGroups"), (AC, "addSubCommand"), (AC, "requirePermission"), (AC, "addAliases")):
+             (AC, "setPermissionGroups"), (AC, "addSubCommand"), (AC, "requirePermission"), (AC, "addAliases"),
+             (ST, "getExternalData"), (EST, "getWorld"), (WLD, "execute"), (CEV, "isCancelled"), (PR, "isValid")):
     B.probe(pool, c, m)
 
 PKG = "com.skyy.collections"
@@ -75,7 +87,8 @@ store = pool.makeClass(PKG + ".CollStore")
 sysc  = pool.makeClass(PKG + ".CollSystem", pool.get(EES))
 unl   = pool.makeClass(PKG + ".CollUnlocks")
 sav   = pool.makeClass(PKG + ".CollSaver")
-rck   = pool.makeClass(PKG + ".CollRecheck")
+cio   = pool.makeClass(PKG + ".CollIO")
+brk   = pool.makeClass(PKG + ".CollBreakTask")
 ccmp  = pool.makeClass(PKG + ".CollCmp")
 page  = pool.makeClass(PKG + ".CollPage", pool.get(PAGE))
 ulc   = pool.makeClass(PKG + ".CollUnlocksCmd", pool.get(APC))
@@ -115,24 +128,58 @@ public static String pkey(java.util.UUID u) {
   } catch (Throwable t) { }
   return u.toString();
 }""", store))
+# per pkey: when its counts file last failed to read (Long millis). A failed read is never cached as empty; retried at most every 2 s
+store.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap BROKEN = new java.util.concurrent.ConcurrentHashMap();", store))
+# Every counts-file read and write holds CollIO.class (a leaf lock: nothing else is taken inside it). On Windows an open reader
+# makes a concurrent replace fail, and the shutdown flush can overlap a saver flush that is still running (same .tmp file).
+# The replace is retried 5x 20 ms (sharing violations from scanners/indexers) before the save counts as failed.
+cio.addMethod(CtNewMethod.make("""
+public static synchronized java.util.Properties read(java.nio.file.Path f) throws java.io.IOException {
+  java.util.Properties p = new java.util.Properties();
+  if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
+    java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+    try { p.load(in); } finally { in.close(); }
+  }
+  return p;
+}""", cio))
+cio.addMethod(CtNewMethod.make("""
+public static synchronized void write(java.nio.file.Path dir, String key, java.util.Properties p) throws java.io.IOException {
+  java.nio.file.Files.createDirectories(dir, new java.nio.file.attribute.FileAttribute[0]);
+  java.nio.file.Path tmp = dir.resolve(key + ".properties.tmp");
+  java.io.OutputStream out = java.nio.file.Files.newOutputStream(tmp, new java.nio.file.OpenOption[0]);
+  try { p.store(out, "SkyyCollections"); } finally { out.close(); }
+  java.nio.file.Path f = dir.resolve(key + ".properties");
+  java.io.IOException last = null;
+  for (int i = 0; i < 5; i++) {
+    try {
+      java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      return;
+    } catch (java.nio.file.FileSystemException e) {
+      last = e;
+    }
+    try { Thread.sleep(20L); } catch (InterruptedException ie) { }
+  }
+  throw last;
+}""", cio))
 store.addMethod(CtNewMethod.make("""
 public static java.util.Map countsKey(String key) {
   java.util.Map m = (java.util.Map) DATA.get(key);
   if (m != null) return m;
   m = new java.util.concurrent.ConcurrentHashMap();
+  Long bad = (Long) BROKEN.get(key);
+  if (bad != null && System.currentTimeMillis() - bad.longValue() < 2000L) return m;
   try {
-    java.nio.file.Path f = DIR.resolve(key + ".properties");
-    if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
-      java.util.Properties p = new java.util.Properties();
-      java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
-      try { p.load(in); } finally { in.close(); }
-      java.util.Enumeration en = p.propertyNames();
-      while (en.hasMoreElements()) {
-        String k = (String) en.nextElement();
-        try { m.put(k, Long.valueOf(Long.parseLong(p.getProperty(k).trim()))); } catch (Throwable t) { }
-      }
+    java.util.Properties p = com.skyy.collections.CollIO.read(DIR.resolve(key + ".properties"));
+    java.util.Enumeration en = p.propertyNames();
+    while (en.hasMoreElements()) {
+      String k = (String) en.nextElement();
+      try { m.put(k, Long.valueOf(Long.parseLong(p.getProperty(k).trim()))); } catch (Throwable t) { }
     }
-  } catch (Throwable t) { warn("could not load counts for " + key + ": " + t); }
+  } catch (Throwable t) {
+    if (BROKEN.put(key, Long.valueOf(System.currentTimeMillis())) == null) warn("could not read counts/" + key + ".properties - breaks for that profile are not counted and the file is left untouched until it reads again (retried every 2 s while needed): " + t);
+    return new java.util.concurrent.ConcurrentHashMap();
+  }
+  if (BROKEN.remove(key) != null) warn("counts/" + key + ".properties reads again");
   java.util.Map prev = (java.util.Map) DATA.putIfAbsent(key, m);
   return prev != null ? prev : m;
 }""", store))
@@ -141,31 +188,30 @@ public static java.util.Map counts(java.util.UUID u) {
   return countsKey(pkey(u));
 }""", store))
 store.addMethod(CtNewMethod.make("""
-public static void save(String key) {
+public static boolean save(String key) {
   try {
     java.util.Map m = (java.util.Map) DATA.get(key);
-    if (m == null) return;
+    if (m == null) return true;
     java.util.Properties p = new java.util.Properties();
     java.util.Iterator it = m.entrySet().iterator();
     while (it.hasNext()) {
       java.util.Map.Entry e = (java.util.Map.Entry) it.next();
       p.setProperty((String) e.getKey(), String.valueOf(((Long) e.getValue()).longValue()));
     }
-    java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
-    java.nio.file.Path tmp = DIR.resolve(key + ".properties.tmp");
-    java.io.OutputStream out = java.nio.file.Files.newOutputStream(tmp, new java.nio.file.OpenOption[0]);
-    try { p.store(out, "SkyyCollections"); } finally { out.close(); }
-    java.nio.file.Files.move(tmp, DIR.resolve(key + ".properties"), new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
-  } catch (Throwable t) { warn("could not save counts for " + key + ": " + t); }
+    com.skyy.collections.CollIO.write(DIR, key, p);
+    return true;
+  } catch (Throwable t) { warn("could not save counts/" + key + ".properties (retried at the next flush): " + t); return false; }
 }""", store))
 store.addMethod(CtNewMethod.make("""
 public static void flushDirty() {
+  java.util.ArrayList failed = new java.util.ArrayList();
   java.util.Iterator it = DIRTY.keySet().iterator();
   while (it.hasNext()) {
     String key = (String) it.next();
     it.remove();
-    save(key);
+    if (!save(key)) failed.add(key);
   }
+  for (int i = 0; i < failed.size(); i++) DIRTY.put(failed.get(i), Boolean.TRUE);
 }""", store))
 store.addMethod(CtNewMethod.make("""
 public static int tierOf(long n) {
@@ -188,7 +234,7 @@ public static String pretty(String id) {
 }""", store))
 # returns new tier if a milestone was crossed, else 0
 store.addMethod(CtNewMethod.make("""
-public static synchronized int bumpKey(String key, String id, long n) {
+public static synchronized int bumpLocked(String key, String id, long n) {
   java.util.Map m = countsKey(key);
   Long v = (Long) m.get(id);
   long oldv = v == null ? 0L : v.longValue();
@@ -198,9 +244,11 @@ public static synchronized int bumpKey(String key, String id, long n) {
   int ot = tierOf(oldv); int nt = tierOf(newv);
   return nt > ot ? nt : 0;
 }""", store))
+# the counts file is loaded BEFORE the bump monitor (the world thread never waits on disk I/O while holding it)
 store.addMethod(CtNewMethod.make("""
-public static int bump(java.util.UUID u, String id, long n) {
-  return bumpKey(pkey(u), id, n);
+public static int bumpKey(String key, String id, long n) {
+  countsKey(key);
+  return bumpLocked(key, id, n);
 }""", store))
 
 # ================= CollUnlocks (bridge publisher) =================
@@ -211,12 +259,6 @@ unl.addField(CtField.make("public static final java.util.concurrent.ConcurrentHa
 # per UUID: profile:epoch value (Long, -1 = absent) and pkey (String) the last publish was computed for
 unl.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap EPOCH = new java.util.concurrent.ConcurrentHashMap();", unl))
 unl.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap PUBKEY = new java.util.concurrent.ConcurrentHashMap();", unl))
-# per UUID: fast rechecks left (Integer) after an epoch change that still published for the SAME pkey (key function may lag)
-unl.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap RECHECK = new java.util.concurrent.ConcurrentHashMap();", unl))
-# CollRecheck: field + constructor now (CollUnlocks.scheduleRecheck constructs it); run() is added after CollUnlocks.recheck exists
-rck.addInterface(pool.get("java.lang.Runnable"))
-rck.addField(CtField.make("public java.util.UUID u;", rck))
-rck.addConstructor(CtNewConstructor.make("public CollRecheck(java.util.UUID u) { this.u = u; }", rck))
 unl.addMethod(CtNewMethod.make(f"""
 public static java.util.Map bridge() {{
   return {PKG}.CollStore.bridge();
@@ -302,13 +344,21 @@ public static java.util.TreeSet compute(java.util.Map counts) {{
   return out;
 }}""", unl))
 unl.addMethod(CtNewMethod.make(f"""
-public static synchronized int publish(java.util.UUID u) {{
+public static synchronized int publishLocked(java.util.UUID u) {{
   try {{
     int n = 0;
     for (int pass = 0; pass < 3; pass++) {{
       long ep = epochOf(u);
       String key = {PKG}.CollStore.pkey(u);
-      java.util.TreeSet ids = compute({PKG}.CollStore.countsKey(key));
+      java.util.Map counts = {PKG}.CollStore.countsKey(key);
+      if (!{PKG}.CollStore.DATA.containsKey(key)) {{
+        bridge().remove("coll:recipes:" + u.toString());
+        PUBLISHED.remove(u);
+        EPOCH.remove(u);
+        PUBKEY.remove(u);
+        return 0;
+      }}
+      java.util.TreeSet ids = compute(counts);
       StringBuilder sb = new StringBuilder();
       java.util.Iterator it = ids.iterator();
       while (it.hasNext()) {{ if (sb.length() > 0) sb.append(','); sb.append((String) it.next()); }}
@@ -322,44 +372,36 @@ public static synchronized int publish(java.util.UUID u) {{
     return n;
   }} catch (Throwable t) {{ {PKG}.CollStore.warn("publish failed for " + u + ": " + t); return 0; }}
 }}""", unl))
-# one fast recheck of u in 1 s (CollRecheck -> recheck(u)); on failure the chain ends and the 5 s saver tick remains the backstop
+# The counts file is loaded BEFORE the publish monitor, so the monitor never waits on disk I/O (safe from the world thread).
+# A key whose counts file cannot be read publishes nothing: coll:recipes:<uuid> is removed (never another profile's list) and the
+# player is dropped from PUBLISHED, so publishOnline retries every tick until it reads.
 unl.addMethod(CtNewMethod.make(f"""
-public static void scheduleRecheck(java.util.UUID u) {{
-  try {{
-    {HSV}.SCHEDULED_EXECUTOR.schedule(new {PKG}.CollRecheck(u), 1L, java.util.concurrent.TimeUnit.SECONDS);
-  }} catch (Throwable t) {{ RECHECK.remove(u); }}
+public static int publish(java.util.UUID u) {{
+  try {{ {PKG}.CollStore.countsKey({PKG}.CollStore.pkey(u)); }} catch (Throwable t) {{ }}
+  return publishLocked(u);
 }}""", unl))
-# republish an already-published player when the active profile changed (epoch bump, or a different pkey) since the last publish.
-# Epoch moved but publish() still computed for the SAME pkey as before: SkyyProfiles may have bumped the epoch before its key
-# function returns the new key (the contract does not fix that order), or the epoch moved without a key change. Either way arm
-# 5 fast rechecks (1 s apart) so a late key flip is republished within ~1 s instead of on the next 5 s tick.
+# Republish an already-published player when the active profile changed since the last publish: profile:epoch:<uuid> moved or
+# pkey() now differs from the key publish computed for. SkyyProfiles 0.1 commits its key function BEFORE it bumps the epoch
+# (PROFILES-CONTRACT.md "Key flip timing"), so a moved epoch always comes with the new key; the pkey comparison covers the
+# one-call window where the key already flipped and the epoch has not. Epoch bumps that keep the key (first profile, a new
+# profile before its switch, setclass) republish the same list: harmless. Never-published players are left to baseline() /
+# publishOnline(): their first publish is the baseline (absent -> value is not a change), nothing switch-like happens.
 unl.addMethod(CtNewMethod.make(f"""
-public static synchronized boolean syncEpoch(java.util.UUID u) {{
+public static boolean syncEpoch(java.util.UUID u) {{
   try {{
     if (u == null || !PUBLISHED.containsKey(u)) return false;
     Long seen = (Long) EPOCH.get(u);
     String key = (String) PUBKEY.get(u);
-    boolean epochMoved = seen == null || seen.longValue() != epochOf(u);
-    if (!epochMoved && key != null && key.equals({PKG}.CollStore.pkey(u))) return false;
+    if (seen != null && seen.longValue() == epochOf(u) && key != null && key.equals({PKG}.CollStore.pkey(u))) return false;
     publish(u);
-    if (epochMoved && key != null && key.equals(PUBKEY.get(u))) {{
-      if (RECHECK.put(u, Integer.valueOf(5)) == null) scheduleRecheck(u);
-    }}
     return true;
   }} catch (Throwable t) {{ return false; }}
 }}""", unl))
-# CollRecheck target: one step of the fast-recheck chain (only one chain per UUID is ever pending)
+# first sight of a player in this session publishes the baseline; after that only a changed epoch/key republishes
 unl.addMethod(CtNewMethod.make("""
-public static synchronized void recheck(java.util.UUID u) {
-  try {
-    Object left = RECHECK.remove(u);
-    if (left == null || !PUBLISHED.containsKey(u)) return;
-    if (syncEpoch(u)) return;
-    int n = ((Integer) left).intValue() - 1;
-    if (n <= 0) return;
-    RECHECK.put(u, Integer.valueOf(n));
-    scheduleRecheck(u);
-  } catch (Throwable t) { RECHECK.remove(u); }
+public static void baseline(java.util.UUID u) {
+  if (u == null) return;
+  if (!PUBLISHED.containsKey(u)) publish(u); else syncEpoch(u);
 }""", unl))
 unl.addMethod(CtNewMethod.make("""
 public static void checkEpochs() {
@@ -368,10 +410,6 @@ public static void checkEpochs() {
     while (it.hasNext()) syncEpoch((java.util.UUID) it.next());
   } catch (Throwable t) { }
 }""", unl))
-rck.addMethod(CtNewMethod.make(f"""
-public void run() {{
-  try {{ {PKG}.CollUnlocks.recheck(this.u); }} catch (Throwable t) {{ }}
-}}""", rck))
 unl.addMethod(CtNewMethod.make(f"""
 public static void publishOnline() {{
   try {{
@@ -387,7 +425,6 @@ public static void publishOnline() {{
     PUBLISHED.keySet().retainAll(online);
     EPOCH.keySet().retainAll(online);
     PUBKEY.keySet().retainAll(online);
-    RECHECK.keySet().retainAll(online);
   }} catch (Throwable t) {{ }}
 }}""", unl))
 unl.addMethod(CtNewMethod.make("""
@@ -411,6 +448,36 @@ public static void reloadAndReport({PR} pr) {{
   pr.sendMessage({MSG}.raw("[Collections] unlocks.properties reloaded (" + TABLE.size() + " explicit rule(s), auto=" + AUTO + ")"));
 }}""", unl))
 
+# ================= CollBreakTask (deferred count, SkyySkills BreakTask pattern) =================
+# World.execute always queues, so when run() starts every other system (SkyyIslands' GuardBreak, whose order relative to ours is
+# unknown) has handled the event. The engine creates a new BreakBlockEvent per break, so holding it is safe.
+brk.addInterface(pool.get("java.lang.Runnable"))
+brk.addField(CtField.make(f"public {BBE} ev;", brk))
+brk.addField(CtField.make(f"public {PR} pr;", brk))
+brk.addField(CtField.make("public java.util.UUID u;", brk))
+brk.addField(CtField.make("public String key;", brk))
+brk.addField(CtField.make("public String id;", brk))
+brk.addConstructor(CtNewConstructor.make(f"""
+public CollBreakTask({BBE} ev, {PR} pr, java.util.UUID u, String key, String id) {{
+  this.ev = ev; this.pr = pr; this.u = u; this.key = key; this.id = id;
+}}""", brk))
+# key = the profile that broke the block. If a switch ran between the break and this task (both world-thread tasks), the break
+# still counts for that profile, silently (no milestone line, no publish: coll:recipes describes the ACTIVE profile).
+brk.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{
+    if (this.ev.isCancelled()) return;
+    boolean active = this.key.equals({PKG}.CollStore.pkey(this.u));
+    if (active) {PKG}.CollUnlocks.baseline(this.u);
+    int newTier = {PKG}.CollStore.bumpKey(this.key, this.id, 1L);
+    if (newTier <= 0 || !active) return;
+    Object was = {PKG}.CollUnlocks.PUBLISHED.get(this.u);
+    int before = was instanceof Integer ? ((Integer) was).intValue() : 0;
+    int now = {PKG}.CollUnlocks.publish(this.u);
+    if (this.pr != null && this.pr.isValid()) this.pr.sendMessage({MSG}.raw("Collection milestone! " + {PKG}.CollStore.pretty(this.id) + " " + {PKG}.CollStore.roman(newTier) + (now > before ? "  +" + (now - before) + " recipe(s) unlocked - /craft" : "")));
+  }} catch (Throwable t) {{ {PKG}.CollStore.warn("break count failed: " + t); }}
+}}""", brk))
+
 # ================= CollSystem (BreakBlockEvent listener) =================
 sysc.addConstructor(CtNewConstructor.make(f"public CollSystem() {{ super({BBE}.class); }}", sysc))
 sysc.addMethod(CtNewMethod.make(f"""
@@ -429,14 +496,12 @@ public void handle(int idx, {ACH} chunk, {ST} st, {CB} buf, {EV} ev) {{
     if (bt == null) return;
     String id = (String) bt.getId();
     if (id == null) return;
+    Object ext = st.getExternalData();
+    if (!(ext instanceof {EST})) return;
+    {WLD} w = (({EST}) ext).getWorld();
+    if (w == null) return;
     java.util.UUID u = pr.getUuid();
-    {PKG}.CollUnlocks.syncEpoch(u);
-    int newTier = {PKG}.CollStore.bump(u, id, 1L);
-    if (newTier > 0) {{
-      int before = {PKG}.CollUnlocks.PUBLISHED.containsKey(u) ? ((Integer) {PKG}.CollUnlocks.PUBLISHED.get(u)).intValue() : 0;
-      int now = {PKG}.CollUnlocks.publish(u);
-      pr.sendMessage({MSG}.raw("Collection milestone! " + {PKG}.CollStore.pretty(id) + " " + {PKG}.CollStore.roman(newTier) + (now > before ? "  +" + (now - before) + " recipe(s) unlocked - /craft" : "")));
-    }}
+    w.execute(new {PKG}.CollBreakTask(e, pr, u, {PKG}.CollStore.pkey(u), id));
   }} catch (Throwable t) {{ {PKG}.CollStore.warn("break handler failed: " + t); }}
 }}""", sysc))
 
@@ -446,10 +511,10 @@ sav.addConstructor(CtNewConstructor.make("public CollSaver() { }", sav))
 sav.addMethod(CtNewMethod.make(f"""
 public void run() {{
   try {{ {PKG}.CollUnlocks.checkEpochs(); }} catch (Throwable t) {{ }}
-  this.ticks = this.ticks + 1;
-  if (this.ticks % 2 != 0) return;
-  try {{ {PKG}.CollStore.flushDirty(); }} catch (Throwable t) {{ }}
   try {{ {PKG}.CollUnlocks.publishOnline(); }} catch (Throwable t) {{ }}
+  this.ticks = this.ticks + 1;
+  if (this.ticks % 10 != 0) return;
+  try {{ {PKG}.CollStore.flushDirty(); }} catch (Throwable t) {{ }}
 }}""", sav))
 
 ccmp.addInterface(pool.get("java.util.Comparator"))
@@ -567,18 +632,17 @@ public void setup() {{
   {PKG}.CollUnlocks.load();
   getEntityStoreRegistry().registerSystem(new {PKG}.CollSystem());
   getCommandRegistry().registerCommand(new {PKG}.CollCmd());
-  this.saver = {HSV}.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new {PKG}.CollSaver(), 5L, 5L, java.util.concurrent.TimeUnit.SECONDS);
+  this.saver = {HSV}.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new {PKG}.CollSaver(), 1L, 1L, java.util.concurrent.TimeUnit.SECONDS);
   getLogger().at(java.util.logging.Level.INFO).log("[SkyyCollections] {VERSION} ready - break blocks, /collections to view, per-profile counts, unlocks auto=" + {PKG}.CollUnlocks.AUTO + " explicit=" + {PKG}.CollUnlocks.TABLE.size());
 }}""", pl))
 pl.addMethod(CtNewMethod.make(f"""
 protected void shutdown() {{
   try {{ if (this.saver != null) this.saver.cancel(false); }} catch (Throwable t) {{ }}
-  try {{ {PKG}.CollUnlocks.RECHECK.clear(); }} catch (Throwable t) {{ }}
   try {{ {PKG}.CollStore.flushDirty(); }} catch (Throwable t) {{ }}
   super.shutdown();
 }}""", pl))
 
-for c in (store, unl, rck, sysc, sav, ccmp, page, ulc, rlc, cmd, pl):
+for c in (cio, store, unl, brk, sysc, sav, ccmp, page, ulc, rlc, cmd, pl):
     c.writeFile(OUT)
 print("classes written")
 

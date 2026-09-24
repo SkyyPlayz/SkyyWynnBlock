@@ -7,13 +7,13 @@
    active key changes, CraftLinkTask retires the old mirror (sync into its own pool, save, drop) and swaps it out of any open
    bench window in the same world-thread run.
  - Every sweep / page / bench / processing path resolves the pkey ONCE per run or click and passes it down.
- - Settle window: for 3 s after the epoch or the key changes, the sweep skips and page item moves are refused (guards a
+ - Settle window: for SETTLE_MS (3 s; 6 s since the integration fixes) after the epoch or the key changes, the sweep skips and page item moves are refused (guards a
    non-atomic inventory swap in SkyyProfiles); a page built for another key refuses the click and rebuilds for the new profile.
  - Rule 3: SkyySacks publishes no per-player bridge values; ProcTask (existing 1 s tick) remembers profile:epoch:<uuid> per
    player - on a change it flushes every dirty file off the world thread and logs the switch; an open Sacks/Craft page built
    for another key gets a set()-only "profile changed" notice (the proven live() pattern; the rebuild happens on the next click).
  - Rules 4-6: nothing applied to the live player; vanilla inventory never touched; the Craftable-only toggle stays per player.
-Without SkyyProfiles pkey = uuid.toString() = profile 1 and the epoch stays 0: same files, same log lines, same behaviour.
+Without SkyyProfiles pkey = uuid.toString() = profile 1 and the epoch stays absent (-1): same files, same log lines, same behaviour.
 Review fixes (0.7.2 review, same version):
  - HIGH: the bench link (CraftLinkTask) resolves the key with settledKey, not pkey. While a switch settles it only PARKS the bench
    mirror (BagMirror.park: sync what the bench already took into the mirror's own pool, empty the mirror, let the engine re-feed
@@ -24,6 +24,28 @@ Review fixes (0.7.2 review, same version):
    SackPool.saveSoon(k) (mark dirty + SackSaver on the scheduler thread) instead of the blocking SackPool.save(k).
  - LOW: the PROFILE log lines (epochCheck, retired/parked mirror) are queued with CraftLog.later and written by the SackSaver
    (SackSaver.run now also drains CraftLog.PENDING, so its run() is added below CraftLog); shutdown drains the queue too.
+Integration fixes against the pinned SkyyProfiles 0.1 semantics (tools/PROFILES-CONTRACT.md "Semantics of SkyyProfiles 0.1", same
+version). settledKey(u) is the one gate every item move goes through (sweep, Sacks page clicks, craft/processing clicks, bench link);
+it now returns null (= paused: no sweep, clicks refused, bench mirror parked) also when:
+ - HIGH: profile:busy:<uuid> is present (contract 4.5). SkyyProfiles sets it at PlayerConnectEvent while a crash recovery is pending
+   and clears it after the recovery loaded the active profile's snapshot on the player's world thread; a sweep in between (the 2 s
+   SackTick reaches a player as soon as the entity is in a world) moved items of the pre-recovery inventory into the pool, and the
+   recovery then reloaded them from the snapshot: duplicated.
+ - MEDIUM: SkyyProfiles is installed (profile:fn:key present) but profile:epoch:<uuid> is absent for this online player. Contract
+   4.4 / 5: that means the players file is unreadable with no good copy and the Function falls back to profile 1's key while the live
+   inventory may belong to profile N - a sweep would move profile N's items into profile 1's pool. Logged once per episode.
+ - MEDIUM: the player's pool file could not be read. Before, pool() cached an EMPTY pool on a read error and the next save replaced
+   the real file with it (every stored item lost); the first read of each profile's pool happens right after a switch. Now a failed
+   read is not cached (views show it empty, saveNow never writes a key that is not loaded), retried at most every 2 s, logged once.
+ - epoch() returns -1 when profile:epoch:<uuid> is absent; a transition from or to "absent" is a baseline, not a change (contract
+   4.2), in settledKey and in ProcTask.epochCheck.
+ - LOW: SETTLE_MS 3 s -> 6 s. The switch itself is one world-thread task (no inventory race), but acc:has:<uuid> (SkyyAccessories,
+   up to its 5 s AccTick) and coll:recipes:<uuid> (SkyyCollections, 5 s saver tick) are republished for the new profile a few seconds
+   later; craft clicks in that gap used the previous profile's bench accessories and collection unlocks.
+ - LOW: SackPool.saveNow re-marks the key dirty when the write fails (Windows: a rename refused while another process holds the file)
+   instead of dropping the change until the next add; SackPool/ProcStore.flushDirty iterate a snapshot of the dirty keys.
+ - LOW: plugin shutdown syncs every bench mirror into its own pool (BagMirror.syncAll) before the last flush: bench crafts from bag
+   items in the last <= 300 ms before a stop (or since the player disconnected at an open bench) were never debited.
 """
 import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -67,21 +89,31 @@ rep('offline progress and an output slot (Skyy_SkyySacks/processing/<uuid>.prope
     'offline progress and an output slot (Skyy_SkyySacks/processing/<uuid>.properties); BagMirror.sync idempotent (no double bag deduction).' + LF
     + '0.7.2: per-profile storage (tools/PROFILES-CONTRACT.md): pools/<pkey>.properties, processing/<pkey>.properties, crafts.log lines' + LF
     + 'carry the pkey; pool/exemption/processing/BagMirror caches keyed by the pkey String; sweep, pages, bench link and processing resolve' + LF
-    + 'the pkey once per run (a bench mirror keeps its key and is retired into its own pool on a switch); 3s settle window after a switch' + LF
+    + 'the pkey once per run (a bench mirror keeps its key and is retired into its own pool on a switch); 6s settle window after a switch' + LF
     + '(no sweep, page item moves refused); ProcTask checks profile:epoch:<uuid> every second (flush saves, log, notice on an open page).' + LF
     + 'Review fixes: the bench link uses settledKey and parks the mirror (bag materials off the open bench) while a switch settles; the craft' + LF
     + 'page never builds a mirror for an unsettled key; world-thread pool saves go through SackPool.saveSoon (SackSaver thread); PROFILE log' + LF
     + 'lines are queued (CraftLog.later) and written by the SackSaver.' + LF
+    + 'Integration fixes (SkyyProfiles 0.1 semantics): settledKey also pauses item moves while profile:busy:<uuid> is set (crash recovery' + LF
+    + 'at join), while SkyyProfiles is installed but published no epoch for the player (unreadable players file) and while the pool file' + LF
+    + 'cannot be read (a failed read is no longer cached as an empty pool that the next save wrote over the file); absent epoch = baseline;' + LF
+    + 'settle window 6s (covers the acc:has / coll:recipes republish); failed pool saves stay dirty; shutdown syncs open bench mirrors.' + LF
     + 'Derived by tools/sacks_0_7_2_patch.py. Without SkyyProfiles pkey = uuid = profile 1: same files, same behaviour.' + LF + '"""')
 rep('VERSION = "0.7.1"', 'VERSION = "0.7.2"')
 
 # ---------------- SackPool: contract helper, epoch, settle window ----------------
 rep('sp.addField(CtField.make("public static final Object SAVELOCK = new Object();", sp))' + LF,
     'sp.addField(CtField.make("public static final Object SAVELOCK = new Object();", sp))' + LF + LF.join([
-        'sp.addField(CtField.make("public static final long SETTLE_MS = 3000L;", sp))',
+        '# integration fix: 6 s, not 3 - the switch is one world-thread task, but acc:has / coll:recipes follow the new profile only on',
+        '# the next SkyyAccessories / SkyyCollections republish (up to their 5 s ticks); craft clicks wait until those are current.',
+        'sp.addField(CtField.make("public static final long SETTLE_MS = 6000L;", sp))',
         'sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap SEENEPOCH = new java.util.concurrent.ConcurrentHashMap();", sp))',
         'sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap SEENKEY = new java.util.concurrent.ConcurrentHashMap();", sp))',
         'sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap CHANGEDAT = new java.util.concurrent.ConcurrentHashMap();", sp))',
+        '# integration fix: pool keys whose file could not be read (key -> time of the last failed read; never cached as an empty pool) and',
+        '# players whose profile state is unknown (SkyyProfiles installed, no profile:epoch published) - both only for warn-once + retry pacing.',
+        'sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap BADPOOL = new java.util.concurrent.ConcurrentHashMap();", sp))',
+        'sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap UNKNOWN = new java.util.concurrent.ConcurrentHashMap();", sp))',
         '# 0.7.2 profile contract (tools/PROFILES-CONTRACT.md): bridge + pkey helper exactly as the contract gives it. Without SkyyProfiles',
         '# pkey(u) = u.toString() = profile 1 (the pre-0.7.2 file names). Per-player bridge values we READ (acc:has, coll:recipes) stay keyed by UUID.',
         'sp.addMethod(CtNewMethod.make("""',
@@ -101,6 +133,8 @@ rep('sp.addField(CtField.make("public static final Object SAVELOCK = new Object(
         '  } catch (Throwable t) { }',
         '  return u.toString();',
         '}""", sp))',
+        '# profile:epoch:<uuid> as a long; -1 = absent (SkyyProfiles missing, or it has not published this player: contract 3 "Epoch").',
+        '# An absent epoch carries no information - going from or to -1 is never treated as a profile change (contract 4.2).',
         'sp.addMethod(CtNewMethod.make("""',
         'public static long epoch(java.util.UUID u) {',
         '  try {',
@@ -108,26 +142,9 @@ rep('sp.addField(CtField.make("public static final Object SAVELOCK = new Object(
         '    if (e instanceof Number) return ((Number) e).longValue();',
         '    if (e != null) return Long.parseLong(String.valueOf(e).trim());',
         '  } catch (Throwable t) { }',
-        '  return 0L;',
+        '  return -1L;',
         '}""", sp))',
-        '# the active key, or null for SETTLE_MS after the epoch or the key changed (sweep skips, page item moves are refused) so an',
-        '# inventory swap and a key switch that do not land in the same world-thread task cannot move items across profiles.',
-        '# Without SkyyProfiles the epoch stays 0 and the key stays the uuid: never unsettled.',
-        'sp.addMethod(CtNewMethod.make("""',
-        'public static String settledKey(java.util.UUID u) {',
-        '  long e = epoch(u);',
-        '  String k = pkey(u);',
-        '  Long le = (Long) SEENEPOCH.put(u, Long.valueOf(e));',
-        '  String lk = (String) SEENKEY.put(u, k);',
-        '  long now = System.currentTimeMillis();',
-        '  if (le != null && lk != null && (le.longValue() != e || !lk.equals(k))) CHANGEDAT.put(u, Long.valueOf(now));',
-        '  Long t = (Long) CHANGEDAT.get(u);',
-        '  if (t != null) {',
-        '    if (now - t.longValue() < SETTLE_MS) return null;',
-        '    CHANGEDAT.remove(u);',
-        '  }',
-        '  return k;',
-        '}""", sp))',
+        '# settledKey(u) is added below pool() (it needs ready(k)); see "integration fixes" further down.',
     ]) + LF)
 
 SPA = 'sp.addField(CtField.make("public static final Object SAVELOCK'
@@ -284,7 +301,7 @@ blk('public void handleDataEvent({REF} ref, {ST} st, String data) {{',
     [('    if (player == null) return;' + LF + '    for (int i = 0; i < 36; i++) {{' + LF,
       '    if (player == null) return;' + LF
       + '    String k = {PKG}.SackPool.settledKey(u);' + LF
-      + '    if (k == null) {{ this.info = "switching profiles - try again in a moment"; rebuild(); return; }}' + LF
+      + '    if (k == null) {{ this.info = "bags paused (profile loading or switching) - try again in a moment"; rebuild(); return; }}' + LF
       + '    if (this.key != null && !this.key.equals(k)) {{ this.info = "your profile changed - this page now shows it"; rebuild(); return; }}' + LF
       + '    for (int i = 0; i < 36; i++) {{' + LF),
      ('SweepTask.withdraw(player, u, this.cells[i], n)', 'SweepTask.withdraw(player, k, this.cells[i], n)'),
@@ -488,15 +505,15 @@ blk('public void build({REF} ref, {UCB} b, {UEB} ev, {ST} st) {{',
       + '  if (k == null) {{' + LF
       + '    this.settling = true;' + LF
       + '    k = {PKG}.SackPool.pkey(u);' + LF
-      + '    if (this.info == null || this.info.length() == 0) this.info = "switching profiles - bag counts come back in a moment";' + LF
-      + '  }} else if (this.info != null && this.info.startsWith("switching profiles")) this.info = "";' + LF
+      + '    if (this.info == null || this.info.length() == 0) this.info = "bags paused (profile loading or switching) - bag counts come back in a moment";' + LF
+      + '  }} else if (this.info != null && this.info.startsWith("bags paused")) this.info = "";' + LF
       + '  this.key = k;' + LF + '  this.tabs = buildTabs(p, u, k);'),
      ('buildProc(b, ev, p, u); return;', 'buildProc(b, ev, p, u, k); return;'),
      ('{CIC} mats = materials(p, u);', '{CIC} mats = viewMats(p, k);')], HPA)
 blk('public void handleDataEvent({REF} ref, {ST} st, String data) {{',
     [('    if (handleProc(ref, st, p, u, data)) return;',
       '    String k = {PKG}.SackPool.settledKey(u);' + LF
-      + '    if (k == null) {{ this.info = "switching profiles - try again in a moment"; rebuild(); return; }}' + LF
+      + '    if (k == null) {{ this.info = "bags paused (profile loading or switching) - try again in a moment"; rebuild(); return; }}' + LF
       + '    if (this.key != null && !this.key.equals(k)) {{ this.info = "your profile changed - this page now shows it"; this.pageNo = 0; rebuild(); return; }}' + LF
       + '    if (handleProc(ref, st, p, u, k, data)) return;'),
      ('{CIC} mats = materials(p, u);', '{CIC} mats = materials(p, k);'),
@@ -529,11 +546,13 @@ rep('ptk.addConstructor(CtNewConstructor.make(f"public ProcTask({PR} pr, java.ut
         'ptk.addConstructor(CtNewConstructor.make(f"public ProcTask({PR} pr, java.util.UUID w) {{ this.pr = pr; this.expectedWorld = w; }}", ptk))',
         '# 0.7.2 profile contract rule 3: remember the last profile:epoch:<uuid> seen per player. SkyySacks publishes no per-player bridge',
         '# values, so "republish" = flush every dirty pool/processing file (the old profile\'s included) off the world thread right away and',
-        '# log the switch; an open page built for another key is told in run(). Without SkyyProfiles the epoch stays 0: never fires.',
+        '# log the switch; an open page built for another key is told in run(). Without SkyyProfiles the epoch stays absent: never fires.',
+        '# Integration fix: an absent epoch (-1) is not remembered, so the first published value is a baseline (contract 4.2), not a change.',
         '# Review fix: the log line is queued (CraftLog.later) BEFORE the SackSaver is scheduled, which writes it off the world thread.',
         'ptk.addMethod(CtNewMethod.make(f"""',
         'public static boolean epochCheck(java.util.UUID u, String k) {{',
         '  long ep = {PKG}.SackPool.epoch(u);',
+        '  if (ep < 0L) return false;',
         '  Long last = (Long) EPOCH.put(u, Long.valueOf(ep));',
         '  if (last == null || last.longValue() == ep) return false;',
         '  {PKG}.CraftLog.later(k, "PROFILE epoch " + last + " -> " + ep + " - bags, furnace and tannery now use this key");',
@@ -570,6 +589,112 @@ blk('public void run() {{',
 rep('  getLogger().at(java.util.logging.Level.INFO).log("[SkyySacks] {VERSION} ready - /pd, /craft (Crafting, Alchemy, timed Furnace/Tannery queues), right-click a magic bag; workbenches craft from your bags");',
     '  getLogger().at(java.util.logging.Level.INFO).log("[SkyySacks] {VERSION} ready - /pd, /craft (Crafting, Alchemy, timed Furnace/Tannery queues), right-click a magic bag; workbenches craft from your bags; storage per profile (pkey)");')
 
+# ---------------- integration fixes (pinned SkyyProfiles 0.1 semantics; notes in the docstring above) ----------------
+# pool(k): a failed read is NOT cached (it used to cache an empty pool that the next save wrote over the real file)
+blk('public static java.util.Map pool(String k) {',
+    [('  } catch (Throwable t) { warn("could not load pool for " + k + ": " + t); }' + LF,
+      '  } catch (Throwable t) {' + LF
+      + '    java.util.Map again = (java.util.Map) POOLS.get(k);' + LF
+      + '    if (again != null) return again;' + LF
+      + '    if (BADPOOL.put(k, Long.valueOf(System.currentTimeMillis())) == null) warn("could not load pool for " + k + " - file left untouched, item moves for this profile paused until it reads (retry every 2s): " + t);' + LF
+      + '    return m;' + LF
+      + '  }' + LF
+      + '  if (BADPOOL.remove(k) != null) warn("pool for " + k + " reads again - item moves resumed");' + LF)], SPA)
+# a failed pool write stays dirty (retried by the next SackSaver run) instead of waiting for the next add
+blk('public static void saveNow(String k) {',
+    [('  } catch (Throwable t) { warn("could not save pool for " + k + ": " + t); }',
+      '  } catch (Throwable t) { DIRTY.put(k, Boolean.TRUE); warn("could not save pool for " + k + " (kept dirty - retried by the next save): " + t); }')], SPA)
+# flushDirty iterates a snapshot (a failed save re-marks its key; re-inserting while iterating the live key set could revisit it)
+blk('public static void flushDirty() {',
+    [('  java.util.Iterator it = DIRTY.keySet().iterator();' + LF
+      + '  while (it.hasNext()) {' + LF
+      + '    String k = (String) it.next();' + LF
+      + '    it.remove();' + LF
+      + '    save(k);' + LF
+      + '  }',
+      '  java.util.ArrayList ks = new java.util.ArrayList(DIRTY.keySet());' + LF
+      + '  for (int i = 0; i < ks.size(); i++) {' + LF
+      + '    String k = (String) ks.get(i);' + LF
+      + '    DIRTY.remove(k);' + LF
+      + '    save(k);' + LF
+      + '  }')], SPA)
+blk('public static void flushDirty() {',
+    [('  java.util.Iterator it = DIRTY.keySet().iterator();' + LF
+      + '  while (it.hasNext()) {' + LF
+      + '    String k = (String) it.next();' + LF
+      + '    save(k);' + LF
+      + '  }',
+      '  java.util.ArrayList ks = new java.util.ArrayList(DIRTY.keySet());' + LF
+      + '  for (int i = 0; i < ks.size(); i++) save((String) ks.get(i));')], PSA)
+# ready(k) + settledKey(u), below pool() (javassist: callee before caller). settledKey is the gate of every item move.
+rep('# ================= Processing (0.7.0)',
+    LF.join([
+        '# integration fix: true when the pool of key k is loaded (or its file does not exist yet). A pool whose file could not be read is',
+        '# retried at most every 2 s; until it reads, settledKey pauses every item move for that key (nothing can be written over the file).',
+        'sp.addMethod(CtNewMethod.make("""',
+        'public static boolean ready(String k) {',
+        '  if (k == null) return false;',
+        '  if (POOLS.containsKey(k)) return true;',
+        '  Long bad = (Long) BADPOOL.get(k);',
+        '  if (bad != null && System.currentTimeMillis() - bad.longValue() < 2000L) return false;',
+        '  pool(k);',
+        '  return POOLS.containsKey(k);',
+        '}""", sp))',
+        '# The ONE gate of every item move between the live inventory and a pool (sweep, Sacks page clicks, craft/processing clicks, bench',
+        '# link): the active key, or null = paused (sweep skips, clicks are refused, the bench mirror is parked). Paused while:',
+        '#  - SkyyProfiles is installed (profile:fn:key) but published no profile:epoch:<uuid> for this player: unreadable players file with no',
+        '#    good copy, where the Function falls back to profile 1 while the live inventory may be profile N (contract 4.4 / 5);',
+        '#  - SETTLE_MS after the epoch or the key changed (baseline = first value seen; absent epochs are no change, contract 4.2) - the other',
+        '#    mods republish acc:has / coll:recipes for the new profile in that time;',
+        '#  - profile:busy:<uuid> is present (contract 4.5): a crash recovery is pending at join and will reload the inventory from a snapshot,',
+        '#    so a sweep before it would duplicate items (a switch sets it too, but inside one world-thread task we never run in);',
+        '#  - the pool file of the key cannot be read (ready).',
+        '# Without SkyyProfiles: no epoch, no busy flag, key = uuid - only the pool-file check applies.',
+        'sp.addMethod(CtNewMethod.make("""',
+        'public static String settledKey(java.util.UUID u) {',
+        '  if (u == null) return null;',
+        '  java.util.Map b = bridge();',
+        '  long e = epoch(u);',
+        '  String k = pkey(u);',
+        '  if (e < 0L && (b.get("profile:fn:key") instanceof java.util.function.Function)) {',
+        '    if (UNKNOWN.putIfAbsent(u, Boolean.TRUE) == null) warn("SkyyProfiles is installed but published no profile:epoch for " + u + " (unreadable players file, or SkyyProfiles failed to start) - bag item moves paused for this player until it does");',
+        '    return null;',
+        '  }',
+        '  if (UNKNOWN.remove(u) != null) warn("profile state of " + u + " is known again - bag item moves resumed");',
+        '  Long le = (Long) SEENEPOCH.put(u, Long.valueOf(e));',
+        '  String lk = (String) SEENKEY.put(u, k);',
+        '  long now = System.currentTimeMillis();',
+        '  boolean moved = le != null && le.longValue() >= 0L && e >= 0L && le.longValue() != e;',
+        '  if (moved || (lk != null && !lk.equals(k))) CHANGEDAT.put(u, Long.valueOf(now));',
+        '  Long t = (Long) CHANGEDAT.get(u);',
+        '  if (t != null) {',
+        '    if (now - t.longValue() < SETTLE_MS) return null;',
+        '    CHANGEDAT.remove(u);',
+        '  }',
+        '  if (b.get("profile:busy:" + u.toString()) != null) return null;',
+        '  if (!ready(k)) return null;',
+        '  return k;',
+        '}""", sp))',
+        '',
+        '# ================= Processing (0.7.0)']))
+# shutdown: every bench mirror is synced into its own pool first (bench crafts from bag items since the last 300 ms link run - or
+# since the player disconnected at an open bench - were never debited), then the files are flushed.
+rep('  return out;' + LF + '}}""", mir))' + LF,
+    '  return out;' + LF + '}}""", mir))' + LF + LF.join([
+        'mir.addMethod(CtNewMethod.make(f"""',
+        'public static int syncAll() {{',
+        '  int n = 0;',
+        '  java.util.Iterator it = MIRRORS.values().iterator();',
+        '  while (it.hasNext()) {{',
+        '    try {{ n += (({PKG}.BagMirror) it.next()).sync(); }} catch (Throwable t) {{ }}',
+        '  }}',
+        '  return n;',
+        '}}""", mir))',
+    ]) + LF)
+rep('  try {{ if (this.procTicker != null) this.procTicker.cancel(false); }} catch (Throwable t) {{ }}' + LF,
+    '  try {{ if (this.procTicker != null) this.procTicker.cancel(false); }} catch (Throwable t) {{ }}' + LF
+    + '  try {{ int c = {PKG}.BagMirror.syncAll(); if (c > 0) {PKG}.SackPool.warn("shutdown: " + c + " bag items used by open benches debited"); }} catch (Throwable t) {{ }}' + LF)
+
 # every storage call must now take the pkey - fail the derivation if a UUID-keyed call survived
 for bad in ("SackPool.save(u)", "SackPool.pool(u)", "SackPool.get(u,", "SackPool.add(u,", "SackPool.catTotal(u,", "ProcStore.get(u,",
             "ProcStore.of(u,", "ProcStore.all(u)", "ProcStore.markDirty(u)", "ProcStore.BROKEN.containsKey(u)", "BagMirror.of(u)",
@@ -581,6 +706,12 @@ assert "CraftLog.line(k, \"PROFILE" not in s and "CraftLog.line(old," not in s, 
 assert s.count("{PKG}.SackPool.pkey(u);") == 4, "unexpected pkey() call sites: %d" % s.count("{PKG}.SackPool.pkey(u);")
 assert "    String k = {PKG}.SackPool.settledKey(u);" + LF + "    if (k == null) {{" + LF + "      {WM} wm0" in s, "CraftLinkTask not on settledKey"
 assert s.index("public static void saveSoon(String k) {{" + LF + "  if (k != null)") > s.index("sav.addConstructor("), "saveSoon before SackSaver ctor"
+# integration fixes: settledKey (the item-move gate) is defined once, below pool(), and honours busy / unknown state / unreadable pools
+assert s.count("public static String settledKey(java.util.UUID u) {") == 1, "settledKey defined more than once"
+assert s.index("public static String settledKey(java.util.UUID u) {") > s.index("public static boolean ready(String k) {") > s.index("public static java.util.Map pool(String k) {"), "settledKey/ready before pool"
+assert 'b.get("profile:busy:" + u.toString()) != null) return null;' in s, "settledKey ignores profile:busy"
+assert "if (!ready(k)) return null;" in s and "SETTLE_MS = 6000L" in s and "return -1L;" in s, "integration fixes missing"
+assert "switching profiles" not in s, "old pause message left"
 
 open(dst, "w", encoding="utf8", newline="").write(s.replace(LF, NL))
 print("wrote", dst)

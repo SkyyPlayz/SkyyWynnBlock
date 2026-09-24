@@ -10,6 +10,8 @@ Run:   python build_skyyaccessories_0.4.1.py            -> SkyyAccessories/SkyyA
        active key) changes - checked in the 5 s AccTick and the 1 s AccEffects sync; talisman stats, regen and the Speed movement
        source follow the new profile's bag through the same per-second sync (it reads through pkey).
      - The bag page rebuilds instead of acting when the profile changed since it was drawn. Vanilla inventory untouched.
+     - Integration pass: Equip/Unequip refused while profile:busy:<uuid> is set (pending crash recovery) or the player's profile
+       state is unknown (SkyyProfiles installed, no profile:epoch:<uuid>); one pkey per click for every store call of that click.
      - Without SkyyProfiles every key is the UUID: behaviour identical to 0.4.
 0.4 notes:
 0.4: RARITY TIERS + PERCENT LAYER + OMNI (full notes in tools/acc_0_4_patch.py):
@@ -600,9 +602,9 @@ public static boolean has(java.util.UUID u, String id) {{
 }}""", st_))
 # would equip(u, id) take the item? same rule as equip - asked BEFORE the item leaves the inventory
 st_.addMethod(CtNewMethod.make(f"""
-public static boolean canEquip(java.util.UUID u, String id) {{
+public static boolean canEquipK(java.util.UUID u, String k, String id) {{
   synchronized (lock(u)) {{
-    String[] s = slots(u);
+    String[] s = slotsK(u, k);
     String g = {PKG}.AccDefs.groupOf(id);
     int tier = {PKG}.AccDefs.tierOf(id);
     for (int i = 0; i < s.length; i++) {{
@@ -613,11 +615,14 @@ public static boolean canEquip(java.util.UUID u, String id) {{
     return false;
   }}
 }}""", st_))
+st_.addMethod(CtNewMethod.make("""
+public static boolean canEquip(java.util.UUID u, String id) {
+  return canEquipK(u, pkey(u), id);
+}""", st_))
 # equips id; returns the item id that was displaced (same group, lower tier) or "" when a free slot was used, or null when the bag is full / an equal or better one is in
 st_.addMethod(CtNewMethod.make(f"""
-public static String equip(java.util.UUID u, String id) {{
+public static String equipK(java.util.UUID u, String k, String id) {{
   synchronized (lock(u)) {{
-    String k = pkey(u);
     String[] s = slotsK(u, k);
     String g = {PKG}.AccDefs.groupOf(id);
     int tier = {PKG}.AccDefs.tierOf(id);
@@ -633,32 +638,60 @@ public static String equip(java.util.UUID u, String id) {{
   }}
 }}""", st_))
 st_.addMethod(CtNewMethod.make("""
-public static String unequip(java.util.UUID u, int idx) {
+public static String equip(java.util.UUID u, String id) {
+  return equipK(u, pkey(u), id);
+}""", st_))
+st_.addMethod(CtNewMethod.make("""
+public static String unequipK(java.util.UUID u, String k, int idx) {
   synchronized (lock(u)) {
-    String k = pkey(u);
     String[] s = slotsK(u, k);
     if (idx < 0 || idx >= s.length || s[idx] == null) return null;
     String id = s[idx]; s[idx] = null; saveK(u, k); return id;
   }
 }""", st_))
 st_.addMethod(CtNewMethod.make("""
-public static void put(java.util.UUID u, int idx, String id) {
+public static String unequip(java.util.UUID u, int idx) {
+  return unequipK(u, pkey(u), idx);
+}""", st_))
+st_.addMethod(CtNewMethod.make("""
+public static void putK(java.util.UUID u, String k, int idx, String id) {
   synchronized (lock(u)) {
-    String k = pkey(u);
     String[] s = slotsK(u, k);
     if (idx < 0 || idx >= s.length) return;
     s[idx] = id; saveK(u, k);
   }
 }""", st_))
+st_.addMethod(CtNewMethod.make("""
+public static void put(java.util.UUID u, int idx, String id) {
+  putK(u, pkey(u), idx, id);
+}""", st_))
 # last resort so an item can never vanish: first free slot, ignoring the one-per-group rule (bestTiers and SkyySacks use the best tier)
 st_.addMethod(CtNewMethod.make("""
-public static boolean stash(java.util.UUID u, String id) {
+public static boolean stashK(java.util.UUID u, String k, String id) {
   synchronized (lock(u)) {
-    String k = pkey(u);
     String[] s = slotsK(u, k);
     for (int i = 0; i < s.length; i++) if (s[i] == null) { s[i] = id; saveK(u, k); return true; }
     return false;
   }
+}""", st_))
+st_.addMethod(CtNewMethod.make("""
+public static boolean stash(java.util.UUID u, String id) {
+  return stashK(u, pkey(u), id);
+}""", st_))
+# Integration pass (semantics rule 5): null = item moves between the live inventory and this player's bag are safe right now, else the
+# reason shown on the page. profile:busy:<uuid> = the live inventory may not belong to the active profile (pending crash recovery at
+# join; a switch runs inside one world-thread task, so the page handler never sees that one). SkyyProfiles installed but no
+# profile:epoch:<uuid> for an online player = its players file is unreadable and pkey fell back to profile 1's key (or the join work
+# has not run yet): moving items now could carry them from one profile to another. Without SkyyProfiles both keys are absent -> null.
+st_.addMethod(CtNewMethod.make("""
+public static String moveBlock(java.util.UUID u) {
+  try {
+    java.util.Map b = bridge();
+    String us = u.toString();
+    if (b.get("profile:busy:" + us) != null) return "your profile is still loading - try again in a moment";
+    if (b.get("profile:fn:key") != null && b.get("profile:epoch:" + us) == null) return "your profile is not loaded - try again in a moment - tell an admin if this stays";
+  } catch (Throwable t) { }
+  return null;
 }""", st_))
 # 0.4.1 PROFILES-CONTRACT rule 3: republish acc:has / acc:tal when profile:epoch:<uuid> changed since the last publish, or the active
 # key is not the one published (either write order inside SkyyProfiles). Only after the first publish (0.4 timing kept). Without
@@ -817,9 +850,9 @@ public void build({REF} ref, {UCB} b, {UEB} ev, {ST} st) {{
 }}""", page))
 # giveBack: 0 = back in the inventory, 1 = kept in a free bag slot, 2 = lost (logged with the player's uuid so an admin can give it back)
 page.addMethod(CtNewMethod.make(f"""
-public static int giveBack({PLA} p, java.util.UUID u, String id) {{
+public static int giveBack({PLA} p, java.util.UUID u, String k, String id) {{
   if (giveOne(p, id)) return 0;
-  if ({PKG}.AccStore.stash(u, id)) return 1;
+  if ({PKG}.AccStore.stashK(u, k, id)) return 1;   // integration pass: the bag of the click's key k
   {PKG}.AccStore.warn("ITEM LOST - could not return " + id + " to player " + u + " (inventory and accessory bag full), give it back by hand");
   return 2;
 }}""", page))
@@ -830,16 +863,19 @@ public void handleDataEvent({REF} ref, {ST} st, String data) {{
     java.util.UUID u = this.playerRef.getUuid();
     {PLA} player = ({PLA}) st.getComponent(ref, {PLA}.getComponentType());
     if (player == null) return;
-    if (this.key != null && !this.key.equals({PKG}.AccStore.pkey(u))) {{   // 0.4.1: profile switched since this page was drawn
+    String k = {PKG}.AccStore.pkey(u);   // integration pass: ONE storage key for everything this click does (semantics rule 1)
+    if (this.key != null && !this.key.equals(k)) {{   // 0.4.1: profile switched since this page was drawn
       this.info = "your profile changed - this is the bag of your current profile now";
       rebuild(); return;
     }}
+    String blk = {PKG}.AccStore.moveBlock(u);   // integration pass: profile:busy / unknown profile state -> move nothing
+    if (blk != null) {{ this.info = blk; rebuild(); return; }}
     for (int i = 0; i < {PKG}.AccStore.CAP; i++) {{
       if (data.indexOf("un:" + i + "\\"") < 0) continue;
-      String id = {PKG}.AccStore.unequip(u, i);
+      String id = {PKG}.AccStore.unequipK(u, k, i);
       if (id == null) return;
       String give = {PKG}.AccDefs.modernOf(id);   // 0.4: a legacy Talisman/Ring/Artifact comes back as the modern (upgradable) item
-      if (!giveOne(player, give)) {{ {PKG}.AccStore.put(u, i, id); this.info = "your inventory is full"; }}
+      if (!giveOne(player, give)) {{ {PKG}.AccStore.putK(u, k, i, id); this.info = "your inventory is full"; }}
       else this.info = "unequipped " + {PKG}.AccDefs.pretty(give) + (give.equals(id) ? "" : " - your old " + {PKG}.AccDefs.pretty(id) + " came back as the new upgradable talisman");
       rebuild(); return;
     }}
@@ -849,17 +885,17 @@ public void handleDataEvent({REF} ref, {ST} st, String data) {{
       String id = this.invIds[i];
       String put = {PKG}.AccDefs.modernOf(id);   // 0.4: a legacy talisman is stored as its modern rarity id
       String why = "bag is full, or the same or a better " + ({PKG}.AccDefs.isTalisman(id) ? {PKG}.AccDefs.familyOf(id) + " talisman" : ({PKG}.AccDefs.OMNI.equals(id) ? "Omni accessory" : "bench accessory")) + " is already equipped";
-      if (!{PKG}.AccStore.canEquip(u, put)) {{ this.info = why; rebuild(); return; }}
+      if (!{PKG}.AccStore.canEquipK(u, k, put)) {{ this.info = why; rebuild(); return; }}
       if (!takeOne(player, id)) {{ this.info = "could not find " + {PKG}.AccDefs.pretty(id) + " in your inventory"; rebuild(); return; }}
-      String res = {PKG}.AccStore.equip(u, put);
+      String res = {PKG}.AccStore.equipK(u, k, put);
       if (res == null) {{
-        int g = giveBack(player, u, id);
+        int g = giveBack(player, u, k, id);
         this.info = g == 0 ? why : (g == 1 ? why + " - it was kept in a free bag slot" : "could not give " + {PKG}.AccDefs.pretty(id) + " back - inventory and bag full, reported to the server log");
         rebuild(); return;
       }}
       if (res.length() > 0) {{
         res = {PKG}.AccDefs.modernOf(res);
-        int g = giveBack(player, u, res);
+        int g = giveBack(player, u, k, res);
         String old = {PKG}.AccDefs.pretty(res);
         this.info = "upgraded to " + {PKG}.AccDefs.pretty(id) + " - " + (g == 0 ? old + " returned" : (g == 1 ? old + " kept in the bag - inventory full" : old + " could not be returned - reported to the server log"));
       }}

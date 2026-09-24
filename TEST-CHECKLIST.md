@@ -349,3 +349,43 @@ None left. The 10,000 starter coins are a real feature (kept).
 - [ ] /rolls give iron sword -> gives nothing and suggests Weapon_Longsword_Iron, Weapon_Sword_Iron.
 - [ ] /rolls give (no name) -> the default copper longsword.
 - [ ] Metadata test (the point of the spike): /rolls read on the bow, relog, /rolls read again (same numbers), drop + pick up, chest in/out.
+
+## Profiles set (SkyyProfiles 0.1 + per-profile Coins/Bank/Sacks/Skills/Collections/Accessories/Islands/Classes) - built + integration-checked 2026-09-24, NOT deployed
+0. **Deploy the set and start the server.** The log shows a ready line for every Skyy mod, including "[SkyyProfiles] 0.1 ready". SkyyClasses says "SkyyProfiles found - class per profile" and SkyyIslands says "island protection on …". No "already registered" lines and no load errors.
+
+**A: new player** (an alt account that has never joined)
+
+1. **Join.** Expect the Menu item in slot 9, the HUD, the chat lines "Welcome! Create your profile" and "10,000 starter coins", and exactly one page, Create Profile, after about 2–3 s. No SkyyClasses picker. HUD shows Coins 10,000.
+2. **Relog, and right-click the Menu item within 2 s.** The Menu stays open. The Create page appears about 1 s after you close the Menu.
+3. **Press Later, then run `/class`.** Expect "You have no profile yet" and no Choose buttons.
+4. **`/profiles` → pick Warrior → Create profile.** The page closes with "Profile … created", no teleport, and the inventory is unchanged. Within 2 s `/class` shows Warrior locked, and `/balance` shows 10000 (profile: name).
+
+**B: your own account** (log out on your island before deploying)
+
+5. **Join.** Expect "Welcome back! You start in the hub", then about 1 s later the Create page, once, with your old class pre-selected. The log has no "could not open the Create Profile page".
+6. **Create profile 1.** Coins, bank, `/skills`, `/pd`, `/acc`, `/collections` and `/island` are all unchanged.
+
+**C: create profile 2**
+
+7. **`/profiles` → Create new → another class.** Expect "Switched to …", an empty inventory except the Menu item, a loading screen, and arrival on a new island whose chest holds the starter kit, including an Accessory Bag.
+8. **Within about 2 s of arriving:**
+   - coins: "New profile: 10,000 starter coins", HUD Coins 10,000, `/balance` shows profile 2;
+   - `/bank` 0, `/skills` all 0 with the new combat skill, `/acc`, `/pd` and `/collections` empty;
+   - `/class` locked to the new class;
+   - `/island info` shows the `…-p2` world;
+   - the Menu profile tooltip agrees.
+9. **Check the files.** `Skyy_SkyyProfiles/inventories/<uuid>.json` exists, the file in `switching/` disappears about 30 s after the switch, and `switches.log` has a SWITCH line.
+
+**D: switch back**
+
+10. **Switch to profile 1.** Every item is back in its slot (armor and backpack size too). You land on the old island, the HUD shows profile 1's coins, there is no starter-coins message, and everything else matches step 6. `inventories/<uuid>-p2.json` now exists.
+11. **Hit a mob, then try to switch.** Refused with "You are in combat - wait N s".
+
+**E: crash**
+
+12. **Switch profiles, and within 5 s kill `java.exe`. Restart and join.** Expect a RECOVER line in the log and the "interrupted by a server stop" chat. You are on the profile named in the players file (`active=`), with that profile's inventory and coins. Switch back and check that no item is in both profiles. If you spawned on an island, you are sent to the hub.
+
+**F: relog on profile 2**
+
+13. **On profile 2, log out on its island, wait 15 s, log back in.** Expect the hub, "Playing profile … (class)" and no Create page. The HUD shows profile 2's coins within 1 s. `/skills`, `/bank`, `/acc`, `/pd` and `/island info` all show profile 2 on the first try. The log shows no "profile switch" or "now uses … -p2" lines at login.
+14. **Graceful `/stop`, restart, and repeat step 13.** Same result.

@@ -5,6 +5,8 @@
    NotificationStyle.Warning - the call vanilla CraftingManager makes for crafting errors) showing the blocked weapon's icon
    (ItemStack.toPacket() -> ItemWithAllMetadata), the title "You can't use this weapon" (or "Choose a class first") and the same text as
    the chat line. At most one popup per 1.5 s per player (POPPED); the chat line keeps its own 3 s throttle.
+   With SkyyProfiles loaded a classless player's popup title says "Create a profile first" (classes come from profiles there).
+The profile integration fixes of 2026-09-23 live in build_skyyclasses_0.1.3.py (0.1.3 docstring) and reach 0.1.4 through this patch.
 """
 import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -50,7 +52,7 @@ POPUP = LF.join([
     "    Long last = (Long) POPPED.get(u);",
     "    if (last != null && now - last.longValue() < 1500L) return;",
     "    POPPED.put(u, Long.valueOf(now));",
-    "    String head = @PKG@.ClassStore.classIndex(u) < 0 ? \"Choose a class first\" : \"You can't use this weapon\";",
+    "    String head = @PKG@.ClassStore.classIndex(u) < 0 ? (@PKG@.ClassCfg.profilesOn() ? \"Create a profile first\" : \"Choose a class first\") : \"You can't use this weapon\";",
     "    @MSG@ title = @MSG@.raw(head).color(\"#ff9d6b\");",
     "    @MSG@ body = @MSG@.raw(text);",
     "    @IWM@ icon = null;",

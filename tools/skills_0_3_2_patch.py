@@ -18,6 +18,16 @@ newline-agnostic; 0.3.1 stays untouched, the CRLF/LF line endings of 0.3.1 are p
  - Without SkyyProfiles every key is uuid.toString(), no epoch, no profile:class -> behaviour identical to 0.3.1.
  - Review fix (pre-existing since 0.3.1): /skills top|stats help and the unknown-skill message say "shaman" instead of the removed
    "berserking" (SkillDefs.indexOf resolves "shaman" to the Shaman placeholder slot; "berserking" never resolved since 0.3.1).
+ - Profiles integration check (2026-09-23, against "Semantics of SkyyProfiles 0.1" in tools/PROFILES-CONTRACT.md), fixed in place:
+   * epochChanged: an ABSENT profile:epoch carries no information (semantics 4.2) - it is not recorded, so absent -> value is a
+     baseline, not a switch (0.3.2 draft recorded -1 and ran the switch path: dropped unpaid Acrobatics XP, logged a fake switch).
+   * publish is serialized (SkillStore.PUB) and reads pkey + levels INSIDE the lock, so the scheduler's publishOnline can no longer
+     put an older profile's skill:<uuid> on top of the world thread's post-switch publish; publishOnline never loads a file.
+   * Windows saves (pre-existing, tested on the game JRE 26.0.2): the leaderboard scan opened player files with java.io.FileInputStream,
+     which makes a concurrent save's rename fail ("being used by another process") - and the failed key had already left DIRTY, so
+     that XP was only in memory. Now: scan reads go through NIO under the IO lock (SkillStore.readLocked), saves use tmp +
+     ATOMIC_MOVE (one MoveFileEx; the old REPLACE_EXISTING path deleted the target first, so a crash between the two calls lost the
+     file) retried 5x 20 ms, a failed save keeps its key dirty for the next flush, and shutdown flushes twice.
 Run:  python tools/skills_0_3_2_patch.py   then   python SkyySkills/build_skyyskills_0.3.2.py   (NO --deploy: coordinated deploy)
 """
 import os
@@ -66,6 +76,10 @@ rep('''"""SkyySkills 0.3 - build script (derived from 0.2 by tools/skills_0_3_pa
   drops still go to the live inventory). The first read of a switched-to profile's file happens on the player's world thread in
   that 1 s tick (same as PublishTask: the shared SCHEDULED_EXECUTOR never does player-file I/O); one small file per manual switch.
   Skill args: "shaman" replaces the removed "berserking" in the /skills top|stats help and the unknown-skill message.
+  Profiles integration check (2026-09-23, "Semantics of SkyyProfiles 0.1"): an absent profile:epoch is never recorded (absent ->
+  value = baseline, not a switch); skill:<uuid> publishes are serialized (SkillStore.PUB, state read inside the lock); player-file
+  saves are atomic (ATOMIC_MOVE, retried 5x 20 ms on Windows sharing errors), a failed save stays dirty, and the leaderboard scan
+  reads through NIO under the IO lock (java.io.FileInputStream blocked the save's rename on Windows).
 0.3.1 (design lock''')
 rep('''Run:   python build_skyyskills_0.3.py            -> SkyySkills/SkyySkills-0.3.jar
        python build_skyyskills_0.3.py --deploy   -> also copies''', '''Run:   python build_skyyskills_0.3.2.py            -> SkyySkills/SkyySkills-0.3.2.jar
@@ -209,33 +223,123 @@ public static void flushDirty() {
     it.remove();
     save(u);
   }
-}""", sto))''', '''public static void saveNow(String k) {{
+}""", sto))''', '''public static void moveRetry(java.nio.file.Path from, java.nio.file.Path to) throws java.io.IOException {{
+  java.io.IOException last = null;
+  for (int i = 0; i < 5; i++) {{
+    try {{
+      java.nio.file.Files.move(from, to, new java.nio.file.CopyOption[] {{ java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING }});
+      return;
+    }} catch (java.nio.file.AtomicMoveNotSupportedException e) {{
+      java.nio.file.Files.move(from, to, new java.nio.file.CopyOption[] {{ java.nio.file.StandardCopyOption.REPLACE_EXISTING }});
+      return;
+    }} catch (java.nio.file.FileSystemException e) {{
+      last = e;
+    }}
+    try {{ Thread.sleep(20L); }} catch (InterruptedException ie) {{ }}
+  }}
+  throw last;
+}}""", sto))
+# true = written (or nothing to write); false = the file on disk is older than memory (the caller keeps the key dirty)
+sto.addMethod(CtNewMethod.make(f"""
+public static boolean saveNow(String k) {{
   try {{
     java.util.Properties p = snap(k);
-    if (p == null) return;
+    if (p == null) return true;
     java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
     java.nio.file.Path tmp = DIR.resolve(k + ".properties.tmp");
     java.io.OutputStream out = java.nio.file.Files.newOutputStream(tmp, new java.nio.file.OpenOption[0]);
     try {{ p.store(out, "SkyySkills"); }} finally {{ out.close(); }}
-    java.nio.file.Files.move(tmp, DIR.resolve(k + ".properties"), new java.nio.file.CopyOption[] {{ java.nio.file.StandardCopyOption.REPLACE_EXISTING }});
-  }} catch (Throwable t) {{ {PKG}.SkillCfg.warn("could not save skills for " + k + ": " + t); }}
+    moveRetry(tmp, DIR.resolve(k + ".properties"));
+    return true;
+  }} catch (Throwable t) {{
+    {PKG}.SkillCfg.warn("could not save skills for " + k + " (kept dirty, retried on the next save): " + t);
+    return false;
+  }}
 }}""", sto))
 sto.addMethod(CtNewMethod.make("""
-public static void save(String k) {
-  synchronized (IO) { saveNow(k); }
+public static boolean save(String k) {
+  boolean r;
+  synchronized (IO) { r = saveNow(k); }
+  return r;
 }""", sto))
+# a key whose save failed goes back into DIRTY AFTER the pass (never retried inside the same pass)
 sto.addMethod(CtNewMethod.make("""
 public static void flushDirty() {
+  java.util.ArrayList failed = new java.util.ArrayList();
   java.util.Iterator it = DIRTY.keySet().iterator();
   while (it.hasNext()) {
     String k = (String) it.next();
     it.remove();
-    save(k);
+    if (!save(k)) failed.add(k);
   }
+  for (int i = 0; i < failed.size(); i++) DIRTY.put(failed.get(i), Boolean.TRUE);
+}""", sto))
+# leaderboard reads (SkillTop.all): NIO stream under the IO lock. java.io.FileInputStream opens without FILE_SHARE_DELETE, and on
+# Windows any open handle makes the ATOMIC_MOVE of a save fail (tested on the game JRE), so our own reads never overlap our saves.
+sto.addMethod(CtNewMethod.make("""
+public static java.util.Properties readProps(java.nio.file.Path f) throws java.io.IOException {
+  java.util.Properties p = new java.util.Properties();
+  java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+  try { p.load(in); } finally { in.close(); }
+  return p;
+}""", sto))
+sto.addMethod(CtNewMethod.make("""
+public static java.util.Properties readLocked(java.nio.file.Path f) throws java.io.IOException {
+  java.util.Properties p;
+  synchronized (IO) { p = readProps(f); }
+  return p;
 }""", sto))''')
 
-# publishOnline: "in memory" = the ACTIVE profile's data is loaded
-rep('''      if (DATA.containsKey(u)) {{ publish(u); continue; }}''', '''      if (DATA.containsKey(pkey(u))) {{ publish(u); continue; }}''')
+# skill:<uuid> publishes (integration check): serialized on PUB, and pkey + levels are read INSIDE the lock, so two publishes never
+# interleave and the value never goes back to an older profile / class (the scheduler's publishOnline could compute the old profile's
+# levels, get preempted by the world thread's post-switch publish, then put its stale string on top). levelsOf takes the data array
+# that belongs to the key resolved inside the lock. Lock order: PUB -> SkyyProfiles' key Function (never calls back) -> SkillStore
+# (install); nothing takes PUB while holding another SkillStore / SkillMsg / IO lock.
+rep('''public static String levelsString(java.util.UUID u) {{
+  long[] d = data(u);
+  int cs = {PKG}.SkillClass.slot(u);''', '''public static String levelsOf(java.util.UUID u, long[] d) {{
+  int cs = {PKG}.SkillClass.slot(u);''')
+rep('''sto.addMethod(CtNewMethod.make("""
+public static void publish(java.util.UUID u) {
+  try {
+    bridge().put("skill:" + u.toString(), levelsString(u));
+    PUBLISHED.put(u, Boolean.TRUE);
+  } catch (Throwable t) { }
+}""", sto))''', '''sto.addMethod(CtNewMethod.make("""
+public static String levelsString(java.util.UUID u) {
+  return levelsOf(u, data(u));
+}""", sto))
+sto.addField(CtField.make("public static final Object PUB = new Object();", sto))
+# false = the active profile's data is not in memory and load was false (nothing published)
+sto.addMethod(CtNewMethod.make("""
+public static boolean publishNow(java.util.UUID u, boolean load) {
+  try {
+    String k = pkey(u);
+    long[] d = (long[]) DATA.get(k);
+    if (d == null) {
+      if (!load) return false;
+      d = dataK(k, u);
+    }
+    bridge().put("skill:" + u.toString(), levelsOf(u, d));
+    PUBLISHED.put(u, Boolean.TRUE);
+  } catch (Throwable t) { }
+  return true;
+}""", sto))
+# the file (if any) is loaded BEFORE taking PUB; inside, publishNow only loads when the key flipped in between
+sto.addMethod(CtNewMethod.make("""
+public static void publish(java.util.UUID u) {
+  try { data(u); } catch (Throwable t) { }
+  synchronized (PUB) { publishNow(u, true); }
+}""", sto))
+# scheduler thread (publishOnline): memory only - never reads a player file
+sto.addMethod(CtNewMethod.make("""
+public static boolean publishIfLoaded(java.util.UUID u) {
+  boolean r;
+  synchronized (PUB) { r = publishNow(u, false); }
+  return r;
+}""", sto))''')
+# publishOnline: "in memory" = the ACTIVE profile's data is loaded (checked inside PUB); otherwise PublishTask loads it on the world thread
+rep('''      if (DATA.containsKey(u)) {{ publish(u); continue; }}''', '''      if (publishIfLoaded(u)) continue;''')
 
 # add / owes / payOwed resolve the key ONCE per award (gain2) so one award never spans two profiles
 rep('''public static long[] add(java.util.UUID u, String name, int skill, long amount) {{
@@ -376,9 +480,13 @@ public static long epoch(java.util.UUID u) {{
 }}""", perk))
 # true when the epoch differs from the one seen on this player's previous 1 s tick (the first tick of a session only records it:
 # Perks.tick republishes on a session's first tick anyway). Without SkyyProfiles the epoch is always -1 -> never true.
+# Integration check (PROFILES-CONTRACT semantics 4.2): an ABSENT epoch carries no information, so it is never recorded - absent ->
+# value is a baseline like the first value of a session (the draft recorded -1 and treated absent -> value as a switch), and
+# value -> absent keeps the last value. Data never depends on this: every read/write resolves pkey itself.
 perk.addMethod(CtNewMethod.make("""
 public static boolean epochChanged(java.util.UUID u) {
   long e = epoch(u);
+  if (e < 0L) return false;
   Object last = EPOCH.put(u, Long.valueOf(e));
   return last != null && ((Long) last).longValue() != e;
 }""", perk))
@@ -479,6 +587,18 @@ public static int rankOf(java.util.ArrayList rows, java.util.UUID u) {{
   return 0;
 }}""", top))''')
 rep('''    boolean me = u.toString().equals(e[2]);''', '''    boolean me = {PKG}.SkillStore.pkey(u).equals(e[2]);''')
+# integration check (Windows, tested on the game JRE): java.io.FileInputStream here made a concurrent save of that file fail
+rep('''        java.util.Properties p = new java.util.Properties();
+        java.io.InputStream in = new java.io.FileInputStream(fs[i]);
+        try {{ p.load(in); }} finally {{ in.close(); }}
+        long x = 0L;''', '''        java.util.Properties p = {PKG}.SkillStore.readLocked(fs[i].toPath());
+        long x = 0L;''')
+
+# ---------------------------------------------------------------- shutdown: a second pass for keys whose save failed (kept dirty)
+rep('''  try {{ {PKG}.SkillStore.flushDirty(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.PlacedStore.flush(); }} catch (Throwable t) {{ }}''', '''  try {{ {PKG}.SkillStore.flushDirty(); }} catch (Throwable t) {{ }}
+  try {{ if (!{PKG}.SkillStore.DIRTY.isEmpty()) {PKG}.SkillStore.flushDirty(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.PlacedStore.flush(); }} catch (Throwable t) {{ }}''')
 
 # ---------------------------------------------------------------- skill args: "shaman" replaces the removed "berserking" (review fix)
 # SkillDefs.indexOf("shaman") = the Shaman placeholder slot (CLASSES match); "berserking" matches nothing since 0.3.1 renamed the slot.
@@ -501,6 +621,11 @@ assert "SINCE.keySet().retainAll(online)" in s and "GAVEUP.keySet().retainAll(on
 assert s.count("SkillClass.consistent(u)") == 2 and s.count("if (!consistent(u))") == 1   # Perks.tick, CombatDmgSys, killSlot
 assert "SkillClass.resync(u);" in s and "return overdue(u, pc, c);" in s
 assert "berserking" not in s.split("\n# ================= SkillDefs", 1)[1], "a player-facing string still says berserking"
+# integration check (2026-09-23)
+assert "new java.io.FileInputStream(" not in s, "player files must be read through NIO under the IO lock (Windows rename)"
+assert s.count("StandardCopyOption.ATOMIC_MOVE") == 1 and "if (!save(k)) failed.add(k);" in s
+assert "if (e < 0L) return false;" in s and "synchronized (PUB) { publishNow(u, true); }" in s
+assert "if (publishIfLoaded(u)) continue;" in s and "levelsString(u));" not in s
 assert 'VERSION = "0.3.2"' in s and "0.3.2: per-profile storage (tools/PROFILES-CONTRACT.md)" in s
 assert "--deploy" in s   # the script keeps its optional deploy switch; this workflow never passes it
 open(dst, "w", encoding="utf8", newline=NL).write(s)   # keep the line endings of 0.3.1

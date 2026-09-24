@@ -19,6 +19,35 @@ atomic file writes, logged I/O failures, ticker cancelled on shutdown, DEAD/GRAN
   yet is retried next tick. Each op also re-resolves pkey afterwards and republishes if the profile switched mid-op. /balance
   names the active profile (profile:name:<uuid>) when SkyyProfiles publishes one. Death state (DEAD) stays per player. Nothing
   touches the inventory (rule 5).
+0.1.5 integration pass (2026-09-23, same version - never deployed), checked against the pinned SkyyProfiles 0.1 semantics
+  (tools/PROFILES-CONTRACT.md "Semantics of SkyyProfiles 0.1") and every coins:* caller in the deploy set:
+  - The profile handling itself was already right: every op resolves pkey once (authoritative from its very first call, offline
+    too), so the first epoch seen only causes a harmless republish (a baseline, nothing switch-like); every write goes straight to
+    disk (nothing dirty to flush at a switch); coins:<uuid> follows the active profile (recheck + epoch republish); the key
+    Function is never called while the ledger lock is held (lock order callers -> CoinStore -> System.class, no call-outs under it).
+    Callers (Bank deposit/withdraw, Bazaar trades, Skills level rewards, Classes switch cost) all run on the player's world thread,
+    the same thread a switch runs on, so no op can straddle a switch; /pay's target side is booked on the profile active when
+    /pay ran (one key per op).
+  - FIX unreadable balance file: a balances/<key>.properties that exists but cannot be read or parsed (bad hand edit, transient
+    Windows sharing violation) counted as "no balance": the first tick granted 10,000 starter coins OVER it, and any add/set (bank
+    withdraw, bazaar sale, skill reward, /pay, /coinsgive) replaced the real balance. Now that key is frozen: loadK() is retried on
+    every use (a failure is never cached as loaded), starterK() refuses, get/set/add/take/transfer throw before anything changes
+    (transfer checks BOTH keys first), coins:fn:* return null (Bank = refused, Bazaar = refused / items returned, Skills = reward
+    stays owed, Classes = refused), /balance and /pay say so, coins:<uuid> is removed instead of showing a stale number, and the
+    log warns once a minute per key.
+  - FIX Windows replace: the tmp -> balance file rename retries 5 x 20 ms on a FileSystemException (AccessDeniedException = another
+    handle, virus scanner or indexer has the file open; SkyyProfiles 0.1 pattern). A save that still fails keeps the value in
+    memory and the next change writes it.
+  - FIX CoinTick: World.execute() throws IllegalThreadStateException once a world stops accepting tasks (HytaleServer.jar
+    bytecode: acceptingTasks false, e.g. an island instance shutting down while a player is still listed in it). That aborted the
+    whole tick, so every player after that one missed the epoch republish, starter coins and the death check that second. Each
+    player is now dispatched in its own try (warn at most once a minute).
+  - FIX double death penalty on relog: DeathComponent is saved with the player (DamageModule.setup registers "Death" with a
+    codec) and PlayerSystems$PlayerAddedSystem re-opens the respawn screen for a player who logged out dead. DEAD was pruned to
+    online players every second, so a relog while dead charged the same death again. Offline entries are now kept (pruned only
+    past 4096 entries); a server restart while dead still forgets it.
+  - CoinTick no longer calls pkey: GRANTED maps key -> owner UUID and is pruned by online UUIDs, so the shared scheduler thread
+    never reaches SkyyProfiles' players-file read (its case 2(d) re-reads an unreadable file every 2 s).
 0.1.4: (1) /balance (bal, coins, purse) and /pay <player> <amount> are open to ordinary players: their constructors call
   setPermissionGroups(new String[] { "hytale:Adventurer" }) (vanilla /help /who /ping pattern, same as SkyyEssentials 0.1).
   Before, CommandRegistry.registerCommand -> AbstractCommand.setOwner() gave them an auto node like
@@ -100,6 +129,8 @@ cs.addField(CtField.make("public static java.nio.file.Path DIR;", cs))
 cs.addField(CtField.make(f"public static {LOG} LOG;", cs))
 cs.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap BAL = new java.util.concurrent.ConcurrentHashMap();", cs))
 cs.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap LOADED = new java.util.concurrent.ConcurrentHashMap();", cs))
+# key -> Long millis of the last "unreadable balance file" warning (once a minute per key)
+cs.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap BADWARN = new java.util.concurrent.ConcurrentHashMap();", cs))
 cs.addMethod(CtNewMethod.make("""
 public static java.util.Map bridge() {
   synchronized (java.lang.System.class) {
@@ -125,50 +156,93 @@ public static String pkey(java.util.UUID u) {
   } catch (Throwable t) { }
   return u.toString();
 }""", cs))
-# balances/<k>.properties is read once per key; the first successful load publishes coins:<uuid> (as 0.1.4 load() did)
+# balances/<k>.properties is read once per key; the first successful load publishes coins:<uuid> (as 0.1.4 load() did).
+# Returns false while the file EXISTS but cannot be read or parsed: that is never cached as loaded (retried on every use) and
+# nothing may be written over it (need() / starterK / publishK below) - 0.1.5 fix, see the docstring.
 cs.addMethod(CtNewMethod.make("""
-public static synchronized void loadK(java.util.UUID u, String k) {
-  if (LOADED.containsKey(k)) return;
+public static synchronized boolean loadK(java.util.UUID u, String k) {
+  if (LOADED.containsKey(k)) return true;
   try {
     java.nio.file.Path f = DIR.resolve(k + ".properties");
+    Long bal = null;
     if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
       java.util.Properties p = new java.util.Properties();
       java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
       try { p.load(in); } finally { in.close(); }
       String v = p.getProperty("balance");
-      if (v != null) BAL.put(k, Long.valueOf(Long.parseLong(v.trim())));
+      if (v != null) bal = Long.valueOf(Long.parseLong(v.trim()));
     }
+    if (bal != null) BAL.put(k, bal);
     LOADED.put(k, Boolean.TRUE);
+    BADWARN.remove(k);
     Long cur = (Long) BAL.get(k);
     bridge().put("coins:" + u.toString(), cur == null ? Long.valueOf(0L) : cur);
-  } catch (Throwable t) { warn("could not load balance for " + k + ": " + t); }
+    return true;
+  } catch (Throwable t) {
+    long now = System.currentTimeMillis();
+    Object last = BADWARN.get(k);
+    if (!(last instanceof Long) || now - ((Long) last).longValue() >= 60000L) {
+      BADWARN.put(k, Long.valueOf(now));
+      warn("balances/" + k + ".properties exists but cannot be read (" + t + ") - that purse is frozen (no starter coins, nothing added, taken or overwritten) until the file is fixed or removed; retried on every use");
+    }
+    return false;
+  }
+}""", cs))
+# every read-modify-write goes through need(): an unreadable balance file throws BEFORE anything changes (never overwritten)
+cs.addMethod(CtNewMethod.make("""
+public static synchronized void need(java.util.UUID u, String k) {
+  if (!loadK(u, k)) throw new java.lang.IllegalStateException("SkyyCoins balance file " + k + ".properties is unreadable - nothing was changed");
 }""", cs))
 cs.addMethod(CtNewMethod.make("""
 public static synchronized boolean knownK(java.util.UUID u, String k) {
-  loadK(u, k);
+  need(u, k);
   return BAL.containsKey(k);
 }""", cs))
 cs.addMethod(CtNewMethod.make("""
 public static synchronized long getK(java.util.UUID u, String k) {
-  loadK(u, k);
+  need(u, k);
   Long v = (Long) BAL.get(k);
   return v == null ? 0L : v.longValue();
+}""", cs))
+# tmp file + replace; the replace retries 5 x 20 ms on a FileSystemException (Windows refuses to replace a file another handle
+# has open: AccessDeniedException - SkyyProfiles 0.1 pattern). A failed save keeps BAL (memory) for the next change to write.
+cs.addMethod(CtNewMethod.make("""
+public static synchronized void saveK(String k, long v) {
+  java.nio.file.Path dst = null;
+  java.nio.file.Path tmp = null;
+  try {
+    java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
+    dst = DIR.resolve(k + ".properties");
+    tmp = DIR.resolve(k + ".properties.tmp");
+    java.util.Properties p = new java.util.Properties();
+    p.setProperty("balance", String.valueOf(v));
+    java.io.OutputStream out = java.nio.file.Files.newOutputStream(tmp, new java.nio.file.OpenOption[0]);
+    try { p.store(out, "SkyyCoins"); } finally { out.close(); }
+  } catch (Throwable t) { warn("could not save balance for " + k + " (kept in memory, written with the next change): " + t); return; }
+  Throwable last = null;
+  int i = 0;
+  while (i < 5) {
+    try {
+      java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      return;
+    } catch (java.nio.file.FileSystemException e) {
+      last = e;
+      i++;
+    } catch (Throwable t) {
+      last = t;
+      i = 5;
+    }
+    if (i < 5) { try { Thread.sleep(20L); } catch (Throwable ie) { } }
+  }
+  warn("could not save balance for " + k + " (kept in memory, written with the next change): " + last);
 }""", cs))
 cs.addMethod(CtNewMethod.make("""
 public static synchronized void setK(java.util.UUID u, String k, long v) {
   if (v < 0L) v = 0L;
-  loadK(u, k);
+  need(u, k);
   BAL.put(k, Long.valueOf(v));
   bridge().put("coins:" + u.toString(), Long.valueOf(v));
-  try {
-    java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
-    java.util.Properties p = new java.util.Properties();
-    p.setProperty("balance", String.valueOf(v));
-    java.nio.file.Path tmp = DIR.resolve(k + ".properties.tmp");
-    java.io.OutputStream out = java.nio.file.Files.newOutputStream(tmp, new java.nio.file.OpenOption[0]);
-    try { p.store(out, "SkyyCoins"); } finally { out.close(); }
-    java.nio.file.Files.move(tmp, DIR.resolve(k + ".properties"), new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
-  } catch (Throwable t) { warn("could not save balance for " + k + ": " + t); }
+  saveK(k, v);
 }""", cs))
 cs.addMethod(CtNewMethod.make("""
 public static synchronized long addK(java.util.UUID u, String k, long d) {
@@ -188,23 +262,29 @@ public static synchronized boolean takeK(java.util.UUID u, String k, long amount
 cs.addMethod(CtNewMethod.make("""
 public static synchronized boolean transferK(java.util.UUID from, String kf, java.util.UUID to, String kt, long amount) {
   if (amount <= 0L) return false;
+  need(from, kf);
+  need(to, kt);
   long have = getK(from, kf);
   if (have < amount) return false;
   setK(from, kf, have - amount);
   addK(to, kt, amount);
   return true;
 }""", cs))
-# starter coins, once per profile key: only a key with no balance yet (no file) is granted - atomic check + set
+# starter coins, once per profile key: only a key with no balance yet (no file) is granted - atomic check + set.
+# An existing but unreadable file is NOT "no balance": refused (0.1.5 fix).
 cs.addMethod(CtNewMethod.make("""
 public static synchronized boolean starterK(java.util.UUID u, String k, long amount) {
-  loadK(u, k);
+  if (!loadK(u, k)) return false;
   if (BAL.containsKey(k)) return false;
   setK(u, k, amount);
   return true;
 }""", cs))
+# an unreadable active purse removes coins:<uuid> rather than leave another profile's (or a stale) number on the HUD
 cs.addMethod(CtNewMethod.make("""
 public static synchronized void publishK(java.util.UUID u, String k) {
-  bridge().put("coins:" + u.toString(), Long.valueOf(getK(u, k)));
+  if (!loadK(u, k)) { bridge().remove("coins:" + u.toString()); return; }
+  Long v = (Long) BAL.get(k);
+  bridge().put("coins:" + u.toString(), v == null ? Long.valueOf(0L) : v);
 }""", cs))
 # coins:<uuid> = balance of the ACTIVE profile (PROFILES-CONTRACT rule 3); called by CoinTask (world thread, never the scheduler
 # thread: it may read the balance file and takes the ledger lock) when CoinTick flagged a profile:epoch:<uuid> change
@@ -264,6 +344,11 @@ public static boolean take(java.util.UUID u, long amount) {
   recheck(u, k);
   return ok;
 }""", cs))
+# balance for chat lines that must not fail (/pay after the transfer already happened)
+cs.addMethod(CtNewMethod.make("""
+public static String balText(java.util.UUID u) {
+  try { return String.valueOf(get(u)); } catch (Throwable t) { return "unavailable"; }
+}""", cs))
 
 # ================= CoinFn (bridge functions) =================
 fn.addInterface(pool.get("java.util.function.Function"))
@@ -282,7 +367,10 @@ public Object apply(Object arg) {{
     if ("add".equals(mode)) return Long.valueOf({PKG}.CoinStore.add(u, n));
     if ("take".equals(mode)) return Boolean.valueOf({PKG}.CoinStore.take(u, n));
     return null;
-  }} catch (Throwable t) {{ {PKG}.CoinStore.warn("bridge fn " + mode + " failed: " + t); return null; }}
+  }} catch (Throwable t) {{
+    if (!(t instanceof java.lang.IllegalStateException)) {PKG}.CoinStore.warn("bridge fn " + mode + " failed: " + t);
+    return null;
+  }}
 }}""", fn))
 
 # ================= CoinConfig =================
@@ -325,7 +413,8 @@ task.addField(CtField.make("public java.util.UUID expectedWorld;", task))
 # set by CoinTick when profile:epoch:<uuid> changed: run() republishes coins:<uuid> for the active profile (off the scheduler thread)
 task.addField(CtField.make("public boolean republish;", task))
 task.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap DEAD = new java.util.concurrent.ConcurrentHashMap();", task))
-# DEAD is keyed by UUID (live player state); GRANTED by the profile key String (starter coins once per profile, rule 2)
+# DEAD is keyed by UUID (live player state; kept while offline: a player who logged out dead is still dead at the next login).
+# GRANTED maps the profile key String -> owner UUID (starter coins once per profile, rule 2; pruned by online UUIDs in CoinTick).
 task.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap GRANTED = new java.util.concurrent.ConcurrentHashMap();", task))
 task.addConstructor(CtNewConstructor.make(f"public CoinTask({PR} pr, java.util.UUID w) {{ this.pr = pr; this.expectedWorld = w; }}", task))
 task.addMethod(CtNewMethod.make(f"""
@@ -341,7 +430,7 @@ public void run() {{
     if (st == null) return;
     java.util.UUID u = pr.getUuid();
     String k = {PKG}.CoinStore.pkey(u);
-    if (GRANTED.putIfAbsent(k, Boolean.TRUE) == null && {PKG}.CoinStore.starterK(u, k, 10000L)) {{
+    if (GRANTED.putIfAbsent(k, u) == null && {PKG}.CoinStore.starterK(u, k, 10000L)) {{
       {PKG}.CoinStore.recheck(u, k);
       if (k.equals(u.toString())) pr.sendMessage({MSG}.raw("[SkyyCoins] Welcome! You received 10,000 starter coins. /balance to check."));
       else pr.sendMessage({MSG}.raw("[SkyyCoins] New profile: you received 10,000 starter coins. /balance to check."));
@@ -373,41 +462,57 @@ tick.addInterface(pool.get("java.lang.Runnable"))
 # Without SkyyProfiles the epoch key never exists and nothing happens. This runs on the SHARED scheduler thread, so it only DETECTS
 # the change and sets CoinTask.republish; the publish itself (file read + ledger lock) runs in CoinTask on the world thread.
 # EPOCH is updated only after w.execute() accepted the flagged task, so no world / a failed hand-off retries next tick.
+# 0.1.5 fix: each player is dispatched in its own try - World.execute() throws IllegalThreadStateException for a world that
+# stopped accepting tasks, which used to abort the tick for every player after that one. No pkey call here (scheduler thread).
 tick.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap EPOCH = new java.util.concurrent.ConcurrentHashMap();", tick))
+tick.addField(CtField.make("public static volatile long WARNED = 0L;", tick))
 tick.addConstructor(CtNewConstructor.make("public CoinTick() { }", tick))
+tick.addMethod(CtNewMethod.make(f"""
+public static void dispatch({PR} pr, java.util.Map br) {{
+  java.util.UUID u = null;
+  try {{
+    u = pr.getUuid();
+    java.util.UUID wu = pr.getWorldUuid();
+    if (wu == null) return;
+    {WLD} w = {UNI}.get().getWorld(wu);
+    if (w == null) return;
+    Object ep = br.get("profile:epoch:" + u.toString());
+    Object last = EPOCH.get(u);
+    boolean changed = ep != null ? !ep.equals(last) : last != null;
+    {PKG}.CoinTask ct = new {PKG}.CoinTask(pr, wu);
+    ct.republish = changed;
+    w.execute(ct);
+    if (changed) {{
+      if (ep != null) EPOCH.put(u, ep); else EPOCH.remove(u);
+    }}
+  }} catch (Throwable t) {{
+    long now = System.currentTimeMillis();
+    if (now - WARNED >= 60000L) {{
+      WARNED = now;
+      {PKG}.CoinStore.warn("coin tick skipped " + u + " (retried every second): " + t);
+    }}
+  }}
+}}""", tick))
 tick.addMethod(CtNewMethod.make(f"""
 public void run() {{
   try {{
     java.util.HashSet online = new java.util.HashSet();
-    java.util.HashSet onlineKeys = new java.util.HashSet();
     java.util.Map br = {PKG}.CoinStore.bridge();
     java.util.Iterator it = {UNI}.get().getPlayers().iterator();
     while (it.hasNext()) {{
       {PR} pr = ({PR}) it.next();
-      if (pr == null || !pr.isValid()) continue;
-      java.util.UUID u = pr.getUuid();
-      online.add(u);
-      onlineKeys.add({PKG}.CoinStore.pkey(u));
-      java.util.UUID wu = pr.getWorldUuid();
-      if (wu == null) continue;
-      {WLD} w = {UNI}.get().getWorld(wu);
-      if (w == null) continue;
-      Object ep = null;
-      boolean changed = false;
-      try {{
-        ep = br.get("profile:epoch:" + u.toString());
-        Object last = EPOCH.get(u);
-        if (ep != null) changed = !ep.equals(last); else changed = last != null;
-      }} catch (Throwable te) {{ changed = false; {PKG}.CoinStore.warn("profile epoch check failed for " + u + ": " + te); }}
-      {PKG}.CoinTask ct = new {PKG}.CoinTask(pr, wu);
-      ct.republish = changed;
-      w.execute(ct);
-      if (changed) {{
-        if (ep != null) EPOCH.put(u, ep); else EPOCH.remove(u);
+      if (pr != null && pr.isValid()) {{
+        online.add(pr.getUuid());
+        dispatch(pr, br);
       }}
     }}
-    {PKG}.CoinTask.DEAD.keySet().retainAll(online);
-    {PKG}.CoinTask.GRANTED.keySet().retainAll(onlineKeys);
+    java.util.Iterator gi = {PKG}.CoinTask.GRANTED.keySet().iterator();
+    while (gi.hasNext()) {{
+      Object gk = gi.next();
+      Object gu = {PKG}.CoinTask.GRANTED.get(gk);
+      if (gu == null || !online.contains(gu)) gi.remove();
+    }}
+    if ({PKG}.CoinTask.DEAD.size() > 4096) {PKG}.CoinTask.DEAD.keySet().retainAll(online);
     EPOCH.keySet().retainAll(online);
   }} catch (Throwable t) {{ }}
 }}""", tick))
@@ -422,7 +527,14 @@ public BalanceCmd() {{
 bal.addMethod(CtNewMethod.make(f"""
 protected void execute({CTX} ctx, {ST} store, {REF} ref, {PR} pr, {WLD} world) {{
   java.util.UUID u = pr.getUuid();
-  String line = "Balance: " + {PKG}.CoinStore.get(u) + " coins";
+  String line = null;
+  try {{
+    line = "Balance: " + {PKG}.CoinStore.get(u) + " coins";
+  }} catch (Throwable t) {{
+    {PKG}.CoinStore.warn("/balance failed for " + u + ": " + t);
+    pr.sendMessage({MSG}.raw("[SkyyCoins] Your coin purse could not be read right now - nothing was changed. The server log says why."));
+    return;
+  }}
   Object pn = {PKG}.CoinStore.bridge().get("profile:name:" + u.toString());
   if (pn instanceof String && ((String) pn).length() > 0) line = line + " (profile: " + pn + ")";
   pr.sendMessage({MSG}.raw(line));
@@ -449,14 +561,14 @@ protected void execute({CTX} ctx, {ST} store, {REF} ref, {PR} pr, {WLD} world) {
     if (target.getUuid().equals(pr.getUuid())) {{ pr.sendMessage({MSG}.raw("You can't pay yourself.")); return; }}
     if (!target.isValid()) {{ pr.sendMessage({MSG}.raw("That player is not online.")); return; }}
     if (!{PKG}.CoinStore.transfer(pr.getUuid(), target.getUuid(), amount)) {{
-      pr.sendMessage({MSG}.raw("Not enough coins (balance: " + {PKG}.CoinStore.get(pr.getUuid()) + ")."));
+      pr.sendMessage({MSG}.raw("Not enough coins (balance: " + {PKG}.CoinStore.balText(pr.getUuid()) + ")."));
       return;
     }}
-    pr.sendMessage({MSG}.raw("Paid " + amount + " coins to " + target.getUsername() + ". Balance: " + {PKG}.CoinStore.get(pr.getUuid())));
-    target.sendMessage({MSG}.raw(pr.getUsername() + " paid you " + amount + " coins. Balance: " + {PKG}.CoinStore.get(target.getUuid())));
+    pr.sendMessage({MSG}.raw("Paid " + amount + " coins to " + target.getUsername() + ". Balance: " + {PKG}.CoinStore.balText(pr.getUuid())));
+    target.sendMessage({MSG}.raw(pr.getUsername() + " paid you " + amount + " coins. Balance: " + {PKG}.CoinStore.balText(target.getUuid())));
   }} catch (Throwable t2) {{
     {PKG}.CoinStore.warn("/pay failed: " + t2);
-    pr.sendMessage({MSG}.raw("Pay failed. Usage: /pay <player> <amount>"));
+    pr.sendMessage({MSG}.raw("Pay failed - nothing was sent (a coin purse could not be read, see /balance). Usage: /pay <player> <amount>"));
   }}
 }}""", pay))
 
@@ -476,7 +588,10 @@ protected void execute({CTX} ctx, {ST} store, {REF} ref, {PR} pr, {WLD} world) {
     if (amount <= 0L) {{ pr.sendMessage({MSG}.raw("Amount must be positive.")); return; }}
     long after = {PKG}.CoinStore.add(pr.getUuid(), amount);
     pr.sendMessage({MSG}.raw("Granted " + amount + ". Balance: " + after));
-  }} catch (Throwable t) {{ {PKG}.CoinStore.warn("/coinsgive failed: " + t); }}
+  }} catch (Throwable t) {{
+    {PKG}.CoinStore.warn("/coinsgive failed: " + t);
+    pr.sendMessage({MSG}.raw("Could not grant coins - nothing was changed (see the server log)."));
+  }}
 }}""", give))
 
 dp.addField(CtField.make(f"public {OA} specArg;", dp))

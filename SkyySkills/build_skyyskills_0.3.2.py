@@ -24,6 +24,10 @@
   drops still go to the live inventory). The first read of a switched-to profile's file happens on the player's world thread in
   that 1 s tick (same as PublishTask: the shared SCHEDULED_EXECUTOR never does player-file I/O); one small file per manual switch.
   Skill args: "shaman" replaces the removed "berserking" in the /skills top|stats help and the unknown-skill message.
+  Profiles integration check (2026-09-23, "Semantics of SkyyProfiles 0.1"): an absent profile:epoch is never recorded (absent ->
+  value = baseline, not a switch); skill:<uuid> publishes are serialized (SkillStore.PUB, state read inside the lock); player-file
+  saves are atomic (ATOMIC_MOVE, retried 5x 20 ms on Windows sharing errors), a failed save stays dirty, and the leaderboard scan
+  reads through NIO under the IO lock (java.io.FileInputStream blocked the save's rename on Windows).
 0.3.1 (design lock 2026-09-23 night): the Berserker/Berserking class slot becomes the Shaman placeholder (Combat.Shaman, 'Shaman skill');
   slot count stays 10 so saved files and slot indices are unchanged. Old Combat.Berserker XP stays in the file, unread.
 Run:   python build_skyyskills_0.3.2.py            -> SkyySkills/SkyySkills-0.3.2.jar
@@ -1264,29 +1268,71 @@ public static synchronized java.util.Properties snap(String k) {{
 }}""", sto))
 # snapshot under the SkillStore lock, write outside it; IO keeps two saves of the same file (ticker + shutdown) ordered
 sto.addMethod(CtNewMethod.make(f"""
-public static void saveNow(String k) {{
+public static void moveRetry(java.nio.file.Path from, java.nio.file.Path to) throws java.io.IOException {{
+  java.io.IOException last = null;
+  for (int i = 0; i < 5; i++) {{
+    try {{
+      java.nio.file.Files.move(from, to, new java.nio.file.CopyOption[] {{ java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING }});
+      return;
+    }} catch (java.nio.file.AtomicMoveNotSupportedException e) {{
+      java.nio.file.Files.move(from, to, new java.nio.file.CopyOption[] {{ java.nio.file.StandardCopyOption.REPLACE_EXISTING }});
+      return;
+    }} catch (java.nio.file.FileSystemException e) {{
+      last = e;
+    }}
+    try {{ Thread.sleep(20L); }} catch (InterruptedException ie) {{ }}
+  }}
+  throw last;
+}}""", sto))
+# true = written (or nothing to write); false = the file on disk is older than memory (the caller keeps the key dirty)
+sto.addMethod(CtNewMethod.make(f"""
+public static boolean saveNow(String k) {{
   try {{
     java.util.Properties p = snap(k);
-    if (p == null) return;
+    if (p == null) return true;
     java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
     java.nio.file.Path tmp = DIR.resolve(k + ".properties.tmp");
     java.io.OutputStream out = java.nio.file.Files.newOutputStream(tmp, new java.nio.file.OpenOption[0]);
     try {{ p.store(out, "SkyySkills"); }} finally {{ out.close(); }}
-    java.nio.file.Files.move(tmp, DIR.resolve(k + ".properties"), new java.nio.file.CopyOption[] {{ java.nio.file.StandardCopyOption.REPLACE_EXISTING }});
-  }} catch (Throwable t) {{ {PKG}.SkillCfg.warn("could not save skills for " + k + ": " + t); }}
+    moveRetry(tmp, DIR.resolve(k + ".properties"));
+    return true;
+  }} catch (Throwable t) {{
+    {PKG}.SkillCfg.warn("could not save skills for " + k + " (kept dirty, retried on the next save): " + t);
+    return false;
+  }}
 }}""", sto))
 sto.addMethod(CtNewMethod.make("""
-public static void save(String k) {
-  synchronized (IO) { saveNow(k); }
+public static boolean save(String k) {
+  boolean r;
+  synchronized (IO) { r = saveNow(k); }
+  return r;
 }""", sto))
+# a key whose save failed goes back into DIRTY AFTER the pass (never retried inside the same pass)
 sto.addMethod(CtNewMethod.make("""
 public static void flushDirty() {
+  java.util.ArrayList failed = new java.util.ArrayList();
   java.util.Iterator it = DIRTY.keySet().iterator();
   while (it.hasNext()) {
     String k = (String) it.next();
     it.remove();
-    save(k);
+    if (!save(k)) failed.add(k);
   }
+  for (int i = 0; i < failed.size(); i++) DIRTY.put(failed.get(i), Boolean.TRUE);
+}""", sto))
+# leaderboard reads (SkillTop.all): NIO stream under the IO lock. java.io.FileInputStream opens without FILE_SHARE_DELETE, and on
+# Windows any open handle makes the ATOMIC_MOVE of a save fail (tested on the game JRE), so our own reads never overlap our saves.
+sto.addMethod(CtNewMethod.make("""
+public static java.util.Properties readProps(java.nio.file.Path f) throws java.io.IOException {
+  java.util.Properties p = new java.util.Properties();
+  java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+  try { p.load(in); } finally { in.close(); }
+  return p;
+}""", sto))
+sto.addMethod(CtNewMethod.make("""
+public static java.util.Properties readLocked(java.nio.file.Path f) throws java.io.IOException {
+  java.util.Properties p;
+  synchronized (IO) { p = readProps(f); }
+  return p;
 }""", sto))
 sto.addMethod(CtNewMethod.make(f"""
 public static int level(java.util.UUID u, int skill) {{
@@ -1294,8 +1340,7 @@ public static int level(java.util.UUID u, int skill) {{
   return {PKG}.SkillDefs.levelOf(data(u)[skill]);
 }}""", sto))
 sto.addMethod(CtNewMethod.make(f"""
-public static String levelsString(java.util.UUID u) {{
-  long[] d = data(u);
+public static String levelsOf(java.util.UUID u, long[] d) {{
   int cs = {PKG}.SkillClass.slot(u);
   StringBuilder sb = new StringBuilder();
   for (int i = 0; i < {PKG}.SkillDefs.ROWS; i++) {{
@@ -1310,11 +1355,37 @@ public static String levelsString(java.util.UUID u) {{
   return sb.toString();
 }}""", sto))
 sto.addMethod(CtNewMethod.make("""
-public static void publish(java.util.UUID u) {
+public static String levelsString(java.util.UUID u) {
+  return levelsOf(u, data(u));
+}""", sto))
+sto.addField(CtField.make("public static final Object PUB = new Object();", sto))
+# false = the active profile's data is not in memory and load was false (nothing published)
+sto.addMethod(CtNewMethod.make("""
+public static boolean publishNow(java.util.UUID u, boolean load) {
   try {
-    bridge().put("skill:" + u.toString(), levelsString(u));
+    String k = pkey(u);
+    long[] d = (long[]) DATA.get(k);
+    if (d == null) {
+      if (!load) return false;
+      d = dataK(k, u);
+    }
+    bridge().put("skill:" + u.toString(), levelsOf(u, d));
     PUBLISHED.put(u, Boolean.TRUE);
   } catch (Throwable t) { }
+  return true;
+}""", sto))
+# the file (if any) is loaded BEFORE taking PUB; inside, publishNow only loads when the key flipped in between
+sto.addMethod(CtNewMethod.make("""
+public static void publish(java.util.UUID u) {
+  try { data(u); } catch (Throwable t) { }
+  synchronized (PUB) { publishNow(u, true); }
+}""", sto))
+# scheduler thread (publishOnline): memory only - never reads a player file
+sto.addMethod(CtNewMethod.make("""
+public static boolean publishIfLoaded(java.util.UUID u) {
+  boolean r;
+  synchronized (PUB) { r = publishNow(u, false); }
+  return r;
 }""", sto))
 # world thread: load a player's file and publish it (handed over by publishOnline, FlushTask pattern)
 pub.addInterface(pool.get("java.lang.Runnable"))
@@ -1342,7 +1413,7 @@ public static void publishOnline() {{
       online.add(u);
       if (PUBLISHED.containsKey(u)) continue;
       try {{ String n = pr.getUsername(); if (n != null) NAMES.put(u, n); }} catch (Throwable t) {{ }}
-      if (DATA.containsKey(pkey(u))) {{ publish(u); continue; }}
+      if (publishIfLoaded(u)) continue;
       try {{
         {WLD} w = {UNI}.get().getWorld(pr.getWorldUuid());
         if (w != null) w.execute(new {PKG}.PublishTask(u));
@@ -1665,9 +1736,13 @@ public static long epoch(java.util.UUID u) {{
 }}""", perk))
 # true when the epoch differs from the one seen on this player's previous 1 s tick (the first tick of a session only records it:
 # Perks.tick republishes on a session's first tick anyway). Without SkyyProfiles the epoch is always -1 -> never true.
+# Integration check (PROFILES-CONTRACT semantics 4.2): an ABSENT epoch carries no information, so it is never recorded - absent ->
+# value is a baseline like the first value of a session (the draft recorded -1 and treated absent -> value as a switch), and
+# value -> absent keeps the last value. Data never depends on this: every read/write resolves pkey itself.
 perk.addMethod(CtNewMethod.make("""
 public static boolean epochChanged(java.util.UUID u) {
   long e = epoch(u);
+  if (e < 0L) return false;
   Object last = EPOCH.put(u, Long.valueOf(e));
   return last != null && ((Long) last).longValue() != e;
 }""", perk))
@@ -2661,9 +2736,7 @@ public static synchronized java.util.ArrayList all(int skill) {{
       if (!fn.endsWith(".properties")) continue;
       String us = fn.substring(0, fn.length() - 11);
       try {{
-        java.util.Properties p = new java.util.Properties();
-        java.io.InputStream in = new java.io.FileInputStream(fs[i]);
-        try {{ p.load(in); }} finally {{ in.close(); }}
+        java.util.Properties p = {PKG}.SkillStore.readLocked(fs[i].toPath());
         long x = 0L;
         try {{ x = Long.parseLong(String.valueOf(p.getProperty({PKG}.SkillDefs.NAMES[skill], "0")).trim()); }} catch (Throwable t) {{ }}
         String nm = p.getProperty("name");
@@ -3095,6 +3168,7 @@ pl.addMethod(CtNewMethod.make(f"""
 protected void shutdown() {{
   try {{ if (this.ticker != null) this.ticker.cancel(false); }} catch (Throwable t) {{ }}
   try {{ {PKG}.SkillStore.flushDirty(); }} catch (Throwable t) {{ }}
+  try {{ if (!{PKG}.SkillStore.DIRTY.isEmpty()) {PKG}.SkillStore.flushDirty(); }} catch (Throwable t) {{ }}
   try {{ {PKG}.PlacedStore.flush(); }} catch (Throwable t) {{ }}
   try {{ {PKG}.SkillStore.bridge().remove("skill:fn:level"); }} catch (Throwable t) {{ }}
   try {{ {PKG}.MoveSync.releaseFall({PKG}.Acro.MOD); }} catch (Throwable t) {{ }}

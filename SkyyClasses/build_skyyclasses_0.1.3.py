@@ -14,6 +14,34 @@
   profile's file. A profile:class naming a class that is not ENABLED here (Assassin, Shaman) is not authoritative (logged once, the class
   file decides - never a silent unlock of a coming-soon class's weapons). ensure() is synchronized (load + first publish atomic, as
   0.1.2's load was). /classadmin info reads one pkey and says whether the class comes from the profile or from the profile file.
+  Integration fixes (2026-09-23, checked against "Semantics of SkyyProfiles 0.1" in tools/PROFILES-CONTRACT.md; still 0.1.3):
+  - a profile:class naming a KNOWN class that is not playable yet (Assassin, Shaman - /profileadmin setclass allows them) is
+    authoritative too: the profile is locked to it, class:<uuid> says so (SkyySkills' class check then matches instead of pausing and
+    failing open every switch), and that class's own weapons stay blocked like any unassigned weapon (allowed() only lets a class use
+    its weapons while the class is ENABLED). Before, the class file decided: an empty profile file meant "no class" = every weapon
+    worked (the silent unlock the review wanted to prevent), and /class let the player pick a different class for that profile.
+    Unknown names (hand edits) still fall back to the class file (logged once). Only ENABLED classes are ever written into a file.
+  - SkyyProfiles loaded but no profile yet (profile:<uuid> absent): /class is read-only and points to /profiles (the class is picked
+    when the profile is created - one picker, not two); chooseKey refuses it server-side too. /classadmin set still works.
+  - a player file that cannot be READ is no longer cached as an empty file (the next syncKey / choice / prompted flag used to overwrite
+    it, losing class, played, switches): the failed read is retried at most every 2 s and saves of an unread key are refused.
+    Atomic replace retries 5 x 20 ms on a Windows AccessDeniedException (file briefly held open by a scanner or backup).
+  - publishKey is synchronized (reads the class inside ClassStore's lock; only bridge reads + puts, no Function call), so two
+    publishes (tick, admin, choice) can no longer interleave into class:<uuid> and class:skill:<uuid> of different classes.
+  - the steady-snapshot file sync also needs profile:key:<uuid> == pkey(u): SkyyProfiles flips the key Function at the players-file
+    commit and publishes key/class/epoch just after, so a stall in between can never copy the old profile's class into the new file.
+  - OpenTask (no-SkyyProfiles first-join page) re-checks on the world thread that the player is still in the world it hopped to.
+  Cross-mod timeline pass (2026-09-23, same version): the no-SkyyProfiles first-join page also waits for the player to stay in one
+  world for 2 polls, waits up to 8 s while they stand in a skyy-island-* world (SkyyIslands' login routing to the hub would lose the
+  page), never replaces an open custom page (SkyyMenu etc.) and never opens over the respawn screen - the same guards as SkyyProfiles'
+  Create Profile page. The player-file replace retries on any FileSystemException (a sharing violation from another program is not
+  an AccessDeniedException).
+  Verified: what first sight does (baseline = one publish, no file write until steady), writes before the key is right (none: pkey is
+  right from its first call; ClassStore writes only on a choice, an admin command or the steady sync), epoch change (republish at the
+  next 2 s tick; no live effects to recompute - the weapon lock reads profile:class per hit; no dirty data: every write is synchronous),
+  lock order (pkey always outside ClassStore's lock; nothing under it calls another mod), disconnect (per-UUID maps dropped, DATA kept by
+  pkey, class:<uuid> kept like SkyyProfiles' keys). No item, coin or stat writes happen on the profile path (coins only on a paid switch,
+  which is off), so profile:busy needs no check here.
 0.1.2 (design lock 2026-09-23 night): roster = Wynn's five - Archer, Warrior, Mage selectable; Assassin + Shaman 'coming later'; Berserker removed
   (axes/battleaxes/maces/clubs are unassigned now). Class switching is OFF (allowSwitch=false): a new class = a new profile (SkyyProfiles).
 0.1.1 (Skyy 2026-09-23): Mage ENABLED with staffs (skill Sorcery; wands + spellbooks stay unassigned); /class opened to every player (setPermissionGroups hytale:Adventurer).
@@ -294,6 +322,8 @@ for c, m in ((T["DMG"], "setCancelled"), (T["DMG"], "setAmount"), (T["DMG"], "ge
              (T["QRY"], "and"), (T["QRY"], "or"), (T["PR"], "isValid"),
              ("com.hypixel.hytale.component.system.ISystem", "getGroup"),
              ("com.hypixel.hytale.server.core.plugin.PluginBase", "getEntityStoreRegistry"),
+             ("com.hypixel.hytale.server.core.entity.entities.player.pages.PageManager", "getCustomPage"),
+             ("com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent", "getComponentType"), (T["WLD"], "getName"),
              ("com.hypixel.hytale.server.core.plugin.PluginBase", "shutdown")):
     B.probe(pool, c, m)
 pool.get(T["DES"])
@@ -375,6 +405,13 @@ public static String pkey(java.util.UUID u) {
 M(cfg, r"""
 public static boolean profilesOn() {
   return bridge().get("profile:fn:key") instanceof java.util.function.Function;
+}""")
+# integration fix: SkyyProfiles is loaded but this player has no profile yet (profile:<uuid> absent: no profile, or SkyyProfiles could
+# not read their players file) -> the class is picked on SkyyProfiles' create page, not in /class
+M(cfg, r"""
+public static boolean needsProfile(java.util.UUID u) {
+  if (u == null || !profilesOn()) return false;
+  return bridge().get("profile:" + u.toString()) == null;
 }""")
 M(cfg, r"""
 public static String profileClass(java.util.UUID u) {
@@ -569,6 +606,9 @@ F(st_, "public static final java.util.concurrent.ConcurrentHashMap CLS = new jav
 F(st_, "public static final java.util.concurrent.ConcurrentHashMap SESSION = new java.util.concurrent.ConcurrentHashMap();")
 F(st_, "public static final java.util.concurrent.ConcurrentHashMap EPOCH = new java.util.concurrent.ConcurrentHashMap();")  # UUID -> last profile:epoch seen
 F(st_, "public static volatile boolean BADPROF = false;")
+F(st_, "public static volatile boolean BADOFF = false;")
+# integration fix: pkey -> Long ms of the last failed read of that player file (not cached; retried at most every 2 s)
+F(st_, "public static final java.util.concurrent.ConcurrentHashMap FAILAT = new java.util.concurrent.ConcurrentHashMap();")
 # review fix: UUID -> last (epoch|pkey|profile class) snapshot seen by check() and when it was first seen (syncKey only on a steady one)
 F(st_, "public static final java.util.concurrent.ConcurrentHashMap SNAP = new java.util.concurrent.ConcurrentHashMap();")
 F(st_, "public static final java.util.concurrent.ConcurrentHashMap SNAPAT = new java.util.concurrent.ConcurrentHashMap();")
@@ -579,18 +619,26 @@ public static int fileIndex(String k) {
   Object c = CLS.get(k);
   return c == null ? -1 : @PKG@.ClassDefs.indexOf((String) c);
 }""")
-# 0.1.3: profile:class:<uuid> is AUTHORITATIVE when present and a known, ENABLED class name; -1 = absent, unknown or a coming-soon
-# class (Assassin, Shaman: review fix - never a silent unlock of its weapons) -> the class file decides
+# 0.1.3: profile:class:<uuid> is AUTHORITATIVE when present and a known class name; -1 = absent or unknown -> the class file decides.
+# Integration fix: a known class that is not playable yet (Assassin, Shaman - /profileadmin setclass allows them) is authoritative
+# too: the profile is locked to it and ClassRules.allowed keeps its weapons blocked (never a silent unlock - before, an empty class
+# file made the player classless = every weapon allowed, and /class let them pick another class for that profile)
 M(st_, r"""
 public static int profileIndex(java.util.UUID u) {
   if (u == null) return -1;
   String s = @PKG@.ClassCfg.profileClass(u);
   if (s == null) return -1;
   int i = @PKG@.ClassDefs.indexOf(s);
-  if (i >= 0 && @PKG@.ClassDefs.ENABLED[i]) return i;
+  if (i >= 0) {
+    if (!@PKG@.ClassDefs.ENABLED[i] && !BADOFF) {
+      BADOFF = true;
+      @PKG@.ClassCfg.warn("profile:class:" + u + " = " + @PKG@.ClassDefs.NAMES[i] + " is not playable yet in SkyyClasses (coming soon) - the profile stays locked to it and its weapons deal no damage (logged once)");
+    }
+    return i;
+  }
   if (!BADPROF) {
     BADPROF = true;
-    @PKG@.ClassCfg.warn("profile:class:" + u + " = " + @PKG@.ClassCfg.clean(s, 32) + (i < 0 ? " is not a SkyyClasses class" : " is not playable yet in SkyyClasses (coming soon)") + " - using the class file instead (logged once)");
+    @PKG@.ClassCfg.warn("profile:class:" + u + " = " + @PKG@.ClassCfg.clean(s, 32) + " is not a SkyyClasses class - using the class file instead (logged once)");
   }
   return -1;
 }""")
@@ -599,8 +647,11 @@ public static boolean locked(java.util.UUID u) {
   return profileIndex(u) >= 0;
 }""")
 # bridge values stay keyed by UUID and describe the ACTIVE profile (contract rule 3); k = pkey(u)
+# integration fix: synchronized - the class is read and both keys are written in one step, so concurrent publishes (ClassTick, an
+# admin command, a choice) never leave class:<uuid> and class:skill:<uuid> describing different classes. Safe under the lock: only
+# bridge reads and puts (no profile:fn:key call, no other mod called).
 M(st_, r"""
-public static void publishKey(java.util.UUID u, String k) {
+public static synchronized void publishKey(java.util.UUID u, String k) {
   java.util.Map b = @PKG@.ClassCfg.bridge();
   int i = profileIndex(u);
   if (i < 0) i = fileIndex(k);
@@ -616,18 +667,28 @@ M(st_, r"""
 public static long num(java.util.Properties p, String k) {
   try { String v = p.getProperty(k); return v == null ? 0L : Long.parseLong(v.trim()); } catch (Throwable t) { return 0L; }
 }""")
+# integration fix: a file that exists but cannot be read is NOT cached (0.1.3 cached an empty copy, which the next syncKey / choice /
+# prompted flag wrote over the real file). The caller gets an uncached empty Properties (= no class for now), the read is retried at
+# most every 2 s, and every save checks DATA.get(k) == its copy, so an unread file is never overwritten. A missing file = empty, cached.
 M(st_, r"""
 public static synchronized java.util.Properties loadKey(String k) {
   java.util.Properties p = (java.util.Properties) DATA.get(k);
   if (p != null) return p;
   p = new java.util.Properties();
+  Long failed = (Long) FAILAT.get(k);
+  if (failed != null && System.currentTimeMillis() - failed.longValue() < 2000L) return p;
   try {
     java.nio.file.Path f = DIR.resolve(k + ".properties");
     if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
       java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
       try { p.load(in); } finally { in.close(); }
     }
-  } catch (Throwable t) { @PKG@.ClassCfg.warn("could not load player " + k + ": " + t); }
+  } catch (Throwable t) {
+    FAILAT.put(k, Long.valueOf(System.currentTimeMillis()));
+    @PKG@.ClassCfg.warnLimited("could not read player file " + k + " (not cached, retried every 2 s, never overwritten meanwhile): " + t);
+    return new java.util.Properties();
+  }
+  FAILAT.remove(k);
   DATA.put(k, p);
   int i = @PKG@.ClassDefs.indexOf(p.getProperty("class", ""));
   if (i >= 0) CLS.put(k, @PKG@.ClassDefs.NAMES[i]);
@@ -657,59 +718,87 @@ public static int classIndex(java.util.UUID u) {
   if (!DATA.containsKey(k)) ensure(u, k);
   return fileIndex(k);
 }""")
+# integration fix: returns whether the file was written; nothing is written for a key whose file could not be read (not in DATA);
+# the atomic replace retries 5 x 20 ms on any FileSystemException (AccessDeniedException, or a sharing violation from a scanner / backup)
 M(st_, r"""
-public static synchronized void saveKey(String k) {
+public static synchronized boolean saveKey(String k) {
   java.util.Properties p = (java.util.Properties) DATA.get(k);
-  if (p == null) return;
+  if (p == null) { @PKG@.ClassCfg.warnLimited("not saving player " + k + " - its file could not be read yet"); return false; }
+  boolean ok = false;
   try {
     java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
     java.nio.file.Path tmp = DIR.resolve(k + ".properties.tmp");
     java.io.OutputStream out = java.nio.file.Files.newOutputStream(tmp, new java.nio.file.OpenOption[0]);
     try { p.store(out, "SkyyClasses player"); } finally { out.close(); }
-    java.nio.file.Files.move(tmp, DIR.resolve(k + ".properties"), new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+    java.nio.file.Path dst = DIR.resolve(k + ".properties");
+    int tries = 0;
+    while (!ok) {
+      try {
+        java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+        ok = true;
+      } catch (java.nio.file.FileSystemException ade) {
+        tries++;
+        if (tries >= 5) throw ade;
+        Thread.sleep(20L);
+      }
+    }
   } catch (Throwable t) { @PKG@.ClassCfg.warn("could not save player " + k + ": " + t); }
+  return ok;
 }""")
 # idx < 0 = remove the class. byPlayer = a player's own choice (starts the switch cooldown); paid = counts as a switch
 # 0.1.3: k = pkey of the profile being changed, computed by the caller OUTSIDE this lock (pkey may call into SkyyProfiles)
+# integration fix: returns false (nothing changed) when the file could not be read or written
 M(st_, r"""
-public static synchronized void setClassKey(String k, int idx, boolean byPlayer, boolean paid) {
-  java.util.Properties p = loadKey(k);
+public static synchronized boolean setClassKey(String k, int idx, boolean byPlayer, boolean paid) {
+  java.util.Properties old = loadKey(k);
+  if (DATA.get(k) != old) return false;
+  java.util.Properties p = new java.util.Properties();
+  p.putAll(old);
   long now = System.currentTimeMillis();
+  String n = null;
   if (idx < 0) {
     p.remove("class");
-    CLS.remove(k);
   } else {
-    String n = @PKG@.ClassDefs.NAMES[idx];
+    n = @PKG@.ClassDefs.NAMES[idx];
     p.setProperty("class", n);
-    CLS.put(k, n);
     String played = p.getProperty("played", "");
     if (("," + played + ",").indexOf("," + n + ",") < 0) p.setProperty("played", played.length() == 0 ? n : played + "," + n);
   }
   p.setProperty("chosenAt", String.valueOf(now));
   p.setProperty("lastChoiceAt", byPlayer ? String.valueOf(now) : "0");
   if (paid) p.setProperty("switches", String.valueOf(num(p, "switches") + 1L));
-  saveKey(k);
+  DATA.put(k, p);
+  if (!saveKey(k)) { DATA.put(k, old); return false; }
+  if (n == null) CLS.remove(k); else CLS.put(k, n);
+  return true;
 }""")
 M(st_, r"""
-public static void setClass(java.util.UUID u, int idx, boolean byPlayer, boolean paid) {
+public static boolean setClass(java.util.UUID u, int idx, boolean byPlayer, boolean paid) {
   String k = @PKG@.ClassCfg.pkey(u);
   if (!DATA.containsKey(k)) ensure(u, k);
-  setClassKey(k, idx, byPlayer, paid);
+  boolean ok = setClassKey(k, idx, byPlayer, paid);
   publishKey(u, k);
+  return ok;
 }""")
 # 0.1.3: copy the authoritative profile class into that profile's file (offline class:fn:get, /classadmin info, a start without SkyyProfiles)
+# integration fix: only a file that was read is changed, and DATA / CLS only take the new class once the file is written (a failed save
+# is retried by the next steady check instead of being hidden by the cache)
 M(st_, r"""
 public static synchronized void syncKey(String k, int pi) {
   if (pi < 0 || pi >= @PKG@.ClassDefs.NAMES.length || !@PKG@.ClassDefs.ENABLED[pi]) return;
-  java.util.Properties p = loadKey(k);
+  java.util.Properties old = loadKey(k);
+  if (DATA.get(k) != old) return;
   String n = @PKG@.ClassDefs.NAMES[pi];
-  CLS.put(k, n);
-  if (n.equals(p.getProperty("class"))) return;
+  if (n.equals(old.getProperty("class"))) { CLS.put(k, n); return; }
+  java.util.Properties p = new java.util.Properties();
+  p.putAll(old);
   p.setProperty("class", n);
   String played = p.getProperty("played", "");
   if (("," + played + ",").indexOf("," + n + ",") < 0) p.setProperty("played", played.length() == 0 ? n : played + "," + n);
   if (p.getProperty("chosenAt") == null) p.setProperty("chosenAt", String.valueOf(System.currentTimeMillis()));
-  saveKey(k);
+  DATA.put(k, p);
+  if (!saveKey(k)) { DATA.put(k, old); return; }
+  CLS.put(k, n);
 }""")
 # review fix: how long (ms) check() has seen exactly this (epoch|pkey|profile class) snapshot for u; 0 = new or changed. Map work only
 # (no bridge Function calls) -> safe under ClassStore's lock, and one atomic step for the two maps.
@@ -729,6 +818,9 @@ public static synchronized long steadyFor(java.util.UUID u, String snap) {
 # bridge publish self-heals on the next tick, a file write does not -> syncKey only runs when the snapshot (epoch, pkey, class) has held
 # for >= SYNC_STEADY_MS across checks AND a re-read right before the write still matches it (a mid-switch pair never reaches the disk;
 # a re-read that differs restarts the steady clock).
+# Integration fix: the write also needs profile:key:<uuid> == pkey. SkyyProfiles flips the Function when the players file is committed
+# and publishes key, class, epoch a moment later, so "new key + old class + old epoch" is the mid-switch view; the bridge key still
+# shows the old key there, so even a long stall between commit and publish can never write the old profile's class into the new file.
 M(st_, r"""
 public static void check(java.util.UUID u) {
   if (u == null) return;
@@ -739,11 +831,12 @@ public static void check(java.util.UUID u) {
   loadKey(k);
   int pi = profileIndex(u);
   long steady = steadyFor(u, e + "|" + k + "|" + pi);
-  if (pi >= 0 && fileIndex(k) != pi && steady >= SYNC_STEADY_MS) {
+  if (pi >= 0 && @PKG@.ClassDefs.ENABLED[pi] && fileIndex(k) != pi && steady >= SYNC_STEADY_MS) {
     long e2 = @PKG@.ClassCfg.profileEpoch(u);
     String k2 = @PKG@.ClassCfg.pkey(u);
     int pi2 = profileIndex(u);
-    if (e2 == e && pi2 == pi && k.equals(k2)) syncKey(k, pi);
+    Object kk = @PKG@.ClassCfg.bridge().get("profile:key:" + u.toString());
+    if (e2 == e && pi2 == pi && k.equals(k2) && k.equals(kk)) syncKey(k, pi);
     else steadyFor(u, e2 + "|" + k2 + "|" + pi2);   // a switch is under way: restart the steady clock from the newer snapshot
   }
   int i = pi >= 0 ? pi : fileIndex(k);
@@ -778,10 +871,13 @@ public static boolean wasPrompted(java.util.UUID u) {
 }""")
 M(st_, r"""
 public static synchronized void markPromptedKey(String k) {
-  java.util.Properties p = loadKey(k);
-  if ("1".equals(p.getProperty("prompted"))) return;
+  java.util.Properties old = loadKey(k);
+  if (DATA.get(k) != old || "1".equals(old.getProperty("prompted"))) return;
+  java.util.Properties p = new java.util.Properties();
+  p.putAll(old);
   p.setProperty("prompted", "1");
-  saveKey(k);
+  DATA.put(k, p);
+  if (!saveKey(k)) DATA.put(k, old);
 }""")
 M(st_, r"""
 public static void markPrompted(java.util.UUID u) {
@@ -828,12 +924,14 @@ public static synchronized String chooseKey(java.util.UUID u, String k, int idx)
   if (idx < 0 || idx >= @PKG@.ClassDefs.NAMES.length) return "Unknown class.";
   String name = @PKG@.ClassDefs.NAMES[idx];
   if (locked(u)) return "Your class is locked to this profile. A new class means a new profile.";
+  if (@PKG@.ClassCfg.needsProfile(u)) return "Create your profile with /profiles - you pick your class there and it is locked to that profile.";
   if (!@PKG@.ClassDefs.ENABLED[idx]) return name + "s are coming soon.";
   if (!DATA.containsKey(k)) ensure(u, k);
+  if (!DATA.containsKey(k)) return "Your class file could not be read - try again in a moment.";
   int cur = fileIndex(k);
   if (cur == idx) return "You already are " + @PKG@.ClassDefs.article(name) + ".";
   if (cur < 0) {
-    setClassKey(k, idx, true, false);
+    if (!setClassKey(k, idx, true, false)) return "Your class could not be saved - try again in a moment.";
     return null;
   }
   if (!@PKG@.ClassCfg.ALLOW_SWITCH) return "Your class is locked. A new class means a new profile (SkyyProfiles).";
@@ -844,7 +942,7 @@ public static synchronized String chooseKey(java.util.UUID u, String k, int idx)
     if (!coinsReady()) return "Switching costs " + cost + " coins but SkyyCoins is not loaded - ask an admin.";
     if (!purseTake(u, cost)) return "Switching costs " + cost + " coins - you have " + purse(u) + ".";
   }
-  setClassKey(k, idx, true, cost > 0L);
+  if (!setClassKey(k, idx, true, cost > 0L)) return "Your class could not be saved - try again in a moment.";
   return null;
 }""")
 M(st_, r"""
@@ -878,7 +976,7 @@ public static String describe(java.util.UUID u) {
     String pt = @PKG@.ClassCfg.profileText(u);
     String raw = pi >= 0 ? null : @PKG@.ClassCfg.profileClass(u);
     String why = " - the profile has no class";
-    if (pi >= 0) why = " - class locked by the profile";
+    if (pi >= 0) why = " - class locked by the profile" + (@PKG@.ClassDefs.ENABLED[pi] ? "" : " (not playable yet - its weapons deal no damage)");
     else if (raw != null) why = " - profile class " + @PKG@.ClassCfg.clean(raw, 32) + " is not playable in SkyyClasses" + (ci >= 0 ? " - using the class chosen for this profile file" : " - no class in this profile file");
     else if (ci >= 0) why = " - class chosen for this profile file, not locked by SkyyProfiles";
     prof = " | " + (pt.length() > 0 ? pt : "no active profile") + " file " + k + why;
@@ -897,7 +995,7 @@ public static boolean allowed(java.util.UUID u, String id) {
   if (owner == @PKG@.ClassDefs.FREE) return true;
   int ci = @PKG@.ClassStore.classIndex(u);
   if (ci < 0) return !@PKG@.ClassCfg.REQUIRE_CLASS;
-  if (owner == ci) return true;
+  if (owner == ci && @PKG@.ClassDefs.ENABLED[ci]) return true;
   if (owner == @PKG@.ClassDefs.UNASSIGNED || !@PKG@.ClassDefs.ENABLED[owner]) return !@PKG@.ClassCfg.UNASSIGNED_BLOCKED;
   return false;
 }""")
@@ -907,7 +1005,7 @@ public static String blockText(java.util.UUID u, String id, boolean util) {
   String noun = @PKG@.ClassDefs.nounOf(id);
   String where = util ? " (it is in your utility slot)" : "";
   int ci = @PKG@.ClassStore.classIndex(u);
-  if (ci < 0) return "Choose a class with /class before fighting with weapons" + where + ".";
+  if (ci < 0) return (@PKG@.ClassCfg.profilesOn() ? "Create a profile with /profiles to get a class" : "Choose a class with /class") + " before fighting with weapons" + where + ".";
   if (owner >= 0 && @PKG@.ClassDefs.ENABLED[owner]) return "Only " + @PKG@.ClassDefs.NAMES[owner] + "s can use " + noun + where + ". You are " + @PKG@.ClassDefs.article(@PKG@.ClassDefs.NAMES[ci]) + " - /class shows your weapons.";
   if (owner >= 0) return @PKG@.ClassDefs.NAMES[owner] + "s are coming soon - nobody can fight with " + noun + " yet" + where + ".";
   return "No class can fight with " + noun + " yet" + where + ".";
@@ -1124,6 +1222,7 @@ public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
   java.util.UUID u = this.playerRef.getUuid();
   int pi = @PKG@.ClassStore.profileIndex(u);
   boolean lockp = pi >= 0;
+  boolean np = !lockp && @PKG@.ClassCfg.needsProfile(u);
   int cur = lockp ? pi : @PKG@.ClassStore.classIndex(u);
   String bs = "__BTN__";
   String go = "__BTNGO__";
@@ -1133,6 +1232,8 @@ public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
   String sub = cur < 0 ? "You have no class yet - your first choice is free. Your class decides your weapons and your combat skill."
     : "You are " + @PKG@.ClassDefs.article(@PKG@.ClassDefs.NAMES[cur]) + " - combat skill " + @PKG@.ClassDefs.SKILLS[cur] + ". Only " + @PKG@.ClassDefs.NAMES[cur] + " weapons deal damage for you.";
   if (lockp) sub = "Your class is locked to this profile - you are " + @PKG@.ClassDefs.article(@PKG@.ClassDefs.NAMES[cur]) + " with combat skill " + @PKG@.ClassDefs.SKILLS[cur] + ". A new class means a new profile.";
+  if (lockp && !@PKG@.ClassDefs.ENABLED[cur]) sub = "This profile is locked to " + @PKG@.ClassDefs.NAMES[cur] + " - not playable yet. Its weapons deal no damage until it is released.";
+  if (np) sub = "You have no profile yet. Type /profiles to create one - you pick your class there and it is locked to that profile.";
   b.appendInline("#SkyyCls", "Label #SkyyClsSub { Anchor: (Height: 20); Text: \"" + safe(sub) + "\"; Style: (FontSize: 11, TextColor: #9fb8cc, HorizontalAlignment: Center, VerticalAlignment: Center); }");
   for (int i = 0; i < @PKG@.ClassDefs.NAMES.length; i++) {
     boolean on = @PKG@.ClassDefs.ENABLED[i];
@@ -1161,7 +1262,7 @@ public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
       b.appendInline("#SkyyClsAct" + i, "Label { Anchor: (Width: 130, Height: 30); Text: \"Coming soon\"; Style: (FontSize: 12, RenderBold: true, TextColor: #5f6b78, HorizontalAlignment: Center, VerticalAlignment: Center); }");
     } else if (sel) {
       b.appendInline("#SkyyClsAct" + i, "Label { Anchor: (Width: 130, Height: 30); Text: \"Selected\"; Style: (FontSize: 13, RenderBold: true, TextColor: #8fe39a, HorizontalAlignment: Center, VerticalAlignment: Center); }");
-    } else if (lockp) {
+    } else if (lockp || np) {
       b.appendInline("#SkyyClsAct" + i, "Label { Anchor: (Width: 130, Height: 30); Text: \"Locked\"; Style: (FontSize: 12, RenderBold: true, TextColor: #5f6b78, HorizontalAlignment: Center, VerticalAlignment: Center); }");
     } else {
       b.appendInline("#SkyyClsAct" + i, "TextButton #SkyyClsPick" + i + " { Anchor: (Width: 130, Height: 30); Text: \"" + (cur < 0 ? "Choose" : "Switch") + "\"; " + (pend ? go : bs) + " }");
@@ -1171,7 +1272,7 @@ public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
   b.appendInline("#SkyyCls", "Label { Anchor: (Height: 8); Text: \"\"; }");
   b.appendInline("#SkyyCls", "Label #SkyyClsInfo { Anchor: (Height: 22); Text: \"" + safe(this.info) + "\"; Style: (FontSize: 12, RenderBold: true, TextColor: #ffd27a, HorizontalAlignment: Center, VerticalAlignment: Center); }");
   long cost = @PKG@.ClassCfg.SWITCH_COST;
-  if (!lockp && this.pending >= 0 && this.pending < @PKG@.ClassDefs.NAMES.length) {
+  if (!lockp && !np && this.pending >= 0 && this.pending < @PKG@.ClassDefs.NAMES.length) {
     String pn = @PKG@.ClassDefs.NAMES[this.pending];
     String q = cur < 0 ? "Become " + @PKG@.ClassDefs.article(pn) + "? Your first choice is free."
       : "Switch to " + pn + " for " + cost + " coins? Your " + @PKG@.ClassDefs.NAMES[cur] + " progress is kept.";
@@ -1182,6 +1283,9 @@ public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
     b.appendInline("#SkyyClsConfirm", "TextButton #SkyyClsNo { Anchor: (Width: 120, Height: 28); Text: \"Cancel\"; " + bs + " }");
     ev.addEventBinding(@BT@.Activating, "#SkyyClsYes", @EVD@.of("a", "clsyes"));
     ev.addEventBinding(@BT@.Activating, "#SkyyClsNo", @EVD@.of("a", "clsno"));
+  } else if (np) {
+    String nf = "Your class comes from your profile - type /profiles to create it. Shields and tools work for every class.";
+    b.appendInline("#SkyyCls", "Label #SkyyClsFoot { Anchor: (Height: 30); Text: \"" + safe(nf) + "\"; Style: (FontSize: 11, TextColor: #8fa4b8, HorizontalAlignment: Center, VerticalAlignment: Center); }");
   } else if (lockp) {
     String pt = @PKG@.ClassCfg.profileText(u);
     String lf = "Class locked to " + (pt.length() > 0 ? pt : "this profile") + ". To play another class create a new profile. Shields and tools work for every class.";
@@ -1200,6 +1304,11 @@ public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
     if (@PKG@.ClassStore.locked(u)) {
       this.pending = -1;
       this.info = "Your class is locked to this profile - a new class means a new profile.";
+      rebuild(); return;
+    }
+    if (@PKG@.ClassCfg.needsProfile(u)) {
+      this.pending = -1;
+      this.info = "Create your profile with /profiles - you pick your class there.";
       rebuild(); return;
     }
     for (int i = 0; i < @PKG@.ClassDefs.NAMES.length; i++) {
@@ -1235,16 +1344,30 @@ public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
 }""")
 
 # ================= OpenTask: first-join page open (SkyyHud AttachTask pattern: delay, world-thread hop, WorldMap channel gate) =================
+# Only without SkyyProfiles. Cross-mod timeline pass (same guards as SkyyProfiles' Create Profile page): calm resets when the player's
+# world changes between polls (opens only after 2 polls in one world); waits up to ISLAND_WAIT_MS while the player stands in a
+# skyy-island-* world (SkyyIslands routes island logins to the hub 1.5 s after the first PlayerReadyEvent - a page opened just before
+# that teleport is lost); never replaces an open custom page (our own ClassPage opened with /class -> done; any other, e.g. the
+# SkyyMenu page -> wait until it is closed); never opens over the respawn screen. Gives up after 240 polls (2 min).
 opn.addInterface(pool.get("java.lang.Runnable"))
+F(opn, "public static final long ISLAND_WAIT_MS = 8000L;")
 F(opn, "public @PR@ pr;")
 F(opn, "public boolean onWorld;")
 F(opn, "public int calm;")
 F(opn, "public int tries;")
-C(opn, "public OpenTask(@PR@ pr) { this.pr = pr; this.onWorld = false; this.calm = 0; this.tries = 0; }")
+F(opn, "public java.util.UUID wu;")
+F(opn, "public java.util.UUID lastWorld;")
+F(opn, "public long born;")
+C(opn, "public OpenTask(@PR@ pr) { this.pr = pr; this.onWorld = false; this.calm = 0; this.tries = 0; this.wu = null; this.lastWorld = null; this.born = System.currentTimeMillis(); }")
 M(opn, r"""
 public void later(long ms) {
   this.onWorld = false;
   @HSV@.SCHEDULED_EXECUTOR.schedule(this, ms, java.util.concurrent.TimeUnit.MILLISECONDS);
+}""")
+M(opn, r"""
+public void again(boolean unsettled) {
+  if (unsettled) this.calm = 0;
+  if (++this.tries < 240) later(500L);
 }""")
 M(opn, r"""
 public void run() {
@@ -1252,21 +1375,32 @@ public void run() {
     if (pr == null || !pr.isValid()) return;
     if (!this.onWorld) {
       java.util.UUID wu = pr.getWorldUuid();
-      if (wu == null) { if (++this.tries < 240) later(500L); return; }
+      if (wu == null) { again(true); return; }
       @WLD@ w = @UNI@.get().getWorld(wu);
-      if (w == null) { if (++this.tries < 240) later(500L); return; }
+      if (w == null) { again(true); return; }
+      this.wu = wu;
       this.onWorld = true;
       w.execute(this);
       return;
     }
+    java.util.UUID now = pr.getWorldUuid();
+    if (now == null || !now.equals(this.wu)) { again(true); return; }
     if (@PKG@.ClassCfg.profilesOn()) return;
     if (@PKG@.ClassStore.classIndex(pr.getUuid()) >= 0) return;
+    if (this.lastWorld == null || !this.lastWorld.equals(now)) { this.lastWorld = now; this.calm = 0; }
+    @WLD@ here = @UNI@.get().getWorld(now);
+    String wn = here == null ? null : here.getName();
+    if (wn != null && wn.startsWith("skyy-island-") && System.currentTimeMillis() - this.born < ISLAND_WAIT_MS) { again(true); return; }
     @REF@ r = pr.getReference();
-    if (r == null) return;
+    if (r == null) { again(true); return; }
     @ST@ st = r.getStore();
-    if (st == null) return;
+    if (st == null) { again(true); return; }
     @PLA@ player = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
-    if (player == null) { if (++this.tries < 240) later(500L); return; }
+    if (player == null) { again(true); return; }
+    if (st.getComponent(r, com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent.getComponentType()) != null) { again(true); return; }
+    Object cp = player.getPageManager().getCustomPage();
+    if (cp instanceof @PKG@.ClassPage) return;
+    if (cp != null) { again(true); return; }
     boolean writable = true;
     try {
       com.hypixel.hytale.server.core.io.PacketHandler ph = player.getPlayerConnection();
@@ -1274,7 +1408,7 @@ public void run() {
       writable = ch == null || ch.isWritable();
     } catch (Throwable t) { writable = true; }
     if (writable) this.calm++; else this.calm = 0;
-    if (this.calm < 2) { if (++this.tries < 240) later(500L); return; }
+    if (this.calm < 2) { again(false); return; }
     player.getPageManager().openCustomPage(r, st, new @PKG@.ClassPage(pr));
     @PKG@.ClassStore.markPrompted(pr.getUuid());
   } catch (Throwable t) { @PKG@.ClassCfg.warn("could not open the class page on join: " + t); }
@@ -1393,7 +1527,7 @@ protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
     int i = @PKG@.ClassDefs.indexOf(String.valueOf(ctx.get(this.classArg)));
     if (i < 0) { pr.sendMessage(@MSG@.raw("[Classes] Unknown class. Classes: " + @PKG@.ClassDefs.listText())); return; }
     if (!@PKG@.ClassDefs.ENABLED[i]) { pr.sendMessage(@MSG@.raw("[Classes] " + @PKG@.ClassDefs.NAMES[i] + " is not available yet (coming soon).")); return; }
-    @PKG@.ClassStore.setClass(t, i, false, false);
+    if (!@PKG@.ClassStore.setClass(t, i, false, false)) { pr.sendMessage(@MSG@.raw("[Classes] Could not read or write the class file of " + t + " - nothing changed (see the server log).")); return; }
     pr.sendMessage(@MSG@.raw("[Classes] " + t + " is now " + @PKG@.ClassDefs.article(@PKG@.ClassDefs.NAMES[i]) + ". " + @PKG@.ClassStore.describe(t)));
     @PR@ tp = @UNI@.get().getPlayer(t);
     if (tp != null && tp.isValid()) tp.sendMessage(@MSG@.raw("[Classes] An admin made you " + @PKG@.ClassDefs.article(@PKG@.ClassDefs.NAMES[i]) + ". Your weapons: " + @PKG@.ClassDefs.WTEXT[i] + ".").color("#8fe39a"));
@@ -1413,7 +1547,7 @@ protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
     if (t == null) { pr.sendMessage(@MSG@.raw("[Classes] Unknown player - use an online name or a uuid.")); return; }
     int lk = @PKG@.ClassStore.profileIndex(t);
     if (lk >= 0) { pr.sendMessage(@MSG@.raw("[Classes] " + t + " is locked to " + @PKG@.ClassDefs.NAMES[lk] + " by their active profile (SkyyProfiles). A new class means a new profile.")); return; }
-    @PKG@.ClassStore.setClass(t, -1, false, false);
+    if (!@PKG@.ClassStore.setClass(t, -1, false, false)) { pr.sendMessage(@MSG@.raw("[Classes] Could not read or write the class file of " + t + " - nothing changed (see the server log).")); return; }
     pr.sendMessage(@MSG@.raw("[Classes] Class of " + t + " removed - their next choice is free."));
     @PR@ tp = @UNI@.get().getPlayer(t);
     if (tp != null && tp.isValid()) tp.sendMessage(@MSG@.raw("[Classes] An admin reset your class. Type /class to choose again (free).").color("#ffc800"));
