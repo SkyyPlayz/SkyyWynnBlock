@@ -17,9 +17,13 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.7"), ("SkyySacks", "0.7.4"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2"), ("SkyyParty", "0.1.2"),
-    ("SkyyBank", "0.1.2"), ("SkyyIslands", "0.4.4"), ("SkyyBazaar", "0.1.1"), ("SkyyRolls", "0.1.3"), ("SkyySkills", "0.4"),
+    ("SkyyBank", "0.1.2"), ("SkyyIslands", "0.4.4"), ("SkyyBazaar", "0.1.1"), ("SkyyRolls", "0.1.3"), ("SkyySkills", "0.4.1"),
     ("SkyyAccessories", "0.4.3"), ("SkyyClasses", "0.1.4"), ("SkyyMenu", "0.1.2"), ("SkyyEssentials", "0.1"), ("SkyyProfiles", "0.1"),
-    ("SkyyCooking", "0.1.1"), ("SkyyTrees", "0.1"),
+    ("SkyyCooking", "0.1.1"), ("SkyyTrees", "0.2"),
+    # Exploration round (research/Exploration-Build-Spec.md section 5): these three deploy TOGETHER - SkyySkills 0.4.1 has the
+    # Exploration row, SkyyTrees 0.2 the Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists
+    # (0.4 drops the unknown Exploration keys on its next save)
+    ("SkyyExploration", "0.1"),
 ]
 # third-party mods that are part of the pack (enabled in the world by their manifest key; their files are NOT in this repo -
 # a server owner installs them from their authors, see PACK.md). Never disabled by this script.

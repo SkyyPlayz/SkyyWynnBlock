@@ -526,3 +526,61 @@ Files changed, in `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\`:
 - [ ] /skyyhud export -> reset -> import <code> restores the style; same with profile save/load.
 - [ ] Zone widget: own island 'Your Island'; other profile's island 'Island' after switching; a friend's island 'Island'; hub shows the Hytale zone name (or 'Hub'); nothing runs into the next widget.
 - [ ] Client log: no "Failed to parse" / "Selected element not found".
+
+## Exploration round: SkyyExploration 0.1, SkyySkills 0.4.1, SkyyTrees 0.2 (built + cross-checked 2026-09-24, NOT deployed; deploy all three together, never go back to Skills 0.4 once Exploration XP exists)
+**In-game test plan (riskiest first)**
+1. **Start with the new 18-jar set.** Expected:
+   - "[SkyyExploration] 0.1 ready" with no LATE-fallback warning.
+   - "[SkyySkills] 0.4.1 ready ... Exploration (via SkyyExploration, no boosters)".
+   - "[SkyyTrees] 0.2 ready ... 64 of 64 nodes on (8 coming later)".
+   - The Exploration block is added to `xp.properties` once and the 0.2 lines to `trees.properties` once; a second restart adds neither again. No errors.
+2. **Loot chest capture.** Go into never-generated terrain and run `/exploreadmin stats`. Expected: the capture counter rises. Then:
+   - First open of a world loot chest: chat line plus Exploration XP.
+   - Second open: nothing.
+   - A chest you placed yourself, or the island starter chest: nothing.
+3. **XP arrives in Skills.** Expected:
+   - `/skills` shows the Exploration row (map icon) after Acrobatics, with XP rising by exactly the chest's number.
+   - `/explore` shows no "waiting for SkyySkills" text.
+   - Level-ups pay coins.
+4. **No boosters.** Set `multiplier=2.0`, add Exploration to `bridge.bonus.xpSkills`, then `/skills reload`. Expected: one WARN, Exploration XP still exact, Mining doubled.
+5. **Map coverage.** Expected:
+   - Walking into new chunks gives one combined line every 30 s.
+   - `/fly` or creative gives no XP and no line.
+   - Teleporting still counts.
+   - `/explore quiet` hides the line.
+   - Your own island pays nothing.
+6. **Zones.** Entering a Zone1 region for the first time gives zone XP once. The Zones tab lists it.
+7. **Titles.** Expected:
+   - Pick a title with `/title`: your chat shows the [Title] prefix, and other players see it too.
+   - `/title wor` asks for more letters.
+   - `/title off` removes the prefix.
+8. **Stamina and Health.** Expected:
+   - `/skills xp exploration 1175` gives level 5 and +0.5 max Stamina on the bar.
+   - Tree Second Wind 1 adds +0.2 Stamina.
+   - Wanderer's Heart 1 adds +0.4 Health.
+9. **Acrobatics tree** (use `debug.extraTokens` and `extraDust`). Expected:
+   - Fleet Foot: faster.
+   - Spring Step: higher jump.
+   - Soft Landing: less fall damage.
+   - Quick Dodge: longer dodge push; with `acro.dodgeBoost=false`, no push.
+   - `/skills stats acrobatics` shows the "Skill tree:" line.
+10. **Exploration tree.** Treasure Sense makes the `/explore` chest luck show "+ tree X%". Scavenger sometimes pays "10 x level" coins on a first-opened chest.
+11. **Pages.** Expected:
+    - `/skills` shows 9 rows with nothing clipped. The Acrobatics and Exploration Tree buttons open the right trees.
+    - `/tree` shows 6 tabs on one row. Exploration S5-S12 are "Coming later" and Buy is refused.
+    - On `/explore`, the "< Skills" and "Exploration tree" buttons replace the page cleanly.
+    - The SkyyMenu profile box's skills line (now one entry longer) still fits.
+12. **Profiles.** Switch to another profile. Expected:
+    - Exploration level, zones, chests, title, both new trees and `/bank` balance are separate (the bank earns interest per profile).
+    - The same world chest pays once again on the new profile.
+    - Switching back restores everything within about 1 s.
+13. **Two players, if possible.** Expected:
+    - The same chest pays each player's profile once.
+    - After logoff, no leftover tree speed stays on the player.
+    - The other player is unaffected.
+
+**Files:**
+- `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\tools\deploy_set.py` (edited)
+- `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\SkyyExploration\SkyyExploration-0.1.jar`
+- `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\SkyySkills\SkyySkills-0.4.1.jar`
+- `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\SkyyTrees\SkyyTrees-0.2.jar`

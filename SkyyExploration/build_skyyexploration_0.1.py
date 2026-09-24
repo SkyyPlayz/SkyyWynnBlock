@@ -12,7 +12,11 @@ WHAT IT DOES (each source pays ONCE per profile, never while flying or in creati
      BEFORE StashPlugin$StashSystem (SystemDependency(Order.BEFORE, ...)) records every container that HAS a drop list at add time in a
      per-world registry (world-file journal chests/<worldFile>.log; lines "A x y z droplist placedBy" / "R x y z"). Players can never
      create a drop list (only spawner tables, prefabs or an admin /stash set). If the ordered registration throws
-     IllegalArgumentException (StashPlugin disabled or missing), the unordered ChestSpawnLateSys is registered instead (one WARN).
+     IllegalArgumentException (Hytale:Stash is not loaded: turned off in the server config, or its setup failed), the unordered
+     ChestSpawnLateSys is registered instead (one WARN). Load order is never the cause: Mod.calculateLoadOrder (HytaleServer.jar)
+     makes every enabled core plugin of group "Hytale" (manifests.json in the server jar, inServerClassPath) a predecessor of every
+     Mods-folder plugin, PluginManager.setup() runs setup() in that order, and a modLoadOrder that contradicts it stops the server
+     (ModLoadOrderException) - so StashSystem is always registered before our setup() when Hytale:Stash is enabled.
      A REMOVE / BUILDER_TOOLS_UNDO of the block entity drops the record; a SPAWN without a drop list at a recorded spot drops it too
      (a fresh non-loot container replaced it); UNLOAD / a LOAD without a drop list keep it. The capture keeps running while
      chests.enabled=false (a chest generated then would otherwise be lost for good).
@@ -69,7 +73,8 @@ STORAGE (tools/PROFILES-CONTRACT.md)  <world>/mods/Skyy_SkyyExploration/
 PAGE /explore (inline, HANDOFF section 2): tabs Overview | Zones | Titles, cards, zone lists, title rows with Use buttons, "< Skills"
   and "Exploration tree" (runs the command while this page is open; the new page replaces it). Rebuilt only on clicks.
 COMMANDS (HANDOFF command rules): /explore (aliases exploration, discoveries), /explore quiet, /title (alias titles), /title <title>
-  (usage variant; id, name without spaces, 3+ letter prefix, off / none) - all hytale:Adventurer. /exploreadmin reload | stats |
+  (usage variant; id, name without spaces, 3+ letter prefix of exactly one title - "wor" fits two and asks for more letters, off /
+  none) - all hytale:Adventurer. /exploreadmin reload | stats |
   resetme - requirePermission("skyyexploration.admin") + setPermissionGroups(new String[0]).
 
 ENGINE RULES KEPT  one registerSystem per class (ChestSpawnSys, ChestSpawnLateSys, ChestOpenSys, ExpTick); components / inventory only on
@@ -534,25 +539,51 @@ public static int title(String id) {
   for (int i = 0; i < T_ID.length; i++) if (T_ID[i].equals(id)) return i;
   return -1;
 }""")
-# /title argument: -2 = off/none, -1 = unknown, else the title index (id, name without spaces, 3+ letter id prefix; any case)
+# /title argument, lower case without spaces / _ / - / '
 M(defs, r"""
-public static int resolveTitle(String s) {
-  if (s == null) return -1;
+public static String normTitle(String s) {
+  if (s == null) return "";
   String t = s.trim().toLowerCase();
   StringBuilder sb = new StringBuilder();
   for (int i = 0; i < t.length(); i++) {
     char c = t.charAt(i);
     if (c != ' ' && c != '_' && c != '-' && c != '\'') sb.append(c);
   }
-  t = sb.toString();
+  return sb.toString();
+}""")
+# /title argument: -3 = a prefix of more than one title, -2 = off/none, -1 = unknown, else the title index (id, name without spaces,
+# 3+ letter id prefix that fits exactly one title; any case). "wor" / "worl" / "world" fit Worldwalker AND World Seer -> -3
+M(defs, r"""
+public static int resolveTitle(String s) {
+  if (s == null) return -1;
+  String t = normTitle(s);
   if (t.length() == 0) return -1;
   if (t.equals("off") || t.equals("none")) return -2;
   for (int i = 0; i < T_ID.length; i++) if (T_ID[i].equals(t)) return i;
   for (int i = 0; i < T_ID.length; i++) if (T_NAME[i].toLowerCase().replace(" ", "").equals(t)) return i;
   if (t.length() >= 3) {
-    for (int i = 0; i < T_ID.length; i++) if (T_ID[i].startsWith(t)) return i;
+    int hit = -1;
+    for (int i = 0; i < T_ID.length; i++) {
+      if (!T_ID[i].startsWith(t)) continue;
+      if (hit >= 0) return -3;
+      hit = i;
+    }
+    return hit;
   }
   return -1;
+}""")
+# names of the titles whose id starts with the argument (the /title "type more letters" hint)
+M(defs, r"""
+public static String titleMatches(String s) {
+  String t = normTitle(s);
+  StringBuilder sb = new StringBuilder();
+  if (t.length() == 0) return "";
+  for (int i = 0; i < T_ID.length; i++) {
+    if (!T_ID[i].startsWith(t)) continue;
+    if (sb.length() > 0) sb.append(", ");
+    sb.append(T_NAME[i]);
+  }
+  return sb.toString();
 }""")
 # compact number without commas: 950, 12.3k, 1.25m (Trees / Skills fmt)
 M(defs, r"""
@@ -811,12 +842,15 @@ F(dat, "public String name;")
 F(dat, "public boolean bad;")
 F(dat, "public boolean quiet;")
 F(dat, 'public String title = "";')
-F(dat, "public long owed;")
-F(dat, "public long earned;")
-F(dat, "public long chests;")
-F(dat, "public long luck;")
-F(dat, "public long total;")
-F(dat, "public long touched;")
+# counters: written only inside the synchronized ExpStore mutators (on the owner's world thread), read without the lock for display
+# (/exploreadmin stats reads every online player's record from the admin's world thread; ExpSaver.retain reads touched on the
+# scheduler) - volatile gives those readers the latest value (JMM visibility, no torn longs); no compound update runs outside the lock
+F(dat, "public volatile long owed;")
+F(dat, "public volatile long earned;")
+F(dat, "public volatile long chests;")
+F(dat, "public volatile long luck;")
+F(dat, "public volatile long total;")
+F(dat, "public volatile long touched;")
 F(dat, "public boolean noLoad;")
 F(dat, "public java.util.concurrent.ConcurrentHashMap zones = new java.util.concurrent.ConcurrentHashMap();")    # region -> TRUE
 F(dat, "public java.util.concurrent.ConcurrentHashMap opened = new java.util.concurrent.ConcurrentHashMap();")   # worldFile -> LongOpenHashSet
@@ -2628,6 +2662,8 @@ protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
   String a = String.valueOf(ctx.get(this.titleArg));
   int i = @PKG@.ExpDefs.resolveTitle(a);
   if (i == -1) { pr.sendMessage(@MSG@.raw("[Exploration] Unknown title '" + a + "' - /title opens the list, /title off removes yours").color("#ff9090")); return; }
+  if (i == -3) { pr.sendMessage(@MSG@.raw("[Exploration] '" + a + "' fits more than one title (" + @PKG@.ExpDefs.titleMatches(a) + ") - type more letters, or /title to pick from the list").color("#ffb080")); return; }
+  if (i < -2) return;
   String r = @PKG@.ExpTitles.choose(pr, i);
   pr.sendMessage(@MSG@.raw("[Exploration] " + r).color(r.indexOf("locked") >= 0 || r.indexOf("could not") >= 0 ? "#ffb080" : "#9fd0ff"));
 }""")
@@ -2662,7 +2698,7 @@ public ExAdminStatsCmd() {
 }""")
 M(ast, r"""
 protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
-""" + ADMIN_CHECK + r"""  pr.sendMessage(@MSG@.raw("[Exploration] capture: " + (@PKG@.ChestReg.LATE ? "LATE fallback (StashPlugin missing - drop lists are not cleared)" : (@PKG@.ChestReg.ORDERED ? "ordered BEFORE the stash roll" : "unordered (StashPlugin class not found)")) + " - chests " + (@PKG@.ExpCfg.CHESTS_ON ? "on" : "off")).color("#ffd27a"));
+""" + ADMIN_CHECK + r"""  pr.sendMessage(@MSG@.raw("[Exploration] capture: " + (@PKG@.ChestReg.LATE ? "LATE fallback (Hytale:Stash not loaded - drop lists are not cleared)" : (@PKG@.ChestReg.ORDERED ? "ordered BEFORE the stash roll" : "unordered (StashPlugin class not found)")) + " - chests " + (@PKG@.ExpCfg.CHESTS_ON ? "on" : "off")).color("#ffd27a"));
   java.util.Iterator it = @PKG@.ChestReg.W.keySet().iterator();
   int n = 0;
   while (it.hasNext() && n < 12) {
@@ -2744,7 +2780,7 @@ public void setup() {
     cap = stash != null ? "capture ordered before the stash roll" : "capture UNORDERED (StashPlugin class not found)";
   } catch (IllegalArgumentException e) {
     @PKG@.ChestReg.LATE = true;
-    @PKG@.ExpCfg.warn("could not order the loot chest capture before StashPlugin$StashSystem (" + e.getMessage() + ") - StashPlugin is disabled or missing, so nobody clears drop lists; using the unordered fallback");
+    @PKG@.ExpCfg.warn("could not order the loot chest capture before StashPlugin$StashSystem (" + e.getMessage() + ") - the Hytale:Stash plugin is not loaded (turned off in the server config, or its setup failed; core plugins always set up before Mods-folder plugins), so nobody clears drop lists; using the unordered fallback");
     getChunkStoreRegistry().registerSystem(new @PKG@.ChestSpawnLateSys());
     cap = "capture LATE fallback";
   }
