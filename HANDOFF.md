@@ -95,25 +95,27 @@ Other proven facts: HUD attach = `new HudMain(pr).show()` on `PlayerReadyEvent` 
 ## 3. CURRENT STATE (always kept current - last update 2026-09-23 20:45)
 
 ### Versions: live in the "HUD mod" test world vs newest built
-| Mod | Live (enabled in Saves/HUD mod/config.json) | Newest built, NOT deployed |
+All mods are deployed TOGETHER as one set (Skyy 2026-09-23: "keep building and testing all the mods together at once").
+| Mod | Live (deployed 2026-09-23 ~22:00) | In progress |
 |---|---|---|
-| SkyyHud | 0.3.5 | 0.3.6 (Adventurer perms + /skyyhud export/import/reset/profile subcommands) |
-| SkyySacks | 0.6.8 | 0.7.1 (Crafting/Alchemy/Furnace/Tannery tabs, timed Furnace+Tannery page, perms) |
-| SkyyCoins | 0.1.3 | 0.1.4 (perms, /deathpenalty <spec>) |
-| SkyyCollections | 0.1.3 | 0.1.4 (perms, /collections unlocks, reload) |
-| SkyyParty | 0.1.1 | 0.1.2 (perms) |
-| SkyyBank | 0.1 | 0.1.1 (perms, /bank deposit/withdraw <amt>) |
-| SkyyBazaar | 0.1 | 0.1.1 (perms, /bazaaradmin subcommands) |
-| SkyyEssentials | 0.1 | - (tpa/msg/reply/fly; already had perms) |
-| SkyyRolls | 0.1 | 0.1.1 (admin-only spike, positional args) |
-| SkyySkills | 0.1 | 0.3 (Acrobatics, cap 100, Stats page, perks, class combat) - 0.2 superseded |
-| SkyyAccessories | 0.2 | 0.4 (5 rarities, % talismans, OMNI, shared movement protocol) - 0.3 superseded |
-| SkyyIslands | 0.4.2 | 0.4.3 (perms, /island info/visit/invite) |
-| SkyyClasses | not deployed | 0.1.1 (built spike: Archer/Warrior/Assassin/Berserker/Mage, weapon lock). Design lock replaces Berserker with Shaman — see section 1 |
-| SkyyMenu | not deployed | 0.1.1 (NEW: /skymenu + menu item, teleports/warps, mods list) |
-HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death - built for an older API).
-**Deploy rule (Skyy):** build without --deploy, list the changes, deploy only after Skyy OKs.
-**Deploy together:** SkyySkills 0.3 + SkyyAccessories 0.4 + SkyyClasses 0.1.1 (shared movement protocol + class bridge).
+| SkyyHud | 0.3.6 | - |
+| SkyySacks | 0.7.1 | 0.7.2 per-profile storage |
+| SkyyCoins | 0.1.4 | 0.1.5 per-profile |
+| SkyyCollections | 0.1.4 | 0.1.5 per-profile |
+| SkyyParty | 0.1.2 | - |
+| SkyyBank | 0.1.1 | 0.1.2 per-profile |
+| SkyyBazaar | 0.1.1 | - |
+| SkyyEssentials | 0.1 | - |
+| SkyyRolls | 0.1.1 | - |
+| SkyySkills | 0.3.1 (Berserker slot -> Shaman placeholder) | 0.3.2 per-profile |
+| SkyyAccessories | 0.4 | 0.4.1 per-profile |
+| SkyyIslands | 0.4.3 | 0.4.4 island per profile |
+| SkyyClasses | 0.1.2 (Archer/Warrior/Mage; Assassin+Shaman later; no Berserker; class locked) | 0.1.3 profile class is authoritative |
+| SkyyMenu | 0.1.1 | - |
+| SkyyProfiles | - | 0.1 NEW (profiles + class picked at creation + inventory swap) |
+HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death).
+**Deploy rule:** build without --deploy, deploy the whole set together once Skyy OKs; watch the first join in the server log.
+Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 
 ### Verified in game by Skyy (2026-09-23)
 - SkyyHud: editor live previews + screen-edge frame (0.3.3), Widgets and per-widget Settings pages ("beautiful").
@@ -123,8 +125,8 @@ HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death - built
 - SkyySkills 0.1: /skills page renders. HyperEssentials death crash diagnosed and removed.
 
 ### Open decisions for Skyy
-0. **After the 2026-09-23 night design lock:** approve a realign pass BEFORE deploying: SkyyClasses 0.1.2 (Archer/Warrior/Mage selectable, Assassin + Shaman 'coming later', Berserker removed -> axes/battleaxes/maces/clubs unassigned, paid class switch off until profiles) and SkyySkills 0.3.1 (drop the Berserking row). SkyyAccessories 0.4 needs nothing yet. Also approve starting **SkyyProfiles** now (bridge profile:<uuid> = active profile id; every mod stores data per profile; existing data = profile 1) - cheapest before public players.
-1. Deploy approval for the built set above (hold SkyyClasses 0.1.1 - superseded by the lock).
+0. Classes + skills focus: Skyy is sorting every class/skill into 'focus now' vs 'back burner' (list sent 2026-09-23 22:05).
+1. Deploy approval for the profiles set when it is built (SkyyProfiles 0.1 + the 8 per-profile versions).
 2. Endurance/Intelligence talismans: % of vanilla base (Stamina 10, Mana 0) is nearly useless - make them flat until armor adds base stats?
 3. Accessory power: six [SKYY?] questions in SkyyAccessories-Plan.md (AP values, bench accessories count?, class crystals, slot sources/prices, Mage crystal).
 
@@ -282,3 +284,5 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-23 night: design lock from the voice call written into the plan docs (island = progression + creative; island-chain spine; Wynn's five with Assassin/Shaman later; no shared Combat skill; ambitious skill list kept; minions optional; dungeons = story beats + one capstone; guilds in the core loop; soft skill gate with a ceiling). Docs only — SkyyClasses 0.1.1 still contains Berserker until a code pass.
 - 2026-09-23 night, batch 2 (same call): death 10–25% reaffirmed; sacks and accessories+MP are core; IDs+reforges core; Wynn elements+powders replace SkyBlock runes; co-op is share/visit; slayers moved to the core loop; HOTM trees follow the skill, not a place; Garden holds most farming; coin-bypass kept; profiles are the class selector (new class = new island from zero); SkyWynn vs repo SkyyWynnBlock; UI placeholders except the inventory screen; magic approach left open.
 - 2026-09-23 21:45: pulled Skyy's design-lock commit b2d4164 (plans for Classes/Skills/Islands/Minions/Dungeons/Guilds, Decisions + Master Plan re-cut). Impact: SkyyClasses 0.1.1 conflicts (Berserker, Assassin at launch, paid switch) -> do not deploy, realign as 0.1.2; SkyySkills 0.3 drop Berserking; profiles (new class = new profile + island) need a cross-mod storage change -> proposed SkyyProfiles; P1 core now also includes guilds, accessory power, item rarity/stats/reforges, elements + powders.
+- 2026-09-23 22:00: built SkyyClasses 0.1.2 (locked roster, class lock) + SkyySkills 0.3.1 (Shaman placeholder slot) and DEPLOYED THE WHOLE SET together (14 Skyy mods: Hud 0.3.6, Sacks 0.7.1, Coins 0.1.4, Collections 0.1.4, Party 0.1.2, Bank 0.1.1, Islands 0.4.3, Bazaar 0.1.1, Rolls 0.1.1, Skills 0.3.1, Accessories 0.4, Classes 0.1.2, Menu 0.1.1, Essentials 0.1). Join-log watcher running.
+- 2026-09-23 22:05: wrote tools/PROFILES-CONTRACT.md; workflow skywynn-profiles building SkyyProfiles 0.1 + per-profile versions of Coins, Bank, Sacks, Skills, Collections, Accessories, Islands, Classes (no deploy).
