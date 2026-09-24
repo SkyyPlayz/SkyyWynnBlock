@@ -21,6 +21,9 @@ SET = [
     ("SkyyAccessories", "0.4.2"), ("SkyyClasses", "0.1.4"), ("SkyyMenu", "0.1.2"), ("SkyyEssentials", "0.1"), ("SkyyProfiles", "0.1"),
     ("SkyyCooking", "0.1"), ("SkyyTrees", "0.1"),
 ]
+# third-party mods that are part of the pack (enabled in the world by their manifest key; their files are NOT in this repo -
+# a server owner installs them from their authors, see PACK.md). Never disabled by this script.
+PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers"]
 
 
 def server_running():
@@ -61,6 +64,8 @@ def main():
     for mod, ver, jar in plan:
         B.deploy(jar, mod + ".jar")
         B.enable_in_world(WORLD, "Skyy:%s %s" % (ver, mod), disable_prefix="Skyy:")
+    for key in PACK_THIRD_PARTY:
+        B.enable_in_world(WORLD, key)
     print("deployed %d mods. Start the world and watch the server log for every '[Skyy...] ready' line." % len(plan))
     return 0
 
