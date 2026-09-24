@@ -42,13 +42,18 @@ SWITCH (world thread, one uninterrupted task, per-player BUSY guard):
      dispatch the player's own "/island" (CommandManager.get().handleCommand(playerRef, "island") - SkyyIslands 0.4.4 sends them to the
      ACTIVE profile's island, created on first use); without SkyyIslands -> the default world spawn (SkyyIslands HubCmd fallback calls).
   Failure inside 4-6 -> immediate rollback (clear + reload the step-2 snapshot, marker removed). If even that fails the marker becomes
-  stage=failed (never auto-applied; the snapshots stay on disk for an admin) and the player is told.
+  stage=failed (never auto-applied; the snapshots stay on disk for an admin) and the player is told. While a stage=failed marker exists
+  every switch / create-and-switch is refused (it would overwrite the snapshots the admin needs) until an admin deletes the marker.
   keepItems (config, default Skyy_Menu = the SkyyMenu item): never saved, never cleared - it stays on every profile (SkyyMenu gives its
   item once per PLAYER, so a new profile would otherwise have no menu item).
 CRASH SAFETY: a leftover marker at join (first PlayerReadyEvent of the session, files read off the world thread, applied on it):
   stage=saved + players file active == from -> ROLL BACK: clear, load inventories/<fromKey>.json (the snapshot the marker was written
   after). active == to -> ROLL FORWARD: clear, load the target snapshot (or empty for a new profile). Either way the live inventory becomes
   exactly the snapshot of the ACTIVE profile and the other profile's items stay in their file: no loss, no duplication.
+  The load runs in rollbackMode exactly like the live rollback: a slot the clear could not empty that already holds the identical saved
+  stack (same id + qty) counts as restored and is never given again. If the clear could not verify every slot empty, the recovery is NOT
+  reported as clean: the marker becomes stage=failed with a note (which slots to check for duplicates = server log "could not empty"),
+  the player is told and switching pauses until an admin deletes the marker.
   stage=done -> just deleted. stage=failed -> reported (log + player), left for an admin.
 ADMIN (perm skyyprofiles.admin): /profileadmin info <player|uuid>, /profileadmin setclass <player|uuid> <n> <class> (fix mistakes; bumps
   the epoch when it is the active profile), /profileadmin reload (config + re-read player files).
@@ -65,8 +70,8 @@ SCHEMA (Skyy_SkyyProfiles/, everything keyed by player UUID; this mod owns the p
                            p.<id>.lastPlayed (epoch millis), p.<id>.inv=1 (only while that profile is NOT active: its items are on disk)
   inventories/<key>.json   {format:1, mod, uuid, profile, key, savedAt, backpackCapacity, count, sections:[{name, capacity,
                            slots:[{slot, id, qty, durability, maxDurability, quality, overrideAnim, meta, stack}]}]}  (EXTENDED JSON)
-  switching/<uuid>.properties  marker {from, to, fromKey, toKey, toHadFile, stage=saved|done|failed, at}
-  switches.log             one line per CREATE / SWITCH / ROLLBACK / RECOVER (admin audit trail)
+  switching/<uuid>.properties  marker {from, to, fromKey, toKey, toHadFile, stage=saved|done|failed, at, note (failed recoveries)}
+  switches.log             one line per CREATE / SWITCH / ROLLBACK / RECOVER / RECOVER-INCOMPLETE (admin audit trail)
 """
 import sys, os, re, zipfile
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools"))
@@ -1147,6 +1152,22 @@ public static void failMarker(java.util.UUID u) {
   m.setProperty("stage", "failed");
   storeMarker(u, m);
 }""")
+# same, with a line for the admin (what already happened, what to check) - shown by recoverPlan at every later join
+M(sw, r"""
+public static void failMarkerNote(java.util.UUID u, String note) {
+  java.util.Properties m = readMarker(u);
+  if (m == null) m = new java.util.Properties();
+  m.setProperty("stage", "failed");
+  m.setProperty("note", note);
+  storeMarker(u, m);
+}""")
+# a FAILED marker = an admin must look first: no new switch may overwrite the marker or the snapshots it points at
+M(sw, r"""
+public static String markerBlock(java.util.UUID u) {
+  java.util.Properties m = readMarker(u);
+  if (m == null || !"failed".equals(m.getProperty("stage", ""))) return null;
+  return "An earlier profile switch of yours needs an admin first - your items are saved on the server. Profile switching is paused until then. Please tell an admin.";
+}""")
 M(sw, r"""
 public static void closeOurPage(@REF@ ref, @ST@ st, @PLA@ player) {
   try {
@@ -1241,6 +1262,8 @@ public static String switchTo(@ST@ st, @REF@ ref, @PR@ pr, @PLA@ player, String 
   if (from == null) return "Create your first profile first (/profiles create).";
   if (to == null || !@PKG@.ProfStore.exists(p, to)) return "You have no such profile. /profiles list shows yours.";
   if (to.equals(from)) return "You are already on that profile.";
+  String mb = markerBlock(u);
+  if (mb != null) return mb;
   String why = refuse(st, ref, player);
   if (why != null) return why;
   if (@PKG@.ProfStore.BUSY.putIfAbsent(u, Boolean.TRUE) != null) return "A profile switch is already running.";
@@ -1270,6 +1293,8 @@ public static String createAndSwitch(@ST@ st, @REF@ ref, @PR@ pr, @PLA@ player, 
   java.util.Properties p = @PKG@.ProfStore.load(u);
   if (@PKG@.ProfStore.activeOf(p) == null) return createFirst(pr, cls, name);
   if (@PKG@.ProfStore.count(p) >= @PKG@.ProfCfg.MAX_PROFILES) return "All " + @PKG@.ProfCfg.MAX_PROFILES + " profile slots are used.";
+  String mb = markerBlock(u);
+  if (mb != null) return mb;
   String why = refuse(st, ref, player);
   if (why != null) return why;
   if (@PKG@.ProfStore.BUSY.containsKey(u)) return "A profile switch is already running.";
@@ -1293,7 +1318,8 @@ public static Object[] recoverPlan(java.util.UUID u) {
   String from = m.getProperty("from");
   String to = m.getProperty("to");
   if (stage.equals("failed")) {
-    @PKG@.ProfCfg.warn("player " + u + " has a FAILED switch marker (" + from + "->" + to + ") - restore by hand from inventories/, then delete switching/" + u + ".properties");
+    String note = m.getProperty("note", "");
+    @PKG@.ProfCfg.warn("player " + u + " has a FAILED switch marker (" + from + "->" + to + ") - " + (note.length() > 0 ? note : "restore by hand from inventories/, then delete switching/" + u + ".properties") + " (profile switching is refused until then)");
     return new Object[] { null, null, "failed" };
   }
   String act = @PKG@.ProfStore.activeId(u);
@@ -1316,16 +1342,27 @@ public static Object[] recoverPlan(java.util.UUID u) {
   @PKG@.ProfCfg.warn("switch marker for " + u + " names " + from + "->" + to + " but the active profile is " + act + " - left alone");
   return null;
 }""")
+# loadInto in rollbackMode like rollback(): a slot clearAll could not empty that already holds the identical saved stack counts as
+# restored (never given a second time). clearAll not fully verified -> the marker becomes stage=failed with a note (an admin checks the
+# stuck slots for duplicates; switching is refused until the marker is deleted) instead of reporting a clean recovery.
 M(sw, r"""
 public static void recoverApply(@ST@ st, @REF@ ref, @PR@ pr, @PLA@ player, org.bson.BsonDocument doc, String which, String how) {
   java.util.UUID u = pr.getUuid();
   boolean ok = @PKG@.ProfInv.clearAll(st, ref);
-  int[] r = @PKG@.ProfInv.loadInto(st, ref, player, doc, u, false);
-  clearMarker(u);
-  @PKG@.ProfStore.publish(u);
-  @PKG@.ProfStore.log("RECOVER " + u + " " + pr.getUsername() + " profile " + which + " " + how + " loaded=" + r[0] + " moved=" + r[1] + " skipped=" + r[2] + (ok ? "" : " (some slots could not be emptied)"));
+  int[] r = @PKG@.ProfInv.loadInto(st, ref, player, doc, u, true);
   java.util.Properties p = @PKG@.ProfStore.load(u);
   String name = p.getProperty("p." + which + ".name", "Profile " + which);
+  if (!ok) {
+    failMarkerNote(u, "crash recovery (" + how + " to profile " + which + ") loaded that snapshot but could not empty every slot first - check the slots named in the server log (could not empty ...) for duplicates, then delete switching/" + u + ".properties");
+    @PKG@.ProfCfg.warn("crash recovery for " + u + " (" + how + ", profile " + which + ") could not empty every slot first - snapshot loaded without re-giving identical stuck stacks, marker set to failed for an admin");
+    @PKG@.ProfStore.publish(u);
+    @PKG@.ProfStore.log("RECOVER-INCOMPLETE " + u + " " + pr.getUsername() + " profile " + which + " " + how + " loaded=" + r[0] + " moved=" + r[1] + " skipped=" + r[2] + " (some slots could not be emptied - marker left as failed for an admin)");
+    pr.sendMessage(@MSG@.raw("[Profiles] Your last profile switch was interrupted by a server stop and could not be fully repaired - you are on " + name + " but some slots could not be emptied first. Profile switching is paused until an admin checks it. Please tell an admin.").color("#ff9d6b"));
+    return;
+  }
+  clearMarker(u);
+  @PKG@.ProfStore.publish(u);
+  @PKG@.ProfStore.log("RECOVER " + u + " " + pr.getUsername() + " profile " + which + " " + how + " loaded=" + r[0] + " moved=" + r[1] + " skipped=" + r[2]);
   pr.sendMessage(@MSG@.raw("[Profiles] Your last profile switch was interrupted by a server stop. It was " + how + " - you are on " + name + " with its saved inventory.").color("#ffc800"));
 }""")
 
@@ -1760,7 +1797,7 @@ public void run() {
       @PKG@.ProfStore.BUSY.put(u, Boolean.TRUE);
       new @PKG@.RecoverTask(pr, (org.bson.BsonDocument) plan[0], (String) plan[1], (String) plan[2]).later(0L);
     } else if (plan != null) {
-      pr.sendMessage(@MSG@.raw("[Profiles] A profile switch of yours failed earlier and needs an admin - your items are saved on the server. Please tell an admin.").color("#ff9d6b"));
+      pr.sendMessage(@MSG@.raw("[Profiles] A profile switch of yours failed earlier and needs an admin - your items are saved on the server. Profile switching is paused until then. Please tell an admin.").color("#ff9d6b"));
     }
     @PKG@.ProfStore.publish(u);
     String act = @PKG@.ProfStore.activeOf(p);
