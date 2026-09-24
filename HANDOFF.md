@@ -149,6 +149,12 @@ HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death).
 Test order: TEST-CHECKLIST.md, the last two sections (profiles set, then this build round), riskiest first.
 Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 
+### Verified in game by Skyy (2026-09-24, new set)
+- All 17 mods load together with no errors (server log 06-24-04).
+- SkyyProfiles: first-join welcome + profile 'Strawberry' created as Archer, existing data became profile 1.
+- SkyySkills 0.4 Smithing: vanilla Furnace bars pay +5 Smithing XP each, level-up coins paid.
+- SkyyCollections 0.2: migration message shown at join.
+
 ### Verified in game by Skyy (2026-09-23)
 - SkyyHud: editor live previews + screen-edge frame (0.3.3), Widgets and per-widget Settings pages ("beautiful").
 - SkyyIslands: /island creates + teleports, /sethub, /hub. Black grass traced to biome tint (fix in 0.4.2, not yet re-checked).
@@ -344,3 +350,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-24: Skyy feedback: Campfire accessory back (x0.5 Cooking XP, x0.75 skill buffs), Tree Feller = horizontal same-Y breaking, smelting-only Smithing XP confirmed. Feedback round: SkyyAccessories 0.4.3, SkyySacks 0.7.4, SkyyCooking 0.1.1 now; SkyyTrees Tree Feller rework after the exploration round's SkyyTrees 0.2 lands.
 - 2026-09-24: Skyy (testing live Sacks 0.7.1): bars should pool in the Mining bag; could not find the Combat bag (it exists; tab hidden without the bag). Queued SkyySacks 0.7.5.
 - 2026-09-24 06:25: Skyy said deploy -> tools/deploy_set.py --yes installed the 17-mod set (world config: exactly these 17 Skyy keys on, old versions off). Backup of the old Skyy jars + config.json in backups/deploy-20260924-0623/ (backups/ is git-ignored). Fixed deploy_set.py's server check (it matched its own PowerShell query; now java.exe only). Watcher bs5jiy9ms reports the first start's load errors + ready lines.
+- 2026-09-24 06:35: Skyy: 'all good so far' - profile creation, Smithing XP from the vanilla Furnace, level-up coins and the Collections migration seen in game; server log clean. Possible HUD overlap at top right ('default' drawn over another widget) - ask/check.
