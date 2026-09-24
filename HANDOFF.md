@@ -154,6 +154,7 @@ Profile contract for every mod: tools/PROFILES-CONTRACT.md.
 - SkyyProfiles: first-join welcome + profile 'Strawberry' created as Archer, existing data became profile 1.
 - SkyySkills 0.4 Smithing: vanilla Furnace bars pay +5 Smithing XP each, level-up coins paid.
 - SkyyCollections 0.2: migration message shown at join.
+- SkyySacks 0.7.3: the inline search TextField parses and works (search 'stick' -> 1 found in Crafting, Smithing and Farming); Crafting/Smithing/Farming/Furnace/Tannery tabs shown.
 
 ### Verified in game by Skyy (2026-09-23)
 - SkyyHud: editor live previews + screen-edge frame (0.3.3), Widgets and per-widget Settings pages ("beautiful").
@@ -351,3 +352,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-24: Skyy (testing live Sacks 0.7.1): bars should pool in the Mining bag; could not find the Combat bag (it exists; tab hidden without the bag). Queued SkyySacks 0.7.5.
 - 2026-09-24 06:25: Skyy said deploy -> tools/deploy_set.py --yes installed the 17-mod set (world config: exactly these 17 Skyy keys on, old versions off). Backup of the old Skyy jars + config.json in backups/deploy-20260924-0623/ (backups/ is git-ignored). Fixed deploy_set.py's server check (it matched its own PowerShell query; now java.exe only). Watcher bs5jiy9ms reports the first start's load errors + ready lines.
 - 2026-09-24 06:35: Skyy: 'all good so far' - profile creation, Smithing XP from the vanilla Furnace, level-up coins and the Collections migration seen in game; server log clean. Possible HUD overlap at top right ('default' drawn over another widget) - ask/check.
+- 2026-09-24 06:40: Skyy: search works. BUG: '/cookadmin give pie_meat 5' prints nothing and gives nothing (server log: 'executed command', no error). Static checks: execute signature matches AbstractPlayerCommand; engine hasPermission passes for an op; every code path in CookGiveCmd sends a chat line except 'Player component null'. Asked Skyy to run /cookadmin and /cooking to isolate.
