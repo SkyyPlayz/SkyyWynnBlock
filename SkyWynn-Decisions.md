@@ -52,9 +52,10 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
    - Higher Smithing level raises a **smithing rarity** stat, which raises the chance of crafting a higher-rarity item.
    - Higher rarity means a reforge can roll wider and higher. A reforge still swaps bonuses.
    - Mobs drop **unidentified** weapons and armor. Identifying them reveals the rolled IDs. **Open:** where, how, and the cost.
-   - Combat armor and weapons copy Wynncraft. Gathering gear is SkyBlock-style farming and foraging armor sets; mining armor is likely the same. **Proposed, not locked:** combat gear uses Wynn's five skill points (Str/Dex/Int/Def/Agi); gathering sets use SkyBlock stats (fortune, speed).
+   - Combat armor and weapons copy Wynncraft. Gathering gear is SkyBlock-style farming and foraging armor sets; mining armor is likely the same. The stat split in this sentence (Wynn skill points on combat gear, fortune/speed on gathering sets) was proposed here and **locked later the same day as a mix** (change note 7).
    - **Wardrobe + loadouts** like Hypixel SkyBlock (save a set, quick-swap). Placeholders are fine. Nothing on the inventory screen (10.22). **Open:** what a loadout saves.
    - Also still open: whether drops can reach the top rarities or some tiers are craft-only; powder slots and drops; bazaar vs auction house for rolled items.
+7. **Gear stats are a mix (same day, after note 6).** Locks rows 1.6 and 6.5. Replaces the "proposed, not locked" stat split in note 6. Weapons and armor carry Wynn's five skill points (Strength, Dexterity, Intelligence, Defence, Agility), with SkyBlock-style stats layered on top. Crit chance, crit damage, and fortune are in that layer. Gathering armor uses this same mix. **Open:** the exact stat list beyond these, and how each stat applies in Hytale combat. Does not change any jar.
 
 ---
 
@@ -67,7 +68,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 1.3 | Multi-skill soft-gating (neglect a skill → held back) | Skyy's rule | TAKE | ✔ Soft gate **with a ceiling**: uneven progress is allowed; drift too far and gains slow until you catch up. Not a hard togetherness gate, and not unlimited neglect |
 | 1.4 | SkyBlock account level (whole-profile number) | SkyBlock | TAKE (cheap, good goalpost) | |
 | 1.5 | Class Level (char level → ability points) | Wynn | TAKE | |
-| 1.6 | Skill Points (STR/DEX/INT/DEF/AGI) + gear SP requirements | Wynn | TAKE — but maybe 5 stats is a lot on top of skills+abilities? | **PROPOSED 2026-09-24, not locked** — combat gear would use these five; gathering sets would use SkyBlock stats (fortune, speed). Waiting on the owner. See SkyyGear-Plan.md |
+| 1.6 | Skill Points (STR/DEX/INT/DEF/AGI) + gear SP requirements | Wynn | TAKE — but maybe 5 stats is a lot on top of skills+abilities? | ✔ LOCKED (2026-09-24, change note 7) — these five sit on **weapons and armor**, with SkyBlock stats layered on (6.5). The earlier combat-vs-gathering split is not the rule. **Open:** gear SP requirements (minimums to equip), the rest of the stat list, and how each applies in Hytale combat |
 | 1.7 | Level-gated world zones | Wynn | TAKE | ✔ MODIFY — not the spine. Replaced by the zone island chain (7.1). Hub is spawn / social only |
 | 1.8 | Profiles (multiple saves per account) | SkyBlock | LATER — public server may not want it | ✔ TAKE — full SkyBlock-style profiles. A swap is a different island and different everything. **Default cap 6** (2026-09-24, raised from 4). In-game ways to raise it higher; method TBD. SkyyProfiles 0.1 still caps at 4 |
 | 1.9 | Multiple class slots per account | Wynn | TAKE (replaces 1.8?) | ✔ MODIFY — the profile is the class selector. A new class is a new profile and a new island from zero. Not several classes on one island. Roster and combat-only lock (6.1) still apply. Default cap **6** profiles (1.8); raising it in game is TBD |
@@ -173,7 +174,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.2 | Archetypes (3 themed sub-builds per class) | Wynn | v1: 1–2 archetypes per class, 3rd later | |
 | 6.3 | Ability tree size: Wynn has 70+ nodes/class | Wynn | ~25 nodes/class v1 — enough? | |
 | 6.4 | Mana / intelligence resource for abilities | Wynn | TAKE | |
-| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | **PROPOSED 2026-09-24, not locked** — do not merge yet. Combat gear would use Wynn skill points (1.6); gathering sets would use SkyBlock stats such as fortune and speed. Waiting on the owner |
+| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 7) — **mix**, not a separate sheet. Crit chance, crit damage, and fortune layer on top of the five skill points (1.6), on weapons and armor. Ferocity and the rest of the SkyBlock sheet are **not** locked. **Open:** the exact list beyond those named stats, and how each applies in Hytale combat |
 | 6.6 | Healer/Tank dungeon-class variants (SkyBlock Catacombs style) | SkyBlock | SKIP? classes already cover roles | |
 | 6.7 | Slayers (spawn-a-boss quest chains + slayer XP) | SkyBlock | TAKE (midgame) | ✔ **Core loop**, not side content. Not the leveling spine (that stays the island chain) |
 | 6.8 | Boss altars (summon boss with materials) | Wynn | TAKE (cheap early bosses) | |
@@ -273,4 +274,4 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 11.3 | ... | | |
 
 ---
-*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*
+*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, and the stat mix of Wynn's five skill points plus SkyBlock stats on weapons and armor). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*

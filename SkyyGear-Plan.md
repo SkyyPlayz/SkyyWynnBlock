@@ -12,16 +12,17 @@ Skyy's direction still holds: every mod in the pack is eventually our own. Comba
 5. **Combat armor and weapons** basically copy Wynncraft. Class weapons stay the ones already named in `SkyyClasses-Plan.md`. Berserker is still PENDING and has no weapon list.
 6. **Gathering gear** is SkyBlock-style: farming armor sets and foraging armor sets. Mining armor is likely the same kind of set. This note does not name the pieces.
 7. **Wardrobe + loadouts**, Hypixel SkyBlock style: save a gear set and quick-swap to it. **UI:** placeholders are fine. Nothing on the inventory screen yet (`SkyWynn-Decisions.md` 10.22). What a loadout saves is open.
+8. **Stat mix.** Weapons and armor carry Wynn's five skill points — Strength, Dexterity, Intelligence, Defence, Agility — with SkyBlock-style stats layered on top. Crit chance, crit damage, and fortune are in that layer. The exact list beyond these, and how each one applies in Hytale combat, stay open. This replaces the earlier same-day proposal that split Wynn skill points onto combat gear and fortune/speed onto gathering sets.
 
 ## What it covers
 | Line | Style | Locked shape |
 |---|---|---|
-| Combat weapons and armor | Wynncraft | Copy Wynn's model. Class weapons: Archer shortbow/crossbow, Warrior sword/longsword/spear, Mage staff; later Assassin daggers/kunai; Shaman TBD; Berserker PENDING with no list. Every piece has a level requirement and a rarity. Mobs drop them unidentified. Rolled IDs show after identify. Powders and Wynn's five elements stay (batch 2); powder slot counts are open |
-| Gathering armor | Hypixel SkyBlock | Farming sets and foraging sets. Mining sets are likely the same idea. Proposed stats (not locked): fortune, speed |
+| Combat weapons and armor | Wynncraft | Copy Wynn's model. Class weapons: Archer shortbow/crossbow, Warrior sword/longsword/spear, Mage staff; later Assassin daggers/kunai; Shaman TBD; Berserker PENDING with no list. Every piece has a level requirement and a rarity. Mobs drop them unidentified. Rolled IDs show after identify. Stats are the mix in lock 8. Powders and Wynn's five elements stay (batch 2); powder slot counts are open |
+| Gathering armor | Hypixel SkyBlock | Farming sets and foraging sets. Mining sets are likely the same idea. They are armor, so they use the same stat mix (lock 8), not a separate fortune/speed sheet |
 | Tools | Hypixel SkyBlock | Pickaxes, axes, hoes (rods later). Reforges, and tiers tied to the zone islands, are still to design. They are gear, so they carry a level requirement and a rarity |
 
 ## Built foundations we reuse
-- **SkyyRolls** (0.1.3): rolled stats stored on the item and shown on its tooltip (reforge name in the rarity colour, one line per stat). This is the ID / reforge foundation. It does not do unidentified drops, smithing rarity, or a rarity-based roll range.
+- **SkyyRolls** (0.1.3): rolled stats stored on the item and shown on its tooltip (reforge name in the rarity colour, one line per stat). This is the ID / reforge foundation. It does not do unidentified drops, smithing rarity, a rarity-based roll range, or the stat mix.
 - **SkyyClasses**: weapon ownership by item-id prefix, so our own weapons slot in by name.
 - **SkyySkills Smithing**: smelting pays XP now. Reforging and powders are still the planned later XP sources. Smithing rarity is a new effect of the level, not a new XP source.
 - **SkyyTrees / SkyySkills perks**: tool bonuses can feed the same gathering hooks (breaking speed, double drops, fortune).
@@ -34,12 +35,6 @@ Skyy's direction still holds: every mod in the pack is eventually our own. Comba
 | More Crossbow Tiers (Serj) | our own crossbow line (own item ids, stats, recipes) |
 | Saplings From Trees (Helios) | our own leaf drops + sapling recipes (or keep until the Foraging rework) |
 
-## Proposed, not locked
-Awaiting owner confirm. Do not build from this paragraph.
-
-- Combat gear uses Wynn's five skill points (Strength, Dexterity, Intelligence, Defence, Agility).
-- Gathering sets use SkyBlock stats (fortune, speed).
-
 ## Open questions
 1. **Level type.** Every gear item has a level requirement. Which number gates it: skill, class, or combat level?
 2. **Rarity list and colours.** Wynn uses Normal / Unique / Rare / Legendary / Fabled / Mythic / Set. SkyyRolls today uses Common through Legendary. The old draft of a 7-tier Common→Divine ladder is not the lock.
@@ -50,3 +45,4 @@ Awaiting owner confirm. Do not build from this paragraph.
 7. **Loadout contents.** Armor only, or also weapons, accessories, and HUD?
 8. **Where rolled items sell.** Bazaar (stackable commodities today) or the auction house. Separate from that: the late-game wall still pulls some items off both buy and sell (Decisions 1.2). Which gear that hits is open.
 9. **Zone pacing.** How gear steps up across the island chain. Not numbered here.
+10. **Stat list and combat application.** The mix is locked (five skill points, plus crit chance, crit damage, and fortune). Anything past that list is open. How each stat applies in Hytale combat is open. Do not invent formulas or extra stats from this plan.
