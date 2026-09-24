@@ -123,7 +123,8 @@ HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death - built
 - SkyySkills 0.1: /skills page renders. HyperEssentials death crash diagnosed and removed.
 
 ### Open decisions for Skyy
-1. Deploy approval for the built set above.
+0. **After the 2026-09-23 night design lock:** approve a realign pass BEFORE deploying: SkyyClasses 0.1.2 (Archer/Warrior/Mage selectable, Assassin + Shaman 'coming later', Berserker removed -> axes/battleaxes/maces/clubs unassigned, paid class switch off until profiles) and SkyySkills 0.3.1 (drop the Berserking row). SkyyAccessories 0.4 needs nothing yet. Also approve starting **SkyyProfiles** now (bridge profile:<uuid> = active profile id; every mod stores data per profile; existing data = profile 1) - cheapest before public players.
+1. Deploy approval for the built set above (hold SkyyClasses 0.1.1 - superseded by the lock).
 2. Endurance/Intelligence talismans: % of vanilla base (Stamina 10, Mana 0) is nearly useless - make them flat until armor adds base stats?
 3. Accessory power: six [SKYY?] questions in SkyyAccessories-Plan.md (AP values, bench accessories count?, class crystals, slot sources/prices, Mage crystal).
 
@@ -280,3 +281,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-23 21:10: CI lint added and green on GitHub (run 35949789086). Remote URL now includes the SkyyPlayz username so pushes stop asking which account to use.
 - 2026-09-23 night: design lock from the voice call written into the plan docs (island = progression + creative; island-chain spine; Wynn's five with Assassin/Shaman later; no shared Combat skill; ambitious skill list kept; minions optional; dungeons = story beats + one capstone; guilds in the core loop; soft skill gate with a ceiling). Docs only — SkyyClasses 0.1.1 still contains Berserker until a code pass.
 - 2026-09-23 night, batch 2 (same call): death 10–25% reaffirmed; sacks and accessories+MP are core; IDs+reforges core; Wynn elements+powders replace SkyBlock runes; co-op is share/visit; slayers moved to the core loop; HOTM trees follow the skill, not a place; Garden holds most farming; coin-bypass kept; profiles are the class selector (new class = new island from zero); SkyWynn vs repo SkyyWynnBlock; UI placeholders except the inventory screen; magic approach left open.
+- 2026-09-23 21:45: pulled Skyy's design-lock commit b2d4164 (plans for Classes/Skills/Islands/Minions/Dungeons/Guilds, Decisions + Master Plan re-cut). Impact: SkyyClasses 0.1.1 conflicts (Berserker, Assassin at launch, paid switch) -> do not deploy, realign as 0.1.2; SkyySkills 0.3 drop Berserking; profiles (new class = new profile + island) need a cross-mod storage change -> proposed SkyyProfiles; P1 core now also includes guilds, accessory power, item rarity/stats/reforges, elements + powders.
