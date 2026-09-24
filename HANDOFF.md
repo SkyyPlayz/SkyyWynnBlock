@@ -95,7 +95,9 @@ HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death - built
 ### Repository
 Git repo in this folder, branch main, pushed to https://github.com/SkyyPlayz/SkyyWynnBlock (remote origin). The repo is PUBLIC on purpose (Skyy, 2026-09-23: free GitHub Actions CI; not worried about copying). So: never commit game files, other people's mods or personal data (emails, tokens).
 Commits use the GitHub noreply address 73867804+SkyyPlayz@users.noreply.github.com (repo-local git config) because Skyy's account blocks
-publishing their personal email. Commit + push after each meaningful change (git add -A; git commit; git push).
+publishing their personal email. Commit + push after each meaningful change (git add -A; git commit; git push). Remote URL carries the username
+(https://SkyyPlayz@github.com/...) so Git Credential Manager picks the SkyyPlayz account (a second GitHub account is saved on this PC).
+CI: .github/workflows/lint.yml runs tools/ci/lint.py on every push (syntax, forbidden files, UI id rules, command permissions) - free on public repos.
 .gitignore keeps out build_classes/, __pycache__/, all mod jars (build output) except tools/javassist.jar, and any game files/other mods.
 .gitattributes `* -text` keeps line endings byte-exact. Engine inspection helpers live in tools/dev/.
 
@@ -236,3 +238,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-23 20:55: pushed to the GitHub repo SkyyPlayz/SkyyWynnBlock (Skyy created it). First push was declined for exposing the account's private email; the repo now commits as the GitHub noreply address.
 - 2026-09-23 20:58: anonymous API check shows the repo is PUBLIC (created on GitHub's default). Asked Skyy to switch it to Private; further pushes held until then.
 - 2026-09-23 21:00: Skyy keeps the repo PUBLIC on purpose (free CI). Removed the personal email from HANDOFF line 2 (it is still in the first commit's history - rewriting history needs Skyy's OK). CI note: GitHub Actions cannot run the real builds (HytaleServer.jar cannot be uploaded); it can run syntax/rule checks.
+- 2026-09-23 21:10: CI lint added and green on GitHub (run 35949789086). Remote URL now includes the SkyyPlayz username so pushes stop asking which account to use.
