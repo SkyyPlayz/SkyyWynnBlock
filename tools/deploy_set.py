@@ -38,6 +38,23 @@ def server_running():
         return True
 
 
+def newer_builds(mod, ver):
+    """Versions of <mod>-<version>.jar on disk that are HIGHER than the pinned one. A note only: SET decides what deploys (a newer jar
+    can be an unreviewed build), but it makes a forgotten SET bump visible instead of silently redeploying the old set."""
+    import re
+    def v(s):
+        return tuple(int(x) for x in s.split("."))
+    d = os.path.join(ROOT, mod)
+    if not os.path.isdir(d):
+        return []
+    out = []
+    for n in os.listdir(d):
+        m = re.match(r"^%s-(\d+(?:\.\d+)*)\.jar$" % re.escape(mod), n)
+        if m and v(m.group(1)) > v(ver):
+            out.append(m.group(1))
+    return sorted(out, key=v)
+
+
 def main():
     missing = []
     plan = []
@@ -48,6 +65,13 @@ def main():
         plan.append((mod, ver, jar))
     for mod, ver, jar in plan:
         print("  %-16s %-6s %s" % (mod, ver, "OK" if os.path.isfile(jar) else "MISSING " + jar))
+    newer = [(mod, ver, newer_builds(mod, ver)) for mod, ver in SET]
+    newer = [x for x in newer if x[2]]
+    if newer:
+        print("NOTE: newer builds are on disk than SET pins (SET decides what deploys - bump it, and HANDOFF section 3, only for the "
+              "builds Skyy approved):")
+        for mod, ver, vs in newer:
+            print("  %-16s pinned %-6s newer on disk: %s" % (mod, ver, ", ".join(vs)))
     if missing:
         print("STOP: %d jar(s) missing - build them first (python <build script>, no --deploy)." % len(missing))
         return 1

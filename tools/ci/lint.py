@@ -42,6 +42,12 @@ def vkey(path):
 
 
 files = tracked_files()
+# a tracked file deleted in the working tree but not yet `git rm`-ed (e.g. a scratch script) is not checked: lint reads the working tree,
+# and py_compile / open() would otherwise crash the whole run with FileNotFoundError before any check prints (CI checkouts never hit this)
+missing = [f for f in files if not os.path.lexists(os.path.join(ROOT, f))]
+if missing:
+    gone = set(missing)
+    files = [f for f in files if f not in gone]
 
 # ---- forbidden files
 for f in files:
@@ -101,6 +107,8 @@ for mod, f in sorted(newest.items()):
         warns.append("%s: command '%s' has no setPermissionGroups/requirePermission (ordinary players cannot run it)" % (f, name))
 
 print("SkyWynn lint: %d files, newest build scripts: %s" % (len(files), ", ".join("%s %s" % (m, vkey(p)) for m, p in sorted(newest.items()))))
+if missing:
+    print("note: %d tracked file(s) deleted in the working tree (not git rm-ed) were skipped: %s" % (len(missing), ", ".join(missing[:8]) + (" ..." if len(missing) > 8 else "")))
 for w in warns:
     print("WARN  " + w)
 for x in fails:

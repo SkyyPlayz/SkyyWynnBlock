@@ -5,15 +5,17 @@
 "just reduce the XP by half when using the campfire accessory. and reduce the buffs added by cooking skill by 0.25. so you get 50% xp
 and 75% of your normal buffs when using it, so its an emergency cook". This mod's side of it:
  - bridge Function cook:fn:campfire (SkyySacks calls it on the world thread when a player crafts a Campfire dish in /craft):
-   Object[]{UUID, String recipeOrOutputId, Number crafts [, String expectKey [, Boolean creative]]} -> String item id to give
+   Object[]{UUID, String campfireRecipeId, Number crafts [, String expectKey [, Boolean creative]]} -> String item id to give
    (graded "Skyy_Cook_<dish>_G<c>" or the plain dish id; null = not a campfire dish), paying Cooking XP x campfire.xpFactor through
    skill:fn:addxp. Grade c = the highest Grade whose multiplier M(c) = 2^(c/5) is <= 1 + campfire.buffFactor x (M(G) - 1), G = the
    Grade a Cooking Bench guarantees (level / 10 + Master Chef). Reuses the 0.1 Grade assets (no new asset set).
- - bridge String cook:campfire:ids = the dish ids it accepts (every vanilla Campfire recipe output, build-checked).
+ - bridge String cook:campfire:ids = the dish ids it grades (every vanilla Campfire recipe output, build-checked); bridge Function
+   cook:fn:campfactors = the live campfire.* factors (for UI text). Only a Campfire-bench RECIPE id is accepted (never a bare dish id,
+   never a Cooking Bench recipe). The bench Grade G comes from Cook.benchGrade, the one helper the Cooking Bench uses too.
  - cooking.properties campfire.buffFactor=0.75, campfire.xpFactor=0.5 (appended once to a 0.1 file).
  - /cookadmin campfire <dish> <count> (admin test of the bridge), /cooking + Skills Stats page lines.
  - build self-checks: campfire outputs = graded T1 dishes with XP and Grade assets, no effect cap binds on them, mapping table
-   asserted, and the COMPILED Java campGrade is run through jpype against the Python mirror.
+   asserted, and the COMPILED Java campGrade / benchGrade / campRecipeDish are run through jpype against the Python mirror.
 Full contract: the 0.1.1 docstring section of the generated script.
 """
 import os
@@ -209,7 +211,7 @@ rep('''      "graded=" + ",".join(DISHES),
 
 # ---------------------------------------------------------------------------------------------------------------- class creation
 rep('sfn  = pool.makeClass(PKG + ".CookStatsFn")',
-    'sfn  = pool.makeClass(PKG + ".CookStatsFn")' + LF + 'cfn  = pool.makeClass(PKG + ".CookCampFn")')
+    'sfn  = pool.makeClass(PKG + ".CookStatsFn")' + LF + 'cfn  = pool.makeClass(PKG + ".CookCampFn")' + LF + 'ifn  = pool.makeClass(PKG + ".CookCampInfoFn")')
 rep('rcmd = pool.makeClass(PKG + ".CookReloadCmd", pool.get(APC))',
     'rcmd = pool.makeClass(PKG + ".CookReloadCmd", pool.get(APC))' + LF + 'fcmd = pool.makeClass(PKG + ".CookCampCmd", pool.get(APC))')
 
@@ -270,6 +272,39 @@ rep('''    MESSAGES = bool(p, "messages", true);
 rep('''", cap " + MAX_PER_MIN + "/min" + (bad > 0 ?''',
     '''", cap " + MAX_PER_MIN + "/min, campfire accessory x" + CAMP_BUFF + " Grade bonus x" + CAMP_XP + " XP" + (bad > 0 ?''')
 
+
+# ---------------------------------------------------------------------------------------------------------------- Cook: ONE bench-Grade helper
+# 0.1.1: the guaranteed Cooking Bench Grade (level/10, max 10, + Master Chef, clamped) lives in ONE method, Cook.benchGrade; guaranteed()
+# (cook:fn:grade), roll(), /cooking, the Skills Stats page and the campfire accessory all call it (the build runs it against a mirror).
+rep('''Mk(ck, """
+public static int guaranteed(java.util.UUID u) {
+  int lv = level(u);
+  if (lv < 0) return 0;
+  int[] t = tree(u);
+  return clampGrade(baseGrade(lv) + (t[9] >= 1 ? 1 : 0));
+}""")''', '''# the Grade a Cooking Bench guarantees: level/10 (max 10) + 1 with Master Chef (CMaster, node 9) >= 1, clamped to maxGrade
+Mk(ck, """
+public static int benchGrade(int lv, int[] t) {
+  int mc = 0;
+  if (t != null && t.length > 9 && t[9] >= 1) mc = 1;
+  return clampGrade(baseGrade(lv) + mc);
+}""")
+Mk(ck, """
+public static int guaranteed(java.util.UUID u) {
+  int lv = level(u);
+  if (lv < 0) return 0;
+  return benchGrade(lv, tree(u));
+}""")''')
+rep('''  int g = baseGrade(level) + (t[9] >= 1 ? 1 : 0);
+  int b = 0;''', '''  int g = benchGrade(level, t);
+  int b = 0;''')
+rep('''    int g = @PKG@.Cook.clampGrade(base + (t[9] >= 1 ? 1 : 0));
+''', '''    int g = @PKG@.Cook.benchGrade(lv, t);
+''')
+rep('''    int g = @PKG@.Cook.clampGrade(base + m);
+''', '''    int g = @PKG@.Cook.benchGrade(lv, t);
+''')
+
 # ---------------------------------------------------------------------------------------------------------------- Cook: campfire logic
 rep('F(ck, "public static final java.util.HashMap RATE = new java.util.HashMap();")',
     'F(ck, "public static final java.util.HashMap RATE = new java.util.HashMap();")' + LF +
@@ -284,18 +319,39 @@ public static boolean isCampfire(@CRR@ rc) {
   for (int i = 0; i < b.length; i++) if (b[i] != null && "Campfire".equals(b[i].id)) return true;
   return false;
 }""")
-# a[1] -> the campfire dish id: a listed dish id as is, or a Campfire-bench recipe id whose primary output is listed; else null
+# a[1] -> the campfire dish id. ONLY a Campfire-bench RECIPE id whose primary output is listed in CAMP; else null. A bare dish id is
+# refused (it cannot prove a Campfire craft - the Cooking Bench makes the same dishes via Skyy_Cook_Recipe_*), and so is every
+# Cooking Bench recipe (isCampfire false). Engine ids of item recipes are "<ItemId>_Recipe_Generated_<n>", never a bare dish id.
 Mk(ck, """
-public static String campDish(String what) {
+public static String campRecipeDish(String what) {
   if (what == null) return null;
   String w = what.trim();
   if (w.length() == 0) return null;
-  if (@PKG@.CookCfg.campIndex(w) >= 0) return w;
+  if (@PKG@.CookCfg.campIndex(w) >= 0) {
+    @PKG@.CookCfg.once("campfn:bare", "cook:fn:campfire was passed the bare dish id " + w + " - refused (normal output, no XP): pass the Campfire recipe id, String.valueOf(recipe.getId())");
+    return null;
+  }
   try {
     @CRR@ rc = (@CRR@) @CRR@.getAssetMap().getAsset(w);
     if (rc == null || !isCampfire(rc)) return null;
     String out = outId(rc);
     if (@PKG@.CookCfg.campIndex(out) >= 0) return out;
+  } catch (Throwable t) { }
+  return null;
+}""")
+# dish id -> the id of the vanilla Campfire-bench recipe that makes it (for /cookadmin campfire, so it tests the strict path); null = none
+Mk(ck, """
+public static String campRecipeFor(String dish) {
+  if (dish == null) return null;
+  try {
+    java.util.Iterator it = @CRR@.getAssetMap().getAssetMap().values().iterator();
+    while (it.hasNext()) {
+      Object o = it.next();
+      if (!(o instanceof @CRR@)) continue;
+      @CRR@ rc = (@CRR@) o;
+      if (!isCampfire(rc)) continue;
+      if (dish.equals(outId(rc))) return String.valueOf(rc.getId());
+    }
   } catch (Throwable t) { }
   return null;
 }""")
@@ -333,11 +389,14 @@ public static void campHint(java.util.UUID u, int g, int c) {
 Mk(ck, """
 public static Object[] campfire(java.util.UUID u, String what, int crafts, String expectKey, Boolean creativeFlag) {
   if (u == null) return null;
-  String dish = campDish(what);
+  String dish = campRecipeDish(what);
   if (dish == null) return null;
   int n = crafts;
   boolean preview = n <= 0;
-  if (n > 10000) n = 10000;
+  if (n > 10000) {
+    @PKG@.CookCfg.every("campfn:clamp", 60000L, "cook:fn:campfire: " + n + " crafts of " + dish + " in one call for " + u + " - Cooking XP is paid for 10,000 of them only (the caller hands out all " + n + " dishes); send big batches in parts");
+    n = 10000;
+  }
   String key = pkey(u);
   String why = null;
   if (!@PKG@.CookCfg.ENABLED) why = "graded cooking is off (enabled=false)";
@@ -360,8 +419,7 @@ public static Object[] campfire(java.util.UUID u, String what, int crafts, Strin
     if (lv < 0) why = "SkyySkills is not loaded";
   }
   if (why != null) return new Object[] { dish, Integer.valueOf(0), Integer.valueOf(0), Long.valueOf(0L), why };
-  int[] t = tree(u);
-  int g = clampGrade(baseGrade(lv) + (t[9] >= 1 ? 1 : 0));
+  int g = benchGrade(lv, tree(u));
   int c = campGrade(g, @PKG@.CookCfg.CAMP_BUFF);
   String id = dish;
   if (c > 0 && @PKG@.CookCfg.GRADED.contains(dish)) {
@@ -401,6 +459,13 @@ public Object apply(Object arg) {
     return r[0];
   } catch (Throwable t) { @PKG@.CookCfg.every("campfn", 30000L, "cook:fn:campfire failed (the caller gives its plain output): " + t); return null; }
 }""")
+# cook:fn:campfactors (0.1.1): apply(anything) -> Object[]{Double buffFactor, Double xpFactor, Boolean enabled} - the LIVE values (UI text)
+ifn.addInterface(pool.get("java.util.function.Function"))
+Ct(ifn, "public CookCampInfoFn() { }")
+Mk(ifn, """
+public Object apply(Object arg) {
+  return new Object[] { Double.valueOf(@PKG@.CookCfg.CAMP_BUFF), Double.valueOf(@PKG@.CookCfg.CAMP_XP), Boolean.valueOf(@PKG@.CookCfg.ENABLED) };
+}""")
 
 '''
 rep("# skill:stats:Cooking (SkyySkills 0.4 Stats page hook)", CAMP_FN + "# skill:stats:Cooking (SkyySkills 0.4 Stats page hook)")
@@ -438,16 +503,18 @@ protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
     if (n < 0 || n > 64) { pr.sendMessage(@MSG@.raw("[Cooking] count must be 0-64 (0 = preview)")); return; }
     @PLA@ p = (@PLA@) store.getComponent(ref, @PLA@.getComponentType());
     if (p == null) { pr.sendMessage(@MSG@.raw("[Cooking] campfire test: no Player component on your entity - nothing done")); return; }
+    String rid = @PKG@.Cook.campRecipeFor(dish);
+    if (rid == null) { pr.sendMessage(@MSG@.raw("[Cooking] no loaded Campfire-bench recipe makes " + dish + " - nothing done")); return; }
     Boolean cf = Boolean.valueOf(p.getGameMode() == @GM@.Creative);
     int cm = @PKG@.Cook.creativeOf(pr.getUuid());
-    Object[] r = @PKG@.Cook.campfire(pr.getUuid(), dish, n, (String) null, cf);
-    if (r == null) { pr.sendMessage(@MSG@.raw("[Cooking] " + dish + " was not accepted as a campfire dish")); return; }
+    Object[] r = @PKG@.Cook.campfire(pr.getUuid(), rid, n, (String) null, cf);
+    if (r == null) { pr.sendMessage(@MSG@.raw("[Cooking] the Campfire recipe " + rid + " (" + dish + ") was not accepted by cook:fn:campfire")); return; }
     String id = (String) r[0];
     if (n > 0) @SIC@.addOrDropItemStack(store, ref, p.getInventory().getCombinedStorageHotbarBackpack(), new @IS@(id, n));
     String why = r[4] == null ? "" : " - plain because " + String.valueOf(r[4]);
     String act = n > 0 ? "gave " + n + " x " : "would give ";
     String mode = cm == 1 ? "creative" : (cm == 0 ? "not creative" : "unreadable");
-    pr.sendMessage(@MSG@.raw("[Cooking] Campfire accessory test: bench Grade " + String.valueOf(r[1]) + " -> campfire Grade " + String.valueOf(r[2]) + " (buffFactor " + @PKG@.CookCfg.CAMP_BUFF + ", xpFactor " + @PKG@.CookCfg.CAMP_XP + ") - " + act + id + " - Cooking XP sent " + String.valueOf(r[3]) + why + " - game mode as the bridge reads it without a flag: " + mode));
+    pr.sendMessage(@MSG@.raw("[Cooking] Campfire accessory test (recipe " + rid + "): bench Grade " + String.valueOf(r[1]) + " -> campfire Grade " + String.valueOf(r[2]) + " (buffFactor " + @PKG@.CookCfg.CAMP_BUFF + ", xpFactor " + @PKG@.CookCfg.CAMP_XP + ") - " + act + id + " - Cooking XP sent " + String.valueOf(r[3]) + why + " - game mode as the bridge reads it without a flag: " + mode));
   } catch (Throwable t) { @PKG@.CookCfg.warn("/cookadmin campfire failed: " + t); pr.sendMessage(@MSG@.raw("[Cooking] campfire test failed: " + t)); }
 }""")
 '''
@@ -470,17 +537,18 @@ rep('''A placed Campfire gives plain food and no XP; its dishes are on the Cooki
 rep('''  b.put("skill:stats:Cooking", new @PKG@.CookStatsFn());''',
     '''  b.put("skill:stats:Cooking", new @PKG@.CookStatsFn());''' + LF +
     '''  b.put("cook:fn:campfire", new @PKG@.CookCampFn());''' + LF +
-    '''  b.put("cook:campfire:ids", @PKG@.CookCfg.campList());''')
+    '''  b.put("cook:campfire:ids", @PKG@.CookCfg.campList());''' + LF +
+    '''  b.put("cook:fn:campfactors", new @PKG@.CookCampInfoFn());''')
 rep('''and Cooking XP through SkyySkills; /cooking; config: "''',
     '''and Cooking XP through SkyySkills; Campfire accessory bridge cook:fn:campfire (" + @PKG@.CookCfg.campList() + "); /cooking; config: "''')
 rep('''b.remove("skill:stats:Cooking"); }''',
-    '''b.remove("skill:stats:Cooking"); b.remove("cook:fn:campfire"); b.remove("cook:campfire:ids"); }''')
+    '''b.remove("skill:stats:Cooking"); b.remove("cook:fn:campfire"); b.remove("cook:campfire:ids"); b.remove("cook:fn:campfactors"); }''')
 
 # ---------------------------------------------------------------------------------------------------------------- write classes + compiled-Java parity check + manifest
 rep('''for c in (cfg, ck, xpt, csy, gfn, ofn, sfn, gcmd, rcmd, acmd, ccmd, pl):
     c.writeFile(OUT)
 print("classes written")
-''', r'''for c in (cfg, ck, xpt, csy, gfn, ofn, sfn, cfn, gcmd, rcmd, fcmd, acmd, ccmd, pl):
+''', r'''for c in (cfg, ck, xpt, csy, gfn, ofn, sfn, cfn, ifn, gcmd, rcmd, fcmd, acmd, ccmd, pl):
     c.writeFile(OUT)
 print("classes written")
 
@@ -497,12 +565,38 @@ for _f in (CAMP_BUFF_DEF, 0.5, 0.25, 0.0, 1.0, 0.9):
         raise SystemExit("self-check 0.1.1: compiled Cook.campGrade(g, %s) = %s but the Python mirror says %s" % (_f, _jt, _pt))
 if str(_JCfg.campList()) != ",".join(CAMP_DISHES) or int(_JCfg.campIndex("Food_Pie_Meat")) != -1 or int(_JCfg.campIndex(CAMP_DISHES[0])) != 0:
     raise SystemExit("self-check 0.1.1: compiled CookCfg.campList / campIndex disagree with CAMP_DISHES")
-if str(_JCook.campDish(" " + CAMP_DISHES[1] + " ")) != CAMP_DISHES[1]:
-    raise SystemExit("self-check 0.1.1: compiled Cook.campDish does not accept a listed dish id")
-print("compiled campfire mapping matches the Python mirror (buffFactor 0.75 / 0.5 / 0.25 / 0 / 1 / 0.9); cook:campfire:ids = " + str(_JCfg.campList()))
+# a bare dish id is never proof of a Campfire craft: the strict resolver and the whole campfire() call refuse it before any asset lookup
+for _d in CAMP_DISHES:
+    if _JCook.campRecipeDish(_d) is not None or _JCook.campRecipeDish(" " + _d + " ") is not None:
+        raise SystemExit("self-check 0.1.1: compiled Cook.campRecipeDish accepts the bare dish id " + _d)
+    if _JCook.campfire(jpype.JClass("java.util.UUID").randomUUID(), _d, 1, None, jpype.JClass("java.lang.Boolean").FALSE) is not None:
+        raise SystemExit("self-check 0.1.1: compiled Cook.campfire grades the bare dish id " + _d)
+if _JCook.campRecipeDish(None) is not None or _JCook.campRecipeDish("  ") is not None:
+    raise SystemExit("self-check 0.1.1: compiled Cook.campRecipeDish accepts null / blank")
+# the ONE bench-Grade helper: compiled Cook.benchGrade = min(level/10, 10) + (Master Chef >= 1), clamped to 0..min(maxGrade, GEN_MAX)
+_mg = min(int(_JCfg.MAX_GRADE), GEN_MAX)
+_IA = jpype.JArray(jpype.JInt)
+for _lv in list(range(0, 131)) + [-5, 999, 1000]:
+    for _mc in (0, 1, 3):
+        _t = _IA(len(NODES))
+        _t[9] = _mc
+        _want = max(0, min((min(_lv // 10, 10) if _lv > 0 else 0) + (1 if _mc >= 1 else 0), _mg))
+        if int(_JCook.benchGrade(_lv, _t)) != _want:
+            raise SystemExit("self-check 0.1.1: compiled Cook.benchGrade(%d, Master Chef %d) = %d, expected %d" % (_lv, _mc, int(_JCook.benchGrade(_lv, _t)), _want))
+if int(_JCook.benchGrade(50, None)) != 5:
+    raise SystemExit("self-check 0.1.1: compiled Cook.benchGrade(50, null) must be 5")
+_JInfo = jpype.JClass(PKG + ".CookCampInfoFn", loader=_ld)()
+_fx = _JInfo.apply(None)
+if abs(float(_fx[0]) - CAMP_BUFF_DEF) > 1e-12 or abs(float(_fx[1]) - CAMP_XP_DEF) > 1e-12 or not bool(_fx[2]):
+    raise SystemExit("self-check 0.1.1: compiled cook:fn:campfactors returns %s, expected [%s, %s, true]" % (list(_fx), CAMP_BUFF_DEF, CAMP_XP_DEF))
+print("compiled campfire mapping matches the Python mirror (buffFactor 0.75 / 0.5 / 0.25 / 0 / 1 / 0.9); bare dish ids refused; benchGrade "
+      "matches min(level/10, 10) + Master Chef (max Grade %d); cook:fn:campfactors = %s; cook:campfire:ids = %s" % (_mg, [str(x) for x in _fx], str(_JCfg.campList())))
 ''')
 rep('''the Campfire dishes can be cooked at the Cooking Bench too; Cooking XP goes to SkyySkills.''',
     '''the Campfire dishes can be cooked at the Cooking Bench too, or instantly through the Campfire accessory in /craft (SkyySacks) as an emergency cook at 75% of the Grade bonus and 50% of the XP; Cooking XP goes to SkyySkills.''')
 
+for _dup in ("baseGrade(lv) + (t[9]", "baseGrade(level) + (t[9]", "clampGrade(base + (t[9]", "clampGrade(base + m);"):
+    assert _dup not in s, "a copy of the bench-Grade formula is left outside Cook.benchGrade: " + _dup
+assert s.count("campDish(") == 0 and s.count("campRecipeDish(") >= 3, "campfire recipe resolution must go through campRecipeDish"
 open(dst, "w", encoding="utf8", newline="").write(s.replace(LF, NL))
 print("wrote", dst)

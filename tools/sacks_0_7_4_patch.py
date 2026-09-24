@@ -22,6 +22,18 @@ this mod only shows the tab, crafts from inventory + bags and hands out the id S
  - The click re-checks the accessory and the recipe (acc:has can change while the page is open) before anything moves.
 Everything else in 0.7.3 is untouched: tabs, search (Crafting + Smithing + Farming only), settledKey / profile:busy gates, bench link,
 Furnace / Tannery queues and Smithing XP, config switch, /craft <words>.
+Review fixes (same version, 2026-09-24):
+ - The tab text numbers come from CAMP_XP_PCT / CAMP_BUFF_PCT, which the build script checks against the newest SkyyCooking build script's
+   CAMP_BUFF_DEF / CAMP_XP_DEF (build fails on a mismatch - the SkyyAccessories 0.4.3 pattern); campNote() shows the LIVE factors from
+   SkyyCooking's cook:fn:campfactors (Object[]{Double buffFactor, Double xpFactor, Boolean enabled}) when that Function is on the bridge,
+   and says plain food / no XP when enabled=false; without the Function it falls back to CAMP_*_PCT.
+ - hasItemOutput(): a click on a recipe that hands out no item is refused before any material moves (every tab). The vanilla Campfire
+   recipes are item-embedded without an Output list; Item.processConfig then sets outputs = [primaryOutput = the item, quantity 1]
+   (HytaleServer.jar bytecode), so they pass.
+ - The Campfire tab lists Campfire-EXCLUSIVE recipes only (campfireRecipe && tableOnly), so no recipe is reachable both here and in the
+   merged tabs; the click re-check tests the same.
+ - The graded id replaces exactly ONE output entry (the primary output object, else the first entry with its item id), not every entry
+   that shares the id.
 """
 import os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -69,10 +81,41 @@ rep('Tannery tab has a Refresh button instead of the ~2 s self-refresh (periodic
     + 'recipe, plain output, no XP); instant from inventory + bags like Crafting; each click calls cook:fn:campfire once after the materials' + LF
     + 'are removed and gives the id it returns instead of the primary output (null / missing / unknown item = plain output); SkyyCooking pays' + LF
     + 'the Cooking XP (x0.5) and grades the dish (x0.75 of the Cooking bonus); the tab does not report skill:fn:craftxp. The Campfire stays a' + LF
-    + 'retired bench everywhere else (Crafting / Smithing / Farming / search / Collections keep no cooked food).' + LF + '"""')
+    + 'retired bench everywhere else (Crafting / Smithing / Farming / search / Collections keep no cooked food).' + LF
+    + '0.7.4 review fixes: tab text numbers from SkyyCooking\'s live cook:fn:campfactors (fallback: build-checked defaults); a' + LF
+    + 'recipe that gives no item is refused before materials move (every tab); Campfire-exclusive recipes only; the graded id replaces exactly' + LF
+    + 'one output entry.' + LF + '"""')
 rep('VERSION = "0.7.3"', 'VERSION = "0.7.4"')
 
 # ---------------- constants + probes ----------------
+# review fix (finding 3): the Campfire tab's "50% Cooking XP, 75% of your cooking bonus" numbers are SkyyCooking's campfire.xpFactor /
+# campfire.buffFactor DEFAULTS. The build script checks them against the newest SkyyCooking build script on every build (the SkyyAccessories
+# 0.4.3 pattern), so the text cannot drift from those defaults; campNote() prefers SkyyCooking's live cook:fn:campfactors.
+CAMP_PCT_CHECK = '''# 0.7.4: the Campfire tab text numbers = SkyyCooking's campfire.xpFactor / campfire.buffFactor defaults (cook:fn:campfire applies the real,
+# configurable factors). Checked against the newest SkyyCooking build script when it is present (SkyyAccessories 0.4.3 pattern), so the
+# text cannot drift from those defaults. CraftPage.campNote() shows SkyyCooking's LIVE factors from cook:fn:campfactors when that Function
+# is on the bridge (an edited cooking.properties + /cookadmin reload shows at once); these numbers are only the fallback without it.
+CAMP_XP_PCT, CAMP_BUFF_PCT = 50, 75
+def _camp_defaults_check():
+    import re, glob
+    def _v(p):
+        m = re.search(r"_(\\d+(?:\\.\\d+)*)\\.py$", p)
+        return tuple(int(x) for x in m.group(1).split(".")) if m else (0,)
+    found = sorted(glob.glob(os.path.join(HERE, "..", "SkyyCooking", "build_skyycooking_*.py")), key=_v)
+    if not found:
+        print("note: no SkyyCooking build script next to this mod - Campfire tab numbers not cross-checked")
+        return
+    txt = open(found[-1], encoding="utf8", errors="replace").read()
+    m = re.search(r"^CAMP_BUFF_DEF, CAMP_XP_DEF = ([0-9.]+), ([0-9.]+)", txt, re.M)
+    if not m:
+        raise SystemExit("0.7.4: %s has no CAMP_BUFF_DEF / CAMP_XP_DEF line - re-check the Campfire tab numbers (CAMP_*_PCT)" % os.path.basename(found[-1]))
+    buff, xp = int(round(float(m.group(1)) * 100)), int(round(float(m.group(2)) * 100))
+    if (buff, xp) != (CAMP_BUFF_PCT, CAMP_XP_PCT):
+        raise SystemExit("0.7.4: %s defaults are buff %d%% / XP %d%% but the Campfire tab says %d%% / %d%% - update CAMP_*_PCT"
+                         % (os.path.basename(found[-1]), buff, xp, CAMP_BUFF_PCT, CAMP_XP_PCT))
+    print("campfire tab text matches %s defaults (XP %d%%, bonus %d%%)" % (os.path.basename(found[-1]), xp, buff))
+_camp_defaults_check()
+'''.replace(CR + LF, LF)
 rep('BTP = "com.hypixel.hytale.protocol.BenchType"' + LF,
     'BTP = "com.hypixel.hytale.protocol.BenchType"' + LF
     + '# 0.7.4: the creative flag passed to cook:fn:campfire (SkyyCooking 0.1.1 reads the same enum)' + LF
@@ -207,12 +250,59 @@ public static String campRowNote({PLA} p, java.util.UUID u, String k, {CRR} r) {
   int g = gradeOfId(campCall(p, u, k, r, 0));
   return g > 0 ? ("  - comes out Grade " + g) : "  - comes out plain";
 }}""", cpg))
-# the tab's emergency-cook line (Skyy: 50% XP, 75% of the buffs the Cooking skill adds); shown with set(), so commas and colons are safe
+# the tab's emergency-cook line (Skyy: 50% XP, 75% of the buffs the Cooking skill adds); shown with set(), so commas and colons are safe.
+# Review fix: the numbers are the LIVE factors from SkyyCooking's cook:fn:campfactors (apply(anything) -> Object[]{Double buffFactor,
+# Double xpFactor, Boolean enabled}, any thread, no I/O - so an edited cooking.properties + /cookadmin reload shows at once); a SkyyCooking
+# without that Function -> CAMP_XP_PCT / CAMP_BUFF_PCT, cross-checked against SkyyCooking's defaults at build time.
+cpg.addField(CtField.make("public static final int CAMPXPPCT = " + str(CAMP_XP_PCT) + ";", cpg))
+cpg.addField(CtField.make("public static final int CAMPBUFFPCT = " + str(CAMP_BUFF_PCT) + ";", cpg))
+# factor (0..1) -> whole percent; anything else -> def
+cpg.addMethod(CtNewMethod.make("""
+public static int campPct(Object v, int def) {
+  if (!(v instanceof Number)) return def;
+  double f = ((Number) v).doubleValue();
+  if (!(f >= 0.0 && f <= 1.0)) return def;
+  return (int) Math.round(f * 100.0);
+}""", cpg))
+# {xp %, buff %, enabled 1/0}: cook:fn:campfactors when present and well formed, else the build-checked defaults (enabled)
+cpg.addMethod(CtNewMethod.make("""
+public static int[] campFactors() {
+  int[] out = new int[] { CAMPXPPCT, CAMPBUFFPCT, 1 };
+  try {
+    Object f = {PKG}.SackPool.bridge().get("cook:fn:campfactors");
+    if (!(f instanceof java.util.function.Function)) return out;
+    Object r = ((java.util.function.Function) f).apply((Object) null);
+    if (!(r instanceof Object[])) return out;
+    Object[] a = (Object[]) r;
+    if (a.length < 2) return out;
+    out[1] = campPct(a[0], CAMPBUFFPCT);
+    out[0] = campPct(a[1], CAMPXPPCT);
+    if (a.length > 2 && Boolean.FALSE.equals(a[2])) out[2] = 0;
+  } catch (Throwable t) { }
+  return out;
+}""".replace("{PKG}", PKG), cpg))
 cpg.addMethod(CtNewMethod.make("""
 public static String campNote() {
   if (campIds() == null) return "Campfire accessory = quick emergency cooking: plain food and no Cooking XP (SkyyCooking is not installed).";
-  return "Campfire accessory = emergency cook: 50% Cooking XP, 75% of your cooking bonus. A Cooking Bench gives the full Grade and XP.";
+  int[] cf = campFactors();
+  if (cf[2] == 0) return "Campfire accessory = quick emergency cooking: graded cooking is switched off on this server - plain food and no Cooking XP.";
+  return "Campfire accessory = emergency cook: " + cf[0] + "% Cooking XP, " + cf[1] + "% of your cooking bonus. A Cooking Bench gives the full Grade and XP.";
 }""", cpg))
+# review fix (finding 2): true when a craft of this recipe hands out at least one item - the exact test the give loop in handleDataEvent
+# makes (getOutputs() entries with an item id; an empty Outputs list falls back to the primary output). Checked BEFORE any material moves,
+# so a recipe without an item output can never eat ingredients (every tab). The vanilla Campfire recipes pass: Item.processConfig fills
+# outputs = [primaryOutput = the item itself, quantity 1] for an item-embedded Recipe without an Output list (bytecode 2026-09-24).
+cpg.addMethod(CtNewMethod.make(f"""
+public static boolean hasItemOutput({CRR} r) {{
+  if (r == null) return false;
+  {MQ}[] o = r.getOutputs();
+  if (o == null || o.length == 0) {{
+    {MQ} po = r.getPrimaryOutput();
+    return po != null && po.getItemId() != null && po.getQuantity() > 0;
+  }}
+  for (int i = 0; i < o.length; i++) if (o[i] != null && o[i].getItemId() != null && o[i].getQuantity() > 0) return true;
+  return false;
+}}""", cpg))
 '''
 rep('# collection unlocks published by SkyyCollections via the JVM bridge: "coll:recipes:<uuid>" -> "id,id,id"' + LF,
     CAMP_HELPERS + '# collection unlocks published by SkyyCollections via the JVM bridge: "coll:recipes:<uuid>" -> "id,id,id"' + LF)
@@ -234,7 +324,9 @@ blk('public java.util.ArrayList recipesFor(String tabId, java.util.UUID u) {{', 
      + '  boolean camp = tabId.equals("K:camp");' + LF),
     ('    if (!timed && tableOnly(rc)) continue;' + LF,
      '    if (!timed && !camp && tableOnly(rc)) continue;' + LF
-     + '    if (camp && !campfireRecipe(rc)) continue;' + LF),
+     + '    // review fix (finding 5): Campfire-EXCLUSIVE recipes only (tableOnly = no live instant bench besides it), so no recipe is reachable' + LF
+     + '    // both here (graded, SkyyCooking XP) and in Crafting / Smithing / Farming (plain, craftxp). The 3 vanilla ones are Campfire-only.' + LF
+     + '    if (camp && !(campfireRecipe(rc) && tableOnly(rc))) continue;' + LF),
 ])
 
 # ---------------- build(): the emergency-cook line, per-row preview, empty text ----------------
@@ -265,17 +357,25 @@ blk('public void handleDataEvent({REF} ref, {ST} st, String data) {{', [
      '    {CRR} r = ({CRR}) this.rows.get(idx);' + LF
      + '    // 0.7.4 Campfire tab: still equipped and still a Campfire-bench recipe at click time (acc:has can change while the page is open)' + LF
      + '    boolean campTab = "K:camp".equals(this.tab);' + LF
-     + '    if (campTab && (campfireTier(u) <= 0 || !campfireRecipe(r))) {{ this.info = "equip the Campfire accessory in your accessory bag to cook here"; rebuild(); return; }}' + LF),
+     + '    if (campTab && (campfireTier(u) <= 0 || !campfireRecipe(r) || !tableOnly(r))) {{ this.info = "equip the Campfire accessory in your accessory bag to cook here"; rebuild(); return; }}' + LF
+     + '    // review fix: a recipe that hands out no item never gets its materials removed (every tab; the give loop below makes the same test)' + LF
+     + '    if (!hasItemOutput(r)) {{ this.info = "this recipe gives no item - nothing was used"; rebuild(); return; }}' + LF),
     ('    if ((outs == null || outs.length == 0) && outq != null) outs = new {MQ}[] {{ outq }};' + LF + '    int given = 0;' + LF,
      '    if ((outs == null || outs.length == 0) && outq != null) outs = new {MQ}[] {{ outq }};' + LF
      + '    // 0.7.4: ONE cook:fn:campfire call per click, after the materials were removed, with the finished crafts and the settled key;' + LF
      + '    // its String answer replaces the primary output id (same quantity). null = plain output. SkyyCooking pays the Cooking XP.' + LF
      + '    String campId = null;' + LF
      + '    if (campTab && done > 0) campId = campCall(p, u, k, r, done);' + LF
+     + '    // review fix (finding 4): swap ONE entry - the primary output itself (same object), else the first entry with its item id' + LF
+     + '    int campAt = -1;' + LF
+     + '    if (campId != null && outq != null && outs != null) {{' + LF
+     + '      for (int pq = 0; pq < outs.length && campAt < 0; pq++) if (outs[pq] == outq) campAt = pq;' + LF
+     + '      for (int pq = 0; pq < outs.length && campAt < 0; pq++) if (outs[pq] != null && outq.getItemId() != null && outq.getItemId().equals(outs[pq].getItemId())) campAt = pq;' + LF
+     + '    }}' + LF
      + '    int given = 0;' + LF),
     ('        {SIC}.addOrDropItemStack(st, ref, p.getInventory().getCombinedStorageHotbarBackpack(), new {IS}(outs[k].getItemId(), (int) total));' + LF,
      '        String gid = outs[k].getItemId();' + LF
-     + '        if (campId != null && outq != null && gid.equals(outq.getItemId())) gid = campId;' + LF
+     + '        if (k == campAt) gid = campId;' + LF
      + '        {SIC}.addOrDropItemStack(st, ref, p.getInventory().getCombinedStorageHotbarBackpack(), new {IS}(gid, (int) total));' + LF),
     ('    {PKG}.CraftLog.write(k, String.valueOf(r.getId()), qty, done, flag, given, audit.toString());' + LF,
      '    if (campTab) audit.append(" campfire=").append(campId == null ? "plain" : campId);' + LF
@@ -313,6 +413,18 @@ assert "    if (!timed && !camp && tableOnly(rc)) continue;" in s
 assert s.count("    if (tableOnly(rc)) continue;") == 1, "search lost its tableOnly filter"
 assert "if (done > 0 && !campTab) {{" in s and s.count('get("skill:fn:craftxp")') == 2, "craftxp call (instant craft + Furnace drain)"
 assert s.count('get("cook:fn:campfire")') == 1 and s.count("campCall(p, u, k, r, done)") == 1 and s.count("campCall(p, u, k, r, 0)") == 1
+# review fixes
+i_cde = s.index("public void handleDataEvent({REF} ref,", s.index("public boolean handleProc("))
+assert s.index("public static boolean hasItemOutput(") < i_cde, "hasItemOutput must come before CraftPage.handleDataEvent"
+assert s.count("if (!hasItemOutput(r))") == 1 and i_cde < s.index("if (!hasItemOutput(r))") < s.index("Object tx = mats.removeMaterials(inputs);", i_cde), \
+    "the no-item-output guard must run before the materials are removed"
+assert "    if (camp && !(campfireRecipe(rc) && tableOnly(rc))) continue;" in s and "!campfireRecipe(r) || !tableOnly(r)" in s, "Campfire-only filter"
+assert s.index("public static boolean tableOnly(") < s.index("public java.util.ArrayList recipesFor("), "tableOnly must come before recipesFor"
+assert "        if (k == campAt) gid = campId;" in s and "gid.equals(outq.getItemId())" not in s, "swap exactly one output entry"
+assert s.index("CAMP_XP_PCT, CAMP_BUFF_PCT = 50, 75") < s.index("str(CAMP_XP_PCT)") and s.count("_camp_defaults_check()") == 2
+assert s.index("public static int campPct(") < s.index("public static int[] campFactors()") < s.index("public static String campNote()")
+assert s.count('get("cook:fn:campfactors")') == 1, "campNote must read SkyyCooking's live cook:fn:campfactors"
+assert "50% Cooking XP" not in s.split('CAMP_XP_PCT, CAMP_BUFF_PCT = 50, 75')[1].split("public static String campNote()")[1][:600], "campNote numbers must come from CAMP_*_PCT"
 assert "#SkyyCCampNote" in s and "#Skyy_" not in s
 # every 0.7.3 profile / busy rule untouched
 assert s.count("public static String settledKey(java.util.UUID u) {") == 1, "settledKey changed"

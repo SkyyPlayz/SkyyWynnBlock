@@ -287,5 +287,11 @@ assert "Campfire accessory is retired" not in s and "Bench or Campfire" not in s
 assert "assert len(omni_in) == len(ACTIVE) == 10" not in s
 assert "for b in BENCHES), dfs))" not in s, "a Java bench array still built from BENCHES"
 assert s.count("isRetired(id)") >= 8
+# review fixes
+assert s.count("public static double[] campFactors()") == 1 and s.count("{PKG}.AccStore.campCheck();") == 1
+assert s.count("{PKG}.AccStore.campLine(s)") == 1 and "safe(this.info) + " not in s
+assert s.index("public static double[] campFactors()") < s.index("public static String campPct(") < s.index("public static void campCheck()") \
+    < s.index("public static String campLine(") < s.index("# ================= AccFn"), "javassist: methods before their callers"
+assert "Campfire description numbers not cross-checked\" % os.path.basename" not in s, "regex miss must fail the build"
 open(dst, "w", encoding="utf8", newline=NL).write(s)   # keep the line endings of 0.4.2
 print("wrote", dst)

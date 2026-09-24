@@ -9,7 +9,7 @@ Commands (ADMIN ONLY, see Permissions below):
   /rolls give [itemId]   gives one item (default Weapon_Longsword_Copper) with random rolls stored in metadata key "SkyyRolls"
                          {reforge: <name>, dmg: +%, str: n, crit: n, quality: 0..100, rolledAt: millis} - weapons, armor, tools only
   /rolls clear           removes the rolls (and the rolls tooltip) from the item in your hand, keeps everything else
-  The 0.1 flag forms still work: /rolls --action give|read|reroll [--item <itemId>]
+  The 0.1 flag forms still work: /rolls --action give|read|reroll|clear [--item <itemId>]
 Test protocol: give -> read -> relog -> read again (must match) -> drop + pick up -> read -> put in a chest and take out -> read.
 API: ItemStack.withMetadata(String, BsonValue) returns a NEW stack; ItemStack.getMetadata() -> org.bson.BsonDocument;
 Inventory.getItemInHand(), getActiveHotbarSlot(), getHotbar().setItemStackForSlot(short, ItemStack).

@@ -82,6 +82,8 @@ Commands (ADMIN ONLY, see Permissions below):
   /rolls give [itemId]   gives one item (default Weapon_Longsword_Copper) with random rolls stored in metadata key "SkyyRolls"
                          {reforge: <name>, dmg: +%, str: n, crit: n, quality: 0..100, rolledAt: millis} - weapons, armor, tools only
   /rolls clear           removes the rolls (and the rolls tooltip) from the item in your hand, keeps everything else''')
+rep("  The 0.1 flag forms still work: /rolls --action give|read|reroll [--item <itemId>]",
+    "  The 0.1 flag forms still work: /rolls --action give|read|reroll|clear [--item <itemId>]")
 rep("0.1.2: /rolls give takes a plain name",
     "0.1.3: the rolls are SHOWN on the item: native ItemDisplay metadata (Name = rarity-coloured '<Reforge> <item>', Description =" + LF +
     "  vanilla description + one line per roll), written by give/reroll, by /rolls read and by a join refresh for older rolled items;" + LF +
