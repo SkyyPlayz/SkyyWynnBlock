@@ -67,8 +67,8 @@ Added after batch 1. Batch 1 stays in force. Where a line below names a batch 1 
 | Mining, Foraging, Farming | **NOW** (live) | Each gets its own skill tree |
 | Acrobatics | **NOW** (live) | Skyy's mcMMO skill |
 | Archery, Swordsmanship, Sorcery | **NOW** (live) | Class weapon skills |
-| Smithing | **KEEP** | Leveled by reforging and adding powders; its XP arrives with those systems |
-| Alchemy | **BUILD NOW** | |
+| Smithing | **KEEP** | Leveled by reforging and adding powders, **and by smelting in the furnace** (vanilla Furnace + the SkyySacks Furnace tab) |
+| Alchemy | **BUILD NOW** | **Table use only**: the Alchemy Bench accessory is removed; the vanilla Alchemy Bench draws ingredients from your sacks |
 | Exploration | **ADD** | Research what SkyBlock and Wynncraft give for exploring first, then Skyy picks the rewards |
 | Skill tree per gathering skill | **YES** | Mining, Foraging, Farming (Fishing's tree waits with Fishing) |
 | Fishing | SHELF | |
@@ -79,7 +79,7 @@ Added after batch 1. Batch 1 stays in force. Where a line below names a batch 1 
 | Runecrafting | SHELF | |
 | Social | SHELF | |
 | Dungeoneering | LATER | Already LATER (2.14) |
-| Cooking | **BUILD NOW** (next to Alchemy) | Food you cook gets stronger AND lasts longer with your Cooking level: x2 at level 50, x4 at level 100; skill-tree modifiers can push it further. Only if the engine allows it (research running) |
+| Cooking | **BUILD NOW** (next to Alchemy), **table use only** (Cooking Bench accessory removed; the vanilla bench draws from your sacks) | Food you cook gets stronger AND lasts longer with your Cooking level: x2 at level 50, x4 at level 100; skill-tree modifiers can push it further. Only if the engine allows it (research running) |
 
 | # | Skill | Origin blend | Draft call | ☐ DECISION |
 |---|---|---|---|---|

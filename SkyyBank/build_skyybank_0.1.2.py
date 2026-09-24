@@ -43,9 +43,28 @@ Admin: /bankconfig (show), /bankconfig <percent> <minutes>, /bankconfig <percent
     accounts/<uuid>.properties is profile 1, no migration); profile N = "<uuid>-pN" -> accounts/<uuid>-pN.properties.
     Without SkyyProfiles pkey = uuid, so files, balances, messages and interest are exactly 0.1.1.
   - In-memory caches BAL / LOADED are keyed by that key String (rule 2), so a profile switch simply resolves to another entry.
-    New key-level API: loadKey/getKey/setKey(String); get/set(UUID) are thin wrappers over pkey. deposit/withdraw resolve the key
-    ONCE per call, so a switch in the middle cannot split one transfer across two accounts (the purse side goes through
-    coins:fn:*, which SkyyCoins resolves to the active profile).
+    New key-level API: loadKey/getKey/setKey(String); get/set(UUID) are thin wrappers over pkey.
+  - Transfers vs profile switches (review fix): deposit/withdraw resolve the bank key once, but the purse side goes through
+    coins:fn:take/add, and SkyyCoins resolves pkey(uuid) AGAIN inside that call. Two mods resolving at two instants cannot be made
+    atomic from the bank alone, so a switch that lands between the bank's read and SkyyCoins' read would split one transfer across
+    two profiles (reproduced with a fake SkyyProfiles + SkyyCoins against the 0.1.2 jar). The bank now brackets the purse call:
+    it reads profile:epoch:<uuid> then the key before, and the key then the epoch after (sound whichever order SkyyProfiles
+    updates them in, and it catches A->B->A). deposit/withdraw return an int:
+      1 = done, nothing switched: both sides provably used the same profile.
+      0 = not enough coins (purse for deposit, bank for withdraw) or SkyyCoins refused; nothing moved.
+      3 = the profile switched before any coins moved (checked right before the purse call): nothing moved, the player is told
+          "Your profile changed, nothing was moved. Try again."
+      2 = the profile switched while the purse call ran. The purse side is already done and the bridge cannot say which profile
+          SkyyCoins resolved, so the bank side is booked on the profile the transfer STARTED on (the one the player typed /bank on),
+          the player is told so, and a WARNING logs uuid, both keys and both epochs for an admin. Why not refund + fail: SkyyCoins
+          resolves its key first thing in take/add and then spends milliseconds in its ledger lock and file write, so a switch
+          landing inside the purse call almost always lands AFTER SkyyCoins resolved the start profile; booking the start profile is
+          then exactly right, while a refund through coins:fn:add would land on the NEW profile's purse (a cross-profile move in the
+          common case). The only remaining split is a switch completing inside the microseconds between the bank's key read and
+          SkyyCoins' own read; closing that needs a key-pinned coins bridge function (SkyyCoins + contract change, not this mod).
+    In practice none of this can fire: /bank is an AbstractPlayerCommand, whose executeAsync runs execute() via
+    runAsync(ctx, runnable, world) on the player's world thread (HytaleServer.jar bytecode), and SkyyProfiles has to switch on
+    that same thread (it swaps the vanilla inventory, rule 5), so the two are serialised; the check is the backstop.
   - Interest still pays EVERY account file, offline profiles included: allAccounts() now returns storage keys and accepts
     "<uuid>.properties" (UUID.fromString, canonicalised exactly like 0.1.1) and "<uuid>-p<digits>.properties". The online
     "[Bank] You earned ..." message reports the player's active profile only.
@@ -54,6 +73,8 @@ Admin: /bankconfig (show), /bankconfig <percent> <minutes>, /bankconfig <percent
     every 5 s; each run compares "profile:epoch:<uuid>" of every online player with the last epoch seen (BankStore.EPOCH, pruned
     to online players) and republishes bank:<uuid> from the new profile on a change. The interest check runs on every 6th run
     (30 s after start, then every 30 s: the 0.1.1 cadence). No epoch key (SkyyProfiles absent) -> the check does nothing.
+  - Review fix: the interest tick's "[Bank] You earned" loop now null-checks Universe.get() like epochs() does (payouts were
+    already saved before it; only the messages were at risk).
   - Rule 4 n/a (no stats or movement in this mod); rule 5: the vanilla inventory is never touched.
 """
 import sys, os
@@ -253,23 +274,55 @@ public static synchronized void publish(java.util.UUID u) {
   long v = getKey(pkey(u));
   bridge().put("bank:" + u.toString(), Long.valueOf(v));
 }""", bs))
+# ---- transfers vs profile switches (review fix, see docstring "Transfers vs profile switches")
+# epoch(u): SkyyProfiles' switch counter for u (Long), null without SkyyProfiles.
 bs.addMethod(CtNewMethod.make("""
-public static synchronized boolean deposit(java.util.UUID u, long n) {
-  if (n <= 0L) return false;
-  String k = pkey(u);
-  if (!purseTake(u, n)) return false;
-  setKey(k, getKey(k) + n);
-  return true;
+public static Object epoch(java.util.UUID u) {
+  try { return bridge().get("profile:epoch:" + u.toString()); } catch (Throwable t) { return null; }
+}""", bs))
+# sameProfile(u, k, e): true when u is still on key k with the epoch e read before k (key first, then epoch: catches A->B->A).
+bs.addMethod(CtNewMethod.make("""
+public static boolean sameProfile(java.util.UUID u, String k, Object e) {
+  if (!k.equals(pkey(u))) return false;
+  Object e2 = epoch(u);
+  return e == null ? e2 == null : e.equals(e2);
 }""", bs))
 bs.addMethod(CtNewMethod.make("""
-public static synchronized boolean withdraw(java.util.UUID u, long n) {
-  if (n <= 0L) return false;
+public static void straddle(String op, java.util.UUID u, String k, Object e, long n) {
+  warn("profile switched during a " + op + " of " + n + " coins for " + u + ": bank side booked on " + k
+      + " (the profile it started on; active now " + pkey(u) + ", epoch " + e + " -> " + epoch(u)
+      + "). SkyyCoins resolved the purse side itself: if it had already switched, the new profile's purse moved instead of " + k + "'s.");
+}""", bs))
+# 1 = done, 0 = not enough / refused (nothing moved), 3 = switched before coins moved (nothing moved),
+# 2 = switched during the purse call (bank side booked on the start profile k, logged)
+bs.addMethod(CtNewMethod.make("""
+public static synchronized int deposit(java.util.UUID u, long n) {
+  if (n <= 0L) return 0;
+  Object e = epoch(u);
+  String k = pkey(u);
+  getKey(k);
+  if (!sameProfile(u, k, e)) return 3;
+  if (!purseTake(u, n)) return 0;
+  boolean same = sameProfile(u, k, e);
+  setKey(k, getKey(k) + n);
+  if (same) return 1;
+  straddle("deposit", u, k, e, n);
+  return 2;
+}""", bs))
+bs.addMethod(CtNewMethod.make("""
+public static synchronized int withdraw(java.util.UUID u, long n) {
+  if (n <= 0L) return 0;
+  Object e = epoch(u);
   String k = pkey(u);
   long have = getKey(k);
-  if (have < n) return false;
-  if (!purseAdd(u, n)) return false;
+  if (!sameProfile(u, k, e)) return 3;
+  if (have < n) return 0;
+  if (!purseAdd(u, n)) return 0;
+  boolean same = sameProfile(u, k, e);
   setKey(k, have - n);
-  return true;
+  if (same) return 1;
+  straddle("withdraw", u, k, e, n);
+  return 2;
 }""", bs))
 # every account file (all profiles, online or not) -> list of storage keys
 bs.addMethod(CtNewMethod.make("""
@@ -363,7 +416,9 @@ public void interest() {{
     {PKG}.BankConfig.LAST = {PKG}.BankConfig.LAST + due * interval;
     {PKG}.BankConfig.save();
     {PKG}.BankStore.info("interest paid to " + earned.size() + " account(s), " + due + " period(s) at " + pct + "%");
-    java.util.Iterator it = {UNI}.get().getPlayers().iterator();
+    {UNI} uni = {UNI}.get();
+    if (uni == null) return;
+    java.util.Iterator it = uni.getPlayers().iterator();
     while (it.hasNext()) {{
       {PR} pr = ({PR}) it.next();
       if (pr == null || !pr.isValid()) continue;
@@ -447,11 +502,14 @@ public static void run({PR} pr, String actionText, String amountText) {{
     try {{ n = parseAmount(amountText, all); }}
     catch (Throwable t) {{ pr.sendMessage({MSG}.raw("[Bank] That is not a number. Use e.g. 500, 2k, 1.5m or all.")); return; }}
     if (n <= 0L) {{ pr.sendMessage({MSG}.raw("[Bank] Nothing to " + (dep ? "deposit" : "withdraw") + ".")); return; }}
+    int r = dep ? {PKG}.BankStore.deposit(u, n) : {PKG}.BankStore.withdraw(u, n);
+    if (r == 3) {{ pr.sendMessage({MSG}.raw("[Bank] Your profile changed, nothing was moved. Try again.")); return; }}
+    if (r == 2) {{ pr.sendMessage({MSG}.raw("[Bank] Your profile changed during this " + (dep ? "deposit: the " + n + " coins went into" : "withdrawal: the " + n + " coins came out of") + " the bank of the profile you started it on.")); return; }}
     if (dep) {{
-      if (!{PKG}.BankStore.deposit(u, n)) {{ pr.sendMessage({MSG}.raw("[Bank] Not enough coins in your purse (" + {PKG}.BankStore.purse(u) + ").")); return; }}
+      if (r != 1) {{ pr.sendMessage({MSG}.raw("[Bank] Not enough coins in your purse (" + {PKG}.BankStore.purse(u) + ").")); return; }}
       pr.sendMessage({MSG}.raw("[Bank] Deposited " + n + " coins. Bank: " + {PKG}.BankStore.get(u) + "  |  Purse: " + {PKG}.BankStore.purse(u)));
     }} else {{
-      if (!{PKG}.BankStore.withdraw(u, n)) {{ pr.sendMessage({MSG}.raw("[Bank] Not enough coins in the bank (" + {PKG}.BankStore.get(u) + ").")); return; }}
+      if (r != 1) {{ pr.sendMessage({MSG}.raw("[Bank] Not enough coins in the bank (" + {PKG}.BankStore.get(u) + ").")); return; }}
       pr.sendMessage({MSG}.raw("[Bank] Withdrew " + n + " coins. Bank: " + {PKG}.BankStore.get(u) + "  |  Purse: " + {PKG}.BankStore.purse(u)));
     }}
   }} catch (Throwable t) {{

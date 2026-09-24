@@ -116,3 +116,6 @@ opened by right-clicking an "Accessory Bag" item (our OpenCustomUI page or the v
 can add a `B:<Bench>` tab per carried bench accessory without a dependency.
 
 BUILT 2026-09-23: SkyyAccessories 0.1 (bag + 30 tiered bench accessories) and Sacks 0.6.1 (tiered bench tabs from the bag). See HANDOFF.
+
+## Change (Skyy, 2026-09-23 late): alchemy and cooking are table-only
+Alchemy and Cooking are skills now, so their bench accessories go: no Alchemy Bench or Cooking Bench accessory, no Alchemy tab and no cooking recipes in /craft. You brew and cook at the real tables, and those tables draw ingredients from your sacks (the SkyySacks bag link already feeds every vanilla bench window). The Omni accessory stops counting them. Accessories already owned stay as items but do nothing (no recipe). Smelting in the furnace (vanilla Furnace and the SkyySacks Furnace tab) gives Smithing XP.
