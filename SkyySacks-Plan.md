@@ -119,3 +119,11 @@ BUILT 2026-09-23: SkyyAccessories 0.1 (bag + 30 tiered bench accessories) and Sa
 
 ## Change (Skyy, 2026-09-23 late): alchemy and cooking are table-only
 Alchemy and Cooking are skills now, so their bench accessories go: no Alchemy Bench or Cooking Bench accessory, no Alchemy tab and no cooking recipes in /craft. You brew and cook at the real tables, and those tables draw ingredients from your sacks (the SkyySacks bag link already feeds every vanilla bench window). The Omni accessory stops counting them. Accessories already owned stay as items but do nothing (no recipe). Smelting in the furnace (vanilla Furnace and the SkyySacks Furnace tab) gives Smithing XP.
+
+## Craft page tabs + search (Skyy, 2026-09-23 late)
+Keep crafting split into tabs. Tabs: < Back to bags | Crafting | Smithing | Farming | Furnace | Tannery | Collections (no Alchemy - table only).
+- **Smithing**: tools, weapons and armor (everything you make with the metals you mine) - recipes whose output is Tool_*, Weapon_* or Armor_*.
+- **Farming**: everything from the farming table (Bench_Farming) back in its own tab.
+- **Crafting**: everything else.
+- **Search**: a text box; Enter or the Search button filters Crafting + Smithing + Farming together by item name; a clear button resets it.
+Engine facts for the build (vanilla PluginListPage.ui / CommandListPage, 2026-09-23): an inline `TextField #Id { PlaceholderText: ...; PlaceholderStyle: (...); Anchor: (...); Padding: (...) }` is valid without a .ui template; the value is read with EventData.of("@SearchQuery", "#Id.Value"); binding types include ValueChanged and Validating (Enter). CustomUIPage.sendUpdate has no event builder, and page clicks are dropped while an update is unacknowledged, so search runs on Enter/button with a full rebuild (the TextField is rebuilt with Value = the query), not on every keystroke.
