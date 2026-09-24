@@ -75,6 +75,12 @@ Batch 1 above stays. This list adds to it.
 - **Cooking: BUILD NOW next to Alchemy** - food you cook gets stronger and lasts longer with your Cooking level (x2 at level 50, x4 at level 100); skill-tree modifiers push it further. Condition: the engine must allow it.
 Full table: SkyySkills-Plan.md.
 
+### Feedback on the build round (Skyy, 2026-09-24)
+- SkyyCooking and the skill trees: approved ("great"). Smithing tab (tools/weapons/armor incl. wood/crude): approved.
+- **Campfire accessory comes BACK** for quick inventory cooking (it already limits you to the campfire dishes): Cooking XP x0.5 and the buffs the Cooking skill adds x0.75 when cooking through it (an emergency cook). Alchemy + Cooking Bench accessories stay retired.
+- Smithing XP = smelting ore into bars only; mining never gives Smithing XP (confirmed in SkyySkills 0.4: SmeltSys + Sacks Furnace tab only).
+- **Tree Feller rework:** Hytale already fells a tree when its whole base is broken, so Tree Feller breaks extra logs HORIZONTALLY on the broken block's Y level: level 1 = the next log beside it, max level = every log of that tree on that Y level. No vertical reach. Trees will get a SkyBlock-style rework on the server later.
+
 ### Pack goal (Skyy, 2026-09-24)
 Get the pack to where it is **100% usable for solo and private multiplayer worlds**, and **prepared for server use** - if someone else wants to run a server with it, the pack is good to go. Many server features stay on the back burner, but their BACKBONES get built (config/admin driven, multiplayer-safe) so a server builder only has to add content.
 
@@ -334,3 +340,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-24 01:55: whole-set static check of the 17 deploy jars: no shared Java packages; the only shared asset path is Server/Languages/en-US/server.lang (Sacks, Accessories, Menu, Cooking) - the live set already ships it from 3 Skyy mods + Skyys-Modpack + SkyyHighPack and names show, so Hytale merges lang files across packs (test plan step 2 re-checks). GitHub lint green on 0198e90. Everything Skyy asked for on 2026-09-23 is built except Exploration (waits for Skyy's picks, research/Exploration-Research.md sections 4-5) and the deploy (waits for Skyy's OK).
 - 2026-09-24 morning: Skyy's Exploration call (SkyyExploration-Plan.md) + 'bank and skills are all per profile'. Next round: SkyyExploration 0.1 (new), SkyySkills 0.4.1 (Exploration row), SkyyTrees 0.2 (Acrobatics + Exploration trees).
 - 2026-09-24 morning: Skyy: island visitors -> copy SkyBlock plugins' island settings menu (research + SkyyIslands 0.5 build running); pack goal = 100% usable solo + private multiplayer, prepared for server use; build the island checklist backbone now (SkyyExploration 0.2 after 0.1). Later: a server-readiness audit (config docs, admin guide, multiplayer/performance checks).
+- 2026-09-24: Skyy feedback: Campfire accessory back (x0.5 Cooking XP, x0.75 skill buffs), Tree Feller = horizontal same-Y breaking, smelting-only Smithing XP confirmed. Feedback round: SkyyAccessories 0.4.3, SkyySacks 0.7.4, SkyyCooking 0.1.1 now; SkyyTrees Tree Feller rework after the exploration round's SkyyTrees 0.2 lands.
