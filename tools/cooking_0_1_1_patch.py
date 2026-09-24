@@ -84,9 +84,14 @@ Run:   python build_skyycooking_0.1.1.py            -> SkyyCooking/SkyyCooking-0
       vanilla Campfire recipe output, build-checked). SkyySacks shows exactly the Campfire-bench recipes whose primary output is listed.
  CONFIG (cooking.properties; appended once to a 0.1 file that lacks both lines): campfire.buffFactor=0.75, campfire.xpFactor=0.5
   (each 0..1, clamped with a log line; /cookadmin reload re-reads them).
- COMMAND: /cookadmin campfire <dish> <count 0-64> (skyycooking.admin) runs the bridge exactly as /craft would, on the admin's world
-  thread, and gives count x the returned id (no materials used) + the XP; count 0 = preview. /cooking and the Skills Stats page show
-  the campfire Grade and XP share.
+ COMMAND: /cookadmin campfire <dish> <count 0-64> (skyycooking.admin) runs the bridge the way /craft should call it (world thread,
+  creative flag read from the Player component and passed as a[4]) and gives count x the returned id (no materials used) + the XP;
+  count 0 = preview. Its chat line also says how the bridge reads the game mode WITHOUT a flag (creative / not creative /
+  unreadable). /cooking and the Skills Stats page show the campfire Grade and XP share.
+ RECOMMENDED CALL (SkyySacks craft page, after removing the materials, done = finished crafts):
+  Object id = ((Function) bridge.get("cook:fn:campfire")).apply(new Object[] { u, String.valueOf(r.getId()), Integer.valueOf(done), k,
+  Boolean.valueOf(p.getGameMode() == GameMode.Creative) });  -> give (String) id instead of the primary output id when it is a String,
+  else the normal output. Show only recipes whose primary output is in cook:campfire:ids (split on ","); absent key = SkyyCooking missing.
  NOT IN THIS MOD: SkyyAccessories has to un-retire Skyy_Accessory_Campfire_T1 and SkyySacks has to show its tab again (only the
   cook:campfire:ids recipes) and call cook:fn:campfire for them. Until then nothing calls the bridge (test it with /cookadmin campfire).
 ''')
@@ -409,16 +414,18 @@ protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
     int n = -1;
     try { n = Integer.parseInt(String.valueOf(ctx.get(this.countArg)).trim()); } catch (Throwable t) { n = -1; }
     if (n < 0 || n > 64) { pr.sendMessage(@MSG@.raw("[Cooking] count must be 0-64 (0 = preview)")); return; }
-    Object[] r = @PKG@.Cook.campfire(pr.getUuid(), dish, n, (String) null, (Boolean) null);
+    @PLA@ p = (@PLA@) store.getComponent(ref, @PLA@.getComponentType());
+    if (p == null) { pr.sendMessage(@MSG@.raw("[Cooking] campfire test: no Player component on your entity - nothing done")); return; }
+    Boolean cf = Boolean.valueOf(p.getGameMode() == @GM@.Creative);
+    int cm = @PKG@.Cook.creativeOf(pr.getUuid());
+    Object[] r = @PKG@.Cook.campfire(pr.getUuid(), dish, n, (String) null, cf);
     if (r == null) { pr.sendMessage(@MSG@.raw("[Cooking] " + dish + " was not accepted as a campfire dish")); return; }
     String id = (String) r[0];
-    if (n > 0) {
-      @PLA@ p = (@PLA@) store.getComponent(ref, @PLA@.getComponentType());
-      if (p != null) @SIC@.addOrDropItemStack(store, ref, p.getInventory().getCombinedStorageHotbarBackpack(), new @IS@(id, n));
-    }
+    if (n > 0) @SIC@.addOrDropItemStack(store, ref, p.getInventory().getCombinedStorageHotbarBackpack(), new @IS@(id, n));
     String why = r[4] == null ? "" : " - plain because " + String.valueOf(r[4]);
     String act = n > 0 ? "gave " + n + " x " : "would give ";
-    pr.sendMessage(@MSG@.raw("[Cooking] Campfire accessory test: bench Grade " + String.valueOf(r[1]) + " -> campfire Grade " + String.valueOf(r[2]) + " (buffFactor " + @PKG@.CookCfg.CAMP_BUFF + ", xpFactor " + @PKG@.CookCfg.CAMP_XP + ") - " + act + id + " - Cooking XP sent " + String.valueOf(r[3]) + why));
+    String mode = cm == 1 ? "creative" : (cm == 0 ? "not creative" : "unreadable");
+    pr.sendMessage(@MSG@.raw("[Cooking] Campfire accessory test: bench Grade " + String.valueOf(r[1]) + " -> campfire Grade " + String.valueOf(r[2]) + " (buffFactor " + @PKG@.CookCfg.CAMP_BUFF + ", xpFactor " + @PKG@.CookCfg.CAMP_XP + ") - " + act + id + " - Cooking XP sent " + String.valueOf(r[3]) + why + " - game mode as the bridge reads it without a flag: " + mode));
   } catch (Throwable t) { @PKG@.CookCfg.warn("/cookadmin campfire failed: " + t); pr.sendMessage(@MSG@.raw("[Cooking] campfire test failed: " + t)); }
 }""")
 '''
