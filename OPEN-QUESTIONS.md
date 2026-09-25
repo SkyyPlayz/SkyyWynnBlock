@@ -113,13 +113,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-09-25 (Skyy): co-op size 5 including the owner. [5, already the default]
 - LOCKED 2026-09-25 (Skyy): Island Admins may invite co-op members. Was: only the Owner. [yes; 0.5.2 still defaults coop.adminsInvite to false]
 - LOCKED 2026-09-25 (Skyy): Admins may expel, ban and untrust visitors and helpers. Only the Owner kicks co-op members. [as written, already the default]
-- LOCKED 2026-09-25 (Skyy): Trusted cannot harvest crops. Chests, beds, and crafting stations are in the visitor set. [crops stay member]
+- LOCKED 2026-09-25 (Skyy): Trusted cannot harvest crops or open chests. Beds are in the visitor set. Crafting stations stay at trusted. [crops and chests stay member]
 - LOCKED 2026-09-25 (Skyy): no visits to your own old island while you are in someone's co-op. [no, already the default]
 - Old "build rights" invites became Trusted, not members. [done]
 - LOCKED 2026-09-25 (Skyy): `/island reset` cooldown 24 h with 3 confirms. [24 h, already the default]
 - LOCKED 2026-09-25 (Skyy): visitor limit 10. Was: 5. [10; 0.5.2 still writes defaults.visit.limit=5]
 - LOCKED 2026-09-25 (Skyy): biome change is free. Unlocks tied to exploration come later. [free, already the default]
-- LOCKED 2026-09-25 (Skyy): visitors may use doors, seats, chests, beds, and crafting stations. Was: doors and seats. [visitor; 0.5.2 still writes containers=member, crafting=trusted, beds=member]
+- LOCKED 2026-09-25 (Skyy): visitors may use doors, seats, and beds. Chests and crafting stations stay closed to visitors. Was, briefly: chests and crafting stations open. [beds visitor; chests member; crafting trusted; 0.5.2 still writes beds=member]
 
 ## In-game server setup (`research/Server-Setup-Spec.md` section 9)
 1. Who sees Server Setup? [ops only, node skyymenu.modconfig can be given to staff]
