@@ -902,3 +902,12 @@ Essentials 0.1.3, Exploration 0.2.1, Guilds 0.1.2, Vault 0.1.1, Rolls 0.1.5, Hud
 5. Switch profiles with the vault open: it closes; for 30 s the arrows show the wait message.
 6. Arrows off (Server Setup): 4 rows, shift-click and Take All still work. Creative library: searching "page"/"vault" lists no arrow items.
 7. [2P] Two players flip their own vaults at the same time with no cross-effects.
+
+
+## Round 7 - SkyySkills 0.4.5 (crossbows stay loaded), SkyyMenu 0.3.2, SkyyGuilds 0.1.3, DEPLOYED 2026-09-25 08:24 (backup backups/deploy-20260925-0824)
+1. Server log: SkyySkills line includes "crossbows stay loaded at Archery 5 (on)"; Guilds logs "xpSkills was still the old default - added Fury and Divinity".
+2. Archer, Archery 5+: load a crossbow, scroll away (vanilla gives the bolts back as Crude Arrows), scroll back -> ~0.1 s later the same bolt count returns and the same number of arrows is taken. Try with fewer arrows than bolts, with no arrows, and with a More Crossbow Tiers crossbow.
+3. Scroll back to a DIFFERENT crossbow, or move the crossbow first -> nothing restored, nothing taken. Fast scrolling -> no free bolts. Profile switch / relog / world change / death -> never restored. Archery 4, Warrior, Berserker -> vanilla behaviour.
+4. Archery 4 -> 5: chat "Unlocked: Crossbows stay loaded when you switch slots"; the Stats page lists it. Server Setup -> Skills: 5 new rows; OFF asks to confirm.
+5. Guilds: Server Setup -> Guilds -> Skills that count ends with Fury, Divinity; a Berserker earning Fury XP raises guild XP.
+6. Mods list shows Skills 0.4.5, Menu 0.3.2, Guilds 0.1.3; the SkyyClasses entry names 7 classes. [2P] non-op: no /classadmin kit line, /modconfig refused.
