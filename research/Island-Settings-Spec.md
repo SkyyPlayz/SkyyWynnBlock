@@ -84,7 +84,7 @@ Server admins (`skyyislands.admin`) pass every flag and entry check, as in 0.4.x
 
 LOCKED 2026-09-25 (Skyy): Island Admins may invite co-op members. `coop.adminsInvite` defaults to `true`. Was: `false`, Owner only. SkyyIslands 0.5.2 still defaults the row and `config.properties` to `false`. A file already on `false` keeps owner-only invites until that line is set to `true`.
 
-LOCKED 2026-09-25 (Skyy): only the Owner kicks co-op members. Admins may still expel or ban visitors and untrust helpers. That was already the default.
+LOCKED 2026-09-25 (Skyy): Admins may expel, ban and untrust visitors and helpers. Only the Owner kicks co-op members. That was already the default.
 
 ### 1.3 The home island rule
 
@@ -683,7 +683,7 @@ animals.extra=                            # extra NPC role names that count as f
 **`[SKYY?]` choices (defaults picked):**
 - LOCKED 2026-09-25 (Skyy): co-op size 5 including the owner. That was already the default;
 - LOCKED 2026-09-25 (Skyy): Island Admins may invite co-op members. `coop.adminsInvite` defaults to `true`. Was: `false`. SkyyIslands 0.5.2 still writes `false`;
-- LOCKED 2026-09-25 (Skyy): only the Owner kicks co-op members. Admins may still expel, ban and untrust visitors and helpers. That was already the default;
+- LOCKED 2026-09-25 (Skyy): Admins may expel, ban and untrust visitors and helpers. Only the Owner kicks co-op members. That was already the default;
 - Trusted = builder (no harvest or beds);
 - no visits to your own dormant island while you are in a co-op;
 - old build-rights invites become Trusted;

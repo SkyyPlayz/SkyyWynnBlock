@@ -112,7 +112,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 ## Islands (`research/Island-Settings-Spec.md`, live in SkyyIslands 0.5.1)
 - LOCKED 2026-09-25 (Skyy): co-op size 5 including the owner. [5, already the default]
 - LOCKED 2026-09-25 (Skyy): Island Admins may invite co-op members. Was: only the Owner. [yes; 0.5.2 still defaults coop.adminsInvite to false]
-- LOCKED 2026-09-25 (Skyy): only the Owner kicks co-op members. Admins may still expel, ban and untrust visitors and helpers. [owner kicks, already the default]
+- LOCKED 2026-09-25 (Skyy): Admins may expel, ban and untrust visitors and helpers. Only the Owner kicks co-op members. [as written, already the default]
 - Trusted = build only (no harvesting crops, no beds, no chests). [as written]
 - No visits to your own old island while you are in someone's co-op. [no]
 - Old "build rights" invites became Trusted, not members. [done]
