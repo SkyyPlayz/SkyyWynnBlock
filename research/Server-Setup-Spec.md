@@ -700,6 +700,7 @@ Categories `guilds, xp, bank`: `maxMembers` int 25 (1-500, L; lowering never kic
 L), `onlineMessages` bool true (L), `xpSharePercent` int 10 (0-1000, L), `xpSkills` text (comma list of skill ids, the mod checks names, L),
 `levelBase` int 100 / `levelStep` int 150 (L, D), `xpPollSeconds` 10 / `xpPerLevelFallback` 25 / `xpMaxPerCheck` 1e7 (A), `maxBank` int 1e12
 (L, D), `bankLogKeep` int 200 (10-1000, A), `defaultAdminLimit` text `none` / `defaultMemberLimit` text `0` (number or `none`, N).
+LOCKED 2026-09-25 (Skyy): `onlineMessages` treats off, no, and 0 as OFF, the same as every other on/off setting. That stays. SkyyGuilds 0.1.3 already reads them that way. The default stays true. A file that already says `onlineMessages=off`, `no`, or `0` means OFF. 0.1.1 only treated the word false as OFF.
 Make configurable later: the fixed 3-rank ladder (Member/Admin/Leader), a SkyyGuilds design question, not a setting.
 
 ### 4.5 SkyyParty [0.1.3] (the one mod with no admin path today)
