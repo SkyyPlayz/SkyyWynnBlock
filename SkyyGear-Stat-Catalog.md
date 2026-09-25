@@ -1,9 +1,12 @@
 # SkyyGear stat catalog
-*Research list, 2026-09-24. Combat, defence, and mana are marked in the collapsed section above the blank tables. From Movement down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up, and Decisions change note 9. Fortune was not in this pass. It stays until the loot and gathering tables are reviewed.
+**SkyGear is planned enough to START BUILDING.** Implement locked systems. Do not block on open tables.
 
-**Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %). Those are our locks, not wiki lines.
+*Research list, 2026-09-24. Combat through the Combat 15 ladder are marked in the collapsed section. Stone powers, then tuning, still have a blank Decision. Write **Keep**, **Scrap**, or **Add later** there. Do not block the build on those blank tables.*
+
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Change note 15 (2026-09-25) scraps the Other table as gear IDs. Change note 16 uses Hytale oxygen and accessory effects instead of a Respiration ID. Change note 17 is the accessory craft ladder. Change note 18 is enrichments. Change note 19 was the Hypixel starter lean. Change note 20 replaces those names with Tank, Balance, Slayer, Lucky, Fast, and Magical. Change note 21 is the Combat 15 ladder. Change note 22 keeps Magical Power as the spell-damage stat and confirms Fortress, Harmony, Fortune, Blitz, and Arcane. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is stone powers. Do not block the build on it. No Power is scrap (change note 24). The default profile is Balance. Change note 25 is the gear pipeline: combat gear first, gathering gear later, Keep modifiers in the roll pool.
+
+**Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter, Cooking Wisdom, Smithing Wisdom, Exploration Wisdom, Acrobatics Wisdom). Those are our locks, not wiki lines.
 
 **Game** means where the stat is from. **Both** means one row covers two names.
 
@@ -20,9 +23,9 @@ True Damage is in the decided section. It ignores Defence. True Defense, the sta
 ---
 
 <details>
-<summary><strong>Decided — combat, defence, and mana</strong> (2026-09-24, change note 9). Next blank table is Movement.</summary>
+<summary><strong>Decided — combat through Combat 15 powers</strong> (change notes 9–24). Next blank table is stone powers.</summary>
 
-These rows are marked. **Keep**, **Scrap**, or **Open**. Placement is the lock. Fortune was not in this pass.
+These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. The Other table was scrapped as gear IDs (change note 15). Breathing uses Hytale oxygen (change note 16). Accessory craft ladder is change note 17. Enrichments are change note 18. Change note 19 leaned Keep on Hypixel starter names. Change note 20 replaces that list. Change note 21 is the Combat 15 ladder. Change note 22 confirms that ladder and adds Magical Power.
 
 ### Damage and crits
 
@@ -30,7 +33,8 @@ These rows are marked. **Keep**, **Scrap**, or **Open**. Placement is the lock. 
 |---|---|---|---|
 | Damage | SB | Weapon-only modifier. Use Hytale's damage and build on it, unless a custom system is easier later. | Keep |
 | Neutral damage | Wynn | Same stat. Call it Damage. Stick to Hytale unless we must make our own. | Keep |
-| Strength | SB | SkyBlock-style. Weapons, armor, and Equipment. Class skill trees can raise base Strength. | Keep |
+| Strength | SB | SkyBlock-style. Boosts physical damage from a melee or hit. Weapons, armor, Equipment, and accessories. Class skill trees can raise base Strength. Mage staff melee uses this, not Magical Power. | Keep |
+| Magical Power | SkyWynn | Keep. Does for spells what Strength does for a melee hit. Mage spells use this. Staff melee uses Strength. Weapons, armor, Equipment, and accessories. Not the bag score. The bag score is Accessory Power. | Keep |
 | Strength | Wynn | The Wynn skill point (more damage and Earth damage) is out. Strength is the SkyBlock row. | Scrap |
 | Dexterity | Wynn | Not a skill point for crit. Crit Chance replaces it. | Scrap |
 | Crit Chance | SB | No cap. 100% is a guaranteed crit. Over 100% is overcrit chance. 120% crit means a 20% chance to overcrit. | Keep |
@@ -94,7 +98,7 @@ These rows are marked. **Keep**, **Scrap**, or **Open**. Placement is the lock. 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
 | Attack Speed | Both | The weapon has a built-in swing speed, Wynn-style. +Attack Speed % can roll on weapons, armor, Equipment, and accessories. Cap 150%. | Keep |
-| Ferocity | SB | SkyBlock-style. Cap 300 for now. | Keep |
+| Ferocity | SB | Keep. Combat, gear, and accessories. Enchant cap 300. Total cap 600. | Keep |
 | Exploding | Wynn | Keep the Wynn effect. Chance a main-attack hit hurts nearby mobs. | Keep |
 | Poison | Wynn | Keep the Wynn effect. Extra damage over time after a hit. | Keep |
 | Swing Range / Main Attack Range | Both | Renamed **Reach**. A % stat. Gathering skill trees only: Mining, Farming, and Gathering. Small upgrades. Total max +50%. | Keep |
@@ -144,167 +148,217 @@ These rows are marked. **Keep**, **Scrap**, or **Open**. Placement is the lock. 
 | Raw 3rd Spell Cost | Wynn | Per-spell raw cost. Out. Same skill-upgrade rule. | Scrap |
 | Raw 4th Spell Cost | Wynn | Per-spell raw cost. Out. Same skill-upgrade rule. | Scrap |
 
+### Movement
+
+Reach (old Swing Range) was already locked. Gathering trees only. Max +50%. Not re-opened here.
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Speed / Walk Speed | Both | SkyBlock-style flat +Speed. Armor, Equipment, and accessories. Acrobatics skill tree still grants +% movement speed on its own. | Keep |
+| Sprint | Wynn | Not a gear stat. Not a sprint bar. Use Hytale stamina. | Scrap |
+| Sprint Regen | Wynn | Renamed **Stamina Regen**. Armor only. Also Acrobatics and Exploration skill trees. Not on weapons, Equipment, or accessories unless Skyy says later. | Keep |
+| Jump Height | Wynn | Skill trees and accessories only. Not on armor, Equipment, or weapons. | Keep |
+| Rift Speed | SB | Rift move speed is out. | Scrap |
+
+### Gathering
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Breaking Power | SB | Add. Lets you mine harder blocks. Hytale may already have this under another name. That check is open. | Keep |
+| Mining Speed | SB | Yes. In Hytale the main limit is pick swing speed, so this increases swing speed. | Keep |
+| Pick Breaking Damage | SkyWynn | New name. Damage to blocks only. Not mobs. Open: how Hytale decides pick damage vs hits-to-break a block. | Keep |
+| Mining Spread | SB | Yes. Breaks nearby blocks too. | Keep |
+| Mining Fortune | SB | Yes. One stat. Covers ores, blocks, dwarven metals, and gemstones. | Keep |
+| Ore Fortune | SB | Folded into Mining Fortune. | Scrap |
+| Block Fortune | SB | Folded into Mining Fortune. | Scrap |
+| Dwarven Metal Fortune | SB | Folded into Mining Fortune. | Scrap |
+| Gemstone Fortune | SB | Folded into Mining Fortune. | Scrap |
+| Auto Smelt | SkyWynn | Add. SkyBlock Smelting Touch. Ores auto-smelt to ingots. | Keep |
+| Farming Fortune | SB | Yes. One stat for every crop. | Keep |
+| Wheat Fortune | SB | No separate crop fortune. | Scrap |
+| Carrot Fortune | SB | No separate crop fortune. | Scrap |
+| Potato Fortune | SB | No separate crop fortune. | Scrap |
+| Pumpkin Fortune | SB | No separate crop fortune. | Scrap |
+| Sugar Cane Fortune | SB | No separate crop fortune. | Scrap |
+| Melon Slice Fortune | SB | No separate crop fortune. | Scrap |
+| Cactus Fortune | SB | No separate crop fortune. | Scrap |
+| Cocoa Beans Fortune | SB | No separate crop fortune. | Scrap |
+| Mushroom Fortune | SB | No separate crop fortune. | Scrap |
+| Nether Wart Fortune | SB | No separate crop fortune. | Scrap |
+| Sunflower Fortune | SB | No separate crop fortune. | Scrap |
+| Moonflower Fortune | SB | No separate crop fortune. | Scrap |
+| Wild Rose Fortune | SB | No separate crop fortune. | Scrap |
+| Bonus Pest Chance | SB | Skip for now. Unsure about pests and the Garden. | Add later |
+| Overbloom | SB | Skip for now. | Add later |
+| Foraging Fortune | SB | Yes. One stat for logs. | Keep |
+| Fig Fortune | SB | No separate tree fortune for now. | Add later |
+| Mangrove Fortune | SB | No separate tree fortune for now. | Add later |
+| Helix Fortune | SB | No separate tree fortune for now. | Add later |
+| Sweep | SB | Scrap. Timber replaces this name and this behavior. | Scrap |
+| Timber | SB | Keep the name Timber. Not Treefeller. Not Sweep. Breaks extra blocks on a horizontal plane only. Breaking the base already fells the whole tree in Hytale. | Keep |
+| Fishing Speed | SB | Parked until a fishing mod exists. | Add later |
+| Sea Creature Chance | SB | Parked until a fishing mod exists. | Add later |
+| Double Hook Chance | SB | Parked until a fishing mod exists. | Add later |
+| Treasure Chance | SB | Parked until a fishing mod exists. | Add later |
+| Trophy Chance | SB | Parked until a fishing mod exists. | Add later |
+| Pull | SB | Parked until a fishing mod exists. | Add later |
+| Hunting Fortune | SB | Parked until a hunting mod exists. | Add later |
+| Charm Chance | SB | Parked until a hunting mod exists. | Add later |
+| Gather Speed | Wynn | Skip. | Add later |
+| Gemstone Spread | SB | Only if we add gemstones later. | Add later |
+| Pristine | SB | Only if we add gemstones later. | Add later |
+
+### Loot and luck
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Loot Bonus | Wynn | Keep. More items from mobs and loot chests. | Keep |
+| Loot Quality | Wynn | Keep. Rarer loot, fewer commons. Mostly on ingredients. | Keep |
+| Stealing | Wynn | Keep. Chance a hit mob drops an emerald. | Keep |
+| Magic Find | SB | Scrap as the player-facing name. The idea lives on as Trophy Hunter. | Scrap |
+| Trophy Hunter | SkyWynn | New name. Higher chance at unique drops and drop-only sets. Bosses and normal mobs. There will be mob drop-only armor sets, not only boss legendaries. Borderlands-style unique loot. | Keep |
+| Pet Luck | SB | Keep later. Build when pets exist. | Add later |
+| Fear | SB | Scrap. | Scrap |
+| Tracking | SB | Scrap. | Scrap |
+
+### XP and wisdom
+
+One Wisdom stat per skill we have. Combat Wisdom is one modifier for every class. Combat XP levels the class.
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Combat Wisdom | SB | Keep. One modifier. It works for every class. Combat XP levels the class. | Keep |
+| Farming Wisdom | SB | Keep. We have Farming. | Keep |
+| Mining Wisdom | SB | Keep. We have Mining. | Keep |
+| Foraging Wisdom | SB | Keep. We have Foraging. | Keep |
+| Enchanting Wisdom | SB | Keep now. | Keep |
+| Alchemy Wisdom | SB | Keep. We have Alchemy. | Keep |
+| Carpentry Wisdom | SB | Keep now. | Keep |
+| Cooking Wisdom | SkyWynn | Keep. We have Cooking. | Keep |
+| Smithing Wisdom | SkyWynn | Keep. We have Smithing. | Keep |
+| Exploration Wisdom | SkyWynn | Keep. We have Exploration. | Keep |
+| Acrobatics Wisdom | SkyWynn | Keep. We have Acrobatics. | Keep |
+| Social Wisdom | SB | Social is shelved. Not a skill we have now. | Add later |
+| Fishing Wisdom | SB | Later. With fishing. | Add later |
+| Hunting Wisdom | SB | Later. With hunting. | Add later |
+| Taming Wisdom | SB | Later. With pets. | Add later |
+| Runecrafting Wisdom | SB | Scrap. No Runecrafting skill unless we add one. | Scrap |
+| XP Bonus | Wynn | Keep. A flat small % boost to all XP. Not a large boost. | Keep |
+| Gather XP Bonus | Wynn | Scrap. Wisdom covers gathering XP. | Scrap |
+| Soul Point Regen | Wynn | Scrap. No soul points. | Scrap |
+
+### Other
+
+Scrap the whole table.
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Heat Resistance | SB | Scrap. | Scrap |
+| Cold Resistance | SB | Scrap. | Scrap |
+| Respiration | SB | Scrap as a gear ID. Do not bring this ID back. | Scrap |
+| Pressure Resistance | SB | Scrap. | Scrap |
+| Rift Time | SB | Scrap. | Scrap |
+| Rift Damage | SB | Scrap. | Scrap |
+| Rift Intelligence | SB | Scrap. | Scrap |
+| Hearts | SB | Scrap. | Scrap |
+
+Breathing is not a Respiration stat. Use Hytale's native oxygen. Accessories can raise oxygen. A max-level oxygen accessory line allows full underwater breathing. A separate accessory boosts water swim speed. These are accessory effects. They are not gear IDs.
+
+### Accessory progression
+
+Most accessories are crafted. Some come from mobs or chests. Leveling a collection unlocks the next accessory craft tier. Crafting the next rarity needs the previous rarity as an ingredient. SkyBlock-style ladder.
+
+Gear modifier rulings apply to accessories and Equipment the same way. That includes Magical Power. Accessory powers use flat mana, not Intelligence. Dedicated mana accessories use +% mana.
+
+### Accessory enrichments
+
+Wiki amounts are research. They are not our numbers.
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Speed Enrichment | SB | Keep. Same Speed ruling as gear. | Keep |
+| Crit Damage Enrichment | SB | Keep. Same Crit Damage ruling as gear. | Keep |
+| Crit Chance Enrichment | SB | Keep. Same Crit Chance ruling as gear. | Keep |
+| Strength Enrichment | SB | Keep. Same Strength ruling as gear. | Keep |
+| Defense Enrichment | SB | Keep. Same Defence ruling as gear. | Keep |
+| Health Enrichment | SB | Keep. Same Health ruling as gear. | Keep |
+| Attack Speed Enrichment | SB | Keep. Same Attack Speed ruling as gear. Cap 150%. | Keep |
+| Mana % enrichment | SkyWynn | Was Intelligence Enrichment. +% mana on a dedicated mana accessory. No Intelligence ID. Powers use flat mana, not this %. | Keep |
+| Sea Creature Chance Enrichment | SB | Add later. With fishing. | Add later |
+| Magic Find Enrichment | SB | Scrap. Magic Find is not the name. | Scrap |
+| Ferocity Enrichment | SB | Pending. Not locked. Ferocity the stat stays. Enchant cap 300. Total cap 600. Do not scrap that stat. | Open |
+
+### Accessory powers
+
+The power system stays. SkyBlock style (change note 23).
+
+Each accessory has its own buffs. It also adds a flat Accessory Power amount by rarity, from +10 to +25. The exact table is not set. Total Accessory Power is the sum across equipped accessories. You pick one profile (Tank, Balance, Slayer, and the Combat 15 ladder). That profile's stats scale from the total. This score is not the spell stat Magical Power.
+
+Every starter grants a little Health and Defense. That baseline is the same on each of these. Powers use flat mana, not Intelligence and not mana %.
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Fortuitous | SB | Scrap. Hypixel starter name. Use the custom list. | Scrap |
+| Pretty | SB | Scrap. Hypixel starter name. Balance is the multi-stat starter. | Scrap |
+| Protected | SB | Scrap. Hypixel starter name. Tank is the Health and Defense starter. | Scrap |
+| Simple | SB | Scrap. Hypixel starter name. | Scrap |
+| Warrior | SB | Scrap as a power name. It clashes with the Warrior class. The change note 8 example used this name. That name is out. | Scrap |
+| Tank | SkyWynn | Keep. Bonus Health and Defense only. No other stats. | Keep |
+| Balance | SkyWynn | Keep. Default profile. Even boost to Health, Defense, Speed, Strength, flat mana, Crit Chance, and Crit Damage. | Keep |
+| No Power | SB | Scrap. No empty profile. The default is Balance. | Scrap |
+| Slayer | SkyWynn | Keep. More Strength and Crit Damage. Less Health and Defense. | Keep |
+| Lucky | SkyWynn | Keep. Normal Health and Defense. High Crit Chance. | Keep |
+| Fast | SkyWynn | Keep. Normal Health and Defense. High Speed and Attack Speed. | Keep |
+| Magical | SkyWynn | Keep. Normal Health. Less Defense than the others. Flat mana, mana regen, and Magical Power. | Keep |
+
+Combat-gated powers mirror those starter themes. They are more extreme. They use buffs and debuffs, SkyBlock style. Amounts still scale with total Accessory Power. Mana on these powers is flat mana.
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Commando | SB | Scrap as a copy-paste name. Combat 15 slot is the custom ladder. | Scrap |
+| Disciplined | SB | Scrap as a copy-paste name. | Scrap |
+| Inspired | SB | Scrap as a copy-paste name. | Scrap |
+| Ominous | SB | Scrap as a copy-paste name. | Scrap |
+| Prepared | SB | Scrap as a copy-paste name. | Scrap |
+| Glass Cannon | SkyWynn | Keep. Combat 15 form of Slayer. −Health. −Defense. Much more Strength and Crit Damage. Solid Crit Chance. | Keep |
+| Fortress | SkyWynn | Keep. Combat 15 form of Tank. Large Health and Defense. A Speed or Strength debuff is optional. Not picked. | Keep |
+| Harmony | SkyWynn | Keep. Combat 15 form of Balance. Larger even spread: Health, Defense, Speed, Strength, flat mana, Crit Chance, Crit Damage. Magical Power is not in this spread unless added later. | Keep |
+| Fortune | SkyWynn | Keep. Combat 15 form of Lucky. Much higher Crit Chance. Good Crit Damage. Slight Strength. −Health. −Defense. | Keep |
+| Blitz | SkyWynn | Keep. Combat 15 form of Fast. High Speed and Attack Speed. −Health. −Defense. | Keep |
+| Arcane | SkyWynn | Keep. Combat 15 form of Magical. More Magical Power. −Defense. −Strength. Flat mana and mana regen. | Keep |
+
 </details>
-
-
-## Movement
-
-| Stat | Game | What it does | Decision |
-|---|---|---|---|
-| Speed / Walk Speed | Both | Move faster. SB Speed base is 100, cap 400. Wynn Walk Speed is a percent, and stops helping past +400%. | |
-| Sprint | Wynn | How long you can sprint before the bar runs out. | |
-| Sprint Regen | Wynn | How fast the sprint bar refills. | |
-| Jump Height | Wynn | How high you jump. | |
-| Rift Speed | SB | Move speed inside the Rift only. | |
-
-## Gathering
-
-| Stat | Game | What it does | Decision |
-|---|---|---|---|
-| Breaking Power | SB | Lets you mine harder blocks. | |
-| Mining Speed | SB | Mines blocks faster. | |
-| Mining Spread | SB | Breaks nearby blocks too. Every 100 is another block. Not gemstones. Off on a private island. | |
-| Gemstone Spread | SB | Breaks nearby gemstone blocks. | |
-| Pristine | SB | Chance a mined gemstone comes out a higher quality. | |
-| Mining Fortune | SB | Chance of extra mining drops. Every 100 is one extra drop. | |
-| Ore Fortune | SB | Extra Mining Fortune on ores. | |
-| Block Fortune | SB | Extra Mining Fortune on blocks. | |
-| Dwarven Metal Fortune | SB | Extra Mining Fortune on dwarven metals. | |
-| Gemstone Fortune | SB | Extra Mining Fortune on gemstones. | |
-| Farming Fortune | SB | Chance of extra crop drops. Every 100 is one extra drop. | |
-| Wheat Fortune | SB | Extra Farming Fortune on wheat. | |
-| Carrot Fortune | SB | Extra Farming Fortune on carrots. | |
-| Potato Fortune | SB | Extra Farming Fortune on potatoes. | |
-| Pumpkin Fortune | SB | Extra Farming Fortune on pumpkins. | |
-| Sugar Cane Fortune | SB | Extra Farming Fortune on sugar cane. | |
-| Melon Slice Fortune | SB | Extra Farming Fortune on melon slices. | |
-| Cactus Fortune | SB | Extra Farming Fortune on cactus. | |
-| Cocoa Beans Fortune | SB | Extra Farming Fortune on cocoa beans. | |
-| Mushroom Fortune | SB | Extra Farming Fortune on mushrooms. | |
-| Nether Wart Fortune | SB | Extra Farming Fortune on nether wart. | |
-| Sunflower Fortune | SB | Extra Farming Fortune on sunflowers. | |
-| Moonflower Fortune | SB | Extra Farming Fortune on moonflowers. | |
-| Wild Rose Fortune | SB | Extra Farming Fortune on wild roses. | |
-| Bonus Pest Chance | SB | More pests can spawn at once. | |
-| Overbloom | SB | Higher chance of rare crops. | |
-| Foraging Fortune | SB | Chance of extra foraging drops. Every 100 is one extra drop. | |
-| Fig Fortune | SB | Extra Foraging Fortune on fig logs. | |
-| Mangrove Fortune | SB | Extra Foraging Fortune on mangrove logs. | |
-| Helix Fortune | SB | Extra Foraging Fortune on helix logs. | |
-| Sweep | SB | Lets an axe break more logs. Tougher trees need more Sweep. | |
-| Timber | SB | Chance the first axe cut fells the whole tree. | |
-| Fishing Speed | SB | How fast a catch lands. The cap depends on the zone. | |
-| Sea Creature Chance | SB | Chance a catch is a sea creature. | |
-| Double Hook Chance | SB | Chance to hook a second sea creature. Cap 100. | |
-| Treasure Chance | SB | Higher chance of a fishing treasure. | |
-| Trophy Chance | SB | Higher chance of a trophy fish. Cap 150. | |
-| Pull | SB | What a fishing net can grab, and how long it takes. | |
-| Hunting Fortune | SB | Chance of extra attribute shards. Every 100 is one extra shard. | |
-| Charm Chance | SB | Higher chance a killed mob drops an attribute shard. | |
-| Gather Speed | Wynn | Faster gathering. Found on ingredients, not normal armour. | |
-
-## Loot and luck
-
-| Stat | Game | What it does | Decision |
-|---|---|---|---|
-| Magic Find | SB | Higher chance of rare drops from mobs and bosses. Cap 900. **Clash:** not Wynn Loot Bonus. | |
-| Pet Luck | SB | Higher chance a mob or boss drops a pet. | |
-| Loot Bonus | Wynn | More items from mobs and loot chests. | |
-| Loot Quality | Wynn | Rarer loot, fewer commons. Mostly on ingredients. | |
-| Stealing | Wynn | Chance a hit mob drops an emerald. | |
-| Fear | SB | During the Great Spook, Primal Fears spawn more often and hurt you less. | |
-| Tracking | SB | Higher chance to find elusive mobs. | |
-
-## XP and wisdom
-
-| Stat | Game | What it does | Decision |
-|---|---|---|---|
-| Combat Wisdom | SB | More Combat XP. | |
-| Farming Wisdom | SB | More Farming XP. | |
-| Fishing Wisdom | SB | More Fishing XP. | |
-| Mining Wisdom | SB | More Mining XP. | |
-| Foraging Wisdom | SB | More Foraging XP. | |
-| Enchanting Wisdom | SB | More Enchanting XP. | |
-| Alchemy Wisdom | SB | More Alchemy XP. | |
-| Carpentry Wisdom | SB | More Carpentry XP. | |
-| Runecrafting Wisdom | SB | More Runecrafting XP. | |
-| Taming Wisdom | SB | More Taming XP. | |
-| Social Wisdom | SB | More Social XP. | |
-| Hunting Wisdom | SB | More Hunting XP. | |
-| XP Bonus | Wynn | More XP from mobs and dungeons. Quests, discoveries, raids, and profession XP are left out. | |
-| Gather XP Bonus | Wynn | More gathering XP. On ingredients. | |
-| Soul Point Regen | Wynn | Chance of an extra soul point at dawn. Negative can skip the daily point. | |
-
-## Other
-
-| Stat | Game | What it does | Decision |
-|---|---|---|---|
-| Heat Resistance | SB | Heat builds slower in the Magma Fields. | |
-| Cold Resistance | SB | Cold builds slower in the Glacite tunnels and mineshafts. | |
-| Respiration | SB | Longer breath underwater. Base 30. | |
-| Pressure Resistance | SB | Pressure hurts less while diving. | |
-| Rift Time | SB | Longer stay in the Rift before you are sent out. | |
-| Rift Damage | SB | More damage dealt inside the Rift. | |
-| Rift Intelligence | SB | More mana, and more mana regen, inside the Rift. | |
-| Hearts | SB | Extra hits you can take from some Rift creatures. | |
 
 ## SkyBlock accessory powers
 
-Hypixel name: Accessory Power. Older name: Magical Power. Each accessory in the bag adds power by its rarity. You pick one power. More power makes that power's listed stats bigger. A stone power can also have a unique bonus that does not grow with power. Numbers here are the wiki's stats at 250 Accessory Power, plus that unique bonus. They are SkyBlock facts for this menu. They are not a SkyWynn lock. Hypixel's Warrior power is not the locked SkyWynn example named Warrior.
+Starters and the Combat 15 ladder are in the decided section (change notes 20–22). Fortress, Harmony, Glass Cannon, Fortune, Blitz, and Arcane are Keep. Hypixel names Commando, Disciplined, Inspired, Ominous, and Prepared are scrap.
+
+No Power is scrap (change note 24). There is no empty profile. The default profile is Balance. Players can switch to Tank, Slayer, Lucky, Fast, Magical, or the Combat 15 ladder when those are unlocked. Stone powers are not locked. Whether Magical Power joins enrichments or tuning is not locked. Hypixel name for the bag score: Accessory Power. Hypixel's older name for that score was Magical Power. Our spell stat Magical Power is not that score. A stone power can also have a unique bonus that does not grow with power. Numbers here are the wiki's stats at 250 Accessory Power, plus that unique bonus. They are SkyBlock facts. They are not a SkyWynn lock. A SkyBlock Intelligence line on a power is flat mana. Not an Intelligence ID. Not mana %.
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
-| No Power | SB | A selectable option that applies no power stats. | |
-| Fortuitous | SB | Starter. At 250 Accessory Power: +32 Health, +12 Defense, +46 Strength, +42 Crit Chance, +46 Crit Damage. | |
-| Pretty | SB | Starter. At 250: +16 Health, +12 Defense, +6 Speed, +46 Strength, +104 Intelligence, +5 Crit Chance, +12 Crit Damage. | |
-| Protected | SB | Starter. At 250: +113 Health, +104 Defense, +23 Strength, +5 Crit Chance, +12 Crit Damage. | |
-| Simple | SB | Starter. At 250: +48 Health, +35 Defense, +12 Speed, +35 Strength, +52 Intelligence, +14 Crit Chance, +35 Crit Damage. | |
-| Warrior | SB | Starter. At 250: +32 Health, +12 Defense, +81 Strength, +23 Crit Chance, +58 Crit Damage. **Clash:** Hypixel's power, not the locked SkyWynn Warrior example. | |
-| Commando | SB | Needs Combat 15. At 250: +48 Health, +23 Defense, +81 Strength, +5 Crit Chance, +81 Crit Damage. | |
-| Disciplined | SB | Needs Combat 15. At 250: +48 Health, +23 Defense, +69 Strength, +14 Crit Chance, +69 Crit Damage. | |
-| Inspired | SB | Needs Combat 15. At 250: +16 Health, +12 Defense, +46 Strength, +156 Intelligence, +9 Crit Chance, +35 Crit Damage. | |
-| Ominous | SB | Needs Combat 15. At 250: +48 Health, +9 Speed, +35 Strength, +59 Intelligence, +14 Crit Chance, +35 Crit Damage, +9 Attack Speed. | |
-| Prepared | SB | Needs Combat 15. At 250: +120 Health, +109 Defense, +19 Strength, +4 Crit Chance, +9 Crit Damage. | |
-| Forceful | SB | Stone: Acacia Birdhouse. Needs Combat 20. At 250: +46.28 Crit Damage, +173.56 Strength, +16.2 Health. Unique bonus: +4 Ferocity. | |
-| Bloody | SB | Stone: Beating Heart. Needs Combat 20. At 250: +104.13 Crit Damage, +104.13 Strength, +34.71 Intelligence. Unique bonus: +10 Attack Speed. | |
+| Forceful | SB | Stone: Acacia Birdhouse. Needs Combat 20. At 250: +46.28 Crit Damage, +173.56 Strength, +16.2 Health. Unique bonus: +4 Ferocity. Not locked. | |
+| Bloody | SB | Stone: Beating Heart. Needs Combat 20. At 250: +104.13 Crit Damage, +104.13 Strength, +34.71 flat mana. Unique bonus: +10 Attack Speed. | |
 | Bubba | SB | Stone: Bubba Blister. Needs Combat 25. At 250: −92.56 Defense, +48.6 Health, +104.13 Crit Damage, +7.87 True Defense, +46.28 Strength, +17.36 Attack Speed, +9.26 Crit Chance. Unique bonus: +2 Combat Wisdom. | |
 | Shaded | SB | Stone: Dark Orb. Needs Combat 20. At 250: +5.79 Speed, +173.56 Crit Damage, +46.28 Strength. Unique bonus: +3 Attack Speed and +3 Ferocity. | |
-| Sanguisuge | SB | Stone: Displaced Leech. Needs Combat 10. At 250: +9.26 Crit Chance, +46.28 Crit Damage, +32.4 Health, +138.85 Strength. Unique bonus: +100 Intelligence. | |
-| Bizarre | SB | Stone: Eccentric Painting. Needs Combat 25. At 250: −23.14 Crit Damage, +416.54 Intelligence, −23.14 Strength. Unique bonus: +5 Ability Damage. | |
-| Adept | SB | Stone: End Stone Shulker. Needs Combat 20. At 250: +92.56 Defense, +34.71 Intelligence, +161.99 Health. Unique bonus: +100 Health and +50 Defense. | |
-| Sighted | SB | Stone: Ender Monocle. Needs Combat 15. At 250: +347.11 Intelligence. Unique bonus: +3 Ability Damage. | |
-| Crumbly | SB | Stone: Fang-tastic Chocolate Chip. Needs Combat 20. At 250: +97.19 Health, +4.63 Crit Chance, +6.94 Attack Speed, +52.07 Intelligence, +15.74 True Defense. Unique bonus: +25 Speed. | |
+| Sanguisuge | SB | Stone: Displaced Leech. Needs Combat 10. At 250: +9.26 Crit Chance, +46.28 Crit Damage, +32.4 Health, +138.85 Strength. Unique bonus: +100 flat mana. | |
+| Bizarre | SB | Stone: Eccentric Painting. Needs Combat 25. At 250: −23.14 Crit Damage, +416.54 flat mana, −23.14 Strength. Unique bonus: +5 Ability Damage. | |
+| Adept | SB | Stone: End Stone Shulker. Needs Combat 20. At 250: +92.56 Defense, +34.71 flat mana, +161.99 Health. Unique bonus: +100 Health and +50 Defense. | |
+| Sighted | SB | Stone: Ender Monocle. Needs Combat 15. At 250: +347.11 flat mana. Unique bonus: +3 Ability Damage. | |
+| Crumbly | SB | Stone: Fang-tastic Chocolate Chip. Needs Combat 20. At 250: +97.19 Health, +4.63 Crit Chance, +6.94 Attack Speed, +52.07 flat mana, +15.74 True Defense. Unique bonus: +25 Speed. | |
 | Itchy | SB | Stone: Furball. Needs Combat 20. At 250: +5.79 Speed, +80.99 Crit Damage, +69.42 Strength, +20.83 Attack Speed. Unique bonus: +15 Strength and +15 Crit Damage. | |
 | Frozen | SB | Stone: Glacite Chunk. Needs Combat 20. At 250: +17.7 True Defense, +127.27 Defense. Unique bonus: +10 True Defense, +25 Crit Damage, +25 Strength. | |
-| Slender | SB | Stone: Hazmat Enderman. Needs Combat 30. At 250: +57.85 Crit Damage, +80.99 Health, +10.41 Attack Speed, +5.79 Speed, +86.78 Intelligence, +57.85 Strength, +57.85 Defense. Unique bonus: +50 Strength and +100 Defense. | |
-| Demonic | SB | Stone: Horns of Torment. Needs Combat 25. At 250: +53.22 Strength, +267.28 Intelligence. Unique bonus: +50 Crit Damage. | |
+| Slender | SB | Stone: Hazmat Enderman. Needs Combat 30. At 250: +57.85 Crit Damage, +80.99 Health, +10.41 Attack Speed, +5.79 Speed, +86.78 flat mana, +57.85 Strength, +57.85 Defense. Unique bonus: +50 Strength and +100 Defense. | |
+| Demonic | SB | Stone: Horns of Torment. Needs Combat 25. At 250: +53.22 Strength, +267.28 flat mana. Unique bonus: +50 Crit Damage. | |
 | Silky | SB | Stone: Luxurious Spool. Needs Combat 15. At 250: +5.79 Speed, +219.84 Crit Damage. Unique bonus: +5 Attack Speed. | |
 | Hurtful | SB | Stone: Magma Urchin. Needs Combat 25. At 250: +46.28 Strength, +185.13 Crit Damage. Unique bonus: +15 Attack Speed. | |
 | Strong | SB | Stone: Mandraa. Needs Combat 30. At 250: +115.7 Strength, +115.7 Crit Damage. Unique bonus: +25 Strength and +25 Crit Damage. | |
-| Mythical | SB | Stone: Obsidian Tablet. Needs Combat 20. At 250: +39.34 Defense, +55.08 Health, +39.34 Crit Damage, +9.26 Speed, +39.34 Strength, +59.01 Intelligence, +15.74 Crit Chance. Unique bonus: +40 Strength and +150 Health. | |
+| Mythical | SB | Stone: Obsidian Tablet. Needs Combat 20. At 250: +39.34 Defense, +55.08 Health, +39.34 Crit Damage, +9.26 Speed, +39.34 Strength, +59.01 flat mana, +15.74 Crit Chance. Unique bonus: +40 Strength and +150 Health. | |
 | Pleasant | SB | Stone: Precious Pearl. Needs Combat 25. At 250: +129.59 Health, +138.85 Defense. No unique bonus on the wiki. | |
 | Sweet | SB | Stone: Rock Candy. Needs Combat 15. At 250: +11.57 Speed, +104.13 Defense, +145.79 Health. Unique bonus: +5 Speed. | |
 | Scorching | SB | Stone: Scorched Books. Needs Combat 35. At 250: +92.56 Crit Damage, +80.99 Strength, +17.36 Attack Speed. Unique bonus: +7 Ferocity. | |
 | Buttery | SB | Stone: Sunflower Butter. Needs Combat 20. At 250: +23.14 Speed, +20.83 Attack Speed. Unique bonus: +5 Attack Speed. | |
 | Healthy | SB | Stone: Vitamin Death. Needs Combat 30. At 250: +323.97 Health. Unique bonus: +200 Health. | |
-
-## Accessory enrichments
-
-One enrichment on a Legendary, Mythic, Special, or Very Special accessory. Bought from Elizabeth for 5,000 Bits each. As of SkyBlock 0.24.5 the wiki cap is 65 enriched accessories.
-
-| Stat | Game | What it does | Decision |
-|---|---|---|---|
-| Speed Enrichment | SB | +1 Speed on that accessory. | |
-| Intelligence Enrichment | SB | +2 Intelligence on that accessory. | |
-| Critical Damage Enrichment | SB | +1 Crit Damage on that accessory. | |
-| Critical Chance Enrichment | SB | +1 Crit Chance on that accessory. | |
-| Strength Enrichment | SB | +1 Strength on that accessory. | |
-| Defense Enrichment | SB | +1 Defense on that accessory. | |
-| Health Enrichment | SB | +3 Health on that accessory. | |
-| Magic Find Enrichment | SB | +0.5 Magic Find on that accessory. | |
-| Ferocity Enrichment | SB | +0.3 Ferocity on that accessory. | |
-| Sea Creature Chance Enrichment | SB | +0.3 Sea Creature Chance on that accessory. | |
-| Attack Speed Enrichment | SB | +0.5 Attack Speed on that accessory. | |
 
 ## Tuning points
 
@@ -319,7 +373,7 @@ One enrichment on a Legendary, Mythic, Special, or Very Special accessory. Bough
 | Crit Damage tuning | SB | A Tuning Point can be spent on Crit Damage. Per-point amount is not stated on the wiki page. | |
 | Crit Chance tuning | SB | +0.2 Crit Chance per Tuning Point. | |
 | Attack Speed tuning | SB | +0.3 Attack Speed per Tuning Point. | |
-| Intelligence tuning | SB | A Tuning Point can be spent on Intelligence. Per-point amount is not stated on the wiki page. | |
+| Mana % tuning | SB | Was Intelligence tuning. Not locked. Powers use flat mana. Dedicated mana accessories use +% mana. Per-point amount is not on the wiki page. | |
 
 ## Wynn Major IDs
 
@@ -489,7 +543,7 @@ Unique effects on set items and some raid buffs. Not a rolled ID. Read 2026-09-2
 
 ## New SkyWynn stats
 
-Dodge Chance, Overcrit, True Damage, and flat Spell Cost % are already in the decided section. Blank rows below are for the next idea.
+Dodge Chance, Overcrit, True Damage, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter, and the extra Wisdom rows (Cooking, Smithing, Exploration, Acrobatics) are already in the decided section. Blank rows below are for the next idea.
 
 | Stat | What it might do | Decision |
 |---|---|---|

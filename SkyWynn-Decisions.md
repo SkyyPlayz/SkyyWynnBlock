@@ -62,8 +62,8 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
    - **Set bonuses.** A worn set has a set bonus (Wynncraft set bonuses, Hypixel Full Set Bonus). The sets and the numbers are not named here.
    - **Equipment bar.** A separate bar next to armor: necklace, cloak, ring, belt. Working name **Equipment**. The name is not final. Placeholders on our pages. Not on the inventory screen (10.22). Not the accessory bag.
    - **Loadouts save** armor, that Equipment bar, and the selected Accessory Power buff. Pets are included once pets exist.
-   - **Accessory Power.** Each accessory gives its own buff and also adds accessory power. Total power feeds one selectable buff. More power means a stronger buff. Locked examples: Warrior (strength as a damage modifier, plus a small amount of crit chance, crit damage, health, and defence) and Elementalist (all elemental damage types, and all elemental resistance). **Open:** the rest of the buff list, and the numbers. The crystal table in `SkyyAccessories-Plan.md` stays a draft.
-9. **Combat, defence, and mana (same day, after the catalog).** Locks rows 1.6, 6.4, and 6.5, and adds 6.10–6.13. Full list in `SkyyGear-Plan.md` locks 15–24. Marked in `SkyyGear-Stat-Catalog.md`. The next blank table is Movement. Does not change any jar.
+   - **Accessory Power.** Each accessory gives its own buff and also adds accessory power. Total power feeds one selectable buff. More power means a stronger buff. Locked examples: Warrior (strength as a damage modifier, plus a small amount of crit chance, crit damage, health, and defence) and Elementalist (all elemental damage types, and all elemental resistance). **Open at this note:** the rest of the buff list, and the numbers. The crystal table in `SkyyAccessories-Plan.md` stays a draft. The accessory craft ladder is change note 17. The power name Warrior is scrap later (change note 20). Elementalist is not re-opened there.
+9. **Combat, defence, and mana (same day, after the catalog).** Locks rows 1.6, 6.4, and 6.5, and adds 6.10–6.13. Full list in `SkyyGear-Plan.md` locks 15–24. Marked in `SkyyGear-Stat-Catalog.md`. The next blank table at this note was Movement. Locked later (change note 10). Does not change any jar.
    - **Damage** uses Hytale's system, built on, unless a custom system is easier later. Weapon-only. Neutral damage is called Damage.
    - **Crit Chance** has no cap. 100% is a guaranteed crit. Over 100% is overcrit chance (120% crit = 20% chance to overcrit). **Overcrit** always doubles the crit hit. **Crit Damage** is SkyBlock-style: 0 means a crit is double a normal hit; +100% means double a normal crit, which is 4x a normal hit.
    - **True Damage** ignores enemy Defence. Mobs will almost never deal it. **True Defense is scrap.**
@@ -72,7 +72,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
    - Single-element damage % is Equipment only. Single-element defence is armor only. **Elemental Damage %** and **Elemental Defence** are class skill trees only. **Percent Damage is scrap.**
    - Per-element main-attack lines and per-element spell % are **open**, leaning skip. Wynn spells are class skills. Except Mage and Shaman, those skills are mana abilities, and their element is set in the skill tree.
    - Raw elemental spell damage is skill trees and accessories. An accessory can be specific. A bonus on every skill is rare.
-   - **Attack Speed** % can roll on weapons, armor, Equipment, and accessories. The weapon also has a built-in swing speed. Cap 150%. **Ferocity** cap 300 for now. **Exploding**, **Poison**, and **Knockback** stay Wynn-style.
+   - **Attack Speed** % can roll on weapons, armor, Equipment, and accessories. The weapon also has a built-in swing speed. Cap 150%. **Ferocity** is combat, gear, and accessories. Enchant cap 300. Total cap 600 (change note 20). **Exploding**, **Poison**, and **Knockback** stay Wynn-style.
    - Swing Range is renamed **Reach** (%). Gathering trees only: Mining, Farming, Gathering. Max +50%.
    - **Ability Damage** is skill trees, accessories, and Equipment. Not weapons or armor.
    - **Health** uses Hytale armor health unless we must make our own. Also Equipment and accessories. Not weapons. +Health % can be a gathering-tree upgrade. **Defence** is SkyBlock-style, unless Hytale already has it.
@@ -92,6 +92,125 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 2. **Priest is a class** (was the 'later Priest' idea, rows 6.6 / 6.13). An **AoE healing support** class: healing spells and some damage. Weapon skill **Divinity**. Weapons: wands and spellbooks (`Weapon_Wand_*`, `Weapon_Spellbook_*`). Much of it will be custom content later. Placeholder until the spell system exists: when a Priest damages a mob with a class weapon, party members nearby heal a share of that damage (numbers editable in Server Setup).
 3. **Class kits.** Every class has a kit with its basic weapon, given automatically when the class is selected (a new profile). The kit contents are editable in game.
 4. Shaman (later) gets its own custom weapon (Wynn's relik has no Hytale item); Assassin keeps daggers + kunai.
+5. **Movement (change note 10).** Locks rows 6.14–6.18. Full list in `SkyyGear-Plan.md` locks 25–30. Marked in `SkyyGear-Stat-Catalog.md`. The next blank table at this note was Gathering. Locked later (change note 11). Does not change any jar.
+   - **Speed.** SkyBlock-style flat +Speed. Armor, Equipment, and accessories. Acrobatics skill tree still grants +% movement speed on its own.
+   - **Sprint.** Scrap as a gear stat and as a sprint bar. Use Hytale stamina.
+   - **Stamina Regen.** Sprint Regen, renamed. Armor only. Also Acrobatics and Exploration skill trees. Not on weapons, Equipment, or accessories unless Skyy says later.
+   - **Jump Height.** Skill trees and accessories only. Not on armor, Equipment, or weapons.
+   - **Rift Speed.** Scrap.
+   - **Reach** stays the earlier lock. Gathering trees only (Mining, Farming, Gathering). Max +50%. Not re-opened.
+6. **Gathering (change note 11).** Locks rows 6.19–6.29. Full list in `SkyyGear-Plan.md` locks 31–41. Marked in `SkyyGear-Stat-Catalog.md`. Loot and luck was partly locked later (change note 12). Does not change any jar.
+   - **Breaking Power.** Add. Hytale may already have this under another name. That check is open.
+   - **Mining Speed.** Yes. It increases pick swing speed.
+   - **Pick Breaking Damage.** New name. Damage to blocks only. Not mobs. Open: how Hytale decides pick damage vs hits-to-break a block.
+   - **Mining Spread.** Yes.
+   - **Mining Fortune.** Yes. Ore, Block, Dwarven Metal, and Gemstone Fortune fold into it.
+   - **Auto Smelt.** Add. Ores auto-smelt to ingots (SkyBlock Smelting Touch).
+   - **Farming Fortune.** Yes. Per-crop fortunes are scrap.
+   - **Foraging Fortune.** Yes. Per-tree fortunes are out for now.
+   - **Timber.** Keep that name. Not Treefeller. Not Sweep. Sweep is scrap. Horizontal extra breaks only. Breaking the base already fells the tree.
+   - **Later.** Gemstone Spread and Pristine only if we add gemstones. Fishing and hunting stats stay parked until those mods exist.
+   - **Skip for now.** Bonus Pest Chance. Overbloom. Gather Speed.
+7. **Loot and luck, part (change note 12).** Locks rows 6.30–6.33. Full list in `SkyyGear-Plan.md` locks 42–46. Marked in `SkyyGear-Stat-Catalog.md`. Pet Luck, Fear, and Tracking were locked later (change note 13). Does not change any jar.
+   - **Loot Bonus.** Keep. Wynn. More items from mobs and loot chests.
+   - **Loot Quality.** Keep. Wynn. Rarer loot, fewer commons.
+   - **Stealing.** Keep. Wynn. Chance a hit mob drops an emerald.
+   - **Trophy Hunter.** New name. Higher chance at unique drops and drop-only sets. Bosses and normal mobs. Mob drop-only armor sets, not only boss legendaries. Borderlands-style unique loot.
+   - **Magic Find.** Scrap as the player-facing name. The idea lives on as Trophy Hunter.
+   - **Still open at this note.** Pet Luck, Fear, Tracking. Locked later (change note 13).
+8. **Loot and luck, rest (change note 13).** Finishes the table. Rows 6.34–6.36. Plan locks 48–50. XP and wisdom was locked later (change note 14). Does not change any jar.
+   - **Pet Luck.** Keep later. Build when pets exist.
+   - **Fear.** Scrap.
+   - **Tracking.** Scrap.
+9. **XP and wisdom (change note 14).** Locks rows 6.37–6.44. Full list in `SkyyGear-Plan.md` locks 51–59. Marked in `SkyyGear-Stat-Catalog.md`. The Other table was scrapped later as gear IDs (change note 15). Oxygen uses Hytale's system plus accessories (change note 16). Does not change any jar.
+   - **Wisdom.** One stat per skill we have.
+   - **Combat Wisdom.** Keep. One modifier for every class. Combat XP levels the class.
+   - **Keep now.** Farming, Mining, Foraging, Enchanting, Alchemy, Carpentry. Also Cooking, Smithing, Exploration, and Acrobatics, because we have those skills.
+   - **Social Wisdom.** Add later. Social is shelved. Not a skill we have now.
+   - **Later.** Fishing Wisdom, Hunting Wisdom, Taming Wisdom.
+   - **Runecrafting Wisdom.** Scrap. No Runecrafting skill unless we add one.
+   - **XP Bonus.** Keep. A flat small % boost to all XP. Not large.
+   - **Gather XP Bonus.** Scrap. Wisdom covers gathering XP.
+   - **Soul Point Regen.** Scrap. No soul points.
+10. **Other (change note 15).** Scrap the whole table as gear IDs. Row 6.45. Plan lock 60. Next blank table is SkyBlock accessory powers. Does not change any jar. Clarified later (change note 16): breathing uses Hytale oxygen, not a Respiration ID.
+   - Heat Resistance. Cold Resistance. Respiration. Pressure Resistance.
+   - Rift Time. Rift Damage. Rift Intelligence. Hearts.
+11. **Oxygen and swim speed (change note 16).** Not a Respiration stat ID. Row 6.46. Plan locks 61–62. Does not change any jar.
+   - Use Hytale's native oxygen.
+   - Accessories can raise oxygen. A max-level oxygen accessory line allows full underwater breathing.
+   - A separate accessory boosts water swim speed.
+12. **Accessory progression (change note 17).** Rows 6.47. Plan locks 63–65. Does not change any jar.
+   - Most accessories are crafted. Some come from mobs or chests.
+   - Leveling a collection unlocks the next accessory craft tier.
+   - Crafting the next rarity needs the previous rarity as an ingredient. SkyBlock-style ladder.
+13. **Accessory enrichments (change note 18).** Rows 6.48. Plan locks 66–70. Does not change any jar. Gear modifier rulings apply to accessories and Equipment the same way.
+   - **Keep.** Speed, Crit Damage, Crit Chance, Strength, Defense, Health, Attack Speed.
+   - **Mana % enrichment.** Was Intelligence Enrichment. +% mana on a dedicated mana accessory. No Intelligence ID. Powers use flat mana (change note 20).
+   - **Sea Creature Chance Enrichment.** Add later. With fishing.
+   - **Magic Find Enrichment.** Scrap.
+   - **Ferocity Enrichment.** Pending. Not locked. Ferocity the stat stays (change note 20). Do not scrap that stat.
+14. **Accessory power starters (change note 19).** Rows 6.49. Plan locks 71–76. Leaning Keep at this note. Pending confirm. Does not change any jar. Replaced later (change note 20).
+   - The power system stays.
+   - **Starters at this note.** No Power, Fortuitous, Pretty, Protected, Simple, Warrior.
+   - **Warrior.** Rename TBD at this note. The name is scrap later (change note 20).
+   - **Pretty.** Multi-stat blend at this note. Replaced later by Balance (change note 20).
+15. **Ferocity caps and custom starters (change note 20).** Rows 6.50. Plan locks 77–90. Does not change any jar. Next blank table is the rest of SkyBlock accessory powers.
+   - **Ferocity.** Keep. Combat, gear, and accessories. Enchant cap 300. Total cap 600.
+   - **Ferocity Enrichment.** Still pending. Do not scrap the Ferocity stat.
+   - **Scrap Hypixel starter names.** Fortuitous, Pretty, Protected, Simple, Warrior.
+   - **Baseline.** Every starter grants a little Health and Defense.
+   - **Keep.** Tank, Balance, Slayer, Lucky, Fast, Magical.
+   - **Tank.** Bonus Health and Defense only. No other stats.
+   - **Balance.** Even boost to Health, Defense, Speed, Strength, flat mana, Crit Chance, and Crit Damage.
+   - **Slayer.** More Strength and Crit Damage. Less Health and Defense. The name is Slayer.
+   - **Lucky.** Normal Health and Defense. High Crit Chance.
+   - **Fast.** Normal Health and Defense. High Speed and Attack Speed.
+   - **Magical.** Normal Health. Less Defense than the others. Flat mana and mana regen. Also boosts Magical Power (change note 22).
+   - **Powers.** Flat mana. Not Intelligence. Not mana %.
+   - **Dedicated mana accessories.** +% mana.
+   - **Pending at this note.** Combat 15+ Hypixel powers and stone powers are not locked. Hypixel Combat 15 names were scrapped later (change note 21). Stone powers stay pending. No Power was scrapped later (change note 24).
+   - Gear modifier rulings apply to accessories and Equipment the same way.
+16. **Combat 15 power ladder (change note 21).** Rows 6.51. Plan locks 91–101. Does not change any jar. Next blank table is stone powers.
+   - Combat-gated powers mirror the starter themes. They are more extreme.
+   - They use buffs and debuffs. SkyBlock style.
+   - Amounts still scale with total Accessory Power.
+   - **Glass Cannon.** Keep. Combat 15 form of Slayer. −Health. −Defense. Much more Strength and Crit Damage. Solid Crit Chance.
+   - **Drafts at this note.** Fortress, Harmony, Fortune, Blitz, Arcane. Confirmed later (change note 22). Fortune's debuff picks here were replaced.
+   - **Scrap Hypixel names.** Commando, Disciplined, Inspired, Ominous, Prepared. Do not copy them.
+   - **Still pending.** Stone powers. Fortress's extra debuff stays optional (change note 22). No Power was scrapped later (change note 24).
+17. **Magical Power and Combat 15 confirm (change note 22).** Rows 6.52. Plan locks 102–110. Does not change any jar.
+   - **Magical Power.** Keep. Spell damage. Strength is melee or hit damage. Mage staff melee uses Strength. Mage spells use Magical Power.
+   - Weapons, armor, Equipment, and accessories. Same rulings. Not the bag score. The bag score is Accessory Power.
+   - **Starter Magical** also boosts Magical Power.
+   - **Fortress.** Keep. Large Health and Defense. A Speed or Strength debuff is optional. Not picked.
+   - **Harmony.** Keep. Larger even spread: Health, Defense, Speed, Strength, flat mana, Crit Chance, Crit Damage. Magical Power is not in this spread unless added later.
+   - **Glass Cannon.** Already Keep.
+   - **Fortune.** Keep. Much higher Crit Chance. Good Crit Damage. Slight Strength. −Health. −Defense.
+   - **Blitz.** Keep. High Speed and Attack Speed. −Health. −Defense.
+   - **Arcane.** Keep. More Magical Power. −Defense. −Strength. Flat mana and mana regen.
+   - **Still pending.** Stone powers. Whether Magical Power joins enrichments or tuning. No Power was scrapped later (change note 24).
+18. **Accessory Power model (change note 23).** Rows 6.53. Plan locks 111–115. Does not change any jar.
+   - Each accessory has its own buffs.
+   - Each accessory also adds flat Accessory Power by rarity. The range is +10 to +25. The exact table is not set.
+   - Total Accessory Power is the sum across equipped accessories.
+   - The selected profile scales its stats from that total. Profiles include Tank, Balance, Slayer, and the Combat 15 ladder.
+   - **No Power at this note.** Pending. Scrapped later (change note 24). There is no empty profile.
+19. **Profile selection (change note 24).** Rows 6.54. Plan locks 116–118. Does not change any jar.
+   - **No Power.** Scrap. No selectable empty profile.
+   - **Default.** Balance.
+   - Players can switch to Tank, Slayer, Lucky, Fast, or Magical.
+   - Combat 15 ladder, when unlocked: Fortress, Harmony, Glass Cannon, Fortune, Blitz, Arcane.
+20. **Gear pipeline (change note 25).** Row 6.55. Plan locks 119–126. Does not change any jar. Start the combat-gear build. Do not block on open tables.
+   - Every gear piece, craft or drop, has a rarity. Rarity drives modifier count and power.
+   - Mob-dropped gear is combat gear. Default Hytale gear is combat gear for now.
+   - Mining, farming, and foraging gear come later, with that skill's modifiers. Combat gear first.
+   - Crafted gear gets its rarity and its roll on craft.
+   - Mob drops start unidentified. Rarity is set before identify. Identify reveals what the item is and its roll.
+   - The roll system stays as designed. The modifier pool is every Keep modifier from the catalog pass.
+   - Combat modifiers only on combat gear. Movement modifiers on any gear. Skill-specific modifiers only on that skill's gear. A catalog row that already names a tighter slot still uses that slot.
+   - Default Accessory Power profile is Balance. No empty profile. No Power stays scrap.
+
+---
 
 ---
 
@@ -196,7 +315,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 5.7 | Powders (elemental socketables T1–T6) | Wynn | TAKE | ✔ TAKE — powders replace SkyBlock runes |
 | 5.8 | Elements (5-element damage/defense matrix) | Wynn | TAKE "elements-lite" v1 | ✔ TAKE Wynn's five. Not elements-lite, and not a swap to Hytale's set (9.3) |
 | 5.9 | Enchanting (table + books + anvil + ultimates) | SkyBlock | TAKE | |
-| 5.10 | Accessories/talismans + Accessory Bag + Magical Power + tuning | SkyBlock | TAKE | ✔ **Core**, not later-game. **Tightened 2026-09-24 (change note 8):** each accessory gives its own buff and adds accessory power. Total power feeds one selectable buff; more power, stronger buff. Locked examples: Warrior and Elementalist. **Open:** the full buff list and the numbers. Tuning and the crystal table in `SkyyAccessories-Plan.md` stay a draft. The selected buff is saved in a loadout (5.14) |
+| 5.10 | Accessories/talismans + Accessory Bag + Magical Power + tuning | SkyBlock | TAKE | ✔ **Core**, not later-game. **Tightened 2026-09-24 (change note 8):** each accessory gives its own buff and adds accessory power. Total power feeds one selectable buff; more power, stronger buff. Locked examples: Warrior and Elementalist. **Tightened 2026-09-25 (change notes 17–19):** most accessories are crafted; collections unlock the next craft tier; the next rarity needs the previous rarity. Enrichments: keep Speed, Crit Damage, Crit Chance, Strength, Defense, Health, Attack Speed; Intelligence Enrichment is Mana % enrichment; Sea Creature Chance is later; Magic Find Enrichment is scrap; Ferocity Enrichment is pending (Ferocity the stat stays; enchant cap 300, total cap 600, change note 20). Hypixel starter names are scrap. Custom starters: Tank, Balance, Slayer, Lucky, Fast, Magical. Powers use flat mana. Dedicated mana accessories use +% mana. **Change note 21, confirmed in change note 22:** Fortress, Harmony, Glass Cannon, Fortune, Blitz, and Arcane are Keep. Hypixel Combat 15 names are scrap. **Change note 22:** Magical Power is a spell-damage stat, not this bag score. Strength is melee. The spell stat can roll on weapons, armor, Equipment, and accessories. Whether it joins enrichments or tuning is open. **Open:** stone powers, Fortress's extra debuff, the numbers, and tuning. No Power is scrap (change note 24). The default profile is Balance. The crystal table in `SkyyAccessories-Plan.md` stays a draft. The selected buff is saved in a loadout (5.14) |
 | 5.11 | Set items (bonus for wearing the set) | Wynn | TAKE (cheap, fun) | ✔ LOCKED (2026-09-24, change note 8) — sets have a set bonus (Wynncraft set bonuses and Hypixel Full Set Bonus). Some sets are drop-only and some are craft-only (5.16). Bonus numbers are not set here |
 | 5.12 | Durability: only on crafted gear (Wynn) vs all gear vs none | Wynn | DECIDE — pack currently has durability-off mod! | |
 | 5.13 | Pets (leveling companions, rarity, pet items) | SkyBlock | TAKE | |
@@ -213,7 +332,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.2 | Archetypes (3 themed sub-builds per class) | Wynn | v1: 1–2 archetypes per class, 3rd later | |
 | 6.3 | Ability tree size: Wynn has 70+ nodes/class | Wynn | ~25 nodes/class v1 — enough? | |
 | 6.4 | Mana / intelligence resource for abilities | Wynn | TAKE | ✔ LOCKED (2026-09-24, change note 9) — use Hytale's mana. Our modifiers add to it. +Max Mana on gear is Equipment only. Overall Level (average of all skill levels) raises base Health and Mana (6.11). Per-spell cost IDs are scrap. One flat −% Spell Cost, accessory only. Skill-upgrade points come every 5 levels (6.12) |
-| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 9) — first pass is in. Crit Chance has no cap (over 100% is overcrit chance). Crit Damage is SkyBlock-style (0 = double a normal hit; +100% = 4x). Overcrit doubles the crit. Ferocity cap 300 for now. Attack Speed cap 150%. True Damage ignores Defence; True Defense is scrap. Fortune from change note 7 was **not** re-opened. The catalog's next blank table is Movement |
+| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 9) — first pass is in. Crit Chance has no cap (over 100% is overcrit chance). Crit Damage is SkyBlock-style (0 = double a normal hit; +100% = 4x). Overcrit doubles the crit. Ferocity enchant cap 300, total cap 600 (change note 20). Attack Speed cap 150%. True Damage ignores Defence; True Defense is scrap. Gathering fortunes are locked (change note 11). Movement is locked (change note 10). Loot and luck is finished (change notes 12 and 13). XP and wisdom is locked (change note 14). The Other table is scrap as gear IDs (change note 15). Oxygen uses Hytale's system plus accessories (change note 16). Accessory progression and enrichments are change notes 17–18. Custom starters are change note 20. The Combat 15 ladder is change note 21. Magical Power and the Combat 15 confirm are change note 22. Next blank table is stone powers. No Power is scrap (change note 24). The default profile is Balance |
 | 6.6 | Healer/Tank dungeon-class variants (SkyBlock Catacombs style) | SkyBlock | SKIP? classes already cover roles | Open with 6.13. Crowd healing is a later Priest idea. This row's dungeon-variant call is not locked |
 | 6.7 | Slayers (spawn-a-boss quest chains + slayer XP) | SkyBlock | TAKE (midgame) | ✔ **Core loop**, not side content. Not the leveling spine (that stays the island chain) |
 | 6.8 | Boss altars (summon boss with materials) | Wynn | TAKE (cheap early bosses) | |
@@ -222,6 +341,48 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.11 | Overall Level (average of all skill levels) | Skyy | | ✔ LOCKED (2026-09-24, change note 9) — each Overall Level raises base Health and base Mana. Class trees can add flat Health and Mana. Gathering trees can add a small +%. **Open:** the amount per level |
 | 6.12 | Skill-upgrade points (every 5 levels) | Skyy | | ✔ LOCKED (2026-09-24, change note 9) — separate from the skill tree. An upgrade raises a skill's damage, or its range if it is a traversal skill, and lowers its raw cost. **Open:** how big that change is |
 | 6.13 | Class roles, including a later Priest | Skyy | | Open. Priest is the named idea for crowd healing (healing spells and some damage, a support role). Roles are not defined yet. Not added to the class roster |
+| 6.14 | Speed (flat +Speed) | SkyBlock | | ✔ LOCKED (2026-09-25, change note 10) — SkyBlock-style flat +Speed. Armor, Equipment, and accessories. Acrobatics skill tree still grants +% movement speed on its own |
+| 6.15 | Sprint bar | Wynn | | ✔ SCRAP (2026-09-25, change note 10) — not a gear stat and not a sprint bar. Use Hytale stamina |
+| 6.16 | Stamina Regen (was Sprint Regen) | Wynn | | ✔ LOCKED (2026-09-25, change note 10) — armor only. Also Acrobatics and Exploration skill trees. Not on weapons, Equipment, or accessories unless Skyy says later |
+| 6.17 | Jump Height | Wynn | | ✔ LOCKED (2026-09-25, change note 10) — skill trees and accessories only. Not on armor, Equipment, or weapons |
+| 6.18 | Rift Speed | SkyBlock | | ✔ SCRAP (2026-09-25, change note 10) — Rift move speed is out |
+| 6.19 | Breaking Power | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — add. Hytale may already have this under another name. That check is open |
+| 6.20 | Mining Speed | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — yes. It increases pick swing speed |
+| 6.21 | Pick Breaking Damage | Skyy | | ✔ LOCKED (2026-09-25, change note 11) — damage to blocks only. Not mobs. **Open:** how Hytale decides pick damage vs hits-to-break a block |
+| 6.22 | Mining Spread | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — yes |
+| 6.23 | Mining Fortune (one stat) | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — yes. Ore, Block, Dwarven Metal, and Gemstone Fortune fold into it |
+| 6.24 | Auto Smelt | Skyy | | ✔ LOCKED (2026-09-25, change note 11) — add. SkyBlock Smelting Touch. Ores auto-smelt to ingots |
+| 6.25 | Farming Fortune | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — yes. Per-crop Farming Fortunes are scrap |
+| 6.26 | Foraging Fortune | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — yes. Per-tree Foraging Fortunes are out for now |
+| 6.27 | Timber (replaces Sweep) | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — keep the name Timber. Not Treefeller. Not Sweep. Horizontal extra breaks only. Breaking the base already fells the tree |
+| 6.28 | Gemstones, fishing, hunting | SkyBlock | | ✔ ADD LATER (2026-09-25, change note 11) — Gemstone Spread and Pristine only if we add gemstones. Fishing and hunting stats stay parked until those mods exist |
+| 6.29 | Pest Chance, Overbloom, Gather Speed | both | | ✔ ADD LATER (2026-09-25, change note 11) — skip for now. Bonus Pest Chance is unsure (pests and the Garden). Overbloom. Wynn Gather Speed |
+| 6.30 | Loot Bonus | Wynn | | ✔ LOCKED (2026-09-25, change note 12) — keep. More items from mobs and loot chests |
+| 6.31 | Loot Quality | Wynn | | ✔ LOCKED (2026-09-25, change note 12) — keep. Rarer loot, fewer commons |
+| 6.32 | Stealing | Wynn | | ✔ LOCKED (2026-09-25, change note 12) — keep. Chance a hit mob drops an emerald |
+| 6.33 | Trophy Hunter (replaces Magic Find name) | Skyy | | ✔ LOCKED (2026-09-25, change note 12) — new name. Higher chance at unique drops and drop-only sets. Bosses and normal mobs. Mob drop-only armor sets, not only boss legendaries. Borderlands-style unique loot. Magic Find is scrap as the player-facing name |
+| 6.34 | Pet Luck | SkyBlock | | ✔ ADD LATER (2026-09-25, change note 13) — keep later. Build when pets exist |
+| 6.35 | Fear | SkyBlock | | ✔ SCRAP (2026-09-25, change note 13) |
+| 6.36 | Tracking | SkyBlock | | ✔ SCRAP (2026-09-25, change note 13) |
+| 6.37 | Combat Wisdom | SkyBlock | | ✔ LOCKED (2026-09-25, change note 14) — one modifier for every class. Combat XP levels the class |
+| 6.38 | Wisdom for skills we have | Skyy | | ✔ LOCKED (2026-09-25, change note 14) — Farming, Mining, Foraging, Enchanting, Alchemy, Carpentry, Cooking, Smithing, Exploration, Acrobatics |
+| 6.39 | Social Wisdom | SkyBlock | | ✔ ADD LATER (2026-09-25, change note 14) — Social is shelved. Not a skill we have now |
+| 6.40 | Fishing, Hunting, Taming Wisdom | SkyBlock | | ✔ ADD LATER (2026-09-25, change note 14) — with fishing, hunting, and pets |
+| 6.41 | Runecrafting Wisdom | SkyBlock | | ✔ SCRAP (2026-09-25, change note 14) — no Runecrafting skill unless we add one |
+| 6.42 | XP Bonus | Wynn | | ✔ LOCKED (2026-09-25, change note 14) — a flat small % boost to all XP. Not large |
+| 6.43 | Gather XP Bonus | Wynn | | ✔ SCRAP (2026-09-25, change note 14) — Wisdom covers gathering XP |
+| 6.44 | Soul Point Regen | Wynn | | ✔ SCRAP (2026-09-25, change note 14) — no soul points |
+| 6.45 | Other table (Heat, Cold, breath, pressure, Rift, Hearts) | SkyBlock | | ✔ SCRAP (2026-09-25, change note 15) — scrap all as gear IDs. Heat Resistance, Cold Resistance, Respiration, Pressure Resistance, Rift Time, Rift Damage, Rift Intelligence, Hearts. Do not bring Respiration back as an ID |
+| 6.46 | Hytale oxygen + water swim speed | Skyy | | ✔ LOCKED (2026-09-25, change note 16) — use Hytale's native oxygen. Accessories can raise oxygen. A max-level oxygen line allows full underwater breathing. A separate accessory boosts water swim speed. Not gear IDs |
+| 6.47 | Accessory progression | Skyy | | ✔ LOCKED (2026-09-25, change note 17) — most accessories are crafted. Some come from mobs or chests. Collections unlock the next craft tier. The next rarity needs the previous rarity |
+| 6.48 | Accessory enrichments | SkyBlock | | ✔ LOCKED (2026-09-25, change note 18) — keep Speed, Crit Damage, Crit Chance, Strength, Defense, Health, Attack Speed. Intelligence Enrichment is Mana % enrichment (+% mana on a dedicated mana accessory). Sea Creature Chance is later. Magic Find Enrichment is scrap. Ferocity Enrichment is pending. Ferocity the stat stays (change note 20) |
+| 6.49 | Accessory power starters (Hypixel names) | SkyBlock | | ✔ REPLACED (2026-09-25, change note 19, then change note 20) — the lean on No Power, Fortuitous, Pretty, Protected, Simple, and Warrior is out. Those Hypixel names are scrap |
+| 6.50 | Custom starter powers + Ferocity caps | Skyy | | ✔ LOCKED (2026-09-25, change note 20) — Ferocity stays. Enchant cap 300. Total cap 600. Combat, gear, and accessories. Starters: Tank, Balance, Slayer, Lucky, Fast, Magical. Every starter grants a little Health and Defense. Powers use flat mana. Dedicated mana accessories use +% mana. No Power was scrapped later (change note 24). The default profile is Balance. Stone powers stay pending. Combat 15 names were replaced later (change note 21) |
+| 6.51 | Combat 15 power ladder | Skyy | | ✔ LOCKED (2026-09-25, change note 21, confirmed change note 22) — mirror starter themes, more extreme, buffs and debuffs, amounts scale with Accessory Power. Keep: Fortress, Harmony, Glass Cannon, Fortune, Blitz, Arcane. Scrap Hypixel names: Commando, Disciplined, Inspired, Ominous, Prepared. Fortress extra debuff is optional |
+| 6.52 | Magical Power stat | Skyy | | ✔ LOCKED (2026-09-25, change note 22) — spell-damage stat. Strength is melee or hit damage. Mage staff melee uses Strength. Spells use Magical Power. Weapons, armor, Equipment, and accessories. Not the bag score. Starter Magical and Arcane boost it. Not yet an enrichment or a tuning stat |
+| 6.53 | Accessory Power model | SkyBlock | | ✔ LOCKED (2026-09-25, change note 23) — each accessory has its own buffs and adds flat +10 to +25 Accessory Power by rarity. Exact table is not set. Total is the sum of equipped accessories. The selected profile scales from that total. No Power was scrapped later (change note 24) |
+| 6.54 | Profile selection | Skyy | | ✔ LOCKED (2026-09-25, change note 24) — No Power is scrap. No empty profile. Default is Balance. Switch to Tank, Slayer, Lucky, Fast, Magical, or the Combat 15 ladder when unlocked |
+| 6.55 | Gear pipeline | Skyy | | ✔ LOCKED (2026-09-25, change note 25) — start building combat gear. Rarity on every craft and drop drives modifier count and power. Mob drops and default Hytale gear are combat gear. Gathering gear is later. Crafted gear rolls on craft. Mob drops identify to reveal the item and the roll; rarity is already set. The Keep list is the modifier pool. Combat modifiers on combat gear. Movement modifiers on any gear. Skill modifiers on that skill's gear. Default profile is Balance |
 
 ## 7. WORLD & CONTENT
 
@@ -317,4 +478,4 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 11.3 | ... | | |
 
 ---
-*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Change note 9 replaces the five Wynn skill points on gear with the combat, defence, and mana pass. Fortune from change note 7 was not re-opened. Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*
+*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Change note 9 replaces the five Wynn skill points on gear with the combat, defence, and mana pass. Change note 10 (2026-09-25) locks Movement: flat +Speed, Sprint scrap, Stamina Regen, Jump Height, Rift Speed scrap. Change note 11 locks Gathering: Breaking Power, Mining Speed, Pick Breaking Damage, Mining Spread, one Mining Fortune, Auto Smelt, Farming Fortune, Foraging Fortune, and Timber. Change note 12 locks part of Loot and luck: Loot Bonus, Loot Quality, Stealing, and Trophy Hunter. Magic Find is scrap as the player-facing name. Change note 13 finishes it: Pet Luck is keep later (build when pets exist). Fear and Tracking are scrap. Change note 14 locks XP and wisdom. Change note 15 scraps the Other table as gear IDs. Change note 16 uses Hytale oxygen and a water-swim accessory, not a Respiration ID. Change note 17 locks the accessory craft ladder. Change note 18 locks enrichments. Change note 19 leaned Keep on Hypixel starter names. Change note 20 scraps those names and locks Tank, Balance, Slayer, Lucky, Fast, and Magical. Ferocity enchant cap is 300. Total cap is 600. Change note 21 locks the Combat 15 shape. Change note 22 confirms Fortress, Harmony, Fortune, Blitz, and Arcane, and adds Magical Power as the spell-damage stat. Change note 23 locks the Accessory Power model: own buffs, flat +10 to +25 by rarity, sum of equipped accessories, profile scales from that total. Change note 24 scraps No Power. The default profile is Balance. Change note 25 locks the gear pipeline: combat gear first, gathering gear later, rarity drives modifier count and power, Keep modifiers are the roll pool. Next blank table is stone powers. Do not block the build on it. Reach stays the earlier lock (max +50%). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*
