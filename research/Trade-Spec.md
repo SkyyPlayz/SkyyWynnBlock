@@ -351,9 +351,8 @@ just that one player's half:
   side: escrowed items are also just "whatever was in the active profile's inventory" the instant they were dragged in.
 - `tradeCoinsAllowed` (default `true`) - a server can turn off the coins box outright even with SkyyCoins installed, for a server that wants
   `/trade` item-only (e.g. to keep a separate economy mod as the only coin-moving path).
-- No per-trade coin cap is hard-coded (section 1's Hypixel numbers don't map cleanly onto our economy or our "SkyBlock level" gap) -
-  `tradeMaxCoins` (default `0` = no cap) is a config key so a server can set one without a rebuild; whether to eventually tie it to
-  something like SkyySkills' overall level total is an open question (section 20), not part of 0.1.2.
+- No per-trade coin cap is hard-coded. `tradeMaxCoins` (default `0` = no cap) is a flat server-wide number a server can set without a rebuild.
+  LOCKED 2026-09-25 (Skyy): it stays that flat number. `0` means no cap.
 
 ## 14. Metadata kept + logs
 
@@ -394,7 +393,7 @@ to the vault mod as a future follow-up, but out of scope for this file per the t
 | `tradeSlotsPerSide` | `16` | Escrow container size per player. |
 | `tradeCountdownSeconds` | `3` | Section 9. |
 | `tradeCoinsAllowed` | `true` | Section 13. |
-| `tradeMaxCoins` | `0` (no cap) | Section 13. |
+| `tradeMaxCoins` | `0` (no cap) | Section 13. LOCKED 2026-09-25 (Skyy): flat server number. `0` = no cap. |
 | `tradeCancelOnDamage` | `true` | Cancels an open session (return-to-owner, section 10) if either player takes damage - anti-combat-scam parity with the plugins in section 2, not a dupe-safety requirement. |
 | `tradeOpenMode` | `page` | `page` / `chest`, section 8. |
 | `tradeAfterSwitchSeconds` | `30` | Section 12. |
@@ -452,9 +451,7 @@ docstring already explains for 0.1.1 from 0.1):
 ## 20. Open questions for Skyy (the build uses the default in brackets)
 
 1. LOCKED 2026-09-25 (Skyy): the 3 s countdown after both click Ready is the confirm. Finishing it uninterrupted executes the trade. There is no extra click. That was already the default.
-2. Should `tradeMaxCoins` eventually scale with something (total skill levels, collections, an eventual "SkyBlock-level"-alike number), the
-   way Hypixel ties its own coin cap to SkyBlock level, or stay a single flat server-wide config number for now? **[default: flat number,
-   `0` = uncapped, until a level-like metric exists to key it off]**
+2. LOCKED 2026-09-25 (Skyy): `tradeMaxCoins` stays a flat server-wide number. `0` means no cap. That was already the default.
 3. `tradeCancelOnDamage` default `true` - matches the "don't get combat-scammed mid-trade" spirit of the researched plugins, but on a PvE-
    leaning server this could be an annoyance (stray mob damage cancelling a trade). Keep it `true`, or default `false` and let a PvP-heavy
    server opt in? **[default: `true`]**
