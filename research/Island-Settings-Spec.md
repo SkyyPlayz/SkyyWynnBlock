@@ -213,7 +213,7 @@ Each flag stores one **minimum role**: `visitor | trusted | member | admin | own
 | 12 | `drop` | Drop items | trusted | no / yes / yes / yes | **not guarded** | `DropItemEvent$PlayerRequest` (CancellableEcsEvent, `Store.invoke(ref, ev)` on the dropper) |
 | 13 | `other` | Lanterns, coffins, teleporters, other blocks | trusted | no / yes / yes / yes | members only | `UseBlockEvent$Pre`, anything not matched above |
 
-**Trusted = a builder** (Skyy: "build permission only"): place, break, crafting benches, pickup and drop (needed to build), toggle blocks, doors, seats and mobs. They can't open chests or furnaces, harvest the farm, sleep, or touch animals. The first draft allowed Trusted to harvest and sleep; this revision moves both to Member. The owner can widen or narrow any of it in the grid.
+**Trusted = a builder** (Skyy: "build permission only"): place, break, crafting benches, pickup and drop (needed to build), toggle blocks, doors, seats and mobs. They can't open chests or furnaces, harvest the farm, sleep, or touch animals. The first draft allowed Trusted to harvest and sleep; this revision moves both to Member. The owner can widen or narrow any of it in the grid. LOCKED 2026-09-25 (Skyy): Trusted stays build only. No harvesting crops, no beds, no chests. That was already the default.
 
 Two pseudo-flags exist for the bridge only (not in the grid): `enter` (may this player be on the island now, 4.1) and `settings` (Owner or Admin, fixed).
 
@@ -459,7 +459,7 @@ The same resend goes into `FillTask` (harmless at creation) and `BiomeApply` (wi
 - `loadIslandWorlds()` reads each island file. If the file has no `v=5`, it copies the file to `<key>.properties.v4bak`, then moves every `members=` entry into `trusted=` and writes `v=5`. It logs "migrated N build-rights entries to Trusted in <key>". Reason: in 0.4.x, `/island invite` meant **build rights**, which is Trusted now. Turning those entries into co-op members would silently move their `/island` to someone else's island and make their own island dormant. Example: the beta's "F: /island invite S" would take Skyy's `/island` to Wesley's island.
 - Entries are bare UUIDs, which are each player's profile-1 key (`tools/PROFILES-CONTRACT.md`). They stay valid as profile-1 Trusted entries. In 0.4.x membership covered all of that player's profiles; now it covers profile 1 only. That is the anti-transfer rule, and the owner can re-trust them on another profile.
 - The in-game changelog line: "Island 0.5: /island invite now asks your friend to JOIN your island as a co-op member (/island accept). Old build-rights invites are now Trusted (build only). Use /island trust for helpers."
-- Flag behaviour changes for visitors versus 0.4.5: **seats** allowed; **animals** guarded; **drop** guarded (trusted+). Old build-rights players become Trusted, so they lose chests, furnaces, crops and beds until the owner invites them as members `[SKYY?]`.
+- Flag behaviour changes for visitors versus 0.4.5: **seats** allowed; **animals** guarded; **drop** guarded (trusted+). Old build-rights players become Trusted, so they lose chests, furnaces, crops and beds until the owner invites them as members. LOCKED 2026-09-25 (Skyy): Trusted stays build only. No harvesting crops, no beds, no chests.
 - The world `config.json` of old islands already has `IsPvpEnabled: false`, `IsSpawningNPC: false` and the Void environment. Nothing to change.
 - Nobody is Member, Admin or Banned after the upgrade.
 
@@ -684,7 +684,7 @@ animals.extra=                            # extra NPC role names that count as f
 - LOCKED 2026-09-25 (Skyy): co-op size 5 including the owner. That was already the default;
 - LOCKED 2026-09-25 (Skyy): Island Admins may invite co-op members. `coop.adminsInvite` defaults to `true`. Was: `false`. SkyyIslands 0.5.2 still writes `false`;
 - LOCKED 2026-09-25 (Skyy): Admins may expel, ban and untrust visitors and helpers. Only the Owner kicks co-op members. That was already the default;
-- Trusted = builder (no harvest or beds);
+- LOCKED 2026-09-25 (Skyy): Trusted stays build only. No harvesting crops, no beds, no chests. That was already the default;
 - no visits to your own dormant island while you are in a co-op;
 - old build-rights invites become Trusted;
 - reset cooldown 24 h;

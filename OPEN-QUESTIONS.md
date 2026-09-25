@@ -113,7 +113,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-09-25 (Skyy): co-op size 5 including the owner. [5, already the default]
 - LOCKED 2026-09-25 (Skyy): Island Admins may invite co-op members. Was: only the Owner. [yes; 0.5.2 still defaults coop.adminsInvite to false]
 - LOCKED 2026-09-25 (Skyy): Admins may expel, ban and untrust visitors and helpers. Only the Owner kicks co-op members. [as written, already the default]
-- Trusted = build only (no harvesting crops, no beds, no chests). [as written]
+- LOCKED 2026-09-25 (Skyy): Trusted stays build only. No harvesting crops, no beds, no chests. [as written, already the default]
 - No visits to your own old island while you are in someone's co-op. [no]
 - Old "build rights" invites became Trusted, not members. [done]
 - `/island reset` cooldown 24 h (3 confirms). [24 h]
