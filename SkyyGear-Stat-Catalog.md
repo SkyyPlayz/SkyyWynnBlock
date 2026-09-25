@@ -1,7 +1,7 @@
 # SkyyGear stat catalog
 *Research list, 2026-09-24. Combat through the Combat 15 ladder are marked in the collapsed section. Stone powers, then tuning, still have a blank Decision. No Power is pending. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Change note 15 (2026-09-25) scraps the Other table as gear IDs. Change note 16 uses Hytale oxygen and accessory effects instead of a Respiration ID. Change note 17 is the accessory craft ladder. Change note 18 is enrichments. Change note 19 was the Hypixel starter lean. Change note 20 replaces those names with Tank, Balance, Slayer, Lucky, Fast, and Magical. Change note 21 is the Combat 15 ladder. Glass Cannon is the confirmed theme. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is stone powers. No Power is pending.
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Change note 15 (2026-09-25) scraps the Other table as gear IDs. Change note 16 uses Hytale oxygen and accessory effects instead of a Respiration ID. Change note 17 is the accessory craft ladder. Change note 18 is enrichments. Change note 19 was the Hypixel starter lean. Change note 20 replaces those names with Tank, Balance, Slayer, Lucky, Fast, and Magical. Change note 21 is the Combat 15 ladder. Change note 22 keeps Magical Power as the spell-damage stat and confirms Fortress, Harmony, Fortune, Blitz, and Arcane. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is stone powers. No Power is pending.
 
 **Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter, Cooking Wisdom, Smithing Wisdom, Exploration Wisdom, Acrobatics Wisdom). Those are our locks, not wiki lines.
 
@@ -20,9 +20,9 @@ True Damage is in the decided section. It ignores Defence. True Defense, the sta
 ---
 
 <details>
-<summary><strong>Decided — combat through Combat 15 powers</strong> (change notes 9–21). Next blank table is stone powers. No Power is pending.</summary>
+<summary><strong>Decided — combat through Combat 15 powers</strong> (change notes 9–22). Next blank table is stone powers. No Power is pending.</summary>
 
-These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. The Other table was scrapped as gear IDs (change note 15). Breathing uses Hytale oxygen (change note 16). Accessory craft ladder is change note 17. Enrichments are change note 18. Change note 19 leaned Keep on Hypixel starter names. Change note 20 replaces that list. Change note 21 is the Combat 15 ladder. Glass Cannon is Keep. The other five names are drafts.
+These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. The Other table was scrapped as gear IDs (change note 15). Breathing uses Hytale oxygen (change note 16). Accessory craft ladder is change note 17. Enrichments are change note 18. Change note 19 leaned Keep on Hypixel starter names. Change note 20 replaces that list. Change note 21 is the Combat 15 ladder. Change note 22 confirms that ladder and adds Magical Power.
 
 ### Damage and crits
 
@@ -30,7 +30,8 @@ These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placemen
 |---|---|---|---|
 | Damage | SB | Weapon-only modifier. Use Hytale's damage and build on it, unless a custom system is easier later. | Keep |
 | Neutral damage | Wynn | Same stat. Call it Damage. Stick to Hytale unless we must make our own. | Keep |
-| Strength | SB | SkyBlock-style. Weapons, armor, and Equipment. Class skill trees can raise base Strength. | Keep |
+| Strength | SB | SkyBlock-style. Boosts physical damage from a melee or hit. Weapons, armor, Equipment, and accessories. Class skill trees can raise base Strength. Mage staff melee uses this, not Magical Power. | Keep |
+| Magical Power | SkyWynn | Keep. Does for spells what Strength does for a melee hit. Mage spells use this. Staff melee uses Strength. Weapons, armor, Equipment, and accessories. Not the bag score. The bag score is Accessory Power. | Keep |
 | Strength | Wynn | The Wynn skill point (more damage and Earth damage) is out. Strength is the SkyBlock row. | Scrap |
 | Dexterity | Wynn | Not a skill point for crit. Crit Chance replaces it. | Scrap |
 | Crit Chance | SB | No cap. 100% is a guaranteed crit. Over 100% is overcrit chance. 120% crit means a 20% chance to overcrit. | Keep |
@@ -264,7 +265,7 @@ Breathing is not a Respiration stat. Use Hytale's native oxygen. Accessories can
 
 Most accessories are crafted. Some come from mobs or chests. Leveling a collection unlocks the next accessory craft tier. Crafting the next rarity needs the previous rarity as an ingredient. SkyBlock-style ladder.
 
-Gear modifier rulings apply to accessories and Equipment the same way. Accessory powers use flat mana, not Intelligence. Dedicated mana accessories use +% mana.
+Gear modifier rulings apply to accessories and Equipment the same way. That includes Magical Power. Accessory powers use flat mana, not Intelligence. Dedicated mana accessories use +% mana.
 
 ### Accessory enrichments
 
@@ -302,7 +303,7 @@ Every starter grants a little Health and Defense. That baseline is the same on e
 | Slayer | SkyWynn | Keep. More Strength and Crit Damage. Less Health and Defense. | Keep |
 | Lucky | SkyWynn | Keep. Normal Health and Defense. High Crit Chance. | Keep |
 | Fast | SkyWynn | Keep. Normal Health and Defense. High Speed and Attack Speed. | Keep |
-| Magical | SkyWynn | Keep. Normal Health. Less Defense than the others. Flat mana and mana regen. | Keep |
+| Magical | SkyWynn | Keep. Normal Health. Less Defense than the others. Flat mana, mana regen, and Magical Power. | Keep |
 
 Combat-gated powers mirror those starter themes. They are more extreme. They use buffs and debuffs, SkyBlock style. Amounts still scale with total Accessory Power. Mana on these powers is flat mana.
 
@@ -314,19 +315,19 @@ Combat-gated powers mirror those starter themes. They are more extreme. They use
 | Ominous | SB | Scrap as a copy-paste name. | Scrap |
 | Prepared | SB | Scrap as a copy-paste name. | Scrap |
 | Glass Cannon | SkyWynn | Keep. Combat 15 form of Slayer. −Health. −Defense. Much more Strength and Crit Damage. Solid Crit Chance. | Keep |
-| Fortress | SkyWynn | Draft. Pending confirm. Combat 15 form of Tank. Large Health and Defense. Possible −Speed or −Strength. Debuff pick is open. | Open |
-| Harmony | SkyWynn | Draft. Pending confirm. Combat 15 form of Balance. Larger even spread. No debuffs, or tiny ones. | Open |
-| Fortune | SkyWynn | Draft. Pending confirm. Combat 15 form of Lucky. High Crit Chance. Possible −Crit Damage or −Strength. Debuff pick is open. | Open |
-| Blitz | SkyWynn | Draft. Pending confirm. Combat 15 form of Fast. High Speed and Attack Speed. Possible −Defense or −Health. Debuff pick is open. | Open |
-| Arcane | SkyWynn | Draft. Pending confirm. Combat 15 form of Magical. High flat mana and mana regen. −Defense. Maybe −Strength. Debuff pick is open. | Open |
+| Fortress | SkyWynn | Keep. Combat 15 form of Tank. Large Health and Defense. A Speed or Strength debuff is optional. Not picked. | Keep |
+| Harmony | SkyWynn | Keep. Combat 15 form of Balance. Larger even spread: Health, Defense, Speed, Strength, flat mana, Crit Chance, Crit Damage. Magical Power is not in this spread unless added later. | Keep |
+| Fortune | SkyWynn | Keep. Combat 15 form of Lucky. Much higher Crit Chance. Good Crit Damage. Slight Strength. −Health. −Defense. | Keep |
+| Blitz | SkyWynn | Keep. Combat 15 form of Fast. High Speed and Attack Speed. −Health. −Defense. | Keep |
+| Arcane | SkyWynn | Keep. Combat 15 form of Magical. More Magical Power. −Defense. −Strength. Flat mana and mana regen. | Keep |
 
 </details>
 
 ## SkyBlock accessory powers
 
-Starters and the Combat 15 ladder are in the decided section (change notes 20 and 21). Glass Cannon is Keep. Fortress, Harmony, Fortune, Blitz, and Arcane are drafts. Hypixel names Commando, Disciplined, Inspired, Ominous, and Prepared are scrap.
+Starters and the Combat 15 ladder are in the decided section (change notes 20–22). Fortress, Harmony, Glass Cannon, Fortune, Blitz, and Arcane are Keep. Hypixel names Commando, Disciplined, Inspired, Ominous, and Prepared are scrap.
 
-No Power is pending captain. Stone powers are not locked. Hypixel name: Accessory Power. Older name: Magical Power. A stone power can also have a unique bonus that does not grow with power. Numbers here are the wiki's stats at 250 Accessory Power, plus that unique bonus. They are SkyBlock facts. They are not a SkyWynn lock. A SkyBlock Intelligence line on a power is flat mana. Not an Intelligence ID. Not mana %.
+No Power is pending captain. Stone powers are not locked. Whether Magical Power joins enrichments or tuning is not locked. Hypixel name for the bag score: Accessory Power. Hypixel's older name for that score was Magical Power. Our spell stat Magical Power is not that score. A stone power can also have a unique bonus that does not grow with power. Numbers here are the wiki's stats at 250 Accessory Power, plus that unique bonus. They are SkyBlock facts. They are not a SkyWynn lock. A SkyBlock Intelligence line on a power is flat mana. Not an Intelligence ID. Not mana %.
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
