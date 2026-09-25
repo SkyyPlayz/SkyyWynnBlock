@@ -244,9 +244,8 @@ viewers instead of one):
    ("Trade complete!" / whatever didn't fit, per section 10's delivery rule).
 
 This is deliberately closer to Hypixel's own "closing the menu during the countdown cancels it" behaviour (section 1) than to a fourth
-manual "Confirm" click: the countdown itself *is* the last chance to back out, and finishing it uninterrupted **is** the confirmation. Section
-20 asks Skyy to confirm this reading against the alternative (a literal extra click after the countdown) since the task description's
-phrasing could support either.
+manual "Confirm" click: the countdown itself *is* the last chance to back out, and finishing it uninterrupted **is** the confirmation.
+LOCKED 2026-09-25 (Skyy): that 3 s countdown is the confirm. There is no extra click.
 
 ## 10. ESCROW: the core safety design
 
@@ -452,9 +451,7 @@ docstring already explains for 0.1.1 from 0.1):
 
 ## 20. Open questions for Skyy (the build uses the default in brackets)
 
-1. Is the countdown itself the confirmation (finishing it uninterrupted executes the trade, as designed in section 9), or does Skyy want a
-   literal extra "Confirm" click after the countdown reaches zero, closer to a fourth explicit step? **[default: countdown-is-confirmation,
-   matching the researched Hypixel behaviour most directly]**
+1. LOCKED 2026-09-25 (Skyy): the 3 s countdown after both click Ready is the confirm. Finishing it uninterrupted executes the trade. There is no extra click. That was already the default.
 2. Should `tradeMaxCoins` eventually scale with something (total skill levels, collections, an eventual "SkyBlock-level"-alike number), the
    way Hypixel ties its own coin cap to SkyBlock level, or stay a single flat server-wide config number for now? **[default: flat number,
    `0` = uncapped, until a level-like metric exists to key it off]**

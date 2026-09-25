@@ -103,7 +103,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 16. LOCKED 2026-09-25 (Skyy): ask before Claim all puts 100,000+ coins in the purse. [yes, already the default]
 
 ## /trade (`research/Trade-Spec.md` section 20)
-1. The 3 s countdown after both click Ready IS the confirm (no extra click)? [yes]
+1. LOCKED 2026-09-25 (Skyy): the 3 s countdown after both click Ready is the confirm. There is no extra click. [yes, already the default]
 2. Max coins per trade: flat server number, or tied to a level later? [flat, 0 = no cap]
 3. Taking damage cancels the trade? [yes]
 4. 16 slots per side (4x4)? Bigger? [16]
