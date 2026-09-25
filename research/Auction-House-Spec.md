@@ -165,7 +165,7 @@ Admin commands: section 8.
 | `graceSeconds` | `20` | Nobody can buy a new listing for 20 s (Hypixel, VERIFIED). In practice it gives the seller time to cancel a mistyped price before a sniper takes it. |
 | `confirmAbove` / `confirmSeconds` | `10000` / `10` | A buy at or above this price needs the confirm click, armed for 10 s. 10,000 = a new profile's starting purse. LOCKED 2026-09-25 (Skyy). |
 | `claimAllConfirmAbove` | `100000` | [Claim all] asks first when the coins owed are at or above this (2.5). `0` = never ask. Hypixel's nudge sits at about 100,000 (UNVERIFIED, one source). |
-| `cancelRefundsFee` | `false` | Hypixel keeps the fee (VERIFIED). |
+| `cancelRefundsFee` | `false` | Hypixel keeps the fee (VERIFIED). LOCKED 2026-09-25 (Skyy). |
 | `adminRemoveRefundsFee` | `false` | An admin removal returns the item, not the fee (an admin can `/coinsgive` if it was a mistake). |
 
 ---
@@ -715,7 +715,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 5. **Creative players.** LOCKED 2026-09-25 (Skyy): Creative players browse and claim only. They cannot list or buy. That was already the default (`blockCreative=true`).
 6. **Listing cap.** LOCKED 2026-09-25 (Skyy): the default cap stays 14 listings per profile. Progression rewards or rank perks can raise that cap in game later. SkyyAuctions 0.1.1 is a flat 14 with no perk raise yet.
 7. **Confirm threshold.** LOCKED 2026-09-25 (Skyy): a buy of 10,000 coins or more needs a second click. That was already the default (`confirmAbove=10000`).
-8. **Cancel keeps the fee** (Hypixel). [kept]
+8. **Cancel keeps the fee** (Hypixel). LOCKED 2026-09-25 (Skyy): cancelling a listing keeps the fee. That was already the default (`cancelRefundsFee=false`).
 9. **`/ah sell`.** Open the prefilled page for one click, or list straight from chat? [prefilled page]
 10. **Grace period.** How long should a new listing wait before anyone can buy it? [20 s]
 11. **Where `/ah` works.** Anywhere, or later only at an Auction Master NPC in the hub? On Hypixel, remote `/ah` is a Booster Cookie perk; this is from general knowledge, not in the research. [anywhere; the page id `SkyyAuctions` is ready for an NPC]

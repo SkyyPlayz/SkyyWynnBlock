@@ -92,7 +92,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 5. LOCKED 2026-09-25 (Skyy): Creative players browse and claim only. [yes, already the default]
 6. LOCKED 2026-09-25 (Skyy): 14 listings per profile stays the default cap. Progression rewards or rank perks can raise it in game later. [14; 0.1.1 has no perk raise yet]
 7. LOCKED 2026-09-25 (Skyy): a second click for buys of 10,000 coins or more. [10,000, already the default]
-8. Cancelling keeps the fee (Hypixel)? [kept]
+8. LOCKED 2026-09-25 (Skyy): cancelling keeps the fee (Hypixel). [kept, already the default]
 9. `/ah sell <price>` opens the filled-in page for one click (or lists straight from chat)? [page]
 10. New listings wait 20 s before anyone can buy? [20 s]
 11. `/ah` works anywhere, or later only at an Auction Master NPC in the hub? [anywhere]
