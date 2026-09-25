@@ -76,8 +76,7 @@ lost).
 **Wynncraft reference (research pass 2, own words):** page 1 is free and more pages are bought. A distinct arrow appears only on the
 last owned page, and double-clicking it buys the next page from inside the bank. Navigation is strictly one page at a time (players
 asked for a page picker for years; it was never shipped). The arrow item can never be picked up: the server keeps putting it back.
-The bank is shared by all characters. Our design matches all of that, except that "double-click" becomes "click, then click again
-within 10 s" (section 4.6).
+The bank is shared by all characters. Our design matches all of that. LOCKED 2026-09-25 (Skyy): the buy is not a double-click and not two clicks within 10 s. Below `buyConfirmCoins` (default 50,000) the page buys at once. At or above that, a confirm dialog asks "Buy page X for Y coins?" (section 4.6). SkyyVault 0.1.2 still uses the 10 s second click.
 
 **Nothing to copy locally:** no installed mod (251 scanned) puts a real clickable item in a real vanilla container slot. They all
 build a custom page with buttons. The mechanism above comes straight from engine primitives.
