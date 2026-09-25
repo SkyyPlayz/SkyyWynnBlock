@@ -118,7 +118,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - Old "build rights" invites became Trusted, not members. [done]
 - LOCKED 2026-09-25 (Skyy): `/island reset` cooldown 24 h with 3 confirms. [24 h, already the default]
 - LOCKED 2026-09-25 (Skyy): visitor limit 10. Was: 5. [10; 0.5.2 still writes defaults.visit.limit=5]
-- Biome change: free, unlocks tied to exploration later. [free]
+- LOCKED 2026-09-25 (Skyy): biome change is free. Unlocks tied to exploration come later. [free, already the default]
 - What visitors may use by default (doors today). [doors, seats]
 
 ## In-game server setup (`research/Server-Setup-Spec.md` section 9)

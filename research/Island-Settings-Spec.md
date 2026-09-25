@@ -400,7 +400,7 @@ cfg.markChanged();
 - `EnvironmentChunk.setColumn(x, z, idx)` rewrites a whole 320-block column in one call: 1,024 calls per chunk, about 80k for R=4. It keeps its own block counts (bytecode). **Fallback** if the in-game test shows stale columns: the builder-tools per-block loop `bc.setEnvironment(x, y, z, idx)`, restricted to y 64..255.
 - The world's live generator is not swapped. New chunks generated before the next reload use the old values; the arrival re-apply fixes them.
 - **Arrival re-apply:** section 5's `TintFix` generalises to `BiomeApply.fixChunk(chunk, argb, idx)`. For each loaded chunk within R, when `bc.getTint(8, 8) != argb` or `bc.getEnvironment(8, 128, 8) != idx`, it applies to that chunk and resends. `FillTask` uses the island's biome tint instead of the `GRASS` constant.
-- **Cost / gating** (every plugin treats the biome as a reward): ship `biome.cost=0` (coins via the SkyyCoins bridge `coins:fn:take`; a refusal means no change) and `biome.cooldownSeconds=60`. Admins trim the list with `biomes=`. Tying unlocks to Exploration zone discovery is `[SKYY?]`, later.
+- **Cost / gating** (every plugin treats the biome as a reward): ship `biome.cost=0` (coins via the SkyyCoins bridge `coins:fn:take`; a refusal means no change) and `biome.cooldownSeconds=60`. Admins trim the list with `biomes=`. LOCKED 2026-09-25 (Skyy): a biome change is free. Unlocks tied to Exploration zone discovery come later. That was already the default.
 
 ### 4.5 Weather lock (slice B; dry weathers only)
 The vanilla `WeatherSetCommand.setForcedWeather(World, String, ComponentAccessor)` sequence (VERIFIED), on the island world thread with `store = w.getEntityStore().getStore()`:
@@ -615,7 +615,7 @@ reset.cooldownHours=24                  # LOCKED 2026-09-25 (Skyy): 24 h, with 3
 reset.confirmSeconds=20
 tint.resend=tints                         # tints | chunk | off (section 5)
 biomes=void,plains,forest,autumn,azure,swamp,savanna,oasis,tundra,glacial,wastes
-biome.cost=0
+biome.cost=0                             # LOCKED 2026-09-25 (Skyy): free. Exploration unlocks later.
 biome.cooldownSeconds=60
 biome.radiusChunks=4
 weathers=clear,fireflies,cloudy,fog,snow,aurora,skylands
@@ -689,7 +689,7 @@ animals.extra=                            # extra NPC role names that count as f
 - old build-rights invites become Trusted;
 - LOCKED 2026-09-25 (Skyy): `/island reset` cooldown 24 h, with 3 confirms. That was already the default;
 - LOCKED 2026-09-25 (Skyy): visitor limit 10. Was: 5. SkyyIslands 0.5.2 still writes `defaults.visit.limit=5`. A file already on 5 keeps 5 until that line is set to 10;
-- biome cost 0 and unlock gating later.
+- LOCKED 2026-09-25 (Skyy): biome change is free. Unlocks tied to exploration come later. That was already the default.
 
 ---
 
