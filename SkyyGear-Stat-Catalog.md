@@ -1,9 +1,9 @@
 # SkyyGear stat catalog
-*Research list, 2026-09-24. Combat, defence, mana, Movement, and Gathering are marked in the collapsed section. From Loot and luck down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
+*Research list, 2026-09-24. Combat, defence, mana, Movement, Gathering, and part of Loot and luck are marked in the collapsed section. Pet Luck, Fear, and Tracking are still blank. After Loot finishes, the next blank section is XP and wisdom. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Mining Fortune, Farming Fortune, and Foraging Fortune are in. Loot and luck is still blank.
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change note 12 (2026-09-25) is part of Loot and luck. Mining Fortune, Farming Fortune, and Foraging Fortune are in. Pet Luck, Fear, and Tracking are still blank.
 
-**Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt). Those are our locks, not wiki lines.
+**Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter). Those are our locks, not wiki lines.
 
 **Game** means where the stat is from. **Both** means one row covers two names.
 
@@ -20,9 +20,9 @@ True Damage is in the decided section. It ignores Defence. True Defense, the sta
 ---
 
 <details>
-<summary><strong>Decided — combat, defence, mana, Movement, and Gathering</strong> (change notes 9–11). Next blank table is Loot and luck.</summary>
+<summary><strong>Decided — combat, defence, mana, Movement, Gathering, and part of Loot</strong> (change notes 9–12). Still blank in Loot: Pet Luck, Fear, Tracking.</summary>
 
-These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. Gathering was locked 2026-09-25 (change note 11).
+These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. Part of Loot and luck was locked 2026-09-25 (change note 12).
 
 ### Damage and crits
 
@@ -204,17 +204,27 @@ Reach (old Swing Range) was already locked. Gathering trees only. Max +50%. Not 
 | Gemstone Spread | SB | Only if we add gemstones later. | Add later |
 | Pristine | SB | Only if we add gemstones later. | Add later |
 
+### Loot and luck (part)
+
+Pet Luck, Fear, and Tracking stay in the blank table below. Do not mark them yet.
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Loot Bonus | Wynn | Keep. More items from mobs and loot chests. | Keep |
+| Loot Quality | Wynn | Keep. Rarer loot, fewer commons. Mostly on ingredients. | Keep |
+| Stealing | Wynn | Keep. Chance a hit mob drops an emerald. | Keep |
+| Magic Find | SB | Scrap as the player-facing name. The idea lives on as Trophy Hunter. | Scrap |
+| Trophy Hunter | SkyWynn | New name. Higher chance at unique drops and drop-only sets. Bosses and normal mobs. There will be mob drop-only armor sets, not only boss legendaries. Borderlands-style unique loot. | Keep |
+
 </details>
 
 ## Loot and luck
 
+Still open. Do not mark these until Skyy answers. After this table finishes, the next blank section is XP and wisdom.
+
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
-| Magic Find | SB | Higher chance of rare drops from mobs and bosses. Cap 900. **Clash:** not Wynn Loot Bonus. | |
 | Pet Luck | SB | Higher chance a mob or boss drops a pet. | |
-| Loot Bonus | Wynn | More items from mobs and loot chests. | |
-| Loot Quality | Wynn | Rarer loot, fewer commons. Mostly on ingredients. | |
-| Stealing | Wynn | Chance a hit mob drops an emerald. | |
 | Fear | SB | During the Great Spook, Primal Fears spawn more often and hurt you less. | |
 | Tracking | SB | Higher chance to find elusive mobs. | |
 
@@ -492,7 +502,7 @@ Unique effects on set items and some raid buffs. Not a rolled ID. Read 2026-09-2
 
 ## New SkyWynn stats
 
-Dodge Chance, Overcrit, True Damage, flat Spell Cost %, Pick Breaking Damage, and Auto Smelt are already in the decided section. Blank rows below are for the next idea.
+Dodge Chance, Overcrit, True Damage, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, and Trophy Hunter are already in the decided section. Blank rows below are for the next idea.
 
 | Stat | What it might do | Decision |
 |---|---|---|
