@@ -18,6 +18,10 @@
 - Default profile is Balance (change note 24). No empty profile. Players can switch to Tank, Slayer, Lucky, Fast, Magical, or the Combat 15 ladder when unlocked.
 - Gear pipeline (change note 25): combat gear first. Every piece has a rarity. Rarity drives modifier count and power. Crafted gear rolls on craft. Mob drops identify to reveal the item and the roll. The Keep list is the modifier pool.
 
+**Answered 2026-09-25 (Skyy, in chat; SkyWynn-Decisions change notes 2026-09-25 #5):** rarities = Wynn (Normal, Unique, Rare, Legendary,
+Fabled, Mythic + Set); level requirement = the player's class weapon skill; SkyyGear REPLACES SkyyRolls; mob AND world-chest gear drops
+unidentified, old gear stays plain until reforged (rolled items keep their rolls).
+
 **STILL OPEN.** Do not block the build on these. Do not invent them.
 
 - Tuning table.
