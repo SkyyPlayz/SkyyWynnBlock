@@ -15,6 +15,8 @@ given when you select the class that gives you the basic weapon of that class.)"
 - Root wands, Stoneskin wands, and the Rekindle Embers spellbook count as Priest weapons. That confirms the existing yes. No behavior change.
 - The class kit drops **straight into the hotbar immediately** when a player selects or changes class. That replaces "into storage, about 31 s after a new profile arrives." What does not fit still waits on `/class kit`. 0.1.6 still uses storage and the 31 s wait.
 - **To build:** a daily Archer arrow refill. Arrows only, once per day, so Archers do not have to craft every arrow. Not in 0.1.6.
+- LOCKED 2026-09-25 (Skyy): while class switching is locked, the class-switch settings are **greyed out**. Players can see that the option exists and cannot use it. Was: hidden, with one read-only line. SkyyClasses 0.1.6 still leaves `switchCost` and `cooldownMinutes` off the page and shows one read-only "Class switching" row.
+- **To build:** class changes unlock later through a special item earned from a quest, or a similar progression gate. Not in 0.1.6.
 
 ---
 

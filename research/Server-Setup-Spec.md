@@ -778,8 +778,7 @@ Stays assets (rebuild only): upgrade recipes, rarity colours.
 
 ### 4.15 SkyyClasses [0.1.4]
 `requireClass` bool false (L, D), `unassignedBlocked` bool true (L), `promptEveryLogin` bool true (L), `openDelayMillis` int 2000 (250-60000, A).
-**Do not register `switchCost` and `cooldownMinutes`** while `ALLOW_SWITCH=false` is code (they are inert, a trap; Config inventory); the page
-shows one `ro` row "Class switching: off in this version (design lock)". LOCKED 2026-09-25 (Skyy): those class-switch settings stay hidden while switching is locked, with that one read-only line. That was already the default. Make configurable later: the weapon -> class rule table (new weapons
+LOCKED 2026-09-25 (Skyy): while class switching is locked, the class-switch settings are **greyed out**. Players can see that the option exists and cannot use it. Was: hidden, with one read-only line. SkyyClasses 0.1.6 still leaves `switchCost` and `cooldownMinutes` off the page and shows one read-only "Class switching" row. LOCKED 2026-09-25 (Skyy): a future feature, to build: class changes unlock later through a special item earned from a quest, or a similar progression gate. Make configurable later: the weapon -> class rule table (new weapons
 from other mods) as a table `rules` (entry = item id prefix, column `Class or free or unassigned`).
 
 ### 4.16 SkyyProfiles [0.1]
@@ -1160,7 +1159,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 10. LOCKED 2026-09-25 (Skyy): Chat order when a player has a rank and a title? `[Rank] [Title] Name`. That was already the default.
 11. LOCKED 2026-09-25 (Skyy): SkyyMenu 0.2 (player Settings) and 0.3 (Server Setup) as two rounds, or one? Two, done as 0.2 + 0.3. That was already the default.
 12. LOCKED 2026-09-25 (Skyy): Island template box size? The default stays 3 x 3 chunks around the island, y 96 to 191. That was already the default. Future, to build: players upgrade 3 x 3, then 4 x 4, 5 x 5, 6 x 6, 7 x 7, 8 x 8, up to 9 x 9. The height stays y 96 to 191. See 5.5.
-13. LOCKED 2026-09-25 (Skyy): Keep SkyyClasses' inert switch keys hidden while switching is code-locked? Hidden, with one read-only line. That was already the default.
+13. LOCKED 2026-09-25 (Skyy): SkyyClasses' class-switch settings while switching is locked? Greyed out. Players can see the option and cannot use it. Was: hidden, with one read-only line. Future, to build: class changes unlock later through a special item earned from a quest, or a similar progression gate. See 4.15. SkyyClasses 0.1.6 still leaves `switchCost` and `cooldownMinutes` off the page.
 14. Quest hooks: add the `quest:fn:event` calls now or only when SkyyQuests has a spec? [Only with its spec.]
 15. Should rank grants later carry perks (extra vault pages, bigger parties)? [Not in 0.1; the marker node `skyyranks.rank.<id>` makes it possible later.]
 16. Raising the profile cap above 6: no default. HANDOFF says to wait for Skyy's method; a rank perk node would be one option. (Listed in
