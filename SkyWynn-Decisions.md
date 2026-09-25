@@ -122,7 +122,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
    - **Pet Luck.** Keep later. Build when pets exist.
    - **Fear.** Scrap.
    - **Tracking.** Scrap.
-9. **XP and wisdom (change note 14).** Locks rows 6.37–6.44. Full list in `SkyyGear-Plan.md` locks 51–59. Marked in `SkyyGear-Stat-Catalog.md`. The Other table was scrapped later (change note 15). Does not change any jar.
+9. **XP and wisdom (change note 14).** Locks rows 6.37–6.44. Full list in `SkyyGear-Plan.md` locks 51–59. Marked in `SkyyGear-Stat-Catalog.md`. The Other table was scrapped later as gear IDs (change note 15). Oxygen uses Hytale's system plus accessories (change note 16). Does not change any jar.
    - **Wisdom.** One stat per skill we have.
    - **Combat Wisdom.** Keep. One modifier for every class. Combat XP levels the class.
    - **Keep now.** Farming, Mining, Foraging, Enchanting, Alchemy, Carpentry. Also Cooking, Smithing, Exploration, and Acrobatics, because we have those skills.
@@ -132,9 +132,13 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
    - **XP Bonus.** Keep. A flat small % boost to all XP. Not large.
    - **Gather XP Bonus.** Scrap. Wisdom covers gathering XP.
    - **Soul Point Regen.** Scrap. No soul points.
-10. **Other (change note 15).** Scrap the whole table. Row 6.45. Plan lock 60. Next blank table is SkyBlock accessory powers. Does not change any jar.
+10. **Other (change note 15).** Scrap the whole table as gear IDs. Row 6.45. Plan lock 60. Next blank table is SkyBlock accessory powers. Does not change any jar. Clarified later (change note 16): breathing uses Hytale oxygen, not a Respiration ID.
    - Heat Resistance. Cold Resistance. Respiration. Pressure Resistance.
    - Rift Time. Rift Damage. Rift Intelligence. Hearts.
+11. **Oxygen and swim speed (change note 16).** Not a Respiration stat ID. Row 6.46. Plan locks 61–62. Does not change any jar.
+   - Use Hytale's native oxygen.
+   - Accessories can raise oxygen. A max-level oxygen accessory line allows full underwater breathing.
+   - A separate accessory boosts water swim speed.
 
 ---
 
@@ -256,7 +260,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.2 | Archetypes (3 themed sub-builds per class) | Wynn | v1: 1–2 archetypes per class, 3rd later | |
 | 6.3 | Ability tree size: Wynn has 70+ nodes/class | Wynn | ~25 nodes/class v1 — enough? | |
 | 6.4 | Mana / intelligence resource for abilities | Wynn | TAKE | ✔ LOCKED (2026-09-24, change note 9) — use Hytale's mana. Our modifiers add to it. +Max Mana on gear is Equipment only. Overall Level (average of all skill levels) raises base Health and Mana (6.11). Per-spell cost IDs are scrap. One flat −% Spell Cost, accessory only. Skill-upgrade points come every 5 levels (6.12) |
-| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 9) — first pass is in. Crit Chance has no cap (over 100% is overcrit chance). Crit Damage is SkyBlock-style (0 = double a normal hit; +100% = 4x). Overcrit doubles the crit. Ferocity cap 300 for now. Attack Speed cap 150%. True Damage ignores Defence; True Defense is scrap. Gathering fortunes are locked (change note 11). Movement is locked (change note 10). Loot and luck is finished (change notes 12 and 13). XP and wisdom is locked (change note 14). The Other table is scrap (change note 15). Next blank table is SkyBlock accessory powers |
+| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 9) — first pass is in. Crit Chance has no cap (over 100% is overcrit chance). Crit Damage is SkyBlock-style (0 = double a normal hit; +100% = 4x). Overcrit doubles the crit. Ferocity cap 300 for now. Attack Speed cap 150%. True Damage ignores Defence; True Defense is scrap. Gathering fortunes are locked (change note 11). Movement is locked (change note 10). Loot and luck is finished (change notes 12 and 13). XP and wisdom is locked (change note 14). The Other table is scrap as gear IDs (change note 15). Oxygen uses Hytale's system plus accessories (change note 16). Next blank table is SkyBlock accessory powers |
 | 6.6 | Healer/Tank dungeon-class variants (SkyBlock Catacombs style) | SkyBlock | SKIP? classes already cover roles | Open with 6.13. Crowd healing is a later Priest idea. This row's dungeon-variant call is not locked |
 | 6.7 | Slayers (spawn-a-boss quest chains + slayer XP) | SkyBlock | TAKE (midgame) | ✔ **Core loop**, not side content. Not the leveling spine (that stays the island chain) |
 | 6.8 | Boss altars (summon boss with materials) | Wynn | TAKE (cheap early bosses) | |
@@ -296,7 +300,8 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.42 | XP Bonus | Wynn | | ✔ LOCKED (2026-09-25, change note 14) — a flat small % boost to all XP. Not large |
 | 6.43 | Gather XP Bonus | Wynn | | ✔ SCRAP (2026-09-25, change note 14) — Wisdom covers gathering XP |
 | 6.44 | Soul Point Regen | Wynn | | ✔ SCRAP (2026-09-25, change note 14) — no soul points |
-| 6.45 | Other table (Heat, Cold, breath, pressure, Rift, Hearts) | SkyBlock | | ✔ SCRAP (2026-09-25, change note 15) — scrap all. Heat Resistance, Cold Resistance, Respiration, Pressure Resistance, Rift Time, Rift Damage, Rift Intelligence, Hearts |
+| 6.45 | Other table (Heat, Cold, breath, pressure, Rift, Hearts) | SkyBlock | | ✔ SCRAP (2026-09-25, change note 15) — scrap all as gear IDs. Heat Resistance, Cold Resistance, Respiration, Pressure Resistance, Rift Time, Rift Damage, Rift Intelligence, Hearts. Do not bring Respiration back as an ID |
+| 6.46 | Hytale oxygen + water swim speed | Skyy | | ✔ LOCKED (2026-09-25, change note 16) — use Hytale's native oxygen. Accessories can raise oxygen. A max-level oxygen line allows full underwater breathing. A separate accessory boosts water swim speed. Not gear IDs |
 
 ## 7. WORLD & CONTENT
 
@@ -392,4 +397,4 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 11.3 | ... | | |
 
 ---
-*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Change note 9 replaces the five Wynn skill points on gear with the combat, defence, and mana pass. Change note 10 (2026-09-25) locks Movement: flat +Speed, Sprint scrap, Stamina Regen, Jump Height, Rift Speed scrap. Change note 11 locks Gathering: Breaking Power, Mining Speed, Pick Breaking Damage, Mining Spread, one Mining Fortune, Auto Smelt, Farming Fortune, Foraging Fortune, and Timber. Change note 12 locks part of Loot and luck: Loot Bonus, Loot Quality, Stealing, and Trophy Hunter. Magic Find is scrap as the player-facing name. Change note 13 finishes it: Pet Luck is keep later (build when pets exist). Fear and Tracking are scrap. Change note 14 locks XP and wisdom. Change note 15 scraps the Other table. Next blank table is SkyBlock accessory powers. Reach stays the earlier lock (max +50%). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*
+*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Change note 9 replaces the five Wynn skill points on gear with the combat, defence, and mana pass. Change note 10 (2026-09-25) locks Movement: flat +Speed, Sprint scrap, Stamina Regen, Jump Height, Rift Speed scrap. Change note 11 locks Gathering: Breaking Power, Mining Speed, Pick Breaking Damage, Mining Spread, one Mining Fortune, Auto Smelt, Farming Fortune, Foraging Fortune, and Timber. Change note 12 locks part of Loot and luck: Loot Bonus, Loot Quality, Stealing, and Trophy Hunter. Magic Find is scrap as the player-facing name. Change note 13 finishes it: Pet Luck is keep later (build when pets exist). Fear and Tracking are scrap. Change note 14 locks XP and wisdom. Change note 15 scraps the Other table as gear IDs. Change note 16 uses Hytale oxygen and a water-swim accessory, not a Respiration ID. Next blank table is SkyBlock accessory powers. Reach stays the earlier lock (max +50%). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*

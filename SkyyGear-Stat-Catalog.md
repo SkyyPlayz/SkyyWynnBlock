@@ -1,7 +1,7 @@
 # SkyyGear stat catalog
 *Research list, 2026-09-24. Combat through Other are marked in the collapsed section. From SkyBlock accessory powers down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Change note 15 (2026-09-25) scraps the Other table. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is SkyBlock accessory powers.
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Change note 15 (2026-09-25) scraps the Other table as gear IDs. Change note 16 uses Hytale oxygen and accessory effects instead of a Respiration ID. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is SkyBlock accessory powers.
 
 **Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter, Cooking Wisdom, Smithing Wisdom, Exploration Wisdom, Acrobatics Wisdom). Those are our locks, not wiki lines.
 
@@ -20,9 +20,9 @@ True Damage is in the decided section. It ignores Defence. True Defense, the sta
 ---
 
 <details>
-<summary><strong>Decided — combat through Other</strong> (change notes 9–15). Next blank table is SkyBlock accessory powers.</summary>
+<summary><strong>Decided — combat through Other</strong> (change notes 9–16). Next blank table is SkyBlock accessory powers.</summary>
 
-These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. The Other table was scrapped 2026-09-25 (change note 15).
+These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. The Other table was scrapped as gear IDs (change note 15). Breathing uses Hytale oxygen (change note 16).
 
 ### Damage and crits
 
@@ -251,12 +251,14 @@ Scrap the whole table.
 |---|---|---|---|
 | Heat Resistance | SB | Scrap. | Scrap |
 | Cold Resistance | SB | Scrap. | Scrap |
-| Respiration | SB | Scrap. | Scrap |
+| Respiration | SB | Scrap as a gear ID. Do not bring this ID back. | Scrap |
 | Pressure Resistance | SB | Scrap. | Scrap |
 | Rift Time | SB | Scrap. | Scrap |
 | Rift Damage | SB | Scrap. | Scrap |
 | Rift Intelligence | SB | Scrap. | Scrap |
 | Hearts | SB | Scrap. | Scrap |
+
+Breathing is not a Respiration stat. Use Hytale's native oxygen. Accessories can raise oxygen. A max-level oxygen accessory line allows full underwater breathing. A separate accessory boosts water swim speed. These are accessory effects. They are not gear IDs.
 
 </details>
 
