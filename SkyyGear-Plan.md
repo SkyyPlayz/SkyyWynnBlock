@@ -12,10 +12,10 @@
 - Starters: Tank, Balance, Slayer, Lucky, Fast, Magical (locks 80–86, 104).
 - Combat 15: Fortress, Harmony, Glass Cannon, Fortune, Blitz, Arcane (locks 94, 105–109). Amounts scale with Accessory Power. Curves are not locked.
 - Accessory Power model (change note 23): each accessory has its own buffs and adds flat +10 to +25 Accessory Power by rarity. Exact table is not set. Total is the sum of equipped accessories. The selected profile scales from that total.
+- Default profile is Balance (change note 24). No empty profile. Players can switch to Tank, Slayer, Lucky, Fast, Magical, or the Combat 15 ladder when unlocked.
 
 **STILL OPEN.**
 
-- No Power. Pending Keep vs scrap. If kept, it is only an empty profile. Accessories still give their own buffs and still add Accessory Power.
 - Stone accessory powers.
 - Tuning points table.
 - Wynn Major IDs.
@@ -36,7 +36,7 @@ Skyy's direction still holds: every mod in the pack is eventually our own. Comba
 5. **Combat armor and weapons** basically copy Wynncraft. Class weapons stay the ones already named in `SkyyClasses-Plan.md`. Berserker is still PENDING and has no weapon list.
 6. **Gathering gear** is SkyBlock-style: farming armor sets and foraging armor sets. Mining armor is likely the same kind of set. This note does not name the pieces.
 7. **Wardrobe + loadouts**, Hypixel SkyBlock style: save a gear set and quick-swap to it. **UI:** placeholders are fine. Nothing on the inventory screen yet (`SkyWynn-Decisions.md` 10.22). What a loadout saves is lock 12.
-8. **Stat mix (revised later the same day).** This note put Wynn's five skill points on weapons and armor, with crit chance, crit damage, and fortune layered on. **Change note 9 replaces the five skill points.** Strength is SkyBlock-style. Dexterity, Wynn Defence, Wynn Intelligence, and Wynn Agility are not gear skill points. Crit chance and crit damage stay, with the rules in locks 15 and up. **Gathering fortunes were locked later (change note 11).** Mining Fortune, Farming Fortune, and Foraging Fortune are in. One stat each. Loot and luck was finished later (change notes 12 and 13). XP and wisdom was locked later (change note 14). The Other table was scrapped later as gear IDs (change note 15). Oxygen and water swim speed are accessory effects (change note 16). Accessory progression and enrichments were locked later (change notes 17–18). Change note 19 leaned Keep on Hypixel starter names. Change note 20 replaces that list with Tank, Balance, Slayer, Lucky, Fast, and Magical. Change note 21 is the Combat 15 ladder. Change note 22 confirms Fortress, Harmony, Fortune, Blitz, and Arcane, and adds Magical Power. Next blank table is stone powers. No Power is pending.
+8. **Stat mix (revised later the same day).** This note put Wynn's five skill points on weapons and armor, with crit chance, crit damage, and fortune layered on. **Change note 9 replaces the five skill points.** Strength is SkyBlock-style. Dexterity, Wynn Defence, Wynn Intelligence, and Wynn Agility are not gear skill points. Crit chance and crit damage stay, with the rules in locks 15 and up. **Gathering fortunes were locked later (change note 11).** Mining Fortune, Farming Fortune, and Foraging Fortune are in. One stat each. Loot and luck was finished later (change notes 12 and 13). XP and wisdom was locked later (change note 14). The Other table was scrapped later as gear IDs (change note 15). Oxygen and water swim speed are accessory effects (change note 16). Accessory progression and enrichments were locked later (change notes 17–18). Change note 19 leaned Keep on Hypixel starter names. Change note 20 replaces that list with Tank, Balance, Slayer, Lucky, Fast, and Magical. Change note 21 is the Combat 15 ladder. Change note 22 confirms Fortress, Harmony, Fortune, Blitz, and Arcane, and adds Magical Power. Change note 23 is the Accessory Power sum: flat +10 to +25 by rarity, total is the sum, the selected profile scales from that total. Next blank table is stone powers. No Power is scrap (change note 24). The default profile is Balance.
 9. **Identification.** For now, a menu opened with `/identify`. Later `/identify` is disabled and identification moves to an NPC, Wynncraft-style. Identifying costs coins. The cost scales with the item's rarity and level. The cost formula is open. The menu is one of our pages (placeholders are fine). It does not go on the inventory screen (10.22). SkyyRolls 0.1.3 has no identify step.
 10. **Drops and sets.** Mob drops can be any rarity. Some sets are drop-only. Some sets are craft-only. That closes the older question about craft-only tiers.
 11. **Set bonuses.** Sets have a bonus for wearing the set, in the vein of Wynncraft set bonuses and Hypixel's Full Set Bonus. Which sets, and the bonus numbers, are not named here.
@@ -181,7 +181,7 @@ Change notes 17–19 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog
 
 ## Locked 2026-09-25 — Ferocity caps and custom starters
 
-Change note 20 in `SkyWynn-Decisions.md`. Replaces the Hypixel starter lean in change note 19. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is the rest of SkyBlock accessory powers. No Power is pending. Does not change any jar.
+Change note 20 in `SkyWynn-Decisions.md`. Replaces the Hypixel starter lean in change note 19. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is the rest of SkyBlock accessory powers. No Power was scrapped later (change note 24). The default profile is Balance. Does not change any jar.
 
 77. **Ferocity.** Keep. Combat, gear, and accessories. Enchant cap 300. Total cap 600.
 78. **Ferocity Enrichment.** Still pending. Do not scrap the Ferocity stat.
@@ -195,12 +195,12 @@ Change note 20 in `SkyWynn-Decisions.md`. Replaces the Hypixel starter lean in c
 86. **Magical.** Keep. Normal Health. Less Defense than the others. Flat mana and mana regen. Also boosts Magical Power (change note 22).
 87. **Mana on powers.** Flat mana. Not Intelligence. Not mana %.
 88. **Mana on dedicated accessories.** +% mana. The Mana % enrichment stays that rule.
-89. **No Power.** Pending captain. Not locked.
+89. **No Power at this note.** Pending. Scrapped later (change note 24).
 90. **Later powers at this note.** Combat 15+ Hypixel powers and stone powers are not locked. Hypixel Combat 15 names were scrapped later (change note 21). Stone powers stay pending.
 
 ## Locked 2026-09-25 — Combat 15 power ladder
 
-Change note 21 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is stone powers. No Power is pending. Does not change any jar.
+Change note 21 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is stone powers. No Power was scrapped later (change note 24). The default profile is Balance. Does not change any jar.
 
 91. **Combat 15 shape.** These powers mirror the starter themes. They are more extreme.
 92. **Buffs and debuffs.** SkyBlock style. A Combat 15 power can raise some stats and cut others.
@@ -212,11 +212,11 @@ Change note 21 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md`. 
 98. **Blitz at this note.** Draft. Confirmed later (change note 22). −Health and −Defense.
 99. **Arcane at this note.** Draft. Confirmed later (change note 22). It boosts Magical Power. −Defense and −Strength.
 100. **Hypixel Combat 15 names.** Scrap as copy-paste. Commando, Disciplined, Inspired, Ominous, Prepared.
-101. **Still pending at this note.** No Power. Stone powers. The exact debuff on the drafts. Confirmed later for the five names (change note 22). Fortress's extra debuff stays optional.
+101. **Still pending at this note.** Stone powers. The exact debuff on the drafts. Confirmed later for the five names (change note 22). Fortress's extra debuff stays optional. No Power was scrapped later (change note 24).
 
 ## Locked 2026-09-25 — Magical Power and Combat 15 confirm
 
-Change note 22 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is stone powers. No Power is pending. Does not change any jar.
+Change note 22 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is stone powers. No Power was scrapped later (change note 24). The default profile is Balance. Does not change any jar.
 
 102. **Magical Power.** Keep. Spell-damage stat. Strength boosts a melee or hit. Magical Power does that job for spells. A Mage can melee with a staff and also cast. Staff melee uses Strength. Spells use Magical Power.
 103. **Where it rolls.** Weapons, armor, Equipment, and accessories. Same gear rulings as Strength. This is not the bag score. The bag score is Accessory Power.
@@ -226,17 +226,25 @@ Change note 22 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md`. 
 107. **Fortune.** Keep. Combat 15 form of Lucky. Much higher Crit Chance. Good Crit Damage. Slight Strength. −Health. −Defense.
 108. **Blitz.** Keep. Combat 15 form of Fast. High Speed and Attack Speed. −Health. −Defense.
 109. **Arcane.** Keep. Combat 15 form of Magical. More Magical Power than the starter. −Defense. −Strength. Flat mana and mana regen.
-110. **Still pending.** No Power. Stone powers. Fortress's extra debuff, if any. Whether Magical Power is an enrichment or a tuning stat. No Power's meaning was clarified later (change note 23). Keep vs scrap is still open.
+110. **Still pending at this note.** Stone powers. Fortress's extra debuff, if any. Whether Magical Power is an enrichment or a tuning stat. No Power was scrapped later (change note 24).
 
 ## Locked 2026-09-25 — Accessory Power model
 
 Change note 23 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md`. Does not change any jar.
 
-111. **Inherent buffs.** Each accessory has its own buffs. Those buffs stay on even if the selected profile is empty.
+111. **Inherent buffs.** Each accessory has its own buffs. Those buffs stay on with whichever profile is selected. There is no empty profile (change note 24).
 112. **Flat Accessory Power.** Each accessory also adds a flat amount by rarity. The range is +10 to +25. The exact table is not set. The old 3/5/8/12/16 draft is not the lock.
 113. **Total.** Accessory Power is the sum across equipped accessories.
 114. **Selected profile.** Tank, Balance, Slayer, and the Combat 15 ladder scale their stats from that total.
-115. **No Power.** Pending. It is only an optional profile that grants no profile stats. It does not remove accessory buffs or Accessory Power. Keep vs scrap is not decided.
+115. **No Power at this note.** Pending. Scrapped later (change note 24). There is no empty profile.
+
+## Locked 2026-09-25 — No empty profile
+
+Change note 24 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is stone powers. Does not change any jar.
+
+116. **No Power.** Scrap. No selectable empty profile.
+117. **Default profile.** Balance. It is the starter default.
+118. **Switch list.** Players can switch to Tank, Slayer, Lucky, Fast, or Magical. They can also switch to the Combat 15 ladder when unlocked: Fortress, Harmony, Glass Cannon, Fortune, Blitz, Arcane.
 
 ## Open research — Borderlands 4 skill trees
 
@@ -279,8 +287,8 @@ Public notes only. Not a SkyWynn design.
 6. **Powders.** Wynn's five elements and "powders replace SkyBlock runes" stay locked. Still open: slots per item, tiers, and how they drop.
 7. **Where rolled items sell.** Bazaar (stackable commodities today) or the auction house. Separate from that: the late-game wall still pulls some items off both buy and sell (Decisions 1.2). Which gear that hits is open.
 8. **Zone pacing.** How gear steps up across the island chain. Not numbered here.
-9. **Stat list from accessory powers down.** Gathering is locked (change note 11). Loot and luck is finished (change notes 12 and 13). XP and wisdom is locked (change note 14). The Other table is scrap as gear IDs (change note 15, lock 60). Oxygen and swim speed are accessory effects (change note 16, locks 61–62). Accessory progression and enrichments are change notes 17–18 (locks 63–70). Custom starters and Ferocity caps are change note 20 (locks 77–90). The Combat 15 ladder is change note 21 (locks 91–101). Magical Power and the Combat 15 confirm are change note 22 (locks 102–110). Next blank table is stone powers, then tuning. No Power is pending. Whether Magical Power joins enrichments or tuning is open. Reach stays lock 18. Still open: the Breaking Power name in Hytale; how pick damage vs hits-to-break works; per-element main-attack lines and per-element spell % (leaning skip); Reflection; life-steal numbers; which classes count as magic-using for Mana Regen; Health and Mana per Overall Level; how big a skill upgrade is. Do not invent those numbers.
-10. **Accessory Power list and numbers.** The system stays (lock 71). Custom starters are locks 80–86: Tank, Balance, Slayer, Lucky, Fast, Magical. Hypixel names Fortuitous, Pretty, Protected, Simple, and Warrior are scrap (lock 79). The change note 8 example named Warrior is that scrap name. Elementalist is not in the starter list. It is not re-opened here. The model is change note 23 (locks 111–115): own buffs, flat +10 to +25 Accessory Power by rarity, exact table not set, total is the sum, the selected profile scales from that total. No Power is pending (lock 115). It is only an empty profile. Glass Cannon is Keep (lock 94). Fortress, Harmony, Fortune, Blitz, and Arcane are Keep (locks 105–109). Hypixel Combat 15 names are scrap (lock 100). Stone powers are not locked (lock 110). Magical Power is the spell-damage stat (lock 102). It is not the bag score. Numbers stay open. Powers use flat mana (lock 87). Dedicated mana accessories use +% mana (lock 88). Enrichments are locks 66–70. Ferocity Enrichment is still pending (lock 78). Tuning is still blank. Do not treat the crystal table in `SkyyAccessories-Plan.md` as the lock. The craft ladder in locks 63–65 is the lock for how accessories are obtained. Bag-slot prices in that file stay a draft.
+9. **Stat list from accessory powers down.** Gathering is locked (change note 11). Loot and luck is finished (change notes 12 and 13). XP and wisdom is locked (change note 14). The Other table is scrap as gear IDs (change note 15, lock 60). Oxygen and swim speed are accessory effects (change note 16, locks 61–62). Accessory progression and enrichments are change notes 17–18 (locks 63–70). Custom starters and Ferocity caps are change note 20 (locks 77–90). The Combat 15 ladder is change note 21 (locks 91–101). Magical Power and the Combat 15 confirm are change note 22 (locks 102–110). Next blank table is stone powers, then tuning. No Power is scrap (change note 24). The default profile is Balance. Whether Magical Power joins enrichments or tuning is open. Reach stays lock 18. Still open: the Breaking Power name in Hytale; how pick damage vs hits-to-break works; per-element main-attack lines and per-element spell % (leaning skip); Reflection; life-steal numbers; which classes count as magic-using for Mana Regen; Health and Mana per Overall Level; how big a skill upgrade is. Do not invent those numbers.
+10. **Accessory Power list and numbers.** The system stays (lock 71). Custom starters are locks 80–86: Tank, Balance, Slayer, Lucky, Fast, Magical. Hypixel names Fortuitous, Pretty, Protected, Simple, and Warrior are scrap (lock 79). The change note 8 example named Warrior is that scrap name. Elementalist is not in the starter list. It is not re-opened here. The model is change note 23 (locks 111–115): own buffs, flat +10 to +25 Accessory Power by rarity, exact table not set, total is the sum, the selected profile scales from that total. No Power is scrap (lock 116). The default profile is Balance (lock 117). Glass Cannon is Keep (lock 94). Fortress, Harmony, Fortune, Blitz, and Arcane are Keep (locks 105–109). Hypixel Combat 15 names are scrap (lock 100). Stone powers are not locked (lock 110). Magical Power is the spell-damage stat (lock 102). It is not the bag score. Numbers stay open. Powers use flat mana (lock 87). Dedicated mana accessories use +% mana (lock 88). Enrichments are locks 66–70. Ferocity Enrichment is still pending (lock 78). Tuning is still blank. Do not treat the crystal table in `SkyyAccessories-Plan.md` as the lock. The craft ladder in locks 63–65 is the lock for how accessories are obtained. Bag-slot prices in that file stay a draft.
 11. **Class skill trees.** Borderlands-style, not a straight line. The Borderlands 4 notes above are research. Do not design the trees yet. Decisions 6.3 (~25 nodes) is the older draft, not this lock.
 12. **Class roles.** A Priest class is the later idea for crowd healing (healing spells and some damage). Roles are not defined yet.
 

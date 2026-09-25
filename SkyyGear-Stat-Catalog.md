@@ -1,7 +1,7 @@
 # SkyyGear stat catalog
-*Research list, 2026-09-24. Combat through the Combat 15 ladder are marked in the collapsed section. Stone powers, then tuning, still have a blank Decision. No Power is pending. Write **Keep**, **Scrap**, or **Add later** there.*
+*Research list, 2026-09-24. Combat through the Combat 15 ladder are marked in the collapsed section. Stone powers, then tuning, still have a blank Decision. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Change note 15 (2026-09-25) scraps the Other table as gear IDs. Change note 16 uses Hytale oxygen and accessory effects instead of a Respiration ID. Change note 17 is the accessory craft ladder. Change note 18 is enrichments. Change note 19 was the Hypixel starter lean. Change note 20 replaces those names with Tank, Balance, Slayer, Lucky, Fast, and Magical. Change note 21 is the Combat 15 ladder. Change note 22 keeps Magical Power as the spell-damage stat and confirms Fortress, Harmony, Fortune, Blitz, and Arcane. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is stone powers. No Power is pending.
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Change note 15 (2026-09-25) scraps the Other table as gear IDs. Change note 16 uses Hytale oxygen and accessory effects instead of a Respiration ID. Change note 17 is the accessory craft ladder. Change note 18 is enrichments. Change note 19 was the Hypixel starter lean. Change note 20 replaces those names with Tank, Balance, Slayer, Lucky, Fast, and Magical. Change note 21 is the Combat 15 ladder. Change note 22 keeps Magical Power as the spell-damage stat and confirms Fortress, Harmony, Fortune, Blitz, and Arcane. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is stone powers. No Power is scrap (change note 24). The default profile is Balance.
 
 **Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter, Cooking Wisdom, Smithing Wisdom, Exploration Wisdom, Acrobatics Wisdom). Those are our locks, not wiki lines.
 
@@ -20,7 +20,7 @@ True Damage is in the decided section. It ignores Defence. True Defense, the sta
 ---
 
 <details>
-<summary><strong>Decided — combat through Combat 15 powers</strong> (change notes 9–22). Next blank table is stone powers. No Power is pending.</summary>
+<summary><strong>Decided — combat through Combat 15 powers</strong> (change notes 9–24). Next blank table is stone powers.</summary>
 
 These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. The Other table was scrapped as gear IDs (change note 15). Breathing uses Hytale oxygen (change note 16). Accessory craft ladder is change note 17. Enrichments are change note 18. Change note 19 leaned Keep on Hypixel starter names. Change note 20 replaces that list. Change note 21 is the Combat 15 ladder. Change note 22 confirms that ladder and adds Magical Power.
 
@@ -301,7 +301,8 @@ Every starter grants a little Health and Defense. That baseline is the same on e
 | Simple | SB | Scrap. Hypixel starter name. | Scrap |
 | Warrior | SB | Scrap as a power name. It clashes with the Warrior class. The change note 8 example used this name. That name is out. | Scrap |
 | Tank | SkyWynn | Keep. Bonus Health and Defense only. No other stats. | Keep |
-| Balance | SkyWynn | Keep. Even boost to Health, Defense, Speed, Strength, flat mana, Crit Chance, and Crit Damage. | Keep |
+| Balance | SkyWynn | Keep. Default profile. Even boost to Health, Defense, Speed, Strength, flat mana, Crit Chance, and Crit Damage. | Keep |
+| No Power | SB | Scrap. No empty profile. The default is Balance. | Scrap |
 | Slayer | SkyWynn | Keep. More Strength and Crit Damage. Less Health and Defense. | Keep |
 | Lucky | SkyWynn | Keep. Normal Health and Defense. High Crit Chance. | Keep |
 | Fast | SkyWynn | Keep. Normal Health and Defense. High Speed and Attack Speed. | Keep |
@@ -329,11 +330,10 @@ Combat-gated powers mirror those starter themes. They are more extreme. They use
 
 Starters and the Combat 15 ladder are in the decided section (change notes 20–22). Fortress, Harmony, Glass Cannon, Fortune, Blitz, and Arcane are Keep. Hypixel names Commando, Disciplined, Inspired, Ominous, and Prepared are scrap.
 
-No Power is pending. It is only an optional profile that grants no profile stats. Accessories still give their own buffs and still add Accessory Power. Keep vs scrap is not decided. Stone powers are not locked. Whether Magical Power joins enrichments or tuning is not locked. Hypixel name for the bag score: Accessory Power. Hypixel's older name for that score was Magical Power. Our spell stat Magical Power is not that score. A stone power can also have a unique bonus that does not grow with power. Numbers here are the wiki's stats at 250 Accessory Power, plus that unique bonus. They are SkyBlock facts. They are not a SkyWynn lock. A SkyBlock Intelligence line on a power is flat mana. Not an Intelligence ID. Not mana %.
+No Power is scrap (change note 24). There is no empty profile. The default profile is Balance. Players can switch to Tank, Slayer, Lucky, Fast, Magical, or the Combat 15 ladder when those are unlocked. Stone powers are not locked. Whether Magical Power joins enrichments or tuning is not locked. Hypixel name for the bag score: Accessory Power. Hypixel's older name for that score was Magical Power. Our spell stat Magical Power is not that score. A stone power can also have a unique bonus that does not grow with power. Numbers here are the wiki's stats at 250 Accessory Power, plus that unique bonus. They are SkyBlock facts. They are not a SkyWynn lock. A SkyBlock Intelligence line on a power is flat mana. Not an Intelligence ID. Not mana %.
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
-| No Power | SB | Pending. Optional profile only. Grants no profile stats. Accessories still give their own buffs and still add Accessory Power. Keep vs scrap is not decided. | |
 | Forceful | SB | Stone: Acacia Birdhouse. Needs Combat 20. At 250: +46.28 Crit Damage, +173.56 Strength, +16.2 Health. Unique bonus: +4 Ferocity. Not locked. | |
 | Bloody | SB | Stone: Beating Heart. Needs Combat 20. At 250: +104.13 Crit Damage, +104.13 Strength, +34.71 flat mana. Unique bonus: +10 Attack Speed. | |
 | Bubba | SB | Stone: Bubba Blister. Needs Combat 25. At 250: −92.56 Defense, +48.6 Health, +104.13 Crit Damage, +7.87 True Defense, +46.28 Strength, +17.36 Attack Speed, +9.26 Crit Chance. Unique bonus: +2 Combat Wisdom. | |
