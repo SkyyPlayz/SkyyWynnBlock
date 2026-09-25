@@ -393,8 +393,7 @@ nothing an admin cannot already read in the files (`config-changes.log`, the con
 
 ## 2. SkyWynn Menu -> Mods section (SkyyMenu 0.3)
 
-SkyyMenu 0.2 is the player Settings menu (Settings-Spec). The admin side is **0.3**, on top of it. If Skyy prefers one round, both can ship
-together as 0.2: the two registries are independent `[SKYY?]`. The newest SkyyMenu script on disk is `build_skyymenu_0.1.3.py`.
+SkyyMenu 0.2 is the player Settings menu (Settings-Spec). The admin side is **0.3**, on top of it. LOCKED 2026-09-25 (Skyy): Player Settings and Server Setup stay two menu versions, 0.2 and 0.3. That was already the default. The newest SkyyMenu script on disk is `build_skyymenu_0.1.3.py`.
 
 ### 2.1 Who can see it
 - Node **`skyymenu.modconfig`**. Ops have it through `hytale:Admin`'s built-in `"*"` (VERIFIED), so on a fresh world the owner sees it with no
@@ -1037,7 +1036,7 @@ planned there (`SkyyExploration-Plan.md`).
 | Step | What | Depends on |
 |---|---|---|
 | 1 | `tools/skyycfg.py` (the kit + its bare-JVM test harness, 8.2) | nothing |
-| 2 | **SkyyMenu 0.3** (Mods section, `/modconfig`, its own config page). SkyyMenu 0.2 (player Settings) first, or both as 0.2 in one round `[SKYY?]` | step 1 |
+| 2 | **SkyyMenu 0.3** (Mods section, `/modconfig`, its own config page). LOCKED 2026-09-25 (Skyy): SkyyMenu 0.2 (player Settings) and 0.3 (Server Setup) stay two versions. That was already the default. | step 1 |
 | 3 | **SkyyEconomy 0.1**: the merge round (`SkyyEconomy-Plan.md`), built on the kit from day one: parts, coins, bank, bazaar, auctions, market tables; `/bankconfig` etc. through the kit | step 1; the separate Bank 0.1.3 / Bazaar 0.1.2 / Auctions 0.1 tested |
 | 4 | **SkyyRanks 0.1** (5.1): ranks, grants, members, per-player denies, chat prefix. Staff and permission setup is one of the first things an owner does, so it comes before the waves. First in-game test: the `hytale:Adventurer` check (8.4.5). Until it ships, ranks are vanilla `/op`, `/perm group|user`, `/setgroup` or `permissions.json` | step 1 (its `link` row shows in the Mods list once step 2 exists; it needs nothing from SkyyEconomy) |
 | 5 | Wave 1, the gaps (each mod's next version): SkyyParty (+`/partyadmin reload`), SkyyEssentials (+tpa timings, warps editor, world spawn rows), SkyyIslands (starter kit row + all defaults + the `volatile` / `DEF_PERM` field changes), SkyyProfiles (with the 4 -> 6 follow-up), SkyyVault, SkyyGuilds, SkyyRolls (+`/rolls` permission fix) | step 1 |
@@ -1148,7 +1147,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 8. LOCKED 2026-09-25 (Skyy): Ranks: a new SkyyRanks mod, or inside SkyyEssentials? SkyyRanks. 0.1 is live. That was already the default.
 9. LOCKED 2026-09-25 (Skyy): Which ranks come seeded? Member, Admin, and Developer. Was: only Member. Member stays the default rank, with no prefix and no grants. Admin and Developer are staff, close to the owner, and do not get full op (`*`, `/op`, or `hytale:Admin`). Was: Developer got the rank editor. See 5.1. The rank editing UI is for ops and players with the Owner rank. Was: ops only. Admin and Developer cannot edit rank permissions or create or modify ranks. `skyymenu.modconfig` does not open it. Ranks stay fully editable in that UI. SkyyRanks 0.1 still seeds only Member, and still opens `/rankadmin` for anyone with `skyyranks.admin`. A file that already has only Member keeps only Member until Admin and Developer are added. SkyyRanks 0.1 still refuses grants, delete, and ladder moves on the default rank.
 10. LOCKED 2026-09-25 (Skyy): Chat order when a player has a rank and a title? `[Rank] [Title] Name`. That was already the default.
-11. SkyyMenu 0.2 (player Settings) and 0.3 (Mods section) as two rounds, or one? [Two, smaller and easier to test.]
+11. LOCKED 2026-09-25 (Skyy): SkyyMenu 0.2 (player Settings) and 0.3 (Server Setup) as two rounds, or one? Two, done as 0.2 + 0.3. That was already the default.
 12. Island template box size. [3 x 3 chunks around the island, y 96 to 191.]
 13. Keep SkyyClasses' inert switch keys hidden while switching is code-locked? [Hidden, with one read-only line.]
 14. Quest hooks: add the `quest:fn:event` calls now or only when SkyyQuests has a spec? [Only with its spec.]
