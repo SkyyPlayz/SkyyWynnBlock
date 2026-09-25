@@ -1,7 +1,7 @@
 # SkyyGear stat catalog
-*Research list, 2026-09-24. Combat through accessory starters are marked in the collapsed section. The rest of SkyBlock accessory powers, then tuning, still have a blank Decision. Write **Keep**, **Scrap**, or **Add later** there.*
+*Research list, 2026-09-24. Combat through the Combat 15 ladder are marked in the collapsed section. Stone powers, then tuning, still have a blank Decision. No Power is pending. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Change note 15 (2026-09-25) scraps the Other table as gear IDs. Change note 16 uses Hytale oxygen and accessory effects instead of a Respiration ID. Change note 17 is the accessory craft ladder. Change note 18 is enrichments. Change note 19 was the Hypixel starter lean. Change note 20 replaces those names with Tank, Balance, Slayer, Lucky, Fast, and Magical. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is the rest of SkyBlock accessory powers. No Power is pending.
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Change note 15 (2026-09-25) scraps the Other table as gear IDs. Change note 16 uses Hytale oxygen and accessory effects instead of a Respiration ID. Change note 17 is the accessory craft ladder. Change note 18 is enrichments. Change note 19 was the Hypixel starter lean. Change note 20 replaces those names with Tank, Balance, Slayer, Lucky, Fast, and Magical. Change note 21 is the Combat 15 ladder. Glass Cannon is the confirmed theme. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is stone powers. No Power is pending.
 
 **Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter, Cooking Wisdom, Smithing Wisdom, Exploration Wisdom, Acrobatics Wisdom). Those are our locks, not wiki lines.
 
@@ -20,9 +20,9 @@ True Damage is in the decided section. It ignores Defence. True Defense, the sta
 ---
 
 <details>
-<summary><strong>Decided — combat through accessory starters</strong> (change notes 9–20). Next blank table is the rest of SkyBlock accessory powers. No Power is pending.</summary>
+<summary><strong>Decided — combat through Combat 15 powers</strong> (change notes 9–21). Next blank table is stone powers. No Power is pending.</summary>
 
-These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. The Other table was scrapped as gear IDs (change note 15). Breathing uses Hytale oxygen (change note 16). Accessory craft ladder is change note 17. Enrichments are change note 18. Change note 19 leaned Keep on Hypixel starter names. Change note 20 replaces that list.
+These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. The Other table was scrapped as gear IDs (change note 15). Breathing uses Hytale oxygen (change note 16). Accessory craft ladder is change note 17. Enrichments are change note 18. Change note 19 leaned Keep on Hypixel starter names. Change note 20 replaces that list. Change note 21 is the Combat 15 ladder. Glass Cannon is Keep. The other five names are drafts.
 
 ### Damage and crits
 
@@ -304,23 +304,34 @@ Every starter grants a little Health and Defense. That baseline is the same on e
 | Fast | SkyWynn | Keep. Normal Health and Defense. High Speed and Attack Speed. | Keep |
 | Magical | SkyWynn | Keep. Normal Health. Less Defense than the others. Flat mana and mana regen. | Keep |
 
+Combat-gated powers mirror those starter themes. They are more extreme. They use buffs and debuffs, SkyBlock style. Amounts still scale with total Accessory Power. Mana on these powers is flat mana.
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Commando | SB | Scrap as a copy-paste name. Combat 15 slot is the custom ladder. | Scrap |
+| Disciplined | SB | Scrap as a copy-paste name. | Scrap |
+| Inspired | SB | Scrap as a copy-paste name. | Scrap |
+| Ominous | SB | Scrap as a copy-paste name. | Scrap |
+| Prepared | SB | Scrap as a copy-paste name. | Scrap |
+| Glass Cannon | SkyWynn | Keep. Combat 15 form of Slayer. −Health. −Defense. Much more Strength and Crit Damage. Solid Crit Chance. | Keep |
+| Fortress | SkyWynn | Draft. Pending confirm. Combat 15 form of Tank. Large Health and Defense. Possible −Speed or −Strength. Debuff pick is open. | Open |
+| Harmony | SkyWynn | Draft. Pending confirm. Combat 15 form of Balance. Larger even spread. No debuffs, or tiny ones. | Open |
+| Fortune | SkyWynn | Draft. Pending confirm. Combat 15 form of Lucky. High Crit Chance. Possible −Crit Damage or −Strength. Debuff pick is open. | Open |
+| Blitz | SkyWynn | Draft. Pending confirm. Combat 15 form of Fast. High Speed and Attack Speed. Possible −Defense or −Health. Debuff pick is open. | Open |
+| Arcane | SkyWynn | Draft. Pending confirm. Combat 15 form of Magical. High flat mana and mana regen. −Defense. Maybe −Strength. Debuff pick is open. | Open |
+
 </details>
 
 ## SkyBlock accessory powers
 
-Custom starters are in the decided section (change note 20): Tank, Balance, Slayer, Lucky, Fast, Magical. Hypixel names Fortuitous, Pretty, Protected, Simple, and Warrior are scrap.
+Starters and the Combat 15 ladder are in the decided section (change notes 20 and 21). Glass Cannon is Keep. Fortress, Harmony, Fortune, Blitz, and Arcane are drafts. Hypixel names Commando, Disciplined, Inspired, Ominous, and Prepared are scrap.
 
-No Power is pending captain. Combat 15+ powers and stone powers are not locked. Hypixel name: Accessory Power. Older name: Magical Power. A stone power can also have a unique bonus that does not grow with power. Numbers here are the wiki's stats at 250 Accessory Power, plus that unique bonus. They are SkyBlock facts. They are not a SkyWynn lock. A SkyBlock Intelligence line on a power is flat mana. Not an Intelligence ID. Not mana %.
+No Power is pending captain. Stone powers are not locked. Hypixel name: Accessory Power. Older name: Magical Power. A stone power can also have a unique bonus that does not grow with power. Numbers here are the wiki's stats at 250 Accessory Power, plus that unique bonus. They are SkyBlock facts. They are not a SkyWynn lock. A SkyBlock Intelligence line on a power is flat mana. Not an Intelligence ID. Not mana %.
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
 | No Power | SB | Pending captain. A selectable option that applies no power stats. Not locked. | |
-| Commando | SB | Needs Combat 15. At 250: +48 Health, +23 Defense, +81 Strength, +5 Crit Chance, +81 Crit Damage. Not locked. | |
-| Disciplined | SB | Needs Combat 15. At 250: +48 Health, +23 Defense, +69 Strength, +14 Crit Chance, +69 Crit Damage. | |
-| Inspired | SB | Needs Combat 15. At 250: +16 Health, +12 Defense, +46 Strength, +156 flat mana, +9 Crit Chance, +35 Crit Damage. | |
-| Ominous | SB | Needs Combat 15. At 250: +48 Health, +9 Speed, +35 Strength, +59 flat mana, +14 Crit Chance, +35 Crit Damage, +9 Attack Speed. | |
-| Prepared | SB | Needs Combat 15. At 250: +120 Health, +109 Defense, +19 Strength, +4 Crit Chance, +9 Crit Damage. | |
-| Forceful | SB | Stone: Acacia Birdhouse. Needs Combat 20. At 250: +46.28 Crit Damage, +173.56 Strength, +16.2 Health. Unique bonus: +4 Ferocity. | |
+| Forceful | SB | Stone: Acacia Birdhouse. Needs Combat 20. At 250: +46.28 Crit Damage, +173.56 Strength, +16.2 Health. Unique bonus: +4 Ferocity. Not locked. | |
 | Bloody | SB | Stone: Beating Heart. Needs Combat 20. At 250: +104.13 Crit Damage, +104.13 Strength, +34.71 flat mana. Unique bonus: +10 Attack Speed. | |
 | Bubba | SB | Stone: Bubba Blister. Needs Combat 25. At 250: −92.56 Defense, +48.6 Health, +104.13 Crit Damage, +7.87 True Defense, +46.28 Strength, +17.36 Attack Speed, +9.26 Crit Chance. Unique bonus: +2 Combat Wisdom. | |
 | Shaded | SB | Stone: Dark Orb. Needs Combat 20. At 250: +5.79 Speed, +173.56 Crit Damage, +46.28 Strength. Unique bonus: +3 Attack Speed and +3 Ferocity. | |
