@@ -137,36 +137,37 @@ A round is READY when it is built, reviewed, fixed, cross-checked, pinned in too
 the world config.json into backups/deploy-<date-time>/) and run `python tools/deploy_set.py --yes`. It refuses while a server runs - if the
 game is open, leave it and tell Skyy it deploys as soon as the game is closed (never kill the game). Build scripts still never get
 `--deploy`; deploy_set is the only deploy path. `--check` only verifies the jars. Backups: backups/ (git-ignored).
-| Mod | was live until 2026-09-24 22:53 | LIVE since 2026-09-24 22:53 (beta round 1; = tools/deploy_set.py SET) |
+| Mod | LIVE since 2026-09-25 04:11 (= tools/deploy_set.py SET; round 4 = every mod's settings in game) | what the newest step added |
 |---|---|---|
-| SkyyHud | 0.3.8 | 0.3.9 = Party/Guild widget drawn aligned on the first render (+ co-op island shown as "Your Island") |
-| SkyySacks | 0.7.4 | 0.7.5 = NEW Smithing bag (bars, leather, hides, other smithing mats), tree sap -> Foraging, all tabs always shown (recipe if no bag) |
-| SkyyCoins | 0.1.5 | 0.1.5 |
-| SkyyCollections | 0.2 | 0.2.1 = felled logs count (source skills:felled), "No tier yet" |
-| SkyyParty | 0.1.3 | 0.1.3 |
-| SkyyBank | 0.1.2 | 0.1.3 = /bank opens the page: Deposit all (left), amount box + Deposit/Withdraw (middle), Withdraw all (right) |
-| SkyyIslands | 0.4.5 | 0.5.1 (deployed 2026-09-25 02:33) = SECURITY hotfix: /island reload no longer hands every player skyyislands.admin. 0.5 = co-op members (invite/accept, /island -> the owner's island), Trusted (build only), Admin, /island menu (5 tabs, permission grid, visit modes, ban/expel), /island reset (3 confirms), chunk resend after re-tint; 0.4.x invitees migrated to Trusted (.v4bak copies). NEVER deploy 0.5 again |
-| SkyyBazaar | 0.1.1 | 0.1.2 = custom amount box with Buy/Sell (+ max), page ~1.4x |
-| SkyyRolls | 0.1.3 | 0.1.4 = /reforge page (anvil slot, coin cost by rarity, reroll) + SkyBlock tooltip "Damage: 11-48 (+24%)" |
-| SkyySkills | 0.4.1 | 0.4.2 = every felled log pays the feller (XP, double drops, collections), Stats page 1.5x, Double Jump (crouch in mid-air), party combat XP share (50% within 48 blocks, same world) |
-| SkyyAccessories | 0.4.3 | 0.4.3 |
-| SkyyClasses | 0.1.4 | 0.1.4 |
-| SkyyMenu | 0.1.2 | 0.3 (deployed 2026-09-25 02:33) = 0.2: player Settings page (/settings, tabs, per-player switches for mods that register them; the 3 refusing switches wait for Skyy) + Auction House entry; 0.3: admin-only Server Setup (book, slot 41, /modconfig): every Skyy mod listed, config pages for adopted mods, change log + undo, file history + restore, export/import codes; 0.1.3 = Island Menu / Bank / Vault / Reforge / Party / Guild entries, Invite to Your Island + Let Them Build, Hover Tooltips switch |
-| SkyyEssentials | 0.1 | 0.1.2 (deployed 2026-09-25 00:54) = /trade (escrow, both Ready -> 3 s countdown, coins, cancels on move/damage/world or profile change, /trade claim, /tradeadmin + config page); 0.1.1 = /r reply for non-builders, tpa return-point NPE fixed |
-| SkyyProfiles | 0.1 | 0.1 |
-| SkyyCooking | 0.1.1 | 0.1.1 |
-| SkyyTrees | 0.2 | 0.2.1 = Tree Feller same-Y rework (1/2/3/4 logs then the whole layer, 5 s cooldown), Double Jump node (tier II, replaces Quick Dodge 1:1) |
-| SkyyExploration | 0.1 | 0.2 (deployed 2026-09-25 00:54) = admin-placed discovery + secret spots (banner, sound, XP), island checklist per profile with %, /exploreadmin page (Spots / Checklist / Island) |
-| SkyyGuilds | 0.1 | 0.1.1 = Officer -> Admin (invite + kick Members only), per-rank daily (game day) withdraw limits, bank log Expand |
-| SkyyVault | - | 0.1 NEW = /vault item storage shared by all your profiles, 2 free pages, more for coins (50k + 25k per page, max 10 - proposal) |
-| SkyyRanks | - | 0.1 NEW (deployed 2026-09-25 02:33) = ranks made in game: /rank create/prefix/grant/deny/set/clear, /rankadmin editor page, chat prefix [Rank] [Title] Name; seeded 'Member' only; never removes hytale:Adventurer |
-| SkyyAuctions | - | 0.1 NEW (deployed 2026-09-25 00:19) = BIN auction house: /ah (browse by category, search, sort, rarity; item view; Create BIN with fee preview; Manage + claims), /ah sell, /ahadmin; Hypixel fees (1/2/2.5% + duration fee, 1% tax over 1M), 14 listings per profile, 1h-48h |
+| SkyyHud | 0.3.10 | Server Setup page + "Use my layout" default layout; 0.3.9 Party/Guild widget alignment |
+| SkyySacks | 0.7.6 | Server Setup page (bag caps etc.) + Settings switches; 0.7.5 Smithing bag, tree sap, all tabs |
+| SkyyCoins | 0.1.5 | (file only until SkyyEconomy) |
+| SkyyCollections | 0.2.2 | Server Setup page (3 files) + Settings switches; 0.2.1 felled logs count, "No tier yet" |
+| SkyyParty | 0.1.4 | Server Setup page, /partyadmin, Settings switches (party.chat, party.members, ...) |
+| SkyyBank | 0.1.3 | (file only until SkyyEconomy) /bank page |
+| SkyyIslands | 0.5.2 | Server Setup page incl. starter kit ("Use my hotbar"), Settings switches; 0.5.1 security hotfix; 0.5 co-op/trust/menu/reset. NEVER deploy 0.5 |
+| SkyyBazaar | 0.1.2 | (file only until SkyyEconomy) custom amounts, bigger page |
+| SkyyRolls | 0.1.5 | Server Setup page (reforge cost table), /rolls permission fix; 0.1.4 /reforge + "(+roll)" tooltips |
+| SkyySkills | 0.4.3 | Server Setup page (levels, XP rates, perks, curve actions) + Settings switches; 0.4.2 felled trees, Double Jump, party XP |
+| SkyyAccessories | 0.4.4 | FIRST config file + Server Setup page (slots, talisman bonuses) |
+| SkyyClasses | 0.1.5 | Server Setup page + Settings switch (blocked-weapon chat) |
+| SkyyMenu | 0.3 | player Settings (/settings) + admin Server Setup (/modconfig); 0.1.3 menu entries |
+| SkyyEssentials | 0.1.3 | Server Setup page, warps editor (/warpadmin), world spawn rows, tpa timings, Settings switches; 0.1.2 /trade |
+| SkyyProfiles | 0.1.1 | Server Setup page; DEFAULT CAP 6 (an untouched maxProfiles=4 file became 6) |
+| SkyyCooking | 0.1.2 | Server Setup page (graded cooking part switch etc.) + Settings switches |
+| SkyyTrees | 0.2.2 | Server Setup page (node values, Dust, Feller) + Settings switches; 0.2.1 Feller same-Y, Double Jump node |
+| SkyyExploration | 0.2.1 | Server Setup page (+ stamina per level read from SkyySkills); 0.2 spots + checklist |
+| SkyyGuilds | 0.1.2 | Server Setup page, Settings switches (guild.online, guild.members, guild.chat); 0.1.1 Admin rank, daily limits |
+| SkyyVault | 0.1.1 | Server Setup page (pages, prices, after-switch wait) |
+| SkyyAuctions | 0.1 | (file only until SkyyEconomy) BIN auction house /ah |
+| SkyyRanks | 0.1 | ranks made in game (/rank, /rankadmin), chat prefix |
 | third-party (PACK.md) | More Crossbow Tiers, Saplings From Trees | same |
-Deploy rules: Skills 0.4.2 + Trees 0.2.1 + Collections 0.2.1 go together; never go back to Trees 0.2 once 0.2.1 has run, or to Skills 0.4 once
-Exploration XP exists. Islands 0.5 migrated island files (.v4bak kept); rolling back to 0.4.5 needs those backups.
-Backup of the previous live set (jars + world config + Skyy_* data): backups/deploy-20260924-2253/.
+Deploy rules: never go back to Trees 0.2 once 0.2.1+ has run, to Skills 0.4 once Exploration XP exists, or to Islands 0.5 (security hole);
+Islands 0.5 migrated island files (.v4bak kept). Every round-4 mod needs SkyyMenu 0.3+ for its Server Setup page (it still runs without it).
+Backups before each deploy (jars + world config + Skyy_* data): backups/deploy-20260924-2253, -20260925-0019, -0054, -0233, -0411.
 HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death).
-Test order: TEST-CHECKLIST.md (newest sections at the bottom; tonight = the TWO-PLAYER TEST section).
+Test order: TEST-CHECKLIST.md, the sections from 'BETA ROUND 1' down (BETA ROUND 1, SkyyAuctions 0.1, Round 2, Round 3, Round 4), riskiest first.
+Every choice the builds made for Skyy, with the live default: OPEN-QUESTIONS.md.
 Profile contract for every mod: tools/PROFILES-CONTRACT.md. Design status for the design guy: DESIGN-STATUS.md.
 
 ### Verified in game by Skyy (2026-09-24, new set)
@@ -284,8 +285,10 @@ Defaults that still hold: shields, tools, and fists usable by all; classless pla
 
 ## 4. WHAT TO DO NEXT (in order)
 
-1. **Next test:** TEST-CHECKLIST.md section "BETA ROUND 1" (the 20-mod set is live since 2026-09-24 22:53). Riskiest first: server log,
-   island migration, vault dupes, reforge, bank, guild limits (2 players), felled trees, party XP, island co-op.
+1. **Next test (Skyy + a NON-op friend):** TEST-CHECKLIST.md from 'BETA ROUND 1' down - 22 mods live since 2026-09-25 04:11, nothing of
+   tonight's work seen in game yet. Riskiest first: server log (all 22 ready lines, no config-kit warnings), island migration + the 0.5.1
+   permission fix (a non-op cannot /island reload, /sethub or break blocks on your island), vault + trade + auction dupe tests, ranks never
+   removing basic commands, then the features. Then answer OPEN-QUESTIONS.md.
 2. **Skyy's open decisions** (collected in DESIGN-STATUS.md "Open questions"): Mining bag upgrades from Cobblestone or Iron tiers; settings
    menu refuse-vs-hide for party invites / tpa / private messages; tree-fall numbers; double jump tier II or III; campfire accessory extras;
    island visitors' block use; Endurance/Intelligence talismans; accessory power questions. **Added 2026-09-24:** how a player raises the
@@ -296,8 +299,10 @@ Defaults that still hold: shields, tools, and fists usable by all; classless pla
    - DONE: SkyyAuctions 0.1 deployed 2026-09-25 00:19 (test: TEST-CHECKLIST 'SkyyAuctions 0.1'; 14 open questions in research/Auction-House-Spec.md section 12).
    - DONE: research/Server-Setup-Spec.md (18 open questions in its section 9); round 3 deployed 2026-09-25 02:33: tools/skyycfg.py kit
      (+ tools/CONFIG-CONTRACT.md), SkyyMenu 0.3, SkyyRanks 0.1, SkyyIslands 0.5.1 security hotfix.
-     NEXT: the adoption waves (every mod registers its admin settings via tools/skyycfg.py + its player Settings switches:
-     Server-Setup-Spec section 7 steps 5-6 + Settings-Spec section 3). Coins/Bank/Bazaar/Auctions adopt as SkyyEconomy 0.1.
+     DONE 2026-09-25 04:11: the adoption round - 16 mods have Server Setup pages + Settings switches. Coins/Bank/Bazaar/Auctions adopt
+     as SkyyEconomy 0.1. Kit follow-ups (tools/skyycfg.py; each adopter picks them up at its next version): hand-edited TABLE lines are
+     logged ok without the row check (CfgFile.handApply); 1-column tables split on '|' and cap text at 200 (blocks a Collections table);
+     custom rows' file lines never trigger the reload; wants() skips a lone reload request; action rows can't carry a value.
    - DONE: SkyyEssentials 0.1.2 /trade + SkyyExploration 0.2 deployed 2026-09-25 00:54 (TEST-CHECKLIST 'Round 2').
    - SkyyMenu 0.2: player Settings menu (research/Settings-Spec.md) - the 3 refusing switches wait for Skyy's refuse-vs-hide answer.
    - SkyyEconomy 0.1 = Coins + Bank + Bazaar + Auctions merged (SkyyEconomy-Plan.md) AFTER Skyy tests the separate versions.
@@ -440,3 +445,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-25 00:19: SkyyAuctions 0.1 finished (workflow skywynn-auction-house: 3 research passes -> research/Auction-House-Spec.md, 2 spec reviews, build, 3 reviews (engine, dupe hunter, design), fix, verify: 21 jars under -Xverify:all, 553 classes; buy / cancel-vs-buy / claim paths re-traced). Committed d75807b, pinned, AUTO-DEPLOYED (backup backups/deploy-20260925-0019). Known limit (pack-wide): a hard crash within ~1 s of listing can leave the item both listed and in the inventory (forced player save shortens it; /ahadmin regrant repairs lost claims). Also 2026-09-24 late: research/Server-Setup-Spec.md written + reviewed (18 findings applied); round 2 (trade + exploration) and round 3 (config foundation) building.
 - 2026-09-25 00:54: round 2 finished (workflow skywynn-round-2-trade-exploration, 13 agents): SkyyEssentials 0.1.2 (/trade; research/Trade-Spec.md) + SkyyExploration 0.2 (spots + checklist; research/Exploration-0.2-Spec.md); 15 + 9 review findings fixed; cross-check: 625 classes -Xverify:all, no command clashes, contracts with Skills/Profiles/Coins/Vault pass. Committed 7940a40, AUTO-DEPLOYED (backup backups/deploy-20260925-0054). Notes: a player literally named accept/deny/cancel/claim can't be /trade'd by name; SkyyMenu help texts don't list /trade + the new exploreadmin commands yet (next menu build); existing alias takeovers (by design): /r (reply), /hub (SkyyIslands over CreativeHub), /p (SkyyParty over vanilla /prefab's alias).
 - 2026-09-25 02:33: round 3 finished (workflow skywynn-round-3-config-foundation, 21 agents): tools/skyycfg.py config kit (harness 194/194 + 22 must-fail), tools/CONFIG-CONTRACT.md, SkyyMenu 0.2 -> 0.3, SkyyRanks 0.1 (new). Its cross-check (real CommandManager + permissions provider, 697 classes) found a LIVE hole: SkyyIslands 0.5 gave EVERY player skyyislands.admin (/island reload had requirePermission without setPermissionGroups(new String[0]); the engine copies a command's node into the groups it inherits from its parent) -> island protection + bans bypassed, /sethub open. Built SkyyIslands 0.5.1 (tools/islands_0_5_1_patch.py); a verification agent re-ran the engine's own permission code over all 22 jars: Adventurer holds 124 nodes, none admin (the 0.5 control run leaks); new lint rule perm_group_leaks. Nobody played on 0.5 (deployed 22:53, world not started since). Committed f814f93, AUTO-DEPLOYED Islands 0.5.1 + Menu 0.3 + Ranks 0.1 (backup backups/deploy-20260925-0233). Known: auto permission nodes carry the mod version (skyy.<ver>_<mod>.command.x), so a /rank grant or deny of a Skyy command node stops applying after that mod's next version - stable nodes are Server-Setup-Spec 8.4.6.
+- 2026-09-25 04:11: round 4 (adoption) finished (workflow skywynn-round-4-adoption, 65 agents): 16 mods register their admin settings through tools/skyycfg.py (Server Setup pages) + player Settings switches; extras: Profiles default cap 6, Islands starter-kit row, /partyadmin, Essentials warps editor + spawn rows, Hud default layout, Accessories' first config file, Rolls cost table. Cross-check: 840 classes -Xverify:all; 292 rows set + restored through SkyyMenu 0.3's own path; non-op denied everywhere; hytale:Adventurer holds 128 nodes, none admin; 30 player switches; defaults identical to the previous versions except the intended maxProfiles 4 -> 6. Committed 6f78480, AUTO-DEPLOYED (backup backups/deploy-20260925-0411). Open for Skyy (OPEN-QUESTIONS.md): Sacks Furnace/Tannery caps as danger rows?, party.members switch also hiding kick/invite lines?, Guilds onlineMessages now reads off/no/0 as OFF (kit rule).

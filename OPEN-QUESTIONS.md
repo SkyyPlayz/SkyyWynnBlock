@@ -79,6 +79,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 17. SkyyRanks before the other mods' settings pages? [done]
 18. Warps page can also move the world spawn (with a confirm)? [yes]
 
+## Server Setup pages (round 4, live)
+- SkyySacks: should changing the Furnace / Tannery caps ask for a confirm (danger row)? [no confirm]
+- SkyyParty: should the "party members" switch also hide "X kicked Y" and "X invited Y" lines? [no - always shown]
+- SkyyGuilds: `onlineMessages` now treats off / no / 0 as OFF like every other on/off setting (before: only the word false). OK? [yes]
+- Profiles: the default cap is now 6 (your 2026-09-24 decision); lowering it never deletes a profile.
+
 ## Player Settings (`research/Settings-Spec.md` section 6)
 - Settings icon in the menu: slot 51 (bottom row) or next to Mods? [51]
 - Anything that should stay always on (never switchable)? [the section 2.3 list]

@@ -818,3 +818,37 @@ Then run `/ahadmin reload`. You need 2 profiles with about 50k coins each, a `/r
 15. Hand-edit `Skyy_SkyyRanks/config.properties` while the server runs, then click Reload file: Changes shows the edit as `via=file`.
 16. [2P] `/rankadmin` page: New rank, Up/Down, grant search, adding a member from the online list, "< Server Setup", and the page fits 1080 high.
 17. [2P] Two admins on the Ranks page: after one changes a value, the other sees it on their next click, and both changes are logged with names.
+
+
+## Round 4 - every mod's settings in game (16 mods), DEPLOYED 2026-09-25 04:11 (backup backups/deploy-20260925-0411)
+Skills 0.4.3, Trees 0.2.2, Collections 0.2.2, Sacks 0.7.6, Classes 0.1.5, Cooking 0.1.2, Profiles 0.1.1, Islands 0.5.2, Party 0.1.4,
+Essentials 0.1.3, Exploration 0.2.1, Guilds 0.1.2, Vault 0.1.1, Rolls 0.1.5, Hud 0.3.10, Accessories 0.4.4. [2P] = needs a second, NON-op player.
+
+1. Start the world. All 22 mods load, every "[Skyy…] ready" line appears, and the log has no "config kit", "unreadable" or "clamped" warnings. Check the files:
+   - `Skyy_SkyyProfiles/config.properties` now says `maxProfiles=6`.
+   - `Skyy_SkyyEssentials/config.properties` has the "added by SkyyEssentials 0.1.3" block at the end.
+   - `Skyy_SkyyAccessories/config.properties` and `Skyy_SkyyHud/config.properties` now exist.
+2. [2P] Player B has no Server Setup tile and `/modconfig` is refused. Each of these is refused for B:
+   - `/partyadmin`, `/classadmin`, `/cookadmin`, `/profileadmin`, `/guildadmin`, `/vaultadmin`
+   - `/exploreadmin`, `/tradeadmin`, `/warpadmin`, `/sethub`, `/rolls`
+   - `/skyyhud default`, `/island reload`, `/skills reload`, `/tree reload`, `/collections reload`, `/accessories reload`
+3. [2P] B can still run every normal command: `/island`, `/hub`, `/party`, `/pc`, `/guild`, `/gc`, `/skills`, `/tree`, `/collections`, `/skyyhud`, `/settings`, `/vault`, `/trade`, `/tpa`, `/msg`, `/profiles`, `/class`, `/cooking`, `/explore`, `/reforge`, `/accessories`, `/pd`, `/craft`.
+4. Server Setup shows 18 mods as set up and 4 as file-only (Auctions, Bank, Bazaar, Coins). Open all 16 new pages: none fails to load and every page fits the screen. Searching "invite" finds Party, Guilds and Islands.
+5. Dangerous changes:
+   - Set Vault `maxPages` below a page that holds items: refused.
+   - Set Vault `freePages` above `maxPages`: refused.
+   - Lower Accessories slots to 7: it asks first, and an 8th equip is then refused.
+   - Undo each change from Changes; the file changes only on that line.
+6. [2P] Durations use the right unit: Party `inviteSeconds` 20 (the invite expires at about 20 s), Essentials `tpa.expireSeconds` 20, Profiles `combatSeconds` 5 (a profile switch works 5 s after a hit, not before).
+7. Turn a part off and on again (Cooking "Graded cooking", then an Exploration part, then Essentials `part.tpa`). Turning it off asks first and the feature stops; turning it back on works as before.
+8. Islands: "Use my hotbar" for the starter kit, then a new profile's new island chest has exactly that kit. Lowering `reset.cooldownHours` asks first; raising it does not.
+9. Skills: set `levels.max` to 60 (asks first), then change another Skills row straight away. After about 1 s, `/skills` caps at 60. Put it back to 100.
+10. Commands go through the kit: `/partyadmin set maxSize 6`, `/guildadmin set maxMembers 60`, `/profileadmin set openDelayMillis 3000` and `/exploreadmin set …` each show in Changes as "command" with your name.
+11. Hand-edit `Skyy_SkyyGuilds/config.properties` (`maxMembers`), then press "Reload file" on the Guilds page. The value is live and logged as "file", and `/guildadmin config` shows it.
+12. Export a Trees code, change a Trees value, then import the code (Preview, then Apply). The value comes back. Restore an older History version, then undo that restore.
+13. [2P] In `/settings`, B turns off `party.chat`, `guild.chat` and `tpa.updates`. B stops seeing A's `/pc` and `/gc` lines and denied/expired tpa notices, but still sees B's own lines. With `skills.xpGain` off, XP still counts.
+14. [2P] `islands.visitPing` off for A: B visits A's island and A gets no ping. With `classes.blockedChat` off, a blocked weapon hit is still blocked, with no chat line.
+15. The restart-only row `replyShortcut` shows RESTART, and the Mods list says it waits for a restart. After a restart the tag is gone.
+16. HUD: "Use my layout" makes a fresh player, or `/skyyhud reset`, get your layout. The "HUD editor" link opens the editor, and Back returns to Server Setup.
+17. Rolls: edit the cost table ("Rare"), and `/reforge` shows the new cost. Sacks: lower `bag.small`; it asks first and the cap applies.
+18. Profiles: with `maxProfiles` now 6, a 5th profile can be created. Lowering the value never deletes a profile.

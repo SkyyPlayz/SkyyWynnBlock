@@ -76,7 +76,7 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
   an in-game settings page with a change log, undo, file history and export/import codes.
 
 ## Decided but not built yet
-- **Every mod's settings in game**: the adoption round (each mod registers its settings with the config kit) is being built.
+- **Every mod's settings in game**: DONE 2026-09-25 for 18 mods (Server Setup pages); Coins, Bank, Bazaar and Auctions get theirs as SkyyEconomy.
 - **SkyyEconomy**: Coins + Bank + Bazaar + Auction House as one mod, after Skyy tests the separate versions; then NPC shops set up in game.
 - **Bags**: bag sizes will come from collections (waits on the Cobblestone-vs-Iron answer).
 - **Big in-game editors**: NPC shops (SkyyEconomy 0.2), island template, warps page, NPC quests (future SkyyQuests).
