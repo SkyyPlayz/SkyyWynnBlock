@@ -65,7 +65,7 @@ SkyyEssentials (locked). This spec makes **SkyyEconomy 0.1 the first mod built o
 SkyyBank, SkyyBazaar and SkyyAuctions do not adopt it, they retire into SkyyEconomy.
 
 **Homes decided here:** ranks + permissions -> a new **SkyyRanks** mod (5.1, not SkyyEssentials), built right after SkyyEconomy 0.1
-(section 7 step 4). NPC shops -> **SkyyEconomy 0.2** (after the 0.1 merge is proven). Warps editor + world spawn -> **SkyyEssentials**.
+(section 7 step 4). LOCKED 2026-09-25 (Skyy): ranks stay in their own mod, SkyyRanks. 0.1 is live. That was already the default. NPC shops -> **SkyyEconomy 0.2** (after the 0.1 merge is proven). Warps editor + world spawn -> **SkyyEssentials**.
 Island template + starter kit -> **SkyyIslands**. NPC quests -> future **SkyyQuests**; only the hooks are defined now (5.3).
 
 **One registry or two?** Two small registries that share one toolkit (1.2): the player Settings registry (`settings:*`, Settings-Spec,
@@ -834,6 +834,8 @@ every click through one `guard()` called first in `build()` and `handleDataEvent
 
 ### 5.1 Ranks and permissions -> a new mod, **SkyyRanks** (recommended over SkyyEssentials)
 
+LOCKED 2026-09-25 (Skyy): ranks stay in their own mod, SkyyRanks. 0.1 is live. That was already the default.
+
 **Why its own mod:** it edits the world's security (who may do what), so it deserves its own admin node and its own off switch (remove the
 jar); servers that already use another permissions mod can leave it out; a solo world never needs it; it owns a chat hook that must be
 ordered with SkyyExploration's title prefix; SkyyEssentials stays the small "commands most servers have" mod (tpa, msg, warps, `/trade`).
@@ -1126,7 +1128,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 5. LOCKED 2026-09-25 (Skyy): When the bank comes back on, is the off time paid as interest? Yes. Players receive back-pay for interest accrued while the bank was switched off. Was: no back-pay.
 6. LOCKED 2026-09-25 (Skyy): NPC shops: buy and sell-back per item, infinite stock by default, optional limited stock with a restock timer. Yes, as described in 5.2. Infinite stock stays the default. That was already the default.
 7. LOCKED 2026-09-25 (Skyy): NPC shops in SkyyEconomy 0.1 or 0.2? 0.2, so 0.1 stays a clean merge. That was already the default.
-8. Ranks: a new SkyyRanks mod, or inside SkyyEssentials? [SkyyRanks.]
+8. LOCKED 2026-09-25 (Skyy): Ranks: a new SkyyRanks mod, or inside SkyyEssentials? SkyyRanks. 0.1 is live. That was already the default.
 9. Which ranks come seeded? [Only the default rank "Member" (no prefix); owners make the rest in game.]
 10. Chat order when a player has a rank and a title? [`[Rank] [Title] Name`.]
 11. SkyyMenu 0.2 (player Settings) and 0.3 (Mods section) as two rounds, or one? [Two, smaller and easier to test.]
