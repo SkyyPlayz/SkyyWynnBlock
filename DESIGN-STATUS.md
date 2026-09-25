@@ -17,7 +17,7 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
   skills, collections, accessories and skill trees. Creating a profile is where you pick your class (Archer, Warrior or Mage), and it is locked.
 - Switching profiles swaps the inventory and sends you to that profile's island; it is crash-safe.
 - Classes lock the combat path only: each class can only fight with its own weapons (a popup shows the weapon and why). Gathering is open to all.
-- Classes: Archer, Warrior, Mage, and (locked 2026-09-25, being built) **Berserker** (Fury: axes, battleaxes, maces, clubs) and **Priest**
+- Classes: Archer, Warrior, Mage, and (locked + live 2026-09-25) **Berserker** (Fury: axes, battleaxes, maces, clubs) and **Priest**
   (an AoE healing support class; Divinity: wands and spellbooks; its weapon hits heal the party until real spells exist; much of it custom
   later). Assassin and Shaman later. Every class gets a kit with its basic weapon when you pick it. `ALLOW_SWITCH=false` (no paid switch).
 

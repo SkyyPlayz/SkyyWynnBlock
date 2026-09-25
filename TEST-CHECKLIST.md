@@ -876,3 +876,19 @@ Essentials 0.1.3, Exploration 0.2.1, Guilds 0.1.2, Vault 0.1.1, Rolls 0.1.5, Hud
 5. `/tree swing` -> "tier 25 (+25% - a swing every 0.28 s)"; `/tree mining` -> "Now: +25% pickaxe swing speed".
 6. Chopping Speed + a Cobalt+ hatchet swings faster on logs; a sword swings at normal speed; a profile without the node is vanilla speed;
    no status icon shows; no blocks pop back / rubber-banding; the one-time chat notice shows once.
+
+
+## Round 6 - Berserker, Priest, class kits (SkyyClasses 0.1.6 + SkyySkills 0.4.4 + SkyyProfiles 0.1.2), DEPLOYED 2026-09-25 07:11 (backup backups/deploy-20260925-0711)
+[2P] = needs a NON-op second player.
+1. Server log: all ready lines; SkyyClasses "class kits: N existing profiles marked"; SkyySkills "appended the Divinity section"; no config warnings. Existing profiles (Strawberry, Zucchini) get NO kit.
+2. Existing profile: `/skills` shows the same levels as before (relog, check again).
+3. `/profiles` -> Create new: 7 cards fit, Priest reads "AoE healer / support". Create a Priest: "kit on its way", then within ~35 s after arriving a "Class kit" popup + chat line and the Wood Wand in storage. Relog/restart: no second kit.
+4. Solo Priest: take fall damage, tap-hit a monster with the wand -> you heal ("[Classes] Heals: +N HP to you", max every 5 s, no XP for self-heal). A kill gives Divinity XP; `/skills` shows Divinity.
+5. [2P] Friend (non-op Warrior) in your party, hurt: wand-hit a monster within 16 blocks -> the friend heals ("Skyy healed you +N HP"), their HUD party bar rises, you get Divinity XP (~0.2 per HP). Friend at full health / 20+ blocks away / other world / not in party -> no heal.
+6. [2P] Friend: `/class kit` -> "Nothing is waiting"; `/classadmin kit`, `/classadmin info`, `/modconfig classes` refused or view-only; `/settings` -> Combat "healed by others" off hides the lines (heals still happen).
+7. Creative hits heal nothing; hits on players heal nothing.
+8. Berserker profile: battleaxe kit; axes/battleaxes/maces/clubs deal damage; a hatchet chops and hits; a wand is blocked ("Only Priests can use wands" + popup). `/skills stats fury`; a kill gives Fury XP.
+9. [2P] Party kill share: a Warrior kill gives you Divinity, your Priest kill gives the friend Swordsmanship.
+10. Server Setup -> Classes: 4 tabs; add a spellbook to the Priest kit; 'Use my hotbar' on the Archer kit with a sword asks first; heal share 50%; Priest heal OFF (asks) -> no heals; back ON. Skills has 3 Divinity rows.
+11. Full inventory + `/classadmin kit <you> archer` -> "did not fit ... /class kit"; make room, `/class kit` delivers; survives a relog.
+12. `/class` shows 7 cards; footer "Hatchets are tools."

@@ -22,6 +22,20 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - **Party combat XP:** members within 48 blocks in the same world get 50% of the killer's combat XP (the killer keeps 100%). [as written]
 - **Menu hover tooltips:** on by default; the book switch turns them off if the stuck tooltip after Esc still happens. Default off? [on]
 
+## Berserker, Priest, class kits (`research/Classes-Berserker-Priest-Spec.md` section 8, live in Classes 0.1.6 / Skills 0.4.4 / Profiles 0.1.2)
+- Priest heal: 25% of the damage to party members within 16 blocks, the Priest heals themself at 50% of that, max 10 HP per hit and 10 HP per
+  second per player; party only, not other players. [as written, all editable in Server Setup]
+- Divinity XP from healing others: 0.2 XP per HP, max 300 XP a minute (healing yourself pays no XP). [as written]
+- Heal chat lines on by default (at most one every 5 s; players can switch theirs off). [on]
+- **Mana:** vanilla max Mana is 0, so wand casts (25 Mana), spellbook casts (100) and the Mage staff summon (50) never work for a new
+  character - only the swings. Give Priests / Mages base Mana? [not yet]
+- **Priest weapons:** no wand or spellbook can be crafted and almost none drop - the kit's Wood Wand (never breaks) is the only way to get
+  one. Add recipes/drops now or wait for custom Priest weapons? [wait]
+- The vanilla Healing Totem (AoE +5 HP/s, endgame recipe): Priest, Shaman, or anyone? [anyone]
+- Root / Stoneskin wands and the Rekindle Embers spellbook count as Priest weapons. [yes]
+- Kits: into storage (not the hotbar), ~31 s after a new profile arrives (crash-safe), overflow waits for `/class kit`, Archer kit 64 arrows,
+  no new kit when an admin changes a profile's class. [as written]
+
 ## Swing speed (`research/Swing-Speed-Spec.md`, live in SkyyTrees 0.2.3)
 - Mining Speed max +25% faster pickaxe swings (the engine allows up to +40% without re-timing the vanilla swing)? [+25%]
 - Chopping Speed gets the same for hatchets; Chopping Speed II renamed "Heavy Hatchet" (breaking power on wood). [yes]
