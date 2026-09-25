@@ -685,3 +685,72 @@ and a friend (the friend must NOT be opped, or permission checks don't count).
 - Tree Feller: 1/2/3/4 extra logs then the whole layer, 5 s cooldown. Double Jump: tier II (replaces Quick Dodge 1:1), 2 Stamina.
 - Party XP share: 50% of the killer's combat XP to members within 48 blocks in the same world.
 - Menu hover tooltips stay ON by default; the "Hover Tooltips" switch (book icon) turns them off if the stuck tooltip after Esc still happens.
+
+
+## SkyyAuctions 0.1 - BIN auction house, DEPLOYED 2026-09-25 00:19 (backup backups/deploy-20260925-0019)
+Riskiest first. The SkyWynn Menu button comes with SkyyMenu 0.2; until then use `/ah`. Open questions (fees, durations, bazaar items off the AH,
+no buying from your own other profile, `/ah` anywhere vs an NPC later, the late-game block list): research/Auction-House-Spec.md section 12.
+
+**Before you start:** in `<world>/mods/Skyy_SkyyAuctions/config.properties` set:
+- `sameAccountBuy=true`
+- `allowTestDurations=true`
+- `durations=2m:0,1h:20,6h:45,12h:100,24h:350,48h:1200`
+
+Then run `/ahadmin reload`. You need 2 profiles with about 50k coins each, a `/rolls give` weapon, a graded dish and admin rights. Put all these settings back after the solo steps.
+
+**Solo**
+1. `/ah`: click all 7 categories, every sort, the rarity filter, and Browse/Create/Manage. Press Close, then reopen and press Esc. Nothing should stay on screen.
+2. Note the weapon's `/rolls read`. In Create BIN, pick it, type `12k` and press Enter.
+   - The fee reads 470 (120 + 350). Create BIN: the purse drops by exactly 470 and the item is gone.
+   - Browse → Weapons shows the rarity colour, the reforge and "(yours)". The item view shows the roll lines.
+   - Cancel through Yes, cancel: the item comes back with an identical `/rolls read`.
+   - Repeat with the graded dish; the grade must survive.
+3. List the weapon for 12k on profile 1. Switch to profile 2 and wait 20 s. Buy → Confirm.
+   - Profile 2's purse drops by exactly 12,000 and the weapon has the exact same stats.
+   - Back on profile 1, Claim coins pays exactly 12,000. Double-click it: the second click says there is nothing to claim.
+4. Full inventory:
+   - Buy with a full inventory: you are charged and the item waits in Manage. Free a slot and claim it; stats are intact.
+   - Cancel with a full inventory, then claim.
+   - Partial: list 64 of a stackable item that is not sold on the Bazaar. Leave room for about 10 and cancel: it says "10 came back, 54 wait". Claim the rest. You get exactly 64 back, no more.
+5. Note the player file's modified time, list an item, and check it changes within 1-2 s. Then list another item and end the server process within 2 s. After the restart the item must be listed OR in the inventory, never both.
+6. Failed write, then a crash:
+   - Cancel a listing with a full inventory so the item waits as a claim.
+   - Make a folder `listings/<id>.json.tmp`. This blocks the listing's file write.
+   - Free a slot and Claim item. The item arrives and the server log warns "WRITE FAILED".
+   - `/ahadmin info <id>` shows "NOT SAVED YET".
+   - End the server process, delete the folder, and start the server.
+   - The log shows "restored listing #<id> … closed", `auctions.log` has `WRITE-RESTORED`, and Manage does not offer the item again.
+7. Same as step 6 up to "NOT SAVED YET", but only delete the folder (no crash). Within 10 s `WRITE-RETRY-OK` is logged, the file moves to `archive/<month>/`, and `info` shows "(archived)".
+8. Clean restart: the listing survives with its stats. `auctions.log` has `BOOT`, and `STOP` after the clean stop.
+9. List with 2m, let it expire, and claim it back.
+10. List with 2m and log out for 3 minutes. Log back in: the notice appears once, and switching worlds does not repeat it.
+11. Profiles:
+    - Rename profile 1 in SkyyProfiles, then list something on profile 1.
+    - On profile 2, Manage shows the other-profile line with the new name.
+    - Set `sameAccountBuy=false` and reload: profile 2 sees "you cannot buy from yourself".
+12. In Creative, listing and buying are refused, but claiming works.
+13. Add the item id to `Skyy_Market/blocked.txt` and reload. The listing shows "off the market" and cannot be bought, but the seller can still cancel it. Listing Copper Ore is refused (Bazaar item).
+14. `/ah sell 5k` opens the page ready for one click; `/ah sell 5k 6h` sets 6h; `/ah sell 5k 7h` gives "Pick one of...".
+15. Admin tools:
+    - Try `/ahadmin list`, `info`, and `remove <id> testing`.
+    - `pause`: listing and buying are refused, cancel and claims still work. Then `resume`.
+    - `regrant`: the preview changes nothing, `confirm` within 60 s makes the claim show at once, and a second `confirm` is refused.
+    - `/ahadmin` status lists the restore from step 6.
+16. Smaller checks:
+    - Claim all with more than 100k owed asks first.
+    - The "cheaper one is listed" line appears on the pricier of two listings of the same item.
+    - `detailTextSpans=false` shows the plain "Reforge X - Damage +N% …" line.
+    - `allowTestDurations=false` plus a reload removes 2m.
+    - Then put the config back.
+
+**Two players** (A sells, B buys)
+17. Cancel-vs-buy race: A lists for 12k. After the grace period, B gets the Confirm button ready while A gets "Yes, cancel" ready in Manage. Both click on a count of 3. Exactly one wins: either B paid 12,000 and has the item, or A has it back and B's purse is unchanged. Do this 3 times, within the 10 s confirm window each time.
+18. B has the item view open while A cancels. B's Buy says "no longer for sale" and B's purse is unchanged.
+19. A lists a rolled weapon. Within 20 s B sees "Buy (opens in N s)"; the label doesn't count down, so click to refresh it. After that, B buys through Confirm (double-click it): exactly one charge of 12,000, and B's `/rolls read` matches A's. A gets the sale message at once, and Claim coins pays exactly 12,000.
+20. B buys with a full inventory: B is charged, the item waits in Manage, and it can be claimed later with stats intact.
+21. A lists and logs off, B buys, A logs back in: the notice appears once and `/ah claim` pays.
+22. A on the island, B on the hub: buying still works.
+23. B without enough coins sees "You need N more coins".
+24. A 2,000,000 sale pays 1,980,000.
+25. A 15th listing is refused, and claiming one frees a slot.
+26. Optional, with a third player: two buyers confirm at the same moment. Only one gets it and only that purse changes.
