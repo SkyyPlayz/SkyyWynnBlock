@@ -51,7 +51,7 @@ the list finds a setting or an editor by name ("warps", "shops", "interest") acr
 - **Ranks** until SkyyRanks 0.1 (section 7 step 4): the vanilla chat commands `/op add|remove`, `/perm group|user ...`, `/setgroup`, or
   `permissions.json` with the server stopped.
 - **NPC quests:** not yet (5.3). **A custom starting island:** the built-in island stays fixed until the template editor (5.5).
-  **Profile cap above 6:** not possible at all yet, not even by file (section 9 Q16).
+  **Profile cap above 6:** CONFIRMED intentionally open 2026-09-25 (Skyy). Reviewed and parked. Likely linked to ranks, and undecided. Not a resolved mechanic. Still not possible, not even by file (section 9 Q16).
 - **Deliberately not covered (vanilla or start-up jobs, not Skyy settings):** creating a world and its seed and world generation, the
   server's own start-up settings (name, port, player limit, launch options), whitelist, kicks and bans, op itself, backups, and other
   authors' mods. Vanilla already has `/whitelist`, `/kick`, `/ban`, `/op`, `/perm`, `/setgroup` and `/spawn set` (command classes seen in
@@ -786,7 +786,7 @@ from other mods) as a table `rules` (entry = item id prefix, column `Class or fr
 it only blocks creating), `openDelayMillis` (A; `ProfCfg.OPEN_DELAY_MS`, no scale), `promptEveryLogin` bool, `combatSeconds` int 10 s
 (0-600; `field:ProfCfg.COMBAT_MS*1000`: the field stores milliseconds), `islandOnSwitch` bool,
 `perProfileBackpack` bool (L, D), `newProfileBackpack` int (-1-256, N), `keepItems` items (L, D: an item kept across profiles moves between
-them). Raising the cap above 6 is Skyy's open decision (HANDOFF: do not invent the method); the row's max follows whatever the code allows.
+them). CONFIRMED intentionally open 2026-09-25 (Skyy): raising the cap above 6 stays parked. Likely linked to ranks, and undecided. Not a resolved mechanic, so do not invent the method. The row's max follows whatever the code allows. Today there is still no in-game or file way above 6.
 
 ### 4.17 SkyyIslands [0.5]
 Categories `permissions, visits, coop, limits, starter, hub, tech`. permissions: 14 choice rows `defaults.perm.<flag>` (`visitor|trusted|member|
@@ -1162,8 +1162,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 13. LOCKED 2026-09-25 (Skyy): SkyyClasses' class-switch settings while switching is locked? Greyed out. Players can see the option and cannot use it. Was: hidden, with one read-only line. Future, to build: class changes unlock later through a special item earned from a quest, or a similar progression gate. See 4.15. SkyyClasses 0.1.6 still leaves `switchCost` and `cooldownMinutes` off the page.
 14. LOCKED 2026-09-25 (Skyy): Quest hooks: add the `quest:fn:event` calls now or only when SkyyQuests has a spec? With SkyyQuests, not now. That was already the default.
 15. Should rank grants later carry perks (extra vault pages, bigger parties)? [Not in 0.1; the marker node `skyyranks.rank.<id>` makes it possible later.]
-16. Raising the profile cap above 6: no default. HANDOFF says to wait for Skyy's method; a rank perk node would be one option. (Listed in
-    section 0 as a known gap: today there is no in-game or file way above 6.)
+16. CONFIRMED intentionally open 2026-09-25 (Skyy): How does a player raise the profile cap above 6? Left open. Likely linked to ranks, and undecided. Not a resolved mechanic. Today there is still no in-game or file way above 6. See 4.16.
 17. When does SkyyRanks come? [Section 7 step 4, right after SkyyEconomy 0.1 and before the adoption waves; until then vanilla `/op`,
     `/perm`, `/setgroup` or `permissions.json`.]
 18. Should the warps page also move the world spawn? [Yes: `Set the world spawn here` and `Reset the world spawn to the original`, the

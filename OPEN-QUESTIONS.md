@@ -137,7 +137,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 13. LOCKED 2026-09-25 (Skyy): SkyyClasses' class-switch settings are greyed out while switching is locked. Players can see the option and cannot use it. Was: hidden, with one read-only line. Future, to build: class changes unlock later through a special item earned from a quest, or a similar progression gate. [greyed out; 0.1.6 still leaves switchCost and cooldownMinutes off the page]
 14. LOCKED 2026-09-25 (Skyy): quest hooks ship with SkyyQuests, not now. [with SkyyQuests, already the default]
 15. Rank perks later (extra vault pages, bigger parties)? [later]
-16. How does a player raise the profile cap above 6? [no default - your call]
+16. CONFIRMED intentionally open 2026-09-25 (Skyy): how a player raises the profile cap above 6 is left open. Likely linked to ranks, and undecided. Not a resolved mechanic. [parked; no way above 6 yet]
 17. SkyyRanks before the other mods' settings pages? [done]
 18. Warps page can also move the world spawn (with a confirm)? [yes]
 
