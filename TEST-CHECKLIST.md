@@ -682,7 +682,7 @@ and a friend (the friend must NOT be opped, or permission checks don't count).
 16. **Collections:** a new, untouched collection shows "No tier yet".
 
 **Numbers that are proposals (change in the config files, or tell Claude):**
-- LOCKED 2026-09-25: Vault: 2 free pages, max 10, page 3 = 50,000 and each next page +25,000; pages shared across all profiles (Wynncraft style). In-chest Prev/Next arrows are the approved page switch.
+- LOCKED 2026-09-25: Vault: 2 free pages, max 10, page 3 = 50,000 and each next page +25,000; pages shared across all profiles (Wynncraft style). In-chest Prev/Next arrows are the approved page switch. Buying a page does not use two clicks within 10 s: below buyConfirmCoins (default 50,000) the buy is instant; at or above it a dialog asks "Buy page X for Y coins?". SkyyVault 0.1.2 still uses the 10 s second click.
 - LOCKED 2026-09-25: Tree Feller: 1 / 2 / 4 / 5 / 6 / 10 extra logs at levels 1-6 (level 6 jumps to 10 so a very large tree is not broken as a whole layer), 3 s cooldown. Double Jump: tier III, second jump in mid-air, 2 Stamina.
 - Party XP share: 50% of the killer's combat XP to members within 48 blocks in the same world.
 - Menu hover tooltips stay ON by default; the "Hover Tooltips" switch (book icon) turns them off if the stuck tooltip after Esc still happens.

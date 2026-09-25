@@ -687,7 +687,9 @@ Make configurable later: the rarity-based roll ranges once they exist (unbuilt, 
 
 ### 4.3 SkyyVault [0.1]
 Category `vault`: `freePages` int 2 (1-100, <= maxPages, L, D), `maxPages` int 10 (1-1000, L, D; refuses a value below any player's highest
-used page, the `/vaultadmin` rule), `slotsPerPage` int 36 (9-90, N, D), `pagePrice` int 50,000 (L), `pagePriceStep` int 25,000 (L), `openMode`
+used page, the `/vaultadmin` rule), `slotsPerPage` int 36 (9-90, N, D), `pagePrice` int 50,000 (L), `pagePriceStep` int 25,000 (L), `buyConfirmCoins` int 50,000 (0–1e12, L, coins; LOCKED 2026-09-25: a page cheaper than
+this buys at once, this price or more asks "Buy page X for Y coins?" first; `field:VCfg.BUY_CONFIRM`. SkyyVault 0.1.2 still uses a second
+click within 10 s and does not read the row yet), `openMode`
 choice `page|Page view,chest|Chest window` (L), `afterSwitchSeconds` int 30 s (0-120, L, A; `field:VCfg.AFTER_SWITCH_MS*1000`: the field
 stores milliseconds), `saveDelayMillis` int 1000 ms (100-30000, L, A; `VCfg.SAVE_DELAY_MS`, no scale).
 Keep in code: `MAX_CAP = 1024`, `MAX_PAGE = 1000` (safety ceilings).

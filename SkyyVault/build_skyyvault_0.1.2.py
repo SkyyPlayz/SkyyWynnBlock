@@ -26,9 +26,11 @@ Run:   python build_skyyvault_0.1.2.py          -> SkyyVault/SkyyVault-0.1.2.jar
     in storage is saved as empty and removed), a Skyy_Vault_* stack in a vault file is dropped at load (vault.log STRAY-FILE), so a
     rollback to 0.1.1 is safe.
   * CLICK: Prev / Next = gate (profile busy / after-switch wait) + the existing swap (sync old page, fill new, read back, close
-    noSync on a mismatch), which now also rebuilds the control row; page mode also refreshes our page. Gold Buy = the SAME 10 s
+    noSync on a mismatch), which now also rebuilds the control row; page mode also refreshes our page. Gold Buy in 0.1.2 = the SAME 10 s
     confirm as the page's Buy button and /vault buy (VStore.buyKey / confirm / buy): first click arms (chat), a click in a LATER batch
-    within 10 s buys (coins once) and the new page opens in place. First page / Last page / page info / fillers: a chat line or
+    within 10 s buys (coins once) and the new page opens in place. LOCKED Skyy 2026-09-25 replaces that two-click with buyConfirmCoins
+    (default 50000, VCfg.BUY_CONFIRM): below the threshold buy at once, at or above it a dialog asks "Buy page X for Y coins?". This
+    build still uses the 10 s second click and does not read the row. First page / Last page / page info / fillers: a chat line or
     nothing. The slot's action follows the CURRENT vault state (a row made stale by /vault buy or a freePages raise acts right and is
     redrawn). /vault buy and the page's buttons redraw an open row.
   * SAFETY SWEEP (VSweepTask, world thread; no events, no ECS systems - still none registered): on join (the 1 s ticker's online set),
@@ -104,6 +106,9 @@ Run:   python build_skyyvault_0.1.2.py          -> SkyyVault/SkyyVault-0.1.2.jar
     slotsPerPage        int     36       9-90         -      new,danger         field:VCfg.SLOTS        (vaults loaded afterwards)
     pagePrice           int     50000    0-1e12       coins  live               field:VCfg.PRICE
     pagePriceStep       int     25000    0-1e12       coins  live               field:VCfg.STEP
+    buyConfirmCoins     int     50000    0-1e12       coins  live               field:VCfg.BUY_CONFIRM
+                                                                                LOCKED Skyy 2026-09-25. Below: buy at once. At or above:
+                                                                                dialog "Buy page X for Y coins?". 0.1.2 does not read it.
     openMode            choice  page     page|chest   -      live               field:VCfg.OPEN_MODE (new String twin of PAGE_MODE; the
                                                                                 after= hook and VCfg.load keep PAGE_MODE in step)
     afterSwitchSeconds  int     30       0-120        s      live,adv           field:VCfg.AFTER_SWITCH_MS*1000 (the field stores ms: typing
@@ -142,10 +147,12 @@ WHAT THE PLAYER SEES
   /vault <page>     the same, on that page (usage variant, one required arg; the engine picks subcommands by name first).
   /vault next | prev    the next / previous page (swaps in place when the vault is already showing, else opens it).
   /vault pages      the page with the buttons (openMode=chest) - in page mode it is the same as /vault.
-  /vault buy        buy the next page (type it twice within 10 s). /vault info  pages, slots used per page, next price.
+  /vault buy        buy the next page. 0.1.2: type it twice within 10 s. /vault info  pages, slots used per page, next price.
                     The page's Buy button and /vault buy share ONE confirmation (VStore.CONFIRM, key buy:<uuid>:<page number>): a
                     click then a typed /vault buy (or the reverse) is the two-step confirm; arming by command refreshes an open vault
                     page so its button shows "Sure?". The key names the page, so a confirm armed for page 3 never buys page 4.
+                    LOCKED Skyy 2026-09-25: drop the 10 s second click. buyConfirmCoins (default 50000): a cheaper page buys at once;
+                    this price or more asks "Buy page X for Y coins?" in a confirm dialog. The next Vault build reads the row.
   Vault pages: freePages (2) free, more bought with coins up to maxPages (10): page N costs
   pagePrice + pagePriceStep x (N - freePages - 1) = 50k, 75k, 100k, ... (config). 36 slots per page (a large chest; config).
   LOCKED Skyy 2026-09-25: 2 free pages, max 10, page 3 = 50,000 coins, each next page +25,000, pages shared across all profiles
@@ -400,7 +407,7 @@ def C(cls, src):
 
 # ---- config defaults (edit here, rebuild; Skyy can also edit config.properties and /vaultadmin reload)
 DEF_FREE, DEF_MAX, DEF_SLOTS = 2, 10, 36
-DEF_PRICE, DEF_STEP = 50000, 25000
+DEF_PRICE, DEF_STEP, DEF_BUY_CONFIRM = 50000, 25000, 50000
 DEF_AFTER_SWITCH_S, DEF_SAVE_DELAY_MS = 30, 1000   # 30 = SkyyProfiles 0.1 keeps its switch marker 30 s (ClearLater)
 DEF_SWEEP_S = 30        # 0.1.2: stray arrow check period (straySweepSeconds)
 MAX_CAP = 1024          # hard cap on slots per page (a hand-edited file cannot make a huge container)
@@ -446,6 +453,10 @@ CFG_LINES = [
     "# (with freePages=2: page 3 = pagePrice, page 4 = pagePrice + pagePriceStep, ...)",
     "pagePrice=%d" % DEF_PRICE,
     "pagePriceStep=%d" % DEF_STEP,
+    "# buyConfirmCoins = LOCKED Skyy 2026-09-25. A page cheaper than this buys at once.",
+    "#   This price or more asks \"Buy page X for Y coins?\" before coins move.",
+    "#   SkyyVault 0.1.2 still uses a second click within 10 s and does not read this row.",
+    "buyConfirmCoins=%d" % DEF_BUY_CONFIRM,
     "# openMode = page: /vault opens the vault page (buttons) together with the vault slots; its Open as chest button opens the plain chest",
     "#            chest: /vault opens the plain chest window at once; /vault pages opens the page with the buttons",
     "openMode=page",
@@ -468,7 +479,9 @@ for f in ("public static java.nio.file.Path DIR;", "public static java.nio.file.
           "public static java.nio.file.Path LOGF;", "public static java.nio.file.Path NAMESF;", "public static @LOG@ LOG;",
           "public static volatile int FREE_PAGES = %d;" % DEF_FREE, "public static volatile int MAX_PAGES = %d;" % DEF_MAX,
           "public static volatile int SLOTS = %d;" % DEF_SLOTS, "public static volatile long PRICE = %dL;" % DEF_PRICE,
-          "public static volatile long STEP = %dL;" % DEF_STEP, "public static volatile long AFTER_SWITCH_MS = %dL;" % (DEF_AFTER_SWITCH_S * 1000),
+          "public static volatile long STEP = %dL;" % DEF_STEP,
+          "public static volatile long BUY_CONFIRM = %dL;" % DEF_BUY_CONFIRM,
+          "public static volatile long AFTER_SWITCH_MS = %dL;" % (DEF_AFTER_SWITCH_S * 1000),
           "public static volatile long SAVE_DELAY_MS = %dL;" % DEF_SAVE_DELAY_MS, "public static volatile boolean PAGE_MODE = true;",
           # 0.1.1: the config kit binds openMode to this String twin (a choice row cannot bind a boolean); VCfg.load and the kit's
           # after= hook (VHooks.afterOpenMode) keep PAGE_MODE, which the rest of the mod reads, in step with it
@@ -580,6 +593,7 @@ public static synchronized String load() {
     SLOTS = (int) lng(p, "slotsPerPage", (long) SLOTS, 9L, 90L);
     PRICE = lng(p, "pagePrice", PRICE, 0L, 1000000000000L);
     STEP = lng(p, "pagePriceStep", STEP, 0L, 1000000000000L);
+    BUY_CONFIRM = lng(p, "buyConfirmCoins", BUY_CONFIRM, 0L, 1000000000000L);
     AFTER_SWITCH_MS = lng(p, "afterSwitchSeconds", AFTER_SWITCH_MS / 1000L, 0L, 120L) * 1000L;
     SAVE_DELAY_MS = lng(p, "saveDelayMillis", SAVE_DELAY_MS, 100L, 30000L);
     String om = p.getProperty("openMode");
@@ -626,6 +640,10 @@ ROWS = [  # (key, label, cat, type, default, min, max, opts, unit, flags, help, 
     ("pagePriceStep", "Price step per page", "vault", "int", str(DEF_STEP), "0", "1000000000000", "", "coins", "live",
      "Each later bought page costs this many coins more than the one before.",
      "field:VCfg.STEP" + F_ + "pagePriceStep"),
+    # LOCKED Skyy 2026-09-25. Added after the 11-row harness in the header; 0.1.2's buy path does not read it yet.
+    ("buyConfirmCoins", "Buy confirm threshold", "vault", "int", str(DEF_BUY_CONFIRM), "0", "1000000000000", "", "coins", "live",
+     "A cheaper page buys at once. This price or more asks Buy page X for Y coins? first.",
+     "field:VCfg.BUY_CONFIRM" + F_ + "buyConfirmCoins"),
     ("openMode", "Open /vault as", "vault", "choice", "page", "", "", "page|Page view,chest|Chest window", "", "live",
      "Page view: the vault page with buttons and slots. Chest window: the plain chest at once.",
      "field:VCfg.OPEN_MODE" + F_ + "openMode;after=VHooks.afterOpenMode"),
@@ -1227,8 +1245,10 @@ public static java.util.UUID resolve(String who) {
   if (s instanceof String) { try { return java.util.UUID.fromString((String) s); } catch (Throwable t) { } }
   return null;
 }""")
-# arm on the first call, true on a second call within CONFIRM_MS. ONE key for the page's Buy button AND /vault buy, naming the page
-# number, so a click and a typed command combine and a confirm armed for page N never buys page N + 1.
+# 0.1.2: arm on the first call, true on a second call within CONFIRM_MS. ONE key for the page's Buy button AND /vault buy, naming the
+# page number, so a click and a typed command combine and a confirm armed for page N never buys page N + 1.
+# LOCKED Skyy 2026-09-25: the next Vault build drops this 10 s second click. Below VCfg.BUY_CONFIRM (buyConfirmCoins, default 50000)
+# the buy runs at once; at or above it a dialog asks "Buy page X for Y coins?". This method is what 0.1.2 still does.
 M(sto, r"""
 public static String buyKey(java.util.UUID u, int page) {
   return "buy:" + u + ":" + page;

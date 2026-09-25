@@ -61,7 +61,7 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
 - Coins, a bank with interest (per profile, `/bank` page), a bazaar (custom amounts), item rolls shown SkyBlock style
   ("Damage: 11-48 (+24%)") with a `/reforge` anvil page.
 - Auction House (live 2026-09-25): Buy It Now only (bids later), `/ah` with categories, search, sort, rarity; Hypixel fees; listings belong to
-  the profile that made them. `/vault`: item storage shared by all your profiles. `/trade`: two-player trade window with coins.
+  the profile that made them. `/vault`: item storage shared by all your profiles. Page buy confirm is locked 2026-09-25: below 50,000 coins the page buys at once; at or above that a dialog asks "Buy page X for Y coins?" (`buyConfirmCoins`). 0.1.2 still uses a second click within 10 s. `/trade`: two-player trade window with coins.
 - **SkyyEconomy (Skyy, 2026-09-24):** Coins, Bank, Bazaar and the Auction House become one mod in the next round; later NPC shops (set up
   in game) and an item value / networth tool. `/trade` goes in SkyyEssentials. Plan: `SkyyEconomy-Plan.md`.
 

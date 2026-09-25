@@ -8,6 +8,7 @@ like Wynncraft so I don't have to go back to select vault 2". Their screenshots 
 vault page 1 of 2, with no way to turn the page except typing `/vault next` or reopening.*
 *Design lock kept: no custom UI on the vanilla inventory screen. The arrows are ITEMS inside OUR container, not buttons on the screen.*
 *APPROVED 2026-09-25 (Skyy): the in-chest Prev/Next arrows already in this spec are the way to cycle pages inside the vault GUI. Do not add a second page-switch UI. Page prices are locked the same day: 2 free pages, max 10, page 3 = 50,000 coins, each next page +25,000, pages shared across all profiles (Wynncraft style). Those prices were already the live defaults (`freePages`, `maxPages`, `pagePrice`, `pagePriceStep`).*
+*LOCKED 2026-09-25 (Skyy): buying a page does not use two clicks within 10 s. Server Setup coin threshold `buyConfirmCoins`, default 50,000. A price below that buys at once, with no confirm. A price at or above it opens a confirm dialog: "Buy page X for Y coins?". The gold arrow, the page's Buy button, and `/vault buy` share that one rule. SkyyVault 0.1.2 still arms the old 10 s second click; the next Vault build reads `buyConfirmCoins` (`VCfg.BUY_CONFIRM`).*
 *Engine facts marked [E] were checked read-only in this pass against `HytaleServer.jar` (javassist disassembly + `tools/dev/reflect.py`,
 `cpgrep.py`), the client's own UI files (`Client/Data/Game/Interface/...`) and `Assets.zip`. Scratch files were deleted afterwards.
 Anything the real game still has to confirm is marked UNVERIFIED and collected in section 12.*
@@ -29,9 +30,10 @@ yours. The bottom row is a control bar:
 
 - **Left arrow**: previous page. On page 1 it is a grey "First page" arrow that does nothing.
 - **Middle item**: a page icon. Hover it and it reads "Page 2 of 4" with "14 of 36 slots used".
-- **Right arrow**: next page. On your last owned page it turns **gold: "Buy page 5 - 75,000 coins"**. Click it once and chat asks you
-  to confirm. Click it again within 10 seconds to buy (coins taken once), and the new page opens in place. This is the same confirm
-  that the page's Buy button and `/vault buy` already share. At the max page it becomes a grey "Last page" arrow.
+- **Right arrow**: next page. On your last owned page it turns **gold: "Buy page 5 - 75,000 coins"**. LOCKED 2026-09-25: a price below
+  `buyConfirmCoins` (default 50,000) buys on that click. A price at or above the threshold opens a confirm dialog, "Buy page X for Y
+  coins?", and only a yes takes the coins. The page's Buy button and `/vault buy` use the same rule. At the max page it becomes a grey
+  "Last page" arrow. SkyyVault 0.1.2 still uses a second click within 10 s (section 4.6); the next Vault build replaces that.
 - Click an arrow and the chest shows the other page **in place**: no typing, no reopening. The old page is saved first, as every page
   swap already does.
 
@@ -142,7 +144,7 @@ placed with `setItemStackForSlot(i, st, false)` (E3), then read back (item id + 
 | PREV | `Skyy_Vault_Prev` | page > 1 | `< Page 1` | Click to turn to page 1 of 4. |
 | PREV_OFF | `Skyy_Vault_PrevOff` | page 1 | `First page` | You are on page 1 of 4. |
 | NEXT | `Skyy_Vault_Next` | page < owned | `Page 3 >` | Click to turn to page 3 of 4. |
-| BUY | `Skyy_Vault_Buy` | page = owned < maxPages | `Buy page 5` (gold) | 75,000 coins from your active profile. Click, then click again within 10 s. (Price 0: "Unlock page 5 - free".) |
+| BUY | `Skyy_Vault_Buy` | page = owned < maxPages | `Buy page 5` (gold) | 75,000 coins from your active profile. LOCKED 2026-09-25: below `buyConfirmCoins` buy at once; at or above it, confirm "Buy page X for Y coins?". 0.1.2: click, then click again within 10 s. (Price 0: "Unlock page 5 - free".) |
 | NEXT_OFF | `Skyy_Vault_NextOff` | page = owned = maxPages | `Last page` | You own every vault page (10 of 10). |
 | INFO | `Skyy_Vault_Info` | row layout, `R+4` | `Page 2 of 4` (gold) | 14 of 36 slots used / Shared by all your profiles / /vault <page> jumps to a page |
 | FILLER | `Skyy_Vault_Filler` | the other control and padding slots | `Vault` | (no description) |
@@ -223,6 +225,11 @@ For PREV/NEXT the task runs the same steps as `pageSwap`:
 - Any nav click disarms a pending buy (`VStore.disarm`, as the page's buttons do).
 
 ### 4.6 Buying from inside (BUY kind)
+
+LOCKED 2026-09-25 (Skyy) replaces the steps below. Two clicks within 10 s is what 0.1.2 shipped, not the buy UX going forward.
+`buyConfirmCoins` (default 50,000, `VCfg.BUY_CONFIRM`): below the threshold, buy at once; at or above it, a confirm dialog asks
+"Buy page X for Y coins?" before coins move. The gold arrow, the page Buy button, and `/vault buy` share that rule. The next Vault
+build reads the row. Until then, 0.1.2 still does this:
 
 Reuse, do not duplicate: `VStore.buyKey(u, next)`, `VStore.confirm(key)` (the 10 s arm shared with the page's Buy button and
 `/vault buy`), `VStore.buy(u, name)` (coins first, write + read back, relock + refund on failure) and the same result strings.
@@ -481,7 +488,7 @@ give 0 fails. Never pass `--deploy`, `tools/deploy_set.py --check` only, and do 
 7. After all of that, search your whole inventory for "page" / "Vault" items. The server log and
    `mods/Skyy_SkyyVault/vault.log` should show no STRAY lines (a STRAY line means the safety net caught something: report it).
 
-**D. Buy a page from inside.**
+**D. Buy a page from inside.** SkyyVault 0.1.2 still uses the 10 s second click below. The next Vault build buys at once under `buyConfirmCoins` (default 50,000) and otherwise asks "Buy page X for Y coins?".
 1. With coins, go to your last page. Click the gold arrow: chat asks you to confirm.
 2. Click again within 10 s: the coins are taken ONCE and the new page opens.
 3. Click, wait 11 s, click: it asks again and buys nothing.
@@ -514,7 +521,7 @@ next to the page), and the page's label follows arrow clicks.
 |---|---|---|
 | Q1 | Extra 5th row (all 36 slots stay usable) or Wynncraft-exact (arrows use 2 of the 36)? | Extra row (`arrowLayout=row`); Inside is one switch away |
 | Q2 | Arrows also in page mode (where the page already has Prev/Next buttons)? | Yes (one code path) |
-| Q3 | Buy from inside the chest with click + click again within 10 s (Wynncraft: double-click)? | Yes; the same confirm as the page button and `/vault buy` |
+| Q3 | ANSWERED 2026-09-25: two clicks within 10 s is not the buy UX. Below `buyConfirmCoins` (default 50,000) the buy is instant. At or above it, a dialog asks "Buy page X for Y coins?". | Gold arrow, page Buy button, and `/vault buy` share that rule. 0.1.2 still ships the 10 s second click. |
 | Q4 | A chat line on every page turn ("Vault page 3 of 4.")? | Yes (the chest title cannot show the page) |
 | Q5 | Dark filler items in the unused bottom-row slots? | Yes (the row reads as "not storage", and fillers keep bulk buttons from looking like a click) |
 | Q6 | Icons: our generated simple arrows, or does Skyy want to draw/pick art? | Generated now, replaceable later |
