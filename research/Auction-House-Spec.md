@@ -164,7 +164,7 @@ Admin commands: section 8.
 | `maxListingsServer` | `5000` | Keeps load time and page filtering bounded. |
 | `graceSeconds` | `20` | Nobody can buy a new listing for 20 s (Hypixel, VERIFIED). In practice it gives the seller time to cancel a mistyped price before a sniper takes it. LOCKED 2026-09-25 (Skyy). |
 | `confirmAbove` / `confirmSeconds` | `10000` / `10` | A buy at or above this price needs the confirm click, armed for 10 s. 10,000 = a new profile's starting purse. LOCKED 2026-09-25 (Skyy). |
-| `claimAllConfirmAbove` | `100000` | [Claim all] asks first when the coins owed are at or above this (2.5). `0` = never ask. Hypixel's nudge sits at about 100,000 (UNVERIFIED, one source). |
+| `claimAllConfirmAbove` | `100000` | [Claim all] asks first when the coins owed are at or above this (2.5). `0` = never ask. Hypixel's nudge sits at about 100,000 (UNVERIFIED, one source). LOCKED 2026-09-25 (Skyy). |
 | `cancelRefundsFee` | `false` | Hypixel keeps the fee (VERIFIED). LOCKED 2026-09-25 (Skyy). |
 | `adminRemoveRefundsFee` | `false` | An admin removal returns the item, not the fee (an admin can `/coinsgive` if it was a mistake). |
 
@@ -723,7 +723,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 13. **Bid auctions.** LOCKED 2026-09-25 (Skyy): parked for later. No rules to sketch yet. Buy It Now stays the only listing type.
 14. **Deleted profiles.** Claims owned by a profile that no longer exists (SkyyProfiles 0.1 has no delete yet). [they stay in the file; an admin can use `regrant` or move them by hand]
 15. **Bags on the AH.** LOCKED 2026-09-25 (Skyy): Magic Bags and the Accessory Bag are blocked. They cannot be listed or bought. Was: tradeable, with a "contents not included" line. SkyyAuctions 0.1.1 still allows them until `Skyy_Market/blocked.txt` has `Skyy_Sack_*` and `Skyy_Accessory_Bag`.
-16. **Claim-all confirm.** Ask before [Claim all] puts a lot of coins in the purse (death penalty 10-25%)? [yes, at 100,000 coins]
+16. **Claim-all confirm.** LOCKED 2026-09-25 (Skyy): [Claim all] asks first when it would put 100,000 coins or more into the purse. That was already the default (`claimAllConfirmAbove=100000`).
 
 ---
 

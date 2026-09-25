@@ -100,7 +100,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 13. LOCKED 2026-09-25 (Skyy): bid auctions are parked for later. No rules yet. [later]
 14. Claims of a deleted profile? [kept; admin can regrant]
 15. LOCKED 2026-09-25 (Skyy): Magic Bags and the Accessory Bag are blocked on the AH. They cannot be listed or bought. Was: tradeable. [0.1.1 still allows them until blocked.txt has Skyy_Sack_* and Skyy_Accessory_Bag]
-16. Ask before Claim all puts 100,000+ coins in the purse? [yes]
+16. LOCKED 2026-09-25 (Skyy): ask before Claim all puts 100,000+ coins in the purse. [yes, already the default]
 
 ## /trade (`research/Trade-Spec.md` section 20)
 1. The 3 s countdown after both click Ready IS the confirm (no extra click)? [yes]
