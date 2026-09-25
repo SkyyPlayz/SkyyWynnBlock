@@ -110,7 +110,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 5. LOCKED 2026-09-25 (Skyy): trades stay private. There is no chat line to party or guild. [private, already the default]
 
 ## Islands (`research/Island-Settings-Spec.md`, live in SkyyIslands 0.5.1)
-- Co-op size 5 including the owner. [5]
+- LOCKED 2026-09-25 (Skyy): co-op size 5 including the owner. [5, already the default]
 - Island Admins can't invite co-op members (only the Owner). [can't]
 - Admins may expel, ban and untrust visitors/helpers; only the Owner kicks members. [as written]
 - Trusted = build only (no harvesting crops, no beds, no chests). [as written]

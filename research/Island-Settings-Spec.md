@@ -113,7 +113,7 @@ Everything that means "my island" uses `homeKey`:
 2. The island exists (`worldName(ownerKey) != null`). Otherwise: "Create your island first: /island".
 3. The target is online and not you (the UUID, which also covers your other profiles).
 4. The target is not banned here ("/island unban them first") and not already a member or admin here on any profile.
-5. The co-op is not full: owner + members < `coop.maxPlayers` (default 5 = owner + 4, like Hypixel co-ops) `[SKYY?]`.
+5. The co-op is not full: owner + members < `coop.maxPlayers` (default 5 = owner + 4). LOCKED 2026-09-25 (Skyy): co-op size stays 5, including the owner. That was already the default.
 6. Store `INVITES[targetUuid] = Object[] { ownerKey, inviterUuid, Long expiryMs, inviterName, ownerName }`. A newer island invite to the same player replaces the older one.
 7. Chat to the target: `[Island] Skyy invited you to join their island as a co-op member. Type /island accept (or /island decline) within 60 s. Joining uses your current profile (Strawberry). Your own island stays saved and comes back if you leave.` The inviter gets "Invited Wesley - they have 60 s". The invite also shows on the target's Overview tab with Accept / Decline.
 
@@ -603,7 +603,7 @@ defaults.perm.build=trusted ... (all 14, section 3.2)
 defaults.visit.mode=public
 defaults.visit.limit=5
 visit.limitMax=10
-coop.maxPlayers=5                         # owner + 4
+coop.maxPlayers=5                         # owner + 4. LOCKED 2026-09-25 (Skyy): 5 including the owner.
 coop.adminsInvite=false
 invite.seconds=60
 trusted.max=20
@@ -679,7 +679,7 @@ animals.extra=                            # extra NPC role names that count as f
 7. Slice B: the biome live resend (`updateChunkEnvironments`), the weather lock surviving a restart, the 5-arg landing teleport with `completedFuture`.
 
 **`[SKYY?]` choices (defaults picked):**
-- co-op size 5 including the owner;
+- LOCKED 2026-09-25 (Skyy): co-op size 5 including the owner. That was already the default;
 - Admins can't invite;
 - Admins may expel, ban and untrust, but only the Owner kicks members;
 - Trusted = builder (no harvest or beds);
