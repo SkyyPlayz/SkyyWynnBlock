@@ -5,11 +5,11 @@ config value: change it in game (SkyWynn Menu -> Server Setup, once that mod has
 under each heading. Older design questions (gear, classes, collections cutoff, World Gen 2, ...) stay in `DESIGN-STATUS.md` "Open questions".
 
 ## Answer first (they block or shape the next builds)
-1. **Settings menu: refuse or hide?** When a player switches off party invites, teleport requests or private messages, should the other
+1. ANSWERED 2026-09-25: **block** (refuse the sender). Was: **Settings menu: refuse or hide?** When a player switches off party invites, teleport requests or private messages, should the other
    player be refused (Hypixel style), or should the message just be hidden? Staff bypass? [not built yet - these 3 switches wait for you]
    (`research/Settings-Spec.md` section 6)
 2. **SkyyEconomy merge:** go ahead once you have tested the separate Bank 0.1.3, Bazaar 0.1.2 and Auctions 0.1? [yes, next round after your test]
-3. **Bags:** do the Mining bag upgrades come from the Cobblestone or the Iron collection? Which collections grow Foraging, Farming, Combat and
+3. ANSWERED 2026-09-25: Mining bag from **Iron**. Was: **Bags:** do the Mining bag upgrades come from the Cobblestone or the Iron collection? Which collections grow Foraging, Farming, Combat and
    the new Smithing bag? [today every bag is crafted at a Workbench]
 
 ## Numbers picked in the beta round (live now)
@@ -33,9 +33,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   second per player; party only, not other players. [as written, all editable in Server Setup]
 - Divinity XP from healing others: 0.2 XP per HP, max 300 XP a minute (healing yourself pays no XP). [as written]
 - Heal chat lines on by default (at most one every 5 s; players can switch theirs off). [on]
-- **Mana:** vanilla max Mana is 0, so wand casts (25 Mana), spellbook casts (100) and the Mage staff summon (50) never work for a new
+- ANSWERED 2026-09-25: base Mana 10, Mage/Priest 20, plus Overall Level Health/Mana. Was: **Mana:** vanilla max Mana is 0, so wand casts (25 Mana), spellbook casts (100) and the Mage staff summon (50) never work for a new
   character - only the swings. Give Priests / Mages base Mana? [not yet]
-- **Priest weapons:** no wand or spellbook can be crafted and almost none drop - the kit's Wood Wand (never breaks) is the only way to get
+- ANSWERED 2026-09-25: wait for custom weapons. Was: **Priest weapons:** no wand or spellbook can be crafted and almost none drop - the kit's Wood Wand (never breaks) is the only way to get
   one. Add recipes/drops now or wait for custom Priest weapons? [wait]
 - The vanilla Healing Totem (AoE +5 HP/s, endgame recipe): Priest, Shaman, or anyone? [anyone]
 - Root / Stoneskin wands and the Rekindle Embers spellbook count as Priest weapons. [yes]
