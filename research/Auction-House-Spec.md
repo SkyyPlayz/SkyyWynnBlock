@@ -106,7 +106,7 @@ Admin commands: section 8.
   - **Buy now - 12,000 coins.** At or above `confirmAbove` (default 10,000) the first click arms a confirm row: "Pay 12,000 coins for Sharp Copper Longsword?" [Confirm] [Cancel]. When the cheaper-listing line is showing, the confirm text ends with "A cheaper one is listed at 8,000 each." It is armed for 10 s, and any other click disarms it. Below the threshold, one click buys. Opening the item view is already the first step of Hypixel's two-step buy.
   - **An armed confirm belongs to one listing.** It stores the listing id and the price it was armed for (7.1). Confirm acts only when both still equal the page's `detailId` and `detailPrice` and the 10 s have not run out. Building the item view for any listing starts **unarmed**, even when a different item view was armed a moment ago. The same rule covers the cancel-confirm rows and the Claim-all confirm (2.5).
   - Your own listing (same profile): [Cancel listing] instead of Buy, with its own confirm row "Cancel? The 470 coin fee is not refunded."
-  - Your account on another profile: the text "Listed by your profile Apple - you cannot buy from yourself."
+  - Your account on another profile: Buy is allowed, the same as any other buy. LOCKED 2026-09-25. SkyyAuctions 0.1.1 still shows "Listed by your profile Apple - you cannot buy from yourself." unless `sameAccountBuy=true`.
   - Still in the grace period: the button reads "Buy (opens in 14 s)" and a click only explains why.
   - [< Back to results] returns to Browse with the same category, search, sort, rarity and page.
 - After a buy, the page goes back to Browse with the status "Bought Sharp Copper Longsword for 12,000 coins" or "...your inventory is full, it waits in Manage".
@@ -181,7 +181,7 @@ Admin commands: section 8.
 - **Co-op:** SkyWynn co-op shares islands, not profiles, so listings are never shared between players (unlike Hypixel co-op profiles).
 
 ### 4.2 Who may trade
-- **You cannot buy from your own account on any profile.** `buyer.uuid == seller.uuid` is refused. Otherwise one account could move coins between its own profiles with junk listings, which breaks the per-profile purse lock. `sameAccountBuy=false`. Setting it to `true` is for solo testing only.
+- **Same-profile self-buy is forbidden. A different profile on the same account may buy the listing.** LOCKED 2026-09-25 (Skyy). Was: refuse every buy where `buyer.uuid == seller.uuid` (`sameAccountBuy=false`). SkyyAuctions 0.1.1 still refuses that uuid match unless `sameAccountBuy=true`.
 - **Creative mode** (`blockCreative=true`): players whose game mode is Creative can browse and claim, but not create listings or buy. Creative can spawn items. Admins get no bypass. The check runs at click time.
 - **Admins** (`skyyauctions.admin`) use the admin commands. In the market they follow every player rule: fees, limits, no self-buy.
 - **`market:deny:<uuid>`:** a bridge String reason. When it is present, that player's active profile may browse but not list or buy, and the page shows the reason. It is empty by default and nothing sets it yet. It is the hook for future Ironman / Stranded-style profile modes (Hypixel blocks those profiles from its Auction House, VERIFIED).
@@ -222,7 +222,7 @@ Checked at Create, and again at buy time where it matters:
 The listed stack is **removed** from the seller's inventory and lives only in the listing record until it is bought, returned or claimed. It is never in two places, apart from the logged crash window in 6.8 (made much shorter by the forced player save, R8).
 
 ### 4.8 Solo
-Everything works in solo: list, browse, cancel, expire, claim, admin tools. **Nobody buys** in solo, because the AH is a player market and you cannot buy from yourself (the Bazaar is the solo market). For a one-account test, `sameAccountBuy=true` lets profile 2 buy profile 1's listing.
+Everything works in solo: list, browse, cancel, expire, claim, admin tools. The same profile cannot buy its own listing. A second profile on that account can. LOCKED 2026-09-25. SkyyAuctions 0.1.1 still needs `sameAccountBuy=true` before profile 2 can buy profile 1's listing.
 
 ---
 
@@ -389,7 +389,7 @@ ACTIVE ────────────────────────�
   - `now < graceUntil`: refuse with the seconds left.
   - `price != shownPrice`: refuse and rebuild.
   - Blocked or vetoed: refuse.
-  - `buyer.uuid == seller.uuid` and `sameAccountBuy=false`: refuse.
+  - Same profile as the seller: refuse. A different profile on the same account may buy. LOCKED 2026-09-25. SkyyAuctions 0.1.1 still refuses when `buyer.uuid == seller.uuid` and `sameAccountBuy=false`.
 - d. `bal = Coins.get(u)`: less than price means "You need N more coins." (nothing taken).
 - e. `fits = room(stack)`. This only chooses the delivery path; a full inventory never blocks the buy.
 - f. Log `BUY-START #id buyer price`.
@@ -680,8 +680,8 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 6. **Full inventory:** fill the inventory, let a listing expire, Claim: "make room", nothing lost. Free one slot, Claim works.
 7. **Relog notice:** list with `2m`, log out for 3 minutes, log in: the "expired" notice appears once. Change world (`/hub`, `/island`): no repeat.
 8. **Restart persistence:** list, stop and start the server. The listing is still there with the same time left and identical metadata after cancelling.
-9. **Profiles:** list on profile 1, switch to profile 2. Manage says "Your profile <1> has 1 thing to claim" and Cancel is not offered. Profile 2 **buys it** (`sameAccountBuy=true`): profile 2's purse drops and the item arrives. Switch to 1: Claim coins pays profile 1 exactly the price (tax 0 under 1M).
-10. `sameAccountBuy=false` (default): profile 2 sees "Listed by your profile ...", no Buy.
+9. **Profiles:** list on profile 1, switch to profile 2. Manage says "Your profile <1> has 1 thing to claim" and Cancel is not offered. LOCKED 2026-09-25: profile 2 may buy it. Profile 2's purse drops and the item arrives. Switch to 1: Claim coins pays profile 1 exactly the price (tax 0 under 1M). SkyyAuctions 0.1.1 still refuses that buy unless `sameAccountBuy=true`.
+10. Same profile: the item view offers Cancel, and Buy is refused. LOCKED 2026-09-25.
 11. **Creative:** switch to Creative, try Create and Buy: refused, browsing works.
 12. **Blocked:** add the item id to `Skyy_Market/blocked.txt`, `/ahadmin reload`. The picker says "off the market", an existing listing shows red "off the market" and cannot be bought, Cancel still works.
 13. **Bazaar item:** try to list Copper Ore: "Sell this on the Bazaar: /bz".
@@ -711,7 +711,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 1. **Fees and tax.** LOCKED 2026-09-25 (Skyy): keep Hypixel's numbers. Listing fee 1% / 2% / 2.5% (`listingFee=0:1.0,10000000:2.0,100000000:2.5`). Duration fees on 1h / 6h / 12h / 24h stay 20, 45, 100 and 350 (the fee half of `durations`). The 48h charge is question 2. Claim tax 1% above 1,000,000 (`claimTaxPercent=1.0`, `claimTaxFrom=1000000`). Every fee value is adjustable in Server Setup: `ah.listingFee`, the fee half of `ah.durations`, `ah.claimTaxPercent`, and `ah.claimTaxFrom`. SkyyAuctions 0.1.1 still reads `config.properties` (then `/ahadmin reload`). The menu rows ship with SkyyEconomy. A later tax edit does not change a sale that already stored its tax. New profiles still start with 10,000 coins.
 2. **Durations.** LOCKED 2026-09-25 (Skyy): presets stay 1h, 6h, 12h, 24h and 48h. Default is 24h. The 48h option costs double the normal listing fee (2% / 4% / 5% on the same price tiers as the 1% / 2% / 2.5% listing fee). 1h, 6h, 12h and 24h still add their flat duration fees. SkyyAuctions 0.1.1 still adds a flat 1,200 coins for 48h. The loader's 14-day ceiling stays a safety cap if a custom preset is longer.
 3. **Bazaar items on the AH.** LOCKED 2026-09-25 (Skyy): Bazaar commodities stay refused on the Auction House (`bazaarItemsAllowed=false`). That was already the default.
-4. **One account, several profiles.** Should one account never be able to buy its own listings, even from another profile? [never]
+4. **One account, several profiles.** LOCKED 2026-09-25 (Skyy): buying your own listing from a different profile is allowed. Same-profile self-buy stays forbidden. Was: never, even from another profile. SkyyAuctions 0.1.1 still refuses the other profile unless `sameAccountBuy=true`.
 5. **Creative players.** Browse and claim only? [yes]
 6. **Listing cap.** 14 per profile, with no rank or permission bonus (Hypixel's only bonus is co-op size, which we do not have). [14]
 7. **Confirm threshold.** Should buys at or above this need a second click? [10,000 coins]
