@@ -781,3 +781,40 @@ Then run `/ahadmin reload`. You need 2 profiles with about 50k coins each, a `/r
 18. A keeps dragging items: B's page updates at most once a second, and B's Cancel click still works.
 19. Open `/vault` (e.g. from SkyyMenu) while the trade page is open: the trade page closes ("trade stays open"), the vault works, and `/trade` reopens the trade. No items lost.
 20. Exploration with 2 players: both get their own first discovery of a spot, the checklist % is per profile, and titles show in chat.
+
+
+## Round 3 - in-game setup: SkyyMenu 0.3, SkyyRanks 0.1, SkyyIslands 0.5.1 (security), DEPLOYED 2026-09-25 02:33 (backup backups/deploy-20260925-0233)
+[2P] = needs a second player who is NOT an op. Server Setup open questions: research/Server-Setup-Spec.md section 9.
+
+1. [2P] SkyyIslands 0.5.1 hole closed: player B (not op) runs `/island reload` and `/sethub` (both refused) and tries to break a block on Skyy's island (refused).
+2. Server log at start: "[SkyyMenu] 0.3 ready", "config kit folder: .../mods/Skyy_SkyyMenu", "[SkyyRanks] 0.1 ready", and no "Failed to register command". At the first join, the three command checks all say they belong to SkyyMenu.
+3. [2P] `/rank create vip VIP`, `/rank prefix vip [VIP]`, `/rank grant vip skyyessentials.fly`, `/rank set B vip`:
+   - The reply lists B's groups as `hytale:Adventurer` + `skyy:vip`.
+   - B can still use `/bazaar`, `/skills`, `/island`, `/settings` and `/ah`; `/fly` works.
+   - B's chat reads `[VIP] [title] B: hi`, and the op is unaffected.
+4. [2P] `/rank clear B` leaves only Adventurer and `/fly` is refused. Assign the rank again, then `/rank delete vip`: B is back to Member and all normal commands still work.
+5. [2P] Open `/rankadmin` on B, search "pay", Deny that permission: B's `/pay` is refused. Remove the deny: `/pay` works again.
+6. [2P] B sees no book at slot 41, and `/modconfig` and `/rankadmin` are refused. Grant B `skyymenu.modconfig`: B sees Server Setup, but the Menu page says view only. Take the grant away while B's page is open: B's next click shows "You no longer have access to Server Setup." and only Close works.
+7. `/modconfig`:
+   - Menu and Ranks come first; Ranks says "3 settings - Editors: Ranks editor".
+   - The 20 file-only rows show live versions.
+   - Reload works on SkyyEssentials and SkyyProfiles.
+   - Open on SkyyBank shows its file and `/bankconfig`.
+   - Searching "prefix" finds Ranks and marks the row with ">".
+8. Ranks page:
+   - Setting Default rank to a rank that has grants is refused with the reason.
+   - Chat prefix OFF takes effect in chat at once.
+   - With Advanced ON, chat prefix order 30000 asks first, then shows amber "applies after a restart", and the list says it is waiting for a restart. Set it back to 31000.
+9. [2P] Menu page: "Mods list for players" OFF hides the Mods tile from B only. Only that line of `config.properties` changes. The change shows in Changes, and Undo works.
+10. [2P] In the settings defaults table, set `explore.chunkXp` off: B (who never chose) stops getting chunk-XP messages. B switches it ON in `/settings` and B's choice wins. Then set the entry back to unset.
+11. `/settings`:
+    - The Skills tab shows the two Exploration rows; General shows hover tooltips.
+    - A changed switch survives a relog.
+    - `/explore quiet` flips the same row.
+    - Reset all needs two clicks, and the page fits 1080 high.
+12. If tooltips were off in 0.1.3, they are still off after the update, and the book and the Settings row agree.
+13. [2P] Slot 24 opens `/ah` for both players, slot 25 is Reforge, slot 51 is Settings, and the slot 41 book shows only for the op.
+14. Ranks: Export puts a code in the box and a file in `exports/`. Importing that code previews "nothing to change". In History, Restore `config.properties`, then undo that restore.
+15. Hand-edit `Skyy_SkyyRanks/config.properties` while the server runs, then click Reload file: Changes shows the edit as `via=file`.
+16. [2P] `/rankadmin` page: New rank, Up/Down, grant search, adding a member from the online list, "< Server Setup", and the page fits 1080 high.
+17. [2P] Two admins on the Ranks page: after one changes a value, the other sees it on their next click, and both changes are logged with names.
