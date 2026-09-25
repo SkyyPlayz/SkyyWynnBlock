@@ -49,11 +49,16 @@ XP from fighting goes into the **weapon skill of the equipped class**:
 - Archer → Archery
 - Warrior → Swordsmanship
 - Mage → Sorcery
+- Berserker → **Fury** (locked 2026-09-25, live in SkyySkills 0.4.4)
+- Priest → **Divinity** (locked 2026-09-25, live in SkyySkills 0.4.4; also earns XP from healing, see below)
 - Assassin → Assassination (later)
 - Shaman → that class's weapon skill (later; name set with the class)
-- Berserker → not named. Status PENDING (2026-09-24). Do not add a weapon skill until the owner locks the class with the builder
 
-Class Level (ability points) is not this skill. The `SkyySkills` 0.3 spike still stores per-class combat XP under `Combat.<Class>`. Those keys stand in for the weapon skills until a code pass renames them. There is still no single Combat skill that every class shares.
+Class Level (ability points) is not this skill. Per-class combat XP is still stored under `Combat.<Class>` keys (`Combat.Berserker` = Fury, `Combat.Priest` = Divinity, appended as slots 14/15 in SkyySkills 0.4.4 — every existing slot and key is untouched). Those keys stand in for the weapon skills until a code pass renames them. There is still no single Combat skill that every class shares.
+
+### Divinity XP from healing (SkyySkills 0.4.4, locked 2026-09-25)
+
+Priest is the one weapon skill that also pays XP outside kills: healing a party member (not yourself) with a Priest weapon hit pays **0.2 Divinity XP per HP healed**, capped at **300 XP a minute** per Priest (both editable in Server Setup). Kills still pay Divinity like every other class skill. The heal itself (SkyyClasses' placeholder AoE party heal) always happens even if this XP is switched off. See `SkyyClasses-Plan.md` and `research/Classes-Berserker-Priest-Spec.md` for the heal mechanic itself — this skill only reacts to it.
 
 Gathering skills do not care which class you are.
 
@@ -70,6 +75,15 @@ Uneven progression is allowed. You can push one skill ahead of the others.
 If you drift too far, that skill slows down until the rest catch up. The exact drift threshold is a tuning knob, not a number locked on the call.
 
 This is not a hard rule that every skill must advance together, and it is not unlimited neglect. Gear can still ask for a skill (a better pick wants Mining). The gate is the slowdown, not a wall that freezes the character.
+
+## Status 2026-09-25
+- Built + live (SkyySkills 0.4.4, deployed 2026-09-25 07:11 with SkyyClasses 0.1.6 + SkyyProfiles 0.1.2): two new weapon skills,
+  **Fury** (Berserker, slot 14) and **Divinity** (Priest, slot 15), appended after Exploration — every existing skill keeps its slot
+  and key, so old saves are untouched. Divinity also earns XP from healing (0.2 XP per HP healed on other party members, capped 300
+  XP/minute). Class slots are no longer one contiguous block (5-9, then 14-15), so every place that read `CLASS0 + i` now goes through
+  a slot lookup table — the fix that stops a Berserker or Priest from crashing the per-class perk tick. `/skills` and the Stats page
+  show Fury / Divinity like any other class skill. **Downgrade rule:** never go back to SkyySkills 0.4.3 once a player has Fury or
+  Divinity XP saved (0.4.3's save format drops both keys).
 
 ## Status 2026-09-24
 - Built: Mining, Foraging, Farming, Acrobatics (fall XP: bigger survived falls pay more; safe drops and water pay nothing), Archery /

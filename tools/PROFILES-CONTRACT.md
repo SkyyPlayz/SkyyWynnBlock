@@ -6,11 +6,11 @@ The class is chosen **when the profile is created** (like creating a Minecraft w
 
 `SkyyProfiles` owns profiles. Every other Skyy mod keeps working without it (zero dependencies) and follows these rules.
 
-## Cap (design 2026-09-24; code still 4)
+## Cap (design 2026-09-24; in code since SkyyProfiles 0.1.1)
 
-The default cap is **6 profiles** (raised from 4). There will be in-game ways to raise it higher. **Open:** the method is TBD. This contract does not pick one.
+The default cap is **6 profiles** (raised from 4). There will be in-game ways for a player to go higher. **Open:** the method is TBD. This contract does not pick one.
 
-`SkyyProfiles` 0.1 still uses `DEF_MAX_PROFILES = 4` (config `maxProfiles`, default 4). A fifth profile is refused ("All 4 profile slots are used."). Raising the default to 6, and any in-game raise, is a code follow-up in `HANDOFF.md`. Adopters do not hardcode 4 or 6; they follow whatever cap SkyyProfiles enforces.
+`SkyyProfiles` enforces it since 0.1.1 (deployed 2026-09-25 04:11); the live 0.1.2 keeps it: `DEF_MAX_PROFILES = 6`, config `maxProfiles` (default 6, clamped 1-6; admin row "Profile slots per player" in Server Setup > Profiles, or `/profileadmin set maxProfiles <n>`). With the default, a **7th** profile is refused ("All 6 profile slots are used."). Lowering the setting never deletes a profile; it only stops new ones. 0.1.1 replaced a `config.properties` that was still byte for byte the untouched 0.1 default file once at start; a file an owner had edited keeps its `maxProfiles` value (it may still say 4). Nothing goes above 6 yet: the in-game raise past 6 is the only open code follow-up (`HANDOFF.md`, waits on Skyy's pick). Adopters do not hardcode 4 or 6; they follow whatever cap SkyyProfiles enforces.
 
 Class values on `profile:class:<uuid>` are `Archer`, `Warrior`, `Mage`, `Berserker`, `Priest` (Berserker + Priest locked 2026-09-25; they appear once SkyyProfiles 0.1.2 + SkyyClasses 0.1.6 are live), and later `Assassin`, `Shaman`. Readers must treat an unknown value as "a class this mod does not know", never as none.
 
@@ -65,6 +65,23 @@ public static String pkey(java.util.UUID u) {
 - **SkyyClasses:** when `profile:class:<uuid>` is present it is AUTHORITATIVE: use it as the player's class, show /class read-only
   ("your class is locked to this profile"), and do not open the first-join class picker (SkyyProfiles runs profile creation).
   Without SkyyProfiles keep today's behaviour (pick once, locked).
+  **Class kits (SkyyClasses 0.1.6 + SkyyProfiles 0.1.2, 2026-09-25; `research/Classes-Berserker-Priest-Spec.md` 2.3 / 4.3):** every
+  class has a kit (its basic weapon), given once per profile. SkyyClasses puts a bridge function `class:fn:kitnew` =
+  `Function apply(Object[] { UUID player, String pkey, String className })` -> `Boolean` in `setup()` (never removed, same rule as
+  every other bridge function here). SkyyProfiles calls it **outside every SkyyProfiles monitor**, after `ProfStore.create` and
+  `publish` have both returned, never before: `createFirst` calls it right after creating + publishing profile 1 (`key =
+  u.toString()`); `createAndSwitch` calls it after creating + publishing profile N but **before** the switch to it (`key =
+  ProfStore.keyFor(u, id)`), so a switch that then fails or is refused still leaves the kit pending for whenever the player does
+  switch to that profile. It is **not** called by `/profileadmin setclass` (a fix, not a pick — an admin who wants that profile kitted
+  uses `/classadmin kit`). The call runs on the caller's (SkyyProfiles') thread, is synchronous, small (one file write under
+  SkyyClasses' own lock), never calls another mod back and never throws. `TRUE` means SkyyClasses recorded the pick (state
+  `pending`, or `off` while its kits switch is off) or the profile already had a kit state (never a second automatic kit); `FALSE`
+  means bad arguments or that profile's class file could not be read or written. SkyyProfiles logs one WARN per JVM on `FALSE` or a
+  thrown exception and does not retry; a missing function (SkyyClasses absent, or older than 0.1.6) means nothing happens, silently.
+  SkyyProfiles never waits for the kit to actually arrive: SkyyClasses delivers it itself later (kits switch on, player online, the
+  target profile active, not `profile:busy`, and — with SkyyProfiles present — at least 31 s since the epoch change it saw for that
+  player, so a crash-recovery rollback in SkyyProfiles' own 30 s window cannot eat the kit). Overflow that does not fit the inventory
+  becomes a claim (`/class kit`), never dropped on the ground.
 - **SkyyCoins:** starter coins per profile (a new profile starts fresh). `coins:fn:*` resolve the active profile.
 - **SkyySkills:** XP, per-class combat XP and perks per profile.
 - **SkyySacks:** pool, processing queues and crafts.log lines per profile (key in the log line).

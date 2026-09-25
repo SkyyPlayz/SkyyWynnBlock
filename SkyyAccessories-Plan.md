@@ -43,12 +43,12 @@ AP gives no stats itself. It feeds two things, both in the accessory percent lay
 | Hawkeye | Archer | Damage 8%, Crit Chance 3%, Speed 3% |
 | Bulwark | Warrior | Health 10%, Defense 10%, Damage 4% |
 | Shadowstep | Assassin | Crit Damage 15%, Speed 4%, Health -3% |
-| Bloodrage | Shaman (later) — may point back at Berserker, pending | Damage 12%, Health 5%, Defense -4% |
+| Bloodrage | Shaman (later) — may point back at Berserker, open [SKYY?] (see below) | Damage 12%, Health 5%, Defense -4% |
 | Arcane | Mage | Mana 15%, Ability Damage 6% |
 
 Negative stats follow your gear trade-off rule. Balanced is unlocked from the start; your class crystal unlocks at class skill 10. Later: "Stone" upgrades for 9 of a rare boss drop (like Hypixel's Stone Powers).
 
-Class crystals follow the class roster in `SkyyClasses-Plan.md` (Warrior, Archer, Mage, Assassin, Shaman, plus Berserker once that class is no longer pending). Bloodrage's class column was drafted as Berserker. The 2026-09-23 roster lock pointed it at Shaman, a later class. **2026-09-24:** Berserker is back on the roster, status PENDING (the owner wants it; details and timing wait on a talk with the builder). Bloodrage **may point back at Berserker**, pending that talk. Until then the table still shows Shaman, and the numbers are still a draft. Do not retune Bloodrage in this pass.
+Class crystals follow the class roster in `SkyyClasses-Plan.md` (Warrior, Archer, Mage, Berserker, Priest live; Assassin, Shaman later). Priest has no crystal drafted yet (see below). Bloodrage's class column was drafted as Berserker. The 2026-09-23 roster lock pointed it at Shaman, a later class; the 2026-09-24 note said Bloodrage **may point back at Berserker**, pending a talk about the class. **2026-09-25: that talk happened — Berserker is now locked and live (SkyyClasses 0.1.6), so Bloodrage's "pending Berserker" pointer is resolvable.** Skyy has not said which way to resolve it, so this is now **open for Skyy [SKYY?]: does Bloodrage move to Berserker, stay Shaman's, or serve both until Shaman ships?** Until Skyy decides, the table still shows Shaman and the numbers are still a draft — do not retune or reassign Bloodrage in this pass. **Also open [SKYY?]:** Priest (locked + live alongside Berserker, 2026-09-25) has no row in this table at all — no class crystal has been drafted for it. Do not invent one; add it once Skyy picks its stats and unlock rule.
 
 **Tuning points.** 1 point per 10 AP, spent in `/acc tune`, free reset. Per point: Health or Defense +0.25%, Damage +0.15%, Crit Chance +0.1%, Stamina or Mana +0.5%, Speed +0.1% (max +5% speed from tuning).
 
@@ -91,6 +91,8 @@ Unlocks are permanent (switching class never removes slots). Note: only **18 fam
 4. **[SKYY?]** 60-slot max, these sources, these coin prices?
 5. **[SKYY?]** Today's talismans give FLAT Health, Stamina and Mana, but the layer model says accessories give %. Convert them in 0.4 along with the rarity change?
 6. **[SKYY?]** Should the Arcane (Mage) crystal ship in 0.5?
+7. **[SKYY?]** (new 2026-09-25) Bloodrage's class column: now that Berserker is locked and live (SkyyClasses 0.1.6), does Bloodrage move to Berserker, stay pointed at Shaman, or serve both until Shaman ships?
+8. **[SKYY?]** (new 2026-09-25) Priest (locked and live alongside Berserker) has no class crystal drafted at all — what stats should it get, and does it unlock the same way (class skill 10)?
 
 ---
 ## Technical notes
