@@ -139,7 +139,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 15. Rank perks later (extra vault pages, bigger parties)? [later]
 16. CONFIRMED intentionally open 2026-09-25 (Skyy): how a player raises the profile cap above 6 is left open. Likely linked to ranks, and undecided. Not a resolved mechanic. [parked; no way above 6 yet]
 17. SkyyRanks before the other mods' settings pages? [done]
-18. Warps page can also move the world spawn (with a confirm)? [yes]
+18. LOCKED 2026-09-25 (Skyy): the warps page does not move the world spawn. Was: yes, with a confirm. World spawn movement is an owner/ops-only command, for example /setspawn. [command, not the warps page]
 
 ## Server Setup pages (round 4, live)
 - SkyySacks: should changing the Furnace / Tannery caps ask for a confirm (danger row)? [no confirm]

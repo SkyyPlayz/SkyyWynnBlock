@@ -34,7 +34,7 @@ SkyyMenu is missing, nothing changes: the mod still reads its file and its admin
 | Mods section: mod list, a mod's config page, table editor, confirm, change log, history, export/import, `/modconfig` | SkyyMenu 0.3 | ~900 lines |
 | First adopter, from day one | SkyyEconomy 0.1 (the merge round) | schema + ~60 lines |
 | Every other mod adopts in its next version | 20 mods (section 7) | schema + 10-80 lines each |
-| Big editors, each with its mod | NPC shops (SkyyEconomy 0.2), ranks (new SkyyRanks, right after SkyyEconomy 0.1), warps + world spawn (SkyyEssentials), island template + starter kit (SkyyIslands), market tables (SkyyEconomy). **NPC quests: not buildable yet** (future SkyyQuests; only the hooks are defined now) | section 5 |
+| Big editors, each with its mod | NPC shops (SkyyEconomy 0.2), ranks (new SkyyRanks, right after SkyyEconomy 0.1), warps (SkyyEssentials; world spawn is an owner/ops command, not a warps-page row, 5.4), island template + starter kit (SkyyIslands), market tables (SkyyEconomy). **NPC quests: not buildable yet** (future SkyyQuests; only the hooks are defined now) | section 5 |
 
 **What a server owner gets:** SkyWynn Menu -> Mods (or `/modconfig`) -> a list of every installed Skyy mod with its version and its parts
 (for example "Bank ON - Bazaar ON - Auction House OFF - NPC shops ON"). Click a mod -> its settings in tabs: ON/OFF buttons, number and
@@ -65,7 +65,7 @@ SkyyEssentials (locked). This spec makes **SkyyEconomy 0.1 the first mod built o
 SkyyBank, SkyyBazaar and SkyyAuctions do not adopt it, they retire into SkyyEconomy.
 
 **Homes decided here:** ranks + permissions -> a new **SkyyRanks** mod (5.1, not SkyyEssentials), built right after SkyyEconomy 0.1
-(section 7 step 4). LOCKED 2026-09-25 (Skyy): ranks stay in their own mod, SkyyRanks. 0.1 is live. That was already the default. NPC shops -> **SkyyEconomy 0.2** (after the 0.1 merge is proven). Warps editor + world spawn -> **SkyyEssentials**.
+(section 7 step 4). LOCKED 2026-09-25 (Skyy): ranks stay in their own mod, SkyyRanks. 0.1 is live. That was already the default. NPC shops -> **SkyyEconomy 0.2** (after the 0.1 merge is proven). Warps editor -> **SkyyEssentials**. World spawn is an owner/ops command, not on the warps page (5.4).
 Island template + starter kit -> **SkyyIslands**. NPC quests -> future **SkyyQuests**; only the hooks are defined now (5.3).
 
 **One registry or two?** Two small registries that share one toolkit (1.2): the player Settings registry (`settings:*`, Settings-Spec,
@@ -465,8 +465,7 @@ re-reads), never `setPage(None)` before opening another page, Esc closes (`CanDi
   (2.11) until its adopting version lands (section 7). The subtitle then reads `1 mod set up for in-game editing - the rest show their file.`
 - **Search** (TextField `#SkyyAdmFind` + `Search`; Enter = Search; `Clear`): at least 2 characters, case-insensitive, matched against each
   set-up mod's name and title, its category labels, and every row's label and help (all read from `config:def:`), and against the names of
-  mods not set up yet. The list then shows only mods with a hit; line 2 lists the hits instead of the summary (`Hits: Warps editor, Set the
-  world spawn here`, up to 3, then `and 4 more`). `Open` on a hit opens the mod on the first hit's tab and page and marks hit rows with `>`
+  mods not set up yet. The list then shows only mods with a hit; line 2 lists the hits instead of the summary (`Hits: Warps editor, TPA expire`, up to 3, then `and 4 more`). `Open` on a hit opens the mod on the first hit's tab and page and marks hit rows with `>`
   before the label. No hit: `Nothing matches "<text>" - mods not set up yet are matched by name only.` This is also the per-mod settings
   search (SkyySkills alone writes more than 100 keys into its default file). Height with the search row: padding 28 + accent 3 + title 48 + subtitle 26 + search 58 +
   8 rows x 76 + status 30 + footer 62 = 863 <= 930.
@@ -714,7 +713,7 @@ Categories `parts, tpa, msg, warps, trade`: `part.tpa`, `part.msg` (bool, L, par
 `tpa.cooldownSeconds` int 10 s (0-300, L) (**make configurable**: today `EssStore.EXPIRE_MS` / `COOLDOWN_MS` are `public static final long`
 milliseconds; they become `public static volatile long` and bind `field:EssStore.EXPIRE_MS*1000@config.properties:tpa.expireSeconds` and
 `field:EssStore.COOLDOWN_MS*1000@...:tpa.cooldownSeconds`), `replyShortcut` bool true (**R**: the `/r` alias is registered at start),
-`warps.editor` link `warpadmin` (5.4), actions `Set the world spawn here` (D) and `Reset the world spawn to the original` (D) (5.4).
+`warps.editor` link `warpadmin` (5.4). LOCKED 2026-09-25 (Skyy): no world-spawn actions on this page. World spawn is the owner/ops command in 5.4. Was: `Set the world spawn here` and `Reset the world spawn to the original`.
 Later with `/trade`: `part.trade`, `trade.timeoutSeconds`, `trade.allowCoins`, `trade.maxStacks`.
 
 ### 4.7 SkyyMenu [0.1.3] (its own admin config, 0.3)
@@ -972,10 +971,7 @@ and wrong for branching scripts. So SkyyQuests will ship an in-game **linear** q
   and `/spawn set default` (`SpawnSetDefaultCommand`, `hytale:Admin`: back to the world's original spawn). VERIFIED this session
   (bytecode + `server.lang`): `/spawn set` runs on the world, builds `new Transform(position, rotation)` and calls
   `world.getWorldConfig().setSpawnProvider(new GlobalSpawnProvider(transform))`, then `WorldConfig.markChanged()`; `/spawn set default`
-  calls `setSpawnProvider` with no provider (a null, read from the bytecode shape). The warps page gets two action rows that do the same on
-  the admin's world thread: `Set the world spawn here` (confirm: `Move this world's spawn to where you stand? New and respawning players
-  arrive here.`) and `Reset the world spawn to the original` (confirm). It only touches the world the admin stands in; island worlds keep
-  their own spawn provider (SkyyIslands). UNVERIFIED: whether `markChanged()` alone saves it across a restart (test 8.4.8).
+  calls `setSpawnProvider` with no provider (a null, read from the bytecode shape). LOCKED 2026-09-25 (Skyy): the warps page does not move the world spawn. Was: two confirm rows on that page, `Set the world spawn here` and `Reset the world spawn to the original`. Moving the world spawn is an owner/ops-only command, for example `/setspawn`, not a row in the warps UI. It uses those same calls, on the world the player stands in. Island worlds keep their own spawn provider (SkyyIslands). A player who is not an owner or op cannot run it. UNVERIFIED: whether `markChanged()` alone saves it across a restart (test 8.4.8).
 
 ### 5.5 Island template and starter kit -> **SkyyIslands**
 - **Starter kit (easy, next version):** `starter.kit` items row (4.17) replaces the hard-coded `ids`/`qty` arrays in `FillTask.starterKit`; the
@@ -1049,7 +1045,7 @@ planned there (`SkyyExploration-Plan.md`).
 | 2 | **SkyyMenu 0.3** (Mods section, `/modconfig`, its own config page). LOCKED 2026-09-25 (Skyy): SkyyMenu 0.2 (player Settings) and 0.3 (Server Setup) stay two versions. That was already the default. | step 1 |
 | 3 | **SkyyEconomy 0.1**: the merge round (`SkyyEconomy-Plan.md`), built on the kit from day one: parts, coins, bank, bazaar, auctions, market tables; `/bankconfig` etc. through the kit | step 1; the separate Bank 0.1.3 / Bazaar 0.1.2 / Auctions 0.1 tested |
 | 4 | **SkyyRanks 0.1** (5.1): ranks, grants, members, per-player denies, chat prefix. Staff and permission setup is one of the first things an owner does, so it comes before the waves. First in-game test: the `hytale:Adventurer` check (8.4.5). Until it ships, ranks are vanilla `/op`, `/perm group|user`, `/setgroup` or `permissions.json` | step 1 (its `link` row shows in the Mods list once step 2 exists; it needs nothing from SkyyEconomy) |
-| 5 | Wave 1, the gaps (each mod's next version): SkyyParty (+`/partyadmin reload`), SkyyEssentials (+tpa timings, warps editor, world spawn rows), SkyyIslands (starter kit row + all defaults + the `volatile` / `DEF_PERM` field changes), SkyyProfiles (with the 4 -> 6 follow-up), SkyyVault, SkyyGuilds, SkyyRolls (+`/rolls` permission fix) | step 1 |
+| 5 | Wave 1, the gaps (each mod's next version): SkyyParty (+`/partyadmin reload`), SkyyEssentials (+tpa timings, warps editor; world spawn is the owner/ops command in 5.4, not a page row), SkyyIslands (starter kit row + all defaults + the `volatile` / `DEF_PERM` field changes), SkyyProfiles (with the 4 -> 6 follow-up), SkyyVault, SkyyGuilds, SkyyRolls (+`/rolls` permission fix) | step 1 |
 | 6 | Wave 2, progression: SkyySkills (+curve actions), SkyyTrees, SkyyCollections, SkyyExploration (+stamina read over the bridge), SkyyCooking, SkyyClasses, SkyySacks, SkyyAccessories (new config file), SkyyHud (default layout) | step 1 |
 | 7 | Big editors: SkyyEconomy 0.2 NPC shops; SkyyIslands template editor; stable command nodes pack-wide after the test (8.4.6) | steps 2-3 |
 | 8 | SkyyQuests spec + `tools/skyynpc.py` + the `quest:fn:event` calls | step 7 (shops) |
@@ -1133,8 +1129,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
    B sells back; coins match on both profiles; B cannot hurt the NPC; restart -> the NPC is there once (no duplicate), still a shop; A moves
    and removes it; `part.npcShops` OFF -> "This shop is closed."
 8. Warps: A adds, renames, moves and removes a warp from `/warpadmin`; B's SkyyMenu Teleport list follows; the warps survive a restart.
-   World spawn: A uses `Set the world spawn here`; B's `/spawn` and B's next respawn arrive there; still there after a restart; `Reset the
-   world spawn to the original` puts it back.
+   The warps page has no world-spawn buttons. World spawn: A, an op, uses the owner/ops command (for example `/setspawn`); B's `/spawn` and B's next respawn arrive there; still there after a restart; the reset command puts it back. A player who is not an owner or op cannot run it.
 9. Starter kit from A's hotbar -> B creates a new profile -> B's new island chest has exactly that kit. Template: A saves a template, B's next
    new island is the template; deleting the prefab file -> the built-in island again.
 10. Durations take effect in the right unit (the `field:` scale): A sets SkyyParty `inviteSeconds` to 20 in the menu; A invites B; the
@@ -1165,8 +1160,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 16. CONFIRMED intentionally open 2026-09-25 (Skyy): How does a player raise the profile cap above 6? Left open. Likely linked to ranks, and undecided. Not a resolved mechanic. Today there is still no in-game or file way above 6. See 4.16.
 17. When does SkyyRanks come? [Section 7 step 4, right after SkyyEconomy 0.1 and before the adoption waves; until then vanilla `/op`,
     `/perm`, `/setgroup` or `permissions.json`.]
-18. Should the warps page also move the world spawn? [Yes: `Set the world spawn here` and `Reset the world spawn to the original`, the
-    same thing vanilla `/spawn set` does, with a confirm.]
+18. LOCKED 2026-09-25 (Skyy): Should the warps page also move the world spawn? No. The warps page does not move it. Was: yes, with two confirm rows. World spawn movement is an owner/ops-only command, for example `/setspawn`, not a row in the warps UI. See 5.4.
 
 ---
 
