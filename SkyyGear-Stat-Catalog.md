@@ -1,130 +1,151 @@
 # SkyyGear stat catalog
-*Research list, 2026-09-24. Not a lock. The Decision column is blank on purpose. Write **Keep**, **Scrap**, or **Add later**. Nothing here is marked for you.*
+*Research list, 2026-09-24. Combat, defence, and mana are marked in the collapsed section above the blank tables. From Movement down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The locked mix still stands (`SkyyGear-Plan.md` lock 8): Wynn's five skill points on weapons and armor, plus crit chance, crit damage, and fortune. This sheet is the menu for everything else.
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up, and Decisions change note 9. Fortune was not in this pass. It stays until the loot and gathering tables are reviewed.
 
-**Count:** 135 SkyBlock lines and 249 Wynn lines. 6 lines are shared (marked Both), so they sit in both totals. SkyBlock's 81 category stats from the wiki are all here, plus weapon Damage and Mana. The rest of the SkyBlock lines are accessory powers, enrichments, and tuning. The extra Wynn lines are the per-element combat IDs and every Major ID.
+**Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %). Those are our locks, not wiki lines.
 
-**Game** means where the stat is from. **Both** means one row covers two names. A line that starts with **Clash** means the names match and the effects do not.
+**Game** means where the stat is from. **Both** means one row covers two names.
 
-Major IDs are unique item effects. They have their own section. They do not stack with a copy of themselves. Different Major IDs can be worn together. Some are locked to a class. A few effect lines had an element icon on the wiki that did not copy, so that element name is left off.
+Major IDs are still in their own section, below, with a blank Decision. They do not stack with a copy of themselves. Different Major IDs can be worn together. Some are locked to a class. A few effect lines had an element icon on the wiki that did not copy, so that element name is left off.
 
 Left off the tables, because they are not a line you roll onto gear:
 
 - SkyBlock Effective Health (math from Health and Defense).
-- SkyBlock True Damage (a damage type). True Defense is the stat that answers it.
 - SkyBlock Overflow Mana, Soulflow, Absorption, Heat, and Cold (pools or meters). Heat Resistance and Cold Resistance are the gear stats.
 - Wynn skill-point requirements (a gate on the item, not a bonus).
 
+True Damage is in the decided section. It ignores Defence. True Defense, the stat that would cut it, is Scrap.
+
 ---
 
-## Combat offense
+<details>
+<summary><strong>Decided — combat, defence, and mana</strong> (2026-09-24, change note 9). Next blank table is Movement.</summary>
 
-Wynn's Strength and Dexterity skill points are in this table. Defence and Agility are under Combat defense. Intelligence is under Mana and abilities. Element defence is under Combat defense. The element rows are the lines items show.
+These rows are marked. **Keep**, **Scrap**, or **Open**. Placement is the lock. Fortune was not in this pass.
 
-| Stat | Game | What it does | Decision |
-|---|---|---|---|
-| Damage | SB | The weapon's own damage number. Strength and crits multiply it. | |
-| Strength | SB | Multiplies the damage you deal. **Clash:** Wynn Strength is a skill point (next row). | |
-| Strength | Wynn | Adds to the Strength skill point: more damage, and more Earth damage. A gear bonus does not count toward gear requirements. | |
-| Dexterity | Wynn | Adds to Dexterity: a chance to crit for +100% damage, and more Thunder damage. SkyBlock uses Crit Chance instead of this. | |
-| Crit Chance | SB | Chance a hit is a crit. At 100% or more, every hit crits. | |
-| Crit Damage / Critical Damage Bonus | Both | A crit hits harder. SB Crit Damage is the standing multiplier. Wynn's ID is an extra bonus on top of Dexterity crits. | |
-| Neutral damage | Wynn | The weapon's own damage with no element, before IDs. | |
-| Earth damage (base) | Wynn | The weapon's own Earth damage, before IDs. | |
-| Thunder damage (base) | Wynn | The weapon's own Thunder damage, before IDs. | |
-| Water damage (base) | Wynn | The weapon's own Water damage, before IDs. | |
-| Fire damage (base) | Wynn | The weapon's own Fire damage, before IDs. | |
-| Air damage (base) | Wynn | The weapon's own Air damage, before IDs. | |
-| Earth Damage % | Wynn | Percent bonus to Earth damage. | |
-| Thunder Damage % | Wynn | Percent bonus to Thunder damage. | |
-| Water Damage % | Wynn | Percent bonus to Water damage. Healing also scales with this. | |
-| Fire Damage % | Wynn | Percent bonus to Fire damage. | |
-| Air Damage % | Wynn | Percent bonus to Air damage. | |
-| Elemental Damage % | Wynn | Percent bonus to every element's damage at once. | |
-| Raw Damages | Wynn | The wiki's name for flat attack damage. The raw rows below are the lines items show. | |
-| Percent Damages | Wynn | The wiki's name for a percent of the weapon's base damage. It does not add to raw damage IDs. The percent rows are the lines items show. | |
-| Earth Main Attack Damage | Wynn | Percent Earth damage on the main attack. | |
-| Earth Spell Damage % | Wynn | Percent Earth damage on spells. | |
-| Raw Earth Spell Damage | Wynn | Flat Earth damage on spells. | |
-| Thunder Main Attack Damage % | Wynn | Percent Thunder damage on the main attack. | |
-| Raw Thunder Main Attack Damage | Wynn | Flat Thunder damage on the main attack. | |
-| Thunder Spell Damage % | Wynn | Percent Thunder damage on spells. | |
-| Raw Thunder Spell Damage | Wynn | Flat Thunder damage on spells. | |
-| Raw Thunder Damage | Wynn | Flat Thunder damage, listed beside the main-attack and spell lines. | |
-| Water Spell Damage % | Wynn | Percent Water damage on spells. | |
-| Raw Water Spell Damage | Wynn | Flat Water damage on spells. | |
-| Raw Water Damage | Wynn | Flat Water damage, listed beside the spell lines. | |
-| Fire Spell Damage % | Wynn | Percent Fire damage on spells. | |
-| Raw Fire Spell Damage | Wynn | Flat Fire damage on spells. | |
-| Raw Fire Main Attack Damage | Wynn | Flat Fire damage on the main attack. | |
-| Air Main Attack Damage % | Wynn | Percent Air damage on the main attack. | |
-| Air Spell Damage % | Wynn | Percent Air damage on spells. | |
-| Raw Air Spell Damage | Wynn | Flat Air damage on spells. | |
-| Raw Air Main Attack Damage | Wynn | Flat Air damage on the main attack. | |
-| Elemental Spell Damage % | Wynn | Percent spell damage for every element at once. | |
-| Raw Elemental damage | Wynn | Flat damage added to every element at once. | |
-| Raw Elemental Spell Damage | Wynn | Flat spell damage for every element at once. | |
-| Raw Elemental Main Attack Damage | Wynn | Flat main-attack damage for every element at once. | |
-| Main Attack Damage % | Wynn | Percent bonus to main-attack damage. Also called melee damage %. Does not add to raw damage IDs. | |
-| Raw Main Attack Damage | Wynn | Flat bonus to main-attack damage. | |
-| Spell Damage % | Wynn | Percent bonus to spell damage. **Clash:** not SkyBlock Ability Damage. | |
-| Raw Spell Damage | Wynn | Flat bonus to spell damage. | |
-| Raw Neutral Spell Damage | Wynn | Flat spell damage with no element. | |
-| Attack Speed | Both | Faster swings. SB is a percent, cap 100. Wynn is a base tier (Super Slow to Super Fast) plus an ID that shifts that tier. | |
-| Ferocity | SB | Chance a hit counts as extra hits. Each 100 is one guaranteed extra hit. Cap 500. | |
-| Exploding | Wynn | Chance a main-attack hit blows up and hurts nearby mobs. Past 100% does nothing more. | |
-| Poison | Wynn | Extra damage over time after you hit. The number is the total over 3 seconds. | |
-| Swing Range / Main Attack Range | Both | How far a melee hit reaches. SB is blocks (base 3, cap 15). Wynn is a percent. | |
-| Knockback | Wynn | How far a valid hit pushes a mob. Past −100% it pulls them in. Capped at ±300%. | |
-| Ability Damage | SB | Multiplies ability and magic damage. **Clash:** not Wynn spell damage. | |
-
-## Combat defense
+### Damage and crits
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
-| Health | Both | Max health. SB Health, and the base Health number on Wynn armour. Wynn's Health ID is the next row. | |
-| Health (ID) | Wynn | Flat health on top of base health. The wiki also calls this Raw Health. | |
-| Defense | SB | Cuts damage from normal hits. Does not stop True Damage. **Clash:** not the Wynn Defence skill point, and not elemental defence. | |
-| Defence | Wynn | Adds to the Defence skill point: less damage taken, and more Fire damage. | |
-| Agility | Wynn | Adds to Agility: a chance to dodge (that hit deals 90% less), and more Air damage. | |
-| True Defense | SB | Cuts True Damage. Normal Defense does not. | |
-| Earth Defence | Wynn | Percent defence against Earth damage. | |
-| Thunder Defence | Wynn | Percent defence against Thunder damage. | |
-| Water Defence | Wynn | Percent defence against Water damage. | |
-| Fire Defence | Wynn | Percent defence against Fire damage. | |
-| Air Defence | Wynn | Percent defence against Air damage. | |
-| Elemental Defence | Wynn | Percent defence against every element at once. | |
-| Health Regen | SB | Faster natural health recovery. **Clash:** Wynn regen is the next two rows, and it does not speed natural regen the same way. | |
-| Raw Health Regen | Wynn | Flat health gained or lost on a timer. Negative drains you. | |
-| % Health Regen | Wynn | Percent change to Raw Health Regen. Does not change natural regen. | |
-| Life Steal | Wynn | Health from landing your main attack. The number is the total over 3 seconds of attacking. | |
-| Vitality | SB | A pool that healing abilities spend. Base 100. | |
-| Mending / Healing Efficiency | Both | Stronger heals. SB Mending is heals you give other people. Wynn Healing Efficiency is heals on you and others, except potions, regen, and life steal. | |
-| Thorns | Wynn | Chance a melee attacker takes damage back. Past 100% does nothing more. | |
-| Reflection | Wynn | Same as Thorns, for spells and projectiles. | |
-| Slow Enemy | Wynn | A hit mob moves slower. Caps at 50%. | |
-| Weaken Enemy | Wynn | A hit mob deals less damage. Caps at 50%. | |
+| Damage | SB | Weapon-only modifier. Use Hytale's damage and build on it, unless a custom system is easier later. | Keep |
+| Neutral damage | Wynn | Same stat. Call it Damage. Stick to Hytale unless we must make our own. | Keep |
+| Strength | SB | SkyBlock-style. Weapons, armor, and Equipment. Class skill trees can raise base Strength. | Keep |
+| Strength | Wynn | The Wynn skill point (more damage and Earth damage) is out. Strength is the SkyBlock row. | Scrap |
+| Dexterity | Wynn | Not a skill point for crit. Crit Chance replaces it. | Scrap |
+| Crit Chance | SB | No cap. 100% is a guaranteed crit. Over 100% is overcrit chance. 120% crit means a 20% chance to overcrit. | Keep |
+| Crit Damage / Critical Damage Bonus | Both | SkyBlock-style. 0 crit damage means a crit is double a normal hit. +100% crit damage means double a normal crit, which is 4x a normal hit. | Keep |
+| Overcrit | SkyWynn | Always double whatever the crit hit is. | Keep |
+| True Damage | SkyWynn | Ignores enemy Defence. Mobs will almost never deal this. | Keep |
 
-## Mana and abilities
+### Elements
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
-| Intelligence | SB | Bigger mana pool, and more magic damage. **Clash:** Wynn Intelligence is the next row. | |
-| Intelligence | Wynn | Adds to Intelligence: cheaper spells (up to 50% off), a bigger mana pool, and more Water damage. | |
-| Mana | SB | The mana pool. Base 100. It grows with Intelligence. Gear usually adds Intelligence, not Mana itself. | |
-| Max Mana | Wynn | Flat mana. Caps at 400, counting Intelligence and the base 100. | |
-| Mana Regen | Wynn | Mana back over time. Shown per 5 seconds. | |
-| Mana Steal | Wynn | Mana from landing your main attack. The number is the total over 3 seconds of attacking. | |
-| Rift Mana Regen | SB | Mana regen inside the Rift only. | |
-| 1st Spell Cost % | Wynn | Percent change to the mana cost of spell 1. A minus is cheaper. | |
-| 2nd Spell Cost % | Wynn | Percent change to the mana cost of spell 2. | |
-| 3rd Spell Cost % | Wynn | Percent change to the mana cost of spell 3. | |
-| 4th Spell Cost % | Wynn | Percent change to the mana cost of spell 4. | |
-| Raw 1st Spell Cost | Wynn | Flat mana added or removed from spell 1's cost. | |
-| Raw 2nd Spell Cost | Wynn | Flat mana added or removed from spell 2's cost. | |
-| Raw 3rd Spell Cost | Wynn | Flat mana added or removed from spell 3's cost. | |
-| Raw 4th Spell Cost | Wynn | Flat mana added or removed from spell 4's cost. | |
+| Earth damage (base) | Wynn | Weapon only. Flat Earth added to the weapon (example: 40 Damage + 6 Fire). Base Damage is cut by target Defence. Element damage is applied on its own, then cut or raised by element affinity and elemental defence. Same model as Wynncraft. | Keep |
+| Thunder damage (base) | Wynn | Weapon only. Flat Thunder on the weapon. Same Defence and element split as Earth. | Keep |
+| Water damage (base) | Wynn | Weapon only. Flat Water on the weapon. Same split. | Keep |
+| Fire damage (base) | Wynn | Weapon only. Flat Fire on the weapon. Same split. | Keep |
+| Air damage (base) | Wynn | Weapon only. Flat Air on the weapon. Same split. | Keep |
+| Raw Thunder Damage | Wynn | Weapon only. Another flat Thunder line. Same model. | Keep |
+| Raw Water Damage | Wynn | Weapon only. Another flat Water line. Same model. | Keep |
+| Raw Elemental damage | Wynn | Weapon only. Flat damage on every element at once. Same model. | Keep |
+| Earth Damage % | Wynn | Equipment only. | Keep |
+| Thunder Damage % | Wynn | Equipment only. | Keep |
+| Water Damage % | Wynn | Equipment only. | Keep |
+| Fire Damage % | Wynn | Equipment only. | Keep |
+| Air Damage % | Wynn | Equipment only. | Keep |
+| Elemental Damage % | Wynn | All elements at once. Class skill trees only. | Keep |
+| Earth Defence | Wynn | Armor only. Wynn-style. | Keep |
+| Thunder Defence | Wynn | Armor only. Wynn-style. | Keep |
+| Water Defence | Wynn | Armor only. Wynn-style. | Keep |
+| Fire Defence | Wynn | Armor only. Wynn-style. | Keep |
+| Air Defence | Wynn | Armor only. Wynn-style. | Keep |
+| Elemental Defence | Wynn | All elements at once. Class skill trees only. Same place as Elemental Damage %. | Keep |
+| Percent Damages | Wynn | The wiki's percent-of-base-damage family. | Scrap |
+| Main Attack Damage % | Wynn | Generic percent on the main attack. Part of Percent Damage. | Scrap |
+| Spell Damage % | Wynn | Generic percent on spells. Part of Percent Damage. Per-element spell % is the Open rows below. | Scrap |
+| Raw Damages | Wynn | The wiki's family name for flat attack damage. Not called as its own stat. | Open |
+| Earth Main Attack Damage | Wynn | Per-element main-attack line. Leaning skip. Prefer flat element on the weapon, on every attack. | Open |
+| Thunder Main Attack Damage % | Wynn | Per-element main-attack line. Leaning skip. Same reason. | Open |
+| Raw Thunder Main Attack Damage | Wynn | Per-element main-attack line. Leaning skip. Same reason. | Open |
+| Raw Fire Main Attack Damage | Wynn | Per-element main-attack line. Leaning skip. Same reason. | Open |
+| Air Main Attack Damage % | Wynn | Per-element main-attack line. Leaning skip. Same reason. | Open |
+| Raw Air Main Attack Damage | Wynn | Per-element main-attack line. Leaning skip. Same reason. | Open |
+| Raw Elemental Main Attack Damage | Wynn | Main-attack-only flat on every element. Leaning skip. Same reason. | Open |
+| Raw Main Attack Damage | Wynn | Flat bonus on the main attack only. Not called. Leaning skip with the main-attack lines. | Open |
+| Earth Spell Damage % | Wynn | Per-element spell percent. Leaning skip. Wynn spells are class skills. Except Mage and Shaman, those skills are mana abilities. Their element is set in the skill tree, not on weapons or armor. | Open |
+| Thunder Spell Damage % | Wynn | Per-element spell percent. Leaning skip. Same reason. | Open |
+| Water Spell Damage % | Wynn | Per-element spell percent. Leaning skip. Same reason. | Open |
+| Fire Spell Damage % | Wynn | Per-element spell percent. Leaning skip. Same reason. | Open |
+| Air Spell Damage % | Wynn | Per-element spell percent. Leaning skip. Same reason. | Open |
+| Elemental Spell Damage % | Wynn | Spell percent for every element. Leaning skip. The all-elements percent that is kept is Elemental Damage %, on class skill trees. | Open |
+| Raw Earth Spell Damage | Wynn | Skill trees and accessories. An accessory can be specific (Archer arrow spam +10 Earth). A bonus on every skill is rare. | Keep |
+| Raw Thunder Spell Damage | Wynn | Skill trees and accessories. Same rule. | Keep |
+| Raw Water Spell Damage | Wynn | Skill trees and accessories. Same rule. | Keep |
+| Raw Fire Spell Damage | Wynn | Skill trees and accessories. Same rule. Rare shape: every skill +10 Fire. | Keep |
+| Raw Air Spell Damage | Wynn | Skill trees and accessories. Same rule. | Keep |
+| Raw Elemental Spell Damage | Wynn | Skill trees and accessories. Flat spell damage on every element. | Keep |
+| Raw Spell Damage | Wynn | Skill trees and accessories. Flat spell damage. | Keep |
+| Raw Neutral Spell Damage | Wynn | Skill trees and accessories. Flat spell damage with no element. | Keep |
+
+### Attack extras
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Attack Speed | Both | The weapon has a built-in swing speed, Wynn-style. +Attack Speed % can roll on weapons, armor, Equipment, and accessories. Cap 150%. | Keep |
+| Ferocity | SB | SkyBlock-style. Cap 300 for now. | Keep |
+| Exploding | Wynn | Keep the Wynn effect. Chance a main-attack hit hurts nearby mobs. | Keep |
+| Poison | Wynn | Keep the Wynn effect. Extra damage over time after a hit. | Keep |
+| Swing Range / Main Attack Range | Both | Renamed **Reach**. A % stat. Gathering skill trees only: Mining, Farming, and Gathering. Small upgrades. Total max +50%. | Keep |
+| Knockback | Wynn | Keep the Wynn effect. How far a hit pushes a mob. | Keep |
+| Ability Damage | SB | Skill trees, accessories, and Equipment. Not on weapons or armor. | Keep |
+
+### Defence and healing
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Health | Both | All armor has base Health. Use Hytale's armor health unless we must make our own. Also on Equipment and accessories. Not on weapons. +Health % can be a gathering skill-tree upgrade. | Keep |
+| Health (ID) | Wynn | Extra flat Health. Same places as Health: Equipment and accessories, and not weapons. Armor uses its base Health. | Keep |
+| Defense | SB | SkyBlock-style Defence, unless Hytale already has Defence we can use. True Damage ignores it. | Keep |
+| Defence | Wynn | The Wynn skill point (less damage taken, and more Fire damage) is out. Defence is the SkyBlock row. | Scrap |
+| Agility | Wynn | Not a gear skill point. Dodge Chance replaces it. | Scrap |
+| Dodge Chance | SkyWynn | Part of the Acrobatics skill. A small % per Acrobatics level. Bigger upgrades in the Acrobatics skill tree. Also on dodge accessories. | Keep |
+| True Defense | SB | Mobs will almost never deal True Damage, so this stat is out. | Scrap |
+| Health Regen | SB | Faster natural regen. Out. We use the Wynn regen rows. Hytale has no natural flat regen. | Scrap |
+| Raw Health Regen | Wynn | Keep, Wynn-style. Flat health on a timer. | Keep |
+| % Health Regen | Wynn | Keep, Wynn-style. Percent change to Raw Health Regen. | Keep |
+| Life Steal | Wynn | Heal from all damage you deal. Preferred shape to research: 10% Life Steal heals you every 3 seconds for 10% of the damage dealt in those 3 seconds. Numbers are open. | Keep |
+| Vitality | SB | Out for now. Healing is Hytale food, the Cooking skill, and Alchemy health potions. Weak food and pots are a soft gate. Cooking and Alchemy are not hard-locked. | Scrap |
+| Mending / Healing Efficiency | Both | Out. Crowd healing comes later from a Priest class (healing spells and some damage, a support role). Class roles are still open. | Scrap |
+| Thorns | Wynn | Armor only. | Keep |
+| Reflection | Wynn | Not called this pass. | Open |
+| Slow Enemy | Wynn | Weapon only. Some skills will also slow. | Keep |
+| Weaken Enemy | Wynn | Weapons only. | Keep |
+
+### Mana and spell cost
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Intelligence | SB | A modifier on Hytale's mana. Our modifiers add to Hytale's pool. The SkyBlock "also more magic damage" half was not locked. | Keep |
+| Intelligence | Wynn | The Wynn skill point (cheaper spells, mana, Water damage) is out. Mana uses Hytale's system. | Scrap |
+| Mana | SB | Hytale's mana pool. Our modifiers add to it. | Keep |
+| Max Mana | Wynn | +Max Mana, Wynn-style. On gear, Equipment only. Overall Level (the average of all skill levels) raises base Health and base Mana. Class skill trees can add flat Health and Mana. Gathering skill trees can add a small +% Health and +% Mana. The Wynn cap of 400 is not the lock. | Keep |
+| Mana Regen | Wynn | Equipment and accessories. Also class skill trees, and only for magic-using classes. | Keep |
+| Mana Steal | Wynn | Weapons and accessories only. | Keep |
+| Rift Mana Regen | SB | Rift mana is out. | Scrap |
+| Spell Cost % | SkyWynn | One flat −% on every spell and skill. Accessory only. Replaces the per-spell cost IDs. | Keep |
+| 1st Spell Cost % | Wynn | Per-spell percent cost. Out. Use the flat Spell Cost % row. | Scrap |
+| 2nd Spell Cost % | Wynn | Per-spell percent cost. Out. | Scrap |
+| 3rd Spell Cost % | Wynn | Per-spell percent cost. Out. | Scrap |
+| 4th Spell Cost % | Wynn | Per-spell percent cost. Out. | Scrap |
+| Raw 1st Spell Cost | Wynn | Per-spell raw cost. Out. Raw cost drops when the skill is upgraded. Skill-upgrade points come every 5 levels. An upgrade raises damage, or range on a traversal skill, and lowers raw cost. | Scrap |
+| Raw 2nd Spell Cost | Wynn | Per-spell raw cost. Out. Same skill-upgrade rule. | Scrap |
+| Raw 3rd Spell Cost | Wynn | Per-spell raw cost. Out. Same skill-upgrade rule. | Scrap |
+| Raw 4th Spell Cost | Wynn | Per-spell raw cost. Out. Same skill-upgrade rule. | Scrap |
+
+</details>
+
 
 ## Movement
 
@@ -468,7 +489,7 @@ Unique effects on set items and some raid buffs. Not a rolled ID. Read 2026-09-2
 
 ## New SkyWynn stats
 
-Stats we invent. None yet.
+Dodge Chance, Overcrit, True Damage, and flat Spell Cost % are already in the decided section. Blank rows below are for the next idea.
 
 | Stat | What it might do | Decision |
 |---|---|---|
