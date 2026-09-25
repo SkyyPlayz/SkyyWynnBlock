@@ -163,7 +163,7 @@ Admin commands: section 8.
 | `maxListings` | `14` | Per **profile**. A slot counts from Create until the seller has claimed that listing's coins or item (Hypixel rule: only claiming or cancelling frees a slot; a cancel with an immediate return frees it at once). LOCKED 2026-09-25 (Skyy): 14 is the default cap. Progression rewards or rank perks can raise it in game later. SkyyAuctions 0.1.1 is a flat 14 with no perk raise yet. |
 | `maxListingsServer` | `5000` | Keeps load time and page filtering bounded. |
 | `graceSeconds` | `20` | Nobody can buy a new listing for 20 s (Hypixel, VERIFIED). In practice it gives the seller time to cancel a mistyped price before a sniper takes it. |
-| `confirmAbove` / `confirmSeconds` | `10000` / `10` | A buy at or above this price needs the confirm click, armed for 10 s. 10,000 = a new profile's starting purse. `[SKYY?]` |
+| `confirmAbove` / `confirmSeconds` | `10000` / `10` | A buy at or above this price needs the confirm click, armed for 10 s. 10,000 = a new profile's starting purse. LOCKED 2026-09-25 (Skyy). |
 | `claimAllConfirmAbove` | `100000` | [Claim all] asks first when the coins owed are at or above this (2.5). `0` = never ask. Hypixel's nudge sits at about 100,000 (UNVERIFIED, one source). |
 | `cancelRefundsFee` | `false` | Hypixel keeps the fee (VERIFIED). |
 | `adminRemoveRefundsFee` | `false` | An admin removal returns the item, not the fee (an admin can `/coinsgive` if it was a mistake). |
@@ -714,7 +714,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 4. **One account, several profiles.** LOCKED 2026-09-25 (Skyy): buying your own listing from a different profile is allowed. Same-profile self-buy stays forbidden. Was: never, even from another profile. SkyyAuctions 0.1.1 still refuses the other profile unless `sameAccountBuy=true`.
 5. **Creative players.** LOCKED 2026-09-25 (Skyy): Creative players browse and claim only. They cannot list or buy. That was already the default (`blockCreative=true`).
 6. **Listing cap.** LOCKED 2026-09-25 (Skyy): the default cap stays 14 listings per profile. Progression rewards or rank perks can raise that cap in game later. SkyyAuctions 0.1.1 is a flat 14 with no perk raise yet.
-7. **Confirm threshold.** Should buys at or above this need a second click? [10,000 coins]
+7. **Confirm threshold.** LOCKED 2026-09-25 (Skyy): a buy of 10,000 coins or more needs a second click. That was already the default (`confirmAbove=10000`).
 8. **Cancel keeps the fee** (Hypixel). [kept]
 9. **`/ah sell`.** Open the prefilled page for one click, or list straight from chat? [prefilled page]
 10. **Grace period.** How long should a new listing wait before anyone can buy it? [20 s]
