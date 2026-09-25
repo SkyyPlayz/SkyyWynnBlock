@@ -141,9 +141,9 @@ A Trusted player may be invited. Accepting upgrades them and removes the trusted
 
 ### 1.7 `/island reset` (Owner)
 
-**Confirm twice.** `/island reset` prints the warning: "This deletes every block and chest on your island, including your co-op members' things. Members, trusted players, bans and settings are kept. Type /island reset again within 20 s to continue." The second run gives the final warning, and the third run resets. On the page, the button reads "Reset island" → "Delete everything?" → "Really? Last click". The state lives in `CONFIRM[uuid] = { step, millis }`, and the 20 s window is `reset.confirmSeconds`.
+**Confirm twice.** `/island reset` prints the warning: "This deletes every block and chest on your island, including your co-op members' things. Members, trusted players, bans and settings are kept. Type /island reset again within 20 s to continue." The second run gives the final warning, and the third run resets. On the page, the button reads "Reset island" → "Delete everything?" → "Really? Last click". The state lives in `CONFIRM[uuid] = { step, millis }`, and the 20 s window is `reset.confirmSeconds`. LOCKED 2026-09-25 (Skyy): three confirms. That was already the default.
 
-**Refused when:** you are not the Owner of your home island; the island is being created (`CREATING`); `profile:busy:<uuid>` is set; or the cooldown `reset.cooldownHours` (default 24, `[SKYY?]`) has not passed. The cooldown stops repeated resets from farming starter kits.
+**Refused when:** you are not the Owner of your home island; the island is being created (`CREATING`); `profile:busy:<uuid>` is set; or the cooldown `reset.cooldownHours` (default 24) has not passed. LOCKED 2026-09-25 (Skyy): the cooldown stays 24 h. That was already the default. The cooldown stops repeated resets from farming starter kits.
 
 **How (a new world, not a wipe in place):**
 1. `newName = "skyy-island-" + ownerKey + "-r" + (resets + 1)`. Bump N while `Universe.isWorldLoadable(newName)` is true.
@@ -611,7 +611,7 @@ invite.seconds=60
 trusted.max=20
 bans.max=100
 expel.cooldownSeconds=60
-reset.cooldownHours=24
+reset.cooldownHours=24                  # LOCKED 2026-09-25 (Skyy): 24 h, with 3 confirms.
 reset.confirmSeconds=20
 tint.resend=tints                         # tints | chunk | off (section 5)
 biomes=void,plains,forest,autumn,azure,swamp,savanna,oasis,tundra,glacial,wastes
@@ -640,7 +640,7 @@ animals.extra=                            # extra NPC role names that count as f
 2. **Owner on another profile** is a visitor, and the `drop` flag is **hard-denied** for them whatever the grid says (no dropping on the profile-B island and picking up on A).
 3. **Breaking a container or furnace needs break AND containers/processing** (3.3), because breaking drops the contents.
 4. **One co-op per profile; a leader can't join another co-op** (1.4). Accept resolves the pkey once and refuses while `profile:busy` is set.
-5. **Reset spam:** 24 h cooldown `[SKYY?]` and 3 runs to confirm. The starter kit is the only thing a reset gives.
+5. **Reset spam:** 24 h cooldown and 3 confirms. LOCKED 2026-09-25 (Skyy): that stays. The starter kit is the only thing a reset gives.
 6. **Reset with players on the island:** everyone but the owner goes to the hub first. Late arrivals in the old world are sent to the hub by `ArrivalTask` and the sweep. The old world unloads when empty and is kept as a backup.
 7. **Kick/leave/disband while standing on the island:** the player goes to their own island. If that fails, they stay as a visitor and the sweep applies the visit mode.
 8. **Visitors inside when settings change:** Closed, Friends or a ban → immediate sweep and expel. PvP on → visitors expelled. A lower limit only affects new arrivals. Flag changes apply on the next event (cache).
@@ -687,7 +687,7 @@ animals.extra=                            # extra NPC role names that count as f
 - LOCKED 2026-09-25 (Skyy): Trusted stays build only. No harvesting crops, no beds, no chests. That was already the default;
 - LOCKED 2026-09-25 (Skyy): no visits to your own dormant island while you are in a co-op. That was already the default;
 - old build-rights invites become Trusted;
-- reset cooldown 24 h;
+- LOCKED 2026-09-25 (Skyy): `/island reset` cooldown 24 h, with 3 confirms. That was already the default;
 - visitor limit 5;
 - biome cost 0 and unlock gating later.
 

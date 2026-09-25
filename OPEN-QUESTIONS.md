@@ -116,7 +116,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-09-25 (Skyy): Trusted stays build only. No harvesting crops, no beds, no chests. [as written, already the default]
 - LOCKED 2026-09-25 (Skyy): no visits to your own old island while you are in someone's co-op. [no, already the default]
 - Old "build rights" invites became Trusted, not members. [done]
-- `/island reset` cooldown 24 h (3 confirms). [24 h]
+- LOCKED 2026-09-25 (Skyy): `/island reset` cooldown 24 h with 3 confirms. [24 h, already the default]
 - Visitor limit 5. [5]
 - Biome change: free, unlocks tied to exploration later. [free]
 - What visitors may use by default (doors today). [doors, seats]
