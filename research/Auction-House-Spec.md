@@ -197,7 +197,7 @@ Checked at Create, and again at buy time where it matters:
 5. **The snapshot round-trip passes** (6.4 step e). An item whose data cannot be saved and restored exactly is refused: "This item cannot be listed (its data could not be saved)." This is what **guarantees that SkyyRolls metadata survives**.
 6. The price is within min / max, the duration is a preset, a profile slot is free, the server cap is not reached, and the purse covers the fee.
 
-**Bags are tradeable, but say what they are.** A Magic Bag (`Skyy_Sack_<Category>_<Tier>`) or the Accessory Bag (`Skyy_Accessory_Bag`) is only a **key**: the materials and accessories live in a per-player file (SkyySacks / SkyyAccessories), not in the item, and SkyySacks writes no item metadata. Selling one hands over a crafted bag, and the buyer opens their **own** pool with it. Nothing is created. The seller gave up the item and pays materials to craft another, like any crafted item, and "coins can bypass collections early" is a locked design fact. So 0.1 does **not** block bags. What it adds against a misunderstanding: for those ids, the Create view's selected panel and the item view's facts show "Contents are not included - a bag opens its owner's own storage." If Skyy wants bags off the market, two lines in `Skyy_Market/blocked.txt` do it (`Skyy_Sack_*` and `Skyy_Accessory_Bag`) with no code change (open question 15).
+**Bags are blocked on the Auction House.** LOCKED 2026-09-25 (Skyy). A Magic Bag (`Skyy_Sack_*`) and the Accessory Bag (`Skyy_Accessory_Bag`) cannot be listed or bought. Was: tradeable, with a "contents not included" line. The block is two lines in `Skyy_Market/blocked.txt`: `Skyy_Sack_*` and `Skyy_Accessory_Bag`. SkyyAuctions 0.1.1 creates that file with comments only, so bags can still be listed until those lines are present.
 
 ### 4.4 The late-game block list (empty by default)
 - **File** `<world>/mods/Skyy_Market/blocked.txt`. It is **shared by the market mods**: SkyyAuctions now, and SkyyBazaar can read the same file later, so one entry takes an item off both markets. It is created on first run with only comment lines. The format is one entry per line: `ItemId` or `Prefix*`, with an optional ` = reason shown to players`. The default reason is "late-game item". `#` starts a comment. It is re-read by `/ahadmin reload`.
@@ -208,7 +208,7 @@ Checked at Create, and again at buy time where it matters:
   3. The value's text after the first `|` is the reason shown to players.
   Matching is case-sensitive, like item ids. A bare `*` (which would block everything) is ignored with a WARN; `/ahadmin pause` is the tool for closing the market.
 - **Bridge** `market:veto` = a ConcurrentHashMap of owner -> `java.util.function.Function` `apply(ItemStack)`, returning `null` (allowed) or a String reason. It is empty by default. It is for per-stack rules that an id list cannot express, e.g. a future SkyyGear "unidentified items cannot be sold". A veto that throws counts as a refusal ("could not check this item") and is logged once. Vetoes are asked after the block list, one Function per owner, on every stack (they are not keyed by id, so the prefix rule does not apply to them).
-- LOCKED 2026-09-25 (Skyy): the late-game list that leaves both markets stays empty until Skyy names the items. Nothing ships blocked.
+- LOCKED 2026-09-25 (Skyy): the late-game list that leaves both markets stays empty until Skyy names the items. Magic Bags and the Accessory Bag are blocked separately (question 15).
 
 ### 4.5 Grace, own listings, expiry
 - A listing is buyable only when `now >= graceUntil` (created + 20 s) and `now < endsAt`.
@@ -722,7 +722,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 12. **Late-game cutoff.** LOCKED 2026-09-25 (Skyy): the list of items that leave both markets stays empty for now. Fill it when Skyy names the items. The block file and the `market:blocked` bridge stay ready.
 13. **Bid auctions.** LOCKED 2026-09-25 (Skyy): parked for later. No rules to sketch yet. Buy It Now stays the only listing type.
 14. **Deleted profiles.** Claims owned by a profile that no longer exists (SkyyProfiles 0.1 has no delete yet). [they stay in the file; an admin can use `regrant` or move them by hand]
-15. **Bags on the AH.** Magic Bags and the Accessory Bag are only keys to the owner's own storage (4.3). Tradeable with a "contents not included" line, or off the market? [tradeable; two `blocked.txt` lines take them off]
+15. **Bags on the AH.** LOCKED 2026-09-25 (Skyy): Magic Bags and the Accessory Bag are blocked. They cannot be listed or bought. Was: tradeable, with a "contents not included" line. SkyyAuctions 0.1.1 still allows them until `Skyy_Market/blocked.txt` has `Skyy_Sack_*` and `Skyy_Accessory_Bag`.
 16. **Claim-all confirm.** Ask before [Claim all] puts a lot of coins in the purse (death penalty 10-25%)? [yes, at 100,000 coins]
 
 ---
@@ -750,7 +750,7 @@ Twelve review findings were checked against this spec, the live scripts and `Hyt
   - The method also needs a `Holder`, which the engine builds from its own chunk data; a mod has to use `Store.copySerializableEntity(ref)` (UNVERIFIED in game).
   - Result: a soft-probed, config-gated call after the lock with `force = true`. It shortens the window from up to 10 s to "until the queued write lands", not to zero.
   - It applies to LIST, BUY delivery, claims and a cancel's return. EXPIRE and admin REMOVE never touch an inventory, so they need no save (the finding listed them).
-- **Magic Bags / Accessory Bag.** Not blocked by default. The finding called bag sales a free-money exploit that breaks "no item or coin is ever created", but nothing is created:
+- **Magic Bags / Accessory Bag.** LOCKED 2026-09-25 (Skyy): blocked on the Auction House. The notes below are the earlier review, which left them tradeable. The finding called bag sales a free-money exploit that breaks "no item or coin is ever created", but nothing is created:
   - The seller hands over a crafted item and pays materials to craft another, as with any crafted item.
   - SkyySacks puts no metadata on bags, so the buyer opens their own pool. Nothing of the seller's moves.
   - "Coins can bypass collections early" is locked design, and blocking bags is Skyy's call.
