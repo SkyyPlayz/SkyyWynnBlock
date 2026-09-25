@@ -865,6 +865,21 @@ SkyyGuilds' guild ranks and SkyyIslands' island roles are different things and s
   start with `skyy:`, never touches `hytale:Admin` membership (op stays vanilla `/op`), and never edits `permissions.json` directly.
 - **A player has at most one `skyy:*` group**, always next to `hytale:Adventurer`. Assigning removes the other `skyy:*` groups. The default rank
   (`ranks.default`) is implicit: nobody is added to it; it is the rank shown when a player has no `skyy:*` group.
+- **Seeded ranks.** LOCKED 2026-09-25 (Skyy): a new `ranks.properties` seeds **Member**, **Admin**, and **Developer**. Was: only Member. Member stays the default rank (`ranks.default=member`): no prefix, no grants, no engine group. Admin and Developer sit above Member on the ladder, staff on, and stay short of full op. SkyyRanks 0.1 still writes only Member. A file that already has only Member keeps only Member until Admin and Developer are added.
+
+  | | Member | Admin | Developer | Owner / op |
+  |---|---|---|---|---|
+  | Who | Every player with no Skyy rank | Day-to-day staff | Staff who also manage ranks | The server owner |
+  | Group | none (the default rank) | `skyy:admin` | `skyy:developer` | `hytale:Admin`, not a Skyy rank |
+  | Staff flag | no | yes | yes | not a Skyy rank |
+  | Chat prefix | none | `[Admin]` | `[Dev]` | none from SkyyRanks |
+  | Player commands | yes, through `hytale:Adventurer` | yes | yes | yes |
+  | Server Setup (`skyymenu.modconfig`) | no | yes | yes, inherited from Admin | yes, through `*` |
+  | Mod `.admin` nodes other than `skyyranks.admin` | no | yes | yes, inherited from Admin | yes, through `*` |
+  | Rank editor (`skyyranks.admin`) | no | no | yes | yes, through `*` |
+  | `*`, `/op`, or membership in `hytale:Admin` | no | no | no | yes |
+
+  Admin and Developer are close to the owner: they can open Server Setup and change mod settings. Developer also runs `/rankadmin`. Neither is op. SkyyRanks never adds anyone to `hytale:Admin` and these seeds never grant `*`. Op stays vanilla `/op`.
 - **Grants are additive in 0.1.** The editor offers: grant a node to a rank (e.g. `skyyessentials.fly`, `skyymenu.modconfig`,
   `skyyeconomy.admin`, future perk nodes), and a per-player deny (reliable, user level). Taking a command away from everybody is the owning
   mod's part switch, not a rank deny. The page explains this in one line.
@@ -1129,7 +1144,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 6. LOCKED 2026-09-25 (Skyy): NPC shops: buy and sell-back per item, infinite stock by default, optional limited stock with a restock timer. Yes, as described in 5.2. Infinite stock stays the default. That was already the default.
 7. LOCKED 2026-09-25 (Skyy): NPC shops in SkyyEconomy 0.1 or 0.2? 0.2, so 0.1 stays a clean merge. That was already the default.
 8. LOCKED 2026-09-25 (Skyy): Ranks: a new SkyyRanks mod, or inside SkyyEssentials? SkyyRanks. 0.1 is live. That was already the default.
-9. Which ranks come seeded? [Only the default rank "Member" (no prefix); owners make the rest in game.]
+9. LOCKED 2026-09-25 (Skyy): Which ranks come seeded? Member, Admin, and Developer. Was: only Member. Member stays the default rank, with no prefix and no grants. Admin and Developer are staff, close to the owner, and do not get full op (`*`, `/op`, or `hytale:Admin`). Developer also gets the rank editor. See 5.1. SkyyRanks 0.1 still seeds only Member. A file that already has only Member keeps only Member until Admin and Developer are added.
 10. Chat order when a player has a rank and a title? [`[Rank] [Title] Name`.]
 11. SkyyMenu 0.2 (player Settings) and 0.3 (Mods section) as two rounds, or one? [Two, smaller and easier to test.]
 12. Island template box size. [3 x 3 chunks around the island, y 96 to 191.]

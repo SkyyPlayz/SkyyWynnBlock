@@ -130,7 +130,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 6. LOCKED 2026-09-25 (Skyy): NPC shops have buy and sell-back per item, infinite stock by default, and optional limited stock with a restock timer. [yes, infinite stock stays the default]
 7. LOCKED 2026-09-25 (Skyy): NPC shops are in SkyyEconomy 0.2. [0.2, already the default]
 8. LOCKED 2026-09-25 (Skyy): ranks are in their own mod, SkyyRanks. 0.1 is live. [yes, already the default]
-9. Seeded ranks: only "Member"; you make the rest in game? [yes]
+9. LOCKED 2026-09-25 (Skyy): seeded ranks are Member, Admin, and Developer. Admin and Developer are close to the owner and do not get full op. Developer also gets the rank editor. Was: only Member. [Member, Admin, Developer; 0.1 still seeds only Member]
 10. Chat order `[Rank] [Title] Name`? [yes]
 11. Player Settings and Server Setup as two menu versions? [done as 0.2 + 0.3]
 12. Island template box size for the future template editor: 3 x 3 chunks, y 96-191? [yes]
