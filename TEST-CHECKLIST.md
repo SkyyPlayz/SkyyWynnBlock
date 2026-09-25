@@ -201,8 +201,9 @@ None left. The 10,000 starter coins are a real feature (kept).
 - [ ] As a normal player without a mod's permission, click that mod's entry: the menu stays open and shows 'You do not have permission for /x (node). Ask an admin.'
 - [ ] Join with a new account and a full inventory: you get the 'inventory full' message. Free a slot, disconnect and reconnect within 30 seconds: the menu item should arrive about 4 seconds after joining (this is the finding 5 fix).
 
-## SkyyClasses 0.1.1 (not deployed yet)
-- [ ] Bomb test (finding 1): as a Berserker, throw a Weapon_Bomb at an NPC. Try it with a stack in hand and also with your last bomb, then swap to your axe before it explodes. Expect no damage and the chat line 'No class can fight with bombs yet'. Then set unassignedBlocked=false, run /classadmin reload, and the bomb should hurt.
+## SkyyClasses 0.1.1 (historical spike — not the current jar)
+0.1.2+ removed Berserker and set `ALLOW_SWITCH=false` (no paid class switch). Current code is 0.1.4 and still has no Berserker. Design as of 2026-09-24 wants Berserker back, status PENDING — these steps are not a test of that future class. "As a Berserker" below only applied to the 0.1.1 jar.
+- [ ] Bomb test (finding 1): as a Berserker (0.1.1 jar only), throw a Weapon_Bomb at an NPC. Try it with a stack in hand and also with your last bomb, then swap to your axe before it explodes. Expect no damage and the chat line 'No class can fight with bombs yet'. Then set unassignedBlocked=false, run /classadmin reload, and the bomb should hurt.
 - [ ] Arrow swap test: as a Warrior, fire a shortbow at an NPC and swap to a sword before the arrow lands. Expect 0 damage and 'Only Archers can use bows'. About 10 s later (or once the arrow is gone), sword hits work again.
 - [ ] Archer control test: an Archer's shortbow/crossbow hits do damage. Kunai thrown by an Assassin do damage. A Warrior throwing their LAST kunai gets no damage.
 - [ ] Legacy projectile test (finding 2): as an Archer, charge-throw a spear (a Warrior weapon) and log out or change world while it flies. It should deal no damage.

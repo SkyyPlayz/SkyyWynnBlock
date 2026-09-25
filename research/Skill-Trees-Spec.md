@@ -56,7 +56,7 @@ Jar checked: `...\game\latest\Server\HytaleServer.jar`. Our code checked: `SkyyS
 
 **What we take from each:**
 - **HOTM / HotF:** tokens choose, a second currency grinds, a full free reset keeps tier progress, and one template serves several skills.
-- **Garden:** Farming's real SkyBlock progression is per-crop fortune. Our Farming tree turns that into crop-family "Mastery" nodes (S6, S7, S8, S10).
+- **Garden:** Farming's real SkyBlock progression is per-crop fortune. Our Farming tree turns that into crop-family "Mastery" nodes (S6, S7, S8, S10). This row is SkyBlock research. SkyWynn's dedicated Garden island is **parked** (2026-09-24); farming stays on the main islands. The node name "Garden Mastery" (S8) is a crop-family node, not a commitment to build that island.
 - **mcMMO:** its signature gathering ability (Super Breaker, Tree Feller, Green Terra) becomes our tier-6 capstone. mcMMO hands it out early (level 5); we save it for tier 6 so it is the tree's big goal. The capstone is passive with a cooldown, because active ability keys are not verified (section 7).
 
 ---

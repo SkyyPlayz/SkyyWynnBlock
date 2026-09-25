@@ -5,7 +5,7 @@
 
 Guilds are in the **core loop with parties**. They are not Phase 7 and not a "later phase" system.
 
-Parties and guilds both show up in P1, next to skills, collections, and the coin bypass. `SkyyParty` is the party mod already in the roster. Guilds build on that, they do not replace it.
+Parties and guilds both show up in P1, next to skills, collections, and the coin bypass (tiered as of 2026-09-24: early game and the first half of mid game, then a buy-and-sell wall). `SkyyParty` is the party mod already in the roster. Guilds build on that, they do not replace it.
 
 ## Parties (already locked, still core)
 

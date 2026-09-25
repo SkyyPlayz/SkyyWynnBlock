@@ -5,7 +5,7 @@
 Tags: **VERIFIED** = seen in a source, the game jar, the game assets or our code. **UNVERIFIED** = reported but not confirmed, or sources disagree.
 Hytale feasibility tags: **VERIFIED hook** (the engine piece exists and we know how to use it) / **needs a test** (the pieces exist, but we haven't proven them in game) / **not possible**.
 
-**In one breath:** SkyBlock has no Exploration skill. It pays for exploring with scattered side systems (Fairy Souls, warps, coin hunts). Wynncraft treats exploring as its biggest XP source (Discoveries plus Caves). Hytale already has a built-in "you discovered a zone" banner we can listen to. It only works on generated worlds, though, so SkyWynn's hand-built island chain will need its own list of discovery spots.
+**In one breath:** SkyBlock has no Exploration skill. It pays for exploring with scattered side systems (Fairy Souls, warps, coin hunts). Wynncraft treats exploring as its biggest XP source (Discoveries plus Caves). Hytale already has a built-in "you discovered a zone" banner we can listen to. It only works on generated worlds, though, so the server's hand-built island chain will need its own list of discovery spots. (2026-09-24: solo players are planned to get that chain from SkyyWorldGen, a World Gen 2 mod that is not started. Whether generated zones even work there is open research, so do not assume the engine banner covers solo.)
 
 ---
 

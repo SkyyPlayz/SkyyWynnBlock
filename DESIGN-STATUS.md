@@ -1,4 +1,4 @@
-# SkyWynn - design status (2026-09-24)
+# SkyWynn - design status (2026-09-24, owner decisions the same day)
 
 A plain-language snapshot for planning sessions. SkyWynn is a Hytale server pack that blends Hypixel SkyBlock (private island, skills,
 collections, bags, bazaar, accessories) with Wynncraft (classes, a chain of zone islands, quests, dungeons). It is built as standalone
@@ -10,10 +10,15 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
 ## What a player can do (live now or in the next deploy)
 
 **Profiles and classes**
-- Up to 4 profiles per player, SkyBlock style. Each profile is a full separate save: its own class, island, inventory, coins, bank, bags,
+- Design default is **6 profiles** per player (2026-09-24, raised from 4), SkyBlock style. There will be in-game ways to raise that cap;
+  the method is not chosen yet. **Code follow-up:** SkyyProfiles 0.1 still caps at 4 (`DEF_MAX_PROFILES = 4`). Do not change the jar in a docs pass.
+- Each profile is a full separate save: its own class, island, inventory, coins, bank, bags,
   skills, collections, accessories and skill trees. Creating a profile is where you pick your class (Archer, Warrior or Mage), and it is locked.
 - Switching profiles swaps the inventory and sends you to that profile's island; it is crash-safe.
 - Classes lock the combat path only: each class can only fight with its own weapons (a popup shows the weapon and why). Gathering is open to all.
+- Launch classes in the jar: Archer, Warrior, Mage. Assassin and Shaman are later. **Berserker is back on the roster, status PENDING**
+  (owner wants it; details and timing wait on a talk with the builder — not placed before or after Assassin/Shaman).
+  **Code follow-up:** SkyyClasses 0.1.4 has no Berserker. 0.1.2+ already set `ALLOW_SWITCH=false` (the paid class switch is gone). Adding Berserker is future code, not a return to the 0.1.1 spike.
 
 **Islands**
 - A private island per profile (created on first `/island`), a shared hub, visiting and co-op invites. Visitors can look but not touch.
@@ -24,7 +29,7 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
 - Acrobatics (mcMMO style): running, jumping, dodging and big survived falls level it; speed, jump height, less fall damage.
 - Class weapon skills: Archery, Swordsmanship, Sorcery (combat XP goes to your class's weapon skill; no shared Combat skill).
 - Alchemy: brew at the Alchemy Bench; potions last longer as you level.
-- Smithing: smelting ore into bars at a furnace (later: reforging and powders).
+- Smithing: smelting ore into bars at a furnace (later: reforging and powders). A higher Smithing level will also raise a **smithing rarity** stat (better chance to craft a higher rarity). That stat is not in the live skill.
 - Cooking: food you cook carries a Grade from your Cooking level - 2x stronger and longer at level 50, 4x at 100. The Campfire accessory
   is an emergency cook (half XP, 75% of the bonus).
 - Exploration: first-time world chests, walking new ground, discovering Hytale's zones; +max Stamina per level; titles; no XP boosters.
@@ -34,8 +39,13 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
   free respec. The Exploration tree is a first draft (most slots "coming later").
 
 **Collections (SkyBlock style, `/collections`)**
-- About 100 item collections (logs per wood type, stone, ores, crops, mob drops); tiers pay coins, skill XP and recipe unlocks; early tiers
-  can be bought with coins (the coin bypass).
+- About 100 item collections (logs per wood type, stone, ores, crops, mob drops); tiers pay coins, skill XP and recipe unlocks.
+- **Coin-bypass is tiered (2026-09-24):** coins can bypass collections in the early game and the first half of mid game. Toward late game
+  those items can no longer be bought or sold (bazaar/market), so that progression is earned. Every gear item has a level requirement
+  (which level type is still open).
+  **Open:** the exact cutoff per collection and tier, and which level type gates an item (skill vs class vs combat level).
+  **Code follow-up:** SkyyCollections 0.2 still sells bypass on the older per-curve walls (Bulk through V, Standard through IV, Rare through III,
+  Elite never). That is not the new cutoff, and it does not take items off the market. SkyyBazaar 0.1.1 has no late-game sell wall.
 
 **Bags, crafting and economy**
 - Magic bags (Mining, Foraging, Farming, Combat) pool matching pickups; `/craft` crafts from inventory + bags with tabs Crafting, Smithing
@@ -57,14 +67,21 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
 - **Player Settings menu**: switch each kind of chat notification on or off.
 - **Bags**: smelted bars go in the Mining bag; all bag tabs always shown; bag sizes will come from collections.
 - **Exploration backbones**: an island checklist and admin-placed discovery spots, so a server only has to add content.
+- **Gear (`SkyyGear-Plan.md`, locked 2026-09-24, not built):** every gear item has a level requirement and a rarity tier. Higher Smithing = higher smithing rarity = better odds of a higher-rarity craft. Higher rarity = better reforge rolls. Mobs drop unidentified weapons and armor. Combat armor and weapons copy Wynncraft. Gathering gear is SkyBlock-style farming and foraging sets (mining likely the same). Wardrobe + loadouts save and quick-swap a set. A loadout saves armor, the Equipment bar (necklace, cloak, ring, belt; working name Equipment, name not final), and the selected Accessory Power buff. Pets join once pets exist. Placeholders are fine; nothing on the inventory screen. Identify is a `/identify` menu for now and an NPC later. It costs coins, scaling with rarity and level (formula open). Mob drops can be any rarity. Some sets are drop-only and some are craft-only. Sets have set bonuses. Accessory Power: each accessory has its own buff and adds power; total power feeds one selectable buff (Warrior and Elementalist are examples; the full list and numbers are open). **Stats (change note 9):** the five Wynn skill points are not the gear sheet. Combat, defence, and mana are locked in `SkyyGear-Plan.md`. Fortune from the earlier mix was not re-opened. The catalog's next blank table is Movement. Class skill trees are Borderlands-style research (Borderlands 4), not designed. SkyyRolls 0.1.3 still shows rolls immediately. None of the identify step, the Equipment bar, set bonuses, or the selectable Power buff is in a jar.
 
 ## Direction: our own content
-Eventually every mod in the pack is SkyWynn's own; third-party mods (crossbow tiers, saplings) are stopgaps. A custom gear line is planned: Wynncraft-style weapons (rolled IDs, powders, elements), SkyBlock-style tools (reforges, fortune) and armor - built on the item rolls + tooltip system that works now, and the source of Smithing XP from reforging and powders. We rebuild features ourselves rather than copying other authors' files. Draft plan: `SkyyGear-Plan.md`.
+Eventually every mod in the pack is SkyWynn's own; third-party mods (crossbow tiers, saplings) are stopgaps. The gear line is locked in `SkyyGear-Plan.md` (2026-09-24): combat armor and weapons copy Wynncraft (unidentified drops, level + rarity on every piece), gathering armor is SkyBlock-style farming and foraging sets (mining likely the same), and Smithing level feeds smithing rarity. It still sits on the item rolls + tooltip system that works now. Reforging and powders remain later Smithing XP. We rebuild features ourselves rather than copying other authors' files.
 
 ## Later (needs the server / the island chain)
 Discovery and secret spots, island arrival, dungeons, Echo Shards (void shards; half = no coin loss when falling into the void, all = creative
 flight on your island), island completion, zone hunts, town warps (starter town free, others via quests / scrolls), lootrun camps, map reveal,
-cosmetics, Hunting, Fishing, Taming / pets, Dungeoneering, territory war, a world gen 2 floating-islands world.
+cosmetics, Hunting, Fishing, Taming / pets, Dungeoneering, territory war.
+
+**Island chain (2026-09-24).** The spine is unchanged: one floating island per zone. Much of it will be **server-side** (hand-built shared worlds).
+For **solo** players, a new mod is planned: **SkyyWorldGen** (name TBD). It would use Hytale's World Gen 2 to auto-generate the world as flying
+islands split by zone. Status: planned, not started. Whether World Gen 2 can do that is an open research item.
+
+**Garden is parked.** The dedicated farming island is on the back burner. Farming stays on the main islands (private island and the zone chain) for now.
 
 ## Open questions (Skyy + design)
 1. **Bags:** should the Mining bag upgrades come from the Cobblestone or the Iron collection? Which collection grows the Foraging, Farming and
@@ -78,8 +95,16 @@ cosmetics, Hunting, Fishing, Taming / pets, Dungeoneering, territory war, a worl
 5. **Campfire accessory:** it gives only the guaranteed Grade (no skill-tree Grade chances or extra-dish perks) - right for an emergency cook?
 6. **Islands:** what should visitors be allowed to use by default (today: doors only)? The island settings menu will make it the owner's call.
 7. **Exploration:** what else should level it past about level 25 (it is one-time only for now)? The rest of the Exploration tree.
-8. **Accessories:** Endurance / Intelligence talismans flat or percent; the accessory power questions in `SkyyAccessories-Plan.md`.
+8. **Accessories:** Endurance / Intelligence talismans flat or percent. The shape of Accessory Power is locked (own buff plus one selectable buff that scales with total power). Still open in `SkyyAccessories-Plan.md`: the full buff list, the numbers, and the older draft questions (AP-by-rarity, tuning, slot prices).
 9. **Classes:** Assassin and Shaman design (Shaman's weapons and skill name); the ability system waits on Hytale's Chapter 1 runes.
+   **Berserker** is a separate pending item (2026-09-24): the owner wants it back and needs to talk with the builder before any design or
+   timing. Do not invent it, and do not assume it ships before or after Assassin/Shaman.
+10. **Profile cap:** how does a player raise the cap above the new default of 6? (Method TBD. Code still enforces 4.)
+11. **Coin-bypass cutoff:** where, per collection and per tier, does the late-game wall start (no more buy or sell on the bazaar/market)?
+    Which level type gates items — skill, class, or combat level?
+12. **World Gen 2:** can it auto-generate a world of flying islands split by zone? That research gates SkyyWorldGen. Not started.
+13. **Gear (open):** which level type gates a gear item (skill, class, or combat)? Exact rarity names and colours (Wynn's list vs SkyyRolls Common..Legendary)? The Equipment bar's final name? The identify cost formula (coins that scale with rarity and level are locked)? Powder slots and how powders drop? Bazaar vs auction house for rolled items? Combat, defence, and mana are marked in `SkyyGear-Stat-Catalog.md` (change note 9). The next blank table is Movement, then gathering, loot, powers, and Major IDs. Still open inside that pass: per-element main-attack and spell % (leaning skip), Reflection, life-steal numbers, magic-using classes for Mana Regen, and the amounts for Overall Level and skill upgrades. The SkyWynn Accessory Power buff list and its numbers stay open. The Hypixel list in the catalog is research.
+14. **Class skill trees (open research):** Borderlands-style, not a straight line. Read the Borderlands 4 notes in `SkyyGear-Plan.md` (three trees, row gates, branches and capstones, respec). Do not design SkyWynn trees yet. Class roles, including a later Priest, are also open.
 
 ## Not yet seen in game (first things to watch in the next test)
 Rolls on item tooltips, the HUD glow and colours, Party and Guild widgets, the island starter kit fix, Exploration chests / titles / zones,

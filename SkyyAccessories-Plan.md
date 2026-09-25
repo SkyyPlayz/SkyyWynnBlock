@@ -3,6 +3,8 @@
 
 **Lock (2026-09-23 batch 2):** the accessory bag and magical power are **core**, not a later-game system. They ship with the core loop (`SkyWynn-Master-Plan.md` P1, `SkyWynn-Decisions.md` 5.10). The numbers below are still a draft. Gear also has rarity and stats on every item, and a reforge swaps bonuses (rows 5.1, 5.3–5.5); that layer is core too, and it is not this bag.
 
+**Lock (2026-09-24, Decisions change note 8, `SkyyGear-Plan.md` lock 14):** each accessory gives its own buff and also adds accessory power. Total power feeds one selectable buff. More power means a stronger buff. Locked examples: **Warrior** (strength as a damage modifier, plus a small amount of crit chance, crit damage, health, and defence) and **Elementalist** (all elemental damage types, and all elemental resistance). More options are TBD. A loadout saves the selected buff, along with armor and the Equipment bar (necklace, cloak, ring, belt — working name Equipment, name not final). That bar is not this bag. The crystal table, the ln curve, tuning, AP-by-rarity, and the slot prices below stay a draft. They are not the locked buff list or the locked numbers.
+
 ## 1. Accessory Power (AP)
 Each accessory in the bag gives AP by rarity; only the best item per family counts (the bag already hands back lower tiers).
 
@@ -26,12 +28,12 @@ AP gives no stats itself. It feeds two things, both in the accessory percent lay
 | Hawkeye | Archer | Damage 8%, Crit Chance 3%, Speed 3% |
 | Bulwark | Warrior | Health 10%, Defense 10%, Damage 4% |
 | Shadowstep | Assassin | Crit Damage 15%, Speed 4%, Health -3% |
-| Bloodrage | Shaman (later) | Damage 12%, Health 5%, Defense -4% |
+| Bloodrage | Shaman (later) — may point back at Berserker, pending | Damage 12%, Health 5%, Defense -4% |
 | Arcane | Mage | Mana 15%, Ability Damage 6% |
 
 Negative stats follow your gear trade-off rule. Balanced is unlocked from the start; your class crystal unlocks at class skill 10. Later: "Stone" upgrades for 9 of a rare boss drop (like Hypixel's Stone Powers).
 
-Class crystals follow Wynn's five (Warrior, Archer, Mage, Assassin, Shaman — `SkyyClasses-Plan.md`). Bloodrage's class column was drafted as Berserker; the 2026-09-23 roster lock points it at Shaman, which is a later class. The numbers are still a draft.
+Class crystals follow the class roster in `SkyyClasses-Plan.md` (Warrior, Archer, Mage, Assassin, Shaman, plus Berserker once that class is no longer pending). Bloodrage's class column was drafted as Berserker. The 2026-09-23 roster lock pointed it at Shaman, a later class. **2026-09-24:** Berserker is back on the roster, status PENDING (the owner wants it; details and timing wait on a talk with the builder). Bloodrage **may point back at Berserker**, pending that talk. Until then the table still shows Shaman, and the numbers are still a draft. Do not retune Bloodrage in this pass.
 
 **Tuning points.** 1 point per 10 AP, spent in `/acc tune`, free reset. Per point: Health or Defense +0.25%, Damage +0.15%, Crit Chance +0.1%, Stamina or Mana +0.5%, Speed +0.1% (max +5% speed from tuning).
 
