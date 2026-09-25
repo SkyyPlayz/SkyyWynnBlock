@@ -763,7 +763,7 @@ Make configurable later: per-collection bypass and the level walls (open design,
 `craftSearch` bool true (L; binding `reload:SackCfg.reload`: the value lives in an `AtomicBoolean` `SEARCH`, not a `field:` type, and
 `SackCfg.reload()` is the mod's own self-poll routine, so calling it after the write makes the change immediate instead of within ~10 s). Make configurable (A, D): bag caps `bag.small` 640 / `bag.medium` 2240 /
 `bag.large` 20160 (locked design numbers, so the default must stay; lowering never deletes pooled items, it only stops intake), `QUEUE_CAP`
-256, `FUEL_CAP` 1000, `OUT_CAP` 20000 (A). Not ours: processing times (vanilla bench assets).
+256, `FUEL_CAP` 1000, `OUT_CAP` 20000 (A). LOCKED 2026-09-25 (Skyy): changing the Furnace and Tannery caps does not ask for a confirm. They stay quick to tweak. That was already the default. Not ours: processing times (vanilla bench assets).
 
 ### 4.13 SkyyCooking [0.1.1] (`cooking.properties`, `reload:`)
 `enabled` (part), `maxGrade` int (1 to the jar's real max; `ro` note "can only lower the cap"), `creativeGrades` bool, `xpMultiplier` dec 1.0 (D),

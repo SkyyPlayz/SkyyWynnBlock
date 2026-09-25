@@ -142,7 +142,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 18. LOCKED 2026-09-25 (Skyy): the warps page does not move the world spawn. Was: yes, with a confirm. World spawn movement is an owner/ops-only command, for example /setspawn. [command, not the warps page]
 
 ## Server Setup pages (round 4, live)
-- SkyySacks: should changing the Furnace / Tannery caps ask for a confirm (danger row)? [no confirm]
+- LOCKED 2026-09-25 (Skyy): changing the Furnace / Tannery caps does not ask for a confirm. They stay quick to tweak. [no confirm, already the default]
 - SkyyParty: should the "party members" switch also hide "X kicked Y" and "X invited Y" lines? [no - always shown]
 - SkyyGuilds: `onlineMessages` now treats off / no / 0 as OFF like every other on/off setting (before: only the word false). OK? [yes]
 - Profiles: the default cap is now 6 (your 2026-09-24 decision); lowering it never deletes a profile.
