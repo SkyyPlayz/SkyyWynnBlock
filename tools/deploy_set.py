@@ -47,6 +47,27 @@ SET = [
 # third-party mods that are part of the pack (enabled in the world by their manifest key; their files are NOT in this repo -
 # a server owner installs them from their authors, see PACK.md). Never disabled by this script.
 PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees"]
+# Skyy mods that were MERGED into another mod and must be switched OFF in the world config on every deploy (their jar may stay in Mods;
+# a disabled key is not loaded). Without this, deploy_set only disables older versions of the SAME mod name, and a retired mod would keep
+# loading next to its replacement (duplicate commands, two systems). Example: SkyyRolls once SkyyGear replaces it; SkyyCoins, SkyyBank,
+# SkyyBazaar and SkyyAuctions once SkyyEconomy replaces them. A name here must not also be in SET.
+RETIRED = []
+
+
+def retire_in_world(world, mod):
+    """Disable every world-config key 'Skyy:<ver> <mod>' (all versions). Returns how many were switched off."""
+    import json
+    cfg = os.path.join(B.USERDATA, "Saves", world, "config.json")
+    d = json.load(open(cfg, encoding="utf-8"))
+    mods = d.setdefault("Mods", {})
+    n = 0
+    for k in list(mods):
+        if k.startswith("Skyy:") and k.endswith(" " + mod) and mods[k].get("Enabled"):
+            mods[k] = {"Enabled": False}
+            n += 1
+    json.dump(d, open(cfg, "w", encoding="utf-8"), indent=2)
+    print("world", world, "retired", mod, "(%d key(s) switched off)" % n)
+    return n
 
 
 def server_running():
@@ -84,6 +105,10 @@ def main():
         print(__doc__)
         print("unknown argument(s): %s - nothing done" % " ".join(bad))
         return 2
+    clash = [m for m in RETIRED if m in [x[0] for x in SET]]
+    if clash:
+        print("STOP: retired mod(s) still in SET: %s" % ", ".join(clash))
+        return 1
     missing = []
     plan = []
     for mod, ver in SET:
@@ -118,6 +143,8 @@ def main():
         B.enable_in_world(WORLD, "Skyy:%s %s" % (ver, mod), disable_prefix="Skyy:")
     for key in PACK_THIRD_PARTY:
         B.enable_in_world(WORLD, key)
+    for mod in RETIRED:
+        retire_in_world(WORLD, mod)
     print("deployed %d mods. Start the world and watch the server log for every '[Skyy...] ready' line." % len(plan))
     return 0
 
