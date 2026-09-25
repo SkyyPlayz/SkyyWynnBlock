@@ -940,19 +940,19 @@ stocked-shop split, research "Server tools" 2). Infinite stock stays the default
 - **Shared NPC claim (for SkyyQuests later):** bridge `npc:owner` = ConcurrentHashMap `uuidString -> "SkyyEconomy|shop|<id>"`, created
   with `putIfAbsent`. Each mod reacts only to its own claims, so a quest giver and a shop can never both answer one NPC.
 
-### 5.3 NPC quests -> future **SkyyQuests** (NOT buildable yet: only the hooks now)
+### 5.3 NPC quests -> future **SkyyQuests** (NOT buildable yet)
 
 Unlike the NPC shops above, nothing here can be built or used in game until SkyyQuests has its own spec (section 7 step 8).
 
 The BetonQuest lesson (research "Server tools" 3): a click editor is right for linear quests (talk, deliver, kill N, gather N, reach a place)
 and wrong for branching scripts. So SkyyQuests will ship an in-game **linear** quest builder and keep the file
-(`Skyy_SkyyQuests/quests/<id>.properties`) as the escape hatch for anything bigger. Nothing is built now except:
+(`Skyy_SkyyQuests/quests/<id>.properties`) as the escape hatch for anything bigger. Nothing is built now. When SkyyQuests ships:
 - **`quest:fn:event`** (future, owned by SkyyQuests): `Function apply(new Object[] { UUID player, String type, String id, Long amount,
   String world })` -> ignored return. Types: `kill` (NPC role), `gather` (block id), `collect` (item id), `craft`, `smelt`, `cook` (item id),
   `reach` (zone or region id), `talk` (npc id), `buy` / `sell` (shop id), `level` (skill id, amount = level). Adopters call it next to hooks
   they already have, through a cached lookup that costs one map read when SkyyQuests is absent (the `notifyOn` style). First callers when
   SkyyQuests exists: SkyySkills (kill, gather, level), SkyyCollections (collect), SkyySacks (craft, smelt), SkyyCooking (cook),
-  SkyyExploration (reach), SkyyEconomy (talk, buy, sell). **Do not add the calls before SkyyQuests has a spec** `[SKYY?]`.
+  SkyyExploration (reach), SkyyEconomy (talk, buy, sell). LOCKED 2026-09-25 (Skyy): the `quest:fn:event` calls ship with SkyyQuests, not now. That was already the default.
 - **Quest givers** reuse the shop NPC code (placement, nameplate, damage lock, use hook, restart self-heal, `npc:owner`). Put that code in a
   second generator, `tools/skyynpc.py`, when SkyyQuests starts, so both jars carry the same classes.
 - **Rewards** go through bridges that exist today: `coins:fn:add`, `skill:fn:addxp`, item stacks.
@@ -1160,7 +1160,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 11. LOCKED 2026-09-25 (Skyy): SkyyMenu 0.2 (player Settings) and 0.3 (Server Setup) as two rounds, or one? Two, done as 0.2 + 0.3. That was already the default.
 12. LOCKED 2026-09-25 (Skyy): Island template box size? The default stays 3 x 3 chunks around the island, y 96 to 191. That was already the default. Future, to build: players upgrade 3 x 3, then 4 x 4, 5 x 5, 6 x 6, 7 x 7, 8 x 8, up to 9 x 9. The height stays y 96 to 191. See 5.5.
 13. LOCKED 2026-09-25 (Skyy): SkyyClasses' class-switch settings while switching is locked? Greyed out. Players can see the option and cannot use it. Was: hidden, with one read-only line. Future, to build: class changes unlock later through a special item earned from a quest, or a similar progression gate. See 4.15. SkyyClasses 0.1.6 still leaves `switchCost` and `cooldownMinutes` off the page.
-14. Quest hooks: add the `quest:fn:event` calls now or only when SkyyQuests has a spec? [Only with its spec.]
+14. LOCKED 2026-09-25 (Skyy): Quest hooks: add the `quest:fn:event` calls now or only when SkyyQuests has a spec? With SkyyQuests, not now. That was already the default.
 15. Should rank grants later carry perks (extra vault pages, bigger parties)? [Not in 0.1; the marker node `skyyranks.rank.<id>` makes it possible later.]
 16. Raising the profile cap above 6: no default. HANDOFF says to wait for Skyy's method; a rank perk node would be one option. (Listed in
     section 0 as a known gap: today there is no in-game or file way above 6.)
