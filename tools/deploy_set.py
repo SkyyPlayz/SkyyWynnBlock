@@ -33,6 +33,8 @@ SET = [
     # the next save, so do not go back to SkyyTrees 0.2 after it ran. SkyyIslands 0.5 migrates island files at start (0.4.x copies
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
     ("SkyyVault", "0.1"),
+    # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
+    ("SkyyAuctions", "0.1"),
 ]
 # third-party mods that are part of the pack (enabled in the world by their manifest key; their files are NOT in this repo -
 # a server owner installs them from their authors, see PACK.md). Never disabled by this script.
