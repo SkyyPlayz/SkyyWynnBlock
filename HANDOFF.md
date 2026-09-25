@@ -21,6 +21,10 @@
 **Answered 2026-09-25 (Skyy, in chat; SkyWynn-Decisions change notes 2026-09-25 #5):** rarities = Wynn (Normal, Unique, Rare, Legendary,
 Fabled, Mythic + Set); level requirement = the player's class weapon skill; SkyyGear REPLACES SkyyRolls; mob AND world-chest gear drops
 unidentified, old gear stays plain until reforged (rolled items keep their rolls).
+**GEAR LEVEL CAP BY GEAR TYPE (Skyy, 2026-09-25):** your CLASS level (class weapon skill) caps COMBAT gear; your MINING level caps MINING
+gear; your FORAGING level caps FORAGING gear; FARMING caps farming gear; etc. (fishing and others later). So every gear piece carries a
+GATE SKILL (combat -> the class weapon skill; mining/foraging/farming gear -> that gathering skill), and the level check is generic. Stage 1
+builds combat gear only, but the data model and the check must already support the gathering gate skills.
 
 **STILL OPEN.** Do not block the build on these. Do not invent them.
 
