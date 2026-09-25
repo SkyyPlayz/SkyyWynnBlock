@@ -68,7 +68,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   own combat swing-speed stat, untouched by Chopping Speed or Heavy Hatchet. [0.2.3 still speeds every hatchet swing, including hits on
   mobs, and has no combat swing-speed stat yet. Weapon axes are already on other roots, so Chopping Speed does not touch them today]
 - LOCKED 2026-09-25 (Skyy): Heavy Pick applies to ore and rock (+40% breaking power at max). Was ore only.
-- Heavy Hatchet up to +100% so top hatchets cut a log in one hit? [no]
+- LOCKED 2026-09-25 (Skyy): Heavy Hatchet max is +100% wood breaking power, so a top hatchet (0.5 power) cuts a log in one hit. Was no,
+  keep +40%. [new-file `Foraging.FSpeed2.per=0.05`; a file already on 0.02 keeps +40% until that line is set to 0.05. Chopping Speed
+  swing stays +25%. This still must not change weapon-axe combat speed]
 - Faster pickaxe hits on mobs stay accepted. Hatchet swings on mobs do not: see the Heavy Hatchet hard rule above. [pickaxe yes; hatchet no]
 - A Farming sickle speed node later? Accessories/gear adding swing speed later? [not now]
 - One-time chat notice about the change + free respec. [yes]

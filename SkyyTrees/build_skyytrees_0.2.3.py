@@ -33,7 +33,7 @@ derived from 0.2.1 by tools/trees_0_2_2_patch.py, 0.2.1 from 0.2 by tools/trees_
       until that line is set to 0.016. If +40 % is still too slow, vanilla swing timing may need adjusting. NOW "+%V pickaxe swing speed".
     - Mining S10 MHeavy "Heavy Pick": DMG (+2 % breaking power per level, +40 %). LOCKED Skyy 2026-09-25: rock and ore (was ore only).
     - Foraging S1 FSpeed "Chopping Speed": SWING like Mining Speed, for hatchets.
-    - Foraging S10 FSpeed2 renamed "Heavy Hatchet" (was Chopping Speed II): unchanged DMG on wood (+40 %). Id and saved key stay FSpeed2.
+    - Foraging S10 FSpeed2 renamed "Heavy Hatchet" (was Chopping Speed II). LOCKED Skyy 2026-09-25: per 0.05 = +100% wood breaking power at 20, so a 0.5-power hatchet one-chops a log (was per 0.02, +40%). A file already on Foraging.FSpeed2.per=0.02 keeps +40% until that line is set to 0.05. Id and saved key stay FSpeed2. Breaking power on wood only; it does not change weapon-axe combat swing speed.
     - TreeFx.dmgBonus: rock no longer gets MSpeed, wood no longer gets FSpeed. LOCKED Skyy 2026-09-25: rock and ore -> + MHeavy, Woods -> + FSpeed2.
     - TreeFx.value(SWING) = the EFFECTIVE fraction min(floor(per x level x 100 + 1e-6), 40) / 100 (whole percents, capped at +40 %), so the
       page and tree:fn:bonus("Mining.MSpeed") show what really applies; TreeDefs.valueText shows a whole percent, " (max)" at 40.
@@ -614,7 +614,8 @@ NODES = {
   ("FCoins", "Pocket Change", "Ingredient_Bar_Gold", "COINS", 10, 0.002, 0, "%V chance per log for coins equal to your Foraging level", PAIDF + " - needs SkyyCoins", "", ""),
   ("FSpread", "Timber Spread", "Wood_Birch_Trunk", "SPREAD", 10, 0.03, 0, "%V chance to also break 1 touching log of the same kind", PAIDF + " - never placed logs", "", ""),
   ("FStride", "Woodland Stride", "Armor_Leather_Light_Legs", "MOVE", 10, 0.01, 0, "+%V move speed while holding a hatchet", FLAT, "", ""),
-  ("FSpeed2", "Heavy Hatchet", "Tool_Hatchet_Mithril", "DMG", 20, 0.02, 0, "+%V breaking power on wood", "Wood blocks break in fewer hits (more damage per hit)", "", ""),
+  # LOCKED Skyy 2026-09-25: per 0.05 = +100% at 20 so a top hatchet one-chops a log. A file on 0.02 keeps +40%.
+  ("FSpeed2", "Heavy Hatchet", "Tool_Hatchet_Mithril", "DMG", 20, 0.05, 0, "+%V breaking power on wood", "Wood breaks in fewer hits. At max a top hatchet cuts a log in one hit", "", ""),
   ("FFortune2", "Fortune II", "Wood_Redwood_Trunk", "DD", 10, 0.02, 0, "+%V double-drop chance on logs - adds to Fortune", "Stacks with Foraging Fortune" + S04, "", ""),
   ("FFeller", "Tree Feller", "Tool_Hatchet_Adamantite", "FELLER", 5, 1.0, 0.0, "Breaks %V more logs beside it on the same level", "On a log that pays Foraging XP - same Y level only (Hytale fells the tree once that layer is cut) - natural trees - cooldown %C s", "", ""),
  ],
@@ -956,7 +957,7 @@ ADD023 = "\n".join([
 assert all(ord(ch) < 128 for ch in ADD023)
 assert "swing.enabled=true" in DEFAULTS and "swing.enabled=true" in ADD023 and DEFAULTS.count("swing.enabled=") == 1
 assert not [l for l in ADD023.splitlines() if not l.startswith("#") and l != "swing.enabled=true"]
-assert "Mining.MSpeed.per=0.016" in DEFAULTS and "Foraging.FSpeed.per=0.01" in DEFAULTS and "Foraging.FSpeed2.per=0.02" in DEFAULTS
+assert "Mining.MSpeed.per=0.016" in DEFAULTS and "Foraging.FSpeed.per=0.01" in DEFAULTS and "Foraging.FSpeed2.per=0.05" in DEFAULTS
 assert "Mining.MHeavy.per=0.02" in DEFAULTS and "# Foraging S10 Heavy Hatchet (tier V)" in DEFAULTS and "Chopping Speed II" not in DEFAULTS
 
 # ================= classes =================
