@@ -9,6 +9,7 @@ draft said "no lever". It was wrong, and section 9 explains why.*
 
 **LOCKED 2026-09-25 (Skyy):**
 - Mining Speed max bonus is **+40%** faster pickaxe swings (was +25%). A new `trees.properties` uses `Mining.MSpeed.per=0.016` (25 levels x 1.6% = 40%, a swing every 0.25 s, back to back). A file already on `0.01` keeps +25% until that line is set to `0.016`. If +40% is still too slow, vanilla swing timing may need adjusting. The engine does not go past +40% without re-timing the animation.
+- Heavy Pick applies to **ore and rock** (was ore only). +40 % breaking power at max, same as before. SkyyTrees 0.2.3 `dmgBonus` adds it for `Ore_` ids, Rocks, VolcanicRocks, and gather types that start with `Ore`.
 - Chopping Speed II stays renamed **Heavy Hatchet** (breaking power on wood). HARD RULE: hatchet swing-speed bonuses apply only to tree-breaking and wood-chopping. They must not change weapon-axe combat speed for Berserker or any combat class. Weapon axes get their own combat swing-speed stat, and Chopping Speed / Heavy Hatchet do not touch it. SkyyTrees 0.2.3 still speeds every `Hatchet_Attack` swing, including hits on mobs, and has no combat swing-speed stat yet. `Weapon_Axe_*` and `Weapon_Battleaxe_*` already use other roots, so Chopping Speed does not reach them today.
 
 **Build status (2026-09-25):** SkyyTrees 0.2.3 has been built from this spec: `tools/trees_0_2_3_patch.py` ->
@@ -229,12 +230,12 @@ proposed. Open question Q4.
 | Id | 0.2.2 | 0.2.3 name | kind, max, per | Now text (`%V`) | How text |
 |---|---|---|---|---|---|
 | `MSpeed` | Mining Speed: DMG 25 x 0.02 = +50 % breaking power on rock and ore | **Mining Speed** | SWING, 25, **0.01** (+25 %) | `+%V pickaxe swing speed` | `Less wait between pickaxe swings - more blocks per second, even when one hit breaks the block (any pickaxe, also on mobs)` |
-| `MHeavy` | Heavy Pick: DMG 20 x 0.02 on ore, "adds to Mining Speed" | **Heavy Pick** | DMG, 20, 0.02 (unchanged, +40 %) | `+%V breaking power on ore` | `Ore blocks only - ore breaks in fewer hits (more damage per hit)` |
+| `MHeavy` | Heavy Pick: DMG 20 x 0.02 on ore, "adds to Mining Speed" | **Heavy Pick** | DMG, 20, 0.02 (unchanged, +40 %) | `+%V breaking power on rock and ore` | LOCKED 2026-09-25: rock and ore. Was ore only. |
 | `FSpeed` | Chopping Speed: DMG 25 x 0.02 on wood | **Chopping Speed** | SWING, 25, **0.01** (+25 %) | `+%V hatchet swing speed` | `Less wait between hatchet swings - more logs per second (any hatchet, also on mobs)` |
 | `FSpeed2` | Chopping Speed II: DMG 20 x 0.02 on wood, "adds to Chopping Speed" | **Heavy Hatchet** | DMG, 20, 0.02 (unchanged, +40 %) | `+%V breaking power on wood` | `Wood blocks break in fewer hits (more damage per hit)` |
 
-- `TreeFx.dmgBonus`: drop `MSPEED` (rock) and `FSPEED` (wood). What stays is `ore → + MHEAVY` and `Woods → + FSPEED2`. The
-  `rock` local then goes unused.
+- `TreeFx.dmgBonus`: drop `MSPEED` (rock) and `FSPEED` (wood). LOCKED 2026-09-25: **rock and ore → + MHEAVY**, and `Woods → + FSPEED2`.
+  Rock is gather type `Rocks` or `VolcanicRocks`, an `Ore_` id, or a gather type that starts with `Ore` (the old Mining Speed rock set).
 - `TreeFx.value` for SWING returns the **effective** fraction: `min(floor(per x level x 100 + 1e-6), 40) / 100`. So
   `tree:fn:bonus("Mining.MSpeed")` and the page show what really applies. This follows the precedent of `FELLER_ALL` at the Feller
   max.
@@ -491,7 +492,7 @@ lower what `per` / `max` already control.
   - Custom `per`: kept, with the warning.
   - A second load does nothing.
 - `checkNode` asks first above 40 %. The row reads back its default. Export, then import preview says nothing to change.
-- `dmgBonus`: rock gets 0, ore gets MHEAVY, wood gets FSPEED2.
+- `dmgBonus`: LOCKED 2026-09-25, rock and ore get MHEAVY, wood gets FSPEED2. The 0.2.3 harness checked the older rule (rock gets 0).
 - The generated JSON parses. The python tree walk is correct for tiers 0..40.
 
 **B. In game (Skyy, after a deploy):**
@@ -507,8 +508,8 @@ lower what `per` / `max` already control.
 4. **Level 5** (+5 %). `/tree` shows "+5% pickaxe swing speed", and `/tree swing` says tier 5 (0.3333 s).
 5. **Hatchets.** Chopping Speed 25 on logs with a Cobalt hatchet: 2 hits per log, swings clearly faster. Heavy Hatchet 20 with an
    Iron hatchet: 3 hits instead of 4.
-6. **Heavy Pick** 20 with an Iron pick on iron ore: 3 hits instead of 4. Rock with a Copper pick: 3 hits (Mining Speed no longer
-   adds breaking power).
+6. **Heavy Pick** 20 with an Iron pick on iron ore: 3 hits instead of 4. LOCKED 2026-09-25: the same bonus applies to rock. A Crude
+   pick on rock goes from 4 hits to 3. A Copper pick on rock stays 3 hits (0.35 power x 1.40 still needs 3).
 7. **Switching.** Swap to a sword: normal sword speed. Swap back: fast at once (no 1 s delay).
 8. **Removal.**
    - Respec Mining: after one pause, back to 0.35 s.
@@ -532,7 +533,7 @@ lower what `per` / `max` already control.
 | # | Question | Default |
 |---|---|---|
 | Q1 | ANSWERED 2026-09-25: Mining Speed max is +40 % (0.25 s per swing, `Mining.MSpeed.per=0.016`). Chopping Speed stays +25 % until a later lock. If +40 % is still too slow, vanilla swing timing may need adjusting | was +25 % for both |
-| Q2 | Early tools on rock (Crude/Copper) are a little slower than with 0.2.2's +50 % breaking power (table 3.4). Should Heavy Pick also cover rock (+40 % on rock **and** ore)? | **No**, Heavy Pick stays ore-only. Adamantite+ picks one-shot rock anyway |
+| Q2 | ANSWERED 2026-09-25: Heavy Pick covers rock and ore (+40 % breaking power at max) | was: ore only |
 | Q3 | Heavy Hatchet (+40 % wood breaking power) cannot make top hatchets (0.5 power) one-chop a log. Raise it to +100 % at max so a maxed Heavy Hatchet one-chops logs with Cobalt+ hatchets (a strong endgame goal, big with Tree Feller)? | **No**, keep +40 % |
 | Q4 | More than +40 % ever (a copied, re-timed vanilla swing and a faster animation, Hylamity-style)? | **No** |
 | Q5 | ANSWERED 2026-09-25: faster pickaxe hits on mobs stay accepted. Hatchet swing speed is wood and trees only, and must not speed weapon-axe combat. Weapon axes get their own combat swing-speed stat | was: accept for both tools |

@@ -31,10 +31,10 @@ derived from 0.2.1 by tools/trees_0_2_2_patch.py, 0.2.1 from 0.2 by tools/trees_
     - Mining S1 MSpeed "Mining Speed": SWING, max 25, per 0.016 = +1.6 % pickaxe swing speed per level, +40 % at max (a swing every
       0.25 s instead of 0.35 s). LOCKED Skyy 2026-09-25 (was per 0.01, +25 %). A file already on Mining.MSpeed.per=0.01 keeps +25 %
       until that line is set to 0.016. If +40 % is still too slow, vanilla swing timing may need adjusting. NOW "+%V pickaxe swing speed".
-    - Mining S10 MHeavy "Heavy Pick": unchanged DMG (+2 % breaking power on ORE per level, +40 %); text "+%V breaking power on ore".
+    - Mining S10 MHeavy "Heavy Pick": DMG (+2 % breaking power per level, +40 %). LOCKED Skyy 2026-09-25: rock and ore (was ore only).
     - Foraging S1 FSpeed "Chopping Speed": SWING like Mining Speed, for hatchets.
     - Foraging S10 FSpeed2 renamed "Heavy Hatchet" (was Chopping Speed II): unchanged DMG on wood (+40 %). Id and saved key stay FSpeed2.
-    - TreeFx.dmgBonus: rock no longer gets MSpeed, wood no longer gets FSpeed: ore -> + MHeavy, Woods -> + FSpeed2 only.
+    - TreeFx.dmgBonus: rock no longer gets MSpeed, wood no longer gets FSpeed. LOCKED Skyy 2026-09-25: rock and ore -> + MHeavy, Woods -> + FSpeed2.
     - TreeFx.value(SWING) = the EFFECTIVE fraction min(floor(per x level x 100 + 1e-6), 40) / 100 (whole percents, capped at +40 %), so the
       page and tree:fn:bonus("Mining.MSpeed") show what really applies; TreeDefs.valueText shows a whole percent, " (max)" at 40.
     - Farming: no change (no speed node, no multi-swing cadence, every slot taken).
@@ -597,7 +597,8 @@ NODES = {
   ("MCoins", "Pocket Change", "Ingredient_Bar_Gold", "COINS", 10, 0.002, 0, "%V chance per block for coins equal to your Mining level", PAIDM + " - needs SkyyCoins", "", ""),
   ("MSpread", "Mining Spread", "Rock_Stone", "SPREAD", 10, 0.03, 0, "%V chance to also break 1 touching block of the same kind", PAIDM + " - never placed blocks", "", ""),
   ("MRunner", "Tunnel Runner", "Armor_Leather_Light_Legs", "MOVE", 10, 0.01, 0, "+%V move speed while holding a pickaxe", FLAT, "", ""),
-  ("MHeavy", "Heavy Pick", "Tool_Pickaxe_Mithril", "DMG", 20, 0.02, 0, "+%V breaking power on ore", "Ore blocks only - ore breaks in fewer hits (more damage per hit)", "", ""),
+  # LOCKED Skyy 2026-09-25: rock and ore (was ore only).
+  ("MHeavy", "Heavy Pick", "Tool_Pickaxe_Mithril", "DMG", 20, 0.02, 0, "+%V breaking power on rock and ore", "Rock and ore break in fewer hits (more damage per hit)", "", ""),
   ("MBars", "Prospector", "Ingredient_Bar_Iron", "ITEM", 10, 0.01, 0, "%V chance an ore also gives its smelted bar", "Rolls on every ore block that pays Mining XP (copper to adamantite)", "", ""),
   ("MVein", "Vein Burst", "Ore_Adamantite", "VEIN", 5, 2.0, 4.0, "Breaks up to %V more touching ore of the same kind", "On an ore block that pays Mining XP - cooldown %C s - never placed blocks", "", ""),
  ],
@@ -2170,8 +2171,9 @@ public static double dmgBonus(double[] v, @BTY@ bt) {
   String gt = @PKG@.TreeDefs.gatherType(bt);
   String id = @PKG@.TreeDefs.bid(bt);
   boolean ore = id.startsWith("Ore_");
+  boolean rock = ore || "Rocks".equals(gt) || "VolcanicRocks".equals(gt) || (gt != null && gt.startsWith("Ore"));
   double b = 0.0;
-  if (ore) b = b + v[@I_MHEAVY@];
+  if (rock) b = b + v[@I_MHEAVY@];
   if ("Woods".equals(gt)) b = b + v[@I_FSPEED2@];
   return b;
 }""")

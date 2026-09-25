@@ -67,7 +67,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   tree-breaking and wood-chopping. They must not change weapon-axe combat speed for Berserker or any combat class. Weapon axes get their
   own combat swing-speed stat, untouched by Chopping Speed or Heavy Hatchet. [0.2.3 still speeds every hatchet swing, including hits on
   mobs, and has no combat swing-speed stat yet. Weapon axes are already on other roots, so Chopping Speed does not touch them today]
-- Heavy Pick also on rock (helps early picks, which lost a little from the change)? [no, ore only]
+- LOCKED 2026-09-25 (Skyy): Heavy Pick applies to ore and rock (+40% breaking power at max). Was ore only.
 - Heavy Hatchet up to +100% so top hatchets cut a log in one hit? [no]
 - Faster pickaxe hits on mobs stay accepted. Hatchet swings on mobs do not: see the Heavy Hatchet hard rule above. [pickaxe yes; hatchet no]
 - A Farming sickle speed node later? Accessories/gear adding swing speed later? [not now]
