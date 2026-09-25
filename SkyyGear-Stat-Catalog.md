@@ -1,7 +1,7 @@
 # SkyyGear stat catalog
-*Research list, 2026-09-24. Combat, defence, mana, Movement, Gathering, Loot and luck, and XP and wisdom are marked in the collapsed section. From Other down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
+*Research list, 2026-09-24. Combat through Other are marked in the collapsed section. From SkyBlock accessory powers down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is Other.
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Change note 15 (2026-09-25) scraps the Other table. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is SkyBlock accessory powers.
 
 **Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter, Cooking Wisdom, Smithing Wisdom, Exploration Wisdom, Acrobatics Wisdom). Those are our locks, not wiki lines.
 
@@ -20,9 +20,9 @@ True Damage is in the decided section. It ignores Defence. True Defense, the sta
 ---
 
 <details>
-<summary><strong>Decided — combat through XP and wisdom</strong> (change notes 9–14). Next blank table is Other.</summary>
+<summary><strong>Decided — combat through Other</strong> (change notes 9–15). Next blank table is SkyBlock accessory powers.</summary>
 
-These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. XP and wisdom was locked 2026-09-25 (change note 14).
+These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. The Other table was scrapped 2026-09-25 (change note 15).
 
 ### Damage and crits
 
@@ -243,20 +243,22 @@ One Wisdom stat per skill we have. Combat Wisdom is one modifier for every class
 | Gather XP Bonus | Wynn | Scrap. Wisdom covers gathering XP. | Scrap |
 | Soul Point Regen | Wynn | Scrap. No soul points. | Scrap |
 
-</details>
+### Other
 
-## Other
+Scrap the whole table.
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
-| Heat Resistance | SB | Heat builds slower in the Magma Fields. | |
-| Cold Resistance | SB | Cold builds slower in the Glacite tunnels and mineshafts. | |
-| Respiration | SB | Longer breath underwater. Base 30. | |
-| Pressure Resistance | SB | Pressure hurts less while diving. | |
-| Rift Time | SB | Longer stay in the Rift before you are sent out. | |
-| Rift Damage | SB | More damage dealt inside the Rift. | |
-| Rift Intelligence | SB | More mana, and more mana regen, inside the Rift. | |
-| Hearts | SB | Extra hits you can take from some Rift creatures. | |
+| Heat Resistance | SB | Scrap. | Scrap |
+| Cold Resistance | SB | Scrap. | Scrap |
+| Respiration | SB | Scrap. | Scrap |
+| Pressure Resistance | SB | Scrap. | Scrap |
+| Rift Time | SB | Scrap. | Scrap |
+| Rift Damage | SB | Scrap. | Scrap |
+| Rift Intelligence | SB | Scrap. | Scrap |
+| Hearts | SB | Scrap. | Scrap |
+
+</details>
 
 ## SkyBlock accessory powers
 
