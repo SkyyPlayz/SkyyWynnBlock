@@ -72,7 +72,7 @@
 | Command | What it does |
 |---|---|
 | `/ah` (aliases `/auction`, `/auctionhouse`) | Opens the page on **Browse** (category All, sort Lowest price). |
-| `/ah sell <price>` | Subcommand `sell` with one required STRING arg. Takes the stack in the **active hotbar slot**. Default (`sellCommandOpensPage=true`): opens the **Create** view with that stack picked, the price filled in, the default duration and the fee preview, so **one click on Create BIN** lists it. With `false`, it lists straight from chat and replies with the fee and listing id. |
+| `/ah sell <price>` | Subcommand `sell` with one required STRING arg. Takes the stack in the **active hotbar slot**. Default (`sellCommandOpensPage=true`): opens the **Create** view with that stack picked, the price filled in, the default duration and the fee preview, so **one click on Create BIN** lists it. With `false`, it lists straight from chat and replies with the fee and listing id. LOCKED 2026-09-25 (Skyy): the page stays the default. |
 | `/ah sell <price> <duration>` | A usage variant of `sell` (description-only constructor + two `withRequiredArg`, added with `addUsageVariant`). The duration is `24`, `24h`, `30m` or `2d` and must match a configured preset, otherwise: "Pick one of: 1h 6h 12h 24h 48h". |
 | `/ah claim` | Claims everything the active profile is owed: coins first, then items until the inventory is full. Summary in chat. |
 | `/ah manage` (alias `mine`) | Opens the page on **Manage**. |
@@ -716,7 +716,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 6. **Listing cap.** LOCKED 2026-09-25 (Skyy): the default cap stays 14 listings per profile. Progression rewards or rank perks can raise that cap in game later. SkyyAuctions 0.1.1 is a flat 14 with no perk raise yet.
 7. **Confirm threshold.** LOCKED 2026-09-25 (Skyy): a buy of 10,000 coins or more needs a second click. That was already the default (`confirmAbove=10000`).
 8. **Cancel keeps the fee** (Hypixel). LOCKED 2026-09-25 (Skyy): cancelling a listing keeps the fee. That was already the default (`cancelRefundsFee=false`).
-9. **`/ah sell`.** Open the prefilled page for one click, or list straight from chat? [prefilled page]
+9. **`/ah sell`.** LOCKED 2026-09-25 (Skyy): `/ah sell <price>` opens the pre-filled Create page for one click. That was already the default (`sellCommandOpensPage=true`).
 10. **Grace period.** How long should a new listing wait before anyone can buy it? [20 s]
 11. **Where `/ah` works.** Anywhere, or later only at an Auction Master NPC in the hub? On Hypixel, remote `/ah` is a Booster Cookie perk; this is from general knowledge, not in the research. [anywhere; the page id `SkyyAuctions` is ready for an NPC]
 12. **Late-game cutoff.** Which items leave both markets? Still open (DESIGN-STATUS question 11). [nothing blocked; the list and bridge are ready]
