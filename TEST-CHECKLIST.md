@@ -754,3 +754,30 @@ Then run `/ahadmin reload`. You need 2 profiles with about 50k coins each, a `/r
 24. A 2,000,000 sale pays 1,980,000.
 25. A 15th listing is refused, and claiming one frees a slot.
 26. Optional, with a third player: two buyers confirm at the same moment. Only one gets it and only that purse changes.
+
+
+## Round 2 - SkyyEssentials 0.1.2 (/trade) + SkyyExploration 0.2, DEPLOYED 2026-09-25 00:54 (backup backups/deploy-20260925-0054)
+
+**Solo**
+1. Start the server with both jars. Confirm the log shows "[SkyyEssentials] 0.1.2 ready … /trade /tradeadmin (0 unsettled trade record(s); …)" and the SkyyExploration 0.2 ready line with no WARN. Confirm Essentials' `config.properties` now has all 14 keys with the old `replyShortcut` value, and Exploration's config gained the 0.2 block exactly once.
+2. `/exploreadmin`: the page opens at 1120x900 with the Spots, Checklist and Island tabs. Type a name in the text box and add a spot where you stand; this also tests the unverified "three text boxes on one button". Then set radius and XP, and remove it (needs a second click within 10 s).
+3. Walk into the spot: banner, sound, chat line and Exploration XP in `/skills`. Walking out and back in gives nothing. With `/fly` on, or in creative, nothing is recorded.
+4. Add a secret spot: `/explore` Checklist shows "??? Secret spot" until you find it, then the real name and the Secret Keeper title.
+5. Checklist: add chest, chests N, zone and custom entries; tick the custom one with `/exploreadmin check tick`. At 100%, the XP (and coins with SkyyCoins) is paid once, and `/explore` shows the %.
+6. Edit `worlds/<world>.properties` by hand while the server runs. Try an in-game change: it is refused ("run /exploreadmin reload first"). After reload, the hand edit shows. Also check an unsaved change shows as "NOT saved" in `/exploreadmin stats`.
+7. Switch profile, then open a new loot chest within 30 s: "Loot chests count again in N s". After 30 s it counts. The new profile can find the same spots again.
+8. `/tradeadmin config` (1060x900): toggle an ON/OFF setting; set distance 5000 (refused) and 12 (saved, file updated); press Reload file. Hand-edit the file, then run `/tradeadmin reload`. Also `/tradeadmin log`, `/exploreadmin set` / `get`.
+9. `/r <text>` replies; `/r` alone still runs `/redo` for a builder; `/trade` alone shows usage; `/trade claim` with nothing owed says so.
+
+**2 players**
+10. A runs `/trade B`, B runs `/trade accept`. Check the slots appear next to the page (unverified; otherwise use Open as chest). Drag items in: they leave the inventory, and the other player sees them read-only with tooltips. Both click Ready, count down 3-2-1: the items swap, with exact counts before and after.
+11. Cancel paths: Cancel button during the countdown; Esc; walking more than 9 blocks away; taking damage; `/island` (world change); one player quitting. Every time, each player gets their own items back and nothing is duplicated.
+12. Change an offer during the countdown: the countdown stops and both Ready marks clear. Also Not ready.
+13. Receiver has a full inventory: "did not fit - /trade claim". Free space, then `/trade claim` delivers; rejoining also delivers. Test `/tradeadmin return <player>`.
+14. Coins on both sides: balances are correct afterwards. One player spends coins during the countdown (`/pay`): the trade cancels and all coins come back.
+15. B switches profile while the trade is open: the trade cancels, and B's items say "switch back then /trade claim". They are never delivered on the new profile; after switching back and 30 s, they are delivered.
+16. Stop the server normally mid-trade: on next join, "Returned from a trade that was open when the server stopped", items complete.
+17. Chest mode (`tradeOpenMode=chest` on the config page): accepting opens the vanilla chest. Closing it brings the page back without slots, and Edit my offer reopens the chest.
+18. A keeps dragging items: B's page updates at most once a second, and B's Cancel click still works.
+19. Open `/vault` (e.g. from SkyyMenu) while the trade page is open: the trade page closes ("trade stays open"), the vault works, and `/trade` reopens the trade. No items lost.
+20. Exploration with 2 players: both get their own first discovery of a spot, the checklist % is per profile, and titles show in chat.
