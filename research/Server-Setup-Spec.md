@@ -889,7 +889,7 @@ SkyyGuilds' guild ranks and SkyyIslands' island roles are different things and s
   <name>")` **and** `setPermissionGroups(new String[] { "hytale:Adventurer" })`: `putRecursivePermissionGroups` puts the command's permission
   id into the group's virtual set (bytecode read this session), so everyone keeps the command by default and the node name stays the same.
   Adopt per mod with its next version, after a one-command test proves it (8.4).
-- **Chat:** wrap the previous chat formatter exactly like SkyyExploration's `TitleFormatter`, registered at `chat.priority` 31000 (after
+- **Chat:** LOCKED 2026-09-25 (Skyy): chat order is `[Rank] [Title] Name`. That was already the default. Wrap the previous chat formatter exactly like SkyyExploration's `TitleFormatter`, registered at `chat.priority` 31000 (after
   Exploration's 30000), so the outer prefix is the rank: `[VIP] [Explorer] Skyy: hi`. Prefix coloured with `Message.raw(prefix).color(colour)`
   (proven), plain text if the colour is unusable. Bridge for other mods: `rank:<uuid>` (display name), `rank:prefix:<uuid>`, `rank:colour:<uuid>`
   (for the SkyyMenu Players view and the HUD players list later).
@@ -1146,7 +1146,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 7. LOCKED 2026-09-25 (Skyy): NPC shops in SkyyEconomy 0.1 or 0.2? 0.2, so 0.1 stays a clean merge. That was already the default.
 8. LOCKED 2026-09-25 (Skyy): Ranks: a new SkyyRanks mod, or inside SkyyEssentials? SkyyRanks. 0.1 is live. That was already the default.
 9. LOCKED 2026-09-25 (Skyy): Which ranks come seeded? Member, Admin, and Developer. Was: only Member. Member stays the default rank, with no prefix and no grants. Admin and Developer are staff, close to the owner, and do not get full op (`*`, `/op`, or `hytale:Admin`). Developer also gets the rank editor. See 5.1. SkyyRanks 0.1 still seeds only Member. A file that already has only Member keeps only Member until Admin and Developer are added. All ranks, including these three, are fully editable in the in-game Server Setup ranks editor: Skyy can change each rank's permissions and add new ranks from the menu without editing files. SkyyRanks 0.1 still refuses grants, delete, and ladder moves on the default rank.
-10. Chat order when a player has a rank and a title? [`[Rank] [Title] Name`.]
+10. LOCKED 2026-09-25 (Skyy): Chat order when a player has a rank and a title? `[Rank] [Title] Name`. That was already the default.
 11. SkyyMenu 0.2 (player Settings) and 0.3 (Mods section) as two rounds, or one? [Two, smaller and easier to test.]
 12. Island template box size. [3 x 3 chunks around the island, y 96 to 191.]
 13. Keep SkyyClasses' inert switch keys hidden while switching is code-locked? [Hidden, with one read-only line.]
