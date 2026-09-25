@@ -888,9 +888,9 @@ SkyyGuilds' guild ranks and SkyyIslands' island roles are different things and s
 
 ### 5.2 NPC shops -> **SkyyEconomy 0.2** (after 0.1's merge is proven)
 
-Answers Skyy's open question with defaults `[SKYY?]`: every item can have a **buy** price (player pays) and a **sell-back** price (0 = the
+LOCKED 2026-09-25 (Skyy): every item can have a **buy** price (player pays) and a **sell-back** price (0 = the
 NPC does not buy it); stock is **infinite** by default; any item can get a **limited stock with a restock timer** (Shopkeepers' admin-shop vs
-stocked-shop split, research "Server tools" 2).
+stocked-shop split, research "Server tools" 2). Infinite stock stays the default. That was already the default.
 
 - **Placing** (editor, "Create shop here"): `NPCPlugin.get().spawnNPC(store, <group>, role, adminPos, adminRotation)` on the admin's world
   thread. Role = a choice from `shops.roles` (a curated list of existing role templates; `/shopadmin roles` prints
@@ -1122,7 +1122,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 3. LOCKED 2026-09-25 (Skyy): How many old versions of each config file to keep? 10. Was: 20. `tools/skyycfg.py` still defaults `KEEP=20`.
 4. LOCKED 2026-09-25 (Skyy): When a part is switched off, can players still take out what is theirs (bank withdraw, auction claims and cancels)? Yes. That was already the default.
 5. LOCKED 2026-09-25 (Skyy): When the bank comes back on, is the off time paid as interest? Yes. Players receive back-pay for interest accrued while the bank was switched off. Was: no back-pay.
-6. NPC shops: buy and sell-back per item, infinite stock by default, optional limited stock with a restock timer? [Yes, as described in 5.2.]
+6. LOCKED 2026-09-25 (Skyy): NPC shops: buy and sell-back per item, infinite stock by default, optional limited stock with a restock timer. Yes, as described in 5.2. Infinite stock stays the default. That was already the default.
 7. NPC shops in SkyyEconomy 0.1 or 0.2? [0.2, so 0.1 stays a clean merge.]
 8. Ranks: a new SkyyRanks mod, or inside SkyyEssentials? [SkyyRanks.]
 9. Which ranks come seeded? [Only the default rank "Member" (no prefix); owners make the rest in game.]

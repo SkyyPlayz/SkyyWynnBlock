@@ -127,7 +127,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 3. LOCKED 2026-09-25 (Skyy): old config file versions kept is 10. Was: 20. [10; skyycfg still defaults KEEP=20]
 4. LOCKED 2026-09-25 (Skyy): when a part is off, players can still take out what is theirs (bank withdraw, auction claims). [yes, already the default]
 5. LOCKED 2026-09-25 (Skyy): bank interest for the time the bank was off is paid. Players receive back-pay for interest accrued while the bank was switched off. Was: no back-pay. [yes]
-6. NPC shops: buy + sell-back per item, infinite stock by default, optional limited stock + restock timer? [yes]
+6. LOCKED 2026-09-25 (Skyy): NPC shops have buy and sell-back per item, infinite stock by default, and optional limited stock with a restock timer. [yes, infinite stock stays the default]
 7. NPC shops in SkyyEconomy 0.1 or 0.2? [0.2]
 8. Ranks in their own mod (SkyyRanks)? [yes - built, 0.1 live]
 9. Seeded ranks: only "Member"; you make the rest in game? [yes]
