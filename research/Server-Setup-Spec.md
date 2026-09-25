@@ -601,7 +601,7 @@ server? Prices and files are kept.`); switching it back ON asks nothing (1.4.2: 
 1. Its commands stay registered (the name is not freed for another mod) and answer `<Part> is turned off on this server.` The pages refuse
    to open with the same line. SkyyMenu tiles for it show "(off on this server)".
 2. **No data is deleted, converted or rewritten.** Files stay; the part simply stops acting on them.
-3. **Off stops new activity, but a player can always take out what is theirs** (the "nobody loses a coin" rule).
+3. **Off stops new activity, but a player can always take out what is theirs** (the "nobody loses a coin" rule). LOCKED 2026-09-25 (Skyy): bank withdraw and auction claims stay available. That was already the default.
 4. Timers of the part pause and do **not** pay back the off time when it comes back on `[SKYY?]` (default: no back-pay).
 5. Its bridge functions answer as if the part were not installed (other mods already handle that case), except where rule 3 needs a path.
 6. Live: checked at every command, click and tick. No restart.
@@ -1120,7 +1120,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 1. LOCKED 2026-09-25 (Skyy): Who sees Server Setup? Ops only, through the node `skyymenu.modconfig`, which staff ranks can be given. That was already the default.
 2. LOCKED 2026-09-25 (Skyy): Which changes ask for a confirm? Money, penalties, rates, caps, curves, switching a part off, imports, restores, undos. That was already the default. [Only rows marked danger: money, penalties, rates, caps, curves, switching a part OFF, pausing the auction house, raising the auction purchase-confirm thresholds; plus imports, restores, undos, removes.]
 3. LOCKED 2026-09-25 (Skyy): How many old versions of each config file to keep? 10. Was: 20. `tools/skyycfg.py` still defaults `KEEP=20`.
-4. When a part is switched off, can players still take out what is theirs (bank withdraw, auction claims and cancels)? [Yes.]
+4. LOCKED 2026-09-25 (Skyy): When a part is switched off, can players still take out what is theirs (bank withdraw, auction claims and cancels)? Yes. That was already the default.
 5. When the bank comes back on, is the off time paid as interest? [No back-pay.]
 6. NPC shops: buy and sell-back per item, infinite stock by default, optional limited stock with a restock timer? [Yes, as described in 5.2.]
 7. NPC shops in SkyyEconomy 0.1 or 0.2? [0.2, so 0.1 stays a clean merge.]
