@@ -1,9 +1,9 @@
 # SkyyGear stat catalog
-*Research list, 2026-09-24. Combat, defence, mana, Movement, Gathering, and Loot and luck are marked in the collapsed section. From XP and wisdom down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
+*Research list, 2026-09-24. Combat, defence, mana, Movement, Gathering, Loot and luck, and XP and wisdom are marked in the collapsed section. From Other down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is XP and wisdom.
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is Other.
 
-**Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter). Those are our locks, not wiki lines.
+**Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter, Cooking Wisdom, Smithing Wisdom, Exploration Wisdom, Acrobatics Wisdom). Those are our locks, not wiki lines.
 
 **Game** means where the stat is from. **Both** means one row covers two names.
 
@@ -20,9 +20,9 @@ True Damage is in the decided section. It ignores Defence. True Defense, the sta
 ---
 
 <details>
-<summary><strong>Decided — combat, defence, mana, Movement, Gathering, and Loot</strong> (change notes 9–13). Next blank table is XP and wisdom.</summary>
+<summary><strong>Decided — combat through XP and wisdom</strong> (change notes 9–14). Next blank table is Other.</summary>
 
-These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. Loot and luck was finished 2026-09-25 (change notes 12 and 13).
+These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. XP and wisdom was locked 2026-09-25 (change note 14).
 
 ### Damage and crits
 
@@ -217,27 +217,33 @@ Reach (old Swing Range) was already locked. Gathering trees only. Max +50%. Not 
 | Fear | SB | Scrap. | Scrap |
 | Tracking | SB | Scrap. | Scrap |
 
-</details>
+### XP and wisdom
 
-## XP and wisdom
+One Wisdom stat per skill we have. Combat Wisdom is one modifier for every class. Combat XP levels the class.
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
-| Combat Wisdom | SB | More Combat XP. | |
-| Farming Wisdom | SB | More Farming XP. | |
-| Fishing Wisdom | SB | More Fishing XP. | |
-| Mining Wisdom | SB | More Mining XP. | |
-| Foraging Wisdom | SB | More Foraging XP. | |
-| Enchanting Wisdom | SB | More Enchanting XP. | |
-| Alchemy Wisdom | SB | More Alchemy XP. | |
-| Carpentry Wisdom | SB | More Carpentry XP. | |
-| Runecrafting Wisdom | SB | More Runecrafting XP. | |
-| Taming Wisdom | SB | More Taming XP. | |
-| Social Wisdom | SB | More Social XP. | |
-| Hunting Wisdom | SB | More Hunting XP. | |
-| XP Bonus | Wynn | More XP from mobs and dungeons. Quests, discoveries, raids, and profession XP are left out. | |
-| Gather XP Bonus | Wynn | More gathering XP. On ingredients. | |
-| Soul Point Regen | Wynn | Chance of an extra soul point at dawn. Negative can skip the daily point. | |
+| Combat Wisdom | SB | Keep. One modifier. It works for every class. Combat XP levels the class. | Keep |
+| Farming Wisdom | SB | Keep. We have Farming. | Keep |
+| Mining Wisdom | SB | Keep. We have Mining. | Keep |
+| Foraging Wisdom | SB | Keep. We have Foraging. | Keep |
+| Enchanting Wisdom | SB | Keep now. | Keep |
+| Alchemy Wisdom | SB | Keep. We have Alchemy. | Keep |
+| Carpentry Wisdom | SB | Keep now. | Keep |
+| Cooking Wisdom | SkyWynn | Keep. We have Cooking. | Keep |
+| Smithing Wisdom | SkyWynn | Keep. We have Smithing. | Keep |
+| Exploration Wisdom | SkyWynn | Keep. We have Exploration. | Keep |
+| Acrobatics Wisdom | SkyWynn | Keep. We have Acrobatics. | Keep |
+| Social Wisdom | SB | Social is shelved. Not a skill we have now. | Add later |
+| Fishing Wisdom | SB | Later. With fishing. | Add later |
+| Hunting Wisdom | SB | Later. With hunting. | Add later |
+| Taming Wisdom | SB | Later. With pets. | Add later |
+| Runecrafting Wisdom | SB | Scrap. No Runecrafting skill unless we add one. | Scrap |
+| XP Bonus | Wynn | Keep. A flat small % boost to all XP. Not a large boost. | Keep |
+| Gather XP Bonus | Wynn | Scrap. Wisdom covers gathering XP. | Scrap |
+| Soul Point Regen | Wynn | Scrap. No soul points. | Scrap |
+
+</details>
 
 ## Other
 
@@ -493,7 +499,7 @@ Unique effects on set items and some raid buffs. Not a rolled ID. Read 2026-09-2
 
 ## New SkyWynn stats
 
-Dodge Chance, Overcrit, True Damage, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, and Trophy Hunter are already in the decided section. Blank rows below are for the next idea.
+Dodge Chance, Overcrit, True Damage, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter, and the extra Wisdom rows (Cooking, Smithing, Exploration, Acrobatics) are already in the decided section. Blank rows below are for the next idea.
 
 | Stat | What it might do | Decision |
 |---|---|---|

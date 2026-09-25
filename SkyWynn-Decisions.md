@@ -118,10 +118,20 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
    - **Trophy Hunter.** New name. Higher chance at unique drops and drop-only sets. Bosses and normal mobs. Mob drop-only armor sets, not only boss legendaries. Borderlands-style unique loot.
    - **Magic Find.** Scrap as the player-facing name. The idea lives on as Trophy Hunter.
    - **Still open at this note.** Pet Luck, Fear, Tracking. Locked later (change note 13).
-8. **Loot and luck, rest (change note 13).** Finishes the table. Rows 6.34–6.36. Plan locks 48–50. Next blank table is XP and wisdom. Does not change any jar.
+8. **Loot and luck, rest (change note 13).** Finishes the table. Rows 6.34–6.36. Plan locks 48–50. XP and wisdom was locked later (change note 14). Does not change any jar.
    - **Pet Luck.** Keep later. Build when pets exist.
    - **Fear.** Scrap.
    - **Tracking.** Scrap.
+9. **XP and wisdom (change note 14).** Locks rows 6.37–6.44. Full list in `SkyyGear-Plan.md` locks 51–59. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is Other. Does not change any jar.
+   - **Wisdom.** One stat per skill we have.
+   - **Combat Wisdom.** Keep. One modifier for every class. Combat XP levels the class.
+   - **Keep now.** Farming, Mining, Foraging, Enchanting, Alchemy, Carpentry. Also Cooking, Smithing, Exploration, and Acrobatics, because we have those skills.
+   - **Social Wisdom.** Add later. Social is shelved. Not a skill we have now.
+   - **Later.** Fishing Wisdom, Hunting Wisdom, Taming Wisdom.
+   - **Runecrafting Wisdom.** Scrap. No Runecrafting skill unless we add one.
+   - **XP Bonus.** Keep. A flat small % boost to all XP. Not large.
+   - **Gather XP Bonus.** Scrap. Wisdom covers gathering XP.
+   - **Soul Point Regen.** Scrap. No soul points.
 
 ---
 
@@ -243,7 +253,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.2 | Archetypes (3 themed sub-builds per class) | Wynn | v1: 1–2 archetypes per class, 3rd later | |
 | 6.3 | Ability tree size: Wynn has 70+ nodes/class | Wynn | ~25 nodes/class v1 — enough? | |
 | 6.4 | Mana / intelligence resource for abilities | Wynn | TAKE | ✔ LOCKED (2026-09-24, change note 9) — use Hytale's mana. Our modifiers add to it. +Max Mana on gear is Equipment only. Overall Level (average of all skill levels) raises base Health and Mana (6.11). Per-spell cost IDs are scrap. One flat −% Spell Cost, accessory only. Skill-upgrade points come every 5 levels (6.12) |
-| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 9) — first pass is in. Crit Chance has no cap (over 100% is overcrit chance). Crit Damage is SkyBlock-style (0 = double a normal hit; +100% = 4x). Overcrit doubles the crit. Ferocity cap 300 for now. Attack Speed cap 150%. True Damage ignores Defence; True Defense is scrap. Gathering fortunes are locked (change note 11). Movement is locked (change note 10). Loot and luck is finished (change notes 12 and 13). Next blank table is XP and wisdom |
+| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 9) — first pass is in. Crit Chance has no cap (over 100% is overcrit chance). Crit Damage is SkyBlock-style (0 = double a normal hit; +100% = 4x). Overcrit doubles the crit. Ferocity cap 300 for now. Attack Speed cap 150%. True Damage ignores Defence; True Defense is scrap. Gathering fortunes are locked (change note 11). Movement is locked (change note 10). Loot and luck is finished (change notes 12 and 13). XP and wisdom is locked (change note 14). Next blank table is Other |
 | 6.6 | Healer/Tank dungeon-class variants (SkyBlock Catacombs style) | SkyBlock | SKIP? classes already cover roles | Open with 6.13. Crowd healing is a later Priest idea. This row's dungeon-variant call is not locked |
 | 6.7 | Slayers (spawn-a-boss quest chains + slayer XP) | SkyBlock | TAKE (midgame) | ✔ **Core loop**, not side content. Not the leveling spine (that stays the island chain) |
 | 6.8 | Boss altars (summon boss with materials) | Wynn | TAKE (cheap early bosses) | |
@@ -275,6 +285,14 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.34 | Pet Luck | SkyBlock | | ✔ ADD LATER (2026-09-25, change note 13) — keep later. Build when pets exist |
 | 6.35 | Fear | SkyBlock | | ✔ SCRAP (2026-09-25, change note 13) |
 | 6.36 | Tracking | SkyBlock | | ✔ SCRAP (2026-09-25, change note 13) |
+| 6.37 | Combat Wisdom | SkyBlock | | ✔ LOCKED (2026-09-25, change note 14) — one modifier for every class. Combat XP levels the class |
+| 6.38 | Wisdom for skills we have | Skyy | | ✔ LOCKED (2026-09-25, change note 14) — Farming, Mining, Foraging, Enchanting, Alchemy, Carpentry, Cooking, Smithing, Exploration, Acrobatics |
+| 6.39 | Social Wisdom | SkyBlock | | ✔ ADD LATER (2026-09-25, change note 14) — Social is shelved. Not a skill we have now |
+| 6.40 | Fishing, Hunting, Taming Wisdom | SkyBlock | | ✔ ADD LATER (2026-09-25, change note 14) — with fishing, hunting, and pets |
+| 6.41 | Runecrafting Wisdom | SkyBlock | | ✔ SCRAP (2026-09-25, change note 14) — no Runecrafting skill unless we add one |
+| 6.42 | XP Bonus | Wynn | | ✔ LOCKED (2026-09-25, change note 14) — a flat small % boost to all XP. Not large |
+| 6.43 | Gather XP Bonus | Wynn | | ✔ SCRAP (2026-09-25, change note 14) — Wisdom covers gathering XP |
+| 6.44 | Soul Point Regen | Wynn | | ✔ SCRAP (2026-09-25, change note 14) — no soul points |
 
 ## 7. WORLD & CONTENT
 
@@ -370,4 +388,4 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 11.3 | ... | | |
 
 ---
-*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Change note 9 replaces the five Wynn skill points on gear with the combat, defence, and mana pass. Change note 10 (2026-09-25) locks Movement: flat +Speed, Sprint scrap, Stamina Regen, Jump Height, Rift Speed scrap. Change note 11 locks Gathering: Breaking Power, Mining Speed, Pick Breaking Damage, Mining Spread, one Mining Fortune, Auto Smelt, Farming Fortune, Foraging Fortune, and Timber. Change note 12 locks part of Loot and luck: Loot Bonus, Loot Quality, Stealing, and Trophy Hunter. Magic Find is scrap as the player-facing name. Change note 13 finishes it: Pet Luck is keep later (build when pets exist). Fear and Tracking are scrap. Next blank table is XP and wisdom. Reach stays the earlier lock (max +50%). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*
+*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Change note 9 replaces the five Wynn skill points on gear with the combat, defence, and mana pass. Change note 10 (2026-09-25) locks Movement: flat +Speed, Sprint scrap, Stamina Regen, Jump Height, Rift Speed scrap. Change note 11 locks Gathering: Breaking Power, Mining Speed, Pick Breaking Damage, Mining Spread, one Mining Fortune, Auto Smelt, Farming Fortune, Foraging Fortune, and Timber. Change note 12 locks part of Loot and luck: Loot Bonus, Loot Quality, Stealing, and Trophy Hunter. Magic Find is scrap as the player-facing name. Change note 13 finishes it: Pet Luck is keep later (build when pets exist). Fear and Tracking are scrap. Change note 14 locks XP and wisdom. Next blank table is Other. Reach stays the earlier lock (max +50%). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*
