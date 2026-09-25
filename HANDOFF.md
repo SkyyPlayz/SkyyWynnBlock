@@ -128,7 +128,7 @@ Other proven facts: HUD attach = `new HudMain(pr).show()` on `PlayerReadyEvent` 
 
 ---
 
-## 3. CURRENT STATE (always kept current - last update 2026-09-24)
+## 3. CURRENT STATE (always kept current - last update 2026-09-24 23:00)
 
 ### Versions: live in the "HUD mod" test world vs the next deploy set
 All mods are deployed TOGETHER as one set (Skyy: "keep building and testing all the mods together at once").
@@ -137,29 +137,32 @@ A round is READY when it is built, reviewed, fixed, cross-checked, pinned in too
 the world config.json into backups/deploy-<date-time>/) and run `python tools/deploy_set.py --yes`. It refuses while a server runs - if the
 game is open, leave it and tell Skyy it deploys as soon as the game is closed (never kill the game). Build scripts still never get
 `--deploy`; deploy_set is the only deploy path. `--check` only verifies the jars. Backups: backups/ (git-ignored).
-| Mod | was live until 2026-09-24 19:55 | LIVE since 2026-09-24 19:55 (beta test; = tools/deploy_set.py SET) |
+| Mod | was live until 2026-09-24 22:53 | LIVE since 2026-09-24 22:53 (beta round 1; = tools/deploy_set.py SET) |
 |---|---|---|
-| SkyyHud | 0.3.6 | 0.3.8 = per-widget colour/bold/italic/glow + friendly Zone name (0.3.7) + Party and Guild widgets |
-| SkyySacks | 0.7.3 | 0.7.4 = + Campfire tab (emergency cooking with the Campfire accessory) |
+| SkyyHud | 0.3.8 | 0.3.9 = Party/Guild widget drawn aligned on the first render (+ co-op island shown as "Your Island") |
+| SkyySacks | 0.7.4 | 0.7.5 = NEW Smithing bag (bars, leather, hides, other smithing mats), tree sap -> Foraging, all tabs always shown (recipe if no bag) |
 | SkyyCoins | 0.1.5 | 0.1.5 |
-| SkyyCollections | 0.2 | 0.2 |
-| SkyyParty | 0.1.2 | 0.1.3 = kick/disband/promote, /party page, bridge data for the HUD |
-| SkyyBank | 0.1.2 | 0.1.2 |
-| SkyyIslands | 0.4.4 | 0.4.5 = starter-kit hotfix (chunk store) |
-| SkyyBazaar | 0.1.1 | 0.1.1 |
-| SkyyRolls | 0.1.2 | 0.1.3 = rolls shown on the item (native ItemDisplay), gear only, /rolls clear |
-| SkyySkills | 0.4 | 0.4.1 = + Exploration row (+0.1 max Stamina/level, no boosters), Tree buttons on Acrobatics + Exploration |
-| SkyyAccessories | 0.4.2 | 0.4.3 = Campfire accessory back |
+| SkyyCollections | 0.2 | 0.2.1 = felled logs count (source skills:felled), "No tier yet" |
+| SkyyParty | 0.1.3 | 0.1.3 |
+| SkyyBank | 0.1.2 | 0.1.3 = /bank opens the page: Deposit all (left), amount box + Deposit/Withdraw (middle), Withdraw all (right) |
+| SkyyIslands | 0.4.5 | 0.5 = co-op members (invite/accept, /island -> the owner's island), Trusted (build only), Admin, /island menu (5 tabs, permission grid, visit modes, ban/expel), /island reset (3 confirms), chunk resend after re-tint; 0.4.x invitees migrated to Trusted (.v4bak copies) |
+| SkyyBazaar | 0.1.1 | 0.1.2 = custom amount box with Buy/Sell (+ max), page ~1.4x |
+| SkyyRolls | 0.1.3 | 0.1.4 = /reforge page (anvil slot, coin cost by rarity, reroll) + SkyBlock tooltip "Damage: 11-48 (+24%)" |
+| SkyySkills | 0.4.1 | 0.4.2 = every felled log pays the feller (XP, double drops, collections), Stats page 1.5x, Double Jump (crouch in mid-air), party combat XP share (50% within 48 blocks, same world) |
+| SkyyAccessories | 0.4.3 | 0.4.3 |
 | SkyyClasses | 0.1.4 | 0.1.4 |
-| SkyyMenu | 0.1.2 | 0.1.2 |
-| SkyyEssentials | 0.1 | 0.1 |
+| SkyyMenu | 0.1.2 | 0.1.3 = Island Menu, Bank, Vault, Reforge, Party, Guild entries; player actions Invite to Your Island (co-op) + Let Them Build (trust); Hover Tooltips switch (stuck-tooltip mitigation) |
+| SkyyEssentials | 0.1 | 0.1.1 = /r = reply for non-builders (builders keep /redo), tpa instance return-point NPE fixed |
 | SkyyProfiles | 0.1 | 0.1 |
-| SkyyCooking | 0.1 | 0.1.1 = campfire-accessory bridge (x0.75 bonus as a lower Grade, x0.5 XP) |
-| SkyyTrees | 0.1 | 0.2 = + Acrobatics tree (12 nodes) + Exploration draft tree |
-| SkyyExploration | - | 0.1 NEW = world chests, map coverage, zones, chest luck, titles, /explore |
-| SkyyGuilds | - | 0.1 NEW = guilds: ranks, /gc, guild bank, guild XP, seasons, /guild page |
-| third-party (PACK.md) | - | More Crossbow Tiers (Serj), Saplings From Trees (Helios) enabled by deploy_set |
-Deploy rule: SkyySkills 0.4.1 + SkyyTrees 0.2 + SkyyExploration 0.1 go together; never go back to Skills 0.4 once Exploration XP exists.
+| SkyyCooking | 0.1.1 | 0.1.1 |
+| SkyyTrees | 0.2 | 0.2.1 = Tree Feller same-Y rework (1/2/3/4 logs then the whole layer, 5 s cooldown), Double Jump node (tier II, replaces Quick Dodge 1:1) |
+| SkyyExploration | 0.1 | 0.1 |
+| SkyyGuilds | 0.1 | 0.1.1 = Officer -> Admin (invite + kick Members only), per-rank daily (game day) withdraw limits, bank log Expand |
+| SkyyVault | - | 0.1 NEW = /vault item storage shared by all your profiles, 2 free pages, more for coins (50k + 25k per page, max 10 - proposal) |
+| third-party (PACK.md) | More Crossbow Tiers, Saplings From Trees | same |
+Deploy rules: Skills 0.4.2 + Trees 0.2.1 + Collections 0.2.1 go together; never go back to Trees 0.2 once 0.2.1 has run, or to Skills 0.4 once
+Exploration XP exists. Islands 0.5 migrated island files (.v4bak kept); rolling back to 0.4.5 needs those backups.
+Backup of the previous live set (jars + world config + Skyy_* data): backups/deploy-20260924-2253/.
 HyperEssentials 0.1.0 is DISABLED (crashes the world on any player death).
 Test order: TEST-CHECKLIST.md (newest sections at the bottom; tonight = the TWO-PLAYER TEST section).
 Profile contract for every mod: tools/PROFILES-CONTRACT.md. Design status for the design guy: DESIGN-STATUS.md.
@@ -279,21 +282,22 @@ Defaults that still hold: shields, tools, and fists usable by all; classless pla
 
 ## 4. WHAT TO DO NEXT (in order)
 
-1. **Tonight:** Skyy says deploy (game closed) -> `python tools/deploy_set.py`; the two-player test (TEST-CHECKLIST.md, TWO-PLAYER TEST).
+1. **Next test:** TEST-CHECKLIST.md section "BETA ROUND 1" (the 20-mod set is live since 2026-09-24 22:53). Riskiest first: server log,
+   island migration, vault dupes, reforge, bank, guild limits (2 players), felled trees, party XP, island co-op.
 2. **Skyy's open decisions** (collected in DESIGN-STATUS.md "Open questions"): Mining bag upgrades from Cobblestone or Iron tiers; settings
    menu refuse-vs-hide for party invites / tpa / private messages; tree-fall numbers; double jump tier II or III; campfire accessory extras;
    island visitors' block use; Endurance/Intelligence talismans; accessory power questions. **Added 2026-09-24:** how a player raises the
    profile cap above 6; Berserker details and timing (talk with the builder first — do not design it); coin-bypass cutoff per collection/tier;
    which level type gates gear (skill vs class vs combat); whether World Gen 2 can generate zone-split flying islands. **Gear, still open**
    (`SkyyGear-Plan.md`): combat, defence, and mana are locked (change note 9). The five Wynn skill points are not the gear sheet. Fortune from change note 7 was not re-opened. Identification, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power are locked (change note 8). Still open: the catalog from Movement down (`SkyyGear-Stat-Catalog.md`); class skill trees (research Borderlands 4, do not design them yet — notes are in SkyyGear-Plan.md); class roles, including a later Priest; life-steal numbers; per-element main-attack and spell % (leaning skip); Reflection; rarity names and colours; the Equipment name; the identify cost formula; the SkyWynn Power buff list and numbers (the Hypixel list in the catalog is research); powder slots and drops; bazaar vs auction house for rolled items.
-3. **Feedback round 2** (all specs written and verified; Claude usage was at 85% of the weekly limit on 2026-09-24, so Skyy decides when):
-   - SkyySkills 0.4.2 + SkyyCollections 0.2.1 + SkyyTrees 0.2.1: felled-tree crediting (research/Tree-Fall-Spec.md), Tree Feller same-Y
-     rework, Double Jump node (research/Double-Jump-Spec.md), Skills Stats page 1.5x, Collections 'No tier yet'.
-   - SkyySacks 0.7.5: smelted bars pool into the Mining bag; all four bag tabs always shown (+ the bag restructure once Skyy picks).
-   - SkyyIslands 0.5 (+0.5.1) from 0.4.5: island settings menu (research/Island-Settings-Spec.md - its last fix pass may have been cut off,
-     re-check), /island reset, chunk resend after the re-tint.
-   - SkyyMenu 0.2: player Settings menu + every mod's notification gates (research/Settings-Spec.md; answer its section-6 questions first).
+3. **In progress / queued (2026-09-24 night):**
+   - SkyyAuctions 0.1 (NEW, BIN auction house; research/Auction-House-Spec.md) - workflow skywynn-auction-house; deploys itself when ready.
+   - research/Server-Setup-Spec.md (in-game config editor: SkyWynn Menu -> Mods) - workflow skywynn-server-setup-spec, docs only.
+   - SkyyEssentials: /trade (Skyy: trading belongs in Essentials).
+   - SkyyMenu 0.2: player Settings menu (research/Settings-Spec.md) - the 3 refusing switches wait for Skyy's refuse-vs-hide answer.
+   - SkyyEconomy 0.1 = Coins + Bank + Bazaar + Auctions merged (SkyyEconomy-Plan.md) AFTER Skyy tests the separate versions.
    - SkyyExploration 0.2: island checklist backbone + admin-placed discovery / secret spots.
+   - Bag restructure (bag sizes from collections) once Skyy picks Cobblestone vs Iron; SkyyCollections has no Smithing bag reward yet.
 4. **Later / server:** everything in SkyyExploration-Plan.md "Later"; **SkyyWorldGen** (name TBD — solo World Gen 2 flying islands split by zone; planned, not started; capability research still open); a server-readiness audit
    (config docs, admin guide, performance with many players). The server island chain itself stays hand-built shared worlds.
 5. **Code follow-ups from the 2026-09-24 decisions (docs recorded them; do not treat as built):**
@@ -428,3 +432,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-24 20:10: BETA TEST with WesleyPlayz (results at the end of BETA-TEST.md). BETA BACKLOG (Skyy): (1) SMITHING SACK holding everything for smithing (ingots/bars, hides, leather, ...) - replaces 'bars in the Mining bag'; TREE SAP into the Foraging sack. (2) REFORGE MENU for rolls (Hypixel reforge anvil style: put the item in, spend coins to reroll) + SkyBlock tooltip base stat '(+roll)'. (3) GUILD: add to the SkyWynn Menu; guild ADMINS may invite + kick but not promote to admin or disband; leader sets per-rank withdraw limits PER GAME DAY; 'expand' button for the bank log; what guild levels DO - discuss later. (4) BANK: /bank opens the bank page; controls = Deposit all (left), Withdraw all (right), a middle amount TextField with Deposit / Withdraw (like /guild). (5) /VAULT: Wynncraft bank-style item storage shared by ALL profiles of a player (move items between profiles); Vault button in the menu. (6) PARTY shares combat XP. (7) ISLANDS: /is invite <player> makes them a MEMBER / co-owner of my island (their /is then goes to MY island), separate from build permission; the leader keeps kick + disband; island admins can change settings; an ISLAND MENU in the SkyWynn Menu and /is menu; settings like the SkyBlock plugins (research/Island-Settings-Spec.md + this co-op model). (8) BAZAAR: custom-amount TextField with Buy / Sell buttons; bigger page. Bugs: menu tooltip stuck after Esc; party widget alignment until moved; /r = vanilla /redo; sacks without ingots. SkyyGear: Skyy is still deciding which Wynn + SkyBlock modifiers to keep - do NOT build SkyyGear yet.
 - 2026-09-24 21:00: Skyy asked for an AUCTION HOUSE next to the bazaar, Hypixel-style, BIN (buy it now) only for now, bids maybe later -> workflow skywynn-auction-house (research Hypixel AH + server AH plugins -> research/Auction-House-Spec.md -> new mod SkyyAuctions 0.1 -> 3 reviews -> fix -> verify). Beta round 1 (13 mods, workflow skywynn-beta-round-1) running. Skyy: 'just deploy things as they are ready' -> standing AUTO-DEPLOY rule (section 3): a round deploys itself with tools/deploy_set.py --yes once built, reviewed, cross-checked, pinned and committed (backup first; refused while the game runs).
 - 2026-09-24 21:20: Skyy decisions: (1) SkyyEconomy = SkyyCoins + SkyyBank + SkyyBazaar + SkyyAuctions in ONE mod, later NPC shops + item value (SkyyEconomy-Plan.md); built the round AFTER the separate Bank 0.1.3 / Bazaar 0.1.2 / Auctions 0.1 are tested. /trade goes in SkyyEssentials, not the economy. (2) IN-GAME SERVER SETUP: everything a server owner might change must be editable in game - SkyWynn Menu -> Mods -> click a mod -> config page; NPC shops, NPC quests, ranks + permissions (SkyWynn-Server-Setup-Plan.md, HANDOFF section 1 rows). Research + spec for the shared config editor started (research/Server-Setup-Spec.md).
+- 2026-09-24 22:53: beta round 1 finished (workflow skywynn-beta-round-1, 55 agents: build -> engine + design review -> fix per mod, cross-check): SkyySkills 0.4.2, SkyyCollections 0.2.1, SkyyTrees 0.2.1, SkyySacks 0.7.5, SkyyBank 0.1.3, SkyyVault 0.1 (NEW), SkyyGuilds 0.1.1, SkyyBazaar 0.1.2, SkyyRolls 0.1.4, SkyyIslands 0.5, SkyyMenu 0.1.3, SkyyHud 0.3.9, SkyyEssentials 0.1.1. Cross-check: 20 jars load together under -Xverify:all (518 classes), 13 contract checks pass, no duplicate command names; fixed the HUD party line for co-op islands and stale Menu texts. Main session added the Menu 'Let Them Build' (/island trust) player action. Committed 7b96761, then AUTO-DEPLOYED with deploy_set --yes (game closed; world config = exactly these 20 Skyy keys + the 2 pack mods). Backup incl. Skyy_* data: backups/deploy-20260924-2253. deploy_set now refuses unknown arguments (builders hit the deploy prompt with --help). Test list: TEST-CHECKLIST 'BETA ROUND 1'. Proposals for Skyy: vault prices + shared pages, Feller numbers, Double Jump tier II, party XP 50%/48 blocks, menu tooltips default on.

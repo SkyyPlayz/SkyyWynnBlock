@@ -626,3 +626,62 @@ Files changed, in `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\`:
 - **Party widget:** just rejoin (a disconnect removes you from the party), run `/skyyhud`, hide Party, and continue.
 - **Guild widget, F kicked:** S runs `/guild kick F`, which works while F is offline. F rejoins and hides Guild in `/skyyhud`.
 - **Guild widget, S kicked:** with the world closed, in `Saves/HUD mod/mods/Skyy_SkyyHud/layouts/<S uuid>.properties`, set the line to `Guild=0,tl,8,444,100,1`.
+
+
+## BETA ROUND 1 - 20-mod set, DEPLOYED 2026-09-24 22:53 (auto-deploy; backup backups/deploy-20260924-2253)
+New: SkyySkills 0.4.2, SkyyCollections 0.2.1, SkyyTrees 0.2.1, SkyySacks 0.7.5, SkyyBank 0.1.3, SkyyVault 0.1 (NEW), SkyyGuilds 0.1.1,
+SkyyBazaar 0.1.2, SkyyRolls 0.1.4, SkyyIslands 0.5, SkyyMenu 0.1.3, SkyyHud 0.3.9, SkyyEssentials 0.1.1. Riskiest first; [2P] = needs Skyy
+and a friend (the friend must NOT be opped, or permission checks don't count).
+1. **Server log:** a ready line for all 20 mods, including `[SkyyVault] 0.1`, `[SkyySkills] 0.4.2` and `[SkyyCollections] 0.2.1 ... felled=true`. Also look for the Islands 0.5 migration count (with `.v4bak` copies next to the island files), the Guilds 0.1.1 "Officers are called Admin" line, and no errors.
+2. **Existing islands after migration [2P]:** your `/island` still has all its blocks. Your friend's beta island is intact. Your old build rights on their island now show as Trusted in `/island menu`, not Member.
+3. **Vault:**
+   - `/vault`: first find out whether the vault slots appear next to the page.
+   - Store items, close and reopen, relog, switch profile: the same items should be there on every profile.
+   - Try **Open as chest**.
+   - Buy page 3 for 50,000 coins (give yourself coins with `/coinsgive`).
+   - Dupe tests: put an item in, then disconnect at once; and switch profile with the vault open. The item must exist exactly once.
+4. **Reforge:**
+   - Hold a rolled weapon and type `/reforge`: it goes on the anvil. Click Reforge: coins are taken and the stats change.
+   - The tooltip reads like `Damage: 11-48 (+24%)`.
+   - A stack bigger than 1 is refused. A double click only charges once.
+5. **Bank:** `/bank` opens the page. Try Deposit all, Withdraw all, and a typed amount with Deposit or Withdraw. Pressing Enter moves nothing. The numbers match `/balance` and `/bank status`.
+6. **Guild [2P]:**
+   - Promote your friend to Admin. They can invite and kick Members, but cannot promote or disband.
+   - Set `/guild bank limit member 100`. As a Member, your friend can withdraw 100; 101 is refused.
+   - Click Expand log: it pages the log on the same page.
+7. **Bazaar:** type 10 in the custom amount box and press Enter: the price shows. Click Buy or Sell. Try `max`. Check the page is bigger. Trades are refused while a profile is still loading.
+8. **Felled trees:**
+   - Cut a tree's base so it falls: Foraging XP and the Collections count go up for every log, not just the one you cut.
+   - Placed logs pay nothing.
+   - Tree Feller breaks logs only on the level you cut, shows "+N logs on this level", and has a 5 s cooldown.
+9. **Party XP [2P]:**
+   - Party up in the same world within 48 blocks, both with a class. You kill a mob with your class weapon: your friend sees "[Party] +N ... XP from Skyy's kill" before any SKILL LEVEL UP it causes.
+   - Farther than 48 blocks, or in creative: they get nothing.
+10. **Island co-op [2P]:**
+    - Invite and accept: your friend's `/island` now goes to your island and they can build.
+    - Check the 5 tabs of `/island menu`, the permission grid, trust and untrust, kick, and ban and expel with the Closed visit mode.
+    - Your friend's HUD party line shows you as "Your Island".
+    - Run `/island reset` only on a throwaway island (it needs 3 runs).
+11. **Double jump:**
+    - Settle the trigger first: set `acro.doubleJump.debug=true` in the SkyySkills `xp.properties`, run `/skills reload`, and crouch in mid-air. An admin chat line should appear.
+    - Then get Acrobatics to 10 (`/skills xp`) and buy Double Jump in `/tree acrobatics`.
+    - One jump per airtime, costs 2 Stamina, no jump in creative, and it recharges on landing.
+12. **Menu:**
+    - Island Menu, Bank, Vault, Reforge, Party and Guild each open their page in place of the menu. Players -> pick a player -> 'Invite to Your Island' (co-op) and 'Let Them Build' (trust only).
+    - The Hover Tooltips switch works.
+    - Esc while hovering an item: the tooltip may still stick (that fix is only an experiment); with tooltips switched off it can't happen.
+13. **HUD [2P]:** make a party: the Party widget lines up on the very first draw, without touching the editor. Use Snap to C, then add or remove a member: it stays centred. The Guild widget shows the Admin rank.
+14. **Sacks:**
+    - `/pd` with no bag opens and shows all 5 tabs; a bag you don't carry shows its recipe.
+    - Craft a Small Smithing Bag (3 Bolt of Wool + 4 Light Leather at a Workbench). Bars, leather and hides go into it, and old hides from the Combat bag appear in the Smithing tab.
+    - Tree sap goes into the Foraging bag.
+15. **Essentials [2P]:**
+    - Your friend sends `/msg`; you answer with `/r`. `/r` alone as a non-op shows usage; `/redo` still works for an op.
+    - `/tpa` into an island: no warning in the server log, and `/instances exit` sends you back.
+16. **Collections:** a new, untouched collection shows "No tier yet".
+
+**Numbers that are proposals (change in the config files, or tell Claude):**
+- Vault: 2 free pages, max 10, page 3 costs 50,000 and each next page +25,000; one profile's coins buy a page ALL your profiles share (Wynncraft style).
+- Tree Feller: 1/2/3/4 extra logs then the whole layer, 5 s cooldown. Double Jump: tier II (replaces Quick Dodge 1:1), 2 Stamina.
+- Party XP share: 50% of the killer's combat XP to members within 48 blocks in the same world.
+- Menu hover tooltips stay ON by default; the "Hover Tooltips" switch (book icon) turns them off if the stuck tooltip after Esc still happens.

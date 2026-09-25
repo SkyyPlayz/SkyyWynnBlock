@@ -69,6 +69,11 @@ def newer_builds(mod, ver):
 
 
 def main():
+    bad = [a for a in sys.argv[1:] if a not in ("--yes", "--check")]
+    if bad:   # 2026-09-24: builders ran it with --help and landed on the deploy prompt; unknown arguments now only print the usage
+        print(__doc__)
+        print("unknown argument(s): %s - nothing done" % " ".join(bad))
+        return 2
     missing = []
     plan = []
     for mod, ver in SET:
