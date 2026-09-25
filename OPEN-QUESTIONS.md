@@ -22,6 +22,20 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - **Party combat XP:** members within 48 blocks in the same world get 50% of the killer's combat XP (the killer keeps 100%). [as written]
 - **Menu hover tooltips:** on by default; the book switch turns them off if the stuck tooltip after Esc still happens. Default off? [on]
 
+## Swing speed (`research/Swing-Speed-Spec.md`, live in SkyyTrees 0.2.3)
+- Mining Speed max +25% faster pickaxe swings (the engine allows up to +40% without re-timing the vanilla swing)? [+25%]
+- Chopping Speed gets the same for hatchets; Chopping Speed II renamed "Heavy Hatchet" (breaking power on wood). [yes]
+- Heavy Pick also on rock (helps early picks, which lost a little from the change)? [no, ore only]
+- Heavy Hatchet up to +100% so top hatchets cut a log in one hit? [no]
+- Faster hits on mobs with a pickaxe/hatchet are accepted (can't cheaply split mining from hitting). [yes]
+- A Farming sickle speed node later? Accessories/gear adding swing speed later? [not now]
+- One-time chat notice about the change + free respec. [yes]
+
+## Crossbows stay loaded (`research/Crossbow-Loaded-Spec.md`, SkyySkills 0.4.5 - building after round 6)
+- Archery level 5, Archer class only, crossbows only (not shortbows)? [yes]
+- Keep the load across teleports? [no - reload once after a teleport]
+- Keep the big-arrow ability meter too? Sound/chat hint when the bolts go back in? Personal /settings toggle? [no]
+
 ## Auction House (`research/Auction-House-Spec.md` section 12)
 1. Hypixel's fees for our smaller economy: listing 1% / 2% / 2.5%, duration fee 20-1,200, 1% tax above 1,000,000? [Hypixel's numbers]
 2. Durations 1h / 6h / 12h / 24h / 48h, default 24h - or up to 7-14 days? [up to 48h]

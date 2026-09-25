@@ -864,3 +864,15 @@ Essentials 0.1.3, Exploration 0.2.1, Guilds 0.1.2, Vault 0.1.1, Rolls 0.1.5, Hud
 2. Mods tile as op: all 22 mods, Essentials 0.1.4, Auctions 0.1.1; 'Admin only:' lines (Essentials /warpadmin, Party /partyadmin); one click on a set-up mod opens its Server Setup page.
 3. `/settings`: General shows the 3 guild switches; turning off Guild chat hides the friend's /gc lines.
 4. [2P] Non-op friend: no admin lines, no Server Setup book, `/modconfig` refused, `/settings` works.
+
+
+## SkyyTrees 0.2.3 - faster tool swings, DEPLOYED 2026-09-25 06:53 (backup backups/deploy-20260925-0653)
+1. Server log: "swing speed ready: 80 effects, pickaxe root = SkyyTrees, hatchet root = SkyyTrees", no errors naming Skyy_Tree_Swing.
+2. Adventure mode (creative breaks instantly). Buy Mining Speed 25 (Server Setup -> Trees -> Advanced 'Test: extra Dust / tokens' if needed,
+   set back to 0 after). Take an Adamantite / Mithril / Onyxium pickaxe (one-hits stone).
+3. Hold left-click on stone and flip Server Setup -> Trees -> 'Faster tool swings' OFF / ON (applies within 1 s): OFF ~2.9 swings/s,
+   ON ~3.6 swings/s. Clearest: temporarily set Mining MSpeed.per 0.016 (+40%) -> swings back to back; set it back to 0.01.
+4. Count: hold 10 s on stone -> ~28 blocks vanilla, ~35 at +25%, ~40 at +40%.
+5. `/tree swing` -> "tier 25 (+25% - a swing every 0.28 s)"; `/tree mining` -> "Now: +25% pickaxe swing speed".
+6. Chopping Speed + a Cobalt+ hatchet swings faster on logs; a sword swings at normal speed; a profile without the node is vanilla speed;
+   no status icon shows; no blocks pop back / rubber-banding; the one-time chat notice shows once.
