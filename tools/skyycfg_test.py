@@ -10,8 +10,19 @@ HytaleServer.jar on the classpath) loads every class and drives every op against
 Default scratch folder: tools/dev/scratch/skyycfg-test (git-ignored), deleted at the end unless --keep. Exit code 1 on any failure.
 In a bare JVM HytaleServer cannot initialise, so the kit's saves run on its fallback daemon threads; CfgPub.flush() is used to make
 the tests deterministic. The in-game scheduler path (HytaleServer.SCHEDULED_EXECUTOR) is the same code with a different executor.
+
+Kit 1.1 (section Q, sample mod 3 SkyyCfgFix + a few phase-1 checks): one case per round-4 gap - (1) hand-edited table lines run the
+row's checks and a refused one is logged invalid while memory keeps the old value, (2) a 1-column table keeps '|' in its value and its
+row max sets the text length, (3) a custom row's written file lines run the mod's reload routine, (4) a lone reload request runs,
+(5) action rows with a typed value (value=). Phase-1 check failures are collected (not fatal) so a run against an older kit lists every
+missing fix; a kit that cannot build the value-action rows builds SkyyCfgFix without them and section Q fails those checks.
+Section Q also covers: Q3 a second file that cannot be written (read-only) while a reload routine re-reads it (its field: value is set
+again, no false clamp), and Q6 concurrency on SkyyCfgFix - a check= hook the test holds open while a newer hand edit of the same entry
+arrives (memory never shows a value that did not pass, the late answer about the older line changes nothing), then a stress phase
+(8 threads: a hand editor rewriting fix.properties, 3 in-game threads, a reload thread, a mode/level/flush thread, 2 readers that
+assert every value in memory passed its checks) followed by file = memory checks.
 """
-import os, sys, re, shutil, subprocess, time, zlib, base64
+import os, sys, re, shutil, stat, subprocess, time, zlib, base64
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -107,6 +118,49 @@ ROWS = [
 ]
 FILES = ["Skyy_SkyyCfgTest/config.properties", "Skyy_SkyyCfgTest/xp.properties"]
 
+# sample mod 3 (kit 1.1 fixes): one file, a reload routine that counts its runs and reads mode= back from the file
+FIX_TEXT = """# SkyyCfgFix - kit 1.1 cases
+rate.a=10
+rate.b=20
+rate.keep=5
+pair.x=Alpha:5
+coll.Wheat=Farming|B|Wheat|Plant_Wheat|Wheat_Item|none|Farms
+mode=a
+late=a
+"""
+FIX_ROWS = [
+    # (1) hand-edited table lines: bounds 0-100 + a check= hook (a value ending in 3 is refused, the entry keep may not be removed)
+    ("fix.rate", "Rates", "main", "table", "", "0", "100", "int;type;Rate", "", "live", "Hand edits are checked.",
+     "reload@fix.properties:rate.;check=FixHooks.check"),
+    # (1) a 2-column table (sep=:): a '|' typed into its line is refused, the kit never writes one there
+    ("fix.pair", "Pairs", "main", "table", "", "0", "100", "text|int;type;Name|Amount", "", "live", "Two columns in the file.",
+     "reload@fix.properties:pair.;sep=:"),
+    # (2) a 1-column text table: the value keeps its '|', the row max (900) is the text length
+    ("fix.coll", "Collections", "main", "table", "", "", "900", "text;type;Line", "", "live", "One column with | inside.",
+     "reload@fix.properties:coll."),
+    # (3) custom rows whose customSet hands back a file line: live runs the reload routine, restart does not
+    ("fix.mode", "Mode", "main", "choice", "a", "", "", "a|A,b|B", "", "live", "A custom row with a file line.",
+     "custom:FixHooks@fix.properties:mode"),
+    ("fix.late", "Late mode", "main", "choice", "a", "", "", "a|A,b|B", "", "restart", "A restart custom row.",
+     "custom:FixHooks@fix.properties:late"),
+    ("fix.ping", "Ping", "main", "action", "", "", "", "Ping", "", "", "A plain action (layout unchanged).", "action:FixHooks.ping"),
+    # (3) a field row in the second file: the reload routine a custom row runs must not read back its unsaved in-game value
+    ("fix.level", "Level", "main", "int", "1", "1", "100", "", "", "live", "A field row in the second file.",
+     "field:FixCfg.LEVEL@b.properties:level"),
+]
+FIX_ACT = [
+    # (5) action rows with a typed value: an int with bounds, a default and check=, and a text value without a default
+    ("fix.give", "Give XP", "main", "action", "100", "1", "1000", "Give", "", "danger", "A value action.",
+     "action:FixHooks.give;value=int;check=FixHooks.check"),
+    ("fix.note", "Post a note", "main", "action", "", "1", "20", "Post", "", "", "A text value action without a default.",
+     "action:FixHooks.note;value=text"),
+]
+FIX_FILES = ["Skyy_SkyyCfgFix/fix.properties", "Skyy_SkyyCfgFix/b.properties"]
+FIX_B_TEXT = """# SkyyCfgFix second file
+level=1
+"""
+P1_FAILS = []
+
 
 # =====================================================================================================================  phase 1: build
 def build():
@@ -141,10 +195,17 @@ def build():
               "confirm= without danger": "has no danger flag", "confirm=on on an int row": "is for bool rows",
               "confirm=up on an action": "take confirm=always or confirm=never only", "choice label over": "a choice label must be 1-20",
               "overlapping table prefixes": "overlap in", "scalar file key inside a table family": "inside the key family",
-              "two rows bind one file key": "one row per file key", "custom: without a file": "must name its file"}
+              "two rows bind one file key": "one row per file key", "custom: without a file": "must name its file",
+              # kit 1.1
+              "value= on a non-action row": "value= is for action rows", "value=choice on an action row": "value= must be one of",
+              "value action default outside": "does not pass its own row", "plain action with a default": "default must be empty",
+              "value action method without the value parameter": "needs a public static method",
+              "text-only table max over 2000": "text length",
+              "text-only table with a min": "has no effect on a table without number columns"}
 
-    def must_fail(what, pkg, fields, rows, defaults=None, files=("Skyy_SkyyNeg/config.properties",), reload=None, hooks_after=None):
-        mk(pkg + ".NegCfg", fields=fields)
+    def must_fail(what, pkg, fields, rows, defaults=None, files=("Skyy_SkyyNeg/config.properties",), reload=None, hooks_after=None,
+                  methods=()):
+        mk(pkg + ".NegCfg", fields=fields, methods=methods)
         want = [v for k, v in EXPECT.items() if what.startswith(k)][0]
         try:
             kit = CFG.emit(pool, pkg, MOD="SkyyNeg", TITLE="Neg", VERSION="0.1", NODE="skyyneg.admin", CATS=[("main", "Main")], ROWS=rows,
@@ -154,11 +215,14 @@ def build():
         except CFG.CfgError as e:
             msg = str(e)[len("skyycfg: "):]
             if want not in msg:
-                raise SystemExit("NEGATIVE CHECK FAILED FOR THE WRONG REASON: %s -> %s" % (what, msg[:300]))
+                P1_FAILS.append("negative check failed for the wrong reason: %s -> %s" % (what, msg[:300]))
+                print("FAIL negative check failed for the wrong reason:", what, "->", msg[:200])
+                return
             print("  ok, refused:", what, "->", msg[:150])
             neg_ok[0] += 1
             return
-        raise SystemExit("NEGATIVE CHECK DID NOT FAIL: " + what)
+        P1_FAILS.append("negative check did not fail: " + what)
+        print("FAIL negative check did not fail:", what)
 
     print("8.1.4 schema checks that must fail:")
     must_fail("ms field bound to unit s without *1000", "com.skyy.neg1", ["public static volatile long INVITE_MS = 60000L;"],
@@ -213,17 +277,40 @@ def build():
     must_fail("custom: without a file in a mod with two FILES", "com.skyy.neg22", ["public static volatile int P = 1;"],
               [("p.r", "R", "main", "range", "1-2", "0", "10", "", "", "live", "", "custom:NegCfg")],
               files=("Skyy_SkyyNeg/a.properties", "Skyy_SkyyNeg/b.properties"))
+    # kit 1.1: action rows with a typed value (value=) and the text length of a table without number columns
+    GO3 = "public static Object[] go(java.util.UUID who, String name, String value) { return new Object[] { \"ok\", \"\", \"done\" }; }"
+    must_fail("value= on a non-action row", "com.skyy.neg23", ["public static volatile int P = 1;"],
+              [("p.p", "P", "main", "int", "1", "0", "100", "", "", "live", "", "field:NegCfg.P@config.properties:p;value=int")])
+    must_fail("value=choice on an action row (only int, dec, text, bool, range, color)", "com.skyy.neg24", ["public static volatile int P = 1;"],
+              [("t.go", "Go", "main", "action", "", "", "", "Go", "", "", "", "action:NegCfg.go;value=choice")], methods=[GO3])
+    must_fail("value action default outside its own bounds", "com.skyy.neg25", ["public static volatile int P = 1;"],
+              [("t.go", "Go", "main", "action", "5000", "1", "1000", "Go", "", "", "", "action:NegCfg.go;value=int")], methods=[GO3])
+    must_fail("plain action with a default (only value actions take one)", "com.skyy.neg26", ["public static volatile int P = 1;"],
+              [("t.go", "Go", "main", "action", "5", "", "", "Go", "", "", "", "action:NegCfg.go")])
+    must_fail("value action method without the value parameter (deferred check)", "com.skyy.neg27", ["public static volatile int P = 1;"],
+              [("t.go", "Go", "main", "action", "", "1", "10", "Go", "", "", "", "action:NegCfg.go;value=int")], hooks_after=True,
+              methods=["public static Object[] go(java.util.UUID who, String name) { return new Object[] { \"ok\", \"\", \"done\" }; }"])
+    must_fail("text-only table max over 2000 (its max is the text length)", "com.skyy.neg28", ["public static volatile int P = 1;"],
+              [("t.a", "A", "main", "table", "", "", "5000", "text;type;Line", "", "live", "", "reload@config.properties:line.")],
+              reload="NegCfg.reload")
+    must_fail("text-only table with a min (min means nothing there, only max: the text length)", "com.skyy.neg29",
+              ["public static volatile int P = 1;"],
+              [("t.a", "A", "main", "table", "", "1", "40", "text|bool;type;Line|On", "", "live", "", "reload@config.properties:line.")],
+              reload="NegCfg.reload")
 
     # ---------------- schemas that must BUILD (a build check must not be too eager)
     pos_ok = [0]
 
-    def must_pass(what, pkg, fields, rows, files=("Skyy_SkyyPos/config.properties",)):
-        mk(pkg + ".PosCfg", fields=fields)
+    def must_pass(what, pkg, fields, rows, files=("Skyy_SkyyPos/config.properties",), methods=()):
+        mk(pkg + ".PosCfg", fields=fields, methods=methods)
         try:
-            CFG.emit(pool, pkg, MOD="SkyyPos", TITLE="Pos", VERSION="0.1", NODE="skyypos.admin", CATS=[("main", "Main")], ROWS=rows,
-                     FILES=list(files), ITEMS=set(ITEMS))
+            kit = CFG.emit(pool, pkg, MOD="SkyyPos", TITLE="Pos", VERSION="0.1", NODE="skyypos.admin", CATS=[("main", "Main")], ROWS=rows,
+                           FILES=list(files), ITEMS=set(ITEMS))
+            kit.check()
         except CFG.CfgError as e:
-            raise SystemExit("POSITIVE CHECK REFUSED: %s -> %s" % (what, str(e)[:300]))
+            P1_FAILS.append("positive check refused: %s -> %s" % (what, str(e)[:300]))
+            print("FAIL positive check refused:", what, "->", str(e)[:200])
+            return
         print("  ok, built:", what)
         pos_ok[0] += 1
 
@@ -236,6 +323,16 @@ def build():
               ["public static volatile long delayMs = 500L;", "public static volatile long graceMillis = 60000L;"],
               [("p.delay", "Delay", "main", "int", "500", "0", "10000", "", "ms", "live", "", "field:PosCfg.delayMs@config.properties:delayMs"),
                ("p.grace", "Grace", "main", "int", "1", "0", "60", "", "min", "live", "", "field:PosCfg.graceMillis*60000@config.properties:graceMinutes")])
+    must_pass("kit 1.1: value actions (int with a default, text, range, bool) and a 2000-character text table", "com.skyy.pos3",
+              ["public static volatile int P = 1;"],
+              [("t.a", "A", "main", "action", "100", "1", "1000", "Give", "", "danger", "", "action:PosCfg.go;value=int;confirm=never"),
+               ("t.b", "B", "main", "action", "", "0", "40", "Post", "", "", "", "action:PosCfg.go;value=text"),
+               ("t.c", "C", "main", "action", "5-10", "0", "100", "Roll", "%", "", "", "action:PosCfg.go;value=range"),
+               ("t.d", "D", "main", "action", "true", "", "", "Switch", "", "", "", "action:PosCfg.go;value=bool"),
+               ("t.e", "E", "main", "action", "", "", "", "Plain", "", "", "", "action:PosCfg.plain"),
+               ("t.f", "F", "main", "table", "", "", "2000", "text;type;Line", "", "live", "", "reload:PosCfg.reload@config.properties:line.")],
+              methods=[GO3, "public static Object[] plain(java.util.UUID who, String name) { return new Object[] { \"ok\", \"\", \"done\" }; }",
+                       "public static void reload() { }"])
 
     # ---------------- sample mod 1: SkyyCfgTest
     P = "com.skyy.cfgtest"
@@ -371,10 +468,216 @@ def build():
                         ("kit", "Kit", "main", "items", "", "0", "9", "", "", "live", "", "field:PlainCfg.KIT")])
     kit2.write(out)
     pool.get(P2 + ".PlainCfg").writeFile(out)
+    # ---------------- sample mod 3: SkyyCfgFix (kit 1.1 cases, phase 2 section Q)
+    P3 = "com.skyy.cfgfix"
+    mk(P3 + ".FixCfg", fields=[
+        "public static java.nio.file.Path FILE;", "public static java.nio.file.Path FILE2;", "public static volatile int LEVEL = 1;",
+        "public static volatile int RELOADS = 0;", "public static volatile String MODEFILE = \"\";",
+        "public static volatile String MODE = \"a\";", "public static volatile String LATE = \"a\";",
+    ], methods=[
+        # the mod's reload routine: counts its runs and reads mode= back from the file (proves it ran AFTER the write)
+        r"""public static void reload() {
+  RELOADS = RELOADS + 1;
+  try {
+    java.util.Properties p = new java.util.Properties();
+    java.io.InputStream in = java.nio.file.Files.newInputStream(FILE, new java.nio.file.OpenOption[0]);
+    try { p.load(in); } finally { in.close(); }
+    MODEFILE = p.getProperty("mode", "");
+  } catch (Throwable t) { }
+  try {
+    java.util.Properties p = new java.util.Properties();
+    java.io.InputStream in = java.nio.file.Files.newInputStream(FILE2, new java.nio.file.OpenOption[0]);
+    try { p.load(in); } finally { in.close(); }
+    LEVEL = Integer.parseInt(p.getProperty("level", "1").trim());
+  } catch (Throwable t) { }
+}"""])
+    mk(P3 + ".FixHooks", fields=["public static volatile String GIVEN = null;", "public static volatile String NOTE = null;",
+                                 "public static volatile int GIVES = 0;", "public static volatile int PINGS = 0;",
+                                 "public static volatile String CHECKED = null;",
+                                 # Q6: GATEV = a fix.rate value whose check waits while GATEV is set (BLOCKED = it is waiting); SLOW = ms
+                                 # every fix.rate check sleeps (the stress phase)
+                                 "public static volatile String GATEV = null;", "public static volatile boolean BLOCKED = false;",
+                                 "public static volatile int SLOW = 0;"], methods=[
+        r"""public static String customGet(String key) {
+  if (key.equals("fix.mode")) return com.skyy.cfgfix.FixCfg.MODE;
+  if (key.equals("fix.late")) return com.skyy.cfgfix.FixCfg.LATE;
+  return null;
+}""",
+        r"""public static Object[] customSet(String key, String value) {
+  if (key.equals("fix.mode")) { com.skyy.cfgfix.FixCfg.MODE = value; return new Object[] { "ok", value, null, new String[] { "mode", value } }; }
+  if (key.equals("fix.late")) { com.skyy.cfgfix.FixCfg.LATE = value; return new Object[] { "restart", value, null, new String[] { "late", value } }; }
+  return new Object[] { "unknown", null, "no such key" };
+}""",
+        r"""public static String check(String key, String value) {
+  if (key.startsWith("fix.rate[")) {
+    if (GATEV != null && GATEV.equals(value)) {
+      BLOCKED = true;
+      long end = System.currentTimeMillis() + 10000L;
+      while (GATEV != null && System.currentTimeMillis() < end) { try { Thread.sleep(5L); } catch (InterruptedException e) { } }
+    }
+    if (SLOW > 0) { try { Thread.sleep((long) SLOW); } catch (InterruptedException e) { } }
+    if (value == null && key.equals("fix.rate[keep]")) return "keep cannot be removed.";
+    if (value != null && value.endsWith("3")) return value + " is not allowed (no rate may end in 3).";
+    return null;
+  }
+  if (key.equals("fix.give")) {
+    CHECKED = value;
+    if (value == null) return "a value action's check gets its value";
+    if ("13".equals(value)) return "13 is not allowed.";
+    return null;
+  }
+  return null;
+}""",
+        r"""public static Object[] ping(java.util.UUID who, String name) { PINGS = PINGS + 1; return new Object[] { "ok", "", "Pong." }; }""",
+        r"""public static Object[] give(java.util.UUID who, String name, String value) { GIVES = GIVES + 1; GIVEN = value; return new Object[] { "ok", "", "Gave " + value + " XP." }; }""",
+        r"""public static Object[] note(java.util.UUID who, String name, String value) { NOTE = value; return new Object[] { "ok", "", "Posted." }; }""",
+    ])
+
+    def emit3(rows):
+        return CFG.emit(pool, P3, MOD="SkyyCfgFix", TITLE="Fix test", VERSION="0.1", NODE="skyycfgfix.admin", CATS=[("main", "Main")],
+                        FILES=FIX_FILES, ROWS=rows, RELOAD="FixCfg.reload", DEFAULTS={"fix.properties": FIX_TEXT, "b.properties": FIX_B_TEXT},
+                        ITEMS=set(ITEMS),
+                        PERM_FN="com.skyy.cfgtest.TestPerm.has", ITEM_FN="com.skyy.cfgtest.TestPerm.item")
+    try:
+        kit3 = emit3(FIX_ROWS + FIX_ACT)
+        kit3.check()
+    except CFG.CfgError as e:
+        # an older kit: build the other kit 1.1 cases anyway, section Q fails the value-action checks
+        P1_FAILS.append("the value-action rows (value=) do not build: %s" % str(e)[:200])
+        print("FAIL the value-action rows (value=) do not build:", str(e)[:200])
+        kit3 = emit3(FIX_ROWS)
+    # Q6 runner (compiled after the kit classes: it calls CfgPub.flush). role 0 = hand editor of fix.properties (rate.s0-s3, atomic
+    # replace, a unique mtime per write, sometimes a reload op), 1-3 = in-game tset/add/remove of fix.rate + set fix.level, 4 = reload
+    # ops, 5 = fix.mode / fix.level sets + CfgPub.flush, 6-7 = readers that count every fix.rate value in memory that would not pass
+    # (bounds 0-100, FixHooks.check: no value ending in 3), 9 = one reload op (the held-hook case). ok/bad answers are fine, anything
+    # else (null, error, denied, an exception) is an error
+    mk(P3 + ".FixStress", iface="java.lang.Runnable",
+       fields=["public static final java.util.UUID WHO = java.util.UUID.fromString(\"00000000-0000-0000-0000-00000000000a\");",
+               "public int role;", "public int seed;", "public long ms;", "public volatile int errors;", "public volatile int done;",
+               "public volatile int bad;", "public volatile int seen;", "public volatile int skipped;", "public volatile String last;",
+               "public volatile String lastSeen;"],
+       ctors=["public FixStress(int role, int seed, long ms) { this.role = role; this.seed = seed; this.ms = ms; }"],
+       methods=[
+           r"""public static boolean okv(String v) {
+  if (v == null || v.endsWith("3")) return false;
+  try { int n = Integer.parseInt(v); return n >= 0 && n <= 100 && String.valueOf(n).equals(v); } catch (Throwable t) { return false; }
+}""",
+           r"""public void tally(Object res, String what) {
+  if (res == null) { this.errors = this.errors + 1; this.last = "null for " + what; return; }
+  if (!(res instanceof Object[])) return;
+  Object[] r = (Object[]) res;
+  if (r.length != 3 || !(r[0] instanceof String)) return;
+  String s = (String) r[0];
+  if (s.equals("bad")) { this.bad = this.bad + 1; return; }
+  if (!s.equals("ok")) { this.errors = this.errors + 1; this.last = what + " -> " + s + ": " + r[2]; }
+}""",
+           r"""public void hand(java.util.function.Function f, java.util.Random r, long end) {
+  java.nio.file.Path p = com.skyy.cfgfix.FixCfg.FILE;
+  java.nio.file.Path tmp = p.resolveSibling("fix.properties.hand");
+  long stamp = System.currentTimeMillis() + 600000L;
+  int k = 0;
+  while (System.currentTimeMillis() < end) {
+    try {
+      String text = new String(java.nio.file.Files.readAllBytes(p), "ISO-8859-1");
+      String e = "rate.s" + r.nextInt(4) + "=";
+      String line = null;
+      if (r.nextInt(8) > 0) line = e + r.nextInt(121);
+      String[] ls = text.split("\n", -1);
+      StringBuilder sb = new StringBuilder();
+      boolean put = false;
+      for (int q = 0; q < ls.length; q++) {
+        String l = ls[q];
+        if (q == ls.length - 1 && l.length() == 0) continue;
+        if (l.startsWith(e)) { if (line != null && !put) { sb.append(line).append('\n'); put = true; } continue; }
+        sb.append(l).append('\n');
+      }
+      if (line != null && !put) sb.append(line).append('\n');
+      java.nio.file.Files.write(tmp, sb.toString().getBytes("ISO-8859-1"), new java.nio.file.OpenOption[0]);
+      k++;
+      java.nio.file.Files.setLastModifiedTime(tmp, java.nio.file.attribute.FileTime.fromMillis(stamp + (long) k));
+      java.nio.file.Files.move(tmp, p, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      this.done = this.done + 1;
+      if (r.nextInt(4) == 0) tally(f.apply(new Object[] { "reload", WHO, "Hand" }), "hand reload");
+    } catch (Throwable t) { this.skipped = this.skipped + 1; this.lastSeen = t.toString(); }
+    try { Thread.sleep(1L); } catch (InterruptedException ie) { }
+  }
+}""",
+           r"""public void game(java.util.function.Function f, java.util.Random r, long end) {
+  while (System.currentTimeMillis() < end) {
+    String e = "s" + r.nextInt(4);
+    String v = String.valueOf(r.nextInt(121));
+    int op = r.nextInt(6);
+    Object res = null;
+    if (op < 3) res = f.apply(new Object[] { "tset", "fix.rate", e, v, WHO, "G" + this.seed, "yes" });
+    else if (op == 3) res = f.apply(new Object[] { "add", "fix.rate", e, v, WHO, "G" + this.seed, "yes" });
+    else if (op == 4) res = f.apply(new Object[] { "remove", "fix.rate", e, WHO, "G" + this.seed, "yes" });
+    else res = f.apply(new Object[] { "set", "fix.level", String.valueOf(1 + r.nextInt(100)), WHO, "G" + this.seed, "yes", "menu" });
+    tally(res, "game op " + op);
+    this.done = this.done + 1;
+  }
+}""",
+           r"""public void reloads(java.util.function.Function f, java.util.Random r, long end) {
+  while (System.currentTimeMillis() < end) {
+    tally(f.apply(new Object[] { "reload", WHO, "R" }), "reload");
+    this.done = this.done + 1;
+    try { Thread.sleep(2L); } catch (InterruptedException ie) { }
+  }
+}""",
+           r"""public void levels(java.util.function.Function f, java.util.Random r, long end) {
+  int k = 0;
+  while (System.currentTimeMillis() < end) {
+    k++;
+    String m = "a";
+    if (r.nextInt(2) == 0) m = "b";
+    tally(f.apply(new Object[] { "set", "fix.mode", m, WHO, "L", "yes", "menu" }), "set mode");
+    tally(f.apply(new Object[] { "set", "fix.level", String.valueOf(1 + r.nextInt(100)), WHO, "L", "yes", "menu" }), "set level");
+    if (k % 10 == 0) com.skyy.cfgfix.CfgPub.flush();
+    this.done = this.done + 1;
+    try { Thread.sleep(1L); } catch (InterruptedException ie) { }
+  }
+}""",
+           r"""public void read(java.util.function.Function f, java.util.Random r, long end) {
+  while (System.currentTimeMillis() < end) {
+    Object res = f.apply(new Object[] { "keys", "fix.rate", "" });
+    if (res == null) { this.errors = this.errors + 1; this.last = "null keys"; }
+    else {
+      Object[] k = (Object[]) res;
+      Object[] ks = (Object[]) k[0];
+      Object[] vs = (Object[]) k[2];
+      for (int q = 0; q < ks.length; q++) {
+        String v = (String) vs[q];
+        if (!okv(v)) { this.seen = this.seen + 1; this.lastSeen = ks[q] + "=" + v; }
+      }
+    }
+    if (f.apply(new Object[] { "get", "fix.level" }) == null) { this.errors = this.errors + 1; this.last = "null get"; }
+    if (f.apply(new Object[] { "status" }) == null) { this.errors = this.errors + 1; this.last = "null status"; }
+    if (r.nextInt(20) == 0 && f.apply(new Object[] { "log", Integer.valueOf(20) }) == null) { this.errors = this.errors + 1; this.last = "null log"; }
+    this.done = this.done + 1;
+  }
+}""",
+           r"""public void run() {
+  try {
+    java.util.Map b = (java.util.Map) System.getProperties().get("skyy.bridge");
+    java.util.function.Function f = (java.util.function.Function) b.get("config:fn:SkyyCfgFix");
+    java.util.Random r = new java.util.Random((long) this.seed);
+    long end = System.currentTimeMillis() + this.ms;
+    if (this.role == 9) { tally(f.apply(new Object[] { "reload", WHO, "Slow" }), "held reload"); this.done = 1; return; }
+    if (this.role == 0) hand(f, r, end);
+    else if (this.role <= 3) game(f, r, end);
+    else if (this.role == 4) reloads(f, r, end);
+    else if (this.role == 5) levels(f, r, end);
+    else read(f, r, end);
+  } catch (Throwable t) { this.errors = this.errors + 1; this.last = t.toString(); }
+}"""])
+    kit3.write(out)
+    for n in ("FixCfg", "FixHooks", "FixStress"):
+        pool.get(P3 + "." + n).writeFile(out)
     jar = os.path.join(SCRATCH, "cfgkit-samples.jar")
     B.assemble(jar, B.manifest("SkyyCfgTest", "0.1", "skyycfg harness samples", P + ".TestCfg"), out)
-    print("phase 1: %d negative checks refused as expected, %d positive checks built, %d + %d kit classes built" % (
-        neg_ok[0], pos_ok[0], len(kit.classes), len(kit2.classes)))
+    print("phase 1: %d negative checks refused as expected, %d positive checks built, %d + %d + %d kit classes built, %d phase-1 failures" % (
+        neg_ok[0], pos_ok[0], len(kit.classes), len(kit2.classes), len(kit3.classes), len(P1_FAILS)))
+    for f in P1_FAILS:
+        print("  PHASE 1 FAILED:", f)
     return jar
 
 
@@ -986,6 +1289,369 @@ def run(jar):
     check(R(op("action", "tools.purge", Bp, "B", "yes"))[0] == "denied" and TestCust.PURGES == 1, "action with check= still needs the node")
     print("P. restart reload rows, confirm=never, action check= done")
 
+    # ---------------- Q. kit 1.1: the five round-4 gaps (sample mod 3 SkyyCfgFix: one file, reload routine FixCfg.reload)
+    P3 = "com.skyy.cfgfix."
+    FixCfg, FixHooks, FixPub, FixFile, FixRows = (JClass(P3 + "FixCfg"), JClass(P3 + "FixHooks"), JClass(P3 + "CfgPub"),
+                                                  JClass(P3 + "CfgFile"), JClass(P3 + "CfgRows"))
+    fixh = os.path.join(mods, "Skyy_SkyyCfgFix")
+    os.makedirs(fixh)
+    fixp = os.path.join(fixh, "fix.properties")
+    open(fixp, "w", newline="\n").write(FIX_TEXT)
+    fixb = os.path.join(fixh, "b.properties")
+    open(fixb, "w", newline="\n").write(FIX_B_TEXT)
+    FixCfg.FILE = Paths.get(fixp)
+    FixCfg.FILE2 = Paths.get(fixb)
+    FixPub.start(Paths.get(mods), None)
+    fn3 = bridge.get("config:fn:SkyyCfgFix")
+
+    def op3(*args):
+        a = JArray(JObject)(len(args))
+        for i, x in enumerate(args):
+            a[i] = x
+        return fn3.apply(a)
+
+    def setv3(k, v, confirm="yes"):
+        return R(op3("set", k, v, A, "Skyy", confirm, "menu"))
+
+    def logs3():
+        return [str(x) for x in op3("log", Integer.valueOf(200))]
+
+    def has3(L, frag):
+        return any(frag in l for l in L)
+
+    def keys3(tk):
+        k = op3("keys", tk, "")
+        return dict(zip([str(x) for x in k[0]], [str(x) for x in k[2]]))
+
+    def settle3():
+        FixPub.flush()
+        time.sleep(0.4)
+        FixPub.flush()
+
+    bump3 = [0]
+
+    def hand3(pairs):
+        t = ftext(fixp)
+        for o, n in pairs:
+            if o not in t:
+                FAILS.append("hand edit: %r not in the file" % o)
+            t = t.replace(o, n)
+        open(fixp, "wb").write(t.encode("latin-1"))
+        bump3[0] += 7
+        s_ = os.stat(fixp)
+        os.utime(fixp, (s_.st_atime, s_.st_mtime + bump3[0]))
+
+    # (1) hand-edited table lines run the row's checks (entry, columns and bounds, check=); a refused line is logged invalid, memory
+    # keeps the old value, the file keeps the hand-typed line and the reload routine runs only for accepted lines
+    check(keys3("fix.rate") == {"a": "10", "b": "20", "keep": "5"}, "Q1 start %s" % keys3("fix.rate"))
+    r0 = FixCfg.RELOADS
+    hand3([("rate.a=10", "rate.a=500"), ("rate.b=20", "rate.b=13\nrate.c=7\nrate.d=abc"), ("rate.keep=5\n", "")])
+    r = R(op3("reload", A, "Skyy"))
+    settle3()
+    L3 = logs3()
+    check(r[0] == "ok" and r[1] == "5", "Q1 reload counts the 5 hand-edited lines %s" % (r,))
+    check(has3(L3, "\tfile\tfix.rate[a]\t10\t500\tinvalid"), "Q1 an out-of-bounds hand-edited table line is logged invalid")
+    check(has3(L3, "\tfile\tfix.rate[b]\t20\t13\tinvalid"), "Q1 a hand-edited table line check= refuses is logged invalid")
+    check(has3(L3, "\tfile\tfix.rate[d]\t(none)\tabc\tinvalid"), "Q1 a hand-added line that is not a number is logged invalid")
+    check(has3(L3, "\tfile\tfix.rate[keep]\t5\t(none)\tinvalid"), "Q1 a hand removal check= refuses is logged invalid")
+    check(has3(L3, "\tfile\tfix.rate[c]\t(none)\t7\tok"), "Q1 a good hand-added line is logged ok")
+    check(keys3("fix.rate") == {"a": "10", "b": "20", "c": "7", "keep": "5"}, "Q1 memory keeps the old values %s" % keys3("fix.rate"))
+    check(FixCfg.RELOADS == r0 + 1, "Q1 the accepted line runs the reload routine once (%d -> %d)" % (r0, FixCfg.RELOADS))
+    # the save path (a hand edit found by an in-game change's save): the check hooks run after the locked part of the save
+    hand3([("rate.b=13", "rate.b=50"), ("rate.c=7", "rate.c=200")])
+    check(setv3("fix.mode", "b")[0] == "ok", "Q1 an in-game change to the same file")
+    settle3()
+    L3 = logs3()
+    check(has3(L3, "\tfile\tfix.rate[b]\t20\t50\tok"), "Q1 save path: a corrected line is accepted (old = the value memory kept)")
+    check(has3(L3, "\tfile\tfix.rate[c]\t7\t200\tinvalid"), "Q1 save path: a refused line is logged invalid")
+    check(keys3("fix.rate") == {"a": "10", "b": "50", "c": "7", "keep": "5"}, "Q1 save path: memory %s" % keys3("fix.rate"))
+    fl = ftext(fixp).split("\n")
+    check("rate.a=500" in fl and "rate.c=200" in fl and "rate.d=abc" in fl and not any(l.startswith("rate.keep=") for l in fl)
+          and "mode=b" in fl, "Q1 the file keeps every hand-typed line (a hand edit is never lost) and the in-game change")
+    r = R(op3("tset", "fix.rate", "a", "30", A, "Skyy", ""))
+    settle3()
+    check(r[0] == "ok" and "rate.a=30" in ftext(fixp).split("\n") and keys3("fix.rate").get("a") == "30"
+          and has3(logs3(), "\tmenu\tfix.rate[a]\t10\t30\tok"), "Q1 an in-game set of a held entry replaces the line %s" % (r,))
+    # a '|' typed into a 2-column line (sep=:) is refused (the mod's loader splits on ':'); a normal line in the same edit is taken
+    hand3([("pair.x=Alpha:5", "pair.x=Alpha|7" + "\n" + "pair.y=Beta:9")])
+    R(op3("reload", A, "Skyy"))
+    settle3()
+    L3 = logs3()
+    check(has3(L3, "\tfile\tfix.pair[x]\tAlpha|5\tAlpha|7\tinvalid") and has3(L3, "\tfile\tfix.pair[y]\t(none)\tBeta|9\tok")
+          and keys3("fix.pair") == {"x": "Alpha|5", "y": "Beta|9"}, "Q1 a '|' typed into a 2-column line is invalid, memory keeps Alpha|5 %s" % keys3("fix.pair"))
+    print("Q1. hand-edited table lines checked")
+
+    # (2) a 1-column table: no '|' split, the row max (900) is the text length; a table with a number column keeps the 200 cap
+    W0 = "Farming|B|Wheat|Plant_Wheat|Wheat_Item|none|Farms"
+    W1 = "Farming|B|Wheat|Plant_Wheat|Wheat_Item,Wheat_Seeds|hidden|Farms"
+    check(keys3("fix.coll").get("Wheat") == W0, "Q2 a 1-column line reads back whole")
+    r = R(op3("tset", "fix.coll", "Wheat", W1, A, "Skyy", ""))
+    settle3()
+    check(r[0] == "ok" and r[1] == W1, "Q2 tset of a 7-field '|' value in a 1-column table %s" % (r,))
+    check(("coll.Wheat=" + W1) in ftext(fixp).split("\n") and keys3("fix.coll").get("Wheat") == W1, "Q2 written and read back with its '|'")
+    v700 = ("Forest|S|Oak|Wood_Oak_Trunk|" + "Wood_Oak_Trunk," * 60)[:700]
+    v900 = ("Forest|S|Oak|" + "y" * 900)[:900]
+    r = R(op3("add", "fix.coll", "Oak", v700, A, "Skyy", ""))
+    check(r[0] == "ok" and keys3("fix.coll").get("Oak") == v700, "Q2 a 700-character value (row max 900) %s %s" % (r[0], r[2][:80]))
+    r = R(op3("tset", "fix.coll", "Oak", v900, A, "Skyy", ""))
+    check(r[0] == "ok", "Q2 900 characters = the row max %s" % r[2][:80])
+    r = R(op3("tset", "fix.coll", "Oak", v900 + "z", A, "Skyy", ""))
+    check(r[0] == "bad" and "900" in r[2], "Q2 901 characters refused by the row max %s" % r[2][:80])
+    r = R(op("tset", "xp.block", "Ore_Iron", "M" * 201 + "|5", A, "Skyy", ""))
+    check(r[0] == "bad" and "200" in r[2], "Q2 a table with a number column keeps the 200-character text cap %s" % (r,))
+    settle3()
+    tl = [l for l in logs3() if "\tmenu\tfix.coll[Wheat]\t" in l]
+    check(bool(tl) and tl[0].split("\t")[5:8] == [W0, W1, "ok"], "Q2 the log keeps the whole value %s" % tl[:1])
+    r = R(op3("tset", "fix.coll", "Wheat", tl[0].split("\t")[5] if tl else W0, A, "Skyy", "yes", "undo"))
+    settle3()
+    check(r[0] == "ok" and keys3("fix.coll").get("Wheat") == W0 and ("coll.Wheat=" + W0) in ftext(fixp).split("\n"),
+          "Q2 the inverse op from the log line restores the value exactly %s" % (r,))
+    W2 = W0.replace("|B|", "|S|")
+    hand3([("coll.Wheat=" + W0, "coll.Wheat=" + W2)])
+    R(op3("reload", A, "Skyy"))
+    settle3()
+    check(has3(logs3(), "\tfile\tfix.coll[Wheat]\t" + W0 + "\t" + W2 + "\tok") and keys3("fix.coll").get("Wheat") == W2,
+          "Q2 a hand edit of a 1-column line is checked as one value")
+    code = str(op3("export", "all"))
+    r = R(op3("import", code, A, "Skyy", "preview"))
+    check(r[0] == "ok" and r[1] == "0", "Q2 export -> import preview of '|' values: 0 changes %s" % (r,))
+    print("Q2. 1-column tables done")
+
+    # (3) a custom row's file lines run the mod's reload routine after the write (not for a restart row); custom tables too
+    settle3()
+    r0 = FixCfg.RELOADS
+    r = setv3("fix.mode", "a")
+    settle3()
+    check(r[0] == "ok" and "mode=a" in ftext(fixp).split("\n"), "Q3 custom row set + its file line %s" % (r,))
+    check(FixCfg.RELOADS == r0 + 1 and str(FixCfg.MODEFILE) == "a",
+          "Q3 the custom row's file line ran the reload routine after the write (%d -> %d, file mode %s)" % (r0, FixCfg.RELOADS, FixCfg.MODEFILE))
+    r0 = FixCfg.RELOADS
+    r = setv3("fix.late", "b")
+    settle3()
+    check(r[0] == "restart" and "late=b" in ftext(fixp).split("\n") and FixCfg.RELOADS == r0,
+          "Q3 a restart custom row writes its line and does not run the reload routine %s" % (r,))
+    settle()
+    t0 = TestCfg.RELOADS
+    r = R(op("add", "coins.tags", "silver", "Plain|3", A, "Skyy", "yes"))
+    settle()
+    check(r[0] == "ok" and "tag.silver=Plain:3" in ftext(cfgp).split("\n") and TestCfg.RELOADS == t0 + 1,
+          "Q3 a custom table's file line ran the reload routine (%d -> %d)" % (t0, TestCfg.RELOADS))
+    R(op("remove", "coins.tags", "silver", A, "Skyy", "yes"))
+    settle()
+    # the reload routine re-reads every file: another file's in-game change still only in memory is written first, never read back stale
+    settle3()
+    r = setv3("fix.level", "7")
+    r2 = setv3("fix.mode", "b")
+    FixPub.flush()
+    time.sleep(0.2)
+    check(r[0] == "ok" and r2[0] == "ok" and FixCfg.LEVEL == 7 and "level=7" in ftext(fixb).split("\n") and str(FixCfg.MODEFILE) == "b",
+          "Q3 the reload routine never reads back another file's unsaved in-game change (LEVEL %d, file %s)" % (FixCfg.LEVEL, ftext(fixb).split("\n")[1:2]))
+    settle3()
+    check(not any("\tfix.level\t" in l and l.endswith("\tclamped") for l in logs3()), "Q3 no false clamp line for the field row")
+    # the second file cannot be written (read-only): the reload routine a custom row runs reads its old text back, so the kit sets the
+    # field: row's in-game value again (memory, field and the later write agree; no false clamp); once writable, the retry writes it
+    settle3()
+    os.chmod(fixb, stat.S_IREAD)
+    try:
+        r = setv3("fix.level", "9")
+        r2 = setv3("fix.mode", "a")
+        FixPub.flush()
+        time.sleep(0.2)
+        s3 = [str(x) for x in op3("status")]
+        check(r[0] == "ok" and r2[0] == "ok" and "level=7" in ftext(fixb).split("\n") and s3[0] == "unsaved" and str(FixCfg.MODEFILE) == "a",
+              "Q3 b.properties cannot be written: its change waits, the reload routine ran on the other file (status %s)" % s3)
+        check(FixCfg.LEVEL == 9 and str(op3("get", "fix.level")) == "9",
+              "Q3 the reload routine's stale read of the unwritable file does not revert the field: row's in-game value (LEVEL %d)" % FixCfg.LEVEL)
+    finally:
+        os.chmod(fixb, stat.S_IREAD | stat.S_IWRITE)
+    settle3()
+    s3 = [str(x) for x in op3("status")]
+    check("level=9" in ftext(fixb).split("\n") and FixCfg.LEVEL == 9 and s3[0] != "unsaved",
+          "Q3 writable again: the next save writes it, field = memory = file (status %s)" % s3)
+    check(not any("\tfix.level\t" in l and l.endswith("\tclamped") for l in logs3()), "Q3 no false clamp line while the file could not be written")
+    print("Q3. custom rows run the reload routine")
+
+    # (4) a lone reload request (CfgFile.addReloads, no changed line - SkyySkills' curve rows arm it this way) runs
+    settle3()
+    HashSet = JClass("java.util.HashSet")
+    r0 = FixCfg.RELOADS
+    s = HashSet()
+    s.add(str(FixRows.RELOAD))
+    FixFile.addReloads(0, s)
+    FixPub.flush()
+    check(FixCfg.RELOADS == r0 + 1, "Q4 a lone reload request runs at the next save or flush (%d -> %d)" % (r0, FixCfg.RELOADS))
+    s = HashSet()
+    s.add(str(FixRows.RELOAD))
+    FixFile.addReloads(0, s)
+    FixFile.saveSoon(0)
+    time.sleep(1.2)
+    check(FixCfg.RELOADS == r0 + 2, "Q4 a lone reload request runs through saveSoon (%d -> %d)" % (r0, FixCfg.RELOADS))
+    print("Q4. lone reload request done")
+
+    # (5) action rows with a typed value: value=<type> publishes Object[12] (element 11 = the value type), every other row stays
+    # Object[11]; op action takes the value after via; a missing value (a SkyyMenu 0.3 call) uses the row default
+    hdr3 = bridge.get("config:def:SkyyCfgFix")
+    rows3 = dict((str(x[0]), x) for x in hdr3[7])
+    has_give = "fix.give" in rows3
+    check(has_give and len(rows3["fix.give"]) == 12 and str(rows3["fix.give"][11]) == "int" and str(rows3["fix.give"][4]) == "100",
+          "Q5 a value action publishes Object[12] with its value type")
+    check(all(len(x) == 11 for k2, x in rows3.items() if k2 not in ("fix.give", "fix.note")) and all(len(x) == 11 for x in hdr[7]),
+          "Q5 every row without a value keeps the Object[11] layout")
+    if has_give:
+        r = R(op3("action", "fix.give", A, "Skyy", "", "menu", "250"))
+        check(r[0] == "confirm" and r[2].startswith("Give (250)?") and FixHooks.GIVES == 0, "Q5 a danger value action asks with its value %s" % (r,))
+        r = R(op3("action", "fix.give", A, "Skyy", "yes", "menu", "250"))
+        check(r == ("ok", "", "Gave 250 XP.") and str(FixHooks.GIVEN) == "250" and str(FixHooks.CHECKED) == "250",
+              "Q5 the method gets the value, check= got it too %s" % (r,))
+        check(R(op3("action", "fix.give", A, "Skyy", "yes", "menu", "5000"))[0:2] == ("bad", None) and FixHooks.GIVES == 1, "Q5 out of bounds refused")
+        r = R(op3("action", "fix.give", A, "Skyy", "yes", "menu", "abc"))
+        check(r[0] == "bad" and "from 1 to 1000" in r[2], "Q5 not a number refused with the bounds %s" % (r,))
+        r = R(op3("action", "fix.give", A, "Skyy", "yes", "menu", "13"))
+        check(r == ("bad", None, "13 is not allowed.") and FixHooks.GIVES == 1, "Q5 check= may refuse the typed value %s" % (r,))
+        r = R(op3("action", "fix.give", A, "Skyy", "yes", "menu", "1k"))
+        check(r[0] == "ok" and str(FixHooks.GIVEN) == "1000", "Q5 typed forms are canonical (1k -> 1000) %s" % (r,))
+        r = R(op3("action", "fix.give", A, "Skyy", "yes", "menu"))
+        check(r[0] == "ok" and str(FixHooks.GIVEN) == "100", "Q5 no value (a SkyyMenu 0.3 call) runs with the row default %s" % (r,))
+        check(R(op3("action", "fix.give", Bp, "B", "yes", "menu", "250"))[0] == "denied" and FixHooks.GIVES == 3, "Q5 a value action needs the node")
+        check(op3("action", "fix.give", A, "Skyy", "yes", "menu", Integer.valueOf(5)) is None and FixHooks.GIVES == 3,
+              "Q5 a value that is not text is a bad argument (null)")
+        r = R(op3("action", "fix.note", A, "Skyy", "yes", "menu"))
+        check(r[0] == "bad" and "Type a value" in r[2] and FixHooks.NOTE is None, "Q5 no value and no default: asks for one %s" % (r,))
+        r = R(op3("action", "fix.note", A, "Skyy", "yes", "menu", "  hello  "))
+        check(r[0] == "ok" and str(FixHooks.NOTE) == "hello", "Q5 a text value is trimmed %s" % (r,))
+        check(R(op3("action", "fix.note", A, "Skyy", "yes", "menu", "x" * 21))[0] == "bad", "Q5 text value length (row max 20)")
+        settle3()
+        check(any(l.endswith("\tmenu\tfix.give\t1000\t(action)\tdone") for l in logs3()),
+              "Q5 a value action logs its value in the old column, (action) and done as before")
+    else:
+        for w in ("confirm", "run", "bounds", "check", "default", "denied", "log"):
+            check(False, "Q5 value action: %s (the value-action rows were not built)" % w)
+    r = R(op3("action", "fix.ping", A, "Skyy", "yes", "menu"))
+    check(r == ("ok", "", "Pong.") and FixHooks.PINGS == 1, "Q5 a plain action runs as before %s" % (r,))
+    print("Q5. value actions done")
+
+    # (6) concurrency. A check= hook the test holds open (FixHooks.GATEV) on a reload op running on its own thread, while a newer hand
+    # edit of the same entry arrives: memory never shows a hand-typed value that has not passed, and the late answer about the older
+    # line changes nothing (a newer change of the entry wins)
+    FixStress = JClass(P3 + "FixStress")
+
+    def held(value):
+        FixHooks.BLOCKED = False
+        FixHooks.GATEV = value
+        x = FixStress(9, 0, 0)
+        t = Thread(x)
+        t.start()
+        w0 = time.time()
+        while not FixHooks.BLOCKED and time.time() - w0 < 5:
+            time.sleep(0.01)
+        return x, t
+
+    def release(x, t):
+        FixHooks.GATEV = None
+        t.join(15000)
+        return not t.isAlive() and x.errors == 0
+
+    def rate(e):
+        return keys3("fix.rate").get(e)
+
+    settle3()
+    check(rate("a") == "30" and "rate.a=30" in ftext(fixp).split("\n"), "Q6 start: rate a = 30 (%s)" % rate("a"))
+    hand3([("rate.a=30", "rate.a=73")])
+    x, t = held("73")
+    check(FixHooks.BLOCKED, "Q6 the reload op's check= hook for the hand-typed 73 is running (held by the test)")
+    check(rate("a") == "30", "Q6 while that hook runs, memory keeps the last value that passed (a = %s, not the unchecked 73)" % rate("a"))
+    hand3([("rate.a=73", "rate.a=500")])
+    r = R(op3("reload", A, "Skyy"))
+    check(r[0] == "ok" and rate("a") == "30",
+          "Q6 a newer hand edit (500, out of bounds) while the older line is still being checked holds 30 (a = %s) %s" % (rate("a"), r))
+    ok_ = release(x, t)
+    settle3()
+    L3 = logs3()
+    check(ok_ and rate("a") == "30", "Q6 the held hook's late 'refused' for 73 changes nothing: a = %s" % rate("a"))
+    check(has3(L3, "\tfile\tfix.rate[a]\t30\t73\tinvalid") and has3(L3, "\tfile\tfix.rate[a]\t30\t500\tinvalid"),
+          "Q6 both hand-edited lines are logged invalid next to the value memory kept (30): %s" % [l.split("\t")[4:] for l in L3 if "\tfix.rate[a]\t" in l][:3])
+    # an in-game set while the hook of an older hand-typed line is held: the late 'accepted' for that line does not bring it back
+    hand3([("rate.a=500", "rate.a=77")])
+    x, t = held("77")
+    r = R(op3("tset", "fix.rate", "a", "40", A, "Skyy", ""))
+    settle3()
+    ok_ = release(x, t)
+    settle3()
+    check(ok_ and r[0] == "ok" and rate("a") == "40" and "rate.a=40" in ftext(fixp).split("\n"),
+          "Q6 an in-game set wins over the late 'accepted' of an older hand line (a = %s) %s" % (rate("a"), r))
+
+    # stress: 8 threads for 4 s on SkyyCfgFix, every fix.rate check sleeps 2 ms
+    def okv(v):
+        if v is None or v.endswith("3"):
+            return False
+        try:
+            n = int(v)
+        except ValueError:
+            return False
+        return 0 <= n <= 100 and str(n) == v
+
+    FixHooks.SLOW = 2
+    System.setOut(JClass("java.io.PrintStream")(JClass("java.io.OutputStream").nullOutputStream()))
+    runners = [FixStress(role, 300 + role, 4000) for role in range(8)]
+    threads = [Thread(x) for x in runners]
+    t0 = time.time()
+    for th in threads:
+        th.start()
+    for th in threads:
+        th.join(60000)
+    System.setOut(old_out)
+    FixHooks.SLOW = 0
+    hung = [i for i, th in enumerate(threads) if th.isAlive()]
+    settle3()
+    rr = R(op3("reload", A, "Skyy"))
+    settle3()
+    errs = sum(x.errors for x in runners)
+    seen = runners[6].seen + runners[7].seen
+    check(not hung, "Q6 stress: no thread hung (%s)" % hung)
+    check(errs == 0 and rr[0] == "ok", "Q6 stress: %d errors (%s), final reload %s" % (errs, [str(x.last) for x in runners if x.last is not None][:2], rr))
+    check(runners[0].done >= 20 and sum(runners[k].done for k in (1, 2, 3)) >= 100 and runners[4].done >= 10,
+          "Q6 stress did real work: %d hand writes, %d in-game ops, %d reloads" % (runners[0].done, sum(runners[k].done for k in (1, 2, 3)), runners[4].done))
+    check(seen == 0, "Q6 stress: the readers never saw a value in memory that did not pass its checks (%d times, e.g. %s)" % (
+        seen, [str(x.lastSeen) for x in runners[6:8] if x.lastSeen is not None][:2]))
+    fp = fprops(fixp)
+    mem = keys3("fix.rate")
+    torn = []
+    for e in ("s0", "s1", "s2", "s3"):
+        fv = fp.getProperty("rate." + e)
+        fv = None if fv is None else str(fv).strip()
+        mv = mem.get(e)
+        if fv is None:
+            good = mv is None
+        elif okv(fv):
+            good = mv == fv
+        else:
+            good = mv != fv and (mv is None or okv(mv))
+        if not good:
+            torn.append((e, fv, mv))
+    check(not torn and all(okv(v) for v in mem.values()),
+          "Q6 stress: memory = the file for every good line, a refused line keeps a value that passed: %s %s" % (torn, mem))
+    badlog = []
+    for l in logs3():
+        p_ = l.split("\t")
+        if len(p_) < 8 or not re.match(r"^fix\.rate\[s\d\]$", p_[4]):
+            continue
+        via, nv, stt = p_[3], p_[6], p_[7]
+        if via == "file":
+            good = (stt == "ok" and (nv == "(none)" or okv(nv))) or (stt == "invalid" and nv != "(none)" and not okv(nv)) or stt == "overridden"
+        else:
+            good = stt == "ok" and (nv == "(none)" or okv(nv))
+        if not good:
+            badlog.append(p_[3:8])
+    check(not badlog, "Q6 stress: every fix.rate log line's status matches its value: %s" % badlog[:3])
+    lv = str(op3("get", "fix.level"))
+    check(FixCfg.LEVEL == int(lv) and ("level=" + lv) in ftext(fixb).split("\n"),
+          "Q6 stress: fix.level field = memory = file (field %d, memory %s, file %s)" % (FixCfg.LEVEL, lv, ftext(fixb).split("\n")[1:2]))
+    print("Q6. concurrency: %d hand writes (%d skipped), %d in-game ops (%d refused), %d reloads in %.1f s, %d errors, %d bad reads" % (
+        runners[0].done, runners[0].skipped, sum(runners[k].done for k in (1, 2, 3)), sum(runners[k].bad for k in (1, 2, 3)), runners[4].done,
+        time.time() - t0, errs, seen))
+    FixPub.shutdown()
+    print("Q. kit 1.1 fixes done")
+
     # ---------------- N. status / versions / log shapes
     s = [str(x) for x in op("status")]
     check(s[0] in ("ok", "restart") and len(s) == 2, "status shape %s" % s)
@@ -1008,8 +1674,11 @@ def main():
     p = subprocess.run([sys.executable, os.path.abspath(__file__), "--run", jar, "--dir", SCRATCH], env=env)
     if not KEEP:
         shutil.rmtree(SCRATCH, ignore_errors=True)
-    print("skyycfg harness:", "PASS" if p.returncode == 0 else "FAIL")
-    sys.exit(p.returncode)
+    for f in P1_FAILS:
+        print("  PHASE 1 FAILED:", f)
+    ok = p.returncode == 0 and not P1_FAILS
+    print("skyycfg harness:", "PASS" if ok else "FAIL (%d phase-1 failures, phase 2 exit %d)" % (len(P1_FAILS), p.returncode))
+    sys.exit(0 if ok else 1)
 
 
 if __name__ == "__main__":

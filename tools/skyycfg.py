@@ -2,6 +2,33 @@
 
 Contract for other mods and for SkyyMenu 0.3: tools/CONFIG-CONTRACT.md. Test harness: python tools/skyycfg_test.py (bare JVM, spec 8.2).
 
+KIT 1.1 (2026-09-25, the round-4 builders' gaps; bridge contract "1", file, log, history and export formats unchanged, so the 18 jars
+built with 1.0 keep working next to jars built with 1.1; each adopter picks 1.1 up at its own next version):
+  1. CfgFile.handApply: a hand-edited TABLE line is checked like an in-game change (entry key, column count / types / bounds, the row's
+     check= hook with tableKey[entry] and the canonical columns, or null for a removed line). A refused line is logged `invalid`, memory
+     keeps the old value (held until that entry changes again in game or by hand, or the next start), its reload routine is not run for
+     it, and the file keeps the hand-typed line (a hand edit is never lost). The check= hooks run outside every kit lock: after the
+     locked part of a save (CfgSaveTask.saveLocked -> CfgFn.handChecks), and between merge and apply on the reload op's own thread.
+     Concurrency: merge and the kit's own line checks are one monitor hold (CfgFile.mergeApply); a line waiting for its check= hook is
+     held like a refused one until the hook accepts it, and only the entry's newest change may apply (CfgFile.HCHK), so a slow hook
+     answering about an older line never puts a value in memory that did not pass; the reload op reads + merges under the save
+     monitor (CfgSaveTask.readMerge), so it never merges a file a save is writing (that stale merge could drop the in-game change
+     being written from memory and let a later save write the older lines back); op keys leaves out a key-family entry removed while
+     it lists (test Q6 + its stress phase).
+  2. A 1-column table no longer splits a value on '|' (the whole value is the one column, written to the file as is, never through
+     sep=), and a table without int/dec columns takes its text length from the row max (1-2000, build-checked; 200 when no max) and
+     takes no min (build-checked: it would have no effect).
+  3. A custom: row or custom table whose customSet hands back file lines queues the mod's RELOAD after the write, like a reload: row
+     (not for a restart row or a "restart" answer). Before any reload routine runs, the mod's other files with unsaved in-game changes
+     are written; a file that still cannot be written (a failed write) or that another thread saves while the routine runs is read
+     stale by the routine, so those in-game field: values are set again after the routines (CfgSaveTask.quiet + CfgFile.reassert)
+     and no false clamp is logged.
+  4. CfgFile.wants() also answers true for a pending reload request with no changed line, so a lone CfgFile.addReloads(...) runs.
+  5. Action rows may take a typed value: binding option value=int|dec|text|bool|range|color. The row publishes Object[12] (element 11 =
+     the value type; every other row keeps Object[11]), op action takes the value after via, validated against the row's min / max /
+     unit (a missing value = the row default, published at element 4, or `bad` when there is none), check= gets (key, value), the
+     method is static Object[] m(UUID who, String name, String value), and the log line carries the value in its old column.
+
 Why a code generator: every mod has its own classloader and there is no javac, so shared code cannot be a library jar. A build script
 imports this module and gets the same seven classes, in its own package, compiled by javassist. The build script only adds DATA: its rows
 and how each row binds to the mod's own fields, files and reload routine.
@@ -30,10 +57,12 @@ Binding grammar (row element 11):
     reload[:<Class>.<method>][@<file>[:<fileKey>]]           file line only; the routine (default RELOAD) runs after the write
     custom:<Class>[@<file>[:<k1>,<k2>]]                     Class.customGet(String) / customSet(String,String) [/ customRead / customKeys]
     action:<Class>.<method>                                  static Object[] method(java.util.UUID who, String name) -> R
+                                                             (with value=: method(java.util.UUID who, String name, String value))
     none | ""                                                link rows
   options, appended with ';':  after=<Class>.<m>   check=<Class>.<m>   confirm=on|off|up|down|always|never   sep=<c>
-                               entry=key|item|itemprefix
-    check= works on scalar, table (key tableKey[entry], value null = remove) and action rows (key, value null).
+                               entry=key|item|itemprefix   value=int|dec|text|bool|range|color (action rows, kit 1.1)
+    check= works on scalar, table (key tableKey[entry], value null = remove; also run on hand-edited lines) and action rows (key, value
+    null, or the canonical typed value for a value= action).
     confirm= needs the danger flag and refines when that row asks: on/off bool rows, up/down int/dec rows, always/never any row
     (tables and actions: always/never only).
   <Class> is a simple name in PKG or a full name. <file> is a path under the world's mods/ folder, or the unique end of one FILES entry.
@@ -47,7 +76,10 @@ import os, re, zipfile
 from decimal import Decimal, InvalidOperation
 
 CONTRACT = "1"
+KIT_VERSION = "1.1"
 TYPES = ("bool", "int", "dec", "text", "choice", "items", "range", "table", "link", "action", "color")
+ACTION_VALUE_TYPES = ("int", "dec", "text", "bool", "range", "color")   # value=<type> on an action row (kit 1.1); no opts-based types
+TABLE_TEXT_MAX = 2000   # a table without int/dec columns takes its text length from the row max, up to this (kit 1.1)
 SCALAR = ("bool", "int", "dec", "text", "choice", "items", "range", "color")
 FLAGS = ("live", "restart", "new", "danger", "part", "adv", "ro")
 UNITS = ("%", "coins", "h", "min", "s", "ms", "blocks", "x", "")
@@ -342,6 +374,8 @@ public static String oneLine(String s) {
   return s.replace('\t', ' ').replace('\r', ' ').replace('\n', ' ');
 }""",
 r"""public static boolean isTable(int i) { return TYPES[i].equals("table"); }""",
+# a table with one named column (no '|' after the last ';' of its opts): its value is never split on '|' (kit 1.1)
+r"""public static boolean oneCol(int i) { return OPTS[i].indexOf('|', OPTS[i].lastIndexOf(';') + 1) < 0; }""",
 r"""public static boolean noValue(int i) { return TYPES[i].equals("table") || TYPES[i].equals("link") || TYPES[i].equals("action"); }""",
 r"""
 public static String[] ok(String v) { return new String[] { v, null }; }""",
@@ -432,9 +466,9 @@ public static String[] chLabels(int i) {
   for (int k = 0; k < p.length; k++) { int b = p[k].indexOf('|'); if (b < 0) r[k] = p[k].trim(); else r[k] = p[k].substring(b + 1).trim(); }
   return r;
 }""",
+# t = the row type, or a value= action's value type (kit 1.1: same rules, the row's min / max / unit)
 r"""
-public static String[] validate(int i, String s) {
-  String t = TYPES[i];
+public static String[] validateAs(int i, String t, String s) {
   if (s == null) return no("No value given.");
   if (s.length() > 20000) return no("That value is too long.");
   if (t.equals("bool")) {
@@ -538,6 +572,7 @@ public static String[] validate(int i, String s) {
   }
   return no("This row has no single value.");
 }""",
+r"""public static String[] validate(int i, String s) { return validateAs(i, TYPES[i], s); }""",
 r"""
 public static boolean same(int i, String a, String b) {
   if (a == null || b == null) return a == b;
@@ -549,15 +584,16 @@ public static boolean same(int i, String a, String b) {
   return x[0].equals(y[0]);
 }""",
 r"""
-public static String disp(int i, String v) {
+public static String dispAs(int i, String t, String v) {
   if (v == null) return "(unknown)";
-  if (TYPES[i].equals("bool")) { if (v.equals("true")) return "ON"; if (v.equals("false")) return "OFF"; return v; }
+  if (t.equals("bool")) { if (v.equals("true")) return "ON"; if (v.equals("false")) return "OFF"; return v; }
   if (v.length() == 0) return "(empty)";
   String u = UNITS[i];
   if (u.length() == 0) return v;
-  if (u.equals("%")) { if (TYPES[i].equals("range")) return v.replace("-", "%-") + "%"; return v + "%"; }
+  if (u.equals("%")) { if (t.equals("range")) return v.replace("-", "%-") + "%"; return v + "%"; }
   return v + " " + u;
 }""",
+r"""public static String disp(int i, String v) { return dispAs(i, TYPES[i], v); }""",
 r"""
 public static String fileText(int i, String canon) {
   if (TYPES[i].equals("bool") && opt(i, "01")) { if (canon.equals("true")) return "1"; return "0"; }
@@ -661,7 +697,10 @@ public static String fileApply(int i, String raw) {
 r"""
 public static Object[] header() {
   Object[] rows = new Object[KEYS.length];
-  for (int i = 0; i < KEYS.length; i++) rows[i] = new Object[] { KEYS[i], LABELS[i], CATS[i], TYPES[i], DEFS[i], MINS[i], MAXS[i], OPTS[i], UNITS[i], FLAGS[i], HELPS[i] };
+  for (int i = 0; i < KEYS.length; i++) {
+    if (VTYPES[i].length() == 0) rows[i] = new Object[] { KEYS[i], LABELS[i], CATS[i], TYPES[i], DEFS[i], MINS[i], MAXS[i], OPTS[i], UNITS[i], FLAGS[i], HELPS[i] };
+    else rows[i] = new Object[] { KEYS[i], LABELS[i], CATS[i], TYPES[i], DEFS[i], MINS[i], MAXS[i], OPTS[i], UNITS[i], FLAGS[i], HELPS[i], VTYPES[i] };
+  }
   String[] ci = new String[CAT_IDS.length];
   String[] cl = new String[CAT_LABELS.length];
   System.arraycopy(CAT_IDS, 0, ci, 0, ci.length);
@@ -1154,6 +1193,9 @@ public static void init() {
     PEND[f] = new java.util.LinkedHashMap();
     RLD[f] = new java.util.HashSet();
     PWHAT[f] = new java.util.HashSet();
+    HOLD[f] = new java.util.HashMap();
+    HCHK[f] = new java.util.HashMap();
+    WROTE[f] = new java.util.HashMap();
     NL[f] = "\n";
     ENDNL[f] = true;
   }
@@ -1172,6 +1214,35 @@ r"""
 public static synchronized void seed(int f) {
   String[] d = @PKG@.CfgRows.defLines(f);
   for (int k = 0; k < d.length; k++) LINES[f].add(d[k]);
+}""",
+# kit 1.1: table entries whose hand edit was refused keep their old value in memory (HOLD: file key -> old file text, null = the entry
+# did not exist); laid over VALS after every re-parse, dropped by an in-game edit of that key or by a later accepted hand edit.
+# A hand-edited line whose check= hook has not answered yet is held too (memory never shows a value that did not pass), and HCHK maps
+# its file key to that pending check (the String[] handApply queued): only the check still in HCHK may accept or keep refusing the
+# line; a newer change of the entry (an in-game edit, a newer hand edit) replaces or drops it
+r"""
+public static synchronized void holdOver(int f) {
+  java.util.ArrayList drop = new java.util.ArrayList();
+  java.util.Iterator it = HOLD[f].keySet().iterator();
+  while (it.hasNext()) {
+    String fk = (String) it.next();
+    if (PEND[f].containsKey(fk)) { drop.add(fk); continue; }
+    String v = (String) HOLD[f].get(fk);
+    if (v == null) VALS[f].remove(fk); else VALS[f].put(fk, v);
+  }
+  for (int k = 0; k < drop.size(); k++) HOLD[f].remove(drop.get(k));
+}""",
+r"""
+public static synchronized void holdSet(int f, String fk, String oldRaw) {
+  HOLD[f].put(fk, oldRaw);
+  if (oldRaw == null) VALS[f].remove(fk); else VALS[f].put(fk, oldRaw);
+}""",
+r"""
+public static synchronized boolean holdClear(int f, String fk, String nowRaw) {
+  if (!HOLD[f].containsKey(fk)) return false;
+  HOLD[f].remove(fk);
+  if (nowRaw == null) VALS[f].remove(fk); else VALS[f].put(fk, nowRaw);
+  return true;
 }""",
 # the disk text replaces the in-memory copy; in-game edits not yet saved are applied again on top (spec 1.4.4 step 5)
 r"""
@@ -1203,6 +1274,7 @@ public static synchronized java.util.ArrayList merge(int f, byte[] disk, long mt
   java.util.Iterator pit = PEND[f].keySet().iterator();
   while (pit.hasNext()) { String k = (String) pit.next(); applyEdit(LINES[f], k, (String) PEND[f].get(k)); }
   VALS[f] = parseVals(LINES[f]);
+  holdOver(f);
   BASE[f] = nv;
   MT[f] = mt;
   SZ[f] = sz;
@@ -1222,8 +1294,11 @@ public static synchronized boolean markBroken(int f, Throwable t) {
 }""",
 r"""public static synchronized boolean isBroken(int f) { return BROKEN[f]; }""",
 r"""public static synchronized boolean isFailed(int f) { return FAILED[f]; }""",
+# kit 1.1: in-game changes of this file still only in memory, and the file can be written (not unreadable, no failed write pending)
+r"""public static synchronized boolean dirtyOk(int f) { return DIRTY[f] && !BROKEN[f] && !FAILED[f]; }""",
 r"""public static synchronized boolean changedOnDisk(int f, long mt, long sz) { return BROKEN[f] || !LOADED[f] || FORCE[f] || mt != MT[f] || sz != SZ[f]; }""",
-r"""public static synchronized boolean wants(int f) { return DIRTY[f] || FORCE[f] || (BROKEN[f] && PEND[f].size() > 0); }""",
+# kit 1.1: a pending reload request with no changed line (CfgFile.addReloads alone) also wants a save pass, so its routine runs
+r"""public static synchronized boolean wants(int f) { return DIRTY[f] || FORCE[f] || RLD[f].size() > 0 || (BROKEN[f] && PEND[f].size() > 0); }""",
 r"""
 public static synchronized String value(int f, String fk) {
   if (f < 0) return null;
@@ -1246,6 +1321,8 @@ public static synchronized boolean edit(int f, String fk, String val, String sta
   applyEdit(LINES[f], fk, val);
   PEND[f].remove(fk);
   PEND[f].put(fk, val);
+  HOLD[f].remove(fk);
+  HCHK[f].remove(fk);
   if (val == null) VALS[f].remove(fk); else VALS[f].put(fk, val);
   DIRTY[f] = true;
   if (PSTAMP[f] == null) PSTAMP[f] = stamp;
@@ -1253,6 +1330,18 @@ public static synchronized boolean edit(int f, String fk, String val, String sta
   PVIA[f] = via;
   PWHAT[f].add(what);
   return true;
+}""",
+# kit 1.1: the file lines a customSet hands back ({ key1, value1, key2, value2 }, value null removes the line), all under one monitor
+# hold, plus the reload routine rel (the mod's RELOAD; "" = none) when at least one line was taken
+r"""
+public static synchronized int editLines(int f, String[] fl, String stamp, String who, String via, String what, String rel) {
+  int n = 0;
+  for (int q = 0; q + 1 < fl.length; q += 2) {
+    if (fl[q] == null) continue;
+    if (edit(f, fl[q], fl[q + 1], stamp, who, via, what)) n++;
+  }
+  if (n > 0 && rel != null && rel.length() > 0) RLD[f].add(rel);
+  return n;
 }""",
 r"""
 public static synchronized void bump() {
@@ -1352,6 +1441,9 @@ public static synchronized Object[] takeBatch(int f) throws Exception {
   byte[] out = join(LINES[f], NL[f], ENDNL[f] || MISSING[f]).getBytes("ISO-8859-1");
   String st = PSTAMP[f];
   if (st == null) st = @PKG@.CfgHist.stamp();
+  SGEN = SGEN + 1L;
+  java.util.Iterator wi = PEND[f].keySet().iterator();
+  while (wi.hasNext()) { String wk = (String) wi.next(); WROTE[f].put(wk, new Object[] { PEND[f].get(wk), Long.valueOf(SGEN) }); }
   Object[] r = new Object[] { out, st, summary(f), PWHO[f], PEND[f], RLD[f], PVIA[f], PWHAT[f] };
   PEND[f] = new java.util.LinkedHashMap();
   RLD[f] = new java.util.HashSet();
@@ -1405,7 +1497,7 @@ r"""
 public static String colsFromFile(int i, String raw) {
   if (raw == null) return null;
   String sep = @PKG@.CfgRows.BSEP[i];
-  if (@PKG@.CfgRows.OPTS[i].indexOf('|', @PKG@.CfgRows.OPTS[i].lastIndexOf(';') + 1) < 0 || sep.length() == 0) return raw.trim();
+  if (@PKG@.CfgRows.oneCol(i) || sep.length() == 0) return raw.trim();
   StringBuilder sb = new StringBuilder();
   int s = 0;
   while (true) {
@@ -1419,13 +1511,22 @@ public static String colsFromFile(int i, String raw) {
 r"""
 public static String colsToFile(int i, String cols) {
   if (cols == null) return null;
+  if (@PKG@.CfgRows.oneCol(i)) return cols;
   return cols.replace("|", @PKG@.CfgRows.BSEP[i]);
 }""",
-# hand edits found at a save or a reload (spec 1.4.4 step 5, 1.4.2): returns { log entries, reload routines, changed row count }
+# hand edits found at a save or a reload (spec 1.4.4 step 5, 1.4.2): returns { log entries, reload routines, changed row count,
+# table lines whose check= hook must still run }. Kit 1.1: a hand-edited table line gets the kit's own checks here (entry key, column
+# count / types / bounds; pure kit code, allowed under the monitor); a refused one is logged invalid and memory keeps the old value
+# (holdSet). A '|' typed into a 2-3 column line is refused too (the kit never writes one there: columns are split by sep=, so the
+# mod's loader would misread it). A line of a row with a check= hook is only queued: the hook is mod code, so CfgFn.handChecks runs it
+# after this monitor (and the save lock) is released, then keeps refusing or accepts the line (holdIf / unholdIf) and logs it. Until
+# then the line is held like a refused one (memory keeps the last value that passed) and HCHK[f] names its pending check; any newer
+# diff of the same entry drops that pending check first, so a late answer about an older line never touches memory
 r"""
 public static synchronized Object[] handApply(int f, java.util.ArrayList diffs) {
   java.util.ArrayList logs = new java.util.ArrayList();
   java.util.HashSet rel = new java.util.HashSet();
+  java.util.ArrayList checks = new java.util.ArrayList();
   int n = 0;
   for (int d = 0; d < diffs.size(); d++) {
     String[] df = (String[]) diffs.get(d);
@@ -1438,13 +1539,34 @@ public static synchronized Object[] handApply(int f, java.util.ArrayList diffs) 
     String st = "ok";
     if (mine) st = "overridden";
     if (@PKG@.CfgRows.isTable(i)) {
+      HCHK[f].remove(fk);
       String e = fk.substring(@PKG@.CfgRows.BFK[i].length());
-      String o = colsFromFile(i, df[1]);
+      String tk = @PKG@.CfgRows.KEYS[i] + "[" + e + "]";
+      String oldRaw = df[1];
+      if (HOLD[f].containsKey(fk)) oldRaw = (String) HOLD[f].get(fk);
+      String o = colsFromFile(i, oldRaw);
       String w = colsFromFile(i, df[2]);
       if (o == null) o = "(none)";
       if (w == null) w = "(none)";
-      logs.add(new String[] { @PKG@.CfgRows.KEYS[i] + "[" + e + "]", o, w, st });
-      if (!mine && !@PKG@.CfgRows.flag(i, "restart")) rel.add(@PKG@.CfgRows.BNAME[i]);
+      if (mine) { logs.add(new String[] { tk, o, w, st }); continue; }
+      String canon = null;
+      String why = null;
+      if (df[2] != null) {
+        why = @PKG@.CfgFn.entryErr(i, e);
+        if (why == null && !@PKG@.CfgRows.oneCol(i) && df[2].indexOf('|') >= 0) why = "a | inside a column";
+        if (why == null) { String[] tv = @PKG@.CfgFn.tvalue(i, w); canon = tv[0]; why = tv[1]; }
+      }
+      if (why != null) { holdSet(f, fk, oldRaw); logs.add(new String[] { tk, o, w, "invalid" }); continue; }
+      if (@PKG@.CfgRows.BCHECK[i].length() > 0) {
+        String[] c = new String[] { fk, oldRaw, df[2], canon, tk, o, w, String.valueOf(i) };
+        holdSet(f, fk, oldRaw);
+        HCHK[f].put(fk, c);
+        checks.add(c);
+        continue;
+      }
+      holdClear(f, fk, df[2]);
+      logs.add(new String[] { tk, o, w, "ok" });
+      if (!@PKG@.CfgRows.flag(i, "restart")) rel.add(@PKG@.CfgRows.BNAME[i]);
       continue;
     }
     if (k == 3) {
@@ -1460,6 +1582,7 @@ public static synchronized Object[] handApply(int f, java.util.ArrayList diffs) 
     String w = @PKG@.CfgRows.fromFile(i, df[2]);
     String clamp = null;
     if (!mine) {
+      WROTE[f].remove(fk);
       if (@PKG@.CfgRows.flag(i, "restart")) {
         PENDV[i] = w;
       } else if (k == 1) {
@@ -1477,39 +1600,98 @@ public static synchronized Object[] handApply(int f, java.util.ArrayList diffs) 
     if (clamp != null) logs.add(new String[] { @PKG@.CfgRows.KEYS[i], w, clamp, "clamped" });
   }
   if (n > 0) bump();
-  return new Object[] { logs, rel, Integer.valueOf(n) };
+  return new Object[] { logs, rel, Integer.valueOf(n), checks };
+}""",
+# kit 1.1, after a table line's check= hook ran outside the monitor (c = the String[] handApply queued): only while c is still the
+# entry's pending check (no in-game edit, no newer hand edit of it since, no in-game edit waiting) - refused: the hold handApply set
+# stays (memory keeps the last value that passed); accepted: the hold is dropped and memory shows the hand-typed line. True = applied
+r"""
+public static synchronized boolean holdIf(int f, String[] c) {
+  String fk = c[0];
+  Object me = c;
+  if (HCHK[f].get(fk) != me) return false;
+  HCHK[f].remove(fk);
+  if (PEND[f].containsKey(fk)) return false;
+  if (!HOLD[f].containsKey(fk)) { holdSet(f, fk, c[1]); bump(); }
+  return true;
+}""",
+r"""
+public static synchronized boolean unholdIf(int f, String[] c) {
+  String fk = c[0];
+  Object me = c;
+  if (HCHK[f].get(fk) != me) return false;
+  HCHK[f].remove(fk);
+  if (PEND[f].containsKey(fk)) return false;
+  if (holdClear(f, fk, c[2])) bump();
+  return true;
+}""",
+# kit 1.1: merge + the kit's checks of the hand-edited lines in ONE monitor hold, so no reader ever sees a hand-typed table line in
+# memory before the kit's own checks (and the hold of a line that still waits for its check= hook) are applied
+r"""
+public static synchronized Object[] mergeApply(int f, byte[] disk, long mt, long sz) throws Exception {
+  return handApply(f, merge(f, disk, mt, sz));
+}""",
+# kit 1.1, after the mod's reload routines ran (CfgSaveTask.runReloads): a routine re-reads the mod's files, so a field: row whose
+# in-game value was not on disk while it read was just set back to the old file text: a value still only in memory (its file could not
+# be written: a failed write waiting for its 30 s retry, an unreadable file, or an edit that landed meanwhile), or one whose save batch
+# was taken after g0 (CfgSaveTask.quiet, just before the routines: that write may have landed after the routine read the file). Set
+# those fields again from that in-game value (validated in game already; WROTE = the last value each save batch took per file key,
+# dropped when a hand edit of the key is merged), so memory, the field and the file agree; returns how many were set
+r"""
+public static synchronized long sgen() { return SGEN; }""",
+r"""
+public static synchronized int reassert(long g0) {
+  int n = 0;
+  for (int i = 0; i < @PKG@.CfgRows.KEYS.length; i++) {
+    if (@PKG@.CfgRows.BK[i] != 1) continue;
+    int f = @PKG@.CfgRows.BF[i];
+    if (f < 0 || @PKG@.CfgRows.flag(i, "restart")) continue;
+    String fk = @PKG@.CfgRows.BFK[i];
+    Object v = null;
+    if (PEND[f].containsKey(fk)) v = PEND[f].get(fk);
+    else {
+      Object[] w = (Object[]) WROTE[f].get(fk);
+      if (w != null && ((Long) w[1]).longValue() > g0) v = w[0];
+    }
+    if (v == null) continue;
+    if (@PKG@.CfgRows.fileApply(i, (String) v).equals("ok")) n++;
+  }
+  return n;
 }""",
 ]
 
 # ================================================================================================================ Java: CfgSaveTask (methods)
 TASK_JAVA = [
+# the locked part of a save (file I/O under the CfgSaveTask monitor): returns { reload routines, hand-edited table lines whose check=
+# hook still has to run (kit 1.1) or null }
 r"""
-public static synchronized java.util.HashSet saveFile(int f) {
+public static synchronized Object[] saveLocked(int f) {
   @PKG@.CfgFile.unsched(f);
   java.util.HashSet rel = new java.util.HashSet();
-  if (!@PKG@.CfgFile.wants(f)) return rel;
+  java.util.ArrayList checks = null;
+  if (!@PKG@.CfgFile.wants(f)) return new Object[] { rel, checks };
   Object[] d = null;
   try { d = @PKG@.CfgFile.readDisk(f); }
   catch (Throwable t) {
     if (@PKG@.CfgFile.markBroken(f, t)) @PKG@.CfgRows.warn(@PKG@.CfgRows.FILES[f] + " cannot be read - in-game changes to it wait until it can be read again (fix or delete it, then Reload): " + t);
     @PKG@.CfgFile.retry(f);
-    return rel;
+    return new Object[] { rel, checks };
   }
   byte[] cur = (byte[]) d[0];
   long mt = ((Long) d[1]).longValue();
   long sz = ((Long) d[2]).longValue();
   try {
     if (@PKG@.CfgFile.changedOnDisk(f, mt, sz)) {
-      java.util.ArrayList diffs = @PKG@.CfgFile.merge(f, cur, mt, sz);
-      Object[] h = @PKG@.CfgFile.handApply(f, diffs);
+      Object[] h = @PKG@.CfgFile.mergeApply(f, cur, mt, sz);
       @PKG@.CfgLog.addFile((java.util.ArrayList) h[0]);
       rel.addAll((java.util.HashSet) h[1]);
+      checks = (java.util.ArrayList) h[3];
     }
-  } catch (Throwable t) { @PKG@.CfgRows.warn("could not re-read " + @PKG@.CfgRows.FILES[f] + ": " + t); @PKG@.CfgFile.retry(f); return rel; }
+  } catch (Throwable t) { @PKG@.CfgRows.warn("could not re-read " + @PKG@.CfgRows.FILES[f] + ": " + t); @PKG@.CfgFile.retry(f); return new Object[] { rel, checks }; }
   Object[] b = null;
   try { b = @PKG@.CfgFile.takeBatch(f); } catch (Throwable t) { @PKG@.CfgRows.warn("save of " + @PKG@.CfgRows.FILES[f] + " failed: " + t); }
-  if (b == null) { @PKG@.CfgLog.flush(); return rel; }
-  if (b[0] == null) { rel.addAll((java.util.HashSet) b[5]); @PKG@.CfgLog.flush(); return rel; }
+  if (b == null) { @PKG@.CfgLog.flush(); return new Object[] { rel, checks }; }
+  if (b[0] == null) { rel.addAll((java.util.HashSet) b[5]); @PKG@.CfgLog.flush(); return new Object[] { rel, checks }; }
   @PKG@.CfgHist.snapshot(f, cur, (String) b[1], (String) b[3], (String) b[2]);
   byte[] out = (byte[]) b[0];
   try { @PKG@.CfgRows.atomicWrite(@PKG@.CfgFile.PATH[f], out); }
@@ -1517,13 +1699,29 @@ public static synchronized java.util.HashSet saveFile(int f) {
     if (@PKG@.CfgFile.saveFail(f, b)) @PKG@.CfgRows.warn("could not save " + @PKG@.CfgRows.FILES[f] + " (the change is kept in memory; retried every 30 s and at shutdown): " + t);
     @PKG@.CfgFile.retry(f);
     @PKG@.CfgLog.flush();
-    return rel;
+    return new Object[] { rel, checks };
   }
   long nmt = 0L;
   try { nmt = java.nio.file.Files.getLastModifiedTime(@PKG@.CfgFile.PATH[f], new java.nio.file.LinkOption[0]).toMillis(); } catch (Throwable t) { }
   try { @PKG@.CfgFile.saveOk(f, out, nmt); } catch (Throwable t) { }
   @PKG@.CfgLog.flush();
   rel.addAll((java.util.HashSet) b[5]);
+  return new Object[] { rel, checks };
+}""",
+# kit 1.1: the reload op's read + merge, under the same monitor as a save (no mod code runs here). Without it a reload could read the
+# file while a save is writing it and merge that older text: memory would drop the in-game change being written (and show a refused
+# hand-typed line again, its hold already dropped by that change), and a later save could write the older lines back
+r"""
+public static synchronized Object[] readMerge(int f) throws Exception {
+  Object[] d = @PKG@.CfgFile.readDisk(f);
+  return @PKG@.CfgFile.mergeApply(f, (byte[]) d[0], ((Long) d[1]).longValue(), ((Long) d[2]).longValue());
+}""",
+# one save pass: the locked part, then (no kit lock held) the check= hooks of hand-edited table lines; the caller runs the reloads
+r"""
+public static java.util.HashSet saveFile(int f) {
+  Object[] r = saveLocked(f);
+  java.util.HashSet rel = (java.util.HashSet) r[0];
+  if (r[1] != null) @PKG@.CfgFn.handChecks(f, (java.util.ArrayList) r[1], rel);
   return rel;
 }""",
 # a field row whose file value is not what the mod's loader put in the field was clamped (or refused) by that loader (spec 1.4.2)
@@ -1540,19 +1738,35 @@ public static void clampCheck() {
     } catch (Throwable t) { }
   }
 }""",
-# the mod's reload routines, after the write, outside every kit lock; a global RELOAD run is followed by the clamp check
+# the mod's reload routines, after the write, outside every kit lock; a global RELOAD run is followed by the clamp check.
+# Kit 1.1: a reload routine re-reads the mod's files, so every other file whose in-game changes are still only in memory is written
+# first (a field: row's new value would otherwise be read back as the old file text and stay reverted); their routines join this run.
+# A file that still cannot be written (a failed write: saveFail keeps its changes and reload marks for the 30 s retry, which runs its
+# own routines after the write) is read stale by the routines, and so may be a file another thread saves while they run: quiet() waits
+# for a save that is writing right now and notes the batch count, and CfgFile.reassert then sets the field: values those routines may
+# have read stale again (before the clamp check, which would otherwise log them clamped)
+r"""
+public static synchronized long quiet() { return @PKG@.CfgFile.sgen(); }""",
 r"""
 public static void runReloads(java.util.HashSet rel) {
   if (rel == null || rel.size() == 0) return;
+  for (int f = 0; f < @PKG@.CfgRows.FILES.length; f++) {
+    if (!@PKG@.CfgFile.dirtyOk(f)) continue;
+    try { rel.addAll(saveFile(f)); } catch (Throwable t) { @PKG@.CfgRows.warn("save of " + @PKG@.CfgRows.FILES[f] + " before a reload failed: " + t); }
+  }
+  long g0 = quiet();
   java.util.Iterator it = rel.iterator();
   boolean global = false;
+  boolean ran = false;
   while (it.hasNext()) {
     String spec = (String) it.next();
     if (spec == null || spec.length() == 0) continue;
     if (spec.equals(@PKG@.CfgRows.RELOAD)) global = true;
+    ran = true;
     try { @PKG@.CfgRows.call(spec, @PKG@.CfgRows.SIG0, new Object[0]); }
     catch (Throwable t) { @PKG@.CfgRows.warn("reload routine " + spec + " failed: " + t); }
   }
+  if (ran) { try { @PKG@.CfgFile.reassert(g0); } catch (Throwable t) { @PKG@.CfgRows.warn("could not set pending values again after a reload: " + t); } }
   if (global) clampCheck();
 }""",
 r"""
@@ -1562,6 +1776,148 @@ public void run() {
     if (this.idx < 0) { @PKG@.CfgFile.logDone(); @PKG@.CfgLog.flush(); return; }
     runReloads(saveFile(this.idx));
   } catch (Throwable t) { @PKG@.CfgRows.warn("config save task failed: " + t); }
+}""",
+]
+
+# ================================================================================================================ Java: CfgFn, early part
+# Compiled right after the CfgFile helpers and BEFORE the CfgFile state methods (kit 1.1): CfgFile.handApply runs the kit's own table
+# checks (entryErr / tvalue) on hand-edited lines. Only CfgRows is referenced here. checkHook calls mod code and is never called while
+# a kit monitor is held.
+FN_EARLY = [
+r"""
+public static String checkHook(int i, String key, String value) {
+  if (@PKG@.CfgRows.BCHECK[i].length() == 0) return null;
+  try {
+    Object o = @PKG@.CfgRows.call(@PKG@.CfgRows.BCHECK[i], @PKG@.CfgRows.SIG_SS, new Object[] { key, value });
+    if (o instanceof String && ((String) o).length() > 0) return (String) o;
+    return null;
+  } catch (Throwable t) { @PKG@.CfgRows.warn("check " + @PKG@.CfgRows.BCHECK[i] + " failed: " + t); return "This value could not be checked - see the server log."; }
+}""",
+r"""
+public static String[] cols(int i) {
+  String[] p = @PKG@.CfgRows.OPTS[i].split(";");
+  if (p.length < 3) return new String[] { "Value" };
+  return p[2].split("\\|");
+}""",
+r"""
+public static String colType(int i, int c) {
+  String[] p = @PKG@.CfgRows.OPTS[i].split(";");
+  String[] ts = p[0].split("\\|");
+  if (ts.length == 0) return "text";
+  if (c < ts.length) return ts[c].trim();
+  return ts[ts.length - 1].trim();
+}""",
+r"""
+public static String entryErr(int i, String e) {
+  if (e == null) return "No entry given.";
+  String s = e.trim();
+  if (s.length() == 0 || s.length() > 120) return "An entry must be 1 to 120 characters.";
+  for (int k = 0; k < s.length(); k++) {
+    char c = s.charAt(k);
+    if (c <= ' ' || c == '=' || c == ':' || c == '#' || c == '!' || c == '[' || c == ']' || c == '\\' || c == '|' || c > 0x7e) return "Not a valid entry: " + s + ".";
+  }
+  int m = @PKG@.CfgRows.BENT[i];
+  if (s.indexOf('*') >= 0) {
+    if (m != 2) return "No * in " + @PKG@.CfgRows.LABELS[i] + ".";
+    if (s.indexOf('*') != s.length() - 1) return "A * may only end an entry.";
+    if (s.length() == 1) return "A lone * would match every item.";
+    return null;
+  }
+  if ((m == 1 || m == 2) && !@PKG@.CfgRows.itemOk(s)) return "Unknown item: " + s + ".";
+  return null;
+}""",
+# kit 1.1: a text column's length limit. A table with an int/dec column uses min/max for those numbers, so its text stays at 200; a
+# table without one takes the row max as its text length (emit() allows 1-2000), 200 when it has no max
+r"""
+public static int textMax(int i) {
+  String[] ts = @PKG@.CfgRows.OPTS[i].split(";")[0].split("\\|");
+  for (int k = 0; k < ts.length; k++) { String t = ts[k].trim(); if (t.equals("int") || t.equals("dec")) return 200; }
+  if (@PKG@.CfgRows.MAXS[i].length() == 0) return 200;
+  try {
+    int n = new java.math.BigDecimal(@PKG@.CfgRows.MAXS[i]).intValue();
+    if (n < 1) return 200;
+    if (n > 2000) return 2000;
+    return n;
+  } catch (Throwable t) { return 200; }
+}""",
+# kit 1.1: a 1-column table's value is the one column as typed ('|' included), never split
+r"""
+public static String[] tvalue(int i, String v) {
+  String[] cn = cols(i);
+  String x = v;
+  if (x == null) x = "";
+  String[] parts = null;
+  if (cn.length == 1) parts = new String[] { x };
+  else parts = x.split("\\|", -1);
+  if (parts.length != cn.length) {
+    StringBuilder sb = new StringBuilder();
+    for (int c = 0; c < cn.length; c++) { if (c > 0) sb.append(" | "); sb.append(cn[c]); }
+    return @PKG@.CfgRows.no("Needs " + cn.length + " value(s): " + sb.toString() + ".");
+  }
+  StringBuilder out = new StringBuilder();
+  String sep = @PKG@.CfgRows.BSEP[i];
+  int tmax = textMax(i);
+  for (int c = 0; c < cn.length; c++) {
+    String p = parts[c].trim();
+    String ty = colType(i, c);
+    if (ty.equals("int")) {
+      java.math.BigDecimal n = @PKG@.CfgRows.num(i, p);
+      if (n == null || !@PKG@.CfgRows.isInt(n) || !@PKG@.CfgRows.inb(i, n)) return @PKG@.CfgRows.no(cn[c] + ": " + @PKG@.CfgRows.rangeText(i, "a whole number"));
+      p = n.toBigInteger().toString();
+    } else if (ty.equals("dec")) {
+      java.math.BigDecimal n = @PKG@.CfgRows.num(i, p);
+      if (n == null || !@PKG@.CfgRows.inb(i, n)) return @PKG@.CfgRows.no(cn[c] + ": " + @PKG@.CfgRows.rangeText(i, "a number"));
+      p = @PKG@.CfgRows.canonDec(n);
+    } else if (ty.equals("bool")) {
+      String b = p.toLowerCase();
+      if (b.equals("true") || b.equals("on") || b.equals("yes") || b.equals("1")) p = "true";
+      else if (b.equals("false") || b.equals("off") || b.equals("no") || b.equals("0")) p = "false";
+      else return @PKG@.CfgRows.no(cn[c] + " must be ON or OFF.");
+    } else {
+      if (p.length() > tmax) return @PKG@.CfgRows.no(cn[c] + " is too long (" + tmax + " characters at most).");
+      if (cn.length > 1 && sep.length() > 0 && p.indexOf(sep) >= 0) return @PKG@.CfgRows.no(cn[c] + " cannot contain '" + sep + "'.");
+      for (int q = 0; q < p.length(); q++) if (p.charAt(q) < ' ') return @PKG@.CfgRows.no(cn[c] + " must be one line.");
+    }
+    if (c > 0) out.append('|');
+    out.append(p);
+  }
+  return @PKG@.CfgRows.ok(out.toString());
+}""",
+# a table value in a message: columns shown as "a / b"; a 1-column value exactly as it is
+r"""
+public static String shown(int i, String v) {
+  if (v == null) return "";
+  if (@PKG@.CfgRows.oneCol(i)) return v;
+  return v.replace("|", " / ");
+}""",
+]
+
+# Compiled after the CfgFile state methods and before CfgSaveTask (kit 1.1). Runs OUTSIDE every kit lock: the save task calls it after
+# saveLocked returns, the reload op on its own thread between handApply and queuing the reloads.
+FN_MID = [
+# the check= hooks of hand-edited table lines that passed the kit's own checks (handApply queued and held them): refused -> stays held
+# + invalid, else accepted (the hold dropped) + ok + the row's reload routine (not for a restart table); a "?question" answer counts as
+# accepted (nobody to ask). The log line is the hook's verdict on that line; memory changes only while the line is still the entry's
+# newest change (CfgFile.holdIf / unholdIf with the queued String[] itself)
+r"""
+public static void handChecks(int f, java.util.ArrayList checks, java.util.HashSet rel) {
+  if (checks == null || checks.size() == 0) return;
+  java.util.ArrayList logs = new java.util.ArrayList();
+  for (int k = 0; k < checks.size(); k++) {
+    String[] c = (String[]) checks.get(k);
+    int i = Integer.parseInt(c[7]);
+    String chk = checkHook(i, c[4], c[3]);
+    if (chk != null && !chk.startsWith("?")) {
+      @PKG@.CfgFile.holdIf(f, c);
+      logs.add(new String[] { c[4], c[5], c[6], "invalid" });
+    } else {
+      @PKG@.CfgFile.unholdIf(f, c);
+      logs.add(new String[] { c[4], c[5], c[6], "ok" });
+      if (!@PKG@.CfgRows.flag(i, "restart")) rel.add(@PKG@.CfgRows.BNAME[i]);
+    }
+  }
+  @PKG@.CfgLog.addFile(logs);
+  @PKG@.CfgFile.logSoon();
 }""",
 ]
 
@@ -1607,15 +1963,6 @@ public static String current(int i) {
     }
     return @PKG@.CfgRows.DEFS[i];
   } catch (Throwable e) { @PKG@.CfgRows.warn("could not read " + @PKG@.CfgRows.KEYS[i] + ": " + e); return null; }
-}""",
-r"""
-public static String checkHook(int i, String key, String value) {
-  if (@PKG@.CfgRows.BCHECK[i].length() == 0) return null;
-  try {
-    Object o = @PKG@.CfgRows.call(@PKG@.CfgRows.BCHECK[i], @PKG@.CfgRows.SIG_SS, new Object[] { key, value });
-    if (o instanceof String && ((String) o).length() > 0) return (String) o;
-    return null;
-  } catch (Throwable t) { @PKG@.CfgRows.warn("check " + @PKG@.CfgRows.BCHECK[i] + " failed: " + t); return "This value could not be checked - see the server log."; }
 }""",
 r"""
 public static void afterHook(int i) {
@@ -1694,8 +2041,9 @@ public static Object[] applyRow(int i, String nv, String old, java.util.UUID who
     String val = S(r, 1);
     if (val == null) val = nv;
     if (r.length > 3 && r[3] instanceof String[] && f >= 0) {
-      String[] fl = (String[]) r[3];
-      for (int q = 0; q + 1 < fl.length; q += 2) @PKG@.CfgFile.edit(f, fl[q], fl[q + 1], stamp, nm, via, @PKG@.CfgRows.KEYS[i]);
+      String rl = "";
+      if (!rs && !rst.equals("restart")) rl = @PKG@.CfgRows.RELOAD;
+      @PKG@.CfgFile.editLines(f, (String[]) r[3], stamp, nm, via, @PKG@.CfgRows.KEYS[i], rl);
       @PKG@.CfgFile.saveSoon(f);
     } else @PKG@.CfgFile.logSoon();
     @PKG@.CfgFile.bump();
@@ -1741,79 +2089,7 @@ public static Object opGet(Object[] a) {
   if (i < 0) return null;
   return current(i);
 }""",
-# ---- tables (spec 1.3 keys/tset/add/remove, 1.4.6 log form)
-r"""
-public static String[] cols(int i) {
-  String[] p = @PKG@.CfgRows.OPTS[i].split(";");
-  if (p.length < 3) return new String[] { "Value" };
-  return p[2].split("\\|");
-}""",
-r"""
-public static String colType(int i, int c) {
-  String[] p = @PKG@.CfgRows.OPTS[i].split(";");
-  String[] ts = p[0].split("\\|");
-  if (ts.length == 0) return "text";
-  if (c < ts.length) return ts[c].trim();
-  return ts[ts.length - 1].trim();
-}""",
-r"""
-public static String entryErr(int i, String e) {
-  if (e == null) return "No entry given.";
-  String s = e.trim();
-  if (s.length() == 0 || s.length() > 120) return "An entry must be 1 to 120 characters.";
-  for (int k = 0; k < s.length(); k++) {
-    char c = s.charAt(k);
-    if (c <= ' ' || c == '=' || c == ':' || c == '#' || c == '!' || c == '[' || c == ']' || c == '\\' || c == '|' || c > 0x7e) return "Not a valid entry: " + s + ".";
-  }
-  int m = @PKG@.CfgRows.BENT[i];
-  if (s.indexOf('*') >= 0) {
-    if (m != 2) return "No * in " + @PKG@.CfgRows.LABELS[i] + ".";
-    if (s.indexOf('*') != s.length() - 1) return "A * may only end an entry.";
-    if (s.length() == 1) return "A lone * would match every item.";
-    return null;
-  }
-  if ((m == 1 || m == 2) && !@PKG@.CfgRows.itemOk(s)) return "Unknown item: " + s + ".";
-  return null;
-}""",
-r"""
-public static String[] tvalue(int i, String v) {
-  String[] cn = cols(i);
-  String x = v;
-  if (x == null) x = "";
-  String[] parts = x.split("\\|", -1);
-  if (parts.length != cn.length) {
-    StringBuilder sb = new StringBuilder();
-    for (int c = 0; c < cn.length; c++) { if (c > 0) sb.append(" | "); sb.append(cn[c]); }
-    return @PKG@.CfgRows.no("Needs " + cn.length + " value(s): " + sb.toString() + ".");
-  }
-  StringBuilder out = new StringBuilder();
-  String sep = @PKG@.CfgRows.BSEP[i];
-  for (int c = 0; c < cn.length; c++) {
-    String p = parts[c].trim();
-    String ty = colType(i, c);
-    if (ty.equals("int")) {
-      java.math.BigDecimal n = @PKG@.CfgRows.num(i, p);
-      if (n == null || !@PKG@.CfgRows.isInt(n) || !@PKG@.CfgRows.inb(i, n)) return @PKG@.CfgRows.no(cn[c] + ": " + @PKG@.CfgRows.rangeText(i, "a whole number"));
-      p = n.toBigInteger().toString();
-    } else if (ty.equals("dec")) {
-      java.math.BigDecimal n = @PKG@.CfgRows.num(i, p);
-      if (n == null || !@PKG@.CfgRows.inb(i, n)) return @PKG@.CfgRows.no(cn[c] + ": " + @PKG@.CfgRows.rangeText(i, "a number"));
-      p = @PKG@.CfgRows.canonDec(n);
-    } else if (ty.equals("bool")) {
-      String b = p.toLowerCase();
-      if (b.equals("true") || b.equals("on") || b.equals("yes") || b.equals("1")) p = "true";
-      else if (b.equals("false") || b.equals("off") || b.equals("no") || b.equals("0")) p = "false";
-      else return @PKG@.CfgRows.no(cn[c] + " must be ON or OFF.");
-    } else {
-      if (p.length() > 200) return @PKG@.CfgRows.no(cn[c] + " is too long (200 characters at most).");
-      if (cn.length > 1 && sep.length() > 0 && p.indexOf(sep) >= 0) return @PKG@.CfgRows.no(cn[c] + " cannot contain '" + sep + "'.");
-      for (int q = 0; q < p.length(); q++) if (p.charAt(q) < ' ') return @PKG@.CfgRows.no(cn[c] + " must be one line.");
-    }
-    if (c > 0) out.append('|');
-    out.append(p);
-  }
-  return @PKG@.CfgRows.ok(out.toString());
-}""",
+# ---- tables (spec 1.3 keys/tset/add/remove, 1.4.6 log form); cols / colType / entryErr / textMax / tvalue / shown are in FN_EARLY
 r"""
 public static String entryValue(int i, String e) {
   try {
@@ -1853,6 +2129,7 @@ public static Object opKeys(Object[] a) {
   java.util.ArrayList vs = new java.util.ArrayList();
   for (int k = 0; k < ek.length && ks.size() < 500; k++) {
     String v = entryValue(i, ek[k]);
+    if (v == null && @PKG@.CfgRows.BK[i] != 3) continue;   // kit 1.1: a key-family entry removed between the listing and this read
     if (v == null) v = "";
     if (flt.length() > 0 && ek[k].toLowerCase().indexOf(flt) < 0 && v.toLowerCase().indexOf(flt) < 0) continue;
     ks.add(ek[k]);
@@ -1881,8 +2158,9 @@ public static Object[] tableApply(int i, String e, String cur, String nv, java.u
     if ("restart".equals(rst)) st = "restart";
     int f = @PKG@.CfgRows.BF[i];
     if (r.length > 3 && r[3] instanceof String[] && f >= 0) {
-      String[] fl = (String[]) r[3];
-      for (int q = 0; q + 1 < fl.length; q += 2) @PKG@.CfgFile.edit(f, fl[q], fl[q + 1], stamp, nm, via, tk);
+      String rl = "";
+      if (!st.equals("restart")) rl = @PKG@.CfgRows.RELOAD;
+      @PKG@.CfgFile.editLines(f, (String[]) r[3], stamp, nm, via, tk, rl);
       @PKG@.CfgFile.saveSoon(f);
     } else @PKG@.CfgFile.logSoon();
     @PKG@.CfgFile.bump();
@@ -1899,8 +2177,8 @@ public static Object[] tableApply(int i, String e, String cur, String nv, java.u
   String tail = ".";
   if (st.equals("restart")) tail = " - saved, applies after a server restart.";
   if (nv == null) return R(st, "", l + ": " + e + " removed" + tail);
-  if (cur == null) return R(st, nv, l + ": " + e + " added (" + nv.replace("|", " / ") + ")" + tail);
-  return R(st, nv, l + ": " + e + " set to " + nv.replace("|", " / ") + tail);
+  if (cur == null) return R(st, nv, l + ": " + e + " added (" + shown(i, nv) + ")" + tail);
+  return R(st, nv, l + ": " + e + " set to " + shown(i, nv) + tail);
 }""",
 # mode 0 = tset, 1 = add, 2 = remove
 r"""
@@ -1922,7 +2200,7 @@ public static Object[] tableChange(int i, String entry, String value, int mode, 
     String[] tv = tvalue(i, value);
     if (tv[0] == null) return R("bad", null, tv[1]);
     nv = tv[0];
-    if (mode == 0 && nv.equals(cur)) return R("ok", nv, l + ": " + e + " is already " + nv.replace("|", " / ") + ".");
+    if (mode == 0 && nv.equals(cur)) return R("ok", nv, l + ": " + e + " is already " + shown(i, nv) + ".");
   }
   String tk = @PKG@.CfgRows.KEYS[i] + "[" + e + "]";
   String chk = checkHook(i, tk, nv);
@@ -1932,8 +2210,8 @@ public static Object[] tableChange(int i, String entry, String value, int mode, 
     if (chk != null) q = @PKG@.CfgRows.clip(chk.substring(1), 200);
     else if (@PKG@.CfgRows.flag(i, "danger") && @PKG@.CfgRows.BCONF[i] != 6) {
       if (mode == 2) q = "Remove " + e + " from " + l + "?";
-      else if (mode == 1) q = "Add " + e + " to " + l + " (" + nv.replace("|", " / ") + ")?";
-      else q = "Change " + e + " in " + l + " from " + cur.replace("|", " / ") + " to " + nv.replace("|", " / ") + "?";
+      else if (mode == 1) q = "Add " + e + " to " + l + " (" + shown(i, nv) + ")?";
+      else q = "Change " + e + " in " + l + " from " + shown(i, cur) + " to " + shown(i, nv) + "?";
       q = withHelp(q, i);
     }
     if (q != null) return R("confirm", null, q);
@@ -1955,10 +2233,13 @@ public static Object opTable(Object[] a, int mode) {
   if (mode != 2) v = S(a, 3);
   return tableChange(i, S(a, 2), v, mode, U(a, base), S(a, base + 1), S(a, base + 2), via);
 }""",
-# ---- actions: check= runs first (key, value null) and may refuse or ask "?question"; a danger action asks unless confirm=never
+# ---- actions: check= runs first (key, value null) and may refuse or ask "?question"; a danger action asks unless confirm=never.
+# Kit 1.1: a value= action takes its typed value after via (a[6]); none given (a SkyyMenu 0.3 call) = the row default, else bad. The
+# value is validated like a scalar row of the value type (the row's min / max / unit), passed to check= and to the method, shown in the
+# confirm question and logged in the old column (new stays "(action)", status "done"). A plain action ignores a[6].
 r"""
 public static Object opAction(Object[] a) {
-  if (a.length < 5 || S(a, 1) == null || bad(a, 2, true) || bad(a, 3, false) || bad(a, 4, false) || bad(a, 5, false)) return null;
+  if (a.length < 5 || S(a, 1) == null || bad(a, 2, true) || bad(a, 3, false) || bad(a, 4, false) || bad(a, 5, false) || bad(a, 6, false)) return null;
   int i = @PKG@.CfgRows.index(S(a, 1));
   if (i < 0) return R("unknown", null, "Unknown action: " + S(a, 1) + ".");
   if (!@PKG@.CfgRows.TYPES[i].equals("action")) return R("bad", null, @PKG@.CfgRows.LABELS[i] + " is not an action.");
@@ -1967,15 +2248,35 @@ public static Object opAction(Object[] a) {
   if (via == null || via.length() == 0) via = "menu";
   if (!@PKG@.CfgRows.allowed(who, via)) return R("denied", null, "Changing " + @PKG@.CfgRows.MOD + " needs " + @PKG@.CfgRows.NODE + ".");
   if (@PKG@.CfgRows.flag(i, "ro")) return R("bad", null, @PKG@.CfgRows.LABELS[i] + " is read-only.");
-  String chk = checkHook(i, @PKG@.CfgRows.KEYS[i], null);
+  String vt = @PKG@.CfgRows.VTYPES[i];
+  String val = null;
+  if (vt.length() > 0) {
+    String in = S(a, 6);
+    if (in == null) {
+      if (@PKG@.CfgRows.DEFS[i].length() == 0) return R("bad", null, "Type a value for " + @PKG@.CfgRows.LABELS[i] + " first.");
+      in = @PKG@.CfgRows.DEFS[i];
+    }
+    String[] v = @PKG@.CfgRows.validateAs(i, vt, in);
+    if (v[0] == null) return R("bad", null, v[1]);
+    val = v[0];
+  }
+  String chk = checkHook(i, @PKG@.CfgRows.KEYS[i], val);
   if (chk != null && !chk.startsWith("?")) return R("bad", null, chk);
   if (!"yes".equals(S(a, 4))) {
     if (chk != null) return R("confirm", null, @PKG@.CfgRows.clip(chk.substring(1), 200));
-    if (@PKG@.CfgRows.flag(i, "danger") && @PKG@.CfgRows.BCONF[i] != 6) return R("confirm", null, withHelp(@PKG@.CfgRows.OPTS[i] + "?", i));
+    if (@PKG@.CfgRows.flag(i, "danger") && @PKG@.CfgRows.BCONF[i] != 6) {
+      String q = @PKG@.CfgRows.OPTS[i];
+      if (val != null) q = q + " (" + @PKG@.CfgRows.dispAs(i, vt, val) + ")";
+      return R("confirm", null, withHelp(q + "?", i));
+    }
   }
   String nm = @PKG@.CfgLog.nameOf(who, S(a, 3));
   Object o = null;
-  try { o = @PKG@.CfgRows.call(@PKG@.CfgRows.BCLS[i] + "." + @PKG@.CfgRows.BNAME[i], @PKG@.CfgRows.SIG_US, new Object[] { who, nm }); }
+  try {
+    String spec = @PKG@.CfgRows.BCLS[i] + "." + @PKG@.CfgRows.BNAME[i];
+    if (vt.length() > 0) o = @PKG@.CfgRows.call(spec, @PKG@.CfgRows.SIG_USS, new Object[] { who, nm, val });
+    else o = @PKG@.CfgRows.call(spec, @PKG@.CfgRows.SIG_US, new Object[] { who, nm });
+  }
   catch (Throwable t) { @PKG@.CfgRows.warn("action " + @PKG@.CfgRows.KEYS[i] + " failed: " + t); return R("error", null, @PKG@.CfgRows.OPTS[i] + " failed - see the server log."); }
   if (!(o instanceof Object[])) return R("error", null, @PKG@.CfgRows.OPTS[i] + " failed - see the server log.");
   Object[] r = (Object[]) o;
@@ -1983,10 +2284,17 @@ public static Object opAction(Object[] a) {
   if (st == null) st = "error";
   String m = S(r, 2);
   if (m == null) m = "";
-  if (st.equals("ok") || st.equals("restart")) { @PKG@.CfgFile.bump(); @PKG@.CfgLog.add(who, nm, via, @PKG@.CfgRows.KEYS[i], "", "(action)", "done"); @PKG@.CfgFile.logSoon(); }
+  if (st.equals("ok") || st.equals("restart")) {
+    String ov = "";
+    if (val != null) ov = val;
+    @PKG@.CfgFile.bump();
+    @PKG@.CfgLog.add(who, nm, via, @PKG@.CfgRows.KEYS[i], ov, "(action)", "done");
+    @PKG@.CfgFile.logSoon();
+  }
   return R(st, S(r, 1), m);
 }""",
-# ---- reload (hand edits): read on the caller thread, merge in memory, the save task writes and runs the reload routines
+# ---- reload (hand edits): read on the caller thread, merge in memory, the save task writes and runs the reload routines. Kit 1.1:
+# the read + merge wait for a save that is writing (CfgSaveTask.readMerge); the check= hooks run after it, with no kit lock held
 r"""
 public static Object opReload(Object[] a) {
   if (a.length < 3 || bad(a, 1, true) || bad(a, 2, false) || bad(a, 3, false)) return null;
@@ -1997,11 +2305,11 @@ public static Object opReload(Object[] a) {
   String err = null;
   for (int f = 0; f < @PKG@.CfgRows.FILES.length; f++) {
     try {
-      Object[] d = @PKG@.CfgFile.readDisk(f);
-      java.util.ArrayList diffs = @PKG@.CfgFile.merge(f, (byte[]) d[0], ((Long) d[1]).longValue(), ((Long) d[2]).longValue());
-      Object[] h = @PKG@.CfgFile.handApply(f, diffs);
+      Object[] h = @PKG@.CfgSaveTask.readMerge(f);
       @PKG@.CfgLog.addFile((java.util.ArrayList) h[0]);
-      @PKG@.CfgFile.addReloads(f, (java.util.HashSet) h[1]);
+      java.util.HashSet rs = (java.util.HashSet) h[1];
+      handChecks(f, (java.util.ArrayList) h[3], rs);
+      @PKG@.CfgFile.addReloads(f, rs);
       changed += ((Integer) h[2]).intValue();
       @PKG@.CfgFile.force(f);
       @PKG@.CfgFile.saveNowSoon(f);
@@ -2142,9 +2450,9 @@ r"""
 public static String planLine(int kind, int i, String e, String old, String nv) {
   String l = @PKG@.CfgRows.LABELS[i];
   if (kind == 0) return l + ": " + @PKG@.CfgRows.disp(i, old) + " -> " + @PKG@.CfgRows.disp(i, nv);
-  if (kind == 1) return l + ": " + e + " added (" + nv.replace("|", " / ") + ")";
+  if (kind == 1) return l + ": " + e + " added (" + shown(i, nv) + ")";
   if (kind == 3) return l + ": " + e + " removed";
-  return l + ": " + e + " " + old.replace("|", " / ") + " -> " + nv.replace("|", " / ");
+  return l + ": " + e + " " + shown(i, old) + " -> " + shown(i, nv);
 }""",
 # shared by import and restore: values = scalar key -> value, tables = table key -> LinkedHashMap entry -> value (null = not in the plan)
 r"""
@@ -2538,12 +2846,12 @@ def _parse_bind(r, pkg, mod, files, reload_default):
     key, typ = r["key"], r["type"]
     parts = b.split(";")
     main, optlist = parts[0].strip(), parts[1:]
-    o = {"after": "", "check": "", "confirm": "", "sep": ",", "entry": "key"}
+    o = {"after": "", "check": "", "confirm": "", "sep": ",", "entry": "key", "value": ""}
     for p in optlist:
         k, eq, v = p.partition("=")
         k = k.strip()
         if not eq or k not in o:
-            _fail("%s: unknown binding option %r (after= check= confirm= sep= entry=)" % (key, p))
+            _fail("%s: unknown binding option %r (after= check= confirm= sep= entry= value=)" % (key, p))
         o[k] = v if k == "sep" else v.strip()
     d = {"kind": 0, "cls": "", "name": "", "scale": 1, "file": -1, "fkey": "", "ckeys": "", "ftype": 0}
     if main in ("", "none"):
@@ -2727,6 +3035,13 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
             _fail("%s: live and restart together" % k)
         if r["unit"] not in UNITS:
             _fail("%s: unit %r is not one of %s (extend UNITS in tools/skyycfg.py if a new one is needed)" % (k, r["unit"], UNITS))
+        # kit 1.1: a value= action's min / max / default follow its value type (a text value: min / max are its length)
+        valt = ""
+        for p in r["bind"].split(";")[1:]:
+            pk, peq, pv = p.partition("=")
+            if pk.strip() == "value" and peq:
+                valt = pv.strip()
+        et = valt if (t == "action" and valt in ACTION_VALUE_TYPES) else t
         for bound in ("min", "max"):
             v = r[bound]
             if v == "":
@@ -2734,11 +3049,11 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
             d = _dec(v)
             if d is None:
                 _fail("%s: %s %r is not a number" % (k, bound, v))
-            if t in ("text", "items") and (d != d.to_integral_value() or d < 0):
-                _fail("%s: %s of a %s row is a count (whole number >= 0)" % (k, bound, t))
-            if t == "int" and d != d.to_integral_value():
+            if et in ("text", "items") and (d != d.to_integral_value() or d < 0):
+                _fail("%s: %s of a %s row is a count (whole number >= 0)" % (k, bound, et))
+            if et == "int" and d != d.to_integral_value():
                 _fail("%s: %s of an int row must be whole" % (k, bound))
-            r[bound] = _plain(d) if t not in ("text", "items") else str(int(d))
+            r[bound] = _plain(d) if et not in ("text", "items") else str(int(d))
         if r["min"] and r["max"] and Decimal(r["min"]) > Decimal(r["max"]):
             _fail("%s: min is above max" % k)
         # opts per type
@@ -2769,10 +3084,22 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
                 _fail("%s: table value types are int, dec, text or bool (one, or one per column)" % k)
             if r["default"]:
                 _fail("%s: a table's default must be empty (its entries come from the file)" % k)
+            # kit 1.1: without an int/dec column the row max is the text length of the table's text columns (CfgFn.textMax) and min
+            # means nothing (no minimum text length for table cells), so a min there is refused instead of silently ignored
+            if not any(x.strip() in ("int", "dec") for x in vt):
+                if r["min"]:
+                    _fail("%s: min %s has no effect on a table without number columns (only max counts there: the text length); "
+                          "leave min empty" % (k, r["min"]))
+                if r["max"]:
+                    dm = Decimal(r["max"])
+                    if dm != dm.to_integral_value() or not 1 <= dm <= TABLE_TEXT_MAX:
+                        _fail("%s: a table without number columns uses max as its text length: a whole number from 1 to %d, not %s" % (
+                            k, TABLE_TEXT_MAX, r["max"]))
         if t in ("link", "action"):
             if not o:
                 _fail("%s: a %s row needs opts (%s)" % (k, t, "the command" if t == "link" else "the button text"))
-            if r["default"]:
+            # a value= action may publish a default (the value used when a caller sends none, SkyyMenu's field text); checked below
+            if r["default"] and not (t == "action" and valt):
                 _fail("%s: a %s row's default must be empty" % (k, t))
         # binding
         d, bo = _parse_bind(r, PKG, MOD, files, reload_default)
@@ -2784,6 +3111,17 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
             _fail("%s: sep= must be one character other than |" % k)
         if (bo["confirm"] or bo["check"]) and t in ("link",):
             _fail("%s: link rows take no confirm=/check=" % k)
+        # kit 1.1: value=<type> gives an action a typed value (validated like a scalar row of that type with this row's min/max/unit)
+        if bo["value"]:
+            if t != "action":
+                _fail("%s: value= is for action rows (an action that takes a typed value), not for type %s" % (k, t))
+            if bo["value"] not in ACTION_VALUE_TYPES:
+                _fail("%s: value= must be one of %s (types that need opts are not possible: opts is the button text)" % (
+                    k, ", ".join(ACTION_VALUE_TYPES)))
+            if r["default"]:
+                canon, why = py_validate(dict(r, type=bo["value"], opts=""), r["default"], items)
+                if canon is None:
+                    _fail("%s: default %r does not pass its own row (value=%s: %s)" % (k, r["default"], bo["value"], why))
         # confirm= refines WHEN a danger row asks (the published danger flag stays the page's CONFIRM tag); every row kind that takes it
         # honours it at runtime: scalars in needConfirm, tables in tableChange, actions in opAction
         if bo["confirm"]:
@@ -2862,7 +3200,9 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
             if t == "table":
                 deferred.append((d["cls"], "customKeys", "(Ljava/lang/String;)[Ljava/lang/String;", "exact", k + " custom table"))
         if kind == 4:
-            deferred.append((d["cls"], d["name"], "(Ljava/util/UUID;Ljava/lang/String;)[Ljava/lang/Object;", "exact", k + " action"))
+            asig = "(Ljava/util/UUID;Ljava/lang/String;Ljava/lang/String;)" if bo["value"] else "(Ljava/util/UUID;Ljava/lang/String;)"
+            deferred.append((d["cls"], d["name"], asig + "[Ljava/lang/Object;", "exact",
+                             k + (" value action (value=%s)" % bo["value"] if bo["value"] else " action")))
         for hook, sig, mode in (("after", "(Ljava/lang/String;)", "prefix"),
                                 ("check", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", "exact")):
             if bo[hook]:
@@ -2978,6 +3318,7 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
     col = lambda name: [r[name] for r in rows]
     # CfgRows fields
     F("CfgRows", "public static final String CONTRACT = %s;" % _jstr(CONTRACT))
+    F("CfgRows", "public static final String KIT = %s;" % _jstr(KIT_VERSION))
     F("CfgRows", "public static final String MOD = %s;" % _jstr(MOD))
     F("CfgRows", "public static final String TITLE = %s;" % _jstr(TITLE))
     F("CfgRows", "public static final String VERSION = %s;" % _jstr(VERSION))
@@ -3004,6 +3345,7 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
     F("CfgRows", "public static final String[] BAFTER = %s;" % _jarr([o["after"] for _, o in binds]))
     F("CfgRows", "public static final String[] BCHECK = %s;" % _jarr([o["check"] for _, o in binds]))
     F("CfgRows", "public static final String[] BSEP = %s;" % _jarr([o["sep"] for _, o in binds]))
+    F("CfgRows", "public static final String[] VTYPES = %s;" % _jarr([o["value"] for _, o in binds]))
     F("CfgRows", "public static final String[] FILES = %s;" % _jarr(files))
     F("CfgRows", "public static final String[] FILE_IDS = %s;" % _jarr([f.replace("/", "~") for f in files]))
     F("CfgRows", "public static final String[] ALIASES = %s;" % _jarr(list(ALIASES)))
@@ -3022,6 +3364,7 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
     F("CfgRows", "public static final Class[] SIG_S = new Class[] { String.class };")
     F("CfgRows", "public static final Class[] SIG_SS = new Class[] { String.class, String.class };")
     F("CfgRows", "public static final Class[] SIG_US = new Class[] { java.util.UUID.class, String.class };")
+    F("CfgRows", "public static final Class[] SIG_USS = new Class[] { java.util.UUID.class, String.class, String.class };")
     F("CfgRows", "public static final Class[] SIG_SM = new Class[] { String.class, java.util.Map.class };")
     for src in ROWS_JAVA:
         M("CfgRows", src)
@@ -3048,15 +3391,22 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
                  "boolean[] LOADED = new boolean[NF]", "boolean[] FORCE = new boolean[NF]", "String[] WHY = new String[NF]",
                  "String[] PSTAMP = new String[NF]", "String[] PWHO = new String[NF]",
                  "String[] PVIA = new String[NF]", "java.util.HashSet[] PWHAT = new java.util.HashSet[NF]",
+                 "java.util.HashMap[] HOLD = new java.util.HashMap[NF]", "java.util.HashMap[] HCHK = new java.util.HashMap[NF]",
+                 "java.util.HashMap[] WROTE = new java.util.HashMap[NF]",
                  "String[] PENDV = new String[%d]" % n, "String[] RUNV = new String[%d]" % n,
                  "java.util.HashSet CLAMPED = new java.util.HashSet()"):
         F("CfgFile", "public static final %s;" % decl)
     F("CfgFile", "public static boolean LOGSCHED;")
+    F("CfgFile", "public static long SGEN;")   # kit 1.1: save batches taken so far (CfgFile.takeBatch / reassert)
     for src in FILE_JAVA_HELPERS:
         M("CfgFile", src)
+    for src in FN_EARLY:          # kit 1.1: CfgFile.handApply uses CfgFn.entryErr / tvalue
+        M("CfgFn", src)
     for src in FILE_JAVA_STATE:
         M("CfgFile", src)
     M("CfgFile", r"""public static synchronized boolean clampSeen(int i, String raw) { return !CLAMPED.add(i + "=" + raw); }""")
+    for src in FN_MID:            # kit 1.1: CfgSaveTask.saveFile calls CfgFn.handChecks
+        M("CfgFn", src)
     for src in TASK_JAVA:
         M("CfgSaveTask", src)
     C("CfgFn", "public CfgFn() { }")
@@ -3066,5 +3416,5 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
     for src in PUB_JAVA:
         M("CfgPub", src)
     classes = [cls[c] for c in CLASS_NAMES]
-    info = {"rows": n, "files": files, "classes": [PKG + "." + c for c in CLASS_NAMES]}
+    info = {"rows": n, "files": files, "classes": [PKG + "." + c for c in CLASS_NAMES], "kit": KIT_VERSION}
     return Kit(pool, classes, dfr, info)
