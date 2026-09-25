@@ -720,7 +720,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 10. **Grace period.** LOCKED 2026-09-25 (Skyy): a new listing waits 20 seconds before anyone can buy it. That was already the default (`graceSeconds=20`).
 11. **Where `/ah` works.** LOCKED 2026-09-25 (Skyy): `/ah` works anywhere. That was already the default. The page id `SkyyAuctions` stays ready if an Auction Master NPC is added later.
 12. **Late-game cutoff.** LOCKED 2026-09-25 (Skyy): the list of items that leave both markets stays empty for now. Fill it when Skyy names the items. The block file and the `market:blocked` bridge stay ready.
-13. **Bid auctions.** When, and with which rules (minimum raise, last-minute extension, 5% fee)? [later; Appendix A]
+13. **Bid auctions.** LOCKED 2026-09-25 (Skyy): parked for later. No rules to sketch yet. Buy It Now stays the only listing type.
 14. **Deleted profiles.** Claims owned by a profile that no longer exists (SkyyProfiles 0.1 has no delete yet). [they stay in the file; an admin can use `regrant` or move them by hand]
 15. **Bags on the AH.** Magic Bags and the Accessory Bag are only keys to the owner's own storage (4.3). Tradeable with a "contents not included" line, or off the market? [tradeable; two `blocked.txt` lines take them off]
 16. **Claim-all confirm.** Ask before [Claim all] puts a lot of coins in the purse (death penalty 10-25%)? [yes, at 100,000 coins]
@@ -764,6 +764,8 @@ Twelve review findings were checked against this spec, the live scripts and `Hyt
 ---
 
 ## Appendix A: bid auctions later, with no data migration
+
+LOCKED 2026-09-25 (Skyy): bid auctions are parked for later. No rules are locked. The notes below are not a decision.
 
 What a later version (0.2 or later) adds, and why 0.1's files already fit:
 - **Record:** `type: "AUCTION"`.
