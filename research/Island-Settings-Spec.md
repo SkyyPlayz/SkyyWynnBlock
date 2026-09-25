@@ -698,7 +698,7 @@ animals.extra=                            # extra NPC role names that count as f
 ## 12. In-game test checklist (append to TEST-CHECKLIST.md when built; A = Skyy (owner), B = Wesley, C optional)
 
 1. Deploy only with Skyy's OK (never `--deploy` from a build script). The server log shows `SkyyIslands 0.5 ready`, the migration lines (`migrated N build-rights entries to Trusted`), no "already registered", and no guard errors on first join.
-2. **Migration:** B had build rights on A's island from the beta. B is now Trusted: B builds, breaks, crafts and picks up, but can't open A's chest. B's `/island` still goes to B's own island. `/island menu` → Members tab shows B under Trusted.
+2. **Migration:** B had build rights on A's island from the beta. B is now Trusted: B builds, breaks, crafts and picks up, and B can open A's chest, sleep, and use a crafting station. B can't harvest a crop or use a furnace. B's `/island` still goes to B's own island. `/island menu` → Members tab shows B under Trusted.
 3. **Invite + accept:** A `/island invite B` → B gets the chat line with the profile name. B `/island accept` → both get "joined". B `/island` → lands on A's island, and B's Zone widget says "Your Island". B opens A's chest and furnace and harvests a crop.
 4. **Own island kept:** B `/island leave` → B lands on B's own island with B's things in place. Re-invite, and B accepts again.
 5. **Admin:** A `/island promote B`. B's `/island menu` → B can change the Permissions grid, Visitors mode and PvP, but has no Kick, Disband or Reset. B `/island kick A` / `/island disband` → refused. A `/island demote B` → B's page is read-only.
@@ -710,7 +710,7 @@ animals.extra=                            # extra NPC role names that count as f
 11. **Owner offline:** B re-joins. A logs off. B `/island` → A's island loads, B arrives, builds and uses chests.
 12. **Reset:** B is on A's island. A runs `/island reset` three times → B lands in the hub with a message, and A lands on a fresh island with the starter chest filled. The Members tab still lists B and C. B `/island` → the fresh island. A fourth `/island reset` → cooldown message. On disk, the old `skyy-island-<key>` folder is still there next to `...-r1`.
 13. **Tint:** an old island that still shows black grass → `/island` → the grass turns green within about 2-6 s without `/hub`. If not, note it, try vanilla `/chunk resend` (op) and see whether that turns it green, then set `tint.resend=chunk`, restart, and retest.
-14. **Grid:** A sets Chests → Visitor YES; a visitor opens the chest; set it back → refused. Clicking Member NO on Chests makes it admin/owner only (a Member is refused).
+14. **Grid:** a visitor opens a chest (the default). A sets Chests above Visitor → the visitor is refused. Clicking Member NO on Chests makes it admin/owner only (a Member is refused).
 15. **Visitors mode:** Friends → a stranger is refused at `/island visit`; a stranger inside via `/tpa` is sent to the hub within about 5 s. Closed, then `/island lock` and `/island unlock` restore the previous mode. Limit 1 with one visitor inside → a second visitor is refused ("island is full").
 16. **Expel / ban:** B (member) `/island expel C` → C in the hub and refused for 60 s. A `/island ban C` → refused at visit and via tpa. C logs off, and `/island unban <C's name>` works offline.
 17. **PvP / spawning:** PvP on → visitors expelled, and members can hit each other. Spawning on with Void Sky → nothing spawns.
