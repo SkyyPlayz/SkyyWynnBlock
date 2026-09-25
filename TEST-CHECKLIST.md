@@ -683,6 +683,9 @@ and a friend (the friend must NOT be opped, or permission checks don't count).
 
 **Numbers that are proposals (change in the config files, or tell Claude):**
 - LOCKED 2026-09-25: Vault: 2 free pages, max 10, page 3 = 50,000 and each next page +25,000; pages shared across all profiles (Wynncraft style). In-chest Prev/Next arrows are the approved page switch. Buying a page does not use two clicks within 10 s: below buyConfirmCoins (default 50,000) the buy is instant; at or above it a dialog asks "Buy page X for Y coins?". SkyyVault 0.1.2 still uses the 10 s second click.
+- LOCKED 2026-09-25: Vault plain click turns the page at once, same as shift-click.
+- LOCKED 2026-09-25: Priest heal numbers stay and are temporary until healing spells (25% / self 50% of that / 16 blocks / 10 HP per hit / 10 HP/s / party only). Divinity: others 0.2 XP per HP, self-heal 0.25 (0.4.5 still pays 0), cap 300/min. Heal chat lines on, every 10 s (new-file priestHeal.feedbackMs=10000). Healing Totem is Priest only. Root, Stoneskin, and Rekindle Embers stay Priest weapons.
+- LOCKED 2026-09-25: Class kit goes straight into the hotbar when the player selects or changes class (0.1.6 still uses storage and the 31 s wait). Daily Archer arrow refill is to build. Mining Speed max +40% (new-file Mining.MSpeed.per=0.016). Heavy Hatchet stays; hatchet swing speed is wood and trees only and must not speed weapon-axe combat.
 - LOCKED 2026-09-25: Tree Feller: 1 / 2 / 4 / 5 / 6 / 10 extra logs at levels 1-6 (level 6 jumps to 10 so a very large tree is not broken as a whole layer), 3 s cooldown. Double Jump: tier III, second jump in mid-air, 2 Stamina.
 - Party XP share: 50% of the killer's combat XP to members within 48 blocks in the same world.
 - Menu hover tooltips stay ON by default; the "Hover Tooltips" switch (book icon) turns them off if the stuck tooltip after Esc still happens.

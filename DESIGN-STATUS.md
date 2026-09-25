@@ -22,6 +22,7 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
 - Classes: Archer, Warrior, Mage, and (locked + live 2026-09-25) **Berserker** (Fury: axes, battleaxes, maces, clubs) and **Priest**
   (an AoE healing support class; Divinity: wands and spellbooks; its weapon hits heal the party until real spells exist; much of it custom
   later). Assassin and Shaman later. Every class gets a kit with its basic weapon when you pick it. `ALLOW_SWITCH=false` (no paid switch).
+- LOCKED 2026-09-25: Priest heal numbers are temporary until spells. Self-heal Divinity XP is 0.25 per HP. Heal chat lines are every 10 s. The Healing Totem is Priest only. Class kits go straight into the hotbar on select or class change. A daily Archer arrow refill is still to build. Mining Speed max is +40%. Hatchet swing speed is wood and trees only and must not speed weapon axes.
 
 **Islands**
 - A private island per profile (created on first `/island`), a shared hub, visiting. Visitors can look but not touch (doors and seats work).

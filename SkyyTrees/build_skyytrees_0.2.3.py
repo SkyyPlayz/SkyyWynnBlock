@@ -28,8 +28,9 @@ derived from 0.2.1 by tools/trees_0_2_2_patch.py, 0.2.1 from 0.2 by tools/trees_
       every tier 0..40 on the right leaf; every referenced id exists and no generated id collides with a vanilla one except the 2 roots.
       The jar is now an asset pack (manifest IncludesAssetPack true, 84 JSON files: 80 effects, 2 decision trees, 2 root overrides).
   NODES (ids, slots, icons, B, tokens and max levels unchanged; KINDS += SWING = 23, every older kind number unchanged):
-    - Mining S1 MSpeed "Mining Speed": SWING, max 25, per 0.01 = +1 % pickaxe swing speed per level, +25 % at max (a swing every 0.28 s
-      instead of 0.35 s). NOW "+%V pickaxe swing speed".
+    - Mining S1 MSpeed "Mining Speed": SWING, max 25, per 0.016 = +1.6 % pickaxe swing speed per level, +40 % at max (a swing every
+      0.25 s instead of 0.35 s). LOCKED Skyy 2026-09-25 (was per 0.01, +25 %). A file already on Mining.MSpeed.per=0.01 keeps +25 %
+      until that line is set to 0.016. If +40 % is still too slow, vanilla swing timing may need adjusting. NOW "+%V pickaxe swing speed".
     - Mining S10 MHeavy "Heavy Pick": unchanged DMG (+2 % breaking power on ORE per level, +40 %); text "+%V breaking power on ore".
     - Foraging S1 FSpeed "Chopping Speed": SWING like Mining Speed, for hatchets.
     - Foraging S10 FSpeed2 renamed "Heavy Hatchet" (was Chopping Speed II): unchanged DMG on wood (+40 %). Id and saved key stay FSpeed2.
@@ -586,7 +587,8 @@ ADJ = "Press %K in mid-air - once per jump - resets when you land - costs Stamin
 # (id, name, icon, kind, max, per, base, now, how, list key, default list)
 NODES = {
  "Mining": [
-  ("MSpeed", "Mining Speed", "Tool_Pickaxe_Iron", "SWING", 25, 0.01, 0, "+%V pickaxe swing speed", "Less wait between pickaxe swings - more blocks per second, even when one hit breaks the block (any pickaxe, also on mobs)", "", ""),
+  # LOCKED Skyy 2026-09-25: per 0.016 = +40% at 25. A file already on 0.01 keeps +25% until edited.
+  ("MSpeed", "Mining Speed", "Tool_Pickaxe_Iron", "SWING", 25, 0.016, 0, "+%V pickaxe swing speed", "Less wait between pickaxe swings - more blocks per second, even when one hit breaks the block (any pickaxe, also on mobs)", "", ""),
   ("MFortune", "Mining Fortune", "Ore_Gold", "DD", 20, 0.01, 0, "+%V double-drop chance on mined blocks", "Adds to your Mining double-drop perk" + S04, "", ""),
   ("MWisdom", "Mining Wisdom", "Ingredient_Crystal_Blue", "XP", 15, 0.01, 0, "+%V Mining XP", "Every block that pays Mining XP pays more" + S04, "", ""),
   ("MStamina", "Miner Stamina", "Tool_Pickaxe_Crude", "STA", 10, 0.3, 0, "+%V max Stamina", ON, "", ""),
@@ -600,6 +602,8 @@ NODES = {
   ("MVein", "Vein Burst", "Ore_Adamantite", "VEIN", 5, 2.0, 4.0, "Breaks up to %V more touching ore of the same kind", "On an ore block that pays Mining XP - cooldown %C s - never placed blocks", "", ""),
  ],
  "Foraging": [
+  # LOCKED Skyy 2026-09-25 HARD RULE: this bonus is for tree and wood breaking only. It must not change weapon-axe combat speed.
+  # Weapon axes get their own combat swing-speed stat. 0.2.3 still speeds every Hatchet_Attack swing, including hits on mobs.
   ("FSpeed", "Chopping Speed", "Tool_Hatchet_Iron", "SWING", 25, 0.01, 0, "+%V hatchet swing speed", "Less wait between hatchet swings - more logs per second (any hatchet, also on mobs)", "", ""),
   ("FFortune", "Foraging Fortune", "Wood_Oak_Trunk", "DD", 20, 0.01, 0, "+%V double-drop chance on logs", "Adds to your Foraging double-drop perk" + S04, "", ""),
   ("FWisdom", "Foraging Wisdom", "Ingredient_Crystal_Green", "XP", 15, 0.01, 0, "+%V Foraging XP", "Every log that pays Foraging XP pays more" + S04, "", ""),
@@ -951,7 +955,7 @@ ADD023 = "\n".join([
 assert all(ord(ch) < 128 for ch in ADD023)
 assert "swing.enabled=true" in DEFAULTS and "swing.enabled=true" in ADD023 and DEFAULTS.count("swing.enabled=") == 1
 assert not [l for l in ADD023.splitlines() if not l.startswith("#") and l != "swing.enabled=true"]
-assert "Mining.MSpeed.per=0.01" in DEFAULTS and "Foraging.FSpeed.per=0.01" in DEFAULTS and "Foraging.FSpeed2.per=0.02" in DEFAULTS
+assert "Mining.MSpeed.per=0.016" in DEFAULTS and "Foraging.FSpeed.per=0.01" in DEFAULTS and "Foraging.FSpeed2.per=0.02" in DEFAULTS
 assert "Mining.MHeavy.per=0.02" in DEFAULTS and "# Foraging S10 Heavy Hatchet (tier V)" in DEFAULTS and "Chopping Speed II" not in DEFAULTS
 
 # ================= classes =================

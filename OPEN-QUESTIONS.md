@@ -36,28 +36,40 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   50,000. A price below that buys at once. A price at or above it asks "Buy page X for Y coins?" in a confirm dialog. The gold arrow,
   the page Buy button, and `/vault buy` share that rule. [SkyyVault 0.1.2 still uses the 10 s second click; the next Vault build reads
   the row]
-- A plain click may only lift the arrow on your screen; the page then turns when you put it down. Shift-click always turns at once. [test]
+- LOCKED 2026-09-25 (Skyy): a plain click turns the vault page immediately, the same as shift-click. Both turn the page at once.
+  [the "plain click only lifts; the page turns on put-down" note is not the UX. 0.1.2 turns the page when the server hears the click]
 
 ## Berserker, Priest, class kits (`research/Classes-Berserker-Priest-Spec.md` section 8, live in Classes 0.1.6 / Skills 0.4.4 / Profiles 0.1.2)
-- Priest heal: 25% of the damage to party members within 16 blocks, the Priest heals themself at 50% of that, max 10 HP per hit and 10 HP per
-  second per player; party only, not other players. [as written, all editable in Server Setup]
-- Divinity XP from healing others: 0.2 XP per HP, max 300 XP a minute (healing yourself pays no XP). [as written]
-- Heal chat lines on by default (at most one every 5 s; players can switch theirs off). [on]
+- LOCKED 2026-09-25 (Skyy), TEMPORARY until healing spells exist: Priest heal stays 25% of the damage to party members within 16 blocks,
+  self-heal 50% of that, cap 10 HP per hit and 10 HP/s per player, party only. [current numbers; replace when spells are built]
+- LOCKED 2026-09-25 (Skyy): Divinity XP from healing others stays 0.2 XP per HP. Healing yourself pays 0.25 XP per HP (was 0). Max 300 XP
+  a minute unchanged. [0.4.5 still pays nothing for a self-heal; the next Skills build pays 0.25]
+- LOCKED 2026-09-25 (Skyy): heal chat lines stay on by default, and players can still turn theirs off. At most one line every 10 s (was
+  5 s). [new-file `priestHeal.feedbackMs=10000`; a file already on 5000 keeps 5 s until that line is edited]
 - ANSWERED 2026-09-25: base Mana 10, Mage/Priest 20, plus Overall Level Health/Mana. Was: **Mana:** vanilla max Mana is 0, so wand casts (25 Mana), spellbook casts (100) and the Mage staff summon (50) never work for a new
   character - only the swings. Give Priests / Mages base Mana? [not yet]
 - ANSWERED 2026-09-25: wait for custom weapons. Was: **Priest weapons:** no wand or spellbook can be crafted and almost none drop - the kit's Wood Wand (never breaks) is the only way to get
   one. Add recipes/drops now or wait for custom Priest weapons? [wait]
-- The vanilla Healing Totem (AoE +5 HP/s, endgame recipe): Priest, Shaman, or anyone? [anyone]
-- Root / Stoneskin wands and the Rekindle Embers spellbook count as Priest weapons. [yes]
-- Kits: into storage (not the hotbar), ~31 s after a new profile arrives (crash-safe), overflow waits for `/class kit`, Archer kit 64 arrows,
-  no new kit when an admin changes a profile's class. [as written]
+- LOCKED 2026-09-25 (Skyy): the vanilla Healing Totem (AoE +5 HP/s, endgame recipe) is Priest only (was anyone). [0.1.6 still leaves every
+  deployable unassigned, so anyone can throw it until the next Classes build]
+- LOCKED 2026-09-25 (Skyy): Root wands, Stoneskin wands, and the Rekindle Embers spellbook count as Priest weapons. Confirms the existing
+  yes. No behavior change (they already match the wand and spellbook prefixes).
+- LOCKED 2026-09-25 (Skyy): the class kit drops straight into the hotbar immediately when a player selects or changes class. Replaces
+  "into storage, about 31 s after a new profile arrives." Overflow that does not fit still waits on `/class kit`. Archer kit stays 64
+  arrows. An admin `/profileadmin setclass` still does not hand out a kit by itself. [0.1.6 still uses storage and the 31 s wait]
+- LOCKED 2026-09-25 (Skyy), to build: a daily arrow refill for Archer. Arrows only, claimable once per day, so Archers do not have to
+  craft every arrow. Not in 0.1.6.
 
 ## Swing speed (`research/Swing-Speed-Spec.md`, live in SkyyTrees 0.2.3)
-- Mining Speed max +25% faster pickaxe swings (the engine allows up to +40% without re-timing the vanilla swing)? [+25%]
-- Chopping Speed gets the same for hatchets; Chopping Speed II renamed "Heavy Hatchet" (breaking power on wood). [yes]
+- LOCKED 2026-09-25 (Skyy): Mining Speed max is +40% faster pickaxe swings (was +25%). If 40% is still too slow, vanilla swing timing may
+  need adjusting. [new-file `Mining.MSpeed.per=0.016`; a file already on 0.01 keeps +25% until that line is set to 0.016]
+- LOCKED 2026-09-25 (Skyy): Chopping Speed II stays renamed Heavy Hatchet. HARD RULE: hatchet swing-speed bonuses apply only to
+  tree-breaking and wood-chopping. They must not change weapon-axe combat speed for Berserker or any combat class. Weapon axes get their
+  own combat swing-speed stat, untouched by Chopping Speed or Heavy Hatchet. [0.2.3 still speeds every hatchet swing, including hits on
+  mobs, and has no combat swing-speed stat yet. Weapon axes are already on other roots, so Chopping Speed does not touch them today]
 - Heavy Pick also on rock (helps early picks, which lost a little from the change)? [no, ore only]
 - Heavy Hatchet up to +100% so top hatchets cut a log in one hit? [no]
-- Faster hits on mobs with a pickaxe/hatchet are accepted (can't cheaply split mining from hitting). [yes]
+- Faster pickaxe hits on mobs stay accepted. Hatchet swings on mobs do not: see the Heavy Hatchet hard rule above. [pickaxe yes; hatchet no]
 - A Farming sickle speed node later? Accessories/gear adding swing speed later? [not now]
 - One-time chat notice about the change + free respec. [yes]
 

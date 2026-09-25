@@ -43,11 +43,11 @@ refuses **before anything moves**, so the arrow never leaves its slot, not even 
 that your client drew under your mouse snaps back. A safety sweep also removes any stray vault button item it ever finds (on join,
 when the vault closes, and every 30 s) and logs it. By design it should never find one.
 
-**The one thing only the game can tell us (UNVERIFIED U2):** Hytale lifts an item under your mouse on YOUR screen before the server
-hears anything. The server only hears when you put the item down, drag it somewhere, shift-click it or press the drop key. So a plain
-click may only "lift" the arrow, and the page turns when you let go or click again. Shift-click is a single message to the server, so
-it always turns the page at once. Either way the page turns the moment the server hears about it, and the arrow snaps back. The first
-in-game test tells us which wording the chat hint should use.
+**LOCKED 2026-09-25 (Skyy):** a plain click turns the page immediately, the same as shift-click. Both turn the page at once. The older
+note that a plain click only lifts the arrow, and the page waits until you put it down, is not the UX. Hytale may still draw a lifted
+item on the client before the server hears the click; the page must turn as soon as that click is a page turn, for a plain click and
+for a shift-click. SkyyVault 0.1.2 turns the page when the server hears a refused take (section 4). If a plain click still waits for
+put-down in game, the next Vault build closes that gap.
 
 **Admin switches (in game, SkyWynn Menu -> Server Setup -> Vault):** arrows on/off, and where they go ("Extra row", the default, or
 "Inside the page", which is Wynncraft-exact: the arrows use 2 of the page's slots and any item stored there is moved out first, never
@@ -473,8 +473,8 @@ give 0 fails. Never pass `--deploy`, `tools/deploy_set.py --check` only, and do 
 
 **B. Flip both ways.**
 1. Click Next. Page 2 shows, the page item reads "Page 2 of N", chat says "Vault page 2 of N". Click Prev to go back.
-2. Try every gesture on an arrow: plain click (does it turn at once, or only when you click again or let go?), drag it onto your
-   inventory, shift-click, drop key, take half.
+2. Try every gesture on an arrow: plain click, drag onto your inventory, shift-click, drop key, take half. LOCKED 2026-09-25: a plain
+   click turns the page at once, the same as shift-click.
 3. After each: the arrow is back in its slot, and after about 1 s your inventory shows no arrow. Close and reopen the inventory to be
    sure.
 
@@ -535,7 +535,7 @@ next to the page), and the page's label follows arrow clicks.
 | # | Question | What we know so far |
 |---|---|---|
 | U1 | Does a 45-slot chest draw 5 rows and still fit the screen with the player inventory? | Client `ContainerPanel.ui` evidence (E9). If not: `arrowLayout=inside`. |
-| U2 | Which gesture reaches the server first (plain click vs put-down / drag / shift-click / drop)? | Section 1. The chat hint wording follows the answer. |
+| U2 | ANSWERED 2026-09-25: a plain click turns the page immediately, the same as shift-click. Both turn at once. | The "plain click only lifts; the page turns on put-down" wording is not the UX. |
 | U3 | Does a refused pick-up snap back cleanly on the client? | `invalidate` + `markDirty` re-send next tick (E7). If a flicker remains, also call `WindowManager.updateWindow(window)` at once. |
 | U4 | Does the ItemDisplay tooltip show on items in a container slot? | SimpleEnchantments / SkyyRolls method; SkyyRolls' tooltip is not yet in the verified list. |
 | U5 | Does `HideFromSearch` in our own quality keep the items out of the creative library? | E11 |
