@@ -62,3 +62,16 @@ Needs the 19-mod set deployed (`python tools/deploy_set.py` with the game closed
 - Chests generated before SkyyExploration was installed never give Exploration XP.
 - An old island may need `/hub` then `/island` once to show green grass.
 - A disconnect removes that player from their party (guilds persist).
+
+## RESULTS 2026-09-24 evening (Skyy + WesleyPlayz)
+Working: HUD 0.3.8 (widget colours / styles "work great", Party + Guild widgets), /party + page, /pc, /guild (leader-only invite/disband,
+deposit + withdraw, /gc), friend's first join (10k coins, commands), /tpa + /tpaccept, /pay, /bazaar, Exploration titles, skill trees,
+Saplings From Trees (leaves drop saplings), More Crossbow Tiers crossbows, island tree felling (the whole tree falls when the base is cut).
+NOTE: WesleyPlayz was OPPED for part of the session (op add/remove in the log) - permission checks from those windows do not count.
+Bugs:
+- Menu: hover an item, press Esc -> its tooltip stays on screen.
+- Party widget drawn misaligned until clicked/moved in the editor.
+- '/r' is VANILLA's /redo shortcut (builder permission) - that was the 'msg needs op'; /msg, /tell, /w, /reply work without op.
+- Sacks still do not hold ingots.
+- Felled trees still pay XP / count collections for the cut log only (known; fix specced).
+Requests: HANDOFF 2026-09-24 20:10 backlog.
