@@ -148,7 +148,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - Profiles: the default cap is now 6 (your 2026-09-24 decision); lowering it never deletes a profile.
 
 ## Player Settings (`research/Settings-Spec.md` section 6)
-- Settings icon in the menu: slot 51 (bottom row) or next to Mods? [51]
+- LOCKED 2026-09-25 (Skyy): the Settings icon sits next to the Mods button (slot 39, left of Mods at 40). Was: slot 51, the bottom row. [next to Mods; SkyyMenu 0.3.2 still uses slot 51]
 - Anything that should stay always on (never switchable)? [the section 2.3 list]
 
 ## Known limits you should know about (not questions)
