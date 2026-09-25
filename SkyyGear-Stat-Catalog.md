@@ -1,7 +1,7 @@
 # SkyyGear stat catalog
-*Research list, 2026-09-24. Combat, defence, mana, Movement, Gathering, and part of Loot and luck are marked in the collapsed section. Pet Luck, Fear, and Tracking are still blank. After Loot finishes, the next blank section is XP and wisdom. Write **Keep**, **Scrap**, or **Add later** there.*
+*Research list, 2026-09-24. Combat, defence, mana, Movement, Gathering, and Loot and luck are marked in the collapsed section. From XP and wisdom down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change note 12 (2026-09-25) is part of Loot and luck. Mining Fortune, Farming Fortune, and Foraging Fortune are in. Pet Luck, Fear, and Tracking are still blank.
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is XP and wisdom.
 
 **Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter). Those are our locks, not wiki lines.
 
@@ -20,9 +20,9 @@ True Damage is in the decided section. It ignores Defence. True Defense, the sta
 ---
 
 <details>
-<summary><strong>Decided — combat, defence, mana, Movement, Gathering, and part of Loot</strong> (change notes 9–12). Still blank in Loot: Pet Luck, Fear, Tracking.</summary>
+<summary><strong>Decided — combat, defence, mana, Movement, Gathering, and Loot</strong> (change notes 9–13). Next blank table is XP and wisdom.</summary>
 
-These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. Part of Loot and luck was locked 2026-09-25 (change note 12).
+These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. Loot and luck was finished 2026-09-25 (change notes 12 and 13).
 
 ### Damage and crits
 
@@ -204,9 +204,7 @@ Reach (old Swing Range) was already locked. Gathering trees only. Max +50%. Not 
 | Gemstone Spread | SB | Only if we add gemstones later. | Add later |
 | Pristine | SB | Only if we add gemstones later. | Add later |
 
-### Loot and luck (part)
-
-Pet Luck, Fear, and Tracking stay in the blank table below. Do not mark them yet.
+### Loot and luck
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
@@ -215,18 +213,11 @@ Pet Luck, Fear, and Tracking stay in the blank table below. Do not mark them yet
 | Stealing | Wynn | Keep. Chance a hit mob drops an emerald. | Keep |
 | Magic Find | SB | Scrap as the player-facing name. The idea lives on as Trophy Hunter. | Scrap |
 | Trophy Hunter | SkyWynn | New name. Higher chance at unique drops and drop-only sets. Bosses and normal mobs. There will be mob drop-only armor sets, not only boss legendaries. Borderlands-style unique loot. | Keep |
+| Pet Luck | SB | Keep later. Build when pets exist. | Add later |
+| Fear | SB | Scrap. | Scrap |
+| Tracking | SB | Scrap. | Scrap |
 
 </details>
-
-## Loot and luck
-
-Still open. Do not mark these until Skyy answers. After this table finishes, the next blank section is XP and wisdom.
-
-| Stat | Game | What it does | Decision |
-|---|---|---|---|
-| Pet Luck | SB | Higher chance a mob or boss drops a pet. | |
-| Fear | SB | During the Great Spook, Primal Fears spawn more often and hurt you less. | |
-| Tracking | SB | Higher chance to find elusive mobs. | |
 
 ## XP and wisdom
 

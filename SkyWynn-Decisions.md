@@ -111,13 +111,17 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
    - **Timber.** Keep that name. Not Treefeller. Not Sweep. Sweep is scrap. Horizontal extra breaks only. Breaking the base already fells the tree.
    - **Later.** Gemstone Spread and Pristine only if we add gemstones. Fishing and hunting stats stay parked until those mods exist.
    - **Skip for now.** Bonus Pest Chance. Overbloom. Gather Speed.
-7. **Loot and luck, part (change note 12).** Locks rows 6.30–6.34. Full list in `SkyyGear-Plan.md` locks 42–47. Marked in `SkyyGear-Stat-Catalog.md`. Pet Luck, Fear, and Tracking stay blank. After Loot finishes, the next blank section is XP and wisdom. Does not change any jar.
+7. **Loot and luck, part (change note 12).** Locks rows 6.30–6.33. Full list in `SkyyGear-Plan.md` locks 42–46. Marked in `SkyyGear-Stat-Catalog.md`. Pet Luck, Fear, and Tracking were locked later (change note 13). Does not change any jar.
    - **Loot Bonus.** Keep. Wynn. More items from mobs and loot chests.
    - **Loot Quality.** Keep. Wynn. Rarer loot, fewer commons.
    - **Stealing.** Keep. Wynn. Chance a hit mob drops an emerald.
    - **Trophy Hunter.** New name. Higher chance at unique drops and drop-only sets. Bosses and normal mobs. Mob drop-only armor sets, not only boss legendaries. Borderlands-style unique loot.
    - **Magic Find.** Scrap as the player-facing name. The idea lives on as Trophy Hunter.
-   - **Still open.** Pet Luck, Fear, Tracking. Do not mark them scrap.
+   - **Still open at this note.** Pet Luck, Fear, Tracking. Locked later (change note 13).
+8. **Loot and luck, rest (change note 13).** Finishes the table. Rows 6.34–6.36. Plan locks 48–50. Next blank table is XP and wisdom. Does not change any jar.
+   - **Pet Luck.** Keep later. Build when pets exist.
+   - **Fear.** Scrap.
+   - **Tracking.** Scrap.
 
 ---
 
@@ -239,7 +243,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.2 | Archetypes (3 themed sub-builds per class) | Wynn | v1: 1–2 archetypes per class, 3rd later | |
 | 6.3 | Ability tree size: Wynn has 70+ nodes/class | Wynn | ~25 nodes/class v1 — enough? | |
 | 6.4 | Mana / intelligence resource for abilities | Wynn | TAKE | ✔ LOCKED (2026-09-24, change note 9) — use Hytale's mana. Our modifiers add to it. +Max Mana on gear is Equipment only. Overall Level (average of all skill levels) raises base Health and Mana (6.11). Per-spell cost IDs are scrap. One flat −% Spell Cost, accessory only. Skill-upgrade points come every 5 levels (6.12) |
-| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 9) — first pass is in. Crit Chance has no cap (over 100% is overcrit chance). Crit Damage is SkyBlock-style (0 = double a normal hit; +100% = 4x). Overcrit doubles the crit. Ferocity cap 300 for now. Attack Speed cap 150%. True Damage ignores Defence; True Defense is scrap. Gathering fortunes are locked (change note 11). Movement is locked (change note 10). Part of Loot and luck is locked (change note 12). Pet Luck, Fear, and Tracking stay open. After Loot finishes, the next blank section is XP and wisdom |
+| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 9) — first pass is in. Crit Chance has no cap (over 100% is overcrit chance). Crit Damage is SkyBlock-style (0 = double a normal hit; +100% = 4x). Overcrit doubles the crit. Ferocity cap 300 for now. Attack Speed cap 150%. True Damage ignores Defence; True Defense is scrap. Gathering fortunes are locked (change note 11). Movement is locked (change note 10). Loot and luck is finished (change notes 12 and 13). Next blank table is XP and wisdom |
 | 6.6 | Healer/Tank dungeon-class variants (SkyBlock Catacombs style) | SkyBlock | SKIP? classes already cover roles | Open with 6.13. Crowd healing is a later Priest idea. This row's dungeon-variant call is not locked |
 | 6.7 | Slayers (spawn-a-boss quest chains + slayer XP) | SkyBlock | TAKE (midgame) | ✔ **Core loop**, not side content. Not the leveling spine (that stays the island chain) |
 | 6.8 | Boss altars (summon boss with materials) | Wynn | TAKE (cheap early bosses) | |
@@ -268,7 +272,9 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.31 | Loot Quality | Wynn | | ✔ LOCKED (2026-09-25, change note 12) — keep. Rarer loot, fewer commons |
 | 6.32 | Stealing | Wynn | | ✔ LOCKED (2026-09-25, change note 12) — keep. Chance a hit mob drops an emerald |
 | 6.33 | Trophy Hunter (replaces Magic Find name) | Skyy | | ✔ LOCKED (2026-09-25, change note 12) — new name. Higher chance at unique drops and drop-only sets. Bosses and normal mobs. Mob drop-only armor sets, not only boss legendaries. Borderlands-style unique loot. Magic Find is scrap as the player-facing name |
-| 6.34 | Pet Luck, Fear, Tracking | SkyBlock | | Open. Do not mark scrap. Still waiting on Skyy |
+| 6.34 | Pet Luck | SkyBlock | | ✔ ADD LATER (2026-09-25, change note 13) — keep later. Build when pets exist |
+| 6.35 | Fear | SkyBlock | | ✔ SCRAP (2026-09-25, change note 13) |
+| 6.36 | Tracking | SkyBlock | | ✔ SCRAP (2026-09-25, change note 13) |
 
 ## 7. WORLD & CONTENT
 
@@ -364,4 +370,4 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 11.3 | ... | | |
 
 ---
-*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Change note 9 replaces the five Wynn skill points on gear with the combat, defence, and mana pass. Change note 10 (2026-09-25) locks Movement: flat +Speed, Sprint scrap, Stamina Regen, Jump Height, Rift Speed scrap. Change note 11 locks Gathering: Breaking Power, Mining Speed, Pick Breaking Damage, Mining Spread, one Mining Fortune, Auto Smelt, Farming Fortune, Foraging Fortune, and Timber. Change note 12 locks part of Loot and luck: Loot Bonus, Loot Quality, Stealing, and Trophy Hunter. Magic Find is scrap as the player-facing name. Pet Luck, Fear, and Tracking stay open. After Loot finishes, the next blank section is XP and wisdom. Reach stays the earlier lock (max +50%). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*
+*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Change note 9 replaces the five Wynn skill points on gear with the combat, defence, and mana pass. Change note 10 (2026-09-25) locks Movement: flat +Speed, Sprint scrap, Stamina Regen, Jump Height, Rift Speed scrap. Change note 11 locks Gathering: Breaking Power, Mining Speed, Pick Breaking Damage, Mining Spread, one Mining Fortune, Auto Smelt, Farming Fortune, Foraging Fortune, and Timber. Change note 12 locks part of Loot and luck: Loot Bonus, Loot Quality, Stealing, and Trophy Hunter. Magic Find is scrap as the player-facing name. Change note 13 finishes it: Pet Luck is keep later (build when pets exist). Fear and Tracking are scrap. Next blank table is XP and wisdom. Reach stays the earlier lock (max +50%). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*
