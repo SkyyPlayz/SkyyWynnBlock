@@ -92,13 +92,25 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 2. **Priest is a class** (was the 'later Priest' idea, rows 6.6 / 6.13). An **AoE healing support** class: healing spells and some damage. Weapon skill **Divinity**. Weapons: wands and spellbooks (`Weapon_Wand_*`, `Weapon_Spellbook_*`). Much of it will be custom content later. Placeholder until the spell system exists: when a Priest damages a mob with a class weapon, party members nearby heal a share of that damage (numbers editable in Server Setup).
 3. **Class kits.** Every class has a kit with its basic weapon, given automatically when the class is selected (a new profile). The kit contents are editable in game.
 4. Shaman (later) gets its own custom weapon (Wynn's relik has no Hytale item); Assassin keeps daggers + kunai.
-5. **Movement (change note 10).** Locks rows 6.14–6.18. Full list in `SkyyGear-Plan.md` locks 25–30. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is Gathering. Does not change any jar.
+5. **Movement (change note 10).** Locks rows 6.14–6.18. Full list in `SkyyGear-Plan.md` locks 25–30. Marked in `SkyyGear-Stat-Catalog.md`. The next blank table at this note was Gathering. Locked later (change note 11). Does not change any jar.
    - **Speed.** SkyBlock-style flat +Speed. Armor, Equipment, and accessories. Acrobatics skill tree still grants +% movement speed on its own.
    - **Sprint.** Scrap as a gear stat and as a sprint bar. Use Hytale stamina.
    - **Stamina Regen.** Sprint Regen, renamed. Armor only. Also Acrobatics and Exploration skill trees. Not on weapons, Equipment, or accessories unless Skyy says later.
    - **Jump Height.** Skill trees and accessories only. Not on armor, Equipment, or weapons.
    - **Rift Speed.** Scrap.
    - **Reach** stays the earlier lock. Gathering trees only (Mining, Farming, Gathering). Max +50%. Not re-opened.
+6. **Gathering (change note 11).** Locks rows 6.19–6.29. Full list in `SkyyGear-Plan.md` locks 31–41. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is Loot and luck. Does not change any jar.
+   - **Breaking Power.** Add. Hytale may already have this under another name. That check is open.
+   - **Mining Speed.** Yes. It increases pick swing speed.
+   - **Pick Breaking Damage.** New name. Damage to blocks only. Not mobs. Open: how Hytale decides pick damage vs hits-to-break a block.
+   - **Mining Spread.** Yes.
+   - **Mining Fortune.** Yes. Ore, Block, Dwarven Metal, and Gemstone Fortune fold into it.
+   - **Auto Smelt.** Add. Ores auto-smelt to ingots (SkyBlock Smelting Touch).
+   - **Farming Fortune.** Yes. Per-crop fortunes are scrap.
+   - **Foraging Fortune.** Yes. Per-tree fortunes are out for now.
+   - **Timber.** Keep that name. Not Treefeller. Not Sweep. Sweep is scrap. Horizontal extra breaks only. Breaking the base already fells the tree.
+   - **Later.** Gemstone Spread and Pristine only if we add gemstones. Fishing and hunting stats stay parked until those mods exist.
+   - **Skip for now.** Bonus Pest Chance. Overbloom. Gather Speed.
 
 ---
 
@@ -220,7 +232,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.2 | Archetypes (3 themed sub-builds per class) | Wynn | v1: 1–2 archetypes per class, 3rd later | |
 | 6.3 | Ability tree size: Wynn has 70+ nodes/class | Wynn | ~25 nodes/class v1 — enough? | |
 | 6.4 | Mana / intelligence resource for abilities | Wynn | TAKE | ✔ LOCKED (2026-09-24, change note 9) — use Hytale's mana. Our modifiers add to it. +Max Mana on gear is Equipment only. Overall Level (average of all skill levels) raises base Health and Mana (6.11). Per-spell cost IDs are scrap. One flat −% Spell Cost, accessory only. Skill-upgrade points come every 5 levels (6.12) |
-| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 9) — first pass is in. Crit Chance has no cap (over 100% is overcrit chance). Crit Damage is SkyBlock-style (0 = double a normal hit; +100% = 4x). Overcrit doubles the crit. Ferocity cap 300 for now. Attack Speed cap 150%. True Damage ignores Defence; True Defense is scrap. Fortune from change note 7 was **not** re-opened. Movement is locked (change note 10). Next blank table is Gathering |
+| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 9) — first pass is in. Crit Chance has no cap (over 100% is overcrit chance). Crit Damage is SkyBlock-style (0 = double a normal hit; +100% = 4x). Overcrit doubles the crit. Ferocity cap 300 for now. Attack Speed cap 150%. True Damage ignores Defence; True Defense is scrap. Gathering fortunes are locked (change note 11). Movement is locked (change note 10). Next blank table is Loot and luck |
 | 6.6 | Healer/Tank dungeon-class variants (SkyBlock Catacombs style) | SkyBlock | SKIP? classes already cover roles | Open with 6.13. Crowd healing is a later Priest idea. This row's dungeon-variant call is not locked |
 | 6.7 | Slayers (spawn-a-boss quest chains + slayer XP) | SkyBlock | TAKE (midgame) | ✔ **Core loop**, not side content. Not the leveling spine (that stays the island chain) |
 | 6.8 | Boss altars (summon boss with materials) | Wynn | TAKE (cheap early bosses) | |
@@ -234,6 +246,17 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.16 | Stamina Regen (was Sprint Regen) | Wynn | | ✔ LOCKED (2026-09-25, change note 10) — armor only. Also Acrobatics and Exploration skill trees. Not on weapons, Equipment, or accessories unless Skyy says later |
 | 6.17 | Jump Height | Wynn | | ✔ LOCKED (2026-09-25, change note 10) — skill trees and accessories only. Not on armor, Equipment, or weapons |
 | 6.18 | Rift Speed | SkyBlock | | ✔ SCRAP (2026-09-25, change note 10) — Rift move speed is out |
+| 6.19 | Breaking Power | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — add. Hytale may already have this under another name. That check is open |
+| 6.20 | Mining Speed | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — yes. It increases pick swing speed |
+| 6.21 | Pick Breaking Damage | Skyy | | ✔ LOCKED (2026-09-25, change note 11) — damage to blocks only. Not mobs. **Open:** how Hytale decides pick damage vs hits-to-break a block |
+| 6.22 | Mining Spread | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — yes |
+| 6.23 | Mining Fortune (one stat) | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — yes. Ore, Block, Dwarven Metal, and Gemstone Fortune fold into it |
+| 6.24 | Auto Smelt | Skyy | | ✔ LOCKED (2026-09-25, change note 11) — add. SkyBlock Smelting Touch. Ores auto-smelt to ingots |
+| 6.25 | Farming Fortune | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — yes. Per-crop Farming Fortunes are scrap |
+| 6.26 | Foraging Fortune | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — yes. Per-tree Foraging Fortunes are out for now |
+| 6.27 | Timber (replaces Sweep) | SkyBlock | | ✔ LOCKED (2026-09-25, change note 11) — keep the name Timber. Not Treefeller. Not Sweep. Horizontal extra breaks only. Breaking the base already fells the tree |
+| 6.28 | Gemstones, fishing, hunting | SkyBlock | | ✔ ADD LATER (2026-09-25, change note 11) — Gemstone Spread and Pristine only if we add gemstones. Fishing and hunting stats stay parked until those mods exist |
+| 6.29 | Pest Chance, Overbloom, Gather Speed | both | | ✔ ADD LATER (2026-09-25, change note 11) — skip for now. Bonus Pest Chance is unsure (pests and the Garden). Overbloom. Wynn Gather Speed |
 
 ## 7. WORLD & CONTENT
 
@@ -329,4 +352,4 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 11.3 | ... | | |
 
 ---
-*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Change note 9 replaces the five Wynn skill points on gear with the combat, defence, and mana pass. Change note 10 (2026-09-25) locks Movement: flat +Speed, Sprint scrap, Stamina Regen, Jump Height, Rift Speed scrap. Next blank table is Gathering. Fortune from change note 7 was not re-opened. Reach stays the earlier lock (max +50%). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*
+*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Change note 9 replaces the five Wynn skill points on gear with the combat, defence, and mana pass. Change note 10 (2026-09-25) locks Movement: flat +Speed, Sprint scrap, Stamina Regen, Jump Height, Rift Speed scrap. Change note 11 locks Gathering: Breaking Power, Mining Speed, Pick Breaking Damage, Mining Spread, one Mining Fortune, Auto Smelt, Farming Fortune, Foraging Fortune, and Timber. Next blank table is Loot and luck. Reach stays the earlier lock (max +50%). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*

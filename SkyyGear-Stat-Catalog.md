@@ -1,9 +1,9 @@
 # SkyyGear stat catalog
-*Research list, 2026-09-24. Combat, defence, mana, and Movement are marked in the collapsed section. From Gathering down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
+*Research list, 2026-09-24. Combat, defence, mana, Movement, and Gathering are marked in the collapsed section. From Loot and luck down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Fortune was not in this pass. It stays until the loot and gathering tables are reviewed.
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Mining Fortune, Farming Fortune, and Foraging Fortune are in. Loot and luck is still blank.
 
-**Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %). Those are our locks, not wiki lines.
+**Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt). Those are our locks, not wiki lines.
 
 **Game** means where the stat is from. **Both** means one row covers two names.
 
@@ -20,9 +20,9 @@ True Damage is in the decided section. It ignores Defence. True Defense, the sta
 ---
 
 <details>
-<summary><strong>Decided — combat, defence, mana, and Movement</strong> (change notes 9 and 10). Next blank table is Gathering.</summary>
+<summary><strong>Decided — combat, defence, mana, Movement, and Gathering</strong> (change notes 9–11). Next blank table is Loot and luck.</summary>
 
-These rows are marked. **Keep**, **Scrap**, or **Open**. Placement is the lock. Fortune was not in this pass. Movement was locked 2026-09-25.
+These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. Gathering was locked 2026-09-25 (change note 11).
 
 ### Damage and crits
 
@@ -156,53 +156,55 @@ Reach (old Swing Range) was already locked. Gathering trees only. Max +50%. Not 
 | Jump Height | Wynn | Skill trees and accessories only. Not on armor, Equipment, or weapons. | Keep |
 | Rift Speed | SB | Rift move speed is out. | Scrap |
 
-</details>
-
-## Gathering
+### Gathering
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
-| Breaking Power | SB | Lets you mine harder blocks. | |
-| Mining Speed | SB | Mines blocks faster. | |
-| Mining Spread | SB | Breaks nearby blocks too. Every 100 is another block. Not gemstones. Off on a private island. | |
-| Gemstone Spread | SB | Breaks nearby gemstone blocks. | |
-| Pristine | SB | Chance a mined gemstone comes out a higher quality. | |
-| Mining Fortune | SB | Chance of extra mining drops. Every 100 is one extra drop. | |
-| Ore Fortune | SB | Extra Mining Fortune on ores. | |
-| Block Fortune | SB | Extra Mining Fortune on blocks. | |
-| Dwarven Metal Fortune | SB | Extra Mining Fortune on dwarven metals. | |
-| Gemstone Fortune | SB | Extra Mining Fortune on gemstones. | |
-| Farming Fortune | SB | Chance of extra crop drops. Every 100 is one extra drop. | |
-| Wheat Fortune | SB | Extra Farming Fortune on wheat. | |
-| Carrot Fortune | SB | Extra Farming Fortune on carrots. | |
-| Potato Fortune | SB | Extra Farming Fortune on potatoes. | |
-| Pumpkin Fortune | SB | Extra Farming Fortune on pumpkins. | |
-| Sugar Cane Fortune | SB | Extra Farming Fortune on sugar cane. | |
-| Melon Slice Fortune | SB | Extra Farming Fortune on melon slices. | |
-| Cactus Fortune | SB | Extra Farming Fortune on cactus. | |
-| Cocoa Beans Fortune | SB | Extra Farming Fortune on cocoa beans. | |
-| Mushroom Fortune | SB | Extra Farming Fortune on mushrooms. | |
-| Nether Wart Fortune | SB | Extra Farming Fortune on nether wart. | |
-| Sunflower Fortune | SB | Extra Farming Fortune on sunflowers. | |
-| Moonflower Fortune | SB | Extra Farming Fortune on moonflowers. | |
-| Wild Rose Fortune | SB | Extra Farming Fortune on wild roses. | |
-| Bonus Pest Chance | SB | More pests can spawn at once. | |
-| Overbloom | SB | Higher chance of rare crops. | |
-| Foraging Fortune | SB | Chance of extra foraging drops. Every 100 is one extra drop. | |
-| Fig Fortune | SB | Extra Foraging Fortune on fig logs. | |
-| Mangrove Fortune | SB | Extra Foraging Fortune on mangrove logs. | |
-| Helix Fortune | SB | Extra Foraging Fortune on helix logs. | |
-| Sweep | SB | Lets an axe break more logs. Tougher trees need more Sweep. | |
-| Timber | SB | Chance the first axe cut fells the whole tree. | |
-| Fishing Speed | SB | How fast a catch lands. The cap depends on the zone. | |
-| Sea Creature Chance | SB | Chance a catch is a sea creature. | |
-| Double Hook Chance | SB | Chance to hook a second sea creature. Cap 100. | |
-| Treasure Chance | SB | Higher chance of a fishing treasure. | |
-| Trophy Chance | SB | Higher chance of a trophy fish. Cap 150. | |
-| Pull | SB | What a fishing net can grab, and how long it takes. | |
-| Hunting Fortune | SB | Chance of extra attribute shards. Every 100 is one extra shard. | |
-| Charm Chance | SB | Higher chance a killed mob drops an attribute shard. | |
-| Gather Speed | Wynn | Faster gathering. Found on ingredients, not normal armour. | |
+| Breaking Power | SB | Add. Lets you mine harder blocks. Hytale may already have this under another name. That check is open. | Keep |
+| Mining Speed | SB | Yes. In Hytale the main limit is pick swing speed, so this increases swing speed. | Keep |
+| Pick Breaking Damage | SkyWynn | New name. Damage to blocks only. Not mobs. Open: how Hytale decides pick damage vs hits-to-break a block. | Keep |
+| Mining Spread | SB | Yes. Breaks nearby blocks too. | Keep |
+| Mining Fortune | SB | Yes. One stat. Covers ores, blocks, dwarven metals, and gemstones. | Keep |
+| Ore Fortune | SB | Folded into Mining Fortune. | Scrap |
+| Block Fortune | SB | Folded into Mining Fortune. | Scrap |
+| Dwarven Metal Fortune | SB | Folded into Mining Fortune. | Scrap |
+| Gemstone Fortune | SB | Folded into Mining Fortune. | Scrap |
+| Auto Smelt | SkyWynn | Add. SkyBlock Smelting Touch. Ores auto-smelt to ingots. | Keep |
+| Farming Fortune | SB | Yes. One stat for every crop. | Keep |
+| Wheat Fortune | SB | No separate crop fortune. | Scrap |
+| Carrot Fortune | SB | No separate crop fortune. | Scrap |
+| Potato Fortune | SB | No separate crop fortune. | Scrap |
+| Pumpkin Fortune | SB | No separate crop fortune. | Scrap |
+| Sugar Cane Fortune | SB | No separate crop fortune. | Scrap |
+| Melon Slice Fortune | SB | No separate crop fortune. | Scrap |
+| Cactus Fortune | SB | No separate crop fortune. | Scrap |
+| Cocoa Beans Fortune | SB | No separate crop fortune. | Scrap |
+| Mushroom Fortune | SB | No separate crop fortune. | Scrap |
+| Nether Wart Fortune | SB | No separate crop fortune. | Scrap |
+| Sunflower Fortune | SB | No separate crop fortune. | Scrap |
+| Moonflower Fortune | SB | No separate crop fortune. | Scrap |
+| Wild Rose Fortune | SB | No separate crop fortune. | Scrap |
+| Bonus Pest Chance | SB | Skip for now. Unsure about pests and the Garden. | Add later |
+| Overbloom | SB | Skip for now. | Add later |
+| Foraging Fortune | SB | Yes. One stat for logs. | Keep |
+| Fig Fortune | SB | No separate tree fortune for now. | Add later |
+| Mangrove Fortune | SB | No separate tree fortune for now. | Add later |
+| Helix Fortune | SB | No separate tree fortune for now. | Add later |
+| Sweep | SB | Scrap. Timber replaces this name and this behavior. | Scrap |
+| Timber | SB | Keep the name Timber. Not Treefeller. Not Sweep. Breaks extra blocks on a horizontal plane only. Breaking the base already fells the whole tree in Hytale. | Keep |
+| Fishing Speed | SB | Parked until a fishing mod exists. | Add later |
+| Sea Creature Chance | SB | Parked until a fishing mod exists. | Add later |
+| Double Hook Chance | SB | Parked until a fishing mod exists. | Add later |
+| Treasure Chance | SB | Parked until a fishing mod exists. | Add later |
+| Trophy Chance | SB | Parked until a fishing mod exists. | Add later |
+| Pull | SB | Parked until a fishing mod exists. | Add later |
+| Hunting Fortune | SB | Parked until a hunting mod exists. | Add later |
+| Charm Chance | SB | Parked until a hunting mod exists. | Add later |
+| Gather Speed | Wynn | Skip. | Add later |
+| Gemstone Spread | SB | Only if we add gemstones later. | Add later |
+| Pristine | SB | Only if we add gemstones later. | Add later |
+
+</details>
 
 ## Loot and luck
 
@@ -490,7 +492,7 @@ Unique effects on set items and some raid buffs. Not a rolled ID. Read 2026-09-2
 
 ## New SkyWynn stats
 
-Dodge Chance, Overcrit, True Damage, and flat Spell Cost % are already in the decided section. Blank rows below are for the next idea.
+Dodge Chance, Overcrit, True Damage, flat Spell Cost %, Pick Breaking Damage, and Auto Smelt are already in the decided section. Blank rows below are for the next idea.
 
 | Stat | What it might do | Decision |
 |---|---|---|

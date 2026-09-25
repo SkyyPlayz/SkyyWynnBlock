@@ -12,7 +12,7 @@ Skyy's direction still holds: every mod in the pack is eventually our own. Comba
 5. **Combat armor and weapons** basically copy Wynncraft. Class weapons stay the ones already named in `SkyyClasses-Plan.md`. Berserker is still PENDING and has no weapon list.
 6. **Gathering gear** is SkyBlock-style: farming armor sets and foraging armor sets. Mining armor is likely the same kind of set. This note does not name the pieces.
 7. **Wardrobe + loadouts**, Hypixel SkyBlock style: save a gear set and quick-swap to it. **UI:** placeholders are fine. Nothing on the inventory screen yet (`SkyWynn-Decisions.md` 10.22). What a loadout saves is lock 12.
-8. **Stat mix (revised later the same day).** This note put Wynn's five skill points on weapons and armor, with crit chance, crit damage, and fortune layered on. **Change note 9 replaces the five skill points.** Strength is SkyBlock-style. Dexterity, Wynn Defence, Wynn Intelligence, and Wynn Agility are not gear skill points. Crit chance and crit damage stay, with the rules in locks 15 and up. **Fortune was not re-opened.** It stays in the mix until the loot and gathering tables are reviewed.
+8. **Stat mix (revised later the same day).** This note put Wynn's five skill points on weapons and armor, with crit chance, crit damage, and fortune layered on. **Change note 9 replaces the five skill points.** Strength is SkyBlock-style. Dexterity, Wynn Defence, Wynn Intelligence, and Wynn Agility are not gear skill points. Crit chance and crit damage stay, with the rules in locks 15 and up. **Gathering fortunes were locked later (change note 11).** Mining Fortune, Farming Fortune, and Foraging Fortune are in. One stat each. Loot and luck is still blank.
 9. **Identification.** For now, a menu opened with `/identify`. Later `/identify` is disabled and identification moves to an NPC, Wynncraft-style. Identifying costs coins. The cost scales with the item's rarity and level. The cost formula is open. The menu is one of our pages (placeholders are fine). It does not go on the inventory screen (10.22). SkyyRolls 0.1.3 has no identify step.
 10. **Drops and sets.** Mob drops can be any rarity. Some sets are drop-only. Some sets are craft-only. That closes the older question about craft-only tiers.
 11. **Set bonuses.** Sets have a bonus for wearing the set, in the vein of Wynncraft set bonuses and Hypixel's Full Set Bonus. Which sets, and the bonus numbers, are not named here.
@@ -70,7 +70,7 @@ Change note 9 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md` (c
 
 ## Locked 2026-09-25 — Movement
 
-Change note 10 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md` (same collapsed section). Next blank table is Gathering. Does not change any jar.
+Change note 10 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md` (same collapsed section). Gathering was locked later (change note 11). Does not change any jar.
 
 25. **Speed.** SkyBlock-style flat +Speed. Can roll on armor, Equipment, and accessories. The Acrobatics skill tree still grants +% movement speed on its own.
 26. **Sprint.** Scrap as a gear stat and as a sprint bar. Use Hytale stamina.
@@ -78,6 +78,22 @@ Change note 10 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md` (
 28. **Jump Height.** Skill trees and accessories only. Not on armor, Equipment, or weapons.
 29. **Rift Speed.** Scrap.
 30. **Reach stays.** Already locked (lock 18). Gathering trees only: Mining, Farming, and Gathering. Max +50%. Not re-opened.
+
+## Locked 2026-09-25 — Gathering
+
+Change note 11 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md` (same collapsed section). Next blank table is Loot and luck. Does not change any jar.
+
+31. **Breaking Power.** Add. Hytale may already have this under another name. That check is open.
+32. **Mining Speed.** Yes. It increases pick swing speed. That is the main limit in Hytale.
+33. **Pick Breaking Damage.** New SkyWynn name. Damage to blocks only. Not mobs. Open: how Hytale decides pick damage vs hits-to-break a block.
+34. **Mining Spread.** Yes.
+35. **Mining Fortune.** Yes. Ore Fortune, Block Fortune, Dwarven Metal Fortune, and Gemstone Fortune fold into it. One stat covers all.
+36. **Auto Smelt.** Add. SkyBlock Smelting Touch. Ores auto-smelt to ingots.
+37. **Farming Fortune.** Yes. Per-crop Farming Fortunes are scrap.
+38. **Foraging Fortune.** Yes. Per-tree Foraging Fortunes are out for now.
+39. **Timber.** Keep the name Timber. Not Treefeller. Not Sweep. Sweep is scrap. Extra breaks are on a horizontal plane only. Breaking the base already fells the whole tree in Hytale.
+40. **Later.** Gemstone Spread and Pristine only if we add gemstones. Fishing and hunting stats stay parked until those mods exist.
+41. **Skip for now.** Bonus Pest Chance (unsure about pests and the Garden). Overbloom. Gather Speed.
 
 ## Open research — Borderlands 4 skill trees
 
@@ -91,10 +107,10 @@ Public notes only. Not a SkyWynn design.
 ## What it covers
 | Line | Style | Locked shape |
 |---|---|---|
-| Combat weapons and armor | Wynncraft | Copy Wynn's model. Class weapons: Archer shortbow/crossbow, Warrior sword/longsword/spear, Mage staff; later Assassin daggers/kunai; Shaman TBD; Berserker PENDING with no list. Every piece has a level requirement and a rarity. Mobs can drop any rarity. Rolled IDs show after identify (lock 9). Stats follow locks 15 and up (change notes 9 and 10), not the five Wynn skill points. Sets can be drop-only or craft-only, and a worn set has a set bonus (locks 10–11). Powders and Wynn's five elements stay (batch 2); powder slot counts are open |
-| Gathering armor | Hypixel SkyBlock | Farming sets and foraging sets. Mining sets are likely the same idea. They are armor, so they follow the armor placement in locks 15 and up. Speed and Stamina Regen can sit on armor. Jump Height does not. Fortune from lock 8 is still on the sheet until that table is reviewed. A worn set has a set bonus |
+| Combat weapons and armor | Wynncraft | Copy Wynn's model. Class weapons: Archer shortbow/crossbow, Warrior sword/longsword/spear, Mage staff; later Assassin daggers/kunai; Shaman TBD; Berserker PENDING with no list. Every piece has a level requirement and a rarity. Mobs can drop any rarity. Rolled IDs show after identify (lock 9). Stats follow locks 15 and up (change notes 9–11), not the five Wynn skill points. Sets can be drop-only or craft-only, and a worn set has a set bonus (locks 10–11). Powders and Wynn's five elements stay (batch 2); powder slot counts are open |
+| Gathering armor | Hypixel SkyBlock | Farming sets and foraging sets. Mining sets are likely the same idea. They are armor, so they follow the armor placement in locks 15 and up. Speed and Stamina Regen can sit on armor. Jump Height does not. Mining Fortune, Farming Fortune, and Foraging Fortune are in (change note 11). One stat each. A worn set has a set bonus |
 | Equipment | Hypixel SkyBlock | Separate bar next to armor. Slots: necklace, cloak, ring, belt. Working name Equipment (not final). Saved in a loadout |
-| Tools | Hypixel SkyBlock | Pickaxes, axes, hoes (rods later). Reforges, and tiers tied to the zone islands, are still to design. They are gear, so they carry a level requirement and a rarity |
+| Tools | Hypixel SkyBlock | Pickaxes, axes, hoes (rods later). Reforges, and tiers tied to the zone islands, are still to design. They are gear, so they carry a level requirement and a rarity. Gathering stats follow locks 31–41 |
 
 ## Built foundations we reuse
 - **SkyyRolls** (0.1.3): rolled stats stored on the item and shown on its tooltip (reforge name in the rarity colour, one line per stat). This is the ID / reforge foundation. It does not do unidentified drops, smithing rarity, a rarity-based roll range, or the stat mix.
@@ -120,7 +136,7 @@ Public notes only. Not a SkyWynn design.
 6. **Powders.** Wynn's five elements and "powders replace SkyBlock runes" stay locked. Still open: slots per item, tiers, and how they drop.
 7. **Where rolled items sell.** Bazaar (stackable commodities today) or the auction house. Separate from that: the late-game wall still pulls some items off both buy and sell (Decisions 1.2). Which gear that hits is open.
 8. **Zone pacing.** How gear steps up across the island chain. Not numbered here.
-9. **Stat list from Gathering down.** Movement is locked (change note 10, locks 25–29). Next blank table is Gathering. Fortune from lock 8 was not re-opened. Reach stays lock 18. Still open inside the combat pass: per-element main-attack lines and per-element spell % (leaning skip); Reflection; life-steal numbers; which classes count as magic-using for Mana Regen; Health and Mana per Overall Level; how big a skill upgrade is. Do not invent those numbers.
+9. **Stat list from Loot and luck down.** Gathering is locked (change note 11, locks 31–41). Next blank table is Loot and luck. Reach stays lock 18. Still open: the Breaking Power name in Hytale; how pick damage vs hits-to-break works; per-element main-attack lines and per-element spell % (leaning skip); Reflection; life-steal numbers; which classes count as magic-using for Mana Regen; Health and Mana per Overall Level; how big a skill upgrade is. Do not invent those numbers.
 10. **Accessory Power list and numbers.** Warrior and Elementalist are locked examples. The rest of the buff list, and every number, stay open. The Hypixel power menu (every selectable power, enrichments, and tuning) is in that same catalog, decision column blank. It is research. Do not treat the crystal table in `SkyyAccessories-Plan.md` as the lock.
 11. **Class skill trees.** Borderlands-style, not a straight line. The Borderlands 4 notes above are research. Do not design the trees yet. Decisions 6.3 (~25 nodes) is the older draft, not this lock.
 12. **Class roles.** A Priest class is the later idea for crowd healing (healing spells and some damage). Roles are not defined yet.
