@@ -87,7 +87,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 ## Auction House (`research/Auction-House-Spec.md` section 12)
 1. LOCKED 2026-09-25 (Skyy): Hypixel fee defaults stay. Listing 1% / 2% / 2.5%. Duration fees on 1h / 6h / 12h / 24h stay 20 / 45 / 100 / 350. 1% tax above 1,000,000. All of those fee values are adjustable in Server Setup (SkyyEconomy rows `ah.listingFee`, the fee half of `ah.durations`, `ah.claimTaxPercent`, `ah.claimTaxFrom`). [SkyyAuctions 0.1.1 still uses config.properties; the menu rows are the next economy build. 48h is question 2]
 2. LOCKED 2026-09-25 (Skyy): durations stay 1h / 6h / 12h / 24h / 48h, default 24h. The 48h option costs double the normal listing fee. [0.1.1 still adds a flat 1,200 coins on 48h]
-3. Bazaar items refused on the AH (like Hypixel)? [refused]
+3. LOCKED 2026-09-25 (Skyy): Bazaar items stay refused on the AH. [refused, already the default]
 4. Never buy your own listing, even from another profile? [never]
 5. Creative players: browse and claim only? [yes]
 6. 14 listings per profile? [14]
