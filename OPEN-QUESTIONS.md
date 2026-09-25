@@ -22,6 +22,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - **Party combat XP:** members within 48 blocks in the same world get 50% of the killer's combat XP (the killer keeps 100%). [as written]
 - **Menu hover tooltips:** on by default; the book switch turns them off if the stuck tooltip after Esc still happens. Default off? [on]
 
+## Vault arrows (`research/Vault-Arrows-Spec.md`, live in SkyyVault 0.1.2)
+- The arrows sit in an extra 5th row, so all 36 slots stay free. If the 5-row chest doesn't fit your screen, switch Server Setup -> Vault ->
+  arrow layout to "Inside the page" (the arrows then take the bottom-left and bottom-right slots, Wynncraft-exact). [extra row]
+- Buying the next page from the gold arrow needs two clicks within 10 s (one shift-click can reach the server twice). [two clicks]
+- A plain click may only lift the arrow on your screen; the page then turns when you put it down. Shift-click always turns at once. [test]
+
 ## Berserker, Priest, class kits (`research/Classes-Berserker-Priest-Spec.md` section 8, live in Classes 0.1.6 / Skills 0.4.4 / Profiles 0.1.2)
 - Priest heal: 25% of the damage to party members within 16 blocks, the Priest heals themself at 50% of that, max 10 HP per hit and 10 HP per
   second per player; party only, not other players. [as written, all editable in Server Setup]

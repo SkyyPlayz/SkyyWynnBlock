@@ -892,3 +892,13 @@ Essentials 0.1.3, Exploration 0.2.1, Guilds 0.1.2, Vault 0.1.1, Rolls 0.1.5, Hud
 10. Server Setup -> Classes: 4 tabs; add a spellbook to the Priest kit; 'Use my hotbar' on the Archer kit with a sword asks first; heal share 50%; Priest heal OFF (asks) -> no heals; back ON. Skills has 3 Divinity rows.
 11. Full inventory + `/classadmin kit <you> archer` -> "did not fit ... /class kit"; make room, `/class kit` delivers; survives a relog.
 12. `/class` shows 7 cards; footer "Hatchets are tools."
+
+
+## SkyyVault 0.1.2 - page arrows inside the chest, DEPLOYED 2026-09-25 07:47 (backup backups/deploy-20260925-0747)
+1. `/vault` (chest mode): 5 rows with your inventory still visible; read every tooltip in the bottom row. If it doesn't fit: Server Setup -> Vault -> arrow layout "Inside the page".
+2. Click Next, then Prev. On an arrow try: plain click, drag to your inventory, shift-click, drop key, take half. Each time the page turns once, the arrow is back, and ~1 s later no arrow is in your inventory.
+3. Try to steal an arrow: drag it to hotbar / armour / a vault slot; Take All, Sort, Put All, Quick Stack; drop an item onto an arrow and a filler; spam Next 10x; Esc mid-drag. Then check mods/Skyy_SkyyVault/vault.log + server log for STRAY / RESCUE / "Failed to run task".
+4. Last page: click the gold arrow (chat asks), click again within 10 s -> coins taken once, new page opens. Wait 11 s between clicks -> it only asks again. Too few coins -> refused. At max pages -> grey "Last page".
+5. Switch profiles with the vault open: it closes; for 30 s the arrows show the wait message.
+6. Arrows off (Server Setup): 4 rows, shift-click and Take All still work. Creative library: searching "page"/"vault" lists no arrow items.
+7. [2P] Two players flip their own vaults at the same time with no cross-effects.
