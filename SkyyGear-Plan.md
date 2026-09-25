@@ -113,3 +113,6 @@ Public notes only. Not a SkyWynn design.
 10. **Accessory Power list and numbers.** Warrior and Elementalist are locked examples. The rest of the buff list, and every number, stay open. The Hypixel power menu (every selectable power, enrichments, and tuning) is in that same catalog, decision column blank. It is research. Do not treat the crystal table in `SkyyAccessories-Plan.md` as the lock.
 11. **Class skill trees.** Borderlands-style, not a straight line. The Borderlands 4 notes above are research. Do not design the trees yet. Decisions 6.3 (~25 nodes) is the older draft, not this lock.
 12. **Class roles.** A Priest class is the later idea for crowd healing (healing spells and some damage). Roles are not defined yet.
+
+## Tooltip style (Skyy, 2026-09-24)
+SkyBlock style: each stat line shows the item's BASE value followed by what the roll / reforge adds in brackets, e.g. `Damage: 11-48 (+24%)`, `Strength: 12 (+3)`. First step: SkyyRolls 0.1.4 (0.1.3 lists the rolls as separate lines).
