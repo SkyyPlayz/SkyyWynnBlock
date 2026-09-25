@@ -1,7 +1,7 @@
 # SkyyGear stat catalog
-*Research list, 2026-09-24. Combat through Other are marked in the collapsed section. From SkyBlock accessory powers down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
+*Research list, 2026-09-24. Combat through accessory starters are marked in the collapsed section. The rest of SkyBlock accessory powers, then tuning, still have a blank Decision. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Change note 15 (2026-09-25) scraps the Other table as gear IDs. Change note 16 uses Hytale oxygen and accessory effects instead of a Respiration ID. Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is SkyBlock accessory powers.
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Change note 11 (2026-09-25) is Gathering. Change notes 12 and 13 (2026-09-25) finish Loot and luck. Change note 14 (2026-09-25) is XP and wisdom. Change note 15 (2026-09-25) scraps the Other table as gear IDs. Change note 16 uses Hytale oxygen and accessory effects instead of a Respiration ID. Change note 17 is the accessory craft ladder. Change note 18 is enrichments. Change note 19 is starter powers (leaning Keep, pending confirm). Mining Fortune, Farming Fortune, and Foraging Fortune are in. The next blank table is the rest of SkyBlock accessory powers.
 
 **Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %, Pick Breaking Damage, Auto Smelt, Trophy Hunter, Cooking Wisdom, Smithing Wisdom, Exploration Wisdom, Acrobatics Wisdom). Those are our locks, not wiki lines.
 
@@ -20,9 +20,9 @@ True Damage is in the decided section. It ignores Defence. True Defense, the sta
 ---
 
 <details>
-<summary><strong>Decided — combat through Other</strong> (change notes 9–16). Next blank table is SkyBlock accessory powers.</summary>
+<summary><strong>Decided — combat through accessory starters</strong> (change notes 9–19). Next blank table is the rest of SkyBlock accessory powers.</summary>
 
-These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. The Other table was scrapped as gear IDs (change note 15). Breathing uses Hytale oxygen (change note 16).
+These rows are marked. **Keep**, **Scrap**, **Add later**, or **Open**. Placement is the lock. The Other table was scrapped as gear IDs (change note 15). Breathing uses Hytale oxygen (change note 16). Accessory craft ladder is change note 17. Enrichments are change note 18. Starter powers are change note 19. They lean Keep. They are pending confirm.
 
 ### Damage and crits
 
@@ -260,65 +260,82 @@ Scrap the whole table.
 
 Breathing is not a Respiration stat. Use Hytale's native oxygen. Accessories can raise oxygen. A max-level oxygen accessory line allows full underwater breathing. A separate accessory boosts water swim speed. These are accessory effects. They are not gear IDs.
 
+### Accessory progression
+
+Most accessories are crafted. Some come from mobs or chests. Leveling a collection unlocks the next accessory craft tier. Crafting the next rarity needs the previous rarity as an ingredient. SkyBlock-style ladder.
+
+Gear modifier rulings apply to accessories and Equipment the same way. A SkyBlock Intelligence line on an accessory is mana %. Not an Intelligence ID.
+
+### Accessory enrichments
+
+Wiki amounts are research. They are not our numbers.
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| Speed Enrichment | SB | Keep. Same Speed ruling as gear. | Keep |
+| Crit Damage Enrichment | SB | Keep. Same Crit Damage ruling as gear. | Keep |
+| Crit Chance Enrichment | SB | Keep. Same Crit Chance ruling as gear. | Keep |
+| Strength Enrichment | SB | Keep. Same Strength ruling as gear. | Keep |
+| Defense Enrichment | SB | Keep. Same Defence ruling as gear. | Keep |
+| Health Enrichment | SB | Keep. Same Health ruling as gear. | Keep |
+| Attack Speed Enrichment | SB | Keep. Same Attack Speed ruling as gear. Cap 150%. | Keep |
+| Mana % enrichment | SkyWynn | Was Intelligence Enrichment. Mana %. No Intelligence ID. Accessories and Equipment follow the gear mana ruling. | Keep |
+| Sea Creature Chance Enrichment | SB | Add later. With fishing. | Add later |
+| Magic Find Enrichment | SB | Scrap. Magic Find is not the name. | Scrap |
+| Ferocity Enrichment | SB | Pending captain. They said "not in the pack". Ferocity the combat stat stays. Cap 300. Do not scrap that stat. | Open |
+
+### Accessory powers
+
+The power system stays. You pick one power. More power makes that power's stats bigger.
+
+These starters lean Keep. Pending confirm. Wiki numbers at 250 Accessory Power are research. They are not our numbers. Any Intelligence line is mana %.
+
+| Stat | Game | What it does | Decision |
+|---|---|---|---|
+| No Power | SB | Leaning Keep. Pending confirm. Applies no power stats. | Open |
+| Fortuitous | SB | Leaning Keep. Pending confirm. Starter. | Open |
+| Pretty | SB | Leaning Keep. Pending confirm. Starter. Multi-stat blend: Health, Defense, Speed, Strength, mana, Crit Chance, Crit Damage. Not one theme. | Open |
+| Protected | SB | Leaning Keep. Pending confirm. Starter. | Open |
+| Simple | SB | Leaning Keep. Pending confirm. Starter. | Open |
+| Warrior | SB | Leaning Keep. Pending confirm. Starter. Rename TBD. The name clashes with the Warrior class. This is the change note 8 example, pending that rename. Not a second power. | Open |
+
 </details>
 
 ## SkyBlock accessory powers
 
-Hypixel name: Accessory Power. Older name: Magical Power. Each accessory in the bag adds power by its rarity. You pick one power. More power makes that power's listed stats bigger. A stone power can also have a unique bonus that does not grow with power. Numbers here are the wiki's stats at 250 Accessory Power, plus that unique bonus. They are SkyBlock facts for this menu. They are not a SkyWynn lock. Hypixel's Warrior power is not the locked SkyWynn example named Warrior.
+The system and the six starters are in the decided section (change note 19). Starters lean Keep. They are pending confirm. Warrior's name is TBD.
+
+Rows below are still blank. Hypixel name: Accessory Power. Older name: Magical Power. A stone power can also have a unique bonus that does not grow with power. Numbers here are the wiki's stats at 250 Accessory Power, plus that unique bonus. They are SkyBlock facts. They are not a SkyWynn lock. A SkyBlock Intelligence line on these rows is mana %. Not an Intelligence ID.
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
-| No Power | SB | A selectable option that applies no power stats. | |
-| Fortuitous | SB | Starter. At 250 Accessory Power: +32 Health, +12 Defense, +46 Strength, +42 Crit Chance, +46 Crit Damage. | |
-| Pretty | SB | Starter. At 250: +16 Health, +12 Defense, +6 Speed, +46 Strength, +104 Intelligence, +5 Crit Chance, +12 Crit Damage. | |
-| Protected | SB | Starter. At 250: +113 Health, +104 Defense, +23 Strength, +5 Crit Chance, +12 Crit Damage. | |
-| Simple | SB | Starter. At 250: +48 Health, +35 Defense, +12 Speed, +35 Strength, +52 Intelligence, +14 Crit Chance, +35 Crit Damage. | |
-| Warrior | SB | Starter. At 250: +32 Health, +12 Defense, +81 Strength, +23 Crit Chance, +58 Crit Damage. **Clash:** Hypixel's power, not the locked SkyWynn Warrior example. | |
 | Commando | SB | Needs Combat 15. At 250: +48 Health, +23 Defense, +81 Strength, +5 Crit Chance, +81 Crit Damage. | |
 | Disciplined | SB | Needs Combat 15. At 250: +48 Health, +23 Defense, +69 Strength, +14 Crit Chance, +69 Crit Damage. | |
-| Inspired | SB | Needs Combat 15. At 250: +16 Health, +12 Defense, +46 Strength, +156 Intelligence, +9 Crit Chance, +35 Crit Damage. | |
-| Ominous | SB | Needs Combat 15. At 250: +48 Health, +9 Speed, +35 Strength, +59 Intelligence, +14 Crit Chance, +35 Crit Damage, +9 Attack Speed. | |
+| Inspired | SB | Needs Combat 15. At 250: +16 Health, +12 Defense, +46 Strength, +156 mana %, +9 Crit Chance, +35 Crit Damage. | |
+| Ominous | SB | Needs Combat 15. At 250: +48 Health, +9 Speed, +35 Strength, +59 mana %, +14 Crit Chance, +35 Crit Damage, +9 Attack Speed. | |
 | Prepared | SB | Needs Combat 15. At 250: +120 Health, +109 Defense, +19 Strength, +4 Crit Chance, +9 Crit Damage. | |
 | Forceful | SB | Stone: Acacia Birdhouse. Needs Combat 20. At 250: +46.28 Crit Damage, +173.56 Strength, +16.2 Health. Unique bonus: +4 Ferocity. | |
-| Bloody | SB | Stone: Beating Heart. Needs Combat 20. At 250: +104.13 Crit Damage, +104.13 Strength, +34.71 Intelligence. Unique bonus: +10 Attack Speed. | |
+| Bloody | SB | Stone: Beating Heart. Needs Combat 20. At 250: +104.13 Crit Damage, +104.13 Strength, +34.71 mana %. Unique bonus: +10 Attack Speed. | |
 | Bubba | SB | Stone: Bubba Blister. Needs Combat 25. At 250: −92.56 Defense, +48.6 Health, +104.13 Crit Damage, +7.87 True Defense, +46.28 Strength, +17.36 Attack Speed, +9.26 Crit Chance. Unique bonus: +2 Combat Wisdom. | |
 | Shaded | SB | Stone: Dark Orb. Needs Combat 20. At 250: +5.79 Speed, +173.56 Crit Damage, +46.28 Strength. Unique bonus: +3 Attack Speed and +3 Ferocity. | |
-| Sanguisuge | SB | Stone: Displaced Leech. Needs Combat 10. At 250: +9.26 Crit Chance, +46.28 Crit Damage, +32.4 Health, +138.85 Strength. Unique bonus: +100 Intelligence. | |
-| Bizarre | SB | Stone: Eccentric Painting. Needs Combat 25. At 250: −23.14 Crit Damage, +416.54 Intelligence, −23.14 Strength. Unique bonus: +5 Ability Damage. | |
-| Adept | SB | Stone: End Stone Shulker. Needs Combat 20. At 250: +92.56 Defense, +34.71 Intelligence, +161.99 Health. Unique bonus: +100 Health and +50 Defense. | |
-| Sighted | SB | Stone: Ender Monocle. Needs Combat 15. At 250: +347.11 Intelligence. Unique bonus: +3 Ability Damage. | |
-| Crumbly | SB | Stone: Fang-tastic Chocolate Chip. Needs Combat 20. At 250: +97.19 Health, +4.63 Crit Chance, +6.94 Attack Speed, +52.07 Intelligence, +15.74 True Defense. Unique bonus: +25 Speed. | |
+| Sanguisuge | SB | Stone: Displaced Leech. Needs Combat 10. At 250: +9.26 Crit Chance, +46.28 Crit Damage, +32.4 Health, +138.85 Strength. Unique bonus: +100 mana %. | |
+| Bizarre | SB | Stone: Eccentric Painting. Needs Combat 25. At 250: −23.14 Crit Damage, +416.54 mana %, −23.14 Strength. Unique bonus: +5 Ability Damage. | |
+| Adept | SB | Stone: End Stone Shulker. Needs Combat 20. At 250: +92.56 Defense, +34.71 mana %, +161.99 Health. Unique bonus: +100 Health and +50 Defense. | |
+| Sighted | SB | Stone: Ender Monocle. Needs Combat 15. At 250: +347.11 mana %. Unique bonus: +3 Ability Damage. | |
+| Crumbly | SB | Stone: Fang-tastic Chocolate Chip. Needs Combat 20. At 250: +97.19 Health, +4.63 Crit Chance, +6.94 Attack Speed, +52.07 mana %, +15.74 True Defense. Unique bonus: +25 Speed. | |
 | Itchy | SB | Stone: Furball. Needs Combat 20. At 250: +5.79 Speed, +80.99 Crit Damage, +69.42 Strength, +20.83 Attack Speed. Unique bonus: +15 Strength and +15 Crit Damage. | |
 | Frozen | SB | Stone: Glacite Chunk. Needs Combat 20. At 250: +17.7 True Defense, +127.27 Defense. Unique bonus: +10 True Defense, +25 Crit Damage, +25 Strength. | |
-| Slender | SB | Stone: Hazmat Enderman. Needs Combat 30. At 250: +57.85 Crit Damage, +80.99 Health, +10.41 Attack Speed, +5.79 Speed, +86.78 Intelligence, +57.85 Strength, +57.85 Defense. Unique bonus: +50 Strength and +100 Defense. | |
-| Demonic | SB | Stone: Horns of Torment. Needs Combat 25. At 250: +53.22 Strength, +267.28 Intelligence. Unique bonus: +50 Crit Damage. | |
+| Slender | SB | Stone: Hazmat Enderman. Needs Combat 30. At 250: +57.85 Crit Damage, +80.99 Health, +10.41 Attack Speed, +5.79 Speed, +86.78 mana %, +57.85 Strength, +57.85 Defense. Unique bonus: +50 Strength and +100 Defense. | |
+| Demonic | SB | Stone: Horns of Torment. Needs Combat 25. At 250: +53.22 Strength, +267.28 mana %. Unique bonus: +50 Crit Damage. | |
 | Silky | SB | Stone: Luxurious Spool. Needs Combat 15. At 250: +5.79 Speed, +219.84 Crit Damage. Unique bonus: +5 Attack Speed. | |
 | Hurtful | SB | Stone: Magma Urchin. Needs Combat 25. At 250: +46.28 Strength, +185.13 Crit Damage. Unique bonus: +15 Attack Speed. | |
 | Strong | SB | Stone: Mandraa. Needs Combat 30. At 250: +115.7 Strength, +115.7 Crit Damage. Unique bonus: +25 Strength and +25 Crit Damage. | |
-| Mythical | SB | Stone: Obsidian Tablet. Needs Combat 20. At 250: +39.34 Defense, +55.08 Health, +39.34 Crit Damage, +9.26 Speed, +39.34 Strength, +59.01 Intelligence, +15.74 Crit Chance. Unique bonus: +40 Strength and +150 Health. | |
+| Mythical | SB | Stone: Obsidian Tablet. Needs Combat 20. At 250: +39.34 Defense, +55.08 Health, +39.34 Crit Damage, +9.26 Speed, +39.34 Strength, +59.01 mana %, +15.74 Crit Chance. Unique bonus: +40 Strength and +150 Health. | |
 | Pleasant | SB | Stone: Precious Pearl. Needs Combat 25. At 250: +129.59 Health, +138.85 Defense. No unique bonus on the wiki. | |
 | Sweet | SB | Stone: Rock Candy. Needs Combat 15. At 250: +11.57 Speed, +104.13 Defense, +145.79 Health. Unique bonus: +5 Speed. | |
 | Scorching | SB | Stone: Scorched Books. Needs Combat 35. At 250: +92.56 Crit Damage, +80.99 Strength, +17.36 Attack Speed. Unique bonus: +7 Ferocity. | |
 | Buttery | SB | Stone: Sunflower Butter. Needs Combat 20. At 250: +23.14 Speed, +20.83 Attack Speed. Unique bonus: +5 Attack Speed. | |
 | Healthy | SB | Stone: Vitamin Death. Needs Combat 30. At 250: +323.97 Health. Unique bonus: +200 Health. | |
-
-## Accessory enrichments
-
-One enrichment on a Legendary, Mythic, Special, or Very Special accessory. Bought from Elizabeth for 5,000 Bits each. As of SkyBlock 0.24.5 the wiki cap is 65 enriched accessories.
-
-| Stat | Game | What it does | Decision |
-|---|---|---|---|
-| Speed Enrichment | SB | +1 Speed on that accessory. | |
-| Intelligence Enrichment | SB | +2 Intelligence on that accessory. | |
-| Critical Damage Enrichment | SB | +1 Crit Damage on that accessory. | |
-| Critical Chance Enrichment | SB | +1 Crit Chance on that accessory. | |
-| Strength Enrichment | SB | +1 Strength on that accessory. | |
-| Defense Enrichment | SB | +1 Defense on that accessory. | |
-| Health Enrichment | SB | +3 Health on that accessory. | |
-| Magic Find Enrichment | SB | +0.5 Magic Find on that accessory. | |
-| Ferocity Enrichment | SB | +0.3 Ferocity on that accessory. | |
-| Sea Creature Chance Enrichment | SB | +0.3 Sea Creature Chance on that accessory. | |
-| Attack Speed Enrichment | SB | +0.5 Attack Speed on that accessory. | |
 
 ## Tuning points
 
@@ -333,7 +350,7 @@ One enrichment on a Legendary, Mythic, Special, or Very Special accessory. Bough
 | Crit Damage tuning | SB | A Tuning Point can be spent on Crit Damage. Per-point amount is not stated on the wiki page. | |
 | Crit Chance tuning | SB | +0.2 Crit Chance per Tuning Point. | |
 | Attack Speed tuning | SB | +0.3 Attack Speed per Tuning Point. | |
-| Intelligence tuning | SB | A Tuning Point can be spent on Intelligence. Per-point amount is not stated on the wiki page. | |
+| Mana % tuning | SB | Was Intelligence tuning. A Tuning Point can be spent on mana %. Not an Intelligence ID. Not locked yet. Per-point amount is not stated on the wiki page. | |
 
 ## Wynn Major IDs
 
