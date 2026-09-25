@@ -102,7 +102,7 @@ Everything that means "my island" uses `homeKey`:
 
 - **Accept binds the profile that is active when the player accepts.** The invite goes to a player; the pkey is resolved once at accept (contract pattern 4.1: one key per operation). The invite text names that profile: "Joining uses your current profile (Strawberry)".
 - **Switching profile switches island.** On another profile the player's home is that profile's own island, and on the co-op island they are a visitor. Switching back makes them a member again. Nothing is rewritten.
-- **Their own island stays.** The member's own island file, world, chests and trusted list are untouched while they are in a co-op. That island is dormant: `/island` does not go there. `/island leave` (or kick or disband) makes it their home again. `[SKYY?]` Should a member be able to visit their own dormant island? Default **no**, to keep one home per profile. Tell players to move items before they accept.
+- **Their own island stays.** The member's own island file, world, chests and trusted list are untouched while they are in a co-op. That island is dormant: `/island` does not go there. `/island leave` (or kick or disband) makes it their home again. LOCKED 2026-09-25 (Skyy): no visits to that dormant island while you are in the co-op. One home per profile. That was already the default. Tell players to move items before they accept.
 - **One co-op per profile.** A profile is a member of at most one island (`MEMBER_OF`). Accepting a second invite is refused: "/island leave first".
 - **A leader can't join someone else.** A profile whose own island has members can't accept an invite ("You lead a co-op island - /island disband first"). An owner without members may join a co-op; their island goes dormant like any member's.
 - **One role per player per island (anti-transfer).** Across all their profiles, a player holds at most one entry on an island: member, admin or trusted. Otherwise a player could drop items there as Trusted on profile 1, switch, and pick them up as a Member on profile 2. Accept is refused while another of their profiles has a role there. Trusting a player whose other profile is already trusted **moves** the entry to the current profile and says so. Inviting yourself or your own other profile is refused (the owner UUID check).
@@ -685,7 +685,7 @@ animals.extra=                            # extra NPC role names that count as f
 - LOCKED 2026-09-25 (Skyy): Island Admins may invite co-op members. `coop.adminsInvite` defaults to `true`. Was: `false`. SkyyIslands 0.5.2 still writes `false`;
 - LOCKED 2026-09-25 (Skyy): Admins may expel, ban and untrust visitors and helpers. Only the Owner kicks co-op members. That was already the default;
 - LOCKED 2026-09-25 (Skyy): Trusted stays build only. No harvesting crops, no beds, no chests. That was already the default;
-- no visits to your own dormant island while you are in a co-op;
+- LOCKED 2026-09-25 (Skyy): no visits to your own dormant island while you are in a co-op. That was already the default;
 - old build-rights invites become Trusted;
 - reset cooldown 24 h;
 - visitor limit 5;
