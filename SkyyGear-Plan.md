@@ -12,7 +12,7 @@ Skyy's direction still holds: every mod in the pack is eventually our own. Comba
 5. **Combat armor and weapons** basically copy Wynncraft. Class weapons stay the ones already named in `SkyyClasses-Plan.md`. Berserker is still PENDING and has no weapon list.
 6. **Gathering gear** is SkyBlock-style: farming armor sets and foraging armor sets. Mining armor is likely the same kind of set. This note does not name the pieces.
 7. **Wardrobe + loadouts**, Hypixel SkyBlock style: save a gear set and quick-swap to it. **UI:** placeholders are fine. Nothing on the inventory screen yet (`SkyWynn-Decisions.md` 10.22). What a loadout saves is lock 12.
-8. **Stat mix (revised later the same day).** This note put Wynn's five skill points on weapons and armor, with crit chance, crit damage, and fortune layered on. **Change note 9 replaces the five skill points.** Strength is SkyBlock-style. Dexterity, Wynn Defence, Wynn Intelligence, and Wynn Agility are not gear skill points. Crit chance and crit damage stay, with the rules in locks 15 and up. **Gathering fortunes were locked later (change note 11).** Mining Fortune, Farming Fortune, and Foraging Fortune are in. One stat each. Loot and luck was finished later (change notes 12 and 13). XP and wisdom was locked later (change note 14). The Other table was scrapped later as gear IDs (change note 15). Oxygen and water swim speed are accessory effects (change note 16). Accessory progression and enrichments were locked later (change notes 17–18). Starter powers lean Keep, pending confirm (change note 19). Next blank table is the rest of SkyBlock accessory powers.
+8. **Stat mix (revised later the same day).** This note put Wynn's five skill points on weapons and armor, with crit chance, crit damage, and fortune layered on. **Change note 9 replaces the five skill points.** Strength is SkyBlock-style. Dexterity, Wynn Defence, Wynn Intelligence, and Wynn Agility are not gear skill points. Crit chance and crit damage stay, with the rules in locks 15 and up. **Gathering fortunes were locked later (change note 11).** Mining Fortune, Farming Fortune, and Foraging Fortune are in. One stat each. Loot and luck was finished later (change notes 12 and 13). XP and wisdom was locked later (change note 14). The Other table was scrapped later as gear IDs (change note 15). Oxygen and water swim speed are accessory effects (change note 16). Accessory progression and enrichments were locked later (change notes 17–18). Change note 19 leaned Keep on Hypixel starter names. Change note 20 replaces that list with Tank, Balance, Slayer, Lucky, Fast, and Magical. Next blank table is the rest of SkyBlock accessory powers. No Power is pending.
 9. **Identification.** For now, a menu opened with `/identify`. Later `/identify` is disabled and identification moves to an NPC, Wynncraft-style. Identifying costs coins. The cost scales with the item's rarity and level. The cost formula is open. The menu is one of our pages (placeholders are fine). It does not go on the inventory screen (10.22). SkyyRolls 0.1.3 has no identify step.
 10. **Drops and sets.** Mob drops can be any rarity. Some sets are drop-only. Some sets are craft-only. That closes the older question about craft-only tiers.
 11. **Set bonuses.** Sets have a bonus for wearing the set, in the vein of Wynncraft set bonuses and Hypixel's Full Set Bonus. Which sets, and the bonus numbers, are not named here.
@@ -40,7 +40,7 @@ Change note 9 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md` (c
     - Raw elemental spell damage is **skill trees and accessories**. An accessory can be specific (Archer arrow spam +10 Earth). A bonus on every skill is rare (every skill +10 Fire).
 18. **Attack extras.**
     - **Attack Speed.** The weapon has a built-in swing speed, Wynn-style. +Attack Speed % can roll on weapons, armor, Equipment, and accessories. Cap **150%**.
-    - **Ferocity.** Keep. SkyBlock-style. Cap **300** for now.
+    - **Ferocity.** Keep. SkyBlock-style. Combat, gear, and accessories. **Tightened later (change note 20):** enchant cap **300**. Total cap **600**.
     - **Exploding** and **Poison.** Keep. Wynn-style.
     - **Reach.** Swing Range is renamed Reach. It is a % stat. Gathering skill trees only: Mining, Farming, and Gathering. Small upgrades. Total max **+50%**.
     - **Knockback.** Keep. Wynn-style.
@@ -138,22 +138,41 @@ Change notes 15 and 16 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catal
 
 ## Locked 2026-09-25 — Accessory progression, enrichments, starters
 
-Change notes 17–19 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is the rest of SkyBlock accessory powers. Does not change any jar.
+Change notes 17–19 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md`. The Hypixel starter lean in locks 72–74 was replaced later (change note 20). Does not change any jar.
 
 63. **Where accessories come from.** Most are crafted. Some come from mobs or chests.
 64. **Craft tiers.** Leveling a collection unlocks the next accessory craft tier.
 65. **Rarity ladder.** Crafting the next rarity needs the previous rarity as an ingredient. SkyBlock-style ladder.
 66. **Enrichments to keep.** Speed, Crit Damage, Crit Chance, Strength, Defense, Health, Attack Speed. Same rulings as gear. Attack Speed cap stays 150%.
-67. **Mana % enrichment.** Was Intelligence Enrichment. Mana %. No Intelligence ID. Accessories and Equipment follow the gear mana ruling.
+67. **Mana % enrichment.** Was Intelligence Enrichment. +% mana on a dedicated mana accessory. No Intelligence ID. Powers use flat mana (change note 20).
 68. **Sea Creature Chance Enrichment.** Add later. With fishing.
 69. **Magic Find Enrichment.** Scrap. Magic Find is not the name.
-70. **Ferocity Enrichment.** Pending captain. They said "not in the pack". Ferocity the combat stat stays. Cap 300. Do not scrap that stat.
+70. **Ferocity Enrichment.** Pending. Not locked. Ferocity the stat stays (change note 20). Do not scrap that stat.
 71. **Accessory Power system.** Keep. You pick one power. More power makes that power's stats bigger.
-72. **Starter powers.** Leaning Keep. Pending confirm. No Power, Fortuitous, Pretty, Protected, Simple, Warrior.
-73. **Warrior name.** Rename TBD. It clashes with the Warrior class. This is the change note 8 example, pending that rename. Not a second power.
-74. **Pretty.** Multi-stat blend. Health, Defense, Speed, Strength, mana, Crit Chance, Crit Damage. Not one theme.
-75. **Same rulings.** Gear modifier rulings apply to accessories and Equipment the same way. A SkyBlock Intelligence line on an accessory is mana %.
+72. **Starter powers at this note.** Leaning Keep. Pending confirm. No Power, Fortuitous, Pretty, Protected, Simple, Warrior. Replaced later (change note 20).
+73. **Warrior name at this note.** Rename TBD. Replaced later (change note 20). The name is scrap.
+74. **Pretty at this note.** Multi-stat blend. Replaced later by Balance (change note 20).
+75. **Same rulings.** Gear modifier rulings apply to accessories and Equipment the same way. Powers use flat mana (change note 20). Dedicated mana accessories use +% mana.
 76. **Wiki numbers.** Amounts at 250 Accessory Power, and the enrichment amounts, are research. They are not our numbers.
+
+## Locked 2026-09-25 — Ferocity caps and custom starters
+
+Change note 20 in `SkyWynn-Decisions.md`. Replaces the Hypixel starter lean in change note 19. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is the rest of SkyBlock accessory powers. No Power is pending. Does not change any jar.
+
+77. **Ferocity.** Keep. Combat, gear, and accessories. Enchant cap 300. Total cap 600.
+78. **Ferocity Enrichment.** Still pending. Do not scrap the Ferocity stat.
+79. **Hypixel starter names.** Scrap. Fortuitous, Pretty, Protected, Simple, Warrior.
+80. **Starter baseline.** Every starter power grants a little Health and Defense. That baseline is the same on each starter.
+81. **Tank.** Keep. Bonus Health and Defense only. No other stats.
+82. **Balance.** Keep. Even boost to Health, Defense, Speed, Strength, flat mana, Crit Chance, and Crit Damage.
+83. **Slayer.** Keep. More Strength and Crit Damage. Less Health and Defense. The name is Slayer.
+84. **Lucky.** Keep. Normal Health and Defense. High Crit Chance.
+85. **Fast.** Keep. Normal Health and Defense. High Speed and Attack Speed.
+86. **Magical.** Keep. Normal Health. Less Defense than the others. Flat mana and mana regen.
+87. **Mana on powers.** Flat mana. Not Intelligence. Not mana %.
+88. **Mana on dedicated accessories.** +% mana. The Mana % enrichment stays that rule.
+89. **No Power.** Pending captain. Not locked.
+90. **Later powers.** Combat 15+ Hypixel powers and stone powers are not locked.
 
 ## Open research — Borderlands 4 skill trees
 
@@ -167,7 +186,7 @@ Public notes only. Not a SkyWynn design.
 ## What it covers
 | Line | Style | Locked shape |
 |---|---|---|
-| Combat weapons and armor | Wynncraft | Copy Wynn's model. Class weapons: Archer shortbow/crossbow, Warrior sword/longsword/spear, Mage staff; later Assassin daggers/kunai; Shaman TBD; Berserker PENDING with no list. Every piece has a level requirement and a rarity. Mobs can drop any rarity. Rolled IDs show after identify (lock 9). Stats follow locks 15 and up (change notes 9–19), not the five Wynn skill points. Sets can be drop-only or craft-only, and a worn set has a set bonus (locks 10–11). Powders and Wynn's five elements stay (batch 2); powder slot counts are open |
+| Combat weapons and armor | Wynncraft | Copy Wynn's model. Class weapons: Archer shortbow/crossbow, Warrior sword/longsword/spear, Mage staff; later Assassin daggers/kunai; Shaman TBD; Berserker PENDING with no list. Every piece has a level requirement and a rarity. Mobs can drop any rarity. Rolled IDs show after identify (lock 9). Stats follow locks 15 and up (change notes 9–20), not the five Wynn skill points. Sets can be drop-only or craft-only, and a worn set has a set bonus (locks 10–11). Powders and Wynn's five elements stay (batch 2); powder slot counts are open |
 | Gathering armor | Hypixel SkyBlock | Farming sets and foraging sets. Mining sets are likely the same idea. They are armor, so they follow the armor placement in locks 15 and up. Speed and Stamina Regen can sit on armor. Jump Height does not. Mining Fortune, Farming Fortune, and Foraging Fortune are in (change note 11). One stat each. A worn set has a set bonus |
 | Equipment | Hypixel SkyBlock | Separate bar next to armor. Slots: necklace, cloak, ring, belt. Working name Equipment (not final). Saved in a loadout |
 | Tools | Hypixel SkyBlock | Pickaxes, axes, hoes (rods later). Reforges, and tiers tied to the zone islands, are still to design. They are gear, so they carry a level requirement and a rarity. Gathering stats follow locks 31–41 |
@@ -196,8 +215,8 @@ Public notes only. Not a SkyWynn design.
 6. **Powders.** Wynn's five elements and "powders replace SkyBlock runes" stay locked. Still open: slots per item, tiers, and how they drop.
 7. **Where rolled items sell.** Bazaar (stackable commodities today) or the auction house. Separate from that: the late-game wall still pulls some items off both buy and sell (Decisions 1.2). Which gear that hits is open.
 8. **Zone pacing.** How gear steps up across the island chain. Not numbered here.
-9. **Stat list from accessory powers down.** Gathering is locked (change note 11). Loot and luck is finished (change notes 12 and 13). XP and wisdom is locked (change note 14). The Other table is scrap as gear IDs (change note 15, lock 60). Oxygen and swim speed are accessory effects (change note 16, locks 61–62). Accessory progression, enrichments, and starter powers are change notes 17–19 (locks 63–76). Next blank table is the rest of SkyBlock accessory powers, then tuning. Reach stays lock 18. Still open: the Breaking Power name in Hytale; how pick damage vs hits-to-break works; per-element main-attack lines and per-element spell % (leaning skip); Reflection; life-steal numbers; which classes count as magic-using for Mana Regen; Health and Mana per Overall Level; how big a skill upgrade is. Do not invent those numbers.
-10. **Accessory Power list and numbers.** The system stays (lock 71). Starters lean Keep, pending confirm (lock 72): No Power, Fortuitous, Pretty, Protected, Simple, Warrior. Warrior's name is TBD (lock 73). Pretty is a multi-stat blend (lock 74). Elementalist stays the other change note 8 example. The rest of the power list, and every number, stay open. Enrichments are lock 66–70. Tuning is still blank. Do not treat the crystal table in `SkyyAccessories-Plan.md` as the lock. The craft ladder in locks 63–65 is the lock for how accessories are obtained. Bag-slot prices in that file stay a draft.
+9. **Stat list from accessory powers down.** Gathering is locked (change note 11). Loot and luck is finished (change notes 12 and 13). XP and wisdom is locked (change note 14). The Other table is scrap as gear IDs (change note 15, lock 60). Oxygen and swim speed are accessory effects (change note 16, locks 61–62). Accessory progression and enrichments are change notes 17–18 (locks 63–70). Custom starters and Ferocity caps are change note 20 (locks 77–90). Next blank table is the rest of SkyBlock accessory powers, then tuning. No Power is pending. Reach stays lock 18. Still open: the Breaking Power name in Hytale; how pick damage vs hits-to-break works; per-element main-attack lines and per-element spell % (leaning skip); Reflection; life-steal numbers; which classes count as magic-using for Mana Regen; Health and Mana per Overall Level; how big a skill upgrade is. Do not invent those numbers.
+10. **Accessory Power list and numbers.** The system stays (lock 71). Custom starters are locks 80–86: Tank, Balance, Slayer, Lucky, Fast, Magical. Hypixel names Fortuitous, Pretty, Protected, Simple, and Warrior are scrap (lock 79). The change note 8 example named Warrior is that scrap name. Elementalist is not in the starter list. It is not re-opened here. No Power is pending (lock 89). Combat 15+ powers and stone powers are not locked (lock 90). Numbers stay open. Powers use flat mana (lock 87). Dedicated mana accessories use +% mana (lock 88). Enrichments are locks 66–70. Ferocity Enrichment is still pending (lock 78). Tuning is still blank. Do not treat the crystal table in `SkyyAccessories-Plan.md` as the lock. The craft ladder in locks 63–65 is the lock for how accessories are obtained. Bag-slot prices in that file stay a draft.
 11. **Class skill trees.** Borderlands-style, not a straight line. The Borderlands 4 notes above are research. Do not design the trees yet. Decisions 6.3 (~25 nodes) is the older draft, not this lock.
 12. **Class roles.** A Priest class is the later idea for crowd healing (healing spells and some damage). Roles are not defined yet.
 
