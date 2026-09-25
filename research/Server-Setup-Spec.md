@@ -987,12 +987,23 @@ and wrong for branching scripts. So SkyyQuests will ship an in-game **linear** q
 - **Template (bigger, the version after):** today the island is placed block by block in chunk (0,0) by `FillTask`. The template editor:
   `/island template edit` opens a template world (an instance of the same `SkyyIsland` template, `skyy-island-template`, the existing
   `InstancesPlugin.spawnInstance` path) and sends the admin there; they build; `Save template` (action, confirm) copies the box
-  `template.box` (default x -16..31, y 96..191, z -16..31: 3 x 3 chunks around the island `[SKYY?]`) into a server prefab with
+  `template.box` (default x -16..31, y 96..191, z -16..31: 3 x 3 chunks around the island) into a server prefab with
   `BlockSelection.copyFromAtWorld(...)` + `PrefabStore.get().saveServerPrefab("SkyyIslandStarter", selection)`; new islands paste it
   (`BlockSelection.place` / `PrefabUtil.paste`) instead of the `FillTask` loop, and the kit goes into the first chest found in the pasted box
   (or `template.chest` x,y,z). Existing islands never change. Missing or unreadable prefab -> the built-in island (logged). Using the engine's
   own prefab format keeps block rotation and chests, which a plain block-id copy (`chunk.getBlock`/`setBlock`) would lose. The API usage is
   UNVERIFIED; if it fails in the first test, the fallback is our own id-per-position copy with the rotation limitation written in the help line.
+- **Template size.** LOCKED 2026-09-25 (Skyy): the default box stays **3 x 3 chunks, y 96 to 191** (x -16..31, z -16..31). That was already the default. A future feature, to build: a player can upgrade that box one step at a time. The height stays y 96 to 191 at every tier. 9 x 9 is the max.
+
+  | Step | Size |
+  |---|---|
+  | default | 3 x 3 |
+  | 1 | 4 x 4 |
+  | 2 | 5 x 5 |
+  | 3 | 6 x 6 |
+  | 4 | 7 x 7 |
+  | 5 | 8 x 8 |
+  | 6, max | 9 x 9 |
 
 ### 5.6 Market -> **SkyyEconomy** (tables in its config page, 4.1)
 - **Bazaar products:** the `bazaar.products` table (add by held item or id, columns `Category|Base price|Name`, remove = off the bazaar, the
@@ -1148,7 +1159,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 9. LOCKED 2026-09-25 (Skyy): Which ranks come seeded? Member, Admin, and Developer. Was: only Member. Member stays the default rank, with no prefix and no grants. Admin and Developer are staff, close to the owner, and do not get full op (`*`, `/op`, or `hytale:Admin`). Was: Developer got the rank editor. See 5.1. The rank editing UI is for ops and players with the Owner rank. Was: ops only. Admin and Developer cannot edit rank permissions or create or modify ranks. `skyymenu.modconfig` does not open it. Ranks stay fully editable in that UI. SkyyRanks 0.1 still seeds only Member, and still opens `/rankadmin` for anyone with `skyyranks.admin`. A file that already has only Member keeps only Member until Admin and Developer are added. SkyyRanks 0.1 still refuses grants, delete, and ladder moves on the default rank.
 10. LOCKED 2026-09-25 (Skyy): Chat order when a player has a rank and a title? `[Rank] [Title] Name`. That was already the default.
 11. LOCKED 2026-09-25 (Skyy): SkyyMenu 0.2 (player Settings) and 0.3 (Server Setup) as two rounds, or one? Two, done as 0.2 + 0.3. That was already the default.
-12. Island template box size. [3 x 3 chunks around the island, y 96 to 191.]
+12. LOCKED 2026-09-25 (Skyy): Island template box size? The default stays 3 x 3 chunks around the island, y 96 to 191. That was already the default. Future, to build: players upgrade 3 x 3, then 4 x 4, 5 x 5, 6 x 6, 7 x 7, 8 x 8, up to 9 x 9. The height stays y 96 to 191. See 5.5.
 13. Keep SkyyClasses' inert switch keys hidden while switching is code-locked? [Hidden, with one read-only line.]
 14. Quest hooks: add the `quest:fn:event` calls now or only when SkyyQuests has a spec? [Only with its spec.]
 15. Should rank grants later carry perks (extra vault pages, bigger parties)? [Not in 0.1; the marker node `skyyranks.rank.<id>` makes it possible later.]

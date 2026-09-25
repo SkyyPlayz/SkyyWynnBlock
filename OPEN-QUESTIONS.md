@@ -133,7 +133,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 9. LOCKED 2026-09-25 (Skyy): seeded ranks are Member, Admin, and Developer. Admin and Developer are close to the owner and do not get full op. Was: Developer got the rank editor. The rank editing UI is for ops and players with the Owner rank. Was: ops only. Admin and Developer cannot edit rank permissions or create or modify ranks. skyymenu.modconfig does not open it. Ranks stay fully editable in that UI. Was: only Member. [Member, Admin, Developer; 0.1 still seeds only Member; 0.1 still opens /rankadmin for anyone with skyyranks.admin; 0.1 still refuses grants, delete, and ladder moves on the default rank]
 10. LOCKED 2026-09-25 (Skyy): chat order is `[Rank] [Title] Name`. [yes, already the default]
 11. LOCKED 2026-09-25 (Skyy): Player Settings and Server Setup are two menu versions, done as 0.2 + 0.3. [two, already the default]
-12. Island template box size for the future template editor: 3 x 3 chunks, y 96-191? [yes]
+12. LOCKED 2026-09-25 (Skyy): island template box default stays 3 x 3 chunks, y 96-191. Future, to build: players upgrade 3 x 3, then 4 x 4, 5 x 5, 6 x 6, 7 x 7, 8 x 8, up to 9 x 9. [3 x 3 default; max 9 x 9 later]
 13. Hide SkyyClasses' class-switch settings while switching is locked? [hidden]
 14. Quest hooks now or with SkyyQuests? [with SkyyQuests]
 15. Rank perks later (extra vault pages, bigger parties)? [later]
