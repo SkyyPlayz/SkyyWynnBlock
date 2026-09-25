@@ -208,7 +208,7 @@ Checked at Create, and again at buy time where it matters:
   3. The value's text after the first `|` is the reason shown to players.
   Matching is case-sensitive, like item ids. A bare `*` (which would block everything) is ignored with a WARN; `/ahadmin pause` is the tool for closing the market.
 - **Bridge** `market:veto` = a ConcurrentHashMap of owner -> `java.util.function.Function` `apply(ItemStack)`, returning `null` (allowed) or a String reason. It is empty by default. It is for per-stack rules that an id list cannot express, e.g. a future SkyyGear "unidentified items cannot be sold". A veto that throws counts as a refusal ("could not check this item") and is logged once. Vetoes are asked after the block list, one Function per owner, on every stack (they are not keyed by id, so the prefix rule does not apply to them).
-- The cutoff itself is still open (DESIGN-STATUS question 11), so nothing ships blocked.
+- LOCKED 2026-09-25 (Skyy): the late-game list that leaves both markets stays empty until Skyy names the items. Nothing ships blocked.
 
 ### 4.5 Grace, own listings, expiry
 - A listing is buyable only when `now >= graceUntil` (created + 20 s) and `now < endsAt`.
@@ -719,7 +719,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 9. **`/ah sell`.** LOCKED 2026-09-25 (Skyy): `/ah sell <price>` opens the pre-filled Create page for one click. That was already the default (`sellCommandOpensPage=true`).
 10. **Grace period.** LOCKED 2026-09-25 (Skyy): a new listing waits 20 seconds before anyone can buy it. That was already the default (`graceSeconds=20`).
 11. **Where `/ah` works.** LOCKED 2026-09-25 (Skyy): `/ah` works anywhere. That was already the default. The page id `SkyyAuctions` stays ready if an Auction Master NPC is added later.
-12. **Late-game cutoff.** Which items leave both markets? Still open (DESIGN-STATUS question 11). [nothing blocked; the list and bridge are ready]
+12. **Late-game cutoff.** LOCKED 2026-09-25 (Skyy): the list of items that leave both markets stays empty for now. Fill it when Skyy names the items. The block file and the `market:blocked` bridge stay ready.
 13. **Bid auctions.** When, and with which rules (minimum raise, last-minute extension, 5% fee)? [later; Appendix A]
 14. **Deleted profiles.** Claims owned by a profile that no longer exists (SkyyProfiles 0.1 has no delete yet). [they stay in the file; an admin can use `regrant` or move them by hand]
 15. **Bags on the AH.** Magic Bags and the Accessory Bag are only keys to the owner's own storage (4.3). Tradeable with a "contents not included" line, or off the market? [tradeable; two `blocked.txt` lines take them off]
