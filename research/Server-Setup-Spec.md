@@ -399,6 +399,7 @@ together as 0.2: the two registries are independent `[SKYY?]`. The newest SkyyMe
 ### 2.1 Who can see it
 - Node **`skyymenu.modconfig`**. Ops have it through `hytale:Admin`'s built-in `"*"` (VERIFIED), so on a fresh world the owner sees it with no
   setup and nobody else does. A staff rank gets it only when granted (SkyyRanks 5.1 or `permissions.json`). It is separate from moderation.
+  LOCKED 2026-09-25 (Skyy): ops only. The node `skyymenu.modconfig` can be given to staff. That was already the default.
 - Changing a mod also needs **that mod's** admin node (1.4.8). A viewer without it sees the mod's page read-only: "View only - changing
   SkyyBank needs skyybank.admin." So an owner can give someone the market but not ranks.
 - SkyyMenu checks `this.playerRef.hasPermission("skyymenu.modconfig")` (inside `try/catch`, false on error) **on page build and on every
@@ -1116,7 +1117,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 
 ## 9. Open questions for Skyy (the build uses the default in brackets)
 
-1. Who sees Server Setup? [Ops only by default, through the node `skyymenu.modconfig`, which staff ranks can be given.]
+1. LOCKED 2026-09-25 (Skyy): Who sees Server Setup? Ops only, through the node `skyymenu.modconfig`, which staff ranks can be given. That was already the default.
 2. Which changes ask for a confirm? [Only rows marked danger: money, penalties, rates, caps, curves, switching a part OFF, pausing the
    auction house, raising the auction purchase-confirm thresholds; plus imports, restores, undos, removes.]
 3. How many old versions of each config file to keep? [20.]

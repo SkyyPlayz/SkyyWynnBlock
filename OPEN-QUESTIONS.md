@@ -122,7 +122,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-09-25 (Skyy): visitors may use doors, seats, and beds. Chests and crafting stations stay closed to visitors. Was, briefly: chests and crafting stations open. [beds visitor; chests member; crafting trusted; 0.5.2 still writes beds=member]
 
 ## In-game server setup (`research/Server-Setup-Spec.md` section 9)
-1. Who sees Server Setup? [ops only, node skyymenu.modconfig can be given to staff]
+1. LOCKED 2026-09-25 (Skyy): who sees Server Setup is ops only. The node skyymenu.modconfig can be given to staff. [ops only, already the default]
 2. Which changes ask for a confirm? [money, penalties, rates, caps, curves, switching a part off, imports, restores, undos]
 3. How many old versions of each config file to keep? [20]
 4. When a part is off, can players still take out what is theirs (bank withdraw, auction claims)? [yes]
