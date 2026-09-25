@@ -23,7 +23,8 @@ Level cap 100 for every skill is an existing engineering lock in `HANDOFF.md`. T
 |---|---|---|
 | Archer, Warrior, Mage | **NOW** | Launch classes |
 | Assassin, Shaman | LATER | Stay greyed out |
-| Berserker | **PENDING** | Owner wants it back (2026-09-24). Details and timing wait on a talk with the builder. Not placed before or after Assassin/Shaman. No weapon skill named here. Not in SkyyClasses 0.1.4 |
+| Berserker | **NOW** (2026-09-25) | Weapon skill **Fury** (axes, battleaxes, maces, clubs) |
+| Priest | **NOW** (2026-09-25) | Weapon skill **Divinity** (wands, spellbooks); AoE healing support |
 | Mining, Foraging, Farming | **NOW** (live) | Each gets its own skill tree |
 | Acrobatics | **NOW** (live) | Skyy's mcMMO skill. Fall XP (Skyy 2026-09-23): the further you fall WITHOUT dying the more XP - jumping from heights is a real grind; no XP for water or any fall whose damage is negated (safe no-damage drops pay nothing) |
 | Archery, Swordsmanship, Sorcery | **NOW** (live) | Class weapon skills |

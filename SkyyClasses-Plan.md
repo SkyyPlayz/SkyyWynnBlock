@@ -12,7 +12,8 @@ Wynn's five stay. **Berserker is back on the roster as of 2026-09-24, status PEN
 | Mage | Launch | Sorcery | Staff |
 | Assassin | Later | Assassination | Daggers, Kunai |
 | Shaman | Later | Named when that class is designed | — |
-| Berserker | **PENDING** | Not designed | Not designed. The 0.1.1 axe / battleaxe / mace / club list is not carried forward |
+| Berserker | **NOW** (locked 2026-09-25) | Fury | Axes, battleaxes, maces, clubs |
+| Priest | **NOW** (locked 2026-09-25) | Divinity | Wands, spellbooks. AoE healing support; placeholder party heal on weapon hits until the spell system exists |
 
 The 2026-09-23 "no Berserker" line is reversed. Archetype count and ability-tree size stay open on the decision sheet (6.2–6.4). Rows 9.1–9.2 are the **open magic thread**, not a rune-gating lock. This plan does not pick new numbers for them.
 

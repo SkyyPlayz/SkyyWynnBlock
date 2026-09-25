@@ -86,6 +86,15 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 
 ---
 
+## Change notes (2026-09-25)
+
+1. **Berserker is locked** (ends the 2026-09-24 PENDING status). Weapon skill **Fury**. Weapons: axes, battleaxes, maces, clubs (Hytale's `Weapon_Axe_*`, `Weapon_Battleaxe_*`, `Weapon_Mace_*`, `Weapon_Club_*`). Hatchets (`Tool_Hatchet_*`) stay gathering tools for everyone.
+2. **Priest is a class** (was the 'later Priest' idea, rows 6.6 / 6.13). An **AoE healing support** class: healing spells and some damage. Weapon skill **Divinity**. Weapons: wands and spellbooks (`Weapon_Wand_*`, `Weapon_Spellbook_*`). Much of it will be custom content later. Placeholder until the spell system exists: when a Priest damages a mob with a class weapon, party members nearby heal a share of that damage (numbers editable in Server Setup).
+3. **Class kits.** Every class has a kit with its basic weapon, given automatically when the class is selected (a new profile). The kit contents are editable in game.
+4. Shaman (later) gets its own custom weapon (Wynn's relik has no Hytale item); Assassin keeps daggers + kunai.
+
+---
+
 ## 1. PROGRESSION SPINE
 
 | # | Element | From | Draft call | ☐ DECISION |
@@ -110,7 +119,8 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 |---|---|---|
 | Archer, Warrior, Mage | **NOW** | Launch classes |
 | Assassin, Shaman | LATER | Stay greyed out |
-| Berserker | **PENDING** | Owner wants it back (2026-09-24). Details and timing wait on a talk with the builder. Not placed before or after Assassin/Shaman. Not in SkyyClasses 0.1.4 |
+| Berserker | **NOW** (2026-09-25) | Weapon skill Fury: axes, battleaxes, maces, clubs. Class kit with a basic weapon |
+| Priest | **NOW** (2026-09-25) | AoE healing support. Weapon skill Divinity: wands, spellbooks. Placeholder party heal on weapon hits until the spell system exists; much of it custom later |
 | Mining, Foraging, Farming | **NOW** (live) | Each gets its own skill tree |
 | Acrobatics | **NOW** (live) | Skyy's mcMMO skill. Fall XP (Skyy 2026-09-23): the further you fall WITHOUT dying the more XP - jumping from heights is a real grind; no XP for water or any fall whose damage is negated (safe no-damage drops pay nothing) |
 | Archery, Swordsmanship, Sorcery | **NOW** (live) | Class weapon skills |

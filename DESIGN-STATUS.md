@@ -17,9 +17,9 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
   skills, collections, accessories and skill trees. Creating a profile is where you pick your class (Archer, Warrior or Mage), and it is locked.
 - Switching profiles swaps the inventory and sends you to that profile's island; it is crash-safe.
 - Classes lock the combat path only: each class can only fight with its own weapons (a popup shows the weapon and why). Gathering is open to all.
-- Launch classes in the jar: Archer, Warrior, Mage. Assassin and Shaman are later. **Berserker is back on the roster, status PENDING**
-  (owner wants it; details and timing wait on a talk with the builder — not placed before or after Assassin/Shaman).
-  **Code follow-up:** SkyyClasses 0.1.4 has no Berserker. 0.1.2+ already set `ALLOW_SWITCH=false` (the paid class switch is gone). Adding Berserker is future code, not a return to the 0.1.1 spike.
+- Classes: Archer, Warrior, Mage, and (locked 2026-09-25, being built) **Berserker** (Fury: axes, battleaxes, maces, clubs) and **Priest**
+  (an AoE healing support class; Divinity: wands and spellbooks; its weapon hits heal the party until real spells exist; much of it custom
+  later). Assassin and Shaman later. Every class gets a kit with its basic weapon when you pick it. `ALLOW_SWITCH=false` (no paid switch).
 
 **Islands**
 - A private island per profile (created on first `/island`), a shared hub, visiting. Visitors can look but not touch (doors and seats work).
@@ -114,9 +114,8 @@ islands split by zone. Status: planned, not started. Whether World Gen 2 can do 
 6. **Islands:** what should visitors be allowed to use by default (today: doors only)? The island settings menu will make it the owner's call.
 7. **Exploration:** what else should level it past about level 25 (it is one-time only for now)? The rest of the Exploration tree.
 8. **Accessories:** Endurance / Intelligence talismans flat or percent. The shape of Accessory Power is locked (own buff plus one selectable buff that scales with total power). Still open in `SkyyAccessories-Plan.md`: the full buff list, the numbers, and the older draft questions (AP-by-rarity, tuning, slot prices).
-9. **Classes:** Assassin and Shaman design (Shaman's weapons and skill name); the ability system waits on Hytale's Chapter 1 runes.
-   **Berserker** is a separate pending item (2026-09-24): the owner wants it back and needs to talk with the builder before any design or
-   timing. Do not invent it, and do not assume it ships before or after Assassin/Shaman.
+9. **Classes:** Assassin and Shaman design (Shaman gets a custom weapon; its skill name); the ability system waits on Hytale's Chapter 1
+   runes. Berserker and Priest were locked 2026-09-25 (the Priest's real AoE heals come with the spell system).
 10. **Profile cap:** how does a player raise the cap above the new default of 6? (Method TBD. SkyyProfiles 0.1 still enforces 4; 0.1.1 in the adoption round raises it to 6.)
 11. **Coin-bypass cutoff:** where, per collection and per tier, does the late-game wall start (no more buy or sell on the bazaar/market)?
     Which level type gates items — skill, class, or combat level?

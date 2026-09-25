@@ -12,7 +12,7 @@ The default cap is **6 profiles** (raised from 4). There will be in-game ways to
 
 `SkyyProfiles` 0.1 still uses `DEF_MAX_PROFILES = 4` (config `maxProfiles`, default 4). A fifth profile is refused ("All 4 profile slots are used."). Raising the default to 6, and any in-game raise, is a code follow-up in `HANDOFF.md`. Adopters do not hardcode 4 or 6; they follow whatever cap SkyyProfiles enforces.
 
-Class values on `profile:class:<uuid>` today are `Archer`, `Warrior`, `Mage`, and later `Assassin`, `Shaman`. **Berserker is not a value** until that class leaves PENDING status (2026-09-24: owner wants it back; details and timing wait on the builder). Do not publish `Berserker` from this contract.
+Class values on `profile:class:<uuid>` are `Archer`, `Warrior`, `Mage`, `Berserker`, `Priest` (Berserker + Priest locked 2026-09-25; they appear once SkyyProfiles 0.1.2 + SkyyClasses 0.1.6 are live), and later `Assassin`, `Shaman`. Readers must treat an unknown value as "a class this mod does not know", never as none.
 
 ## Bridge keys (System.getProperties().get("skyy.bridge"), a ConcurrentHashMap)
 
@@ -21,7 +21,7 @@ Class values on `profile:class:<uuid>` today are `Archer`, `Warrior`, `Mage`, an
 | `profile:fn:key` | `java.util.function.Function` apply(UUID) -> String storage key of the player's ACTIVE profile | SkyyProfiles |
 | `profile:key:<uuid>` | String, same value as `profile:fn:key` (convenience) | SkyyProfiles |
 | `profile:<uuid>` | String active profile id: `"1"`, `"2"`, ... | SkyyProfiles |
-| `profile:class:<uuid>` | String class of the active profile (`Archer`, `Warrior`, `Mage`, later `Assassin`, `Shaman`). Berserker is PENDING and is not a value yet. Absent = none | SkyyProfiles |
+| `profile:class:<uuid>` | String class of the active profile (`Archer`, `Warrior`, `Mage`, `Berserker`, `Priest`, later `Assassin`, `Shaman`). Absent = none | SkyyProfiles |
 | `profile:epoch:<uuid>` | Long, +1 on every profile switch or creation | SkyyProfiles |
 | `profile:name:<uuid>` | String display name of the active profile | SkyyProfiles |
 
