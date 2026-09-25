@@ -1,0 +1,3015 @@
+"""SkyyGuilds 0.1.1 - build script (javassist via jpype). Derived from the LIVE 0.1 (build_skyyguilds_0.1.py) by copy + edit
+(SkyyGuilds has no tools/ patch script).
+Run:   python build_skyyguilds_0.1.1.py          -> SkyyGuilds/SkyyGuilds-0.1.1.jar
+       (no --deploy in this script on purpose: tools/deploy_set.py installs the whole set once Skyy says deploy)
+
+0.1.1 = Skyy's beta backlog item 3 (HANDOFF log 2026-09-24 20:10):
+  1. RANKS: Leader, ADMIN, Member. The 0.1 "Officer" rank is called Admin everywhere (page, chat, /guild info, the guild:info bridge
+     rank field, which SkyyHud 0.3.8 shows as-is). Migration: 0.1 saves ranks as numbers (member.<uuid>=1|... = Officer), so every
+     saved Officer IS an Admin with no file change; a hand-edited rank word (Officer / Admin / Leader / Member) is read too. The first
+     0.1.1 start logs how many Officers became Admins and writes format=2 into each guild file.
+     Rights (0.1 checked line by line - no gap found, the rules below were already enforced in every command AND page action):
+       Leader  invite, kick anyone, promote Member -> Admin, demote Admin -> Member, transfer, tag, disband, set withdraw limits,
+               withdraw without a limit.
+       Admin   invite, kick MEMBERS only, withdraw up to the Admin limit. Cannot promote, demote, transfer, tag, disband or set limits.
+       Member  deposit, withdraw up to the Member limit (0 by default = no withdrawing, as in 0.1).
+  2. GUILD BANK WITHDRAW LIMITS PER GAME DAY: the Leader sets one limit per rank (Admin, Member): a number of coins per game day,
+     0 = may not withdraw, none = no limit. Defaults (config.properties): Admin none (0.1 Officers had no limit), Member 0 (0.1
+     Members could not withdraw) - so nothing changes until the Leader sets a limit. Each member's withdrawals are counted per game
+     day (wd.<uuid>=day|coins in the guild file); the count starts again when the game day changes (any change, also /time back).
+     Leaving or being kicked keeps that day's count (wdk.<uuid>), so leave + re-invite on the same game day does not reset it.
+     GAME DAY = the DEFAULT world's clock (Universe.getDefaultWorld(); every world has its own WorldTimeResource, so ONE world is the
+     guild clock - otherwise hopping between worlds would reset the count): day = floor((gameTime - ZERO_YEAR) / SECONDS_PER_DAY) + 1,
+     the same number as SkyyHud's Day widget shows in that world. Read by a DayTask on the default world's thread (World.execute) every
+     5 s from the tick; a limited withdraw while the day is not known yet (the first seconds after a start) is refused, never guessed.
+     On this server the default world IS the hub (live hub.properties world=default, config.json Defaults.World=default), so /hub
+     shows the same Day. It is not hub.properties on purpose: the engine never unloads the default world (only /world remove|prune
+     or the instance RemovalSystem remove worlds), while a "hub world, else default" clock could flip between two worlds' day numbers
+     (hub not loaded yet, /sethub moved) and every flip would restart every member's daily count. If /sethub ever moves the hub to
+     another world, this clock stays on the default world (the log line names it).
+     WATCHDOG (review fix): the day only counts while its last read is under 60 s old (GuildStore.day(); DAY_READ was written but never
+     read) - a DayTask that stops answering makes limited withdrawals wait instead of silently counting on a frozen day, and the tick
+     logs "guild clock: ... not been read ..." (every 10 min while it lasts, plus a line when it recovers). The engine keeps an empty
+     world's clock running (World.tick has no player gate), but a paused world (singleplayer host alone + Esc, /world pause) or paused
+     game time (/world config pausetime) stops it: after 120 s of unchanged game time DayTask logs "guild clock: the game time of the
+     default world ... has not moved" once, and "runs again" when it moves (counts do not restart while it stands still).
+     Shown as "x / limit today" on the page, in /guild bank and in the withdraw reply; the member rows show what each member took today.
+     /guild bank limit <admin|member> <amount|none>  and on the page (Leader): a limit box + "Set Admin limit" / "Set Member limit".
+     Every limit change goes into the bank log ("set the Admin daily limit to 5,000 coins").
+  3. BANK LOG EXPAND: the guild file now keeps the last bankLogKeep (200) bank moves (0.1 kept 10). The page's "Expand log" button
+     opens the log view on the same page (rebuild, no close / reopen): 15 lines per page, newest first, Prev / Next, "Back to guild".
+     First 0.1.1 start: each 0.1 guild file's log is rebuilt from banklog.log (all time, one line per move) when that holds more lines,
+     so the beta test's history shows up. /guild bank log = the last 10 in chat.
+  Kept from 0.1 unchanged: membership, invites, /gc, guild XP, seasons, deposits, coin safety order, bridge keys, files, admin.
+  Left out: the SkyWynn Menu guild button (SkyyMenu's file, not this mod); what guild levels DO (Skyy: "discuss later").
+
+COMMANDS (every player command, subcommand and argument form calls setPermissionGroups(new String[] { "hytale:Adventurer" });
+optional arguments are never used - names with spaces are GREEDY_STRING, which the engine accepts inside subcommands:
+AbstractCommand.acceptCall -> ParserContext.convertToSubCommand once per command level, extractGreedyRawTail skips
+subCommandIndex + earlier required parameters words of the raw input; registerRequiredArg sets allowsExtraArguments for a greedy arg,
+acceptCall0 then only needs tokens >= required - HytaleServer.jar bytecode, 2026-09-24):
+  /guild                          opens the guild page (not in a guild: a Create page with a name box, plus your pending invite)
+  /guild help                     every command in chat
+  /guild create <name>            3-24 letters / digits / spaces, unique (case-insensitive); you become the Leader
+  /guild tag <tag>                Leader: 2-4 letters/digits, unique; /guild tag clear removes it
+  /guild invite <player>          Leader / Admin; the player must be online; invites last inviteSeconds (300)
+  /guild accept | /guild decline  answer your newest invite
+  /guild leave                    Members leave at once; the Leader confirms (repeat within 10 s): the best Admin (then the oldest
+                                  member) becomes Leader; the LAST member leaving disbands the guild (bank paid to their purse)
+  /guild kick <player>            Leader / Admin, only members ranked BELOW you (Admins kick Members, the Leader anyone)
+  /guild promote <player>         Leader: Member -> Admin
+  /guild demote <player>          Leader: Admin -> Member
+  /guild transfer <player>        Leader hands the guild over (repeat within 10 s); the old Leader becomes an Admin
+  /guild disband                  Leader, repeat within 10 s; the bank is paid into the Leader's purse (refused if that fails)
+  /guild info | /guild list       your guild in chat | the top 10 guilds by level
+  /guild bank                     balance, the daily limits + what you took today, the last 5 bank log lines
+  /guild bank log                 the last 10 bank log lines
+  /guild bank deposit <amount>    anyone in the guild; amount 500, 2k, 1.5m, all
+  /guild bank withdraw <amount>   Leader (no limit), Admin / Member up to their rank's limit per game day; "all" = as much as allowed
+  /guild bank limit <rank> <amount|none>   Leader: rank admin | member (officer is read as admin); amount 500, 2k, 1.5m, 0 (no
+                                  withdrawing) or none (no limit)
+  /gc <message>                   guild chat (GREEDY_STRING like SkyyParty's /pc)
+  /guildadmin ...                 requirePermission("skyyguilds.admin") on the root and on every subcommand:
+       info <guild>  |  delete <guild> (repeat within 10 s; bank paid to the Leader, works offline)  |  season  |  season next
+       (repeat within 10 s)  |  xp <amount> <guild> (test helper: adds guild XP)  |  reload (config.properties)
+  <guild> = name (case-insensitive), tag or id.
+
+THE /guild PAGE (inline only, HANDOFF section 2: no .ui files, no underscores in ids, root Group anchor Width/Height only, TextButton +
+EventData, rebuilt only after a click - never a periodic page update, never closes itself before opening another page):
+  1120 x 900 main view: name + [TAG], level, season XP, your rank, a green XP bar with "x / y XP to level L+1", bank + online count;
+  member rows (7 per page in 0.1.1 - 8 in 0.1 - to make room for the limits, Prev/Next) with an online dot, name, rank, guild XP
+  they added, coins taken today, online/offline and the buttons your rank allows: Promote / Demote / Kick / Make leader (Kick and
+  Make leader need a second click); an Invite TextField + button (Leader/Admin), an Amount TextField + Deposit (+ Withdraw when your
+  rank may withdraw), the limits line ("Admins 5,000 - Members none - you: 1,200 / 5,000 today (game day 12)"), for the Leader a
+  limit TextField + Set Admin limit + Set Member limit, the bank log header with "Expand log", the last 3 bank log lines, Refresh,
+  Leave guild (second click confirms), Disband (Leader, second click). Enter in the Name / Invite box submits it; Enter in the Amount
+  or Limit box only keeps the value and says which button to click (never moves coins or changes a limit). Text fields use the
+  SkyySacks 0.7.3 search pattern (verified in game): EventData.of("a", action).append("@GInvite", "#SkyyGInvite.Value"), read back
+  with jsonStr. Log view (Expand): 1120 x 900, 15 lines per page (when / player / what / bank after), Prev / Next, Back to guild,
+  Refresh. Not in a guild: 1120 x 660 with the pending invite (Accept / Decline), a guild name TextField + Create guild, the rules and
+  the commands.
+
+GUILD XP: every GuildTick (5 s, scheduler) the online guild members get an XpTask on THEIR world thread every xpPollSeconds (10 s).
+  It sums skill:fn:xp (SkyySkills 0.4+: apply(Object[]{UUID, skill}) -> Long total XP of the ACTIVE profile) over xpSkills
+  (Mining, Foraging, Farming, Acrobatics, Archery, Swordsmanship, Assassination, Shaman, Sorcery, Alchemy, Smithing, Cooking,
+  Exploration - "Combat" is left out on purpose: it is an alias of the current class skill). The positive change since the last check
+  x xpSharePercent (10) / 100 goes to the guild (fractions carry over), capped at xpMaxPerCheck skill XP per check. The baseline is
+  keyed by profile key + guild id, so a profile switch or joining a guild is a new baseline (no credit for XP earned elsewhere); the
+  first check after a join / restart only records the baseline (up to one check of XP is not counted after a server restart).
+  Fallback without skill:fn:xp: the sum of the levels in skill:<uuid> ("Mining:12,..."), xpPerLevelFallback (25) guild XP per level
+  gained. SkyySkills is never touched or called for anything else.
+  Level curve: level L -> L+1 needs levelBase + levelStep x (L - 1) guild XP (defaults 100 / 150: level 2 at 100, level 5 at 1,300,
+  level 10 at 6,300 guild XP). A level-up is announced to the online members.
+SEASONS: meta.properties holds the season number (starts at 1). Guild XP also counts into season.<n> of that guild; /guildadmin season
+  shows the season top 10, /guildadmin season next starts the next season (levels and total XP stay; no rewards yet).
+
+GUILD BANK: coins move only through SkyyCoins' coins:fn:get / coins:fn:take / coins:fn:add (SkyyCoins 0.1.5: act on the ACTIVE
+  profile; null = purse unreadable, nothing changed). All under the one GuildStore lock (the SkyyBank 0.1.2 pattern: SkyyCoins never
+  calls back, so no lock cycle). Rule: the guild file never shows coins that already left the bank. Deposit = take from the purse
+  FIRST (coins:fn:take must say TRUE), then add to the bank and write. Withdraw = check the rank's daily limit, then write the lower
+  bank AND the member's raised day count FIRST (a failed write = nothing moved, both restored), then coins:fn:add; if that does not
+  return a number the exact amount and the old day count go back and are written again. Disband / admin delete = rewrite the guild
+  file as disbanded with bank 0 FIRST (a failed write refuses), then pay the bank to the Leader (a failed payout restores the live
+  file and refuses), then move the file to guilds/deleted/. Every move is logged: guild file log.0..199 (the page) + banklog.log (all
+  time, one line per move). maxBank (1e12) caps a bank. No coins are created: nothing in this mod adds coins except a withdraw /
+  payout of coins the bank held.
+
+BRIDGE (FIXED CONTRACT shared with SkyyParty 0.1.3 and SkyyHud 0.3.8; per PLAYER):
+  "guild:<uuid>"      = guild name (String) while the player is in a guild, removed when they leave / are kicked / it is disbanded
+  "guild:info:<uuid>" = "name|tag|level|xp|xpForNext|onlineCount|memberCount|rank"  (tag "" when none; xp = XP INTO the current level,
+                        xpForNext = the XP that level needs in total, so a bar is xp / xpForNext; rank = Leader / Admin / Member -
+                        0.1 published "Officer" here).
+                        Republished on every change (join, leave, rank, tag, XP) for every member, and every 5 s for online members.
+  "guild:fn:online"   = java.util.function.Function apply(UUID viewer) -> String[] display names of the ONLINE members of the viewer's
+                        guild (the viewer included, in stored member order), empty array when not in a guild. Any thread.
+  Read: coins:fn:get/take/add (SkyyCoins), skill:fn:xp / skill:<uuid> (SkyySkills), profile:fn:key (SkyyProfiles, baseline key only).
+
+DATA (<world>/mods/Skyy_SkyyGuilds/, stable across versions): guilds/<id>.properties (id g1, g2, ...: name, tag, created, xp, bank,
+  member.<uuid>=rank|joinedMillis|guildXpAdded|name, season.<n>=xp, log.0..199, 0.1.1: format=2, limitAdmin / limitMember (-1 = no
+  limit), wd.<uuid>=gameDay|coinsTakenThatDay, wdk.<uuid> = the same for a member who left today) = the truth; players.properties (uuid=guildId|name|guild, rewritten after every
+  membership change, rebuilt from the guild files at every start - a player listed in two guild files keeps the first and is
+  removed from the other, logged); meta.properties (nextId, season, seasonStart); banklog.log (append-only); config.properties
+  (defaults written on first start; 0.1.1 appends each of its three new keys that is missing, one block per key, so it happens
+  once; /guildadmin reload). Every file
+  write = tmp file + fsync + atomic rename (ATOMIC_MOVE + REPLACE_EXISTING, 5 x 20 ms retries on a Windows FileSystemException -
+  SkyyProfiles 0.1 pattern). A disbanded guild file is marked disbanded=<millis> and moved to guilds/deleted/ (never loaded again,
+  never hard-deleted). XP-only changes are written by the 5 s tick (dirty flag) and on shutdown; membership, tag, limit and bank
+  changes are written at once. Downgrade to 0.1 is safe: 0.1 ignores the new keys (and would drop them on its next save).
+
+THREADS: commands and page clicks run on the player's world thread (AbstractPlayerCommand / page events); the tick on the shared
+  scheduler (no component, stat or inventory access at all; Universe.getPlayers / getPlayer + sendMessage only, the SkyyBank tick
+  pattern); XP reads on the member's own world thread; the game-day read (a Resource of the default world's store) on the default
+  world's thread. One registered command set, no ECS systems, no events (join / leave notices come from the tick's online set, so
+  PlayerReadyEvent re-fires on world switches do not matter).
+
+CHECKED for 0.1 in a bare JVM (2026-09-24, scratch harness, -Xverify:all on all 35 classes): create / name + tag rules, invite ->
+  accept, rank rules, leader leave hand-over, last-member leave = disband with payout, deposit / withdraw with a fake AND the real
+  SkyyCoins 0.1.5 CoinFn, rollbacks, coins conserved, guild XP, seasons, reload from disk, the page in all four views, every command's
+  permission. 0.1.1: see CHECKED 0.1.1 below.
+CHECKED 0.1.1 in a bare JVM (2026-09-24, scratch harness under tools/dev/scratch, deleted afterwards; 137 checks, 0 fails): all 38
+  classes load under -Xverify:all; a 0.1 config gets the three new keys appended once; a 0.1 guild file loads with the default limits,
+  its Officer is an Admin (bridge rank "Admin"), its log is rebuilt from banklog.log (14 lines; another guild's g10 lines and a garbage
+  line skipped) and it is rewritten with format=2; Admin cannot promote / demote / transfer / disband / tag / set limits / kick the
+  Leader or another Admin, Admin kicks a Member, Member cannot invite; withdraw: Leader unlimited, Admin limit none, Member 0 refused,
+  limited withdraw refused while the day is unknown, 600 + 500 (refused, "400 more") + all (= 400) + 1 (limit reached) on day 5, the
+  count restarts on day 6; limit parsing (1k, 1.5k, 0, none, officer = admin; all / -5 / abc / unknown rank refused; same value =
+  info); rollback on a coins:fn:add failure and on a failed guild file write (bank AND day count restored, limit unchanged); coins
+  conserved through every step (fake SkyyCoins); reload keeps limits, day counts and the log; bankLogKeep trims; kick + rejoin on the
+  same game day keeps the count (wdk.<uuid>, survives a reload, stale days not written); DayTask.dayOf equals SkyyHud's Day formula
+  (SECONDS_PER_DAY = 86400); the page (fake PlayerRef) in Leader / Admin / Member / not-in-a-guild views and the log view (first,
+  last, empty): balanced inline markup, no underscore ids, unique ids, every event bound to an existing id, content height Leader 867
+  / Admin 817 / log 777 of 872, 7 member rows, 15 log rows newest first, paging clamps; page clicks (limit Enter keeps the text, Set
+  Admin limit, a bad limit keeps the box, an Admin's forged limit click is refused, Admin withdraw shows "400 / 2,000", Expand / Newer
+  / Older / Back); every /guild and /gc command + subcommand (21) has hytale:Adventurer, /guild bank limit has 2 required args,
+  every /guildadmin command requires skyyguilds.admin.
+REVIEW FIXES 0.1.1 (2026-09-24, same version, not deployed yet): (1) propsOf also removes the wdKeep entries it does not write
+  (another game day, unreadable, player a member again) from the live map; (2) DAY_READ is used: GuildStore.day() = DAY only while
+  its last read is <= 60 s old (else limited withdrawals wait with "not known right now"), GuildTick.checkDayAge warns when the day
+  is not read for > 60 s (every 10 min, plus a recovery line), DayTask.watchClock warns once when the default world's game time
+  stands still for 120 s and says when it runs again; (3) config.properties: each missing 0.1.1 key is appended on its own (was:
+  only when all three were missing). Rejected: moving the clock to the hub.properties world (the hub IS the default world here, see
+  GAME DAY above). Bare JVM, scratch harness (deleted afterwards): 64 checks, 0 fails - all 38 classes verify (-Xverify:all) and
+  initialize; config: fresh / 0.1 / only bankLogKeep (no trailing newline) / only defaultMemberLimit / all three present (file
+  untouched, hand values kept), second load appends nothing; day(): unknown, DAY without DAY_READ, 59 s fresh, 61 s stale + texts;
+  stale day refuses a limited withdraw without touching the count, the Leader still withdraws, page and usage show "not known";
+  fresh again: 300 refused ("200 more"), all = 200, coins conserved; kick keeps wdKeep on the same day, rejoin restores 500 and
+  empties it, garbage / current-member / old-day entries leave the live map, day 6 save empties it, unknown day keeps it; reload
+  keeps count + limit, day 6 restarts the count; watchClock (quiet 60 s, warn at 121 s once, "runs again", /time back = moving);
+  checkDayAge (quiet 55 s, warn at 61 s "since the start", throttled, recovery line, "last read 70 s ago", repeat after 10 min).
+  Engine checked (HytaleServer.jar bytecode): World.tick consumes the task queue and ticks the store with no player-count gate
+  (paused world: Store.pausedTick, tasks still run); World.setPaused only from GamePacketHandler.handleSetPaused (SINGLEPLAYER +
+  getPlayerCount) and /world pause; WorldTimeResource.tick stops on WorldConfig.isGameTimePaused (/world config pausetime);
+  Universe.removeWorld only from /world remove|prune, prefab / portal / instance code. Live world: default world config
+  IsTicking=true, IsGameTimePaused=false, day 1728 s + night 1152 s = one game day per 48 real minutes.
+UNVERIFIED (needs the game): the 0.1.1 page on a real client (the limits row, the Expand log view, 7-row member list - inline markup
+  copied from the 0.1 page, which rendered in the beta test), the game day read on the default world's thread (the same
+  WorldTimeResource calls SkyyHud 0.3.8's clock uses, but from World.execute) and the watchdog lines around it, the nested
+  /guild bank limit subcommand with two STRING args in game (same shape as /guild bank deposit).
+"""
+import sys, os, re
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools"))
+import skyybuild as B
+
+VERSION = "0.1.1"
+HERE = os.path.dirname(os.path.abspath(__file__))
+J = B.start()
+pool, CtField, CtNewMethod, CtNewConstructor = J["pool"], J["CtField"], J["CtNewMethod"], J["CtNewConstructor"]
+OUT = B.class_out(HERE)
+
+PKG = "com.skyy.guilds"
+T = {
+    "JP":   "com.hypixel.hytale.server.core.plugin.JavaPlugin",
+    "JPI":  "com.hypixel.hytale.server.core.plugin.JavaPluginInit",
+    "PR":   "com.hypixel.hytale.server.core.universe.PlayerRef",
+    "REF":  "com.hypixel.hytale.component.Ref",
+    "ST":   "com.hypixel.hytale.component.Store",
+    "UNI":  "com.hypixel.hytale.server.core.universe.Universe",
+    "WLD":  "com.hypixel.hytale.server.core.universe.world.World",
+    "APC":  "com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand",
+    "CTX":  "com.hypixel.hytale.server.core.command.system.CommandContext",
+    "MSG":  "com.hypixel.hytale.server.core.Message",
+    "HSV":  "com.hypixel.hytale.server.core.HytaleServer",
+    "ATY":  "com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes",
+    "RA":   "com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg",
+    "LOG":  "com.hypixel.hytale.logger.HytaleLogger",
+    "PLA":  "com.hypixel.hytale.server.core.entity.entities.Player",
+    "PAGE": "com.hypixel.hytale.server.core.entity.entities.player.pages.CustomUIPage",
+    "LIFE": "com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime",
+    "UCB":  "com.hypixel.hytale.server.core.ui.builder.UICommandBuilder",
+    "UEB":  "com.hypixel.hytale.server.core.ui.builder.UIEventBuilder",
+    "EVD":  "com.hypixel.hytale.server.core.ui.builder.EventData",
+    "BT":   "com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType",
+    # 0.1.1: the game-day clock (same class + calls as SkyyHud 0.3.8's Gclock / Day widgets)
+    "WTR":  "com.hypixel.hytale.server.core.modules.time.WorldTimeResource",
+    "PKG":  PKG,
+    "VERSION": VERSION,
+    # every player command: grant its auto permission node to the default player group (vanilla /help /who pattern)
+    "ADV":  'setPermissionGroups(new String[] { "hytale:Adventurer" });',
+    "ADMIN": 'requirePermission("skyyguilds.admin");',
+}
+AC  = "com.hypixel.hytale.server.core.command.system.AbstractCommand"
+PGM = "com.hypixel.hytale.server.core.entity.entities.player.pages.PageManager"
+PB  = "com.hypixel.hytale.server.core.plugin.PluginBase"
+
+for c, m in ((T["UNI"], "getPlayer"), (T["UNI"], "getPlayers"), (T["UNI"], "getWorld"), (T["PR"], "getWorldUuid"),
+             (T["PR"], "getUsername"), (T["PR"], "getUuid"), (T["PR"], "isValid"), (T["PR"], "sendMessage"), (T["WLD"], "execute"),
+             (T["HSV"], "SCHEDULED_EXECUTOR"), (PB, "shutdown"), (PB, "getDataDirectory"), (PB, "getCommandRegistry"),
+             (AC, "setPermissionGroups"), (AC, "requirePermission"), (AC, "addSubCommand"), (AC, "withRequiredArg"),
+             (T["ATY"], "GREEDY_STRING"), (T["ATY"], "STRING"), (T["CTX"], "get"), (T["MSG"], "raw"), (T["MSG"], "color"),
+             (T["UCB"], "appendInline"), (T["UCB"], "set"), (T["UEB"], "addEventBinding"), (T["EVD"], "of"), (T["EVD"], "append"),
+             (T["BT"], "Activating"), (T["BT"], "Validating"), (T["PAGE"], "rebuild"), (T["PAGE"], "handleDataEvent"),
+             (PGM, "openCustomPage"), (T["PLA"], "getPageManager"), (T["LIFE"], "CanDismiss"),
+             # 0.1.1 game day
+             (T["UNI"], "getDefaultWorld"), (T["WLD"], "getEntityStore"), (T["ST"], "getResource"), (T["WTR"], "getResourceType"),
+             (T["WTR"], "getGameTime"), (T["WTR"], "ZERO_YEAR"), (T["WTR"], "SECONDS_PER_DAY"),
+             ("com.hypixel.hytale.server.core.universe.world.storage.EntityStore", "getStore"), (T["WLD"], "getName")):
+    B.probe(pool, c, m)
+
+TOKEN = re.compile(r"@([A-Z]{2,7})@")
+
+
+def jv(src):
+    def rep(m):
+        k = m.group(1)
+        if k not in T:
+            raise SystemExit("unknown token @%s@ in:\n%s" % (k, src[:300]))
+        return T[k]
+    return TOKEN.sub(rep, src)
+
+
+def F(cls, src):
+    cls.addField(CtField.make(jv(src), cls))
+
+
+def M(cls, src):
+    try:
+        cls.addMethod(CtNewMethod.make(jv(src), cls))
+    except Exception as e:
+        raise SystemExit("compile failed in %s:\n%s\n---\n%s" % (cls.getName(), e, jv(src)[:1500]))
+
+
+def C(cls, src):
+    try:
+        cls.addConstructor(CtNewConstructor.make(jv(src), cls))
+    except Exception as e:
+        raise SystemExit("constructor failed in %s:\n%s\n---\n%s" % (cls.getName(), e, jv(src)[:1500]))
+
+
+mem  = pool.makeClass(PKG + ".GMember")
+gld  = pool.makeClass(PKG + ".Guild")
+cfg  = pool.makeClass(PKG + ".GCfg")
+gs   = pool.makeClass(PKG + ".GuildStore")
+xpt  = pool.makeClass(PKG + ".XpTask")
+dayt = pool.makeClass(PKG + ".DayTask")
+tick = pool.makeClass(PKG + ".GuildTick")
+ofn  = pool.makeClass(PKG + ".GuildOnlineFn")
+page = pool.makeClass(PKG + ".GuildPage", pool.get(T["PAGE"]))
+pl   = pool.makeClass(PKG + ".SkyyGuildsPlugin", pool.get(T["JP"]))
+ALL = [mem, gld, cfg, gs, xpt, dayt, tick, ofn, page]
+
+# ================= GMember / Guild (plain data; every access holds the GuildStore lock) =================
+# 0.1.1: wdDay / wdUsed = the game day of this member's last counted withdraw and the coins taken on that day (wd.<uuid> in the file)
+for f in ("public String uuid;", "public java.util.UUID uid;", "public String name;", "public int rank;", "public long joined;",
+          "public long contrib;", "public long wdDay;", "public long wdUsed;"):
+    F(mem, f)
+C(mem, "public GMember() { this.wdDay = -1L; this.wdUsed = 0L; }")
+
+# 0.1.1: limAdmin / limMember = coins per game day (-1 = no limit, 0 = may not withdraw); legacy = loaded from a 0.1 file (no format=2)
+for f in ("public String id;", "public String name;", "public String tag;", "public long created;", "public long xp;",
+          "public long bank;", "public java.util.LinkedHashMap members;", "public java.util.HashMap season;",
+          "public java.util.ArrayList log;", "public boolean dirty;", "public long limAdmin;", "public long limMember;",
+          "public boolean legacy;", "public java.util.HashMap wdKeep;"):
+    F(gld, f)
+# wdKeep: uuid -> "gameDay|coins" of members who LEFT or were kicked, restored when they rejoin the same guild on the same game day
+# (leave + re-invite must not reset a daily withdraw count); file keys wdk.<uuid>, stale days are dropped on save
+C(gld, r"""
+public Guild() {
+  this.members = new java.util.LinkedHashMap();
+  this.season = new java.util.HashMap();
+  this.log = new java.util.ArrayList();
+  this.tag = "";
+  this.name = "";
+  this.limAdmin = -1L;
+  this.limMember = 0L;
+  this.legacy = false;
+  this.wdKeep = new java.util.HashMap();
+}""")
+M(gld, r"""
+public long seasonXp(int s) {
+  Object v = this.season.get(String.valueOf(s));
+  return v instanceof Long ? ((Long) v).longValue() : 0L;
+}""")
+M(gld, r"""
+public void addSeason(int s, long n) {
+  this.season.put(String.valueOf(s), Long.valueOf(seasonXp(s) + n));
+}""")
+M(gld, r"""
+public @PKG@.GMember member(String u) {
+  if (u == null) return null;
+  return (@PKG@.GMember) this.members.get(u);
+}""")
+M(gld, r"""
+public @PKG@.GMember leader() {
+  java.util.Iterator it = this.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    if (m.rank == 2) return m;
+  }
+  return null;
+}""")
+
+# ================= GCfg fields (load() is added after GuildStore.warn exists) =================
+SKILLS = "Mining,Foraging,Farming,Acrobatics,Archery,Swordsmanship,Assassination,Shaman,Sorcery,Alchemy,Smithing,Cooking,Exploration"
+for f in ("public static java.nio.file.Path FILE;",
+          "public static volatile int SHARE = 10;",
+          "public static volatile int POLL = 10;",
+          'public static volatile String[] SKILLS = "%s".split(",");' % SKILLS,
+          "public static volatile long LEVEL_FALLBACK = 25L;",
+          "public static volatile long MAX_DELTA = 10000000L;",
+          "public static volatile long BASE = 100L;",
+          "public static volatile long STEP = 150L;",
+          "public static volatile int MAX_MEMBERS = 25;",
+          "public static volatile int INVITE_SECONDS = 300;",
+          "public static volatile long MAX_BANK = 1000000000000L;",
+          "public static volatile boolean ONLINE_MSG = true;",
+          # 0.1.1
+          "public static volatile int LOG_KEEP = 200;",
+          "public static volatile long DEF_LIM_ADMIN = -1L;",
+          "public static volatile long DEF_LIM_MEMBER = 0L;"):
+    F(cfg, f)
+
+CFG_LINES = [
+    "# SkyyGuilds %s settings. /guildadmin reload re-reads this file (no restart needed)." % VERSION,
+    "# Guild XP: the skill XP every guild member earns (SkyySkills) adds this percent to the guild's XP (fractions carry over).",
+    "xpSharePercent=10",
+    "# How often the members' skill XP is checked, in seconds (5 to 300, in 5 second steps).",
+    "xpPollSeconds=10",
+    "# The skills (SkyySkills skill:fn:xp names) whose XP counts. Unknown names count 0. Combat is left out on purpose (it is the class skill).",
+    "xpSkills=" + SKILLS,
+    "# Only when SkyySkills has no skill:fn:xp (older than 0.4): guild XP per skill LEVEL a member gains.",
+    "xpPerLevelFallback=25",
+    "# Most skill XP one member can add in one check (guards against admin XP commands); the rest of that jump is ignored.",
+    "xpMaxPerCheck=10000000",
+    "# Guild level curve: level L -> L+1 needs levelBase + levelStep x (L - 1) guild XP.",
+    "levelBase=100",
+    "levelStep=150",
+    "# Largest guild.",
+    "maxMembers=25",
+    "# How long a guild invite lasts, in seconds.",
+    "inviteSeconds=300",
+    "# Largest guild bank balance, in coins.",
+    "maxBank=1000000000000",
+    "# Chat notice to the guild when a member comes online or goes offline.",
+    "onlineMessages=true",
+]
+# 0.1.1 keys: written with the defaults above on a first start, and appended ONCE to an existing 0.1 config.properties
+# (review fix) one block per key: an existing config gets EACH missing key appended on its own (a key already in the file is never
+# appended again - Properties would let the appended default override the value that is there)
+CFG_011_HEAD = ["# --- added by SkyyGuilds 0.1.1 ---"]
+CFG_011_LOG = [
+    "# How many guild bank moves each guild file keeps for the page's Expand log (10 to 1000). banklog.log keeps every move forever.",
+    "bankLogKeep=200",
+]
+CFG_011_ADM = [
+    "# Daily withdraw limit (coins per GAME day) a NEW guild starts with for Admins; the Leader changes it per guild with",
+    "# /guild bank limit admin <amount|none>. none = no limit, 0 = may not withdraw. The Leader never has a limit.",
+    "# Guilds from 0.1 get this too (0.1 Officers - now Admins - had no limit).",
+    "defaultAdminLimit=none",
+]
+CFG_011_MEM = [
+    "# The same for Members (/guild bank limit member <amount|none>). Guilds from 0.1 get this too (0.1 Members could not withdraw).",
+    "defaultMemberLimit=0",
+]
+CFG_LINES_011 = CFG_011_HEAD + CFG_011_LOG + CFG_011_ADM + CFG_011_MEM
+def cfg_java(lines):
+    return "\\n".join(l.replace("\\", "\\\\").replace('"', '\\"') for l in lines) + "\\n"
+CFG_TEXT = cfg_java(CFG_LINES + CFG_LINES_011)
+
+# ================= GuildStore (the ONE lock: every guild state change is a static synchronized method here) =================
+for f in ("public static java.nio.file.Path DIR;",
+          "public static java.nio.file.Path GDIR;",
+          "public static @LOG@ LOG;",
+          "public static final java.util.HashMap GUILDS = new java.util.HashMap();",
+          "public static final java.util.HashMap BYNAME = new java.util.HashMap();",
+          "public static final java.util.concurrent.ConcurrentHashMap BYPLAYER = new java.util.concurrent.ConcurrentHashMap();",
+          "public static final java.util.concurrent.ConcurrentHashMap INVITES = new java.util.concurrent.ConcurrentHashMap();",
+          "public static final java.util.concurrent.ConcurrentHashMap CONFIRM = new java.util.concurrent.ConcurrentHashMap();",
+          "public static volatile int SEASON = 1;",
+          "public static volatile long SEASON_START = 0L;",
+          "public static volatile long NEXT_ID = 1L;",
+          # 0.1.1: the current GAME day of the default world (-1 = not read yet), written by DayTask on that world's thread
+          "public static volatile long DAY = -1L;",
+          "public static volatile long DAY_READ = 0L;"):
+    F(gs, f)
+# GUILDS: id -> Guild, BYNAME: lower-case name -> id (both under the lock). BYPLAYER: uuid string -> id (written under the lock, read
+# lock-free). INVITES: invitee uuid string -> Object[]{guildId, inviterName, Long expiryMillis}. CONFIRM: "action:uuid..." -> Long expiry.
+
+M(gs, r"""
+public static java.util.Map bridge() {
+  synchronized (java.lang.System.class) {
+    Object o = System.getProperties().get("skyy.bridge");
+    if (o == null) { o = new java.util.concurrent.ConcurrentHashMap(); System.getProperties().put("skyy.bridge", o); }
+    return (java.util.Map) o;
+  }
+}""")
+# profile contract helper (tools/PROFILES-CONTRACT.md), verbatim - only used for the XP baseline key (guilds are per player)
+M(gs, r"""
+public static String pkey(java.util.UUID u) {
+  try {
+    Object f = bridge().get("profile:fn:key");
+    if (f instanceof java.util.function.Function) {
+      Object r = ((java.util.function.Function) f).apply(u);
+      if (r instanceof String && ((String) r).length() > 0) return (String) r;
+    }
+  } catch (Throwable t) { }
+  return u.toString();
+}""")
+M(gs, r"""
+public static void warn(String msg) {
+  try {
+    if (LOG != null) LOG.at(java.util.logging.Level.WARNING).log("[SkyyGuilds] " + msg);
+    else System.out.println("[SkyyGuilds] WARN " + msg);
+  } catch (Throwable t) { }
+}""")
+M(gs, r"""
+public static void info(String msg) {
+  try {
+    if (LOG != null) LOG.at(java.util.logging.Level.INFO).log("[SkyyGuilds] " + msg);
+    else System.out.println("[SkyyGuilds] " + msg);
+  } catch (Throwable t) { }
+}""")
+M(gs, r"""
+public static long parseLong(String s, long d) {
+  if (s == null) return d;
+  try { return Long.parseLong(s.trim()); } catch (Throwable t) { return d; }
+}""")
+# (review fix) the game day the limits count on: DAY while its last read (DAY_READ, DayTask every 5 s) is at most 60 s old, else -1 =
+# not known (limited withdrawals wait, never counted on a day that stopped being read). DayTask writes DAY before DAY_READ, so a
+# reader racing the very first read sees DAY_READ 0 = not known yet.
+M(gs, r"""
+public static long day() {
+  long d = DAY;
+  if (d < 0L) return -1L;
+  long r = DAY_READ;
+  if (r <= 0L || System.currentTimeMillis() - r > 60000L) return -1L;
+  return d;
+}""")
+# why day() is -1: "yet" (never read since the start) or how long ago the last read was
+M(gs, r"""
+public static String dayUnknownText() {
+  long r = DAY_READ;
+  if (DAY < 0L || r <= 0L) return "not known yet (the main world is still starting)";
+  return "not known right now (the main world's clock last answered " + ((System.currentTimeMillis() - r) / 1000L) + " s ago - an admin can check the server log)";
+}""")
+
+# ---- GCfg.load (needs GuildStore.warn / parseLong)
+M(cfg, r"""
+public static long lng(java.util.Properties p, String k, long d, long min, long max) {
+  long v = @PKG@.GuildStore.parseLong(p.getProperty(k), d);
+  if (v < min) v = min;
+  if (v > max) v = max;
+  return v;
+}""")
+# 0.1.1: a daily limit value: none / unlimited / nolimit / -1 = -1 (no limit), a number >= 0, anything else = d
+M(cfg, r"""
+public static long limProp(java.util.Properties p, String k, long d) {
+  String s = p.getProperty(k);
+  if (s == null) return d;
+  String t = s.trim().toLowerCase();
+  if (t.equals("none") || t.equals("unlimited") || t.equals("nolimit") || t.equals("-1")) return -1L;
+  long v = @PKG@.GuildStore.parseLong(t, -2L);
+  if (v < 0L) return d;
+  return v > 1000000000000000L ? 1000000000000000L : v;
+}""")
+M(cfg, r"""
+public static void load() {
+  try {
+    if (!java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0])) {
+      java.nio.file.Files.createDirectories(FILE.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+      java.nio.file.Files.write(FILE, "@CFGTEXT@".getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+    }
+    java.util.Properties p = new java.util.Properties();
+    java.io.InputStream in = java.nio.file.Files.newInputStream(FILE, new java.nio.file.OpenOption[0]);
+    try { p.load(in); } finally { in.close(); }
+    String add = "";
+    String names = "";
+    if (p.getProperty("bankLogKeep") == null) { add = add + "@CFG011LOG@"; names = names + ", bankLogKeep"; }
+    if (p.getProperty("defaultAdminLimit") == null) { add = add + "@CFG011ADM@"; names = names + ", defaultAdminLimit"; }
+    if (p.getProperty("defaultMemberLimit") == null) { add = add + "@CFG011MEM@"; names = names + ", defaultMemberLimit"; }
+    if (add.length() > 0) {
+      try {
+        byte[] old = java.nio.file.Files.readAllBytes(FILE);
+        String pre = (old.length > 0 && old[old.length - 1] != 10) ? "\n" : "";
+        java.nio.file.Files.write(FILE, (pre + "@CFG011HEAD@" + add).getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.APPEND });
+        @PKG@.GuildStore.info("config.properties: added the 0.1.1 key(s) " + names.substring(2) + " with their defaults");
+      } catch (Throwable t) { @PKG@.GuildStore.warn("could not add the 0.1.1 key(s) " + names.substring(2) + " to " + FILE + " (defaults used): " + t); }
+    }
+    LOG_KEEP = (int) lng(p, "bankLogKeep", 200L, 10L, 1000L);
+    DEF_LIM_ADMIN = limProp(p, "defaultAdminLimit", -1L);
+    DEF_LIM_MEMBER = limProp(p, "defaultMemberLimit", 0L);
+    SHARE = (int) lng(p, "xpSharePercent", 10L, 0L, 1000L);
+    long poll = lng(p, "xpPollSeconds", 10L, 5L, 300L);
+    POLL = (int) ((poll + 4L) / 5L * 5L);
+    String sk = p.getProperty("xpSkills");
+    if (sk != null && sk.trim().length() > 0) {
+      String[] a = sk.split(",");
+      java.util.ArrayList l = new java.util.ArrayList();
+      for (int i = 0; i < a.length; i++) {
+        String x = a[i].trim();
+        if (x.length() > 0 && !x.equalsIgnoreCase("combat")) l.add(x);
+      }
+      String[] r = new String[l.size()];
+      for (int i = 0; i < r.length; i++) r[i] = (String) l.get(i);
+      SKILLS = r;
+    }
+    LEVEL_FALLBACK = lng(p, "xpPerLevelFallback", 25L, 0L, 1000000L);
+    MAX_DELTA = lng(p, "xpMaxPerCheck", 10000000L, 1L, 1000000000000L);
+    BASE = lng(p, "levelBase", 100L, 1L, 1000000000000L);
+    STEP = lng(p, "levelStep", 150L, 0L, 1000000000000L);
+    MAX_MEMBERS = (int) lng(p, "maxMembers", 25L, 1L, 500L);
+    INVITE_SECONDS = (int) lng(p, "inviteSeconds", 300L, 10L, 86400L);
+    MAX_BANK = lng(p, "maxBank", 1000000000000L, 0L, 1000000000000000L);
+    ONLINE_MSG = !"false".equalsIgnoreCase(String.valueOf(p.getProperty("onlineMessages", "true")).trim());
+  } catch (Throwable t) { @PKG@.GuildStore.warn("could not read " + FILE + " (defaults used): " + t); }
+}""".replace("@CFG011HEAD@", cfg_java(CFG_011_HEAD)).replace("@CFG011LOG@", cfg_java(CFG_011_LOG))
+    .replace("@CFG011ADM@", cfg_java(CFG_011_ADM)).replace("@CFG011MEM@", cfg_java(CFG_011_MEM)).replace("@CFGTEXT@", CFG_TEXT))
+
+M(gs, r"""
+public static @UNI@ uni() {
+  try { return @UNI@.get(); } catch (Throwable t) { return null; }
+}""")
+M(gs, r"""
+public static @PR@ online(java.util.UUID u) {
+  if (u == null) return null;
+  try {
+    @UNI@ un = uni();
+    if (un == null) return null;
+    @PR@ p = un.getPlayer(u);
+    return (p != null && p.isValid()) ? p : null;
+  } catch (Throwable t) { return null; }
+}""")
+M(gs, r"""
+public static @PR@ onlineByName(String n) {
+  if (n == null) return null;
+  String want = n.trim();
+  if (want.length() == 0) return null;
+  try {
+    @UNI@ un = uni();
+    if (un == null) return null;
+    java.util.Iterator it = un.getPlayers().iterator();
+    while (it.hasNext()) {
+      @PR@ p = (@PR@) it.next();
+      if (p != null && p.isValid() && p.getUsername() != null && p.getUsername().equalsIgnoreCase(want)) return p;
+    }
+  } catch (Throwable t) { }
+  return null;
+}""")
+M(gs, r"""
+public static void say(@PR@ p, String text, String color) {
+  if (p == null || text == null) return;
+  try { p.sendMessage(@MSG@.raw(text).color(color)); } catch (Throwable t) { }
+}""")
+M(gs, r"""
+public static void sayU(java.util.UUID u, String text, String color) {
+  say(online(u), text, color);
+}""")
+# results: "+..." success (green), "-..." refused (orange), "=..." info / confirm prompt (blue)
+M(gs, r"""
+public static String colorOf(String res) {
+  if (res == null || res.length() == 0) return "#cfe3ff";
+  char c = res.charAt(0);
+  if (c == '+') return "#8fe39a";
+  if (c == '-') return "#ff9d6b";
+  return "#cfe3ff";
+}""")
+M(gs, r"""
+public static String textOf(String res) {
+  if (res == null) return "";
+  if (res.length() > 0 && (res.charAt(0) == '+' || res.charAt(0) == '-' || res.charAt(0) == '=')) return res.substring(1);
+  return res;
+}""")
+M(gs, r"""
+public static void tell(@PR@ p, String res) {
+  if (res == null || res.length() == 0) return;
+  say(p, "[Guild] " + textOf(res), colorOf(res));
+}""")
+M(gs, r"""
+public static void tellAll(@PR@ p, String[] lines) {
+  for (int i = 0; lines != null && i < lines.length; i++) tell(p, lines[i]);
+}""")
+# ---- files: tmp + fsync + atomic rename, 5 x 20 ms retries on a Windows FileSystemException (SkyyProfiles 0.1 / SkyyBank 0.1.2)
+M(gs, r"""
+public static void replaceFile(java.nio.file.Path tmp, java.nio.file.Path f) throws java.io.IOException {
+  java.io.IOException last = null;
+  for (int i = 0; i < 5; i++) {
+    try {
+      try {
+        java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE });
+      } catch (java.nio.file.AtomicMoveNotSupportedException a) {
+        java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      }
+      return;
+    } catch (java.nio.file.NoSuchFileException e) {
+      throw e;
+    } catch (java.nio.file.FileSystemException e) {
+      last = e;
+    }
+    try { Thread.sleep(20L); } catch (InterruptedException ie) { }
+  }
+  throw last;
+}""")
+M(gs, r"""
+public static void writeProps(java.nio.file.Path f, java.util.Properties p, String header) throws java.io.IOException {
+  java.nio.file.Files.createDirectories(f.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+  java.nio.file.Path tmp = f.resolveSibling(f.getFileName().toString() + ".tmp");
+  java.io.FileOutputStream out = new java.io.FileOutputStream(tmp.toFile());
+  try {
+    p.store(out, header);
+    out.flush();
+    out.getFD().sync();
+  } finally { out.close(); }
+  replaceFile(tmp, f);
+}""")
+# 0.1.1: rank 1 is ADMIN (0.1 called it Officer; the files store the number, so old Officers are Admins with no file change)
+M(gs, r"""
+public static String rankName(int r) {
+  if (r >= 2) return "Leader";
+  if (r == 1) return "Admin";
+  return "Member";
+}""")
+# a saved rank: the number (0.1 / 0.1.1 files) or a hand-edited word; Officer (the 0.1 name) = Admin; unknown = Member
+M(gs, r"""
+public static int parseRank(String s) {
+  if (s == null) return 0;
+  String t = s.trim().toLowerCase();
+  if (t.equals("leader") || t.equals("2")) return 2;
+  if (t.equals("admin") || t.equals("officer") || t.equals("1")) return 1;
+  return 0;
+}""")
+# 1234567 -> "1,234,567"
+M(gs, r"""
+public static String num(long n) {
+  if (n < 0L) return "-" + num(n == Long.MIN_VALUE ? Long.MAX_VALUE : -n);
+  String s = String.valueOf(n);
+  StringBuilder sb = new StringBuilder();
+  int c = 0;
+  for (int i = s.length() - 1; i >= 0; i--) {
+    sb.append(s.charAt(i));
+    c++;
+    if (c % 3 == 0 && i > 0) sb.append(',');
+  }
+  return sb.reverse().toString();
+}""")
+# a daily limit for people: -1 no limit, 0 no withdrawing, else "5,000 coins"
+M(gs, r"""
+public static String limText(long v) {
+  if (v < 0L) return "no limit";
+  if (v == 0L) return "no withdrawing";
+  return num(v) + " coins";
+}""")
+M(gs, r"""
+public static String norm(String s) {
+  if (s == null) return "";
+  String t = s.trim();
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < t.length(); i++) {
+    char c = t.charAt(i);
+    if (Character.isWhitespace(c)) {
+      if (sb.length() > 0 && sb.charAt(sb.length() - 1) != ' ') sb.append(' ');
+    } else sb.append(c);
+  }
+  return sb.toString().trim();
+}""")
+M(gs, r"""
+public static boolean alnum(char c) {
+  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
+}""")
+M(gs, r"""
+public static String nameError(String n) {
+  if (n.length() < 3 || n.length() > 24) return "A guild name needs 3 to 24 characters (letters, digits and spaces).";
+  boolean letter = false;
+  for (int i = 0; i < n.length(); i++) {
+    char c = n.charAt(i);
+    if (!alnum(c) && c != ' ') return "A guild name may only use letters, digits and spaces.";
+    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')) letter = true;
+  }
+  if (!letter) return "A guild name needs at least one letter.";
+  return null;
+}""")
+M(gs, r"""
+public static String tagError(String t) {
+  if (t.length() < 2 || t.length() > 4) return "A guild tag needs 2 to 4 letters or digits.";
+  for (int i = 0; i < t.length(); i++) if (!alnum(t.charAt(i))) return "A guild tag may only use letters and digits.";
+  return null;
+}""")
+# typed text echoed in chat: letters, digits, _ and spaces only, max 32
+M(gs, r"""
+public static String clean(String s) {
+  if (s == null) return "";
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < s.length() && sb.length() < 32; i++) {
+    char c = s.charAt(i);
+    if (alnum(c) || c == '_' || c == ' ' || c == '-') sb.append(c);
+  }
+  return sb.toString().trim();
+}""")
+M(gs, r"""
+public static long need(long lv) {
+  long n = @PKG@.GCfg.BASE + @PKG@.GCfg.STEP * (lv - 1L);
+  return n < 1L ? 1L : n;
+}""")
+# {level, xp into that level, xp that level needs}
+M(gs, r"""
+public static long[] levelInfo(long xp) {
+  long left = xp < 0L ? 0L : xp;
+  long lv = 1L;
+  while (lv < 100000L) {
+    long n = need(lv);
+    if (left < n) break;
+    left = left - n;
+    lv++;
+  }
+  return new long[] { lv, left, need(lv) };
+}""")
+M(gs, r"""
+public static String fmt(long n) {
+  if (n < 0L) return "-" + fmt(n == Long.MIN_VALUE ? Long.MAX_VALUE : -n);
+  if (n < 10000L) return String.valueOf(n);
+  if (n < 1000000L) { long t = n / 100L; return (t / 10L) + "." + (t % 10L) + "k"; }
+  if (n < 1000000000L) { long h = n / 10000L; return (h / 100L) + "." + ((h % 100L) < 10L ? "0" : "") + (h % 100L) + "m"; }
+  long g = n / 10000000L;
+  return (g / 100L) + "." + ((g % 100L) < 10L ? "0" : "") + (g % 100L) + "b";
+}""")
+M(gs, r"""
+public static String tagText(@PKG@.Guild g) {
+  return (g.tag == null || g.tag.length() == 0) ? "" : " [" + g.tag + "]";
+}""")
+M(gs, r"""
+public static String mins() {
+  int s = @PKG@.GCfg.INVITE_SECONDS;
+  if (s % 60 == 0) return (s / 60) + (s == 60 ? " minute" : " minutes");
+  return s + " seconds";
+}""")
+# FIXED CONTRACT value: "name|tag|level|xp|xpForNext|onlineCount|memberCount|rank"
+M(gs, r"""
+public static String infoString(@PKG@.Guild g, @PKG@.GMember m, int onl) {
+  long[] li = levelInfo(g.xp);
+  return g.name + "|" + (g.tag == null ? "" : g.tag) + "|" + li[0] + "|" + li[1] + "|" + li[2] + "|" + onl + "|" + g.members.size() + "|" + rankName(m.rank);
+}""")
+M(gs, r"""
+public static synchronized int onlineCount(@PKG@.Guild g) {
+  int n = 0;
+  java.util.Iterator it = g.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    if (online(m.uid) != null) n++;
+  }
+  return n;
+}""")
+M(gs, r"""
+public static synchronized void publishGuild(@PKG@.Guild g) {
+  if (g == null) return;
+  int onl = onlineCount(g);
+  java.util.Map b = bridge();
+  java.util.Iterator it = g.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    b.put("guild:" + m.uuid, g.name);
+    b.put("guild:info:" + m.uuid, infoString(g, m, onl));
+  }
+}""")
+M(gs, r"""
+public static void unpublish(String u) {
+  java.util.Map b = bridge();
+  b.remove("guild:" + u);
+  b.remove("guild:info:" + u);
+}""")
+# except = comma-joined uuid strings that do not get the line (they got their own message), or null
+M(gs, r"""
+public static synchronized void broadcast(@PKG@.Guild g, String text, String color, String except) {
+  java.util.Iterator it = g.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    if (except != null && except.indexOf(m.uuid) >= 0) continue;
+    say(online(m.uid), text, color);
+  }
+}""")
+# (review fix) a wdKeep entry that is not written (another game day, unreadable, or the player is a member again) is also REMOVED from
+# the live map - every caller holds the GuildStore lock, the only lock wdKeep is touched under
+M(gs, r"""
+public static synchronized java.util.Properties propsOf(@PKG@.Guild g) {
+  java.util.Properties p = new java.util.Properties();
+  p.setProperty("id", g.id);
+  p.setProperty("name", g.name);
+  p.setProperty("tag", g.tag == null ? "" : g.tag);
+  p.setProperty("created", String.valueOf(g.created));
+  p.setProperty("xp", String.valueOf(g.xp));
+  p.setProperty("bank", String.valueOf(g.bank));
+  p.setProperty("format", "2");
+  p.setProperty("limitAdmin", String.valueOf(g.limAdmin));
+  p.setProperty("limitMember", String.valueOf(g.limMember));
+  java.util.Iterator it = g.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    p.setProperty("member." + m.uuid, m.rank + "|" + m.joined + "|" + m.contrib + "|" + (m.name == null ? "" : m.name));
+    if (m.wdDay >= 0L && m.wdUsed > 0L) p.setProperty("wd." + m.uuid, m.wdDay + "|" + m.wdUsed);
+  }
+  java.util.Iterator ki = g.wdKeep.keySet().iterator();
+  while (ki.hasNext()) {
+    String k = (String) ki.next();
+    String v = String.valueOf(g.wdKeep.get(k));
+    long d = parseLong(v.split("\\|", 2)[0], -1L);
+    if (d < 0L || (DAY >= 0L && d != DAY) || g.members.containsKey(k)) { ki.remove(); continue; }
+    p.setProperty("wdk." + k, v);
+  }
+  java.util.Iterator si = g.season.keySet().iterator();
+  while (si.hasNext()) {
+    String k = (String) si.next();
+    p.setProperty("season." + k, String.valueOf(g.season.get(k)));
+  }
+  for (int i = 0; i < g.log.size(); i++) p.setProperty("log." + i, (String) g.log.get(i));
+  return p;
+}""")
+M(gs, r"""
+public static synchronized boolean saveGuild(@PKG@.Guild g) {
+  try {
+    writeProps(GDIR.resolve(g.id + ".properties"), propsOf(g), "SkyyGuilds guild file - edit only while the server is stopped");
+    g.dirty = false;
+    return true;
+  } catch (Throwable t) {
+    g.dirty = true;
+    warn("could not save guild " + g.id + " (kept in memory, retried every 5 s): " + t);
+    return false;
+  }
+}""")
+M(gs, r"""
+public static synchronized void saveIndex() {
+  try {
+    java.util.Properties p = new java.util.Properties();
+    java.util.Iterator it = GUILDS.values().iterator();
+    while (it.hasNext()) {
+      @PKG@.Guild g = (@PKG@.Guild) it.next();
+      java.util.Iterator mi = g.members.values().iterator();
+      while (mi.hasNext()) {
+        @PKG@.GMember m = (@PKG@.GMember) mi.next();
+        p.setProperty(m.uuid, g.id + "|" + m.name + "|" + g.name);
+      }
+    }
+    writeProps(DIR.resolve("players.properties"), p, "SkyyGuilds players index (uuid=guildId|name|guild) - rebuilt from guilds/*.properties at every start; the guild files are the truth");
+  } catch (Throwable t) { warn("could not save the players index: " + t); }
+}""")
+M(gs, r"""
+public static synchronized void saveMeta() {
+  try {
+    java.util.Properties p = new java.util.Properties();
+    p.setProperty("nextId", String.valueOf(NEXT_ID));
+    p.setProperty("season", String.valueOf(SEASON));
+    p.setProperty("seasonStart", String.valueOf(SEASON_START));
+    writeProps(DIR.resolve("meta.properties"), p, "SkyyGuilds meta - season number and the next guild id");
+  } catch (Throwable t) { warn("could not save meta.properties: " + t); }
+}""")
+# bank log: last GCfg.LOG_KEEP (0.1.1: 200; 0.1: 10) in the guild file (page + Expand log) + banklog.log (all time)
+M(gs, r"""
+public static synchronized void addLog(@PKG@.Guild g, String who, String action, long amount) {
+  long now = System.currentTimeMillis();
+  String w = who == null ? "?" : who.replace('|', ' ');
+  g.log.add(now + "|" + w + "|" + action + "|" + amount + "|" + g.bank);
+  while (g.log.size() > @PKG@.GCfg.LOG_KEEP) g.log.remove(0);
+  try {
+    java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
+    String line = java.time.Instant.ofEpochMilli(now).toString() + " guild=" + g.id + " (" + g.name + ") player=" + w + " " + action + " " + amount + " bank=" + g.bank + System.lineSeparator();
+    java.nio.file.Files.write(DIR.resolve("banklog.log"), line.getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND });
+  } catch (Throwable t) { warn("could not write banklog.log: " + t); }
+}""")
+# exactly one Leader: none -> the best Admin / oldest member; several -> the oldest stays, the rest become Admins
+M(gs, r"""
+public static boolean fixLeader(@PKG@.Guild g) {
+  @PKG@.GMember lead = null;
+  int leaders = 0;
+  java.util.Iterator it = g.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    if (m.rank == 2) { leaders++; if (lead == null || m.joined < lead.joined) lead = m; }
+  }
+  if (leaders == 1) return false;
+  if (g.members.size() == 0) return false;
+  if (leaders == 0) {
+    java.util.Iterator it2 = g.members.values().iterator();
+    while (it2.hasNext()) {
+      @PKG@.GMember m = (@PKG@.GMember) it2.next();
+      if (lead == null || m.rank > lead.rank || (m.rank == lead.rank && m.joined < lead.joined)) lead = m;
+    }
+    lead.rank = 2;
+    warn("guild " + g.id + " had no Leader - " + lead.name + " is the Leader now");
+    return true;
+  }
+  java.util.Iterator it3 = g.members.values().iterator();
+  while (it3.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it3.next();
+    if (m.rank == 2 && m != lead) m.rank = 1;
+  }
+  warn("guild " + g.id + " had " + leaders + " Leaders - kept " + lead.name + ", the others are Admins");
+  return true;
+}""")
+M(gs, r"""
+public static java.util.Properties readProps(java.nio.file.Path f) throws java.io.IOException {
+  java.io.IOException last = null;
+  for (int i = 0; i < 3; i++) {
+    try {
+      java.util.Properties p = new java.util.Properties();
+      java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+      try { p.load(in); } finally { in.close(); }
+      return p;
+    } catch (java.nio.file.NoSuchFileException e) {
+      throw e;
+    } catch (java.io.IOException e) {
+      last = e;
+    }
+    try { Thread.sleep(50L); } catch (InterruptedException ie) { }
+  }
+  throw last;
+}""")
+M(gs, r"""
+public static @PKG@.Guild loadGuildFile(java.nio.file.Path f) {
+  String fn = f.getFileName().toString();
+  try {
+    java.util.Properties p = readProps(f);
+    if (p.getProperty("disbanded") != null) return null;
+    String base = fn.substring(0, fn.length() - 11);
+    @PKG@.Guild g = new @PKG@.Guild();
+    g.id = p.getProperty("id", base).trim();
+    if (!g.id.equals(base)) { warn("guild file " + fn + " says id=" + g.id + " - using " + base); g.id = base; }
+    g.name = norm(p.getProperty("name", ""));
+    if (g.name.length() == 0) { warn("guild file " + fn + " has no name - not loaded"); return null; }
+    g.tag = p.getProperty("tag", "").trim();
+    g.created = parseLong(p.getProperty("created"), 0L);
+    g.xp = Math.max(0L, parseLong(p.getProperty("xp"), 0L));
+    g.bank = Math.max(0L, parseLong(p.getProperty("bank"), 0L));
+    g.legacy = p.getProperty("format") == null;
+    g.limAdmin = @PKG@.GCfg.limProp(p, "limitAdmin", @PKG@.GCfg.DEF_LIM_ADMIN);
+    g.limMember = @PKG@.GCfg.limProp(p, "limitMember", @PKG@.GCfg.DEF_LIM_MEMBER);
+    java.util.ArrayList mems = new java.util.ArrayList();
+    java.util.Iterator it = p.stringPropertyNames().iterator();
+    while (it.hasNext()) {
+      String k = (String) it.next();
+      if (k.startsWith("member.")) {
+        java.util.UUID uid = null;
+        try { uid = java.util.UUID.fromString(k.substring(7).trim()); } catch (Throwable t) { uid = null; }
+        if (uid == null) { warn("guild file " + fn + ": bad member key " + k + " - skipped"); continue; }
+        String[] v = p.getProperty(k).split("\\|", 4);
+        @PKG@.GMember m = new @PKG@.GMember();
+        m.uid = uid;
+        m.uuid = uid.toString();
+        m.rank = parseRank(v.length > 0 ? v[0] : "0");
+        m.joined = v.length > 1 ? parseLong(v[1], 0L) : 0L;
+        m.contrib = v.length > 2 ? Math.max(0L, parseLong(v[2], 0L)) : 0L;
+        m.name = (v.length > 3 && v[3].trim().length() > 0) ? v[3].trim() : m.uuid.substring(0, 8);
+        mems.add(m);
+      } else if (k.startsWith("season.")) {
+        g.season.put(k.substring(7).trim(), Long.valueOf(Math.max(0L, parseLong(p.getProperty(k), 0L))));
+      }
+    }
+    // members in join order (the file itself is unordered)
+    for (int i = 1; i < mems.size(); i++) {
+      @PKG@.GMember x = (@PKG@.GMember) mems.get(i);
+      int j = i - 1;
+      while (j >= 0 && ((@PKG@.GMember) mems.get(j)).joined > x.joined) { mems.set(j + 1, mems.get(j)); j--; }
+      mems.set(j + 1, x);
+    }
+    for (int i = 0; i < mems.size(); i++) {
+      @PKG@.GMember m = (@PKG@.GMember) mems.get(i);
+      g.members.put(m.uuid, m);
+    }
+    // 0.1.1: wd.<uuid>=gameDay|coins (withdrawn on that game day)
+    java.util.Iterator wi = p.stringPropertyNames().iterator();
+    while (wi.hasNext()) {
+      String k = (String) wi.next();
+      if (k.startsWith("wdk.")) { g.wdKeep.put(k.substring(4).trim(), p.getProperty(k).trim()); continue; }
+      if (!k.startsWith("wd.")) continue;
+      @PKG@.GMember m = g.member(k.substring(3).trim());
+      if (m == null) continue;
+      String[] v = p.getProperty(k).split("\\|", 2);
+      if (v.length < 2) continue;
+      m.wdDay = parseLong(v[0], -1L);
+      m.wdUsed = Math.max(0L, parseLong(v[1], 0L));
+    }
+    // log.0 .. log.N (0.1 wrote 10, 0.1.1 up to bankLogKeep), oldest first; only the newest LOG_KEEP stay
+    for (int i = 0; i < 1000; i++) {
+      String l = p.getProperty("log." + i);
+      if (l != null) g.log.add(l);
+    }
+    while (g.log.size() > @PKG@.GCfg.LOG_KEEP) g.log.remove(0);
+    return g;
+  } catch (Throwable t) {
+    warn("could not read guild file " + fn + " (NOT loaded, left untouched on disk): " + t);
+    return null;
+  }
+}""")
+# 0.1.1 backfill: one banklog.log line ("<ISO instant> guild=<id> (<name>) player=<who> <action> <amount> bank=<bank>") ->
+# the guild file log form "millis|who|action|amount|bank", or null when the line is not for guild gid / cannot be read
+M(gs, r"""
+public static String parseBankLine(String line, String gid) {
+  try {
+    if (line == null) return null;
+    int sp = line.indexOf(' ');
+    if (sp <= 0) return null;
+    String rest = line.substring(sp + 1);
+    if (!rest.startsWith("guild=" + gid + " ")) return null;
+    int pl = rest.lastIndexOf(" player=");
+    if (pl < 0) return null;
+    String[] w = rest.substring(pl + 8).trim().split(" ");
+    if (w.length < 4) return null;
+    String bk = w[w.length - 1];
+    if (!bk.startsWith("bank=")) return null;
+    long amount = Long.parseLong(w[w.length - 2]);
+    long bank = Long.parseLong(bk.substring(5));
+    String action = w[w.length - 3];
+    StringBuilder who = new StringBuilder();
+    for (int i = 0; i < w.length - 3; i++) { if (i > 0) who.append(' '); who.append(w[i]); }
+    long ms = java.time.Instant.parse(line.substring(0, sp)).toEpochMilli();
+    return ms + "|" + who.toString().replace('|', ' ') + "|" + action + "|" + amount + "|" + bank;
+  } catch (Throwable t) { return null; }
+}""")
+# first 0.1.1 start: 0.1 guild files kept only 10 log lines; rebuild each legacy guild's log from banklog.log when it holds more.
+# Returns the number of log lines restored. Runs once per legacy file (format=2 is written right after), in setup() - never on a
+# world thread.
+M(gs, r"""
+public static synchronized int backfillLogs(java.util.ArrayList legacy) {
+  if (legacy == null || legacy.size() == 0) return 0;
+  java.nio.file.Path f = DIR.resolve("banklog.log");
+  if (!java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) return 0;
+  java.util.List lines = null;
+  try { lines = java.nio.file.Files.readAllLines(f, java.nio.charset.StandardCharsets.UTF_8); }
+  catch (Throwable t) { warn("could not read banklog.log for the 0.1.1 log backfill (the 0.1 logs are kept): " + t); return 0; }
+  int restored = 0;
+  for (int gi = 0; gi < legacy.size(); gi++) {
+    @PKG@.Guild g = (@PKG@.Guild) legacy.get(gi);
+    java.util.ArrayList got = new java.util.ArrayList();
+    for (int i = 0; i < lines.size(); i++) {
+      String e = parseBankLine((String) lines.get(i), g.id);
+      if (e != null) got.add(e);
+    }
+    if (got.size() <= g.log.size()) continue;
+    while (got.size() > @PKG@.GCfg.LOG_KEEP) got.remove(0);
+    g.log = got;
+    g.dirty = true;
+    restored = restored + got.size();
+  }
+  return restored;
+}""")
+M(gs, r"""
+public static synchronized void loadAll() {
+  GUILDS.clear();
+  BYNAME.clear();
+  BYPLAYER.clear();
+  long now = System.currentTimeMillis();
+  try {
+    java.nio.file.Files.createDirectories(GDIR, new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Path mf = DIR.resolve("meta.properties");
+    if (java.nio.file.Files.exists(mf, new java.nio.file.LinkOption[0])) {
+      java.util.Properties p = readProps(mf);
+      NEXT_ID = Math.max(1L, parseLong(p.getProperty("nextId"), 1L));
+      SEASON = (int) Math.max(1L, parseLong(p.getProperty("season"), 1L));
+      SEASON_START = parseLong(p.getProperty("seasonStart"), now);
+    } else {
+      NEXT_ID = 1L; SEASON = 1; SEASON_START = now;
+      saveMeta();
+    }
+  } catch (Throwable t) { warn("could not read meta.properties (season 1): " + t); }
+  java.util.ArrayList files = new java.util.ArrayList();
+  try {
+    java.util.stream.Stream s = java.nio.file.Files.list(GDIR);
+    try {
+      java.util.Iterator it = s.iterator();
+      while (it.hasNext()) {
+        java.nio.file.Path f = (java.nio.file.Path) it.next();
+        String n = f.getFileName().toString();
+        if (n.endsWith(".properties") && java.nio.file.Files.isRegularFile(f, new java.nio.file.LinkOption[0])) files.add(f);
+      }
+    } finally { s.close(); }
+  } catch (Throwable t) { warn("could not list " + GDIR + ": " + t); }
+  int members = 0;
+  java.util.ArrayList legacy = new java.util.ArrayList();
+  int admins = 0;
+  for (int i = 0; i < files.size(); i++) {
+    @PKG@.Guild g = loadGuildFile((java.nio.file.Path) files.get(i));
+    if (g == null) continue;
+    if (g.legacy) {
+      legacy.add(g);
+      g.dirty = true;
+      java.util.Iterator ai = g.members.values().iterator();
+      while (ai.hasNext()) if (((@PKG@.GMember) ai.next()).rank == 1) admins++;
+    }
+    String low = g.name.toLowerCase();
+    if (BYNAME.containsKey(low)) warn("two guild files use the name '" + g.name + "' (" + BYNAME.get(low) + " and " + g.id + ") - name lookups find " + BYNAME.get(low));
+    else BYNAME.put(low, g.id);
+    GUILDS.put(g.id, g);
+    if (g.id.startsWith("g")) {
+      long n = parseLong(g.id.substring(1), 0L);
+      if (n >= NEXT_ID) NEXT_ID = n + 1L;
+    }
+    java.util.ArrayList dup = new java.util.ArrayList();
+    java.util.Iterator mi = g.members.values().iterator();
+    while (mi.hasNext()) {
+      @PKG@.GMember m = (@PKG@.GMember) mi.next();
+      Object other = BYPLAYER.get(m.uuid);
+      if (other != null) { dup.add(m.uuid); warn(m.name + " (" + m.uuid + ") is listed in guild " + other + " AND " + g.id + " - kept in " + other + ", removed from " + g.id); }
+      else { BYPLAYER.put(m.uuid, g.id); members++; }
+    }
+    for (int d = 0; d < dup.size(); d++) g.members.remove(dup.get(d));
+    if (fixLeader(g) || dup.size() > 0) g.dirty = true;
+  }
+  if (legacy.size() > 0) {
+    int restored = backfillLogs(legacy);
+    info("0.1.1 migration: " + legacy.size() + " guild file(s) from 0.1 - " + admins + " Officer(s) are called Admin now; daily withdraw limits start at Admin "
+         + limText(@PKG@.GCfg.DEF_LIM_ADMIN) + " / Member " + limText(@PKG@.GCfg.DEF_LIM_MEMBER) + "; " + restored + " bank log line(s) restored from banklog.log");
+  }
+  saveMeta();
+  saveIndex();
+  java.util.Iterator gi = GUILDS.values().iterator();
+  while (gi.hasNext()) {
+    @PKG@.Guild g = (@PKG@.Guild) gi.next();
+    if (g.dirty) saveGuild(g);
+    publishGuild(g);
+  }
+  info("loaded " + GUILDS.size() + " guild(s) with " + members + " member(s), season " + SEASON + " (" + DIR + ")");
+}""")
+# confirm-by-repeating: true when the same key was asked within the last 10 s (then it is consumed)
+M(gs, r"""
+public static boolean confirm(String key) {
+  long now = System.currentTimeMillis();
+  Object t = CONFIRM.get(key);
+  if (t instanceof Long && ((Long) t).longValue() >= now) { CONFIRM.remove(key); return true; }
+  CONFIRM.put(key, Long.valueOf(now + 10000L));
+  return false;
+}""")
+M(gs, r"""
+public static String gidOf(String u) {
+  Object id = BYPLAYER.get(u);
+  return id == null ? null : (String) id;
+}""")
+M(gs, r"""
+public static synchronized @PKG@.Guild guildOf(String u) {
+  Object id = BYPLAYER.get(u);
+  return id == null ? null : (@PKG@.Guild) GUILDS.get(id);
+}""")
+# member by uuid string, stored name (any case), or an online player's name
+M(gs, r"""
+public static synchronized @PKG@.GMember findMember(@PKG@.Guild g, String who) {
+  if (who == null) return null;
+  String w = who.trim();
+  if (w.length() == 0) return null;
+  @PKG@.GMember byId = g.member(w);
+  if (byId != null) return byId;
+  java.util.Iterator it = g.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    if (m.name != null && m.name.equalsIgnoreCase(w)) return m;
+  }
+  @PR@ p = onlineByName(w);
+  if (p != null) return g.member(p.getUuid().toString());
+  return null;
+}""")
+# ---- SkyyCoins bridge (coins:fn:* act on the ACTIVE profile; null = purse unreadable / SkyyCoins refused, nothing changed)
+M(gs, r"""
+public static boolean coinsReady() {
+  java.util.Map b = bridge();
+  return b.get("coins:fn:get") instanceof java.util.function.Function
+      && b.get("coins:fn:add") instanceof java.util.function.Function
+      && b.get("coins:fn:take") instanceof java.util.function.Function;
+}""")
+M(gs, r"""
+public static Long coinsGet(java.util.UUID u) {
+  try {
+    Object f = bridge().get("coins:fn:get");
+    if (!(f instanceof java.util.function.Function)) return null;
+    Object r = ((java.util.function.Function) f).apply(u);
+    return r instanceof Number ? Long.valueOf(((Number) r).longValue()) : null;
+  } catch (Throwable t) { return null; }
+}""")
+M(gs, r"""
+public static Object coinsTake(java.util.UUID u, long n) {
+  try {
+    Object f = bridge().get("coins:fn:take");
+    if (!(f instanceof java.util.function.Function)) return null;
+    return ((java.util.function.Function) f).apply(new Object[] { u, Long.valueOf(n) });
+  } catch (Throwable t) { warn("coins:fn:take failed: " + t); return null; }
+}""")
+M(gs, r"""
+public static boolean coinsAdd(java.util.UUID u, long n) {
+  try {
+    Object f = bridge().get("coins:fn:add");
+    if (!(f instanceof java.util.function.Function)) return false;
+    Object r = ((java.util.function.Function) f).apply(new Object[] { u, Long.valueOf(n) });
+    return r instanceof Number;
+  } catch (Throwable t) { warn("coins:fn:add failed: " + t); return false; }
+}""")
+# 500, 2k, 1.5m, 2b, 1,000, all / max, half; throws on text that is not a number
+M(gs, r"""
+public static long parseAmount(String s, long all) {
+  String t = s == null ? "" : s.trim().toLowerCase().replace(",", "").replace("_", "");
+  if (t.equals("all") || t.equals("max") || t.equals("everything")) return all;
+  if (t.equals("half")) return all / 2L;
+  double mult = 1.0;
+  if (t.endsWith("k")) { mult = 1000.0; t = t.substring(0, t.length() - 1); }
+  else if (t.endsWith("m")) { mult = 1000000.0; t = t.substring(0, t.length() - 1); }
+  else if (t.endsWith("b")) { mult = 1000000000.0; t = t.substring(0, t.length() - 1); }
+  if (t.length() == 0) throw new IllegalArgumentException("empty amount");
+  double d = Double.parseDouble(t);
+  if (Double.isNaN(d) || Double.isInfinite(d)) throw new IllegalArgumentException("not a number");
+  double v = d * mult;
+  if (v < 1.0) return 0L;
+  if (v > 9.0E15) return Long.MAX_VALUE;
+  return (long) Math.floor(v);
+}""")
+
+# ================= operations (commands and the page call these; u + username so they also run in a bare-JVM test) =================
+M(gs, r"""
+public static synchronized String create(java.util.UUID u, String uname, String raw) {
+  String us = u.toString();
+  if (BYPLAYER.containsKey(us)) return "-You are already in a guild. Leave it first with /guild leave.";
+  String name = norm(raw);
+  String err = nameError(name);
+  if (err != null) return "-" + err;
+  String low = name.toLowerCase();
+  if (BYNAME.containsKey(low)) return "-A guild called " + name + " already exists. Pick another name.";
+  long now = System.currentTimeMillis();
+  @PKG@.Guild g = new @PKG@.Guild();
+  g.id = "g" + NEXT_ID;
+  while (GUILDS.containsKey(g.id)) { NEXT_ID = NEXT_ID + 1L; g.id = "g" + NEXT_ID; }
+  NEXT_ID = NEXT_ID + 1L;
+  saveMeta();
+  g.name = name;
+  g.created = now;
+  @PKG@.GMember m = new @PKG@.GMember();
+  m.uuid = us; m.uid = u; m.name = uname; m.rank = 2; m.joined = now;
+  g.members.put(us, m);
+  GUILDS.put(g.id, g);
+  BYNAME.put(low, g.id);
+  BYPLAYER.put(us, g.id);
+  INVITES.remove(us);
+  saveGuild(g);
+  saveIndex();
+  publishGuild(g);
+  info(uname + " (" + us + ") founded guild " + g.id + " '" + name + "'");
+  return "+You founded " + name + "! You are its Leader. Invite players with /guild invite <player> - /guild opens the guild page.";
+}""")
+M(gs, r"""
+public static synchronized String setTag(java.util.UUID u, String uname, String raw) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild.";
+  if (g.member(us).rank < 2) return "-Only the Leader can change the guild tag.";
+  String t = raw == null ? "" : raw.trim();
+  String lt = t.toLowerCase();
+  if (lt.equals("clear") || lt.equals("none") || lt.equals("remove") || lt.equals("off")) {
+    g.tag = "";
+    saveGuild(g);
+    publishGuild(g);
+    broadcast(g, "[Guild] " + uname + " removed the guild tag.", "#cfe3ff", us);
+    return "+The guild tag is removed.";
+  }
+  String err = tagError(t);
+  if (err != null) return "-" + err + " (/guild tag clear removes it)";
+  t = t.toUpperCase();
+  java.util.Iterator it = GUILDS.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.Guild o = (@PKG@.Guild) it.next();
+    if (o != g && o.tag != null && o.tag.equalsIgnoreCase(t)) return "-Another guild already uses the tag [" + t + "].";
+  }
+  g.tag = t;
+  saveGuild(g);
+  publishGuild(g);
+  broadcast(g, "[Guild] " + uname + " set the guild tag to [" + t + "].", "#8fe39a", us);
+  return "+The guild tag is now [" + t + "].";
+}""")
+M(gs, r"""
+public static synchronized String invite(java.util.UUID u, String uname, String who) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild. Create one with /guild create <name>.";
+  if (g.member(us).rank < 1) return "-Only the Leader and Admins can invite players.";
+  if (g.members.size() >= @PKG@.GCfg.MAX_MEMBERS) return "-Your guild is full (" + @PKG@.GCfg.MAX_MEMBERS + " members).";
+  String w = who == null ? "" : who.trim();
+  if (w.length() == 0) return "-Type the name of the player to invite.";
+  @PR@ t = onlineByName(w);
+  if (t == null) return "-No online player called " + clean(w) + ". They must be online to get an invite.";
+  String tu = t.getUuid().toString();
+  if (tu.equals(us)) return "-You can't invite yourself.";
+  if (g.member(tu) != null) return "-" + t.getUsername() + " is already in your guild.";
+  if (BYPLAYER.containsKey(tu)) return "-" + t.getUsername() + " is already in another guild.";
+  long exp = System.currentTimeMillis() + (long) @PKG@.GCfg.INVITE_SECONDS * 1000L;
+  INVITES.put(tu, new Object[] { g.id, uname, Long.valueOf(exp) });
+  say(t, "[Guild] " + uname + " invited you to join " + g.name + tagText(g) + "! Type /guild accept (or open /guild) within " + mins() + " - /guild decline says no.", "#ffd070");
+  broadcast(g, "[Guild] " + uname + " invited " + t.getUsername() + " to the guild.", "#cfe3ff", us);
+  return "+Invited " + t.getUsername() + " to " + g.name + ". The invite lasts " + mins() + ".";
+}""")
+M(gs, r"""
+public static synchronized String accept(java.util.UUID u, String uname) {
+  String us = u.toString();
+  if (BYPLAYER.containsKey(us)) return "-You are already in a guild. Leave it first with /guild leave.";
+  Object[] inv = (Object[]) INVITES.remove(us);
+  if (inv == null || ((Long) inv[2]).longValue() < System.currentTimeMillis()) return "-You have no guild invite right now (invites last " + mins() + ").";
+  @PKG@.Guild g = (@PKG@.Guild) GUILDS.get(inv[0]);
+  if (g == null) return "-That guild no longer exists.";
+  if (g.members.size() >= @PKG@.GCfg.MAX_MEMBERS) return "-" + g.name + " is full.";
+  @PKG@.GMember m = new @PKG@.GMember();
+  m.uuid = us; m.uid = u; m.name = uname; m.rank = 0; m.joined = System.currentTimeMillis();
+  Object kept = g.wdKeep.remove(us);
+  if (kept != null) {
+    String[] kv = String.valueOf(kept).split("\\|", 2);
+    m.wdDay = parseLong(kv[0], -1L);
+    m.wdUsed = kv.length > 1 ? Math.max(0L, parseLong(kv[1], 0L)) : 0L;
+  }
+  g.members.put(us, m);
+  BYPLAYER.put(us, g.id);
+  saveGuild(g);
+  saveIndex();
+  publishGuild(g);
+  broadcast(g, "[Guild] " + uname + " joined the guild!", "#8fe39a", us);
+  info(uname + " (" + us + ") joined guild " + g.id + " '" + g.name + "'");
+  return "+Welcome to " + g.name + tagText(g) + "! /gc <message> talks to your guild - /guild opens the guild page.";
+}""")
+M(gs, r"""
+public static synchronized String decline(java.util.UUID u, String uname) {
+  Object[] inv = (Object[]) INVITES.remove(u.toString());
+  if (inv == null) return "-You have no guild invite right now.";
+  @PKG@.Guild g = (@PKG@.Guild) GUILDS.get(inv[0]);
+  if (g == null) return "=That guild no longer exists.";
+  broadcast(g, "[Guild] " + uname + " declined the guild invite.", "#cfe3ff", null);
+  return "=You declined the invite to " + g.name + ".";
+}""")
+M(gs, r"""
+public static synchronized void removeMember(@PKG@.Guild g, String us) {
+  @PKG@.GMember m = g.member(us);
+  if (m != null && m.wdDay >= 0L && m.wdUsed > 0L) g.wdKeep.put(us, m.wdDay + "|" + m.wdUsed);
+  g.members.remove(us);
+  BYPLAYER.remove(us);
+  unpublish(us);
+}""")
+M(gs, r"""
+public static synchronized @PKG@.GMember successor(@PKG@.Guild g, String exceptU) {
+  @PKG@.GMember best = null;
+  java.util.Iterator it = g.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    if (m.uuid.equals(exceptU)) continue;
+    if (best == null || m.rank > best.rank || (m.rank == best.rank && m.joined < best.joined)) best = m;
+  }
+  return best;
+}""")
+# a removed guild's file: final state marked disbanded=<millis>, then moved to guilds/deleted/ (never loaded again, never hard-deleted)
+M(gs, r"""
+public static synchronized boolean archive(@PKG@.Guild g) {
+  long now = System.currentTimeMillis();
+  java.nio.file.Path f = GDIR.resolve(g.id + ".properties");
+  try {
+    java.util.Properties p = propsOf(g);
+    p.setProperty("disbanded", String.valueOf(now));
+    writeProps(f, p, "SkyyGuilds guild file - DISBANDED, kept for the record only");
+    java.nio.file.Path dd = GDIR.resolve("deleted");
+    java.nio.file.Files.createDirectories(dd, new java.nio.file.attribute.FileAttribute[0]);
+    replaceFile(f, dd.resolve(g.id + "-" + now + ".properties"));
+    return true;
+  } catch (Throwable t) {
+    warn("could not archive guild file " + g.id + " (if it still exists it is marked disbanded and will not load): " + t);
+    return false;
+  }
+}""")
+# Disband: (1) the guild file is rewritten as disbanded with bank 0 BEFORE any coin moves (a failed write refuses the disband, nothing
+# changed), (2) the bank is paid to payTo (the Leader) - a failed payout restores the live file and refuses, (3) the file moves to
+# guilds/deleted/. The file on disk never shows more coins than exist, so a crash can never pay the same bank twice.
+M(gs, r"""
+public static synchronized String disbandNow(@PKG@.Guild g, java.util.UUID payTo, String payName, String actorU, String by) {
+  long amt = g.bank;
+  if (amt > 0L && (payTo == null || !coinsReady())) return "-The guild bank still holds " + amt + " coins and SkyyCoins is not available to pay them out, so " + g.name + " was NOT disbanded.";
+  try {
+    java.util.Properties p = propsOf(g);
+    p.setProperty("bank", "0");
+    p.setProperty("disbanded", String.valueOf(System.currentTimeMillis()));
+    writeProps(GDIR.resolve(g.id + ".properties"), p, "SkyyGuilds guild file - DISBANDED (" + amt + " bank coins paid to " + payName + "), kept for the record only");
+  } catch (Throwable t) {
+    warn("disband of " + g.id + " refused: the guild file could not be written: " + t);
+    return "-The guild file could not be written, so " + g.name + " was NOT disbanded (nothing changed). Try again.";
+  }
+  long paid = 0L;
+  if (amt > 0L) {
+    if (!coinsAdd(payTo, amt)) {
+      g.dirty = true;
+      saveGuild(g);
+      return "-SkyyCoins could not pay the guild bank's " + amt + " coins out, so " + g.name + " was NOT disbanded. Try again.";
+    }
+    g.bank = 0L;
+    paid = amt;
+    addLog(g, payName, "disband-payout", amt);
+  }
+  archive(g);
+  GUILDS.remove(g.id);
+  if (g.id.equals(BYNAME.get(g.name.toLowerCase()))) BYNAME.remove(g.name.toLowerCase());
+  java.util.Iterator it = g.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    BYPLAYER.remove(m.uuid);
+    unpublish(m.uuid);
+    if (actorU == null || !actorU.equals(m.uuid)) sayU(m.uid, "[Guild] " + g.name + " was disbanded by " + by + ".", "#ffd070");
+  }
+  java.util.Iterator ii = INVITES.entrySet().iterator();
+  while (ii.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) ii.next();
+    Object[] v = (Object[]) e.getValue();
+    if (v != null && g.id.equals(v[0])) ii.remove();
+  }
+  saveIndex();
+  info(g.name + " (" + g.id + ") disbanded by " + by + (paid > 0L ? ", bank " + paid + " coins paid to " + payName : ""));
+  boolean self = actorU != null && payTo != null && actorU.equals(payTo.toString());
+  return "+" + g.name + " is disbanded." + (paid > 0L ? " The guild bank's " + paid + " coins went to " + (self ? "your purse." : payName + "'s purse.") : "");
+}""")
+M(gs, r"""
+public static synchronized String leaveWarning(java.util.UUID u) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild.";
+  @PKG@.GMember me = g.member(us);
+  if (me.rank == 2 && g.members.size() <= 1) return "=You are the last member: leaving DISBANDS " + g.name + (g.bank > 0L ? " and pays the bank's " + g.bank + " coins to your purse" : "") + ". Click Leave again within 10 s.";
+  if (me.rank == 2) return "=Leaving makes " + successor(g, us).name + " the new Leader. Click Leave again within 10 s.";
+  return "=Click Leave again within 10 s to leave " + g.name + ".";
+}""")
+M(gs, r"""
+public static synchronized String disbandWarning(java.util.UUID u) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild.";
+  if (g.member(us).rank < 2) return "-Only the Leader can disband the guild.";
+  return "=Disbanding deletes " + g.name + " for all " + g.members.size() + " members" + (g.bank > 0L ? " and pays the bank's " + g.bank + " coins to your purse" : "") + ". Click Disband again within 10 s.";
+}""")
+M(gs, r"""
+public static synchronized String leave(java.util.UUID u, String uname, boolean confirmed) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild.";
+  @PKG@.GMember me = g.member(us);
+  if (me.rank == 2 && g.members.size() <= 1) {
+    if (!confirmed && !confirm("leave:" + us)) return "=You are the last member, so leaving DISBANDS " + g.name + (g.bank > 0L ? " and pays the guild bank's " + g.bank + " coins into your purse" : "") + ". Type /guild leave again within 10 s to confirm.";
+    return disbandNow(g, u, uname, us, uname);
+  }
+  if (me.rank == 2) {
+    @PKG@.GMember s = successor(g, us);
+    if (!confirmed && !confirm("leave:" + us)) return "=You are the Leader: leaving makes " + s.name + " the new Leader. Type /guild leave again within 10 s to confirm.";
+    s.rank = 2;
+    removeMember(g, us);
+    saveGuild(g);
+    saveIndex();
+    publishGuild(g);
+    sayU(s.uid, "[Guild] " + uname + " left - you are the Leader of " + g.name + " now!", "#ffe08a");
+    broadcast(g, "[Guild] " + uname + " left the guild. " + s.name + " is the new Leader.", "#ffd070", s.uuid);
+    return "+You left " + g.name + ". " + s.name + " is its new Leader.";
+  }
+  removeMember(g, us);
+  saveGuild(g);
+  saveIndex();
+  publishGuild(g);
+  broadcast(g, "[Guild] " + uname + " left the guild.", "#cfe3ff", null);
+  return "+You left " + g.name + ".";
+}""")
+M(gs, r"""
+public static synchronized String kick(java.util.UUID u, String uname, String who) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild.";
+  @PKG@.GMember me = g.member(us);
+  if (me.rank < 1) return "-Only the Leader and Admins can kick members (Admins kick Members only).";
+  @PKG@.GMember t = findMember(g, who);
+  if (t == null) return "-Nobody called " + clean(who) + " is in your guild.";
+  if (t.uuid.equals(us)) return "-You can't kick yourself - use /guild leave.";
+  if (t.rank >= me.rank) return "-" + (me.rank == 1 ? "Admins can only kick Members" : "You can only kick members ranked below you") + " (" + t.name + " is " + (t.rank == 1 ? "an " : "the ") + rankName(t.rank) + ").";
+  removeMember(g, t.uuid);
+  saveGuild(g);
+  saveIndex();
+  publishGuild(g);
+  sayU(t.uid, "[Guild] You were removed from " + g.name + " by " + uname + ".", "#ff9d6b");
+  broadcast(g, "[Guild] " + t.name + " was removed from the guild by " + uname + ".", "#ffd070", us);
+  info(uname + " kicked " + t.name + " from " + g.id);
+  return "+Removed " + t.name + " from the guild.";
+}""")
+M(gs, r"""
+public static synchronized String promote(java.util.UUID u, String uname, String who) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild.";
+  if (g.member(us).rank < 2) return "-Only the Leader can promote members.";
+  @PKG@.GMember t = findMember(g, who);
+  if (t == null) return "-Nobody called " + clean(who) + " is in your guild.";
+  if (t.uuid.equals(us)) return "-You are the Leader already.";
+  if (t.rank >= 1) return "-" + t.name + " is already an Admin. /guild transfer " + t.name + " makes them the Leader.";
+  t.rank = 1;
+  saveGuild(g);
+  publishGuild(g);
+  sayU(t.uid, "[Guild] " + uname + " made you an Admin: you can invite players and kick Members. Your daily guild bank withdraw limit: " + limText(g.limAdmin) + ".", "#8fe39a");
+  broadcast(g, "[Guild] " + t.name + " is now an Admin.", "#cfe3ff", us + "," + t.uuid);
+  return "+" + t.name + " is now an Admin.";
+}""")
+M(gs, r"""
+public static synchronized String demote(java.util.UUID u, String uname, String who) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild.";
+  if (g.member(us).rank < 2) return "-Only the Leader can demote Admins.";
+  @PKG@.GMember t = findMember(g, who);
+  if (t == null) return "-Nobody called " + clean(who) + " is in your guild.";
+  if (t.rank == 2) return "-The Leader can't be demoted - /guild transfer <player> hands the guild over.";
+  if (t.rank == 0) return "-" + t.name + " is already a Member.";
+  t.rank = 0;
+  saveGuild(g);
+  publishGuild(g);
+  sayU(t.uid, "[Guild] " + uname + " made you a Member again.", "#ffd070");
+  broadcast(g, "[Guild] " + t.name + " is now a Member.", "#cfe3ff", us + "," + t.uuid);
+  return "+" + t.name + " is now a Member.";
+}""")
+M(gs, r"""
+public static synchronized String transfer(java.util.UUID u, String uname, String who, boolean confirmed) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild.";
+  @PKG@.GMember me = g.member(us);
+  if (me.rank < 2) return "-Only the Leader can hand the guild over.";
+  @PKG@.GMember t = findMember(g, who);
+  if (t == null) return "-Nobody called " + clean(who) + " is in your guild.";
+  if (t.uuid.equals(us)) return "-You are the Leader already.";
+  if (!confirmed && !confirm("transfer:" + us + ":" + t.uuid)) return "=This makes " + t.name + " the Leader of " + g.name + " (you become an Admin). Type the same command again within 10 s to confirm.";
+  t.rank = 2;
+  me.rank = 1;
+  saveGuild(g);
+  publishGuild(g);
+  sayU(t.uid, "[Guild] " + uname + " made you the Leader of " + g.name + "!", "#ffe08a");
+  broadcast(g, "[Guild] " + t.name + " is the new Leader (" + uname + " is now an Admin).", "#ffd070", us + "," + t.uuid);
+  info(uname + " handed " + g.id + " to " + t.name);
+  return "+" + t.name + " is now the Leader of " + g.name + ". You are an Admin.";
+}""")
+M(gs, r"""
+public static synchronized String disband(java.util.UUID u, String uname, boolean confirmed) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild.";
+  if (g.member(us).rank < 2) return "-Only the Leader can disband the guild.";
+  if (!confirmed && !confirm("disband:" + us)) return "=This deletes " + g.name + " for every member" + (g.bank > 0L ? " and pays the guild bank's " + g.bank + " coins into your purse" : "") + ". Type /guild disband again within 10 s to confirm.";
+  return disbandNow(g, u, uname, us, uname);
+}""")
+# deposit: take from the purse FIRST (coins:fn:take must say TRUE), then add to the bank
+M(gs, r"""
+public static synchronized String deposit(java.util.UUID u, String uname, String amountText) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild.";
+  if (!coinsReady()) return "-SkyyCoins is not loaded, so the guild bank cannot move coins.";
+  Long purse = coinsGet(u);
+  if (purse == null) return "-Your purse cannot be read right now - nothing moved. Try again.";
+  long n;
+  try { n = parseAmount(amountText, purse.longValue()); }
+  catch (Throwable t) { return "-That is not an amount. Use e.g. 500, 2k, 1.5m or all."; }
+  if (n <= 0L) return "-Nothing to deposit (your purse has " + purse + " coins).";
+  if (n > purse.longValue()) return "-Not enough coins in your purse (" + purse + ").";
+  if (g.bank > @PKG@.GCfg.MAX_BANK - n) return "-The guild bank can hold at most " + @PKG@.GCfg.MAX_BANK + " coins (it has " + g.bank + ").";
+  Object r = coinsTake(u, n);
+  if (!(r instanceof Boolean)) return "-SkyyCoins could not take the coins (purse unreadable?) - nothing moved.";
+  if (!((Boolean) r).booleanValue()) return "-Not enough coins in your purse.";
+  g.bank = g.bank + n;
+  addLog(g, uname, "deposit", n);
+  saveGuild(g);
+  broadcast(g, "[Guild] " + uname + " deposited " + n + " coins. Guild bank: " + g.bank + ".", "#ffd070", us);
+  Long after = coinsGet(u);
+  return "+Deposited " + n + " coins. Guild bank: " + g.bank + " - your purse: " + (after == null ? "?" : String.valueOf(after)) + ".";
+}""")
+# ---- 0.1.1 daily withdraw limits (coins per GAME day of the default world, GuildStore.DAY)
+# a rank's limit: the Leader never has one (-1); Admin / Member = the guild's limAdmin / limMember (-1 none, 0 no withdrawing)
+M(gs, r"""
+public static long limitFor(@PKG@.Guild g, int rank) {
+  if (rank >= 2) return -1L;
+  return rank == 1 ? g.limAdmin : g.limMember;
+}""")
+# coins this member took on game day `day` (0 when the day is unknown or their count is from another day)
+M(gs, r"""
+public static long usedToday(@PKG@.GMember m, long day) {
+  return (m != null && day >= 0L && m.wdDay == day) ? m.wdUsed : 0L;
+}""")
+M(gs, r"""
+public static String rankPlural(int r) {
+  if (r >= 2) return "Leaders";
+  return r == 1 ? "Admins" : "Members";
+}""")
+M(gs, r"""
+public static String dayText() {
+  long d = day();
+  if (d >= 0L) return "game day " + d;
+  return (DAY < 0L || DAY_READ <= 0L) ? "game day not known yet" : "game day not known right now";
+}""")
+# "1,200 / 5,000 today" and friends, for the page, /guild bank and /guild info
+M(gs, r"""
+public static String usageText(@PKG@.Guild g, @PKG@.GMember m) {
+  long d = day();
+  long lim = limitFor(g, m.rank);
+  long used = usedToday(m, d);
+  if (m.rank >= 2) return "no limit (Leader)" + (used > 0L ? ", " + num(used) + " taken today" : "");
+  if (lim == 0L) return "you can't withdraw";
+  if (lim < 0L) return "no limit" + (used > 0L ? ", " + num(used) + " taken today" : "");
+  if (d < 0L) return "? / " + num(lim) + " today";
+  return num(used) + " / " + num(lim) + " today";
+}""")
+# can this player withdraw at all (Leader, or their rank's limit is not 0)
+M(gs, r"""
+public static synchronized boolean canWithdraw(java.util.UUID u) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return false;
+  @PKG@.GMember m = g.member(us);
+  return m != null && limitFor(g, m.rank) != 0L;
+}""")
+# rank word for /guild bank limit: 1 admin (officer = the 0.1 name), 0 member, -1 unknown
+M(gs, r"""
+public static int limitRank(String s) {
+  String t = s == null ? "" : s.trim().toLowerCase();
+  if (t.equals("admin") || t.equals("admins") || t.equals("officer") || t.equals("officers")) return 1;
+  if (t.equals("member") || t.equals("members")) return 0;
+  return -1;
+}""")
+# a typed limit: -1 none (no limit), >= 0 coins per game day (0 = no withdrawing), -2 = not a limit
+M(gs, r"""
+public static long parseLimit(String s) {
+  String t = s == null ? "" : s.trim().toLowerCase();
+  if (t.equals("none") || t.equals("unlimited") || t.equals("nolimit") || t.equals("no-limit") || t.equals("-1")) return -1L;
+  if (t.length() == 0 || t.startsWith("-") || t.equals("all") || t.equals("max") || t.equals("half") || t.equals("everything")) return -2L;
+  try { return parseAmount(t, 0L); } catch (Throwable x) { return -2L; }
+}""")
+M(gs, r"""
+public static synchronized String setLimit(java.util.UUID u, String uname, String rankText, String amountText) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild.";
+  if (g.member(us).rank < 2) return "-Only the Leader can set the daily withdraw limits.";
+  int r = limitRank(rankText);
+  if (r < 0) return "-Pick the rank: admin or member (the Leader has no limit). Example: /guild bank limit member 5k";
+  long v = parseLimit(amountText);
+  if (v == -2L) return "-That is not a limit. Use coins per game day (500, 2k, 1.5m), 0 (no withdrawing) or none (no limit).";
+  if (v > @PKG@.GCfg.MAX_BANK) v = @PKG@.GCfg.MAX_BANK;
+  long old = r == 1 ? g.limAdmin : g.limMember;
+  String rp = rankPlural(r);
+  if (old == v) return "=" + rp + " already have: " + limText(v) + (v > 0L ? " per game day" : "") + ".";
+  if (r == 1) g.limAdmin = v; else g.limMember = v;
+  if (!saveGuild(g)) {
+    if (r == 1) g.limAdmin = old; else g.limMember = old;
+    return "-The guild file could not be written - the limit did not change. Try again.";
+  }
+  addLog(g, uname, r == 1 ? "limit-admin" : "limit-member", v);
+  saveGuild(g);
+  String what = v < 0L ? "no daily limit" : (v == 0L ? "no withdrawing (limit 0)" : num(v) + " coins per game day");
+  broadcast(g, "[Guild] " + uname + " set the guild bank withdraw limit for " + rp + ": " + what + ".", "#ffd070", us);
+  info(uname + " set " + g.id + " limit " + (r == 1 ? "admin" : "member") + " = " + v);
+  return "+" + rp + ": " + what + " (was: " + limText(old) + ").";
+}""")
+# withdraw: (0.1.1) the rank's daily limit is checked first; then the lower bank AND the member's raised day count are WRITTEN first
+# (a failed write = nothing moved, both restored), then coins:fn:add; if SkyyCoins did not add, the exact amount and the old day count
+# go back and are written again. The file never shows coins that already left the bank.
+M(gs, r"""
+public static synchronized String withdraw(java.util.UUID u, String uname, String amountText) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild.";
+  @PKG@.GMember me = g.member(us);
+  long lim = limitFor(g, me.rank);
+  if (lim == 0L) return "-" + rankPlural(me.rank) + " can't withdraw from the guild bank (daily limit 0). The Leader can set one with /guild bank limit " + (me.rank == 1 ? "admin" : "member") + " <amount>.";
+  if (!coinsReady()) return "-SkyyCoins is not loaded, so the guild bank cannot move coins.";
+  long day = day();
+  if (lim > 0L && day < 0L) return "-The game day is " + dayUnknownText() + ", so limited withdrawals wait. Try again in a few seconds.";
+  long used = usedToday(me, day);
+  long left = lim > 0L ? lim - used : Long.MAX_VALUE;
+  if (left < 0L) left = 0L;
+  if (lim > 0L && left == 0L) return "-You reached today's withdraw limit (" + num(used) + " / " + num(lim) + " coins). It starts again on the next game day.";
+  long cap = g.bank < left ? g.bank : left;
+  long n;
+  try { n = parseAmount(amountText, cap); }
+  catch (Throwable t) { return "-That is not an amount. Use e.g. 500, 2k, 1.5m or all."; }
+  if (n <= 0L) return "-Nothing to withdraw (the guild bank has " + g.bank + " coins).";
+  if (n > g.bank) return "-The guild bank only has " + g.bank + " coins.";
+  if (lim > 0L && n > left) return "-You can take " + num(left) + " more coins today (" + num(used) + " / " + num(lim) + "). The count starts again on the next game day.";
+  long oldDay = me.wdDay;
+  long oldUsed = me.wdUsed;
+  g.bank = g.bank - n;
+  if (day >= 0L) { me.wdDay = day; me.wdUsed = used + n; }
+  if (!saveGuild(g)) {
+    g.bank = g.bank + n;
+    me.wdDay = oldDay;
+    me.wdUsed = oldUsed;
+    return "-The guild file could not be written - nothing moved (guild bank: " + g.bank + "). Try again.";
+  }
+  if (!coinsAdd(u, n)) {
+    g.bank = g.bank + n;
+    me.wdDay = oldDay;
+    me.wdUsed = oldUsed;
+    saveGuild(g);
+    warn("withdraw of " + n + " for " + uname + " (" + us + ") from " + g.id + " refused by SkyyCoins - bank restored to " + g.bank);
+    return "-SkyyCoins could not put the coins in your purse - nothing moved (guild bank: " + g.bank + ").";
+  }
+  addLog(g, uname, "withdraw", n);
+  saveGuild(g);
+  broadcast(g, "[Guild] " + uname + " withdrew " + n + " coins. Guild bank: " + g.bank + ".", "#ffd070", us);
+  Long after = coinsGet(u);
+  String lt = lim > 0L ? " Today: " + num(me.wdUsed) + " / " + num(lim) + " (" + dayText() + ")." : "";
+  return "+Withdrew " + n + " coins. Guild bank: " + g.bank + " - your purse: " + (after == null ? "?" : String.valueOf(after)) + "." + lt;
+}""")
+M(gs, r"""
+public static synchronized String chat(java.util.UUID u, String uname, String msg) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return "-You are not in a guild. /guild create <name> or ask for an invite.";
+  String m = msg == null ? "" : msg.trim();
+  if (m.length() == 0) return "-Usage: /gc <message>";
+  if (m.length() > 256) m = m.substring(0, 256);
+  int r = g.member(us).rank;
+  String rk = r == 2 ? "[Leader] " : (r == 1 ? "[Admin] " : "");
+  broadcast(g, "[Guild] " + rk + uname + ": " + m, "#7fe0a0", null);
+  return null;
+}""")
+# one guild file log line "millis|who|action|amount|bankAfter" -> {when, who, what, bank after} (0.1.1: limit changes too)
+M(gs, r"""
+public static String[] logParts(String line) {
+  try {
+    String[] v = line.split("\\|", 5);
+    long ms = parseLong(v[0], 0L);
+    String when = new java.text.SimpleDateFormat("MM-dd HH:mm").format(new java.util.Date(ms));
+    String act = v[2];
+    long amt = parseLong(v[3], 0L);
+    String what;
+    if (act.equals("deposit")) what = "deposited " + num(amt) + " coins";
+    else if (act.equals("withdraw")) what = "withdrew " + num(amt) + " coins";
+    else if (act.equals("disband-payout")) what = "was paid out " + num(amt) + " coins (disband)";
+    else if (act.equals("limit-admin")) what = "set the Admin daily limit: " + limText(amt);
+    else if (act.equals("limit-member")) what = "set the Member daily limit: " + limText(amt);
+    else what = act + " " + v[3];
+    return new String[] { when, v[1], what, num(parseLong(v[4], 0L)) };
+  } catch (Throwable t) { return new String[] { "", "", line == null ? "" : line, "" }; }
+}""")
+M(gs, r"""
+public static String logText(String line) {
+  String[] p = logParts(line);
+  if (p[0].length() == 0) return p[2];
+  return p[0] + "   " + p[1] + " " + p[2] + "   (bank " + p[3] + ")";
+}""")
+M(gs, r"""
+public static synchronized String[] infoLines(java.util.UUID u) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return new String[] { "=You are not in a guild. /guild create <name> starts one, or ask a Leader or Admin for an invite." };
+  long[] li = levelInfo(g.xp);
+  StringBuilder lead = new StringBuilder();
+  StringBuilder offs = new StringBuilder();
+  StringBuilder mems = new StringBuilder();
+  java.util.Iterator it = g.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    String n = m.name + (online(m.uid) != null ? "*" : "");
+    StringBuilder sb = m.rank == 2 ? lead : (m.rank == 1 ? offs : mems);
+    if (sb.length() > 0) sb.append(", ");
+    sb.append(n);
+  }
+  return new String[] {
+    "=" + g.name + tagText(g) + " - level " + li[0] + " (" + li[1] + " / " + li[2] + " XP to level " + (li[0] + 1L) + ") - season " + SEASON + ": " + g.seasonXp(SEASON) + " XP",
+    "=Guild bank: " + g.bank + " coins - " + g.members.size() + " / " + @PKG@.GCfg.MAX_MEMBERS + " members, " + onlineCount(g) + " online (*)",
+    "=Leader: " + lead + (offs.length() > 0 ? " - Admins: " + offs : "") + (mems.length() > 0 ? " - Members: " + mems : ""),
+    "=Daily withdraw limits: Admins " + limText(g.limAdmin) + ", Members " + limText(g.limMember) + " - you: " + usageText(g, g.member(us)) + " (" + dayText() + ")",
+    "=You are " + rankName(g.member(us).rank) + ". /guild opens the guild page, /gc <message> is guild chat."
+  };
+}""")
+M(gs, r"""
+public static synchronized String[] bankLines(java.util.UUID u) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return new String[] { "-You are not in a guild." };
+  java.util.ArrayList out = new java.util.ArrayList();
+  out.add("=Guild bank of " + g.name + ": " + num(g.bank) + " coins. /guild bank deposit <amount> - /guild bank withdraw <amount> - /guild bank log");
+  out.add("=Daily withdraw limits (" + dayText() + "): Admins " + limText(g.limAdmin) + ", Members " + limText(g.limMember) + ", the Leader no limit. You: " + usageText(g, g.member(us)) + ".");
+  if (g.member(us).rank >= 2) out.add("=Change a limit: /guild bank limit <admin|member> <amount|none> (0 = no withdrawing, none = no limit).");
+  int from = g.log.size() - 5;
+  if (from < 0) from = 0;
+  for (int i = g.log.size() - 1; i >= from; i--) out.add("=  " + logText((String) g.log.get(i)));
+  if (g.log.size() == 0) out.add("=  No deposits or withdrawals yet.");
+  String[] r = new String[out.size()];
+  for (int i = 0; i < r.length; i++) r[i] = (String) out.get(i);
+  return r;
+}""")
+M(gs, r"""
+public static synchronized String[] bankLogLines(java.util.UUID u) {
+  @PKG@.Guild g = guildOf(u.toString());
+  if (g == null) return new String[] { "-You are not in a guild." };
+  java.util.ArrayList out = new java.util.ArrayList();
+  int n = g.log.size() < 10 ? g.log.size() : 10;
+  out.add("=Guild bank log of " + g.name + " - the last " + n + " of " + g.log.size() + " kept (newest first; /guild -> Expand log shows them all):");
+  for (int i = g.log.size() - 1; i >= g.log.size() - n; i--) out.add("=  " + logText((String) g.log.get(i)));
+  if (g.log.size() == 0) out.add("=  No deposits or withdrawals yet.");
+  String[] r = new String[out.size()];
+  for (int i = 0; i < r.length; i++) r[i] = (String) out.get(i);
+  return r;
+}""")
+M(gs, r"""
+public static synchronized String[] listLines() {
+  java.util.ArrayList all = new java.util.ArrayList(GUILDS.values());
+  for (int i = 1; i < all.size(); i++) {
+    @PKG@.Guild x = (@PKG@.Guild) all.get(i);
+    int j = i - 1;
+    while (j >= 0 && ((@PKG@.Guild) all.get(j)).xp < x.xp) { all.set(j + 1, all.get(j)); j--; }
+    all.set(j + 1, x);
+  }
+  if (all.size() == 0) return new String[] { "=There are no guilds yet. /guild create <name> founds the first one." };
+  int n = all.size() < 10 ? all.size() : 10;
+  String[] r = new String[n + 1];
+  r[0] = "=Top guilds (" + all.size() + " in total):";
+  for (int i = 0; i < n; i++) {
+    @PKG@.Guild g = (@PKG@.Guild) all.get(i);
+    r[i + 1] = "=  " + (i + 1) + ". " + g.name + tagText(g) + " - level " + levelInfo(g.xp)[0] + " - " + g.members.size() + " members";
+  }
+  return r;
+}""")
+M(gs, r"""
+public static String[] helpLines() {
+  return new String[] {
+    "=/guild - the guild page.  /guild create <name>  /guild accept  /guild decline  /guild list  /guild info  /guild leave",
+    "=/gc <message> - guild chat.  /guild bank  /guild bank log  /guild bank deposit <amount>  /guild bank withdraw <amount>",
+    "=Leader / Admin: /guild invite <player>  /guild kick <member> (Admins kick Members only)",
+    "=Leader: /guild promote|demote|transfer <player>  /guild tag <tag>  /guild disband  /guild bank limit <admin|member> <amount|none>",
+    "=Amounts: 500, 2k, 1.5m or all. Withdraw limits count per game day (0 = no withdrawing). Guild XP = " + @PKG@.GCfg.SHARE + "% of members' skill XP."
+  };
+}""")
+M(gs, r"""
+public static synchronized long addXp(String gid, String us, long n) {
+  if (n <= 0L) return 0L;
+  @PKG@.Guild g = (@PKG@.Guild) GUILDS.get(gid);
+  if (g == null) return 0L;
+  @PKG@.GMember m = us == null ? null : g.member(us);
+  if (us != null && m == null) return 0L;
+  long before = levelInfo(g.xp)[0];
+  long nx = g.xp + n;
+  if (nx < g.xp) nx = Long.MAX_VALUE / 4L;
+  g.xp = nx;
+  g.addSeason(SEASON, n);
+  if (m != null) m.contrib = m.contrib + n;
+  g.dirty = true;
+  publishGuild(g);
+  long after = levelInfo(g.xp)[0];
+  if (after > before) {
+    broadcast(g, "[Guild] " + g.name + " reached guild level " + after + "!", "#ffe08a", null);
+    info(g.id + " '" + g.name + "' reached level " + after);
+  }
+  return n;
+}""")
+# tick (every 5 s) for each online player: stored name refresh + republish; true = in a guild
+M(gs, r"""
+public static synchronized boolean touch(java.util.UUID u, String uname) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) { unpublish(us); return false; }
+  @PKG@.GMember m = g.member(us);
+  if (uname != null && uname.length() > 0 && !uname.equals(m.name)) { m.name = uname; g.dirty = true; }
+  java.util.Map b = bridge();
+  b.put("guild:" + us, g.name);
+  b.put("guild:info:" + us, infoString(g, m, onlineCount(g)));
+  return true;
+}""")
+M(gs, r"""
+public static synchronized void welcome(@PR@ pr) {
+  String us = pr.getUuid().toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g != null) {
+    say(pr, "[Guild] " + g.name + tagText(g) + " - level " + levelInfo(g.xp)[0] + " - " + onlineCount(g) + " of " + g.members.size() + " members online. /gc <message> talks to them, /guild opens the guild page.", "#8fe39a");
+    if (@PKG@.GCfg.ONLINE_MSG) broadcast(g, "[Guild] " + pr.getUsername() + " is online.", "#9fb8d0", us);
+    return;
+  }
+  Object[] inv = (Object[]) INVITES.get(us);
+  if (inv != null) {
+    @PKG@.Guild ig = (@PKG@.Guild) GUILDS.get(inv[0]);
+    if (ig != null) say(pr, "[Guild] You have an invite to " + ig.name + tagText(ig) + " from " + inv[1] + ": /guild accept or /guild decline.", "#ffd070");
+  }
+}""")
+M(gs, r"""
+public static synchronized void wentOffline(java.util.UUID u) {
+  if (!@PKG@.GCfg.ONLINE_MSG) return;
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return;
+  broadcast(g, "[Guild] " + g.member(us).name + " went offline.", "#9fb8d0", us);
+  publishGuild(g);
+}""")
+M(gs, r"""
+public static synchronized void flushDirty() {
+  java.util.Iterator it = GUILDS.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.Guild g = (@PKG@.Guild) it.next();
+    if (g.dirty) saveGuild(g);
+  }
+}""")
+M(gs, r"""
+public static int cmpRow(String[] a, String[] b) {
+  int ra = Integer.parseInt(a[2]);
+  int rb = Integer.parseInt(b[2]);
+  if (ra != rb) return rb - ra;
+  if (!a[4].equals(b[4])) return a[4].equals("1") ? -1 : 1;
+  return a[1].compareToIgnoreCase(b[1]);
+}""")
+M(gs, r"""
+public static void sortRows(java.util.ArrayList rows) {
+  for (int i = 1; i < rows.size(); i++) {
+    String[] x = (String[]) rows.get(i);
+    int j = i - 1;
+    while (j >= 0 && cmpRow((String[]) rows.get(j), x) > 0) { rows.set(j + 1, rows.get(j)); j--; }
+    rows.set(j + 1, x);
+  }
+}""")
+# page data: {name, tag, Long xp, Long bank, Integer myRank, rows String[]{uuid, name, rank, contrib, online 1/0, coins taken today},
+# log, Long seasonXp, Integer season, Integer online, id, (0.1.1) Long limAdmin, Long limMember, String myUsage, String dayText}
+M(gs, r"""
+public static synchronized Object[] snapshot(java.util.UUID u) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return null;
+  long day = day();
+  java.util.ArrayList rows = new java.util.ArrayList();
+  int onl = 0;
+  java.util.Iterator it = g.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    boolean on = online(m.uid) != null;
+    if (on) onl++;
+    rows.add(new String[] { m.uuid, m.name == null ? "?" : m.name, String.valueOf(m.rank), String.valueOf(m.contrib), on ? "1" : "0",
+                            String.valueOf(usedToday(m, day)) });
+  }
+  sortRows(rows);
+  @PKG@.GMember me = g.member(us);
+  return new Object[] { g.name, g.tag == null ? "" : g.tag, Long.valueOf(g.xp), Long.valueOf(g.bank), Integer.valueOf(me.rank), rows,
+                        new java.util.ArrayList(g.log), Long.valueOf(g.seasonXp(SEASON)), Integer.valueOf(SEASON), Integer.valueOf(onl), g.id,
+                        Long.valueOf(g.limAdmin), Long.valueOf(g.limMember), usageText(g, me), dayText() };
+}""")
+M(gs, r"""
+public static synchronized Object[] inviteFor(java.util.UUID u) {
+  Object[] inv = (Object[]) INVITES.get(u.toString());
+  if (inv == null) return null;
+  long left = ((Long) inv[2]).longValue() - System.currentTimeMillis();
+  if (left <= 0L) { INVITES.remove(u.toString()); return null; }
+  @PKG@.Guild g = (@PKG@.Guild) GUILDS.get(inv[0]);
+  if (g == null) return null;
+  return new Object[] { g.name, g.tag == null ? "" : g.tag, Long.valueOf(levelInfo(g.xp)[0]), Integer.valueOf(g.members.size()), inv[1], Long.valueOf(left) };
+}""")
+M(gs, r"""
+public static synchronized String nameOfMember(java.util.UUID u, String target) {
+  @PKG@.Guild g = guildOf(u.toString());
+  if (g == null) return "?";
+  @PKG@.GMember m = g.member(target);
+  return m == null ? "?" : m.name;
+}""")
+# the viewer's rank (2 Leader, 1 Admin, 0 Member), -1 = not in a guild
+M(gs, r"""
+public static synchronized int rankOf(java.util.UUID u) {
+  String us = u.toString();
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return -1;
+  @PKG@.GMember m = g.member(us);
+  return m == null ? -1 : m.rank;
+}""")
+M(gs, r"""
+public static synchronized java.util.ArrayList memberList(String us) {
+  @PKG@.Guild g = guildOf(us);
+  if (g == null) return null;
+  java.util.ArrayList out = new java.util.ArrayList();
+  java.util.Iterator it = g.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    out.add(new Object[] { m.uid, m.name });
+  }
+  return out;
+}""")
+# guild:fn:online - the membership copy is taken under the lock, the online checks run outside it
+M(gs, r"""
+public static String[] onlineNames(java.util.UUID u) {
+  java.util.ArrayList ms = memberList(u.toString());
+  if (ms == null) return new String[0];
+  java.util.ArrayList out = new java.util.ArrayList();
+  for (int i = 0; i < ms.size(); i++) {
+    Object[] e = (Object[]) ms.get(i);
+    @PR@ p = online((java.util.UUID) e[0]);
+    if (p != null) out.add(p.getUsername() != null ? p.getUsername() : (String) e[1]);
+  }
+  String[] r = new String[out.size()];
+  for (int i = 0; i < r.length; i++) r[i] = (String) out.get(i);
+  return r;
+}""")
+# ---- admin
+M(gs, r"""
+public static synchronized @PKG@.Guild findGuild(String raw) {
+  if (raw == null) return null;
+  String t = norm(raw);
+  if (t.length() == 0) return null;
+  Object id = BYNAME.get(t.toLowerCase());
+  if (id != null) return (@PKG@.Guild) GUILDS.get(id);
+  @PKG@.Guild byId = (@PKG@.Guild) GUILDS.get(t);
+  if (byId != null) return byId;
+  java.util.Iterator it = GUILDS.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.Guild g = (@PKG@.Guild) it.next();
+    if (g.tag != null && g.tag.length() > 0 && g.tag.equalsIgnoreCase(t)) return g;
+  }
+  return null;
+}""")
+M(gs, r"""
+public static synchronized String[] adminInfo(String raw) {
+  @PKG@.Guild g = findGuild(raw);
+  if (g == null) return new String[] { "-No guild called " + clean(raw) + ". /guild list shows the top guilds." };
+  long[] li = levelInfo(g.xp);
+  java.util.ArrayList out = new java.util.ArrayList();
+  out.add("=" + g.name + tagText(g) + " (id " + g.id + ", file guilds/" + g.id + ".properties, created " + java.time.Instant.ofEpochMilli(g.created) + ")");
+  out.add("=Level " + li[0] + " (" + li[1] + "/" + li[2] + "), total XP " + g.xp + ", season " + SEASON + " XP " + g.seasonXp(SEASON) + ", bank " + g.bank + " coins");
+  java.util.Iterator it = g.members.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GMember m = (@PKG@.GMember) it.next();
+    out.add("=  " + rankName(m.rank) + " " + m.name + (online(m.uid) != null ? " (online)" : "") + " - " + m.contrib + " guild XP added - " + m.uuid);
+  }
+  String[] r = new String[out.size()];
+  for (int i = 0; i < r.length; i++) r[i] = (String) out.get(i);
+  return r;
+}""")
+M(gs, r"""
+public static synchronized String adminDelete(java.util.UUID admin, String adminName, String raw) {
+  @PKG@.Guild g = findGuild(raw);
+  if (g == null) return "-No guild called " + clean(raw) + ".";
+  @PKG@.GMember l = g.leader();
+  if (!confirm("adel:" + admin + ":" + g.id)) return "=This deletes " + g.name + " (" + g.members.size() + " members" + (g.bank > 0L ? ", its bank's " + g.bank + " coins are paid to its Leader " + (l == null ? "?" : l.name) : "") + "). Type the same command again within 10 s to confirm.";
+  return disbandNow(g, l == null ? null : l.uid, l == null ? "?" : l.name, admin.toString(), adminName + " (admin)");
+}""")
+M(gs, r"""
+public static synchronized String[] seasonLines() {
+  java.util.ArrayList all = new java.util.ArrayList(GUILDS.values());
+  int s = SEASON;
+  for (int i = 1; i < all.size(); i++) {
+    @PKG@.Guild x = (@PKG@.Guild) all.get(i);
+    int j = i - 1;
+    while (j >= 0 && ((@PKG@.Guild) all.get(j)).seasonXp(s) < x.seasonXp(s)) { all.set(j + 1, all.get(j)); j--; }
+    all.set(j + 1, x);
+  }
+  int n = all.size() < 10 ? all.size() : 10;
+  String[] r = new String[n + 1];
+  r[0] = "=Season " + s + " (started " + java.time.Instant.ofEpochMilli(SEASON_START) + "). /guildadmin season next starts season " + (s + 1) + ".";
+  for (int i = 0; i < n; i++) {
+    @PKG@.Guild g = (@PKG@.Guild) all.get(i);
+    r[i + 1] = "=  " + (i + 1) + ". " + g.name + tagText(g) + " - " + g.seasonXp(s) + " season XP (level " + levelInfo(g.xp)[0] + ")";
+  }
+  return r;
+}""")
+M(gs, r"""
+public static synchronized String seasonNext(java.util.UUID admin, String adminName) {
+  if (!confirm("season:" + admin)) return "=This ends season " + SEASON + " and starts season " + (SEASON + 1) + ": every guild's season XP starts at 0 (levels and total XP stay). Type /guildadmin season next again within 10 s to confirm.";
+  SEASON = SEASON + 1;
+  SEASON_START = System.currentTimeMillis();
+  saveMeta();
+  info(adminName + " started guild season " + SEASON);
+  try {
+    @UNI@ un = uni();
+    if (un != null) {
+      java.util.Iterator it = un.getPlayers().iterator();
+      while (it.hasNext()) say((@PR@) it.next(), "[Guilds] Season " + SEASON + " has begun! Every guild's season XP starts again at 0.", "#ffe08a");
+    }
+  } catch (Throwable t) { }
+  return "+Season " + SEASON + " started.";
+}""")
+M(gs, r"""
+public static synchronized String adminXp(String amountText, String raw) {
+  long n;
+  try { n = parseAmount(amountText, 0L); } catch (Throwable t) { return "-That is not an amount: " + clean(amountText); }
+  if (n <= 0L || n > 1000000000000L) return "-Give between 1 and 1000000000000 guild XP.";
+  @PKG@.Guild g = findGuild(raw);
+  if (g == null) return "-No guild called " + clean(raw) + ".";
+  addXp(g.id, null, n);
+  return "+Gave " + n + " guild XP to " + g.name + " (now level " + levelInfo(g.xp)[0] + ").";
+}""")
+M(gs, r"""
+public static String[] adminHelp() {
+  return new String[] {
+    "=/guildadmin info <guild>  -  /guildadmin delete <guild> (repeat to confirm; bank paid to the Leader)",
+    "=/guildadmin season  -  /guildadmin season next (repeat to confirm)  -  /guildadmin xp <amount> <guild>  -  /guildadmin reload",
+    "=<guild> = name, tag or id (g1). Data: mods/Skyy_SkyyGuilds (guilds/, players.properties, meta.properties, banklog.log, config.properties)."
+  };
+}""")
+
+# ================= XpTask (the member's own world thread): skill XP delta -> guild XP =================
+xpt.addInterface(pool.get("java.lang.Runnable"))
+F(xpt, "public @PR@ pr;")
+F(xpt, "public static final java.util.concurrent.ConcurrentHashMap BASE = new java.util.concurrent.ConcurrentHashMap();")
+F(xpt, "public static final java.util.concurrent.ConcurrentHashMap FRAC = new java.util.concurrent.ConcurrentHashMap();")
+F(xpt, "public static volatile boolean WARNED = false;")
+C(xpt, "public XpTask(@PR@ pr) { this.pr = pr; }")
+# total XP over GCfg.SKILLS through skill:fn:xp; -1 = SkyySkills has no skill:fn:xp
+M(xpt, r"""
+public static long total(java.util.UUID u) {
+  Object f = @PKG@.GuildStore.bridge().get("skill:fn:xp");
+  if (!(f instanceof java.util.function.Function)) return -1L;
+  long sum = 0L;
+  String[] sk = @PKG@.GCfg.SKILLS;
+  for (int i = 0; i < sk.length; i++) {
+    Object r = ((java.util.function.Function) f).apply(new Object[] { u, sk[i] });
+    if (r instanceof Number) {
+      long v = ((Number) r).longValue();
+      if (v > 0L) sum = sum + v;
+    }
+  }
+  return sum;
+}""")
+# fallback: the sum of the levels in skill:<uuid> = "Mining:12,Foraging:3,..."; -1 = nothing published
+M(xpt, r"""
+public static long levels(java.util.UUID u) {
+  Object s = @PKG@.GuildStore.bridge().get("skill:" + u.toString());
+  if (!(s instanceof String)) return -1L;
+  long sum = 0L;
+  String[] parts = ((String) s).split(",");
+  for (int i = 0; i < parts.length; i++) {
+    String p = parts[i];
+    int c = p.lastIndexOf(':');
+    if (c > 0) sum = sum + Math.max(0L, @PKG@.GuildStore.parseLong(p.substring(c + 1), 0L));
+  }
+  return sum;
+}""")
+# delta since the last check for this key; -1 = first sight (baseline only)
+M(xpt, r"""
+public static synchronized long step(String key, long now) {
+  Object last = BASE.get(key);
+  BASE.put(key, Long.valueOf(now));
+  if (!(last instanceof Long)) return -1L;
+  return now - ((Long) last).longValue();
+}""")
+M(xpt, r"""
+public static synchronized long share(String key, long delta, double pct) {
+  Object fo = FRAC.get(key);
+  double fr = fo instanceof Double ? ((Double) fo).doubleValue() : 0.0;
+  double c = (double) delta * pct / 100.0 + fr;
+  long whole = (long) Math.floor(c);
+  FRAC.put(key, Double.valueOf(c - (double) whole));
+  return whole;
+}""")
+# one check for one player (also used by the bare-JVM test with a null PlayerRef): returns the guild XP added
+M(xpt, r"""
+public static long check(java.util.UUID u) {
+  String gid = @PKG@.GuildStore.gidOf(u.toString());
+  if (gid == null) return 0L;
+  long t = total(u);
+  String mode = "x";
+  if (t < 0L) { t = levels(u); mode = "l"; }
+  if (t < 0L) return 0L;
+  String key = @PKG@.GuildStore.pkey(u) + "|" + gid + "|" + mode;
+  long d = step(key, t);
+  if (d <= 0L) return 0L;
+  if (d > @PKG@.GCfg.MAX_DELTA) d = @PKG@.GCfg.MAX_DELTA;
+  long gain = mode.equals("x") ? share(key, d, (double) @PKG@.GCfg.SHARE) : d * @PKG@.GCfg.LEVEL_FALLBACK;
+  if (gain <= 0L) return 0L;
+  return @PKG@.GuildStore.addXp(gid, u.toString(), gain);
+}""")
+M(xpt, r"""
+public void run() {
+  try {
+    if (this.pr == null || !this.pr.isValid()) return;
+    check(this.pr.getUuid());
+  } catch (Throwable t) {
+    if (!WARNED) { WARNED = true; @PKG@.GuildStore.warn("guild XP check failed (logged once): " + t); }
+  }
+}""")
+
+# ================= DayTask (0.1.1; the DEFAULT world's thread): its game clock -> GuildStore.DAY =================
+# day = floor((gameTime - ZERO_YEAR) / SECONDS_PER_DAY) + 1 - the number SkyyHud 0.3.8's Day widget shows in that world
+# (ChronoUnit.DAYS.between(ZERO_YEAR, gameTime) + 1 there; floorDiv here so a clock before ZERO_YEAR still gives a stable number)
+dayt.addInterface(pool.get("java.lang.Runnable"))
+F(dayt, "public @WLD@ world;")
+F(dayt, "public static volatile boolean WARNED = false;")
+C(dayt, "public DayTask(@WLD@ w) { this.world = w; }")
+M(dayt, r"""
+public static long dayOf(java.time.Instant t) {
+  long secs = t.getEpochSecond() - @WTR@.ZERO_YEAR.getEpochSecond();
+  long per = (long) @WTR@.SECONDS_PER_DAY;
+  if (per <= 0L) per = 86400L;
+  return Math.floorDiv(secs, per) + 1L;
+}""")
+# (review fix) clock watchdog, on the default world's thread: the game time (epoch second, ~150 game s per 5 s poll) unchanged for
+# 120 s real time = that world is paused or its game time is paused -> one warning, and one info line when it moves again.
+# Static + synchronized so the bare-JVM test can drive it without a World (it only logs; no other lock).
+F(dayt, "public static volatile long LAST_GT = 0L;")
+F(dayt, "public static volatile long GT_MOVED = 0L;")
+F(dayt, "public static volatile boolean STALLED = false;")
+M(dayt, r"""
+public static synchronized void watchClock(String wname, long gsec, long day, long now) {
+  if (GT_MOVED == 0L || gsec != LAST_GT) {
+    if (STALLED) { STALLED = false; @PKG@.GuildStore.info("guild clock: the game time of the default world '" + wname + "' runs again (game day " + day + ")"); }
+    LAST_GT = gsec;
+    GT_MOVED = now;
+    return;
+  }
+  if (!STALLED && now - GT_MOVED >= 120000L) {
+    STALLED = true;
+    @PKG@.GuildStore.warn("guild clock: the game time of the default world '" + wname + "' has not moved for " + ((now - GT_MOVED) / 1000L) + " s (world paused - a singleplayer host alone in it with the menu open, or /world pause - or game time paused with /world config pausetime). Game day " + day + " stays the guild day, so daily withdraw limits do not restart until the time moves again.");
+  }
+}""")
+M(dayt, r"""
+public void run() {
+  try {
+    if (this.world == null) return;
+    @ST@ st = this.world.getEntityStore().getStore();
+    if (st == null) return;
+    @WTR@ tr = (@WTR@) st.getResource(@WTR@.getResourceType());
+    if (tr == null) return;
+    java.time.Instant t = tr.getGameTime();
+    if (t == null) return;
+    long d = dayOf(t);
+    long old = @PKG@.GuildStore.DAY;
+    @PKG@.GuildStore.DAY = d;
+    long now = System.currentTimeMillis();
+    @PKG@.GuildStore.DAY_READ = now;
+    watchClock(this.world.getName(), t.getEpochSecond(), d, now);
+    if (old < 0L) @PKG@.GuildStore.info("guild clock: game day " + d + " of the default world '" + this.world.getName() + "' (daily withdraw limits count per game day)");
+  } catch (Throwable t) {
+    if (!WARNED) { WARNED = true; @PKG@.GuildStore.warn("game day read failed (logged once; limited withdrawals wait until it works): " + t); }
+  }
+}""")
+
+# ================= GuildTick (scheduler, every 5 s) =================
+tick.addInterface(pool.get("java.lang.Runnable"))
+F(tick, "public int runs = 0;")
+F(tick, "public static final java.util.HashSet SEEN = new java.util.HashSet();")
+F(tick, "public static final java.util.HashMap MISS = new java.util.HashMap();")
+F(tick, "public static volatile long WARNED = 0L;")
+C(tick, "public GuildTick() { }")
+M(tick, r"""
+public static void prune(java.util.concurrent.ConcurrentHashMap m, boolean invites, long now) {
+  java.util.Iterator it = m.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    Object v = e.getValue();
+    long exp = 0L;
+    if (invites && v instanceof Object[]) exp = ((Long) ((Object[]) v)[2]).longValue();
+    else if (v instanceof Long) exp = ((Long) v).longValue();
+    if (exp < now) it.remove();
+  }
+}""")
+# World.execute throws IllegalThreadStateException once a world stops accepting tasks: each player in its own try (SkyyCoins 0.1.5)
+M(tick, r"""
+public static void dispatch(@PR@ pr) {
+  try {
+    java.util.UUID wu = pr.getWorldUuid();
+    if (wu == null) return;
+    @UNI@ un = @PKG@.GuildStore.uni();
+    if (un == null) return;
+    @WLD@ w = un.getWorld(wu);
+    if (w == null) return;
+    w.execute(new @PKG@.XpTask(pr));
+  } catch (Throwable t) {
+    long now = System.currentTimeMillis();
+    if (now - WARNED > 60000L) { WARNED = now; @PKG@.GuildStore.warn("guild XP check not dispatched (retried): " + t); }
+  }
+}""")
+# (review fix) DAY_READ watchdog on the tick (every 5 s): the day not read for over 60 s (DayTask not running, the default world
+# gone / not taking tasks, a silent null) -> a warning every 10 min while it lasts (GuildStore.day() already refuses limited
+# withdrawals then), one info line when reads come back. Static + synchronized so the bare-JVM test can drive it.
+F(tick, "public static volatile long DAY_FIRST = 0L;")
+F(tick, "public static volatile long STALE_WARNED = 0L;")
+M(tick, r"""
+public static synchronized void checkDayAge(long now) {
+  if (DAY_FIRST == 0L) DAY_FIRST = now;
+  long r = @PKG@.GuildStore.DAY_READ;
+  long age = now - (r > 0L ? r : DAY_FIRST);
+  if (age <= 60000L) {
+    if (STALE_WARNED != 0L && r > 0L) { STALE_WARNED = 0L; @PKG@.GuildStore.info("guild clock: the default world's game day is read again (game day " + @PKG@.GuildStore.DAY + ") - daily withdraw limits work again"); }
+    return;
+  }
+  if (STALE_WARNED != 0L && now - STALE_WARNED < 600000L) return;
+  STALE_WARNED = now;
+  @PKG@.GuildStore.warn("guild clock: the default world's game day " + (r > 0L ? "was last read " + (age / 1000L) + " s ago" : "has not been read in the " + (age / 1000L) + " s since the start") + " - withdrawals with a daily limit are refused until it is read again (is the default world running?)");
+}""")
+# 0.1.1: the game-day read goes to the DEFAULT world's thread (a store Resource is only read on its own world thread)
+F(tick, "public static volatile long DAY_WARNED = 0L;")
+M(tick, r"""
+public static void dispatchDay(@UNI@ un) {
+  try {
+    @WLD@ w = un.getDefaultWorld();
+    if (w == null) return;
+    w.execute(new @PKG@.DayTask(w));
+  } catch (Throwable t) {
+    long now = System.currentTimeMillis();
+    if (now - DAY_WARNED > 60000L) { DAY_WARNED = now; @PKG@.GuildStore.warn("game day read not dispatched (retried): " + t); }
+  }
+}""")
+# presence: this tick's online set -> {newly online (welcome), gone for two ticks in a row (went offline)}; a relog or a one-tick
+# hiccup inside 10 s says nothing. Static + synchronized so the bare-JVM test can drive it without a Universe.
+M(tick, r"""
+public static synchronized java.util.ArrayList[] presence(java.util.HashSet online) {
+  java.util.ArrayList fresh = new java.util.ArrayList();
+  java.util.ArrayList gone = new java.util.ArrayList();
+  java.util.Iterator oi = online.iterator();
+  while (oi.hasNext()) {
+    Object u = oi.next();
+    if (!SEEN.contains(u)) fresh.add(u);
+    MISS.remove(u);
+  }
+  java.util.HashSet keep = new java.util.HashSet(online);
+  java.util.Iterator si = SEEN.iterator();
+  while (si.hasNext()) {
+    Object o = si.next();
+    if (online.contains(o)) continue;
+    Object mc = MISS.get(o);
+    int miss = (mc instanceof Integer ? ((Integer) mc).intValue() : 0) + 1;
+    if (miss >= 2) { MISS.remove(o); gone.add(o); }
+    else { MISS.put(o, Integer.valueOf(miss)); keep.add(o); }
+  }
+  SEEN.clear();
+  SEEN.addAll(keep);
+  return new java.util.ArrayList[] { fresh, gone };
+}""")
+M(tick, r"""
+public void run() {
+  try {
+    this.runs = this.runs + 1;
+    long now = System.currentTimeMillis();
+    prune(@PKG@.GuildStore.INVITES, true, now);
+    prune(@PKG@.GuildStore.CONFIRM, false, now);
+    @UNI@ un = @PKG@.GuildStore.uni();
+    if (un == null) return;
+    checkDayAge(now);
+    dispatchDay(un);
+    int every = @PKG@.GCfg.POLL / 5;
+    if (every < 1) every = 1;
+    boolean poll = this.runs % every == 0;
+    java.util.HashSet online = new java.util.HashSet();
+    java.util.HashMap refs = new java.util.HashMap();
+    java.util.Iterator it = un.getPlayers().iterator();
+    while (it.hasNext()) {
+      @PR@ pr = (@PR@) it.next();
+      if (pr == null || !pr.isValid()) continue;
+      java.util.UUID u = pr.getUuid();
+      online.add(u);
+      refs.put(u, pr);
+      boolean member = false;
+      try { member = @PKG@.GuildStore.touch(u, pr.getUsername()); } catch (Throwable t) { }
+      if (member && poll) dispatch(pr);
+    }
+    java.util.ArrayList[] pres = presence(online);
+    for (int i = 0; i < pres[0].size(); i++) {
+      try { @PKG@.GuildStore.welcome((@PR@) refs.get(pres[0].get(i))); } catch (Throwable t) { }
+    }
+    for (int i = 0; i < pres[1].size(); i++) {
+      try { @PKG@.GuildStore.wentOffline((java.util.UUID) pres[1].get(i)); } catch (Throwable t) { }
+    }
+    @PKG@.GuildStore.flushDirty();
+    if (@PKG@.XpTask.BASE.size() > 20000) { @PKG@.XpTask.BASE.clear(); @PKG@.XpTask.FRAC.clear(); }
+  } catch (Throwable t) { @PKG@.GuildStore.warn("guild tick failed: " + t); }
+}""")
+
+# ================= guild:fn:online =================
+ofn.addInterface(pool.get("java.util.function.Function"))
+C(ofn, "public GuildOnlineFn() { }")
+M(ofn, r"""
+public Object apply(Object arg) {
+  try {
+    if (!(arg instanceof java.util.UUID)) return new String[0];
+    return @PKG@.GuildStore.onlineNames((java.util.UUID) arg);
+  } catch (Throwable t) { return new String[0]; }
+}""")
+
+# ================= GuildPage (inline, rebuilt only after a click) =================
+# 0.1.1: view 0 = the guild page, 1 = the full bank log (Expand); logPage = its page; keepLimit = the Leader's limit box
+for f in ("public int pageNo;", "public String info;", "public java.util.ArrayList rowIds;", "public String confirm;",
+          "public long confirmUntil;", "public String keepInvite;", "public String keepAmount;", "public String keepName;",
+          "public int view;", "public int logPage;", "public String keepLimit;"):
+    F(page, f)
+C(page, r"""
+public GuildPage(@PR@ pr) {
+  super(pr, @LIFE@.CanDismiss);
+  this.pageNo = 0; this.info = ""; this.confirm = ""; this.confirmUntil = 0L;
+  this.keepInvite = ""; this.keepAmount = ""; this.keepName = ""; this.keepLimit = "";
+  this.view = 0; this.logPage = 0;
+  this.rowIds = new java.util.ArrayList();
+}""")
+M(page, r"""
+public static String safe(String t) {
+  if (t == null) return "";
+  return t.replace(':', ' ').replace(';', ' ').replace(',', ' ').replace('{', '(').replace('}', ')').replace('"', ' ').replace('\\', ' ');
+}""")
+M(page, r"""
+public static String style(String bg, String hov, String press, String fg, int fs) {
+  String ls = "LabelStyle: (FontSize: " + fs + ", TextColor: " + fg + ", RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center)";
+  return "Style: TextButtonStyle(Default: (Background: " + bg + ", " + ls + "), Hovered: (Background: " + hov + ", " + ls + "), Pressed: (Background: " + press + ", " + ls + "));";
+}""")
+# one string value out of the page event JSON (SkyySacks 0.7.3 CraftPage.jsonStr, verified in game with the search TextField)
+M(page, r"""
+public static String jsonStr(String data, String key) {
+  if (data == null || key == null) return "";
+  String qt = String.valueOf((char) 34);
+  int i = data.indexOf(qt + key + qt);
+  if (i < 0) return "";
+  i = data.indexOf(':', i + key.length() + 2);
+  if (i < 0) return "";
+  i++;
+  while (i < data.length() && Character.isWhitespace(data.charAt(i))) i++;
+  if (i >= data.length() || data.charAt(i) != 34) return "";
+  i++;
+  StringBuilder sb = new StringBuilder();
+  while (i < data.length() && sb.length() < 200) {
+    char c = data.charAt(i);
+    if (c == 34) break;
+    if (c == 92 && i + 1 < data.length()) {
+      char n = data.charAt(i + 1);
+      if (n == 'u' && i + 5 < data.length()) {
+        try { sb.append((char) Integer.parseInt(data.substring(i + 2, i + 6), 16)); } catch (Throwable t) { }
+        i += 6;
+        continue;
+      }
+      if (n == 'n' || n == 'r' || n == 't' || n == 'b' || n == 'f') sb.append(' '); else sb.append(n);
+      i += 2;
+      continue;
+    }
+    sb.append(c);
+    i++;
+  }
+  return sb.toString();
+}""")
+M(page, r"""
+public static String two(long n) {
+  return n < 10L ? "0" + n : String.valueOf(n);
+}""")
+M(page, r"""
+public void infoLabel(@UCB@ b) {
+  String col = @PKG@.GuildStore.colorOf(this.info);
+  b.appendInline("#SkyyGuild", "Label #SkyyGInfo { Anchor: (Height: 32); Text: \"\"; Style: (FontSize: 17, RenderBold: true, TextColor: " + col + ", HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGInfo.Text", @PKG@.GuildStore.textOf(this.info));
+}""")
+M(page, r"""
+public void buildNone(@UCB@ b, @UEB@ ev, java.util.UUID u) {
+  String bs = style("#1d3a5f", "#2f5a8f", "#0f2038", "#e6f2ff", 16);
+  String gs = style("#1f5a34", "#2c7a48", "#133a22", "#e6ffe8", 17);
+  String rs = style("#5a2424", "#7a3030", "#3a1414", "#ffe6e6", 17);
+  b.appendInline((String) null, "Group #SkyyGuild { Anchor: (Width: 1120, Height: 660); Background: #0b1524(0.96); Padding: (Horizontal: 24, Vertical: 14); LayoutMode: Top; }");
+  b.appendInline("#SkyyGuild", "Group { Anchor: (Height: 3); Background: #ffd070; }");
+  b.appendInline("#SkyyGuild", "Label { Anchor: (Height: 54); Text: \"Guilds\"; Style: (FontSize: 30, RenderBold: true, TextColor: #ffe08a, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.appendInline("#SkyyGuild", "Label #SkyyGNoneTxt { Anchor: (Height: 30); Text: \"\"; Style: (FontSize: 17, TextColor: #cfe3ff, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGNoneTxt.Text", "You are not in a guild yet. A guild shares a bank, levels up from its members' skill XP and has its own chat.");
+  b.appendInline("#SkyyGuild", "Label { Anchor: (Height: 14); Text: \"\"; }");
+  Object[] inv = @PKG@.GuildStore.inviteFor(u);
+  if (inv != null) {
+    long secs = ((Long) inv[5]).longValue() / 1000L;
+    String tg = ((String) inv[1]).length() > 0 ? " [" + inv[1] + "]" : "";
+    b.appendInline("#SkyyGuild", "Group #SkyyGInvRow { Anchor: (Height: 64); LayoutMode: Left; Padding: (Top: 8); Background: #1d3320(0.95); }");
+    b.appendInline("#SkyyGInvRow", "Label { Anchor: (Width: 16, Height: 48); Text: \"\"; }");
+    b.appendInline("#SkyyGInvRow", "Label #SkyyGInvTxt { Anchor: (Width: 740, Height: 48); Text: \"\"; Style: (FontSize: 17, RenderBold: true, TextColor: #ffe08a, VerticalAlignment: Center); }");
+    b.set("#SkyyGInvTxt.Text", "Invite to " + inv[0] + tg + " (level " + inv[2] + ", " + inv[3] + " members) from " + inv[4] + " - " + (secs / 60L) + ":" + two(secs % 60L) + " left");
+    b.appendInline("#SkyyGInvRow", "TextButton #SkyyGAccept { Anchor: (Width: 140, Height: 44); Text: \"Accept\"; " + gs + " }");
+    b.appendInline("#SkyyGInvRow", "Label { Anchor: (Width: 10, Height: 44); Text: \"\"; }");
+    b.appendInline("#SkyyGInvRow", "TextButton #SkyyGDecline { Anchor: (Width: 140, Height: 44); Text: \"Decline\"; " + rs + " }");
+    ev.addEventBinding(@BT@.Activating, "#SkyyGAccept", @EVD@.of("a", "accept"));
+    ev.addEventBinding(@BT@.Activating, "#SkyyGDecline", @EVD@.of("a", "decline"));
+    b.appendInline("#SkyyGuild", "Label { Anchor: (Height: 16); Text: \"\"; }");
+  }
+  b.appendInline("#SkyyGuild", "Label { Anchor: (Height: 40); Text: \"Create a guild\"; Style: (FontSize: 21, RenderBold: true, TextColor: #e6f2ff, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.appendInline("#SkyyGuild", "Group #SkyyGCreateRow { Anchor: (Height: 52); LayoutMode: Left; Padding: (Top: 6); }");
+  b.appendInline("#SkyyGCreateRow", "Label { Anchor: (Width: 196, Height: 42); Text: \"\"; }");
+  b.appendInline("#SkyyGCreateRow", "Group #SkyyGNameBox { Anchor: (Width: 460, Height: 42); Background: #16263a; }");
+  b.appendInline("#SkyyGNameBox", "TextField #SkyyGName { Anchor: (Full: 0); Padding: (Horizontal: 12); MaxLength: 24; PlaceholderText: \"Guild name\"; PlaceholderStyle: (TextColor: #6e7da1, FontSize: 17); Style: (TextColor: #ffffff, FontSize: 17); }");
+  if (this.keepName != null && this.keepName.length() > 0) b.set("#SkyyGName.Value", this.keepName);
+  b.appendInline("#SkyyGCreateRow", "Label { Anchor: (Width: 12, Height: 42); Text: \"\"; }");
+  b.appendInline("#SkyyGCreateRow", "TextButton #SkyyGCreate { Anchor: (Width: 200, Height: 42); Text: \"Create guild\"; " + gs + " }");
+  ev.addEventBinding(@BT@.Validating, "#SkyyGName", @EVD@.of("a", "create").append("@GName", "#SkyyGName.Value"), false);
+  ev.addEventBinding(@BT@.Activating, "#SkyyGCreate", @EVD@.of("a", "create").append("@GName", "#SkyyGName.Value"));
+  b.appendInline("#SkyyGuild", "Label #SkyyGRule { Anchor: (Height: 28); Text: \"\"; Style: (FontSize: 15, TextColor: #9fb8d0, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGRule.Text", "3 to 24 letters, digits and spaces. Every guild name is unique. You become its Leader.");
+  b.appendInline("#SkyyGuild", "Label { Anchor: (Height: 22); Text: \"\"; }");
+  b.appendInline("#SkyyGuild", "Label { Anchor: (Height: 32); Text: \"Commands\"; Style: (FontSize: 19, RenderBold: true, TextColor: #e6f2ff, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  String[] help = @PKG@.GuildStore.helpLines();
+  for (int i = 0; i < help.length; i++) {
+    b.appendInline("#SkyyGuild", "Label #SkyyGHelp" + i + " { Anchor: (Height: 26); Text: \"\"; Style: (FontSize: 14, TextColor: #b8c8d8, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+    b.set("#SkyyGHelp" + i + ".Text", @PKG@.GuildStore.textOf(help[i]));
+  }
+  b.appendInline("#SkyyGuild", "Label { Anchor: (Height: 12); Text: \"\"; }");
+  infoLabel(b);
+  b.appendInline("#SkyyGuild", "Group #SkyyGBottom { Anchor: (Height: 50); LayoutMode: Left; Padding: (Top: 6); }");
+  b.appendInline("#SkyyGBottom", "Label { Anchor: (Width: 466, Height: 40); Text: \"\"; }");
+  b.appendInline("#SkyyGBottom", "TextButton #SkyyGRefresh { Anchor: (Width: 140, Height: 40); Text: \"Refresh\"; " + bs + " }");
+  ev.addEventBinding(@BT@.Activating, "#SkyyGRefresh", @EVD@.of("a", "refresh"));
+}""")
+# 0.1.1 main view, 1120 x 900 (content 872 high): 3 + 42 title + 26 sub + 24 bar + 24 xp + 28 stats + 26 header + 7 x 48 rows + 36 nav
+# + 52 actions + 22 hint + 26 limits + 50 Leader limit row + 30 log header + 3 x 20 log + 50 bottom + 32 info = 867 (Leader, several
+# member pages - the tallest case)
+M(page, r"""
+public void buildGuild(@UCB@ b, @UEB@ ev, java.util.UUID u, Object[] s) {
+  String name = (String) s[0];
+  String tag = (String) s[1];
+  long xp = ((Long) s[2]).longValue();
+  long bank = ((Long) s[3]).longValue();
+  int my = ((Integer) s[4]).intValue();
+  java.util.ArrayList rows = (java.util.ArrayList) s[5];
+  java.util.ArrayList log = (java.util.ArrayList) s[6];
+  long sx = ((Long) s[7]).longValue();
+  int season = ((Integer) s[8]).intValue();
+  int onl = ((Integer) s[9]).intValue();
+  long limA = ((Long) s[11]).longValue();
+  long limM = ((Long) s[12]).longValue();
+  String usage = (String) s[13];
+  String dayT = (String) s[14];
+  long myLim = my >= 2 ? -1L : (my == 1 ? limA : limM);
+  boolean canWd = myLim != 0L;
+  String us = u.toString();
+  long[] li = @PKG@.GuildStore.levelInfo(xp);
+  String bs = style("#1d3a5f", "#2f5a8f", "#0f2038", "#e6f2ff", 15);
+  String gs = style("#1f5a34", "#2c7a48", "#133a22", "#e6ffe8", 15);
+  String rs = style("#5a2424", "#7a3030", "#3a1414", "#ffe6e6", 15);
+  String ys = style("#7a3a10", "#9a4c18", "#4a2208", "#fff0dc", 15);
+  String ps = style("#3a2f5f", "#54448a", "#221a3a", "#efe8ff", 15);
+  b.appendInline((String) null, "Group #SkyyGuild { Anchor: (Width: 1120, Height: 900); Background: #0b1524(0.96); Padding: (Horizontal: 24, Vertical: 14); LayoutMode: Top; }");
+  b.appendInline("#SkyyGuild", "Group { Anchor: (Height: 3); Background: #ffd070; }");
+  b.appendInline("#SkyyGuild", "Label #SkyyGTitle { Anchor: (Height: 42); Text: \"\"; Style: (FontSize: 28, RenderBold: true, TextColor: #ffe08a, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGTitle.Text", name + (tag.length() > 0 ? "  [" + tag + "]" : ""));
+  b.appendInline("#SkyyGuild", "Label #SkyyGSub { Anchor: (Height: 26); Text: \"\"; Style: (FontSize: 17, TextColor: #cfe3ff, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGSub.Text", "Guild level " + li[0] + "     Season " + season + ": " + @PKG@.GuildStore.fmt(sx) + " guild XP     You are " + (my == 1 ? "an " : "the ") + @PKG@.GuildStore.rankName(my));
+  int bw = 1072;
+  int fill = li[2] > 0L ? (int) ((long) bw * li[1] / li[2]) : 0;
+  if (fill < 0) fill = 0;
+  if (fill > bw) fill = bw;
+  b.appendInline("#SkyyGuild", "Group #SkyyGBar { Anchor: (Width: " + bw + ", Height: 24); Background: #22324a; }");
+  if (fill > 0) b.appendInline("#SkyyGBar", "Group { Anchor: (Left: 0, Top: 0, Width: " + fill + ", Height: 24); Background: #58c070; }");
+  b.appendInline("#SkyyGBar", "Label #SkyyGBarTxt { Anchor: (Full: 0); Text: \"\"; Style: (FontSize: 14, RenderBold: true, TextColor: #ffffff, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGBarTxt.Text", @PKG@.GuildStore.fmt(li[1]) + " / " + @PKG@.GuildStore.fmt(li[2]) + " XP to level " + (li[0] + 1L));
+  b.appendInline("#SkyyGuild", "Label #SkyyGXpTxt { Anchor: (Height: 24); Text: \"\"; Style: (FontSize: 14, TextColor: #9fb8d0, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGXpTxt.Text", "Members add " + @PKG@.GCfg.SHARE + "% of the skill XP they earn to the guild. Total guild XP: " + @PKG@.GuildStore.fmt(xp));
+  b.appendInline("#SkyyGuild", "Label #SkyyGStats { Anchor: (Height: 28); Text: \"\"; Style: (FontSize: 20, RenderBold: true, TextColor: #ffd070, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGStats.Text", "Guild bank: " + @PKG@.GuildStore.num(bank) + " coins          Online: " + onl + " / " + rows.size() + " members");
+  String hs = "Style: (FontSize: 15, RenderBold: true, TextColor: #9fb8d0, VerticalAlignment: Center); }";
+  b.appendInline("#SkyyGuild", "Group #SkyyGMemHdr { Anchor: (Height: 26); LayoutMode: Left; }");
+  b.appendInline("#SkyyGMemHdr", "Label { Anchor: (Width: 34, Height: 26); Text: \"\"; }");
+  b.appendInline("#SkyyGMemHdr", "Label { Anchor: (Width: 230, Height: 26); Text: \"Member\"; " + hs);
+  b.appendInline("#SkyyGMemHdr", "Label { Anchor: (Width: 100, Height: 26); Text: \"Rank\"; " + hs);
+  b.appendInline("#SkyyGMemHdr", "Label { Anchor: (Width: 150, Height: 26); Text: \"Guild XP added\"; " + hs);
+  b.appendInline("#SkyyGMemHdr", "Label { Anchor: (Width: 130, Height: 26); Text: \"Taken today\"; " + hs);
+  b.appendInline("#SkyyGMemHdr", "Label { Anchor: (Width: 84, Height: 26); Text: \"Status\"; " + hs);
+  b.appendInline("#SkyyGMemHdr", "Label #SkyyGMemAct { Anchor: (Width: 320, Height: 26); Text: \"\"; " + hs);
+  b.set("#SkyyGMemAct.Text", my == 2 ? "Leader actions" : (my == 1 ? "Admin actions" : ""));
+  int per = 7;
+  int pages = (rows.size() + per - 1) / per;
+  if (pages < 1) pages = 1;
+  if (this.pageNo >= pages) this.pageNo = pages - 1;
+  if (this.pageNo < 0) this.pageNo = 0;
+  int start = this.pageNo * per;
+  this.rowIds = new java.util.ArrayList();
+  for (int i = start; i < rows.size() && i < start + per; i++) {
+    String[] r = (String[]) rows.get(i);
+    int idx = i - start;
+    this.rowIds.add(r[0]);
+    int rr = Integer.parseInt(r[2]);
+    boolean on = "1".equals(r[4]);
+    boolean me = r[0].equals(us);
+    long took = @PKG@.GuildStore.parseLong(r[5], 0L);
+    String rid = "#SkyyGRow" + idx;
+    b.appendInline("#SkyyGuild", "Group #SkyyGRow" + idx + " { Anchor: (Height: 44); LayoutMode: Left; Padding: (Top: 3); Background: " + (me ? "#1c2c44(0.95)" : "#142030(0.9)") + "; }");
+    b.appendInline(rid, "Group { Anchor: (Width: 34, Height: 38); Group { Anchor: (Left: 10, Top: 12, Width: 14, Height: 14); Background: " + (on ? "#50d060" : "#55606e") + "; } }");
+    b.appendInline(rid, "Label #SkyyGRowName" + idx + " { Anchor: (Width: 230, Height: 38); Text: \"\"; Style: (FontSize: 18, RenderBold: true, TextColor: " + (on ? "#ffffff" : "#9aa6b4") + ", VerticalAlignment: Center); }");
+    b.set("#SkyyGRowName" + idx + ".Text", r[1] + (me ? "  (you)" : ""));
+    String rc = rr == 2 ? "#ffd060" : (rr == 1 ? "#8fc8ff" : "#c8d4e0");
+    b.appendInline(rid, "Label #SkyyGRowRank" + idx + " { Anchor: (Width: 100, Height: 38); Text: \"\"; Style: (FontSize: 17, RenderBold: true, TextColor: " + rc + ", VerticalAlignment: Center); }");
+    b.set("#SkyyGRowRank" + idx + ".Text", @PKG@.GuildStore.rankName(rr));
+    b.appendInline(rid, "Label #SkyyGRowXp" + idx + " { Anchor: (Width: 150, Height: 38); Text: \"\"; Style: (FontSize: 15, TextColor: #9fb8d0, VerticalAlignment: Center); }");
+    b.set("#SkyyGRowXp" + idx + ".Text", @PKG@.GuildStore.fmt(@PKG@.GuildStore.parseLong(r[3], 0L)) + " XP");
+    b.appendInline(rid, "Label #SkyyGRowDay" + idx + " { Anchor: (Width: 130, Height: 38); Text: \"\"; Style: (FontSize: 15, TextColor: " + (took > 0L ? "#ffb070" : "#6f7c8c") + ", VerticalAlignment: Center); }");
+    b.set("#SkyyGRowDay" + idx + ".Text", took > 0L ? @PKG@.GuildStore.fmt(took) + " coins" : "-");
+    b.appendInline(rid, "Label #SkyyGRowOn" + idx + " { Anchor: (Width: 84, Height: 38); Text: \"\"; Style: (FontSize: 14, TextColor: " + (on ? "#7fe07f" : "#7f8a98") + ", VerticalAlignment: Center); }");
+    b.set("#SkyyGRowOn" + idx + ".Text", on ? "online" : "offline");
+    boolean canKick = !me && rr < my && my >= 1;
+    if (my == 2 && !me) {
+      if (rr == 0) {
+        b.appendInline(rid, "TextButton #SkyyGPro" + idx + " { Anchor: (Width: 104, Height: 36); Text: \"Promote\"; " + bs + " }");
+        ev.addEventBinding(@BT@.Activating, "#SkyyGPro" + idx, @EVD@.of("a", "promote:" + idx));
+      } else {
+        b.appendInline(rid, "TextButton #SkyyGDem" + idx + " { Anchor: (Width: 104, Height: 36); Text: \"Demote\"; " + bs + " }");
+        ev.addEventBinding(@BT@.Activating, "#SkyyGDem" + idx, @EVD@.of("a", "demote:" + idx));
+      }
+      b.appendInline(rid, "Label { Anchor: (Width: 6, Height: 36); Text: \"\"; }");
+    }
+    if (canKick) {
+      boolean ck = this.confirm.equals("kick:" + r[0]);
+      b.appendInline(rid, "TextButton #SkyyGKick" + idx + " { Anchor: (Width: 88, Height: 36); Text: \"" + (ck ? "Sure?" : "Kick") + "\"; " + rs + " }");
+      ev.addEventBinding(@BT@.Activating, "#SkyyGKick" + idx, @EVD@.of("a", "kick:" + idx));
+      b.appendInline(rid, "Label { Anchor: (Width: 6, Height: 36); Text: \"\"; }");
+    }
+    if (my == 2 && !me) {
+      boolean cl = this.confirm.equals("lead:" + r[0]);
+      b.appendInline(rid, "TextButton #SkyyGLead" + idx + " { Anchor: (Width: 116, Height: 36); Text: \"" + (cl ? "Confirm?" : "Make leader") + "\"; " + ys + " }");
+      ev.addEventBinding(@BT@.Activating, "#SkyyGLead" + idx, @EVD@.of("a", "lead:" + idx));
+    }
+    b.appendInline("#SkyyGuild", "Label { Anchor: (Height: 4); Text: \"\"; }");
+  }
+  if (pages > 1) {
+    b.appendInline("#SkyyGuild", "Group #SkyyGNav { Anchor: (Height: 36); LayoutMode: Left; Padding: (Top: 2); }");
+    b.appendInline("#SkyyGNav", "Label { Anchor: (Width: 340, Height: 32); Text: \"\"; }");
+    b.appendInline("#SkyyGNav", "TextButton #SkyyGPrev { Anchor: (Width: 110, Height: 32); Text: \"< Prev\"; " + bs + " }");
+    b.appendInline("#SkyyGNav", "Label #SkyyGPageTxt { Anchor: (Width: 170, Height: 32); Text: \"\"; Style: (FontSize: 15, TextColor: #9fb8d0, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+    b.set("#SkyyGPageTxt.Text", "Page " + (this.pageNo + 1) + " / " + pages);
+    b.appendInline("#SkyyGNav", "TextButton #SkyyGNext { Anchor: (Width: 110, Height: 32); Text: \"Next >\"; " + bs + " }");
+    ev.addEventBinding(@BT@.Activating, "#SkyyGPrev", @EVD@.of("a", "prev"));
+    ev.addEventBinding(@BT@.Activating, "#SkyyGNext", @EVD@.of("a", "next"));
+  } else {
+    b.appendInline("#SkyyGuild", "Label { Anchor: (Height: 12); Text: \"\"; }");
+  }
+  b.appendInline("#SkyyGuild", "Group #SkyyGAct { Anchor: (Height: 52); LayoutMode: Left; Padding: (Top: 6); }");
+  if (my >= 1) {
+    b.appendInline("#SkyyGAct", "Group #SkyyGInvBox { Anchor: (Width: 270, Height: 40); Background: #16263a; }");
+    b.appendInline("#SkyyGInvBox", "TextField #SkyyGInvite { Anchor: (Full: 0); Padding: (Horizontal: 10); MaxLength: 32; PlaceholderText: \"Player name\"; PlaceholderStyle: (TextColor: #6e7da1, FontSize: 16); Style: (TextColor: #ffffff, FontSize: 16); }");
+    if (this.keepInvite != null && this.keepInvite.length() > 0) b.set("#SkyyGInvite.Value", this.keepInvite);
+    b.appendInline("#SkyyGAct", "Label { Anchor: (Width: 8, Height: 40); Text: \"\"; }");
+    b.appendInline("#SkyyGAct", "TextButton #SkyyGInviteBtn { Anchor: (Width: 120, Height: 40); Text: \"Invite\"; " + gs + " }");
+    ev.addEventBinding(@BT@.Validating, "#SkyyGInvite", @EVD@.of("a", "invite").append("@GInvite", "#SkyyGInvite.Value"), false);
+    ev.addEventBinding(@BT@.Activating, "#SkyyGInviteBtn", @EVD@.of("a", "invite").append("@GInvite", "#SkyyGInvite.Value"));
+    b.appendInline("#SkyyGAct", "Label { Anchor: (Width: 60, Height: 40); Text: \"\"; }");
+  } else {
+    b.appendInline("#SkyyGAct", "Label { Anchor: (Width: 300, Height: 40); Text: \"\"; }");
+  }
+  b.appendInline("#SkyyGAct", "Group #SkyyGAmtBox { Anchor: (Width: 200, Height: 40); Background: #16263a; }");
+  b.appendInline("#SkyyGAmtBox", "TextField #SkyyGAmount { Anchor: (Full: 0); Padding: (Horizontal: 10); MaxLength: 16; PlaceholderText: \"Amount\"; PlaceholderStyle: (TextColor: #6e7da1, FontSize: 16); Style: (TextColor: #ffffff, FontSize: 16); }");
+  if (this.keepAmount != null && this.keepAmount.length() > 0) b.set("#SkyyGAmount.Value", this.keepAmount);
+  b.appendInline("#SkyyGAct", "Label { Anchor: (Width: 8, Height: 40); Text: \"\"; }");
+  b.appendInline("#SkyyGAct", "TextButton #SkyyGDep { Anchor: (Width: 136, Height: 40); Text: \"Deposit\"; " + gs + " }");
+  ev.addEventBinding(@BT@.Activating, "#SkyyGDep", @EVD@.of("a", "deposit").append("@GAmount", "#SkyyGAmount.Value"));
+  ev.addEventBinding(@BT@.Validating, "#SkyyGAmount", @EVD@.of("a", "amount").append("@GAmount", "#SkyyGAmount.Value"), false);
+  if (canWd) {
+    b.appendInline("#SkyyGAct", "Label { Anchor: (Width: 8, Height: 40); Text: \"\"; }");
+    b.appendInline("#SkyyGAct", "TextButton #SkyyGWd { Anchor: (Width: 136, Height: 40); Text: \"Withdraw\"; " + bs + " }");
+    ev.addEventBinding(@BT@.Activating, "#SkyyGWd", @EVD@.of("a", "withdraw").append("@GAmount", "#SkyyGAmount.Value"));
+  }
+  b.appendInline("#SkyyGuild", "Label #SkyyGHint { Anchor: (Height: 22); Text: \"\"; Style: (FontSize: 13, TextColor: #8fa4b8, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGHint.Text", (my >= 1 ? "Invite: an online player's name.   " : "") + "Amounts: 500, 2k, 1.5m or all - coins come from and go to your purse." + (canWd ? "" : "  Your rank can't withdraw right now (daily limit 0)."));
+  b.appendInline("#SkyyGuild", "Label #SkyyGLimTxt { Anchor: (Height: 26); Text: \"\"; Style: (FontSize: 15, RenderBold: true, TextColor: #cfe3ff, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGLimTxt.Text", "Withdraw limits per game day:  Admins " + @PKG@.GuildStore.limText(limA) + "  -  Members " + @PKG@.GuildStore.limText(limM) + "        You: " + usage + "   (" + dayT + ")");
+  if (my == 2) {
+    b.appendInline("#SkyyGuild", "Group #SkyyGLimRow { Anchor: (Height: 50); LayoutMode: Left; Padding: (Top: 5); }");
+    b.appendInline("#SkyyGLimRow", "Label { Anchor: (Width: 200, Height: 40); Text: \"Set a daily limit:\"; Style: (FontSize: 16, RenderBold: true, TextColor: #ffd070, HorizontalAlignment: End, VerticalAlignment: Center); }");
+    b.appendInline("#SkyyGLimRow", "Label { Anchor: (Width: 10, Height: 40); Text: \"\"; }");
+    b.appendInline("#SkyyGLimRow", "Group #SkyyGLimBox { Anchor: (Width: 190, Height: 40); Background: #16263a; }");
+    b.appendInline("#SkyyGLimBox", "TextField #SkyyGLimit { Anchor: (Full: 0); Padding: (Horizontal: 10); MaxLength: 16; PlaceholderText: \"5k  0  or none\"; PlaceholderStyle: (TextColor: #6e7da1, FontSize: 16); Style: (TextColor: #ffffff, FontSize: 16); }");
+    if (this.keepLimit != null && this.keepLimit.length() > 0) b.set("#SkyyGLimit.Value", this.keepLimit);
+    b.appendInline("#SkyyGLimRow", "Label { Anchor: (Width: 8, Height: 40); Text: \"\"; }");
+    b.appendInline("#SkyyGLimRow", "TextButton #SkyyGLimA { Anchor: (Width: 190, Height: 40); Text: \"Set Admin limit\"; " + ps + " }");
+    b.appendInline("#SkyyGLimRow", "Label { Anchor: (Width: 8, Height: 40); Text: \"\"; }");
+    b.appendInline("#SkyyGLimRow", "TextButton #SkyyGLimM { Anchor: (Width: 200, Height: 40); Text: \"Set Member limit\"; " + ps + " }");
+    b.appendInline("#SkyyGLimRow", "Label { Anchor: (Width: 12, Height: 40); Text: \"\"; }");
+    b.appendInline("#SkyyGLimRow", "Label #SkyyGLimHint { Anchor: (Width: 250, Height: 40); Text: \"\"; Style: (FontSize: 13, TextColor: #8fa4b8, VerticalAlignment: Center); }");
+    b.set("#SkyyGLimHint.Text", "0 = no withdrawing, none = no limit");
+    ev.addEventBinding(@BT@.Validating, "#SkyyGLimit", @EVD@.of("a", "limit").append("@GLimit", "#SkyyGLimit.Value"), false);
+    ev.addEventBinding(@BT@.Activating, "#SkyyGLimA", @EVD@.of("a", "limadmin").append("@GLimit", "#SkyyGLimit.Value"));
+    ev.addEventBinding(@BT@.Activating, "#SkyyGLimM", @EVD@.of("a", "limmember").append("@GLimit", "#SkyyGLimit.Value"));
+  }
+  b.appendInline("#SkyyGuild", "Group #SkyyGLogHdr { Anchor: (Height: 30); LayoutMode: Left; }");
+  b.appendInline("#SkyyGLogHdr", "Label { Anchor: (Width: 170, Height: 30); Text: \"Guild bank log\"; Style: (FontSize: 16, RenderBold: true, TextColor: #9fb8d0, VerticalAlignment: Center); }");
+  b.appendInline("#SkyyGLogHdr", "Label #SkyyGLogCnt { Anchor: (Width: 260, Height: 30); Text: \"\"; Style: (FontSize: 14, TextColor: #8fa4b8, VerticalAlignment: Center); }");
+  b.set("#SkyyGLogCnt.Text", log.size() == 0 ? "empty" : "newest " + (log.size() < 3 ? log.size() : 3) + " of " + log.size() + " kept");
+  b.appendInline("#SkyyGLogHdr", "TextButton #SkyyGExpand { Anchor: (Width: 170, Height: 28); Text: \"Expand log\"; " + ps + " }");
+  ev.addEventBinding(@BT@.Activating, "#SkyyGExpand", @EVD@.of("a", "expand"));
+  int shown = 0;
+  for (int i = log.size() - 1; i >= 0 && shown < 3; i--) {
+    b.appendInline("#SkyyGuild", "Label #SkyyGLog" + shown + " { Anchor: (Height: 20); Text: \"\"; Style: (FontSize: 14, TextColor: #c8d4e0, VerticalAlignment: Center); }");
+    b.set("#SkyyGLog" + shown + ".Text", "   " + @PKG@.GuildStore.logText((String) log.get(i)));
+    shown++;
+  }
+  if (shown == 0) {
+    b.appendInline("#SkyyGuild", "Label #SkyyGLog0 { Anchor: (Height: 20); Text: \"\"; Style: (FontSize: 14, TextColor: #8fa4b8, VerticalAlignment: Center); }");
+    b.set("#SkyyGLog0.Text", "   No deposits or withdrawals yet.");
+    shown = 1;
+  }
+  for (int i = shown; i < 3; i++) b.appendInline("#SkyyGuild", "Label { Anchor: (Height: 20); Text: \"\"; }");
+  b.appendInline("#SkyyGuild", "Group #SkyyGBottom { Anchor: (Height: 50); LayoutMode: Left; Padding: (Top: 8); }");
+  b.appendInline("#SkyyGBottom", "Label { Anchor: (Width: 230, Height: 40); Text: \"\"; }");
+  b.appendInline("#SkyyGBottom", "TextButton #SkyyGRefresh { Anchor: (Width: 140, Height: 40); Text: \"Refresh\"; " + bs + " }");
+  ev.addEventBinding(@BT@.Activating, "#SkyyGRefresh", @EVD@.of("a", "refresh"));
+  b.appendInline("#SkyyGBottom", "Label { Anchor: (Width: 14, Height: 40); Text: \"\"; }");
+  boolean cLeave = this.confirm.equals("leave");
+  b.appendInline("#SkyyGBottom", "TextButton #SkyyGLeave { Anchor: (Width: 220, Height: 40); Text: \"" + (cLeave ? "Click again to leave" : "Leave guild") + "\"; " + rs + " }");
+  ev.addEventBinding(@BT@.Activating, "#SkyyGLeave", @EVD@.of("a", "leave"));
+  if (my == 2) {
+    b.appendInline("#SkyyGBottom", "Label { Anchor: (Width: 14, Height: 40); Text: \"\"; }");
+    boolean cDis = this.confirm.equals("disband");
+    b.appendInline("#SkyyGBottom", "TextButton #SkyyGDisband { Anchor: (Width: 240, Height: 40); Text: \"" + (cDis ? "Click again to DISBAND" : "Disband guild") + "\"; " + rs + " }");
+    ev.addEventBinding(@BT@.Activating, "#SkyyGDisband", @EVD@.of("a", "disband"));
+  }
+  infoLabel(b);
+}""")
+# 0.1.1 log view (Expand), 1120 x 900: 3 + 42 title + 26 sub + 26 limits + 26 header + 15 x 34 rows + 40 nav + 22 note + 50 bottom
+# + 32 info = 777. Newest first; the guild file keeps GCfg.LOG_KEEP lines.
+M(page, r"""
+public void buildLog(@UCB@ b, @UEB@ ev, java.util.UUID u, Object[] s) {
+  String name = (String) s[0];
+  String tag = (String) s[1];
+  long bank = ((Long) s[3]).longValue();
+  java.util.ArrayList log = (java.util.ArrayList) s[6];
+  long limA = ((Long) s[11]).longValue();
+  long limM = ((Long) s[12]).longValue();
+  String usage = (String) s[13];
+  String dayT = (String) s[14];
+  String bs = style("#1d3a5f", "#2f5a8f", "#0f2038", "#e6f2ff", 15);
+  String ps = style("#3a2f5f", "#54448a", "#221a3a", "#efe8ff", 16);
+  b.appendInline((String) null, "Group #SkyyGuild { Anchor: (Width: 1120, Height: 900); Background: #0b1524(0.96); Padding: (Horizontal: 24, Vertical: 14); LayoutMode: Top; }");
+  b.appendInline("#SkyyGuild", "Group { Anchor: (Height: 3); Background: #ffd070; }");
+  b.appendInline("#SkyyGuild", "Label #SkyyGLogTitle { Anchor: (Height: 42); Text: \"\"; Style: (FontSize: 28, RenderBold: true, TextColor: #ffe08a, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGLogTitle.Text", name + (tag.length() > 0 ? "  [" + tag + "]" : "") + "  -  guild bank log");
+  b.appendInline("#SkyyGuild", "Label #SkyyGLogSub { Anchor: (Height: 26); Text: \"\"; Style: (FontSize: 17, TextColor: #cfe3ff, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGLogSub.Text", "Guild bank: " + @PKG@.GuildStore.num(bank) + " coins     " + log.size() + " bank moves kept, newest first");
+  b.appendInline("#SkyyGuild", "Label #SkyyGLogLim { Anchor: (Height: 26); Text: \"\"; Style: (FontSize: 15, RenderBold: true, TextColor: #cfe3ff, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGLogLim.Text", "Withdraw limits per game day:  Admins " + @PKG@.GuildStore.limText(limA) + "  -  Members " + @PKG@.GuildStore.limText(limM) + "        You: " + usage + "   (" + dayT + ")");
+  String hs = "Style: (FontSize: 15, RenderBold: true, TextColor: #9fb8d0, VerticalAlignment: Center); }";
+  b.appendInline("#SkyyGuild", "Group #SkyyGLogCols { Anchor: (Height: 26); LayoutMode: Left; }");
+  b.appendInline("#SkyyGLogCols", "Label { Anchor: (Width: 16, Height: 26); Text: \"\"; }");
+  b.appendInline("#SkyyGLogCols", "Label { Anchor: (Width: 150, Height: 26); Text: \"When\"; " + hs);
+  b.appendInline("#SkyyGLogCols", "Label { Anchor: (Width: 220, Height: 26); Text: \"Player\"; " + hs);
+  b.appendInline("#SkyyGLogCols", "Label { Anchor: (Width: 460, Height: 26); Text: \"What\"; " + hs);
+  b.appendInline("#SkyyGLogCols", "Label { Anchor: (Width: 210, Height: 26); Text: \"Bank after\"; " + hs);
+  int per = 15;
+  int pages = (log.size() + per - 1) / per;
+  if (pages < 1) pages = 1;
+  if (this.logPage >= pages) this.logPage = pages - 1;
+  if (this.logPage < 0) this.logPage = 0;
+  int shown = 0;
+  for (int k = 0; k < per; k++) {
+    int i = log.size() - 1 - (this.logPage * per + k);
+    if (i < 0) break;
+    String[] lp = @PKG@.GuildStore.logParts((String) log.get(i));
+    String w = lp[2];
+    String col = w.startsWith("deposited") ? "#8fe39a" : (w.startsWith("withdrew") ? "#ffb070" : (w.startsWith("set the") ? "#8fc8ff" : "#ffe08a"));
+    String rid = "#SkyyGLRow" + k;
+    b.appendInline("#SkyyGuild", "Group #SkyyGLRow" + k + " { Anchor: (Height: 32); LayoutMode: Left; Background: " + (k % 2 == 0 ? "#142030(0.9)" : "#101a28(0.9)") + "; }");
+    b.appendInline(rid, "Label { Anchor: (Width: 16, Height: 32); Text: \"\"; }");
+    b.appendInline(rid, "Label #SkyyGLWhen" + k + " { Anchor: (Width: 150, Height: 32); Text: \"\"; Style: (FontSize: 15, TextColor: #9fb8d0, VerticalAlignment: Center); }");
+    b.set("#SkyyGLWhen" + k + ".Text", lp[0]);
+    b.appendInline(rid, "Label #SkyyGLWho" + k + " { Anchor: (Width: 220, Height: 32); Text: \"\"; Style: (FontSize: 16, RenderBold: true, TextColor: #ffffff, VerticalAlignment: Center); }");
+    b.set("#SkyyGLWho" + k + ".Text", lp[1]);
+    b.appendInline(rid, "Label #SkyyGLWhat" + k + " { Anchor: (Width: 460, Height: 32); Text: \"\"; Style: (FontSize: 16, TextColor: " + col + ", VerticalAlignment: Center); }");
+    b.set("#SkyyGLWhat" + k + ".Text", w);
+    b.appendInline(rid, "Label #SkyyGLBank" + k + " { Anchor: (Width: 210, Height: 32); Text: \"\"; Style: (FontSize: 15, TextColor: #c8d4e0, VerticalAlignment: Center); }");
+    b.set("#SkyyGLBank" + k + ".Text", lp[3].length() > 0 ? lp[3] + " coins" : "");
+    b.appendInline("#SkyyGuild", "Label { Anchor: (Height: 2); Text: \"\"; }");
+    shown++;
+  }
+  if (shown == 0) {
+    b.appendInline("#SkyyGuild", "Label #SkyyGLEmpty { Anchor: (Height: 40); Text: \"\"; Style: (FontSize: 17, TextColor: #8fa4b8, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+    b.set("#SkyyGLEmpty.Text", "No deposits or withdrawals yet.");
+    b.appendInline("#SkyyGuild", "Label { Anchor: (Height: " + (per * 34 - 40) + "); Text: \"\"; }");
+  } else if (shown < per) {
+    b.appendInline("#SkyyGuild", "Label { Anchor: (Height: " + ((per - shown) * 34) + "); Text: \"\"; }");
+  }
+  if (pages > 1) {
+    b.appendInline("#SkyyGuild", "Group #SkyyGLNav { Anchor: (Height: 40); LayoutMode: Left; Padding: (Top: 4); }");
+    b.appendInline("#SkyyGLNav", "Label { Anchor: (Width: 340, Height: 34); Text: \"\"; }");
+    b.appendInline("#SkyyGLNav", "TextButton #SkyyGLPrev { Anchor: (Width: 110, Height: 34); Text: \"< Newer\"; " + bs + " }");
+    b.appendInline("#SkyyGLNav", "Label #SkyyGLPageTxt { Anchor: (Width: 170, Height: 34); Text: \"\"; Style: (FontSize: 15, TextColor: #9fb8d0, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+    b.set("#SkyyGLPageTxt.Text", "Page " + (this.logPage + 1) + " / " + pages);
+    b.appendInline("#SkyyGLNav", "TextButton #SkyyGLNext { Anchor: (Width: 110, Height: 34); Text: \"Older >\"; " + bs + " }");
+    ev.addEventBinding(@BT@.Activating, "#SkyyGLPrev", @EVD@.of("a", "lprev"));
+    ev.addEventBinding(@BT@.Activating, "#SkyyGLNext", @EVD@.of("a", "lnext"));
+  } else {
+    b.appendInline("#SkyyGuild", "Label { Anchor: (Height: 40); Text: \"\"; }");
+  }
+  b.appendInline("#SkyyGuild", "Label #SkyyGLNote { Anchor: (Height: 22); Text: \"\"; Style: (FontSize: 13, TextColor: #8fa4b8, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+  b.set("#SkyyGLNote.Text", "The guild keeps its last " + @PKG@.GCfg.LOG_KEEP + " bank moves. Every move ever made is also in the server's banklog.log.");
+  b.appendInline("#SkyyGuild", "Group #SkyyGBottom { Anchor: (Height: 50); LayoutMode: Left; Padding: (Top: 8); }");
+  b.appendInline("#SkyyGBottom", "Label { Anchor: (Width: 312, Height: 40); Text: \"\"; }");
+  b.appendInline("#SkyyGBottom", "TextButton #SkyyGBack { Anchor: (Width: 240, Height: 40); Text: \"< Back to guild\"; " + ps + " }");
+  ev.addEventBinding(@BT@.Activating, "#SkyyGBack", @EVD@.of("a", "back"));
+  b.appendInline("#SkyyGBottom", "Label { Anchor: (Width: 14, Height: 40); Text: \"\"; }");
+  b.appendInline("#SkyyGBottom", "TextButton #SkyyGRefresh { Anchor: (Width: 140, Height: 40); Text: \"Refresh\"; " + bs + " }");
+  ev.addEventBinding(@BT@.Activating, "#SkyyGRefresh", @EVD@.of("a", "refresh"));
+  infoLabel(b);
+}""")
+M(page, r"""
+public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
+  java.util.UUID u = this.playerRef.getUuid();
+  if (this.confirmUntil < System.currentTimeMillis()) this.confirm = "";
+  Object[] s = null;
+  try { s = @PKG@.GuildStore.snapshot(u); } catch (Throwable t) { @PKG@.GuildStore.warn("guild page snapshot failed: " + t); }
+  if (s == null) { this.view = 0; buildNone(b, ev, u); }
+  else if (this.view == 1) buildLog(b, ev, u, s);
+  else buildGuild(b, ev, u, s);
+}""")
+M(page, r"""
+public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
+  try {
+    if (data == null) return;
+    String a = jsonStr(data, "a");
+    if (a.length() == 0) return;
+    java.util.UUID u = this.playerRef.getUuid();
+    String un = this.playerRef.getUsername();
+    long now = System.currentTimeMillis();
+    if (this.confirmUntil < now) this.confirm = "";
+    if (a.equals("refresh")) { this.info = ""; this.confirm = ""; rebuild(); return; }
+    if (a.equals("prev")) { this.pageNo--; this.confirm = ""; rebuild(); return; }
+    if (a.equals("next")) { this.pageNo++; this.confirm = ""; rebuild(); return; }
+    if (a.equals("expand")) { this.view = 1; this.logPage = 0; this.info = ""; this.confirm = ""; rebuild(); return; }
+    if (a.equals("back")) { this.view = 0; this.info = ""; this.confirm = ""; rebuild(); return; }
+    if (a.equals("lprev")) { this.logPage--; rebuild(); return; }
+    if (a.equals("lnext")) { this.logPage++; rebuild(); return; }
+    String res = null;
+    String keep = "";
+    this.keepInvite = ""; this.keepAmount = ""; this.keepName = ""; this.keepLimit = "";
+    String was = this.confirm;
+    this.confirm = "";
+    if (a.equals("create")) {
+      keep = jsonStr(data, "@GName");
+      res = @PKG@.GuildStore.create(u, un, keep);
+      if (res != null && res.startsWith("-")) this.keepName = keep;
+    } else if (a.equals("accept")) {
+      res = @PKG@.GuildStore.accept(u, un);
+    } else if (a.equals("decline")) {
+      res = @PKG@.GuildStore.decline(u, un);
+    } else if (a.equals("invite")) {
+      keep = jsonStr(data, "@GInvite");
+      res = @PKG@.GuildStore.invite(u, un, keep);
+      if (res != null && res.startsWith("-")) this.keepInvite = keep;
+    } else if (a.equals("deposit") || a.equals("withdraw")) {
+      keep = jsonStr(data, "@GAmount");
+      res = a.equals("deposit") ? @PKG@.GuildStore.deposit(u, un, keep) : @PKG@.GuildStore.withdraw(u, un, keep);
+      if (res != null && res.startsWith("-")) this.keepAmount = keep;
+    } else if (a.equals("amount")) {
+      keep = jsonStr(data, "@GAmount").trim();
+      if (keep.length() > 16) keep = keep.substring(0, 16);
+      this.keepAmount = keep;
+      boolean wd = @PKG@.GuildStore.canWithdraw(u);
+      if (keep.length() == 0) res = "=Type an amount (500, 2k, 1.5m or all), then click Deposit" + (wd ? " or Withdraw." : ".");
+      else res = "=Click Deposit" + (wd ? " or Withdraw" : "") + " to move " + keep + " coins. Enter alone never moves coins.";
+    } else if (a.equals("limadmin") || a.equals("limmember")) {
+      keep = jsonStr(data, "@GLimit").trim();
+      res = @PKG@.GuildStore.setLimit(u, un, a.equals("limadmin") ? "admin" : "member", keep);
+      if (res != null && res.startsWith("-")) this.keepLimit = keep;
+    } else if (a.equals("limit")) {
+      keep = jsonStr(data, "@GLimit").trim();
+      if (keep.length() > 16) keep = keep.substring(0, 16);
+      this.keepLimit = keep;
+      if (keep.length() == 0) res = "=Type a daily limit (5k, 0 = no withdrawing, none = no limit), then click Set Admin limit or Set Member limit.";
+      else res = "=Click Set Admin limit or Set Member limit to use " + keep + ". Enter alone never changes a limit.";
+    } else if (a.equals("leave")) {
+      if (was.equals("leave")) res = @PKG@.GuildStore.leave(u, un, true);
+      else { res = @PKG@.GuildStore.leaveWarning(u); if (res.startsWith("=")) { this.confirm = "leave"; this.confirmUntil = now + 10000L; } }
+    } else if (a.equals("disband")) {
+      if (was.equals("disband")) res = @PKG@.GuildStore.disband(u, un, true);
+      else { res = @PKG@.GuildStore.disbandWarning(u); if (res.startsWith("=")) { this.confirm = "disband"; this.confirmUntil = now + 10000L; } }
+    } else {
+      int c = a.indexOf(':');
+      if (c <= 0 || this.rowIds == null) return;
+      String act = a.substring(0, c);
+      int idx = -1;
+      try { idx = Integer.parseInt(a.substring(c + 1)); } catch (Throwable t) { idx = -1; }
+      if (idx < 0 || idx >= this.rowIds.size()) return;
+      String tu = (String) this.rowIds.get(idx);
+      if (act.equals("promote")) res = @PKG@.GuildStore.promote(u, un, tu);
+      else if (act.equals("demote")) res = @PKG@.GuildStore.demote(u, un, tu);
+      else if (act.equals("kick")) {
+        if (was.equals("kick:" + tu)) res = @PKG@.GuildStore.kick(u, un, tu);
+        else { this.confirm = "kick:" + tu; this.confirmUntil = now + 10000L; res = "=Click Sure? within 10 s to remove " + @PKG@.GuildStore.nameOfMember(u, tu) + " from the guild."; }
+      } else if (act.equals("lead")) {
+        if (was.equals("lead:" + tu)) res = @PKG@.GuildStore.transfer(u, un, tu, true);
+        else { this.confirm = "lead:" + tu; this.confirmUntil = now + 10000L; res = "=Click Confirm? within 10 s to make " + @PKG@.GuildStore.nameOfMember(u, tu) + " the Leader (you become an Admin)."; }
+      } else return;
+    }
+    this.info = res == null ? "+Done." : res;
+    rebuild();
+  } catch (Throwable t) { @PKG@.GuildStore.warn("guild page click failed: " + t); }
+}""")
+
+# ================= commands =================
+EXEC = "protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world)"
+CMDS = []
+
+
+def cmd(clsname, name, desc, args, body, perm="@ADV@", subs=(), aliases=()):
+    """One AbstractPlayerCommand. args = [(field, argName, argDesc, "STRING" | "GREEDY_STRING")], read into a0, a1, ..."""
+    c = pool.makeClass(PKG + "." + clsname, pool.get(T["APC"]))
+    for (fld, _an, _ad, _ty) in args:
+        F(c, "public @RA@ %s;" % fld)
+    lines = ['super("%s", "%s");' % (name, desc), perm]
+    if aliases:
+        lines.append("addAliases(new String[] { %s });" % ", ".join('"%s"' % a for a in aliases))
+    for (fld, an, ad, ty) in args:
+        lines.append('this.%s = withRequiredArg("%s", "%s", @ATY@.%s);' % (fld, an, ad, ty))
+    for s in subs:
+        lines.append("addSubCommand(new @PKG@.%s());" % s)
+    C(c, "public %s() {\n  %s\n}" % (clsname, "\n  ".join(lines)))
+    reads = "".join('    String a%d = String.valueOf(ctx.get(this.%s));\n' % (i, a[0]) for i, a in enumerate(args))
+    M(c, EXEC + " {\n  try {\n" + reads + "    " + body + "\n  } catch (Throwable t) {\n"
+      "    @PKG@.GuildStore.warn(\"/" + name + " failed: \" + t);\n"
+      "    @PKG@.GuildStore.tell(pr, \"-Something went wrong - the server log has the details.\");\n  }\n}")
+    CMDS.append(c)
+    return c
+
+
+U = "pr.getUuid(), pr.getUsername()"
+S = "@PKG@.GuildStore."
+cmd("GHelpCmd", "help", "Every guild command", [], S + "tellAll(pr, " + S + "helpLines());")
+cmd("GCreateCmd", "create", "Found a guild: /guild create <name> (3-24 letters, digits, spaces)",
+    [("nameArg", "name", "Guild name (spaces allowed)", "GREEDY_STRING")], S + "tell(pr, " + S + "create(" + U + ", a0));")
+cmd("GTagCmd", "tag", "Leader: set the guild tag (2-4 letters/digits) or /guild tag clear",
+    [("tagArg", "tag", "2-4 letters or digits, or clear", "STRING")], S + "tell(pr, " + S + "setTag(" + U + ", a0));")
+cmd("GInviteCmd", "invite", "Leader/Admin: invite an online player",
+    [("playerArg", "player", "Online player name", "STRING")], S + "tell(pr, " + S + "invite(" + U + ", a0));")
+cmd("GAcceptCmd", "accept", "Accept your guild invite", [], S + "tell(pr, " + S + "accept(" + U + "));")
+cmd("GDeclineCmd", "decline", "Decline your guild invite", [], S + "tell(pr, " + S + "decline(" + U + "));")
+cmd("GLeaveCmd", "leave", "Leave your guild", [], S + "tell(pr, " + S + "leave(" + U + ", false));")
+cmd("GKickCmd", "kick", "Leader/Admin: remove a lower-ranked member (Admins: Members only)",
+    [("playerArg", "player", "Member name", "STRING")], S + "tell(pr, " + S + "kick(" + U + ", a0));")
+cmd("GPromoteCmd", "promote", "Leader: make a Member an Admin",
+    [("playerArg", "player", "Member name", "STRING")], S + "tell(pr, " + S + "promote(" + U + ", a0));")
+cmd("GDemoteCmd", "demote", "Leader: make an Admin a Member",
+    [("playerArg", "player", "Member name", "STRING")], S + "tell(pr, " + S + "demote(" + U + ", a0));")
+cmd("GTransferCmd", "transfer", "Leader: hand the guild to another member (repeat to confirm)",
+    [("playerArg", "player", "Member name", "STRING")], S + "tell(pr, " + S + "transfer(" + U + ", a0, false));")
+cmd("GDisbandCmd", "disband", "Leader: delete the guild (repeat within 10 s to confirm)", [], S + "tell(pr, " + S + "disband(" + U + ", false));")
+cmd("GInfoCmd", "info", "Your guild in chat", [], S + "tellAll(pr, " + S + "infoLines(pr.getUuid()));")
+cmd("GListCmd", "list", "The top 10 guilds", [], S + "tellAll(pr, " + S + "listLines());")
+cmd("GDepositCmd", "deposit", "Put coins from your purse into the guild bank: 500, 2k, 1.5m, all",
+    [("amountArg", "amount", "500, 2k, 1.5m or all", "STRING")], S + "tell(pr, " + S + "deposit(" + U + ", a0));")
+cmd("GWithdrawCmd", "withdraw", "Take coins from the guild bank into your purse (up to your rank's daily limit)",
+    [("amountArg", "amount", "500, 2k, 1.5m or all", "STRING")], S + "tell(pr, " + S + "withdraw(" + U + ", a0));")
+# 0.1.1: /guild bank limit <rank> <amount|none> (Leader) and /guild bank log
+cmd("GLimitCmd", "limit", "Leader: daily withdraw limit per game day for a rank: /guild bank limit <admin|member> <amount|0|none>",
+    [("rankArg", "rank", "admin or member", "STRING"), ("amountArg", "amount", "coins per game day (500, 2k, 1.5m), 0 or none", "STRING")],
+    S + "tell(pr, " + S + "setLimit(" + U + ", a0, a1));")
+cmd("GBankLogCmd", "log", "The last 10 guild bank moves", [], S + "tellAll(pr, " + S + "bankLogLines(pr.getUuid()));")
+cmd("GBankCmd", "bank", "Guild bank balance, limits + log; /guild bank deposit|withdraw <amount>, /guild bank limit, /guild bank log", [],
+    S + "tellAll(pr, " + S + "bankLines(pr.getUuid()));", subs=("GDepositCmd", "GWithdrawCmd", "GLimitCmd", "GBankLogCmd"))
+cmd("GuildChatCmd", "gc", "Guild chat: /gc <message>",
+    [("msgArg", "message", "Message to your guild", "GREEDY_STRING")], S + "tell(pr, " + S + "chat(" + U + ", a0));")
+root = cmd("GuildCmd", "guild", "Guilds: /guild opens the guild page - /guild help lists every command", [],
+    r"""@PLA@ p = (@PLA@) store.getComponent(ref, @PLA@.getComponentType());
+    if (p == null) { @PKG@.GuildStore.tellAll(pr, @PKG@.GuildStore.helpLines()); return; }
+    p.getPageManager().openCustomPage(ref, store, new @PKG@.GuildPage(pr));""",
+    subs=("GHelpCmd", "GCreateCmd", "GTagCmd", "GInviteCmd", "GAcceptCmd", "GDeclineCmd", "GLeaveCmd", "GKickCmd", "GPromoteCmd",
+          "GDemoteCmd", "GTransferCmd", "GDisbandCmd", "GInfoCmd", "GListCmd", "GBankCmd"))
+
+# ---- admin (requirePermission on the root AND on every subcommand: a subcommand with no permission groups checks its own node)
+A = "@ADMIN@"
+cmd("GAInfoCmd", "info", "Admin: a guild's details", [("guildArg", "guild", "Guild name, tag or id", "GREEDY_STRING")],
+    S + "tellAll(pr, " + S + "adminInfo(a0));", perm=A)
+cmd("GADeleteCmd", "delete", "Admin: delete a guild (repeat to confirm; bank paid to its Leader)",
+    [("guildArg", "guild", "Guild name, tag or id", "GREEDY_STRING")], S + "tell(pr, " + S + "adminDelete(" + U + ", a0));", perm=A)
+cmd("GASeasonNextCmd", "next", "Admin: start the next guild season (repeat to confirm)", [],
+    S + "tell(pr, " + S + "seasonNext(" + U + "));", perm=A)
+cmd("GASeasonCmd", "season", "Admin: the current guild season and its top 10", [], S + "tellAll(pr, " + S + "seasonLines());",
+    perm=A, subs=("GASeasonNextCmd",))
+cmd("GAXpCmd", "xp", "Admin: give a guild XP (testing)", [("amountArg", "amount", "Guild XP", "STRING"),
+    ("guildArg", "guild", "Guild name, tag or id", "GREEDY_STRING")], S + "tell(pr, " + S + "adminXp(a0, a1));", perm=A)
+cmd("GAReloadCmd", "reload", "Admin: re-read config.properties", [],
+    "@PKG@.GCfg.load(); " + S + "tell(pr, \"+config.properties re-read: XP share \" + @PKG@.GCfg.SHARE + \"%, check every \" + @PKG@.GCfg.POLL + \" s, max \" + @PKG@.GCfg.MAX_MEMBERS + \" members.\");", perm=A)
+cmd("GuildAdminCmd", "guildadmin", "Guild admin: info | delete | season | xp | reload", [], S + "tellAll(pr, " + S + "adminHelp());",
+    perm=A, subs=("GAInfoCmd", "GADeleteCmd", "GASeasonCmd", "GAXpCmd", "GAReloadCmd"))
+
+# ================= plugin =================
+F(pl, "public java.util.concurrent.ScheduledFuture ticker;")
+C(pl, "public SkyyGuildsPlugin(@JPI@ init) { super(init); }")
+M(pl, r"""
+public void setup() {
+  @PKG@.GuildStore.LOG = getLogger();
+  java.nio.file.Path dir = getDataDirectory().resolveSibling("Skyy_SkyyGuilds");
+  @PKG@.GuildStore.DIR = dir;
+  @PKG@.GuildStore.GDIR = dir.resolve("guilds");
+  @PKG@.GCfg.FILE = dir.resolve("config.properties");
+  @PKG@.GCfg.load();
+  @PKG@.GuildStore.loadAll();
+  getCommandRegistry().registerCommand(new @PKG@.GuildCmd());
+  getCommandRegistry().registerCommand(new @PKG@.GuildChatCmd());
+  getCommandRegistry().registerCommand(new @PKG@.GuildAdminCmd());
+  @PKG@.GuildStore.bridge().put("guild:fn:online", new @PKG@.GuildOnlineFn());
+  this.ticker = @HSV@.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new @PKG@.GuildTick(), 5L, 5L, java.util.concurrent.TimeUnit.SECONDS);
+  getLogger().at(java.util.logging.Level.INFO).log("[SkyyGuilds] @VERSION@ ready - /guild (page), /gc, /guildadmin; ranks Leader / Admin / Member; XP share " + @PKG@.GCfg.SHARE + "% of members' skill XP; daily withdraw limits per game day (new guilds: Admin " + @PKG@.GuildStore.limText(@PKG@.GCfg.DEF_LIM_ADMIN) + ", Member " + @PKG@.GuildStore.limText(@PKG@.GCfg.DEF_LIM_MEMBER) + "); data in " + dir);
+}""")
+M(pl, r"""
+protected void shutdown() {
+  try { if (this.ticker != null) this.ticker.cancel(false); } catch (Throwable t) { }
+  try { @PKG@.GuildStore.flushDirty(); } catch (Throwable t) { }
+  try { @PKG@.GuildStore.bridge().remove("guild:fn:online"); } catch (Throwable t) { }
+  super.shutdown();
+}""")
+
+for c in ALL + CMDS + [pl]:
+    c.writeFile(OUT)
+print("classes written:", len(ALL + CMDS) + 1)
+
+jar = os.path.join(HERE, "SkyyGuilds-%s.jar" % VERSION)
+man = B.manifest("SkyyGuilds", VERSION, "SkyWynn guilds: create/invite, ranks Leader/Admin/Member, guild chat (/gc), guild bank (SkyyCoins bridge) with per-rank daily withdraw limits per game day and a full bank log, guild XP from members' skill XP (SkyySkills bridge), seasons, /guild page. Per player. Zero dependencies.", PKG + ".SkyyGuildsPlugin")
+man["IncludesAssetPack"] = False
+B.assemble(jar, man, OUT)
