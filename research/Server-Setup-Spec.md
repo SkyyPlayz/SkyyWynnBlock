@@ -706,7 +706,7 @@ Make configurable later: the fixed 3-rank ladder (Member/Admin/Leader), a SkyyGu
 Category `party`: `maxSize` int 5 (2-10, **L** once adopted: `MAX` is already `volatile`; a party above a lowered max keeps its members and
 cannot invite), `inviteSeconds` int 60 s (15-600, L; binding `field:PartyStore.INVITE_MS*1000@config.properties:inviteSeconds`, because
 `INVITE_MS` stores milliseconds and the loader multiplies the file's seconds by 1000). Add `/partyadmin reload` (`requirePermission("skyyparty.admin")`) in the same version so
-the file works without SkyyMenu too.
+the file works without SkyyMenu too. LOCKED 2026-09-25 (Skyy): the `party.members` switch does not hide "X kicked Y" and "X invited Y". Those lines are always shown. That was already the default. SkyyParty 0.1.4 already leaves those two lines ungated.
 
 ### 4.6 SkyyEssentials [0.1.1]
 Categories `parts, tpa, msg, warps, trade`: `part.tpa`, `part.msg` (bool, L, part, D), `tpa.expireSeconds` int 60 s (10-600, L) and
