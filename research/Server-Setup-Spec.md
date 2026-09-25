@@ -888,6 +888,8 @@ SkyyGuilds' guild ranks and SkyyIslands' island roles are different things and s
 
 ### 5.2 NPC shops -> **SkyyEconomy 0.2** (after 0.1's merge is proven)
 
+LOCKED 2026-09-25 (Skyy): NPC shops ship in SkyyEconomy 0.2, so 0.1 stays a clean merge. That was already the default.
+
 LOCKED 2026-09-25 (Skyy): every item can have a **buy** price (player pays) and a **sell-back** price (0 = the
 NPC does not buy it); stock is **infinite** by default; any item can get a **limited stock with a restock timer** (Shopkeepers' admin-shop vs
 stocked-shop split, research "Server tools" 2). Infinite stock stays the default. That was already the default.
@@ -1123,7 +1125,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 4. LOCKED 2026-09-25 (Skyy): When a part is switched off, can players still take out what is theirs (bank withdraw, auction claims and cancels)? Yes. That was already the default.
 5. LOCKED 2026-09-25 (Skyy): When the bank comes back on, is the off time paid as interest? Yes. Players receive back-pay for interest accrued while the bank was switched off. Was: no back-pay.
 6. LOCKED 2026-09-25 (Skyy): NPC shops: buy and sell-back per item, infinite stock by default, optional limited stock with a restock timer. Yes, as described in 5.2. Infinite stock stays the default. That was already the default.
-7. NPC shops in SkyyEconomy 0.1 or 0.2? [0.2, so 0.1 stays a clean merge.]
+7. LOCKED 2026-09-25 (Skyy): NPC shops in SkyyEconomy 0.1 or 0.2? 0.2, so 0.1 stays a clean merge. That was already the default.
 8. Ranks: a new SkyyRanks mod, or inside SkyyEssentials? [SkyyRanks.]
 9. Which ranks come seeded? [Only the default rank "Member" (no prefix); owners make the rest in game.]
 10. Chat order when a player has a rank and a title? [`[Rank] [Title] Name`.]
