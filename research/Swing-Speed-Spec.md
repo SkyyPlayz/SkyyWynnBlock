@@ -11,6 +11,7 @@ draft said "no lever". It was wrong, and section 9 explains why.*
 - Mining Speed max bonus is **+40%** faster pickaxe swings (was +25%). A new `trees.properties` uses `Mining.MSpeed.per=0.016` (25 levels x 1.6% = 40%, a swing every 0.25 s, back to back). A file already on `0.01` keeps +25% until that line is set to `0.016`. If +40% is still too slow, vanilla swing timing may need adjusting. The engine does not go past +40% without re-timing the animation.
 - Heavy Pick applies to **ore and rock** (was ore only). +40 % breaking power at max, same as before. SkyyTrees 0.2.3 `dmgBonus` adds it for `Ore_` ids, Rocks, VolcanicRocks, and gather types that start with `Ore`.
 - Chopping Speed II stays renamed **Heavy Hatchet** (breaking power on wood). LOCKED 2026-09-25: max is **+100%** (was +40%), so a Cobalt+ hatchet (0.5 wood power) cuts a log in one hit. New files use `Foraging.FSpeed2.per=0.05` (20 levels x 5% = 100%). A file already on `0.02` keeps +40% until that line is set to `0.05`. This is breaking power on wood, not swing speed. Chopping Speed (the swing node) stays +25%. HARD RULE: hatchet swing-speed bonuses apply only to tree-breaking and wood-chopping. They must not change weapon-axe combat speed for Berserker or any combat class. Weapon axes get their own combat swing-speed stat, and Chopping Speed / Heavy Hatchet do not touch it. SkyyTrees 0.2.3 still speeds every `Hatchet_Attack` swing, including hits on mobs, and has no combat swing-speed stat yet. `Weapon_Axe_*` and `Weapon_Battleaxe_*` already use other roots, so Chopping Speed does not reach them today.
+- One-time chat notice about the swing-speed change, plus a free respec, stays **on**. LOCKED 2026-09-25. The default was already yes.
 
 **Build status (2026-09-25):** SkyyTrees 0.2.3 has been built from this spec: `tools/trees_0_2_3_patch.py` ->
 `SkyyTrees/build_skyytrees_0.2.3.py` -> `SkyyTrees/SkyyTrees-0.2.3.jar`. All the section 3.7 self-checks pass at build time. The bare-JVM
@@ -410,7 +411,7 @@ The patch reads `Assets.zip` **in memory** (python `zipfile`, read-only) and wri
 - Dust is never stored. It is always total XP / rate, minus the recomputed spend, and B and tokens do not change. So every Dust and
   token balance is identical.
 - No player-file format change is needed.
-- **One-time notice (default ON, Q7).** On the first tick where a profile has `MSpeed`, `FSpeed` or `FSpeed2` above 0, send the
+- **One-time notice (LOCKED 2026-09-25, default stays ON).** On the first tick where a profile has `MSpeed`, `FSpeed` or `FSpeed2` above 0, send the
   chat line below once. Then write `note.swing=1` into that profile's file. It is a new key: older versions ignore it, and a
   downgrade that drops it only shows the notice once more.
   > [Trees] Mining Speed now makes your pickaxe swing faster (it no longer adds breaking power). Chopping Speed does the same for
@@ -538,7 +539,7 @@ lower what `per` / `max` already control.
 | Q4 | More than +40 % ever (a copied, re-timed vanilla swing and a faster animation, Hylamity-style)? | **No** |
 | Q5 | ANSWERED 2026-09-25: faster pickaxe hits on mobs stay accepted. Hatchet swing speed is wood and trees only, and must not speed weapon-axe combat. Weapon axes get their own combat swing-speed stat | was: accept for both tools |
 | Q6 | Farming: add a sickle swing-speed node later? (Every slot is taken, so it would replace one) | **No, not now** |
-| Q7 | One-time chat notice explaining the change and the free respec? | **Yes** |
+| Q7 | ANSWERED 2026-09-25: one-time chat notice about the swing-speed change, and a free respec | **Yes** (already the default) |
 | Q8 | The effect is hidden (no status icon). If the HUD shows an empty slot, or Skyy wants feedback, show a small "Mining Speed" icon while it is active? | **Hidden** |
 | Q9 | Should accessories / SkyyGear add swing speed later (for example a "Mining Speed" talisman)? That would need a bridge key `swing:<uuid>` that SkyyTrees sums into the tier, like the movement protocol | **Not now** (design note only) |
 | Q10 | ANSWERED 2026-09-25: keep the name Heavy Hatchet. HARD RULE: it does not affect weapon-axe combat speed | **Heavy Hatchet** |

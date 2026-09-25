@@ -31,6 +31,7 @@ by tools/skills_0_3_2_patch.py, 0.3 from 0.2 by tools/skills_0_3_patch.py)
     crossbow's). PER-TICK EPOCH CHECK (review 7.4): each XbowState keeps the profile:epoch it was built under (Perks.epoch, one bridge
     read); a different live value wipes it on the next slot event or tick, before any payment (the 1 s Perks.switched is not relied on).
     Relog / world change (new Ref), death (DeathComponent) and a false cached flag also wipe; profile:busy only pauses.
+    LOCKED Skyy 2026-09-25: loaded bolts survive teleports. This build still wipes on a world change. Relog, death, and profile switch still drop the load.
   CONFIG (spec 3.2 / 3.3): XbowCfg, the Crossbows-stay-loaded block of xp.properties (a fresh file has it; an existing one without
     perk.archery.keepLoaded.enabled gets it appended ONCE), read by SkillCfg.load (/skills reload and the kit's reload routine). 5 rows,
     159 in total: perk.archery.keepLoaded.enabled (Parts, live,part,danger - asks when switched OFF), .level (Perks, 0-100), .items
@@ -61,7 +62,9 @@ by tools/skills_0_3_2_patch.py, 0.3 from 0.2 by tools/skills_0_3_patch.py)
   UNVERIFIED (needs the game, spec section 4): XbowSlotSys + Xbow.onSlot / Xbow.tick on real hotbar switches (the event, the held-long-
     enough guard, the 3-tick restore after vanilla's wipe, the arrow payment through getCombined inside AcroSys, the client's bolt counter
     and its ~0.1 s gap), the level-up unlock line, the 5 rows in SkyyMenu's Server Setup; go/no-go tests 5, 9, 10 and 12.
-  NOT HERE (spec 2.9 / 6): shortbows, the Signature meter, the off-hand slot, keeping loads across teleports (all dropped by default).
+  NOT HERE (spec 2.9 / 6): shortbows (LOCKED Skyy 2026-09-25: crossbows only), the Signature meter, the off-hand slot.
+    Keeping loads across teleports is LOCKED yes (2026-09-25); this build still drops them on a world change.
+    Planned, not built: Archery 15+ bolt capacity up to +4 extra bolts, and a late-game holstered reload of about 30 s.
 0.4.4 (research/Classes-Berserker-Priest-Spec.md section 3 - BERSERKER + PRIEST; Skyy's decisions 2026-09-25, SkyWynn-Decisions.md change
   notes 1-2). Pairs with SkyyClasses 0.1.6 (class:list + class:weapons:Berserker|Priest, and the placeholder Priest heal that calls
   skill:fn:healxp) and SkyyProfiles 0.1.2; every mix loads and is safe (spec 5): with SkyyClasses 0.1.5 the two new slots simply stay
@@ -1326,8 +1329,11 @@ DIV_LIT = json.dumps(DIV_DEFAULTS)
 XBOW_L = []
 XBOW_L.append("# ---------- Crossbows stay loaded (SkyySkills 0.4.5) - the Archery level-5 reward, research/Crossbow-Loaded-Spec.md ----------")
 XBOW_L.append("# Comments must stay on their own lines.")
+XBOW_L.append("# LOCKED Skyy 2026-09-25: Archery level 5, Archer class only, crossbows only (not shortbows).")
 XBOW_L.append("# An Archer whose Archery level is at least 'level' keeps a crossbow's loaded bolts when switching hotbar slots and back.")
 XBOW_L.append("# Vanilla gives the bolts back as Crude Arrows when you switch away; switching back loads them again, paid with those arrows.")
+XBOW_L.append("# LOCKED Skyy 2026-09-25: loaded bolts survive teleports. This build still wipes them on a world change.")
+XBOW_L.append("# Planned, not in this build: Archery 15+ can add up to 4 extra bolts. A late-game node reloads a holstered crossbow in about 30 s.")
 XBOW_L.append("perk.archery.keepLoaded.enabled=true")
 XBOW_L.append("perk.archery.keepLoaded.level=5")
 XBOW_L.append("# item id starts that count as crossbows, comma separated")

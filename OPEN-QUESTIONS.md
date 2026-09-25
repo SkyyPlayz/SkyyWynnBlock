@@ -73,12 +73,14 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   swing stays +25%. This still must not change weapon-axe combat speed]
 - Faster pickaxe hits on mobs stay accepted. Hatchet swings on mobs do not: see the Heavy Hatchet hard rule above. [pickaxe yes; hatchet no]
 - A Farming sickle speed node later? Accessories/gear adding swing speed later? [not now]
-- One-time chat notice about the change + free respec. [yes]
+- LOCKED 2026-09-25 (Skyy): one-time chat notice about the swing-speed change, plus a free respec. The default was already yes.
 
 ## Crossbows stay loaded (`research/Crossbow-Loaded-Spec.md`, SkyySkills 0.4.5 - building after round 6)
-- Archery level 5, Archer class only, crossbows only (not shortbows)? [yes]
-- Keep the load across teleports? [no - reload once after a teleport]
+- LOCKED 2026-09-25 (Skyy): Archery level 5, Archer class only, crossbows only (not shortbows). [already the live defaults]
+- LOCKED 2026-09-25 (Skyy): loaded bolts survive teleports. Was: drop the load and reload once after a teleport. [0.4.5 still wipes on a world change; the next Skills build keeps the load. Relog, death, and profile switch still drop it]
 - Keep the big-arrow ability meter too? Sound/chat hint when the bolts go back in? Personal /settings toggle? [no]
+- APPROVED 2026-09-25 (Skyy), to build: Archery level 15+ upgrades that raise a crossbow's max bolt capacity, up to +4 extra bolts. Not in 0.4.5.
+- APPROVED 2026-09-25 (Skyy), to build, late-game only: near the top of the Archer tree, a holstered crossbow reloads itself in about 30 s while you use another weapon. Not an early or mid-tier node. Not in 0.4.5.
 
 ## Auction House (`research/Auction-House-Spec.md` section 12)
 1. Hypixel's fees for our smaller economy: listing 1% / 2% / 2.5%, duration fee 20-1,200, 1% tax above 1,000,000? [Hypixel's numbers]
