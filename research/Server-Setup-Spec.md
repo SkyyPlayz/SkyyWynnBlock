@@ -602,7 +602,7 @@ server? Prices and files are kept.`); switching it back ON asks nothing (1.4.2: 
    to open with the same line. SkyyMenu tiles for it show "(off on this server)".
 2. **No data is deleted, converted or rewritten.** Files stay; the part simply stops acting on them.
 3. **Off stops new activity, but a player can always take out what is theirs** (the "nobody loses a coin" rule). LOCKED 2026-09-25 (Skyy): bank withdraw and auction claims stay available. That was already the default.
-4. Timers of the part pause and do **not** pay back the off time when it comes back on. LOCKED 2026-09-25 (Skyy): bank interest for the time the bank was off is no back-pay. That was already the default.
+4. Timers of the part pause and do **not** pay back the off time when it comes back on, except bank interest. LOCKED 2026-09-25 (Skyy): players receive back-pay for interest accrued while the bank was switched off. Was: no back-pay. `lastInterestMillis` stays put while the bank is off, and the missed periods are paid when the bank comes back on. SkyyBank 0.1.3 has no part switch yet.
 5. Its bridge functions answer as if the part were not installed (other mods already handle that case), except where rule 3 needs a path.
 6. Live: checked at every command, click and tick. No restart.
 
@@ -610,7 +610,7 @@ server? Prices and files are kept.`); switching it back ON asks nothing (1.4.2: 
 
 | Part | Off means | Still works |
 |---|---|---|
-| `part.bank` | No deposits, no interest (the tick skips; `lastInterestMillis` is set to now when it comes back on). `bank:<uuid>` is still published so the HUD and menu show the balance. | `/bank withdraw` and Withdraw all, so nobody's coins are locked away. |
+| `part.bank` | No deposits. The interest tick skips while the bank is off, and `lastInterestMillis` is left alone. When the bank comes back on, players receive the interest accrued while it was off. `bank:<uuid>` is still published so the HUD and menu show the balance. | `/bank withdraw` and Withdraw all, so nobody's coins are locked away. |
 | `part.bazaar` | `/bazaar` and `/bz` refused; demand drift paused (the decay clock restarts from now when it comes back on). `bazaar:products` is removed from the bridge so the auction house stops refusing bazaar items. | Nothing is stored per player, so nothing is locked. |
 | `part.auctions` | No browsing, listing or buying (like `/ahadmin pause`, plus Browse closed). `auction:fn:lowestBin` returns null. Listing clocks keep running; an expired listing returns to its seller's claims as usual. | `/ah claim` and Manage (cancel your own listings, claim coins and items). |
 | `part.npcShops` (0.2) | Shop NPCs stay where they are; using one says "This shop is closed." (`npcShops` off does not despawn them). | - (NPC shops hold no player items) |
@@ -1076,7 +1076,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 4. A `RESTART` row (e.g. `replyShortcut`): amber status, the Mods list says it waits for a restart; after restart the tag is gone.
 5. Default button on a changed row; Advanced ON shows the adv rows; Prev/Next paging; typed drafts survive clicking another row's Set.
 6. Parts: bazaar OFF -> `/bz` answers "turned off", the menu tile says off, the bazaar files are unchanged; ON again -> works, prices as before.
-   Bank OFF -> deposit refused, withdraw works, no interest; ON -> no back-pay. Auctions OFF -> browse refused, `/ah claim` works.
+   Bank OFF -> deposit refused, withdraw works, no payout while off; ON -> the missed interest is paid. Auctions OFF -> browse refused, `/ah claim` works.
 7. Export SkyyEconomy -> code in the box and a file in `exports/`; on a second test world, Import -> Preview -> Apply; values match.
 8. History -> Preview -> Restore of an older version; then undo that restore.
 9. Hand-edit `Skyy_SkyyBank/config.properties` while running -> `Reload file` -> the change is live and logged `via=file`.
@@ -1121,7 +1121,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 2. LOCKED 2026-09-25 (Skyy): Which changes ask for a confirm? Money, penalties, rates, caps, curves, switching a part off, imports, restores, undos. That was already the default. [Only rows marked danger: money, penalties, rates, caps, curves, switching a part OFF, pausing the auction house, raising the auction purchase-confirm thresholds; plus imports, restores, undos, removes.]
 3. LOCKED 2026-09-25 (Skyy): How many old versions of each config file to keep? 10. Was: 20. `tools/skyycfg.py` still defaults `KEEP=20`.
 4. LOCKED 2026-09-25 (Skyy): When a part is switched off, can players still take out what is theirs (bank withdraw, auction claims and cancels)? Yes. That was already the default.
-5. LOCKED 2026-09-25 (Skyy): When the bank comes back on, is the off time paid as interest? No back-pay. That was already the default.
+5. LOCKED 2026-09-25 (Skyy): When the bank comes back on, is the off time paid as interest? Yes. Players receive back-pay for interest accrued while the bank was switched off. Was: no back-pay.
 6. NPC shops: buy and sell-back per item, infinite stock by default, optional limited stock with a restock timer? [Yes, as described in 5.2.]
 7. NPC shops in SkyyEconomy 0.1 or 0.2? [0.2, so 0.1 stays a clean merge.]
 8. Ranks: a new SkyyRanks mod, or inside SkyyEssentials? [SkyyRanks.]
