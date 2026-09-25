@@ -71,7 +71,7 @@ Server admins (`skyyislands.admin`) pass every flag and entry check, as in 0.4.x
 
 | Action | Owner | Admin | Member | Trusted | Visitor |
 |---|---|---|---|---|---|
-| Invite a co-op member | yes | no, unless `coop.adminsInvite=true` `[SKYY?]` | no | no | no |
+| Invite a co-op member | yes | yes (`coop.adminsInvite` default `true`) | no | no | no |
 | Kick a member, promote, demote | yes | no | no | no | no |
 | Disband the co-op, reset the island | yes | no | no | no | no |
 | Leave the co-op | no (disband instead) | yes | yes | n/a | n/a |
@@ -82,7 +82,9 @@ Server admins (`skyyislands.admin`) pass every flag and entry check, as in 0.4.x
 | Build, chests, farm... | always | by the flags (3.2) | by the flags | by the flags | by the flags |
 | Go to the island with `/island` | yes | yes | yes | no (`/island visit`) | no |
 
-`[SKYY?]` Reading of "the leader keeps the rights to kick players": only the Owner removes **co-op members**. Admins may still expel or ban visitors and untrust helpers, because that is moderation, part of "island settings".
+LOCKED 2026-09-25 (Skyy): Island Admins may invite co-op members. `coop.adminsInvite` defaults to `true`. Was: `false`, Owner only. SkyyIslands 0.5.2 still defaults the row and `config.properties` to `false`. A file already on `false` keeps owner-only invites until that line is set to `true`.
+
+LOCKED 2026-09-25 (Skyy): only the Owner kicks co-op members. Admins may still expel or ban visitors and untrust helpers. That was already the default.
 
 ### 1.3 The home island rule
 
@@ -109,7 +111,7 @@ Everything that means "my island" uses `homeKey`:
 ### 1.5 Invite and accept (SkyyParty 0.1.3 pattern)
 
 `/island invite <player>` (PLAYER_REF, online only). Checks, in order:
-1. You are the Owner of your home island (or an Admin with `coop.adminsInvite=true`). Otherwise: "Only the island owner can invite (you are a member of Skyy's island)".
+1. You are the Owner of your home island, or an Admin (`coop.adminsInvite` default `true`). Otherwise: "Only the island owner can invite (you are a member of Skyy's island)".
 2. The island exists (`worldName(ownerKey) != null`). Otherwise: "Create your island first: /island".
 3. The target is online and not you (the UUID, which also covers your other profiles).
 4. The target is not banned here ("/island unban them first") and not already a member or admin here on any profile.
@@ -421,7 +423,7 @@ On a visitor's arrival, if `visit.notify=1`: message the owner (`Universe.get().
 - **Visits while the owner is offline, island warps list, "visit a random public island".** `/island visit` takes `PLAYER_REF` (online only). Members don't need this: their `/island` loads the co-op island while the owner is offline.
 - **Leader transfer** (`/island transfer`). An island is one profile's file, so a transfer means moving the file to another pkey and re-keying `WORLD_OWNER`. It is possible, but not asked for.
 - **Delete the old world on reset** (`reset.deleteOldWorld`). `WorldConfig.setDeleteOnRemove(true)` + `markChanged()` before the old world empties makes the engine move it to `worlds-deleted/` and delete it (bytecode, 1.7). The default keeps it as a backup; add the switch when disk space matters.
-- **Admins invite / a member vote to kick** (Hypixel), **party / guild visit sources** (SkyyParty 0.1.3 publishes `party:fn:members`; SkyyGuilds publishes `guild:<uuid>`: a "Friends" mode that includes the party and guild is a small follow-up), **visitor keep-inventory** (world-wide `setDeathConfigOverride`, touches the death-penalty design), **split animal/monster spawning** (one engine boolean), **fire spread**, **custom roles / per-player overrides**, **admin `/island admin settings <player>`**, **island size border** (belongs with the size tiers).
+- **A member vote to kick** (Hypixel), **party / guild visit sources** (SkyyParty 0.1.3 publishes `party:fn:members`; SkyyGuilds publishes `guild:<uuid>`: a "Friends" mode that includes the party and guild is a small follow-up), **visitor keep-inventory** (world-wide `setDeathConfigOverride`, touches the death-penalty design), **split animal/monster spawning** (one engine boolean), **fire spread**, **custom roles / per-player overrides**, **admin `/island admin settings <player>`**, **island size border** (belongs with the size tiers).
 
 ---
 
@@ -491,14 +493,14 @@ The same resend goes into `FillTask` (harmless at creation) and `BiomeApply` (wi
 
 ### 7.3 Members tab
 - **Name box** (SkyySacks 0.7.3 / SkyyGuilds pattern, verified in game): `TextField #SkyyIsName { Anchor: (Full: 0); Padding: (Horizontal: 10); MaxLength: 32; PlaceholderText: "Player name"; ... FontSize: 16 }` inside a 420 x 46 box.
-  - `#SkyyIsInvBtn` "Invite to co-op": Owner, or Admin with `coop.adminsInvite`.
+  - `#SkyyIsInvBtn` "Invite to co-op": Owner, or an Admin (`coop.adminsInvite` default `true`).
   - `#SkyyIsTrustBtn` "Trust (build only)": Owner and Admin.
   - Both buttons send `EventData.of("a", "invite" | "trust").append("@IsName", "#SkyyIsName.Value")`, read back with SkyyGuilds' `jsonStr`.
   - **Enter** (`Validating` binding with `EventData.of("a", "name").append(...)`) only keeps the typed name (`keepName`) and says "Click Invite or Trust". A box with two actions must not guess, the same rule as the guild Amount box.
   - The name is matched against online players: exact (ignoring case) first, then prefix (SkyyParty 0.1.3).
   - Members, Trusted players and Visitors don't see the box.
 - **Co-op roster** (owner first, up to `coop.maxPlayers` rows of 48 px): an online dot, name, "(you)", the role, and "since <date>". The Owner sees `#SkyyIsPr<n>` Promote / `#SkyyIsDm<n>` Demote and `#SkyyIsKk<n>` Kick (2 clicks) on each member row.
-- **Pending invites** (Owner): "Invited: Wesley (38 s)".
+- **Pending invites** (Owner, and an Admin): "Invited: Wesley (38 s)".
 - **Trusted:** 2 columns x 6 rows per page, name + `#SkyyIsUt<n>` Untrust (Owner/Admin), with `#SkyyIsTp` / `#SkyyIsTn` Prev/Next.
 
 ### 7.4 Permissions tab (the grid)
@@ -536,7 +538,7 @@ All are subcommands of `/island` (alias `/is`). Each is an `AbstractPlayerComman
 | `/island info` | none | anyone | home island, owner, your role, members n/max, trusted n, world loaded, the world you are in |
 | `/island menu` (aliases `settings`, `options`) | none | anyone | opens the island page (section 7) |
 | `/island visit <player>` (alias `warp`) | `PLAYER_REF` | anyone | the target's home island, with the entry check (4.1) and the landing point (slice B) |
-| `/island invite <player>` (alias `add`) | `PLAYER_REF` | Owner (+ Admin if `coop.adminsInvite`) | co-op invite, 60 s (1.5) |
+| `/island invite <player>` (alias `add`) | `PLAYER_REF` | Owner, and Admin (`coop.adminsInvite` default `true`) | co-op invite, 60 s (1.5) |
 | `/island accept` | none | the invited player | join with the active profile (1.5) |
 | `/island decline` | none | the invited player | refuse |
 | `/island leave` | none | Member, Admin | leave the co-op; you go back to your own island (1.6) |
@@ -604,7 +606,7 @@ defaults.visit.mode=public
 defaults.visit.limit=5
 visit.limitMax=10
 coop.maxPlayers=5                         # owner + 4. LOCKED 2026-09-25 (Skyy): 5 including the owner.
-coop.adminsInvite=false
+coop.adminsInvite=true                    # LOCKED 2026-09-25 (Skyy): Admins may invite. Was: false. SkyyIslands 0.5.2 still writes false.
 invite.seconds=60
 trusted.max=20
 bans.max=100
@@ -680,8 +682,8 @@ animals.extra=                            # extra NPC role names that count as f
 
 **`[SKYY?]` choices (defaults picked):**
 - LOCKED 2026-09-25 (Skyy): co-op size 5 including the owner. That was already the default;
-- Admins can't invite;
-- Admins may expel, ban and untrust, but only the Owner kicks members;
+- LOCKED 2026-09-25 (Skyy): Island Admins may invite co-op members. `coop.adminsInvite` defaults to `true`. Was: `false`. SkyyIslands 0.5.2 still writes `false`;
+- LOCKED 2026-09-25 (Skyy): only the Owner kicks co-op members. Admins may still expel, ban and untrust visitors and helpers. That was already the default;
 - Trusted = builder (no harvest or beds);
 - no visits to your own dormant island while you are in a co-op;
 - old build-rights invites become Trusted;
