@@ -813,7 +813,9 @@ SkyySkills' real value over the bridge (Config inventory flags the hand-kept cop
 thresholds (table `title`, when SkyyExploration 0.2 builds its checklist backbone).
 
 ### 4.19 SkyyRanks 0.1 (new, 5.1) and SkyyQuests (future)
-SkyyRanks: `ranks.editor` link `rankadmin`, `ranks.default` choice (the rank ids), `chat.prefix` bool true (L), `chat.priority` int 31000 (R, A).
+SkyyRanks: `ranks.editor` link `rankadmin`, `ranks.default` text (a rank id, checked live: rank ids are made in game, so a build-time
+`choice` list cannot hold them; the default rank always sits at the bottom of the ladder), `chat.prefix` bool true (L), `chat.priority` int
+31000 (R, A).
 SkyyQuests: nothing to register until it exists.
 
 ---
