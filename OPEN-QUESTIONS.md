@@ -78,7 +78,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 ## Crossbows stay loaded (`research/Crossbow-Loaded-Spec.md`, SkyySkills 0.4.5 - building after round 6)
 - LOCKED 2026-09-25 (Skyy): Archery level 5, Archer class only, crossbows only (not shortbows). [already the live defaults]
 - LOCKED 2026-09-25 (Skyy): loaded bolts survive teleports. Was: drop the load and reload once after a teleport. [0.4.5 still wipes on a world change; the next Skills build keeps the load. Relog, death, and profile switch still drop it]
-- Keep the big-arrow ability meter too? Sound/chat hint when the bolts go back in? Personal /settings toggle? [no]
+- LOCKED 2026-09-25 (Skyy): keep the big-arrow ability meter across a slot switch. Was no. [0.4.5 still resets it]
+- LOCKED 2026-09-25 (Skyy): a sound and a chat hint when the bolts go back in. Was no. [0.4.5 stays quiet]
+- LOCKED 2026-09-25 (Skyy): `/settings` switches so a player can turn the meter, the sound, and the chat hint off individually. Was no. [0.4.5 has no player switches]
 - APPROVED 2026-09-25 (Skyy), to build: Archery level 15+ upgrades that raise a crossbow's max bolt capacity, up to +4 extra bolts. Not in 0.4.5.
 - APPROVED 2026-09-25 (Skyy), to build, late-game only: near the top of the Archer tree, a holstered crossbow reloads itself in about 30 s while you use another weapon. Not an early or mid-tier node. Not in 0.4.5.
 

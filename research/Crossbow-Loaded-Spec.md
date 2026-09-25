@@ -23,6 +23,10 @@ text and the method it sits in, which is what the `rep` patch keys on. All of th
 - Loaded bolts **survive teleports** (`/hub`, `/island`, portals). Was: wipe on world change and reload once. SkyySkills 0.4.5 still wipes. Relog, death, and profile switch still drop the load.
 - **To build, not in 0.4.5:** Archery level 15+ upgrades raise a crossbow's max bolt capacity, up to **+4 extra bolts**.
 - **To build, late-game only, not in 0.4.5:** near the top of the Archer tree, a holstered crossbow reloads itself in about 30 seconds while the player uses a different weapon (fire it full, swap to another bow, it refills in the background). Not an early or mid-tier unlock. There is no Archer class tree yet, so both planned nodes sit on the Archery skill tree until a class tree exists.
+- The big-arrow ability meter (Signature charge) is kept across a slot switch, with the bolts. Was: bolts only.
+- When the bolts go back in, play a sound and send a chat hint. Was: no sound and no hint.
+- `/settings` has separate switches so a player can turn the meter, the sound, and the chat hint off on their own. Was: no personal toggle.
+- SkyySkills 0.4.5 still resets the meter, stays quiet, and has no player switches.
 
 **VERIFIED** = seen directly in bytecode, in asset JSON, or in our own source. **INFERRED** = strongly implied, not read literally.
 **UNTESTED** = not seen in game yet (section 4 checks it).
@@ -370,8 +374,8 @@ tick. It is **not** used: a cross-module ordering edge that fails to resolve wou
 
 ### 2.9 Known limits (documented, not bugs)
 - The restore is not instant: about 0.1 s. A click inside that window starts a vanilla reload (2.6).
-- Only the loaded bolts are kept. The **Signature** meter (the big-arrow ability charge, `SignatureEnergy` / `SignatureCharges`) still
-  resets on a switch like vanilla (open question 6.5).
+- LOCKED 2026-09-25: the **Signature** meter (the big-arrow ability charge, `SignatureEnergy` / `SignatureCharges`) is kept with the bolts.
+  SkyySkills 0.4.5 still resets it on a switch, like vanilla.
 - Only **Crude** arrows exist in the crossbow's economy: vanilla loads Crude, refunds Crude, and we charge Crude.
 - A crossbow in the off-hand / utility slot (`Utility.Compatible: true`) is not covered. Only hotbar switches are.
 - **Vanilla, not this perk (INFERRED):** `StatsCondition` does not spend `Ammo` (1.3). If two `SwapFrom` chains ever ran in one tick
@@ -649,12 +653,11 @@ Arrows (`Weapon_Arrow_Crude`, the only arrow a crossbow loads).
 3. **ANSWERED 2026-09-25:** loaded bolts survive teleports (`/hub`, `/island`, portals). Relog, death, and profile switch still drop
    the load. *Was: drop on world change too. 0.4.5 still wipes teleports.*
 4. **ANSWERED 2026-09-25:** crossbows only, not shortbows. *Was already the default.*
-5. **Signature meter:** the big-arrow ability charge still resets on a switch, as in vanilla. Keep it too? *Default: no, bolts only.*
-6. **Feedback:** a quiet click sound when the bolts go back in, or a one-time chat hint the first time it happens? *Default: none. The
-   level-up line and the /skills page say it.*
+5. **ANSWERED 2026-09-25:** keep the big-arrow ability meter (Signature charge) across a slot switch, with the bolts. *Was: no, bolts only. 0.4.5 still resets it.*
+6. **ANSWERED 2026-09-25:** when the bolts go back in, play a sound and send a chat hint. *Was: none. 0.4.5 stays quiet.*
 7. **Existing Archers already at 5+** when 0.4.5 goes live: one chat line on their next join ("New Archery reward: ...")? *Default: no.
    /skills shows it.*
-8. **Player toggle** in /settings to turn it off for yourself? *Default: no. Server owners have the part switch.*
+8. **ANSWERED 2026-09-25:** `/settings` switches so a player can turn the meter, the sound, and the chat hint off individually. *Was: no personal toggle. 0.4.5 has none. The stay-loaded perk itself stays a server part switch.*
 9. **Teaser before level 5:** show "Level 5: crossbows stay loaded" on the Archery page at levels 1-3 too? *Default: no. It shows at
    level 4 under "Level 5 adds".*
 

@@ -62,7 +62,8 @@ by tools/skills_0_3_2_patch.py, 0.3 from 0.2 by tools/skills_0_3_patch.py)
   UNVERIFIED (needs the game, spec section 4): XbowSlotSys + Xbow.onSlot / Xbow.tick on real hotbar switches (the event, the held-long-
     enough guard, the 3-tick restore after vanilla's wipe, the arrow payment through getCombined inside AcroSys, the client's bolt counter
     and its ~0.1 s gap), the level-up unlock line, the 5 rows in SkyyMenu's Server Setup; go/no-go tests 5, 9, 10 and 12.
-  NOT HERE (spec 2.9 / 6): shortbows (LOCKED Skyy 2026-09-25: crossbows only), the Signature meter, the off-hand slot.
+  NOT HERE (spec 2.9 / 6): shortbows (LOCKED Skyy 2026-09-25: crossbows only), the off-hand slot.
+    LOCKED Skyy 2026-09-25, not in this build: keep the Signature meter, a sound and a chat hint when bolts return, and /settings switches for the meter, the sound, and the hint. This build still resets the meter and stays quiet.
     Keeping loads across teleports is LOCKED yes (2026-09-25); this build still drops them on a world change.
     Planned, not built: Archery 15+ bolt capacity up to +4 extra bolts, and a late-game holstered reload of about 30 s.
 0.4.4 (research/Classes-Berserker-Priest-Spec.md section 3 - BERSERKER + PRIEST; Skyy's decisions 2026-09-25, SkyWynn-Decisions.md change
@@ -1333,6 +1334,8 @@ XBOW_L.append("# LOCKED Skyy 2026-09-25: Archery level 5, Archer class only, cro
 XBOW_L.append("# An Archer whose Archery level is at least 'level' keeps a crossbow's loaded bolts when switching hotbar slots and back.")
 XBOW_L.append("# Vanilla gives the bolts back as Crude Arrows when you switch away; switching back loads them again, paid with those arrows.")
 XBOW_L.append("# LOCKED Skyy 2026-09-25: loaded bolts survive teleports. This build still wipes them on a world change.")
+XBOW_L.append("# LOCKED Skyy 2026-09-25: keep the big-arrow meter, and play a sound plus a chat hint when bolts return.")
+XBOW_L.append("# Players can turn the meter, the sound, and the hint off in /settings. This build does none of that yet.")
 XBOW_L.append("# Planned, not in this build: Archery 15+ can add up to 4 extra bolts. A late-game node reloads a holstered crossbow in about 30 s.")
 XBOW_L.append("perk.archery.keepLoaded.enabled=true")
 XBOW_L.append("perk.archery.keepLoaded.level=5")
