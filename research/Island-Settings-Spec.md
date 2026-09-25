@@ -319,7 +319,7 @@ Who changes them: Owner and Admin. Members see them read-only.
 | Setting | Values | Default | Hook | When |
 |---|---|---|---|---|
 | Who may visit | Public / Friends only (members + trusted) / Closed (members only) | Public (= 0.4.x) | custom: `/island visit`, arrival check, 5 s sweep | **Now** |
-| Visitor limit | 1..`visit.limitMax` (config, default 10) | 5 `[SKYY?]` | `World.getPlayerRefs()` (thread-safe) | **Now** |
+| Visitor limit | 1..`visit.limitMax` (config, default 10) | 10. LOCKED 2026-09-25 (Skyy). Was: 5. | `World.getPlayerRefs()` (thread-safe) | **Now** |
 | Expel | one visitor or trusted player to the hub + a 60 s re-entry block | n/a | `HubCmd.sendToHub` on the island's world thread | **Now** |
 | Ban list | UUIDs, max 100 | empty | custom | **Now** |
 | Lock / unlock | lock = Closed, and remember the previous mode | n/a | alias of "Who may visit" | **Now** |
@@ -451,7 +451,7 @@ The same resend goes into `FillTask` (harmless at creation) and `BiomeApply` (wi
 
 ## 6. Defaults and migration
 
-**A new island starts with:** Public visits, limit 5, visit ping on, PvP off, spawning off, biome Void Sky, weather biome default, no landing point, and the flags from 3.2. Visitors may walk around, open doors, sit and fight hostile mobs. Trusted players build (place, break, benches, pickup, drop, toggle blocks). Members and admins do everything, including chests, furnaces, crops, beds and animals.
+**A new island starts with:** Public visits, limit 10, visit ping on, PvP off, spawning off, biome Void Sky, weather biome default, no landing point, and the flags from 3.2. LOCKED 2026-09-25 (Skyy): the visitor limit is 10. Was: 5. SkyyIslands 0.5.2 still writes `defaults.visit.limit=5`. A file already on 5 keeps 5 until that line is set to 10. Visitors may walk around, open doors, sit and fight hostile mobs. Trusted players build (place, break, benches, pickup, drop, toggle blocks). Members and admins do everything, including chests, furnaces, crops, beds and animals.
 
 **All defaults live in `Skyy_SkyyIslands/config.properties`** (`defaults.perm.<id>=`, `defaults.visit.mode=` ...). The file is written with these values on first run, as SkyySkills does with `xp.properties`. A key missing from an island file means "use the config default". A server builder can therefore fix a bad default for every island that never touched that setting.
 
@@ -583,7 +583,7 @@ settings=1                               # written on the first settings change;
 perm.build=trusted                       # one per flag id; values visitor|trusted|member|admin|owner
 visit.mode=public                        # public|friends|closed
 visit.prev=public                        # restored by /island unlock
-visit.limit=5
+visit.limit=10                           # LOCKED 2026-09-25 (Skyy). Was: 5. A file already on 5 keeps 5.
 visit.notify=1
 visit.spawn=8.5,129.0,8.5,0,0,0          # slice B; absent = island SpawnProvider
 pvp=0
@@ -603,7 +603,7 @@ weather=                                 # slice B; empty = biome default
 ```
 defaults.perm.build=trusted ... (all 14, section 3.2)
 defaults.visit.mode=public
-defaults.visit.limit=5
+defaults.visit.limit=10                 # LOCKED 2026-09-25 (Skyy). Was: 5. SkyyIslands 0.5.2 still writes 5.
 visit.limitMax=10
 coop.maxPlayers=5                         # owner + 4. LOCKED 2026-09-25 (Skyy): 5 including the owner.
 coop.adminsInvite=true                    # LOCKED 2026-09-25 (Skyy): Admins may invite. Was: false. SkyyIslands 0.5.2 still writes false.
@@ -688,7 +688,7 @@ animals.extra=                            # extra NPC role names that count as f
 - LOCKED 2026-09-25 (Skyy): no visits to your own dormant island while you are in a co-op. That was already the default;
 - old build-rights invites become Trusted;
 - LOCKED 2026-09-25 (Skyy): `/island reset` cooldown 24 h, with 3 confirms. That was already the default;
-- visitor limit 5;
+- LOCKED 2026-09-25 (Skyy): visitor limit 10. Was: 5. SkyyIslands 0.5.2 still writes `defaults.visit.limit=5`. A file already on 5 keeps 5 until that line is set to 10;
 - biome cost 0 and unlock gating later.
 
 ---

@@ -117,7 +117,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-09-25 (Skyy): no visits to your own old island while you are in someone's co-op. [no, already the default]
 - Old "build rights" invites became Trusted, not members. [done]
 - LOCKED 2026-09-25 (Skyy): `/island reset` cooldown 24 h with 3 confirms. [24 h, already the default]
-- Visitor limit 5. [5]
+- LOCKED 2026-09-25 (Skyy): visitor limit 10. Was: 5. [10; 0.5.2 still writes defaults.visit.limit=5]
 - Biome change: free, unlocks tied to exploration later. [free]
 - What visitors may use by default (doors today). [doors, seats]
 

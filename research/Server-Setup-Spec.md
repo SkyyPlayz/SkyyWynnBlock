@@ -792,7 +792,7 @@ them). Raising the cap above 6 is Skyy's open decision (HANDOFF: do not invent t
 ### 4.17 SkyyIslands [0.5]
 Categories `permissions, visits, coop, limits, starter, hub, tech`. permissions: 14 choice rows `defaults.perm.<flag>` (`visitor|trusted|member|
 admin|owner`, L for islands whose owner never set that flag). visits: `defaults.visit.mode` choice `public|friends|closed` (N), `visit.limitMax`
-10 (1-100, L), `defaults.visit.limit` 5 (N), `defaults.visit.notify` bool (N). coop: `coop.maxPlayers` 5 (1-50, L), `coop.adminsInvite` bool,
+10 (1-100, L), `defaults.visit.limit` 10 (N). LOCKED 2026-09-25 (Skyy): the default visitor limit is 10. Was: 5. SkyyIslands 0.5.2 still writes 5. `defaults.visit.notify` bool (N). coop: `coop.maxPlayers` 5 (1-50, L), `coop.adminsInvite` bool,
 `invite.seconds` 60 s (10-3600). limits: `trusted.max` 20 (0-500), `bans.max` 100 (0-1000), `expel.cooldownSeconds` 60 s (0-86400),
 `reset.cooldownHours` 24 h (0-8760), `reset.confirmSeconds` 20 s (5-300) (ranges = the 0.5 loader's clamps; every one of these fields
 stores the file's own unit, so no scale). tech (A): `tint.resend` choice, `perm.otherProfileStrict` bool (D), `animals.extra` text (role ids).

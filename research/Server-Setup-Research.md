@@ -467,7 +467,7 @@ Data folder: `Skyy_SkyyIslands/`. Config file: `config.properties` (spec section
 |---|---|---|---|---|---|
 | `defaults.perm.<FlagId>` — 14 flags: `build`, `break`, `containers`, `doors`, `crafting`, `processing`, `beds`, `seats`, `harvest`, `animals`, `mobs`, `pickup`, `drop`, `other` | choice: `visitor`\|`trusted`\|`member`\|`admin`\|`owner` | per-flag (e.g. `doors`/`seats`/`mobs`=visitor, `containers`/`processing`/`beds`/`harvest`/`animals`=member, the rest=trusted) | 5 ranks | The server-wide default minimum role for each of 14 island permissions, used on any island whose owner never touched that flag. | **Live** via `/island reload` (`skyyislands.admin`, explicitly *not* the player `Adventurer` group) |
 | `defaults.visit.mode` | choice: `public`\|`friends`\|`closed` | `public` | — | Default visitor policy for a new island. | Live via reload |
-| `visit.limitMax` / `defaults.visit.limit` | whole number | 10, 5 | 1–100 / 1–`limitMax` | Server ceiling on concurrent visitors, and the default per-island limit. | Live via reload |
+| `visit.limitMax` / `defaults.visit.limit` | whole number | 10, 10 | 1–100 / 1–`limitMax` | Server ceiling on concurrent visitors, and the default per-island limit. LOCKED 2026-09-25 (Skyy): the default is 10. Was: 5. SkyyIslands 0.5.2 still writes 5. | Live via reload |
 | `defaults.visit.notify` | on/off | true | — | Whether the owner is notified when someone visits. | Live via reload |
 | `coop.maxPlayers` | whole number | 5 | 1–50 | Largest co-op member count per island. | Live via reload |
 | `coop.adminsInvite` | on/off | false | — | Whether island admins (not just the owner) may send co-op invites. | Live via reload |
