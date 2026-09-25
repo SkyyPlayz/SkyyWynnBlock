@@ -39,7 +39,7 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
   is an emergency cook (half XP, 75% of the bonus).
 - Exploration: first-time world chests, walking new ground, discovering Hytale's zones; +max Stamina per level; titles; no XP boosters.
   Live 2026-09-25: admin-placed discovery and secret spots (banner, sound, XP) and an island checklist with a completion %.
-- Felled trees pay for every log (XP, double drops, collections). Party members nearby share 50% of combat XP. Double Jump (crouch in mid-air).
+- Felled trees pay for every log (XP, double drops, collections). Party members nearby share 50% of combat XP. Double Jump is locked 2026-09-25: Acrobatics tier III, a second jump in mid-air, 2 Stamina (`research/Double-Jump-Spec.md`). The deployed node is still tier II / crouch until the next Trees and Skills build.
 
 **Skill trees (`/tree`)**
 - Mining, Foraging, Farming, Cooking, Acrobatics and Exploration trees. Tokens from skill levels unlock nodes, Dust from XP levels them,
@@ -108,10 +108,12 @@ islands split by zone. Status: planned, not started. Whether World Gen 2 can do 
    Combat bags? (Today every bag is craftable at a Workbench, so the bag rewards on collection tiers do nothing yet.)
 2. **Settings menu:** when someone turns off party invites, teleport requests or private messages - refuse the sender, or just hide it?
    Staff bypass? Anything that should stay always-on?
-3. **Tree felling:** felled logs pay full XP? Leaves pay XP? Tree Feller cooldown (5 s suggested)? Two players on one tree? Do double drops
-   count for collections? Apple, bamboo and ice trees are missing from the game's own tree lists - count them anyway?
-4. **Double Jump:** tier II (replaces Quick Dodge; no tree dodge bonus before Acrobatics 45) or tier III? Double-jump boots as gear for the real
-   jump key? Height and stamina numbers.
+3. **Tree felling:** felled logs pay full XP? Leaves pay XP? Two players on one tree? Do double drops count for collections? Apple, bamboo and
+   ice trees are missing from the game's own tree lists - count them anyway? Tree Feller's count and cooldown are locked 2026-09-25:
+   levels 1–6 = 1, 2, 4, 5, 6, 10 extra logs on the same height (level 6 jumps to 10 so a very large tree is not broken as a whole layer);
+   cooldown 3 s (`research/Tree-Fall-Spec.md`).
+4. **Double Jump** tier and trigger are locked 2026-09-25: tier III (slot 7, replaces Sprinter), jump again in mid-air, 2 Stamina
+   (`research/Double-Jump-Spec.md`). Still open: double-jump boots as gear, and the 55%–100% height curve.
 5. **Campfire accessory:** it gives only the guaranteed Grade (no skill-tree Grade chances or extra-dish perks) - right for an emergency cook?
 6. **Islands:** what should visitors be allowed to use by default (today: doors only)? The island settings menu will make it the owner's call.
 7. **Exploration:** what else should level it past about level 25 (it is one-time only for now)? The rest of the Exploration tree.

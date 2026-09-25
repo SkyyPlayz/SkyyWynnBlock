@@ -19,6 +19,31 @@
 
 UNVERIFIED means design, inference, or not yet tested in game. `[SKYY?]` marks a choice or number for Skyy (they/them).
 
+## LOCKED 2026-09-25 — Tree Feller count and cooldown (Skyy, voice)
+
+Same-height behavior stays. Tree Feller breaks extra logs horizontally on the cut's own Y level. Nothing above or below that level is broken. The natural-tree / leaves check is unchanged.
+
+**Extra logs by node level.** This replaces 1 / 2 / 3 / 4 extra logs, then the whole layer at max:
+
+| Level | Extra logs |
+|---|---|
+| 1 | 1 |
+| 2 | 2 |
+| 3 | 4 |
+| 4 | 5 |
+| 5 | 6 |
+| 6 | 10 |
+
+Skyy locked the ends: level 1 = 1, level 5 = 6, level 6 = 10, and said the middle scales up. Levels 2–4 are the whole-log steps of a straight line from 1 at level 1 to 6 at level 5: `1 + (level - 1) * 1.25`, rounded half up (2.25 → 2, 3.5 → 4, 4.75 → 5). Level 6 is not on that line.
+
+**Why level 6 jumps to 10.** The old max broke every log of that tree on the cut's Y level, up to `feller.maxPerLayer` (default 64). On a very large tree that is enough blocks in one break to crash. The jump to 10 extra logs is the cap on purpose: a huge tree is still helped, and it is not felled as a whole layer.
+
+**Cooldown:** 3 seconds. Was 5 (the 0.2.1 default; before that, 30).
+
+`feller.maxPerLayer` stays a safety ceiling above 10. It is no longer the level-6 count.
+
+**What SkyyTrees 0.2.3 still computes.** The shared capstone slot is max 5 (`SLOT_MAX` index 11, `Foraging.FFeller.max=5`). `TreeFx.value` still returns `FELLER_ALL` (the whole layer, up to `feller.maxPerLayer`) at that max, and `base + per * level` below it (default 1, 2, 3, 4). The lock needs 6 levels on Tree Feller only. The next Trees build raises only this node's max to 6 and replaces the whole-layer return with the table above. Do not raise every tree's capstone. New `trees.properties`, and a missing `feller.cooldownSec`, use 3. A file that already has the old stock line `feller.cooldownSec=5` keeps 5 until that line is set to 3.
+
 ---
 
 ## 0. Verdict in plain words
@@ -40,7 +65,7 @@ UNVERIFIED means design, inference, or not yet tested in game. `[SKYY?]` marks a
 5. **Where it is built:**
    - **SkyySkills 0.4.2:** snapshot, watcher, XP, double drops, a guard so explosions and fire never pay as felled, a "who felled this" bridge, and a new per-log listener map.
    - **SkyyCollections 0.2.1:** accepts one more `coll:fn:add` source. That is a config default only; Collections 0.2 already works if the source is added by hand.
-   - **SkyyTrees 0.2.1:** Tree Feller becomes same-Y only (level 1 = 1 log beside it, max = the whole layer). Felled logs also roll the per-log Foraging nodes.
+   - **SkyyTrees 0.2.1:** Tree Feller becomes same-Y only (level 1 = 1 log beside it, max = the whole layer in that build). Felled logs also roll the per-log Foraging nodes. The count curve and cooldown are superseded by the 2026-09-25 lock at the top of this file (levels 1–6 = 1, 2, 4, 5, 6, 10 extra logs; cooldown 3 s). Same-height breaking still stands.
 
 Expected result for Skyy's birch: about 20 x 6 = **120 Foraging XP** instead of 6, plus 1 XP per leaf if leaf XP stays on (section 2.7). **Birch Log collection +20** instead of +1. Both match the HANDOFF test expectation.
 
@@ -513,9 +538,11 @@ Fix: skip recording when `ev.getItemInHand()` has an id starting with `Plant_Sap
 - now text: `"Breaks %V more logs beside it on the same level"`;
 - how text: `"On a log that pays Foraging XP - same Y level only; Hytale fells the tree once a whole layer is cut - cooldown %C s"`.
 
-The level curve is **1, 2, 3, 4, then every log of that tree on that layer**:
+The level curve **shipped in 0.2.1** is **1, 2, 3, 4, then every log of that tree on that layer**:
 - a 2x2 tree needs level 3;
 - a 3x3 needs level 5.
+
+**Superseded 2026-09-25** by the lock at the top of this file: six levels, extra logs 1, 2, 4, 5, 6, 10, cooldown 3 s. Same-height breaking in the steps below still stands. The 0.2.3 generator still uses the 0.2.1 formula until the next Trees build applies the table.
 
 `TreeFx.value` for `K_FELLER`:
 ```java
@@ -546,7 +573,7 @@ The page shows "every log on that level" at max (`%V` reads `FELLER_ALL` as "eve
 
 **Config (`trees.properties`).** Use the 0.2 `TreeCfg.has02` / append-once pattern:
 - New: `feller.maxPerLayer=64` (clamp 1-256), stored as `TreeCfg.FELLER_ALL`.
-- `feller.cooldownSec` default **5** (was 30) `[SKYY?]`. At 30 s a level-1 Feller is nearly useless.
+- `feller.cooldownSec` default **3** (LOCKED 2026-09-25; was 5 in 0.2.1, and 30 before that). At 30 s a level-1 Feller is nearly useless. A file that already stored the old stock `5` keeps 5 until that line is set to 3.
 - A one-time migration rewrites the old default lines when they are unchanged:
   - `Foraging.FFeller.per=8.0` -> `1.0`;
   - `Foraging.FFeller.base=8.0` -> `0.0`;
@@ -623,11 +650,12 @@ The page shows "every log on that level" at max (`%V` reads `FELLER_ALL` as "eve
 
 **T6. 2x2 tree without the Feller.** Break 1 base log: nothing falls, 6 XP. Break the other 3 one at a time within a minute: the tree falls after the last one, and every log above is paid.
 
-**T7. Tree Feller.**
-- Level 1 on a 2x2: breaks 1 log beside the cut on the same Y, nothing falls.
-- Level 3 on a 2x2: the whole layer is cut, the tree falls, everything is paid, and XP is not doubled for the layer logs.
-- Level 5 on a 3x3 or wider tree: the whole layer is cut.
+**T7. Tree Feller.** LOCKED 2026-09-25 counts (same Y only). SkyyTrees 0.2.3 still uses 1 / 2 / 3 / 4 then the whole layer until the next Trees build applies this table.
+- Level 1: 1 extra log beside the cut. On a 2x2, nothing falls.
+- Level 5: 6 extra logs on that height.
+- Level 6: 10 extra logs. It does not break the rest of a wider layer. That cap is intentional so a very large tree is not broken in one layer.
 - Nothing is ever broken above or below the cut level.
+- Cooldown 3 s (a file still on the old stock `feller.cooldownSec=5` stays at 5 until that line is set to 3).
 
 **T8. Two accounts, A and B.**
 - A cuts a 1-wide tree. While it falls, B breaks a log higher up: B gets that 1 log, A gets the rest.
@@ -665,7 +693,7 @@ Repeat next to a dense same-species stand whose crowns touch.
 
 1. `fell.xpFactor` = 1.0: felled logs pay exactly like hand-broken ones. Lower it if trees become too fast a Foraging source. `[SKYY?]`
 2. Leaf XP on felled trees: on at 1 XP each (the hand table) or off (`fell.leaves=false`, also cheaper on the server). `[SKYY?]`
-3. Tree Feller level curve 1 / 2 / 3 / 4 / whole layer, and a 5 s cooldown (was 30 s). `[SKYY?]`
+3. LOCKED 2026-09-25 (Skyy): extra logs 1 / 2 / 4 / 5 / 6 / 10 at levels 1–6 (level 6 jumps to 10 so a very large tree is not broken as a whole layer), cooldown 3 s. Was: 1 / 2 / 3 / 4, then the whole layer at max, and a 5 s cooldown (was 30 s before that). Same-height breaking stays. See the lock at the top of this file.
 4. Shared-tree rule: the player who removes the last support gets the fall (2.4). `[SKYY?]`
 5. Count double-drop items in Collections (`skills:double`, SkyySkills 0.4.2 one-liner, affects hand breaks too). `[SKYY?]`
 6. The sapling placed-tracker fix (3.1) so the base log of a replanted tree pays. `[SKYY?]`

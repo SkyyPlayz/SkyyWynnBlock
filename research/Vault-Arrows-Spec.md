@@ -7,6 +7,7 @@ this file today. It stays for its line numbers. Where the appendix and Part A di
 like Wynncraft so I don't have to go back to select vault 2". Their screenshots show 0.1.1 in CHEST mode: the vanilla chest window,
 vault page 1 of 2, with no way to turn the page except typing `/vault next` or reopening.*
 *Design lock kept: no custom UI on the vanilla inventory screen. The arrows are ITEMS inside OUR container, not buttons on the screen.*
+*APPROVED 2026-09-25 (Skyy): the in-chest Prev/Next arrows already in this spec are the way to cycle pages inside the vault GUI. Do not add a second page-switch UI. Page prices are locked the same day: 2 free pages, max 10, page 3 = 50,000 coins, each next page +25,000, pages shared across all profiles (Wynncraft style). Those prices were already the live defaults (`freePages`, `maxPages`, `pagePrice`, `pagePriceStep`).*
 *Engine facts marked [E] were checked read-only in this pass against `HytaleServer.jar` (javassist disassembly + `tools/dev/reflect.py`,
 `cpgrep.py`), the client's own UI files (`Client/Data/Game/Interface/...`) and `Assets.zip`. Scratch files were deleted afterwards.
 Anything the real game still has to confirm is marked UNVERIFIED and collected in section 12.*

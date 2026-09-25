@@ -741,8 +741,9 @@ smithing under crafting, party XP share + bridge bonus under general. Category i
 ### 4.10 SkyyTrees [0.2.1] (`trees.properties`, `reload:`)
 Categories `general, abilities, nodes`. general: `tier.levels` text (6 increasing levels, L, D), `tokens.first` 1 / `tokens.every` 5 (L, D),
 `dust.xpPerDust` 10 + table `dust.xpPerDust` (per tree), `respec.cooldownMinutes` 10, `respec.coins` 0, `feedbackMs` (A), `debug.extraTokens` /
-`debug.extraDust` (A, D). abilities: `ability.disabledWorlds` text, `ability.maxRadius` 6, `vein.cooldownSec` 40, `feller.cooldownSec` 5,
-`feller.maxPerLayer` 64, `feller.needLeaves` true, `feller.maxHeight` 32, `felled.nodes` true. nodes: one table per tree (Mining, Foraging,
+`debug.extraDust` (A, D). abilities: `ability.disabledWorlds` text, `ability.maxRadius` 6, `vein.cooldownSec` 40, `feller.cooldownSec` 3
+(LOCKED 2026-09-25, was 5),
+`feller.maxPerLayer` 64, `feller.needLeaves` true, `feller.maxHeight` 32, `felled.nodes` true. Tree Feller's locked count is 1 / 2 / 4 / 5 / 6 / 10 extra logs at levels 1–6 (level 6 jumps to 10 so a very large tree is not broken as a whole layer); the 0.2.3 formula still uses the whole layer at max until the next Trees build (`research/Tree-Fall-Spec.md`). nodes: one table per tree (Mining, Foraging,
 Farming, Cooking, Acrobatics, Exploration) with columns `Max|Per level|On`, and one table `nodeCost` with columns `Tokens|Dust B`.
 Stays code: node names, icons, order; the 8 unbuilt Exploration slots.
 

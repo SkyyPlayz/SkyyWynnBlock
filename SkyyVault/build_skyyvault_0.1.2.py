@@ -148,11 +148,11 @@ WHAT THE PLAYER SEES
                     page so its button shows "Sure?". The key names the page, so a confirm armed for page 3 never buys page 4.
   Vault pages: freePages (2) free, more bought with coins up to maxPages (10): page N costs
   pagePrice + pagePriceStep x (N - freePages - 1) = 50k, 75k, 100k, ... (config). 36 slots per page (a large chest; config).
-  PROPOSED NUMBERS, NOT SIGNED OFF BY SKYY: the backlog asks for "Wynncraft bank-style" storage (Wynncraft bank pages are bought, and
-  its bank is shared by every character) but names no prices. Every number is in config.properties, so a decision needs no rebuild.
+  LOCKED Skyy 2026-09-25: 2 free pages, max 10, page 3 = 50,000 coins, each next page +25,000, pages shared across all profiles
+  (Wynncraft style). These were already the live defaults. Every number is in config.properties, so a later change needs no rebuild.
   Coins come from the ACTIVE profile's purse (coins:fn:take acts on the active profile) while the page belongs to the vault every
-  profile shares - the Wynncraft pattern (one character's emeralds buy an account-wide bank page). Not yet written into
-  tools/PROFILES-CONTRACT.md as a sanctioned pattern; Skyy decides.
+  profile shares - the Wynncraft pattern (one character's emeralds buy an account-wide bank page). The prices and the
+  shared-pages rule are locked 2026-09-25. Not yet copied into tools/PROFILES-CONTRACT.md.
   ADMIN  /vaultadmin open <player> [page]   READ-ONLY snapshot of that vault page in a vanilla chest window: a COPY of the page in
                     a SimpleItemContainer with FilterType.DENY_ALL (vanilla /invsee read-only pattern: nothing can be taken or put
                     in, and it is a copy, so nothing can change the real vault).  /vaultadmin info <player>  /vaultadmin setpages
@@ -433,6 +433,8 @@ ALL = [cfg, dat, cod, sto, sjob, thf, ses, chg, win, page, clt, vs, tick, hk, sc
 CFG_LINES = [
     "# SkyyVault config - change it in game (SkyWynn Menu -> Server Setup -> Vault, or /vaultadmin config <key> <value>),",
     "# or edit it here, then /vaultadmin reload (or restart the server)",
+    "# LOCKED Skyy 2026-09-25: 2 free pages, max 10, page 3 = pagePrice (50000), each next page + pagePriceStep (25000).",
+    "# Pages are shared across all profiles (Wynncraft style). In-chest Prev/Next arrows are the approved way to cycle pages.",
     "# freePages = vault pages every player owns for free (the vault is shared by all profiles of a player)",
     "freePages=%d" % DEF_FREE,
     "# maxPages = the most vault pages a player can own (free + bought)",
@@ -454,6 +456,7 @@ CFG_LINES = [
     "# saveDelayMillis = how soon after a change the vault file is written (closing the vault writes it at once)",
     "saveDelayMillis=%d" % DEF_SAVE_DELAY_MS,
     "# pageArrows = arrow items inside the vault window turn pages (Wynncraft style): true or false. Applies to vault windows opened afterwards.",
+    "# APPROVED Skyy 2026-09-25: these in-chest Prev/Next arrows are the way to cycle pages. Do not add a second page-switch UI.",
     "pageArrows=true",
     "# arrowLayout = row: an extra control row under the vault slots (every slot stays usable)",
     "#   or inside: the arrows use the first and last slot of the page's last row (an item stored there moves to a free slot first)",

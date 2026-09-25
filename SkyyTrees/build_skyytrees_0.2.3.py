@@ -858,9 +858,12 @@ DL = ["# SkyyTrees %s - skill trees for Mining, Foraging, Farming, Cooking, Acro
       "# Horizontal radius cap for Spread / Vein Burst / Tree Feller (and the vertical cap for Vein Burst)",
       "ability.maxRadius=6",
       "vein.cooldownSec=40",
-      "# Tree Feller (0.2.1): breaks logs beside the cut on the SAME Y level only - levels 1-4 = 1-4 logs, the max level = every log",
-      "# of that tree on that level (up to feller.maxPerLayer). Hytale itself fells the tree once its whole layer is cut.",
-      "feller.cooldownSec=5", "feller.maxPerLayer=64",
+      "# Tree Feller: breaks logs beside the cut on the SAME Y level only. Hytale itself fells the tree once its whole layer is cut.",
+      "# LOCKED Skyy 2026-09-25 (research/Tree-Fall-Spec.md): extra logs by level = 1, 2, 4, 5, 6, 10.",
+      "# Level 6 jumps to 10 so a very large tree is not broken as a whole layer (that could crash). Cooldown 3 s (was 5).",
+      "# This build still uses base + per x level, and the max level breaks every log on that level up to feller.maxPerLayer.",
+      "# The locked table replaces that formula in the next Trees build. A file still on feller.cooldownSec=5 keeps 5 until edited.",
+      "feller.cooldownSec=3", "feller.maxPerLayer=64",
       "# Natural-tree check: the cut wood must touch leaves within feller.maxHeight blocks above or below the cut (nothing there is broken)",
       "feller.needLeaves=true", "feller.maxHeight=32",
       "# Felled trees (SkyySkills 0.4.2 pays every log that falls): those logs also roll Sap Tapper, Replanter and Pocket Change",
@@ -874,7 +877,8 @@ DL = ["# SkyyTrees %s - skill trees for Mining, Foraging, Farming, Cooking, Acro
       "debug.extraTokens=0", "debug.extraDust=0",
       "# ---- nodes: <Tree>.<Id>.max / per / B / tokens / enabled (Vein Burst + Tree Feller also base; lists: items / crops) ----",
       "# per = amount per node level: a fraction for % nodes (0.02 = 2%), a flat amount for Health / Stamina, blocks for Vein Burst",
-      "# (up to base + per x level), logs on the cut level for Tree Feller (base + per x level; its max level = the whole layer),",
+      "# (up to base + per x level), logs on the cut level for Tree Feller (this build: base + per x level; max level = the whole layer;",
+      "# LOCKED 2026-09-25 table is 1, 2, 4, 5, 6, 10 extra logs - applied in the next Trees build),",
       "# a fraction of your own jump height for Double Jump (base + per x level); Master Chef: per = chance per level above 1."]
 def node_lines(r):
     tn = TREES[r["t"]]
@@ -920,7 +924,7 @@ ADD021FEL = "\n".join([
     "# ---------- SkyyTrees 0.2.1 (added once): Tree Feller rework ----------",
     "# Tree Feller now breaks logs beside the cut on the SAME Y level only (Hytale itself fells a tree once its whole layer is cut):",
     "# levels 1-4 = 1-4 more logs (base + per x level), the max level = every log of that tree on that level, up to feller.maxPerLayer.",
-    "# The old default lines Foraging.FFeller.per=8.0 / Foraging.FFeller.base=8.0 / feller.cooldownSec=30 were changed to 1.0 / 0.0 / 5",
+    "# The old default lines Foraging.FFeller.per=8.0 / Foraging.FFeller.base=8.0 / feller.cooldownSec=30 were changed to 1.0 / 0.0 / 3",
     "# (custom values were kept). feller.maxHeight now only sets how far above / below the cut the leaves check looks.",
     "feller.maxPerLayer=64",
     "# Felled trees (SkyySkills 0.4.2 pays every log that falls): those logs also roll Sap Tapper, Replanter and Pocket Change.",
@@ -928,7 +932,7 @@ ADD021FEL = "\n".join([
 for _b in (ADD021DJ, ADD021FEL): assert all(ord(ch) < 128 for ch in _b)
 assert "Acrobatics.RDodge." not in DEFAULTS and "Acrobatics.RDodge." not in ADD02 and "Acrobatics.RDodge2.max=10" in DEFAULTS
 assert "Acrobatics.RDouble.base=0.5" in DEFAULTS and "Acrobatics.RDouble.max=10" in ADD02 and "Acrobatics.RDouble.base=0.5" in ADD021DJ
-assert "Foraging.FFeller.per=1.0" in DEFAULTS and "Foraging.FFeller.base=0.0" in DEFAULTS and "feller.cooldownSec=5" in DEFAULTS
+assert "Foraging.FFeller.per=1.0" in DEFAULTS and "Foraging.FFeller.base=0.0" in DEFAULTS and "feller.cooldownSec=3" in DEFAULTS
 assert "feller.maxPerLayer=64" in DEFAULTS and "felled.nodes=true" in DEFAULTS and "feller.cooldownSec=30" not in DEFAULTS
 assert "feller.maxPerLayer=64" in ADD021FEL and "felled.nodes=true" in ADD021FEL
 assert not [l for l in ADD021FEL.splitlines() if not l.startswith("#") and (l.startswith("feller.cooldownSec") or "FFeller" in l)]
@@ -1208,7 +1212,7 @@ F(cfg, "public static final String ADD021FEL = " + json.dumps(ADD021FEL) + ";")
 F(cfg, "public static final String ADD023 = " + json.dumps(ADD023) + ";")
 for decl in ("int[] TIER_LV = new int[] { 1, 10, 20, 30, 45, 60 }", "int TOK_FIRST = 1", "int TOK_EVERY = 5", "long XP_PER_DUST = 10L",
              "long RESPEC_CD_MS = 600000L", "long RESPEC_COINS = 0L", "String[] OFF_WORLDS = new String[0]", "int RADIUS = 6",
-             "int FELLER_H = 32", "long VEIN_CD_MS = 40000L", "long FELLER_CD_MS = 5000L", "boolean FELLER_LEAVES = true",
+             "int FELLER_H = 32", "long VEIN_CD_MS = 40000L", "long FELLER_CD_MS = 3000L", "boolean FELLER_LEAVES = true",
              "int FELLER_ALL = 64", "boolean FELLED_NODES = true", "boolean SWING_ON = true",
              "long FEEDBACK_MS = 2000L", "long EXTRA_TOKENS = 0L", "long EXTRA_DUST = 0L",
              "long[] XP_T = " + jlong([DUST_DEF.get(t, 10) for t in TREES]),
@@ -1317,7 +1321,7 @@ public static void apply(java.util.Properties p) {
   RADIUS = (int) clampL(lng(p, "ability.maxRadius", 6L), 1L, 16L);
   FELLER_H = (int) clampL(lng(p, "feller.maxHeight", 32L), 1L, 64L);
   VEIN_CD_MS = clampL(lng(p, "vein.cooldownSec", 40L), 0L, 86400L) * 1000L;
-  FELLER_CD_MS = clampL(lng(p, "feller.cooldownSec", 5L), 0L, 86400L) * 1000L;
+  FELLER_CD_MS = clampL(lng(p, "feller.cooldownSec", 3L), 0L, 86400L) * 1000L;
   FELLER_LEAVES = bool(p, "feller.needLeaves", true);
   FELLER_ALL = (int) clampL(lng(p, "feller.maxPerLayer", 64L), 1L, 256L);
   FELLED_NODES = bool(p, "felled.nodes", true);
@@ -1399,7 +1403,7 @@ public static String migrateFeller(String text, int[] n) {
     String ln = ls[i];
     String r = migrateLine(ln, "Foraging.FFeller.per", "8.0", "1.0");
     if (r == null) r = migrateLine(ln, "Foraging.FFeller.base", "8.0", "0.0");
-    if (r == null) r = migrateLine(ln, "feller.cooldownSec", "30", "5");
+    if (r == null) r = migrateLine(ln, "feller.cooldownSec", "30", "3");
     if (r != null) { ln = r; n[0] = n[0] + 1; }
     if (i > 0) sb.append('\n');
     sb.append(ln);
@@ -1462,7 +1466,7 @@ public static java.util.Properties upgrade(java.util.Properties p) {
     if (needFel) {
       if ("8.0".equals(str(q, "Foraging.FFeller.per", ""))) q.setProperty("Foraging.FFeller.per", "1.0");
       if ("8.0".equals(str(q, "Foraging.FFeller.base", ""))) q.setProperty("Foraging.FFeller.base", "0.0");
-      if ("30".equals(str(q, "feller.cooldownSec", ""))) q.setProperty("feller.cooldownSec", "5");
+      if ("30".equals(str(q, "feller.cooldownSec", ""))) q.setProperty("feller.cooldownSec", "3");
     }
     if (need023) {
       if ("0.02".equals(str(q, "Mining.MSpeed.per", ""))) q.setProperty("Mining.MSpeed.per", "0.01");
@@ -2002,14 +2006,15 @@ M(fx, r"""
 public static double r6(double x) {
   return Math.round(x * 1000000.0) / 1000000.0;
 }""")
-# 0.2.1 Double Jump card: the trigger key SkyySkills 0.4.2 publishes (skill:dj:key = "crouch" / "jump" / "jump or crouch"), else crouch
+# 0.2.1 Double Jump card: the trigger key SkyySkills publishes (skill:dj:key = "crouch" / "jump" / "jump or crouch").
+# LOCKED 2026-09-25: a missing bridge key reads as "jump" (second jump in mid-air), not crouch.
 M(fx, r"""
 public static String djKey() {
   try {
     Object o = @PKG@.TreeStore.bridge().get("skill:dj:key");
     if (o instanceof String && ((String) o).trim().length() > 0) return ((String) o).trim();
   } catch (Throwable t) { }
-  return "crouch";
+  return "jump";
 }""")
 M(fx, r"""
 public static void putNZ(java.util.HashMap m, String k, double x) {
@@ -3528,8 +3533,8 @@ CFG_ROWS = [
      "Sideways reach of Spread, Vein Burst and Tree Feller (also how high Vein Burst reaches).", "reload"),
     ("vein.cooldownSec", "Vein Burst cooldown", "abilities", "int", "40", "0", "86400", "", "s", "live",
      "Seconds between two Vein Bursts of one player.", "reload"),
-    ("feller.cooldownSec", "Tree Feller cooldown", "abilities", "int", "5", "0", "86400", "", "s", "live",
-     "Seconds between two Tree Fellers of one player.", "reload"),
+    ("feller.cooldownSec", "Tree Feller cooldown", "abilities", "int", "3", "0", "86400", "", "s", "live",
+     "Seconds between two Tree Fellers of one player. LOCKED 2026-09-25: 3 (was 5).", "reload"),
     ("feller.maxPerLayer", "Tree Feller max logs", "abilities", "int", "64", "1", "256", "", "", "live",
      "The max level breaks every log of the tree on the cut's level, up to this many.", "reload"),
     ("feller.needLeaves", "Tree Feller needs leaves", "abilities", "bool", "true", "", "", "", "", "live",

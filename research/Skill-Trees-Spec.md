@@ -209,7 +209,7 @@ Hook codes are explained in 6.4. **Costs:** the Slot column is the row in sectio
 | S9 | Woodland Stride (FStride) | Armor_Leather_Light_Legs | 10 | +1% move speed while holding a Tool_Hatchet_ (+10%) | MOVE |
 | S10 | Chopping Speed II (FSpeed2) | Tool_Hatchet_Mithril | 20 | +2% breaking power on WOOD blocks, stacks with S1 (+40%) | DMG |
 | S11 | Fortune II (FFortune2) | Wood_Redwood_Trunk | 10 | +2% double-drop chance on logs (+20%) | DD |
-| S12 | Tree Feller (FFeller) | Tool_Hatchet_Adamantite | 5 | Breaking a paid log fells up to 8 + 8 x level connected logs of the same wood (16 up to 48). Only if that log group touches a `Plant_Leaves_` block (a natural tree, not a log wall). 30 s cooldown | BREAK |
+| S12 | Tree Feller (FFeller) | Tool_Hatchet_Adamantite | 5 | Draft row (2026-09-23): up to 8 + 8 x level connected logs (16 up to 48), 30 s cooldown. Superseded: same-height breaking, then LOCKED 2026-09-25 in `research/Tree-Fall-Spec.md` (levels 1–6 = 1, 2, 4, 5, 6, 10 extra logs on that Y level; cooldown 3 s; level 6 spikes to 10 so a very large tree is not broken as a whole layer) | BREAK |
 
 ### 6.3 Farming
 

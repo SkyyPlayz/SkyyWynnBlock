@@ -653,7 +653,7 @@ and a friend (the friend must NOT be opped, or permission checks don't count).
 8. **Felled trees:**
    - Cut a tree's base so it falls: Foraging XP and the Collections count go up for every log, not just the one you cut.
    - Placed logs pay nothing.
-   - Tree Feller breaks logs only on the level you cut, shows "+N logs on this level", and has a 5 s cooldown.
+   - Tree Feller breaks logs only on the level you cut and shows "+N logs on this level". The deployed jar still uses a 5 s cooldown. LOCKED 2026-09-25: 3 s, and extra logs 1 / 2 / 4 / 5 / 6 / 10 at levels 1-6 (see OPEN-QUESTIONS).
 9. **Party XP [2P]:**
    - Party up in the same world within 48 blocks, both with a class. You kill a mob with your class weapon: your friend sees "[Party] +N ... XP from Skyy's kill" before any SKILL LEVEL UP it causes.
    - Farther than 48 blocks, or in creative: they get nothing.
@@ -663,8 +663,9 @@ and a friend (the friend must NOT be opped, or permission checks don't count).
     - Your friend's HUD party line shows you as "Your Island".
     - Run `/island reset` only on a throwaway island (it needs 3 runs).
 11. **Double jump:**
-    - Settle the trigger first: set `acro.doubleJump.debug=true` in the SkyySkills `xp.properties`, run `/skills reload`, and crouch in mid-air. An admin chat line should appear.
-    - Then get Acrobatics to 10 (`/skills xp`) and buy Double Jump in `/tree acrobatics`.
+    - The deployed node is still Acrobatics tier II and still listens for crouch until the next Trees and Skills build. LOCKED 2026-09-25: tier III, jump again in mid-air, 2 Stamina (see OPEN-QUESTIONS).
+    - Settle the trigger first: set `acro.doubleJump.debug=true` in the SkyySkills `xp.properties`, run `/skills reload`, and press the configured key in mid-air. An admin chat line should appear.
+    - Then buy Double Jump in `/tree acrobatics` (Acrobatics 10 on the deployed tree; the lock moves it to tier III / Acrobatics 20).
     - One jump per airtime, costs 2 Stamina, no jump in creative, and it recharges on landing.
 12. **Menu:**
     - Island Menu, Bank, Vault, Reforge, Party and Guild each open their page in place of the menu. Players -> pick a player -> 'Invite to Your Island' (co-op) and 'Let Them Build' (trust only).
@@ -681,8 +682,8 @@ and a friend (the friend must NOT be opped, or permission checks don't count).
 16. **Collections:** a new, untouched collection shows "No tier yet".
 
 **Numbers that are proposals (change in the config files, or tell Claude):**
-- Vault: 2 free pages, max 10, page 3 costs 50,000 and each next page +25,000; one profile's coins buy a page ALL your profiles share (Wynncraft style).
-- Tree Feller: 1/2/3/4 extra logs then the whole layer, 5 s cooldown. Double Jump: tier II (replaces Quick Dodge 1:1), 2 Stamina.
+- LOCKED 2026-09-25: Vault: 2 free pages, max 10, page 3 = 50,000 and each next page +25,000; pages shared across all profiles (Wynncraft style). In-chest Prev/Next arrows are the approved page switch.
+- LOCKED 2026-09-25: Tree Feller: 1 / 2 / 4 / 5 / 6 / 10 extra logs at levels 1-6 (level 6 jumps to 10 so a very large tree is not broken as a whole layer), 3 s cooldown. Double Jump: tier III, second jump in mid-air, 2 Stamina.
 - Party XP share: 50% of the killer's combat XP to members within 48 blocks in the same world.
 - Menu hover tooltips stay ON by default; the "Hover Tooltips" switch (book icon) turns them off if the stuck tooltip after Esc still happens.
 

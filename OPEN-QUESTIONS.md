@@ -13,16 +13,23 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
    the new Smithing bag? [today every bag is crafted at a Workbench]
 
 ## Numbers picked in the beta round (live now)
-- **Vault:** 2 free pages, max 10, page 3 costs 50,000 and each next page +25,000. A page bought on one profile is shared by all your
-  profiles (Wynncraft style). [as written]
-- **Tree Feller:** 1 / 2 / 3 / 4 extra logs on the same height, then the whole layer at max level; 5 s cooldown. [as written]
-- **Double Jump:** tier II of the Acrobatics tree (replaces Quick Dodge 1:1), costs 2 Stamina, crouch in mid-air. Or tier III? [tier II]
+- LOCKED 2026-09-25 (Skyy): **Vault:** 2 free pages, max 10, page 3 = 50,000 coins, each next page +25,000. Pages are shared across all profiles
+  (Wynncraft style). [as written — already the live defaults]
+- LOCKED 2026-09-25 (Skyy): **Tree Feller:** same height as the cut. Extra logs 1 / 2 / 4 / 5 / 6 / 10 at levels 1–6. Level 6 jumps to 10 so a
+  very large tree is not broken as a whole layer (that could crash). Cooldown 3 s (was 5). Was: 1 / 2 / 3 / 4 extra logs, then the whole
+  layer at max. [new-file cooldown is 3; a file still on the old stock `feller.cooldownSec=5` keeps 5 until that line is set to 3. The
+  6-level table is the next Trees build — `research/Tree-Fall-Spec.md`]
+- LOCKED 2026-09-25 (Skyy): **Double Jump:** Acrobatics tier III (slot 7, replaces Sprinter; Quick Dodge returns to tier II). Jump again
+  while already in mid-air, not crouch. Stamina stays 2 (tier III does not name a different cost). Was: tier II, crouch in mid-air.
+  [new-file trigger is `jump`; a file still on `acro.doubleJump.trigger=crouch` keeps crouch until that line is set to `jump`. The slot
+  move is the next Trees build — `research/Double-Jump-Spec.md`]
 - **Tree felling:** every felled log pays full Foraging XP and counts for collections; felled leaves pay their normal XP (about 1 each);
   placed logs never pay. [fell.xpFactor 1.0, fell.leafXpFactor 1.0]
 - **Party combat XP:** members within 48 blocks in the same world get 50% of the killer's combat XP (the killer keeps 100%). [as written]
 - **Menu hover tooltips:** on by default; the book switch turns them off if the stuck tooltip after Esc still happens. Default off? [on]
 
 ## Vault arrows (`research/Vault-Arrows-Spec.md`, live in SkyyVault 0.1.2)
+- APPROVED 2026-09-25 (Skyy): cycle pages inside the vault GUI with the existing in-chest Prev/Next arrows. Do not add a second page-switch UI.
 - The arrows sit in an extra 5th row, so all 36 slots stay free. If the 5-row chest doesn't fit your screen, switch Server Setup -> Vault ->
   arrow layout to "Inside the page" (the arrows then take the bottom-left and bottom-right slots, Wynncraft-exact). [extra row]
 - Buying the next page from the gold arrow needs two clicks within 10 s (one shift-click can reach the server twice). [two clicks]
