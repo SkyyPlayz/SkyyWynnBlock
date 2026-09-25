@@ -160,7 +160,7 @@ Admin commands: section 8.
 | `defaultDuration` | `24h` | Must be one of the presets. LOCKED 2026-09-25. Server Setup `ah.defaultDuration`. |
 | `claimTaxPercent` / `claimTaxFrom` | `1.0` / `1000000` | Tax = min(ceil(gross x 1%), gross - 1,000,000), only when gross > 1,000,000, so the net never drops below 1,000,000. Worked out and **stored at sale time** (a later config change never alters money already earned). UNVERIFIED Hypixel detail, concept cross-checked. LOCKED 2026-09-25. Server Setup `ah.claimTaxPercent` and `ah.claimTaxFrom`. |
 | `minPrice` / `maxPrice` | `1` / `50000000000` | Whole coins. The max is a sanity cap (UNVERIFIED Hypixel number). |
-| `maxListings` | `14` | Per **profile**. A slot counts from Create until the seller has claimed that listing's coins or item (Hypixel rule: only claiming or cancelling frees a slot; a cancel with an immediate return frees it at once). |
+| `maxListings` | `14` | Per **profile**. A slot counts from Create until the seller has claimed that listing's coins or item (Hypixel rule: only claiming or cancelling frees a slot; a cancel with an immediate return frees it at once). LOCKED 2026-09-25 (Skyy): 14 is the default cap. Progression rewards or rank perks can raise it in game later. SkyyAuctions 0.1.1 is a flat 14 with no perk raise yet. |
 | `maxListingsServer` | `5000` | Keeps load time and page filtering bounded. |
 | `graceSeconds` | `20` | Nobody can buy a new listing for 20 s (Hypixel, VERIFIED). In practice it gives the seller time to cancel a mistyped price before a sniper takes it. |
 | `confirmAbove` / `confirmSeconds` | `10000` / `10` | A buy at or above this price needs the confirm click, armed for 10 s. 10,000 = a new profile's starting purse. `[SKYY?]` |
@@ -713,7 +713,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 3. **Bazaar items on the AH.** LOCKED 2026-09-25 (Skyy): Bazaar commodities stay refused on the Auction House (`bazaarItemsAllowed=false`). That was already the default.
 4. **One account, several profiles.** LOCKED 2026-09-25 (Skyy): buying your own listing from a different profile is allowed. Same-profile self-buy stays forbidden. Was: never, even from another profile. SkyyAuctions 0.1.1 still refuses the other profile unless `sameAccountBuy=true`.
 5. **Creative players.** LOCKED 2026-09-25 (Skyy): Creative players browse and claim only. They cannot list or buy. That was already the default (`blockCreative=true`).
-6. **Listing cap.** 14 per profile, with no rank or permission bonus (Hypixel's only bonus is co-op size, which we do not have). [14]
+6. **Listing cap.** LOCKED 2026-09-25 (Skyy): the default cap stays 14 listings per profile. Progression rewards or rank perks can raise that cap in game later. SkyyAuctions 0.1.1 is a flat 14 with no perk raise yet.
 7. **Confirm threshold.** Should buys at or above this need a second click? [10,000 coins]
 8. **Cancel keeps the fee** (Hypixel). [kept]
 9. **`/ah sell`.** Open the prefilled page for one click, or list straight from chat? [prefilled page]

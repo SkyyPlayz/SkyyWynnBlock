@@ -90,7 +90,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 3. LOCKED 2026-09-25 (Skyy): Bazaar items stay refused on the AH. [refused, already the default]
 4. LOCKED 2026-09-25 (Skyy): a different profile may buy your listing. The same profile may not. Was: never, even from another profile. [0.1.1 still refuses the other profile unless sameAccountBuy=true]
 5. LOCKED 2026-09-25 (Skyy): Creative players browse and claim only. [yes, already the default]
-6. 14 listings per profile? [14]
+6. LOCKED 2026-09-25 (Skyy): 14 listings per profile stays the default cap. Progression rewards or rank perks can raise it in game later. [14; 0.1.1 has no perk raise yet]
 7. Second click for buys of 10,000 coins or more? [10,000]
 8. Cancelling keeps the fee (Hypixel)? [kept]
 9. `/ah sell <price>` opens the filled-in page for one click (or lists straight from chat)? [page]
