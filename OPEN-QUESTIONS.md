@@ -149,7 +149,8 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 
 ## Player Settings (`research/Settings-Spec.md` section 6)
 - LOCKED 2026-09-25 (Skyy): the Settings icon sits next to the Mods button (slot 39, left of Mods at 40). Was: slot 51, the bottom row. [next to Mods; SkyyMenu 0.3.2 still uses slot 51]
-- Anything that should stay always on (never switchable)? [the section 2.3 list]
+- LOCKED 2026-09-25 (Skyy): the always-on list stays as written in Settings-Spec section 2.3. [keep as-is]
+- LOCKED 2026-09-25 (Skyy), to be built: settings visibility is permission-based. A player sees only the settings they have permission to change. A basic player does not see admin-only or restricted settings. Those rows are hidden, with no greyed-out or disabled entry. [hidden; SkyyMenu 0.3.2 still shows every row]
 
 ## Known limits you should know about (not questions)
 - A hard server crash within about a second of an auction listing, vault move or trade can leave an item in two places (the forced save
