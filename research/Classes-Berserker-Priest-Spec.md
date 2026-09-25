@@ -7,6 +7,17 @@ SkyyProfiles 0.1.1. Every engine and asset fact below was checked on this machin
 Skyy's request, in their words: "we're bringing back berserker and adding a priest class. (make a kit per class you are automatically
 given when you select the class that gives you the basic weapon of that class.)"
 
+**LOCKED 2026-09-25 (Skyy), same voice call:**
+- Priest heal numbers stay as written (25% of damage to party within 16 blocks; self-heal 50% of that; cap 10 HP per hit and 10 HP/s per player; party only) and are **TEMPORARY** until healing spells replace them.
+- Divinity XP: healing others stays 0.2 XP per HP. Healing yourself pays **0.25 XP per HP** (was 0). Max 300 XP a minute unchanged. SkyySkills 0.4.5 still pays nothing for a self-heal.
+- Heal chat lines stay on. Players can still turn theirs off. The rate cap is **every 10 s** (was 5 s). New files use `priestHeal.feedbackMs=10000`. A file already on 5000 keeps 5 s until that line is edited.
+- The vanilla Healing Totem (AoE +5 HP/s, endgame recipe) is **Priest only** (was anyone). 0.1.6 still leaves every deployable unassigned.
+- Root wands, Stoneskin wands, and the Rekindle Embers spellbook count as Priest weapons. That confirms the existing yes. No behavior change.
+- The class kit drops **straight into the hotbar immediately** when a player selects or changes class. That replaces "into storage, about 31 s after a new profile arrives." What does not fit still waits on `/class kit`. 0.1.6 still uses storage and the 31 s wait.
+- **To build:** a daily Archer arrow refill. Arrows only, once per day, so Archers do not have to craft every arrow. Not in 0.1.6.
+- LOCKED 2026-09-25 (Skyy): while class switching is locked, the class-switch settings are **greyed out**. Players can see that the option exists and cannot use it. Was: hidden, with one read-only line. SkyyClasses 0.1.6 still leaves `switchCost` and `cooldownMinutes` off the page and shows one read-only "Class switching" row.
+- **To build:** class changes unlock later through a special item earned from a quest, or a similar progression gate. Not in 0.1.6.
+
 ---
 
 ## 0. Verdict (plain words)
@@ -22,11 +33,14 @@ given when you select the class that gives you the basic weapon of that class.)"
   "custom Priest weapons later" is a real need (open question Q7).
 - **Priest placeholder heal (SkyyClasses):** when a Priest's wand or spellbook hit damages a monster, every party member within 16
   blocks of the Priest heals 25 % of that damage (the Priest themself 50 % of that), at most 10 HP per hit and 10 HP per second per
-  player, never above max health. It runs after the damage is applied (Inspect damage group), so it only ever heals for damage that
-  really landed. The only vanilla heal weapon, the Healing Totem, is a deployable and never triggers it: no double heal.
-- **Divinity XP from healing (SkyySkills):** 0.2 XP per HP healed on OTHER party members (the same rate as combat XP per point of
-  monster health), at most 300 XP a minute. Kills still pay Divinity like every class skill.
-- **Class kits (SkyyClasses):** every class has a kit (Server Setup rows, "Use my hotbar" like the island starter kit). It is given once
+  player, never above max health. LOCKED 2026-09-25 as TEMPORARY until healing spells exist. It runs after the damage is applied
+  (Inspect damage group), so it only ever heals for damage that really landed. The Healing Totem is a deployable and never triggers
+  this heal: no double heal. LOCKED 2026-09-25: that totem is Priest only (0.1.6 still lets anyone throw it).
+- **Divinity XP from healing (SkyySkills):** 0.2 XP per HP healed on OTHER party members, and LOCKED 2026-09-25 **0.25 XP per HP the
+  Priest heals on themself** (was 0), at most 300 XP a minute for both together. Kills still pay Divinity like every class skill.
+  0.4.5 still pays nothing for a self-heal.
+- **Class kits (SkyyClasses):** every class has a kit (Server Setup rows, "Use my hotbar" like the island starter kit). LOCKED
+  2026-09-25: it drops straight into the hotbar the moment the player selects or changes class. 0.1.6 still gives it once
   per profile, when the class is picked: SkyyProfiles' Create Profile tells SkyyClasses, SkyyClasses' own picker marks it itself. Existing
   profiles are marked "had a class before kits" at the first start, so nobody gets a surprise kit. Items go storage first; what does not
   fit waits as a claim (`/class kit`), never dropped on the ground.
@@ -86,8 +100,8 @@ Other facts that matter:
 - **Health:** players max 100, no survival regeneration (Health.json regenerates NPCs and creative players only). Heals matter.
 - **The only vanilla heal "weapon":** `Weapon_Deployable_Healing_Totem` (Items.Debug category too): thrown deployable, effect
   `Healing_Totem_Heal` = +5 Health per 1 s tick in its area, 10 s cooldown, Arcanebench recipe (50 Life Essence, 20 Thorium bars,
-  10 Greater Health potions). It is unassigned, deals no damage and acts as its own entity (SkyyClasses docstring: deployables are not
-  judged by the lock), so it never triggers the Priest heal and cannot double it.
+  10 Greater Health potions). LOCKED 2026-09-25: Priest only. 0.1.6 still leaves it unassigned (anyone), because deployables are not
+  judged by the class lock and the totem acts as its own entity. It never triggers the Priest weapon-hit heal, so there is no double heal.
 
 ### 1.3 Kit items (all exist in Assets.zip)
 
@@ -175,6 +189,12 @@ not only forbidden ones (`ShotTrack.onEntityAdded`: `item = idOf(InventoryCompon
 argument). The lock keeps using `bad` / `util`; the heal uses `item`.
 
 ### 2.3 Class kits
+
+LOCKED 2026-09-25 (Skyy) replaces the delivery below. When a player selects or changes class, the kit drops straight into the hotbar
+immediately. 0.1.6 still writes it to storage about 31 s after a new profile arrives. What does not fit still waits on `/class kit`.
+
+**Daily Archer arrow refill (to build, not in 0.1.6).** Arrows only, claimable once per day, so an Archer does not have to craft every
+arrow. Separate from the one-time class kit (that kit still includes 64 arrows).
 
 **Where the contents live:** `Skyy_SkyyClasses/config.properties`, one line per class (`kit.<Class>=id:amount,id:amount`, at most 9
 stacks), edited in Server Setup (section 2.5) or by hand + `/classadmin reload`. Fields `KitCfg.K_<CLASS>` (public static volatile
@@ -285,17 +305,18 @@ same rule as melee, fine for a placeholder.
 
 **Why the Priest is included (at 50 %):** Skyy wants the pack 100 % usable solo; a solo Priest (or a Priest not in a party) would
 otherwise get nothing from their class on weak weapons. Wynncraft's healers heal themselves in their AoE too. The factor keeps the Priest
-from being a lifesteal tank, and self-heals pay no Divinity XP, so the XP stays a reward for supporting others.
+from being a lifesteal tank. LOCKED 2026-09-25: a self-heal pays 0.25 Divinity XP per HP (healing others stays 0.2). 0.4.5 still pays
+nothing for a self-heal. The 300 XP a minute cap covers both.
 
 **Feedback (chat, aggregated; admin master switch + two player Settings switches):**
-- Priest, key `classes.healGiven`: at most one line every `priestHeal.feedbackMs` (5 s): "[Classes] Heals: +23 HP to your party (2
+- Priest, key `classes.healGiven`: at most one line every `priestHeal.feedbackMs` (LOCKED 2026-09-25: 10 s, was 5 s): "[Classes] Heals: +23 HP to your party (2
   players) and +6 HP to you" (only the parts that are > 0; "+6 HP to you" alone when solo).
 - Healed member, key `classes.healTaken`: "[Classes] Skyy healed you +12 HP" ("Priests healed you +12 HP" with several healers).
 - Flushed by `ClassTick` (`HealMsg.flushDue`), gated like Settings-Spec 1.3: `ClassCfg.HEAL_MSG` AND `notifyOn(u, key)`, checked before the
-  line's own timestamp. The heal itself always happens. A popup was considered and rejected: a toast every 5 s in a fight is too loud.
+  line's own timestamp. The heal itself always happens. A popup was considered and rejected: a toast every 10 s in a fight is too loud.
 - `setup()` registers (category `combat`): `classes.healGiven` "Priest heals - your heals" / "Your heals: +23 HP to 2 party members and
-  +6 HP to you - one line every 5 s at most"; `classes.healTaken` "Priest heals - healed by others" / "Skyy healed you +12 HP - one line
-  every 5 s at most. The heal happens either way".
+  +6 HP to you - one line every 10 s at most"; `classes.healTaken` "Priest heals - healed by others" / "Skyy healed you +12 HP - one line
+  every 10 s at most. The heal happens either way".
 
 ### 2.5 Server Setup rows (config kit; file `Skyy_SkyyClasses/config.properties`, row key = file key)
 
@@ -321,7 +342,7 @@ are code (rebuild)."
 | `priestHeal.maxPerHit` | Most HP per hit (each player) | priest | dec | 10 | 0.5-1000 | | live | HEAL_MAX_HIT | Cap for one hit and one player, before the per-second cap. |
 | `priestHeal.maxPerSecond` | Most HP per second (each player) | priest | dec | 10 | 0.5-1000 | | live | HEAL_MAX_SEC | All Priest heals one player gets in one second, added up. |
 | `priestHeal.messages` | Heal chat lines | priest | bool | true | | | live | HEAL_MSG | Off: no heal lines for anyone. Players can also hide theirs in /settings. |
-| `priestHeal.feedbackMs` | Heal chat line interval | priest | int | 5000 | 1000-60000 | ms | live,adv | HEAL_MSG_MS | At most one heal line per player this often (heals are added up). |
+| `priestHeal.feedbackMs` | Heal chat line interval | priest | int | 10000 | 1000-60000 | ms | live,adv | HEAL_MSG_MS | LOCKED 2026-09-25: at most one heal line per player this often (was 5000). A file already on 5000 keeps 5 s. |
 
 Notes for the builder:
 - One hook method per action row (`KitHooks.hbArcher(UUID who, String name)` ... `hbShaman`), each calling
@@ -454,7 +475,7 @@ max health x 0.2), cap 300 XP a minute per Priest (normal support play stays wel
 | Key | Label | Cat | Type | Default | Min-max | Flags | Help |
 |---|---|---|---|---|---|---|---|
 | `divinity.healXp.enabled` | Divinity XP from healing | parts | bool | true | | live,part,danger | Off: Priest heals pay no Divinity XP (kills still do). Levels are kept. |
-| `divinity.healXpPerHp` | Divinity XP per HP healed | combat | dec | 0.2 | 0-100 | live | XP per 1 HP a Priest heals on OTHER party members (healing themself pays nothing). |
+| `divinity.healXpPerHp` | Divinity XP per HP healed | combat | dec | 0.2 | 0-100 | live | XP per 1 HP a Priest heals on OTHER party members. LOCKED 2026-09-25: self-heals pay 0.25 XP per HP (0.4.5 still pays 0). |
 | `divinity.healXpMaxPerMinute` | Divinity heal XP per minute | combat | int | 300 | 0-1000000000 | live | Most Divinity XP healing pays one Priest in 60 s (0 = no limit). Kills are not counted. |
 
 Default xp.properties text gains a block `# ---------- Divinity (SkyySkills 0.4.4) - Priest heals from SkyyClasses 0.1.6 (skill:fn:healxp) ----------`
@@ -607,7 +628,7 @@ Downgrades: SkyySkills 0.4.3 = loses Fury/Divinity XP (forbidden); SkyyClasses 0
    wand is in storage. `/classadmin info <you>` = kit given.
 3. `/class` on that profile: 7 cards, read-only, fits. Stats: `/skills` class row = Divinity with the wand icon.
 4. Hit a monster with the wand (tap swings): damage lands, you heal (take some fall damage first), "[Classes] Heals: +N HP to you" at most
-   every 5 s; no Divinity XP from self-heal; kill -> "+N Divinity XP".
+   every 10 s (LOCKED 2026-09-25, was 5 s); self-heal pays 0.25 Divinity XP per HP (0.4.5 still pays 0); kill -> "+N Divinity XP".
 5. Swap to a sword: "Only Warriors can use swords" + popup, no damage, no heal. Hatchet chops logs and hits monsters (free).
 6. Creative mode: hits heal nothing. Hit another player (if PvP on): no heal.
 7. Create a Berserker profile: battleaxe kit; axes/maces/clubs deal damage; `/skills` shows Fury; `/skills stats fury` shows the class
@@ -623,7 +644,7 @@ Downgrades: SkyySkills 0.4.3 = loses Fury/Divinity XP (forbidden); SkyyClasses 0
 
 1. Friend: `/class kit` works ("Nothing is waiting..."); `/classadmin kit`, `/classadmin info`, `/modconfig classes` refused / view only.
 2. Party up (`/party invite`). Friend takes damage; Skyy hits a monster with the wand within 16 blocks: friend heals, sees "Skyy healed you
-   +N HP" (<= every 5 s), Skyy sees "+N HP to your party (1 player)" and gets Divinity XP (~0.2 per HP); friend at full health = no heal, no XP.
+   +N HP" (<= every 10 s), Skyy sees "+N HP to your party (1 player)" and gets Divinity XP (~0.2 per HP on the friend, 0.25 per HP on Skyy once the next Skills build pays self-heals); friend at full health = no heal, no XP.
 3. Friend walks 20+ blocks away or to another world: no heal. Friend leaves the party: no heal.
 4. Two Priests (if a third account exists) on one hurt target: total heal per second never above 10 HP.
 5. Party kill share still works both ways (Warrior kill -> Divinity share for Skyy; Priest kill -> Swordsmanship share for the friend).
@@ -642,16 +663,16 @@ island transfer; `NotificationStyle.Success` popups; both pages at 1000 x 900 on
 
 | # | Question | Default in this build |
 |---|---|---|
-| Q1 | Heal numbers: share 25 %, Priest self 50 % of that, range 16 blocks, 10 HP per hit, 10 HP per second per player | as listed (all editable in Server Setup) |
-| Q2 | Divinity XP from healing: 0.2 XP per HP healed on others, max 300 XP a minute | as listed (editable) |
-| Q3 | Does the Priest heal themself? | yes, at 50 % of a member's heal, no XP for it (solo play) |
-| Q4 | Kit into storage (the pack's item rule) or straight into the hotbar? | storage first + popup + chat line naming the items |
-| Q5 | Kit delay after a new profile's switch: ~31 s (crash-safe with SkyyProfiles' 30 s marker) or right away (a server crash in the first 30 s would eat it) | 31 s, with a "your kit is on its way" line at creation |
+| Q1 | ANSWERED 2026-09-25, TEMPORARY until healing spells: share 25 %, Priest self 50 % of that, range 16 blocks, 10 HP per hit, 10 HP per second per player, party only | current numbers, then replace |
+| Q2 | ANSWERED 2026-09-25: Divinity XP 0.2 per HP healed on others, **0.25 per HP healed on yourself**, max 300 XP a minute | 0.4.5 still pays 0 for a self-heal |
+| Q3 | ANSWERED 2026-09-25: the Priest heals themself, and that heal pays 0.25 XP per HP | was: yes, at 50 % of a member's heal, no XP |
+| Q4 | ANSWERED 2026-09-25: kit straight into the hotbar | was: storage first. 0.1.6 still uses storage |
+| Q5 | ANSWERED 2026-09-25: the kit lands immediately when the player selects or changes class | was: ~31 s. 0.1.6 still waits |
 | Q6 | Vanilla max Mana is 0: wand casts (25), spellbook casts (100) and the Mage staff summon (50) never work for a fresh character. Give Priests/Mages base Mana (a class MAX Mana modifier like SkyyAccessories' `skyyacc_mana`)? | not in this round; melee swings heal and deal damage |
 | Q7 | No wand/spellbook is craftable or drops (except Rekindle Embers). Add recipes / drops now, or wait for custom Priest weapons? | wait; the kit wand never breaks (no durability); admins can edit kits or use /classadmin kit |
-| Q8 | The Healing Totem (vanilla AoE +5 HP/s deployable, endgame Arcanebench recipe) - Priest, Shaman, or leave it? | unassigned (anyone can throw it; deployables are not judged by the lock) |
-| Q9 | Root and Stoneskin wands (no damage, test-ish effects) and Rekindle Embers (necromancy, spawns Risen) become Priest items by prefix. OK? | yes |
-| Q10 | Heal chat lines ON by default (one every 5 s at most)? | ON; players can switch theirs off |
+| Q8 | ANSWERED 2026-09-25: the Healing Totem is Priest only | was: anyone. 0.1.6 still leaves deployables unassigned |
+| Q9 | ANSWERED 2026-09-25: Root wands, Stoneskin wands, and Rekindle Embers count as Priest weapons | confirms the existing yes; no behavior change |
+| Q10 | ANSWERED 2026-09-25: heal chat lines ON, at most one every 10 s | was: every 5 s. Players can still switch theirs off |
 | Q11 | Heals reach party members only, not other players nearby? | party only |
 | Q12 | Arrows in the Archer kit | 64 |
 | Q13 | Kit overflow as a claim (/class kit) rather than dropped at the feet | claim |

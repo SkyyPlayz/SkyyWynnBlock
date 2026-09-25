@@ -10,12 +10,12 @@
 
 | Question | Verdict |
 |---|---|
-| **Can the Acrobatics tree give a double jump?** | **YES, but not on the plain jump key.** It works as a server-side system in SkyySkills' Acrobatics tick. The trigger is a **crouch press in mid-air**, and the push is a `Velocity` instruction. |
-| **Trigger, and where it is copied from** | **Rising edge of `MovementStates.crouching` while `!onGround`.** This is copied exactly from **TerrariaAddons 1.7.4** (`CloudInABottle` + `BoostOrderManager.isCrouchPressed`, VERIFIED in bytecode). Its Blizzard and Sandstorm bottles share the same edge, so three shipping accessories rely on it. It is UNVERIFIED in our game: test 5.0 checks it in 1 minute. |
+| **Can the Acrobatics tree give a double jump?** | **YES, as a server-side `Velocity` push in SkyySkills' Acrobatics tick.** LOCKED 2026-09-25: the trigger is a second jump in mid-air. The 2026-09-24 research recommended crouch because the jump key may not be visible to the server (section 1.1). |
+| **Trigger, and where it is copied from** | **LOCKED 2026-09-25: jump again while already in mid-air** (`acro.doubleJump.trigger=jump`). Not crouch. The 2026-09-24 research below copied a crouch edge from TerrariaAddons because `MovementStates.jumping` may be invisible in normal air (section 1.1, test 5.0). Skyy locked the second jump anyway. Crouch and `both` stay admin overrides. |
 | **Why not the jump key?** | Evidence (section 1.1) says `MovementStates.jumping` is the client's **jump-rising physics state**, not "jump key down". A mid-air press with no extra jump available very likely changes nothing the server can see. **None** of the 6 installed double-jump implementations uses the jump key in normal air. The spec keeps a `jump` trigger mode behind config, for the case where probe 5.0 proves otherwise. |
 | **Native engine double jump?** | It exists, but only for armor, and the client does it: `Armor.MovementSettings.ExtraJumpCount` (vanilla `Debug_Movement_Boots`). The server never reads it except to serialize the item asset (VERIFIED, callers.py). No runtime or per-player API exists. It is not usable for a tree node. It is the only way to get a real jump-key double jump, so it is a gear idea for later (section 4, F4). |
 | **Push** | `Velocity.addInstruction(new Vector3d(vx, vy, vz), (VelocityConfig) null, ChangeVelocityType.Set)`. This is our own `Acro.boost` path (dodge push, `.Add`). `.Set` is what TerrariaAddons, Zephyr and GrapplingHook use, and it matches the engine's own jump, which *sets* `vy = jumpForce`. |
-| **Placement** | **Tier II, slot 5**: it replaces Quick Dodge (`RDodge`). The 12-node template is unchanged. It is unlocked at Acrobatics 10, max level 10. Level 1 = an air jump at 55 % of your jump height; level 10 = 100 %. Trade-off: the tree then gives no dodge push before Acrobatics 45 (section 2.1; open decision for Skyy). |
+| **Placement** | **LOCKED 2026-09-25: tier III, slot 7** (the alternative in section 2.1). It replaces Sprinter (`RSpeed2`). Quick Dodge (`RDodge`) returns to tier II slot 5. Unlocked at Acrobatics 20. SkyyTrees 0.2.3 still has the node in tier II slot 5; the next Trees build does the move. |
 
 ---
 
@@ -75,6 +75,7 @@ All of these mods are disabled in the "HUD mod" world `config.json` (VERIFIED), 
 ## 2. Design
 
 ### 2.1 Placement: replace, keep the template at 12
+**LOCKED 2026-09-25: the tier III column.** Slot 7, replaces Sprinter. The "why tier II" text below is the 2026-09-24 recommendation. It is not the lock.
 The template is fixed: `SLOT_TIER = [1,1,1,2,2,3,3,4,4,5,5,6]`, `SLOT_MAX = [25,20,15,10,10,15,10,10,10,20,10,5]`, `assert mx == SLOT_MAX[s]`, 12 nodes per tree, `TIER_LV = {1,10,20,30,45,60}` (VERIFIED, `build_skyytrees_0.1.py`).
 
 | | Recommended: **slot 5, tier II** | Alternative: slot 7, tier III |
@@ -88,9 +89,10 @@ The template is fixed: `SLOT_TIER = [1,1,1,2,2,3,3,4,4,5,5,6]`, `SLOT_MAX = [25,
 **Why tier II:** tier VI (the natural "capstone" slot) needs Acrobatics 60 = 111,672,425 XP. That is unreachable under the Acrobatics caps (the Tree-Feller-style capstone slot would hide the node from everyone). Tier II lets every player feel the node early. The 10 levels (55 % → 100 %) are the long grind. By numbers the lost bonus (Quick Dodge's +10 % dodge push) is the smallest one in the tree, and Skyy only locked the Stamina node here ("a Stamina node in the Acrobatics tree; the rest ... figure out later", HANDOFF 1). **What tier II really costs, stated plainly:** it is not a smaller dodge number. It removes the tree's dodge push **completely for Acrobatics 10-44**. The only tree dodge node left is Evasion at tier V, Acrobatics 45 = 38,072,425 cumulative XP. That is about 3,800x the 9,925 XP of level 10, and about 2,600 h at the 240/min movement cap alone (fall XP has its own cap and adds some; that pace is UNVERIFIED). So for nearly every player the tree gives **no** dodge push at all. The skill's own dodge push stays: `acro.dodgeBoostPerLevel=0.004`, i.e. +4 % at Acrobatics 10, +8 % at 20, +17.6 % at 44, capped at `acro.dodgeBoostMax=0.5` (VERIFIED, `build_skyyskills_0.4.1.py` `Acro.dodgeBonus` and `Acro.boost`). Tier III keeps Quick Dodge from level 10 and removes Sprinter's +5 % speed instead, but Double Jump then waits until Acrobatics 20 (522,425 XP). **Open decision for Skyy** (section 6): tier II (now) or tier III (later).
 
 ### 2.2 The node
+Slot and trigger below are what 0.2.1 specified. **LOCKED 2026-09-25** moves the node to tier III slot 7 and sets the trigger to a second jump. Stamina stays 2. See the lock before section 6.
 | Field | Value |
 |---|---|
-| Slot / tier | 5 / II (path rule unchanged: needs a tier I node) |
+| Slot / tier | 5 / II in the 0.2.1 build (LOCKED 2026-09-25: slot 7 / tier III) |
 | Id / name | `RDouble` / `Double Jump` (no `_`, `,` or `:`) |
 | Icon | `Plant_Fruit_Windwillow` (VERIFIED item id; fallback `Ingredient_Feathers_Light`) |
 | Kind | new `DJUMP` (appended to `KINDS`; existing kind numbers unchanged) |
@@ -115,6 +117,7 @@ The template is fixed: `SLOT_TIER = [1,1,1,2,2,3,3,4,4,5,5,6]`, `SLOT_MAX = [25,
 The air jump is a fraction of **the player's current jump**. `MovementManager.getSettings().jumpForce` already includes the Acrobatics level, Spring Step / High Jumper and gear through the movement protocol. So the double jump feels like "your jump again". Hard cap: `acro.doubleJump.maxBlocks=3.5`, which is vy 14.97. That matches the vy 15 that vanilla `Double_Jump.json`, Zephyr and TerrariaAddons all use.
 
 ### 2.3 Rules (all server-side, per player, in memory)
+Rule 3's crouch press is what 0.2.1 specified. **LOCKED 2026-09-25:** the default trigger is a second jump (`acro.doubleJump.trigger=jump`). Stamina in rule 5 stays 2.
 1. **One extra jump per airtime.** `acro.doubleJump.maxJumps=1`, admin-raisable (Zephyr `maxJumps` pattern).
 2. **The charge resets** on any tick with `onGround || climbing || inFluid || swimming || mantling`. This is Zephyr's `GroundResetSystem` set plus mantling. It also resets on a world change and a profile switch.
 3. **Trigger** = crouch **press** (rising edge). Holding crouch never fires twice. A press in the first `acro.doubleJump.minAirMs=100` ms after leaving the ground is ignored (and consumed).
@@ -181,13 +184,12 @@ The air jump is a fraction of **the player's current jump**. `MovementManager.ge
 7. `/tree acrobatics` test text, spec 4.4 test 5: Quick Dodge → Evasion.
 
 ### 3.2 SkyySkills 0.4.2 (patch on 0.4.1; source of truth `tools/skills_0_4_2_patch.py`, `rep` style)
-**xp.properties block**, appended once when there is no `acro.doubleJump.enabled` key (the `ExplCfg` / `AlchCfg` ensureDefaults pattern, called beside `AcroCfg.ensureDefaults`); `/skills reload` re-reads it. Comments go on their own lines:
+**xp.properties block**, appended once when there is no `acro.doubleJump.enabled` key (the `ExplCfg` / `AlchCfg` ensureDefaults pattern, called beside `AcroCfg.ensureDefaults`); `/skills reload` re-reads it. Comments go on their own lines. **LOCKED 2026-09-25:** the default trigger line is `acro.doubleJump.trigger=jump`, not `crouch`. Stamina stays `2.0`. The block below is what 0.4.2 shipped; the live default in `build_skyyskills_0.4.5.py` follows the lock.
 ```
 # ---------- Double Jump (SkyySkills 0.4.2) - Acrobatics skill-tree node, SkyyTrees 0.2.1 skill:bonus doublejump.acrobatics ----------
-# trigger: crouch = press crouch in mid-air (default); jump = the jump key in mid-air (only if research/Double-Jump-Spec.md test 5.0
-# showed the client reports it); both = either one.
+# trigger: crouch = press crouch in mid-air (0.4.2 default); jump = the jump key in mid-air. LOCKED 2026-09-25 default is jump.
 acro.doubleJump.enabled=true
-acro.doubleJump.trigger=crouch
+acro.doubleJump.trigger=jump
 acro.doubleJump.maxJumps=1
 # Air jump height = node value (fraction of your own jump height), capped at maxFraction and at maxBlocks.
 acro.doubleJump.maxFraction=1.0
@@ -204,7 +206,7 @@ acro.doubleJump.fx=true
 # debug=true: players with skyyskills.admin see a chat line for every crouch / jump / extra-jump edge while airborne (test 5.0).
 acro.doubleJump.debug=false
 ```
-`AcroCfg` fields: `DJ_ON, DJ_TRIGGER (int: 0 crouch, 1 jump, 2 both; unknown -> 0 + one WARN), DJ_MAX_JUMPS (1..5), DJ_MAX_FRAC (0..1.5), DJ_MAX_BLOCKS (0.5..10), DJ_FORWARD (0..10), DJ_STAMINA (>=0), DJ_REGEN_DELAY (>=0), DJ_CD (>=0), DJ_MIN_AIR (>=0), DJ_MAX_FALL, DJ_XP (>=0), DJ_FX, DJ_DEBUG`. On setup and on every reload, SkyySkills puts the bridge key `skill:dj:key` = `"crouch"` / `"jump"` / `"jump or crouch"`, and removes it in shutdown.
+`AcroCfg` fields: `DJ_ON, DJ_TRIGGER (int: 0 crouch, 1 jump, 2 both; LOCKED 2026-09-25: missing or unknown -> 1 jump + one WARN), DJ_MAX_JUMPS (1..5), DJ_MAX_FRAC (0..1.5), DJ_MAX_BLOCKS (0.5..10), DJ_FORWARD (0..10), DJ_STAMINA (>=0), DJ_REGEN_DELAY (>=0), DJ_CD (>=0), DJ_MIN_AIR (>=0), DJ_MAX_FALL, DJ_XP (>=0), DJ_FX, DJ_DEBUG`. On setup and on every reload, SkyySkills puts the bridge key `skill:dj:key` = `"crouch"` / `"jump"` / `"jump or crouch"`, and removes it in shutdown. The default key is `jump`.
 
 **Acro STATE:** `double[281]` → `double[292]`. Update the layout comment:
 `281` prev crouching, `282` air jumps used since the last ground contact, `283` last double jump ms, `284` airborne-since ms (0 = grounded), `285` prev jumping (own copy; `s[5]` belongs to `move()`), `286` last debug line ms, `287` prev `extraJumpsUsed`, `288-291` spare.
@@ -398,7 +400,15 @@ If crouch works but Skyy wants the jump key, set `acro.doubleJump.trigger=both` 
 
 ---
 
+## LOCKED 2026-09-25 — placement, activation, Stamina (Skyy, voice)
+
+1. **Tier III, not tier II.** Use the alternative already written in section 2.1: slot 7 (index 6), unlocked at Acrobatics 20, replaces Sprinter (`RSpeed2`). Quick Dodge (`RDodge`) returns to tier II slot 5. Do not invent a new slot. SkyyTrees 0.2.3 still places `RDouble` in slot 5 (it replaced Quick Dodge). The next Trees build does this move. The tier III slot's Dust coefficient is the existing template value for slot 7 (`SLOT_B` 500, section 2.1). That is not a new Stamina cost.
+2. **Activation: jump again while already in mid-air** (a second jump). Not crouch in mid-air. The config key already exists: `acro.doubleJump.trigger=jump`. Crouch and `both` stay choices in Server Setup, not the default. Section 1.1 still says the client may not report `MovementStates.jumping` in normal air (test 5.0). Skyy locked the jump key anyway. If test 5.0 shows no jump edge, that is a follow-up. It does not keep crouch as the default.
+3. **Stamina stays 2** (`acro.doubleJump.stamina=2.0`). Section 2.1's tier III column does not name a different Stamina cost. There is no conflict. Do not invent one.
+
+New `xp.properties`, and a missing `acro.doubleJump.trigger`, use `jump`. A file that already has `acro.doubleJump.trigger=crouch` keeps crouch until that line is set to `jump`.
+
 ## 6. Open questions for Skyy
-1. **Placement:** tier II slot 5 (Acrobatics 10, replaces Quick Dodge; recommended) or tier III slot 7 (Acrobatics 20, replaces Sprinter)? Tier II means **no dodge push from the tree at all before Acrobatics 45** (38M XP: in practice never for most players), not just a smaller number; the skill's own +0.4 % per level dodge push stays either way. Tier III keeps Quick Dodge but costs Sprinter's +5 % speed and moves Double Jump to Acrobatics 20 (tens of hours).
-2. **Key:** crouch in mid-air is the reliable key. The jump key is only possible as gear (a double-jump boots item, F4). Should that boots item be added later as well?
-3. **Numbers:** 55 % → 100 % of your jump height over 10 levels, 2 Stamina, no XP, no double jump once you fall fast enough to get hurt. OK?
+1. LOCKED 2026-09-25: **tier III slot 7** (Acrobatics 20, replaces Sprinter). Was: tier II slot 5 (Acrobatics 10, replaces Quick Dodge) or tier III? See the lock above.
+2. LOCKED 2026-09-25: **jump again in mid-air**, not crouch. The boots item (F4) is still open: should a later gear piece add a real jump-key extra jump on top?
+3. **Stamina 2 is locked** with the decision above. Still open: 55 % → 100 % of your jump height over 10 levels, no XP, and no double jump once you fall fast enough to get hurt.

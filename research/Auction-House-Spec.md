@@ -30,10 +30,10 @@
 
 **Who owns what:** the **profile** that listed an item owns the listing. Coins and returned items are claimed into that profile. Buyers pay from whichever profile is active.
 
-**Money:** Hypixel-like defaults, and all of them can be changed in `config.properties`:
-- listing fee 1% / 2% / 2.5% by price, plus a small fee for the duration;
+**Money:** LOCKED 2026-09-25: Hypixel fee defaults stay, and every fee value is a Server Setup row so it can be tuned live (SkyyEconomy auctions category). Until that menu ships, the same numbers live in `config.properties`:
+- listing fee 1% / 2% / 2.5% by price, plus a flat duration fee on 1h, 6h, 12h and 24h. A 48h listing pays double that listing fee (LOCKED 2026-09-25);
 - 1% tax on proceeds above 1,000,000 coins;
-- 14 active listings per profile, 1 to 50 billion coins, 1 to 48 hours.
+- 14 active listings per profile, 1 to 50 billion coins, durations 1h / 6h / 12h / 24h / 48h, default 24h (LOCKED 2026-09-25).
 
 **Safety:** one lock, a strict state machine, and every change written before it counts. No item or coin is ever created. The only possible loss is a logged hard-crash window, and an admin can repair it (section 6).
 
@@ -71,8 +71,8 @@
 
 | Command | What it does |
 |---|---|
-| `/ah` (aliases `/auction`, `/auctionhouse`) | Opens the page on **Browse** (category All, sort Lowest price). |
-| `/ah sell <price>` | Subcommand `sell` with one required STRING arg. Takes the stack in the **active hotbar slot**. Default (`sellCommandOpensPage=true`): opens the **Create** view with that stack picked, the price filled in, the default duration and the fee preview, so **one click on Create BIN** lists it. With `false`, it lists straight from chat and replies with the fee and listing id. |
+| `/ah` (aliases `/auction`, `/auctionhouse`) | Opens the page on **Browse** (category All, sort Lowest price). LOCKED 2026-09-25 (Skyy): `/ah` works anywhere. |
+| `/ah sell <price>` | Subcommand `sell` with one required STRING arg. Takes the stack in the **active hotbar slot**. Default (`sellCommandOpensPage=true`): opens the **Create** view with that stack picked, the price filled in, the default duration and the fee preview, so **one click on Create BIN** lists it. With `false`, it lists straight from chat and replies with the fee and listing id. LOCKED 2026-09-25 (Skyy): the page stays the default. |
 | `/ah sell <price> <duration>` | A usage variant of `sell` (description-only constructor + two `withRequiredArg`, added with `addUsageVariant`). The duration is `24`, `24h`, `30m` or `2d` and must match a configured preset, otherwise: "Pick one of: 1h 6h 12h 24h 48h". |
 | `/ah claim` | Claims everything the active profile is owed: coins first, then items until the inventory is full. Summary in chat. |
 | `/ah manage` (alias `mine`) | Opens the page on **Manage**. |
@@ -106,7 +106,7 @@ Admin commands: section 8.
   - **Buy now - 12,000 coins.** At or above `confirmAbove` (default 10,000) the first click arms a confirm row: "Pay 12,000 coins for Sharp Copper Longsword?" [Confirm] [Cancel]. When the cheaper-listing line is showing, the confirm text ends with "A cheaper one is listed at 8,000 each." It is armed for 10 s, and any other click disarms it. Below the threshold, one click buys. Opening the item view is already the first step of Hypixel's two-step buy.
   - **An armed confirm belongs to one listing.** It stores the listing id and the price it was armed for (7.1). Confirm acts only when both still equal the page's `detailId` and `detailPrice` and the 10 s have not run out. Building the item view for any listing starts **unarmed**, even when a different item view was armed a moment ago. The same rule covers the cancel-confirm rows and the Claim-all confirm (2.5).
   - Your own listing (same profile): [Cancel listing] instead of Buy, with its own confirm row "Cancel? The 470 coin fee is not refunded."
-  - Your account on another profile: the text "Listed by your profile Apple - you cannot buy from yourself."
+  - Your account on another profile: Buy is allowed, the same as any other buy. LOCKED 2026-09-25. SkyyAuctions 0.1.1 still shows "Listed by your profile Apple - you cannot buy from yourself." unless `sameAccountBuy=true`.
   - Still in the grace period: the button reads "Buy (opens in 14 s)" and a click only explains why.
   - [< Back to results] returns to Browse with the same category, search, sort, rarity and page.
 - After a buy, the page goes back to Browse with the status "Bought Sharp Copper Longsword for 12,000 coins" or "...your inventory is full, it waits in Manage".
@@ -154,18 +154,18 @@ Admin commands: section 8.
 
 | Key | Default | Meaning / source |
 |---|---|---|
-| `listingFee` | `0:1.0,10000000:2.0,100000000:2.5` | Tiers `fromPrice:percent`. Fee = ceil(price x percent / 100), paid on Create, never refunded by cancel. Hypixel BIN fee, VERIFIED in the research. |
-| `durations` | `1h:20,6h:45,12h:100,24h:350,48h:1200` | Presets `length:fee`, at most 8. `m`, `h` and `d` suffixes are allowed. The code caps every preset at 14 days (Hypixel's VERIFIED cap). The fee numbers are Hypixel's classic presets from general knowledge; the research only verified the 14-day cap and a 55,200 maximum duration fee. `[SKYY?]` |
+| `listingFee` | `0:1.0,10000000:2.0,100000000:2.5` | Tiers `fromPrice:percent`. Fee = ceil(price x percent / 100), paid on Create, never refunded by cancel. Hypixel BIN fee, VERIFIED in the research. LOCKED 2026-09-25. Server Setup `ah.listingFee`. |
+| `durations` | `1h:20,6h:45,12h:100,24h:350,48h:1200` | Presets `length:fee`, at most 8. `m`, `h` and `d` suffixes are allowed. The code caps every preset at 14 days (Hypixel's VERIFIED cap). The fee numbers are Hypixel's classic presets from general knowledge; the research only verified the 14-day cap and a 55,200 maximum duration fee. LOCKED 2026-09-25: preset lengths are 1h / 6h / 12h / 24h / 48h. Fees on the first four stay 20 / 45 / 100 / 350 (Server Setup `ah.durations`). A 48h listing pays twice the listing fee, so the flat 1,200 in this default is what SkyyAuctions 0.1.1 still charges. |
 | `minDurationFee` / `allowTestDurations` | `1` / `false` | **Test-preset guard.** A preset whose fee is below `minDurationFee` (e.g. the `2m:0` used in the test plan) is a test preset. With `allowTestDurations=false`, config load and `/ahadmin reload` **drop** it with a loud WARN ("dropped test duration 2m:0 - set allowTestDurations=true to use it"), and `defaultDuration` falls back to `24h` if it pointed at a dropped preset. With `true`, the preset works, but every start, every reload and the `/ahadmin` status print "TEST DURATIONS ARE ON: 2m:0". So a forgotten test preset cannot quietly become a free way to churn listings. |
-| `defaultDuration` | `24h` | Must be one of the presets. |
-| `claimTaxPercent` / `claimTaxFrom` | `1.0` / `1000000` | Tax = min(ceil(gross x 1%), gross - 1,000,000), only when gross > 1,000,000, so the net never drops below 1,000,000. Worked out and **stored at sale time** (a later config change never alters money already earned). UNVERIFIED Hypixel detail, concept cross-checked. |
+| `defaultDuration` | `24h` | Must be one of the presets. LOCKED 2026-09-25. Server Setup `ah.defaultDuration`. |
+| `claimTaxPercent` / `claimTaxFrom` | `1.0` / `1000000` | Tax = min(ceil(gross x 1%), gross - 1,000,000), only when gross > 1,000,000, so the net never drops below 1,000,000. Worked out and **stored at sale time** (a later config change never alters money already earned). UNVERIFIED Hypixel detail, concept cross-checked. LOCKED 2026-09-25. Server Setup `ah.claimTaxPercent` and `ah.claimTaxFrom`. |
 | `minPrice` / `maxPrice` | `1` / `50000000000` | Whole coins. The max is a sanity cap (UNVERIFIED Hypixel number). |
-| `maxListings` | `14` | Per **profile**. A slot counts from Create until the seller has claimed that listing's coins or item (Hypixel rule: only claiming or cancelling frees a slot; a cancel with an immediate return frees it at once). |
+| `maxListings` | `14` | Per **profile**. A slot counts from Create until the seller has claimed that listing's coins or item (Hypixel rule: only claiming or cancelling frees a slot; a cancel with an immediate return frees it at once). LOCKED 2026-09-25 (Skyy): 14 is the default cap. Progression rewards or rank perks can raise it in game later. SkyyAuctions 0.1.1 is a flat 14 with no perk raise yet. |
 | `maxListingsServer` | `5000` | Keeps load time and page filtering bounded. |
-| `graceSeconds` | `20` | Nobody can buy a new listing for 20 s (Hypixel, VERIFIED). In practice it gives the seller time to cancel a mistyped price before a sniper takes it. |
-| `confirmAbove` / `confirmSeconds` | `10000` / `10` | A buy at or above this price needs the confirm click, armed for 10 s. 10,000 = a new profile's starting purse. `[SKYY?]` |
-| `claimAllConfirmAbove` | `100000` | [Claim all] asks first when the coins owed are at or above this (2.5). `0` = never ask. Hypixel's nudge sits at about 100,000 (UNVERIFIED, one source). |
-| `cancelRefundsFee` | `false` | Hypixel keeps the fee (VERIFIED). |
+| `graceSeconds` | `20` | Nobody can buy a new listing for 20 s (Hypixel, VERIFIED). In practice it gives the seller time to cancel a mistyped price before a sniper takes it. LOCKED 2026-09-25 (Skyy). |
+| `confirmAbove` / `confirmSeconds` | `10000` / `10` | A buy at or above this price needs the confirm click, armed for 10 s. 10,000 = a new profile's starting purse. LOCKED 2026-09-25 (Skyy). |
+| `claimAllConfirmAbove` | `100000` | [Claim all] asks first when the coins owed are at or above this (2.5). `0` = never ask. Hypixel's nudge sits at about 100,000 (UNVERIFIED, one source). LOCKED 2026-09-25 (Skyy). |
+| `cancelRefundsFee` | `false` | Hypixel keeps the fee (VERIFIED). LOCKED 2026-09-25 (Skyy). |
 | `adminRemoveRefundsFee` | `false` | An admin removal returns the item, not the fee (an admin can `/coinsgive` if it was a mistake). |
 
 ---
@@ -181,8 +181,8 @@ Admin commands: section 8.
 - **Co-op:** SkyWynn co-op shares islands, not profiles, so listings are never shared between players (unlike Hypixel co-op profiles).
 
 ### 4.2 Who may trade
-- **You cannot buy from your own account on any profile.** `buyer.uuid == seller.uuid` is refused. Otherwise one account could move coins between its own profiles with junk listings, which breaks the per-profile purse lock. `sameAccountBuy=false`. Setting it to `true` is for solo testing only.
-- **Creative mode** (`blockCreative=true`): players whose game mode is Creative can browse and claim, but not create listings or buy. Creative can spawn items. Admins get no bypass. The check runs at click time.
+- **Same-profile self-buy is forbidden. A different profile on the same account may buy the listing.** LOCKED 2026-09-25 (Skyy). Was: refuse every buy where `buyer.uuid == seller.uuid` (`sameAccountBuy=false`). SkyyAuctions 0.1.1 still refuses that uuid match unless `sameAccountBuy=true`.
+- **Creative mode** (`blockCreative=true`): players whose game mode is Creative can browse and claim, but not create listings or buy. Creative can spawn items. Admins get no bypass. The check runs at click time. LOCKED 2026-09-25 (Skyy).
 - **Admins** (`skyyauctions.admin`) use the admin commands. In the market they follow every player rule: fees, limits, no self-buy.
 - **`market:deny:<uuid>`:** a bridge String reason. When it is present, that player's active profile may browse but not list or buy, and the page shows the reason. It is empty by default and nothing sets it yet. It is the hook for future Ironman / Stranded-style profile modes (Hypixel blocks those profiles from its Auction House, VERIFIED).
 - **Paused market** (`paused=true` or `/ahadmin pause`): no new listings or buys. Cancel and claims still work. A banner reads "The Auction House is paused by an admin."
@@ -192,12 +192,12 @@ Checked at Create, and again at buy time where it matters:
 1. The stack is not empty and holds at least 1 item. The **whole stack** in that slot is listed: players split stacks in their inventory first (the Hypixel way, and it keeps every listing one snapshot).
 2. The quality tier is below 8 (technical items are never tradeable). The item is not `Skyy_Menu` (SkyyProfiles keeps it across profiles).
 3. **Not blocked** (4.4). A blocked item cannot be listed or bought. Listings made before the block show "off the market". They can still be cancelled, they expire normally, and the item goes back to the seller.
-4. **Not a Bazaar commodity** (`bazaarItemsAllowed=false`): an id in the bridge `bazaar:products` gets "Sell this on the Bazaar: /bz". Hypixel keeps each item on the Bazaar or the Auction House, never both (research section 11). `[SKYY?]`
+4. **Not a Bazaar commodity** (`bazaarItemsAllowed=false`): an id in the bridge `bazaar:products` gets "Sell this on the Bazaar: /bz". Hypixel keeps each item on the Bazaar or the Auction House, never both (research section 11). LOCKED 2026-09-25 (Skyy).
    - **Match whole ids only.** SkyyBazaar 0.1.2 publishes `bazaar:products` as **one comma-joined String** (`publishAll()`), not a Set. A plain `products.contains(id)` is a substring test and would give false hits (a short id inside a longer one). `AhItem.isBazaarItem(id)` splits the String on `,` into a `HashSet` of trimmed tokens and tests `set.contains(id)`. It caches the set and re-splits only when the bridge value is a different String (`!s.equals(lastProducts)`). An equivalent one-liner is `("," + s + ",").indexOf("," + id + ",") >= 0`. A missing key means "no Bazaar loaded": nothing is refused.
 5. **The snapshot round-trip passes** (6.4 step e). An item whose data cannot be saved and restored exactly is refused: "This item cannot be listed (its data could not be saved)." This is what **guarantees that SkyyRolls metadata survives**.
 6. The price is within min / max, the duration is a preset, a profile slot is free, the server cap is not reached, and the purse covers the fee.
 
-**Bags are tradeable, but say what they are.** A Magic Bag (`Skyy_Sack_<Category>_<Tier>`) or the Accessory Bag (`Skyy_Accessory_Bag`) is only a **key**: the materials and accessories live in a per-player file (SkyySacks / SkyyAccessories), not in the item, and SkyySacks writes no item metadata. Selling one hands over a crafted bag, and the buyer opens their **own** pool with it. Nothing is created. The seller gave up the item and pays materials to craft another, like any crafted item, and "coins can bypass collections early" is a locked design fact. So 0.1 does **not** block bags. What it adds against a misunderstanding: for those ids, the Create view's selected panel and the item view's facts show "Contents are not included - a bag opens its owner's own storage." If Skyy wants bags off the market, two lines in `Skyy_Market/blocked.txt` do it (`Skyy_Sack_*` and `Skyy_Accessory_Bag`) with no code change (open question 15).
+**Bags are blocked on the Auction House.** LOCKED 2026-09-25 (Skyy). A Magic Bag (`Skyy_Sack_*`) and the Accessory Bag (`Skyy_Accessory_Bag`) cannot be listed or bought. Was: tradeable, with a "contents not included" line. The block is two lines in `Skyy_Market/blocked.txt`: `Skyy_Sack_*` and `Skyy_Accessory_Bag`. SkyyAuctions 0.1.1 creates that file with comments only, so bags can still be listed until those lines are present.
 
 ### 4.4 The late-game block list (empty by default)
 - **File** `<world>/mods/Skyy_Market/blocked.txt`. It is **shared by the market mods**: SkyyAuctions now, and SkyyBazaar can read the same file later, so one entry takes an item off both markets. It is created on first run with only comment lines. The format is one entry per line: `ItemId` or `Prefix*`, with an optional ` = reason shown to players`. The default reason is "late-game item". `#` starts a comment. It is re-read by `/ahadmin reload`.
@@ -208,7 +208,7 @@ Checked at Create, and again at buy time where it matters:
   3. The value's text after the first `|` is the reason shown to players.
   Matching is case-sensitive, like item ids. A bare `*` (which would block everything) is ignored with a WARN; `/ahadmin pause` is the tool for closing the market.
 - **Bridge** `market:veto` = a ConcurrentHashMap of owner -> `java.util.function.Function` `apply(ItemStack)`, returning `null` (allowed) or a String reason. It is empty by default. It is for per-stack rules that an id list cannot express, e.g. a future SkyyGear "unidentified items cannot be sold". A veto that throws counts as a refusal ("could not check this item") and is logged once. Vetoes are asked after the block list, one Function per owner, on every stack (they are not keyed by id, so the prefix rule does not apply to them).
-- The cutoff itself is still open (DESIGN-STATUS question 11), so nothing ships blocked.
+- LOCKED 2026-09-25 (Skyy): the late-game list that leaves both markets stays empty until Skyy names the items. Magic Bags and the Accessory Bag are blocked separately (question 15).
 
 ### 4.5 Grace, own listings, expiry
 - A listing is buyable only when `now >= graceUntil` (created + 20 s) and `now < endsAt`.
@@ -222,7 +222,7 @@ Checked at Create, and again at buy time where it matters:
 The listed stack is **removed** from the seller's inventory and lives only in the listing record until it is bought, returned or claimed. It is never in two places, apart from the logged crash window in 6.8 (made much shorter by the forced player save, R8).
 
 ### 4.8 Solo
-Everything works in solo: list, browse, cancel, expire, claim, admin tools. **Nobody buys** in solo, because the AH is a player market and you cannot buy from yourself (the Bazaar is the solo market). For a one-account test, `sameAccountBuy=true` lets profile 2 buy profile 1's listing.
+Everything works in solo: list, browse, cancel, expire, claim, admin tools. The same profile cannot buy its own listing. A second profile on that account can. LOCKED 2026-09-25. SkyyAuctions 0.1.1 still needs `sameAccountBuy=true` before profile 2 can buy profile 1's listing.
 
 ---
 
@@ -366,7 +366,7 @@ ACTIVE ────────────────────────�
 - c. Read the picked slot (section: hotbar, storage or backpack; the slot number). `orig` must be non-empty and equal the pick (id, quantity, metadata). If not: "That item moved or changed - pick it again."
 - d. Eligibility 4.3 (1-4, 6).
 - e. `snap = AhItem.snap(orig)`. **Round-trip check:** `restore(snap)` must give the same id and quantity, `getMetadata()` equal (BsonDocument equals, both null counts as equal), durability and quality. Otherwise refuse (4.3.5).
-- f. `fee = listingFee(price) + durationFee(duration)`. `bal = Coins.get(u)`: -1 means refuse "coins unavailable"; less than `fee` means refuse "You need N more coins for the fee."
+- f. `fee = listingFee(price) + durationFee(duration)`. LOCKED 2026-09-25: a 48h listing's whole create charge is `2 * listingFee(price)` (double the 1% / 2% / 2.5% tiers). SkyyAuctions 0.1.1 still uses the sum above, so 48h still adds 1,200. `bal = Coins.get(u)`: -1 means refuse "coins unavailable"; less than `fee` means refuse "You need N more coins for the fee."
 - g. `id = nextId`, then write `state.properties` with `nextId + 1`. If that write fails, refuse.
 - h. Log `LIST-START #id`.
 - i. `Coins.take(u, fee)`: 0 means refuse and `LIST-ABORT`; -1 means refuse, `TAKE-ERROR` and `LIST-ABORT` ("contact an admin if your purse dropped").
@@ -389,7 +389,7 @@ ACTIVE ────────────────────────�
   - `now < graceUntil`: refuse with the seconds left.
   - `price != shownPrice`: refuse and rebuild.
   - Blocked or vetoed: refuse.
-  - `buyer.uuid == seller.uuid` and `sameAccountBuy=false`: refuse.
+  - Same profile as the seller: refuse. A different profile on the same account may buy. LOCKED 2026-09-25. SkyyAuctions 0.1.1 still refuses when `buyer.uuid == seller.uuid` and `sameAccountBuy=false`.
 - d. `bal = Coins.get(u)`: less than price means "You need N more coins." (nothing taken).
 - e. `fits = room(stack)`. This only chooses the delivery path; a full inventory never blocks the buy.
 - f. Log `BUY-START #id buyer price`.
@@ -680,8 +680,8 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 6. **Full inventory:** fill the inventory, let a listing expire, Claim: "make room", nothing lost. Free one slot, Claim works.
 7. **Relog notice:** list with `2m`, log out for 3 minutes, log in: the "expired" notice appears once. Change world (`/hub`, `/island`): no repeat.
 8. **Restart persistence:** list, stop and start the server. The listing is still there with the same time left and identical metadata after cancelling.
-9. **Profiles:** list on profile 1, switch to profile 2. Manage says "Your profile <1> has 1 thing to claim" and Cancel is not offered. Profile 2 **buys it** (`sameAccountBuy=true`): profile 2's purse drops and the item arrives. Switch to 1: Claim coins pays profile 1 exactly the price (tax 0 under 1M).
-10. `sameAccountBuy=false` (default): profile 2 sees "Listed by your profile ...", no Buy.
+9. **Profiles:** list on profile 1, switch to profile 2. Manage says "Your profile <1> has 1 thing to claim" and Cancel is not offered. LOCKED 2026-09-25: profile 2 may buy it. Profile 2's purse drops and the item arrives. Switch to 1: Claim coins pays profile 1 exactly the price (tax 0 under 1M). SkyyAuctions 0.1.1 still refuses that buy unless `sameAccountBuy=true`.
+10. Same profile: the item view offers Cancel, and Buy is refused. LOCKED 2026-09-25.
 11. **Creative:** switch to Creative, try Create and Buy: refused, browsing works.
 12. **Blocked:** add the item id to `Skyy_Market/blocked.txt`, `/ahadmin reload`. The picker says "off the market", an existing listing shows red "off the market" and cannot be bought, Cancel still works.
 13. **Bazaar item:** try to list Copper Ore: "Sell this on the Bazaar: /bz".
@@ -708,22 +708,22 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 ---
 
 ## 12. Open questions for Skyy (the build uses the default in brackets; each is one config key)
-1. **Fees and tax for our smaller economy.** Keep Hypixel's numbers (listing 1% / 2% / 2.5%, duration fees 20 to 1,200, 1% tax above 1,000,000)? New profiles start with 10,000 coins. [Hypixel's numbers]
-2. **Durations.** Presets 1h 6h 12h 24h 48h, default 24h? Allow up to 7 or 14 days (Hypixel allows 14)? [1h to 48h, default 24h]
-3. **Bazaar items on the AH.** Should Bazaar commodities be refused on the AH, like Hypixel? [refused]
-4. **One account, several profiles.** Should one account never be able to buy its own listings, even from another profile? [never]
-5. **Creative players.** Browse and claim only? [yes]
-6. **Listing cap.** 14 per profile, with no rank or permission bonus (Hypixel's only bonus is co-op size, which we do not have). [14]
-7. **Confirm threshold.** Should buys at or above this need a second click? [10,000 coins]
-8. **Cancel keeps the fee** (Hypixel). [kept]
-9. **`/ah sell`.** Open the prefilled page for one click, or list straight from chat? [prefilled page]
-10. **Grace period.** How long should a new listing wait before anyone can buy it? [20 s]
-11. **Where `/ah` works.** Anywhere, or later only at an Auction Master NPC in the hub? On Hypixel, remote `/ah` is a Booster Cookie perk; this is from general knowledge, not in the research. [anywhere; the page id `SkyyAuctions` is ready for an NPC]
-12. **Late-game cutoff.** Which items leave both markets? Still open (DESIGN-STATUS question 11). [nothing blocked; the list and bridge are ready]
-13. **Bid auctions.** When, and with which rules (minimum raise, last-minute extension, 5% fee)? [later; Appendix A]
+1. **Fees and tax.** LOCKED 2026-09-25 (Skyy): keep Hypixel's numbers. Listing fee 1% / 2% / 2.5% (`listingFee=0:1.0,10000000:2.0,100000000:2.5`). Duration fees on 1h / 6h / 12h / 24h stay 20, 45, 100 and 350 (the fee half of `durations`). The 48h charge is question 2. Claim tax 1% above 1,000,000 (`claimTaxPercent=1.0`, `claimTaxFrom=1000000`). Every fee value is adjustable in Server Setup: `ah.listingFee`, the fee half of `ah.durations`, `ah.claimTaxPercent`, and `ah.claimTaxFrom`. SkyyAuctions 0.1.1 still reads `config.properties` (then `/ahadmin reload`). The menu rows ship with SkyyEconomy. A later tax edit does not change a sale that already stored its tax. New profiles still start with 10,000 coins.
+2. **Durations.** LOCKED 2026-09-25 (Skyy): presets stay 1h, 6h, 12h, 24h and 48h. Default is 24h. The 48h option costs double the normal listing fee (2% / 4% / 5% on the same price tiers as the 1% / 2% / 2.5% listing fee). 1h, 6h, 12h and 24h still add their flat duration fees. SkyyAuctions 0.1.1 still adds a flat 1,200 coins for 48h. The loader's 14-day ceiling stays a safety cap if a custom preset is longer.
+3. **Bazaar items on the AH.** LOCKED 2026-09-25 (Skyy): Bazaar commodities stay refused on the Auction House (`bazaarItemsAllowed=false`). That was already the default.
+4. **One account, several profiles.** LOCKED 2026-09-25 (Skyy): buying your own listing from a different profile is allowed. Same-profile self-buy stays forbidden. Was: never, even from another profile. SkyyAuctions 0.1.1 still refuses the other profile unless `sameAccountBuy=true`.
+5. **Creative players.** LOCKED 2026-09-25 (Skyy): Creative players browse and claim only. They cannot list or buy. That was already the default (`blockCreative=true`).
+6. **Listing cap.** LOCKED 2026-09-25 (Skyy): the default cap stays 14 listings per profile. Progression rewards or rank perks can raise that cap in game later. SkyyAuctions 0.1.1 is a flat 14 with no perk raise yet.
+7. **Confirm threshold.** LOCKED 2026-09-25 (Skyy): a buy of 10,000 coins or more needs a second click. That was already the default (`confirmAbove=10000`).
+8. **Cancel keeps the fee** (Hypixel). LOCKED 2026-09-25 (Skyy): cancelling a listing keeps the fee. That was already the default (`cancelRefundsFee=false`).
+9. **`/ah sell`.** LOCKED 2026-09-25 (Skyy): `/ah sell <price>` opens the pre-filled Create page for one click. That was already the default (`sellCommandOpensPage=true`).
+10. **Grace period.** LOCKED 2026-09-25 (Skyy): a new listing waits 20 seconds before anyone can buy it. That was already the default (`graceSeconds=20`).
+11. **Where `/ah` works.** LOCKED 2026-09-25 (Skyy): `/ah` works anywhere. That was already the default. The page id `SkyyAuctions` stays ready if an Auction Master NPC is added later.
+12. **Late-game cutoff.** LOCKED 2026-09-25 (Skyy): the list of items that leave both markets stays empty for now. Fill it when Skyy names the items. The block file and the `market:blocked` bridge stay ready.
+13. **Bid auctions.** LOCKED 2026-09-25 (Skyy): parked for later. No rules to sketch yet. Buy It Now stays the only listing type.
 14. **Deleted profiles.** Claims owned by a profile that no longer exists (SkyyProfiles 0.1 has no delete yet). [they stay in the file; an admin can use `regrant` or move them by hand]
-15. **Bags on the AH.** Magic Bags and the Accessory Bag are only keys to the owner's own storage (4.3). Tradeable with a "contents not included" line, or off the market? [tradeable; two `blocked.txt` lines take them off]
-16. **Claim-all confirm.** Ask before [Claim all] puts a lot of coins in the purse (death penalty 10-25%)? [yes, at 100,000 coins]
+15. **Bags on the AH.** LOCKED 2026-09-25 (Skyy): Magic Bags and the Accessory Bag are blocked. They cannot be listed or bought. Was: tradeable, with a "contents not included" line. SkyyAuctions 0.1.1 still allows them until `Skyy_Market/blocked.txt` has `Skyy_Sack_*` and `Skyy_Accessory_Bag`.
+16. **Claim-all confirm.** LOCKED 2026-09-25 (Skyy): [Claim all] asks first when it would put 100,000 coins or more into the purse. That was already the default (`claimAllConfirmAbove=100000`).
 
 ---
 
@@ -750,7 +750,7 @@ Twelve review findings were checked against this spec, the live scripts and `Hyt
   - The method also needs a `Holder`, which the engine builds from its own chunk data; a mod has to use `Store.copySerializableEntity(ref)` (UNVERIFIED in game).
   - Result: a soft-probed, config-gated call after the lock with `force = true`. It shortens the window from up to 10 s to "until the queued write lands", not to zero.
   - It applies to LIST, BUY delivery, claims and a cancel's return. EXPIRE and admin REMOVE never touch an inventory, so they need no save (the finding listed them).
-- **Magic Bags / Accessory Bag.** Not blocked by default. The finding called bag sales a free-money exploit that breaks "no item or coin is ever created", but nothing is created:
+- **Magic Bags / Accessory Bag.** LOCKED 2026-09-25 (Skyy): blocked on the Auction House. The notes below are the earlier review, which left them tradeable. The finding called bag sales a free-money exploit that breaks "no item or coin is ever created", but nothing is created:
   - The seller hands over a crafted item and pays materials to craft another, as with any crafted item.
   - SkyySacks puts no metadata on bags, so the buyer opens their own pool. Nothing of the seller's moves.
   - "Coins can bypass collections early" is locked design, and blocking bags is Skyy's call.
@@ -764,6 +764,8 @@ Twelve review findings were checked against this spec, the live scripts and `Hyt
 ---
 
 ## Appendix A: bid auctions later, with no data migration
+
+LOCKED 2026-09-25 (Skyy): bid auctions are parked for later. No rules are locked. The notes below are not a decision.
 
 What a later version (0.2 or later) adds, and why 0.1's files already fit:
 - **Record:** `type: "AUCTION"`.

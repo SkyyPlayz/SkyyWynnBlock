@@ -28,12 +28,13 @@ derived from 0.2.1 by tools/trees_0_2_2_patch.py, 0.2.1 from 0.2 by tools/trees_
       every tier 0..40 on the right leaf; every referenced id exists and no generated id collides with a vanilla one except the 2 roots.
       The jar is now an asset pack (manifest IncludesAssetPack true, 84 JSON files: 80 effects, 2 decision trees, 2 root overrides).
   NODES (ids, slots, icons, B, tokens and max levels unchanged; KINDS += SWING = 23, every older kind number unchanged):
-    - Mining S1 MSpeed "Mining Speed": SWING, max 25, per 0.01 = +1 % pickaxe swing speed per level, +25 % at max (a swing every 0.28 s
-      instead of 0.35 s). NOW "+%V pickaxe swing speed".
-    - Mining S10 MHeavy "Heavy Pick": unchanged DMG (+2 % breaking power on ORE per level, +40 %); text "+%V breaking power on ore".
+    - Mining S1 MSpeed "Mining Speed": SWING, max 25, per 0.016 = +1.6 % pickaxe swing speed per level, +40 % at max (a swing every
+      0.25 s instead of 0.35 s). LOCKED Skyy 2026-09-25 (was per 0.01, +25 %). A file already on Mining.MSpeed.per=0.01 keeps +25 %
+      until that line is set to 0.016. If +40 % is still too slow, vanilla swing timing may need adjusting. NOW "+%V pickaxe swing speed".
+    - Mining S10 MHeavy "Heavy Pick": DMG (+2 % breaking power per level, +40 %). LOCKED Skyy 2026-09-25: rock and ore (was ore only).
     - Foraging S1 FSpeed "Chopping Speed": SWING like Mining Speed, for hatchets.
-    - Foraging S10 FSpeed2 renamed "Heavy Hatchet" (was Chopping Speed II): unchanged DMG on wood (+40 %). Id and saved key stay FSpeed2.
-    - TreeFx.dmgBonus: rock no longer gets MSpeed, wood no longer gets FSpeed: ore -> + MHeavy, Woods -> + FSpeed2 only.
+    - Foraging S10 FSpeed2 renamed "Heavy Hatchet" (was Chopping Speed II). LOCKED Skyy 2026-09-25: per 0.05 = +100% wood breaking power at 20, so a 0.5-power hatchet one-chops a log (was per 0.02, +40%). A file already on Foraging.FSpeed2.per=0.02 keeps +40% until that line is set to 0.05. Id and saved key stay FSpeed2. Breaking power on wood only; it does not change weapon-axe combat swing speed.
+    - TreeFx.dmgBonus: rock no longer gets MSpeed, wood no longer gets FSpeed. LOCKED Skyy 2026-09-25: rock and ore -> + MHeavy, Woods -> + FSpeed2.
     - TreeFx.value(SWING) = the EFFECTIVE fraction min(floor(per x level x 100 + 1e-6), 40) / 100 (whole percents, capped at +40 %), so the
       page and tree:fn:bonus("Mining.MSpeed") show what really applies; TreeDefs.valueText shows a whole percent, " (max)" at 40.
     - Farming: no change (no speed node, no multi-swing cadence, every slot taken).
@@ -586,7 +587,8 @@ ADJ = "Press %K in mid-air - once per jump - resets when you land - costs Stamin
 # (id, name, icon, kind, max, per, base, now, how, list key, default list)
 NODES = {
  "Mining": [
-  ("MSpeed", "Mining Speed", "Tool_Pickaxe_Iron", "SWING", 25, 0.01, 0, "+%V pickaxe swing speed", "Less wait between pickaxe swings - more blocks per second, even when one hit breaks the block (any pickaxe, also on mobs)", "", ""),
+  # LOCKED Skyy 2026-09-25: per 0.016 = +40% at 25. A file already on 0.01 keeps +25% until edited.
+  ("MSpeed", "Mining Speed", "Tool_Pickaxe_Iron", "SWING", 25, 0.016, 0, "+%V pickaxe swing speed", "Less wait between pickaxe swings - more blocks per second, even when one hit breaks the block (any pickaxe, also on mobs)", "", ""),
   ("MFortune", "Mining Fortune", "Ore_Gold", "DD", 20, 0.01, 0, "+%V double-drop chance on mined blocks", "Adds to your Mining double-drop perk" + S04, "", ""),
   ("MWisdom", "Mining Wisdom", "Ingredient_Crystal_Blue", "XP", 15, 0.01, 0, "+%V Mining XP", "Every block that pays Mining XP pays more" + S04, "", ""),
   ("MStamina", "Miner Stamina", "Tool_Pickaxe_Crude", "STA", 10, 0.3, 0, "+%V max Stamina", ON, "", ""),
@@ -595,11 +597,14 @@ NODES = {
   ("MCoins", "Pocket Change", "Ingredient_Bar_Gold", "COINS", 10, 0.002, 0, "%V chance per block for coins equal to your Mining level", PAIDM + " - needs SkyyCoins", "", ""),
   ("MSpread", "Mining Spread", "Rock_Stone", "SPREAD", 10, 0.03, 0, "%V chance to also break 1 touching block of the same kind", PAIDM + " - never placed blocks", "", ""),
   ("MRunner", "Tunnel Runner", "Armor_Leather_Light_Legs", "MOVE", 10, 0.01, 0, "+%V move speed while holding a pickaxe", FLAT, "", ""),
-  ("MHeavy", "Heavy Pick", "Tool_Pickaxe_Mithril", "DMG", 20, 0.02, 0, "+%V breaking power on ore", "Ore blocks only - ore breaks in fewer hits (more damage per hit)", "", ""),
+  # LOCKED Skyy 2026-09-25: rock and ore (was ore only).
+  ("MHeavy", "Heavy Pick", "Tool_Pickaxe_Mithril", "DMG", 20, 0.02, 0, "+%V breaking power on rock and ore", "Rock and ore break in fewer hits (more damage per hit)", "", ""),
   ("MBars", "Prospector", "Ingredient_Bar_Iron", "ITEM", 10, 0.01, 0, "%V chance an ore also gives its smelted bar", "Rolls on every ore block that pays Mining XP (copper to adamantite)", "", ""),
   ("MVein", "Vein Burst", "Ore_Adamantite", "VEIN", 5, 2.0, 4.0, "Breaks up to %V more touching ore of the same kind", "On an ore block that pays Mining XP - cooldown %C s - never placed blocks", "", ""),
  ],
  "Foraging": [
+  # LOCKED Skyy 2026-09-25 HARD RULE: this bonus is for tree and wood breaking only. It must not change weapon-axe combat speed.
+  # Weapon axes get their own combat swing-speed stat. 0.2.3 still speeds every Hatchet_Attack swing, including hits on mobs.
   ("FSpeed", "Chopping Speed", "Tool_Hatchet_Iron", "SWING", 25, 0.01, 0, "+%V hatchet swing speed", "Less wait between hatchet swings - more logs per second (any hatchet, also on mobs)", "", ""),
   ("FFortune", "Foraging Fortune", "Wood_Oak_Trunk", "DD", 20, 0.01, 0, "+%V double-drop chance on logs", "Adds to your Foraging double-drop perk" + S04, "", ""),
   ("FWisdom", "Foraging Wisdom", "Ingredient_Crystal_Green", "XP", 15, 0.01, 0, "+%V Foraging XP", "Every log that pays Foraging XP pays more" + S04, "", ""),
@@ -609,7 +614,8 @@ NODES = {
   ("FCoins", "Pocket Change", "Ingredient_Bar_Gold", "COINS", 10, 0.002, 0, "%V chance per log for coins equal to your Foraging level", PAIDF + " - needs SkyyCoins", "", ""),
   ("FSpread", "Timber Spread", "Wood_Birch_Trunk", "SPREAD", 10, 0.03, 0, "%V chance to also break 1 touching log of the same kind", PAIDF + " - never placed logs", "", ""),
   ("FStride", "Woodland Stride", "Armor_Leather_Light_Legs", "MOVE", 10, 0.01, 0, "+%V move speed while holding a hatchet", FLAT, "", ""),
-  ("FSpeed2", "Heavy Hatchet", "Tool_Hatchet_Mithril", "DMG", 20, 0.02, 0, "+%V breaking power on wood", "Wood blocks break in fewer hits (more damage per hit)", "", ""),
+  # LOCKED Skyy 2026-09-25: per 0.05 = +100% at 20 so a top hatchet one-chops a log. A file on 0.02 keeps +40%.
+  ("FSpeed2", "Heavy Hatchet", "Tool_Hatchet_Mithril", "DMG", 20, 0.05, 0, "+%V breaking power on wood", "Wood breaks in fewer hits. At max a top hatchet cuts a log in one hit", "", ""),
   ("FFortune2", "Fortune II", "Wood_Redwood_Trunk", "DD", 10, 0.02, 0, "+%V double-drop chance on logs - adds to Fortune", "Stacks with Foraging Fortune" + S04, "", ""),
   ("FFeller", "Tree Feller", "Tool_Hatchet_Adamantite", "FELLER", 5, 1.0, 0.0, "Breaks %V more logs beside it on the same level", "On a log that pays Foraging XP - same Y level only (Hytale fells the tree once that layer is cut) - natural trees - cooldown %C s", "", ""),
  ],
@@ -858,9 +864,12 @@ DL = ["# SkyyTrees %s - skill trees for Mining, Foraging, Farming, Cooking, Acro
       "# Horizontal radius cap for Spread / Vein Burst / Tree Feller (and the vertical cap for Vein Burst)",
       "ability.maxRadius=6",
       "vein.cooldownSec=40",
-      "# Tree Feller (0.2.1): breaks logs beside the cut on the SAME Y level only - levels 1-4 = 1-4 logs, the max level = every log",
-      "# of that tree on that level (up to feller.maxPerLayer). Hytale itself fells the tree once its whole layer is cut.",
-      "feller.cooldownSec=5", "feller.maxPerLayer=64",
+      "# Tree Feller: breaks logs beside the cut on the SAME Y level only. Hytale itself fells the tree once its whole layer is cut.",
+      "# LOCKED Skyy 2026-09-25 (research/Tree-Fall-Spec.md): extra logs by level = 1, 2, 4, 5, 6, 10.",
+      "# Level 6 jumps to 10 so a very large tree is not broken as a whole layer (that could crash). Cooldown 3 s (was 5).",
+      "# This build still uses base + per x level, and the max level breaks every log on that level up to feller.maxPerLayer.",
+      "# The locked table replaces that formula in the next Trees build. A file still on feller.cooldownSec=5 keeps 5 until edited.",
+      "feller.cooldownSec=3", "feller.maxPerLayer=64",
       "# Natural-tree check: the cut wood must touch leaves within feller.maxHeight blocks above or below the cut (nothing there is broken)",
       "feller.needLeaves=true", "feller.maxHeight=32",
       "# Felled trees (SkyySkills 0.4.2 pays every log that falls): those logs also roll Sap Tapper, Replanter and Pocket Change",
@@ -874,7 +883,8 @@ DL = ["# SkyyTrees %s - skill trees for Mining, Foraging, Farming, Cooking, Acro
       "debug.extraTokens=0", "debug.extraDust=0",
       "# ---- nodes: <Tree>.<Id>.max / per / B / tokens / enabled (Vein Burst + Tree Feller also base; lists: items / crops) ----",
       "# per = amount per node level: a fraction for % nodes (0.02 = 2%), a flat amount for Health / Stamina, blocks for Vein Burst",
-      "# (up to base + per x level), logs on the cut level for Tree Feller (base + per x level; its max level = the whole layer),",
+      "# (up to base + per x level), logs on the cut level for Tree Feller (this build: base + per x level; max level = the whole layer;",
+      "# LOCKED 2026-09-25 table is 1, 2, 4, 5, 6, 10 extra logs - applied in the next Trees build),",
       "# a fraction of your own jump height for Double Jump (base + per x level); Master Chef: per = chance per level above 1."]
 def node_lines(r):
     tn = TREES[r["t"]]
@@ -920,7 +930,7 @@ ADD021FEL = "\n".join([
     "# ---------- SkyyTrees 0.2.1 (added once): Tree Feller rework ----------",
     "# Tree Feller now breaks logs beside the cut on the SAME Y level only (Hytale itself fells a tree once its whole layer is cut):",
     "# levels 1-4 = 1-4 more logs (base + per x level), the max level = every log of that tree on that level, up to feller.maxPerLayer.",
-    "# The old default lines Foraging.FFeller.per=8.0 / Foraging.FFeller.base=8.0 / feller.cooldownSec=30 were changed to 1.0 / 0.0 / 5",
+    "# The old default lines Foraging.FFeller.per=8.0 / Foraging.FFeller.base=8.0 / feller.cooldownSec=30 were changed to 1.0 / 0.0 / 3",
     "# (custom values were kept). feller.maxHeight now only sets how far above / below the cut the leaves check looks.",
     "feller.maxPerLayer=64",
     "# Felled trees (SkyySkills 0.4.2 pays every log that falls): those logs also roll Sap Tapper, Replanter and Pocket Change.",
@@ -928,7 +938,7 @@ ADD021FEL = "\n".join([
 for _b in (ADD021DJ, ADD021FEL): assert all(ord(ch) < 128 for ch in _b)
 assert "Acrobatics.RDodge." not in DEFAULTS and "Acrobatics.RDodge." not in ADD02 and "Acrobatics.RDodge2.max=10" in DEFAULTS
 assert "Acrobatics.RDouble.base=0.5" in DEFAULTS and "Acrobatics.RDouble.max=10" in ADD02 and "Acrobatics.RDouble.base=0.5" in ADD021DJ
-assert "Foraging.FFeller.per=1.0" in DEFAULTS and "Foraging.FFeller.base=0.0" in DEFAULTS and "feller.cooldownSec=5" in DEFAULTS
+assert "Foraging.FFeller.per=1.0" in DEFAULTS and "Foraging.FFeller.base=0.0" in DEFAULTS and "feller.cooldownSec=3" in DEFAULTS
 assert "feller.maxPerLayer=64" in DEFAULTS and "felled.nodes=true" in DEFAULTS and "feller.cooldownSec=30" not in DEFAULTS
 assert "feller.maxPerLayer=64" in ADD021FEL and "felled.nodes=true" in ADD021FEL
 assert not [l for l in ADD021FEL.splitlines() if not l.startswith("#") and (l.startswith("feller.cooldownSec") or "FFeller" in l)]
@@ -947,7 +957,7 @@ ADD023 = "\n".join([
 assert all(ord(ch) < 128 for ch in ADD023)
 assert "swing.enabled=true" in DEFAULTS and "swing.enabled=true" in ADD023 and DEFAULTS.count("swing.enabled=") == 1
 assert not [l for l in ADD023.splitlines() if not l.startswith("#") and l != "swing.enabled=true"]
-assert "Mining.MSpeed.per=0.01" in DEFAULTS and "Foraging.FSpeed.per=0.01" in DEFAULTS and "Foraging.FSpeed2.per=0.02" in DEFAULTS
+assert "Mining.MSpeed.per=0.016" in DEFAULTS and "Foraging.FSpeed.per=0.01" in DEFAULTS and "Foraging.FSpeed2.per=0.05" in DEFAULTS
 assert "Mining.MHeavy.per=0.02" in DEFAULTS and "# Foraging S10 Heavy Hatchet (tier V)" in DEFAULTS and "Chopping Speed II" not in DEFAULTS
 
 # ================= classes =================
@@ -1208,7 +1218,7 @@ F(cfg, "public static final String ADD021FEL = " + json.dumps(ADD021FEL) + ";")
 F(cfg, "public static final String ADD023 = " + json.dumps(ADD023) + ";")
 for decl in ("int[] TIER_LV = new int[] { 1, 10, 20, 30, 45, 60 }", "int TOK_FIRST = 1", "int TOK_EVERY = 5", "long XP_PER_DUST = 10L",
              "long RESPEC_CD_MS = 600000L", "long RESPEC_COINS = 0L", "String[] OFF_WORLDS = new String[0]", "int RADIUS = 6",
-             "int FELLER_H = 32", "long VEIN_CD_MS = 40000L", "long FELLER_CD_MS = 5000L", "boolean FELLER_LEAVES = true",
+             "int FELLER_H = 32", "long VEIN_CD_MS = 40000L", "long FELLER_CD_MS = 3000L", "boolean FELLER_LEAVES = true",
              "int FELLER_ALL = 64", "boolean FELLED_NODES = true", "boolean SWING_ON = true",
              "long FEEDBACK_MS = 2000L", "long EXTRA_TOKENS = 0L", "long EXTRA_DUST = 0L",
              "long[] XP_T = " + jlong([DUST_DEF.get(t, 10) for t in TREES]),
@@ -1317,7 +1327,7 @@ public static void apply(java.util.Properties p) {
   RADIUS = (int) clampL(lng(p, "ability.maxRadius", 6L), 1L, 16L);
   FELLER_H = (int) clampL(lng(p, "feller.maxHeight", 32L), 1L, 64L);
   VEIN_CD_MS = clampL(lng(p, "vein.cooldownSec", 40L), 0L, 86400L) * 1000L;
-  FELLER_CD_MS = clampL(lng(p, "feller.cooldownSec", 5L), 0L, 86400L) * 1000L;
+  FELLER_CD_MS = clampL(lng(p, "feller.cooldownSec", 3L), 0L, 86400L) * 1000L;
   FELLER_LEAVES = bool(p, "feller.needLeaves", true);
   FELLER_ALL = (int) clampL(lng(p, "feller.maxPerLayer", 64L), 1L, 256L);
   FELLED_NODES = bool(p, "felled.nodes", true);
@@ -1399,7 +1409,7 @@ public static String migrateFeller(String text, int[] n) {
     String ln = ls[i];
     String r = migrateLine(ln, "Foraging.FFeller.per", "8.0", "1.0");
     if (r == null) r = migrateLine(ln, "Foraging.FFeller.base", "8.0", "0.0");
-    if (r == null) r = migrateLine(ln, "feller.cooldownSec", "30", "5");
+    if (r == null) r = migrateLine(ln, "feller.cooldownSec", "30", "3");
     if (r != null) { ln = r; n[0] = n[0] + 1; }
     if (i > 0) sb.append('\n');
     sb.append(ln);
@@ -1462,7 +1472,7 @@ public static java.util.Properties upgrade(java.util.Properties p) {
     if (needFel) {
       if ("8.0".equals(str(q, "Foraging.FFeller.per", ""))) q.setProperty("Foraging.FFeller.per", "1.0");
       if ("8.0".equals(str(q, "Foraging.FFeller.base", ""))) q.setProperty("Foraging.FFeller.base", "0.0");
-      if ("30".equals(str(q, "feller.cooldownSec", ""))) q.setProperty("feller.cooldownSec", "5");
+      if ("30".equals(str(q, "feller.cooldownSec", ""))) q.setProperty("feller.cooldownSec", "3");
     }
     if (need023) {
       if ("0.02".equals(str(q, "Mining.MSpeed.per", ""))) q.setProperty("Mining.MSpeed.per", "0.01");
@@ -2002,14 +2012,15 @@ M(fx, r"""
 public static double r6(double x) {
   return Math.round(x * 1000000.0) / 1000000.0;
 }""")
-# 0.2.1 Double Jump card: the trigger key SkyySkills 0.4.2 publishes (skill:dj:key = "crouch" / "jump" / "jump or crouch"), else crouch
+# 0.2.1 Double Jump card: the trigger key SkyySkills publishes (skill:dj:key = "crouch" / "jump" / "jump or crouch").
+# LOCKED 2026-09-25: a missing bridge key reads as "jump" (second jump in mid-air), not crouch.
 M(fx, r"""
 public static String djKey() {
   try {
     Object o = @PKG@.TreeStore.bridge().get("skill:dj:key");
     if (o instanceof String && ((String) o).trim().length() > 0) return ((String) o).trim();
   } catch (Throwable t) { }
-  return "crouch";
+  return "jump";
 }""")
 M(fx, r"""
 public static void putNZ(java.util.HashMap m, String k, double x) {
@@ -2161,8 +2172,9 @@ public static double dmgBonus(double[] v, @BTY@ bt) {
   String gt = @PKG@.TreeDefs.gatherType(bt);
   String id = @PKG@.TreeDefs.bid(bt);
   boolean ore = id.startsWith("Ore_");
+  boolean rock = ore || "Rocks".equals(gt) || "VolcanicRocks".equals(gt) || (gt != null && gt.startsWith("Ore"));
   double b = 0.0;
-  if (ore) b = b + v[@I_MHEAVY@];
+  if (rock) b = b + v[@I_MHEAVY@];
   if ("Woods".equals(gt)) b = b + v[@I_FSPEED2@];
   return b;
 }""")
@@ -3528,8 +3540,8 @@ CFG_ROWS = [
      "Sideways reach of Spread, Vein Burst and Tree Feller (also how high Vein Burst reaches).", "reload"),
     ("vein.cooldownSec", "Vein Burst cooldown", "abilities", "int", "40", "0", "86400", "", "s", "live",
      "Seconds between two Vein Bursts of one player.", "reload"),
-    ("feller.cooldownSec", "Tree Feller cooldown", "abilities", "int", "5", "0", "86400", "", "s", "live",
-     "Seconds between two Tree Fellers of one player.", "reload"),
+    ("feller.cooldownSec", "Tree Feller cooldown", "abilities", "int", "3", "0", "86400", "", "s", "live",
+     "Seconds between two Tree Fellers of one player. LOCKED 2026-09-25: 3 (was 5).", "reload"),
     ("feller.maxPerLayer", "Tree Feller max logs", "abilities", "int", "64", "1", "256", "", "", "live",
      "The max level breaks every log of the tree on the cut's level, up to this many.", "reload"),
     ("feller.needLeaves", "Tree Feller needs leaves", "abilities", "bool", "true", "", "", "", "", "live",

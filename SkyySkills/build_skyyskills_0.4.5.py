@@ -31,6 +31,7 @@ by tools/skills_0_3_2_patch.py, 0.3 from 0.2 by tools/skills_0_3_patch.py)
     crossbow's). PER-TICK EPOCH CHECK (review 7.4): each XbowState keeps the profile:epoch it was built under (Perks.epoch, one bridge
     read); a different live value wipes it on the next slot event or tick, before any payment (the 1 s Perks.switched is not relied on).
     Relog / world change (new Ref), death (DeathComponent) and a false cached flag also wipe; profile:busy only pauses.
+    LOCKED Skyy 2026-09-25: loaded bolts survive teleports. This build still wipes on a world change. Relog, death, and profile switch still drop the load.
   CONFIG (spec 3.2 / 3.3): XbowCfg, the Crossbows-stay-loaded block of xp.properties (a fresh file has it; an existing one without
     perk.archery.keepLoaded.enabled gets it appended ONCE), read by SkillCfg.load (/skills reload and the kit's reload routine). 5 rows,
     159 in total: perk.archery.keepLoaded.enabled (Parts, live,part,danger - asks when switched OFF), .level (Perks, 0-100), .items
@@ -61,7 +62,10 @@ by tools/skills_0_3_2_patch.py, 0.3 from 0.2 by tools/skills_0_3_patch.py)
   UNVERIFIED (needs the game, spec section 4): XbowSlotSys + Xbow.onSlot / Xbow.tick on real hotbar switches (the event, the held-long-
     enough guard, the 3-tick restore after vanilla's wipe, the arrow payment through getCombined inside AcroSys, the client's bolt counter
     and its ~0.1 s gap), the level-up unlock line, the 5 rows in SkyyMenu's Server Setup; go/no-go tests 5, 9, 10 and 12.
-  NOT HERE (spec 2.9 / 6): shortbows, the Signature meter, the off-hand slot, keeping loads across teleports (all dropped by default).
+  NOT HERE (spec 2.9 / 6): shortbows (LOCKED Skyy 2026-09-25: crossbows only), the off-hand slot.
+    LOCKED Skyy 2026-09-25, not in this build: keep the Signature meter, a sound and a chat hint when bolts return, and /settings switches for the meter, the sound, and the hint. This build still resets the meter and stays quiet.
+    Keeping loads across teleports is LOCKED yes (2026-09-25); this build still drops them on a world change.
+    Planned, not built: Archery 15+ bolt capacity up to +4 extra bolts, and a late-game holstered reload of about 30 s.
 0.4.4 (research/Classes-Berserker-Priest-Spec.md section 3 - BERSERKER + PRIEST; Skyy's decisions 2026-09-25, SkyWynn-Decisions.md change
   notes 1-2). Pairs with SkyyClasses 0.1.6 (class:list + class:weapons:Berserker|Priest, and the placeholder Priest heal that calls
   skill:fn:healxp) and SkyyProfiles 0.1.2; every mix loads and is safe (spec 5): with SkyyClasses 0.1.5 the two new slots simply stay
@@ -1253,10 +1257,12 @@ print("felled trees: %d wood ids, %d leaf ids (+ extraTrees %d / %d)" % (len(TRE
 DJ_L = []
 DJ_L.append("# ---------- Double Jump (SkyySkills 0.4.2) - the Acrobatics skill-tree node (SkyyTrees 0.2.1, skill:bonus doublejump.acrobatics) ----------")
 DJ_L.append("# Comments must stay on their own lines.")
-DJ_L.append("# trigger: crouch = press crouch in mid-air (default); jump = the jump key in mid-air (only if research/Double-Jump-Spec.md test 5.0")
-DJ_L.append("# showed the client reports it); both = either one.")
+DJ_L.append("# LOCKED Skyy 2026-09-25 (research/Double-Jump-Spec.md): jump again while already in mid-air. Not crouch.")
+DJ_L.append("# trigger: jump = the jump key in mid-air (default); crouch = press crouch in mid-air; both = either one.")
+DJ_L.append("# A file that already has acro.doubleJump.trigger=crouch keeps crouch until that line is set to jump.")
+DJ_L.append("# Stamina stays 2. Tier III does not name a different cost.")
 DJ_L.append("acro.doubleJump.enabled=true")
-DJ_L.append("acro.doubleJump.trigger=crouch")
+DJ_L.append("acro.doubleJump.trigger=jump")
 DJ_L.append("# extra jumps per airtime (1-5); they recharge when you land, climb, swim or touch water")
 DJ_L.append("acro.doubleJump.maxJumps=1")
 DJ_L.append("# Air jump height = the node value (a fraction of your own jump height), capped at maxFraction and at maxBlocks.")
@@ -1306,8 +1312,10 @@ PARTY_LIT = json.dumps(PARTY_DEFAULTS)
 DIV_L = []
 DIV_L.append("# ---------- Divinity (SkyySkills 0.4.4) - Priest heals from SkyyClasses 0.1.6 (skill:fn:healxp) ----------")
 DIV_L.append("# Comments must stay on their own lines.")
-DIV_L.append("# A Priest (class skill Divinity) earns healXpPerHp Divinity XP for every 1 HP their weapon hits heal on OTHER party members")
-DIV_L.append("# (healing themself pays nothing). healXpMaxPerMinute: most heal XP per Priest in one 60 second window, counted before the xp")
+DIV_L.append("# A Priest (class skill Divinity) earns healXpPerHp Divinity XP for every 1 HP their weapon hits heal on OTHER party members.")
+DIV_L.append("# LOCKED Skyy 2026-09-25: healing themself pays 0.25 XP per HP (was 0). Others stay 0.2. Cap stays 300 a minute.")
+DIV_L.append("# This build still pays nothing for a self-heal. The next Skills build reads that 0.25.")
+DIV_L.append("# healXpMaxPerMinute: most heal XP per Priest in one 60 second window, counted before the xp")
 DIV_L.append("# multiplier (0 = no limit). Kills pay Divinity XP like every class skill (combat.* keys) and are not counted here.")
 DIV_L.append("divinity.healXp.enabled=true")
 DIV_L.append("divinity.healXpPerHp=0.2")
@@ -1322,8 +1330,13 @@ DIV_LIT = json.dumps(DIV_DEFAULTS)
 XBOW_L = []
 XBOW_L.append("# ---------- Crossbows stay loaded (SkyySkills 0.4.5) - the Archery level-5 reward, research/Crossbow-Loaded-Spec.md ----------")
 XBOW_L.append("# Comments must stay on their own lines.")
+XBOW_L.append("# LOCKED Skyy 2026-09-25: Archery level 5, Archer class only, crossbows only (not shortbows).")
 XBOW_L.append("# An Archer whose Archery level is at least 'level' keeps a crossbow's loaded bolts when switching hotbar slots and back.")
 XBOW_L.append("# Vanilla gives the bolts back as Crude Arrows when you switch away; switching back loads them again, paid with those arrows.")
+XBOW_L.append("# LOCKED Skyy 2026-09-25: loaded bolts survive teleports. This build still wipes them on a world change.")
+XBOW_L.append("# LOCKED Skyy 2026-09-25: keep the big-arrow meter, and play a sound plus a chat hint when bolts return.")
+XBOW_L.append("# Players can turn the meter, the sound, and the hint off in /settings. This build does none of that yet.")
+XBOW_L.append("# Planned, not in this build: Archery 15+ can add up to 4 extra bolts. A late-game node reloads a holstered crossbow in about 30 s.")
 XBOW_L.append("perk.archery.keepLoaded.enabled=true")
 XBOW_L.append("perk.archery.keepLoaded.level=5")
 XBOW_L.append("# item id starts that count as crossbows, comma separated")
@@ -1817,7 +1830,7 @@ for _decl in ("boolean ENABLED = true", "double SPRINT = 0.25", "double RUN = 0.
               "double DODGE_PER_LVL = 0.004", "double DODGE_MAX = 0.5", "double TREE_DODGE_MAX = 0.25"):
     acfg.addField(CtField.make("public static volatile %s;" % _decl, acfg))
 # 0.4.2 stage 2: acro.doubleJump.* (research/Double-Jump-Spec.md 3.2) - read by readDj from SkillCfg.load, so /skills reload re-reads them
-for _decl in ("boolean DJ_ON = true", "int DJ_TRIGGER = 0", 'String DJ_KEY = "crouch"', "int DJ_MAX_JUMPS = 1", "double DJ_MAX_FRAC = 1.0",
+for _decl in ("boolean DJ_ON = true", "int DJ_TRIGGER = 1", 'String DJ_KEY = "jump"', "int DJ_MAX_JUMPS = 1", "double DJ_MAX_FRAC = 1.0",
               "double DJ_MAX_BLOCKS = 3.5", "double DJ_FORWARD = 2.0", "double DJ_STAMINA = 2.0", "double DJ_REGEN_DELAY = 0.3",
               "long DJ_CD = 250L", "long DJ_MIN_AIR = 100L", "double DJ_MAX_FALL = 0.0", "double DJ_XP = 0.0", "boolean DJ_FX = true",
               "boolean DJ_DEBUG = false"):
@@ -1857,7 +1870,8 @@ public static void read(java.util.Properties p) {{
   DODGE_MAX = Math.min(2.0, nn({PKG}.SkillCfg.dbl(p, "acro.dodgeBoostMax", 0.5)));
   TREE_DODGE_MAX = Math.min(2.0, nn({PKG}.SkillCfg.dbl(p, "acro.treeDodgeMax", 0.25)));
 }}""", acfg))
-# 0.4.2 stage 2 (Double-Jump-Spec 3.2): trigger 0 crouch (default), 1 jump, 2 both - an unknown value = crouch + one warning per load.
+# 0.4.2 stage 2 (Double-Jump-Spec 3.2): trigger 0 crouch, 1 jump, 2 both.
+# LOCKED 2026-09-25: missing or unknown = jump (a second jump in mid-air). An explicit crouch line is still honored.
 # DJ_KEY = the words the SkyyTrees card (bridge skill:dj:key, Acro.djPublish) and the Stats page show.
 acfg.addMethod(CtNewMethod.make("""
 public static double clampD(double v, double lo, double hi) {
@@ -1868,13 +1882,13 @@ public static double clampD(double v, double lo, double hi) {
 acfg.addMethod(CtNewMethod.make(f"""
 public static void readDj(java.util.Properties p) {{
   DJ_ON = {PKG}.SkillCfg.bool(p, "acro.doubleJump.enabled", true);
-  int tr = 0;
+  int tr = 1;
   String t = p.getProperty("acro.doubleJump.trigger");
   if (t != null) {{
     String x = t.trim().toLowerCase(java.util.Locale.ROOT);
-    if (x.equals("jump")) tr = 1;
+    if (x.equals("crouch")) tr = 0;
     else if (x.equals("both")) tr = 2;
-    else if (x.length() > 0 && !x.equals("crouch")) {PKG}.SkillCfg.warn("acro.doubleJump.trigger=" + t.trim() + " is not crouch, jump or both - using crouch");
+    else if (x.length() > 0 && !x.equals("jump")) {{ {PKG}.SkillCfg.warn("acro.doubleJump.trigger=" + t.trim() + " is not crouch, jump or both - using jump"); tr = 1; }}
   }}
   DJ_TRIGGER = tr;
   DJ_KEY = tr == 1 ? "jump" : (tr == 2 ? "jump or crouch" : "crouch");
@@ -7919,8 +7933,8 @@ CFG_ROWS = [
     ("acro.dodgeBoostMax", "Dodge push cap", "acrobatics", "dec", "0.5", "0", "2", "", "", "live", "", "reload"),
     ("acro.treeDodgeMax", "Tree dodge nodes cap", "acrobatics", "dec", "0.25", "0", "2", "", "", "live",
      "Most dodge push the Acrobatics tree's dodge nodes can add.", "reload"),
-    ("acro.doubleJump.trigger", "Double Jump key", "acrobatics", "choice", "crouch", "", "", "crouch|Crouch,jump|Jump,both|Both", "",
-     "live", "The key pressed in mid-air. Jump only works if the client reports it (spec test 5.0).", "reload"),
+    ("acro.doubleJump.trigger", "Double Jump key", "acrobatics", "choice", "jump", "", "", "crouch|Crouch,jump|Jump,both|Both", "",
+     "live", "LOCKED 2026-09-25: jump again while already in mid-air. Crouch remains a choice. Jump only works if the client reports it (spec test 5.0).", "reload"),
     ("acro.doubleJump.maxJumps", "Air jumps per airtime", "acrobatics", "int", "1", "1", "5", "", "", "live",
      "They recharge when you land, climb, swim or touch water.", "reload"),
     ("acro.doubleJump.maxFraction", "Air jump height cap", "acrobatics", "dec", "1.0", "0", "1.5", "", "", "live",
@@ -8573,7 +8587,7 @@ kit.write(OUT)   # 0.4.3: the kit's deferred checks (SkillKit hooks) + its 7 cla
 print("classes written")
 
 jar = os.path.join(HERE, "SkyySkills-%s.jar" % VERSION)
-m = B.manifest("SkyySkills", VERSION, "SkyWynn skills (Hypixel SkyBlock style): Mining, Foraging, Farming, Alchemy, Smithing, Cooking, Acrobatics, Exploration and your class combat skill (SkyyClasses: Archery, Swordsmanship, Sorcery, Fury, Divinity) to level 100. XP from breaking blocks (a felled tree pays every log that falls), ripe crops, brewing at the Alchemy Bench, smelting at a Furnace, cooking (SkyyCooking), exploring (SkyyExploration - never boosted), kills with class weapons (nearby SkyyParty members get a share in their own class skill), Priest heals on party members (Divinity, from SkyyClasses) and running / jumping / big survived falls / dodging (+ the Acrobatics tree Double Jump: crouch in mid-air). Alchemy makes potion effects last longer and adds max Mana; Exploration adds max Stamina; crossbows stay loaded from Archery 5 by default (the level is set in Server Setup; Archers keep their bolts across hotbar switches, paid with the arrows vanilla refunds). Perks: max health / stamina, double drops, class weapon damage; Acrobatics raises speed, jump height and dodge push and lowers fall damage (shared Skyy movement protocol). Stats page per skill. Every setting editable in game (SkyWynn Menu Server Setup, optional) and per-player chat switches (/settings, optional). Skill tree bonuses and Tree buttons with SkyyTrees (optional). Level ups pay SkyyCoins. /skills. Per profile with SkyyProfiles (optional). Zero dependencies.", PKG + ".SkyySkillsPlugin")
+m = B.manifest("SkyySkills", VERSION, "SkyWynn skills (Hypixel SkyBlock style): Mining, Foraging, Farming, Alchemy, Smithing, Cooking, Acrobatics, Exploration and your class combat skill (SkyyClasses: Archery, Swordsmanship, Sorcery, Fury, Divinity) to level 100. XP from breaking blocks (a felled tree pays every log that falls), ripe crops, brewing at the Alchemy Bench, smelting at a Furnace, cooking (SkyyCooking), exploring (SkyyExploration - never boosted), kills with class weapons (nearby SkyyParty members get a share in their own class skill), Priest heals on party members (Divinity, from SkyyClasses) and running / jumping / big survived falls / dodging (+ the Acrobatics tree Double Jump: jump again in mid-air). Alchemy makes potion effects last longer and adds max Mana; Exploration adds max Stamina; crossbows stay loaded from Archery 5 by default (the level is set in Server Setup; Archers keep their bolts across hotbar switches, paid with the arrows vanilla refunds). Perks: max health / stamina, double drops, class weapon damage; Acrobatics raises speed, jump height and dodge push and lowers fall damage (shared Skyy movement protocol). Stats page per skill. Every setting editable in game (SkyWynn Menu Server Setup, optional) and per-player chat switches (/settings, optional). Skill tree bonuses and Tree buttons with SkyyTrees (optional). Level ups pay SkyyCoins. /skills. Per profile with SkyyProfiles (optional). Zero dependencies.", PKG + ".SkyySkillsPlugin")
 m["IncludesAssetPack"] = False
 B.assemble(jar, m, OUT, {})  # no assets: page built inline (see memory hytale-ui-rules)
 if "--deploy" in sys.argv:

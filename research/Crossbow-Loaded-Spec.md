@@ -18,6 +18,16 @@ text and the method it sits in, which is what the `rep` patch keys on. All of th
 
 *Reviewed 2026-09-25: section 7 lists the review findings, what changed and what was rejected.*
 
+**LOCKED 2026-09-25 (Skyy):**
+- Stay-loaded scope: Archery level 5, Archer class only, crossbows only (not shortbows). Those were already the defaults.
+- Loaded bolts **survive teleports** (`/hub`, `/island`, portals). Was: wipe on world change and reload once. SkyySkills 0.4.5 still wipes. Relog, death, and profile switch still drop the load.
+- **To build, not in 0.4.5:** Archery level 15+ upgrades raise a crossbow's max bolt capacity, up to **+4 extra bolts**.
+- **To build, late-game only, not in 0.4.5:** near the top of the Archer tree, a holstered crossbow reloads itself in about 30 seconds while the player uses a different weapon (fire it full, swap to another bow, it refills in the background). Not an early or mid-tier unlock. There is no Archer class tree yet, so both planned nodes sit on the Archery skill tree until a class tree exists.
+- The big-arrow ability meter (Signature charge) is kept across a slot switch, with the bolts. Was: bolts only.
+- When the bolts go back in, play a sound and send a chat hint. Was: no sound and no hint.
+- `/settings` has separate switches so a player can turn the meter, the sound, and the chat hint off on their own. Was: no personal toggle.
+- SkyySkills 0.4.5 still resets the meter, stays quiet, and has no player switches.
+
 **VERIFIED** = seen directly in bytecode, in asset JSON, or in our own source. **INFERRED** = strongly implied, not read literally.
 **UNTESTED** = not seen in game yet (section 4 checks it).
 
@@ -359,13 +369,13 @@ tick. It is **not** used: a cross-module ordering edge that fails to resolve wou
   bolts are already in the inventory as arrows. What vanilla does with a crossbow held **loaded** at logout is unchanged and untouched.
 - **Death:** wiped while the `DeathComponent` is present. Whatever the server's death rules do to items applies to the refunded arrows
   like any item.
-- **World change** (`/hub`, `/island`, portals): wiped (new `Ref`). A teleport means reloading once. This is an open question (6.3).
+- **World change** (`/hub`, `/island`, portals): LOCKED 2026-09-25, the load survives the teleport. SkyySkills 0.4.5 still wipes it (new `Ref`) and the player reloads once. The next Skills build keeps the bolts. Relog, death, and profile switch still drop the load.
 - Nothing is written to `players/<pkey>.properties`, and there is no migration.
 
 ### 2.9 Known limits (documented, not bugs)
 - The restore is not instant: about 0.1 s. A click inside that window starts a vanilla reload (2.6).
-- Only the loaded bolts are kept. The **Signature** meter (the big-arrow ability charge, `SignatureEnergy` / `SignatureCharges`) still
-  resets on a switch like vanilla (open question 6.5).
+- LOCKED 2026-09-25: the **Signature** meter (the big-arrow ability charge, `SignatureEnergy` / `SignatureCharges`) is kept with the bolts.
+  SkyySkills 0.4.5 still resets it on a switch, like vanilla.
 - Only **Crude** arrows exist in the crossbow's economy: vanilla loads Crude, refunds Crude, and we charge Crude.
 - A crossbow in the off-hand / utility slot (`Utility.Compatible: true`) is not covered. Only hotbar switches are.
 - **Vanilla, not this perk (INFERRED):** `StatsCondition` does not spend `Ammo` (1.3). If two `SwapFrom` chains ever ran in one tick
@@ -610,7 +620,7 @@ Arrows (`Weapon_Arrow_Crude`, the only arrow a crossbow loads).
    wheel hard across two or more slots at once, 10 times. Each time the arrow count must rise by exactly 6, never 12. A double
    refund would be a vanilla bug (2.9), but the perk would make it faster to repeat, so if it is ever seen, 0.4.5 does not ship until
    it is understood. Turn on Advanced → "Stay-loaded debug lines" to watch each keep and restore.
-10. **Profile / relog / death / teleport.** Load 6 and go to slot 2, then each of: relog, die, `/hub`, switch profile and back. After
+10. **Profile / relog / death / teleport.** LOCKED 2026-09-25: a teleport keeps the loaded bolts. 0.4.5 still wipes `/hub`. Load 6 and go to slot 2, then each of: relog, die, `/hub`, switch profile and back. After
     each, slot 1 needs a normal reload and the 6 arrows are in the inventory. Nothing lost, nothing gained.
     **Switch during an armed restore:** set "Stay-loaded restore delay" to 20. Give a second profile a plain Iron Crossbow in slot 1,
     at most Archery 4 (or a non-Archer class), and 10 Crude Arrows. Use SkyyProfiles `islandOnSwitch=false` (or stand on the target
@@ -638,21 +648,25 @@ Arrows (`Weapon_Arrow_Crude`, the only arrow a crossbow loads).
 ---
 
 ## 6. Open questions for Skyy (the build uses the default unless Skyy says otherwise)
-1. **Level:** Archery **5** (your "lvl5 reward"). It is changeable in game (Perks tab). *Default: 5.*
-2. **Archer only?** It works only while you are an Archer (like the class damage perk), with the crossbow allowed by SkyyClasses.
-   *Default: yes.*
-3. **Teleports:** kept loads are dropped on relog, death, profile switch **and** world change (`/hub`, `/island`). You reload once
-   after a teleport; nothing is lost. Keep them across teleports instead? *Default: dropped (simplest, safest).*
-4. **Shortbows too?** They have the same unload (1 drawn arrow). The perk could cover them by adding `Weapon_Shortbow_` to the item
-   list, but that is untested. *Default: crossbows only.*
-5. **Signature meter:** the big-arrow ability charge still resets on a switch, as in vanilla. Keep it too? *Default: no, bolts only.*
-6. **Feedback:** a quiet click sound when the bolts go back in, or a one-time chat hint the first time it happens? *Default: none. The
-   level-up line and the /skills page say it.*
+1. **ANSWERED 2026-09-25:** Archery **5** (the lvl5 reward). It stays changeable in game (Perks tab). *Was already the default.*
+2. **ANSWERED 2026-09-25:** Archer class only, with the crossbow allowed by SkyyClasses. *Was already the default.*
+3. **ANSWERED 2026-09-25:** loaded bolts survive teleports (`/hub`, `/island`, portals). Relog, death, and profile switch still drop
+   the load. *Was: drop on world change too. 0.4.5 still wipes teleports.*
+4. **ANSWERED 2026-09-25:** crossbows only, not shortbows. *Was already the default.*
+5. **ANSWERED 2026-09-25:** keep the big-arrow ability meter (Signature charge) across a slot switch, with the bolts. *Was: no, bolts only. 0.4.5 still resets it.*
+6. **ANSWERED 2026-09-25:** when the bolts go back in, play a sound and send a chat hint. *Was: none. 0.4.5 stays quiet.*
 7. **Existing Archers already at 5+** when 0.4.5 goes live: one chat line on their next join ("New Archery reward: ...")? *Default: no.
    /skills shows it.*
-8. **Player toggle** in /settings to turn it off for yourself? *Default: no. Server owners have the part switch.*
+8. **ANSWERED 2026-09-25:** `/settings` switches so a player can turn the meter, the sound, and the chat hint off individually. *Was: no personal toggle. 0.4.5 has none. The stay-loaded perk itself stays a server part switch.*
 9. **Teaser before level 5:** show "Level 5: crossbows stay loaded" on the Archery page at levels 1-3 too? *Default: no. It shows at
    level 4 under "Level 5 adds".*
+
+### 6.1 Planned Archer nodes (APPROVED 2026-09-25, not in 0.4.5)
+
+There is no Archer class tree yet. These sit on the Archery skill tree until one exists.
+
+- **Bolt capacity, Archery level 15+.** Late-game upgrades raise a crossbow's max bolt capacity. The bonus tops out at **+4 extra bolts** (vanilla `Ammo` is 0-6, so the raised cap is at most 10). Not an early reward.
+- **Holstered reload, near the top of the tree.** Late-game only, not early or mid-tier. While the player uses a different weapon, a holstered crossbow reloads itself in about **30 seconds**. Example: fire the crossbow full, swap to another bow, and the crossbow refills in the background.
 
 ---
 

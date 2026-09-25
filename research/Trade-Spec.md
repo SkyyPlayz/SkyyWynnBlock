@@ -244,9 +244,8 @@ viewers instead of one):
    ("Trade complete!" / whatever didn't fit, per section 10's delivery rule).
 
 This is deliberately closer to Hypixel's own "closing the menu during the countdown cancels it" behaviour (section 1) than to a fourth
-manual "Confirm" click: the countdown itself *is* the last chance to back out, and finishing it uninterrupted **is** the confirmation. Section
-20 asks Skyy to confirm this reading against the alternative (a literal extra click after the countdown) since the task description's
-phrasing could support either.
+manual "Confirm" click: the countdown itself *is* the last chance to back out, and finishing it uninterrupted **is** the confirmation.
+LOCKED 2026-09-25 (Skyy): that 3 s countdown is the confirm. There is no extra click.
 
 ## 10. ESCROW: the core safety design
 
@@ -281,10 +280,13 @@ This is the section that makes section 3's bug table true, not just asserted.
   5. `markNeedsSave()` (and, if the review pass verifies it the way `Auction-House-Spec.md` section 6.1's R8 did, a forced
      `player.saveConfig(...)` right after, to shrink the crash-loses-state window from the engine's normal 10 s tick down to about however
      long the queued write takes) for both players, since both inventories just changed.
-- **Cancel (button, `/trade cancel`, distance/damage rule, or one side disconnecting), inside the lock:** each side's escrow is delivered
+- **Cancel (button, `/trade cancel`, distance rule, or one side disconnecting), inside the lock:** each side's escrow is delivered
   back to **its own owner** (never swapped) with the same `deliver()` routine and the same "owed claim, never dropped" rule if it doesn't
   fit. The record is written `CANCELLED` with a reason, logged, and the file is deleted once both sides' returns are confirmed delivered (or
   kept, holding only the undelivered remainder, exactly like a completed trade with a full inventory on one side).
+  LOCKED 2026-09-25 (Skyy): taking damage does not cancel the trade. Trades survive hits. `tradeCancelOnDamage` defaults to `false`. Only
+  `true` returns both escrows when either player takes damage. SkyyEssentials 0.1.4 still defaults this to `true`. A file already on `true`
+  keeps cancel-on-damage until that line is set to `false`.
 - **Disconnect** ends the whole session (section 3's table) the same way as an explicit cancel, except the disconnecting player's return
   can't be delivered right now - it stays in the persisted file and is delivered at their next `PlayerConnectEvent`/`PlayerReadyEvent` join,
   same mechanism section 11 describes for a server crash. The still-online player gets their return immediately.
@@ -308,7 +310,8 @@ This is the section that makes section 3's bug table true, not just asserted.
 - `names.properties` - lower-case name -> uuid, so `/tradeadmin return <player>` and `/tradeadmin log <player>` work for an offline player
   by name, same convenience file `SkyyVault`'s admin commands already keep.
 - `trade.log` - one line per event: `REQUEST`, `ACCEPT`, `DENY`, `EXPIRE`, `READY`, `UNREADY` (offer changed after being ready), `COUNTDOWN-
-  START`, `COUNTDOWN-CANCEL`, `COMPLETE`, `CANCEL` (with reason: `player`, `distance`, `damage`, `world-change`, `disconnect`, `admin`),
+  START`, `COUNTDOWN-CANCEL`, `COMPLETE`, `CANCEL` (with reason: `player`, `distance`, `world-change`, `disconnect`, `admin`, and `damage`
+  only when `tradeCancelOnDamage` is `true`),
   `RETURN-AT-JOIN`, `ADMIN-RETURN`, `WRITE-FAIL`.
 - `config.properties` - section 16.
 
@@ -352,9 +355,8 @@ just that one player's half:
   side: escrowed items are also just "whatever was in the active profile's inventory" the instant they were dragged in.
 - `tradeCoinsAllowed` (default `true`) - a server can turn off the coins box outright even with SkyyCoins installed, for a server that wants
   `/trade` item-only (e.g. to keep a separate economy mod as the only coin-moving path).
-- No per-trade coin cap is hard-coded (section 1's Hypixel numbers don't map cleanly onto our economy or our "SkyBlock level" gap) -
-  `tradeMaxCoins` (default `0` = no cap) is a config key so a server can set one without a rebuild; whether to eventually tie it to
-  something like SkyySkills' overall level total is an open question (section 20), not part of 0.1.2.
+- No per-trade coin cap is hard-coded. `tradeMaxCoins` (default `0` = no cap) is a flat server-wide number a server can set without a rebuild.
+  LOCKED 2026-09-25 (Skyy): it stays that flat number. `0` means no cap.
 
 ## 14. Metadata kept + logs
 
@@ -363,6 +365,7 @@ still reads correctly in old logs), the full item snapshots on both sides (lossl
 the shared `VCodec`-style codec), both coin amounts, `startedAt`/`endedAt`, and the result with a reason where one applies (a cancel always
 has a reason; a completion doesn't need one). `trade.log` (section 11) is the append-only audit trail an admin reads with `/tradeadmin log`;
 the JSON records are the actual state and are what `/tradeadmin return` acts on.
+LOCKED 2026-09-25 (Skyy): a completed trade stays private between the two players. There is no chat line to party, guild, or the server. The record stays in `trade.log`. That was already the default.
 
 ## 15. Admin: `/tradeadmin`
 
@@ -392,11 +395,11 @@ to the vault mod as a future follow-up, but out of scope for this file per the t
 | `tradeDistance` | `9` | Section 6; `0` disables the live re-check. |
 | `tradeExpirySeconds` | `60` | Section 7. |
 | `tradeCooldownSeconds` | `10` | Section 7. |
-| `tradeSlotsPerSide` | `16` | Escrow container size per player. |
+| `tradeSlotsPerSide` | `16` | Escrow container size per player. LOCKED 2026-09-25 (Skyy): 16 slots, a 4x4 grid. |
 | `tradeCountdownSeconds` | `3` | Section 9. |
 | `tradeCoinsAllowed` | `true` | Section 13. |
-| `tradeMaxCoins` | `0` (no cap) | Section 13. |
-| `tradeCancelOnDamage` | `true` | Cancels an open session (return-to-owner, section 10) if either player takes damage - anti-combat-scam parity with the plugins in section 2, not a dupe-safety requirement. |
+| `tradeMaxCoins` | `0` (no cap) | Section 13. LOCKED 2026-09-25 (Skyy): flat server number. `0` = no cap. |
+| `tradeCancelOnDamage` | `false` | LOCKED 2026-09-25 (Skyy): hits do not cancel an open trade. `true` still returns both escrows (section 10) if either player takes damage. SkyyEssentials 0.1.4 still defaults this to `true`. |
 | `tradeOpenMode` | `page` | `page` / `chest`, section 8. |
 | `tradeAfterSwitchSeconds` | `30` | Section 12. |
 | `tradeSaveDelayMillis` | `1000` | Section 11. |
@@ -452,16 +455,8 @@ docstring already explains for 0.1.1 from 0.1):
 
 ## 20. Open questions for Skyy (the build uses the default in brackets)
 
-1. Is the countdown itself the confirmation (finishing it uninterrupted executes the trade, as designed in section 9), or does Skyy want a
-   literal extra "Confirm" click after the countdown reaches zero, closer to a fourth explicit step? **[default: countdown-is-confirmation,
-   matching the researched Hypixel behaviour most directly]**
-2. Should `tradeMaxCoins` eventually scale with something (total skill levels, collections, an eventual "SkyBlock-level"-alike number), the
-   way Hypixel ties its own coin cap to SkyBlock level, or stay a single flat server-wide config number for now? **[default: flat number,
-   `0` = uncapped, until a level-like metric exists to key it off]**
-3. `tradeCancelOnDamage` default `true` - matches the "don't get combat-scammed mid-trade" spirit of the researched plugins, but on a PvE-
-   leaning server this could be an annoyance (stray mob damage cancelling a trade). Keep it `true`, or default `false` and let a PvP-heavy
-   server opt in? **[default: `true`]**
-4. `tradeSlotsPerSide=16` (a 4x4 grid) - big enough for a normal trade without inviting "dump your whole inventory" abuse, but Hypixel's own
-   window reads as noticeably bigger (multiple rows). Keep 16, or go bigger (e.g. 27, a double-chest-row shape)? **[default: 16]**
-5. Should a completed trade generate any server-wide or party chat line (e.g. for a guild/party to see "so-and-so traded with so-and-so"),
-   or stay entirely private between the two participants the way Hypixel's own trade is? **[default: fully private, log-only]**
+1. LOCKED 2026-09-25 (Skyy): the 3 s countdown after both click Ready is the confirm. Finishing it uninterrupted executes the trade. There is no extra click. That was already the default.
+2. LOCKED 2026-09-25 (Skyy): `tradeMaxCoins` stays a flat server-wide number. `0` means no cap. That was already the default.
+3. LOCKED 2026-09-25 (Skyy): taking damage does not cancel the trade. Trades survive hits. `tradeCancelOnDamage` defaults to `false`. Was: `true`. SkyyEssentials 0.1.4 still defaults the row and `config.properties` to `true`. A file already on `true` keeps cancel-on-damage until that line is set to `false`.
+4. LOCKED 2026-09-25 (Skyy): each side of a trade has 16 slots, a 4x4 grid. That was already the default.
+5. LOCKED 2026-09-25 (Skyy): a completed trade stays private between the two players. There is no chat line to party or guild. That was already the default (log-only).

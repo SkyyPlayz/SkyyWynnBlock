@@ -372,6 +372,8 @@ Counts: Skills 5 (+2 planned), Collections 2, Sacks 2, Combat 2, Coins 3, Profil
 
 ### 2.3 Never toggleable (always shown), and why
 
+LOCKED 2026-09-25 (Skyy): this list stays as written. These messages stay always shown.
+
 | Message (mod #) | Why it cannot be switched off |
 |---|---|
 | **Replies to your own action:** every typed-command reply (usage, "no permission", errors), page status lines, Bazaar trade results (Bazaar), `/pay` sender line (Coins), `/tpa` sender lines, "Accepted..." (Ess #14), profile switch / create confirmations (Profiles #4, #6), class chosen (Classes #7), skill tree open failed (Skills #8), retired accessory click (Acc #6), the `/island visit` reply "Visiting X's island - look, don't touch (they can /island invite you to build)." (Islands, `IslandCmd.visit`, already live in 0.4.4; it is **not** `islands.visitWelcome`, see 3.10) | You just asked for it. Hiding it makes buttons and commands look broken. |
@@ -661,8 +663,8 @@ SkyyHud (no unprompted messages), SkyyBazaar (only replies and click results), S
 ## 4. UI (SkyyMenu 0.2)
 
 ### 4.1 Where it opens
-- **Menu icon:** a new MENU DATA entry, slot **51** in the main view. The bottom row then reads Back 45, Prev 48, Close 49, Next 50, **Settings 51**, the way SkyBlock puts its Redstone Torch next to Close. Slot 50 is reserved for Next by the build check.
-  `("main", 51, "Furniture_Crude_Torch", "Settings", ["Turn chat messages on or off - one switch per message, for every mod.", "Your settings are the same on every profile.", "Command: /settings"], "Click to open!", "settings")`
+- **Menu icon:** a new MENU DATA entry, next to the Mods button. LOCKED 2026-09-25 (Skyy): the Settings icon sits next to Mods. Was: slot **51**, the bottom row next to Close, the way SkyBlock puts its Redstone Torch next to Close. Mods is at slot 40. Server Setup already fills slot 41, immediately right of Mods, so the torch goes in slot **39**, immediately left of Mods. The bottom row reads Back 45, Prev 48, Close 49, Next 50. Slot 50 stays reserved for Next. SkyyMenu 0.3.2 still places the torch at slot 51.
+  `("main", 39, "Furniture_Crude_Torch", "Settings", ["Turn chat messages on or off - one switch per message, for every mod.", "Your settings are the same on every profile.", "Command: /settings"], "Click to open!", "settings")`
   Build check: add `"settings"` to the allowed actions in the `ENTRIES` assert. `MenuPage.click`: `if (act.equals("settings")) { openSettings(ref, st); return; }` with
   ```java
   public void openSettings(@REF@ ref, @ST@ st) {
@@ -670,7 +672,7 @@ SkyyHud (no unprompted messages), SkyyBazaar (only replies and click results), S
     if (p != null) p.getPageManager().openCustomPage(ref, st, new @PKG@.SettingsPage(this.playerRef, 0));
   }
   ```
-  The page is opened directly. The menu is **not** closed first (the 0.1.2 rule; SkyyHud does the same page-to-page), and this does not depend on who owns the `/settings` name. `[SKYY?]` Slot 51 (SkyBlock spot) or slot 25 (next to Mods in the icon rows)?
+  The page is opened directly. The menu is **not** closed first (the 0.1.2 rule; SkyyHud does the same page-to-page), and this does not depend on who owns the `/settings` name.
 - **Command:** `SettingsCmd`, `super("settings", "Open your settings - turn chat messages on or off")`, `addAliases(new String[] { "skysettings" })`, `setPermissionGroups(new String[] { "hytale:Adventurer" })` (command rule 1). No arguments (command rule 2 needs none). `execute` opens `new SettingsPage(pr, 0)`. On failure: `[Settings] Could not open your settings.`
 - **MODS list:** SkyyMenu entry gets `"/settings (or /skysettings) - turn chat messages on or off"`. SkyySkills gets `"/skills quiet - hide the +XP messages (also in /settings)"`. SkyyTrees gets its `/tree quiet` line the same way.
 
@@ -745,10 +747,11 @@ Also `SET_ORDER` (section 2.2 keys, in order) and `SET_ROWS = 7`.
 - **build():** `SetReg.drain()`, clamp `cat` and `pageNo`, append root, accent, title, hint and both tab rows. For tab `i`, append a spacer when `i % 4 != 0` and bind `#SkyyStgTab<i>` -> `EventData.of("a", "stab" + i)`. Then gap, header, rows. For each visible row `r`: store `rowKeys[r] = key`, `Boolean v = SetStore.get(u, key)` (`on = v == null || v`), append row, spacer, text group, name, desc, ON (selected if on), spacer, OFF (selected if off), gap. `b.set` the name and help. Bind `son<r>` / `soff<r>`. With no rows, append `UI_SEMPTY` and set it to `Nothing to switch here yet - the mods for this tab are not installed or not updated.`. Header text: `SET_HEAD[cat] + "   -   " + n + (n == 1 ? " setting" : " settings") + (pages > 1 ? "   -   page " + (pageNo + 1) + " of " + pages : "")`. Then the Always line, status and footer (Prev/Next only when `pages > 1`). Reset uses the armed variant while `now - armedAt <= 10000`. Bind `sprev snext sreset smenu sclose`. If `SetStore.isBroken(u)` and the status is empty, the status becomes `Your settings file could not be read - changes are not saved. Tell an admin.`
 - **handleDataEvent** (match `data.indexOf(payload + "\"")`, the proven pattern; `son1"` can never match `son11"` or `soff1"`): `sclose` -> `setPage(None)`. `smenu` -> `openCustomPage(ref, st, new MenuPage(this.playerRef, "main"))`. `sreset` -> first click arms (`Click Reset again within 10 seconds to reset EVERY tab to its default.`), a second click within 10 s runs `SetStore.resetAll(u)` (`Every setting is back to its default.` or the unreadable-file text). Any other click disarms. `stab<i>` -> `cat = i; pageNo = 0`. `sprev/snext` -> page. `son<r>` / `soff<r>` -> `SetStore.set(u, rowKeys[r], on, false)`, status `<Label>: ON - saved.` / `<Label>: OFF - saved.` or the unreadable text. Every branch ends in `rebuild()` (click handlers may rebuild freely). Wrap everything in `try/catch` with `MenuUtil.warn`.
 - **Never:** no MouseEntered/MouseExited bindings, no timers or periodic updates (the armed Reset reverts on the next click, not on a timer), no `setPage(None)` before opening another page. `CustomPageLifetime.CanDismiss` means Esc closes it.
+- **Who sees a row.** LOCKED 2026-09-25 (Skyy), to be built: settings visibility is permission-based. A player sees only the settings they have permission to change. A basic player who is not an admin does not see admin-only or restricted settings. Those rows are hidden. The page does not draw a greyed-out or disabled entry for them. SkyyMenu 0.3.2 still lists every registered key of the open tab.
 - A change made elsewhere while the page is open (`/skills quiet` in chat) shows at the next click. That is acceptable, since there are no periodic updates.
 
 ### 4.5 Build-time checks (in the SkyyMenu 0.2 script)
-Copy the menu's existing checks to the new strings: balanced `{}`/`()`, no underscore in any `#Id`, no `Anchow`/`;;`, root anchor Width/Height only, height budget <= 930, and every `UI_S*` string present in `MenuData.class` after the build (the existing post-build constant-pool check). Also: `len(SET_CAT_ID) == 8`, every `SET_ORDER` key passes `validKey`, no duplicate keys, every help line in the section 2.2 table <= 90 characters (put the table in MENU DATA as `SET_KNOWN` for this check and for the admin template), slot 51 free in `main`, icon `Furniture_Crude_Torch` exists (`need_item`), and every `makeClass` is in the `writeFile` list.
+Copy the menu's existing checks to the new strings: balanced `{}`/`()`, no underscore in any `#Id`, no `Anchow`/`;;`, root anchor Width/Height only, height budget <= 930, and every `UI_S*` string present in `MenuData.class` after the build (the existing post-build constant-pool check). Also: `len(SET_CAT_ID) == 8`, every `SET_ORDER` key passes `validKey`, no duplicate keys, every help line in the section 2.2 table <= 90 characters (put the table in MENU DATA as `SET_KNOWN` for this check and for the admin template), slot 39 free in `main`, icon `Furniture_Crude_Torch` exists (`need_item`), and every `makeClass` is in the `writeFile` list.
 
 ---
 
@@ -770,7 +773,7 @@ Copy the menu's existing checks to the new strings: balanced `{}`/`()`, no under
 
 ### 5.2 In game, one account (Skyy)
 1. `/settings` opens the page: 8 tabs and rows only for installed, updated mods. `/skysettings` opens it too. The server log has no "another mod owns /settings" warning.
-2. SkyWynn Menu: the torch at slot 51 opens Settings. "< SkyWynn Menu" returns to the menu. Clicks keep working after each switch (the 0.1.2 Loading... bug must not come back).
+2. SkyWynn Menu: the torch next to Mods (slot 39) opens Settings. "< SkyWynn Menu" returns to the menu. Clicks keep working after each switch (the 0.1.2 Loading... bug must not come back).
 3. Skills tab: Skill XP gains OFF -> mine stone: no `+XP` line, and XP is still earned (check `/skills`). A level-up still shows. Level-ups OFF -> the next level-up is silent and its coins are still paid (`/balance`).
 4. Relog -> still OFF. Switch profile (`/profiles`) -> still OFF (per player).
 5. `/skills quiet` -> the three Skills switches flip together. The page shows it after a click. `/skills quiet` again -> all ON.
@@ -795,13 +798,14 @@ Copy the menu's existing checks to the new strings: balanced `{}`/`()`, no under
 
 ## 6. Open points
 
-- `[SKYY?]` Settings icon: slot 51 (bottom row next to Close, SkyBlock's spot) or slot 25 (next to Mods)?
+- LOCKED 2026-09-25 (Skyy): the Settings icon sits next to the Mods button (slot 39, left of Mods at 40). Was: slot 51, the bottom row next to Close. SkyyMenu 0.3.2 still places the torch at slot 51.
 - `[SKYY?]` **Answer before the build round.** Party invites / teleport requests / private messages **refuse** when OFF (Hypixel-style privacy) instead of just hiding the line. OK? This is the only place the spec gates the action and not just the message (1.3), and it goes further than "chat notifications". Do not build these three rows on a guess: if the round has to start without an answer, leave the three keys out of `regSetting` and `SET_ORDER` (25 switches until then) and add them in a follow-up. If Skyy says **hide only**, build these rows instead:
   - `party.invites`: the invite is stored and the sender's "Invited X..." reply is unchanged. Only `target.sendMessage(... invited you to a party! ...)` in `InviteCmd.execute` (~173) gets `if ({PKG}.PartyStore.notifyOn(target.getUuid(), "party.invites"))`. Help line: `Party invites from other players - hidden invites still expire after 60 s`.
   - `tpa.requests`: `tryAdd` and both sender replies are unchanged. Only the two `say(target, ...)` request lines in `EssStore.request` (~499, ~502) get `if (notifyOn(target.getUuid(), "tpa.requests"))`. Help line: `Incoming /tpa and /tpahere requests - you can still /tpaccept a hidden one`.
   - `msg.private`: the sender's `[you -> X]` echo, `LAST_PM` and `/reply` are unchanged. Only `say(target, "[" + ... + " -> you] " + text, PM)` in `EssStore.pm` (~547) gets `if (notifyOn(target.getUuid(), "msg.private"))`. Drop the "(Your own private messages are off...)" note. Help line: `Private messages to you - the sender is not told you hid them`.
   - In each case the refusal texts go, the three 2.2 help lines change as above, section 1.1's "Some General switches refuse..." sentence goes, and the 5.3 tests 1-3 become "A sees nothing, B's command works as normal".
 - `[SKYY?]` A staff bypass for the refusing switches (so an admin's `/msg` always arrives)?
-- `[SKYY?]` Anything in 2.3 Skyy wants switchable anyway (for example the "Playing profile" line is switchable, but the create-a-profile reminder is not)?
+- LOCKED 2026-09-25 (Skyy): the always-on list in section 2.3 stays as written. Nothing on that list becomes switchable for now.
+- LOCKED 2026-09-25 (Skyy), to be built: settings visibility is permission-based. A player sees only the settings they have permission to change. A basic player who is not an admin does not see admin-only or restricted settings. Those rows are hidden. The page does not draw a greyed-out or disabled entry for them. SkyyMenu 0.3.2 still shows every registered key of the open tab.
 - **Later (0.2.1+):** link rows (register with a `String` command in element 4 instead of a `Boolean`; the row shows one "Open" button that runs the command as the player without closing first): "HUD layout" -> `/skyyhud` (SkyyHud 0.3.7), "Island settings" -> `/island settings` (SkyyIslands 0.5.1), so Settings becomes the one place for every personal setting. Also a Wynncraft-style `/settings <key> on|off` for power users (needs a usage variant), and sound switches once any Skyy mod plays sounds.
 - After the build: copy 1.2 into `tools/SETTINGS-CONTRACT.md`, add a TEST-CHECKLIST section from 5.2/5.3, add `SkyyMenu 0.2` to `tools/deploy_set.py`'s set, and update HANDOFF section 3. Other workflows own those files, so this spec does not touch them.

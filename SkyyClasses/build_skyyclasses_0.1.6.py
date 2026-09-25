@@ -191,6 +191,7 @@ CLASSES = [
 FREE_WEAPONS = [("Weapon_Shield_", "shields")]
 # weapons no class owns yet (blocked for players with a class while unassignedBlocked=true). "Weapon_" = catch-all for any other Weapon_*.
 UNASSIGNED = [
+    # LOCKED Skyy 2026-09-25: Weapon_Deployable_Healing_Totem is Priest only. This build still leaves every deployable unassigned.
     ("Weapon_Bomb", "bombs"), ("Weapon_Gun", "guns"), ("Flamethrower_", "flamethrowers"), ("Weapon_Deployable_", "deployables"),
     ("Weapon_Dart_", "darts"), ("Weapon_Claws_", "claws"), ("Weapon_Blowgun_", "blowguns"),
     ("Weapon_Assault_Rifle", "guns"), ("Weapon_Handgun", "guns"), ("Weapon_Grenade_", "grenades"), ("Weapon_Test_", "test weapons"),
@@ -222,7 +223,7 @@ DEF_HEAL_RADIUS = 16.0
 DEF_HEAL_MAX_HIT = 10.0
 DEF_HEAL_MAX_SEC = 10.0
 DEF_HEAL_MSG = True
-DEF_HEAL_MSG_MS = 5000
+DEF_HEAL_MSG_MS = 10000   # LOCKED Skyy 2026-09-25: one heal chat line every 10 s (was 5 s). A file already on 5000 keeps 5 s.
 HEAL_SHARE_MAX, HEAL_SELF_MAX = 500, 100
 HEAL_RADIUS_MIN, HEAL_RADIUS_MAX = 1.0, 64.0
 HEAL_CAP_MIN, HEAL_CAP_MAX = 0.5, 1000.0
@@ -497,11 +498,14 @@ CFG_LINES = [
     "# openDelayMillis = how long after joining the class page opens",
     "openDelayMillis=%d" % DEF_OPEN_DELAY_MS,
     "# ---------- Class kits (0.1.6) - every class gets its basic weapon once, when a profile picks the class ----------",
+    "# LOCKED Skyy 2026-09-25: the kit drops straight into the hotbar the moment the player selects or changes class.",
+    "# This build still puts it in storage about 31 s after a new profile arrives. Daily Archer arrow refill is not in this build.",
     "# kits.enabled = false: new classes get no kit (kits still pending or owed wait until it is on again)",
     "kits.enabled=%s" % str(DEF_KITS_ON).lower(),
     "# kit.<Class> = item:amount,item:amount (at most %d stacks). In game: Server Setup -> Classes -> Class kits (also 'Use my hotbar')" % KIT_MAX_STACKS,
 ] + ["kit.%s=%s" % (_c["name"], _c["kit"]) for _c in CLASSES] + [
-    "# ---------- Priest heal (placeholder until spells exist) ----------",
+    "# ---------- Priest heal (LOCKED Skyy 2026-09-25, TEMPORARY until healing spells exist) ----------",
+    "# Numbers locked for now: sharePercent 25, selfPercent 50, radius 16, maxPerHit 10, maxPerSecond 10, party only.",
     "# a Priest's wand or spellbook hit on a monster heals party members within priestHeal.radius blocks of the Priest by sharePercent of",
     "# the damage (the Priest themself selfPercent of that), at most maxPerHit per hit and maxPerSecond per second for each player",
     "priestHeal.enabled=%s" % str(DEF_HEAL_ON).lower(),
@@ -510,7 +514,8 @@ CFG_LINES = [
     "priestHeal.radius=%s" % dnum(DEF_HEAL_RADIUS),
     "priestHeal.maxPerHit=%s" % dnum(DEF_HEAL_MAX_HIT),
     "priestHeal.maxPerSecond=%s" % dnum(DEF_HEAL_MAX_SEC),
-    "# messages = heal chat lines (players can also hide theirs in /settings); feedbackMs = at most one line per player this often",
+    "# messages = heal chat lines, on by default (players can hide theirs in /settings)",
+    "# feedbackMs = LOCKED Skyy 2026-09-25: at most one line per player every 10000 ms (was 5000). A file already on 5000 keeps 5000.",
     "priestHeal.messages=%s" % str(DEF_HEAL_MSG).lower(),
     "priestHeal.feedbackMs=%d" % DEF_HEAL_MSG_MS,
 ]
@@ -3312,8 +3317,8 @@ public void setup() {
   this.ticker = @HSV@.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new @PKG@.ClassTick(), 2L, 2L, java.util.concurrent.TimeUnit.SECONDS);
   @PKG@.ClassCfg.regSetting("classes.blockedChat", "Blocked weapon - chat line", "combat", true, "Only Archers can use bows... - at most every 3 s. The hit is blocked either way");
   @PKG@.ClassCfg.regSetting("classes.blockedPopup", "Blocked weapon - popup", "combat", true, "The popup with the weapon's icon - at most every 1.5 s");
-  @PKG@.ClassCfg.regSetting("classes.healGiven", "Priest heals - your heals", "combat", true, "Your heals: +23 HP to 2 party members and +6 HP to you - one line every 5 s at most");
-  @PKG@.ClassCfg.regSetting("classes.healTaken", "Priest heals - healed by others", "combat", true, "Skyy healed you +12 HP - one line every 5 s at most. The heal happens either way");
+  @PKG@.ClassCfg.regSetting("classes.healGiven", "Priest heals - your heals", "combat", true, "Your heals: +23 HP to 2 party members and +6 HP to you - one line every 10 s at most");
+  @PKG@.ClassCfg.regSetting("classes.healTaken", "Priest heals - healed by others", "combat", true, "Skyy healed you +12 HP - one line every 10 s at most. The heal happens either way");
   @PKG@.CfgPub.start(getDataDirectory().getParent(), getLogger());
   getLogger().at(java.util.logging.Level.INFO).log("[SkyyClasses] __VER__ ready - /class, /class kit, /classadmin; classes " + @PKG@.ClassDefs.listText() + "; " + cfgText + " (coins bridge " + (@PKG@.ClassStore.coinsReady() ? "found" : "not found yet") + "; profiles " + (@PKG@.ClassCfg.profilesOn() ? "SkyyProfiles found - class per profile" : "SkyyProfiles not loaded yet - class per player") + "; config also in game: SkyWynn Menu -> Server Setup -> Classes)");
 }""".replace("__VER__", VERSION))

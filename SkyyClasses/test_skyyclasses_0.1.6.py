@@ -107,7 +107,7 @@ NEW_ROWS = [  # (key, cat, type, default, min, max, opts, unit, flags) - spec 2.
     ("priestHeal.maxPerHit", "priest", "dec", "10", "0.5", "1000", "", "", "live"),
     ("priestHeal.maxPerSecond", "priest", "dec", "10", "0.5", "1000", "", "", "live"),
     ("priestHeal.messages", "priest", "bool", "true", "", "", "", "", "live"),
-    ("priestHeal.feedbackMs", "priest", "int", "5000", "1000", "60000", "", "ms", "live,adv"),
+    ("priestHeal.feedbackMs", "priest", "int", "10000", "1000", "60000", "", "ms", "live,adv"),
 ]
 DEF16 = "switchCost=5000 cooldownMinutes=60 requireClass=false unassignedBlocked=true promptEveryLogin=true openDelayMillis=2000" \
         " kits=on priestHeal=on healShare=25% self=50% radius=16"
@@ -172,7 +172,7 @@ def run(jar):
     check([str(x) for x in Rows.defLines(0)] == [str(x) for x in Cfg.DEFAULT_LINES], "kit DEFAULTS text = ClassCfg.DEFAULT_LINES")
     check(bool(KitCfg.ON) and int(Cfg.HEAL_SHARE_PCT) == 25 and int(Cfg.HEAL_SELF_PCT) == 50 and float(Cfg.HEAL_RADIUS) == 16.0
           and float(Cfg.HEAL_MAX_HIT) == 10.0 and float(Cfg.HEAL_MAX_SEC) == 10.0 and bool(Cfg.HEAL_ON) and bool(Cfg.HEAL_MSG)
-          and int(Cfg.HEAL_MSG_MS) == 5000, "new field defaults (spec 2.5)")
+          and int(Cfg.HEAL_MSG_MS) == 10000, "new field defaults (spec 2.5)")
     print("B. defaults done")
 
     work = os.path.join(SCRATCH, "work")
@@ -277,7 +277,7 @@ def run(jar):
           == ("false", "true", "true", "2000", "false"), "initial gets")
     check((get("kits.enabled"), get("kit.Priest"), get("kit.Shaman"), get("priestHeal.sharePercent"), get("priestHeal.radius"),
            get("priestHeal.maxPerHit"), get("priestHeal.feedbackMs"), get("kit.Priest.fromHotbar"))
-          == ("true", "Weapon_Wand_Wood:1", "", "25", "16", "10", "5000", ""), "initial gets of the new rows (a 0.1.5 file = defaults)")
+          == ("true", "Weapon_Wand_Wood:1", "", "25", "16", "10", "10000", ""), "initial gets of the new rows (a 0.1.5 file = defaults)")
     check(get("switchCost") is None and get("nope") is None, "non-row keys are unknown to get")
     r = cset("requireClass", "true", confirm="")
     check(r[0] == "confirm" and not bool(Cfg.REQUIRE_CLASS), "requireClass ON asks first, nothing changed: %s" % (r,))

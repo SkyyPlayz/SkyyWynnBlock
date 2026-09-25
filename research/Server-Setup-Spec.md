@@ -34,13 +34,13 @@ SkyyMenu is missing, nothing changes: the mod still reads its file and its admin
 | Mods section: mod list, a mod's config page, table editor, confirm, change log, history, export/import, `/modconfig` | SkyyMenu 0.3 | ~900 lines |
 | First adopter, from day one | SkyyEconomy 0.1 (the merge round) | schema + ~60 lines |
 | Every other mod adopts in its next version | 20 mods (section 7) | schema + 10-80 lines each |
-| Big editors, each with its mod | NPC shops (SkyyEconomy 0.2), ranks (new SkyyRanks, right after SkyyEconomy 0.1), warps + world spawn (SkyyEssentials), island template + starter kit (SkyyIslands), market tables (SkyyEconomy). **NPC quests: not buildable yet** (future SkyyQuests; only the hooks are defined now) | section 5 |
+| Big editors, each with its mod | NPC shops (SkyyEconomy 0.2), ranks (new SkyyRanks, right after SkyyEconomy 0.1), warps (SkyyEssentials; world spawn is an owner/ops command, not a warps-page row, 5.4), island template + starter kit (SkyyIslands), market tables (SkyyEconomy). **NPC quests: not buildable yet** (future SkyyQuests; only the hooks are defined now) | section 5 |
 
 **What a server owner gets:** SkyWynn Menu -> Mods (or `/modconfig`) -> a list of every installed Skyy mod with its version and its parts
 (for example "Bank ON - Bazaar ON - Auction House OFF - NPC shops ON"). Click a mod -> its settings in tabs: ON/OFF buttons, number and
 text boxes with a Set button, choice buttons, item lists, and a Default button on every row. Risky changes (money, penalties, caps) ask
 "Change X from A to B?" first. Every change is logged (who, when, old -> new) and can be undone from the log. Each mod's file keeps its
-last 20 versions for restore. A mod's whole setup can be exported as a code (and a file) and imported on another world. A search box on
+last 10 versions for restore. LOCKED 2026-09-25 (Skyy). Was: 20. A mod's whole setup can be exported as a code (and a file) and imported on another world. A search box on
 the list finds a setting or an editor by name ("warps", "shops", "interest") across every set-up mod.
 
 **What still needs files or vanilla commands (known, tracked gaps):**
@@ -51,7 +51,7 @@ the list finds a setting or an editor by name ("warps", "shops", "interest") acr
 - **Ranks** until SkyyRanks 0.1 (section 7 step 4): the vanilla chat commands `/op add|remove`, `/perm group|user ...`, `/setgroup`, or
   `permissions.json` with the server stopped.
 - **NPC quests:** not yet (5.3). **A custom starting island:** the built-in island stays fixed until the template editor (5.5).
-  **Profile cap above 6:** not possible at all yet, not even by file (section 9 Q16).
+  **Profile cap above 6:** CONFIRMED intentionally open 2026-09-25 (Skyy). Reviewed and parked. Likely linked to ranks, and undecided. Not a resolved mechanic. Still not possible, not even by file (section 9 Q16).
 - **Deliberately not covered (vanilla or start-up jobs, not Skyy settings):** creating a world and its seed and world generation, the
   server's own start-up settings (name, port, player limit, launch options), whitelist, kicks and bans, op itself, backups, and other
   authors' mods. Vanilla already has `/whitelist`, `/kick`, `/ban`, `/op`, `/perm`, `/setgroup` and `/spawn set` (command classes seen in
@@ -65,7 +65,7 @@ SkyyEssentials (locked). This spec makes **SkyyEconomy 0.1 the first mod built o
 SkyyBank, SkyyBazaar and SkyyAuctions do not adopt it, they retire into SkyyEconomy.
 
 **Homes decided here:** ranks + permissions -> a new **SkyyRanks** mod (5.1, not SkyyEssentials), built right after SkyyEconomy 0.1
-(section 7 step 4). NPC shops -> **SkyyEconomy 0.2** (after the 0.1 merge is proven). Warps editor + world spawn -> **SkyyEssentials**.
+(section 7 step 4). LOCKED 2026-09-25 (Skyy): ranks stay in their own mod, SkyyRanks. 0.1 is live. That was already the default. NPC shops -> **SkyyEconomy 0.2** (after the 0.1 merge is proven). Warps editor -> **SkyyEssentials**. World spawn is an owner/ops command, not on the warps page (5.4).
 Island template + starter kit -> **SkyyIslands**. NPC quests -> future **SkyyQuests**; only the hooks are defined now (5.3).
 
 **One registry or two?** Two small registries that share one toolkit (1.2): the player Settings registry (`settings:*`, Settings-Spec,
@@ -225,7 +225,7 @@ button). `who` is the admin's `java.util.UUID`, `name` their username, `confirm`
 | `reload` | `UUID who, String name` | R (re-reads the files after hand edits; every difference is logged `via=file`) |
 | `export` | `String scope` (`changed` = only values that differ from the default, `all`) | `String` code (1.4.7), `null` if unreadable |
 | `import` | `String code, UUID who, String name, String mode` (`preview` / `apply`) | R; message = the change list |
-| `versions` | - | `String[]` newest first, each `id \t file \t time \t who \t summary`, max 20 per file (1.4.5: every version belongs to one file) |
+| `versions` | - | `String[]` newest first, each `id \t file \t time \t who \t summary`, max 10 per file (1.4.5: every version belongs to one file). LOCKED 2026-09-25 (Skyy). Was: 20. |
 | `restore` | `String id, UUID who, String name, String mode` | R; restores only the one file the id names; preview message = the change list |
 | `log` | `Integer max` (1-200) | `String[]` newest first, each `time \t name \t uuid \t via \t key \t old \t new \t status` (table ops use the 1.4.6 table form) |
 | `status` | - | `String[] { state, message }`, state = `ok`, `unreadable`, `unsaved`, `restart` (changes wait for a restart) |
@@ -263,7 +263,7 @@ ROWS = [  # (key, label, cat, type, default, min, max, opts, unit, flags, help, 
   ("part.bazaar", "Bazaar", "parts", "bool", "true", "", "", "", "", "live,part,danger",
    "Off: /bazaar says it is turned off on this server. Prices and files are kept.", "field:Parts.BAZAAR@config.properties:part.bazaar"),
 ]
-CFG.emit(pool, PKG, MOD="SkyyEconomy", TITLE="Economy", NODE="skyyeconomy.admin", CATS=[...], ROWS=ROWS, RELOAD="EcoCfg.reloadAll", KEEP=20)
+CFG.emit(pool, PKG, MOD="SkyyEconomy", TITLE="Economy", NODE="skyyeconomy.admin", CATS=[...], ROWS=ROWS, RELOAD="EcoCfg.reloadAll", KEEP=10)
 ```
 
 Generated classes (added in dependency order, fields before methods, no inner classes, no lambdas, no String switch: a key is found with a
@@ -336,7 +336,7 @@ Owners keep editing files by hand, so the kit changes **only the line of the key
 Before every write the kit copies the current file to `Skyy_<Mod>/config-history/<fileId>.<yyyyMMdd-HHmmss-SSS>.bak` (skipped when it
 equals the newest copy of that file), where `<fileId>` is the file's path under `mods/` with `/` replaced by `~`
 (`Skyy_SkyyBank~config.properties`), and appends `id \t file \t time \t who \t summary` to `config-history/index.log`, with
-`id = <fileId>#<yyyyMMdd-HHmmss-SSS>`. It keeps the newest **20** per file `[SKYY?]`.
+`id = <fileId>#<yyyyMMdd-HHmmss-SSS>`. It keeps the newest **10** per file. LOCKED 2026-09-25 (Skyy). Was: 20. `tools/skyycfg.py` still defaults `KEEP=20`. A build that passes `KEEP=20`, or omits `KEEP`, still keeps 20 until that call uses 10.
 **A version belongs to exactly one file, and `restore` acts on that one file only.** The mod's other files stay as they are (SkyyEconomy
 has four). One change that touches several files (an import can touch all four SkyyEconomy files) makes one version per touched file with
 the same time stamp and summary, so the History view can show them side by side.
@@ -393,12 +393,12 @@ nothing an admin cannot already read in the files (`config-changes.log`, the con
 
 ## 2. SkyWynn Menu -> Mods section (SkyyMenu 0.3)
 
-SkyyMenu 0.2 is the player Settings menu (Settings-Spec). The admin side is **0.3**, on top of it. If Skyy prefers one round, both can ship
-together as 0.2: the two registries are independent `[SKYY?]`. The newest SkyyMenu script on disk is `build_skyymenu_0.1.3.py`.
+SkyyMenu 0.2 is the player Settings menu (Settings-Spec). The admin side is **0.3**, on top of it. LOCKED 2026-09-25 (Skyy): Player Settings and Server Setup stay two menu versions, 0.2 and 0.3. That was already the default. The newest SkyyMenu script on disk is `build_skyymenu_0.1.3.py`.
 
 ### 2.1 Who can see it
 - Node **`skyymenu.modconfig`**. Ops have it through `hytale:Admin`'s built-in `"*"` (VERIFIED), so on a fresh world the owner sees it with no
   setup and nobody else does. A staff rank gets it only when granted (SkyyRanks 5.1 or `permissions.json`). It is separate from moderation.
+  LOCKED 2026-09-25 (Skyy): ops only. The node `skyymenu.modconfig` can be given to staff. That was already the default. That node does not open the rank editor. LOCKED 2026-09-25 (Skyy): the rank editing UI is for ops and players with the Owner rank. Was: ops only. Admin and Developer cannot edit rank permissions or create or modify ranks. See 5.1.
 - Changing a mod also needs **that mod's** admin node (1.4.8). A viewer without it sees the mod's page read-only: "View only - changing
   SkyyBank needs skyybank.admin." So an owner can give someone the market but not ranks.
 - SkyyMenu checks `this.playerRef.hasPermission("skyymenu.modconfig")` (inside `try/catch`, false on error) **on page build and on every
@@ -465,8 +465,7 @@ re-reads), never `setPage(None)` before opening another page, Esc closes (`CanDi
   (2.11) until its adopting version lands (section 7). The subtitle then reads `1 mod set up for in-game editing - the rest show their file.`
 - **Search** (TextField `#SkyyAdmFind` + `Search`; Enter = Search; `Clear`): at least 2 characters, case-insensitive, matched against each
   set-up mod's name and title, its category labels, and every row's label and help (all read from `config:def:`), and against the names of
-  mods not set up yet. The list then shows only mods with a hit; line 2 lists the hits instead of the summary (`Hits: Warps editor, Set the
-  world spawn here`, up to 3, then `and 4 more`). `Open` on a hit opens the mod on the first hit's tab and page and marks hit rows with `>`
+  mods not set up yet. The list then shows only mods with a hit; line 2 lists the hits instead of the summary (`Hits: Warps editor, TPA expire`, up to 3, then `and 4 more`). `Open` on a hit opens the mod on the first hit's tab and page and marks hit rows with `>`
   before the label. No hit: `Nothing matches "<text>" - mods not set up yet are matched by name only.` This is also the per-mod settings
   search (SkyySkills alone writes more than 100 keys into its default file). Height with the search row: padding 28 + accent 3 + title 48 + subtitle 26 + search 58 +
   8 rows x 76 + status 30 + footer 62 = 863 <= 930.
@@ -600,8 +599,8 @@ server? Prices and files are kept.`); switching it back ON asks nothing (1.4.2: 
 1. Its commands stay registered (the name is not freed for another mod) and answer `<Part> is turned off on this server.` The pages refuse
    to open with the same line. SkyyMenu tiles for it show "(off on this server)".
 2. **No data is deleted, converted or rewritten.** Files stay; the part simply stops acting on them.
-3. **Off stops new activity, but a player can always take out what is theirs** (the "nobody loses a coin" rule).
-4. Timers of the part pause and do **not** pay back the off time when it comes back on `[SKYY?]` (default: no back-pay).
+3. **Off stops new activity, but a player can always take out what is theirs** (the "nobody loses a coin" rule). LOCKED 2026-09-25 (Skyy): bank withdraw and auction claims stay available. That was already the default.
+4. Timers of the part pause and do **not** pay back the off time when it comes back on, except bank interest. LOCKED 2026-09-25 (Skyy): players receive back-pay for interest accrued while the bank was switched off. Was: no back-pay. `lastInterestMillis` stays put while the bank is off, and the missed periods are paid when the bank comes back on. SkyyBank 0.1.3 has no part switch yet.
 5. Its bridge functions answer as if the part were not installed (other mods already handle that case), except where rule 3 needs a path.
 6. Live: checked at every command, click and tick. No restart.
 
@@ -609,7 +608,7 @@ server? Prices and files are kept.`); switching it back ON asks nothing (1.4.2: 
 
 | Part | Off means | Still works |
 |---|---|---|
-| `part.bank` | No deposits, no interest (the tick skips; `lastInterestMillis` is set to now when it comes back on). `bank:<uuid>` is still published so the HUD and menu show the balance. | `/bank withdraw` and Withdraw all, so nobody's coins are locked away. |
+| `part.bank` | No deposits. The interest tick skips while the bank is off, and `lastInterestMillis` is left alone. When the bank comes back on, players receive the interest accrued while it was off. `bank:<uuid>` is still published so the HUD and menu show the balance. | `/bank withdraw` and Withdraw all, so nobody's coins are locked away. |
 | `part.bazaar` | `/bazaar` and `/bz` refused; demand drift paused (the decay clock restarts from now when it comes back on). `bazaar:products` is removed from the bridge so the auction house stops refusing bazaar items. | Nothing is stored per player, so nothing is locked. |
 | `part.auctions` | No browsing, listing or buying (like `/ahadmin pause`, plus Browse closed). `auction:fn:lowestBin` returns null. Listing clocks keep running; an expired listing returns to its seller's claims as usual. | `/ah claim` and Manage (cancel your own listings, claim coins and items). |
 | `part.npcShops` (0.2) | Shop NPCs stay where they are; using one says "This shop is closed." (`npcShops` off does not despawn them). | - (NPC shops hold no player items) |
@@ -664,9 +663,9 @@ bindings name the file key). Categories: `parts, coins, bank, bazaar, auctions, 
 | bazaar | `bazaar.demandFloor` / `bazaar.demandCeiling` | dec x | 0.25 / 4.0 | 0.01-1 / 1-100 | L, A | **make configurable**: `MINF`/`MAXF` |
 | bazaar | `bazaar.impactBase` | dec | 1.10 | 1.0-2.0 | L, A, D | **make configurable**: the price-impact exponent base |
 | bazaar | `bazaar.resetDemand` | action | - | - | D | "Reset all prices to base" (= `/bazaaradmin reset all`) |
-| auctions | `ah.listingFee` | text | `0:1.0,10000000:2.0,100000000:2.5` | tiers `from:percent` | L, D | AH spec 3 |
-| auctions | `ah.durations` / `ah.defaultDuration` | text / choice | presets / `24h` | max 8, cap 14 d | L | choice list = the current presets |
-| auctions | `ah.claimTaxPercent` / `ah.claimTaxFrom` | dec % / int | 1.0 / 1,000,000 | 0-50 / 0-1e15 | L, D | stored at sale time, never retroactive |
+| auctions | `ah.listingFee` | text | `0:1.0,10000000:2.0,100000000:2.5` | tiers `from:percent` | L, D | AH spec 3. LOCKED 2026-09-25: 1% / 2% / 2.5% |
+| auctions | `ah.durations` / `ah.defaultDuration` | text / choice | presets / `24h` | max 8, cap 14 d | L | LOCKED 2026-09-25: 1h / 6h / 12h / 24h / 48h, default 24h. Fees 20 / 45 / 100 / 350. 48h pays 2x `ah.listingFee` |
+| auctions | `ah.claimTaxPercent` / `ah.claimTaxFrom` | dec % / int | 1.0 / 1,000,000 | 0-50 / 0-1e15 | L, D | stored at sale time, never retroactive. LOCKED 2026-09-25: 1% above 1,000,000 |
 | auctions | `ah.minPrice` / `ah.maxPrice` | int coins | 1 / 5e10 | 1-1e15 | L | |
 | auctions | `ah.maxListings` / `ah.maxListingsServer` | int | 14 / 5000 | 1-100 / 100-100000 | L (server cap A) | |
 | auctions | `ah.graceSeconds` | int s | 20 | 0-600 | L | |
@@ -679,6 +678,8 @@ bindings name the file key). Categories: `parts, coins, bank, bazaar, auctions, 
 | shops | `shops.roles` | text | curated role list | - | L | 0.2 |
 | shops | `shops.defaultRestockMinutes` | int min | 60 | 1-10080 | L | 0.2 |
 
+**LOCKED 2026-09-25 (Skyy), Auction House fees.** The fee rows above stay the Hypixel defaults and are the live tune: listing 1% / 2% / 2.5%, duration fees 20 / 45 / 100 / 350 on 1h / 6h / 12h / 24h, and 1% tax above 1,000,000. Skyy can change any of those numbers in Server Setup once SkyyEconomy is up. A tax edit applies to later sales only. SkyyAuctions 0.1.1 still reads `config.properties` and has no Server Setup page yet. **LOCKED 2026-09-25 (Skyy), durations:** presets stay 1h / 6h / 12h / 24h / 48h, default 24h. A 48h listing pays twice the listing fee. 0.1.1 still adds a flat 1,200 coins for 48h.
+
 ### 4.2 SkyyRolls [0.1.4] (later the gear mod)
 `cost.Junk` 100, `cost.Common` 250, `cost.Uncommon` 500, `cost.Rare` 1000, `cost.Epic` 2500, `cost.Legendary` 5000, `cost.default` 1000 (int
 coins, 0-1e12, L; category `reforge`). Adopt as one table `cost` (entry = quality, column `Coins`, add `type`). **Fix in the same version:**
@@ -687,7 +688,9 @@ Make configurable later: the rarity-based roll ranges once they exist (unbuilt, 
 
 ### 4.3 SkyyVault [0.1]
 Category `vault`: `freePages` int 2 (1-100, <= maxPages, L, D), `maxPages` int 10 (1-1000, L, D; refuses a value below any player's highest
-used page, the `/vaultadmin` rule), `slotsPerPage` int 36 (9-90, N, D), `pagePrice` int 50,000 (L), `pagePriceStep` int 25,000 (L), `openMode`
+used page, the `/vaultadmin` rule), `slotsPerPage` int 36 (9-90, N, D), `pagePrice` int 50,000 (L), `pagePriceStep` int 25,000 (L), `buyConfirmCoins` int 50,000 (0–1e12, L, coins; LOCKED 2026-09-25: a page cheaper than
+this buys at once, this price or more asks "Buy page X for Y coins?" first; `field:VCfg.BUY_CONFIRM`. SkyyVault 0.1.2 still uses a second
+click within 10 s and does not read the row yet), `openMode`
 choice `page|Page view,chest|Chest window` (L), `afterSwitchSeconds` int 30 s (0-120, L, A; `field:VCfg.AFTER_SWITCH_MS*1000`: the field
 stores milliseconds), `saveDelayMillis` int 1000 ms (100-30000, L, A; `VCfg.SAVE_DELAY_MS`, no scale).
 Keep in code: `MAX_CAP = 1024`, `MAX_PAGE = 1000` (safety ceilings).
@@ -697,20 +700,21 @@ Categories `guilds, xp, bank`: `maxMembers` int 25 (1-500, L; lowering never kic
 L), `onlineMessages` bool true (L), `xpSharePercent` int 10 (0-1000, L), `xpSkills` text (comma list of skill ids, the mod checks names, L),
 `levelBase` int 100 / `levelStep` int 150 (L, D), `xpPollSeconds` 10 / `xpPerLevelFallback` 25 / `xpMaxPerCheck` 1e7 (A), `maxBank` int 1e12
 (L, D), `bankLogKeep` int 200 (10-1000, A), `defaultAdminLimit` text `none` / `defaultMemberLimit` text `0` (number or `none`, N).
+LOCKED 2026-09-25 (Skyy): `onlineMessages` treats off, no, and 0 as OFF, the same as every other on/off setting. That stays. SkyyGuilds 0.1.3 already reads them that way. The default stays true. A file that already says `onlineMessages=off`, `no`, or `0` means OFF. 0.1.1 only treated the word false as OFF.
 Make configurable later: the fixed 3-rank ladder (Member/Admin/Leader), a SkyyGuilds design question, not a setting.
 
 ### 4.5 SkyyParty [0.1.3] (the one mod with no admin path today)
 Category `party`: `maxSize` int 5 (2-10, **L** once adopted: `MAX` is already `volatile`; a party above a lowered max keeps its members and
 cannot invite), `inviteSeconds` int 60 s (15-600, L; binding `field:PartyStore.INVITE_MS*1000@config.properties:inviteSeconds`, because
 `INVITE_MS` stores milliseconds and the loader multiplies the file's seconds by 1000). Add `/partyadmin reload` (`requirePermission("skyyparty.admin")`) in the same version so
-the file works without SkyyMenu too.
+the file works without SkyyMenu too. LOCKED 2026-09-25 (Skyy): the `party.members` switch does not hide "X kicked Y" and "X invited Y". Those lines are always shown. That was already the default. SkyyParty 0.1.4 already leaves those two lines ungated.
 
 ### 4.6 SkyyEssentials [0.1.1]
 Categories `parts, tpa, msg, warps, trade`: `part.tpa`, `part.msg` (bool, L, part, D), `tpa.expireSeconds` int 60 s (10-600, L) and
 `tpa.cooldownSeconds` int 10 s (0-300, L) (**make configurable**: today `EssStore.EXPIRE_MS` / `COOLDOWN_MS` are `public static final long`
 milliseconds; they become `public static volatile long` and bind `field:EssStore.EXPIRE_MS*1000@config.properties:tpa.expireSeconds` and
 `field:EssStore.COOLDOWN_MS*1000@...:tpa.cooldownSeconds`), `replyShortcut` bool true (**R**: the `/r` alias is registered at start),
-`warps.editor` link `warpadmin` (5.4), actions `Set the world spawn here` (D) and `Reset the world spawn to the original` (D) (5.4).
+`warps.editor` link `warpadmin` (5.4). LOCKED 2026-09-25 (Skyy): no world-spawn actions on this page. World spawn is the owner/ops command in 5.4. Was: `Set the world spawn here` and `Reset the world spawn to the original`.
 Later with `/trade`: `part.trade`, `trade.timeoutSeconds`, `trade.allowCoins`, `trade.maxStacks`.
 
 ### 4.7 SkyyMenu [0.1.3] (its own admin config, 0.3)
@@ -741,8 +745,9 @@ smithing under crafting, party XP share + bridge bonus under general. Category i
 ### 4.10 SkyyTrees [0.2.1] (`trees.properties`, `reload:`)
 Categories `general, abilities, nodes`. general: `tier.levels` text (6 increasing levels, L, D), `tokens.first` 1 / `tokens.every` 5 (L, D),
 `dust.xpPerDust` 10 + table `dust.xpPerDust` (per tree), `respec.cooldownMinutes` 10, `respec.coins` 0, `feedbackMs` (A), `debug.extraTokens` /
-`debug.extraDust` (A, D). abilities: `ability.disabledWorlds` text, `ability.maxRadius` 6, `vein.cooldownSec` 40, `feller.cooldownSec` 5,
-`feller.maxPerLayer` 64, `feller.needLeaves` true, `feller.maxHeight` 32, `felled.nodes` true. nodes: one table per tree (Mining, Foraging,
+`debug.extraDust` (A, D). abilities: `ability.disabledWorlds` text, `ability.maxRadius` 6, `vein.cooldownSec` 40, `feller.cooldownSec` 3
+(LOCKED 2026-09-25, was 5),
+`feller.maxPerLayer` 64, `feller.needLeaves` true, `feller.maxHeight` 32, `felled.nodes` true. Tree Feller's locked count is 1 / 2 / 4 / 5 / 6 / 10 extra logs at levels 1–6 (level 6 jumps to 10 so a very large tree is not broken as a whole layer); the 0.2.3 formula still uses the whole layer at max until the next Trees build (`research/Tree-Fall-Spec.md`). nodes: one table per tree (Mining, Foraging,
 Farming, Cooking, Acrobatics, Exploration) with columns `Max|Per level|On`, and one table `nodeCost` with columns `Tokens|Dust B`.
 Stays code: node names, icons, order; the 8 unbuilt Exploration slots.
 
@@ -759,7 +764,7 @@ Make configurable later: per-collection bypass and the level walls (open design,
 `craftSearch` bool true (L; binding `reload:SackCfg.reload`: the value lives in an `AtomicBoolean` `SEARCH`, not a `field:` type, and
 `SackCfg.reload()` is the mod's own self-poll routine, so calling it after the write makes the change immediate instead of within ~10 s). Make configurable (A, D): bag caps `bag.small` 640 / `bag.medium` 2240 /
 `bag.large` 20160 (locked design numbers, so the default must stay; lowering never deletes pooled items, it only stops intake), `QUEUE_CAP`
-256, `FUEL_CAP` 1000, `OUT_CAP` 20000 (A). Not ours: processing times (vanilla bench assets).
+256, `FUEL_CAP` 1000, `OUT_CAP` 20000 (A). LOCKED 2026-09-25 (Skyy): changing the Furnace and Tannery caps does not ask for a confirm. They stay quick to tweak. That was already the default. Not ours: processing times (vanilla bench assets).
 
 ### 4.13 SkyyCooking [0.1.1] (`cooking.properties`, `reload:`)
 `enabled` (part), `maxGrade` int (1 to the jar's real max; `ro` note "can only lower the cap"), `creativeGrades` bool, `xpMultiplier` dec 1.0 (D),
@@ -773,8 +778,7 @@ Stays assets (rebuild only): upgrade recipes, rarity colours.
 
 ### 4.15 SkyyClasses [0.1.4]
 `requireClass` bool false (L, D), `unassignedBlocked` bool true (L), `promptEveryLogin` bool true (L), `openDelayMillis` int 2000 (250-60000, A).
-**Do not register `switchCost` and `cooldownMinutes`** while `ALLOW_SWITCH=false` is code (they are inert, a trap; Config inventory); the page
-shows one `ro` row "Class switching: off in this version (design lock)". Make configurable later: the weapon -> class rule table (new weapons
+LOCKED 2026-09-25 (Skyy): while class switching is locked, the class-switch settings are **greyed out**. Players can see that the option exists and cannot use it. Was: hidden, with one read-only line. SkyyClasses 0.1.6 still leaves `switchCost` and `cooldownMinutes` off the page and shows one read-only "Class switching" row. LOCKED 2026-09-25 (Skyy): a future feature, to build: class changes unlock later through a special item earned from a quest, or a similar progression gate. Make configurable later: the weapon -> class rule table (new weapons
 from other mods) as a table `rules` (entry = item id prefix, column `Class or free or unassigned`).
 
 ### 4.16 SkyyProfiles [0.1]
@@ -782,12 +786,12 @@ from other mods) as a table `rules` (entry = item id prefix, column `Class or fr
 it only blocks creating), `openDelayMillis` (A; `ProfCfg.OPEN_DELAY_MS`, no scale), `promptEveryLogin` bool, `combatSeconds` int 10 s
 (0-600; `field:ProfCfg.COMBAT_MS*1000`: the field stores milliseconds), `islandOnSwitch` bool,
 `perProfileBackpack` bool (L, D), `newProfileBackpack` int (-1-256, N), `keepItems` items (L, D: an item kept across profiles moves between
-them). Raising the cap above 6 is Skyy's open decision (HANDOFF: do not invent the method); the row's max follows whatever the code allows.
+them). CONFIRMED intentionally open 2026-09-25 (Skyy): raising the cap above 6 stays parked. Likely linked to ranks, and undecided. Not a resolved mechanic, so do not invent the method. The row's max follows whatever the code allows. Today there is still no in-game or file way above 6.
 
 ### 4.17 SkyyIslands [0.5]
 Categories `permissions, visits, coop, limits, starter, hub, tech`. permissions: 14 choice rows `defaults.perm.<flag>` (`visitor|trusted|member|
 admin|owner`, L for islands whose owner never set that flag). visits: `defaults.visit.mode` choice `public|friends|closed` (N), `visit.limitMax`
-10 (1-100, L), `defaults.visit.limit` 5 (N), `defaults.visit.notify` bool (N). coop: `coop.maxPlayers` 5 (1-50, L), `coop.adminsInvite` bool,
+10 (1-100, L), `defaults.visit.limit` 10 (N). LOCKED 2026-09-25 (Skyy): the default visitor limit is 10. Was: 5. SkyyIslands 0.5.2 still writes 5. `defaults.visit.notify` bool (N). coop: `coop.maxPlayers` 5 (1-50, L), `coop.adminsInvite` bool,
 `invite.seconds` 60 s (10-3600). limits: `trusted.max` 20 (0-500), `bans.max` 100 (0-1000), `expel.cooldownSeconds` 60 s (0-86400),
 `reset.cooldownHours` 24 h (0-8760), `reset.confirmSeconds` 20 s (5-300) (ranges = the 0.5 loader's clamps; every one of these fields
 stores the file's own unit, so no scale). tech (A): `tint.resend` choice, `perm.otherProfileStrict` bool (D), `animals.extra` text (role ids).
@@ -828,6 +832,8 @@ every click through one `guard()` called first in `build()` and `handleDataEvent
 
 ### 5.1 Ranks and permissions -> a new mod, **SkyyRanks** (recommended over SkyyEssentials)
 
+LOCKED 2026-09-25 (Skyy): ranks stay in their own mod, SkyyRanks. 0.1 is live. That was already the default.
+
 **Why its own mod:** it edits the world's security (who may do what), so it deserves its own admin node and its own off switch (remove the
 jar); servers that already use another permissions mod can leave it out; a solo world never needs it; it owns a chat hook that must be
 ordered with SkyyExploration's title prefix; SkyyEssentials stays the small "commands most servers have" mod (tpa, msg, warps, `/trade`).
@@ -857,6 +863,23 @@ SkyyGuilds' guild ranks and SkyyIslands' island roles are different things and s
   start with `skyy:`, never touches `hytale:Admin` membership (op stays vanilla `/op`), and never edits `permissions.json` directly.
 - **A player has at most one `skyy:*` group**, always next to `hytale:Adventurer`. Assigning removes the other `skyy:*` groups. The default rank
   (`ranks.default`) is implicit: nobody is added to it; it is the rank shown when a player has no `skyy:*` group.
+- **Seeded ranks.** LOCKED 2026-09-25 (Skyy): a new `ranks.properties` seeds **Member**, **Admin**, and **Developer**. Was: only Member. Member stays the default rank (`ranks.default=member`): no prefix, no grants, no engine group. Admin and Developer sit above Member on the ladder, staff on, and stay short of full op. SkyyRanks 0.1 still writes only Member. A file that already has only Member keeps only Member until Admin and Developer are added.
+
+  | | Member | Admin | Developer | Owner / op |
+  |---|---|---|---|---|
+  | Who | Every player with no Skyy rank | Day-to-day staff | Staff above Admin | The server owner |
+  | Group | none (the default rank) | `skyy:admin` | `skyy:developer` | `hytale:Admin`, not a Skyy rank |
+  | Staff flag | no | yes | yes | not a Skyy rank |
+  | Chat prefix | none | `[Admin]` | `[Dev]` | none from SkyyRanks |
+  | Player commands | yes, through `hytale:Adventurer` | yes | yes | yes |
+  | Server Setup (`skyymenu.modconfig`) | no | yes | yes, inherited from Admin | yes, through `*` |
+  | Mod `.admin` nodes other than `skyyranks.admin` | no | yes | yes, inherited from Admin | yes, through `*` |
+  | Rank editor | no | no | no | yes: op and the Owner rank |
+  | `*`, `/op`, or membership in `hytale:Admin` | no | no | no | yes |
+
+  Admin and Developer are close to the owner: they can open Server Setup and change mod settings. Neither opens the rank editor, and neither is op. Was: Developer got the rank editor (`skyyranks.admin`). SkyyRanks never adds anyone to `hytale:Admin` and these seeds never grant `*` or `skyyranks.admin`. Op stays vanilla `/op`.
+- **Edited in the menu.** LOCKED 2026-09-25 (Skyy): every rank, including the seeded Member, Admin, and Developer, is fully editable in the in-game Server Setup ranks editor (`/rankadmin`, the Ranks editor link). An op, or a player with the Owner rank, can change each rank's permissions and add new ranks from that menu. Rank files do not have to be edited by hand. SkyyRanks 0.1 already edits ranks and adds new ones from that page. It still refuses grants, delete, and ladder moves on the default rank (Member). Admin and Developer, once they exist, are ordinary ranks on that page.
+- **Who opens it.** LOCKED 2026-09-25 (Skyy): that rank editing UI is for ops and players with the Owner rank. Was: ops only. Admin and Developer cannot edit rank permissions or create or modify ranks, so they cannot raise their own permissions. `skyymenu.modconfig` does not open it. SkyyRanks 0.1 still opens `/rankadmin` for anyone with `skyyranks.admin`. It does not yet limit that page to ops and the Owner rank.
 - **Grants are additive in 0.1.** The editor offers: grant a node to a rank (e.g. `skyyessentials.fly`, `skyymenu.modconfig`,
   `skyyeconomy.admin`, future perk nodes), and a per-player deny (reliable, user level). Taking a command away from everybody is the owning
   mod's part switch, not a rank deny. The page explains this in one line.
@@ -865,12 +888,12 @@ SkyyGuilds' guild ranks and SkyyIslands' island roles are different things and s
   <name>")` **and** `setPermissionGroups(new String[] { "hytale:Adventurer" })`: `putRecursivePermissionGroups` puts the command's permission
   id into the group's virtual set (bytecode read this session), so everyone keeps the command by default and the node name stays the same.
   Adopt per mod with its next version, after a one-command test proves it (8.4).
-- **Chat:** wrap the previous chat formatter exactly like SkyyExploration's `TitleFormatter`, registered at `chat.priority` 31000 (after
+- **Chat:** LOCKED 2026-09-25 (Skyy): chat order is `[Rank] [Title] Name`. That was already the default. Wrap the previous chat formatter exactly like SkyyExploration's `TitleFormatter`, registered at `chat.priority` 31000 (after
   Exploration's 30000), so the outer prefix is the rank: `[VIP] [Explorer] Skyy: hi`. Prefix coloured with `Message.raw(prefix).color(colour)`
   (proven), plain text if the colour is unusable. Bridge for other mods: `rank:<uuid>` (display name), `rank:prefix:<uuid>`, `rank:colour:<uuid>`
   (for the SkyyMenu Players view and the HUD players list later).
 
-**Page (`/rankadmin`, `requirePermission("skyyranks.admin")`; also the `link` row):**
+**Page (`/rankadmin`, `requirePermission("skyyranks.admin")`; also the `link` row):** LOCKED 2026-09-25 (Skyy): ops and players with the Owner rank. Was: ops only. Admin and Developer cannot edit rank permissions or create or modify ranks. `skyymenu.modconfig` does not open this page. SkyyRanks 0.1 still checks `skyyranks.admin` and does not yet limit the page to ops and the Owner rank.
 - Ranks view: rows `order - name - prefix preview - <n> members`, buttons `Up`, `Down`, `Edit`, `Delete` (confirm: members go back to the
   default rank), and `New rank` (id + name TextFields).
 - Rank view: name, prefix (TextField), colour (TextField `#rrggbb` until the `color` widget exists), `staff` ON/OFF; **Grants** table (node,
@@ -882,9 +905,11 @@ SkyyGuilds' guild ranks and SkyyIslands' island roles are different things and s
 
 ### 5.2 NPC shops -> **SkyyEconomy 0.2** (after 0.1's merge is proven)
 
-Answers Skyy's open question with defaults `[SKYY?]`: every item can have a **buy** price (player pays) and a **sell-back** price (0 = the
+LOCKED 2026-09-25 (Skyy): NPC shops ship in SkyyEconomy 0.2, so 0.1 stays a clean merge. That was already the default.
+
+LOCKED 2026-09-25 (Skyy): every item can have a **buy** price (player pays) and a **sell-back** price (0 = the
 NPC does not buy it); stock is **infinite** by default; any item can get a **limited stock with a restock timer** (Shopkeepers' admin-shop vs
-stocked-shop split, research "Server tools" 2).
+stocked-shop split, research "Server tools" 2). Infinite stock stays the default. That was already the default.
 
 - **Placing** (editor, "Create shop here"): `NPCPlugin.get().spawnNPC(store, <group>, role, adminPos, adminRotation)` on the admin's world
   thread. Role = a choice from `shops.roles` (a curated list of existing role templates; `/shopadmin roles` prints
@@ -915,19 +940,19 @@ stocked-shop split, research "Server tools" 2).
 - **Shared NPC claim (for SkyyQuests later):** bridge `npc:owner` = ConcurrentHashMap `uuidString -> "SkyyEconomy|shop|<id>"`, created
   with `putIfAbsent`. Each mod reacts only to its own claims, so a quest giver and a shop can never both answer one NPC.
 
-### 5.3 NPC quests -> future **SkyyQuests** (NOT buildable yet: only the hooks now)
+### 5.3 NPC quests -> future **SkyyQuests** (NOT buildable yet)
 
 Unlike the NPC shops above, nothing here can be built or used in game until SkyyQuests has its own spec (section 7 step 8).
 
 The BetonQuest lesson (research "Server tools" 3): a click editor is right for linear quests (talk, deliver, kill N, gather N, reach a place)
 and wrong for branching scripts. So SkyyQuests will ship an in-game **linear** quest builder and keep the file
-(`Skyy_SkyyQuests/quests/<id>.properties`) as the escape hatch for anything bigger. Nothing is built now except:
+(`Skyy_SkyyQuests/quests/<id>.properties`) as the escape hatch for anything bigger. Nothing is built now. When SkyyQuests ships:
 - **`quest:fn:event`** (future, owned by SkyyQuests): `Function apply(new Object[] { UUID player, String type, String id, Long amount,
   String world })` -> ignored return. Types: `kill` (NPC role), `gather` (block id), `collect` (item id), `craft`, `smelt`, `cook` (item id),
   `reach` (zone or region id), `talk` (npc id), `buy` / `sell` (shop id), `level` (skill id, amount = level). Adopters call it next to hooks
   they already have, through a cached lookup that costs one map read when SkyyQuests is absent (the `notifyOn` style). First callers when
   SkyyQuests exists: SkyySkills (kill, gather, level), SkyyCollections (collect), SkyySacks (craft, smelt), SkyyCooking (cook),
-  SkyyExploration (reach), SkyyEconomy (talk, buy, sell). **Do not add the calls before SkyyQuests has a spec** `[SKYY?]`.
+  SkyyExploration (reach), SkyyEconomy (talk, buy, sell). LOCKED 2026-09-25 (Skyy): the `quest:fn:event` calls ship with SkyyQuests, not now. That was already the default.
 - **Quest givers** reuse the shop NPC code (placement, nameplate, damage lock, use hook, restart self-heal, `npc:owner`). Put that code in a
   second generator, `tools/skyynpc.py`, when SkyyQuests starts, so both jars carry the same classes.
 - **Rewards** go through bridges that exist today: `coins:fn:add`, `skill:fn:addxp`, item stacks.
@@ -947,10 +972,7 @@ and wrong for branching scripts. So SkyyQuests will ship an in-game **linear** q
   and `/spawn set default` (`SpawnSetDefaultCommand`, `hytale:Admin`: back to the world's original spawn). VERIFIED this session
   (bytecode + `server.lang`): `/spawn set` runs on the world, builds `new Transform(position, rotation)` and calls
   `world.getWorldConfig().setSpawnProvider(new GlobalSpawnProvider(transform))`, then `WorldConfig.markChanged()`; `/spawn set default`
-  calls `setSpawnProvider` with no provider (a null, read from the bytecode shape). The warps page gets two action rows that do the same on
-  the admin's world thread: `Set the world spawn here` (confirm: `Move this world's spawn to where you stand? New and respawning players
-  arrive here.`) and `Reset the world spawn to the original` (confirm). It only touches the world the admin stands in; island worlds keep
-  their own spawn provider (SkyyIslands). UNVERIFIED: whether `markChanged()` alone saves it across a restart (test 8.4.8).
+  calls `setSpawnProvider` with no provider (a null, read from the bytecode shape). LOCKED 2026-09-25 (Skyy): the warps page does not move the world spawn. Was: two confirm rows on that page, `Set the world spawn here` and `Reset the world spawn to the original`. Moving the world spawn is an owner/ops-only command, for example `/setspawn`, not a row in the warps UI. It uses those same calls, on the world the player stands in. Island worlds keep their own spawn provider (SkyyIslands). A player who is not an owner or op cannot run it. UNVERIFIED: whether `markChanged()` alone saves it across a restart (test 8.4.8).
 
 ### 5.5 Island template and starter kit -> **SkyyIslands**
 - **Starter kit (easy, next version):** `starter.kit` items row (4.17) replaces the hard-coded `ids`/`qty` arrays in `FillTask.starterKit`; the
@@ -961,12 +983,23 @@ and wrong for branching scripts. So SkyyQuests will ship an in-game **linear** q
 - **Template (bigger, the version after):** today the island is placed block by block in chunk (0,0) by `FillTask`. The template editor:
   `/island template edit` opens a template world (an instance of the same `SkyyIsland` template, `skyy-island-template`, the existing
   `InstancesPlugin.spawnInstance` path) and sends the admin there; they build; `Save template` (action, confirm) copies the box
-  `template.box` (default x -16..31, y 96..191, z -16..31: 3 x 3 chunks around the island `[SKYY?]`) into a server prefab with
+  `template.box` (default x -16..31, y 96..191, z -16..31: 3 x 3 chunks around the island) into a server prefab with
   `BlockSelection.copyFromAtWorld(...)` + `PrefabStore.get().saveServerPrefab("SkyyIslandStarter", selection)`; new islands paste it
   (`BlockSelection.place` / `PrefabUtil.paste`) instead of the `FillTask` loop, and the kit goes into the first chest found in the pasted box
   (or `template.chest` x,y,z). Existing islands never change. Missing or unreadable prefab -> the built-in island (logged). Using the engine's
   own prefab format keeps block rotation and chests, which a plain block-id copy (`chunk.getBlock`/`setBlock`) would lose. The API usage is
   UNVERIFIED; if it fails in the first test, the fallback is our own id-per-position copy with the rotation limitation written in the help line.
+- **Template size.** LOCKED 2026-09-25 (Skyy): the default box stays **3 x 3 chunks, y 96 to 191** (x -16..31, z -16..31). That was already the default. A future feature, to build: a player can upgrade that box one step at a time. The height stays y 96 to 191 at every tier. 9 x 9 is the max.
+
+  | Step | Size |
+  |---|---|
+  | default | 3 x 3 |
+  | 1 | 4 x 4 |
+  | 2 | 5 x 5 |
+  | 3 | 6 x 6 |
+  | 4 | 7 x 7 |
+  | 5 | 8 x 8 |
+  | 6, max | 9 x 9 |
 
 ### 5.6 Market -> **SkyyEconomy** (tables in its config page, 4.1)
 - **Bazaar products:** the `bazaar.products` table (add by held item or id, columns `Category|Base price|Name`, remove = off the bazaar, the
@@ -999,7 +1032,7 @@ planned there (`SkyyExploration-Plan.md`).
 | Someone takes all player commands away by accident | SkyyRanks always keeps `hytale:Adventurer`, never edits non-`skyy:` groups or op membership, and confirms `*`/admin grants. |
 | An import from another server breaks this one | Checksum, mod name, every value validated, all or nothing, preview first, a version saved first. |
 | A part switched off locks player value away | Rule 3 in section 3 (withdraw and claims keep working). |
-| Log grows forever | `config-changes.log` rotates at 1 MB, keeps 3; history keeps 20 copies per file. |
+| Log grows forever | `config-changes.log` rotates at 1 MB, keeps 3; history keeps 10 copies per file. LOCKED 2026-09-25 (Skyy). Was: 20. `tools/skyycfg.py` still defaults `KEEP=20`. |
 | Restart-only values look applied | `RESTART` tag on the row, amber status, and "`<k>` wait for a restart" on the Mods list until the next start (the mod compares file vs running values at start). |
 | A value changed elsewhere while the page is open | Shown at the next click (no periodic updates, by rule); every set answers with the value actually stored. |
 
@@ -1010,10 +1043,10 @@ planned there (`SkyyExploration-Plan.md`).
 | Step | What | Depends on |
 |---|---|---|
 | 1 | `tools/skyycfg.py` (the kit + its bare-JVM test harness, 8.2) | nothing |
-| 2 | **SkyyMenu 0.3** (Mods section, `/modconfig`, its own config page). SkyyMenu 0.2 (player Settings) first, or both as 0.2 in one round `[SKYY?]` | step 1 |
+| 2 | **SkyyMenu 0.3** (Mods section, `/modconfig`, its own config page). LOCKED 2026-09-25 (Skyy): SkyyMenu 0.2 (player Settings) and 0.3 (Server Setup) stay two versions. That was already the default. | step 1 |
 | 3 | **SkyyEconomy 0.1**: the merge round (`SkyyEconomy-Plan.md`), built on the kit from day one: parts, coins, bank, bazaar, auctions, market tables; `/bankconfig` etc. through the kit | step 1; the separate Bank 0.1.3 / Bazaar 0.1.2 / Auctions 0.1 tested |
 | 4 | **SkyyRanks 0.1** (5.1): ranks, grants, members, per-player denies, chat prefix. Staff and permission setup is one of the first things an owner does, so it comes before the waves. First in-game test: the `hytale:Adventurer` check (8.4.5). Until it ships, ranks are vanilla `/op`, `/perm group|user`, `/setgroup` or `permissions.json` | step 1 (its `link` row shows in the Mods list once step 2 exists; it needs nothing from SkyyEconomy) |
-| 5 | Wave 1, the gaps (each mod's next version): SkyyParty (+`/partyadmin reload`), SkyyEssentials (+tpa timings, warps editor, world spawn rows), SkyyIslands (starter kit row + all defaults + the `volatile` / `DEF_PERM` field changes), SkyyProfiles (with the 4 -> 6 follow-up), SkyyVault, SkyyGuilds, SkyyRolls (+`/rolls` permission fix) | step 1 |
+| 5 | Wave 1, the gaps (each mod's next version): SkyyParty (+`/partyadmin reload`), SkyyEssentials (+tpa timings, warps editor; world spawn is the owner/ops command in 5.4, not a page row), SkyyIslands (starter kit row + all defaults + the `volatile` / `DEF_PERM` field changes), SkyyProfiles (with the 4 -> 6 follow-up), SkyyVault, SkyyGuilds, SkyyRolls (+`/rolls` permission fix) | step 1 |
 | 6 | Wave 2, progression: SkyySkills (+curve actions), SkyyTrees, SkyyCollections, SkyyExploration (+stamina read over the bridge), SkyyCooking, SkyyClasses, SkyySacks, SkyyAccessories (new config file), SkyyHud (default layout) | step 1 |
 | 7 | Big editors: SkyyEconomy 0.2 NPC shops; SkyyIslands template editor; stable command nodes pack-wide after the test (8.4.6) | steps 2-3 |
 | 8 | SkyyQuests spec + `tools/skyynpc.py` + the `quest:fn:event` calls | step 7 (shops) |
@@ -1049,7 +1082,7 @@ c. Line-preserving write: comments, blank lines and key order unchanged; a `#key
    header; a non-ASCII value is escaped and reads back the same with both an ISO-8859-1 and a UTF-8 reader.
 d. Hand edit between two sets (change the file's mtime) -> both the hand edit and the new value survive; the log has `via=file`.
 e. Unreadable file (a folder with the file's name, or an exclusive lock) -> `error`, file untouched byte for byte, one warning.
-f. History: 25 changes -> 20 copies left; `restore` preview lists the right differences; apply makes a new version; undo of that works.
+f. History: 25 changes -> 10 copies left; `restore` preview lists the right differences; apply makes a new version; undo of that works. LOCKED 2026-09-25 (Skyy). Was: 20 copies.
    With two files: changes to both -> `versions` names the file on every entry; restoring a version of file 1 leaves file 2 byte for byte.
 g. Import: bad checksum refused; wrong mod refused (except the SkyyEconomy legacy names); one bad value -> nothing applied; unknown key skipped
    and listed.
@@ -1070,7 +1103,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 4. A `RESTART` row (e.g. `replyShortcut`): amber status, the Mods list says it waits for a restart; after restart the tag is gone.
 5. Default button on a changed row; Advanced ON shows the adv rows; Prev/Next paging; typed drafts survive clicking another row's Set.
 6. Parts: bazaar OFF -> `/bz` answers "turned off", the menu tile says off, the bazaar files are unchanged; ON again -> works, prices as before.
-   Bank OFF -> deposit refused, withdraw works, no interest; ON -> no back-pay. Auctions OFF -> browse refused, `/ah claim` works.
+   Bank OFF -> deposit refused, withdraw works, no payout while off; ON -> the missed interest is paid. Auctions OFF -> browse refused, `/ah claim` works.
 7. Export SkyyEconomy -> code in the box and a file in `exports/`; on a second test world, Import -> Preview -> Apply; values match.
 8. History -> Preview -> Restore of an older version; then undo that restore.
 9. Hand-edit `Skyy_SkyyBank/config.properties` while running -> `Reload file` -> the change is live and logged `via=file`.
@@ -1097,8 +1130,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
    B sells back; coins match on both profiles; B cannot hurt the NPC; restart -> the NPC is there once (no duplicate), still a shop; A moves
    and removes it; `part.npcShops` OFF -> "This shop is closed."
 8. Warps: A adds, renames, moves and removes a warp from `/warpadmin`; B's SkyyMenu Teleport list follows; the warps survive a restart.
-   World spawn: A uses `Set the world spawn here`; B's `/spawn` and B's next respawn arrive there; still there after a restart; `Reset the
-   world spawn to the original` puts it back.
+   The warps page has no world-spawn buttons. World spawn: A, an op, uses the owner/ops command (for example `/setspawn`); B's `/spawn` and B's next respawn arrive there; still there after a restart; the reset command puts it back. A player who is not an owner or op cannot run it.
 9. Starter kit from A's hotbar -> B creates a new profile -> B's new island chest has exactly that kit. Template: A saves a template, B's next
    new island is the template; deleting the prefab file -> the built-in island again.
 10. Durations take effect in the right unit (the `field:` scale): A sets SkyyParty `inviteSeconds` to 20 in the menu; A invites B; the
@@ -1111,28 +1143,25 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 
 ## 9. Open questions for Skyy (the build uses the default in brackets)
 
-1. Who sees Server Setup? [Ops only by default, through the node `skyymenu.modconfig`, which staff ranks can be given.]
-2. Which changes ask for a confirm? [Only rows marked danger: money, penalties, rates, caps, curves, switching a part OFF, pausing the
-   auction house, raising the auction purchase-confirm thresholds; plus imports, restores, undos, removes.]
-3. How many old versions of each config file to keep? [20.]
-4. When a part is switched off, can players still take out what is theirs (bank withdraw, auction claims and cancels)? [Yes.]
-5. When the bank comes back on, is the off time paid as interest? [No back-pay.]
-6. NPC shops: buy and sell-back per item, infinite stock by default, optional limited stock with a restock timer? [Yes, as described in 5.2.]
-7. NPC shops in SkyyEconomy 0.1 or 0.2? [0.2, so 0.1 stays a clean merge.]
-8. Ranks: a new SkyyRanks mod, or inside SkyyEssentials? [SkyyRanks.]
-9. Which ranks come seeded? [Only the default rank "Member" (no prefix); owners make the rest in game.]
-10. Chat order when a player has a rank and a title? [`[Rank] [Title] Name`.]
-11. SkyyMenu 0.2 (player Settings) and 0.3 (Mods section) as two rounds, or one? [Two, smaller and easier to test.]
-12. Island template box size. [3 x 3 chunks around the island, y 96 to 191.]
-13. Keep SkyyClasses' inert switch keys hidden while switching is code-locked? [Hidden, with one read-only line.]
-14. Quest hooks: add the `quest:fn:event` calls now or only when SkyyQuests has a spec? [Only with its spec.]
+1. LOCKED 2026-09-25 (Skyy): Who sees Server Setup? Ops only, through the node `skyymenu.modconfig`, which staff ranks can be given. That was already the default.
+2. LOCKED 2026-09-25 (Skyy): Which changes ask for a confirm? Money, penalties, rates, caps, curves, switching a part off, imports, restores, undos. That was already the default. [Only rows marked danger: money, penalties, rates, caps, curves, switching a part OFF, pausing the auction house, raising the auction purchase-confirm thresholds; plus imports, restores, undos, removes.]
+3. LOCKED 2026-09-25 (Skyy): How many old versions of each config file to keep? 10. Was: 20. `tools/skyycfg.py` still defaults `KEEP=20`.
+4. LOCKED 2026-09-25 (Skyy): When a part is switched off, can players still take out what is theirs (bank withdraw, auction claims and cancels)? Yes. That was already the default.
+5. LOCKED 2026-09-25 (Skyy): When the bank comes back on, is the off time paid as interest? Yes. Players receive back-pay for interest accrued while the bank was switched off. Was: no back-pay.
+6. LOCKED 2026-09-25 (Skyy): NPC shops: buy and sell-back per item, infinite stock by default, optional limited stock with a restock timer. Yes, as described in 5.2. Infinite stock stays the default. That was already the default.
+7. LOCKED 2026-09-25 (Skyy): NPC shops in SkyyEconomy 0.1 or 0.2? 0.2, so 0.1 stays a clean merge. That was already the default.
+8. LOCKED 2026-09-25 (Skyy): Ranks: a new SkyyRanks mod, or inside SkyyEssentials? SkyyRanks. 0.1 is live. That was already the default.
+9. LOCKED 2026-09-25 (Skyy): Which ranks come seeded? Member, Admin, and Developer. Was: only Member. Member stays the default rank, with no prefix and no grants. Admin and Developer are staff, close to the owner, and do not get full op (`*`, `/op`, or `hytale:Admin`). Was: Developer got the rank editor. See 5.1. The rank editing UI is for ops and players with the Owner rank. Was: ops only. Admin and Developer cannot edit rank permissions or create or modify ranks. `skyymenu.modconfig` does not open it. Ranks stay fully editable in that UI. SkyyRanks 0.1 still seeds only Member, and still opens `/rankadmin` for anyone with `skyyranks.admin`. A file that already has only Member keeps only Member until Admin and Developer are added. SkyyRanks 0.1 still refuses grants, delete, and ladder moves on the default rank.
+10. LOCKED 2026-09-25 (Skyy): Chat order when a player has a rank and a title? `[Rank] [Title] Name`. That was already the default.
+11. LOCKED 2026-09-25 (Skyy): SkyyMenu 0.2 (player Settings) and 0.3 (Server Setup) as two rounds, or one? Two, done as 0.2 + 0.3. That was already the default.
+12. LOCKED 2026-09-25 (Skyy): Island template box size? The default stays 3 x 3 chunks around the island, y 96 to 191. That was already the default. Future, to build: players upgrade 3 x 3, then 4 x 4, 5 x 5, 6 x 6, 7 x 7, 8 x 8, up to 9 x 9. The height stays y 96 to 191. See 5.5.
+13. LOCKED 2026-09-25 (Skyy): SkyyClasses' class-switch settings while switching is locked? Greyed out. Players can see the option and cannot use it. Was: hidden, with one read-only line. Future, to build: class changes unlock later through a special item earned from a quest, or a similar progression gate. See 4.15. SkyyClasses 0.1.6 still leaves `switchCost` and `cooldownMinutes` off the page.
+14. LOCKED 2026-09-25 (Skyy): Quest hooks: add the `quest:fn:event` calls now or only when SkyyQuests has a spec? With SkyyQuests, not now. That was already the default.
 15. Should rank grants later carry perks (extra vault pages, bigger parties)? [Not in 0.1; the marker node `skyyranks.rank.<id>` makes it possible later.]
-16. Raising the profile cap above 6: no default. HANDOFF says to wait for Skyy's method; a rank perk node would be one option. (Listed in
-    section 0 as a known gap: today there is no in-game or file way above 6.)
+16. CONFIRMED intentionally open 2026-09-25 (Skyy): How does a player raise the profile cap above 6? Left open. Likely linked to ranks, and undecided. Not a resolved mechanic. Today there is still no in-game or file way above 6. See 4.16.
 17. When does SkyyRanks come? [Section 7 step 4, right after SkyyEconomy 0.1 and before the adoption waves; until then vanilla `/op`,
     `/perm`, `/setgroup` or `permissions.json`.]
-18. Should the warps page also move the world spawn? [Yes: `Set the world spawn here` and `Reset the world spawn to the original`, the
-    same thing vanilla `/spawn set` does, with a confirm.]
+18. LOCKED 2026-09-25 (Skyy): Should the warps page also move the world spawn? No. The warps page does not move it. Was: yes, with two confirm rows. World spawn movement is an owner/ops-only command, for example `/setspawn`, not a row in the warps UI. See 5.4.
 
 ---
 

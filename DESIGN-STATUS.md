@@ -22,6 +22,7 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
 - Classes: Archer, Warrior, Mage, and (locked + live 2026-09-25) **Berserker** (Fury: axes, battleaxes, maces, clubs) and **Priest**
   (an AoE healing support class; Divinity: wands and spellbooks; its weapon hits heal the party until real spells exist; much of it custom
   later). Assassin and Shaman later. Every class gets a kit with its basic weapon when you pick it. `ALLOW_SWITCH=false` (no paid switch).
+- LOCKED 2026-09-25: Priest heal numbers are temporary until spells. Self-heal Divinity XP is 0.25 per HP. Heal chat lines are every 10 s. The Healing Totem is Priest only. Class kits go straight into the hotbar on select or class change. A daily Archer arrow refill is still to build. Mining Speed max is +40%. Hatchet swing speed is wood and trees only and must not speed weapon axes.
 
 **Islands**
 - A private island per profile (created on first `/island`), a shared hub, visiting. Visitors can look but not touch (doors and seats work).
@@ -39,7 +40,7 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
   is an emergency cook (half XP, 75% of the bonus).
 - Exploration: first-time world chests, walking new ground, discovering Hytale's zones; +max Stamina per level; titles; no XP boosters.
   Live 2026-09-25: admin-placed discovery and secret spots (banner, sound, XP) and an island checklist with a completion %.
-- Felled trees pay for every log (XP, double drops, collections). Party members nearby share 50% of combat XP. Double Jump (crouch in mid-air).
+- Felled trees pay for every log (XP, double drops, collections). Party members nearby share 50% of combat XP. Double Jump is locked 2026-09-25: Acrobatics tier III, a second jump in mid-air, 2 Stamina (`research/Double-Jump-Spec.md`). The deployed node is still tier II / crouch until the next Trees and Skills build.
 
 **Skill trees (`/tree`)**
 - Mining, Foraging, Farming, Cooking, Acrobatics and Exploration trees. Tokens from skill levels unlock nodes, Dust from XP levels them,
@@ -61,7 +62,7 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
 - Coins, a bank with interest (per profile, `/bank` page), a bazaar (custom amounts), item rolls shown SkyBlock style
   ("Damage: 11-48 (+24%)") with a `/reforge` anvil page.
 - Auction House (live 2026-09-25): Buy It Now only (bids later), `/ah` with categories, search, sort, rarity; Hypixel fees; listings belong to
-  the profile that made them. `/vault`: item storage shared by all your profiles. `/trade`: two-player trade window with coins.
+  the profile that made them. `/vault`: item storage shared by all your profiles. Page buy confirm is locked 2026-09-25: below 50,000 coins the page buys at once; at or above that a dialog asks "Buy page X for Y coins?" (`buyConfirmCoins`). 0.1.2 still uses a second click within 10 s. `/trade`: two-player trade window with coins.
 - **SkyyEconomy (Skyy, 2026-09-24):** Coins, Bank, Bazaar and the Auction House become one mod in the next round; later NPC shops (set up
   in game) and an item value / networth tool. `/trade` goes in SkyyEssentials. Plan: `SkyyEconomy-Plan.md`.
 
@@ -108,10 +109,12 @@ islands split by zone. Status: planned, not started. Whether World Gen 2 can do 
    Combat bags? (Today every bag is craftable at a Workbench, so the bag rewards on collection tiers do nothing yet.)
 2. **Settings menu:** when someone turns off party invites, teleport requests or private messages - refuse the sender, or just hide it?
    Staff bypass? Anything that should stay always-on?
-3. **Tree felling:** felled logs pay full XP? Leaves pay XP? Tree Feller cooldown (5 s suggested)? Two players on one tree? Do double drops
-   count for collections? Apple, bamboo and ice trees are missing from the game's own tree lists - count them anyway?
-4. **Double Jump:** tier II (replaces Quick Dodge; no tree dodge bonus before Acrobatics 45) or tier III? Double-jump boots as gear for the real
-   jump key? Height and stamina numbers.
+3. **Tree felling:** felled logs pay full XP? Leaves pay XP? Two players on one tree? Do double drops count for collections? Apple, bamboo and
+   ice trees are missing from the game's own tree lists - count them anyway? Tree Feller's count and cooldown are locked 2026-09-25:
+   levels 1–6 = 1, 2, 4, 5, 6, 10 extra logs on the same height (level 6 jumps to 10 so a very large tree is not broken as a whole layer);
+   cooldown 3 s (`research/Tree-Fall-Spec.md`).
+4. **Double Jump** tier and trigger are locked 2026-09-25: tier III (slot 7, replaces Sprinter), jump again in mid-air, 2 Stamina
+   (`research/Double-Jump-Spec.md`). Still open: double-jump boots as gear, and the 55%–100% height curve.
 5. **Campfire accessory:** it gives only the guaranteed Grade (no skill-tree Grade chances or extra-dish perks) - right for an emergency cook?
 6. **Islands:** what should visitors be allowed to use by default (today: doors only)? The island settings menu will make it the owner's call.
 7. **Exploration:** what else should level it past about level 25 (it is one-time only for now)? The rest of the Exploration tree.

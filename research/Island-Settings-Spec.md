@@ -46,7 +46,7 @@
 5. Membership belongs to the member's active profile. Their own island stays saved and comes back when they leave.
 6. New commands: `accept`, `decline`, `leave`, `kick`, `promote`, `demote`, `disband`, `trust`, `untrust`, `menu`, `reset`.
 7. The page is `/island menu` (`/island settings` is an alias), with an Overview and a Members tab.
-8. The Trusted defaults are narrowed to building: harvesting crops and beds moved to Member (3.2).
+8. The Trusted defaults are narrowed to building: harvesting crops stay at Member (3.2). LOCKED 2026-09-25 (Skyy): visitors may use doors, seats, and beds. Chests and crafting stations stay closed to visitors.
 9. 0.4.x "members" (build-rights invites) migrate to **Trusted**, not to co-op (section 6).
 10. Grass-tint resend and `/island reset` added.
 
@@ -71,7 +71,7 @@ Server admins (`skyyislands.admin`) pass every flag and entry check, as in 0.4.x
 
 | Action | Owner | Admin | Member | Trusted | Visitor |
 |---|---|---|---|---|---|
-| Invite a co-op member | yes | no, unless `coop.adminsInvite=true` `[SKYY?]` | no | no | no |
+| Invite a co-op member | yes | yes (`coop.adminsInvite` default `true`) | no | no | no |
 | Kick a member, promote, demote | yes | no | no | no | no |
 | Disband the co-op, reset the island | yes | no | no | no | no |
 | Leave the co-op | no (disband instead) | yes | yes | n/a | n/a |
@@ -82,7 +82,9 @@ Server admins (`skyyislands.admin`) pass every flag and entry check, as in 0.4.x
 | Build, chests, farm... | always | by the flags (3.2) | by the flags | by the flags | by the flags |
 | Go to the island with `/island` | yes | yes | yes | no (`/island visit`) | no |
 
-`[SKYY?]` Reading of "the leader keeps the rights to kick players": only the Owner removes **co-op members**. Admins may still expel or ban visitors and untrust helpers, because that is moderation, part of "island settings".
+LOCKED 2026-09-25 (Skyy): Island Admins may invite co-op members. `coop.adminsInvite` defaults to `true`. Was: `false`, Owner only. SkyyIslands 0.5.2 still defaults the row and `config.properties` to `false`. A file already on `false` keeps owner-only invites until that line is set to `true`.
+
+LOCKED 2026-09-25 (Skyy): Admins may expel, ban and untrust visitors and helpers. Only the Owner kicks co-op members. That was already the default.
 
 ### 1.3 The home island rule
 
@@ -100,7 +102,7 @@ Everything that means "my island" uses `homeKey`:
 
 - **Accept binds the profile that is active when the player accepts.** The invite goes to a player; the pkey is resolved once at accept (contract pattern 4.1: one key per operation). The invite text names that profile: "Joining uses your current profile (Strawberry)".
 - **Switching profile switches island.** On another profile the player's home is that profile's own island, and on the co-op island they are a visitor. Switching back makes them a member again. Nothing is rewritten.
-- **Their own island stays.** The member's own island file, world, chests and trusted list are untouched while they are in a co-op. That island is dormant: `/island` does not go there. `/island leave` (or kick or disband) makes it their home again. `[SKYY?]` Should a member be able to visit their own dormant island? Default **no**, to keep one home per profile. Tell players to move items before they accept.
+- **Their own island stays.** The member's own island file, world, chests and trusted list are untouched while they are in a co-op. That island is dormant: `/island` does not go there. `/island leave` (or kick or disband) makes it their home again. LOCKED 2026-09-25 (Skyy): no visits to that dormant island while you are in the co-op. One home per profile. That was already the default. Tell players to move items before they accept.
 - **One co-op per profile.** A profile is a member of at most one island (`MEMBER_OF`). Accepting a second invite is refused: "/island leave first".
 - **A leader can't join someone else.** A profile whose own island has members can't accept an invite ("You lead a co-op island - /island disband first"). An owner without members may join a co-op; their island goes dormant like any member's.
 - **One role per player per island (anti-transfer).** Across all their profiles, a player holds at most one entry on an island: member, admin or trusted. Otherwise a player could drop items there as Trusted on profile 1, switch, and pick them up as a Member on profile 2. Accept is refused while another of their profiles has a role there. Trusting a player whose other profile is already trusted **moves** the entry to the current profile and says so. Inviting yourself or your own other profile is refused (the owner UUID check).
@@ -109,11 +111,11 @@ Everything that means "my island" uses `homeKey`:
 ### 1.5 Invite and accept (SkyyParty 0.1.3 pattern)
 
 `/island invite <player>` (PLAYER_REF, online only). Checks, in order:
-1. You are the Owner of your home island (or an Admin with `coop.adminsInvite=true`). Otherwise: "Only the island owner can invite (you are a member of Skyy's island)".
+1. You are the Owner of your home island, or an Admin (`coop.adminsInvite` default `true`). Otherwise: "Only the island owner can invite (you are a member of Skyy's island)".
 2. The island exists (`worldName(ownerKey) != null`). Otherwise: "Create your island first: /island".
 3. The target is online and not you (the UUID, which also covers your other profiles).
 4. The target is not banned here ("/island unban them first") and not already a member or admin here on any profile.
-5. The co-op is not full: owner + members < `coop.maxPlayers` (default 5 = owner + 4, like Hypixel co-ops) `[SKYY?]`.
+5. The co-op is not full: owner + members < `coop.maxPlayers` (default 5 = owner + 4). LOCKED 2026-09-25 (Skyy): co-op size stays 5, including the owner. That was already the default.
 6. Store `INVITES[targetUuid] = Object[] { ownerKey, inviterUuid, Long expiryMs, inviterName, ownerName }`. A newer island invite to the same player replaces the older one.
 7. Chat to the target: `[Island] Skyy invited you to join their island as a co-op member. Type /island accept (or /island decline) within 60 s. Joining uses your current profile (Strawberry). Your own island stays saved and comes back if you leave.` The inviter gets "Invited Wesley - they have 60 s". The invite also shows on the target's Overview tab with Accept / Decline.
 
@@ -139,9 +141,9 @@ A Trusted player may be invited. Accepting upgrades them and removes the trusted
 
 ### 1.7 `/island reset` (Owner)
 
-**Confirm twice.** `/island reset` prints the warning: "This deletes every block and chest on your island, including your co-op members' things. Members, trusted players, bans and settings are kept. Type /island reset again within 20 s to continue." The second run gives the final warning, and the third run resets. On the page, the button reads "Reset island" → "Delete everything?" → "Really? Last click". The state lives in `CONFIRM[uuid] = { step, millis }`, and the 20 s window is `reset.confirmSeconds`.
+**Confirm twice.** `/island reset` prints the warning: "This deletes every block and chest on your island, including your co-op members' things. Members, trusted players, bans and settings are kept. Type /island reset again within 20 s to continue." The second run gives the final warning, and the third run resets. On the page, the button reads "Reset island" → "Delete everything?" → "Really? Last click". The state lives in `CONFIRM[uuid] = { step, millis }`, and the 20 s window is `reset.confirmSeconds`. LOCKED 2026-09-25 (Skyy): three confirms. That was already the default.
 
-**Refused when:** you are not the Owner of your home island; the island is being created (`CREATING`); `profile:busy:<uuid>` is set; or the cooldown `reset.cooldownHours` (default 24, `[SKYY?]`) has not passed. The cooldown stops repeated resets from farming starter kits.
+**Refused when:** you are not the Owner of your home island; the island is being created (`CREATING`); `profile:busy:<uuid>` is set; or the cooldown `reset.cooldownHours` (default 24) has not passed. LOCKED 2026-09-25 (Skyy): the cooldown stays 24 h. That was already the default. The cooldown stops repeated resets from farming starter kits.
 
 **How (a new world, not a wipe in place):**
 1. `newName = "skyy-island-" + ownerKey + "-r" + (resets + 1)`. Bump N while `Universe.isWorldLoadable(newName)` is true.
@@ -158,7 +160,7 @@ A Trusted player may be invited. Accepting upgrades them and removes the trusted
 1. Skyy (profile Strawberry) runs `/island invite Wesley`. Wesley (profile Apple) runs `/island accept`. From now on Wesley's `/island` goes to Skyy's island, and Wesley can open Skyy's chests.
 2. Skyy runs `/island promote Wesley`. Wesley opens `/island menu` and turns Visitors to Friends only. Wesley has no Kick, Disband or Reset buttons.
 3. Wesley switches to profile Banana and lands on Banana's own island. On Skyy's island Wesley-Banana is a visitor. Wesley switches back to Apple, and `/island` goes to Skyy's island again.
-4. Skyy runs `/island trust Kai`. Kai may build on Skyy's island, but Kai's `/island` still goes to Kai's own island, and Kai can't open chests.
+4. Skyy runs `/island trust Kai`. Kai may build on Skyy's island, sleep, and use a crafting station. Kai's `/island` still goes to Kai's own island, and Kai can't open chests or harvest crops.
 5. Wesley runs `/island leave`. Wesley is back on Apple's own island, and everything Wesley had there is still in place.
 
 ---
@@ -202,7 +204,7 @@ Each flag stores one **minimum role**: `visitor | trusted | member | admin | own
 | 3 | `doors` | Doors, trapdoors, fence gates | visitor | yes / yes / yes / yes | everyone | `UseBlockEvent$Pre`, `BlockType.isDoor()` |
 | 4 | `crafting` | Crafting benches (Workbench, Armory, Builder's...) | trusted | no / yes / yes / yes | members only | `UseBlockEvent$Pre`, `getBench().getType() != Processing` |
 | 5 | `processing` | Furnace, campfire, tannery, salvager (also breaking them) | member | no / no / yes / yes | members only | `UseBlockEvent$Pre`, `BenchType.Processing` |
-| 6 | `beds` | Beds (sleep, set respawn) | **member** | no / no / yes / yes | members only | `UseBlockEvent$Pre`, `getBeds() != null` |
+| 6 | `beds` | Beds (sleep, set respawn) | visitor | yes / yes / yes / yes | members only | `UseBlockEvent$Pre`, `getBeds() != null` |
 | 7 | `seats` | Chairs & benches (sit) | **visitor** | yes / yes / yes / yes | members only (**loosened**) | `UseBlockEvent$Pre`, `getSeats() != null` |
 | 8 | `harvest` | Crops & plants (F-harvest, hitting crops) | **member** | no / no / yes / yes | members only | `UseBlockEvent$Pre` + `BreakBlockEvent` + `DamageBlockEvent` on crop/plant blocks |
 | 9 | `animals` | Farm animals (hurt, interact, coops) | member | no / no / yes / yes | **not guarded** | `Damage` (DamageEventSystem, filter group) with an NPC victim in the animal list; `UseEntityEvent$Pre` on that NPC; coop block use |
@@ -211,7 +213,7 @@ Each flag stores one **minimum role**: `visitor | trusted | member | admin | own
 | 12 | `drop` | Drop items | trusted | no / yes / yes / yes | **not guarded** | `DropItemEvent$PlayerRequest` (CancellableEcsEvent, `Store.invoke(ref, ev)` on the dropper) |
 | 13 | `other` | Lanterns, coffins, teleporters, other blocks | trusted | no / yes / yes / yes | members only | `UseBlockEvent$Pre`, anything not matched above |
 
-**Trusted = a builder** (Skyy: "build permission only"): place, break, crafting benches, pickup and drop (needed to build), toggle blocks, doors, seats and mobs. They can't open chests or furnaces, harvest the farm, sleep, or touch animals. The first draft allowed Trusted to harvest and sleep; this revision moves both to Member. The owner can widen or narrow any of it in the grid.
+**Trusted = a builder** (Skyy: "build permission only"): place, break, crafting benches, pickup and drop (needed to build), toggle blocks, doors, seats, beds, and mobs. They can't open chests or furnaces, harvest the farm, or touch animals. The owner can widen or narrow any of it in the grid. LOCKED 2026-09-25 (Skyy): visitors may use doors, seats, and beds. Chests and crafting stations stay closed to visitors. Chests stay at member. Crafting stations stay at trusted. Was, briefly: chests and crafting stations open to visitors. SkyyIslands 0.5.2 still writes `beds=member`. A file already on `beds=member` keeps that until the line is set to `visitor`. Another profile of someone who already has a role still only gets doors, seats, and hostile mobs.
 
 Two pseudo-flags exist for the bridge only (not in the grid): `enter` (may this player be on the island now, 4.1) and `settings` (Owner or Admin, fixed).
 
@@ -317,7 +319,7 @@ Who changes them: Owner and Admin. Members see them read-only.
 | Setting | Values | Default | Hook | When |
 |---|---|---|---|---|
 | Who may visit | Public / Friends only (members + trusted) / Closed (members only) | Public (= 0.4.x) | custom: `/island visit`, arrival check, 5 s sweep | **Now** |
-| Visitor limit | 1..`visit.limitMax` (config, default 10) | 5 `[SKYY?]` | `World.getPlayerRefs()` (thread-safe) | **Now** |
+| Visitor limit | 1..`visit.limitMax` (config, default 10) | 10. LOCKED 2026-09-25 (Skyy). Was: 5. | `World.getPlayerRefs()` (thread-safe) | **Now** |
 | Expel | one visitor or trusted player to the hub + a 60 s re-entry block | n/a | `HubCmd.sendToHub` on the island's world thread | **Now** |
 | Ban list | UUIDs, max 100 | empty | custom | **Now** |
 | Lock / unlock | lock = Closed, and remember the previous mode | n/a | alias of "Who may visit" | **Now** |
@@ -343,7 +345,7 @@ Who changes them: Owner and Admin. Members see them read-only.
   2. **Arrival:** `IslandReady` already hears `PlayerReadyEvent` on **every** world switch (0.2.1 fact). 0.5 keeps login routing for the first ready of a session. Every later ready schedules `ArrivalTask` (1.5 s, the RouteTask/RouteDispatch pattern onto the player's world thread). There:
      - a `world.prev` world (reset backup, 1.7) sends the player to the hub;
      - `!mayEnter` → `HubCmd.sendToHub(...)` plus a reason;
-     - a visitor gets the welcome line (`Visiting Skyy's island - PvP off - you may: doors, seats, hostile mobs`) and the visit ping goes out;
+     - a visitor gets the welcome line (`Visiting Skyy's island - PvP off - you may: doors, seats, beds, hostile mobs`) and the visit ping goes out;
      - the arrival re-tint + resend runs (section 5);
      - the island's WorldConfig settings are re-applied idempotently.
   3. **Sweep:** `SeenTick` (already every 5 s) dispatches `SweepTask` with `w.execute(...)` to each loaded island world that has players. On that world thread it walks `w.getPlayerRefs()` and expels anyone who fails `mayEnter` without the limit clause. This catches `/tpa`, vanilla `/teleport`, respawns, profile switches while standing on the island, kicks, and ban/lock changes.
@@ -398,7 +400,7 @@ cfg.markChanged();
 - `EnvironmentChunk.setColumn(x, z, idx)` rewrites a whole 320-block column in one call: 1,024 calls per chunk, about 80k for R=4. It keeps its own block counts (bytecode). **Fallback** if the in-game test shows stale columns: the builder-tools per-block loop `bc.setEnvironment(x, y, z, idx)`, restricted to y 64..255.
 - The world's live generator is not swapped. New chunks generated before the next reload use the old values; the arrival re-apply fixes them.
 - **Arrival re-apply:** section 5's `TintFix` generalises to `BiomeApply.fixChunk(chunk, argb, idx)`. For each loaded chunk within R, when `bc.getTint(8, 8) != argb` or `bc.getEnvironment(8, 128, 8) != idx`, it applies to that chunk and resends. `FillTask` uses the island's biome tint instead of the `GRASS` constant.
-- **Cost / gating** (every plugin treats the biome as a reward): ship `biome.cost=0` (coins via the SkyyCoins bridge `coins:fn:take`; a refusal means no change) and `biome.cooldownSeconds=60`. Admins trim the list with `biomes=`. Tying unlocks to Exploration zone discovery is `[SKYY?]`, later.
+- **Cost / gating** (every plugin treats the biome as a reward): ship `biome.cost=0` (coins via the SkyyCoins bridge `coins:fn:take`; a refusal means no change) and `biome.cooldownSeconds=60`. Admins trim the list with `biomes=`. LOCKED 2026-09-25 (Skyy): a biome change is free. Unlocks tied to Exploration zone discovery come later. That was already the default.
 
 ### 4.5 Weather lock (slice B; dry weathers only)
 The vanilla `WeatherSetCommand.setForcedWeather(World, String, ComponentAccessor)` sequence (VERIFIED), on the island world thread with `store = w.getEntityStore().getStore()`:
@@ -421,7 +423,7 @@ On a visitor's arrival, if `visit.notify=1`: message the owner (`Universe.get().
 - **Visits while the owner is offline, island warps list, "visit a random public island".** `/island visit` takes `PLAYER_REF` (online only). Members don't need this: their `/island` loads the co-op island while the owner is offline.
 - **Leader transfer** (`/island transfer`). An island is one profile's file, so a transfer means moving the file to another pkey and re-keying `WORLD_OWNER`. It is possible, but not asked for.
 - **Delete the old world on reset** (`reset.deleteOldWorld`). `WorldConfig.setDeleteOnRemove(true)` + `markChanged()` before the old world empties makes the engine move it to `worlds-deleted/` and delete it (bytecode, 1.7). The default keeps it as a backup; add the switch when disk space matters.
-- **Admins invite / a member vote to kick** (Hypixel), **party / guild visit sources** (SkyyParty 0.1.3 publishes `party:fn:members`; SkyyGuilds publishes `guild:<uuid>`: a "Friends" mode that includes the party and guild is a small follow-up), **visitor keep-inventory** (world-wide `setDeathConfigOverride`, touches the death-penalty design), **split animal/monster spawning** (one engine boolean), **fire spread**, **custom roles / per-player overrides**, **admin `/island admin settings <player>`**, **island size border** (belongs with the size tiers).
+- **A member vote to kick** (Hypixel), **party / guild visit sources** (SkyyParty 0.1.3 publishes `party:fn:members`; SkyyGuilds publishes `guild:<uuid>`: a "Friends" mode that includes the party and guild is a small follow-up), **visitor keep-inventory** (world-wide `setDeathConfigOverride`, touches the death-penalty design), **split animal/monster spawning** (one engine boolean), **fire spread**, **custom roles / per-player overrides**, **admin `/island admin settings <player>`**, **island size border** (belongs with the size tiers).
 
 ---
 
@@ -449,7 +451,7 @@ The same resend goes into `FillTask` (harmless at creation) and `BiomeApply` (wi
 
 ## 6. Defaults and migration
 
-**A new island starts with:** Public visits, limit 5, visit ping on, PvP off, spawning off, biome Void Sky, weather biome default, no landing point, and the flags from 3.2. Visitors may walk around, open doors, sit and fight hostile mobs. Trusted players build (place, break, benches, pickup, drop, toggle blocks). Members and admins do everything, including chests, furnaces, crops, beds and animals.
+**A new island starts with:** Public visits, limit 10, visit ping on, PvP off, spawning off, biome Void Sky, weather biome default, no landing point, and the flags from 3.2. LOCKED 2026-09-25 (Skyy): the visitor limit is 10. Was: 5. SkyyIslands 0.5.2 still writes `defaults.visit.limit=5`. A file already on 5 keeps 5 until that line is set to 10. Visitors may walk around, open doors, sit, sleep, and fight hostile mobs. Trusted players build (place, break, benches, pickup, drop, toggle blocks). Members and admins do everything, including chests, furnaces, crops, beds and animals.
 
 **All defaults live in `Skyy_SkyyIslands/config.properties`** (`defaults.perm.<id>=`, `defaults.visit.mode=` ...). The file is written with these values on first run, as SkyySkills does with `xp.properties`. A key missing from an island file means "use the config default". A server builder can therefore fix a bad default for every island that never touched that setting.
 
@@ -457,7 +459,7 @@ The same resend goes into `FillTask` (harmless at creation) and `BiomeApply` (wi
 - `loadIslandWorlds()` reads each island file. If the file has no `v=5`, it copies the file to `<key>.properties.v4bak`, then moves every `members=` entry into `trusted=` and writes `v=5`. It logs "migrated N build-rights entries to Trusted in <key>". Reason: in 0.4.x, `/island invite` meant **build rights**, which is Trusted now. Turning those entries into co-op members would silently move their `/island` to someone else's island and make their own island dormant. Example: the beta's "F: /island invite S" would take Skyy's `/island` to Wesley's island.
 - Entries are bare UUIDs, which are each player's profile-1 key (`tools/PROFILES-CONTRACT.md`). They stay valid as profile-1 Trusted entries. In 0.4.x membership covered all of that player's profiles; now it covers profile 1 only. That is the anti-transfer rule, and the owner can re-trust them on another profile.
 - The in-game changelog line: "Island 0.5: /island invite now asks your friend to JOIN your island as a co-op member (/island accept). Old build-rights invites are now Trusted (build only). Use /island trust for helpers."
-- Flag behaviour changes for visitors versus 0.4.5: **seats** allowed; **animals** guarded; **drop** guarded (trusted+). Old build-rights players become Trusted, so they lose chests, furnaces, crops and beds until the owner invites them as members `[SKYY?]`.
+- Flag behaviour changes for visitors versus 0.4.5: **seats** allowed; **animals** guarded; **drop** guarded (trusted+). Old build-rights players become Trusted, so they lose chests, furnaces, and crops until the owner invites them as members. LOCKED 2026-09-25 (Skyy): visitors may use doors, seats, and beds. Chests and crafting stations stay closed to visitors. Crop harvest stays at member.
 - The world `config.json` of old islands already has `IsPvpEnabled: false`, `IsSpawningNPC: false` and the Void environment. Nothing to change.
 - Nobody is Member, Admin or Banned after the upgrade.
 
@@ -491,14 +493,14 @@ The same resend goes into `FillTask` (harmless at creation) and `BiomeApply` (wi
 
 ### 7.3 Members tab
 - **Name box** (SkyySacks 0.7.3 / SkyyGuilds pattern, verified in game): `TextField #SkyyIsName { Anchor: (Full: 0); Padding: (Horizontal: 10); MaxLength: 32; PlaceholderText: "Player name"; ... FontSize: 16 }` inside a 420 x 46 box.
-  - `#SkyyIsInvBtn` "Invite to co-op": Owner, or Admin with `coop.adminsInvite`.
+  - `#SkyyIsInvBtn` "Invite to co-op": Owner, or an Admin (`coop.adminsInvite` default `true`).
   - `#SkyyIsTrustBtn` "Trust (build only)": Owner and Admin.
   - Both buttons send `EventData.of("a", "invite" | "trust").append("@IsName", "#SkyyIsName.Value")`, read back with SkyyGuilds' `jsonStr`.
   - **Enter** (`Validating` binding with `EventData.of("a", "name").append(...)`) only keeps the typed name (`keepName`) and says "Click Invite or Trust". A box with two actions must not guess, the same rule as the guild Amount box.
   - The name is matched against online players: exact (ignoring case) first, then prefix (SkyyParty 0.1.3).
   - Members, Trusted players and Visitors don't see the box.
 - **Co-op roster** (owner first, up to `coop.maxPlayers` rows of 48 px): an online dot, name, "(you)", the role, and "since <date>". The Owner sees `#SkyyIsPr<n>` Promote / `#SkyyIsDm<n>` Demote and `#SkyyIsKk<n>` Kick (2 clicks) on each member row.
-- **Pending invites** (Owner): "Invited: Wesley (38 s)".
+- **Pending invites** (Owner, and an Admin): "Invited: Wesley (38 s)".
 - **Trusted:** 2 columns x 6 rows per page, name + `#SkyyIsUt<n>` Untrust (Owner/Admin), with `#SkyyIsTp` / `#SkyyIsTn` Prev/Next.
 
 ### 7.4 Permissions tab (the grid)
@@ -536,7 +538,7 @@ All are subcommands of `/island` (alias `/is`). Each is an `AbstractPlayerComman
 | `/island info` | none | anyone | home island, owner, your role, members n/max, trusted n, world loaded, the world you are in |
 | `/island menu` (aliases `settings`, `options`) | none | anyone | opens the island page (section 7) |
 | `/island visit <player>` (alias `warp`) | `PLAYER_REF` | anyone | the target's home island, with the entry check (4.1) and the landing point (slice B) |
-| `/island invite <player>` (alias `add`) | `PLAYER_REF` | Owner (+ Admin if `coop.adminsInvite`) | co-op invite, 60 s (1.5) |
+| `/island invite <player>` (alias `add`) | `PLAYER_REF` | Owner, and Admin (`coop.adminsInvite` default `true`) | co-op invite, 60 s (1.5) |
 | `/island accept` | none | the invited player | join with the active profile (1.5) |
 | `/island decline` | none | the invited player | refuse |
 | `/island leave` | none | Member, Admin | leave the co-op; you go back to your own island (1.6) |
@@ -581,7 +583,7 @@ settings=1                               # written on the first settings change;
 perm.build=trusted                       # one per flag id; values visitor|trusted|member|admin|owner
 visit.mode=public                        # public|friends|closed
 visit.prev=public                        # restored by /island unlock
-visit.limit=5
+visit.limit=10                           # LOCKED 2026-09-25 (Skyy). Was: 5. A file already on 5 keeps 5.
 visit.notify=1
 visit.spawn=8.5,129.0,8.5,0,0,0          # slice B; absent = island SpawnProvider
 pvp=0
@@ -600,20 +602,23 @@ weather=                                 # slice B; empty = biome default
 ### 9.2 `Skyy_SkyyIslands/config.properties` (admin, new; written with defaults on first run)
 ```
 defaults.perm.build=trusted ... (all 14, section 3.2)
+# LOCKED 2026-09-25 (Skyy): visitors may use doors, seats, and beds. defaults.perm.beds=visitor.
+# Chests and crafting stations stay closed to visitors. defaults.perm.containers=member, defaults.perm.crafting=trusted.
+# Was, briefly: containers=visitor and crafting=visitor. SkyyIslands 0.5.2 still writes beds=member.
 defaults.visit.mode=public
-defaults.visit.limit=5
+defaults.visit.limit=10                 # LOCKED 2026-09-25 (Skyy). Was: 5. SkyyIslands 0.5.2 still writes 5.
 visit.limitMax=10
-coop.maxPlayers=5                         # owner + 4
-coop.adminsInvite=false
+coop.maxPlayers=5                         # owner + 4. LOCKED 2026-09-25 (Skyy): 5 including the owner.
+coop.adminsInvite=true                    # LOCKED 2026-09-25 (Skyy): Admins may invite. Was: false. SkyyIslands 0.5.2 still writes false.
 invite.seconds=60
 trusted.max=20
 bans.max=100
 expel.cooldownSeconds=60
-reset.cooldownHours=24
+reset.cooldownHours=24                  # LOCKED 2026-09-25 (Skyy): 24 h, with 3 confirms.
 reset.confirmSeconds=20
 tint.resend=tints                         # tints | chunk | off (section 5)
 biomes=void,plains,forest,autumn,azure,swamp,savanna,oasis,tundra,glacial,wastes
-biome.cost=0
+biome.cost=0                             # LOCKED 2026-09-25 (Skyy): free. Exploration unlocks later.
 biome.cooldownSeconds=60
 biome.radiusChunks=4
 weathers=clear,fireflies,cloudy,fog,snow,aurora,skylands
@@ -638,7 +643,7 @@ animals.extra=                            # extra NPC role names that count as f
 2. **Owner on another profile** is a visitor, and the `drop` flag is **hard-denied** for them whatever the grid says (no dropping on the profile-B island and picking up on A).
 3. **Breaking a container or furnace needs break AND containers/processing** (3.3), because breaking drops the contents.
 4. **One co-op per profile; a leader can't join another co-op** (1.4). Accept resolves the pkey once and refuses while `profile:busy` is set.
-5. **Reset spam:** 24 h cooldown `[SKYY?]` and 3 runs to confirm. The starter kit is the only thing a reset gives.
+5. **Reset spam:** 24 h cooldown and 3 confirms. LOCKED 2026-09-25 (Skyy): that stays. The starter kit is the only thing a reset gives.
 6. **Reset with players on the island:** everyone but the owner goes to the hub first. Late arrivals in the old world are sent to the hub by `ArrivalTask` and the sweep. The old world unloads when empty and is kept as a backup.
 7. **Kick/leave/disband while standing on the island:** the player goes to their own island. If that fails, they stay as a visitor and the sweep applies the visit mode.
 8. **Visitors inside when settings change:** Closed, Friends or a ban → immediate sweep and expel. PvP on → visitors expelled. A lower limit only affects new arrivals. Flag changes apply on the next event (cache).
@@ -679,28 +684,28 @@ animals.extra=                            # extra NPC role names that count as f
 7. Slice B: the biome live resend (`updateChunkEnvironments`), the weather lock surviving a restart, the 5-arg landing teleport with `completedFuture`.
 
 **`[SKYY?]` choices (defaults picked):**
-- co-op size 5 including the owner;
-- Admins can't invite;
-- Admins may expel, ban and untrust, but only the Owner kicks members;
-- Trusted = builder (no harvest or beds);
-- no visits to your own dormant island while you are in a co-op;
+- LOCKED 2026-09-25 (Skyy): co-op size 5 including the owner. That was already the default;
+- LOCKED 2026-09-25 (Skyy): Island Admins may invite co-op members. `coop.adminsInvite` defaults to `true`. Was: `false`. SkyyIslands 0.5.2 still writes `false`;
+- LOCKED 2026-09-25 (Skyy): Admins may expel, ban and untrust visitors and helpers. Only the Owner kicks co-op members. That was already the default;
+- LOCKED 2026-09-25 (Skyy): visitors may use doors, seats, and beds. Chests and crafting stations stay closed to visitors. Chests stay at member. Crafting stations stay at trusted. SkyyIslands 0.5.2 still writes `beds=member`. A file already on `beds=member` keeps that until the line is set to `visitor`;
+- LOCKED 2026-09-25 (Skyy): no visits to your own dormant island while you are in a co-op. That was already the default;
 - old build-rights invites become Trusted;
-- reset cooldown 24 h;
-- visitor limit 5;
-- biome cost 0 and unlock gating later.
+- LOCKED 2026-09-25 (Skyy): `/island reset` cooldown 24 h, with 3 confirms. That was already the default;
+- LOCKED 2026-09-25 (Skyy): visitor limit 10. Was: 5. SkyyIslands 0.5.2 still writes `defaults.visit.limit=5`. A file already on 5 keeps 5 until that line is set to 10;
+- LOCKED 2026-09-25 (Skyy): biome change is free. Unlocks tied to exploration come later. That was already the default.
 
 ---
 
 ## 12. In-game test checklist (append to TEST-CHECKLIST.md when built; A = Skyy (owner), B = Wesley, C optional)
 
 1. Deploy only with Skyy's OK (never `--deploy` from a build script). The server log shows `SkyyIslands 0.5 ready`, the migration lines (`migrated N build-rights entries to Trusted`), no "already registered", and no guard errors on first join.
-2. **Migration:** B had build rights on A's island from the beta. B is now Trusted: B builds, breaks, crafts and picks up, but can't open A's chest. B's `/island` still goes to B's own island. `/island menu` → Members tab shows B under Trusted.
+2. **Migration:** B had build rights on A's island from the beta. B is now Trusted: B builds, breaks, crafts and picks up, and B can sleep. B can't open A's chest, harvest a crop, or use a furnace. B's `/island` still goes to B's own island. `/island menu` → Members tab shows B under Trusted.
 3. **Invite + accept:** A `/island invite B` → B gets the chat line with the profile name. B `/island accept` → both get "joined". B `/island` → lands on A's island, and B's Zone widget says "Your Island". B opens A's chest and furnace and harvests a crop.
 4. **Own island kept:** B `/island leave` → B lands on B's own island with B's things in place. Re-invite, and B accepts again.
 5. **Admin:** A `/island promote B`. B's `/island menu` → B can change the Permissions grid, Visitors mode and PvP, but has no Kick, Disband or Reset. B `/island kick A` / `/island disband` → refused. A `/island demote B` → B's page is read-only.
 6. **Profiles:** B switches to profile 2 → B lands on B-p2's own island. On A's island B-p2 is a visitor (chest refused, with the "switch to your profile Apple" message). B switches back → `/island` goes to A's island.
 7. **One role per player:** while B-p1 is a member, A invites B again while B is on profile 2 → B `/island accept` → refused, naming profile 1.
-8. **Trusted is separate:** A `/island trust C` → C builds on A's island, but C's `/island` goes to C's own island, and C can't open chests or harvest. A `/island untrust C` → visitor.
+8. **Trusted is separate:** A `/island trust C` → C builds on A's island, but C's `/island` goes to C's own island. C can sleep and use a crafting station, and C can't open a chest, harvest, or use a furnace. A `/island untrust C` → visitor.
 9. **Kick:** A `/island kick B` while B stands on A's island → B is sent to B's own island with a message. `/island kick C` (trusted) → "use /island untrust".
 10. **Disband:** B re-joins. A `/island disband`, then again within 10 s → B (on the island) goes to B's own island. C stays Trusted.
 11. **Owner offline:** B re-joins. A logs off. B `/island` → A's island loads, B arrives, builds and uses chests.
