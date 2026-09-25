@@ -857,3 +857,10 @@ Essentials 0.1.3, Exploration 0.2.1, Guilds 0.1.2, Vault 0.1.1, Rolls 0.1.5, Hud
 ## HOTFIX SkyyAuctions 0.1.1 + SkyyEssentials 0.1.4, DEPLOYED 2026-09-25 05:42
 1. `/ah`: list a ROLLED weapon (`/rolls give mithril bow`), then Browse -> View it: no disconnect; the icon shows and the rolls are listed as text.
 2. [2P] `/trade`: offer a rolled weapon; the other player sees its icon without a disconnect, and hovering the slot shows its name + rolls.
+
+
+## Round 5 - SkyyMenu 0.3.1 (+ config kit 1.1), DEPLOYED 2026-09-25 05:53
+1. Server log: `[SkyyMenu] 0.3.1 ready (config kit 1.1 ...)`, no config-kit warnings.
+2. Mods tile as op: all 22 mods, Essentials 0.1.4, Auctions 0.1.1; 'Admin only:' lines (Essentials /warpadmin, Party /partyadmin); one click on a set-up mod opens its Server Setup page.
+3. `/settings`: General shows the 3 guild switches; turning off Guild chat hides the friend's /gc lines.
+4. [2P] Non-op friend: no admin lines, no Server Setup book, `/modconfig` refused, `/settings` works.
