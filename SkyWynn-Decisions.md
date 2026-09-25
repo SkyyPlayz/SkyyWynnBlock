@@ -63,7 +63,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
    - **Equipment bar.** A separate bar next to armor: necklace, cloak, ring, belt. Working name **Equipment**. The name is not final. Placeholders on our pages. Not on the inventory screen (10.22). Not the accessory bag.
    - **Loadouts save** armor, that Equipment bar, and the selected Accessory Power buff. Pets are included once pets exist.
    - **Accessory Power.** Each accessory gives its own buff and also adds accessory power. Total power feeds one selectable buff. More power means a stronger buff. Locked examples: Warrior (strength as a damage modifier, plus a small amount of crit chance, crit damage, health, and defence) and Elementalist (all elemental damage types, and all elemental resistance). **Open:** the rest of the buff list, and the numbers. The crystal table in `SkyyAccessories-Plan.md` stays a draft.
-9. **Combat, defence, and mana (same day, after the catalog).** Locks rows 1.6, 6.4, and 6.5, and adds 6.10–6.13. Full list in `SkyyGear-Plan.md` locks 15–24. Marked in `SkyyGear-Stat-Catalog.md`. The next blank table is Movement. Does not change any jar.
+9. **Combat, defence, and mana (same day, after the catalog).** Locks rows 1.6, 6.4, and 6.5, and adds 6.10–6.13. Full list in `SkyyGear-Plan.md` locks 15–24. Marked in `SkyyGear-Stat-Catalog.md`. The next blank table at this note was Movement. Locked later (change note 10). Does not change any jar.
    - **Damage** uses Hytale's system, built on, unless a custom system is easier later. Weapon-only. Neutral damage is called Damage.
    - **Crit Chance** has no cap. 100% is a guaranteed crit. Over 100% is overcrit chance (120% crit = 20% chance to overcrit). **Overcrit** always doubles the crit hit. **Crit Damage** is SkyBlock-style: 0 means a crit is double a normal hit; +100% means double a normal crit, which is 4x a normal hit.
    - **True Damage** ignores enemy Defence. Mobs will almost never deal it. **True Defense is scrap.**
@@ -92,6 +92,13 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 2. **Priest is a class** (was the 'later Priest' idea, rows 6.6 / 6.13). An **AoE healing support** class: healing spells and some damage. Weapon skill **Divinity**. Weapons: wands and spellbooks (`Weapon_Wand_*`, `Weapon_Spellbook_*`). Much of it will be custom content later. Placeholder until the spell system exists: when a Priest damages a mob with a class weapon, party members nearby heal a share of that damage (numbers editable in Server Setup).
 3. **Class kits.** Every class has a kit with its basic weapon, given automatically when the class is selected (a new profile). The kit contents are editable in game.
 4. Shaman (later) gets its own custom weapon (Wynn's relik has no Hytale item); Assassin keeps daggers + kunai.
+5. **Movement (change note 10).** Locks rows 6.14–6.18. Full list in `SkyyGear-Plan.md` locks 25–30. Marked in `SkyyGear-Stat-Catalog.md`. Next blank table is Gathering. Does not change any jar.
+   - **Speed.** SkyBlock-style flat +Speed. Armor, Equipment, and accessories. Acrobatics skill tree still grants +% movement speed on its own.
+   - **Sprint.** Scrap as a gear stat and as a sprint bar. Use Hytale stamina.
+   - **Stamina Regen.** Sprint Regen, renamed. Armor only. Also Acrobatics and Exploration skill trees. Not on weapons, Equipment, or accessories unless Skyy says later.
+   - **Jump Height.** Skill trees and accessories only. Not on armor, Equipment, or weapons.
+   - **Rift Speed.** Scrap.
+   - **Reach** stays the earlier lock. Gathering trees only (Mining, Farming, Gathering). Max +50%. Not re-opened.
 
 ---
 
@@ -213,7 +220,7 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.2 | Archetypes (3 themed sub-builds per class) | Wynn | v1: 1–2 archetypes per class, 3rd later | |
 | 6.3 | Ability tree size: Wynn has 70+ nodes/class | Wynn | ~25 nodes/class v1 — enough? | |
 | 6.4 | Mana / intelligence resource for abilities | Wynn | TAKE | ✔ LOCKED (2026-09-24, change note 9) — use Hytale's mana. Our modifiers add to it. +Max Mana on gear is Equipment only. Overall Level (average of all skill levels) raises base Health and Mana (6.11). Per-spell cost IDs are scrap. One flat −% Spell Cost, accessory only. Skill-upgrade points come every 5 levels (6.12) |
-| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 9) — first pass is in. Crit Chance has no cap (over 100% is overcrit chance). Crit Damage is SkyBlock-style (0 = double a normal hit; +100% = 4x). Overcrit doubles the crit. Ferocity cap 300 for now. Attack Speed cap 150%. True Damage ignores Defence; True Defense is scrap. Fortune from change note 7 was **not** re-opened. The catalog's next blank table is Movement |
+| 6.5 | SkyBlock stat sheet (Crit Chance/Damage, Ferocity, etc.) | SkyBlock | TAKE — merged with Wynn SP stats (needs a unified stat sheet design) | ✔ LOCKED (2026-09-24, change note 9) — first pass is in. Crit Chance has no cap (over 100% is overcrit chance). Crit Damage is SkyBlock-style (0 = double a normal hit; +100% = 4x). Overcrit doubles the crit. Ferocity cap 300 for now. Attack Speed cap 150%. True Damage ignores Defence; True Defense is scrap. Fortune from change note 7 was **not** re-opened. Movement is locked (change note 10). Next blank table is Gathering |
 | 6.6 | Healer/Tank dungeon-class variants (SkyBlock Catacombs style) | SkyBlock | SKIP? classes already cover roles | Open with 6.13. Crowd healing is a later Priest idea. This row's dungeon-variant call is not locked |
 | 6.7 | Slayers (spawn-a-boss quest chains + slayer XP) | SkyBlock | TAKE (midgame) | ✔ **Core loop**, not side content. Not the leveling spine (that stays the island chain) |
 | 6.8 | Boss altars (summon boss with materials) | Wynn | TAKE (cheap early bosses) | |
@@ -222,6 +229,11 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 6.11 | Overall Level (average of all skill levels) | Skyy | | ✔ LOCKED (2026-09-24, change note 9) — each Overall Level raises base Health and base Mana. Class trees can add flat Health and Mana. Gathering trees can add a small +%. **Open:** the amount per level |
 | 6.12 | Skill-upgrade points (every 5 levels) | Skyy | | ✔ LOCKED (2026-09-24, change note 9) — separate from the skill tree. An upgrade raises a skill's damage, or its range if it is a traversal skill, and lowers its raw cost. **Open:** how big that change is |
 | 6.13 | Class roles, including a later Priest | Skyy | | Open. Priest is the named idea for crowd healing (healing spells and some damage, a support role). Roles are not defined yet. Not added to the class roster |
+| 6.14 | Speed (flat +Speed) | SkyBlock | | ✔ LOCKED (2026-09-25, change note 10) — SkyBlock-style flat +Speed. Armor, Equipment, and accessories. Acrobatics skill tree still grants +% movement speed on its own |
+| 6.15 | Sprint bar | Wynn | | ✔ SCRAP (2026-09-25, change note 10) — not a gear stat and not a sprint bar. Use Hytale stamina |
+| 6.16 | Stamina Regen (was Sprint Regen) | Wynn | | ✔ LOCKED (2026-09-25, change note 10) — armor only. Also Acrobatics and Exploration skill trees. Not on weapons, Equipment, or accessories unless Skyy says later |
+| 6.17 | Jump Height | Wynn | | ✔ LOCKED (2026-09-25, change note 10) — skill trees and accessories only. Not on armor, Equipment, or weapons |
+| 6.18 | Rift Speed | SkyBlock | | ✔ SCRAP (2026-09-25, change note 10) — Rift move speed is out |
 
 ## 7. WORLD & CONTENT
 
@@ -317,4 +329,4 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
 | 11.3 | ... | | |
 
 ---
-*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Change note 9 replaces the five Wynn skill points on gear with the combat, defence, and mana pass. Fortune from change note 7 was not re-opened. Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*
+*The 2026-09-23 call locked the ✔ rows and the master-plan phases were re-cut to match. The 2026-09-24 change notes override the Berserker drop, the Garden fold-in, the single coin-bypass wall, and the unspoken profile cap of 4, they split how the island chain is built, and they lock the SkyyGear rules (level + rarity on every gear item, smithing rarity, reforge roll range, unidentified drops, Wynn combat gear, SkyBlock gathering sets, wardrobe + loadouts, `/identify` then an NPC, any-rarity drops, set bonuses, the Equipment bar, loadout contents, and Accessory Power). Change note 9 replaces the five Wynn skill points on gear with the combat, defence, and mana pass. Change note 10 (2026-09-25) locks Movement: flat +Speed, Sprint scrap, Stamina Regen, Jump Height, Rift Speed scrap. Next blank table is Gathering. Fortune from change note 7 was not re-opened. Reach stays the earlier lock (max +50%). Unmarked rows are still open. Build work that already started is tracked in `HANDOFF.md`; this sheet does not change any jar.*

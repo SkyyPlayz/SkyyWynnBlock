@@ -22,7 +22,7 @@ Skyy's direction still holds: every mod in the pack is eventually our own. Comba
 
 ## Locked later the same day — combat, defence, mana
 
-Change note 9 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md` (collapsed section). The next blank table is Movement. Does not change any jar.
+Change note 9 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md` (collapsed section). Movement was locked later (change note 10). Does not change any jar.
 
 15. **Damage and crits.** Use Hytale's damage and build on it, unless a custom system is easier later. Damage is a weapon-only modifier. Neutral damage uses the same name: Damage.
     - **Crit Chance.** No cap. 100% is a guaranteed crit. Over 100% is overcrit chance. 120% crit means a 20% chance to overcrit.
@@ -68,6 +68,17 @@ Change note 9 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md` (c
     - Raw cost lives on the skill. **Skill-upgrade points** come every 5 levels. An upgrade raises damage, or range on a traversal skill, and lowers raw cost. How big that change is stays open.
 24. **Class skill trees.** Borderlands-style, not a straight line. Research Borderlands 4 before any tree is designed. This note does not design the trees. The old "~25 nodes" draft is not this lock.
 
+## Locked 2026-09-25 — Movement
+
+Change note 10 in `SkyWynn-Decisions.md`. Marked in `SkyyGear-Stat-Catalog.md` (same collapsed section). Next blank table is Gathering. Does not change any jar.
+
+25. **Speed.** SkyBlock-style flat +Speed. Can roll on armor, Equipment, and accessories. The Acrobatics skill tree still grants +% movement speed on its own.
+26. **Sprint.** Scrap as a gear stat and as a sprint bar. Use Hytale stamina.
+27. **Stamina Regen.** Sprint Regen, renamed. Armor only. Also grantable in the Acrobatics and Exploration skill trees. Not on weapons, Equipment, or accessories unless Skyy says later.
+28. **Jump Height.** Skill trees and accessories only. Not on armor, Equipment, or weapons.
+29. **Rift Speed.** Scrap.
+30. **Reach stays.** Already locked (lock 18). Gathering trees only: Mining, Farming, and Gathering. Max +50%. Not re-opened.
+
 ## Open research — Borderlands 4 skill trees
 
 Public notes only. Not a SkyWynn design.
@@ -80,8 +91,8 @@ Public notes only. Not a SkyWynn design.
 ## What it covers
 | Line | Style | Locked shape |
 |---|---|---|
-| Combat weapons and armor | Wynncraft | Copy Wynn's model. Class weapons: Archer shortbow/crossbow, Warrior sword/longsword/spear, Mage staff; later Assassin daggers/kunai; Shaman TBD; Berserker PENDING with no list. Every piece has a level requirement and a rarity. Mobs can drop any rarity. Rolled IDs show after identify (lock 9). Stats follow locks 15 and up (change note 9), not the five Wynn skill points. Sets can be drop-only or craft-only, and a worn set has a set bonus (locks 10–11). Powders and Wynn's five elements stay (batch 2); powder slot counts are open |
-| Gathering armor | Hypixel SkyBlock | Farming sets and foraging sets. Mining sets are likely the same idea. They are armor, so they follow the armor placement in locks 15 and up. Fortune from lock 8 is still on the sheet until that table is reviewed. A worn set has a set bonus |
+| Combat weapons and armor | Wynncraft | Copy Wynn's model. Class weapons: Archer shortbow/crossbow, Warrior sword/longsword/spear, Mage staff; later Assassin daggers/kunai; Shaman TBD; Berserker PENDING with no list. Every piece has a level requirement and a rarity. Mobs can drop any rarity. Rolled IDs show after identify (lock 9). Stats follow locks 15 and up (change notes 9 and 10), not the five Wynn skill points. Sets can be drop-only or craft-only, and a worn set has a set bonus (locks 10–11). Powders and Wynn's five elements stay (batch 2); powder slot counts are open |
+| Gathering armor | Hypixel SkyBlock | Farming sets and foraging sets. Mining sets are likely the same idea. They are armor, so they follow the armor placement in locks 15 and up. Speed and Stamina Regen can sit on armor. Jump Height does not. Fortune from lock 8 is still on the sheet until that table is reviewed. A worn set has a set bonus |
 | Equipment | Hypixel SkyBlock | Separate bar next to armor. Slots: necklace, cloak, ring, belt. Working name Equipment (not final). Saved in a loadout |
 | Tools | Hypixel SkyBlock | Pickaxes, axes, hoes (rods later). Reforges, and tiers tied to the zone islands, are still to design. They are gear, so they carry a level requirement and a rarity |
 
@@ -109,7 +120,7 @@ Public notes only. Not a SkyWynn design.
 6. **Powders.** Wynn's five elements and "powders replace SkyBlock runes" stay locked. Still open: slots per item, tiers, and how they drop.
 7. **Where rolled items sell.** Bazaar (stackable commodities today) or the auction house. Separate from that: the late-game wall still pulls some items off both buy and sell (Decisions 1.2). Which gear that hits is open.
 8. **Zone pacing.** How gear steps up across the island chain. Not numbered here.
-9. **Stat list from Movement down.** Combat, defence, and mana are marked in `SkyyGear-Stat-Catalog.md`. The next blank table is Movement. Fortune from lock 8 was not re-opened. Still open inside that pass: per-element main-attack lines and per-element spell % (leaning skip); Reflection; life-steal numbers; which classes count as magic-using for Mana Regen; Health and Mana per Overall Level; how big a skill upgrade is. Do not invent those numbers.
+9. **Stat list from Gathering down.** Movement is locked (change note 10, locks 25–29). Next blank table is Gathering. Fortune from lock 8 was not re-opened. Reach stays lock 18. Still open inside the combat pass: per-element main-attack lines and per-element spell % (leaning skip); Reflection; life-steal numbers; which classes count as magic-using for Mana Regen; Health and Mana per Overall Level; how big a skill upgrade is. Do not invent those numbers.
 10. **Accessory Power list and numbers.** Warrior and Elementalist are locked examples. The rest of the buff list, and every number, stay open. The Hypixel power menu (every selectable power, enrichments, and tuning) is in that same catalog, decision column blank. It is research. Do not treat the crystal table in `SkyyAccessories-Plan.md` as the lock.
 11. **Class skill trees.** Borderlands-style, not a straight line. The Borderlands 4 notes above are research. Do not design the trees yet. Decisions 6.3 (~25 nodes) is the older draft, not this lock.
 12. **Class roles.** A Priest class is the later idea for crowd healing (healing spells and some damage). Roles are not defined yet.

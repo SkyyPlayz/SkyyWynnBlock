@@ -1,7 +1,7 @@
 # SkyyGear stat catalog
-*Research list, 2026-09-24. Combat, defence, and mana are marked in the collapsed section above the blank tables. From Movement down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
+*Research list, 2026-09-24. Combat, defence, mana, and Movement are marked in the collapsed section. From Gathering down, the Decision column is still blank. Write **Keep**, **Scrap**, or **Add later** there.*
 
-The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up, and Decisions change note 9. Fortune was not in this pass. It stays until the loot and gathering tables are reviewed.
+The first mix (five Wynn skill points on every weapon and armor) was revised later the same day. Current rules: `SkyyGear-Plan.md` locks 15 and up. Decisions change note 9 is combat, defence, and mana. Change note 10 (2026-09-25) is Movement. Fortune was not in this pass. It stays until the loot and gathering tables are reviewed.
 
 **Count:** 135 SkyBlock lines and 249 Wynn lines in the research list. 6 lines are shared (marked Both), so they sit in both totals. The decided section also has a few SkyWynn rows (Overcrit, True Damage, Dodge Chance, flat Spell Cost %). Those are our locks, not wiki lines.
 
@@ -20,9 +20,9 @@ True Damage is in the decided section. It ignores Defence. True Defense, the sta
 ---
 
 <details>
-<summary><strong>Decided — combat, defence, and mana</strong> (2026-09-24, change note 9). Next blank table is Movement.</summary>
+<summary><strong>Decided — combat, defence, mana, and Movement</strong> (change notes 9 and 10). Next blank table is Gathering.</summary>
 
-These rows are marked. **Keep**, **Scrap**, or **Open**. Placement is the lock. Fortune was not in this pass.
+These rows are marked. **Keep**, **Scrap**, or **Open**. Placement is the lock. Fortune was not in this pass. Movement was locked 2026-09-25.
 
 ### Damage and crits
 
@@ -144,18 +144,19 @@ These rows are marked. **Keep**, **Scrap**, or **Open**. Placement is the lock. 
 | Raw 3rd Spell Cost | Wynn | Per-spell raw cost. Out. Same skill-upgrade rule. | Scrap |
 | Raw 4th Spell Cost | Wynn | Per-spell raw cost. Out. Same skill-upgrade rule. | Scrap |
 
-</details>
+### Movement
 
-
-## Movement
+Reach (old Swing Range) was already locked. Gathering trees only. Max +50%. Not re-opened here.
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
-| Speed / Walk Speed | Both | Move faster. SB Speed base is 100, cap 400. Wynn Walk Speed is a percent, and stops helping past +400%. | |
-| Sprint | Wynn | How long you can sprint before the bar runs out. | |
-| Sprint Regen | Wynn | How fast the sprint bar refills. | |
-| Jump Height | Wynn | How high you jump. | |
-| Rift Speed | SB | Move speed inside the Rift only. | |
+| Speed / Walk Speed | Both | SkyBlock-style flat +Speed. Armor, Equipment, and accessories. Acrobatics skill tree still grants +% movement speed on its own. | Keep |
+| Sprint | Wynn | Not a gear stat. Not a sprint bar. Use Hytale stamina. | Scrap |
+| Sprint Regen | Wynn | Renamed **Stamina Regen**. Armor only. Also Acrobatics and Exploration skill trees. Not on weapons, Equipment, or accessories unless Skyy says later. | Keep |
+| Jump Height | Wynn | Skill trees and accessories only. Not on armor, Equipment, or weapons. | Keep |
+| Rift Speed | SB | Rift move speed is out. | Scrap |
+
+</details>
 
 ## Gathering
 
