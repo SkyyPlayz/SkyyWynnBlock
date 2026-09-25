@@ -365,6 +365,7 @@ still reads correctly in old logs), the full item snapshots on both sides (lossl
 the shared `VCodec`-style codec), both coin amounts, `startedAt`/`endedAt`, and the result with a reason where one applies (a cancel always
 has a reason; a completion doesn't need one). `trade.log` (section 11) is the append-only audit trail an admin reads with `/tradeadmin log`;
 the JSON records are the actual state and are what `/tradeadmin return` acts on.
+LOCKED 2026-09-25 (Skyy): a completed trade stays private between the two players. There is no chat line to party, guild, or the server. The record stays in `trade.log`. That was already the default.
 
 ## 15. Admin: `/tradeadmin`
 
@@ -458,5 +459,4 @@ docstring already explains for 0.1.1 from 0.1):
 2. LOCKED 2026-09-25 (Skyy): `tradeMaxCoins` stays a flat server-wide number. `0` means no cap. That was already the default.
 3. LOCKED 2026-09-25 (Skyy): taking damage does not cancel the trade. Trades survive hits. `tradeCancelOnDamage` defaults to `false`. Was: `true`. SkyyEssentials 0.1.4 still defaults the row and `config.properties` to `true`. A file already on `true` keeps cancel-on-damage until that line is set to `false`.
 4. LOCKED 2026-09-25 (Skyy): each side of a trade has 16 slots, a 4x4 grid. That was already the default.
-5. Should a completed trade generate any server-wide or party chat line (e.g. for a guild/party to see "so-and-so traded with so-and-so"),
-   or stay entirely private between the two participants the way Hypixel's own trade is? **[default: fully private, log-only]**
+5. LOCKED 2026-09-25 (Skyy): a completed trade stays private between the two players. There is no chat line to party or guild. That was already the default (log-only).

@@ -107,7 +107,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 2. LOCKED 2026-09-25 (Skyy): max coins per trade is a flat server number. 0 means no cap. [flat, 0 = no cap, already the default]
 3. LOCKED 2026-09-25 (Skyy): taking damage does not cancel the trade. Trades survive hits. [no; 0.1.4 still defaults tradeCancelOnDamage to true]
 4. LOCKED 2026-09-25 (Skyy): 16 slots per side (a 4x4 grid). [16, already the default]
-5. Trades stay private (no chat line to party/guild)? [private]
+5. LOCKED 2026-09-25 (Skyy): trades stay private. There is no chat line to party or guild. [private, already the default]
 
 ## Islands (`research/Island-Settings-Spec.md`, live in SkyyIslands 0.5.1)
 - Co-op size 5 including the owner. [5]
