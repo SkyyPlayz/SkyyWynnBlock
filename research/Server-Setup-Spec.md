@@ -399,7 +399,7 @@ together as 0.2: the two registries are independent `[SKYY?]`. The newest SkyyMe
 ### 2.1 Who can see it
 - Node **`skyymenu.modconfig`**. Ops have it through `hytale:Admin`'s built-in `"*"` (VERIFIED), so on a fresh world the owner sees it with no
   setup and nobody else does. A staff rank gets it only when granted (SkyyRanks 5.1 or `permissions.json`). It is separate from moderation.
-  LOCKED 2026-09-25 (Skyy): ops only. The node `skyymenu.modconfig` can be given to staff. That was already the default. That node does not open the rank editor. LOCKED 2026-09-25 (Skyy): the rank editing UI is ops only. Only a full op can view and edit rank permissions and create new ranks. See 5.1.
+  LOCKED 2026-09-25 (Skyy): ops only. The node `skyymenu.modconfig` can be given to staff. That was already the default. That node does not open the rank editor. LOCKED 2026-09-25 (Skyy): the rank editing UI is for ops and players with the Owner rank. Was: ops only. Admin and Developer cannot edit rank permissions or create or modify ranks. See 5.1.
 - Changing a mod also needs **that mod's** admin node (1.4.8). A viewer without it sees the mod's page read-only: "View only - changing
   SkyyBank needs skyybank.admin." So an owner can give someone the market but not ranks.
 - SkyyMenu checks `this.playerRef.hasPermission("skyymenu.modconfig")` (inside `try/catch`, false on error) **on page build and on every
@@ -876,12 +876,12 @@ SkyyGuilds' guild ranks and SkyyIslands' island roles are different things and s
   | Player commands | yes, through `hytale:Adventurer` | yes | yes | yes |
   | Server Setup (`skyymenu.modconfig`) | no | yes | yes, inherited from Admin | yes, through `*` |
   | Mod `.admin` nodes other than `skyyranks.admin` | no | yes | yes, inherited from Admin | yes, through `*` |
-  | Rank editor | no | no | no | yes, ops only |
+  | Rank editor | no | no | no | yes: op and the Owner rank |
   | `*`, `/op`, or membership in `hytale:Admin` | no | no | no | yes |
 
   Admin and Developer are close to the owner: they can open Server Setup and change mod settings. Neither opens the rank editor, and neither is op. Was: Developer got the rank editor (`skyyranks.admin`). SkyyRanks never adds anyone to `hytale:Admin` and these seeds never grant `*` or `skyyranks.admin`. Op stays vanilla `/op`.
-- **Edited in the menu.** LOCKED 2026-09-25 (Skyy): every rank, including the seeded Member, Admin, and Developer, is fully editable in the in-game Server Setup ranks editor (`/rankadmin`, the Ranks editor link). An op can change each rank's permissions and add new ranks from that menu. Rank files do not have to be edited by hand. SkyyRanks 0.1 already edits ranks and adds new ones from that page. It still refuses grants, delete, and ladder moves on the default rank (Member). Admin and Developer, once they exist, are ordinary ranks on that page.
-- **Who opens it.** LOCKED 2026-09-25 (Skyy): that rank editing UI is ops only. Staff with `skyymenu.modconfig` cannot open it. Only a full op can view and edit rank permissions and create new ranks. SkyyRanks 0.1 still opens `/rankadmin` for anyone with `skyyranks.admin`. Ops already have that node through `*`.
+- **Edited in the menu.** LOCKED 2026-09-25 (Skyy): every rank, including the seeded Member, Admin, and Developer, is fully editable in the in-game Server Setup ranks editor (`/rankadmin`, the Ranks editor link). An op, or a player with the Owner rank, can change each rank's permissions and add new ranks from that menu. Rank files do not have to be edited by hand. SkyyRanks 0.1 already edits ranks and adds new ones from that page. It still refuses grants, delete, and ladder moves on the default rank (Member). Admin and Developer, once they exist, are ordinary ranks on that page.
+- **Who opens it.** LOCKED 2026-09-25 (Skyy): that rank editing UI is for ops and players with the Owner rank. Was: ops only. Admin and Developer cannot edit rank permissions or create or modify ranks, so they cannot raise their own permissions. `skyymenu.modconfig` does not open it. SkyyRanks 0.1 still opens `/rankadmin` for anyone with `skyyranks.admin`. It does not yet limit that page to ops and the Owner rank.
 - **Grants are additive in 0.1.** The editor offers: grant a node to a rank (e.g. `skyyessentials.fly`, `skyymenu.modconfig`,
   `skyyeconomy.admin`, future perk nodes), and a per-player deny (reliable, user level). Taking a command away from everybody is the owning
   mod's part switch, not a rank deny. The page explains this in one line.
@@ -895,7 +895,7 @@ SkyyGuilds' guild ranks and SkyyIslands' island roles are different things and s
   (proven), plain text if the colour is unusable. Bridge for other mods: `rank:<uuid>` (display name), `rank:prefix:<uuid>`, `rank:colour:<uuid>`
   (for the SkyyMenu Players view and the HUD players list later).
 
-**Page (`/rankadmin`, `requirePermission("skyyranks.admin")`; also the `link` row):** LOCKED 2026-09-25 (Skyy): ops only. `skyymenu.modconfig` does not open this page. Only a full op can view and edit rank permissions and create new ranks. SkyyRanks 0.1 still checks `skyyranks.admin`, which ops have through `*`.
+**Page (`/rankadmin`, `requirePermission("skyyranks.admin")`; also the `link` row):** LOCKED 2026-09-25 (Skyy): ops and players with the Owner rank. Was: ops only. Admin and Developer cannot edit rank permissions or create or modify ranks. `skyymenu.modconfig` does not open this page. SkyyRanks 0.1 still checks `skyyranks.admin` and does not yet limit the page to ops and the Owner rank.
 - Ranks view: rows `order - name - prefix preview - <n> members`, buttons `Up`, `Down`, `Edit`, `Delete` (confirm: members go back to the
   default rank), and `New rank` (id + name TextFields).
 - Rank view: name, prefix (TextField), colour (TextField `#rrggbb` until the `color` widget exists), `staff` ON/OFF; **Grants** table (node,
@@ -1146,7 +1146,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 6. LOCKED 2026-09-25 (Skyy): NPC shops: buy and sell-back per item, infinite stock by default, optional limited stock with a restock timer. Yes, as described in 5.2. Infinite stock stays the default. That was already the default.
 7. LOCKED 2026-09-25 (Skyy): NPC shops in SkyyEconomy 0.1 or 0.2? 0.2, so 0.1 stays a clean merge. That was already the default.
 8. LOCKED 2026-09-25 (Skyy): Ranks: a new SkyyRanks mod, or inside SkyyEssentials? SkyyRanks. 0.1 is live. That was already the default.
-9. LOCKED 2026-09-25 (Skyy): Which ranks come seeded? Member, Admin, and Developer. Was: only Member. Member stays the default rank, with no prefix and no grants. Admin and Developer are staff, close to the owner, and do not get full op (`*`, `/op`, or `hytale:Admin`). Was: Developer got the rank editor. See 5.1. The rank editing UI is ops only. `skyymenu.modconfig` does not open it. Only a full op can view and edit rank permissions and create new ranks. Ranks stay fully editable in that UI. SkyyRanks 0.1 still seeds only Member, and still opens `/rankadmin` for anyone with `skyyranks.admin`. A file that already has only Member keeps only Member until Admin and Developer are added. SkyyRanks 0.1 still refuses grants, delete, and ladder moves on the default rank.
+9. LOCKED 2026-09-25 (Skyy): Which ranks come seeded? Member, Admin, and Developer. Was: only Member. Member stays the default rank, with no prefix and no grants. Admin and Developer are staff, close to the owner, and do not get full op (`*`, `/op`, or `hytale:Admin`). Was: Developer got the rank editor. See 5.1. The rank editing UI is for ops and players with the Owner rank. Was: ops only. Admin and Developer cannot edit rank permissions or create or modify ranks. `skyymenu.modconfig` does not open it. Ranks stay fully editable in that UI. SkyyRanks 0.1 still seeds only Member, and still opens `/rankadmin` for anyone with `skyyranks.admin`. A file that already has only Member keeps only Member until Admin and Developer are added. SkyyRanks 0.1 still refuses grants, delete, and ladder moves on the default rank.
 10. LOCKED 2026-09-25 (Skyy): Chat order when a player has a rank and a title? `[Rank] [Title] Name`. That was already the default.
 11. SkyyMenu 0.2 (player Settings) and 0.3 (Mods section) as two rounds, or one? [Two, smaller and easier to test.]
 12. Island template box size. [3 x 3 chunks around the island, y 96 to 191.]
