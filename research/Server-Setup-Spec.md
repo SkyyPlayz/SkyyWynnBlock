@@ -40,7 +40,7 @@ SkyyMenu is missing, nothing changes: the mod still reads its file and its admin
 (for example "Bank ON - Bazaar ON - Auction House OFF - NPC shops ON"). Click a mod -> its settings in tabs: ON/OFF buttons, number and
 text boxes with a Set button, choice buttons, item lists, and a Default button on every row. Risky changes (money, penalties, caps) ask
 "Change X from A to B?" first. Every change is logged (who, when, old -> new) and can be undone from the log. Each mod's file keeps its
-last 20 versions for restore. A mod's whole setup can be exported as a code (and a file) and imported on another world. A search box on
+last 10 versions for restore. LOCKED 2026-09-25 (Skyy). Was: 20. A mod's whole setup can be exported as a code (and a file) and imported on another world. A search box on
 the list finds a setting or an editor by name ("warps", "shops", "interest") across every set-up mod.
 
 **What still needs files or vanilla commands (known, tracked gaps):**
@@ -225,7 +225,7 @@ button). `who` is the admin's `java.util.UUID`, `name` their username, `confirm`
 | `reload` | `UUID who, String name` | R (re-reads the files after hand edits; every difference is logged `via=file`) |
 | `export` | `String scope` (`changed` = only values that differ from the default, `all`) | `String` code (1.4.7), `null` if unreadable |
 | `import` | `String code, UUID who, String name, String mode` (`preview` / `apply`) | R; message = the change list |
-| `versions` | - | `String[]` newest first, each `id \t file \t time \t who \t summary`, max 20 per file (1.4.5: every version belongs to one file) |
+| `versions` | - | `String[]` newest first, each `id \t file \t time \t who \t summary`, max 10 per file (1.4.5: every version belongs to one file). LOCKED 2026-09-25 (Skyy). Was: 20. |
 | `restore` | `String id, UUID who, String name, String mode` | R; restores only the one file the id names; preview message = the change list |
 | `log` | `Integer max` (1-200) | `String[]` newest first, each `time \t name \t uuid \t via \t key \t old \t new \t status` (table ops use the 1.4.6 table form) |
 | `status` | - | `String[] { state, message }`, state = `ok`, `unreadable`, `unsaved`, `restart` (changes wait for a restart) |
@@ -263,7 +263,7 @@ ROWS = [  # (key, label, cat, type, default, min, max, opts, unit, flags, help, 
   ("part.bazaar", "Bazaar", "parts", "bool", "true", "", "", "", "", "live,part,danger",
    "Off: /bazaar says it is turned off on this server. Prices and files are kept.", "field:Parts.BAZAAR@config.properties:part.bazaar"),
 ]
-CFG.emit(pool, PKG, MOD="SkyyEconomy", TITLE="Economy", NODE="skyyeconomy.admin", CATS=[...], ROWS=ROWS, RELOAD="EcoCfg.reloadAll", KEEP=20)
+CFG.emit(pool, PKG, MOD="SkyyEconomy", TITLE="Economy", NODE="skyyeconomy.admin", CATS=[...], ROWS=ROWS, RELOAD="EcoCfg.reloadAll", KEEP=10)
 ```
 
 Generated classes (added in dependency order, fields before methods, no inner classes, no lambdas, no String switch: a key is found with a
@@ -336,7 +336,7 @@ Owners keep editing files by hand, so the kit changes **only the line of the key
 Before every write the kit copies the current file to `Skyy_<Mod>/config-history/<fileId>.<yyyyMMdd-HHmmss-SSS>.bak` (skipped when it
 equals the newest copy of that file), where `<fileId>` is the file's path under `mods/` with `/` replaced by `~`
 (`Skyy_SkyyBank~config.properties`), and appends `id \t file \t time \t who \t summary` to `config-history/index.log`, with
-`id = <fileId>#<yyyyMMdd-HHmmss-SSS>`. It keeps the newest **20** per file `[SKYY?]`.
+`id = <fileId>#<yyyyMMdd-HHmmss-SSS>`. It keeps the newest **10** per file. LOCKED 2026-09-25 (Skyy). Was: 20. `tools/skyycfg.py` still defaults `KEEP=20`. A build that passes `KEEP=20`, or omits `KEEP`, still keeps 20 until that call uses 10.
 **A version belongs to exactly one file, and `restore` acts on that one file only.** The mod's other files stay as they are (SkyyEconomy
 has four). One change that touches several files (an import can touch all four SkyyEconomy files) makes one version per touched file with
 the same time stamp and summary, so the History view can show them side by side.
@@ -1005,7 +1005,7 @@ planned there (`SkyyExploration-Plan.md`).
 | Someone takes all player commands away by accident | SkyyRanks always keeps `hytale:Adventurer`, never edits non-`skyy:` groups or op membership, and confirms `*`/admin grants. |
 | An import from another server breaks this one | Checksum, mod name, every value validated, all or nothing, preview first, a version saved first. |
 | A part switched off locks player value away | Rule 3 in section 3 (withdraw and claims keep working). |
-| Log grows forever | `config-changes.log` rotates at 1 MB, keeps 3; history keeps 20 copies per file. |
+| Log grows forever | `config-changes.log` rotates at 1 MB, keeps 3; history keeps 10 copies per file. LOCKED 2026-09-25 (Skyy). Was: 20. `tools/skyycfg.py` still defaults `KEEP=20`. |
 | Restart-only values look applied | `RESTART` tag on the row, amber status, and "`<k>` wait for a restart" on the Mods list until the next start (the mod compares file vs running values at start). |
 | A value changed elsewhere while the page is open | Shown at the next click (no periodic updates, by rule); every set answers with the value actually stored. |
 
@@ -1055,7 +1055,7 @@ c. Line-preserving write: comments, blank lines and key order unchanged; a `#key
    header; a non-ASCII value is escaped and reads back the same with both an ISO-8859-1 and a UTF-8 reader.
 d. Hand edit between two sets (change the file's mtime) -> both the hand edit and the new value survive; the log has `via=file`.
 e. Unreadable file (a folder with the file's name, or an exclusive lock) -> `error`, file untouched byte for byte, one warning.
-f. History: 25 changes -> 20 copies left; `restore` preview lists the right differences; apply makes a new version; undo of that works.
+f. History: 25 changes -> 10 copies left; `restore` preview lists the right differences; apply makes a new version; undo of that works. LOCKED 2026-09-25 (Skyy). Was: 20 copies.
    With two files: changes to both -> `versions` names the file on every entry; restoring a version of file 1 leaves file 2 byte for byte.
 g. Import: bad checksum refused; wrong mod refused (except the SkyyEconomy legacy names); one bad value -> nothing applied; unknown key skipped
    and listed.
@@ -1119,7 +1119,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 
 1. LOCKED 2026-09-25 (Skyy): Who sees Server Setup? Ops only, through the node `skyymenu.modconfig`, which staff ranks can be given. That was already the default.
 2. LOCKED 2026-09-25 (Skyy): Which changes ask for a confirm? Money, penalties, rates, caps, curves, switching a part off, imports, restores, undos. That was already the default. [Only rows marked danger: money, penalties, rates, caps, curves, switching a part OFF, pausing the auction house, raising the auction purchase-confirm thresholds; plus imports, restores, undos, removes.]
-3. How many old versions of each config file to keep? [20.]
+3. LOCKED 2026-09-25 (Skyy): How many old versions of each config file to keep? 10. Was: 20. `tools/skyycfg.py` still defaults `KEEP=20`.
 4. When a part is switched off, can players still take out what is theirs (bank withdraw, auction claims and cancels)? [Yes.]
 5. When the bank comes back on, is the off time paid as interest? [No back-pay.]
 6. NPC shops: buy and sell-back per item, infinite stock by default, optional limited stock with a restock timer? [Yes, as described in 5.2.]

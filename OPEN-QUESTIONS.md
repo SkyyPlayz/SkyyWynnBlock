@@ -124,7 +124,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 ## In-game server setup (`research/Server-Setup-Spec.md` section 9)
 1. LOCKED 2026-09-25 (Skyy): who sees Server Setup is ops only. The node skyymenu.modconfig can be given to staff. [ops only, already the default]
 2. LOCKED 2026-09-25 (Skyy): which changes ask for a confirm are money, penalties, rates, caps, curves, switching a part off, imports, restores, undos. [already the default]
-3. How many old versions of each config file to keep? [20]
+3. LOCKED 2026-09-25 (Skyy): old config file versions kept is 10. Was: 20. [10; skyycfg still defaults KEEP=20]
 4. When a part is off, can players still take out what is theirs (bank withdraw, auction claims)? [yes]
 5. Bank interest for the time the bank was off? [no back-pay]
 6. NPC shops: buy + sell-back per item, infinite stock by default, optional limited stock + restock timer? [yes]
