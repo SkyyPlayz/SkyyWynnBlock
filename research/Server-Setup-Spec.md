@@ -1118,8 +1118,7 @@ j. **The real effect, not only the echo.** A test config class with `public stat
 ## 9. Open questions for Skyy (the build uses the default in brackets)
 
 1. LOCKED 2026-09-25 (Skyy): Who sees Server Setup? Ops only, through the node `skyymenu.modconfig`, which staff ranks can be given. That was already the default.
-2. Which changes ask for a confirm? [Only rows marked danger: money, penalties, rates, caps, curves, switching a part OFF, pausing the
-   auction house, raising the auction purchase-confirm thresholds; plus imports, restores, undos, removes.]
+2. LOCKED 2026-09-25 (Skyy): Which changes ask for a confirm? Money, penalties, rates, caps, curves, switching a part off, imports, restores, undos. That was already the default. [Only rows marked danger: money, penalties, rates, caps, curves, switching a part OFF, pausing the auction house, raising the auction purchase-confirm thresholds; plus imports, restores, undos, removes.]
 3. How many old versions of each config file to keep? [20.]
 4. When a part is switched off, can players still take out what is theirs (bank withdraw, auction claims and cancels)? [Yes.]
 5. When the bank comes back on, is the off time paid as interest? [No back-pay.]
