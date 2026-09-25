@@ -394,7 +394,7 @@ to the vault mod as a future follow-up, but out of scope for this file per the t
 | `tradeDistance` | `9` | Section 6; `0` disables the live re-check. |
 | `tradeExpirySeconds` | `60` | Section 7. |
 | `tradeCooldownSeconds` | `10` | Section 7. |
-| `tradeSlotsPerSide` | `16` | Escrow container size per player. |
+| `tradeSlotsPerSide` | `16` | Escrow container size per player. LOCKED 2026-09-25 (Skyy): 16 slots, a 4x4 grid. |
 | `tradeCountdownSeconds` | `3` | Section 9. |
 | `tradeCoinsAllowed` | `true` | Section 13. |
 | `tradeMaxCoins` | `0` (no cap) | Section 13. LOCKED 2026-09-25 (Skyy): flat server number. `0` = no cap. |
@@ -457,7 +457,6 @@ docstring already explains for 0.1.1 from 0.1):
 1. LOCKED 2026-09-25 (Skyy): the 3 s countdown after both click Ready is the confirm. Finishing it uninterrupted executes the trade. There is no extra click. That was already the default.
 2. LOCKED 2026-09-25 (Skyy): `tradeMaxCoins` stays a flat server-wide number. `0` means no cap. That was already the default.
 3. LOCKED 2026-09-25 (Skyy): taking damage does not cancel the trade. Trades survive hits. `tradeCancelOnDamage` defaults to `false`. Was: `true`. SkyyEssentials 0.1.4 still defaults the row and `config.properties` to `true`. A file already on `true` keeps cancel-on-damage until that line is set to `false`.
-4. `tradeSlotsPerSide=16` (a 4x4 grid) - big enough for a normal trade without inviting "dump your whole inventory" abuse, but Hypixel's own
-   window reads as noticeably bigger (multiple rows). Keep 16, or go bigger (e.g. 27, a double-chest-row shape)? **[default: 16]**
+4. LOCKED 2026-09-25 (Skyy): each side of a trade has 16 slots, a 4x4 grid. That was already the default.
 5. Should a completed trade generate any server-wide or party chat line (e.g. for a guild/party to see "so-and-so traded with so-and-so"),
    or stay entirely private between the two participants the way Hypixel's own trade is? **[default: fully private, log-only]**
