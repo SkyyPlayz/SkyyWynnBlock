@@ -182,7 +182,7 @@ Admin commands: section 8.
 
 ### 4.2 Who may trade
 - **Same-profile self-buy is forbidden. A different profile on the same account may buy the listing.** LOCKED 2026-09-25 (Skyy). Was: refuse every buy where `buyer.uuid == seller.uuid` (`sameAccountBuy=false`). SkyyAuctions 0.1.1 still refuses that uuid match unless `sameAccountBuy=true`.
-- **Creative mode** (`blockCreative=true`): players whose game mode is Creative can browse and claim, but not create listings or buy. Creative can spawn items. Admins get no bypass. The check runs at click time.
+- **Creative mode** (`blockCreative=true`): players whose game mode is Creative can browse and claim, but not create listings or buy. Creative can spawn items. Admins get no bypass. The check runs at click time. LOCKED 2026-09-25 (Skyy).
 - **Admins** (`skyyauctions.admin`) use the admin commands. In the market they follow every player rule: fees, limits, no self-buy.
 - **`market:deny:<uuid>`:** a bridge String reason. When it is present, that player's active profile may browse but not list or buy, and the page shows the reason. It is empty by default and nothing sets it yet. It is the hook for future Ironman / Stranded-style profile modes (Hypixel blocks those profiles from its Auction House, VERIFIED).
 - **Paused market** (`paused=true` or `/ahadmin pause`): no new listings or buys. Cancel and claims still work. A banner reads "The Auction House is paused by an admin."
@@ -712,7 +712,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 2. **Durations.** LOCKED 2026-09-25 (Skyy): presets stay 1h, 6h, 12h, 24h and 48h. Default is 24h. The 48h option costs double the normal listing fee (2% / 4% / 5% on the same price tiers as the 1% / 2% / 2.5% listing fee). 1h, 6h, 12h and 24h still add their flat duration fees. SkyyAuctions 0.1.1 still adds a flat 1,200 coins for 48h. The loader's 14-day ceiling stays a safety cap if a custom preset is longer.
 3. **Bazaar items on the AH.** LOCKED 2026-09-25 (Skyy): Bazaar commodities stay refused on the Auction House (`bazaarItemsAllowed=false`). That was already the default.
 4. **One account, several profiles.** LOCKED 2026-09-25 (Skyy): buying your own listing from a different profile is allowed. Same-profile self-buy stays forbidden. Was: never, even from another profile. SkyyAuctions 0.1.1 still refuses the other profile unless `sameAccountBuy=true`.
-5. **Creative players.** Browse and claim only? [yes]
+5. **Creative players.** LOCKED 2026-09-25 (Skyy): Creative players browse and claim only. They cannot list or buy. That was already the default (`blockCreative=true`).
 6. **Listing cap.** 14 per profile, with no rank or permission bonus (Hypixel's only bonus is co-op size, which we do not have). [14]
 7. **Confirm threshold.** Should buys at or above this need a second click? [10,000 coins]
 8. **Cancel keeps the fee** (Hypixel). [kept]

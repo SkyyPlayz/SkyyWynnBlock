@@ -89,7 +89,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 2. LOCKED 2026-09-25 (Skyy): durations stay 1h / 6h / 12h / 24h / 48h, default 24h. The 48h option costs double the normal listing fee. [0.1.1 still adds a flat 1,200 coins on 48h]
 3. LOCKED 2026-09-25 (Skyy): Bazaar items stay refused on the AH. [refused, already the default]
 4. LOCKED 2026-09-25 (Skyy): a different profile may buy your listing. The same profile may not. Was: never, even from another profile. [0.1.1 still refuses the other profile unless sameAccountBuy=true]
-5. Creative players: browse and claim only? [yes]
+5. LOCKED 2026-09-25 (Skyy): Creative players browse and claim only. [yes, already the default]
 6. 14 listings per profile? [14]
 7. Second click for buys of 10,000 coins or more? [10,000]
 8. Cancelling keeps the fee (Hypixel)? [kept]
