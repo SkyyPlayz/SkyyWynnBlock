@@ -105,7 +105,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 ## /trade (`research/Trade-Spec.md` section 20)
 1. LOCKED 2026-09-25 (Skyy): the 3 s countdown after both click Ready is the confirm. There is no extra click. [yes, already the default]
 2. LOCKED 2026-09-25 (Skyy): max coins per trade is a flat server number. 0 means no cap. [flat, 0 = no cap, already the default]
-3. Taking damage cancels the trade? [yes]
+3. LOCKED 2026-09-25 (Skyy): taking damage does not cancel the trade. Trades survive hits. [no; 0.1.4 still defaults tradeCancelOnDamage to true]
 4. 16 slots per side (4x4)? Bigger? [16]
 5. Trades stay private (no chat line to party/guild)? [private]
 
