@@ -287,7 +287,9 @@ Wiki amounts are research. They are not our numbers.
 
 ### Accessory powers
 
-The power system stays. You pick one power. More power makes that power's stats bigger.
+The power system stays. SkyBlock style (change note 23).
+
+Each accessory has its own buffs. It also adds a flat Accessory Power amount by rarity, from +10 to +25. The exact table is not set. Total Accessory Power is the sum across equipped accessories. You pick one profile (Tank, Balance, Slayer, and the Combat 15 ladder). That profile's stats scale from the total. This score is not the spell stat Magical Power.
 
 Every starter grants a little Health and Defense. That baseline is the same on each of these. Powers use flat mana, not Intelligence and not mana %.
 
@@ -327,11 +329,11 @@ Combat-gated powers mirror those starter themes. They are more extreme. They use
 
 Starters and the Combat 15 ladder are in the decided section (change notes 20–22). Fortress, Harmony, Glass Cannon, Fortune, Blitz, and Arcane are Keep. Hypixel names Commando, Disciplined, Inspired, Ominous, and Prepared are scrap.
 
-No Power is pending captain. Stone powers are not locked. Whether Magical Power joins enrichments or tuning is not locked. Hypixel name for the bag score: Accessory Power. Hypixel's older name for that score was Magical Power. Our spell stat Magical Power is not that score. A stone power can also have a unique bonus that does not grow with power. Numbers here are the wiki's stats at 250 Accessory Power, plus that unique bonus. They are SkyBlock facts. They are not a SkyWynn lock. A SkyBlock Intelligence line on a power is flat mana. Not an Intelligence ID. Not mana %.
+No Power is pending. It is only an optional profile that grants no profile stats. Accessories still give their own buffs and still add Accessory Power. Keep vs scrap is not decided. Stone powers are not locked. Whether Magical Power joins enrichments or tuning is not locked. Hypixel name for the bag score: Accessory Power. Hypixel's older name for that score was Magical Power. Our spell stat Magical Power is not that score. A stone power can also have a unique bonus that does not grow with power. Numbers here are the wiki's stats at 250 Accessory Power, plus that unique bonus. They are SkyBlock facts. They are not a SkyWynn lock. A SkyBlock Intelligence line on a power is flat mana. Not an Intelligence ID. Not mana %.
 
 | Stat | Game | What it does | Decision |
 |---|---|---|---|
-| No Power | SB | Pending captain. A selectable option that applies no power stats. Not locked. | |
+| No Power | SB | Pending. Optional profile only. Grants no profile stats. Accessories still give their own buffs and still add Accessory Power. Keep vs scrap is not decided. | |
 | Forceful | SB | Stone: Acacia Birdhouse. Needs Combat 20. At 250: +46.28 Crit Damage, +173.56 Strength, +16.2 Health. Unique bonus: +4 Ferocity. Not locked. | |
 | Bloody | SB | Stone: Beating Heart. Needs Combat 20. At 250: +104.13 Crit Damage, +104.13 Strength, +34.71 flat mana. Unique bonus: +10 Attack Speed. | |
 | Bubba | SB | Stone: Bubba Blister. Needs Combat 25. At 250: −92.56 Defense, +48.6 Health, +104.13 Crit Damage, +7.87 True Defense, +46.28 Strength, +17.36 Attack Speed, +9.26 Crit Chance. Unique bonus: +2 Combat Wisdom. | |

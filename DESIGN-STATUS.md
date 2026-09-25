@@ -4,7 +4,7 @@ A plain-language snapshot for planning sessions. SkyWynn is a Hytale server pack
 collections, bags, bazaar, accessories) with Wynncraft (classes, a chain of zone islands, quests, dungeons). It is built as standalone
 "Skyy" mods. Goal (Skyy): 100% usable in solo and private multiplayer worlds, and ready for anyone to run a server with.
 
-**BUILDER / STATUS (2026-09-25):** gear themes through Magical Power and the Combat 15 ladder are locked enough to implement. Still open: No Power, stone powers, tuning, Wynn Major IDs, accessory-power number curves, Magical Power on enrichments or tuning, and later content (pets, fishing, hunting). Full note is at the top of `HANDOFF.md` and `SkyyGear-Plan.md`.
+**BUILDER / STATUS (2026-09-25):** gear themes through Magical Power and the Combat 15 ladder are locked enough to implement. Accessory Power: each accessory has its own buffs and adds flat +10 to +25 by rarity (exact table not set). Total is the sum. The selected profile scales from that total. Still open: No Power (empty profile only, Keep vs scrap not decided), stone powers, tuning, Wynn Major IDs, accessory-power number curves, Magical Power on enrichments or tuning, and later content (pets, fishing, hunting). Full note is at the top of `HANDOFF.md` and `SkyyGear-Plan.md`.
 
 Where the detail lives: `HANDOFF.md` (the locked decisions + current state), `SkyWynn-Decisions.md`, `SkyWynn-Master-Plan.md`,
 the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-party mods), `TEST-CHECKLIST.md`.

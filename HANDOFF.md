@@ -12,13 +12,15 @@
 - Accessory craft ladder (change note 17). Enrichments (change note 18). **Ferocity** enchant cap 300, total cap 600 (change note 20).
 - Starters: Tank, Balance, Slayer, Lucky, Fast, Magical.
 - Combat 15: Fortress, Harmony, Glass Cannon, Fortune, Blitz, Arcane. Buffs and debuffs. Amounts scale with Accessory Power. Exact curves are not locked.
+- Accessory Power model (change note 23): each accessory has its own buffs and adds flat +10 to +25 Accessory Power by rarity. Exact table is not set. Total is the sum of equipped accessories. The selected profile scales from that total.
 
 **STILL OPEN.** Do not build these as if they were locked.
 
-- No Power option.
+- No Power. Pending Keep vs scrap. If kept, it is only an empty profile. Accessories still give their own buffs and still add Accessory Power.
 - Stone accessory powers.
 - Tuning points table.
 - Wynn Major IDs.
+- Exact Accessory Power amounts per rarity. The range +10 to +25 is locked. The table is not.
 - Exact numeric curves for accessory powers.
 - Magical Power on enrichments or tuning.
 - Fortress extra debuff, if any. Do not add one until Skyy picks it.
@@ -491,3 +493,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-25: Combat 15 power ladder, docs only (Decisions change note 21, SkyyGear-Plan.md locks 91–101, row 6.51). Combat-gated powers mirror starter themes and are more extreme. Buffs and debuffs. Amounts scale with Accessory Power. Glass Cannon is Keep: −Health, −Defense, much more Strength and Crit Damage, solid Crit Chance. The other five were drafts at this line. Confirmed later the same day (change note 22). Scrap Hypixel names: Commando, Disciplined, Inspired, Ominous, Prepared. No Power and stone powers stay pending. Not in any jar.
 - 2026-09-25: Magical Power and Combat 15 confirm, docs only (Decisions change note 22, SkyyGear-Plan.md locks 102–110, row 6.52). Magical Power is the spell-damage stat. Strength is melee or hit damage. Mage staff melee uses Strength. Spells use Magical Power. It rolls on weapons, armor, Equipment, and accessories. It is not the bag score. Starter Magical also boosts it. Keep: Fortress, Harmony, Fortune, Blitz, Arcane. Fortune is much higher Crit Chance, good Crit Damage, slight Strength, −Health, −Defense. Blitz is high Speed and Attack Speed, −Health, −Defense. Arcane boosts Magical Power more, −Defense, −Strength, plus mana and mana regen. Harmony does not include Magical Power. Fortress extra debuff is optional. Whether Magical Power joins enrichments or tuning is open. Not in any jar.
 - 2026-09-25: Builder status, docs only. Top of this file and `SkyyGear-Plan.md`. Locked themes are ready to implement. Still open: No Power, stone powers, tuning, Wynn Major IDs, accessory-power number curves, Magical Power on enrichments or tuning, Fortress extra debuff, and later content (pets, fishing, hunting). Not in any jar.
+- 2026-09-25: Accessory Power model, docs only (Decisions change note 23, SkyyGear-Plan.md locks 111–115, row 6.53). Each accessory has its own buffs and adds flat +10 to +25 Accessory Power by rarity. Exact table is not set. Total is the sum of equipped accessories. The selected profile scales from that total. No Power is pending. If kept, it is only an empty profile. Accessories still give their own buffs and still add Accessory Power. Not in any jar.

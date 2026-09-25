@@ -13,8 +13,13 @@
 
 **Lock (2026-09-25, change note 22, `SkyyGear-Plan.md` locks 102–110):** Magical Power is a spell-damage stat. Strength boosts a melee or hit. A Mage can melee with a staff and also cast. Staff melee uses Strength. Spells use Magical Power. It rolls on weapons, armor, Equipment, and accessories. It is not the bag's Accessory Power score. Hypixel's older name for that score was also Magical Power. Do not mix them. Starter Magical adds flat mana, mana regen, and Magical Power. Combat 15 Keep: Fortress (large Health and Defense; a Speed or Strength debuff is optional), Harmony (larger even spread of Health, Defense, Speed, Strength, flat mana, Crit Chance, and Crit Damage; Magical Power is not in that spread), Fortune (much higher Crit Chance, good Crit Damage, slight Strength, −Health, −Defense), Blitz (high Speed and Attack Speed, −Health, −Defense), Arcane (more Magical Power, −Defense, −Strength, flat mana and mana regen). Whether Magical Power joins enrichments or tuning is open.
 
+**Lock (2026-09-25, change note 23, `SkyyGear-Plan.md` locks 111–115):** SkyBlock-style Accessory Power. Each accessory has its own buffs and also adds flat Accessory Power by rarity, from +10 to +25. The exact table is not set. The 3/5/8/12/16 table below is the old draft, not this lock. Total Accessory Power is the sum across equipped accessories. The selected profile (Tank, Balance, Slayer, and the Combat 15 ladder) scales from that total. No Power, if kept, is only an empty profile. Accessories still give their own buffs and still add Accessory Power. Keep vs scrap for No Power is not decided.
+
 ## 1. Accessory Power (AP)
-Each accessory in the bag gives AP by rarity; only the best item per family counts (the bag already hands back lower tiers).
+
+The numbers in this section are the old draft. Change note 23 is the lock: flat +10 to +25 by rarity, exact table not set, total is the sum of equipped accessories.
+
+Each accessory in the bag gives AP by rarity; only the best item per family counts (the bag already hands back lower tiers). That best-per-family line is part of this draft, not change note 23.
 
 | Rarity | Common | Uncommon | Rare | Epic | Legendary |
 |---|---|---|---|---|---|
