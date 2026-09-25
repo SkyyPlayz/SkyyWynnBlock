@@ -665,7 +665,7 @@ bindings name the file key). Categories: `parts, coins, bank, bazaar, auctions, 
 | bazaar | `bazaar.impactBase` | dec | 1.10 | 1.0-2.0 | L, A, D | **make configurable**: the price-impact exponent base |
 | bazaar | `bazaar.resetDemand` | action | - | - | D | "Reset all prices to base" (= `/bazaaradmin reset all`) |
 | auctions | `ah.listingFee` | text | `0:1.0,10000000:2.0,100000000:2.5` | tiers `from:percent` | L, D | AH spec 3. LOCKED 2026-09-25: 1% / 2% / 2.5% |
-| auctions | `ah.durations` / `ah.defaultDuration` | text / choice | presets / `24h` | max 8, cap 14 d | L | choice list = the current presets. Fee half LOCKED 2026-09-25 (20 / 45 / 100 / 350 / 1,200). Lengths still AH spec 12 Q2 |
+| auctions | `ah.durations` / `ah.defaultDuration` | text / choice | presets / `24h` | max 8, cap 14 d | L | LOCKED 2026-09-25: 1h / 6h / 12h / 24h / 48h, default 24h. Fees 20 / 45 / 100 / 350. 48h pays 2x `ah.listingFee` |
 | auctions | `ah.claimTaxPercent` / `ah.claimTaxFrom` | dec % / int | 1.0 / 1,000,000 | 0-50 / 0-1e15 | L, D | stored at sale time, never retroactive. LOCKED 2026-09-25: 1% above 1,000,000 |
 | auctions | `ah.minPrice` / `ah.maxPrice` | int coins | 1 / 5e10 | 1-1e15 | L | |
 | auctions | `ah.maxListings` / `ah.maxListingsServer` | int | 14 / 5000 | 1-100 / 100-100000 | L (server cap A) | |
@@ -679,7 +679,7 @@ bindings name the file key). Categories: `parts, coins, bank, bazaar, auctions, 
 | shops | `shops.roles` | text | curated role list | - | L | 0.2 |
 | shops | `shops.defaultRestockMinutes` | int min | 60 | 1-10080 | L | 0.2 |
 
-**LOCKED 2026-09-25 (Skyy), Auction House fees.** The three fee rows above stay the Hypixel defaults and are the live tune: listing 1% / 2% / 2.5%, duration fees 20 to 1,200, and 1% tax above 1,000,000. Skyy can change any of those numbers in Server Setup once SkyyEconomy is up. A tax edit applies to later sales only. SkyyAuctions 0.1.1 still reads `config.properties` and has no Server Setup page yet.
+**LOCKED 2026-09-25 (Skyy), Auction House fees.** The fee rows above stay the Hypixel defaults and are the live tune: listing 1% / 2% / 2.5%, duration fees 20 / 45 / 100 / 350 on 1h / 6h / 12h / 24h, and 1% tax above 1,000,000. Skyy can change any of those numbers in Server Setup once SkyyEconomy is up. A tax edit applies to later sales only. SkyyAuctions 0.1.1 still reads `config.properties` and has no Server Setup page yet. **LOCKED 2026-09-25 (Skyy), durations:** presets stay 1h / 6h / 12h / 24h / 48h, default 24h. A 48h listing pays twice the listing fee. 0.1.1 still adds a flat 1,200 coins for 48h.
 
 ### 4.2 SkyyRolls [0.1.4] (later the gear mod)
 `cost.Junk` 100, `cost.Common` 250, `cost.Uncommon` 500, `cost.Rare` 1000, `cost.Epic` 2500, `cost.Legendary` 5000, `cost.default` 1000 (int
