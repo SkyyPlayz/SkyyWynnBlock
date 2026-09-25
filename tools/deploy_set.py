@@ -18,12 +18,12 @@ WORLD = "HUD mod"
 SET = [
     ("SkyyHud", "0.3.9"), ("SkyySacks", "0.7.5"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.1"), ("SkyyParty", "0.1.3"),
     ("SkyyBank", "0.1.3"), ("SkyyIslands", "0.5"), ("SkyyBazaar", "0.1.2"), ("SkyyRolls", "0.1.4"), ("SkyySkills", "0.4.2"),
-    ("SkyyAccessories", "0.4.3"), ("SkyyClasses", "0.1.4"), ("SkyyMenu", "0.1.3"), ("SkyyEssentials", "0.1.1"), ("SkyyProfiles", "0.1"),
+    ("SkyyAccessories", "0.4.3"), ("SkyyClasses", "0.1.4"), ("SkyyMenu", "0.1.3"), ("SkyyEssentials", "0.1.2"), ("SkyyProfiles", "0.1"),
     ("SkyyCooking", "0.1.1"), ("SkyyTrees", "0.2.1"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
-    ("SkyyExploration", "0.1"),
+    ("SkyyExploration", "0.2"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
     ("SkyyGuilds", "0.1.1"),
