@@ -162,7 +162,7 @@ Admin commands: section 8.
 | `minPrice` / `maxPrice` | `1` / `50000000000` | Whole coins. The max is a sanity cap (UNVERIFIED Hypixel number). |
 | `maxListings` | `14` | Per **profile**. A slot counts from Create until the seller has claimed that listing's coins or item (Hypixel rule: only claiming or cancelling frees a slot; a cancel with an immediate return frees it at once). LOCKED 2026-09-25 (Skyy): 14 is the default cap. Progression rewards or rank perks can raise it in game later. SkyyAuctions 0.1.1 is a flat 14 with no perk raise yet. |
 | `maxListingsServer` | `5000` | Keeps load time and page filtering bounded. |
-| `graceSeconds` | `20` | Nobody can buy a new listing for 20 s (Hypixel, VERIFIED). In practice it gives the seller time to cancel a mistyped price before a sniper takes it. |
+| `graceSeconds` | `20` | Nobody can buy a new listing for 20 s (Hypixel, VERIFIED). In practice it gives the seller time to cancel a mistyped price before a sniper takes it. LOCKED 2026-09-25 (Skyy). |
 | `confirmAbove` / `confirmSeconds` | `10000` / `10` | A buy at or above this price needs the confirm click, armed for 10 s. 10,000 = a new profile's starting purse. LOCKED 2026-09-25 (Skyy). |
 | `claimAllConfirmAbove` | `100000` | [Claim all] asks first when the coins owed are at or above this (2.5). `0` = never ask. Hypixel's nudge sits at about 100,000 (UNVERIFIED, one source). |
 | `cancelRefundsFee` | `false` | Hypixel keeps the fee (VERIFIED). LOCKED 2026-09-25 (Skyy). |
@@ -717,7 +717,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 7. **Confirm threshold.** LOCKED 2026-09-25 (Skyy): a buy of 10,000 coins or more needs a second click. That was already the default (`confirmAbove=10000`).
 8. **Cancel keeps the fee** (Hypixel). LOCKED 2026-09-25 (Skyy): cancelling a listing keeps the fee. That was already the default (`cancelRefundsFee=false`).
 9. **`/ah sell`.** LOCKED 2026-09-25 (Skyy): `/ah sell <price>` opens the pre-filled Create page for one click. That was already the default (`sellCommandOpensPage=true`).
-10. **Grace period.** How long should a new listing wait before anyone can buy it? [20 s]
+10. **Grace period.** LOCKED 2026-09-25 (Skyy): a new listing waits 20 seconds before anyone can buy it. That was already the default (`graceSeconds=20`).
 11. **Where `/ah` works.** Anywhere, or later only at an Auction Master NPC in the hub? On Hypixel, remote `/ah` is a Booster Cookie perk; this is from general knowledge, not in the research. [anywhere; the page id `SkyyAuctions` is ready for an NPC]
 12. **Late-game cutoff.** Which items leave both markets? Still open (DESIGN-STATUS question 11). [nothing blocked; the list and bridge are ready]
 13. **Bid auctions.** When, and with which rules (minimum raise, last-minute extension, 5% fee)? [later; Appendix A]

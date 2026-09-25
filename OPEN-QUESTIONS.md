@@ -94,7 +94,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 7. LOCKED 2026-09-25 (Skyy): a second click for buys of 10,000 coins or more. [10,000, already the default]
 8. LOCKED 2026-09-25 (Skyy): cancelling keeps the fee (Hypixel). [kept, already the default]
 9. LOCKED 2026-09-25 (Skyy): `/ah sell <price>` opens the pre-filled page for one click. [page, already the default]
-10. New listings wait 20 s before anyone can buy? [20 s]
+10. LOCKED 2026-09-25 (Skyy): new listings wait 20 s before anyone can buy. [20 s, already the default]
 11. `/ah` works anywhere, or later only at an Auction Master NPC in the hub? [anywhere]
 12. Late-game items that leave both markets? [none yet - the list is ready and empty]
 13. Bid auctions: when and with which rules? [later]
