@@ -52,6 +52,10 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
   (tools, weapons, armor), Farming, Campfire, Furnace, Tannery, Collections and a search box. Real benches also draw from bags.
 - Alchemy and Cooking are table-only (their bench accessories were retired); accessories bag with bench accessories and stat talismans.
 - Coins, a bank with interest (per profile), a bazaar, item rolls (reforge + stats, shown on the item).
+- Being built (beta round, 2026-09-24): an Auction House (Buy It Now only for now, Hypixel style), `/vault` (item storage shared by all
+  your profiles), a `/reforge` page, a Smithing bag (bars, leather, hides), guild admins + daily withdraw limits, island co-op members.
+- **SkyyEconomy (Skyy, 2026-09-24):** Coins, Bank, Bazaar and the Auction House become one mod in the next round; later NPC shops (set up
+  in game) and an item value / networth tool. `/trade` goes in SkyyEssentials. Plan: `SkyyEconomy-Plan.md`.
 
 **Social**
 - Parties (invite, kick, promote, party chat, a party page) and guilds (ranks, guild chat, guild bank, guild XP from members' skills,
@@ -65,9 +69,15 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
 - **Tree Feller** perk breaks logs sideways on the same height (Hytale already fells the tree once the base is gone).
 - **Double Jump** node in the Acrobatics tree (crouch in mid-air).
 - **Player Settings menu**: switch each kind of chat notification on or off.
-- **Bags**: smelted bars go in the Mining bag; all bag tabs always shown; bag sizes will come from collections.
+- **Bags**: a Smithing bag for bars, leather and hides (Skyy's beta call, replaces bars in the Mining bag); tree sap in the Foraging bag;
+  all bag tabs always shown; bag sizes will come from collections.
 - **Exploration backbones**: an island checklist and admin-placed discovery spots, so a server only has to add content.
 - **Gear (`SkyyGear-Plan.md`, locked 2026-09-24, not built):** every gear item has a level requirement and a rarity tier. Higher Smithing = higher smithing rarity = better odds of a higher-rarity craft. Higher rarity = better reforge rolls. Mobs drop unidentified weapons and armor. Combat armor and weapons copy Wynncraft. Gathering gear is SkyBlock-style farming and foraging sets (mining likely the same). Wardrobe + loadouts save and quick-swap a set. A loadout saves armor, the Equipment bar (necklace, cloak, ring, belt; working name Equipment, name not final), and the selected Accessory Power buff. Pets join once pets exist. Placeholders are fine; nothing on the inventory screen. Identify is a `/identify` menu for now and an NPC later. It costs coins, scaling with rarity and level (formula open). Mob drops can be any rarity. Some sets are drop-only and some are craft-only. Sets have set bonuses. Accessory Power: each accessory has its own buff and adds power; total power feeds one selectable buff (Warrior and Elementalist are examples; the full list and numbers are open). **Stats (change note 9):** the five Wynn skill points are not the gear sheet. Combat, defence, and mana are locked in `SkyyGear-Plan.md`. Fortune from the earlier mix was not re-opened. The catalog's next blank table is Movement. Class skill trees are Borderlands-style research (Borderlands 4), not designed. SkyyRolls 0.1.3 still shows rolls immediately. None of the identify step, the Equipment bar, set bonuses, or the selectable Power buff is in a jar.
+
+## Direction: everything editable in game (Skyy, 2026-09-24)
+Everything a server owner might change should be editable in game: SkyWynn Menu -> Mods (admins) -> click a mod -> its config page, plus
+editors for NPC shops, NPC quests, ranks and permissions, the island template and the market. Files stay and always match the game.
+Plan: `SkyWynn-Server-Setup-Plan.md`.
 
 ## Direction: our own content
 Eventually every mod in the pack is SkyWynn's own; third-party mods (crossbow tiers, saplings) are stopgaps. The gear line is locked in `SkyyGear-Plan.md` (2026-09-24): combat armor and weapons copy Wynncraft (unidentified drops, level + rarity on every piece), gathering armor is SkyBlock-style farming and foraging sets (mining likely the same), and Smithing level feeds smithing rarity. It still sits on the item rolls + tooltip system that works now. Reforging and powders remain later Smithing XP. We rebuild features ourselves rather than copying other authors' files.
