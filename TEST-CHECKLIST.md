@@ -852,3 +852,8 @@ Essentials 0.1.3, Exploration 0.2.1, Guilds 0.1.2, Vault 0.1.1, Rolls 0.1.5, Hud
 16. HUD: "Use my layout" makes a fresh player, or `/skyyhud reset`, get your layout. The "HUD editor" link opens the editor, and Back returns to Server Setup.
 17. Rolls: edit the cost table ("Rare"), and `/reforge` shows the new cost. Sacks: lower `bag.small`; it asks first and the cap applies.
 18. Profiles: with `maxProfiles` now 6, a 5th profile can be created. Lowering the value never deletes a profile.
+
+
+## HOTFIX SkyyAuctions 0.1.1 + SkyyEssentials 0.1.4, DEPLOYED 2026-09-25 05:42
+1. `/ah`: list a ROLLED weapon (`/rolls give mithril bow`), then Browse -> View it: no disconnect; the icon shows and the rolls are listed as text.
+2. [2P] `/trade`: offer a rolled weapon; the other player sees its icon without a disconnect, and hovering the slot shows its name + rolls.

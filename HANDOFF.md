@@ -120,6 +120,9 @@ Full rationale: `SkyWynn-Decisions.md` (rows 10.17–10.28 locked, plus the 2026
    Buttons are `TextButton #Id { Anchor: (...); Text: "..."; Style: TextButtonStyle(Default: (Background: #.., LabelStyle: (...)), Hovered: (...), Pressed: (...)); }` bound with `ev.addEventBinding(CustomUIEventBindingType.Activating, "#Id", EventData.of("a", "payload"))`; `handleDataEvent(ref, store, data)` receives JSON containing the payload (match with `data.indexOf("payload\"")`).
    Commas/colons inside inline `Text` are NOT proven to break anything (the crashes blamed on them were an `Anchow:` typo in the Sacks page); the Sacks page sanitizes `, : ; { } "` anyway. When an inline append fails, dump the page class's string constants first and read them for typos; `set("#Id.Text", v)` is safe for anything.
    **Never send a page update from a MouseEntered/MouseExited handler** — the client process crashes ("Collection was modified"). Click handlers may rebuild()/sendUpdate freely.
+   **Never put an ItemStack that may carry METADATA into an `ItemGridSlot`** (2026-09-25, SkyyAuctions 0.1 disconnect): the UI codec sends
+   metadata as a JSON object and the client fails with "Failed to convert JSON value (Object) to specified type (ClientItemMetadata)" and
+   disconnects. Use `new ItemGridSlot(new ItemStack(s.getItemId(), s.getQuantity()))` and show rolls/grades as text or via setName/setDescription.
    Because nothing depends on `.ui` files any more, **Reconnect is enough after a redeploy** (no client restart).
 
 **Data folders are stable across versions**: every mod stores under `<world>/mods/Skyy_<Mod>/` via `getDataDirectory().resolveSibling("Skyy_<Mod>")` (the default dir carries the version and would orphan data). **Cross-mod data** (no dependency): a JVM-global map in `System.getProperties().get("skyy.bridge")`; Coins writes `coins:<uuid>` -> Long, the HUD Coins widget reads it. **Page roots** are a Group with only Width/Height in the Anchor (the page system centres it).
@@ -152,14 +155,14 @@ game is open, leave it and tell Skyy it deploys as soon as the game is closed (n
 | SkyyAccessories | 0.4.4 | FIRST config file + Server Setup page (slots, talisman bonuses) |
 | SkyyClasses | 0.1.5 | Server Setup page + Settings switch (blocked-weapon chat) |
 | SkyyMenu | 0.3 | player Settings (/settings) + admin Server Setup (/modconfig); 0.1.3 menu entries |
-| SkyyEssentials | 0.1.3 | Server Setup page, warps editor (/warpadmin), world spawn rows, tpa timings, Settings switches; 0.1.2 /trade |
+| SkyyEssentials | 0.1.4 | HOTFIX 05:42: /trade offer grid without item metadata (rolled items would disconnect); 0.1.3 Server Setup page, warps editor, spawn rows, tpa timings, Settings switches; 0.1.2 /trade |
 | SkyyProfiles | 0.1.1 | Server Setup page; DEFAULT CAP 6 (an untouched maxProfiles=4 file became 6) |
 | SkyyCooking | 0.1.2 | Server Setup page (graded cooking part switch etc.) + Settings switches |
 | SkyyTrees | 0.2.2 | Server Setup page (node values, Dust, Feller) + Settings switches; 0.2.1 Feller same-Y, Double Jump node |
 | SkyyExploration | 0.2.1 | Server Setup page (+ stamina per level read from SkyySkills); 0.2 spots + checklist |
 | SkyyGuilds | 0.1.2 | Server Setup page, Settings switches (guild.online, guild.members, guild.chat); 0.1.1 Admin rank, daily limits |
 | SkyyVault | 0.1.1 | Server Setup page (pages, prices, after-switch wait) |
-| SkyyAuctions | 0.1 | (file only until SkyyEconomy) BIN auction house /ah |
+| SkyyAuctions | 0.1.1 | HOTFIX 05:42: item view no longer disconnects (grid without metadata); 0.1 BIN auction house /ah (file only until SkyyEconomy) |
 | SkyyRanks | 0.1 | ranks made in game (/rank, /rankadmin), chat prefix |
 | third-party (PACK.md) | More Crossbow Tiers, Saplings From Trees | same |
 Deploy rules: never go back to Trees 0.2 once 0.2.1+ has run, to Skills 0.4 once Exploration XP exists, or to Islands 0.5 (security hole);
@@ -450,3 +453,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-25: Skyy: the Mining tree's Mining Speed only adds breaking power (more damage per hit), so once a pick one-hits a block it does nothing - mining speed must make the pick SWING faster. Workflow skywynn-swing-speed: research whether/how a server can change a player's swing/interaction speed -> research/Swing-Speed-Spec.md (verdict) -> SkyyTrees 0.2.3 only if feasible; otherwise alternatives go to Skyy.
 - 2026-09-25: Skyy: an early Archer upgrade = crossbows stay LOADED when you scroll off and back; put it in the level-5 reward. No Archer class tree exists yet, so it becomes the ARCHERY skill's level-5 reward (SkyySkills 0.4.5, built from 0.4.4 after round 6). Workflow skywynn-crossbow-stays-loaded-spec: research + research/Crossbow-Loaded-Spec.md (verdict) first.
 - 2026-09-25 (Skyy in game, 22-mod set): SkyyVault 0.1.1 VERIFIED - /vault chest mode stores items (page 1 of 2), buying page 3 works. Request: Wynncraft-style page arrows inside the chest -> SkyyVault 0.1.2 (workflow skywynn-vault-page-arrows, research/Vault-Arrows-Spec.md). /coinsgive <amount> answered.
+- 2026-09-25 05:42: Skyy DISCONNECTED clicking View on their own listing in /ah: client log 'CustomUI Set command couldn't set value. Selector: #SkyyAhDGrid.Slots -> Failed to convert JSON value (Object) to specified type (ClientItemMetadata)'. Cause: an ItemStack WITH metadata (rolls) in an ItemGridSlot. Audited every ItemGridSlot in the newest scripts: only SkyyAuctions (item view) and SkyyEssentials (/trade offer grid) passed real stacks; Menu/HUD use fresh id stacks. HOTFIX SkyyAuctions 0.1.1 (tools/auctions_0_1_1_patch.py) + SkyyEssentials 0.1.4 (tools/essentials_0_1_4_patch.py; trade slots show a rolled item's name + description as the slot tooltip). New HANDOFF section 2 rule. Committed eebcb2b, deployed with the game closed (backup backups/deploy-20260925-0542). Essentials now uses patch scripts: later versions derive from 0.1.4.
