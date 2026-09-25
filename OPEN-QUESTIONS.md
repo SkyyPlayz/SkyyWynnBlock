@@ -22,6 +22,40 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - **Party combat XP:** members within 48 blocks in the same world get 50% of the killer's combat XP (the killer keeps 100%). [as written]
 - **Menu hover tooltips:** on by default; the book switch turns them off if the stuck tooltip after Esc still happens. Default off? [on]
 
+## Vault arrows (`research/Vault-Arrows-Spec.md`, live in SkyyVault 0.1.2)
+- The arrows sit in an extra 5th row, so all 36 slots stay free. If the 5-row chest doesn't fit your screen, switch Server Setup -> Vault ->
+  arrow layout to "Inside the page" (the arrows then take the bottom-left and bottom-right slots, Wynncraft-exact). [extra row]
+- Buying the next page from the gold arrow needs two clicks within 10 s (one shift-click can reach the server twice). [two clicks]
+- A plain click may only lift the arrow on your screen; the page then turns when you put it down. Shift-click always turns at once. [test]
+
+## Berserker, Priest, class kits (`research/Classes-Berserker-Priest-Spec.md` section 8, live in Classes 0.1.6 / Skills 0.4.4 / Profiles 0.1.2)
+- Priest heal: 25% of the damage to party members within 16 blocks, the Priest heals themself at 50% of that, max 10 HP per hit and 10 HP per
+  second per player; party only, not other players. [as written, all editable in Server Setup]
+- Divinity XP from healing others: 0.2 XP per HP, max 300 XP a minute (healing yourself pays no XP). [as written]
+- Heal chat lines on by default (at most one every 5 s; players can switch theirs off). [on]
+- **Mana:** vanilla max Mana is 0, so wand casts (25 Mana), spellbook casts (100) and the Mage staff summon (50) never work for a new
+  character - only the swings. Give Priests / Mages base Mana? [not yet]
+- **Priest weapons:** no wand or spellbook can be crafted and almost none drop - the kit's Wood Wand (never breaks) is the only way to get
+  one. Add recipes/drops now or wait for custom Priest weapons? [wait]
+- The vanilla Healing Totem (AoE +5 HP/s, endgame recipe): Priest, Shaman, or anyone? [anyone]
+- Root / Stoneskin wands and the Rekindle Embers spellbook count as Priest weapons. [yes]
+- Kits: into storage (not the hotbar), ~31 s after a new profile arrives (crash-safe), overflow waits for `/class kit`, Archer kit 64 arrows,
+  no new kit when an admin changes a profile's class. [as written]
+
+## Swing speed (`research/Swing-Speed-Spec.md`, live in SkyyTrees 0.2.3)
+- Mining Speed max +25% faster pickaxe swings (the engine allows up to +40% without re-timing the vanilla swing)? [+25%]
+- Chopping Speed gets the same for hatchets; Chopping Speed II renamed "Heavy Hatchet" (breaking power on wood). [yes]
+- Heavy Pick also on rock (helps early picks, which lost a little from the change)? [no, ore only]
+- Heavy Hatchet up to +100% so top hatchets cut a log in one hit? [no]
+- Faster hits on mobs with a pickaxe/hatchet are accepted (can't cheaply split mining from hitting). [yes]
+- A Farming sickle speed node later? Accessories/gear adding swing speed later? [not now]
+- One-time chat notice about the change + free respec. [yes]
+
+## Crossbows stay loaded (`research/Crossbow-Loaded-Spec.md`, SkyySkills 0.4.5 - building after round 6)
+- Archery level 5, Archer class only, crossbows only (not shortbows)? [yes]
+- Keep the load across teleports? [no - reload once after a teleport]
+- Keep the big-arrow ability meter too? Sound/chat hint when the bolts go back in? Personal /settings toggle? [no]
+
 ## Auction House (`research/Auction-House-Spec.md` section 12)
 1. Hypixel's fees for our smaller economy: listing 1% / 2% / 2.5%, duration fee 20-1,200, 1% tax above 1,000,000? [Hypixel's numbers]
 2. Durations 1h / 6h / 12h / 24h / 48h, default 24h - or up to 7-14 days? [up to 48h]

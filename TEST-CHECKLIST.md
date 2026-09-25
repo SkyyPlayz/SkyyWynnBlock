@@ -864,3 +864,41 @@ Essentials 0.1.3, Exploration 0.2.1, Guilds 0.1.2, Vault 0.1.1, Rolls 0.1.5, Hud
 2. Mods tile as op: all 22 mods, Essentials 0.1.4, Auctions 0.1.1; 'Admin only:' lines (Essentials /warpadmin, Party /partyadmin); one click on a set-up mod opens its Server Setup page.
 3. `/settings`: General shows the 3 guild switches; turning off Guild chat hides the friend's /gc lines.
 4. [2P] Non-op friend: no admin lines, no Server Setup book, `/modconfig` refused, `/settings` works.
+
+
+## SkyyTrees 0.2.3 - faster tool swings, DEPLOYED 2026-09-25 06:53 (backup backups/deploy-20260925-0653)
+1. Server log: "swing speed ready: 80 effects, pickaxe root = SkyyTrees, hatchet root = SkyyTrees", no errors naming Skyy_Tree_Swing.
+2. Adventure mode (creative breaks instantly). Buy Mining Speed 25 (Server Setup -> Trees -> Advanced 'Test: extra Dust / tokens' if needed,
+   set back to 0 after). Take an Adamantite / Mithril / Onyxium pickaxe (one-hits stone).
+3. Hold left-click on stone and flip Server Setup -> Trees -> 'Faster tool swings' OFF / ON (applies within 1 s): OFF ~2.9 swings/s,
+   ON ~3.6 swings/s. Clearest: temporarily set Mining MSpeed.per 0.016 (+40%) -> swings back to back; set it back to 0.01.
+4. Count: hold 10 s on stone -> ~28 blocks vanilla, ~35 at +25%, ~40 at +40%.
+5. `/tree swing` -> "tier 25 (+25% - a swing every 0.28 s)"; `/tree mining` -> "Now: +25% pickaxe swing speed".
+6. Chopping Speed + a Cobalt+ hatchet swings faster on logs; a sword swings at normal speed; a profile without the node is vanilla speed;
+   no status icon shows; no blocks pop back / rubber-banding; the one-time chat notice shows once.
+
+
+## Round 6 - Berserker, Priest, class kits (SkyyClasses 0.1.6 + SkyySkills 0.4.4 + SkyyProfiles 0.1.2), DEPLOYED 2026-09-25 07:11 (backup backups/deploy-20260925-0711)
+[2P] = needs a NON-op second player.
+1. Server log: all ready lines; SkyyClasses "class kits: N existing profiles marked"; SkyySkills "appended the Divinity section"; no config warnings. Existing profiles (Strawberry, Zucchini) get NO kit.
+2. Existing profile: `/skills` shows the same levels as before (relog, check again).
+3. `/profiles` -> Create new: 7 cards fit, Priest reads "AoE healer / support". Create a Priest: "kit on its way", then within ~35 s after arriving a "Class kit" popup + chat line and the Wood Wand in storage. Relog/restart: no second kit.
+4. Solo Priest: take fall damage, tap-hit a monster with the wand -> you heal ("[Classes] Heals: +N HP to you", max every 5 s, no XP for self-heal). A kill gives Divinity XP; `/skills` shows Divinity.
+5. [2P] Friend (non-op Warrior) in your party, hurt: wand-hit a monster within 16 blocks -> the friend heals ("Skyy healed you +N HP"), their HUD party bar rises, you get Divinity XP (~0.2 per HP). Friend at full health / 20+ blocks away / other world / not in party -> no heal.
+6. [2P] Friend: `/class kit` -> "Nothing is waiting"; `/classadmin kit`, `/classadmin info`, `/modconfig classes` refused or view-only; `/settings` -> Combat "healed by others" off hides the lines (heals still happen).
+7. Creative hits heal nothing; hits on players heal nothing.
+8. Berserker profile: battleaxe kit; axes/battleaxes/maces/clubs deal damage; a hatchet chops and hits; a wand is blocked ("Only Priests can use wands" + popup). `/skills stats fury`; a kill gives Fury XP.
+9. [2P] Party kill share: a Warrior kill gives you Divinity, your Priest kill gives the friend Swordsmanship.
+10. Server Setup -> Classes: 4 tabs; add a spellbook to the Priest kit; 'Use my hotbar' on the Archer kit with a sword asks first; heal share 50%; Priest heal OFF (asks) -> no heals; back ON. Skills has 3 Divinity rows.
+11. Full inventory + `/classadmin kit <you> archer` -> "did not fit ... /class kit"; make room, `/class kit` delivers; survives a relog.
+12. `/class` shows 7 cards; footer "Hatchets are tools."
+
+
+## SkyyVault 0.1.2 - page arrows inside the chest, DEPLOYED 2026-09-25 07:47 (backup backups/deploy-20260925-0747)
+1. `/vault` (chest mode): 5 rows with your inventory still visible; read every tooltip in the bottom row. If it doesn't fit: Server Setup -> Vault -> arrow layout "Inside the page".
+2. Click Next, then Prev. On an arrow try: plain click, drag to your inventory, shift-click, drop key, take half. Each time the page turns once, the arrow is back, and ~1 s later no arrow is in your inventory.
+3. Try to steal an arrow: drag it to hotbar / armour / a vault slot; Take All, Sort, Put All, Quick Stack; drop an item onto an arrow and a filler; spam Next 10x; Esc mid-drag. Then check mods/Skyy_SkyyVault/vault.log + server log for STRAY / RESCUE / "Failed to run task".
+4. Last page: click the gold arrow (chat asks), click again within 10 s -> coins taken once, new page opens. Wait 11 s between clicks -> it only asks again. Too few coins -> refused. At max pages -> grey "Last page".
+5. Switch profiles with the vault open: it closes; for 30 s the arrows show the wait message.
+6. Arrows off (Server Setup): 4 rows, shift-click and Take All still work. Creative library: searching "page"/"vault" lists no arrow items.
+7. [2P] Two players flip their own vaults at the same time with no cross-effects.
