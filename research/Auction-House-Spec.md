@@ -30,7 +30,7 @@
 
 **Who owns what:** the **profile** that listed an item owns the listing. Coins and returned items are claimed into that profile. Buyers pay from whichever profile is active.
 
-**Money:** Hypixel-like defaults, and all of them can be changed in `config.properties`:
+**Money:** LOCKED 2026-09-25: Hypixel fee defaults stay, and every fee value is a Server Setup row so it can be tuned live (SkyyEconomy auctions category). Until that menu ships, the same numbers live in `config.properties`:
 - listing fee 1% / 2% / 2.5% by price, plus a small fee for the duration;
 - 1% tax on proceeds above 1,000,000 coins;
 - 14 active listings per profile, 1 to 50 billion coins, 1 to 48 hours.
@@ -154,11 +154,11 @@ Admin commands: section 8.
 
 | Key | Default | Meaning / source |
 |---|---|---|
-| `listingFee` | `0:1.0,10000000:2.0,100000000:2.5` | Tiers `fromPrice:percent`. Fee = ceil(price x percent / 100), paid on Create, never refunded by cancel. Hypixel BIN fee, VERIFIED in the research. |
-| `durations` | `1h:20,6h:45,12h:100,24h:350,48h:1200` | Presets `length:fee`, at most 8. `m`, `h` and `d` suffixes are allowed. The code caps every preset at 14 days (Hypixel's VERIFIED cap). The fee numbers are Hypixel's classic presets from general knowledge; the research only verified the 14-day cap and a 55,200 maximum duration fee. `[SKYY?]` |
+| `listingFee` | `0:1.0,10000000:2.0,100000000:2.5` | Tiers `fromPrice:percent`. Fee = ceil(price x percent / 100), paid on Create, never refunded by cancel. Hypixel BIN fee, VERIFIED in the research. LOCKED 2026-09-25. Server Setup `ah.listingFee`. |
+| `durations` | `1h:20,6h:45,12h:100,24h:350,48h:1200` | Presets `length:fee`, at most 8. `m`, `h` and `d` suffixes are allowed. The code caps every preset at 14 days (Hypixel's VERIFIED cap). The fee numbers are Hypixel's classic presets from general knowledge; the research only verified the 14-day cap and a 55,200 maximum duration fee. LOCKED 2026-09-25: those fees stay 20 / 45 / 100 / 350 / 1,200 and are the fee half of Server Setup `ah.durations`. Preset lengths stay section 12 question 2. |
 | `minDurationFee` / `allowTestDurations` | `1` / `false` | **Test-preset guard.** A preset whose fee is below `minDurationFee` (e.g. the `2m:0` used in the test plan) is a test preset. With `allowTestDurations=false`, config load and `/ahadmin reload` **drop** it with a loud WARN ("dropped test duration 2m:0 - set allowTestDurations=true to use it"), and `defaultDuration` falls back to `24h` if it pointed at a dropped preset. With `true`, the preset works, but every start, every reload and the `/ahadmin` status print "TEST DURATIONS ARE ON: 2m:0". So a forgotten test preset cannot quietly become a free way to churn listings. |
 | `defaultDuration` | `24h` | Must be one of the presets. |
-| `claimTaxPercent` / `claimTaxFrom` | `1.0` / `1000000` | Tax = min(ceil(gross x 1%), gross - 1,000,000), only when gross > 1,000,000, so the net never drops below 1,000,000. Worked out and **stored at sale time** (a later config change never alters money already earned). UNVERIFIED Hypixel detail, concept cross-checked. |
+| `claimTaxPercent` / `claimTaxFrom` | `1.0` / `1000000` | Tax = min(ceil(gross x 1%), gross - 1,000,000), only when gross > 1,000,000, so the net never drops below 1,000,000. Worked out and **stored at sale time** (a later config change never alters money already earned). UNVERIFIED Hypixel detail, concept cross-checked. LOCKED 2026-09-25. Server Setup `ah.claimTaxPercent` and `ah.claimTaxFrom`. |
 | `minPrice` / `maxPrice` | `1` / `50000000000` | Whole coins. The max is a sanity cap (UNVERIFIED Hypixel number). |
 | `maxListings` | `14` | Per **profile**. A slot counts from Create until the seller has claimed that listing's coins or item (Hypixel rule: only claiming or cancelling frees a slot; a cancel with an immediate return frees it at once). |
 | `maxListingsServer` | `5000` | Keeps load time and page filtering bounded. |
@@ -708,7 +708,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 ---
 
 ## 12. Open questions for Skyy (the build uses the default in brackets; each is one config key)
-1. **Fees and tax for our smaller economy.** Keep Hypixel's numbers (listing 1% / 2% / 2.5%, duration fees 20 to 1,200, 1% tax above 1,000,000)? New profiles start with 10,000 coins. [Hypixel's numbers]
+1. **Fees and tax.** LOCKED 2026-09-25 (Skyy): keep Hypixel's numbers. Listing fee 1% / 2% / 2.5% (`listingFee=0:1.0,10000000:2.0,100000000:2.5`). Duration fees 20, 45, 100, 350 and 1,200 (the fee half of `durations`; how long each preset lasts stays question 2). Claim tax 1% above 1,000,000 (`claimTaxPercent=1.0`, `claimTaxFrom=1000000`). Every fee value is adjustable in Server Setup: `ah.listingFee`, the fee half of `ah.durations`, `ah.claimTaxPercent`, and `ah.claimTaxFrom`. SkyyAuctions 0.1.1 still reads `config.properties` (then `/ahadmin reload`). The menu rows ship with SkyyEconomy. A later tax edit does not change a sale that already stored its tax. New profiles still start with 10,000 coins.
 2. **Durations.** Presets 1h 6h 12h 24h 48h, default 24h? Allow up to 7 or 14 days (Hypixel allows 14)? [1h to 48h, default 24h]
 3. **Bazaar items on the AH.** Should Bazaar commodities be refused on the AH, like Hypixel? [refused]
 4. **One account, several profiles.** Should one account never be able to buy its own listings, even from another profile? [never]

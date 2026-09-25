@@ -664,9 +664,9 @@ bindings name the file key). Categories: `parts, coins, bank, bazaar, auctions, 
 | bazaar | `bazaar.demandFloor` / `bazaar.demandCeiling` | dec x | 0.25 / 4.0 | 0.01-1 / 1-100 | L, A | **make configurable**: `MINF`/`MAXF` |
 | bazaar | `bazaar.impactBase` | dec | 1.10 | 1.0-2.0 | L, A, D | **make configurable**: the price-impact exponent base |
 | bazaar | `bazaar.resetDemand` | action | - | - | D | "Reset all prices to base" (= `/bazaaradmin reset all`) |
-| auctions | `ah.listingFee` | text | `0:1.0,10000000:2.0,100000000:2.5` | tiers `from:percent` | L, D | AH spec 3 |
-| auctions | `ah.durations` / `ah.defaultDuration` | text / choice | presets / `24h` | max 8, cap 14 d | L | choice list = the current presets |
-| auctions | `ah.claimTaxPercent` / `ah.claimTaxFrom` | dec % / int | 1.0 / 1,000,000 | 0-50 / 0-1e15 | L, D | stored at sale time, never retroactive |
+| auctions | `ah.listingFee` | text | `0:1.0,10000000:2.0,100000000:2.5` | tiers `from:percent` | L, D | AH spec 3. LOCKED 2026-09-25: 1% / 2% / 2.5% |
+| auctions | `ah.durations` / `ah.defaultDuration` | text / choice | presets / `24h` | max 8, cap 14 d | L | choice list = the current presets. Fee half LOCKED 2026-09-25 (20 / 45 / 100 / 350 / 1,200). Lengths still AH spec 12 Q2 |
+| auctions | `ah.claimTaxPercent` / `ah.claimTaxFrom` | dec % / int | 1.0 / 1,000,000 | 0-50 / 0-1e15 | L, D | stored at sale time, never retroactive. LOCKED 2026-09-25: 1% above 1,000,000 |
 | auctions | `ah.minPrice` / `ah.maxPrice` | int coins | 1 / 5e10 | 1-1e15 | L | |
 | auctions | `ah.maxListings` / `ah.maxListingsServer` | int | 14 / 5000 | 1-100 / 100-100000 | L (server cap A) | |
 | auctions | `ah.graceSeconds` | int s | 20 | 0-600 | L | |
@@ -678,6 +678,8 @@ bindings name the file key). Categories: `parts, coins, bank, bazaar, auctions, 
 | shops | `shops.editor` | link | `shopadmin` | - | - | 0.2, section 5.2 |
 | shops | `shops.roles` | text | curated role list | - | L | 0.2 |
 | shops | `shops.defaultRestockMinutes` | int min | 60 | 1-10080 | L | 0.2 |
+
+**LOCKED 2026-09-25 (Skyy), Auction House fees.** The three fee rows above stay the Hypixel defaults and are the live tune: listing 1% / 2% / 2.5%, duration fees 20 to 1,200, and 1% tax above 1,000,000. Skyy can change any of those numbers in Server Setup once SkyyEconomy is up. A tax edit applies to later sales only. SkyyAuctions 0.1.1 still reads `config.properties` and has no Server Setup page yet.
 
 ### 4.2 SkyyRolls [0.1.4] (later the gear mod)
 `cost.Junk` 100, `cost.Common` 250, `cost.Uncommon` 500, `cost.Rare` 1000, `cost.Epic` 2500, `cost.Legendary` 5000, `cost.default` 1000 (int
