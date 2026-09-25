@@ -71,7 +71,7 @@
 
 | Command | What it does |
 |---|---|
-| `/ah` (aliases `/auction`, `/auctionhouse`) | Opens the page on **Browse** (category All, sort Lowest price). |
+| `/ah` (aliases `/auction`, `/auctionhouse`) | Opens the page on **Browse** (category All, sort Lowest price). LOCKED 2026-09-25 (Skyy): `/ah` works anywhere. |
 | `/ah sell <price>` | Subcommand `sell` with one required STRING arg. Takes the stack in the **active hotbar slot**. Default (`sellCommandOpensPage=true`): opens the **Create** view with that stack picked, the price filled in, the default duration and the fee preview, so **one click on Create BIN** lists it. With `false`, it lists straight from chat and replies with the fee and listing id. LOCKED 2026-09-25 (Skyy): the page stays the default. |
 | `/ah sell <price> <duration>` | A usage variant of `sell` (description-only constructor + two `withRequiredArg`, added with `addUsageVariant`). The duration is `24`, `24h`, `30m` or `2d` and must match a configured preset, otherwise: "Pick one of: 1h 6h 12h 24h 48h". |
 | `/ah claim` | Claims everything the active profile is owed: coins first, then items until the inventory is full. Summary in chat. |
@@ -718,7 +718,7 @@ No ECS system is needed (so no `registerSystem` concerns). Nothing touches compo
 8. **Cancel keeps the fee** (Hypixel). LOCKED 2026-09-25 (Skyy): cancelling a listing keeps the fee. That was already the default (`cancelRefundsFee=false`).
 9. **`/ah sell`.** LOCKED 2026-09-25 (Skyy): `/ah sell <price>` opens the pre-filled Create page for one click. That was already the default (`sellCommandOpensPage=true`).
 10. **Grace period.** LOCKED 2026-09-25 (Skyy): a new listing waits 20 seconds before anyone can buy it. That was already the default (`graceSeconds=20`).
-11. **Where `/ah` works.** Anywhere, or later only at an Auction Master NPC in the hub? On Hypixel, remote `/ah` is a Booster Cookie perk; this is from general knowledge, not in the research. [anywhere; the page id `SkyyAuctions` is ready for an NPC]
+11. **Where `/ah` works.** LOCKED 2026-09-25 (Skyy): `/ah` works anywhere. That was already the default. The page id `SkyyAuctions` stays ready if an Auction Master NPC is added later.
 12. **Late-game cutoff.** Which items leave both markets? Still open (DESIGN-STATUS question 11). [nothing blocked; the list and bridge are ready]
 13. **Bid auctions.** When, and with which rules (minimum raise, last-minute extension, 5% fee)? [later; Appendix A]
 14. **Deleted profiles.** Claims owned by a profile that no longer exists (SkyyProfiles 0.1 has no delete yet). [they stay in the file; an admin can use `regrant` or move them by hand]
