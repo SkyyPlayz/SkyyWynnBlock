@@ -1,6 +1,28 @@
 # SkyyGear - plan
 *Design lock 2026-09-24 (Skyy). Nothing here is built. Change note: `SkyWynn-Decisions.md`. Code follow-ups: `HANDOFF.md`, `DESIGN-STATUS.md`.*
 
+## BUILDER / STATUS (2026-09-25)
+
+**LOCKED enough to implement.** Themes and rules in this file are the lock. Do not invent the open numbers. Not in any jar yet.
+
+- Gear rules in locks 1–14. Combat, defence, and mana in locks 15 and up. Magical Power is spell damage. Strength is melee or hit damage (lock 102).
+- Movement, gathering, loot, and wisdom are locked (change notes 10–14).
+- Ferocity: enchant cap 300, total cap 600 (lock 77).
+- Accessory craft ladder (locks 63–65). Enrichments (locks 66–70). Ferocity Enrichment is still pending.
+- Starters: Tank, Balance, Slayer, Lucky, Fast, Magical (locks 80–86, 104).
+- Combat 15: Fortress, Harmony, Glass Cannon, Fortune, Blitz, Arcane (locks 94, 105–109). Amounts scale with Accessory Power. Curves are not locked.
+
+**STILL OPEN.**
+
+- No Power option.
+- Stone accessory powers.
+- Tuning points table.
+- Wynn Major IDs.
+- Exact numeric curves for accessory powers.
+- Magical Power on enrichments or tuning.
+- Fortress extra debuff, if any.
+- Later content: pets, fishing, hunting, and the other "add later" rows.
+
 Skyy's direction still holds: every mod in the pack is eventually our own. Combat armor and weapons copy Wynncraft. Gathering gear is SkyBlock-style. We rebuild features ourselves. Never copy another author's files (items, models, textures, code) unless their license allows it.
 
 ## Locked (2026-09-24)

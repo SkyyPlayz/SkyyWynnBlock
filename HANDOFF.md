@@ -1,6 +1,29 @@
 # SKYWYNN — HANDOFF
 *Rewritten 2026-09-22 21:00, restructured 2026-09-23 20:45 (session 4): section 3 = current state (always current), section 6 = running log (append-only). Read this first; every other doc in this folder is detail. Owner: Skyy (GitHub: SkyyPlayz).*
 
+## BUILDER / STATUS (2026-09-25)
+
+**LOCKED enough to implement.** Themes and rules below are the lock. Do not invent the open numbers. Detail is in `SkyyGear-Plan.md` and `SkyyGear-Stat-Catalog.md`. Not in any jar yet.
+
+- Gear rules: level and rarity on every item, smithing rarity, reforge roll range, unidentified drops, `/identify` then an NPC, any-rarity drops, set bonuses, Equipment bar, loadouts, Accessory Power system.
+- Combat, defence, and mana (change note 9). **Magical Power** is the spell-damage stat. **Strength** is melee or hit damage. Mage staff melee uses Strength. Spells use Magical Power (change note 22).
+- Movement (change note 10). Gathering (change note 11). Loot and luck (change notes 12–13). XP and wisdom (change note 14).
+- Other table is scrap as gear IDs. Breathing uses Hytale oxygen. A separate accessory boosts water swim speed (change notes 15–16).
+- Accessory craft ladder (change note 17). Enrichments (change note 18). **Ferocity** enchant cap 300, total cap 600 (change note 20).
+- Starters: Tank, Balance, Slayer, Lucky, Fast, Magical.
+- Combat 15: Fortress, Harmony, Glass Cannon, Fortune, Blitz, Arcane. Buffs and debuffs. Amounts scale with Accessory Power. Exact curves are not locked.
+
+**STILL OPEN.** Do not build these as if they were locked.
+
+- No Power option.
+- Stone accessory powers.
+- Tuning points table.
+- Wynn Major IDs.
+- Exact numeric curves for accessory powers.
+- Magical Power on enrichments or tuning.
+- Fortress extra debuff, if any. Do not add one until Skyy picks it.
+- Later content: pets, fishing, hunting, and the other "add later" rows.
+
 ---
 
 ## 1. THE GOAL
@@ -316,7 +339,7 @@ Defaults that still hold: shields, tools, and fists usable by all; classless pla
    - SkyyProfiles 0.1: raise the default cap from 4 to 6 (`DEF_MAX_PROFILES`). Do not invent the in-game way to raise it past 6 until Skyy picks the method.
    - SkyyClasses: 0.1.4 has no Berserker and `ALLOW_SWITCH=false`. Do not add Berserker until the PENDING lock is actually locked with the builder.
    - SkyyCollections 0.2: coin-bypass still follows the older per-curve walls (`bypass.walls=5,4,3,0`: Bulk through V, Standard through IV, Rare through III, Elite never). That is not the new rule (early game + first half of mid game, then a buy-and-sell wall). SkyyBazaar 0.1.1 has no late-game sell wall. Level requirements on items are not built. Cutoffs and level type stay open, so do not guess them in code.
-   - SkyyGear locks are not in the jars. SkyyRolls 0.1.3 shows rolls immediately (no unidentified drop, no `/identify`, no rarity-based reforge range, no stat mix). SkyySkills 0.4 has no smithing rarity stat. No wardrobe, loadout, Equipment bar, or set-bonus mod. SkyyAccessories has a bag and talisman bonuses; it does not implement the selectable Accessory Power buff or saving that buff in a loadout. Do not add any of this until the open questions in SkyyGear-Plan.md that block a build are answered (rarity list, level type, identify cost formula, the rest of the catalog from SkyBlock accessory powers down, class skill trees, the rest of the Power list and the numbers). Change notes 17–22 are docs-only. Custom starters are Tank, Balance, Slayer, Lucky, Fast, and Magical. The Combat 15 ladder is Keep. Magical Power is the spell-damage stat. No Power is pending. They are not in a jar.
+   - SkyyGear locks are not in the jars. SkyyRolls 0.1.3 shows rolls immediately (no unidentified drop, no `/identify`, no rarity-based reforge range, no stat mix). SkyySkills 0.4 has no smithing rarity stat. No wardrobe, loadout, Equipment bar, or set-bonus mod. SkyyAccessories has a bag and talisman bonuses; it does not implement the selectable Accessory Power buff or saving that buff in a loadout. The locked themes are ready to implement. See **BUILDER / STATUS** at the top of this file. Do not invent the still-open list (No Power, stone powers, tuning, Major IDs, power number curves, Magical Power on enrichments or tuning). They are not in a jar.
 
 ## 5. DESIGN NOTES + DECISIONS (added during 2026-09-23; newest decisions win)
 
@@ -467,3 +490,4 @@ writes speed the old way). In progress on top: SkyySkills 0.3 + SkyyAccessories 
 - 2026-09-25: Ferocity caps and custom starters, docs only (Decisions change note 20, SkyyGear-Plan.md locks 77–90, row 6.50). Ferocity stays. Combat, gear, and accessories. Enchant cap 300. Total cap 600. Ferocity Enrichment stays pending. Scrap Hypixel starter names: Fortuitous, Pretty, Protected, Simple, Warrior. Keep: Tank, Balance, Slayer, Lucky, Fast, Magical. Every starter grants a little Health and Defense. Powers use flat mana. Dedicated mana accessories use +% mana. No Power is pending. Combat 15 names were replaced later the same day (change note 21). Stone powers stay pending. Not in any jar.
 - 2026-09-25: Combat 15 power ladder, docs only (Decisions change note 21, SkyyGear-Plan.md locks 91–101, row 6.51). Combat-gated powers mirror starter themes and are more extreme. Buffs and debuffs. Amounts scale with Accessory Power. Glass Cannon is Keep: −Health, −Defense, much more Strength and Crit Damage, solid Crit Chance. The other five were drafts at this line. Confirmed later the same day (change note 22). Scrap Hypixel names: Commando, Disciplined, Inspired, Ominous, Prepared. No Power and stone powers stay pending. Not in any jar.
 - 2026-09-25: Magical Power and Combat 15 confirm, docs only (Decisions change note 22, SkyyGear-Plan.md locks 102–110, row 6.52). Magical Power is the spell-damage stat. Strength is melee or hit damage. Mage staff melee uses Strength. Spells use Magical Power. It rolls on weapons, armor, Equipment, and accessories. It is not the bag score. Starter Magical also boosts it. Keep: Fortress, Harmony, Fortune, Blitz, Arcane. Fortune is much higher Crit Chance, good Crit Damage, slight Strength, −Health, −Defense. Blitz is high Speed and Attack Speed, −Health, −Defense. Arcane boosts Magical Power more, −Defense, −Strength, plus mana and mana regen. Harmony does not include Magical Power. Fortress extra debuff is optional. Whether Magical Power joins enrichments or tuning is open. Not in any jar.
+- 2026-09-25: Builder status, docs only. Top of this file and `SkyyGear-Plan.md`. Locked themes are ready to implement. Still open: No Power, stone powers, tuning, Wynn Major IDs, accessory-power number curves, Magical Power on enrichments or tuning, Fortress extra debuff, and later content (pets, fishing, hunting). Not in any jar. Do not merge from this note. Nix squash-merges.
