@@ -35,7 +35,7 @@ Added after batch 1. Batch 1 stays in force. Where a line below names a batch 1 
 10. **Coin-bypass** — 1.2 reaffirmed that night as early, steep, off at the endgame wall. **Tightened 2026-09-24** (change notes): coins bypass collections in the early game and the first half of mid game; toward late game those items cannot be bought or sold. Many items also have level requirements. Exact cutoff and level type are open.
 11. **Profiles** — 1.8 was LATER; 1.9 drafted multiple class slots on one account. Locked: full SkyBlock-style profiles. Swapping profile means a different island and different everything. **Profiles are how you select a class.** A new class is a **new profile and a new island from zero.** The batch 1 roster, phase order, and combat-only lock still apply inside a profile. **2026-09-24:** the default cap is **6** profiles (raised from 4). In-game ways to raise it higher are wanted; the method is TBD. SkyyProfiles 0.1 still caps at 4 (code follow-up).
 12. **Name** — **SkyWynn** is the quick reference. **SkyyWynnBlock** stays the repo name.
-13. **UI** — 10.22 was a full UI build freeze until NoesisGUI. Locked: build the **best placeholders possible** and keep refining them. **Exception:** do not add buttons or custom UI on the **inventory screen** (Hytale will change that UI). Wait on the inventory screen only. F5/F6/F7 and the other QoL rows stay locked.
+13. **UI** — 10.22 was a full UI build freeze until NoesisGUI. Locked: build the **best placeholders possible** and keep refining them. **Exception:** do not add buttons or custom UI on the **inventory screen** (Hytale will change that UI). Wait on the inventory screen only. F5/F6/F7 and the other QoL rows stay locked. **2026-09-25:** every custom UI must also copy Hytale's native look (change note 21). Players should not feel like they are in a modded UI.
 14. **Magic system** — **open, not locked.** Wait to see how Hytale Chapter 1 handles runes before choosing the magic approach. Rows 9.1 and 9.2 are that open thread. This does not reopen the class roster, the combat-only lock, or powders-on-gear.
 
 ## Change notes (2026-09-24, America/Denver)
@@ -213,6 +213,8 @@ Owner decisions. Where a line below names a 2026-09-23 lock, it overrides that l
    - The roll system stays as designed. The modifier pool is every Keep modifier from the catalog pass.
    - Combat modifiers only on combat gear. Movement modifiers on any gear. Skill-specific modifiers only on that skill's gear. A catalog row that already names a tighter slot still uses that slot.
    - Default Accessory Power profile is Balance. No empty profile. No Power stays scrap.
+
+21. **UI look and feel (Skyy, 2026-09-25, America/Denver).** Locked for every custom UI in the SkyWynn / SkyyWynnBlock pack. Every UI we add to the game must copy Hytale's native style and look. Menus, panels, buttons, fonts, colors, spacing, and interaction patterns should feel like part of vanilla Hytale. They should not feel like a third-party mod overlay. Goal: players should not feel like they are in a modded UI. This adds to row 10.22. Still no new buttons or custom UI on the inventory screen. Does not change any jar. Does not change gameplay numbers. Does not reopen other locks.
 
 ---
 

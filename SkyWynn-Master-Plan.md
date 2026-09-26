@@ -186,7 +186,7 @@ These sit on the loop above. They do not replace it.
 - **Coin-bypass** is tiered (2026-09-24): early game and the first half of mid game only. Toward late game those items cannot be bought or sold. Many items have level requirements. The 2026-09-23 "midgame wall, no endgame bypass" line is the older wording.
 - **The Garden is parked** (2026-09-24). Farming stays on the private island and on the zone islands for now. The 2026-09-23 "most farming is in the Garden" lock is reversed.
 - **SkyWynn** is the quick name. The repo stays **SkyyWynnBlock**.
-- UI: best placeholders we can ship, refined as we go. No new buttons or custom UI on the **inventory screen**.
+- UI: best placeholders we can ship, refined as we go. Every custom UI must copy Hytale's native style and look (locked 2026-09-25). Menus, panels, buttons, fonts, colors, spacing, and interaction patterns should feel like vanilla Hytale. Players should not feel like they are in a modded UI. No new buttons or custom UI on the **inventory screen**.
 - **Magic is an open thread.** Class abilities are not locked to Chapter 1 runes until we see how Hytale ships them. Powders-on-gear stay locked either way.
 
 ## 2C. Systems mapping to Hytale tech we ALREADY have proven
@@ -266,7 +266,7 @@ These sit on the loop above. They do not replace it.
 10. **Coin-bypass** is tiered (2026-09-24): early game and the first half of mid game. Toward late game those items cannot be bought or sold. Many items have level requirements. Exact cutoff and level type are open. The "gone at the endgame wall" sentence is the older wording.
 11. **Profiles** are full SkyBlock-style saves. A swap is a different island and different everything. A new class is a new profile and a new island from zero. **Default cap 6** (raised from 4). In-game ways to raise it are TBD. SkyyProfiles 0.1 still caps at 4.
 12. **SkyWynn** is the short name. **SkyyWynnBlock** is the repo.
-13. **UI:** best placeholders, refined continuously. No buttons or custom UI on the inventory screen.
+13. **UI:** best placeholders, refined continuously. Every custom UI must copy Hytale's native look (locked 2026-09-25). Players should not feel like they are in a modded UI. No buttons or custom UI on the inventory screen.
 14. **Magic system: open.** Wait on Hytale Chapter 1 runes before choosing the approach. Not locked.
 
 Worksheet: `SkyWynn-Decisions.md` (batch 1, then batch 2). Feature plans: `SkyyIslands-Plan.md`, `SkyyClasses-Plan.md`, `SkyySkills-Plan.md`, `SkyyMinions-Plan.md`, `SkyyDungeons-Plan.md`, `SkyyGuilds-Plan.md`, `SkyyAccessories-Plan.md`, `SkyySacks-Plan.md`.

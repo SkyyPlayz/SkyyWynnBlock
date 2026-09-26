@@ -4,6 +4,8 @@ A plain-language snapshot for planning sessions. SkyWynn is a Hytale server pack
 collections, bags, bazaar, accessories) with Wynncraft (classes, a chain of zone islands, quests, dungeons). It is built as standalone
 "Skyy" mods. Goal (Skyy): 100% usable in solo and private multiplayer worlds, and ready for anyone to run a server with.
 
+**UI look & feel (LOCKED, Skyy, 2026-09-25).** Every UI we add to the game must copy Hytale's native style and look. Menus, panels, buttons, fonts, colors, spacing, and interaction patterns should feel like part of vanilla Hytale. They should not feel like a third-party mod overlay. Goal: players should not feel like they are in a modded UI. Still no new buttons or custom UI on the inventory screen. Detail: `HANDOFF.md` and `SkyWynn-Decisions.md`.
+
 **BUILDER / STATUS (2026-09-25):** **SkyGear is planned enough to START BUILDING.** Implement locked systems. Do not block on open tables. Gear themes through Magical Power and the Combat 15 ladder are locked enough to implement. Accessory Power: each accessory has its own buffs and adds flat +10 to +25 by rarity (exact table not set). Total is the sum. The selected profile scales from that total. No Power is scrap. The default profile is Balance. Still open, and do not block the build: tuning, stone powers (do not extend the Hypixel stone list), Wynn Major IDs, accessory-power number curves, Magical Power on enrichments or tuning, gathering gear, and later content (pets, fishing, hunting). Combat gear is the first build (change note 25). Full note is at the top of `HANDOFF.md` and `SkyyGear-Plan.md`.
 
 Where the detail lives: `HANDOFF.md` (the locked decisions + current state), `SkyWynn-Decisions.md`, `SkyWynn-Master-Plan.md`,
@@ -72,6 +74,7 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
 - Ranks (live 2026-09-25, SkyyRanks): server ranks made in game, with permissions and a chat prefix `[Rank] [Title] Name`.
 
 **Interface**
+- Custom menus must copy Hytale's native look (locked 2026-09-25). See the rule at the top of this file.
 - A SkyWynn Menu item (everything in one place, warps, teleports, Island menu, Bank, Vault, Reforge, Party, Guild, Auction House),
   a customizable HUD (drag, size, colour, bold, italic, glow per widget).
 - Player Settings (`/settings`): switch each kind of chat message on or off (the invite / teleport / message switches wait for Skyy).
