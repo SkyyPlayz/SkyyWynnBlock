@@ -7,6 +7,7 @@ UI framework while we wait on the NoesisGUI rework + inventory changes. 2026-09-
 2. Widget priority: **shared-everywhere widgets first**, unique ones later.
 3. Every widget individually movable/scalable/toggleable; preset bundles that can be split; **layout export/import codes**.
 4. Released standalone (Mod Browser when possible) — must "just work" solo, AND slot into the future SkyWynn pack as its HUD layer.
+5. **Look and feel.** Every UI we add must copy Hytale's native style (locked 2026-09-25 in `HANDOFF.md`). Players should not feel like they are in a modded UI.
 
 ## Reality check that reshapes the phasing
 The census below sorts by *shared vs unique*, but the build order is actually forced by **where the data lives**:

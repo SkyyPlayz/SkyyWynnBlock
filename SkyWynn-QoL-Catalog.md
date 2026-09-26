@@ -7,7 +7,7 @@ Every mod below is a CLIENT mod that exists because Hypixel's server can't chang
 No player installs anything; the QoL that takes Hypixel players 5 mods to get is just... how SkyWynn works.
 (And like Hypixel's `HypixelModAPI` mod in this folder: we should still expose a clean data API so community client mods can exist.)
 
-**UI lock (2026-09-23 batch 2):** build the best placeholders we can and keep refining them. Do not add buttons or custom UI on the **inventory screen** — Hytale will change that screen, so it waits. HUD, sack pages, accessory pages, and other windows are in scope. F5/F6/F7 stay as already locked in `SkyWynn-Decisions.md`. Magic Bags and the accessory bag are core QoL, not a later pass.
+**UI lock (2026-09-23 batch 2):** build the best placeholders we can and keep refining them. Do not add buttons or custom UI on the **inventory screen** — Hytale will change that screen, so it waits. HUD, sack pages, accessory pages, and other windows are in scope. F5/F6/F7 stay as already locked in `SkyWynn-Decisions.md`. Magic Bags and the accessory bag are core QoL, not a later pass. **Native look (LOCKED 2026-09-25):** every custom UI must copy Hytale's native style so players do not feel like they are in a modded UI (`HANDOFF.md`).
 
 ---
 

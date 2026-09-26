@@ -3,6 +3,8 @@
 
 ## BUILDER / STATUS (2026-09-25)
 
+**UI look & feel (LOCKED, Skyy, 2026-09-25).** Every UI we add to the game must copy Hytale's native style and look. Menus, panels, buttons, fonts, colors, spacing, and interaction patterns should feel like part of vanilla Hytale. They should not feel like a third-party mod overlay. Goal: players should not feel like they are in a modded UI. This adds to the inventory-screen rule. Still no new buttons or custom UI on the inventory screen.
+
 **SkyGear is planned enough to START BUILDING.** Implement locked systems. Do not block on open tables.
 
 **LOCKED enough to implement.** Themes and rules below are the lock. Do not invent the open numbers. Detail is in `SkyyGear-Plan.md` and `SkyyGear-Stat-Catalog.md`. Not in any jar yet.
@@ -60,7 +62,7 @@ It is built as a **family of standalone mods** ("Skyy*" mods). Each one must:
 | Garden | **Parked (2026-09-24).** Farming stays on the main islands (private island and the zone chain) for now. The 2026-09-23 "most farming is in the Garden" lock is reversed |
 | Death penalty | **10–25%** of coins, reaffirmed 2026-09-23. **Editable in-game**: `/deathpenalty 5%` (fixed) or `/deathpenalty 5%-10%` (random in range) |
 | Name | **SkyWynn** is the quick reference. Repo name stays **SkyyWynnBlock** |
-| UI | Best placeholders we can ship, refined as we go. **Exception:** no buttons or custom UI on the **inventory screen** (Hytale will change that UI). HUD, pages, and other windows are in scope. F5/F6/F7 stay locked |
+| UI | Best placeholders we can ship, refined as we go. **Look & feel (LOCKED 2026-09-25):** every custom UI must copy Hytale's native style and look. Menus, panels, buttons, fonts, colors, spacing, and interaction patterns should feel like part of vanilla Hytale. They should not feel like a third-party mod overlay. Goal: players should not feel like they are in a modded UI. **Exception:** no buttons or custom UI on the **inventory screen** (Hytale will change that UI). HUD, pages, and other windows are in scope. F5/F6/F7 stay locked |
 | HUD | Lunar-style editor for OUR widgets (move/scale/toggle), layout export/import codes; rebindable edit hotkey (engine-limited today) |
 | Party widget | Name + HP + stamina + mana per member; same party system feeds map positions |
 | Map | ONE renderer for full map + minimap, party + quest layers. **Not built yet — design for integration only** |
@@ -104,7 +106,7 @@ Batch 1 above stays. This list adds to it.
 10. **Coin-bypass** is tiered (2026-09-24): early game and the first half of mid game. Toward late game those items cannot be bought or sold. Many items have level requirements; **every gear item** has one. Cutoff and level type are open. The "off at the endgame wall" sentence is the older wording. SkyyCollections 0.2 and SkyyBazaar 0.1.1 do not implement the new wall (code follow-up).
 11. **Profiles** are full saves. Swapping profile changes the island and everything else. A new class is a new profile and a new island from zero. **Default cap 6** (raised from 4). In-game raise method TBD. SkyyProfiles 0.1 still caps at 4. Paid class switch: removed in SkyyClasses 0.1.2 (`ALLOW_SWITCH=false`). The 0.1.1 jar that sold a switch is not the current jar (0.1.4).
 12. **SkyWynn** / repo **SkyyWynnBlock**.
-13. **UI:** placeholders, refined continuously. Inventory screen is the only UI we skip.
+13. **UI:** placeholders, refined continuously. Every custom UI must copy Hytale's native look (locked 2026-09-25). Players should not feel like they are in a modded UI. Inventory screen is the only UI we skip.
 14. **Magic: open.** Wait on Chapter 1 runes. Do not treat "class abilities are engine runes" as locked.
 
 ### Focus call (Skyy, 2026-09-23 late): what gets built now
