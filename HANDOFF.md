@@ -1,6 +1,8 @@
 # SKYWYNN — HANDOFF
 *Rewritten 2026-09-22 21:00, restructured 2026-09-23 20:45 (session 4): section 3 = current state (always current), section 6 = running log (append-only). Read this first; every other doc in this folder is detail. Owner: Skyy (GitHub: SkyyPlayz).*
 
+> **PICKING THE PROJECT BACK UP? Read `RESUME.md` first** (PC file locations, where we got to on 2026-09-28, the exact next steps).
+
 ## BUILDER / STATUS (2026-09-25)
 
 **SkyGear is planned enough to START BUILDING.** Implement locked systems. Do not block on open tables.
