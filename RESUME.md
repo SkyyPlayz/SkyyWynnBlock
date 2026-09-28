@@ -39,7 +39,7 @@ SkyyProfiles 0.1.2, SkyyCooking 0.1.2, SkyyTrees 0.2.3, SkyyExploration 0.2.1, S
 SkyyRanks 0.1; pack mods More Crossbow Tiers (Serj), Saplings From Trees (Helios). What each does: HANDOFF section 3 table.
 Not yet tested in game: almost everything from 2026-09-24 22:53 on - TEST-CHECKLIST.md sections from "BETA ROUND 1" down (the vault was verified).
 
-**Stopped 2026-09-28:** Skyy's plan dropped from Max to Pro and weekly Claude Code usage reached 98%. Skyy chose to WAIT FOR THE WEEKLY
+**Stopped 2026-09-28:** Skyy switched from Max to Pro and weekly Claude Code usage reached 98%. Skyy chose to WAIT FOR THE WEEKLY
 RESET. Nothing below is built yet. Specs are written and committed; the working tree is clean.
 
 **Important rule (commit ab75b6c):** Skyy edited these GENERATED scripts directly with locked defaults: `SkyySkills\build_skyyskills_0.4.5.py`,
