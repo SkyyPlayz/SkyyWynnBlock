@@ -75,9 +75,13 @@ built BEFORE that edit. Never regenerate those four from their old patch scripts
    48h pays double the listing fee, a different profile may buy your listing, Magic Bags + Accessory Bag blocked) and SkyyMenu 0.3.3 (Identify
    tile, Mods text, Settings icon at slot 39, permission-based settings visibility). Deploy: add SkyyGear 0.1 to SET, remove SkyyRolls, put
    `SkyyRolls` in deploy_set's `RETIRED` list.
-5. **Small follow-ups:** config kit keeps 10 old file versions (tools/skyycfg.py KEEP 20 -> 10); SkyyGuilds xpSkills mid-run change credits
+5. **Vanilla UI look (Skyy, 2026-09-28):** every UI must look and feel as close to vanilla Hytale as possible. First research the vanilla
+   styles in Assets.zip (panel frames, colours, fonts, button styles, spacing, sounds) and put them in one shared style helper for the build
+   scripts; every NEW page uses it from then on, and the existing Skyy pages (menu, bags, skills, trees, collections, bank, bazaar, AH, vault,
+   island menu, Server Setup, ...) get a vanilla-style pass over time.
+6. **Small follow-ups:** config kit keeps 10 old file versions (tools/skyycfg.py KEEP 20 -> 10); SkyyGuilds xpSkills mid-run change credits
    a skill's whole saved XP (fix in the next Guilds version); Archery 15+ extra bolts and the late-game holstered reload (approved, later).
-6. **After Skyy tests the separate economy mods:** SkyyEconomy 0.1 = Coins + Bank + Bazaar + Auctions merged (`SkyyEconomy-Plan.md`; use the
+7. **After Skyy tests the separate economy mods:** SkyyEconomy 0.1 = Coins + Bank + Bazaar + Auctions merged (`SkyyEconomy-Plan.md`; use the
    RETIRED list), then NPC shops (SkyyEconomy 0.2).
 
 Every round: build (no `--deploy`), review (sonnet), fix, cross-check with the whole set (one JVM, -Xverify:all, the Adventurer permission

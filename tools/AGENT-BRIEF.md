@@ -20,6 +20,8 @@ Server Setup), research/Settings-Spec.md 1.2-1.3 (player switches), tools/PROFIL
   world thread; count items before and after moves; give items storage-first unless a lock says otherwise.
 - COMMAND RULES: every player command / subcommand / usage variant needs setPermissionGroups(new String[] { "hytale:Adventurer" }); an
   admin SUB-command under a player command needs requirePermission(...) AND setPermissionGroups(new String[0]) (lint rule perm_group_leaks).
+- UI LOOK (Skyy 2026-09-28): every UI must look and feel as close to vanilla Hytale as possible - mirror the game's own UI styles
+  (colours, fonts, frames, buttons, spacing) from Assets.zip instead of custom styling.
 - UI RULES (HANDOFF section 2): inline pages only; no underscores in element ids; root anchor only Width/Height; TextButton + EventData;
   never periodic page updates; never close a page right before opening another; BIG readable pages (fit 1080 high); no UI on the vanilla
   inventory screen; NEVER put an ItemStack that may carry metadata into an ItemGridSlot (client disconnect) - use new ItemStack(id, qty).
