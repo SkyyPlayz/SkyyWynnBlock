@@ -174,33 +174,33 @@ Why this ladder and not a straight move to Iron III/V/VIII:
 | Rarity | Item id | Display name | Quality | Cap key (default) | Recipe (Workbench, `Workbench_Crafting`) | Knowledge | Unlocked at |
 |---|---|---|---|---|---|---|---|
 | Normal | `Skyy_Sack_<Type>_Small` (kept) | Normal `<Type>` Bag | `Skyy_Bag_Normal` | `bag.small` (640) | 3 Bolt of Wool + 4 `BAG_MAT` (unchanged) | required | collection tier I |
-| Unique | `Skyy_Sack_<Type>_Medium` (kept) | Unique `<Type>` Bag | `Skyy_Bag_Unique` | `bag.medium` (2,240) | Normal bag + 3 Bolt of Linen (unchanged) | required | tier III |
-| Rare | `Skyy_Sack_<Type>_Rare` (**new**) | Rare `<Type>` Bag | `Skyy_Bag_Rare` | `bag.rare` (**6,720**) | Unique bag + 3 Bolt of Silk (the old Large step) | required | tier V |
-| Legendary | `Skyy_Sack_<Type>_Large` (kept) | Legendary `<Type>` Bag | `Skyy_Bag_Legendary` | `bag.large` (20,160) | **Rare** bag + 3 Bolt of Cindercloth (changed: was Medium + 3 Silk) | required | tier VII |
+| Unique | `Skyy_Sack_<Type>_Medium` (kept) | Unique `<Type>` Bag | `Skyy_Bag_Unique` | `bag.medium` (2,240) | Normal bag + 6 Linen Scraps (`Ingredient_Fabric_Scrap_Linen`; changed: was 3 Bolt of Linen) | required | tier III |
+| Rare | `Skyy_Sack_<Type>_Rare` (**new**) | Rare `<Type>` Bag | `Skyy_Bag_Rare` | `bag.rare` (**6,720**) | Unique bag + 6 Shadoweave Scraps (`Ingredient_Fabric_Scrap_Shadoweave`) | required | tier V |
+| Legendary | `Skyy_Sack_<Type>_Large` (kept) | Legendary `<Type>` Bag | `Skyy_Bag_Legendary` | `bag.large` (20,160) | **Rare** bag + 6 Cindercloth Scraps (`Ingredient_Fabric_Scrap_Cindercloth`; changed: was Medium + 3 Bolt of Silk) | required | tier VII |
 | Mythic | `Skyy_Sack_Omni` (**new**) | Mythic Omni Bag | `Skyy_Bag_Mythic` | `bag.omni` (**100,000**, every type) | 1 Legendary bag of each type (section 4) | **not** required | none (owning the 5 bags) |
 
 - **Rare cap 6,720 = 3 x 2,240 = 20,160 / 3.** It is the exact geometric middle of Unique and Legendary: sqrt(2,240 x 20,160) = 6,720. Each step up gives about three times the room.
 - **Existing owners stay whole.** Small, Medium and Large keep 640 / 2,240 / 20,160 as Normal / Unique / Legendary.
 - **The next rarity needs the previous one**, like accessories (change note 17). So Legendary now takes a Rare bag. A Large recipe of "Medium + Silk" would skip the new tier.
-- **Bolt of Cindercloth.** VERIFIED id: it exists, is the one higher cloth the game's recipes use, and is salvaged from Cindercloth armor (Adamantite tier) or made at the Loombench. `[SKYY?]`: if it proves too hard to get, use 6 Bolt of Silk.
+- **Upgrade materials = mob-dropped fabric scraps** (review fix, 2026-09-28). The first draft used Bolt of Linen / Silk / Cindercloth, but those come only from the Loombench, whose recipe needs 3 Cotton Scraps (`Ingredient_Fabric_Scrap_Cotton`) that no drop table gives, and from salvaging cloth armor that itself needs those bolts and never drops (VERIFIED `Assets.zip`). The live 0.7.6 Medium / Large recipes have the same problem. The scraps follow the vanilla armor tiers and are already Smithing-bag items: **Linen Scraps** (goblins, trorks: 41 NPC drop tables), **Shadoweave Scraps** (outlanders: 9), **Cindercloth Scraps** (burnt skeletons, Incandescent skeletons, fire dragon, flame golem, wraith: 14). Silk Scraps are not used: nothing drops them. Normal keeps 3 Bolt of Wool (Wool Scraps drop from sheep, Furniture Bench). The build stops if a step material is no longer dropped by an NPC (or one recipe step from one). **The 6 per step is a PLACEHOLDER** `[SKYY?]`.
 - **Twenty knowledge-gated recipes** (5 types x 4 rarities) plus one ungated Omni recipe. 21 item JSONs, 5 quality JSONs.
 
 ### 3.2 Rarity look: own qualities in the Wynn colours
 
 The rarity names and colours are the Wynn ladder of change note 5: Normal white, Unique yellow, Rare pink, Legendary aqua, Mythic purple. Hex values are Wynncraft's own chat colours.
 
-| Quality id | Label | TextColor (tooltip) | Page text colour | QualityValue | Vanilla textures reused (by hue) | Drop particle (by rank) |
+| Quality id | Label | TextColor (tooltip) | Page text colour | QualityValue | Vanilla textures reused (by hue) | Drop particle (SkyyGear's, by hue) |
 |---|---|---|---|---|---|---|
 | `Skyy_Bag_Normal` | Normal | `#ffffff` | `#ffffff` | 1 | Common | `Drop_Common` |
-| `Skyy_Bag_Unique` | Unique | `#ffff55` | `#ffff55` | 2 | Legendary (gold frame reads as yellow) | `Drop_Uncommon` |
-| `Skyy_Bag_Rare` | Rare | `#ff55ff` | `#ff55ff` | 3 | Epic (purple frame reads as pink) | `Drop_Rare` |
-| `Skyy_Bag_Legendary` | Legendary | `#55ffff` | `#55ffff` | 4 | Rare (blue frame reads as aqua) | `Drop_Epic` |
-| `Skyy_Bag_Mythic` | Mythic | `#aa00aa` | **`#cc66cc`** | 6 | Epic | `Drop_Legendary` |
+| `Skyy_Bag_Unique` | Unique | `#ffff55` | `#ffff55` | 2 | Legendary (gold frame reads as yellow) | `Drop_Legendary` |
+| `Skyy_Bag_Rare` | Rare | `#ff55ff` | `#ff55ff` | 3 | Epic (purple frame reads as pink) | `Drop_Epic` |
+| `Skyy_Bag_Legendary` | Legendary | `#55ffff` | `#55ffff` | 4 | Rare (blue frame reads as aqua) | `Drop_Rare` |
+| `Skyy_Bag_Mythic` | Mythic | `#aa00aa` | **`#cc66cc`** | 6 | Epic | `Drop_Epic` |
 
 - **JSON shape.** Each JSON copies the vanilla shape and texture paths exactly (`UI/ItemQualities/Tooltips/ItemTooltip<X>.png`, `...Arrow.png`, `UI/ItemQualities/Slots/Slot<X>.png` for Slot, BlockSlot and SpecialSlot). Other fields: `LocalizationKey: server.general.qualities.<Id>`, `VisibleQualityLabel: true`, `RenderSpecialSlot: true`, `ItemEntityConfig.ParticleSystemId`. Lang writes both `general.qualities.<Id>=<Label>` and the `server.` twin (the SkyyVault pattern).
-- **Matches SkyyGear exactly.** VERIFIED against `research/SkyyGear-Stage1-Spec.md` 2.1 (written the same day for the SkyyGear build): the same hexes, the same frame art by hue (Unique = Legendary frame, Rare = Epic, Legendary = Rare, Mythic = Epic) and the same QualityValue 1-6.
+- **Matches SkyyGear exactly.** VERIFIED against `research/SkyyGear-Stage1-Spec.md` 2.1 (written the same day for the SkyyGear build): the same hexes, the same frame art by hue (Unique = Legendary frame, Rare = Epic, Legendary = Rare, Mythic = Epic) and the same QualityValue 1-6. The drop particles are SkyyGear's too (`SkyyGear/build_skyygear_0.1.py` `RARITIES`, by hue like the frame: Normal `Drop_Common`, Unique `Drop_Legendary`, Rare `Drop_Epic`, Legendary `Drop_Rare`, Mythic `Drop_Epic`; review fix 2026-09-28, was one particle per rank).
 - **Ids are SkyySacks-owned** (`Skyy_Bag_` prefix, unused in the repo). SkyyGear ships `Skyy_Gear_<Name>`. Two packs defining one asset id would depend on load order, so the ids must differ. Only the look is shared.
-- **Build-time colour check.** If a `SkyyGear/build_skyygear_*.py` exists, the SkyySacks build reads its newest copy as text. If its Wynn colour table can be found, it compares the four shared rarities plus Mythic and stops on a mismatch. Otherwise it prints a note. It never imports the script. This is the `_camp_defaults_check` pattern. SkyyGear owns the rarity look: if it picks other hexes or texture mapping, SkyySacks follows.
+- **Build-time look check.** If a `SkyyGear/build_skyygear_*.py` exists, the SkyySacks build reads its newest copy as text and parses its `RARITIES` tuples (`(id, name, hex, page hex, tooltip frame, slot frame, drop particle)`). For the four shared rarities plus Mythic it compares the tooltip hex, the frame art and the drop particle, and stops on a mismatch, so a Unique bag and Unique gear look and glow the same. A script that is missing, unreadable or mid-edit falls back to the SkyyGear spec 2.1 table (hexes only, it has no particle column) with a printed note; an unreadable source never stops the build. It never imports the script. This is the `_camp_defaults_check` pattern. SkyyGear owns the rarity look: if it picks other hexes, texture mapping or particles, SkyySacks follows.
 - **Mythic on the page.** `#aa00aa` on the page background `#0b1524` is contrast 2.9:1, too dark for big readable text. The bag page draws Mythic text in `#cc66cc` (about 5.5:1). The item tooltip keeps `#aa00aa` to match Wynn and SkyyGear `[SKYY?]`.
 - QualityValue stays below 8 (SkyyAuctions' technical threshold, 1.4).
 
@@ -537,7 +537,7 @@ Every read is optional and a missing key has a defined meaning, so the zero-depe
 2. **`caps()` trusts any `Skyy_Sack_<X>_<Y>`.** An unknown tier word (for example a 0.8 Rare bag read by a 0.7.6 jar) makes that type "carried" with cap 0, and any word becomes a type. 0.8.0 skips both (5.5).
 3. **Saved bag stacks store `"Quality": 5`** (Skyy's `universe/players/<uuid>.json`). Changing the asset quality alone would not change owned bags. Restamp (5.6).
 4. **SkyyCollections prints size names** ("Small Mining Bag"). 6.2.
-5. **Bolt sources.** Bolt of Linen and Bolt of Silk come only from the Loombench and from salvaging cloth armor. The Loombench's item `Bench_Loom` has quality Developer and its recipe has no bench requirement. Today's Medium and Large recipes already need these bolts. Check in game that players can get them before relying on the ladder's materials (test T15) `[SKYY?]`.
+5. **Bolt sources (resolved in 0.7.7).** Bolt of Linen / Silk / Cindercloth come only from the Loombench and from salvaging cloth armor. The Loombench's item `Bench_Loom` has quality Developer, its recipe has no bench requirement and needs 3 Cotton Scraps that no drop table gives; the cloth armor needs those bolts and never drops (VERIFIED `Assets.zip`). So the live 0.7.6 Medium / Large and the first 0.7.7 draft could not be crafted in survival. 0.7.7 uses mob-dropped Linen / Shadoweave / Cindercloth Scraps instead (3.1); the build checks each step material is NPC-dropped. Test T15 now means: a survival player can collect each scrap. Scraps per step (6) = placeholder `[SKYY?]`.
 6. **Wheat had no Small Farming Bag row** because Small was free. The ladder gives every type four rows.
 7. **Bags are tradeable** (AH default, OPEN-QUESTIONS AH 15). The collection gate covers crafting, not trading (question 7).
 
