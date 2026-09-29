@@ -30,15 +30,36 @@ THIS FILE IS BUILT IN TWO PARTS (Skyy / RESUME step 4). PART A = this build. PAR
     - live stats (4.3): GearShotTrack (SkyyClasses ShotTrack copy: what a shooter held at launch), GearHitSys (Filter, BEFORE
       DamageSystems$ArmorDamageReduction: gate + Damage % / Strength or Magical Power / flat elements / crit / overcrit on weapon hits,
       pre-armor capture), GearArmorSys (AFTER it: the copied engine armor formula over only the active pieces, then Defense),
-      GearTrueSys (AFTER GearArmorSys: + True Damage), GearLeechSys (Inspect: Life Steal / Mana Steal owed); GearFx (GearTick every
-      second + GearFxInvSys on every inventory change): skyygear_lock_<stat> MAX modifiers cancelling under-level armor's own Health
-      / Mana / Stamina ..., Raw Health Regen x (1 + Health Regen %) and Stamina Regen every regen.periodMs, Life Steal payout every
-      steal.windowS, Mana Steal, Speed through skyymove protocol v1 (source gear.armor, layer flat).
+      GearTrueSys (AFTER GearArmorSys: + True Damage + the flat element damage, lock 17), GearLeechSys (Inspect: Life Steal / Mana
+      Steal owed); GearFx (GearTick every second + GearFxInvSys on armor-container changes + GearLockSys every tick BEFORE
+      EntityStatsSystems$Recalculate): skyygear_lock_<stat> MAX modifiers cancelling under-level armor's own Health / Mana /
+      Stamina ... (x BrokenPenalties armor factor for broken pieces), Raw Health Regen x (1 + Health Regen %) and Stamina Regen
+      every regen.periodMs, Life Steal payout every steal.windowS, Mana Steal, Speed through skyymove protocol v1 (source
+      gear.armor, layer flat).
+  REVIEW FIXES (2026-09-29, research/SkyyGear-0.1-Review-Findings.md; version stays 0.1, not deployed yet):
+    - the armor lock never eats CURRENT Health / Mana / Stamina (engine review 1). EntityStatValue.putModifier / removeModifier
+      recompute max and clamp the current value at once (VERIFIED bytecode), and the engine only adds a piece's own stats at
+      EntityStatsSystems$Recalculate (LegacyArmorChangeStatSystem.scheduleRecalculate -> StatModifiersManager.applyStatModifiers,
+      one MAX modifier per calculation type under CalculationType.createKey("Armor")). So a lock only GROWS in the 1 s tick and
+      only when the engine's own Armor modifier already equals the container's sum for that stat (GearFx.plan: the piece's +sum is
+      in, so -sum lands on the final max); a lock SHRINKS at once (always safe: max only goes up) from GearFxInvSys, from the tick
+      and from GearLockSys, ordered BEFORE Recalculate so an unequipped piece's lock is gone before the engine drops its +sum.
+    - projectile hits take the launcher's stats from the newest live launch record (exploit 1); armor in the hand is never judged
+      as a weapon (engine 3); stackable gear (spears, spellbooks) is rolled / stamped per item: stacks are split into single items
+      in empty slots, storage first (the /gear give order), counted before and after; what does not fit stays one stack (exploit
+      2; no MaxStack override - splitting keeps the vanilla item assets); Weapon_Shortbow_Bomb is gear (exploit 3); migrated armor
+      drops dmg (exploit 4); migrate.clampToLevel (exploit 5); the resolved Skyy_Gear_* quality indices persist in
+      Skyy_SkyyGear/quality.properties and a stale / unknown stack quality is rewritten (engine 4); GearLog writes outside its
+      lock, GearCfg.writeAtomic = temp + fsync + ATOMIC_MOVE (engine 6, 7); gear.include + kind.prefix + an Equipment slot letter
+      (design 1), one totals function + the gear:extra:<uuid> bridge string (design 2), vanilla #ff6b6b / #39f493 (design 3),
+      Mythic #CC66CC (design 4), Health Regen % rolls only with Raw Health Regen (design 5), element damage after armor (design 8),
+      identify texts follow identify.command (design 9), 5 more coming-later Keep stats (design 11).
     - level enforcement: weapon (main hand + utility slot, projectiles by launch record + the 10 s shot window) above the gate level
       or unidentified -> amount 0 + cancelled + knockback removed + GearGate.popup (gear.blockedPopup gates only the popup); armor
       above the level or unidentified -> no SkyyGear stats, native Health / resistance cancelled (level.armorNative), one
       gear.armorWarn chat line each time a piece becomes inactive.
-  Bare-JVM harness (spec 11.1 #3): kept outside the repo (scratch, deleted after the run; the second builder's report describes it).
+  Bare-JVM harness (spec 11.1 #3): SkyyGear/test_skyygear_0.1.py (load + verify every class under -Xverify:all, then the review
+  fixes that a bare JVM can reach; scratch in tools/dev/scratch/, deleted after the run).
 
 Commands (spec 8.1):
   /reforge                 player (hytale:Adventurer): the Reforge page (vanilla item-repair look): pick a weapon or armor piece,
@@ -52,7 +73,11 @@ Commands (spec 8.1):
                            ADMIN: requirePermission("skyygear.admin") + setPermissionGroups(new String[0]) on every sub-command
                            (lint perm_group_leaks); the root /gear lists hytale:Adventurer.
 Data: <world>/mods/Skyy_SkyyGear/ (getDataDirectory().resolveSibling): config.properties (the kit's rows), config-changes.log +
-  config-history/ (kit, KEEP 10), players/<pkey>.properties (noticeShown), gear.log (rotated at 5 MB).
+  config-history/ (kit, KEEP 10), players/<pkey>.properties (noticeShown), gear.log (rotated at 5 MB), quality.properties (the
+  Skyy_Gear_* quality indices of the last start, engine review 4).
+Bridge in (design review 2): gear:extra:<uuid> = "str:40,cc:10,..." (stat keys of section 4.2) another mod publishes (Accessory
+  Power, the Equipment bar, set bonuses, powders later); SkyyGear adds it to the active totals it applies (combat, Defense, regen,
+  steal, Speed). gear:stats:<uuid> stays SkyyGear's own items only, so a publisher never reads its own values back.
 UI rules: inline pages only, no underscores in ids, root anchor Width/Height only, TextButton / Button + EventData, no periodic
   updates, never close-then-open, no ItemGridSlot at all (icons are ItemIcon { ItemId } = metadata free).
 Vanilla look (spec 5.8, AGENT-BRIEF "UI LOOK"): the values in VANILLA below are copied from Assets.zip Common/UI/Custom/Common.ui,
@@ -250,7 +275,8 @@ RARITIES = [
     ("rare", "Rare", "#FF55FF", "#FF55FF", "Epic", "Epic", "Drop_Epic"),
     ("legendary", "Legendary", "#55FFFF", "#55FFFF", "Rare", "Rare", "Drop_Rare"),
     ("fabled", "Fabled", "#FF5555", "#FF5555", "Common", "Developer", "Drop_Legendary"),
-    ("mythic", "Mythic", "#AA00AA", "#CC66CC", "Epic", "Epic", "Drop_Epic"),
+    # design review 4: Wynn's #AA00AA reads at ~2.8:1 on the tooltip; #CC66CC (still purple, LOCKED colour name) is SkyySacks' choice
+    ("mythic", "Mythic", "#CC66CC", "#CC66CC", "Epic", "Epic", "Drop_Epic"),
     ("set", "Set", "#55FF55", "#55FF55", "Uncommon", "Uncommon", "Drop_Uncommon"),
 ]
 NR = len(RARITIES)
@@ -284,12 +310,14 @@ for _r in R_IDS:
     assert 0 <= lo <= hi <= 1000
 
 # ================================================================= spec 4.2: the modifier pool (Keep rows only)
-# key, label, slots (w = any gear weapon, s = spell weapon only, a = armor), unit ("%" or ""), max @100 % (PLACEHOLDER),
-# weight (PLACEHOLDER), live (1 = 0.1 applies it - PART B code; 0 = "(coming later)"), suffix kind
+# key, label, slots (w = any gear weapon, s = spell weapon only, a = armor, e = Equipment - design review 1: the Equipment bar is
+# a later stage; e marks the rows SkyyGear-Plan names for Equipment: Strength lock 16, Attack Speed lock 18, Speed lock 25,
+# Magical Power lock 103), unit ("%" or ""), max @100 % (PLACEHOLDER), weight (PLACEHOLDER), live (1 = 0.1 applies it - PART B
+# code; 0 = "(coming later)"), suffix kind
 STATS = [
     ("dmg", "Damage", "w", "%", 30, 10, 1, ""),
-    ("str", "Strength", "wa", "", 25, 10, 1, ""),
-    ("mp", "Magical Power", "sa", "", 25, 10, 1, "spells"),
+    ("str", "Strength", "wae", "", 25, 10, 1, ""),
+    ("mp", "Magical Power", "sae", "", 25, 10, 1, "spells"),
     ("cc", "Crit Chance", "wa", "%", 15, 10, 1, ""),
     ("cd", "Crit Damage", "wa", "%", 30, 10, 1, ""),
     ("tdmg", "True Damage", "w", "", 5, 5, 1, ""),
@@ -304,11 +332,11 @@ STATS = [
     ("msteal", "Mana Steal", "s", "", 3, 5, 1, "steal"),
     ("lsteal", "Life Steal", "wa", "%", 5, 5, 1, "steal"),
     ("hpr", "Raw Health Regen", "wa", "", 2, 5, 1, "regen"),
-    ("hprp", "Health Regen", "wa", "%", 20, 5, 1, "hprp"),
+    ("hprp", "Health Regen %", "wa", "%", 20, 5, 1, "hprp"),      # design review 5: the catalog's "% Health Regen"
     ("def", "Defense", "a", "", 25, 10, 1, ""),
-    ("spd", "Speed", "a", "", 5, 10, 1, ""),
+    ("spd", "Speed", "ae", "", 5, 10, 1, ""),
     ("stam", "Stamina Regen", "a", "", 2, 5, 1, "regen"),
-    ("as", "Attack Speed", "wa", "%", 10, 5, 0, ""),
+    ("as", "Attack Speed", "wae", "%", 10, 5, 0, ""),
     ("fer", "Ferocity", "wa", "", 10, 5, 0, ""),
     ("thorns", "Thorns", "a", "%", 10, 5, 0, ""),
     ("expl", "Exploding", "w", "%", 10, 5, 0, ""),
@@ -322,15 +350,23 @@ STATS = [
     ("dFire", "Fire Defence", "a", "", 10, 3, 0, ""),
     ("dAir", "Air Defence", "a", "", 10, 3, 0, ""),
     ("cwis", "Combat Wisdom", "wa", "%", 10, 5, 0, ""),
+    # design review 11: the Keep rows of Plan lock 124 that spec 4.2 left out (placement not stated, spec Q15 -> lock 125's general
+    # rule: any combat gear). Coming later, small PLACEHOLDER weights.
+    ("lbonus", "Loot Bonus", "wa", "%", 10, 2, 0, ""),
+    ("lquality", "Loot Quality", "wa", "%", 10, 2, 0, ""),
+    ("stealing", "Stealing", "wa", "%", 5, 2, 0, ""),
+    ("trophy", "Trophy Hunter", "wa", "%", 10, 2, 0, ""),
+    ("xpb", "XP Bonus", "wa", "%", 5, 2, 0, ""),
 ]
 NS = len(STATS)
 S_KEYS = [s[0] for s in STATS]
 assert len(set(S_KEYS)) == NS, "duplicate stat key"
 SPEC_KEYS = ("dmg str mp cc cd tdmg fEarth fThunder fWater fFire fAir rThunder rWater rElem msteal lsteal hpr hprp def spd stam "
              "as fer thorns expl poison kb slow weak dEarth dThunder dWater dFire dAir cwis").split()
-assert S_KEYS == SPEC_KEYS, "the stat table must match spec 4.2 (keys + display order)"
+LATER_KEYS = "lbonus lquality stealing trophy xpb".split()      # design review 11, appended after the spec 4.2 rows
+assert S_KEYS == SPEC_KEYS + LATER_KEYS, "the stat table must match spec 4.2 (keys + display order) + the design-review rows"
 for _s in STATS:
-    assert re.match(r"^[a-z][a-zA-Z]*$", _s[0]) and _s[2] in ("w", "s", "a", "wa", "sa") and _s[3] in ("", "%"), _s
+    assert re.match(r"^[a-z][a-zA-Z]*$", _s[0]) and re.match(r"^(?!.*(.).*\1)[wsae]{1,4}$", _s[2]) and _s[3] in ("", "%"), _s
     assert _s[4] > 0 and _s[5] >= 0 and _s[6] in (0, 1) and _s[7] in ("", "spells", "elem", "steal", "regen", "hprp"), _s
     assert '"' not in _s[1] and "|" not in _s[1], _s
 assert [s[0] for s in STATS if s[6] == 1] == SPEC_KEYS[:21], "live stats = spec 4.2 LIVE rows"
@@ -338,7 +374,12 @@ assert [s[0] for s in STATS if s[6] == 1] == SPEC_KEYS[:21], "live stats = spec 
 # ================================================================= spec 3.3: the gate skill per gear kind (LOCKED)
 GATE_BY_KIND = [("combat", "class"), ("mining", "Mining"), ("foraging", "Foraging"), ("farming", "Farming"), ("tool", ""),
                 ("equipment", "class"), ("accessory", "")]
-ENFORCED_KINDS = ["combat"]
+# the kinds whose gate 0.1 enforces: combat, and Equipment (same class gate, spec 1.4) so the Equipment stage needs no code edit;
+# the gathering kinds get enforced with their own hooks (block break, harvest) in the gathering stage
+ENFORCED_KINDS = ["combat", "equipment"]
+# design review 1: the kinds kind.prefix may name (Server Setup table), and the ids that are never gear, even through gear.include
+KIND_CHOICES = ["combat", "mining", "foraging", "farming", "equipment"]
+NEVER_GEAR = ["Skyy_Sack_", "Skyy_Bag_", "Skyy_Accessory_Bag"]     # Magic Bags, bag upgrade items, the Accessory Bag
 # spec 1.6 tool families of SkyyRolls-rolled tools (VERIFIED families in Assets.zip); every other Tool_* -> kind "tool", no gate
 TOOL_FAMILIES = [("Tool_Pickaxe_", "mining"), ("Tool_Hatchet_", "foraging"), ("Tool_Hoe_", "farming"), ("Tool_Sickle_", "farming"),
                  ("Tool_Shovel_", "mining")]
@@ -356,6 +397,17 @@ EXCLUDE_DEF = ",".join(["Weapon_Shield_", "Weapon_Bomb", "Weapon_Gun", "Weapon_D
 AMMO = ["arrow", "arrows", "bolt", "bolts", "bomb", "bombs", "dart", "darts", "grenade", "grenades", "ammo", "bullet", "bullets",
         "shell", "shells", "shuriken", "shurikens", "thrown"]
 SPELL_PREFIXES = ["Weapon_Staff_", "Weapon_Wand_", "Weapon_Spellbook_"]
+# exploit review 3: only the token right after the family counts (GearData.ammo = parts[1]). Build check against Assets.zip: the
+# 14 real ammo ids stay ammo, and the only id the old any-token rule caught besides them is the Archer shortbow Weapon_Shortbow_Bomb.
+_W_IDS = sorted(set(os.path.basename(n)[:-5] for n in AZ_NAMES if n.startswith("Server/Item/Items/") and n.endswith(".json")
+                    and os.path.basename(n).startswith("Weapon_")))
+_AMMO_NEW = [i for i in _W_IDS if len(i.split("_")) > 1 and i.split("_")[1].lower() in AMMO]
+_AMMO_OLD = [i for i in _W_IDS if any(p.lower() in AMMO for p in i.split("_")[1:])]
+AMMO_IDS = ["Weapon_Arrow_Clearshot", "Weapon_Arrow_Crude", "Weapon_Arrow_Deadeye", "Weapon_Arrow_Iron", "Weapon_Arrow_Trueshot",
+            "Weapon_Bomb", "Weapon_Bomb_Continuous", "Weapon_Bomb_Fire", "Weapon_Bomb_Large_Fire", "Weapon_Bomb_Popberry",
+            "Weapon_Bomb_Potion_Poison", "Weapon_Bomb_Stun", "Weapon_Dart_Tribal", "Weapon_Grenade_Frag"]
+assert _AMMO_NEW == AMMO_IDS, "ammo ids changed in Assets.zip: %s" % _AMMO_NEW
+assert sorted(set(_AMMO_OLD) - set(_AMMO_NEW)) == ["Weapon_Shortbow_Bomb"], sorted(set(_AMMO_OLD) - set(_AMMO_NEW))
 # spec 3.2 default material table (PLACEHOLDER)
 MATERIALS = [("Crude", 0), ("Wood", 0), ("Copper", 10), ("Bronze", 15), ("Iron", 20), ("Thorium", 30), ("Cobalt", 35),
              ("Adamantite", 40), ("Mithril", 50), ("Onyxium", 50)]
@@ -397,7 +449,8 @@ for _r in RARITIES:
 # (read-only build checks against the game's own UI documents; nothing here is shipped - every page is built inline. The folder
 #  and the document names are kept apart so tools/ci/lint.py's ".ui file" rule never mistakes these reads for a shipped file.)
 _VDIR = "Common/" + "UI/Custom/"
-_VDOC = dict(common="Common", sounds="Sounds", page="Pages/ItemRepairPage", element="Pages/ItemRepairElement")
+_VDOC = dict(common="Common", sounds="Sounds", page="Pages/ItemRepairPage", element="Pages/ItemRepairElement",
+             bad="Pages/AssetPackSaveBrowser", ok="Pages/Memories/MemoriesCategory")
 
 
 def vdoc(k):
@@ -433,6 +486,11 @@ for _needle in ('@ButtonsLightActivate = "Sounds/ButtonsLightActivate.ogg";', '@
                 '@ButtonsCancelActivate = "Sounds/ButtonsCancelActivate.ogg";'):
     assert _needle in SOUNDS_UI, "Sounds.ui changed: " + _needle
 assert "$C.@DecoratedContainer" in REPAIR_UI and "TopScrolling" in REPAIR_UI and "@DefaultScrollbarStyle" in REPAIR_UI
+# design review 3: the refusal / too-low red and the "met" green are the game's own label colours (not the rarity reds / greens)
+V_BAD = "#ff6b6b"                 # vanilla error label (AssetPackSaveBrowser, PrefabSavePage, ...)
+V_OK = "#39f493"                  # vanilla counter "complete" green (MemoriesCategory)
+assert ("TextColor: " + V_BAD) in vdoc("bad"), "vanilla error red changed"
+assert ("TextColor: " + V_OK) in vdoc("ok"), "vanilla complete green changed"
 assert "Background: #000000(0.2)" in REPAIR_EL and "TextColor: #ffffff(0.6)" in REPAIR_EL and "Anchor: (Width: 32, Height: 32)" in REPAIR_EL
 V_TEXTURES = ["Common/ContainerHeader.png", "Common/ContainerPatch.png", "Common/ContainerDecorationTop.png",
               "Common/ContainerDecorationBottom.png", "Common/ContainerVerticalSeparator.png", "Common/Buttons/Primary.png",
@@ -477,6 +535,8 @@ CFG_FILE = "Skyy_SkyyGear/config.properties"
 CFG_CATS = [("general", "General"), ("rarity", "Rarity"), ("levels", "Levels"), ("stats", "Stats"), ("costs", "Costs"),
             ("drops", "Drops + craft"), ("combat", "Combat"), ("migrate", "Migration")]
 PH = " Placeholder - Skyy tunes this."
+STAT_LEGEND = "dmg Damage, str Strength, mp Magical Power, cc/cd Crit Chance/Damage, tdmg True Damage, def Defense"
+assert len(STAT_LEGEND) <= 100, len(STAT_LEGEND)
 _rch = ",".join("%s|%s" % (r[0], r[1]) for r in RARITIES[:6])
 _mch = ",".join("%s|%s" % (r[0], r[1]) for r in RARITIES[:5])
 CFG_ROWS = [
@@ -496,16 +556,22 @@ CFG_ROWS = [
     ("gear.exclude", "Weapon prefixes that are not gear", "general", "text", EXCLUDE_DEF, "0", "2000", "", "", "live,adv",
      "Comma list of Weapon_ id prefixes that never get rarity or level (shields, bombs, guns ...).",
      "field:GearCfg.EXCLUDE"),
+    # design review 1: later stages (Equipment, gathering gear, Skyy_ items) opt in here instead of a code edit
+    ("gear.include", "Extra id prefixes that are gear", "general", "text", "", "0", "2000", "", "", "live,adv",
+     "Comma list of id prefixes that count as gear too (Skyy_ ids allowed; bags never are).", "field:GearCfg.INCLUDE"),
+    ("kind.prefix", "Gear kind by id prefix", "general", "table", "", "", "20", "text;type;Kind", "", "live,adv",
+     "combat, mining, foraging, farming or equipment: picks the pool + gate skill. Longest prefix wins.",
+     "reload@%s:kind.prefix.;check=GearCfg.checkKind" % CFG_FILE),
     ("ui.frames", "Vanilla frames on gear pages", "general", "bool", "true", "", "", "", "", "live,adv",
      "Reforge and Identify use the game's own frame textures and sounds. Off = flat colours.", "field:GearCfg.UI_FRAMES"),
     ("pool.later", "Roll coming-later stats", "stats", "bool", "true", "", "", "", "", "live",
-     "Stats that do nothing yet (Ferocity, Thorns ...) may roll, shown grey (coming later).", "field:GearCfg.POOL_LATER"),
+     "Stats that do nothing yet (Ferocity, Thorns) may roll, shown grey." + PH, "field:GearCfg.POOL_LATER"),
     ("rarity", "Modifiers and roll power by rarity", "rarity", "table", "", "0", "1000", "int;none;Mods|Low %|High %", "",
      "live,danger", "Modifier count per rarity and roll power in % of the stat max." + PH,
      "reload@%s:rarity.;check=GearCfg.checkRarity" % CFG_FILE),
+    # design review 7: the help is a legend of the short keys (every key with its name sits above its line in config.properties)
     ("stat", "Stat max and weight", "stats", "table", "", "0", "100000", "int;none;Max at 100%|Weight", "", "live,danger",
-     "Value at 100 % power on full-level gear, and roll weight (0 = never)." + PH,
-     "reload@%s:stats.;check=GearCfg.checkStat" % CFG_FILE),
+     STAT_LEGEND, "reload@%s:stats.;check=GearCfg.checkStat" % CFG_FILE),
     ("stat.levelFloor", "Modifier power at item level 0", "stats", "int", "25", "1", "100", "", "%", "live,danger",
      "Level-0 gear rolls at this % of full power (100 = no level scaling)." + PH, "field:GearCfg.LEVEL_FLOOR"),
     ("stat.levelFull", "Item level with full modifier power", "stats", "int", "50", "1", "100", "", "", "live,danger",
@@ -518,7 +584,7 @@ CFG_ROWS = [
     ("smith.cap", "Smithing rarity cap", "drops", "dec", "50", "0", "100", "", "%", "live,danger",
      "The Smithing step-up chance never goes above this." + PH, "field:GearCfg.SMITH_CAP"),
     ("craft.maxRarity", "Best rarity from crafting", "drops", "choice", "fabled", "", "", _rch, "", "live,danger",
-     "Crafting (Smithing included) never makes a better rarity than this.", "field:GearCfg.CRAFT_MAX"),
+     "Crafting (Smithing included) never makes a better rarity than this." + PH, "field:GearCfg.CRAFT_MAX"),
     ("level.material", "Level by material", "levels", "table", "", "0", "100", "int;type;Level", "", "live",
      "Level for gear of this material (first matching word of the id)." + PH,
      "reload@%s:level.material." % CFG_FILE),
@@ -532,7 +598,7 @@ CFG_ROWS = [
     ("level.noSkills", "Without SkyySkills", "levels", "choice", "pass", "", "", "pass|Allow all,block|Block", "", "live",
      "When SkyySkills is missing the level cannot be checked: allow all gear or block it.", "field:GearCfg.NO_SKILLS"),
     ("level.armorNative", "Under-level armor loses Hytale stats", "levels", "bool", "true", "", "", "", "", "live",
-     "Armor above your level also loses its own Health and protection (off = only SkyyGear stats).",
+     "Under-level armor loses its Health + protection (off = mods only)." + PH,
      "field:GearCfg.ARMOR_NATIVE"),
     ("cost.reforge", "Reforge cost", "costs", "table", "", "0", "1000000000000", "int;none;Base|Per level", "coins",
      "live,danger", "Coins per reforge by rarity: base + per level x item level." + PH,
@@ -558,7 +624,7 @@ CFG_ROWS = [
     ("steal.windowS", "Life / Mana Steal window", "combat", "int", "3", "1", "60", "", "s", "live",
      "Life Steal and Mana Steal pay out at most once per this many seconds.", "field:GearCfg.STEAL_S"),
     ("regen.periodMs", "Regen tick", "combat", "int", "2000", "250", "60000", "", "ms", "live",
-     "Health Regen and Stamina Regen from gear apply once per this many ms.", "field:GearCfg.REGEN_MS"),
+     "Health Regen and Stamina Regen from gear apply once per this many ms." + PH, "field:GearCfg.REGEN_MS"),
     ("speed.per", "Speed per point", "combat", "dec", "1", "0", "100", "", "%", "live,danger",
      "Each Speed point adds this % of the default walk speed." + PH, "field:GearCfg.SPEED_PER"),
     ("migrate.by", "Old SkyyRolls rarity from", "migrate", "choice", "stats", "", "",
@@ -569,7 +635,12 @@ CFG_ROWS = [
      "Old SkyyRolls score (0-100) needed for each rarity; lower = Normal." + PH,
      "reload@%s:migrate.map.;check=GearCfg.checkMigKey" % CFG_FILE),
     ("migrate.maxRarity", "Best rarity for old SkyyRolls items", "migrate", "choice", "fabled", "", "", _mch, "", "new,danger",
-     "An old SkyyRolls item never moves over better than this (never Mythic or Set).", "field:GearCfg.MIGRATE_MAX"),
+     "Old SkyyRolls items move over no better than this (never Mythic/Set)." + PH, "field:GearCfg.MIGRATE_MAX"),
+    # exploit review 5 (policy): off = the LOCKED "rolled items keep their rolls"; on = each value capped at the best roll its new
+    # rarity can make at the item's level (GearRoll.bounds high end)
+    ("migrate.clampToLevel", "Cap old rolls at the new roll range", "migrate", "bool", "false", "", "", "", "", "new,danger",
+     "Off = old SkyyRolls values stay (locked). On = each is capped at the top roll of its rarity + level.",
+     "field:GearCfg.MIGRATE_CLAMP"),
 ]
 _bad = ["%s help %d" % (_r[0], len(_r[10])) for _r in CFG_ROWS if len(_r[10]) > 100] +        ["%s label %d" % (_r[0], len(_r[1])) for _r in CFG_ROWS if len(_r[1]) > 40]
 assert not _bad, "config row text too long: %s" % _bad
@@ -577,9 +648,14 @@ assert not _bad, "config row text too long: %s" % _bad
 _DANGER = {"part.gate", "part.stats", "part.craft", "part.drops", "part.chests", "rarity", "stat", "stat.levelFloor", "stat.levelFull",
            "odds", "smith.perLevel", "smith.cap", "craft.maxRarity", "cost.reforge", "cost.identify", "xp.reforge", "combat.strPer",
            "combat.mpPer", "combat.defScale", "crit.base", "crit.baseDamage", "speed.per", "migrate.by", "migrate.map",
-           "migrate.maxRarity"}
+           "migrate.maxRarity", "migrate.clampToLevel"}
 for _r in CFG_ROWS:
     assert (("danger" in _r[9].split(",")) == (_r[0] in _DANGER)), "danger flag mismatch: " + _r[0]
+# design review 10: these help lines carry the Placeholder suffix too
+for _r in CFG_ROWS:
+    if _r[0] in ("craft.maxRarity", "migrate.maxRarity", "regen.periodMs", "pool.later", "level.armorNative"):
+        assert _r[10].endswith(PH), "missing the Placeholder suffix: " + _r[0]
+assert "(spec" not in "".join(_r[10] for _r in CFG_ROWS)
 
 
 def _dn(x):
@@ -595,13 +671,20 @@ def default_text():
         L.append("# %s: %s" % (rows[k][1], rows[k][10]))
         L.append("%s=%s" % (k, rows[k][4]))
     L.append("# ---- general ----")
-    for k in ("part.gate", "part.stats", "part.craft", "part.drops", "part.chests", "identify.command", "gear.exclude", "ui.frames"):
+    for k in ("part.gate", "part.stats", "part.craft", "part.drops", "part.chests", "identify.command", "gear.exclude", "gear.include",
+              "ui.frames"):
         scal(k)
+    L += ["# ---- kind.prefix.<id prefix>=<combat|mining|foraging|farming|equipment> (Gear kind by id prefix; none by default:",
+          "#      Weapon_ / Armor_ = combat, SkyyRolls tools by family). Example: kind.prefix.Skyy_Ring_=equipment ----"]
     L += ["", "# ---- rarity: rarity.<id>=<modifiers>,<low %>,<high %> (spec 2.2) ----"]
     for r in R_IDS:
         L.append("rarity.%s=%d,%d,%d" % ((r,) + RARITY_DEF[r]))
-    L += ["", "# ---- stats: stats.<key>=<max at 100 % power>,<weight> (spec 4.2; weight 0 = never rolls) ----"]
+    L += ["", "# ---- stats: stats.<key>=<max at 100 % power>,<weight> (spec 4.2; weight 0 = never rolls); the line above each"
+          " names it ----"]
+    _where = {"w": "weapon", "s": "spell weapon", "a": "armor", "e": "Equipment"}
     for s in STATS:
+        L.append("# %s = %s (%s%s%s)" % (s[0], s[1], ", ".join(_where[c] for c in s[2]), ", %" if s[3] == "%" else "",
+                                        "" if s[6] else ", coming later"))
         L.append("stats.%s=%d,%d" % (s[0], s[4], s[5]))
     for k in ("pool.later", "stat.levelFloor", "stat.levelFull"):
         scal(k)
@@ -632,6 +715,7 @@ def default_text():
     for r in MIG_IDS:
         L.append("migrate.map.%s=%d" % (r, MIG_DEF[r]))
     scal("migrate.maxRarity")
+    scal("migrate.clampToLevel")
     return "\n".join(L) + "\n"
 
 
@@ -650,6 +734,7 @@ gu   = mk("Gear")            # util: log, bridge, busy, epoch, pkey, text helper
 gdf  = mk("GearDefs")        # tables generated from the Python lists above
 gcf  = mk("GearCfg")         # config fields (kit-bound) + tables + loader + checks
 glg  = mk("GearLog")         # gear.log (queued, rotated at 5 MB)
+gql  = mk("GearQual")        # quality.properties: the Skyy_Gear_* quality indices of the last start (engine review 4)
 gdt  = mk("GearData")        # the gear document: id rules, read, migrate, write
 glv  = mk("GearLevel")       # level lookup + level factor
 grl  = mk("GearRoll")        # SecureRandom rolls: rarity, modifiers, reforge, identify, crafted gear
@@ -780,6 +865,16 @@ for c, m in ((PB["DMG"], "getAmount"), (PB["DMG"], "setAmount"), (PB["DMG"], "ge
     B.probe(pool, c, m)
 for _c in (PB["SDEP"], PB["ORD"], PB["ROLE"]):
     pool.get(_c)
+# review-fix probes (2026-09-29): stack split, armor-container check, the engine Armor key, broken penalties, the lock pass order
+for c, m in ((IS, "withQuantity"), (ICE, "getItemContainer"), (ICE, "getInventory"), (CAL, "createKey"), (WLD, "getGameplayConfig"),
+             ("com.hypixel.hytale.server.core.asset.type.gameplay.GameplayConfig", "getItemDurabilityConfig"),
+             ("com.hypixel.hytale.server.core.asset.type.gameplay.ItemDurabilityConfig", "getBrokenPenalties"),
+             ("com.hypixel.hytale.server.core.asset.type.gameplay.BrokenPenalties", "getArmor"),
+             ("com.hypixel.hytale.server.core.modules.entitystats.EntityStatsSystems$Recalculate", "tick"),
+             ("com.hypixel.hytale.server.core.inventory.InventorySystems$LegacyArmorChangeStatSystem", "tick"),
+             ("com.hypixel.hytale.server.core.entity.StatModifiersManager", "recalculateEntityStatModifiers"),
+             ("com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue", "computeModifiers")):
+    B.probe(pool, c, m)
 MV.probe(B, pool)
 # the vanilla armor effects under-level armor does NOT cancel in 0.1 (spec 3.5 part 4): listed here and logged once at start
 _KNOWN_LIMIT_KEYS = ("DamageClassEnhancement", "KnockbackResistances", "KnockbackEnhancements", "DamageEnhancement", "Regenerating",
@@ -813,7 +908,8 @@ gdrs  = mk("GearDropSys", PB["RSYS"])    # RefSystem ItemComponent: tags death d
 gcm1  = mk("GearChestMark", PB["RSYS"])  # ChunkStore, BEFORE StashPlugin$StashSystem
 gcm2  = mk("GearChestTag", PB["RSYS"])   # ChunkStore, AFTER StashPlugin$StashSystem
 gfx   = mk("GearFx")                     # per-player stat effects (armor lock, regen, stamina, speed, steal payouts, armor warn)
-gfxi  = mk("GearFxInvSys", EES)          # InventoryChangeEvent -> armor lock + speed at once
+gfxi  = mk("GearFxInvSys", EES)          # InventoryChangeEvent of the armor container -> lower-only lock pass + speed at once
+glks  = mk("GearLockSys", ETS)           # every tick BEFORE EntityStatsSystems$Recalculate: lower-only lock pass (engine review 1)
 gbyb  = mk("GearByeB")                   # PlayerDisconnectEvent -> PART B state cleanup
 gidn  = mk("GearIdent")                  # the identify core (write safety 1.7, coins first, refund)
 ipg   = mk("IdentifyPage", PAGE)
@@ -825,11 +921,13 @@ gtsyU = mk("GearTrueSysU", PKG + ".GearTrueSys")
 gdmU  = mk("GearDeathMarkU", PKG + ".GearDeathMark")
 gcm1U = mk("GearChestMarkU", PKG + ".GearChestMark")
 gcm2U = mk("GearChestTagU", PKG + ".GearChestTag")
+glksU = mk("GearLockSysU", PKG + ".GearLockSys")
 PARTB_CLASSES = [(gmv, "move"), (ghit, "combat helpers"), (gsho, "shot record"), (gstk, "shot track"), (garm, "armor formula"),
                  (ghsy, "hit"), (garsy, "armor"), (gtsy, "true"), (glsy, "leech"), (gtag, "tag"), (gdm, "death mark"),
                  (gdrs, "drop tag"), (gcm1, "chest mark"), (gcm2, "chest tag"), (gfx, "effects"), (gfxi, "effects on change"),
-                 (gbyb, "cleanup"), (gidn, "identify core"), (ipg, "identify page"), (idc, "/identify"), (ghsyU, "fallback"),
-                 (garsU, "fallback"), (gtsyU, "fallback"), (gdmU, "fallback"), (gcm1U, "fallback"), (gcm2U, "fallback")]
+                 (glks, "lock pass"), (gbyb, "cleanup"), (gidn, "identify core"), (ipg, "identify page"), (idc, "/identify"),
+                 (ghsyU, "fallback"), (garsU, "fallback"), (gtsyU, "fallback"), (gdmU, "fallback"), (gcm1U, "fallback"),
+                 (gcm2U, "fallback"), (glksU, "fallback")]
 # ---------------------------------------------------------------- PART B PLUGS IN HERE (2/4): lines inside setup()
 # Java statements (with @TOKENS@) PART B needs in SkyyGearPlugin.setup(), after SkyyGear's own systems and commands, before the
 # bridge + kit publish: registerSystem calls (ordered with SystemDependency + unordered fallback + one WARN, spec 5.5), the
@@ -844,28 +942,39 @@ PARTB_SETUP = ["  @PKG@.GearFx.setup(this);",
 PARTB_TICK = "    @PKG@.GearFx.second(u, pr, cb, ref, inv);"
 
 # ================================================================= GearLog: gear.log (spec 8.2), queued, written on the scheduler
+# engine review 6: the class monitor (shared with kick(), which world threads reach through line()) is held only to swap the
+# queue out (take); the disk write runs outside it, under WLOCK, which only the writing threads (scheduler, shutdown) ever take.
 glg.addInterface(pool.get("java.lang.Runnable"))
 F(glg, "public static final java.util.concurrent.ConcurrentLinkedQueue Q = new java.util.concurrent.ConcurrentLinkedQueue();")
+F(glg, "public static final Object WLOCK = new Object();")
 F(glg, "public static volatile boolean SCHED = false;")
 F(glg, "public static volatile java.nio.file.Path FILE;")
 F(glg, "public static volatile boolean FAILED = false;")
 C(glg, "public GearLog() { }")
 M(glg, r"""
-public static synchronized void flush() {
+public static synchronized String take() {
   SCHED = false;
-  java.nio.file.Path f = FILE;
-  if (f == null) { Q.clear(); return; }
   StringBuilder sb = new StringBuilder();
   Object o = Q.poll();
   while (o != null) { sb.append((String) o).append('\n'); o = Q.poll(); }
-  if (sb.length() == 0) return;
+  return sb.toString();
+}""")
+M(glg, r"""
+public static void write(java.nio.file.Path f, String text) {
   try {
     java.nio.file.Files.createDirectories(f.getParent(), new java.nio.file.attribute.FileAttribute[0]);
     if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0]) && java.nio.file.Files.size(f) > 5242880L) {
       java.nio.file.Files.move(f, f.resolveSibling(f.getFileName().toString() + ".1"), new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
     }
-    java.nio.file.Files.write(f, sb.toString().getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND });
+    java.nio.file.Files.write(f, text.getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND });
   } catch (Throwable t) { if (!FAILED) { FAILED = true; System.err.println("[SkyyGear] could not write gear.log: " + t); } }
+}""")
+M(glg, r"""
+public static void flush() {
+  String text = take();
+  java.nio.file.Path f = FILE;
+  if (f == null || text.length() == 0) return;
+  synchronized (WLOCK) { write(f, text); }
 }""")
 M(glg, "public void run() { flush(); }")
 M(glg, r"""
@@ -1008,6 +1117,11 @@ M(gu, r"""
 public static int quality(@IS@ s) {
   try { return s == null ? Integer.MIN_VALUE : s.getQualityIndex(); } catch (Throwable t) { return Integer.MIN_VALUE; }
 }""")
+# the item's own quality index (what getQualityIndex answers for a stack without its own); MIN_VALUE when unreadable
+M(gu, r"""
+public static int ownQuality(@IS@ s) {
+  try { @ITM@ it = s == null ? null : s.getItem(); return it == null ? Integer.MIN_VALUE : it.getQualityIndex(); } catch (Throwable t) { return Integer.MIN_VALUE; }
+}""")
 M(gu, r"""
 public static boolean admin(java.util.UUID u) {
   try { return u != null && @PERM@.get().hasPermission(u, "skyygear.admin"); } catch (Throwable t) { return false; }
@@ -1086,8 +1200,12 @@ F(gdf, 'public static final String C_GRAY = "#878e9c";')      # @ColorGrayCaptio
 F(gdf, 'public static final String C_LABEL = "#96a9be";')     # @ColorDefaultLabel
 F(gdf, 'public static final String C_GOLD = "#E8A93B";')      # @ColorGoldHighlight: costs
 F(gdf, 'public static final String C_DIS = "#797b7c";')       # @ColorDisabled
-F(gdf, 'public static final String C_OK = "#55FF55";')        # gate line green (Wynn) until step 5 names a vanilla success colour
-F(gdf, 'public static final String C_BAD = "#FF5555";')       # gate line red (Wynn)
+F(gdf, 'public static final String C_OK = "%s";' % V_OK)      # design review 3: vanilla "met" green (MemoriesCategory counter)
+F(gdf, 'public static final String C_BAD = "%s";' % V_BAD)    # vanilla error red: too low / refused, everywhere (tooltip, popup, pages)
+F(gdf, "public static final String[] NEVER = %s;" % jarr(NEVER_GEAR))
+F(gdf, "public static final String[] KIND_CHOICES = %s;" % jarr(KIND_CHOICES))
+F(gdf, "public static final int I_HPR = %d;" % S_KEYS.index("hpr"))
+F(gdf, "public static final int I_HPRP = %d;" % S_KEYS.index("hprp"))
 M(gdf, r"""
 public static int rIndex(String id) {
   if (id == null) return -1;
@@ -1119,31 +1237,10 @@ public static String classSkill(String cls) {
   for (int i = 0; i < CL_NAME.length; i++) if (CL_NAME[i].equalsIgnoreCase(cls)) return CL_SKILL[i];
   return null;
 }""")
-# quality asset index per rarity (resolved once; -1 = the plugin quality asset is not loaded -> fallback 2.1: name colour only)
+# quality asset index per rarity (resolved once; -1 = the plugin quality asset is not loaded -> fallback 2.1: name colour only).
+# qIndex itself sits in the GearQual block (after GearCfg): it compares with the indices of the last start (engine review 4).
 F(gdf, "public static volatile int[] QIDX = null;")
 F(gdf, "public static volatile long QMISS = 0L;")
-M(gdf, r"""
-public static int qIndex(int r) {
-  int[] q = QIDX;
-  if (q == null || (QMISS > 0L && System.currentTimeMillis() - QMISS > 60000L)) {
-    q = new int[R_QID.length];
-    boolean miss = false;
-    for (int i = 0; i < R_QID.length; i++) {
-      q[i] = -1;
-      try {
-        int ix = @IQ@.getAssetMap().getIndex(R_QID[i]);
-        Object a = ix < 0 ? null : @IQ@.getAssetMap().getAsset(ix);
-        if (a instanceof @IQ@ && R_QID[i].equals(((@IQ@) a).getId())) q[i] = ix;
-      } catch (Throwable t) { q[i] = -1; }
-      if (q[i] < 0) miss = true;
-    }
-    if (miss) @PKG@.Gear.warnOnce("qual", "the Skyy_Gear_* quality assets were not found - items keep their own quality frame and only the name takes the rarity colour (spec 2.1 fallback)");
-    QMISS = miss ? System.currentTimeMillis() : 0L;
-    QIDX = q;
-  }
-  if (r < 0 || r >= q.length) return -1;
-  return q[r];
-}""")
 
 # ================================================================= GearCfg fields (kit-bound fields must exist before emit)
 CFG_FIELDS = [("PART_GATE", "boolean", "true"), ("PART_STATS", "boolean", "true"), ("PART_CRAFT", "boolean", "true"),
@@ -1155,7 +1252,8 @@ CFG_FIELDS = [("PART_GATE", "boolean", "true"), ("PART_STATS", "boolean", "true"
               ("NAMES", "String", jstr(REFORGE_NAMES_DEF)), ("STR_PER", "double", "1.0"), ("MP_PER", "double", "1.0"),
               ("DEF_SCALE", "int", "100"), ("CRIT_BASE", "double", "0.0"), ("CRIT_BASE_DMG", "double", "0.0"),
               ("STEAL_S", "int", "3"), ("REGEN_MS", "int", "2000"), ("SPEED_PER", "double", "1.0"),
-              ("MIGRATE_BY", "String", '"stats"'), ("MIGRATE_MAX", "String", '"fabled"')]
+              ("MIGRATE_BY", "String", '"stats"'), ("MIGRATE_MAX", "String", '"fabled"'), ("INCLUDE", "String", '""'),
+              ("MIGRATE_CLAMP", "boolean", "false")]
 for _n, _t, _v in CFG_FIELDS:
     F(gcf, "public static volatile %s %s = %s;" % (_t, _n, _v))
 # tables (set by load(); not kit fields)
@@ -1190,6 +1288,9 @@ F(gcf, "public static volatile String EXCL_SRC = null;")
 F(gcf, "public static volatile String[] EXCL = new String[0];")
 F(gcf, "public static volatile String NAMES_SRC = null;")
 F(gcf, "public static volatile String[] RF = new String[0];")
+F(gcf, "public static volatile String INCL_SRC = null;")
+F(gcf, "public static volatile String[] INCL = new String[0];")
+F(gcf, "public static volatile java.util.HashMap KINDP = new java.util.HashMap();")     # kind.prefix table: id prefix -> kind
 
 kit = CFG.emit(pool, PKG, MOD="SkyyGear", TITLE="Gear", VERSION=VERSION, NODE="skyygear.admin", CATS=CFG_CATS, ROWS=CFG_ROWS,
                FILES=[CFG_FILE], NOTE="Every number is a placeholder. Tables apply at once; hand edits on Reload.",
@@ -1221,17 +1322,27 @@ public static void regSetting(String key, String label, String cat, boolean def,
 
 # ================================================================= GearCfg: loader, SkyyRolls cost import, checks, costs
 M(gcf, "public static String defaultsText() { return " + jlit(DEFAULT_TEXT) + "; }")
+# engine review 7: the config kit's atomicWrite shape - temp file, flush + fsync, then ATOMIC_MOVE + REPLACE_EXISTING (plain
+# REPLACE_EXISTING where the file system has no atomic move). replace = false keeps "never overwrite a file that appeared in
+# between" (a plain move that fails on an existing file; ATOMIC_MOVE would replace it on Windows).
 M(gcf, r"""
 public static void writeAtomic(java.nio.file.Path dst, String text, boolean replace) throws Exception {
   java.nio.file.Files.createDirectories(dst.getParent(), new java.nio.file.attribute.FileAttribute[0]);
   java.nio.file.Path tmp = dst.resolveSibling(dst.getFileName().toString() + ".tmp");
-  java.nio.file.Files.write(tmp, text.getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+  java.io.FileOutputStream out = new java.io.FileOutputStream(tmp.toFile());
+  try {
+    out.write(text.getBytes("UTF-8"));
+    out.flush();
+    out.getFD().sync();
+  } finally { out.close(); }
   Throwable last = null;
   int i = 0;
   while (i < 5) {
     try {
-      if (replace) java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
-      else java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[0]);
+      if (replace) {
+        try { java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING }); }
+        catch (java.nio.file.AtomicMoveNotSupportedException am) { java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING }); }
+      } else java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[0]);
       return;
     } catch (java.nio.file.FileAlreadyExistsException ae) {
       try { java.nio.file.Files.deleteIfExists(tmp); } catch (Throwable d1) { }
@@ -1327,6 +1438,13 @@ public static int rchoice(String v, int maxIdx, int def) {
   if (i < 0 || i > maxIdx) return def;
   return i;
 }""")
+# design review 1: a kind.prefix value is one of combat, mining, foraging, farming, equipment
+M(gcf, r"""
+public static boolean kindOk(String v) {
+  if (v == null) return false;
+  for (int i = 0; i < @PKG@.GearDefs.KIND_CHOICES.length; i++) if (@PKG@.GearDefs.KIND_CHOICES[i].equals(v)) return true;
+  return false;
+}""")
 # every value read from the file (or the built-in defaults when there is no file: bare-JVM tests); clamps like the kit rows
 M(gcf, r"""
 public static synchronized void apply(java.util.Properties p, boolean fromFile) {
@@ -1360,6 +1478,8 @@ public static synchronized void apply(java.util.Properties p, boolean fromFile) 
   String mb = ptext(p, "migrate.by", "stats").toLowerCase();
   MIGRATE_BY = (mb.equals("roll") || mb.equals("item")) ? mb : "stats";
   MIGRATE_MAX = @PKG@.GearDefs.R_ID[rchoice(ptext(p, "migrate.maxRarity", "fabled"), 4, 4)];
+  INCLUDE = ptext(p, "gear.include", "");
+  MIGRATE_CLAMP = pbool(p, "migrate.clampToLevel", false);
   int nr = @PKG@.GearDefs.NR;
   int[] rm = new int[nr];
   int[] rl = new int[nr];
@@ -1419,11 +1539,16 @@ public static synchronized void apply(java.util.Properties p, boolean fromFile) 
   }
   java.util.HashMap mat = new java.util.HashMap();
   java.util.HashMap il = new java.util.HashMap();
+  java.util.HashMap kp = new java.util.HashMap();
   java.util.Iterator it = p.stringPropertyNames().iterator();
   boolean anyMat = false;
   while (it.hasNext()) {
     String k = (String) it.next();
-    if (k.startsWith("level.material.") && k.length() > 15) {
+    if (k.startsWith("kind.prefix.") && k.length() > 12) {
+      String kv = p.getProperty(k).trim().toLowerCase();
+      if (kindOk(kv)) kp.put(k.substring(12), kv);
+      else @PKG@.Gear.warn("config.properties: " + k + "=" + kv + " is not combat, mining, foraging, farming or equipment - ignored");
+    } else if (k.startsWith("level.material.") && k.length() > 15) {
       anyMat = true;
       double[] c = cells(p.getProperty(k), 1);
       if (c == null) { @PKG@.Gear.warn("config.properties: " + k + " is not a level - ignored"); continue; }
@@ -1438,7 +1563,7 @@ public static synchronized void apply(java.util.Properties p, boolean fromFile) 
   R_MODS = rm; R_LO = rl; R_HI = rh;
   O_CRAFT = oc; O_MOB = om; O_CHEST = ox;
   CR_BASE = crb; CR_PER = crp; CI_BASE = cib; CI_PER = cip; XPR = xp;
-  S_MAX = sm; S_W = sw; MIG = mg; MAT = mat; ITEMLVL = il;
+  S_MAX = sm; S_W = sw; MIG = mg; MAT = mat; ITEMLVL = il; KINDP = kp;
   EPOCH = EPOCH + 1L;
 }""".replace("@EXCLDEF@", jstr(EXCLUDE_DEF)).replace("@NAMESDEF@", jstr(REFORGE_NAMES_DEF)))
 # RELOAD of the kit (tools/CONFIG-CONTRACT.md) and the setup() loader: the first start writes the default file
@@ -1561,6 +1686,25 @@ public static String[] names() {
   }
   return RF;
 }""")
+M(gcf, r"""
+public static String[] incl() {
+  String s = INCLUDE;
+  if (s != INCL_SRC) {
+    java.util.ArrayList l = new java.util.ArrayList();
+    if (s != null) {
+      String[] ps = s.split(",");
+      for (int i = 0; i < ps.length; i++) { String t = ps[i].trim(); if (t.length() > 0) l.add(t); }
+    }
+    String[] a = new String[l.size()];
+    for (int i = 0; i < a.length; i++) a[i] = (String) l.get(i);
+    INCL = a;
+    INCL_SRC = s;
+  }
+  return INCL;
+}""")
+# design review 9: where a player identifies (identify.command live): ": /identify" or nothing ("Identify it first")
+M(gcf, "public static String idHow() { return IDENTIFY_CMD ? \": /identify\" : \"\"; }")
+M(gcf, "public static String idWhere() { return IDENTIFY_CMD ? \"/identify\" : \"at the identifier\"; }")
 M(gcf, "public static int craftMax() { return rchoice(CRAFT_MAX, 5, 4); }")
 M(gcf, "public static int migrateMax() { return rchoice(MIGRATE_MAX, 4, 4); }")
 M(gcf, r"""
@@ -1620,11 +1764,18 @@ public static String checkMigKey(String key, String value) {
   return "Old SkyyRolls items can only become unique, rare, legendary or fabled (anything lower is normal).";
 }""")
 M(gcf, r"""
+public static String checkKind(String key, String value) {
+  if (value == null) return null;
+  String v = value.trim().toLowerCase();
+  if (!kindOk(v)) return "Use combat, mining, foraging, farming or equipment.";
+  return null;
+}""")
+M(gcf, r"""
 public static String checkStat(String key, String value) {
   String e = entryOf(key);
   if (e == null) return null;
   int i = @PKG@.GearDefs.sIndex(e);
-  if (i < 0) return "Unknown stat " + e + " - the stat keys are the ones listed in Server Setup (spec 4.2).";
+  if (i < 0) return "Unknown stat " + e + " - use a key from the list above each stats line in config.properties (dmg, str, mp, cc ...).";
   if (value == null) return null;
   double[] c = cells(value, 2);
   if (c == null) return null;
@@ -1648,6 +1799,121 @@ public static String checkNames(String key, String value) {
   return null;
 }""")
 
+# ================================================================= GearQual (engine review 4): per-stack Quality is saved as an INTEGER
+# index (ItemStack.CODEC key Quality, load-order indices). The resolved Skyy_Gear_* indices are kept in quality.properties; when
+# they move between starts: one WARN and every gear item is re-stamped at its owner's join (the config epoch in every sig moves).
+# A stack whose stored index no longer resolves to a quality asset is rewritten (GearView.apply). Nothing else trusts a raw index:
+# the sig carries the quality's asset id.
+gql.addInterface(pool.get("java.lang.Runnable"))
+F(gql, "public static volatile int[] OLD = null;")                  # indices of the last start (null = no file yet)
+F(gql, "public static volatile java.nio.file.Path FILE;")
+F(gql, "public static volatile boolean CHECKED = false;")
+F(gql, "public static volatile boolean MOVED = false;")
+F(gql, "public String text;")
+C(gql, "public GearQual(String text) { this.text = text; }")
+M(gql, r"""
+public static int[] parse(java.util.Properties p) {
+  int nr = @PKG@.GearDefs.NR;
+  int[] q = new int[nr];
+  boolean any = false;
+  for (int i = 0; i < nr; i++) {
+    q[i] = -1;
+    String v = p.getProperty(@PKG@.GearDefs.R_QID[i]);
+    if (v == null) continue;
+    try { q[i] = Integer.parseInt(v.trim()); any = true; } catch (Throwable t) { q[i] = -1; }
+  }
+  if (!any) return null;
+  return q;
+}""")
+M(gql, r"""
+public static String text(int[] q) {
+  StringBuilder sb = new StringBuilder("# SkyyGear: the Skyy_Gear_* quality asset indices of the last start (engine review 4)\n");
+  for (int i = 0; q != null && i < q.length && i < @PKG@.GearDefs.NR; i++) sb.append(@PKG@.GearDefs.R_QID[i]).append('=').append(q[i]).append('\n');
+  return sb.toString();
+}""")
+M(gql, r"""
+public static void load(java.nio.file.Path f) {
+  FILE = f;
+  try {
+    if (f != null && java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) OLD = parse(@PKG@.GearCfg.read(f));
+  } catch (Throwable t) { OLD = null; @PKG@.Gear.warn("could not read quality.properties: " + t); }
+}""")
+# true = a stored index differs from the index resolved now (only known entries count)
+M(gql, r"""
+public static boolean differs(int[] old, int[] now) {
+  if (old == null || now == null) return false;
+  for (int i = 0; i < old.length && i < now.length; i++) if (old[i] >= 0 && now[i] >= 0 && old[i] != now[i]) return true;
+  return false;
+}""")
+# a stack index that was a Skyy_Gear_* quality at the last start (a stale frame once the assets are gone or moved)
+M(gql, r"""
+public static boolean wasOurs(int idx) {
+  int[] o = OLD;
+  if (o == null || idx < 0) return false;
+  for (int i = 0; i < o.length; i++) if (o[i] == idx) return true;
+  return false;
+}""")
+M(gql, r"""
+public void run() {
+  try { if (FILE != null) @PKG@.GearCfg.writeAtomic(FILE, this.text, true); }
+  catch (Throwable t) { @PKG@.Gear.warnOnce("qualwrite", "could not write quality.properties: " + t); }
+}""")
+# once per start, after the first full resolution: compare, WARN + force the re-stamp, persist (off the world thread)
+M(gql, r"""
+public static void check(int[] now) {
+  if (CHECKED || now == null) return;
+  CHECKED = true;
+  int[] old = OLD;
+  boolean moved = differs(old, now);
+  if (moved) {
+    MOVED = true;
+    @PKG@.Gear.warnOnce("qualmove", "the Skyy_Gear_* quality indices moved since the last start (" + text(old).replace('\n', ' ') + "-> now " + text(now).replace('\n', ' ') + ") - every gear item is re-stamped when its owner joins");
+    @PKG@.GearCfg.EPOCH = @PKG@.GearCfg.EPOCH + 1000L;
+  }
+  boolean same = old != null && !moved;
+  if (same) for (int i = 0; i < now.length && i < old.length; i++) if (old[i] != now[i]) same = false;
+  if (same || FILE == null) return;
+  try { @HSV@.SCHEDULED_EXECUTOR.schedule(new @PKG@.GearQual(text(now)), 100L, java.util.concurrent.TimeUnit.MILLISECONDS); }
+  catch (Throwable t) { @PKG@.Gear.warnOnce("qualwrite", "could not schedule the quality.properties write: " + t); }
+}""")
+M(gdf, r"""
+public static int qIndex(int r) {
+  int[] q = QIDX;
+  if (q == null || (QMISS > 0L && System.currentTimeMillis() - QMISS > 60000L)) {
+    q = new int[R_QID.length];
+    boolean miss = false;
+    for (int i = 0; i < R_QID.length; i++) {
+      q[i] = -1;
+      try {
+        int ix = @IQ@.getAssetMap().getIndex(R_QID[i]);
+        Object a = ix < 0 ? null : @IQ@.getAssetMap().getAsset(ix);
+        if (a instanceof @IQ@ && R_QID[i].equals(((@IQ@) a).getId())) q[i] = ix;
+      } catch (Throwable t) { q[i] = -1; }
+      if (q[i] < 0) miss = true;
+    }
+    if (miss) @PKG@.Gear.warnOnce("qual", "the Skyy_Gear_* quality assets were not found - items keep their own quality frame and only the name takes the rarity colour (spec 2.1 fallback)");
+    QMISS = miss ? System.currentTimeMillis() : 0L;
+    QIDX = q;
+    if (!miss) @PKG@.GearQual.check(q);
+  }
+  if (r < 0 || r >= q.length) return -1;
+  return q[r];
+}""")
+# a stack quality index that resolves to a quality asset (Integer.MIN_VALUE = the item's own quality, always fine)
+M(gdf, r"""
+public static boolean validQ(int q) {
+  if (q == Integer.MIN_VALUE) return true;
+  if (q < 0) return false;
+  try { return @IQ@.getAssetMap().getAsset(q) instanceof @IQ@; } catch (Throwable t) { return false; }
+}""")
+# the asset id behind an index for sigs (never the raw index: indices are load-order)
+M(gdf, r"""
+public static String qName(int q) {
+  if (q == Integer.MIN_VALUE) return "own";
+  try { Object a = @IQ@.getAssetMap().getAsset(q); if (a instanceof @IQ@) return ((@IQ@) a).getId(); } catch (Throwable t) { }
+  return "?";
+}""")
+
 # ================================================================= GearData (1/2): id rules + document read + migration (spec 1)
 M(gdt, r"""
 public static boolean skyyItem(String id) {
@@ -1655,19 +1921,37 @@ public static boolean skyyItem(String id) {
   String low = id.toLowerCase();
   return low.startsWith("skyy") || low.indexOf("_skyy") >= 0;
 }""")
+# exploit review 3: only the token right after the family is an ammo word (Weapon_Arrow_Iron, Weapon_Bomb_Fire); a later token is
+# not (Weapon_Shortbow_Bomb is the Archer's shortbow). Build-checked against Assets.zip: the same 14 ammo ids as before.
 M(gdt, r"""
 public static boolean ammo(String id) {
+  if (id == null) return false;
   String[] parts = id.split("_");
-  for (int i = 1; i < parts.length; i++) {
-    String p = parts[i].toLowerCase();
-    for (int j = 0; j < @PKG@.GearDefs.AMMO.length; j++) if (p.equals(@PKG@.GearDefs.AMMO[j])) return true;
-  }
+  if (parts.length < 2) return false;
+  String p = parts[1].toLowerCase();
+  for (int j = 0; j < @PKG@.GearDefs.AMMO.length; j++) if (p.equals(@PKG@.GearDefs.AMMO[j])) return true;
   return false;
 }""")
-# spec 1.3: gear = every Weapon_* (not ammo, not an excluded prefix) and every Armor_*; never Skyy_* and never Tool_*
+# design review 1: bags (Magic Bags, bag upgrade items, the Accessory Bag) are never gear, not even through gear.include
+M(gdt, r"""
+public static boolean neverGear(String id) {
+  for (int i = 0; i < @PKG@.GearDefs.NEVER.length; i++) if (id.startsWith(@PKG@.GearDefs.NEVER[i])) return true;
+  return false;
+}""")
+M(gdt, r"""
+public static boolean included(String id) {
+  String[] in = @PKG@.GearCfg.incl();
+  for (int i = 0; i < in.length; i++) if (id.startsWith(in[i])) return true;
+  return false;
+}""")
+# spec 1.3: gear = every Weapon_* (not ammo, not an excluded prefix) and every Armor_*; never Skyy_* and never Tool_*.
+# design review 1: an id matching a gear.include prefix is gear too (Skyy_ ids and Tool_ families of later stages opt in there;
+# include wins over gear.exclude and the ammo rule, never over the bag list)
 M(gdt, r"""
 public static boolean isGear(String id) {
-  if (id == null || id.length() == 0 || skyyItem(id)) return false;
+  if (id == null || id.length() == 0 || neverGear(id)) return false;
+  if (included(id)) return true;
+  if (skyyItem(id)) return false;
   if (id.startsWith("Armor_")) return true;
   if (!id.startsWith("Weapon_")) return false;
   if (ammo(id)) return false;
@@ -1682,26 +1966,46 @@ public static boolean isSpell(String id) {
   for (int i = 0; i < @PKG@.GearDefs.SPELL.length; i++) if (id.startsWith(@PKG@.GearDefs.SPELL[i])) return true;
   return false;
 }""")
-# 0 = weapon, 1 = spell weapon, 2 = armor, 3 = tool, -1 = not gear
-M(gdt, r"""
-public static int slotOf(String id) {
-  if (isGear(id)) {
-    if (id.startsWith("Armor_")) return 2;
-    return isSpell(id) ? 1 : 0;
-  }
-  if (isTool(id)) return 3;
-  return -1;
-}""")
 M(gdt, r"""
 public static String toolKind(String id) {
   if (id == null) return "tool";
   for (int i = 0; i < @PKG@.GearDefs.TF_PRE.length; i++) if (id.startsWith(@PKG@.GearDefs.TF_PRE[i])) return @PKG@.GearDefs.TF_KIND[i];
   return "tool";
 }""")
+# design review 1: the kind.prefix table (longest matching prefix wins), else a tool by family, else combat
 M(gdt, r"""
 public static String kindFor(String id) {
+  if (id == null) return "combat";
+  java.util.HashMap kp = @PKG@.GearCfg.KINDP;
+  String best = null;
+  int bl = -1;
+  java.util.Iterator it = kp.keySet().iterator();
+  while (it.hasNext()) {
+    String k = (String) it.next();
+    if (k.length() > bl && id.startsWith(k)) { best = (String) kp.get(k); bl = k.length(); }
+  }
+  if (best != null) return best;
   if (isTool(id)) return toolKind(id);
   return "combat";
+}""")
+# is the engine item an armor piece (an included id without the Armor_ prefix)
+M(gdt, r"""
+public static boolean armorItem(String id) {
+  if (id.startsWith("Armor_")) return true;
+  if (id.startsWith("Weapon_")) return false;
+  try { @ITM@ it = @PKG@.Gear.item(id); return it != null && it.getArmor() != null; } catch (Throwable t) { return false; }
+}""")
+# 0 = weapon, 1 = spell weapon, 2 = armor, 3 = tool, 4 = Equipment (design review 1: kind equipment), -1 = not gear
+M(gdt, r"""
+public static int slotOf(String id) {
+  if (isGear(id)) {
+    if ("equipment".equals(kindFor(id))) return 4;
+    if (armorItem(id)) return 2;
+    if (id.startsWith("Tool_")) return 3;
+    return isSpell(id) ? 1 : 0;
+  }
+  if (isTool(id)) return 3;
+  return -1;
 }""")
 M(gdt, r"""
 public static @BV@ getv(@BD@ md, String k) {
@@ -1815,6 +2119,8 @@ public static String qualityIdOf(String id) {
 }""")
 # spec 1.6: rarity of an old SkyyRolls document. stats (default): score = average of dmg/30, str/25, crit/15 in % (SkyyRolls' maxima;
 # a missing key = 0); roll: the old Roll Quality; item: the item's engine quality. Capped at migrate.maxRarity, never mythic / set.
+# exploit review 4: armor never applies Damage % (a weapon-only stat), so an armor piece's score is the average of str/25 and
+# crit/15 only (its dmg roll is dropped from the migrated document too; the whole old document stays in "old").
 M(gdt, r"""
 public static int migrateRarity(String id, @BD@ rolls) {
   String by = @PKG@.GearCfg.MIGRATE_BY;
@@ -1829,7 +2135,8 @@ public static int migrateRarity(String id, @BD@ rolls) {
       double a = (double) num(rolls, "dmg", 0) / 30.0;
       double b = (double) num(rolls, "str", 0) / 25.0;
       double c = (double) num(rolls, "crit", 0) / 15.0;
-      score = (a + b + c) / 3.0 * 100.0;
+      if (slotOf(id) == 2) score = (b + c) / 2.0 * 100.0;
+      else score = (a + b + c) / 3.0 * 100.0;
     }
     int[] mg = @PKG@.GearCfg.MIG;
     if (score >= (double) mg[3]) r = 4;
@@ -1844,33 +2151,7 @@ public static int migrateRarity(String id, @BD@ rolls) {
   if (r > 4) r = 4;
   return r;
 }""")
-M(gdt, r"""
-public static @BD@ migrate(String id, @BD@ rolls) {
-  String kind = kindFor(id);
-  @BD@ d = base(kind, migrateRarity(id, rolls), true, "rolls");
-  @BA@ ms = new @BA@();
-  int vDmg = num(rolls, "dmg", 0);
-  int vStr = num(rolls, "str", 0);
-  int vCrit = num(rolls, "crit", 0);
-  if (vDmg != 0) ms.add(mod("dmg", vDmg));
-  if (vStr != 0) ms.add(mod("str", vStr));
-  if (vCrit != 0) ms.add(mod("cc", vCrit));
-  d.put("mods", ms);
-  String rf = str(rolls, "reforge", null);
-  if (rf != null && rf.trim().length() > 0 && !rf.equals("?") && @PKG@.GearDefs.rIndex(rf) < 0) d.append("rf", new org.bson.BsonString(rf.trim()));
-  d.append("old", rolls.clone());
-  return d;
-}""")
-# spec 1.2 reading rules 1 + 2 (the in-memory view every reader uses); null = unreadable / newer schema / not gear
-M(gdt, r"""
-public static @BD@ effective(String id, @BD@ md) {
-  int st = state(md);
-  if (st == 1) return gearDoc(md);
-  if (st == 3 || st == 4) return null;
-  if (st == 2) return (isGear(id) || isTool(id)) ? migrate(id, rollsDoc(md)) : null;
-  if (isGear(id)) return legacy(id);
-  return null;
-}""")
+# (migrate + effective sit after GearRoll: migrate.clampToLevel needs GearRoll.bounds)
 
 # ================================================================= GearLevel (spec 3.1, 2.2 level factor)
 M(glv, r"""
@@ -2042,7 +2323,7 @@ public static void popup(@PR@ pr, java.util.UUID u, String id, String title, Str
     Long last = (Long) POPPED.get(u);
     if (last != null && now - last.longValue() < 1500L) return;
     POPPED.put(u, Long.valueOf(now));
-    @MSG@ t = @MSG@.raw(title).color("#ff9d6b");
+    @MSG@ t = @MSG@.raw(title).color(@PKG@.GearDefs.C_BAD);
     @MSG@ b = @MSG@.raw(body);
     @IWM@ icon = null;
     try { if (id != null && id.length() > 0) icon = (@IWM@) new @IS@(id, 1).toPacket(); } catch (Throwable t0) { icon = null; }
@@ -2108,6 +2389,7 @@ public static boolean allowed(int i, int slot) {
   if (slot == 2) return s.indexOf('a') >= 0;
   if (slot == 0) return s.indexOf('w') >= 0;
   if (slot == 1) return s.indexOf('w') >= 0 || s.indexOf('s') >= 0;
+  if (slot == 4) return s.indexOf('e') >= 0;
   return false;
 }""")
 M(grl, r"""
@@ -2136,6 +2418,12 @@ public static int[] bounds(int i, int r, int lvl) {
   if (hi < lo) hi = lo;
   return new int[] { (int) lo, (int) hi };
 }""")
+# design review 5: Health Regen % only scales Raw Health Regen, so it is a candidate only after Raw Health Regen was picked
+M(grl, r"""
+public static double wAt(int si, int[] w, boolean[] pick) {
+  if (si == @PKG@.GearDefs.I_HPRP && !pick[@PKG@.GearDefs.I_HPR]) return 0.0;
+  return (double) w[si];
+}""")
 # spec 2.3: pick count distinct stats (weighted, no repeats, capped by the pool), roll each value, display order = table order
 M(grl, r"""
 public static @BA@ rollMods(int slot, int r, int lvl) {
@@ -2149,14 +2437,16 @@ public static @BA@ rollMods(int slot, int r, int lvl) {
   boolean[] pick = new boolean[@PKG@.GearDefs.NS];
   for (int k = 0; k < count; k++) {
     double total = 0.0;
-    for (int j = 0; j < p.length; j++) if (!used[j]) total = total + (double) w[p[j]];
+    for (int j = 0; j < p.length; j++) if (!used[j]) total = total + wAt(p[j], w, pick);
     if (total <= 0.0) break;
     double x = RNG.nextDouble() * total;
     int sel = -1;
     for (int j = 0; j < p.length; j++) {
       if (used[j]) continue;
+      double wj = wAt(p[j], w, pick);
+      if (wj <= 0.0) continue;
       sel = j;
-      x = x - (double) w[p[j]];
+      x = x - wj;
       if (x < 0.0) break;
     }
     if (sel < 0) break;
@@ -2218,6 +2508,57 @@ public static @BD@ identify(String id, @BD@ doc, java.util.UUID by) {
   d.put("at", new org.bson.BsonInt64(now));
   return d;
 }""")
+# exploit review 5: migrate.clampToLevel ON = a migrated value never above the best roll of its new rarity at the item's level
+M(grl, r"""
+public static int clampOld(String key, int v, int r, int lvl) {
+  int i = @PKG@.GearDefs.sIndex(key);
+  if (i < 0) return v;
+  int hi = bounds(i, r, lvl)[1];
+  return v > hi ? hi : v;
+}""")
+# exploit review 2: a split single item keeps apart from its neighbours (identical documents would stack again)
+M(grl, r"""
+public static @BD@ nonce(@BD@ d) {
+  d.put("k", new org.bson.BsonInt32(RNG.nextInt()));
+  return d;
+}""")
+
+# ================================================================= GearData (1b): migration + the reading rules (spec 1.2, 1.6)
+M(gdt, r"""
+public static @BD@ migrate(String id, @BD@ rolls) {
+  String kind = kindFor(id);
+  int r = migrateRarity(id, rolls);
+  @BD@ d = base(kind, r, true, "rolls");
+  @BA@ ms = new @BA@();
+  int vDmg = num(rolls, "dmg", 0);
+  int vStr = num(rolls, "str", 0);
+  int vCrit = num(rolls, "crit", 0);
+  if (slotOf(id) == 2) vDmg = 0;
+  if (@PKG@.GearCfg.MIGRATE_CLAMP) {
+    int lvl = @PKG@.GearLevel.level(id, d);
+    vDmg = @PKG@.GearRoll.clampOld("dmg", vDmg, r, lvl);
+    vStr = @PKG@.GearRoll.clampOld("str", vStr, r, lvl);
+    vCrit = @PKG@.GearRoll.clampOld("cc", vCrit, r, lvl);
+  }
+  if (vDmg != 0) ms.add(mod("dmg", vDmg));
+  if (vStr != 0) ms.add(mod("str", vStr));
+  if (vCrit != 0) ms.add(mod("cc", vCrit));
+  d.put("mods", ms);
+  String rf = str(rolls, "reforge", null);
+  if (rf != null && rf.trim().length() > 0 && !rf.equals("?") && @PKG@.GearDefs.rIndex(rf) < 0) d.append("rf", new org.bson.BsonString(rf.trim()));
+  d.append("old", rolls.clone());
+  return d;
+}""")
+# spec 1.2 reading rules 1 + 2 (the in-memory view every reader uses); null = unreadable / newer schema / not gear
+M(gdt, r"""
+public static @BD@ effective(String id, @BD@ md) {
+  int st = state(md);
+  if (st == 1) return gearDoc(md);
+  if (st == 3 || st == 4) return null;
+  if (st == 2) return (isGear(id) || isTool(id)) ? migrate(id, rollsDoc(md)) : null;
+  if (isGear(id)) return legacy(id);
+  return null;
+}""")
 
 # ================================================================= GearView (spec 6): tooltip, plain lines, sigs
 M(gvw, r"""
@@ -2225,13 +2566,14 @@ public static String slotWord(String id) {
   int s = @PKG@.GearData.slotOf(id);
   if (s == 2) return "ARMOR";
   if (s == 3) return "TOOL";
+  if (s == 4) return "EQUIPMENT";
   return "WEAPON";
 }""")
 M(gvw, r"""
 public static String suffix(int i) {
   if (@PKG@.GearDefs.S_LIVE[i] == 0) return " (coming later)";
   String s = @PKG@.GearDefs.S_SUF[i];
-  if (s.equals("spells")) return " (spells)";
+  if (s.equals("spells")) return " (spell attacks only)";
   if (s.equals("elem")) return " (each element)";
   if (s.equals("steal")) return " (every " + @PKG@.GearCfg.STEAL_S + "s)";
   if (s.equals("regen")) return " (every " + @PKG@.Gear.fnum((double) @PKG@.GearCfg.REGEN_MS / 1000.0) + "s)";
@@ -2445,7 +2787,7 @@ public static void lines(String id, @BD@ d, java.util.UUID owner, java.util.Arra
     if (gt.length() > 0) add(txt, col, gt, (String) g[1]);
     add(txt, col, "Unidentified - its modifiers appear when you identify it.", @PKG@.GearDefs.C_GRAY);
     add(txt, col, slot == 2 ? "Gives no stats until identified." : "Cannot be used until identified.", @PKG@.GearDefs.C_BAD);
-    add(txt, col, "Identify: /identify - " + @PKG@.Gear.fmt(@PKG@.GearCfg.costIdentify(r, need)) + " coins", @PKG@.GearDefs.C_GOLD);
+    add(txt, col, "Identify: " + @PKG@.GearCfg.idWhere() + " - " + @PKG@.Gear.fmt(@PKG@.GearCfg.costIdentify(r, need)) + " coins", @PKG@.GearDefs.C_GOLD);
     return;
   }
   statLines(id, d, txt, col);
@@ -2508,7 +2850,7 @@ M(gvw, r"""
 public static String sig(String id, int quality, @BD@ d, java.util.ArrayList txt, java.util.ArrayList col) {
   StringBuilder sb = new StringBuilder();
   for (int i = 0; i < txt.size(); i++) sb.append((String) txt.get(i)).append('|').append(String.valueOf(col.get(i))).append('\n');
-  return @PKG@.GearDefs.VIEW_V + ":" + id + ":" + quality + ":" + Integer.toHexString(d.toJson().hashCode()) + ":"
+  return @PKG@.GearDefs.VIEW_V + ":" + id + ":" + @PKG@.GearDefs.qName(quality) + ":" + Integer.toHexString(d.toJson().hashCode()) + ":"
     + Integer.toHexString(sb.toString().hashCode()) + ":" + @PKG@.GearLevel.level(id, d) + ":" + @PKG@.GearCfg.cfgEpoch() + ":" + (hasDesc(id) ? 1 : 0);
 }""")
 # fingerprint of the stack's CURRENT ItemDisplay through the engine codec (SkyyRolls dispHash); null = none / unreadable
@@ -2543,16 +2885,22 @@ public static @IS@ apply(@IS@ s, @BD@ doc, java.util.UUID owner) {
     @BD@ md = s.getMetadata();
     int r = @PKG@.GearData.rarity(doc);
     int q = @PKG@.GearDefs.qIndex(r);
+    // ItemStack.getQualityIndex() answers the item's own quality index while the stack has none of its own (VERIFIED bytecode)
     int curQ = @PKG@.Gear.quality(s);
-    int wantQ = q >= 0 ? q : curQ;
+    int ownQ = @PKG@.Gear.ownQuality(s);
+    // engine review 4: a stored index that resolves to no quality asset (or, with our assets missing, one that was a Skyy_Gear_*
+    // index at the last start) goes back to the item's own quality; a moved index is rewritten to the rarity's index of today
+    int wantQ = q;
+    if (q < 0) wantQ = (curQ != ownQ && (!@PKG@.GearDefs.validQ(curQ) || @PKG@.GearQual.wasOurs(curQ))) ? Integer.MIN_VALUE : curQ;
+    int effQ = wantQ == Integer.MIN_VALUE ? ownQ : wantQ;
     java.util.ArrayList txt = new java.util.ArrayList();
     java.util.ArrayList col = new java.util.ArrayList();
     lines(id, doc, owner, txt, col);
-    String sg = sig(id, wantQ, doc, txt, col);
+    String sg = sig(id, effQ, doc, txt, col);
     @BV@ cur = md == null ? null : md.get(@PKG@.GearDefs.DOC_KEY);
     boolean sameDoc = cur != null && cur.isDocument() && cur.asDocument().toJson().equals(doc.toJson());
     @BV@ view = md == null ? null : md.get(@PKG@.GearDefs.VIEW_KEY);
-    if (sameDoc && wantQ == curQ && view != null && view.isDocument() && md.containsKey(@IDM@.KEY)) {
+    if (sameDoc && effQ == curQ && view != null && view.isDocument() && md.containsKey(@IDM@.KEY)) {
       @BV@ g = view.asDocument().get("sig");
       if (g != null && g.isString() && g.asString().getValue().equals(sg) && ours(s, view.asDocument())) return s;
     }
@@ -2564,7 +2912,7 @@ public static @IS@ apply(@IS@ s, @BD@ doc, java.util.UUID owner) {
     } else if (curD != null && !curD.isNull()) keep = curD;
     @IS@ out = s;
     if (!sameDoc) out = out.withMetadata(@PKG@.GearDefs.DOC_KEY, (@BV@) doc);
-    if (q >= 0 && wantQ != curQ) out = out.withQuality(q);
+    if (effQ != curQ) out = out.withQuality(wantQ);
     String hex = @PKG@.GearDefs.R_HEX[r];
     out = out.withMetadata(@IDM@.KEYED_CODEC, new @IDM@(nameMsg(id, doc, hex), descMsg(id, doc, txt, col)));
     @BD@ nv = new @BD@();
@@ -2709,29 +3057,78 @@ public static void addMods(int[] t, @BD@ d, boolean armor) {
     t[si] = t[si] + @PKG@.GearData.num(m.asDocument(), "v", 0);
   }
 }""")
+# design review 2: gear:extra:<uuid> = "str:40,cc:10,..." another mod publishes (stat keys of section 4.2, whole numbers, may be
+# negative; unknown keys and bad parts are skipped). Parsed once per distinct text.
+F(gst, "public static final java.util.concurrent.ConcurrentHashMap XCACHE = new java.util.concurrent.ConcurrentHashMap();")
 M(gst, r"""
-public static int[] totals(java.util.UUID u, @INV@ inv) {
+public static int[] parseExtra(String s) {
   int[] t = new int[@PKG@.GearDefs.NS];
-  if (inv == null) return t;
-  @IS@ h = hand(inv);
-  if (h != null && !h.isEmpty()) {
-    String id = h.getItemId();
+  if (s == null || s.length() == 0) return t;
+  String[] ps = s.split(",");
+  for (int i = 0; i < ps.length; i++) {
+    String p = ps[i].trim();
+    int c = p.indexOf(':');
+    if (c <= 0) continue;
+    int si = @PKG@.GearDefs.sIndex(p.substring(0, c).trim());
+    if (si < 0) continue;
+    try {
+      double v = Double.parseDouble(p.substring(c + 1).trim());
+      if (Double.isNaN(v) || Double.isInfinite(v)) continue;
+      if (v > 1000000.0) v = 1000000.0;
+      if (v < -1000000.0) v = -1000000.0;
+      t[si] = t[si] + (int) Math.floor(v);
+    } catch (Throwable x) { }
+  }
+  return t;
+}""")
+M(gst, r"""
+public static int[] extra(java.util.UUID u) {
+  Object o = u == null ? null : @PKG@.Gear.bget("gear:extra:" + u);
+  if (!(o instanceof String) || ((String) o).length() == 0) return null;
+  String s = (String) o;
+  int[] t = (int[]) XCACHE.get(s);
+  if (t == null) {
+    t = parseExtra(s);
+    if (XCACHE.size() > 512) XCACHE.clear();
+    XCACHE.put(s, t);
+  }
+  return t;
+}""")
+# design review 2: THE totals (spec 4.3 T): the weapon's modifiers (weapon-only stats only from it) + every ACTIVE armor piece's
+# (+ gear:extra when withExtra). ok[0] = false when the weapon slot holds something that is neither gear nor empty (a tool, a
+# block, an unusable gear weapon): offence stats only apply to a gear weapon or bare hands (spec 4.3). weapon == null = armor only.
+M(gst, r"""
+public static int[] totals(java.util.UUID u, @IS@ weapon, @IC@ armor, boolean[] ok, boolean withExtra) {
+  int[] t = new int[@PKG@.GearDefs.NS];
+  boolean good = true;
+  if (weapon != null && !weapon.isEmpty()) {
+    String id = weapon.getItemId();
     int sl = @PKG@.GearData.slotOf(id);
     if (sl == 0 || sl == 1) {
-      @BD@ d = @PKG@.GearData.effective(id, h.getMetadata());
+      @BD@ d = @PKG@.GearData.effective(id, weapon.getMetadata());
       if (active(u, id, d)) addMods(t, d, false);
-    }
+      else good = false;
+    } else good = false;
   }
-  @IC@ a = inv.getArmor();
-  if (a != null) {
-    for (int i = 0; i < a.getCapacity(); i++) {
-      @IS@ s = a.getItemStack((short) i);
+  if (armor != null) {
+    for (int i = 0; i < armor.getCapacity(); i++) {
+      @IS@ s = armor.getItemStack((short) i);
       if (s == null || s.isEmpty() || @PKG@.GearData.slotOf(s.getItemId()) != 2) continue;
       @BD@ d = @PKG@.GearData.effective(s.getItemId(), s.getMetadata());
       if (active(u, s.getItemId(), d)) addMods(t, d, true);
     }
   }
+  if (withExtra) {
+    int[] x = extra(u);
+    if (x != null) for (int i = 0; i < t.length && i < x.length; i++) t[i] = t[i] + x[i];
+  }
+  if (ok != null && ok.length > 0) ok[0] = good;
   return t;
+}""")
+M(gst, r"""
+public static int[] totalsInv(java.util.UUID u, @INV@ inv, boolean withExtra) {
+  if (inv == null) return totals(u, null, null, null, withExtra);
+  return totals(u, hand(inv), inv.getArmor(), null, withExtra);
 }""")
 M(gst, r"""
 public static String statsString(int[] t) {
@@ -2828,6 +3225,97 @@ public static boolean held(java.util.UUID u, String id) {
   @PKG@.Gear.info("a pending craft of " + id + " expired unrolled - it is stamped Normal");
   return false;
 }""")
+# ---- exploit review 2: stackable gear (17 spears MaxStack 5/30, 5 spellbooks 5/25) is rolled and stamped per ITEM. A stack of more
+# than one gear item is split into single items, each with its own document, into EMPTY slots of give[] in order (the player path
+# passes storage, hotbar, backpack = the /gear give order; a chest passes itself). Never merged into another stack, never dropped:
+# what does not fit stays in the original slot as one stack (split again at the next scan once there is room). The item id's total
+# over all[] is counted before and after (engine rule); a difference is a WARN + gear.log line.
+# mode: 0 = stamp (a copy of the stack's document, its SkyyRolls migration, or a legacy Normal document), 1 = craft roll (craftDoc),
+# 2 = chest unidentified (unidDoc chest), 3 = mob unidentified (unidDoc mob). Every split single gets a nonce ("k") so identical
+# documents never stack again. Returns the number of singles moved; got collects rolled rarity ids (mode 1).
+M(gsp, r"""
+public static int countId(@IC@[] all, String id) {
+  int n = 0;
+  for (int k = 0; all != null && k < all.length; k++) {
+    @IC@ c = all[k];
+    if (c == null) continue;
+    boolean dup = false;
+    for (int j = 0; j < k; j++) if (all[j] == c) dup = true;
+    if (dup) continue;
+    for (int i = 0; i < c.getCapacity(); i++) {
+      @IS@ s = c.getItemStack((short) i);
+      if (s != null && !s.isEmpty() && id.equals(s.getItemId())) n = n + s.getQuantity();
+    }
+  }
+  return n;
+}""")
+M(gsp, r"""
+public static @BD@ splitDoc(String id, @BD@ md, int mode, java.util.UUID u) {
+  if (mode == 1) return @PKG@.GearRoll.craftDoc(id, u);
+  if (mode == 2) return @PKG@.GearRoll.unidDoc(id, 2, "chest");
+  if (mode == 3) return @PKG@.GearRoll.unidDoc(id, 1, "drop");
+  int st = @PKG@.GearData.state(md);
+  if (st == 1) return @PKG@.GearData.gearDoc(md).clone();
+  if (st == 2) return @PKG@.GearData.migrate(id, @PKG@.GearData.rollsDoc(md));
+  return @PKG@.GearData.legacy(id);
+}""")
+M(gsp, r"""
+public static int split(@IC@ c, int slot, @IC@[] give, @IC@[] all, java.util.UUID u, int mode, int maxMove, StringBuilder got) {
+  if (c == null || slot < 0 || slot >= c.getCapacity()) return 0;
+  @IS@ s0 = c.getItemStack((short) slot);
+  if (s0 == null || s0.isEmpty() || s0.getQuantity() <= 1 || !@PKG@.GearData.isGear(s0.getItemId())) return 0;
+  String id = s0.getItemId();
+  int st0 = @PKG@.GearData.state(s0.getMetadata());
+  if (st0 == 3 || st0 == 4) return 0;
+  int before = countId(all, id);
+  int moved = 0;
+  int gi = 0;
+  int gs = 0;
+  while (moved < maxMove) {
+    @IS@ cur = c.getItemStack((short) slot);
+    if (cur == null || cur.isEmpty() || cur.getQuantity() <= 1 || !id.equals(cur.getItemId())) break;
+    @IC@ dst = null;
+    int ds = -1;
+    while (gi < give.length && dst == null) {
+      @IC@ g = give[gi];
+      if (g != null) {
+        while (gs < g.getCapacity()) {
+          @IS@ e = g.getItemStack((short) gs);
+          if ((e == null || e.isEmpty()) && !(g == c && gs == slot)) { dst = g; ds = gs; break; }
+          gs++;
+        }
+      }
+      if (dst == null) { gi++; gs = 0; }
+    }
+    if (dst == null) break;
+    @BD@ d = @PKG@.GearRoll.nonce(splitDoc(id, cur.getMetadata(), mode, u));
+    @IS@ one = @PKG@.GearData.put(cur.withQuantity(1), d, u);
+    Object t1 = c.setItemStackForSlot((short) slot, cur.withQuantity(cur.getQuantity() - 1));
+    if (t1 instanceof @TXN@ && !((@TXN@) t1).succeeded()) break;
+    Object t2 = dst.setItemStackForSlot((short) ds, one);
+    if (t2 instanceof @TXN@ && !((@TXN@) t2).succeeded()) { c.setItemStackForSlot((short) slot, cur); break; }
+    moved++;
+    gs++;
+    if (got != null) got.append(' ').append(@PKG@.GearDefs.R_ID[@PKG@.GearData.rarity(d)]);
+  }
+  int after = countId(all, id);
+  if (after != before) {
+    @PKG@.Gear.warn("SPLIT COUNT MISMATCH " + id + ": " + before + " before, " + after + " after (moved " + moved + ")");
+    @PKG@.GearLog.line("SPLIT-COUNT " + u + " " + id + " before " + before + " after " + after + " moved " + moved);
+  } else if (moved > 0) @PKG@.GearLog.line("SPLIT " + u + " " + id + " x" + moved + " mode " + mode);
+  return moved;
+}""")
+M(gsp, r"""
+public static @IC@[] giveOf(@INV@ inv) {
+  if (inv == null) return new @IC@[0];
+  return new @IC@[] { inv.getStorage(), inv.getHotbar(), inv.getBackpack() };
+}""")
+M(gsp, r"""
+public static @IC@[] allOf(@INV@ inv) {
+  @IC@[] cs = new @IC@[SCAN.length];
+  for (int k = 0; k < cs.length; k++) cs[k] = section(inv, SCAN[k]);
+  return cs;
+}""")
 # one stack -> the stack it should be (same object = nothing to do). cnt: [0] stamped Normal, [1] migrated, [2] re-rendered
 M(gsp, r"""
 public static @IS@ stampStack(@IS@ s, java.util.UUID owner, int[] cnt) {
@@ -2886,11 +3374,13 @@ public static boolean paused(java.util.UUID u, int wrote) {
 # stacks of their own item id (review E3)
 M(gsp, r"""
 public static int[] scan(@PR@ pr, @INV@ inv) {
-  int[] cnt = new int[3];
+  int[] cnt = new int[4];
   if (pr == null || inv == null) return cnt;
   java.util.UUID u = pr.getUuid();
   LAST.put(u, Long.valueOf(System.currentTimeMillis()));
   if (@PKG@.Gear.busy(u) || paused(u, 0)) return cnt;
+  @IC@[] give = giveOf(inv);
+  @IC@[] all = allOf(inv);
   for (int k = 0; k < SCAN.length; k++) {
     @IC@ c = section(inv, SCAN[k]);
     if (c == null) continue;
@@ -2899,12 +3389,18 @@ public static int[] scan(@PR@ pr, @INV@ inv) {
       @IS@ s = c.getItemStack((short) i);
       if (s == null || s.isEmpty()) continue;
       if (@PKG@.GearData.state(s.getMetadata()) == 0 && held(u, s.getItemId())) continue;
+      // exploit review 2: a stack of several gear items becomes single items first (each its own document)
+      if (s.getQuantity() > 1 && @PKG@.GearData.isGear(s.getItemId())) {
+        try { cnt[3] = cnt[3] + split(c, i, give, all, u, 0, 64, null); } catch (Throwable t) { @PKG@.Gear.warnOnce("scansplit", "stack split failed: " + t); }
+        s = c.getItemStack((short) i);
+        if (s == null || s.isEmpty()) continue;
+      }
       @IS@ ns = stampStack(s, u, cnt);
       if (ns == s) continue;
       try { c.setItemStackForSlot((short) i, ns); } catch (Throwable t) { @PKG@.Gear.warnOnce("scanset", "stamp write failed: " + t); }
     }
   }
-  paused(u, cnt[0] + cnt[1] + cnt[2]);
+  paused(u, cnt[0] + cnt[1] + cnt[2] + cnt[3]);
   if (cnt[1] > 0) {
     notice(pr, cnt[1]);
     @PKG@.GearLog.line("MIGRATE " + pr.getUsername() + " " + u + " migrated=" + cnt[1] + " stamped=" + cnt[0]);
@@ -3046,8 +3542,8 @@ public static String refuse(@IS@ it, @BD@ d) {
   if (st == 3) return "The gear data on this item is unreadable - an admin can check it with /gear read.";
   if (st == 4) return "This item comes from a newer SkyyGear - it cannot be changed here.";
   if (d == null) return "The gear data on this item is unreadable.";
-  if (!@PKG@.GearData.identified(d)) return "Identify it first: /identify";
-  if (it.getQuantity() > 1) return "A reforge works on one item at a time - split this stack of " + it.getQuantity() + " first.";
+  if (!@PKG@.GearData.identified(d)) return "Identify it first" + @PKG@.GearCfg.idHow();
+  if (it.getQuantity() > 1) return "A reforge works on one item at a time - free " + (it.getQuantity() - 1) + (it.getQuantity() == 2 ? " slot" : " slots") + " and this stack of " + it.getQuantity() + " splits into single items.";
   return null;
 }""")
 # Object[] { Integer code (1 done, 0 refused, -1 failed + refunded / not refunded), String message, IS newStack, BD before,
@@ -3263,8 +3759,10 @@ public static boolean fresh(@IS@ s, @BD@ outMeta) {
 }""")
 # the candidate rule over the containers in SCAN order (static so the bare-JVM harness runs it on plain containers): not in the
 # pre-craft identity snapshot, no document, fresh; at most cap rolls. got collects the rolled rarity ids. Returns the roll count.
+# exploit review 2: a candidate stack of q items is rolled per item (split into singles, give = storage, hotbar, backpack) and only
+# when q still fits the craft count (q <= cap - n): a crafted stack that merged into an undocumented stack is never rolled as one.
 M(gcrt, r"""
-public static int rollIn(@IC@[] cs, java.util.UUID u, String id, java.util.IdentityHashMap snap, int cap, @BD@ outMeta, StringBuilder got) {
+public static int rollIn(@IC@[] cs, @IC@[] give, java.util.UUID u, String id, java.util.IdentityHashMap snap, int cap, @BD@ outMeta, StringBuilder got) {
   int n = 0;
   for (int k = 0; k < cs.length && n < cap; k++) {
     @IC@ c = cs[k];
@@ -3273,6 +3771,13 @@ public static int rollIn(@IC@[] cs, java.util.UUID u, String id, java.util.Ident
       @IS@ s = c.getItemStack((short) i);
       if (s == null || s.isEmpty() || !id.equals(s.getItemId())) continue;
       if (snap.containsKey(s) || @PKG@.GearData.hasAnyDoc(s.getMetadata()) || !fresh(s, outMeta)) continue;
+      int q = s.getQuantity();
+      if (q > cap - n) continue;
+      if (q > 1) {
+        n = n + @PKG@.GearStamp.split(c, i, give, cs, u, 1, q - 1, got);
+        s = c.getItemStack((short) i);
+        if (s == null || s.isEmpty() || s.getQuantity() > 1 || n >= cap) continue;
+      }
       @BD@ d = @PKG@.GearRoll.craftDoc(id, u);
       @IS@ ns = @PKG@.GearData.put(s, d, u);
       if (ns == s) continue;
@@ -3291,10 +3796,9 @@ public void run() {
     u = this.pr.getUuid();
     @INV@ inv = @PKG@.GearStamp.invOf(this.pr);
     if (inv == null || @PKG@.Gear.busy(u)) { @PKG@.GearStamp.pendingClear(u, this.id); return; }
-    @IC@[] cs = new @IC@[@PKG@.GearStamp.SCAN.length];
-    for (int k = 0; k < cs.length; k++) cs[k] = @PKG@.GearStamp.section(inv, @PKG@.GearStamp.SCAN[k]);
+    @IC@[] cs = @PKG@.GearStamp.allOf(inv);
     StringBuilder got = new StringBuilder();
-    int n = rollIn(cs, u, this.id, this.snap, this.cap, this.outMeta, got);
+    int n = rollIn(cs, @PKG@.GearStamp.giveOf(inv), u, this.id, this.snap, this.cap, this.outMeta, got);
     @PKG@.GearStamp.pendingClear(u, this.id);
     if (n > 0) @PKG@.GearLog.line("CRAFT " + this.pr.getUsername() + " " + u + " " + this.id + " x" + n + ":" + got.toString() + " recipe " + this.recipe + " smith " + @PKG@.Gear.fnum(@PKG@.GearRoll.smithChance(u)) + "%");
     if (n < this.cap) @PKG@.GearLog.line("CRAFT-MISS " + this.pr.getUsername() + " " + this.id + " rolled " + n + " of " + this.cap + " (output on the ground or changed) - the rest is stamped Normal");
@@ -3363,8 +3867,8 @@ for _k in ("dmg", "str", "mp", "cc", "cd", "tdmg", "fEarth", "fThunder", "fWater
     F(ghit, "public static final int I_%s = %d;" % (_k.upper(), SI[_k]))
 # the per-Damage info GearHitSys leaves for GearArmorSys / GearTrueSys / GearLeechSys (the same Damage object runs through every
 # damage system in one dispatch): Object[] { Float pre-armor amount (null = the victim wears no inactive armor), Integer True Damage,
-# Integer Life Steal %, Integer Mana Steal, UUID attacker }. GearLeechSys removes it; entries of damage cancelled on the way are
-# dropped when the table passes 512 (they are never read again).
+# Integer Life Steal %, Integer Mana Steal, UUID attacker, Integer flat element damage (design review 8) }. GearLeechSys removes it;
+# entries of damage cancelled on the way are dropped when the table passes 512 (they are never read again).
 M(ghit, r"""
 public static synchronized void put(Object d, Object[] v) {
   if (INFO.size() > 512) INFO.clear();
@@ -3372,10 +3876,17 @@ public static synchronized void put(Object d, Object[] v) {
 }""")
 M(ghit, "public static synchronized Object[] get(Object d) { return (Object[]) INFO.get(d); }")
 M(ghit, "public static synchronized Object[] take(Object d) { return (Object[]) INFO.remove(d); }")
+# design review 8 (lock 17): the flat element lines (+ 5 x Raw Elemental) are kept aside from the hit math and added AFTER armor and
+# Defense by GearTrueSys, like True Damage - not cut by Defence, not doubled by crits
+M(ghit, r"""
+public static int elemSum(int[] t) {
+  if (t == null) return 0;
+  return t[I_FEARTH] + t[I_FTHUNDER] + t[I_FWATER] + t[I_FFIRE] + t[I_FAIR] + t[I_RTHUNDER] + t[I_RWATER] + 5 * t[I_RELEM];
+}""")
 M(ghit, r"""
 public static Object[] info(java.util.UUID u, int[] t) {
-  if (t == null) return new Object[] { null, Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0), u };
-  return new Object[] { null, Integer.valueOf(t[I_TDMG]), Integer.valueOf(t[I_LSTEAL]), Integer.valueOf(t[I_MSTEAL]), u };
+  if (t == null) return new Object[] { null, Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0), u, Integer.valueOf(0) };
+  return new Object[] { null, Integer.valueOf(t[I_TDMG]), Integer.valueOf(t[I_LSTEAL]), Integer.valueOf(t[I_MSTEAL]), u, Integer.valueOf(elemSum(t)) };
 }""")
 # spec 3.4: when SkyyClasses already says the class may not use the item, SkyyGear stays out (SkyyClasses blocks + shows its popup)
 M(ghit, r"""
@@ -3395,11 +3906,14 @@ public static String[] judge(java.util.UUID u, @IS@ it, boolean util) {
   if (u == null || it == null || it.isEmpty()) return null;
   String id = it.getItemId();
   if (!@PKG@.GearData.isGear(id)) return null;
+  // engine review 3: only a weapon is judged as a weapon - armor (or Equipment) held in the hand never blocks a hit
+  int sl = @PKG@.GearData.slotOf(id);
+  if (sl != 0 && sl != 1) return null;
   @BD@ d = @PKG@.GearData.effective(id, it.getMetadata());
   if (d == null || !@PKG@.GearDefs.enforcedKind(@PKG@.GearData.kind(d))) return null;
   if (!classAllows(u, id)) return null;
   String where = util ? " (it is in your utility slot)" : "";
-  if (!@PKG@.GearData.identified(d)) return new String[] { id, "Unidentified", "Identify it first: /identify" + where };
+  if (!@PKG@.GearData.identified(d)) return new String[] { id, "Unidentified", "Identify it first" + @PKG@.GearCfg.idHow() + where };
   int need = @PKG@.GearLevel.level(id, d);
   Object[] c = @PKG@.GearGate.check(u, id, d, need);
   if (((Boolean) c[0]).booleanValue()) return null;
@@ -3436,43 +3950,17 @@ public static int family(@DCS@ c) {
   FAM.put(id, Integer.valueOf(f));
   return f;
 }""")
-# spec 4.3 T = the weapon's modifiers (weapon-only stats only from it) + every ACTIVE armor piece's. ok[0] = false when the hand holds
-# something that is neither gear nor empty (a tool, a block, an unusable gear weapon): offence stats only apply to a gear weapon or
-# bare hands (spec 4.3). weapon == null = armor totals only (Defense, Speed, regen).
-M(ghit, r"""
-public static int[] totals(java.util.UUID u, @IS@ weapon, @IC@ armor, boolean[] ok) {
-  int[] t = new int[@PKG@.GearDefs.NS];
-  boolean good = true;
-  if (weapon != null && !weapon.isEmpty()) {
-    String id = weapon.getItemId();
-    int sl = @PKG@.GearData.slotOf(id);
-    if (sl == 0 || sl == 1) {
-      @BD@ d = @PKG@.GearData.effective(id, weapon.getMetadata());
-      if (@PKG@.GearStats.active(u, id, d)) @PKG@.GearStats.addMods(t, d, false);
-      else good = false;
-    } else good = false;
-  }
-  if (armor != null) {
-    for (int i = 0; i < armor.getCapacity(); i++) {
-      @IS@ s = armor.getItemStack((short) i);
-      if (s == null || s.isEmpty() || @PKG@.GearData.slotOf(s.getItemId()) != 2) continue;
-      @BD@ d = @PKG@.GearData.effective(s.getItemId(), s.getMetadata());
-      if (@PKG@.GearStats.active(u, s.getItemId(), d)) @PKG@.GearStats.addMods(t, d, true);
-    }
-  }
-  if (ok != null && ok.length > 0) ok[0] = good;
-  return t;
-}""")
-# spec 4.3 step 1, in order: Damage %, Strength (physical) or Magical Power (spell), flat elements (+5 x Raw Elemental), crit with
-# chance (crit.base + cc) %: x 2 x (1 + (crit.baseDamage + cd) %), overcrit (a second roll at chance - 100 %) x 2, at most once.
-# r1 / r2 = the two random numbers in [0, 1) (the harness passes fixed ones).
+# (the totals live in GearStats.totals since design review 2 - one function for combat, Defense, regen, Speed and gear:stats)
+# spec 4.3 step 1, in order: Damage %, Strength (physical) or Magical Power (spell), crit with chance (crit.base + cc) %: x 2 x
+# (1 + (crit.baseDamage + cd) %), overcrit (a second roll at chance - 100 %) x 2, at most once. The flat element lines are NOT in
+# here any more (design review 8: GearTrueSys adds elemSum after armor). r1 / r2 = the two random numbers in [0, 1) (the harness
+# passes fixed ones).
 M(ghit, r"""
 public static double hitAmount(double amount, int[] t, boolean spell, double r1, double r2) {
   double a = amount * (1.0 + (double) t[I_DMG] / 100.0);
   double per = spell ? @PKG@.GearCfg.MP_PER : @PKG@.GearCfg.STR_PER;
   int pt = spell ? t[I_MP] : t[I_STR];
   a = a * (1.0 + (double) pt * per / 100.0);
-  a = a + (double) (t[I_FEARTH] + t[I_FTHUNDER] + t[I_FWATER] + t[I_FFIRE] + t[I_FAIR] + t[I_RTHUNDER] + t[I_RWATER]) + 5.0 * (double) t[I_RELEM];
   double ch = (@PKG@.GearCfg.CRIT_BASE + (double) t[I_CC]) / 100.0;
   if (ch > 0.0 && r1 < ch) {
     a = a * 2.0 * (1.0 + (@PKG@.GearCfg.CRIT_BASE_DMG + (double) t[I_CD]) / 100.0);
@@ -3524,6 +4012,22 @@ public static @PKG@.GearShot liveBad(java.util.UUID u) {
     if (r != null && r.bad != null && u.equals(r.shooter) && now - r.at < %dL) return r;
   }
   return null;
+}""" % SHOT_WINDOW_MS)
+# exploit review 1: a projectile hit that reaches GearHitSys as a plain EntitySource (shortbow / crossbow arrows through
+# DamageEntityInteraction) takes its weapon from the shooter's NEWEST live launch record in the shot window, never from the item
+# in hand at landing (fire bow A, swap to stat-stick bow B mid-flight: B's stats no longer apply)
+M(gstk, r"""
+public static @PKG@.GearShot newest(java.util.UUID u) {
+  if (u == null || SHOTS.isEmpty()) return null;
+  long now = System.currentTimeMillis();
+  @PKG@.GearShot best = null;
+  java.util.Iterator it = SHOTS.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GearShot r = (@PKG@.GearShot) it.next();
+    if (r == null || !u.equals(r.shooter) || now - r.at >= %dL) continue;
+    if (best == null || r.at > best.at) best = r;
+  }
+  return best;
 }""" % SHOT_WINDOW_MS)
 M(gstk, r"""
 public @QRY@ getQuery() {
@@ -3618,7 +4122,7 @@ public static String why(java.util.UUID u, @IS@ s) {
   String id = s.getItemId();
   @BD@ d = @PKG@.GearData.effective(id, s.getMetadata());
   String name = @PKG@.GearView.nameText(id, d);
-  if (!@PKG@.GearData.identified(d)) return "Your " + name + " gives no stats until you identify it: /identify";
+  if (!@PKG@.GearData.identified(d)) return "Your " + name + " gives no stats until you identify it" + @PKG@.GearCfg.idHow();
   int need = @PKG@.GearLevel.level(id, d);
   Object[] c = @PKG@.GearGate.check(u, id, d, need);
   int st = ((Integer) c[5]).intValue();
@@ -3644,38 +4148,73 @@ public static @SIC@ activeCopy(java.util.UUID u, @IC@ armor) {
   }
   return c;
 }""")
-# spec 3.5 part 2: per stat index, the sum of the ADDITIVE MAX stat modifiers of the inactive pieces (vanilla armor only has those:
-# StatModifiersManager applies them as one StaticModifier(MAX, ADDITIVE, sum) under the "Armor" key, VERIFIED). Integer -> Float.
+# spec 3.5 part 2: per stat index, the ADDITIVE stat modifiers of a piece, the way StatModifiersManager.computeStatModifiers adds
+# them (VERIFIED bytecode 2026-09-29): every StaticModifier of the piece's ItemArmor.getStatModifiers() summed per calculation type
+# (the engine puts the sum under Modifier target MAX, whatever the asset's own target), amount x (float) BrokenPenalties.getArmor(0.0)
+# when the stack isBroken() (engine review 2; Default.json 0.75). statMods = the Int2ObjectMap (a java.util.Map of StaticModifier[]).
 M(garm, r"""
-public static java.util.HashMap lockSums(java.util.UUID u, @IC@ armor) {
+public static void addSums(Object statMods, boolean broken, float f, java.util.HashMap out, String id) {
+  if (!(statMods instanceof java.util.Map)) return;
+  java.util.Iterator e = ((java.util.Map) statMods).entrySet().iterator();
+  while (e.hasNext()) {
+    java.util.Map.Entry en = (java.util.Map.Entry) e.next();
+    if (!(en.getKey() instanceof Number) || !(en.getValue() instanceof Object[])) continue;
+    Integer k = Integer.valueOf(((Number) en.getKey()).intValue());
+    Object[] xs = (Object[]) en.getValue();
+    float sum = 0.0f;
+    for (int j = 0; j < xs.length; j++) {
+      if (!(xs[j] instanceof @SMO@)) continue;
+      @SMO@ m = (@SMO@) xs[j];
+      if (m.getCalculationType() == @CAL@.ADDITIVE) {
+        float a = m.getAmount();
+        if (broken) a = a * f;
+        sum = sum + a;
+      } else if (id != null) @PKG@.Gear.warnOnce("lockcalc:" + id, id + " has a non-additive armor stat modifier - under-level armor keeps it (spec 3.5 part 4)");
+    }
+    if (sum == 0.0f) continue;
+    Object prev = out.get(k);
+    out.put(k, Float.valueOf((prev instanceof Float ? ((Float) prev).floatValue() : 0.0f) + sum));
+  }
+}""")
+M(garm, r"""
+public static void addPiece(@IS@ s, float f, java.util.HashMap out, boolean warn) {
+  if (s == null || s.isEmpty()) return;
+  @ITM@ it = @PKG@.Gear.item(s.getItemId());
+  @IAR@ a = it == null ? null : it.getArmor();
+  Object sm = a == null ? null : a.getStatModifiers();
+  boolean br = false;
+  try { br = s.isBroken(); } catch (Throwable t) { br = false; }
+  addSums(sm, br, f, out, warn ? s.getItemId() : null);
+}""")
+# the inactive pieces only = what the lock cancels (Integer stat index -> Float)
+M(garm, r"""
+public static java.util.HashMap lockSums(java.util.UUID u, @IC@ armor, float f) {
   java.util.HashMap out = new java.util.HashMap();
   if (armor == null) return out;
   for (int i = 0; i < armor.getCapacity(); i++) {
     @IS@ s = armor.getItemStack((short) i);
     if (!inactive(u, s)) continue;
-    @ITM@ it = @PKG@.Gear.item(s.getItemId());
-    @IAR@ a = it == null ? null : it.getArmor();
-    Object sm = a == null ? null : a.getStatModifiers();
-    if (!(sm instanceof java.util.Map)) continue;
-    java.util.Iterator e = ((java.util.Map) sm).entrySet().iterator();
-    while (e.hasNext()) {
-      java.util.Map.Entry en = (java.util.Map.Entry) e.next();
-      if (!(en.getKey() instanceof Number) || !(en.getValue() instanceof Object[])) continue;
-      Integer k = Integer.valueOf(((Number) en.getKey()).intValue());
-      Object[] xs = (Object[]) en.getValue();
-      float sum = 0.0f;
-      for (int j = 0; j < xs.length; j++) {
-        if (!(xs[j] instanceof @SMO@)) continue;
-        @SMO@ m = (@SMO@) xs[j];
-        if (m.getCalculationType() == @CAL@.ADDITIVE && (m.getTarget() == null || m.getTarget() == @MTG@.MAX)) sum = sum + m.getAmount();
-        else @PKG@.Gear.warnOnce("lockcalc:" + s.getItemId(), s.getItemId() + " has a non-additive armor stat modifier - under-level armor keeps it (spec 3.5 part 4)");
-      }
-      if (sum == 0.0f) continue;
-      Object prev = out.get(k);
-      out.put(k, Float.valueOf((prev instanceof Float ? ((Float) prev).floatValue() : 0.0f) + sum));
-    }
+    addPiece(s, f, out, true);
   }
   return out;
+}""")
+# every piece = what the engine's own "Armor" modifier holds once it has recalculated this container (engine review 1: the sync check)
+M(garm, r"""
+public static java.util.HashMap fullSums(@IC@ armor, float f) {
+  java.util.HashMap out = new java.util.HashMap();
+  if (armor == null) return out;
+  for (int i = 0; i < armor.getCapacity(); i++) addPiece(armor.getItemStack((short) i), f, out, false);
+  return out;
+}""")
+# the world's BrokenPenalties armor factor (the engine's own call: getGameplayConfig().getItemDurabilityConfig().getBrokenPenalties()
+# .getArmor(0.0)); 1 when it cannot be read (logged once)
+M(garm, r"""
+public static float brokenFactor(Object ext) {
+  try {
+    @WLD@ w = ext instanceof @EST@ ? ((@EST@) ext).getWorld() : (ext instanceof @WLD@ ? (@WLD@) ext : null);
+    if (w != null) return (float) w.getGameplayConfig().getItemDurabilityConfig().getBrokenPenalties().getArmor(0.0);
+  } catch (Throwable t) { @PKG@.Gear.warnOnce("broken", "could not read the broken-armor penalty - broken armor locks count in full: " + t); }
+  return 1.0f;
 }""")
 
 # ================================================================= GearTag: unidentified tagging (spec 5.5, 5.6) + death / chest marks
@@ -3733,11 +4272,20 @@ public static @IS@ unid(@IS@ s, int col) {
   if (col != 1 && col != 2) return s;
   return @PKG@.GearData.put(s, @PKG@.GearRoll.unidDoc(id, col, col == 1 ? "drop" : "chest"), null);
 }""")
+# exploit review 2: a stack of several undocumented gear items in a fresh loot chest is split into empty slots of the SAME chest
+# first (one unidentified document and one rarity roll per item); what does not fit stays one stack with one document (split with
+# copies of that document once it sits in a player inventory, GearStamp.scan). Mob drops keep one document per dropped stack
+# (splitting an item entity would mean spawning new entities) and are split the same way in the inventory.
 M(gtag, r"""
 public static int tagContainer(@IC@ c, String where) {
   if (c == null) return 0;
   int n = 0;
+  @IC@[] self = new @IC@[] { c };
   for (int i = 0; i < c.getCapacity(); i++) {
+    @IS@ s0 = c.getItemStack((short) i);
+    if (@PKG@.GearCfg.PART_CHESTS && s0 != null && !s0.isEmpty() && s0.getQuantity() > 1 && @PKG@.GearData.isGear(s0.getItemId()) && !@PKG@.GearData.hasAnyDoc(s0.getMetadata())) {
+      n = n + @PKG@.GearStamp.split(c, i, self, self, null, 2, 64, null);
+    }
     @IS@ s = c.getItemStack((short) i);
     @IS@ ns = unid(s, 2);
     if (ns == s || ns == null) continue;
@@ -3760,8 +4308,11 @@ M(gtag, "public static synchronized String chestTake(Object ref) { return ref ==
 # ================================================================= GearFx: per-player stat effects (spec 3.5 part 2, 4.2), helpers
 # REGEN: UUID -> long[]{lastMs, accumulatedMs}; LEECH: UUID -> double[]{heal owed, last payout ms}; MANA: UUID -> double[]{mana owed,
 # last Mana Steal ms}; WARNED: UUID -> HashSet of "slot:id:doc" of the armor pieces already announced inactive; MOVE: skyymove state.
-for _f in ("REGEN", "LEECH", "MANA", "WARNED", "MOVE"):
+# LOCKED: UUID -> Object[] of the armor stacks (identity) when a non-zero lock was last written (GearLockSys only looks at those
+# players); BLOCKED: UUID -> int[]{seconds a lock raise waited for the engine}
+for _f in ("REGEN", "LEECH", "MANA", "WARNED", "MOVE", "LOCKED", "BLOCKED"):
     F(gfx, "public static final java.util.concurrent.ConcurrentHashMap %s = new java.util.concurrent.ConcurrentHashMap();" % _f)
+F(gfx, "public static volatile String AKEY = null;")
 F(gfx, 'public static final String LOCK = "%s";' % LOCK_PREFIX)
 F(gfx, 'public static final String LIMITS = %s;' % jstr(", ".join(ARMOR_LIMITS)[:1500]))
 # Life Steal: lsteal % of the landed damage is owed and paid out once per steal.windowS (spec 4.2, the lock-20 shape)
@@ -3797,12 +4348,65 @@ public static void add(@ESM@ m, int idx, float amt, boolean health) {
   if (cur + a > max) a = max - cur;
   m.addStatValue(idx, a);
 }""")
-# spec 3.5 part 2: one StaticModifier(MAX, ADDITIVE, -sum) per stat under skyygear_lock_<stat id>, removed at 0; only written when it
-# changes. want = GearArmor.lockSums (Integer stat index -> Float).
+# ---- engine review 1: the lock must never eat the CURRENT value. EntityStatValue.putModifier / removeModifier recompute min / max and
+# clamp the value at once (VERIFIED bytecode 2026-09-29: computeModifiers ends with value = MathUtil.clamp(value, min, max)), and the
+# engine adds a piece's own +sum only at EntityStatsSystems$Recalculate (StatModifiersManager.applyStatModifiers, key
+# CalculationType.ADDITIVE.createKey("Armor")). So:
+#  - SHRINKING a lock (or removing it) only raises max: always safe, done at once wherever the want drops (GearFxInvSys on an armor
+#    change, GearLockSys every tick BEFORE Recalculate, the 1 s tick) - an unequipped piece's lock is gone before the engine drops
+#    that piece's +sum;
+#  - GROWING a lock lowers max: only in the 1 s tick (raise = true) and only when the engine's own Armor modifier for that stat
+#    already equals the container's full sum (the piece's +sum is in), so the lock lands on the final max and the clamp can only
+#    remove value above the new max - what vanilla does when a piece with less Health goes on. Not synced yet: wait (next second).
 M(gfx, r"""
-public static void locks(@ESM@ m, java.util.HashMap want) {
+public static float plan(float have, float want, boolean raise, float engine, float full) {
+  if (want <= have) return want;
+  if (!raise) return have;
+  if (Math.abs(engine - full) > 0.01f) return have;
+  return want;
+}""")
+M(gfx, r"""
+public static String armorKey() {
+  String k = AKEY;
+  if (k == null) { k = @CAL@.ADDITIVE.createKey("Armor"); AKEY = k; }
+  return k;
+}""")
+# the amount of the engine's own ADDITIVE "Armor" MAX modifier on stat i (0 = none)
+M(gfx, r"""
+public static float engineArmor(@ESM@ m, int i) {
+  try {
+    @MODF@ x = m.getModifier(i, armorKey());
+    if (x instanceof @SMO@) return ((@SMO@) x).getAmount();
+  } catch (Throwable t) { }
+  return 0.0f;
+}""")
+M(gfx, r"""
+public static float lockNow(@MODF@ cur) {
+  if (cur instanceof @SMO@) { float a = -((@SMO@) cur).getAmount(); return a > 0.0f ? a : 0.0f; }
+  return 0.0f;
+}""")
+M(gfx, r"""
+public static Object[] snapshot(@IC@ armor) {
+  if (armor == null) return new Object[0];
+  Object[] o = new Object[armor.getCapacity()];
+  for (int i = 0; i < o.length; i++) o[i] = armor.getItemStack((short) i);
+  return o;
+}""")
+M(gfx, r"""
+public static boolean sameStacks(Object[] snap, @IC@ armor) {
+  if (snap == null || armor == null) return snap == null && armor == null;
+  if (snap.length != armor.getCapacity()) return false;
+  for (int i = 0; i < snap.length; i++) if (snap[i] != armor.getItemStack((short) i)) return false;
+  return true;
+}""")
+# spec 3.5 part 2: one StaticModifier(MAX, ADDITIVE, -sum) per stat under skyygear_lock_<stat id>, removed at 0; only written when it
+# changes; each amount through plan(). want = GearArmor.lockSums (Integer stat index -> Float); full = GearArmor.fullSums (raise only).
+M(gfx, r"""
+public static void locks(java.util.UUID u, @ESM@ m, java.util.HashMap want, java.util.HashMap full, @IC@ armor, boolean raise) {
   if (m == null) return;
   int n = m.size();
+  boolean any = false;
+  boolean waited = false;
   for (int i = 0; i < n; i++) {
     @ESV@ v = null;
     try { v = m.get(i); } catch (Throwable t) { v = null; }
@@ -3811,11 +4415,33 @@ public static void locks(@ESM@ m, java.util.HashMap want) {
     Object w = want == null ? null : want.get(Integer.valueOf(i));
     float amt = w instanceof Float ? ((Float) w).floatValue() : 0.0f;
     @MODF@ cur = m.getModifier(i, key);
-    if (amt == 0.0f) { if (cur != null) m.removeModifier(i, key); continue; }
-    @SMO@ nm = new @SMO@(@MTG@.MAX, @CAL@.ADDITIVE, -amt);
+    float have = lockNow(cur);
+    float fl = 0.0f;
+    if (full != null) { Object fo = full.get(Integer.valueOf(i)); fl = fo instanceof Float ? ((Float) fo).floatValue() : 0.0f; }
+    float next = plan(have, amt, raise && full != null, engineArmor(m, i), fl);
+    if (next < amt) waited = true;
+    if (next > 0.0f) any = true;
+    if (next <= 0.0f) { if (cur != null) m.removeModifier(i, key); continue; }
+    @SMO@ nm = new @SMO@(@MTG@.MAX, @CAL@.ADDITIVE, -next);
     if (cur != null && cur.equals(nm)) continue;
     m.putModifier(i, key, nm);
   }
+  if (u == null) return;
+  if (any) LOCKED.put(u, snapshot(armor));
+  else LOCKED.remove(u);
+  if (!raise) return;
+  if (!waited) { BLOCKED.remove(u); return; }
+  int[] b = (int[]) BLOCKED.get(u);
+  if (b == null) { b = new int[1]; BLOCKED.put(u, b); }
+  b[0] = b[0] + 1;
+  if (b[0] == 30) @PKG@.Gear.warnOnce("lockwait:" + u, "an under-level armor lock waited 30 s for the engine's own armor stats (player " + u + ") - the piece keeps its Health until they match");
+}""")
+# lower-only pass (GearFxInvSys, GearLockSys): the want of the container as it is now, never a raise
+M(gfx, r"""
+public static void lowerNow(java.util.UUID u, @ESM@ m, @IC@ armor, float f) {
+  if (m == null) return;
+  java.util.HashMap want = (@PKG@.GearCfg.ARMOR_NATIVE && armor != null) ? @PKG@.GearArmor.lockSums(u, armor, f) : new java.util.HashMap();
+  locks(u, m, want, null, armor, false);
 }""")
 # spec 3.5: one chat line each time a piece becomes inactive (gear.armorWarn gates only the line)
 M(gfx, r"""
@@ -3838,17 +4464,25 @@ public static void warnLines(@PR@ pr, java.util.UUID u, @IC@ armor) {
   if (lines.isEmpty() || pr == null || !@PKG@.Gear.notifyOn(u, "gear.armorWarn")) return;
   for (int i = 0; i < lines.size(); i++) pr.sendMessage(@MSG@.raw("[Gear] " + (String) lines.get(i)).color(@PKG@.GearDefs.C_GOLD));
 }""")
-# the armor part (on every armor change through GearFxInvSys, and every second from GearTick): lock modifiers, the warn line, Speed
+# the armor part (on an armor-container change through GearFxInvSys with raise = false, and every second from GearTick with
+# raise = true): lock modifiers (engine review 1: raise only from the tick), the warn line, Speed. While SkyyProfiles swaps the
+# profile (profile:busy) only the lower-only lock pass runs (lowering never touches the current value).
 M(gfx, r"""
-public static void armorPass(java.util.UUID u, @PR@ pr, @CB@ cb, @REF@ ref, @IC@ armor) {
-  if (u == null || cb == null || ref == null || @PKG@.Gear.busy(u)) return;
+public static void armorPass(java.util.UUID u, @PR@ pr, @CB@ cb, @REF@ ref, @IC@ armor, boolean raise) {
+  if (u == null || cb == null || ref == null) return;
+  boolean busy = @PKG@.Gear.busy(u);
   @ESM@ m = (@ESM@) cb.getComponent(ref, @ESM@.getComponentType());
-  java.util.HashMap want = (@PKG@.GearCfg.ARMOR_NATIVE && armor != null) ? @PKG@.GearArmor.lockSums(u, armor) : new java.util.HashMap();
-  if (m != null) locks(m, want);
+  float f = @PKG@.GearArmor.brokenFactor(cb.getExternalData());
+  if (m != null) {
+    java.util.HashMap want = (@PKG@.GearCfg.ARMOR_NATIVE && armor != null) ? @PKG@.GearArmor.lockSums(u, armor, f) : new java.util.HashMap();
+    boolean up = raise && !busy;
+    locks(u, m, want, up ? @PKG@.GearArmor.fullSums(armor, f) : null, armor, up);
+  }
+  if (busy) return;
   warnLines(pr, u, armor);
   float sp = 0.0f;
   if (@PKG@.GearCfg.PART_STATS && armor != null) {
-    int[] t = @PKG@.GearHit.totals(u, null, armor, null);
+    int[] t = @PKG@.GearStats.totals(u, null, armor, null, true);
     sp = (float) ((double) t[@PKG@.GearHit.I_SPD] * @PKG@.GearCfg.SPEED_PER / 100.0);
   }
   @PKG@.GearMove.post(u, "@MOVESRC@", "flat", sp, 0.0f, 0.0f);
@@ -3859,13 +4493,13 @@ public static void armorPass(java.util.UUID u, @PR@ pr, @CB@ cb, @REF@ ref, @IC@
 M(gfx, r"""
 public static void second(java.util.UUID u, @PR@ pr, @CB@ cb, @REF@ ref, @INV@ inv) {
   if (u == null || inv == null) return;
-  armorPass(u, pr, cb, ref, inv.getArmor());
+  armorPass(u, pr, cb, ref, inv.getArmor(), true);
   @ESM@ m = (@ESM@) cb.getComponent(ref, @ESM@.getComponentType());
   if (m == null) return;
   if (!@PKG@.GearCfg.PART_STATS) { REGEN.remove(u); LEECH.remove(u); MANA.remove(u); return; }
   boolean dead = cb.getComponent(ref, @DTHC@.getComponentType()) != null;
   long now = System.currentTimeMillis();
-  int[] t = @PKG@.GearStats.totals(u, inv);
+  int[] t = @PKG@.GearStats.totalsInv(u, inv, true);
   long[] rg = (long[]) REGEN.get(u);
   if (rg == null) { rg = new long[] { now, 0L }; REGEN.put(u, rg); }
   long el = now - rg[0];
@@ -3900,7 +4534,7 @@ public static void second(java.util.UUID u, @PR@ pr, @CB@ cb, @REF@ ref, @INV@ i
 M(gfx, r"""
 public static void forget(java.util.UUID u) {
   if (u == null) return;
-  REGEN.remove(u); LEECH.remove(u); MANA.remove(u); WARNED.remove(u); MOVE.remove(u);
+  REGEN.remove(u); LEECH.remove(u); MANA.remove(u); WARNED.remove(u); MOVE.remove(u); LOCKED.remove(u); BLOCKED.remove(u);
   try { @PKG@.GearMove.post(u, "@MOVESRC@", "flat", 0.0f, 0.0f, 0.0f); } catch (Throwable t) { }
 }""".replace("@MOVESRC@", MOVE_SOURCE))
 
@@ -3962,11 +4596,23 @@ dmg_system(ghsy, "GearHitSys", "getFilterDamageGroup", "ADR", "BEFORE", "ADR", r
         if (att != null && att.isValid()) pr = (@PR@) buf.getComponent(att, @PR@.getComponentType());
         if (pr != null) {
           u = pr.getUuid();
-          main = @INVC@.getItemInHand(buf, att);
-          @UTIL@ uc = (@UTIL@) buf.getComponent(att, @UTIL@.getComponentType());
-          ut = uc == null ? null : uc.getActiveItem();
-          bad = @PKG@.GearHit.judge(u, main, false);
-          if (bad == null) bad = @PKG@.GearHit.judge(u, ut, true);
+          // exploit review 1: a projectile hit (Projectile family) through a plain EntitySource (shortbow / crossbow arrows via
+          // DamageEntityInteraction) takes weapon + spell flag from the shooter's newest live launch record; melee keeps the hand
+          @PKG@.GearShot nr = @PKG@.GearHit.family(d.getCause()) == 2 ? @PKG@.GearShotTrack.newest(u) : null;
+          if (nr != null) {
+            main = nr.main;
+            ut = nr.util;
+            shot = true;
+            if (nr.bad != null) bad = new String[] { nr.bad, nr.title, nr.body };
+          } else {
+            main = @INVC@.getItemInHand(buf, att);
+            @UTIL@ uc = (@UTIL@) buf.getComponent(att, @UTIL@.getComponentType());
+            ut = uc == null ? null : uc.getActiveItem();
+            bad = @PKG@.GearHit.judge(u, main, false);
+            if (bad == null) bad = @PKG@.GearHit.judge(u, ut, true);
+            // a projectile with no launch record: never the item in hand at landing - armor stats only
+            if (@PKG@.GearHit.family(d.getCause()) == 2) { main = null; ut = null; }
+          }
           if (bad == null) {
             @PKG@.GearShot lb = @PKG@.GearShotTrack.liveBad(u);
             if (lb != null) bad = new String[] { lb.bad, lb.title, lb.body };
@@ -3989,7 +4635,7 @@ dmg_system(ghsy, "GearHitSys", "getFilterDamageGroup", "ADR", "BEFORE", "ADR", r
             arm = ac == null ? null : ac.getInventory();
           }
           boolean[] ok = new boolean[1];
-          int[] t = @PKG@.GearHit.totals(u, main, arm, ok);
+          int[] t = @PKG@.GearStats.totals(u, main, arm, ok, true);
           if (ok[0]) {
             java.util.concurrent.ThreadLocalRandom rnd = java.util.concurrent.ThreadLocalRandom.current();
             float a0 = d.getAmount();
@@ -4038,20 +4684,23 @@ dmg_system(garsy, "GearArmorSys", "getFilterDamageGroup", "ADR", "AFTER", "ADR",
       if (nu != cur) d.setAmount(nu);
     }
     if (@PKG@.GearCfg.PART_STATS && d.getSource() instanceof @DENT@) {
-      int[] t = @PKG@.GearHit.totals(vu, null, full, null);
+      int[] t = @PKG@.GearStats.totals(vu, null, full, null, true);
       int def = t[@PKG@.GearHit.I_DEF];
       if (def > 0) {
         double sc = (double) @PKG@.GearCfg.DEF_SCALE;
         d.setAmount((float) ((double) d.getAmount() * sc / (sc + (double) def)));
       }
     }""")
-# GearTrueSys (Filter, AFTER GearArmorSys): + True Damage, so neither Hytale armor nor Defense reduces it (spec 4.2)
+# GearTrueSys (Filter, AFTER GearArmorSys): + True Damage, so neither Hytale armor nor Defense reduces it (spec 4.2), + the flat
+# element damage (design review 8, lock 17: element damage applies on its own, not cut by Defence; affinities are a later stage)
 dmg_system(gtsy, "GearTrueSys", "getFilterDamageGroup", "AFTERSYS", "AFTER", "AFTERSYS", r"""
     if (d.isCancelled() || !@PKG@.GearCfg.PART_STATS) return;
     Object[] info = @PKG@.GearHit.get(d);
     if (info == null || !(info[1] instanceof Integer)) return;
     int td = ((Integer) info[1]).intValue();
-    if (td > 0) d.setAmount(d.getAmount() + (float) td);""")
+    int el = info.length > 5 && info[5] instanceof Integer ? ((Integer) info[5]).intValue() : 0;
+    int add = (td > 0 ? td : 0) + (el > 0 ? el : 0);
+    if (add > 0) d.setAmount(d.getAmount() + (float) add);""")
 # GearLeechSys (Inspect: after the damage landed): Life Steal owed, Mana Steal owed; the stat writes happen in GearTick (no stat write
 # inside the damage dispatch, the SkyyClasses PriestHealSys rule)
 dmg_system(glsy, "GearLeechSys", "getInspectDamageGroup", None, "AFTER", "null", r"""
@@ -4185,13 +4834,56 @@ C(gcm1U, "public GearChestMarkU() { super(false); }")
 C(gcm2U, "public GearChestTagU() { super(false); }")
 
 # ================================================================= GearFxInvSys (armor changes apply at once) + GearByeB (cleanup)
+# engine review 5: only an event of the ARMOR container runs the armor pass (the weapon side needs nothing here: the gate is judged
+# per hit and gear:stats is published by GearTick). Engine review 1: this pass never grows a lock (raise = false).
 event_system(gfxi, "GearFxInvSys", ICE, PLAYER_Q, r"""
+    @ICE@ ie = (@ICE@) ev;
     @REF@ r = chunk.getReferenceTo(idx);
     if (r == null) return;
-    @PR@ pr = (@PR@) st.getComponent(r, @PR@.getComponentType());
     @PLA@ p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
-    if (pr == null || p == null || p.getInventory() == null) return;
-    @PKG@.GearFx.armorPass(pr.getUuid(), pr, buf, r, p.getInventory().getArmor());""")
+    if (p == null || p.getInventory() == null) return;
+    @IC@ armor = p.getInventory().getArmor();
+    if (armor == null || (ie.getItemContainer() != armor && !(ie.getInventory() instanceof @ARMC@))) return;
+    @PR@ pr = (@PR@) st.getComponent(r, @PR@.getComponentType());
+    if (pr == null) return;
+    @PKG@.GearFx.armorPass(pr.getUuid(), pr, buf, r, armor, false);""")
+# GearLockSys (engine review 1): every tick, ordered BEFORE EntityStatsSystems$Recalculate, for the players that carry a lock: when
+# an armor stack changed since the lock was written, the lock shrinks to the container's new want before the engine can drop the
+# unequipped piece's +sum (lower-only; the 1 s tick grows locks). Four identity compares per locked player per tick otherwise.
+F(glks, "public java.util.Set deps;")
+F(glks, "public static Class RECALC;")
+F(glks, "public @QRY@ query;")
+C(glks, r"""
+public GearLockSys(boolean ordered) {
+  super();
+  this.deps = new java.util.HashSet();
+  if (ordered && RECALC != null) this.deps.add(new @SDEP@(@ORD@.BEFORE, RECALC));
+  this.query = null;
+}""")
+M(glks, r"""
+public @QRY@ getQuery() {
+  if (this.query == null) this.query = @QRY@.and(new @QRY@[] { (@QRY@) @PLA@.getComponentType(), (@QRY@) @ARMC@.getComponentType(), (@QRY@) @ESM@.getComponentType() });
+  return this.query;
+}""")
+M(glks, "public java.util.Set getDependencies() { return this.deps; }")
+M(glks, "public boolean isParallel(int a, int b) { return false; }")
+M(glks, r"""
+public void tick(float dt, int idx, @ACH@ chunk, @ST@ store, @CB@ cb) {
+  try {
+    if (@PKG@.GearFx.LOCKED.isEmpty()) return;
+    @PR@ pr = (@PR@) chunk.getComponent(idx, @PR@.getComponentType());
+    if (pr == null) return;
+    java.util.UUID u = pr.getUuid();
+    Object snap = @PKG@.GearFx.LOCKED.get(u);
+    if (snap == null) return;
+    @ARMC@ ac = (@ARMC@) chunk.getComponent(idx, @ARMC@.getComponentType());
+    @IC@ armor = ac == null ? null : ac.getInventory();
+    if (@PKG@.GearFx.sameStacks((Object[]) snap, armor)) return;
+    @ESM@ m = (@ESM@) chunk.getComponent(idx, @ESM@.getComponentType());
+    @PKG@.GearFx.lowerNow(u, m, armor, @PKG@.GearArmor.brokenFactor(store.getExternalData()));
+  } catch (Throwable t) { @PKG@.Gear.warnOnce("locksys", "armor lock pass failed: " + t); }
+}""")
+C(glksU, "public GearLockSysU() { super(false); }")
 gbyb.addInterface(pool.get("java.util.function.Consumer"))
 C(gbyb, "public GearByeB() { }")
 M(gbyb, r"""
@@ -4256,6 +4948,14 @@ public static void setup(@JPLG@ pl) {
     try { pl.getChunkStoreRegistry().registerSystem(new @PKG@.GearChestTagU()); } catch (Throwable t8b) { @PKG@.Gear.warn("GearChestTagU could not be registered: " + t8b); }
   }
   try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearFxInvSys()); } catch (Throwable t9) { @PKG@.Gear.warn("GearFxInvSys could not be registered: " + t9); }
+  Class recalc = cls("com.hypixel.hytale.server.core.modules.entitystats.EntityStatsSystems$Recalculate");
+  @PKG@.GearLockSys.RECALC = recalc;
+  if (recalc == null) @PKG@.Gear.warn("EntityStatsSystems$Recalculate not found - the armor lock pass runs unordered (GearFxInvSys still lowers locks on armor changes)");
+  try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearLockSys(true)); }
+  catch (Throwable t10) {
+    @PKG@.Gear.warn("could not order the armor lock pass before EntityStatsSystems$Recalculate (" + t10 + ") - unordered fallback");
+    try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearLockSysU()); } catch (Throwable t10b) { @PKG@.Gear.warn("GearLockSysU could not be registered: " + t10b); }
+  }
   @PKG@.GearMove.checkProto("SkyyGear");
   pl.getEventRegistry().registerGlobal(@PDEV@.class, new @PKG@.GearByeB());
   if (LIMITS.length() > 0) @PKG@.Gear.info("known limit (spec 3.5 part 4): under-level armor keeps these rarely used vanilla effects: " + LIMITS);
@@ -4293,7 +4993,7 @@ public void tick(float dt, int idx, @ACH@ chunk, @ST@ store, @CB@ cb) {
     if (dirty) @PKG@.GearStamp.dirty(pr, w);
     // spec 7.1: gear:stats:<uuid> = the active totals (held weapon + worn armor that is identified and meets its gate), read by
     // gear:fn:stats; republished only when it changed. PART B applies these totals in combat; this only publishes them.
-    String ss = @PKG@.GearStats.statsString(@PKG@.GearStats.totals(u, inv));
+    String ss = @PKG@.GearStats.statsString(@PKG@.GearStats.totalsInv(u, inv, false));
     if (!ss.equals(@PKG@.Gear.bget("gear:stats:" + u))) @PKG@.Gear.bridge().put("gear:stats:" + u, ss);
     // ---- PART B PLUGS IN HERE (4/4): stat effects (PARTB_TICK) ----
 @PARTBTICK@
@@ -4530,7 +5230,7 @@ public static void column(@UCB@ b, String parent, String cid, String head, Strin
   java.util.ArrayList txt = new java.util.ArrayList();
   java.util.ArrayList col = new java.util.ArrayList();
   if (d != null && @PKG@.GearData.identified(d)) @PKG@.GearView.statLines(id, d, txt, col);
-  else if (d != null) { txt.add("Unidentified - identify it first (/identify)."); col.add(@PKG@.GearDefs.C_GRAY); }
+  else if (d != null) { txt.add("Unidentified - identify it first" + (@PKG@.GearCfg.IDENTIFY_CMD ? " (/identify)." : ".")); col.add(@PKG@.GearDefs.C_GRAY); }
   if (txt.isEmpty()) { txt.add("No modifiers yet - a reforge rolls them."); col.add(@PKG@.GearDefs.C_GRAY); }
   for (int i = 0; i < txt.size() && i < 12; i++) {
     String c = (String) col.get(i);
@@ -4813,7 +5513,7 @@ public static String refuse(@IS@ it, @BD@ d) {
   if (st == 4) return "This item comes from a newer SkyyGear - it cannot be changed here.";
   if (d == null) return "The gear data on this item is unreadable.";
   if (@PKG@.GearData.identified(d)) return "It is already identified.";
-  if (it.getQuantity() > 1) return "Identify works on one item at a time - split this stack of " + it.getQuantity() + " first.";
+  if (it.getQuantity() > 1) return "Identify works on one item at a time - free " + (it.getQuantity() - 1) + (it.getQuantity() == 2 ? " slot" : " slots") + " and this stack of " + it.getQuantity() + " splits into single items.";
   return null;
 }""")
 # spec 5.7 flow + 1.7 write safety (the GearForge.reforge shape): same id + fingerprint in the same slot, coins TAKEN FIRST, the
@@ -4860,6 +5560,35 @@ public static Object[] identify(@IC@ c, int slot, String expId, String expFp, ja
   }
   @PKG@.GearLog.line("IDENTIFY " + who + " " + u + " " + id + " " + @PKG@.GearDefs.R_ID[r] + " lv" + lvl + " [" + @PKG@.GearView.modSummary(nd) + "] cost " + cost + (free ? " (free)" : ""));
   return new Object[] { Integer.valueOf(1), "Identified!", nu, d, nd, Long.valueOf(cost) };
+}""")
+# spec 5.7 "Identify all" (exploit review 2): one by one, each paid on its own; a REFUSED row (a stack of several items, not enough
+# coins for this one, ...) is skipped and the rest go on; only a failed write (code -1, refunded) stops. bySec[s] = the container of
+# inventory section s (GearStamp.section numbering). recent collects "Name: modifiers" lines. Object[] { Integer done, Long spent,
+# Integer skipped, String first skip reason, String stop reason }.
+M(gidn, r"""
+public static Object[] allIn(@IC@[] bySec, java.util.ArrayList rs, java.util.UUID u, String who, java.util.ArrayList recent) {
+  int done = 0;
+  int skipped = 0;
+  long spent = 0L;
+  String firstSkip = null;
+  String stop = null;
+  for (int i = 0; i < rs.size(); i++) {
+    int[] rw = (int[]) rs.get(i);
+    @IC@ c = rw[0] >= 0 && rw[0] < bySec.length ? bySec[rw[0]] : null;
+    if (c == null || rw[1] < 0 || rw[1] >= c.getCapacity()) continue;
+    @IS@ it = c.getItemStack((short) rw[1]);
+    if (it == null || it.isEmpty()) continue;
+    String name = @PKG@.Gear.itemName(it.getItemId());
+    Object[] res = identify(c, rw[1], it.getItemId(), @PKG@.GearForge.fp(it), u, who, false);
+    int code = ((Integer) res[0]).intValue();
+    if (code == 0) { skipped++; if (firstSkip == null) firstSkip = name + ": " + (String) res[1]; continue; }
+    if (code != 1) { stop = (String) res[1]; break; }
+    done++;
+    spent = spent + ((Long) res[5]).longValue();
+    String sum = @PKG@.GearView.modSummary((@BD@) res[4]);
+    if (recent != null) recent.add(name + ": " + (sum.length() > 0 ? sum : "no modifiers"));
+  }
+  return new Object[] { Integer.valueOf(done), Long.valueOf(spent), Integer.valueOf(skipped), firstSkip, stop };
 }""")
 
 # ================================================================= IdentifyPage (spec 5.7 + 5.8): the /reforge page's vanilla look
@@ -4973,7 +5702,7 @@ public void detail(@UCB@ b, @UEB@ ev, java.util.UUID u, @IS@ sel) {
     b.set("#SkyyGColUH.Text", "Unidentified");
     b.appendInline("#SkyyGColU", "Label #SkyyGColU1 { Anchor: (Height: 24); Text: \"\"; Style: (FontSize: 15, TextColor: #878e9c, VerticalAlignment: Center); }");
     b.set("#SkyyGColU1.Text", "Its modifiers appear when you identify it.");
-    b.appendInline("#SkyyGColU", "Label #SkyyGColU2 { Anchor: (Height: 24); Text: \"\"; Style: (FontSize: 15, TextColor: #FF5555, VerticalAlignment: Center); }");
+    b.appendInline("#SkyyGColU", "Label #SkyyGColU2 { Anchor: (Height: 24); Text: \"\"; Style: (FontSize: 15, TextColor: " + @PKG@.GearDefs.C_BAD + ", VerticalAlignment: Center); }");
     b.set("#SkyyGColU2.Text", @PKG@.GearData.slotOf(id) == 2 ? "Gives no stats until identified." : "Cannot be used until identified.");
     b.appendInline("#SkyyGColU", "Label #SkyyGColU3 { Anchor: (Height: 24); Text: \"\"; Style: (FontSize: 15, TextColor: #878e9c, VerticalAlignment: Center); }");
     b.set("#SkyyGColU3.Text", "The modifiers roll for its rarity and level the moment you pay.");
@@ -5121,7 +5850,7 @@ public void one(@INV@ inv) {
   if (msg != null && msg.startsWith("That item moved")) clearSel();
   this.info = "-" + msg;
 }""")
-# spec 5.7 "Identify all": one by one, each paid on its own, stops at the first refusal with a summary line
+# spec 5.7 "Identify all": one by one, each paid on its own; refused rows are skipped (exploit review 2), a failed write stops
 M(ipg, r"""
 public void all(@INV@ inv) {
   if (!guard()) return;
@@ -5130,24 +5859,18 @@ public void all(@INV@ inv) {
   if (rs.isEmpty()) { this.info = "-No unidentified gear on you."; return; }
   clearSel();
   this.recent.clear();
-  int done = 0;
-  long spent = 0L;
-  String stop = null;
-  for (int i = 0; i < rs.size(); i++) {
-    int[] rw = (int[]) rs.get(i);
-    @IC@ c = @PKG@.GearStamp.section(inv, rw[0]);
-    @IS@ it = @PKG@.GearStamp.at(inv, rw[0], rw[1]);
-    if (it == null || it.isEmpty()) continue;
-    String name = @PKG@.Gear.itemName(it.getItemId());
-    Object[] res = @PKG@.GearIdent.identify(c, rw[1], it.getItemId(), @PKG@.GearForge.fp(it), u, this.playerRef.getUsername(), false);
-    if (((Integer) res[0]).intValue() != 1) { stop = (String) res[1]; break; }
-    done++;
-    spent = spent + ((Long) res[5]).longValue();
-    String sum = @PKG@.GearView.modSummary((@BD@) res[4]);
-    this.recent.add(name + ": " + (sum.length() > 0 ? sum : "no modifiers"));
-  }
-  if (stop == null) this.info = "+Identified " + done + (done == 1 ? " item" : " items") + " for " + @PKG@.Gear.fmt(spent) + " coins.";
-  else this.info = (done > 0 ? "-Identified " + done + " of " + rs.size() + " (" + @PKG@.Gear.fmt(spent) + " coins) - stopped: " : "-") + stop;
+  @IC@[] by = new @IC@[6];
+  for (int s = 0; s < by.length; s++) by[s] = @PKG@.GearStamp.section(inv, s);
+  Object[] r = @PKG@.GearIdent.allIn(by, rs, u, this.playerRef.getUsername(), this.recent);
+  int done = ((Integer) r[0]).intValue();
+  long spent = ((Long) r[1]).longValue();
+  int skipped = ((Integer) r[2]).intValue();
+  String first = (String) r[3];
+  String stop = (String) r[4];
+  String head = "Identified " + done + " of " + rs.size() + (done > 0 ? " for " + @PKG@.Gear.fmt(spent) + " coins" : "");
+  if (stop != null) this.info = "-" + head + " - stopped: " + stop;
+  else if (skipped > 0) this.info = "-" + head + " - skipped " + skipped + " (" + first + ")";
+  else this.info = "+Identified " + done + (done == 1 ? " item" : " items") + " for " + @PKG@.Gear.fmt(spent) + " coins.";
 }""")
 M(ipg, r"""
 public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
@@ -5460,6 +6183,17 @@ public static void run(@ST@ store, @REF@ ref, @PR@ pr, String action, String res
     msg(pr, "error: " + t);
   }
 }""")
+M(gad, r"""
+public static String totalsText(int[] t) {
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; t != null && i < t.length && i < @PKG@.GearDefs.NS; i++) {
+    if (t[i] == 0) continue;
+    if (sb.length() > 0) sb.append(", ");
+    sb.append(@PKG@.GearDefs.S_LABEL[i]).append(' ').append(@PKG@.GearView.valText(@PKG@.GearDefs.S_KEY[i], t[i]));
+    if (@PKG@.GearDefs.S_LIVE[i] == 0) sb.append(" (later)");
+  }
+  return sb.length() > 0 ? sb.toString() : "none";
+}""")
 # the player's own /gear: held item lines, active totals, Smithing rarity (spec 8.1, 5.3)
 M(gad, r"""
 public static void me(@ST@ store, @REF@ ref, @PR@ pr) {
@@ -5478,15 +6212,10 @@ public static void me(@ST@ store, @REF@ ref, @PR@ pr) {
         for (int i = 0; i < ls.length; i++) pr.sendMessage(@MSG@.raw((i == 0 ? "[Gear] " : "  ") + ls[i]));
       }
     } else msg(pr, "hold a weapon or armor piece to see its gear lines");
-    int[] t = @PKG@.GearStats.totals(u, inv);
-    StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < t.length; i++) {
-      if (t[i] == 0) continue;
-      if (sb.length() > 0) sb.append(", ");
-      sb.append(@PKG@.GearDefs.S_LABEL[i]).append(' ').append(@PKG@.GearView.valText(@PKG@.GearDefs.S_KEY[i], t[i]));
-      if (@PKG@.GearDefs.S_LIVE[i] == 0) sb.append(" (later)");
-    }
-    msg(pr, "Your active totals (held weapon + worn armor you meet the level for): " + (sb.length() > 0 ? sb.toString() : "none"));
+    int[] t = @PKG@.GearStats.totalsInv(u, inv, false);
+    msg(pr, "Your active totals (held weapon + worn armor you meet the level for): " + totalsText(t));
+    int[] x = @PKG@.GearStats.extra(u);
+    if (x != null) msg(pr, "From other mods (gear:extra): " + totalsText(x));
     msg(pr, "Your Smithing rarity: +" + @PKG@.Gear.fnum(@PKG@.GearRoll.smithChance(u)) + " % chance of a better rarity when you craft gear");
   } catch (Throwable t) { @PKG@.Gear.warn("/gear failed: " + t); }
 }""")
@@ -5615,6 +6344,7 @@ public void setup() {
   @PKG@.GearCfg.DIR = dir;
   @PKG@.GearCfg.FILE = dir.resolve("config.properties");
   @PKG@.GearLog.FILE = dir.resolve("gear.log");
+  @PKG@.GearQual.load(dir.resolve("quality.properties"));
   @PKG@.GearCfg.importRolls(@PKG@.GearCfg.FILE, getDataDirectory().resolveSibling("Skyy_SkyyRolls").resolve("reforge.properties"));
   @PKG@.GearCfg.load();
   if (@PKG@.Gear.bget("config:def:SkyyRolls") != null) @PKG@.Gear.warnOnce("rolls", "SkyyRolls is still enabled - retire it (tools/deploy_set.py RETIRED); both mods register /reforge");
@@ -5644,7 +6374,7 @@ protected void shutdown() {
 }""")
 
 # ================================================================= write + build checks (spec 11.1 #2) + assemble
-ALL = [gu, gdf, gcf, glg, gdt, glv, grl, ggt, gvw, gst, gnt, gsp, gspt, gfg, gfn, ginv, gthr, gcrs, gcrt, gtk, grft, grdy, gbye, gui,
+ALL = [gu, gdf, gcf, glg, gql, gdt, glv, grl, ggt, gvw, gst, gnt, gsp, gspt, gfg, gfn, ginv, gthr, gcrs, gcrt, gtk, grft, grdy, gbye, gui,
        rpg, rfc, gad, gmt, gcm] + [subc[s[0]] for s in SUBS] + [pl] + [c for c, _n in PARTB_CLASSES]
 for c in ALL:
     c.writeFile(OUT)
