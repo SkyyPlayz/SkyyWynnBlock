@@ -51,6 +51,17 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Only a real op may grant `*`, `skyyranks.*`, `hytale.*` or `hytale.permissionsmodule.*` (covers /op, /perm) - Owner included. [as listed]
 - SkyyRanks: a rank below the default rank (Member) can't have grants or be staff, and the default rank can't be staff. [on]
 
+## Vanilla UI look (kit tools/skyyui.py, 2026-09-29) - defaults picked, change any
+- Text size: "readable" - vanilla's 11-14 px lines are shown at 14-18 px (vanilla list text tops out at 14). Exact vanilla sizes are one switch. [readable]
+- Leaving a page: Esc + a footer Close button (Secondary, cancel sound) like vanilla pages; the corner X is optional (vanilla hides it). [footer Close]
+- Result lines: vanilla green for done, vanilla red for refused, info blue #7caacc for notes (vanilla BarterPage); gold stays for highlights. [blue notes]
+- Tabs: like vanilla's spawn page - the active tab is a gold Primary button, the others Secondary, equal widths. [vanilla tabs]
+- Window: decorated frame (title bar with runes + gold ornaments) for forms and dialogs, the plain frame for long list pages - both are vanilla. [both]
+- Mythic on pages stays #CC66CC (your lock); HUD widgets get vanilla's #000000(0.2) background when the HUD is restyled. [as listed]
+- Not possible inline: vanilla's full-screen dim and bottom-left Back button (a page's root may only have a width and height).
+- Still to see in game (/skyprobe pages): text box look (3 candidates on probe page 2), checkboxes, dropdowns, tooltips, progress bars,
+  rarity-framed item slots - they stay off until you've seen them.
+
 ## Vault arrows (`research/Vault-Arrows-Spec.md`, live in SkyyVault 0.1.2)
 - APPROVED 2026-09-25 (Skyy): cycle pages inside the vault GUI with the existing in-chest Prev/Next arrows. Do not add a second page-switch UI.
 - The arrows sit in an extra 5th row, so all 36 slots stay free. If the 5-row chest doesn't fit your screen, switch Server Setup -> Vault ->
