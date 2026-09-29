@@ -12,6 +12,13 @@ check and expensive to get wrong:
         hytale:Adventurer = every player): a sub-command that calls requirePermission without setPermissionGroups(new String[0]) under
         a parent that sets groups, a requirePermission command that sets groups itself, or a requirePermission sub-command whose
         parent lint cannot find (details at perm_group_leaks below; SkyyIslands 0.5 /island reload handed every player skyyislands.admin)
+  WARN  newest build script that imports the vanilla UI kit (tools/skyyui.py) carries a literal colour that is neither a kit colour
+        (skyyui.COLOR) nor a rarity / quality colour (RARITY, RARITY_WYNN, QUALITY) - data colours (class, skill, tree colours...)
+        go in a module constant UI_DATA_COLORS (a list / tuple / dict of literals or of earlier module constants, dict .values() /
+        .keys(), list() / sorted() of those, a + b) or on a line marked ui-data (never a FAIL; research/Vanilla-UI-Style-Guide.md)
+  WARN  the same scripts write their own texture / sound path (TexturePath / Background / SoundPath / ... "<path>.png|.ogg") that the
+        kit does not verify (skyyui.TEX / SND), or a FontName other than the vanilla Default / Secondary (never a FAIL; ui-data lines
+        are skipped)
 Exit code 1 on any FAIL.
 Files checked = tracked + untracked-but-not-ignored (what `git add -A` would commit), so a new, not yet committed build script counts.
 Extra: python tools/ci/lint.py --perm <build script> ...   runs only the permission-group check on the given files (old / pinned ones).
@@ -431,6 +438,155 @@ for mod, f in sorted(newest.items()):
         fails.extend("permission groups: " + x for x in perm_group_leaks(f, text))
     except SyntaxError:
         pass    # already a "python does not parse" FAIL
+
+# ---- WARN only: literal colours outside the vanilla UI kit, in the newest build scripts that import tools/skyyui.py
+KIT_IMPORT_RE = re.compile(r"^[ \t]*(?:import[ \t]+skyyui\b|from[ \t]+skyyui[ \t]+import\b)", re.M)
+# a colour literal: #rrggbb[aa] with an optional well-formed (alpha); not an element id (#Facade {, "#Facade.Text") and never a
+# malformed alpha such as #ffffff(...) or #123456(1.2.3) (those are skipped - skyyui.norm_color would not parse them)
+KIT_HEX_RE = re.compile(r"(?<![0-9A-Za-z_&])#([0-9A-Fa-f]{6}(?:[0-9A-Fa-f]{2})?)(\(\s*(?:\d+(?:\.\d+)?|\.\d+)\s*\))?"
+                        r"(?![0-9A-Za-z_.(])(?!\s*\{)")
+KIT_PY_COMMENT_RE = re.compile(r"(?:^|\s)#\s.*$")
+KIT_MAX_WARNS = 25
+KIT_PATH_RE = re.compile(r'(?:TexturePath|Background|SoundPath|Texture|BarTexturePath|EffectTexturePath|MaskTexturePath|'
+                         r'SlotBackground|FallbackTexturePath|LabelMaskTexturePath)\s*:\s*\(?\s*(?:TexturePath\s*:\s*)?\\?"'
+                         r'([^"\\]+\.(?:png|ogg))\\?"')
+KIT_FONT_RE = re.compile(r'FontName\s*:\s*\\?"([^"\\]*)\\?"')
+
+
+def _kit_lev(n, env):
+    """_lev plus the shapes a UI_DATA_COLORS constant takes: list / tuple / set / sorted(x), d.values() / .keys() / .items(), a + b."""
+    if isinstance(n, ast.Call) and not n.keywords:
+        f = n.func
+        if isinstance(f, ast.Name) and f.id in ("list", "tuple", "set", "sorted") and len(n.args) == 1:
+            v = _kit_lev(n.args[0], env)
+            try:
+                return set(v) if f.id == "set" else list(v)
+            except TypeError:
+                raise _Unres()
+        if isinstance(f, ast.Attribute) and f.attr in ("values", "keys", "items") and not n.args:
+            v = _kit_lev(f.value, env)
+            if isinstance(v, dict):
+                return list(getattr(v, f.attr)())
+            raise _Unres()
+    if isinstance(n, (ast.List, ast.Tuple, ast.Set)) and not any(isinstance(e, ast.Starred) for e in n.elts):
+        out = []
+        for e in n.elts:                # an element lint cannot evaluate is skipped, the rest still counts
+            try:
+                out.append(_kit_lev(e, env))
+            except _Unres:
+                pass
+        return out
+    if isinstance(n, ast.BinOp) and isinstance(n.op, ast.Add):
+        l, r = _kit_lev(n.left, env), _kit_lev(n.right, env)
+        try:
+            return (list(l) + list(r)) if isinstance(l, (list, tuple)) and isinstance(r, (list, tuple)) else l + r
+        except TypeError:
+            raise _Unres()
+    if isinstance(n, ast.Dict) and None not in n.keys:
+        d = {}
+        for k, v in zip(n.keys, n.values):
+            try:
+                d[_kit_lev(k, env)] = _kit_lev(v, env)
+            except (_Unres, TypeError):
+                pass
+        return d
+    return _lev(n, env)
+
+
+def _kit_strs(v):
+    """Every str inside a (nested) list / tuple / set / dict value."""
+    if isinstance(v, str):
+        return [v]
+    if isinstance(v, dict):
+        return _kit_strs(list(v.keys())) + _kit_strs(list(v.values()))
+    if isinstance(v, (list, tuple, set)):
+        return [x for e in v for x in _kit_strs(e)]
+    return []
+
+
+def _kit_code_lines(text):
+    """(line number, code) of every line that is not a Python comment and not marked ui-data."""
+    for i, line in enumerate(text.splitlines(), 1):
+        if "ui-data" in line:
+            continue
+        yield i, (KIT_PY_COMMENT_RE.sub("", line) if line.lstrip().startswith("#") or " # " in line else line)
+
+
+def kit_color_warnings(rel, text, kit):
+    """WARN lines for literal colours that are not skyyui kit / rarity colours (UI_DATA_COLORS and ui-data lines excepted)."""
+    allowed = set(kit.allowed_colors())
+    try:
+        env = {}
+        for stmt in ast.parse(text).body:
+            if not isinstance(stmt, ast.Assign):
+                continue
+            names = [t.id for t in stmt.targets if isinstance(t, ast.Name)]
+            try:
+                v = _kit_lev(stmt.value, env)
+            except (_Unres, TypeError, ValueError):
+                v = None
+            if "UI_DATA_COLORS" in names:
+                allowed |= set(kit.norm_color(x) for x in _kit_strs(v))
+            for nm in names:            # earlier module constants resolve inside a later UI_DATA_COLORS
+                if v is None:
+                    env.pop(nm, None)
+                else:
+                    env[nm] = v
+    except SyntaxError:
+        return []
+    opaque = set(c for c in allowed if "(" not in c and len(c) == 7)
+    out, extra = [], 0
+    for i, code in _kit_code_lines(text):
+        for m in KIT_HEX_RE.finditer(code):
+            lit = "#" + m.group(1) + (m.group(2) or "")
+            n = kit.norm_color(lit)
+            if n in allowed or (m.group(2) and ("#" + m.group(1).lower()) in opaque):
+                continue
+            if len(out) < KIT_MAX_WARNS:
+                out.append("%s:%d colour %s is not a skyyui kit / rarity colour - use skyyui.COLOR[...] (data colours: UI_DATA_COLORS or "
+                           "a ui-data line)" % (rel, i, lit))
+            else:
+                extra += 1
+    if extra:
+        out.append("%s: %d more non-kit colour(s) not listed" % (rel, extra))
+    return out
+
+
+def kit_style_warnings(rel, text, kit):
+    """WARN lines for texture / sound paths the kit does not verify and for fonts other than the vanilla two (ui-data lines excepted)."""
+    known = set(kit.TEX.values()) | set(kit.SND.values())
+    fonts = set(kit.FONTS)
+    out, extra = [], 0
+    for i, code in _kit_code_lines(text):
+        found = ["path %s is not a skyyui kit texture / sound (skyyui.TEX / SND) - use the kit builders or add it to the kit with its "
+                 "vanilla proof" % m.group(1) for m in KIT_PATH_RE.finditer(code) if m.group(1) not in known]
+        found += ['FontName "%s" is not a vanilla font (Default / Secondary)' % m.group(1) for m in KIT_FONT_RE.finditer(code)
+                  if m.group(1) not in fonts]
+        for f in found:
+            if len(out) < KIT_MAX_WARNS:
+                out.append("%s:%d %s" % (rel, i, f))
+            else:
+                extra += 1
+    if extra:
+        out.append("%s: %d more non-kit path / font warning(s) not listed" % (rel, extra))
+    return out
+
+
+_kit_users = [(mod, f) for mod, f in sorted(newest.items())
+              if KIT_IMPORT_RE.search(open(os.path.join(ROOT, f), encoding="utf8", errors="replace").read())]
+if _kit_users:
+    try:
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        import skyyui as _kit
+    except Exception as e:      # the kit itself failing to import is reported, never a FAIL of this rule
+        _kit = None
+        warns.append("tools/skyyui.py could not be imported (%s: %s) - the kit colour / path / font rules were skipped"
+                     % (type(e).__name__, e))
+    if _kit is not None:
+        for mod, f in _kit_users:
+            _src = open(os.path.join(ROOT, f), encoding="utf8", errors="replace").read()
+            warns.extend(kit_color_warnings(f, _src, _kit))
+            warns.extend(kit_style_warnings(f, _src, _kit))
 
 print("SkyWynn lint: %d files, newest build scripts: %s" % (len(files), ", ".join("%s %s" % (m, vkey(p)) for m, p in sorted(newest.items()))))
 if missing:
