@@ -14,11 +14,13 @@ Run:   python build_skyyranks_0.1.1.py        -> SkyyRanks/SkyyRanks-0.1.1.jar
     Developer are the spec 5.1 table's; the three colours are placeholders (all editable in the editor).
     STAFF_GRANTS (placeholders for Skyy to confirm - never *, never skyyranks.admin):
         hytale.system.command.kick                 vanilla /kick   (CommandManager system command -> hytale.system.command.<name>)
-        hytale.accesscontrolmodule.command.ban     vanilla /ban    (core plugin AccessControlModule -> hytale.accesscontrolmodule.command.<name>)
-        hytale.accesscontrolmodule.command.unban   vanilla /unban
         skyymenu.modconfig                         SkyWynn Menu -> Server Setup, VIEW ONLY (changing a mod still needs that mod's .admin node)
         skyyparty.bypass                           reach players whose party invites are off (registered by SkyyParty 0.1.5)
         skyyessentials.bypass                      reach players whose tpa / private messages are off (registered by SkyyEssentials 0.1.5)
+    SAFETY DEFAULT (review 2026-09-28, Skyy decides later): vanilla /ban and /unban (hytale.accesscontrolmodule.command.ban / .unban,
+    core plugin AccessControlModule) are NOT seeded any more - vanilla /ban has no target protection, so an Admin could ban the Owner.
+    An op (or the Owner rank) can still grant them to Admin in /rankadmin (asks first). Seeding stays non-destructive: an existing
+    ranks.properties (with or without them) is never changed.
     (the vanilla node names come from AbstractCommand.generatePermission + PluginBase.createBasePermission + PluginManifest.corePlugin
     bytecode read this session; the Grants tab's Search lists every registered node to double-check them in game.)
   - SEEDING NEVER OVERWRITES: an existing ranks.properties keeps every rank as it is; only MISSING seeds are added. The file remembers
@@ -37,13 +39,37 @@ Run:   python build_skyyranks_0.1.1.py        -> SkyyRanks/SkyyRanks-0.1.1.jar
     Its name, prefix, colour, staff flag, other grants and members stay editable. Giving someone the Owner rank asks first (it carries
     skyyranks.admin); taking it from yourself asks first (self-lockout, the 0.1 check).
   - THE DEFAULT RANK IS FULLY EDITABLE (was: no grants, no moves): grants and ladder moves on the default rank (Member) work like on any
-    rank; only deleting it stays refused. Its node set lives in ONE fixed engine group, skyy:default-rank (a group name no rank id can
+    rank (a grant always asks first; no rank with grants or the staff flag may pass below it - REVIEW FIXES below); only deleting it
+    stays refused. Its node set lives in ONE fixed engine group, skyy:default-rank (a group name no rank id can
     take: ids have no '-'), so changing which rank is the default never moves players between groups. Players without a rank are put
     in skyy:default-rank (hytale:Adventurer explicitly first, the 0.1 guard) only once that group carries something beyond its marker
     (own grants, or ranks below it): online players at once (RankDefTask), the others at their next join - a server that never gives
     the default rank a grant writes nothing new for plain players (0.1 behaviour). Making another rank the default still needs a rank
-    with no members and no grants (a clean switch) and still moves it to the bottom; a reload or restart no longer moves the default
+    with no members and no grants (a clean switch; review fix: and not a staff rank, and a rank with a chat prefix asks first) and
+    still moves it to the bottom; a reload or restart no longer moves the default
     rank (that would undo a deliberate move). Every rank above the default also gets the default's grants (the ladder rule).
+  - REVIEW FIXES (second review, 2026-09-28; checked again in a bare JVM with the REAL HytalePermissionsProvider, see CHECKED below):
+    (1) NOTHING PASSES BELOW THE DEFAULT RANK WITH GRANTS OR STAFF: every rank below the default rank gives its grants to everyone
+        without a rank (skyy:default-rank). A move that puts a rank below the default (Up on the default rank, or Down on the rank just
+        above it) is REFUSED when that rank is a staff rank or has any own grants (RankStore.passBelow, in RankOps.move AND again in
+        RankStore.move); a plain rank (no grants, not staff) may pass. The same rule keeps it that way afterwards: a rank below the
+        default takes no grants and no staff flag (RankOps.grant / RankStore.setGrant, RankOps.staff). /rank create puts the new rank
+        just above the default rank, so it inherits only what everyone without a rank already has - never staff grants (RankStore.create
+        re-checks it: a staff default or grants below it refuse the create; defaultId() below makes that state impossible).
+    (2) The default rank's grants reach everyone: a grant on the default rank ALWAYS asks first ("Grant <node> to Member - everyone
+        without a rank?"). RankStore.dangerous() also flags every hytale.* node (vanilla /kick, /ban, /op ...) and every *.bypass node,
+        so moves, rank changes and grants name them in their question.
+    (3) dangerous() ignores the rank markers (skyyranks.rank.<id>, e.g. skyyranks.rank.admin no longer counts as an admin node).
+    (4) THE DEFAULT RANK IS NEVER STAFF: the kit's ranks.default check refuses a staff rank and asks first for a rank with a chat prefix
+        (everyone without a rank shows it); /rank staff refuses ON for the default rank. A hand-edited ranks.default (or ranks.properties)
+        whose default rank is staff or has grants below it is not used: RankStore.defaultId() falls back to the lowest rank that is safe
+        (not staff, nothing below it with grants) and RankHooks.warnDefault logs it as SEVERE at every load (defaultId() once more per
+        run). floorDefault now floors the CONFIGURED rank (a kit switch), never the fallback.
+    (5) SAFETY DEFAULT (Skyy decides later): only a real op (RankEngine.isOp = in hytale:Admin) may grant an op-level node -
+        *, skyyranks.*, hytale.*, hytale.permissionsmodule.* or anything under hytale.permissionsmodule.command (vanilla /op, /perm,
+        /setgroup: PermissionsModule is a core plugin, so its command nodes are hytale.permissionsmodule.command.<name>, VERIFIED
+        PermissionsModule.setup + MANIFEST bytecode). The Owner rank edits ranks but cannot make itself (or any rank) full op.
+    (6) SAFETY DEFAULT: the seeded Admin placeholders drop vanilla /ban and /unban (see STAFF_GRANTS above).
   - KEEP=10 config versions (Skyy's lock, OPEN-QUESTIONS 'In-game server setup' #3; was 20).
   - VANILLA LOOK (HANDOFF section 2 rule 0, tools/AGENT-BRIEF.md "UI LOOK"): the editor page is restyled after the game's own UI
     (Assets.zip Common/UI/Custom/Common.ui, Sounds.ui, Pages/WorldEvent/WorldEventListRow.ui + WorldEventSectionLabel.ui, the error /
@@ -62,8 +88,11 @@ built-in provider through PermissionsModule, like vanilla /perm does. permission
 RULES (spec 5.1, all enforced in code; the 0.1 text, updated where 0.1.1 changed it):
   - Seeds: see 0.1.1 CHANGES above (0.1 seeded only member).
   - The default rank (ranks.default) is everyone without a skyy rank group: nobody is stored as its member. 0.1.1: it can hold grants
-    and move on the ladder (group skyy:default-rank, see above); making a rank the default needs no members and no grants and moves it
-    to the bottom (RankStore.floorDefault, only on that change). It cannot be deleted and cannot be the Owner rank.
+    and move on the ladder (group skyy:default-rank, see above); making a rank the default needs no members, no grants and no staff
+    flag and moves it to the bottom (RankStore.floorDefault, only on that change). It cannot be deleted, cannot be the Owner rank and
+    is never a staff rank. Review fix: every rank below it gives its grants to everyone without a rank, so no rank with grants or the
+    staff flag goes below it (moves refused; a rank below it takes no grants and no staff flag), and a default that breaks this (a
+    hand edit) is replaced by the lowest safe rank (RankStore.defaultId, SEVERE in the log).
   - Grants only on ranks + per-player denies. A rank group's node set = its marker skyyranks.rank.<id> + its own grants + every LOWER
     rank's marker and grants (the engine has no API to set a group parent, so the lower grants are copied in); nodes covering
     skyyranks.admin only on the Owner rank. At start and after every
@@ -85,14 +114,19 @@ RULES (spec 5.1, all enforced in code; the 0.1 text, updated where 0.1.1 changed
   - Nothing is changed in the engine before PermissionsModule is ENABLED (its start() loads permissions.json; a write before that would
     save an empty state over the file). RankStartTask polls every 2 s, then syncs the groups and reconciles the stored members.
   - Confirm steps (page: a Confirm view; chat: type the same command again within 10 s): granting * / any wildcard / *.admin /
-    skyymenu.modconfig / skyyranks.admin; giving someone a staff rank or a rank that carries such a node; moving a rank so it (or the
-    rank passed) gains such a node; deleting a rank; a personal deny on an op or a staff-rank member; taking a staff rank from another
+    skyymenu.modconfig / skyyranks.admin / any hytale.* node / any *.bypass node (review fix; rank markers skyyranks.rank.* never
+    count); ANY grant on the default rank (review fix: it names the node and "everyone without a rank"); giving someone a staff rank
+    or a rank that carries such a node; moving a rank so it (or the rank passed) gains such a node; making a rank with a chat prefix
+    the default (review fix); deleting a rank; a personal deny on an op or a staff-rank member; taking a staff rank from another
     player; any change that takes skyyranks.admin (the editor) from players: a rank change of another player (not an op), a grant
     removal or a move - the question names you first (self-lockout) and counts the other members who lose it. Editor access is decided
     exactly as the engine does (RankPerm.grants: skyyranks.admin, *, skyyranks.*, skyyranks.admin.*), never a hand-kept list.
     Refused outright: a deny of *, a deny on yourself that covers skyyranks.admin, grants that start with - (grants only), deleting the
     default rank; 0.1.1: a node covering skyyranks.admin on any rank but Owner, removing skyyranks.admin from Owner, deleting / moving
     Owner, moving a rank above Owner, Owner as the default rank. (0.1 also refused grants on and moves of the default rank - no longer.)
+    Review fixes: a move that puts a staff rank or a rank with own grants below the default rank; a grant on, or the staff flag for, a
+    rank below the default rank; the staff flag for the default rank; a staff rank as the default rank; an op-level node (*,
+    skyyranks.*, hytale.*, hytale.permissionsmodule.*, hytale.permissionsmodule.command...) granted by anyone who is not a real op.
   - ranks.properties unreadable (or no valid rank in it) -> nothing is synced, every rank change is refused, the page says so in red.
     It is never overwritten; a change made on disk while the server runs refuses in-game rank edits until /rankadmin reload.
 
@@ -117,7 +151,8 @@ COMMANDS (every one: requirePermission("skyyranks.admin") on the root AND on eac
   /rank set <player> <rank>    |  /rank clear <player>      (hytale:Adventurer is always kept; the reply lists the player's groups)
   /rank who <player>              rank, engine groups, denies, personal grants
   /rank deny <player> <node>   |  /rank undeny <player> <node>
-  /rank default <rank>            the same as the ranks.default setting (through the config kit: validated, logged, versioned)
+  /rank default <rank>            the same as the ranks.default setting (through the config kit: validated, logged, versioned; a rank
+                                  with a chat prefix asks first - repeat to confirm)
   <rank> = id or display name. <player> = online name, a seen player's name, or a UUID. All arguments required (no optional args).
 
 THE EDITOR PAGE (RankPage; inline only, ids SkyyRk..., root Group anchor Width/Height only, 1120 x 860 so it fits 1080 high, TextButton +
@@ -141,7 +176,8 @@ THE EDITOR PAGE (RankPage; inline only, ids SkyyRk..., root Group anchor Width/H
 CONFIG (tools/skyycfg.py, contract tools/CONFIG-CONTRACT.md; shows in SkyyMenu 0.3 Server Setup as "Ranks"):
   config:def:SkyyRanks / config:fn:SkyyRanks / config:epoch:SkyyRanks. File Skyy_SkyyRanks/config.properties. Node skyyranks.admin.
   ranks.editor   link   rankadmin
-  ranks.default  text   member   (field RankCfg.DEFAULT_RANK; check= refuses an unknown rank, Owner, or one with members or grants; after=
+  ranks.default  text   member   (field RankCfg.DEFAULT_RANK; check= refuses an unknown rank, Owner, a staff rank, or one with members or
+                                  grants, and asks first ("?") for a rank with a chat prefix; after=
                                   moves it to the bottom of the ladder and re-syncs. text, not the spec's choice: rank ids are made in game,
                                   a kit choice list is fixed at build time)
   KEEP = 10 old versions per file (0.1: 20).
@@ -190,6 +226,34 @@ VERIFIED this session (HytaleServer.jar bytecode / reflection, tools/dev/bc.py, 
   .unban (derived, not seen in a live registry: the Grants tab's Search shows the real list); voice /voice mute is opened to players
   (setPermissionGroups), so it is no moderation node; SkyyMenu 0.3 runs a link row's command AS the viewer (CommandManager.handleCommand),
   so the engine refuses /rankadmin to anyone without skyyranks.admin - skyymenu.modconfig alone never opens the editor.
+
+CHECKED in a bare JVM for the REVIEW FIXES (2026-09-29, scratch harness tools/dev/scratch/fx-ranks, deleted afterwards; 138 checks,
+  0 fails) with the REAL engine: a HytalePermissionsProvider on a scratch permissions.json (syncLoad / syncSave, the real addUserToGroup
+  trap) behind RankPerm.FAKE, and every "has" answered by the REAL PermissionsModule.hasPermission(UUID, String) on a module instance
+  (providers = that provider, virtualGroups hytale:Adventurer -> a player command node). All 51 classes load with -Xverify:all. Proved:
+  (6) a fresh file seeds Admin with kick, modconfig and the two bypass nodes only - an Admin member has /kick but not vanilla /ban or
+  /unban; the LIVE 0.1 file gets the same Admin, players.properties untouched; a file whose Admin already has ban / unban keeps them.
+  (3) dangerous(): markers (skyyranks.rank.admin, .vip, .*) no; hytale.*, *.bypass, modconfig, *.admin, * yes; plain nodes no.
+  (2) a grant on the default rank asks first even for a plain node (names the node and "everyone without a rank"; nothing applied
+  before the confirm), then online plain players join skyy:default-rank and get it; a vanilla node there asks with the vanilla text;
+  moving VIP above Admin names hytale.system.command.kick; plain grants on a normal rank need no confirm.
+  (5) an Owner member cannot grant *, skyyranks.*, hytale.*, hytale.permissionsmodule.*, .command.*, .command.op, .op.self, .perm (to
+  Owner, Admin or the default rank, even confirmed) and still has no vanilla /op; a real op may grant * to Owner (asks), an Owner
+  member may remove it; * on Admin stays refused for an op (editor rule); the engine's own set logic confirms every op-level wildcard
+  covers vanilla /op. (1) Up on the default / Down on the rank above it with a granted rank -> refused even confirmed (RankOps and
+  RankStore.move), ladder + default group unchanged; a plain rank passes with no question; a rank below the default takes no grant
+  (RankOps + RankStore.setGrant) and no staff flag (RankOps + setField); Admin (staff + grants) can never pass below; a staff-only
+  rank cannot either; a rank may go from below the default to above it; /rank create lands just above the default and inherits
+  exactly the default's set. (4) checkDefault / the kit refuse a staff default (even with yes); /rank staff on the default is
+  refused; a default with a prefix asks first on the page (Confirm view, config untouched), the confirm switches and floors it with NO
+  SEVERE in between (floorDefault floors the configured rank); a plain rank without a prefix switches with no question; a hand-edited
+  ranks.default=admin (kit reload AND server start) is not used - the lowest safe rank is, SEVERE logged, Admin keeps skyy:admin and
+  plain players get no kick; a hand-edited ladder with a granted Admin below Member falls back to the plain VIP below it (SEVERE), and
+  with no safe rank at all the configured default stays with a SEVERE while /rank create refuses to inherit the staff grants. Page:
+  an Owner member's Grants search marks the /op nodes op-level (no Grant button), an op's does not; the default rank's Settings says
+  it cannot be staff and its search hits say it asks first. Every command and subcommand (23) requires skyyranks.admin with no
+  permission groups; hytale:Adventurer kept and at most one skyy group for every player after every step.
+  NOT checked here: RankOps.reply / the chat repeat of /rank default (same code as the other repeat commands), the real client look.
 
 CHECKED in a bare JVM for 0.1.1 (2026-09-28, scratch harness tools/dev/scratch/r9-ranks, deleted afterwards; 169 checks, 0 fails): all
   51 classes load and initialise with bytecode verification on; a fake engine with the provider's real semantics (the addUserToGroup trap,
@@ -355,7 +419,7 @@ CONFIG_TEXT = "\n".join([
     "# The ranks themselves (names, prefixes, colours, grants) are made with /rankadmin and live in ranks.properties.",
     "#",
     "# ranks.default = the rank shown for every player without a rank (a rank id). It has no members; its grants go to everyone without a rank.",
-    "# Switching it needs a rank with no members and no grants (it then moves to the bottom of the ladder). The Owner rank cannot be the default.",
+    "# Switching it needs a rank with no members, no grants and no staff flag (it then moves to the bottom of the ladder). The Owner rank cannot be the default.",
     "ranks.default=member",
     "# chat.prefix = put the rank prefix in front of chat messages: [Rank] [Title] Name: text",
     "chat.prefix=true",
@@ -397,7 +461,7 @@ ROWS = [
     ("ranks.editor", "Ranks editor", "ranks", "link", "", "", "", "rankadmin", "", "",
      "Ops and the Owner rank only. Ranks, grants, members, denies. No Undo in Changes for these.", ""),
     ("ranks.default", "Default rank", "ranks", "text", "member", "2", "16", "", "", "live",
-     "Rank id for players without a rank. Needs no members or grants; moves to the ladder bottom.",
+     "Rank id for players without a rank. Not staff, no members or grants; moves to the ladder bottom.",
      "field:RankCfg.DEFAULT_RANK@config.properties:ranks.default;check=RankHooks.checkDefault;after=RankHooks.afterDefault"),
     ("chat.prefix", "Rank prefix in chat", "chat", "bool", "true", "", "", "", "", "live",
      "Puts the rank prefix in front of chat messages: [Rank] [Title] Name.",
@@ -426,6 +490,10 @@ public static void severe(String m) {
 M(cfg, r"""
 public static void warnOnce(String key, String m) {
   if (key != null && WARNED.putIfAbsent(key, Boolean.TRUE) == null) warn(m);
+}""")
+M(cfg, r"""
+public static void severeOnce(String key, String m) {
+  if (key != null && WARNED.putIfAbsent("severe:" + key, Boolean.TRUE) == null) severe(m);
 }""")
 M(cfg, r"""
 public static Object makeBridge() {
@@ -996,8 +1064,9 @@ public static boolean grants(java.util.Set s, String node) {
 # lowest first: (id, display name, prefix, colour, staff, own grants). Admin's grants are PLACEHOLDERS for Skyy to confirm (the task:
 # moderation + Server Setup view + the staff bypass nodes; never *, never rank editing). Developer sits above Admin and inherits them.
 OWNER_ID, DEF_GROUP, EDITOR_NODE = "owner", "skyy:default-rank", "skyyranks.admin"
-STAFF_GRANTS = ["hytale.system.command.kick", "hytale.accesscontrolmodule.command.ban", "hytale.accesscontrolmodule.command.unban",
-                "skyymenu.modconfig", "skyyparty.bypass", "skyyessentials.bypass"]
+# SAFETY DEFAULT (review 2026-09-28): no vanilla /ban or /unban here - vanilla /ban has no target protection (an Admin could ban the Owner)
+STAFF_GRANTS = ["hytale.system.command.kick", "skyymenu.modconfig", "skyyparty.bypass", "skyyessentials.bypass"]
+assert not any(g.startswith("hytale.accesscontrolmodule.") for g in STAFF_GRANTS), "the Admin seed must not get vanilla /ban or /unban"
 SEEDS = [("member", "Member", "", "", False, []),
          ("admin", "Admin", "[Admin]", "#ff5555", True, STAFF_GRANTS),
          ("developer", "Developer", "[Dev]", "#55ffff", True, []),
@@ -1013,6 +1082,9 @@ for _sid, _sn, _sp, _sc, _ss, _sg in SEEDS:
         # never *, never a node that opens the rank editor - except the Owner rank's own skyyranks.admin
         _ed = _g == "*" or _g in ("skyyranks.admin", "skyyranks.*", "skyyranks.admin.*")
         assert (_sid == OWNER_ID and _g == EDITOR_NODE) or not _ed, "seed %s must not get %s" % (_sid, _g)
+        # review fix (5): no seed holds an op-level node (the same rule as RankStore.opNode below)
+        assert not (_g in ("*", "skyyranks.*", "hytale.*", "hytale.permissionsmodule") or _g.startswith("hytale.permissionsmodule.")), \
+            "seed %s must not get the op-level node %s" % (_sid, _g)
 
 # ================= RankStore: ranks.properties + players.properties, the ladder, the chat map, bridge publishing =================
 st = mk("RankStore")
@@ -1107,10 +1179,23 @@ public static boolean editorNode(String n) {
   return @PKG@.RankPerm.grants(one, EDITOR);
 }""")
 M(st, r"""public static boolean isOwner(String id) { return OWNER.equals(id); }""")
+# review fixes (2) + (3): the rank markers (skyyranks.rank.<id> - skyyranks.rank.admin ends with .admin) are never dangerous; every
+# vanilla node (hytale.*: /kick, /ban, /op ...) and every staff bypass node (*.bypass) is
 M(st, r"""
 public static boolean dangerous(String n) {
   if (n == null) return false;
-  return n.indexOf('*') >= 0 || n.endsWith(".admin") || n.equals("skyymenu.modconfig") || editorNode(n);
+  if (n.startsWith("skyyranks.rank.")) return false;
+  return n.indexOf('*') >= 0 || n.endsWith(".admin") || n.equals("skyymenu.modconfig") || editorNode(n) || n.startsWith("hytale.") || n.endsWith(".bypass");
+}""")
+# review fix (5), SAFETY DEFAULT (Skyy decides later): an OP-LEVEL node - only a real op (RankEngine.isOp: in hytale:Admin) may grant it:
+# * (every permission), skyyranks.* (every SkyyRanks node), hytale.* and hytale.permissionsmodule.* (they cover the next one), and
+# everything under hytale.permissionsmodule.command (vanilla /op, /perm, /setgroup - PermissionsModule is a core plugin: VERIFIED
+# PermissionsModule.setup registers OpCommand / PermCommand / SetGroupCommand, MANIFEST = PluginManifest.corePlugin(PermissionsModule)).
+# So the Owner rank edits ranks but can never make itself (or any rank) full op.
+M(st, r"""
+public static boolean opNode(String n) {
+  if (n == null) return false;
+  return n.equals("*") || n.equals("skyyranks.*") || n.equals("hytale.*") || n.equals("hytale.permissionsmodule") || n.startsWith("hytale.permissionsmodule.");
 }""")
 M(st, r"""
 public static String dangerText(String n) {
@@ -1118,6 +1203,8 @@ public static String dangerText(String n) {
   if (n.equals("skyyranks.admin")) return "It opens this ranks editor - its members can change every rank. Only the Owner rank holds it.";
   if (n.equals("skyymenu.modconfig")) return "It opens Server Setup (every mod's settings, view only without the mod's own admin node).";
   if (n.indexOf('*') >= 0) return "A wildcard grants every node under it.";
+  if (n.startsWith("hytale.")) return "It is a vanilla Hytale permission - moderation or admin commands like /kick or /ban.";
+  if (n.endsWith(".bypass")) return "It is a staff bypass - its members reach players who switched invites, tpa or messages off.";
   return "It opens an admin command or editor.";
 }""")
 # java.util.Properties escaping for values we write (non-ASCII as \uXXXX: ISO-8859-1 and UTF-8 readers see the same text)
@@ -1155,13 +1242,53 @@ public static @PKG@.Rank find(String id) {
   return i < 0 ? null : (@PKG@.Rank) l.get(i);
 }""")
 M(st, r"""public static boolean isRank(String id) { return find(id) != null; }""")
+# review fixes (1) + (4): every rank below the default rank gives its grants to everyone without a rank (skyy:default-rank = the default
+# rank's set, which holds every lower rank's grants). "" = rank at <at> is a safe default rank, else why not: it is a staff rank, or a
+# rank below it has grants (a node that opens the ranks editor never counts: it is never applied below Owner, see effectiveIn).
+M(st, r"""
+public static String defProblem(java.util.ArrayList l, int at) {
+  if (at < 0 || at >= l.size()) return "it is not a rank";
+  @PKG@.Rank d = (@PKG@.Rank) l.get(at);
+  if (OWNER.equals(d.id)) return "it is the Owner rank";
+  if (d.staff) return "it is a staff rank";
+  for (int i = 0; i < at; i++) {
+    @PKG@.Rank r = (@PKG@.Rank) l.get(i);
+    java.util.Iterator it = r.grants.iterator();
+    while (it.hasNext()) if (!editorNode((String) it.next())) return "the rank " + r.id + " below it has grants";
+  }
+  return "";
+}""")
+M(st, r"""
+public static int safeIdx(java.util.ArrayList l) {
+  for (int i = 0; i < l.size(); i++) if (defProblem(l, i).length() == 0) return i;
+  return -1;
+}""")
+# the default rank in use: ranks.default when it is a safe default rank; otherwise (a hand edit - in game every path that could make it
+# unsafe is refused) the LOWEST SAFE rank, said once per run as SEVERE (RankHooks.warnDefault says it at every load). No safe rank at
+# all (the lowest rank is a staff rank with grants, so every rank inherits them - only a hand edit gets there): ranks.default stays,
+# or the lowest rank, and SEVERE says how to fix the ladder.
 M(st, r"""
 public static String defaultId() {
   String d = @PKG@.RankCfg.DEFAULT_RANK;
-  if (!OWNER.equals(d) && find(d) != null) return d;
   java.util.ArrayList l = RANKS;
+  int at = idx(l, d);
+  if (at >= 0 && defProblem(l, at).length() == 0) return d;
+  int s = safeIdx(l);
+  if (s >= 0) {
+    String id = ((@PKG@.Rank) l.get(s)).id;
+    if (at >= 0) @PKG@.RankCfg.severeOnce("def:" + d + ">" + id, "the default rank " + d + " is not used: " + defProblem(l, at) + " (everyone without a rank would get that) - " + id + " (the lowest safe rank) is the default instead. Fix it in Server Setup -> Ranks or /rankadmin.");
+    return id;
+  }
+  if (at >= 0 && !OWNER.equals(d)) { @PKG@.RankCfg.severeOnce("def:nosafe:" + d, "no rank can be a safe default rank: the lowest rank is a staff rank or has grants every rank inherits - " + d + " stays the default. Move that rank up in /rankadmin."); return d; }
   for (int i = 0; i < l.size(); i++) { String id = ((@PKG@.Rank) l.get(i)).id; if (!OWNER.equals(id)) return id; }
   return "member";
+}""")
+# is the rank <id> below the default rank in ladder l? (its grants would go to everyone without a rank)
+M(st, r"""
+public static boolean belowDef(java.util.ArrayList l, String id) {
+  int at = idx(l, id);
+  int di = idx(l, defaultId());
+  return at >= 0 && di >= 0 && at < di;
 }""")
 # the engine group that holds a rank's node set: skyy:<id>, or skyy:default-rank for the default rank (0.1.1)
 M(st, r"""
@@ -1618,6 +1745,10 @@ public static synchronized String create(String id0, String name0) {
   if (RANKS.size() >= 60) return "-60 ranks is the most this version keeps.";
   java.util.ArrayList l = copyList();
   int di = idx(l, defaultId());
+  // review fix (1): the new rank goes just above the default rank, so it inherits exactly what everyone without a rank has. defaultId()
+  // is always a safe default (not staff, no grants below it); this re-check keeps create from ever inheriting staff grants by accident.
+  if (di >= 0 && defProblem(l, di).length() > 0) return "-New ranks go just above the default rank " + label(defaultId()) + ", but " + defProblem(l, di) + " - fix the ladder first (/rankadmin).";
+  for (int i = 0; i <= di; i++) { @PKG@.Rank lo = (@PKG@.Rank) l.get(i); if (lo.staff) return "-New ranks go just above the default rank " + label(defaultId()) + ", but the staff rank " + lo.name + " sits at or below it - move it above the default rank first."; }
   @PKG@.Rank r = new @PKG@.Rank();
   r.id = id;
   r.name = name;
@@ -1657,11 +1788,32 @@ public static synchronized String setField(String id, int field, String v) {
   int at = idx(l, id);
   if (at < 0) return "-No rank called " + id + ".";
   @PKG@.Rank r = (@PKG@.Rank) l.get(at);
+  if (field == 3 && "true".equals(v) && (id.equals(defaultId()) || belowDef(l, id))) return "-" + r.name + (id.equals(defaultId()) ? " is the default rank (everyone without a rank) and cannot be a staff rank." : " sits below the default rank and cannot be a staff rank - move it above the default rank first.");
   if (field == 0) r.name = v;
   else if (field == 1) r.prefix = v;
   else if (field == 2) r.colour = v;
   else r.staff = "true".equals(v);
   return commit(l);
+}""")
+# review fix (1): a move that puts a rank BELOW the default rank (Up on the default rank, or Down on the rank just above it) gives that
+# rank's grants to everyone without a rank - refused when it is a staff rank or has any own grants (a plain rank may pass). A move the
+# other way (a rank goes from below the default to above it) only takes a plain rank's marker away and is fine. null = allowed.
+M(st, r"""
+public static String passBelow(java.util.ArrayList l, String id, boolean up) {
+  int at = idx(l, id);
+  if (at < 0) return null;
+  int to = up ? at + 1 : at - 1;
+  if (to < 0 || to >= l.size()) return null;
+  int di = idx(l, defaultId());
+  if (di < 0) return null;
+  @PKG@.Rank p = null;
+  if (up && at == di) p = (@PKG@.Rank) l.get(to);
+  else if (!up && to == di) p = (@PKG@.Rank) l.get(at);
+  if (p == null || (!p.staff && p.grants.isEmpty())) return null;
+  @PKG@.Rank d = (@PKG@.Rank) l.get(di);
+  int n = p.grants.size();
+  String what = (n > 0 ? n + (n == 1 ? " grant" : " grants") : "") + (n > 0 && p.staff ? " and its " : "") + (p.staff ? "staff flag" : "");
+  return "-" + p.name + " cannot go below the default rank " + d.name + ": everyone without a rank would get its " + what + ". Remove " + (n > 0 ? "its grants" : "") + (n > 0 && p.staff ? " and " : "") + (p.staff ? "the staff flag" : "") + " first, or grant nodes to " + d.name + " itself (asks first).";
 }""")
 M(st, r"""
 public static synchronized String move(String id, boolean up) {
@@ -1671,6 +1823,8 @@ public static synchronized String move(String id, boolean up) {
   int to = up ? at + 1 : at - 1;
   if (to < 0 || to >= l.size()) return "=" + ((@PKG@.Rank) l.get(at)).name + " is already the " + (up ? "highest" : "lowest") + " rank.";
   if (OWNER.equals(id) || OWNER.equals(((@PKG@.Rank) l.get(to)).id)) return "=The Owner rank always stays at the top of the ladder.";
+  String pb = passBelow(l, id, up);
+  if (pb != null) return pb;
   Object a = l.get(at);
   l.set(at, l.get(to));
   l.set(to, a);
@@ -1678,11 +1832,15 @@ public static synchronized String move(String id, boolean up) {
 }""")
 # a NEW default rank (ranks.default changed through the kit: a rank with no members and no grants) moves to the bottom of the ladder.
 # 0.1.1: only on that change - a reload or restart leaves the default rank where it is (it may be moved on purpose now). The rank has
-# no grants, so only its marker node moves. Returns the refusal, or null (moved or already there).
+# no grants, so only its marker node moves. Returns the refusal, or null (moved or already there). Review fix (4): it floors the
+# CONFIGURED rank (ranks.default), never defaultId()'s fallback - before the move, a new default with grants below it is not yet safe
+# and defaultId() would answer the old one. A staff rank or the Owner rank is never floored (the kit's check refuses both).
 M(st, r"""
 public static synchronized String floorDefault() {
   if (BROKEN) return null;
-  String def = defaultId();
+  String def = @PKG@.RankCfg.DEFAULT_RANK;
+  @PKG@.Rank dr = find(def);
+  if (dr == null || OWNER.equals(def) || dr.staff) return null;
   int at = idx(RANKS, def);
   if (at <= 0) return null;
   java.util.ArrayList l = copyList();
@@ -1701,6 +1859,7 @@ public static synchronized String setGrant(String id, String node, boolean add) 
   int at = idx(l, id);
   if (at < 0) return "-No rank called " + id + ".";
   @PKG@.Rank r = (@PKG@.Rank) l.get(at);
+  if (add && belowDef(l, id)) return "-" + r.name + " sits below the default rank " + label(defaultId()) + ", so its grants would go to everyone without a rank. Grant it to " + label(defaultId()) + " instead (asks first), or move " + r.name + " above it.";
   if (add) { if (r.grants.size() >= 400) return "-400 grants per rank is the most this version keeps."; r.grants.add(node); }
   else r.grants.remove(node);
   return commit(l);
@@ -2231,9 +2390,12 @@ public static String checkDefault(String key, String value) {
     return "No rank with the id " + v + ". Ranks: " + @PKG@.RankStore.idList() + ".";
   }
   if (@PKG@.RankStore.isOwner(v)) return "The Owner rank cannot be the default rank - it is the top rank that opens the ranks editor.";
+  @PKG@.Rank r = @PKG@.RankStore.find(v);
+  if (r.staff) return r.name + " is a staff rank - the default rank is everyone without a rank, so it cannot be staff. Turn staff off first or pick another rank.";
   if (@PKG@.RankStore.grantCount(v) > 0) return @PKG@.RankStore.label(v) + " has grants - pick a rank without grants (a clean switch; the default rank can get grants afterwards). Remove them first.";
   int m = @PKG@.RankStore.memberCount(v);
   if (m > 0) return @PKG@.RankStore.label(v) + " has " + m + (m == 1 ? " member" : " members") + " - give them another rank first. The default rank has no members.";
+  if (r.prefix.length() > 0) return "?Make " + r.name + " the default rank? Every player without a rank would show its chat prefix " + r.prefix + " in chat.";
   return null;
 }""")
 M(hk, r"""
@@ -2251,15 +2413,22 @@ public static String checkPriority(String key, String value) {
   if (p <= 30000) return "?At " + p + " the rank prefix may be added before SkyyExploration's title (priority 30000), so chat could read [Title] [Rank] Name. Use " + p + " anyway?";
   return null;
 }""")
-# a hand-edited ranks.default that breaks the rule is used anyway (never refuse a start), but said once per load
+# a hand-edited ranks.default with members is used anyway (never refuse a start), but said once per load. Review fix (4): a default rank
+# that is a staff rank or has grants below it (everyone without a rank would get them) is NOT used - RankStore.defaultId() takes the
+# lowest safe rank instead - and that is logged as SEVERE at every load
 M(hk, r"""
 public static void warnDefault() {
   try {
+    String c = @PKG@.RankCfg.DEFAULT_RANK;
     String d = @PKG@.RankStore.defaultId();
-    if (!d.equals(@PKG@.RankCfg.DEFAULT_RANK)) @PKG@.RankCfg.warn("config.properties: ranks.default=" + @PKG@.RankCfg.DEFAULT_RANK + " is not a rank - " + d + " (the lowest rank) is the default instead");
+    java.util.ArrayList l = @PKG@.RankStore.RANKS;
+    int at = @PKG@.RankStore.idx(l, c);
+    if (@PKG@.RankStore.isOwner(c)) @PKG@.RankCfg.warn("config.properties: ranks.default=owner - the Owner rank cannot be the default; " + d + " is the default instead");
+    else if (at < 0) @PKG@.RankCfg.warn("config.properties: ranks.default=" + c + " is not a rank - " + d + " (the lowest safe rank) is the default instead");
+    else if (!d.equals(c)) @PKG@.RankCfg.severe("config.properties: ranks.default=" + c + " is NOT used: " + @PKG@.RankStore.defProblem(l, at) + ", so everyone without a rank would get " + (@PKG@.RankStore.find(c).staff ? "a staff rank" : "those grants") + " - " + d + " (the lowest safe rank) is the default instead. Pick a plain rank in Server Setup -> Ranks (or fix the ladder in /rankadmin).");
+    else if (@PKG@.RankStore.defProblem(l, at).length() > 0) @PKG@.RankCfg.severe("the default rank " + d + " is not safe: " + @PKG@.RankStore.defProblem(l, at) + " and no rank is (the lowest rank is a staff rank or has grants every rank inherits) - everyone without a rank gets them. Move that rank up in /rankadmin.");
     int m = @PKG@.RankStore.memberCount(d);
     if (m > 0) @PKG@.RankCfg.warn("the default rank " + d + " has " + m + " stored member(s) - it stays the default: they show as the default rank like everyone without a rank.");
-    if (@PKG@.RankStore.isOwner(@PKG@.RankCfg.DEFAULT_RANK)) @PKG@.RankCfg.warn("config.properties: ranks.default=owner - the Owner rank cannot be the default; " + d + " is the default instead");
   } catch (Throwable t) { }
 }""")
 M(hk, r"""
@@ -2408,6 +2577,9 @@ public static String staff(java.util.UUID who, String wn, String via, String tex
   if (rid == null) return noRank(text);
   @PKG@.Rank r = @PKG@.RankStore.find(rid);
   if (r.staff == on) return "=" + r.name + " is already " + (on ? "a staff rank." : "not a staff rank.");
+  String def = @PKG@.RankStore.defaultId();
+  if (on && rid.equals(def)) return "-" + r.name + " is the default rank - everyone without a rank - so it cannot be a staff rank.";
+  if (on && @PKG@.RankStore.belowDef(@PKG@.RankStore.RANKS, rid)) return "-" + r.name + " sits below the default rank " + @PKG@.RankStore.label(def) + " (everyone without a rank gets what is below it), so it cannot be a staff rank. Move it above " + @PKG@.RankStore.label(def) + " first.";
   String e = @PKG@.RankStore.setField(rid, 3, on ? "true" : "false");
   if (e != null) return e;
   @PKG@.RankStore.log(who, wn, via, "rank[" + rid + "].staff", r.staff ? "true" : "false", on ? "true" : "false");
@@ -2481,6 +2653,8 @@ public static String move(java.util.UUID who, String wn, String via, String text
   if (at < 0 || to < 0 || to >= l.size()) return "=" + lab + " is already the " + (up ? "highest" : "lowest") + " rank.";
   @PKG@.Rank other = (@PKG@.Rank) l.get(to);
   if (@PKG@.RankStore.isOwner(other.id)) return "=" + lab + " is already the highest rank below the Owner rank, which always stays at the top.";
+  String pb = @PKG@.RankStore.passBelow(l, rid, up);
+  if (pb != null) return pb;
   if (!conf) {
     java.util.TreeSet before = @PKG@.RankStore.effectiveIn(l, up ? rid : other.id);
     java.util.ArrayList l2 = new java.util.ArrayList(l);
@@ -2511,12 +2685,18 @@ public static String grant(java.util.UUID who, String wn, String via, String tex
   String node = node0 == null ? "" : node0.trim();
   if (node.startsWith("-")) return "-Grants only: a rank cannot deny. To take a permission from one player use a personal deny (Players tab or /rank deny).";
   if (!@PKG@.RankStore.validNode(node)) return "-" + node + " is not a valid permission node (letters, digits, - and _, parts joined by dots, * as a wildcard).";
+  if (@PKG@.RankStore.opNode(node) && !@PKG@.RankEngine.isOp(who)) return "-Only an op (vanilla /op) can grant " + node + ": it is op-level (every permission, every SkyyRanks node, or vanilla /op and /perm), so " + lab + "'s members could make themselves op. Ask an op to grant it.";
   if (!@PKG@.RankStore.isOwner(rid) && @PKG@.RankStore.editorNode(node)) return "-Only the Owner rank opens the ranks editor (ops always can): " + node + " covers skyyranks.admin, so " + lab + " cannot get it. Give the player the Owner rank instead.";
   @PKG@.Rank r = @PKG@.RankStore.find(rid);
   if (r.grants.contains(node)) return "=" + lab + " already has " + node + ".";
+  String defLab = @PKG@.RankStore.label(@PKG@.RankStore.defaultId());
+  if (@PKG@.RankStore.belowDef(@PKG@.RankStore.RANKS, rid)) return "-" + lab + " sits below the default rank " + defLab + ", so its grants would go to everyone without a rank. Grant it to " + defLab + " instead (asks first), or move " + lab + " above " + defLab + ".";
   int above = @PKG@.RankStore.RANKS.size() - 1 - @PKG@.RankStore.position(rid);
   String all = isDef ? " Everyone without a rank gets it too." : "";
-  if (!conf && @PKG@.RankStore.dangerous(node)) return "?Grant " + node + " to " + lab + "? " + @PKG@.RankStore.dangerText(node) + (above > 0 ? " The " + above + (above == 1 ? " rank" : " ranks") + " above it get it too." : "") + all;
+  String more = above > 0 ? " The " + above + (above == 1 ? " rank" : " ranks") + " above it get it too." : "";
+  boolean dang = @PKG@.RankStore.dangerous(node);
+  if (!conf && isDef) return "?Grant " + node + " to " + lab + " - everyone without a rank? Every player without a rank gets " + node + "." + (dang ? " " + @PKG@.RankStore.dangerText(node) : "") + more;
+  if (!conf && dang) return "?Grant " + node + " to " + lab + "? " + @PKG@.RankStore.dangerText(node) + more + all;
   String e = @PKG@.RankStore.setGrant(rid, node, true);
   if (e != null) return e;
   @PKG@.RankStore.log(who, wn, via, "rank[" + rid + "].grant[" + node + "]", "(none)", "granted");
@@ -2647,14 +2827,17 @@ public static String undeny(java.util.UUID who, String wn, String via, String pt
   return ok ? "+" + p[1] + "'s deny on " + node + " is gone." : "-The deny on " + node + " is still there - see the server log.";
 }""")
 # through the config kit (validated by RankHooks.checkDefault, logged, versioned) - the same path as SkyyMenu's Server Setup
+# review fix (4): the kit's check (RankHooks.checkDefault) asks first for a rank with a chat prefix - its "confirm" answer becomes our '?'
+# (page: the Confirm view; chat: /rank default again within 10 s), and the confirmed call passes "yes"
 M(ops, r"""
-public static String makeDefault(java.util.UUID who, String wn, String via, String text) {
+public static String makeDefault(java.util.UUID who, String wn, String via, String text, boolean conf) {
   String rid = @PKG@.RankStore.resolveRank(text);
   if (rid == null) return noRank(text);
   int was = @PKG@.RankStore.position(rid);
-  Object[] r = @PKG@.CfgFn.set("ranks.default", rid, who, wn, "yes", via);
+  Object[] r = @PKG@.CfgFn.set("ranks.default", rid, who, wn, conf ? "yes" : "", via);
   String stt = r == null || r.length < 3 ? "error" : String.valueOf(r[0]);
   String msg = r == null || r.length < 3 ? "could not change it" : String.valueOf(r[2]);
+  if (stt.equals("confirm")) return "?" + msg;
   if (was > 0 && @PKG@.RankStore.position(rid) == 0) msg = msg + " " + @PKG@.RankStore.label(rid) + " moved to the bottom of the ladder, where the default rank always is.";
   if (stt.equals("ok") || stt.equals("restart")) return (msg.indexOf("already") >= 0 ? "=" : "+") + msg;
   return "-" + msg;
@@ -3171,7 +3354,8 @@ public void buildSettings(@UCB@ b, @UEB@ ev, @PKG@.Rank rk) {
   setRow(b, ev, 2, this.i2, rk.colour, true);
   rowEnd(b);
   rowStart(b, 3, @PKG@.RankUI.TXTD);
-  texts(b, 3, "Staff rank", "Marks staff for other mods. A personal deny on a staff member asks first.", false);
+  boolean below = @PKG@.RankStore.belowDef(l, rk.id);
+  texts(b, 3, "Staff rank", isDef ? "The default rank (everyone without a rank) cannot be a staff rank." : (below ? "Below the default rank - it cannot be a staff rank (move it up first)." : "Marks staff for other mods. A personal deny on a staff member asks first."), false);
   button(b, ev, 3, rk.staff ? @PKG@.RankUI.ONSEL : @PKG@.RankUI.ON, "SkyyRkOn", "staffon");
   sp(b, 3);
   button(b, ev, 3, rk.staff ? @PKG@.RankUI.OFF : @PKG@.RankUI.OFFSEL, "SkyyRkOff", "staffoff");
@@ -3186,7 +3370,7 @@ public void buildSettings(@UCB@ b, @UEB@ ev, @PKG@.Rank rk) {
   }
   rowEnd(b);
   rowStart(b, 5, @PKG@.RankUI.TXTD);
-  texts(b, 5, isDef ? "The default rank" : "Default rank", isDef ? "Everyone without a rank is " + rk.name + " and gets its grants (group skyy:default-rank)." : (isOwn ? "The Owner rank cannot be the default rank." : "Needs no members or grants. It then moves to the bottom of the ladder."), false);
+  texts(b, 5, isDef ? "The default rank" : "Default rank", isDef ? "Everyone without a rank is " + rk.name + " and gets its grants (group skyy:default-rank)." : (isOwn ? "The Owner rank cannot be the default rank." : "Needs no members, grants or staff flag. It then moves to the bottom of the ladder."), false);
   if (!isDef && !isOwn) button(b, ev, 5, @PKG@.RankUI.MK, "SkyyRkMk", "mkdef");
   rowEnd(b);
   rowStart(b, 6, @PKG@.RankUI.TXTD);
@@ -3199,6 +3383,8 @@ M(page, r"""
 public void buildGrants(@UCB@ b, @UEB@ ev, @PKG@.Rank rk) {
   boolean isDef = rk.id.equals(@PKG@.RankStore.defaultId());
   boolean isOwn = @PKG@.RankStore.isOwner(rk.id);
+  boolean below = @PKG@.RankStore.belowDef(@PKG@.RankStore.RANKS, rk.id);
+  boolean opMe = @PKG@.RankEngine.isOp(this.me);
   java.util.ArrayList inh = @PKG@.RankStore.inherited(rk.id);
   b.appendInline("#SkyyRkBody", @PKG@.RankUI.ROWS);
   java.util.ArrayList items = new java.util.ArrayList();
@@ -3224,9 +3410,12 @@ public void buildGrants(@UCB@ b, @UEB@ ev, @PKG@.Rank rk) {
     boolean ed = !isOwn && @PKG@.RankStore.editorNode(x[0]);
     if (x[1].equals("hit")) {
       boolean hasIt = rk.grants.contains(x[0]);
-      texts(b, ri, x[0], hasIt ? rk.name + " already has it" : (ed ? "opens the ranks editor - only the Owner rank may hold it" : (@PKG@.RankStore.dangerous(x[0]) ? "admin node - asks before granting" : "registered by the server or a mod")), hasIt || ed);
+      boolean opOnly = !opMe && @PKG@.RankStore.opNode(x[0]);
+      boolean no = hasIt || ed || opOnly || below;
+      String cap = hasIt ? rk.name + " already has it" : (opOnly ? "op-level - only an op (vanilla /op) can grant it" : (ed ? "opens the ranks editor - only the Owner rank may hold it" : (below ? "below the default rank - it takes no grants" : (isDef ? "everyone without a rank gets it - asks first" : (@PKG@.RankStore.dangerous(x[0]) ? "admin node - asks before granting" : "registered by the server or a mod")))));
+      texts(b, ri, x[0], cap, no);
       sp(b, ri);
-      if (!hasIt && !ed) button(b, ev, ri, @PKG@.RankUI.GR, "SkyyRkGr", "hit:" + ri);
+      if (!no) button(b, ev, ri, @PKG@.RankUI.GR, "SkyyRkGr", "hit:" + ri);
     } else if (x[1].equals("auto") || (isOwn && x[0].equals(@PKG@.RankStore.EDITOR))) {
       texts(b, ri, x[0], "protected - the Owner rank always opens this ranks editor", false);
     } else if (x[1].equals("own")) {
@@ -3510,7 +3699,7 @@ public String runOp(String[] op, boolean conf) {
   if (o.equals("setrank")) return @PKG@.RankOps.setRank(u, n, "menu", op[1], op[2], conf);
   if (o.equals("deny")) return @PKG@.RankOps.deny(u, n, "menu", op[1], op[2], conf);
   if (o.equals("undeny")) return @PKG@.RankOps.undeny(u, n, "menu", op[1], op[2]);
-  if (o.equals("default")) return @PKG@.RankOps.makeDefault(u, n, "menu", op[1]);
+  if (o.equals("default")) return @PKG@.RankOps.makeDefault(u, n, "menu", op[1], conf);
   return "-Unknown action.";
 }""")
 # every change goes through here: a '?' answer parks the op and shows the Confirm view
@@ -3804,7 +3993,7 @@ cmd("RkDenyCmd", "deny", "(admin) a personal deny: /rank deny <player> <node> (b
 cmd("RkUndenyCmd", "undeny", "(admin) remove a personal deny: /rank undeny <player> <node>", [PARG, NARG],
     O + 'reply(pr, "undeny", ' + O + 'undeny(' + U + ', a0, a1));')
 cmd("RkDefaultCmd", "default", "(admin) the rank shown for players without one: /rank default <rank>", [RARG],
-    O + 'reply(pr, "default", ' + O + 'makeDefault(' + U + ', a0));')
+    'String k = "default|" + a0.toLowerCase();\n    ' + O + 'reply(pr, k, ' + O + 'makeDefault(' + U + ', a0, ' + O + 'repeat(pr.getUuid(), k)));')
 cmd("RankCmd", "rank", "(ops and the Owner rank) ranks: list, info, create, delete, name, prefix, colour, staff, up, down, grant, ungrant, set, clear, who, deny, undeny, default", [],
     O + "tellAll(pr, " + O + "helpLines());",
     subs=("RkListCmd", "RkInfoCmd", "RkCreateCmd", "RkDeleteCmd", "RkNameCmd", "RkPrefixCmd", "RkColourCmd", "RkStaffCmd", "RkUpCmd",
