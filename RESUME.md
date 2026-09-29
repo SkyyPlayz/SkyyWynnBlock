@@ -52,7 +52,7 @@ built BEFORE that edit. Never regenerate those four from their old patch scripts
    and make sure the spec has: Wynn rarities (Normal, Unique, Rare, Legendary, Fabled, Mythic + Set); a GATE SKILL per gear piece (combat ->
    class weapon skill, mining gear -> Mining, foraging -> Foraging, farming -> Farming; stage 1 builds combat only but the check is generic);
    SkyyGear replaces SkyyRolls; mob + world-chest gear drops unidentified; old gear plain until reforged.
-2. **Round 8** (Skyy's 2026-09-25 answers; specs ready):
+2. **DONE - round 8 deployed 2026-09-28 18:37.** Was: **Round 8** (Skyy's 2026-09-25 answers; specs ready):
    - SkyyParty 0.1.5 + SkyyEssentials 0.1.5: party invites / tpa requests / private messages switches BLOCK the sender (research/Settings-Spec.md
      refusing version), staff bypass default on; Essentials also: trades survive damage (tradeCancelOnDamage false), warps page no longer moves
      the world spawn. SkyyEssentials uses patch scripts since 0.1.4 (`tools/essentials_0_1_4_patch.py`).

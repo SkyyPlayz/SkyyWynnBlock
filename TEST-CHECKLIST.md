@@ -915,3 +915,17 @@ Essentials 0.1.3, Exploration 0.2.1, Guilds 0.1.2, Vault 0.1.1, Rolls 0.1.5, Hud
 4. Archery 4 -> 5: chat "Unlocked: Crossbows stay loaded when you switch slots"; the Stats page lists it. Server Setup -> Skills: 5 new rows; OFF asks to confirm.
 5. Guilds: Server Setup -> Guilds -> Skills that count ends with Fury, Divinity; a Berserker earning Fury XP raises guild XP.
 6. Mods list shows Skills 0.4.5, Menu 0.3.2, Guilds 0.1.3; the SkyyClasses entry names 7 classes. [2P] non-op: no /classadmin kit line, /modconfig refused.
+
+
+## Round 8 - blocking switches, base Mana + Overall Level, rarity bags + Omni, DEPLOYED 2026-09-28 18:37 (backup backups/deploy-20260928-1837)
+SkyyParty 0.1.5, SkyyEssentials 0.1.5, SkyySkills 0.4.6, SkyySacks 0.7.7, SkyyCollections 0.2.3. [2P] = needs a second, NON-op player.
+1. Start the world: ready lines for all five; Collections "bags: 11 removed, 20 added"; Essentials "staff bypass on" + the tradeCancelOnDamage INFO line; no "no collection tier unlocks these Magic Bags" warning.
+2. Log in with your old bags: /pd opens each type, pool counts intact, tooltips show rarity names + colours; the one-time "[Bags] ... rarities" line appears once.
+3. With 0 Iron Ore a Workbench can't craft the Normal Mining Bag; the bag page says "Unlocks at Iron Ore tier I - you have 0 / 50". /collections give Iron 50 -> within ~2 s the Workbench and /craft Collections offer it.
+4. Server Setup -> Bags and Crafting -> "Free bag recipes" ON (asks): every bag craftable, /collections rewards say "(free)". OFF: locked again.
+5. Upgrades: Normal -> Unique with 6 Linen Scraps (goblins/trorks) after Iron III; Rare with 6 Shadoweave Scraps (outlanders); Legendary with 6 Cindercloth Scraps (burnt skeletons). The Omni from 5 Legendary bags holds 100,000 per item for every type.
+6. [2P] B turns off Party invites / Teleport requests / Private messages (/settings General). A (op) gets through with "(sent anyway - staff bypass ...)" and B sees "A (staff)". A non-op is refused ("B isn't accepting party invites right now." etc., /r too). Server Setup "Staff get through blocked switches" OFF -> the op is refused too.
+7. [2P] /trade: a hit doesn't cancel; a trader dying cancels and everything goes back.
+8. /skills header "Overall Level N - average X.Y of M skills"; the Overall button opens a vanilla-style page; the Mana bar shows 10 (20 on a Mage/Priest); after a relog max Health/Mana don't dip.
+9. Archer, Archery 5+: switch away from a loaded crossbow, /hub or /island, switch back -> bolts return with the load sound + chat line; with two crossbows only one big-arrow meter stays banked; /settings Combat has 3 crossbow switches.
+10. Nothing lost: /skills levels, /collections counts, /bank, /vault, party and guild look as before.

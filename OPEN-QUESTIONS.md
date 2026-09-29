@@ -28,6 +28,15 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - **Party combat XP:** members within 48 blocks in the same world get 50% of the killer's combat XP (the killer keeps 100%). [as written]
 - **Menu hover tooltips:** on by default; the book switch turns them off if the stuck tooltip after Esc still happens. Default off? [on]
 
+## Round 8 defaults (live 2026-09-28)
+- Bag unlock collections: Mining = Iron (your call), Foraging = Oak Log, Farming = Wheat, Combat = Bone, Smithing = Light Hide; tiers I / III / V / VII. [proposed]
+- Bag upgrade materials: Unique 6 Linen Scraps, Rare 6 Shadoweave Scraps, Legendary 6 Cindercloth Scraps (the old Loom bolts were impossible to get). [6 each]
+- Coins can unlock bags up to Unique; Rare and Legendary must be gathered (bypass.bagMax). [unique]
+- Should Magic Bags be blocked in /trade too (the auction house blocks them)? Otherwise a bag can skip its collection. [allowed]
+- Staff bypass for the blocking switches is ON by default (ops + players with skyyparty.bypass / skyyessentials.bypass). [on]
+- Overall Level: +0.5 max Health and +0.2 max Mana per level. [placeholders]
+- Two crossbows keep only ONE banked big-arrow meter. [one]
+
 ## Vault arrows (`research/Vault-Arrows-Spec.md`, live in SkyyVault 0.1.2)
 - APPROVED 2026-09-25 (Skyy): cycle pages inside the vault GUI with the existing in-chest Prev/Next arrows. Do not add a second page-switch UI.
 - The arrows sit in an extra 5th row, so all 36 slots stay free. If the 5-row chest doesn't fit your screen, switch Server Setup -> Vault ->
