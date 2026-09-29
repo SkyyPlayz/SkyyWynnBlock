@@ -16,9 +16,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
-    ("SkyyHud", "0.3.10"), ("SkyySacks", "0.7.6"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.2"), ("SkyyParty", "0.1.4"),
-    ("SkyyBank", "0.1.3"), ("SkyyIslands", "0.5.2"), ("SkyyBazaar", "0.1.2"), ("SkyyRolls", "0.1.5"), ("SkyySkills", "0.4.5"),
-    ("SkyyAccessories", "0.4.4"), ("SkyyClasses", "0.1.6"), ("SkyyMenu", "0.3.2"), ("SkyyEssentials", "0.1.4"), ("SkyyProfiles", "0.1.2"),
+    ("SkyyHud", "0.3.10"), ("SkyySacks", "0.7.7"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.3"), ("SkyyParty", "0.1.5"),
+    ("SkyyBank", "0.1.3"), ("SkyyIslands", "0.5.2"), ("SkyyBazaar", "0.1.2"), ("SkyyRolls", "0.1.5"), ("SkyySkills", "0.4.6"),
+    ("SkyyAccessories", "0.4.4"), ("SkyyClasses", "0.1.6"), ("SkyyMenu", "0.3.2"), ("SkyyEssentials", "0.1.5"), ("SkyyProfiles", "0.1.2"),
     ("SkyyCooking", "0.1.2"), ("SkyyTrees", "0.2.3"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -51,6 +51,9 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees"]
 # a disabled key is not loaded). Without this, deploy_set only disables older versions of the SAME mod name, and a retired mod would keep
 # loading next to its replacement (duplicate commands, two systems). Example: SkyyRolls once SkyyGear replaces it; SkyyCoins, SkyyBank,
 # SkyyBazaar and SkyyAuctions once SkyyEconomy replaces them. A name here must not also be in SET.
+# round 8 (2026-09-28): SkyySacks 0.7.7 + SkyyCollections 0.2.3 deploy TOGETHER (bag recipe ids, coll:fn:where, migrated rewards file).
+# Never roll back below SkyySacks 0.7.7 (Rare/Omni bags + Skyy_Bag_* qualities), SkyySkills 0.4.6 (saved max modifiers - switch Base Mana
+# and Overall Level OFF and let players log in once first), or SkyyCollections 0.2.3 without restoring rewards-0.2.properties.
 RETIRED = []
 
 
