@@ -46,7 +46,24 @@ RESET. Nothing below is built yet. Specs are written and committed; the working 
 `SkyyTrees\build_skyytrees_0.2.3.py`, `SkyyClasses\build_skyyclasses_0.1.6.py`, `SkyyVault\build_skyyvault_0.1.2.py`. The live jars were
 built BEFORE that edit. Never regenerate those four from their old patch scripts; each next version derives from the EDITED script.
 
-## 3. What to do next (in this order; on Pro run 1-3 agents at a time, sonnet where possible)
+## 3. What to do next (in this order; on Max 5x run about 4-6 agents at a time, sonnet for reviews)
+
+**RESUME POINT (2026-09-28 late, usage limit hit - 3 agents stopped mid-work):**
+- Built + committed, NOT deployed: SkyyClasses 0.1.7, SkyyTrees 0.2.4, SkyyVault 0.1.3 (reviewed+fixed), SkyyIslands 0.5.3 (reviewed+fixed,
+  beds member-only), SkyyGear 0.1, SkyyMenu 0.3.3, SkyyAuctions 0.1.2 (commit 46d7a27).
+- STOPPED mid-edit (uncommitted changes may be on disk - check `git status`/`git diff`, finish them, don't start over):
+  - SkyyRanks 0.1.1 fixer (`SkyyRanks\build_skyyranks_0.1.1.py`): review items 1-6 = moves around the default rank refused; default-rank
+    grants confirm; dangerous() fixes; staff default refused; only real ops may grant `*` / `skyyranks.*` / `hytale.permissionsmodule.command.*`;
+    seeded Admin keeps kick, drops ban/unban. It was on the "grant op" item when stopped.
+  - SkyyMenu 0.3.3 fixer (`tools\menu_0_3_3_patch.py` -> regenerate): invalid settings node fails closed for set/get; validPerm rejects
+    `-x`, `..`, `*`, trailing `.:-`; conflicting registrations keep the stricter node; `/rank set <player> <rank> | clear <player>` text;
+    "(admin)"/"(staff)" command lines out of the players' Mods text.
+  - SkyyAuctions 0.1.2 review (read-only) - rerun it.
+- NEXT: one SkyyGear fixer with `research\SkyyGear-0.1-Review-Findings.md` (design + exploit + engine reviews; most important: armor lock
+  eats current HP - apply locks only on the 1 s tick; bow hot-swap stats; armor in hand judged as a weapon; broken-armor lock; stacking
+  spears/spellbooks; Weapon_Shortbow_Bomb seen as ammo). Then the final cross-check of all of the above with the live set, pin SET
+  (+SkyyGear 0.1, -SkyyRolls, `RETIRED = ["SkyyRolls"]`), commit, back up, deploy (game closed), docs. After deploy tell Skyy to set
+  Mining.MSpeed.per=0.016, Foraging.FSpeed2.per=0.05, feller.cooldownSec=3 in Server Setup -> Trees (live file keeps old values).
 
 1. **SkyyGear spec fix** - apply `research/SkyyGear-Stage1-Spec-Review-Findings.md` (13 findings) to `research/SkyyGear-Stage1-Spec.md`,
    and make sure the spec has: Wynn rarities (Normal, Unique, Rare, Legendary, Fabled, Mythic + Set); a GATE SKILL per gear piece (combat ->
