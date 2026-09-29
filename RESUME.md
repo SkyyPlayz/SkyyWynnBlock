@@ -32,73 +32,30 @@ Other folders next to the project (`Hytale mods WORK\Hytale mods`, `Your new mod
 
 ## 2. Where we got to
 
-**Live in the "HUD mod" world (last deploy 2026-09-25 08:24, = `tools/deploy_set.py` SET, 22 Skyy mods + 2 pack mods):**
-SkyyHud 0.3.10, SkyySacks 0.7.6, SkyyCoins 0.1.5, SkyyCollections 0.2.2, SkyyParty 0.1.4, SkyyBank 0.1.3, SkyyIslands 0.5.2,
-SkyyBazaar 0.1.2, SkyyRolls 0.1.5, SkyySkills 0.4.5, SkyyAccessories 0.4.4, SkyyClasses 0.1.6, SkyyMenu 0.3.2, SkyyEssentials 0.1.4,
-SkyyProfiles 0.1.2, SkyyCooking 0.1.2, SkyyTrees 0.2.3, SkyyExploration 0.2.1, SkyyGuilds 0.1.3, SkyyVault 0.1.2, SkyyAuctions 0.1.1,
-SkyyRanks 0.1; pack mods More Crossbow Tiers (Serj), Saplings From Trees (Helios). What each does: HANDOFF section 3 table.
-Not yet tested in game: almost everything from 2026-09-24 22:53 on - TEST-CHECKLIST.md sections from "BETA ROUND 1" down (the vault was verified).
-
-**Stopped 2026-09-28:** Skyy switched from Max to Pro and weekly Claude Code usage reached 98%. Skyy chose to WAIT FOR THE WEEKLY
-RESET. Nothing below is built yet. Specs are written and committed; the working tree is clean.
+**Live in the "HUD mod" world (last deploy 2026-09-29 06:56, backup `backups\deploy-20260929-0656`, = `tools/deploy_set.py` SET, 22 Skyy
+mods + 2 pack mods):** SkyyHud 0.3.10, SkyySacks 0.7.7, SkyyCoins 0.1.5, SkyyCollections 0.2.3, SkyyParty 0.1.5, SkyyBank 0.1.3,
+SkyyIslands 0.5.3, SkyyBazaar 0.1.2, SkyyGear 0.1, SkyySkills 0.4.6, SkyyAccessories 0.4.4, SkyyClasses 0.1.7, SkyyMenu 0.3.3,
+SkyyEssentials 0.1.5, SkyyProfiles 0.1.2, SkyyCooking 0.1.2, SkyyTrees 0.2.4, SkyyExploration 0.2.1, SkyyGuilds 0.1.3, SkyyVault 0.1.3,
+SkyyAuctions 0.1.2, SkyyRanks 0.1.1; SkyyRolls RETIRED (switched off, replaced by SkyyGear); pack mods More Crossbow Tiers (Serj),
+Saplings From Trees (Helios). What each does: HANDOFF section 3 table. Test list: TEST-CHECKLIST.md, newest section "Round 9 + SkyyGear"
+(its step 0 = settings Skyy changes first: gear level check off for testing, three Trees values). Rounds 8 and 9 are not tested in game yet.
 
 **Important rule (commit ab75b6c):** Skyy edited these GENERATED scripts directly with locked defaults: `SkyySkills\build_skyyskills_0.4.5.py`,
-`SkyyTrees\build_skyytrees_0.2.3.py`, `SkyyClasses\build_skyyclasses_0.1.6.py`, `SkyyVault\build_skyyvault_0.1.2.py`. The live jars were
-built BEFORE that edit. Never regenerate those four from their old patch scripts; each next version derives from the EDITED script.
+`SkyyTrees\build_skyytrees_0.2.3.py`, `SkyyClasses\build_skyyclasses_0.1.6.py`, `SkyyVault\build_skyyvault_0.1.2.py`. Never regenerate those
+four from their old patch scripts (their successors 0.4.6 / 0.2.4 / 0.1.7 / 0.1.3 are built from the edited scripts and are live).
 
-## 3. What to do next (in this order; on Max 5x run about 4-6 agents at a time, sonnet for reviews)
+## 3. What to do next (on Max 5x run about 4-6 agents at a time, sonnet for reviews)
 
-**RESUME POINT (2026-09-28 late, usage limit hit - 3 agents stopped mid-work):**
-- Built + committed, NOT deployed: SkyyClasses 0.1.7, SkyyTrees 0.2.4, SkyyVault 0.1.3 (reviewed+fixed), SkyyIslands 0.5.3 (reviewed+fixed,
-  beds member-only), SkyyGear 0.1, SkyyMenu 0.3.3, SkyyAuctions 0.1.2 (commit 46d7a27).
-- STOPPED mid-edit (uncommitted changes may be on disk - check `git status`/`git diff`, finish them, don't start over):
-  - SkyyRanks 0.1.1 fixer (`SkyyRanks\build_skyyranks_0.1.1.py`): review items 1-6 = moves around the default rank refused; default-rank
-    grants confirm; dangerous() fixes; staff default refused; only real ops may grant `*` / `skyyranks.*` / `hytale.permissionsmodule.command.*`;
-    seeded Admin keeps kick, drops ban/unban. It was on the "grant op" item when stopped.
-  - SkyyMenu 0.3.3 fixer (`tools\menu_0_3_3_patch.py` -> regenerate): invalid settings node fails closed for set/get; validPerm rejects
-    `-x`, `..`, `*`, trailing `.:-`; conflicting registrations keep the stricter node; `/rank set <player> <rank> | clear <player>` text;
-    "(admin)"/"(staff)" command lines out of the players' Mods text.
-  - SkyyAuctions 0.1.2 review (read-only) - rerun it.
-- NEXT: one SkyyGear fixer with `research\SkyyGear-0.1-Review-Findings.md` (design + exploit + engine reviews; most important: armor lock
-  eats current HP - apply locks only on the 1 s tick; bow hot-swap stats; armor in hand judged as a weapon; broken-armor lock; stacking
-  spears/spellbooks; Weapon_Shortbow_Bomb seen as ammo). Then the final cross-check of all of the above with the live set, pin SET
-  (+SkyyGear 0.1, -SkyyRolls, `RETIRED = ["SkyyRolls"]`), commit, back up, deploy (game closed), docs. After deploy tell Skyy to set
-  Mining.MSpeed.per=0.016, Foraging.FSpeed2.per=0.05, feller.cooldownSec=3 in Server Setup -> Trees (live file keeps old values).
-
-1. **SkyyGear spec fix** - apply `research/SkyyGear-Stage1-Spec-Review-Findings.md` (13 findings) to `research/SkyyGear-Stage1-Spec.md`,
-   and make sure the spec has: Wynn rarities (Normal, Unique, Rare, Legendary, Fabled, Mythic + Set); a GATE SKILL per gear piece (combat ->
-   class weapon skill, mining gear -> Mining, foraging -> Foraging, farming -> Farming; stage 1 builds combat only but the check is generic);
-   SkyyGear replaces SkyyRolls; mob + world-chest gear drops unidentified; old gear plain until reforged.
-2. **DONE - round 8 deployed 2026-09-28 18:37.** Was: **Round 8** (Skyy's 2026-09-25 answers; specs ready):
-   - SkyyParty 0.1.5 + SkyyEssentials 0.1.5: party invites / tpa requests / private messages switches BLOCK the sender (research/Settings-Spec.md
-     refusing version), staff bypass default on; Essentials also: trades survive damage (tradeCancelOnDamage false), warps page no longer moves
-     the world spawn. SkyyEssentials uses patch scripts since 0.1.4 (`tools/essentials_0_1_4_patch.py`).
-   - SkyySkills 0.4.6 (from the EDITED 0.4.5): `research/Overall-Level-Spec.md` (base Mana 10, Mage/Priest 20, Overall Level = average of
-     skills with a small Health + Mana bonus per level) + Skyy locks: self-heal Divinity XP 0.25/HP (heal-XP bridge gets an optional trailing
-     Boolean self), crossbow load survives teleports, keep the big-arrow meter, sound + chat hint on restore, /settings switches for those three.
-   - SkyySacks 0.7.7 + SkyyCollections 0.2.3: `research/Bag-Restructure-Spec.md` - bag tiers by rarity (Normal, Unique, Rare, Legendary; old
-     Small/Medium/Large items keep working), Mythic Omni Bag (all 5 Legendary bags -> one bag, 100,000 per item for every bag type, tabs per
-     type), bags unlocked from collections, Mining bag from IRON.
-3. **Round 9** (Skyy's commit ab75b6c locks, listed as LOCKED lines in OPEN-QUESTIONS.md):
-   - SkyyTrees 0.2.4 (from EDITED 0.2.3): Tree Feller extra logs 1/2/4/5/6/10 at levels 1-6, cooldown 3 s; Double Jump -> Acrobatics tier III
-     slot 7 (replaces Sprinter; Quick Dodge back to tier II) with save migration; hatchet swing speed only on wood (never mobs / weapon axes).
-   - SkyyClasses 0.1.7 (from EDITED 0.1.6): class kit straight into the hotbar at class select/change; Healing Totem Priest-only; heal lines
-     every 10 s; send self-heal amounts to SkyySkills (Boolean self); daily Archer arrow refill; class-switch rows greyed out in Server Setup.
-   - SkyyVault 0.1.3 (from EDITED 0.1.2): buyConfirmCoins (50,000): cheaper pages buy at once, dearer ones ask "Buy page X for Y coins?" in a
-     dialog; a plain click turns the page at once.
-   - SkyyIslands 0.5.3: admins may invite co-op, visitor limit 10, beds visitor-level (chests member, crafting trusted).
-   - SkyyRanks 0.1.1: seeded Member, Admin, Developer + a protected Owner rank; rank editor for ops + Owner only.
-4. **SkyyGear 0.1 build** per the fixed spec (new mod `SkyyGear\build_skyygear_0.1.py`), then SkyyAuctions 0.1.2 (gear compat + AH locks:
-   48h pays double the listing fee, a different profile may buy your listing, Magic Bags + Accessory Bag blocked) and SkyyMenu 0.3.3 (Identify
-   tile, Mods text, Settings icon at slot 39, permission-based settings visibility). Deploy: add SkyyGear 0.1 to SET, remove SkyyRolls, put
-   `SkyyRolls` in deploy_set's `RETIRED` list.
-5. **Vanilla UI look (Skyy, 2026-09-28):** every UI must look and feel as close to vanilla Hytale as possible. First research the vanilla
+1. **Skyy tests** round 8 + round 9 + SkyyGear (TEST-CHECKLIST sections "Round 8" and "Round 9 + SkyyGear"); fix what they report first.
+2. **Open questions** from the round: OPEN-QUESTIONS.md "Round 9 + SkyyGear defaults" (48h floor, clampToLevel, real gear level table,
+   Ranks placeholders) and "Round 8 defaults".
+3. **Vanilla UI look (Skyy, 2026-09-28):** every UI must look and feel as close to vanilla Hytale as possible. First research the vanilla
    styles in Assets.zip (panel frames, colours, fonts, button styles, spacing, sounds) and put them in one shared style helper for the build
    scripts; every NEW page uses it from then on, and the existing Skyy pages (menu, bags, skills, trees, collections, bank, bazaar, AH, vault,
    island menu, Server Setup, ...) get a vanilla-style pass over time.
-6. **Small follow-ups:** config kit keeps 10 old file versions (tools/skyycfg.py KEEP 20 -> 10); SkyyGuilds xpSkills mid-run change credits
+4. **Small follow-ups:** config kit keeps 10 old file versions (tools/skyycfg.py KEEP 20 -> 10); SkyyGuilds xpSkills mid-run change credits
    a skill's whole saved XP (fix in the next Guilds version); Archery 15+ extra bolts and the late-game holstered reload (approved, later).
-7. **After Skyy tests the separate economy mods:** SkyyEconomy 0.1 = Coins + Bank + Bazaar + Auctions merged (`SkyyEconomy-Plan.md`; use the
+5. **After Skyy tests the separate economy mods:** SkyyEconomy 0.1 = Coins + Bank + Bazaar + Auctions merged (`SkyyEconomy-Plan.md`; use the
    RETIRED list), then NPC shops (SkyyEconomy 0.2).
 
 Every round: build (no `--deploy`), review (sonnet), fix, cross-check with the whole set (one JVM, -Xverify:all, the Adventurer permission

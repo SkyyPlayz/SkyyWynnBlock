@@ -37,6 +37,20 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - Overall Level: +0.5 max Health and +0.2 max Mana per level. [placeholders]
 - Two crossbows keep only ONE banked big-arrow meter. [one]
 
+## Round 9 + SkyyGear defaults (live 2026-09-29)
+- Auction house 48h: "double the listing fee", but never cheaper than the 24h price (built literally, 48h cost 20 coins on a 1,000-coin item
+  vs 360 for 24h, so everyone would pick 48h). Server Setup key `xFloorPrev` - OFF = exactly 2 x the listing fee. [on]
+- SkyyGear: old SkyyRolls items keep their rolls (your lock). Switch `migrate.clampToLevel` caps old rolls at what that item's level can
+  roll now (a cheap SkyyRolls max roll on junk gear stays strong otherwise). [off]
+- SkyyGear placeholder item levels: Copper 10, Iron 20, Mithril 50 (by material word). Your own gear is blocked until your weapon skill
+  reaches them - switch "Level requirement check" off to test other things. Real level table? [placeholders]
+- SkyyGear stacking gear (17 spears, 5 spellbooks): stacks stay whole until you Identify / Reforge / craft; then one item comes off
+  (5 free slots kept, never into the hotbar). A fresh loot chest splits its stacks into single rolled items. [as built]
+- SkyyGear new stats Loot Bonus, Loot Quality, Stealing, Trophy Hunter, XP Bonus are listed as "coming later" (weight 2, weapons + armor). [later]
+- SkyyRanks placeholders: Admin = kick + /modconfig + party/essentials staff bypass (no ban/unban); Developer = Admin's; Owner = rank editor.
+  Only a real op may grant `*`, `skyyranks.*`, `hytale.*` or `hytale.permissionsmodule.*` (covers /op, /perm) - Owner included. [as listed]
+- SkyyRanks: a rank below the default rank (Member) can't have grants or be staff, and the default rank can't be staff. [on]
+
 ## Vault arrows (`research/Vault-Arrows-Spec.md`, live in SkyyVault 0.1.2)
 - APPROVED 2026-09-25 (Skyy): cycle pages inside the vault GUI with the existing in-chest Prev/Next arrows. Do not add a second page-switch UI.
 - The arrows sit in an extra 5th row, so all 36 slots stay free. If the 5-row chest doesn't fit your screen, switch Server Setup -> Vault ->

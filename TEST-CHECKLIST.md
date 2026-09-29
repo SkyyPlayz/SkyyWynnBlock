@@ -929,3 +929,37 @@ SkyyParty 0.1.5, SkyyEssentials 0.1.5, SkyySkills 0.4.6, SkyySacks 0.7.7, SkyyCo
 8. /skills header "Overall Level N - average X.Y of M skills"; the Overall button opens a vanilla-style page; the Mana bar shows 10 (20 on a Mage/Priest); after a relog max Health/Mana don't dip.
 9. Archer, Archery 5+: switch away from a loaded crossbow, /hub or /island, switch back -> bolts return with the load sound + chat line; with two crossbows only one big-arrow meter stays banked; /settings Combat has 3 crossbow switches.
 10. Nothing lost: /skills levels, /collections counts, /bank, /vault, party and guild look as before.
+
+
+## Round 9 + SkyyGear - gear rarities/levels/identify, class kits to hotbar, Tree Feller, vault confirm, ranks, AH gear, DEPLOYED 2026-09-29 06:56 (backup backups/deploy-20260929-0656)
+SkyyGear 0.1 (NEW, replaces SkyyRolls - switched off), SkyyClasses 0.1.7, SkyyTrees 0.2.4, SkyyVault 0.1.3, SkyyIslands 0.5.3, SkyyRanks 0.1.1,
+SkyyMenu 0.3.3, SkyyAuctions 0.1.2. [2P] = needs a second, NON-op player.
+0. FIRST: the gear level check will block your own gear (placeholder levels Copper 10, Iron 20, Mithril 50; your weapon skills are low).
+   For testing switch it off: Server Setup -> Gear -> General "Level requirement check" OFF (turn it back ON for step 6).
+   Also set in Server Setup -> Trees: Mining.MSpeed.per 0.016, Foraging.FSpeed2.per 0.05, feller.cooldownSec 3 (the live file keeps old values).
+1. Start the world: a "[Skyy...] ready" line for all 22 mods, none for SkyyRolls. The first start also runs the pending migrations from
+   rounds 6-8 (the world last ran 2026-09-25). SkyyAuctions logs "config.properties updated for 0.1.2" once; a restart logs it no more.
+2. Gear tooltips: hold your old weapons - Normal gear shows a rarity line + level; SkyyRolls items keep their rolls (Mithril Shortbow = Rare,
+   Copper Longsword = Unique). Colours: Normal white, Unique yellow, Rare pink, Legendary aqua, Fabled red, Mythic purple, Set green.
+3. Craft a weapon: it gets a random rarity + rolls. Craft Crude Spears with 8+ free slots: each spear is its own rolled single in storage.
+   A stack of 30 spears picked up stays ONE stack (no splitting until you identify/reforge it; never into the hotbar).
+4. Kill mobs / open fresh loot chests: gear drops "Unidentified <item>"; /identify (or the Identify tile in /skymenu) shows the cost and
+   rolls it; "Identify all" counts items. Unidentified gear can't be reforged.
+5. /reforge on a stack: one item is reforged, the rest moves to a free storage slot, one cost taken; with fewer than 6 free slots it refuses
+   before taking coins.
+6. With the level check ON: an under-level weapon cancels hits with a popup; under-level armor gives no protection/stats and your current HP
+   never drops when you put it on or take it off (try at full HP and at 60% HP several times).
+7. Bow swap: fire a weak bow, swap to a strong one while the arrow flies -> the hit uses the first bow (or the weaker one).
+8. Classes: pick/change class -> the kit goes straight into the hotbar; the Healing Totem only for Priest; heal chat lines at most every 10 s;
+   Archer gets the daily arrow refill; self-heals give Divinity XP.
+9. Trees: Tree Feller extra logs 1/2/4/5/6/10 at levels 1-6, cooldown 3 s (after step 0); Double Jump is Acrobatics tier III slot 7 (your old
+   Double Jump points moved there); hatchet swing speed only on wood, not on mobs or weapon axes.
+10. Vault: pages under 50,000 coins buy at once; dearer pages ask "Buy page X for Y coins?" in a dialog; a plain arrow click turns the page.
+11. Islands: [2P] an island admin can invite co-op; visitor limit 10; beds member-only (a visitor can't use your bed).
+12. Ranks: /rankadmin shows Member (default), Admin [Admin], Developer [Dev], Owner [Owner]. Admin has kick but not ban. A non-op Owner
+    can't grant * or /op. Grant something to Member -> it asks "everyone without a rank?". [2P] give the alt Admin: /kick works, /ban denied.
+13. Menu: Settings icon at slot 39; Identify tile; [2P] a non-op doesn't see /classadmin, /ahadmin or /fly lines in the Mods list.
+14. Auction house: list a sword for 1,000 on 48h -> fee 360 (same as 24h, "at least the 24h price"); 1m on 48h -> 20,000. Gear listings
+    show rarity colour + a short roll line; the item page shows the full text. Bags (Magic Bags, Accessory Bag) are refused. List on profile A,
+    buy on profile B after 20 s. Your old expired listing #1 (Sharp Copper Longsword) comes back as a claim.
+15. Nothing lost: /skills levels, /collections, /bank, /vault pages, bags, party, guild look as before.
