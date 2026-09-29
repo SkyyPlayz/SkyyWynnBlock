@@ -54,6 +54,22 @@ THIS FILE IS BUILT IN TWO PARTS (Skyy / RESUME step 4). PART A = this build. PAR
       (design 1), one totals function + the gear:extra:<uuid> bridge string (design 2), vanilla #ff6b6b / #39f493 (design 3),
       Mythic #CC66CC (design 4), Health Regen % rolls only with Raw Health Regen (design 5), element damage after armor (design 8),
       identify texts follow identify.command (design 9), 5 more coming-later Keep stats (design 11).
+  FOLLOW-UP FIXES (2026-09-29, second review of the fix commit e43c8bf; version stays 0.1):
+    - gear.include is guarded: the row check (and the loader) refuse prefixes under 6 characters and bare Skyy_ / Weapon_ / Armor_ /
+      Tool_; include never beats the ammo rule; an included id with MaxStack > 1 is gear only as Weapon_ / Armor_ / Tool_, never
+      above MaxStack 30; an included id that is not Weapon_ / Armor_ / Tool_ and has no kind.prefix row is kind equipment.
+    - the ammo rule: parts[1] only for ids with MaxStack <= 1 (Weapon_Shortbow_Bomb stays gear), the old any-token test for
+      stackable ids; split() skips ids with MaxStack > 30 (one WARN per id: add the prefix to gear.exclude).
+    - stacks are split only when an action needs one item: Identify / Identify all / Reforge take ONE item off the stack (the rest
+      moves as one stack to a free slot), crafted gear and loot chests roll per item; the passive scan never splits (a stack of
+      identical documents stays one stack). Splits never go into the hotbar and always leave 5 storage + backpack slots free; a
+      failed destination write restores the source (tagContainer catches its own split).
+    - projectile hits with no launch record log one WARN; several live records with different weapons -> the weaker one (lower
+      totals; a blocked record still blocks through liveBad). Locks saved with the player are picked up by GearLockSys once per
+      join / world switch; a lock that waited 3 s for the engine schedules a Recalculate (then every 10 s, the 30 s WARN stays);
+      negative armor sums are cancelled too. An unreadable quality.properties is left alone; no epoch bump on moved indices
+      (GearView.apply rewrites a stack whose effective quality differs). gear:extra is summed with saturation, Damage % >= -100,
+      a hit never goes below 0.
     - level enforcement: weapon (main hand + utility slot, projectiles by launch record + the 10 s shot window) above the gate level
       or unidentified -> amount 0 + cancelled + knockback removed + GearGate.popup (gear.blockedPopup gates only the popup); armor
       above the level or unidentified -> no SkyyGear stats, native Health / resistance cancelled (level.armorNative), one
@@ -380,6 +396,12 @@ ENFORCED_KINDS = ["combat", "equipment"]
 # design review 1: the kinds kind.prefix may name (Server Setup table), and the ids that are never gear, even through gear.include
 KIND_CHOICES = ["combat", "mining", "foraging", "farming", "equipment"]
 NEVER_GEAR = ["Skyy_Sack_", "Skyy_Bag_", "Skyy_Accessory_Bag"]     # Magic Bags, bag upgrade items, the Accessory Bag
+# follow-up review 1: gear.include entries that are refused (too broad): shorter than INCL_MIN characters or one of these families
+INCL_MIN = 6
+INCL_BARE = ["Skyy_", "Weapon_", "Armor_", "Tool_"]
+GEAR_FAMILIES = ["Weapon_", "Armor_", "Tool_"]     # the only included ids that may stack (MaxStack > 1)
+STACK_CEIL = 30             # follow-up review 2: no gear above this MaxStack is split (vanilla max: spears 30, VERIFIED below)
+FREE_KEEP = 5               # follow-up review 3: a split always leaves this many storage + backpack slots empty
 # spec 1.6 tool families of SkyyRolls-rolled tools (VERIFIED families in Assets.zip); every other Tool_* -> kind "tool", no gate
 TOOL_FAMILIES = [("Tool_Pickaxe_", "mining"), ("Tool_Hatchet_", "foraging"), ("Tool_Hoe_", "farming"), ("Tool_Sickle_", "farming"),
                  ("Tool_Shovel_", "mining")]
@@ -408,6 +430,42 @@ AMMO_IDS = ["Weapon_Arrow_Clearshot", "Weapon_Arrow_Crude", "Weapon_Arrow_Deadey
             "Weapon_Bomb_Potion_Poison", "Weapon_Bomb_Stun", "Weapon_Dart_Tribal", "Weapon_Grenade_Frag"]
 assert _AMMO_NEW == AMMO_IDS, "ammo ids changed in Assets.zip: %s" % _AMMO_NEW
 assert sorted(set(_AMMO_OLD) - set(_AMMO_NEW)) == ["Weapon_Shortbow_Bomb"], sorted(set(_AMMO_OLD) - set(_AMMO_NEW))
+# follow-up review 2: the rule the jar runs (GearData.ammoMs): parts[1] for MaxStack <= 1, any token for stackable ids. MaxStack as the
+# engine resolves it (Item.processConfig, VERIFIED bytecode): the MaxStack of the item or its Parent chain, else 1 for an item with a
+# Weapon / Armor / Tool section, else 100.
+_AZ_JSON = {}
+for _n in AZ_NAMES:
+    if _n.startswith("Server/Item/Items/") and _n.endswith(".json"):
+        try:
+            _AZ_JSON[os.path.basename(_n)[:-5]] = json.loads(AZ.read(_n).decode("utf-8-sig"))
+        except Exception:
+            pass
+
+
+def az_max_stack(i):
+    seen, cur, sect = 0, i, False
+    while cur in _AZ_JSON and seen < 16:
+        d = _AZ_JSON[cur]
+        if "MaxStack" in d:
+            return int(d["MaxStack"])
+        sect = sect or any(k in d for k in ("Weapon", "Armor", "Tool"))
+        cur, seen = d.get("Parent"), seen + 1
+    return 1 if sect else 100
+
+
+def az_ammo(i):
+    ps = i.split("_")
+    if az_max_stack(i) <= 1:
+        return len(ps) > 1 and ps[1].lower() in AMMO
+    return any(p.lower() in AMMO for p in ps[1:])
+
+
+assert az_max_stack("Weapon_Shortbow_Bomb") == 1, "Weapon_Shortbow_Bomb stacks now: %s" % az_max_stack("Weapon_Shortbow_Bomb")
+assert [i for i in _W_IDS if az_ammo(i)] == AMMO_IDS, "ammo under the MaxStack rule: %s" % [i for i in _W_IDS if az_ammo(i)]
+_EXCL0 = EXCLUDE_DEF.split(",")
+_STACK_GEAR = dict((i, az_max_stack(i)) for i in _W_IDS if not az_ammo(i) and not i.startswith(tuple(_EXCL0)) and az_max_stack(i) > 1)
+assert _STACK_GEAR and max(_STACK_GEAR.values()) <= STACK_CEIL, "stackable vanilla gear above the split ceiling: %s" % _STACK_GEAR
+assert all(i.startswith(("Weapon_Spear_", "Weapon_Spellbook_")) for i in _STACK_GEAR), sorted(_STACK_GEAR)
 # spec 3.2 default material table (PLACEHOLDER)
 MATERIALS = [("Crude", 0), ("Wood", 0), ("Copper", 10), ("Bronze", 15), ("Iron", 20), ("Thorium", 30), ("Cobalt", 35),
              ("Adamantite", 40), ("Mithril", 50), ("Onyxium", 50)]
@@ -556,9 +614,11 @@ CFG_ROWS = [
     ("gear.exclude", "Weapon prefixes that are not gear", "general", "text", EXCLUDE_DEF, "0", "2000", "", "", "live,adv",
      "Comma list of Weapon_ id prefixes that never get rarity or level (shields, bombs, guns ...).",
      "field:GearCfg.EXCLUDE"),
-    # design review 1: later stages (Equipment, gathering gear, Skyy_ items) opt in here instead of a code edit
+    # design review 1: later stages (Equipment, gathering gear, Skyy_ items) opt in here instead of a code edit. Follow-up review 1:
+    # the check refuses prefixes under 6 characters and the bare families (GearCfg.inclBad; the loader drops them from hand edits)
     ("gear.include", "Extra id prefixes that are gear", "general", "text", "", "0", "2000", "", "", "live,adv",
-     "Comma list of id prefixes that count as gear too (Skyy_ ids allowed; bags never are).", "field:GearCfg.INCLUDE"),
+     "Comma list of id prefixes (6+ letters, e.g. Skyy_Ring_) that count as gear too. Bags never are.",
+     "field:GearCfg.INCLUDE;check=GearCfg.checkInclude"),
     ("kind.prefix", "Gear kind by id prefix", "general", "table", "", "", "20", "text;type;Kind", "", "live,adv",
      "combat, mining, foraging, farming or equipment: picks the pool + gate skill. Longest prefix wins.",
      "reload@%s:kind.prefix.;check=GearCfg.checkKind" % CFG_FILE),
@@ -875,6 +935,12 @@ for c, m in ((IS, "withQuantity"), (ICE, "getItemContainer"), (ICE, "getInventor
              ("com.hypixel.hytale.server.core.entity.StatModifiersManager", "recalculateEntityStatModifiers"),
              ("com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue", "computeModifiers")):
     B.probe(pool, c, m)
+# follow-up review probes (2026-09-29): the lock self-heal (item 6) and the MaxStack rules (items 1-2)
+for c, m in ((PB["ESM"], "getStatModifiersManager"), ("com.hypixel.hytale.server.core.entity.StatModifiersManager", "scheduleRecalculate"),
+             (ITM, "getMaxStack"), (DCS, "getId")):
+    B.probe(pool, c, m)
+_srm = pool.get("com.hypixel.hytale.server.core.entity.StatModifiersManager").getDeclaredMethod("scheduleRecalculate")
+assert J0["Modifier"].isPublic(_srm.getModifiers()) and str(_srm.getSignature()) == "()V", "StatModifiersManager.scheduleRecalculate changed"
 MV.probe(B, pool)
 # the vanilla armor effects under-level armor does NOT cancel in 0.1 (spec 3.5 part 4): listed here and logged once at start
 _KNOWN_LIMIT_KEYS = ("DamageClassEnhancement", "KnockbackResistances", "KnockbackEnhancements", "DamageEnhancement", "Regenerating",
@@ -1203,6 +1269,11 @@ F(gdf, 'public static final String C_DIS = "#797b7c";')       # @ColorDisabled
 F(gdf, 'public static final String C_OK = "%s";' % V_OK)      # design review 3: vanilla "met" green (MemoriesCategory counter)
 F(gdf, 'public static final String C_BAD = "%s";' % V_BAD)    # vanilla error red: too low / refused, everywhere (tooltip, popup, pages)
 F(gdf, "public static final String[] NEVER = %s;" % jarr(NEVER_GEAR))
+F(gdf, "public static final int INCL_MIN = %d;" % INCL_MIN)
+F(gdf, "public static final String[] INCL_BARE = %s;" % jarr(INCL_BARE))
+F(gdf, "public static final String[] FAMILIES = %s;" % jarr(GEAR_FAMILIES))
+F(gdf, "public static final int STACK_CEIL = %d;" % STACK_CEIL)
+F(gdf, "public static final int FREE_KEEP = %d;" % FREE_KEEP)
 F(gdf, "public static final String[] KIND_CHOICES = %s;" % jarr(KIND_CHOICES))
 F(gdf, "public static final int I_HPR = %d;" % S_KEYS.index("hpr"))
 F(gdf, "public static final int I_HPRP = %d;" % S_KEYS.index("hprp"))
@@ -1686,6 +1757,15 @@ public static String[] names() {
   }
   return RF;
 }""")
+# follow-up review 1: a gear.include entry that would pull whole families in ("Skyy_" = menus, food, vaults ...; "Weapon_Arrow_"-style
+# short ones) is refused: why (null = fine). The row check refuses it in game; the loader drops it from a hand edit with one WARN.
+M(gcf, r"""
+public static String inclBad(String t) {
+  if (t == null) return null;
+  for (int i = 0; i < @PKG@.GearDefs.INCL_BARE.length; i++) if (@PKG@.GearDefs.INCL_BARE[i].equalsIgnoreCase(t)) return t + " is a whole item family - name a narrower prefix such as Skyy_Ring_ or Tool_Pickaxe_.";
+  if (t.length() < @PKG@.GearDefs.INCL_MIN) return t + " is too short - a gear.include prefix needs at least " + @PKG@.GearDefs.INCL_MIN + " characters (e.g. Skyy_Ring_).";
+  return null;
+}""")
 M(gcf, r"""
 public static String[] incl() {
   String s = INCLUDE;
@@ -1693,7 +1773,13 @@ public static String[] incl() {
     java.util.ArrayList l = new java.util.ArrayList();
     if (s != null) {
       String[] ps = s.split(",");
-      for (int i = 0; i < ps.length; i++) { String t = ps[i].trim(); if (t.length() > 0) l.add(t); }
+      for (int i = 0; i < ps.length; i++) {
+        String t = ps[i].trim();
+        if (t.length() == 0) continue;
+        String bad = inclBad(t);
+        if (bad != null) { @PKG@.Gear.warnOnce("inclbad:" + t, "config.properties: gear.include entry " + bad + " - ignored"); continue; }
+        l.add(t);
+      }
     }
     String[] a = new String[l.size()];
     for (int i = 0; i < a.length; i++) a[i] = (String) l.get(i);
@@ -1771,6 +1857,18 @@ public static String checkKind(String key, String value) {
   return null;
 }""")
 M(gcf, r"""
+public static String checkInclude(String key, String value) {
+  if (value == null) return null;
+  String[] ps = value.split(",");
+  for (int i = 0; i < ps.length; i++) {
+    String t = ps[i].trim();
+    if (t.length() == 0) continue;
+    String bad = inclBad(t);
+    if (bad != null) return bad;
+  }
+  return null;
+}""")
+M(gcf, r"""
 public static String checkStat(String key, String value) {
   String e = entryOf(key);
   if (e == null) return null;
@@ -1801,14 +1899,17 @@ public static String checkNames(String key, String value) {
 
 # ================================================================= GearQual (engine review 4): per-stack Quality is saved as an INTEGER
 # index (ItemStack.CODEC key Quality, load-order indices). The resolved Skyy_Gear_* indices are kept in quality.properties; when
-# they move between starts: one WARN and every gear item is re-stamped at its owner's join (the config epoch in every sig moves).
-# A stack whose stored index no longer resolves to a quality asset is rewritten (GearView.apply). Nothing else trusts a raw index:
-# the sig carries the quality's asset id.
+# they move between starts: one WARN. Follow-up review 7: no config-epoch bump - GearView.apply already rewrites every stack whose
+# effective quality differs from its stored index (effQ != curQ skips the "unchanged" early return, VERIFIED in apply below), and
+# the join scan runs apply on every stack. A stack whose stored index no longer resolves to a quality asset is rewritten the same
+# way. Nothing else trusts a raw index: the sig carries the quality's asset id. An unreadable quality.properties is never
+# overwritten (one WARN; the admin deletes it and the next start writes a new one).
 gql.addInterface(pool.get("java.lang.Runnable"))
 F(gql, "public static volatile int[] OLD = null;")                  # indices of the last start (null = no file yet)
 F(gql, "public static volatile java.nio.file.Path FILE;")
 F(gql, "public static volatile boolean CHECKED = false;")
 F(gql, "public static volatile boolean MOVED = false;")
+F(gql, "public static volatile boolean UNREAD = false;")            # the file exists but could not be read: never overwrite it
 F(gql, "public String text;")
 C(gql, "public GearQual(String text) { this.text = text; }")
 M(gql, r"""
@@ -1831,12 +1932,33 @@ public static String text(int[] q) {
   for (int i = 0; q != null && i < q.length && i < @PKG@.GearDefs.NR; i++) sb.append(@PKG@.GearDefs.R_QID[i]).append('=').append(q[i]).append('\n');
   return sb.toString();
 }""")
+# a known key whose value is not a whole number = the file is damaged (an empty file or one without our keys is not)
+M(gql, r"""
+public static boolean damaged(java.util.Properties p) {
+  for (int i = 0; i < @PKG@.GearDefs.NR; i++) {
+    String v = p.getProperty(@PKG@.GearDefs.R_QID[i]);
+    if (v == null) continue;
+    try { Integer.parseInt(v.trim()); } catch (Throwable t) { return true; }
+  }
+  return false;
+}""")
 M(gql, r"""
 public static void load(java.nio.file.Path f) {
   FILE = f;
+  UNREAD = false;
+  String why = null;
   try {
-    if (f != null && java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) OLD = parse(@PKG@.GearCfg.read(f));
-  } catch (Throwable t) { OLD = null; @PKG@.Gear.warn("could not read quality.properties: " + t); }
+    if (f != null && java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
+      java.util.Properties p = @PKG@.GearCfg.read(f);
+      OLD = parse(p);
+      if (damaged(p)) why = "a value is not a whole number";
+    }
+  } catch (Throwable t) { why = String.valueOf(t); }
+  if (why != null) {
+    OLD = null;
+    UNREAD = true;
+    @PKG@.Gear.warnOnce("qualread", "quality.properties could not be read (" + why + ") - it is left as it is and moved quality indices are not detected this start; delete it and the next start writes a new one");
+  }
 }""")
 # true = a stored index differs from the index resolved now (only known entries count)
 M(gql, r"""
@@ -1855,10 +1977,11 @@ public static boolean wasOurs(int idx) {
 }""")
 M(gql, r"""
 public void run() {
+  if (UNREAD) return;
   try { if (FILE != null) @PKG@.GearCfg.writeAtomic(FILE, this.text, true); }
   catch (Throwable t) { @PKG@.Gear.warnOnce("qualwrite", "could not write quality.properties: " + t); }
 }""")
-# once per start, after the first full resolution: compare, WARN + force the re-stamp, persist (off the world thread)
+# once per start, after the first full resolution: compare, WARN, persist (off the world thread; never over an unreadable file)
 M(gql, r"""
 public static void check(int[] now) {
   if (CHECKED || now == null) return;
@@ -1867,12 +1990,11 @@ public static void check(int[] now) {
   boolean moved = differs(old, now);
   if (moved) {
     MOVED = true;
-    @PKG@.Gear.warnOnce("qualmove", "the Skyy_Gear_* quality indices moved since the last start (" + text(old).replace('\n', ' ') + "-> now " + text(now).replace('\n', ' ') + ") - every gear item is re-stamped when its owner joins");
-    @PKG@.GearCfg.EPOCH = @PKG@.GearCfg.EPOCH + 1000L;
+    @PKG@.Gear.warnOnce("qualmove", "the Skyy_Gear_* quality indices moved since the last start (" + text(old).replace('\n', ' ') + "-> now " + text(now).replace('\n', ' ') + ") - every gear item gets today's quality when its owner's inventory is scanned (join)");
   }
   boolean same = old != null && !moved;
   if (same) for (int i = 0; i < now.length && i < old.length; i++) if (old[i] != now[i]) same = false;
-  if (same || FILE == null) return;
+  if (same || FILE == null || UNREAD) return;
   try { @HSV@.SCHEDULED_EXECUTOR.schedule(new @PKG@.GearQual(text(now)), 100L, java.util.concurrent.TimeUnit.MILLISECONDS); }
   catch (Throwable t) { @PKG@.Gear.warnOnce("qualwrite", "could not schedule the quality.properties write: " + t); }
 }""")
@@ -1921,15 +2043,33 @@ public static boolean skyyItem(String id) {
   String low = id.toLowerCase();
   return low.startsWith("skyy") || low.indexOf("_skyy") >= 0;
 }""")
-# exploit review 3: only the token right after the family is an ammo word (Weapon_Arrow_Iron, Weapon_Bomb_Fire); a later token is
-# not (Weapon_Shortbow_Bomb is the Archer's shortbow). Build-checked against Assets.zip: the same 14 ammo ids as before.
+# follow-up review 2: the item's MaxStack as the engine resolved it (Item.processConfig, VERIFIED bytecode: its own / inherited
+# MaxStack, else 1 for an item with a Weapon / Armor / Tool section, else 100); -1 = no such item asset (treated as a single item)
 M(gdt, r"""
-public static boolean ammo(String id) {
+public static int maxStack(String id) {
+  try { @ITM@ it = @PKG@.Gear.item(id); return it == null ? -1 : it.getMaxStack(); } catch (Throwable t) { return -1; }
+}""")
+# exploit review 3: only the token right after the family is an ammo word (Weapon_Arrow_Iron, Weapon_Bomb_Fire); a later token is
+# not (Weapon_Shortbow_Bomb is the Archer's shortbow). Follow-up review 2: that narrow rule only for single items (MaxStack <= 1);
+# an id that stacks keeps the old any-token test (Weapon_Throwing_Arrow ... stays ammo). Build-checked against Assets.zip: the same
+# 14 ammo ids, Weapon_Shortbow_Bomb (MaxStack 1) is gear.
+M(gdt, r"""
+public static boolean ammoMs(String id, int ms) {
   if (id == null) return false;
   String[] parts = id.split("_");
   if (parts.length < 2) return false;
-  String p = parts[1].toLowerCase();
-  for (int j = 0; j < @PKG@.GearDefs.AMMO.length; j++) if (p.equals(@PKG@.GearDefs.AMMO[j])) return true;
+  int last = ms <= 1 ? 1 : parts.length - 1;
+  for (int i = 1; i <= last; i++) {
+    String p = parts[i].toLowerCase();
+    for (int j = 0; j < @PKG@.GearDefs.AMMO.length; j++) if (p.equals(@PKG@.GearDefs.AMMO[j])) return true;
+  }
+  return false;
+}""")
+M(gdt, "public static boolean ammo(String id) { return ammoMs(id, maxStack(id)); }")
+M(gdt, r"""
+public static boolean family(String id) {
+  if (id == null) return false;
+  for (int i = 0; i < @PKG@.GearDefs.FAMILIES.length; i++) if (id.startsWith(@PKG@.GearDefs.FAMILIES[i])) return true;
   return false;
 }""")
 # design review 1: bags (Magic Bags, bag upgrade items, the Accessory Bag) are never gear, not even through gear.include
@@ -1946,18 +2086,38 @@ public static boolean included(String id) {
 }""")
 # spec 1.3: gear = every Weapon_* (not ammo, not an excluded prefix) and every Armor_*; never Skyy_* and never Tool_*.
 # design review 1: an id matching a gear.include prefix is gear too (Skyy_ ids and Tool_ families of later stages opt in there;
-# include wins over gear.exclude and the ammo rule, never over the bag list)
+# include wins over gear.exclude, never over the bag list). Follow-up review 1: include never beats the ammo rule either, and an
+# included id that stacks (MaxStack > 1) is gear only in a gear family (Weapon_ / Armor_ / Tool_) and never above the split ceiling
+# (a Skyy_ food / menu item must never be stamped, let alone split). ms = the item's MaxStack (maxStack; the harness passes its own).
 M(gdt, r"""
-public static boolean isGear(String id) {
+public static boolean isGearMs(String id, int ms) {
   if (id == null || id.length() == 0 || neverGear(id)) return false;
-  if (included(id)) return true;
+  if (included(id)) {
+    if (ammoMs(id, ms)) return false;
+    if (ms > 1 && (ms > @PKG@.GearDefs.STACK_CEIL || !family(id))) {
+      @PKG@.Gear.warnOnce("inclstack:" + id, "gear.include matches " + id + ", which stacks to " + ms + " - only Weapon_ / Armor_ / Tool_ ids stacking to at most " + @PKG@.GearDefs.STACK_CEIL + " can be included; it stays a plain item");
+      return false;
+    }
+    return true;
+  }
   if (skyyItem(id)) return false;
   if (id.startsWith("Armor_")) return true;
   if (!id.startsWith("Weapon_")) return false;
-  if (ammo(id)) return false;
+  if (ammoMs(id, ms)) return false;
   String[] ex = @PKG@.GearCfg.excl();
   for (int i = 0; i < ex.length; i++) if (id.startsWith(ex[i])) return false;
   return true;
+}""")
+# the asset lookup only where the answer depends on it (included ids and Weapon_*)
+M(gdt, r"""
+public static boolean isGear(String id) {
+  if (id == null || id.length() == 0 || neverGear(id)) return false;
+  if (!included(id)) {
+    if (skyyItem(id)) return false;
+    if (id.startsWith("Armor_")) return true;
+    if (!id.startsWith("Weapon_")) return false;
+  }
+  return isGearMs(id, maxStack(id));
 }""")
 M(gdt, "public static boolean isTool(String id) { return id != null && id.startsWith(\"Tool_\") && !skyyItem(id); }")
 M(gdt, r"""
@@ -1972,7 +2132,9 @@ public static String toolKind(String id) {
   for (int i = 0; i < @PKG@.GearDefs.TF_PRE.length; i++) if (id.startsWith(@PKG@.GearDefs.TF_PRE[i])) return @PKG@.GearDefs.TF_KIND[i];
   return "tool";
 }""")
-# design review 1: the kind.prefix table (longest matching prefix wins), else a tool by family, else combat
+# design review 1: the kind.prefix table (longest matching prefix wins), else a tool by family, else combat. Follow-up review 1
+# (design finding 11): an included id outside the gear families (Skyy_Talisman_ ...) without a kind.prefix row is Equipment, never a
+# combat weapon that the gate could block hits with.
 M(gdt, r"""
 public static String kindFor(String id) {
   if (id == null) return "combat";
@@ -1986,6 +2148,7 @@ public static String kindFor(String id) {
   }
   if (best != null) return best;
   if (isTool(id)) return toolKind(id);
+  if (!family(id)) return "equipment";
   return "combat";
 }""")
 # is the engine item an armor piece (an included id without the Armor_ prefix)
@@ -3045,6 +3208,14 @@ public static boolean active(java.util.UUID u, String id, @BD@ d) {
   Object[] c = @PKG@.GearGate.check(u, id, d, @PKG@.GearLevel.level(id, d));
   return ((Boolean) c[0]).booleanValue();
 }""")
+# follow-up review 9: every stat total is summed in long and saturated at +-1,000,000,000 (a hand-made document or a gear:extra text
+# can never wrap an int around)
+M(gst, r"""
+public static int sat(long v) {
+  if (v > 1000000000L) return 1000000000;
+  if (v < -1000000000L) return -1000000000;
+  return (int) v;
+}""")
 M(gst, r"""
 public static void addMods(int[] t, @BD@ d, boolean armor) {
   @BA@ ms = @PKG@.GearData.mods(d);
@@ -3054,16 +3225,18 @@ public static void addMods(int[] t, @BD@ d, boolean armor) {
     int si = @PKG@.GearDefs.sIndex(@PKG@.GearData.str(m.asDocument(), "s", ""));
     if (si < 0) continue;
     if (armor && @PKG@.GearDefs.S_SLOT[si].indexOf('a') < 0) continue;
-    t[si] = t[si] + @PKG@.GearData.num(m.asDocument(), "v", 0);
+    t[si] = sat((long) t[si] + (long) @PKG@.GearData.num(m.asDocument(), "v", 0));
   }
 }""")
 # design review 2: gear:extra:<uuid> = "str:40,cc:10,..." another mod publishes (stat keys of section 4.2, whole numbers, may be
-# negative; unknown keys and bad parts are skipped). Parsed once per distinct text.
+# negative; unknown keys and bad parts are skipped). Parsed once per distinct text. Follow-up review 9: each part and each stat's sum
+# stays within +-1,000,000 (long math, no wrap-around however many parts the text has).
 F(gst, "public static final java.util.concurrent.ConcurrentHashMap XCACHE = new java.util.concurrent.ConcurrentHashMap();")
 M(gst, r"""
 public static int[] parseExtra(String s) {
   int[] t = new int[@PKG@.GearDefs.NS];
   if (s == null || s.length() == 0) return t;
+  long[] acc = new long[t.length];
   String[] ps = s.split(",");
   for (int i = 0; i < ps.length; i++) {
     String p = ps[i].trim();
@@ -3076,9 +3249,12 @@ public static int[] parseExtra(String s) {
       if (Double.isNaN(v) || Double.isInfinite(v)) continue;
       if (v > 1000000.0) v = 1000000.0;
       if (v < -1000000.0) v = -1000000.0;
-      t[si] = t[si] + (int) Math.floor(v);
+      acc[si] = acc[si] + (long) Math.floor(v);
+      if (acc[si] > 1000000L) acc[si] = 1000000L;
+      if (acc[si] < -1000000L) acc[si] = -1000000L;
     } catch (Throwable x) { }
   }
+  for (int i = 0; i < t.length; i++) t[i] = (int) acc[i];
   return t;
 }""")
 M(gst, r"""
@@ -3120,7 +3296,7 @@ public static int[] totals(java.util.UUID u, @IS@ weapon, @IC@ armor, boolean[] 
   }
   if (withExtra) {
     int[] x = extra(u);
-    if (x != null) for (int i = 0; i < t.length && i < x.length; i++) t[i] = t[i] + x[i];
+    if (x != null) for (int i = 0; i < t.length && i < x.length; i++) t[i] = sat((long) t[i] + (long) x[i]);
   }
   if (ok != null && ok.length > 0) ok[0] = good;
   return t;
@@ -3225,11 +3401,17 @@ public static boolean held(java.util.UUID u, String id) {
   @PKG@.Gear.info("a pending craft of " + id + " expired unrolled - it is stamped Normal");
   return false;
 }""")
-# ---- exploit review 2: stackable gear (17 spears MaxStack 5/30, 5 spellbooks 5/25) is rolled and stamped per ITEM. A stack of more
-# than one gear item is split into single items, each with its own document, into EMPTY slots of give[] in order (the player path
-# passes storage, hotbar, backpack = the /gear give order; a chest passes itself). Never merged into another stack, never dropped:
-# what does not fit stays in the original slot as one stack (split again at the next scan once there is room). The item id's total
-# over all[] is counted before and after (engine rule); a difference is a WARN + gear.log line.
+# ---- exploit review 2: stackable gear (17 spears MaxStack 5/30, 5 spellbooks 5/25) is rolled per ITEM. Follow-up review 3: a stack
+# is split only when an action needs its items apart - crafted gear and loot chests (each item rolls its own document: split) and
+# Identify / Reforge (one item is taken off the stack: takeOne). The passive stamp scan never splits: every single it would make
+# carries the same document anyway (a copy, the same migration, the same legacy Normal), so the stack stays one stack.
+# split: single items, each with its own document, into EMPTY slots of give[] in order (the player path passes storage, backpack -
+# never the hotbar; a chest passes itself), only while more than floor empty slots are left in give[] (players: GearDefs.FREE_KEEP
+# = 5, so loot and craft output always find room; a chest: 0). Never merged into another stack, never dropped: what does not fit
+# stays in the original slot as one stack. Follow-up review 2: ids with MaxStack > GearDefs.STACK_CEIL are never split (one WARN per
+# id: the admin adds the prefix to gear.exclude). The item id's total over all[] is counted before and after (engine rule); a
+# difference is a WARN + gear.log line. Follow-up review 8: the source is written first and restored when the destination write
+# fails or throws.
 # mode: 0 = stamp (a copy of the stack's document, its SkyyRolls migration, or a legacy Normal document), 1 = craft roll (craftDoc),
 # 2 = chest unidentified (unidDoc chest), 3 = mob unidentified (unidDoc mob). Every split single gets a nonce ("k") so identical
 # documents never stack again. Returns the number of singles moved; got collects rolled rarity ids (mode 1).
@@ -3259,56 +3441,134 @@ public static @BD@ splitDoc(String id, @BD@ md, int mode, java.util.UUID u) {
   if (st == 2) return @PKG@.GearData.migrate(id, @PKG@.GearData.rollsDoc(md));
   return @PKG@.GearData.legacy(id);
 }""")
+# empty slots over the distinct containers of give[], the slot (c, slot) not counted
 M(gsp, r"""
-public static int split(@IC@ c, int slot, @IC@[] give, @IC@[] all, java.util.UUID u, int mode, int maxMove, StringBuilder got) {
+public static int empties(@IC@[] give, @IC@ c, int slot) {
+  int n = 0;
+  for (int k = 0; give != null && k < give.length; k++) {
+    @IC@ g = give[k];
+    if (g == null) continue;
+    boolean dup = false;
+    for (int j = 0; j < k; j++) if (give[j] == g) dup = true;
+    if (dup) continue;
+    for (int i = 0; i < g.getCapacity(); i++) {
+      if (g == c && i == slot) continue;
+      @IS@ e = g.getItemStack((short) i);
+      if (e == null || e.isEmpty()) n++;
+    }
+  }
+  return n;
+}""")
+# the first empty slot of give[] in order (not (c, slot)): Object[] { container, Integer slot } or null
+M(gsp, r"""
+public static Object[] firstEmpty(@IC@[] give, @IC@ c, int slot) {
+  for (int k = 0; give != null && k < give.length; k++) {
+    @IC@ g = give[k];
+    if (g == null) continue;
+    for (int i = 0; i < g.getCapacity(); i++) {
+      if (g == c && i == slot) continue;
+      @IS@ e = g.getItemStack((short) i);
+      if (e == null || e.isEmpty()) return new Object[] { g, Integer.valueOf(i) };
+    }
+  }
+  return null;
+}""")
+# write one destination slot; false = refused or threw (follow-up review 8: the caller then restores the source)
+M(gsp, r"""
+public static boolean putDst(@IC@ dst, int ds, @IS@ s) {
+  try {
+    Object t = dst.setItemStackForSlot((short) ds, s);
+    return !(t instanceof @TXN@ && !((@TXN@) t).succeeded());
+  } catch (Throwable x) {
+    @PKG@.Gear.warnOnce("splitdst", "a stack split could not write its destination slot (the source was restored): " + x);
+    return false;
+  }
+}""")
+M(gsp, r"""
+public static void countCheck(@IC@[] all, String id, int before, java.util.UUID u, String what) {
+  int after = countId(all, id);
+  if (after == before) return;
+  @PKG@.Gear.warn("SPLIT COUNT MISMATCH " + id + ": " + before + " before, " + after + " after (" + what + ")");
+  @PKG@.GearLog.line("SPLIT-COUNT " + u + " " + id + " before " + before + " after " + after + " " + what);
+}""")
+M(gsp, r"""
+public static int split(@IC@ c, int slot, @IC@[] give, @IC@[] all, java.util.UUID u, int mode, int maxMove, int floor, StringBuilder got) {
   if (c == null || slot < 0 || slot >= c.getCapacity()) return 0;
   @IS@ s0 = c.getItemStack((short) slot);
   if (s0 == null || s0.isEmpty() || s0.getQuantity() <= 1 || !@PKG@.GearData.isGear(s0.getItemId())) return 0;
   String id = s0.getItemId();
   int st0 = @PKG@.GearData.state(s0.getMetadata());
   if (st0 == 3 || st0 == 4) return 0;
+  int ms = @PKG@.GearData.maxStack(id);
+  if (ms > @PKG@.GearDefs.STACK_CEIL) {
+    @PKG@.Gear.warnOnce("splitcap:" + id, id + " stacks to " + ms + " - SkyyGear never splits stacks above " + @PKG@.GearDefs.STACK_CEIL + " (the whole stack keeps one document); if it is not gear, add its prefix to gear.exclude in Server Setup");
+    return 0;
+  }
+  int free = empties(give, c, slot);
   int before = countId(all, id);
   int moved = 0;
-  int gi = 0;
-  int gs = 0;
-  while (moved < maxMove) {
+  while (moved < maxMove && free > floor) {
     @IS@ cur = c.getItemStack((short) slot);
     if (cur == null || cur.isEmpty() || cur.getQuantity() <= 1 || !id.equals(cur.getItemId())) break;
-    @IC@ dst = null;
-    int ds = -1;
-    while (gi < give.length && dst == null) {
-      @IC@ g = give[gi];
-      if (g != null) {
-        while (gs < g.getCapacity()) {
-          @IS@ e = g.getItemStack((short) gs);
-          if ((e == null || e.isEmpty()) && !(g == c && gs == slot)) { dst = g; ds = gs; break; }
-          gs++;
-        }
-      }
-      if (dst == null) { gi++; gs = 0; }
-    }
-    if (dst == null) break;
+    Object[] fe = firstEmpty(give, c, slot);
+    if (fe == null) break;
+    @IC@ dst = (@IC@) fe[0];
+    int ds = ((Integer) fe[1]).intValue();
     @BD@ d = @PKG@.GearRoll.nonce(splitDoc(id, cur.getMetadata(), mode, u));
     @IS@ one = @PKG@.GearData.put(cur.withQuantity(1), d, u);
     Object t1 = c.setItemStackForSlot((short) slot, cur.withQuantity(cur.getQuantity() - 1));
     if (t1 instanceof @TXN@ && !((@TXN@) t1).succeeded()) break;
-    Object t2 = dst.setItemStackForSlot((short) ds, one);
-    if (t2 instanceof @TXN@ && !((@TXN@) t2).succeeded()) { c.setItemStackForSlot((short) slot, cur); break; }
+    if (!putDst(dst, ds, one)) {
+      try { c.setItemStackForSlot((short) slot, cur); } catch (Throwable r) { @PKG@.Gear.warn("SPLIT RESTORE FAILED " + id + ": " + r); }
+      break;
+    }
     moved++;
-    gs++;
+    free--;
     if (got != null) got.append(' ').append(@PKG@.GearDefs.R_ID[@PKG@.GearData.rarity(d)]);
   }
   int after = countId(all, id);
-  if (after != before) {
-    @PKG@.Gear.warn("SPLIT COUNT MISMATCH " + id + ": " + before + " before, " + after + " after (moved " + moved + ")");
-    @PKG@.GearLog.line("SPLIT-COUNT " + u + " " + id + " before " + before + " after " + after + " moved " + moved);
-  } else if (moved > 0) @PKG@.GearLog.line("SPLIT " + u + " " + id + " x" + moved + " mode " + mode);
+  if (after != before) countCheck(all, id, before, u, "split moved " + moved);
+  else if (moved > 0) @PKG@.GearLog.line("SPLIT " + u + " " + id + " x" + moved + " mode " + mode);
   return moved;
+}""")
+# follow-up review 3: Identify / Reforge need ONE item: the rest of the stack (quantity - 1, the same metadata) moves as one stack to
+# the first empty slot of give[] (storage, backpack - never the hotbar), only when more than FREE_KEEP empty slots are there; the one
+# item stays in its own slot for the action (write safety 1.7: same slot). Object[] { container, Integer slot } of the rest, or null
+# (nothing changed). Source first, restored when the destination write fails or throws; counted before and after.
+M(gsp, r"""
+public static Object[] takeOne(@IC@ c, int slot, @IC@[] give, @IC@[] all, java.util.UUID u) {
+  if (c == null || slot < 0 || slot >= c.getCapacity()) return null;
+  @IS@ cur = c.getItemStack((short) slot);
+  if (cur == null || cur.isEmpty() || cur.getQuantity() <= 1) return null;
+  if (empties(give, c, slot) <= @PKG@.GearDefs.FREE_KEEP) return null;
+  Object[] fe = firstEmpty(give, c, slot);
+  if (fe == null) return null;
+  @IC@ dst = (@IC@) fe[0];
+  int ds = ((Integer) fe[1]).intValue();
+  String id = cur.getItemId();
+  int before = countId(all, id);
+  Object t1 = c.setItemStackForSlot((short) slot, cur.withQuantity(1));
+  if (t1 instanceof @TXN@ && !((@TXN@) t1).succeeded()) return null;
+  boolean ok = putDst(dst, ds, cur.withQuantity(cur.getQuantity() - 1));
+  if (!ok) { try { c.setItemStackForSlot((short) slot, cur); } catch (Throwable r) { @PKG@.Gear.warn("SPLIT RESTORE FAILED " + id + ": " + r); } }
+  int after = countId(all, id);
+  if (after != before) countCheck(all, id, before, u, "take one");
+  else if (ok) @PKG@.GearLog.line("SPLIT-ONE " + u + " " + id + " rest x" + (cur.getQuantity() - 1));
+  if (!ok) return null;
+  return fe;
+}""")
+# why a stack cannot give up one item for an action (null = it can, or it is one item): what = "a reforge" / "identify"
+M(gsp, r"""
+public static String stackWhy(@IS@ it, @IC@[] give, String what) {
+  if (it == null || it.isEmpty() || it.getQuantity() <= 1) return null;
+  int need = @PKG@.GearDefs.FREE_KEEP + 1 - empties(give, null, -1);
+  if (need <= 0) return null;
+  return "Free " + need + (need == 1 ? " slot" : " slots") + " to split this stack - " + what + " works on one item at a time.";
 }""")
 M(gsp, r"""
 public static @IC@[] giveOf(@INV@ inv) {
   if (inv == null) return new @IC@[0];
-  return new @IC@[] { inv.getStorage(), inv.getHotbar(), inv.getBackpack() };
+  return new @IC@[] { inv.getStorage(), inv.getBackpack() };
 }""")
 M(gsp, r"""
 public static @IC@[] allOf(@INV@ inv) {
@@ -3371,7 +3631,9 @@ public static boolean paused(java.util.UUID u, int wrote) {
   return false;
 }""")
 # the scan (world thread): the 6 sections in SkyyRolls' order; never while profile:busy; pending crafts hold back only undocumented
-# stacks of their own item id (review E3)
+# stacks of their own item id (review E3). Follow-up review 3: the scan never splits a stack (every single would carry the same
+# document: a copy, the same migration or the same legacy Normal) - a stack of gear is stamped as one stack; Identify / Reforge take
+# one item off it when a player acts on it. cnt[3] (split singles) stays 0, kept for the callers.
 M(gsp, r"""
 public static int[] scan(@PR@ pr, @INV@ inv) {
   int[] cnt = new int[4];
@@ -3379,8 +3641,6 @@ public static int[] scan(@PR@ pr, @INV@ inv) {
   java.util.UUID u = pr.getUuid();
   LAST.put(u, Long.valueOf(System.currentTimeMillis()));
   if (@PKG@.Gear.busy(u) || paused(u, 0)) return cnt;
-  @IC@[] give = giveOf(inv);
-  @IC@[] all = allOf(inv);
   for (int k = 0; k < SCAN.length; k++) {
     @IC@ c = section(inv, SCAN[k]);
     if (c == null) continue;
@@ -3389,12 +3649,6 @@ public static int[] scan(@PR@ pr, @INV@ inv) {
       @IS@ s = c.getItemStack((short) i);
       if (s == null || s.isEmpty()) continue;
       if (@PKG@.GearData.state(s.getMetadata()) == 0 && held(u, s.getItemId())) continue;
-      // exploit review 2: a stack of several gear items becomes single items first (each its own document)
-      if (s.getQuantity() > 1 && @PKG@.GearData.isGear(s.getItemId())) {
-        try { cnt[3] = cnt[3] + split(c, i, give, all, u, 0, 64, null); } catch (Throwable t) { @PKG@.Gear.warnOnce("scansplit", "stack split failed: " + t); }
-        s = c.getItemStack((short) i);
-        if (s == null || s.isEmpty()) continue;
-      }
       @IS@ ns = stampStack(s, u, cnt);
       if (ns == s) continue;
       try { c.setItemStackForSlot((short) i, ns); } catch (Throwable t) { @PKG@.Gear.warnOnce("scanset", "stamp write failed: " + t); }
@@ -3543,37 +3797,47 @@ public static String refuse(@IS@ it, @BD@ d) {
   if (st == 4) return "This item comes from a newer SkyyGear - it cannot be changed here.";
   if (d == null) return "The gear data on this item is unreadable.";
   if (!@PKG@.GearData.identified(d)) return "Identify it first" + @PKG@.GearCfg.idHow();
-  if (it.getQuantity() > 1) return "A reforge works on one item at a time - free " + (it.getQuantity() - 1) + (it.getQuantity() == 2 ? " slot" : " slots") + " and this stack of " + it.getQuantity() + " splits into single items.";
   return null;
 }""")
 # Object[] { Integer code (1 done, 0 refused, -1 failed + refunded / not refunded), String message, IS newStack, BD before,
-#            BD after, Long cost }. Coins TAKEN FIRST, REFUND on any failure; the new stack replaces the old one in the same slot.
+#            BD after, Long cost, Object[] { container, Integer slot } of the rest of a stack or null }. Coins TAKEN FIRST, REFUND on
+# any failure; the new stack replaces the old one in the same slot. Follow-up review 3: a stack of several items gives up ONE item
+# (GearStamp.takeOne: the rest moves to a free storage / backpack slot, 5 always stay free) after the coins are taken; no room =
+# refused before any coin moves ("Free N slots to split this stack"). give / all = GearStamp.giveOf / allOf of the inventory.
 M(gfg, r"""
-public static Object[] reforge(@IC@ c, int slot, String expId, String expFp, java.util.UUID u, String who, boolean free) {
+public static Object[] reforge(@IC@ c, int slot, String expId, String expFp, java.util.UUID u, String who, boolean free, @IC@[] give, @IC@[] all) {
   @IS@ it = null;
   try { if (c != null && slot >= 0 && slot < c.getCapacity()) it = c.getItemStack((short) slot); } catch (Throwable t0) { it = null; }
-  if (!same(it, expId, expFp)) return new Object[] { Integer.valueOf(0), "That item moved or changed - pick it again.", null, null, null, Long.valueOf(0L) };
+  if (!same(it, expId, expFp)) return new Object[] { Integer.valueOf(0), "That item moved or changed - pick it again.", null, null, null, Long.valueOf(0L), null };
   String id = it.getItemId();
   @BD@ d = @PKG@.GearData.effective(id, it.getMetadata());
   String why = refuse(it, d);
-  if (why != null) return new Object[] { Integer.valueOf(0), why, null, null, null, Long.valueOf(0L) };
+  if (why == null) why = @PKG@.GearStamp.stackWhy(it, give, "a reforge");
+  if (why != null) return new Object[] { Integer.valueOf(0), why, null, null, null, Long.valueOf(0L), null };
   int r = @PKG@.GearData.rarity(d);
   int lvl = @PKG@.GearLevel.level(id, d);
   long cost = free ? 0L : @PKG@.GearCfg.costReforge(r, lvl);
   if (cost > 0L) {
     int t = take(u, cost);
-    if (t < 0) return new Object[] { Integer.valueOf(0), "Coins are not available right now (SkyyCoins missing or your balance cannot be read). Nothing was taken.", null, null, null, Long.valueOf(0L) };
+    if (t < 0) return new Object[] { Integer.valueOf(0), "Coins are not available right now (SkyyCoins missing or your balance cannot be read). Nothing was taken.", null, null, null, Long.valueOf(0L), null };
     if (t == 0) {
       long have = purse(u);
-      return new Object[] { Integer.valueOf(0), "Not enough coins: this reforge costs " + @PKG@.Gear.fmt(cost) + (have >= 0L ? " and you have " + @PKG@.Gear.fmt(have) : "") + ".", null, null, null, Long.valueOf(0L) };
+      return new Object[] { Integer.valueOf(0), "Not enough coins: this reforge costs " + @PKG@.Gear.fmt(cost) + (have >= 0L ? " and you have " + @PKG@.Gear.fmt(have) : "") + ".", null, null, null, Long.valueOf(0L), null };
     }
     @PKG@.GearLog.line("TAKE " + who + " " + u + " " + cost + " reforge " + id);
   }
   @BD@ nd = null;
   @IS@ nu = null;
   Object tx = null;
+  Object[] rest = null;
   Throwable err = null;
   try {
+    if (it.getQuantity() > 1) {
+      rest = @PKG@.GearStamp.takeOne(c, slot, give, all, u);
+      if (rest == null) throw new IllegalStateException("the stack could not be split");
+      it = c.getItemStack((short) slot);
+      if (!same(it, expId, expFp) || it.getQuantity() != 1) throw new IllegalStateException("the stack changed while it was split");
+    }
     nd = @PKG@.GearRoll.reforge(id, d);
     nu = @PKG@.GearData.put(it, nd, u);
     tx = c.setItemStackForSlot((short) slot, nu);
@@ -3584,7 +3848,7 @@ public static Object[] reforge(@IC@ c, int slot, String expId, String expFp, jav
     String what = err != null ? String.valueOf(err) : "the inventory refused the change";
     @PKG@.Gear.warn("REFORGE FAILED for " + who + " (" + u + ") on " + id + ": " + what + (cost > 0L ? (back ? " - refunded " + cost + " coins" : " - REFUND FAILED, give back " + cost + " coins by hand") : ""));
     if (cost > 0L) @PKG@.GearLog.line((back ? "REFUND " : "REFUND-FAILED ") + who + " " + u + " " + cost + " reforge " + id + ": " + what);
-    return new Object[] { Integer.valueOf(-1), back ? "The reforge failed and nothing changed" + (cost > 0L ? " - your " + @PKG@.Gear.fmt(cost) + " coins were refunded." : ".") : "The reforge failed and the refund did not go through - an admin can find it in the server log.", null, d, null, Long.valueOf(cost) };
+    return new Object[] { Integer.valueOf(-1), back ? "The reforge failed and nothing changed" + (cost > 0L ? " - your " + @PKG@.Gear.fmt(cost) + " coins were refunded." : ".") : "The reforge failed and the refund did not go through - an admin can find it in the server log.", null, d, null, Long.valueOf(cost), rest };
   }
   if (!free) {
     long xp = @PKG@.GearCfg.xpReforge(r);
@@ -3596,7 +3860,7 @@ public static Object[] reforge(@IC@ c, int slot, String expId, String expFp, jav
     }
   }
   @PKG@.GearLog.line("REFORGE " + who + " " + u + " " + id + " " + @PKG@.GearDefs.R_ID[r] + " lv" + lvl + " [" + @PKG@.GearView.modSummary(d) + "] -> [" + @PKG@.GearView.modSummary(nd) + "] cost " + cost + " rfN " + @PKG@.GearData.num(nd, "rfN", 0) + (free ? " (admin, free)" : ""));
-  return new Object[] { Integer.valueOf(1), "Reforged!", nu, d, nd, Long.valueOf(cost) };
+  return new Object[] { Integer.valueOf(1), "Reforged!", nu, d, nd, Long.valueOf(cost), rest };
 }""")
 
 # ================================================================= GearFn: bridge functions (spec 7.1). Never throw, never touch ECS.
@@ -3759,8 +4023,9 @@ public static boolean fresh(@IS@ s, @BD@ outMeta) {
 }""")
 # the candidate rule over the containers in SCAN order (static so the bare-JVM harness runs it on plain containers): not in the
 # pre-craft identity snapshot, no document, fresh; at most cap rolls. got collects the rolled rarity ids. Returns the roll count.
-# exploit review 2: a candidate stack of q items is rolled per item (split into singles, give = storage, hotbar, backpack) and only
-# when q still fits the craft count (q <= cap - n): a crafted stack that merged into an undocumented stack is never rolled as one.
+# exploit review 2: a candidate stack of q items is rolled per item (split into singles, give = storage, backpack - follow-up review
+# 3: never the hotbar, 5 slots always stay free) and only when q still fits the craft count (q <= cap - n): a crafted stack that
+# merged into an undocumented stack is never rolled as one. What cannot be split for lack of room stays unrolled (CRAFT-MISS line).
 M(gcrt, r"""
 public static int rollIn(@IC@[] cs, @IC@[] give, java.util.UUID u, String id, java.util.IdentityHashMap snap, int cap, @BD@ outMeta, StringBuilder got) {
   int n = 0;
@@ -3774,7 +4039,7 @@ public static int rollIn(@IC@[] cs, @IC@[] give, java.util.UUID u, String id, ja
       int q = s.getQuantity();
       if (q > cap - n) continue;
       if (q > 1) {
-        n = n + @PKG@.GearStamp.split(c, i, give, cs, u, 1, q - 1, got);
+        n = n + @PKG@.GearStamp.split(c, i, give, cs, u, 1, q - 1, @PKG@.GearDefs.FREE_KEEP, got);
         s = c.getItemStack((short) i);
         if (s == null || s.isEmpty() || s.getQuantity() > 1 || n >= cap) continue;
       }
@@ -3881,7 +4146,8 @@ M(ghit, "public static synchronized Object[] take(Object d) { return (Object[]) 
 M(ghit, r"""
 public static int elemSum(int[] t) {
   if (t == null) return 0;
-  return t[I_FEARTH] + t[I_FTHUNDER] + t[I_FWATER] + t[I_FFIRE] + t[I_FAIR] + t[I_RTHUNDER] + t[I_RWATER] + 5 * t[I_RELEM];
+  long s = (long) t[I_FEARTH] + (long) t[I_FTHUNDER] + (long) t[I_FWATER] + (long) t[I_FFIRE] + (long) t[I_FAIR] + (long) t[I_RTHUNDER] + (long) t[I_RWATER] + 5L * (long) t[I_RELEM];
+  return @PKG@.GearStats.sat(s);
 }""")
 M(ghit, r"""
 public static Object[] info(java.util.UUID u, int[] t) {
@@ -3955,17 +4221,25 @@ public static int family(@DCS@ c) {
 # (1 + (crit.baseDamage + cd) %), overcrit (a second roll at chance - 100 %) x 2, at most once. The flat element lines are NOT in
 # here any more (design review 8: GearTrueSys adds elemSum after armor). r1 / r2 = the two random numbers in [0, 1) (the harness
 # passes fixed ones).
+# follow-up review 9: gear:extra may be negative - Damage % counts down to -100 at most, no factor goes below 0, and the result is
+# never below 0 (nor above 1e9, so the float stays finite)
 M(ghit, r"""
 public static double hitAmount(double amount, int[] t, boolean spell, double r1, double r2) {
-  double a = amount * (1.0 + (double) t[I_DMG] / 100.0);
+  int dm = t[I_DMG];
+  if (dm < -100) dm = -100;
+  double a = amount * (1.0 + (double) dm / 100.0);
   double per = spell ? @PKG@.GearCfg.MP_PER : @PKG@.GearCfg.STR_PER;
   int pt = spell ? t[I_MP] : t[I_STR];
-  a = a * (1.0 + (double) pt * per / 100.0);
+  double fp = 1.0 + (double) pt * per / 100.0;
+  a = a * (fp > 0.0 ? fp : 0.0);
   double ch = (@PKG@.GearCfg.CRIT_BASE + (double) t[I_CC]) / 100.0;
   if (ch > 0.0 && r1 < ch) {
-    a = a * 2.0 * (1.0 + (@PKG@.GearCfg.CRIT_BASE_DMG + (double) t[I_CD]) / 100.0);
+    double fc = 2.0 * (1.0 + (@PKG@.GearCfg.CRIT_BASE_DMG + (double) t[I_CD]) / 100.0);
+    a = a * (fc > 0.0 ? fc : 0.0);
     if (ch > 1.0 && r2 < ch - 1.0) a = a * 2.0;
   }
+  if (!(a > 0.0)) return 0.0;
+  if (a > 1.0E9) return 1.0E9;
   return a;
 }""")
 
@@ -4028,6 +4302,41 @@ public static @PKG@.GearShot newest(java.util.UUID u) {
     if (best == null || r.at > best.at) best = r;
   }
   return best;
+}""" % SHOT_WINDOW_MS)
+# follow-up review 4: which live record a plain-EntitySource projectile hit belongs to. One record (or several with the same weapon:
+# id + document + quality + durability) = the newest. Several with DIFFERENT weapons in the air: GearShot keeps no position, so the
+# WEAKER one counts (lower sum of the totals it would give with this armor; a weapon that gives no stats at all is the weakest) -
+# swapping to a stat stick mid-flight never pays. A blocked record still blocks: GearHitSys ORs every live bad flag (liveBad).
+M(gstk, r"""
+public static @PKG@.GearShot pick(java.util.UUID u, @IC@ arm) {
+  if (u == null || SHOTS.isEmpty()) return null;
+  long now = System.currentTimeMillis();
+  java.util.ArrayList live = new java.util.ArrayList();
+  @PKG@.GearShot best = null;
+  java.util.Iterator it = SHOTS.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GearShot r = (@PKG@.GearShot) it.next();
+    if (r == null || !u.equals(r.shooter) || now - r.at >= %dL) continue;
+    live.add(r);
+    if (best == null || r.at > best.at) best = r;
+  }
+  if (live.size() < 2) return best;
+  String f0 = @PKG@.GearForge.fp(best.main);
+  boolean same = true;
+  for (int i = 0; i < live.size(); i++) if (!f0.equals(@PKG@.GearForge.fp(((@PKG@.GearShot) live.get(i)).main))) same = false;
+  if (same) return best;
+  @PKG@.GearShot weak = null;
+  long ws = 0L;
+  for (int i = 0; i < live.size(); i++) {
+    @PKG@.GearShot r = (@PKG@.GearShot) live.get(i);
+    boolean[] ok = new boolean[1];
+    int[] t = @PKG@.GearStats.totals(u, r.main, arm, ok, true);
+    long s = 0L;
+    for (int k = 0; k < t.length; k++) s = s + (long) t[k];
+    if (!ok[0]) s = Long.MIN_VALUE;
+    if (weak == null || s < ws || (s == ws && r.at > weak.at)) { weak = r; ws = s; }
+  }
+  return weak;
 }""" % SHOT_WINDOW_MS)
 M(gstk, r"""
 public @QRY@ getQuery() {
@@ -4273,9 +4582,10 @@ public static @IS@ unid(@IS@ s, int col) {
   return @PKG@.GearData.put(s, @PKG@.GearRoll.unidDoc(id, col, col == 1 ? "drop" : "chest"), null);
 }""")
 # exploit review 2: a stack of several undocumented gear items in a fresh loot chest is split into empty slots of the SAME chest
-# first (one unidentified document and one rarity roll per item); what does not fit stays one stack with one document (split with
-# copies of that document once it sits in a player inventory, GearStamp.scan). Mob drops keep one document per dropped stack
-# (splitting an item entity would mean spawning new entities) and are split the same way in the inventory.
+# first (one unidentified document and one rarity roll per item); what does not fit stays one stack with one document (unidentified
+# documents carry no modifiers: Identify takes one item off the stack and rolls it, follow-up review 3). Mob drops keep one document
+# per dropped stack (splitting an item entity would mean spawning new entities). Follow-up review 8: a failed split is caught here
+# (the stack is then tagged whole) so one bad slot never stops the chest.
 M(gtag, r"""
 public static int tagContainer(@IC@ c, String where) {
   if (c == null) return 0;
@@ -4284,7 +4594,8 @@ public static int tagContainer(@IC@ c, String where) {
   for (int i = 0; i < c.getCapacity(); i++) {
     @IS@ s0 = c.getItemStack((short) i);
     if (@PKG@.GearCfg.PART_CHESTS && s0 != null && !s0.isEmpty() && s0.getQuantity() > 1 && @PKG@.GearData.isGear(s0.getItemId()) && !@PKG@.GearData.hasAnyDoc(s0.getMetadata())) {
-      n = n + @PKG@.GearStamp.split(c, i, self, self, null, 2, 64, null);
+      try { n = n + @PKG@.GearStamp.split(c, i, self, self, null, 2, 64, 0, null); }
+      catch (Throwable t) { @PKG@.Gear.warnOnce("chestsplit:" + s0.getItemId(), "loot chest split of " + s0.getItemId() + " failed (the stack is tagged whole): " + t); }
     }
     @IS@ s = c.getItemStack((short) i);
     @IS@ ns = unid(s, 2);
@@ -4309,8 +4620,10 @@ M(gtag, "public static synchronized String chestTake(Object ref) { return ref ==
 # REGEN: UUID -> long[]{lastMs, accumulatedMs}; LEECH: UUID -> double[]{heal owed, last payout ms}; MANA: UUID -> double[]{mana owed,
 # last Mana Steal ms}; WARNED: UUID -> HashSet of "slot:id:doc" of the armor pieces already announced inactive; MOVE: skyymove state.
 # LOCKED: UUID -> Object[] of the armor stacks (identity) when a non-zero lock was last written (GearLockSys only looks at those
-# players); BLOCKED: UUID -> int[]{seconds a lock raise waited for the engine}
-for _f in ("REGEN", "LEECH", "MANA", "WARNED", "MOVE", "LOCKED", "BLOCKED"):
+# players); BLOCKED: UUID -> int[]{seconds a lock raise waited for the engine}; PRIMED: UUID -> TRUE once GearLockSys looked for lock
+# modifiers saved with the player (follow-up review 5: the EntityStatValue codec saves Modifiers, so a lock can come back from disk
+# before LOCKED knows it; cleared at every PlayerReady = join / world switch)
+for _f in ("REGEN", "LEECH", "MANA", "WARNED", "MOVE", "LOCKED", "BLOCKED", "PRIMED"):
     F(gfx, "public static final java.util.concurrent.ConcurrentHashMap %s = new java.util.concurrent.ConcurrentHashMap();" % _f)
 F(gfx, "public static volatile String AKEY = null;")
 F(gfx, 'public static final String LOCK = "%s";' % LOCK_PREFIX)
@@ -4358,6 +4671,9 @@ public static void add(@ESM@ m, int idx, float amt, boolean health) {
 #  - GROWING a lock lowers max: only in the 1 s tick (raise = true) and only when the engine's own Armor modifier for that stat
 #    already equals the container's full sum (the piece's +sum is in), so the lock lands on the final max and the clamp can only
 #    remove value above the new max - what vanilla does when a piece with less Health goes on. Not synced yet: wait (next second).
+# Follow-up review 10: have / want are SIGNED sums (the lock modifier = -sum): a negative armor sum (a piece with -5 Health) is
+# cancelled too. Its cancel (+5) raises max, so it is applied at once like any shrink; taking it away again lowers max, so that
+# waits for the tick + the synced engine like any growth. plan() is the same rule for both signs: a smaller want is always safe.
 M(gfx, r"""
 public static float plan(float have, float want, boolean raise, float engine, float full) {
   if (want <= have) return want;
@@ -4380,10 +4696,21 @@ public static float engineArmor(@ESM@ m, int i) {
   } catch (Throwable t) { }
   return 0.0f;
 }""")
+# the signed armor sum a lock modifier cancels now (the modifier holds -sum; 0 = none)
 M(gfx, r"""
 public static float lockNow(@MODF@ cur) {
-  if (cur instanceof @SMO@) { float a = -((@SMO@) cur).getAmount(); return a > 0.0f ? a : 0.0f; }
+  if (cur instanceof @SMO@) return -((@SMO@) cur).getAmount();
   return 0.0f;
+}""")
+# follow-up review 5: does this stat map carry any skyygear_lock_ modifier (e.g. saved with the player)?
+M(gfx, r"""
+public static boolean hasLock(@ESM@ m) {
+  if (m == null) return false;
+  int n = m.size();
+  for (int i = 0; i < n; i++) {
+    try { if (m.get(i) != null && m.getModifier(i, LOCK + @PKG@.GearView.statName(i)) != null) return true; } catch (Throwable t) { }
+  }
+  return false;
 }""")
 M(gfx, r"""
 public static Object[] snapshot(@IC@ armor) {
@@ -4400,7 +4727,10 @@ public static boolean sameStacks(Object[] snap, @IC@ armor) {
   return true;
 }""")
 # spec 3.5 part 2: one StaticModifier(MAX, ADDITIVE, -sum) per stat under skyygear_lock_<stat id>, removed at 0; only written when it
-# changes; each amount through plan(). want = GearArmor.lockSums (Integer stat index -> Float); full = GearArmor.fullSums (raise only).
+# changes; each amount through plan() (signed: follow-up review 10). want = GearArmor.lockSums (Integer stat index -> Float); full =
+# GearArmor.fullSums (raise only). Follow-up review 6: a raise that waited 3 ticks in a row for the engine schedules the engine's own
+# Recalculate (StatModifiersManager.scheduleRecalculate, public, VERIFIED: it only sets the flag EntityStatsSystems$Recalculate
+# reads) and the next tick checks again; again every 10 s while it keeps waiting; the 30 s WARN stays.
 M(gfx, r"""
 public static void locks(java.util.UUID u, @ESM@ m, java.util.HashMap want, java.util.HashMap full, @IC@ armor, boolean raise) {
   if (m == null) return;
@@ -4419,9 +4749,9 @@ public static void locks(java.util.UUID u, @ESM@ m, java.util.HashMap want, java
     float fl = 0.0f;
     if (full != null) { Object fo = full.get(Integer.valueOf(i)); fl = fo instanceof Float ? ((Float) fo).floatValue() : 0.0f; }
     float next = plan(have, amt, raise && full != null, engineArmor(m, i), fl);
-    if (next < amt) waited = true;
-    if (next > 0.0f) any = true;
-    if (next <= 0.0f) { if (cur != null) m.removeModifier(i, key); continue; }
+    if (Math.abs(next - amt) > 0.0001f) waited = true;
+    if (Math.abs(next) <= 0.0001f) { if (cur != null) m.removeModifier(i, key); continue; }
+    any = true;
     @SMO@ nm = new @SMO@(@MTG@.MAX, @CAL@.ADDITIVE, -next);
     if (cur != null && cur.equals(nm)) continue;
     m.putModifier(i, key, nm);
@@ -4434,7 +4764,11 @@ public static void locks(java.util.UUID u, @ESM@ m, java.util.HashMap want, java
   int[] b = (int[]) BLOCKED.get(u);
   if (b == null) { b = new int[1]; BLOCKED.put(u, b); }
   b[0] = b[0] + 1;
-  if (b[0] == 30) @PKG@.Gear.warnOnce("lockwait:" + u, "an under-level armor lock waited 30 s for the engine's own armor stats (player " + u + ") - the piece keeps its Health until they match");
+  if (b[0] % 10 == 3) {
+    try { m.getStatModifiersManager().scheduleRecalculate(); }
+    catch (Throwable t) { @PKG@.Gear.warnOnce("lockrecalc", "could not ask the engine to recalculate armor stats: " + t); }
+  }
+  if (b[0] == 30) @PKG@.Gear.warnOnce("lockwait:" + u, "an under-level armor lock waited 30 s for the engine's own armor stats (player " + u + ", a Recalculate was requested) - the piece keeps its Health until they match");
 }""")
 # lower-only pass (GearFxInvSys, GearLockSys): the want of the container as it is now, never a raise
 M(gfx, r"""
@@ -4534,7 +4868,7 @@ public static void second(java.util.UUID u, @PR@ pr, @CB@ cb, @REF@ ref, @INV@ i
 M(gfx, r"""
 public static void forget(java.util.UUID u) {
   if (u == null) return;
-  REGEN.remove(u); LEECH.remove(u); MANA.remove(u); WARNED.remove(u); MOVE.remove(u); LOCKED.remove(u); BLOCKED.remove(u);
+  REGEN.remove(u); LEECH.remove(u); MANA.remove(u); WARNED.remove(u); MOVE.remove(u); LOCKED.remove(u); BLOCKED.remove(u); PRIMED.remove(u);
   try { @PKG@.GearMove.post(u, "@MOVESRC@", "flat", 0.0f, 0.0f, 0.0f); } catch (Throwable t) { }
 }""".replace("@MOVESRC@", MOVE_SOURCE))
 
@@ -4597,8 +4931,19 @@ dmg_system(ghsy, "GearHitSys", "getFilterDamageGroup", "ADR", "BEFORE", "ADR", r
         if (pr != null) {
           u = pr.getUuid();
           // exploit review 1: a projectile hit (Projectile family) through a plain EntitySource (shortbow / crossbow arrows via
-          // DamageEntityInteraction) takes weapon + spell flag from the shooter's newest live launch record; melee keeps the hand
-          @PKG@.GearShot nr = @PKG@.GearHit.family(d.getCause()) == 2 ? @PKG@.GearShotTrack.newest(u) : null;
+          // DamageEntityInteraction) takes weapon + spell flag from the shooter's live launch record (follow-up review 4:
+          // GearShotTrack.pick - the newest, or the weaker weapon when different ones are in the air); melee keeps the hand
+          boolean proj = @PKG@.GearHit.family(d.getCause()) == 2;
+          @PKG@.GearShot nr = null;
+          if (proj) {
+            @IC@ pa = null;
+            if (att != null && att.isValid()) {
+              @ARMC@ pac = (@ARMC@) buf.getComponent(att, @ARMC@.getComponentType());
+              pa = pac == null ? null : pac.getInventory();
+            }
+            nr = @PKG@.GearShotTrack.pick(u, pa);
+            if (nr == null) @PKG@.Gear.warnOnce("norecord", "a projectile hit (" + d.getCause().getId() + ") by " + pr.getUsername() + " found no launch record in the 10 s window - it got armor stats only; if this repeats, the shot tracker misses this projectile type (tell the SkyyGear builder)");
+          }
           if (nr != null) {
             main = nr.main;
             ut = nr.util;
@@ -4611,7 +4956,7 @@ dmg_system(ghsy, "GearHitSys", "getFilterDamageGroup", "ADR", "BEFORE", "ADR", r
             bad = @PKG@.GearHit.judge(u, main, false);
             if (bad == null) bad = @PKG@.GearHit.judge(u, ut, true);
             // a projectile with no launch record: never the item in hand at landing - armor stats only
-            if (@PKG@.GearHit.family(d.getCause()) == 2) { main = null; ut = null; }
+            if (proj) { main = null; ut = null; }
           }
           if (bad == null) {
             @PKG@.GearShot lb = @PKG@.GearShotTrack.liveBad(u);
@@ -4699,8 +5044,9 @@ dmg_system(gtsy, "GearTrueSys", "getFilterDamageGroup", "AFTERSYS", "AFTER", "AF
     if (info == null || !(info[1] instanceof Integer)) return;
     int td = ((Integer) info[1]).intValue();
     int el = info.length > 5 && info[5] instanceof Integer ? ((Integer) info[5]).intValue() : 0;
-    int add = (td > 0 ? td : 0) + (el > 0 ? el : 0);
-    if (add > 0) d.setAmount(d.getAmount() + (float) add);""")
+    long add = (long) (td > 0 ? td : 0) + (long) (el > 0 ? el : 0);
+    if (add > 1000000000L) add = 1000000000L;
+    if (add > 0L) d.setAmount(d.getAmount() + (float) add);""")
 # GearLeechSys (Inspect: after the damage landed): Life Steal owed, Mana Steal owed; the stat writes happen in GearTick (no stat write
 # inside the damage dispatch, the SkyyClasses PriestHealSys rule)
 dmg_system(glsy, "GearLeechSys", "getInspectDamageGroup", None, "AFTER", "null", r"""
@@ -4850,6 +5196,8 @@ event_system(gfxi, "GearFxInvSys", ICE, PLAYER_Q, r"""
 # GearLockSys (engine review 1): every tick, ordered BEFORE EntityStatsSystems$Recalculate, for the players that carry a lock: when
 # an armor stack changed since the lock was written, the lock shrinks to the container's new want before the engine can drop the
 # unequipped piece's +sum (lower-only; the 1 s tick grows locks). Four identity compares per locked player per tick otherwise.
+# Follow-up review 5: lock modifiers are saved with the player, so a player not in LOCKED is checked ONCE per join / world switch
+# (GearReady clears PRIMED) for a lock that came back from disk; one is found -> the lower-only pass runs and LOCKED knows it.
 F(glks, "public java.util.Set deps;")
 F(glks, "public static Class RECALC;")
 F(glks, "public @QRY@ query;")
@@ -4870,12 +5218,18 @@ M(glks, "public boolean isParallel(int a, int b) { return false; }")
 M(glks, r"""
 public void tick(float dt, int idx, @ACH@ chunk, @ST@ store, @CB@ cb) {
   try {
-    if (@PKG@.GearFx.LOCKED.isEmpty()) return;
     @PR@ pr = (@PR@) chunk.getComponent(idx, @PR@.getComponentType());
     if (pr == null) return;
     java.util.UUID u = pr.getUuid();
     Object snap = @PKG@.GearFx.LOCKED.get(u);
-    if (snap == null) return;
+    if (snap == null) {
+      if (@PKG@.GearFx.PRIMED.putIfAbsent(u, Boolean.TRUE) != null) return;
+      @ESM@ m0 = (@ESM@) chunk.getComponent(idx, @ESM@.getComponentType());
+      if (!@PKG@.GearFx.hasLock(m0)) return;
+      @ARMC@ ac0 = (@ARMC@) chunk.getComponent(idx, @ARMC@.getComponentType());
+      @PKG@.GearFx.lowerNow(u, m0, ac0 == null ? null : ac0.getInventory(), @PKG@.GearArmor.brokenFactor(store.getExternalData()));
+      return;
+    }
     @ARMC@ ac = (@ARMC@) chunk.getComponent(idx, @ARMC@.getComponentType());
     @IC@ armor = ac == null ? null : ac.getInventory();
     if (@PKG@.GearFx.sameStacks((Object[]) snap, armor)) return;
@@ -5069,6 +5423,8 @@ public void accept(Object ev) {
     if (st == null) return;
     @PR@ pr = (@PR@) st.getComponent(r, @PR@.getComponentType());
     if (pr == null) return;
+    // follow-up review 5: GearLockSys looks once more for lock modifiers saved with the player (join / world switch)
+    @PKG@.GearFx.PRIMED.remove(pr.getUuid());
     new @PKG@.GearRefreshTask(pr).later(2000L);
   } catch (Throwable t) { @PKG@.Gear.warn("ready handler failed: " + t); }
 }""")
@@ -5239,7 +5595,7 @@ public static void column(@UCB@ b, String parent, String cid, String head, Strin
   }
 }""")
 M(rpg, r"""
-public void anvil(@UCB@ b, @UEB@ ev, java.util.UUID u, @IS@ sel) {
+public void anvil(@UCB@ b, @UEB@ ev, java.util.UUID u, @IS@ sel, @INV@ inv) {
   b.appendInline("#SkyyGMain", "Group #SkyyGAnvil { Anchor: (Width: 562); LayoutMode: Top; }");
   b.appendInline("#SkyyGAnvil", "Label #SkyyGAnvilT { Anchor: (Height: 35); Padding: (Horizontal: 8); Text: \"\"; Style: (RenderBold: true, VerticalAlignment: Center, FontSize: 15, TextColor: #afc2c3); }");
   b.set("#SkyyGAnvilT.Text", "Anvil");
@@ -5279,7 +5635,7 @@ public void anvil(@UCB@ b, @UEB@ ev, java.util.UUID u, @IS@ sel) {
   if (d != null) g = @PKG@.GearView.gateLine(u, id, d, lvl);
   b.set("#SkyyGSelSub.Text", @PKG@.GearDefs.R_NAME[r].toUpperCase() + " " + @PKG@.GearView.slotWord(id) + "   -   " + (g == null || ((String) g[0]).length() == 0 ? "Level " + lvl : (String) g[0]));
   b.appendInline("#SkyyGSelTxt", "Label #SkyyGSelWhere { Anchor: (Height: 22); Text: \"\"; Style: (FontSize: 14, TextColor: #ffffff(0.6), VerticalAlignment: Center); }");
-  b.set("#SkyyGSelWhere.Text", "In your " + @PKG@.GearForge.where(this.selSec, this.selSlot) + " - it stays there while you reforge it.");
+  b.set("#SkyyGSelWhere.Text", "In your " + @PKG@.GearForge.where(this.selSec, this.selSlot) + (sel.getQuantity() > 1 ? " - stack of " + sel.getQuantity() + ": one item is reforged." : " - it stays there while you reforge it."));
   b.appendInline("#SkyyGAnvil", "Group { Anchor: (Height: 1); Background: #2b3542; }");
   b.appendInline("#SkyyGAnvil", "Group #SkyyGCols { Anchor: (Height: 330); LayoutMode: Left; Padding: (Top: 6); }");
   if (this.fresh && this.before != null && this.after != null) {
@@ -5292,6 +5648,7 @@ public void anvil(@UCB@ b, @UEB@ ev, java.util.UUID u, @IS@ sel) {
   long cost = @PKG@.GearCfg.costReforge(r, lvl);
   long have = @PKG@.GearForge.purse(u);
   String why = @PKG@.GearForge.refuse(sel, d);
+  if (why == null) why = @PKG@.GearStamp.stackWhy(sel, @PKG@.GearStamp.giveOf(inv), "a reforge");
   b.appendInline("#SkyyGAnvil", "Label #SkyyGCostTxt { Anchor: (Height: 30); Text: \"\"; Style: (FontSize: 17, RenderBold: true, TextColor: #E8A93B, VerticalAlignment: Center); }");
   b.set("#SkyyGCostTxt.Text", cost > 0L ? "Cost: " + @PKG@.Gear.fmt(cost) + " coins (" + @PKG@.GearDefs.R_NAME[r] + ", level " + lvl + ")" : "Cost: free");
   b.appendInline("#SkyyGAnvil", "Label #SkyyGPurse { Anchor: (Height: 26); Text: \"\"; Style: (FontSize: 15, TextColor: #96a9be, VerticalAlignment: Center); }");
@@ -5341,7 +5698,7 @@ public void list(@UCB@ b, @UEB@ ev, @INV@ inv) {
     boolean on = rw[0] == this.selSec && rw[1] == this.selSlot;
     String rid = "#SkyyGRow" + i;
     b.appendInline("#SkyyGList", "Button " + rid + " { Anchor: (Height: 44); LayoutMode: Left; Padding: (Full: 6); " + @PKG@.GearUi.rowStyle(on) + " ItemIcon { Anchor: (Width: 32, Height: 32); ItemId: \"" + @PKG@.Gear.safe(id) + "\"; } Label #SkyyGRowName" + i + " { Anchor: (Width: 262); Padding: (Horizontal: 10, Vertical: 5); Text: \"\"; Style: (FontSize: 15, RenderBold: true, TextColor: " + rarHex(r) + ", VerticalAlignment: Center); } Label #SkyyGRowSub" + i + " { Anchor: (Width: 140); Padding: (Horizontal: 10, Vertical: 5); Text: \"\"; Style: (FontSize: 14, TextColor: #ffffff(0.6), HorizontalAlignment: End, VerticalAlignment: Center); } }");
-    b.set("#SkyyGRowName" + i + ".Text", (d == null ? @PKG@.Gear.itemName(id) : @PKG@.GearView.nameText(id, d)) + (on ? "  (on the anvil)" : ""));
+    b.set("#SkyyGRowName" + i + ".Text", (d == null ? @PKG@.Gear.itemName(id) : @PKG@.GearView.nameText(id, d)) + (it.getQuantity() > 1 ? " x" + it.getQuantity() : "") + (on ? "  (on the anvil)" : ""));
     b.set("#SkyyGRowSub" + i + ".Text", (d == null ? "?" : @PKG@.GearDefs.R_NAME[r]) + " - Lv " + lvl);
     b.appendInline("#SkyyGList", "Group { Anchor: (Height: 2); Background: #ffffff(0.6); }");
     ev.addEventBinding(@BT@.Activating, rid, @EVD@.of("a", "sel:" + i));
@@ -5380,7 +5737,7 @@ public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
   b.appendInline("#SkyyGMain", "Label { Anchor: (Width: 14); Text: \"\"; }");
   b.appendInline("#SkyyGMain", @PKG@.GearUi.vsep());
   b.appendInline("#SkyyGMain", "Label { Anchor: (Width: 14); Text: \"\"; }");
-  anvil(b, ev, u, sel);
+  anvil(b, ev, u, sel, inv);
   boolean menu = @PKG@.Gear.bget("config:def:SkyyMenu") != null;
   b.appendInline("#SkyyGBody", "Group #SkyyGBar { Anchor: (Height: 58); LayoutMode: Left; Padding: (Top: 10); }");
   b.appendInline("#SkyyGBar", "Label #SkyyGInfo { Anchor: (Width: 700, Height: 44); Text: \"\"; Style: (FontSize: 16, RenderBold: true, TextColor: " + @PKG@.GearUi.infoColor(this.info) + ", VerticalAlignment: Center); }");
@@ -5404,7 +5761,7 @@ public void forge(@INV@ inv) {
   if (!ep.equals(this.epoch)) { clearSel(); this.epoch = ep; this.info = "-Your profile changed - pick the item again."; return; }
   @IC@ c = @PKG@.GearStamp.section(inv, this.selSec);
   String name = @PKG@.Gear.itemName(this.selId);
-  Object[] res = @PKG@.GearForge.reforge(c, this.selSlot, this.selId, this.selFp, u, this.playerRef.getUsername(), false);
+  Object[] res = @PKG@.GearForge.reforge(c, this.selSlot, this.selId, this.selFp, u, this.playerRef.getUsername(), false, @PKG@.GearStamp.giveOf(inv), @PKG@.GearStamp.allOf(inv));
   int code = ((Integer) res[0]).intValue();
   if (code == 1) {
     this.selFp = @PKG@.GearForge.fp((@IS@) res[2]);
@@ -5513,39 +5870,48 @@ public static String refuse(@IS@ it, @BD@ d) {
   if (st == 4) return "This item comes from a newer SkyyGear - it cannot be changed here.";
   if (d == null) return "The gear data on this item is unreadable.";
   if (@PKG@.GearData.identified(d)) return "It is already identified.";
-  if (it.getQuantity() > 1) return "Identify works on one item at a time - free " + (it.getQuantity() - 1) + (it.getQuantity() == 2 ? " slot" : " slots") + " and this stack of " + it.getQuantity() + " splits into single items.";
   return null;
 }""")
 # spec 5.7 flow + 1.7 write safety (the GearForge.reforge shape): same id + fingerprint in the same slot, coins TAKEN FIRST, the
 # modifiers roll for the item's rarity and level (GearRoll.identify: id true, idAt, idBy), the new stack goes into the SAME slot,
 # REFUND on any failure. Object[] { Integer code (1 done, 0 refused, -1 failed), String message, IS new stack, BD before, BD after,
-# Long cost }. No Smithing XP (none is designed).
+# Long cost, Object[] { container, Integer slot } of the rest of a stack or null }. No Smithing XP (none is designed).
+# Follow-up review 3: a stack gives up ONE item (GearStamp.takeOne, after the coins; the rest keeps its unidentified document in a
+# free storage / backpack slot, 5 always stay free); no room = refused before any coin moves ("Free N slots to split this stack").
 M(gidn, r"""
-public static Object[] identify(@IC@ c, int slot, String expId, String expFp, java.util.UUID u, String who, boolean free) {
+public static Object[] identify(@IC@ c, int slot, String expId, String expFp, java.util.UUID u, String who, boolean free, @IC@[] give, @IC@[] all) {
   @IS@ it = null;
   try { if (c != null && slot >= 0 && slot < c.getCapacity()) it = c.getItemStack((short) slot); } catch (Throwable t0) { it = null; }
-  if (!@PKG@.GearForge.same(it, expId, expFp)) return new Object[] { Integer.valueOf(0), "That item moved or changed - pick it again.", null, null, null, Long.valueOf(0L) };
+  if (!@PKG@.GearForge.same(it, expId, expFp)) return new Object[] { Integer.valueOf(0), "That item moved or changed - pick it again.", null, null, null, Long.valueOf(0L), null };
   String id = it.getItemId();
   @BD@ d = @PKG@.GearData.effective(id, it.getMetadata());
   String why = refuse(it, d);
-  if (why != null) return new Object[] { Integer.valueOf(0), why, null, null, null, Long.valueOf(0L) };
+  if (why == null) why = @PKG@.GearStamp.stackWhy(it, give, "identify");
+  if (why != null) return new Object[] { Integer.valueOf(0), why, null, null, null, Long.valueOf(0L), null };
   int r = @PKG@.GearData.rarity(d);
   int lvl = @PKG@.GearLevel.level(id, d);
   long cost = free ? 0L : @PKG@.GearCfg.costIdentify(r, lvl);
   if (cost > 0L) {
     int t = @PKG@.GearForge.take(u, cost);
-    if (t < 0) return new Object[] { Integer.valueOf(0), "Coins are not available right now (SkyyCoins missing or your balance cannot be read). Nothing was taken.", null, null, null, Long.valueOf(0L) };
+    if (t < 0) return new Object[] { Integer.valueOf(0), "Coins are not available right now (SkyyCoins missing or your balance cannot be read). Nothing was taken.", null, null, null, Long.valueOf(0L), null };
     if (t == 0) {
       long have = @PKG@.GearForge.purse(u);
-      return new Object[] { Integer.valueOf(0), "Not enough coins: identifying it costs " + @PKG@.Gear.fmt(cost) + (have >= 0L ? " and you have " + @PKG@.Gear.fmt(have) : "") + ".", null, null, null, Long.valueOf(0L) };
+      return new Object[] { Integer.valueOf(0), "Not enough coins: identifying it costs " + @PKG@.Gear.fmt(cost) + (have >= 0L ? " and you have " + @PKG@.Gear.fmt(have) : "") + ".", null, null, null, Long.valueOf(0L), null };
     }
     @PKG@.GearLog.line("TAKE " + who + " " + u + " " + cost + " identify " + id);
   }
   @BD@ nd = null;
   @IS@ nu = null;
   Object tx = null;
+  Object[] rest = null;
   Throwable err = null;
   try {
+    if (it.getQuantity() > 1) {
+      rest = @PKG@.GearStamp.takeOne(c, slot, give, all, u);
+      if (rest == null) throw new IllegalStateException("the stack could not be split");
+      it = c.getItemStack((short) slot);
+      if (!@PKG@.GearForge.same(it, expId, expFp) || it.getQuantity() != 1) throw new IllegalStateException("the stack changed while it was split");
+    }
     nd = @PKG@.GearRoll.identify(id, d, u);
     nu = @PKG@.GearData.put(it, nd, u);
     tx = c.setItemStackForSlot((short) slot, nu);
@@ -5556,15 +5922,17 @@ public static Object[] identify(@IC@ c, int slot, String expId, String expFp, ja
     String what = err != null ? String.valueOf(err) : "the inventory refused the change";
     @PKG@.Gear.warn("IDENTIFY FAILED for " + who + " (" + u + ") on " + id + ": " + what + (cost > 0L ? (back ? " - refunded " + cost + " coins" : " - REFUND FAILED, give back " + cost + " coins by hand") : ""));
     if (cost > 0L) @PKG@.GearLog.line((back ? "REFUND " : "REFUND-FAILED ") + who + " " + u + " " + cost + " identify " + id + ": " + what);
-    return new Object[] { Integer.valueOf(-1), back ? "Identifying failed and nothing changed" + (cost > 0L ? " - your " + @PKG@.Gear.fmt(cost) + " coins were refunded." : ".") : "Identifying failed and the refund did not go through - an admin can find it in the server log.", null, d, null, Long.valueOf(cost) };
+    return new Object[] { Integer.valueOf(-1), back ? "Identifying failed and nothing changed" + (cost > 0L ? " - your " + @PKG@.Gear.fmt(cost) + " coins were refunded." : ".") : "Identifying failed and the refund did not go through - an admin can find it in the server log.", null, d, null, Long.valueOf(cost), rest };
   }
   @PKG@.GearLog.line("IDENTIFY " + who + " " + u + " " + id + " " + @PKG@.GearDefs.R_ID[r] + " lv" + lvl + " [" + @PKG@.GearView.modSummary(nd) + "] cost " + cost + (free ? " (free)" : ""));
-  return new Object[] { Integer.valueOf(1), "Identified!", nu, d, nd, Long.valueOf(cost) };
+  return new Object[] { Integer.valueOf(1), "Identified!", nu, d, nd, Long.valueOf(cost), rest };
 }""")
-# spec 5.7 "Identify all" (exploit review 2): one by one, each paid on its own; a REFUSED row (a stack of several items, not enough
+# spec 5.7 "Identify all" (exploit review 2): one by one, each paid on its own; a REFUSED row (no room to split a stack, not enough
 # coins for this one, ...) is skipped and the rest go on; only a failed write (code -1, refunded) stops. bySec[s] = the container of
-# inventory section s (GearStamp.section numbering). recent collects "Name: modifiers" lines. Object[] { Integer done, Long spent,
-# Integer skipped, String first skip reason, String stop reason }.
+# inventory section s (GearStamp.section numbering). Follow-up review 3: a stack row gives up one item per identify and the rest of
+# the stack (its new slot, identify's res[6]) is queued, so a stack is identified item by item until 5 free slots are left.
+# recent collects "Name: modifiers" lines. Object[] { Integer done, Long spent, Integer skipped, String first skip reason,
+# String stop reason }.
 M(gidn, r"""
 public static Object[] allIn(@IC@[] bySec, java.util.ArrayList rs, java.util.UUID u, String who, java.util.ArrayList recent) {
   int done = 0;
@@ -5572,23 +5940,43 @@ public static Object[] allIn(@IC@[] bySec, java.util.ArrayList rs, java.util.UUI
   long spent = 0L;
   String firstSkip = null;
   String stop = null;
+  @IC@[] give = new @IC@[] { bySec.length > 1 ? bySec[1] : null, bySec.length > 2 ? bySec[2] : null };
+  java.util.ArrayList work = new java.util.ArrayList();
   for (int i = 0; i < rs.size(); i++) {
     int[] rw = (int[]) rs.get(i);
     @IC@ c = rw[0] >= 0 && rw[0] < bySec.length ? bySec[rw[0]] : null;
-    if (c == null || rw[1] < 0 || rw[1] >= c.getCapacity()) continue;
-    @IS@ it = c.getItemStack((short) rw[1]);
+    if (c != null) work.add(new Object[] { c, Integer.valueOf(rw[1]) });
+  }
+  for (int i = 0; i < work.size() && i < 4096; i++) {
+    Object[] w = (Object[]) work.get(i);
+    @IC@ c = (@IC@) w[0];
+    int sl = ((Integer) w[1]).intValue();
+    if (sl < 0 || sl >= c.getCapacity()) continue;
+    @IS@ it = c.getItemStack((short) sl);
     if (it == null || it.isEmpty()) continue;
     String name = @PKG@.Gear.itemName(it.getItemId());
-    Object[] res = identify(c, rw[1], it.getItemId(), @PKG@.GearForge.fp(it), u, who, false);
+    Object[] res = identify(c, sl, it.getItemId(), @PKG@.GearForge.fp(it), u, who, false, give, bySec);
     int code = ((Integer) res[0]).intValue();
     if (code == 0) { skipped++; if (firstSkip == null) firstSkip = name + ": " + (String) res[1]; continue; }
     if (code != 1) { stop = (String) res[1]; break; }
     done++;
     spent = spent + ((Long) res[5]).longValue();
+    if (res.length > 6 && res[6] instanceof Object[]) work.add(res[6]);
     String sum = @PKG@.GearView.modSummary((@BD@) res[4]);
     if (recent != null) recent.add(name + ": " + (sum.length() > 0 ? sum : "no modifiers"));
   }
   return new Object[] { Integer.valueOf(done), Long.valueOf(spent), Integer.valueOf(skipped), firstSkip, stop };
+}""")
+# the number of items (stack quantities) at the rows' slots
+M(gidn, r"""
+public static int items(@INV@ inv, java.util.ArrayList rs) {
+  int n = 0;
+  for (int i = 0; rs != null && i < rs.size(); i++) {
+    int[] rw = (int[]) rs.get(i);
+    @IS@ it = @PKG@.GearStamp.at(inv, rw[0], rw[1]);
+    if (it != null && !it.isEmpty()) n = n + it.getQuantity();
+  }
+  return n;
 }""")
 
 # ================================================================= IdentifyPage (spec 5.7 + 5.8): the /reforge page's vanilla look
@@ -5634,12 +6022,13 @@ public long total(@INV@ inv) {
   long s = 0L;
   for (int i = 0; i < this.rows.size(); i++) {
     int[] rw = (int[]) this.rows.get(i);
-    s = s + @PKG@.GearIdent.costOf(@PKG@.GearStamp.at(inv, rw[0], rw[1]));
+    @IS@ it = @PKG@.GearStamp.at(inv, rw[0], rw[1]);
+    if (it != null && !it.isEmpty()) s = s + @PKG@.GearIdent.costOf(it) * (long) it.getQuantity();
   }
   return s;
 }""")
 M(ipg, r"""
-public void detail(@UCB@ b, @UEB@ ev, java.util.UUID u, @IS@ sel) {
+public void detail(@UCB@ b, @UEB@ ev, java.util.UUID u, @IS@ sel, @INV@ inv) {
   b.appendInline("#SkyyGMain", "Group #SkyyGDet { Anchor: (Width: 562); LayoutMode: Top; }");
   b.appendInline("#SkyyGDet", "Label #SkyyGDetT { Anchor: (Height: 35); Padding: (Horizontal: 8); Text: \"\"; Style: (RenderBold: true, VerticalAlignment: Center, FontSize: 15, TextColor: #afc2c3); }");
   b.set("#SkyyGDetT.Text", "Identify");
@@ -5689,7 +6078,7 @@ public void detail(@UCB@ b, @UEB@ ev, java.util.UUID u, @IS@ sel) {
   if (d != null) g = @PKG@.GearView.gateLine(u, id, d, lvl);
   b.set("#SkyyGSelSub.Text", @PKG@.GearDefs.R_NAME[r].toUpperCase() + " " + @PKG@.GearView.slotWord(id) + "   -   " + (g == null || ((String) g[0]).length() == 0 ? "Level " + lvl : (String) g[0]));
   b.appendInline("#SkyyGSelTxt", "Label #SkyyGSelWhere { Anchor: (Height: 22); Text: \"\"; Style: (FontSize: 14, TextColor: #ffffff(0.6), VerticalAlignment: Center); }");
-  b.set("#SkyyGSelWhere.Text", "In your " + @PKG@.GearForge.where(this.selSec, this.selSlot) + " - it stays there while you identify it.");
+  b.set("#SkyyGSelWhere.Text", "In your " + @PKG@.GearForge.where(this.selSec, this.selSlot) + (sel.getQuantity() > 1 ? " - stack of " + sel.getQuantity() + ": one item is identified." : " - it stays there while you identify it."));
   b.appendInline("#SkyyGDet", "Group { Anchor: (Height: 1); Background: #2b3542; }");
   b.appendInline("#SkyyGDet", "Group #SkyyGCols { Anchor: (Height: 330); LayoutMode: Left; Padding: (Top: 6); }");
   if (done) {
@@ -5710,6 +6099,7 @@ public void detail(@UCB@ b, @UEB@ ev, java.util.UUID u, @IS@ sel) {
   long cost = d == null ? 0L : @PKG@.GearCfg.costIdentify(r, lvl);
   long have = @PKG@.GearForge.purse(u);
   String why = @PKG@.GearIdent.refuse(sel, d);
+  if (why == null) why = @PKG@.GearStamp.stackWhy(sel, @PKG@.GearStamp.giveOf(inv), "identify");
   b.appendInline("#SkyyGDet", "Label #SkyyGCostTxt { Anchor: (Height: 30); Text: \"\"; Style: (FontSize: 17, RenderBold: true, TextColor: #E8A93B, VerticalAlignment: Center); }");
   b.set("#SkyyGCostTxt.Text", done ? "Identified" : (cost > 0L ? "Cost: " + @PKG@.Gear.fmt(cost) + " coins (" + @PKG@.GearDefs.R_NAME[r] + ", level " + lvl + ")" : "Cost: free"));
   b.appendInline("#SkyyGDet", "Label #SkyyGPurse { Anchor: (Height: 26); Text: \"\"; Style: (FontSize: 15, TextColor: #96a9be, VerticalAlignment: Center); }");
@@ -5756,7 +6146,7 @@ public void list(@UCB@ b, @UEB@ ev, @INV@ inv) {
     boolean on = rw[0] == this.selSec && rw[1] == this.selSlot;
     String rid = "#SkyyGRow" + i;
     b.appendInline("#SkyyGList", "Button " + rid + " { Anchor: (Height: 44); LayoutMode: Left; Padding: (Full: 6); " + @PKG@.GearUi.rowStyle(on) + " ItemIcon { Anchor: (Width: 32, Height: 32); ItemId: \"" + @PKG@.Gear.safe(id) + "\"; } Label #SkyyGRowName" + i + " { Anchor: (Width: 262); Padding: (Horizontal: 10, Vertical: 5); Text: \"\"; Style: (FontSize: 15, RenderBold: true, TextColor: " + @PKG@.ReforgePage.rarHex(r) + ", VerticalAlignment: Center); } Label #SkyyGRowSub" + i + " { Anchor: (Width: 140); Padding: (Horizontal: 10, Vertical: 5); Text: \"\"; Style: (FontSize: 14, TextColor: #ffffff(0.6), HorizontalAlignment: End, VerticalAlignment: Center); } }");
-    b.set("#SkyyGRowName" + i + ".Text", (d == null ? @PKG@.Gear.itemName(id) : @PKG@.GearView.nameText(id, d)) + (on ? "  (selected)" : ""));
+    b.set("#SkyyGRowName" + i + ".Text", (d == null ? @PKG@.Gear.itemName(id) : @PKG@.GearView.nameText(id, d)) + (it.getQuantity() > 1 ? " x" + it.getQuantity() : "") + (on ? "  (selected)" : ""));
     b.set("#SkyyGRowSub" + i + ".Text", @PKG@.GearDefs.R_NAME[r] + " - Lv " + lvl);
     b.appendInline("#SkyyGList", "Group { Anchor: (Height: 2); Background: #ffffff(0.6); }");
     ev.addEventBinding(@BT@.Activating, rid, @EVD@.of("a", "sel:" + i));
@@ -5793,7 +6183,7 @@ public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
   b.appendInline("#SkyyGBody", "Label #SkyyGSub { Anchor: (Height: 28); Text: \"\"; Style: (FontSize: 16, TextColor: #96a9be, VerticalAlignment: Center); }");
   b.set("#SkyyGSub.Text", "Gear from mobs and loot chests arrives unidentified. Pay coins to reveal its modifiers - the rarity is already set.");
   b.appendInline("#SkyyGBody", "Group #SkyyGTop { Anchor: (Height: 52); LayoutMode: Left; Padding: (Top: 4); }");
-  int n = this.rows.size();
+  int n = @PKG@.GearIdent.items(inv, this.rows);
   boolean allOff = n == 0 || (have >= 0L && have < all && n == 1);
   String at = n == 0 ? "Nothing to identify" : (n == 1 ? "Identify 1 item" : "Identify all " + n + " items");
   b.appendInline("#SkyyGTop", "TextButton #SkyyGBtnAll { Anchor: (Width: 320, Height: 44); Text: \"" + @PKG@.Gear.safe(at) + "\"; " + @PKG@.GearUi.btn(allOff ? 3 : 1) + " }");
@@ -5806,7 +6196,7 @@ public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
   b.appendInline("#SkyyGMain", "Label { Anchor: (Width: 14); Text: \"\"; }");
   b.appendInline("#SkyyGMain", @PKG@.GearUi.vsep());
   b.appendInline("#SkyyGMain", "Label { Anchor: (Width: 14); Text: \"\"; }");
-  detail(b, ev, u, sel);
+  detail(b, ev, u, sel, inv);
   boolean menu = @PKG@.Gear.bget("config:def:SkyyMenu") != null;
   b.appendInline("#SkyyGBody", "Group #SkyyGBar { Anchor: (Height: 58); LayoutMode: Left; Padding: (Top: 10); }");
   b.appendInline("#SkyyGBar", "Label #SkyyGInfo { Anchor: (Width: 700, Height: 44); Text: \"\"; Style: (FontSize: 16, RenderBold: true, TextColor: " + @PKG@.GearUi.infoColor(this.info) + ", VerticalAlignment: Center); }");
@@ -5836,7 +6226,7 @@ public void one(@INV@ inv) {
   java.util.UUID u = this.playerRef.getUuid();
   @IC@ c = @PKG@.GearStamp.section(inv, this.selSec);
   String name = @PKG@.Gear.itemName(this.selId);
-  Object[] res = @PKG@.GearIdent.identify(c, this.selSlot, this.selId, this.selFp, u, this.playerRef.getUsername(), false);
+  Object[] res = @PKG@.GearIdent.identify(c, this.selSlot, this.selId, this.selFp, u, this.playerRef.getUsername(), false, @PKG@.GearStamp.giveOf(inv), @PKG@.GearStamp.allOf(inv));
   int code = ((Integer) res[0]).intValue();
   if (code == 1) {
     this.selFp = @PKG@.GearForge.fp((@IS@) res[2]);
@@ -5857,6 +6247,7 @@ public void all(@INV@ inv) {
   java.util.UUID u = this.playerRef.getUuid();
   java.util.ArrayList rs = @PKG@.GearIdent.rows(inv);
   if (rs.isEmpty()) { this.info = "-No unidentified gear on you."; return; }
+  int want = @PKG@.GearIdent.items(inv, rs);
   clearSel();
   this.recent.clear();
   @IC@[] by = new @IC@[6];
@@ -5867,7 +6258,7 @@ public void all(@INV@ inv) {
   int skipped = ((Integer) r[2]).intValue();
   String first = (String) r[3];
   String stop = (String) r[4];
-  String head = "Identified " + done + " of " + rs.size() + (done > 0 ? " for " + @PKG@.Gear.fmt(spent) + " coins" : "");
+  String head = "Identified " + done + " of " + want + (done > 0 ? " for " + @PKG@.Gear.fmt(spent) + " coins" : "");
   if (stop != null) this.info = "-" + head + " - stopped: " + stop;
   else if (skipped > 0) this.info = "-" + head + " - skipped " + skipped + " (" + first + ")";
   else this.info = "+Identified " + done + (done == 1 ? " item" : " items") + " for " + @PKG@.Gear.fmt(spent) + " coins.";
@@ -6140,7 +6531,7 @@ public static void run(@ST@ store, @REF@ ref, @PR@ pr, String action, String res
     @BD@ d = @PKG@.GearData.effective(id, md);
     if (d == null) { msg(pr, "no gear data"); return; }
     if (action.equals("reroll")) {
-      Object[] res = @PKG@.GearForge.reforge(handC(inv), handS(inv), id, @PKG@.GearForge.fp(h), u, who, true);
+      Object[] res = @PKG@.GearForge.reforge(handC(inv), handS(inv), id, @PKG@.GearForge.fp(h), u, who, true, @PKG@.GearStamp.giveOf(inv), @PKG@.GearStamp.allOf(inv));
       msg(pr, (String) res[1] + (((Integer) res[0]).intValue() == 1 ? " " + @PKG@.GearView.modSummary((@BD@) res[4]) : ""));
       return;
     }

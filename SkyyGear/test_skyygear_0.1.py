@@ -21,15 +21,22 @@ folder) and checks:
      run relative to EntityStatsSystems$Recalculate, the Armor key, GearLockSys ordered BEFORE Recalculate, raise flags (bytecode)
   M  engine 2: broken armor = amount x BrokenPenalties factor (the engine's computeStatModifiers shape)
   N  engine 3: armor in the hand is never judged as a weapon; an unidentified weapon still is
-  O  engine 4: quality.properties parse / write / moved-index WARN + epoch bump; a stale stack quality is rewritten; sig uses names
+  O  engine 4: quality.properties parse / write / moved-index WARN (no epoch bump since follow-up 7); a stale stack quality is
+     rewritten; sig uses names
   P  engine 5: GearFxInvSys only reacts to the armor container (bytecode)
   Q  engine 6: GearLog - line() and take() never wait for the disk lock; flush() writes under WLOCK only
   R  engine 7: writeAtomic replace / no-replace, no temp file left
-  S  exploit 1: GearShotTrack.newest (newest live record of that shooter inside the 10 s window); GearHitSys uses it (bytecode)
+  S  exploit 1: GearShotTrack.newest (newest live record of that shooter inside the 10 s window); GearHitSys uses pick (bytecode)
   T  exploit 2: stack split (storage first, counted, full inventory keeps the stack, nonces), craft rolls per item + the q <= cap - n
-     rule, chest split per item, Identify all skips refused rows
+     rule, chest split per item, Identify all skips rows it cannot split
   U  exploit 4: migrated armor drops dmg and scores without it
   V  exploit 5: migrate.clampToLevel caps each migrated value at GearRoll.bounds(i, rarity, level)[1]
+  W  follow-up review of e43c8bf: 1 gear.include guard (check hook, loader drops, ammo beats include, stackable included ids,
+     kind equipment), 2 MaxStack ammo rule + split ceiling (fake Item assets with a MaxStack), 3 no hotbar split + 5-slot floor +
+     no passive split + Identify / Reforge / Identify all take one item off a stack, 4 GearShotTrack.pick (weaker weapon) + the
+     no-record WARN, 5 GearLockSys primes from saved locks, 6 scheduleRecalculate after waits, 7 unreadable quality.properties
+     kept, 8 a throwing destination restores the source (split + takeOne), 9 gear:extra saturation + hit never below 0,
+     10 negative armor sums cancelled (plan + clamp simulation)
 Not testable without the game (UNVERIFIED in the build report): the real system order around Recalculate, the engine recalculating a
 live EntityStatMap, projectile records on real arrows, item entities, loot chests, pages on a client, the quality asset pack.
 Nothing is deployed. Default scratch folder: tools/dev/scratch/skyygear-test (git-ignored), deleted at the end unless --keep.
@@ -469,7 +476,8 @@ def run(jar):
     ep = int(Cfg.EPOCH)
     Qual.CHECKED = False
     Qual.check(now)
-    check(bool(Qual.MOVED) and int(Cfg.EPOCH) == ep + 1000, "moved indices: WARN + the config epoch moves (every sig changes -> re-stamp)")
+    # follow-up review 7 (changed check): no epoch bump any more - GearView.apply rewrites a stack whose quality index moved
+    check(bool(Qual.MOVED) and int(Cfg.EPOCH) == ep, "moved indices: WARN, the config epoch stays (GearView.apply rewrites effQ != curQ)")
     J("GearQual")(Qual.text(now)).run()
     txtq = open(qf).read()
     check("Skyy_Gear_Rare=50" in txtq and "Skyy_Gear_Mythic=45" in txtq, "quality.properties rewritten with today's indices")
@@ -566,15 +574,17 @@ def run(jar):
     check(Track.newest(U1) is None, "a record outside the 10 s window never counts")
     Track.SHOTS.clear()
     hs = code("GearHitSys", "handle")
-    check(any("GearShotTrack.newest" in l for l in hs) and any("GearHit.family" in l for l in hs), "GearHitSys takes projectile hits from newest()")
+    # follow-up review 4 (changed check): GearHitSys now asks GearShotTrack.pick (newest, or the weaker weapon), not newest()
+    check(any("GearShotTrack.pick" in l for l in hs) and any("GearHit.family" in l for l in hs), "GearHitSys takes projectile hits from pick()")
     print("S. exploit 1 done")
 
     # ---------------- T. exploit 2: per-item rolls / stamps
+    # (follow-up review 3: split takes a floor argument - 0 here, the player floor is tested in W; give = storage, backpack)
     hot, sto, bak = SIC(9), SIC(36), SIC(9)
-    give = JArray(IC)([sto, hot, bak])
+    give = JArray(IC)([sto, bak])
     alls = JArray(IC)([hot, sto, bak])
     hot.setItemStackForSlot(0, IS("Weapon_Spear_Crude", 3))
-    moved = int(Stamp.split(hot, 0, give, alls, U1, 0, 64, None))
+    moved = int(Stamp.split(hot, 0, give, alls, U1, 0, 64, 0, None))
     s0, s1, s2 = hot.getItemStack(0), sto.getItemStack(0), sto.getItemStack(1)
     check(moved == 2 and int(s0.getQuantity()) == 1 and s1 is not None and int(s1.getQuantity()) == 1 and int(s2.getQuantity()) == 1,
           "a stack of 3 spears -> the slot keeps 1, two singles go to storage first")
@@ -589,10 +599,10 @@ def run(jar):
     fs.setItemStackForSlot(1, IS("Ingredient_Stick", 1))
     fh.setItemStackForSlot(1, IS("Ingredient_Stick", 1))
     fh.setItemStackForSlot(0, IS("Weapon_Spear_Crude", 5))
-    moved = int(Stamp.split(fh, 0, JArray(IC)([fs, fh]), JArray(IC)([fh, fs]), U1, 0, 64, None))
+    moved = int(Stamp.split(fh, 0, JArray(IC)([fs, fh]), JArray(IC)([fh, fs]), U1, 0, 64, 0, None))
     check(moved == 0 and int(fh.getItemStack(0).getQuantity()) == 5, "full inventory: the stack stays whole (never dropped)")
     fs.setItemStackForSlot(1, None)
-    moved = int(Stamp.split(fh, 0, JArray(IC)([fs, fh]), JArray(IC)([fh, fs]), U1, 0, 64, None))
+    moved = int(Stamp.split(fh, 0, JArray(IC)([fs, fh]), JArray(IC)([fh, fs]), U1, 0, 64, 0, None))
     check(moved == 1 and int(fh.getItemStack(0).getQuantity()) == 4 and int(Stamp.countId(JArray(IC)([fh, fs]), "Weapon_Spear_Crude")) == 5,
           "one free slot: one single moves, the rest stays one stack, count unchanged")
     # an unidentified stack: every single keeps the rarity, stays unidentified
@@ -600,7 +610,7 @@ def run(jar):
     ud = Roll.unidDoc("Weapon_Spellbook_Frost", 1, "drop")
     ud.put("r", JClass("org.bson.BsonString")("rare"))
     uh.setItemStackForSlot(0, Data.put(IS("Weapon_Spellbook_Frost", 4), ud, None))
-    moved = int(Stamp.split(uh, 0, JArray(IC)([us, uh]), JArray(IC)([uh, us]), U1, 0, 64, None))
+    moved = int(Stamp.split(uh, 0, JArray(IC)([us, uh]), JArray(IC)([uh, us]), U1, 0, 64, 0, None))
     docs = [Data.gearDoc(us.getItemStack(i).getMetadata()) for i in range(3)]
     check(moved == 3 and all(dd is not None and not bool(Data.identified(dd)) and int(Data.rarity(dd)) == 2 for dd in docs),
           "an unidentified stack of 4 -> 4 unidentified Rare singles")
@@ -608,14 +618,14 @@ def run(jar):
     ch, cs_ = SIC(9), SIC(36)
     ch.setItemStackForSlot(2, IS("Weapon_Spear_Crude", 3))
     got = JClass("java.lang.StringBuilder")()
-    n = int(CraftTask.rollIn(JArray(IC)([ch, cs_]), JArray(IC)([cs_, ch]), U1, "Weapon_Spear_Crude", IdMap(), 3, None, got))
+    n = int(CraftTask.rollIn(JArray(IC)([ch, cs_]), JArray(IC)([cs_]), U1, "Weapon_Spear_Crude", IdMap(), 3, None, got))
     rolled = [x for x in [ch.getItemStack(2)] + [cs_.getItemStack(i) for i in range(4)] if x is not None and not x.isEmpty()]
     srcs = [str(Data.gearDoc(x.getMetadata()).getString("src").getValue()) for x in rolled]
     check(n == 3 and len(rolled) == 3 and all(int(x.getQuantity()) == 1 for x in rolled) and srcs == ["craft"] * 3,
           "Weapon_Spear_Crude outputs 3 -> 3 rolled singles (%d, %s, got%s)" % (n, srcs, got))
     ch2, cs2 = SIC(9), SIC(36)
     ch2.setItemStackForSlot(0, IS("Weapon_Spear_Crude", 5))
-    n = int(CraftTask.rollIn(JArray(IC)([ch2, cs2]), JArray(IC)([cs2, ch2]), U1, "Weapon_Spear_Crude", IdMap(), 3, None, None))
+    n = int(CraftTask.rollIn(JArray(IC)([ch2, cs2]), JArray(IC)([cs2]), U1, "Weapon_Spear_Crude", IdMap(), 3, None, None))
     check(n == 0 and int(ch2.getItemStack(0).getQuantity()) == 5 and not bool(Data.hasAnyDoc(ch2.getItemStack(0).getMetadata())),
           "a merged stack of 5 for a craft of 3 is never rolled as one (q > cap - n)")
     # loot chest: per-item unidentified documents inside the same chest
@@ -659,12 +669,287 @@ def run(jar):
         rows.add(rr)
     rec = ArrayList()
     res = Ident.allIn(by, rows, U1, "tester", rec)
-    check(int(res[0]) == 1 and int(res[2]) == 1 and res[4] is None and "splits into single items" in str(res[3]),
-          "Identify all: the stack row is skipped, the next item is identified (%s)" % [str(x) for x in res])
+    # follow-up review 3 (changed check): a stack is no longer refused as such - with no storage / backpack room (none here) it
+    # cannot give up one item: "Free 6 slots to split this stack"
+    check(int(res[0]) == 1 and int(res[2]) == 1 and res[4] is None and "Free 6 slots to split this stack" in str(res[3]),
+          "Identify all: the stack row without room is skipped, the next item is identified (%s)" % [str(x) for x in res])
     check(bool(Data.identified(Data.gearDoc(ih.getItemStack(1).getMetadata()))) and coins["take"] == 1, "exactly one paid identify")
+    print("T. exploit 2 done")
+
+    # ---------------- W. follow-up review of the fix commit e43c8bf
+    BA_, BS_, BI_ = JClass("org.bson.BsonArray"), JClass("org.bson.BsonString"), JClass("org.bson.BsonInt32")
+    ItemC = JClass("com.hypixel.hytale.server.core.asset.type.item.config.Item")
+    amf = JClass("com.hypixel.hytale.assetstore.map.DefaultAssetMap").class_.getDeclaredField("assetMap")
+    amf.setAccessible(True)
+    idf = ItemC.class_.getDeclaredField("id")
+    idf.setAccessible(True)
+    msf = ItemC.class_.getDeclaredField("maxStack")
+    msf.setAccessible(True)
+    unsafe = uf.get(None)             # (section T reuses the name us for a container)
+
+    def fake_item(iid, ms):
+        """an Item asset with only an id + MaxStack (never constructed, like the fake store) so GearData.maxStack sees it"""
+        it_ = unsafe.allocateInstance(ItemC.class_)
+        idf.set(it_, iid)
+        msf.setInt(it_, ms)
+        amf.get(store.getAssetMap()).put(iid, it_)
+
+    def with_mods(iid, pairs):
+        dd = Roll.newDoc(iid, 0, True, "admin")
+        arr = BA_()
+        for k, v in pairs:
+            md = BD()
+            md.append("s", BS_(k))
+            md.append("v", BI_(v))
+            arr.add(md)
+        dd.put("mods", arr)
+        return dd
+
+    def qty(c, i):
+        s_ = c.getItemStack(i)
+        return 0 if s_ is None or s_.isEmpty() else int(s_.getQuantity())
+
+    FREE = int(Defs.FREE_KEEP)
+    check(FREE == 5 and int(Defs.STACK_CEIL) == 30, "follow-up constants: 5 free slots, split ceiling MaxStack 30")
+
+    # 1. gear.include guard
+    for bad in ("Skyy_", "Weapon_", "Armor_", "Tool_", "skyy_", "Wea", "Sky"):
+        check(Cfg.checkInclude("gear.include", "Skyy_Ring_," + bad) is not None, "W1: gear.include refuses %r" % bad)
+    check(Cfg.checkInclude("gear.include", "Skyy_Ring_, Tool_Pickaxe_,Weapon_Arrow_") is None and Cfg.checkInclude("gear.include", "") is None
+          and Cfg.checkInclude("gear.include", None) is None, "W1: narrow prefixes (6+ characters) pass the check")
+    check(any("checkInclude" in str(x) for x in Rows.BCHECK), "W1: the gear.include row binds the check hook")
+    check("6+" in helps["gear.include"], "W1: the row help names the 6-character rule")
+    p = Props()
+    p.setProperty("gear.include", "Skyy_,Weapon_,Wea,Skyy_Talisman_,Weapon_Arrow_,Skyy_Cook_Food_,Weapon_Knife_")
+    Cfg.apply(p, False)
+    check([str(x) for x in Cfg.incl()] == ["Skyy_Talisman_", "Weapon_Arrow_", "Skyy_Cook_Food_", "Weapon_Knife_"],
+          "W1: the loader drops refused entries from a hand edit: %s" % [str(x) for x in Cfg.incl()])
+    check(not any(bool(Data.isGear(x)) for x in ("Skyy_Menu", "Skyy_Market", "Skyy_Vault_Small", "Skyy_Accessory_Omni")),
+          "W1: a bare Skyy_ entry pulls nothing in (menu, market, vault, accessory)")
+    check(not bool(Data.isGear("Weapon_Arrow_Iron")) and not bool(Data.isGearMs("Weapon_Arrow_Iron", 40)) and not bool(Data.isGearMs("Weapon_Arrow_Iron", 1)),
+          "W1: include never beats the ammo rule (Weapon_Arrow_ included, arrows stay ammo)")
+    tal = "Skyy_Talisman_Luck"
+    check(bool(Data.isGear(tal)) and str(Data.kindFor(tal)) == "equipment" and int(Data.slotOf(tal)) == 4,
+          "W1: an included non-family id without a kind.prefix row is kind equipment (slot 4)")
+    tst = Data.put(IS(tal, 1), Roll.newDoc(tal, 2, False, "drop"), U1)
+    check(Hit.judge(U1, tst, False) is None and Hit.judge(U1, tst, True) is None, "W1: an unidentified included talisman never blocks a hit")
+    check(not bool(Data.isGearMs("Skyy_Cook_Food_Pie", 64)) and not bool(Data.isGearMs(tal, 5)),
+          "W1: an included id that stacks is gear only in Weapon_ / Armor_ / Tool_")
+    check(not bool(Data.isGearMs("Weapon_Knife_Throw", 40)) and bool(Data.isGearMs("Weapon_Knife_Throw", 20)) and bool(Data.isGearMs("Weapon_Knife_Throw", 1)),
+          "W1: an included family id is gear up to MaxStack 30, never above")
+    fake_item("Skyy_Cook_Food_Pie", 64)
+    fake_item("Weapon_Knife_Throw", 40)
+    check(int(Data.maxStack("Skyy_Cook_Food_Pie")) == 64 and int(Data.maxStack("Nope_Item")) == -1, "W1: maxStack reads the Item asset (-1 = none)")
+    check(not bool(Data.isGear("Skyy_Cook_Food_Pie")) and not bool(Data.isGear("Weapon_Knife_Throw")),
+          "W1: through the asset: included food (64) and an included Weapon_ above 30 stay plain items")
+    Cfg.apply(Props(), False)
+
+    # 2. MaxStack ammo rule + split ceiling
+    check(not bool(Data.ammoMs("Weapon_Shortbow_Bomb", 1)) and bool(Data.ammoMs("Weapon_Shortbow_Bomb", 20)),
+          "W2: parts[1] rule only for single items; a stackable id keeps the any-token test")
+    check(bool(Data.ammoMs("Weapon_Arrow_Iron", 40)) and bool(Data.ammoMs("Weapon_Arrow_Iron", 1)) and not bool(Data.ammoMs("Weapon_Spear_Iron", 30)),
+          "W2: arrows are ammo either way, spears (30) are not")
+    fake_item("Weapon_Knife_Stack", 40)
+    fake_item("Weapon_Knife_Small", 20)
+    check(bool(Data.isGear("Weapon_Knife_Stack")), "W2: a stackable Weapon_ id above 30 is still gear (gear.exclude decides)")
+    kh, ks = SIC(3), SIC(9)
+    kh.setItemStackForSlot(0, IS("Weapon_Knife_Stack", 10))
+    m40 = int(Stamp.split(kh, 0, JArray(IC)([ks]), JArray(IC)([kh, ks]), U1, 0, 64, 0, None))
+    check(m40 == 0 and qty(kh, 0) == 10 and all(qty(ks, i) == 0 for i in range(9)), "W2: split skips an id with MaxStack 40 (stack untouched)")
+    kh.setItemStackForSlot(1, IS("Weapon_Knife_Small", 3))
+    m20 = int(Stamp.split(kh, 1, JArray(IC)([ks]), JArray(IC)([kh, ks]), U1, 0, 64, 0, None))
+    check(m20 == 2 and qty(kh, 1) == 1, "W2: an id with MaxStack 20 still splits (%d)" % m20)
+
+    # 3. no hotbar, 5-slot floor, no passive split, actions take one item off a stack
+    gv = code("GearStamp", "giveOf")
+    check(any("Inventory.getStorage" in l for l in gv) and any("Inventory.getBackpack" in l for l in gv) and not any("getHotbar" in l for l in gv),
+          "W3: giveOf = storage + backpack, never the hotbar")
+    sc = code("GearStamp", "scan")
+    check(not any("GearStamp.split" in l for l in sc) and not any("takeOne" in l for l in sc), "W3: the passive scan never splits")
+    fc, fsto = SIC(9), SIC(6)
+    fc.setItemStackForSlot(0, IS("Weapon_Spear_Crude", 3))
+    nf = int(CraftTask.rollIn(JArray(IC)([fc, fsto]), JArray(IC)([fsto]), U1, "Weapon_Spear_Crude", IdMap(), 3, None, None))
+    check(nf == 1 and qty(fc, 0) == 2 and sum(1 for i in range(6) if qty(fsto, i) == 0) == 5
+          and not bool(Data.hasAnyDoc(fc.getItemStack(0).getMetadata())),
+          "W3: craft rolls keep the 5-slot floor (6 free: one rolled single, the stack of 2 stays unrolled)")
+    h3, s3 = SIC(9), SIC(7)
+    h3.setItemStackForSlot(0, IS("Weapon_Spear_Crude", 5))
+    mv3 = int(Stamp.split(h3, 0, JArray(IC)([s3]), JArray(IC)([h3, s3]), U1, 1, 4, FREE, None))
+    free3 = sum(1 for i in range(7) if qty(s3, i) == 0)
+    check(mv3 == 2 and qty(h3, 0) == 3 and free3 == 5 and all(qty(h3, i) == 0 for i in range(1, 9))
+          and int(Stamp.countId(JArray(IC)([h3, s3]), "Weapon_Spear_Crude")) == 5,
+          "W3: 7 free storage slots -> 2 singles, 5 stay free, nothing lands in the hotbar (%d moved)" % mv3)
+    sp3 = IS("Weapon_Spear_Crude", 3)
+    st3 = Stamp.stampStack(sp3, U1, None)
+    d3 = Data.gearDoc(st3.getMetadata())
+    check(int(st3.getQuantity()) == 3 and d3 is not None and int(Data.rarity(d3)) == 0, "W3: the passive stamp keeps a stack of identical items whole")
+    check(Stamp.stackWhy(IS("Weapon_Spear_Crude", 1), JArray(IC)([]), "identify") is None
+          and str(Stamp.stackWhy(sp3, JArray(IC)([SIC(4)]), "identify")) == "Free 2 slots to split this stack - identify works on one item at a time."
+          and Stamp.stackWhy(sp3, JArray(IC)([SIC(6)]), "identify") is None, "W3: stackWhy needs 6 free slots (1 + the 5 kept free)")
+    coins["take"] = 0
+    ud3 = Roll.unidDoc("Weapon_Spear_Crude", 1, "drop")
+    ud3.put("r", BS_("rare"))
+    ih3, is3 = SIC(9), SIC(9)
+    ih3.setItemStackForSlot(0, Data.put(IS("Weapon_Spear_Crude", 3), ud3, None))
+    it3 = ih3.getItemStack(0)
+    r3 = Ident.identify(ih3, 0, "Weapon_Spear_Crude", Forge.fp(it3), U1, "tester", False, JArray(IC)([is3, None]), JArray(IC)([ih3, is3]))
+    rest3 = Data.gearDoc(is3.getItemStack(0).getMetadata()) if qty(is3, 0) else None
+    check(int(r3[0]) == 1 and qty(ih3, 0) == 1 and bool(Data.identified(Data.gearDoc(ih3.getItemStack(0).getMetadata())))
+          and qty(is3, 0) == 2 and rest3 is not None and not bool(Data.identified(rest3)) and int(Data.rarity(rest3)) == 2
+          and coins["take"] == 1 and r3[6] is not None and int(r3[6][1]) == 0,
+          "W3: Identify on a stack of 3 identifies one item in place, the other 2 move on unidentified, paid once (%s)" % str(r3[1]))
+    ih4, is4 = SIC(9), SIC(5)
+    ih4.setItemStackForSlot(0, Data.put(IS("Weapon_Spear_Crude", 3), ud3, None))
+    it4 = ih4.getItemStack(0)
+    r4 = Ident.identify(ih4, 0, "Weapon_Spear_Crude", Forge.fp(it4), U1, "tester", False, JArray(IC)([is4]), JArray(IC)([ih4, is4]))
+    check(int(r4[0]) == 0 and str(r4[1]) == "Free 1 slot to split this stack - identify works on one item at a time." and qty(ih4, 0) == 3
+          and coins["take"] == 1, "W3: no room -> refused before any coin moves, the stack is untouched (%s)" % str(r4[1]))
+    rh, rs5 = SIC(9), SIC(9)
+    rh.setItemStackForSlot(0, Data.put(IS("Weapon_Spear_Crude", 2), with_mods("Weapon_Spear_Crude", [("dmg", 3)]), U1))
+    r5 = Forge.reforge(rh, 0, "Weapon_Spear_Crude", Forge.fp(rh.getItemStack(0)), U1, "tester", True, JArray(IC)([rs5]), JArray(IC)([rh, rs5]))
+    check(int(r5[0]) == 1 and qty(rh, 0) == 1 and qty(rs5, 0) == 1 and int(Stamp.countId(JArray(IC)([rh, rs5]), "Weapon_Spear_Crude")) == 2,
+          "W3: Reforge on a stack of 2 reforges one item, the other moves to a free slot (%s)" % str(r5[1]))
+    ah, as_ = SIC(9), SIC(9)
+    ah.setItemStackForSlot(0, Data.put(IS("Weapon_Spear_Crude", 3), ud3, None))
+    ah.setItemStackForSlot(1, Data.put(IS("Weapon_Sword_Iron", 1), Roll.unidDoc("Weapon_Sword_Iron", 1, "drop"), None))
+    by2 = JArray(IC)(6)
+    by2[0] = ah
+    by2[1] = as_
+    rows2 = ArrayList()
+    for sl in (0, 1):
+        rr = JArray(JInt)(2)
+        rr[0] = 0
+        rr[1] = sl
+        rows2.add(rr)
+    coins["take"] = 0
+    res2 = Ident.allIn(by2, rows2, U1, "tester", ArrayList())
+    left = [x for c_ in (ah, as_) for i in range(9) for x in [c_.getItemStack(i)] if x is not None and not x.isEmpty()]
+    check(int(res2[0]) == 4 and int(res2[2]) == 0 and coins["take"] == 4 and len(left) == 4 and all(int(x.getQuantity()) == 1 for x in left)
+          and all(bool(Data.identified(Data.gearDoc(x.getMetadata()))) for x in left),
+          "W3: Identify all works a stack of 3 item by item (4 paid identifies, 4 identified singles) %s" % [str(x) for x in res2])
+
+    # 4. projectile attribution
+    Track.SHOTS.clear()
+    ms_ = int(JClass("java.lang.System").currentTimeMillis())
+    strong = Data.put(IS("Weapon_Shortbow_Crude", 1), with_mods("Weapon_Shortbow_Crude", [("dmg", 20), ("str", 10)]), U1)
+    weak = Data.put(IS("Weapon_Shortbow_Crude", 1), with_mods("Weapon_Shortbow_Crude", [("dmg", 2)]), U1)
+    ra, rb = Shot(U1, strong, None, None), Shot(U1, weak, None, None)
+    ra.at, rb.at = ms_ - 1000, ms_ - 3000
+    Track.SHOTS.put(UUID.nameUUIDFromBytes(b"wa"), ra)
+    check(str(Forge.fp(Track.pick(U1, None).main)) == str(Forge.fp(strong)), "W4: one live record -> that record")
+    Track.SHOTS.put(UUID.nameUUIDFromBytes(b"wb"), rb)
+    check(str(Forge.fp(Track.newest(U1).main)) == str(Forge.fp(strong)) and str(Forge.fp(Track.pick(U1, None).main)) == str(Forge.fp(weak)),
+          "W4: two live records with different weapons -> the WEAKER one, not the newest")
+    rc = Shot(U1, strong, None, None)
+    rc.at = ms_ - 500
+    Track.SHOTS.remove(UUID.nameUUIDFromBytes(b"wb"))
+    Track.SHOTS.put(UUID.nameUUIDFromBytes(b"wc"), rc)
+    pk = Track.pick(U1, None)
+    check(pk is not None and int(pk.at) == int(rc.at), "W4: the same weapon twice -> the newest record")
+    Track.SHOTS.clear()
+    check(Track.pick(U1, None) is None, "W4: no live record -> none")
+    check(any("norecord" in l for l in hs) and any("Gear.warnOnce" in l for l in hs), "W4: a projectile hit without a record logs one WARN")
+
+    # 5 / 6. saved locks + the Recalculate nudge (bytecode)
+    lt = code("GearLockSys", "tick")
+    check(any("GearFx.PRIMED" in l for l in lt) and any("GearFx.hasLock" in l for l in lt), "W5: GearLockSys looks once for saved lock modifiers")
+    ga = code("GearReady", "accept")
+    check(any("GearFx.PRIMED" in l for l in ga), "W5: PlayerReady (join / world switch) clears PRIMED")
+    check(any("GearFx.PRIMED" in l for l in code("GearFx", "forget")), "W5: disconnect forgets PRIMED")
+    hl = code("GearFx", "hasLock")
+    check(any("EntityStatMap.getModifier" in l for l in hl) and not bool(Fx.hasLock(None)), "W5: hasLock reads the lock modifiers (null map = none)")
+    lk2 = code("GearFx", "locks")
+    check(any("getStatModifiersManager" in l for l in lk2) and any("StatModifiersManager.scheduleRecalculate" in l for l in lk2),
+          "W6: a lock that keeps waiting asks the engine for a Recalculate")
+
+    # 7. unreadable quality.properties is left alone
+    open(qf, "w").write("Skyy_Gear_Normal=forty\nSkyy_Gear_Rare=42\n")
+    Qual.load(Paths.get(qf))
+    Qual.CHECKED = False
+    Qual.check(now)
+    J("GearQual")(Qual.text(now)).run()
+    time.sleep(0.4)
+    check(bool(Qual.UNREAD) and Qual.OLD is None and open(qf).read() == "Skyy_Gear_Normal=forty\nSkyy_Gear_Rare=42\n",
+          "W7: an unreadable quality.properties is never overwritten")
+    open(qf, "w").write("")
+    Qual.load(Paths.get(qf))
+    check(not bool(Qual.UNREAD), "W7: an empty file is not 'unreadable' (it may be rewritten)")
+
+    # 8. a throwing destination restores the source
+    CtC = JClass("javassist.CtNewConstructor")
+    CtM = JClass("javassist.CtNewMethod")
+    tb = jp.makeClass("com.hypixel.hytale.server.core.inventory.container.SkyyTestThrowBox",
+                      jp.get("com.hypixel.hytale.server.core.inventory.container.SimpleItemContainer"))
+    tb.addConstructor(CtC.make("public SkyyTestThrowBox(short n) { super(n); }", tb))
+    tb.addMethod(CtM.make("public com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransaction setItemStackForSlot(short s, "
+                          "com.hypixel.hytale.server.core.inventory.ItemStack st) { throw new IllegalStateException(\"test: no writes\"); }", tb))
+    ThrowBox = JClass(tb.toClass(SIC.class_).getName())
+    from jpype import JShort
+    dstb = ThrowBox(JShort(9))
+    srcb = SIC(3)
+    srcb.setItemStackForSlot(0, IS("Weapon_Spear_Crude", 4))
+    both = JArray(IC)([srcb, dstb])
+    mv8 = int(Stamp.split(srcb, 0, JArray(IC)([dstb]), both, U1, 0, 64, 0, None))
+    check(mv8 == 0 and qty(srcb, 0) == 4 and int(Stamp.countId(both, "Weapon_Spear_Crude")) == 4, "W8: split - destination write throws -> the source is restored")
+    t8 = Stamp.takeOne(srcb, 0, JArray(IC)([dstb]), both, U1)
+    check(t8 is None and qty(srcb, 0) == 4 and int(Stamp.countId(both, "Weapon_Spear_Crude")) == 4, "W8: takeOne - destination write throws -> the source is restored")
+    tg = code("GearTag", "tagContainer")
+    check(any("chestsplit" in l for l in tg), "W8: tagContainer catches its own split")
+
+    # 9. gear:extra saturation, Damage % floor, hit never below 0
+    xs = Stats.parseExtra(",".join(["str:1000000"] * 3000) + ",dmg:-500,cd:-400")
+    check(int(xs[si("str")]) == 1000000 and int(xs[si("dmg")]) == -500, "W9: 3000 parts of str:1000000 saturate at 1,000,000 (no wrap)")
+    t9 = JArray(JInt)(int(Defs.NS))
+    t9[si("dmg")] = -500
+    check(float(Hit.hitAmount(10.0, t9, False, 0.9, 0.9)) == 0.0, "W9: Damage % below -100 counts as -100 (hit 0, never negative)")
+    t9[si("dmg")] = -50
+    check(abs(float(Hit.hitAmount(10.0, t9, False, 0.9, 0.9)) - 5.0) < 1e-9, "W9: Damage -50 % halves the hit")
+    t9[si("dmg")] = 0
+    t9[si("str")] = -1000
+    check(float(Hit.hitAmount(10.0, t9, False, 0.9, 0.9)) == 0.0, "W9: negative Strength never makes a hit negative")
+    t9[si("str")] = 0
+    t9[si("cc")] = 100
+    t9[si("cd")] = -400
+    check(float(Hit.hitAmount(10.0, t9, False, 0.0, 0.9)) == 0.0, "W9: a negative crit multiplier floors at 0")
+    t9 = JArray(JInt)(int(Defs.NS))
+    t9[si("rElem")] = 1000000000
+    t9[si("fFire")] = 1000000000
+    check(int(Hit.elemSum(t9)) == 1000000000, "W9: elemSum saturates")
+    bridge.put("gear:extra:" + str(U2), "str:1000000")
+    top9 = Data.put(IS("Weapon_Sword_Crude", 1), with_mods("Weapon_Sword_Crude", [("str", 2147483000)]), U2)
+    t10 = Stats.totals(U2, top9, None, None, True)
+    check(int(t10[si("str")]) == 1000000000, "W9: gear + gear:extra totals saturate instead of wrapping (%d)" % int(t10[si("str")]))
+    bridge.remove("gear:extra:" + str(U2))
+
+    # 10. negative armor sums cancelled (signed plan)
+    check(plan(0, -5, False, 0, 0) == -5, "W10: a negative sum is cancelled at once (+5 max = safe)")
+    check(plan(-5, 0, False, -5, 0) == -5 and plan(-5, 0, True, -5, 0) == -5 and plan(-5, 0, True, 0, 0) == 0,
+          "W10: taking a negative cancel away waits for the tick + the synced engine")
+    check(plan(-5, 12, True, 7, 7) == 12, "W10: a mixed sum grows like a positive one once synced")
+    neg = {
+        "equip an inactive -5 piece": [(0, 0, "ET"), (-5, -5, "LET")],
+        "unequip an inactive -5 piece": [(-5, -5, "LET"), (0, 0, "LET")],
+        "level up: inactive -5 becomes active": [(-5, -5, "LET"), (-5, 0, "T")],
+        "class change: active -5 becomes inactive": [(-5, 0, "LET"), (-5, -5, "T")],
+        "tick before the engine (unequip -5)": [(-5, -5, "LET"), (0, 0, "TLET")],
+        "inactive +17 and -5 on one stat (sum +12), unequip the -5": [(12, 12, "LET"), (17, 17, "LET")],
+    }
+    for name, steps in neg.items():
+        res = sim(steps)
+        ok_ = True
+        for i, (v, steady) in enumerate(res):
+            prev_v = res[i - 1][0] if i else 100.0
+            if v + 1e-6 < min(prev_v, steady):
+                ok_ = False
+        check(ok_, "W10 simulation keeps the current value: %s -> %s" % (name, res))
+    ctl = StatModel(100.0, 100.0)
+    ctl.put("lock", 5.0)          # the -5 piece goes on: its cancel first (max 105) ...
+    ctl.put("Armor", -5.0)        # ... then the engine's -5 (max 100, value 100)
+    ctl.put("lock", 0.0)          # unequip, cancel removed BEFORE Recalculate drops the -5: max 95 -> the value is clamped
+    check(ctl.value == 95.0, "W10: the model sees the loss when a negative cancel goes before Recalculate (why it waits)")
     for k in ("coins:fn:take", "coins:fn:get", "coins:fn:add"):
         bridge.remove(k)
-    print("T. exploit 2 done")
+    print("W. follow-up review done")
 
     # ---------------- U / V. exploit 4 / 5: migration
     BI = JClass("org.bson.BsonInt32")
