@@ -20,7 +20,8 @@ Run:   python build_skyyvault_0.1.3.py          -> SkyyVault/SkyyVault-0.1.3.jar
     (Skyy: "afterwards return to the vault on the new page"), on the page shown before after Cancel / a refused buy; /vault pages
     (chest mode) -> that page; nothing open (/vault buy from the world) -> the window just closes. Esc = nothing bought (chat line),
     the vault stays closed (a page opened from onDismiss would be wiped by the engine right after it). A second window never stacks:
-    a click / /vault buy while one is open for that page says "Confirm or cancel the purchase in the window on your screen."
+    a click / /vault buy while one is open for that page says "Confirm or cancel the purchase in the window on your screen." The
+    return page is always an OWNED page (a locked page that was selected on the vault page returns to the last owned page).
   * NEVER CHARGED TWICE: VStore.buyAt(u, name, expected page, shown price) buys only the page the click / window / command offered
     (a stale window finds it "already yours"; a later page never skips one); one purchase at a time per player (BUYING); the window is
     one-shot (done: a double click on Buy, Buy then Cancel, or Esc then Buy act once) and page events of a replaced page are dropped by
@@ -60,8 +61,19 @@ Run:   python build_skyyvault_0.1.3.py          -> SkyyVault/SkyyVault-0.1.3.jar
   old vault window closing right after the window opened (CloseWindow while our page is up) does not close the window itself; V5 Esc
   on the window leaves nothing open and says "Nothing was bought."; U2 (0.1.2) whether a plain click reaches the server before the
   put-down.
+  0.1.3 REVIEW FIXES (same version, rebuilt; bare-JVM harness under tools/dev/scratch/fx-vault/, deleted afterwards; 48 checks, 0
+  fails: the buy-path checks above re-run on the real jar + dlgBack / askBuy / cmdBuy run with the engine calls stubbed):
+    F1 VSessions.dlgBack clamps the return page to an owned page (1..unlocked) before anything opens: /vault buy while the vault
+       page had a LOCKED page selected stored back = that page (cmdBuy, VaultPage branch), so Cancel tried open2 on a locked page and
+       showed a red "Vault page N is locked" line instead of returning to the vault.
+    F2 VBuyDlg remembers its world (wu) and open time (at); VBuyDlg.live(world now) = not acted, same world, under STALE_MS (2 min).
+       cmdBuy and askBuy only treat a LIVE window for that page as "on your screen"; a dead one (kept by the page manager after a
+       world switch, or simply old) is marked done and a fresh window opens (cmdBuy then returns nowhere: ret 0). cmdBuy's check also
+       ignored done before (a done window for the same page blocked /vault buy).
+    F3 the 0.1.2 notes below are marked HISTORICAL (their "10 s second click" is 0.1.2 behaviour, gone in 0.1.3).
 
-0.1.2 notes (unchanged below):
+0.1.2 notes (HISTORICAL - how 0.1.2 behaved; kept for reference. Where they differ, the 0.1.3 notes above win: the 10 s second click
+and CONFIRM_MS are gone in 0.1.3):
 
 0.1.2 = WYNNCRAFT-STYLE PAGE ARROWS INSIDE THE VAULT WINDOW (spec: research/Vault-Arrows-Spec.md Part A; Skyy 2026-09-25: "if possible
   could you add arrows in the chest to switch between vaults like wynncraft so i dont have to go back to select vault 2").
@@ -90,8 +102,8 @@ Run:   python build_skyyvault_0.1.3.py          -> SkyyVault/SkyyVault-0.1.3.jar
     noSync on a mismatch), which now also rebuilds the control row; page mode also refreshes our page. Gold Buy in 0.1.2 = the SAME 10 s
     confirm as the page's Buy button and /vault buy (VStore.buyKey / confirm / buy): first click arms (chat), a click in a LATER batch
     within 10 s buys (coins once) and the new page opens in place. LOCKED Skyy 2026-09-25 replaces that two-click with buyConfirmCoins
-    (default 50000, VCfg.BUY_CONFIRM): below the threshold buy at once, at or above it a dialog asks "Buy page X for Y coins?". This
-    build still uses the 10 s second click and does not read the row. First page / Last page / page info / fillers: a chat line or
+    (default 50000, VCfg.BUY_CONFIRM): below the threshold buy at once, at or above it a dialog asks "Buy page X for Y coins?". The
+    0.1.2 build still used the 10 s second click and did not read the row (HISTORICAL - 0.1.3 reads it, see above). First page / Last page / page info / fillers: a chat line or
     nothing. The slot's action follows the CURRENT vault state (a row made stale by /vault buy or a freePages raise acts right and is
     redrawn). /vault buy and the page's buttons redraw an open row.
   * SAFETY SWEEP (VSweepTask, world thread; no events, no ECS systems - still none registered): on join (the 1 s ticker's online set),
@@ -2036,8 +2048,12 @@ for _v in (DLG_SND_BUY, DLG_SND_NO, DLG_BTN_P, DLG_BTN_S):
 # chest window (chest mode: "afterwards return to the vault on the new page"), 3 the vault page without slots (/vault pages in chest
 # mode). back = the vault page shown before (Cancel / a refused buy return there). done = the window already acted (one-shot: a double
 # click on Buy, or Esc after Buy, can never act twice).
+# 0.1.3 review hardening: wu = the world the window opened in, at = when it opened. A window the page manager still reports after a
+# world switch or after STALE_MS (2 min) no longer counts as "on your screen" (live()): /vault buy and a buy click drop it (done) and
+# open a fresh one instead of being blocked by a dead window.
 for f in ("public @PR@ pr;", "public java.util.UUID u;", "public int page;", "public long cost;", "public int ret;", "public int back;",
-          "public volatile boolean done;",
+          "public volatile boolean done;", "public java.util.UUID wu;", "public long at;",
+          "public static final long STALE_MS = 120000L;",
           "public static final String BTNP = %s;" % jstr(DLG_BTN_P), "public static final String BTNS = %s;" % jstr(DLG_BTN_S)):
     F(dlg, f)
 C(dlg, r"""
@@ -2045,6 +2061,20 @@ public VBuyDlg(@PR@ pr, int page, long cost, int ret, int back) {
   super(pr, @LIFE@.CanDismiss);
   this.pr = pr; this.u = pr == null ? null : pr.getUuid(); this.page = page; this.cost = cost; this.ret = ret; this.back = back < 1 ? 1 : back;
   this.done = false;
+  java.util.UUID w = null;
+  try { if (pr != null) w = pr.getWorldUuid(); } catch (Throwable t) { w = null; }
+  this.wu = w;
+  this.at = System.currentTimeMillis();
+}""")
+# true = this window still blocks a new one for its page: not acted yet, opened in the player's CURRENT world (now = pr.getWorldUuid()
+# at the caller), and younger than STALE_MS (a clock that jumped back counts as stale too)
+M(dlg, r"""
+public boolean live(java.util.UUID now) {
+  if (this.done) return false;
+  long age = System.currentTimeMillis() - this.at;
+  if (age < 0L || age > STALE_MS) return false;
+  if (this.wu == null) return now == null;
+  return this.wu.equals(now);
 }""")
 # the question, the message and the purse note; all dynamic text goes through set() (HANDOFF section 2)
 M(dlg, r"""
@@ -2630,7 +2660,8 @@ public static void afterBuy(@PR@ pr, @REF@ ref, @ST@ st, String res) {
 # RETIRED first (DENY_ALL + synced + marked closed, the 0.1.1 "the new page replaces it" rule: a page is never closed right before
 # another opens), then the window opens, and only then the retired vault window is closed (a stale window must not come back next to
 # the chest when the window returns to the vault; a second click / shift-click packet on the old arrows can never reach a filter again).
-# A window already on screen for the same page is kept (a second /vault buy or click never stacks windows or charges). Returns null
+# A window already on screen for the same page is kept (a second /vault buy or click never stacks windows or charges) while it is
+# live (VBuyDlg.live: not acted, same world, under 2 min old); a dead one is marked done and a fresh window replaces it. Returns null
 # (window opened) or a chat line (nothing was charged).
 M(vs, r"""
 public static String askBuy(@PR@ pr, @REF@ ref, @ST@ st, @PLA@ p, @PKG@.VSession s, int page, int ret, int back) {
@@ -2639,7 +2670,9 @@ public static String askBuy(@PR@ pr, @REF@ ref, @ST@ st, @PLA@ p, @PKG@.VSession
     Object cp = p.getPageManager().getCustomPage();
     if (cp instanceof @PKG@.VBuyDlg) {
       @PKG@.VBuyDlg o = (@PKG@.VBuyDlg) cp;
-      if (!o.done && o.page == page) return "=Confirm or cancel the purchase in the window on your screen.";
+      java.util.UUID now = null;
+      try { now = pr.getWorldUuid(); } catch (Throwable t2) { now = null; }
+      if (o.page == page && o.live(now)) return "=Confirm or cancel the purchase in the window on your screen.";
       o.done = true;
     }
   } catch (Throwable t) { }
@@ -2671,8 +2704,13 @@ public static String dlgBuy(@PKG@.VBuyDlg dlg) {
 # after Buy / Cancel (world thread, inside the window's click): back to where the player came from, on page `pg` (the new page after a
 # buy, else dlg.back). Opening the vault REPLACES the window (never closed first). res = the result line: chat always for a purchase or
 # a refusal (+/-), and on the vault page's info line in page mode.
+# 0.1.3 review fix: pg is clamped to an OWNED page first - dlg.back can be a locked page (/vault buy while the vault page had a locked
+# page selected sets back = that selection), and Cancel must return to the vault, not show a red "locked" line from open2.
 M(vs, r"""
 public static void dlgBack(@PKG@.VBuyDlg dlg, @REF@ ref, @ST@ st, int pg, String res) {
+  @PKG@.VData d = @PKG@.VStore.load(dlg.u);
+  if (d != null && pg > d.unlocked) pg = d.unlocked;
+  if (pg < 1) pg = 1;
   @PR@ pr = dlg.pr;
   boolean loud = res != null && res.length() > 0 && (res.charAt(0) == '+' || res.charAt(0) == '-');
   @PLA@ p = null;
@@ -2732,7 +2770,13 @@ public static void cmdBuy(@PR@ pr, @REF@ ref, @ST@ st) {
       @PKG@.VaultPage vp = (@PKG@.VaultPage) cp;
       ret = (vp.sess != null && @PKG@.VCfg.PAGE_MODE) ? 1 : 3;
       back = vp.sel;
-    } else if (cp instanceof @PKG@.VBuyDlg && ((@PKG@.VBuyDlg) cp).page == pg) { tell(pr, "=Confirm or cancel the purchase in the window on your screen."); return; }
+    } else if (cp instanceof @PKG@.VBuyDlg && ((@PKG@.VBuyDlg) cp).page == pg) {
+      // 0.1.3 review hardening: only a LIVE window (not acted, same world, under 2 min old) blocks; a dead one falls through to askBuy,
+      // which marks it done and opens a fresh window (ret 0: the vault is not on screen)
+      java.util.UUID now = null;
+      try { now = pr.getWorldUuid(); } catch (Throwable t) { now = null; }
+      if (((@PKG@.VBuyDlg) cp).live(now)) { tell(pr, "=Confirm or cancel the purchase in the window on your screen."); return; }
+    }
   }
   String r = askBuy(pr, ref, st, p, s, pg, ret, back);
   if (r != null) tell(pr, r);
