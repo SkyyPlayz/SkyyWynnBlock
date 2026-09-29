@@ -15,18 +15,37 @@ THIS FILE IS BUILT IN TWO PARTS (Skyy / RESUME step 4). PART A = this build. PAR
     reads it), Server Setup rows via tools/skyycfg.py kit 1.1 with KEEP=10 (9), player
     switches (9.3), admin /gear commands (8.1), gear.log (8.2), the SkyyRolls cost import (1.6) and the SkyyRolls-still-loaded
     warning (8.4).
-  PART B (NOT built here): unidentified drops from mobs (GearDeathMark + GearDropSys, 5.5) and world chests (GearChestMark +
-    GearChestTag, 5.5), the /identify page + command (5.7; the cost table cost.identify, the identify roll GearRoll.identify and
-    the admin /gear identify already exist), live stat effects (GearHitSys / GearArmorSys / GearTrueSys / GearLeechSys, the
-    GearTick regen / stamina / armor-lock / speed parts; 4.3, 3.5) and level enforcement (weapon block + popup
-    3.4 through GearGate.popup, inactive armor 3.5). Hooks ready for PART B: PARTB_CLASSES, PARTB_SETUP, PARTB_TICK (Python lists /
-    string below), GearStats.totals / statsString (active totals), GearGate.check / have / popup, GearRoll.unidDoc / identify,
-    GearData.put, GearCfg.costIdentify, the settings gear.blockedPopup / gear.armorWarn (registered here).
+  PART B (built 2026-09-28, second builder; declarations at the four "PART B PLUGS IN HERE" markers, code in the blocks
+    "PART B (1/2)" before GearTick and "PART B (2/2)" after /reforge):
+    - unidentified drops (5.5): mobs = GearDeathMark (EntityTickingSystem ordered BEFORE NPCDamageSystems$DropDeathItems, the same
+      drop condition, marks {world, NPC position + (0,1,0)} for exactly one world tick) + GearDropSys (RefSystem on ItemComponent,
+      AddReason.SPAWN, tags undocumented gear spawning within 2 blocks of a mark); world chests = GearChestMark / GearChestTag
+      (ChunkStore RefSystems ordered BEFORE / AFTER StashPlugin$StashSystem: a container with a drop list is remembered, then every
+      undocumented gear stack the stash roll put in is made unidentified inside the engine's own add). Rarity from odds.mob /
+      odds.chest, no modifiers stored until identify (5.6). Unordered fallbacks + one WARN when the other system is missing.
+    - /identify (5.7): IdentifyPage (the /reforge page's vanilla item-repair look: list of unidentified gear, detail panel with cost,
+      Identify button, "Identify all N items" paid one by one and stopping at the first refusal) + IdentifyCmd (identify.command is
+      checked live). GearIdent.identify = write safety 1.7: same slot + fingerprint, coins TAKEN FIRST (coins:fn:take), roll, same
+      slot, REFUND (coins:fn:add) on any failure, gear.log TAKE / IDENTIFY / REFUND lines.
+    - live stats (4.3): GearShotTrack (SkyyClasses ShotTrack copy: what a shooter held at launch), GearHitSys (Filter, BEFORE
+      DamageSystems$ArmorDamageReduction: gate + Damage % / Strength or Magical Power / flat elements / crit / overcrit on weapon hits,
+      pre-armor capture), GearArmorSys (AFTER it: the copied engine armor formula over only the active pieces, then Defense),
+      GearTrueSys (AFTER GearArmorSys: + True Damage), GearLeechSys (Inspect: Life Steal / Mana Steal owed); GearFx (GearTick every
+      second + GearFxInvSys on every inventory change): skyygear_lock_<stat> MAX modifiers cancelling under-level armor's own Health
+      / Mana / Stamina ..., Raw Health Regen x (1 + Health Regen %) and Stamina Regen every regen.periodMs, Life Steal payout every
+      steal.windowS, Mana Steal, Speed through skyymove protocol v1 (source gear.armor, layer flat).
+    - level enforcement: weapon (main hand + utility slot, projectiles by launch record + the 10 s shot window) above the gate level
+      or unidentified -> amount 0 + cancelled + knockback removed + GearGate.popup (gear.blockedPopup gates only the popup); armor
+      above the level or unidentified -> no SkyyGear stats, native Health / resistance cancelled (level.armorNative), one
+      gear.armorWarn chat line each time a piece becomes inactive.
+  Bare-JVM harness (spec 11.1 #3): kept outside the repo (scratch, deleted after the run; the second builder's report describes it).
 
 Commands (spec 8.1):
   /reforge                 player (hytale:Adventurer): the Reforge page (vanilla item-repair look): pick a weapon or armor piece,
                            pay coins (cost.reforge by rarity + level), its modifiers are re-rolled for its rarity and level; the
                            rarity never changes; Smithing XP through skill:fn:addxp (xp.reforge).
+  /identify                player (hytale:Adventurer; Server Setup identify.command, live): the Identify page - reveal the
+                           modifiers of unidentified gear for coins (cost.identify by rarity + level), one item or all of them.
   /gear                    player: the held item's gear lines, your active totals, your Smithing rarity.
   /gear give <item> [--rarity <id>] [--unid true] | read | reroll | clear | rarity <id> | unid | identify | level <n|clear> |
         gate <skill|class> | migrate [player]
@@ -668,20 +687,161 @@ subc = dict((s[0], mk(s[1], APC)) for s in SUBS)
 pl   = mk("SkyyGearPlugin", JP)
 
 # ---------------------------------------------------------------- PART B PLUGS IN HERE (1/4): its classes
-# PART B appends (CtClass, "note") tuples here after creating them with mk(...) further down (or in its own section before the
-# plugin is compiled); they are written with the rest. Planned names (spec Appendix A): GearShotTrack, GearHitSys, GearArmorSys,
-# GearTrueSys, GearLeechSys, GearDeathMark, GearDropSys, GearChestMark, GearChestTag, IdentifyPage, IdentifyCmd.
-PARTB_CLASSES = []
+# PART B (built 2026-09-28): tokens, engine probes and the class list. The Java itself sits in two blocks further down, each right
+# before the first PART A class that calls it: "PART B (1/2)" before GearTick (combat, drops, chests, stat effects) and
+# "PART B (2/2)" after /reforge (the Identify page + /identify). Engine facts (HytaleServer.jar bytecode, 2026-09-28):
+#  - DamageSystems$ArmorDamageReduction (Filter group, no own dependencies) = public static getResistanceModifiers(World, armor
+#    container, canApplyPenalties, EffectControllerComponent) + the flat / multiplier loop over inheritedParentId (copied in
+#    GearArmor.reduce; ArmorResistanceModifiers' fields are public). The armor container is the InventoryComponent$Armor component.
+#  - Store.tick(ArchetypeTickingSystem, dt, systemIndex) consumes that system's CommandBuffer right after its own tick, so the item
+#    entities NPCDamageSystems$DropDeathItems adds with AddReason.SPAWN reach RefSystems in the SAME world tick; their TransformComponent
+#    position is exactly the NPC position + (0, 1, 0) (ItemComponent.generateItemDrop).
+#  - StashPlugin$StashSystem.onEntityAdded (ChunkStore RefSystem) rolls the drop list into ItemContainerBlock.getItemContainer() on ANY
+#    add reason while the drop list is set and WorldConfig.isBlockSpawnersResolved(), then clears it when the gameplay config says so.
+#  - Armor stat modifiers are applied by StatModifiersManager as ONE StaticModifier(MAX, calc, sum) per calculation type under the key
+#    CalculationType.createKey("Armor"); MAX modifiers of one type add up (EntityStatValue.computeModifiers, value clamped to max).
+import skyymove as MV
+PB = {
+    "DES": "com.hypixel.hytale.server.core.modules.entity.damage.DamageEventSystem",
+    "DMG": "com.hypixel.hytale.server.core.modules.entity.damage.Damage",
+    "DSRC": "com.hypixel.hytale.server.core.modules.entity.damage.Damage$Source",
+    "DENT": "com.hypixel.hytale.server.core.modules.entity.damage.Damage$EntitySource",
+    "DPRJ": "com.hypixel.hytale.server.core.modules.entity.damage.Damage$ProjectileSource",
+    "DMOD": "com.hypixel.hytale.server.core.modules.entity.damage.DamageModule",
+    "SG": "com.hypixel.hytale.component.SystemGroup",
+    "ADRC": "com.hypixel.hytale.server.core.modules.entity.damage.DamageSystems$ArmorDamageReduction",
+    "ARMR": "com.hypixel.hytale.server.core.modules.entity.damage.DamageSystems$ArmorDamageReduction$ArmorResistanceModifiers",
+    "ARMC": "com.hypixel.hytale.server.core.inventory.InventoryComponent$Armor",
+    "UTIL": "com.hypixel.hytale.server.core.inventory.InventoryComponent$Utility",
+    "INVC": "com.hypixel.hytale.server.core.inventory.InventoryComponent",
+    "ECC": "com.hypixel.hytale.server.core.entity.effect.EffectControllerComponent",
+    "ITU": "com.hypixel.hytale.server.core.entity.ItemUtils",
+    "KBC": "com.hypixel.hytale.server.core.entity.knockback.KnockbackComponent",
+    "SDEP": "com.hypixel.hytale.component.dependency.SystemDependency",
+    "ORD": "com.hypixel.hytale.component.dependency.Order",
+    "UUIDC": "com.hypixel.hytale.server.core.entity.UUIDComponent",
+    "TC": "com.hypixel.hytale.server.core.modules.entity.component.TransformComponent",
+    "LPC": "com.hypixel.hytale.server.core.entity.entities.ProjectileComponent",
+    "SPP": "com.hypixel.hytale.server.core.modules.projectile.config.StandardPhysicsProvider",
+    "RSYS": "com.hypixel.hytale.component.system.RefSystem",
+    "ADDR": "com.hypixel.hytale.component.AddReason",
+    "REMR": "com.hypixel.hytale.component.RemoveReason",
+    "DTHC": "com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent",
+    "ILM": "com.hypixel.hytale.server.core.asset.type.gameplay.DeathConfig$ItemsLossMode",
+    "NPCE": "com.hypixel.hytale.server.npc.entities.NPCEntity",
+    "ROLE": "com.hypixel.hytale.server.npc.role.Role",
+    "DCR": "com.hypixel.hytale.server.core.modules.entity.damage.DeferredCorpseRemoval",
+    "ITC": "com.hypixel.hytale.server.core.modules.entity.item.ItemComponent",
+    "CHS": "com.hypixel.hytale.server.core.universe.world.storage.ChunkStore",
+    "ICB": "com.hypixel.hytale.server.core.modules.block.components.ItemContainerBlock",
+    "BSI": "com.hypixel.hytale.server.core.modules.block.BlockModule$BlockStateInfo",
+    "ESM": "com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap",
+    "ESV": "com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue",
+    "DST": "com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes",
+    "MODF": "com.hypixel.hytale.server.core.modules.entitystats.modifier.Modifier",
+    "MTG": "com.hypixel.hytale.server.core.modules.entitystats.modifier.Modifier$ModifierTarget",
+    "VEC": "org.joml.Vector3d",
+    "JPLG": JP,
+    "PDEV": "com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent",
+}
+for _k in PB:
+    assert _k not in T, "PART B token clashes with PART A: " + _k
+    assert re.match(r"^[A-Z]+$", _k), _k
+T.update(PB)
+for c, m in ((PB["DMG"], "getAmount"), (PB["DMG"], "setAmount"), (PB["DMG"], "getSource"), (PB["DMG"], "getCause"),
+             (PB["DMG"], "isCancelled"), (PB["DMG"], "setCancelled"), (PB["DENT"], "getRef"), (PB["DPRJ"], "getProjectile"),
+             (PB["DMOD"], "get"), (PB["DMOD"], "getFilterDamageGroup"), (PB["DMOD"], "getInspectDamageGroup"),
+             (PB["ADRC"], "getResistanceModifiers"), (PB["ARMR"], "flatModifier"), (PB["ARMR"], "multiplierModifier"),
+             (PB["ARMR"], "inheritedParentId"), (PB["ARMC"], "getComponentType"), (PB["ARMC"], "getInventory"),
+             (PB["UTIL"], "getComponentType"), (PB["UTIL"], "getActiveItem"), (PB["INVC"], "getItemInHand"),
+             (PB["ECC"], "getComponentType"), (PB["ITU"], "canApplyItemStackPenalties"), (PB["KBC"], "getComponentType"),
+             (CB, "tryRemoveComponent"), (CB, "getComponent"), (CB, "getExternalData"), (PB["UUIDC"], "getComponentType"),
+             (PB["UUIDC"], "getUuid"), (PB["TC"], "getComponentType"), (PB["TC"], "getPosition"), (PB["LPC"], "getComponentType"),
+             (PB["LPC"], "getCreatorUuid"), (PB["SPP"], "getComponentType"), (PB["SPP"], "getCreatorUuid"),
+             (PB["RSYS"], "onEntityAdded"), (PB["RSYS"], "onEntityRemove"), (PB["ADDR"], "SPAWN"), (EST, "getRefFromUUID"),
+             (EST, "getWorld"), (PB["DTHC"], "getComponentType"), (PB["DTHC"], "getItemsLossMode"), (PB["ILM"], "ALL"),
+             (PB["NPCE"], "getComponentType"), (PB["NPCE"], "getRole"), (PB["ROLE"], "hasDroppedDeathItems"),
+             (PB["ROLE"], "isDropDeathItemsInstantly"), (PB["DCR"], "getComponentType"), (PB["DCR"], "shouldRemove"),
+             (PB["ITC"], "getComponentType"), (PB["ITC"], "getItemStack"), (PB["ITC"], "setItemStack"), (PB["CHS"], "getWorld"),
+             (PB["ICB"], "getComponentType"), (PB["ICB"], "getDroplist"), (PB["ICB"], "getItemContainer"),
+             (PB["BSI"], "getComponentType"), (PB["ESM"], "getComponentType"), (PB["ESM"], "get"), (PB["ESM"], "size"),
+             (PB["ESM"], "putModifier"), (PB["ESM"], "removeModifier"), (PB["ESM"], "getModifier"), (PB["ESM"], "addStatValue"),
+             (PB["ESV"], "get"), (PB["ESV"], "getMax"), (PB["DST"], "getHealth"), (PB["DST"], "getMana"), (PB["DST"], "getStamina"),
+             (SMO, "getTarget"), (PB["MTG"], "MAX"), (CAL, "ADDITIVE"), (PB["VEC"], "x"), (PB["VEC"], "y"), (PB["VEC"], "z"),
+             (UNI, "getPlayer"), (WLD, "getName"), (QRY, "and"), (QRY, "any"), (SIC, "setItemStackForSlot"), (IS, "isBroken"),
+             ("com.hypixel.hytale.component.system.ISystem", "getDependencies"),
+             ("com.hypixel.hytale.component.system.ISystem", "getGroup"),
+             ("com.hypixel.hytale.component.system.tick.EntityTickingSystem", "isParallel"),
+             ("com.hypixel.hytale.component.system.tick.ArchetypeTickingSystem", "tick"),
+             ("com.hypixel.hytale.server.core.plugin.PluginBase", "getChunkStoreRegistry"),
+             ("com.hypixel.hytale.server.npc.systems.NPCDamageSystems$DropDeathItems", "tick"),
+             ("com.hypixel.hytale.builtin.adventure.stash.StashPlugin$StashSystem", "onEntityAdded"),
+             ("com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent", "getPlayerRef")):
+    B.probe(pool, c, m)
+for _c in (PB["SDEP"], PB["ORD"], PB["ROLE"]):
+    pool.get(_c)
+MV.probe(B, pool)
+# the vanilla armor effects under-level armor does NOT cancel in 0.1 (spec 3.5 part 4): listed here and logged once at start
+_KNOWN_LIMIT_KEYS = ("DamageClassEnhancement", "KnockbackResistances", "KnockbackEnhancements", "DamageEnhancement", "Regenerating",
+                     "MovementSettings")
+ARMOR_LIMITS = []
+for _n in sorted(AZ_NAMES):
+    if not (_n.startswith("Server/Item/Items/") and _n.endswith(".json") and os.path.basename(_n).startswith("Armor_")):
+        continue
+    try:
+        _a = json.loads(AZ.read(_n).decode("utf-8-sig")).get("Armor")
+    except Exception:
+        _a = None
+    if isinstance(_a, dict):
+        _hit = [k for k in _KNOWN_LIMIT_KEYS if _a.get(k)]
+        if _hit:
+            ARMOR_LIMITS.append("%s (%s)" % (os.path.basename(_n)[:-5], "+".join(_hit)))
+print("PART B known limit (spec 3.5 part 4) - under-level armor keeps these vanilla effects: %d piece(s): %s"
+      % (len(ARMOR_LIMITS), ", ".join(ARMOR_LIMITS)))
+gmv   = mk("GearMove")                   # skyymove protocol v1 copy (tools/skyymove.py): Speed from armor, source gear.armor
+ghit  = mk("GearHit")                    # combat helpers: gate judge, weapon-hit test, totals, hit math, per-Damage info
+gsho  = mk("GearShot")                   # one launch record (what the shooter held)
+gstk  = mk("GearShotTrack", PB["RSYS"])  # RefSystem on projectiles (SkyyClasses ShotTrack copy)
+garm  = mk("GearArmor")                  # the copied armor formula + inactive-armor helpers
+ghsy  = mk("GearHitSys", PB["DES"])      # Filter, BEFORE ArmorDamageReduction: gate, offence stats, pre-armor capture
+garsy = mk("GearArmorSys", PB["DES"])    # Filter, AFTER ArmorDamageReduction: inactive-armor correction, Defense
+gtsy  = mk("GearTrueSys", PB["DES"])     # Filter, AFTER GearArmorSys: + True Damage
+glsy  = mk("GearLeechSys", PB["DES"])    # Inspect: Life Steal / Mana Steal bookkeeping
+gtag  = mk("GearTag")                    # unidentified tagging + death marks + chest marks
+gdm   = mk("GearDeathMark", ETS)         # BEFORE NPCDamageSystems$DropDeathItems: marks this tick's dying NPCs
+gdrs  = mk("GearDropSys", PB["RSYS"])    # RefSystem ItemComponent: tags death drops at a mark
+gcm1  = mk("GearChestMark", PB["RSYS"])  # ChunkStore, BEFORE StashPlugin$StashSystem
+gcm2  = mk("GearChestTag", PB["RSYS"])   # ChunkStore, AFTER StashPlugin$StashSystem
+gfx   = mk("GearFx")                     # per-player stat effects (armor lock, regen, stamina, speed, steal payouts, armor warn)
+gfxi  = mk("GearFxInvSys", EES)          # InventoryChangeEvent -> armor lock + speed at once
+gbyb  = mk("GearByeB")                   # PlayerDisconnectEvent -> PART B state cleanup
+gidn  = mk("GearIdent")                  # the identify core (write safety 1.7, coins first, refund)
+ipg   = mk("IdentifyPage", PAGE)
+idc   = mk("IdentifyCmd", APC)
+# unordered fallbacks (the registry is keyed by class, so a fallback is its own class; SkyyExploration ChestSpawnLateSys pattern)
+ghsyU = mk("GearHitSysU", PKG + ".GearHitSys")
+garsU = mk("GearArmorSysU", PKG + ".GearArmorSys")
+gtsyU = mk("GearTrueSysU", PKG + ".GearTrueSys")
+gdmU  = mk("GearDeathMarkU", PKG + ".GearDeathMark")
+gcm1U = mk("GearChestMarkU", PKG + ".GearChestMark")
+gcm2U = mk("GearChestTagU", PKG + ".GearChestTag")
+PARTB_CLASSES = [(gmv, "move"), (ghit, "combat helpers"), (gsho, "shot record"), (gstk, "shot track"), (garm, "armor formula"),
+                 (ghsy, "hit"), (garsy, "armor"), (gtsy, "true"), (glsy, "leech"), (gtag, "tag"), (gdm, "death mark"),
+                 (gdrs, "drop tag"), (gcm1, "chest mark"), (gcm2, "chest tag"), (gfx, "effects"), (gfxi, "effects on change"),
+                 (gbyb, "cleanup"), (gidn, "identify core"), (ipg, "identify page"), (idc, "/identify"), (ghsyU, "fallback"),
+                 (garsU, "fallback"), (gtsyU, "fallback"), (gdmU, "fallback"), (gcm1U, "fallback"), (gcm2U, "fallback")]
 # ---------------------------------------------------------------- PART B PLUGS IN HERE (2/4): lines inside setup()
 # Java statements (with @TOKENS@) PART B needs in SkyyGearPlugin.setup(), after SkyyGear's own systems and commands, before the
 # bridge + kit publish: registerSystem calls (ordered with SystemDependency + unordered fallback + one WARN, spec 5.5), the
-# /identify command (only when GearCfg.IDENTIFY_CMD at start), ...
-PARTB_SETUP = []
+# /identify command (registered always; identify.command is checked live when the command runs, so the Server Setup switch works
+# without a restart), the movement protocol check, the disconnect cleanup. The bodies live in GearFx.setup (PART B (1/2)).
+PARTB_SETUP = ["  @PKG@.GearFx.setup(this);",
+               "  getCommandRegistry().registerCommand(new @PKG@.IdentifyCmd());"]
 # ---------------------------------------------------------------- PART B PLUGS IN HERE (3/4): GearTick body
 # Java statements run once per second per player inside GearTick.tick after the level refresh. In scope: dt, idx, chunk, store,
 # cb, ref (Ref), p (Player), pr (PlayerRef), u (UUID), w (World), inv (Inventory), ss (String: this second's active totals, already
 # published as gear:stats:<uuid> by PART A). Spec 3.5 / 4.2: armor lock modifiers, regen, stamina, speed (skyymove).
-PARTB_TICK = ""
+PARTB_TICK = "    @PKG@.GearFx.second(u, pr, cb, ref, inv);"
 
 # ================================================================= GearLog: gear.log (spec 8.2), queued, written on the scheduler
 glg.addInterface(pool.get("java.lang.Runnable"))
@@ -3179,6 +3339,928 @@ event_system(gcrs, "GearCraftSys", CREP, "@ARC@.empty()", r"""
     }
     @PKG@.GearStamp.pendingAdd(pr.getUuid(), id);
     w.execute(new @PKG@.GearCraftTask(pr, id, snap, cap, po.getMetadata(), rc.getId()));""")
+
+# ####################################################################################################################################
+# PART B (1/2): level enforcement (3.4, 3.5), live stats (4.3, 3.5 part 2, 4.2), unidentified mob + chest drops (5.5). Placed here
+# because GearTick (next) calls GearFx.second. Compile order = call order: GearMove, GearHit, GearShot, GearShotTrack, GearArmor,
+# GearTag, GearFx (helpers), the systems, then GearFx.setup (the registrations PARTB_SETUP calls).
+# ####################################################################################################################################
+SI = dict((k, S_KEYS.index(k)) for k in S_KEYS)
+SHOT_WINDOW_MS = 10000      # SkyyClasses 0.1.6 verbatim: a live projectile launched with a blocked weapon blocks all of its shooter's damage
+SHOT_PURGE_MS = 120000      # launch records older than this are purged when the table grows past SHOT_PURGE_AT (safety net)
+SHOT_PURGE_AT = 1024
+MOVE_SOURCE = "gear.armor"  # spec 4.2 Speed: skyymove protocol v1 source name, layer flat (HANDOFF: armor flat, accessories %)
+LOCK_PREFIX = "skyygear_lock_"   # spec 3.5 part 2; SkyySkills uses skyyskill_*, SkyyAccessories skyyacc_* - never the same key
+for _other in ("skyyskill_basemana", "skyyskill_overallhp", "skyyskill_overallmana", "skyyacc_health", "skyyacc_stamina", "skyyacc_mana"):
+    assert not _other.startswith(LOCK_PREFIX) and not _other.startswith("skyygear_")
+MV.add_move_sync(gmv, CtField, CtNewMethod, PKG + ".Gear.warn")
+
+# ================================================================= GearHit: combat helpers (spec 3.4, 4.3)
+F(ghit, "public static final java.util.IdentityHashMap INFO = new java.util.IdentityHashMap();")    # Damage -> Object[] (below)
+F(ghit, "public static final java.util.concurrent.ConcurrentHashMap FAM = new java.util.concurrent.ConcurrentHashMap();")
+for _k in ("dmg", "str", "mp", "cc", "cd", "tdmg", "fEarth", "fThunder", "fWater", "fFire", "fAir", "rThunder", "rWater", "rElem",
+           "msteal", "lsteal", "hpr", "hprp", "def", "spd", "stam"):
+    F(ghit, "public static final int I_%s = %d;" % (_k.upper(), SI[_k]))
+# the per-Damage info GearHitSys leaves for GearArmorSys / GearTrueSys / GearLeechSys (the same Damage object runs through every
+# damage system in one dispatch): Object[] { Float pre-armor amount (null = the victim wears no inactive armor), Integer True Damage,
+# Integer Life Steal %, Integer Mana Steal, UUID attacker }. GearLeechSys removes it; entries of damage cancelled on the way are
+# dropped when the table passes 512 (they are never read again).
+M(ghit, r"""
+public static synchronized void put(Object d, Object[] v) {
+  if (INFO.size() > 512) INFO.clear();
+  INFO.put(d, v);
+}""")
+M(ghit, "public static synchronized Object[] get(Object d) { return (Object[]) INFO.get(d); }")
+M(ghit, "public static synchronized Object[] take(Object d) { return (Object[]) INFO.remove(d); }")
+M(ghit, r"""
+public static Object[] info(java.util.UUID u, int[] t) {
+  if (t == null) return new Object[] { null, Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0), u };
+  return new Object[] { null, Integer.valueOf(t[I_TDMG]), Integer.valueOf(t[I_LSTEAL]), Integer.valueOf(t[I_MSTEAL]), u };
+}""")
+# spec 3.4: when SkyyClasses already says the class may not use the item, SkyyGear stays out (SkyyClasses blocks + shows its popup)
+M(ghit, r"""
+public static boolean classAllows(java.util.UUID u, String id) {
+  java.util.function.Function f = @PKG@.Gear.fn("class:fn:allowed");
+  if (f == null || u == null) return true;
+  try {
+    Object r = f.apply(new Object[] { u, id });
+    if (r instanceof Boolean) return ((Boolean) r).booleanValue();
+  } catch (Throwable t) { }
+  return true;
+}""")
+# spec 3.4: null = this item may deal damage; else { item id, popup title, popup body }. Unidentified gear is always blocked (5.6);
+# the level check follows part.gate. Tools and kinds 0.1 does not enforce (gathering) never block.
+M(ghit, r"""
+public static String[] judge(java.util.UUID u, @IS@ it, boolean util) {
+  if (u == null || it == null || it.isEmpty()) return null;
+  String id = it.getItemId();
+  if (!@PKG@.GearData.isGear(id)) return null;
+  @BD@ d = @PKG@.GearData.effective(id, it.getMetadata());
+  if (d == null || !@PKG@.GearDefs.enforcedKind(@PKG@.GearData.kind(d))) return null;
+  if (!classAllows(u, id)) return null;
+  String where = util ? " (it is in your utility slot)" : "";
+  if (!@PKG@.GearData.identified(d)) return new String[] { id, "Unidentified", "Identify it first: /identify" + where };
+  int need = @PKG@.GearLevel.level(id, d);
+  Object[] c = @PKG@.GearGate.check(u, id, d, need);
+  if (((Boolean) c[0]).booleanValue()) return null;
+  int st = ((Integer) c[5]).intValue();
+  String base = @PKG@.Gear.itemName(id);
+  String body;
+  if (st == 1) body = base + " needs " + c[1] + " " + need + " - pick a class first";
+  else if (st == 2) body = base + " needs level " + need + " - skills are unavailable right now";
+  else body = base + " needs " + c[1] + " " + need + " - you are " + c[3];
+  return new String[] { id, "Level too low", body + where };
+}""")
+# 1 = Physical family (melee: Physical, Slashing, Bludgeoning), 2 = Projectile family, 0 = anything else (fire / poison damage over
+# time, environment). Offence stats only change weapon hits (VERIFIED Assets.zip: weapon BaseDamage keys are Physical / Projectile;
+# staff spells use Fire / Ice and count through the spell-projectile record instead).
+M(ghit, r"""
+public static int family(@DCS@ c) {
+  if (c == null) return 0;
+  String id = c.getId();
+  if (id == null) return 0;
+  Object o = FAM.get(id);
+  if (o instanceof Integer) return ((Integer) o).intValue();
+  int f = 0;
+  @DCS@ x = c;
+  for (int i = 0; i < 6 && x != null; i++) {
+    String xi = x.getId();
+    if ("Physical".equals(xi)) { f = 1; break; }
+    if ("Projectile".equals(xi)) { f = 2; break; }
+    String inh = x.getInherits();
+    if (inh == null || inh.length() == 0) break;
+    Object n = null;
+    try { n = @DCS@.getAssetMap().getAsset(inh); } catch (Throwable t) { n = null; }
+    x = n instanceof @DCS@ ? (@DCS@) n : null;
+  }
+  FAM.put(id, Integer.valueOf(f));
+  return f;
+}""")
+# spec 4.3 T = the weapon's modifiers (weapon-only stats only from it) + every ACTIVE armor piece's. ok[0] = false when the hand holds
+# something that is neither gear nor empty (a tool, a block, an unusable gear weapon): offence stats only apply to a gear weapon or
+# bare hands (spec 4.3). weapon == null = armor totals only (Defense, Speed, regen).
+M(ghit, r"""
+public static int[] totals(java.util.UUID u, @IS@ weapon, @IC@ armor, boolean[] ok) {
+  int[] t = new int[@PKG@.GearDefs.NS];
+  boolean good = true;
+  if (weapon != null && !weapon.isEmpty()) {
+    String id = weapon.getItemId();
+    int sl = @PKG@.GearData.slotOf(id);
+    if (sl == 0 || sl == 1) {
+      @BD@ d = @PKG@.GearData.effective(id, weapon.getMetadata());
+      if (@PKG@.GearStats.active(u, id, d)) @PKG@.GearStats.addMods(t, d, false);
+      else good = false;
+    } else good = false;
+  }
+  if (armor != null) {
+    for (int i = 0; i < armor.getCapacity(); i++) {
+      @IS@ s = armor.getItemStack((short) i);
+      if (s == null || s.isEmpty() || @PKG@.GearData.slotOf(s.getItemId()) != 2) continue;
+      @BD@ d = @PKG@.GearData.effective(s.getItemId(), s.getMetadata());
+      if (@PKG@.GearStats.active(u, s.getItemId(), d)) @PKG@.GearStats.addMods(t, d, true);
+    }
+  }
+  if (ok != null && ok.length > 0) ok[0] = good;
+  return t;
+}""")
+# spec 4.3 step 1, in order: Damage %, Strength (physical) or Magical Power (spell), flat elements (+5 x Raw Elemental), crit with
+# chance (crit.base + cc) %: x 2 x (1 + (crit.baseDamage + cd) %), overcrit (a second roll at chance - 100 %) x 2, at most once.
+# r1 / r2 = the two random numbers in [0, 1) (the harness passes fixed ones).
+M(ghit, r"""
+public static double hitAmount(double amount, int[] t, boolean spell, double r1, double r2) {
+  double a = amount * (1.0 + (double) t[I_DMG] / 100.0);
+  double per = spell ? @PKG@.GearCfg.MP_PER : @PKG@.GearCfg.STR_PER;
+  int pt = spell ? t[I_MP] : t[I_STR];
+  a = a * (1.0 + (double) pt * per / 100.0);
+  a = a + (double) (t[I_FEARTH] + t[I_FTHUNDER] + t[I_FWATER] + t[I_FFIRE] + t[I_FAIR] + t[I_RTHUNDER] + t[I_RWATER]) + 5.0 * (double) t[I_RELEM];
+  double ch = (@PKG@.GearCfg.CRIT_BASE + (double) t[I_CC]) / 100.0;
+  if (ch > 0.0 && r1 < ch) {
+    a = a * 2.0 * (1.0 + (@PKG@.GearCfg.CRIT_BASE_DMG + (double) t[I_CD]) / 100.0);
+    if (ch > 1.0 && r2 < ch - 1.0) a = a * 2.0;
+  }
+  return a;
+}""")
+
+# ================================================================= GearShot + GearShotTrack (SkyyClasses 0.1.6 ShotRec / ShotTrack copy)
+for _f in ("public java.util.UUID shooter;", "public @IS@ main;", "public @IS@ util;", "public String bad;", "public String title;",
+           "public String body;", "public long at;"):
+    F(gsho, _f)
+C(gsho, r"""
+public GearShot(java.util.UUID shooter, @IS@ main, @IS@ util, String[] bad) {
+  this.shooter = shooter;
+  this.main = main;
+  this.util = util;
+  this.bad = bad == null ? null : bad[0];
+  this.title = bad == null ? null : bad[1];
+  this.body = bad == null ? null : bad[2];
+  this.at = System.currentTimeMillis();
+}""")
+F(gstk, "public static final java.util.concurrent.ConcurrentHashMap SHOTS = new java.util.concurrent.ConcurrentHashMap();")
+F(gstk, "public @QRY@ query;")
+C(gstk, "public GearShotTrack() { super(); this.query = null; }")
+M(gstk, r"""
+public static void purge() {
+  long now = System.currentTimeMillis();
+  java.util.Iterator it = SHOTS.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GearShot r = (@PKG@.GearShot) it.next();
+    if (r == null || now - r.at > %dL) it.remove();
+  }
+}""" % SHOT_PURGE_MS)
+M(gstk, r"""
+public static @PKG@.GearShot find(@CB@ buf, @REF@ pj) {
+  if (pj == null || !pj.isValid() || SHOTS.isEmpty()) return null;
+  @UUIDC@ idc = (@UUIDC@) buf.getComponent(pj, @UUIDC@.getComponentType());
+  if (idc == null || idc.getUuid() == null) return null;
+  return (@PKG@.GearShot) SHOTS.get(idc.getUuid());
+}""")
+M(gstk, r"""
+public static @PKG@.GearShot liveBad(java.util.UUID u) {
+  if (u == null || SHOTS.isEmpty()) return null;
+  long now = System.currentTimeMillis();
+  java.util.Iterator it = SHOTS.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GearShot r = (@PKG@.GearShot) it.next();
+    if (r != null && r.bad != null && u.equals(r.shooter) && now - r.at < %dL) return r;
+  }
+  return null;
+}""" % SHOT_WINDOW_MS)
+M(gstk, r"""
+public @QRY@ getQuery() {
+  if (this.query == null) {
+    this.query = @QRY@.and(new @QRY@[] { (@QRY@) @TC@.getComponentType(), @QRY@.or(new @QRY@[] { (@QRY@) @LPC@.getComponentType(), (@QRY@) @SPP@.getComponentType() }) });
+  }
+  return this.query;
+}""")
+M(gstk, r"""
+public void onEntityAdded(@REF@ ref, @ADDR@ reason, @ST@ st, @CB@ buf) {
+  try {
+    if (reason != @ADDR@.SPAWN) return;
+    java.util.UUID creator = null;
+    @SPP@ sp = (@SPP@) buf.getComponent(ref, @SPP@.getComponentType());
+    if (sp != null) creator = sp.getCreatorUuid();
+    if (creator == null) {
+      @LPC@ lp = (@LPC@) buf.getComponent(ref, @LPC@.getComponentType());
+      if (lp != null) creator = lp.getCreatorUuid();
+    }
+    if (creator == null) return;
+    @UUIDC@ idc = (@UUIDC@) buf.getComponent(ref, @UUIDC@.getComponentType());
+    if (idc == null || idc.getUuid() == null) return;
+    @REF@ sh = ((@EST@) buf.getExternalData()).getRefFromUUID(creator);
+    if (sh == null || !sh.isValid()) return;
+    @PR@ pr = (@PR@) buf.getComponent(sh, @PR@.getComponentType());
+    if (pr == null) return;
+    java.util.UUID u = pr.getUuid();
+    @IS@ mh = @INVC@.getItemInHand(buf, sh);
+    @UTIL@ ut = (@UTIL@) buf.getComponent(sh, @UTIL@.getComponentType());
+    @IS@ ui = ut == null ? null : ut.getActiveItem();
+    String[] bad = @PKG@.GearHit.judge(u, mh, false);
+    if (bad == null) bad = @PKG@.GearHit.judge(u, ui, true);
+    if (SHOTS.size() > %d) purge();
+    SHOTS.put(idc.getUuid(), new @PKG@.GearShot(u, mh, ui, bad));
+  } catch (Throwable t) { @PKG@.Gear.warnOnce("shottrack", "gear shot tracker failed: " + t); }
+}""" % SHOT_PURGE_AT)
+M(gstk, r"""
+public void onEntityRemove(@REF@ ref, @REMR@ reason, @ST@ st, @CB@ buf) {
+  try {
+    if (SHOTS.isEmpty()) return;
+    @UUIDC@ idc = (@UUIDC@) buf.getComponent(ref, @UUIDC@.getComponentType());
+    if (idc != null && idc.getUuid() != null) SHOTS.remove(idc.getUuid());
+  } catch (Throwable t) { }
+}""")
+
+# ================================================================= GearArmor: the copied engine formula + inactive armor (spec 3.5)
+# reduce() = DamageSystems$ArmorDamageReduction.handle after getResistanceModifiers, instruction for instruction (bytecode 2026-09-28):
+#   bypass or empty map -> unchanged; r = map[cause]; none -> unchanged; a = max(0, a - flat); a *= max(0, 1 - mult); then the same
+#   for every inheritedParentId link until a link is missing. The bare-JVM harness proves reduce(engine map) == the engine's own
+#   handle() on 50 random armor sets.
+M(garm, r"""
+public static float reduce(float amount, @DCS@ cause, java.util.Map m) {
+  if (cause == null || cause.doesBypassResistances() || m == null || m.isEmpty()) return amount;
+  @ARMR@ r = (@ARMR@) m.get(cause);
+  if (r == null) return amount;
+  float a = Math.max(0.0f, amount - r.flatModifier);
+  a = a * Math.max(0.0f, 1.0f - r.multiplierModifier);
+  while (r.inheritedParentId != null) {
+    r = (@ARMR@) m.get(r.inheritedParentId);
+    if (r == null) break;
+    a = Math.max(0.0f, a - r.flatModifier);
+    a = a * Math.max(0.0f, 1.0f - r.multiplierModifier);
+  }
+  return a;
+}""")
+# cur = the amount after the engine's full-armor pass (plus whatever other mods did in between); full / act = the copied formula on
+# the pre-armor amount with every piece / only the active pieces. Nothing in between (the normal case): exactly act. Another mod
+# multiplied in between: its factor is kept (cur x act / full).
+M(garm, r"""
+public static float correct(float cur, float full, float act) {
+  if (full > 0.0001f) return cur * act / full;
+  return act + (cur > 0.0f ? cur : 0.0f);
+}""")
+# spec 3.5: an armor piece gives no stats while unidentified (always) or under its gate level (part.gate); gathering kinds and
+# unreadable data never count as inactive
+M(garm, r"""
+public static boolean inactive(java.util.UUID u, @IS@ s) {
+  if (s == null || s.isEmpty()) return false;
+  String id = s.getItemId();
+  if (@PKG@.GearData.slotOf(id) != 2) return false;
+  @BD@ d = @PKG@.GearData.effective(id, s.getMetadata());
+  if (d == null || !@PKG@.GearDefs.enforcedKind(@PKG@.GearData.kind(d))) return false;
+  if (!@PKG@.GearData.identified(d)) return true;
+  if (!@PKG@.GearCfg.PART_GATE) return false;
+  Object[] c = @PKG@.GearGate.check(u, id, d, @PKG@.GearLevel.level(id, d));
+  return !((Boolean) c[0]).booleanValue();
+}""")
+# the gear.armorWarn line for an inactive piece (spec 3.5: "Your Mithril Chestplate gives no stats until Archery 50 (you: 12)"); null = active
+M(garm, r"""
+public static String why(java.util.UUID u, @IS@ s) {
+  if (!inactive(u, s)) return null;
+  String id = s.getItemId();
+  @BD@ d = @PKG@.GearData.effective(id, s.getMetadata());
+  String name = @PKG@.GearView.nameText(id, d);
+  if (!@PKG@.GearData.identified(d)) return "Your " + name + " gives no stats until you identify it: /identify";
+  int need = @PKG@.GearLevel.level(id, d);
+  Object[] c = @PKG@.GearGate.check(u, id, d, need);
+  int st = ((Integer) c[5]).intValue();
+  if (st == 1) return "Your " + name + " gives no stats until you pick a class (it needs " + c[1] + " " + need + ")";
+  if (st == 2) return "Your " + name + " gives no stats - skills are unavailable (it needs level " + need + ")";
+  return "Your " + name + " gives no stats until " + c[1] + " " + need + " (you: " + c[3] + ")";
+}""")
+M(garm, r"""
+public static boolean hasInactive(java.util.UUID u, @IC@ armor) {
+  if (armor == null) return false;
+  for (int i = 0; i < armor.getCapacity(); i++) if (inactive(u, armor.getItemStack((short) i))) return true;
+  return false;
+}""")
+# a temporary container with only the active pieces (non-gear items stay): what the engine formula sees for "only these are worn"
+M(garm, r"""
+public static @SIC@ activeCopy(java.util.UUID u, @IC@ armor) {
+  short cap = armor.getCapacity();
+  @SIC@ c = new @SIC@(cap);
+  for (int i = 0; i < cap; i++) {
+    @IS@ s = armor.getItemStack((short) i);
+    if (s == null || s.isEmpty() || inactive(u, s)) continue;
+    c.setItemStackForSlot((short) i, s);
+  }
+  return c;
+}""")
+# spec 3.5 part 2: per stat index, the sum of the ADDITIVE MAX stat modifiers of the inactive pieces (vanilla armor only has those:
+# StatModifiersManager applies them as one StaticModifier(MAX, ADDITIVE, sum) under the "Armor" key, VERIFIED). Integer -> Float.
+M(garm, r"""
+public static java.util.HashMap lockSums(java.util.UUID u, @IC@ armor) {
+  java.util.HashMap out = new java.util.HashMap();
+  if (armor == null) return out;
+  for (int i = 0; i < armor.getCapacity(); i++) {
+    @IS@ s = armor.getItemStack((short) i);
+    if (!inactive(u, s)) continue;
+    @ITM@ it = @PKG@.Gear.item(s.getItemId());
+    @IAR@ a = it == null ? null : it.getArmor();
+    Object sm = a == null ? null : a.getStatModifiers();
+    if (!(sm instanceof java.util.Map)) continue;
+    java.util.Iterator e = ((java.util.Map) sm).entrySet().iterator();
+    while (e.hasNext()) {
+      java.util.Map.Entry en = (java.util.Map.Entry) e.next();
+      if (!(en.getKey() instanceof Number) || !(en.getValue() instanceof Object[])) continue;
+      Integer k = Integer.valueOf(((Number) en.getKey()).intValue());
+      Object[] xs = (Object[]) en.getValue();
+      float sum = 0.0f;
+      for (int j = 0; j < xs.length; j++) {
+        if (!(xs[j] instanceof @SMO@)) continue;
+        @SMO@ m = (@SMO@) xs[j];
+        if (m.getCalculationType() == @CAL@.ADDITIVE && (m.getTarget() == null || m.getTarget() == @MTG@.MAX)) sum = sum + m.getAmount();
+        else @PKG@.Gear.warnOnce("lockcalc:" + s.getItemId(), s.getItemId() + " has a non-additive armor stat modifier - under-level armor keeps it (spec 3.5 part 4)");
+      }
+      if (sum == 0.0f) continue;
+      Object prev = out.get(k);
+      out.put(k, Float.valueOf((prev instanceof Float ? ((Float) prev).floatValue() : 0.0f) + sum));
+    }
+  }
+  return out;
+}""")
+
+# ================================================================= GearTag: unidentified tagging (spec 5.5, 5.6) + death / chest marks
+# MARKS: world name -> ArrayList of double[]{x, y, z} = where an NPC drops its death items THIS tick (read and written only on that
+# world's thread). CHEST: chest block-entity Ref (identity) -> its drop list, between the BEFORE-Stash and the AFTER-Stash system.
+F(gtag, "public static final java.util.concurrent.ConcurrentHashMap MARKS = new java.util.concurrent.ConcurrentHashMap();")
+F(gtag, "public static final java.util.IdentityHashMap CHEST = new java.util.IdentityHashMap();")
+F(gtag, "public static final java.util.concurrent.atomic.AtomicLong MOB_TAGS = new java.util.concurrent.atomic.AtomicLong();")
+F(gtag, "public static final java.util.concurrent.atomic.AtomicLong CHEST_TAGS = new java.util.concurrent.atomic.AtomicLong();")
+M(gtag, r"""
+public static String key(Object ext) {
+  try {
+    if (ext instanceof @EST@) { @WLD@ w = ((@EST@) ext).getWorld(); return w == null ? "?" : w.getName(); }
+    if (ext instanceof @CHS@) { @WLD@ w2 = ((@CHS@) ext).getWorld(); return w2 == null ? "?" : w2.getName(); }
+  } catch (Throwable t) { }
+  return "?";
+}""")
+M(gtag, "public static void clear(String k) { if (k != null) MARKS.remove(k); }")
+M(gtag, r"""
+public static void mark(String k, double x, double y, double z) {
+  if (k == null) return;
+  java.util.ArrayList l = (java.util.ArrayList) MARKS.get(k);
+  if (l == null) { l = new java.util.ArrayList(); MARKS.put(k, l); }
+  if (l.size() < 4096) l.add(new double[] { x, y, z });
+}""")
+M(gtag, r"""
+public static boolean any(String k) {
+  Object o = k == null ? null : MARKS.get(k);
+  return o instanceof java.util.ArrayList && !((java.util.ArrayList) o).isEmpty();
+}""")
+# within 2 blocks of a mark (the drops spawn exactly at the NPC position + (0, 1, 0), VERIFIED)
+M(gtag, r"""
+public static boolean near(String k, double x, double y, double z) {
+  Object o = k == null ? null : MARKS.get(k);
+  if (!(o instanceof java.util.ArrayList)) return false;
+  java.util.ArrayList l = (java.util.ArrayList) o;
+  for (int i = 0; i < l.size(); i++) {
+    double[] p = (double[]) l.get(i);
+    double dx = p[0] - x;
+    double dy = p[1] - y;
+    double dz = p[2] - z;
+    if (dx * dx + dy * dy + dz * dz <= 4.0) return true;
+  }
+  return false;
+}""")
+# the tag: gear with NO document only (a stack that ever sat in a player inventory or was thrown by a player carries one, spec 1.5 /
+# 10), rarity from odds.mob (col 1, src drop) or odds.chest (col 2, src chest), unidentified, no modifiers stored (5.6)
+M(gtag, r"""
+public static @IS@ unid(@IS@ s, int col) {
+  if (s == null || s.isEmpty()) return s;
+  String id = s.getItemId();
+  if (!@PKG@.GearData.isGear(id) || @PKG@.GearData.hasAnyDoc(s.getMetadata())) return s;
+  if (col == 1 && !@PKG@.GearCfg.PART_DROPS) return s;
+  if (col == 2 && !@PKG@.GearCfg.PART_CHESTS) return s;
+  if (col != 1 && col != 2) return s;
+  return @PKG@.GearData.put(s, @PKG@.GearRoll.unidDoc(id, col, col == 1 ? "drop" : "chest"), null);
+}""")
+M(gtag, r"""
+public static int tagContainer(@IC@ c, String where) {
+  if (c == null) return 0;
+  int n = 0;
+  for (int i = 0; i < c.getCapacity(); i++) {
+    @IS@ s = c.getItemStack((short) i);
+    @IS@ ns = unid(s, 2);
+    if (ns == s || ns == null) continue;
+    c.setItemStackForSlot((short) i, ns);
+    n++;
+    @BD@ d = @PKG@.GearData.gearDoc(ns.getMetadata());
+    @PKG@.GearLog.line("UNID chest " + ns.getItemId() + " " + (d == null ? "?" : @PKG@.GearDefs.R_ID[@PKG@.GearData.rarity(d)]) + " " + where);
+  }
+  if (n > 0) CHEST_TAGS.addAndGet((long) n);
+  return n;
+}""")
+M(gtag, r"""
+public static synchronized void chestMark(Object ref, String dl) {
+  if (ref == null) return;
+  if (CHEST.size() > 1024) CHEST.clear();
+  CHEST.put(ref, dl == null ? "" : dl);
+}""")
+M(gtag, "public static synchronized String chestTake(Object ref) { return ref == null ? null : (String) CHEST.remove(ref); }")
+
+# ================================================================= GearFx: per-player stat effects (spec 3.5 part 2, 4.2), helpers
+# REGEN: UUID -> long[]{lastMs, accumulatedMs}; LEECH: UUID -> double[]{heal owed, last payout ms}; MANA: UUID -> double[]{mana owed,
+# last Mana Steal ms}; WARNED: UUID -> HashSet of "slot:id:doc" of the armor pieces already announced inactive; MOVE: skyymove state.
+for _f in ("REGEN", "LEECH", "MANA", "WARNED", "MOVE"):
+    F(gfx, "public static final java.util.concurrent.ConcurrentHashMap %s = new java.util.concurrent.ConcurrentHashMap();" % _f)
+F(gfx, 'public static final String LOCK = "%s";' % LOCK_PREFIX)
+F(gfx, 'public static final String LIMITS = %s;' % jstr(", ".join(ARMOR_LIMITS)[:1500]))
+# Life Steal: lsteal % of the landed damage is owed and paid out once per steal.windowS (spec 4.2, the lock-20 shape)
+M(gfx, r"""
+public static void leech(java.util.UUID u, double heal) {
+  if (u == null || !(heal > 0.0)) return;
+  double[] v = (double[]) LEECH.get(u);
+  if (v == null) { v = new double[] { 0.0, 0.0 }; LEECH.put(u, v); }
+  v[0] = v[0] + heal;
+}""")
+# Mana Steal: when a hit lands and steal.windowS passed since the last payout, v mana is owed (paid by the next GearTick)
+M(gfx, r"""
+public static void manaSteal(java.util.UUID u, int v) {
+  if (u == null || v <= 0) return;
+  long now = System.currentTimeMillis();
+  double[] m = (double[]) MANA.get(u);
+  if (m == null) { m = new double[] { 0.0, 0.0 }; MANA.put(u, m); }
+  if ((double) now - m[1] < (double) @PKG@.GearCfg.STEAL_S * 1000.0) return;
+  m[1] = (double) now;
+  m[0] = m[0] + (double) v;
+}""")
+# never above max, never on a dead player (Health <= 0)
+M(gfx, r"""
+public static void add(@ESM@ m, int idx, float amt, boolean health) {
+  if (m == null || idx < 0 || !(amt > 0.0f)) return;
+  @ESV@ v = m.get(idx);
+  if (v == null) return;
+  float cur = v.get();
+  float max = v.getMax();
+  if (health && cur <= 0.0f) return;
+  if (cur >= max) return;
+  float a = amt;
+  if (cur + a > max) a = max - cur;
+  m.addStatValue(idx, a);
+}""")
+# spec 3.5 part 2: one StaticModifier(MAX, ADDITIVE, -sum) per stat under skyygear_lock_<stat id>, removed at 0; only written when it
+# changes. want = GearArmor.lockSums (Integer stat index -> Float).
+M(gfx, r"""
+public static void locks(@ESM@ m, java.util.HashMap want) {
+  if (m == null) return;
+  int n = m.size();
+  for (int i = 0; i < n; i++) {
+    @ESV@ v = null;
+    try { v = m.get(i); } catch (Throwable t) { v = null; }
+    if (v == null) continue;
+    String key = LOCK + @PKG@.GearView.statName(i);
+    Object w = want == null ? null : want.get(Integer.valueOf(i));
+    float amt = w instanceof Float ? ((Float) w).floatValue() : 0.0f;
+    @MODF@ cur = m.getModifier(i, key);
+    if (amt == 0.0f) { if (cur != null) m.removeModifier(i, key); continue; }
+    @SMO@ nm = new @SMO@(@MTG@.MAX, @CAL@.ADDITIVE, -amt);
+    if (cur != null && cur.equals(nm)) continue;
+    m.putModifier(i, key, nm);
+  }
+}""")
+# spec 3.5: one chat line each time a piece becomes inactive (gear.armorWarn gates only the line)
+M(gfx, r"""
+public static void warnLines(@PR@ pr, java.util.UUID u, @IC@ armor) {
+  java.util.HashSet now = new java.util.HashSet();
+  java.util.ArrayList lines = new java.util.ArrayList();
+  java.util.HashSet old = (java.util.HashSet) WARNED.get(u);
+  if (armor != null) {
+    for (int i = 0; i < armor.getCapacity(); i++) {
+      @IS@ s = armor.getItemStack((short) i);
+      String why = @PKG@.GearArmor.why(u, s);
+      if (why == null) continue;
+      @BD@ d = @PKG@.GearData.effective(s.getItemId(), s.getMetadata());
+      String k = i + ":" + s.getItemId() + ":" + (d == null ? 0 : d.toJson().hashCode());
+      now.add(k);
+      if (old == null || !old.contains(k)) lines.add(why);
+    }
+  }
+  WARNED.put(u, now);
+  if (lines.isEmpty() || pr == null || !@PKG@.Gear.notifyOn(u, "gear.armorWarn")) return;
+  for (int i = 0; i < lines.size(); i++) pr.sendMessage(@MSG@.raw("[Gear] " + (String) lines.get(i)).color(@PKG@.GearDefs.C_GOLD));
+}""")
+# the armor part (on every armor change through GearFxInvSys, and every second from GearTick): lock modifiers, the warn line, Speed
+M(gfx, r"""
+public static void armorPass(java.util.UUID u, @PR@ pr, @CB@ cb, @REF@ ref, @IC@ armor) {
+  if (u == null || cb == null || ref == null || @PKG@.Gear.busy(u)) return;
+  @ESM@ m = (@ESM@) cb.getComponent(ref, @ESM@.getComponentType());
+  java.util.HashMap want = (@PKG@.GearCfg.ARMOR_NATIVE && armor != null) ? @PKG@.GearArmor.lockSums(u, armor) : new java.util.HashMap();
+  if (m != null) locks(m, want);
+  warnLines(pr, u, armor);
+  float sp = 0.0f;
+  if (@PKG@.GearCfg.PART_STATS && armor != null) {
+    int[] t = @PKG@.GearHit.totals(u, null, armor, null);
+    sp = (float) ((double) t[@PKG@.GearHit.I_SPD] * @PKG@.GearCfg.SPEED_PER / 100.0);
+  }
+  @PKG@.GearMove.post(u, "@MOVESRC@", "flat", sp, 0.0f, 0.0f);
+  if (pr != null) @PKG@.GearMove.sync(u, pr, cb, ref, MOVE, "SkyyGear");
+}""".replace("@MOVESRC@", MOVE_SOURCE))
+# GearTick, once per second per player (world thread): the armor part, then regen / stamina every regen.periodMs, Life Steal payout
+# every steal.windowS, owed Mana Steal. part.stats off = no regen, no steal, no Speed (the armor lock is level enforcement: part.gate).
+M(gfx, r"""
+public static void second(java.util.UUID u, @PR@ pr, @CB@ cb, @REF@ ref, @INV@ inv) {
+  if (u == null || inv == null) return;
+  armorPass(u, pr, cb, ref, inv.getArmor());
+  @ESM@ m = (@ESM@) cb.getComponent(ref, @ESM@.getComponentType());
+  if (m == null) return;
+  if (!@PKG@.GearCfg.PART_STATS) { REGEN.remove(u); LEECH.remove(u); MANA.remove(u); return; }
+  boolean dead = cb.getComponent(ref, @DTHC@.getComponentType()) != null;
+  long now = System.currentTimeMillis();
+  int[] t = @PKG@.GearStats.totals(u, inv);
+  long[] rg = (long[]) REGEN.get(u);
+  if (rg == null) { rg = new long[] { now, 0L }; REGEN.put(u, rg); }
+  long el = now - rg[0];
+  if (el < 0L) el = 0L;
+  if (el > 5000L) el = 5000L;
+  rg[0] = now;
+  rg[1] = rg[1] + el;
+  long per = (long) @PKG@.GearCfg.REGEN_MS;
+  if (per < 250L) per = 250L;
+  if (rg[1] >= per) {
+    long n = rg[1] / per;
+    rg[1] = rg[1] - n * per;
+    if (!dead) {
+      double hp = (double) n * (double) t[@PKG@.GearHit.I_HPR] * (1.0 + (double) t[@PKG@.GearHit.I_HPRP] / 100.0);
+      if (hp > 0.0) add(m, @DST@.getHealth(), (float) hp, true);
+      double sta = (double) n * (double) t[@PKG@.GearHit.I_STAM];
+      if (sta > 0.0) add(m, @DST@.getStamina(), (float) sta, false);
+    }
+  }
+  double[] lv = (double[]) LEECH.get(u);
+  if (lv != null && lv[0] > 0.0 && (double) now - lv[1] >= (double) @PKG@.GearCfg.STEAL_S * 1000.0) {
+    if (!dead) add(m, @DST@.getHealth(), (float) lv[0], true);
+    lv[0] = 0.0;
+    lv[1] = (double) now;
+  }
+  double[] mv = (double[]) MANA.get(u);
+  if (mv != null && mv[0] > 0.0) {
+    if (!dead) add(m, @DST@.getMana(), (float) mv[0], false);
+    mv[0] = 0.0;
+  }
+}""")
+M(gfx, r"""
+public static void forget(java.util.UUID u) {
+  if (u == null) return;
+  REGEN.remove(u); LEECH.remove(u); MANA.remove(u); WARNED.remove(u); MOVE.remove(u);
+  try { @PKG@.GearMove.post(u, "@MOVESRC@", "flat", 0.0f, 0.0f, 0.0f); } catch (Throwable t) { }
+}""".replace("@MOVESRC@", MOVE_SOURCE))
+
+# ================================================================= damage systems (spec 4.3 order): GearHitSys -> engine armor ->
+# GearArmorSys -> GearTrueSys (Filter group, ordered with SystemDependency), GearLeechSys (Inspect group: the landed amount)
+def dmg_system(cls, ctor, group, dep_field, dep_order, dep_expr, body):
+    F(cls, "public java.util.Set deps;")
+    F(cls, "public boolean ordered;")
+    if dep_field:
+        F(cls, "public static Class %s;" % dep_field)
+    C(cls, r"""
+public %s(boolean ordered) {
+  super();
+  this.deps = new java.util.HashSet();
+  Class dc = %s;
+  this.ordered = ordered && dc != null;
+  if (this.ordered) this.deps.add(new @SDEP@(@ORD@.%s, dc));
+}""" % (ctor, dep_expr, dep_order))
+    M(cls, "public @QRY@ getQuery() { return @QRY@.any(); }")
+    M(cls, "public @SG@ getGroup() { return @DMOD@.get().%s(); }" % group)
+    M(cls, "public java.util.Set getDependencies() { return this.deps; }")
+    M(cls, r"""
+public void handle(int idx, @ACH@ chunk, @ST@ st, @CB@ buf, @EV@ ev) {
+  try {
+    if (!(ev instanceof @DMG@)) return;
+    @DMG@ d = (@DMG@) ev;
+%s
+  } catch (Throwable t) { @PKG@.Gear.warnOnce("%s", "%s failed: " + t); }
+}""" % (body, ctor, ctor))
+
+
+# GearHitSys (Filter, BEFORE ArmorDamageReduction): spec 3.4 gate (main hand + utility slot, projectiles by their launch record, the
+# SkyyClasses shot window), 4.3 offence stats on weapon hits, then the pre-armor amount of a player victim wearing an inactive piece
+dmg_system(ghsy, "GearHitSys", "getFilterDamageGroup", "ADR", "BEFORE", "ADR", r"""
+    if (d.isCancelled()) return;
+    @REF@ vic = chunk.getReferenceTo(idx);
+    Object[] info = null;
+    @DSRC@ src = d.getSource();
+    if (src instanceof @DENT@) {
+      java.util.UUID u = null;
+      @PR@ pr = null;
+      @IS@ main = null;
+      @IS@ ut = null;
+      @REF@ att = null;
+      boolean shot = false;
+      String[] bad = null;
+      @PKG@.GearShot rec = null;
+      if (src instanceof @DPRJ@) rec = @PKG@.GearShotTrack.find(buf, ((@DPRJ@) src).getProjectile());
+      if (rec != null) {
+        u = rec.shooter;
+        main = rec.main;
+        ut = rec.util;
+        shot = true;
+        if (rec.bad != null) bad = new String[] { rec.bad, rec.title, rec.body };
+        pr = @UNI@.get().getPlayer(u);
+        try { att = ((@EST@) buf.getExternalData()).getRefFromUUID(u); } catch (Throwable t0) { att = null; }
+      } else {
+        att = ((@DENT@) src).getRef();
+        if (att != null && att.isValid()) pr = (@PR@) buf.getComponent(att, @PR@.getComponentType());
+        if (pr != null) {
+          u = pr.getUuid();
+          main = @INVC@.getItemInHand(buf, att);
+          @UTIL@ uc = (@UTIL@) buf.getComponent(att, @UTIL@.getComponentType());
+          ut = uc == null ? null : uc.getActiveItem();
+          bad = @PKG@.GearHit.judge(u, main, false);
+          if (bad == null) bad = @PKG@.GearHit.judge(u, ut, true);
+          if (bad == null) {
+            @PKG@.GearShot lb = @PKG@.GearShotTrack.liveBad(u);
+            if (lb != null) bad = new String[] { lb.bad, lb.title, lb.body };
+          }
+        }
+      }
+      if (u != null && bad != null) {
+        d.setAmount(0.0f);
+        d.setCancelled(true);
+        if (vic != null) buf.tryRemoveComponent(vic, @KBC@.getComponentType());
+        if (pr != null && pr.isValid()) @PKG@.GearGate.popup(pr, u, bad[0], bad[1], bad[2]);
+        return;
+      }
+      if (u != null && @PKG@.GearCfg.PART_STATS) {
+        boolean spell = shot && main != null && !main.isEmpty() && @PKG@.GearData.isSpell(main.getItemId());
+        if (spell || @PKG@.GearHit.family(d.getCause()) > 0) {
+          @IC@ arm = null;
+          if (att != null && att.isValid()) {
+            @ARMC@ ac = (@ARMC@) buf.getComponent(att, @ARMC@.getComponentType());
+            arm = ac == null ? null : ac.getInventory();
+          }
+          boolean[] ok = new boolean[1];
+          int[] t = @PKG@.GearHit.totals(u, main, arm, ok);
+          if (ok[0]) {
+            java.util.concurrent.ThreadLocalRandom rnd = java.util.concurrent.ThreadLocalRandom.current();
+            float a0 = d.getAmount();
+            double a = @PKG@.GearHit.hitAmount((double) a0, t, spell, rnd.nextDouble(), rnd.nextDouble());
+            if (a != (double) a0) d.setAmount((float) a);
+            info = @PKG@.GearHit.info(u, t);
+          }
+        }
+      }
+    }
+    if (this.ordered && @PKG@.GearCfg.ARMOR_NATIVE && vic != null) {
+      @PR@ vpr = (@PR@) buf.getComponent(vic, @PR@.getComponentType());
+      if (vpr != null) {
+        @ARMC@ vac = (@ARMC@) buf.getComponent(vic, @ARMC@.getComponentType());
+        @IC@ va = vac == null ? null : vac.getInventory();
+        if (va != null && @PKG@.GearArmor.hasInactive(vpr.getUuid(), va)) {
+          if (info == null) info = @PKG@.GearHit.info(null, null);
+          info[0] = Float.valueOf(d.getAmount());
+        }
+      }
+    }
+    if (info != null) @PKG@.GearHit.put(d, info);""")
+# GearArmorSys (Filter, AFTER ArmorDamageReduction): spec 3.5 part 3 (the engine formula over only the active pieces) and Defense
+# (x scale / (scale + def), player victims, damage with an entity source; environment damage untouched, Q17)
+dmg_system(garsy, "GearArmorSys", "getFilterDamageGroup", "ADR", "AFTER", "ADR", r"""
+    if (d.isCancelled()) return;
+    @REF@ vic = chunk.getReferenceTo(idx);
+    if (vic == null) return;
+    @PR@ vpr = (@PR@) buf.getComponent(vic, @PR@.getComponentType());
+    if (vpr == null) return;
+    java.util.UUID vu = vpr.getUuid();
+    @ARMC@ vac = (@ARMC@) buf.getComponent(vic, @ARMC@.getComponentType());
+    @IC@ full = vac == null ? null : vac.getInventory();
+    if (full == null) return;
+    Object[] info = @PKG@.GearHit.get(d);
+    if (this.ordered && @PKG@.GearCfg.ARMOR_NATIVE && info != null && info[0] instanceof Float) {
+      float pre = ((Float) info[0]).floatValue();
+      @WLD@ w = null;
+      try { w = ((@EST@) buf.getExternalData()).getWorld(); } catch (Throwable t0) { w = null; }
+      boolean pen = @ITU@.canApplyItemStackPenalties(vic, buf);
+      @ECC@ ecc = (@ECC@) chunk.getComponent(idx, @ECC@.getComponentType());
+      float f = @PKG@.GearArmor.reduce(pre, d.getCause(), @ADRC@.getResistanceModifiers(w, full, pen, ecc));
+      float a = @PKG@.GearArmor.reduce(pre, d.getCause(), @ADRC@.getResistanceModifiers(w, @PKG@.GearArmor.activeCopy(vu, full), pen, ecc));
+      float cur = d.getAmount();
+      float nu = @PKG@.GearArmor.correct(cur, f, a);
+      if (nu != cur) d.setAmount(nu);
+    }
+    if (@PKG@.GearCfg.PART_STATS && d.getSource() instanceof @DENT@) {
+      int[] t = @PKG@.GearHit.totals(vu, null, full, null);
+      int def = t[@PKG@.GearHit.I_DEF];
+      if (def > 0) {
+        double sc = (double) @PKG@.GearCfg.DEF_SCALE;
+        d.setAmount((float) ((double) d.getAmount() * sc / (sc + (double) def)));
+      }
+    }""")
+# GearTrueSys (Filter, AFTER GearArmorSys): + True Damage, so neither Hytale armor nor Defense reduces it (spec 4.2)
+dmg_system(gtsy, "GearTrueSys", "getFilterDamageGroup", "AFTERSYS", "AFTER", "AFTERSYS", r"""
+    if (d.isCancelled() || !@PKG@.GearCfg.PART_STATS) return;
+    Object[] info = @PKG@.GearHit.get(d);
+    if (info == null || !(info[1] instanceof Integer)) return;
+    int td = ((Integer) info[1]).intValue();
+    if (td > 0) d.setAmount(d.getAmount() + (float) td);""")
+# GearLeechSys (Inspect: after the damage landed): Life Steal owed, Mana Steal owed; the stat writes happen in GearTick (no stat write
+# inside the damage dispatch, the SkyyClasses PriestHealSys rule)
+dmg_system(glsy, "GearLeechSys", "getInspectDamageGroup", None, "AFTER", "null", r"""
+    Object[] info = @PKG@.GearHit.take(d);
+    if (info == null || d.isCancelled() || !@PKG@.GearCfg.PART_STATS) return;
+    java.util.UUID u = info[4] instanceof java.util.UUID ? (java.util.UUID) info[4] : null;
+    if (u == null) return;
+    float dealt = d.getAmount();
+    if (!(dealt > 0.0f)) return;
+    int ls = ((Integer) info[2]).intValue();
+    if (ls > 0) @PKG@.GearFx.leech(u, (double) dealt * (double) ls / 100.0);
+    int ms = ((Integer) info[3]).intValue();
+    if (ms > 0) @PKG@.GearFx.manaSteal(u, ms);""")
+C(ghsyU, "public GearHitSysU() { super(false); }")
+C(garsU, "public GearArmorSysU() { super(false); }")
+C(gtsyU, "public GearTrueSysU() { super(false); }")
+
+# ================================================================= GearDeathMark (BEFORE DropDeathItems) + GearDropSys (spec 5.5 mobs)
+F(gdm, "public java.util.Set deps;")
+F(gdm, "public static Class DDI;")
+C(gdm, r"""
+public GearDeathMark(boolean ordered) {
+  super();
+  this.deps = new java.util.HashSet();
+  if (ordered && DDI != null) this.deps.add(new @SDEP@(@ORD@.BEFORE, DDI));
+}""")
+M(gdm, "public @QRY@ getQuery() { return @QRY@.and(new @QRY@[] { (@QRY@) @NPCE@.getComponentType(), (@QRY@) @DTHC@.getComponentType() }); }")
+M(gdm, "public java.util.Set getDependencies() { return this.deps; }")
+M(gdm, "public boolean isParallel(int a, int b) { return false; }")
+# once per world tick, before the chunks: last tick's marks go (the window is exactly one tick, spec 5.5 step 3)
+M(gdm, r"""
+public void tick(float dt, int si, @ST@ store) {
+  try { @PKG@.GearTag.clear(@PKG@.GearTag.key(store.getExternalData())); } catch (Throwable t) { }
+  super.tick(dt, si, store);
+}""")
+# the DropDeathItems condition, copied (bytecode 2026-09-28): DeathComponent items-loss mode ALL, a role that has not dropped yet,
+# dropping instantly or with a DeferredCorpseRemoval that is due (or none)
+M(gdm, r"""
+public void tick(float dt, int idx, @ACH@ chunk, @ST@ store, @CB@ cb) {
+  try {
+    if (!@PKG@.GearCfg.PART_DROPS) return;
+    @DTHC@ dc = (@DTHC@) chunk.getComponent(idx, @DTHC@.getComponentType());
+    if (dc == null || dc.getItemsLossMode() != @ILM@.ALL) return;
+    @NPCE@ npc = (@NPCE@) chunk.getComponent(idx, @NPCE@.getComponentType());
+    if (npc == null) return;
+    @ROLE@ role = npc.getRole();
+    if (role == null || role.hasDroppedDeathItems()) return;
+    if (!role.isDropDeathItemsInstantly()) {
+      @DCR@ dcr = (@DCR@) chunk.getComponent(idx, @DCR@.getComponentType());
+      if (dcr != null && !dcr.shouldRemove()) return;
+    }
+    @TC@ tc = (@TC@) chunk.getComponent(idx, @TC@.getComponentType());
+    if (tc == null || tc.getPosition() == null) return;
+    @VEC@ p = tc.getPosition();
+    @PKG@.GearTag.mark(@PKG@.GearTag.key(store.getExternalData()), p.x, p.y + 1.0, p.z);
+  } catch (Throwable t) { @PKG@.Gear.warnOnce("deathmark", "death drop mark failed: " + t); }
+}""")
+C(gdmU, "public GearDeathMarkU() { super(false); }")
+F(gdrs, "public @QRY@ query;")
+C(gdrs, "public GearDropSys() { super(); this.query = null; }")
+M(gdrs, r"""
+public @QRY@ getQuery() {
+  if (this.query == null) this.query = @QRY@.and(new @QRY@[] { (@QRY@) @ITC@.getComponentType(), (@QRY@) @TC@.getComponentType() });
+  return this.query;
+}""")
+M(gdrs, r"""
+public void onEntityAdded(@REF@ ref, @ADDR@ reason, @ST@ st, @CB@ buf) {
+  try {
+    if (reason != @ADDR@.SPAWN || !@PKG@.GearCfg.PART_DROPS) return;
+    String k = @PKG@.GearTag.key(st.getExternalData());
+    if (!@PKG@.GearTag.any(k)) return;
+    @ITC@ ic = (@ITC@) buf.getComponent(ref, @ITC@.getComponentType());
+    if (ic == null) return;
+    @IS@ s = ic.getItemStack();
+    if (s == null || s.isEmpty() || !@PKG@.GearData.isGear(s.getItemId()) || @PKG@.GearData.hasAnyDoc(s.getMetadata())) return;
+    @TC@ tc = (@TC@) buf.getComponent(ref, @TC@.getComponentType());
+    if (tc == null || tc.getPosition() == null) return;
+    @VEC@ p = tc.getPosition();
+    if (!@PKG@.GearTag.near(k, p.x, p.y, p.z)) return;
+    @IS@ ns = @PKG@.GearTag.unid(s, 1);
+    if (ns == s || ns == null) return;
+    ic.setItemStack(ns);
+    @PKG@.GearTag.MOB_TAGS.incrementAndGet();
+    @BD@ d = @PKG@.GearData.gearDoc(ns.getMetadata());
+    @PKG@.GearLog.line("UNID mob " + ns.getItemId() + " " + (d == null ? "?" : @PKG@.GearDefs.R_ID[@PKG@.GearData.rarity(d)]) + " " + k + " " + Math.round(p.x) + " " + Math.round(p.y) + " " + Math.round(p.z));
+  } catch (Throwable t) { @PKG@.Gear.warnOnce("droptag", "death drop tag failed: " + t); }
+}""")
+M(gdrs, "public void onEntityRemove(@REF@ ref, @REMR@ reason, @ST@ st, @CB@ buf) { }")
+
+# ================================================================= GearChestMark / GearChestTag around StashPlugin$StashSystem (5.5 chests)
+def chest_system(cls, ctor, order, body):
+    F(cls, "public @QRY@ query;")
+    F(cls, "public java.util.Set deps;")
+    if ctor == "GearChestMark":
+        F(cls, "public static Class STASH;")
+    C(cls, r"""
+public %s(boolean ordered) {
+  super();
+  this.query = @QRY@.and(new @QRY@[] { (@QRY@) @ICB@.getComponentType(), (@QRY@) @BSI@.getComponentType() });
+  this.deps = new java.util.HashSet();
+  if (ordered && @PKG@.GearChestMark.STASH != null) this.deps.add(new @SDEP@(@ORD@.%s, @PKG@.GearChestMark.STASH));
+}""" % (ctor, order))
+    M(cls, "public @QRY@ getQuery() { return this.query; }")
+    M(cls, "public java.util.Set getDependencies() { return this.deps; }")
+    M(cls, r"""
+public void onEntityAdded(@REF@ ref, @ADDR@ reason, @ST@ store, @CB@ cb) {
+  try {
+%s
+  } catch (Throwable t) { @PKG@.Gear.warnOnce("%s", "%s failed: " + t); }
+}""" % (body, ctor, ctor))
+    M(cls, "public void onEntityRemove(@REF@ ref, @REMR@ reason, @ST@ store, @CB@ cb) { }")
+
+
+# BEFORE the stash roll: a container that has a drop list now (only world generation / prefabs / an admin set one) is remembered
+chest_system(gcm1, "GearChestMark", "BEFORE", r"""
+    if (!@PKG@.GearCfg.PART_CHESTS) return;
+    @ICB@ icb = (@ICB@) store.getComponent(ref, @ICB@.getComponentType());
+    if (icb == null) return;
+    String dl = icb.getDroplist();
+    if (dl == null || dl.length() == 0) return;
+    @PKG@.GearTag.chestMark(ref, dl);""")
+# AFTER the stash roll, still inside the engine's own add: every undocumented gear stack in that container becomes unidentified,
+# before any player can open the chest (spec 5.5 chests step 2-3)
+chest_system(gcm2, "GearChestTag", "AFTER", r"""
+    String dl = @PKG@.GearTag.chestTake(ref);
+    if (dl == null || !@PKG@.GearCfg.PART_CHESTS) return;
+    @ICB@ icb = (@ICB@) store.getComponent(ref, @ICB@.getComponentType());
+    if (icb == null) return;
+    @PKG@.GearTag.tagContainer(icb.getItemContainer(), "droplist " + dl + " in " + @PKG@.GearTag.key(store.getExternalData()));""")
+C(gcm1U, "public GearChestMarkU() { super(false); }")
+C(gcm2U, "public GearChestTagU() { super(false); }")
+
+# ================================================================= GearFxInvSys (armor changes apply at once) + GearByeB (cleanup)
+event_system(gfxi, "GearFxInvSys", ICE, PLAYER_Q, r"""
+    @REF@ r = chunk.getReferenceTo(idx);
+    if (r == null) return;
+    @PR@ pr = (@PR@) st.getComponent(r, @PR@.getComponentType());
+    @PLA@ p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+    if (pr == null || p == null || p.getInventory() == null) return;
+    @PKG@.GearFx.armorPass(pr.getUuid(), pr, buf, r, p.getInventory().getArmor());""")
+gbyb.addInterface(pool.get("java.util.function.Consumer"))
+C(gbyb, "public GearByeB() { }")
+M(gbyb, r"""
+public void accept(Object ev) {
+  try {
+    @PR@ pr = ((@PDEV@) ev).getPlayerRef();
+    if (pr != null) @PKG@.GearFx.forget(pr.getUuid());
+  } catch (Throwable t) { }
+}""")
+
+# ================================================================= GearFx.setup: every PART B registration (PARTB_SETUP calls it)
+# ordered registrations fall back to an unordered class + one WARN (spec 5.5; SkyyExploration ChestSpawnLateSys pattern)
+M(gfx, r"""
+public static Class cls(String n) {
+  try { return Class.forName(n); } catch (Throwable t) { return null; }
+}""")
+M(gfx, r"""
+public static void setup(@JPLG@ pl) {
+  Class adr = cls("@ADRC@");
+  @PKG@.GearHitSys.ADR = adr;
+  @PKG@.GearArmorSys.ADR = adr;
+  @PKG@.GearTrueSys.AFTERSYS = @PKG@.GearArmorSys.class;
+  if (adr == null) @PKG@.Gear.warn("DamageSystems$ArmorDamageReduction not found - under-level armor keeps its native resistance (spec 3.5 part 3 off)");
+  try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearShotTrack()); } catch (Throwable t0) { @PKG@.Gear.warn("GearShotTrack could not be registered: " + t0); }
+  try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearHitSys(true)); }
+  catch (Throwable t1) {
+    @PKG@.Gear.warn("could not order GearHitSys before ArmorDamageReduction (" + t1 + ") - unordered fallback: under-level armor keeps its native resistance");
+    try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearHitSysU()); } catch (Throwable t1b) { @PKG@.Gear.warn("GearHitSysU could not be registered: " + t1b); }
+  }
+  try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearArmorSys(true)); }
+  catch (Throwable t2) {
+    @PKG@.Gear.warn("could not order GearArmorSys after ArmorDamageReduction (" + t2 + ") - unordered fallback: Defense only");
+    try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearArmorSysU()); } catch (Throwable t2b) { @PKG@.Gear.warn("GearArmorSysU could not be registered: " + t2b); }
+  }
+  try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearTrueSys(true)); }
+  catch (Throwable t3) {
+    @PKG@.Gear.warn("could not order GearTrueSys after GearArmorSys (" + t3 + ") - unordered fallback: armor may reduce True Damage");
+    try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearTrueSysU()); } catch (Throwable t3b) { @PKG@.Gear.warn("GearTrueSysU could not be registered: " + t3b); }
+  }
+  try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearLeechSys(false)); } catch (Throwable t4) { @PKG@.Gear.warn("GearLeechSys could not be registered: " + t4); }
+  Class ddi = cls("com.hypixel.hytale.server.npc.systems.NPCDamageSystems$DropDeathItems");
+  @PKG@.GearDeathMark.DDI = ddi;
+  try {
+    pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearDeathMark(true));
+    if (ddi == null) @PKG@.Gear.warn("NPCDamageSystems$DropDeathItems not found - the death-drop mark runs unordered (mob gear may stay Normal)");
+  } catch (Throwable t5) {
+    @PKG@.Gear.warn("could not order the death-drop mark before NPCDamageSystems$DropDeathItems (" + t5 + ") - unordered fallback (mob gear may stay Normal)");
+    try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearDeathMarkU()); } catch (Throwable t5b) { @PKG@.Gear.warn("GearDeathMarkU could not be registered: " + t5b); }
+  }
+  try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearDropSys()); } catch (Throwable t6) { @PKG@.Gear.warn("GearDropSys could not be registered: " + t6); }
+  Class stash = cls("com.hypixel.hytale.builtin.adventure.stash.StashPlugin$StashSystem");
+  @PKG@.GearChestMark.STASH = stash;
+  if (stash == null) @PKG@.Gear.warn("StashPlugin$StashSystem not found - nobody fills world loot chests, chest tagging runs unordered");
+  try { pl.getChunkStoreRegistry().registerSystem(new @PKG@.GearChestMark(true)); }
+  catch (Throwable t7) {
+    @PKG@.Gear.warn("could not order the loot chest mark before StashPlugin$StashSystem (" + t7 + ") - Hytale:Stash is not loaded; unordered fallback");
+    try { pl.getChunkStoreRegistry().registerSystem(new @PKG@.GearChestMarkU()); } catch (Throwable t7b) { @PKG@.Gear.warn("GearChestMarkU could not be registered: " + t7b); }
+  }
+  try { pl.getChunkStoreRegistry().registerSystem(new @PKG@.GearChestTag(true)); }
+  catch (Throwable t8) {
+    @PKG@.Gear.warn("could not order the loot chest tag after StashPlugin$StashSystem (" + t8 + ") - unordered fallback");
+    try { pl.getChunkStoreRegistry().registerSystem(new @PKG@.GearChestTagU()); } catch (Throwable t8b) { @PKG@.Gear.warn("GearChestTagU could not be registered: " + t8b); }
+  }
+  try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearFxInvSys()); } catch (Throwable t9) { @PKG@.Gear.warn("GearFxInvSys could not be registered: " + t9); }
+  @PKG@.GearMove.checkProto("SkyyGear");
+  pl.getEventRegistry().registerGlobal(@PDEV@.class, new @PKG@.GearByeB());
+  if (LIMITS.length() > 0) @PKG@.Gear.info("known limit (spec 3.5 part 4): under-level armor keeps these rarely used vanilla effects: " + LIMITS);
+}""")
+
 # GearTick: 1 s per player (world thread). Re-reads the gate levels (spec 3.3 / 3.6 / 6.3) and marks the player dirty when a level,
 # the class skill, the profile or the config changed, so the scan re-renders exactly the items whose visible lines changed.
 F(gtk, "public static final java.util.concurrent.ConcurrentHashMap CLOCK = new java.util.concurrent.ConcurrentHashMap();")
@@ -3690,6 +4772,439 @@ protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
   }
 }""")
 
+# ####################################################################################################################################
+# PART B (2/2): /identify (spec 5.7, pages 5.8). The identify core (GearIdent, write safety 1.7), the vanilla-look page (the /reforge
+# page's frame, list rows, buttons and sounds from GearUi) and the player command.
+# ####################################################################################################################################
+# unidentified gear on the player, in the SCAN order (spec 5.7 page left side)
+M(gidn, r"""
+public static java.util.ArrayList rows(@INV@ inv) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  if (inv == null) return out;
+  for (int k = 0; k < @PKG@.GearStamp.SCAN.length; k++) {
+    @IC@ c = @PKG@.GearStamp.section(inv, @PKG@.GearStamp.SCAN[k]);
+    if (c == null) continue;
+    int cap = c.getCapacity();
+    for (int i = 0; i < cap; i++) {
+      @IS@ it = c.getItemStack((short) i);
+      if (it == null || it.isEmpty() || !@PKG@.GearData.isGear(it.getItemId())) continue;
+      @BD@ d = @PKG@.GearData.effective(it.getItemId(), it.getMetadata());
+      if (d == null || @PKG@.GearData.identified(d)) continue;
+      out.add(new int[] { @PKG@.GearStamp.SCAN[k], i });
+    }
+  }
+  return out;
+}""")
+M(gidn, r"""
+public static long costOf(@IS@ it) {
+  if (it == null || it.isEmpty()) return 0L;
+  @BD@ d = @PKG@.GearData.effective(it.getItemId(), it.getMetadata());
+  if (d == null) return 0L;
+  return @PKG@.GearCfg.costIdentify(@PKG@.GearData.rarity(d), @PKG@.GearLevel.level(it.getItemId(), d));
+}""")
+# why a stack cannot be identified (null = it can)
+M(gidn, r"""
+public static String refuse(@IS@ it, @BD@ d) {
+  if (it == null || it.isEmpty()) return "Pick an unidentified weapon or armor piece first.";
+  String id = it.getItemId();
+  if (!@PKG@.GearData.isGear(id)) return @PKG@.Gear.itemName(id) + " is not gear - only weapons and armor get identified.";
+  int st = @PKG@.GearData.state(it.getMetadata());
+  if (st == 3) return "The gear data on this item is unreadable - an admin can check it with /gear read.";
+  if (st == 4) return "This item comes from a newer SkyyGear - it cannot be changed here.";
+  if (d == null) return "The gear data on this item is unreadable.";
+  if (@PKG@.GearData.identified(d)) return "It is already identified.";
+  if (it.getQuantity() > 1) return "Identify works on one item at a time - split this stack of " + it.getQuantity() + " first.";
+  return null;
+}""")
+# spec 5.7 flow + 1.7 write safety (the GearForge.reforge shape): same id + fingerprint in the same slot, coins TAKEN FIRST, the
+# modifiers roll for the item's rarity and level (GearRoll.identify: id true, idAt, idBy), the new stack goes into the SAME slot,
+# REFUND on any failure. Object[] { Integer code (1 done, 0 refused, -1 failed), String message, IS new stack, BD before, BD after,
+# Long cost }. No Smithing XP (none is designed).
+M(gidn, r"""
+public static Object[] identify(@IC@ c, int slot, String expId, String expFp, java.util.UUID u, String who, boolean free) {
+  @IS@ it = null;
+  try { if (c != null && slot >= 0 && slot < c.getCapacity()) it = c.getItemStack((short) slot); } catch (Throwable t0) { it = null; }
+  if (!@PKG@.GearForge.same(it, expId, expFp)) return new Object[] { Integer.valueOf(0), "That item moved or changed - pick it again.", null, null, null, Long.valueOf(0L) };
+  String id = it.getItemId();
+  @BD@ d = @PKG@.GearData.effective(id, it.getMetadata());
+  String why = refuse(it, d);
+  if (why != null) return new Object[] { Integer.valueOf(0), why, null, null, null, Long.valueOf(0L) };
+  int r = @PKG@.GearData.rarity(d);
+  int lvl = @PKG@.GearLevel.level(id, d);
+  long cost = free ? 0L : @PKG@.GearCfg.costIdentify(r, lvl);
+  if (cost > 0L) {
+    int t = @PKG@.GearForge.take(u, cost);
+    if (t < 0) return new Object[] { Integer.valueOf(0), "Coins are not available right now (SkyyCoins missing or your balance cannot be read). Nothing was taken.", null, null, null, Long.valueOf(0L) };
+    if (t == 0) {
+      long have = @PKG@.GearForge.purse(u);
+      return new Object[] { Integer.valueOf(0), "Not enough coins: identifying it costs " + @PKG@.Gear.fmt(cost) + (have >= 0L ? " and you have " + @PKG@.Gear.fmt(have) : "") + ".", null, null, null, Long.valueOf(0L) };
+    }
+    @PKG@.GearLog.line("TAKE " + who + " " + u + " " + cost + " identify " + id);
+  }
+  @BD@ nd = null;
+  @IS@ nu = null;
+  Object tx = null;
+  Throwable err = null;
+  try {
+    nd = @PKG@.GearRoll.identify(id, d, u);
+    nu = @PKG@.GearData.put(it, nd, u);
+    tx = c.setItemStackForSlot((short) slot, nu);
+  } catch (Throwable t) { err = t; }
+  boolean ok = err == null && nu != null && nu != it && !(tx instanceof @TXN@ && !((@TXN@) tx).succeeded());
+  if (!ok) {
+    boolean back = cost <= 0L || @PKG@.GearForge.refund(u, cost);
+    String what = err != null ? String.valueOf(err) : "the inventory refused the change";
+    @PKG@.Gear.warn("IDENTIFY FAILED for " + who + " (" + u + ") on " + id + ": " + what + (cost > 0L ? (back ? " - refunded " + cost + " coins" : " - REFUND FAILED, give back " + cost + " coins by hand") : ""));
+    if (cost > 0L) @PKG@.GearLog.line((back ? "REFUND " : "REFUND-FAILED ") + who + " " + u + " " + cost + " identify " + id + ": " + what);
+    return new Object[] { Integer.valueOf(-1), back ? "Identifying failed and nothing changed" + (cost > 0L ? " - your " + @PKG@.Gear.fmt(cost) + " coins were refunded." : ".") : "Identifying failed and the refund did not go through - an admin can find it in the server log.", null, d, null, Long.valueOf(cost) };
+  }
+  @PKG@.GearLog.line("IDENTIFY " + who + " " + u + " " + id + " " + @PKG@.GearDefs.R_ID[r] + " lv" + lvl + " [" + @PKG@.GearView.modSummary(nd) + "] cost " + cost + (free ? " (free)" : ""));
+  return new Object[] { Integer.valueOf(1), "Identified!", nu, d, nd, Long.valueOf(cost) };
+}""")
+
+# ================================================================= IdentifyPage (spec 5.7 + 5.8): the /reforge page's vanilla look
+for _f in ("public java.util.ArrayList rows;", "public int pageNo;", "public int selSec;", "public int selSlot;", "public String selId;",
+           "public String selFp;", "public String info;", "public String epoch;", "public long lastClick;", "public @BD@ revealed;",
+           "public java.util.ArrayList recent;"):
+    F(ipg, _f)
+C(ipg, r"""
+public IdentifyPage(@PR@ pr) {
+  super(pr, @LIFE@.CanDismiss);
+  this.rows = new java.util.ArrayList();
+  this.recent = new java.util.ArrayList();
+  this.pageNo = 0;
+  this.selSec = -1; this.selSlot = -1; this.selId = null; this.selFp = null;
+  this.info = ""; this.lastClick = 0L; this.revealed = null;
+  this.epoch = @PKG@.Gear.epoch(pr.getUuid());
+}""")
+M(ipg, r"""
+public void clearSel() {
+  this.selSec = -1; this.selSlot = -1; this.selId = null; this.selFp = null; this.revealed = null;
+}""")
+M(ipg, r"""
+public boolean pick(@INV@ inv, int s, int slot) {
+  @IS@ it = @PKG@.GearStamp.at(inv, s, slot);
+  if (it == null || it.isEmpty() || !@PKG@.GearData.isGear(it.getItemId())) return false;
+  @BD@ d = @PKG@.GearData.effective(it.getItemId(), it.getMetadata());
+  if (d == null || @PKG@.GearData.identified(d)) return false;
+  this.selSec = s; this.selSlot = slot; this.selId = it.getItemId(); this.selFp = @PKG@.GearForge.fp(it);
+  this.revealed = null;
+  this.info = "=" + @PKG@.GearView.nameText(it.getItemId(), d) + " is selected.";
+  return true;
+}""")
+M(ipg, r"""
+public void preselect(@INV@ inv) {
+  try {
+    if (inv == null) return;
+    if (inv.usingToolsItem()) pick(inv, 5, (int) inv.getActiveToolsSlot());
+    else pick(inv, 0, (int) inv.getActiveHotbarSlot());
+  } catch (Throwable t) { }
+}""")
+M(ipg, r"""
+public long total(@INV@ inv) {
+  long s = 0L;
+  for (int i = 0; i < this.rows.size(); i++) {
+    int[] rw = (int[]) this.rows.get(i);
+    s = s + @PKG@.GearIdent.costOf(@PKG@.GearStamp.at(inv, rw[0], rw[1]));
+  }
+  return s;
+}""")
+M(ipg, r"""
+public void detail(@UCB@ b, @UEB@ ev, java.util.UUID u, @IS@ sel) {
+  b.appendInline("#SkyyGMain", "Group #SkyyGDet { Anchor: (Width: 562); LayoutMode: Top; }");
+  b.appendInline("#SkyyGDet", "Label #SkyyGDetT { Anchor: (Height: 35); Padding: (Horizontal: 8); Text: \"\"; Style: (RenderBold: true, VerticalAlignment: Center, FontSize: 15, TextColor: #afc2c3); }");
+  b.set("#SkyyGDetT.Text", "Identify");
+  b.appendInline("#SkyyGDet", "Group { Anchor: (Height: 1); Background: #393426(0.5); }");
+  b.appendInline("#SkyyGDet", "Group #SkyyGSel { Anchor: (Height: 92); LayoutMode: Left; Padding: (Top: 12); }");
+  b.appendInline("#SkyyGSel", "Group #SkyyGSelIcon { Anchor: (Width: 72, Height: 72); Background: #000000(0.25); }");
+  if (sel != null) b.appendInline("#SkyyGSelIcon", "ItemIcon { Anchor: (Width: 64, Height: 64, Left: 4, Top: 4); ItemId: \"" + @PKG@.Gear.safe(sel.getItemId()) + "\"; }");
+  b.appendInline("#SkyyGSel", "Label { Anchor: (Width: 14, Height: 72); Text: \"\"; }");
+  b.appendInline("#SkyyGSel", "Group #SkyyGSelTxt { Anchor: (Width: 470, Height: 76); LayoutMode: Top; }");
+  if (sel == null) {
+    b.appendInline("#SkyyGSelTxt", "Label #SkyyGSelName { Anchor: (Height: 30); Text: \"\"; Style: (FontSize: 20, RenderBold: true, TextColor: #ffffff, VerticalAlignment: Center); }");
+    b.set("#SkyyGSelName.Text", "Nothing selected");
+    b.appendInline("#SkyyGSelTxt", "Label #SkyyGSelSub { Anchor: (Height: 24); Text: \"\"; Style: (FontSize: 15, TextColor: #96a9be, VerticalAlignment: Center); }");
+    b.set("#SkyyGSelSub.Text", "Pick an item from Unidentified gear - it stays in its own slot.");
+    b.appendInline("#SkyyGDet", "Group { Anchor: (Height: 1); Background: #2b3542; }");
+    if (!this.recent.isEmpty()) {
+      b.appendInline("#SkyyGDet", "Label #SkyyGRecH { Anchor: (Height: 32); Text: \"\"; Style: (FontSize: 16, RenderBold: true, TextColor: #ffffff, VerticalAlignment: Center); }");
+      b.set("#SkyyGRecH.Text", "Revealed");
+      for (int i = 0; i < this.recent.size() && i < 14; i++) {
+        b.appendInline("#SkyyGDet", "Label #SkyyGRec" + i + " { Anchor: (Height: 24); Text: \"\"; Style: (FontSize: 14, TextColor: #ffffff, VerticalAlignment: Center); }");
+        b.set("#SkyyGRec" + i + ".Text", (String) this.recent.get(i));
+      }
+      return;
+    }
+    b.appendInline("#SkyyGDet", "Label #SkyyGCostH { Anchor: (Height: 32); Text: \"\"; Style: (FontSize: 16, RenderBold: true, TextColor: #ffffff, VerticalAlignment: Center); }");
+    b.set("#SkyyGCostH.Text", "Identify cost by rarity");
+    for (int r = 0; r < @PKG@.GearDefs.NR; r++) {
+      b.appendInline("#SkyyGDet", "Label #SkyyGCost" + r + " { Anchor: (Height: 26); Text: \"\"; Style: (FontSize: 15, RenderBold: true, TextColor: " + @PKG@.ReforgePage.rarHex(r) + ", VerticalAlignment: Center); }");
+      long per = @PKG@.GearCfg.CI_PER[r];
+      b.set("#SkyyGCost" + r + ".Text", @PKG@.GearDefs.R_NAME[r] + ": " + @PKG@.Gear.fmt(@PKG@.GearCfg.CI_BASE[r]) + " coins" + (per > 0L ? " + " + @PKG@.Gear.fmt(per) + " per item level" : ""));
+    }
+    b.appendInline("#SkyyGDet", "Label #SkyyGHow1 { Anchor: (Height: 30); Text: \"\"; Style: (FontSize: 15, TextColor: #878e9c, VerticalAlignment: Center); }");
+    b.set("#SkyyGHow1.Text", "The rarity is already set - identifying reveals the modifiers.");
+    b.appendInline("#SkyyGDet", "Label #SkyyGHow2 { Anchor: (Height: 26); Text: \"\"; Style: (FontSize: 15, TextColor: #878e9c, VerticalAlignment: Center); }");
+    b.set("#SkyyGHow2.Text", "Unidentified weapons deal no damage and unidentified armor gives no stats.");
+    return;
+  }
+  String id = sel.getItemId();
+  @BD@ d = @PKG@.GearData.effective(id, sel.getMetadata());
+  int r = d == null ? 0 : @PKG@.GearData.rarity(d);
+  int lvl = @PKG@.GearLevel.level(id, d);
+  boolean done = d != null && @PKG@.GearData.identified(d);
+  b.appendInline("#SkyyGSelTxt", "Label #SkyyGSelName { Anchor: (Height: 30); Text: \"\"; Style: (FontSize: 20, RenderBold: true, TextColor: " + @PKG@.ReforgePage.rarHex(r) + ", VerticalAlignment: Center); }");
+  b.set("#SkyyGSelName.Text", d == null ? @PKG@.Gear.itemName(id) : @PKG@.GearView.nameText(id, d));
+  b.appendInline("#SkyyGSelTxt", "Label #SkyyGSelSub { Anchor: (Height: 24); Text: \"\"; Style: (FontSize: 15, RenderBold: true, TextColor: " + @PKG@.ReforgePage.rarHex(r) + ", VerticalAlignment: Center); }");
+  Object[] g = null;
+  if (d != null) g = @PKG@.GearView.gateLine(u, id, d, lvl);
+  b.set("#SkyyGSelSub.Text", @PKG@.GearDefs.R_NAME[r].toUpperCase() + " " + @PKG@.GearView.slotWord(id) + "   -   " + (g == null || ((String) g[0]).length() == 0 ? "Level " + lvl : (String) g[0]));
+  b.appendInline("#SkyyGSelTxt", "Label #SkyyGSelWhere { Anchor: (Height: 22); Text: \"\"; Style: (FontSize: 14, TextColor: #ffffff(0.6), VerticalAlignment: Center); }");
+  b.set("#SkyyGSelWhere.Text", "In your " + @PKG@.GearForge.where(this.selSec, this.selSlot) + " - it stays there while you identify it.");
+  b.appendInline("#SkyyGDet", "Group { Anchor: (Height: 1); Background: #2b3542; }");
+  b.appendInline("#SkyyGDet", "Group #SkyyGCols { Anchor: (Height: 330); LayoutMode: Left; Padding: (Top: 6); }");
+  if (done) {
+    @BD@ show = d;
+    if (this.revealed != null) show = this.revealed;
+    @PKG@.ReforgePage.column(b, "#SkyyGCols", "#SkyyGColR", "Revealed", "#ffffff", id, show, 562);
+  } else {
+    b.appendInline("#SkyyGCols", "Group #SkyyGColU { Anchor: (Width: 562); LayoutMode: Top; }");
+    b.appendInline("#SkyyGColU", "Label #SkyyGColUH { Anchor: (Height: 30); Text: \"\"; Style: (FontSize: 16, RenderBold: true, TextColor: #ffffff, VerticalAlignment: Center); }");
+    b.set("#SkyyGColUH.Text", "Unidentified");
+    b.appendInline("#SkyyGColU", "Label #SkyyGColU1 { Anchor: (Height: 24); Text: \"\"; Style: (FontSize: 15, TextColor: #878e9c, VerticalAlignment: Center); }");
+    b.set("#SkyyGColU1.Text", "Its modifiers appear when you identify it.");
+    b.appendInline("#SkyyGColU", "Label #SkyyGColU2 { Anchor: (Height: 24); Text: \"\"; Style: (FontSize: 15, TextColor: #FF5555, VerticalAlignment: Center); }");
+    b.set("#SkyyGColU2.Text", @PKG@.GearData.slotOf(id) == 2 ? "Gives no stats until identified." : "Cannot be used until identified.");
+    b.appendInline("#SkyyGColU", "Label #SkyyGColU3 { Anchor: (Height: 24); Text: \"\"; Style: (FontSize: 15, TextColor: #878e9c, VerticalAlignment: Center); }");
+    b.set("#SkyyGColU3.Text", "The modifiers roll for its rarity and level the moment you pay.");
+  }
+  long cost = d == null ? 0L : @PKG@.GearCfg.costIdentify(r, lvl);
+  long have = @PKG@.GearForge.purse(u);
+  String why = @PKG@.GearIdent.refuse(sel, d);
+  b.appendInline("#SkyyGDet", "Label #SkyyGCostTxt { Anchor: (Height: 30); Text: \"\"; Style: (FontSize: 17, RenderBold: true, TextColor: #E8A93B, VerticalAlignment: Center); }");
+  b.set("#SkyyGCostTxt.Text", done ? "Identified" : (cost > 0L ? "Cost: " + @PKG@.Gear.fmt(cost) + " coins (" + @PKG@.GearDefs.R_NAME[r] + ", level " + lvl + ")" : "Cost: free"));
+  b.appendInline("#SkyyGDet", "Label #SkyyGPurse { Anchor: (Height: 26); Text: \"\"; Style: (FontSize: 15, TextColor: #96a9be, VerticalAlignment: Center); }");
+  b.set("#SkyyGPurse.Text", have >= 0L ? "Your purse: " + @PKG@.Gear.fmt(have) + " coins" : "Your purse: unavailable (SkyyCoins)");
+  boolean poor = cost > 0L && have >= 0L && have < cost;
+  boolean off = done || why != null || poor;
+  String bt = done ? "Identified" : (why != null ? "Cannot identify" : (poor ? "Not enough coins" : "Identify"));
+  b.appendInline("#SkyyGDet", "Group #SkyyGGo { Anchor: (Height: 56); LayoutMode: Left; Padding: (Top: 8); }");
+  b.appendInline("#SkyyGGo", "Label { Anchor: (Width: 111, Height: 44); Text: \"\"; }");
+  b.appendInline("#SkyyGGo", "TextButton #SkyyGBtnId { Anchor: (Width: 340, Height: 44); Text: \"" + @PKG@.Gear.safe(bt) + "\"; " + @PKG@.GearUi.btn(off ? 3 : 0) + " }");
+  ev.addEventBinding(@BT@.Activating, "#SkyyGBtnId", @EVD@.of("a", "id"));
+}""")
+M(ipg, r"""
+public void list(@UCB@ b, @UEB@ ev, @INV@ inv) {
+  boolean t = @PKG@.GearUi.tex();
+  b.appendInline("#SkyyGMain", "Group #SkyyGListBox { Anchor: (Width: 470); LayoutMode: Top; }");
+  b.appendInline("#SkyyGListBox", "Group #SkyyGListHead { Anchor: (Height: 30); LayoutMode: Left; Padding: (Right: 15, Bottom: 5); }");
+  b.appendInline("#SkyyGListHead", "Label #SkyyGHeadItem { Anchor: (Width: 300); Text: \"\"; Style: (FontSize: 16, RenderBold: true, TextColor: #ffffff, VerticalAlignment: Center); }");
+  b.appendInline("#SkyyGListHead", "Label #SkyyGHeadRar { Anchor: (Width: 150); Text: \"\"; Style: (FontSize: 16, RenderBold: true, TextColor: #ffffff, HorizontalAlignment: End, VerticalAlignment: Center); }");
+  b.set("#SkyyGHeadItem.Text", "Unidentified gear (" + this.rows.size() + ")");
+  b.set("#SkyyGHeadRar.Text", "Rarity - Level");
+  int per = t ? 200 : 11;
+  int pages = (this.rows.size() + per - 1) / per;
+  if (pages < 1) pages = 1;
+  if (this.pageNo >= pages) this.pageNo = pages - 1;
+  if (this.pageNo < 0) this.pageNo = 0;
+  int start = this.pageNo * per;
+  if (t) b.appendInline("#SkyyGListBox", "Group #SkyyGList { Anchor: (Height: 590); LayoutMode: TopScrolling; " + @PKG@.GearUi.scroll() + " }");
+  else b.appendInline("#SkyyGListBox", "Group #SkyyGList { Anchor: (Height: 540); LayoutMode: Top; }");
+  if (this.rows.isEmpty()) {
+    b.appendInline("#SkyyGList", "Label #SkyyGEmpty1 { Anchor: (Height: 40); Text: \"\"; Style: (FontSize: 16, TextColor: #96a9be, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+    b.set("#SkyyGEmpty1.Text", "No unidentified gear on you.");
+    b.appendInline("#SkyyGList", "Label #SkyyGEmpty2 { Anchor: (Height: 30); Text: \"\"; Style: (FontSize: 15, TextColor: #878e9c, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+    b.set("#SkyyGEmpty2.Text", "Weapons and armor from mobs and loot chests arrive unidentified.");
+  }
+  for (int i = start; i < this.rows.size() && i < start + per; i++) {
+    int[] rw = (int[]) this.rows.get(i);
+    @IS@ it = @PKG@.GearStamp.at(inv, rw[0], rw[1]);
+    if (it == null || it.isEmpty()) continue;
+    String id = it.getItemId();
+    @BD@ d = @PKG@.GearData.effective(id, it.getMetadata());
+    int r = d == null ? 0 : @PKG@.GearData.rarity(d);
+    int lvl = @PKG@.GearLevel.level(id, d);
+    boolean on = rw[0] == this.selSec && rw[1] == this.selSlot;
+    String rid = "#SkyyGRow" + i;
+    b.appendInline("#SkyyGList", "Button " + rid + " { Anchor: (Height: 44); LayoutMode: Left; Padding: (Full: 6); " + @PKG@.GearUi.rowStyle(on) + " ItemIcon { Anchor: (Width: 32, Height: 32); ItemId: \"" + @PKG@.Gear.safe(id) + "\"; } Label #SkyyGRowName" + i + " { Anchor: (Width: 262); Padding: (Horizontal: 10, Vertical: 5); Text: \"\"; Style: (FontSize: 15, RenderBold: true, TextColor: " + @PKG@.ReforgePage.rarHex(r) + ", VerticalAlignment: Center); } Label #SkyyGRowSub" + i + " { Anchor: (Width: 140); Padding: (Horizontal: 10, Vertical: 5); Text: \"\"; Style: (FontSize: 14, TextColor: #ffffff(0.6), HorizontalAlignment: End, VerticalAlignment: Center); } }");
+    b.set("#SkyyGRowName" + i + ".Text", (d == null ? @PKG@.Gear.itemName(id) : @PKG@.GearView.nameText(id, d)) + (on ? "  (selected)" : ""));
+    b.set("#SkyyGRowSub" + i + ".Text", @PKG@.GearDefs.R_NAME[r] + " - Lv " + lvl);
+    b.appendInline("#SkyyGList", "Group { Anchor: (Height: 2); Background: #ffffff(0.6); }");
+    ev.addEventBinding(@BT@.Activating, rid, @EVD@.of("a", "sel:" + i));
+  }
+  if (!t && pages > 1) {
+    b.appendInline("#SkyyGListBox", "Group #SkyyGNav { Anchor: (Height: 44); LayoutMode: Left; Padding: (Top: 4); }");
+    b.appendInline("#SkyyGNav", "TextButton #SkyyGBtnPrev { Anchor: (Width: 140, Height: 36); Text: \"Prev\"; " + @PKG@.GearUi.btn(1) + " }");
+    b.appendInline("#SkyyGNav", "Label #SkyyGPageTxt { Anchor: (Width: 170, Height: 36); Text: \"\"; Style: (FontSize: 15, TextColor: #96a9be, HorizontalAlignment: Center, VerticalAlignment: Center); }");
+    b.set("#SkyyGPageTxt.Text", "Page " + (this.pageNo + 1) + " / " + pages);
+    b.appendInline("#SkyyGNav", "TextButton #SkyyGBtnNext { Anchor: (Width: 140, Height: 36); Text: \"Next\"; " + @PKG@.GearUi.btn(1) + " }");
+    ev.addEventBinding(@BT@.Activating, "#SkyyGBtnPrev", @EVD@.of("a", "prev"));
+    ev.addEventBinding(@BT@.Activating, "#SkyyGBtnNext", @EVD@.of("a", "next"));
+  }
+}""")
+M(ipg, r"""
+public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
+  java.util.UUID u = this.playerRef.getUuid();
+  @PLA@ p = null;
+  try { p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType()); } catch (Throwable t) { p = null; }
+  @INV@ inv = p == null ? null : p.getInventory();
+  @IS@ sel = null;
+  if (this.selSec >= 0) {
+    sel = @PKG@.GearStamp.at(inv, this.selSec, this.selSlot);
+    if (!@PKG@.GearForge.same(sel, this.selId, this.selFp)) {
+      sel = null;
+      clearSel();
+      if (this.info == null || this.info.length() == 0 || this.info.charAt(0) != '-') this.info = "-The selected item moved or changed - pick it again.";
+    }
+  }
+  this.rows = @PKG@.GearIdent.rows(inv);
+  long all = total(inv);
+  long have = @PKG@.GearForge.purse(u);
+  @PKG@.GearUi.frame(b, "Identify", 1100, 880);
+  b.appendInline("#SkyyGBody", "Label #SkyyGSub { Anchor: (Height: 28); Text: \"\"; Style: (FontSize: 16, TextColor: #96a9be, VerticalAlignment: Center); }");
+  b.set("#SkyyGSub.Text", "Gear from mobs and loot chests arrives unidentified. Pay coins to reveal its modifiers - the rarity is already set.");
+  b.appendInline("#SkyyGBody", "Group #SkyyGTop { Anchor: (Height: 52); LayoutMode: Left; Padding: (Top: 4); }");
+  int n = this.rows.size();
+  boolean allOff = n == 0 || (have >= 0L && have < all && n == 1);
+  String at = n == 0 ? "Nothing to identify" : (n == 1 ? "Identify 1 item" : "Identify all " + n + " items");
+  b.appendInline("#SkyyGTop", "TextButton #SkyyGBtnAll { Anchor: (Width: 320, Height: 44); Text: \"" + @PKG@.Gear.safe(at) + "\"; " + @PKG@.GearUi.btn(allOff ? 3 : 1) + " }");
+  b.appendInline("#SkyyGTop", "Label { Anchor: (Width: 18, Height: 44); Text: \"\"; }");
+  b.appendInline("#SkyyGTop", "Label #SkyyGAllCost { Anchor: (Width: 700, Height: 44); Text: \"\"; Style: (FontSize: 16, RenderBold: true, TextColor: #E8A93B, VerticalAlignment: Center); }");
+  b.set("#SkyyGAllCost.Text", n == 0 ? "" : "Total: " + @PKG@.Gear.fmt(all) + " coins" + (have >= 0L ? " - your purse: " + @PKG@.Gear.fmt(have) : "") + " - each item is paid on its own");
+  ev.addEventBinding(@BT@.Activating, "#SkyyGBtnAll", @EVD@.of("a", "all"));
+  b.appendInline("#SkyyGBody", "Group #SkyyGMain { Anchor: (Height: 628); LayoutMode: Left; Padding: (Top: 6); }");
+  list(b, ev, inv);
+  b.appendInline("#SkyyGMain", "Label { Anchor: (Width: 14); Text: \"\"; }");
+  b.appendInline("#SkyyGMain", @PKG@.GearUi.vsep());
+  b.appendInline("#SkyyGMain", "Label { Anchor: (Width: 14); Text: \"\"; }");
+  detail(b, ev, u, sel);
+  boolean menu = @PKG@.Gear.bget("config:def:SkyyMenu") != null;
+  b.appendInline("#SkyyGBody", "Group #SkyyGBar { Anchor: (Height: 58); LayoutMode: Left; Padding: (Top: 10); }");
+  b.appendInline("#SkyyGBar", "Label #SkyyGInfo { Anchor: (Width: 700, Height: 44); Text: \"\"; Style: (FontSize: 16, RenderBold: true, TextColor: " + @PKG@.GearUi.infoColor(this.info) + ", VerticalAlignment: Center); }");
+  b.set("#SkyyGInfo.Text", @PKG@.GearUi.infoText(this.info));
+  b.appendInline("#SkyyGBar", "TextButton #SkyyGBtnRefresh { Anchor: (Width: 170, Height: 44); Text: \"Refresh\"; " + @PKG@.GearUi.btn(1) + " }");
+  b.appendInline("#SkyyGBar", "Label { Anchor: (Width: 12, Height: 44); Text: \"\"; }");
+  b.appendInline("#SkyyGBar", "TextButton #SkyyGBtnBack { Anchor: (Width: 170, Height: 44); Text: \"" + (menu ? "Back" : "Close") + "\"; " + @PKG@.GearUi.btn(2) + " }");
+  ev.addEventBinding(@BT@.Activating, "#SkyyGBtnRefresh", @EVD@.of("a", "refresh"));
+  ev.addEventBinding(@BT@.Activating, "#SkyyGBtnBack", @EVD@.of("a", "back"));
+}""")
+# the click guard, profile:busy and the profile epoch (spec 1.7) come before any write; the page never holds an item copy
+M(ipg, r"""
+public boolean guard() {
+  long now = System.currentTimeMillis();
+  if (now - this.lastClick < 400L) return false;
+  this.lastClick = now;
+  java.util.UUID u = this.playerRef.getUuid();
+  if (@PKG@.Gear.busy(u)) { this.info = "-Your profile is still loading - nothing was identified. Try again in a moment."; return false; }
+  String ep = @PKG@.Gear.epoch(u);
+  if (!ep.equals(this.epoch)) { clearSel(); this.recent.clear(); this.epoch = ep; this.info = "-Your profile changed - the list was refreshed."; return false; }
+  return true;
+}""")
+M(ipg, r"""
+public void one(@INV@ inv) {
+  if (!guard()) return;
+  if (this.selSec < 0) { this.info = "-Pick an item from Unidentified gear first."; return; }
+  java.util.UUID u = this.playerRef.getUuid();
+  @IC@ c = @PKG@.GearStamp.section(inv, this.selSec);
+  String name = @PKG@.Gear.itemName(this.selId);
+  Object[] res = @PKG@.GearIdent.identify(c, this.selSlot, this.selId, this.selFp, u, this.playerRef.getUsername(), false);
+  int code = ((Integer) res[0]).intValue();
+  if (code == 1) {
+    this.selFp = @PKG@.GearForge.fp((@IS@) res[2]);
+    this.revealed = (@BD@) res[4];
+    long cost = ((Long) res[5]).longValue();
+    String sum = @PKG@.GearView.modSummary(this.revealed);
+    this.info = "+Identified your " + name + (sum.length() > 0 ? " - revealed: " + sum : "") + (cost > 0L ? " (-" + @PKG@.Gear.fmt(cost) + " coins)" : "");
+    return;
+  }
+  String msg = (String) res[1];
+  if (msg != null && msg.startsWith("That item moved")) clearSel();
+  this.info = "-" + msg;
+}""")
+# spec 5.7 "Identify all": one by one, each paid on its own, stops at the first refusal with a summary line
+M(ipg, r"""
+public void all(@INV@ inv) {
+  if (!guard()) return;
+  java.util.UUID u = this.playerRef.getUuid();
+  java.util.ArrayList rs = @PKG@.GearIdent.rows(inv);
+  if (rs.isEmpty()) { this.info = "-No unidentified gear on you."; return; }
+  clearSel();
+  this.recent.clear();
+  int done = 0;
+  long spent = 0L;
+  String stop = null;
+  for (int i = 0; i < rs.size(); i++) {
+    int[] rw = (int[]) rs.get(i);
+    @IC@ c = @PKG@.GearStamp.section(inv, rw[0]);
+    @IS@ it = @PKG@.GearStamp.at(inv, rw[0], rw[1]);
+    if (it == null || it.isEmpty()) continue;
+    String name = @PKG@.Gear.itemName(it.getItemId());
+    Object[] res = @PKG@.GearIdent.identify(c, rw[1], it.getItemId(), @PKG@.GearForge.fp(it), u, this.playerRef.getUsername(), false);
+    if (((Integer) res[0]).intValue() != 1) { stop = (String) res[1]; break; }
+    done++;
+    spent = spent + ((Long) res[5]).longValue();
+    String sum = @PKG@.GearView.modSummary((@BD@) res[4]);
+    this.recent.add(name + ": " + (sum.length() > 0 ? sum : "no modifiers"));
+  }
+  if (stop == null) this.info = "+Identified " + done + (done == 1 ? " item" : " items") + " for " + @PKG@.Gear.fmt(spent) + " coins.";
+  else this.info = (done > 0 ? "-Identified " + done + " of " + rs.size() + " (" + @PKG@.Gear.fmt(spent) + " coins) - stopped: " : "-") + stop;
+}""")
+M(ipg, r"""
+public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
+  try {
+    if (data == null) return;
+    String a = @PKG@.Gear.jsonStr(data, "a");
+    if (a.length() == 0) return;
+    if (a.equals("refresh")) { this.info = ""; this.recent.clear(); this.epoch = @PKG@.Gear.epoch(this.playerRef.getUuid()); rebuild(); return; }
+    if (a.equals("prev")) { this.pageNo--; rebuild(); return; }
+    if (a.equals("next")) { this.pageNo++; rebuild(); return; }
+    if (a.equals("back")) {
+      if (@PKG@.Gear.bget("config:def:SkyyMenu") != null) {
+        try { @CMGR@.get().handleCommand(this.playerRef, "skymenu"); return; } catch (Throwable t1) { }
+      }
+      close();
+      return;
+    }
+    @PLA@ p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+    @INV@ inv = p == null ? null : p.getInventory();
+    if (inv == null) return;
+    if (a.startsWith("sel:")) {
+      int i = -1;
+      try { i = Integer.parseInt(a.substring(4)); } catch (Throwable t) { i = -1; }
+      if (i < 0 || this.rows == null || i >= this.rows.size()) return;
+      int[] r = (int[]) this.rows.get(i);
+      this.recent.clear();
+      if (!pick(inv, r[0], r[1])) this.info = "-That item is not there any more.";
+      rebuild();
+      return;
+    }
+    if (a.equals("id")) { one(inv); rebuild(); return; }
+    if (a.equals("all")) { all(inv); rebuild(); return; }
+  } catch (Throwable t) { @PKG@.Gear.warn("identify page click failed: " + t); }
+}""")
+
+# ================================================================= /identify (player command; identify.command checked live - spec 5.7)
+C(idc, r"""
+public IdentifyCmd() {
+  super("identify", "Open the Identify page: pay coins to reveal the modifiers of unidentified weapons and armor");
+  setPermissionGroups(new String[] { "hytale:Adventurer" });
+}""")
+M(idc, r"""
+protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
+  try {
+    if (!@PKG@.GearCfg.IDENTIFY_CMD) { pr.sendMessage(@MSG@.raw("[Identify] /identify is switched off on this server - items are identified another way (an NPC).").color(@PKG@.GearDefs.C_GOLD)); return; }
+    @PLA@ p = (@PLA@) store.getComponent(ref, @PLA@.getComponentType());
+    if (p == null) { pr.sendMessage(@MSG@.raw("[Identify] no player found")); return; }
+    @PKG@.GearStamp.scan(pr, p.getInventory());
+    @PKG@.IdentifyPage page = new @PKG@.IdentifyPage(pr);
+    page.preselect(p.getInventory());
+    p.getPageManager().openCustomPage(ref, store, page);
+  } catch (Throwable t) {
+    @PKG@.Gear.warn("/identify failed: " + t);
+    pr.sendMessage(@MSG@.raw("[Identify] could not open the Identify page - the server log has the details"));
+  }
+}""")
+
 # ================================================================= GearAdmin: /gear bodies (world thread; admin writes are logged)
 M(gad, r"""
 public static void msg(@PR@ pr, String t) {
@@ -4117,7 +5632,7 @@ public void setup() {
   @PKG@.Gear.regSetting("gear.blockedPopup", "Gear level popups", "combat", true, "Popup when a weapon is too high level or unidentified");
   @PKG@.Gear.regSetting("gear.armorWarn", "Armor level warning", "combat", true, "Chat line when armor gives no stats because of its level");
   @PKG@.Gear.regSetting("gear.notices", "Gear update notices", "combat", true, "One-time line when your old rolled items move to the new gear system");
-  getLogger().at(java.util.logging.Level.INFO).log("[SkyyGear] @VER@ ready - /reforge, /gear (admin: /gear give | read | reroll | clear | rarity | unid | identify | level | gate | migrate, node skyygear.admin); rarity + level + modifiers on every weapon and armor piece; crafted gear rolls; SkyyRolls items migrate on first sight; Server Setup -> Gear");
+  getLogger().at(java.util.logging.Level.INFO).log("[SkyyGear] @VER@ ready - /reforge, /identify, /gear (admin: /gear give | read | reroll | clear | rarity | unid | identify | level | gate | migrate, node skyygear.admin); rarity + level + modifiers on every weapon and armor piece; crafted gear rolls; mob + loot chest gear drops unidentified; gear stats live in combat; under-level gear blocked / inactive; SkyyRolls items migrate on first sight; Server Setup -> Gear");
   @PKG@.CfgPub.start(getDataDirectory().getParent(), getLogger());
 }""".replace("@REG@", _reg).replace("@FNS@", _fns).replace("@PDE@", PDE).replace("@VER@", VERSION)
    .replace("@PARTBSETUP@", "\n".join(PARTB_SETUP)))
