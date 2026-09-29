@@ -17,9 +17,9 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.10"), ("SkyySacks", "0.7.7"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.3"), ("SkyyParty", "0.1.5"),
-    ("SkyyBank", "0.1.3"), ("SkyyIslands", "0.5.2"), ("SkyyBazaar", "0.1.2"), ("SkyyRolls", "0.1.5"), ("SkyySkills", "0.4.6"),
-    ("SkyyAccessories", "0.4.4"), ("SkyyClasses", "0.1.6"), ("SkyyMenu", "0.3.2"), ("SkyyEssentials", "0.1.5"), ("SkyyProfiles", "0.1.2"),
-    ("SkyyCooking", "0.1.2"), ("SkyyTrees", "0.2.3"),
+    ("SkyyBank", "0.1.3"), ("SkyyIslands", "0.5.3"), ("SkyyBazaar", "0.1.2"), ("SkyyGear", "0.1"), ("SkyySkills", "0.4.6"),
+    ("SkyyAccessories", "0.4.4"), ("SkyyClasses", "0.1.7"), ("SkyyMenu", "0.3.3"), ("SkyyEssentials", "0.1.5"), ("SkyyProfiles", "0.1.2"),
+    ("SkyyCooking", "0.1.2"), ("SkyyTrees", "0.2.4"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -32,13 +32,13 @@ SET = [
     # skill:bonus "doublejump.acrobatics", Skills publishes skill:dj:key); SkyyTrees 0.2.1 rewrites Acrobatics.RDodge as RDouble on
     # the next save, so do not go back to SkyyTrees 0.2 after it ran. SkyyIslands 0.5 migrates island files at start (0.4.x copies
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
-    ("SkyyVault", "0.1.2"),
+    ("SkyyVault", "0.1.3"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
-    ("SkyyAuctions", "0.1.1"),
+    ("SkyyAuctions", "0.1.2"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
-    ("SkyyRanks", "0.1"),
+    ("SkyyRanks", "0.1.1"),
 ]
 # round 6 (2026-09-25): SkyyClasses 0.1.6 + SkyySkills 0.4.4 + SkyyProfiles 0.1.2 deploy TOGETHER (Berserker/Fury, Priest/Divinity, class kits;
 # Profiles 0.1.1 only draws 6 class cards). Never go back to SkyySkills 0.4.3 once Fury/Divinity XP exists (0.4.3 drops those keys).
@@ -54,7 +54,11 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees"]
 # round 8 (2026-09-28): SkyySacks 0.7.7 + SkyyCollections 0.2.3 deploy TOGETHER (bag recipe ids, coll:fn:where, migrated rewards file).
 # Never roll back below SkyySacks 0.7.7 (Rare/Omni bags + Skyy_Bag_* qualities), SkyySkills 0.4.6 (saved max modifiers - switch Base Mana
 # and Overall Level OFF and let players log in once first), or SkyyCollections 0.2.3 without restoring rewards-0.2.properties.
-RETIRED = []
+# round 9 + SkyyGear (2026-09-29): SkyyGear 0.1 REPLACES SkyyRolls (migrates SkyyRolls rolls on first touch; SkyyRolls switched off
+# below). SkyyAuctions 0.1.2 + SkyyMenu 0.3.3 deploy with SkyyGear 0.1 (gear text, Identify tile). SkyyClasses 0.1.7 needs SkyySkills 0.4.6+.
+# Never roll back below SkyyTrees 0.2.4 (Double Jump slot moved in saves). Rolling SkyyAuctions back to 0.1.1: restore 48h:1200 in its
+# config.properties by hand first (0.1.1 cannot read 48h:x2).
+RETIRED = ["SkyyRolls"]
 
 
 def retire_in_world(world, mod):
