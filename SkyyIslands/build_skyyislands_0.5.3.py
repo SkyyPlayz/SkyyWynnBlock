@@ -1,11 +1,15 @@
 """0.5.3 (2026-09-28): Skyy's 2026-09-25 ISLAND LOCKS, derived from the live 0.5.2 by tools/islands_0_5_3_patch.py (edit the patch, not
-  this file; notes there). coop.adminsInvite default true (island admins may invite co-op members), defaults.visit.limit default 10,
-  beds flag default visitor (chests + crops stay member, crafting benches trusted, doors + seats visitor). Untouched-default
-  migration once per world at the first start: a config line still EXACTLY the old default (false / 5 / member) that no admin ever
-  set (config-changes.log never names it) is set through the config kit and written at once (logged with Undo, History copy, INFO
-  line); anything else is kept; done = Skyy_SkyyIslands/migrations.properties. Island files are never rewritten: a grid click stores
+  this file; notes there). coop.adminsInvite default true (island admins may invite co-op members), defaults.visit.limit default 10.
+  Beds stay MEMBER (Skyy 2026-09-28, change note 10: sleeping claims a bed as the sleeper's respawn point) - the permission grid
+  is 0.5.2's (chests, furnaces, beds, crops, animals member; crafting benches trusted; doors + seats visitor). Untouched-default
+  migration once per world at the first start, those two keys only (beds is not migrated): a config line still EXACTLY the old
+  default (false / 5) that no admin ever set (config-changes.log never names it) is set through the config kit and written at once
+  (logged with Undo, History copy, INFO line); anything else is kept; done = Skyy_SkyyIslands/migrations.properties (a world that
+  already ran an earlier 0.5.3 build keeps its values). Island files are never rewritten: a grid click stores
   only the clicked flag and Reset to defaults removes the lines, so an owner's own choice stays and untouched islands follow the new
   defaults. Trusted-player texts built from the island's grid. Config kit KEEP 10 (kit 1.1). Menu look unchanged (text only).
+  Review fixes: co-op invites re-checked at accept (the sender must still be allowed to invite), the owner hears of an island
+  admin's invite, admin-correct Members hint, the Trusted player's own lines from the grid, plain() drops backslashes.
 0.5.2 (2026-09-25): IN-GAME SERVER SETUP + PLAYER SETTINGS, derived from 0.5.1 by tools/islands_0_5_2_patch.py (edit the patch,
   not this file; notes there). Admin config kit (config:def/fn:SkyyIslands, page Islands, node skyyislands.admin): 14 permission
   defaults, visit defaults, co-op, limits, starter kit (+ from my hotbar), hub point, tech rows; IslandCfg scalars volatile, DEF_PERM
@@ -294,7 +298,7 @@ FLAGS = [  # id, grid label, hint, default minimum role (spec 3.2)
     ("doors", "Doors and gates", "Doors, trapdoors, fence gates", "visitor"),
     ("crafting", "Crafting benches", "Workbench, Armory, Builders bench...", "trusted"),
     ("processing", "Furnaces", "Furnace, campfire, tannery, salvager", "member"),
-    ("beds", "Beds", "Sleeping, setting your respawn", "visitor"),   # 0.5.3: LOCKED 2026-09-25 (Skyy) - was member
+    ("beds", "Beds", "Sleeping, setting your respawn", "member"),   # 0.5.3: stays MEMBER-only (Skyy 2026-09-28, change note 10)
     ("seats", "Chairs and benches", "Sitting down", "visitor"),
     ("harvest", "Crops and plants", "F-harvest and hitting crops", "member"),
     ("animals", "Farm animals", "Hurting and using farm animals", "member"),
@@ -903,12 +907,12 @@ public static java.util.HashSet animalSet(String base, String extra) {
 # ---- 0.5.3: Skyy's 2026-09-25 island locks = new defaults. plan053() (setup, BEFORE the config kit starts) picks the config lines that
 # still hold the untouched OLD default; IslandHooks.apply053 (right after CfgPub.start) sets them through the kit. Once per world:
 # migrations.properties records the step (see tools/islands_0_5_3_patch.py). Island files are never read or written here.
-for f in ('public static final String[] MIG_KEYS = new String[] { "coop.adminsInvite", "defaults.visit.limit", "defaults.perm.beds" };',
-          'public static final String[] MIG_OLD = new String[] { "false", "5", "member" };',
-          'public static final String[] MIG_NEW = new String[] { "true", "10", "visitor" };',
+# Two keys: beds stay member (Skyy 2026-09-28, change note 10), so defaults.perm.beds is never planned, set or named in the marker.
+for f in ('public static final String[] MIG_KEYS = new String[] { "coop.adminsInvite", "defaults.visit.limit" };',
+          'public static final String[] MIG_OLD = new String[] { "false", "5" };',
+          'public static final String[] MIG_NEW = new String[] { "true", "10" };',
           'public static final String[] MIG_WHY = new String[] { "island admins may invite co-op members now (only the owner kicks, promotes, disbands and resets)", '
-          '"islands whose owner never set a visitor limit allow 10 visitors at once now (never above visit.limitMax)", '
-          '"visitors may use beds now on islands whose owner never changed the Beds permission (an owner\'s own Beds setting stays)" };',
+          '"islands whose owner never set a visitor limit allow 10 visitors at once now (never above visit.limitMax)" };',
           'public static final String MIG_STEP = "defaults.0.5.3";',
           'public static final String MIG_BY = "SkyyIslands 0.5.3 update";',
           'public static volatile String[] MIG_NOTE = new String[0];'):
@@ -951,14 +955,16 @@ public static java.util.HashSet loggedKeys(java.nio.file.Path log, String skip) 
   }
   return keys;
 }""")
-# printable ASCII only, max n characters (values quoted in log lines and in migrations.properties)
+# printable ASCII only, max n characters (values quoted in log lines and in migrations.properties); a backslash becomes '?' too
+# (0.5.3 review: Properties.load reads '\' as an escape - an admin value holding "\u" with fewer than 4 hex digits would make
+# migrations.properties unreadable)
 M(cfg, r"""
 public static String plain(String v, int n) {
   if (v == null) return "";
   StringBuilder sb = new StringBuilder();
   for (int i = 0; i < v.length() && sb.length() < n; i++) {
     char c = v.charAt(i);
-    if (c >= ' ' && c < 127) sb.append(c); else sb.append('?');
+    if (c >= ' ' && c < 127 && c != '\\') sb.append(c); else sb.append('?');
   }
   return sb.toString();
 }""")
@@ -2129,7 +2135,7 @@ public static String visitorAllowedText(@PKG@.IslandSettings s) {
   return sb.length() == 0 ? "look around" : sb.toString();
 }""")
 # 0.5.3: the things a Trusted player may NOT do on this island (flags whose minimum role is above trusted), "a, b or c"; "" = nothing.
-# Default grid: "chests, furnaces, crops or farm animals" (beds are visitor level since 0.5.3)
+# Default grid: "chests, furnaces, beds, crops or farm animals" (beds member-only: Skyy 2026-09-28)
 M(perm, r"""
 public static String trustedDeniedText(@PKG@.IslandSettings s) {
   java.util.ArrayList l = new java.util.ArrayList();
@@ -2147,6 +2153,24 @@ M(perm, r"""
 public static boolean trustedBuilds(@PKG@.IslandSettings s) {
   if (s.perm.length <= PICKUP) return false;
   return s.perm[BUILD] <= 1 && s.perm[BREAK] <= 1 && s.perm[CRAFTING] <= 1 && s.perm[PICKUP] <= 1;
+}""")
+# 0.5.3 review: what a Trusted player may do on this island, for THEIR chat lines (trusted notice, /island visit, arrival welcome):
+# "you may build (not chests, furnaces, beds, crops or farm animals)" on the default grid, "you may build" when nothing is closed to
+# Trusted, else (the owner closed building to Trusted) the flags still open to Trusted, e.g. "you may: doors, seats, hostile mobs", or
+# "you may only look around"
+M(perm, r"""
+public static String trustedYouText(@PKG@.IslandSettings s) {
+  if (trustedBuilds(s)) {
+    String nt = trustedDeniedText(s);
+    return "you may build" + (nt.length() > 0 ? " (not " + nt + ")" : "");
+  }
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < s.perm.length && i < SHORT.length; i++) {
+    if (s.perm[i] > 1) continue;
+    if (sb.length() > 0) sb.append(", ");
+    sb.append(SHORT[i]);
+  }
+  return sb.length() == 0 ? "you may only look around" : "you may: " + sb.toString();
 }""")
 
 # =====================================================================================================================
@@ -2563,7 +2587,7 @@ public static void visit(@ST@ store, @REF@ ref, @PR@ pr, @WLD@ world, @PR@ targe
   }
   boolean memberThere = !tk.equals(@PKG@.IslandStore.pkey(tu));
   go(store, ref, pr, world, tk, false);
-  if (rank <= 1) @PKG@.IslandStore.say(pr, "[Island] Visiting " + on + "'s island" + (memberThere ? " (" + target.getUsername() + " is a co-op member there)" : "") + (rank == 1 ? " - you are Trusted here: you may build." : " - the owner decides what visitors may do (/island menu on your own island shows the rules)."), "#cfe3ff");
+  if (rank <= 1) @PKG@.IslandStore.say(pr, "[Island] Visiting " + on + "'s island" + (memberThere ? " (" + target.getUsername() + " is a co-op member there)" : "") + (rank == 1 ? " - you are Trusted here: " + @PKG@.IslandPerms.trustedYouText(s) + "." : " - the owner decides what visitors may do (/island menu on your own island shows the rules)."), "#cfe3ff");
 }""")
 
 # =====================================================================================================================
@@ -2794,7 +2818,7 @@ public void run() {
         }
       }
     } else if (rank == 1) {
-      if (@PKG@.IslandStore.notifyOn(u, "islands.visitWelcome")) @PKG@.IslandStore.say(pr, "[Island] Welcome to " + on + "'s island - you are Trusted here (you may build).", "#8fc8ff");
+      if (@PKG@.IslandStore.notifyOn(u, "islands.visitWelcome")) @PKG@.IslandStore.say(pr, "[Island] Welcome to " + on + "'s island - you are Trusted here: " + @PKG@.IslandPerms.trustedYouText(s) + ".", "#8fc8ff");
     }
     schedule(pr, this.worldName, 2, 4500L);
   } catch (Throwable t) { @PKG@.IslandStore.warn("arrival check failed: " + t); }
@@ -2853,6 +2877,9 @@ public static String acceptProblem(@PR@ pr) {
   if (s.bad) return "that island's file can't be read right now - try again in a moment";
   if (s.world == null) return "that island is gone";
   if (u.equals(@PKG@.IslandStore.ownerUuid(ok))) return "that island belongs to one of your own profiles";
+  java.util.UUID iu = (java.util.UUID) inv[1];   // 0.5.3 review: the inviter must still be allowed to invite (same rule as invite())
+  int ir = iu.equals(@PKG@.IslandStore.ownerUuid(ok)) ? 4 : @PKG@.IslandPerms.rank(ok, iu, s);
+  if (!(ir == 4 || (ir == 3 && @PKG@.IslandCfg.ADMINS_INVITE))) return "that invite is no longer valid - the player who sent it may not invite any more";
   String k = @PKG@.IslandStore.pkey(u);
   String hk = @PKG@.IslandStore.homeKey(u);
   if (!hk.equals(k)) return "you are in " + @PKG@.IslandStore.ownerDisplay(hk, @PKG@.IslandStore.settings(hk)) + "'s co-op - /island leave first";
@@ -2886,6 +2913,11 @@ public static String invite(@PR@ pr, @PR@ target) {
   if (count >= @PKG@.IslandCfg.COOP_MAX) return "-The co-op is full (" + count + " / " + @PKG@.IslandCfg.COOP_MAX + ").";
   long exp = System.currentTimeMillis() + @PKG@.IslandCfg.INVITE_SECONDS * 1000L;
   @PKG@.IslandStore.INVITES.put(tu, new Object[] { hk, u, Long.valueOf(exp), pr.getUsername(), on });
+  if (!hk.equals(k)) {   // 0.5.3 review: an island admin invited (rank 4 = hk is the inviter's own key) - tell the owner if online
+    java.util.UUID ou = @PKG@.IslandStore.ownerUuid(hk);
+    @PR@ op = @PKG@.IslandStore.online(ou);
+    if (op != null) @PKG@.IslandStore.say(op, "[Island] " + pr.getUsername() + " invited " + tn + " to your island" + (hk.equals(@PKG@.IslandStore.pkey(ou)) ? "" : " on another of your profiles (" + @PKG@.IslandStore.profileNameOf(hk) + ")") + " as a co-op member - they have " + @PKG@.IslandCfg.INVITE_SECONDS + " s to accept.", "#ffe08a");
+  }
   @PKG@.IslandStore.say(target, "[Island] " + pr.getUsername() + " invited you to join " + (hk.equals(k) ? "their" : on + "'s") + " island as a co-op member. Type /island accept (or /island decline) within " + @PKG@.IslandCfg.INVITE_SECONDS + " s. Joining uses your current profile" + @PKG@.IslandStore.profileLabel(tu) + ". Your own island stays saved and comes back if you leave.", "#ffe08a");
   return "+Invited " + tn + " to the co-op - they have " + @PKG@.IslandCfg.INVITE_SECONDS + " s to /island accept.";
 }""")
@@ -3093,8 +3125,8 @@ public static String trust(@PR@ pr, @PR@ target) {
   if (r == 4) return @PKG@.IslandStore.FILE_ERR;
   @PKG@.IslandStore.bump();
   String on = @PKG@.IslandStore.ownerDisplay(hk, s);
-  if (@PKG@.IslandStore.notifyOn(tu, "islands.buildRights")) @PKG@.IslandStore.say(target, "[Island] " + pr.getUsername() + " trusted you on " + on + "'s island: you may build there (/island visit " + on + "). Your own /island does not change.", "#8fc8ff");
-  String nt = @PKG@.IslandPerms.trustedDeniedText(s);   // 0.5.3: from the island's grid (beds are visitor level by default)
+  if (@PKG@.IslandStore.notifyOn(tu, "islands.buildRights")) @PKG@.IslandStore.say(target, "[Island] " + pr.getUsername() + " trusted you on " + on + "'s island (/island visit " + on + ") - there " + @PKG@.IslandPerms.trustedYouText(s) + ". Your own /island does not change.", "#8fc8ff");
+  String nt = @PKG@.IslandPerms.trustedDeniedText(s);   // 0.5.3: from the island's grid (default: chests, furnaces, beds, crops, animals)
   String td = @PKG@.IslandPerms.trustedBuilds(s) ? "they may build on the island" : "the Permissions tab (/island menu) shows what they may do";
   return "+" + tn + " is now Trusted: " + td + (nt.length() > 0 ? " (not " + nt + ")" : "") + "." + (r == 1 ? " Their trust from another of their profiles moved to the current one" + @PKG@.IslandStore.profileLabel(tu) + "." : "");
 }""")
@@ -3901,7 +3933,7 @@ public void buildMembers(@UCB@ b, @UEB@ ev, java.util.UUID u, String k, String h
     }
     b.appendInline(r, "TextButton #SkyyIsTrustBtn { Anchor: (Width: 270, Height: 46); Text: \"Trust (build only)\"; " + bs + " }");
     ev.addEventBinding(@BT@.Activating, "#SkyyIsTrustBtn", @EVD@.of("a", "trust").append("@IsName", "#SkyyIsName.Value"));
-    lbl(b, P, 0, 24, 13, false, "#9fb8d0", false, (canInv ? "Invite to co-op = they join your island (their /island comes here).   " : "") + "Trust = build rights only, their /island stays their own.   Enter only keeps the name.");
+    lbl(b, P, 0, 24, 13, false, "#9fb8d0", false, (canInv ? "Invite to co-op = they join " + (rank == 4 ? "your" : "the") + " island (their /island comes here).   " : "") + "Trust = build rights only, their /island stays their own.   Enter only keeps the name.");
   }
   String[] m = @PKG@.IslandStore.split(s.members);
   int total = m.length + 1;
