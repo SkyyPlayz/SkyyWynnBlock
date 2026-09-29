@@ -27,9 +27,11 @@ fresh JVM (the game's own JRE, -Xverify:all, HytaleServer.jar + the jar + tools/
   T  roster: order, class:list, weapon prefixes, owners (hatchets free, Healing Totem = Priest), block texts, allowed()
   U  daily Archer arrows: cooldown math, the per-profile state writes (begin / end / claim, cooldown + owed re-checked under the lock,
      in-flight record, other keys kept, unreadable file), admin texts, checkArrow, the crash-safe order in Arrows.use / collect
-  V  Healing Totem guard: the deployable table, DeployGuard never throws without the Deployables plugin, remove + lock line order
+  V  Healing Totem guard: the deployable table, DeployGuard never throws without the Deployables plugin, remove + lock line order;
+     review fix: judged strictly (Priest only - classless loses it too, requireClass on or off; unreadable file = kept, logged once)
   W  self-heal XP: the exact skill:fn:healxp call with the trailing Boolean.TRUE; heals on others keep the 4-element call
-  X  kit delivery (bytecode): hotbar only for kits, hotbar-then-storage for claims, no 31 s / 3 s waits, KitSoon right after a pick
+  X  kit delivery (bytecode): hotbar only for kits and the quiet arrival retry (review fix), hotbar-then-storage for /class kit, no
+     31 s / 3 s waits, KitSoon right after a pick
 Not testable without the game (listed as UNVERIFIED in the build report): the Inspect-group heal on a real hit, addStatValue on another
 player, inventory adds / remainders, the kit arriving with real players and SkyyProfiles switches, DeployGuard on a real thrown totem,
 popups, the pages on a client.
@@ -142,7 +144,7 @@ def run(jar):
         jvm = B._jvm()
     tmp = os.path.join(SCRATCH, "tmp")
     os.makedirs(tmp, exist_ok=True)
-    jpype.startJVM(jvm, "-Xverify:all", "--enable-native-access=ALL-UNNAMED", "-Djava.io.tmpdir=" + tmp,
+    jpype.startJVM(jvm, "-Xverify:all", "-XX:-UsePerfData", "--enable-native-access=ALL-UNNAMED", "-Djava.io.tmpdir=" + tmp,
                    classpath=[B.SERVER_JAR, jar, B.JAVASSIST], convertStrings=True)
 
     # ---------------- A. load + verify
@@ -560,7 +562,21 @@ def run(jar):
         return bool(at) and all(any(want in l for l in lines[max(0, i - span):i]) for i in at)
     gv, cl, bx, cn = code("Kit", "give"), code("Kit", "claim"), code("Kit", "box"), code("Kit", "consider")
     check(before(gv, "Kit.put(", "iconst_0"), "automatic / admin kits: put(p, 0 = the hotbar only, ...)")
-    check(before(cl, "Kit.put(", "iconst_1") and before(cl, "Kit.room(", "iconst_1", 2), "claims: room / put(p, 1 = hotbar then storage, ...)")
+    # review fix (LOCKED 2026-09-25 "overflow that does not fit still waits on /class kit"): where = quiet ? 0 : 1 -> the quiet arrival
+    # retry (KitTask mode 2) fills the hotbar only; only an explicit /class kit goes hotbar, then storage. Bytecode of the ternary:
+    # iload_3 (quiet) / ifeq / iconst_0 / goto / iconst_1 / istore <where>; room and put then load <where>.
+    wh = [i for i, l in enumerate(cl) if "istore" in l and i >= 5 and "iload_3" in cl[i - 5] and "ifeq" in cl[i - 4]
+          and "iconst_0" in cl[i - 3] and "goto" in cl[i - 2] and "iconst_1" in cl[i - 1]]
+    ld_ = None
+    if len(wh) == 1:
+        sl_ = cl[wh[0]].split("istore")[1]
+        ld_ = "iload" + sl_.strip() if sl_.startswith("_") else "iload " + sl_.strip()
+    check(ld_ is not None and before(cl, "Kit.put(", ld_) and before(cl, "Kit.room(", ld_, 2) and not before(cl, "Kit.put(", "iconst_1")
+          and not before(cl, "Kit.room(", "iconst_1", 2),
+          "claims: where = quiet ? 0 (arrival retry: hotbar only) : 1 (/class kit: hotbar then storage) -> room / put(p, where, ...)")
+    kw_, kc_ = code("KitTask", "work"), code("ClassKitCmd", "execute")
+    check(before(kw_, "Kit.claim(", "iconst_1") and len(idx("Kit.claim(", kw_)) == 1 and before(kc_, "Kit.claim(", "iconst_0")
+          and len(idx("Kit.claim(", kc_)) == 1, "callers: KitTask mode 2 claims quietly (hotbar only), /class kit loudly (hotbar then storage)")
     check(idx("getHotbar(", bx) and idx("getCombinedHotbarFirst(", bx) and not idx("getCombinedStorageHotbarBackpack(", bx),
           "box: 0 = Inventory.getHotbar, 1 = Inventory.getCombinedHotbarFirst")
     kitcc = pool.get(PKG + "Kit")
@@ -1074,9 +1090,43 @@ def run(jar):
     check(ok_, "DeployGuard never throws without the Deployables plugin (bare JVM: Query.any fallback, type retried later): %s" % why_)
     oe = code("DeployGuard", "onEntityAdded")
     check(0 <= first(oe, "AddReason.SPAWN") < first(oe, "DeployableComponent.getConfig(") < first(oe, "ClassDefs.deployItem(")
-          < first(oe, "ClassRules.allowed(") < first(oe, "CommandBuffer.removeEntity(") < first(oe, "ClassRules.tell(")
+          < first(oe, "DeployGuard.judge(") < first(oe, "CommandBuffer.removeEntity(") < first(oe, "DeployGuard.text(") < first(oe, "ClassRules.tell(")
           and first(oe, "ClassRules.popup(") > first(oe, "CommandBuffer.removeEntity("),
-          "DeployGuard: SPAWN -> config id -> item -> allowed? -> remove -> lock chat line + popup")
+          "DeployGuard: SPAWN -> config id -> item -> judge -> remove -> lock text -> chat line + popup")
+    check(first(oe, "ClassRules.allowed(") < 0 and before(oe, "CommandBuffer.removeEntity(", "iconst_1", 8),
+          "review fix: DeployGuard no longer asks ClassRules.allowed (classless = allowed while requireClass is off); removes only on judge == 1")
+    # review fix: judged STRICTLY - only a playable Priest keeps the totem; classless and every other class lose it; an unreadable class
+    # file keeps it (never removed on a guess) and is logged once. uw / ua / up / ub = Warrior / Archer / Priest / Berserker files (T).
+    TOT = "Weapon_Deployable_Healing_Totem"
+    Cfg.REQUIRE_CLASS = False
+    vdir = os.path.join(work, "v", "Skyy_SkyyClasses", "players")
+    os.makedirs(vdir)
+    Store.DIR = Paths.get(vdir)
+    uc = UUID.fromString("00000000-0000-0000-0000-0000000002c1")        # no class file: classless
+    ux = UUID.fromString("00000000-0000-0000-0000-0000000002c2")        # a folder with the file's name: unreadable
+    us = UUID.fromString("00000000-0000-0000-0000-0000000002c3")        # class=Assassin (not playable yet)
+    os.makedirs(os.path.join(vdir, str(ux) + ".properties"))
+    open(os.path.join(vdir, str(us) + ".properties"), "w").write("class=Assassin\n")
+    check(bool(Rules.allowed(uc, TOT)), "the weapon lock still lets a classless player through while requireClass is off (unchanged)")
+    check(int(DG.judge(up, TOT)) == 0, "judge: a Priest keeps the totem")
+    check(int(DG.judge(uw, TOT)) == 1 and int(DG.judge(ua, TOT)) == 1 and int(DG.judge(ub, TOT)) == 1, "judge: Warrior / Archer / Berserker lose it")
+    check(int(DG.judge(uc, TOT)) == 1 and Store.DATA.containsKey(str(uc)), "judge: a CLASSLESS player loses it too (requireClass off)")
+    Cfg.REQUIRE_CLASS = True
+    check(int(DG.judge(uc, TOT)) == 1 and int(DG.judge(up, TOT)) == 0, "judge: the same with requireClass on")
+    Cfg.REQUIRE_CLASS = False
+    check(int(DG.judge(us, TOT)) == 1, "judge: a class that is not playable (Assassin) loses it")
+    check(not bool(DG.UNREAD), "nothing logged yet")
+    check(int(DG.judge(ux, TOT)) == 2 and not Store.DATA.containsKey(str(ux)) and bool(DG.UNREAD),
+          "judge: an unreadable class file keeps the totem (never removed on a guess), logged once")
+    check(int(DG.judge(ux, TOT)) == 2 and int(DG.judge(None, TOT)) == 0 and int(DG.judge(up, None)) == 0, "judge: again 2 (log flag stays), null-safe")
+    t_ = str(DG.text(uc, TOT))
+    check(t_ == "Only Priests can use healing totems - choose Priest with /class.", "classless lock line (no SkyyProfiles): %s" % t_)
+    bridge.put("profile:fn:key", JClass(PKG + "AllowedFn")())             # any Function: profilesOn() = true for the text only
+    t_ = str(DG.text(uc, TOT))
+    bridge.remove("profile:fn:key")
+    check(t_ == "Only Priests can use healing totems - create a Priest profile with /profiles.", "classless lock line (SkyyProfiles): %s" % t_)
+    t_ = str(DG.text(uw, TOT))
+    check(t_ == "Only Priests can use healing totems. You are a Warrior - /class shows your weapons.", "a class's lock line = the weapon lock's: %s" % t_)
     check(first(oe, "DeployableComponent.getOwner(") >= 0 and first(oe, "getOwnerUUID(") >= 0 and first(oe, "ShotTrack.SHOTS") >= 0,
           "thrower = owner Ref's PlayerRef, else the owner UUID's ShotTrack launch record")
     print("V. totem guard done")

@@ -3,10 +3,11 @@ patch, not this file; classes_0_1_6_patch.py is never re-run). Wynncraft-style c
 0.1.7 (Skyy's 2026-09-25 locks, commit ab75b6c; OPEN-QUESTIONS.md + research/Classes-Berserker-Priest-Spec.md). Notes in the patch.
   - CLASS KITS straight into the HOTBAR, immediately: a class pick (SkyyProfiles Create Profile -> class:fn:kitnew, the own picker,
     /classadmin set on a classless file) tries the kit ~0.3 s later, then every 2 s - no 31 s epoch wait, no 3 s same-world wait. The
-    automatic kit (and /classadmin kit) fills the 9 hotbar slots only; what does not fit waits as a claim for /class kit (claims go
-    hotbar first, then storage). /profileadmin setclass still hands out nothing; one kit per profile (kit= flag, written first).
-  - Weapon_Deployable_Healing_Totem is a PRIEST weapon: DeployGuard removes another class's totem the moment it lands and sends the
-    weapon-lock chat line + popup (the totem item is never used up).
+    automatic kit (and /classadmin kit) fills the 9 hotbar slots only; what does not fit waits as a claim for /class kit (hotbar first,
+    then storage; the automatic retry at each world arrival fills the hotbar only). /profileadmin setclass still hands out nothing; one
+    kit per profile (kit= flag, written first).
+  - Weapon_Deployable_Healing_Totem is a PRIEST weapon: DeployGuard removes the totem of anyone who is not a Priest (players without a
+    class too) the moment it lands and sends the weapon-lock chat line + popup (the totem item is never used up).
   - Priest heal: HP a Priest heals on themself goes to SkyySkills too (skill:fn:healxp with a trailing Boolean.TRUE = the self rate,
     SkyySkills 0.4.6+). Heals on others unchanged. Heal chat lines every 10 s (Skyy's edited default).
   - DAILY ARCHER ARROWS: /class arrows - an Archer profile claims 64 Crude Arrows once every 24 h (Server Setup -> Classes -> Archer
@@ -2175,8 +2176,8 @@ public void handle(int idx, @ACH@ chunk, @ST@ st, @CB@ buf, @EV@ ev) {
 # The weapon lock only judges damage and a totem heals, so the thrown totem's deployable entity is checked instead: RefSystem on the
 # engine's DeployableComponent (DeployablesUtils.spawnDeployable calls DeployableComponent.init(owner, ...) BEFORE addEntity(SPAWN), so the
 # owner is known here), config id -> ClassDefs.deployItem, thrower = the owner Ref's PlayerRef, else the owner UUID's ShotTrack launch
-# record (the totem is thrown as a projectile), else that UUID as a player. Not allowed -> CommandBuffer.removeEntity (the engine's own
-# remove-on-add pattern, e.g. FailedSpawnSystem) + the weapon-lock chat line + popup. The item is not used up (10 s cooldown only).
+# record (the totem is thrown as a projectile), else that UUID as a player. Not the owner class (judge below) -> CommandBuffer.removeEntity
+# (the engine's own remove-on-add pattern, e.g. FailedSpawnSystem) + the lock chat line + popup. The item is not used up (10 s cooldown only).
 # The component type comes from the built-in Deployables plugin: resolved lazily (at most every 5 s while missing); without it the
 # query falls back to Query.any() and nothing is judged until the type exists.
 F(dgd, "public @QRY@ query;")
@@ -2202,6 +2203,38 @@ public @QRY@ getQuery() {
     else this.query = @QRY@.any();
   }
   return this.query;
+}""")
+# review fix: the totem is judged STRICTLY - only its owner class (Priest), and only while that class is playable, may throw it. The
+# weapon lock's ClassRules.allowed lets a CLASSLESS player through while requireClass is off (the default), which would make the
+# Priest-only totem free for anyone without a class. 0 = keep (the owner class), 1 = remove, 2 = keep: the class is unknown right now
+# (no class from SkyyProfiles and the class file could not be read -> DATA has no copy); never removed on a guess, logged once.
+F(dgd, "public static volatile boolean UNREAD = false;")
+M(dgd, r"""
+public static int judge(java.util.UUID u, String item) {
+  if (u == null || item == null) return 0;
+  int owner = @PKG@.ClassDefs.ownerOf(item);
+  int ci = @PKG@.ClassStore.classIndex(u);
+  if (owner >= 0 && ci == owner && @PKG@.ClassDefs.ENABLED[ci]) return 0;
+  if (ci < 0 && @PKG@.ClassStore.DATA.get(@PKG@.ClassCfg.pkey(u)) == null) {
+    if (!UNREAD) {
+      UNREAD = true;
+      @PKG@.ClassCfg.warn("deployable guard: the class file of " + u + " could not be read - their " + item + " was left standing rather than removed on a guess (logged once)");
+    }
+    return 2;
+  }
+  return 1;
+}""")
+# the lock line: a player with a class gets the weapon lock's own text; a classless one is told which class owns the item (the weapon
+# lock's classless text says 'before fighting with weapons', which is wrong while requireClass is off)
+M(dgd, r"""
+public static String text(java.util.UUID u, String item) {
+  if (@PKG@.ClassStore.classIndex(u) >= 0) return @PKG@.ClassRules.blockText(u, item, false);
+  int owner = @PKG@.ClassDefs.ownerOf(item);
+  String noun = @PKG@.ClassDefs.nounOf(item);
+  if (owner < 0) return "No class can use " + noun + " yet.";
+  String cn = @PKG@.ClassDefs.NAMES[owner];
+  if (!@PKG@.ClassDefs.ENABLED[owner]) return cn + "s are coming soon - nobody can use " + noun + " yet.";
+  return "Only " + cn + "s can use " + noun + " - " + (@PKG@.ClassCfg.profilesOn() ? "create a " + cn + " profile with /profiles." : "choose " + cn + " with /class.");
 }""")
 M(dgd, r"""
 public void onEntityAdded(@REF@ ref, @ADDR@ reason, @ST@ st, @CB@ buf) {
@@ -2229,9 +2262,9 @@ public void onEntityAdded(@REF@ ref, @ADDR@ reason, @ST@ st, @CB@ buf) {
       pr = @UNI@.get().getPlayer(u);
     }
     if (pr == null || u == null) return;     // not a player's deployable: never judged
-    if (@PKG@.ClassRules.allowed(u, item)) return;
+    if (judge(u, item) != 1) return;         // review fix: strictly the owner class; an unreadable class file never removes
     buf.removeEntity(ref, @REMR@.REMOVE);
-    String bt = @PKG@.ClassRules.blockText(u, item, false);
+    String bt = text(u, item);
     @PKG@.ClassRules.tell(pr, u, bt);
     @PKG@.ClassRules.popup(pr, u, item, bt);
   } catch (Throwable t) { @PKG@.ClassCfg.warnLimited("deployable guard failed: " + t); }
@@ -2414,8 +2447,9 @@ public static int count(@IC@ c, String id) {
   }
   return n;
 }""")
-# 0.1.7 where the items go: 0 = the 9 hotbar slots only (class kits, LOCKED Skyy 2026-09-25 - what does not fit becomes the /class kit
-# claim), 1 = hotbar first, then storage (claims, owed items, daily arrows; Inventory.getCombinedHotbarFirst = hotbar + storage)
+# 0.1.7 where the items go: 0 = the 9 hotbar slots only (class kits and the quiet arrival retry of owed kit items, LOCKED Skyy 2026-09-25 -
+# what does not fit stays the /class kit claim), 1 = hotbar first, then storage (an explicit /class kit claim, daily arrows;
+# Inventory.getCombinedHotbarFirst = hotbar + storage)
 M(kit_, r"""
 public static @IC@ box(@PLA@ p, int where) {
   if (p == null) return null;
@@ -2517,20 +2551,21 @@ public static void claim(@PR@ pr, @PLA@ p, String k, boolean quiet) {
   String[] ids = (String[]) ow[0];
   int[] qs = (int[]) ow[1];
   if (ids.length == 0) { @PKG@.ClassStore.kitEnd(k, ""); requeue(k); if (!quiet) tell(pr, "Nothing is waiting.", false); return; }
-  if (!room(p, 1, ids)) {
+  int where = quiet ? 0 : 1;   // 0.1.7 review fix: automatic (arrival) claims = the hotbar only; /class kit = hotbar, then storage
+  if (!room(p, where, ids)) {
     if (!quiet) tell(pr, "Your hotbar and storage are full - make room for your kit items (" + @PKG@.KitCfg.listText(ids, qs) + "), then type /class kit again.", true);
     return;
   }
   String owed = @PKG@.ClassStore.kitClaimBegin(k);
   if (owed == null) { if (!quiet) tell(pr, "Your kit record could not be saved - try again in a moment.", true); return; }
-  int[] got = put(p, 1, ids, qs);   // 0.1.7: claims go hotbar first, then storage
+  int[] got = put(p, where, ids, qs);
   String rem = @PKG@.KitCfg.rest(ids, qs, got);
   @PKG@.ClassStore.kitEnd(k, rem);
   requeue(k);
   int g = @PKG@.KitCfg.total(got);
   int left = @PKG@.KitCfg.total(qs) - g;
   if (g > 0) tell(pr, "Collected " + g + (g == 1 ? " kit item: " : " kit items: ") + @PKG@.KitCfg.listText(ids, got) + ".", false);
-  if (left > 0 && (!quiet || g > 0)) tell(pr, left + (left == 1 ? " item" : " items") + " still did not fit - make room, then type /class kit again.", true);
+  if (left > 0 && (!quiet || g > 0)) tell(pr, left + (left == 1 ? " item" : " items") + (quiet ? " did not fit your hotbar - type /class kit to collect " + (left == 1 ? "it" : "them") + " (hotbar, then storage)." : " still did not fit - make room, then type /class kit again."), true);
   @PKG@.ClassCfg.info("class kit claim: " + pr.getUsername() + " (" + k + ") collected " + (g > 0 ? @PKG@.KitCfg.join(ids, got) : "nothing") + (left > 0 ? ", still owed " + rem : ""));
 }""")
 # /class kit with nothing owed
