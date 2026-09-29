@@ -18,10 +18,17 @@ Build the jar first (python tools/menu_0_3_3_patch.py, then python SkyyMenu/buil
   E  the new rows in their tabs: every regSetting of THIS ROUND's set (tools/deploy_set.py SET + the build's ROUND_PINS, ROUND_RETIRED
      out) registered -> General / Combat / Skills rows in SET_ORDER; paging on the real page: General and Combat = 10 rows = page 1 of 2
      with 8 rows + Prev / Next, page 2 of 2 with 2 rows; one-page tabs have no Prev / Next; the defaults template lists the new keys
+  G  the review fixes (2026-09-29): a key registered with a node that is not plain is REFUSED for everyone (may false, row hidden, set
+     refused, get = its registered default even over a stored choice; an earlier weaker registration of the same mod goes too; later
+     registrations stay refused; an undrained settings:def: fails closed on the first call); validPerm refuses "-skyytest.staff" and
+     the other non-plain forms and accepts every node the round's mods use today (scanned: regSetting nodes + literal
+     requirePermission / hasPermission nodes); two mods on one key: no node then a node = gated (kept when the first mod registers
+     again), two different nodes = refused, a mod may change (never drop) its own node
   F  the Mods list texts (MenuData + MenuUtil.modBodyFor for a player and an admin): SkyyGear replaces SkyyRolls, the round versions,
      Essentials without world spawn + the Warps page, privacy.staffBypass in Party + Essentials, /class arrows + hotbar at once, rarity
      bags + Omni, the bag ladder, no "type it twice"; the Identify tile (slot 26, cmdc:identify; no /identify command = the
-     "not installed" path), Settings at slot 39, main slot 51 empty
+     "not installed" path), Settings at slot 39, main slot 51 empty; review fix: no (admin) / (staff) line in any player's Mods text,
+     every MOD_ADMIN line in the admin's (/classadmin, /ahadmin ... regrant, /fly, /rank set <player> <rank>)
 Not testable without the game (UNVERIFIED in the build report): the pages on a client, a real server's permission lookups (ops,
 SkyyRanks grants), the Identify tile with SkyyGear loaded, clicks through the real PageManager.
 Nothing is deployed. Default scratch folder: tools/dev/scratch/gc-menu (deleted at the end unless --keep); TEMP / TMP and java.io.tmpdir
@@ -92,6 +99,20 @@ def round_scripts():
 
 
 REG = re.compile(r'regSetting\(\s*"([^"]+)"\s*,\s*"([^"]*)"\s*,\s*"([^"]*)"\s*,\s*(true|false|True|False)\s*,\s*"([^"]*)"\s*(?:,\s*"([^"]*)"\s*)?\)')
+NODE_LIT = re.compile(r'(?:requirePermission\(\s*|hasPermission\([^;"]*?)"([^"]+)"\s*\)')
+
+
+def real_nodes(scripts):
+    """the permission nodes the round's mods use today: every regSetting node (7th registration element - none yet) and every literal
+    requirePermission / hasPermission node of their newest scripts (what a mod would gate a switch with) -> {node: script names}"""
+    out = {}
+    for mod, p in scripts:
+        t = open(p, encoding="utf-8", errors="ignore").read()
+        found = [r[5] for r in REG.findall(t) if r[5]]          # registration nodes: all of them, whatever they look like
+        found += [n for n in NODE_LIT.findall(t) if "." in n and not n.endswith(".") and not re.search(r"[{}@%\s]", n)]
+        for n in found:
+            out.setdefault(n, set()).add(os.path.basename(p))
+    return out
 
 
 def run():
@@ -324,8 +345,90 @@ def run():
           "D. stale click on a row the player lost: refused, nothing stored (%r)" % str(pgB.status))
     check(idx >= 0, "D. the holder's page kept the node row key")
 
+    # ---------------- G. review fixes: a refused key fails closed, plain nodes only, the stricter node wins
+    sget = JClass(PKG + "SetGetFn")()
+    FA = Boolean.FALSE
+    F_ = UUID.fromString("00000000-0000-0000-0000-00000000000f")     # plain player with choices stored for the keys refused below
+    open(os.path.join(work, "settings", str(F_) + ".properties"), "w").write("_v=1\ntest.inv=true\ntest.weak=false\n")
+    # an invalid node (skyy.*) -> the key is refused: set refused, get = the registered default, row hidden - for everyone
+    check(not bool(reg.apply(jarr("TestMod", "test.inv", "Invalid node", "coins", FA, "h", "skyy.*"))), "G. node skyy.* refused")
+    check(SetReg.DEFS.get("test.inv") is None and SetReg.REFUSED.get("test.inv") is not None, "G. the key is REFUSED, not in DEFS")
+    for u, who in ((A_, "holder"), (B_, "plain player"), (C_, "op"), (F_, "player with a stored choice")):
+        check(not bool(SetReg.may(u, "test.inv")), "G. refused key: may() false for the %s" % who)
+        check("test.inv" not in [str(x) for x in SetReg.visible(COINS, u)], "G. refused key: row hidden for the %s" % who)
+        check(not bool(sset.apply(jarr(u, "test.inv", T))), "G. refused key: settings:fn:set refused for the %s" % who)
+    check(SetStore.own(A_, "test.inv") is None and SetStore.own(C_, "test.inv") is None, "G. refused key: nothing stored")
+    _g = sget.apply(jarr(F_, "test.inv"))
+    check(_g is not None and not bool(_g), "G. refused key: settings:fn:get = the registered default FALSE, not the stored TRUE (%r)" % (_g,))
+    _g = sget.apply(jarr(B_, "test.inv"))
+    check(_g is not None and not bool(_g), "G. refused key: settings:fn:get = the registered default for a player without a choice (%r)" % (_g,))
+    pgG = SettingsPage(pref(C_), COINS)
+    cG = build(pgG)
+    check(not any("Invalid node" in d for s, t, d in cG) and "2 settings" in head_of(cG), "G. refused key: no row on the op's page (%r)" % head_of(cG))
+    # the same mod: a weaker registration first, then an invalid node -> the earlier registration goes too
+    check(bool(reg.apply(jarr("TestMod", "test.weak", "Weak row", "general", T, "every player"))) and
+          "test.weak" in [str(x) for x in SetReg.visible(GEN, B_)], "G. test.weak registers for every player")
+    check(not bool(reg.apply(jarr("TestMod", "test.weak", "Weak row", "general", T, "h", "a..b"))), "G. the same mod again with node a..b: refused")
+    check(SetReg.DEFS.get("test.weak") is None and "test.weak" not in [str(x) for x in SetReg.visible(GEN, B_)]
+          and not bool(SetReg.may(B_, "test.weak")) and not bool(sset.apply(jarr(B_, "test.weak", FA))),
+          "G. ... the earlier weaker registration is gone: hidden, may() false, set refused")
+    _g = sget.apply(jarr(F_, "test.weak"))
+    check(_g is not None and bool(_g), "G. ... settings:fn:get = the registered default TRUE, not the stored FALSE (%r)" % (_g,))
+    check(not bool(reg.apply(jarr("TestMod", "test.weak", "Weak row", "general", T, "every player")))
+          and not bool(reg.apply(jarr("OtherMod", "test.weak", "W", "general", T, "h", "skyytest.staff"))) and SetReg.DEFS.get("test.weak") is None,
+          "G. a refused key stays refused (a later valid registration of any mod)")
+    # an undrained settings:def: with a bad node fails closed on the very first get / may / set; the drain never brings it back
+    br.put("settings:def:test.lazy", jarr("LazyMod", "test.lazy", "Lazy", "general", FA, "h", "-skyytest.staff"))
+    _g = sget.apply(jarr(B_, "test.lazy"))
+    check(_g is not None and not bool(_g) and not bool(SetReg.may(D_, "test.lazy")) and not bool(sset.apply(jarr(B_, "test.lazy", T))),
+          "G. settings:def: with a bad node, never drained: get = default, may() false, set refused (%r)" % (_g,))
+    SetReg.drain()
+    check(SetReg.DEFS.get("test.lazy") is None and SetReg.REFUSED.get("test.lazy") is not None, "G. ... the drain keeps it refused")
+    # plain nodes only
+    check(not bool(reg.apply(jarr("TestMod", "test.deny", "Deny", "coins", T, "h", "-skyytest.staff"))) and not bool(SetReg.may(D_, "test.deny"))
+          and not bool(SetReg.may(A_, "test.deny")), "G. -skyytest.staff (the engine's deny syntax) refuses the key")
+    for bad in ("-skyytest.staff", "-", ":", ".", "..", "a..b", "skyy.", "skyy:", "skyy-", "skyy.admin.", "skyy.admin-", "skyy.admin:",
+                ".skyy.admin", "skyy.*", "*", "skyy.ad*min", "skyy:admin", "skyy-x.admin", "Skyy.admin", "skyy_x.admin", "skyy",
+                "a b.c", "1skyy.admin", "x" * 98 + ".ab"):
+        check(not bool(SetReg.validPerm(bad)), "G. validPerm refuses %r" % bad[:24])
+    for good in ("skyytest.staff", "a.b", "skyy0.admin2", "skyy.2fa", "skyyranks.rank.vip", "x" * 97 + ".ab"):
+        check(bool(SetReg.validPerm(good)), "G. validPerm accepts %r" % good[:24])
+    scripts_g, _rp, _rr = round_scripts()
+    scripts_g = scripts_g + [(m, p) for m, p in (("SkyyGear", os.path.join(ROOT, "SkyyGear", "build_skyygear_0.1.py")),)
+                             if (m, p) not in scripts_g and os.path.isfile(p)]
+    real = real_nodes(scripts_g)
+    print("G. %d permission nodes the round's mods use today (registration nodes: %d)" %
+          (len(real), len([1 for m, p in scripts_g for r in REG.findall(open(p, encoding="utf-8", errors="ignore").read()) if r[5]])))
+    check(len(real) >= 15, "G. real nodes found in the round's scripts: %d" % len(real))
+    for n in sorted(real):
+        check(bool(SetReg.validPerm(n)), "G. validPerm accepts the real node %s (%s)" % (n, ", ".join(sorted(real[n]))))
+    # two mods on one key: the stricter node wins
+    check(bool(reg.apply(jarr("ModA", "test.conf", "Conflict row", "general", T, "first, no node"))), "G. conflict: ModA registers without a node")
+    check(bool(reg.apply(jarr("ModB", "test.conf", "Other text", "general", T, "second, a node", "skyytest.staff"))),
+          "G. conflict: ModB registers the same key with a node")
+    _d = SetReg.info("test.conf")
+    check(str(SetReg.permOf("test.conf")) == "skyytest.staff" and str(_d[0]) == "ModA" and str(_d[2]) == "Conflict row" and len(_d) == 7,
+          "G. null then node: the key is gated by the node, ModA's texts kept")
+    check(not bool(SetReg.may(B_, "test.conf")) and bool(SetReg.may(A_, "test.conf")) and bool(SetReg.may(C_, "test.conf"))
+          and "test.conf" not in [str(x) for x in SetReg.visible(GEN, B_)] and "test.conf" in [str(x) for x in SetReg.visible(GEN, A_)],
+          "G. ... hidden for the plain player, shown to the holder and the op")
+    check(not bool(sset.apply(jarr(B_, "test.conf", FA))) and bool(sset.apply(jarr(A_, "test.conf", FA))), "G. ... set: plain refused, holder ok")
+    check(bool(reg.apply(jarr("ModA", "test.conf", "Conflict row", "general", T, "first, no node"))) and str(SetReg.permOf("test.conf")) == "skyytest.staff",
+          "G. ModA registering again (the settings:def: drain) keeps ModB's node")
+    check(bool(reg.apply(jarr("ModA", "test.conf2", "Two nodes", "general", T, "h", "skyytest.staff"))), "G. test.conf2: ModA with a node")
+    check(not bool(reg.apply(jarr("ModB", "test.conf2", "Two nodes", "general", T, "h", "skyytest.other"))) and SetReg.DEFS.get("test.conf2") is None
+          and not bool(SetReg.may(A_, "test.conf2")) and not bool(SetReg.may(C_, "test.conf2")),
+          "G. two mods, two different nodes: the key is refused (hidden even for holders and ops)")
+    check(bool(reg.apply(jarr("ModA", "test.own", "Own", "general", T, "h", "skyytest.staff")))
+          and bool(reg.apply(jarr("ModA", "test.own", "Own", "general", T, "h", "skyytest.other"))) and str(SetReg.permOf("test.own")) == "skyytest.other",
+          "G. a mod may change its own node")
+    check(bool(reg.apply(jarr("ModA", "test.own", "Own", "general", T, "h"))) and str(SetReg.permOf("test.own")) == "skyytest.other",
+          "G. ... but never drops it by registering without one")
+
     # ---------------- E. this round's rows in their tabs + paging on the real page
     SetReg.DEFS.clear()
+    SetReg.REFUSED.clear()
+    SetReg.PERM_MOD.clear()
     for k in list(br.keySet()):
         if str(k).startswith("settings:def:test."):
             br.remove(k)
@@ -415,6 +518,24 @@ def run():
     check(MU.cmd("identify") is None and str(JClass(PKG + "MenuPage").cmdOf("cmdc:identify")) == "identify",
           "F. no /identify command loaded -> MenuUtil.cmd null = the greyed 'not installed' path of fillStatic")
     check("identifying gear" in str(MD.MOD_BODY[mods.index("SkyyMenu")]), "F. SkyyMenu's own Mods text names identifying")
+    # review fix: Commands lines marked (admin) / (staff) only in the admins' Mods text (MOD_AONLY = the MOD_ADMIN lines)
+    madm = [str(x) for x in MD.MOD_ADMIN]
+    for i, m in enumerate(mods):
+        pl, ad = body(m, False), body(m, True)
+        st = str(MD.MOD_BODY[i]) + str(MD.MOD_OLD_BODY[i])
+        check("(admin)" not in pl and "(staff)" not in pl and "(admin)" not in st and "(staff)" not in st,
+              "F. %s: no (admin) / (staff) line in the players' Mods text" % m)
+        for l in [x for x in madm[i].split("\n") if x]:
+            check(l.replace("<", "[").replace(">", "]") in ad, "F. %s: the admin sees %r" % (m, l[:50]))
+    c_pl2, c_ad2 = body("SkyyClasses", False), body("SkyyClasses", True)
+    check("/classadmin" not in c_pl2 and "/class arrows" in c_pl2 and all(("/classadmin " + s) in c_ad2 for s in ("set", "reset", "info", "reload", "kit")),
+          "F. /classadmin set|reset|info|reload|kit: admins only")
+    check("/classadmin set" in madm[mods.index("SkyyClasses")], "F. ... and on the Server Setup page (MOD_ADMIN)")
+    a_pl, a_ad = body("SkyyAuctions", False), body("SkyyAuctions", True)
+    check("/ahadmin" not in a_pl and "/ah sell" in a_pl and "regrant" in a_ad and "Admin only:" in a_ad, "F. /ahadmin ... regrant: admins only")
+    check("/fly" not in body("SkyyEssentials", False) and "/fly - (staff)" in body("SkyyEssentials", True), "F. /fly (staff): admins only")
+    r_pl, r_ad = body("SkyyRanks", False), body("SkyyRanks", True)
+    check("/rank set [player] [rank] | clear [player] - (admin)" in r_ad and "/rank" not in r_pl, "F. SkyyRanks: /rank set <player> <rank> | clear <player>, admins only")
 
 
 def main():

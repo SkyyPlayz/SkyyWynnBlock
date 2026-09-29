@@ -5,6 +5,8 @@
        element = a node; rows the player may not change are hidden, never greyed; settings:fn:set refuses them); the refusing General
        switches party.invites / tpa.requests / msg.private, skills.overallUp, the crossbow switches and SkyyGear's three in the known
        list; Mods texts of rounds 8 + 9; the live-set check also accepts this round's SET (ROUND_PINS / ROUND_RETIRED); kit KEEP 10.
+       Review fixes: a bad node refuses the key for good (hidden, set refused, get = its default), plain nodes only, the stricter
+       node wins when two mods register one key; (admin) / (staff) Commands lines only in the admins' Mods text; /rank set <player> <rank>.
        Notes: tools/menu_0_3_3_patch.py.
 0.3.2: menu data for round 6 (Berserker / Fury, Priest / Divinity, class kits): every class text names the 7-class roster (Archer,
        Warrior, Mage, Berserker, Priest playable; Assassin, Shaman later) and the weapon skills; SkyyClasses /class kit + the admin
@@ -501,7 +503,7 @@ MODS = [
      "setup": ("0.1", "Ranks", "the ranks editor, the default rank, the chat prefix"),
      "admin": ["/rankadmin - (admin) the ranks editor: ranks, prefixes, grants, members",
                "/rankadmin player <player> - (admin) one player's rank and denies",
-               "/rank set | clear <player> - (admin) give or take a rank in chat",
+               "/rank set <player> <rank> | clear <player> - (admin) give or take a rank in chat",
                "/rankadmin reload | sync - (admin) re-read the files, fix the groups"],
      "desc": "Server ranks with a chat prefix in front of your name - Member, Admin, Developer and Owner to start. Ops and the Owner rank make the ranks and what each rank may do, all in game.",
      "commands": ["No commands for players - your rank shows in front of your name in chat."]},
@@ -911,6 +913,8 @@ _modix = dict((m["mod"], m) for m in MODS)
 _known = dict((k[0], k) for k in SET_KNOWN)
 # 0.3.3: an optional 6th string argument (a permission node, the 7th registration element) is accepted
 _REG = re.compile(r'regSetting\(\s*"([^"]+)"\s*,\s*"([^"]*)"\s*,\s*"([^"]*)"\s*,\s*(true|false|True|False)\s*,\s*"([^"]*)"\s*(?:,\s*"([^"]*)"\s*)?\)')
+# 0.3.3 review: a registration node must be plain (= SetReg.validPerm, max 100 characters), else SkyyMenu refuses that key
+_NODE_RE = re.compile(r"^[a-z][a-z0-9]*(\.[a-z0-9]+)+$")
 _EMIT = re.compile(r'\.emit\(\s*pool\s*,\s*PKG\s*,\s*MOD\s*=\s*"(\w+)"\s*,\s*TITLE\s*=\s*"([^"]+)"')
 _PATCH = "tools/menu_0_3_3_patch.py"
 
@@ -943,6 +947,8 @@ def menu_check(live, retired):
             cls[0] = t
         for _k, _lab, _cat, _def, _hlp, _perm in _REG.findall(t):
             keys.add(_k)
+            if _perm and not (len(_perm) <= 100 and _NODE_RE.match(_perm)):
+                drift.append("%s: switch %s registers the node %r - not a plain node, SkyyMenu refuses the key" % (mod, _k, _perm))
             _kn = _known.get(_k)
             if _kn is None:
                 drift.append("%s registers the player switch %s - not in SET_KNOWN" % (mod, _k))
@@ -1449,22 +1455,40 @@ E_FOOT = [txt(e[5]) if e[5] else None for e in ENTRIES]; E_ACT = [e[6] for e in 
 for a in E_ACT:
     assert '"' not in a and "\\" not in a
 PA = PLAYER_ACTIONS
-MOD_BODY = [txt(m["desc"]) + "\nCommands:\n" + "\n".join(txt(c.replace("%ALIASES%", ALIAS_TEXT)) for c in m["commands"]) for m in MODS]
+# 0.3.3 (review): a Commands line marked (admin) or (staff) is admin-only too - it is never in MOD_BODY / MOD_OLD_BODY (the Mods text
+# every player reads); admins read it in the "Admin only:" block (MOD_AONLY below = exactly the lines MOD_ADMIN lists on the Server
+# Setup page: those Commands lines, then the MODS "admin" lines)
+def admin_line(c):
+    return "(admin)" in c or "(staff)" in c
+def player_lines(cmds):
+    return [c for c in cmds if not admin_line(c)]
+def admin_lines(m):
+    return [c for c in m["commands"] if admin_line(c)] + m.get("admin", [])
+for _m in MODS:
+    assert player_lines(_m["commands"]) and ("old" not in _m or player_lines(_m["old"]["commands"])), \
+        "%s: every Commands line is admin-only - players need one line (e.g. 'No commands for players - ...')" % _m["mod"]
+MOD_BODY = [txt(m["desc"]) + "\nCommands:\n" + "\n".join(txt(c.replace("%ALIASES%", ALIAS_TEXT)) for c in player_lines(m["commands"]))
+            for m in MODS]
 MOD_OLD_NEED = [m["old"]["need"] if "old" in m else "" for m in MODS]
-MOD_OLD_BODY = [(txt(m["old"]["desc"]) + "\nCommands:\n" + "\n".join(txt(c.replace("%ALIASES%", ALIAS_TEXT)) for c in m["old"]["commands"]))
+MOD_OLD_BODY = [(txt(m["old"]["desc"]) + "\nCommands:\n" + "\n".join(txt(c.replace("%ALIASES%", ALIAS_TEXT)) for c in player_lines(m["old"]["commands"])))
                 if "old" in m else "" for m in MODS]
+for _i, _m in enumerate(MODS):
+    assert MOD_ADMIN[_i] == "\n".join(c.replace("%ALIASES%", "") for c in admin_lines(_m)), "%s: MOD_ADMIN lines" % _m["mod"]
+for _b in MOD_BODY + MOD_OLD_BODY:
+    assert "(admin)" not in _b and "(staff)" not in _b, "an admin line in the players' Mods text: " + _b[:80]
 # 0.3.1: the admin-only lines of the Mods view (MODS "admin"): admins read them under MOD_AHEAD between the description and the
 # commands (MenuUtil.modBodyFor builds exactly MOD_ABODY at run time), players never see them. The tooltip opens ABOVE the icon, so
 # an admin tooltip keeps to 14 detail lines.
 MOD_AHEAD = "Admin only:"
-MOD_AONLY = ["\n".join(txt(c.replace("%ALIASES%", ALIAS_TEXT)) for c in m.get("admin", [])) for m in MODS]
+# 0.3.3 (review): + the (admin) / (staff) Commands lines (admin_lines = the MOD_ADMIN lines), which MOD_BODY no longer carries
+MOD_AONLY = ["\n".join(txt(c.replace("%ALIASES%", ALIAS_TEXT)) for c in admin_lines(m)) for m in MODS]
 # review 2026-09-25: MenuUtil.modBodyFor puts the admin block after the FIRST line of the text, so a description is one line (the
 # info box wraps it); MOD_ABODY is built from its parts and must equal what modBodyFor makes of MOD_BODY
 for _m in MODS:
     for _d in [_m["desc"]] + ([_m["old"]["desc"]] if "old" in _m else []):
         assert "\n" not in _d and "\r" not in _d, "%s: desc must be one line (the admin lines go after the first line)" % _m["mod"]
 MOD_ABODY = [(txt(m["desc"]) + "\n" + MOD_AHEAD + "\n" + MOD_AONLY[i] + "\nCommands:\n" +
-              "\n".join(txt(c.replace("%ALIASES%", ALIAS_TEXT)) for c in m["commands"])) if MOD_AONLY[i] else MOD_BODY[i]
+              "\n".join(txt(c.replace("%ALIASES%", ALIAS_TEXT)) for c in player_lines(m["commands"]))) if MOD_AONLY[i] else MOD_BODY[i]
              for i, m in enumerate(MODS)]
 def java_abody(b, a):
     """= MenuUtil.modBodyFor(k, true) on the text b (no "old" wording)"""
@@ -2268,19 +2292,27 @@ print("config kit: %d rows (kit %s, skyycfg.py blob %s), files %s" % (KIT.info["
 # Bridge contract (never removed; java.lang types only - every mod has its own classloader):
 #   settings:fn:register  apply(Object[] { String mod, String key, String label, String category, Boolean def, String help [, String perm] })
 #                         -> Boolean. 0.3.3: the optional 7th element = a permission node: only players holding it see the row (hidden, never
-#                         greyed) and may set it; null / "" / six elements = every player; any other value refuses the registration.
-#   settings:fn:get       apply(Object[] { UUID player, String key }) -> Boolean (choice, else admin default, else registered default; null = unknown)
+#                         greyed) and may set it; null / "" / six elements = every player; any value that is not a plain node
+#                         (SetReg.validPerm) REFUSES THE KEY for this run (fail closed: hidden for all, set FALSE, get = its default).
+#                         Two mods on one key: the stricter wins (a node is never dropped; two different nodes refuse the key).
+#   settings:fn:get       apply(Object[] { UUID player, String key }) -> Boolean (choice, else admin default, else registered default; null = unknown;
+#                         0.3.3: a refused key answers its registered default - never a stored choice)
 #   settings:fn:set       apply(Object[] { UUID player, String key, Boolean value [, Boolean onlyIfUnset] }) -> Boolean (TRUE = stored state matches;
 #                         0.3.3: FALSE for a key whose permission node the player lacks)
 #   settings:def:<key>    the same Object[6] (or Object[7]) as register, written by every adopter at setup (drained here, so load order never matters)
 # Guarantees: never throws (bad input = null / FALSE); never calls another mod, never writes the bridge from get/set, never touches ECS or
 # inventories; the only locks are SetReg.class (register, memory only), SetStore.class (memory only - never held during file I/O) and
 # SetStore's 64 lock stripes (one player's own file read / write; a stripe holder never takes another lock or calls out), so calling it
-# from inside a caller's own lock is safe and no lock cycle exists. get is two ConcurrentHashMap reads + a HashMap read after the
+# from inside a caller's own lock is safe and no lock cycle exists. get is four ConcurrentHashMap reads + a HashMap read after the
 # player's first read (preloaded at join); set / resetAll of a loaded player never wait for any disk write, not even that player's own.
 # ---- SetReg: the registered switches (fields first - javassist) + the admin defaults file
 F(sreg, "public static final java.util.concurrent.ConcurrentHashMap DEFS = new java.util.concurrent.ConcurrentHashMap();")
 F(sreg, "public static final java.util.concurrent.ConcurrentHashMap WARNED = new java.util.concurrent.ConcurrentHashMap();")
+# 0.3.3 (review): keys refused for this server run (a registration with a node that is not plain, or two mods with two different nodes):
+# key -> the Boolean default settings:fn:get answers. Never cleared: hidden for everyone, may() false, set refused, later registrations
+# refused - load order never makes a refused key visible. PERM_MOD: key -> the mod whose node gates the key (DEFS stays Object[7]).
+F(sreg, "public static final java.util.concurrent.ConcurrentHashMap REFUSED = new java.util.concurrent.ConcurrentHashMap();")
+F(sreg, "public static final java.util.concurrent.ConcurrentHashMap PERM_MOD = new java.util.concurrent.ConcurrentHashMap();")
 F(sreg, "public static volatile java.util.HashMap ADMIN = new java.util.HashMap();")
 F(sreg, "public static java.nio.file.Path ADMIN_FILE = null;")
 F(sreg, "public static volatile long ADMIN_MTIME = -1L;")
@@ -2308,21 +2340,46 @@ public static int catIndex(String c) {
   for (int i = 0; i < @PKG@.MenuData.SET_CAT_ID.length; i++) if (@PKG@.MenuData.SET_CAT_ID[i].equals(c)) return i;
   return @PKG@.MenuData.SET_CAT_ID.length - 1;
 }""")
-# 0.3.3: a permission node of a registration (element 7): letters, digits and . _ - : only, 1-100 characters (no *, no spaces). null / ""
-# never reach this (= no node).
+# 0.3.3 (review): a permission node of a registration (element 7) must be PLAIN - the menu's own node pattern
+# ^[a-z][a-z0-9]*(\.[a-z0-9]+)+$ (ADMIN_NODE / MENU_CFG_NODE), 3-100 characters: no leading "-" (the engine's personal-deny syntax would
+# invert the check), no *, :, _, - or spaces, no "..", no trailing dot. Every literal node a Skyy mod uses passes (the harness scans them).
+# null / "" never reach this (= no node).
 M(sreg, r"""
 public static boolean validPerm(String p) {
-  if (p == null || p.length() < 1 || p.length() > 100) return false;
-  for (int i = 0; i < p.length(); i++) {
+  if (p == null || p.length() < 3 || p.length() > 100) return false;
+  char prev = p.charAt(0);
+  if (prev < 'a' || prev > 'z') return false;
+  boolean dot = false;
+  for (int i = 1; i < p.length(); i++) {
     char c = p.charAt(i);
-    if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '.' || c == '_' || c == '-' || c == ':')) return false;
+    if (c == '.') {
+      if (prev == '.') return false;
+      dot = true;
+    } else if (!((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))) return false;
+    prev = c;
   }
-  return true;
+  return dot && prev != '.';
 }""")
-# idempotent: the same mod registering again updates label / help / tab / node; a different mod registering the same key (shared keys such
-# as rewards.late) is accepted and the FIRST registration is kept - one warning if the defaults (0.3.3: or the nodes) differ.
-# 0.3.3: DEFS values are Object[7] { mod, key, label, cat, def, help, perm } (perm null = every player). A 7th element that is neither
-# null, "" nor a valid node refuses the registration (fail closed: the row is never shown to everyone by mistake), one warning per key.
+# 0.3.3 (review): refuse a key for this run (register holds the SetReg lock): its registration leaves DEFS (whoever made it), REFUSED keeps
+# the default settings:fn:get answers (the kept first registration's, else this one's), one warning per key
+M(sreg, r"""
+public static void refuse(String key, Boolean def, String why) {
+  Object[] old = (Object[]) DEFS.remove(key);
+  PERM_MOD.remove(key);
+  Boolean d = old != null && old[4] instanceof Boolean ? (Boolean) old[4] : def;
+  if (d == null) d = Boolean.TRUE;
+  REFUSED.putIfAbsent(key, d);
+  if (WARNED.putIfAbsent("refused:" + key, Boolean.TRUE) == null)
+    @PKG@.MenuUtil.warn("setting " + key + ": " + why + " - the switch is refused until the next restart (hidden for every player, nobody can change it, it answers its default " + d + ")");
+}""")
+# idempotent: the same mod registering again updates label / help / tab / default; a different mod registering the same key (shared keys
+# such as rewards.late) is accepted and the FIRST registration's texts and default are kept - one warning if the defaults differ.
+# 0.3.3: DEFS values are Object[7] { mod, key, label, cat, def, help, perm } (perm null = every player).
+# 0.3.3 review fixes (fail closed, load order never matters):
+#   - a refused key (REFUSED) refuses every later registration (FALSE)
+#   - a 7th element that is neither null, "" nor a plain node refuses the KEY (refuse(): also an earlier weaker registration goes)
+#   - the stricter node wins: a node is never dropped (another mod's node gates the first mod's registration, a registration without
+#     a node keeps the node already there, one warning); two different nodes from two mods refuse the key; a mod may change its own node
 M(sreg, r"""
 public static synchronized boolean register(Object o) {
   try {
@@ -2337,27 +2394,51 @@ public static synchronized boolean register(Object o) {
     String cat = @PKG@.MenuData.SET_CAT_ID[catIndex(a[3] == null ? "" : String.valueOf(a[3]))];
     Boolean def = a[4] instanceof Boolean ? (Boolean) a[4] : Boolean.TRUE;
     String help = a.length > 5 ? clip(a[5], 100) : "";
+    if (REFUSED.containsKey(key)) return false;
     String perm = null;
     if (a.length > 6 && a[6] != null) {
       String p = a[6] instanceof String ? ((String) a[6]).trim() : null;
       if (p == null || (p.length() > 0 && !validPerm(p))) {
-        if (WARNED.putIfAbsent("perm:" + key, Boolean.TRUE) == null)
-          @PKG@.MenuUtil.warn("setting " + key + " (" + mod + "): '" + clip(a[6], 60) + "' is not a permission node - the switch is not registered");
+        refuse(key, def, mod + " gave '" + clip(a[6], 60) + "', which is not a plain permission node");
         return false;
       }
       if (p.length() > 0) perm = p;
     }
     Object[] old = (Object[]) DEFS.get(key);
+    String op = old != null && old.length > 6 && old[6] instanceof String ? (String) old[6] : null;
+    Object pmo = PERM_MOD.get(key);
+    String om = pmo instanceof String ? (String) pmo : (old == null ? null : String.valueOf(old[0]));
     if (old != null && !mod.equals(old[0])) {
       if (!def.equals(old[4]) && WARNED.putIfAbsent(key, Boolean.TRUE) == null)
         @PKG@.MenuUtil.warn("setting " + key + ": " + mod + " wants default " + def + ", " + old[0] + " registered " + old[4] + " first - keeping " + old[4]);
-      Object op = old.length > 6 ? old[6] : null;
-      boolean same = op == null ? perm == null : op.equals(perm);
-      if (!same && WARNED.putIfAbsent("node:" + key, Boolean.TRUE) == null)
-        @PKG@.MenuUtil.warn("setting " + key + ": " + mod + " wants node " + perm + ", " + old[0] + " registered " + op + " first - keeping " + op);
-      return true;
+      if (perm == null || perm.equals(op)) {
+        if (perm == null && op != null && WARNED.putIfAbsent("node:" + key, Boolean.TRUE) == null)
+          @PKG@.MenuUtil.warn("setting " + key + ": " + mod + " registers it for every player, " + om + " with the node " + op + " - keeping the node " + op);
+        return true;
+      }
+      if (op == null) {
+        DEFS.put(key, new Object[] { old[0], key, old[2], old[3], old[4], old[5], perm });
+        PERM_MOD.put(key, mod);
+        if (WARNED.putIfAbsent("node:" + key, Boolean.TRUE) == null)
+          @PKG@.MenuUtil.warn("setting " + key + ": " + old[0] + " registered it for every player, " + mod + " with the node " + perm + " - only holders of " + perm + " see and change it");
+        return true;
+      }
+      refuse(key, def, mod + " wants the node " + perm + ", " + om + " registered the node " + op);
+      return false;
+    }
+    if (old != null && op != null) {
+      if (perm == null) {
+        perm = op;
+        if (WARNED.putIfAbsent("node:" + key, Boolean.TRUE) == null)
+          @PKG@.MenuUtil.warn("setting " + key + ": " + mod + " registers it again without a node - keeping the node " + op + " (from " + om + ")");
+      } else if (!perm.equals(op) && !mod.equals(om)) {
+        refuse(key, def, mod + " wants the node " + perm + ", " + om + " registered the node " + op);
+        return false;
+      }
     }
     DEFS.put(key, new Object[] { mod, key, label, cat, def, help, perm });
+    if (perm == null) PERM_MOD.remove(key);
+    else if (!perm.equals(op)) PERM_MOD.put(key, mod);
     return true;
   } catch (Throwable t) { return false; }
 }""")
@@ -2378,7 +2459,7 @@ M(sreg, r"""
 public static Object[] info(String key) {
   if (key == null) return null;
   Object[] d = (Object[]) DEFS.get(key);
-  if (d == null) {
+  if (d == null && !REFUSED.containsKey(key)) {
     Object v = @PKG@.MenuUtil.bridge().get("settings:def:" + key);
     if (v != null && register(v)) d = (Object[]) DEFS.get(key);
   }
@@ -2387,6 +2468,18 @@ public static Object[] info(String key) {
 # 0.3.3: may the player change (and so see) this switch? No node = yes. The node check = PermissionsModule.get().hasPermission(uuid, node),
 # exactly what PlayerRef.hasPermission(node) runs (the check MenuUtil.isAdmin uses for Server Setup). Fail closed (no module, an error,
 # no player = hidden). Never called under a SetReg / SetStore lock: info() returns before the engine is asked.
+# review fix: refusedDef = the default a REFUSED key answers (null = not refused). A key nobody drained yet is looked up first (info():
+# its settings:def: registration is registered - or refused - now), so the first call already fails closed.
+M(sreg, r"""
+public static Boolean refusedDef(String key) {
+  if (key == null) return null;
+  Object r = REFUSED.get(key);
+  if (r == null && DEFS.get(key) == null) {
+    info(key);
+    r = REFUSED.get(key);
+  }
+  return r instanceof Boolean ? (Boolean) r : null;
+}""")
 M(sreg, r"""
 public static String permOf(String key) {
   Object[] d = info(key);
@@ -2404,6 +2497,7 @@ public static boolean allowed(java.util.UUID u, String perm) {
 }""")
 M(sreg, r"""
 public static boolean may(java.util.UUID u, String key) {
+  if (refusedDef(key) != null) return false;
   return allowed(u, permOf(key));
 }""")
 M(sreg, r"""
@@ -2607,6 +2701,8 @@ public static Boolean own(java.util.UUID u, String key) {
 M(sst, r"""
 public static Boolean get(java.util.UUID u, String key) {
   if (u == null || key == null) return null;
+  Boolean rd = @PKG@.SetReg.refusedDef(key);
+  if (rd != null) return rd;
   Boolean o = own(u, key);
   if (o != null) return o;
   return @PKG@.SetReg.def(key);
