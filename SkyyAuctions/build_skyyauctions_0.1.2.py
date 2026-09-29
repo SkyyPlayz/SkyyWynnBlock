@@ -1,6 +1,7 @@
 """0.1.2 (2026-09-28): SkyyGear compat (names, rarity filter on the Wynn ladder, modifier lines via the gear:fn bridge, SkyyRolls
-  fallback) + Skyy's AH locks (48h = double listing fee, another profile of the same account may buy, Magic Bags + Accessory
-  Bag blocked built in). Notes in tools/auctions_0_1_2_patch.py.
+  fallback) + Skyy's AH locks (48h = double listing fee but never less than 24h - xFloorPrev, another profile of the same
+  account may buy, Magic Bags + Accessory Bag blocked built in); 2026-09-29 review fixes (capped row sub-lines, config
+  migration fixes). Notes in tools/auctions_0_1_2_patch.py.
 0.1.1 (2026-09-25): HOTFIX - the item view's grid gets a metadata-free copy of the item (a rolled item disconnected the
   client: ClientItemMetadata). Notes in tools/auctions_0_1_1_patch.py.
 SkyyAuctions 0.1 - build script (javassist via jpype). A Hypixel-style Auction House for SkyWynn, BUY IT NOW listings only.
@@ -504,13 +505,17 @@ OTHER_NOTE = ("# otherProfileBuy = true: ANOTHER profile of the same account may
               "false = no buying from your own account at all.")
 BAGS_NOTE = ("# blockBags = true: Magic Bags (Skyy_Sack_*) and the Accessory Bag cannot be listed or bought - they open their owner's own "
              "storage. false = tradeable (the contents are never included).")
+XFLOOR_NOTE = "# xFloorPrev = true: an xN preset never costs less than the preset before it; false = exactly N x the listing fee"
 ADDED_HEAD = "# ---- added by SkyyAuctions 0.1.2 ----"
+SAB_MARK = " (retired, ignored)"     # appended once to the old "# sameAccountBuy ..." comment line by migrate()
 CFG_LINES = [
     "# SkyyAuctions config - edit, then /ahadmin reload (or restart). A bad value falls back to its default with a warning in the log.",
     "# listingFee = fee tiers fromPrice:percent (the highest tier at or below the price is used). Paid on Create, never refunded by a cancel.",
     "listingFee=0:1.0,10000000:2.0,100000000:2.5",
     NEW_DUR_NOTE,
     "durations=" + NEW_DURS,
+    XFLOOR_NOTE,
+    "xFloorPrev=true",
     "# minDurationFee = a preset whose fee is below this is a TEST preset (like 2m:0). It is dropped unless allowTestDurations=true,",
     "# and while test presets are on every start, reload and /ahadmin status says so.",
     "minDurationFee=1",
@@ -562,8 +567,9 @@ BLOCK_LINES = [
     "#   (Magic Bags Skyy_Sack_* and the Accessory Bag are blocked built in - blockBags in Skyy_SkyyAuctions/config.properties)",
     "# Matching is exact and case-sensitive; a lone * is ignored (use /ahadmin pause to close the market). After editing: /ahadmin reload",
 ]
-for _l in CFG_LINES + BLOCK_LINES + [OLD_DUR_NOTE, ADDED_HEAD]:
+for _l in CFG_LINES + BLOCK_LINES + [OLD_DUR_NOTE, ADDED_HEAD, SAB_MARK]:
     assert '"' not in _l and "\\" not in _l, _l
+    assert all(32 <= ord(_c) < 127 for _c in _l), "config text must be plain ASCII (migrate() writes ISO-8859-1): " + _l
 
 F(cfg, "public static java.nio.file.Path DIR;")
 F(cfg, "public static java.nio.file.Path FILE;")
@@ -577,6 +583,8 @@ F(cfg, "public static final String NEW_DUR_NOTE = %s;" % jstr(NEW_DUR_NOTE))
 F(cfg, "public static final String OTHER_NOTE = %s;" % jstr(OTHER_NOTE))
 F(cfg, "public static final String BAGS_NOTE = %s;" % jstr(BAGS_NOTE))
 F(cfg, "public static final String ADDED_HEAD = %s;" % jstr(ADDED_HEAD))
+F(cfg, "public static final String XFLOOR_NOTE = %s;" % jstr(XFLOOR_NOTE))
+F(cfg, "public static final String SAB_MARK = %s;" % jstr(SAB_MARK))
 F(cfg, "public static final String BAG_REASON = %s;" % jstr("Magic Bags and the Accessory Bag open their owner's own storage - they cannot be sold"))
 # every tunable is volatile (read on world threads and the tick, written by /ahadmin reload); a reload runs inside the AhStore lock
 # (AhStore.reloadCfg), so a trade never sees half of a new duration or fee table
@@ -587,6 +595,7 @@ F(cfg, "public static volatile String[] DUR_LABEL = new String[] { \"1h\", \"6h\
 F(cfg, "public static volatile long[] DUR_MS = new long[] { 3600000L, 21600000L, 43200000L, 86400000L, 172800000L };")
 F(cfg, "public static volatile long[] DUR_FEE = new long[] { 20L, 45L, 100L, 350L, 0L };")
 F(cfg, "public static volatile int[] DUR_MUL = new int[] { 0, 0, 0, 0, 2 };")     # 0.1.2: xN = N x the listing fee, no flat fee
+F(cfg, "public static volatile boolean X_FLOOR = true;")     # 0.1.2 xFloorPrev: an xN total is never below the preset before it
 F(cfg, "public static volatile int DEF_DUR = 3;")
 F(cfg, "public static volatile String TEST_ON = \"\";")
 F(cfg, "public static volatile long MIN_DUR_FEE = 1L;")
@@ -642,6 +651,10 @@ public static void atomicWrite(java.nio.file.Path f, byte[] data) throws java.io
 M(cfg, r"""
 public static String readText(java.nio.file.Path f) throws java.io.IOException {
   return new String(java.nio.file.Files.readAllBytes(f), "UTF-8");
+}""")
+M(cfg, r"""
+public static String readRaw(java.nio.file.Path f) throws java.io.IOException {
+  return new String(java.nio.file.Files.readAllBytes(f), "ISO-8859-1");
 }""")
 M(cfg, r"""
 public static long lngP(java.util.Properties p, String k, long d, long lo, long hi) {
@@ -790,6 +803,7 @@ public static synchronized String load() {
     @PKG@.AhUtil.warn("config durations has no usable preset - using " + NEW_DURS);
     parseDurs(NEW_DURS);
   }
+  X_FLOOR = boolP(p, "xFloorPrev", true);
   long dm = @PKG@.AhUtil.parseDurMs(p.getProperty("defaultDuration", "24h"));
   int di = dm > 0L ? durIndexMs(dm) : -1;
   if (di < 0) {
@@ -842,17 +856,31 @@ public static long listingFee(long price) {
   long fee = (long) Math.ceil((double) price * pc / 100.0 - 1.0E-9);
   return fee < 0L ? 0L : fee;
 }""")
-# 0.1.2 fee of a listing: { tier listing fee, duration part, N }. A flat preset adds its fee (N = 0); an xN preset (48h:x2) charges N x the
-# tier fee: the duration part is (N - 1) x the tier fee, so fee.listing + fee.duration is always the total that was paid
+# 0.1.2 fee of a listing: { tier listing fee, duration part, N, raised }. A flat preset adds its fee (N = 0); an xN preset (48h:x2) charges
+# N x the tier fee - with xFloorPrev (review 2026-09-29) never less than the total of the preset right before it in the list (raised = 1
+# when that floor was used), so 48h is a premium, never a discount. The duration part is total - tier fee, so fee.listing + fee.duration
+# is always exactly the total that was paid. Pure (bare-JVM tested).
 M(cfg, r"""
 public static long[] fees(long price, int i) {
   long l = listingFee(price);
   long[] df = DUR_FEE;
   int[] mu = DUR_MUL;
-  if (i < 0 || i >= df.length) return new long[] { l, 0L, 0L };
-  int m = i < mu.length ? mu[i] : 0;
-  if (m > 0) return new long[] { l, l * (long) (m - 1), (long) m };
-  return new long[] { l, df[i], 0L };
+  boolean fl = X_FLOOR;
+  if (i < 0 || i >= df.length) return new long[] { l, 0L, 0L, 0L };
+  long prev = -1L;
+  long tot = 0L;
+  long raised = 0L;
+  for (int j = 0; j <= i; j++) {
+    int m = j < mu.length ? mu[j] : 0;
+    raised = 0L;
+    if (m > 0) {
+      tot = l * (long) m;
+      if (fl && prev >= 0L && tot < prev) { tot = prev; raised = 1L; }
+    } else tot = l + df[j];
+    prev = tot;
+  }
+  int mi = i < mu.length ? mu[i] : 0;
+  return new long[] { l, tot - l, mi > 0 ? (long) mi : 0L, raised };
 }""")
 M(cfg, r"""
 public static String mulWord(long m) {
@@ -884,12 +912,29 @@ public static String pctText(double pc) {
   if (s.endsWith(".0")) s = s.substring(0, s.length() - 2);
   return s;
 }""")
+# 0.1.2 the Create page fee line: a flat preset as in 0.1.1; an xN preset names the multiplier, the tier fee and - with xFloorPrev and a
+# preset before it - "at least the <previous> price", so a raised total (48h at a low price) explains itself
+M(cfg, r"""
+public static String feeLine(long pp, int i) {
+  long[] fz = fees(pp, i);
+  String[] dl = DUR_LABEL;
+  String lab = i >= 0 && i < dl.length ? dl[i] : "?";
+  String pc = pctText(pctFor(pp));
+  String rfd = " coins now (" + (CANCEL_REFUND ? "refunded" : "not refunded") + " if you cancel).";
+  long tot = fz[0] + fz[1];
+  if (fz[2] > 0L) {
+    String why = lab + ": " + mulWord(fz[2]) + " listing fee (" + pc + "% = " + @PKG@.AhUtil.fmt(fz[0]) + (fz[3] > 0L ? ", x" + fz[2] + " = " + @PKG@.AhUtil.fmt(fz[0] * fz[2]) : " x" + fz[2]) + ")";
+    if (X_FLOOR && i > 0 && i - 1 < dl.length) why = why + ", at least the " + dl[i - 1] + " price";
+    return why + " -> you pay " + @PKG@.AhUtil.fmt(tot) + rfd;
+  }
+  return "Listing fee " + pc + "% = " + @PKG@.AhUtil.fmt(fz[0]) + " + duration fee (" + lab + ") = " + @PKG@.AhUtil.fmt(fz[1]) + " -> you pay " + @PKG@.AhUtil.fmt(tot) + rfd;
+}""")
 # /ahadmin pause | resume: rewrite only the paused= line of config.properties
 M(cfg, r"""
 public static synchronized boolean setPaused(boolean on) {
   PAUSED = on;
   try {
-    String txt = java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0]) ? readText(FILE) : TEMPLATE;
+    String txt = java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0]) ? readRaw(FILE) : TEMPLATE;
     String[] lines = txt.split("\n", -1);
     StringBuilder sb = new StringBuilder();
     boolean done = false;
@@ -901,7 +946,7 @@ public static synchronized boolean setPaused(boolean on) {
       if (i < lines.length - 1) sb.append('\n');
     }
     if (!done) sb.append("\npaused=").append(on).append('\n');
-    atomicWrite(FILE, sb.toString().getBytes("UTF-8"));
+    atomicWrite(FILE, sb.toString().getBytes("ISO-8859-1"));
     return true;
   } catch (Throwable t) { @PKG@.AhUtil.warn("could not write paused to config.properties: " + t); return false; }
 }""")
@@ -927,24 +972,32 @@ public static String valOf(String line) {
   return r;
 }""")
 # 0.1.2, once at start (before load): the durations line that is EXACTLY the 0.1.1 stock default becomes 48h:x2 (+ its stock comment); a
-# hand-edited line is kept (logged). The new keys otherProfileBuy / blockBags are appended with their comments when absent. sameAccountBuy
-# stays where it is (load() logs it as retired). Line endings kept, atomic write, one INFO line. Returns what changed ("" = nothing).
+# line that is neither the old nor the new stock line is kept (logged). The new keys otherProfileBuy / blockBags / xFloorPrev are appended
+# with their comments when absent (the "added by" head only once). sameAccountBuy stays where it is (load() logs it as retired); its old
+# comment line gets SAB_MARK once. ISO-8859-1 in and out (byte-preserving, what Properties.load reads), line endings kept, atomic write, one
+# INFO line. Returns what changed ("" = nothing; a failure leaves the old file untouched and load() reads it as it is).
 M(cfg, r"""
 public static synchronized String migrate() {
   try {
     if (FILE == null || !java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0])) return "";
-    String raw = readText(FILE);
+    String raw = readRaw(FILE);
     boolean crlf = raw.indexOf("\r\n") >= 0;
     String[] lines = raw.replace("\r\n", "\n").split("\n", -1);
     boolean hasOther = false;
     boolean hasBags = false;
+    boolean hasFloor = false;
+    boolean hasHead = false;
     for (int i = 0; i < lines.length; i++) {
       String k = keyOf(lines[i]);
       if ("otherProfileBuy".equals(k)) hasOther = true;
       if ("blockBags".equals(k)) hasBags = true;
+      if ("xFloorPrev".equals(k)) hasFloor = true;
+      if (ADDED_HEAD.equals(lines[i].trim())) hasHead = true;
     }
     java.util.ArrayList out = new java.util.ArrayList();
     boolean durDone = false;
+    boolean samSeen = false;
+    boolean samDone = false;
     String custom = null;
     for (int i = 0; i < lines.length; i++) {
       String l = lines[i];
@@ -956,32 +1009,44 @@ public static synchronized String migrate() {
           durDone = true;
           continue;
         }
-        custom = v;
+        if (!v.equals(NEW_DURS)) custom = v;
+      }
+      String tt = l.trim();
+      if (!samSeen && tt.length() > 1 && (tt.charAt(0) == '#' || tt.charAt(0) == '!') && tt.substring(1).trim().startsWith("sameAccountBuy")) {
+        samSeen = true;
+        if (l.indexOf(SAB_MARK.trim()) < 0) {
+          int e = l.length();
+          while (e > 0 && (l.charAt(e - 1) == ' ' || l.charAt(e - 1) == '\t')) e--;
+          l = l.substring(0, e) + SAB_MARK;
+          samDone = true;
+        }
       }
       out.add(l);
     }
     StringBuilder what = new StringBuilder();
-    if (durDone) what.append("durations 48h:1200 -> 48h:x2 (a 48h listing pays double the listing fee)");
-    if (!hasOther || !hasBags) {
+    if (durDone) what.append("durations 48h:1200 -> 48h:x2 (a 48h listing pays double the listing fee, at least the 24h price)");
+    if (samDone) { if (what.length() > 0) what.append("; "); what.append("sameAccountBuy comment marked retired"); }
+    if (!hasOther || !hasBags || !hasFloor) {
       int at = out.size();
       if (at > 0 && ((String) out.get(at - 1)).length() == 0) at--;
       java.util.ArrayList add = new java.util.ArrayList();
-      add.add(ADDED_HEAD);
+      if (!hasHead) add.add(ADDED_HEAD);
       if (!hasOther) { add.add(OTHER_NOTE); add.add("otherProfileBuy=true"); }
       if (!hasBags) { add.add(BAGS_NOTE); add.add("blockBags=true"); }
+      if (!hasFloor) { add.add(XFLOOR_NOTE); add.add("xFloorPrev=true"); }
       for (int j = 0; j < add.size(); j++) out.add(at + j, add.get(j));
       if (what.length() > 0) what.append("; ");
-      what.append("added").append(hasOther ? "" : " otherProfileBuy=true").append(hasBags ? "" : " blockBags=true");
+      what.append("added").append(hasOther ? "" : " otherProfileBuy=true").append(hasBags ? "" : " blockBags=true").append(hasFloor ? "" : " xFloorPrev=true");
     }
-    if (custom != null) @PKG@.AhUtil.info("custom durations kept: " + custom + " (the new stock default is " + NEW_DURS + ": 48h pays double the listing fee)");
+    if (custom != null) @PKG@.AhUtil.info("custom durations kept: " + custom + " (the new stock default is " + NEW_DURS + ": 48h pays double the listing fee, at least the 24h price)");
     if (what.length() == 0) return "";
     StringBuilder sb = new StringBuilder();
     String nl = crlf ? "\r\n" : "\n";
     for (int i = 0; i < out.size(); i++) { if (i > 0) sb.append(nl); sb.append((String) out.get(i)); }
-    atomicWrite(FILE, sb.toString().getBytes("UTF-8"));
+    atomicWrite(FILE, sb.toString().getBytes("ISO-8859-1"));
     @PKG@.AhUtil.info("config.properties updated for 0.1.2: " + what);
     return what.toString();
-  } catch (Throwable t) { @PKG@.AhUtil.warn("could not update config.properties for 0.1.2 (the defaults still apply): " + t); return ""; }
+  } catch (Throwable t) { @PKG@.AhUtil.warn("could not update config.properties for 0.1.2 (the old file is used as it is): " + t); return ""; }
 }""")
 M(cfg, r"""
 public static String summary() {
@@ -994,7 +1059,7 @@ public static String summary() {
   sb.append(" | ").append(MAX_LISTINGS).append(" per profile, ").append(MAX_SERVER).append(" server");
   sb.append(" | grace ").append(GRACE_MS / 1000L).append("s | confirm >= ").append(@PKG@.AhUtil.fmt(CONFIRM_ABOVE));
   sb.append(" | claim-all confirm >= ").append(@PKG@.AhUtil.fmt(CLAIMALL_ABOVE));
-  sb.append(" | otherProfileBuy ").append(OTHER_PROFILE).append(" | blockBags ").append(BLOCK_BAGS).append(" | blockCreative ").append(BLOCK_CREATIVE).append(" | bazaarItemsAllowed ").append(BAZAAR_OK);
+  sb.append(" | xFloorPrev ").append(X_FLOOR).append(" | otherProfileBuy ").append(OTHER_PROFILE).append(" | blockBags ").append(BLOCK_BAGS).append(" | blockCreative ").append(BLOCK_CREATIVE).append(" | bazaarItemsAllowed ").append(BAZAAR_OK);
   return sb.toString();
 }""")
 M(cfg, r"""
@@ -1833,6 +1898,54 @@ public static String dispSub(@BD@ r) {
   String rf = reforge(meta);
   return "x" + qty + " - " + qName((int) @PKG@.AhRec.lng(it, "quality", 0L)) + (rf != null ? " - " + rf : "");
 }""")
+F(itm, "public static final int ROW_SUB = 52;")
+F(itm, "public static final int SEL_SUB = 96;")
+F(itm, "public static final int FACT_SUB = 96;")
+F(itm, "public static final int DESC_LINES = 12;")
+F(itm, "public static final int DESC_WRAP = 90;")
+# s cut to n characters ending in ".." (a trailing " - ", "+", ",", "(" or ":" is dropped before the dots); null -> ""
+M(itm, r"""
+public static String clip(String s, int n) {
+  if (s == null) return "";
+  if (s.length() <= n) return s;
+  if (n < 3) return s.substring(0, n < 0 ? 0 : n);
+  int e = n - 2;
+  while (e > 0) {
+    char c = s.charAt(e - 1);
+    if (c == ' ' || c == '-' || c == '+' || c == ',' || c == '(' || c == ':') e--; else break;
+  }
+  return s.substring(0, e) + "..";
+}""")
+# the Browse row sub-line: dispSub cut to ROW_SUB; " - OFF THE MARKET" always stays whole (the item page keeps the full text)
+M(itm, r"""
+public static String rowSub(@BD@ r, boolean blocked) {
+  String tail = blocked ? " - OFF THE MARKET" : "";
+  return clip(dispSub(r), ROW_SUB - tail.length()) + tail;
+}""")
+M(itm, r"""
+public static int vlines(String s, int perLine) {
+  if (s == null || s.length() == 0 || perLine < 1) return 1;
+  return 1 + (s.length() - 1) / perLine;
+}""")
+# the item page's gear text (lines from index `from`, one per row): at most maxLines rows; with more, the last row is "..."
+M(itm, r"""
+public static String descText(String[] gl, int from, int maxLines, int perLine) {
+  if (gl == null) return "";
+  int total = 0;
+  for (int i = from; i < gl.length; i++) { if (gl[i] != null) total = total + vlines(gl[i], perLine); }
+  int budget = total <= maxLines ? maxLines : maxLines - 1;
+  StringBuilder sb = new StringBuilder();
+  int used = 0;
+  for (int i = from; i < gl.length; i++) {
+    if (gl[i] == null) continue;
+    int v = vlines(gl[i], perLine);
+    if (used + v > budget) { if (sb.length() > 0) sb.append('\n'); sb.append("..."); break; }
+    if (sb.length() > 0) sb.append('\n');
+    sb.append(gl[i]);
+    used = used + v;
+  }
+  return sb.toString();
+}""")
 M(itm, r"""
 public static boolean isBag(String id) {
   return id != null && (id.startsWith("Skyy_Sack_") || id.equals("Skyy_Accessory_Bag"));
@@ -2368,7 +2481,7 @@ public static String refuse(java.util.UUID u, @PLA@ p, boolean trade) {
   return null;
 }""")
 M(sto, r"""
-public static @BD@ newRecord(String id, java.util.UUID u, String key, String name, String prof, @BD@ snap, @IS@ orig, long price, int durIdx, long feeL, long feeD, long now) {
+public static @BD@ newRecord(String id, java.util.UUID u, String key, String name, String prof, @BD@ snap, @IS@ orig, long price, int durIdx, long feeL, long feeD, long now, String nm0, String gxs0) {
   @BD@ r = new @BD@();
   r.put("v", new org.bson.BsonInt32(1));
   r.put("id", new org.bson.BsonString(id));
@@ -2383,9 +2496,9 @@ public static @BD@ newRecord(String id, java.util.UUID u, String key, String nam
   s.put("profile", new org.bson.BsonString(prof == null ? "" : prof));
   r.put("seller", s);
   r.put("item", snap);
-  String nm = @PKG@.AhItem.stackName(orig);
+  String nm = nm0 == null || nm0.length() == 0 ? orig.getItemId() : nm0;
   r.put("name", new org.bson.BsonString(nm));
-  String gxs = @PKG@.AhItem.searchExtra(orig);
+  String gxs = gxs0 == null ? "" : gxs0;
   r.put("search", new org.bson.BsonString((nm + " " + orig.getItemId() + " " + (name == null ? "" : name) + (gxs.length() > 0 ? " " + gxs : "")).toLowerCase()));
   r.put("category", new org.bson.BsonString(@PKG@.AhItem.category(orig)));
   r.put("price", new org.bson.BsonInt64(price));
@@ -2436,6 +2549,8 @@ public static @RES@ list0(@PLA@ p, @REF@ ref, @ST@ st, java.util.UUID u, String 
   if (qty < 1) return new @RES@(false, "That slot is empty.");
   String tw = @PKG@.AhItem.tradeable(orig);
   if (tw != null) return new @RES@(false, tw);
+  String gName = @PKG@.AhItem.stackName(orig);
+  String gExtra = @PKG@.AhItem.searchExtra(orig);
   if (price < @PKG@.AhCfg.MIN_PRICE || price > @PKG@.AhCfg.MAX_PRICE) return new @RES@(false, "The price must be " + @PKG@.AhUtil.fmt(@PKG@.AhCfg.MIN_PRICE) + " to " + @PKG@.AhUtil.fmt(@PKG@.AhCfg.MAX_PRICE) + " coins.");
   if (durIdx < 0 || durIdx >= @PKG@.AhCfg.DUR_MS.length) return new @RES@(false, "Pick a duration.");
   int used = slotsUsed(key);
@@ -2487,7 +2602,7 @@ public static @RES@ list0(@PLA@ p, @REF@ ref, @ST@ st, java.util.UUID u, String 
     try { p.markNeedsSave(); } catch (Throwable t) { }
     return r1;
   }
-  @BD@ r = newRecord(id, u, key, name, prof, snap, orig, price, durIdx, feeL, feeD, now);
+  @BD@ r = newRecord(id, u, key, name, prof, snap, orig, price, durIdx, feeL, feeD, now, gName, gExtra);
   if (fz[2] > 0L) { @BD@ fd = @PKG@.AhRec.sub(r, "fee"); if (fd != null) fd.put("mult", new org.bson.BsonInt64(fz[2])); }
   if (!write(r)) {
     try { c.addItemStackToSlot((short) slot, orig); } catch (Throwable t) { }
@@ -2506,7 +2621,7 @@ public static @RES@ list0(@PLA@ p, @REF@ ref, @ST@ st, java.util.UUID u, String 
     return r2;
   }
   LIVE.put(id, r);
-  @PKG@.AhLog.log("LIST", id, "seller=" + @PKG@.AhUtil.tok(name) + " key=" + key + " " + it + " price=" + price + " fee=" + fee + " ends=" + @PKG@.AhCfg.DUR_LABEL[durIdx] + (fz[2] > 0L ? " feeMult=x" + fz[2] : ""));
+  @PKG@.AhLog.log("LIST", id, "seller=" + @PKG@.AhUtil.tok(name) + " key=" + key + " " + it + " price=" + price + " fee=" + fee + " ends=" + @PKG@.AhCfg.DUR_LABEL[durIdx] + (fz[2] > 0L ? " feeMult=x" + fz[2] + (fz[3] > 0L ? " feeFloor=prev" : "") : ""));
   try { p.markNeedsSave(); } catch (Throwable t) { }
   @RES@ ok = new @RES@(true, "Listed #" + id + " - " + @PKG@.AhRec.str(r, "name", iid) + (qty > 1 ? " x" + qty : "") + " for " + @PKG@.AhUtil.fmt(price) + " coins (fee " + @PKG@.AhUtil.fmt(fee) + " paid).");
   ok.id = id;
@@ -3484,7 +3599,7 @@ public void renderBrowse(@UCB@ b, @UEB@ ev, java.util.UUID u, long now) {
       b.appendInline(row, "Group #SkyyAhRowTxt" + i + " { Anchor: (Width: 380, Height: 58); LayoutMode: Top; }");
       txt(b, "#SkyyAhRowTxt" + i, "SkyyAhRowName" + i, 0, 32, 17, true, @PKG@.AhItem.dispColor(r), null, false, @PKG@.AhItem.dispName(r));
       String blk = @PKG@.AhItem.blockedReason(iid);
-      String sub = @PKG@.AhItem.dispSub(r) + (blk != null ? " - OFF THE MARKET" : "");
+      String sub = @PKG@.AhItem.rowSub(r, blk != null);
       txt(b, "#SkyyAhRowTxt" + i, "SkyyAhRowSub" + i, 0, 24, 13, false, blk != null ? "#ff7070" : "#9fb8cc", null, false, sub);
       String sn = @PKG@.AhRec.subStr(r, "seller", "name", "?");
       String tag = "";
@@ -3549,9 +3664,7 @@ public void renderItem(@UCB@ b, @UEB@ ev, java.util.UUID u, long now) {
     if (gl != null) {
       // 0.1.2: SkyyGear's own owner-neutral lines (spec 6.3: the AH shows its text via gear:fn:describe, not the seller's tooltip)
       b.set("#SkyyAhDName.Text", gl[0]);
-      StringBuilder sb = new StringBuilder();
-      for (int i = 1; i < gl.length; i++) { if (gl[i] == null) continue; if (sb.length() > 0) sb.append('\n'); sb.append(gl[i]); }
-      b.set("#SkyyAhDDesc.Text", sb.toString());
+      b.set("#SkyyAhDDesc.Text", @PKG@.AhItem.descText(gl, 1, @PKG@.AhItem.DESC_LINES, @PKG@.AhItem.DESC_WRAP));   // review: fits the 266 px box
       named = true;
     } else if (st != null && @PKG@.AhCfg.SPANS) {
       try {
@@ -3576,7 +3689,7 @@ public void renderItem(@UCB@ b, @UEB@ ev, java.util.UUID u, long now) {
     double md = @PKG@.AhRec.dbl(it, "maxDurability", 0.0);
     String sk = @PKG@.AhRec.subStr(r, "seller", "key", "");
     String gs = gl != null ? @PKG@.AhItem.gearSummary(iid, meta) : null;
-    facts[0] = gs != null ? "Gear: " + gs : "Rarity: " + @PKG@.AhItem.qName(qi);
+    facts[0] = gs != null ? @PKG@.AhItem.clip("Gear: " + gs, @PKG@.AhItem.FACT_SUB) : "Rarity: " + @PKG@.AhItem.qName(qi);
     facts[1] = "Quantity: " + qty;
     facts[2] = md > 0.0 ? "Durability: " + Math.round(cd) + " / " + Math.round(md) : "Durability: -";
     String sprof = @PKG@.AhRec.subStr(r, "seller", "profile", "");
@@ -3716,11 +3829,11 @@ public void renderCreate(@UCB@ b, @UEB@ ev, java.util.UUID u, @PLA@ p, long now)
     txt(b, "#SkyyAhSelTxt", "SkyyAhSelHint", 0, 24, 14, false, "#ffd36a", null, false, "");
   } else {
     txt(b, "#SkyyAhSelTxt", "SkyyAhSelName", 0, 30, 18, true, @PKG@.AhItem.stackColor(picked), null, false, @PKG@.AhItem.stackName(picked));
-    txt(b, "#SkyyAhSelTxt", "SkyyAhSelInfo", 0, 22, 14, false, "#9fb8cc", null, false, @PKG@.AhItem.stackSub(picked) + " - " + @PKG@.AhItem.secName(this.pickSec) + " slot " + (this.pickSlot + 1));
+    txt(b, "#SkyyAhSelTxt", "SkyyAhSelInfo", 0, 22, 14, false, "#9fb8cc", null, false, @PKG@.AhItem.clip(@PKG@.AhItem.stackSub(picked), @PKG@.AhItem.SEL_SUB) + " - " + @PKG@.AhItem.secName(this.pickSec) + " slot " + (this.pickSlot + 1));
     long[] lo = @PKG@.AhStore.lowestBin(pid, null, now);
     boolean gearPick = @PKG@.AhItem.gearRarity(pid, picked.getMetadata()) != null;
     String h = lo[0] > 0L ? "Lowest BIN for this item now: " + @PKG@.AhUtil.fmt(lo[0]) + " each (" + lo[1] + " listed" + (gearPick ? ", any rarity" : "") + ")" : "None listed right now.";
-    if (@PKG@.AhItem.isBag(pid)) h = h + " Contents not included - a bag opens its owner's own storage.";
+    if (@PKG@.AhItem.isBag(pid)) h = @PKG@.AhCfg.BLOCK_BAGS ? "Off the market: " + @PKG@.AhCfg.BAG_REASON + "." : h + " Contents not included - a bag opens its owner's own storage.";
     txt(b, "#SkyyAhSelTxt", "SkyyAhSelHint", 0, 24, 14, false, "#ffd36a", null, false, h);
   }
   b.appendInline("#SkyyAh", "Group #SkyyAhPriceRow { Anchor: (Height: 50); LayoutMode: Left; Padding: (Top: 4); }");
@@ -3744,12 +3857,7 @@ public void renderCreate(@UCB@ b, @UEB@ ev, java.util.UUID u, @PLA@ p, long now)
   String f0, f1, f2 = "";
   long pp = this.previewPrice;
   if (pp > 0L) {
-    long[] fz = @PKG@.AhCfg.fees(pp, this.durIdx);
-    long lf = fz[0];
-    long df = fz[1];
-    String rfd = (@PKG@.AhCfg.CANCEL_REFUND ? "refunded" : "not refunded") + " if you cancel).";
-    if (fz[2] > 0L) f0 = "Listing fee " + @PKG@.AhCfg.pctText(@PKG@.AhCfg.pctFor(pp)) + "% = " + @PKG@.AhUtil.fmt(lf) + " x" + fz[2] + " (" + dl[this.durIdx] + ": " + @PKG@.AhCfg.mulWord(fz[2]) + " listing fee) -> you pay " + @PKG@.AhUtil.fmt(lf + df) + " coins now (" + rfd;
-    else f0 = "Listing fee " + @PKG@.AhCfg.pctText(@PKG@.AhCfg.pctFor(pp)) + "% = " + @PKG@.AhUtil.fmt(lf) + " + duration fee (" + dl[this.durIdx] + ") = " + @PKG@.AhUtil.fmt(df) + " -> you pay " + @PKG@.AhUtil.fmt(lf + df) + " coins now (" + rfd;
+    f0 = @PKG@.AhCfg.feeLine(pp, this.durIdx);     // 0.1.2: flat presets as before; xN names the multiplier and the xFloorPrev floor
     long tx = @PKG@.AhCfg.tax(pp);
     f1 = "If it sells you get " + @PKG@.AhUtil.fmt(pp - tx) + " coins" + (tx > 0L ? " (" + @PKG@.AhCfg.pctText(@PKG@.AhCfg.TAX_PCT) + "% tax " + @PKG@.AhUtil.fmt(tx) + ")." : " (no tax under " + @PKG@.AhUtil.fmt(@PKG@.AhCfg.TAX_FROM) + ").");
     if (picked != null) {
@@ -4034,7 +4142,7 @@ public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
         else {
           String why = @PKG@.AhItem.tradeable(x);
           if (why != null) say(why, 2);
-          else { this.pickSec = this.cellSec[i]; this.pickSlot = this.cellSlot[i]; this.pickSig = this.cellSig[i]; say("Picked " + @PKG@.AhItem.plainName(x) + " - type a price.", 0); }
+          else { this.pickSec = this.cellSec[i]; this.pickSlot = this.cellSlot[i]; this.pickSig = this.cellSig[i]; say("Picked " + @PKG@.AhItem.stackName(x) + " - type a price.", 0); }
         }
       }
     }
@@ -4207,6 +4315,14 @@ public static void list(@PR@ pr, String who) {
   if (out.size() > 20) atell(pr, "... and " + (out.size() - 20) + " more.");
 }""")
 M(cmds, r"""
+public static String multNote(@BD@ r) {
+  long m = @PKG@.AhRec.subLng(r, "fee", "mult", 0L);
+  if (m <= 0L) return "";
+  long l = @PKG@.AhRec.subLng(r, "fee", "listing", 0L);
+  long d = @PKG@.AhRec.subLng(r, "fee", "duration", 0L);
+  return " (x" + m + " listing fee" + (l * m < l + d ? ", raised to the price of the preset before it (xFloorPrev)" : "") + ")";
+}""")
+M(cmds, r"""
 public static void info(@PR@ pr, String id) {
   @BD@ r = @PKG@.AhStore.readAny(id == null ? "" : id.trim().replace("#", ""));
   if (r == null) { atell(pr, "No record #" + id + " (live or archived)."); return; }
@@ -4217,7 +4333,7 @@ public static void info(@PR@ pr, String id) {
   atell(pr, "type " + @PKG@.AhRec.str(r, "type", "?") + ", v " + @PKG@.AhRec.lng(r, "v", 1L) + ", rev " + @PKG@.AhRec.lng(r, "rev", 0L) + ", closed " + @PKG@.AhRec.bool(r, "closed", false) + ", category " + @PKG@.AhRec.str(r, "category", "?") + ", duration " + @PKG@.AhRec.str(r, "duration", "?"));
   atell(pr, "seller " + @PKG@.AhRec.subStr(r, "seller", "name", "?") + " " + @PKG@.AhRec.subStr(r, "seller", "uuid", "?") + " key " + @PKG@.AhRec.subStr(r, "seller", "key", "?") + " profile " + @PKG@.AhRec.subStr(r, "seller", "profile", ""));
   if (@PKG@.AhRec.sub(r, "buyer") != null) atell(pr, "buyer " + @PKG@.AhRec.subStr(r, "buyer", "name", "?") + " " + @PKG@.AhRec.subStr(r, "buyer", "uuid", "?") + " key " + @PKG@.AhRec.subStr(r, "buyer", "key", "?") + " profile " + @PKG@.AhRec.subStr(r, "buyer", "profile", ""));
-  atell(pr, "fee listing " + @PKG@.AhRec.subLng(r, "fee", "listing", 0L) + " + duration " + @PKG@.AhRec.subLng(r, "fee", "duration", 0L) + (@PKG@.AhRec.subLng(r, "fee", "mult", 0L) > 0L ? " (x" + @PKG@.AhRec.subLng(r, "fee", "mult", 0L) + " listing fee)" : "") + " refunded " + @PKG@.AhRec.subBool(r, "fee", "refunded", false) + (@PKG@.AhRec.sub(r, "sale") != null ? " | sale gross " + @PKG@.AhRec.subLng(r, "sale", "gross", 0L) + " tax " + @PKG@.AhRec.subLng(r, "sale", "tax", 0L) + " net " + @PKG@.AhRec.subLng(r, "sale", "net", 0L) : ""));
+  atell(pr, "fee listing " + @PKG@.AhRec.subLng(r, "fee", "listing", 0L) + " + duration " + @PKG@.AhRec.subLng(r, "fee", "duration", 0L) + @PKG@.AhCmds.multNote(r) + " refunded " + @PKG@.AhRec.subBool(r, "fee", "refunded", false) + (@PKG@.AhRec.sub(r, "sale") != null ? " | sale gross " + @PKG@.AhRec.subLng(r, "sale", "gross", 0L) + " tax " + @PKG@.AhRec.subLng(r, "sale", "tax", 0L) + " net " + @PKG@.AhRec.subLng(r, "sale", "net", 0L) : ""));
   atell(pr, "claims sellerCoins " + @PKG@.AhRec.claim(r, "sellerCoins") + ", sellerItem " + @PKG@.AhRec.claim(r, "sellerItem") + " (qty " + @PKG@.AhRec.subLng(r, "claims", "sellerItemQty", 0L) + "), buyerItem " + @PKG@.AhRec.claim(r, "buyerItem") + " (qty " + @PKG@.AhRec.subLng(r, "claims", "buyerItemQty", 0L) + ")");
   @BD@ it = @PKG@.AhRec.sub(r, "item");
   @BD@ meta = @PKG@.AhRec.sub(it, "meta");
