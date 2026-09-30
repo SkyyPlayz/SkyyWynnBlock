@@ -979,3 +979,9 @@ deploy as soon as base1-3 work. A disconnect here is harmless: rejoin and carry 
    same look, so if they work the base is fine.
 6. Tell Claude: which pages opened, which disconnected (the server log also records "sent probe N" right before any disconnect), and
    anything that looked off.
+UPDATE 2026-09-30 00:46: SkyyUiProbe 0.2 replaces 0.1 (backup backups/deploy-20260930-0046) - the index now lists all 22 test pages in
+two columns (ready line "[SkyyUiProbe] 0.2 ready - /skyprobe (admin): 22 probe pages"). Order: base1, base2, base3 (page 18), base4
+(page 19) first - green Open buttons - then the rest, left column top to bottom, then the right column. New pages: 19 base4 (the newer
+layout blocks), 20 button-text, 21 flex-rows, 22 layout-right. On base2: if it shows only the Back/Close footer and no columns, FlexWeight
+failed - note it. After each page press Back: the line under the columns says which page is next. 12 restyled mods are waiting: Bank,
+Party, Accessory Bag, Class, Profiles, Vault need base1-3; Collections, Guilds, Islands, Skills, Trees, Exploration also need base4.
