@@ -16,23 +16,23 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
-    ("SkyyHud", "0.3.10"), ("SkyySacks", "0.7.7"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.3"), ("SkyyParty", "0.1.5"),
-    ("SkyyBank", "0.1.3"), ("SkyyIslands", "0.5.3"), ("SkyyBazaar", "0.1.2"), ("SkyyGear", "0.1"), ("SkyySkills", "0.4.6"),
-    ("SkyyAccessories", "0.4.4"), ("SkyyClasses", "0.1.7"), ("SkyyMenu", "0.3.3"), ("SkyyEssentials", "0.1.5"), ("SkyyProfiles", "0.1.2"),
-    ("SkyyCooking", "0.1.2"), ("SkyyTrees", "0.2.4"),
+    ("SkyyHud", "0.3.10"), ("SkyySacks", "0.7.7"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.4"), ("SkyyParty", "0.1.6"),
+    ("SkyyBank", "0.1.4"), ("SkyyIslands", "0.5.4"), ("SkyyBazaar", "0.1.2"), ("SkyyGear", "0.1"), ("SkyySkills", "0.4.7"),
+    ("SkyyAccessories", "0.4.5"), ("SkyyClasses", "0.1.8"), ("SkyyMenu", "0.3.3"), ("SkyyEssentials", "0.1.5"), ("SkyyProfiles", "0.1.3"),
+    ("SkyyCooking", "0.1.2"), ("SkyyTrees", "0.2.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
-    ("SkyyExploration", "0.2.1"),
+    ("SkyyExploration", "0.2.2"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
-    ("SkyyGuilds", "0.1.3"),
+    ("SkyyGuilds", "0.1.4"),
     # beta backlog round (Skyy 2026-09-24 20:10 list, cross-checked together): SkyySkills 0.4.2 + SkyyTrees 0.2.1 + SkyyCollections
     # 0.2.1 deploy TOGETHER (felled-log crediting: Skills -> coll:fn:add "skills:felled" + skill:on:felled; Double Jump: Trees posts
     # skill:bonus "doublejump.acrobatics", Skills publishes skill:dj:key); SkyyTrees 0.2.1 rewrites Acrobatics.RDodge as RDouble on
     # the next save, so do not go back to SkyyTrees 0.2 after it ran. SkyyIslands 0.5 migrates island files at start (0.4.x copies
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
-    ("SkyyVault", "0.1.3"),
+    ("SkyyVault", "0.1.4"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
     ("SkyyAuctions", "0.1.2"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
@@ -61,6 +61,10 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees"]
 # below). SkyyAuctions 0.1.2 + SkyyMenu 0.3.3 deploy with SkyyGear 0.1 (gear text, Identify tile). SkyyClasses 0.1.7 needs SkyySkills 0.4.6+.
 # Never roll back below SkyyTrees 0.2.4 (Double Jump slot moved in saves). Rolling SkyyAuctions back to 0.1.1: restore 48h:1200 in its
 # config.properties by hand first (0.1.1 cannot read 48h:x2).
+# vanilla UI pass (2026-09-30): Skyy opened probe pages base1-base4 in game with no disconnect -> the 12 look-only restyles ship:
+# Bank 0.1.4, Party 0.1.6, Accessories 0.4.5, Classes 0.1.8, Profiles 0.1.3, Vault 0.1.4, Collections 0.2.4, Guilds 0.1.4 (+ xpSkills
+# mid-run fix), Islands 0.5.4, Skills 0.4.7 + Trees 0.2.5 + Exploration 0.2.2 (together). Rolling any of them back to the previous pin
+# is safe (no data migration); the rollback floors above still apply.
 RETIRED = ["SkyyRolls"]
 
 
