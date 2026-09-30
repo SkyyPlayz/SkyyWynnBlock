@@ -42,6 +42,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   vs 360 for 24h, so everyone would pick 48h). Server Setup key `xFloorPrev` - OFF = exactly 2 x the listing fee. [on]
 - SkyyGear: old SkyyRolls items keep their rolls (your lock). Switch `migrate.clampToLevel` caps old rolls at what that item's level can
   roll now (a cheap SkyyRolls max roll on junk gear stays strong otherwise). [off]
+- LOCKED 2026-09-30 (Skyy): "if its not in the game yet, dont leave it in the reforge list" - coming-later stats (Ferocity, Weaken Enemy,
+  Thorns, ...) never roll: Server Setup -> Gear -> Stats "Roll coming-later stats" default OFF (was ON). Gear that already has one keeps it until
+  its next reforge. [SkyyGear 0.1.1]
 - LOCKED 2026-09-30 (Skyy): SkyyGear level by material = Crude 0, Wood 0, Copper 10, Bronze 15, Iron 15, Thorium 20, Cobalt 25,
   Adamantite 35, Mithril 40, Onyxium 40 (bronze is hard to get in vanilla; our own gear fills the gaps later). The level is checked against
   your class weapon skill (Archery, Swordsmanship, Sorcery, Fury, Divinity). Editable in Server Setup -> Gear -> Levels. [SkyyGear 0.1.1]
