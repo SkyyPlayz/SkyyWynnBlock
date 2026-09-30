@@ -92,6 +92,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   (3 candidates on probe page 2): not picked yet - the current look stays. [current look]
 
 ## Vault arrows (`research/Vault-Arrows-Spec.md`, live in SkyyVault 0.1.2)
+- QUESTION 2026-09-30: the vanilla chest never tells the server when you LIFT an item (research/Vault-Arrow-Click-Research.md), so an in-chest
+  arrow can only turn the page on put-back, shift-click or the Drop key (SkyyVault 0.1.5). A true one-click arrow is possible only if the arrow row
+  is drawn on our own vanilla-look page next to the vault slots (not a second page-switch screen - the arrows stay in the vault window). OK to try
+  that (needs one probe first)? [not built]
 - APPROVED 2026-09-25 (Skyy): cycle pages inside the vault GUI with the existing in-chest Prev/Next arrows. Do not add a second page-switch UI.
 - The arrows sit in an extra 5th row, so all 36 slots stay free. If the 5-row chest doesn't fit your screen, switch Server Setup -> Vault ->
   arrow layout to "Inside the page" (the arrows then take the bottom-left and bottom-right slots, Wynncraft-exact). [extra row]
