@@ -42,8 +42,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   vs 360 for 24h, so everyone would pick 48h). Server Setup key `xFloorPrev` - OFF = exactly 2 x the listing fee. [on]
 - SkyyGear: old SkyyRolls items keep their rolls (your lock). Switch `migrate.clampToLevel` caps old rolls at what that item's level can
   roll now (a cheap SkyyRolls max roll on junk gear stays strong otherwise). [off]
-- SkyyGear placeholder item levels: Copper 10, Iron 20, Mithril 50 (by material word). Your own gear is blocked until your weapon skill
-  reaches them - switch "Level requirement check" off to test other things. Real level table? [placeholders]
+- LOCKED 2026-09-30 (Skyy): SkyyGear level by material = Crude 0, Wood 0, Copper 10, Bronze 15, Iron 15, Thorium 20, Cobalt 25,
+  Adamantite 35, Mithril 40, Onyxium 40 (bronze is hard to get in vanilla; our own gear fills the gaps later). The level is checked against
+  your class weapon skill (Archery, Swordsmanship, Sorcery, Fury, Divinity). Editable in Server Setup -> Gear -> Levels. [SkyyGear 0.1.1]
 - SkyyGear stacking gear (17 spears, 5 spellbooks): stacks stay whole until you Identify / Reforge / craft; then one item comes off
   (5 free slots kept, never into the hotbar). A fresh loot chest splits its stacks into single rolled items. [as built]
 - SkyyGear new stats Loot Bonus, Loot Quality, Stealing, Trophy Hunter, XP Bonus are listed as "coming later" (weight 2, weapons + armor). [later]
