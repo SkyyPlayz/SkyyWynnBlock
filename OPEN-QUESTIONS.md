@@ -42,9 +42,16 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   vs 360 for 24h, so everyone would pick 48h). Server Setup key `xFloorPrev` - OFF = exactly 2 x the listing fee. [on]
 - SkyyGear: old SkyyRolls items keep their rolls (your lock). Switch `migrate.clampToLevel` caps old rolls at what that item's level can
   roll now (a cheap SkyyRolls max roll on junk gear stays strong otherwise). [off]
-- LOCKED 2026-09-30 (Skyy): new SkyyGear modifier on weapons AND armor that boosts charged-attack damage ("in hytale every weapon has a
-  charged attack"). Ships only once SkyyGear can really tell a charged hit (research/Charged-Attack-Research.md); until then it does not roll.
-  [SkyyGear 0.1.2]
+- LOCKED 2026-09-30 (Skyy): new SkyyGear modifier "Charged Attack Damage" on weapons AND armor. Bows: only when the arrow GLOWS (held a few
+  seconds - partial draws never count); crossbows: the 3rd bolt in a row (Hytale's charged hit) counts; spells (staff/wand/spellbook orbs): yes but
+  reduced - a roll that gives +100% to a charged melee/bow hit gives only +15% to a spell; clubs: left alone (no charged attack, never rolls).
+  Research: research/Charged-Attack-Research.md. [SkyyGear 0.1.2]
+- Mage + Priest start at 30 Mana and every spell's Mana cost is divided by 5 (wand 5, staff 10, spellbook 20) so a level-1 caster gets a few
+  casts (Skyy 2026-09-30: "make priest start at like 30 mana" + "take your recommendation 1"). [SkyySkills 0.4.8]
+- Profile cap default = number of classes you can pick (5 now, grows with Assassin/Shaman); more profiles later through ranks (Skyy 2026-09-30).
+  [SkyyProfiles 0.1.4]
+- SkyyGear "Item level with full modifier power" 50 -> 40 so the top material (Mithril/Onyxium 40) rolls at full power; raise it again when our own
+  higher-level gear exists. [SkyyGear 0.1.1, default picked - change any time in Server Setup]
 - LOCKED 2026-09-30 (Skyy): cooked food stays out of the Farming bag ("id keep cooked food out"). Farming keeps raw produce (plants, crops,
   fish, raw meat, eggs); cooked / prepared food (bread, pies, kebabs, salads, grilled fish, cooked meat, Skyy cooking dishes) stays in your
   inventory. Server Setup switch, default off; cooked food already stored can still be taken out. [SkyySacks 0.7.8]
