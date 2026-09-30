@@ -50,7 +50,25 @@ folder) and checks:
      java.util.Properties and byte for byte + migrate011 end to end, no marker per start), finding 3 = no rewrite unless
      config-history holds the old bytes (blocked History folder -> WARN + untouched, then updated; a failed write retried without a
      second copy; a copy whose index line failed still counts), (h) non-ASCII bytes + BOM kept, a folder in place of the file = WARN and nothing written;
-     setup() order importRolls -> migrate011 -> load -> CfgPub.start (bytecode)
+     setup() order importRolls -> migrate011 -> migrateStat011 -> load -> CfgPub.start (bytecode)
+  Y  0.1.1 stat defaults (OPEN-QUESTIONS LOCKED 2026-09-30: pool.later off, stat.levelFull 40): (a) row defaults + help (pool.later
+     has no Placeholder claim any more - B's design-10 list drops it), the field initial values (bytecode), the loader fallback
+     (missing / unreadable line), the level factor (full power from 40), the fresh default file (values + the stat marker above the
+     pool.later help line; neither update touches it); (b) the live file on a scratch copy through both updates in the setup order:
+     exact bytes (two value lines + the marker), the INFO line printed, two History versions, two scalar change-log lines, the
+     loader + the ready line's stat part; (c) a second start changes nothing; (d) CRLF; (e) hand-edited values kept + noted (on,
+     True, 45, 50.0) or silent (already new, missing lines -> the marker under the level marker); (f) the config kit's log op lists
+     the two lines, Undo (set back) works and survives the next start; (g) History blocked -> no rewrite + WARN (also on the whole
+     live start), then updated; a failed write retried without a second copy; no anchor -> WARN, untouched; (h) the pure text step
+     on edge cases + 2000 random files checked against java.util.Properties and byte for byte; (i) EVERY roll path with pool.later
+     off never yields a coming-later stat: GearRoll.rollMods over all slots / rarities / levels, /gear give (newDoc), crafting
+     (craftDoc, the bench per-item roll GearCraftTask.rollIn, the SkyySacks /craft bridge gear:fn:roll for craft and other sources),
+     mob drops (GearTag.unid + gear:fn:unid, then the Identify page GearIdent.identify and /gear identify GearRoll.identify), loot
+     chests (GearTag.tagContainer + Identify all GearIdent.allIn), the Reforge page (GearForge.reforge paid) and /gear reroll (free),
+     SkyyRolls migration (GearData.migrate / effective / the passive stamp) - with the coming-later weights raised to 100000 so one
+     leak would dominate (a pool.later-on control run shows them), GearRoll.RNG is a never-seeded SecureRandom so "many seeds" =
+     many independent rolls; the bytecode shows GearRoll.pool is the only way into a roll (callers of pool / GearData.mod /
+     rollMods); gear that already has one keeps it until its next reforge (the lock), and loses it on that reforge
 Not testable without the game (UNVERIFIED in the build report): the real system order around Recalculate, the engine recalculating a
 live EntityStatMap, projectile records on real arrows, item entities, loot chests, pages on a client, the quality asset pack.
 Nothing is deployed. Default scratch folder: tools/dev/scratch/skyygear-test (git-ignored), deleted at the end unless --keep.
@@ -203,8 +221,10 @@ def run(jar):
     check("migrate.clampToLevel" in keys and types["migrate.clampToLevel"] == "bool" and defs["migrate.clampToLevel"] == "false"
           and "danger" in flags["migrate.clampToLevel"].split(","), "row migrate.clampToLevel (bool, default false, danger)")
     check(all(len(h) <= 100 for h in helps.values()), "every help <= 100 characters")
-    for k in ("craft.maxRarity", "migrate.maxRarity", "regen.periodMs", "pool.later", "level.armorNative"):
+    # (0.1.1 stat defaults: pool.later left the design-10 list - its default is Skyy's lock now; section Y checks its help)
+    for k in ("craft.maxRarity", "migrate.maxRarity", "regen.periodMs", "level.armorNative"):
         check(helps[k].endswith(PH), "design 10: %s help ends with the Placeholder suffix" % k)
+    check("Placeholder" not in helps["pool.later"], "0.1.1: pool.later help makes no Placeholder claim (Skyy's lock)")
     check(helps["stat"].startswith("dmg Damage, str Strength, mp Magical Power"), "design 7: the stat row help is a key legend")
     dt = str(Cfg.defaultsText())
     check("# dmg = Damage (weapon, %)" in dt and "# hprp = Health Regen % (weapon, armor, %)" in dt and "# lbonus = Loot Bonus" in dt,
@@ -1102,7 +1122,8 @@ def run(jar):
         check(str(Cfg.matText()) == "Crude 0, Wood 0, Copper 10, Bronze 15, Iron 15, Thorium 20, Cobalt 25, Adamantite 35, Mithril 40, Onyxium 40",
               "X(a): the ready line's table: " + str(Cfg.matText()))
         same = exp.replace("# SkyyGear 0.1 - ", "# SkyyGear 0.1.1 - ", 1) == dflt
-        print("X. the updated live file %s the 0.1.1 default file apart from the version in line 1" % ("EQUALS" if same else "DIFFERS FROM"))
+        print("X. the level-updated live file %s the 0.1.1 default file apart from the version in line 1 (the stat defaults follow in Y)"
+              % ("EQUALS" if same else "DIFFERS FROM"))
         # (e) a second start
         check(str(Cfg.migrate011()) == "" and rb(f) == got and len(baks(d)) == 1 and len(idx(d)) == 1 and len(clog(d)) == 6,
               "X(e): a second start changes nothing (file, History, change log)")
@@ -1377,10 +1398,519 @@ def run(jar):
     def pos(needle):
         return next((i for i, l in enumerate(su) if needle in l), -1)
 
-    check(0 <= pos("GearCfg.importRolls") < pos("GearCfg.migrate011") < pos("GearCfg.load") < pos("CfgPub.start"),
-          "X: setup() runs importRolls -> migrate011 -> load -> CfgPub.start")
-    check(pos("GearCfg.load") < pos("GearCfg.matText") < pos("CfgPub.start"), "X: the ready line lists the loaded level table")
+    check(0 <= pos("GearCfg.importRolls") < pos("GearCfg.migrate011") < pos("GearCfg.migrateStat011") < pos("GearCfg.load") < pos("CfgPub.start"),
+          "X/Y: setup() runs importRolls -> migrate011 -> migrateStat011 -> load -> CfgPub.start")
+    check(pos("GearCfg.load") < pos("GearCfg.matText") < pos("GearCfg.statText") < pos("CfgPub.start"),
+          "X/Y: the ready line lists the loaded level table, then the loaded stat defaults")
     print("X. 0.1.1 level table + update done")
+
+    # ---------------- Y. 0.1.1 stat defaults: pool.later off + stat.levelFull 40 (defaults, loader, one-time update, every roll path)
+    STM, STID = str(Cfg.ST_MARK), str(Cfg.ST_MARK_ID)
+    check(STM == "# SkyyGear 0.1.1 stat defaults (Skyy 2026-09-30): coming-later stats never roll (pool.later false), full modifier power "
+          "from item level 40 (stat.levelFull 40, Mithril / Onyxium)", "Y: the stat marker text")
+    check([str(x) for x in Cfg.ST_KEY] == ["pool.later", "stat.levelFull"] and [str(x) for x in Cfg.ST_OLD] == ["true", "50"]
+          and [str(x) for x in Cfg.ST_NEW] == ["false", "40"], "Y: keys, 0.1 texts, 0.1.1 texts")
+    check(STID not in LVM and str(Cfg.LV_MARK_ID) not in STM, "Y: the two markers never match each other")
+    WHY = {"pool.later": "coming-later stats never roll", "stat.levelFull": "full modifier power from item level 40 = Mithril / Onyxium"}
+    ST2 = [("pool.later", "true", "false"), ("stat.levelFull", "50", "40")]
+
+    def st_info(changes):
+        return ("config.properties updated to the 0.1.1 stat defaults: " + ", ".join("%s %s -> %s (%s)" % (k, o, n, WHY[k]) for k, o, n in changes)
+                + " (the old file is in config-history; Server Setup -> Changes can undo each line)")
+
+    STINFO = st_info(ST2)
+    NOCHG = "config.properties: no pool.later / stat.levelFull line still had its 0.1 default - nothing changed (0.1.1 stat defaults marker added)"
+    READY = "coming-later stats never roll; full modifier power from item level 40"
+
+    def st_upd(text, changes, anchor="# Roll coming-later stats: "):
+        """the expected stat update: these value lines changed + the marker on its own line right above the anchor line"""
+        nl = "\r\n" if "\r\n" in text else "\n"
+        out = text
+        for k, o, n in changes:
+            a_ = nl + "%s=%s%s" % (k, o, nl)
+            assert out.count(a_) == 1, (k, o)
+            out = out.replace(a_, nl + "%s=%s%s" % (k, n, nl))
+        assert out.count(nl + anchor) == 1, anchor
+        return out.replace(nl + anchor, nl + STM + nl + anchor)
+
+    # (a) defaults: rows, field initial values, loader fallback, level factor, the fresh file
+    check(defs["pool.later"] == "false" and types["pool.later"] == "bool" and defs["stat.levelFull"] == "40" and types["stat.levelFull"] == "int",
+          "Y(a): row defaults pool.later false, stat.levelFull 40")
+    check(helps["pool.later"] == "Off (Skyy, 2026-09-30) = stats that do nothing yet never roll. On = they may roll, shown grey."
+          and helps["stat.levelFull"] == "Gear this level or higher rolls at full power (40 = Mithril)." + PH, "Y(a): the two row help texts")
+    mi_ = pool.get(PKG + "GearCfg").getClassInitializer().getMethodInfo()
+    it_ = mi_.getCodeAttribute().iterator()
+    clinit = []
+    while it_.hasNext():
+        clinit.append(str(IP.instructionString(it_, it_.next(), mi_.getConstPool())))
+    check("iconst_0" in before_call(clinit, "GearCfg.POOL_LATER") and "bipush 40" in before_call(clinit, "GearCfg.LEVEL_FULL"),
+          "Y(a): field initial values POOL_LATER false, LEVEL_FULL 40 (%s / %s)" % (before_call(clinit, "GearCfg.POOL_LATER"),
+                                                                                    before_call(clinit, "GearCfg.LEVEL_FULL")))
+    Cfg.POOL_LATER = True
+    Cfg.LEVEL_FULL = 50
+    Cfg.apply(Props(), False)
+    check(not bool(Cfg.POOL_LATER) and int(Cfg.LEVEL_FULL) == 40, "Y(a): loader fallback without the lines = off / 40")
+    p = Props()
+    p.setProperty("pool.later", "maybe")
+    p.setProperty("stat.levelFull", "lots")
+    Cfg.POOL_LATER = True
+    Cfg.apply(p, False)
+    check(not bool(Cfg.POOL_LATER) and int(Cfg.LEVEL_FULL) == 40, "Y(a): an unreadable value falls back to off / 40 too")
+    Cfg.apply(Props(), False)
+    check(abs(float(Lvl.factor(0)) - 25.0) < 1e-9 and abs(float(Lvl.factor(20)) - 62.5) < 1e-9 and abs(float(Lvl.factor(40)) - 100.0) < 1e-9
+          and abs(float(Lvl.factor(50)) - 100.0) < 1e-9, "Y(a): level factor 25 % at 0, 62.5 % at 20 (Thorium), full power from 40")
+    check(int(Roll.bounds(si("dmg"), 5, 40)[1]) == int(Roll.bounds(si("dmg"), 5, 100)[1]) > int(Roll.bounds(si("dmg"), 5, 35)[1]),
+          "Y(a): Mithril / Onyxium (level 40) reach the top roll, Adamantite (35) does not")
+    check(("\n" + STM + "\n# Roll coming-later stats: " + helps["pool.later"] + "\npool.later=false\n") in dflt and dflt.count(STID) == 1
+          and ("\n# Item level with full modifier power: " + helps["stat.levelFull"] + "\nstat.levelFull=40\n") in dflt,
+          "Y(a): the default file: pool.later=false, stat.levelFull=40, the marker right above the pool.later help line")
+    d, f = case("y-fresh", None)
+    Cfg.load()
+    fd = rb(f) if os.path.isfile(f) else b""
+    check(fd == dflt.encode("utf-8") and str(Cfg.migrate011()) == "" and str(Cfg.migrateStat011()) == "" and rb(f) == fd
+          and not os.path.exists(os.path.join(d, "config-history")) and not os.path.exists(os.path.join(d, "config-changes.log")),
+          "Y(a): a fresh file carries both markers - neither update touches it")
+    Cfg.load()
+    check(not bool(Cfg.POOL_LATER) and int(Cfg.LEVEL_FULL) == 40 and str(Cfg.statText()) == READY, "Y(a): the fresh file loads off / 40")
+
+    OA = JArray(JObject)
+    if live is not None:
+        lt = live.decode("latin-1")
+        # (b) the live file on a scratch copy, both updates in the setup order
+        d, f = case("y-live", live)
+        r1 = str(Cfg.migrate011())
+        mid = rb(f)
+        r2 = str(Cfg.migrateStat011())
+        got = rb(f)
+        exp_mid = upd(lt, CH6)
+        exp = st_upd(exp_mid, ST2)
+        check(mid == exp_mid.encode("latin-1") and got == exp.encode("latin-1"),
+              "Y(b): the live file -> the level update, then exactly the two value lines (pool.later, stat.levelFull) + the stat marker, "
+              "every other byte kept")
+        check(r1 == INFO6 and r2.split("\n") == [STINFO], "Y(b): the INFO lines: %r / %r" % (r1, r2))
+        print("Y. INFO line the live file produces: [SkyyGear] " + r2.split("\n")[0])
+        b = baks(d)
+        check(len(b) == 2 and rb(os.path.join(d, "config-history", b[0])) == live and rb(os.path.join(d, "config-history", b[1])) == mid,
+              "Y(b): History = the 0.1 file (before the level update) + the file before the stat update")
+        ix = idx(d)
+        check(len(ix) == 2 and ix[1].split("\t")[1] == "Skyy_SkyyGear/config.properties"
+              and ix[1].split("\t")[3:] == ["SkyyGear 0.1.1", "before the 0.1.1 stat defaults update"], "Y(b): index.log names the stat update: %s" % ix)
+        cl = clog(d)
+        want = [["SkyyGear 0.1.1", "-", "update", k, o, n, "ok"] for k, o, n in ST2]
+        check(len(cl) == 8 and [l.split("\t")[1:] for l in cl[6:]] == want
+              and all(re.match(r"^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d$", l.split("\t")[0]) for l in cl[6:]),
+              "Y(b): two more config-changes.log lines in the kit's scalar-row format (Undo-able ok lines): %s" % cl[6:])
+        check(not os.path.exists(f + ".tmp"), "Y(b): no temp file left")
+        Cfg.load()
+        check(not bool(Cfg.POOL_LATER) and int(Cfg.LEVEL_FULL) == 40 and str(Cfg.statText()) == READY, "Y(b): the loader reads off / 40")
+        print("Y. ready line (live copy, after both updates): [SkyyGear] 0.1.1 ready - ... level by material (combat gear vs the class weapon skill): "
+              + str(Cfg.matText()) + "; " + str(Cfg.statText()) + "; Server Setup -> Gear")
+        gl_, dl_ = got.decode("latin-1").split("\n"), dflt.split("\n")
+        dif = [i_ for i_ in range(max(len(gl_), len(dl_))) if i_ >= len(gl_) or i_ >= len(dl_) or gl_[i_] != dl_[i_]]
+        print("Y. the fully updated live file %s every value of a fresh 0.1.1 file; it differs in %d line(s) (comments are never rewritten): %s"
+              % ("HAS" if props(got.decode("latin-1")) == props(dflt) else "does NOT have", len(dif), [dl_[i_][:45] for i_ in dif if i_ < len(dl_)]))
+        # (c) a second start
+        check(str(Cfg.migrate011()) == "" and str(Cfg.migrateStat011()) == "" and rb(f) == got and len(baks(d)) == 2 and len(idx(d)) == 2
+              and len(clog(d)) == 8, "Y(c): a second start changes nothing (file, History, change log)")
+
+        # (d) CRLF
+        tc = lt.replace("\n", "\r\n")
+        d, f = case("y-crlf", tc.encode("latin-1"))
+        Cfg.migrate011()
+        midc = rb(f).decode("latin-1")
+        res = str(Cfg.migrateStat011())
+        gc = rb(f)
+        check(gc == st_upd(midc, ST2).encode("latin-1") and gc.count(b"\n") == gc.count(b"\r\n") and gc.replace(b"\r\n", b"\n") == got
+              and res == STINFO, "Y(d): a CRLF file gets the same update, every line (the marker too) still ends CRLF")
+
+        # (e) hand-edited values: kept + noted once, or silent
+        for name, edits, notes, chs, pl, lf in (
+                ("on", [("\npool.later=true\n", "\npool.later=on\n")], ["pool.later=on kept (custom) - the 0.1.1 default is false"], [ST2[1]], True, 40),
+                ("True", [("\npool.later=true\n", "\npool.later=True\n")], ["pool.later=True kept (custom) - the 0.1.1 default is false"], [ST2[1]], True, 40),
+                ("off", [("\npool.later=true\n", "\npool.later=false\n")], [], [ST2[1]], False, 40),
+                ("45", [("\nstat.levelFull=50\n", "\nstat.levelFull=45\n")], ["stat.levelFull=45 kept (custom) - the 0.1.1 default is 40"], [ST2[0]], False, 45),
+                ("50.0", [("\nstat.levelFull=50\n", "\nstat.levelFull=50.0\n")], ["stat.levelFull=50.0 kept (custom) - the 0.1.1 default is 40"], [ST2[0]], False, 50),
+                ("both", [("\npool.later=true\n", "\npool.later=yes\n"), ("\nstat.levelFull=50\n", "\nstat.levelFull=60\n")],
+                 ["pool.later=yes kept (custom) - the 0.1.1 default is false", "stat.levelFull=60 kept (custom) - the 0.1.1 default is 40"], [], True, 60)):
+            te = lt
+            for a_, b_ in edits:
+                te = te.replace(a_, b_)
+            d, f = case("y-" + name, te.encode("latin-1"))
+            Cfg.migrate011()
+            mide = rb(f).decode("latin-1")
+            res = str(Cfg.migrateStat011()).split("\n")
+            check(te != lt and rb(f) == st_upd(mide, chs).encode("latin-1"), "Y(e) %s: the custom line kept, the other updated, every other byte kept" % name)
+            check(res == [st_info(chs) if chs else NOCHG] + notes, "Y(e) %s: INFO + note: %s" % (name, res))
+            check([l.split("\t")[4] for l in clog(d)[6:]] == [c[0] for c in chs], "Y(e) %s: change-log lines only for the updated key" % name)
+            Cfg.load()
+            check(bool(Cfg.POOL_LATER) == pl and int(Cfg.LEVEL_FULL) == lf and (("ROLL" in str(Cfg.statText())) == pl),
+                  "Y(e) %s: the loader: pool.later %s, levelFull %d, the ready line says so (%s)" % (name, pl, lf, str(Cfg.statText())))
+            check(str(Cfg.migrateStat011()) == "", "Y(e) %s: the note is logged once (the next start does nothing)" % name)
+        # both lines missing: silent, the marker right under the level marker, the loader's fallback applies
+        tm = lt.replace("\npool.later=true\n", "\n").replace("\nstat.levelFull=50\n", "\n")
+        d, f = case("y-missing", tm.encode("latin-1"))
+        Cfg.migrate011()
+        midm = rb(f).decode("latin-1")
+        res = str(Cfg.migrateStat011())
+        check(tm != lt and res == NOCHG and rb(f) == midm.replace(LVM + "\n", LVM + "\n" + STM + "\n", 1).encode("latin-1") and len(clog(d)) == 6,
+              "Y(e) missing: no line -> nothing changed, the marker right under the level marker")
+        Cfg.load()
+        check(not bool(Cfg.POOL_LATER) and int(Cfg.LEVEL_FULL) == 40, "Y(e) missing: the loader's new fallback = off / 40")
+
+        # (f) the config kit after the update: log op, Undo (set back), the next start keeps the undone values
+        CfgPub = J("CfgPub")
+        d, f = case("y-kit", live)
+        mods = os.path.dirname(d)
+        Cfg.migrate011()
+        Cfg.migrateStat011()
+        Cfg.load()
+        CfgPub.start(Paths.get(mods), None)
+        fn = bridge.get("config:fn:SkyyGear")
+        lg = [str(x) for x in fn.apply(OA(["log", Integer.valueOf(20)]))]
+        check(sum(1 for l in lg if l.endswith("\tupdate\tpool.later\ttrue\tfalse\tok") or l.endswith("\tupdate\tstat.levelFull\t50\t40\tok")) == 2,
+              "Y(f): the kit's log op lists the two stat update lines as ok (SkyyMenu offers Undo on them)")
+        g1, g2 = fn.apply(OA(["get", "pool.later"])), fn.apply(OA(["get", "stat.levelFull"]))
+        check("false" in str(g1) and "40" in str(g2), "Y(f): kit memory = the updated file (%s / %s)" % (g1, g2))
+        u1 = fn.apply(OA(["set", "pool.later", "true", None, "console", "yes", "console"]))
+        u2 = fn.apply(OA(["set", "stat.levelFull", "50", None, "console", "yes", "console"]))
+        CfgPub.flush()
+        kt2 = rb(f).decode("latin-1")
+        check(str(u1[0]) == "ok" and str(u2[0]) == "ok" and "\npool.later=true\n" in kt2 and "\nstat.levelFull=50\n" in kt2 and STID in kt2,
+              "Y(f): Undo (set back to the old value) of both update lines works, the marker stays")
+        check(str(Cfg.migrate011()) == "" and str(Cfg.migrateStat011()) == "" and rb(f).decode("latin-1") == kt2,
+              "Y(f): values set back after the update survive the next start")
+        Cfg.load()
+        check(bool(Cfg.POOL_LATER) and int(Cfg.LEVEL_FULL) == 50 and "ROLL" in str(Cfg.statText()),
+              "Y(f): the loader after the undo: on / 50, the ready line says coming-later stats ROLL")
+        # (g) the whole live start with History blocked: both updates WARN, nothing is written
+        d, f = case("y-nohist-live", live)
+        open(os.path.join(d, "config-history"), "wb").write(b"blocker")
+        glf = os.path.join(XD, "y-gear-live.log")
+        Log.FILE = Paths.get(glf)
+        ra, rb2 = str(Cfg.migrate011()), str(Cfg.migrateStat011())
+        Log.flush()
+        Log.FILE = None
+        gl = open(glf, encoding="utf-8").read() if os.path.isfile(glf) else ""
+        check(ra == "" and rb2 == "" and rb(f) == live and not os.path.exists(os.path.join(d, "config-changes.log")),
+              "Y(g): live start with History blocked -> the file stays the 0.1 file byte for byte")
+        check("NOT updated to the 0.1.1 level table" in gl and "NOT updated to the 0.1.1 stat defaults" in gl, "Y(g): two WARN lines (%r)" % gl)
+
+    # (g) History blocked on a file that only needs the stat update, then writable again; a failed write; no anchor
+    ty = (H + LVM + "\nlevel.material.Iron=15\n# Roll coming-later stats: x\npool.later=true\nstat.levelFull=50\n").encode("latin-1")
+    d, f = case("y-nohist", ty)
+    open(os.path.join(d, "config-history"), "wb").write(b"blocker")
+    glf = os.path.join(XD, "y-gear.log")
+    Log.FILE = Paths.get(glf)
+    res = str(Cfg.migrateStat011())
+    Log.flush()
+    Log.FILE = None
+    gl = open(glf, encoding="utf-8").read() if os.path.isfile(glf) else ""
+    check(res == "" and rb(f) == ty and not os.path.exists(os.path.join(d, "config-changes.log")) and not os.path.exists(f + ".tmp"),
+          "Y(g): config-history cannot be written -> file untouched, no change-log lines")
+    check("WARN config.properties NOT updated to the 0.1.1 stat defaults: the old file could not be kept in " in gl
+          and "(the file is used as it is; the next start tries again)" in gl and "CONFIG 0.1.1" not in gl, "Y(g): the WARN says why + retry: %r" % gl)
+    Cfg.load()
+    check(bool(Cfg.POOL_LATER) and int(Cfg.LEVEL_FULL) == 50, "Y(g): the untouched file is used as it is until the update can run")
+    os.remove(os.path.join(d, "config-history"))
+    res = str(Cfg.migrateStat011())
+    b = baks(d)
+    check(res == STINFO and len(b) == 1 and rb(os.path.join(d, "config-history", b[0])) == ty and len(clog(d)) == 2
+          and rb(f) == st_upd(ty.decode("latin-1"), ST2).encode("latin-1"), "Y(g): the next start (History writable) updates: %r" % res)
+    Cfg.load()
+    check(not bool(Cfg.POOL_LATER) and int(Cfg.LEVEL_FULL) == 40, "Y(g): then off / 40")
+    d, f = case("y-retry", ty)
+    os.makedirs(f + ".tmp")
+    ok1 = str(Cfg.migrateStat011()) == "" and rb(f) == ty and len(baks(d)) == 1 and not os.path.exists(os.path.join(d, "config-changes.log"))
+    os.rmdir(f + ".tmp")
+    res = str(Cfg.migrateStat011())
+    check(ok1 and res == STINFO and len(baks(d)) == 1 and len(idx(d)) == 1 and len(clog(d)) == 2,
+          "Y(g): a failed write keeps the file; the retry updates without a second History copy: %r" % res)
+    d, f = case("y-noanchor", b"a=1\nb=2\n")
+    check(str(Cfg.migrateStat011()) == "" and rb(f) == b"a=1\nb=2\n" and not os.path.exists(os.path.join(d, "config-history")),
+          "Y(g): no stat line and no level marker -> WARN, untouched (unreachable after migrate011)")
+    res1, res2 = str(Cfg.migrate011()), str(Cfg.migrateStat011())
+    check(res2 == NOCHG and rb(f) == ("a=1\nb=2\n" + LVM + "\n" + STM + "\n").encode("ascii"), "Y(g): in the setup order the marker goes under the level marker")
+
+    # (h) the pure text step on edge cases
+    def st(t):
+        r_ = Cfg.stUpdate(t)
+        return None if r_ is None else (str(r_[0]), str(r_[1]), [str(x) for x in r_[2]], [str(x) for x in r_[3]])
+
+    r = st("pool.later = true\nstat.levelFull:50   \n")
+    check(r[0] == STM + "\npool.later = false\nstat.levelFull:40\n" and r[3] == ["pool.later", "true", "false", "stat.levelFull", "50", "40"]
+          and r[1] == "pool.later true -> false (%s), stat.levelFull 50 -> 40 (%s)" % (WHY["pool.later"], WHY["stat.levelFull"]),
+          "Y(h): spacing, ':' separator, trailing spaces: value text replaced only; the marker above the first entry (%r)" % (r,))
+    check(st("a=1\n# help\npool.later=true\n")[0] == "a=1\n" + STM + "\n# help\npool.later=false\n", "Y(h): a help comment right on top -> above it")
+    check(st("# help\n\npool.later=true\n")[0] == "# help\n\n" + STM + "\npool.later=false\n", "Y(h): a blank line between -> right above the entry")
+    check(st("a=x" + BS + "\n# no comment\npool.later=true\n")[0] == "a=x" + BS + "\n# no comment\n" + STM + "\npool.later=false\n",
+          "Y(h): a continuation line that looks like a comment is not a help comment")
+    r = st("pool.later=true\nx=1\npool.later=on\n")
+    check(r[0] == STM + "\npool.later=true\nx=1\npool.later=on\n" and r[3] == [] and r[2] == ["pool.later=on kept (custom) - the 0.1.1 default is false"],
+          "Y(h): last line wins - custom on kept, the dead true left")
+    r = st("pool.later=on\npool.later=true\n")
+    check(r[0] == STM + "\npool.later=on\npool.later=false\n" and r[3] == ["pool.later", "true", "false"], "Y(h): last line true -> updated")
+    r = st("pool.later=tr" + BS + "\n    ue\nstat.levelFull=50\n")
+    check(r[0] == STM + "\npool.later=tr" + BS + "\n    ue\nstat.levelFull=40\n" and r[3] == ["stat.levelFull", "50", "40"]
+          and r[2] == ["pool.later=true kept (custom) - the 0.1.1 default is false"], "Y(h): a continued entry is never rewritten (noted)")
+    r = st(LVM + "\n#pool.later=true\n! stat.levelFull=50\n")
+    check(r[0] == LVM + "\n" + STM + "\n#pool.later=true\n! stat.levelFull=50\n" and r[1] == "" and r[2] == [] and r[3] == [],
+          "Y(h): commented / template lines never change; no entry -> the marker right under the level marker")
+    r = st("POOL.LATER=true\nstat.levelfull=50\n" + LVM + "\n")
+    check(r[0] == "POOL.LATER=true\nstat.levelfull=50\n" + LVM + "\n" + STM + "\n" and r[3] == [] and r[2] == [],
+          "Y(h): keys are case-sensitive like the loader (other-case lines are not the setting and stay)")
+    check(st(LVM)[0] == LVM + "\n" + STM and st("a=1\r\n" + LVM)[0] == "a=1\r\n" + LVM + "\r\n" + STM
+          and st(LVM + "\r\nb=2\r\n")[0] == LVM + "\r\n" + STM + "\r\nb=2\r\n", "Y(h): under the level marker: no final newline stays so, CRLF kept")
+    check(st("a=1\r\npool.later=true")[0] == "a=1\r\n" + STM + "\r\npool.later=false", "Y(h): the marker takes the file's CRLF above a last line")
+    check(Cfg.stUpdate("# SkyyGear 0.1.1 stat defaults, anything\npool.later=true\n") is None
+          and Cfg.stUpdate("x=1\n  ! SkyyGear 0.1.1 stat defaults\n") is None, "Y(h): a comment line with the marker id = already done")
+    r = st("note=SkyyGear 0.1.1 stat defaults\npool.later=true\n")
+    check(r is not None and "\npool.later=false\n" in r[0], "Y(h): the marker id inside a value does not count")
+    r = st("stat.levelFull=40\npool.later=false\n")
+    check(r[0] == STM + "\nstat.levelFull=40\npool.later=false\n" and r[1] == "" and r[2] == [] and r[3] == [], "Y(h): already the new defaults: silent")
+    try:
+        Cfg.stUpdate("a=1\nb=2\n")
+        thrown = False
+    except Exception:
+        thrown = True
+    check(thrown, "Y(h): no entry and no level marker -> refused (the caller WARNs)")
+    # random files (fixed seed): the level marker first, then pieces with odd / even backslashes, comments, blanks, stat lines,
+    # LF / CRLF, with / without final newline: Properties values = before + the updated rows, the marker = one comment line and the only
+    # line added, the next pass does nothing
+    rnd2 = random.Random(20260930 + 11)
+    spieces = ["a=1", "b=x" + BS, "c=y" + BS + BS, "#c" + BS, "# note", "", "   z" + BS, "d:e", "  f g" + BS, "!x" + BS, "# help",
+               "pool.later=true", "pool.later=on", "pool.later = true", "stat.levelFull=50", "stat.levelFull = 45", "stat.levelFull:50"]
+
+    def st_ok(t, out, rows):
+        want_ = props(t)
+        for i_ in range(0, len(rows), 3):
+            want_[rows[i_]] = rows[i_ + 2]
+        got_ = props(out)
+        return (got_ == want_ and not any(STID in k_ or STID in v_ for k_, v_ in got_.items()) and Cfg.stUpdate(out) is None
+                and out.count(STID) == 1)
+
+    def st_bytes(t, out):
+        ol, tl = out.split("\n"), t.split("\n")
+        mi = [i_ for i_, x_ in enumerate(ol) if STID in x_]
+        if len(mi) != 1 or ol[mi[0]].rstrip("\r") != STM:
+            return False
+        m_ = mi[0]
+        rest = ol[:m_] + ol[m_ + 1:]
+        if len(rest) != len(tl):
+            return False
+        for i_, (a_, b_) in enumerate(zip(rest, tl)):
+            if a_ == b_ or (a_.startswith(("pool.later", "stat.levelFull")) and b_.startswith(("pool.later", "stat.levelFull"))):
+                continue
+            if i_ == len(tl) - 1 and m_ == len(ol) - 1 and a_ == b_ + "\r":
+                continue
+            return False
+        return True
+
+    bad = []
+    for n_ in range(2000):
+        ls_ = [LVM] + [rnd2.choice(spieces) for _q in range(rnd2.randint(0, 8))]
+        nl_ = "\r\n" if rnd2.random() < 0.3 else "\n"
+        t = nl_.join(ls_) + (nl_ if rnd2.random() < 0.6 else "")
+        r = st(t)
+        if r is None or not st_ok(t, r[0], r[3]) or not st_bytes(t, r[0]):
+            bad.append(t)
+    check(not bad, "Y(h): 2000 random files: same Properties values (+ updated rows), the marker = one comment line and the only line added, "
+                   "the next pass does nothing (%d bad, first %r)" % (len(bad), bad[:1]))
+
+    # (i) EVERY roll path with pool.later off (the loader default) never yields a coming-later stat
+    later = set(SK[i] for i in range(int(Defs.NS)) if int(Defs.S_LIVE[i]) == 0)
+    check(len(later) == 19 and {"fer", "thorns", "weak", "as", "lbonus", "xpb"} <= later, "Y(i): 19 coming-later stats: %s" % sorted(later))
+    p = Props()
+    p.setProperty("gear.include", "Skyy_Ring_")
+    p.setProperty("kind.prefix.Skyy_Ring_", "equipment")
+    Cfg.apply(p, False)
+    check(not bool(Cfg.POOL_LATER), "Y(i): pool.later is off from the loader default")
+    w0 = [int(v) for v in Cfg.S_W]
+    wa = JArray(JInt)(len(w0))
+    for i in range(len(w0)):
+        wa[i] = 100000 if SK[i] in later else w0[i]
+    Cfg.S_W = wa                       # one leak would dominate: every coming-later stat outweighs every live one 1000+ to 1
+
+    def keys_of(dd):
+        return [str(m.asDocument().getString("s").getValue()) for m in Data.mods(dd)]
+
+    def doc_of(s_):
+        return Data.gearDoc(s_.getMetadata())
+
+    tally = {}
+
+    def seen(path, dd):
+        t_ = tally.setdefault(path, [0, 0, []])
+        ks_ = keys_of(dd) if dd is not None else []
+        t_[0] += 1
+        t_[1] += len(ks_)
+        t_[2] += [k_ for k_ in ks_ if k_ in later]
+
+    IDS = ["Weapon_Sword_Iron", "Weapon_Shortbow_Crude", "Weapon_Staff_Wood", "Weapon_Spellbook_Frost", "Weapon_Daggers_Crude",
+           "Armor_Mithril_Chest", "Armor_Iron_Head", "Skyy_Ring_Gold"]
+    check(sorted(set(int(Data.slotOf(i)) for i in IDS)) == [0, 1, 2, 4], "Y(i): the test items cover weapon, spell weapon, armor, Equipment")
+    # control: with pool.later ON the same weights make coming-later stats show up on every path shape (the detector works)
+    Cfg.POOL_LATER = True
+    ctl = sum(1 for _ in range(40) for k_ in keys_of(Roll.newDoc("Armor_Mithril_Chest", 5, True, "admin")) if k_ in later)
+    ctl2 = sum(1 for _ in range(40) for k_ in keys_of(Roll.craftDoc("Skyy_Ring_Gold", U1)) if k_ in later)
+    Cfg.POOL_LATER = False
+    check(ctl > 100 and ctl2 > 0, "Y(i): control run with pool.later ON: coming-later stats roll (%d on 40 Mythic armor pieces, %d on rings)" % (ctl, ctl2))
+    # 1. the roll itself: every slot, rarity, level
+    for slot in (0, 1, 2, 4):
+        for rr in range(7):
+            for lvl in (0, 15, 40, 100):
+                for _ in range(60):
+                    arr = Roll.rollMods(slot, rr, lvl)
+                    dd = BD()
+                    dd.put("mods", arr)
+                    seen("GearRoll.rollMods (every slot / rarity / level)", dd)
+    # 2. /gear give (newDoc) and crafting (craftDoc = GearCraftSys on the benches)
+    for iid in IDS:
+        for rr in range(7):
+            for _ in range(30):
+                seen("/gear give (GearRoll.newDoc)", Roll.newDoc(iid, rr, True, "admin"))
+        for _ in range(150):
+            seen("crafting (GearRoll.craftDoc)", Roll.craftDoc(iid, U1))
+    # 3. the bench per-item roll (GearCraftTask.rollIn) on a stack of spears
+    for _ in range(40):
+        ch_, cs_ = SIC(9), SIC(36)
+        ch_.setItemStackForSlot(2, IS("Weapon_Spear_Crude", 3))
+        CraftTask.rollIn(JArray(IC)([ch_, cs_]), JArray(IC)([cs_]), U1, "Weapon_Spear_Crude", IdMap(), 3, None, None)
+        for x_ in [ch_.getItemStack(2)] + [cs_.getItemStack(i) for i in range(36)]:
+            if x_ is not None and not x_.isEmpty():
+                seen("bench craft per item (GearCraftTask.rollIn)", doc_of(x_))
+    # 4. the SkyySacks /craft bridge gear:fn:roll (craft rolls + another source). setup() is not run here: the same GearFn objects it
+    # puts on the bridge (gear:fn:roll = new GearFn(8), gear:fn:unid = new GearFn(9) - checked in the setup() bytecode)
+    su_ = code("SkyyGearPlugin", "setup")
+    fi_r = next((i_ for i_, l_ in enumerate(su_) if '"gear:fn:roll"' in l_), -1)
+    fi_u = next((i_ for i_, l_ in enumerate(su_) if '"gear:fn:unid"' in l_), -1)
+    check(fi_r > 0 and any("bipush 8" in l_ for l_ in su_[fi_r:fi_r + 4]) and fi_u > 0 and any("bipush 9" in l_ for l_ in su_[fi_u:fi_u + 4]),
+          "Y(i): setup() registers gear:fn:roll = GearFn(8), gear:fn:unid = GearFn(9)")
+    froll = J("GearFn")(8)
+    for iid in IDS[:6]:
+        for src in ("craft", "sacks"):
+            outs = froll.apply(OA([U1, iid, Integer.valueOf(64), src]))
+            check(outs is not None and len(outs) == 64, "Y(i): gear:fn:roll %s x64 for %s" % (src, iid))
+            for x_ in outs:
+                seen("SkyySacks /craft bridge (gear:fn:roll)", doc_of(x_))
+    # 5. mob drops (GearTag.unid, gear:fn:unid) -> the Identify page (GearIdent.identify, paid) and /gear identify (GearRoll.identify)
+    bridge.put("coins:fn:take", Take())
+    bridge.put("coins:fn:get", Purse())
+    bridge.put("coins:fn:add", Purse())
+    funid = J("GearFn")(9)
+    Cfg.PART_DROPS = True
+    for iid in IDS:
+        for _ in range(40):
+            s_ = Tag.unid(IS(iid, 1), 1)
+            dd = doc_of(s_)
+            check(dd is not None and not bool(Data.identified(dd)) and keys_of(dd) == [], "Y(i): a mob drop is unidentified without modifiers") if _ == 0 else None
+            c_, g_ = SIC(9), SIC(9)
+            c_.setItemStackForSlot(0, s_)
+            ri = Ident.identify(c_, 0, iid, Forge.fp(c_.getItemStack(0)), U1, "tester", False, JArray(IC)([g_]), JArray(IC)([c_, g_]))
+            if int(ri[0]) != 1:
+                check(False, "Y(i): Identify page refused %s: %s" % (iid, ri[1]))
+                continue
+            seen("mob drop -> Identify page (GearTag.unid + GearIdent.identify)", doc_of(c_.getItemStack(0)))
+            s2_ = funid.apply(OA([IS(iid, 1), "mob"]))
+            seen("mob drop -> /gear identify (gear:fn:unid + GearRoll.identify)", Roll.identify(iid, doc_of(s2_), U1))
+    # 6. loot chests (GearTag.tagContainer) -> Identify all (GearIdent.allIn)
+    for _ in range(15):
+        chest = SIC(27)
+        chest.setItemStackForSlot(0, IS("Weapon_Spellbook_Demon", 4))
+        for j_, iid in enumerate(IDS[:4] + IDS[5:7]):
+            chest.setItemStackForSlot(10 + j_, IS(iid, 1))
+        Tag.tagContainer(chest, "test")
+        by_ = JArray(IC)(6)
+        by_[0] = chest
+        rows_ = ArrayList()
+        for sl in range(27):
+            x_ = chest.getItemStack(sl)
+            if x_ is not None and not x_.isEmpty():
+                rr_ = JArray(JInt)(2)
+                rr_[0] = 0
+                rr_[1] = sl
+                rows_.add(rr_)
+        Ident.allIn(by_, rows_, U1, "tester", ArrayList())
+        for sl in range(27):
+            x_ = chest.getItemStack(sl)
+            if x_ is not None and not x_.isEmpty():
+                dd = doc_of(x_)
+                if dd is not None and bool(Data.identified(dd)):
+                    seen("loot chest -> Identify all (GearTag.tagContainer + GearIdent.allIn)", dd)
+    # 7. reforge: the Reforge page (paid) and /gear reroll (free) on gear that HAS a coming-later stat; GearRoll.reforge itself
+    def with_fer(iid):
+        dd = Roll.newDoc(iid, 3, True, "admin")
+        arr = JClass("org.bson.BsonArray")()
+        arr.add(Data.mod("fer", 5))
+        arr.add(Data.mod("dmg", 3))
+        dd.put("mods", arr)
+        return dd
+
+    for iid in IDS:
+        for free in (False, True):
+            for _ in range(40):
+                c_, g_ = SIC(9), SIC(9)
+                c_.setItemStackForSlot(0, Data.put(IS(iid, 1), with_fer(iid), U1))
+                rf_ = Forge.reforge(c_, 0, iid, Forge.fp(c_.getItemStack(0)), U1, "tester", free, JArray(IC)([g_]), JArray(IC)([c_, g_]))
+                if int(rf_[0]) != 1:
+                    check(False, "Y(i): reforge refused %s: %s" % (iid, rf_[1]))
+                    continue
+                seen("/gear reroll (GearForge.reforge, free)" if free else "Reforge page (GearForge.reforge, paid)", doc_of(c_.getItemStack(0)))
+        for _ in range(30):
+            seen("GearRoll.reforge", Roll.reforge(iid, with_fer(iid)))
+    for k in ("coins:fn:take", "coins:fn:get", "coins:fn:add"):
+        bridge.remove(k)
+    # 8. SkyyRolls migration (GearData.migrate, the in-memory view GearData.effective, the passive stamp GearStamp.stampStack)
+    BI2 = JClass("org.bson.BsonInt32")
+    rng3 = random.Random(7)
+    for mb in ("stats", "roll", "item"):
+        Cfg.MIGRATE_BY = mb
+        for _ in range(60):
+            ro = BD()
+            ro.append("dmg", BI2(rng3.randint(0, 30)))
+            ro.append("str", BI2(rng3.randint(0, 25)))
+            ro.append("crit", BI2(rng3.randint(0, 15)))
+            ro.append("quality", BI2(rng3.randint(0, 100)))
+            iid = rng3.choice(IDS[:7])
+            seen("SkyyRolls migration (GearData.migrate)", Data.migrate(iid, ro))
+            md_ = BD()
+            md_.append("SkyyRolls", ro)
+            seen("SkyyRolls migration (GearData.effective)", Data.effective(iid, md_))
+            seen("SkyyRolls migration (GearStamp.stampStack)", doc_of(Stamp.stampStack(IS(iid, 1).withMetadata(md_), U1, None)))
+    Cfg.MIGRATE_BY = "stats"
+    for path_, (n_items, n_mods, leaks) in sorted(tally.items()):
+        check(n_items > 0 and n_mods > 0 and not leaks, "Y(i): %s: %d items / %d modifiers, %d coming-later (%s)" % (path_, n_items, n_mods, len(leaks), sorted(set(leaks))[:5]))
+    print("Y. roll paths with pool.later off: " + "; ".join("%s %d/%d" % (p_, v_[0], v_[1]) for p_, v_ in sorted(tally.items())))
+    # gear that already has one keeps it until its next reforge (the lock): a split / the passive scan copy the document, no roll
+    kd = with_fer("Weapon_Sword_Iron")
+    ks_ = Data.put(IS("Weapon_Sword_Iron", 1), kd, U1)
+    check("fer" in keys_of(doc_of(Stamp.stampStack(ks_, U1, None))) and "fer" in keys_of(Stamp.splitDoc("Weapon_Sword_Iron", ks_.getMetadata(), 0, U1)),
+          "Y(i): gear that already has a coming-later stat keeps it (passive stamp, stack split)")
+    check(any("(coming later)" in str(x) for x in View.plain("Weapon_Sword_Iron", kd, None)), "Y(i): ... shown '(coming later)' in its tooltip")
+    check("fer" not in keys_of(Roll.reforge("Weapon_Sword_Iron", kd)), "Y(i): ... and loses it on its next reforge")
+    # the bytecode: GearRoll.pool is the only way into a roll - pool <- rollMods only; GearData.mod <- rollMods + migrate only;
+    # rollMods <- newDoc / reforge / identify only (every path above ends in one of these)
+    callers = {}
+    for cn in names:
+        if not cn.startswith(PKG):
+            continue
+        for mm in pool.get(cn).getDeclaredMethods():
+            bo_ = BOS()
+            IP(PS(bo_)).print_(mm)
+            tx_ = str(bo_.toString())
+            for callee in ("GearRoll.pool(", "GearData.mod(", "GearRoll.rollMods(", "GearRoll.newDoc(", "GearRoll.reforge(", "GearRoll.identify(",
+                           "GearRoll.craftDoc(", "GearRoll.unidDoc("):
+                if ("gear." + callee) in tx_:
+                    callers.setdefault(callee, set()).add(cn[len(PKG):] + "." + str(mm.getName()))
+    check(callers.get("GearRoll.pool(") == {"GearRoll.rollMods"}, "Y(i): GearRoll.pool is called by rollMods only: %s" % callers.get("GearRoll.pool("))
+    check(callers.get("GearData.mod(") == {"GearRoll.rollMods", "GearData.migrate"}, "Y(i): GearData.mod (a new modifier) only in rollMods + migrate: %s" % callers.get("GearData.mod("))
+    check(callers.get("GearRoll.rollMods(") == {"GearRoll.newDoc", "GearRoll.reforge", "GearRoll.identify"},
+          "Y(i): rollMods is called by newDoc / reforge / identify only: %s" % callers.get("GearRoll.rollMods("))
+    print("Y. roll entry points (bytecode): " + "; ".join("%s <- %s" % (k_[:-1], ", ".join(sorted(v_))) for k_, v_ in sorted(callers.items())
+                                                         if k_ in ("GearRoll.newDoc(", "GearRoll.reforge(", "GearRoll.identify(", "GearRoll.craftDoc(", "GearRoll.unidDoc(")))
+    Cfg.apply(Props(), False)
+    Cfg.FILE = None
+    Cfg.DIR = None
+    print("Y. 0.1.1 stat defaults + update + roll paths done")
 
 
 def main():

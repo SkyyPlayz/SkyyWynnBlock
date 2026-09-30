@@ -1,8 +1,73 @@
-"""SkyyGear 0.1.1 - build script (javassist via jpype). NEW mod: rarity, level and modifiers on every weapon and armor piece.
+"""SkyyGear 0.1.2 - build script (javassist via jpype). NEW mod: rarity, level and modifiers on every weapon and armor piece.
 Spec: research/SkyyGear-Stage1-Spec.md (the spec wins over this script; section numbers below point into it). Design docs (read only):
 SkyyGear-Plan.md, SkyyGear-Stat-Catalog.md. SkyyGear REPLACES SkyyRolls (same /reforge command; deploy: SkyyRolls goes into
 tools/deploy_set.py RETIRED - main-session work, spec 8.3).
-Run:   python SkyyGear/build_skyygear_0.1.1.py          -> SkyyGear/SkyyGear-0.1.1.jar (never pass --deploy from a builder agent)
+Run:   python SkyyGear/build_skyygear_0.1.2.py          -> SkyyGear/SkyyGear-0.1.2.jar (never pass --deploy from a builder agent)
+
+0.1.2 (2026-09-30; a direct copy of the FINISHED build_skyygear_0.1.1.py - SkyyGear has no patch scripts - with ONLY these changes):
+  NEW MODIFIER "Charged Attack Damage" (key chg, %, weapons AND armor; OPEN-QUESTIONS LOCKED 2026-09-30, research/Charged-Attack-
+  Research.md). Skyy's answers, verbatim where quoted: bows - "charge damage only kicks in when the arrow starts to glow"; crossbow -
+  the 3rd bolt in a row (Hytale's own Charged-tagged combo bolt) counts; spells (staff / wand / spellbook orbs) - "yes, but at a reduced
+  amount ... it would only add +15% to a spell" (charged.spellFactor 0.15); clubs - "Leave clubs alone" (never rolls, never counts;
+  Kunai + Crystal Flame likewise; Crystal Ice excluded too: its Ice hits never reach the stat code - verifier). Skyy's lock: a stat
+  that does nothing must never roll, so it rolls ONLY while charged.on is on, always on armor, and on a weapon only when the weapon
+  really has a charged step the detection can see.
+  - STATS row ("chg", "Charged Attack Damage", "wa", "%", 30, 5, live) right after Crit Damage (display order; saved gear stores
+    modifiers by key, so nothing on existing items moves). Tooltip "Charged Attack Damage: +N%" (grey " (off on this server)" while
+    charged.on is off). Server Setup: charged.on, charged.spellFactor (0.15, Skyy's number), charged.log + the stat row stats.chg=30,5.
+  - DETECTION (GearChg + GearCharged; the research's three signals with the verifier's fixes):
+      B = a per-item IdentityHashMap of DamageCalculator -> how it is reached, built by walking the item's own chains with the
+          engine's InteractionManager.walkChain (the tooltip walk WeaponDamageDataCollector does) and a collector (GearChgWalk).
+          A step is FULLY CHARGED when the Charging edge above it is that Charging step's LARGEST Next key: every melee charged
+          step (Sword thrust 0.65 s, Battleaxe downstrike, Mace 2.0 s, Daggers pounce + its backstab, Axe 1.39 s, Longsword
+          1.565 s, Void scythe 1.67 s) and, on bows, ONLY the 1.2 s full draw - the step that makes the arrow GLOW (Assets.zip
+          evidence, checked by this build: Weapon_Shortbow_Primary_Shoot_Charge plays particle system Bow_Charging, whose own
+          comment says its "delays are tuned to appear at max charge (1.2s)" - first spawner StartDelay 0.75 + the ~0.45 s built-in
+          delay = 1.2 = the largest Next key -> Primary_Shoot_Strength_4, the only draw with the Impact_Dagger_Stab_Charged impact,
+          knockback 8 and a headshot). Partial draws (0.1 / 0.3 / 0.6 / 0.9 s) are PARTIAL and never count, although Hytale tags
+          every draw Class Charged. The headshot calculator of the glow step counts too (same step).
+      A = Hytale's own Class Charged on the hit's DamageSequence - trusted ONLY for vanilla weapon ids + the pack's More Crossbow
+          Tiers crossbows (verifier: a loose Class tag from another mod never counts) and only where the walk shows no partial
+          levels: the crossbow's 3rd-bolt combo (reached without any hold, Class Charged).
+      C = legacy projectiles (spear throws, staff / wand / spellbook orbs): GearShot.charged, set at launch when the item's walk
+          launches that projectile id only from a FULL step.
+      Never: Class Signature (every signature, e.g. the shortbow volley that charges 0.75 / 1.5 s), anything reached from an
+      Ability1-3 root, a calculator reached both charged and uncharged (the prototype bows Bomb / Combat / Pull / Ricochet share
+      one damage step over every draw - so the stat never rolls on them either), the excluded families above.
+  - VERIFIER FIXES: a single spellbook / a single thrown spear is used up by the cast before the projectile exists, so the hand was
+    empty when GearShotTrack recorded it (no weapon stats, no charged flag, no level gate). GearHandSys (every tick, one identity
+    compare per player) keeps the last two hand stacks; GearShotTrack takes the live hand when it launches that projectile, else the
+    newest snapshot (<= 1 s old) whose GEAR item launches it (GearHand.pick). Loose Class tags: see A. Crystal Ice: excluded.
+    Signature hits: see Never.
+  - hitAmount: one extra factor x (1 + chg / 100) (spells x (1 + charged.spellFactor x chg / 100)) after Strength / Magical Power,
+    before the crit roll (a charged crit gets both); True Damage + the flat element lines are added after armor as before (never
+    multiplied). The 5-argument hitAmount stays (= no charged hit).
+  - ROLLS: GearRoll.pool(slot, id) - chg only while charged.on, always on armor, on a weapon only when GearChg.hasCharged(id) (the
+    runtime walk; if the walk cannot run, the vanilla list this build baked from the same rules). newDoc / reforge / identify pass
+    the item id (every roll path goes through them).
+  - /gear charged (ADMIN, skyygear.admin + no groups): the held weapon's charged steps from the index, whether it may roll, your
+    last judged hit (turns on a 10 min probe: your hits are judged even without the stat; /gear charged off ends it).
+  - ONE-TIME UPDATE of an existing config.properties (GearCfg.migrate012, setup() right after migrateStat011, before the loader): adds
+    the missing lines only - "# chg = ..." + stats.chg=30,5 right under stats.cd, and the marker + charged.on / spellFactor / log
+    with their help right under speed.per (the fresh file's places) - so Server Setup lists the new stat row. Values are the
+    built-in defaults (nothing changes in effect, so no config-changes.log line); History keeps the old file ("before the 0.1.2
+    charged attack lines", checked by lvSaved before the write); its own marker, run once; an open continued entry at the end of the
+    file gets the lines before it (the 0.1.1 review finding 4 trap). The 0.1.1 updates are byte-for-byte unchanged.
+  Build self-check (the SkyyTrees pattern): the Python walk of this build over Assets.zip must still find every family's charged
+  step, the bow glow evidence above, Club_Attack a plain Chaining, clubs / Kunai / Crystal Flame without a detectable step.
+  Bare-JVM harness: SkyyGear/test_skyygear_0.1.2.py (section Z).
+  REVIEW OF 0.1.2 (2026-09-30, applied):
+  - Finding 1 (a partial bow draw could count): the "Class Charged, step not in the walk" fallback is MELEE only now. A projectile
+    hit judged against a record GearShotTrack.pick chose (the weaker weapon when several are in the air, e.g. a spear / orb still
+    flying while bow arrows land) looks its damage step up in every live record's weapon (GearShotTrack.liveIds): it counts only when
+    every weapon whose walk knows the step calls it charged; a step no live weapon knows = not charged (the re-walk still runs). A
+    legacy launch flag without a damage step counts only while one weapon is in the air. The projectile's own record (find) = exact.
+  - Finding 2 (the Vampire bow counted without a glow): Weapon_Shortbow_Vampire is excluded (CHG_EXCL; its deprecated draw has no
+    particles and its full-charge arrow looks like the partial ones - build self-check 1b). Shortbow family: 19 gear / 14 may roll.
+  - Finding 3: a Light / Charged-tagged step a completely walked vanilla / pack weapon's index misses after the re-walk logs one WARN
+    per weapon id (gear.log "chgmiss:<id>").
+  - Finding 4: GearCharged.note builds its line only while a probe is armed or charged.log is on.
+  - Finding 5: GearHand.seen ignores an empty hand turning into another empty hand (null <-> empty stack).
 
 0.1.1 (2026-09-30; a direct copy of build_skyygear_0.1.py - SkyyGear has no patch scripts - with ONLY these changes):
   - LEVEL BY MATERIAL, Skyy's lock (OPEN-QUESTIONS 2026-09-30: "bronze is hard to get in vanilla; our own gear fills the gaps later"):
@@ -126,7 +191,7 @@ THIS FILE IS BUILT IN TWO PARTS (Skyy / RESUME step 4). PART A = this build. PAR
       or unidentified -> amount 0 + cancelled + knockback removed + GearGate.popup (gear.blockedPopup gates only the popup); armor
       above the level or unidentified -> no SkyyGear stats, native Health / resistance cancelled (level.armorNative), one
       gear.armorWarn chat line each time a piece becomes inactive.
-  Bare-JVM harness (spec 11.1 #3): SkyyGear/test_skyygear_0.1.1.py (load + verify every class under -Xverify:all, then the review
+  Bare-JVM harness (spec 11.1 #3): SkyyGear/test_skyygear_0.1.2.py (load + verify every class under -Xverify:all, then the review
   fixes that a bare JVM can reach; scratch in tools/dev/scratch/, deleted after the run).
 
 Commands (spec 8.1):
@@ -137,7 +202,7 @@ Commands (spec 8.1):
                            modifiers of unidentified gear for coins (cost.identify by rarity + level), one item or all of them.
   /gear                    player: the held item's gear lines, your active totals, your Smithing rarity.
   /gear give <item> [--rarity <id>] [--unid true] | read | reroll | clear | rarity <id> | unid | identify | level <n|clear> |
-        gate <skill|class> | migrate [player]
+        gate <skill|class> | migrate [player] | charged [off]
                            ADMIN: requirePermission("skyygear.admin") + setPermissionGroups(new String[0]) on every sub-command
                            (lint perm_group_leaks); the root /gear lists hytale:Adventurer.
 Data: <world>/mods/Skyy_SkyyGear/ (getDataDirectory().resolveSibling): config.properties (the kit's rows), config-changes.log +
@@ -158,7 +223,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."
 import skyybuild as B
 import skyycfg as CFG
 
-VERSION = "0.1.1"
+VERSION = "0.1.2"
 HERE = os.path.dirname(os.path.abspath(__file__))
 J0 = B.start()
 pool, CtField, CtNewMethod, CtNewConstructor = J0["pool"], J0["CtField"], J0["CtNewMethod"], J0["CtNewConstructor"]
@@ -388,6 +453,10 @@ STATS = [
     ("mp", "Magical Power", "sae", "", 25, 10, 1, "spells"),
     ("cc", "Crit Chance", "wa", "%", 15, 10, 1, ""),
     ("cd", "Crit Damage", "wa", "%", 30, 10, 1, ""),
+    # 0.1.2 (OPEN-QUESTIONS LOCKED 2026-09-30, research/Charged-Attack-Research.md 4.1-4.2): max 30 at 100 % power like Crit Damage,
+    # weight 5 like the other situational lines (PLACEHOLDER numbers - the research found no reason to change Skyy's placeholder).
+    # Live, but it may roll only while charged.on is on, on armor, and on a weapon with a detectable charged attack (GearRoll.pool)
+    ("chg", "Charged Attack Damage", "wa", "%", 30, 5, 1, ""),
     ("tdmg", "True Damage", "w", "", 5, 5, 1, ""),
     ("fEarth", "Earth Damage", "w", "", 6, 4, 1, ""),
     ("fThunder", "Thunder Damage", "w", "", 6, 4, 1, ""),
@@ -432,12 +501,15 @@ assert len(set(S_KEYS)) == NS, "duplicate stat key"
 SPEC_KEYS = ("dmg str mp cc cd tdmg fEarth fThunder fWater fFire fAir rThunder rWater rElem msteal lsteal hpr hprp def spd stam "
              "as fer thorns expl poison kb slow weak dEarth dThunder dWater dFire dAir cwis").split()
 LATER_KEYS = "lbonus lquality stealing trophy xpb".split()      # design review 11, appended after the spec 4.2 rows
-assert S_KEYS == SPEC_KEYS + LATER_KEYS, "the stat table must match spec 4.2 (keys + display order) + the design-review rows"
+# 0.1.2: Charged Attack Damage sits right after Crit Damage (display order = table order; research 4.3)
+SPEC_KEYS = SPEC_KEYS[:SPEC_KEYS.index("cd") + 1] + ["chg"] + SPEC_KEYS[SPEC_KEYS.index("cd") + 1:]
+assert S_KEYS == SPEC_KEYS + LATER_KEYS, "the stat table must match spec 4.2 (keys + display order) + the design-review rows + chg"
+assert S_KEYS.index("chg") == S_KEYS.index("cd") + 1 and STATS[S_KEYS.index("chg")] == ("chg", "Charged Attack Damage", "wa", "%", 30, 5, 1, "")
 for _s in STATS:
     assert re.match(r"^[a-z][a-zA-Z]*$", _s[0]) and re.match(r"^(?!.*(.).*\1)[wsae]{1,4}$", _s[2]) and _s[3] in ("", "%"), _s
     assert _s[4] > 0 and _s[5] >= 0 and _s[6] in (0, 1) and _s[7] in ("", "spells", "elem", "steal", "regen", "hprp"), _s
     assert '"' not in _s[1] and "|" not in _s[1], _s
-assert [s[0] for s in STATS if s[6] == 1] == SPEC_KEYS[:21], "live stats = spec 4.2 LIVE rows"
+assert [s[0] for s in STATS if s[6] == 1] == SPEC_KEYS[:22], "live stats = spec 4.2 LIVE rows + chg (0.1.2)"
 
 # ================================================================= spec 3.3: the gate skill per gear kind (LOCKED)
 GATE_BY_KIND = [("combat", "class"), ("mining", "Mining"), ("foraging", "Foraging"), ("farming", "Farming"), ("tool", ""),
@@ -552,6 +624,14 @@ ST_MARK = ("# %s (Skyy 2026-09-30): coming-later stats never roll (pool.later fa
 assert all(32 <= ord(_c) < 127 for _c in ST_MARK + "".join("".join(_t) for _t in ST_DEFAULTS)), "the stat marker must be plain ASCII"
 assert ST_MARK_ID not in LV_MARK and LV_MARK_ID not in ST_MARK and "=" not in ST_MARK, "the two markers must not match each other"
 assert [(_k, _o) for _k, _o, _n, _w in ST_DEFAULTS] == [("pool.later", "true"), ("stat.levelFull", "50")], "the 0.1 defaults"
+# 0.1.2 Charged Attack Damage lines: the marker of the one-time update GearCfg.migrate012 (in the default text and in every updated
+# file; a doc comment with spaces and no "key=value" token, so the kit never takes it for a template line) and the update's name
+CH_MARK_ID = "SkyyGear 0.1.2 charged attack lines"
+CH_MARK = ("# %s (Skyy 2026-09-30): Charged Attack Damage on weapons with a charged attack + armor, bows only the glowing full draw, "
+           "spells x 0.15, never clubs" % CH_MARK_ID)
+CH_WHO = "SkyyGear 0.1.2"
+assert all(32 <= ord(_c) < 127 for _c in CH_MARK) and "=" not in CH_MARK, "the charged marker must be plain ASCII without '='"
+assert CH_MARK_ID not in LV_MARK + ST_MARK and LV_MARK_ID not in CH_MARK and ST_MARK_ID not in CH_MARK, "markers must not match"
 REFORGE_NAMES_DEF = "Sharp,Heroic,Spicy,Gentle,Odd,Fast,Epic,Withered"
 for _n in REFORGE_NAMES_DEF.split(","):
     assert _n.lower() not in [x.lower() for x in R_NAMES], "reforge name is a rarity name: " + _n
@@ -671,6 +751,456 @@ for _i, (_rid, _nm, _hex, _phex, _tt, _slot, _part) in enumerate(RARITIES):
 EXTRA["Server/Languages/en-US/server.lang"] = "\n".join(LANG) + "\n"
 assert "general.qualities.Common = Common" in AZ.read("Server/Languages/en-US/server.lang").decode("utf-8-sig")
 
+# ================================================================= 0.1.2: Charged Attack Damage - the build-time walk + self-check
+# ---- CHARGED WALKER BEGIN (pure Python over the Assets.zip JSON; the 0.1.2 harness exec()s this block from the build script)
+class AzWalker:
+    """Every weapon item's interaction chains as the engine walks them (InteractionManager.walkChain + the labels of
+    WeaponDamageDataCollector), from the raw JSON: the item Parent chain (Interactions / InteractionVars merged per key), inline
+    Parent merges (child wins, nested objects deep-merged, TargetedDamage / AngledDamage entries decoded fresh = replaced), Replace
+    (item var else DefaultValue; no Next), Charging Next keys + Failed, Chaining, Serial, Parallel (root refs), Selector (HitEntity,
+    HitEntityRules, HitBlock, Next, Failed), Repeat, DamageEntity (+ Angled / Targeted calculators and their Next), Projectile ->
+    ProjectileConfig ProjectileHit chain, LaunchProjectile ids; every other type = Next (+ any child list) and Failed / Blocked.
+    Label per step (VERIFIED engine rule, 0.1.2 glow refinement): an edge ChargingTag s > 0 = charged at s seconds, FULL when s is
+    that Charging step's largest Next key, else PARTIAL (the bow's early draws); s = 0 and StringTag Failed / Blocked = NORMAL;
+    every other edge keeps the parent's label. Records carry a calculator key: the JSON object that defines the step (the same
+    object = the same engine asset = the same DamageCalculator instance), so ambiguity is judged per item like the jar does."""
+    NORMAL, PARTIAL = -1.0, -3.0
+    SIG_TYPES = ("Ability1", "Ability2", "Ability3")
+
+    def __init__(self, az, names=None, items_overlay=None):
+        import os
+        self.az = az
+        names = names if names is not None else az.namelist()
+        self.inter, self.roots, self.pcfg, self.items = {}, {}, {}, {}
+        for n in names:
+            if not n.endswith(".json"):
+                continue
+            b = os.path.basename(n)[:-5]
+            if n.startswith("Server/Item/Interactions/"):
+                self.inter[b] = n
+            elif n.startswith("Server/Item/RootInteractions/"):
+                self.roots[b] = n
+            elif n.startswith("Server/ProjectileConfigs/"):
+                self.pcfg[b] = n
+            elif n.startswith("Server/Item/Items/"):
+                self.items[b] = n
+        self._cache = {}
+        self._res = {}
+        for k, v in (items_overlay or {}).items():       # pack items (More Crossbow Tiers): id -> parsed JSON
+            self.items[k] = "overlay:" + k
+            self._cache["overlay:" + k] = v
+
+    def js(self, n):
+        import json
+        if n not in self._cache:
+            try:
+                self._cache[n] = json.loads(self.az.read(n).decode("utf-8-sig"))
+            except Exception:
+                self._cache[n] = None
+        return self._cache[n]
+
+    @staticmethod
+    def merge(base, over):
+        if not isinstance(base, dict) or not isinstance(over, dict):
+            return over
+        out = dict(base)
+        for k, v in over.items():
+            if k == "Parent":
+                continue
+            if isinstance(v, dict) and isinstance(base.get(k), dict) and k not in ("TargetedDamage",):
+                out[k] = AzWalker.merge(base.get(k), v)
+            else:
+                out[k] = v
+        return out
+
+    def resolve_parent(self, d, table, seen=None):
+        seen = seen or set()
+        p = d.get("Parent") if isinstance(d, dict) else None
+        if not p or p in seen or p not in table:
+            return d
+        seen.add(p)
+        base = self.resolve_parent(self.js(table[p]) or {}, table, seen)
+        return self.merge(base, d)
+
+    def item(self, iid):
+        n = self.items.get(iid)
+        d = self.js(n) if n else None
+        if d is None:
+            return None
+        chain, cur, seen = [], d, set()
+        while isinstance(cur, dict):
+            chain.append(cur)
+            p = cur.get("Parent")
+            if not p or p in seen or p not in self.items:
+                break
+            seen.add(p)
+            cur = self.js(self.items[p])
+        out = {}
+        for c in reversed(chain):
+            for k, v in c.items():
+                if k in ("Interactions", "InteractionVars") and isinstance(v, dict):
+                    m = dict(out.get(k) or {})
+                    m.update(v)
+                    out[k] = m
+                else:
+                    out[k] = v
+        return out
+
+    @staticmethod
+    def refs(v):
+        if v is None:
+            return []
+        return list(v) if isinstance(v, list) else [v]
+
+    def interaction(self, ref):
+        """(asset id or None, resolved dict or None, identity key) of a string id or an inline object"""
+        if isinstance(ref, str):
+            n = self.inter.get(ref)
+            d = self.js(n) if n else None
+            if d is None:
+                return ref, None, ("missing", ref)
+            k = ("asset", ref)
+            if k not in self._res:
+                self._res[k] = self.resolve_parent(d, self.inter)
+            return ref, self._res[k], k
+        if isinstance(ref, dict):
+            k = ("inline", id(ref))
+            if k not in self._res:
+                self._res[k] = self.resolve_parent(ref, self.inter)
+            return None, self._res[k], k
+        return None, None, ("none", None)
+
+    def root_ids(self, ref):
+        """a root reference (RootInteractions id, or an inline {Interactions: [...]}, or a bare list) -> interaction refs"""
+        if isinstance(ref, str):
+            n = self.roots.get(ref)
+            d = self.js(n) if n else None
+            if d is None:
+                return []
+            return self.refs(self.resolve_parent(d, self.roots).get("Interactions"))
+        if isinstance(ref, dict):
+            if "Type" in ref or "Parent" in ref:
+                return [ref]
+            return self.refs(ref.get("Interactions"))
+        if isinstance(ref, list):
+            return list(ref)
+        return []
+
+    def roots_of(self, v):
+        out = []
+        for r in self.refs(v) if isinstance(v, list) else [v]:
+            out += self.root_ids(r)
+        return out
+
+    def norm(self, d):
+        """the engine walk semantics of one resolved interaction"""
+        t = d.get("Type")
+        o = {"t": t, "charge": None, "next": [], "failed": [], "replace": None, "dmg": None, "proj": None, "launch": None,
+             "explode": t == "Explode"}
+        R = self.refs
+        if t == "Charging":
+            o["charge"] = [(float(k), R(v)) for k, v in (d.get("Next") or {}).items()]
+            o["failed"] = R(d.get("Failed"))
+            return o
+        if t == "Replace":
+            o["replace"] = (d.get("Var"), self.roots_of(d.get("DefaultValue")) if d.get("DefaultValue") is not None else [])
+            return o
+        if t in ("Chaining",):
+            o["next"] = R(d.get("Next"))
+            return o
+        if t == "Serial":
+            o["next"] = R(d.get("Interactions"))
+            return o
+        if t == "Parallel":
+            for r in R(d.get("Interactions")):
+                o["next"] += self.root_ids(r)
+            return o
+        if t == "Selector":
+            o["next"] = (self.roots_of(d.get("HitEntity")) if d.get("HitEntity") is not None else [])
+            for rule in R(d.get("HitEntityRules")):
+                if isinstance(rule, dict) and rule.get("Next") is not None:
+                    o["next"] += self.roots_of(rule.get("Next"))
+            o["next"] += (self.roots_of(d.get("HitBlock")) if d.get("HitBlock") is not None else []) + R(d.get("Next"))
+            o["failed"] = R(d.get("Failed"))
+            return o
+        if t == "Repeat":
+            o["next"] = (self.roots_of(d.get("ForkInteractions")) if d.get("ForkInteractions") is not None else []) + R(d.get("Next"))
+            o["failed"] = R(d.get("Failed"))
+            return o
+        if t == "DamageEntity":
+            ang = [a for a in (d.get("AngledDamage") or []) if isinstance(a, dict)]
+            tgt = dict((k, v) for k, v in (d.get("TargetedDamage") or {}).items() if isinstance(v, dict))
+            o["dmg"] = (d.get("DamageCalculator"), [a.get("DamageCalculator") for a in ang],
+                        dict((k, v.get("DamageCalculator")) for k, v in tgt.items()))
+            o["next"] = R(d.get("Next"))
+            for a in ang:
+                o["next"] += R(a.get("Next"))
+            for v in tgt.values():
+                o["next"] += R(v.get("Next"))
+            o["failed"] = R(d.get("Failed")) + R(d.get("Blocked"))
+            return o
+        if t == "Projectile":
+            o["proj"] = d.get("Config")
+        elif t == "LaunchProjectile":
+            o["launch"] = d.get("ProjectileId")
+        if t is None and "Interactions" in d:           # an inline root used where an interaction is expected
+            o["next"] = R(d.get("Interactions"))
+            return o
+        for k in ("Interactions", "ForkInteractions"):
+            if d.get(k) is not None:
+                o["next"] += self.roots_of(d.get(k))
+        o["next"] += R(d.get("Next"))
+        o["failed"] = R(d.get("Failed")) + R(d.get("Blocked"))
+        return o
+
+    def pcfg_hit(self, cfg):
+        """ProjectileConfig id / inline -> (config key, ProjectileHit interaction refs)"""
+        cd = None
+        if isinstance(cfg, str) and cfg in self.pcfg:
+            cd = self.resolve_parent(self.js(self.pcfg[cfg]) or {}, self.pcfg)
+        elif isinstance(cfg, dict):
+            cd = self.resolve_parent(cfg, self.pcfg)
+        if not cd:
+            return []
+        hit = (cd.get("Interactions") or {}).get("ProjectileHit")
+        return self.root_ids(hit) if hit is not None else []
+
+    def label(self, parent, tag):
+        if tag is None:
+            return parent
+        if tag[0] == "charge":
+            s, mx = tag[1], tag[2]
+            if s <= 0:
+                return self.NORMAL
+            return s if s >= mx - 1e-4 else self.PARTIAL
+        if tag[0] == "failed":
+            return self.NORMAL
+        return parent
+
+    def walk_item(self, iid):
+        """records: {kind: dmg | launch | explode | deep, lab, cls, sub, sig, key, pid, path}; None = no such item"""
+        it = self.item(iid)
+        if it is None:
+            return None
+        vars_ = it.get("InteractionVars") or {}
+        recs = []
+        for t, root in (it.get("Interactions") or {}).items():
+            sig = t in self.SIG_TYPES
+            for r in self.root_ids(root):
+                self._walk(r, self.NORMAL, None, vars_, recs, [t], sig, 0, frozenset())
+        return recs
+
+    def _walk(self, ref, label, tag, vars_, recs, path, sig, depth, onpath):
+        iid, d, key = self.interaction(ref)
+        if d is None:
+            return
+        if depth > 80:
+            recs.append({"kind": "deep", "lab": label, "path": list(path), "sig": sig})
+            return
+        if iid is not None and iid in onpath:
+            return
+        lab = self.label(label, tag)
+        onp = onpath | {iid} if iid else onpath
+        p2 = path + [iid or "<%s>" % d.get("Type")]
+        o = self.norm(d)
+
+        def W(r, tg=None, lb=None):
+            self._walk(r, lab if lb is None else lb, tg, vars_, recs, p2, sig, depth + 1, onp)
+        if o["charge"] is not None:
+            mx = max([k for k, _v in o["charge"]] or [0.0])
+            for k, rs in o["charge"]:
+                for r in rs:
+                    W(r, ("charge", k, mx))
+            for r in o["failed"]:
+                W(r, ("failed",))
+            return
+        if o["replace"] is not None:
+            var, dflt = o["replace"]
+            if var in vars_:
+                v = vars_[var]
+                rs = self.root_ids(v)
+            else:
+                rs = dflt
+            for r in rs:
+                W(r)
+            return
+        if o["dmg"] is not None:
+            calc, ang, tgt = o["dmg"]
+            cl = lambda c: (c or {}).get("Class", "Unknown") if isinstance(c, dict) else "Unknown"
+            if isinstance(calc, dict):              # no DamageCalculator = getDamageCalculator() null = nothing recorded (jar)
+                recs.append({"kind": "dmg", "lab": lab, "cls": cl(calc), "sub": None, "sig": sig, "key": key + (None,), "path": p2})
+            for i, c in enumerate(ang):
+                if isinstance(c, dict):
+                    recs.append({"kind": "dmg", "lab": lab, "cls": cl(c), "sub": "angled%d" % i, "sig": sig, "key": key + ("a%d" % i,), "path": p2})
+            for k, c in tgt.items():
+                if isinstance(c, dict):
+                    recs.append({"kind": "dmg", "lab": lab, "cls": cl(c), "sub": "targeted:" + k, "sig": sig, "key": key + ("t:" + k,), "path": p2})
+        if o["launch"] is not None:
+            recs.append({"kind": "launch", "lab": lab, "pid": o["launch"], "sig": sig, "key": ("pid", o["launch"]), "path": p2})
+        if o["explode"]:
+            recs.append({"kind": "explode", "lab": lab, "sig": sig, "path": p2})
+        if o["proj"] is not None:
+            for r in self.pcfg_hit(o["proj"]):
+                self._walk(r, lab, None, vars_, recs, p2 + ["[hit %s]" % o["proj"]], sig, depth + 1, onp)
+        for r in o["next"]:
+            W(r)
+        for r in o["failed"]:
+            W(r, ("failed",))
+
+    # ---- per-item summary, the jar's rules (GearChgIndex.build + hasCharged)
+    FULL, PART, NORM, SIGR = 1, 2, 4, 8
+
+    def kind(self, lab):
+        return self.NORM if lab == self.NORMAL else (self.PART if lab == self.PARTIAL else self.FULL)
+
+    def summary(self, iid, trusted):
+        recs = self.walk_item(iid)
+        if recs is None:
+            return None
+        calcs, launches, deep, explode = {}, {}, False, False
+        for r in recs:
+            if r["kind"] == "deep":
+                deep = True
+            elif r["kind"] == "explode":
+                explode = True
+            elif r["kind"] == "dmg":
+                e = calcs.setdefault(r["key"], [0, r["cls"], r["sub"], set()])
+                e[0] |= self.kind(r["lab"]) | (self.SIGR if r["sig"] else 0)
+                if r["lab"] > 0:
+                    e[3].add(round(r["lab"], 3))
+            elif r["kind"] == "launch":
+                e = launches.setdefault(r["pid"], [0, set()])
+                e[0] |= self.kind(r["lab"]) | (self.SIGR if r["sig"] else 0)
+                if r["lab"] > 0:
+                    e[1].add(round(r["lab"], 3))
+        full = [k for k, e in calcs.items() if e[0] == self.FULL and e[1] != "Signature"]
+        combo = [k for k, e in calcs.items() if e[0] == self.NORM and e[1] == "Charged"] if trusted else []
+        lfull = [p for p, e in launches.items() if e[0] == self.FULL]
+        partial = any(e[0] & self.PART for e in calcs.values()) or any(e[0] & self.PART for e in launches.values())
+        return {"calcs": calcs, "launches": launches, "full": full, "combo": combo, "lfull": lfull, "partial": partial,
+                "has": bool(full or combo or lfull), "deep": deep, "explode": explode, "recs": recs}
+# ---- CHARGED WALKER END
+
+# 0.1.2 Skyy's exclusions (OPEN-QUESTIONS LOCKED 2026-09-30): "Leave clubs alone" (every Weapon_Club_, the flail clubs and zombie limbs
+# included), the Kunai and the Crystal Flame staff (research 0.5: no charged damage step), the Crystal Ice staff (verifier: its Ice
+# hits are neither Physical / Projectile family nor a legacy spell shot, so GearHitSys never applies gear stats to them - the stat
+# could never trigger). Never rolls on them, never counts on them.
+# Review of 0.1.2 finding 2: the Vampire bow too - its draw is the deprecated Bow_Shoot_Charging (no Bow_Charging particles, only the
+# draw animation + sound) and its 1.0 s shot is the legacy Arrow_FullCharge (Appearance Arrow_Crude, no effect), so its arrow NEVER
+# glows and Skyy's bow rule ("charge damage only kicks in when the arrow starts to glow") leaves it nothing to count (self-check below).
+CHG_EXCL = ["Weapon_Club_", "Weapon_Kunai", "Weapon_Staff_Crystal_Flame", "Weapon_Staff_Crystal_Ice", "Weapon_Shortbow_Vampire"]
+# the pack's third-party weapon mod (PACK.md): More Crossbow Tiers 1.1.0 - its crossbows parent Template_Weapon_Crossbow and keep the
+# vanilla Combo_Projectile_Damage parent, so their 3rd-bolt combo carries Hytale's Class Charged (signal A trusts these ids)
+PACK_TRUST = ["Weapon_Crossbow_Adamantite", "Weapon_Crossbow_Cobalt", "Weapon_Crossbow_Mithril", "Weapon_Crossbow_Thorium"]
+_MCT = {}
+_MCT_ZIP = os.path.join(B.MODS_DIR, "More_Crossbow_Tiers.zip")
+if os.path.isfile(_MCT_ZIP):
+    with zipfile.ZipFile(_MCT_ZIP) as _z:
+        for _n in _z.namelist():
+            if _n.startswith("Server/Item/Items/") and _n.endswith(".json"):
+                _MCT[os.path.basename(_n)[:-5]] = json.loads(_z.read(_n).decode("utf-8-sig"))
+    assert sorted(_MCT) == sorted(PACK_TRUST), "More Crossbow Tiers items changed: %s" % sorted(_MCT)
+    for _i, _d in _MCT.items():
+        assert _d.get("Parent") == "Template_Weapon_Crossbow", _i
+        _cv = (_d.get("InteractionVars") or {}).get("Combo_Projectile_Damage")
+        assert _cv is None or all((isinstance(_x, dict) and _x.get("Parent") == "Weapon_Crossbow_Damage_Combo_Projectile") or
+                                  _x == "Weapon_Crossbow_Damage_Combo_Projectile" for _x in _cv.get("Interactions", [])), _i
+else:
+    print("note: More_Crossbow_Tiers.zip not in the Mods folder - the baked pack list (PACK.md, 1.1.0) is used unchecked")
+CW = AzWalker(AZ, AZ_NAMES, _MCT)
+VANILLA_WEAPONS = sorted(i for i in CW.items if i.startswith("Weapon_") and not str(CW.items[i]).startswith("overlay:"))
+CHG_TRUST = sorted(set(VANILLA_WEAPONS) | set(PACK_TRUST))
+
+
+def chg_excluded(i):
+    return i.startswith(tuple(CHG_EXCL))
+
+
+def chg_gear(i):
+    """the jar's default gear rule for a Weapon_ id (GearData.isGearMs with the default gear.exclude, no gear.include)"""
+    return i.startswith("Weapon_") and not az_ammo(i) and not i.startswith(tuple(_EXCL0))
+
+
+CHG_SUM = dict((i, CW.summary(i, True)) for i in CHG_TRUST)
+assert not [i for i, s in CHG_SUM.items() if s is None or s["deep"]], "charged walk: unreadable / too deep chains"
+# the roll fallback (GearChg.FALLBACK: only when the runtime walk cannot run) and the ids with partial charge levels (never trusted
+# on Hytale's Class tag alone): the same rules as the jar's GearChg.build
+CHG_FALLBACK = sorted(i for i, s in CHG_SUM.items() if s["has"] and not chg_excluded(i) and chg_gear(i))
+CHG_PARTIAL = sorted(i for i, s in CHG_SUM.items() if s["partial"])
+
+# ---- self-check 1: the bow GLOW step (Skyy: "charge damage only kicks in when the arrow starts to glow")
+_BCH = CW.js(CW.inter["Weapon_Shortbow_Primary_Shoot_Charge"])
+_BKEYS = sorted(float(k) for k in _BCH["Next"])
+assert _BCH["Type"] == "Charging" and _BKEYS == [0.0, 0.1, 0.3, 0.6, 0.9, 1.2], _BKEYS
+assert [p.get("SystemId") for p in _BCH["Effects"]["Particles"]] == ["Bow_Charging"], "the draw's particle system changed"
+_BPS = json.loads(AZ.read("Server/Particles/Weapon/Bow/Bow_Charging.particlesystem").decode("utf-8-sig"))
+assert "tuned to appear at max charge (1.2s)" in _BPS["$Comment"] and "0.45" in _BPS["$Comment"], _BPS["$Comment"]
+BOW_GLOW_S = round(min(float(_s["StartDelay"]) for _s in _BPS["Spawners"]) + 0.45, 3)
+assert BOW_GLOW_S == max(_BKEYS) == 1.2, "the glow no longer appears at the full draw: %s vs %s" % (BOW_GLOW_S, max(_BKEYS))
+assert _BCH["Next"]["1.2"]["Next"]["Var"] == "Primary_Shoot_Strength_4", "the 1.2 s key no longer leads to draw strength 4"
+_BDMG = [CW.js(CW.inter["Weapon_Shortbow_Primary_Shoot_Damage_Strength_%d" % _k]) for _k in range(5)]
+assert [d["DamageEffects"]["WorldParticles"][0]["SystemId"] for d in _BDMG] == ["Impact_Dagger_Stab"] * 4 + ["Impact_Dagger_Stab_Charged"]
+assert [("TargetedDamage" in d) for d in _BDMG] == [False] * 4 + [True], "only the full draw has a headshot"
+assert all(d["DamageCalculator"]["Class"] == "Charged" for d in _BDMG), "Hytale tags every draw Charged (why the glow rule is needed)"
+for _k in range(5):
+    _sj = CW.js(CW.inter["Weapon_Shortbow_Primary_Shoot_Strength_%d" % _k])
+    assert _sj["Config"] == "Projectile_Config_Arrow_Shortbow_Strength_%d" % _k, _k
+# ---- self-check 1b (review of 0.1.2 finding 2): the Vampire bow's arrow never glows -> it is in CHG_EXCL. A Hytale update that gives
+# its draw particles or its full-charge arrow a different look fails the build here (then ask Skyy whether it glows now).
+_VB = CW.js(CW.items["Weapon_Shortbow_Vampire"])
+assert _VB["Interactions"]["Primary"] == "Bow_Shoot_Charging", "the Vampire bow's draw changed - re-check its glow (review finding 2)"
+_VCH = CW.js(CW.inter["Bow_Shoot_Charging"])
+assert _VCH["Type"] == "Charging" and "Particles" not in (_VCH.get("Effects") or {}), "the Vampire bow's draw got particles - does it glow now?"
+assert sorted(float(k) for k in _VCH["Next"]) == [0.2, 0.6, 1.0] and _VCH["Next"]["1"]["Next"]["ProjectileId"] == "Arrow_FullCharge"
+_VAR = [json.loads(AZ.read("Server/Projectiles/%s.json" % _p).decode("utf-8-sig")) for _p in ("Arrow_NoCharge", "Arrow_HalfCharge",
+                                                                                                "Arrow_FullCharge")]
+assert all(sorted(_a) == sorted(_VAR[0]) and _a["Appearance"] == "Arrow_Crude" and _a.get("HitParticles") == _VAR[0].get("HitParticles")
+           for _a in _VAR), "the Vampire bow's full-charge arrow no longer looks like its partial ones - does it glow now?"
+assert "Weapon_Shortbow_Vampire" in CHG_EXCL
+# ---- self-check 2: every family's charged step as the research found it (VERIFIED 2026-09-30) + Skyy's exclusions
+_AX = CW.js(CW.inter["Axe_Attack"])
+assert _AX["Type"] == "Charging" and _AX["Next"].get("1.390") == "Axe_Swing_Left_Charged", "Axe_Attack changed"
+assert CW.js(CW.inter["Club_Attack"])["Type"] == "Chaining", "clubs got a charged attack - ask Skyy (they said: leave clubs alone)"
+assert CW.js(CW.inter["Weapon_Sword_Primary_Thrust_Damage"])["DamageCalculator"]["Class"] == "Charged"
+
+
+def _fam(prefix, only_gear=True):
+    return [i for i in CHG_TRUST if i.startswith(prefix) and (chg_gear(i) or not only_gear)]
+
+
+# family -> (gear items, items that may roll Charged Attack Damage); a Hytale update that changes one of these fails the build here
+CHG_FAMILIES = {"Weapon_Sword_": (23, 23), "Weapon_Battleaxe_": (15, 15), "Weapon_Mace_": (12, 12), "Weapon_Daggers_": (16, 16),
+                "Weapon_Axe_": (13, 13), "Weapon_Longsword_": (18, 18), "Weapon_Spear_": (17, 17), "Weapon_Shortbow_": (19, 14),
+                "Weapon_Crossbow_": (6, 6), "Weapon_Staff_": (24, 22), "Weapon_Wand_": (5, 3), "Weapon_Spellbook_": (6, 5),
+                "Weapon_Club_": (22, 0), "Weapon_Kunai": (1, 0)}
+for _p, (_ng, _nr) in CHG_FAMILIES.items():
+    _g = _fam(_p)
+    _r = [i for i in _g if i in CHG_FALLBACK]
+    assert (len(_g), len(_r)) == (_ng, _nr), "charged family %s: %d gear / %d roll, expected %d / %d: %s" % (_p, len(_g), len(_r), _ng, _nr,
+                                                                                                          sorted(set(_g) - set(_r)))
+# the four prototype bows (one damage step for every draw = ambiguous) + the Vampire bow (excluded: no glow, review finding 2)
+assert sorted(set(_fam("Weapon_Shortbow_")) - set(CHG_FALLBACK)) == ["Weapon_Shortbow_Bomb", "Weapon_Shortbow_Combat",
+                                                                     "Weapon_Shortbow_Pull", "Weapon_Shortbow_Ricochet",
+                                                                     "Weapon_Shortbow_Vampire"]
+_VS = CHG_SUM["Weapon_Shortbow_Vampire"]
+assert _VS["has"] and _VS["lfull"] == ["Arrow_FullCharge"], "the Vampire bow's walk changed (its excluded full-charge launch)"
+assert sorted(set(_fam("Weapon_Staff_")) - set(CHG_FALLBACK)) == ["Weapon_Staff_Crystal_Flame", "Weapon_Staff_Crystal_Ice"]
+assert sorted(set(_fam("Weapon_Wand_")) - set(CHG_FALLBACK)) == ["Weapon_Wand_Root", "Weapon_Wand_Stoneskin"]
+assert sorted(set(_fam("Weapon_Spellbook_")) - set(CHG_FALLBACK)) == ["Weapon_Spellbook_Rekindle_Embers"]
+assert all(CHG_SUM[i]["has"] for i in _fam("Weapon_Club_") if "Flail" in i or "Zombie" in i), "the flail clubs lost their charged spin"
+assert not any(CHG_SUM[i]["has"] for i in _fam("Weapon_Club_") if not ("Flail" in i or "Zombie" in i)), "plain clubs got a charged step"
+assert not CHG_SUM["Weapon_Kunai"]["has"] and not CHG_SUM["Weapon_Staff_Crystal_Flame"]["has"] and CHG_SUM["Weapon_Staff_Crystal_Flame"]["explode"]
+assert [i for i in CHG_FALLBACK if not chg_gear(i) or chg_excluded(i)] == []
+# every regular shortbow: exactly one FULL damage step (the 1.2 s glow draw, Class Charged) + its headshot, four PARTIAL draws
+for _i in ("Weapon_Shortbow_Iron", "Weapon_Shortbow_Crude", "Weapon_Shortbow_Onyxium"):
+    _cs = CHG_SUM[_i]["calcs"]
+    _fl = sorted((e[1], e[2] or "") for e in _cs.values() if e[0] == AzWalker.FULL)
+    assert _fl == [("Charged", ""), ("Unknown", "targeted:Head")], (_i, _fl)
+    assert [e[3] for e in _cs.values() if e[0] == AzWalker.FULL] == [{1.2}, {1.2}], _i
+    assert sorted(e[1] for e in _cs.values() if e[0] == AzWalker.PART) == ["Charged"] * 4, _i
+print("charged attack walk: %d vanilla + %d pack weapons; %d may roll Charged Attack Damage; bow glow = the %.1f s draw (Bow_Charging)"
+      % (len(VANILLA_WEAPONS), len(PACK_TRUST), len(CHG_FALLBACK), BOW_GLOW_S))
+
 # ================================================================= spec 9: config rows (tools/skyycfg.py kit 1.1) + the default file
 CFG_FILE = "Skyy_SkyyGear/config.properties"
 CFG_CATS = [("general", "General"), ("rarity", "Rarity"), ("levels", "Levels"), ("stats", "Stats"), ("costs", "Costs"),
@@ -772,6 +1302,14 @@ CFG_ROWS = [
      "Health Regen and Stamina Regen from gear apply once per this many ms." + PH, "field:GearCfg.REGEN_MS"),
     ("speed.per", "Speed per point", "combat", "dec", "1", "0", "100", "", "%", "live,danger",
      "Each Speed point adds this % of the default walk speed." + PH, "field:GearCfg.SPEED_PER"),
+    # 0.1.2 Charged Attack Damage (OPEN-QUESTIONS LOCKED 2026-09-30). Off = the stat does nothing, so it also leaves the roll pool
+    # (Skyy's lock); items that already have it keep the line, shown grey "(off on this server)". 0.15 is Skyy's own number.
+    ("charged.on", "Charged Attack Damage in combat", "combat", "bool", "true", "", "", "", "", "live",
+     "Charged Attack Damage boosts fully charged hits. Off = it does nothing and never rolls.", "field:GearCfg.CHG_ON"),
+    ("charged.spellFactor", "Charged bonus on spells", "combat", "dec", "0.15", "0", "1", "", "x", "live,danger",
+     "Spells get this share of Charged Attack Damage: 0.15 = a +100% roll gives spells +15% (Skyy).", "field:GearCfg.CHG_SPELL"),
+    ("charged.log", "Log charged hits", "combat", "bool", "false", "", "", "", "", "live,adv",
+     "One gear.log line per judged hit (charged or not, and why). For testing; /gear charged shows it.", "field:GearCfg.CHG_LOG"),
     ("migrate.by", "Old SkyyRolls rarity from", "migrate", "choice", "stats", "", "",
      "stats|Roll strength,roll|Roll quality,item|Item colour", "", "new,danger",
      "How an old SkyyRolls item gets its rarity on the move (stats = how strong its rolls are).",
@@ -793,7 +1331,7 @@ assert not _bad, "config row text too long: %s" % _bad
 _DANGER = {"part.gate", "part.stats", "part.craft", "part.drops", "part.chests", "rarity", "stat", "stat.levelFloor", "stat.levelFull",
            "odds", "smith.perLevel", "smith.cap", "craft.maxRarity", "cost.reforge", "cost.identify", "xp.reforge", "combat.strPer",
            "combat.mpPer", "combat.defScale", "crit.base", "crit.baseDamage", "speed.per", "migrate.by", "migrate.map",
-           "migrate.maxRarity", "migrate.clampToLevel"}
+           "migrate.maxRarity", "migrate.clampToLevel", "charged.spellFactor"}
 for _r in CFG_ROWS:
     assert (("danger" in _r[9].split(",")) == (_r[0] in _DANGER)), "danger flag mismatch: " + _r[0]
 # design review 10: these help lines carry the Placeholder suffix too (0.1.1: pool.later left the list - its default is Skyy's lock
@@ -862,6 +1400,9 @@ def default_text():
     for k in ("combat.strPer", "combat.mpPer", "combat.defScale", "crit.base", "crit.baseDamage", "steal.windowS", "regen.periodMs",
               "speed.per"):
         scal(k)
+    L.append(CH_MARK)          # 0.1.2: the charged attack marker right above the charged.on help line (a fresh file never updates)
+    for k in ("charged.on", "charged.spellFactor", "charged.log"):
+        scal(k)
     L += ["", "# ---- migration of old SkyyRolls items (spec 1.6): migrate.map.<id>=<min score %> ----"]
     scal("migrate.by")
     for r in MIG_IDS:
@@ -885,6 +1426,17 @@ assert ("\n" + ST_MARK + "\n# Roll coming-later stats: ") in DEFAULT_TEXT and DE
 for _k, _o, _n, _w in ST_DEFAULTS:
     assert _dp.get(_k) == _n and ("\n%s=%s\n" % (_k, _n)) in DEFAULT_TEXT, "default file %s is not %s" % (_k, _n)
 assert DEFAULT_TEXT.startswith("# SkyyGear %s - " % VERSION)
+# 0.1.2: stats.chg right under stats.cd; the charged marker once, right above the charged.on help line under speed.per
+_DL = DEFAULT_TEXT.split("\n")
+assert _DL[_DL.index("stats.cd=30,10") + 1:_DL.index("stats.cd=30,10") + 3] == ["# chg = Charged Attack Damage (weapon, armor, %)", "stats.chg=30,5"]
+assert _DL[_DL.index("speed.per=1") + 1] == CH_MARK and _DL[_DL.index("speed.per=1") + 2].startswith("# Charged Attack Damage in combat: ")
+assert DEFAULT_TEXT.count(CH_MARK_ID) == 1 and _dp.get("stats.chg") == "30,5"
+# the lines migrate012 adds to an existing file = exactly the fresh file's lines (help comment + key=value per missing key)
+CHG_ADD = _DL[_DL.index("stats.cd=30,10") + 1:_DL.index("stats.cd=30,10") + 3]
+CH_ROWK = ["charged.on", "charged.spellFactor", "charged.log"]
+CH_ROWC = [_DL[_DL.index("%s=%s" % (_k, dict((r[0], r[4]) for r in CFG_ROWS)[_k])) - 1] for _k in CH_ROWK]
+CH_ROWL = ["%s=%s" % (_k, dict((r[0], r[4]) for r in CFG_ROWS)[_k]) for _k in CH_ROWK]
+assert all(_c.startswith("# ") for _c in CH_ROWC) and CH_ROWL == ["charged.on=true", "charged.spellFactor=0.15", "charged.log=false"]
 assert all(ord(_c) < 127 for _c in DEFAULT_TEXT), "the default file must be plain ASCII (the loader writes UTF-8, the update ISO-8859-1)"
 
 # ================================================================= classes (methods before callers; one registerSystem per class)
@@ -929,7 +1481,9 @@ SUBS = [("give", "GearGiveCmd", "Give gear: /gear give <item> [--rarity <id>] [-
         ("identify", "GearIdentifyCmd", "Identify the held item for free", False),
         ("level", "GearLevelCmd", "Set or clear the held item's level: /gear level <n|clear>", True),
         ("gate", "GearGateCmd", "Set the held item's gate skill: /gear gate <skill|class>", True),
-        ("migrate", "GearMigrateCmd", "Run the stamp / migration scan now: /gear migrate [player]", True)]
+        ("migrate", "GearMigrateCmd", "Run the stamp / migration scan now: /gear migrate [player]", True),
+        # 0.1.2: the charged-attack probe (read only; arms a 10 min probe of your own hits)
+        ("charged", "GearChargedCmd", "Charged attack probe: the held weapon's charged steps + your last hit's result", True)]
 subc = dict((s[0], mk(s[1], APC)) for s in SUBS)
 pl   = mk("SkyyGearPlugin", JP)
 
@@ -1096,6 +1650,57 @@ PARTB_CLASSES = [(gmv, "move"), (ghit, "combat helpers"), (gsho, "shot record"),
                  (glks, "lock pass"), (gbyb, "cleanup"), (gidn, "identify core"), (ipg, "identify page"), (idc, "/identify"),
                  (ghsyU, "fallback"), (garsU, "fallback"), (gtsyU, "fallback"), (gdmU, "fallback"), (gcm1U, "fallback"),
                  (gcm2U, "fallback"), (glksU, "fallback")]
+# ---------------------------------------------------------------- 0.1.2 Charged Attack Damage: engine tokens, probes, classes
+_ICFG = "com.hypixel.hytale.server.core.modules.interaction.interaction.config."
+CHT = {
+    "DCSYS": "com.hypixel.hytale.server.core.modules.entity.damage.DamageCalculatorSystems",
+    "DSEQ": "com.hypixel.hytale.server.core.modules.entity.damage.DamageCalculatorSystems$DamageSequence",
+    "DCALC": _ICFG + "server.combat.DamageCalculator",
+    "DCLASS": _ICFG + "server.combat.DamageClass",
+    "IMS": "com.hypixel.hytale.server.core.meta.IMetaStore",
+    "IMGR": "com.hypixel.hytale.server.core.entity.InteractionManager",
+    "ICTX": "com.hypixel.hytale.server.core.entity.InteractionContext",
+    "COLL": _ICFG + "data.Collector",
+    "CTAG": _ICFG + "data.CollectorTag",
+    "CHTAG": _ICFG + "client.ChargingInteraction$ChargingTag",
+    "CHGI": _ICFG + "client.ChargingInteraction",
+    "STAG": _ICFG + "data.StringTag",
+    "DEI": _ICFG + "server.DamageEntityInteraction",
+    "ANGD": _ICFG + "server.DamageEntityInteraction$AngledDamage",
+    "TGTD": _ICFG + "server.DamageEntityInteraction$TargetedDamage",
+    "LPI": _ICFG + "server.LaunchProjectileInteraction",
+    "PJI": "com.hypixel.hytale.server.core.modules.projectile.interaction.ProjectileInteraction",
+    "PJC": "com.hypixel.hytale.server.core.modules.projectile.config.ProjectileConfig",
+    "RTI": _ICFG + "RootInteraction",
+    "INTR": _ICFG + "Interaction",
+    "ITYPE": "com.hypixel.hytale.protocol.InteractionType",
+}
+for _k in CHT:
+    assert _k not in T, "charged token clashes: " + _k
+    assert re.match(r"^[A-Z]+$", _k), _k
+T.update(CHT)
+# research 3.1's placeholder probe list + everything the walk, the judge and the hand snapshot call (a missing API fails the build)
+for c, m in ((CHT["DCSYS"], "DAMAGE_SEQUENCE"), (CHT["DSEQ"], "getDamageCalculator"), (CHT["DCALC"], "getDamageClass"),
+             (CHT["DCLASS"], "CHARGED"), (CHT["DCLASS"], "SIGNATURE"), (CHT["DCLASS"], "LIGHT"), (CHT["IMS"], "getIfPresentMetaObject"),
+             (CHT["IMGR"], "walkChain"), (CHT["ICTX"], "withoutEntity"), (CHT["ICTX"], "setInteractionVarsGetter"),
+             (CHT["ICTX"], "getInteractionVars"), (CHT["COLL"], "collect"), (CHT["COLL"], "into"), (CHT["COLL"], "outof"),
+             (CHT["COLL"], "start"), (CHT["COLL"], "finished"), (CHT["CHTAG"], "getSeconds"), (CHT["STAG"], "getTag"),
+             (CHT["DEI"], "getDamageCalculator"), (CHT["DEI"], "getAngledDamage"), (CHT["DEI"], "getTargetedDamage"),
+             (CHT["TGTD"], "getDamageCalculator"), (CHT["ANGD"], "getDamageCalculator"), (CHT["LPI"], "getProjectileId"),
+             (CHT["PJI"], "getConfig"), (CHT["PJC"], "getInteractions"), (CHT["RTI"], "getAssetMap"), (ITM, "getInteractions"),
+             (ITM, "getInteractionVars"), (CHT["ITYPE"], "ProjectileHit"), (CHT["ITYPE"], "Ability1"), (CHT["ITYPE"], "Ability2"),
+             (CHT["ITYPE"], "Ability3"), (PB["LPC"], "getProjectileAssetName"), (PB["INVC"], "getItemInHand"), (CHT["CHGI"], "walk")):
+    B.probe(pool, c, m)
+_dsq = pool.get(CHT["DSEQ"])
+assert J0["Modifier"].isPublic(_dsq.getModifiers()) and J0["Modifier"].isStatic(_dsq.getModifiers()), "DamageSequence is not public static"
+gchv = mk("GearChgVars")                  # the interaction-vars getter the walk needs (= Item.getInteractionVars())
+gchs = mk("GearChgState")                 # one item walk: records + the largest Next key per Charging step
+gchw = mk("GearChgWalk")                  # the Collector (WeaponDamageDataCollector's label machine + FULL / PARTIAL)
+gchi = mk("GearChg")                      # per-item index, roll eligibility, launch codes, the per-hit rule
+ghnd = mk("GearHand")                     # the last two hand stacks per player (a single spear / spellbook used up by the cast)
+ghns = mk("GearHandSys", ETS)             # every tick: GearHand.seen
+gchg = mk("GearCharged")                  # the per-hit judge (DamageSequence meta), /gear charged, charged.log lines
+CHG_CLASSES = [gchv, gchs, gchw, gchi, ghnd, ghns, gchg]
 # ---------------------------------------------------------------- PART B PLUGS IN HERE (2/4): lines inside setup()
 # Java statements (with @TOKENS@) PART B needs in SkyyGearPlugin.setup(), after SkyyGear's own systems and commands, before the
 # bridge + kit publish: registerSystem calls (ordered with SystemDependency + unordered fallback + one WARN, spec 5.5), the
@@ -1379,6 +1984,7 @@ F(gdf, "public static final int FREE_KEEP = %d;" % FREE_KEEP)
 F(gdf, "public static final String[] KIND_CHOICES = %s;" % jarr(KIND_CHOICES))
 F(gdf, "public static final int I_HPR = %d;" % S_KEYS.index("hpr"))
 F(gdf, "public static final int I_HPRP = %d;" % S_KEYS.index("hprp"))
+F(gdf, "public static final int I_CHG = %d;" % S_KEYS.index("chg"))       # 0.1.2 Charged Attack Damage
 M(gdf, r"""
 public static int rIndex(String id) {
   if (id == null) return -1;
@@ -1426,7 +2032,9 @@ CFG_FIELDS = [("PART_GATE", "boolean", "true"), ("PART_STATS", "boolean", "true"
               ("DEF_SCALE", "int", "100"), ("CRIT_BASE", "double", "0.0"), ("CRIT_BASE_DMG", "double", "0.0"),
               ("STEAL_S", "int", "3"), ("REGEN_MS", "int", "2000"), ("SPEED_PER", "double", "1.0"),
               ("MIGRATE_BY", "String", '"stats"'), ("MIGRATE_MAX", "String", '"fabled"'), ("INCLUDE", "String", '""'),
-              ("MIGRATE_CLAMP", "boolean", "false")]
+              ("MIGRATE_CLAMP", "boolean", "false"),
+              # 0.1.2 Charged Attack Damage
+              ("CHG_ON", "boolean", "true"), ("CHG_SPELL", "double", "0.15"), ("CHG_LOG", "boolean", "false")]
 for _n, _t, _v in CFG_FIELDS:
     F(gcf, "public static volatile %s %s = %s;" % (_t, _n, _v))
 # tables (set by load(); not kit fields)
@@ -1465,6 +2073,14 @@ F(gcf, "public static final String[] ST_NEW = %s;" % jarr([t[2] for t in ST_DEFA
 F(gcf, "public static final String[] ST_WHY = %s;" % jarr([t[3] for t in ST_DEFAULTS]))
 F(gcf, "public static final String ST_MARK = %s;" % jstr(ST_MARK))
 F(gcf, "public static final String ST_MARK_ID = %s;" % jstr(ST_MARK_ID))
+# 0.1.2 charged attack lines update (GearCfg.migrate012): the marker, its name, the lines it adds (exactly the fresh file's)
+F(gcf, "public static final String CH_MARK = %s;" % jstr(CH_MARK))
+F(gcf, "public static final String CH_MARK_ID = %s;" % jstr(CH_MARK_ID))
+F(gcf, "public static final String CH_WHO = %s;" % jstr(CH_WHO))
+F(gcf, "public static final String[] CHG_ADD = %s;" % jarr(CHG_ADD))
+F(gcf, "public static final String[] CH_ROWK = %s;" % jarr(CH_ROWK))
+F(gcf, "public static final String[] CH_ROWC = %s;" % jarr(CH_ROWC))
+F(gcf, "public static final String[] CH_ROWL = %s;" % jarr(CH_ROWL))
 F(gcf, "public static volatile java.util.HashMap MAT = new java.util.HashMap();")
 F(gcf, "public static volatile java.util.HashMap ITEMLVL = new java.util.HashMap();")
 F(gcf, "public static volatile long EPOCH = 0L;")
@@ -1661,6 +2277,9 @@ public static synchronized void apply(java.util.Properties p, boolean fromFile) 
   STEAL_S = (int) plong(p, "steal.windowS", 3L, 1L, 60L);
   REGEN_MS = (int) plong(p, "regen.periodMs", 2000L, 250L, 60000L);
   SPEED_PER = pdec(p, "speed.per", 1.0, 0.0, 100.0);
+  CHG_ON = pbool(p, "charged.on", true);
+  CHG_SPELL = pdec(p, "charged.spellFactor", 0.15, 0.0, 1.0);
+  CHG_LOG = pbool(p, "charged.log", false);
   String mb = ptext(p, "migrate.by", "stats").toLowerCase();
   MIGRATE_BY = (mb.equals("roll") || mb.equals("item")) ? mb : "stats";
   MIGRATE_MAX = @PKG@.GearDefs.R_ID[rchoice(ptext(p, "migrate.maxRarity", "fabled"), 4, 4)];
@@ -2154,6 +2773,161 @@ public static synchronized String migrateStat011() {
     return all.toString();
   } catch (Throwable t) {
     @PKG@.Gear.warn("could not update config.properties to the 0.1.1 stat defaults (the file is used as it is): " + t);
+    return "";
+  }
+}""")
+# ---- 0.1.2 CHARGED ATTACK LINES: the one-time update of an existing config.properties (see the header). The file only GAINS lines
+# (the ones a fresh 0.1.2 file has and this one lacks), so every value the loader reads stays what it was (the new keys read their
+# built-in defaults either way) - no config-changes.log line, only the History version and one INFO line. Lines are read with the
+# kit's own parser (CfgFile.isComment / end / key); ISO-8859-1 chars in and out; every other byte is kept.
+# where lines go in: right after the anchor entry (its last physical line), or BEFORE it when that entry reaches the file's last line
+# still open - its last line ends in an odd number of backslashes, or it swallowed the final newline (the empty tail is its
+# continuation): appended lines would become its continuation (the 0.1.1 review finding 4 trap). The entry's bytes stay last.
+M(gcf, r"""
+public static int chAfter(java.util.ArrayList l, int s, int e) {
+  if (e == l.size() - 1) {
+    String le = (String) l.get(e);
+    if (le.length() == 0 || @PKG@.CfgFile.cont(le)) return s;
+  }
+  return e + 1;
+}""")
+# no anchor: the end of the file (before the final newline's empty tail), or before the last entry when it reaches the last line still
+# open (tail = its first line; the same rule as chAfter)
+M(gcf, r"""
+public static int chEnd(java.util.ArrayList l, int tail, String[] raw) {
+  if (tail >= 0) {
+    String le = (String) l.get(l.size() - 1);
+    if (le.length() == 0 || @PKG@.CfgFile.cont(le)) return tail;
+  }
+  if (raw.length > 0 && raw[raw.length - 1].length() == 0) return raw.length - 1;
+  return raw.length;
+}""")
+# insert lines at index at of out (a copy of the raw lines, CR kept per line); at == out.size() = append after a last line that has no
+# newline: that line gains the CR, the last inserted line gets none (the file still ends without a newline)
+M(gcf, r"""
+public static void chPut(java.util.ArrayList out, int at, java.util.ArrayList lines, String cr) {
+  if (lines.size() == 0) return;
+  if (at >= out.size()) {
+    int last = out.size() - 1;
+    if (last >= 0) {
+      String lv = (String) out.get(last);
+      if (cr.length() > 0 && !lv.endsWith("\r")) out.set(last, lv + cr);
+    }
+    for (int i = 0; i < lines.size(); i++) out.add(((String) lines.get(i)) + (i < lines.size() - 1 ? cr : ""));
+    return;
+  }
+  for (int i = 0; i < lines.size(); i++) out.add(at + i, ((String) lines.get(i)) + cr);
+}""")
+# pure text step. null = the charged marker is already in a comment line - any physical line starting with # or ! that holds the marker
+# id, so a marker a later hand edit swallowed into a continued value still counts as done (never a second marker). Else { new text,
+# "stats.chg, charged.on, ..." (what was added, "" = only the marker), String[] notes (keys already there - kept) }. Which keys are
+# already there is asked of java.util.Properties itself (what the loader reads - a key hidden behind a lone backslash line counts
+# too), so the update never shadows an existing value; the kit's parser only finds the places. stats.chg (with its "# chg = ..." line) goes
+# right under the last stats.cd entry, else under the last stats. entry, else into the block; the block = the marker + every missing
+# charged.* row (its help comment + key=default) goes right under the last speed.per entry, else under the last combat. / crit. /
+# steal. / regen. / speed. entry, else at the end of the file. Both are inserted from the bottom up (equal places: stats.chg first).
+M(gcf, r"""
+public static Object[] chUpdate(String text) {
+  String[] raw = text.split("\n", -1);
+  java.util.ArrayList l = new java.util.ArrayList();
+  for (int i = 0; i < raw.length; i++) {
+    String s0 = raw[i];
+    if (s0.endsWith("\r")) s0 = s0.substring(0, s0.length() - 1);
+    l.add(s0);
+  }
+  for (int i = 0; i < l.size(); i++) {
+    String t0 = ((String) l.get(i)).trim();
+    if ((t0.startsWith("#") || t0.startsWith("!")) && t0.indexOf(CH_MARK_ID) >= 0) return null;
+  }
+  int n = CH_ROWK.length;
+  boolean[] have = new boolean[n];
+  java.util.Properties pp = new java.util.Properties();
+  try { pp.load(new java.io.StringReader(text)); } catch (Throwable x) { }
+  boolean hasChg = pp.getProperty("stats.chg") != null;
+  for (int i = 0; i < n; i++) have[i] = pp.getProperty(CH_ROWK[i]) != null;
+  int cdS = -1; int cdE = -1; int stS = -1; int stE = -1; int spS = -1; int spE = -1; int cbS = -1; int cbE = -1; int tail = -1;
+  int k = 0;
+  while (k < l.size()) {
+    String s = (String) l.get(k);
+    if (@PKG@.CfgFile.isComment(s)) { k++; continue; }
+    int e = @PKG@.CfgFile.end(l, k);
+    if (e == l.size() - 1) tail = k;
+    String key = @PKG@.CfgFile.key(s);
+    if (key != null) {
+      if (key.equals("stats.cd")) { cdS = k; cdE = e; }
+      if (key.startsWith("stats.")) { stS = k; stE = e; }
+      if (key.equals("speed.per")) { spS = k; spE = e; }
+      if (key.startsWith("combat.") || key.startsWith("crit.") || key.startsWith("steal.") || key.startsWith("regen.") || key.startsWith("speed.")) { cbS = k; cbE = e; }
+    }
+    k = e + 1;
+  }
+  StringBuilder added = new StringBuilder();
+  java.util.ArrayList notes = new java.util.ArrayList();
+  java.util.ArrayList chg = new java.util.ArrayList();
+  java.util.ArrayList blk = new java.util.ArrayList();
+  blk.add(CH_MARK);
+  int aS = cdS >= 0 ? cdS : stS;
+  int aE = cdS >= 0 ? cdE : stE;
+  if (hasChg) notes.add("stats.chg is already in the file - kept");
+  else {
+    added.append("stats.chg");
+    for (int i = 0; i < CHG_ADD.length; i++) { if (aS >= 0) chg.add(CHG_ADD[i]); else blk.add(CHG_ADD[i]); }
+  }
+  for (int i = 0; i < n; i++) {
+    if (have[i]) { notes.add(CH_ROWK[i] + " is already in the file - kept"); continue; }
+    if (added.length() > 0) added.append(", ");
+    added.append(CH_ROWK[i]);
+    blk.add(CH_ROWC[i]);
+    blk.add(CH_ROWL[i]);
+  }
+  String crDef = text.indexOf("\r\n") >= 0 ? "\r" : "";
+  java.util.ArrayList out = new java.util.ArrayList();
+  for (int i = 0; i < raw.length; i++) out.add(raw[i]);
+  int bS = spS >= 0 ? spS : cbS;
+  int bE = spS >= 0 ? spE : cbE;
+  int pB = bS >= 0 ? chAfter(l, bS, bE) : chEnd(l, tail, raw);
+  String crB = bS >= 0 && bE < raw.length ? (raw[bE].endsWith("\r") ? "\r" : "") : crDef;
+  int pC = chg.size() > 0 ? chAfter(l, aS, aE) : -1;
+  String crC = aS >= 0 && aE < raw.length ? (raw[aE].endsWith("\r") ? "\r" : "") : crDef;
+  if (pC >= 0 && pC > pB) { chPut(out, pC, chg, crC); chPut(out, pB, blk, crB); }
+  else { chPut(out, pB, blk, crB); if (pC >= 0) chPut(out, pC, chg, crC); }
+  StringBuilder sb = new StringBuilder(text.length() + 1024);
+  for (int i = 0; i < out.size(); i++) { if (i > 0) sb.append('\n'); sb.append((String) out.get(i)); }
+  return new Object[] { sb.toString(), added.toString(), (String[]) notes.toArray(new String[0]) };
+}""")
+# setup(), right after migrateStat011 and BEFORE load() + CfgPub.start: the file before this update becomes a History version (KEEP 10,
+# verified by lvSaved before the rewrite), the new text is written with the kit's atomicWrite (ISO-8859-1 bytes), one INFO line (+ one
+# per note). Returns the INFO line(s) joined by \n ("" = nothing done: no file, marker already there, or a failure - WARN, file
+# untouched, the next start tries again). A fresh file (the loader writes the 0.1.2 default text) carries the marker and never updates.
+M(gcf, r"""
+public static synchronized String migrate012() {
+  java.nio.file.Path f = FILE;
+  if (f == null) return "";
+  try {
+    if (!java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) return "";
+    byte[] old = java.nio.file.Files.readAllBytes(f);
+    Object[] r = chUpdate(new String(old, "ISO-8859-1"));
+    if (r == null) return "";
+    byte[] data = ((String) r[0]).getBytes("ISO-8859-1");
+    lvKit(f.toAbsolutePath().getParent());
+    @PKG@.CfgHist.snapshot(0, old, @PKG@.CfgHist.stamp(), CH_WHO, "before the 0.1.2 charged attack lines");
+    if (!lvSaved(old)) {
+      @PKG@.Gear.warn("config.properties NOT given the 0.1.2 charged attack lines: the old file could not be kept in " + @PKG@.CfgHist.DIR + " (the file is used as it is - the new settings run on their defaults; the next start tries again)");
+      return "";
+    }
+    @PKG@.CfgRows.atomicWrite(f, data);
+    String add = (String) r[1];
+    String[] notes = (String[]) r[2];
+    String msg = add.length() > 0
+      ? "config.properties: added the 0.1.2 Charged Attack Damage lines (" + add + ") with their built-in defaults - nothing changes in effect; the old file is in config-history"
+      : "config.properties: the 0.1.2 Charged Attack Damage lines were already there - nothing added (0.1.2 marker added)";
+    @PKG@.Gear.info(msg);
+    StringBuilder all = new StringBuilder(msg);
+    for (int i = 0; i < notes.length; i++) { @PKG@.Gear.info(notes[i]); all.append('\n').append(notes[i]); }
+    @PKG@.GearLog.line("CONFIG 0.1.2 charged attack lines: " + (add.length() > 0 ? add : "nothing added"));
+    return all.toString();
+  } catch (Throwable t) {
+    @PKG@.Gear.warn("could not add the 0.1.2 charged attack lines to config.properties (the file is used as it is): " + t);
     return "";
   }
 }""")
@@ -2959,6 +3733,531 @@ public static void popup(@PR@ pr, java.util.UUID u, String id, String title, Str
   } catch (Throwable x) { @PKG@.Gear.warnOnce("popup", "popup failed: " + x); }
 }""")
 
+# ####################################################################################################################################
+# 0.1.2 CHARGED ATTACK DAMAGE (1/2): the per-item index + roll eligibility + the per-hit rules (placed here because GearRoll.pool
+# calls GearChg.canRoll). Compile order = call order: GearChgVars, GearChgState, GearChgWalk, GearChg, GearHand. Engine facts
+# (HytaleServer.jar bytecode, 2026-09-30): InteractionManager.walkChain(collector, type, ctx, root) = collector.start(),
+# into(ctx, null), walkInteractions(ROOT, root ids), outof(), finished(); walkInteraction(child) = collect(tag, ctx, child) (true
+# stops the whole walk), into(ctx, child), child.walk(collector, ctx), outof(). ChargingInteraction.walk visits every Next entry
+# with ChargingTag.of(key) and Failed with StringTag "Failed"; SimpleInteraction.walk next ("Next") / failed ("Failed");
+# DamageEntityInteraction.walk next / failed / blocked + every AngledDamage / TargetedDamage next; ReplaceInteraction.walk takes
+# the root id from ctx.getInteractionVars() (the vars getter) or its defaultValue. WeaponDamageDataCollector (the tooltip walk)
+# records getDamageCalculator() per DamageEntityInteraction and walks a ProjectileInteraction's ProjectileHit root with a second
+# collector - so does GearChgWalk. LaunchProjectileInteraction.firstRun -> ProjectileComponent.assembleDefaultProjectile(time,
+# projectileId, ...) -> new ProjectileComponent(projectileId) stores it as projectileAssetName (VERIFIED: the research's
+# UNVERIFIED #4 is settled; getProjectileAssetName() == the LaunchProjectile ProjectileId). DamageCalculator equals / hashCode are
+# by VALUE, so every table keyed by a calculator is an IdentityHashMap.
+# ####################################################################################################################################
+gchv.addInterface(pool.get("java.util.function.Function"))
+F(gchv, "public java.util.Map vars;")
+C(gchv, "public GearChgVars(java.util.Map vars) { this.vars = vars; }")
+M(gchv, "public Object apply(Object o) { return this.vars; }")
+# one item walk: recs = Object[] { calculator | projectile id, Float label seconds (<= 0 = normal), Float charging serial the label
+# came from (-1 = none), Boolean reached from an Ability1-3 root, Integer 0 = damage step / 1 = legacy launch }; max = Integer
+# charging serial -> Float largest Next key seen under that Charging step (every collect() edge, so keys that lead to no damage count)
+for _f in ("public int serial;", "public java.util.HashMap max;", "public java.util.ArrayList recs;", "public boolean abort;",
+           "public int steps;", "public String err;"):
+    F(gchs, _f)
+C(gchs, r"""
+public GearChgState() {
+  this.serial = 0;
+  this.max = new java.util.HashMap();
+  this.recs = new java.util.ArrayList();
+  this.abort = false;
+  this.steps = 0;
+  this.err = null;
+}""")
+# the Collector: a frame per interaction = float[] { label seconds, charging serial of that label, own charging serial (0 = not a
+# Charging step) }. Edge rules (WeaponDamageDataCollector.into, VERIFIED): ChargingTag > 0 -> charged at that many seconds (FULL or
+# PARTIAL is decided after the walk against that Charging step's largest key), ChargingTag 0 -> normal, StringTag Failed / Blocked ->
+# normal, anything else keeps the parent's label. A walk deeper than 128 frames or longer than 20000 steps stops (collect answers
+# true) and the item counts as "walk incomplete" (a looping third-party chain can never hang the server).
+gchw.addInterface(pool.get(CHT["COLL"]))
+for _f in ("public @PKG@.GearChgState st;", "public java.util.ArrayList stack;", "public Object pending;", "public float seedLab;",
+           "public float seedRef;", "public boolean sig;"):
+    F(gchw, _f)
+C(gchw, r"""
+public GearChgWalk(@PKG@.GearChgState st, float lab, float ref, boolean sig) {
+  this.st = st;
+  this.stack = new java.util.ArrayList();
+  this.pending = null;
+  this.seedLab = lab;
+  this.seedRef = ref;
+  this.sig = sig;
+}""")
+M(gchw, "public void start() { this.stack.clear(); this.pending = null; }")
+M(gchw, "public void finished() { }")
+M(gchw, r"""
+public void outof() {
+  int n = this.stack.size();
+  if (n > 0) this.stack.remove(n - 1);
+}""")
+M(gchw, r"""
+public boolean collect(@CTAG@ tag, @ICTX@ ctx, @INTR@ in) {
+  this.pending = tag;
+  int n = this.stack.size();
+  if (tag instanceof @CHTAG@ && n > 0) {
+    float[] top = (float[]) this.stack.get(n - 1);
+    if (top[2] > 0.0f) {
+      Integer key = Integer.valueOf((int) top[2]);
+      float s = (float) ((@CHTAG@) tag).getSeconds();
+      Object m = this.st.max.get(key);
+      if (!(m instanceof Float) || s > ((Float) m).floatValue()) this.st.max.put(key, Float.valueOf(s));
+    }
+  }
+  this.st.steps = this.st.steps + 1;
+  if (this.st.steps > 20000) this.st.abort = true;
+  return this.st.abort;
+}""")
+M(gchw, r"""
+public void add(Object c, float lab, float ref) {
+  if (c == null) return;
+  this.st.recs.add(new Object[] { c, Float.valueOf(lab), Float.valueOf(ref), Boolean.valueOf(this.sig), Integer.valueOf(0) });
+}""")
+M(gchw, r"""
+public void into(@ICTX@ ctx, @INTR@ in) {
+  float lab = this.seedLab;
+  float ref = this.seedRef;
+  int n = this.stack.size();
+  if (n > 0) {
+    float[] p = (float[]) this.stack.get(n - 1);
+    lab = p[0];
+    ref = p[1];
+    Object t = this.pending;
+    if (t instanceof @CHTAG@) {
+      double s = ((@CHTAG@) t).getSeconds();
+      if (s > 0.0) { lab = (float) s; ref = p[2]; }
+      else { lab = -1.0f; ref = -1.0f; }
+    } else if (t instanceof @STAG@) {
+      String g = ((@STAG@) t).getTag();
+      if ("Failed".equals(g) || "Blocked".equals(g)) { lab = -1.0f; ref = -1.0f; }
+    }
+  }
+  this.pending = null;
+  float own = 0.0f;
+  if (in instanceof @CHGI@) { this.st.serial = this.st.serial + 1; own = (float) this.st.serial; }
+  this.stack.add(new float[] { lab, ref, own });
+  if (this.stack.size() > 128) this.st.abort = true;
+  if (in == null || this.st.abort) return;
+  try {
+    if (in instanceof @DEI@) {
+      @DEI@ de = (@DEI@) in;
+      add(de.getDamageCalculator(), lab, ref);
+      @ANGD@[] an = de.getAngledDamage();
+      if (an != null) for (int i = 0; i < an.length; i++) if (an[i] != null) add(an[i].getDamageCalculator(), lab, ref);
+      java.util.Map td = de.getTargetedDamage();
+      if (td != null) {
+        java.util.Iterator it = td.values().iterator();
+        while (it.hasNext()) {
+          Object v = it.next();
+          if (v instanceof @TGTD@) add(((@TGTD@) v).getDamageCalculator(), lab, ref);
+        }
+      }
+    } else if (in instanceof @LPI@) {
+      String pid = ((@LPI@) in).getProjectileId();
+      if (pid != null) this.st.recs.add(new Object[] { pid, Float.valueOf(lab), Float.valueOf(ref), Boolean.valueOf(this.sig), Integer.valueOf(1) });
+    } else if (in instanceof @PJI@) {
+      @PJC@ cfg = ((@PJI@) in).getConfig();
+      java.util.Map im = cfg == null ? null : cfg.getInteractions();
+      Object rid = im == null ? null : im.get(@ITYPE@.ProjectileHit);
+      Object root = rid == null ? null : @RTI@.getAssetMap().getAsset(rid);
+      if (root instanceof @RTI@) {
+        @PKG@.GearChgWalk sub = new @PKG@.GearChgWalk(this.st, lab, ref, this.sig);
+        @IMGR@.walkChain(sub, @ITYPE@.ProjectileHit, ctx, (@RTI@) root);
+      }
+    }
+  } catch (Throwable x) { if (this.st.err == null) this.st.err = String.valueOf(x); }
+}""")
+
+# GearChg: the per-item index (ITEMS: item id -> Object[] entry, built once per id on first use, lock-free reads) and every rule.
+# entry = { IdentityHashMap calculator -> int[] { flags, class (0 unknown, 1 light, 2 charged, 3 signature), longest charge ms },
+#           HashMap projectile id -> int[] { flags, longest charge ms }, Boolean has (a detectable charged attack), Boolean partial
+#           (partial charge levels: never trust the Class tag alone), String summary (/gear charged), Boolean ok (every root walked
+#           completely), Long built at, Boolean found (at least one root walked) }. flags: FULL 1, PARTIAL 2, NORMAL 4, SIG 8 (an
+# Ability1-3 root). A calculator / launch counts only when its flags are exactly FULL (reached both charged and uncharged = ambiguous
+# = never). A calculator the hit carries that the item's index does not know triggers one re-walk (at most every 30 s per item:
+# assets reloaded, LoadedAssetsEvent needs no listener).
+F(gchi, "public static final String[] EXCL = %s;" % jarr(CHG_EXCL))
+F(gchi, "public static final String[] TRUST = %s;" % jarr(CHG_TRUST))
+F(gchi, "public static final String[] FALLBACK = %s;" % jarr(CHG_FALLBACK))
+F(gchi, "public static final String[] PARTIAL = %s;" % jarr(CHG_PARTIAL))
+F(gchi, "public static final double GLOW_S = %s;" % repr(float(BOW_GLOW_S)))
+F(gchi, "public static final java.util.concurrent.ConcurrentHashMap ITEMS = new java.util.concurrent.ConcurrentHashMap();")
+F(gchi, "public static volatile java.util.HashSet TSET = null;")
+F(gchi, "public static volatile java.util.HashSet FSET = null;")
+F(gchi, "public static volatile java.util.HashSet PSET = null;")
+F(gchi, "public static final int FULL = 1;")
+F(gchi, "public static final int PART = 2;")
+F(gchi, "public static final int NORM = 4;")
+F(gchi, "public static final int SIG = 8;")
+F(gchi, "public static final long REWALK_MS = 30000L;")
+M(gchi, r"""
+public static java.util.HashSet set(String[] a) {
+  java.util.HashSet h = new java.util.HashSet();
+  for (int i = 0; i < a.length; i++) h.add(a[i]);
+  return h;
+}""")
+M(gchi, r"""
+public static boolean trusted(String id) {
+  if (id == null) return false;
+  java.util.HashSet h = TSET;
+  if (h == null) { h = set(TRUST); TSET = h; }
+  return h.contains(id);
+}""")
+M(gchi, r"""
+public static boolean fallback(String id) {
+  if (id == null) return false;
+  java.util.HashSet h = FSET;
+  if (h == null) { h = set(FALLBACK); FSET = h; }
+  return h.contains(id);
+}""")
+M(gchi, r"""
+public static boolean partialList(String id) {
+  if (id == null) return false;
+  java.util.HashSet h = PSET;
+  if (h == null) { h = set(PARTIAL); PSET = h; }
+  return h.contains(id);
+}""")
+M(gchi, r"""
+public static boolean excluded(String id) {
+  if (id == null) return false;
+  for (int i = 0; i < EXCL.length; i++) if (id.startsWith(EXCL[i])) return true;
+  return false;
+}""")
+M(gchi, r"""
+public static int clsCode(Object calc) {
+  try {
+    if (!(calc instanceof @DCALC@)) return 0;
+    Object c = ((@DCALC@) calc).getDamageClass();
+    if (c == @DCLASS@.CHARGED) return 2;
+    if (c == @DCLASS@.SIGNATURE) return 3;
+    if (c == @DCLASS@.LIGHT) return 1;
+  } catch (Throwable t) { }
+  return 0;
+}""")
+M(gchi, r"""
+public static int kindOf(float lab, float ref, java.util.HashMap max) {
+  if (!(lab > 0.0f)) return NORM;
+  Object m = max.get(Integer.valueOf((int) ref));
+  float mx = m instanceof Float ? ((Float) m).floatValue() : lab;
+  return lab + 0.0001f >= mx ? FULL : PART;
+}""")
+M(gchi, r"""
+public static String secs(int ms) {
+  int m = ms < 0 ? 0 : ms;
+  String f = String.valueOf(m % 1000 + 1000).substring(1);
+  while (f.length() > 0 && f.charAt(f.length() - 1) == '0') f = f.substring(0, f.length() - 1);
+  return (m / 1000) + (f.length() > 0 ? "." + f : "") + " s";
+}""")
+M(gchi, r"""
+public static Object[] build(String id) {
+  java.util.IdentityHashMap calcs = new java.util.IdentityHashMap();
+  java.util.HashMap launches = new java.util.HashMap();
+  boolean ok = true;
+  boolean found = false;
+  @PKG@.GearChgState st = new @PKG@.GearChgState();
+  java.util.Map inter = null;
+  java.util.Map vars = null;
+  try {
+    @ITM@ it = @PKG@.Gear.item(id);
+    if (it != null) { inter = it.getInteractions(); vars = it.getInteractionVars(); }
+  } catch (Throwable t0) { inter = null; if (st.err == null) st.err = String.valueOf(t0); }
+  if (inter != null) {
+    java.util.Iterator ki = inter.keySet().iterator();
+    while (ki.hasNext()) {
+      Object ty = ki.next();
+      Object rid = inter.get(ty);
+      if (!(ty instanceof @ITYPE@) || rid == null) continue;
+      boolean sig = ty == @ITYPE@.Ability1 || ty == @ITYPE@.Ability2 || ty == @ITYPE@.Ability3;
+      try {
+        Object root = @RTI@.getAssetMap().getAsset(rid);
+        if (!(root instanceof @RTI@)) continue;
+        @ICTX@ ctx = @ICTX@.withoutEntity();
+        ctx.setInteractionVarsGetter(new @PKG@.GearChgVars(vars == null ? new java.util.HashMap() : vars));
+        @IMGR@.walkChain(new @PKG@.GearChgWalk(st, -1.0f, -1.0f, sig), (@ITYPE@) ty, ctx, (@RTI@) root);
+        found = true;
+      } catch (Throwable t) { ok = false; if (st.err == null) st.err = String.valueOf(t); }
+    }
+  }
+  if (st.abort || st.err != null) ok = false;
+  for (int i = 0; i < st.recs.size(); i++) {
+    Object[] r = (Object[]) st.recs.get(i);
+    float lab = ((Float) r[1]).floatValue();
+    int k = kindOf(lab, ((Float) r[2]).floatValue(), st.max);
+    if (((Boolean) r[3]).booleanValue()) k = k | SIG;
+    int ms = lab > 0.0f ? Math.round(lab * 1000.0f) : 0;
+    if (((Integer) r[4]).intValue() == 0) {
+      int[] e = (int[]) calcs.get(r[0]);
+      if (e == null) { e = new int[] { 0, clsCode(r[0]), 0 }; calcs.put(r[0], e); }
+      e[0] = e[0] | k;
+      if (ms > e[2]) e[2] = ms;
+    } else {
+      int[] e2 = (int[]) launches.get(r[0]);
+      if (e2 == null) { e2 = new int[] { 0, 0 }; launches.put(r[0], e2); }
+      e2[0] = e2[0] | k;
+      if (ms > e2[1]) e2[1] = ms;
+    }
+  }
+  boolean tr = trusted(id);
+  int full = 0;
+  int fullMs = 0;
+  int launchMs = 0;
+  int combo = 0;
+  int part = 0;
+  int sigs = 0;
+  int amb = 0;
+  int lfull = 0;
+  boolean partial = false;
+  java.util.Iterator ci = calcs.values().iterator();
+  while (ci.hasNext()) {
+    int[] e = (int[]) ci.next();
+    int f = e[0];
+    if ((f & PART) != 0) partial = true;
+    if ((f & SIG) != 0 || e[1] == 3) { sigs++; continue; }
+    if (f == FULL) { full++; if (e[2] > fullMs) fullMs = e[2]; }
+    else if ((f & FULL) != 0) amb++;
+    else if ((f & PART) != 0) part++;
+    else if (e[1] == 2 && tr) combo++;
+  }
+  StringBuilder lp = new StringBuilder();
+  java.util.Iterator li = launches.keySet().iterator();
+  while (li.hasNext()) {
+    Object pk = li.next();
+    int[] e3 = (int[]) launches.get(pk);
+    if ((e3[0] & PART) != 0) partial = true;
+    if (e3[0] == FULL) {
+      lfull++;
+      if (lp.length() > 0) lp.append(", ");
+      lp.append(String.valueOf(pk));
+      if (e3[1] > launchMs) launchMs = e3[1];
+    } else if ((e3[0] & PART) != 0) part++;
+  }
+  boolean has = full + combo + lfull > 0;
+  StringBuilder sb = new StringBuilder();
+  sb.append(has ? "charged attack: YES" : "charged attack: none detectable");
+  sb.append(" - counts: ").append(full).append(" full-charge damage step").append(full == 1 ? "" : "s");
+  if (fullMs > 0) sb.append(" (up to ").append(secs(fullMs)).append(")");
+  sb.append(", ").append(combo).append(" Hytale Charged-tagged combo hit").append(combo == 1 ? "" : "s");
+  sb.append(", ").append(lfull).append(" charged launch").append(lfull == 1 ? "" : "es");
+  if (lp.length() > 0) sb.append(" (").append(lp.toString()).append(", ").append(secs(launchMs)).append(")");
+  sb.append("; never: ").append(part).append(" partial charge level").append(part == 1 ? "" : "s").append(", ").append(sigs).append(" signature, ").append(amb).append(" ambiguous");
+  if (!found) sb.append(" [the walk found no item chain" + (st.err == null ? "" : ": " + st.err) + "]");
+  else if (!ok) sb.append(" [walk incomplete" + (st.err == null ? "" : ": " + st.err) + "]");
+  return new Object[] { calcs, launches, Boolean.valueOf(has), Boolean.valueOf(partial), sb.toString(), Boolean.valueOf(ok),
+    Long.valueOf(System.currentTimeMillis()), Boolean.valueOf(found) };
+}""")
+M(gchi, r"""
+public static synchronized Object[] buildLocked(String id, boolean again) {
+  Object[] e = (Object[]) ITEMS.get(id);
+  if (e != null && (!again || System.currentTimeMillis() - ((Long) e[6]).longValue() < REWALK_MS)) return e;
+  e = build(id);
+  if (ITEMS.size() > 4096) ITEMS.clear();
+  ITEMS.put(id, e);
+  return e;
+}""")
+M(gchi, r"""
+public static Object[] ensure(String id) {
+  Object[] e = (Object[]) ITEMS.get(id);
+  if (e != null) return e;
+  return buildLocked(id, false);
+}""")
+M(gchi, "public static Object[] rewalk(String id) { return buildLocked(id, true); }")
+M(gchi, "public static void clear() { ITEMS.clear(); }")
+M(gchi, "public static boolean found(Object[] e) { return e != null && ((Boolean) e[7]).booleanValue(); }")
+M(gchi, "public static boolean walked(Object[] e) { return found(e) && ((Boolean) e[5]).booleanValue(); }")
+# roll eligibility of a weapon id: never an excluded family; the runtime walk when it ran completely, else the baked vanilla list
+M(gchi, r"""
+public static boolean hasCharged(String id) {
+  if (id == null || excluded(id)) return false;
+  Object[] e = ensure(id);
+  if (walked(e)) return ((Boolean) e[2]).booleanValue();
+  return fallback(id);
+}""")
+# GearRoll.pool: Charged Attack Damage may roll only while charged.on is on (Skyy's lock: off = it does nothing), always on armor
+# (slot 2), on a weapon (slot 0 / 1) only with a detectable charged attack; never on Equipment (slot letters wa)
+M(gchi, r"""
+public static boolean canRoll(String id, int slot) {
+  if (!@PKG@.GearCfg.CHG_ON) return false;
+  if (slot == 2) return true;
+  if (slot == 0 || slot == 1) return hasCharged(id);
+  return false;
+}""")
+# the legacy projectile pid launched by item id: 1 = only from a FULL step (a charged launch), 0 = also / only uncharged, -1 = this
+# item never launches it (or its walk found nothing)
+M(gchi, r"""
+public static int launchCode(String id, String pid) {
+  if (id == null || pid == null) return -1;
+  Object[] e = ensure(id);
+  if (!found(e)) return -1;
+  int[] f = (int[]) ((java.util.HashMap) e[1]).get(pid);
+  if (f == null) return -1;
+  return f[0] == FULL ? 1 : 0;
+}""")
+# one damage step's index flags (entry e of an item id), null = the item's walk does not know this calculator object
+M(gchi, r"""
+public static int[] step(Object[] e, Object calc) {
+  if (e == null || calc == null) return null;
+  return (int[]) ((java.util.IdentityHashMap) e[0]).get(calc);
+}""")
+# the rule for a KNOWN step f of item id (cls = the calculator's Class code): 1 = charged; w[0] = the reason
+M(gchi, r"""
+public static int stepRule(int[] f, int cls, String id, String[] w) {
+  int g = f[0];
+  if ((g & SIG) != 0) { w[0] = "reached from a signature ability"; return 0; }
+  if (g == FULL) { w[0] = "full charge " + secs(f[2]) + (cls == 2 ? " (Hytale Charged tag)" : " (untagged step, from the walk)"); return 1; }
+  if ((g & FULL) != 0) { w[0] = "ambiguous: this damage step is reached charged and uncharged"; return 0; }
+  if ((g & PART) != 0) { w[0] = "partial charge (" + secs(f[2]) + ") - only the full charge counts"; return 0; }
+  if (cls == 2 && trusted(id)) { w[0] = "Hytale Charged tag on a hit without a hold (crossbow 3rd bolt in a row)"; return 1; }
+  if (cls == 2) { w[0] = "Charged tag on an untrusted item (not vanilla or pack) - ignored"; return 0; }
+  w[0] = "normal attack";
+  return 0;
+}""")
+# review of 0.1.2 finding 3: a Class-tagged (Light / Charged) step that a completely walked vanilla / pack weapon's index still does
+# not know after the re-walk -> ONE gear.log WARN per weapon id. UNVERIFIED #2 / #3: if the live engine objects are not the walked
+# ones, the stat would roll on axes / longswords / bows but never count - silent without this line (only /gear charged showed it).
+M(gchi, r"""
+public static void miss(Object[] e, String wid, int cls, boolean proj) {
+  if (cls != 1 && cls != 2) return;
+  if (wid == null || !walked(e) || !trusted(wid)) return;
+  @PKG@.Gear.warnOnce("chgmiss:" + wid, "Charged Attack Damage: a " + (cls == 2 ? "Charged" : "Light") + "-tagged " + (proj ? "projectile" : "melee")
+    + " hit judged against " + wid + " is not in that weapon's charged-step index even after a re-walk. If this repeats for the weapon's own attacks,"
+    + " the live engine objects do not match the walk (its charged attack would never count although the stat rolls) - check it with /gear charged and tell the SkyyGear builder");
+}""")
+# THE per-hit rule (research 3.1 with the verifier's fixes, Skyy's glow rule and the review of 0.1.2). calc = the DamageCalculator of
+# the hit's DamageSequence (seq = the meta key was there), wid = the weapon the hit's stats come from, proj = a projectile hit judged
+# against a launch record (GearShot), alts = null for the projectile's own record (GearShotTrack.find), else the item ids of every live
+# record of that shooter (the record came from GearShotTrack.pick, which picks the WEAKER weapon when several are in the air, so wid
+# may not be the weapon that fired this arrow), shotCharged / pid = the launch record of a legacy projectile. why[0] = the reason
+# (/gear charged, charged.log). 1 = a charged hit.
+# Review finding 1: the Class-tag fallback for a step that is not in the walk ("Hytale Charged tag (the step is not in the walk)")
+# is for MELEE only. A projectile hit counts only when its step is known: every live shot's weapon whose walk knows the calculator
+# must call it charged (a bow's partial draw can never count because a spear / orb record was picked); a step nobody knows = not
+# charged. A legacy launch flag without a damage step counts only when the record is unambiguous (one weapon in the air).
+M(gchi, r"""
+public static int judgeCalc(Object calc, boolean seq, String wid, boolean proj, String[] alts, boolean shotCharged, String pid, String[] why) {
+  String w = null;
+  int r = 0;
+  String[] o = new String[1];
+  if (!@PKG@.GearCfg.CHG_ON) w = "charged.on is off";
+  else if (wid == null) w = "no weapon";
+  else if (excluded(wid)) w = "excluded family (clubs, Kunai, Crystal Flame / Crystal Ice staff, Vampire bow)";
+  else if (seq && calc != null) {
+    int cls = clsCode(calc);
+    if (cls == 3) w = "signature ability (Hytale Class Signature)";
+    else {
+      Object[] e = ensure(wid);
+      int[] f = step(e, calc);
+      if (f == null && found(e)) {
+        e = rewalk(wid);
+        f = step(e, calc);
+      }
+      if (!proj) {
+        if (f != null) { r = stepRule(f, cls, wid, o); w = o[0]; }
+        else {
+          boolean part = walked(e) ? ((Boolean) e[3]).booleanValue() : partialList(wid);
+          if (cls == 2 && trusted(wid) && !part) { r = 1; w = "Hytale Charged tag (the step is not in the walk)"; }
+          else if (cls == 2 && !trusted(wid)) w = "Charged tag on an untrusted item (not vanilla or pack) - ignored";
+          else if (cls == 2) w = "Charged tag on an item with partial charge levels, step not in the walk - ignored";
+          else w = "normal attack (the step is not in the walk)";
+          miss(e, wid, cls, false);
+        }
+      } else {
+        int n = 0;
+        int yes = 0;
+        String good = null;
+        String bad = null;
+        if (f != null) {
+          n = 1;
+          if (stepRule(f, cls, wid, o) == 1) { yes = 1; good = o[0]; }
+          else bad = o[0];
+        }
+        int m = alts == null ? 0 : alts.length;
+        for (int i = 0; i < m; i++) {
+          String x = alts[i];
+          if (x == null || x.equals(wid)) continue;
+          int[] g = step(ensure(x), calc);
+          if (g == null) continue;
+          n++;
+          if (excluded(x)) { if (bad == null) bad = "fired by " + x + " - excluded family"; }
+          else if (stepRule(g, cls, x, o) == 1) { yes++; if (good == null) good = o[0] + " - fired by " + x; }
+          else if (bad == null) bad = o[0] + " - fired by " + x;
+        }
+        if (n == 0) {
+          w = "projectile step not in the walk of its shot's weapon" + (m > 1 ? " or of any other live shot's weapon" : "") + " - not charged";
+          miss(e, wid, cls, true);
+        }
+        else if (yes == n) { r = 1; w = good; }
+        else w = bad;
+      }
+    }
+  } else if (shotCharged) {
+    if (proj && alts != null && alts.length > 1) w = "charged launch" + (pid == null ? "" : " (" + pid + ")") + " but shots of several weapons are in the air and the hit has no damage step - not charged";
+    else { r = 1; w = "charged launch" + (pid == null ? "" : " (" + pid + ")"); }
+  }
+  else if (pid != null) w = "launch not charged (" + pid + ")";
+  else w = "no damage step and no charged launch";
+  if (why != null && why.length > 0) why[0] = w;
+  return r;
+}""")
+M(gchi, r"""
+public static String summary(String id) {
+  if (id == null) return "no item";
+  if (excluded(id)) return "excluded family (Skyy: clubs, Kunai, Crystal Flame / Crystal Ice staff; the Vampire bow's arrow never glows) - never counts, never rolls";
+  Object[] e = ensure(id);
+  if (walked(e)) return (String) e[4];
+  return (String) e[4] + " - using the built-in list: " + (fallback(id) ? "has a charged attack" : "no charged attack");
+}""")
+M(gchi, r"""
+public static String statusText() {
+  if (!@PKG@.GearCfg.CHG_ON) return "Charged Attack Damage OFF (charged.on - it never rolls)";
+  return "Charged Attack Damage on (spells x" + @PKG@.Gear.fnum(@PKG@.GearCfg.CHG_SPELL) + "; bows only the glowing " + @PKG@.Gear.fnum(GLOW_S) + " s full draw; never clubs, Kunai, Crystal Flame / Ice staffs, the Vampire bow)";
+}""")
+
+# GearHand (verifier fix: a single spellbook / a single thrown spear is used up by the cast before the projectile entity exists, so the
+# hand is empty when GearShotTrack records the shot). CUR: UUID -> Object[] { ItemStack cur, Long since, ItemStack prev, Long prevUntil }
+# kept by GearHandSys every tick (one identity compare while nothing changes). Review of 0.1.2 finding 5: an empty hand that changes
+# to another empty hand (null <-> an empty stack) is no change, so the previous slot keeps the last REAL stack.
+F(ghnd, "public static final java.util.concurrent.ConcurrentHashMap CUR = new java.util.concurrent.ConcurrentHashMap();")
+M(ghnd, r"""
+public static boolean none(Object s) {
+  return s == null || ((@IS@) s).isEmpty();
+}""")
+M(ghnd, r"""
+public static void seen(java.util.UUID u, @IS@ s) {
+  if (u == null) return;
+  Object[] e = (Object[]) CUR.get(u);
+  if (e != null && (e[0] == s || (none(e[0]) && none(s)))) return;
+  Long now = Long.valueOf(System.currentTimeMillis());
+  if (e == null) CUR.put(u, new Object[] { s, now, null, Long.valueOf(0L) });
+  else CUR.put(u, new Object[] { s, now, e[0], now });
+}""")
+M(ghnd, r"""
+public static boolean launches(@IS@ s, String pid) {
+  if (s == null || s.isEmpty() || pid == null) return false;
+  return @PKG@.GearChg.launchCode(s.getItemId(), pid) >= 0;
+}""")
+M(ghnd, r"""
+public static boolean gearLaunch(@IS@ s, String pid) {
+  return s != null && !s.isEmpty() && @PKG@.GearData.isGear(s.getItemId()) && launches(s, pid);
+}""")
+# the stack that launched legacy projectile pid: the live hand when it launches pid; else the newest snapshot (the current one, then
+# the previous one if it left the hand <= 1000 ms ago) whose GEAR item launches pid; else the live hand (0.1 behaviour). The live
+# hand always wins when it can have launched it, so a snapshot never replaces what is really held.
+M(ghnd, r"""
+public static @IS@ pick(java.util.UUID u, @IS@ live, String pid, long now) {
+  if (u == null || pid == null) return live;
+  if (launches(live, pid)) return live;
+  Object[] e = (Object[]) CUR.get(u);
+  if (e == null) return live;
+  @IS@ c = (@IS@) e[0];
+  if (c != live && gearLaunch(c, pid)) return c;
+  @IS@ p = (@IS@) e[2];
+  long pu = ((Long) e[3]).longValue();
+  if (p != null && now - pu <= 1000L && gearLaunch(p, pid)) return p;
+  return live;
+}""")
+M(ghnd, "public static void forget(java.util.UUID u) { if (u != null) CUR.remove(u); }")
+
 # ================================================================= GearRoll (spec 2.3, 5.3, 5.4): SecureRandom, never seeded
 F(grl, "public static final java.security.SecureRandom RNG = new java.security.SecureRandom();")
 M(grl, r"""
@@ -3019,19 +4318,23 @@ public static boolean allowed(int i, int slot) {
   if (slot == 4) return s.indexOf('e') >= 0;
   return false;
 }""")
+# 0.1.2: id = the item being rolled - Charged Attack Damage only where GearChg.canRoll says (charged.on, armor, a weapon with a
+# detectable charged attack; Skyy's lock: never a stat that does nothing). pool(slot) = no item known = never chg on a weapon.
 M(grl, r"""
-public static int[] pool(int slot) {
+public static int[] pool(int slot, String id) {
   int[] w = @PKG@.GearCfg.S_W;
   java.util.ArrayList l = new java.util.ArrayList();
   for (int i = 0; i < @PKG@.GearDefs.NS; i++) {
     if (!allowed(i, slot) || w[i] <= 0) continue;
     if (@PKG@.GearDefs.S_LIVE[i] == 0 && !@PKG@.GearCfg.POOL_LATER) continue;
+    if (i == @PKG@.GearDefs.I_CHG && !@PKG@.GearChg.canRoll(id, slot)) continue;
     l.add(Integer.valueOf(i));
   }
   int[] a = new int[l.size()];
   for (int i = 0; i < a.length; i++) a[i] = ((Integer) l.get(i)).intValue();
   return a;
 }""")
+M(grl, "public static int[] pool(int slot) { return pool(slot, null); }")
 # value bounds of stat i for rarity r at item level lvl: { lo, hi } = max(1, round(max x low/100 x f/100)) .. (high)
 M(grl, r"""
 public static int[] bounds(int i, int r, int lvl) {
@@ -3053,9 +4356,9 @@ public static double wAt(int si, int[] w, boolean[] pick) {
 }""")
 # spec 2.3: pick count distinct stats (weighted, no repeats, capped by the pool), roll each value, display order = table order
 M(grl, r"""
-public static @BA@ rollMods(int slot, int r, int lvl) {
+public static @BA@ rollMods(String id, int slot, int r, int lvl) {
   @BA@ out = new @BA@();
-  int[] p = pool(slot);
+  int[] p = pool(slot, id);
   if (p.length == 0) return out;
   int count = @PKG@.GearCfg.R_MODS[@PKG@.GearCfg.ri(r)];
   if (count > p.length) count = p.length;
@@ -3087,6 +4390,7 @@ public static @BA@ rollMods(int slot, int r, int lvl) {
   }
   return out;
 }""")
+M(grl, "public static @BA@ rollMods(int slot, int r, int lvl) { return rollMods(null, slot, r, lvl); }")
 M(grl, r"""
 public static String pickName(String cur) {
   String[] ns = @PKG@.GearCfg.names();
@@ -3102,7 +4406,7 @@ public static String pickName(String cur) {
 M(grl, r"""
 public static @BD@ newDoc(String id, int r, boolean ident, String src) {
   @BD@ d = @PKG@.GearData.base(@PKG@.GearData.kindFor(id), r, ident, src);
-  if (ident) d.put("mods", rollMods(@PKG@.GearData.slotOf(id), r, @PKG@.GearLevel.level(id, d)));
+  if (ident) d.put("mods", rollMods(id, @PKG@.GearData.slotOf(id), r, @PKG@.GearLevel.level(id, d)));
   return d;
 }""")
 M(grl, "public static @BD@ craftDoc(String id, java.util.UUID u) { return newDoc(id, craftRarity(u, null), true, \"craft\"); }")
@@ -3114,7 +4418,7 @@ M(grl, r"""
 public static @BD@ reforge(String id, @BD@ doc) {
   @BD@ d = doc.clone();
   int r = @PKG@.GearData.rarity(d);
-  d.put("mods", rollMods(@PKG@.GearData.slotOf(id), r, @PKG@.GearLevel.level(id, d)));
+  d.put("mods", rollMods(id, @PKG@.GearData.slotOf(id), r, @PKG@.GearLevel.level(id, d)));
   String n = pickName(@PKG@.GearData.str(d, "rf", null));
   if (n != null) d.put("rf", new org.bson.BsonString(n));
   else d.remove("rf");
@@ -3128,7 +4432,7 @@ public static @BD@ identify(String id, @BD@ doc, java.util.UUID by) {
   @BD@ d = doc.clone();
   int r = @PKG@.GearData.rarity(d);
   long now = System.currentTimeMillis();
-  d.put("mods", rollMods(@PKG@.GearData.slotOf(id), r, @PKG@.GearLevel.level(id, d)));
+  d.put("mods", rollMods(id, @PKG@.GearData.slotOf(id), r, @PKG@.GearLevel.level(id, d)));
   d.put("id", new org.bson.BsonBoolean(true));
   d.put("idAt", new org.bson.BsonInt64(now));
   if (by != null) d.put("idBy", new org.bson.BsonString(by.toString()));
@@ -3199,6 +4503,7 @@ public static String slotWord(String id) {
 M(gvw, r"""
 public static String suffix(int i) {
   if (@PKG@.GearDefs.S_LIVE[i] == 0) return " (coming later)";
+  if (i == @PKG@.GearDefs.I_CHG && !@PKG@.GearCfg.CHG_ON) return " (off on this server)";
   String s = @PKG@.GearDefs.S_SUF[i];
   if (s.equals("spells")) return " (spell attacks only)";
   if (s.equals("elem")) return " (each element)";
@@ -3223,6 +4528,12 @@ M(gvw, r"""
 public static boolean later(String key) {
   int i = @PKG@.GearDefs.sIndex(key);
   return i >= 0 && @PKG@.GearDefs.S_LIVE[i] == 0;
+}""")
+# 0.1.2: a modifier line shown grey = coming later, or Charged Attack Damage while charged.on is off (it does nothing then)
+M(gvw, r"""
+public static boolean dim(String key) {
+  if (later(key)) return true;
+  return "chg".equals(key) && !@PKG@.GearCfg.CHG_ON;
 }""")
 # weapon base damage from the engine's own damage data (SkyyRolls 0.1.4 rangeOf / damageText, ItemWeapon basic breakdown)
 M(gvw, r"""
@@ -3397,7 +4708,7 @@ public static void statLines(String id, @BD@ d, java.util.ArrayList txt, java.ut
     String k = @PKG@.GearData.str(m.asDocument(), "s", "?");
     if (k.equals("dmg") && dmgShown) continue;
     int v = @PKG@.GearData.num(m.asDocument(), "v", 0);
-    add(txt, col, modLine(k, v), (later(k) || slot == 3) ? @PKG@.GearDefs.C_GRAY : null);
+    add(txt, col, modLine(k, v), (dim(k) || slot == 3) ? @PKG@.GearDefs.C_GRAY : null);
   }
 }""")
 # every tooltip line below the name (spec 6.1 identified, 6.2 unidentified), for the owner (null = neutral text)
@@ -4592,7 +5903,7 @@ MV.add_move_sync(gmv, CtField, CtNewMethod, PKG + ".Gear.warn")
 F(ghit, "public static final java.util.IdentityHashMap INFO = new java.util.IdentityHashMap();")    # Damage -> Object[] (below)
 F(ghit, "public static final java.util.concurrent.ConcurrentHashMap FAM = new java.util.concurrent.ConcurrentHashMap();")
 for _k in ("dmg", "str", "mp", "cc", "cd", "tdmg", "fEarth", "fThunder", "fWater", "fFire", "fAir", "rThunder", "rWater", "rElem",
-           "msteal", "lsteal", "hpr", "hprp", "def", "spd", "stam"):
+           "msteal", "lsteal", "hpr", "hprp", "def", "spd", "stam", "chg"):
     F(ghit, "public static final int I_%s = %d;" % (_k.upper(), SI[_k]))
 # the per-Damage info GearHitSys leaves for GearArmorSys / GearTrueSys / GearLeechSys (the same Damage object runs through every
 # damage system in one dispatch): Object[] { Float pre-armor amount (null = the victim wears no inactive armor), Integer True Damage,
@@ -4687,8 +5998,12 @@ public static int family(@DCS@ c) {
 # passes fixed ones).
 # follow-up review 9: gear:extra may be negative - Damage % counts down to -100 at most, no factor goes below 0, and the result is
 # never below 0 (nor above 1e9, so the float stays finite)
+# 0.1.2: chg = a charged hit (GearCharged.judge) -> one more SEPARATE factor x (1 + Charged Attack Damage %) - spells x (1 +
+# charged.spellFactor x Charged Attack Damage %) (Skyy: "if it adds +100% damage to a charged bow or melee, it would only add +15% to a
+# spell") - after Strength / Magical Power, before the crit roll (a charged crit gets both); clamped at 0 like every factor. True
+# Damage and the flat element lines are not in here (GearTrueSys adds them after armor), so they are never multiplied.
 M(ghit, r"""
-public static double hitAmount(double amount, int[] t, boolean spell, double r1, double r2) {
+public static double hitAmount(double amount, int[] t, boolean spell, boolean chg, double r1, double r2) {
   int dm = t[I_DMG];
   if (dm < -100) dm = -100;
   double a = amount * (1.0 + (double) dm / 100.0);
@@ -4696,6 +6011,12 @@ public static double hitAmount(double amount, int[] t, boolean spell, double r1,
   int pt = spell ? t[I_MP] : t[I_STR];
   double fp = 1.0 + (double) pt * per / 100.0;
   a = a * (fp > 0.0 ? fp : 0.0);
+  if (chg) {
+    double cp = (double) t[I_CHG];
+    if (spell) cp = cp * @PKG@.GearCfg.CHG_SPELL;
+    double fq = 1.0 + cp / 100.0;
+    a = a * (fq > 0.0 ? fq : 0.0);
+  }
   double ch = (@PKG@.GearCfg.CRIT_BASE + (double) t[I_CC]) / 100.0;
   if (ch > 0.0 && r1 < ch) {
     double fc = 2.0 * (1.0 + (@PKG@.GearCfg.CRIT_BASE_DMG + (double) t[I_CD]) / 100.0);
@@ -4706,10 +6027,14 @@ public static double hitAmount(double amount, int[] t, boolean spell, double r1,
   if (a > 1.0E9) return 1.0E9;
   return a;
 }""")
+# the 0.1.1 signature = no charged hit (kept for every caller that has no DamageSequence to judge)
+M(ghit, "public static double hitAmount(double amount, int[] t, boolean spell, double r1, double r2) { return hitAmount(amount, t, spell, false, r1, r2); }")
 
 # ================================================================= GearShot + GearShotTrack (SkyyClasses 0.1.6 ShotRec / ShotTrack copy)
 for _f in ("public java.util.UUID shooter;", "public @IS@ main;", "public @IS@ util;", "public String bad;", "public String title;",
-           "public String body;", "public long at;"):
+           "public String body;", "public long at;",
+           # 0.1.2: a legacy projectile launched only from a FULL step (signal C), its asset name, main came from the hand snapshot
+           "public boolean charged;", "public String pid;", "public boolean snap;"):
     F(gsho, _f)
 C(gsho, r"""
 public GearShot(java.util.UUID shooter, @IS@ main, @IS@ util, String[] bad) {
@@ -4721,6 +6046,114 @@ public GearShot(java.util.UUID shooter, @IS@ main, @IS@ util, String[] bad) {
   this.body = bad == null ? null : bad[2];
   this.at = System.currentTimeMillis();
 }""")
+# ####################################################################################################################################
+# 0.1.2 CHARGED ATTACK DAMAGE (2/2): GearHandSys (the hand snapshot every tick) + GearCharged (the per-hit judge on the hit's
+# DamageSequence, the probe of /gear charged, charged.log lines). After GearShot (it reads GearShot.charged / pid), before
+# GearShotTrack and GearHitSys (their callers).
+# ####################################################################################################################################
+F(ghns, "public @QRY@ query;")
+C(ghns, "public GearHandSys() { super(); this.query = null; }")
+M(ghns, "public @QRY@ getQuery() { return (@QRY@) @PLA@.getComponentType(); }")
+M(ghns, "public boolean isParallel(int a, int b) { return false; }")
+M(ghns, r"""
+public void tick(float dt, int idx, @ACH@ chunk, @ST@ store, @CB@ cb) {
+  try {
+    @PR@ pr = (@PR@) chunk.getComponent(idx, @PR@.getComponentType());
+    if (pr == null) return;
+    @REF@ r = chunk.getReferenceTo(idx);
+    if (r == null) return;
+    @PKG@.GearHand.seen(pr.getUuid(), @INVC@.getItemInHand(cb, r));
+  } catch (Throwable t) { @PKG@.Gear.warnOnce("handsys", "hand snapshot failed: " + t); }
+}""")
+# PROBE: UUID -> Long probe-until (armed by /gear charged: that admin's hits are judged even without the stat); LAST: UUID ->
+# Object[] { Long at, String line } = the last judged hit of an armed player
+F(gchg, "public static final java.util.concurrent.ConcurrentHashMap PROBE = new java.util.concurrent.ConcurrentHashMap();")
+F(gchg, "public static final java.util.concurrent.ConcurrentHashMap LAST = new java.util.concurrent.ConcurrentHashMap();")
+M(gchg, r"""
+public static boolean watch(java.util.UUID u) {
+  if (u == null || PROBE.isEmpty()) return false;
+  Object o = PROBE.get(u);
+  if (!(o instanceof Long)) return false;
+  if (((Long) o).longValue() < System.currentTimeMillis()) { PROBE.remove(u); return false; }
+  return true;
+}""")
+# the hit's DamageSequence (DamageCalculatorSystems.DAMAGE_SEQUENCE, put on the Damage by DamageEntityInteraction before the damage
+# event is dispatched - VERIFIED bytecode; the engine's own SequenceModifier reads it the same way; Damage implements IMetaStore and
+# getIfPresentMetaObject is an interface default method) -> GearChg.judgeCalc. A legacy projectile hit has no sequence: the launch
+# record decides (GearShot.charged). shot = the hit's launch record (null = melee), alts = null when that record is the projectile's
+# own (GearShotTrack.find), else the item ids of the shooter's live records (GearShotTrack.liveIds; review of 0.1.2 finding 1).
+M(gchg, r"""
+public static boolean judge(@DMG@ d, String wid, @PKG@.GearShot shot, String[] alts, String[] why) {
+  Object calc = null;
+  boolean seq = false;
+  try {
+    Object so = ((@IMS@) d).getIfPresentMetaObject(@DCSYS@.DAMAGE_SEQUENCE);
+    if (so instanceof @DSEQ@) { seq = true; calc = ((@DSEQ@) so).getDamageCalculator(); }
+  } catch (Throwable t) { seq = false; calc = null; }
+  String[] al = null;
+  if (shot != null) al = alts;
+  return @PKG@.GearChg.judgeCalc(calc, seq, wid, shot != null, al, shot != null && shot.charged, shot == null ? null : shot.pid, why) == 1;
+}""")
+# review of 0.1.2 finding 4: the line is built only while someone reads it (an armed probe or charged.log)
+M(gchg, r"""
+public static void note(java.util.UUID u, @PR@ pr, @IS@ main, boolean chg, String why, boolean spell, int stat, float a0, double a) {
+  try {
+    boolean wt = watch(u);
+    if (!wt && !@PKG@.GearCfg.CHG_LOG) return;
+    String wid = main == null || main.isEmpty() ? "-" : main.getItemId();
+    double pct = spell ? (double) stat * @PKG@.GearCfg.CHG_SPELL : (double) stat;
+    String line = (chg ? "CHARGED" : "not charged") + " - " + why + " - " + wid + (spell ? " (spell)" : "") + " - damage "
+      + @PKG@.Gear.fnum((double) a0) + " -> " + @PKG@.Gear.fnum(a)
+      + (chg ? " (Charged Attack Damage " + stat + "%" + (spell ? " x " + @PKG@.Gear.fnum(@PKG@.GearCfg.CHG_SPELL) + " = " + @PKG@.Gear.fnum(pct) + "%" : "") + "; every other stat and crits included)" : "");
+    if (wt) LAST.put(u, new Object[] { Long.valueOf(System.currentTimeMillis()), line });
+    if (@PKG@.GearCfg.CHG_LOG) @PKG@.GearLog.line("CHARGED " + (chg ? "yes " : "no ") + (pr == null ? "?" : pr.getUsername()) + " " + u + " " + line);
+  } catch (Throwable t) { }
+}""")
+M(gchg, r"""
+public static void forget(java.util.UUID u) {
+  if (u == null) return;
+  PROBE.remove(u);
+  LAST.remove(u);
+  @PKG@.GearHand.forget(u);
+}""")
+# /gear charged [off] (admin, read only): the switch + your total, the held item's index summary + whether it may roll, the last judged
+# hit; arms the 10-minute probe (off ends it)
+M(gchg, r"""
+public static String[] probe(java.util.UUID u, @IS@ held, int[] t, String rest) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  String a = rest == null ? "" : rest.trim().toLowerCase();
+  if (a.equals("off")) {
+    PROBE.remove(u);
+    LAST.remove(u);
+    out.add("charged-attack probe off");
+    return (String[]) out.toArray(new String[0]);
+  }
+  long now = System.currentTimeMillis();
+  boolean was = watch(u);
+  PROBE.put(u, Long.valueOf(now + 600000L));
+  out.add(@PKG@.GearChg.statusText() + "; your Charged Attack Damage total: " + (t == null ? 0 : t[@PKG@.GearDefs.I_CHG]) + "%");
+  if (held == null || held.isEmpty()) out.add("Held: nothing - hold a weapon to see its charged steps");
+  else {
+    String id = held.getItemId();
+    int sl = @PKG@.GearData.slotOf(id);
+    if (sl == 2) out.add("Held: " + id + " (armor) - Charged Attack Damage " + (@PKG@.GearChg.canRoll(id, 2) ? "may roll on armor" : "does not roll (charged.on is off)"));
+    else if (sl != 0 && sl != 1) out.add("Held: " + id + " - not a gear weapon (gear stats do not apply to its hits)");
+    else {
+      out.add("Held: " + id + " - " + @PKG@.GearChg.summary(id));
+      out.add("  may roll Charged Attack Damage: " + (@PKG@.GearChg.canRoll(id, sl) ? "yes" : "no"));
+    }
+  }
+  Object[] l = (Object[]) LAST.get(u);
+  if (l == null) out.add("Last hit: none judged yet - probe " + (was ? "still on" : "on for 10 minutes") + ": hit something, then /gear charged again (/gear charged off ends it)");
+  else out.add("Last hit (" + ((now - ((Long) l[0]).longValue()) / 1000L) + " s ago): " + (String) l[1]);
+  return (String[]) out.toArray(new String[0]);
+}""")
+M(gchg, r"""
+public static void setup(@JPLG@ pl) {
+  try { pl.getEntityStoreRegistry().registerSystem(new @PKG@.GearHandSys()); }
+  catch (Throwable t) { @PKG@.Gear.warn("GearHandSys could not be registered - a single spear / spellbook throw gets no weapon stats and no charged flag: " + t); }
+}""")
+
 F(gstk, "public static final java.util.concurrent.ConcurrentHashMap SHOTS = new java.util.concurrent.ConcurrentHashMap();")
 F(gstk, "public @QRY@ query;")
 C(gstk, "public GearShotTrack() { super(); this.query = null; }")
@@ -4802,6 +6235,22 @@ public static @PKG@.GearShot pick(java.util.UUID u, @IC@ arm) {
   }
   return weak;
 }""" % SHOT_WINDOW_MS)
+# review of 0.1.2 finding 1: the distinct item ids of the shooter's live records (the same window as pick) - GearCharged.judge looks a
+# picked projectile hit's damage step up in all of them (pick may have chosen another weapon's record than the one that fired it)
+M(gstk, r"""
+public static String[] liveIds(java.util.UUID u) {
+  if (u == null || SHOTS.isEmpty()) return new String[0];
+  long now = System.currentTimeMillis();
+  java.util.ArrayList out = new java.util.ArrayList();
+  java.util.Iterator it = SHOTS.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.GearShot r = (@PKG@.GearShot) it.next();
+    if (r == null || !u.equals(r.shooter) || now - r.at >= %dL || r.main == null || r.main.isEmpty()) continue;
+    String id = r.main.getItemId();
+    if (id != null && !out.contains(id)) out.add(id);
+  }
+  return (String[]) out.toArray(new String[0]);
+}""" % SHOT_WINDOW_MS)
 M(gstk, r"""
 public @QRY@ getQuery() {
   if (this.query == null) {
@@ -4831,10 +6280,24 @@ public void onEntityAdded(@REF@ ref, @ADDR@ reason, @ST@ st, @CB@ buf) {
     @IS@ mh = @INVC@.getItemInHand(buf, sh);
     @UTIL@ ut = (@UTIL@) buf.getComponent(sh, @UTIL@.getComponentType());
     @IS@ ui = ut == null ? null : ut.getActiveItem();
+    // 0.1.2 (verifier): a legacy projectile (spear throw, spell orb) names its ProjectileId; a single spear / spellbook is already
+    // used up here, so the hand snapshot supplies the stack that launched it (GearHand.pick: the live hand always wins when it can)
+    String pid = null;
+    @LPC@ lpj = (@LPC@) buf.getComponent(ref, @LPC@.getComponentType());
+    if (lpj != null) pid = lpj.getProjectileAssetName();
+    boolean snap = false;
+    if (pid != null) {
+      @IS@ pk = @PKG@.GearHand.pick(u, mh, pid, System.currentTimeMillis());
+      if (pk != mh) { mh = pk; snap = true; }
+    }
     String[] bad = @PKG@.GearHit.judge(u, mh, false);
     if (bad == null) bad = @PKG@.GearHit.judge(u, ui, true);
     if (SHOTS.size() > %d) purge();
-    SHOTS.put(idc.getUuid(), new @PKG@.GearShot(u, mh, ui, bad));
+    @PKG@.GearShot rec = new @PKG@.GearShot(u, mh, ui, bad);
+    rec.pid = pid;
+    rec.snap = snap;
+    rec.charged = pid != null && mh != null && !mh.isEmpty() && @PKG@.GearChg.launchCode(mh.getItemId(), pid) == 1;
+    SHOTS.put(idc.getUuid(), rec);
   } catch (Throwable t) { @PKG@.Gear.warnOnce("shottrack", "gear shot tracker failed: " + t); }
 }""" % SHOT_PURGE_AT)
 M(gstk, r"""
@@ -5380,8 +6843,10 @@ dmg_system(ghsy, "GearHitSys", "getFilterDamageGroup", "ADR", "BEFORE", "ADR", r
       boolean shot = false;
       String[] bad = null;
       @PKG@.GearShot rec = null;
+      @PKG@.GearShot srec = null;
       if (src instanceof @DPRJ@) rec = @PKG@.GearShotTrack.find(buf, ((@DPRJ@) src).getProjectile());
       if (rec != null) {
+        srec = rec;
         u = rec.shooter;
         main = rec.main;
         ut = rec.util;
@@ -5409,6 +6874,7 @@ dmg_system(ghsy, "GearHitSys", "getFilterDamageGroup", "ADR", "BEFORE", "ADR", r
             if (nr == null) @PKG@.Gear.warnOnce("norecord", "a projectile hit (" + d.getCause().getId() + ") by " + pr.getUsername() + " found no launch record in the 10 s window - it got armor stats only; if this repeats, the shot tracker misses this projectile type (tell the SkyyGear builder)");
           }
           if (nr != null) {
+            srec = nr;
             main = nr.main;
             ut = nr.util;
             shot = true;
@@ -5448,8 +6914,20 @@ dmg_system(ghsy, "GearHitSys", "getFilterDamageGroup", "ADR", "BEFORE", "ADR", r
           if (ok[0]) {
             java.util.concurrent.ThreadLocalRandom rnd = java.util.concurrent.ThreadLocalRandom.current();
             float a0 = d.getAmount();
-            double a = @PKG@.GearHit.hitAmount((double) a0, t, spell, rnd.nextDouble(), rnd.nextDouble());
+            // 0.1.2 Charged Attack Damage: judged only for a player with the stat (or an armed /gear charged probe)
+            boolean chg = false;
+            String[] cw = null;
+            if (@PKG@.GearCfg.CHG_ON && (t[@PKG@.GearHit.I_CHG] != 0 || @PKG@.GearCharged.watch(u))) {
+              cw = new String[1];
+              // review of 0.1.2 finding 1: a record from GearShotTrack.pick (rec == null) may belong to another weapon than the
+              // arrow's - the judge also looks the step up in every live record's weapon (the projectile's own record: exact)
+              String[] alts = null;
+              if (srec != null && rec == null) alts = @PKG@.GearShotTrack.liveIds(u);
+              chg = @PKG@.GearCharged.judge(d, main == null || main.isEmpty() ? null : main.getItemId(), srec, alts, cw);
+            }
+            double a = @PKG@.GearHit.hitAmount((double) a0, t, spell, chg, rnd.nextDouble(), rnd.nextDouble());
             if (a != (double) a0) d.setAmount((float) a);
+            if (cw != null) @PKG@.GearCharged.note(u, pr, main, chg, cw[0], spell, t[@PKG@.GearHit.I_CHG], a0, a);
             info = @PKG@.GearHit.info(u, t);
           }
         }
@@ -5907,6 +7385,7 @@ public void accept(Object ev) {
     @PKG@.GearStamp.forget(u);
     @PKG@.GearTick.CLOCK.remove(u);
     @PKG@.GearTick.SEEN.remove(u);
+    @PKG@.GearCharged.forget(u);
     @PKG@.Gear.bridge().remove("gear:stats:" + u);
   } catch (Throwable t) { }
 }""" % PDE)
@@ -6973,6 +8452,12 @@ public static void run(@ST@ store, @REF@ ref, @PR@ pr, String action, String res
     @INV@ inv = p.getInventory();
     java.util.UUID u = pr.getUuid();
     String who = pr.getUsername();
+    // 0.1.2: /gear charged is read only (it never writes the inventory) and works with an empty hand
+    if (action.equals("charged")) {
+      String[] ls = @PKG@.GearCharged.probe(u, hand(inv), @PKG@.GearStats.totalsInv(u, inv, true), rest);
+      for (int i = 0; i < ls.length; i++) msg(pr, ls[i]);
+      return;
+    }
     // spec 1.7: no inventory write while SkyyProfiles is swapping this player's profile (read only reads; migrate checks its target)
     if (!action.equals("read") && !action.equals("migrate") && @PKG@.Gear.busy(u)) { msg(pr, "your profile is loading (profile:busy) - try again in a moment"); return; }
     if (action.equals("give")) { giveCmd(pr, inv, rest); return; }
@@ -7149,6 +8634,13 @@ public GearMigrateCmd() {
   setPermissionGroups(new String[0]);
   setAllowsExtraArguments(true);
 }""")
+C(subc["charged"], r"""
+public GearChargedCmd() {
+  super("charged", "Charged attack probe: the held weapon's charged steps + your last hit's result");
+  requirePermission("skyygear.admin");
+  setPermissionGroups(new String[0]);
+  setAllowsExtraArguments(true);
+}""")
 # give: the parsed --rarity / --unid values are appended last, so they win over the raw-text parse in GearAdmin.giveCmd
 M(subc["give"], r"""
 protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
@@ -7180,6 +8672,7 @@ public GearCmd() {
   addSubCommand(new @PKG@.GearLevelCmd());
   addSubCommand(new @PKG@.GearGateCmd());
   addSubCommand(new @PKG@.GearMigrateCmd());
+  addSubCommand(new @PKG@.GearChargedCmd());
 }""")
 M(gcm, r"""
 protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
@@ -7203,6 +8696,7 @@ public void setup() {
   @PKG@.GearCfg.importRolls(@PKG@.GearCfg.FILE, getDataDirectory().resolveSibling("Skyy_SkyyRolls").resolve("reforge.properties"));
   @PKG@.GearCfg.migrate011();
   @PKG@.GearCfg.migrateStat011();
+  @PKG@.GearCfg.migrate012();
   @PKG@.GearCfg.load();
   if (@PKG@.Gear.bget("config:def:SkyyRolls") != null) @PKG@.Gear.warnOnce("rolls", "SkyyRolls is still enabled - retire it (tools/deploy_set.py RETIRED); both mods register /reforge");
 @REG@
@@ -7212,6 +8706,7 @@ public void setup() {
   getCommandRegistry().registerCommand(new @PKG@.GearCmd());
   // ---- PART B PLUGS IN HERE (2/4): PARTB_SETUP ----
 @PARTBSETUP@
+  @PKG@.GearCharged.setup(this);
   java.util.Map br = @PKG@.Gear.bridge();
 @FNS@
   br.put("gear:gates", @PKG@.GearDefs.GATES);
@@ -7219,7 +8714,7 @@ public void setup() {
   @PKG@.Gear.regSetting("gear.blockedPopup", "Gear level popups", "combat", true, "Popup when a weapon is too high level or unidentified");
   @PKG@.Gear.regSetting("gear.armorWarn", "Armor level warning", "combat", true, "Chat line when armor gives no stats because of its level");
   @PKG@.Gear.regSetting("gear.notices", "Gear update notices", "combat", true, "One-time line when your old rolled items move to the new gear system");
-  getLogger().at(java.util.logging.Level.INFO).log("[SkyyGear] @VER@ ready - /reforge, /identify, /gear (admin: /gear give | read | reroll | clear | rarity | unid | identify | level | gate | migrate, node skyygear.admin); rarity + level + modifiers on every weapon and armor piece; crafted gear rolls; mob + loot chest gear drops unidentified; gear stats live in combat; under-level gear blocked / inactive; SkyyRolls items migrate on first sight; level by material (combat gear vs the class weapon skill): " + @PKG@.GearCfg.matText() + "; " + @PKG@.GearCfg.statText() + "; Server Setup -> Gear");
+  getLogger().at(java.util.logging.Level.INFO).log("[SkyyGear] @VER@ ready - /reforge, /identify, /gear (admin: /gear give | read | reroll | clear | rarity | unid | identify | level | gate | migrate | charged, node skyygear.admin); rarity + level + modifiers on every weapon and armor piece; crafted gear rolls; mob + loot chest gear drops unidentified; gear stats live in combat; under-level gear blocked / inactive; SkyyRolls items migrate on first sight; level by material (combat gear vs the class weapon skill): " + @PKG@.GearCfg.matText() + "; " + @PKG@.GearCfg.statText() + "; " + @PKG@.GearChg.statusText() + "; Server Setup -> Gear");
   @PKG@.CfgPub.start(getDataDirectory().getParent(), getLogger());
 }""".replace("@REG@", _reg).replace("@FNS@", _fns).replace("@PDE@", PDE).replace("@VER@", VERSION)
    .replace("@PARTBSETUP@", "\n".join(PARTB_SETUP)))
@@ -7232,7 +8727,7 @@ protected void shutdown() {
 
 # ================================================================= write + build checks (spec 11.1 #2) + assemble
 ALL = [gu, gdf, gcf, glg, gql, gdt, glv, grl, ggt, gvw, gst, gnt, gsp, gspt, gfg, gfn, ginv, gthr, gcrs, gcrt, gtk, grft, grdy, gbye, gui,
-       rpg, rfc, gad, gmt, gcm] + [subc[s[0]] for s in SUBS] + [pl] + [c for c, _n in PARTB_CLASSES]
+       rpg, rfc, gad, gmt, gcm] + [subc[s[0]] for s in SUBS] + [pl] + [c for c, _n in PARTB_CLASSES] + CHG_CLASSES
 for c in ALL:
     c.writeFile(OUT)
 kit.write(OUT)
