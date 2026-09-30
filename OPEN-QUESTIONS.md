@@ -57,6 +57,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   seconds - partial draws never count); crossbows: the 3rd bolt in a row (Hytale's charged hit) counts; spells (staff/wand/spellbook orbs): yes but
   reduced - a roll that gives +100% to a charged melee/bow hit gives only +15% to a spell; clubs: left alone (no charged attack, never rolls).
   Research: research/Charged-Attack-Research.md. [SkyyGear 0.1.2]
+- QUESTION 2026-09-30: Mana Regen perks (research/Mana-Cost-And-Regen-Research.md) - vanilla Mana refills 5/s out of combat and NOT AT ALL for
+  6 s after you take damage, so a %-of-vanilla perk does nothing in a fight. Recommended: every Mana Regen perk = flat "+N Mana every 5 s", works in
+  and out of combat, one total cap (placeholders: gear roll up to +1.5/piece, booster line +0.5/+1/+1.5/+2, magic tree node +0.5/rank, cap 12).
+  Also: the staff now needs 10 Mana to cast - Crystal Red/Ice staffs spend 0 but still need 10 present. OK? [recommended defaults]
 - Mage + Priest start at 30 Mana and every spell's Mana cost is divided by 5 (wand 5, staff 10, spellbook 20) so a level-1 caster gets a few
   casts (Skyy 2026-09-30: "make priest start at like 30 mana" + "take your recommendation 1"). [SkyySkills 0.4.8]
 - Profile cap default = number of classes you can pick (5 now, grows with Assassin/Shaman); more profiles later through ranks (Skyy 2026-09-30).

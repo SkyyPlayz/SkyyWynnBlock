@@ -1020,3 +1020,7 @@ Skills 0.4.7, Trees 0.2.5, Exploration 0.2.2. Only the LOOK changed (plus the Gu
 5. Stats: Health/Stamina/Mana bars grow; Speed makes you faster; Stamina Regen refills stamina faster only while it is refilling (never while
    sprinting); Brawler/Runic/Stonehide/Razorfang show up in SkyyGear totals (hit harder / crit more); Feather cuts fall damage and raises jumps.
 6. Take an accessory out / switch profile / relog: its bonus goes away and comes back correctly; your current Health/Mana never drops.
+## SkyySkills 0.4.9 - casters check what they spend, DEPLOYED 2026-09-30 17:02 (backup backups/deploy-20260930-1702)
+1. Priest (30 Mana): the wand casts from 5 Mana up (6 casts from full); at 4 Mana it refuses. Mage: a staff casts from 10 Mana (3 casts) and
+   REFUSES at 0 (it used to cast for free). Spellbook needs 20; Rusty Blunderbuss 10.
+2. Mana refills 5 per second out of combat; after you TAKE damage it waits 6 s; holding a charge pauses it.
