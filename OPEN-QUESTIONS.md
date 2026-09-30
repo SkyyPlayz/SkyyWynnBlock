@@ -42,6 +42,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   vs 360 for 24h, so everyone would pick 48h). Server Setup key `xFloorPrev` - OFF = exactly 2 x the listing fee. [on]
 - SkyyGear: old SkyyRolls items keep their rolls (your lock). Switch `migrate.clampToLevel` caps old rolls at what that item's level can
   roll now (a cheap SkyyRolls max roll on junk gear stays strong otherwise). [off]
+- LOCKED 2026-09-30 (Skyy): booster accessories (research/Booster-Accessories-Spec.md). No separate tier words - "they are all accessories.
+  but they come in the same rarity tiers as weapons and armor"; a booster line UPGRADES through Normal -> Unique -> Rare -> Legendary and stops at
+  Legendary; Fabled and Mythic accessories are rare finds / drops that cannot be crafted or upgraded (a few special ones, later). Bag: 18 slots to
+  start, up to 60. The 25 current talismans fold into the new lines with the new numbers (Health/Stamina/Mana stronger, Regeneration weaker).
+  "+stamina" = max Stamina AND Stamina Regen (this lifts the earlier "Stamina Regen armor-only" rule for accessories). How they are obtained and
+  upgraded: later (mob drops, loot chests); admin give command for now. [SkyyAccessories 0.5]
 - LOCKED 2026-09-30 (Skyy): new SkyyGear modifier "Charged Attack Damage" on weapons AND armor. Bows: only when the arrow GLOWS (held a few
   seconds - partial draws never count); crossbows: the 3rd bolt in a row (Hytale's charged hit) counts; spells (staff/wand/spellbook orbs): yes but
   reduced - a roll that gives +100% to a charged melee/bow hit gives only +15% to a spell; clubs: left alone (no charged attack, never rolls).
