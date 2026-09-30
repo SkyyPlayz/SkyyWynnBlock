@@ -49,10 +49,14 @@ four from their old patch scripts (their successors 0.4.6 / 0.2.4 / 0.1.7 / 0.1.
 1. **Skyy tests** round 8 + round 9 + SkyyGear (TEST-CHECKLIST sections "Round 8" and "Round 9 + SkyyGear"); fix what they report first.
 2. **Open questions** from the round: OPEN-QUESTIONS.md "Round 9 + SkyyGear defaults" (48h floor, clampToLevel, real gear level table,
    Ranks placeholders) and "Round 8 defaults".
-3. **Vanilla UI look (Skyy, 2026-09-28):** every UI must look and feel as close to vanilla Hytale as possible. First research the vanilla
-   styles in Assets.zip (panel frames, colours, fonts, button styles, spacing, sounds) and put them in one shared style helper for the build
-   scripts; every NEW page uses it from then on, and the existing Skyy pages (menu, bags, skills, trees, collections, bank, bazaar, AH, vault,
-   island menu, Server Setup, ...) get a vanilla-style pass over time.
+3. **Vanilla UI pass (IN PROGRESS, Skyy 2026-09-29 "run the vanilla ui pass"):** shared kit `tools\skyyui.py` 1.3 + guide
+   `research\Vanilla-UI-Style-Guide.md` done; dev mod SkyyUiProbe 0.1 deployed (/skyprobe, 18 probe pages - TEST-CHECKLIST "Vanilla UI probe").
+   Built + reviewed + cross-checked but HELD (pins not bumped): SkyyBank 0.1.4, SkyyParty 0.1.6, SkyyAccessories 0.4.5, SkyyClasses 0.1.8,
+   SkyyProfiles 0.1.3. When Skyy reports base1-3 work: add "base" (+ each passing probe) to `skyyui.PROBED`, bump those 5 pins, cross-check
+   quickly, deploy. Then kit 1.4 (review gaps: static_row, list_well, result_line, stat_bar, list_card, state_word, text_width) and the
+   remaining batches in `research\Skyy-UI-Inventory.md` section 7 (Collections/Guilds/Islands, Skills/Trees/Exploration, Bazaar/Auctions,
+   Sacks /craft, Essentials, Menu, Hud, Vault main page), then retire SkyyUiProbe. If a base probe disconnects: fix the property in the kit,
+   rebuild the probe + the held pages, redeploy the probe.
 4. **Small follow-ups:** config kit keeps 10 old file versions (tools/skyycfg.py KEEP 20 -> 10); SkyyGuilds xpSkills mid-run change credits
    a skill's whole saved XP (fix in the next Guilds version); Archery 15+ extra bolts and the late-game holstered reload (approved, later).
 5. **After Skyy tests the separate economy mods:** SkyyEconomy 0.1 = Coins + Bank + Bazaar + Auctions merged (`SkyyEconomy-Plan.md`; use the

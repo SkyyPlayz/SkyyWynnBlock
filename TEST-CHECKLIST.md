@@ -963,3 +963,19 @@ SkyyMenu 0.3.3, SkyyAuctions 0.1.2. [2P] = needs a second, NON-op player.
     show rarity colour + a short roll line; the item page shows the full text. Bags (Magic Bags, Accessory Bag) are refused. List on profile A,
     buy on profile B after 20 s. Your old expired listing #1 (Sharp Copper Longsword) comes back as a claim.
 15. Nothing lost: /skills levels, /collections, /bank, /vault pages, bags, party, guild look as before.
+## Vanilla UI probe - SkyyUiProbe 0.1 (dev/test mod), DEPLOYED 2026-09-29 18:38 (backup backups/deploy-20260929-1838)
+Why: the new vanilla look (tools/skyyui.py) has never been seen in game, and a page the client can't read DISCONNECTS you when it opens.
+These test pages prove it piece by piece. The 5 restyled pages (Bank, Party, Accessory Bag, Class, Profiles) are built and waiting; they
+deploy as soon as base1-3 work. A disconnect here is harmless: rejoin and carry on.
+1. Start the world: "[SkyyUiProbe] 0.1 ready - /skyprobe (admin): 18 probe pages".
+2. Run /skyprobe (ops only): an index page in the OLD style lists all 18 test pages with an Open button each (/skyprobe list prints them in chat;
+   /skyprobe <n> opens one directly).
+3. Open base1, then base2, then base3. Each page shows its own numbered "what to see" list - check each line (frame with runes, gold
+   ornaments not cut off, buttons change on hover/press and click, Close has the cancel sound, text sizes, the list and rows...).
+   On base2, say which of the 3 text-box looks matches the game best.
+4. Then open pages 3-17 one by one (checkbox, number-field, tooltip, progress-element, memories-bar, quality-frame, itemslot, dropdown,
+   search-field, spinner, tile, text-mask, slot-background, disabled-prop, value-ref). Note which open and which disconnect.
+5. Also open the vanilla-style pages that are ALREADY live: /rankadmin, /reforge, /identify and the vault page-buy dialog - they use the
+   same look, so if they work the base is fine.
+6. Tell Claude: which pages opened, which disconnected (the server log also records "sent probe N" right before any disconnect), and
+   anything that looked off.
