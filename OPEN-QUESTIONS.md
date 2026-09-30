@@ -42,6 +42,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   vs 360 for 24h, so everyone would pick 48h). Server Setup key `xFloorPrev` - OFF = exactly 2 x the listing fee. [on]
 - SkyyGear: old SkyyRolls items keep their rolls (your lock). Switch `migrate.clampToLevel` caps old rolls at what that item's level can
   roll now (a cheap SkyyRolls max roll on junk gear stays strong otherwise). [off]
+- LOCKED 2026-09-30 (Skyy): item durability is a Server Setup switch, OFF by default - tools, weapons and armor never lose durability or break
+  while it is off. [queued]
+- REQUEST 2026-09-30 (Skyy): a MOB LEVEL system - research + plan only for now (check how other Hytale mods do it). Levels set by biome (the
+  easiest: where the mob spawns); zone 1's blue forest and other zone-1 biomes slightly higher, zone 2 a big step up; inside a zone, rarer biomes
+  = higher level. [plan queued: research/Mob-Levels-Plan.md]
 - LOCKED 2026-09-30 (Skyy): booster accessories (research/Booster-Accessories-Spec.md). No separate tier words - "they are all accessories.
   but they come in the same rarity tiers as weapons and armor"; a booster line UPGRADES through Normal -> Unique -> Rare -> Legendary and stops at
   Legendary; Fabled and Mythic accessories are rare finds / drops that cannot be crafted or upgraded (a few special ones, later). Bag: 18 slots to
