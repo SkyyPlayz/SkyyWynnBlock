@@ -22,12 +22,15 @@ one is still there, verbatim, at every build (a game update that changes one fai
     java = SUI.java_expr(ROW)               # "Group #SkyyBRow" + (i) + " { ... }"   (SUI.java_lit for static text)
 
 Rules the kit enforces (HANDOFF section 2): element ids letters + digits only (an underscore raises, also in Java selectors),
-no duplicate static ids on a page, inline Text only [A-Za-z0-9 <>/-] (anything else goes through b.set), page roots Anchor Width /
-Height only, pages fit a 1080 px screen, no document variables (@X / $C) inline, every texture / sound path is one the kit verifies.
+no duplicate static ids on a page, inline Text only [A-Za-z0-9 <>/-] (anything else goes through b.set: Appends.text / Shell.text
+do that split for you), page roots Anchor Width / Height only, pages fit a 1080 px screen, no document variables (@X / $C) inline,
+every texture / sound path is one the kit verifies, WrapMaxLines only together with Wrap: true.
 Elements nobody has seen work inline yet need trial=True (UNVERIFIED below); probe_pages() builds one in-game test page per
-UNVERIFIED feature (plus two "base" pages for the core look) - add a feature to PROBED once Skyy has seen its page work in game.
-Kept out on purpose: ItemGridSlot content (the metadata rule stays with the page: only new ItemStack(id, qty)), the full-screen
-@PageOverlay dim and the bottom-left BackButton (Skyy page roots are Width / Height only; Esc + a footer Close button do it), the
+UNVERIFIED feature (plus three "base" pages for the core look: 1, 2 and 18) - add a feature to PROBED once Skyy has seen its page
+work in game. Each probe page has a stable name (probe_page("checkbox")) and shows its own numbered "what to see" list.
+ItemGrid slots: the kit builds the grid (item_grid) and the only Java that fills it (java_grid_methods / java_grid_fill: every slot
+is new ItemGridSlot(new ItemStack(id, qty)) - never a stack you hold, whose metadata disconnects the client). Kept out on purpose:
+the full-screen @PageOverlay dim and the bottom-left BackButton (Skyy page roots are Width / Height only; Esc + a footer Close do it), the
 client-only textures (Pages/Inventory/Slot.png, the client's own tooltip frame, the settings CheckBox toggle), the broken vanilla
 styles (@SmallDefaultTextButtonStyle -> Common/ButtonSmall*.png is missing, @ButtonDestructiveSounds -> an undefined sound set).
 The item QUALITY frames (Common/UI/ItemQualities/Slots|Tooltips/*.png) ARE in Assets.zip, outside the custom root: only their
@@ -35,7 +38,12 @@ inline path "../ItemQualities/..." is unverified (quality_frame / tooltip_panel(
 """
 import os, re, json, zipfile, hashlib, posixpath
 
-KIT_VERSION = "1.2"   # 1.2 (2026-09-29, SkyyBank 0.1.4 pilot): + group(), status_line(wrap=, max_lines=, anchor=)
+KIT_VERSION = "1.3"   # 1.2 (2026-09-29, SkyyBank 0.1.4 pilot): + group(), status_line(wrap=, max_lines=, anchor=)
+# 1.3 (2026-09-29, the SkyyBank pilot review): titles without LetterSpacing 0 (= the deployed SkyyRanks / SkyyVault titles),
+#     WrapMaxLines only with Wrap: true (max_lines=False / 0 = none), display = 32 px Default font (Hud/TimeLeft), STATUS "=" =
+#     info blue #7caacc (gold: java_status_methods(info="gold")); + pager, item_grid + java_grid_methods / java_grid_fill,
+#     icon_cell, Appends.text / Shell.text (punctuated text -> b.set), confirm_view, choose (a markup picked at runtime),
+#     probe pages with stable names + their own "what to see" list (+ base page 18 for the 1.3 builders)
 
 # ================================================================= where the game files are (READ-ONLY; never written)
 _HYTALE = os.path.join(os.environ.get("APPDATA", r"C:\Users\SkyLo\AppData\Roaming"), "Hytale")
@@ -63,7 +71,7 @@ DOCS = {
 }
 # client in-game UI documents (NOT in Assets.zip; Client/Data/Game/Interface). Checked only when that folder exists.
 CLIENT_DOCS = {"CT": "InGame/Tooltips/ItemTooltip", "CS": "Common/Settings/LabeledCheckBoxSetting",
-               "CH": "Common/Settings/SectionHeader"}
+               "CH": "Common/Settings/SectionHeader", "CG": "InGame/Common", "CC": "InGame/Pages/Inventory/BasicCraftingPanel"}
 
 _CHECKS = []        # (document key, exact text that must be in it, what it proves)
 _STATE = {"verified": False}
@@ -125,8 +133,8 @@ _col("rowSub", "#7f93a6", "W", "Style: (FontSize: 12, TextColor: #7f93a6")
 _col("rowBadge", "#9aacbc", "W", "Style: (FontSize: 12, TextColor: #9aacbc, HorizontalAlignment: End")
 _col("muted", "#ffffff(0.6)", "R", "Style: (TextColor: #ffffff(0.6));")                     # ItemRepairElement durability
 _col("disabled", "#797b7c", "C", "@ColorDisabled = #797b7c;")                               # the disabled button label (real)
-# gold: @ColorGoldHighlight is only a UI Gallery sample (TextContent.ui), no real page shows it. Kept for the "=" info mark that
-# SkyyRanks / SkyyGear already use; whether "=" stays gold or becomes info #7caacc (BarterPage timer) is Skyy's call (STATUS).
+# gold: @ColorGoldHighlight is only a UI Gallery sample (TextContent.ui), no real page shows it. Kept for costs and as the named
+# alternative "=" colour (STATUS_INFO["gold"], the SkyyRanks 0.1.1 / SkyyGear 0.1 look); the kit's "=" is info #7caacc (kit 1.3).
 _col("gold", "#E8A93B", "C", "@ColorGoldHighlight = #E8A93B;")
 _col("buttonText", "#bfcdd5", "C", "@ColorButtonText = #bfcdd5;")                           # primary / destructive label
 _col("button2Text", "#bdcbd3", "C", "...@DefaultButtonLabelStyle,\n  TextColor: #bdcbd3")    # secondary / tertiary label
@@ -202,9 +210,11 @@ _col("tipLine", "#25262c", "CT", "Background: (Color: #25262c);")
 _col("settingOff", "#495972", "CS", "TextColor: #495972, RenderUppercase: true, FontSize: 18, RenderBold: false")
 
 # the three result marks every Skyy status line uses ("+" done, "-" refused, "=" info). "+" / "-" are the vanilla success / error
-# (MemoriesCategory #39f493, PrefabSavePage #ff6b6b). "=" is gold like SkyyRanks 0.1.1 / SkyyGear 0.1 - OPEN for Skyy: keep gold
-# or switch to info #7caacc (the colour with real-page support). Change it HERE only; java_status_methods reads this table.
-STATUS = {"+": COLOR["success"], "-": COLOR["error"], "=": COLOR["gold"]}
+# (MemoriesCategory #39f493, PrefabSavePage #ff6b6b). "=" is the vanilla info blue #7caacc (BarterPage #RefreshTimer: the info
+# colour a real page shows; kit 1.3, SkyyBank pilot review) - the gallery-only gold of SkyyRanks 0.1.1 / SkyyGear 0.1 stays
+# available by name: java_status_methods(info="gold"). Change the default HERE only; java_status_methods reads these tables.
+STATUS_INFO = {"info": COLOR["info"], "gold": COLOR["gold"]}
+STATUS = {"+": COLOR["success"], "-": COLOR["error"], "=": STATUS_INFO["info"]}
 
 # ================================================================= rarity palettes (content colours, kept as they are)
 # LOCKED by Skyy 2026-09-25 (research/SkyyGear-Stage1-Spec.md 2.1, SkyyGear 0.1 RARITIES, SkyySacks 0.7.7 BAG_RARITY):
@@ -225,7 +235,8 @@ QUALITY_TIP = {"Junk": "Junk", "Common": "Common", "Uncommon": "Uncommon", "Rare
 
 # ================================================================= fonts, sizes, spacing
 FONT_DEFAULT = "Default"          # body text, buttons, inputs (the engine default; never needs to be written)
-FONT_SECONDARY = "Secondary"      # window titles (@TitleStyle), display numbers (PortalDeviceSummon), tile names (Memories)
+FONT_SECONDARY = "Secondary"      # window titles (@TitleStyle), big titles (RespawnPage 38 px, PortalDeviceSummon #Title0 24 px),
+                                  # tile names (Memories). Big NUMBERS are Default (Hud/TimeLeft timer 32 px: the "display" kind)
 FONTS = (FONT_DEFAULT, FONT_SECONDARY)
 
 TITLE_H = 38                      # @TitleHeight (fixed by the ContainerHeader texture: never scale it)
@@ -430,9 +441,10 @@ _need("W2", "$C.@SecondaryTextButton #CloseButton {\n          @Sounds = $Sounds
 
 # ================================================================= features not yet seen working inline (trial=True to use them)
 UNVERIFIED = {
-    "base": "the kit's core look inline: frame + ornaments + close X, button textures / states / inline Sounds / Disabled state, "
-            "FlexWeight, LayoutMode Full / Right, LetterSpacing, WrapMaxLines, ShrinkTextToFit, the well (probe pages 1-2; "
-            "no trial gate - the first restyle waits for these two pages)",
+    "base": "the kit's core look inline: frame + ornaments + close X, button textures / states / inline Sounds / Disabled look, "
+            "FlexWeight, LayoutMode Full / Right, LetterSpacing, WrapMaxLines, ShrinkTextToFit, the well, and the kit 1.3 "
+            "builders made from them (pager, item_grid, icon_cell, confirm_view) (probe pages 1, 2 and 18; no trial gate - the "
+            "first restyle waits for these pages)",
     "itemslot": "the ItemSlot element with ShowQualityBackground + #Id.ItemId (vanilla BarterTradeRow) inline",
     "disabled-prop": "Disabled: true on an inline TextButton (the style's Disabled state + clicks stop)",
     "tooltip": "TooltipText + TextTooltipStyle on an inline element (also test Esc with a tooltip open)",
@@ -614,12 +626,50 @@ def _sel(ident):
     return "#" + bare
 
 
+class Choice(object):
+    """A markup picked at runtime (SUI.choose): the Java appends (cond) ? a : b. Both markups are checked and must create the same
+    static element ids (later appends and b.set lines target them either way)."""
+
+    def __init__(self, cond, a, b):
+        self.cond, self.a, self.b = cond, a, b
+
+    def variants(self):
+        return (self.a, self.b)
+
+    def __repr__(self):
+        return "Choice(%r, ...)" % self.cond
+
+
+def choose(cond, a, b):
+    """A markup chosen in the Java at runtime: cond = J("expr") or a plain Java boolean expression str ("pageNo > 0"), a = the
+    markup when it is true, b = when false (J() values allowed in both). Use it where a page picks a look by its state (a pager's
+    disabled Prev, a selected icon cell); Appends / java_append emit b.appendInline(p, (cond) ? (a) : (b))."""
+    if isinstance(cond, str) and has_j(cond):
+        m = _J_RE.fullmatch(cond)
+        if not m:
+            raise ValueError("choose(): cond is one J(expr), not text around it")
+        cond = m.group(1)
+    if not isinstance(cond, str) or not cond.strip() or ";" in cond or any(ord(c) < 32 for c in cond):
+        raise ValueError("choose(): cond must be a Java boolean expression (no ';', one line): %r" % (cond,))
+    for mk in (a, b):
+        if not isinstance(mk, str):
+            raise ValueError("choose(): both variants are markup strings")
+    return Choice(cond.strip(), a, b)
+
+
+def _variants(mk):
+    return mk.variants() if isinstance(mk, Choice) else (mk,)
+
+
 def java_append(parent, markup, b="b", page_root=True):
     """One Java statement: b.appendInline(<parent or (String) null>, <markup>); the markup is check_markup-ed first (a root append
-    is checked as a page root: Anchor Width / Height only; page_root=False for a HUD root such as Anchor Full 0)."""
+    is checked as a page root: Anchor Width / Height only; page_root=False for a HUD root such as Anchor Full 0). markup may be a
+    choose(...) Choice: b.appendInline(p, (cond) ? (a) : (b))."""
     require_verified()
     check_markup(markup, root=(parent is None and page_root))
     p = "(String) null" if parent is None else java_value(_sel(parent))
+    if isinstance(markup, Choice):
+        return "%s.appendInline(%s, (%s) ? (%s) : (%s));" % (b, p, markup.cond, java_value(markup.a), java_value(markup.b))
     return "%s.appendInline(%s, %s);" % (b, p, java_value(markup))
 
 
@@ -663,12 +713,16 @@ def java_set_raw(ident, prop, expr, b="b"):
     return java_set(ident, prop, expr if has_j(expr) else J(expr), b, raw=True)
 
 
-def java_status_methods(name_color="colorOf", name_text="textOf"):
+def java_status_methods(name_color="colorOf", name_text="textOf", info=None):
     """Java source of two static methods (CtNewMethod.make each): the vanilla colour of a result line by its first character
-    ("+" success #39f493, "-" error #ff6b6b, "=" STATUS["="], else the label colour) and the text without that mark."""
+    ("+" success #39f493, "-" error #ff6b6b, "=" STATUS["="] = info #7caacc, else the label colour) and the text without that
+    mark. info = the "=" colour by name instead: "gold" (STATUS_INFO: the SkyyRanks 0.1.1 / SkyyGear 0.1 gold) or a COLOR name."""
+    eq = STATUS["="] if info is None else (STATUS_INFO[info] if info in STATUS_INFO else color(info))
+    if has_j(eq):
+        raise ValueError("java_status_methods(info=...) takes a colour name or literal, not a J() runtime value")
     c = ('public static String %s(String res) {\n  if (res == null || res.length() == 0) return "%s";\n  char c = res.charAt(0);\n'
          '  if (c == \'+\') return "%s";\n  if (c == \'-\') return "%s";\n  if (c == \'=\') return "%s";\n  return "%s";\n}'
-         % (name_color, COLOR["text"], STATUS["+"], STATUS["-"], STATUS["="], COLOR["text"]))
+         % (name_color, COLOR["text"], STATUS["+"], STATUS["-"], eq, COLOR["text"]))
     t = ('public static String %s(String res) {\n  if (res == null) return "";\n'
          '  if (res.length() > 0 && (res.charAt(0) == \'+\' || res.charAt(0) == \'-\' || res.charAt(0) == \'=\')) return res.substring(1);\n'
          '  return res;\n}' % name_text)
@@ -778,7 +832,9 @@ _TEXT_PROP_RE = re.compile(r'(?:\bText|PlaceholderText|TooltipText): "((?:[^"\\]
 
 
 def _static_ids(s):
-    """The element ids of one markup that hold no J() value (runtime ids are never counted as duplicates)."""
+    """The element ids of one markup that hold no J() value (runtime ids are never counted as duplicates); a Choice: its first
+    variant (check_markup proves both create the same ids)."""
+    s = _variants(s)[0]
     return [m.group(2) for m in _ELEM_OPEN.finditer(_strip_quoted(render(s, mark=True))) if m.group(2) and _DYN not in m.group(2)]
 
 
@@ -786,7 +842,16 @@ def check_markup(s, prefix=None, root=False, kit_paths=True):
     """Syntax / rule check of one inline markup string (raises ValueError). Mirrors SkyyRanks 0.1.1 _check_ui: balanced { } ( ),
     no underscore ids, ids start with the page prefix, no Anchow typo, no ';;', inline Text only [A-Za-z0-9 <>/-], no unfilled
     placeholder - plus: every { opens an element (Type or Type #Id), no duplicate static id, no @variables / $imports inline, every
-    texture / sound path is one the kit verifies (kit_paths), and root=True: the page root's Anchor has Width and Height only."""
+    texture / sound path is one the kit verifies (kit_paths), and root=True: the page root's Anchor has Width and Height only.
+    A choose(...) Choice: both variants, which must create the same element ids (static and runtime)."""
+    if isinstance(s, Choice):
+        for v in s.variants():
+            check_markup(v, prefix, root, kit_paths)
+        ids = [sorted(m.group(2) for m in _ELEM_OPEN.finditer(_strip_quoted(render(v, mark=True))) if m.group(2))
+               for v in s.variants()]
+        if ids[0] != ids[1]:
+            raise ValueError("choose(): both markups must create the same element ids, got %s / %s" % (ids[0], ids[1]))
+        return s
     if not isinstance(s, str) or not s.strip():
         raise ValueError("empty markup")
     for m in _TEXT_PROP_RE.finditer(s):
@@ -856,9 +921,12 @@ def check_page(appends, prefix=None, known_parents=()):
             if eid in static:
                 raise ValueError("append %d creates #%s a second time (duplicate element id)" % (i, eid))
             static.add(eid)
-        for m in _ELEM_OPEN.finditer(_strip_quoted(render(mk))):
+        for m in _ELEM_OPEN.finditer(_strip_quoted(render(_variants(mk)[0]))):
             if m.group(2):
                 seen.add(m.group(2))
+    for ident, _prop, _v in getattr(appends, "sets", ()):
+        if render(ident).lstrip("#") not in seen:
+            raise ValueError("a b.set line targets #%s, which no append created" % render(ident))
     return appends
 
 
@@ -979,9 +1047,27 @@ def sounds(kind="light"):
     return SOUNDS[kind]
 
 
+def _is_zero(v):
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v == 0
+
+
+def _max_lines(v):
+    """The WrapMaxLines to write: None / False / 0 = none (never "WrapMaxLines: 0"), else an int >= 1."""
+    if v is None or v is False:
+        return None
+    if isinstance(v, bool) or not isinstance(v, int) or v < 0:
+        raise ValueError("max_lines is an int >= 1 (0 / False / None = no WrapMaxLines), got %r" % (v,))
+    return v or None
+
+
 def text_style(size, col, bold=False, upper=False, italic=False, halign=None, valign="Center", wrap=False, max_lines=None,
                font=None, shrink=None, spacing=None):
-    """A LabelStyle value (FontSize, TextColor, ...) in vanilla key order. spacing = LetterSpacing (float allowed: 0.5, 1.8)."""
+    """A LabelStyle value (FontSize, TextColor, ...) in vanilla key order. spacing = LetterSpacing (float allowed: 0.5, 1.8; 0 = the
+    engine default, not written - the deployed SkyyRanks / SkyyVault titles have none). max_lines = WrapMaxLines, only together
+    with wrap=True (vanilla always pairs them; it raises otherwise); None / False / 0 = no line limit."""
+    ml = _max_lines(max_lines)
+    if ml is not None and not wrap:
+        raise ValueError("WrapMaxLines without Wrap: true - pass wrap=True with max_lines=%d (or max_lines=False for none)" % ml)
     parts = ["FontSize: " + _num(size, "font size"), "TextColor: " + color(col)]
     if bold:
         parts.append("RenderBold: true")
@@ -993,7 +1079,7 @@ def text_style(size, col, bold=False, upper=False, italic=False, halign=None, va
         if font not in FONTS:
             raise ValueError("font %r: vanilla fonts are Default and Secondary" % font)
         parts.append('FontName: "%s"' % font)
-    if spacing is not None:
+    if spacing is not None and not _is_zero(spacing):
         parts.append("LetterSpacing: " + _num(spacing, "letter spacing"))
     if halign is not None:
         if halign not in ("Start", "Center", "End"):
@@ -1005,8 +1091,8 @@ def text_style(size, col, bold=False, upper=False, italic=False, halign=None, va
         parts.append("VerticalAlignment: " + valign)
     if wrap:
         parts.append("Wrap: true")
-    if max_lines is not None:
-        parts.append("WrapMaxLines: %d" % max_lines)
+    if ml is not None:
+        parts.append("WrapMaxLines: %d" % ml)
     if shrink is not None:
         parts.append("ShrinkTextToFit: true, MinShrinkTextToFitFontSize: %d" % shrink)
     return "(" + ", ".join(parts) + ")"
@@ -1042,7 +1128,8 @@ LABELS = {
     "propValue": (13, "value", False, False, None, True, False, "property value (WorldEventPropertyRow #Value, one line)"),
     "summary": (13, "summary", False, False, None, True, False, "summary line (WorldEventSummaryRow, one line)"),
     "fieldLabel": (13, "text", True, False, None, False, False, "form field label (BlockSpawnerSpawnerEntryRow @FieldLabelStyle)"),
-    "display": (32, "white", False, False, None, False, False, "big number / display text (PortalDeviceSummon, font Secondary)"),
+    "display": (32, "white", False, False, None, False, False, "big number (Hud/TimeLeft timer: 32 px, the Default font - big "
+                "Secondary text on real pages is a title: RespawnPage 38, PortalDeviceSummon 24)"),
     "tileName": (15, "title", True, True, "Center", True, False, "tile name (MemoriesCategory, font Secondary, bottom-aligned)"),
     "section": (13, "section", True, True, "Start", False, False, "list section head (WorldEventSectionLabel)"),
     "subtitle": (15, "text", True, True, None, False, False, "section subtitle (@SubtitleStyle)"),
@@ -1059,7 +1146,7 @@ LABELS = {
     "settingHead": (18, "text", True, True, None, False, False, "settings section header (client SectionHeader)"),
 }
 # kind: (font, WrapMaxLines, VerticalAlignment) where it is not the default (None, None, Center)
-LABEL_MORE = {"display": (FONT_SECONDARY, None, "Center"), "tileName": (FONT_SECONDARY, None, "End"),
+LABEL_MORE = {"tileName": (FONT_SECONDARY, None, "End"),
               "heading": (None, 1, "Center"), "propKey": (None, 1, "Center"), "propValue": (None, 1, "Center"),
               "summary": (None, 1, "Center")}
 _need("C", "@SubtitleStyle = LabelStyle(FontSize: 15, RenderUppercase: true, TextColor: #96a9be, RenderBold: true);", "label subtitle")
@@ -1074,7 +1161,11 @@ _need("W", "Style: (FontSize: 12, TextColor: #7f93a6, VerticalAlignment: Center,
 _need("W2", "Style: (FontSize: 18, RenderBold: true, TextColor: #d6e4ee, VerticalAlignment: Center, Wrap: true, WrapMaxLines: 1);",
       "label heading")
 _need("BS", "@FieldLabelStyle = (...$C.@DefaultLabelStyle, FontSize: 13, RenderBold: true);", "label fieldLabel")
-_need("PS", '@TimeLimitStyle = LabelStyle(FontSize: 32, FontName: "Secondary");', "label display")
+# display: the one big NUMBER a real custom page shows is the Hud/TimeLeft timer (32 px, no FontName = Default). PortalDeviceSummon's
+# @TimeLimitStyle (32 px Secondary) is defined but never used on that page; big Secondary text on real pages is a title.
+_need("HT", "TimerLabel #TimeLabel {\n      Style: (FontSize: 32, Alignment: Center);", "label display (Hud/TimeLeft timer, Default font)")
+_need("PS", 'Style: (FontSize: 24, TextColor: #dee2ef, FontName: "Secondary", RenderUppercase: true, HorizontalAlignment: Center, '
+      'ShrinkTextToFit: true, MinShrinkTextToFitFontSize: 18);', "big Secondary text is a title (PortalDeviceSummon #Title0, 24 px)")
 _need("MC", 'Style: (...@TitleStyle, FontName: "Default", RenderBold: true, TextColor: #b4c8c9, LetterSpacing: 0.5);',
       "LetterSpacing takes a float (0.5)")
 _need("RS", "FontSize: 38,\n            LetterSpacing: 1.8,\n            FontName: \"Secondary\",", "LetterSpacing 1.8 on a Secondary title")
@@ -1100,9 +1191,11 @@ _need("CH", "Style: (FontSize: 18, TextColor: #96a9be, RenderUppercase: true, Re
 def label(ident=None, text="", kind="default", h=None, w=None, size=None, col=None, bold=None, upper=None, align=None,
           valign=None, wrap=None, max_lines=None, italic=None, anchor=None, padding=None, flex=None, font=None, spacing=None,
           extra=""):
-    """A Label in one of the vanilla LABELS kinds. Text is empty by default (b.set it); static text must be [A-Za-z0-9 <>/-].
+    """A Label in one of the vanilla LABELS kinds. Text is empty by default (b.set it); static text must be [A-Za-z0-9 <>/-]
+    (Appends.text / Shell.text split other text into an empty label + a b.set line for you).
     size defaults to fs(the vanilla size); h defaults to size + 10 (h=False: no Height, the label fills its parent / row);
-    col / bold / font (Default / Secondary) / spacing (LetterSpacing, float) / valign (False = none) / ... override the kind."""
+    col / bold / font (Default / Secondary) / spacing (LetterSpacing, float; 0 = none) / valign (False = none) / ... override the
+    kind. max_lines = WrapMaxLines (needs wrap; max_lines=False / 0 removes the kind's own line limit, and wrap=False drops it too)."""
     if kind not in LABELS:
         raise ValueError("label kind %r (one of %s)" % (kind, ", ".join(sorted(LABELS))))
     vs, kc, kb, ku, ka, kw, ki, _where = LABELS[kind]
@@ -1112,10 +1205,12 @@ def label(ident=None, text="", kind="default", h=None, w=None, size=None, col=No
         h = sz + 10
     elif h is False:
         h = None                       # no Height: the label fills its parent (a row badge, a property value)
+    wr = kw if wrap is None else bool(wrap)
+    ml = (kml if wr else None) if max_lines is None else max_lines    # the kind's line limit goes with its wrap
     st = text_style(sz, col if col is not None else kc, bold=kb if bold is None else bold, upper=ku if upper is None else upper,
                     italic=ki if italic is None else italic, halign=align if align is not None else ka,
-                    valign=kva if valign is None else (None if valign is False else valign), wrap=kw if wrap is None else wrap,
-                    max_lines=max_lines if max_lines is not None else kml, font=font if font is not None else kf, spacing=spacing)
+                    valign=kva if valign is None else (None if valign is False else valign), wrap=wr,
+                    max_lines=ml, font=font if font is not None else kf, spacing=spacing)
     head = "Label #%s { " % check_id(ident) if ident else "Label { "
     return (head + _anchor(w, h, anchor) + _padding(padding) + _flex(flex) + 'Text: "%s"; ' % check_text(text)
             + "Style: %s; " % st + _extra(extra) + "}")
@@ -1123,16 +1218,17 @@ def label(ident=None, text="", kind="default", h=None, w=None, size=None, col=No
 
 def status_line(ident, color_expr="colorOf(this.info)", h=30, size=16, wrap=False, max_lines=None, anchor=None):
     """The page's result line (SkyyRanks look: 16 px bold, centred) whose colour is picked at runtime by the mark of the result
-    ("+" success, "-" error, "=" STATUS["="]: java_status_methods()). color_expr is the Java expression that gives the colour: the
-    default assumes your page class keeps the result in a field named `info`. b.set its Text with textOf(...). wrap=True (with a
-    taller h, e.g. 44 for two lines) for pages whose results can be longer than one line; max_lines = WrapMaxLines (a "base"
-    probe property); anchor = its margins (e.g. {"top": 12})."""
+    ("+" success, "-" error, "=" STATUS["="] = info blue: java_status_methods()). color_expr is the Java expression that gives the
+    colour: the default assumes your page class keeps the result in a field named `info`. b.set its Text with textOf(...).
+    wrap=True (with a taller h, e.g. 44 for two lines) for pages whose results can be longer than one line; max_lines =
+    WrapMaxLines (a "base" probe property; only with wrap=True - it raises otherwise); anchor = its margins (e.g. {"top": 12})."""
     return label(ident, "", "default", h=h, size=size, bold=True, align="Center", col=J(color_expr, COLOR["success"]),
                  wrap=True if wrap else None, max_lines=max_lines, anchor=anchor)
 
 
 def title_style():
-    """The window title LabelStyle (@Title: ...@TitleStyle + HorizontalAlignment Center)."""
+    """The window title LabelStyle (@Title: ...@TitleStyle + HorizontalAlignment Center). @TitleStyle's LetterSpacing: 0 is the
+    engine default and is not written (kit 1.3), so the title matches the deployed SkyyRanks 0.1.1 / SkyyVault 0.1.3 titles."""
     return text_style(TITLE_SIZE, "title", bold=True, upper=True, font=FONT_SECONDARY, spacing=0, halign="Center", valign="Center")
 
 
@@ -1809,14 +1905,26 @@ _need("BS", "LayoutMode: Top;\n  Anchor: (Bottom: 8);\n  Background: (Color: #00
 
 
 # ================================================================= items
+_ITEM_ID_OK = re.compile(r"\A[A-Za-z0-9_*]+\Z")
+
+
+def _item_id(item_id):
+    """A static item id ([A-Za-z0-9_*]) or a J(expr, sample) runtime one (written inline like the deployed pages do:
+    ItemId: "" + (expr) + ""; the expression must give a plain item id - wrap untrusted text in the mod's safe())."""
+    if not isinstance(item_id, str) or not _ITEM_ID_OK.fullmatch(render(item_id)):
+        raise ValueError("item id %r: letters, digits, _ (a runtime id: J(expr, \"Weapon_Sword_Iron\"))" % (item_id,))
+    if has_j(item_id) and not _J_RE.fullmatch(item_id):
+        raise ValueError("a runtime item id is one J(expr), not text around it")
+    return item_id
+
+
 def item_icon(ident=None, item_id=None, size=ICON, anchor=None):
-    """ItemIcon (metadata-free, proven on Skyy pages). item_id static (b.set "#Id.ItemId" for a runtime one)."""
+    """ItemIcon (metadata-free, proven on Skyy pages). item_id static or a J(expr, sample) written inline the way the deployed pages
+    write it (SkyyBazaar / SkyySacks / SkyyAuctions cells: ItemId: "" + id + ""); no Skyy page has b.set an ItemId yet."""
     head = ("ItemIcon #%s { " % check_id(ident)) if ident else "ItemIcon { "
     iid = ""
     if item_id is not None:
-        if has_j(item_id) or not re.fullmatch(r"[A-Za-z0-9_*]+", item_id):
-            raise ValueError("static item id %r (letters, digits, _); b.set(\"#Id.ItemId\", id) for a runtime one" % item_id)
-        iid = 'ItemId: "%s"; ' % item_id
+        iid = 'ItemId: "%s"; ' % _item_id(item_id)
     return head + _anchor(size, size, anchor) + iid + "}"
 
 
@@ -1867,6 +1975,212 @@ def item_grid_style(slot=74, icon=64, spacing=2, slot_bg=False, trial=False):
 
 
 _need("ES", 'SlotBackground: "../Common/BlockSelectorSlotBackground.png"', "grid slot background")
+
+GRID_SLOT, GRID_ICON, GRID_SPACING = 74, 64, 2       # the client inventory grid (@DefaultItemSlotSize / SlotIconSize / Spacing)
+GRID_WELL_PAD = WELL_LIST_PAD                        # the grid sits 4 px inside the well (Anchor Left / Top, no Padding)
+_need("CG", "@DefaultItemSlotSpacing = 2;\n@DefaultItemSlotSize = 74;", "grid slot 74 / spacing 2 (client inventory)")
+_need("CG", "@DefaultItemGridStyle = ItemGridStyle(\n  SlotSpacing: @DefaultItemSlotSpacing,\n  SlotSize: @DefaultItemSlotSize,\n"
+      "  SlotIconSize: 64,", "grid icon 64 (client inventory)")
+_need("CC", "Anchor: (Width: $InGame.@DefaultItemSlotSize * 3 + $InGame.@DefaultItemSlotSpacing * 2 + $InGame.@PanelPadding,",
+      "grid width = cols x slot + (cols - 1) x spacing (client BasicCraftingPanel)")
+
+
+def item_grid(ident, cols, rows, slot=GRID_SLOT, icon=GRID_ICON, spacing=GRID_SPACING, drag=False, tooltips=True, well=True,
+              box_id=None, w=None, h=None, anchor=None, slot_bg=False, trial=False):
+    """An ItemGrid written the way the deployed pages write it (SkyyAuctions item view, SkyyEssentials trade columns, SkyyMenu
+    launcher, SkyyHud editor): Anchor Width / Height, SlotsPerRow, AreItemsDraggable (drag=True only for a drag canvas like the
+    HUD editor), InfoDisplay: None when tooltips=False (no hover tooltip that could stay up after Esc - SkyyAuctions), and the Style
+    SlotSize / SlotIconSize / SlotSpacing, by default the client inventory's 74 / 64 / 2. Size = cols x slot + (cols - 1) x spacing
+    (the client's own grid anchors, BasicCraftingPanel); give w / h when cols / rows / slot are J() runtime values.
+    well=True (default) = the vanilla list well behind it: Group #<box_id or ident+'Box'> (#000000(0.15)) with the grid at Left /
+    Top 4 - no textures, since the client's slot frame (Pages/Inventory/Slot.png) is client-only and SlotBackground
+    (BlockSelectorSlotBackground) is UNVERIFIED inline (slot_bg=True needs trial=True). well=False = the bare grid (anchor= then
+    goes on the grid). FILL IT ONLY through java_grid_methods() / java_grid_fill(): every slot is new ItemGridSlot(new
+    ItemStack(id, qty)) (an ItemStack that may carry metadata in an ItemGridSlot disconnects the client). Bind SlotClicking on
+    #ident for clicks (SkyyMenu launcher); set the slots with java_set_raw(ident, "Slots", "slotsList")."""
+    check_id(ident)
+    for v, what in ((cols, "cols"), (rows, "rows")):
+        n = _sample_num(v)
+        if n is None or n < 1 or int(n) != n:
+            raise ValueError("item_grid %s must be an int >= 1 or a J() with a digit sample: %r" % (what, v))
+    for v, what in ((slot, "slot size"), (icon, "icon size")):
+        _size(v, what)
+    _num(spacing, "slot spacing")
+    if _sample_num(spacing) is None or _sample_num(spacing) < 0:
+        raise ValueError("slot spacing must be >= 0")
+    static = all(isinstance(v, int) and not isinstance(v, bool) for v in (cols, rows, slot, spacing))
+    if w is None or h is None:
+        if not static:
+            raise ValueError("item_grid with J() cols / rows / slot / spacing needs w= and h= (the grid's pixel size)")
+        w = w if w is not None else cols * slot + (cols - 1) * spacing
+        h = h if h is not None else rows * slot + (rows - 1) * spacing
+    if static and isinstance(icon, int) and icon > slot:
+        raise ValueError("item_grid icon %d is larger than its slot %d" % (icon, slot))
+    grid_anchor = {"left": GRID_WELL_PAD, "top": GRID_WELL_PAD} if well else anchor
+    mk = ("ItemGrid #%s { %sSlotsPerRow: %s; AreItemsDraggable: %s; %sStyle: %s; }"
+          % (ident, _anchor(w, h, grid_anchor), _num(cols, "cols"), "true" if drag else "false",
+             "" if tooltips else "InfoDisplay: None; ",
+             item_grid_style(slot, icon, spacing, slot_bg=slot_bg, trial=trial)))
+    if not well:
+        return mk
+    box = check_id(box_id or ident + "Box")
+    return "Group #%s { %sBackground: %s; %s }" % (box, _anchor(_plus(w, 2 * GRID_WELL_PAD), _plus(h, 2 * GRID_WELL_PAD), anchor),
+                                                   COLOR["well"], mk)
+
+
+def _plus(v, n):
+    """v + n for a size that is an int or ONE J(expr, sample) (then a J of (expr) + n with the sample moved too)."""
+    if isinstance(v, int) and not isinstance(v, bool):
+        return v + n
+    m = _J_RE.fullmatch(v) if isinstance(v, str) else None
+    if not m or _sample_num(v) is None:
+        raise ValueError("a size here is an int or one J(expr, sample) with a number sample: %r" % (v,))
+    return J("(%s) + %d" % (m.group(1), n), str(int(_sample_num(v)) + n))
+
+
+GRID_SLOT_CLASS = "com.hypixel.hytale.server.core.ui.ItemGridSlot"
+ITEM_STACK_CLASS = "com.hypixel.hytale.server.core.inventory.ItemStack"
+_JAVA_CLASS_OK = re.compile(r"\A[A-Za-z_$][A-Za-z0-9_$]*(?:\.[A-Za-z_$][A-Za-z0-9_$]*)*\Z")
+
+
+def _java_class(name, what):
+    if not isinstance(name, str) or not _JAVA_CLASS_OK.fullmatch(name):
+        raise ValueError("%s must be a Java class name: %r" % (what, name))
+    return name
+
+
+def java_grid_methods(prefix="grid", igs=GRID_SLOT_CLASS, stack=ITEM_STACK_CLASS):
+    """Java source of the four static methods (CtNewMethod.make each, IN THIS ORDER: a method comes before its callers) that are
+    the only way a Skyy page should fill an ItemGrid - every slot is new ItemGridSlot(new ItemStack(id, qty)), never a stack the
+    player holds (its metadata in an ItemGridSlot disconnects the client; HANDOFF section 2):
+      <prefix>Slot(String itemId, int qty)            one slot; a null / blank id or qty < 1 = an empty slot
+      <prefix>SlotOf(ItemStack s)                     a slot from s's item id + quantity ONLY (null / empty stack = empty slot)
+      <prefix>Slots(String[] ids, int[] qtys, int n)  n slots (missing ids = empty; qtys null or short = 1 each)
+      <prefix>SlotsOf(ItemStack[] a, int n)           n slots from a snapshot, id + quantity only
+    A stack's display name / description is gone in the copy: set it on the slot yourself (ItemGridSlot.setName /
+    setDescription, SkyyEssentials 0.1.5 gridSlot) if the page needs it. Then b.set the list: java_set_raw(id, "Slots", "list").
+    igs / stack = the two class names (the defaults are the engine's)."""
+    if not isinstance(prefix, str) or not re.fullmatch(r"[a-z][A-Za-z0-9]*", prefix):
+        raise ValueError("java_grid_methods prefix: a lower-case Java name like grid")
+    G, S = _java_class(igs, "igs"), _java_class(stack, "stack")
+    p = prefix
+    return [
+        ("public static %(G)s %(p)sSlot(String itemId, int qty) {\n"
+         "  if (itemId == null || itemId.trim().length() == 0 || qty < 1) return new %(G)s();\n"
+         "  return new %(G)s(new %(S)s(itemId, qty));\n}") % {"G": G, "S": S, "p": p},
+        ("public static %(G)s %(p)sSlotOf(%(S)s s) {\n"
+         "  if (s == null || s.isEmpty()) return new %(G)s();\n"
+         "  return %(p)sSlot(s.getItemId(), s.getQuantity());\n}") % {"G": G, "S": S, "p": p},
+        ("public static java.util.ArrayList %(p)sSlots(String[] ids, int[] qtys, int n) {\n"
+         "  java.util.ArrayList l = new java.util.ArrayList();\n"
+         "  for (int i = 0; i < n; i++) {\n"
+         "    String id = (ids != null && i < ids.length) ? ids[i] : null;\n"
+         "    int q = (qtys != null && i < qtys.length) ? qtys[i] : 1;\n"
+         "    l.add(%(p)sSlot(id, q));\n  }\n  return l;\n}") % {"p": p},
+        ("public static java.util.ArrayList %(p)sSlotsOf(%(S)s[] a, int n) {\n"
+         "  java.util.ArrayList l = new java.util.ArrayList();\n"
+         "  for (int i = 0; i < n; i++) l.add(%(p)sSlotOf((a != null && i < a.length) ? a[i] : null));\n"
+         "  return l;\n}") % {"S": S, "p": p},
+    ]
+
+
+def java_grid_fill(ident, items, var="gridSlots", b="b", igs=GRID_SLOT_CLASS, stack=ITEM_STACK_CLASS):
+    """Java statements that fill ItemGrid #ident with FIXED items (a showcase, a recipe, a probe page): a local java.util.ArrayList
+    `var` (unique per method) of new ItemGridSlot(new ItemStack(id, qty)) - items = [(item_id, qty) or None for an empty slot];
+    item_id static or J(expr) (a Java String), qty an int >= 1 or J(expr) (a Java int) - then b.set("#ident.Slots", var)."""
+    check_id(ident)
+    if not isinstance(var, str) or not re.fullmatch(r"[a-z][A-Za-z0-9]*", var):
+        raise ValueError("java_grid_fill var: a lower-case Java local name")
+    G, S = _java_class(igs, "igs"), _java_class(stack, "stack")
+    out = ["java.util.ArrayList %s = new java.util.ArrayList();" % var]
+    for it in items:
+        if it is None:
+            out.append("%s.add(new %s());" % (var, G))
+            continue
+        iid, qty = it
+        _item_id(iid)
+        if has_j(qty):
+            q = "(" + _J_RE.fullmatch(qty).group(1) + ")" if _J_RE.fullmatch(qty) else None
+            if q is None:
+                raise ValueError("a runtime quantity is one J(expr)")
+        elif isinstance(qty, int) and not isinstance(qty, bool) and qty >= 1:
+            q = str(qty)
+        else:
+            raise ValueError("quantity must be an int >= 1 or J(expr): %r" % (qty,))
+        out.append("%s.add(new %s(new %s(%s, %s)));" % (var, G, S, java_value(iid), q))
+    out.append(java_set_raw(ident, "Slots", var, b))
+    return "\n".join(out)
+
+
+def item_grid_java_is_safe(java_src, igs=GRID_SLOT_CLASS, stack=ITEM_STACK_CLASS):
+    """True when every `new <ItemGridSlot>(...)` in a Java text is empty or takes a `new <ItemStack>(...)` built right there (the
+    metadata rule, as the kit's own grid Java does it); the test and tools/ci/lint.py (WARN) apply the same rule to build scripts."""
+    G, S = re.escape(igs), re.escape(stack)
+    bad = re.compile(r"new\s+%s\s*\((?!\s*\)|\s*new\s+%s\s*\()" % (G, S))
+    return bad.search(java_src) is None
+
+
+ICON_CELL_STATES = ("normal", "selected", "disabled", "empty")
+ICON_CELL_LOOKS = ("row", "plain")
+
+
+def _cell_style(look, state, sound):
+    snd = (", Sounds: %s" % sounds(sound)) if sound and state in ("normal", "selected") else ""
+    if look == "row":                    # WorldEventListRow @NormalRowStyle / @SelectedRowStyle / @StaticRowStyle
+        d, hv, pr = {"normal": ("row", "rowHover", "rowPressed"), "selected": ("selected", "selected", "selected")}.get(
+            state, ("row", "row", "row"))
+    else:                                # ItemRepairElement / BasicTextButton: no back, hover #000000(0.2), active #7a9cc6(0.25)
+        d, hv, pr = {"normal": ("transparent", "hover", "hover"), "selected": ("active", "activeHover", "activeHover")}.get(
+            state, ("transparent", "transparent", "transparent"))
+    return "Style: ButtonStyle(Default: (Background: %s), Hovered: (Background: %s), Pressed: (Background: %s)%s);" % (
+        COLOR[d], COLOR[hv], COLOR[pr], snd)
+
+
+def icon_cell(ident, item=None, size=74, state="normal", icon=None, qty=False, look="row", w=None, h=None, sound="light",
+              icon_left=None, anchor=None, extra=""):
+    """A compact clickable item cell (Bazaar product cells, Auctions picker cells, Accessories rows, Trees nodes, Menu launcher) in
+    the cell pattern the deployed pages already use (SkyyBazaar / SkyyAuctions / SkyyTrees / SkyySacks: a Button with a ButtonStyle
+    holding an ItemIcon and a quantity Label, children placed by Anchor) with vanilla state looks from kit colours:
+      look "row" (default) = the WorldEventListRow palette: normal #101925(0.55), hover #132033(0.8), pressed #182a40(0.9) + the
+        light click; selected = #4274a5 (@SelectedRowStyle); disabled / empty = the static row colour, silent;
+      look "plain" = the ItemRepairElement / BasicTextButton palette: no back, hover #000000(0.2); selected #7a9cc6(0.25/0.35).
+    disabled also lays the vanilla sold-out cover (#0a0e12(0.75), BarterTradeRow) over the icon; empty = no icon. Neither is
+    un-clickable (the Disabled: true property is UNVERIFIED): leave them unbound or refuse the click. item = a static item id or
+    J(expr, sample) written inline (as the deployed cells do); None = an ItemIcon without an id. ItemIcon #<ident>Ic is icon px
+    (default size - 10), centred (icon_left = its left margin for a wide cell with text next to it; append your labels into
+    #ident with Anchor Left / Top). qty: False, True (an empty 15 px bold white label #<ident>Qty at the bottom right - b.set it)
+    or static digits ("64"). w / h override size for a wide cell. sound=None = silent. A runtime state: choose(J("i == sel"),
+    icon_cell(..., state="selected"), icon_cell(...))."""
+    check_id(ident)
+    if state not in ICON_CELL_STATES:
+        raise ValueError("icon_cell state %s" % " / ".join(ICON_CELL_STATES))
+    if look not in ICON_CELL_LOOKS:
+        raise ValueError("icon_cell look %s" % " / ".join(ICON_CELL_LOOKS))
+    cw = w if w is not None else size
+    ch = h if h is not None else size
+    for v, what in ((cw, "cell width"), (ch, "cell height")):
+        if not isinstance(v, int) or isinstance(v, bool) or v < 24:
+            raise ValueError("icon_cell %s must be an int >= 24: %r" % (what, v))
+    ic = icon if icon is not None else min(cw, ch) - 10
+    if not isinstance(ic, int) or isinstance(ic, bool) or ic < 8 or ic > min(cw, ch):
+        raise ValueError("icon_cell icon size %r must fit the cell" % (ic,))
+    top = (ch - ic) // 2
+    left = icon_left if icon_left is not None else ((cw - ic) // 2 if cw == ch else top)
+    kids = []
+    if state != "empty":
+        kids.append(item_icon(ident + "Ic", item, ic, anchor={"left": left, "top": top}))
+    if state == "disabled":
+        kids.append("Group #%sOut { Anchor: (Full: 0); Background: %s; }" % (ident, COLOR["cardOverlay"]))
+    if qty is not False and state != "empty":
+        if qty is True:
+            qtext = ""
+        elif isinstance(qty, str) and re.fullmatch(r"[0-9]{1,6}", qty):
+            qtext = qty
+        else:
+            raise ValueError("icon_cell qty: False, True (b.set #<id>Qty.Text) or static digits like \"64\"; got %r" % (qty,))
+        kids.append(label(ident + "Qty", qtext, "quantity", w=cw - 8, h=20, anchor={"right": 4, "bottom": 3}))
+    return "Button #%s { %s%s %s%s}" % (ident, _anchor(cw, ch, anchor), _cell_style(look, state, sound), _extra(extra),
+                                        (" ".join(kids) + " ") if kids else "")
 
 
 def card(ident, w=CARD_W, h=CARD_H, inner_id=None, margin=CARD_MARGIN, sold_out=False, out_id=None, anchor=None, flex=None, extra=""):
@@ -2039,16 +2353,65 @@ _need("C", '@TextHighlightGradientMask = "Common/TextGradient.png";', "text grad
 
 # ================================================================= Appends, page shell, confirm dialog
 class Appends(list):
-    """A list of (parent id or None for the page root, markup). .java(b) = the Java statements, .check(prefix) = check_page."""
+    """A list of (parent id or None for the page root, markup) plus .sets, the b.set lines [(id, prop, value)] that go with them
+    (Appends.text, pager, confirm_view fill it). .java(b) = the appendInline statements, then the b.set lines; .check(prefix) =
+    check_page (also: every b.set target exists). extend / += carry the other list's .sets along."""
 
-    def java(self, b="b", page_root=True):
-        return "\n".join(java_append(p, mk, b, page_root) for p, mk in self)
+    def __init__(self, items=()):
+        list.__init__(self, items)
+        self.sets = list(getattr(items, "sets", ()))
+
+    def extend(self, items):
+        list.extend(self, items)
+        self.sets.extend(getattr(items, "sets", ()))
+
+    def __iadd__(self, items):
+        self.extend(items)
+        return self
+
+    def java(self, b="b", page_root=True, sets=None):
+        lines = [java_append(p, mk, b, page_root) for p, mk in self]
+        lines += [java_set(i, pr, v, b) for i, pr, v in list(self.sets) + list(sets or [])]
+        return "\n".join(lines)
 
     def check(self, prefix=None, known_parents=()):
         return check_page(self, prefix, known_parents)
 
     def markups(self):
         return [mk for _p, mk in self]
+
+    def text(self, parent, ident=None, text="", kind="default", **kw):
+        """Append a label (a label() kind + its options) WITH its text, whatever the text holds: proven static text
+        ([A-Za-z0-9 <>/-]) goes inline; static text with other characters (commas, dots, "?", "%", ...) or a J() runtime text goes
+        in as an empty label + a b.set line in .sets - the SkyyBank #SkyyBCapMid pattern, so a builder never splits it by hand.
+        ident=None and a b.set text = an id made from the parent: <parent>Tx<n> (the first n free in this list). Returns the
+        label id (None for an anonymous inline label)."""
+        if parent is None:
+            raise ValueError("Appends.text needs a parent element (not the page root)")
+        if not isinstance(text, str):
+            raise ValueError("Appends.text: text must be a str or J(): %r" % (text,))
+        inline = not has_j(text) and TEXT_OK.fullmatch(text) is not None
+        if not inline and not ident:
+            base = parent[1:] if parent.startswith("#") else parent
+            taken = set(render(i) for _p, mk in self for v in _variants(mk)
+                        for i in (m.group(2) for m in _ELEM_OPEN.finditer(_strip_quoted(render(v)))) if i)
+            n = 0
+            while render(base + "Tx%d" % n) in taken:
+                n += 1
+            ident = base + "Tx%d" % n
+        self.append((parent, label(ident, text if inline else "", kind, **kw)))
+        if not inline:
+            self.sets.append((ident, "Text", text))
+        return ident
+
+
+class Part(Appends):
+    """What pager / confirm_view return: the Appends (+ .sets) of one block plus its ids and .h (the height it takes in a
+    LayoutMode Top parent, its margins included - add it to sh.fit([...]))."""
+
+    def __init__(self, items=(), **kw):
+        Appends.__init__(self, items)
+        self.__dict__.update(kw)
 
 
 class Shell(object):
@@ -2070,6 +2433,14 @@ class Shell(object):
         for ident, prop, val in self.sets + list(sets or []):
             lines.append(java_set(ident, prop, val, b))
         return "\n".join(lines)
+
+    def text(self, parent, ident=None, text="", kind="default", **kw):
+        """Appends.text on this page's appends: a label with any text (punctuated / J() text -> an empty label + a b.set line)."""
+        return self.appends.text(parent, ident, text, kind, **kw)
+
+    def all_sets(self):
+        """Every b.set line this shell emits, in order: the appends' (Appends.text, blocks) then the shell's own (the title)."""
+        return list(self.appends.sets) + list(self.sets)
 
 
 def page_shell(prefix, w, h, title="", kind="decorated", pad=CONTENT_PAD, root_id=None, bar_id=None, title_id=None, body_id=None,
@@ -2164,19 +2535,170 @@ def confirm_dialog(prefix, w=CONFIRM_W, msg_h=48, note=True, yes_text="Confirm",
     return sh
 
 
+def _text_into(part, parent, ident, text, kind, **kw):
+    """A label whose text is static-inline, b.set (punctuated / J()) or left empty (None / "": the builder b.sets it)."""
+    if text is None or text == "":
+        part.append((parent, label(ident, "", kind, **kw)))
+    else:
+        part.text(parent, ident, text, kind, **kw)
+
+
+def _left_margin(avail, used, align, what):
+    left = fit([used], avail, what)
+    return {"center": left // 2, "left": 0, "right": left}[align]
+
+
+def _state_button(ident, text, on, w, anchor, size="small", kind="secondary"):
+    """A button that is live (True), shows the vanilla Disabled look (False) or picks one at runtime (J(cond): choose)."""
+    live = button(ident, text, kind, size, w=w, anchor=anchor)
+    if on is True:
+        return live
+    dead = button(ident, text, kind, size, w=w, anchor=anchor, disabled=True)
+    if on is False:
+        return dead
+    if isinstance(on, str) and has_j(on):
+        return choose(on, live, dead)
+    raise ValueError("a pager button state is True, False or J(\"condition\"): %r" % (on,))
+
+
+def pager(parent, prefix, w, text=None, prev_on=True, next_on=True, btn_w=150, caption_w=260, gap=12, prev_text="< Prev",
+          next_text="Next >", align="center", top=8, kind="default", ids=None):
+    """Prev / page / Next for the pages that keep a pager. Vanilla never paginates (every vanilla list is a TopScrolling
+    scroll_list): use scroll_list when the page allows, this pager otherwise (fixed page sizes, money lists that must not
+    scroll). Two small Secondary buttons #<prefix>Prev / #<prefix>Next (btn_w 150, 32 high, the light click) around the caption
+    label #<prefix>Page (caption_w, a `kind` label, centred) in a LayoutMode Left row #<prefix> (32 high, top margin 8): the first
+    button's left margin centres the group in w (the parent's inner width, e.g. sh.inner_w; align "left" / "right") - only
+    properties the deployed pages already use (no LayoutMode Center, no FlexWeight).
+    prev_on / next_on: True, False (the vanilla Disabled look: Disabled.png, grey label, silent - still clickable, so keep ignoring
+    Prev on page 1 in handleDataEvent) or J("pageNo > 0") (both looks, picked in the Java: choose). text: the caption - static
+    proven text ("Page 2 / 5") inline, punctuated / J() text as a b.set line in .sets, None = b.set #<prefix>Page yourself.
+    ids = {"row": .., "prev": .., "page": .., "next": ..} keeps a restyled page's old ids. Returns a Part: .h (32 + top), .row,
+    .prev, .page, .next."""
+    ids = dict(ids or {})
+    row = check_id(ids.get("row", prefix))
+    pv, pg, nx = (check_id(ids.get(k, prefix + d)) for k, d in (("prev", "Prev"), ("page", "Page"), ("next", "Next")))
+    if align not in ("center", "left", "right"):
+        raise ValueError("pager align center / left / right")
+    used = 2 * btn_w + 2 * gap + caption_w
+    left = _left_margin(w, used, align, "pager")
+    h = BTN_SMALL_H
+    part = Part(h=h + (top or 0), row=row, prev=pv, page=pg, next=nx)
+    part.append((parent, group(row, "Left", h=h, anchor={"top": top} if top else None)))
+    part.append((row, _state_button(pv, prev_text, prev_on, btn_w, _merge({"left": left} if left else None, {"right": gap}))))
+    _text_into(part, row, pg, text, kind, w=caption_w, h=h, align="Center")
+    part.append((row, _state_button(nx, next_text, next_on, btn_w, {"left": gap})))
+    return part
+
+
+CONFIRM_PANELS = ("well", "row", None)
+
+
+def confirm_view(parent, prefix, w, question="", message="", note=None, msg_h=48, yes_text="Confirm", no_text="Cancel",
+                 yes_kind="primary", yes_sound=None, yes_w=180, no_w=180, panel="well", pad=DIALOG_PAD, compact=False, top=8,
+                 ids=None):
+    """The in-page confirm (SkyyRanks 0.1.1 buildConfirm: a question + Confirm / Cancel INSIDE the same page - nothing closes or
+    opens, so the HANDOFF rule "never close a page right before opening another" holds) in the vanilla confirm look
+    (Pages/PrefabEditorExitConfirm): a panel #<prefix> w wide (panel "well" = #000000(0.15), "row" = #101925(0.55) like SkyyRanks,
+    None = no back; padding pad = 20) holding the #ffcc00 32 px question #<prefix>Q (bottom 12), the wrapped #96a9be message
+    #<prefix>Msg (msg_h high, bottom 16), with note= a 12 px note #<prefix>Note (bottom 8), and the button row #<prefix>Btns (top 8):
+    yes #<prefix>Yes (Primary + the SaveSettings sound; yes_kind="destructive" = Destructive + ButtonsCancel for a risky question:
+    Delete / Disband / Kick / Reset) and no #<prefix>No (Secondary + ButtonsCancel), centred by a computed left margin (LayoutMode
+    Left + Anchor margins only). compact=True = ONE row instead (Classes / Profiles inline confirm rows): the question in 16 px bold
+    #ffcc00 filling what is left + yes + no. Texts: static proven text inline, anything else ("?", ",", J()) through b.set lines
+    in .sets; "" / None = b.set it yourself. Returns a Part: .h (height incl. its top margin), .box, .question, .message, .note,
+    .row, .yes, .no. Bind yes / no with Activating; the page's own state (pending action) decides what Confirm does."""
+    ids = dict(ids or {})
+    box = check_id(ids.get("box", prefix))
+    q = check_id(ids.get("question", prefix + "Q"))
+    yes = check_id(ids.get("yes", prefix + "Yes"))
+    no = check_id(ids.get("no", prefix + "No"))
+    if panel not in CONFIRM_PANELS:
+        raise ValueError("confirm_view panel well / row / None")
+    if yes_kind not in ("primary", "destructive"):
+        raise ValueError("confirm_view yes_kind primary / destructive")
+    if not isinstance(w, int) or isinstance(w, bool):
+        raise ValueError("confirm_view needs the int width w (the parent's inner width, e.g. sh.inner_w)")
+    bg = ("Background: %s; " % COLOR[panel]) if panel else ""
+    ysnd = yes_sound or ("save" if yes_kind == "primary" else None)
+    tm = {"top": top} if top else None
+    if compact:
+        cpad = 8
+        inner = w - 2 * 12
+        qw = inner - yes_w - no_w - 2 * 6
+        if qw < 160:
+            raise ValueError("confirm_view compact: %d px left for the question (w too small / buttons too wide)" % qw)
+        h = BTN_H + 2 * cpad
+        part = Part(h=h + (top or 0), box=box, question=q, message=None, note=None, row=box, yes=yes, no=no)
+        part.append((parent, "Group #%s { %sLayoutMode: Left; %sPadding: (Horizontal: 12, Vertical: %d); }"
+                     % (box, _anchor(w, h, tm), bg, cpad)))
+        _text_into(part, box, q, question, "bold", w=qw, h=BTN_H, col="warning")
+        part.append((box, button(yes, yes_text, yes_kind, w=yes_w, sound=ysnd, anchor={"left": 6})))
+        part.append((box, button(no, no_text, "secondary", w=no_w, sound="cancel", anchor={"left": 6})))
+        return part
+    m = check_id(ids.get("message", prefix + "Msg"))
+    n = check_id(ids.get("note", prefix + "Note")) if note is not None else None
+    r = check_id(ids.get("row", prefix + "Btns"))
+    if not isinstance(pad, int) or isinstance(pad, bool) or pad < 0:
+        raise ValueError("confirm_view pad must be an int >= 0")
+    qh, nh = 46, fs(12) + 10
+    parts = [qh + 12, msg_h + 16] + ([nh + 8] if n else []) + [BTN_H + 8]
+    h = 2 * pad + sum(parts)
+    inner = w - 2 * pad
+    left = _left_margin(inner, yes_w + no_w + 2 * 6, "center", "confirm_view buttons")
+    part = Part(h=h + (top or 0), box=box, question=q, message=m, note=n, row=r, yes=yes, no=no)
+    part.append((parent, "Group #%s { %sLayoutMode: Top; %s%s}" % (box, _anchor(w, h, tm), bg, _padding(pad) if pad else "")))
+    _text_into(part, box, q, question, "warning", h=qh, anchor={"bottom": 12, "horizontal": 8})
+    _text_into(part, box, m, message, "message", h=msg_h, anchor={"bottom": 16, "horizontal": 8})
+    if n:
+        _text_into(part, box, n, note, "note", h=nh, anchor={"bottom": 8, "horizontal": 4})
+    part.append((box, group(r, "Left", h=BTN_H, anchor={"top": 8})))
+    part.append((r, button(yes, yes_text, yes_kind, w=yes_w, sound=ysnd, anchor=_merge({"left": left} if left else None,
+                                                                                         {"right": 6}))))
+    part.append((r, button(no, no_text, "secondary", w=no_w, sound="cancel", anchor={"left": 6})))
+    return part
+
+
 # ================================================================= probe pages: the in-game gate for everything UNVERIFIED
 class Probe(object):
-    """One in-game probe page: n (1-based), key (the UNVERIFIED key it proves), shell (appends + b.set lines), look (what Skyy
-    should see / hear, in order), java_extra (extra Java statements with %B% for the builder variable)."""
+    """One in-game probe page: n (its number), name (a STABLE key for a probe command: "base1", "checkbox", ... - numbers may
+    grow, names do not; probe_page(name)), key (the UNVERIFIED key it proves: add it to PROBED once the page works; "base" for the
+    base pages 1, 2 and 18), shell (appends + b.set lines), look (the short numbered "what to see" list - the page shows it too),
+    java_extra (extra Java statements with %B% for the builder variable, or callables f(b) -> statements)."""
 
-    def __init__(self, n, key, shell, look, java_extra=()):
+    def __init__(self, n, key, shell, look, java_extra=(), name=None):
         self.n, self.key, self.shell, self.look, self.java_extra = n, key, shell, list(look), list(java_extra)
+        self.name = name or key
 
     def java(self, b="b", extra=True):
-        return "\n".join([self.shell.java(b)] + ([x.replace("%B%", b) for x in self.java_extra] if extra else []))
+        more = [x(b) if callable(x) else x.replace("%B%", b) for x in self.java_extra] if extra else []
+        return "\n".join([self.shell.java(b)] + more)
 
     def check(self):
         return self.shell.appends.check(self.shell.prefix)
+
+
+PROBE_BASE = ("base1", "base2", "base3")     # the base pages (key "base", numbers 1, 2 and 18): open these first
+
+
+def _look_lines(name, look, w, size=16):
+    """(head, numbered lines, line heights, total height) of a probe page's own "what to see" list in w px (wrapped default
+    labels: about 0.55 em per character, 21 px per line)."""
+    head = "Probe " + name + " - what to see"
+    lines = ["%d. %s" % (i + 1, t[:1].upper() + t[1:]) for i, t in enumerate(look)]
+    per = max(10, int((w - 4) / (size * 0.55)))
+    hs = [max(1, -(-len(t) // per)) * 21 + 4 for t in lines]
+    return head, lines, hs, (fs(13) + 10) + 10 + 4 + sum(hs)
+
+
+def _look_list(ap, parent, P, name, look, w):
+    """Append the probe page's numbered "what to see" list (Group #<P>Look: a section head + one wrapped label per line; the lines
+    hold punctuation, so they are b.set lines - Appends.text). Returns its height."""
+    head, lines, hs, total = _look_lines(name, look, w)
+    ap.append((parent, group(P + "Look", "Top", w=w, h=total)))
+    ap.append((P + "Look", section(P + "LookH", head)))
+    for i, (t, h) in enumerate(zip(lines, hs)):
+        ap.text(P + "Look", P + "Look" + str(i + 1), t, "default", h=h, wrap=True)
+    return total
 
 
 def _probe_shell(prefix, n, title, h, w=900, kind="plain"):
@@ -2184,62 +2706,81 @@ def _probe_shell(prefix, n, title, h, w=900, kind="plain"):
 
 
 def probe_pages(prefix="SkyyPb"):
-    """The in-game probe pages (engine review 7 / open question 8): pages 1-2 = the kit's core look ("base": every property the
-    restyles rely on that no Skyy page has used inline yet), then ONE page per UNVERIFIED feature, so a page that fails to parse
-    ("Failed to parse or resolve document" = a disconnect) names its culprit. A mod-side probe command opens page n with
-    probe.java("b") inside a CustomUIPage build (no bindings needed). Order: 1, 2, then the rest; after a page works in game, add its
-    key to PROBED (and tell the next builders). Returns [Probe, ...]."""
+    """The in-game probe pages (engine review 7 / open question 8). The BASE pages (key "base": base1 = page 1, base2 = page 2,
+    base3 = page 18) show the kit's core look - every property the restyles rely on that no Skyy page has used inline yet, and
+    the kit 1.3 builders made from them; then ONE page per UNVERIFIED feature (3-17), so a page that fails to parse ("Failed to
+    parse or resolve document" = a disconnect) names its culprit. Every page shows its own numbered "what to see" list (Probe.look)
+    and has a stable name (Probe.name; probe_page(name)). A mod-side probe command opens a page with probe.java("b") inside a
+    CustomUIPage build (no bindings needed). Order: base1, base2, base3, then 3-17; after a page works in game, add its key to
+    PROBED (and tell the next builders). Returns [Probe, ...] in number order."""
     check_id(prefix)
     pages = []
     t = True
 
-    # ---- page 1: frame, ornaments, close X, buttons, tabs, text
-    sh = page_shell(prefix + "1", 1100, 860, "Kit probe 1", close=True)
+    # ---- page 1 (base1): frame, ornaments, close X, buttons, tabs, text
+    look1 = ["the page opens (no disconnect): every base property parses inline",
+             "title bar: runes, KIT PROBE 1 in the Secondary font; the gold ornaments show above and below, not clipped",
+             "the close X hangs off the top-right corner; its click is the cancel sound",
+             "tabs: three equal tabs 5 px apart, the first gold (Primary); below them two tertiary tabs, the first outlined gold",
+             "every button changes on hover / press and clicks; BACK and DELETE use the cancel sound",
+             "LOCKED is grey and silent",
+             "REFORGE EVERYTHING NOW shrinks to fit its 150 px; the small SAVE (Primary) is 150 wide",
+             "12345 is big (32 px, the default font); Letter spacing is spaced out",
+             "separators: a thin line, the fancy line with its centre ornament, the gold-brown form line",
+             "the long caption stays on one line",
+             "CLOSE sits at the bottom right"]
+    sh = page_shell(prefix + "1", 1500, 860, "Kit probe 1", close=True)
     P = prefix + "1"
     ap = sh.appends
-    ap.extend(tab_row(sh.body, P + "Tabs", [P + "TabA", P + "TabB", P + "TabC"], ["Primary tab", "Second", "Third"], 0))
-    ap.extend(tab_row(sh.body, P + "Tabt", [P + "TabD", P + "TabE"], ["Quiet on", "Quiet off"], 0, w=190, mode="tertiary"))
-    ap.append((sh.body, label(P + "Head", "Buttons", "heading")))
-    ap.append((sh.body, button_row(P + "Row1", align="left", top=0)))
+    main_w = 1066
+    ap.append((sh.body, group(P + "Cols", "Left", h=sh.inner_h)))
+    ap.append((P + "Cols", group(P + "Main", "Top", w=main_w, h=sh.inner_h)))
+    ap.append((P + "Cols", separator("vertical", anchor={"left": 8, "right": 8})))
+    body = P + "Main"
+    ap.extend(tab_row(body, P + "Tabs", [P + "TabA", P + "TabB", P + "TabC"], ["Primary tab", "Second", "Third"], 0))
+    ap.extend(tab_row(body, P + "Tabt", [P + "TabD", P + "TabE"], ["Quiet on", "Quiet off"], 0, w=190, mode="tertiary"))
+    ap.append((body, label(P + "Head", "Buttons", "heading")))
+    ap.append((body, button_row(P + "Row1", align="left", top=0)))
     for i, (k, tx, extra) in enumerate((("primary", "Buy", {}), ("secondary", "Back", {"sound": "cancel"}),
                                         ("destructive", "Delete", {}), ("tertiary", "Tertiary", {}),
                                         ("secondary", "Locked", {"disabled": True}))):
         ap.append((P + "Row1", button(P + "B" + str(i), tx, k, anchor={"right": 6}, **extra)))
-    ap.append((sh.body, button_row(P + "Row2", h=BTN_BIG_H, align="left")))
+    ap.append((body, button_row(P + "Row2", h=BTN_BIG_H, align="left")))
     ap.append((P + "Row2", button(P + "S0", "Save", "primary", "small", anchor={"right": 6})))
     ap.append((P + "Row2", button(P + "S1", "Edit", "secondary", "small", anchor={"right": 6})))
     ap.append((P + "Row2", button(P + "S2", "Remove", "destructive", "small", anchor={"right": 6})))
     ap.append((P + "Row2", button(P + "S3", "Reforge everything now", "primary", w=150, anchor={"right": 6})))
     ap.append((P + "Row2", button(P + "S4", "Big", "primary", "big")))
-    ap.append((sh.body, "Group #%sTxt { Anchor: (Height: 52, Top: 12); LayoutMode: Left; }" % P))
+    ap.append((body, "Group #%sTxt { Anchor: (Height: 52, Top: 12); LayoutMode: Left; }" % P))
     ap.append((P + "Txt", label(P + "Num", "12345", "display", w=220)))
     ap.append((P + "Txt", label(P + "Spc", "Letter spacing", "strong", w=300, font=FONT_SECONDARY, spacing=0.5)))
     ap.append((P + "Txt", label(P + "Gold", "Gold info", "gold", w=200)))
     ap.append((P + "Txt", label(P + "Ok", "Success", "success", w=200)))
-    ap.append((sh.body, separator("content", anchor={"top": SEP_MARGIN, "bottom": SEP_MARGIN})))
-    ap.append((sh.body, separator("fancy")))
-    ap.append((sh.body, separator("form")))
-    ap.append((sh.body, label(P + "Wrap", "One line only - this caption is long enough to wrap but WrapMaxLines keeps one line", "caption",
-                              wrap=True, max_lines=1, w=500)))
-    ap.append((sh.body, spacer(h=40)))
-    ap.append((sh.body, button_row(P + "Foot", align="right")))
+    ap.append((body, separator("content", anchor={"top": SEP_MARGIN, "bottom": SEP_MARGIN})))
+    ap.append((body, separator("fancy")))
+    ap.append((body, separator("form")))
+    ap.append((body, label(P + "Wrap", "One line only - this caption is long enough to wrap but WrapMaxLines keeps one line", "caption",
+                           wrap=True, max_lines=1, w=500)))
+    ap.append((body, spacer(h=40)))
+    ap.append((body, button_row(P + "Foot", align="right")))
     ap.append((P + "Foot", button(P + "Close2", "Close", "secondary", sound="cancel")))
-    pages.append(Probe(1, "base", sh, [
-        "the page opens (no disconnect): every base property parses inline",
-        "title bar: ContainerHeader with runes, KIT PROBE 1 in 15 px Secondary uppercase; the gold ornaments stick out 12 px above "
-        "the bar and 6 px below the body and are NOT clipped",
-        "the close X hangs 8 px outside the top-right corner; hover / click sound = cancel",
-        "tab row 1: three equal-width tabs 5 px apart, the first gold Primary, the others Secondary; row 2 = tertiary, the first "
-        "with the gold outline",
-        "every button changes texture on hover / press and clicks (Back and Delete = cancel sound); LOCKED is grey and silent",
-        "REFORGE EVERYTHING NOW shrinks to fit its 150 px instead of clipping; the small SAVE Primary is 150 wide",
-        "12345 in the Secondary display font; Letter spacing is spaced out (0.5)",
-        "separators: 1 px line (8 px above / below), the fancy line with its centre ornament, the gold-brown form line",
-        "the long caption stays on one line (WrapMaxLines 1)",
-        "the Close button sits at the bottom right (LayoutMode Right)"]))
+    fit([_look_list(ap, P + "Cols", P, "base1", look1, sh.inner_w - main_w - 22)], sh.inner_h, "probe 1 look list")
+    pages.append(Probe(1, "base", sh, look1, name="base1"))
 
-    # ---- page 2: lists, well, rows, fields, panels (plain window)
-    sh = page_shell(prefix + "2", 1200, 900, "Kit probe 2", kind="plain")
+    # ---- page 2 (base2): lists, well, rows, fields, panels (plain window)
+    look2 = ["the page opens; the title bar has NO runes and NO ornaments (plain window)",
+             "the list sits on a darker well with a slim scrollbar",
+             "rows: normal lights up on hover and clicks, selected is blue, static never changes",
+             "the first row shows its badge and a small EDIT button",
+             "property box: grey bold keys, light blue values, one line each",
+             "two trade cards 10 px apart, gold on hover; the second is covered dark (sold out)",
+             "three text fields (kit, vanilla, filter look): tell the builder which typed text matches the game",
+             "the value box stretches next to BROWSE",
+             "option rows: the first tints on hover and is silent, the second has the selected frame",
+             "hover rows and nav buttons light up silently; the selected nav item is white and bold on the dark back",
+             "the setting row shows ON (gold outline) and OFF; the flat bar is two thirds full",
+             "the vertical separators start 2 px above the columns (Top -2)"]
+    sh = page_shell(prefix + "2", 1600, 900, "Kit probe 2", kind="plain")
     P = prefix + "2"
     ap = sh.appends
     ap.append((sh.body, "Group #%sCols { FlexWeight: 1; LayoutMode: Left; }" % P))
@@ -2286,25 +2827,18 @@ def probe_pages(prefix="SkyyPb"):
     for mk in on_off(P + "Set", True):
         ap.append((P + "Set", mk))
     ap.append((P + "R", bar(P + "Stat", 300, 12, 180, anchor={"top": 8})))
+    ap.append((P + "Cols", separator("vertical", anchor={"left": 8, "right": 8})))
+    fit([_look_list(ap, P + "Cols", P, "base2", look2, 400)], sh.inner_h, "probe 2 look list")
     sh.sets.append((P + "SetL", "Text", "Setting row"))
-    pages.append(Probe(2, "base", sh, [
-        "the page opens; the title bar has NO runes and NO ornaments (plain container)",
-        "the list sits on a darker well (#000000(0.15), 4 px inset) with a slim scrollbar; rows: normal (hover lighter, click "
-        "sound), selected (blue #4274a5), static (no hover); the first row shows its badge and a small EDIT button",
-        "the property box: bold grey keys 150 wide, light blue values filling the rest, one line each",
-        "two trade cards 10 px apart (5 px margin each), gold on hover; the second is covered dark (sold out)",
-        "the three text fields: compare the typed text (kit white 16 / vanilla engine default / filter 13 px light blue) - tell "
-        "the builder which matches the game; the value box stretches next to BROWSE",
-        "option rows: the first tints on hover and is SILENT, the second has the selected frame; hover rows light up silently",
-        "nav buttons: grey uppercase, hover light with a dark back; the selected one white bold on the dark back",
-        "the setting row with ON (gold outline) / OFF; the flat bar is two thirds full",
-        "the vertical separator between the columns starts 2 px above them (Top -2)"]))
+    pages.append(Probe(2, "base", sh, look2, name="base2"))
 
-    # ---- one page per UNVERIFIED feature
+    # ---- one page per UNVERIFIED feature (the page grows by its "what to see" list)
     def small(n, key, title, h, build, look, extra=(), w=900):
-        s = _probe_shell(prefix, n, title, h, w)
+        lh = _look_lines(key, look, w - 2 * CONTENT_PAD)[3]
+        s = _probe_shell(prefix, n, title, h + lh, w)
         build(s, prefix + str(n))
-        pages.append(Probe(n, key, s, look, extra))
+        _look_list(s.appends, s.body, prefix + str(n), key, look, s.inner_w)
+        pages.append(Probe(n, key, s, look, extra, name=key))
 
     def b_checkbox(s, p):
         s.appends.append((s.body, checkbox(p + "C0", True, trial=t)))
@@ -2312,37 +2846,37 @@ def probe_pages(prefix="SkyyPb"):
         s.appends.append((s.body, checkbox_row(p + "Row", p + "RowL", p + "RowC", True, "Include entities", trial=t, anchor={"top": 12})))
 
     small(3, "checkbox", "Probe checkbox", 300, b_checkbox, [
-        "the page opens", "two check boxes (checked / empty) in the vanilla frame; clicking toggles with the tick / untick sound",
-        "the row: Include entities, 220 px label, then the box"])
+        "the page opens", "two check boxes (checked, empty) in the vanilla frame; a click toggles with the tick / untick sound",
+        "the row: Include entities (a 220 px label), then its box"])
 
     def b_number(s, p):
         s.appends.append((s.body, text_field(p + "Nb", p + "N", 200, number=True, trial=t)))
 
-    small(4, "number-field", "Probe number field", 240, b_number, ["the page opens", "a number box in the input frame; typing "
-                                                                   "letters is refused, digits work"])
+    small(4, "number-field", "Probe number field", 240, b_number, [
+        "the page opens", "a number box in the input frame: letters are refused, digits work"])
 
     def b_tooltip(s, p):
         s.appends.append((s.body, button(p + "Tip", "Hover me", extra=tooltip("Sells for 20 coins", trial=t))))
         s.appends.append((s.body, label(p + "Tl", "Hover this label", "default", anchor={"top": 12}, extra=tooltip("A label tooltip", trial=t))))
 
-    small(5, "tooltip", "Probe tooltip", 260, b_tooltip, ["the page opens", "hovering the button / label shows the vanilla "
-                                                         "tooltip frame with the text", "Esc with a tooltip open closes the page "
-                                                         "cleanly (no stuck tooltip)"])
+    small(5, "tooltip", "Probe tooltip", 260, b_tooltip, [
+        "the page opens", "hovering the button or the label shows the vanilla tooltip frame with its text",
+        "Esc with a tooltip open closes the page cleanly (no stuck tooltip)"])
 
     def b_progress(s, p):
         s.appends.append((s.body, progress(p + "Pr", value=0.6, trial=t)))
         s.sets.append((p + "Pr", "Value", 0.75))
 
-    small(6, "progress-element", "Probe progress", 220, b_progress, ["the page opens", "a thin vanilla bar three quarters full "
-                                                                    "(the b.set Value 0.75 float wins over the inline 0.6)"])
+    small(6, "progress-element", "Probe progress", 220, b_progress, [
+        "the page opens", "a thin vanilla bar three quarters full (the b.set Value 0.75 wins over the inline 0.6)"])
 
     def b_membar(s, p):
         s.appends.append((s.body, progress(p + "Mb", value=0.4, kind="memories", trial=t)))
         s.sets.append((p + "Mb", "Value", 0.5))
         s.sets.append((p + "MbTex", "Value", 0.5))
 
-    small(7, "memories-bar", "Probe memories bar", 220, b_membar, ["the page opens", "the Memories bar: framed track, half filled, "
-                                                                   "a glowing tip at the fill end"])
+    small(7, "memories-bar", "Probe memories bar", 220, b_membar, [
+        "the page opens", "the Memories bar: a framed track, half full, a glowing tip at the fill end"])
 
     def b_quality(s, p):
         s.appends.append((s.body, "Group #%sQs { Anchor: (Height: %d); LayoutMode: Left; }" % (p, SLOT_FRAME)))
@@ -2352,31 +2886,31 @@ def probe_pages(prefix="SkyyPb"):
         s.appends.append((s.body, tooltip_panel(p + "Tp", w=360, h=120, quality="Rare", trial=t, anchor={"top": 12})))
         s.appends.append((p + "Tp", label(p + "TpN", "Rare sword", "tipName", col=QUALITY["Rare"])))
 
-    small(8, "quality-frame", "Probe quality frames", 340, b_quality, ["the page opens (the ../ItemQualities paths resolve)",
-                                                                       "five swords on the Common / Uncommon / Rare / Epic / "
-                                                                       "Legendary slot frames", "a Rare item tooltip frame with "
-                                                                       "the name"])
+    small(8, "quality-frame", "Probe quality frames", 340, b_quality, [
+        "the page opens (the ../ItemQualities paths resolve)",
+        "five swords on the Common, Uncommon, Rare, Epic and Legendary slot frames",
+        "a Rare item tooltip frame with the name"])
 
     def b_itemslot(s, p):
         s.appends.append((s.body, item_slot(p + "Sb", p + "Sl", trial=t)))
         s.sets.append((p + "Sl", "ItemId", "Weapon_Sword_Iron"))
 
-    small(9, "itemslot", "Probe item slot", 240, b_itemslot, ["the page opens", "the iron sword on its quality background in the "
-                                                             "68 px border; no ItemStack sent"])
+    small(9, "itemslot", "Probe item slot", 240, b_itemslot, [
+        "the page opens", "the iron sword on its quality background in the 68 px border (no ItemStack sent)"])
 
     def b_dropdown(s, p):
         s.appends.append((s.body, dropdown(p + "Dd", trial=t)))
         s.appends.append((s.body, dropdown(p + "Ds", search=True, trial=t, anchor={"top": 12})))
 
-    small(10, "dropdown", "Probe dropdown", 260, b_dropdown, ["the page opens", "two dropdown boxes with the caret; clicking opens "
-                                                             "the panel (no entries: the dim no-items line) with the tick sound; "
-                                                             "the second has a search box"])
+    small(10, "dropdown", "Probe dropdown", 260, b_dropdown, [
+        "the page opens", "two dropdowns with the caret; a click opens the panel (no entries: a dim line) with the tick sound",
+        "the second one has a search box"])
 
     def b_search(s, p):
         s.appends.append((s.body, search_field(p + "Sb", p + "Sf", 400, placeholder="search", trial=t)))
 
-    small(11, "search-field", "Probe search field", 220, b_search, ["the page opens", "an input box with the magnifier on the left; "
-                                                                   "typing shows the clear x on the right, clicking it empties the box"])
+    small(11, "search-field", "Probe search field", 220, b_search, [
+        "the page opens", "an input box with the magnifier on the left; typing shows the clear x, a click on it empties the box"])
 
     def b_spinner(s, p):
         s.appends.append((s.body, spinner(p + "Sp", trial=t)))
@@ -2388,38 +2922,102 @@ def probe_pages(prefix="SkyyPb"):
         for i, st in enumerate(TILE_STATES):
             s.appends.append((p + "Tiles", tile(p + "T" + str(i), st.upper()[:8], st, trial=t)))
 
-    small(13, "tile", "Probe tiles", 320, b_tile, ["the page opens", "four Memories tiles: default (lights on hover, click sound), "
-                                                   "selected, complete, empty (dim, no click)"], w=900)
+    small(13, "tile", "Probe tiles", 320, b_tile, [
+        "the page opens", "four Memories tiles: default (lights on hover, clicks), selected, complete, empty (dim, no click)"], w=900)
 
     def b_mask(s, p):
         s.appends.append((s.body, gradient_label(p + "G", "Gradient heading", trial=t)))
         s.appends.append((s.body, list_button(p + "Lb", "Nav selected", "selected", mask=True, trial=t)))
 
-    small(14, "text-mask", "Probe text mask", 220, b_mask, ["the page opens", "the heading and the selected nav text fade with the "
-                                                            "vanilla gradient"])
+    small(14, "text-mask", "Probe text mask", 220, b_mask, [
+        "the page opens", "the heading and the selected nav text fade with the vanilla gradient"])
 
     def b_slotbg(s, p):
-        s.appends.append((s.body, "ItemGrid #%sGrid { Anchor: (Width: 300, Height: 80); SlotsPerRow: 4; AreItemsDraggable: false; Style: %s; }"
-                          % (p, item_grid_style(74, 64, 2, slot_bg=True, trial=t))))
+        s.appends.append((s.body, item_grid(p + "Grid", 4, 1, well=False, slot_bg=True, trial=t)))
 
-    small(15, "slot-background", "Probe slot background", 240, b_slotbg, ["the page opens", "the empty grid shows the block selector "
-                                                                          "slot backgrounds"])
+    small(15, "slot-background", "Probe slot background", 240, b_slotbg, [
+        "the page opens", "the empty 4-slot grid shows the block selector slot backgrounds"])
 
     def b_disabled(s, p):
         s.appends.append((s.body, button(p + "D", "Disabled", disable_element=True, trial=t)))
 
-    small(16, "disabled-prop", "Probe disabled", 200, b_disabled, ["the page opens", "the button shows the grey Disabled look by "
-                                                                   "itself and does not click"])
+    small(16, "disabled-prop", "Probe disabled", 200, b_disabled, [
+        "the page opens", "the button shows the grey Disabled look by itself and does not click"])
 
     def b_ref(s, p):
         s.appends.append((s.body, button(p + "R", "By reference")))
 
     small(17, "value-ref", "Probe style reference", 200, b_ref, [
-        "the page opens", "the button turns into the gold Primary (Value.ref Common.ui DefaultTextButtonStyle)"],
+        "the page opens", "the button turns into the gold Primary (Value.ref of Common.ui DefaultTextButtonStyle)"],
         extra=[java_ref_style(prefix + "17R", "DefaultTextButtonStyle", b="%B%", trial=t)])
+
+    # ---- page 18 (base3): the kit 1.3 builders (pager, item grid, icon cells, confirm views, punctuated text, display)
+    look18 = ["the page opens (every piece uses base properties only)",
+              "pager: < PREV greyed out and silent, the caption Page 2 / 5 in the middle, NEXT > normal with the click",
+              "item grid: 5 x 2 slots on a dark well - a sword, 64 iron bars, a pickaxe, 12 bread; hover shows the item tooltip",
+              "icon cells: normal (lighter on hover, click), selected (blue), disabled (dark cover, silent), empty; then the "
+              "plain pair (no back, hover dark, selected light blue)",
+              "the first cell shows 64 at its bottom right",
+              "confirm view: yellow question, grey message, CONFIRM (gold, save sound) and CANCEL (cancel sound) centred",
+              "the one-row confirm: the question on the left, SWITCH (red) and CANCEL on the right",
+              "the line Costs 1,250 coins (50% off) shows its comma, brackets and percent sign",
+              "12345 big in the default font"]
+    sh = page_shell(prefix + "18", 1400, 960, "Kit probe 18")
+    P = prefix + "18"
+    ap = sh.appends
+    main_w = 900
+    ap.append((sh.body, group(P + "Cols", "Left", h=sh.inner_h)))
+    ap.append((P + "Cols", group(P + "Main", "Top", w=main_w, h=sh.inner_h)))
+    ap.append((P + "Cols", separator("vertical", anchor={"left": 8, "right": 8})))
+    body = P + "Main"
+    used = []
+    ap.append((body, label(P + "H1", "Pager", "heading")))
+    used.append(fs(18) + 10)
+    pg = pager(body, P + "Pg", main_w, text="Page 2 / 5", prev_on=False)
+    ap.extend(pg)
+    used.append(pg.h)
+    ap.append((body, label(P + "H2", "Item grid", "heading", anchor={"top": 12})))
+    used.append(fs(18) + 10 + 12)
+    ap.append((body, item_grid(P + "Grid", 5, 2)))
+    used.append(2 * GRID_SLOT + GRID_SPACING + 2 * GRID_WELL_PAD)
+    ap.append((body, label(P + "H3", "Icon cells", "heading", anchor={"top": 12})))
+    used.append(fs(18) + 10 + 12)
+    ap.append((body, group(P + "Cells", "Left", h=74)))
+    used.append(74)
+    for i, (st, it, q, lk) in enumerate((("normal", "Ingredient_Bar_Iron", "64", "row"), ("selected", "Weapon_Sword_Iron", False, "row"),
+                                         ("disabled", "Food_Bread", False, "row"), ("empty", None, False, "row"),
+                                         ("normal", "Plant_Fruit_Apple", False, "plain"), ("selected", "Tool_Pickaxe_Iron", False, "plain"))):
+        ap.append((P + "Cells", icon_cell(P + "C" + str(i), it, 74, st, qty=q, look=lk, anchor={"right": 8 if i != 3 else 24})))
+    ap.append((body, label(P + "H4", "Confirm view", "heading", anchor={"top": 12})))
+    used.append(fs(18) + 10 + 12)
+    cv = confirm_view(body, P + "Cf", main_w, question="Sell 64 iron bars?", message="You get 1,250 coins. This cannot be undone.")
+    ap.extend(cv)
+    used.append(cv.h)
+    cc = confirm_view(body, P + "Cc", main_w, question="Switch to Mage for 500 coins?", yes_text="Switch", yes_kind="destructive",
+                      compact=True)
+    ap.extend(cc)
+    used.append(cc.h)
+    sh.text(body, None, "Costs 1,250 coins (50% off) - shown exactly as written.", "default", h=26, anchor={"top": 12})
+    used.append(26 + 12)
+    ap.append((body, label(P + "Num", "12345", "display", h=44)))
+    used.append(44)
+    fit(used, sh.inner_h, "probe 18 body")
+    fit([_look_list(ap, P + "Cols", P, "base3", look18, sh.inner_w - main_w - 22)], sh.inner_h, "probe 18 look list")
+    fill = [("Weapon_Sword_Iron", 1), ("Ingredient_Bar_Iron", 64), ("Tool_Pickaxe_Iron", 1), ("Food_Bread", 12)] + [None] * 6
+    pages.append(Probe(18, "base", sh, look18, name="base3",
+                       java_extra=[lambda b, _p=P, _f=fill: java_grid_fill(_p + "Grid", _f, var="pbGridSlots", b=b)]))
+    pages.sort(key=lambda pg: pg.n)
     for pg in pages:
         pg.check()
     return pages
+
+
+def probe_page(which, prefix="SkyyPb"):
+    """One probe page by its stable name ("base1", "checkbox", "base3", ...) or its number."""
+    for pg in probe_pages(prefix):
+        if pg.name == which or pg.n == which:
+            return pg
+    raise KeyError("no probe page %r (names: %s)" % (which, ", ".join(p.name for p in probe_pages(prefix))))
 
 
 # ================================================================= verify() - the build-time vanilla check
@@ -2523,7 +3121,8 @@ def verify(assets_zip=None, client_dir=None, quiet=False):
             extra = "client folder not found: %d client reference values skipped" % sum(1 for d, _n, _w in _CHECKS if d in CLIENT_DOCS)
         print("vanilla look checked: %d style values, %d textures / sounds (Assets.zip; %s; %s)" % (values, files, extra, kit_id()))
         if "base" not in PROBED:
-            print("  note: the kit's base look is not yet seen in game - open SUI.probe_pages() 1 and 2 before shipping a restyle")
+            print("  note: the kit's base look is not yet seen in game - open the base probe pages (probe_page(\"base1\"), \"base2\", "
+                  "\"base3\" = pages 1, 2, 18) before shipping a restyle")
     return {"values": values, "files": files, "client": client, "client_dir": have_client}
 
 

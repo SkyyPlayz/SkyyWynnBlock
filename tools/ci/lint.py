@@ -19,6 +19,9 @@ check and expensive to get wrong:
   WARN  the same scripts write their own texture / sound path (TexturePath / Background / SoundPath / ... "<path>.png|.ogg") that the
         kit does not verify (skyyui.TEX / SND), or a FontName other than the vanilla Default / Secondary (never a FAIL; ui-data lines
         are skipped)
+  WARN  newest build script of ANY mod fills an ItemGridSlot with something other than a new ItemStack(...) built right there
+        (`new ItemGridSlot(stack)`): a stack that carries metadata in a grid slot disconnects the client (HANDOFF section 2; the
+        SkyyAuctions 0.1 bug). Build the slot as new ItemGridSlot(new ItemStack(id, qty)), as skyyui.java_grid_methods() does
 Exit code 1 on any FAIL.
 Files checked = tracked + untracked-but-not-ignored (what `git add -A` would commit), so a new, not yet committed build script counts.
 Extra: python tools/ci/lint.py --perm <build script> ...   runs only the permission-group check on the given files (old / pinned ones).
@@ -412,6 +415,20 @@ ID_RE = re.compile(r"#([A-Za-z][A-Za-z0-9_]*)")
 UI_HINT = re.compile(r"appendInline|\.set\(\"#|addEventBinding")  # runtime page-building code only (old .ui template strings are dead text)
 UI_FILE_RE = re.compile(r"""["'][^"']*\.ui["']""")
 CMD_RE = re.compile(r'super\("([a-z][a-z0-9_]*)"')
+# ---- WARN only: ItemGridSlot content (the metadata rule). `new ItemGridSlot(` (also as the @IGS@ / {IGS} class tokens of the build
+# scripts) whose argument is neither empty nor a `new ItemStack(` (@IS@ / {IS}) built right there
+GRID_SLOT_NEW_RE = re.compile(r"new\s+(?:[A-Za-z_][\w.]*\.)?(?:ItemGridSlot|@IGS@|\{IGS\})\s*\("
+                              r"(?!\s*\)|\s*new\s+(?:[A-Za-z_][\w.]*\.)?(?:ItemStack|@IS@|\{IS\})\s*\()")
+
+
+def grid_slot_warnings(rel, text):
+    """WARN lines for ItemGridSlots built from anything but a fresh new ItemStack(...) (a held stack may carry metadata)."""
+    out = []
+    for i, line in enumerate(text.splitlines(), 1):
+        if GRID_SLOT_NEW_RE.search(line):
+            out.append("%s:%d ItemGridSlot built from a stack that is not a new ItemStack(id, qty) made right there - item metadata in "
+                       "a grid slot disconnects the client (HANDOFF section 2; use skyyui.java_grid_methods / java_grid_fill)" % (rel, i))
+    return out
 
 for mod, f in sorted(newest.items()):
     text = open(os.path.join(ROOT, f), encoding="utf8", errors="replace").read()
@@ -434,6 +451,7 @@ for mod, f in sorted(newest.items()):
         if name in ADMIN_ONLY_OK.get(mod, set()):
             continue
         warns.append("%s: command '%s' has no setPermissionGroups/requirePermission (ordinary players cannot run it)" % (f, name))
+    warns.extend(grid_slot_warnings(f, text))
     try:
         fails.extend("permission groups: " + x for x in perm_group_leaks(f, text))
     except SyntaxError:

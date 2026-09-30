@@ -39,6 +39,9 @@ SET = [
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
     ("SkyyRanks", "0.1.1"),
+    # vanilla UI pass (2026-09-29): DEV/TEST mod - /skyprobe (admin only) opens the shared kit's probe pages so Skyy can confirm the
+    # vanilla look works inline before any restyled page ships. Move it to RETIRED once the probe results are in.
+    ("SkyyUiProbe", "0.1"),
 ]
 # round 6 (2026-09-25): SkyyClasses 0.1.6 + SkyySkills 0.4.4 + SkyyProfiles 0.1.2 deploy TOGETHER (Berserker/Fury, Priest/Divinity, class kits;
 # Profiles 0.1.1 only draws 6 class cards). Never go back to SkyySkills 0.4.3 once Fury/Divinity XP exists (0.4.3 drops those keys).

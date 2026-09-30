@@ -388,7 +388,12 @@ def phase_structure():
         nos.pop("SearchInputStyle")
         same("dropdown", nos, kit_value(UI.dropdown_style()))
         same("clear button", C.get("ClearButtonStyle"), kit_value(UI.clear_button_style()))
-        same("window title", C.text("(...@TitleStyle, HorizontalAlignment: Center)"), kit_value(UI.title_style()))
+        # kit 1.3: @TitleStyle's LetterSpacing: 0 is the engine default and is not written (= the deployed Ranks / Vault titles)
+        vt = C.text("(...@TitleStyle, HorizontalAlignment: Center)")
+        check(vt.get("LetterSpacing") == "0", "structure: vanilla @TitleStyle still has LetterSpacing 0 (the dropped default)")
+        vt.pop("LetterSpacing", None)
+        same("window title (LetterSpacing 0 dropped)", vt, kit_value(UI.title_style()))
+        check("LetterSpacing" not in UI.title_style(), "kit 1.3: the title writes no LetterSpacing")
         same("list row normal", W.get("NormalRowStyle"), kit_value(UI.row_style("normal")))
         same("list row selected", W.get("SelectedRowStyle"), kit_value(UI.row_style("selected")))
         same("list row static", W.get("StaticRowStyle"), kit_value(UI.row_style("static")))
@@ -517,6 +522,30 @@ def build_samples():
         s["tile " + st] = UI.tile(P + "Tl" + st[:3], "Mage", st, trial=True)
     s["gradient label"] = UI.gradient_label(P + "Big", "Mining", trial=True)
     s["number field"] = UI.text_field(P + "Nb", P + "N", 120, number=True, trial=True)
+    # kit 1.3
+    s["label heading no max lines"] = UI.label(P + "Lnm", "", "heading", max_lines=False)
+    s["label heading wrap off"] = UI.label(P + "Lwo", "", "heading", wrap=False)
+    s["label max lines 0"] = UI.label(P + "Lm0", "", "caption", wrap=True, max_lines=0)
+    s["label zero spacing"] = UI.label(P + "Lzs", "", "strong", spacing=0)
+    s["label zero spacing float"] = UI.label(P + "Lzf", "", "strong", spacing=0.0)
+    s["status line wrap max 0"] = UI.status_line(P + "Stz", h=44, wrap=True, max_lines=0)
+    s["item icon runtime"] = UI.item_icon(P + "Iir", UI.J("ids[i]", "Weapon_Sword_Iron"))
+    for st in UI.ICON_CELL_STATES:
+        for lk in UI.ICON_CELL_LOOKS:
+            s["icon cell %s %s" % (st, lk)] = UI.icon_cell(P + "Ic" + st[:2].title() + lk[:2].title(), "Weapon_Sword_Iron", 74, st,
+                                                           look=lk)
+    s["icon cell qty"] = UI.icon_cell(P + "Icq", "Ingredient_Bar_Iron", 74, qty="64")
+    s["icon cell qty label"] = UI.icon_cell(P + "Icl", "Ingredient_Bar_Iron", 87, qty=True, anchor={"right": 6})
+    s["icon cell runtime"] = UI.icon_cell(P + "Icr" + UI.J("i", "3"), UI.J("ids[i]", "Weapon_Sword_Iron"), 76)
+    s["icon cell wide"] = UI.icon_cell(P + "Icw", "Weapon_Sword_Iron", w=158, h=76, icon=44, icon_left=6)
+    s["icon cell silent"] = UI.icon_cell(P + "Ics", "Weapon_Sword_Iron", sound=None)
+    s["icon cell no item"] = UI.icon_cell(P + "Icn", None, 64)
+    s["item grid kit"] = UI.item_grid(P + "Ig", 9, 6)
+    s["item grid bare"] = UI.item_grid(P + "Igb", 4, 1, well=False, tooltips=False, anchor={"left": 8})
+    s["item grid runtime"] = UI.item_grid(P + "Igr", UI.J("g[0]", "4"), 2, slot=UI.J("g[1]", "72"), spacing=0,
+                                          w=UI.J("g[2]", "288"), h=UI.J("g[3]", "144"))
+    s["item grid slot bg"] = UI.item_grid(P + "Igs", 4, 1, slot_bg=True, trial=True, box_id=P + "IgsWell")
+    s["item grid drag"] = UI.item_grid(P + "Igd", 32, 18, slot=40, icon=1, spacing=0, drag=True, well=False)
     return s
 
 
@@ -654,7 +683,15 @@ def phase_builders():
     raises(lambda: UI.color("red"), ValueError, "unknown colour name refused")
     raises(lambda: UI.color("#ffffff\n"), ValueError, "colour with a trailing newline refused")
     raises(lambda: UI.label(P + "A", "", "default", col="#zzzzzz"), ValueError, "bad label colour refused")
-    check(UI.STATUS == {"+": "#39f493", "-": "#ff6b6b", "=": "#E8A93B"}, "status marks = the vanilla success / error / gold")
+    check(UI.STATUS == {"+": "#39f493", "-": "#ff6b6b", "=": "#7caacc"}, "status marks = the vanilla success / error / info blue (1.3)")
+    check(UI.STATUS_INFO == {"info": "#7caacc", "gold": "#E8A93B"} and UI.STATUS["="] == UI.COLOR["info"],
+          "the gold '=' stays available by name")
+    gm = UI.java_status_methods(info="gold")
+    check("if (c == '=') return \"#E8A93B\";" in gm[0] and "if (c == '=') return \"#7caacc\";" in UI.java_status_methods()[0],
+          "java_status_methods: info blue by default, info='gold' = the old gold")
+    check("return \"#ffcc00\";" in UI.java_status_methods(info="warning")[0], "java_status_methods(info=<COLOR name>)")
+    raises(lambda: UI.java_status_methods(info="nope"), ValueError, "java_status_methods refuses an unknown colour")
+    raises(lambda: UI.java_status_methods(info=UI.J("c", "#ffffff")), ValueError, "java_status_methods refuses a J() colour")
     check(UI.norm_color("#ABCDEF(0.50)") == "#abcdef(0.5)" and UI.norm_color("#ffffff(...)") == "#ffffff(...)"
           and UI.norm_color("#123456(1.2.3)") == "#123456(1.2.3)" and UI.norm_color("#FFFFFF(.5)") == "#ffffff(0.5)",
           "norm_color (malformed alphas come back lower-cased instead of raising)")
@@ -736,7 +773,16 @@ def phase_builders():
           "card sold-out cover")
     check(UI.card(P + "Cd", margin=0).startswith("Button #SkyyTCd { Anchor: (Width: 230, Height: 185);"), "card margin 0")
     lf = UI.label(P + "A", "", "display")
-    check('FontName: "Secondary"' in lf and "FontSize: 32" in lf, "display label: Secondary 32")
+    check("FontName" not in lf and "FontSize: 32" in lf and "TextColor: #ffffff" in lf,
+          "display label: 32 px in the Default font (Hud/TimeLeft timer, kit 1.3)")
+    chk = UI.checks()
+    check(("HT", "TimerLabel #TimeLabel {\n      Style: (FontSize: 32, Alignment: Center);",
+           "label display (Hud/TimeLeft timer, Default font)") in chk, "display cites the Hud/TimeLeft timer")
+    check(not any("@TimeLimitStyle" in n for _d, n, _w in chk), "the unused PortalDeviceSummon @TimeLimitStyle is no longer cited")
+    check(any(d == "PS" and "FontSize: 24" in n and 'FontName: "Secondary"' in n for d, n, _w in chk),
+          "big Secondary text is proven as a title (PortalDeviceSummon 24 px)")
+    check(any(d == "RS" and "FontSize: 38" in n for d, n, _w in chk), "RespawnPage 38 px Secondary title needle")
+    check("Hud/TimeLeft" in UI.LABELS["display"][7] and "display" not in UI.LABEL_MORE, "display kind cites Hud/TimeLeft")
     check("LetterSpacing: 0.5" in samples["label secondary spaced"] and "LetterSpacing: 1.8" in samples["label spaced 1.8"]
           and "VerticalAlignment" not in samples["label spaced 1.8"], "LetterSpacing floats, valign=False")
     tf = UI.text_field(P + "A", P + "B", flex=1)
@@ -937,18 +983,296 @@ def phase_builders():
     return samples
 
 
+# ================================================================= kit 1.3 (the SkyyBank pilot review)
+ROOT_MK = "Group #SkyyTA { Anchor: (Width: 1100, Height: 900); }"
+BODY_MK = "Group #SkyyTBody { LayoutMode: Top; }"
+
+
+def part_ok(name, part, root=True):
+    """check_page of a Part under a stand-in root + body, markup_ok on every append (both variants of a Choice)."""
+    ap = UI.Appends([(None, ROOT_MK), ("SkyyTA", BODY_MK)])
+    ap.extend(part)
+    try:
+        ap.check(P)
+        check(True, name + " check_page")
+    except ValueError as e:
+        FAILS.append("%s: check_page refused it: %s" % (name, e))
+    for i, (par, mk) in enumerate(part):
+        for j, v in enumerate(UI._variants(mk)):
+            markup_ok("%s append %d.%d" % (name, i, j), v)
+    return ap
+
+
+def phase_kit13(samples):
+    # ---- finding 4: LetterSpacing 0 is never written; WrapMaxLines only with Wrap: true, never 0
+    for name, mk in samples.items():
+        plain = UI.render(mk)
+        check(re.search(r"LetterSpacing: 0(?![.\d])", plain) is None, name + ": LetterSpacing 0 written")
+        check("WrapMaxLines: 0" not in plain, name + ": WrapMaxLines 0 written")
+        check(plain.count("WrapMaxLines") == plain.count("Wrap: true, WrapMaxLines"), name + ": WrapMaxLines without Wrap: true")
+    check("WrapMaxLines" not in samples["label heading no max lines"] and "Wrap: true" in samples["label heading no max lines"],
+          "max_lines=False removes the kind's WrapMaxLines (heading keeps Wrap)")
+    check("WrapMaxLines" not in samples["label heading wrap off"] and "Wrap" not in samples["label heading wrap off"],
+          "wrap=False drops the kind's WrapMaxLines too")
+    check("WrapMaxLines" not in samples["label max lines 0"] and "Wrap: true" in samples["label max lines 0"], "max_lines=0 = none")
+    check("LetterSpacing" not in samples["label zero spacing"] and "LetterSpacing" not in samples["label zero spacing float"],
+          "spacing=0 / 0.0 writes no LetterSpacing")
+    check("LetterSpacing: 0.5" in UI.label(P + "A", "", "strong", spacing=0.5), "spacing=0.5 still written")
+    check("WrapMaxLines" not in samples["status line wrap max 0"], "status_line max_lines=0 = none")
+    raises(lambda: UI.text_style(16, "text", max_lines=2), ValueError, "text_style WrapMaxLines without wrap", "Wrap: true")
+    raises(lambda: UI.label(P + "A", "", "caption", max_lines=2), ValueError, "label max_lines without wrap", "Wrap: true")
+    raises(lambda: UI.status_line(P + "A", max_lines=2), ValueError, "status_line max_lines without wrap", "Wrap: true")
+    raises(lambda: UI.label(P + "A", "", "heading", max_lines=-1), ValueError, "negative max_lines")
+    raises(lambda: UI.label(P + "A", "", "heading", max_lines=True), ValueError, "max_lines=True refused")
+    raises(lambda: UI.label(P + "A", "", "heading", max_lines=1.5), ValueError, "max_lines float refused")
+    check("Wrap: true, WrapMaxLines: 1" in UI.label(P + "A", "", "heading"), "heading keeps its vanilla Wrap + WrapMaxLines 1")
+    check("Wrap: true, WrapMaxLines: 3" in UI.label(P + "A", "", "caption", wrap=True, max_lines=3), "explicit wrap + max_lines")
+
+    # ---- item_icon with a runtime id (inline, as the deployed cells do)
+    check(UI.java_expr(samples["item icon runtime"]) == '"ItemIcon #SkyyTIir { Anchor: (Width: 32, Height: 32); ItemId: \\"" + (ids[i]) '
+          '+ "\\"; }"', "item_icon J() id is written inline")
+    raises(lambda: UI.item_icon(P + "A", UI.J("x", "bad id")), ValueError, "runtime item id sample must be an item id")
+    raises(lambda: UI.item_icon(P + "A", "a" + UI.J("x", "B")), ValueError, "runtime item id is one J()")
+    raises(lambda: UI.item_icon(P + "A", 'x"y'), ValueError, "static item id with a quote")
+
+    # ---- G4: Appends.text / Shell.text
+    ap = UI.Appends([(None, ROOT_MK), ("SkyyTA", BODY_MK)])
+    i1 = ap.text("SkyyTBody", P + "Cap", "your whole purse", "caption", w=200)
+    i2 = ap.text("SkyyTBody", P + "Mid", "max 1,000,000 coins (5%).", "caption", w=300)
+    i3 = ap.text("SkyyTBody", None, "Page 1 of 3?", "default")
+    i4 = ap.text("SkyyTBody", None, "Page 2 of 3?", "default")
+    i5 = ap.text("SkyyTBody", None, "plain inline", "default")
+    i6 = ap.text("SkyyTBody", P + "Run", UI.J("name", "Skyy"), "strong")
+    check(i1 == P + "Cap" and 'Text: "your whole purse"' in ap[2][1], "Appends.text: proven text inline")
+    check(i2 == P + "Mid" and 'Text: ""' in ap[3][1] and (P + "Mid", "Text", "max 1,000,000 coins (5%).") in ap.sets,
+          "Appends.text: punctuated text = empty label + b.set line")
+    check(i3 == "SkyyTBodyTx0" and i4 == "SkyyTBodyTx1" and i5 is None, "Appends.text: auto ids <parent>Tx<n>, anonymous inline")
+    check((P + "Run", "Text", UI.J("name", "Skyy")) in ap.sets, "Appends.text: J() text = a b.set line")
+    try:
+        ap.check(P)
+        check(True, "Appends.text page passes check_page")
+    except ValueError as e:
+        FAILS.append("Appends.text page: %s" % e)
+    js = ap.java("b")
+    check(js.index("b.set(\"#SkyyTMid.Text\", \"max 1,000,000 coins (5%).\");") > js.rindex("appendInline"),
+          "Appends.java: the b.set lines come after every append")
+    check('b.set("#SkyyTRun.Text", "" + (name));' in js, "Appends.java: runtime text set")
+    raises(lambda: UI.Appends().text(None, None, "x,y"), ValueError, "Appends.text into the root refused")
+    raises(lambda: UI.Appends().text("SkyyTBody", P + "Bad_Id", "x,y"), ValueError, "Appends.text id with an underscore", "underscore")
+    bad = UI.Appends([(None, ROOT_MK)])
+    bad.sets.append((P + "Ghost", "Text", "x"))
+    raises(lambda: bad.check(P), ValueError, "check_page: a b.set line whose target no append created", "no append created")
+    blk = UI.Appends()
+    blk.text("SkyyTBody", P + "Blk", "a, b and c", "caption")
+    a2 = UI.Appends([(None, ROOT_MK), ("SkyyTA", BODY_MK)])
+    a2.extend(blk)
+    check(a2.sets == [(P + "Blk", "Text", "a, b and c")] and len(a2) == 3, "Appends.extend carries .sets along")
+    a3 = UI.Appends([(None, ROOT_MK), ("SkyyTA", BODY_MK)])
+    a3 += list(blk)
+    check(a3.sets == [], "a plain list brings no .sets")
+    a3 += blk
+    check(a3.sets == blk.sets and len(a3) == 4, "Appends += carries .sets along")
+    check(UI.Appends(ap).sets == ap.sets, "Appends(copy) keeps .sets")
+    sh = UI.page_shell(P, 900, 600, "Shop")
+    tid = sh.text(sh.body, None, "Buy 3 for 1,250 coins?", "default")
+    check(tid == "SkyyTBodyTx0" and sh.all_sets() == [(tid, "Text", "Buy 3 for 1,250 coins?")] and not sh.sets,
+          "Shell.text puts the b.set in the appends; all_sets lists it")
+    check('b.set("#SkyyTBodyTx0.Text", "Buy 3 for 1,250 coins?");' in sh.java("b"), "Shell.java emits Appends.text sets")
+
+    # ---- choose(): a markup picked at runtime
+    ch = UI.choose(UI.J("pageNo > 0"), UI.button(P + "Pv", "Prev", size="small"), UI.button(P + "Pv", "Prev", size="small",
+                                                                                          disabled=True))
+    check(isinstance(ch, UI.Choice) and ch.cond == "pageNo > 0", "choose takes J(cond)")
+    check(UI.choose("a && b", "Group #SkyyTX { }", "Group #SkyyTX { }").cond == "a && b", "choose takes a plain Java condition")
+    jl = UI.java_append(P + "Row", ch)
+    check(jl.startswith('b.appendInline("#SkyyTRow", (pageNo > 0) ? ("TextButton #SkyyTPv {') and ') : ("TextButton #SkyyTPv {' in jl,
+          "java_append of a Choice = a ternary of both markups")
+    raises(lambda: UI.choose("x; y", "Group #SkyyTX { }", "Group #SkyyTX { }"), ValueError, "choose refuses ';' in cond")
+    raises(lambda: UI.choose("", "Group #SkyyTX { }", "Group #SkyyTX { }"), ValueError, "choose refuses an empty cond")
+    raises(lambda: UI.choose("a" + UI.J("b"), "Group #SkyyTX { }", "Group #SkyyTX { }"), ValueError, "choose: cond is one J()")
+    raises(lambda: UI.check_markup(UI.choose("c", "Group #SkyyTX { }", "Group #SkyyTY { }")), ValueError,
+           "choose: both variants must create the same ids", "same element ids")
+    raises(lambda: UI.check_markup(UI.choose("c", "Group #SkyyTX { }", "Group #SkyyTX { ")), ValueError,
+           "choose: a broken variant is refused")
+    cp = UI.Appends([(None, ROOT_MK), ("SkyyTA", "Group #SkyyTRow { LayoutMode: Left; }"), ("SkyyTRow", ch),
+                     (P + "Pv", "Label #SkyyTPvL { }")])
+    try:
+        cp.check(P)
+        check(True, "check_page knows the ids a Choice creates")
+    except ValueError as e:
+        FAILS.append("check_page with a Choice: %s" % e)
+
+    # ---- G1 pager
+    pg = UI.pager("SkyyTBody", P + "Pg", 1066, text="Page 2 / 5", prev_on=False)
+    part_ok("pager static", pg)
+    check((pg.row, pg.prev, pg.page, pg.next, pg.h) == (P + "Pg", P + "PgPrev", P + "PgPage", P + "PgNext", 32 + 8), "pager ids + h")
+    prev_mk, next_mk = pg[1][1], pg[3][1]
+    check(prev_mk.count("Disabled.png") == 4 and "Sounds" not in prev_mk and "Width: 150" in prev_mk and "Left: 241" in prev_mk,
+          "pager: Prev in the vanilla Disabled look, centred by a computed left margin ((1066 - 584) / 2)")
+    check("Secondary.png" in next_mk and "ButtonsLightActivate" in next_mk and "Height: 32" in next_mk and "FontSize: 14" in next_mk,
+          "pager: Next = small Secondary with the light click")
+    check('Text: "Page 2 / 5"' in pg[2][1] and not pg.sets and "HorizontalAlignment: Center" in pg[2][1], "pager caption inline")
+    check("LayoutMode: Left" in pg[0][1] and "LayoutMode: Center" not in "".join(pg.markups()) and
+          "FlexWeight" not in "".join(pg.markups()), "pager uses only LayoutMode Left + margins")
+    pj = UI.pager("SkyyTBody", P + "Pj", 900, text=UI.J("pageText()"), prev_on=UI.J("pageNo > 0"), next_on=UI.J("pageNo < pages - 1"))
+    part_ok("pager runtime", pj)
+    check(isinstance(pj[1][1], UI.Choice) and isinstance(pj[3][1], UI.Choice) and pj.sets == [(P + "PjPage", "Text", UI.J("pageText()"))],
+          "pager: J() states = choose(), J() text = a b.set line")
+    pt = UI.pager("SkyyTBody", P + "Pt", 900, text="Page 2 of 5, 40 items", align="left", top=0)
+    part_ok("pager left", pt)
+    check(pt.sets == [(P + "PtPage", "Text", "Page 2 of 5, 40 items")] and "Left:" not in pt[1][1] and pt.h == 32,
+          "pager: punctuated caption = b.set, align left, top 0")
+    check("Left: 316" in UI.pager("SkyyTBody", P + "Pr", 900, align="right")[1][1], "pager align right")
+    po = UI.pager("SkyyTBody", "SkyyTOld", 900, ids={"prev": "SkyyTOldPrevious", "page": "SkyyTOldNo"})
+    check(po.prev == "SkyyTOldPrevious" and po.page == "SkyyTOldNo" and po.next == "SkyyTOldNext", "pager ids= keeps old ids")
+    raises(lambda: UI.pager("SkyyTBody", P + "Pg", 500), ValueError, "pager wider than w")
+    raises(lambda: UI.pager("SkyyTBody", P + "Pg", 900, align="middle"), ValueError, "pager align")
+    raises(lambda: UI.pager("SkyyTBody", P + "Pg", 900, prev_on="yes"), ValueError, "pager state must be bool or J()")
+    raises(lambda: UI.pager("SkyyTBody", P + "P_g", 900), ValueError, "pager id with an underscore", "underscore")
+
+    # ---- G7 confirm_view
+    cv = UI.confirm_view("SkyyTBody", P + "Cf", 1066, question="Delete rank vip?", message="Nothing has changed yet")
+    part_ok("confirm view", cv)
+    check((cv.box, cv.question, cv.message, cv.note, cv.row, cv.yes, cv.no) ==
+          (P + "Cf", P + "CfQ", P + "CfMsg", None, P + "CfBtns", P + "CfYes", P + "CfNo"), "confirm_view ids")
+    check(cv.h == 2 * 20 + (46 + 12) + (48 + 16) + (44 + 8) + 8, "confirm_view h (padding 20, question, message, row, top 8)")
+    check(cv.sets == [(P + "CfQ", "Text", "Delete rank vip?")] and 'Text: "Nothing has changed yet"' in cv[2][1],
+          "confirm_view: a '?' question is b.set, a proven message inline")
+    yes = [mk for _p, mk in cv if mk.startswith("TextButton #SkyyTCfYes")][0]
+    no = [mk for _p, mk in cv if mk.startswith("TextButton #SkyyTCfNo")][0]
+    check("Primary.png" in yes and "SaveActivate" in yes and "Left: 327" in yes and "Right: 6" in yes,
+          "confirm_view yes = Primary + save sound, centred ((1026 - 372) / 2 = 327)")
+    check("Secondary.png" in no and "ButtonsCancelActivate" in no and "Left: 6" in no, "confirm_view no = Secondary + cancel")
+    check("Background: #000000(0.15)" in cv[0][1] and "Padding: (Full: 20)" in cv[0][1] and "#ffcc00" in cv[1][1] and "FontSize: 32" in cv[1][1],
+          "confirm_view: the well, padding 20, the #ffcc00 32 px question")
+    cd = UI.confirm_view("SkyyTBody", P + "Cd", 900, question=UI.J("q"), message="", note="Costs 5,000 coins", yes_kind="destructive",
+                         panel="row")
+    part_ok("confirm view destructive", cd)
+    check(cd.note == P + "CdNote" and (P + "CdNote", "Text", "Costs 5,000 coins") in cd.sets and (P + "CdQ", "Text", UI.J("q")) in cd.sets
+          and "#101925(0.55)" in cd[0][1], "confirm_view: note, J question, row panel")
+    cdy = [mk for _p, mk in cd if mk.startswith("TextButton #SkyyTCdYes")][0]
+    check("Destructive.png" in cdy and "ButtonsCancelActivate" in cdy and "SaveActivate" not in cdy, "confirm_view destructive yes")
+    cn = UI.confirm_view("SkyyTBody", P + "Cn", 900, panel=None, pad=0, top=0)
+    check("Background" not in cn[0][1] and "Padding" not in cn[0][1] and cn.h == 58 + 64 + 52, "confirm_view panel=None, pad 0")
+    cc = UI.confirm_view("SkyyTBody", P + "Cc", 900, question="Switch to Mage for 500 coins?", compact=True)
+    part_ok("confirm view compact", cc)
+    check(cc.h == 44 + 16 + 8 and cc.message is None and "LayoutMode: Left" in cc[0][1] and "Width: 504" in cc[1][1]
+          and "#ffcc00" in cc[1][1], "confirm_view compact: one row, the question takes what is left")
+    raises(lambda: UI.confirm_view("SkyyTBody", P + "Cc", 500, compact=True), ValueError, "confirm_view compact too narrow")
+    raises(lambda: UI.confirm_view("SkyyTBody", P + "Cc", 900, panel="glass"), ValueError, "confirm_view panel kind")
+    raises(lambda: UI.confirm_view("SkyyTBody", P + "Cc", 900, yes_kind="tertiary"), ValueError, "confirm_view yes kind")
+    raises(lambda: UI.confirm_view("SkyyTBody", P + "Cc", None), ValueError, "confirm_view needs an int width")
+
+    # ---- G3 icon_cell
+    ic = samples["icon cell normal row"]
+    check(ic.startswith("Button #SkyyTIcNoRo { Anchor: (Width: 74, Height: 74); Style: ButtonStyle(Default: (Background: #101925(0.55)), "
+                        "Hovered: (Background: #132033(0.8)), Pressed: (Background: #182a40(0.9)), Sounds: (")
+          and "ItemIcon #SkyyTIcNoRoIc { Anchor: (Width: 64, Height: 64, Left: 5, Top: 5); ItemId: \"Weapon_Sword_Iron\"; }" in ic,
+          "icon_cell normal = the WorldEventListRow palette + light click, a centred 64 px icon")
+    check(samples["icon cell selected row"].count("#4274a5") == 3, "icon_cell selected = #4274a5 (@SelectedRowStyle)")
+    dis = samples["icon cell disabled row"]
+    check("Sounds" not in dis and "#0a0e12(0.75)" in dis and dis.count("#101925(0.55)") == 3, "icon_cell disabled: static, silent, covered")
+    check("ItemIcon" not in samples["icon cell empty row"] and "Sounds" not in samples["icon cell empty row"], "icon_cell empty: no icon")
+    check("Hovered: (Background: #000000(0.2))" in samples["icon cell normal plain"] and "#7a9cc6(0.25)" in samples["icon cell selected plain"],
+          "icon_cell plain look (ItemRepairElement / BasicTextButton)")
+    check('Label #SkyyTIcqQty' in samples["icon cell qty"] and 'Text: "64"' in samples["icon cell qty"] and
+          "HorizontalAlignment: End" in samples["icon cell qty"], "icon_cell static quantity")
+    check('Label #SkyyTIclQty { Anchor: (Width: 79, Height: 20, Right: 4, Bottom: 3); Text: ""' in samples["icon cell qty label"],
+          "icon_cell qty=True = an empty quantity label to b.set")
+    check("Left: 6, Top: 16" in samples["icon cell wide"] and "Width: 158, Height: 76" in samples["icon cell wide"], "icon_cell wide")
+    check("Sounds" not in samples["icon cell silent"], "icon_cell sound=None")
+    check("ItemId" not in samples["icon cell no item"] and "ItemIcon #SkyyTIcnIc" in samples["icon cell no item"], "icon_cell item=None")
+    rj = UI.java_expr(samples["icon cell runtime"])
+    check('"Button #SkyyTIcr" + (i) + " {' in rj and 'ItemId: \\"" + (ids[i]) + "\\"' in rj, "icon_cell runtime id + item")
+    raises(lambda: UI.icon_cell(P + "A", "X", state="hot"), ValueError, "icon_cell state")
+    raises(lambda: UI.icon_cell(P + "A", "X", look="neon"), ValueError, "icon_cell look")
+    raises(lambda: UI.icon_cell(P + "A", "X", qty="lots"), ValueError, "icon_cell qty text")
+    raises(lambda: UI.icon_cell(P + "A", "X", size=16), ValueError, "icon_cell too small")
+    raises(lambda: UI.icon_cell(P + "A", "X", icon=90), ValueError, "icon_cell icon bigger than the cell")
+    raises(lambda: UI.icon_cell(P + "A_b", "X"), ValueError, "icon_cell underscore id", "underscore")
+    csel = UI.choose(UI.J("i == sel"), UI.icon_cell(P + "Cs", "X", state="selected"), UI.icon_cell(P + "Cs", "X"))
+    check(UI.check_markup(csel) is csel, "icon_cell states as a runtime choice")
+
+    # ---- G2 item_grid + the grid Java
+    g = samples["item grid kit"]
+    check(g == ("Group #SkyyTIgBox { Anchor: (Width: 690, Height: 462); Background: #000000(0.15); ItemGrid #SkyyTIg { Anchor: (Width: 682, "
+                "Height: 454, Left: 4, Top: 4); SlotsPerRow: 9; AreItemsDraggable: false; Style: (SlotSize: 74, SlotIconSize: 64, "
+                "SlotSpacing: 2); } }"), "item_grid: the well, 9 x 74 + 8 x 2 = 682 wide, the client inventory style")
+    check(samples["item grid bare"] == ("ItemGrid #SkyyTIgb { Anchor: (Width: 302, Height: 74, Left: 8); SlotsPerRow: 4; AreItemsDraggable: "
+                                        "false; InfoDisplay: None; Style: (SlotSize: 74, SlotIconSize: 64, SlotSpacing: 2); }"),
+          "item_grid bare, tooltips=False = InfoDisplay: None (SkyyAuctions)")
+    gr = UI.java_expr(samples["item grid runtime"])
+    check('"Group #SkyyTIgrBox { Anchor: (Width: " + ((g[2]) + 8) + ", Height: " + ((g[3]) + 8)' in gr and
+          "SlotsPerRow: \" + (g[0]) + \";" in gr and "SlotSize: \" + (g[1]) + \"," in gr, "item_grid with runtime geometry")
+    check("AreItemsDraggable: true" in samples["item grid drag"] and "Width: 1280, Height: 720" in samples["item grid drag"],
+          "item_grid drag canvas (the SkyyHud editor numbers)")
+    check("Group #SkyyTIgsWell" in samples["item grid slot bg"] and "BlockSelectorSlotBackground" in samples["item grid slot bg"],
+          "item_grid box_id + slot_bg (trial)")
+    raises(lambda: UI.item_grid(P + "G", 4, 1, slot_bg=True), UI.UnverifiedError, "item_grid slot_bg needs trial=True", "UNVERIFIED")
+    raises(lambda: UI.item_grid(P + "G", UI.J("c", "4"), 2), ValueError, "item_grid runtime cols need w / h")
+    raises(lambda: UI.item_grid(P + "G", 0, 2), ValueError, "item_grid zero columns")
+    raises(lambda: UI.item_grid(P + "G", 2, 2, slot=40, icon=64), ValueError, "item_grid icon bigger than its slot")
+    raises(lambda: UI.item_grid(P + "G", 2, 2, spacing=-1), ValueError, "item_grid negative spacing")
+    raises(lambda: UI.item_grid(P + "G_x", 2, 2), ValueError, "item_grid underscore id", "underscore")
+    gm = UI.java_grid_methods()
+    check(len(gm) == 4 and gm[0].startswith("public static com.hypixel.hytale.server.core.ui.ItemGridSlot gridSlot(String itemId, int qty)")
+          and "gridSlotOf(com.hypixel.hytale.server.core.inventory.ItemStack s)" in gm[1] and "gridSlots(String[] ids" in gm[2]
+          and "gridSlotsOf(com.hypixel.hytale.server.core.inventory.ItemStack[] a" in gm[3], "java_grid_methods: 4 methods in call order")
+    allj = "\n".join(gm)
+    check(UI.item_grid_java_is_safe(allj) and allj.count("new com.hypixel.hytale.server.core.ui.ItemGridSlot(new "
+                                                         "com.hypixel.hytale.server.core.inventory.ItemStack(itemId, qty))") == 1,
+          "java_grid_methods: the ONLY filled slot is new ItemGridSlot(new ItemStack(itemId, qty))")
+    check("s.getItemId(), s.getQuantity()" in gm[1] and "new com.hypixel.hytale.server.core.ui.ItemGridSlot(s" not in allj,
+          "gridSlotOf copies id + quantity, never passes the stack")
+    check("public static" in UI.java_grid_methods("slot", "a.B", "a.C")[0] and "slotSlot(" in UI.java_grid_methods("slot", "a.B", "a.C")[0],
+          "java_grid_methods prefix + class names")
+    raises(lambda: UI.java_grid_methods("Grid"), ValueError, "java_grid_methods prefix must be lower-case")
+    raises(lambda: UI.java_grid_methods("grid", "a b"), ValueError, "java_grid_methods refuses a bad class name")
+    gf = UI.java_grid_fill(P + "Ig", [("Weapon_Sword_Iron", 1), None, (UI.J("ids[k]", "Food_Bread"), UI.J("qs[k]", "3"))], var="pbSlots")
+    check(gf.splitlines()[0] == "java.util.ArrayList pbSlots = new java.util.ArrayList();" and
+          'pbSlots.add(new com.hypixel.hytale.server.core.ui.ItemGridSlot(new com.hypixel.hytale.server.core.inventory.ItemStack('
+          '"Weapon_Sword_Iron", 1)));' in gf and "pbSlots.add(new com.hypixel.hytale.server.core.ui.ItemGridSlot());" in gf and
+          '"" + (ids[k]), (qs[k]))));' in gf and gf.endswith('b.set("#SkyyTIg.Slots", (pbSlots));'), "java_grid_fill statements")
+    check(UI.item_grid_java_is_safe(gf), "java_grid_fill never passes a raw stack")
+    raises(lambda: UI.java_grid_fill(P + "Ig", [("Weapon_Sword_Iron", 0)]), ValueError, "java_grid_fill quantity >= 1")
+    raises(lambda: UI.java_grid_fill(P + "Ig", [("bad id", 1)]), ValueError, "java_grid_fill item id")
+    raises(lambda: UI.java_grid_fill(P + "Ig", [], var="Bad"), ValueError, "java_grid_fill var name")
+    raises(lambda: UI.java_grid_fill(P + "I_g", []), ValueError, "java_grid_fill underscore id", "underscore")
+    for src, want in (("slots.add(new com.hypixel.hytale.server.core.ui.ItemGridSlot(st));", False),
+                      ("x = new com.hypixel.hytale.server.core.ui.ItemGridSlot( stack.copy());", False),
+                      ("x = new com.hypixel.hytale.server.core.ui.ItemGridSlot();", True),
+                      ("x = new com.hypixel.hytale.server.core.ui.ItemGridSlot(new com.hypixel.hytale.server.core.inventory.ItemStack(i, 1));", True)):
+        check(UI.item_grid_java_is_safe(src) == want, "item_grid_java_is_safe: %s" % src[:60])
+    # the rule the kit enforces on a whole probe page's Java (page 18 fills its grid)
+    check(UI.item_grid_java_is_safe(UI.probe_page("base3").java("b")), "probe base3 fills its grid only with new ItemStack(id, qty)")
+
+
 # ================================================================= probe pages (the in-game gate)
+PROBE_NAMES = ["base1", "base2", "checkbox", "number-field", "tooltip", "progress-element", "memories-bar", "quality-frame",
+               "itemslot", "dropdown", "search-field", "spinner", "tile", "text-mask", "slot-background", "disabled-prop", "value-ref",
+               "base3"]
+
+
 def phase_probes():
     pages = UI.probe_pages()
     keys = [p.key for p in pages]
     check([p.n for p in pages] == list(range(1, len(pages) + 1)), "probe pages are numbered 1..n")
+    check([p.name for p in pages] == PROBE_NAMES, "probe pages keep their stable names: %s" % [p.name for p in pages])
+    check(tuple(p.name for p in pages if p.key == "base") == UI.PROBE_BASE and [p.n for p in pages if p.key == "base"] == [1, 2, 18],
+          "the base pages are base1 / base2 / base3 = 1, 2, 18")
     check(keys[:2] == ["base", "base"], "probe pages 1-2 are the base look")
     check(set(keys) == set(UI.UNVERIFIED), "every UNVERIFIED feature has a probe page (missing: %s, extra: %s)"
           % (sorted(set(UI.UNVERIFIED) - set(keys)), sorted(set(keys) - set(UI.UNVERIFIED))))
-    check(len(set(keys[2:])) == len(keys[2:]), "one probe page per UNVERIFIED feature")
+    feats = [k for k in keys if k != "base"]
+    check(len(set(feats)) == len(feats) == len(UI.UNVERIFIED) - 1, "one probe page per UNVERIFIED feature")
+    check(all(p.name == p.key for p in pages if p.key != "base"), "a feature page's name is its UNVERIFIED key")
+    check(UI.probe_page("checkbox").n == 3 and UI.probe_page(18).name == "base3" and UI.probe_page("base1").n == 1,
+          "probe_page by name or number")
+    raises(lambda: UI.probe_page("nope"), KeyError, "probe_page refuses an unknown name")
     for pg in pages:
         check(pg.shell.h <= UI.MAX_PAGE_H and pg.look and pg.look[0].startswith("the page opens"), "probe %d fits 1080 and says what to see"
               % pg.n)
+        check(all(len(x) <= 190 for x in pg.look), "probe %d look lines are short" % pg.n)
         try:
             pg.check()
             check(True, "probe %d check_page" % pg.n)
@@ -956,13 +1280,29 @@ def phase_probes():
             FAILS.append("probe %d: %s" % (pg.n, e))
         for i, (par, mk) in enumerate(pg.shell.appends):
             markup_ok("probe %d append %d" % (pg.n, i), mk, root=(par is None), prefix=pg.shell.prefix)
+        # the page shows its own numbered "what to see" list: a section head + one b.set line per look line
+        P_ = pg.shell.prefix
+        sets = pg.shell.all_sets()
+        shown = [v for i, pr, v in sets if i.startswith(P_ + "Look") and pr == "Text"]
+        want = ["%d. %s" % (k + 1, x[:1].upper() + x[1:]) for k, x in enumerate(pg.look)]
+        check(shown == want, "probe %d shows its numbered look list on the page" % pg.n)
+        heads = [mk for _p, mk in pg.shell.appends if isinstance(mk, str) and mk.startswith("Label #%sLookH " % P_)]
+        check(len(heads) == 1 and ('Text: "Probe %s - what to see"' % pg.name) in heads[0], "probe %d look list head names %s"
+              % (pg.n, pg.name))
         js = pg.java("b")
         check(js.count("appendInline") == len(pg.shell.appends) and not lint_java_line(js), "probe %d Java" % pg.n)
-    base = "\n".join(UI.render(mk) for pg in pages[:2] for _p, mk in pg.shell.appends)
+        check(UI.item_grid_java_is_safe(js), "probe %d Java never puts a raw stack in a grid slot" % pg.n)
+    base_pages = [pg for pg in pages if pg.key == "base"]
+    base = "\n".join(UI.render(v) for pg in base_pages for _p, mk in pg.shell.appends for v in UI._variants(mk))
     for feat in ("FlexWeight", "LayoutMode: Right", "LayoutMode: Full", "LetterSpacing: 0.5", "WrapMaxLines", "ShrinkTextToFit",
                  "Disabled: (", "Sounds: (", "ContainerDecorationTop", "Top: -8, Right: -8", "#000000(0.15)", "Tertiary_Active",
-                 "ContainerHeaderNoRunes", "Top: -2"):
+                 "ContainerHeaderNoRunes", "Top: -2", "ItemGrid #SkyyPb18Grid", "Button #SkyyPb18C0", "#SkyyPb18CfYes",
+                 "#SkyyPb18PgPrev", "#0a0e12(0.75)", "#7a9cc6(0.25)", 'Text: "Page 2 / 5"'):
         check(feat in base, "base probe pages cover %s" % feat)
+    p18 = UI.probe_page("base3")
+    check(any(v == "Costs 1,250 coins (50% off) - shown exactly as written." for _i, _pr, v in p18.shell.all_sets()),
+          "base3 shows a punctuated text through Appends.text")
+    check("pbGridSlots" in p18.java("b") and "pbGridSlots" not in p18.java("b", extra=False), "base3 fills its grid in java_extra")
     return pages
 
 
@@ -970,12 +1310,19 @@ def phase_probes():
 def phase_guide():
     path = os.path.join(ROOT, "research", "Vanilla-UI-Style-Guide.md")
     text = open(path, encoding="utf-8").read()
-    names = set(re.findall(r"SUI\.([A-Za-z_][A-Za-z0-9_]*)", text)) | set(re.findall(r"`([a-z_][a-z0-9_]*)\(", text))
-    names |= set(n for cell in re.findall(r"`([^`|]*)`", text) for n in re.findall(r"(?<![.\w])([a-z_][a-z0-9_]*)\(", cell))
+    # fenced code blocks (worked examples: patch-script code with rep(), open(), ...) are checked for SUI.<name> only
+    prose = re.sub(r"```.*?```", "", text, flags=re.S)
+    check(prose.count("```") == 0 and text.count("```") % 2 == 0, "the guide's code fences are balanced")
+    names = set(re.findall(r"SUI\.([A-Za-z_][A-Za-z0-9_]*)", text)) | set(re.findall(r"`([a-z_][a-z0-9_]*)\(", prose))
+    names |= set(n for cell in re.findall(r"`([^`|]*)`", prose) for n in re.findall(r"(?<![.\w])([a-z_][a-z0-9_]*)\(", cell))
     names -= {"list", "set", "dict", "tuple", "sorted"}         # Python builtins / the Java set(String, ...) overloads the guide cites
     check(len(names) >= 40, "the guide names the kit functions (%d found)" % len(names))
     for n in sorted(names):
         check(hasattr(UI, n), "the style guide names SUI.%s, which the kit does not have" % n)
+    for n in ("pager", "item_grid", "java_grid_methods", "java_grid_fill", "icon_cell", "confirm_view", "choose", "probe_page",
+              "for_pysource", "for_fstring"):
+        check(n in names, "the guide documents the kit 1.3 function %s" % n)
+    check("@@" in text and "Appends.text" in text and "STATUS_INFO" in text, "the guide documents @@TOKEN@@ patches, Appends.text, STATUS_INFO")
     check("import skyyui as SUI" in text and "import skyyui as UI" not in text, "the guide imports the kit as SUI")
     for k in UI.LABELS:
         check(k in text, "the guide lists the label kind %s" % k)
@@ -986,7 +1333,8 @@ def phase_lint():
     path = os.path.join(HERE, "ci", "lint.py")
     text = open(path, encoding="utf-8").read()
     want = {"_Unres", "_Stub", "_STUB", "_lev", "_kit_lev", "_kit_strs", "_kit_code_lines", "KIT_IMPORT_RE", "KIT_HEX_RE",
-            "KIT_PY_COMMENT_RE", "KIT_MAX_WARNS", "KIT_PATH_RE", "KIT_FONT_RE", "kit_color_warnings", "kit_style_warnings"}
+            "KIT_PY_COMMENT_RE", "KIT_MAX_WARNS", "KIT_PATH_RE", "KIT_FONT_RE", "kit_color_warnings", "kit_style_warnings",
+            "GRID_SLOT_NEW_RE", "grid_slot_warnings"}
     nodes = []
     for node in ast.parse(text).body:
         names = {node.name} if isinstance(node, (ast.FunctionDef, ast.ClassDef)) else \
@@ -1052,6 +1400,35 @@ def phase_lint():
           "lint kit style rule flags only non-kit paths / fonts: %s" % w)
     check(ns["KIT_IMPORT_RE"].search(script) is not None and ns["KIT_IMPORT_RE"].search("import skyyuiX\nx = 1") is None,
           "lint kit import detection")
+    # the grid-slot metadata rule (WARN, every newest build script)
+    if "grid_slot_warnings" not in ns:
+        FAILS.append("lint.py has no grid_slot_warnings rule")
+        return
+    grid_script = "\n".join([
+        'M(page, r"""slots.add(new @IGS@(st));""")',                                                  # a held stack -> WARN
+        'M(page, r"""slots.add(new @IGS@(new @IS@(st.getItemId(), st.getQuantity())));""")',          # fresh copy
+        'M(page, r"""empty.add(new @IGS@());""")',                                                    # empty slot
+        'X = f"""gs = new {IGS}(new {IS}(id, 1));"""',                                                # f-string tokens
+        'Y = "g = new com.hypixel.hytale.server.core.ui.ItemGridSlot(stack.copy());"',                # FQN, a held stack -> WARN
+        'Z = "g = new ItemGridSlot( new ItemStack(id, 2));"',                                         # plain names, fresh
+        'assert ("new " + "ItemGridSlot") not in _src',                                               # a guard, not a slot
+    ] + UI.java_grid_methods() + [UI.java_grid_fill("SkyyTGrid", [("Food_Bread", 1), None])])
+    w = ns["grid_slot_warnings"]("SkyyX/build_skyyx_0.1.py", grid_script)
+    check(len(w) == 2 and w[0].startswith("SkyyX/build_skyyx_0.1.py:1 ") and w[1].startswith("SkyyX/build_skyyx_0.1.py:5 "),
+          "lint grid-slot rule flags only slots built from a held stack (the kit's grid Java passes): %s" % w)
+    live = []
+    for f_ in sorted(os.listdir(ROOT)):
+        d_ = os.path.join(ROOT, f_)
+        if f_.startswith("Skyy") and os.path.isdir(d_):
+            vs = [x for x in os.listdir(d_) if re.match(r"build_skyy[a-z]+_\d+(?:\.\d+)*\.py$", x)]
+            if vs:
+                newest = max(vs, key=lambda x: tuple(int(p_) for p_ in re.findall(r"\d+", x.rsplit("_", 1)[1])))
+                live += ns["grid_slot_warnings"](f_ + "/" + newest, open(os.path.join(d_, newest), encoding="utf8", errors="replace").read())
+    check(not live, "no newest build script trips the grid-slot rule: %s" % live[:3])
+    old_ah = os.path.join(ROOT, "SkyyAuctions", "build_skyyauctions_0.1.py")
+    if os.path.isfile(old_ah):
+        check(len(ns["grid_slot_warnings"]("x", open(old_ah, encoding="utf8", errors="replace").read())) == 1,
+              "the grid-slot rule catches the SkyyAuctions 0.1 bug (new @IGS@(st))")
 
 
 # ================================================================= phase 4: javassist compile
@@ -1114,6 +1491,114 @@ def phase_java(samples, probes):
     for pg in probes:
         uc.addMethod(CtNewMethod.make("public static String probe%d() { skyyuitest.B b = new skyyuitest.B();\n%s\nreturn b.out(); }"
                                       % (pg.n, pg.java("b", extra=False)), uc))
+    # ---- kit 1.3: runtime choices (pager / icon cells), confirm_view, Appends.text, the grid Java, the patch-script templates
+    bc.addMethod(CtNewMethod.make('public void set(String k, java.util.List v) { this.sb.append("set ").append(k).append("=L")'
+                                  '.append(v.size()).append("\\n"); }', bc))
+    pgj = UI.pager(P + "Body", P + "Pj", 900, text=UI.J("pageText", "Page 1 / 5"), prev_on=UI.J("pageNo > 0"),
+                   next_on=UI.J("pageNo < pages - 1"))
+    uc.addMethod(CtNewMethod.make("public static String pagerJ(int pageNo, int pages, String pageText) { skyyuitest.B b = new "
+                                  "skyyuitest.B();\n%s\nreturn b.out(); }" % pgj.java("b"), uc))
+    cvj = UI.confirm_view(P + "Body", P + "Cv", 900, question=UI.J("q", "Sure"), message="You get 1,250 coins.", note="Costs 5 coins")
+    uc.addMethod(CtNewMethod.make("public static String cview(String q) { skyyuitest.B b = new skyyuitest.B();\n%s\nreturn b.out(); }"
+                                  % cvj.java("b"), uc))
+    cell_ch = UI.choose(UI.J("i == sel"), UI.icon_cell(P + "Cell" + UI.J("i", "0"), UI.J("ids[i]", "Weapon_Sword_Iron"), state="selected",
+                                                       qty=True),
+                        UI.icon_cell(P + "Cell" + UI.J("i", "0"), UI.J("ids[i]", "Weapon_Sword_Iron"), qty=True))
+    cell_stmts = "\n".join(["  " + UI.java_append(P + "Cells", cell_ch),
+                            "  " + UI.java_set(P + "Cell" + UI.J("i", "0") + "Qty", "Text", UI.J("String.valueOf(qs[i])", "1"))])
+    uc.addMethod(CtNewMethod.make("public static String cells(String[] ids, int[] qs, int sel) { skyyuitest.B b = new skyyuitest.B();\n"
+                                  "for (int i = 0; i < ids.length; i++) {\n%s\n}\nreturn b.out(); }" % cell_stmts, uc))
+    # the patch-script templates (style guide section 8): kit Java pasted into real Python templates, run, then compiled
+    tmpl_mk = [samples["button primary normal"], samples["label text"], samples["item grid kit"]]
+    tmpl_java = "\n".join([UI.java_append(P + "Body", mk) for mk in tmpl_mk]
+                          + [UI.java_set(P + "Lt", "Text", 'back\\slash "q" {brace} 50% \\n')])
+    tmpl_sets = [(P + "Lt", "Text", 'back\\slash "q" {brace} 50% \\n')]
+    gens = {
+        "non-raw f-string (for_pysource)": 'PKG = "skyyuitest"\nJAVA = f"""// {PKG}\n' + UI.for_pysource(tmpl_java) + '\n"""\n',
+        "raw string (for_pysource raw, no f)": 'JAVA = r"""// skyyuitest\n' + UI.for_pysource(tmpl_java, raw=True, fstring=False) + '\n"""\n',
+        "raw f-string (for_pysource raw)": 'PKG = "skyyuitest"\nJAVA = rf"""// {PKG}\n' + UI.for_pysource(tmpl_java, raw=True) + '\n"""\n',
+        "@@TOKEN@@ replace + f-string": ('X = 1\n@@BODY@@\nY = 2\n').replace(
+            "@@BODY@@", 'PKG = "skyyuitest"\nJAVA = f"""// {PKG}\n' + UI.for_pysource(tmpl_java) + '\n"""'),
+        "build-time interpolation {LIT}": None,
+    }
+    tmpl_src = {}
+    for k, gen in gens.items():
+        if gen is None:
+            continue
+        ns = {}
+        exec(compile(gen, "<generated %s>" % k, "exec"), ns)
+        tmpl_src[k] = ns["JAVA"]
+    tmpl_src[".format template (for_fstring)"] = ("// {pkg}\n" + UI.for_fstring(tmpl_java)).format(pkg="skyyuitest")
+    tmpl_src["% template (for_percent)"] = ("// %s\n" + UI.for_percent(tmpl_java)) % "skyyuitest"
+    ns = {"LIT0": UI.java_lit(tmpl_mk[0]), "LIT1": UI.java_lit(tmpl_mk[1]), "LIT2": UI.java_lit(tmpl_mk[2]),
+          "SETV": UI.java_lit(tmpl_sets[0][2])}
+    exec(compile(r'JAVA = f"""// skyyuitest' + "\n" + r'b.appendInline("#SkyyTBody", {LIT0});' + "\n" + r'b.appendInline("#SkyyTBody", {LIT1});'
+                 + "\n" + r'b.appendInline("#SkyyTBody", {LIT2});' + "\n" + r'b.set("#SkyyTLt.Text", {SETV});"""' + "\n",
+                 "<generated build-time interpolation>", "exec"), ns)
+    tmpl_src["build-time interpolation {LIT}"] = ns["JAVA"]
+    tmpl_names = sorted(tmpl_src)
+    for i, k in enumerate(tmpl_names):
+        check(tmpl_src[k].startswith("// skyyuitest\n"), "template %s still interpolates its own placeholder" % k)
+        check(tmpl_src[k].split("\n", 1)[1].rstrip("\n") == tmpl_java, "template %s gives back the kit Java exactly" % k)
+        uc.addMethod(CtNewMethod.make("public static String tmpl%d() { skyyuitest.B b = new skyyuitest.B();\n%s\nreturn b.out(); }"
+                                      % (i, tmpl_src[k]), uc))
+    # grid slots: the kit's grid Java against stub ItemStack / ItemGridSlot classes that record what they were given
+    isc = pool.makeClass("skyyuitest.IS")
+    for f in ("public String id;", "public int qty;", "public String meta;"):
+        isc.addField(CtField.make(f, isc))
+    isc.addConstructor(CtNewConstructor.make("public IS(String id, int qty) { this.id = id; this.qty = qty; this.meta = null; }", isc))
+    isc.addMethod(CtNewMethod.make("public boolean isEmpty() { return this.id == null || this.qty <= 0; }", isc))
+    isc.addMethod(CtNewMethod.make("public String getItemId() { return this.id; }", isc))
+    isc.addMethod(CtNewMethod.make("public int getQuantity() { return this.qty; }", isc))
+    igc = pool.makeClass("skyyuitest.IGS")
+    igc.addField(CtField.make("public skyyuitest.IS stack;", igc))
+    igc.addConstructor(CtNewConstructor.make("public IGS() { this.stack = null; }", igc))
+    igc.addConstructor(CtNewConstructor.make("public IGS(skyyuitest.IS s) { this.stack = s; }", igc))
+    gc = pool.makeClass("skyyuitest.Grid")
+    grid_src = UI.java_grid_methods("grid", "skyyuitest.IGS", "skyyuitest.IS")
+    for src in grid_src:
+        gc.addMethod(CtNewMethod.make(src, gc))
+    gc.addMethod(CtNewMethod.make(
+        "public static String d(skyyuitest.IGS g) { if (g == null) return \"null\"; if (g.stack == null) return \"empty\"; "
+        "return g.stack.id + \"x\" + String.valueOf(g.stack.qty) + (g.stack.meta == null ? \"\" : \"+META\"); }", gc))
+    gc.addMethod(CtNewMethod.make(
+        "public static String run() {\n  skyyuitest.IS held = new skyyuitest.IS(\"Weapon_Sword_Iron\", 3); held.meta = \"rolled\";\n"
+        "  skyyuitest.IGS g = gridSlotOf(held);\n"
+        "  String r = d(g) + \"|\" + String.valueOf(g.stack != held) + \"|\" + d(gridSlotOf(null)) + \"|\" + d(gridSlot(\" \", 5)) + \"|\" "
+        "+ d(gridSlot(\"Food_Bread\", 0)) + \"|\";\n"
+        "  java.util.ArrayList l = gridSlots(new String[] { \"Food_Bread\", null, \"Ingredient_Bar_Iron\" }, new int[] { 2 }, 4);\n"
+        "  for (int i = 0; i < l.size(); i++) r = r + d((skyyuitest.IGS) l.get(i)) + \",\";\n"
+        "  java.util.ArrayList m = gridSlotsOf(new skyyuitest.IS[] { held, null }, 3);\n"
+        "  for (int i = 0; i < m.size(); i++) r = r + d((skyyuitest.IGS) m.get(i)) + \";\";\n  return r;\n}", gc))
+    fill_java = UI.java_grid_fill(P + "Grid", [("Weapon_Sword_Iron", 1), None, (UI.J("ids[0]", "Food_Bread"), UI.J("qs[0]", "2"))],
+                                  var="gs", igs="skyyuitest.IGS", stack="skyyuitest.IS")
+    gc.addMethod(CtNewMethod.make("public static String fill(String[] ids, int[] qs) { skyyuitest.B b = new skyyuitest.B();\n%s\n"
+                                  "return b.out(); }" % fill_java, gc))
+    check(all(UI.item_grid_java_is_safe(s_, "skyyuitest.IGS", "skyyuitest.IS") for s_ in grid_src + [fill_java]),
+          "the stub grid Java never passes a raw stack")
+    isc.writeFile(out)
+    igc.writeFile(out)
+    gc.writeFile(out)
+    # the real classes (HytaleServer.jar, read-only): the grid Java compiles against the engine's ItemStack / ItemGridSlot /
+    # UICommandBuilder signatures (compile only - nothing is loaded or written)
+    real_jar = B.SERVER_JAR
+    if os.path.isfile(real_jar):
+        rp = Jc("javassist.ClassPool")(False)
+        rp.appendSystemPath()
+        rp.appendClassPath(real_jar)
+        rc = rp.makeClass("skyyuitest.RealGrid")
+        try:
+            for src in UI.java_grid_methods():
+                rc.addMethod(CtNewMethod.make(src, rc))
+            rc.addMethod(CtNewMethod.make("public static void fill(com.hypixel.hytale.server.core.ui.builder.UICommandBuilder b, String[] "
+                                          "ids) {\n%s\n}" % UI.java_grid_fill(P + "Grid", [("Weapon_Sword_Iron", 1), None,
+                                                                                         (UI.J("ids[0]", "Food_Bread"), 3)]), rc))
+            check(True, "the grid Java compiles against HytaleServer.jar (ItemStack(String, int), ItemGridSlot, UICommandBuilder.set)")
+        except Exception as e:      # noqa - report the compile error as a FAIL
+            FAILS.append("the grid Java does not compile against HytaleServer.jar: %s" % e)
+        rc.detach()
+    else:
+        print("note: HytaleServer.jar not found - the grid Java was compiled against stubs only")
     bc.writeFile(out)
     uc.writeFile(out)
     url = Jc("java.io.File")(out).toURI().toURL()
@@ -1146,14 +1631,41 @@ def phase_java(samples, probes):
           "set #SkyyTPf.Value=f0.25\nset #SkyyTV.Visible=btrue\nset #SkyyTT.Text=7\nset #SkyyTQ.Value=i7\n",
           "typed java_set lines pick the float / boolean / int overloads: %s" % str(U.typed(0.25, True, 7)).replace("\n", " | "))
     for pg in probes:
-        check(str(getattr(U, "probe%d" % pg.n)()) == expect(pg.shell.appends, pg.shell.sets),
-              "probe page %d compiles and builds exactly the Python appends" % pg.n)
-    check(str(U.colorOf("+done")) == "#39f493" and str(U.colorOf("-no")) == "#ff6b6b" and str(U.colorOf("=x")) == "#E8A93B"
+        check(str(getattr(U, "probe%d" % pg.n)()) == expect(pg.shell.appends, pg.shell.all_sets()),
+              "probe page %d compiles and builds exactly the Python appends + its b.set lines" % pg.n)
+    check(str(U.colorOf("+done")) == "#39f493" and str(U.colorOf("-no")) == "#ff6b6b" and str(U.colorOf("=x")) == "#7caacc"
           and str(U.colorOf("")) == "#96a9be" and str(U.textOf("-no")) == "no" and str(U.textOf("plain")) == "plain",
-          "java_status_methods compile and answer")
+          "java_status_methods compile and answer ('=' = info blue)")
     for line in (sh.java("b") + "\n" + dl.java("cmd")).splitlines():
         check(not lint_java_line(line), "lint underscore-id rule on the shell Java line: " + line[:60])
-    print("java phase: %d fields + %d methods compiled with javassist and compared" % (n, 8 + len(probes)))
+
+    # ---- kit 1.3 results
+    def subst(mk, vals):
+        return UI._J_RE.sub(lambda m: vals.get(m.group(1), m.group(2)), mk)
+
+    def pick(mk, truth):
+        return (mk.a if truth[mk.cond] else mk.b) if isinstance(mk, UI.Choice) else mk
+
+    for pn, pages_n in ((0, 5), (2, 5), (4, 5)):
+        truth = {"pageNo > 0": pn > 0, "pageNo < pages - 1": pn < pages_n - 1}
+        want = expect([(p_, pick(mk, truth)) for p_, mk in pgj], pgj.sets)
+        check(str(U.pagerJ(pn, pages_n, "Page 1 / 5")) == want, "pager with runtime states compiles and picks the right looks (page %d)" % pn)
+    check(str(U.cview("Sure")) == expect(cvj, cvj.sets), "confirm_view compiles: appends + its b.set lines (J question, punctuated texts)")
+    ids_, qs_, sel_ = ["Weapon_Sword_Iron", "Food_Bread", "Ingredient_Bar_Iron"], [1, 12, 64], 1
+    want = "".join("#%sCells|%s\nset #%sCell%dQty.Text=%d\n" % (P, subst(pick(cell_ch, {"i == sel": i == sel_}), {"i": str(i), "ids[i]": ids_[i]}),
+                                                               P, i, qs_[i]) for i in range(3))
+    check(str(U.cells(jpype.JArray(jpype.JString)(ids_), jpype.JArray(jpype.JInt)(qs_), sel_)) == want,
+          "icon cells in a Java loop: runtime ids / items / selected state / quantity")
+    for i, k in enumerate(tmpl_names):
+        check(str(getattr(U, "tmpl%d" % i)()) == expect([(P + "Body", mk) for mk in tmpl_mk], tmpl_sets),
+              "template %s: the pasted kit Java compiles with javassist and builds the Python markup" % k)
+    G = jpype.JClass("skyyuitest.Grid", loader=loader)
+    check(str(G.run()) == "Weapon_Sword_Ironx3|true|empty|empty|empty|Food_Breadx2,empty,Ingredient_Bar_Ironx1,empty,"
+          "Weapon_Sword_Ironx3;empty;empty;", "grid Java: slots are fresh ItemStack(id, qty) copies (no metadata, never the held "
+          "stack), blanks / zero quantities are empty slots: %s" % str(G.run()))
+    check(str(G.fill(jpype.JArray(jpype.JString)(["Food_Bread"]), jpype.JArray(jpype.JInt)([2]))) == "set #SkyyTGrid.Slots=L3\n",
+          "java_grid_fill compiles and sets the slot list")
+    print("java phase: %d fields + %d methods compiled with javassist and compared" % (n, 12 + len(probes) + len(tmpl_names)))
 
 
 def main():
@@ -1171,6 +1683,7 @@ def main():
             UI._STATE["verified"] = True      # already a FAIL; unlock the emitters so the rest of the test still reports
         phase_structure()
         samples = phase_builders()
+        phase_kit13(samples)
         probes = phase_probes()
         phase_guide()
         phase_lint()
