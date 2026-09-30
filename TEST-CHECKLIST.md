@@ -999,3 +999,15 @@ Skills 0.4.7, Trees 0.2.5, Exploration 0.2.2. Only the LOOK changed (plus the Gu
 5. Guilds fix: an admin adds a skill to Server Setup -> Guilds -> "Skills that count" while the server runs -> the guild does NOT jump by that skill's
    old XP; only XP earned after it was added counts.
 6. If a page disconnects: note which one - rolling that mod back to its previous version is safe (no data changed).
+## 2026-09-30 afternoon deploys - Sacks 0.7.8, Bank 0.1.5, Profiles 0.1.4, Classes 0.1.9, Skills 0.4.8, Vault 0.1.5, Essentials 0.1.6, Gear 0.1.2
+1. Start the world: every ready line; SkyyGear logs the 0.1.1 level table update + the stat defaults update once (a restart logs neither).
+2. Farming bag: pick up bread / a pie / a cooked dish - they stay in your inventory; wheat and raw meat still go in. Old cooked food in the bag
+   can still be taken out (note on the Farming tab).
+3. /bank: ~10% bigger; row DEPOSIT ALL | DEPOSIT | amount | WITHDRAW | WITHDRAW ALL; deposit/withdraw still work.
+4. /profiles: "N of 5 profile slots used"; you keep every profile even above the limit. /class: taller cards, Close at the bottom.
+5. Priest/Mage: start 30 Mana; a wand cast drains 5 (KNOWN: the cast still needs 25 Mana to start - fixed in Skills 0.4.9).
+6. /vault arrows: shift-click or hover + Drop key turns the page at once; a plain click turns it when you put the arrow back.
+7. Durability: tools, weapons, armor never lose durability (Server Setup -> Essentials "Item durability" OFF); turn it ON -> vanilla wear.
+8. SkyyGear: Server Setup -> Gear -> Levels shows the new table; Stats: "Roll coming-later stats" OFF, full power at 40; reforge / craft /
+   identify never show grey "(coming later)" stats. Charged Attack Damage: hold a bow until the arrow glows -> the stat applies (partial draws
+   never); a sword/axe/mace charged swing applies; a spell gets 15% of it; /gear charged (admin) shows the last hit's detection.
