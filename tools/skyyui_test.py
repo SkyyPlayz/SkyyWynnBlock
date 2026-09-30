@@ -546,6 +546,46 @@ def build_samples():
                                           w=UI.J("g[2]", "288"), h=UI.J("g[3]", "144"))
     s["item grid slot bg"] = UI.item_grid(P + "Igs", 4, 1, slot_bg=True, trial=True, box_id=P + "IgsWell")
     s["item grid drag"] = UI.item_grid(P + "Igd", 32, 18, slot=40, icon=1, spacing=0, drag=True, well=False)
+    # kit 1.4 (new names only: the 1.3 samples above are frozen by SNAP13)
+    J = UI.J
+    s["k14 static row full"] = UI.static_row(P + "Sr", 572, icon="Weapon_Sword_Iron", name="Iron sword", sub="Rare", tag="12 m",
+                                             action="Equip")
+    s["k14 static row punct"] = UI.static_row(P + "Sp", 572, icon=J("ids[i]", "Weapon_Sword_Iron"), name="Iron sword, +3",
+                                              sub=J("sub(i)", "Rare"), bar=J("sel == i"), action="Unequip", action_w=112)
+    s["k14 static row runtime id"] = UI.static_row(P + "Sq" + J("i", "2"), 572, name=J("nm", "Steve"), bar=None)
+    s["k14 static row normal"] = UI.static_row(P + "Sn", 600, name="Click me", state="normal", bar=False)
+    s["k14 static row selected"] = UI.static_row(P + "Ss", 600, name="Picked", sub="", state="selected", bar="warning",
+                                                 action="Buy", action_kind="primary", action_on=False)
+    s["k14 status bar on"] = UI.status_bar(P + "Stb")
+    s["k14 status bar off"] = UI.status_bar(P + "Stb", False)
+    s["k14 status bar runtime"] = UI.status_bar(P + "Stb", J("i == sel"), col="warning")
+    s["k14 row bar anon"] = UI.row_bar(None)
+    s["k14 list well"] = UI.list_well(P + "Lwl", w=580, rows=6)
+    s["k14 list well h"] = UI.list_well(P + "Lwh", h=300, anchor={"top": 8})
+    s["k14 result line"] = UI.result_line(P + "Rl", J("infoColor(this.info)", "#39f493"))
+    s["k14 result line name"] = UI.result_line(P + "Rn", "info", h=30, wrap=False, anchor={"top": 12})
+    bp = UI.stat_bar(P + "Sbar", 160, 8, J("stF[0]", "80"), col="progressBlue", anchor={"top": 4})
+    s["k14 stat bar full"], s["k14 stat bar empty"] = bp.full, bp.empty
+    s["k14 stat bar static"] = UI.stat_bar(P + "Sbs", 300, 12, 120, col="progressGreen").pick()
+    spec = UI.column_spec([("Member", 260), ("Health", 175), ("Where", 300)], avail=1300, pad_left=24)
+    s["k14 column heads"] = spec.heads(P + "Chd")
+    s["k14 column heads punct"] = UI.column_heads(P + "Chp", [("Name", 200), ("Lvl.", 80)], pad_left=12, gap=8)
+    s["k14 column row"] = spec.row(P + "Crw", ["Steve", J("hp", "18"), "Hub, near spawn"], kinds=["rowName", "default", "rowSub"])
+    s["k14 column row plain"] = UI.column_row(P + "Crp", spec, panel_kind=None, gap=0)
+    s["k14 stat well"] = UI.stat_well(P + "Swl", "Purse", J("fmt(purse)", "12345"), "coins you carry", w=527)
+    s["k14 stat well punct"] = UI.stat_well(P + "Swp", "Bank", None, "safe when you die, always.", anchor={"left": 12},
+                                            ids={"number": "SkyyTSwpNum"})
+    s["k14 state word"] = UI.state_word(None, "Selected", "success")
+    s["k14 state word punct"] = UI.state_word(P + "Wd", "Coming soon...", "disabled", anchor={"left": 14})
+    s["k14 group bg"] = UI.group(P + "Gbg", "Left", w=4, h=84, bg=UI.color_by([("sel", "rowPressed"), ("pend", "rowHover")], "row"))
+    s["k14 panel bg"] = UI.panel(P + "Pbg", "row", h=56, bg=J('on ? "#132033(0.8)" : "#101925(0.55)"', "#132033(0.8)"))
+    s["k14 item frame item"] = UI.item_frame(P + "Ifi", 64, item=J("ic[k]", "Weapon_Sword_Iron"), icon_anchor={"left": 0, "top": 0})
+    s["k14 item frame cover"] = UI.item_frame(P + "Ifc", item="Food_Bread", cover=True, cover_id=P + "IfcOut")
+    s["k14 icon cell static"] = UI.icon_cell(P + "Ics14", "Food_Bread", 74, "static", qty="12")
+    s["k14 icon cell static plain"] = UI.icon_cell(P + "Icp14", "Food_Bread", 74, "static", look="plain")
+    s["k14 button row right"] = UI.button_row(P + "Brr", align="right", used=350, avail=1066)
+    s["k14 button row centre"] = UI.button_row(P + "Brc", align="center", used=372, w=900, top=0)
+    s["k14 button row runtime"] = UI.button_row(P + "Brj", align="right", left_margin=J("gapR", "722"))
     return s
 
 
@@ -1247,10 +1287,435 @@ def phase_kit13(samples):
     check(UI.item_grid_java_is_safe(UI.probe_page("base3").java("b")), "probe base3 fills its grid only with new ItemStack(id, qty)")
 
 
+# ================================================================= kit 1.4 (the stage-1b restyle reviews; additive only)
+def _func_from(path, name, ns):
+    """exec one top-level function of a (read-only) repo script into ns (the held restyles' own helpers, for equivalence tests)."""
+    text = open(path, encoding="utf8").read()
+    for node in ast.parse(text).body:
+        if isinstance(node, ast.FunctionDef) and node.name == name:
+            exec(compile(ast.get_source_segment(text, node), path, "exec"), ns)
+            return ns[name]
+    return None
+
+
+def _card_block():
+    """The SKYY CARD block of SkyyClasses 0.1.8 / SkyyProfiles 0.1.3 (tools/classes_0_1_8_patch.py CARD_BLOCK, CARD_SHA-checked),
+    exec'd with this kit: {card_java, card_state, card_button, card_list, card_list_h, card_text_w, ...} or None."""
+    import hashlib
+    path = os.path.join(HERE, "classes_0_1_8_patch.py")
+    if not os.path.isfile(path):
+        return None
+    text = open(path, encoding="utf8").read()
+    blk = sha = None
+    for node in ast.parse(text).body:
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            if node.targets[0].id == "CARD_BLOCK":
+                blk = ast.literal_eval(node.value)
+            elif node.targets[0].id == "CARD_SHA":
+                sha = ast.literal_eval(node.value)
+    if blk is None or sha is None or hashlib.sha256(blk.encode("utf8")).hexdigest() != sha:
+        return None
+    ns = {"SUI": UI, "re": re}
+    exec(compile(blk, path + " [CARD_BLOCK]", "exec"), ns)
+    return ns
+
+
+def phase_kit14(samples):
+    J = UI.J
+    UI.fit_warnings("collect", clear=True)
+    # ---- Markup, Appends.add / used_height / used_width / outer_size / is_flex / java_add
+    row = samples["k14 static row full"]
+    check(isinstance(row, UI.Markup) and isinstance(row, str) and row.h == 56 + 3 and row.w == 572, "Markup: a str with .h / .w")
+    check(UI.outer_size(UI.label(P + "A", "", "default", h=30, anchor={"top": 12, "bottom": 4})) == (None, 46)
+          and UI.outer_size(UI.button(P + "A", "Go", w=200, anchor={"left": 6, "right": 4})) == (210, 44)
+          and UI.outer_size(UI.separator("vertical")) == (6, None) and UI.outer_size(UI.group(P + "A", "Left", h=40, anchor={"full": 3}))
+          == (None, 46), "outer_size: Width / Height + margins (Full / Horizontal / Vertical count twice)")
+    check(UI.outer_size(UI.group(P + "A", "Left", h=J("hh", "40"), anchor={"top": J("t", "8")})) == (None, 48), "outer_size: J() samples")
+    check(UI.outer_size(UI.dropdown(P + "Dd", w=300, h=32, search=True, trial=True)) == (300, 32),
+          "outer_size reads the element's own Anchor, not one inside its Style (dropdown SearchInputStyle Anchor)")
+    raises(lambda: UI.outer_size(UI.choose("c", UI.label(P + "A", "", h=20), UI.label(P + "A", "", h=30))), ValueError,
+           "outer_size: a choice whose looks differ in size", "different outer sizes")
+    check(UI.is_flex(UI.button(P + "A", "x", flex=1)) and not UI.is_flex(UI.button(P + "A", "x")), "is_flex")
+    ap = UI.Appends([(None, ROOT_MK), ("SkyyTA", BODY_MK)])
+    hs = [ap.add("SkyyTBody", UI.label(P + "L1", "", "default", h=30, anchor={"bottom": 4})), ap.add("SkyyTBody", row),
+          ap.add("SkyyTBody", UI.scroll_list(P + "Fl")), ap.add("SkyyTBody", samples["k14 stat well"])]
+    check(hs == [34, 59, None, 118], "Appends.add returns each outer height (None for a flex list): %s" % hs)
+    check(UI.used_height(ap, "SkyyTBody") == 34 + 59 + 118 and ap.used("SkyyTBody") == 211, "used_height sums the outer heights (flex = 0)")
+    check((P + "SwlN", "Text", J("fmt(purse)", "12345")) in ap.sets, "Appends.add carries a Markup's .sets along")
+    ap.add("SkyyTBody", UI.label(P + "L2", "", "default", h=False))
+    raises(lambda: UI.used_height(ap, "SkyyTBody"), ValueError, "used_height refuses a child without a Height or a FlexWeight",
+           "cannot be proven")
+    rw = UI.Appends([(None, ROOT_MK), ("SkyyTA", BODY_MK), ("SkyyTBody", UI.group(P + "Rw", "Left", h=44))])
+    for mk in (UI.button(P + "B1", "One", w=172, anchor={"right": 6}), UI.button(P + "B2", "Two", w=172), UI.spacer(12, 44)):
+        rw.add(P + "Rw", mk)
+    check(UI.used_width(rw, P + "Rw") == 172 + 6 + 172 + 12 and rw.used(P + "Rw", "w") == 362, "used_width of a LayoutMode Left row")
+    jl = UI.java_add("SkyyTBody", samples["k14 stat well"])
+    check(jl.count("appendInline") == 1 and 'b.set("#SkyyTSwlN.Text", "" + (fmt(purse)));' in jl, "java_add = the append + its b.set lines")
+    ch = UI.choose(J("c"), UI.state_word(P + "Sw", "A, b", "success"), UI.state_word(P + "Sw", "A, b", "disabled"))
+    check(UI.Appends().add("SkyyTBody", ch) == 44, "Appends.add of a Choice of two Markups")
+    raises(lambda: UI.Appends().add("SkyyTBody", UI.choose(J("c"), UI.state_word(P + "Sw", "A, b"), UI.state_word(P + "Sw", "C, d")))
+           , ValueError, "Appends.add refuses two looks with different texts", "different b.set lines")
+    # ---- margins + button_row(used=)
+    check(UI.right_margin(1066, 350) == 716 and UI.centre_margin(900, 372) == 264, "right_margin / centre_margin")
+    raises(lambda: UI.right_margin(300, 350), ValueError, "right_margin that does not fit")
+    br = samples["k14 button row right"]
+    check(br == "Group #SkyyTBrr { Anchor: (Height: 44, Top: 8); LayoutMode: Left; Padding: (Left: 716); }" and br.left == 716,
+          "button_row(used=) right-aligns with Padding Left, no LayoutMode Right")
+    check("Padding: (Left: 264)" in samples["k14 button row centre"] and "Width: 900" in samples["k14 button row centre"],
+          "button_row(used=) centres (avail = w)")
+    check(UI.java_expr(samples["k14 button row runtime"]).endswith('LayoutMode: Left; Padding: (Left: " + (gapR) + "); }"'),
+          "button_row(left_margin=J()) = a runtime Padding Left (SkyyParty gapR)")
+    check(type(UI.button_row(P + "Br")) is str and UI.button_row(P + "Br", align="right") ==
+          "Group #SkyyTBr { Anchor: (Height: 44, Top: 8); LayoutMode: Right; }", "button_row without used= is the kit 1.3 row")
+    raises(lambda: UI.button_row(P + "Br", align="right", used=100), ValueError, "button_row(used=) needs avail / w")
+    raises(lambda: UI.button_row(P + "Br", left_margin=J("x", "wide")), ValueError, "button_row left_margin sample must be a number")
+    # ---- status_bar / static_row
+    check(samples["k14 status bar on"] == "Group #SkyyTStb { Anchor: (Width: 4, Right: 8); Background: #4274a5; }"
+          and samples["k14 status bar off"] == "Group #SkyyTStb { Anchor: (Width: 4, Right: 8); }", "status_bar on / off (space kept)")
+    sj = UI.java_expr(samples["k14 status bar runtime"])
+    check('+ ((i == sel) ? "Background: #ffcc00; " : "") + "}"' in sj and UI.render(samples["k14 status bar runtime"]) ==
+          "Group #SkyyTStb { Anchor: (Width: 4, Right: 8); Background: #ffcc00; }", "status_bar(on=J()) = a runtime Background property")
+    check(UI.row_bar is UI.status_bar, "row_bar is status_bar")
+    raises(lambda: UI.status_bar(P + "S", "yes"), ValueError, "status_bar on must be bool / J()")
+    r = samples["k14 static row full"]
+    check(r.startswith("Group #SkyyTSr { Anchor: (Height: 56, Bottom: 3); LayoutMode: Left; Group #SkyyTSrP { Anchor: (Width: 476, "
+                       "Height: 56); LayoutMode: Left; Background: #101925(0.55); Padding: (Left: 8, Right: 8); Group #SkyyTSrBar {")
+          and "ItemIcon #SkyyTSrIc { Anchor: (Width: 40, Height: 40, Left: 0, Top: 8); ItemId: \"Weapon_Sword_Iron\"; }" in r
+          and "Group #SkyyTSrT { Anchor: (Width: 238, Height: 56); LayoutMode: Top; Padding: (Top: 6); " in r
+          and 'Label #SkyyTSrTg { Anchor: (Width: 150, Height: 56, Left: 8); Text: "12 m";' in r
+          and "TextButton #SkyyTSrAct { Anchor: (Width: 92, Height: 56, Left: 4);" in r and r.text_w == 238 and not r.sets,
+          "static_row: panel 572 - 96, padding 2 x 8, bar 12, icon box 52, text 238, tag 150 + 8, action 92 + 4 (SkyyAccessories 0.4.5 geometry)")
+    check(r.ids == {"row": P + "Sr", "panel": P + "SrP", "bar": P + "SrBar", "icon_box": P + "SrIb", "icon": P + "SrIc", "text": P + "SrT",
+                    "name": P + "SrNm", "sub": P + "SrSb", "tag": P + "SrTg", "action": P + "SrAct"}, "static_row .ids: %s" % r.ids)
+    rp = samples["k14 static row punct"]
+    check(rp.sets == [(P + "SpNm", "Text", "Iron sword, +3"), (P + "SpSb", "Text", J("sub(i)", "Rare"))] and 'Text: ""' in rp
+          and "Width: 112" in rp, "static_row: punctuated / J() texts become b.set lines")
+    rn = samples["k14 static row normal"]
+    check("Button #SkyyTSnP {" in rn and "ButtonsLightActivate" in rn and "SkyyTSnBar" not in rn and "SkyyTSnAct" not in rn,
+          "static_row state normal = a clickable Button panel, bar=False = no bar")
+    rs = samples["k14 static row selected"]
+    check(rs.count("#4274a5") == 3 and "Background: #ffcc00" in rs and rs.count("Disabled.png") == 4 and "Width: 150" in rs,
+          "static_row selected + a colour bar + a disabled small Primary action")
+    rj = samples["k14 static row runtime id"]
+    check(UI.render(rj).startswith("Group #SkyyTSq2 {") and "Group #SkyyTSq2Bar { Anchor: (Width: 4, Right: 8); }" in UI.render(rj)
+          and rj.sets == [(P + "Sq" + J("i", "2") + "Nm", "Text", J("nm", "Steve"))], "static_row: a runtime id, bar=None keeps the space")
+    raises(lambda: UI.static_row(P + "Sx", 200, icon="Weapon_Sword_Iron", tag="x", action="Go"), ValueError, "static_row too narrow")
+    raises(lambda: UI.static_row(P + "Sx", 572, action="Go", action_on=J("c")), ValueError, "static_row action_on runtime -> choose")
+    raises(lambda: UI.static_row(P + "S_x", 572), ValueError, "static_row underscore id", "underscore")
+    raises(lambda: UI.static_row(P + "Sx", 572, name="a, b", ids={"name": None}), ValueError, "static_row b.set text needs an id")
+    # ---- list_well / result_line / java_color_by_text
+    lw = samples["k14 list well"]
+    check(lw == UI.panel(P + "Lwl", "well", w=580, h=8 + 6 * 59, pad=4) and lw.inner_w == 572 and lw.inner_h == 354 and lw.h == 362,
+          "list_well = panel well, padding 4 (6 rows of 56 + 3)")
+    check(UI.list_well_h(2, 84, 4) == UI.list_card_h(2) == 184, "list_well_h / list_card_h")
+    raises(lambda: UI.list_well(P + "L"), ValueError, "list_well needs h or rows")
+    check(samples["k14 result line"] == UI.status_line(P + "Rl", "infoColor(this.info)", h=44, wrap=True),
+          "result_line = the status line look with any colour (J() here)")
+    check("TextColor: #7caacc" in samples["k14 result line name"] and "Wrap" not in samples["k14 result line name"],
+          "result_line with a colour name, one line")
+    raises(lambda: UI.result_line(P + "R"), ValueError, "result_line needs a colour")
+    jc = UI.java_color_by_text("infoColor", [("startsWith", "upgraded to ", "+"), ("contains", " could not", "-"),
+                                             ("equals", "done", "success"), ("endsWith", "?", "=")], empty="=", default="-")
+    check(jc.startswith("public static String infoColor(String t) {") and 'if (t.startsWith("upgraded to ")) return "#39f493";' in jc
+          and 'if (t.indexOf(" could not") >= 0) return "#ff6b6b";' in jc and 'if (t.equals("done")) return "#39f493";' in jc
+          and 'if (t.endsWith("?")) return "#7caacc";' in jc and jc.endswith('  return "#ff6b6b";\n}'), "java_color_by_text source")
+    raises(lambda: UI.java_color_by_text("InfoColor", []), ValueError, "java_color_by_text name")
+    raises(lambda: UI.java_color_by_text("c", [("like", "x", "+")]), ValueError, "java_color_by_text test")
+    raises(lambda: UI.java_color_by_text("c", [("equals", "x", J("q", "#ffffff"))]), ValueError, "java_color_by_text J colour")
+    # ---- stat_bar
+    full, empty = samples["k14 stat bar full"], samples["k14 stat bar empty"]
+    check(UI.render(empty) == "Group #SkyyTSbar { Anchor: (Width: 160, Height: 8, Top: 4); LayoutMode: Left; Background: #1a2030; }"
+          and UI.render(full) == ("Group #SkyyTSbar { Anchor: (Width: 160, Height: 8, Top: 4); LayoutMode: Left; Background: #1a2030; "
+                                  "Group { Anchor: (Width: 80, Height: 8); Background: #4a7caa; } }"),
+          "stat_bar: the SkyyParty 0.1.6 track + fill; the empty variant has no fill child")
+    bp = UI.stat_bar(P + "Sbar", 160, 8, J("stF[0]", "80"), col="progressBlue", anchor={"top": 4})
+    cb = bp.choose()
+    check(isinstance(cb, UI.Choice) and cb.cond == "(stF[0]) > 0" and UI.check_markup(cb) is cb and bp.h == 12,
+          "stat_bar.choose() = choose(fill > 0, full, empty), both looks check")
+    check(UI.stat_bar(P + "Sb", 100, 8, 0).pick() == UI.stat_bar(P + "Sb", 100, 8, 0).empty and
+          UI.stat_bar(P + "Sb", 100, 8, 5).pick() == UI.stat_bar(P + "Sb", 100, 8, 5).full, "stat_bar.pick() for a static fill")
+    raises(lambda: UI.stat_bar(P + "Sb", 100, 8, 5).choose(), ValueError, "stat_bar.choose() of a static fill")
+    raises(lambda: UI.stat_bar(P + "Sb", 100, 8, -1), ValueError, "stat_bar negative fill")
+    # ---- columns
+    spec = UI.column_spec([("Member", 260), ("Health", 175), ("Where", 300)], avail=1300, pad_left=24, gap=10)
+    check(spec.total == 755 and spec.slack == 1300 - 24 - 755 and spec.width("Health") == 175 and spec.x(0) == 24 and spec.x(2) == 24 + 260
+          + 10 + 175 + 10, "Columns: total, slack, width, x")
+    raises(lambda: UI.column_spec([("A", 500), ("B", 500)], avail=900), ValueError, "columns wider than avail")
+    raises(lambda: UI.column_spec([("A", 0)]), ValueError, "a zero-width column")
+    ch_ = samples["k14 column heads"]
+    check(ch_.startswith("Group #SkyyTChd { Anchor: (Height: 30); LayoutMode: Left; Padding: (Left: 24); Label { Anchor: (Width: 260, "
+                         'Height: 30); Text: "Member";') and ch_.count("Label {") == 3 and not ch_.sets, "column_heads = SkyyParty's heads")
+    chp = samples["k14 column heads punct"]
+    check(chp.sets == [(P + "ChpH1", "Text", "Lvl.")] and "Right: 8" in chp and "Label #SkyyTChpH1 {" in chp, "column_heads punctuated + gap")
+    check(spec.heads(P + "Hx", outside=4).count("Padding: (Left: 28)") == 1, "Columns.heads(outside=) adds the well padding")
+    cr = samples["k14 column row"]
+    check("Label #SkyyTCrwC0 { Anchor: (Width: 260, Height: 56);" in cr and "Background: #101925(0.55)" in cr and
+          cr.sets == [(P + "CrwC1", "Text", J("hp", "18")), (P + "CrwC2", "Text", "Hub, near spawn")] and cr.h == 59,
+          "column_row: one fixed-width cell per column, texts by b.set, row panel")
+    check("Background" not in samples["k14 column row plain"] and samples["k14 column row plain"].h == 56, "column_row without a panel")
+    raises(lambda: UI.column_row(P + "C", spec, texts=["a"]), ValueError, "column_row texts per column")
+    # ---- stat_well = SkyyBank 0.1.4's PURSE box
+    bank = UI._inside(UI.panel("SkyyBPurseBox", "well", w=527, h=118), [
+        UI.label(None, "Purse", "subtitle", h=25, align="Center", anchor={"bottom": 10}), UI.label("SkyyBPurse", "", "display", h=42, align="Center"),
+        UI.label(None, "coins you carry - lost in part when you die", "caption", h=25, align="Center")])
+    sw = UI.stat_well("SkyyBPurseBox", "Purse", None, "coins you carry - lost in part when you die", w=527, ids={"number": "SkyyBPurse"})
+    check(sw == bank and sw.h == 118 and not sw.sets, "stat_well = the SkyyBank 0.1.4 PURSE well, nested")
+    swp = samples["k14 stat well punct"]
+    check(swp.sets == [(P + "SwpC", "Text", "safe when you die, always.")] and "Label #SkyyTSwpNum {" in swp and swp.h == 118,
+          "stat_well punctuated caption + ids")
+    raises(lambda: UI.stat_well(P + "S", number="1,000"), ValueError, "stat_well number must be J() / proven / None")
+    # ---- color_by / group(bg=) / panel(bg=) / state_word / item_frame / icon_cell static
+    cbj = UI.color_by([("sel", "rowPressed"), (J("pend"), "rowHover")], "row")
+    check(UI.java_expr("x" + cbj).endswith('(sel) ? "#182a40(0.9)" : ((pend) ? "#132033(0.8)" : ("#101925(0.55)")))')
+          and UI.render(cbj) == "#182a40(0.9)", "color_by: the SKYY CARD look chain from colour names")
+    raises(lambda: UI.color_by([("a", J("c", "#ffffff"))], "row"), ValueError, "color_by refuses J() colours")
+    raises(lambda: UI.color_by([("a", "nope")], "row"), ValueError, "color_by validates the colour names")
+    check(UI.group(P + "G", None, w=4, h=84, bg="selected") == UI.group(P + "G", None, w=4, h=84, extra="Background: #4274a5"),
+          "group(bg=) = the hand-written extra=\"Background: ...\"")
+    check(UI.panel(P + "Pn", "well", h=40, bg="rowHover") == UI.panel(P + "Pn", "well", h=40).replace("#000000(0.15)", "#132033(0.8)"),
+          "panel(bg=) swaps the colour of a colour panel")
+    raises(lambda: UI.panel(P + "Pn", "simple", bg="row"), ValueError, "panel(bg=) on a texture panel")
+    raises(lambda: UI.group(P + "G", bg="nope"), ValueError, "group(bg=) validates the colour")
+    check(samples["k14 state word"] == UI.label(None, "Selected", "success", w=172, h=44, align="Center", bold=True),
+          "state_word = the SKYY CARD card_state")
+    check(samples["k14 state word punct"].sets == [(P + "Wd", "Text", "Coming soon...")], "state_word punctuated text")
+    raises(lambda: UI.state_word(None, "x", "warning"), ValueError, "state_word kind (the 32 px warning is not one)")
+    raises(lambda: UI.state_word(None, "Soon, maybe"), ValueError, "state_word punctuated text needs an id")
+    fc = samples["k14 item frame cover"]
+    check(fc == ('Group #SkyyTIfc { Anchor: (Width: 68, Height: 68); Background: #1a2530; Padding: (Full: 2); ItemIcon { Anchor: (Width: '
+                 '64, Height: 64); ItemId: "Food_Bread"; } Group #SkyyTIfcOut { Anchor: (Full: 0); Background: #0a0e12(0.75); } }'),
+          "item_frame(item=, cover=True): inline ItemId + the sold-out cover")
+    check(UI.item_frame(P + "F", icon_id=P + "FI") == UI.item_frame(P + "F", icon_id=P + "FI", item=None), "item_frame: old call unchanged")
+    st = samples["k14 icon cell static"]
+    check(st.startswith("Group #SkyyTIcs14 { Anchor: (Width: 74, Height: 74); Background: #101925(0.55); ItemIcon") and "ButtonStyle" not in st
+          and "Sounds" not in st and 'Text: "12"' in st, "icon_cell static = a Group, the static row colour, no style / sound")
+    check("Background" not in samples["k14 icon cell static plain"].split("ItemIcon")[0], "icon_cell static plain has no back")
+    # ---- confirm_view(compact) wrap / yes_on / q_col = SkyyProfiles 0.1.3 pf_row
+    prof = os.path.join(ROOT, "SkyyProfiles", "build_skyyprofiles_0.1.3.py")
+    pf_ns = {"SUI": UI, "re": re, "PF_W": 1100}
+    pf_row = _func_from(prof, "pf_row", pf_ns) if os.path.isfile(prof) else None
+    check(pf_row is not None, "SkyyProfiles 0.1.3 pf_row could be read (equivalence test)")
+    if pf_row is not None:
+        for wrap, yes_on, ask in ((False, True, True), (True, True, True), (True, False, False), (False, False, True), (True, False, True)):
+            want = pf_row("SkyyTBody", "SkyyTMk", J("safe(q)"), "SkyyTYes", "SkyyTNo", "Create profile", "Back", 200, 180, yes_on=yes_on,
+                          ask=ask, wrap=wrap)
+            got = UI.confirm_view("SkyyTBody", "SkyyTMk", 1100 - 34, question=J("safe(q)"), yes_text="Create profile", no_text="Back",
+                                  yes_w=200, no_w=180, compact=True, top=8, ids={"box": "SkyyTMk", "question": "SkyyTMkQ",
+                                                                                 "yes": "SkyyTYes", "no": "SkyyTNo"},
+                                  wrap=wrap, yes_on=yes_on, q_col="warning" if ask else "text")
+            check(list(got) == list(want) and got.sets == want.sets and got.h == want.h,
+                  "confirm_view(compact, wrap=%s, yes_on=%s, q_col=%s) = SkyyProfiles 0.1.3 pf_row" % (wrap, yes_on, ask))
+    cvj = UI.confirm_view("SkyyTBody", "SkyyTCj", 900, question="Sure?", compact=True, yes_on=J("picked"))
+    check(isinstance(cvj[2][1], UI.Choice) and cvj[2][1].cond == "picked", "confirm_view yes_on=J() = both looks (choose)")
+    cvn = UI.confirm_view("SkyyTBody", "SkyyTCn", 900, question="Delete", yes_on=False)
+    check([mk for _p, mk in cvn if isinstance(mk, str) and mk.startswith("TextButton #SkyyTCnYes")][0].count("Disabled.png") == 4,
+          "confirm_view (not compact) yes_on=False")
+    raises(lambda: UI.confirm_view("SkyyTBody", "SkyyTCx", 900, compact=True, yes_on="yes"), ValueError, "confirm_view yes_on type")
+    # ---- list_card = the SKYY CARD (SkyyClasses 0.1.8 / SkyyProfiles 0.1.3) byte for byte
+    cb_ns = _card_block()
+    check(cb_ns is not None, "the SKYY CARD block could be read from tools/classes_0_1_8_patch.py (CARD_SHA ok)")
+    if cb_ns is not None:
+        cls_lines = [{"id": "Nm", "text": "safe(title)", "kind": "rowName", "h": 24, "col": J("@PKG@.ClassDefs.COLORS[i]", "#8fd67a")},
+                     {"id": "Sk", "text": 'safe("Combat skill " + x)', "kind": "fieldLabel", "h": 20, "col": "value"},
+                     {"id": "Ds", "text": "safe(d)", "kind": "rowSub", "h": 40, "col": "rowSub", "wrap": True}]
+        tw = cb_ns["card_text_w"](1058, 3)
+        pf_lines = [{"id": "Nm", "text": "safe(title)", "kind": "rowName", "h": 24, "col": J("c[3]", "#8fd67a"),
+                     "tag": {"id": "Rl", "text": "safe(role)", "col": J("c[3]", "#8fd67a"), "w": tw // 2, "kind": "default"}},
+                    {"id": "Sk", "text": "safe(sk)", "kind": "fieldLabel", "h": 20, "col": "value"},
+                    {"id": "Ds", "text": "safe(c[2])", "kind": "rowSub", "h": 40, "col": "rowSub", "wrap": True}]
+        new_lines = [{"id": "Tx", "text": 'safe("Empty slot (" + n + " free)")', "kind": "default", "h": 44, "col": "text", "wrap": True}]
+        i = J("i")
+        cases = [
+            ("classes", {"list": "SkyyTList", "card": "SkyyTCard" + i, "icons": "SkyyTIco" + i, "text": "SkyyTTxt" + i, "act": "SkyyTAct" + i},
+             1058, [("selected", "sel"), ("pending", "pend"), ("normal", "on"), "off"], cls_lines,
+             dict(icons="ic", icon_item=J("safe(ic[k])", "Weapon_Sword_Iron"), icon_max=4, on="on")),
+            ("profiles list", {"list": "SkyyTList", "card": "SkyyTCard" + J("id", "1"), "text": "SkyyTTx" + J("id", "1"),
+                               "act": "SkyyTAc" + J("id", "1")}, 1058, [("selected", "on"), ("pending", "pend"), "normal"],
+             [dict(cls_lines[0], col=J('on ? "#39f493" : "#d6e4ee"', "#39f493")), cls_lines[1], dict(cls_lines[2], h=20, wrap=False)],
+             dict(icon_item=J("safe(iconOf(cls))", "Weapon_Sword_Iron"), icon_max=1)),
+            ("profiles new", {"list": "SkyyTList", "card": "SkyyTNewCard", "text": "SkyyTNewTxt", "act": "SkyyTNewAct"}, 1058, "empty",
+             new_lines, dict(icon_item=J("NEW_ICON", "Weapon_Sword_Iron"), icon_max=1, var="newCard")),
+            ("profiles create", {"list": "SkyyTList", "card": "SkyyTCls" + i, "icons": "SkyyTIco" + i, "text": "SkyyTCTx" + i,
+                                 "act": "SkyyTCAct" + i}, 1058, [("selected", "sel"), ("normal", "on"), "off"], pf_lines,
+             dict(icons="ic", icon_item=J("safe(ic[k])", "Weapon_Sword_Iron"), icon_max=3, on="on")),
+            ("static off", {"list": "SkyyTList", "card": "SkyyTOff", "text": "SkyyTOffT", "act": "SkyyTOffA"}, 900, "off",
+             [cls_lines[1]], dict(icon_item="Weapon_Sword_Iron", on="false"))]
+        for name, ids, w, look, lines, kw in cases:
+            want = cb_ns["card_java"](ids, w, look, lines, **kw)
+            klines = [dict(ln, text=J(ln["text"]), tag=dict(ln["tag"], text=J(ln["tag"]["text"])) if ln.get("tag") else None) for ln in lines]
+            for ln in klines:
+                if ln["tag"] is None:
+                    del ln["tag"]
+            card = UI.list_card(ids["list"], ids["card"], w, klines, look=look,
+                                ids={"icons": ids.get("icons"), "text": ids["text"], "act": ids["act"]}, **kw)
+            got = card.java("b")
+            check(got == want, "list_card = the SKYY CARD card_java (%s)%s" % (name, "" if got == want else ": " +
+                                                                               next(("%r != %r" % (a, b_) for a, b_ in zip(got.split("\n"), want.split("\n")) if a != b_), "length")))
+            chk = UI.Appends([(None, ROOT_MK), ("SkyyTA", BODY_MK), ("SkyyTBody", UI.list_well("SkyyTList", h=400))])
+            chk.extend(card)
+            try:
+                chk.check(P)
+                check(True, "list_card %s check_page" % name)
+            except ValueError as e:
+                FAILS.append("list_card %s: %s" % (name, e))
+            check(card.h == 88 and card.act == ids["act"], "list_card .h / ids (%s)" % name)
+        check(UI.state_word(None, "Coming later", "disabled") == cb_ns["card_state"]("Coming later", "disabled") and
+              UI.list_card_button("SkyyTPk", "Choose", "primary") == cb_ns["card_button"]("SkyyTPk", "Choose", "primary") and
+              UI.list_well("SkyyTList", h=UI.list_card_h(7)) == cb_ns["card_list"]("SkyyTList", cb_ns["card_list_h"](7)) and
+              UI.list_card_text_w(1058, 3) == cb_ns["card_text_w"](1058, 3) and UI.LIST_CARD_LOOKS == cb_ns["CARD_LOOKS"] and
+              (UI.LIST_CARD_H, UI.LIST_CARD_GAP, UI.LIST_CARD_BAR, UI.LIST_CARD_FRAME, UI.LIST_CARD_ACT_W) ==
+              (cb_ns["CARD_H"], cb_ns["CARD_GAP"], cb_ns["CARD_BAR"], cb_ns["CARD_FRAME"], cb_ns["CARD_ACT_W"]),
+              "state_word / list_card_button / list_well / list_card_h / text width / looks = the SKYY CARD helpers")
+    lc = UI.list_card("SkyyTList", "SkyyTLc", 900, [{"id": "Nm", "text": "Warrior, level 3", "kind": "rowName", "h": 24, "col": "rowName"}],
+                      look="normal", icon_item="Weapon_Sword_Iron", action=UI.state_word(None, "Active", "success"))
+    check(lc.sets == [("SkyyTLcNm", "Text", "Warrior, level 3")] and lc[-1] == ("SkyyTLcAct", UI.state_word(None, "Active", "success"))
+          and "String cardBg" not in lc.java(), "list_card: a static look, a punctuated text, action= appended")
+    raises(lambda: UI.list_card("SkyyTList", "SkyyTLc", 400, []), ValueError, "list_card too narrow")
+    raises(lambda: UI.list_card("SkyyTList", "SkyyTLc", 900, [], look="glowing"), ValueError, "list_card look name")
+    raises(lambda: UI.list_card("SkyyTList", "SkyyTLc", 900, [], icons="a; b"), ValueError, "list_card icons expression")
+    # ---- text width (the client's font tables) + the fit warnings
+    fonts = UI.font_table("Default", True) is not None
+    if fonts:
+        check(abs(UI.text_width("WITHDRAW ALL", 17, True) - 141.9) < 0.2 and abs(UI.line_height(16) - 21.824) < 0.01,
+              "text_width: WITHDRAW ALL at 17 px bold = 142 px (the SkyyBank 0.1.4 harness), Nunito line height 1.364")
+        check(UI.text_width("Mage", 15, font="Secondary") > UI.text_width("Mage", 15), "the Secondary (Lexend) table is wider")
+    else:
+        print("note: client font tables not found - text_width uses FONT_FALLBACK")
+    nofont = os.path.join(SCRATCH, "no-fonts")
+    fb = UI.text_width("Ab1 .", 10, font_dir=nofont)
+    check(abs(fb - 10 * (0.665 + 0.512 + 0.600 + 0.260 + 0.428)) < 1e-9, "text_width falls back to the per-class averages: %s" % fb)
+    check(UI.text_lines("one two three four five six", 60, 16) >= 3 and UI.text_lines("one", 10, 16) == 1, "text_lines wraps greedily")
+    raises(lambda: UI.text_width(J("x"), 16), ValueError, "text_width refuses a J() text")
+    raises(lambda: UI.font_table("Comic"), ValueError, "font_table refuses a non-vanilla font")
+    UI.fit_warnings(clear=True)
+    UI.button(P + "W1", "Reforge everything now", "primary", w=150)
+    UI.button(P + "W2", "Reforge everything now", "primary", w=150, fit=False)
+    UI.button(P + "W3", "Go", w=172)
+    UI.button(P + "W4", "Reforge everything now", flex=1)
+    UI.label(P + "W5", "A long line that cannot fit", "default", w=60)
+    UI.label(P + "W6", "A long line that cannot fit", "default", w=60, wrap=True)
+    UI.label(P + "W7", "Short", "default", w=200)
+    wa = UI.Appends()
+    wa.text("SkyyTBody", P + "W8", "Costs 1,250,000,000 coins per day.", "caption", w=80)
+    wa.text("SkyyTBody", P + "W9", J("x"), "caption", w=10)
+    w = UI.fit_warnings()
+    check(len(w) == 3 and w[0].startswith("button #SkyyTW1 'Reforge everything now'") and w[1].startswith("label #SkyyTW5")
+          and w[2].startswith("label #SkyyTW8"), "fit warnings: only the too-wide static texts (fit=False, flex, wrap, J() skipped): %s" % w)
+    UI.button(P + "W1", "Reforge everything now", "primary", w=150)
+    check(len(UI.fit_warnings()) == 3, "a fit warning is given once")
+    UI.fit_warnings("off", clear=True)
+    UI.button(P + "W1", "Reforge everything now", "primary", w=150)
+    check(UI.fit_warnings() == [], "fit_warnings('off')")
+    UI.fit_warnings("collect")
+    raises(lambda: UI.fit_warnings("loud"), ValueError, "fit_warnings mode")
+    # ---- Appends.button (b.set on a TextButton Text, UNVERIFIED)
+    ab = UI.Appends([(None, ROOT_MK), ("SkyyTA", BODY_MK)])
+    check(ab.button("SkyyTBody", P + "Ab1", "Buy", "primary") == P + "Ab1" and not ab.sets and 'Text: "Buy"' in ab[-1][1],
+          "Appends.button: proven text inline, no gate")
+    raises(lambda: ab.button("SkyyTBody", P + "Ab2", "Buy 3?"), UI.UnverifiedError, "Appends.button b.set text needs trial=True",
+           "UNVERIFIED")
+    ab.button("SkyyTBody", P + "Ab3", "Buy 1,250 coins?", "primary", trial=True, w=300)
+    check(ab.sets == [(P + "Ab3", "Text", "Buy 1,250 coins?")] and 'Text: ""' in ab[-1][1], "Appends.button b.set path")
+    # ---- assert_proven: one table, minus PROBED
+    for name, mk in samples.items():
+        if name.startswith("k14 ") and "runtime" not in name:
+            try:
+                UI.assert_proven(mk)
+                check(True, "assert_proven: kit 1.4 sample %s uses proven properties only" % name)
+            except UI.UnprovenError as e:
+                FAILS.append("kit 1.4 sample %s is not proven-only: %s" % (name, e))
+    base4 = UI.probe_page("base4")
+    found = UI.assert_proven(base4.shell.appends, what="probe base4")
+    check("FlexWeight" not in found and "WrapMaxLines" not in found and not any(k.startswith("LayoutMode: ") and found[k] for k in found),
+          "probe base4 is proven-only (no FlexWeight / WrapMaxLines / LayoutMode Center-Right-Full)")
+    raises(lambda: UI.assert_proven(UI.button(P + "A", "x", flex=1)), UI.UnprovenError, "assert_proven refuses FlexWeight", "FlexWeight")
+    check("FlexWeight" in UI.assert_proven(UI.button(P + "A", "x", flex=1), allow=("flex-rows",)), "assert_proven allow=")
+    UI.PROBED.add("base")
+    try:
+        check(bool(UI.assert_proven([UI.button_row(P + "Br", align="right"), UI.label(P + "A", "", "heading")])),
+              "a PROBED base proves LayoutMode Right + WrapMaxLines")
+    finally:
+        UI.PROBED.discard("base")
+    for mk, what in ((UI.button(P + "A", "x", disable_element=True, trial=True), "Disabled: true"),
+                     (UI.quality_frame(P + "Q", "Rare", trial=True), "../ItemQualities"), (UI.tile(P + "T", trial=True), "tile"),
+                     (UI.checkbox(P + "C", trial=True), "CheckBox"), (UI.tooltip("Hi", trial=True), "TooltipText"),
+                     ('Group #SkyyTA { Alignment: Center; }', "not in the kit's property table")):
+        raises(lambda mk=mk: UI.assert_proven(mk), UI.UnprovenError, "assert_proven catches %s" % what, what)
+    check(UI.assert_proven(UI.Appends([(None, ROOT_MK), ("SkyyTA", UI.choose("c", UI.label(P + "L", ""), UI.label(P + "L", "", "caption")))]))
+          is not None, "assert_proven takes Appends with choices")
+    every = {}
+    for pg in UI.probe_pages():
+        every.update(UI.proven_tokens(pg.shell.appends))
+    every.update(UI.proven_tokens(list(samples.values())))
+    check(not [k for k, g in every.items() if g == "unknown"], "every element / key the kit emits is in the proven table: %s"
+          % sorted(k for k, g in every.items() if g == "unknown"))
+    # the PROVEN entries are really on deployed pages: each one appears in a live build script (tools/deploy_set.py SET, the probe mod
+    # itself not counted)
+    live = _live_scripts()
+    check(len(live) >= 15, "live build scripts found: %d" % len(live))
+    if live:
+        blob = "\n".join(live.values())
+        for k, g in sorted(UI.PROVEN_KEYS.items()):
+            if g is None:
+                check(re.search(r"(?<![A-Za-z])%s\s*:" % k, blob) is not None, "proven key %s appears in a live build script" % k)
+        for e, g in sorted(UI.PROVEN_ELEMENTS.items()):
+            if g is None:
+                check(re.search(r"(?<![A-Za-z])%s\s*[#{]" % e, blob) is not None, "proven element %s appears in a live build script" % e)
+        for v, g in sorted(UI.PROVEN_LAYOUTS.items()):
+            if g is None:
+                check(re.search(r"LayoutMode:\s*%s\b" % v, blob) is not None, "proven LayoutMode %s appears in a live build script" % v)
+        for k in ("FlexWeight", "WrapMaxLines", "LetterSpacing"):
+            check(re.search(r"(?<![A-Za-z])%s\s*:" % k, blob) is None, "base-gated %s is on no live page (still behind the probe)" % k)
+    # ---- probe pages 19-22 + Probe.summary + Probe.with_footer (the public footer hook) + PROBE_OPEN_FIRST
+    pages = UI.probe_pages()
+    check(UI.PROBE_OPEN_FIRST == ("base1", "base2", "base3", "base4") and all(len(p.summary) <= 95 and p.summary for p in pages),
+          "PROBE_OPEN_FIRST; every probe page has a short summary")
+    check(pages[0].summary.startswith("Window frame") and UI.probe_page("base4").n == 19 and UI.probe_page(22).name == "layout-right",
+          "summaries / page numbers 19-22")
+
+    def footer(cont):
+        return [(cont, "Group #SkyyPbNav { Anchor: (Height: 56); LayoutMode: Left; Padding: (Top: 8); }"),
+                ("SkyyPbNav", UI.button("SkyyPbNavBack", "Back", w=240, h=46)), ("SkyyPbNav", UI.button("SkyyPbNavClose", "Close", w=170, h=46))]
+    views = {}
+    for pg in pages:
+        try:
+            views[pg.n] = pg.with_footer(footer, 56, foot_w=426, prefix="SkyyPb")
+            check(views[pg.n].h <= UI.MAX_PAGE_H, "probe %d with a footer fits 1080" % pg.n)
+        except ValueError as e:
+            FAILS.append("probe %d with_footer: %s" % (pg.n, e))
+        body_used = UI.used_height(pg.shell.appends, pg.shell.body)
+        check(body_used <= pg.shell.inner_h, "probe %d body children fit (%d of %d px)" % (pg.n, body_used, pg.shell.inner_h))
+    if len(views) == len(pages):
+        check(views[1].h == 920 and views[16].h == 346 and views[18].container == "SkyyPb18Main" and views[18].h == 960
+              and views[19].container == "SkyyPb19Body" and views[19].h == 647 + 60,
+              "with_footer places the footer like SkyyUiProbe 0.1 (base1 860 -> 920, page 16 290 -> 346, base3 in its main column)")
+        v18 = views[18]
+        check(sum(1 for ln in v18.java("b").splitlines() if "SkyyPbNav" in ln) == 3 and "pbGridSlots" in v18.java("b") and
+              v18.java("b").startswith(pages[17].shell.java("b").split("\n")[0][:40]), "with_footer Java: page + footer + java_extra")
+        check(pages[0].shell.appends[0][1] == 'Group #SkyyPb1 { Anchor: (Width: 1500, Height: 860); }',
+              "with_footer never changes the kit's own page (a copy)")
+    UI.fit_warnings("print", clear=True)
+
+
+def _live_scripts():
+    """{mod: text} of the live build scripts (tools/deploy_set.py SET, read-only; SkyyUiProbe excluded)."""
+    path = os.path.join(HERE, "deploy_set.py")
+    if not os.path.isfile(path):
+        return {}
+    m = re.search(r"^SET = \[(.*?)^\]", open(path, encoding="utf8").read(), re.S | re.M)
+    out = {}
+    for mod, ver in re.findall(r'\("(Skyy\w+)", "([\d.]+)"\)', m.group(1) if m else ""):
+        p = os.path.join(ROOT, mod, "build_%s_%s.py" % (mod.lower(), ver))
+        if mod != "SkyyUiProbe" and os.path.isfile(p):
+            out[mod] = open(p, encoding="utf8", errors="replace").read()
+    return out
+
+
 # ================================================================= probe pages (the in-game gate)
-PROBE_NAMES = ["base1", "base2", "checkbox", "number-field", "tooltip", "progress-element", "memories-bar", "quality-frame",
-               "itemslot", "dropdown", "search-field", "spinner", "tile", "text-mask", "slot-background", "disabled-prop", "value-ref",
-               "base3"]
+PROBE_NAMES13 = ["base1", "base2", "checkbox", "number-field", "tooltip", "progress-element", "memories-bar", "quality-frame",
+                 "itemslot", "dropdown", "search-field", "spinner", "tile", "text-mask", "slot-background", "disabled-prop", "value-ref",
+                 "base3"]
+PROBE_NAMES = PROBE_NAMES13 + ["base4", "button-text", "flex-rows", "layout-right"]      # kit 1.4 appends 19-22
 
 
 def phase_probes():
@@ -1258,6 +1723,7 @@ def phase_probes():
     keys = [p.key for p in pages]
     check([p.n for p in pages] == list(range(1, len(pages) + 1)), "probe pages are numbered 1..n")
     check([p.name for p in pages] == PROBE_NAMES, "probe pages keep their stable names: %s" % [p.name for p in pages])
+    check([p.name for p in pages][:18] == PROBE_NAMES13, "kit 1.4: probe pages 1-18 keep their numbers and names (SkyyUiProbe 0.1)")
     check(tuple(p.name for p in pages if p.key == "base") == UI.PROBE_BASE and [p.n for p in pages if p.key == "base"] == [1, 2, 18],
           "the base pages are base1 / base2 / base3 = 1, 2, 18")
     check(keys[:2] == ["base", "base"], "probe pages 1-2 are the base look")
@@ -1279,7 +1745,8 @@ def phase_probes():
         except ValueError as e:
             FAILS.append("probe %d: %s" % (pg.n, e))
         for i, (par, mk) in enumerate(pg.shell.appends):
-            markup_ok("probe %d append %d" % (pg.n, i), mk, root=(par is None), prefix=pg.shell.prefix)
+            for j, v in enumerate(UI._variants(mk)):        # kit 1.4: probe 19 has runtime choices (both looks are checked)
+                markup_ok("probe %d append %d.%d" % (pg.n, i, j), v, root=(par is None), prefix=pg.shell.prefix)
         # the page shows its own numbered "what to see" list: a section head + one b.set line per look line
         P_ = pg.shell.prefix
         sets = pg.shell.all_sets()
@@ -1322,6 +1789,28 @@ def phase_guide():
     for n in ("pager", "item_grid", "java_grid_methods", "java_grid_fill", "icon_cell", "confirm_view", "choose", "probe_page",
               "for_pysource", "for_fstring"):
         check(n in names, "the guide documents the kit 1.3 function %s" % n)
+    for n in ("static_row", "status_bar", "list_well", "result_line", "java_color_by_text", "stat_bar", "column_spec", "column_heads",
+              "column_row", "right_margin", "centre_margin", "button_row", "stat_well", "list_card", "list_card_h", "list_card_button",
+              "state_word", "color_by", "used_height", "used_width", "outer_size", "text_width", "text_lines", "line_height",
+              "assert_proven", "java_add", "fit_warnings"):
+        check(n in names, "the guide documents the kit 1.4 function %s" % n)
+    for n in ("Markup", "ap.add(", "ap.button(", "with_footer", "PROBE_OPEN_FIRST", "PROBE_SUMMARY", "SNAP13", "base4", "button-text",
+              "flex-rows", "layout-right", "## 12. Kit 1.4 blocks", "## 13. Recipe: restyle a LIST page", "## 14. Recipe: restyle a CARD page"):
+        check(n in text, "the guide mentions %s (kit 1.4)" % n)
+    # the two recipes' code runs as written (the card recipe gets a page shell)
+    for sec in ("## 13.", "## 14."):
+        m = re.search(r"```python\n(.*?)```", text[text.index(sec):], re.S) if sec in text else None
+        if m is None:
+            FAILS.append("guide section %s has no python block" % sec)
+            continue
+        ns = {"SUI": UI}
+        if sec == "## 14.":
+            ns["sh"] = UI.page_shell("SkyyXF", 1100, 900, "Classes", body_id="SkyyX")
+        try:
+            exec(compile(m.group(1), "<guide %s>" % sec, "exec"), ns)
+            check(any(k.endswith("JAVA") for k in ns), "guide recipe %s runs and emits its Java" % sec)
+        except Exception as e:      # noqa
+            FAILS.append("guide recipe %s does not run: %s: %s" % (sec, type(e).__name__, e))
     check("@@" in text and "Appends.text" in text and "STATUS_INFO" in text, "the guide documents @@TOKEN@@ patches, Appends.text, STATUS_INFO")
     check("import skyyui as SUI" in text and "import skyyui as UI" not in text, "the guide imports the kit as SUI")
     for k in UI.LABELS:
@@ -1599,6 +2088,43 @@ def phase_java(samples, probes):
         rc.detach()
     else:
         print("note: HytaleServer.jar not found - the grid Java was compiled against stubs only")
+    # ---- kit 1.4: the Java the new blocks emit (result colour helper, runtime status bar, stat bar choice, a list card with its
+    # runtime look + icon loop, a runtime right footer margin)
+    k14_rules = [("startsWith", "upgraded to ", "+"), ("contains", " could not", "-"), ("equals", "done", "success"), ("endsWith", "?", "=")]
+    uc.addMethod(CtNewMethod.make(UI.java_color_by_text("infoColor", k14_rules, empty="=", default="-"), uc))
+    k14_row = UI.static_row(P + "Sr" + UI.J("i", "2"), 572, icon=UI.J("ids[i]", "Weapon_Sword_Iron"), name=UI.J("nm", "Steve"),
+                            sub="Rare, sharp", bar=UI.J("sel"), action="Equip")
+    uc.addMethod(CtNewMethod.make("public static String srow(int i, boolean sel, String nm, String[] ids) { skyyuitest.B b = new "
+                                  "skyyuitest.B();\n%s\nreturn b.out(); }" % UI.java_add(P + "List", k14_row), uc))
+    k14_bar = UI.stat_bar(P + "Sb", 160, 8, UI.J("f", "80"), col="progressBlue")
+    uc.addMethod(CtNewMethod.make("public static String sbar(int f) { skyyuitest.B b = new skyyuitest.B();\n%s\nreturn b.out(); }"
+                                  % UI.java_append(P + "Box", k14_bar.choose()), uc))
+    k14_card = UI.list_card(P + "List", P + "Card" + UI.J("i"), 1058, [
+        {"id": "Nm", "text": UI.J('"Class " + i'), "kind": "rowName", "h": 24, "col": "rowName",
+         "tag": {"id": "Tg", "text": UI.J('"role"'), "col": "rowSub", "w": 200}},
+        {"id": "Ds", "text": "Two words, a comma.", "kind": "rowSub", "h": 40, "col": "rowSub", "wrap": True}],
+        look=[("selected", "sel"), ("pending", "pend"), ("normal", "on"), "off"], icons="ic", icon_item=UI.J("ic[k]", "Weapon_Sword_Iron"),
+        icon_max=3, ids={"icons": P + "Ico" + UI.J("i"), "text": P + "Txt" + UI.J("i"), "act": P + "Act" + UI.J("i")},
+        action=UI.state_word(None, "Selected", "success"))
+    uc.addMethod(CtNewMethod.make("public static String card(String[] ic, int i, boolean sel, boolean pend, boolean on) { skyyuitest.B b "
+                                  "= new skyyuitest.B();\n%s\nreturn b.out(); }" % k14_card.java("b"), uc))
+    k14_brow = UI.button_row(P + "Br", align="right", left_margin=UI.J("gapR", "722"))
+    uc.addMethod(CtNewMethod.make("public static String brow(int gapR) { skyyuitest.B b = new skyyuitest.B();\n%s\nreturn b.out(); }"
+                                  % UI.java_append(P + "Body", k14_brow), uc))
+    if os.path.isfile(real_jar):
+        rp2 = Jc("javassist.ClassPool")(False)
+        rp2.appendSystemPath()
+        rp2.appendClassPath(real_jar)
+        rc2 = rp2.makeClass("skyyuitest.RealCard")
+        try:
+            rc2.addMethod(CtNewMethod.make("public static void card(com.hypixel.hytale.server.core.ui.builder.UICommandBuilder b, String[] ic, "
+                                           "int i, boolean sel, boolean pend, boolean on) {\n%s\n}" % k14_card.java("b"), rc2))
+            rc2.addMethod(CtNewMethod.make("public static void srow(com.hypixel.hytale.server.core.ui.builder.UICommandBuilder b, int i, "
+                                           "boolean sel, String nm, String[] ids) {\n%s\n}" % UI.java_add(P + "List", k14_row), rc2))
+            check(True, "kit 1.4 list_card / static_row Java compiles against HytaleServer.jar's UICommandBuilder")
+        except Exception as e:      # noqa
+            FAILS.append("kit 1.4 Java does not compile against HytaleServer.jar: %s" % e)
+        rc2.detach()
     bc.writeFile(out)
     uc.writeFile(out)
     url = Jc("java.io.File")(out).toURI().toURL()
@@ -1665,10 +2191,599 @@ def phase_java(samples, probes):
           "stack), blanks / zero quantities are empty slots: %s" % str(G.run()))
     check(str(G.fill(jpype.JArray(jpype.JString)(["Food_Bread"]), jpype.JArray(jpype.JInt)([2]))) == "set #SkyyTGrid.Slots=L3\n",
           "java_grid_fill compiles and sets the slot list")
-    print("java phase: %d fields + %d methods compiled with javassist and compared" % (n, 12 + len(probes) + len(tmpl_names)))
+    # ---- kit 1.4 results
+    for t_, want_ in (("", "#7caacc"), ("upgraded to Rare", "#39f493"), ("it could not move", "#ff6b6b"), ("done", "#39f493"),
+                      ("Sure?", "#7caacc"), ("something else", "#ff6b6b")):
+        check(str(U.infoColor(t_)) == want_, "java_color_by_text compiles and answers %r -> %s (got %s)" % (t_, want_, U.infoColor(t_)))
+    for i_, sel_, nm_ in ((0, True, "Steve"), (3, False, "Alex, the 2nd")):
+        ids_ = ["Weapon_Sword_Iron", "Food_Bread", "Tool_Pickaxe_Iron", "Ingredient_Bar_Iron"]
+        vals = {"i": str(i_), "ids[i]": ids_[i_], "nm": nm_, '(sel) ? "Background: #4274a5; " : ""': "Background: #4274a5; " if sel_ else ""}
+        want = "#%sList|%s\n" % (P, subst(k14_row, vals)) + "".join("set #%s.Text=%s\n" % (subst(a_, vals), subst(v_, vals))
+                                                                   for a_, _p, v_ in k14_row.sets)
+        check(str(U.srow(i_, sel_, nm_, jpype.JArray(jpype.JString)(ids_))) == want,
+              "static_row compiles: runtime id / item / name / status bar (sel=%s)" % sel_)
+    check(str(U.sbar(0)) == "#%sBox|%s\n" % (P, UI.render(k14_bar.empty)) and
+          str(U.sbar(50)) == "#%sBox|%s\n" % (P, subst(k14_bar.full, {"f": "50"})), "stat_bar.choose() compiles: no fill child at 0")
+    check(str(U.brow(310)) == "#%sBody|%s\n" % (P, subst(k14_brow, {"gapR": "310"})), "button_row(left_margin=J()) compiles")
+    looks = {"selected": ("#182a40(0.9)", "#4274a5"), "pending": ("#132033(0.8)", "#ffcc00"), "normal": ("#101925(0.55)", "#101925(0.55)"),
+             "off": ("#1a1e24", "#1a1e24")}
+    for ic_, i_, sel_, pend_, on_ in ((["Weapon_Sword_Iron", "Food_Bread"], 2, False, True, True),
+                                      (["A_B", "C", "D", "E"], 0, True, False, True), ([], 5, False, False, False)):
+        look = "selected" if sel_ else "pending" if pend_ else "normal" if on_ else "off"
+        vals = {"i": str(i_), "cardBg": looks[look][0], "cardBar": looks[look][1], '"Class " + i': "Class %d" % i_, '"role"': "role"}
+        lines = []
+        for idx, (p_, mk) in enumerate(k14_card):
+            if idx == k14_card.act_index:
+                lines += ["set #%s.Text=%s" % (subst(a_, vals), subst(v_, vals)) for a_, _p, v_ in k14_card.sets]
+            if idx == k14_card.loop_index:
+                for k_ in range(min(len(ic_), 3)):
+                    vk = dict(vals, k=str(k_))
+                    vk["ic[k]"] = ic_[k_]
+                    lines.append("#%s|%s" % (subst(p_, vk), subst(mk, vk)))
+            else:
+                lines.append("#%s|%s" % (subst(p_, vals), subst(mk, vals)))
+        got = str(U.card(jpype.JArray(jpype.JString)(ic_), i_, sel_, pend_, on_))
+        check(got == "\n".join(lines) + "\n", "list_card compiles: the %s look, %d icon cells in the loop, the b.set lines before the action "
+                                               "column" % (look, min(len(ic_), 3)))
+    print("java phase: %d fields + %d methods compiled with javassist and compared" % (n, 17 + len(probes) + len(tmpl_names)))
+
+
+# ================================================================= kit 1.4: the kit 1.3 output is FROZEN (the additive-only rule)
+# Kit 1.4 (and every later additive kit) may only ADD functions, parameters (with defaults that keep the old output), table
+# entries (appended at the END of a table), vanilla needles (registered after the 1.3 ones) and probe pages (after page 18). The
+# generator below calls every 1.3 builder over a broad sample of call shapes (fixed literal lists, never a loop over a table that
+# may grow) plus the tables and probe pages 1-18; SNAP13 holds (item count, sha256 prefix) per group, computed from the kit 1.3
+# file (blob 988889603a0f) before any 1.4 change. A table group compares its first `count` entries in order (new entries go at
+# the end); every other group compares all its items. A mismatch names the group; `--snapshot-dump <file>` (a path inside
+# tools/dev/scratch/) writes every item's text, to diff against a dump made from the old kit (git show HEAD~n:tools/skyyui.py).
+_SNAP_SEP = chr(30)
+
+
+def _snap_text(v):
+    """The exact text of one builder result (J() markers kept, Java for Appends / Part / Shell, every attribute of a Part)."""
+    if isinstance(v, UI.Choice):
+        return _SNAP_SEP.join(["CHOICE", v.cond, _snap_text(v.a), _snap_text(v.b)])
+    if isinstance(v, UI.Shell):
+        attrs = ["%s=%r" % (k, getattr(v, k)) for k in ("prefix", "w", "h", "pad", "kind", "root", "bar", "title", "body", "close",
+                                                        "inner_w", "body_h", "inner_h")]
+        more = ["%s=%r" % (k, getattr(v, k)) for k in ("question", "message", "note", "row", "yes", "no") if hasattr(v, k)]
+        return _SNAP_SEP.join(["SHELL", v.java("b")] + attrs + more + ["sets=%r" % (v.all_sets(),)])
+    if isinstance(v, UI.Part):
+        attrs = ["%s=%r" % (k, v.__dict__[k]) for k in sorted(v.__dict__) if k != "sets"]
+        return _SNAP_SEP.join(["PART", v.java("b")] + attrs + ["sets=%r" % (v.sets,)])
+    if isinstance(v, UI.Appends):
+        return _SNAP_SEP.join(["APPENDS", v.java("b"), "sets=%r" % (v.sets,)])
+    if isinstance(v, UI.Probe):
+        return _SNAP_SEP.join(["PROBE", str(v.n), v.key, v.name, repr(v.look), v.java("b"), v.java("b", extra=False)])
+    if isinstance(v, str):
+        return v
+    if isinstance(v, (list, tuple)):
+        return "[" + _SNAP_SEP.join(_snap_text(x) for x in v) + "]"
+    return repr(v)
+
+
+SNAP_TABLES = ("COLOR", "_COLOR_SRC", "TEX", "SND", "SOUNDS", "LABELS", "LABEL_MORE", "BUTTONS", "BUTTON_SIZES", "STATUS",
+               "STATUS_INFO", "RARITY", "RARITY_WYNN", "RARITY_ORDER", "QUALITY", "QUALITY_SLOT", "QUALITY_TIP", "READABLE", "PANELS",
+               "UNVERIFIED", "DOCS", "CLIENT_DOCS", "FONTS", "SEPARATORS", "PANEL_KINDS", "FIELD_LOOKS", "CONFIRM_PANELS",
+               "ICON_CELL_STATES", "ICON_CELL_LOOKS", "TILE_STATES", "PROBE_BASE")
+SNAP_SCALARS = ("GAME_DIR", "ASSETS_ZIP", "CLIENT_UI_DIR", "CUSTOM", "FONT_DEFAULT", "FONT_SECONDARY", "TITLE_H", "TITLE_PAD_TOP",
+                "TITLE_LABEL_PAD", "TITLE_SIZE", "DECO_W", "DECO_H", "DECO_TOP", "DECO_BOTTOM", "CONTENT_PAD", "PAGE_PAD", "DIALOG_PAD",
+                "FORM_PAD", "BTN_H", "BTN_SMALL_H", "BTN_BIG_H", "BTN_PAD", "BTN_SMALL_PAD", "BTN_MIN_W", "PRIMARY_MIN_W",
+                "PRIMARY_SMALL_W", "BTN_BORDER", "FIELD_H", "FIELD_PAD", "INPUT_BORDER", "FILTER_H", "FILTER_PAD", "SEARCH_H",
+                "SEARCH_PAD_LEFT", "ROW_H", "ROW_GAP", "ROW_ACTION_W", "ROW_H_READABLE", "OPTION_ROW_H", "OPTION_ROW_GAP",
+                "SETTING_ROW_H", "SETTING_ROW_GAP", "PROP_ROW_H", "PROP_ROW_GAP", "PROP_KEY_W", "CHECK_SIZE", "CHECK_LABEL_W",
+                "CHECK_ROW_GAP", "TAB_GAP", "TAB_MARGIN", "WELL_PAD", "WELL_LIST_PAD", "SEP_MARGIN", "FORM_LINE_MARGIN", "SCROLL_SIZE",
+                "SCROLL_SPACING", "CONFIRM_W", "PROGRESS_W", "PROGRESS_H", "MEMBAR_H", "MEMBAR_PAD", "MEMBAR_W", "DROPDOWN_W",
+                "DROPDOWN_H", "SPINNER", "TILE_W", "TILE_H", "TILE_GAP", "TILE_BORDER", "TOOLTIP_MAX_W", "TOOLTIP_PAD",
+                "TOOLTIP_BORDER", "CLOSE_SIZE", "SLOT_FRAME", "SLOT_ICON", "CARD_W", "CARD_H", "CARD_MARGIN", "ICON", "MAX_PAGE_H",
+                "MAX_PAGE_W", "MIN_PAGE_W", "GRID_SLOT", "GRID_ICON", "GRID_SPACING", "GRID_WELL_PAD", "GRID_SLOT_CLASS",
+                "ITEM_STACK_CLASS", "DROPDOWN_SOUNDS", "_HOVER")
+SNAP_KINDS = ("default", "bold", "strong", "message", "caption", "captionLight", "note", "muted", "gold", "error", "formError",
+              "success", "warning", "info", "disabled", "have", "outOfStock", "stock", "quantity", "rowName", "rowSub", "rowBadge",
+              "heading", "propKey", "propValue", "summary", "fieldLabel", "display", "tileName", "section", "subtitle", "panelTitle",
+              "formCaption", "optionName", "optionDetail", "cardCaption", "tipName", "tipId", "tipDesc", "tipStat", "setting",
+              "settingHead")
+
+
+def snapshot_items():
+    """{group: [(name, text)]} - the kit 1.3 builders over a broad sample of call shapes, the tables, the needles, probe pages 1-18.
+    Only the kit 1.3 API is called here (keep it that way: this is the frozen reference)."""
+    out = {}
+    J = UI.J
+
+    def add(group, name, fn):
+        try:
+            v = fn() if callable(fn) else fn
+            txt = _snap_text(v)
+        except Exception as e:      # noqa - an error is part of the frozen behaviour too
+            txt = "RAISES " + type(e).__name__ + ": " + str(e)
+        out.setdefault(group, []).append((name, txt))
+
+    # ---- tables (insertion order; 1.4 may append entries), scalars, the vanilla needles (1.4 registers new ones after these)
+    for t in SNAP_TABLES:
+        d = getattr(UI, t)
+        if isinstance(d, dict):
+            for k in d:
+                add("table " + t, repr(k), repr(d[k]))
+        else:
+            for i, v in enumerate(d):
+                add("table " + t, str(i), repr(v))
+    for n in SNAP_SCALARS:
+        add("scalars", n, repr(getattr(UI, n)))
+    for n in ("TEXT_OK", "_ID_OK", "_COLOR_OK", "_J_RE", "_ELEM_OPEN", "_PATH_RE", "_TEXT_PROP_RE", "_NORM_RE", "_ITEM_ID_OK"):
+        add("scalars", n, getattr(UI, n).pattern)
+    for i, (d, n, w) in enumerate(UI.checks()):
+        add("table checks", str(i), "%s|%s|%s" % (d, n, w))
+    # ---- small helpers
+    for v in (0, 11, 12, 13, 14, 15, 16, 18, 20, 32):
+        add("fs", "readable %d" % v, lambda v=v: UI.fs(v))
+    for c in ("gold", "text", "#12ab34", "#12AB34(0.5)", "#ffffff00", J("c", "#ffcc00")):
+        add("color", repr(c), lambda c=c: UI.color(c))
+    for s in ("#ABCDEF(0.50)", "#ffffff(...)", "#FFFFFF(.5)", "#123456", "nope"):
+        add("norm_color", s, lambda s=s: UI.norm_color(s))
+    add("allowed_colors", "all", lambda: sorted(UI.allowed_colors()))
+    for k in ("light", "cancel", "save", "main", "lock", "unlock"):
+        add("sounds", k, lambda k=k: UI.sounds(k))
+    for a in (("header",), ("header", None, 50, 0), ("headerPlain", None, 35, 0), ("patch", 23), ("input", 16), ("option", 16, None, None, "optionHover"),
+              ("Common/Scrollbar.png", 3), ("vsep",)):
+        add("patch", repr(a), lambda a=a: UI.patch(*a))
+    for f in ("scrollbar_style", "tooltip_style", "checkbox_style", "clear_button_style", "search_icon", "title_style"):
+        add(f, "()", getattr(UI, f))
+    add("scrollbar_style", "12", lambda: UI.scrollbar_style(12))
+    add("dropdown_style", "plain", lambda: UI.dropdown_style())
+    add("dropdown_style", "search", lambda: UI.dropdown_style(search=True))
+    for a, kw in (((16, "text"), {}), ((14, "white"), {"bold": True, "upper": True, "italic": True}), ((13, "value"), {"halign": "End", "valign": None}),
+                  ((12, "caption"), {"wrap": True, "max_lines": 2}), ((15, "title"), {"font": "Secondary", "spacing": 0.5, "shrink": 11}),
+                  ((18, J("col", "#ffcc00")), {"halign": "Center", "valign": "Start", "spacing": 0}), ((20, "gold"), {"wrap": True, "max_lines": 0}),
+                  ((16, "text"), {"max_lines": 2})):
+        add("text_style", repr((a, sorted(kw.items()))), lambda a=a, kw=kw: UI.text_style(*a, **kw))
+    # ---- labels: every kind, then the options cycled over the kinds
+    opts = ({}, {"text": "Hello World 42"}, {"w": 300}, {"h": False}, {"size": 20}, {"col": "gold"}, {"bold": True}, {"bold": False},
+            {"upper": True}, {"align": "End"}, {"align": "Center", "valign": "Start"}, {"valign": False}, {"wrap": True},
+            {"wrap": True, "max_lines": 2}, {"max_lines": False}, {"italic": True}, {"anchor": {"top": 4, "left": 2}}, {"padding": 6},
+            {"padding": {"horizontal": 10}}, {"flex": 1}, {"font": "Secondary"}, {"spacing": 1.8}, {"extra": "Visible: true"},
+            {"col": J("cols[i]", "#8fd67a"), "w": J("lw", "200")}, {"wrap": False}, {"text": "Page 1 of 3 < >", "w": 400, "h": 30})
+    for i, k in enumerate(SNAP_KINDS):
+        add("label", k, lambda k=k: UI.label("SkyyTL" + k[:1].upper() + k[1:], "", k))
+        for j in (i % len(opts), (i + 7) % len(opts), (i + 13) % len(opts)):
+            kw = dict(opts[j])
+            text = kw.pop("text", "")
+            add("label", "%s %d" % (k, j), lambda k=k, kw=kw, text=text: UI.label("SkyyTLo" + str(j), text, k, **kw))
+    add("label", "anonymous", lambda: UI.label(None, "Plain", "caption", h=False, flex=1))
+    add("label", "runtime id", lambda: UI.label("SkyyTLr" + J("i", "3"), "", "rowSub"))
+    add("label", "bad kind", lambda: UI.label("SkyyTX", "", "neon"))
+    add("status_line", "default", lambda: UI.status_line("SkyyTSt"))
+    add("status_line", "expr", lambda: UI.status_line("SkyyTSt", "infoColor(this.info)"))
+    add("status_line", "wrap", lambda: UI.status_line("SkyyTSt", h=44, wrap=True))
+    add("status_line", "wrap max", lambda: UI.status_line("SkyyTSt", h=46, size=18, wrap=True, max_lines=2, anchor={"top": 12}))
+    add("title_label", "static", lambda: UI.title_label("SkyyTT", "Reforge"))
+    add("title_label", "empty", lambda: UI.title_label("SkyyTT"))
+    add("section", "plain", lambda: UI.section("SkyyTSec", "Your gear"))
+    add("section", "anon w h", lambda: UI.section(None, "Heads", h=30, w=200))
+    add("subtitle", "plain", lambda: UI.subtitle("SkyyTSub", "Purse"))
+    add("subtitle", "anon h", lambda: UI.subtitle(None, "Bank", h=25))
+    add("panel_title", "plain", lambda: UI.panel_title("SkyyTPt", "Before"))
+    add("panel_title", "w", lambda: UI.panel_title("SkyyTPt", "", w=275))
+    add("property_row", "plain", lambda: UI.property_row("SkyyTPr", "SkyyTPk", "SkyyTPv", "Level"))
+    add("property_row", "opts", lambda: UI.property_row("SkyyTPr", "SkyyTPk", "SkyyTPv", "", key_w=200, h=30, gap=0, w=500,
+                                                        anchor={"top": 4}))
+    # ---- buttons
+    for kind in ("primary", "secondary", "tertiary", "destructive"):
+        for size in ("normal", "small", "big"):
+            add("button_style", "%s %s" % (kind, size), lambda kind=kind, size=size: UI.button_style(kind, size))
+            add("button_style", "%s %s disabled" % (kind, size), lambda kind=kind, size=size: UI.button_style(kind, size, disabled=True))
+            for snd in ("light", "cancel", "save", "main", "lock", "unlock"):
+                add("button_style", "%s %s %s" % (kind, size, snd), lambda kind=kind, size=size, snd=snd: UI.button_style(kind, size, sound=snd))
+            add("button", "%s %s" % (kind, size), lambda kind=kind, size=size: UI.button("SkyyTB", "Go", kind, size))
+            add("button", "%s %s w" % (kind, size), lambda kind=kind, size=size: UI.button("SkyyTB", "Deposit all", kind, size, w=200))
+            add("button", "%s %s disabled" % (kind, size), lambda kind=kind, size=size: UI.button("SkyyTB", "", kind, size, w=180, disabled=True))
+    add("button_style", "tertiary selected", lambda: UI.button_style("tertiary", selected=True))
+    add("button_style", "tertiary small selected", lambda: UI.button_style("tertiary", "small", selected=True, sound="cancel"))
+    for name, fn in (("selected", lambda: UI.button("SkyyTB", "Ranks", "tertiary", "small", w=190, selected=True)),
+                     ("save", lambda: UI.button("SkyyTB", "Save", "primary", w=172, sound="save", anchor={"right": 6})),
+                     ("cancel", lambda: UI.button("SkyyTB", "Close", "secondary", sound="cancel", anchor={"left": 4})),
+                     ("flex", lambda: UI.button("SkyyTB", "Back", flex=1)),
+                     ("flex w", lambda: UI.button("SkyyTB", "Back", w=100, flex=2)),
+                     ("h", lambda: UI.button("SkyyTB", "Tall", h=56)),
+                     ("runtime id", lambda: UI.button("SkyyTB" + J("i", "3"), "Buy", size="small")),
+                     ("runtime w", lambda: UI.button("SkyyTB", "Buy", "primary", w=J("bw", "160"))),
+                     ("primary 120", lambda: UI.button("SkyyTB", "Save", "primary", w=120)),
+                     ("primary 110", lambda: UI.button("SkyyTB", "Save", "primary", w=110)),
+                     ("extra", lambda: UI.button("SkyyTB", "X", extra="Visible: true")),
+                     ("disable element", lambda: UI.button("SkyyTB", "X", disable_element=True, trial=True)),
+                     ("text lt gt", lambda: UI.button("SkyyTB", "< Prev", size="small", w=150))):
+        add("button", name, fn)
+    add("on_off", "on", lambda: UI.on_off("SkyyTPvp", True))
+    add("on_off", "off w h texts", lambda: UI.on_off("SkyyTPvp", False, w=100, h=40, texts=("Yes", "No")))
+    add("close_button", "x", lambda: UI.close_button("SkyyTClose"))
+    for a in ("center", "left", "right"):
+        add("button_row", a, lambda a=a: UI.button_row("SkyyTBr", align=a))
+    add("button_row", "opts", lambda: UI.button_row("SkyyTBr", h=48, align="left", top=0, w=600, anchor={"bottom": 4}))
+    add("button_row", "anchor top", lambda: UI.button_row("SkyyTBr", top=12, anchor={"top": 4}))
+    add("spacer", "w", lambda: UI.spacer(12))
+    add("spacer", "h", lambda: UI.spacer(h=40))
+    add("spacer", "wh", lambda: UI.spacer(12, 40))
+    add("spacer", "J", lambda: UI.spacer(J("gap", "10"), 44))
+    for lm in ("Left", "Top", "Right", "Center", "Middle", "Full", "TopScrolling", "CenterMiddle", "MiddleCenter", "LeftCenterWrap", None):
+        add("group", str(lm), lambda lm=lm: UI.group("SkyyTG", lm, h=44))
+    add("group", "anon", lambda: UI.group(None, "Top", w=300, flex=1, pad=8))
+    add("group", "pad dict extra", lambda: UI.group("SkyyTG", "Left", w=500, h=60, pad={"horizontal": 8, "vertical": 4}, extra="Visible: true"))
+    add("group", "anchor", lambda: UI.group("SkyyTG", "Left", h=44, anchor={"top": 4, "left": J("m", "12")}))
+    # ---- inputs
+    for look in ("kit", "vanilla", "filter"):
+        add("text_field", look, lambda look=look: UI.text_field("SkyyTFb", "SkyyTF", 300, placeholder="player name", look=look))
+        add("text_field", look + " opts", lambda look=look: UI.text_field("SkyyTFb", "SkyyTF", None, 40, "", 16, 18, look=look, flex=1,
+                                                                      anchor={"left": 0}, padding={"left": 12}, extra="Visible: true",
+                                                                      field_extra="Visible: true"))
+    add("text_field", "number", lambda: UI.text_field("SkyyTNb", "SkyyTN", 120, number=True, trial=True))
+    add("text_field", "full width", lambda: UI.text_field("SkyyTFb", "SkyyTF"))
+    add("search_field", "plain", lambda: UI.search_field("SkyyTSb", "SkyyTS", 300, placeholder="search", trial=True))
+    add("search_field", "opts", lambda: UI.search_field("SkyyTSb", "SkyyTS", None, 32, "", 20, "filter", True, {"top": 4}, 1, "Visible: true"))
+    add("value_box", "plain", lambda: UI.value_box("SkyyTVb", "SkyyTV", 260))
+    add("value_box", "opts", lambda: UI.value_box("SkyyTVb", "SkyyTV", None, 44, "strong", {"right": 8}, 1, {"left": 12}, "Visible: true"))
+    add("checkbox", "on", lambda: UI.checkbox("SkyyTC", True, trial=True))
+    add("checkbox", "off anchor", lambda: UI.checkbox("SkyyTC", False, trial=True, anchor={"top": 8}, extra="Visible: true"))
+    add("checkbox_row", "plain", lambda: UI.checkbox_row("SkyyTCr", "SkyyTCl", "SkyyTCb", True, "Include entities", trial=True))
+    add("checkbox_row", "opts", lambda: UI.checkbox_row("SkyyTCr", "SkyyTCl", "SkyyTCb", False, "", 300, 30, 0, True, {"top": 4}))
+    add("dropdown", "plain", lambda: UI.dropdown("SkyyTD", trial=True))
+    add("dropdown", "search flex", lambda: UI.dropdown("SkyyTD", 400, 40, True, True, {"left": 4}, 1, "Visible: true"))
+    # ---- tabs, rows, lists
+    add("tab_row", "primary", lambda: UI.tab_row("SkyyTBody", "SkyyTTr", ["SkyyTT0", "SkyyTT1", "SkyyTT2"], ["Ranks", "Players", ""], 1))
+    add("tab_row", "tertiary", lambda: UI.tab_row("SkyyTBody", "SkyyTTr", ["SkyyTT0", "SkyyTT1"], ["A", "B"], 0, w=190, mode="tertiary"))
+    add("tab_row", "opts", lambda: UI.tab_row("SkyyTBody", "SkyyTTr", ["SkyyTT0", "SkyyTT1"], ["A", "B"], 1, w=200, h=40, gap=0,
+                                              row_h=48, top=0, bottom=4))
+    for st in ("normal", "selected", "static"):
+        add("row_style", st, lambda st=st: UI.row_style(st))
+        add("panel_row", st, lambda st=st: UI.panel_row("SkyyTRow", st))
+        add("panel_row", st + " opts", lambda st=st: UI.panel_row("SkyyTRow", st, h=42, gap=0, bar=False, w=600))
+        add("hover_row", st, lambda st=st: UI.hover_row("SkyyTHr", st, h=44))
+        add("option_row", st, lambda st=st: UI.option_row("SkyyTOp", st == "selected"))
+        add("list_button", st, lambda st=st: UI.list_button("SkyyTLb", "Mining", st))
+    add("panel_row", "runtime", lambda: UI.panel_row("SkyyTRow" + J("r", "4")))
+    add("row_text", "both", lambda: UI.row_text("SkyyTTx", "SkyyTNm", "SkyyTSb"))
+    add("row_text", "name", lambda: UI.row_text("SkyyTTx", "SkyyTNm"))
+    add("row_text", "opts", lambda: UI.row_text("SkyyTTx", "SkyyTNm", "SkyyTSb", row_h=70, name_kind="heading", sub_kind="caption"))
+    add("row_badge", "plain", lambda: UI.row_badge("SkyyTBd"))
+    add("row_badge", "w", lambda: UI.row_badge("SkyyTBd", w=200))
+    for kind in ("secondary", "primary", "destructive"):
+        add("row_action", kind, lambda kind=kind: UI.row_action("SkyyTAct", "Edit", kind))
+    add("row_action", "opts", lambda: UI.row_action("SkyyTAct", "Equip", w=112, h=56, disabled=True, sound="cancel"))
+    add("hover_row", "opts", lambda: UI.hover_row("SkyyTHr", "selected", h=50, pad=8, w=300, sound="light"))
+    add("option_style", "plain", lambda: UI.option_style())
+    add("option_style", "selected light", lambda: UI.option_style(True, "light"))
+    add("option_row", "opts", lambda: UI.option_row("SkyyTOp", False, 60, 0, 400, "light", {"top": 8}))
+    add("list_button_style", "normal", lambda: UI.list_button_style())
+    add("list_button_style", "selected mask", lambda: UI.list_button_style("selected", mask=True, trial=True))
+    add("list_button", "opts", lambda: UI.list_button("SkyyTLb", "Nav", "selected", 40, 200, 0, "light", True, True))
+    add("setting_row", "plain", lambda: UI.setting_row("SkyyTSet", "SkyyTSetL"))
+    add("setting_row", "opts", lambda: UI.setting_row("SkyyTSet", "SkyyTSetL", 300, 50, 0, {"top": 4}, "Visible: true"))
+    add("scroll_list", "h", lambda: UI.scroll_list("SkyyTL", h=500))
+    add("scroll_list", "flex spacing", lambda: UI.scroll_list("SkyyTL", extra_spacing=True))
+    add("scroll_list", "well", lambda: UI.scroll_list("SkyyTL", well=True))
+    add("scroll_list", "opts", lambda: UI.scroll_list("SkyyTL", 400, 2, 600, True, True, 6, {"top": 8}, "Visible: true"))
+    for kind in ("content", "fancy", "vertical", "header", "footer", "panel", "form"):
+        add("separator", kind, lambda kind=kind: UI.separator(kind))
+        add("separator", kind + " opts", lambda kind=kind: UI.separator(kind, "SkyyTSep", 400, 3, {"top": 8, "bottom": 8}, 1, "Visible: true"))
+    for kind in ("simple", "full", "secondary", "tooltip", "well", "dark", "row", "hud"):
+        add("panel", kind, lambda kind=kind: UI.panel("SkyyTPn", kind, w=400, h=200))
+        add("panel", kind + " opts", lambda kind=kind: UI.panel("SkyyTPn", kind, None, 100, {"left": 4, "top": 2}, "Left", 1, {"top": 4},
+                                                                "Visible: true"))
+    # ---- items, cells, cards, bars
+    add("item_icon", "static", lambda: UI.item_icon("SkyyTIc", "Weapon_Sword_Iron", 48))
+    add("item_icon", "anon", lambda: UI.item_icon(None, None, 32))
+    add("item_icon", "runtime", lambda: UI.item_icon("SkyyTIc", J("ids[i]", "Weapon_Sword_Iron"), anchor={"left": 4, "top": 8}))
+    add("item_frame", "plain", lambda: UI.item_frame("SkyyTFr"))
+    add("item_frame", "icon", lambda: UI.item_frame("SkyyTFr", icon_id="SkyyTFrI"))
+    add("item_frame", "opts", lambda: UI.item_frame("SkyyTFr", 64, "slotBorderHave", "SkyyTFrI", 56, {"left": 8, "top": 10}, "Visible: true"))
+    add("item_slot", "plain", lambda: UI.item_slot("SkyyTSb", "SkyyTSl", trial=True))
+    add("item_slot", "opts", lambda: UI.item_slot("SkyyTSb", "SkyyTSl", 80, False, True, trial=True))
+    for q in ("Default", "Junk", "Common", "Uncommon", "Rare", "Epic", "Legendary", "Technical", "Tool", "Developer", "Debug", "Template"):
+        add("quality_frame", q, lambda q=q: UI.quality_frame("SkyyTQf", q, icon_id="SkyyTQfI", trial=True))
+        add("tooltip_panel", q, lambda q=q: UI.tooltip_panel("SkyyTTq", quality=q, trial=True))
+    add("tooltip_panel", "plain", lambda: UI.tooltip_panel("SkyyTTp"))
+    add("tooltip_panel", "opts", lambda: UI.tooltip_panel("SkyyTTp", 300, 120, anchor={"top": 12}))
+    add("item_grid_style", "plain", lambda: UI.item_grid_style())
+    add("item_grid_style", "bg", lambda: UI.item_grid_style(40, 32, 0, True, True))
+    add("item_grid", "kit", lambda: UI.item_grid("SkyyTIg", 9, 6))
+    add("item_grid", "bare", lambda: UI.item_grid("SkyyTIg", 4, 1, well=False, tooltips=False, anchor={"left": 8}))
+    add("item_grid", "runtime", lambda: UI.item_grid("SkyyTIg", J("g[0]", "4"), 2, slot=J("g[1]", "72"), spacing=0, w=J("g[2]", "288"),
+                                                     h=J("g[3]", "144")))
+    add("item_grid", "opts", lambda: UI.item_grid("SkyyTIg", 32, 18, 40, 1, 0, True, False, True, "SkyyTIgW", None, None, {"top": 4}, True, True))
+    add("java_grid_methods", "default", lambda: UI.java_grid_methods())
+    add("java_grid_methods", "custom", lambda: UI.java_grid_methods("slot", "a.B", "a.C"))
+    add("java_grid_fill", "mixed", lambda: UI.java_grid_fill("SkyyTIg", [("Weapon_Sword_Iron", 1), None, (J("ids[k]", "Food_Bread"), J("qs[k]", "3"))],
+                                                             var="pbSlots", b="cmd"))
+    for src in ("slots.add(new com.hypixel.hytale.server.core.ui.ItemGridSlot(st));",
+                "x = new com.hypixel.hytale.server.core.ui.ItemGridSlot();"):
+        add("item_grid_java_is_safe", src[:40], lambda src=src: UI.item_grid_java_is_safe(src))
+    for st in ("normal", "selected", "disabled", "empty"):
+        for lk in ("row", "plain"):
+            add("icon_cell", "%s %s" % (st, lk), lambda st=st, lk=lk: UI.icon_cell("SkyyTCell", "Weapon_Sword_Iron", 74, st, look=lk))
+            add("icon_cell", "%s %s qty" % (st, lk), lambda st=st, lk=lk: UI.icon_cell("SkyyTCell", "Ingredient_Bar_Iron", 87, st, qty="64",
+                                                                                 look=lk, sound=None, anchor={"right": 6}))
+    add("icon_cell", "qty label", lambda: UI.icon_cell("SkyyTCell", "Ingredient_Bar_Iron", qty=True))
+    add("icon_cell", "runtime", lambda: UI.icon_cell("SkyyTCell" + J("i", "3"), J("ids[i]", "Weapon_Sword_Iron"), 76))
+    add("icon_cell", "wide", lambda: UI.icon_cell("SkyyTCell", "Weapon_Sword_Iron", w=158, h=76, icon=44, icon_left=6, extra="Visible: true"))
+    add("icon_cell", "no item", lambda: UI.icon_cell("SkyyTCell", None, 64))
+    add("card", "plain", lambda: UI.card("SkyyTCard"))
+    add("card", "sold out", lambda: UI.card("SkyyTCard", sold_out=True))
+    add("card", "no margin", lambda: UI.card("SkyyTCard", margin=0, extra="Visible: true"))
+    add("card", "opts", lambda: UI.card("SkyyTCard", 200, 160, "SkyyTCardIn2", 4, True, "SkyyTCardO", {"left": 8}, 1, "Visible: true"))
+    add("bar", "plain", lambda: UI.bar("SkyyTBar", 400, 18, 120))
+    add("bar", "runtime", lambda: UI.bar("SkyyTBar" + J("i", "2"), 400, 18, J("fw", "200"), col="progressGreen", anchor={"top": 4}))
+    add("bar", "flex", lambda: UI.bar("SkyyTBar", None, 12, J("fw", "40"), track="well", flex=1, extra="Visible: true"))
+    add("progress", "default", lambda: UI.progress("SkyyTPr", value=0.25, trial=True))
+    add("progress", "memories", lambda: UI.progress("SkyyTPm", value=0.5, kind="memories", trial=True))
+    add("progress", "flex", lambda: UI.progress("SkyyTPr", None, 10, 1, "default", True, {"top": 4}, 1, "Visible: true"))
+    add("tooltip", "plain", lambda: UI.tooltip("Sells for 20 coins", trial=True))
+    add("spinner", "plain", lambda: UI.spinner("SkyyTSp", trial=True))
+    add("spinner", "anon", lambda: UI.spinner(None, 48, True, {"left": 4}))
+    for st in ("default", "selected", "complete", "empty"):
+        add("tile", st, lambda st=st: UI.tile("SkyyTTl", "Mage", st, trial=True))
+    add("tile", "opts", lambda: UI.tile("SkyyTTl", "", "default", 120, 150, 0, None, True, {"left": 4}, "Visible: true"))
+    add("gradient_label", "plain", lambda: UI.gradient_label("SkyyTBig", "Mining", trial=True))
+    add("gradient_label", "size", lambda: UI.gradient_label("SkyyTBig", "", 28, True))
+    # ---- windows, blocks, Java
+    for kind in ("decorated", "plain"):
+        add("page_shell", kind, lambda kind=kind: UI.page_shell("SkyyT", 1100, 880, "Reforge", kind=kind))
+        add("page_shell", kind + " close", lambda kind=kind: UI.page_shell("SkyyT", 1100, 880, "Reforge", kind=kind, close=True))
+    add("page_shell", "ids", lambda: UI.page_shell("SkyyBankF", 1100, 860, body_id="SkyyBank", title="Bank"))
+    add("page_shell", "custom", lambda: UI.page_shell("SkyyT", 900, 600, "Buy page 3 for 1,250 coins?", "plain", 16, "SkyyTRt", "SkyyTBr",
+                                                      "SkyyTTi", "SkyyTBd", True, "SkyyTX", "Left"))
+    add("page_shell", "runtime", lambda: UI.page_shell("SkyyT", J("w", "900"), J("h", "600"), J("titleOf(p)", "X")))
+    add("page_shell", "too high", lambda: UI.page_shell("SkyyT", 900, 981))
+    add("confirm_dialog", "primary", lambda: UI.confirm_dialog("SkyyTD", title="Confirm", yes_text="Buy"))
+    add("confirm_dialog", "destructive", lambda: UI.confirm_dialog("SkyyTD", 700, 60, False, "Delete", "Keep", "destructive", None, 200, 160,
+                                                                   "Delete rank?", {"body": "SkyyTDb", "root": "SkyyTDr"}))
+    add("pager", "static", lambda: UI.pager("SkyyTBody", "SkyyTPg", 1066, text="Page 2 / 5", prev_on=False))
+    add("pager", "runtime", lambda: UI.pager("SkyyTBody", "SkyyTPj", 900, text=J("pageText()"), prev_on=J("pageNo > 0"),
+                                             next_on=J("pageNo < pages - 1")))
+    add("pager", "left", lambda: UI.pager("SkyyTBody", "SkyyTPt", 900, text="Page 2 of 5, 40 items", align="left", top=0))
+    add("pager", "opts", lambda: UI.pager("SkyyTBody", "SkyyTOld", 900, None, True, False, 140, 300, 8, "Back", "More", "right", 12, "caption",
+                                          {"prev": "SkyyTOldPrevious", "page": "SkyyTOldNo"}))
+    add("confirm_view", "plain", lambda: UI.confirm_view("SkyyTBody", "SkyyTCf", 1066, question="Delete rank vip?", message="Nothing has changed yet"))
+    add("confirm_view", "destructive row", lambda: UI.confirm_view("SkyyTBody", "SkyyTCd", 900, question=J("q"), message="", note="Costs 5,000 coins",
+                                                                   yes_kind="destructive", panel="row"))
+    add("confirm_view", "no panel", lambda: UI.confirm_view("SkyyTBody", "SkyyTCn", 900, panel=None, pad=0, top=0))
+    add("confirm_view", "compact", lambda: UI.confirm_view("SkyyTBody", "SkyyTCc", 900, question="Switch to Mage for 500 coins?", compact=True))
+    add("confirm_view", "compact ids", lambda: UI.confirm_view("SkyyTBody", "SkyyClsConfirm", 1066, question=J("safe(q)"), yes_text="Confirm",
+                                                               no_text="Cancel", yes_w=200, no_w=160, compact=True, top=8, panel="row",
+                                                               ids={"box": "SkyyClsConfirm", "yes": "SkyyClsYes", "no": "SkyyClsNo"}))
+    add("confirm_view", "opts", lambda: UI.confirm_view("SkyyTBody", "SkyyTCo", 1000, "Sell all", "Everything goes", "A note", 60, "Sell", "Keep",
+                                                        "primary", "cancel", 200, 200, "well", 16, False, 0,
+                                                        {"box": "SkyyTCoB", "question": "SkyyTCoQ", "message": "SkyyTCoM", "note": "SkyyTCoN",
+                                                         "row": "SkyyTCoR", "yes": "SkyyTCoY", "no": "SkyyTCoX"}))
+
+    def ap_text():
+        ap = UI.Appends([(None, "Group #SkyyTA { Anchor: (Width: 1100, Height: 900); }"), ("SkyyTA", "Group #SkyyTBody { LayoutMode: Top; }")])
+        ap.text("SkyyTBody", "SkyyTCap", "your whole purse", "caption", w=200)
+        ap.text("SkyyTBody", "SkyyTMid", "max 1,000,000 coins (5%).", "caption", w=300)
+        ap.text("SkyyTBody", None, "Page 1 of 3?", "default")
+        ap.text("SkyyTBody", None, "Page 2 of 3?", "default")
+        ap.text("SkyyTBody", None, "plain inline", "default")
+        ap.text("SkyyTBody", "SkyyTRun", J("name", "Skyy"), "strong")
+        return ap
+    add("Appends.text", "mixed", ap_text)
+
+    def sh_text():
+        sh = UI.page_shell("SkyyT", 900, 600, "Shop")
+        sh.text(sh.body, None, "Buy 3 for 1,250 coins?", "default")
+        return sh
+    add("Shell.text", "mixed", sh_text)
+    add("choose", "java", lambda: UI.java_append("SkyyTRow", UI.choose(UI.J("pageNo > 0"), UI.button("SkyyTPv", "Prev", size="small"),
+                                                                       UI.button("SkyyTPv", "Prev", size="small", disabled=True))))
+    add("java_append", "root", lambda: UI.java_append(None, "Group #SkyyTA { Anchor: (Width: 1, Height: 2); }"))
+    add("java_append", "hud root", lambda: UI.java_append(None, "Group #SkyyH { Anchor: (Full: 0); }", page_root=False))
+    add("java_append", "runtime parent", lambda: UI.java_append("SkyyTRow" + J("r"), "Label { }", "cmd"))
+    for name, fn in (("text J", lambda: UI.java_set("SkyyTName", "Text", J("name"))), ("float", lambda: UI.java_set("SkyyTPr", "Value", 0.5)),
+                     ("bool", lambda: UI.java_set("SkyyTCk", "Value", True)), ("int", lambda: UI.java_set("SkyyTN", "Value", 3)),
+                     ("raw", lambda: UI.java_set("SkyyTPr", "Value", J("f"), raw=True)), ("text", lambda: UI.java_set("SkyyTT", "Text", 'a "q" \\ b')),
+                     ("set_raw", lambda: UI.java_set_raw("SkyyTX", "Visible", "on", "cmd"))):
+        add("java_set", name, fn)
+    for info in (None, "gold", "warning"):
+        add("java_status_methods", str(info), lambda info=info: UI.java_status_methods(info=info))
+    add("java_status_methods", "names", lambda: UI.java_status_methods("colOf", "txtOf"))
+    add("java_ref_style", "plain", lambda: UI.java_ref_style("SkyyTX", "SecondaryTextButtonStyle", trial=True))
+    add("java_field", "plain", lambda: UI.java_field("ROW", 'Label { Text: "x"; }'))
+    add("java_expr", "mixed", lambda: UI.java_expr("a" + J("i") + "b" + J("j")))
+    add("java_lit", "tricky", lambda: UI.java_lit('a "quoted" \\ back\nnew\ttab'))
+    add("for_pysource", "raw f", lambda: UI.for_pysource('x {y} \\ "z"', raw=True))
+    add("for_pysource", "plain", lambda: UI.for_pysource('x {y} \\ z'))
+    add("for_percent", "plain", lambda: UI.for_percent("50% {x}"))
+    add("render", "mark", lambda: UI.render("Row" + J("i", "7") + J("j"), mark=True))
+    add("assert_page_size", "ok", lambda: UI.assert_page_size(900, 600))
+    add("fit", "ok", lambda: UI.fit([10, 20], 50))
+    # ---- the vanilla text scale: a sample again at the exact vanilla sizes
+    UI.text_scale("vanilla")
+    try:
+        for k in ("rowName", "rowSub", "caption", "section", "heading", "propKey", "default"):
+            add("vanilla scale", "label " + k, lambda k=k: UI.label("SkyyTV", "", k))
+        add("vanilla scale", "panel_row", lambda: UI.panel_row("SkyyTRow"))
+        add("vanilla scale", "row_text", lambda: UI.row_text("SkyyTTx", "SkyyTNm", "SkyyTSb"))
+        add("vanilla scale", "row_action", lambda: UI.row_action("SkyyTAct", "Edit"))
+        add("vanilla scale", "property_row", lambda: UI.property_row("SkyyTPr", "SkyyTPk", "SkyyTPv"))
+        add("vanilla scale", "text_field filter", lambda: UI.text_field("SkyyTFb", "SkyyTF", look="filter"))
+        add("vanilla scale", "dropdown_style", lambda: UI.dropdown_style(True))
+        add("vanilla scale", "list_button", lambda: UI.list_button("SkyyTLb", "Nav"))
+        add("vanilla scale", "confirm_dialog", lambda: UI.confirm_dialog("SkyyTD", title="Confirm"))
+        add("vanilla scale", "tile", lambda: UI.tile("SkyyTTl", "Mage", trial=True))
+    finally:
+        UI.text_scale("readable")
+    # ---- probe pages 1-18 (the deployed SkyyUiProbe 0.1 opens them by number / name) and every build_samples() entry
+    pages = UI.probe_pages()
+    for pg in pages[:18]:
+        add("probe pages 1-18", "%d %s" % (pg.n, pg.name), pg)
+    for pg in UI.probe_pages("SkyyZz")[:18]:
+        add("probe pages 1-18 prefix", "%d %s" % (pg.n, pg.name), pg)
+    for name, mk in build_samples().items():
+        if SNAP_SAMPLES13 is None or name in SNAP_SAMPLES13:
+            add("build_samples 1.3", name, mk)
+    return out
+
+
+# the build_samples() names of kit 1.3 (their output is frozen; samples added for 1.4 are checked by the builder phases instead)
+SNAP_SAMPLES13 = frozenset([
+    'bar', 'bar flex', 'bar runtime', 'button destructive big', 'button destructive big default width',
+    'button destructive big disabled', 'button destructive normal', 'button destructive normal default width',
+    'button destructive normal disabled', 'button destructive small', 'button destructive small default width',
+    'button destructive small disabled', 'button flex', 'button lock sound', 'button primary 120', 'button primary big',
+    'button primary big default width', 'button primary big disabled', 'button primary normal',
+    'button primary normal default width', 'button primary normal disabled', 'button primary small',
+    'button primary small default width', 'button primary small disabled', 'button row', 'button runtime id',
+    'button runtime width', 'button save sound', 'button secondary big', 'button secondary big default width',
+    'button secondary big disabled', 'button secondary normal', 'button secondary normal default width',
+    'button secondary normal disabled', 'button secondary small', 'button secondary small default width',
+    'button secondary small disabled', 'button tertiary big', 'button tertiary big default width', 'button tertiary big disabled',
+    'button tertiary normal', 'button tertiary normal default width', 'button tertiary normal disabled', 'button tertiary selected',
+    'button tertiary small', 'button tertiary small default width', 'button tertiary small disabled', 'card', 'card flex',
+    'card no margin', 'card sold out', 'checkbox', 'checkbox row', 'close', 'dropdown', 'dropdown search flex', 'gradient label',
+    'group anon column', 'group padding dict', 'group row', 'hover row', 'hover row selected', 'hover row sound',
+    'icon cell disabled plain', 'icon cell disabled row', 'icon cell empty plain', 'icon cell empty row', 'icon cell no item',
+    'icon cell normal plain', 'icon cell normal row', 'icon cell qty', 'icon cell qty label', 'icon cell runtime',
+    'icon cell selected plain', 'icon cell selected row', 'icon cell silent', 'icon cell wide', 'item frame', 'item frame have',
+    'item grid', 'item grid bare', 'item grid drag', 'item grid kit', 'item grid runtime', 'item grid slot bg', 'item icon',
+    'item icon anon', 'item icon runtime', 'item slot', 'label anon', 'label bold', 'label caption', 'label captionLight',
+    'label cardCaption', 'label default', 'label disabled', 'label display', 'label error', 'label fieldLabel', 'label formCaption',
+    'label formError', 'label gold', 'label have', 'label heading', 'label heading no max lines', 'label heading wrap off',
+    'label info', 'label max lines 0', 'label message', 'label muted', 'label note', 'label optionDetail', 'label optionName',
+    'label outOfStock', 'label panelTitle', 'label propKey', 'label propValue', 'label quantity', 'label rowBadge', 'label rowName',
+    'label rowSub', 'label runtime colour', 'label secondary spaced', 'label section', 'label setting', 'label settingHead',
+    'label spaced 1.8', 'label stock', 'label strong', 'label subtitle', 'label success', 'label summary', 'label text',
+    'label tileName', 'label tipDesc', 'label tipId', 'label tipName', 'label tipStat', 'label warning', 'label zero spacing',
+    'label zero spacing float', 'list button', 'list button selected', 'list button selected mask', 'number field', 'on_off 0',
+    'on_off 1', 'option row', 'option row selected', 'option row sound', 'panel dark', 'panel full', 'panel hud',
+    'panel padding dict', 'panel row', 'panel row normal', 'panel row runtime', 'panel row selected', 'panel row static',
+    'panel secondary', 'panel simple', 'panel title', 'panel tooltip', 'panel well', 'progress', 'progress flex',
+    'progress memories', 'property row', 'quality frame', 'quality frame default', 'row action', 'row action destructive',
+    'row action primary', 'row badge', 'row text', 'row text name only', 'scroll list', 'scroll list flex', 'scroll list well',
+    'search field', 'section', 'separator content', 'separator fancy', 'separator footer', 'separator form', 'separator header',
+    'separator id', 'separator margins', 'separator panel', 'separator vertical', 'setting row', 'spacer', 'spinner', 'status line',
+    'status line wrap', 'status line wrap max 0', 'subtitle', 'tab primary 0', 'tab primary 1', 'tab primary 2', 'tab primary 3',
+    'tab primary 4', 'tab primary 5', 'tab tertiary 0', 'tab tertiary 1', 'tab tertiary 2', 'tab tertiary 3', 'text field',
+    'text field filter look', 'text field flex', 'text field full width', 'text field vanilla look', 'tile complete',
+    'tile default', 'tile empty', 'tile selected', 'title', 'tooltip', 'tooltip panel', 'tooltip panel quality', 'value box',
+    'value box flex', 'value box padding',
+])
+
+
+def snapshot_digests(items):
+    """{group: (count, sha256 prefix of the ordered items)}"""
+    import hashlib
+    out = {}
+    for g, lst in items.items():
+        h = hashlib.sha256()
+        for name, txt in lst:
+            h.update(name.encode("utf8") + b"\x00" + txt.encode("utf8") + b"\x00")
+        out[g] = (len(lst), h.hexdigest()[:20])
+    return out
+
+
+def snapshot_prefix_digest(lst, n):
+    import hashlib
+    h = hashlib.sha256()
+    for name, txt in lst[:n]:
+        h.update(name.encode("utf8") + b"\x00" + txt.encode("utf8") + b"\x00")
+    return h.hexdigest()[:20]
+
+
+# (item count, sha256 prefix) per group, recorded from the kit 1.3 file (blob 988889603a0f, 2026-09-29) by --print-snapshot
+SNAP13 = {
+    'Appends.text': (1, '0a9adac746090a3b4df4'), 'Shell.text': (1, '70be127d89413485205d'),
+    'allowed_colors': (1, '5c6e9536f3c7f3cd9770'), 'assert_page_size': (1, '46e253dd497e7ad66c2f'),
+    'bar': (3, '9a74b847191b9c9d893a'), 'build_samples 1.3': (223, '56aae2f64f6ea746d9dc'), 'button': (49, 'd55483f18d55f0b907a1'),
+    'button_row': (5, '58a0dd507ddc358a0c4f'), 'button_style': (98, 'f9277425095828eb5cb4'), 'card': (4, '0cdb0c5ee32e94872026'),
+    'checkbox': (2, '6253c94daf41ae5ead25'), 'checkbox_row': (2, '767d70e0a66ac12b1395'),
+    'checkbox_style': (1, 'dc0d51d7c51c49ec25f1'), 'choose': (1, 'db963919a1a707449ba3'),
+    'clear_button_style': (1, '7e93fcf1aecd490c95b7'), 'close_button': (1, 'eb220859e9e1e1b9fa8c'),
+    'color': (6, 'a3952ca25c3cc14ada05'), 'confirm_dialog': (2, '8efd403440bf0ea2e145'),
+    'confirm_view': (6, '0eed4db5ed08cc83a32e'), 'dropdown': (2, 'c6d0f181d7e6c6c51259'),
+    'dropdown_style': (2, '94dfc65060d83d7c6bfc'), 'fit': (1, '4988eb14e5d0ad3304d5'), 'for_percent': (1, 'f95caeff58c567e49f2a'),
+    'for_pysource': (2, '8465ff5597589b9b3ca1'), 'fs': (10, 'f9e7bc010f2ba9a5db16'), 'gradient_label': (2, 'eedabfe07c3ae55d8628'),
+    'group': (14, 'dc993c9136d9054afad2'), 'hover_row': (4, '89d27d3efd298ef7c98a'), 'icon_cell': (20, '309fba11aef0e10a0eb4'),
+    'item_frame': (3, 'cf083441647ef73fef0f'), 'item_grid': (4, 'e97eb65b8adfa4069712'),
+    'item_grid_java_is_safe': (2, '72e4881ba9dc37fdc16b'), 'item_grid_style': (2, 'c3eebfc5c97ac0f767dd'),
+    'item_icon': (3, '81f425a1a2248fdcb923'), 'item_slot': (2, '81e3429e17825ae69d51'), 'java_append': (3, 'add09461c6e9d9253e55'),
+    'java_expr': (1, '77170e0ef4cf680ff29e'), 'java_field': (1, 'eb7fd2ce86c1639ca483'),
+    'java_grid_fill': (1, 'f6fc081457c57d904c8d'), 'java_grid_methods': (2, '96898090fc9b44044b34'),
+    'java_lit': (1, 'a061966e494fff2f3143'), 'java_ref_style': (1, 'c726c220dcaa632b45b5'), 'java_set': (7, '62a4f4d9e27983bd3ca7'),
+    'java_status_methods': (4, 'bf5739c4f3511338e514'), 'label': (171, '9b65963359c3422c08ea'),
+    'list_button': (4, 'f6ea03a66b50a830bc9d'), 'list_button_style': (2, '4bd4c149efd21d3c13d6'),
+    'norm_color': (5, '5b774e4a91c6dc9a8d8f'), 'on_off': (2, 'db928a3da7b0b1b60498'), 'option_row': (4, '69c8730b31bdd7057b09'),
+    'option_style': (2, '46e2c809adf89f7b2ab1'), 'page_shell': (8, 'fdd915555e40795666cf'), 'pager': (4, '208491816c0b5a620bbe'),
+    'panel': (16, '61822fe7c113746ac1f8'), 'panel_row': (7, 'c3c8672094ab56e83f27'), 'panel_title': (2, 'b88651201d9fc297d197'),
+    'patch': (8, '0f0624524ab083b453f6'), 'probe pages 1-18': (18, '69220672befcf090fb50'),
+    'probe pages 1-18 prefix': (18, '7e1ccc1ae8dd7a2d650c'), 'progress': (3, '666c4cd11aba59e718de'),
+    'property_row': (2, '4a4de278ccf74fd14ed6'), 'quality_frame': (12, '5f6f4511b3f6375d4375'),
+    'render': (1, '1d3e5202aaec8d82f123'), 'row_action': (4, 'ccb913493bb935767297'), 'row_badge': (2, '812b83408bb5350b846e'),
+    'row_style': (3, '61cf739df6968309f26c'), 'row_text': (3, '6d6e2eb6bbff3b04ba21'), 'scalars': (99, 'ffc38bb4f180f0d6c7b7'),
+    'scroll_list': (4, 'fa5e8b909d303f767785'), 'scrollbar_style': (2, '3788dcd2b517ad242b16'),
+    'search_field': (2, '75736315832b16faca12'), 'search_icon': (1, 'fd8570de62c415bde86d'), 'section': (2, 'dad9f55c7c4f3233597b'),
+    'separator': (14, 'f46a3e288053699c3f03'), 'setting_row': (2, 'aaf2816ad0da971786d8'), 'sounds': (6, '104022aa2d39a3c628d4'),
+    'spacer': (4, '682327923d7a4b12c95f'), 'spinner': (2, '990b403d2637d79aac42'), 'status_line': (4, 'fcf7749a610e4139ef29'),
+    'subtitle': (2, '8cae9a303192c02dcfe4'), 'tab_row': (3, 'c73ef930ce4c367a0cdc'), 'table BUTTONS': (4, '551f80e06aa3767fdecd'),
+    'table BUTTON_SIZES': (3, '2155c6a21539eacbf9c4'), 'table CLIENT_DOCS': (5, '5cd277fe3fecaa02514e'),
+    'table COLOR': (80, 'f6c58e198772132ecff7'), 'table CONFIRM_PANELS': (3, '9d0db9fd424eb890b6ba'),
+    'table DOCS': (35, 'c7d7718cbac012e9024f'), 'table FIELD_LOOKS': (3, '6ce4287f55b87622958a'),
+    'table FONTS': (2, 'd6b5722e28ede2e53fdd'), 'table ICON_CELL_LOOKS': (2, '70188a6bdbb8d014cc72'),
+    'table ICON_CELL_STATES': (4, 'b96e2d493b9874df9270'), 'table LABELS': (42, 'c537c067258fdebb465e'),
+    'table LABEL_MORE': (5, 'c283be05e24d7bcf87b2'), 'table PANELS': (4, '0ff35b9fb8e2cbacce83'),
+    'table PANEL_KINDS': (8, 'f778d96c57c1b9bd47aa'), 'table PROBE_BASE': (3, 'ba92455962736738ce8e'),
+    'table QUALITY': (11, 'ca02af4bbdcf354f91dc'), 'table QUALITY_SLOT': (11, 'fb60fc6bdd8e427c3086'),
+    'table QUALITY_TIP': (11, 'dbeceb9e640a4a57cbb2'), 'table RARITY': (7, '65f32f7a715d98054a51'),
+    'table RARITY_ORDER': (7, 'b22c76b667eb6f935a96'), 'table RARITY_WYNN': (7, '5760e693a3e98bc23c99'),
+    'table READABLE': (4, '8524afb81495d518a2e0'), 'table SEPARATORS': (7, '40fe2b3d900311d85a77'),
+    'table SND': (10, '9c54a89171d0e5758153'), 'table SOUNDS': (6, '0e46ec88c5d7e3da9b6f'),
+    'table STATUS': (3, '6ca23e992245983e35e7'), 'table STATUS_INFO': (2, '20dc551f2dfd3218d7fe'),
+    'table TEX': (87, 'f657e99a58fd029b37fb'), 'table TILE_STATES': (4, 'bae9cc985f96471224f1'),
+    'table UNVERIFIED': (16, '29547c0f596bf28c2c7c'), 'table _COLOR_SRC': (80, '36bb8cc66549df56aa2a'),
+    'table checks': (276, 'f1edce1309db7ba9001d'), 'text_field': (8, '13021d1abf0800e50524'),
+    'text_style': (8, 'b48b7f0988c588546a49'), 'tile': (5, '359e68fc2720b64d071a'), 'title_label': (2, '66331ac83448be81f31a'),
+    'title_style': (1, '8d0e5625a5b345c261e2'), 'tooltip': (1, '415fc26c575482235df9'),
+    'tooltip_panel': (14, 'ffcbb62a122861aa6c24'), 'tooltip_style': (1, 'e9ac3ddd3c124a1bcc9b'),
+    'value_box': (2, '7d74e0df8f5256831597'), 'vanilla scale': (16, 'fc4924b42023b50b07c2'),
+}
+
+
+def phase_snapshot():
+    items = snapshot_items()
+    if SNAP13 is None:
+        FAILS.append("SNAP13 is empty: the kit 1.3 snapshot was never recorded")
+        return items
+    for g, (n, dig) in sorted(SNAP13.items()):
+        lst = items.get(g)
+        if lst is None:
+            FAILS.append("snapshot: group %r is gone (kit 1.3 had %d items)" % (g, n))
+            continue
+        if g.startswith("table "):
+            check(len(lst) >= n and snapshot_prefix_digest(lst, n) == dig,
+                  "snapshot: the first %d entries of %s changed (kit 1.3 entries must stay, new ones go at the end)" % (n, g))
+        else:
+            check(len(lst) == n and snapshot_prefix_digest(lst, n) == dig,
+                  "snapshot: %s output changed (%d items now, %d in kit 1.3) - kit 1.4 is additive only" % (g, len(lst), n))
+    extra = sorted(set(items) - set(SNAP13))
+    check(not extra, "snapshot: groups the frozen generator does not know: %s" % extra)
+    return items
 
 
 def main():
+    if "--print-snapshot" in sys.argv:
+        UI.verify(quiet=True)
+        d = snapshot_digests(snapshot_items())
+        print("SNAP13 = {")
+        for g in sorted(d):
+            print("    %r: %r," % (g, d[g]))
+        print("}")
+        print("SNAP_SAMPLES13 = %r" % sorted(build_samples()))
+        return
+    if "--snapshot-dump" in sys.argv:
+        path = os.path.abspath(arg("--snapshot-dump"))
+        if not path.lower().startswith((os.path.join(HERE, "dev", "scratch") + os.sep).lower()):
+            raise SystemExit("--snapshot-dump writes only inside tools/dev/scratch/")
+        UI.verify(quiet=True)
+        import json
+        json.dump(snapshot_items(), open(path, "w", encoding="utf8"), indent=0)
+        print("wrote", path)
+        return
     base = os.path.join(HERE, "dev", "scratch") + os.sep
     if not (SCRATCH + os.sep).lower().startswith(base.lower()) or SCRATCH.rstrip(os.sep).lower() == base.rstrip(os.sep).lower():
         raise SystemExit("--dir must be a folder inside tools/dev/scratch/ (it is emptied and deleted): " + SCRATCH)
@@ -1681,9 +2796,11 @@ def main():
         except UI.VanillaCheckError as e:
             FAILS.append("verify() failed: %s" % e)
             UI._STATE["verified"] = True      # already a FAIL; unlock the emitters so the rest of the test still reports
+        phase_snapshot()                      # kit 1.4: every kit 1.3 builder output byte-identical (SNAP13)
         phase_structure()
         samples = phase_builders()
         phase_kit13(samples)
+        phase_kit14(samples)
         probes = phase_probes()
         phase_guide()
         phase_lint()

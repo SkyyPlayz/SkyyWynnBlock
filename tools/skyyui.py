@@ -35,15 +35,29 @@ client-only textures (Pages/Inventory/Slot.png, the client's own tooltip frame, 
 styles (@SmallDefaultTextButtonStyle -> Common/ButtonSmall*.png is missing, @ButtonDestructiveSounds -> an undefined sound set).
 The item QUALITY frames (Common/UI/ItemQualities/Slots|Tooltips/*.png) ARE in Assets.zip, outside the custom root: only their
 inline path "../ItemQualities/..." is unverified (quality_frame / tooltip_panel(quality=), trial=True).
+Kit 1.4 is ADDITIVE: every kit 1.3 builder output is frozen (the test's SNAP13 snapshot); the new blocks (static_row, list_well,
+result_line, stat_bar, column_spec, stat_well, list_card, state_word, ...: the "kit 1.4 blocks" section) are made from proven
+properties only, assert_proven() checks a page against ONE table of proven properties minus PROBED, text_width() measures with the
+client's own font tables (button() / label() warn when a static text does not fit), and probe pages 19-22 come after page 18.
 """
 import os, re, json, zipfile, hashlib, posixpath
 
-KIT_VERSION = "1.3"   # 1.2 (2026-09-29, SkyyBank 0.1.4 pilot): + group(), status_line(wrap=, max_lines=, anchor=)
+KIT_VERSION = "1.4"   # 1.2 (2026-09-29, SkyyBank 0.1.4 pilot): + group(), status_line(wrap=, max_lines=, anchor=)
 # 1.3 (2026-09-29, the SkyyBank pilot review): titles without LetterSpacing 0 (= the deployed SkyyRanks / SkyyVault titles),
 #     WrapMaxLines only with Wrap: true (max_lines=False / 0 = none), display = 32 px Default font (Hud/TimeLeft), STATUS "=" =
 #     info blue #7caacc (gold: java_status_methods(info="gold")); + pager, item_grid + java_grid_methods / java_grid_fill,
 #     icon_cell, Appends.text / Shell.text (punctuated text -> b.set), confirm_view, choose (a markup picked at runtime),
 #     probe pages with stable names + their own "what to see" list (+ base page 18 for the 1.3 builders)
+# 1.4 (2026-09-29, the stage-1b restyle reviews) - ADDITIVE ONLY: every kit 1.3 builder output is byte-identical (the test's
+#     SNAP13 snapshot), only new functions / parameters (defaults keep the old output) / table entries at the end / probe pages
+#     after 18. New: Markup (a markup str carrying .h / .w / .sets / .ids), static_row, status_bar / row_bar, list_well,
+#     result_line + java_color_by_text, stat_bar (a choose()-ready full / empty pair), column_spec / Columns / column_heads /
+#     column_row, right_margin / centre_margin + button_row(used=, avail=, left_margin=), stat_well, list_card (+ LIST_CARD_*
+#     = the Classes / Profiles SKYY CARD, byte for byte), state_word, color_by, group(bg=) / panel(bg=), item_frame(item=,
+#     cover=), icon_cell(state="static"), confirm_view(wrap=, yes_on=, q_col=), Appends.add / Appends.button / java_add,
+#     outer_size / used_height / used_width, text_width / text_lines / line_height (the client's font tables) + fit warnings in
+#     button() / label() / Appends.text, assert_proven (one table of proven properties minus PROBED), Probe.summary +
+#     Probe.with_footer, probe pages 19-22 (base4, button-text, flex-rows, layout-right)
 
 # ================================================================= where the game files are (READ-ONLY; never written)
 _HYTALE = os.path.join(os.environ.get("APPDATA", r"C:\Users\SkyLo\AppData\Roaming"), "Hytale")
@@ -460,6 +474,14 @@ UNVERIFIED = {
     "spinner": "the Sprite element (Common/Spinner.png, 72 frames at 30 fps) inline",
     "tile": "the Memories tile textures (Pages/Memories/Tiles/*.png) on an inline TextButton",
     "quality-frame": 'the item quality frames outside the custom root ("../ItemQualities/Slots|Tooltips/...png") from inline markup',
+    # kit 1.4 (appended; the 1.3 keys above are unchanged)
+    "base4": "the kit 1.4 builders, made from proven properties only (static_row, status_bar, list_well, result_line, stat_bar, "
+             "column_heads / column_row, button_row(used=), stat_well, list_card, state_word, item_frame(item=, cover=), "
+             "icon_cell static, confirm_view compact wrap / yes_on) (probe page 19; no trial gate - a restyle on them waits for it)",
+    "button-text": 'b.set("#Id.Text", ...) on a TextButton: a button label with punctuation or a runtime value (Appends.button)',
+    "flex-rows": "FlexWeight on its own: equal flex buttons, a flex label next to a fixed button, a flex spacer, a flex filler in a "
+                 "column, the panel_row select button (probe page 21; FlexWeight is also on base1 / base2)",
+    "layout-right": "LayoutMode Right on its own: a right-aligned footer, a row of cells and labels (probe page 22; also on base1)",
 }
 PROBED = set()      # add a key here once Skyy has seen its probe page work in game; it then needs no trial=True
 
@@ -1190,12 +1212,14 @@ _need("CH", "Style: (FontSize: 18, TextColor: #96a9be, RenderUppercase: true, Re
 
 def label(ident=None, text="", kind="default", h=None, w=None, size=None, col=None, bold=None, upper=None, align=None,
           valign=None, wrap=None, max_lines=None, italic=None, anchor=None, padding=None, flex=None, font=None, spacing=None,
-          extra=""):
+          extra="", fit=True):
     """A Label in one of the vanilla LABELS kinds. Text is empty by default (b.set it); static text must be [A-Za-z0-9 <>/-]
     (Appends.text / Shell.text split other text into an empty label + a b.set line for you).
     size defaults to fs(the vanilla size); h defaults to size + 10 (h=False: no Height, the label fills its parent / row);
     col / bold / font (Default / Secondary) / spacing (LetterSpacing, float; 0 = none) / valign (False = none) / ... override the
-    kind. max_lines = WrapMaxLines (needs wrap; max_lines=False / 0 removes the kind's own line limit, and wrap=False drops it too)."""
+    kind. max_lines = WrapMaxLines (needs wrap; max_lines=False / 0 removes the kind's own line limit, and wrap=False drops it too).
+    fit (kit 1.4): a static one-line text wider than w (minus the padding) prints a build WARNING (text_width, the client's own
+    font tables; never an error); fit=False for a text that is meant to be clipped. It never changes the markup."""
     if kind not in LABELS:
         raise ValueError("label kind %r (one of %s)" % (kind, ", ".join(sorted(LABELS))))
     vs, kc, kb, ku, ka, kw, ki, _where = LABELS[kind]
@@ -1207,13 +1231,17 @@ def label(ident=None, text="", kind="default", h=None, w=None, size=None, col=No
         h = None                       # no Height: the label fills its parent (a row badge, a property value)
     wr = kw if wrap is None else bool(wrap)
     ml = (kml if wr else None) if max_lines is None else max_lines    # the kind's line limit goes with its wrap
-    st = text_style(sz, col if col is not None else kc, bold=kb if bold is None else bold, upper=ku if upper is None else upper,
+    eb, eu, ef = kb if bold is None else bold, ku if upper is None else upper, font if font is not None else kf
+    st = text_style(sz, col if col is not None else kc, bold=eb, upper=eu,
                     italic=ki if italic is None else italic, halign=align if align is not None else ka,
                     valign=kva if valign is None else (None if valign is False else valign), wrap=wr,
-                    max_lines=ml, font=font if font is not None else kf, spacing=spacing)
+                    max_lines=ml, font=ef, spacing=spacing)
     head = "Label #%s { " % check_id(ident) if ident else "Label { "
-    return (head + _anchor(w, h, anchor) + _padding(padding) + _flex(flex) + 'Text: "%s"; ' % check_text(text)
-            + "Style: %s; " % st + _extra(extra) + "}")
+    mk = (head + _anchor(w, h, anchor) + _padding(padding) + _flex(flex) + 'Text: "%s"; ' % check_text(text)
+          + "Style: %s; " % st + _extra(extra) + "}")
+    if fit and text and not wr:
+        _fit_label(ident, text, sz, eb, eu, ef, w, padding)     # kit 1.4: a WARNING only, after the markup passed its checks
+    return mk
 
 
 def status_line(ident, color_expr="colorOf(this.info)", h=30, size=16, wrap=False, max_lines=None, anchor=None):
@@ -1335,10 +1363,12 @@ def button_style(kind="secondary", size="normal", selected=False, disabled=False
 
 
 def button(ident, text="", kind="secondary", size="normal", w=None, h=None, selected=False, disabled=False, sound=None,
-           anchor=None, flex=None, disable_element=False, trial=False, extra=""):
+           anchor=None, flex=None, disable_element=False, trial=False, extra="", fit=True):
     """One vanilla TextButton (bind it with Activating on #ident). w defaults to 172 (normal / big), 92 (small) or 150 (a small
     Primary); a Primary is never narrower than 120 (PointInspectorPage; a J() width is checked by its sample, a flex width is not
-    checked). disable_element=True also writes `Disabled: true;` (UNVERIFIED, trial=True)."""
+    checked). disable_element=True also writes `Disabled: true;` (UNVERIFIED, trial=True). fit (kit 1.4): a static label wider than
+    w - 2 x the padding prints a build WARNING (the vanilla label then shrinks to fit, down to 12 px - ShrinkTextToFit); fit=False
+    for a label that is meant to shrink. It never changes the markup."""
     check_id(ident)
     if size not in BUTTON_SIZES:
         raise ValueError("button size %r (normal / small / big)" % size)
@@ -1359,9 +1389,12 @@ def button(ident, text="", kind="secondary", size="normal", w=None, h=None, sele
     if disable_element:
         _gate("disabled-prop", trial)
         dp = "Disabled: true; "
-    return ("TextButton #%s { " % ident + _anchor(w, h if h is not None else bh, anchor) + "Padding: (Horizontal: %d); " % bp
-            + _flex(flex) + dp + 'Text: "%s"; ' % check_text(text)
-            + button_style(kind, size, selected, disabled, sound) + " " + _extra(extra) + "}")
+    mk = ("TextButton #%s { " % ident + _anchor(w, h if h is not None else bh, anchor) + "Padding: (Horizontal: %d); " % bp
+          + _flex(flex) + dp + 'Text: "%s"; ' % check_text(text)
+          + button_style(kind, size, selected, disabled, sound) + " " + _extra(extra) + "}")
+    if fit and text and flex is None:
+        _fit_button(ident, text, lsz, w, bp)                    # kit 1.4: a WARNING only, after the markup passed its checks
+    return mk
 
 
 def on_off(prefix, on, w=120, h=None, texts=("ON", "OFF")):
@@ -1386,12 +1419,30 @@ _need("C", 'Default: (Background: "Common/ContainerCloseButton.png"),\n      Hov
       '      Pressed: (Background: "Common/ContainerCloseButtonPressed.png"),\n      Sounds: @ButtonsCancel', "close X")
 
 
-def button_row(ident, h=BTN_H, align="center", top=8, w=None, anchor=None):
-    """A row for buttons (vanilla dialogs: LayoutMode Center, Top 8; give the buttons anchor right / left 6)."""
+def button_row(ident, h=BTN_H, align="center", top=8, w=None, anchor=None, used=None, avail=None, left_margin=None):
+    """A row for buttons (vanilla dialogs: LayoutMode Center, Top 8; give the buttons anchor right / left 6).
+    Kit 1.4, WITHOUT LayoutMode Center / Right (base probe properties): used = the outer width of the buttons in the row (their
+    Width + Anchor margins: SUI.used_width, or add them up), avail = the row's inner width (default w) -> a LayoutMode Left row
+    whose Padding Left right-aligns (align "right": right_margin(avail, used)) or centres (align "center": centre_margin) them;
+    left_margin = that padding as an int or a J("expr", "344") runtime value (a footer whose buttons come and go - SkyyParty's
+    gapR). Returns a Markup (.left = the padding) on that path; without used / left_margin the kit 1.3 row (a plain str)."""
     lm = {"center": "Center", "left": "Left", "right": "Right"}.get(align)
     if lm is None:
         raise ValueError("align center / left / right")
-    return "Group #%s { %s%s}" % (check_id(ident), _anchor(w, h, _merge({"top": top} if top else None, anchor)), _layout(lm))
+    if used is None and left_margin is None:
+        return "Group #%s { %s%s}" % (check_id(ident), _anchor(w, h, _merge({"top": top} if top else None, anchor)), _layout(lm))
+    if left_margin is None:
+        room = avail if avail is not None else w
+        if not isinstance(room, int) or isinstance(room, bool) or not isinstance(used, int) or isinstance(used, bool):
+            raise ValueError("button_row(used=) needs int used and an int avail= (or w=): the row's inner width")
+        left = {"right": right_margin(room, used), "center": centre_margin(room, used), "left": 0}[align]
+    else:
+        if _sample_num(left_margin) is None or _sample_num(left_margin) < 0:
+            raise ValueError("button_row left_margin: an int >= 0 or a J(expr, sample) with a number sample: %r" % (left_margin,))
+        left = left_margin
+    mk = "Group #%s { %s%s%s}" % (check_id(ident), _anchor(w, h, _merge({"top": top} if top else None, anchor)), _layout("Left"),
+                                  _padding({"left": left}) if not _is_zero(left) else "")
+    return Markup(mk, left=left)
 
 
 _need("P", "LayoutMode: Center;\n        Anchor: (Top: 8);", "button row")
@@ -1404,15 +1455,18 @@ def spacer(w=None, h=None):
     return "Group { %s}" % _anchor(w, h)
 
 
-def group(ident=None, layout="Left", w=None, h=None, anchor=None, flex=None, pad=None, extra=""):
+def group(ident=None, layout="Left", w=None, h=None, anchor=None, flex=None, pad=None, extra="", bg=None):
     """A plain layout container with NO look of its own (no background, no border): a row (layout "Left") or column ("Top") that
     holds kit elements, the way vanilla pages nest plain Groups (PrefabSavePage `Group { LayoutMode: Left; ... #SelectedPackBox
     ... #BrowsePackButton }`, WorldEventPanelPage #Body / #Panes / #Footer). layout = a LayoutMode (Left, Top, Right, Center,
     Middle, Full, TopScrolling, ... - Right / Center / Full are "base" probe properties; Left / Top are proven on Skyy pages);
     w / h / anchor (margins) / flex / pad (int or dict) / extra as the other builders. ident may be None (an anonymous row). Never a
-    page root (page_shell builds that)."""
+    page root (page_shell builds that). bg (kit 1.4) = a background colour: a COLOR name, a RARITY / QUALITY literal or a J()
+    runtime colour (build one from colour NAMES with color_by(...)); written where extra="Background: ..." went, so the output is
+    the same as that hand-written form."""
     head = ("Group #%s { " % check_id(ident)) if ident else "Group { "
-    return head + _anchor(w, h, anchor) + _flex(flex) + _layout(layout) + _padding(pad) + _extra(extra) + "}"
+    return (head + _anchor(w, h, anchor) + _flex(flex) + _layout(layout) + _padding(pad)
+            + (("Background: %s; " % color(bg)) if bg is not None else "") + _extra(extra) + "}")
 
 
 _need("E", "        Group {\n          LayoutMode: Left;\n\n          Group #SelectedPackBox {", "plain layout row (group)")
@@ -1872,13 +1926,16 @@ PANELS = {"simple": ("panelPatch", 4, 12), "full": ("fullPatch", 20, None), "sec
 PANEL_KINDS = ("simple", "full", "secondary", "tooltip", "well", "dark", "row", "hud")
 
 
-def panel(ident, kind="simple", w=None, h=None, pad=None, layout="Top", flex=None, anchor=None, extra=""):
+def panel(ident, kind="simple", w=None, h=None, pad=None, layout="Top", flex=None, anchor=None, extra="", bg=None):
     """An inner panel: simple (@SimpleContainer ContainerPanelPatch Border 4, padding 12), full (@Panel ContainerFullPatch 20),
     secondary (ContainerBackgroundSecondary 5, PortalDevice info box), tooltip (the text tooltip frame, padding 24), well (THE vanilla
     inset for summaries / info boxes / form cards: #000000(0.15), padding 8 - WorldEventPanelPage #Summary, BlockSpawner entry
     rows), dark (#000000(0.3): the RespawnPage full-screen block only), row (the #101925(0.55) row panel), hud (a HUD widget:
-    #000000(0.2), padding 20 / 10 - Hud/TimeLeft). pad = an int or a {left / right / top / bottom / horizontal / vertical / full} dict."""
+    #000000(0.2), padding 20 / 10 - Hud/TimeLeft). pad = an int or a {left / right / top / bottom / horizontal / vertical / full} dict.
+    bg (kit 1.4, colour kinds well / dark / row / hud only) = the background at runtime: a COLOR name or a J() colour (color_by
+    builds one from colour NAMES), in place of the kind's colour; the kind still gives the default padding."""
     check_id(ident)
+    user_bg = bg
     if kind in PANELS:
         tex, border, dpad = PANELS[kind]
         bg = patch(tex, border)
@@ -1892,6 +1949,10 @@ def panel(ident, kind="simple", w=None, h=None, pad=None, layout="Top", flex=Non
         bg, dpad = COLOR["hud"], {"horizontal": 20, "vertical": 10}
     else:
         raise ValueError("panel kind %s" % " / ".join(PANEL_KINDS))
+    if user_bg is not None:
+        if kind in PANELS:
+            raise ValueError("panel(bg=) replaces the colour of a colour panel (well / dark / row / hud), not the %s texture" % kind)
+        bg = color(user_bg)
     p = pad if pad is not None else dpad
     return "Group #%s { %s%s%sBackground: %s; %s%s}" % (ident, _anchor(w, h, anchor), _flex(flex), _layout(layout), bg, _padding(p),
                                                       _extra(extra))
@@ -1928,13 +1989,22 @@ def item_icon(ident=None, item_id=None, size=ICON, anchor=None):
     return head + _anchor(size, size, anchor) + iid + "}"
 
 
-def item_frame(ident, size=SLOT_FRAME, border="slotBorder", icon_id=None, icon_size=None, anchor=None, extra=""):
+def item_frame(ident, size=SLOT_FRAME, border="slotBorder", icon_id=None, icon_size=None, anchor=None, extra="", item=None,
+               cover=False, icon_anchor=None, cover_id=None):
     """The vanilla slot border (BarterTradeRow: a 68 x 68 #1a2530 group, padding 2) - with an ItemIcon inside when icon_id is given
-    (icon = size - 4). border = "slotBorderHave" (green: you have it) or any kit colour."""
+    (icon = size - 4). border = "slotBorderHave" (green: you have it) or any kit colour.
+    Kit 1.4: item = the icon's item id written INLINE (static or J(expr, "Weapon_Sword_Iron"), as item_icon; the ItemIcon is
+    anonymous unless icon_id is given), icon_anchor = the icon's margins, cover=True = the vanilla sold-out cover over it
+    (BarterTradeRow #OutOfStockOverlay colour #0a0e12(0.75), Anchor Full 0; cover_id names it) - a picked-at-runtime cover:
+    choose(J("on"), item_frame(...), item_frame(..., cover=True))."""
     check_id(ident)
-    inner = (" " + item_icon(icon_id, None, icon_size or size - 4)) if icon_id else ""
+    kids = []
+    if icon_id or item is not None:
+        kids.append(item_icon(icon_id, item, icon_size or size - 4, anchor=icon_anchor))
+    if cover:
+        kids.append(group(cover_id, None, anchor={"full": 0}, bg="cardOverlay"))
     return "Group #%s { %sBackground: %s; Padding: (Full: 2); %s%s}" % (ident, _anchor(size, size, anchor), color(border), _extra(extra),
-                                                                     (inner.strip() + " ") if inner else "")
+                                                                     (" ".join(kids) + " ") if kids else "")
 
 
 def item_slot(ident, slot_id, size=SLOT_FRAME, quality=True, quantity=False, trial=False):
@@ -2120,7 +2190,7 @@ def item_grid_java_is_safe(java_src, igs=GRID_SLOT_CLASS, stack=ITEM_STACK_CLASS
     return bad.search(java_src) is None
 
 
-ICON_CELL_STATES = ("normal", "selected", "disabled", "empty")
+ICON_CELL_STATES = ("normal", "selected", "disabled", "empty", "static")       # "static" = kit 1.4 (a non-clickable Group)
 ICON_CELL_LOOKS = ("row", "plain")
 
 
@@ -2150,7 +2220,9 @@ def icon_cell(ident, item=None, size=74, state="normal", icon=None, qty=False, l
     (default size - 10), centred (icon_left = its left margin for a wide cell with text next to it; append your labels into
     #ident with Anchor Left / Top). qty: False, True (an empty 15 px bold white label #<ident>Qty at the bottom right - b.set it)
     or static digits ("64"). w / h override size for a wide cell. sound=None = silent. A runtime state: choose(J("i == sel"),
-    icon_cell(..., state="selected"), icon_cell(...))."""
+    icon_cell(..., state="selected"), icon_cell(...)).
+    state "static" (kit 1.4) = a NON-clickable cell: a Group (not a Button, no style, no sound) in the static row colour (look
+    "row") or with no back (look "plain"), with the icon and the quantity - a display cell (a reward, an ingredient)."""
     check_id(ident)
     if state not in ICON_CELL_STATES:
         raise ValueError("icon_cell state %s" % " / ".join(ICON_CELL_STATES))
@@ -2179,6 +2251,9 @@ def icon_cell(ident, item=None, size=74, state="normal", icon=None, qty=False, l
         else:
             raise ValueError("icon_cell qty: False, True (b.set #<id>Qty.Text) or static digits like \"64\"; got %r" % (qty,))
         kids.append(label(ident + "Qty", qtext, "quantity", w=cw - 8, h=20, anchor={"right": 4, "bottom": 3}))
+    if state == "static":
+        return "Group #%s { %s%s%s%s}" % (ident, _anchor(cw, ch, anchor), ("Background: %s; " % COLOR["row"]) if look == "row" else "",
+                                          _extra(extra), (" ".join(kids) + " ") if kids else "")
     return "Button #%s { %s%s %s%s}" % (ident, _anchor(cw, ch, anchor), _cell_style(look, state, sound), _extra(extra),
                                         (" ".join(kids) + " ") if kids else "")
 
@@ -2402,6 +2477,42 @@ class Appends(list):
         self.append((parent, label(ident, text if inline else "", kind, **kw)))
         if not inline:
             self.sets.append((ident, "Text", text))
+            _fit_label_kw(ident, text, kind, kw)        # kit 1.4: a b.set static text is measured too (the label saw "")
+        return ident
+
+    def add(self, parent, markup):
+        """Kit 1.4: append (parent, markup) and bring a Markup's .sets (the b.set lines of its texts; a Choice: both looks' must
+        be the same) along. Returns the markup's OUTER height (Anchor Height + Top + Bottom (+ 2 x Vertical / Full); None when
+        it sets no Height; a Choice: both looks must agree) - the height accounting of a LayoutMode Top column: add up what
+        add() returns, or ask used_height(ap, container)."""
+        self.append((parent, markup))
+        self.sets.extend(_markup_sets(markup))
+        return outer_size(markup)[1]
+
+    def used(self, container, axis="h"):
+        """used_height(self, container) (axis "h", a LayoutMode Top column) or used_width (axis "w", a LayoutMode Left row)."""
+        return used_height(self, container) if axis == "h" else used_width(self, container)
+
+    def button(self, parent, ident, text="", kind="secondary", size="normal", trial=False, **kw):
+        """Kit 1.4: append a button() WITH its label, whatever the text holds: proven static text goes inline; other text
+        (commas, "?", brackets, a J() runtime value) goes in as an empty label + a b.set("#id.Text") line - UNVERIFIED
+        (button-text: no Skyy page has b.set a TextButton's Text yet; trial=True until probe page 20 works). Returns ident."""
+        if parent is None:
+            raise ValueError("Appends.button needs a parent element (not the page root)")
+        if not isinstance(text, str):
+            raise ValueError("Appends.button: text must be a str or J(): %r" % (text,))
+        inline = not has_j(text) and TEXT_OK.fullmatch(text) is not None
+        if not inline:
+            _gate("button-text", trial)
+        self.append((parent, button(ident, text if inline else "", kind, size, **kw)))
+        if not inline:
+            self.sets.append((ident, "Text", text))
+            if kw.get("fit", True) and kw.get("flex") is None and not has_j(text):
+                lsz, _bh, bp = BUTTON_SIZES[size]
+                w = kw.get("w")
+                if w is None:
+                    w = (PRIMARY_SMALL_W if kind == "primary" else ROW_ACTION_W) if size == "small" else BTN_MIN_W
+                _fit_button(ident, text, lsz, w, bp)
         return ident
 
 
@@ -2593,9 +2704,22 @@ def pager(parent, prefix, w, text=None, prev_on=True, next_on=True, btn_w=150, c
 CONFIRM_PANELS = ("well", "row", None)
 
 
+def _yes_button(ident, text, kind, w, sound, anchor, on):
+    """confirm_view's yes button: live (True), the silent vanilla Disabled look (False) or both picked at runtime (J(cond))."""
+    live = button(ident, text, kind, w=w, sound=sound, anchor=anchor)
+    if on is True:
+        return live
+    dead = button(ident, text, kind, w=w, disabled=True, anchor=anchor)
+    if on is False:
+        return dead
+    if isinstance(on, str) and has_j(on):
+        return choose(on, live, dead)
+    raise ValueError("confirm_view yes_on is True, False or J(\"condition\"): %r" % (on,))
+
+
 def confirm_view(parent, prefix, w, question="", message="", note=None, msg_h=48, yes_text="Confirm", no_text="Cancel",
                  yes_kind="primary", yes_sound=None, yes_w=180, no_w=180, panel="well", pad=DIALOG_PAD, compact=False, top=8,
-                 ids=None):
+                 ids=None, wrap=False, yes_on=True, q_col="warning"):
     """The in-page confirm (SkyyRanks 0.1.1 buildConfirm: a question + Confirm / Cancel INSIDE the same page - nothing closes or
     opens, so the HANDOFF rule "never close a page right before opening another" holds) in the vanilla confirm look
     (Pages/PrefabEditorExitConfirm): a panel #<prefix> w wide (panel "well" = #000000(0.15), "row" = #101925(0.55) like SkyyRanks,
@@ -2606,7 +2730,12 @@ def confirm_view(parent, prefix, w, question="", message="", note=None, msg_h=48
     Left + Anchor margins only). compact=True = ONE row instead (Classes / Profiles inline confirm rows): the question in 16 px bold
     #ffcc00 filling what is left + yes + no. Texts: static proven text inline, anything else ("?", ",", J()) through b.set lines
     in .sets; "" / None = b.set it yourself. Returns a Part: .h (height incl. its top margin), .box, .question, .message, .note,
-    .row, .yes, .no. Bind yes / no with Activating; the page's own state (pending action) decides what Confirm does."""
+    .row, .yes, .no. Bind yes / no with Activating; the page's own state (pending action) decides what Confirm does.
+    Kit 1.4 (the SkyyProfiles 0.1.3 pf_row options, now in the kit; the defaults keep the 1.3 output): wrap=True = the compact
+    question wraps to two 16 px lines in its 44 px row (a long question); yes_on = True, False (yes in the vanilla Disabled look,
+    silent - leave it unbound: nothing is picked yet) or J("cond") (both looks, picked in the Java: choose); q_col = the compact
+    question colour (default "warning" = the vanilla confirm yellow; "text" = a plain hint line, not a question; a COLOR name or
+    J()). Not compact: yes_on works the same, wrap / q_col are the compact row's options only."""
     ids = dict(ids or {})
     box = check_id(ids.get("box", prefix))
     q = check_id(ids.get("question", prefix + "Q"))
@@ -2631,8 +2760,11 @@ def confirm_view(parent, prefix, w, question="", message="", note=None, msg_h=48
         part = Part(h=h + (top or 0), box=box, question=q, message=None, note=None, row=box, yes=yes, no=no)
         part.append((parent, "Group #%s { %sLayoutMode: Left; %sPadding: (Horizontal: 12, Vertical: %d); }"
                      % (box, _anchor(w, h, tm), bg, cpad)))
-        _text_into(part, box, q, question, "bold", w=qw, h=BTN_H, col="warning")
-        part.append((box, button(yes, yes_text, yes_kind, w=yes_w, sound=ysnd, anchor={"left": 6})))
+        qkw = {"w": qw, "h": BTN_H, "col": q_col}
+        if wrap:
+            qkw["wrap"] = True
+        _text_into(part, box, q, question, "bold", **qkw)
+        part.append((box, _yes_button(yes, yes_text, yes_kind, yes_w, ysnd, {"left": 6}, yes_on)))
         part.append((box, button(no, no_text, "secondary", w=no_w, sound="cancel", anchor={"left": 6})))
         return part
     m = check_id(ids.get("message", prefix + "Msg"))
@@ -2652,10 +2784,991 @@ def confirm_view(parent, prefix, w, question="", message="", note=None, msg_h=48
     if n:
         _text_into(part, box, n, note, "note", h=nh, anchor={"bottom": 8, "horizontal": 4})
     part.append((box, group(r, "Left", h=BTN_H, anchor={"top": 8})))
-    part.append((r, button(yes, yes_text, yes_kind, w=yes_w, sound=ysnd, anchor=_merge({"left": left} if left else None,
-                                                                                         {"right": 6}))))
+    part.append((r, _yes_button(yes, yes_text, yes_kind, yes_w, ysnd, _merge({"left": left} if left else None, {"right": 6}), yes_on)))
     part.append((r, button(no, no_text, "secondary", w=no_w, sound="cancel", anchor={"left": 6})))
     return part
+
+
+# ================================================================= kit 1.4 blocks (the stage-1b restyle reviews; ADDITIVE ONLY)
+# Everything below is new in kit 1.4 and made from the kit 1.3 builders + proven properties only (LayoutMode Left / Top, fixed
+# widths / heights, Anchor margins, Padding, colour backgrounds, ItemIcon with an inline ItemId, Wrap): no FlexWeight, no LayoutMode
+# Center / Right / Full, no WrapMaxLines, no LetterSpacing, nothing UNVERIFIED (assert_proven checks it; probe page 19 "base4"
+# shows every block in game). The compositions are the ones the five held restyles made by hand (SkyyBank 0.1.4 wells, SkyyParty
+# 0.1.6 heads / bars / footer, SkyyAccessories 0.4.5 fixed rows / result line, SkyyClasses 0.1.8 + SkyyProfiles 0.1.3 cards).
+class Markup(str):
+    """A markup str that also carries what its builder knows (kit 1.4): .h / .w = its OUTER height / width (Anchor Height + Top +
+    Bottom (+ 2 x Vertical / Full), Width + Left + Right (+ 2 x Horizontal / Full); None when the markup sets none), .sets = the
+    b.set lines its texts need [(id, "Text", value)], .ids = {role: element id}, plus builder-specific attributes. It IS the markup:
+    every kit function, java_append, choose and check_markup take it as a str. Add it with ap.add(parent, markup) (carries .sets)
+    or java_add(parent, markup) (the append + its b.set lines) - a plain ap.append((parent, markup)) drops the .sets."""
+
+    def __new__(cls, text, **attrs):
+        o = str.__new__(cls, text)
+        o.sets = list(attrs.pop("sets", ()))
+        o.ids = dict(attrs.pop("ids", None) or {})
+        if "h" not in attrs or "w" not in attrs:
+            ow, oh = outer_size(str(text))
+            attrs.setdefault("w", ow)
+            attrs.setdefault("h", oh)
+        o.__dict__.update(attrs)
+        return o
+
+
+def _markup_sets(mk):
+    """The b.set lines a Markup (or a Choice of two Markups: both must carry the same) brings along."""
+    if isinstance(mk, Choice):
+        a, b = list(getattr(mk.a, "sets", ())), list(getattr(mk.b, "sets", ()))
+        if a != b:
+            raise ValueError("choose(): the two looks carry different b.set lines (%s / %s) - set the texts once, after the append"
+                             % (a, b))
+        return a
+    return list(getattr(mk, "sets", ()))
+
+
+def java_add(parent, markup, b="b", page_root=True):
+    """Kit 1.4: java_append(parent, markup) followed by the java_set lines of a Markup's .sets (its texts), as one text."""
+    return "\n".join([java_append(parent, markup, b, page_root)] + [java_set(i, pr, v, b) for i, pr, v in _markup_sets(markup)])
+
+
+_OUTER_KEYS = ("Width", "Height", "Left", "Right", "Top", "Bottom", "Horizontal", "Vertical", "Full")
+
+
+def _own_props(mk):
+    """The OUTER element's own property text of one markup (brace depth 1, quoted text blanked, J() values as their samples)."""
+    s = _strip_quoted(render(mk))
+    out, depth = [], 0
+    for ch in s:
+        if ch == "{":
+            depth += 1
+            if depth == 1:
+                continue
+        elif ch == "}":
+            depth -= 1
+        if depth == 1:
+            out.append(ch)
+    return "".join(out)
+
+
+def _top_prop(own, key):
+    """The value text of property `key` written at paren depth 0 of an element's own properties (None when absent)."""
+    depth, i, n = 0, 0, len(own)
+    pat = re.compile(r"(?<![A-Za-z0-9])%s\s*:\s*" % key)
+    while i < n:
+        ch = own[i]
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+        elif depth == 0:
+            m = pat.match(own, i)
+            if m:
+                j, d = m.end(), 0
+                k = j
+                while k < n and not (d == 0 and own[k] == ";"):
+                    d += 1 if own[k] == "(" else (-1 if own[k] == ")" else 0)
+                    k += 1
+                return own[j:k].strip()
+        i += 1
+    return None
+
+
+def _number(v, what):
+    try:
+        f = float(v)
+    except ValueError:
+        raise ValueError("%s: %r is not a number (a J() size needs a number sample)" % (what, v))
+    return int(f) if f == int(f) else f
+
+
+def _anchor_vals(mk):
+    """{Width / Height / Left / ...: number} of a markup's OUTER element's own Anchor (J() values as their samples)."""
+    anc = _top_prop(_own_props(_variants(mk)[0]), "Anchor")
+    vals = {}
+    if anc is not None:
+        body = anc.strip()
+        if body.startswith("(") and body.endswith(")"):
+            body = body[1:-1]
+        for part in body.split(","):
+            k, _s, v = part.partition(":")
+            k = k.strip()
+            if k in _OUTER_KEYS and v.strip():
+                vals[k] = _number(v.strip(), "Anchor " + k)
+    return vals
+
+
+def outer_size(mk):
+    """(outer width, outer height) of a markup's OUTER element (kit 1.4), read from its own Anchor: Width + Left + Right
+    (+ 2 x Horizontal / Full) and Height + Top + Bottom (+ 2 x Vertical / Full); None where it sets no Width / Height. J() values
+    count as their samples. A Choice: both looks must have the same outer size."""
+    if isinstance(mk, Choice):
+        a, b = outer_size(mk.a), outer_size(mk.b)
+        if a != b:
+            raise ValueError("choose(): the two looks have different outer sizes %s / %s" % (a, b))
+        return a
+    vals = _anchor_vals(mk)
+    g = vals.get
+    hm = g("Left", 0) + g("Right", 0) + 2 * (g("Horizontal", 0) + g("Full", 0))
+    vm = g("Top", 0) + g("Bottom", 0) + 2 * (g("Vertical", 0) + g("Full", 0))
+    return (g("Width") + hm if "Width" in vals else None), (g("Height") + vm if "Height" in vals else None)
+
+
+def is_flex(mk):
+    """True when a markup's outer element has a FlexWeight (it takes the free space of its row / column)."""
+    mk = _variants(mk)[0]
+    return _top_prop(_own_props(mk), "FlexWeight") is not None
+
+
+def _used(appends, container, axis, what):
+    cid = render(container).lstrip("#")
+    total = 0
+    kids = [mk for p, mk in appends if p is not None and render(p).lstrip("#") == cid]
+    for mk in kids:
+        size = outer_size(mk)[axis]
+        if size is None:
+            if is_flex(mk):
+                continue
+            raise ValueError("%s of #%s: a child without a fixed %s or a FlexWeight - its size cannot be proven: %s"
+                             % (what, cid, "Height" if axis else "Width", render(_variants(mk)[0])[:120]))
+        total += size
+    return total
+
+
+def used_height(appends, container):
+    """Kit 1.4: the height the DIRECT children of `container` take in a LayoutMode Top column - the sum of their outer heights
+    (Anchor Height + Top + Bottom ...; a FlexWeight child counts 0: it takes what is left). Raises when a child has neither a
+    Height nor a FlexWeight. Budget: fit([used_height(ap, "SkyyXBody")], sh.inner_h) (or == 0 for a body filled exactly)."""
+    return _used(appends, container, 1, "used_height")
+
+
+def used_width(appends, row):
+    """Kit 1.4: the width the DIRECT children of `row` take in a LayoutMode Left row (outer widths; FlexWeight children count 0)."""
+    return _used(appends, row, 0, "used_width")
+
+
+def right_margin(avail, used):
+    """Kit 1.4: the left margin (Padding Left / Anchor Left) that right-aligns content `used` px wide in `avail` px, without
+    LayoutMode Right (a base probe property): avail - used (raises when it does not fit)."""
+    return fit([used], avail, "right-aligned content")
+
+
+def centre_margin(avail, used):
+    """Kit 1.4: the left margin that centres content `used` px wide in `avail` px, without LayoutMode Center: (avail - used) // 2."""
+    return fit([used], avail, "centred content") // 2
+
+
+def _inside(outer, kids):
+    """Kit markup `outer` (ending with its closing brace) with the markups `kids` placed inside it."""
+    kids = [k for k in kids if k]
+    if not outer.endswith("}"):
+        raise ValueError("not a kit element markup: %r" % outer[:60])
+    return (outer[:-1] + " ".join(kids) + " }") if kids else outer
+
+
+def _text_bits(ident, text, what):
+    """(inline text, [b.set line]) of a builder's text: proven static text inline; punctuated static text or J() = empty + a b.set
+    line (then the element needs an id); None / "" = empty, no line (the caller b.sets it)."""
+    if text is None or text == "":
+        return "", []
+    if not isinstance(text, str):
+        raise ValueError("%s text must be a str or J(): %r" % (what, text))
+    if not has_j(text) and TEXT_OK.fullmatch(text):
+        return text, []
+    if not ident:
+        raise ValueError("%s: text %r goes in with b.set, so the label needs an id" % (what, render(text)))
+    return "", [(ident, "Text", text)]
+
+
+def color_by(pairs, default):
+    """Kit 1.4: a runtime colour from colour NAMES (each one validated): [(java condition, colour), ...] + the default colour ->
+    J('(c1) ? "#..." : ((c2) ? "#..." : ("#..."))', sample = the first colour) - the first true condition wins (the SKYY CARD
+    look chain). A condition is a Java boolean expression str or one J(expr). Use it as group(bg=) / panel(bg=) / label(col=)."""
+    d = color(default)
+    if has_j(d):
+        raise ValueError("color_by: the default is a colour name or literal, not a J() value")
+    e = java_lit(d)
+    first = d
+    for cond, col in reversed(list(pairs)):
+        c = color(col)
+        if has_j(c):
+            raise ValueError("color_by: colours are names or literals (validated), not J() values: %r" % (col,))
+        e = "(%s) ? %s : (%s)" % (choose(cond, "x", "x").cond, java_lit(c), e)
+        first = c
+    return J(e, first)
+
+
+STATE_WORD_KINDS = ("success", "disabled", "error", "info", "gold", "muted", "strong", "default")
+
+
+def state_word(ident=None, text="", kind="success", w=BTN_MIN_W, h=BTN_H, anchor=None):
+    """Kit 1.4: the bold centred word that stands where a button would (w x h = a normal button, 172 x 44): Selected / Active
+    (success green), Locked / Coming soon / Coming later (disabled grey), ... (the SKYY CARD card_state: label(None, text, kind,
+    w=172, h=44, align="Center", bold=True) - the same markup). Punctuated / J() text needs an ident (b.set, in .sets)."""
+    if kind not in STATE_WORD_KINDS:
+        raise ValueError("state_word kind %r (one of %s)" % (kind, ", ".join(STATE_WORD_KINDS)))
+    inline, sets = _text_bits(ident, text, "state_word")
+    return Markup(label(ident, inline, kind, w=w, h=h, align="Center", bold=True, anchor=anchor), sets=sets,
+                  ids={"word": ident} if ident else {})
+
+
+def status_bar(ident=None, on=True, col="selected", w=4, gap=8):
+    """Kit 1.4: the 4 px status bar at a list row's left edge (WorldEventListRow #StatusBar: Width 4, Right 8, #4274a5): on=True =
+    the bar (col = any kit colour), False = no colour but its 4 + 8 px kept (rows with and without a bar line up), J("cond") = the
+    bar only when cond is true at runtime (its Background is a runtime property: `(cond) ? "Background: ...; " : ""`)."""
+    head = ("Group #%s { " % check_id(ident)) if ident else "Group { "
+    anc = _anchor(w, None, {"right": gap} if gap else None)
+    c = color(col)
+    if on is True:
+        return head + anc + "Background: %s; }" % c
+    if on is False:
+        return head + anc + "}"
+    if isinstance(on, str) and has_j(on):
+        if has_j(c):
+            raise ValueError("status_bar(on=J(...)) takes a colour name or literal, not a J() colour")
+        prop = "Background: %s; " % c
+        return head + anc + J('(%s) ? %s : ""' % (choose(on, "x", "x").cond, java_lit(prop)), prop) + "}"
+    raise ValueError("status_bar on is True, False or J(\"condition\"): %r" % (on,))
+
+
+row_bar = status_bar
+
+
+def static_row(ident, w, h=None, icon=None, name="", sub=None, tag=None, action=None, bar=True, state="static", gap=ROW_GAP,
+               icon_size=40, tag_w=150, tag_kind="rowBadge", action_kind="secondary", action_w=None, action_on=True,
+               action_sound=None, name_kind="rowName", sub_kind="rowSub", name_col=None, sub_col=None, tag_col=None, pad=8,
+               anchor=None, ids=None):
+    """Kit 1.4: a FIXED-WIDTH list row (the WorldEventListRow look without FlexWeight - SkyyAccessories 0.4.5's rows) as ONE markup:
+    Group #ident (LayoutMode Left, h + gap bottom) holding the row panel #<ident>P (w minus the action, padding left / right 8;
+    state "static" = the #101925(0.55) panel Group, "normal" / "selected" = a clickable Button with row_style: bind #<ident>P)
+    with the status bar #<ident>Bar (bar: True = blue, None = no colour but its 12 px kept, False = none, J("cond") = runtime,
+    or a colour name), the icon box #<ident>Ib + ItemIcon #<ident>Ic (icon = an item id or J(); None = no icon), the text column
+    #<ident>T (name #<ident>Nm 18 px bold + sub #<ident>Sb 15 px, vertically centred) and the right tag #<ident>Tg (tag_w wide,
+    right-aligned, tag=None = none), then the small action button #<ident>Act (action = its proven label; None = none;
+    action_on=False = the vanilla Disabled look - a runtime state: choose(J("c"), static_row(...), static_row(..., action_on=False))).
+    Texts (name / sub / tag): proven text inline, punctuated / J() text as b.set lines in .sets, "" = empty (b.set it yourself).
+    ids = {"panel", "bar", "icon_box", "icon", "text", "name", "sub", "tag", "action"} keeps a restyled page's old ids.
+    Returns a Markup: .h = its outer height (h + gap), .w, .sets, .ids, .text_w (the text column width)."""
+    check_id(ident)
+    ids = dict(ids or {})
+    idd = lambda k, d: check_id(ids.get(k, ident + d))
+    h = h if h is not None else (ROW_H_READABLE if _SCALE[0] == "readable" else ROW_H)
+    for v, what in ((w, "width"), (h, "height"), (icon_size, "icon size"), (tag_w, "tag width"), (pad, "padding")):
+        if not isinstance(v, int) or isinstance(v, bool) or v < 0:
+            raise ValueError("static_row %s must be an int: %r" % (what, v))
+    if state not in ("static", "normal", "selected"):
+        raise ValueError("static_row state static / normal / selected")
+    aw = action_w if action_w is not None else (PRIMARY_SMALL_W if action_kind == "primary" else ROW_ACTION_W)
+    panel_w = w - ((4 + aw) if action is not None else 0)
+    bar_w = 0 if bar is False else 4 + 8
+    box_w = (icon_size + 12) if icon is not None else 0
+    tag_room = (tag_w + 8) if tag is not None else 0
+    text_w = panel_w - 2 * pad - bar_w - box_w - tag_room
+    if text_w < 40:
+        raise ValueError("static_row %s: %d px left for the text column (w %d is too small for its parts)" % (ident, text_w, w))
+    sets, kids = [], []
+    pid = idd("panel", "P")
+    got = {"row": ident, "panel": pid}
+    if bar is not False:
+        got["bar"] = idd("bar", "Bar")
+        if bar is True or bar is None:
+            kids.append(status_bar(got["bar"], bar is True))
+        elif isinstance(bar, str) and has_j(bar):
+            kids.append(status_bar(got["bar"], bar))
+        else:
+            kids.append(status_bar(got["bar"], True, col=bar))
+    if icon is not None:
+        got["icon_box"], got["icon"] = idd("icon_box", "Ib"), idd("icon", "Ic")
+        kids.append(_inside(group(got["icon_box"], None, w=box_w, h=h),
+                            [item_icon(got["icon"], icon, icon_size, anchor={"left": 0, "top": (h - icon_size) // 2})]))
+    nh, shh = fs(LABELS[name_kind][0]) + 6, fs(LABELS[sub_kind][0]) + 5
+    tot = nh + (shh if sub is not None else 0)
+    fit([tot], h, "static_row text")
+    top = (h - tot) // 2
+    nid = got["name"] = idd("name", "Nm")
+    got["text"] = idd("text", "T")
+    t_in, t_sets = _text_bits(nid, name, "static_row name")
+    sets += t_sets
+    tkids = [label(nid, t_in, name_kind, h=nh, col=name_col, fit=False)]
+    if sub is not None:
+        sid = got["sub"] = idd("sub", "Sb")
+        s_in, s_sets = _text_bits(sid, sub, "static_row sub")
+        sets += s_sets
+        tkids.append(label(sid, s_in, sub_kind, h=shh, col=sub_col, fit=False))
+    kids.append(_inside(group(got["text"], "Top", w=text_w, h=h, pad={"top": top} if top else None), tkids))
+    if tag is not None:
+        gid = got["tag"] = idd("tag", "Tg")
+        g_in, g_sets = _text_bits(gid, tag, "static_row tag")
+        sets += g_sets
+        kids.append(label(gid, g_in, tag_kind, w=tag_w, h=h, col=tag_col, anchor={"left": 8}, fit=False))
+    pad_d = {"left": pad, "right": pad} if pad else None
+    if state == "static":
+        pnl = panel(pid, "row", w=panel_w, h=h, layout="Left", pad=pad_d)
+    else:
+        pnl = "Button #%s { %sLayoutMode: Left; %s%s }" % (pid, _anchor(panel_w, h), _padding(pad_d), row_style(state))
+    row_kids = [_inside(pnl, kids)]
+    if action is not None:
+        got["action"] = idd("action", "Act")
+        if action_on not in (True, False):
+            raise ValueError("static_row action_on is True or False (a runtime state: choose() two rows)")
+        row_kids.append(button(got["action"], action, action_kind, "small", w=aw, h=h, disabled=not action_on, sound=action_sound,
+                               anchor={"left": 4}))
+    mk = _inside(group(ident, "Left", h=h, anchor=_merge({"bottom": gap} if gap else None, anchor)), row_kids)
+    return Markup(mk, sets=sets, ids=got, w=w, text_w=text_w)
+
+
+def list_well(ident, w=None, h=None, rows=None, row_h=None, gap=ROW_GAP, anchor=None):
+    """Kit 1.4: a FIXED (non-scrolling) list on the vanilla list well (WorldEventPanelPage #ListContainer: #000000(0.15),
+    padding 4; LayoutMode Top) - = panel(ident, "well", w, h, pad=4). rows + row_h (default the readable 56) + gap (3) give the
+    height: list_well_h(rows, row_h, gap). Returns a Markup (.h, .inner_w, .inner_h: the room for the rows)."""
+    if h is None:
+        if rows is None:
+            raise ValueError("list_well needs h= or rows=")
+        h = list_well_h(rows, row_h, gap)
+    mk = panel(ident, "well", w=w, h=h, pad=WELL_LIST_PAD, anchor=anchor)
+    iw = (w - 2 * WELL_LIST_PAD) if isinstance(w, int) and not isinstance(w, bool) else None
+    ih = (h - 2 * WELL_LIST_PAD) if isinstance(h, int) and not isinstance(h, bool) else None
+    return Markup(mk, inner_w=iw, inner_h=ih)
+
+
+def list_well_h(rows, row_h=None, gap=ROW_GAP):
+    """The height of a list_well holding `rows` rows of row_h (+ gap under each) - its padding 4 included."""
+    rh = row_h if row_h is not None else (ROW_H_READABLE if _SCALE[0] == "readable" else ROW_H)
+    return 2 * WELL_LIST_PAD + rows * (rh + gap)
+
+
+def result_line(ident, colour=None, h=44, wrap=True, size=16, anchor=None):
+    """Kit 1.4: the result line for pages whose result texts carry NO +/-/= marks (SkyyAccessories 0.4.5, SkyyParty 0.1.6):
+    status_line's look (16 px bold, centred, two lines in 44 px) with the colour given as a COLOR name or a J() runtime colour -
+    J("infoColor(this.info)", "#39f493") with a Java helper from java_color_by_text(), or color_by([...]). b.set its Text."""
+    if colour is None:
+        raise ValueError("result_line needs colour= (a COLOR name or J(\"javaColourExpr(...)\", \"#39f493\"))")
+    return label(ident, "", "default", h=h, size=size, bold=True, align="Center", col=colour, wrap=True if wrap else None, anchor=anchor)
+
+
+_JAVA_NAME_OK = re.compile(r"\A[a-z][A-Za-z0-9]*\Z")
+
+
+def java_color_by_text(name, rules, empty="=", default="-"):
+    """Kit 1.4: Java source of `public static String <name>(String t)` (CtNewMethod.make) - the colour of a result text WITHOUT a
+    mark, by its words: rules = [(test, text, colour), ...] in order, the first match wins; test = "startsWith" / "endsWith" /
+    "contains" / "equals"; colour = "+" / "-" / "=" (SUI.STATUS: success / error / info) or a COLOR name. empty = the colour of
+    a null / empty text, default = when no rule matches. javassist-safe (if chains; no String switch)."""
+    if not isinstance(name, str) or not _JAVA_NAME_OK.fullmatch(name):
+        raise ValueError("java_color_by_text name: a lower-case Java method name like infoColor")
+
+    def col(c):
+        v = STATUS[c] if c in STATUS else color(c)
+        if has_j(v):
+            raise ValueError("java_color_by_text colours are marks or colour names, not J() values")
+        return v
+    lines = ["public static String %s(String t) {" % name, '  if (t == null || t.length() == 0) return "%s";' % col(empty)]
+    for test, text, c in rules:
+        if not isinstance(text, str) or not text:
+            raise ValueError("java_color_by_text: rule text must be a non-empty str")
+        cond = {"startsWith": "t.startsWith(%s)", "endsWith": "t.endsWith(%s)", "contains": "t.indexOf(%s) >= 0",
+                "equals": "t.equals(%s)"}.get(test)
+        if cond is None:
+            raise ValueError("java_color_by_text test %r (startsWith / endsWith / contains / equals)" % (test,))
+        lines.append('  if (%s) return "%s";' % (cond % java_lit(text), col(c)))
+    lines += ['  return "%s";' % col(default), "}"]
+    return "\n".join(lines)
+
+
+class BarPair(tuple):
+    """stat_bar's result: (full, empty) - choose()-ready (both create the same id; the empty one has no fill child). .full /
+    .empty, .h (outer height), .fill (the fill width), .choose(cond=None) = choose(J(cond or "fill > 0"), full, empty), .pick() =
+    the right one for a static fill."""
+
+    def __new__(cls, full, empty, **attrs):
+        o = tuple.__new__(cls, (full, empty))
+        o.__dict__.update(attrs)
+        return o
+
+    @property
+    def full(self):
+        return self[0]
+
+    @property
+    def empty(self):
+        return self[1]
+
+    def choose(self, cond=None):
+        if cond is None:
+            m = _J_RE.fullmatch(self.fill) if isinstance(self.fill, str) else None
+            if m is None:
+                raise ValueError("stat_bar.choose(): a static fill needs no choice - use .pick()")
+            cond = "(%s) > 0" % m.group(1)
+        return choose(cond, self[0], self[1])
+
+    def pick(self):
+        if not isinstance(self.fill, int) or isinstance(self.fill, bool):
+            raise ValueError("stat_bar.pick() is for a static int fill; a J() fill: .choose()")
+        return self[0] if self.fill > 0 else self[1]
+
+
+def stat_bar(ident, w, h, fill, col="progressFill", track="progressTrack", anchor=None):
+    """Kit 1.4: a flat stat / progress bar that can drop its fill (SkyyParty 0.1.6's health / stamina / mana bars; the kit 1.3
+    bar() always writes the fill child): the track Group #ident (w x h, LayoutMode Left, the vanilla progress track #1a2030) and
+    - in the FULL variant only - an anonymous fill Group (fill px wide: an int or J("fillPx(cur, max)", "80"); col = a kit /
+    data colour or J()). Returns a BarPair (full, empty): SUI.java_append(p, bar.choose()) appends the fill only when fill > 0
+    (never a 0 px Group); .pick() for a static fill."""
+    check_id(ident)
+    n = _sample_num(fill)
+    if n is None or n < 0:
+        raise ValueError("stat_bar fill: an int >= 0 or J(expr, sample) with a number sample: %r" % (fill,))
+    empty = group(ident, "Left", w=w, h=h, anchor=anchor, bg=track)
+    full = _inside(empty, [group(None, None, w=fill if has_j(fill) else max(int(fill), 1), h=h, bg=col)])
+    return BarPair(full, empty, h=outer_size(empty)[1], fill=fill)
+
+
+class Columns(object):
+    """Kit 1.4 column spec (column_spec): ONE list [(head text, width), ...] gives the heads, the rows and the inner widths.
+    .names, .widths, .gap, .pad_left (the first column's offset inside a ROW: row padding + status bar ...), .total (widths + gaps),
+    .avail and .slack (avail - pad_left - total; raises when it does not fit), .width(i or name), .x(i or name) (offset from the
+    row's left edge), .heads(ident, outside=4) (column_heads over a list well: outside = the well's padding) and .row(ident, ...)."""
+
+    def __init__(self, cols, avail=None, pad_left=0, gap=0):
+        cols = list(cols)
+        if not cols:
+            raise ValueError("column_spec needs at least one (text, width) column")
+        self.names, self.widths = [], []
+        for c in cols:
+            if not (isinstance(c, (tuple, list)) and len(c) == 2 and isinstance(c[0], str) and isinstance(c[1], int)
+                    and not isinstance(c[1], bool) and c[1] > 0):
+                raise ValueError("a column is (head text, int width > 0): %r" % (c,))
+            self.names.append(c[0])
+            self.widths.append(c[1])
+        for v, what in ((pad_left, "pad_left"), (gap, "gap")):
+            if not isinstance(v, int) or isinstance(v, bool) or v < 0:
+                raise ValueError("column_spec %s must be an int >= 0" % what)
+        self.gap, self.pad_left, self.avail = gap, pad_left, avail
+        self.total = sum(self.widths) + gap * (len(self.widths) - 1)
+        self.slack = fit([pad_left, self.total], avail, "columns") if avail is not None else None
+
+    def _i(self, key):
+        return key if isinstance(key, int) else self.names.index(key)
+
+    def width(self, key):
+        return self.widths[self._i(key)]
+
+    def x(self, key):
+        i = self._i(key)
+        return self.pad_left + sum(self.widths[:i]) + self.gap * i
+
+    def heads(self, ident, h=30, kind="section", outside=0, anchor=None):
+        return column_heads(ident, self, pad_left=self.pad_left + outside, h=h, kind=kind, anchor=anchor)
+
+    def row(self, ident, texts=None, h=None, kinds="default", **kw):
+        return column_row(ident, self, texts, h=h, kinds=kinds, **kw)
+
+
+def column_spec(cols, avail=None, pad_left=0, gap=0):
+    """Kit 1.4: a Columns spec from [(head text, width), ...] (see Columns)."""
+    return Columns(cols, avail, pad_left, gap)
+
+
+def column_heads(ident, cols, pad_left=0, h=30, kind="section", gap=None, anchor=None):
+    """Kit 1.4: the column heads over a list (SkyyParty 0.1.6 #SkyyPHead): ONE markup, a LayoutMode Left Group #ident (h high,
+    Padding Left = pad_left - the offset of the first column: list well padding + row padding + status bar) holding one label per
+    column in the vanilla section head style (13 -> 16 px bold uppercase #9aacbc), each as wide as its column (gap between).
+    cols = [(text, width), ...] or a Columns. A punctuated head is b.set (#<ident>H<i>, in .sets). Returns a Markup."""
+    spec = cols if isinstance(cols, Columns) else Columns(cols, pad_left=pad_left, gap=gap or 0)
+    g = spec.gap if gap is None else gap
+    kids, sets = [], []
+    for i, (text, w) in enumerate(zip(spec.names, spec.widths)):
+        hid = ident + "H" + str(i)
+        inline, s = _text_bits(hid, text, "column head")
+        sets += s
+        kids.append(label(hid if s else None, inline, kind, w=w, h=h, anchor={"right": g} if g and i < len(spec.widths) - 1 else None))
+    mk = _inside(group(check_id(ident), "Left", h=h, anchor=anchor, pad={"left": pad_left} if pad_left else None), kids)
+    return Markup(mk, sets=sets, ids={"heads": ident})
+
+
+def column_row(ident, cols, texts=None, h=None, kinds="default", panel_kind="row", gap=ROW_GAP, pad_left=None, cols_col=None,
+               anchor=None):
+    """Kit 1.4: one fixed-width table row whose cells line up under column_heads: a LayoutMode Left row #ident (panel_kind "row"
+    = the #101925(0.55) row panel, None = no back; h high + gap under it; Padding Left = the spec's pad_left) with one label per
+    column #<ident>C<i> as wide as its column. texts[i]: proven text inline, punctuated / J() text as b.set lines (.sets), "" /
+    None = empty (b.set it). kinds = one label kind or a list; cols_col = a list of colours (or None each). Returns a Markup."""
+    spec = cols if isinstance(cols, Columns) else Columns(cols)
+    n = len(spec.widths)
+    h = h if h is not None else (ROW_H_READABLE if _SCALE[0] == "readable" else ROW_H)
+    texts = list(texts) if texts is not None else [""] * n
+    kinds = [kinds] * n if isinstance(kinds, str) else list(kinds)
+    colours = list(cols_col) if cols_col is not None else [None] * n
+    if not (len(texts) == len(kinds) == len(colours) == n):
+        raise ValueError("column_row: texts / kinds / colours must have one entry per column (%d)" % n)
+    pl = spec.pad_left if pad_left is None else pad_left
+    kids, sets = [], []
+    for i in range(n):
+        cid = check_id(ident + "C" + str(i))
+        inline, s = _text_bits(cid, texts[i], "column_row cell")
+        sets += s
+        kids.append(label(cid, inline, kinds[i], w=spec.widths[i], h=h, col=colours[i],
+                          anchor={"right": spec.gap} if spec.gap and i < n - 1 else None, fit=False))
+    anc = _merge({"bottom": gap} if gap else None, anchor)
+    padd = {"left": pl} if pl else None
+    if panel_kind == "row":
+        outer = panel(ident, "row", h=h, pad=padd, layout="Left", anchor=anc)
+    elif panel_kind is None:
+        outer = group(ident, "Left", h=h, pad=padd, anchor=anc)
+    else:
+        raise ValueError("column_row panel_kind row / None")
+    return Markup(_inside(outer, kids), sets=sets, ids=dict([("row", ident)] + [("c%d" % i, ident + "C" + str(i)) for i in range(n)]))
+
+
+def stat_well(ident, heading="", number=None, caption="", w=None, anchor=None, ids=None, head_h=25, num_h=42, cap_h=25):
+    """Kit 1.4: SkyyBank 0.1.4's PURSE / BANK box as ONE markup - a vanilla well (#000000(0.15), padding 8, LayoutMode Top)
+    holding the centred subtitle `heading` (the vanilla @Subtitle 15 px bold uppercase, bottom 10), the big number #<ident>N (the
+    display style: 32 px, Default font, the Hud/TimeLeft timer; number = J("fmt(purse)", "12,345") -> a b.set line, None = b.set it
+    yourself, a proven static text = inline) and a centred grey caption. Punctuated heading / caption texts are b.set too
+    (#<ident>H / #<ident>C). ids = {"number", "heading", "caption"}. Returns a Markup (.h = the outer height: 118 + margins)."""
+    check_id(ident)
+    ids = dict(ids or {})
+    nid = check_id(ids.get("number", ident + "N"))
+    if number is not None and not (isinstance(number, str) and (has_j(number) or TEXT_OK.fullmatch(number))):
+        raise ValueError("stat_well number: J(\"javaExpr\", \"12345\"), a proven static text or None: %r" % (number,))
+    sets = []
+    h_in, hs = _text_bits(ids.get("heading", ident + "H"), heading, "stat_well heading")
+    n_in, ns = _text_bits(nid, number, "stat_well number")
+    c_in, cs = _text_bits(ids.get("caption", ident + "C"), caption, "stat_well caption")
+    sets = hs + ns + cs
+    hid = ids.get("heading") or (ident + "H" if hs else None)
+    cid = ids.get("caption") or (ident + "C" if cs else None)
+    h = head_h + 10 + num_h + cap_h + 2 * WELL_PAD
+    kids = [label(hid, h_in, "subtitle", h=head_h, align="Center", anchor={"bottom": 10}),
+            label(nid, n_in, "display", h=num_h, align="Center"),
+            label(cid, c_in, "caption", h=cap_h, align="Center")]
+    got = {"well": ident, "number": nid}
+    if hid:
+        got["heading"] = hid
+    if cid:
+        got["caption"] = cid
+    return Markup(_inside(panel(ident, "well", w=w, h=h, anchor=anchor), kids), sets=sets, ids=got)
+
+
+# ---- list_card: the SKYY CARD of SkyyClasses 0.1.8 / SkyyProfiles 0.1.3 (their shared block, CARD_SHA 85a04785...), in the kit.
+# list_card(...).java(b) is byte-identical to that block's card_java(...) for the same inputs (the kit test runs both), so the next
+# Classes / Profiles version can switch to the kit without a visual change.
+LIST_CARD_H = 84                 # name 24 + line two 20 + line three 40 (two wrapped 15 px lines)
+LIST_CARD_GAP = 4                # under each card (the OverrideRespawnPointButton option rows: 50 + 4)
+LIST_CARD_BAR = 4                # the status bar (WorldEventListRow #StatusBar)
+LIST_CARD_FRAME = 64             # the item cell border (BarterTradeRow slot border #1a2530, padding 2) around a 60 px ItemIcon
+LIST_CARD_CELL = LIST_CARD_FRAME + 8
+LIST_CARD_ACT_W = 200            # the action column: a normal button (172) centred in it
+LIST_CARD_BTN_W = BTN_MIN_W
+LIST_CARD_PAD_R = 12
+LIST_CARD_LOOKS = {"selected": ("rowPressed", "selected"),     # yours / picked: the WorldEventListRow pressed step + the blue bar
+                   "pending": ("rowHover", "warning"),         # waiting for Confirm: the hovered row + the confirm-yellow bar
+                   "normal": ("row", "row"),                   # the list row panel (bar in the card colour = no bar)
+                   "off": ("cardDisabled", "cardDisabled"),    # coming later: BarterTradeRow's disabled card (+ grey text, covers)
+                   "empty": ("well", "well")}                  # an empty slot: one more step of the well tone
+
+
+def list_card_h(rows):
+    """The height of a list_well holding `rows` list cards (padding 4 + rows x (84 + 4))."""
+    return 2 * WELL_LIST_PAD + rows * (LIST_CARD_H + LIST_CARD_GAP)
+
+
+def list_card_text_w(w, icon_max=1):
+    """The text column width of a w px list card with icon_max item cells (>= 240 px, asserted)."""
+    tw = w - LIST_CARD_BAR - icon_max * LIST_CARD_CELL - LIST_CARD_ACT_W - LIST_CARD_PAD_R
+    fit([LIST_CARD_BAR, icon_max * LIST_CARD_CELL, tw, LIST_CARD_ACT_W, LIST_CARD_PAD_R], w, "card width")
+    if tw < 240:
+        raise ValueError("list card text column too narrow: %d px" % tw)
+    return tw
+
+
+def _card_col(col, on):
+    c = color(col)
+    if on is None:
+        return c
+    sample = render(c) if has_j(c) else c
+    return J("(%s) ? (%s) : %s" % (on, java_value(c), java_lit(COLOR["disabled"])), sample)
+
+
+def _card_look(look, var):
+    if isinstance(look, str):
+        if look not in LIST_CARD_LOOKS:
+            raise ValueError("list card look %r (one of %s)" % (look, ", ".join(sorted(LIST_CARD_LOOKS))))
+        bg, bar = LIST_CARD_LOOKS[look]
+        return [], color(bg), color(bar)
+    conds, last = list(look[:-1]), look[-1]
+    if not conds or not isinstance(last, str) or last not in LIST_CARD_LOOKS or any(nm not in LIST_CARD_LOOKS for nm, _c in conds):
+        raise ValueError("list card look: a LIST_CARD_LOOKS name or [(look, java condition), ..., last look name]: %r" % (look,))
+    if not isinstance(var, str) or not _JAVA_NAME_OK.fullmatch(var):
+        raise ValueError("list card var: a lower-case Java local name")
+    e_bg, e_bar = java_lit(color(LIST_CARD_LOOKS[last][0])), java_lit(color(LIST_CARD_LOOKS[last][1]))
+    for name, cond in reversed(conds):
+        e_bg = "(%s) ? %s : (%s)" % (cond, java_lit(color(LIST_CARD_LOOKS[name][0])), e_bg)
+        e_bar = "(%s) ? %s : (%s)" % (cond, java_lit(color(LIST_CARD_LOOKS[name][1])), e_bar)
+    first = LIST_CARD_LOOKS[conds[0][0]]
+    decl = ["String %sBg = %s;" % (var, e_bg), "String %sBar = %s;" % (var, e_bar)]
+    return decl, J(var + "Bg", color(first[0])), J(var + "Bar", color(first[1]))
+
+
+def _card_cell(fid, item, on):
+    cell = group(None, None, w=LIST_CARD_CELL, h=LIST_CARD_H)
+    anc = {"left": LIST_CARD_CELL - LIST_CARD_FRAME, "top": (LIST_CARD_H - LIST_CARD_FRAME) // 2}
+    live = _inside(cell, [item_frame(fid, LIST_CARD_FRAME, anchor=anc, item=item, icon_anchor={"left": 0, "top": 0})])
+    if on is None:
+        return live
+    return choose(J(on), live, _inside(cell, [item_frame(fid, LIST_CARD_FRAME, anchor=anc, item=item, icon_anchor={"left": 0, "top": 0},
+                                                         cover=True)]))
+
+
+class Card(Part):
+    """list_card's result: a Part (.h = 84 + 4, .card, .body, .icons, .text, .act, .text_w, and .sets = the line texts) whose
+    .java(b) emits the SKYY CARD statements in their order: the runtime look's two String locals, the appends (the icon cells
+    in a Java for loop when icons is a Java array expression), the text b.set lines, then the action column. ALWAYS emit a card
+    with card.java(b) (a runtime look / an icon loop are not appends: extending it into a bigger Appends would drop them)."""
+
+    def java(self, b="b", page_root=True, sets=None):
+        out = list(self.decl)
+        for i, (p, mk) in enumerate(self):
+            if i == self.act_index:
+                out += [java_set(ident, pr, v, b) for ident, pr, v in list(self.sets) + list(sets or [])]
+            line = java_append(p, mk, b, page_root)
+            if i == self.loop_index:
+                out += ["for (int %s = 0; %s < %s.length && %s < %d; %s++) {" % (self.k, self.k, self.icons_expr, self.k, self.icon_max,
+                                                                                self.k), "  " + line, "}"]
+            else:
+                out.append(line)
+        return "\n".join(out)
+
+
+def list_card(parent, ident, w, lines, look="normal", icons=None, icon_item=None, icon_max=1, on=None, ids=None, var="card",
+              k="k", action=None):
+    """Kit 1.4: ONE list card (the SKYY CARD of SkyyClasses 0.1.8 / SkyyProfiles 0.1.3; research/Skyy-UI-Inventory.md section 6):
+    a row of a list_well (Group #ident, LayoutMode Left, 84 high + 4) = the 4 px status bar #<ident>Bar + the card body #<ident>In
+    (the look's background) holding the item cells #<icons> (the vanilla slot border with an ItemIcon, 72 px each), the text column
+    #<text> (up to three label lines, their Text b.set) and the action column #<act> (200 wide: a normal button or a state_word
+    goes in, centred; action= appends one for you).
+      parent  the list well; w = the card width (the well's inner width)
+      lines   [{"id": suffix, "text": J("javaExpr") / proven text / "" , "kind": label kind, "h": px, "col": COLOR name or J(),
+              "wrap": bool, "tag": {"id", "text", "col", "w", "kind"}}] - the label is <ident><suffix>; a tag = a second,
+              right-aligned label on the same row (<ident><tag id>, the row <ident><suffix>Row). The heights sum to <= 84.
+      look    a LIST_CARD_LOOKS name (selected / pending / normal / off / empty) or [(look, java boolean), ..., last look]: the
+              first true condition wins (two String locals <var>Bg / <var>Bar, declared by .java())
+      icons   a Java String[] expression (one cell per entry, at most icon_max; icon_item = J(item id of entry k)), or None and
+              icon_item = one item id (static or J()): one cell
+      on      a Java boolean: false = the coming-later look (grey text, the sold-out cover over the icons); None = always on
+      ids     {"icons", "text", "act"} (defaults <ident>Ics / <ident>Txt / <ident>Act) - a restyled page's old ids
+    Returns a Card; emit it with card.java(b)."""
+    ids = dict(ids or {})
+    card = check_id(ident)
+    text = check_id(ids.get("text", ident + "Txt"))
+    act = check_id(ids.get("act", ident + "Act"))
+    icons_id = check_id(ids.get("icons") or ident + "Ics")
+    tw = list_card_text_w(w, icon_max)
+    decl, bg, bar = _card_look(look, var)
+    body = card + "In"
+    part = Card(h=LIST_CARD_H + LIST_CARD_GAP, card=card, body=body, icons=icons_id, text=text, act=act, text_w=tw, decl=decl,
+                loop_index=None, act_index=None, icons_expr=icons, icon_max=icon_max, k=k)
+    part.append((parent, group(card, "Left", h=LIST_CARD_H, anchor={"bottom": LIST_CARD_GAP})))
+    part.append((card, group(card + "Bar", None, w=LIST_CARD_BAR, h=LIST_CARD_H, bg=bar)))
+    part.append((card, group(body, "Left", w=w - LIST_CARD_BAR, h=LIST_CARD_H, bg=bg)))
+    part.append((body, group(icons_id, "Left", w=icon_max * LIST_CARD_CELL, h=LIST_CARD_H)))
+    if icons is None:
+        part.append((icons_id, _card_cell(card + "F0", icon_item, on)))
+    else:
+        if not isinstance(icons, str) or not icons.strip() or ";" in icons or has_j(icons):
+            raise ValueError("list_card icons: a Java String[] expression (no ';'), or None + one icon_item")
+        if not isinstance(k, str) or not _JAVA_NAME_OK.fullmatch(k):
+            raise ValueError("list_card k: a lower-case Java loop variable")
+        part.loop_index = len(part)
+        part.append((icons_id, _card_cell(card + "F" + J(k), icon_item, on)))
+    top = fit([ln["h"] for ln in lines], LIST_CARD_H, "card text lines") // 2
+    part.append((body, group(text, "Top", w=tw, h=LIST_CARD_H, pad={"top": top} if top else None)))
+    for ln in lines:
+        lid, col = card + ln["id"], _card_col(ln["col"], on)
+        tag = ln.get("tag")
+        inline, s = _text_bits(lid, ln.get("text"), "list_card line")
+        if tag is None:
+            part.append((text, label(lid, inline, ln["kind"], h=ln["h"], col=col, wrap=ln.get("wrap", False), fit=False)))
+        else:
+            row, tid = card + ln["id"] + "Row", card + tag["id"]
+            part.append((text, group(row, "Left", h=ln["h"])))
+            part.append((row, label(lid, inline, ln["kind"], w=tw - tag["w"], h=ln["h"], col=col, wrap=False, fit=False)))
+            t_in, ts = _text_bits(tid, tag.get("text"), "list_card tag")
+            part.append((row, label(tid, t_in, tag.get("kind", "default"), w=tag["w"], h=ln["h"], col=_card_col(tag["col"], on),
+                                    align="End", wrap=False, fit=False)))
+            s = s + ts
+        part.sets.extend(s)
+    part.act_index = len(part)
+    part.append((body, group(act, "Top", w=LIST_CARD_ACT_W, h=LIST_CARD_H, pad={"top": (LIST_CARD_H - BTN_H) // 2,
+                                                                              "left": (LIST_CARD_ACT_W - LIST_CARD_BTN_W) // 2})))
+    if action is not None:
+        part.append((act, action))
+        part.sets.extend(_markup_sets(action))
+    return part
+
+
+def list_card_button(ident, text, kind="secondary", sound=None):
+    """The list card's action button: a vanilla normal text button 172 x 44 (append it into the card's action column)."""
+    return button(ident, text, kind, w=LIST_CARD_BTN_W, sound=sound)
+
+
+# ---- text measuring: the client's own font tables (Client/Data/Shared/UI/Fonts/*.json, READ-ONLY; optional)
+FONT_DIR = os.path.join(GAME_DIR, "Client", "Data", "Shared", "UI", "Fonts")
+# The custom-UI FontName -> the client's font atlas. Inferred, not proven in a document (research/Vanilla-UI-Research.md 3.4): the
+# client ships NunitoSans Medium / ExtraBold (+ Regular / SemiBold ttf only) and Lexend-Bold; Default = Nunito Sans (bold =
+# ExtraBold), Secondary = Lexend Bold.
+FONT_FILES = {("Default", False): "NunitoSans-Medium.json", ("Default", True): "NunitoSans-ExtraBold.json",
+              ("Secondary", False): "Lexend-Bold.json", ("Secondary", True): "Lexend-Bold.json"}
+# fallback when the client folder is missing: the per-character-class average advances (em) measured from those tables on
+# 2026-09-29 (lower-case, upper-case, digit, space, punctuation) + the line height. A flat 0.43 em rule of thumb (the SkyyUiProbe
+# harness note) UNDER-estimates running Nunito text (0.49 em Medium / 0.51 em ExtraBold per character) - so the classes are used.
+FONT_FALLBACK = {("Default", False): (0.512, 0.665, 0.600, 0.260, 0.428, 1.364),
+                 ("Default", True): (0.538, 0.689, 0.600, 0.278, 0.454, 1.364),
+                 ("Secondary", False): (0.582, 0.722, 0.594, 0.320, 0.487, 1.25),
+                 ("Secondary", True): (0.582, 0.722, 0.594, 0.320, 0.487, 1.25)}
+_FONT_CACHE = {}
+
+
+def font_table(font="Default", bold=False, font_dir=None):
+    """({codepoint: advance in em}, line height in em) of the client's font atlas for FontName `font` (bold for Default = the
+    ExtraBold table), read-only and cached; None when the client folder / file is missing (text_width then uses FONT_FALLBACK)."""
+    if font not in FONTS:
+        raise ValueError("font %r: vanilla fonts are Default and Secondary" % (font,))
+    name = FONT_FILES[(font, bool(bold))]
+    path = os.path.join(font_dir or FONT_DIR, name)
+    if path not in _FONT_CACHE:
+        tab = None
+        if os.path.isfile(path):
+            with open(path, encoding="utf-8") as f:
+                d = json.load(f)
+            tab = (dict((int(g["unicode"]), float(g["advance"])) for g in d.get("glyphs", ()) if "unicode" in g),
+                   float(d["metrics"]["lineHeight"]))
+        _FONT_CACHE[path] = tab
+    return _FONT_CACHE[path]
+
+
+def _em(ch, font, bold, tab):
+    if tab is not None:
+        adv = tab[0]
+        v = adv.get(ord(ch))
+        return v if v is not None else adv.get(ord("M"), 0.9)       # an unknown glyph counts as wide as M (conservative)
+    lo, up, dg, sp, pu, _lh = FONT_FALLBACK[(font, bool(bold))]
+    return lo if ch.islower() else up if ch.isupper() else dg if ch.isdigit() else sp if ch == " " else pu
+
+
+def text_width(text, size, bold=False, font="Default", upper=False, font_dir=None):
+    """Kit 1.4: the px width of ONE line of `text` at `size` px (RenderBold, FontName, RenderUppercase as the label renders it),
+    from the client's own glyph advances (font_table; the per-class FONT_FALLBACK when the client is not installed). No kerning
+    (the atlases carry none). A J() runtime text cannot be measured (ValueError)."""
+    if not isinstance(text, str) or has_j(text):
+        raise ValueError("text_width measures a static str, not %r" % (text,))
+    t = text.upper() if upper else text
+    tab = font_table(font or "Default", bold, font_dir)
+    return sum(_em(c, font or "Default", bold, tab) for c in t) * size
+
+
+def line_height(size, font="Default", bold=False):
+    """The px height of one text line (the font's line height x size: 1.364 em for Nunito Sans, 1.25 em for Lexend)."""
+    tab = font_table(font or "Default", bold)
+    return (tab[1] if tab is not None else FONT_FALLBACK[(font or "Default", bool(bold))][5]) * size
+
+
+def text_lines(text, width, size, bold=False, font="Default", upper=False):
+    """Greedy word wrap at spaces: how many lines `text` takes in `width` px (a word wider than the line counts as one line)."""
+    lines, cur = 1, ""
+    for word in text.split(" "):
+        cand = (cur + " " + word) if cur else word
+        if not cur or text_width(cand, size, bold, font, upper) <= width:
+            cur = cand
+        else:
+            lines += 1
+            cur = word
+    return lines
+
+
+_FIT = {"mode": "print", "seen": set(), "log": []}
+
+
+def fit_warnings(mode=None, clear=False):
+    """Kit 1.4 text-fit WARNINGS (button() / label() / Appends.text / Appends.button, never an error): mode "print" (default:
+    'skyyui WARNING: ...' once per message), "collect" (only kept) or "off"; clear=True empties the list. Returns the messages
+    so far (a copy)."""
+    if mode is not None:
+        if mode not in ("print", "collect", "off"):
+            raise ValueError("fit_warnings mode print / collect / off")
+        _FIT["mode"] = mode
+    if clear:
+        _FIT["seen"].clear()
+        del _FIT["log"][:]
+    return list(_FIT["log"])
+
+
+def _warn_fit(msg):
+    if _FIT["mode"] == "off" or msg in _FIT["seen"]:
+        return
+    _FIT["seen"].add(msg)
+    _FIT["log"].append(msg)
+    if _FIT["mode"] == "print":
+        print("skyyui WARNING: " + msg)
+
+
+def _pad_h(padding):
+    if padding is None:
+        return 0
+    if isinstance(padding, dict):
+        d = dict((str(k).lower(), v) for k, v in padding.items())
+        tot = 0
+        for k, mult in (("left", 1), ("right", 1), ("horizontal", 2), ("full", 2)):
+            n = _sample_num(d.get(k, 0))
+            tot += (n or 0) * mult
+        return tot
+    n = _sample_num(padding)
+    return 2 * (n or 0)
+
+
+def _fit_label(ident, text, size, bold, upper, font, w, padding):
+    if not isinstance(text, str) or has_j(text) or not isinstance(w, int) or isinstance(w, bool) or not isinstance(size, int):
+        return
+    room = w - _pad_h(padding)
+    need = text_width(text, size, bool(bold), font or "Default", bool(upper))
+    if need > room + 0.5:
+        _warn_fit("label %s %r: %.0f px of %d px %stext in a %d px box - the client clips it (widen the box, wrap it or shorten "
+                  "the text)" % ("#" + render(ident) if ident else "(anonymous)", text, need, size, "bold " if bold else "", room))
+
+
+def _fit_label_kw(ident, text, kind, kw):
+    """_fit_label for Appends.text (the label kind's own size / bold / upper / font / wrap, the call's overrides on top)."""
+    if not kw.get("fit", True) or kind not in LABELS:
+        return
+    vs, _kc, kb, ku, _ka, kwr, _ki, _where = LABELS[kind]
+    kf = LABEL_MORE.get(kind, (None, None, "Center"))[0]
+    wrap = kw.get("wrap")
+    if (kwr if wrap is None else bool(wrap)):
+        return
+    size = kw.get("size") if kw.get("size") is not None else fs(vs)
+    bold = kw.get("bold") if kw.get("bold") is not None else kb
+    upper = kw.get("upper") if kw.get("upper") is not None else ku
+    font = kw.get("font") if kw.get("font") is not None else kf
+    _fit_label(ident, text, size, bold, upper, font, kw.get("w"), kw.get("padding"))
+
+
+def _fit_button(ident, text, size, w, pad):
+    if not isinstance(text, str) or has_j(text) or not isinstance(w, int) or isinstance(w, bool):
+        return
+    room = w - 2 * pad
+    need = text_width(text, size, True, "Default", True)
+    if need > room + 0.5:
+        at12 = need * 12.0 / size
+        _warn_fit("button #%s %r: %.0f px of %d px label in %d px (w %d - 2 x %d padding) - the vanilla label shrinks to fit "
+                  "(ShrinkTextToFit, down to 12 px: %s); widen the button or shorten the label"
+                  % (render(ident), text, need, size, room, w, pad,
+                     "it fits at about %d px" % int(size * room / need) if at12 <= room else "still %.0f px at 12 px - it clips" % at12))
+
+
+# ---- assert_proven: ONE table of the properties a page may use, minus what Skyy has not seen yet (PROBED)
+# gate None = PROVEN: used inline by a deployed Skyy page (the kit test checks each one appears in a live build script of the
+# tools/deploy_set.py SET - SkyyRanks 0.1.1, SkyyVault 0.1.3, SkyyGear 0.1, SkyyBazaar, SkyySacks, SkyyMenu, ...; the probe mod
+# itself not counted); a tuple = the UNVERIFIED / probe keys that prove it (any one of them in PROBED is enough). The base keys are
+# what the five held restyles kept out by hand (FlexWeight, WrapMaxLines, LetterSpacing, LayoutMode Center / Right / Full): LayoutMode
+# Center is in the SkyyVault 0.1.3 buy dialog, but it stays behind "base" as those reviews decided.
+PROVEN_ELEMENTS = {"Group": None, "Label": None, "TextButton": None, "Button": None, "ItemIcon": None, "ItemGrid": None,
+                   "TextField": None, "NumberField": ("number-field",), "CheckBox": ("checkbox",), "DropdownBox": ("dropdown",),
+                   "ProgressBar": ("progress-element", "memories-bar"), "Sprite": ("spinner",), "ItemSlot": ("itemslot",)}
+PROVEN_LAYOUTS = {"Top": None, "Left": None, "TopScrolling": None, "Center": ("base",), "Right": ("base", "layout-right"),
+                  "Full": ("base",), "Middle": ("base",), "CenterMiddle": ("base",), "MiddleCenter": ("base",),
+                  "LeftCenterWrap": ("base",)}
+_P_CHECK, _P_DROP, _P_SEARCH, _P_TIP, _P_PROG = ("checkbox",), ("dropdown",), ("search-field", "dropdown"), ("tooltip",), \
+    ("progress-element", "memories-bar")
+PROVEN_KEYS = dict([(k, None) for k in (
+    "Activate", "Anchor", "AreItemsDraggable", "Background", "Border", "Bottom", "Color", "Default", "Disabled", "DraggedHandle",
+    "FontName", "FontSize", "Full", "Handle", "Height", "Horizontal", "HorizontalAlignment", "HorizontalBorder", "Hovered",
+    "HoveredHandle", "InfoDisplay", "ItemId", "LabelStyle", "LayoutMode", "Left", "MaxLength", "MaxPitch", "MinPitch",
+    "MinShrinkTextToFitFontSize", "MouseHover", "Padding", "PlaceholderStyle", "PlaceholderText", "Pressed", "RenderBold",
+    "RenderItalics", "RenderUppercase", "Right", "ScrollbarStyle", "ShrinkTextToFit", "Size", "SlotIconSize", "SlotSize",
+    "SlotSpacing", "SlotsPerRow", "SoundPath", "Sounds", "Spacing", "Style", "Text", "TextColor", "TexturePath", "Top", "Vertical",
+    "VerticalAlignment", "VerticalBorder", "Visible", "Volume", "Width", "Wrap")]
+    + [("FlexWeight", ("base", "flex-rows")), ("LetterSpacing", ("base",)), ("WrapMaxLines", ("base",)),
+       ("Value", _P_CHECK + _P_PROG), ("Unchecked", _P_CHECK), ("Checked", _P_CHECK), ("DefaultBackground", _P_CHECK + _P_DROP),
+       ("HoveredBackground", _P_CHECK + _P_DROP), ("PressedBackground", _P_CHECK + _P_DROP), ("DisabledBackground", _P_CHECK),
+       ("ChangedSound", _P_CHECK), ("ShowSearchInput", _P_DROP), ("SearchInputStyle", _P_DROP), ("ArrowWidth", _P_DROP),
+       ("ArrowHeight", _P_DROP), ("DefaultArrowTexturePath", _P_DROP), ("HoveredArrowTexturePath", _P_DROP),
+       ("PressedArrowTexturePath", _P_DROP), ("EntriesInViewport", _P_DROP), ("EntryHeight", _P_DROP), ("EntryLabelStyle", _P_DROP),
+       ("EntrySounds", _P_DROP), ("FocusOutlineColor", _P_DROP), ("FocusOutlineSize", _P_DROP), ("HorizontalEntryPadding", _P_DROP),
+       ("HorizontalPadding", _P_DROP), ("HoveredEntryBackground", _P_DROP), ("PressedEntryBackground", _P_DROP),
+       ("NoItemsLabelStyle", _P_DROP), ("PanelAlign", _P_DROP), ("PanelBackground", _P_DROP), ("PanelOffset", _P_DROP),
+       ("PanelPadding", _P_DROP), ("PanelScrollbarStyle", _P_DROP), ("SelectedEntryLabelStyle", _P_DROP), ("Close", _P_DROP),
+       ("Decoration", ("search-field",)), ("Icon", _P_SEARCH), ("ClearButtonStyle", _P_SEARCH), ("Texture", _P_SEARCH),
+       ("HoveredTexture", _P_SEARCH), ("PressedTexture", _P_SEARCH), ("Side", _P_SEARCH), ("Offset", _P_SEARCH),
+       ("TooltipText", _P_TIP), ("TextTooltipStyle", _P_TIP), ("MaxWidth", _P_TIP), ("BarTexturePath", _P_PROG),
+       ("EffectTexturePath", _P_PROG), ("EffectWidth", _P_PROG), ("EffectHeight", _P_PROG), ("EffectOffset", _P_PROG),
+       ("Frame", ("spinner",)), ("PerRow", ("spinner",)), ("Count", ("spinner",)), ("FramesPerSecond", ("spinner",)),
+       ("ShowQualityBackground", ("itemslot",)), ("ShowQuantity", ("itemslot",)), ("MaskTexturePath", ("text-mask",)),
+       ("LabelMaskTexturePath", ("text-mask",)), ("SlotBackground", ("slot-background",))])
+PROVEN_SPECIAL = ((re.compile(r"(?<![A-Za-z])Disabled:\s*true\b"), "Disabled: true", ("disabled-prop",)),
+                  (re.compile(r'"(?:\.\./)+ItemQualities/'), "a ../ItemQualities path", ("quality-frame",)),
+                  (re.compile(r'"Pages/Memories/Tiles/'), "a Memories tile texture", ("tile",)),
+                  (re.compile(r'"Pages/Memories/MemoriesProgress/'), "a Memories bar texture", ("memories-bar",)))
+_PROP_KEY_RE = re.compile(r"(?<![A-Za-z0-9_#.$@])([A-Za-z][A-Za-z0-9]*)\s*:")
+_LAYOUT_RE = re.compile(r"LayoutMode:\s*([A-Za-z]+)")
+
+
+class UnprovenError(ValueError):
+    """assert_proven found a property / element no deployed Skyy page uses and no PROBED key has proven yet (or an unknown one)."""
+
+
+def _flat_markups(x):
+    if isinstance(x, Choice):
+        return list(x.variants())
+    if isinstance(x, Shell):
+        return _flat_markups(x.appends)
+    if isinstance(x, Appends):
+        return [v for _p, mk in x for v in _variants(mk)]
+    if isinstance(x, str):
+        return [x]
+    if isinstance(x, (list, tuple)):
+        return [v for it in x if it is not None for v in _flat_markups(it)]
+    raise ValueError("assert_proven takes markups, Choices, Appends / Parts, Shells or lists of them, not %r" % (x,))
+
+
+def proven_tokens(markups):
+    """{token: gates} of every element, property key, LayoutMode and special path in the markups (gates None = proven)."""
+    found = {}
+    for mk in _flat_markups(markups):
+        full = render(mk)
+        bare = _strip_quoted(full)
+        for m in _ELEM_OPEN.finditer(bare):
+            e = m.group(1)
+            found["element " + e] = PROVEN_ELEMENTS.get(e, "unknown")
+        for v in _LAYOUT_RE.findall(bare):
+            found["LayoutMode: " + v] = PROVEN_LAYOUTS.get(v, "unknown")
+        for k in _PROP_KEY_RE.findall(bare):
+            found[k] = PROVEN_KEYS.get(k, "unknown")
+        for rx, token, gates in PROVEN_SPECIAL:
+            if rx.search(full):
+                found[token] = gates
+    return found
+
+
+def assert_proven(markups, allow=(), what="page"):
+    """Kit 1.4: raise UnprovenError unless every element, property key, LayoutMode and special path in the markups is PROVEN (used
+    inline by a deployed Skyy page) or proven by a key in skyyui.PROBED (or in allow=, e.g. allow=("base",) on a page meant to test
+    it). One table (PROVEN_ELEMENTS / PROVEN_LAYOUTS / PROVEN_KEYS / PROVEN_SPECIAL) for every restyle, instead of each patch's own
+    forbidden-property loop; an element / key the table does not know raises too (classify it first). markups = markup strs,
+    Choices, Appends / Parts / Cards, a Shell or lists of them. Returns {token: gates} of everything found."""
+    found = proven_tokens(markups)
+    ok = set(PROBED) | set(allow or ())
+    bad = []
+    for tok in sorted(found):
+        gates = found[tok]
+        if gates == "unknown":
+            bad.append("%s (not in the kit's property table - classify it in skyyui.PROVEN_*)" % tok)
+        elif gates is not None and not any(g in ok for g in gates):
+            bad.append("%s (needs %s in skyyui.PROBED: probe page %s)" % (tok, " or ".join(gates),
+                                                                           " / ".join(_probe_of(g) for g in gates)))
+    if bad:
+        raise UnprovenError("assert_proven(%s): %d unproven: %s" % (what, len(bad), "; ".join(bad)))
+    return found
+
+
+def _probe_of(key):
+    return {"base": "base1 / base2 / base3", "base4": "base4 (19)", "button-text": "20", "flex-rows": "21",
+            "layout-right": "22"}.get(key, key)
 
 
 # ================================================================= probe pages: the in-game gate for everything UNVERIFIED
@@ -2663,11 +3776,15 @@ class Probe(object):
     """One in-game probe page: n (its number), name (a STABLE key for a probe command: "base1", "checkbox", ... - numbers may
     grow, names do not; probe_page(name)), key (the UNVERIFIED key it proves: add it to PROBED once the page works; "base" for the
     base pages 1, 2 and 18), shell (appends + b.set lines), look (the short numbered "what to see" list - the page shows it too),
-    java_extra (extra Java statements with %B% for the builder variable, or callables f(b) -> statements)."""
+    java_extra (extra Java statements with %B% for the builder variable, or callables f(b) -> statements).
+    Kit 1.4: summary (one line, <= 95 characters: what the page proves - for a probe mod's index / list; PROBE_SUMMARY) and
+    with_footer(footer, foot_h) (the probe mod's Back / Close footer placed by the kit, with the height proofs)."""
 
-    def __init__(self, n, key, shell, look, java_extra=(), name=None):
+    def __init__(self, n, key, shell, look, java_extra=(), name=None, summary=None):
         self.n, self.key, self.shell, self.look, self.java_extra = n, key, shell, list(look), list(java_extra)
         self.name = name or key
+        s = summary or PROBE_SUMMARY.get(self.name) or UNVERIFIED.get(self.key, self.name)
+        self.summary = s if len(s) <= 95 else s[:92] + "..."
 
     def java(self, b="b", extra=True):
         more = [x(b) if callable(x) else x.replace("%B%", b) for x in self.java_extra] if extra else []
@@ -2676,8 +3793,93 @@ class Probe(object):
     def check(self):
         return self.shell.appends.check(self.shell.prefix)
 
+    def with_footer(self, footer, foot_h, foot_w=0, slack=4, prefix=None):
+        """Kit 1.4 (the public footer hook): this page with a probe mod's own footer (SkyyUiProbe's Back / Close row) placed by the
+        kit. footer(container_id) -> the footer's appends [(parent, markup), ...] (an Appends keeps its .sets), foot_h = its
+        outer height. Placement (the SkyyUiProbe 0.1 rules, proven with used_height): at the END of the page body, the page
+        root taller by foot_h (+ up to `slack` px when the body had less free), when the page stays <= 980 px; otherwise at the
+        bottom of a LayoutMode Top column with a fixed Height, no Padding, >= foot_w wide and >= foot_h + slack px free (not the
+        look list). The page's own markup is not changed (a copy). Returns a Part: .appends (the page + footer, check_page-ed
+        with every b.set target), .sets (+ the shell's own), .container, .how, .h (the page height), .java(b) (the page's Java with
+        the root height line + the footer lines; java_extra after them); raises when there is no room."""
+        sh = self.shell
+        ap = Appends(sh.appends)
+        root_par, root_mk = ap[0]
+        m = re.fullmatch(r"Group #(%s) \{ Anchor: \(Width: (\d+), Height: (\d+)\); \}" % re.escape(render(sh.root)), render(root_mk))
+        if root_par is not None or not m or int(m.group(3)) != sh.h:
+            raise ValueError("probe %d: the page root is not the kit's Width / Height root" % self.n)
+        used = used_height(ap, sh.body)
+        grow = foot_h + max(0, slack - (sh.inner_h - used))
+        page_h, container, how = sh.h, None, None
+        if sh.h + grow <= MAX_PAGE_H:
+            page_h = sh.h + grow
+            assert_page_size(sh.w, page_h)
+            ap[0] = (None, "Group #%s { Anchor: (Width: %d, Height: %d); }" % (m.group(1), sh.w, page_h))
+            left = fit([used, foot_h], sh.inner_h + grow, "probe %d body + footer" % self.n)
+            container, how = sh.body, "body end, page %d -> %d px high, %d px slack" % (sh.h, page_h, left)
+        else:
+            for par, mk in ap:
+                if par is None or isinstance(mk, Choice):
+                    continue
+                em = _ELEM_OPEN.match(_strip_quoted(render(mk)))
+                cid = em.group(2) if em else None
+                own = _own_props(mk)
+                av = _anchor_vals(mk)
+                if (not cid or cid.endswith("Look") or _top_prop(own, "LayoutMode") != "Top" or "Height" not in av
+                        or _top_prop(own, "Padding") is not None or av.get("Width", foot_w) < foot_w):
+                    continue
+                free = av["Height"] - used_height(ap, cid)
+                if free >= foot_h + slack:
+                    container, how = cid, "bottom of #%s (%d px free, %d px slack), page stays %d px high" % (cid, free, free - foot_h,
+                                                                                                          sh.h)
+                    break
+            if container is None:
+                raise ValueError("probe %d (%s): no place for a %d px footer (page %d px high, no column with %d px free)"
+                                 % (self.n, self.name, foot_h, sh.h, foot_h + slack))
+        ap.extend(footer(container))
+        chk = Appends(ap)
+        chk.sets.extend(sh.sets)
+        check_page(chk, prefix)
+        more = [x("b") if callable(x) else x.replace("%B%", "b") for x in self.java_extra]
+        view = Part(ap, container=container, how=how, h=page_h, shell_sets=list(sh.sets), extra=more)
+
+        def java(b="b", page_root=True, sets=None):
+            lines = [ap.java(b, page_root, list(sh.sets) + list(sets or []))]
+            lines += [x(b) if callable(x) else x.replace("%B%", b) for x in self.java_extra]
+            return "\n".join(lines)
+        view.java = java
+        view.sets = list(ap.sets) + list(sh.sets)
+        view.appends = ap
+        return view
+
 
 PROBE_BASE = ("base1", "base2", "base3")     # the base pages (key "base", numbers 1, 2 and 18): open these first
+PROBE_OPEN_FIRST = PROBE_BASE + ("base4",)   # kit 1.4: the order to open the base pages in (base4 = page 19, the 1.4 builders)
+# kit 1.4: one line per probe page - what it proves (the SkyyUiProbe 0.1 index texts for 1-18); Probe.summary
+PROBE_SUMMARY = {
+    "base1": "Window frame, gold ornaments, close X, all button kinds + sounds, tabs, big text, separators",
+    "base2": "Plain window, list well + scrollbar, list rows, property box, cards, 3 text field looks, option / nav rows",
+    "base3": "Kit 1.3 builders: pager, item grid, icon cells, confirm views, punctuated text, big number",
+    "checkbox": "CheckBox element inline (tick / untick sound)",
+    "number-field": "NumberField element inline (digits only)",
+    "tooltip": "Hover tooltips on a button and a label; Esc with a tooltip open",
+    "progress-element": "Vanilla ProgressBar element (its Value set from the server)",
+    "memories-bar": "Textured Memories progress bar",
+    "quality-frame": "Item quality slot frames + a quality tooltip frame (../ItemQualities paths)",
+    "itemslot": "ItemSlot element with its quality background",
+    "dropdown": "DropdownBox, plain and with a search box",
+    "search-field": "Search box with the magnifier and the clear x",
+    "spinner": "Loading spinner (animated sprite)",
+    "tile": "Memories tile textures in their 4 states",
+    "text-mask": "Gradient text mask on a label and on a nav button",
+    "slot-background": "Slot backgrounds in an item grid",
+    "disabled-prop": "Disabled: true on a button (grey look, no click)",
+    "value-ref": "A button style set by reference to the vanilla style",
+    "base4": "Kit 1.4 builders: fixed rows, list wells, stat wells + bars, columns, cards, state words",
+    "button-text": "Button labels set from the server (b.set on a TextButton Text)",
+    "flex-rows": "FlexWeight on its own: flex buttons, a flex label, a flex spacer, a flex filler",
+    "layout-right": "LayoutMode Right on its own: a right-aligned footer and rows",
+}
 
 
 def _look_lines(name, look, w, size=16):
@@ -2712,7 +3914,11 @@ def probe_pages(prefix="SkyyPb"):
     parse or resolve document" = a disconnect) names its culprit. Every page shows its own numbered "what to see" list (Probe.look)
     and has a stable name (Probe.name; probe_page(name)). A mod-side probe command opens a page with probe.java("b") inside a
     CustomUIPage build (no bindings needed). Order: base1, base2, base3, then 3-17; after a page works in game, add its key to
-    PROBED (and tell the next builders). Returns [Probe, ...] in number order."""
+    PROBED (and tell the next builders). Returns [Probe, ...] in number order.
+    Kit 1.4 appends pages 19-22 (1-18 keep their numbers, names and content): 19 base4 (the kit 1.4 builders, key "base4"),
+    20 button-text (b.set on a TextButton Text), 21 flex-rows (FlexWeight on its own), 22 layout-right (LayoutMode Right on its
+    own). Open order: PROBE_OPEN_FIRST (base1, base2, base3, base4), then the rest by number. Every page body's children have a
+    fixed Height (or a FlexWeight), so used_height / Probe.with_footer can prove where a probe mod's footer goes."""
     check_id(prefix)
     pages = []
     t = True
@@ -2749,7 +3955,7 @@ def probe_pages(prefix="SkyyPb"):
     ap.append((P + "Row2", button(P + "S0", "Save", "primary", "small", anchor={"right": 6})))
     ap.append((P + "Row2", button(P + "S1", "Edit", "secondary", "small", anchor={"right": 6})))
     ap.append((P + "Row2", button(P + "S2", "Remove", "destructive", "small", anchor={"right": 6})))
-    ap.append((P + "Row2", button(P + "S3", "Reforge everything now", "primary", w=150, anchor={"right": 6})))
+    ap.append((P + "Row2", button(P + "S3", "Reforge everything now", "primary", w=150, anchor={"right": 6}, fit=False)))
     ap.append((P + "Row2", button(P + "S4", "Big", "primary", "big")))
     ap.append((body, "Group #%sTxt { Anchor: (Height: 52, Top: 12); LayoutMode: Left; }" % P))
     ap.append((P + "Txt", label(P + "Num", "12345", "display", w=220)))
@@ -2945,7 +4151,7 @@ def probe_pages(prefix="SkyyPb"):
         "the page opens", "the button shows the grey Disabled look by itself and does not click"])
 
     def b_ref(s, p):
-        s.appends.append((s.body, button(p + "R", "By reference")))
+        s.appends.append((s.body, button(p + "R", "By reference", fit=False)))
 
     small(17, "value-ref", "Probe style reference", 200, b_ref, [
         "the page opens", "the button turns into the gold Primary (Value.ref of Common.ui DefaultTextButtonStyle)"],
@@ -3006,6 +4212,151 @@ def probe_pages(prefix="SkyyPb"):
     fill = [("Weapon_Sword_Iron", 1), ("Ingredient_Bar_Iron", 64), ("Tool_Pickaxe_Iron", 1), ("Food_Bread", 12)] + [None] * 6
     pages.append(Probe(18, "base", sh, look18, name="base3",
                        java_extra=[lambda b, _p=P, _f=fill: java_grid_fill(_p + "Grid", _f, var="pbGridSlots", b=b)]))
+
+    # ---- kit 1.4: page 19 (base4) - every kit 1.4 builder, from proven properties only (two columns + the look list)
+    look19 = ["the page opens: every block is made of properties the deployed pages already use",
+              "fixed rows: a blue bar, the sword, name + sub, the 12 m tag, EQUIP; the second row has a greyed EQUIP",
+              "column heads MEMBER, LEVEL, WHERE sit exactly over Steve, 12 and Hub",
+              "two wells: PURSE and BANK heads, big numbers, grey captions",
+              "a green bar two thirds full, then an empty track; the result line under them is green",
+              "cards: Warrior on the dark blue step with a blue bar and SELECTED; the second a dark grey card, grey text, LOCKED",
+              "a sword in a frame, the same sword under the dark sold-out cover, then two plain cells",
+              "the one-row question is grey, CREATE is greyed out and silent, CANCEL is normal",
+              "REFRESH and CLOSE sit at the right edge of the right column"]
+    P = prefix + "19"
+    col_w, look_w = 560, 1600 - 2 * CONTENT_PAD - 2 * 560 - 2 * 22
+    left, right = Appends(), Appends()
+    L, R = P + "L", P + "R"
+    lw = list_well(P + "Lw", w=col_w, rows=2)
+    left.add(L, label(P + "H1", "Fixed rows in a list well", "heading", wrap=False))
+    left.add(L, lw)
+    left.add(P + "Lw", static_row(P + "Ra", lw.inner_w, icon="Weapon_Sword_Iron", name="Iron sword", sub="Rare - equipped", tag="12 m",
+                                  action="Equip"))
+    left.add(P + "Lw", static_row(P + "Rb", lw.inner_w, name="Empty slot", sub="Craft one at a Workbench", bar=None, action="Equip",
+                                  action_on=False))
+    spec = column_spec([("Member", 200), ("Level", 100), ("Where", 200)], avail=col_w, pad_left=8)
+    left.add(L, label(P + "H2", "Column heads", "heading", wrap=False, anchor={"top": 12}))
+    left.add(L, spec.heads(P + "Hd"))
+    left.add(L, spec.row(P + "Cr", ["Steve", "12", "Hub"], kinds=["rowName", "default", "rowSub"]))
+    left.add(L, label(P + "H3", "Stat wells and bars", "heading", wrap=False, anchor={"top": 12}))
+    left.add(L, group(P + "Sw", "Left", h=118))
+    left.add(P + "Sw", stat_well(P + "Sa", "Purse", "12345", "coins you carry", w=270))
+    left.add(P + "Sw", stat_well(P + "Sb", "Bank", "987", "safe when you die", w=270, anchor={"left": 12}))
+    left.add(L, group(P + "Bars", "Top", h=66, anchor={"top": 12}))
+    left.add(P + "Bars", label(P + "Bl", "Health 18 / 20", "propValue", h=26, wrap=False))
+    left.add(P + "Bars", stat_bar(P + "Bf", 300, 12, 200, col="progressGreen", anchor={"top": 8}).pick())
+    left.add(P + "Bars", stat_bar(P + "Be", 300, 12, 0, anchor={"top": 8}).pick())
+    left.add(L, result_line(P + "Res", "success", h=44, anchor={"top": 12}))
+    left.sets.append((P + "Res", "Text", "Equipped the iron sword - 2 slots left."))
+    right.add(R, label(P + "H4", "List cards", "heading", wrap=False))
+    cw = list_well(P + "Cw", w=col_w, h=list_card_h(2))
+    right.add(R, cw)
+    right.extend(list_card(P + "Cw", P + "Ca", cw.inner_w, [
+        {"id": "Nm", "text": "Warrior - your class", "kind": "rowName", "h": 24, "col": "rowName"},
+        {"id": "Sk", "text": "Combat skill Swords", "kind": "fieldLabel", "h": 20, "col": "value"},
+        {"id": "Ds", "text": "Strong in close combat. Wears heavy armour and swings big swords.", "kind": "rowSub", "h": 40, "col": "rowSub",
+         "wrap": True}], look="selected", icon_item="Weapon_Sword_Iron", action=state_word(None, "Selected", "success")))
+    right.extend(list_card(P + "Cw", P + "Cb", cw.inner_w, [
+        {"id": "Nm", "text": "Miner", "kind": "rowName", "h": 24, "col": "disabled",
+         "tag": {"id": "Tg", "text": "Coming later", "col": "disabled", "w": 120}},
+        {"id": "Sk", "text": "Combat skill Picks", "kind": "fieldLabel", "h": 20, "col": "disabled"}],
+        look="off", icon_item="Tool_Pickaxe_Iron", action=state_word(None, "Locked", "disabled")))
+    right.add(R, label(P + "H5", "Item frames and static cells", "heading", wrap=False, anchor={"top": 12}))
+    right.add(R, group(P + "If", "Left", h=74))
+    right.add(P + "If", item_frame(P + "Fa", item="Weapon_Sword_Iron", anchor={"top": 3}))
+    right.add(P + "If", item_frame(P + "Fb", item="Weapon_Sword_Iron", cover=True, anchor={"top": 3, "left": 8}))
+    right.add(P + "If", icon_cell(P + "Sc", "Food_Bread", 74, "static", qty="12", anchor={"left": 16}))
+    right.add(P + "If", icon_cell(P + "Sd", "Ingredient_Bar_Iron", 74, "static", look="plain", qty="64", anchor={"left": 8}))
+    right.add(R, label(P + "H6", "One-row question and a right footer", "heading", wrap=False, anchor={"top": 12}))
+    cq = confirm_view(R, P + "Cq", col_w, question="Pick a class first - then create the profile", yes_text="Create", yes_w=160,
+                      no_w=160, compact=True, top=0, wrap=True, yes_on=False, q_col="text")
+    right.extend(cq)
+    right.add(R, button_row(P + "Ft", align="right", top=12, used=2 * BTN_MIN_W + 6, avail=col_w))
+    right.add(P + "Ft", button(P + "Rf", "Refresh"))
+    right.add(P + "Ft", button(P + "Cl", "Close", sound="cancel", anchor={"left": 6}))
+    content_h = max(used_height(left, L), used_height(right, R), _look_lines("base4", look19, look_w)[3])
+    sh = page_shell(P, 1600, TITLE_H + 2 * CONTENT_PAD + content_h, "Kit probe 19")
+    ap = sh.appends
+    ap.append((sh.body, group(P + "Cols", "Left", h=sh.inner_h)))
+    ap.append((P + "Cols", group(L, "Top", w=col_w, h=sh.inner_h)))
+    ap.append((P + "Cols", separator("vertical", anchor={"left": 8, "right": 8})))
+    ap.append((P + "Cols", group(R, "Top", w=col_w, h=sh.inner_h)))
+    ap.append((P + "Cols", separator("vertical", anchor={"left": 8, "right": 8})))
+    ap.extend(left)
+    ap.extend(right)
+    fit([used_height(ap, L)], sh.inner_h, "probe 19 left column")
+    fit([used_height(ap, R)], sh.inner_h, "probe 19 right column")
+    fit([_look_list(ap, P + "Cols", P, "base4", look19, look_w)], sh.inner_h, "probe 19 look list")
+    pages.append(Probe(19, "base4", sh, look19, name="base4"))
+
+    # ---- kit 1.4: page 20 - b.set on a TextButton Text
+    def b_btext(s, p):
+        a = s.appends
+        a.add(s.body, label(p + "Hd", "Button labels set by the server", "heading", wrap=False))
+        a.add(s.body, button_row(p + "Row", align="left"))
+        a.button(p + "Row", p + "B1", "Buy 1,250 coins?", "primary", w=300, trial=t, anchor={"right": 6})
+        a.add(p + "Row", button(p + "B2", "Sell", w=220))
+        a.sets.append((p + "B2", "Text", "Sell (64)"))
+        a.add(s.body, label(p + "Cp", "Both labels are set by the server after the page is built", "caption", anchor={"top": 8}))
+        fit([used_height(a, s.body)], s.inner_h - _look_lines("button-text", look20, s.inner_w)[3], "probe 20 body")
+
+    look20 = ["the page opens", "the first button reads BUY 1,250 COINS? - the comma and the ? came from the server",
+              "the second button reads SELL (64), not SELL: the server text replaced the inline one",
+              "both buttons still light up on hover and click"]
+    small(20, "button-text", "Probe button text", 240, b_btext, look20)
+
+    # ---- kit 1.4: page 21 - FlexWeight on its own
+    def b_flex(s, p):
+        a = s.appends
+        a.add(s.body, group(p + "F1", "Left", h=BTN_H))
+        for i, tx in enumerate(("One", "Two", "Three")):
+            if i:
+                a.add(p + "F1", spacer(TAB_GAP))
+            a.add(p + "F1", button(p + "E" + str(i), tx, flex=1))
+        a.add(s.body, group(p + "F2", "Left", h=BTN_H, anchor={"top": 12}))
+        a.add(p + "F2", label(p + "Fl", "This label takes the free width", "bold", h=False, flex=1))
+        a.add(p + "F2", button(p + "Fb", "Browse"))
+        a.add(s.body, list_well(p + "Fw", rows=1, anchor={"top": 12}))
+        a.add(p + "Fw", panel_row(p + "Fr", "normal"))
+        a.add(p + "FrSel", row_text(p + "FrT", p + "FrN", p + "FrD"))
+        a.add(p + "FrSel", label(p + "FrB", "", "rowBadge", w=150, h=False, anchor={"left": 8}))    # no WrapMaxLines: FlexWeight only
+        a.add(p + "Fr", row_action(p + "FrA", "Edit"))
+        a.sets.extend([(p + "FrN", "Text", "Flex row"), (p + "FrD", "Text", "the select button and the text take the width"),
+                       (p + "FrB", "Text", "badge")])
+        a.add(s.body, group(p + "F4", "Left", h=BTN_H, anchor={"top": 12}))
+        a.add(p + "F4", button(p + "Rf", "Refresh"))
+        a.add(p + "F4", group(None, None, flex=1))
+        a.add(p + "F4", button(p + "Cl", "Close", sound="cancel"))
+        a.add(s.body, group(p + "F5", "Top", h=150, anchor={"top": 12}))
+        a.add(p + "F5", label(p + "Top", "Top of the column", "default"))
+        a.add(p + "F5", group(None, None, flex=1))
+        a.add(p + "F5", label(p + "Bot", "Bottom of the column", "default"))
+        fit([used_height(a, s.body)], s.inner_h - _look_lines("flex-rows", look21, s.inner_w)[3], "probe 21 body")
+
+    look21 = ["the page opens", "ONE, TWO, THREE are three equal buttons 5 px apart across the page",
+              "the bold label fills the row and BROWSE sits at its right end",
+              "the list row stretches: name and sub on the left, the badge and EDIT at the right",
+              "REFRESH on the left, CLOSE pushed to the right edge by the empty flex group",
+              "Top of the column at the top, Bottom of the column at the bottom of its 150 px column"]
+    small(21, "flex-rows", "Probe flex rows", 560, b_flex, look21, w=1200)
+
+    # ---- kit 1.4: page 22 - LayoutMode Right on its own
+    def b_right(s, p):
+        a = s.appends
+        a.add(s.body, button_row(p + "Ft", align="right", top=0))
+        a.add(p + "Ft", button(p + "Rf", "Refresh", anchor={"right": 6}))
+        a.add(p + "Ft", button(p + "Cl", "Close", sound="cancel"))
+        a.add(s.body, group(p + "Cells", "Right", h=74, anchor={"top": 12}))
+        for i, (it, q) in enumerate((("Weapon_Sword_Iron", False), ("Food_Bread", "12"), ("Ingredient_Bar_Iron", "64"))):
+            a.add(p + "Cells", icon_cell(p + "C" + str(i), it, 74, "static", qty=q, anchor={"left": 8}))
+        a.add(s.body, group(p + "Lb", "Right", h=30, anchor={"top": 12}))
+        a.add(p + "Lb", label(None, "First", "bold", w=120, h=30))
+        a.add(p + "Lb", label(None, "Second", "bold", w=120, h=30))
+        fit([used_height(a, s.body)], s.inner_h - _look_lines("layout-right", look22, s.inner_w)[3], "probe 22 body")
+
+    look22 = ["the page opens", "REFRESH then CLOSE hug the right edge (tell the builder if CLOSE comes first)",
+              "the three item cells sit at the right edge, the sword first", "FIRST and SECOND sit at the right edge"]
+    small(22, "layout-right", "Probe layout right", 300, b_right, look22, w=1000)
     pages.sort(key=lambda pg: pg.n)
     for pg in pages:
         pg.check()

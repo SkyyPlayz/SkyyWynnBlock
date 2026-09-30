@@ -2,7 +2,7 @@
 
 Skyy, 2026-09-28: *"the new goal for any and all UI added in the game is for them to look and feel vanilla. i want them as close to
 the original game look and feel as possible."* (HANDOFF section 2 rule 0). This file says HOW: every page is built from
-**`tools/skyyui.py`** (the one shared kit, 1.3). It holds the game's own style values, textures and sounds and proves them against
+**`tools/skyyui.py`** (the one shared kit, 1.4). It holds the game's own style values, textures and sounds and proves them against
 Assets.zip at every build. Background and every value's source: `research/Vanilla-UI-Research.md`. What exists today:
 `research/Skyy-UI-Inventory.md`. Test the kit: `python tools/skyyui_test.py`.
 
@@ -30,13 +30,21 @@ disconnect), so **the first restyle ships only after Skyy has opened the base pr
   `base3`, then the rest in number order.
 - When a page works, add its key to `skyyui.PROBED` (`"base"` once all three base pages work). The UNVERIFIED builders then need
   no `trial=True`, and `verify()` stops printing the "base look not yet seen" note.
+- Kit 1.4 APPENDS pages 19-22 (pages 1-18 keep their numbers, names and content - the deployed SkyyUiProbe 0.1 opens them by
+  number / name): **19 `base4`** (every kit 1.4 builder, key `"base4"`), **20 `button-text`** (b.set on a TextButton's Text),
+  **21 `flex-rows`** (FlexWeight on its own), **22 `layout-right`** (LayoutMode Right on its own). The base pages open first in
+  the order `SUI.PROBE_OPEN_FIRST` (base1, base2, base3, base4). Every page has `.summary` (one line, <= 95 characters, for a probe
+  mod's index: `SUI.PROBE_SUMMARY`), and `probe.with_footer(footer, foot_h)` places a probe mod's own Back / Close footer with
+  the height proofs (the SkyyUiProbe 0.1 rules; it reproduces that mod's views 1-18 exactly). SkyyUiProbe 0.1 itself shows 18
+  rows: rebuilt on kit 1.4 its index budget stops the build (22 rows), so pages 19-22 need a SkyyUiProbe 0.2 (a two-column or
+  scrolling index built on `.summary` + `with_footer`).
 
 ## 1. Setup in a build script
 
 ```python
 import skyyui as SUI                 # tools/ is on sys.path already (the skyybuild import line)
 SUI.verify()                         # prints "vanilla look checked: N style values, M textures / sounds"; fails loudly
-KIT_ID = SUI.kit_id()                # "skyyui 1.3 <blob12>": put it in the ready log line, like SkyyMenu shows CFG_KIT
+KIT_ID = SUI.kit_id()                # "skyyui 1.4 <blob12>": put it in the ready log line, like SkyyMenu shows CFG_KIT
 ```
 
 - Import it as `SUI`, not `UI`: SkyyRanks 0.1.1 and SkyyMenu 0.3.3 already have a module-level `UI = {...}` table.
@@ -88,6 +96,25 @@ KIT_ID = SUI.kit_id()                # "skyyui 1.3 <blob12>": put it in the read
 | Tooltip / tooltip-like panel | `tooltip(text)` as `extra=` / `tooltip_panel(id, quality=)` + `tip*` labels | `@DefaultTextTooltipStyle` / item tooltip frames |
 | A look picked at runtime (selected cell, disabled Prev) | `choose(SUI.J("i == sel"), markup_a, markup_b)` in an Appends / `java_append` | - |
 | Style fragments for your own elements | `button_style() text_style() row_style() option_style() list_button_style() checkbox_style() dropdown_style() tooltip_style() title_style() scrollbar_style() clear_button_style() search_icon() sounds() patch()` | - |
+| **Kit 1.4 blocks** (section 12; proven properties only - probe page 19 `base4`) | | |
+| Fixed-width list row (icon + name / sub + right tag + action, no FlexWeight) | `static_row(id, w, icon=, name=, sub=, tag=, action=, bar=)` -> a Markup (`.h` = its outer height, `.sets`, `.ids`) | WorldEventListRow look; SkyyAccessories 0.4.5 rows |
+| The 4 px status bar alone (also at runtime) | `status_bar(id, on=True / False / SUI.J("sel"))` (= `row_bar`) | WorldEventListRow #StatusBar |
+| Fixed (non-scrolling) list on the well | `list_well(id, w, h=)` or `list_well(id, w, rows=, row_h=)`; `list_well_h(rows, row_h)` | WorldEventPanelPage #ListContainer |
+| Result line whose texts carry no + / - / = mark | `result_line(id, colour=SUI.J("infoColor(this.info)", "#39f493"))` + `java_color_by_text("infoColor", rules)` | the status line look |
+| Stat / progress bar that drops its fill at 0 | `stat_bar(id, w, h, fill=SUI.J("fillPx(cur, max)", "80"), col=)` -> `bar.choose()` / `bar.pick()` | SkyyParty 0.1.6 bars, progress track |
+| Column heads + table rows from ONE list | `column_spec([(text, w), ...], avail, pad_left)` -> `spec.heads(id)` / `spec.row(id, texts)`; `column_heads(id, cols, pad_left)`, `column_row(id, cols, texts)` | WorldEventSectionLabel heads |
+| Right-aligned / centred footer WITHOUT LayoutMode Right / Center | `button_row(id, align="right", used=, avail=)` or `left_margin=SUI.J("gapR", "344")`; `right_margin(avail, used)`, `centre_margin(avail, used)` | WorldEventPanelPage #Footer |
+| Big number box (PURSE / BANK) | `stat_well(id, heading, number=SUI.J("coinText(purse)", "12345"), caption=)` | SkyyBank 0.1.4 wells |
+| Class / profile card | `list_card(parent, id, w, lines, look=, icons=, icon_item=, on=, action=)` -> emit with `card.java("b")`; `list_card_h(rows)`, `list_card_button(...)` | the SKYY CARD of SkyyClasses 0.1.8 / SkyyProfiles 0.1.3 |
+| A word where a button would be (Selected / Active / Locked / Coming soon) | `state_word(id or None, text, kind)` | the card_state label |
+| Background picked at runtime, from colour NAMES | `group(..., bg=)` / `panel(..., bg=)` with `color_by([(cond, name), ...], default_name)` | - |
+| Item in the slot border, optional sold-out cover | `item_frame(id, item=SUI.J("ids[i]", "Weapon_Sword_Iron"), cover=True)` | BarterTradeRow |
+| Display-only item cell (no click) | `icon_cell(id, item, size, "static", qty=)` | the static row colour |
+| One-row question: wraps / greyed Confirm / a grey hint | `confirm_view(..., compact=True, wrap=True, yes_on=False or SUI.J("picked"), q_col="text")` | SkyyProfiles 0.1.3 pf_row |
+| Height budget read from the markup | `ap.add(parent, markup)` (returns its outer height) / `used_height(ap, container)` / `used_width(ap, row)` / `outer_size(markup)` | - |
+| Will the text fit? | `text_width(text, size, bold)`, `text_lines(text, width, size)`, `line_height(size)`; `button()` / `label()` warn by themselves (`fit_warnings()`) | the client's NunitoSans / Lexend tables |
+| Only proven properties on the page | `assert_proven(sh.appends)` (one table minus `PROBED`; replaces the per-patch forbidden loops) | the deployed pages |
+| Button label with punctuation or a runtime value | `ap.button(parent, id, text, kind, trial=True)` (UNVERIFIED `button-text`, probe page 20) | - |
 
 Every builder takes `anchor=` (margins), and the layout builders also take `flex=`, `padding=` / `pad=` and `extra=`. For example
 `text_field(..., flex=1, anchor={"left": 0})` (InstanceListPage search) or `separator("content", anchor={"top": 8, "bottom": 8})`
@@ -174,7 +201,8 @@ page root  Group #<Frame> { Anchor: (Width: W, Height: H); }      <- W x H only;
 - **Static inline text** is `[A-Za-z0-9 <>/-]` only. For anything else use `ap.text(parent, id, text, kind, ...)` /
   `sh.text(...)`: proven text goes inline, other text (and a `J()` runtime text) becomes an empty label plus a b.set line in
   `.sets` - the SkyyBank `#SkyyBCapMid` pattern, without splitting by hand. With `id=None` it names the label `<parent>Tx<n>`.
-  TextButton text cannot be b.set (no Skyy page has done it): keep button labels proven text.
+  TextButton text cannot be b.set (no Skyy page has done it): keep button labels proven text. Kit 1.4 `ap.button(parent, id, text,
+  kind, trial=True)` does the b.set for a punctuated / runtime label, UNVERIFIED (`button-text`) until probe page 20 works.
 - **Titles** have no LetterSpacing: vanilla `@TitleStyle`'s `LetterSpacing: 0` is the engine default, and the deployed SkyyRanks /
   SkyyVault titles leave it out. `spacing=0` is never written; `spacing=0.5` / `1.8` are (MemoriesCategory / RespawnPage).
 - **WrapMaxLines** only together with `Wrap: true` (vanilla always pairs them): `label(..., wrap=True, max_lines=2)`.
@@ -183,6 +211,13 @@ page root  Group #<Frame> { Anchor: (Width: W, Height: H); }      <- W x H only;
 - **Big numbers** (`display`) are 32 px in the Default font: the one big number a real page shows is the Hud/TimeLeft timer. Big
   text in the Secondary font on real pages is a title (RespawnPage 38 px, PortalDeviceSummon 24 px); PortalDeviceSummon's 32 px
   Secondary `@TimeLimitStyle` is defined but never used.
+- **Does it fit?** (kit 1.4) `button()` and `label()` measure every static one-line text with the client's own glyph tables
+  (`Client/Data/Shared/UI/Fonts`: NunitoSans Medium / ExtraBold for the Default font, Lexend Bold for Secondary - read-only; a
+  per-character-class fallback when the client is not installed) and print `skyyui WARNING: ...` when it is wider than its box
+  (a button: its width minus 2 x the padding - the vanilla label then shrinks, down to 12 px). A warning, never an error, and never
+  a markup change; `fit=False` silences one call, `SUI.fit_warnings("collect" / "off")` all of them. `Appends.text` /
+  `ap.button` measure their b.set texts too. For your own checks: `text_width(text, size, bold, font, upper)`,
+  `text_lines(text, width, size)` (greedy wrap), `line_height(size)` (1.364 em for Nunito: two 16 px lines = 43.7 px).
 
 ## 6. Do / don't
 
@@ -194,6 +229,9 @@ Do:
   SkyyRanks scale). Titles, 16 px labels and button labels stay vanilla. Use `panel_row` height 56 for two-line rows.
 - Run `SUI.check_page(sh.appends, prefix)` / `SUI.check_markup(s, prefix)` on your own static markup at build time (`java_append`
   runs `check_markup` on everything it emits anyway; `check_page` also proves every b.set target was appended).
+- Kit 1.4: run `SUI.assert_proven(ap)` on every page state instead of a hand-written forbidden-property loop (one table: what the
+  deployed pages use, minus what `PROBED` has not proven yet), and budget heights with `ap.add(parent, markup)` /
+  `SUI.used_height(ap, container)` instead of typing "+ 12" next to an anchor.
 
 Don't:
 - No dark-blue custom panels (`#0b1524(0.96)` roots, `#142030` rows, `#16263a` input boxes) and no accent stripes. The vanilla frame
@@ -222,15 +260,18 @@ Don't:
    `SUI.button_style(kind, size)`, each label style for a `label` kind / `text_style`, rows for `panel_row` / `hover_row`, the input
    box Group for `text_field(old_box_id, old_field_id, ...)`, lists into `scroll_list(..., well=True)`, item cells into
    `icon_cell(old_cell_id, ...)`, pagers into `pager(..., ids={"prev": old, "page": old, "next": old})`, confirm rows into
-   `confirm_view(..., ids={...})`.
+   `confirm_view(..., ids={...})`. Kit 1.4: fixed-width rows into `static_row(old_row_id, w, ..., ids={...})`, class / profile
+   cards into `list_card(...)`, number boxes into `stat_well(...)`, heads + table rows into one `column_spec(...)` (recipes in
+   sections 13 and 14).
 5. Keep the Java working: never rename an element id that is bound (`addEventBinding(..., "#Id", ...)`), set (`b.set("#Id...")`) or
    read (`"#Field.Value"` in EventData). Never change an EventData key or payload (`"a"`, `"tab3"`, `"cell:4:one"`). Keep the state
    arrays (`rowIds`, `cells`, `invIds`) and the "click acts on what the player saw" checks.
 6. Re-budget the height: the frame takes 38 px of title bar plus 2 x 17 px of padding. If rows no longer fit, shrink the row count or
-   move the list into `scroll_list`. The page must stay <= 980 px high (`assert_page_size`).
-7. Build (must end `assembled ...jar`), run `python tools/ci/lint.py` (0 fails; read the colour / path / font / grid-slot
-   warnings), and list in-game test steps covering every view and state: empty, error, locked, no permission, profile loading
-   (`spinner` once probed).
+   move the list into `scroll_list`. The page must stay <= 980 px high (`assert_page_size`). Kit 1.4: `fit([SUI.used_height(ap,
+   sh.body)], sh.inner_h)` reads the heights back out of the markup (`== 0` for a body filled exactly), `SUI.used_width` a row.
+7. Run `SUI.assert_proven(ap)` on every page state (kit 1.4), build (must end `assembled ...jar`; read any `skyyui WARNING`
+   text-fit line), run `python tools/ci/lint.py` (0 fails; read the colour / path / font / grid-slot warnings), and list in-game
+   test steps covering every view and state: empty, error, locked, no permission, profile loading (`spinner` once probed).
 
 ## 8. Java embedding
 
@@ -314,6 +355,13 @@ and then compiled with javassist by `tools/skyyui_test.py`. Pasted output is fro
   needs its probe page in `probe_pages()` with a stable name and a short look list (the test checks every key has one and that
   every page shows its list). The test must print `N ok, 0 fail`.
 - Bump `KIT_VERSION` when a builder's output changes. Builds print `kit_id()`, so a mixed set of kit revisions is visible.
+- **Additive kits (1.4 on): the old output is frozen.** `tools/skyyui_test.py` holds `SNAP13`: (item count, hash) per group of the
+  kit 1.3 builders over ~1760 call shapes, the tables, the vanilla needles and probe pages 1-18, recorded from the 1.3 file before
+  any 1.4 change. A later additive kit may only add functions, parameters whose defaults keep the old output, table entries at the
+  END of a table, needles registered after the old ones and probe pages after the last one. A group that changes fails the test;
+  `python tools/skyyui_test.py --snapshot-dump <tools/dev/scratch/...json>` writes every item's text to diff against a dump made
+  from the older kit file. A deliberate output change is a new kit version: record its own snapshot the same way
+  (`--print-snapshot`) and say so in section 11.
 
 ## 10. Decisions taken from the reviews (2026-09-29)
 
@@ -340,5 +388,168 @@ and then compiled with javassist by `tools/skyyui_test.py`. Pasted output is fro
   `java_grid_fill`, `item_grid_java_is_safe`, `icon_cell`, `confirm_view` (+ `compact=True`), `Appends.text` / `Shell.text` /
   `Shell.all_sets`, `Appends.sets`, `choose` / `Choice`, `Part`, `probe_page`, `STATUS_INFO`, `item_icon` with a `J()` id; lint
   WARN rule for grid slots built from a held stack.
-- Restyled on the kit (built, not yet seen in game): SkyyBank 0.1.4 (`tools/bank_0_1_4_patch.py`, BankPage; built on kit 1.2 -
-  regenerate it on 1.3 for the title / display / "=" fixes).
+- 1.4 (2026-09-29, the stage-1b restyle reviews) - **additive only**: every kit 1.3 builder output is byte-identical (`SNAP13`,
+  section 9; the five held restyles below rebuild to the same page Java - SkyyBank's page id stays a838d325f680). New (section 12):
+  `Markup`, `static_row`, `status_bar` / `row_bar`, `list_well` / `list_well_h`, `result_line`, `java_color_by_text`, `stat_bar` /
+  `BarPair`, `column_spec` / `Columns` / `column_heads` / `column_row`, `right_margin` / `centre_margin`, `button_row(used=,
+  avail=, left_margin=)`, `stat_well`, `list_card` / `Card` / `list_card_h` / `list_card_text_w` / `list_card_button` /
+  `LIST_CARD_*`, `state_word`, `color_by`, `group(bg=)` / `panel(bg=)`, `item_frame(item=, cover=, icon_anchor=, cover_id=)`,
+  `icon_cell(state="static")`, `confirm_view(wrap=, yes_on=, q_col=)`, `Appends.add` / `Appends.used` / `Appends.button`,
+  `java_add`, `outer_size` / `used_height` / `used_width` / `is_flex`, `text_width` / `text_lines` / `line_height` /
+  `font_table` / `fit_warnings` (+ `fit=` on `button` / `label`), `assert_proven` / `proven_tokens` / `PROVEN_*` /
+  `UnprovenError`, `Probe.summary` / `Probe.with_footer`, `PROBE_SUMMARY`, `PROBE_OPEN_FIRST`, probe pages 19-22 and their
+  UNVERIFIED keys `base4`, `button-text`, `flex-rows`, `layout-right` (appended to `UNVERIFIED`; `ICON_CELL_STATES` gains
+  `"static"` at its end).
+- Restyled on the kit, built + reviewed + cross-checked but **HELD** (their SET pins are not bumped) until Skyy has opened the base
+  probe pages: SkyyBank 0.1.4 (`tools/bank_0_1_4_patch.py`, regenerated on kit 1.3; page id a838d325f680), SkyyParty 0.1.6
+  (`SkyyParty/build_skyyparty_0.1.6.py`), SkyyAccessories 0.4.5 (`tools/acc_0_4_5_patch.py`), SkyyClasses 0.1.8
+  (`tools/classes_0_1_8_patch.py`) and SkyyProfiles 0.1.3 (`tools/profiles_0_1_3_patch.py`; the SKYY CARD block they share is
+  `list_card` in kit 1.4). Each has a committed harness (`test_*.py` next to its build script). Their generated scripts call the
+  kit at build time, so a rebuild on kit 1.4 gives the same pages (checked when 1.4 was made); later restyles (Vault,
+  Collections, Guilds, Islands, Skills, Trees, Exploration - research/Skyy-UI-Inventory.md section 7) start from sections 13 / 14.
+
+## 12. Kit 1.4 blocks (the stage-1b restyle reviews)
+
+Every block below is what one of the five held restyles composed by hand, now in the kit - made ONLY from properties the deployed
+pages already use (LayoutMode Left / Top, fixed widths / heights, Anchor margins, Padding, colour backgrounds, ItemIcon with an
+inline ItemId, Wrap): no FlexWeight, no LayoutMode Center / Right / Full, no WrapMaxLines, no LetterSpacing, nothing UNVERIFIED
+(`assert_proven` passes on each; probe page 19 `base4` shows all of them - a restyle on them waits for that page like the others
+wait for base1-3). Texts follow the `Appends.text` rule everywhere: proven static text inline, punctuated / `J()` text as b.set
+lines in the block's `.sets`, `""` = empty (b.set it yourself). Every block takes `ids={...}` or an id argument so a restyle keeps
+its page's OLD element ids.
+
+**12.1 Markup and height accounting.** Single-markup blocks return a `SUI.Markup`: a plain markup str (every kit function,
+`java_append`, `choose` and `check_markup` take it) that also carries `.h` / `.w` (its OUTER size: Anchor Height + Top + Bottom
+(+ 2 x Vertical / Full), Width + Left + Right ...), `.sets` (its b.set lines) and `.ids`. Add it with `ap.add(parent, markup)`: it
+appends, carries the `.sets` along and RETURNS the outer height (None when it sets no Height). In a Java loop use
+`SUI.java_add(parent, markup)` (the append + its b.set lines). `SUI.used_height(ap, container)` sums the outer heights of a Top
+column's direct children (a FlexWeight child counts 0; a child with neither raises), `SUI.used_width(ap, row)` a Left row's widths,
+`SUI.outer_size(markup)` / `SUI.is_flex(markup)` one element. Budget: `SUI.fit([SUI.used_height(ap, sh.body)], sh.inner_h)`.
+
+**12.2 Rows and lists.**
+- `static_row(id, w, h=56, icon=, name=, sub=, tag=, action=, bar=True, state="static")` - the WorldEventListRow look at a FIXED
+  width, as ONE markup: the row #id (56 + 3) = the row panel #idP (w minus the action; `state` "static" = the #101925(0.55) Group,
+  "normal" / "selected" = a clickable Button with the vanilla row style - bind #idP), the status bar #idBar, the icon box #idIb +
+  ItemIcon #idIc (40 px), the text column #idT (name #idNm 18 px bold + sub #idSb 15 px, centred), the right tag #idTg (150 wide,
+  right-aligned) and the small action button #idAct (92 wide, `action_kind` / `action_w` / `action_on=False` = the Disabled look).
+  `bar`: True = blue, None = no colour but its 12 px kept (rows line up), False = none, `SUI.J("sel")` = at runtime, a colour name.
+  `.text_w` = the text column width (use it for the column heads). A runtime action state: `choose(SUI.J("c"), row_a, row_b)`.
+- `status_bar(id, on=True / False / SUI.J("cond"), col="selected")` (= `row_bar`): the 4 px bar + its 8 px gap; `on=J(...)` makes
+  its Background a runtime property (`(cond) ? "Background: #4274a5; " : ""`), so the bar keeps its space either way.
+- `list_well(id, w, h=)` / `list_well(id, w, rows=, row_h=56, gap=3)`: the vanilla list well, NOT scrolling (= `panel(id, "well",
+  pad=4)`); `.inner_w` / `.inner_h`; `list_well_h(rows, row_h, gap)`. Scrolling lists stay `scroll_list(..., well=True)`.
+- `column_spec([(text, w), ...], avail=, pad_left=, gap=)` -> a `Columns`: ONE list for the heads, the rows and the widths
+  (`.total`, `.slack`, `.width(i or name)`, `.x(i or name)`). `spec.heads(id, outside=4)` = `column_heads(id, spec, pad_left)` - the
+  SkyyParty 0.1.6 heads: section-style labels as wide as their columns, Padding Left = the first column's offset (outside = the
+  list well's padding when the heads sit above the well). `spec.row(id, texts, kinds=)` = `column_row(...)`: a fixed-width table
+  row (row panel or `panel_kind=None`) with one cell #id C<i> per column.
+
+**12.3 Numbers, bars and result lines.**
+- `stat_well(id, heading, number=SUI.J("coinText(purse)", "12345"), caption=, w=)` - SkyyBank 0.1.4's PURSE / BANK box as one
+  markup: the well (padding 8) with the centred @Subtitle head, the 32 px display number #idN and a grey caption; 118 px + margins.
+- `stat_bar(id, w, h, fill, col=, track="progressTrack")` -> a `BarPair` (full, empty): the track #id (LayoutMode Left, the vanilla
+  progress track) with its fill Group ONLY in the full variant (SkyyParty's bars: never a 0 px Group). `SUI.java_append(p,
+  bar.choose())` appends the right one at runtime (fill > 0); `bar.pick()` for a static fill.
+- `result_line(id, colour, h=44)` - the status line look (16 px bold, centred, two lines) for pages whose result texts carry NO
+  + / - / = mark (SkyyAccessories 0.4.5, SkyyParty 0.1.6): colour = a COLOR name or `SUI.J("infoColor(this.info)", "#39f493")`.
+  `java_color_by_text("infoColor", [("startsWith", "equipped ", "+"), ("contains", " could not", "-")], empty="=",
+  default="-")` writes that Java helper (first match wins; colours are the marks or COLOR names; javassist-safe).
+
+**12.4 Cards and state words.**
+- `list_card(parent, id, w, lines, look=, icons=, icon_item=, icon_max=1, on=None, ids=, action=)` - the SKYY CARD of SkyyClasses
+  0.1.8 / SkyyProfiles 0.1.3 (research/Skyy-UI-Inventory.md section 6), byte for byte (the kit test runs both): the 4 px bar, the
+  card body in the look's colour, the item cells (the slot border with an ItemIcon; `icons` = a Java String[] expression for a
+  runtime count, looped in the Java), up to three text lines (a line may carry a right-aligned `tag`), the 200 px action column
+  #act (a `list_card_button(...)` or a `state_word(...)` goes in: `action=` appends one). `look` = selected / pending / normal /
+  off / empty (`LIST_CARD_LOOKS`) or `[(look, java boolean), ..., last]`; `on` = false -> grey text and the sold-out cover over
+  the icons. The card's runtime look and icon loop are Java statements, so ALWAYS emit it with `card.java("b")`. Sizes:
+  `LIST_CARD_H` 84 + `LIST_CARD_GAP` 4, `list_card_h(rows)` for its list well, `list_card_text_w(w, icon_max)`.
+- `state_word(id or None, text, kind="success")` - the bold centred 172 x 44 word where a button would be: Selected / Active
+  (success), Locked / Coming soon / Coming later (disabled); kinds `STATE_WORD_KINDS`.
+
+**12.5 Smaller additions (defaults keep the kit 1.3 output).**
+- `group(..., bg=)` / `panel(..., bg=)` (colour panels only): a background colour - a COLOR name, a rarity / quality literal or a
+  runtime `J()`; `color_by([(java condition, colour name), ...], default_name)` builds that `J()` from validated colour NAMES.
+- `item_frame(id, item=, icon_anchor=, cover=True, cover_id=)`: the slot border with an inline-ItemId icon and the vanilla sold-out
+  cover; `icon_cell(id, item, size, "static")`: a display-only cell (a Group, no style, no sound).
+- `confirm_view(..., compact=True, wrap=True, yes_on=False or SUI.J("picked"), q_col="text")`: the SkyyProfiles 0.1.3 pf_row
+  options (a wrapped question, a greyed silent Confirm, a plain grey hint instead of the yellow question).
+- `button_row(id, align="right" / "center", used=, avail=)` or `left_margin=SUI.J("gapR", "344")`: a right-aligned or centred
+  footer WITHOUT LayoutMode Right / Center - a Left row whose Padding Left is `right_margin(avail, used)` / `centre_margin(...)`;
+  `used` = the buttons' outer widths (`used_width`).
+- `ap.button(parent, id, text, kind, trial=True)`: a button label with punctuation or a runtime value through b.set (UNVERIFIED
+  `button-text`: probe page 20).
+
+**12.6 Text fit and the proven-property table.** `text_width` / `text_lines` / `line_height` / `font_table` measure with the
+client's own glyph tables (section 5b); `button()` / `label()` / `ap.text` warn by themselves (`fit=False`, `fit_warnings(mode)`).
+`assert_proven(markups, allow=())` raises `UnprovenError` for every element, property key, LayoutMode or special path (the
+`Disabled: true` property, `../ItemQualities`, the Memories textures) that no deployed Skyy page uses and no `PROBED` key has
+proven, and for anything the table (`PROVEN_ELEMENTS`, `PROVEN_LAYOUTS`, `PROVEN_KEYS`, `PROVEN_SPECIAL`) does not know. The
+"base" gate holds exactly what the five restyles kept out by hand: FlexWeight (also proven by `flex-rows`), WrapMaxLines,
+LetterSpacing, LayoutMode Center / Right (also `layout-right`) / Full and the other LayoutModes. The kit test checks that every
+PROVEN entry really appears in a live build script of the `tools/deploy_set.py` SET. `proven_tokens(markups)` lists what a page
+uses.
+
+**12.7 Probe support.** `probe.summary` (one line per page, `PROBE_SUMMARY`), `probe.with_footer(footer, foot_h, foot_w=,
+slack=4)` (a probe mod's footer placed with the height proofs; returns the page + footer appends, its Java and where it went) and
+`PROBE_OPEN_FIRST` - section 0.
+
+## 13. Recipe: restyle a LIST page (Vault, Collections, Guilds, Islands, Exploration lists)
+
+1. Frame: `page_shell(..., kind="plain", body_id=<old root>)` - vanilla list pages use the plain window.
+2. Rows: one `static_row` per entry, built ONCE with `J()` ids / values and appended in the page's Java loop with
+   `SUI.java_add(list_id, ROW)`. Keep the old ids through `ids={...}` (row, name, action ...). An icon cell grid (Bazaar-like)
+   stays `icon_cell`; a stats table uses `column_row`.
+3. List: `scroll_list(id, h=, well=True)` when the page may scroll, `list_well(id, w, rows=)` when the Java counts on a fixed page
+   size (then `pager(...)` under it).
+4. Heads: a `column_spec` whose first column is the row's text column (`ROW.text_w`), `pad_left` = the row padding + bar + icon box
+   (8 + 12 + 52), `spec.heads(id, outside=SUI.WELL_LIST_PAD)` above the well.
+5. Result line: `status_line` when the texts carry + / - / =, else `result_line` + `java_color_by_text`. Footer:
+   `button_row(align="right", used=, avail=)` (no LayoutMode Right).
+6. Budget with `ap.add` / `used_height`, then `SUI.assert_proven(ap)` on every page state.
+
+```python
+sh = SUI.page_shell("SkyyXF", 1100, 900, "Vault", kind="plain", body_id="SkyyX")     # the plain list window, old root = body
+ap, W = sh.appends, sh.inner_w
+ROW_W = W - 2 * SUI.WELL_LIST_PAD
+ROW = SUI.static_row("SkyyXRow" + SUI.J("i", "0"), ROW_W, icon=SUI.J("ids[i]", "Weapon_Sword_Iron"),
+                     name=SUI.J("names[i]", "Iron sword"), sub=SUI.J("subs[i]", "Rare"), tag=SUI.J("worth[i]", "120 coins"),
+                     action="Take", ids={"action": "SkyyXTake" + SUI.J("i", "0")})
+spec = SUI.column_spec([("Item", ROW.text_w), ("Worth", 150 + 8)], avail=ROW_W, pad_left=8 + 12 + 52)
+ap.add(sh.body, spec.heads("SkyyXHead", outside=SUI.WELL_LIST_PAD))
+ap.add(sh.body, SUI.list_well("SkyyXList", rows=10))                          # or SUI.scroll_list("SkyyXList", h=..., well=True)
+ap.add(sh.body, SUI.result_line("SkyyXInfo", SUI.J("infoColor(this.info)", "#39f493"), anchor={"top": 8}))
+ap.add(sh.body, SUI.button_row("SkyyXFoot", align="right", used=2 * SUI.BTN_MIN_W + 6, avail=W))
+ap.add("SkyyXFoot", SUI.button("SkyyXRefresh", "Refresh"))
+ap.add("SkyyXFoot", SUI.button("SkyyXClose", "Close", sound="cancel", anchor={"left": 6}))
+SUI.fit([SUI.used_height(ap, sh.body)], sh.inner_h)                           # heights read back out of the markup
+SUI.assert_proven(ap)                                                         # proven properties only (minus PROBED)
+ROW_JAVA = SUI.java_add("SkyyXList", ROW)                                     # goes inside the Java for loop over the entries
+```
+
+## 14. Recipe: restyle a CARD page (Classes, Profiles, Skills trees, Islands pickers)
+
+1. Frame: `page_shell(..., body_id=<old root>)` (decorated for a picker / dialog-like page).
+2. List: `list_well(id, h=SUI.list_card_h(n))` (or a `scroll_list(..., well=True)` when n can grow).
+3. Card: ONE `list_card(...)` with `J()` ids and texts, emitted inside the Java loop with `card.java("b")`; the look chain
+   (`look=[("selected", "sel"), ("pending", "pend"), ("normal", "on"), "off"]`) and the icon loop (`icons="ic"`) are part of it.
+4. Action column: per Java branch append `list_card_button(...)` (Choose / Switch; Primary while pending) or `state_word(...)`
+   (Selected / Locked / Coming soon) into `card.act`.
+5. A pending choice: `confirm_view(..., compact=True, ids={...})` (with `wrap=True` for a long question, `yes_on=False` while
+   nothing is picked, `q_col="text"` for a hint). Heights: `used_height`; then `assert_proven`.
+
+```python
+W = sh.inner_w - 2 * SUI.WELL_LIST_PAD
+sh.appends.add(sh.body, SUI.list_well("SkyyXList", h=SUI.list_card_h(7)))
+i = SUI.J("i")
+CARD = SUI.list_card("SkyyXList", "SkyyXCard" + i, W, [
+    {"id": "Nm", "text": SUI.J("titleOf(i)"), "kind": "rowName", "h": 24, "col": SUI.J("colorOf(i)", "#8fd67a")},
+    {"id": "Sk", "text": SUI.J("skillLine(i)"), "kind": "fieldLabel", "h": 20, "col": "value"},
+    {"id": "Ds", "text": SUI.J("descOf(i)"), "kind": "rowSub", "h": 40, "col": "rowSub", "wrap": True}],
+    look=[("selected", "sel"), ("pending", "pend"), ("normal", "on"), "off"], icons="ic",
+    icon_item=SUI.J("ic[k]", "Weapon_Sword_Iron"), icon_max=4, on="on",
+    ids={"icons": "SkyyXIco" + i, "text": "SkyyXTxt" + i, "act": "SkyyXAct" + i})
+CARD_JAVA = CARD.java("b")                                                    # inside the loop, before the branches below
+PICK_JAVA = SUI.java_append(CARD.act, SUI.list_card_button("SkyyXPick" + i, "Choose"))
+DONE_JAVA = SUI.java_append(CARD.act, SUI.state_word(None, "Selected", "success"))
+```
