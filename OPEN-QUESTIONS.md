@@ -42,6 +42,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   vs 360 for 24h, so everyone would pick 48h). Server Setup key `xFloorPrev` - OFF = exactly 2 x the listing fee. [on]
 - SkyyGear: old SkyyRolls items keep their rolls (your lock). Switch `migrate.clampToLevel` caps old rolls at what that item's level can
   roll now (a cheap SkyyRolls max roll on junk gear stays strong otherwise). [off]
+- LOCKED 2026-09-30 (Skyy): cooked food stays out of the Farming bag ("id keep cooked food out"). Farming keeps raw produce (plants, crops,
+  fish, raw meat, eggs); cooked / prepared food (bread, pies, kebabs, salads, grilled fish, cooked meat, Skyy cooking dishes) stays in your
+  inventory. Server Setup switch, default off; cooked food already stored can still be taken out. [SkyySacks 0.7.8]
 - LOCKED 2026-09-30 (Skyy): "if its not in the game yet, dont leave it in the reforge list" - coming-later stats (Ferocity, Weaken Enemy,
   Thorns, ...) never roll: Server Setup -> Gear -> Stats "Roll coming-later stats" default OFF (was ON). Gear that already has one keeps it until
   its next reforge. [SkyyGear 0.1.1]
