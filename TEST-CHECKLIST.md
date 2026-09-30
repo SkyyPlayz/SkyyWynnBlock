@@ -1011,3 +1011,12 @@ Skills 0.4.7, Trees 0.2.5, Exploration 0.2.2. Only the LOOK changed (plus the Gu
 8. SkyyGear: Server Setup -> Gear -> Levels shows the new table; Stats: "Roll coming-later stats" OFF, full power at 40; reforge / craft /
    identify never show grey "(coming later)" stats. Charged Attack Damage: hold a bow until the arrow glows -> the stat applies (partial draws
    never); a sword/axe/mace charged swing applies; a spell gets 15% of it; /gear charged (admin) shows the last hit's detection.
+## SkyyAccessories 0.5 - booster accessories, DEPLOYED 2026-09-30 16:48 (backup backups/deploy-20260930-1648)
+1. Start the world: SkyyAccessories 0.5 ready line; the config update runs once (bag slots 9 -> 18, old talisman numbers -> the new lines).
+2. Your old talismans still work: open the Accessory Bag - they show as "<Rarity> <Line> Accessory" (e.g. Rare Vitality) with the new numbers;
+   a one-time chat notice explains the change. Nothing in the bag is lost; the bag now has 18 slots (pages).
+3. /accessories lines lists every line and its four rarities. As an op: /accessories give <player> <line> <rarity> (and givetier) hands one out.
+4. Only the best rarity of a line counts: carry a Normal and a Rare of the same line -> only the Rare's bonus shows on the bag page.
+5. Stats: Health/Stamina/Mana bars grow; Speed makes you faster; Stamina Regen refills stamina faster only while it is refilling (never while
+   sprinting); Brawler/Runic/Stonehide/Razorfang show up in SkyyGear totals (hit harder / crit more); Feather cuts fall damage and raises jumps.
+6. Take an accessory out / switch profile / relog: its bonus goes away and comes back correctly; your current Health/Mana never drops.
