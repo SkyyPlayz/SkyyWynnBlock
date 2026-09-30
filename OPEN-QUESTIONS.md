@@ -65,12 +65,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - Text size: "readable" - vanilla's 11-14 px lines are shown at 14-18 px (vanilla list text tops out at 14). Exact vanilla sizes are one switch. [readable]
 - Leaving a page: Esc + a footer Close button (Secondary, cancel sound) like vanilla pages; the corner X is optional (vanilla hides it). [footer Close]
 - Result lines: vanilla green for done, vanilla red for refused, info blue #7caacc for notes (vanilla BarterPage); gold stays for highlights. [blue notes]
-- Tabs: like vanilla's spawn page - the active tab is a gold Primary button, the others Secondary, equal widths. [vanilla tabs]
+- Tabs: like vanilla's spawn page - the active tab is a Primary button (blue in game), the others Secondary, equal widths. [vanilla tabs]
 - Window: decorated frame (title bar with runes + gold ornaments) for forms and dialogs, the plain frame for long list pages - both are vanilla. [both]
 - Mythic on pages stays #CC66CC (your lock); HUD widgets get vanilla's #000000(0.2) background when the HUD is restyled. [as listed]
 - Not possible inline: vanilla's full-screen dim and bottom-left Back button (a page's root may only have a width and height).
-- Still to see in game (/skyprobe pages): text box look (3 candidates on probe page 2), checkboxes, dropdowns, tooltips, progress bars,
-  rarity-framed item slots - they stay off until you've seen them.
+- Seen in game 2026-09-30 (/skyprobe): dropdowns, tooltips, progress bars, item slots with rarity backgrounds, search boxes, tiles,
+  text gradients, stretching layouts all WORK; checkboxes half-work; rarity FRAMES and empty-slot backgrounds do not. Text box look
+  (3 candidates on probe page 2): not picked yet - the current look stays. [current look]
 
 ## Vault arrows (`research/Vault-Arrows-Spec.md`, live in SkyyVault 0.1.2)
 - APPROVED 2026-09-25 (Skyy): cycle pages inside the vault GUI with the existing in-chest Prev/Next arrows. Do not add a second page-switch UI.

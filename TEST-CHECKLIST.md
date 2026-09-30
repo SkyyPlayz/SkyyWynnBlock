@@ -985,3 +985,17 @@ two columns (ready line "[SkyyUiProbe] 0.2 ready - /skyprobe (admin): 22 probe p
 layout blocks), 20 button-text, 21 flex-rows, 22 layout-right. On base2: if it shows only the Back/Close footer and no columns, FlexWeight
 failed - note it. After each page press Back: the line under the columns says which page is next. 12 restyled mods are waiting: Bank,
 Party, Accessory Bag, Class, Profiles, Vault need base1-3; Collections, Guilds, Islands, Skills, Trees, Exploration also need base4.
+## Vanilla UI wave - 12 restyled pages, DEPLOYED 2026-09-30 05:55 (backup backups/deploy-20260930-0555)
+Bank 0.1.4, Party 0.1.6, Accessories 0.4.5, Classes 0.1.8, Profiles 0.1.3, Vault 0.1.4, Collections 0.2.4, Guilds 0.1.4, Islands 0.5.4,
+Skills 0.4.7, Trees 0.2.5, Exploration 0.2.2. Only the LOOK changed (plus the Guilds fix below) - every button, command and number works as before.
+1. Start the world: every "[Skyy...] ready" line; the restyled mods name "skyyui 1.4" in their ready line.
+2. Open each page and check it opens (no disconnect) in the vanilla look (frame + title bar, blue Primary / dark Secondary buttons with hover +
+   click sounds, Close at the bottom, Esc closes): /bank, /party, the Accessory Bag (right-click it), /class, /profiles, /vault (page list),
+   /collections, /guild, /island menu, /skills (+ Stats, Top 10, Overall), /tree (bigger now), the Exploration pages.
+3. Do one real action on each: deposit/withdraw coins, invite to party, equip/unequip an accessory, (class page: Choose is refused while locked),
+   switch profile tab, buy a vault page (the confirm dialog), claim a collection reward, guild page buttons, island settings tab, tree node unlock
+   with a token, Exploration checklist.
+4. Text fits: long names, big numbers (13 digits in the bank), nothing cut off or overlapping.
+5. Guilds fix: an admin adds a skill to Server Setup -> Guilds -> "Skills that count" while the server runs -> the guild does NOT jump by that skill's
+   old XP; only XP earned after it was added counts.
+6. If a page disconnects: note which one - rolling that mod back to its previous version is safe (no data changed).
