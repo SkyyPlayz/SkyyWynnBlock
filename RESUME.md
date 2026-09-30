@@ -56,6 +56,7 @@ four from their old patch scripts (their successors 0.4.6 / 0.2.4 / 0.1.7 / 0.1.
    checkbox partial), fix the probe base2 sample texts + option_row right padding + guide wording (Primary is blue), button labels sized by
    text_width; then the remaining batches: Bazaar + Auctions, Sacks /craft, Essentials, Menu (add the version bumps + SkyyUiProbe to MODS), Hud;
    then retire SkyyUiProbe (RETIRED list).
+3b. **Queued (Skyy decisions 2026-09-30, OPEN-QUESTIONS LOCKED):** SkyyAccessories 0.5 booster lines (spec research\Booster-Accessories-Spec.md; workflow script skywynn-accessories-0-5-boosters, run wf_9134fcdc-a2c, stopped before it started to save the 5-hour limit - re-run it); in flight: SkyyGear 0.1.1 finish + 0.1.2 Charged Attack Damage, SkyySkills 0.4.8 caster Mana, SkyyBank 0.1.5, SkyyProfiles 0.1.4 + SkyyClasses 0.1.9, SkyyVault 0.1.5 arrow click; READY + pinned: SkyySacks 0.7.8. Runes (0.7 beta): research\Hytale-Runes-Research.md, fixes needed when the beta goes live: research\PreRelease-Compat-Report.md.
 4. **Small follow-ups:** config kit keeps 10 old file versions (tools/skyycfg.py KEEP 20 -> 10); SkyyGuilds xpSkills mid-run change credits
    a skill's whole saved XP (fix in the next Guilds version); Archery 15+ extra bolts and the late-game holstered reload (approved, later).
 5. **After Skyy tests the separate economy mods:** SkyyEconomy 0.1 = Coins + Bank + Bazaar + Auctions merged (`SkyyEconomy-Plan.md`; use the
