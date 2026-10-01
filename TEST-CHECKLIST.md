@@ -1082,3 +1082,16 @@ Skills 0.4.7, Trees 0.2.5, Exploration 0.2.2. Only the LOOK changed (plus the Gu
 3. Pocket crafting still has the Accessory Bag. Craft one accessory and one bag from the new tab: same ingredients as before.
 4. Charcoal: with a Smithing bag (or the Omni bag) in your inventory, charcoal you pick up into the MAIN inventory goes into the bag within
    ~2 s. Charcoal already in the hotbar stays there (all bag items work that way) - "Deposit all" on the Smithing tab takes it.
+## SkyyIslands 0.5.5 + SkyyGuilds 0.1.6 (DEPLOYED 2026-10-01)
+Islands (needs a second player, e.g. Wesley as co-op member of your island):
+1. Delete the profile that OWNS the island (/profiles, Delete): Wesley can't /island visit or warp there ("...island is closed - its profile
+   was deleted..."); if he is on it he is sent away within ~5 s. An admin can still go there.
+2. Restore the profile: Wesley can go again, membership and settings unchanged.
+3. (Optional, Server Setup undo window 1 h) let it archive: Wesley is released (told once, now or ~6 s after his next login) and can make
+   his own island.
+4. A member deleting their own profile never closes the island.
+Guilds:
+5. Deposit 1,000, then leave: the confirm says you get back 350 (35%) and the rest stays in the bank; your purse +350.
+6. Kick a member with a positive contribution: the confirm says what they get back; an offline member gets it in their active profile.
+7. Rejoin after leaving: your Contribution starts at 0. Server Setup -> Guilds -> "Leave refund" (0-100) changes the 35%.
+8. Last member leaving still gets the whole bank; disband still splits by contribution.

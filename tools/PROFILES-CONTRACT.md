@@ -224,5 +224,5 @@ ones. The reverse never happens: when you see a new epoch, the Function already 
   caches the list must re-read it, not wait for the epoch.
 - **Other mods' data** under a pending or archived key is never touched and comes back on restore (same key). Mods that scan every
   profile file on disk (leaderboards in Skills / Collections) still see it - skip keys whose `profile:fn:state` is pending or archived.
-  Known gap: SkyyIslands co-op members keep access to a pending/archived owner's island (OPEN-QUESTIONS).
+  Since SkyyIslands 0.5.5 a pending owner's island is closed to co-op members and visitors, and an archived owner's members are released.
 - `MAX_ID` is 256 (was 64): ids are never reused once archived.

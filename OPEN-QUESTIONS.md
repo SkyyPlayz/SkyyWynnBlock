@@ -99,7 +99,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LIVE 2026-10-01 (SkyyGuilds 0.1.5): % disband refunds + Contribution column as decided above.
 - LOCKED 2026-10-01 (Skyy): a member who LEAVES (or is kicked) gets part of their contribution back - "some of it but not all. like 30%-40%
   of what they donated" -> 35% of their positive net contribution (deposits - withdrawals), editable in Server Setup; the rest stays in
-  the bank. [SkyyGuilds 0.1.6 - building]
+  the bank. [LIVE 2026-10-01, SkyyGuilds 0.1.6 - the rest of a leaver's contribution becomes the guild's, so rejoining starts at 0]
 - LIVE 2026-10-01 (SkyyMenu 0.3.4; Server Setup now shows the 24 ms settings in seconds too): every profile gets the SkyWynn Menu item the first time it is used (today: once per player, so new profiles have none -
   /skymenu gives it back). [SkyyMenu 0.3.4]
 - LOCKED 2026-10-01 (Skyy): profiles can be deleted - confirm question, then a 6-hour undo window (Restore button, frees the slot at once);
@@ -109,7 +109,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-10-01 (Skyy): yes, block it - "a player can always leave an island and make their own. so only the owner of an island can delete
   it." While the OWNER's profile is deleted (undo window) the island is closed to co-op members (anyone on it is sent away); a restore opens
   it again; once the profile is archived the members are released so they can make their own island. A member deleting their own profile
-  never affects the island. [SkyyIslands 0.5.5 - building]
+  never affects the island. [LIVE 2026-10-01, SkyyIslands 0.5.5]
 - DECIDED 2026-10-01 (Skyy): starter coins, class kit and island starter chest stay ONCE PER PROFILE (no change).
 - DECIDED 2026-10-01 (Skyy): the profile undo window stays in HOURS ("considering the amount of play time that could be lost"; Wynncraft
   uses a few days - Server Setup allows up to 168 h = 7 days). [default 6 h]
