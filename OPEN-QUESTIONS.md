@@ -47,6 +47,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - REQUEST 2026-09-30 (Skyy): a MOB LEVEL system - research + plan only for now (check how other Hytale mods do it). Levels set by biome (the
   easiest: where the mob spawns); zone 1's blue forest and other zone-1 biomes slightly higher, zone 2 a big step up; inside a zone, rarer biomes
   = higher level. [plan queued: research/Mob-Levels-Plan.md]
+- DECIDED 2026-10-01 (Skyy): keep the Zone 1 Temple discovery reward (+1,000 Exploration XP, ~4 levels for a new profile at the hub) "for now".
 - LOCKED 2026-10-01 (Skyy): the Warrior kit gets a Wood Shield (Weapon_Shield_Wood) next to the Crude Sword - into the off-hand slot when free.
   [SkyyClasses 0.1.10 - queued; it also takes the Priest self-heal 100% default + clearer label below]
 - NOTE 2026-10-01 (Skyy): "Priest heals self" should default to 100% (the Priest heals itself as much as each party member). The placeholder heal
