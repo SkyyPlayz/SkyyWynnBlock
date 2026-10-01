@@ -47,6 +47,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - REQUEST 2026-09-30 (Skyy): a MOB LEVEL system - research + plan only for now (check how other Hytale mods do it). Levels set by biome (the
   easiest: where the mob spawns); zone 1's blue forest and other zone-1 biomes slightly higher, zone 2 a big step up; inside a zone, rarer biomes
   = higher level. [plan queued: research/Mob-Levels-Plan.md]
+- NOTE 2026-10-01 (Skyy): "Priest heals self" should default to 100% (the Priest heals itself as much as each party member). The placeholder heal
+  is temporary, so DON'T spend a build on it - change the default only if SkyyClasses is rebuilt for another reason (also rename the row
+  "Priest self-heal (% of what one party member gets)"). Skyy sets 100 in Server Setup meanwhile.
 - LOCKED 2026-10-01 (Skyy): guild disband pays the bank back fairly, BY PERCENTAGE ("use %") - each member still in the guild gets the share of the
   whole bank equal to their share of everything the current members put in (their deposits minus withdrawals, from the bank log), so interest and
   rewards are shared the same way. Members with nothing put in get nothing; if nobody put anything in, the bank is split evenly. Same when the last
