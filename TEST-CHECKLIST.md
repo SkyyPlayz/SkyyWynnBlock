@@ -1042,3 +1042,13 @@ Skills 0.4.7, Trees 0.2.5, Exploration 0.2.2. Only the LOOK changed (plus the Gu
 4. /classadmin kit <you> Warrior again while holding the shield -> the second shield goes to the hotbar. A torch in the off-hand stays put.
 5. Priest in a party: your own heal equals each member's heal in the heal chat line.
 6. Restart: nothing changes, no new History version.
+## SkyyGuilds 0.1.5 - % disband refunds + contribution column (DEPLOYED 2026-10-01)
+1. First start logs one GodSquad line "seeded once from its history ... COMPLETE"; a restart does not log it again.
+2. /guild: wider window, new Contribution column - SkyLordPlayz 1,100, WesleyPlayz 0; Leader on top, then Admins, then Members, each group
+   highest contribution first. A member who withdrew more than they put in shows a red negative number.
+3. Deposit / withdraw: the number moves at once (deposit +, withdraw -).
+4. Disband with two members who both put coins in: the confirm says "...back to the members by contribution (your share: X)"; after it, each
+   purse got its share (60/40 contributions -> 60/40 of the bank). Nobody positive -> even split. An offline member's share lands in the
+   profile they were last on.
+5. Leaving (not the last member): the confirm says your contribution stays in the bank for the others. Last member leaving gets the whole bank.
+6. /guildadmin info <guild> shows contributions and how the seed went.
