@@ -47,8 +47,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - REQUEST 2026-09-30 (Skyy): a MOB LEVEL system - research + plan only for now (check how other Hytale mods do it). Levels set by biome (the
   easiest: where the mob spawns); zone 1's blue forest and other zone-1 biomes slightly higher, zone 2 a big step up; inside a zone, rarer biomes
   = higher level. [plan queued: research/Mob-Levels-Plan.md]
-- LOCKED 2026-10-01 (Skyy): guild disband pays the bank back fairly - each member still in the guild gets back what they put in (deposits minus
-  withdrawals, from the bank log; scaled down evenly if the bank holds less), and anything left over is split evenly between them. Same when the last
+- LOCKED 2026-10-01 (Skyy): guild disband pays the bank back fairly, BY PERCENTAGE ("use %") - each member still in the guild gets the share of the
+  whole bank equal to their share of everything the current members put in (their deposits minus withdrawals, from the bank log), so interest and
+  rewards are shared the same way. Members with nothing put in get nothing; if nobody put anything in, the bank is split evenly. Same when the last
   member leaves. Was: everything to the Leader. [SkyyGuilds 0.1.5 - queued]
 - QUEUED 2026-10-01: every profile gets the SkyWynn Menu item the first time it is used (today: once per player, so new profiles have none -
   /skymenu gives it back). [SkyyMenu 0.3.4]
