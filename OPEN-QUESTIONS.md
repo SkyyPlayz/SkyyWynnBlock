@@ -56,6 +56,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - NOTE 2026-10-01 (Skyy): "Priest heals self" should default to 100% (the Priest heals itself as much as each party member). The placeholder heal
   is temporary, so DON'T spend a build on it - change the default only if SkyyClasses is rebuilt for another reason (also rename the row
   "Priest self-heal (% of what one party member gets)"). Skyy sets 100 in Server Setup meanwhile.
+- LOCKED 2026-10-01 (Skyy): the guild member list shows each member's overall bank contribution = deposits minus withdrawals (can be negative,
+  e.g. +100,000 - 25,000 = 75,000; +2,000 - 5,000 = -3,000). Sort: first by guild rank (Leader/owner top, then Admins, then Members), then by
+  contribution, highest first - so the biggest donors and the biggest takers are visible in each rank. [SkyyGuilds 0.1.5, with the % refunds]
 - LOCKED 2026-10-01 (Skyy): guild disband pays the bank back fairly, BY PERCENTAGE ("use %") - each member still in the guild gets the share of the
   whole bank equal to their share of everything the current members put in (their deposits minus withdrawals, from the bank log), so interest and
   rewards are shared the same way. Members with nothing put in get nothing; if nobody put anything in, the bank is split evenly. Same when the last
