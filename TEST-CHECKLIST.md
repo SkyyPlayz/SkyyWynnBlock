@@ -1074,3 +1074,11 @@ Skills 0.4.7, Trees 0.2.5, Exploration 0.2.2. Only the LOOK changed (plus the Gu
 2. /skills -> Divinity: "Healing pays 1 Divinity XP per HP on others, 1.25 on yourself (max 900 a minute)".
 3. Heal a party member: Divinity XP = HP healed. Heal yourself: about 1.25 XP per HP. Wand kill XP is the same as before.
 4. Server Setup -> Skills -> Combat: heal rows 1 / 1.25 / 900 ("Not multiplied by class skill XP"); Changes has 3 Undo lines.
+## Accessories 0.5.2 + Sacks 0.7.10 - Workbench "Accessories & Bags" tab, Charcoal -> Smithing bag (DEPLOYED 2026-10-01)
+1. Open a Workbench: a new tab at the right end (bag icon) named "Accessories & Bags". The Crafting tab now holds only the vanilla benches.
+2. Order in the new tab: Accessory Bag, the five Normal bags, Normal accessories, bench accessories I, then Unique, Rare, Legendary
+   (each: accessories, bench accessories, bags), Omni Accessory, Mythic Omni Bag LAST. If the game shows another order, say which -
+   the client may sort on its own.
+3. Pocket crafting still has the Accessory Bag. Craft one accessory and one bag from the new tab: same ingredients as before.
+4. Charcoal: with a Smithing bag (or the Omni bag) in your inventory, charcoal you pick up into the MAIN inventory goes into the bag within
+   ~2 s. Charcoal already in the hotbar stays there (all bag items work that way) - "Deposit all" on the Smithing tab takes it.

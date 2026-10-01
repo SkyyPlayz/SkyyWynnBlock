@@ -47,9 +47,14 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - REQUEST 2026-09-30 (Skyy): a MOB LEVEL system - research + plan only for now (check how other Hytale mods do it). Levels set by biome (the
   easiest: where the mob spawns); zone 1's blue forest and other zone-1 biomes slightly higher, zone 2 a big step up; inside a zone, rarer biomes
   = higher level. [plan queued: research/Mob-Levels-Plan.md]
-- LOCKED 2026-10-01 (Skyy): Charcoal goes in the Smithing bag (it stayed in the hotbar). [next SkyySacks - building]
+- LOCKED 2026-10-01 (Skyy): Charcoal goes in the Smithing bag (it stayed in the hotbar). [LIVE 2026-10-01, SkyySacks 0.7.10]
+- OPEN 2026-10-01: bags auto-collect only from the MAIN inventory (every bag item, since the bags first shipped) - items already in the
+  hotbar or backpack stay there until "Deposit all" or you move them. Sweep the hotbar too? (Careful: it would also pull tools/food
+  you keep on the hotbar if they belong in a bag.) [main inventory only]
+- NOTE 2026-10-01: the real Furnace's fuel slot does not take fuel from bags - withdraw charcoal first (/craft's Furnace does read bags).
 - LOCKED 2026-10-01 (Skyy): a new Workbench tab for accessories + sacks, in crafting order - low tiers first, Legendaries and the Omni bag
-  at the bottom. Pocket-crafted recipes (the Accessory Bag) stay craftable from the inventory. [SkyyAccessories 0.5.2 + next SkyySacks - building]
+  at the bottom. Pocket-crafted recipes (the Accessory Bag) stay craftable from the inventory. [LIVE 2026-10-01, Accessories 0.5.2 + Sacks 0.7.10;
+  the server sends the exact order - whether the game client keeps it is checked on your first look]
 - LOCKED 2026-10-01 (Skyy): copper ARMOR starts at level 1 ("since there is no lower tier armor"); copper weapons/tools keep their level.
   Works today with no build: Server Setup -> Gear -> Levels -> "Level by material" entry Armor_Copper = 1 (an id-word entry at the
   start of the id beats the Copper row). [next SkyyGear: Armor_Copper=1 as a default + one-time add; the Wynn-style level spec: the
