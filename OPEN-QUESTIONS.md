@@ -49,8 +49,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   = higher level. [plan queued: research/Mob-Levels-Plan.md]
 - REQUEST 2026-10-01 (Skyy): gear levels like Wynncraft - "the gears level determines the stat it gives, and the gear level is the use
   requirement level" (e.g. Wooden earth staff Lv1 6-8 damage, Lv4 10-12, needs Priest level 4); "all items crafted are crafted at your level".
-  Gate skill stays as ruled 2026-09-25: combat gear = your class weapon skill, mining/foraging/farming gear = that skill. [spec being
-  written: research/Gear-Levels-Wynn-Spec.md]
+  Gate skill stays as ruled 2026-09-25: combat gear = your class weapon skill, mining/foraging/farming gear = that skill.
+  Skyy, same day: each armor/weapon/tool material has its own LEVEL RANGE, and the ranges OVERLAP like Wynncraft (leather 1-18, chain
+  from ~15, gold from ~20). Crafting above a material's cap makes it AT the cap (a level 80 player crafting a copper pickaxe gets the
+  copper cap, ~22, because iron starts ~20). Same level = about the same stats across materials (Lv 22 copper ~ Lv 20 iron), except the
+  better material starts with a little more of its own base stat (iron: a bit more Mining Fortune). TOOLS become reforgeable too.
+  [spec being written: research/Gear-Levels-Wynn-Spec.md]
 - LOCKED 2026-10-01 (Skyy): ALL weapons and armor found in world chests start unidentified - also prebuilt-structure chests (no loot table) and
   SkyyExploration's chest-luck extras (0.1.2 only tagged loot-table chests). Player storage (own chests, vault, AH, trade, bags) never touched.
   LIVE 2026-10-01 (SkyyGear 0.1.3). Also new: 59 level rows for non-metal gear, all editable in Server Setup -> Gear -> Levels. Picked for you:
