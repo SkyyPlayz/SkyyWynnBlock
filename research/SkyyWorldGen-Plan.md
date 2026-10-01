@@ -515,6 +515,12 @@ ships the default stays `summit`.
 
 ## 8. Questions for Skyy (recommended default in brackets)
 
+**ANSWERED 2026-10-01 by Skyy: (1) unlock = reach the summit today, then class skill 10 / 25 / 40 once the flatter curve ships,
+then beat the summit guardian once bosses exist (the recommended staged rule); (2) solo players start on a SMALL HUB ISLAND (a fifth
+world) and travel to the zone islands from it - NOT the normal Hytale world; (3) SHIFT ZONE 4 DOWN to about Lv 40-49 so vanilla gear
+covers it (our own tiers extend it later) - Zone 3 / Zone 4 level tables, guardian gaps and the Mob-Levels-Plan bands need a re-fit
+(proposed: Zone 3 30-38 with its guardian at 38-40, Zone 4 40-49 with a capstone at 50 - confirm when building).**
+
 Only three, because only these change what gets built. Earlier drafts also asked about ring direction, island size, biome looks and terraces:
 they are now defaults (below), each one a setting or a stage-2 call, not a blocker.
 
