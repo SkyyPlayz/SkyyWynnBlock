@@ -150,7 +150,7 @@ the rim is where Lv 1-2 players fight and knockback would otherwise drop them in
 | Unlock storage | Per profile: `Skyy_SkyyWorldGen/progress/<profile or uuid>.properties`, SkyyProfiles-aware when present |
 | Gate enforcement | `/zone` and the menu check the unlock. `AddPlayerToWorldEvent` exists in the release jar, so a guard can send back a player who arrives another way; whether the event can redirect or cancel is UNVERIFIED (T11). Until then the gate is soft |
 | No flying | `/fly` is blocked on zone islands (SkyyExploration answer Q8); creative and admins are exempt |
-| Warps | **Skyy 2026-10-01: every zone island has its own hub / main town (city) with a warp; unlocking a zone unlocks its town warp** ("once you unlock zone 2 you can warp there"). The town sits at the landing point on the safe rim, so the previous island's summit portal and the warp both arrive in town, and the return portal stands in town. Warp list = the solo hub island + every unlocked zone town (per profile), from the menu / `/warp` (SkyyExploration D1 warps, extended). Zone 1's town is free from the start. Smaller towns / outposts inside an island can become extra warps later with quests |
+| Warps | **Skyy 2026-10-01: every zone island has its own hub / main town (city) with a warp; unlocking a zone unlocks its town warp** ("once you unlock zone 2 you can warp there"). The town sits at the landing point on the safe rim, so the previous island's summit portal and the warp both arrive in town, and the return portal stands in town. Warp list = every unlocked zone town (per profile; the Zone 1 town is the hub), from the menu / `/warp` (SkyyExploration D1 warps, extended). Zone 1's town is free from the start. Smaller towns / outposts inside an island can become extra warps later with quests |
 
 ### 2.4 The vanilla world, the hub and the server
 
@@ -521,6 +521,9 @@ then beat the summit guardian once bosses exist (the recommended staged rule); (
 world) and travel to the zone islands from it - NOT the normal Hytale world; (3) SHIFT ZONE 4 DOWN to about Lv 40-49 so vanilla gear
 covers it (our own tiers extend it later) - Zone 3 / Zone 4 level tables, guardian gaps and the Mob-Levels-Plan bands need a re-fit
 (proposed: Zone 3 30-38 with its guardian at 38-40, Zone 4 40-49 with a capstone at 50 - confirm when building).**
+**Skyy 2026-10-01 (replaces answer 2): NO fifth hub island - the HUB is the main starter town on the Zone 1 island (its landing
+town). Proposed with it: a TEMPLE at the centre of every zone town (zone-themed look), the town's anchor - warp arrival, respawn,
+return portal, the zone's discovery spot (like today's hub at the Forgotten Temple) and later the Memories turn-in.**
 
 Only three, because only these change what gets built. Earlier drafts also asked about ring direction, island size, biome looks and terraces:
 they are now defaults (below), each one a setting or a stage-2 call, not a blocker.
