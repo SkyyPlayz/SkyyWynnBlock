@@ -145,7 +145,7 @@ the rim is where Lv 1-2 players fight and knockback would otherwise drop them in
 | First visit | `InstancesPlugin.spawnInstance("SkyWynn_Zone1", "skywynn_z1", fromWorld, transform)` copies the template and generates. Persist with `setDeleteOnRemove(false)` + `setDeleteOnUniverseStart(false)`; reopen later with `Universe.addWorld(name)`, never `spawnInstance` again (that makes a fresh copy). Same flow as SkyyIslands 0.1 |
 | Arrive | The **landing point** on the south rim: `SpawnPositions` (a `List` position) and the instance `SpawnProvider` point, about (0, top, R - 40). Death in that world respawns here (SkyyIslands 0.4 note: respawn = the world's DeathConfig / `SpawnProvider`) |
 | Leave | `/hub` = `InstancesPlugin.exitInstance` (SkyyIslands already does it) |
-| Unlock the next island | Server Setup row `unlock.mode` = `summit` / `skill` / `guardian` / `open` (question 1). Default today: `summit` (stand on the summit spot). After the SkyySkills flatten ships: `skill` (summit plus class weapon skill at least the zone's top level, 10 / 25 / 40). When bosses exist: `guardian` (beat the summit guardian). The Zone 4 summit unlocks nothing until the capstone dungeon exists |
+| Unlock the next island | Server Setup row `unlock.mode` = `summit` / `skill` / `guardian` / `open` (question 1). Default today: `summit` (stand on the summit spot). After the SkyySkills flatten ships: `skill` (summit plus class weapon skill at least the zone's top level, 20 / 30 / 45). When bosses exist: `guardian` (beat the summit guardian). The Zone 4 summit unlocks nothing until the capstone dungeon exists |
 | **Summit portal (Skyy's idea, 2026-10-01)** | The main way forward: a portal at each island's summit (right next to the guardian arena) that sends you to the NEXT island's landing point, and only works once you have unlocked that island (per profile, `unlock.mode` above - so "beat the guardian" once bosses exist). Every solo world gets it automatically: the summit is always the island centre (0, top, 0), so the portal is placed as a prefab by the generator (V2 prop/prefab at a fixed position) or pasted by our plugin when the island world is first created (the SkyyIslands way) - nobody builds across the void, because each island is its own world and travel is always a teleport. Locked: it stays dark and says "Defeat the guardian to open the way to Zone N"; unlocked: it teleports. One shared block on a server, so locked/unlocked is decided per player when they step in (not a per-player look). A return portal stands at each landing point (back to the previous island / the hub island). Built from vanilla `Portal_Device` / `Instance_Gateway` / `PortalTypes` if they can be driven by our check (UNVERIFIED, stage 0 test), else our own portal block with the same look. `/zone` and the menu stay as shortcuts to islands you have ALREADY unlocked |
 | Unlock storage | Per profile: `Skyy_SkyyWorldGen/progress/<profile or uuid>.properties`, SkyyProfiles-aware when present |
 | Gate enforcement | `/zone` and the menu check the unlock. `AddPlayerToWorldEvent` exists in the release jar, so a guard can send back a player who arrives another way; whether the event can redirect or cancel is UNVERIFIED (T11). Until then the gate is soft |
@@ -345,10 +345,10 @@ Wastes, Volcanoes, Jungles and Shores. Zone 4's guardian row (61-63) is explaine
 
 | Zone | R0 | R1 | R2 | R3 | R4 | Core | Guardian | Leave with |
 |---|---|---|---|---|---|---|---|---|
-| 1 | 1-2 | 1-3 | 3-5 | 5-7 | 7-9 | 8-10 | 11-13 | Copper, weapon skill about 12 |
-| 2 | 15-17 | 16-18 | 17-19 | 19-22 | 22-24 | 23-25 | 26-28 | Cobalt, skill about 27 |
-| 3 | 30-32 | 31-33 | 33-35 | 34-36 | 35-37 | 36-38 | 38-40 | Adamantite / first Mithril, skill about 40 (Skyy 2026-10-01: Zone 4 starts ~40) |
-| 4 | 40-42 | 42-45 | 45-49 | 49-53 | 53-58 | 58-62 | 63-65 | Skyy 2026-10-01: starts ~40, hardest biomes ~60-65; gear above 49 = our own tiers later; more content above 65 later |
+| 1 | 1-3 | 3-6 | 5-9 | 8-12 | 11-15 | 14-18 | 19-20 | Wood -> Copper (copper armor from 1) -> first Iron 15-23; skill about 20 |
+| 2 | 20-22 | 21-23 | 22-25 | 24-27 | 26-28 | 27-29 | 30 | Iron -> Thorium 20-28 -> first Cobalt 25-38; skill about 30 |
+| 3 | 30-33 | 32-35 | 34-37 | 36-40 | 39-42 | 41-44 | 45 | Cobalt -> Adamantite 35-43 -> Mithril / Onyxium 40-49; skill about 45 |
+| 4 | 45-47 | 46-49 | 48-52 | 51-55 | 54-58 | 57-59 | 60 | Mithril / Onyxium / Prisma to 49, then our own tiers 50+ (later); more zones past 60 later |
 
 Oceans (Crystalline Depths) get no island in this plan. A later side island can use the 13 ocean looks at Lv 5-10 (Mob-Levels-Plan 4.1).
 
@@ -516,7 +516,7 @@ ships the default stays `summit`.
 
 ## 8. Questions for Skyy (recommended default in brackets)
 
-**ANSWERED 2026-10-01 by Skyy: (1) unlock = reach the summit today, then class skill 10 / 25 / 40 once the flatter curve ships,
+**ANSWERED 2026-10-01 by Skyy: (1) unlock = reach the summit today, then class skill 20 / 30 / 45 once the flatter curve ships,
 then beat the summit guardian once bosses exist (the recommended staged rule); (2) solo players start on a SMALL HUB ISLAND (a fifth
 world) and travel to the zone islands from it - NOT the normal Hytale world; (3) SHIFT ZONE 4 DOWN to about Lv 40-49 so vanilla gear
 covers it (our own tiers extend it later) - Zone 3 / Zone 4 level tables, guardian gaps and the Mob-Levels-Plan bands need a re-fit
@@ -532,13 +532,17 @@ SkyyExploration discovery). Outposts sit inside their biome patch in its ring, s
 Lv 60-65; more is built later for higher levels. Proposed ladder (section 4.5 updated): Zone 3 rings 30-38 with its guardian at 38-40;
 Zone 4 rim 40-42 -> core 58-62, guardian 63-65. Vanilla gear (Mithril / Onyxium / Prisma 40-49) covers Zone 4's outer rings; the inner
 rings (Lv 50+) are the hard part until our own tiers exist.**
+**Skyy 2026-10-01 - ZONE BANDS (final, replaces every earlier Zone 3 / Zone 4 note): Zone 1 = Lv 1-20 (it has copper AND iron),
+Zone 2 = 20-30, Zone 3 = 30-45, Zone 4 = 45-60, more planned past 60. Zones 1 and 3 have the most biomes, so they stretch over the most
+levels. Each zone's guardian sits at the top of its band (20 / 30 / 45 / 60); the skill unlock becomes class skill 20 / 30 / 45.
+Section 4.5 holds the re-fitted ring ladder; the per-zone tables 4.1-4.4 keep their biome placement, only the levels follow 4.5.**
 
 Only three, because only these change what gets built. Earlier drafts also asked about ring direction, island size, biome looks and terraces:
 they are now defaults (below), each one a setting or a stage-2 call, not a blocker.
 
 1. **What unlocks the next island, and what does "finish" mean until bosses exist?** The lock says finish the zone's island first, but there
    are no guardians yet (SkyyDungeons is planned). [**Reach the summit** until the flatter skill curve ships, then reach the summit with
-   class weapon skill at least the zone's top level (10 / 25 / 40), then beat the summit guardian once bosses exist. One row,
+   class weapon skill at least the zone's top level (20 / 30 / 45), then beat the summit guardian once bosses exist. One row,
    `unlock.mode` = `summit` / `skill` / `guardian` / `open`.]
 2. **Where does a solo player start, and what is the hub?** The locked spine says the hub is the shared spawn. For solo play the plan keeps
    the normal Hytale world as the hub and wild world, with the four islands as separate worlds reached by `/zone` and the menu. The other

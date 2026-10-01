@@ -71,12 +71,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   respawn, return portal, the zone's discovery reward, later the Memories turn-in). LOCKED 2026-10-01 (Skyy): start with the
   VANILLA temples and build each zone's starter town around one; plus at least one OUTPOST TOWN PER BIOME in every zone, each with
   an unlockable warp (found = unlocked). [SkyyWorldGen plan]
-- LOCKED 2026-10-01 (Skyy, replaces 'shift Zone 4 down to 40-49'): Zone 4 starts around Lv 40 and its hardest biomes reach about
-  Lv 60-65; more gets built later for higher levels. Proposed: Zone 3 rings 30-38 + guardian 38-40, Zone 4 rim 40-42 -> core 58-62 +
-  guardian 63-65 (SkyyWorldGen plan 4.5; Mob-Levels-Plan zone bands follow when SkyyMobs is built).
+- LOCKED 2026-10-01 (Skyy, final - replaces the earlier Zone 3 / Zone 4 lines): ZONE BANDS Zone 1 = Lv 1-20 (copper AND iron),
+  Zone 2 = 20-30, Zone 3 = 30-45, Zone 4 = 45-60, more past 60 later (zones 1 and 3 have the most biomes, so they stretch furthest).
+  Guardians at 20 / 30 / 45 / 60; skill unlock = class skill 20 / 30 / 45. Ring ladder in SkyyWorldGen plan 4.5; Mob-Levels-Plan
+  zone bands (was Z1 1-10, Z2 15-25, Z3 30-40, Z4 45-60) follow when SkyyMobs is built.
 - PLAN 2026-10-01 (Skyy: "dont build yet, just make a plan"): SkyyWorldGen - Hytale zones as their own islands, biomes as progressively
   harder levels with level ranges -> research/SkyyWorldGen-Plan.md.
-  ANSWERED 2026-10-01 by Skyy: (1) unlock = reach the summit today, then class skill 10 / 25 / 40 once the flatter curve ships,
+  ANSWERED 2026-10-01 by Skyy: (1) unlock = reach the summit today, then class skill 20 / 30 / 45 once the flatter curve ships,
   then beat the summit guardian once bosses exist (the recommended staged rule); (2) solo players start on a SMALL HUB ISLAND (a fifth
   world) and travel to the zone islands from it - NOT the normal Hytale world; (3) SHIFT ZONE 4 DOWN to about Lv 40-49 so vanilla gear
   covers it (our own tiers extend it later) - Zone 3 / Zone 4 level tables, guardian gaps and the Mob-Levels-Plan bands need a re-fit
