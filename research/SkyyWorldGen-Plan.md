@@ -347,8 +347,8 @@ Wastes, Volcanoes, Jungles and Shores. Zone 4's guardian row (61-63) is explaine
 |---|---|---|---|---|---|---|---|---|
 | 1 | 1-2 | 1-3 | 3-5 | 5-7 | 7-9 | 8-10 | 11-13 | Copper, weapon skill about 12 |
 | 2 | 15-17 | 16-18 | 17-19 | 19-22 | 22-24 | 23-25 | 26-28 | Cobalt, skill about 27 |
-| 3 | 30-32 | 31-33 | 33-35 | 35-37 | 37-39 | 38-40 | 41-43 | Mithril, skill about 42 |
-| 4 | 45-47 | 47-50 | 50-53 | 53-56 | 56-59 | 58-60 | 61-63 | capstone dungeon; skills go on to 100 later |
+| 3 | 30-32 | 31-33 | 33-35 | 34-36 | 35-37 | 36-38 | 38-40 | Adamantite / first Mithril, skill about 40 (Skyy 2026-10-01: Zone 4 starts ~40) |
+| 4 | 40-42 | 42-45 | 45-49 | 49-53 | 53-58 | 58-62 | 63-65 | Skyy 2026-10-01: starts ~40, hardest biomes ~60-65; gear above 49 = our own tiers later; more content above 65 later |
 
 Oceans (Crystalline Depths) get no island in this plan. A later side island can use the 13 ocean looks at Lv 5-10 (Mob-Levels-Plan 4.1).
 
@@ -528,6 +528,10 @@ return portal, the zone's discovery spot (like today's hub at the Forgotten Temp
 (placed by reference at build time, never committed; which temple prefabs exist per zone is a stage 0 check in Assets.zip). Plus AT
 LEAST ONE OUTPOST TOWN PER BIOME in every zone (about 46 across the four islands), each with an unlockable warp (found = unlocked,
 SkyyExploration discovery). Outposts sit inside their biome patch in its ring, so a warp never skips a ring you haven't reached.**
+**Skyy 2026-10-01 (replaces the 'shift Zone 4 down to 40-49' answer): Zone 4 STARTS around Lv 40 and its hardest biomes reach about
+Lv 60-65; more is built later for higher levels. Proposed ladder (section 4.5 updated): Zone 3 rings 30-38 with its guardian at 38-40;
+Zone 4 rim 40-42 -> core 58-62, guardian 63-65. Vanilla gear (Mithril / Onyxium / Prisma 40-49) covers Zone 4's outer rings; the inner
+rings (Lv 50+) are the hard part until our own tiers exist.**
 
 Only three, because only these change what gets built. Earlier drafts also asked about ring direction, island size, biome looks and terraces:
 they are now defaults (below), each one a setting or a stage-2 call, not a blocker.

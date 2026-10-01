@@ -71,6 +71,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   respawn, return portal, the zone's discovery reward, later the Memories turn-in). LOCKED 2026-10-01 (Skyy): start with the
   VANILLA temples and build each zone's starter town around one; plus at least one OUTPOST TOWN PER BIOME in every zone, each with
   an unlockable warp (found = unlocked). [SkyyWorldGen plan]
+- LOCKED 2026-10-01 (Skyy, replaces 'shift Zone 4 down to 40-49'): Zone 4 starts around Lv 40 and its hardest biomes reach about
+  Lv 60-65; more gets built later for higher levels. Proposed: Zone 3 rings 30-38 + guardian 38-40, Zone 4 rim 40-42 -> core 58-62 +
+  guardian 63-65 (SkyyWorldGen plan 4.5; Mob-Levels-Plan zone bands follow when SkyyMobs is built).
 - PLAN 2026-10-01 (Skyy: "dont build yet, just make a plan"): SkyyWorldGen - Hytale zones as their own islands, biomes as progressively
   harder levels with level ranges -> research/SkyyWorldGen-Plan.md.
   ANSWERED 2026-10-01 by Skyy: (1) unlock = reach the summit today, then class skill 10 / 25 / 40 once the flatter curve ships,
