@@ -69,20 +69,23 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   member leaves. Was: everything to the Leader. [SkyyGuilds 0.1.5 - queued]
 - LOCKED 2026-10-01 (Skyy): Server Setup shows every time setting in SECONDS, not milliseconds, and accepts decimals like 0.24 (files keep
   their old units, the menu converts). [SkyyMenu 0.3.4 - queued with the per-profile menu item]
-- LIVE 2026-10-01 (SkyyGuilds 0.1.5): % disband refunds + Contribution column as decided above. NOTE from the review: coins left in the bank by
-  members who LEFT or were kicked are shared out among whoever is still in the guild at disband (by their contribution), so a member
-  can join, deposit a little and get a share of those coins. Fine as is, or pay a leaver's positive contribution back when they leave? [as is]
+- LIVE 2026-10-01 (SkyyGuilds 0.1.5): % disband refunds + Contribution column as decided above.
+- LOCKED 2026-10-01 (Skyy): a member who LEAVES (or is kicked) gets part of their contribution back - "some of it but not all. like 30%-40%
+  of what they donated" -> 35% of their positive net contribution (deposits - withdrawals), editable in Server Setup; the rest stays in
+  the bank. [SkyyGuilds 0.1.6 - building]
 - LIVE 2026-10-01 (SkyyMenu 0.3.4; Server Setup now shows the 24 ms settings in seconds too): every profile gets the SkyWynn Menu item the first time it is used (today: once per player, so new profiles have none -
   /skymenu gives it back). [SkyyMenu 0.3.4]
 - LOCKED 2026-10-01 (Skyy): profiles can be deleted - confirm question, then a 6-hour undo window (Restore button, frees the slot at once);
   never the active or the last profile; after 6 h the files go to an admin-only archive (not wiped). Restore works even over the limit. [SkyyProfiles 0.1.5]
   LIVE 2026-10-01. Review change: a restore may not push you past max(limit, how many profiles you had before that delete) - otherwise delete,
   create, restore made unlimited profiles. A lowered limit still lets every deleted profile come back.
-- OPEN 2026-10-01: co-op members of a DELETED profile's island can still go there and build (also after it is archived); the owner can't manage it
-  meanwhile. Block entry while the owner's profile is deleted (SkyyIslands follow-up), or just reword the delete question? [nothing changed yet]
-- OPEN 2026-10-01: every new profile gets 10,000 starter coins, a class kit and an island starter chest, so delete + create farms them. Once per
-  player instead (later profiles start empty), or keep per profile? [per profile]
-- OPEN 2026-10-01: the profile undo window is set in HOURS (1-168, default 6) - fine, or seconds like the other time settings? [hours]
+- LOCKED 2026-10-01 (Skyy): yes, block it - "a player can always leave an island and make their own. so only the owner of an island can delete
+  it." While the OWNER's profile is deleted (undo window) the island is closed to co-op members (anyone on it is sent away); a restore opens
+  it again; once the profile is archived the members are released so they can make their own island. A member deleting their own profile
+  never affects the island. [SkyyIslands 0.5.5 - building]
+- DECIDED 2026-10-01 (Skyy): starter coins, class kit and island starter chest stay ONCE PER PROFILE (no change).
+- DECIDED 2026-10-01 (Skyy): the profile undo window stays in HOURS ("considering the amount of play time that could be lost"; Wynncraft
+  uses a few days - Server Setup allows up to 168 h = 7 days). [default 6 h]
 - LOCKED 2026-10-01 (Skyy): Campfire cooking (in /crafting) pays half the Cooking XP it did - "Campfire XP share" 0.5 -> 0.25.
   [SkyyCooking 0.1.3 + SkyySacks 0.7.9]
 - LOCKED 2026-10-01 (Skyy): class skills level too slowly - new "Class skill XP multiplier" in Server Setup, default x3, on every XP gain into the
