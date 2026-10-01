@@ -50,6 +50,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-10-01 (Skyy): Charcoal goes in the Smithing bag (it stayed in the hotbar). [next SkyySacks - building]
 - LOCKED 2026-10-01 (Skyy): a new Workbench tab for accessories + sacks, in crafting order - low tiers first, Legendaries and the Omni bag
   at the bottom. Pocket-crafted recipes (the Accessory Bag) stay craftable from the inventory. [SkyyAccessories 0.5.2 + next SkyySacks - building]
+- LOCKED 2026-10-01 (Skyy): copper ARMOR starts at level 1 ("since there is no lower tier armor"); copper weapons/tools keep their level.
+  Works today with no build: Server Setup -> Gear -> Levels -> "Level by material" entry Armor_Copper = 1 (an id-word entry at the
+  start of the id beats the Copper row). [next SkyyGear: Armor_Copper=1 as a default + one-time add; the Wynn-style level spec: the
+  copper armor range starts at 1]
 - REQUEST 2026-10-01 (Skyy): gear levels like Wynncraft - "the gears level determines the stat it gives, and the gear level is the use
   requirement level" (e.g. Wooden earth staff Lv1 6-8 damage, Lv4 10-12, needs Priest level 4); "all items crafted are crafted at your level".
   Gate skill stays as ruled 2026-09-25: combat gear = your class weapon skill, mining/foraging/farming gear = that skill.
