@@ -49,7 +49,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   = higher level. [plan queued: research/Mob-Levels-Plan.md]
 - LOCKED 2026-10-01 (Skyy): ALL weapons and armor found in world chests start unidentified - also prebuilt-structure chests (no loot table) and
   SkyyExploration's chest-luck extras (0.1.2 only tagged loot-table chests). Player storage (own chests, vault, AH, trade, bags) never touched.
-  [SkyyGear 0.1.3 - queued, first in line]
+  LIVE 2026-10-01 (SkyyGear 0.1.3). Also new: 59 level rows for non-metal gear, all editable in Server Setup -> Gear -> Levels. Picked for you:
+  Stone, Trork, Fishbone, Bone, Wool, Leather_Soft and plain staffs/wands (Root, Bamboo, Cane, Onion, Stoneskin) 5; Linen, Scrap, rusty
+  Steel, Leaf, Kweebec, Cutlass, special shortbows 10; Cotton, Leather_Medium, Tribal 15; Silk, Leather_Heavy, Steel, Zombie, Katana, Kunai,
+  Grimoire 20; Doomed, Void, Frost, Flame, Praetorian 25; Cindercloth, Ancient, Crystal, frost staff/spellbook 30; Scarab, Spectral,
+  Silversteel, Demon 35; Crystal_Flame / Crystal_Ice 40; Prisma 45 (Hytale's top set, above Mithril). Change any you don't like. [as listed]
 - DECIDED 2026-10-01 (Skyy): keep the Zone 1 Temple discovery reward (+1,000 Exploration XP, ~4 levels for a new profile at the hub) "for now".
 - LOCKED 2026-10-01 (Skyy): the Warrior kit gets a Wood Shield (Weapon_Shield_Wood) next to the Crude Sword - into the off-hand slot when free.
   [SkyyClasses 0.1.10 - queued; it also takes the Priest self-heal 100% default + clearer label below]

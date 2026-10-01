@@ -1061,3 +1061,11 @@ Skills 0.4.7, Trees 0.2.5, Exploration 0.2.2. Only the LOOK changed (plus the Gu
 5. Type 1,5 -> refused. Changes: "0.24 s -> 0.25 s", Undo asks in seconds and puts 0.24 back.
 6. Classes, Advanced ON: "Class page open delay" Less/More step by 0.25 s.
 7. Mods tile: Profiles 0.1.5 shows the delete/restore lines (archive lines for admins); SkyyUiProbe shows as a dev mod.
+## SkyyGear 0.1.3 - world-chest gear unidentified, non-metal levels (DEPLOYED 2026-10-01)
+1. First start logs "added 59 level family rows" once (a restart does not). Server Setup -> Gear -> Levels lists the new rows; Changes has
+   59 undoable lines; History has "before the 0.1.3 level family rows".
+2. Open a chest in a prebuilt structure (no loot table) with weapons/armor in it: they show unidentified straight away. Open it again
+   (or another player does): nothing changes. Break an unopened one: the drops are unidentified.
+3. Your own placed chests, island chests (starter chest), vault, bags, AH, trade: never touched.
+4. SkyyExploration chest luck extra: a weapon/armor from it lands unidentified.
+5. Stone Trork Daggers: Lv 5 (were 25). Bone sword 5, frost sword 25, Prisma armor 45, iron sword still 15.
