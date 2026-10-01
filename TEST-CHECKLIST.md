@@ -1069,3 +1069,8 @@ Skills 0.4.7, Trees 0.2.5, Exploration 0.2.2. Only the LOOK changed (plus the Gu
 3. Your own placed chests, island chests (starter chest), vault, bags, AH, trade: never touched.
 4. SkyyExploration chest luck extra: a weapon/armor from it lands unidentified.
 5. Stone Trork Daggers: Lv 5 (were 25). Bone sword 5, frost sword 25, Prisma armor 45, iron sword still 15.
+## SkyySkills 0.4.11 - Priest heal XP 1 / 1.25 (DEPLOYED 2026-10-01)
+1. First start logs one "xp.properties updated for the 0.4.11 heal XP ... 0.2 -> 1, 0.25 -> 1.25, 300 -> 900" line (not again on restart).
+2. /skills -> Divinity: "Healing pays 1 Divinity XP per HP on others, 1.25 on yourself (max 900 a minute)".
+3. Heal a party member: Divinity XP = HP healed. Heal yourself: about 1.25 XP per HP. Wand kill XP is the same as before.
+4. Server Setup -> Skills -> Combat: heal rows 1 / 1.25 / 900 ("Not multiplied by class skill XP"); Changes has 3 Undo lines.
