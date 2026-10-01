@@ -417,6 +417,9 @@ are both admin only.
 
 ## 11. Questions for Skyy (each has a recommended default)
 
+**ANSWERED 2026-10-01 by Skyy: all four recommended defaults** (1 flatten the class skill curve, 2 keep the table + 3 overlap,
+3 keep 1-49 / own tiers later, 4 add wand / spellbook / staff recipes now). The questions stay below for reference.
+
 1. **Skill pacing (blocks stage 4; Mob-Levels-Plan question 7 asks the same).** Skill 15 = 67,000 XP, 20 = 522,000, 25 = 3.0 million,
    40 = 25.5 million. How should players reach class skill levels 20-40: a shorter class-skill curve, a level XP bonus (XP x (1 +
    0.05 x (L - 1)) in the Mob plan), or more XP per mob? **Default: decide it with Mob-Levels-Plan question 7 and a playtest. Until

@@ -63,7 +63,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   from ~15, gold from ~20). Crafting above a material's cap makes it AT the cap (a level 80 player crafting a copper pickaxe gets the
   copper cap, ~22, because iron starts ~20). Same level = about the same stats across materials (Lv 22 copper ~ Lv 20 iron), except the
   better material starts with a little more of its own base stat (iron: a bit more Mining Fortune). TOOLS become reforgeable too.
-  [spec WRITTEN: research/Gear-Levels-Wynn-Spec.md - 4 questions in its section 11: skill pacing, band caps, levels above 49, wand/spellbook recipes]
+  [spec WRITTEN: research/Gear-Levels-Wynn-Spec.md]
+  ANSWERED 2026-10-01 (Skyy, all four recommended): (1) FLATTEN the class skill XP curve so every gear tier is reachable (skill 20 in
+  hours of play, 40 in days; editable); (2) keep the table with a +3 overlap: Wood 1-13, Copper 10-18 (copper ARMOR 1-18), Iron 15-23,
+  Thorium 20-28, Cobalt 25-38, Adamantite 35-43, Mithril 40-49; (3) vanilla materials cover 1-49, our own tiers fill 50-100 later;
+  (4) ADD simple Workbench recipes for wands, spellbooks and staffs by material now, so 'crafted at your level' works for every class.
+  [waits for the weekly usage reset 2026-10-06: SkyySkills curve + SkyyGear 0.2 stages 0-3 + the magic weapon recipes]
 - LOCKED 2026-10-01 (Skyy): ALL weapons and armor found in world chests start unidentified - also prebuilt-structure chests (no loot table) and
   SkyyExploration's chest-luck extras (0.1.2 only tagged loot-table chests). Player storage (own chests, vault, AH, trade, bags) never touched.
   LIVE 2026-10-01 (SkyyGear 0.1.3). Also new: 59 level rows for non-metal gear, all editable in Server Setup -> Gear -> Levels. Picked for you:
