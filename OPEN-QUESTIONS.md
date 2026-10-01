@@ -61,6 +61,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   copper armor range starts at 1]
 - LOCKED 2026-10-01 (Skyy): Priest healing XP = 1 Divinity XP per HP healed on others, 1.25 per HP on yourself (what the player gets;
   was 0.6 / 0.75 after the x3 class boost). The healing XP cap stays 900 a minute; kill XP unchanged. [LIVE 2026-10-01, SkyySkills 0.4.11]
+- LOCKED 2026-10-01 (Skyy): the way to the next zone island is a PORTAL at each island's summit that only opens once you beat the boss
+  (until bosses exist: the staged unlock rule). Placed automatically in every solo world (islands are separate worlds - nobody builds
+  across); a return portal at each landing point; /zone + menu only for islands already unlocked. [SkyyWorldGen plan 2.3]
 - PLAN 2026-10-01 (Skyy: "dont build yet, just make a plan"): SkyyWorldGen - Hytale zones as their own islands, biomes as progressively
   harder levels with level ranges -> research/SkyyWorldGen-Plan.md.
   ANSWERED 2026-10-01 by Skyy: (1) unlock = reach the summit today, then class skill 10 / 25 / 40 once the flatter curve ships,
