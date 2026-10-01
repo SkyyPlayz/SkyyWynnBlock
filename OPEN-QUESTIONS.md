@@ -47,6 +47,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - REQUEST 2026-09-30 (Skyy): a MOB LEVEL system - research + plan only for now (check how other Hytale mods do it). Levels set by biome (the
   easiest: where the mob spawns); zone 1's blue forest and other zone-1 biomes slightly higher, zone 2 a big step up; inside a zone, rarer biomes
   = higher level. [plan queued: research/Mob-Levels-Plan.md]
+- LOCKED 2026-10-01 (Skyy): Campfire cooking (in /crafting) pays half the Cooking XP it did - "Campfire XP share" 0.5 -> 0.25.
+  [SkyyCooking 0.1.3 + SkyySacks 0.7.9]
+- LOCKED 2026-10-01 (Skyy): class skills level too slowly - new "Class skill XP multiplier" in Server Setup, default x3, on every XP gain into the
+  class weapon skill (kills, party share, Priest heals). [SkyySkills 0.4.10]
 - LOCKED 2026-10-01 (Skyy): Stamina accessory line - double the max Stamina (+3/+6/+9/+12), half the Stamina Regen (+2.5/+5/+7.5/+10%).
   [SkyyAccessories 0.5.1]
 - LOCKED 2026-09-30 (Skyy): booster accessories (research/Booster-Accessories-Spec.md). No separate tier words - "they are all accessories.
