@@ -68,7 +68,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   The town is at the landing point (safe rim): portals and warps arrive there. [SkyyWorldGen plan 2.3]
 - LOCKED 2026-10-01 (Skyy): no separate hub island - the HUB is the main starter town on the Zone 1 island. PROPOSED (Skyy asked
   "should we have a temple in each town too?"): yes - a zone-themed temple at the centre of every town as its anchor (warp arrival,
-  respawn, return portal, the zone's discovery reward, later the Memories turn-in). [waiting for Skyy's yes]
+  respawn, return portal, the zone's discovery reward, later the Memories turn-in). LOCKED 2026-10-01 (Skyy): start with the
+  VANILLA temples and build each zone's starter town around one; plus at least one OUTPOST TOWN PER BIOME in every zone, each with
+  an unlockable warp (found = unlocked). [SkyyWorldGen plan]
 - PLAN 2026-10-01 (Skyy: "dont build yet, just make a plan"): SkyyWorldGen - Hytale zones as their own islands, biomes as progressively
   harder levels with level ranges -> research/SkyyWorldGen-Plan.md.
   ANSWERED 2026-10-01 by Skyy: (1) unlock = reach the summit today, then class skill 10 / 25 / 40 once the flatter curve ships,
