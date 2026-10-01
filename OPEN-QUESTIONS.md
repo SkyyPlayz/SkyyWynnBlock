@@ -47,6 +47,8 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - REQUEST 2026-09-30 (Skyy): a MOB LEVEL system - research + plan only for now (check how other Hytale mods do it). Levels set by biome (the
   easiest: where the mob spawns); zone 1's blue forest and other zone-1 biomes slightly higher, zone 2 a big step up; inside a zone, rarer biomes
   = higher level. [plan queued: research/Mob-Levels-Plan.md]
+- LOCKED 2026-10-01 (Skyy): Stamina accessory line - double the max Stamina (+3/+6/+9/+12), half the Stamina Regen (+2.5/+5/+7.5/+10%).
+  [SkyyAccessories 0.5.1]
 - LOCKED 2026-09-30 (Skyy): booster accessories (research/Booster-Accessories-Spec.md). No separate tier words - "they are all accessories.
   but they come in the same rarity tiers as weapons and armor"; a booster line UPGRADES through Normal -> Unique -> Rare -> Legendary and stops at
   Legendary; Fabled and Mythic accessories are rare finds / drops that cannot be crafted or upgraded (a few special ones, later). Bag: 18 slots to
