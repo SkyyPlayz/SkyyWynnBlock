@@ -54,6 +54,8 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Works today with no build: Server Setup -> Gear -> Levels -> "Level by material" entry Armor_Copper = 1 (an id-word entry at the
   start of the id beats the Copper row). [next SkyyGear: Armor_Copper=1 as a default + one-time add; the Wynn-style level spec: the
   copper armor range starts at 1]
+- LOCKED 2026-10-01 (Skyy): Priest healing XP = 1 Divinity XP per HP healed on others, 1.25 per HP on yourself (what the player gets;
+  was 0.6 / 0.75 after the x3 class boost). The healing XP cap stays 900 a minute; kill XP unchanged. [SkyySkills 0.4.11 - building]
 - REQUEST 2026-10-01 (Skyy): gear levels like Wynncraft - "the gears level determines the stat it gives, and the gear level is the use
   requirement level" (e.g. Wooden earth staff Lv1 6-8 damage, Lv4 10-12, needs Priest level 4); "all items crafted are crafted at your level".
   Gate skill stays as ruled 2026-09-25: combat gear = your class weapon skill, mining/foraging/farming gear = that skill.
