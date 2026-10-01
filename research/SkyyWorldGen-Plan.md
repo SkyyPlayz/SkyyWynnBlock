@@ -150,7 +150,7 @@ the rim is where Lv 1-2 players fight and knockback would otherwise drop them in
 | Unlock storage | Per profile: `Skyy_SkyyWorldGen/progress/<profile or uuid>.properties`, SkyyProfiles-aware when present |
 | Gate enforcement | `/zone` and the menu check the unlock. `AddPlayerToWorldEvent` exists in the release jar, so a guard can send back a player who arrives another way; whether the event can redirect or cancel is UNVERIFIED (T11). Until then the gate is soft |
 | No flying | `/fly` is blocked on zone islands (SkyyExploration answer Q8); creative and admins are exempt |
-| Warps | The landing town is the free starter warp (SkyyExploration D1). Warps to other towns come later with quests |
+| Warps | **Skyy 2026-10-01: every zone island has its own hub / main town (city) with a warp; unlocking a zone unlocks its town warp** ("once you unlock zone 2 you can warp there"). The town sits at the landing point on the safe rim, so the previous island's summit portal and the warp both arrive in town, and the return portal stands in town. Warp list = the solo hub island + every unlocked zone town (per profile), from the menu / `/warp` (SkyyExploration D1 warps, extended). Zone 1's town is free from the start. Smaller towns / outposts inside an island can become extra warps later with quests |
 
 ### 2.4 The vanilla world, the hub and the server
 
