@@ -47,6 +47,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - REQUEST 2026-09-30 (Skyy): a MOB LEVEL system - research + plan only for now (check how other Hytale mods do it). Levels set by biome (the
   easiest: where the mob spawns); zone 1's blue forest and other zone-1 biomes slightly higher, zone 2 a big step up; inside a zone, rarer biomes
   = higher level. [plan queued: research/Mob-Levels-Plan.md]
+- LOCKED 2026-10-01 (Skyy): guild disband pays the bank back fairly - each member still in the guild gets back what they put in (deposits minus
+  withdrawals, from the bank log; scaled down evenly if the bank holds less), and anything left over is split evenly between them. Same when the last
+  member leaves. Was: everything to the Leader. [SkyyGuilds 0.1.5 - queued]
+- QUEUED 2026-10-01: every profile gets the SkyWynn Menu item the first time it is used (today: once per player, so new profiles have none -
+  /skymenu gives it back). [SkyyMenu 0.3.4]
 - LOCKED 2026-10-01 (Skyy): profiles can be deleted - confirm question, then a 6-hour undo window (Restore button, frees the slot at once);
   never the active or the last profile; after 6 h the files go to an admin-only archive (not wiped). Restore works even over the limit. [SkyyProfiles 0.1.5]
 - LOCKED 2026-10-01 (Skyy): Campfire cooking (in /crafting) pays half the Cooking XP it did - "Campfire XP share" 0.5 -> 0.25.
