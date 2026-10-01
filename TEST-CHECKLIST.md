@@ -1052,3 +1052,12 @@ Skills 0.4.7, Trees 0.2.5, Exploration 0.2.2. Only the LOOK changed (plus the Gu
    profile they were last on.
 5. Leaving (not the last member): the confirm says your contribution stays in the bank for the others. Last member leaving gets the whole bank.
 6. /guildadmin info <guild> shows contributions and how the seed went.
+## SkyyMenu 0.3.4 - menu item per profile, seconds in Server Setup (DEPLOYED 2026-10-01)
+1. Join on your current profile: no second menu item arrives (/skymenu still replaces a lost one).
+2. /profiles switch to another profile without the item: it arrives within ~6 s, once. A profile that already holds it gets nothing.
+   A world switch, relog, or the item in a utility slot never gives a second copy. A new profile gets it within ~6 s.
+3. /modconfig -> Skills, Advanced ON -> "Paid jump cooldown (s)" shows 0.8, help "0.2 to 600 seconds, default 0.8".
+4. Type 0.19 -> refused ("must be 0.2 to 600 seconds"). Type 0.24 -> "0.24 s - saved" (file: acro.jumpCooldownMs=240). Then 0.25 -> 250.
+5. Type 1,5 -> refused. Changes: "0.24 s -> 0.25 s", Undo asks in seconds and puts 0.24 back.
+6. Classes, Advanced ON: "Class page open delay" Less/More step by 0.25 s.
+7. Mods tile: Profiles 0.1.5 shows the delete/restore lines (archive lines for admins); SkyyUiProbe shows as a dev mod.

@@ -68,7 +68,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LIVE 2026-10-01 (SkyyGuilds 0.1.5): % disband refunds + Contribution column as decided above. NOTE from the review: coins left in the bank by
   members who LEFT or were kicked are shared out among whoever is still in the guild at disband (by their contribution), so a member
   can join, deposit a little and get a share of those coins. Fine as is, or pay a leaver's positive contribution back when they leave? [as is]
-- QUEUED 2026-10-01: every profile gets the SkyWynn Menu item the first time it is used (today: once per player, so new profiles have none -
+- LIVE 2026-10-01 (SkyyMenu 0.3.4; Server Setup now shows the 24 ms settings in seconds too): every profile gets the SkyWynn Menu item the first time it is used (today: once per player, so new profiles have none -
   /skymenu gives it back). [SkyyMenu 0.3.4]
 - LOCKED 2026-10-01 (Skyy): profiles can be deleted - confirm question, then a 6-hour undo window (Restore button, frees the slot at once);
   never the active or the last profile; after 6 h the files go to an admin-only archive (not wiped). Restore works even over the limit. [SkyyProfiles 0.1.5]
