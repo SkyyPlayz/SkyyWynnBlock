@@ -47,6 +47,8 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - REQUEST 2026-09-30 (Skyy): a MOB LEVEL system - research + plan only for now (check how other Hytale mods do it). Levels set by biome (the
   easiest: where the mob spawns); zone 1's blue forest and other zone-1 biomes slightly higher, zone 2 a big step up; inside a zone, rarer biomes
   = higher level. [plan queued: research/Mob-Levels-Plan.md]
+- LOCKED 2026-10-01 (Skyy): profiles can be deleted - confirm question, then a 6-hour undo window (Restore button, frees the slot at once);
+  never the active or the last profile; after 6 h the files go to an admin-only archive (not wiped). Restore works even over the limit. [SkyyProfiles 0.1.5]
 - LOCKED 2026-10-01 (Skyy): Campfire cooking (in /crafting) pays half the Cooking XP it did - "Campfire XP share" 0.5 -> 0.25.
   [SkyyCooking 0.1.3 + SkyySacks 0.7.9]
 - LOCKED 2026-10-01 (Skyy): class skills level too slowly - new "Class skill XP multiplier" in Server Setup, default x3, on every XP gain into the
