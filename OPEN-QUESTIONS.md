@@ -61,6 +61,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   copper armor range starts at 1]
 - LOCKED 2026-10-01 (Skyy): Priest healing XP = 1 Divinity XP per HP healed on others, 1.25 per HP on yourself (what the player gets;
   was 0.6 / 0.75 after the x3 class boost). The healing XP cap stays 900 a minute; kill XP unchanged. [LIVE 2026-10-01, SkyySkills 0.4.11]
+- PLAN 2026-10-01 (Skyy: "dont build yet, just make a plan"): SkyyWorldGen - Hytale zones as their own islands, biomes as progressively
+  harder levels with level ranges -> research/SkyyWorldGen-Plan.md. Questions there (section 8): what unlocks the next island until bosses
+  exist [reach the summit, later a class skill level, later the guardian]; solo hub [normal Hytale world stays the hub, islands via /zone
+  + menu]; Zone 4 [built but hidden until our own Lv 50+ gear exists].
 - REQUEST 2026-10-01 (Skyy): gear levels like Wynncraft - "the gears level determines the stat it gives, and the gear level is the use
   requirement level" (e.g. Wooden earth staff Lv1 6-8 damage, Lv4 10-12, needs Priest level 4); "all items crafted are crafted at your level".
   Gate skill stays as ruled 2026-09-25: combat gear = your class weapon skill, mining/foraging/farming gear = that skill.
