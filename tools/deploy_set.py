@@ -18,7 +18,7 @@ WORLD = "HUD mod"
 SET = [
     ("SkyyHud", "0.3.10"), ("SkyySacks", "0.7.9"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.4"), ("SkyyParty", "0.1.6"),
     ("SkyyBank", "0.1.5"), ("SkyyIslands", "0.5.4"), ("SkyyBazaar", "0.1.2"), ("SkyyGear", "0.1.2"), ("SkyySkills", "0.4.10"),
-    ("SkyyAccessories", "0.5.1"), ("SkyyClasses", "0.1.9"), ("SkyyMenu", "0.3.3"), ("SkyyEssentials", "0.1.6"), ("SkyyProfiles", "0.1.4"),
+    ("SkyyAccessories", "0.5.1"), ("SkyyClasses", "0.1.10"), ("SkyyMenu", "0.3.3"), ("SkyyEssentials", "0.1.6"), ("SkyyProfiles", "0.1.5"),
     ("SkyyCooking", "0.1.3"), ("SkyyTrees", "0.2.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -65,6 +65,9 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees"]
 # Bank 0.1.4, Party 0.1.6, Accessories 0.4.5, Classes 0.1.8, Profiles 0.1.3, Vault 0.1.4, Collections 0.2.4, Guilds 0.1.4 (+ xpSkills
 # mid-run fix), Islands 0.5.4, Skills 0.4.7 + Trees 0.2.5 + Exploration 0.2.2 (together). Rolling any of them back to the previous pin
 # is safe (no data migration); the rollback floors above still apply.
+# SkyyProfiles 0.1.5 (2026-10-01): profile delete + 6-hour undo + admin archive. ROLLBACK FLOOR once any profile was deleted:
+# 0.1.4 treats a deleted profile as live again and can reuse an archived profile's id (the new profile would inherit its
+# island, coins and bags) - never roll Profiles back below 0.1.5 after a delete.
 RETIRED = ["SkyyRolls"]
 
 

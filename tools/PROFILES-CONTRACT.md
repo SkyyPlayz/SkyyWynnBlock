@@ -24,6 +24,7 @@ Class values on `profile:class:<uuid>` are `Archer`, `Warrior`, `Mage`, `Berserk
 | `profile:class:<uuid>` | String class of the active profile (`Archer`, `Warrior`, `Mage`, `Berserker`, `Priest`, later `Assassin`, `Shaman`). Absent = none | SkyyProfiles |
 | `profile:epoch:<uuid>` | Long, +1 on every profile switch or creation | SkyyProfiles |
 | `profile:name:<uuid>` | String display name of the active profile | SkyyProfiles |
+| `profile:fn:state` | `java.util.function.Function` apply(String storage key) -> `"active"`, `"inactive"`, `"pending"` (deleted, inside the undo window), `"archived"`, or null (unknown key, or a UUID was passed). String keys only. Since 0.1.5 | SkyyProfiles |
 
 ## Storage key
 
@@ -208,3 +209,20 @@ ones. The reverse never happens: when you see a new epoch, the Function already 
   (`Universe.transferPlayerAsync` -> `PlayerRef.removeFromStore`), so the switched inventory is normally on disk within about a second.
   The 30 s window mostly matters with `islandOnSwitch=false`, or when the player is already on the target island.
 - **Hand edits of a players file while the player is online bypass everything.** The file header says so.
+### 6. Deleted profiles (SkyyProfiles 0.1.5)
+
+- A player can delete any profile except the active one and the last one (confirm question; `/profiles delete` asks, the same command
+  within 10 s deletes). The players file gets `p.<id>.deleted`, `p.<id>.until` (deadline, stored so it survives restarts) and
+  `p.<id>.slots` (the live count before the delete, so a restore cannot push a player past max(limit, that count)).
+- **Pending** (inside the undo window, default 6 h, Server Setup `deleteUndoHours` 1-168, wall-clock time): the profile frees its slot,
+  is left out of `profile:list`, can never be switched to, and `profile:fn:key` never returns its key. Restore brings it back exactly.
+- **Archived** (after the window): its entries move to `Skyy_SkyyProfiles/archive/<uuid>/<id>-<time>/profile.properties` and its
+  `inventories/<key>.json` moves there too. Nothing is deleted. A `gone.<id>` marker keeps the id from ever being reused, because other
+  mods keep their data under that storage key. Admins: `/profileadmin archive list <player>`, `/profileadmin archive restore <player> <name|number|folder>`
+  (also restores a pending profile past its deadline, ignores the limit).
+- **No epoch bump** on delete, restore or archive: `profile:list:<uuid>` changes without `profile:epoch:<uuid>` changing. A mod that
+  caches the list must re-read it, not wait for the epoch.
+- **Other mods' data** under a pending or archived key is never touched and comes back on restore (same key). Mods that scan every
+  profile file on disk (leaderboards in Skills / Collections) still see it - skip keys whose `profile:fn:state` is pending or archived.
+  Known gap: SkyyIslands co-op members keep access to a pending/archived owner's island (OPEN-QUESTIONS).
+- `MAX_ID` is 256 (was 64): ids are never reused once archived.

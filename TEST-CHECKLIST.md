@@ -1024,3 +1024,21 @@ Skills 0.4.7, Trees 0.2.5, Exploration 0.2.2. Only the LOOK changed (plus the Gu
 1. Priest (30 Mana): the wand casts from 5 Mana up (6 casts from full); at 4 Mana it refuses. Mage: a staff casts from 10 Mana (3 casts) and
    REFUSES at 0 (it used to cast for free). Spellbook needs 20; Rusty Blunderbuss 10.
 2. Mana refills 5 per second out of combat; after you TAKE damage it waits 6 s; holding a charge pauses it.
+## SkyyProfiles 0.1.5 - delete a profile (DEPLOYED 2026-10-01)
+1. /profiles: a card that is not active shows Switch and a red Delete; the active card shows only "Active". The footer has a Close button.
+2. Delete -> the footer row asks "Delete profile <name>? ... You have 6 hours to undo this." -> Cancel does nothing; Delete greys the card
+   ("Deleted - restore it within 5 h 59 min") with a Restore button, and the slot is free at once ("N of 5 profile slots used" drops by one).
+3. Restore -> the profile is back exactly (island, coins, skills, bags, items). Switch to it to check.
+4. Limit: with every slot used, delete one, create a new one, then try Restore -> refused "No free slot ... Delete another profile first."
+5. Commands: /profiles delete <name> (asks; the same command again within 10 s deletes), /profiles restore <name>, /profiles list marks
+   DELETED with time left. Admin: /profileadmin archive list <player>, /profileadmin archive restore <player> <name>.
+6. Server Setup -> Profiles -> "Undo window after deleting a profile" (hours, default 6). Set it to 1 to test the archive sooner: after the
+   window the card is gone, /profileadmin archive list shows it, archive restore brings it back.
+7. Note: the Delete / Switch labels are small - check they are readable (not cut with "...").
+## SkyyClasses 0.1.10 - Warrior shield, Priest heal 100% (DEPLOYED 2026-10-01)
+1. First start logs "no kit.Warrior / priestHeal.selfPercent line still had its 0.1.9 default - nothing changed (0.1.10 defaults marker added)".
+2. Server Setup -> Classes: Warrior kit "Weapon_Sword_Crude:1,Weapon_Shield_Wood:1"; "Priest self-heal (% of what members get)" = 100.
+3. New Warrior profile (empty off-hand): sword in the hotbar, Wood Shield equipped in the off-hand, right-click guards.
+4. /classadmin kit <you> Warrior again while holding the shield -> the second shield goes to the hotbar. A torch in the off-hand stays put.
+5. Priest in a party: your own heal equals each member's heal in the heal chat line.
+6. Restart: nothing changes, no new History version.

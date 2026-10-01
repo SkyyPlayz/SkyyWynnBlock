@@ -69,6 +69,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   /skymenu gives it back). [SkyyMenu 0.3.4]
 - LOCKED 2026-10-01 (Skyy): profiles can be deleted - confirm question, then a 6-hour undo window (Restore button, frees the slot at once);
   never the active or the last profile; after 6 h the files go to an admin-only archive (not wiped). Restore works even over the limit. [SkyyProfiles 0.1.5]
+  LIVE 2026-10-01. Review change: a restore may not push you past max(limit, how many profiles you had before that delete) - otherwise delete,
+  create, restore made unlimited profiles. A lowered limit still lets every deleted profile come back.
+- OPEN 2026-10-01: co-op members of a DELETED profile's island can still go there and build (also after it is archived); the owner can't manage it
+  meanwhile. Block entry while the owner's profile is deleted (SkyyIslands follow-up), or just reword the delete question? [nothing changed yet]
+- OPEN 2026-10-01: every new profile gets 10,000 starter coins, a class kit and an island starter chest, so delete + create farms them. Once per
+  player instead (later profiles start empty), or keep per profile? [per profile]
+- OPEN 2026-10-01: the profile undo window is set in HOURS (1-168, default 6) - fine, or seconds like the other time settings? [hours]
 - LOCKED 2026-10-01 (Skyy): Campfire cooking (in /crafting) pays half the Cooking XP it did - "Campfire XP share" 0.5 -> 0.25.
   [SkyyCooking 0.1.3 + SkyySacks 0.7.9]
 - LOCKED 2026-10-01 (Skyy): class skills level too slowly - new "Class skill XP multiplier" in Server Setup, default x3, on every XP gain into the
