@@ -52,11 +52,18 @@ four from their old patch scripts (their successors 0.4.6 / 0.2.4 / 0.1.7 / 0.1.
 
 ## 3. What to do next (Max 5x: at most 3-4 workflows at once, sonnet for reviews)
 
-**Usage:** weekly usage was 94%+ on 2026-10-01; it resets 2026-10-06 ~15:00 UTC. Until then only small fixes from Skyy's tests.
-Nothing is running (no workflow to resume).
+**Usage:** Skyy moved back to the big Max plan on 2026-10-02 (weekly reset to 0%). All open questions were answered on 2026-10-02 -
+OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" (rounds 1-9) is the source of truth.
+
+**RUNNING (2026-10-02):** phase 1 = Skyy's quick fixes + skills HUD widget - SkyySacks 0.7.11 (withdraw amount kept, stack auto-refill
+3-way setting, bags add up), SkyyCollections 0.2.5 (coins never buy tiers / recipes / bags), SkyyEssentials 0.1.7 (bags blocked in
+/trade), SkyyUiProbe 0.3 (vault one-click arrow probes P1/P2 for Skyy), SkyyHud 0.3.11 (Skills widget) - one workflow, run
+wf_8305ee85-c37 (resume with Workflow({scriptPath, resumeFromRunId})). NEXT: phase 2 = the big round (item 2 below + the in-combat Mana
+regen 50% with percent boosts), then phase 3 = SkyyMobs stage 1 if usage still looks good. After Skyy opens the P1/P2 probes:
+SkyyVault 0.1.6 one-click arrow row (research/Vault-Arrow-Click-Research.md step 2).
 
 1. **Skyy tests the 2026-10-01 deploys**; fix what they report first (auto-deploy each fixed round with the game closed).
-2. **NEXT BIG ROUND (after the weekly reset), all decided by Skyy 2026-10-01:**
+2. **THE BIG ROUND (phase 2, after the quick fixes), all decided by Skyy 2026-10-01 / 2026-10-02:**
    - SkyySkills: a flatter class skill XP curve (skill 20 in hours of play, 40 in days; existing XP kept, levels recomputed upward;
      editable rows).
    - SkyyGear 0.2 stages 0-3 from `research/Gear-Levels-Wynn-Spec.md`: a stored per-item level that sets base stats AND the use
