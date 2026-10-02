@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (written 2026-09-28)
+# SkyWynn - RESUME HERE (updated 2026-10-01)
 
 Read this first when picking the project back up. It says where everything lives on Skyy's PC, what state things are in, and exactly
 what to do next. Detail: `HANDOFF.md` (section 3 = current state, section 6 = the full running log), `OPEN-QUESTIONS.md` (every
@@ -19,7 +19,7 @@ decision with its default or LOCKED answer), `SkyWynn-Decisions.md` (change note
 | Builder brief (the rules every build agent must follow) | `tools\AGENT-BRIEF.md` |
 | Engine inspection helpers (reflect, constant-pool grep, bytecode dump, callers) | `tools\dev\` (`reflect.py`, `cpgrep.py` - run inside tools\dev, `bc.py`, `bcfull.py`, `bcfull2.py`, `callers.py`) |
 | Scratch for agents (git-ignored, delete after use) | `tools\dev\scratch\` |
-| Backups made before every deploy (Skyy jars + world config.json + Skyy_* mod data; git-ignored) | `backups\deploy-<date>-<time>\` (newest: `deploy-20260925-0824`) |
+| Backups made before every deploy (Skyy jars + world config.json + Skyy_* mod data; git-ignored) | `backups\deploy-<date>-<time>\` (newest: `deploy-20261001-0737`) |
 | Hytale server jar + game assets (read-only) | `C:\Users\SkyLo\AppData\Roaming\Hytale\install\release\package\game\latest\Server\HytaleServer.jar`, `...\latest\Assets.zip` |
 | Installed mods (deploy target; other authors' mods read-only) | `C:\Users\SkyLo\AppData\Roaming\Hytale\UserData\Mods\` |
 | The test world | `C:\Users\SkyLo\AppData\Roaming\Hytale\UserData\Saves\HUD mod\` (`config.json` = which mods are enabled) |
@@ -32,40 +32,64 @@ Other folders next to the project (`Hytale mods WORK\Hytale mods`, `Your new mod
 
 ## 2. Where we got to
 
-**Live in the "HUD mod" world (last deploy 2026-09-29 06:56, backup `backups\deploy-20260929-0656`, = `tools/deploy_set.py` SET, 22 Skyy
-mods + 2 pack mods):** SkyyHud 0.3.10, SkyySacks 0.7.7, SkyyCoins 0.1.5, SkyyCollections 0.2.3, SkyyParty 0.1.5, SkyyBank 0.1.3,
-SkyyIslands 0.5.3, SkyyBazaar 0.1.2, SkyyGear 0.1, SkyySkills 0.4.6, SkyyAccessories 0.4.4, SkyyClasses 0.1.7, SkyyMenu 0.3.3,
-SkyyEssentials 0.1.5, SkyyProfiles 0.1.2, SkyyCooking 0.1.2, SkyyTrees 0.2.4, SkyyExploration 0.2.1, SkyyGuilds 0.1.3, SkyyVault 0.1.3,
-SkyyAuctions 0.1.2, SkyyRanks 0.1.1; SkyyRolls RETIRED (switched off, replaced by SkyyGear); pack mods More Crossbow Tiers (Serj),
-Saplings From Trees (Helios). What each does: HANDOFF section 3 table. Test list: TEST-CHECKLIST.md, newest section "Round 9 + SkyyGear"
-(its step 0 = settings Skyy changes first: gear level check off for testing, three Trees values). Rounds 8 and 9 are not tested in game yet.
+**Live in the "HUD mod" world (last deploy 2026-10-01, backup `backups\deploy-20261001-0737`, = `tools/deploy_set.py` SET, 23 Skyy mods
++ 2 pack mods):** SkyyHud 0.3.10, SkyySacks 0.7.10, SkyyCoins 0.1.5, SkyyCollections 0.2.4, SkyyParty 0.1.6, SkyyBank 0.1.5,
+SkyyIslands 0.5.5, SkyyBazaar 0.1.2, SkyyGear 0.1.3, SkyySkills 0.4.11, SkyyAccessories 0.5.2, SkyyClasses 0.1.10, SkyyMenu 0.3.4,
+SkyyEssentials 0.1.6, SkyyProfiles 0.1.5, SkyyCooking 0.1.3, SkyyTrees 0.2.5, SkyyExploration 0.2.2, SkyyGuilds 0.1.6, SkyyVault 0.1.5,
+SkyyAuctions 0.1.2, SkyyRanks 0.1.1, SkyyUiProbe 0.2 (dev mod, retire later); SkyyRolls RETIRED; pack mods More Crossbow Tiers (Serj),
+Saplings From Trees (Helios). What each does: HANDOFF section 3 table.
+
+**Not tested in game yet (deployed 2026-10-01):** Profiles 0.1.5 (delete + 6 h undo; ROLLBACK FLOOR 0.1.5 once anything was deleted),
+Classes 0.1.10 (Warrior Wood Shield, Priest self-heal 100%), Guilds 0.1.5 -> 0.1.6 (% disband refunds, Contribution column, 35% leave
+refund), Menu 0.3.4 (seconds in Server Setup, menu item per profile), Gear 0.1.3 (all world-chest gear unidentified, 59 non-metal level rows),
+Skills 0.4.11 (Priest heal XP 1 / 1.25), Accessories 0.5.2 + Sacks 0.7.10 (Workbench "Accessories & Bags" tab, Charcoal -> Smithing bag),
+Islands 0.5.5 (deleted owner closes the island). Test steps: the newest TEST-CHECKLIST sections. Skyy can already set copper armor to Lv 1
+in Server Setup -> Gear -> Levels (`Armor_Copper` = 1).
 
 **Important rule (commit ab75b6c):** Skyy edited these GENERATED scripts directly with locked defaults: `SkyySkills\build_skyyskills_0.4.5.py`,
 `SkyyTrees\build_skyytrees_0.2.3.py`, `SkyyClasses\build_skyyclasses_0.1.6.py`, `SkyyVault\build_skyyvault_0.1.2.py`. Never regenerate those
 four from their old patch scripts (their successors 0.4.6 / 0.2.4 / 0.1.7 / 0.1.3 are built from the edited scripts and are live).
 
-## 3. What to do next (on Max 5x run about 4-6 agents at a time, sonnet for reviews)
+## 3. What to do next (Max 5x: at most 3-4 workflows at once, sonnet for reviews)
 
-1. **Skyy tests** round 8 + round 9 + SkyyGear (TEST-CHECKLIST sections "Round 8" and "Round 9 + SkyyGear"); fix what they report first.
-2. **Open questions** from the round: OPEN-QUESTIONS.md "Round 9 + SkyyGear defaults" (48h floor, clampToLevel, real gear level table,
-   Ranks placeholders) and "Round 8 defaults".
-3. **Vanilla UI pass (IN PROGRESS):** kit `tools\skyyui.py` 1.4 + guide. 2026-09-30 05:55 DEPLOYED 12 restyles (Bank, Party, Accessories,
-   Classes, Profiles, Vault, Collections, Guilds, Islands, Skills, Trees, Exploration) after Skyy's /skyprobe run (results: HANDOFF log
-   2026-09-30 05:55). NEXT: kit 1.5 = record the probe results (PROBED: base, base4, flex, layout-right, button-text, value-ref, number-field,
-   tooltip, progress, memories-bar, itemslot, dropdown, search-field, spinner, tile, text-mask, disabled; FAILED: quality-frame, slot-background;
-   checkbox partial), fix the probe base2 sample texts + option_row right padding + guide wording (Primary is blue), button labels sized by
-   text_width; then the remaining batches: Bazaar + Auctions, Sacks /craft, Essentials, Menu (add the version bumps + SkyyUiProbe to MODS), Hud;
-   then retire SkyyUiProbe (RETIRED list).
-3b. **State 2026-09-30 17:05 (all queued work DEPLOYED):** Sacks 0.7.8, Bank 0.1.5, Profiles 0.1.4, Classes 0.1.9, Skills 0.4.9, Vault 0.1.5, Essentials 0.1.6 (durability switch), Gear 0.1.2 (levels + charged attack), Accessories 0.5 (boosters). Weekly usage 69% on 2026-09-30 with 5.6 days left - keep the next rounds small. NEXT (in order, when Skyy has tested): (1) fixes from Skyy's tests; (2) Skyy's answers to OPEN-QUESTIONS (Mana Regen perks, mob level plan's 17 questions, vault one-click arrow, Vampire bow, staff check on Crystal staffs); (3) small UI follow-ups: Profiles footer Close, kit 1.5 (PROBED from the probe results - skyyui_test fails 1 stale check), option_row padding, Primary=blue wording; (4) remaining vanilla restyles: Bazaar + Auctions, Sacks /craft, Essentials pages, Menu (+ MODS data bumps), Hud; retire SkyyUiProbe; (5) SkyyMobs stage 1 after the mob plan answers; (6) when Hytale 0.7 goes live: research\PreRelease-Compat-Report.md fixes, then class abilities on runes (research\Hytale-Runes-Research.md).
-3f. **BUILD QUEUE 2026-10-01 (launch as slots free, max 4 at once):** (1) SkyyGear 0.1.3 - every world chest's untagged gear unidentified on first open + a full level table for the ~60 non-metal gear families that today fall back to vanilla ItemLevel 10-75 (Skyy: Stone Trork Daggers ask Lv 25): place them around Skyy's metal tiers (Stone/Bone/Wool/Soft 0-5, Scrap/Rusty/Linen/Light 10, Cotton/Medium/Tribal 15, Silk/Heavy/Doomed/Zombie 20-25, Crystal/Cindercloth/Scarab/late spellbooks 30-40), editable, untouched-default migration, list them for Skyy; (2) SkyyClasses 0.1.10 - Warrior kit + Weapon_Shield_Wood (off-hand), Priest self-heal default 100% + label; (3) SkyyGuilds 0.1.5 - disband pays the bank by % of each member's net deposits; (4) SkyyMenu 0.3.4 - menu item per profile, Server Setup ms rows shown in seconds with decimals, MODS data version bumps. Running: SkyyAccessories 0.5.1, SkyyCooking 0.1.3 + SkyySacks 0.7.9, SkyySkills 0.4.10, SkyyProfiles 0.1.5.
-3j. **SkyyWorldGen PLAN written 2026-10-01** (Skyy: dont build yet): research/SkyyWorldGen-Plan.md - World Gen V2 CAN do it (vanilla Portals_Oasis / Map_Portals already make a round void-ringed island with land picked by distance from the centre); one world per zone island, warped terraced rings (rim easy -> summit hardest), every biome placed with a level range on the zone bands, wg:fn:ring for SkyyMobs + gear; 3 questions for Skyy (unlock rule, solo hub, Zone 4 timing). Build waits for Skyy.
-3i. **NEXT BIG ROUND - after the weekly usage reset 2026-10-06 (weekly was 90% on 2026-10-01):** (a) SkyySkills: flatter class skill XP curve (Skyy chose it; skill 20 in hours, 40 in days; existing XP kept, levels recomputed upward, editable rows); (b) SkyyGear 0.2 stages 0-3 from research/Gear-Levels-Wynn-Spec.md (stored per-item level, requirement, crafted at your level inside overlapping material bands, copper armor 1-18, base damage + armor by level); (c) Workbench recipes for wands / spellbooks / staffs by material; (d) next SkyyGear also ships Armor_Copper=1 as a default; (e) next SkyyMenu bumps MODS_VERSIONS (Gear 0.1.3 and later). Tools reforgeable after the gathering stats exist.
-3h. **RUNNING 2026-10-01 (Skyy answers):** SkyyIslands 0.5.5 + SkyyGuilds 0.1.6 DEPLOYED 2026-10-01. Weekly usage 85% at launch. Also running: the Wynn-style gear level SPEC (research/Gear-Levels-Wynn-Spec.md, run wf_3d53f29c-93f - then one revision pass folding in Skyy's clarifications in OPEN-QUESTIONS: overlapping material ranges, craft at the material cap, reforgeable tools, ask the max skill level) and the Workbench 'Accessories & Bags' tab + Charcoal -> Smithing bag (Accessories 0.5.2 + Sacks 0.7.10 DEPLOYED 2026-10-01), and SkyySkills 0.4.11 heal XP 1 / 1.25 (DEPLOYED 2026-10-01).
-3g. **RESUMED after the usage reset (2026-10-01); if stopped again, resume each with Workflow({scriptPath, resumeFromRunId}); files may hold partial edits:** (SkyyProfiles 0.1.5 delete+undo DEPLOYED 2026-10-01), (SkyyGear 0.1.3 chests + level table DEPLOYED 2026-10-01; next SkyyMenu: bump MODS_VERSIONS Gear 0.1.3), (SkyyClasses 0.1.10 Warrior shield + Priest 100% DEPLOYED 2026-10-01). SkyyGuilds 0.1.5 DEPLOYED 2026-10-01. SkyyMenu 0.3.4 DEPLOYED 2026-10-01. (seconds + menu item per profile). DEPLOYED 2026-09-30 evening: Skills 0.4.10 (class XP x3), Cooking 0.1.3 + Sacks 0.7.9 (campfire XP 0.25), Accessories 0.5.1 (old ids hidden, Stamina +3..12 / +2.5..10%).
-4. **Small follow-ups:** config kit keeps 10 old file versions (tools/skyycfg.py KEEP 20 -> 10); SkyyGuilds xpSkills mid-run change credits
-   a skill's whole saved XP (fix in the next Guilds version); Archery 15+ extra bolts and the late-game holstered reload (approved, later).
-5. **After Skyy tests the separate economy mods:** SkyyEconomy 0.1 = Coins + Bank + Bazaar + Auctions merged (`SkyyEconomy-Plan.md`; use the
+**Usage:** weekly usage was 94%+ on 2026-10-01; it resets 2026-10-06 ~15:00 UTC. Until then only small fixes from Skyy's tests.
+Nothing is running (no workflow to resume).
+
+1. **Skyy tests the 2026-10-01 deploys**; fix what they report first (auto-deploy each fixed round with the game closed).
+2. **NEXT BIG ROUND (after the weekly reset), all decided by Skyy 2026-10-01:**
+   - SkyySkills: a flatter class skill XP curve (skill 20 in hours of play, 40 in days; existing XP kept, levels recomputed upward;
+     editable rows).
+   - SkyyGear 0.2 stages 0-3 from `research/Gear-Levels-Wynn-Spec.md`: a stored per-item level that sets base stats AND the use
+     requirement (gate skill as ruled 2026-09-25), crafted at your level inside overlapping material bands (Wood 1-13, Copper 10-18 -
+     copper ARMOR 1-18, Iron 15-23, Thorium 20-28, Cobalt 25-38, Adamantite 35-43, Mithril 40-49), base damage + armor by level;
+     vanilla materials cover 1-49, our own tiers 50+ later; tools reforgeable once gathering stats exist.
+   - Workbench recipes for wands, spellbooks and staffs by material (so "crafted at your level" works for Priest / Mage).
+   - The next SkyyGear also ships `Armor_Copper=1` as a default; the next SkyyMenu bumps MODS_VERSIONS (Gear 0.1.3, Skills 0.4.11,
+     Accessories 0.5.2, Sacks 0.7.10, Islands 0.5.5, Guilds 0.1.6 and later).
+3. **Plans written, waiting (not built):**
+   - `research/SkyyWorldGen-Plan.md` - World Gen V2 zone islands (one world per zone, terraced rings = levels, rim easy -> summit
+     hardest). Skyy's answers: ZONE BANDS Zone 1 1-20, Zone 2 20-30, Zone 3 30-45, Zone 4 45-60, more past 60; a summit PORTAL to the
+     next island that opens after the boss (staged unlock: summit -> class skill 20 / 30 / 45 -> guardian); every zone has a starter town
+     built around a VANILLA temple (the Zone 1 town is the hub, no separate hub island) with a warp unlocked with the zone; at least one
+     outpost town per biome with an unlockable warp. Build starts with a 3-ring Zone 1 test island when Skyy says go.
+   - `research/Mob-Levels-Plan.md` (SkyyMobs) - re-fit its zone bands to the new ones when building.
+   - `research/Pets-Idea.md` - one pet system (SkyBlock-style buff pets: farming, mining, foraging, general combat + at least one class pet
+     per class at launch; better pets fight; mount pets; an active slot + an unlockable mount slot that still gives weaker buffs).
+   - `research/Dragon-Pets-Idea.md` - dragon boss + egg, Zone 5 dinosaur caves, quest-line hatching, elements Earth / Thunder / Water /
+     Fire / Air + secret Blood / Void / Light / Crystal, rideable dragons, dragon-only islands. Idea only.
+4. **Open questions for Skyy** (OPEN-QUESTIONS.md, lines not ANSWERED / LOCKED): bags collecting from the hotbar too; Mana Regen perks;
+   staff check on the Crystal staffs; Vampire bow and charged attacks; Vault one-click arrow; the mob level plan's questions; the
+   SkyyGear spec leftovers.
+5. **Vanilla UI pass leftovers:** kit 1.5 (record the /skyprobe results as PROBED; skyyui_test has 1 stale fail "base-gated
+   WrapMaxLines"), then restyle Bazaar + Auctions, Sacks /craft, Essentials, Menu, Hud; retire SkyyUiProbe (RETIRED list).
+6. **Small follow-ups:** config kit keeps 10 old file versions (tools/skyycfg.py KEEP 20 -> 10); Archery 15+ extra bolts and the late-game
+   holstered reload (approved, later); Skills / Collections leaderboards should skip deleted / archived profiles (profile:fn:state).
+7. **After Skyy tests the separate economy mods:** SkyyEconomy 0.1 = Coins + Bank + Bazaar + Auctions merged (`SkyyEconomy-Plan.md`; use the
    RETIRED list), then NPC shops (SkyyEconomy 0.2).
+8. **Hytale 0.7 (pre-release):** runes = the base for class abilities; SkyyIslands / Menu / Profiles need fixes when 0.7 goes live
+   (`research/Hytale-Runes-Research.md`, `research/PreRelease-Compat-Report.md`).
+9. **Housekeeping:** a stray untracked `PROJECT\` folder in the repo root (an agent's scratch made with a bad relative path) - never
+   commit it; Skyy deletes it (the permission check blocks Claude from deleting it).
 
 Every round: build (no `--deploy`), review (sonnet), fix, cross-check with the whole set (one JVM, -Xverify:all, the Adventurer permission
 audit), pin versions in `tools/deploy_set.py`, commit + push, back up, then `python tools/deploy_set.py --yes` with the game closed
