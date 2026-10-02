@@ -61,8 +61,16 @@ Respect the rollback floors written in `tools/deploy_set.py` (for example: never
   endings.
 - **Cross-mod calls** only through the shared `skyy.bridge` map with plain java.lang types. Per-profile data follows
   `tools/PROFILES-CONTRACT.md`.
-- **Every round:** build -> review -> fix -> cross-check (all SET jars in one JVM with `-Xverify:all`, the Adventurer permission audit,
-  `python tools/ci/lint.py` with 0 fails) -> pin -> commit -> deploy (section 3).
+- **Round size (Skyy 2026-10-02: "full round only for big builds ... better safe than sorry - just use it if you think it might need
+  it"):**
+  - **Full round** - build -> review -> fix -> cross-check (all SET jars in one JVM with `-Xverify:all`, the Adventurer permission audit,
+    `python tools/ci/lint.py` with 0 fails) -> pin -> commit -> deploy (section 3). Use it for anything that touches coins / the economy,
+    saved data or migrations, permissions or commands, items that could be lost or duplicated, several mods at once, or a new system -
+    and whenever in doubt.
+  - **Lean round** - one builder that runs its own harness + one review / cross-check. For a small behaviour change inside one mod with
+    no saved-data change.
+  - **No agents** - docs, plans, notes, OPEN-QUESTIONS / RESUME updates; a setting Skyy can change in Server Setup themselves (tell them
+    how instead of building).
 
 ## 5. Docs to keep current
 
@@ -94,6 +102,10 @@ Respect the rollback floors written in `tools/deploy_set.py` (for example: never
 - **Cloud sessions** (no access to Skyy's PC or the game files) work from `CLOUD-RESUME.md` - a rolling to-do - and write only that file
   and `research/cloud/` straight to `main`; anything else goes through a pull request. The local session reviews `research/cloud/LOG.md`
   and folds finished work into HANDOFF.md. Subagents that need no local files may run in the cloud (Skyy 2026-10-02).
+- **Multi-agent workflows ("ultracode") are OFF by default** (Skyy 2026-10-02). Skyy gave standing permission to run a full multi-agent
+  round whenever the main session judges a build needs it (section 4 "Round size"); small work stays lean or agent-free.
+- **Models per agent:** builders Opus (the javassist / engine work is hard), reviews / cross-checks / web research Sonnet, tiny lookups
+  Haiku. If the main session ever runs on Fable, set builders to Opus explicitly so they don't inherit it.
 - **Usage pacing (Max 5x plan):** at most 3-4 workflows at once; sonnet for reviews and cross-checks, Opus for builds and hard specs;
   check usage between rounds; near the weekly limit finish and deploy what is running, write the next round into RESUME.md and wait for
   the reset unless Skyy says otherwise.
