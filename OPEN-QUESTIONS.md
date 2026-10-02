@@ -32,7 +32,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - R2 LOCKED (Skyy): try the one-click vault arrow row on our own vanilla-look page next to the vault slots (one probe first; the in-chest arrows
   stay as a fallback). [next SkyyVault]
 - R2 LOCKED (Skyy): Magic Bags are blocked in /trade too (same rule as the AH). [next SkyyEssentials]
-- R3 LOCKED (Skyy): withdrawn bag items - auto-collect LEAVES ALONE THE AMOUNT YOU TOOK (take out 512 stone -> up to 512 stone stay in your
+- R3 LOCKED (Skyy) [LIVE 2026-10-02 SkyySacks 0.7.11 + Collections 0.2.5]: withdrawn bag items - auto-collect LEAVES ALONE THE AMOUNT YOU TOOK (take out 512 stone -> up to 512 stone stay in your
   inventory; placing blocks lowers it; anything above it, e.g. newly mined, still goes in; no timer; Deposit all resets). Replaces the
   10-minute per-item exemption. NEW IDEA from Skyy: stacks you are using AUTO-REFILL from the bag every few seconds (grab one stack of stone,
   build, it tops back up to full - never go back to the bag). Details in round 4. [next SkyySacks]
@@ -105,6 +105,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   never buy tiers / recipes / bags; SkyyEssentials: bags blocked in /trade; SkyyVault: one-click arrow page behind a switch) + the skills HUD
   widget (SkyyHud); THEN the big round (class skill curve + in-combat Mana regen in SkyySkills; SkyyGear 0.2 per-item levels + Armor_Copper
   default + wand / spellbook / staff recipes); THEN SkyyMobs stage 1 if usage still looks good.
+
+- OPEN 2026-10-02 (from the SkyySacks 0.7.11 review): carried bags of one type now add up with NO limit, so e.g. 54 Normal bags hold more
+  than a Legendary. Keep unlimited (each extra bag costs a slot and a recipe), or a Server Setup cap on bags counted per type (e.g. 3)?
+  [unlimited]
+- OPEN 2026-10-02 (same review): an idle partial stack only tops up once you use it. Also top up the stack in your selected hotbar slot
+  even when idle? [only when used]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

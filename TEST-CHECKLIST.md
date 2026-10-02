@@ -1095,3 +1095,21 @@ Guilds:
 6. Kick a member with a positive contribution: the confirm says what they get back; an offline member gets it in their active profile.
 7. Rejoin after leaving: your Contribution starts at 0. Server Setup -> Guilds -> "Leave refund" (0-100) changes the 35%.
 8. Last member leaving still gets the whole bank; disband still splits by contribution.
+## Phase 1 of the 2026-10-02 answers - Sacks 0.7.11, Collections 0.2.5, Essentials 0.1.7, UiProbe 0.3, Hud 0.3.11 (DEPLOYED 2026-10-02)
+Bags (carry a Mining bag):
+1. Take out 512 stone: it stays in your inventory. Mine 10: within 2 s exactly 10 go into the bag. Place 30, wait 2 s, mine 5: the 5 go in.
+2. Deposit all on the Mining tab takes everything; relog after taking out 64 -> the 64 go back into the bag within 2 s.
+3. Stack refill (Sacks page setting): Hotbar only - place 10 from a full hotbar stack -> back to full within 2 s, the bag shows 10 fewer.
+   Full inventory - main-inventory stacks top up too (paused while a bench is open, tops up within ~2 s after closing). Off - nothing.
+4. Carry 2 Normal Mining bags: the page shows "2 bags - up to ... of each item" ("their space adds up"). Drop one: nothing stored is lost.
+5. Server Setup -> Bags and Crafting: "Stack refill from bags" off -> the page says the server turned it off; "Stack refill default".
+6. NOT YET: benches / pocket crafting using bag materials (SkyySacks 0.7.12). /craft still crafts from your bags.
+Collections:
+7. A collection tier page no longer offers "Buy tier ... unlocks" for coins; tiers you already bought stay unlocked; bags still unlock.
+Trade:
+8. /trade: putting a Magic Bag or the Accessory Bag in the offer is refused; normal items still trade.
+Vault arrow probes (admin, ~30 s each - report what you see):
+9. /skyprobe win - does the game show a small page AND a chest window (with your inventory) at the same time?
+10. /skyprobe secgrid - same, plus: can you drag items between the page's grid and the chest slots? (Each page says what to look for.)
+HUD:
+11. HUD editor -> add the "Skills" widget: Overall Level + your class skill by default; its Settings page toggles each skill line.
