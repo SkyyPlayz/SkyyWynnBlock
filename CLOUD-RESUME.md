@@ -17,11 +17,6 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Open tasks (top = next)
 
-- [ ] **Class skill XP curve proposal** - feeds the next big round. Skyy chose "flatten the curve": class skill 20 in a few hours of play,
-      40 in days, skills go to 100. Read the current XP table and kill-XP rates in the newest `SkyySkills/build_skyyskills_*.py` (read
-      only) and the pacing numbers in `research/Gear-Levels-Wynn-Spec.md` + `research/Mob-Levels-Plan.md`. Propose a formula + a table
-      (levels 1-100: XP per level, total, time at Zone 1/2/3/4 kill rates at the x3 class multiplier), how existing XP maps (levels only
-      go up), and the Server Setup rows. Output: `research/cloud/Class-Skill-Curve-Proposal.md`.
 - [ ] **Refit the mob level plan to the new zone bands** - Zone 1 1-20, Zone 2 20-30, Zone 3 30-45, Zone 4 45-60 (OPEN-QUESTIONS LOCKED
       2026-10-01) and the ring ladder in `research/SkyyWorldGen-Plan.md` section 4.5. List every table / number in
       `research/Mob-Levels-Plan.md` that changes, with the new values. Output: `research/cloud/Mob-Levels-Refit.md`.
@@ -41,6 +36,9 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 - [ ] **"Test now" summary** - read `TEST-CHECKLIST.md` and write a short list of what Skyy has not tested yet (newest sections), riskiest
       first. Output: `research/cloud/Test-Now.md`.
 
+- [ ] **Open-questions digest for Skyy** - read the lines in `OPEN-QUESTIONS.md` not marked ANSWERED / LOCKED and write one short page: each
+      question, the current default, a recommended answer with one line of why. Output: `research/cloud/Open-Questions-Digest.md`.
+
 ## Done (delete after logging - see the rules above)
 
-(none yet)
+- [x] Class skill XP curve proposal - 2026-10-02 - `research/cloud/Class-Skill-Curve-Proposal.md` (logged)
