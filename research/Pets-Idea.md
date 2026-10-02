@@ -18,6 +18,20 @@ Related: research/Dragon-Pets-Idea.md (dragons = the top tier of this system), r
 - **Balance rule (main-session proposal, agreed with the direction):** a pet's buff strength comes from its rarity and level, not from
   whether it fights or can be ridden - fighting and riding are bonuses on top.
 
+## Pet types (Skyy 2026-10-01: "mainly skyblock style")
+
+| Type | What it boosts | At launch |
+|---|---|---|
+| Farming pets | Farming (crop fortune, farming XP, ...) | yes |
+| Mining pets | Mining (mining speed / fortune, mining XP, ...) | yes |
+| Foraging pets | Foraging (foraging fortune, tree felling, foraging XP, ...) | yes |
+| General combat pets | combat for every class (damage, health, defense, ...) | yes |
+| **Class pets** | geared towards one class's weapons / role | **at least ONE per class at launch**: Archer, Warrior, Mage, Berserker, Priest (Assassin / Shaman when those classes ship) |
+
+Class pet examples (ideas only, models to check in Assets.zip): Archer - a hawk (ranged / crit; `Avian/Raptor/Hawk` exists); Warrior - a
+guard-type beast (defense, block); Mage - an arcane / spirit creature (Magical Power, Mana); Berserker - a boar or bear (Strength, attack
+speed); Priest - a gentle support creature (healing done, Mana regen). Later skill types can get pets too (Fishing, Cooking, Alchemy ...).
+
 ## Build order (when this gets planned)
 
 1. Buff pets (stat modifiers, the same kind SkyyGear / SkyyAccessories already apply) - doable now.
