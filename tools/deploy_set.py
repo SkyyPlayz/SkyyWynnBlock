@@ -17,7 +17,7 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.11"), ("SkyySacks", "0.7.11"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.5"), ("SkyyParty", "0.1.6"),
-    ("SkyyBank", "0.1.5"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.2"), ("SkyyGear", "0.1.3"), ("SkyySkills", "0.4.11"),
+    ("SkyyBank", "0.1.5"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.2"), ("SkyyGear", "0.2"), ("SkyySkills", "0.4.12"),
     ("SkyyAccessories", "0.5.2"), ("SkyyClasses", "0.1.10"), ("SkyyMenu", "0.3.4"), ("SkyyEssentials", "0.1.7"), ("SkyyProfiles", "0.1.5"),
     ("SkyyCooking", "0.1.3"), ("SkyyTrees", "0.2.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -68,6 +68,9 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees"]
 # SkyyProfiles 0.1.5 (2026-10-01): profile delete + 6-hour undo + admin archive. ROLLBACK FLOOR once any profile was deleted:
 # 0.1.4 treats a deleted profile as live again and can reuse an archived profile's id (the new profile would inherit its
 # island, coins and bags) - never roll Profiles back below 0.1.5 after a delete.
+# SkyyGear 0.2 (2026-10-02): ROLLBACK FLOOR - never roll SkyyGear below 0.2 without first restoring the config History copy
+# 'before the 0.2 level bands' (Server Setup -> History): 0.1.3 cannot read '<min>,<cap>' rows, so items would fall back to Hytale's
+# own item level (the kit wand / staff would read about Lv 40). Items themselves are safe to roll back.
 RETIRED = ["SkyyRolls"]
 
 

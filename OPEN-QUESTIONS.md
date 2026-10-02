@@ -14,7 +14,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 
 ## Q&A with Skyy 2026-10-02 (all open questions, round by round - newest answers win)
 
-- R1 LOCKED (Skyy): CLASS SKILL CURVE = the cloud proposal as written (research/cloud/Class-Skill-Curve-Proposal.md): a separate table for
+- R1 LOCKED (Skyy) [LIVE 2026-10-02 SkyySkills 0.4.12]: CLASS SKILL CURVE = the cloud proposal as written (research/cloud/Class-Skill-Curve-Proposal.md): a separate table for
   class skills only, XP per level = 50 x L + 0.25 x L^3 (rounded); skill 20 ~4 h, 40 ~17 h, 100 ~200 h of fighting; never below today at
   any level (levels only go up); editable rows levels.class / .scale / .max / .sameAsOthers. [next SkyySkills]
 - R1 LOCKED (Skyy): gathering skills keep the Hypixel table for now - revisit when tools get levels / requirements.
@@ -23,7 +23,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - R1 ANSWERED (Skyy, own answer): MANA REGEN IN COMBAT = HALF ("for now, might change later") instead of vanilla's 0 for 6 s after taking
   damage, so Mana Regen boosts work in and out of combat. Skyy asked whether to add the boost then halve, or halve vanilla then add the
   boost - see round 2 (recommended: Mana Regen boosts are %, and with % boosts the order makes no difference).
-- R2 LOCKED (Skyy): Mana Regen boosts are PERCENT ("+20% Mana Regen"); in combat the WHOLE regen (vanilla + boosts) runs at 50% - one
+- R2 LOCKED (Skyy) [LIVE 2026-10-02 SkyySkills 0.4.12]: Mana Regen boosts are PERCENT ("+20% Mana Regen"); in combat the WHOLE regen (vanilla + boosts) runs at 50% - one
   Server Setup row "In-combat Mana regen" (default 50%). Combat = vanilla's window (6 s after taking damage), where vanilla gives 0 - our
   mod supplies the regen there. Replaces the earlier flat "+N every 5 s" recommendation. [next SkyySkills / caster build]
 - R2 LOCKED (Skyy): bags keep collecting from the MAIN inventory only. Skyy's worry - pull 8 stacks of stone out for building, only 1 fits the
@@ -111,6 +111,14 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   [unlimited]
 - OPEN 2026-10-02 (same review): an idle partial stack only tops up once you use it. Also top up the stack in your selected hotbar slot
   even when idle? [only when used]
+
+- OPEN 2026-10-02 (SkyyGear 0.2 review): vanilla has NO material wands or spellbooks - only the Wood Wand - so Priests can craft just
+  the Wood Wand at their level (Mages get a staff per material: the new staff recipes mirror each material's shortbow). Make our own
+  material wands / spellbooks (custom items, e.g. Copper -> Mithril), let Priests use staffs, or wait for custom Priest weapons? [wait]
+- OPEN 2026-10-02 (SkyySkills 0.4.12 review): everyone has 10 base Mana, so Warriors / Archers also get the in-combat Mana refill. Limit it
+  to classes that use Mana (Mage, Priest)? [everyone - harmless today]
+- NOTE 2026-10-02 (same review): with the flatter class curve, class level-up coins arrive much faster (xp.properties coinsPerLevel). Your
+  live profiles gained nothing (little class XP yet); check the coin rate before a public launch.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

@@ -1113,3 +1113,23 @@ Vault arrow probes (admin, ~30 s each - report what you see):
 10. /skyprobe secgrid - same, plus: can you drag items between the page's grid and the chest slots? (Each page says what to look for.)
 HUD:
 11. HUD editor -> add the "Skills" widget: Overall Level + your class skill by default; its Settings page toggles each skill line.
+## Big round - SkyySkills 0.4.12 + SkyyGear 0.2 stage 1 (DEPLOYED 2026-10-02)
+Skills:
+1. Log: "class skills level on own table, max level 100 ... in-combat Mana regen 50%" and "class skill curve (first start of 0.4.12): 5 profile
+   file(s) scanned, 0 with a higher class level now" (your profiles had little class XP, so nobody jumps).
+2. /skills -> a class Stats page says "level N of 100"; your Archer / Priest / Warrior levels are unchanged.
+3. Mage or Priest: spend Mana, get hit -> Mana refills about 2.5/s for 6 s after each hit (was 0), 5/s out of combat, nothing while
+   charging a spell. /skills mana says IN COMBAT or out of combat with the rates.
+4. Server Setup -> Skills -> Overall and Mana: "In-combat Mana regen" 0 = vanilla (no refill in combat), 100 = full; "Show my Mana Regen".
+5. Server Setup -> Skills -> Levels: "Class level curve size" 150 shows the new totals; set it back to 100.
+6. HUD Skills widget shows your class level; it updates within ~5 s after a live curve change.
+Gear (damage and armor are still vanilla in this stage):
+7. Log: one "updated to the 0.2 level bands" line. Server Setup -> Gear -> Levels shows Min | Cap (Copper 10 | 18, Armor_Copper 1 | 18).
+8. A fresh Priest's kit Wood Wand: tooltip "Lv 1 - Requires Divinity 1" (green) and it hits.
+9. Craft a Wood Wand (Workbench Survival tab or Weapon Bench Bow tab: 4 sticks + 6 fibre) -> made at your Divinity level (cap 13).
+10. Craft a Copper Staff below Divinity 10 -> Lv 10, chat "Made at Lv 10 ... you need Divinity 10 (you: N)", red tooltip, hits do 0.
+11. Queue 5 staffs below the band -> one chat line (throttled 10 s).
+12. Copper Pickaxe below Mining 10 -> no chat line, tooltip "Lv 10 - Requires Mining 10 (coming later)" in grey, it still mines.
+13. Iron / Mithril pickaxes keep their vanilla frame colour. A skill-80 crafter's Copper staff = Lv 18 ("Copper gear caps at Lv 18").
+14. Change a band in Server Setup, then /gear relevel <player>: stamped items move into the new band.
+15. Auction House: a Lv 4 and a Lv 9 wand show as different ("rolls differ").
