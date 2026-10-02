@@ -1146,3 +1146,16 @@ Gear (damage and armor are still vanilla in this stage):
 7. Higher-level mobs take longer to kill and pay more class skill XP (XP follows their max health).
 8. Your own island and other island worlds: mobs have no level.
 9. Restart: levelled mobs keep their level (saved on the mob).
+## SkyySacks 0.7.12 - bags in bench + inventory crafting (DEPLOYED 2026-10-02)
+1. Put sticks, rubble, logs and fabric scraps ONLY in your bags (the Omni bag is fine).
+2. Workbench -> Survival -> Campfire: the bag amounts show and CRAFT is lit. If it still says 0/4: Server Setup -> Bags and Crafting ->
+   "Bench chest count fallback" ON, reopen the bench, and tell Claude which case worked.
+3. Craft once: /pd shows exactly 4 sticks and 2 rubble fewer. 5 quick crafts + Craft All: totals exact.
+4. Cooking bench and Alchemy bench: craft with bag items.
+5. Bench open: pick up sticks -> the count rises within ~1 s; drop the bag -> bag counts vanish; pick it up -> back.
+6. Inventory crafting: the Accessory Bag from bag logs + scraps. If it still shows 0/4 -> tell Claude (pocket crafting fallback; /craft works).
+   If opening the inventory ever misbehaves: Server Setup "Bags in inventory crafting" OFF (or bags.pocketCraft=false in config.properties).
+7. A second player at the same bench does not see your bags. Profile switch with a bench open: counts vanish ~6 s, then the new profile's.
+8. Close a bench mid timed craft: the started unit returns to your inventory, totals right. Hotbar refill keeps working with a bench open.
+9. Server log: "craft link: benches and inventory crafting use the bags you carry (outbound filter true, pre-craft filter true, pocket window
+   true)", "craft link: attached ..." lines, no "craft link failed", no "would go below zero".

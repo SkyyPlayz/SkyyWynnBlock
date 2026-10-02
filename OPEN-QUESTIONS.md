@@ -43,7 +43,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   never buy a collection tier, a recipe unlock or a bag (remove SkyyCollections' "Buy tier unlocks" and the bag coin unlock). Skyy: "you
   can just make 2 or 3 bags of a lower level if one isnt enough" -> today only the BEST carried bag counts per type (SkyySacks caps() takes
   the max) - see round 4 about adding them up.
-- R4 LOCKED (Skyy): STACK AUTO-REFILL from bags with a player setting in the Sacks page, 3 options: HOTBAR ONLY / FULL INVENTORY / OFF.
+- R4 LOCKED (Skyy) [LIVE 2026-10-02: refill in SkyySacks 0.7.11; benches + inventory crafting really use your bags since 0.7.12 - the 0.7.10 bench link never reached the client]: STACK AUTO-REFILL from bags with a player setting in the Sacks page, 3 options: HOTBAR ONLY / FULL INVENTORY / OFF.
   Skyy: full inventory is for brewing, cooking and crafting at normal benches - "unless you can get the normal benches to pull only from the
   players bag while they are crafting, and not everyone's bag. then id do hot bar stacks only." Note: SkyySacks already has that per-player
   bench link (BagMirror feeds the open vanilla bench from THAT player's carried bags only, 0.7.x) -> default HOTBAR ONLY; check in game that
