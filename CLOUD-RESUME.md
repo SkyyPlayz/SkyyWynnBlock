@@ -17,8 +17,6 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Open tasks (top = next)
 
-- [ ] **Crude armor set design** - the new Lv 1 starter armor (Skyy 2026-10-01): pieces, stats next to vanilla's weakest armor (web),
-      recipe from starter-shard materials. Asset work is local. Output: `research/cloud/Crude-Armor-Design.md`.
 - [ ] **"Test now" summary** - read `TEST-CHECKLIST.md` and write a short list of what Skyy has not tested yet (newest sections), riskiest
       first. Output: `research/cloud/Test-Now.md`.
 
@@ -27,4 +25,4 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Done (delete after logging - see the rules above)
 
-- [x] Zone boss ideas - 2026-10-02 - `research/cloud/Zone-Bosses-Ideas.md`
+- [x] Crude armor set design - 2026-10-02 - `research/cloud/Crude-Armor-Design.md`

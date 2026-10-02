@@ -10,3 +10,4 @@ section 6 when it reviews the results.
 - 2026-10-02: Pets spec draft -> research/cloud/Pets-Spec.md (14-pet launch list, rarity/XP tables; model ids UNVERIFIED; 6 local checks)
 - 2026-10-02: Story script draft -> research/cloud/Story-Script-Draft.md (12-quest starter chain + Zone 1 waiting room chain, dialogue, 6 local checks)
 - 2026-10-02: Zone boss ideas -> research/cloud/Zone-Bosses-Ideas.md (4 guardians + Zone 5 dragon on vanilla bosses; role ids/moves UNVERIFIED; 6 local checks)
+- 2026-10-02: Crude armor set design -> research/cloud/Crude-Armor-Design.md (20 HP / 14.4% set at Lv 1, band 1-8, fibre/stick/rubble recipe; negative material factor needs a local check)
