@@ -48,8 +48,9 @@ Main-session suggestions to build on it (pick what you like):
   - **The twist:** the exit door opens... onto your own personal shard. The clerk checks the paperwork: you have now lived in the Void
     longer than you ever lived in Hytale, so legally the Void IS your home dimension. "Welcome home! Your shard is now rent-free." (It
     really is - no more tab.)
-  - **Optional prestige for the hardcore:** insist on going "home" anyway -> a prestige reset with permanent perks - and a Void hiccup
-    pulls you straight back in: "Welcome back! Your ticket number is #4,000,000,002."
+  - **Optional prestige for the hardcore (Skyy's FAVORITE part - keep it exactly like this):** if you insist on going "home" anyway, you
+    get a prestige reset with permanent perks. Then a Void hiccup pulls you straight back in: "Welcome back! Your ticket number is
+    #4,000,000,002."
 - **Death fits the theme:** you can't really die in the waiting room - you just get sent back to your seat (respawn on your shard).
 
 ## Starter shard chain (Skyy 2026-10-01: "i love it!" + this shape; exact progression to work out later)
