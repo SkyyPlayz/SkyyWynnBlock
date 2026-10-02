@@ -15,6 +15,30 @@ decides otherwise.
   (the temple town). From there the quest starts.
 - The main goal should **not** be "get back home" (generic). Skyy wants it **silly and absurd**.
 
+## Main objective - the Cosmic Waiting Room (Skyy 2026-10-01, base idea, "still needs work")
+
+Skyy loved the hiccups and the lost-and-found pitches, then pitched this:
+- **The Void works like a black hole:** time stretches into infinity as you fall in, so you ARE being pulled toward oblivion - but you
+  have forever to wait until it actually happens. **"What are you doing with your wait?"**
+- Sample dialogue - Player: "Can I go back?" NPC: "Probably. Where are you from?" Player: "Umm, Hytale?" NPC: "That's a good start...
+  which one?" Player: "What do you mean which one!?" NPC: "Which dimension? There are infinite dimensions, with infinite versions of that
+  game. Which one are you from?"
+- **The quest:** find someone who can work out exactly where (which dimension, which version) you are really from.
+- **The catch, if you ever find out:** your personal shard is only free if you are STAYING. To leave, you first have to **pay off your tab**.
+
+Main-session suggestions to build on it (pick what you like):
+- **The waiting room is the Zone 1 hub temple** ("Department of Arrivals"). You take a numbered ticket; the board says "Now serving:
+  #3", your ticket says #4,000,000,001, and the board jumps around every time the Void hiccups. The talking rock guide is ticket #2 and
+  has "been next" for 4,000 years.
+- **The Void's hiccups stay as the reason things keep arriving** - new shards, new players, new content updates ("another hiccup").
+- **The lost-and-found becomes the bureaucracy:** each zone's town has an office or specialist who narrows your origin down one step -
+  Zone 1: which GAME; Zone 2: which VERSION ("Early Access 0.6.8 - or was it the pre-release?"); Zone 3: an archivist in the frozen records
+  hall finds which WORLD / save; Zone 4: an absurd void physicist calculates the coordinates; Zone 5: the dragon. Dragons always know
+  their way home, so hatching your dragon is the last piece - it can find your exact dimension.
+- **The tab is the endgame coin sink:** a gloriously huge number with "interest accrued over infinity", so nobody ever truly pays it off.
+  Paying chunks of it gives titles / cosmetics / prestige rewards - a story reason for a permanent sink that fights coin inflation.
+- **Death fits the theme:** you can't really die in the waiting room - you just get sent back to your seat (respawn on your shard).
+
 ## Starter shard chain (Skyy 2026-10-01: "i love it!" + this shape; exact progression to work out later)
 
 - **The starting shard is bigger and more interesting:** a few trees, a small cave with stone and copper to mine.
