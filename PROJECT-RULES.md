@@ -91,6 +91,9 @@ Respect the rollback floors written in `tools/deploy_set.py` (for example: never
 
 - The main session plans, launches build / review agents, commits and deploys. **Build, review and cross-check agents follow
   `tools/AGENT-BRIEF.md` instead** (no commits, no deploys, no edits to the docs above, only the files their task names).
+- **Cloud sessions** (no access to Skyy's PC or the game files) work from `CLOUD-RESUME.md` - a rolling to-do - and write only that file
+  and `research/cloud/` straight to `main`; anything else goes through a pull request. The local session reviews `research/cloud/LOG.md`
+  and folds finished work into HANDOFF.md. Subagents that need no local files may run in the cloud (Skyy 2026-10-02).
 - **Usage pacing (Max 5x plan):** at most 3-4 workflows at once; sonnet for reviews and cross-checks, Opus for builds and hard specs;
   check usage between rounds; near the weekly limit finish and deploy what is running, write the next round into RESUME.md and wait for
   the reset unless Skyy says otherwise.
