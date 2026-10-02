@@ -39,8 +39,8 @@ Main-session suggestions to build on it (pick what you like):
   rent is charged for every in-game day you have "stayed", so the bill is already absurd by the time you find out.
 - **The tab is the endgame coin sink:** a gloriously huge number with "interest accrued over infinity", so nobody ever truly pays it off.
   Paying chunks of it gives titles / cosmetics / prestige rewards - a story reason for a permanent sink that fights coin inflation.
-- **"But what if someone actually pays off the tab?" (Skyy 2026-10-01) - main-session suggestion: let it be possible but legendary,
-  and make it the real ending with a twist:**
+- **"But what if someone actually pays off the tab?" (Skyy 2026-10-01) - APPROVED by Skyy ("thats beautiful! its perfect"): it is
+  possible but legendary, and it is the real ending with a twist:**
   - It is payable (no fake-impossible maths - someone WILL try to break it). The tab can tick only for days you are on the server, so
     it is a race you can win with endgame income, not a wall.
   - Paying it in full gives the rarest trophy in the game - **the Receipt** - a title ("Paid in Full"), and your name carved on the
