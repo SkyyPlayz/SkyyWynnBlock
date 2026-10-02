@@ -17,9 +17,6 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Open tasks (top = next)
 
-- [ ] **Refit the mob level plan to the new zone bands** - Zone 1 1-20, Zone 2 20-30, Zone 3 30-45, Zone 4 45-60 (OPEN-QUESTIONS LOCKED
-      2026-10-01) and the ring ladder in `research/SkyyWorldGen-Plan.md` section 4.5. List every table / number in
-      `research/Mob-Levels-Plan.md` that changes, with the new values. Output: `research/cloud/Mob-Levels-Refit.md`.
 - [ ] **Pocket Shards spec draft** (SkyWynn's minions, `SkyyMinions-Plan.md`): research Hypixel SkyBlock minions on the web (types, tier
       I-XI speeds and storage, fuel, upgrades, slot unlocks, crafting); propose our Pocket Shard list (fits our skills / Hytale resources),
       tiers, upgrades and slot rules. Engine questions go under "For the local session". Output: `research/cloud/Pocket-Shards-Spec.md`.
@@ -41,4 +38,4 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Done (delete after logging - see the rules above)
 
-- [x] Class skill XP curve proposal - 2026-10-02 - `research/cloud/Class-Skill-Curve-Proposal.md` (logged)
+- [x] Mob level refit to new zone bands - 2026-10-02 - `research/cloud/Mob-Levels-Refit.md`
