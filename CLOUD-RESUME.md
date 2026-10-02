@@ -17,12 +17,23 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Open tasks (top = next)
 
-- [ ] **"Test now" summary** - read `TEST-CHECKLIST.md` and write a short list of what Skyy has not tested yet (newest sections), riskiest
-      first. Output: `research/cloud/Test-Now.md`.
-
-
-<!-- 2026-10-02 local session: the open-questions digest is being done live with Skyy - not a cloud task. -->
+- [ ] **Workbench recipes for wands, spellbooks and staffs by material** (OPEN-QUESTIONS 2026-10-01 answer 4; next big round). Draft the
+      recipe table per material band (Wood, Copper, Iron, Thorium, Cobalt, Adamantite, Mithril) so "crafted at your level" works for Priest /
+      Mage. Read `research/Gear-Levels-Wynn-Spec.md` + `Classes-Berserker-Priest-Spec.md`; item ids UNVERIFIED. Output: `research/cloud/Magic-Weapon-Recipes.md`.
+- [ ] **Zone 2-4 story chains** - continue `research/cloud/Story-Script-Draft.md`: Zone 2 "which VERSION", Zone 3 archivist "which WORLD / save",
+      Zone 4 void physicist, Zone 5 dragon; quests + dialogue, silly. Output: `research/cloud/Story-Script-Zones-2-5.md`.
+- [ ] **The Tab economy design** - the endgame coin sink from `research/Isles-of-the-Void-Lore.md` (20 million coins per in-game day + interest,
+      payable, "Paid in Full" ending, prestige). Work out the numbers vs expected income, title/cosmetic rewards, exploit checks. Output: `research/cloud/Tab-Economy.md`.
+- [ ] **Dragon hatching quest line** from `research/Dragon-Pets-Idea.md`: egg -> specialist -> element choice -> items -> mini dungeon -> hatch;
+      9 elements (5 + secret Blood / Void / Light / Crystal), growth and flying unlock. Output: `research/cloud/Dragon-Quest-Spec.md`.
+- [ ] **Class ability drafts** - research Wynncraft class ability trees on the web and draft SkyWynn abilities for Archer, Warrior, Mage, Berserker,
+      Priest (names, cost, effect; Hytale 0.7 runes as the base - `research/Hytale-Runes-Research.md`). Output: `research/cloud/Class-Abilities-Draft.md`.
+- [ ] **NPC shops spec (SkyyEconomy 0.2)** - read `SkyyEconomy-Plan.md`; research SkyBlock NPC shop/sell prices; propose shop lists, buy/sell price
+      rules per zone town and anti-inflation guards. Output: `research/cloud/NPC-Shops-Spec.md`.
+- [ ] **Starter shard chain map** - paper layout for the starting shard + shards 2-3 (sizes, trees, cave, bridges, spawn points, mob camp, portal
+      frame) matching `Story-Script-Draft.md` quests 1-12. Output: `research/cloud/Starter-Shard-Layout.md`.
+- [ ] **Elites and world events spec** (Mob-Levels-Plan section 11 stage 3): elite rules, event ideas per zone, rewards. Output: `research/cloud/Elites-Events-Spec.md`.
 
 ## Done (delete after logging - see the rules above)
 
-- [x] Crude armor set design - 2026-10-02 - `research/cloud/Crude-Armor-Design.md`
+(none; the 8 finished tasks are logged in `research/cloud/LOG.md`)
