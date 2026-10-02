@@ -82,6 +82,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   world) and travel to the zone islands from it - NOT the normal Hytale world; (3) SHIFT ZONE 4 DOWN to about Lv 40-49 so vanilla gear
   covers it (our own tiers extend it later) - Zone 3 / Zone 4 level tables, guardian gaps and the Mob-Levels-Plan bands need a re-fit
   (proposed: Zone 3 30-38 with its guardian at 38-40, Zone 4 40-49 with a capstone at 50 - confirm when building).
+- LOCKED 2026-10-01 (Skyy, later game): PETS = one system - SkyBlock-style buff pets that level up; better pets grow and fight; some
+  are mounts (all mounts are pets, not all pets are mounts); an active pet slot + an UNLOCKABLE mount slot (mount pets only) that
+  still gives the pet's buffs, weaker. Dragons = the top tier (research/Dragon-Pets-Idea.md). Details + 4 questions:
+  research/Pets-Idea.md. [idea, not scheduled]
 - REQUEST 2026-10-01 (Skyy): gear levels like Wynncraft - "the gears level determines the stat it gives, and the gear level is the use
   requirement level" (e.g. Wooden earth staff Lv1 6-8 damage, Lv4 10-12, needs Priest level 4); "all items crafted are crafted at your level".
   Gate skill stays as ruled 2026-09-25: combat gear = your class weapon skill, mining/foraging/farming gear = that skill.
