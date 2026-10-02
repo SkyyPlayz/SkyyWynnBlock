@@ -42,6 +42,10 @@ SET = [
     # vanilla UI pass (2026-09-29): DEV/TEST mod - /skyprobe (admin only) opens the shared kit's probe pages so Skyy can confirm the
     # vanilla look works inline before any restyled page ships. Move it to RETIRED once the probe results are in.
     ("SkyyUiProbe", "0.3"),
+    # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
+    # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
+    # no data migration, nothing else needs a bump.
+    ("SkyyMobs", "0.1"),
 ]
 # round 6 (2026-09-25): SkyyClasses 0.1.6 + SkyySkills 0.4.4 + SkyyProfiles 0.1.2 deploy TOGETHER (Berserker/Fury, Priest/Divinity, class kits;
 # Profiles 0.1.1 only draws 6 class cards). Never go back to SkyySkills 0.4.3 once Fury/Divinity XP exists (0.4.3 drops those keys).
@@ -71,6 +75,9 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees"]
 # SkyyGear 0.2 (2026-10-02): ROLLBACK FLOOR - never roll SkyyGear below 0.2 without first restoring the config History copy
 # 'before the 0.2 level bands' (Server Setup -> History): 0.1.3 cannot read '<min>,<cap>' rows, so items would fall back to Hytale's
 # own item level (the kit wand / staff would read about Lv 40). Items themselves are safe to roll back.
+# SkyyMobs 0.1 (2026-10-02): rolling it back = take it out of SET and add "SkyyMobs" to RETIRED. Saved mobs keep a Health modifier
+# 'skyymobs_lv<N>' and a '[Lv N] Name' plate until they die; to strip them first: Server Setup > Mobs > Never level these = * , then
+# walk / reload the chunks, then retire. Settings stay in mods/Skyy_SkyyMobs.
 RETIRED = ["SkyyRolls"]
 
 

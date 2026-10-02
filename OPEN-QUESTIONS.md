@@ -54,7 +54,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - R4 LOCKED (Skyy): Overall Level +0.5 max Health / +0.2 max Mana per level stays until a playtest. NEW REQUEST: a HUD WIDGET for the Overall
   Level and skills, where each skill can be toggled on / off in the widget (show all, or just the class level, or Overall + Mining - any
   combo). [next SkyyHud]
-- R5 LOCKED (Skyy) - SkyyMobs (research/Mob-Levels-Plan.md + research/cloud/Mob-Levels-Refit.md): levels on HOSTILE mobs AND NEUTRAL
+- R5 LOCKED (Skyy) [LIVE 2026-10-02 SkyyMobs 0.1] - SkyyMobs (research/Mob-Levels-Plan.md + research/cloud/Mob-Levels-Refit.md): levels on HOSTILE mobs AND NEUTRAL
   FIGHTERS (mobs that fight back: boars, Scaraks ...); animals / passive never.
 - R5 LOCKED (Skyy): +4% health / +2% damage per level by default, with a DIFFICULTY setting in Server Setup that changes it (e.g. presets
   Easy 3% / 1.5%, Normal 4% / 2%, Hard 6% / 3%, plus custom).

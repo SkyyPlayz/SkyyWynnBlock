@@ -1133,3 +1133,16 @@ Gear (damage and armor are still vanilla in this stage):
 13. Iron / Mithril pickaxes keep their vanilla frame colour. A skill-80 crafter's Copper staff = Lv 18 ("Copper gear caps at Lv 18").
 14. Change a band in Server Setup, then /gear relevel <player>: stamped items move into the new band.
 15. Auction House: a Lv 4 and a Lv 9 wand show as different ("rolls differ").
+## SkyyMobs 0.1 - mob levels (NEW mod, DEPLOYED 2026-10-02)
+1. Server log: "[SkyyMobs] 0.1 ready", no WARN lines.
+2. Look at a hostile mob (or the nearest within 8 blocks) and run /mobs platetest: it shows three test plates (three colour markups) - tell
+   Claude which one shows RED in game (or none). Colours stay off until then; plates read "[Lv N] Name" in plain text.
+3. Zone 1 mobs: levels 1-20 by biome (spawn plains low, rarer biomes higher, blue / Azure forest near 18-20). /mobs inspect on a mob shows
+   its level, band and why (biome / environment / world).
+4. Boars, Warthogs, Scaraks and Feran warriors get levels; cows, horses, deer, Kweebecs, traders and tamed animals never.
+5. Deep lava (volcanic) caves: mobs use the zone's top band (Zone 1: 18-20).
+6. Server Setup -> Mobs -> Difficulty: Easy / Normal / Hard / Custom - a higher level mob hits harder at once; health changes on the next
+   spawn / chunk reload.
+7. Higher-level mobs take longer to kill and pay more class skill XP (XP follows their max health).
+8. Your own island and other island worlds: mobs have no level.
+9. Restart: levelled mobs keep their level (saved on the mob).
