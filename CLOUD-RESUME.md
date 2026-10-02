@@ -17,9 +17,6 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Open tasks (top = next)
 
-- [ ] **Pets spec draft** from `research/Pets-Idea.md`: research SkyBlock pets (types, rarities, levels 1-100, XP rules); propose the launch
-      list - farming, mining, foraging, general combat + at least one pet per class (Archer, Warrior, Mage, Berserker, Priest) - with buffs
-      per level and rarity, using Hytale creatures (model ids UNVERIFIED). Output: `research/cloud/Pets-Spec.md`.
 - [ ] **Story script draft** - the starter shard chain and the Zone 1 "cosmic waiting room" from `research/Isles-of-the-Void-Lore.md`:
       quest steps and dialogue (the overconfident talking rock guide, the sleepy clerk, ticket #4,000,000,001). Silly and absurd, as Skyy
       wants. Output: `research/cloud/Story-Script-Draft.md`.
@@ -35,4 +32,4 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Done (delete after logging - see the rules above)
 
-- [x] Pocket Shards spec draft - 2026-10-02 - `research/cloud/Pocket-Shards-Spec.md`
+- [x] Pets spec draft - 2026-10-02 - `research/cloud/Pets-Spec.md`
