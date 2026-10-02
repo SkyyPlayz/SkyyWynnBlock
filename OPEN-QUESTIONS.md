@@ -65,8 +65,49 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   OCEANS: skip - the world gen islands have no oceans. CAVES: the level of the ground above, EXCEPT the deep lava caves (vanilla's volcanic
   caves, Env_ZoneN_Caves_Volcanic_T1-T3 - "really hard in the default game, lets keep that") = the range of the HARDEST biome of that zone
   (Zone 1 deep caves about Lv 17-20).
+- R6 LOCKED (Skyy) - pets (research/Pets-Idea.md, research/cloud/Pets-Spec.md): the second slot is unlocked by a ZONE 2 STABLE QUEST (a
+  stable master gives the slot + your first mount pet).
+- R6 LOCKED (Skyy): a pet in the second slot gives its buffs at 50%, always (Server Setup row). LATER: a hotkey to SWAP the two slots (with a
+  mount pet in both, swap which one is the pet and which the mount). Skyy's question - should combat pets in BOTH slots fight, or only the
+  second? If only the second, rename it the "SUMMON SLOT": it holds mounts AND combat pets (many pets are both - they fight while you are on
+  foot). See round 7.
+- R6 LOCKED (Skyy): pet XP = its own skill's XP + 50% of all other XP (editable in settings).
+- R6 LOCKED (Skyy): a fighting pet that loses all its health retreats into its slot and loses nothing; it can come out again after a short
+  cooldown (default 60 s, editable).
+- R6 ADDED (Skyy): the pet's resummon cooldown after a defeat SHRINKS WITH THE PET'S LEVEL (e.g. 60 s at Lv 1 down to about 15 s at
+  Lv 100 - placeholder numbers, editable).
+- R7 LOCKED (Skyy): only the SECOND slot fights - renamed the SUMMON SLOT: it holds mounts AND combat pets (50% buffs; the creature fights
+  while you are on foot and is ridden when you mount); slot 1 = the pet slot, full buffs, never fights. The Summon slot unlocks with the
+  Zone 2 stable quest; a later hotkey swaps the two slots.
+- R7 LOCKED (Skyy) - Pocket Shards (research/cloud/Pocket-Shards-Spec.md): 12 types at launch, then grow - Cobblestone, Copper, Iron, Oak,
+  Birch, Wheat, Carrot, Pumpkin, Bone, Hide, Feather, Charcoal; items count for collections WHEN YOU COLLECT them; auto-sell LATER with
+  SkyyEconomy (NPC prices + a daily cap).
+- R8 LOCKED (Skyy) - dragons (research/Dragon-Pets-Idea.md): ZONE 5 = the dinosaur caves under Zone 4 as their own zone, Lv 60-75, the
+  dragon boss at 75 (needs our own gear tiers above 49 first).
+- R8 LOCKED (Skyy): ONE DRAGON PER PROFILE for now. Later maybe a much harder quest for a second egg - Skyy's idea: when your dragon gets
+  older it gets lonely and you go on a quest to find it a MATE, and that's how you get another egg.
+- R8 LOCKED (Skyy): dragons follow the pet rules (combat XP + 50% of other XP), grow bigger at set levels, and can be flown from Lv 10
+  (growth steps and the flight level are settings).
+- R8 LOCKED (Skyy): starter shard gaps - BOTH: the first gap has a broken bridge you repair, the later gaps you build across with your own
+  blocks (research/Isles-of-the-Void-Lore.md).
+- R9 LOCKED (Skyy): KEEP ALL the small live defaults not otherwise marked in this file - tree felling XP (felled logs full XP +
+  collections, leaves normal XP, placed logs never), party combat XP 50% within 48 blocks, menu hover tooltips on, staff bypass on, two
+  crossbows share one big-arrow meter, AH 48h never cheaper than 24h (xFloorPrev on), old SkyyRolls rolls not clamped (clampToLevel off),
+  SkyyRanks placeholders (Admin = kick + Server Setup + staff bypass, no ban; Developer = Admin's; Owner = rank editor; only real ops grant
+  op-level nodes; no grants below Member), the vanilla UI look defaults (readable text, footer Close, vanilla colours / tabs / frames, Mythic
+  #CC66CC, current text-box look), no sickle / gear swing-speed for now, a deleted profile's AH claims stay in its archive (admin can regrant),
+  rank perks later, the picked non-metal gear levels (ranges in SkyyGear 0.2).
+- R9 LOCKED (Skyy): outpost towns SHARE one outpost between near-identical biome variants (about 30-35 outposts, each an unlockable warp).
+- R9 LOCKED (Skyy): pet details as the cloud spec proposes (rarity raised with Upgrade Stones, eggs can be found at higher rarities, pets per
+  profile, pet score bonus later) - BUT Upgrade Stones are PER SKILL / MINION TYPE (Mining stones, Combat stones, ...), and late-game pets
+  like dragons have their own DRAGON Upgrade Stones.
+- R9 BUILD ORDER (Skyy): FIRST the quick fixes (SkyySacks: withdraw amount, auto-refill 3-way setting, bags add up; SkyyCollections: coins
+  never buy tiers / recipes / bags; SkyyEssentials: bags blocked in /trade; SkyyVault: one-click arrow page behind a switch) + the skills HUD
+  widget (SkyyHud); THEN the big round (class skill curve + in-combat Mana regen in SkyySkills; SkyyGear 0.2 per-item levels + Armor_Copper
+  default + wand / spellbook / staff recipes); THEN SkyyMobs stage 1 if usage still looks good.
 
 ## Numbers picked in the beta round (live now)
+(2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
 - LOCKED 2026-09-25 (Skyy): **Vault:** 2 free pages, max 10, page 3 = 50,000 coins, each next page +25,000. Pages are shared across all profiles
   (Wynncraft style). [as written — already the live defaults]
 - LOCKED 2026-09-25 (Skyy): **Tree Feller:** same height as the cut. Extra logs 1 / 2 / 4 / 5 / 6 / 10 at levels 1–6. Level 6 jumps to 10 so a
@@ -83,6 +124,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - **Menu hover tooltips:** on by default; the book switch turns them off if the stuck tooltip after Esc still happens. Default off? [on]
 
 ## Round 8 defaults (live 2026-09-28)
+(2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
 - Bag unlock collections: Mining = Iron (your call), Foraging = Oak Log, Farming = Wheat, Combat = Bone, Smithing = Light Hide; tiers I / III / V / VII. [proposed]
 - Bag upgrade materials: Unique 6 Linen Scraps, Rare 6 Shadoweave Scraps, Legendary 6 Cindercloth Scraps (the old Loom bolts were impossible to get). [6 each]
 - Coins can unlock bags up to Unique; Rare and Legendary must be gathered (bypass.bagMax). [unique]
@@ -92,6 +134,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - Two crossbows keep only ONE banked big-arrow meter. [one]
 
 ## Round 9 + SkyyGear defaults (live 2026-09-29)
+(2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
 - Auction house 48h: "double the listing fee", but never cheaper than the 24h price (built literally, 48h cost 20 coins on a 1,000-coin item
   vs 360 for 24h, so everyone would pick 48h). Server Setup key `xFloorPrev` - OFF = exactly 2 x the listing fee. [on]
 - SkyyGear: old SkyyRolls items keep their rolls (your lock). Switch `migrate.clampToLevel` caps old rolls at what that item's level can

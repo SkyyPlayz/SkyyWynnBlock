@@ -1,5 +1,7 @@
 # SkyyWorldGen: plan (World Gen V2 zone islands) - 2026-10-01
 
+> **Skyy's decisions 2026-10-02 win over this draft:** OPEN-QUESTIONS.md, section "Q&A with Skyy 2026-10-02", rounds 9.
+
 Research and plan only. Skyy said "dont build yet, just make a plan", so nothing here is built, packed or deployed. Every number is a
 **PLACEHOLDER** until Skyy picks it (section 8 has the questions). Skyy uses they/them.
 

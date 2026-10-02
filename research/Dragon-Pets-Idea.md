@@ -1,5 +1,7 @@
 # Dragon pets, Zone 5 and dragon-only islands - IDEA (later game, not planned yet)
 
+> **Skyy's decisions 2026-10-02 win over this draft:** OPEN-QUESTIONS.md, section "Q&A with Skyy 2026-10-02", rounds 8.
+
 Skyy's thought dump, 2026-10-01 ("more of a thought dump than a prompt"). Kept here so nothing is lost. Nothing is decided or scheduled.
 Dragons are the top tier of the one pet system (research/Pets-Idea.md, agreed 2026-10-01). Related: research/SkyyWorldGen-Plan.md (zone islands, zone bands Z1 1-20, Z2 20-30, Z3 30-45, Z4 45-60, "more past 60").
 

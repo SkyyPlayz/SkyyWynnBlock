@@ -1,4 +1,6 @@
 # SkyyMinions — plan
+
+> **Skyy's decisions 2026-10-02 win over this draft:** OPEN-QUESTIONS.md, section "Q&A with Skyy 2026-10-02", rounds 7.
 *Design lock 2026-09-23 night. See `SkyWynn-Master-Plan.md` Part 2B and 2E (P2), and `SkyWynn-Decisions.md` rows 3.3–3.7.*
 
 ## Where they live

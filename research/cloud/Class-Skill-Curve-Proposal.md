@@ -1,5 +1,7 @@
 # Class skill XP curve proposal
 
+> **Skyy's decisions 2026-10-02 win over this draft:** OPEN-QUESTIONS.md, section "Q&A with Skyy 2026-10-02", rounds 1 (approved as written, class skills only).
+
 Cloud draft, 2026-10-02. Nothing built or tested. Feeds the next big round (SkySkills flatter curve).
 Skyy's goal (OPEN-QUESTIONS 2026-10-01): class skill **20 in a few hours of play, 40 in days, skills go to 100**.
 

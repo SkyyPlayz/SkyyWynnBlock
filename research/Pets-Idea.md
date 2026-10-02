@@ -1,5 +1,7 @@
 # Pets, combat companions and mounts - one system (IDEA, direction agreed 2026-10-01, not planned in detail yet)
 
+> **Skyy's decisions 2026-10-02 win over this draft:** OPEN-QUESTIONS.md, section "Q&A with Skyy 2026-10-02", rounds 6, 7 and 9.
+
 Related: research/Dragon-Pets-Idea.md (dragons = the top tier of this system), research/SkyyWorldGen-Plan.md.
 
 ## Agreed with Skyy (2026-10-01)

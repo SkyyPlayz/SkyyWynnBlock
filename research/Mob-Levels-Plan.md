@@ -1,5 +1,7 @@
 # Mob Levels: Plan (SkyyMobs) - 2026-09-30
 
+> **Skyy's decisions 2026-10-02 win over this draft:** OPEN-QUESTIONS.md, section "Q&A with Skyy 2026-10-02", rounds 5 (and the zone bands LOCKED 2026-10-01).
+
 Design plan only. Nothing is built, committed or deployed. Every number is a PLACEHOLDER until Skyy picks it (section 17 lists the
 questions with recommended defaults). Skyy uses they/them.
 

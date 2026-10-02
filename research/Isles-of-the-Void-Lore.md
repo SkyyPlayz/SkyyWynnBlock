@@ -1,5 +1,7 @@
 # Isles of the Void - story notes (IDEA, 2026-10-01; nothing renamed)
 
+> **Skyy's decisions 2026-10-02 win over this draft:** OPEN-QUESTIONS.md, section "Q&A with Skyy 2026-10-02", rounds 8.
+
 Working name for the pack / server: **Isles of the Void** (Skyy 2026-10-01; "Iles" was a typo). The code name stays SkyWynn until Skyy
 decides otherwise.
 

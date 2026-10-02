@@ -1,5 +1,7 @@
 # Mob level plan - refit to the new zone bands
 
+> **Skyy's decisions 2026-10-02 win over this draft:** OPEN-QUESTIONS.md, section "Q&A with Skyy 2026-10-02", rounds 5.
+
 Cloud draft, 2026-10-02. Nothing built. Source: `research/Mob-Levels-Plan.md` (read only), OPEN-QUESTIONS LOCKED 2026-10-01 (zone bands),
 `research/SkyyWorldGen-Plan.md` 4.5 (ring ladder). All numbers below were computed by script from the plan's own RR formula, then
 checked by hand against the old tables (the old tables reproduce exactly with the old formula).

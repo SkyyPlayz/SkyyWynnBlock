@@ -1,5 +1,7 @@
 # Pets spec draft (launch list)
 
+> **Skyy's decisions 2026-10-02 win over this draft:** OPEN-QUESTIONS.md, section "Q&A with Skyy 2026-10-02", rounds 6, 7 and 9.
+
 Cloud draft, 2026-10-02. Paper design; nothing built. Direction: `research/Pets-Idea.md` (agreed 2026-10-01) and `research/Dragon-Pets-Idea.md`
 (dragons are the top tier, later). Creature model ids are **UNVERIFIED** (no game files in the cloud).
 

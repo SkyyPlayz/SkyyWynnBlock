@@ -1,5 +1,7 @@
 # Pocket Shards - spec draft (SkyWynn's minions)
 
+> **Skyy's decisions 2026-10-02 win over this draft:** OPEN-QUESTIONS.md, section "Q&A with Skyy 2026-10-02", rounds 7.
+
 Cloud draft, 2026-10-02. Paper design only; nothing built. Builds on `SkyyMinions-Plan.md` (the Pocket Shards section) and
 `research/Isles-of-the-Void-Lore.md`. Every game-engine fact is UNVERIFIED unless said otherwise - see "For the local session".
 
