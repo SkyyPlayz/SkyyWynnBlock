@@ -17,9 +17,6 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Open tasks (top = next)
 
-- [ ] **Pocket Shards spec draft** (SkyWynn's minions, `SkyyMinions-Plan.md`): research Hypixel SkyBlock minions on the web (types, tier
-      I-XI speeds and storage, fuel, upgrades, slot unlocks, crafting); propose our Pocket Shard list (fits our skills / Hytale resources),
-      tiers, upgrades and slot rules. Engine questions go under "For the local session". Output: `research/cloud/Pocket-Shards-Spec.md`.
 - [ ] **Pets spec draft** from `research/Pets-Idea.md`: research SkyBlock pets (types, rarities, levels 1-100, XP rules); propose the launch
       list - farming, mining, foraging, general combat + at least one pet per class (Archer, Warrior, Mage, Berserker, Priest) - with buffs
       per level and rarity, using Hytale creatures (model ids UNVERIFIED). Output: `research/cloud/Pets-Spec.md`.
@@ -38,4 +35,4 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Done (delete after logging - see the rules above)
 
-- [x] Mob level refit to new zone bands - 2026-10-02 - `research/cloud/Mob-Levels-Refit.md`
+- [x] Pocket Shards spec draft - 2026-10-02 - `research/cloud/Pocket-Shards-Spec.md`
