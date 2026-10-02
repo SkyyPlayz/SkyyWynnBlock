@@ -86,8 +86,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   are mounts (all mounts are pets, not all pets are mounts); an active pet slot + an UNLOCKABLE mount slot (mount pets only) that
   still gives the pet's buffs, weaker. Dragons = the top tier (research/Dragon-Pets-Idea.md). Details + 4 questions:
   research/Pets-Idea.md. [idea, not scheduled]
-- IDEA 2026-10-01 (Skyy): a name for the pack / server - "Iles of the Void" (just an idea; nothing renamed). Note: the English spelling is
-  "Isles" ("Iles" reads as French / a typo and is harder to search); a quick web search found no game or server using either name.
+- IDEA 2026-10-01 (Skyy): name for the pack / server = "Isles of the Void" ("Iles" was a typo; nothing renamed). Islands = fragments /
+  shards; story: the Void pulls pieces of worlds (and players) in from everywhere; you wake on your personal shard and unlock a portal
+  to the Zone 1 hub shard. The main objective should be silly and absurd - pitches in research/Isles-of-the-Void-Lore.md.
 - REQUEST 2026-10-01 (Skyy): gear levels like Wynncraft - "the gears level determines the stat it gives, and the gear level is the use
   requirement level" (e.g. Wooden earth staff Lv1 6-8 damage, Lv4 10-12, needs Priest level 4); "all items crafted are crafted at your level".
   Gate skill stays as ruled 2026-09-25: combat gear = your class weapon skill, mining/foraging/farming gear = that skill.
