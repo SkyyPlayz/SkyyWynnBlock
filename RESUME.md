@@ -55,16 +55,14 @@ four from their old patch scripts (their successors 0.4.6 / 0.2.4 / 0.1.7 / 0.1.
 **Usage:** Skyy moved back to the big Max plan on 2026-10-02 (weekly reset to 0%). All open questions were answered on 2026-10-02 -
 OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" (rounds 1-9) is the source of truth.
 
-**RUNNING (2026-10-02):** phase 1 = Skyy's quick fixes + skills HUD widget - SkyySacks 0.7.11 (withdraw amount kept, stack auto-refill
-3-way setting, bags add up), SkyyCollections 0.2.5 (coins never buy tiers / recipes / bags), SkyyEssentials 0.1.7 (bags blocked in
-/trade), SkyyUiProbe 0.3 (vault one-click arrow probes P1/P2 for Skyy), SkyyHud 0.3.11 (Skills widget) - one workflow, run
-wf_8305ee85-c37 (resume with Workflow({scriptPath, resumeFromRunId})). ALSO RUNNING: phase 2 = the big round - SkyySkills 0.4.12 (class
-skill curve + in-combat Mana regen 50% with percent boosts) + SkyyGear 0.2 STAGE 1 (per-item levels / requirement / crafting at your
-level / bands / Armor_Copper / wand-spellbook-staff recipes; damage + armor stay vanilla until stages 2-3) - run wf_00be8b49-589.
-QUEUED after 0.7.11 lands: SkyySacks 0.7.12 = bags in crafting (benches + pocket crafting ignore bags today - diagnosis + fix recipe in
-research/Bag-Craft-Link-Fix.md). Then SkyyGear 0.2 stages 2-3 (weapon damage, armor by level) after Skyy tests stage 1, then phase 3 =
-SkyyMobs stage 1 if usage still looks good. After Skyy opens the P1/P2 probes:
-SkyyVault 0.1.6 one-click arrow row (research/Vault-Arrow-Click-Research.md step 2).
+**2026-10-02 status:** phase 1 DEPLOYED (backup backups/deploy-20261002-1300): SkyySacks 0.7.11, SkyyCollections 0.2.5, SkyyEssentials
+0.1.7, SkyyUiProbe 0.3, SkyyHud 0.3.11 - test steps in TEST-CHECKLIST (newest section; Skyy also opens /skyprobe win + secgrid for the
+vault arrow). RUNNING: (a) the big round - SkyySkills 0.4.12 (class skill curve + in-combat Mana regen 50% with percent boosts) +
+SkyyGear 0.2 STAGE 1 (per-item levels / requirement / crafting at your level / bands / Armor_Copper / magic weapon recipes; damage +
+armor stay vanilla until stages 2-3), run wf_00be8b49-589; (b) SkyySacks 0.7.12 = bags in bench + pocket crafting
+(research/Bag-Craft-Link-Fix.md), run wf_c08491ab-b66. Resume either with Workflow({scriptPath, resumeFromRunId}). NEXT: SkyyMenu 0.3.5
+(Mods list versions - its harness flags the stale ones) after these land; SkyyMobs stage 1 if usage is fine; SkyyGear 0.2 stages 2-3
+after Skyy tests stage 1; SkyyVault 0.1.6 one-click arrow after Skyy's probe results.
 
 1. **Skyy tests the 2026-10-01 deploys**; fix what they report first (auto-deploy each fixed round with the game closed).
 2. **THE BIG ROUND (phase 2, after the quick fixes), all decided by Skyy 2026-10-01 / 2026-10-02:**
