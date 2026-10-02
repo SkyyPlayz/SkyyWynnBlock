@@ -55,15 +55,14 @@ four from their old patch scripts (their successors 0.4.6 / 0.2.4 / 0.1.7 / 0.1.
 **Usage:** Skyy moved back to the big Max plan on 2026-10-02 (weekly reset to 0%). All open questions were answered on 2026-10-02 -
 OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" (rounds 1-9) is the source of truth.
 
-**2026-10-02 status:** DEPLOYED today (Skyy not tested yet - TEST-CHECKLIST newest two sections): phase 1 (backup deploy-20261002-1300):
-SkyySacks 0.7.11, SkyyCollections 0.2.5, SkyyEssentials 0.1.7, SkyyUiProbe 0.3, SkyyHud 0.3.11; the big round (backup
-deploy-20261002-1303): SkyySkills 0.4.12 (class skill curve + in-combat Mana regen 50%), SkyyGear 0.2 stage 1 (per-item levels /
-requirement / crafting at your level / bands / copper armor 1-18 / 8 magic weapon recipes; ROLLBACK FLOOR in deploy_set.py). RUNNING:
-SkyySacks 0.7.12 = bags in bench + pocket crafting (research/Bag-Craft-Link-Fix.md), run wf_c08491ab-b66; SkyyMobs 0.1 (new mod, stage 1:
-levels by zone / biome, difficulty setting, nameplates, /mobs tools, mob:fn:level), run wf_d2d16966-b0f. Resume either with
-Workflow({scriptPath, resumeFromRunId}). NEXT: SkyyMenu 0.3.5 (Mods list versions + help for /skills mana, /gear relevel, /mobs ...)
-after these land; then SkyyGear 0.2 stages 2-3 (damage + armor by level) after Skyy tests stage 1 + SkyyMobs; SkyyVault 0.1.6 one-click
-arrow after Skyy's /skyprobe win + secgrid results; SkyyMobs stage 2 (rewards) later.
+**2026-10-02 status:** DEPLOYED today, NOT tested by Skyy yet (TEST-CHECKLIST: the five newest sections): phase 1 (deploy-20261002-1300)
+SkyySacks 0.7.11, SkyyCollections 0.2.5, SkyyEssentials 0.1.7, SkyyUiProbe 0.3, SkyyHud 0.3.11; the big round (deploy-20261002-1303)
+SkyySkills 0.4.12 + SkyyGear 0.2 stage 1 (Gear ROLLBACK FLOOR in deploy_set.py); SkyyMobs 0.1 NEW (deploy-20261002-1643); SkyySacks 0.7.12
+bags in bench + inventory crafting (deploy-20261002-1707). RUNNING: SkyyMenu 0.3.5 (Mods list + help for today's versions), run
+wf_a32d390f-c19. NEXT (needs Skyy): their test results; /mobs platetest (which colour markup works); /skyprobe win + secgrid -> SkyyVault
+0.1.6 one-click arrow; then SkyyGear 0.2 stages 2-3 (damage + armor by level) once stage 1 + SkyyMobs feel right; SkyyMobs stage 2
+(rewards: XP gap rule, drop bonus, gear rarity); the open questions added today in OPEN-QUESTIONS (bag stacking cap, idle-stack refill,
+Priest material wands, in-combat Mana for non-casters, class coin rate).
 
 1. **Skyy tests the 2026-10-01 deploys**; fix what they report first (auto-deploy each fixed round with the game closed).
 2. **THE BIG ROUND (phase 2, after the quick fixes), all decided by Skyy 2026-10-01 / 2026-10-02:**
