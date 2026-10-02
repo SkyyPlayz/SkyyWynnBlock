@@ -104,7 +104,7 @@ cosmetics, Hunting, Fishing, Taming / pets, Dungeoneering, territory war.
 
 **Island chain (2026-09-24).** The spine is unchanged: one floating island per zone. Much of it will be **server-side** (hand-built shared worlds).
 For **solo** players, a new mod is planned: **SkyyWorldGen** (name TBD). It would use Hytale's World Gen 2 to auto-generate the world as flying
-islands split by zone. Status: planned, not started. Whether World Gen 2 can do that is an open research item.
+islands split by zone. Status: planned, not started. ANSWERED 2026-10-01: World Gen 2 can do it - plan in research/SkyyWorldGen-Plan.md.
 
 **Garden is parked.** The dedicated farming island is on the back burner. Farming stays on the main islands (private island and the zone chain) for now.
 
@@ -128,7 +128,7 @@ islands split by zone. Status: planned, not started. Whether World Gen 2 can do 
 10. **Profile cap:** how does a player raise the cap above the new default of 6? (Method TBD. SkyyProfiles 0.1 still enforces 4; 0.1.1 in the adoption round raises it to 6.)
 11. **Coin-bypass cutoff:** where, per collection and per tier, does the late-game wall start (no more buy or sell on the bazaar/market)?
     Which level type gates items — skill, class, or combat level?
-12. **World Gen 2:** can it auto-generate a world of flying islands split by zone? That research gates SkyyWorldGen. Not started.
+12. **World Gen 2:** can it auto-generate a world of flying islands split by zone? ANSWERED 2026-10-01: yes (research/SkyyWorldGen-Plan.md).
 13. **Gear (open):** which level type gates a gear item (skill, class, or combat)? Exact rarity names and colours (Wynn's list vs SkyyRolls Common..Legendary)? The Equipment bar's final name? The identify cost formula (coins that scale with rarity and level are locked)? Powder slots and how powders drop? Bazaar vs auction house for rolled items? Combat through Other are marked in `SkyyGear-Stat-Catalog.md` (change notes 9–22). The Other table is scrap as gear IDs. Oxygen and water swim speed are accessory effects, not a Respiration ID. Accessory progression, enrichments, custom starters, the Combat 15 ladder, and Magical Power are marked. The next blank table is stone powers, then tuning, and Major IDs. Do not block the build on them. Do not extend the Hypixel stone list. Change note 25: combat gear first. Gathering gear is later. No Power is scrap. The default profile is Balance. Still open: the Breaking Power name in Hytale, and how pick damage vs hits-to-break works. Still open inside the combat pass: per-element main-attack and spell % (leaning skip), Reflection, life-steal numbers, magic-using classes for Mana Regen, and the amounts for Overall Level and skill upgrades. The SkyWynn Accessory Power buff list and its numbers stay open. The Hypixel list in the catalog is research.
 14. **Class skill trees (open research):** Borderlands-style, not a straight line. Read the Borderlands 4 notes in `SkyyGear-Plan.md` (three trees, row gates, branches and capstones, respec). Do not design SkyWynn trees yet. Class roles, including a later Priest, are also open.
 
