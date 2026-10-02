@@ -35,6 +35,8 @@ Main-session suggestions to build on it (pick what you like):
   Zone 1: which GAME; Zone 2: which VERSION ("Early Access 0.6.8 - or was it the pre-release?"); Zone 3: an archivist in the frozen records
   hall finds which WORLD / save; Zone 4: an absurd void physicist calculates the coordinates; Zone 5: the dragon. Dragons always know
   their way home, so hatching your dragon is the last piece - it can find your exact dimension.
+- **The tab's rate (Skyy 2026-10-01): "like 20 million coins per in game day, plus interest, or something outrageous like that."** Shard
+  rent is charged for every in-game day you have "stayed", so the bill is already absurd by the time you find out.
 - **The tab is the endgame coin sink:** a gloriously huge number with "interest accrued over infinity", so nobody ever truly pays it off.
   Paying chunks of it gives titles / cosmetics / prestige rewards - a story reason for a permanent sink that fights coin inflation.
 - **Death fits the theme:** you can't really die in the waiting room - you just get sent back to your seat (respawn on your shard).
