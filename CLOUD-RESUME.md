@@ -22,8 +22,8 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 - [ ] **"Test now" summary** - read `TEST-CHECKLIST.md` and write a short list of what Skyy has not tested yet (newest sections), riskiest
       first. Output: `research/cloud/Test-Now.md`.
 
-- [ ] **Open-questions digest for Skyy** - read the lines in `OPEN-QUESTIONS.md` not marked ANSWERED / LOCKED and write one short page: each
-      question, the current default, a recommended answer with one line of why. Output: `research/cloud/Open-Questions-Digest.md`.
+
+<!-- 2026-10-02 local session: the open-questions digest is being done live with Skyy - not a cloud task. -->
 
 ## Done (delete after logging - see the rules above)
 
