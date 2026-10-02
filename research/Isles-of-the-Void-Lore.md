@@ -15,7 +15,26 @@ decides otherwise.
   (the temple town). From there the quest starts.
 - The main goal should **not** be "get back home" (generic). Skyy wants it **silly and absurd**.
 
-## Starter-shard progression (main-session sketch, for Skyy to shape)
+## Starter shard chain (Skyy 2026-10-01: "i love it!" + this shape; exact progression to work out later)
+
+- **The starting shard is bigger and more interesting:** a few trees, a small cave with stone and copper to mine.
+- **A series of small shards** next to it: you **work your way over** to the next one, fight a few mobs, get some basic armor, collect
+  resources and craft **crude armor** (new - vanilla has crude weapons but no crude armor set, so we add one, made at build time from
+  vanilla assets), then fight over to the next shard with harder mobs and a **mini boss that drops the shard that unlocks the portal**
+  to the Zone 1 hub.
+- **Before you leave you have learned:** Foraging, Mining, Farming, the Collections, the basics of combat, and the level / armor system
+  (crude armor = the first Lv 1 gear).
+- **Afterwards** you can return to your shard any time and build whatever you want there (it is your SkyyIslands personal island).
+- Main-session notes: the small shards can live in the same island world as your starting shard (so bridging works and they stay yours;
+  SkyyIslands already builds island worlds from prefabs). Falling into the void = respawn on your starting shard. Open: do you bridge the
+  gaps with blocks you gathered, or repair broken bridges? [bridge with your own blocks - it uses what you just gathered]
+
+## Pocket Shards = SkyWynn's minions (Skyy 2026-10-01; see SkyyMinions-Plan.md)
+
+A small block you place that holds its **own mini shard inside**, which collects one resource - the same idea as SkyBlock minions with
+similar upgrades, but it takes **one block instead of a big area**, and it fits the story. Details in SkyyMinions-Plan.md "Pocket Shards".
+
+## Starter-shard progression (first main-session sketch, superseded by the chain above)
 
 1. Wake up on the shard with almost nothing (the island starter chest). A guide character talks you through it (see below).
 2. Gather and craft the basics (wood, a Workbench, the Accessory Bag) - doubles as the tutorial.
