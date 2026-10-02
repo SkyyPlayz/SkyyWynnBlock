@@ -12,6 +12,60 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 3. ANSWERED 2026-09-25: Mining bag from **Iron**. Was: **Bags:** do the Mining bag upgrades come from the Cobblestone or the Iron collection? Which collections grow Foraging, Farming, Combat and
    the new Smithing bag? [today every bag is crafted at a Workbench]
 
+## Q&A with Skyy 2026-10-02 (all open questions, round by round - newest answers win)
+
+- R1 LOCKED (Skyy): CLASS SKILL CURVE = the cloud proposal as written (research/cloud/Class-Skill-Curve-Proposal.md): a separate table for
+  class skills only, XP per level = 50 x L + 0.25 x L^3 (rounded); skill 20 ~4 h, 40 ~17 h, 100 ~200 h of fighting; never below today at
+  any level (levels only go up); editable rows levels.class / .scale / .max / .sameAsOthers. [next SkyySkills]
+- R1 LOCKED (Skyy): gathering skills keep the Hypixel table for now - revisit when tools get levels / requirements.
+- R1 LOCKED (Skyy): wand / spellbook / staff recipes MATCH VANILLA WEAPONS - same bench and the same metals / amounts as that material's other
+  vanilla weapons (Wood, Copper, Iron, Thorium, Cobalt, Adamantite, Mithril). [with SkyyGear 0.2]
+- R1 ANSWERED (Skyy, own answer): MANA REGEN IN COMBAT = HALF ("for now, might change later") instead of vanilla's 0 for 6 s after taking
+  damage, so Mana Regen boosts work in and out of combat. Skyy asked whether to add the boost then halve, or halve vanilla then add the
+  boost - see round 2 (recommended: Mana Regen boosts are %, and with % boosts the order makes no difference).
+- R2 LOCKED (Skyy): Mana Regen boosts are PERCENT ("+20% Mana Regen"); in combat the WHOLE regen (vanilla + boosts) runs at 50% - one
+  Server Setup row "In-combat Mana regen" (default 50%). Combat = vanilla's window (6 s after taking damage), where vanilla gives 0 - our
+  mod supplies the regen there. Replaces the earlier flat "+N every 5 s" recommendation. [next SkyySkills / caster build]
+- R2 LOCKED (Skyy): bags keep collecting from the MAIN inventory only. Skyy's worry - pull 8 stacks of stone out for building, only 1 fits the
+  hotbar: today the withdrawn item is EXEMPT from auto-collect for 10 minutes (SkyySacks SackPool.exempt 600000 ms; "Deposit all" clears it);
+  after that, leftovers still in the main inventory go back into the bag. See round 3 for the timer.
+- R2 LOCKED (Skyy): try the one-click vault arrow row on our own vanilla-look page next to the vault slots (one probe first; the in-chest arrows
+  stay as a fallback). [next SkyyVault]
+- R2 LOCKED (Skyy): Magic Bags are blocked in /trade too (same rule as the AH). [next SkyyEssentials]
+- R3 LOCKED (Skyy): withdrawn bag items - auto-collect LEAVES ALONE THE AMOUNT YOU TOOK (take out 512 stone -> up to 512 stone stay in your
+  inventory; placing blocks lowers it; anything above it, e.g. newly mined, still goes in; no timer; Deposit all resets). Replaces the
+  10-minute per-item exemption. NEW IDEA from Skyy: stacks you are using AUTO-REFILL from the bag every few seconds (grab one stack of stone,
+  build, it tops back up to full - never go back to the bag). Details in round 4. [next SkyySacks]
+- R3 LOCKED (Skyy): Charged Attack Damage stays left out of the Vampire shortbow, Kunai and Crystal staffs for now; a stand-in trigger later.
+- R3 LOCKED (Skyy): SkyyEconomy merge (Coins + Bank + Bazaar + Auctions) goes ahead after Skyy has tested the separate mods.
+- R3 LOCKED (Skyy): bag unlock collections / tiers / upgrade scraps stay as they are. NEW RULE (replaces the 2026-09-24 coin-bypass lock and
+  bypass.bagMax): COINS NEVER SKIP COLLECTIONS OR BAGS - coins can buy items you have not unlocked yet on the Auction House / Bazaar, but can
+  never buy a collection tier, a recipe unlock or a bag (remove SkyyCollections' "Buy tier unlocks" and the bag coin unlock). Skyy: "you
+  can just make 2 or 3 bags of a lower level if one isnt enough" -> today only the BEST carried bag counts per type (SkyySacks caps() takes
+  the max) - see round 4 about adding them up.
+- R4 LOCKED (Skyy): STACK AUTO-REFILL from bags with a player setting in the Sacks page, 3 options: HOTBAR ONLY / FULL INVENTORY / OFF.
+  Skyy: full inventory is for brewing, cooking and crafting at normal benches - "unless you can get the normal benches to pull only from the
+  players bag while they are crafting, and not everyone's bag. then id do hot bar stacks only." Note: SkyySacks already has that per-player
+  bench link (BagMirror feeds the open vanilla bench from THAT player's carried bags only, 0.7.x) -> default HOTBAR ONLY; check in game that
+  the bench link covers the cooking / alchemy benches. [next SkyySacks]
+- R4 LOCKED (Skyy): carrying 2-3 bags of the same type ADDS their space together (today only the best bag counts - SkyySacks caps() max).
+  [next SkyySacks]
+- R4 LOCKED (Skyy): keep the late-game market wall (some late items can never be bought / sold); the list stays empty until Skyy names items.
+- R4 LOCKED (Skyy): Overall Level +0.5 max Health / +0.2 max Mana per level stays until a playtest. NEW REQUEST: a HUD WIDGET for the Overall
+  Level and skills, where each skill can be toggled on / off in the widget (show all, or just the class level, or Overall + Mining - any
+  combo). [next SkyyHud]
+- R5 LOCKED (Skyy) - SkyyMobs (research/Mob-Levels-Plan.md + research/cloud/Mob-Levels-Refit.md): levels on HOSTILE mobs AND NEUTRAL
+  FIGHTERS (mobs that fight back: boars, Scaraks ...); animals / passive never.
+- R5 LOCKED (Skyy): +4% health / +2% damage per level by default, with a DIFFICULTY setting in Server Setup that changes it (e.g. presets
+  Easy 3% / 1.5%, Normal 4% / 2%, Hard 6% / 3%, plus custom).
+- R5 LOCKED (Skyy): rewards - XP follows mob health (higher levels pay more automatically); mobs far below your level pay less (5 levels free,
+  then -5% per level, floor 10%); +1% bonus drop chance per level (cap 50%) and slightly better gear rarity from higher levels; no coins yet.
+- R5 LOCKED (Skyy): keep the other defaults (nameplate "[Lv 9] Name" + colour ladder on every levelled mob; elites later 3% / +3 levels /
+  2x health / 1.3x damage / a guaranteed gear roll; no mob armour; no night bonus; random level inside the range; mod name SkyyMobs).
+  OCEANS: skip - the world gen islands have no oceans. CAVES: the level of the ground above, EXCEPT the deep lava caves (vanilla's volcanic
+  caves, Env_ZoneN_Caves_Volcanic_T1-T3 - "really hard in the default game, lets keep that") = the range of the HARDEST biome of that zone
+  (Zone 1 deep caves about Lv 17-20).
+
 ## Numbers picked in the beta round (live now)
 - LOCKED 2026-09-25 (Skyy): **Vault:** 2 free pages, max 10, page 3 = 50,000 coins, each next page +25,000. Pages are shared across all profiles
   (Wynncraft style). [as written — already the live defaults]
