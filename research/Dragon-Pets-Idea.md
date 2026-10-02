@@ -14,7 +14,8 @@ Related: research/SkyyWorldGen-Plan.md (zone islands, zone bands Z1 1-20, Z2 20-
    items. When you bring them back you **choose the element**; that choice decides the last item and the special place where it hatches:
    find the location, fight through a **mini dungeon**, hatch the dragon there.
 5. **Elements = the Wynncraft set:** Earth, Thunder, Water, Fire, Air. **Secret elements** later, with no quest or explanation - players
-   figure them out. First idea: **Blood** (a life-steal dragon).
+   figure them out. First idea: **Blood** (a life-steal dragon). **Skyy 2026-10-01: also plan Void, Light and Crystal** as secret
+   elements, so the secret set is **Blood, Void, Light, Crystal** (9 dragon elements in all: 5 quest elements + 4 secret ones).
 6. **The dragon grows.** It starts small and grows as it levels, helps you in combat, and at about **level 10 you can fly on it**.
 7. **Dragon-only islands.** Smaller islands scattered around that you can only reach on dragon back (at least on a server; solo is harder).
 
