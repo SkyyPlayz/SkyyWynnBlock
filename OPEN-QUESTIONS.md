@@ -285,6 +285,28 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   own spec later [later]; (5) quick-shot heals count 1/5 toward the 10-per-hit heal cap (small SkyyClasses update) [count 1/5].
 - USAGE 2026-10-03 06:20 UTC: weekly 50% (resets Mon 15:00 UTC), 5-hour 63% - overnight 10+ parallel workflows burned ~12% in 90 min.
   New big rounds (SkyyGear 0.2.2 tools, 0.2.3 loot, SkyyArmory 0.1, Accessory Table build) wait for Skyy's go on pacing.
+- ANSWERED 2026-10-03 morning (Skyy, the overnight questions):
+  PACING: 1-2 big rounds at a time, check usage between, keep ~10% for test fixes. NEXT ROUNDS: SkyyArmory wands + resume SkyyTrees 0.3
+  (Gear tool levels, the loot round and the Accessory Table after those).
+  PRIEST MANA: +5 max Mana per Divinity level, Priest-only row (next SkyySkills); Mithril / Onyxium wands stay 85 / 17. Because Skyy also
+  wants the STAFF ladder with the wands (below), Mages get the matching Mage-only row (per Sorcery level) - main-session call, numbers in
+  the Armory round's report. PARTY XP: keep the gap rule on each member's own level, bonus included (no cap).
+  TOOLS (research/Tool-Levels-Spec.md answers): (1) names "Mining Power" / "Chopping Power" - Skyy: "your breaking power is different than
+  your swing speed. your breaking power makes it take less hits to break a block. but once it breaks in 1 hit, you need faster swing speed
+  (how fast your character hits with the tool) to increase breaking speed further"; (2) hoe / sickle lock BUILT AND ON; (3) old tools:
+  "im not worried about any tools that already exist in the world. but all new tools need a level" -> tools from before tool levels stay
+  lenient; EVERY new tool from any source (craft, chest, drop, shop, admin give) gets a real level; (4) hatchet: "lower the damage so one
+  chop comes later, but increase the swing speed a little earlier so even with 2 hits you still break faster than 1 hitting a log in
+  vanilla" -> lower the hatchet power curve AND give tool levels some swing speed earlier (shares the trees' swing cap).
+  LOOT (research/Loot-Unid-Spec.md answers): class lean 50% yes; vanilla drops get the mob / zone level (one rule); mystery items show a
+  LEVEL RANGE (Wynn-style), not the exact level; Crude / Wood gear: "yes, but much less. (the harder it is to craft, the more xp it should
+  give. so users are pushed to craft better stuff more, instead of tons of trash.)" -> craft Smithing XP scales steeply with tier; MYSTERY
+  LOOK: "more of a loot box that indicates the rarity like wynncraft. but better looking" -> rarity-coloured loot boxes (type in the name,
+  rarity by the box), art preview first; extra chest piece only in NEW chests.
+  ARMORY: Wood Wand tap with too little Mana = the no-Mana click; heal cap: RAISE THE CAPS so charged shots heal clearly more than taps
+  (SkyyClasses); Onyxium wand recipe = the Mithril shortbow recipe with Onyxium bars; MAGE STAFFS get their Mana / damage ladder WITH the
+  wands (same SkyyArmory round).
+  WORLDGEN: island deaths keep items. COLLECTIONS: sickle-harvested crops count too (next SkyyCollections).
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
