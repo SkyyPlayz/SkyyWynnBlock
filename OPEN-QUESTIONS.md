@@ -119,6 +119,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   to classes that use Mana (Mage, Priest)? [everyone - harmless today]
 - NOTE 2026-10-02 (same review): with the flatter class curve, class level-up coins arrive much faster (xp.properties coinsPerLevel). Your
   live profiles gained nothing (little class XP yet); check the coin rate before a public launch.
+- LOCKED 2026-10-02 (Skyy) - SMITHING TREE + XP (for research/Skill-Trees-2-Spec.md / SkyyTrees 0.3): (1) the craft RARITY CHANCE is raised by
+  Smithing levels (live: smith.perLevel 0.5% a level, cap 50%) AND by Smithing tree nodes; (2) a REFORGE line in the tree gives BETTER ROLLS
+  when reforging (higher modifier values / better picks); (3) an IDENTIFIER upgrade in the tree gives better-quality loot when you identify
+  unidentified gear (better rolls / a chance at a higher rarity on identify); (4) CRAFTING gear, REFORGING and IDENTIFYING all pay Smithing XP
+  (check what pays today - reforge pays per rarity; add crafting gear + identifying where missing). Today's craft odds (Server Setup -> Gear ->
+  Drops): Normal 60 / Unique 25 / Rare 10 / Legendary 4 / Fabled 1 / Mythic 0 (crafting max Fabled); a reforge never changes the rarity.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
