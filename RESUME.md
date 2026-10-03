@@ -74,6 +74,10 @@ boost x3 -> x1.5 for Mining / Foraging / Farming. SkyyGear 0.2.2 TOOL LEVELS aft
 mod: Copper -> Mithril/Onyxium wands, tap = blue quick shot, hold = charged shot, Mana + damage per metal) after Skyy picks the art style.
 ACCESSORY TABLE after the Night Vision round = SkyyAccessories next + SkyySacks 0.7.13 (+ /craft respects vanilla's Memories level).
 SkyyTrees 0.3 after the trees spec (Smithing tree incl. identify-rarity node; Mining Dust default 5 XP per Dust).
+CROSS-BUILD NOTES (2026-10-03): the loot round needs SkyyMobs mob:fn:levelAt (next SkyyMobs after the 0.1.3 HP-bar fix) and SkyyAuctions
+0.1.3 (AH categories for mystery items); SkyyGear 0.2.3 must use the reader-flag key names SkyyTrees 0.3 ships (the loot spec proposed
+gear:tree:readers - reconcile when the trees build lands); SkyyArmory 0.1 must publish gear:loot:add:SkyyArmory. Open spec questions for
+Skyy (all have defaults): tool levels 5, loot round 6 (OPEN-QUESTIONS Q&A, 2026-10-02/03 SPEC DONE lines).
 NEXT (needs Skyy): test results; the art style pick; the trees/0.7 questions when that plan lands; open questions in OPEN-QUESTIONS (bag
 stacking cap, idle-stack refill, in-combat Mana for non-casters, class coin rate).
 
