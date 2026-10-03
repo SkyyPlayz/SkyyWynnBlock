@@ -108,6 +108,6 @@ Respect the rollback floors written in `tools/deploy_set.py` (for example: never
 - **Models per agent:** builders Opus (the javassist / engine work is hard), reviews / cross-checks / web research Sonnet, tiny lookups
   Haiku. Fable may be used where it helps (Skyy 2026-10-02: "you can use fable if it helps") - e.g. spec synthesis or the hardest
   engine builds; name the model explicitly per agent.
-- **Usage pacing:** big Max plan since 2026-10-02 (about 6+ workflows at once is fine; on Max 5x it was 3-4); sonnet for reviews and cross-checks, Opus for builds and hard specs;
+- **Usage pacing:** big Max plan since 2026-10-02 - about 4-5 heavy workflows at once (10+ with ultracode rounds burned ~12% of the week in 90 minutes on 2026-10-03; on Max 5x it was 3-4); sonnet for reviews and cross-checks, Opus for builds and hard specs;
   check usage between rounds; near the weekly limit finish and deploy what is running, write the next round into RESUME.md and wait for
   the reset unless Skyy says otherwise.

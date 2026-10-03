@@ -267,6 +267,16 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   mob / zone level [yes]; (3) grey "shadow" look + "?" icon, contact sheet first [yes]; (4) extra chest piece only in chests filled from now on
   [new chests only]; (5) exact level, not a Wynn-style range [exact]; (6) Crude / Wood gear pays no craft Smithing XP (else 530 Crude Swords
   = Smithing 20) [no XP for *_Crude, *_Wood].
+- SPEC DONE 2026-10-03: research/SkyyArmory-Spec.md (critic + editor; style B locked; tap = vanilla Charging key 0 -> blue quick orb, hold
+  >= 0.35 s -> charged orb; costs + art fixed in the jar, damage % / quick size / speed live rows; recipes = the metal's shortbow recipe like
+  the staffs). BIG FINDING: a Priest has only ~30 max Mana at every Divinity level, so Iron wands take half the pool and Cobalt+ cannot be
+  cast. Open for Skyy (defaults): (1) Priest +5 max Mana per Divinity level through a NEW Priest-only SkyySkills row (Mithril / Onyxium stay
+  85 / 17) - or +4 with 75 / 15; the existing Server Setup shortcut "Combat: max mana per level" would give EVERY class the bonus (a Sorcery 40
+  Mage ~231 Mana) [(a) +5, Priest-only row in the next SkyySkills]; (2) Wood Wand tap with too little Mana = the no-Mana click [yes];
+  (3) Onyxium wand gets no recipe for now (vanilla has none) [none]; (4) Mage staffs stay 10 Mana / 25-damage orb - a staff ladder in its
+  own spec later [later]; (5) quick-shot heals count 1/5 toward the 10-per-hit heal cap (small SkyyClasses update) [count 1/5].
+- USAGE 2026-10-03 06:20 UTC: weekly 50% (resets Mon 15:00 UTC), 5-hour 63% - overnight 10+ parallel workflows burned ~12% in 90 min.
+  New big rounds (SkyyGear 0.2.2 tools, 0.2.3 loot, SkyyArmory 0.1, Accessory Table build) wait for Skyy's go on pacing.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
