@@ -1259,3 +1259,11 @@ Gear (damage and armor are still vanilla in this stage):
 5. Server Setup: new rows under Parts ("Kill XP by mob level"), Combat (six gap rows), Acrobatics ("Extra XP for a rolled landing"),
    Gathering (seven rows). Type decimals with a DOT (1.5) - a comma (1,5) is read as 15.
 6. With tree bonus nodes, the Stats page line reads "Bonuses (trees + tools): ...".
+## SkyyMenu 0.3.6 - pages no longer freeze after the Island / Hub tile (DEPLOYED 2026-10-03, backup deploy-20261003-0521)
+1. Log: "[SkyyMenu] 0.3.6 ready ... page guard on".
+2. Menu -> Teleport -> My Island. On the island right-click the menu item at once: it opens and Your Profile / Mods / Back answer.
+3. /bank: Deposit All, Withdraw All, Refresh all answer, no "Loading...".
+4. Open and close a Workbench on the island, then /bank, /sacks and the menu: every click works. Repeat via Menu -> Teleport -> Hub.
+5. Same world: menu Close and Esc both close; reopening works.
+6. Menu -> Mods shows 25 mods with tonight's versions (Hud 0.3.12, Bank 0.1.6, Gear 0.2.1, Skills 0.4.14, Accessories 0.5.3, Cooking
+   0.1.4, Mobs 0.1.2, WorldGen 0.1).
