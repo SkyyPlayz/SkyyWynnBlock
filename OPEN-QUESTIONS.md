@@ -139,6 +139,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-10-02 (Skyy): "boost the mining xp a little, kinda flatten the curve. at least through the early game." -> proposed defaults
   (editable rows): Mining XP x2 up to level 10, easing down to x1.25 by level 20 and staying x1.25 after (so early Mining levels come about
   twice as fast, later ones a bit faster); other gathering skills unchanged for now. [queued with the roll-landing XP: next SkyySkills after 0.4.13]
+- LOCKED 2026-10-02 (Skyy): WAIT FOR THE 0.7 RELEASE - no pre-release pack / test world. Groundwork now on the current release: class skill
+  trees with passive nodes + EMPTY ability slots shaped for runes (research/Skill-Trees-2-Spec.md, being written), the 0.7 compatibility audit
+  of all 24 mods (research/PreRelease-Compat-Audit-1002.md), rune research. On release day: fix the audit's list, then build the abilities
+  into the slots.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
