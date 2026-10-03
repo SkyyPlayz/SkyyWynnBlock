@@ -220,6 +220,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   each member's own skill. (Lv 33 skeleton at Divinity 11: 108 -> ~520 XP.) [next SkyySkills after 0.4.13]
 - LOCKED 2026-10-02 (Skyy): LEVEL HEALTH FLOOR - no leveled mob has less health than a 50-HP mob of its level (a Lv 32 cobra ~100 -> ~143
   HP at 6%, more on the new Hard); stronger mobs unchanged; kill XP follows the health. [SkyyMobs 0.1.2]
+- LOCKED 2026-10-02 (Skyy, from testing: "cooking levels really fast" - Vegetable Skewer batches at the Chef's Stove paid ~3,760 XP each,
+  Cooking 12 -> 15 in minutes): "id probably half the speed cooking levels at / your cooking xp gain" -> Cooking XP x0.5. Live now via
+  SkyWynn Menu > Server Setup > Cooking > Cooking XP > XP multiplier = 0.5; new pack default 0.5 in the next SkyyCooking build (a file still on
+  the old default 1 is moved to 0.5 once, a hand-set value is kept).
+- ART PROOF 2026-10-02: metal wand preview sent to Skyy (tools/dev/scratch/wandart/preview.png; kit tools/skyyart.py renders true icons from
+  the generated textures; colours = each tier's pickaxe head + ingot, leaf crystals = that tier's staff gem, Mithril bands = the mithril
+  staff's gold trim). Waiting for Skyy's pick: style A full metal or style B wood handle + metal head.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
