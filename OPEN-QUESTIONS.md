@@ -343,6 +343,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   per-STACK control; research a per-item-TYPE way, e.g. an item-asset field, and its conflicts with other jars that override the same items).
   For the SkyyArmory wands (and the Wood Wand once its tap is the quick shot) the box goes away by itself - it only shows melee damage.
   [same follow-up SkyyGear tooltip build as the charged / quick shot lines]
+- REPORTED 2026-10-03 (Skyy): "night vision accessory makes break particles reallly bright its kinda blinding." (block-break particles next
+  to the pickaxe glow white under the wearer-only DynamicLight). Research running -> research/NightVision-Glare-Research.md (why, values to
+  try, a no-point-light alternative such as per-player PostFX) -> SkyyAccessories 0.5.4.
+- VERIFIED 2026-10-03 (Skyy): "mana keeps regening when charging now" (SkyySkills 0.4.13).
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
