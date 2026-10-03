@@ -80,7 +80,9 @@ remove the grey "Damage Data box is vanilla" note and HIDE the vanilla box where
 ALSO RUNNING: SkyyBazaar 0.1.3 (bag -> Bazaar rule, wf_bf4ba7e9-266), SkyyHud 0.3.13 (equal padding, combat colours, wf_e42acf10-8e3), Night Vision
 glare research agent. The follow-up SkyyGear build also gets the crit indicator (CRIT! popup + Impact_Critical sparks; red number behind a
 switch - research/Crit-Indicator-Research.md).
-NEXT BIG ROUNDS after Armory / Trees (Skyy picks the order): (a) MOB CURVE REBALANCE spec - Wynncraft-style exponential mob health /
+NEXT BIG ROUNDS after Armory / Trees: FIRST (Skyy: "on the next run") the /ISLAND STARTER SHARDS upgrade - SkyyIslands: island 3x with a
+small hill, more trees, a cave, a bridge to a 2nd island with mobs, a 3rd island with the portal (boss later); spec first from
+research/cloud/Starter-Shard-Layout.md. Then (a) MOB CURVE REBALANCE spec - Wynncraft-style exponential mob health /
 damage, a steeper gear curve to match, brutal at +20 levels, kill XP moved off raw health (SkyyMobs + SkyyGear + SkyySkills); (b)
 NEXT BIG ROUND after Armory / Trees: SKYYWORLDGEN STAGE 2 (Skyy 2026-10-03: random island shape, vanilla Zone 1 generation inside it -
 rivers, mountains, caves, goblin camps - a mountain rising to the middle, harder biomes toward the middle as a tendency, ~3x bigger,

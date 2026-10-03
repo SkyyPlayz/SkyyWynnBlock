@@ -361,6 +361,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   CombatText asset; bold is fixed by the client). Possible: a red + bigger crit number by switching that mob's number style for the attacker for
   ~0.5 s (needs a probe build), plus zero-risk extras: a "CRIT!" popup and the vanilla Impact_Critical sparks. Plan: popup + sparks + the red
   number behind a switch (off until Skyy sees the probe) in the next SkyyGear build.
+- LOCKED 2026-10-03 (Skyy): /ISLAND UPGRADE "on the next run" - "make the island 3x with small hill, more trees, a cave, and that bridge to the
+  second island with mobs. and add the 3rd island with the portal and we can add the boss later." -> SkyyIslands starter shards: the personal
+  island 3x bigger with a small hill, more trees and a cave; a bridge to a 2nd island with mobs; a 3rd island with the portal (the guardian /
+  boss comes later). Base the layout on research/cloud/Starter-Shard-Layout.md (3 shards, gaps, resource budget) + the lore. [spec first:
+  what happens to islands that already exist (keep / upgrade on request), how the shards generate, the portal's target until the boss exists]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
