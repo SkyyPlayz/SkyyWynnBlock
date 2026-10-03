@@ -45,7 +45,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.2"),
+    ("SkyyMobs", "0.1.2"), ("SkyyWorldGen", "0.1"),
 ]
 # round 6 (2026-09-25): SkyyClasses 0.1.6 + SkyySkills 0.4.4 + SkyyProfiles 0.1.2 deploy TOGETHER (Berserker/Fury, Priest/Divinity, class kits;
 # Profiles 0.1.1 only draws 6 class cards). Never go back to SkyySkills 0.4.3 once Fury/Divinity XP exists (0.4.3 drops those keys).
@@ -80,6 +80,10 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees"]
 # SkyyMobs 0.1 (2026-10-02): rolling it back = take it out of SET and add "SkyyMobs" to RETIRED. Saved mobs keep a Health modifier
 # 'skyymobs_lv<N>' and a '[Lv N] Name' plate until they die; to strip them first: Server Setup > Mobs > Never level these = * , then
 # walk / reload the chunks, then retire. Settings stay in mods/Skyy_SkyyMobs.
+# SkyyWorldGen 0.1 (2026-10-03, NEW): removing it after /zone 1 has run = stop the server and delete
+# Saves/HUD mod/universe/worlds/skywynn_z1 FIRST (the saved island names the WorldStructure SkyWynn_Z1_Small from the jar; without the
+# jar the generator falls back to empty chunks and saves void into the island), then take it out of SET and add "SkyyWorldGen" to
+# RETIRED. Settings stay in mods/Skyy_SkyyWorldGen.
 RETIRED = ["SkyyRolls"]
 
 

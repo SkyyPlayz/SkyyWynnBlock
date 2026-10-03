@@ -1238,3 +1238,14 @@ Gear (damage and armor are still vanilla in this stage):
 6. Server Setup -> Gear -> Level stats: base.curve "1:1.0,6:3.0" -> the wand shows 18-24 and hits follow at once; put it back. part.base off =
    vanilla numbers at once.
 7. Watch for odd weapons (axes / longswords / clubs above Lv 25 feel weak; some special shortbows very strong) and tell me which.
+## SkyyWorldGen 0.1 - Zone 1 test island (NEW, DEPLOYED 2026-10-03, backup deploy-20261003-0209)
+1. Log reaches "Hytale Server Booted" with no "Failed to validate" naming SkyWynn; "[SkyyWorldGen] ... ready ... template SkyWynn_Zone1 found".
+2. Put valuable gear in a vault first (deaths should keep items now - not proven in game yet).
+3. As op: /zone says Zone 1 "not created yet"; a normal player's /zone is refused.
+4. /zone 1: "Creating Zone 1 - Emerald Wilds..." - you land on the south rim meadow facing the core; /zone info shows "Meadow rim".
+5. Walk inward: meadow -> birch forest (~256 blocks out) -> azure core (~128). Vanilla mobs in each ring; SkyyMobs levels rim 1-3, middle 5-9,
+   core 16-20.
+6. With cheap items only, jump off the rim: you die below y -32, respawn at the landing and keep every item.
+7. Server Setup -> World Gen -> Zone 1 landing point "0 1 0" is refused; /zone setlanding on the ground is accepted; set the default back.
+8. /zone leave returns you to where you ran /zone 1; /hub from the island goes to the hub. Restart -> /zone 1 says "Teleporting..." (same island).
+9. DON'T run /instances spawn SkyWynn_Zone1 (extra copies) or /sethub while standing on the island. The HUD shows the raw name skywynn_z1 (cosmetic).

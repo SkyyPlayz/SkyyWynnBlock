@@ -12,6 +12,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 3. ANSWERED 2026-09-25: Mining bag from **Iron**. Was: **Bags:** do the Mining bag upgrades come from the Cobblestone or the Iron collection? Which collections grow Foraging, Farming, Combat and
    the new Smithing bag? [today every bag is crafted at a Workbench]
 
+- OPEN 2026-10-03 (SkyyWorldGen 0.1 fix round): deaths on the Zone 1 test island KEEP all items (the void would destroy gear; plan: void
+  deaths cost coins, not items). Keep it, use the vanilla 50% drop, or add a coin loss later? [keep items for now]
+
 ## Q&A with Skyy 2026-10-02 (all open questions, round by round - newest answers win)
 
 - R1 LOCKED (Skyy) [LIVE 2026-10-02 SkyySkills 0.4.12]: CLASS SKILL CURVE = the cloud proposal as written (research/cloud/Class-Skill-Curve-Proposal.md): a separate table for
