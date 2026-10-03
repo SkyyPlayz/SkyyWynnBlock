@@ -366,6 +366,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   island 3x bigger with a small hill, more trees and a cave; a bridge to a 2nd island with mobs; a 3rd island with the portal (the guardian /
   boss comes later). Base the layout on research/cloud/Starter-Shard-Layout.md (3 shards, gaps, resource budget) + the lore. [spec first:
   what happens to islands that already exist (keep / upgrade on request), how the shards generate, the portal's target until the boss exists]
+- LOCKED 2026-10-03 (Skyy): LANTERN + NIGHT VISION - "id do 2. soft light and make it a lantern (works more like the torch in backpack mod.
+  but the higher you level the lantern the brighter / bigger range. so it starts at a normal torch brightness for the common, and adds x2 every
+  level so legendary would be x8 a normal torch. (change the night vison one to try 1. the screen brightness, to see how it works." ->
+  (a) NEW LANTERN accessory line: a real light on the player while it is in the Accessory Bag (like carrying a torch, the BackpackTorch idea -
+  ideas only), Common = a normal torch's light, each rarity step doubles brightness / range, Legendary = 8x a torch; (b) the NIGHT VISION
+  accessory switches to per-player SCREEN BRIGHTNESS (post-processing, no light on the player) as a test. [SkyyAccessories 0.5.4 after the
+  night-vision research report; the Accessory Table build moves to the next free version]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
