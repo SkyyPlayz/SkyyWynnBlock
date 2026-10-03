@@ -58,8 +58,8 @@ OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" (rounds 1-9) is the source of truth
 **2026-10-02 status:** DEPLOYED today, NOT tested by Skyy yet (TEST-CHECKLIST: the five newest sections): phase 1 (deploy-20261002-1300)
 SkyySacks 0.7.11, SkyyCollections 0.2.5, SkyyEssentials 0.1.7, SkyyUiProbe 0.3, SkyyHud 0.3.11; the big round (deploy-20261002-1303)
 SkyySkills 0.4.12 + SkyyGear 0.2 stage 1 (Gear ROLLBACK FLOOR in deploy_set.py); SkyyMobs 0.1 NEW (deploy-20261002-1643); SkyySacks 0.7.12
-bags in bench + inventory crafting (deploy-20261002-1707). RUNNING: SkyyMenu 0.3.5 (Mods list + help for today's versions), run
-wf_a32d390f-c19. NEXT (needs Skyy): their test results; /mobs platetest (which colour markup works); /skyprobe win + secgrid -> SkyyVault
+bags in bench + inventory crafting (deploy-20261002-1707); SkyyMenu 0.3.5 Mods list (deploy-20261002-1812). NOTHING RUNNING.
+NEXT (needs Skyy): their test results; /mobs platetest (which colour markup works); /skyprobe win + secgrid -> SkyyVault
 0.1.6 one-click arrow; then SkyyGear 0.2 stages 2-3 (damage + armor by level) once stage 1 + SkyyMobs feel right; SkyyMobs stage 2
 (rewards: XP gap rule, drop bonus, gear rarity); the open questions added today in OPEN-QUESTIONS (bag stacking cap, idle-stack refill,
 Priest material wands, in-combat Mana for non-casters, class coin rate).

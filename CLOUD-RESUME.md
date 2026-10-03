@@ -17,9 +17,6 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Open tasks (top = next)
 
-- [ ] **Workbench recipes for wands, spellbooks and staffs by material** (OPEN-QUESTIONS 2026-10-01 answer 4; next big round). Draft the
-      recipe table per material band (Wood, Copper, Iron, Thorium, Cobalt, Adamantite, Mithril) so "crafted at your level" works for Priest /
-      Mage. Read `research/Gear-Levels-Wynn-Spec.md` + `Classes-Berserker-Priest-Spec.md`; item ids UNVERIFIED. Output: `research/cloud/Magic-Weapon-Recipes.md`.
 - [ ] **Zone 2-4 story chains** - continue `research/cloud/Story-Script-Draft.md`: Zone 2 "which VERSION", Zone 3 archivist "which WORLD / save",
       Zone 4 void physicist, Zone 5 dragon; quests + dialogue, silly. Output: `research/cloud/Story-Script-Zones-2-5.md`.
 - [ ] **The Tab economy design** - the endgame coin sink from `research/Isles-of-the-Void-Lore.md` (20 million coins per in-game day + interest,
@@ -33,6 +30,8 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 - [ ] **Starter shard chain map** - paper layout for the starting shard + shards 2-3 (sizes, trees, cave, bridges, spawn points, mob camp, portal
       frame) matching `Story-Script-Draft.md` quests 1-12. Output: `research/cloud/Starter-Shard-Layout.md`.
 - [ ] **Elites and world events spec** (Mob-Levels-Plan section 11 stage 3): elite rules, event ideas per zone, rewards. Output: `research/cloud/Elites-Events-Spec.md`.
+
+<!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 
 ## Done (delete after logging - see the rules above)
 
