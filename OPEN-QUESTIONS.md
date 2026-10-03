@@ -174,12 +174,19 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-10-02 (Skyy): "boost the drop rates of unidentified weapons and armor." Today SkyyGear only TAGS vanilla's own gear drops
   as unidentified (vanilla drop odds). Answer (picked): each kill of a leveled hostile mob gets an EXTRA 4% roll (1 in 25) for one
   unidentified weapon or armor piece matching the mob's level; about 1 in 3 world chests gets an extra unidentified piece matching the
-  zone. Both editable in Server Setup. [build: SkyyGear 0.2.2 with the tool levels, after 0.2.1 lands]
+  zone. Both editable in Server Setup. [build: SkyyGear 0.2.3 LOOT round (with the Wynncraft-style unidentified items), after 0.2.2 tools]
 - LOCKED 2026-10-02 (Skyy): SMITHING TREE - "you can also add a chance to boost the rarity when identifying." -> a Smithing tree node:
   chance that identifying an item steps it up one rarity (joins Skyy's earlier Smithing tree list: better crafted-rarity chance, better
   reforge rolls, the identifier upgrade for better loot, Smithing XP from crafting / reforging / identifying). [goes into
   research/Skill-Trees-2-Spec.md + SkyyTrees 0.3; SkyyGear 0.2.2 reads the tree bonuses at craft / identify / reforge through skill:bonus
   so the nodes work the day the tree ships]
+- LOCKED 2026-10-02 (Skyy): WYNNCRAFT-STYLE UNIDENTIFIED ITEMS - "do it like wynncraft where it lists the level and rarity, but you wont
+  see what type of sword or bow or chess plate it will be till you identify it." -> an unidentified drop becomes a mystery item such as
+  "Unidentified Sword" / "Unidentified Bow" / "Unidentified Chestplate" showing its level and rarity; which sword / bow / chestplate it
+  really is (material, model, stats) appears only when identified. Defaults (change any): exact level shown (not a range); one mystery item
+  per weapon family and armor slot; they do not stack; vanilla gear drops become mystery items too; unidentified items already owned stay
+  as they are and identify normally. [build: SkyyGear 0.2.3 LOOT round = this + the drop boost + the Smithing-tree identify-rarity hook,
+  after 0.2.2 tools; spec first]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

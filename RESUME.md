@@ -66,7 +66,9 @@ Night Vision accessory research -> SkyyAccessories 0.5.3 if feasible (wf_4726d52
 QUEUED after SkyySkills 0.4.13 lands: the next SkyySkills = roll-landing Acrobatics XP + early XP boost x3 -> x1.5 for Mining, Foraging
 and Farming (OPEN-QUESTIONS Q&A). QUEUED after SkyyGear 0.2.1 lands: SkyyGear 0.2.2 TOOL LEVELS (gate by Mining / Foraging / Farming,
 crafted at your level, speed + Fortune by level, reforgeable tools) from research/Tool-Levels-Spec.md (spec being written now,
-wf_c0c52e96-7aa) + the unidentified gear drop boost (4% extra per leveled kill, ~1 in 3 chests). QUEUED after the Night Vision round:
+wf_c0c52e96-7aa). THEN SkyyGear 0.2.3 LOOT round (spec first, when a workflow slot frees): drop boost (4% extra per leveled
+kill, ~1 in 3 chests) + Wynncraft-style mystery unidentified items (level + rarity shown, type hidden until identified) + the
+Smithing-tree identify-rarity hook. QUEUED after the Night Vision round:
 ACCESSORY TABLE (all accessories + Accessory Bag + every Magic Bag move to their own bench; bench accessory for /craft; Omni covers it)
 = SkyyAccessories next + SkyySacks 0.7.13, which also makes /craft respect vanilla's Memories level (OPEN-QUESTIONS Q&A).
 NEXT (needs Skyy): their test results; /mobs platetest (which colour markup works); /skyprobe win + secgrid -> SkyyVault
