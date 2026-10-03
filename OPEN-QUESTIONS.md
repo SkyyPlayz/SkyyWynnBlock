@@ -143,6 +143,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   trees with passive nodes + EMPTY ability slots shaped for runes (research/Skill-Trees-2-Spec.md, being written), the 0.7 compatibility audit
   of all 24 mods (research/PreRelease-Compat-Audit-1002.md), rune research. On release day: fix the audit's list, then build the abilities
   into the slots.
+- ASKED 2026-10-02 (Skyy): "add a night vision accessory if you can." -> Hytale has no vanilla night-vision effect (Assets.zip: no such
+  entity effect). Research running (wf_4726d526-aa2): screen/camera effect fields, a light on the player like a held torch, or any
+  per-player light the server can send. If one works: SkyyAccessories 0.5.3 adds a Night Vision accessory (its own line so it stacks with the
+  boosters, admin-give like the other boosters for now, only on while it sits in the Accessory Bag, off at once when removed; Server Setup
+  switch). If nothing works, it waits for 0.7.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
