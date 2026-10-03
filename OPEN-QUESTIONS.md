@@ -399,6 +399,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   lantern to craft a rare lantern." -> every accessory tier and bag size is crafted FROM the previous tier / size (check that every existing
   line already follows it; fix any that do not).
 - ANSWERED 2026-10-03 (Skyy): Pocket Dimension spec + build AFTER the current rounds (usage).
+- REQUEST 2026-10-03 (Skyy): MINIMAP - "add the cartographer minimap mod to the pack. BUT ... better maps replaces (or hides and covers, the
+  vanilla map ...) but the minimap adds its own second minimap on top of it. so it loads the maps twice, and it hella laggy. So ... look at how
+  cartographer works, and just make a Bettermaps+minimap mod that adds a minimap that piggybacks off of better maps. using the same map, system,
+  just adding a minimap." (matches the roster's SkyyMap: one renderer for full map + minimap). Research running (read-only, ideas only, licences
+  checked) -> research/Minimap-Research.md, then a plan for Skyy.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
