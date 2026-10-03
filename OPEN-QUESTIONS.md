@@ -211,6 +211,15 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   still raises damage like all gear; the metal sets the Mana cost and its matching multiplier. Asked whether to merge SkyyArmory into
   SkyyGear: recommended separate (content mod ships without waiting behind the SkyyGear queue; SkyyGear's levels / rarity / reforge apply
   to the wands through the metal bands anyway). [spec running: research/SkyyArmory-Spec.md; art proof running; build after Skyy picks a style]
+- CHECKED 2026-10-02 (Skyy: "not sure the levels are scaling right" after a Lv 32 cobra died in 2 shots for 60 XP and a Lv 33 skeleton
+  paid 108): the live server log shows the level health scaling is exact - max health = vanilla x (1 + 6% per level - Skyy's current Hard,
+  the coming Normal): Skeleton_Scout Lv 33 = 61 x 2.92 = 178 HP (-> 36 x 3 = 108 XP), Snake_Marsh Lv 17, Wolf_Black Lv 7, Bear_Grizzly
+  Lv 10, Fen_Stalker Lv 16, Skeleton_Fighter Lv 9 all match; the cobra's real base is only 36 HP, so ~100 HP at Lv 31-32.
+- LOCKED 2026-10-02 (Skyy): KILL XP = "level bonus + gap rule max +250%": kill XP x (1 + 5% per mob level); a mob more than 5 levels ABOVE
+  your class skill gives +5% per extra level, at most +250%; more than 5 levels BELOW gives -5% per level, at least 10%; the party share uses
+  each member's own skill. (Lv 33 skeleton at Divinity 11: 108 -> ~520 XP.) [next SkyySkills after 0.4.13]
+- LOCKED 2026-10-02 (Skyy): LEVEL HEALTH FLOOR - no leveled mob has less health than a 50-HP mob of its level (a Lv 32 cobra ~100 -> ~143
+  HP at 6%, more on the new Hard); stronger mobs unchanged; kill XP follows the health. [SkyyMobs 0.1.2]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
