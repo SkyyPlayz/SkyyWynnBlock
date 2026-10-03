@@ -17,8 +17,6 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Open tasks (top = next)
 
-- [ ] **Zone 2-4 story chains** - continue `research/cloud/Story-Script-Draft.md`: Zone 2 "which VERSION", Zone 3 archivist "which WORLD / save",
-      Zone 4 void physicist, Zone 5 dragon; quests + dialogue, silly. Output: `research/cloud/Story-Script-Zones-2-5.md`.
 - [ ] **The Tab economy design** - the endgame coin sink from `research/Isles-of-the-Void-Lore.md` (20 million coins per in-game day + interest,
       payable, "Paid in Full" ending, prestige). Work out the numbers vs expected income, title/cosmetic rewards, exploit checks. Output: `research/cloud/Tab-Economy.md`.
 - [ ] **Dragon hatching quest line** from `research/Dragon-Pets-Idea.md`: egg -> specialist -> element choice -> items -> mini dungeon -> hatch;
@@ -35,4 +33,4 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Done (delete after logging - see the rules above)
 
-(none; the 8 finished tasks are logged in `research/cloud/LOG.md`)
+- [x] Zone 2-5 story chains - 2026-10-03 - `research/cloud/Story-Script-Zones-2-5.md`

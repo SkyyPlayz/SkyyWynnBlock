@@ -12,3 +12,4 @@ section 6 when it reviews the results.
 - 2026-10-02: Zone boss ideas -> research/cloud/Zone-Bosses-Ideas.md (4 guardians + Zone 5 dragon on vanilla bosses; role ids/moves UNVERIFIED; 6 local checks)
 - 2026-10-02: Crude armor set design -> research/cloud/Crude-Armor-Design.md (20 HP / 14.4% set at Lv 1, band 1-8, fibre/stick/rubble recipe; negative material factor needs a local check)
 - 2026-10-02: Test-now summary -> research/cloud/Test-Now.md (8 untested 2026-10-01 deploys ranked by risk, two test sessions)
+- 2026-10-03: Zone 2-5 story chains -> research/cloud/Story-Script-Zones-2-5.md (Registrar Dune / Archivist Frostwick / Dr. Voidwright / the Dragon; honours the 2026-10-02 locks: Zone 2 stable quest, Zone 5 Lv 60-75 dragon 75, one dragon per profile; 6 local checks)
