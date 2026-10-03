@@ -288,3 +288,7 @@ still unticked).
 - Client: `Interface/InGame/Pages/Inventory/ContainerPanel.ui` (a chest grid without `AreItemsDraggable`); `Interface/InGame/Hud/Hotbar.ui`
   line 69 and `CarriedBlockHotbar.ui` line 32 (`AreItemsDraggable: false`); `Shared/Language/en-US/client.lang` lines 2120-2223
   (inventory actions) and 3651-3661 (UI bindings).
+
+## Probe results
+
+- 2026-10-02 PROBE P1 (/skyprobe win, SkyyUiProbe 0.3, Skyy's screenshot): the custom page shows and its arrow buttons reach the server on the FIRST click (chat lines for arrow 1 and arrow 3), but NO chest panel and NO player inventory appear next to the page - the client does not draw a container window opened with openCustomPageWithWindows. Waiting for Skyy's confirmation + P2 (/skyprobe secgrid: can the page's own ItemGrid show the window's real slots?).
