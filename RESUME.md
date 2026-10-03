@@ -76,7 +76,7 @@ tool levelled, hatchet power lower + earlier swing speed) -> SkyyGear 0.2.2; rev
 XP) -> SkyyGear 0.2.3; finish the paused Accessory Table spec -> build; SkyyMobs 0.1.3 HP-bar fix; SkyyCollections sickle crops.
 NEXT BIG ROUND after Armory / Trees: SKYYWORLDGEN STAGE 2 (Skyy 2026-10-03: random island shape, vanilla Zone 1 generation inside it -
 rivers, mountains, caves, goblin camps - a mountain rising to the middle, harder biomes toward the middle as a tendency, ~3x bigger,
-biomes as varied as vanilla) - research / spec first. Crit indicator research agent running -> research/Crit-Indicator-Research.md.
+biomes as varied as vanilla; ALL zone islands in ONE world so Zone 2 is visible from Zone 1) - research / spec first. Crit indicator research agent running -> research/Crit-Indicator-Research.md.
 PAUSED 2026-10-03 ~06:35 UTC to save the 5-hour window (74%, weekly 53%) - resume with Workflow({scriptPath, resumeFromRunId}); finished
 agents replay from cache, the interrupted one re-runs (its half-written work files get rewritten):
 - SkyyTrees 0.3 ultracode build: part 1 done, part 2 (class tree) was running. scriptPath C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK-SkyWynn-PROJECT\077f1485-8367-478d-8718-87cb80a267c4\workflows\scripts\skywynn-trees03-ultracode-wf_3f431935-177.js, run wf_3f431935-177.

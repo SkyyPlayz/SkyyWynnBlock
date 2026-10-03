@@ -326,6 +326,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   bias - queued as the next big round after Armory / Trees]
 - LOCKED 2026-10-03 (Skyy): CRIT INDICATOR - "we need the numbers to change for a crit indicator, like make the damage numbers bold and red on
   crit or something." [research: can the server style a hit's floating damage number (combat text) - then SkyyGear]
+- VERIFIED 2026-10-03 (Skyy screenshots, /mobs inspect on the island): Lv 8 Spider in the birch ring = x1.56 (95 HP, base 61) and Lv 19
+  Grizzly Bear in the azure core = x2.44 (303 HP, base 124) on Hard 8% / 4% - exact.
+- LOCKED 2026-10-03 (Skyy): "id like all the zone islands in the same world, so you can see the zone 2 from zone 1" -> stage 2 puts every
+  zone island in ONE world, far enough apart to need the portal / warp, close enough to see the next zone across the void. [part of the
+  WorldGen stage 2 research; open design point for the spec: block bridging / flying across the void so the guardian + portal unlock still
+  matters]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
