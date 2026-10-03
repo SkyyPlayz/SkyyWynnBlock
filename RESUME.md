@@ -75,7 +75,8 @@ SkyyClasses 0.1.11 heal caps, 3 reviewers, fixer, cross-check). After them: revi
 tool levelled, hatchet power lower + earlier swing speed) -> SkyyGear 0.2.2; revise Loot-Unid-Spec (level range, rarity loot boxes, tiered craft
 XP) -> SkyyGear 0.2.3; finish the paused Accessory Table spec -> build; SkyyMobs 0.1.3 HP-bar fix; SkyyCollections sickle crops.
 RIGHT AFTER THE ARMORY ROUND: a small SkyyGear tooltip build - wands / staffs show "Charged shot - N Mana - damage at Lv X" + "Quick shot - M Mana
-- damage" instead of the melee line (SkyyArmory bridge with each wand's shots; renumber the tool build to the next free SkyyGear version).
+- damage" instead of the melee line (SkyyArmory bridge with each wand's shots; renumber the tool build to the next free SkyyGear version);
+remove the grey "Damage Data box is vanilla" note and HIDE the vanilla box where an item-type way exists (Skyy: hide it, no note).
 NEXT BIG ROUND after Armory / Trees: SKYYWORLDGEN STAGE 2 (Skyy 2026-10-03: random island shape, vanilla Zone 1 generation inside it -
 rivers, mountains, caves, goblin camps - a mountain rising to the middle, harder biomes toward the middle as a tendency, ~3x bigger,
 biomes as varied as vanilla; ALL zone islands in ONE world so Zone 2 is visible from Zone 1) - research / spec first. Crit indicator research agent running -> research/Crit-Indicator-Research.md.

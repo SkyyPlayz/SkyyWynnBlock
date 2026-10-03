@@ -338,6 +338,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   the melee line (real numbers: today's Lv 6 orb is 43, so about 43 / 9; a range only where the damage really varies). SkyyArmory publishes
   each wand's shots (bridge), SkyyGear's tooltip reads them. [follow-up SkyyGear build right after the SkyyArmory round - the Armory round was
   already past the point where it could take new requirements without throwing away work]
+- LOCKED 2026-10-03 (Skyy): "if you cant make the damage data box work hide it instead of leaving a note in the text." -> drop the grey
+  "(the Damage Data box below is vanilla - before levels)" line; hide the vanilla Damage Data box where possible (SkyyGear 0.2.1 found no
+  per-STACK control; research a per-item-TYPE way, e.g. an item-asset field, and its conflicts with other jars that override the same items).
+  For the SkyyArmory wands (and the Wood Wand once its tap is the quick shot) the box goes away by itself - it only shows melee damage.
+  [same follow-up SkyyGear tooltip build as the charged / quick shot lines]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
