@@ -315,6 +315,17 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-10-03 (Skyy, GENERAL RULE): "if it goes in the bag, it goes in a matching section in the bizzar." -> every item any Magic Bag
   holds is listed in the matching Bazaar tab (Mining / Foraging / Farming / Combat / Smithing); the Bazaar build derives the lists from SkyySacks'
   bag definitions and fails if a bag item has no product. [in the SkyyBazaar 0.1.3 round, relaunched with the rule]
+- VERIFIED 2026-10-03 (Skyy, in game): Zone 1 test island levels are right per ring.
+- LOCKED 2026-10-03 (Skyy): WORLDGEN STAGE 2 - "the island is weirdly round, flat and boring. the next step is making the island shape random.
+  and keeping the normal world gen patterns, structures and features that spawn, like rivers mountains and goblin camps. (but if you can, id
+  make the island's generally trend upwards in the middle like a mountain make them at least 3x the size, and make sure caves spawn in them
+  too. (basically take all of zone one as it normally spawns, similar size and everything, but make it an island, with a mountain in the
+  middle, that gets to harder biomes towards the middle. but make the biomes more ranom like vanilla. the from the outside in are general
+  rules not hard rules, and need more variance. right now its all birch trees untill you get to the blue." [research / spec first: can the
+  vanilla Zone 1 generator (V1 zone mask, biomes, rivers, caves, prefabs like goblin camps) run inside a random island mask with a mountain
+  bias - queued as the next big round after Armory / Trees]
+- LOCKED 2026-10-03 (Skyy): CRIT INDICATOR - "we need the numbers to change for a crit indicator, like make the damage numbers bold and red on
+  crit or something." [research: can the server style a hit's floating damage number (combat text) - then SkyyGear]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
