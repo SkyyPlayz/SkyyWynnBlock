@@ -411,6 +411,15 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   panel. next ill test with better maps" -> wanted: the minimap as a SkyyHud widget (placed with the other widgets in the HUD editor), a
   DapperMap-like settings page, no info panel, sharing BetterMap's map instead of loading it twice. [waiting on Skyy's BetterMap test + the
   minimap research (licences: can DapperMap ship in the pack / be integrated, or do we build our own widget from the ideas)]
+- LOCKED 2026-10-03 (Skyy, after testing DapperMap + BetterMap on the "maps" world): "dapper map was laggy, but got a lot better when i
+  disabled creature markers still laggy though. i think option 2. learn from dapper map, and make our own desiged to piggyback off of better
+  maps (not a standalone mod.) that should help reduce the lag. then we can use or own system." -> our own MINIMAP as a SkyyHud widget,
+  REQUIRING BetterMap and reusing its map data (no second map generator), DapperMap-like settings, no info panel, creature markers optional.
+  LOG FINDINGS (maps world, 2026-10-03 07:01 + 07:06 sessions, read-only): BetterMap 1.3.8 + DapperMap 3.0.1 enabled (Cartographer 0.1.4 and
+  FastMiniMap 2.4.1 present, Cartographer disabled); the server logged "Task took 37-57 ms: DapperMap tick" several times on the WORLD
+  thread (a 30-tick world has ~33 ms per tick, so each one is a lag spike) plus 37-77 ms CompletableFuture tasks. Lesson for our design:
+  no map work on the world thread (only cheap reads there), generate / send minimap images off-thread and only when the view really changed,
+  throttle markers (creature markers were the big cost). [spec after research/Minimap-Research.md lands; build after the current rounds]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
