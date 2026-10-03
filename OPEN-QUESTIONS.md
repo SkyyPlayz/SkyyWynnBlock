@@ -136,6 +136,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   the short labels]
 - LOCKED 2026-10-02 (Skyy): crouching as you land (vanilla's roll) takes less fall damage - make that ROLL pay EXTRA Acrobatics XP.
   [queued: next SkyySkills after 0.4.13 (the combat-widget bridge) lands]
+- LOCKED 2026-10-02 (Skyy): "boost the mining xp a little, kinda flatten the curve. at least through the early game." -> proposed defaults
+  (editable rows): Mining XP x2 up to level 10, easing down to x1.25 by level 20 and staying x1.25 after (so early Mining levels come about
+  twice as fast, later ones a bit faster); other gathering skills unchanged for now. [queued with the roll-landing XP: next SkyySkills after 0.4.13]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
