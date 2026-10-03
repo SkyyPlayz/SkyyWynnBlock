@@ -29,10 +29,10 @@ returning players (one-time flag per profile; existing profiles skip it).
 | 4 | **Rocks Have Feelings** | Starting shard cave | Mine 20 cobblestone and 5 copper. Pebble is nervous about it. | Collections: Cobblestone 20, Copper 5 | 50 Mining XP |
 | 5 | **Seeds Of Doubt** | Starting shard | Plant, grow and harvest 5 wheat. | Collections: Wheat 5 | 50 Farming XP; recipe unlock |
 | 6 | **The Book Of Items** | anywhere | Open /collections; reach tier I of any collection. | collection tier event | a Pocket Shard (Cobblestone) - see 1.4 |
-| 7 | **Bridge To Somewhere** | Starting shard edge | Build a bridge to shard 2 with your own gathered blocks. | player reaches shard 2 (position flag) | - |
+| 7 | **Bridge Repair** | Starting shard edge | Repair the broken bridge to shard 2 (planks, sticks, fibre) - R8 lock: the first gap is a repair. | player reaches shard 2 (position flag) | - |
 | 8 | **Crude Awakening** | Shard 2 | Craft the **Crude armor set** and a crude weapon. | craft events, armor equipped | Lv 1 gear tip (the gear-level system) |
 | 9 | **Friendly Fire** | Shard 2 | Kill 8 hostile mobs (first fight; class weapon). | kill events | 100 class-skill XP; first coins |
-| 10 | **Mind The Gap** | Shard 2 -> 3 | Bridge to shard 3 (a longer bridge, one gap has a mob camp). | position flag | - |
+| 10 | **Mind The Gap** | Shard 2 -> 3 | **Build** a bridge across the 14-block gap with your own blocks (R8 lock: later gaps are built). | position flag | - |
 | 11 | **Paying The Toll** | Shard 3 | Defeat Warden Gumbo. He drops the **Portal Shard**. | boss kill (a named NPC) | Portal Shard |
 | 12 | **Step Right Through** | Shard 3 | Place the Portal Shard in the broken portal frame and step through. | portal unlock flag | arrive at the Zone 1 temple; first warp unlocked |
 
@@ -88,11 +88,11 @@ and the "Gumbo" fight (a vanilla Trork chieftain-style mob with a fixed level, s
 
 ### 1.3 Dialogue - the other shards
 
-**Quest 7 - Bridge To Somewhere**
+**Quest 7 - Bridge Repair**
 
-> **Pebble:** Another shard! Over there. I've never been, it's too far. It's eleven blocks. Build a bridge.
-> *(Player: You can't help?)*
-> **Pebble:** I'm a rock. I sink.
+> **Pebble:** Another shard! Over there. I've never been, it's too far. It's twelve blocks. Mostly. There used to be a bridge. It had opinions.
+> *(Player: Can't you help?)*
+> **Pebble:** I'm a rock. I sink. Fix the planks, though. The posts are still there. They're very proud.
 
 **Quest 8 - Crude Awakening**
 
@@ -111,7 +111,7 @@ and the "Gumbo" fight (a vanilla Trork chieftain-style mob with a fixed level, s
 
 **Quest 10 - Mind The Gap**
 
-> **Pebble:** The next shard has a toll booth. I don't know why. The Void is mostly bureaucracy and weather.
+> **Pebble:** The next shard has a toll booth. I don't know why. The Void is mostly bureaucracy and weather. This time there's no bridge at all, so bring blocks. Your own. Don't ask who owns the other ones.
 
 **Quest 11 - Paying The Toll (Warden Gumbo)**
 
