@@ -112,7 +112,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - OPEN 2026-10-02 (same review): an idle partial stack only tops up once you use it. Also top up the stack in your selected hotbar slot
   even when idle? [only when used]
 
-- OPEN 2026-10-02 (SkyyGear 0.2 review): vanilla has NO material wands or spellbooks - only the Wood Wand - so Priests can craft just
+- ANSWERED 2026-10-02 (Skyy: "custom metal wands. can you create the art?" - see the Q&A block). Was: OPEN 2026-10-02 (SkyyGear 0.2 review): vanilla has NO material wands or spellbooks - only the Wood Wand - so Priests can craft just
   the Wood Wand at their level (Mages get a staff per material: the new staff recipes mirror each material's shortbow). Make our own
   material wands / spellbooks (custom items, e.g. Copper -> Mithril), let Priests use staffs, or wait for custom Priest weapons? [wait]
 - OPEN 2026-10-02 (SkyySkills 0.4.12 review): everyone has 10 base Mana, so Warriors / Archers also get the in-combat Mana refill. Limit it
@@ -196,6 +196,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   is computed from total Mining XP and never stored, so everyone's Mining Dust doubles at once, spent Dust included). New pack default
   in SkyyTrees 0.3 (a file with no dust.xpPerDust.Mining line gets Mining=5; a hand-set value is kept). Note: the coming x3 early
   gathering XP boost also raises Dust (Dust comes from XP).
+- LOCKED 2026-10-02 (Skyy): PRIEST WEAPON PATH = "custom metal wands. can you create the art?" -> our own Copper, Iron, Thorium, Cobalt,
+  Adamantite, Mithril (+ Onyxium) wands, one per metal like the Mage staffs, same cast as the Wood Wand, levels from the metal bands
+  (Copper 10-18 ... Mithril 40-49), recipes mirroring vanilla weapons of the same metal. ART: the vanilla pattern (Weapon_Wand_Wood_Rotten
+  reuses the Wood Wand model with another texture) - each metal wand = the Wood Wand model + a texture / icon recoloured from that metal's
+  own vanilla art AT BUILD TIME (shared kit tools/skyyart.py, nothing vanilla committed). Art proof running: two styles (full metal / wood
+  handle + metal head) on a preview sheet for Skyy to pick before the build. Default home: a new content mod SkyyArmory (our own weapons
+  and armor; later the Crude armor and Lv 50+ gear) so it does not wait behind the SkyyGear queue. [art proof -> Skyy picks -> build]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
