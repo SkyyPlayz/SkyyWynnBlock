@@ -147,7 +147,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   entity effect). Research running (wf_4726d526-aa2): screen/camera effect fields, a light on the player like a held torch, or any
   per-player light the server can send. If one works: SkyyAccessories 0.5.3 adds a Night Vision accessory (its own line so it stacks with the
   boosters, admin-give like the other boosters for now, only on while it sits in the Accessory Bag, off at once when removed; Server Setup
-  switch). If nothing works, it waits for 0.7.
+  switch). If nothing works, it waits for 0.7. [LIVE: SkyyAccessories 0.5.3, deployed 2026-10-02 - a wearer-only light, admin give]
 - LOCKED 2026-10-02 (Skyy): TOOL LEVELS like weapons - "tools like the pickaxe to have levels, linked to the users mining. (need a to be
   mining lvl 13 to use a lvl 13 pickaxe. like weapons, crafted tools are made at your level." + "same for foraging and farming" + "they
   need to be reformable [reforgeable] too". Gate skill: pickaxe + shovel = Mining, hatchet = Foraging, hoe + sickle = Farming. Crafted

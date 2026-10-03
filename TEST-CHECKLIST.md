@@ -1179,3 +1179,14 @@ Gear (damage and armor are still vanilla in this stage):
    x2.08 / x1.54 (the old Hard).
 6. Server Setup -> Changes: two "SkyyMobs 0.1.1" cap lines with Undo; History has "before the 0.1.1 difficulty update".
 7. Restart: no second update line in the log.
+## SkyyAccessories 0.5.3 - Night Vision accessory (DEPLOYED 2026-10-02, backup deploy-20261002-2335)
+1. Log "[SkyyAccessories] 0.5.3 ready". As admin: /accessories givetier <you> NightVision Rare -> tooltip "Night Vision - see in the dark
+   while in your Accessory Bag." with a Rare frame.
+2. At night or in a dark cave, Equip it in /accessories: within about a second everything around you brightens; the bag page shows a
+   "Night Vision" row.
+3. A second player next to you sees no change. Unequip: the light goes out at once.
+4. Equip again, switch worlds and relog: the light is back about a second after loading. Die and respawn wearing it: on, or back within 10 s.
+5. Hold a torch at the same time: nothing breaks. A second Night Vision is refused ("already equipped").
+6. Server Setup -> Accessories -> Night Vision: switch off -> light gone within a second; on again. Brightness: try 255,15,15,15 and
+   15,15,15,15 first (the client probably uses 0-15 per colour); tell me which looks best. If you see a flicker every 10 s, set the re-send row to 0.
+7. Switch to a profile without it: light off; switch back: on.
