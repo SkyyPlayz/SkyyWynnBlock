@@ -227,6 +227,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - ART PROOF 2026-10-02: metal wand preview sent to Skyy (tools/dev/scratch/wandart/preview.png; kit tools/skyyart.py renders true icons from
   the generated textures; colours = each tier's pickaxe head + ingot, leaf crystals = that tier's staff gem, Mithril bands = the mithril
   staff's gold trim). Waiting for Skyy's pick: style A full metal or style B wood handle + metal head.
+- LOCKED 2026-10-02 (Skyy): wand art = "Mix: B low, A high" - Copper, Iron, Thorium wands use style B (wood handle + metal head and bands);
+  Cobalt, Adamantite, Mithril, Onyxium use style A (full metal). Tier-coloured leaf crystals, metal bands (gold on Mithril) as in the
+  preview. [SkyyArmory 0.1 build after its spec; art kit tools/skyyart.py committed]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
