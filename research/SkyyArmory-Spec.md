@@ -4,6 +4,8 @@
 > path = custom metal wands + art; mod name SkyyArmory; tap = fast shot, hold = charged shot, Wood 5/1, Copper 10/2, Iron 15/3 = 3.5x,
 > "the next 3 will be bigger jumps") and the art lock (OPEN-QUESTIONS.md:233, LOCKED 2026-10-02: "actually do B" -> EVERY metal wand
 > uses style B, wood handle + metal head and bands, tier-coloured leaf crystals, gold bands on Mithril).
+> **2026-10-03:** section 15 adds the Mage staff ladder, the Priest / Mage max-Mana rows and the heal-cap rule from Skyy's
+> 2026-10-03 answers (OPEN-QUESTIONS.md:288-308); where it disagrees with an older section, section 15 wins.
 
 *Written 2026-10-02 (spec agent, Opus). Sources, all read-only: SkyySkills 0.4.12 (**S** = `SkyySkills/build_skyyskills_0.4.12.py` +
 its jar), SkyyGear 0.2 jar and the 0.2.1 script that was being built then (**G** = `SkyyGear/build_skyygear_0.2.1.py`, built
@@ -904,3 +906,573 @@ blocks; Assets.zip read-only; the build scripts and jars named below; scratch `t
 - E4: added the live `quick.damage` row (ArmoryTuneSys, default 20 = untouched), because the brief asks for every number to be editable
   where the engine allows.
 - E5: the quick orb's TimeToLive stays the vanilla 3.1 (ignored by the engine) instead of 1.05, so the jar carries no misleading number.
+
+---
+
+## 15. Staffs, Mana pools and heal caps (2026-10-03)
+
+> **What this section builds on.** Skyy's answers in OPEN-QUESTIONS.md ("ANSWERED 2026-10-03 morning", lines 288-308; newer answers win)
+> are: Priests get +5 max Mana per Divinity level through a Priest-only SkyySkills row, and Mithril / Onyxium wands stay 85 / 17. MAGE
+> STAFFS get their Mana / damage ladder WITH the wands, in this round, so Mages need a matching Mage-only row per Sorcery level (the main
+> session decides the numbers; this section proposes them). The heal caps go UP, so that charged shots heal clearly more than taps
+> (SkyyClasses). The Onyxium wand recipe is the Mithril shortbow recipe with Onyxium bars. A Wood Wand tap with too little Mana gives the
+> no-Mana click. This section answers question 4, replaces question 5 and follow-up 2 (sections 6, 8, 12), and wins over older sections.
+
+*Written 2026-10-03 (designer, Opus). All sources were read only:*
+- *Assets.zip, and HytaleServer.jar (the `ProjectileComponent` constant pool).*
+- ***S14** = SkyySkills 0.4.14, its script `SkyySkills/build_skyyskills_0.4.14.py` and its jar. Its SPELL GEN block is copied unchanged
+  through `tools/skills_0_4_14_patch.py` `KEEP`.*
+- ***G** = SkyyGear 0.2.1 (script + jar), **C** = SkyyClasses 0.1.10, **A3** = SkyyAccessories 0.5.3, and `tools/deploy_set.py`.*
+- *From the test world: `config.json`, `mods/Skyy_SkyyClasses/config.properties` + `config-changes.log`, and `mods/Skyy_SkyySkills/xp.properties`.*
+
+*Scratch work went into `tools/dev/scratch/armorystaff/`, deleted afterwards.*
+
+### 15.0 Plain words (for Skyy)
+
+- **What a staff does today.** Every staff costs 10 Mana. Every staff fires the same 25-damage orb as the wands. So a Mithril staff hits
+  just as hard as the Wooden one: at Lv 40 that is 84 damage, while a Mithril wand hits 1,764.
+- **Staffs follow your wand ladder, doubled.** A staff shot costs twice the Mana of the wand shot of the same metal. The vanilla game
+  already does this: the Wooden Earth Staff costs 10, the Wooden Earth Wand costs 5.
+  - **Recommended:** the staff also hits twice as hard, so damage per Mana is the same as the wand's.
+  - Your rule sets each step: damage multiple = 1.25 x cost multiple - 0.25.
+
+| Staff | Levels | Hold (charged) | Tap (quick) | Damage x | Damage, charged / quick (before levels) | At its first level* |
+|---|---|---|---|---|---|---|
+| Wooden Earth Staff | 1-13 | 10 Mana | 2 | 1 | 50 / 10 | Lv 1: 50 / 10 |
+| Copper Staff | 10-18 | 20 | 4 | 2.25 | 113 / 23 | Lv 10: 233 / 47 |
+| Iron Staff | 15-23 | 30 | 6 | 3.5 | 175 / 35 | Lv 15: 396 / 79 |
+| Thorium Staff | 20-28 | 50 | 10 | 6 | 300 / 60 | Lv 20: 742 / 148 |
+| Cobalt Staff | 25-38 | 80 | 16 | 9.75 | 488 / 98 | Lv 25: 1312 / 263 |
+| Adamantite Staff | 35-43 | 120 | 24 | 14.75 | 738 / 148 | Lv 35: 2311 / 463 |
+| Mithril Staff | 40-49 | 170 | 34 | 21 | 1050 / 210 | Lv 40: 3528 / 706 |
+| Onyxium Staff | 40-49 | 170 | 34 | 21 | 1050 / 210 | Lv 40: 3528 / 706 |
+
+  \* With SkyyGear 0.2.1's level damage, before Magical Power, crits and armor. The other choice keeps the vanilla 25 orb: every damage
+  number above is halved, and Mages deal half the damage per Mana of Priests (question S1).
+- **A tap on a staff is a quick shot too (recommended; you asked for the ladder only - question S2).** The staff's free spear swing becomes
+  the blue quick shot: 1/5 of the Mana and 1/5 of the damage. Too little Mana gives the no-Mana click, the same as your Wood Wand answer.
+  Holding 1 second (the vanilla staff charge) fires the charged shot.
+- **Max Mana.** Priests get +5 per Divinity level (your number). Mages get +10 per Sorcery level - twice as much, because staffs cost twice
+  as much. When a metal unlocks, its charged shot then costs at most 37% of the pool for a wand and 40% for a staff.
+- **Heals.**
+  - A charged wand hit heals up to 2 HP for each Mana the wand costs: Copper 20, Iron 30, Thorium 50, Cobalt 80, Adamantite 120, Mithril /
+    Onyxium 170.
+  - A tap heals up to 1/5 of that.
+  - Your Server Setup value of 50 HP per hit stays as the minimum cap. So no charged heal goes down, and taps heal clearly less.
+  - Each player gets at most one charged shot's worth of healing per second. Your 1,000 per second still applies if it is higher.
+- **Who owns the staffs.** The 8 metal staff item files move from SkyySkills to SkyyArmory, and SkyySkills' next build stops shipping them.
+  Both builds go live in the same deploy and roll back together.
+
+### 15.1 What a staff cast is today (VERIFIED)
+
+This is the chain of every ladder staff (`Weapon_Staff_Wood`, `_Copper`, `_Iron`, `_Thorium`, `_Cobalt`, `_Adamantite`, `_Mithril`,
+`_Onyxium`). The item is SkyySkills' override (S14 jar). Its Primary and Secondary point to the root `Staff_Primary`, which runs the
+interaction `Staff_Primary`. That interaction is vanilla and no mod overrides it:
+
+```
+Charging  (ItemAnimationId CastSummonCharging, AllowIndefiniteHold true, HorizontalSpeedMultiplier 0.5)
+  Next "0" -> Chaining (ChainingAllowance 1.25) [Spear_Swing_Left, Spear_Swing_Right]     = TODAY'S TAP: a free spear swing
+  Next "1" -> Staff_Cast_Summon_Charged                                                     = THE HOLD (1.0 s)
+Staff_Cast_Summon_Charged = SkyySkills' override: StatsCondition Costs {Mana: 10} (vanilla: a Simple step, NO check), RunTime 0.167
+  Next Parallel [ Replace var Staff_Cast_Summon_StaminaCost       (default ChangeStat Stamina -5),
+                  Replace var Staff_Cast_Summon_StaminaRegenDelay (default ChangeStat Behaviour Set, StaminaRegenDelay -1.5),
+                  Replace var Staff_Cast_Summon_Cost   (item var: Parent Staff_Cast_Cost, Mana -50 -> -10 by SkyySkills' item override),
+                  Replace var Staff_Cast_Summon_Launch (item var "Staff_Cast_Launch" -> LaunchProjectile Skeleton_Mage_Corruption_Orb,
+                                                        RunTime 0.25, ItemAnimationId CastSummonCharged),
+                  Replace var Staff_Cast_Summon_Effect (item var "Staff_Cast_Effect": SFX_Staff_Ice_Shoot, RunTime 0.5) ]
+  Failed Replace var Staff_Cast_Summon_Fail (item var "Staff_Cast_Fail": Interact animation, SFX_Bow_No_Ammo, RunTime 0.2)
+```
+
+**The numbers today:**
+- **Hold:** at least 1.0 s (Charging key "1").
+- **Cost:** the cast checks for 10 Mana and spends 10 Mana. It also spends 5 Stamina (vanilla Stamina has Max 10,
+  `Server/Entity/Stats/Stamina.json`) and pauses Stamina regen for 1.5 s.
+- **Projectile:** one `Skeleton_Mage_Corruption_Orb`, Damage 25. The wands, the spellbooks and the Skeleton Mage mobs fire the same orb.
+- **Time per charged cast:** 1.0 + 0.167 + max(0.25, 0.5) = **1.667 s**. A wand's charged cast takes 1.017 s.
+- **Tap:** `Spear_Swing_Left` / `_Right` take 0.223 + max(Selector 0.111 + pad 0.223, Effect 0.223) = **0.557 s per swing**. Each swing
+  deals Physical 5 and costs nothing.
+
+**No summon.** "Summon" appears only in the interaction and animation names. The launch is a legacy projectile, `Staff_Cast_Launch`.
+
+**The 8 staffs are identical.** They carry the same 9 InteractionVars. Vanilla sets Mana 50 / -50 in them, and SkyySkills' overrides
+change only those two numbers, to 10 / -10. The item var `Staff_Cast_Summon_Charged` (Costs Mana 10) is dead data: `Staff_Primary` names
+the global interaction directly, and an item var is read only by a Replace step that names it (S14 header 0.4.9; `spell_casts` rules,
+S14:2369).
+
+**So at every metal a staff costs 10 Mana and deals 25 damage before levels.** SkyyGear 0.2.1 then multiplies by F(level) x the band
+bonus, with K = 1 for spells (G:6674).
+
+**Who else uses `Staff_Primary`?** A grep of Assets.zip finds 23 items that name it:
+- the 8 ladder staffs;
+- Bo_Bamboo, Bo_Wood, Bone, Bronze, Cane, Crystal_Fire_Trork, Crystal_Purple, Crystal_Red, Doomed, Frost, Onion, Wizard, Wood_Kweebec,
+  Wood_Rotten and Halloween_Broomstick.
+
+`Weapon_Staff_Crystal_Ice` reaches it too, through `Ice_Staff_Primary_Wrapper`: a StatsCondition on Stamina 0.1 whose Next is
+"Staff_Primary". These items launch different things: Crystal_Fire_Trork and Crystal_Red launch `Fireball`, Frost launches `Ice_Ball`,
+and Crystal_Ice runs a ModifyInventory. Crystal_Red and Crystal_Ice spend 0 Mana. No NPC file names `Staff_Primary`.
+
+**So `Staff_Primary` cannot carry a ladder per metal, and SkyyArmory never overrides it.** `Wand_Primary` is different (2.4): its 3 users
+are all 5-Mana wood wands.
+
+### 15.2 The staff ladder (PROPOSED; the rule is Skyy's)
+
+**The rule:**
+- A staff costs 2 x the Mana of the wand of the same metal. The Wood rung is the live 10 = 2 x 5.
+- So staffs use the wand's cost multiples (x1, x2, x3, x5, x8, x12, x17). Skyy's rule then gives the same damage multiples:
+  mult = 1.25 x (C / 10) - 0.25.
+- Quick = C / 5, which is exact at every rung.
+
+**The base orb: 50 (recommended, question S1).** That is twice the wand's 25, so one staff shot equals two wand shots for twice the
+Mana, and damage per Mana is equal. The other choice is the vanilla 25.
+
+| Staff | Charged / quick Mana | mult | Base 50: charged / quick (first level) | Base 25: charged / quick (first level) | Damage per Mana, base 50 / 25 |
+|---|---|---|---|---|---|
+| Wood (1-13) | 10 / 2 | 1.00 | 50 / 10 (Lv 1: 50 / 10) | 25 / 5 (Lv 1: 25 / 5) | 5.00 / 2.50 |
+| Copper (10-18) | 20 / 4 | 2.25 | 113 / 23 (Lv 10: 233 / 47) | 56 / 11 (Lv 10: 115 / 23) | 5.65 / 2.80 |
+| Iron (15-23) | 30 / 6 | 3.50 | 175 / 35 (Lv 15: 396 / 79) | 88 / 18 (Lv 15: 199 / 41) | 5.83 / 2.93 |
+| Thorium (20-28) | 50 / 10 | 6.00 | 300 / 60 (Lv 20: 742 / 148) | 150 / 30 (Lv 20: 371 / 74) | 6.00 / 3.00 |
+| Cobalt (25-38) | 80 / 16 | 9.75 | 488 / 98 (Lv 25: 1312 / 263) | 244 / 49 (Lv 25: 656 / 132) | 6.10 / 3.05 |
+| Adamantite (35-43) | 120 / 24 | 14.75 | 738 / 148 (Lv 35: 2311 / 463) | 369 / 74 (Lv 35: 1155 / 232) | 6.15 / 3.08 |
+| Mithril (40-49) | 170 / 34 | 21.00 | 1050 / 210 (Lv 40: 3528 / 706) | 525 / 105 (Lv 40: 1764 / 353) | 6.18 / 3.09 |
+| Onyxium (40-49) | 170 / 34 | 21.00 | 1050 / 210 (Lv 40: 3528 / 706) | 525 / 105 (Lv 40: 1764 / 353) | 6.18 / 3.09 |
+
+How the table is computed:
+- Damage = round(base x mult); quick = round(base / 5 x mult). Both round half up from the exact value, as in 3.3.
+- "First level" multiplies by SkyyGear 0.2.1's F(band start) x (1 + 0.3% x band start): 1, 2.06, 2.264, 2.473, 2.6875, 3.131, 3.36
+  (G `base.curve`, `base.matBonus`; Wood starts at Lv 1, so it gets no bonus). The result is rounded half up.
+- With base 25 the staff numbers equal the wand numbers of 4.3, at twice the Mana.
+
+**Why base 50 is recommended:**
+- **Today a staff gives half the wand's damage per Mana:** 25 damage for 10 Mana, against 25 for 5. This is a leftover from vanilla,
+  which priced the staff at 50 and the wand at 25 for the same orb while nobody had any Mana (S14 header 0.4.8). A ladder on base 25 would
+  carry that gap into every metal. Mages, the damage class, would deal half the damage per Mana of Priests, who also heal.
+- **With base 50 both classes deal the same damage per Mana.** So they also deal the same damage per second once their Mana runs dry,
+  because regen is the same flat 5/s (2.5/s in combat) for both. The Mage hits twice as hard per cast and holds twice the pool (15.4).
+  The Priest casts faster (a 0.35 s hold against 1.0 s) and heals.
+- **While Mana lasts, staff damage per second is a little higher:** 50 / 1.667 = 30 against 25 / 1.017 = 24.6 (Wood, before levels).
+- **The cost:** the Mage kit staff hits 50 instead of 25 from Lv 1. From 40 Mana that is 4 charged casts x 50, against 3 x 25 today.
+
+**The tap (question S2, PROPOSED yes).**
+- **Yes (recommended).** `Next "0"` becomes the quick shot: 1/5 of the Mana, 1/5 of the damage, and the blue orb at 3x speed. It is also
+  smaller, using the same `SkyyArmory_QuickOrb` look and ArmorySpawnSys size / speed as the wands. The reasons:
+  - A charged staff shot from Cobalt up costs 80-170 Mana, which is 32-68 s of in-combat regen. With the quick shot a Mage keeps fighting
+    at range at the same damage per Mana, instead of walking into melee range for a 5-damage spear swing.
+  - Every caster then follows one rule: tap = quick, hold = charged.
+  - SkyyGear's "Spell at Lv N: quick-charged" line reads the same on staffs and wands.
+- **What it costs.** The free spear swing (Physical 5) goes away, and with it the vanilla Damage Data box (the same as for the Wood wand,
+  R5). Too little Mana gives the no-Mana click, as Skyy chose for the Wood wand. Flat per-hit gear lines favour taps (R8, the same
+  follow-up).
+- **No (the other choice).** `Next "0"` keeps the vanilla spear Chaining: fewer files, and a free melee attack at 0 Mana.
+
+**Cadence.**
+- The quick staff chain takes RunTime 0.31 + max(launch 0.25, effect 0.25) = **0.56 s**. That is at least the vanilla staff tap of
+  0.557 s, which the build computes from Assets.zip and asserts.
+- So quick shots are never faster than today's taps: a Mage taps 1.8 times a second, a Priest 2.9 times (the wand's 0.35 s).
+- The charged chain stays the vanilla 1.0 s hold + 0.667 s.
+
+**Stamina.** The charged shot keeps the vanilla cost of 5 Stamina and the 1.5 s regen pause (vanilla staff behaviour, which SkyySkills
+also keeps today). The quick shot spends no Stamina, like the wand's.
+
+**Asset ids** (PROPOSED). Every new id starts with `SkyyArmory_` and follows the 2.2 pattern. M = the 8 metals, Wood to Onyxium.
+C = the charged Mana and Q = C / 5 (the table above).
+
+```
+Item override  Weapon_Staff_<M>               8 files at Server/Item/Items/Weapon/Staff/Weapon_Staff_<M>.json (the vanilla path), generated
+                                              from Assets.zip at build time. Changes from vanilla: Primary + Secondary =
+                                              "SkyyArmory_Staff_Primary_<M>", and NO InteractionVars. The Onyxium file also gets a
+                                              "Recipe" (15.3). Every other field stays equal to vanilla (the S14 _spell_diff check).
+Root           SkyyArmory_Staff_Primary_<M>   {"Interactions": ["SkyyArmory_Staff_Primary_<M>"]}
+Interaction    SkyyArmory_Staff_Primary_<M>   Charging = the vanilla Staff_Primary values,
+                                              Next {"0": "SkyyArmory_Staff_Quick_<M>", "1": "SkyyArmory_Staff_Cast_<M>"}
+--- HOLD (charged)
+SkyyArmory_Staff_Cast_<M>          StatsCondition Costs {Mana: C}, RunTime 0.167,
+                                   Next Parallel [SkyyArmory_Staff_Stamina, SkyyArmory_Staff_Stamina_Delay, SkyyArmory_Staff_Cast_Cost_<M>,
+                                                  SkyyArmory_Staff_Cast_Launch_<M>, SkyyArmory_Staff_Cast_Effect],
+                                   Failed "SkyyArmory_Staff_Fail"
+SkyyArmory_Staff_Cast_Cost_<M>     ChangeStat StatModifiers {Mana: -C}
+SkyyArmory_Staff_Cast_Launch_<M>   LaunchProjectile "SkyyArmory_StaffOrb_<M>", RunTime 0.25, ItemAnimationId CastSummonCharged
+--- TAP (quick; only if S2 = yes)
+SkyyArmory_Staff_Quick_<M>         StatsCondition Costs {Mana: Q}, RunTime 0.31,
+                                   Next Parallel [SkyyArmory_Staff_Quick_Cost_<M>, SkyyArmory_Staff_Quick_Launch_<M>,
+                                                  SkyyArmory_Staff_Quick_Effect],
+                                   Failed "SkyyArmory_Staff_Fail"
+SkyyArmory_Staff_Quick_Cost_<M>    ChangeStat StatModifiers {Mana: -Q}
+SkyyArmory_Staff_Quick_Launch_<M>  LaunchProjectile "SkyyArmory_StaffQuickOrb_<M>", RunTime 0.25, ItemAnimationId STAFF_QUICK_ANIM
+                                   STAFF_QUICK_ANIM is a build constant. Default "CastSummonCharged" = the 30-frame cast vanilla plays on
+                                   its 0.25 s launch. "CastSummon" = the unused 90-frame cast, which is too long; try it in game only.
+--- shared (5)
+SkyyArmory_Staff_Stamina           ChangeStat StatModifiers {Stamina: -5}                            (the vanilla Replace default)
+SkyyArmory_Staff_Stamina_Delay     ChangeStat Behaviour Set, StatModifiers {StaminaRegenDelay: -1.5} (the vanilla Replace default)
+SkyyArmory_Staff_Cast_Effect       Simple, WorldSoundEventId SFX_Staff_Ice_Shoot, RunTime 0.5        (= vanilla Staff_Cast_Effect)
+SkyyArmory_Staff_Quick_Effect      Simple, WorldSoundEventId SFX_Wand_Ice_Shoot, RunTime 0.25        (the lighter wand sound, as on wand taps)
+SkyyArmory_Staff_Fail              Simple, ItemAnimationId Interact, WorldSoundEventId SFX_Bow_No_Ammo, RunTime 0.2 (= vanilla Staff_Cast_Fail)
+```
+
+**File counts.**
+- **S2 = yes:** 8 items, 8 roots, 61 interactions (56 per metal + 5 shared) and 16 projectiles.
+- **S2 = no:** 8 items, 8 roots, 36 interactions (4 x 8 + 4) and 8 projectiles. In this case `Next "0"` is a copy of the vanilla spear
+  Chaining, and the item keeps the 4 vanilla Spear_* vars, which name vanilla ids.
+- No staff chain names `Staff_Primary` or any of SkyySkills' 8 overridden interactions.
+
+**Projectiles.** All are fully resolved, with no Parent (see 2.3).
+
+| Id | Count | Look | Damage | MuzzleVelocity / TerminalVelocity / Gravity |
+|---|---|---|---|---|
+| `SkyyArmory_StaffOrb_<M>` (charged) | 8 | the vanilla `Skeleton_Mage_Corruption_Orb` model asset (green) | round(50 x mult); base-25 choice: round(25 x mult) | 30 / 50 / 0 |
+| `SkyyArmory_StaffQuickOrb_<M>` (quick) | 8 | `SkyyArmory_QuickOrb` (blue, the wands' quick model asset) | round(10 x mult); base 25: round(5 x mult) | 90 / 150 / 0 |
+
+These need their own ids, separate from the wand orbs, for two reasons: the per-staff tune rows (ArmoryTuneSys matches projectile ids),
+and SkyyGear's charged walk, which judges each projectile id on its own.
+
+**Shared machinery.** Everything else works as it does for the wands:
+- ArmoryTuneSys gets a second table, `tune.staff`. The Wood staff has its own orbs, so its row scales both of its shots.
+- `quick.damage`, `quick.size` and `quick.speed` cover all 16 quick ids, and ArmorySpawnSys handles the 8 staff quick ids.
+- T-live reads back the staff chains.
+
+**SkyyGear needs no change (VERIFIED contracts):**
+- `Weapon_Staff_` is a spell prefix (G:859, `isSpell` G:5145). So K = 1 (G:6674), Magical Power applies, and Charged Attack Damage adds
+  x0.15 on charged shots only.
+- The charged walk counts the staff orb as charged, because it is launched only under the largest key "1", and the quick orb as normal
+  (key "0").
+- The level band comes from the metal word (Wood 1-13 ... Mithril / Onyxium 40-49; G `BANDS` assert).
+- The tooltip line "Spell at Lv N: lo-hi" (G:6783, G:7205) shows quick to charged. A Copper staff at Lv 10, for example, shows
+  "Spell at Lv 10: 47-233".
+
+**SkyyClasses needs no change either.** `Weapon_Staff_` means Mage (C:241). The Mage kit staff, `Weapon_Staff_Wood:1`, gets the new chain
+at once: an item asset applies to every stack of its id, so there is no saved data and no migration.
+
+### 15.3 Asset ownership for staffs (today VERIFIED, after PROPOSED)
+
+| Asset | Path | Today | After this round |
+|---|---|---|---|
+| `Weapon_Staff_{Wood, Copper, Iron, Thorium, Cobalt, Adamantite, Mithril, Onyxium}` (8 item files) | `Server/Item/Items/Weapon/Staff/` | SkyySkills 0.4.14 (generated, Mana / 5) | **SkyyArmory 0.1 only** (SkyySkills 0.4.15 stops shipping them) |
+| The 14 other staff-folder items: Bo_Bamboo, Bo_Wood, Bone, Bronze, Cane, Crystal_Fire_Trork, Crystal_Purple, Doomed, Frost, Onion, Wizard, Wood_Kweebec, Wood_Rotten, Halloween_Broomstick | same | SkyySkills | SkyySkills (unchanged) |
+| `Staff_Cast_Summon_Charged` (check 10), `Staff_Cast_Cost` (drain -5): 2 of the 8 generated interaction overrides (`SPELL_INT_PLAN`, S14:2740, built from the vanilla map `SPELL_INTS`, S14:2711) | `Server/Item/Interactions/Weapons/Staff/Attacks/` | SkyySkills | SkyySkills (unchanged; they still serve the 14 items + Crystal_Red / Crystal_Ice) |
+| `Staff_Primary`, `Staff_Cast_Launch`, `Staff_Cast_Effect`, `Staff_Cast_Fail` + their roots | vanilla | nobody | nobody |
+| `SkyyGear_Recipe_Weapon_Staff_{Wood ... Mithril}` (7 standalone recipes) | `Server/Item/Recipes/SkyyGear/` | SkyyGear 0.2.1 | SkyyGear (unchanged) |
+| `SkyyArmory_Staff_*` interactions and roots, `SkyyArmory_StaffOrb_*`, `SkyyArmory_StaffQuickOrb_*` | `Server/Item/...`, `Server/Projectiles/...` | - | SkyyArmory |
+| Onyxium staff recipe (embedded; the engine names it `Weapon_Staff_Onyxium_Recipe_Generated_0`) | inside the item file | none | SkyyArmory (question S3) |
+| Language keys `items.Weapon_Staff_<M>.description` | `Server/Languages/en-US/server.lang` (merged per key) | none | SkyyArmory |
+
+**Why the item files have to move (VERIFIED):**
+1. **A check per metal needs data per item.** The check is the StatsCondition that the Charging step names. The 8 staffs share one
+   Charging step (`Staff_Primary` -> `Staff_Cast_Summon_Charged`), and their item vars are identical. `Staff_Primary` itself has 24
+   dependents (15.1). So each ladder staff needs its own Charging root, which means its item file's `Primary` / `Secondary` must change.
+2. **SkyySkills owns those 8 item files** (S14 jar). Its build refuses any live-set jar that ships one of its 32 item ids (`_spell_clash`,
+   S14:2800-2816). If two packs shipped the same id, load order would decide (S14 header 0.4.8: "the pack loaded last wins a clash").
+3. **SkyySkills cannot build the ladder itself without breaking its own rules.** SPELL GEN derives every number as vanilla / 5. It also
+   requires that every item behind one check spends one number (`spell_int_plan`, "one check serves them all", S14:2606-2611). A ladder per
+   metal needs new interactions, projectiles and art, which is SkyyArmory's job.
+4. **Rejected: making the shared check per item.** This would turn `Staff_Primary`'s "1" into a Replace of the item var
+   `Staff_Cast_Summon_Charged`. One cast would then be split across two mods (the costs in SkyySkills' item files, the orbs in SkyyArmory),
+   and the chain of the 16 other staffs would change too.
+
+**The handover (PROPOSED).**
+
+**SkyySkills 0.4.15.** Its patch edits the SPELL GEN block, which 0.4.14's patch copied unchanged:
+- (a) Add `ARMORY_OWNED` = the 8 ladder staff ids. They are removed from `SPELL_ITEMS` before `spell_plan`, so no override is generated
+  and the gate simulation never sees them. 24 item overrides remain: 14 staff-folder items, 2 guns, 5 spellbooks and 3 wands. The guard
+  `len(SPELL_PLAN) >= 20` (S14:2717) still holds.
+- (b) Its 8 interaction overrides stay byte-identical. `Staff_Cast_Summon_Charged` still checks 10 for the 14 remaining staff-folder items
+  (all spend 10) and for Crystal_Red / Crystal_Ice (spend 0), so the one-number rule still holds.
+- (c) Replace the two Wood-staff asserts (S14:2732 `_sk["Weapon_Staff_Wood"]` and S14:2784 `_sg["Weapon_Staff_Wood"]`). The new assert:
+  when the pinned SkyyArmory jar exists, its `SkyyArmory_Staff_Cast_Wood` checks 10 and `SkyyArmory_Staff_Cast_Cost_Wood` spends 10.
+  These are the kit numbers that Skyy's "Mage 30 = 3 casts" was set for.
+- (d) `_spell_clash` gains the 8 `ARMORY_OWNED` paths. They are refused in every live-set jar and pack mod except SkyyArmory. When
+  SkyyArmory is pinned, its jar must ship all 8: a missing one would put the vanilla item behind SkyySkills' 10-check, so it would spend 50
+  with only 10 present.
+- (e) Kit lookup. `ManaCost.costOf` (S14:12903) returns -1 for an unknown id, and ManaGuard skips that id silently (S14:13746). For
+  `ARMORY_OWNED` ids it falls back to `armory:fn:info` {"staff", id}, then to a baked 10.
+- (f) The pack check (one INFO or WARN at start) requires the 8 `ARMORY_OWNED` items to come from SkyyArmory's pack. Otherwise it WARNs
+  "staffs run on vanilla files - install SkyyArmory 0.1+ with SkyySkills 0.4.15".
+- (g) Texts that say "staff 10" stay true, because the Wood staff's charged shot still costs 10.
+
+**SkyyArmory 0.1.** It ships the 8 item overrides and the staff chains (15.2). Its build asserts two things:
+- The vanilla staff shape: the 9 vars, Primary / Secondary = `Staff_Primary`, Charging keys exactly {"0", "1"}, "1" =
+  `Staff_Cast_Summon_Charged`, and "0" = Chaining [Spear_Swing_Left, Spear_Swing_Right].
+- The pinned SkyySkills jar ships none of the 8. Otherwise the build stops with "pin SkyySkills 0.4.15 (staff handover) first".
+
+**SkyyGear 0.2.1: nothing changes.**
+- Its 7 staff recipes are standalone files keyed by output id (`SkyyGear_Recipe_Weapon_Staff_<M>`, Wood to Mithril; G:1966-2021, which also
+  asserts that SkyyGear never ships an item file). So they keep working on SkyyArmory's item files.
+- SkyyArmory embeds NO recipe in those 7 staffs, because a second recipe would duplicate them.
+- Only the Onyxium staff gets a recipe, because SkyyGear has none for it (`MAGIC_MATS` stops at Mithril, G:1927). It gets the Onyxium wand's
+  recipe from Skyy's wand answer: the Mithril shortbow recipe with Onyxium bars (Onyxium Bar x6, Storm Leather x2, Voidheart x1; Weapon
+  Bench / Bow / tier 3; 5 s; recipe id `Weapon_Staff_Onyxium_Recipe_Generated_0`, the SkyySacks suffix). This is question S3.
+
+**Deploy and roll back as a pair.** SkyySkills 0.4.15 and SkyyArmory 0.1 go in the same deploy and are rolled back together (add a
+`tools/deploy_set.py` note). Either one alone breaks the staffs:
+- SkyyArmory 0.1 with SkyySkills 0.4.14: both packs ship the 8 files, so load order decides.
+- SkyySkills 0.4.15 without SkyyArmory: the staffs run on the vanilla files and spend 50 behind a 10-check, which drains the pool to 0.
+
+**No two jars ship the same asset id (proof).**
+
+The scan (2026-10-03, read only) covered the 25 jars pinned in the SET and every installed mod with a manifest in `UserData\Mods`
+(255 archives and folders). It matched exact ids by file basename: the 8 staff items, the 7 metal wand ids, `Staff_Primary`, the 5
+`Staff_Cast_*` interactions, `Wand_Primary`, the 3 wood wands, and anything `SkyyArmory*`.
+- **SET jars:** only SkyySkills 0.4.14 ships any of them: the 8 staff items, `Staff_Cast_Summon_Charged`, `Staff_Cast_Cost` and the 3 wood
+  wands.
+- **Nothing ships `Staff_Primary`, `Wand_Primary`, a `Weapon_Wand_<metal>` item or a `SkyyArmory*` file.**
+- **After the handover the lists are disjoint by construction:**
+  - SkyySkills 0.4.15 ships 24 items + 8 interactions.
+  - SkyyArmory 0.1 ships the 8 staff items, the 7 new wand items, `Wand_Primary` and `SkyyArmory_*` ids only.
+  - SkyyGear ships recipes, qualities and lang only.
+
+  Both builds enforce this (T10 / ST8) and read the other jar.
+
+**Installed mods** are not enabled in the test world: `config.json` enables exactly the 25 SET mods + the 2 pack mods. Three of them touch
+staffs:
+- HyBoards 3.4 ships the same 8 staff files, each vanilla + `"ResourceTypes": [{"Id": "Hyboard_Modular_Staves"}]`.
+- Skyys-HyMax 1.0.5 ships `Staff_Cast_Summon_Charged` and the Mithril / Onyxium staffs.
+- Endgame&QoL 5.4.1 ships `Staff_Cast_Effect` / `Staff_Cast_Fail` and their roots.
+
+They already clash with SkyySkills the same way today. SkyyArmory's build NOTEs installed mods that are not pack mods (the S14 `_other`
+pattern) and fails only for SET jars and `PACK_THIRD_PARTY`.
+
+**Language.** 6 SET jars ship `Server/Languages/en-US/server.lang`. The files merge per key, as proven in game, and none of them has a
+staff or wand key. Vanilla has only staff names (`items.Weapon_Staff_<M>.name`), no descriptions. So SkyyArmory adds
+`items.Weapon_Staff_<M>.description` ("Tap: quick shot, 4 Mana. Hold 1 s: charged shot, 20 Mana.") through the default key (1.1).
+
+**Loot.** The 8 staffs are vanilla ids and are already in the loot round's build-time table (research/Loot-Unid-Spec.md 3.3, step 5).
+So `gear:loot:add:SkyyArmory` lists only the 7 new wands.
+
+### 15.4 Max-Mana rows (PROPOSED for SkyySkills 0.4.15)
+
+| Key | Label (<= 40) | Type | Default | Help (<= 100) |
+|---|---|---|---|---|
+| `mana.classPerLevel` | Max Mana per class level | table `dec;type;Mana per level`, 0-100, live, category "Overall and Mana", right under "Base Mana by class" | Priest 5, Mage 10 (a class not listed = 0) | Max Mana a listed class gains per level of its own class skill (Priest: Divinity, Mage: Sorcery). |
+
+**The stat modifier.**
+- A new MAX / ADDITIVE StaticModifier, key `skyyskill_classmana` = entry[class] x the profile's own class skill level (`Perks.mod`,
+  S14:7208).
+- `Perks.ovl` sets it right next to `skyyskill_basemana` (S14:7296). It uses the same 1 s world-thread tick and the same part switch
+  ("Base Mana", `mana.base.enabled`; off = 0 = removed).
+- It also uses the same session hold, `Overall.hold`, so a relog before SkyyClasses publishes the class cannot dip max Mana.
+- `OVL_KEYS` (S14:2896) gains the key.
+- The table gets a `check=` hook like `mana.classBase` (`OverallCfg.checkClassBase`, S14:12707): a known class name, 0-100 per level.
+
+**The config file.** The default lines reach an existing `xp.properties` through one appended block, following the `SkillCfg.ensure14`
+pattern: only the lines the file lacks, written with the file's own line endings, after a History snapshot and with a change-log line.
+
+**Display.** `/skills mana` and the Stats page show "class level +N".
+
+**Why a class-level row (VERIFIED: nothing Priest- or Mage-only scales today).**
+- `perk.combat.manaPerLevel` (default 0, and 0 on the live server - the live `xp.properties` has no line for it) gives EVERY class Mana per
+  class-skill level (`PerkCfg.MANA`, S14:3521). Keep it at 0.
+- `mana.classBase` is flat (`CLASS_BASE_DEF` Mage 30 / Priest 30, S14:1868).
+
+**Why Mage 10.** It is the smallest whole number that keeps every staff's charged shot at or under 40% of the pool at its band start. The
+case is the fighter, and the Mithril / Onyxium staff needs at least 9.855. The Priest's 5 (Skyy's number) keeps the wands at or under
+36.8% (they need at least 4.54).
+
+**Pools at each band start.** "Fighter" = only the class skill is levelled (Overall = floor(L / 9)). "Typical" = Overall L / 2,
+Alchemy L / 4, and a Unique Mana accessory (+12%) from Lv 10. The charged share is the charged shot's Mana / the fighter pool.
+
+| Band start | Priest pool, fighter / typical | Wand charged -> share | Mage pool, fighter / typical | Staff charged -> share | Casts from full (fighter), wand / staff | Refill one charged shot (out of / in combat), wand / staff |
+|---|---|---|---|---|---|---|
+| Wood, Lv 1 | 35 / 35 | 5 -> 14.3% | 40 / 40 | 10 -> 25.0% | 7 / 4 | 1 / 2 s, 2 / 4 s |
+| Copper, Lv 10 | 80.2 / 91.2 | 10 -> 12.5% | 130.2 / 147.2 | 20 -> 15.4% | 8 / 6 | 2 / 4 s, 4 / 8 s |
+| Iron, Lv 15 | 105.2 / 119.8 | 15 -> 14.3% | 180.2 / 203.8 | 30 -> 16.6% | 7 / 6 | 3 / 6 s, 6 / 12 s |
+| Thorium, Lv 20 | 130.4 / 149.0 | 25 -> 19.2% | 230.4 / 261.0 | 50 -> 21.7% | 5 / 4 | 5 / 10 s, 10 / 20 s |
+| Cobalt, Lv 25 | 155.4 / 177.6 | 40 -> 25.7% | 280.4 / 317.6 | 80 -> 28.5% | 3 / 3 | 8 / 16 s, 16 / 32 s |
+| Adamantite, Lv 35 | 205.6 / 235.2 | 60 -> 29.2% | 380.6 / 431.2 | 120 -> 31.5% | 3 / 3 | 12 / 24 s, 24 / 48 s |
+| Mithril / Onyxium, Lv 40 | 230.8 / 264.3 | 85 -> **36.8%** | 430.8 / 488.3 | 170 -> **39.5%** | 2 / 2 | 17 / 34 s, 34 / 68 s |
+
+**How the sources combine.** Every source is a MAX / ADDITIVE StaticModifier on the Mana stat; vanilla Mana has Max 0 (`Mana.json`).
+- the class base: Mage / Priest 30, everyone else `mana.base` 10 (`skyyskill_basemana`)
+- \+ the class level row (NEW: Priest 5 x Divinity, Mage 10 x Sorcery; `skyyskill_classmana`)
+- \+ 0.2 x Overall Level (`skyyskill_overallmana`; Overall = floor(average of the 9 skills))
+- \+ the sum of `perk.<skill>.manaPerLevel` x level (`skyyskill_mana`: Alchemy 0.2, combat 0)
+- \+ SkyyTrees 0.3, being built now (`skyytree_mana`). The class tree's M units give +5 each (Mage / Priest up to +48 with X1,
+  research/Skill-Trees-2-Spec.md section 6), and the Alchemy tree's Deep Reserves gives +1 per rank (+10).
+- \+ vanilla armor Mana lines (Silk / Cindercloth / Onyxium / Prisma sets; not craftable today, not counted)
+
+SkyyAccessories' Mana line then adds 6 / 12 / 18 / 24% of that flat total (at least +1 to +4; only the best accessory counts). It already
+reads every other ADDITIVE MAX modifier (A3:3784, "flatMax: the type max + every other ADDITIVE MAX modifier, ours left out"; `flatMax`
+A3:3748). So the new row is boosted without any SkyyAccessories change.
+
+The 40% check uses the fighter with no tree, armor or accessory: the worst case.
+
+**SkyyArmory's Mana check** (`check.share` 40%, section 7) reads the row through `config:fn:SkyySkills` `keys mana.classPerLevel ""`
+(values = the numbers; CONFIG-CONTRACT `keys`). It checks wands against the Priest pool and staffs against the Mage pool.
+
+**Rollback.** The new modifier is saved with the player, like the 0.4.6 ones. Before SkyySkills goes below 0.4.15, switch Base Mana off
+and let players log in once (add a deploy_set floor note). Otherwise 0.4.14 never removes `skyyskill_classmana`.
+
+**Coordination.** SkyyTrees 0.3 (running) also needs a SkyySkills reader build (research/Skill-Trees-2-Spec.md, the "SkyySkills (the next
+free version after 0.4.13 ...)" row). Either one 0.4.15 carries both, or the second build becomes 0.4.16, derived from the first. That is
+the main session's call.
+
+**Regen (R6, doubled).**
+- A full refill at Sorcery 40 takes 431 / 5 = 86 s (172 s in combat). A Priest at Divinity 40 takes 46 s / 92 s. Today, at 30 Mana, it
+  takes 6 s / 12 s.
+- One Mithril staff cast costs 34 s / 68 s of regen.
+- Mana Regen boosts shorten this (SkyyTrees gives the magic classes +45%). A regen that grows with max Mana is a later idea (question S7).
+
+### 15.5 Heal caps (PROPOSED for SkyyClasses 0.1.11)
+
+**Today (VERIFIED).**
+- `HealTask.want` = min(dealt x sharePercent / 100, maxPerHit) (C:3251).
+- Each target has a budget, `HealBudget.take`: a fixed 1 s window shared by all Priests, limited by `maxPerSecond` (C:2560-2575).
+- Defaults are 10 / 10 (C:314-315).
+- **On Skyy's live server, Skyy raised both in Server Setup on 2026-09-30:** `priestHeal.maxPerHit` 10 -> 50 and
+  `priestHeal.maxPerSecond` 10 -> 1000 (`Skyy_SkyyClasses/config.properties`, "changed in game" block, and `config-changes.log`).
+- **So live today, charged heals stop growing at Thorium (50), and from Adamantite up a tap heals as much as a charged shot (both 50).**
+
+**The rule (PROPOSED).**
+- **Charged hit cap** = max(`priestHeal.maxPerHit`, `priestHeal.hpPerMana` x the wand's charged Mana).
+- **Quick hit cap** = the charged cap x `priestHeal.quickPercent` / 100. The default of 20 equals 1/5, the quick shot's Mana share, so
+  healing per Mana is the same for both shots. Lowering it makes charged shots better per Mana too.
+- **Any other Priest hit** keeps today's rule, cap = `maxPerHit`: a spellbook, the Healing Totem, melee, a wand SkyyArmory does not know,
+  or SkyyArmory missing.
+- **The heal itself** stays min(25% x landed damage, cap), with overheal clamped first, as today.
+- **Per second:** the target's 1 s window budget = max(`priestHeal.maxPerSecond`, the biggest hit cap that reached that player in this
+  window). That is at most one full charged heal per second, from all Priests together. On the live server Skyy's 1000 still wins.
+- **Setting `hpPerMana` 0 and `quickPercent` 100 gives today's rule** whenever `maxPerSecond` >= `maxPerHit`, which holds for both the
+  defaults and Skyy's values.
+
+**Rows.** All rows are live, and the existing keys are kept, so there is no migration and Skyy's 50 / 1000 stay. A missing key reads its
+default (ClassCfg `dbl()`).
+
+| Key | Label (<= 40) | Type / range | Default | Help (<= 100) |
+|---|---|---|---|---|
+| `priestHeal.hpPerMana` NEW | Charged heal cap per wand Mana | dec 0-50 | 2 | Charged wand hit cap = this x the wand's charged Mana (Mithril 85 x 2 = 170), never below the floor. |
+| `priestHeal.quickPercent` NEW | Tap heal cap (% of charged) | int 0-100 | 20 | A quick shot's heal cap as % of the charged one. 20 = 1/5 = the same healing per Mana. |
+| `priestHeal.maxPerHit` (relabelled) | Most HP per hit (at least) | dec 0.5-1000 | 10 (Skyy: 50) | Cap for spellbook, totem and melee hits; also the least a charged wand hit's cap can be. |
+| `priestHeal.maxPerSecond` (relabelled) | Most HP per second (at least) | dec 0.5-1000 | 10 (Skyy: 1000) | All Priest heals one player gets in 1 s, added up - at least the biggest hit cap of that second. |
+
+**Numbers.** Each wand is at its first level. Heals are per party member, and the Priest gets 100% of that. Damage is charged / quick.
+
+| Wand | Damage, charged / quick | Caps, default 10 | Heal, default | Caps, Skyy's 50 | Heal, Skyy's live server | Today, live (50 flat) | Today, default (10 flat) |
+|---|---|---|---|---|---|---|---|
+| Wood, Lv 1 | 25 / 5 | 10 / 2 | 6.25 / 1.25 | 50 / 10 | 6.25 / 1.25 | 6.25 / 1.25 | 6.25 / 1.25 |
+| Copper, Lv 10 | 115 / 23 | 20 / 4 | 20 / 4 | 50 / 10 | 28.75 / 5.75 | 28.75 / 5.75 | 10 / 5.75 |
+| Iron, Lv 15 | 199 / 41 | 30 / 6 | 30 / 6 | 50 / 10 | 49.75 / 10 | 49.75 / 10.25 | 10 / 10 |
+| Thorium, Lv 20 | 371 / 74 | 50 / 10 | 50 / 10 | 50 / 10 | 50 / 10 | 50 / 18.5 | 10 / 10 |
+| Cobalt, Lv 25 | 656 / 132 | 80 / 16 | 80 / 16 | 80 / 16 | 80 / 16 | 50 / 33 | 10 / 10 |
+| Adamantite, Lv 35 | 1155 / 232 | 120 / 24 | 120 / 24 | 120 / 24 | 120 / 24 | 50 / 50 | 10 / 10 |
+| Mithril / Onyxium, Lv 40 | 1764 / 353 | 170 / 34 | 170 / 34 | 170 / 34 | 170 / 34 | 50 / 50 | 10 / 10 |
+
+**What the new rule gives on Skyy's server:**
+- Charged heals stay the same from Wood to Thorium (the 25% share or Skyy's 50 floor) and go up from Cobalt (50 -> 80 / 120 / 170).
+- Taps drop from Thorium up (18.5 -> 10, 33 -> 16, 50 -> 24 / 34).
+- So a charged hit heals 5x a tap at every metal.
+
+**How big is that?**
+- A player has about 100 Health at Lv 1, and about 185 at Lv 40 in a full Mithril set. That is vanilla 100, + SkyyGear 0.2.1 armor
+  25 x F(40) x 1.12 = 84, + Overall 0.5 per level; accessories add more.
+- So a Mithril charged heal (170) nearly fully heals everyone within 16 blocks.
+- It costs 85 Mana: about 2 casts from a full pool, then one every 34 s in combat.
+- Sustained healing is limited by regen: 2.5 Mana/s x 2 HP per Mana = 5 HP/s per player, at every metal.
+- `priestHeal.hpPerMana` 1 halves every cap above Skyy's floor (Mithril 85; question S5).
+
+**Implementation (SkyyClasses 0.1.11).**
+- `ShotRec` gains `pid` = `ProjectileComponent.getProjectileAssetName()` at launch. `ShotTrack.onEntityAdded` already reads that
+  component for the creator (C:2361), and the method exists (HytaleServer.jar constant pool). It is null for physics-only projectiles.
+- `PriestHealSys` (C:3405) passes (item, pid) to `HealTask`. `HealTask.cap(item, pid)` calls `armory:fn:info` with Object[]{"wand", item}
+  to get the charged Mana C (null -> `maxPerHit`). The shot is quick when pid is in `armory:quick`, which is parsed once per
+  `config:epoch:SkyyArmory`. Then the rule applies. These are pure static methods (tested on a bare JVM). Everything stays on the world
+  thread, as today.
+- `HealBudget.take(u, want, now, perSec, hitCap)`: the window holds {start, used, top}; top = max(top, hitCap); left =
+  max(perSec, top) - used.
+- **What SkyyArmory must answer.** `armory:fn:info` covers the 3 wood-tier wands (`Weapon_Wand_Wood`, `_Wood_Rotten`, `_Tribal` -> 5 / 1)
+  and the 7 metal wands. The wood wands' charged shot is the vanilla orb, which is not in `armory:quick`, so it counts as charged.
+  Staffs answer for {"staff", id}; they are Mage weapons, so they never heal.
+- **Divinity XP** follows the healed HP (1 per HP on others, 1.25 on yourself, x3). Bigger heals reach the 900-a-minute cap sooner, by
+  design.
+
+### 15.6 What this changes elsewhere in this spec
+
+- **Questions (sections 0, 12).** Question 1 is answered: +5 per Divinity, 85 / 17. Question 3 is answered: the Onyxium wand recipe =
+  the Mithril shortbow recipe with Onyxium bars. Question 4 is answered by 15.2 (the staff ladder ships now). Question 5 is replaced by
+  15.5 (Skyy: raise the caps).
+- **Items, interactions, projectiles (1.1, 2).** Add the 8 staff item overrides, 8 roots, 61 interactions and 16 projectiles (15.2).
+  ArmoryTuneSys matches 15 + 16 = 31 projectile ids (3.1).
+- **Mana and heals (4, 6).** The Mana pools include the class row (15.4). The heal rule is 15.5.
+- **Server Setup (7).** Add the `tune.staff` table (Damage by staff (%), entries Wood to Onyxium, 10-500, default 100). Add read-only rows
+  per staff, for example "Copper Staff (fixed in the jar)": "20 / 4 Mana - x2.25 - 113 / 23 damage - Lv 10-18". `check.share` also checks
+  Mage pools.
+- **Bridges (8).**
+  - `armory:staffs` (the `armory:wands` format).
+  - `armory:fn:info` also takes {"staff", id}.
+  - `armory:quick` holds all 16 quick ids (8 wand + 8 staff).
+  - SkyyArmory reads `mana.classPerLevel`.
+  - The SkyySkills contract gains `ARMORY_OWNED`.
+- **Prerequisites (8, 11).**
+  - SkyySkills 0.4.15 and SkyyClasses 0.1.11 deploy together with SkyyArmory 0.1.
+  - SkyySkills 0.4.13 (Mana while charging) and SkyyGear 0.2.1 are already live (0.4.14 and 0.2.1 are pinned).
+  - Pin order: SkyySkills 0.4.15 -> SkyyClasses 0.1.11 -> SkyyArmory 0.1, in one deploy.
+
+**Tests to add to section 9.** The harness EXECUTES them.
+
+| # | Test | Pass condition |
+|---|---|---|
+| ST1 | Staff item overrides | Each of the 8 generated files equals the vanilla file except Primary / Secondary, the removed InteractionVars and, for Onyxium only, the Recipe (the `_spell_diff` check). They decode through `AssetBuilderCodec#decodeJsonAsset` (the 9 intro recipe). |
+| ST2 | Staff chains | Every staff interaction, root and projectile decodes. Reference closure holds. No reference to `Staff_Primary` or to SkyySkills' 8 interactions. |
+| ST3 | Mana gate simulation (S14 `spell_casts` rules) | Tap = check Q, spend Q. Hold = check C, spend C + Stamina 5. Failed spends 0. C = 2 x the wand rung, Q = C / 5. |
+| ST4 | Tap / hold | Charging keys are {0.0, 1.0}. `jumpToChargeValue` on 0, 0.5, 0.99, 1.0, 3.0 gives quick, quick, quick, charged, charged. |
+| ST5 | Damage | `getDamage()` = round(50 x mult) / round(10 x mult), or the 25 / 5 base if S1 = no. MuzzleVelocity 30 / 90. |
+| ST6 | Cadence | The staff quick chain >= the vanilla staff tap computed from Assets.zip (0.557 s). The charged chain = vanilla (0.667 s after the 1.0 s hold). |
+| ST7 | SkyyGear, its real code (as T8) | `GearChg.launchCode(staff, StaffQuickOrb) == 0` and `(staff, StaffOrb) == 1` for all 8. `GearBase.spellRange` = quick - charged. `kOf(id, true) == 1`. |
+| ST8 | Handover + clash | The pinned SkyySkills jar ships none of the 8 staff files, and SkyyArmory ships all 8. No SET jar or pack mod ships any SkyyArmory id. The 7 SkyyGear-recipe staffs carry no embedded recipe. The Onyxium recipe = the Mithril shortbow recipe with the bars swapped. |
+| ST9 | Mana rule (extends T13) | Every wand's charged shot <= 40% at its band start with the Priest row, and every staff's with the Mage row (fighter). The table is printed. |
+| ST10 | SkyySkills 0.4.15 + SkyyClasses 0.1.11 harnesses | `skyyskill_classmana` on real `EntityStatMap` objects (entry x class skill; 0 with Base Mana off; held during the session hold). The heal cap table for every wand x shot x {10, 50}. An unknown item gets `maxPerHit`. HealBudget: two Priests' charged hits in one second = one cap; a new window resets; perSec 1000 is untouched. `ShotRec.pid` is read from a real `ProjectileComponent`, or, if the bare JVM cannot build one, the decision function runs on plain values and the harness says which. |
+| ST-live | Plugin self-check | The 8 staff items come from SkyyArmory's pack. The loaded staff costs, keys and orb damage read back equal to the table. |
+
+**Risks to add to section 10.**
+
+| # | Risk | Status / mitigation |
+|---|---|---|
+| RS1 | The staff handover is a pair | Deploy and roll back SkyySkills 0.4.15 + SkyyArmory 0.1 together. Each build checks the other jar. SkyySkills' pack check WARNs. |
+| RS2 | Big pools refill slowly (flat regen) | 86 s for a full refill at Sorcery 40. Mana Regen boosts help; regen that scales with the pool comes later (S7). |
+| RS3 | The Wood staff hits 50 from Lv 1 (S1) | The Mage early game gets stronger (200 damage per pool against 75 today). The base-25 choice keeps it as it is. |
+| RS4 | No free melee for Mages (S2) | The no-Mana click at 0 Mana, like the wands. S2 = no keeps the spear swing. |
+| RS5 | The other 17 staff-folder items (14 at 10 Mana, the 3 Crystal staffs), the Rotten / Tribal / Root / Stoneskin wands and the spellbooks keep today's costs and projectiles | A Doomed (band 25-32) or Frost staff falls far behind the Cobalt staff (488). Give them a ladder rung by band later (S6). |
+| RS6 | Heal size | A Mithril charged heal (~170) is a near-full party heal. The live row `priestHeal.hpPerMana` adjusts it. |
+| RS7 | HyBoards / Skyys-HyMax / Endgame&QoL (installed, off) ship staff files | A NOTE in the build. It matters only if a server enables them; they clash with SkyySkills the same way today. |
+
+### 15.7 Questions for Skyy (each with the recommended default)
+
+- **S1. Staff damage.** A staff costs twice the wand's Mana. Should it also hit twice as hard, with the Wooden staff at 50 instead of 25
+  (the same damage per Mana as the wand)? Or should it keep the vanilla 25, so Mages get half the Priest's damage per Mana at every metal?
+  **[twice as hard - base 50]**
+- **S2. Staff tap.** Should a staff tap be a quick shot like the wands (1/5 Mana, 1/5 damage, the fast blue orb; the free spear swing goes
+  away), or keep the spear swing? **[quick shot]**
+- **S3. Onyxium staff recipe.** Should it be the Onyxium wand's recipe (the Mithril shortbow recipe with Onyxium bars)? **[yes]**
+- **S4. Mage Mana.** Mages get +10 max Mana per Sorcery level - twice the Priest's +5, because staffs cost twice as much. **[yes]**
+- **S5. Heals.** A charged wand hit heals up to 2 HP per Mana the wand costs (Mithril 170, about a full heal at Lv 40), and a tap 1/5 of
+  that. Your 50 stays as the minimum cap. Each player gets at most one charged heal's worth per second (your 1,000 still applies).
+  **[yes; 1 HP per Mana if 170 feels too strong]**
+- **S6. Other staffs and wands.** The other staffs (Bone, Bronze, Doomed, Frost, Wizard, Crystal ...), the Rotten / Tribal / Root /
+  Stoneskin wands and the spellbooks keep today's costs and the 25 orb. Should they get a ladder rung by their SkyyGear level later?
+  **[later]**
+- **S7. Refill time.** With the bigger pools a full refill takes much longer (Sorcery 40: 86 s, 172 s in combat). Should Mana regen grow
+  with max Mana later? **[later]**
+
+### 15.8 Proof list (designer pass, 2026-10-03)
+
+Every item below was checked in this pass, read only:
+- **Staff chain:**
+  - Assets.zip `Server/Item/Interactions/Weapons/Staff/Attacks/{Staff_Primary, Staff_Cast_Summon_Charged, Staff_Cast_Cost,
+    Staff_Cast_Launch, Staff_Cast_Effect, Staff_Cast_Fail}.json` and the roots `RootInteractions/Weapons/Staff/Attacks/*`.
+  - The 26 files under `Server/Item/Items/Weapon/Staff/`: Interactions, InteractionVars, Quality, ItemLevel, Recipe.
+  - `Spear_Swing_{Left,Right}{,_Damage,_Effect}.json`: 0.557 s, Physical 5.
+  - `Server/Item/Animations/Staff.json` (CastSummonCharging 60, CastSummonCharged 30, CastSummon 90 frames).
+  - `Server/Entity/Stats/{Stamina, StaminaRegenDelay, Mana, Health}.json`.
+  - `Server/Languages/en-US/server.lang`: staff names, no ladder-staff descriptions.
+- **Who names what:** a byte grep of every `Server/**.json` for `"Staff_Primary"`, `"Staff_Cast_*"` and `"Skeleton_Mage_Corruption_Orb"`.
+  This found the 23 items + `Ice_Staff_Primary_Wrapper`, and no NPC.
+- **SkyySkills 0.4.14:**
+  - The jar listing: 32 items, among them the 8 ladder staffs, and 8 interactions.
+  - The jar's `Staff_Cast_Summon_Charged` (StatsCondition, Mana 10), `Staff_Cast_Cost` (-5) and `Weapon_Staff_Copper` (vars 10 / -10).
+  - Script lines S14:96-106, 2184-2185, 2369, 2606-2611, 2717, 2732, 2784, 2800-2816, 2896, 3521, 7208, 7296, 12704-12716, 12903, 13746.
+- **SkyyGear 0.2.1:** the jar listing (8 recipes, no item files); G:859, 1927, 1966-2021, 5145, 6674, 6783, 7205.
+- **SkyyClasses 0.1.10:** C:241, 254, 310-320, 2294-2390 (`ShotRec` / `ShotTrack`, `@LPC@` at 2361), 2560-2575, 3251-3270, 3290-3383,
+  3405-3445. HytaleServer.jar: `ProjectileComponent` has `getProjectileAssetName`.
+- **SkyyAccessories 0.5.3:** A3:3748, 3784, 3791.
+- **The clash scan:** every jar of the 25 SET pins and 255 installed mods with a manifest. Plus `config.json` of the test world: 27
+  enabled = 25 SET + 2 pack mods.
+- **Live settings:** `Skyy_SkyyClasses/config.properties` (maxPerHit 50, maxPerSecond 1000, selfPercent 100) and its
+  `config-changes.log`. `Skyy_SkyySkills/xp.properties`: Mage / Priest base 30, overall 0.2, alchemy 0.2, no combat Mana line.
+- **The numbers** (staff table, pools, shares, needed per-level values, heal caps) come from one Python run of the formulas above. Nothing
+  in it was rounded by hand.

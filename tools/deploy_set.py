@@ -17,8 +17,8 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.13"), ("SkyySacks", "0.7.12"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.5"), ("SkyyParty", "0.1.6"),
-    ("SkyyBank", "0.1.6"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.3"), ("SkyyGear", "0.2.1"), ("SkyySkills", "0.4.14"),
-    ("SkyyAccessories", "0.5.3"), ("SkyyClasses", "0.1.10"), ("SkyyMenu", "0.3.6"), ("SkyyEssentials", "0.1.7"), ("SkyyProfiles", "0.1.5"),
+    ("SkyyBank", "0.1.6"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.3"), ("SkyyGear", "0.2.1"), ("SkyySkills", "0.4.15"),
+    ("SkyyAccessories", "0.5.3"), ("SkyyClasses", "0.1.11"), ("SkyyMenu", "0.3.6"), ("SkyyEssentials", "0.1.7"), ("SkyyProfiles", "0.1.5"),
     ("SkyyCooking", "0.1.4"), ("SkyyTrees", "0.3"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -46,6 +46,9 @@ SET = [
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
     ("SkyyMobs", "0.1.2"), ("SkyyWorldGen", "0.1"),
+    # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
+    # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
+    ("SkyyArmory", "0.1"),
 ]
 # round 6 (2026-09-25): SkyyClasses 0.1.6 + SkyySkills 0.4.4 + SkyyProfiles 0.1.2 deploy TOGETHER (Berserker/Fury, Priest/Divinity, class kits;
 # Profiles 0.1.1 only draws 6 class cards). Never go back to SkyySkills 0.4.3 once Fury/Divinity XP exists (0.4.3 drops those keys).
@@ -87,6 +90,9 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees"]
 # SkyyTrees 0.3 (2026-10-03): ROLLBACK FLOOR - never roll SkyyTrees below 0.3 once it saved a player file (0.2.5 drops every Alchemy /
 # Smithing / class node level on its next save and leaves the skyytree_mana modifier unmanaged; Tokens / Dust are computed, nothing else is
 # lost). Respec Alchemy + Smithing (+ class) first if a rollback is unavoidable.
+# SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 (2026-10-03): deploy and roll back TOGETHER. Before SkyySkills goes below 0.4.15:
+# switch Base Mana off and let players log in once. To roll SkyyArmory back: take it out of SET, add it to RETIRED and put SkyySkills back
+# to 0.4.14 in the same deploy (vanilla staff files would charge 50 Mana behind a 10-Mana check otherwise). SkyyClasses back to 0.1.10 is safe.
 RETIRED = ["SkyyRolls"]
 
 
@@ -145,6 +151,12 @@ def main():
     if clash:
         print("STOP: retired mod(s) still in SET: %s" % ", ".join(clash))
         return 1
+    _p = dict(SET)
+    _v = lambda s: tuple(int(x) for x in s.split("."))
+    if (_v(_p.get("SkyySkills", "0")) >= (0, 4, 15)) != ("SkyyArmory" in _p):
+        print("STOP: SkyySkills 0.4.15+ and SkyyArmory deploy together (the staff handover) - pin both or neither"); return 1
+    if "SkyyArmory" in _p and _v(_p.get("SkyyClasses", "0")) < (0, 1, 11):
+        print("STOP: SkyyArmory needs SkyyClasses 0.1.11+ (the wand heal caps) in the same deploy"); return 1
     missing = []
     plan = []
     for mod, ver in SET:

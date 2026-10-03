@@ -1291,3 +1291,13 @@ Gear (damage and armor are still vanilla in this stage):
 5. Light Leather: same price in Combat and Smithing ("listed in the Combat and Smithing tabs").
 6. Buy 1 / 64, Sell 1 / 64 / all, a custom amount: all work. Sell inventory now sells every listed kind - check the confirm count first.
 7. Server Setup -> Bazaar -> Processed goods premium: allowed 0-22%.
+## SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 - metal wands, staff ladder, Mana pools, heal caps (DEPLOYED 2026-10-03, backup deploy-20261003-0946)
+1. Logs: "[SkyyArmory] 0.1 ready" (pack check ok), "[SkyySkills] 0.4.15 ready", "[SkyyClasses] 0.1.11 ready".
+2. Weapon Bench -> Bow tab: Copper / Iron / Thorium / Cobalt / Adamantite / Mithril / Onyxium wands (wood handle + metal head, tier-coloured
+   crystals). Crafted at your Divinity level inside the metal's range (Copper 10-18 ...).
+3. Wood Wand + any metal wand: TAP fires a small blue fast orb (1 Mana on Wood, 2 Copper, 3 Iron ...); HOLD fires the charged orb (5 / 10 / 15
+   ...). With too little Mana a tap does nothing. Screenshot the blue orb + the wand textures (client side untested).
+4. Max Mana: a Priest gains +5 per Divinity level, a Mage +10 per Sorcery level (/skills or the stats panel).
+5. Mage staffs: tap = quick shot, hold = charged; costs 2x the wand of the same metal (Wood staff 10 / 2).
+6. Priest heals: a charged metal-wand hit on an ally heals more the higher the metal (Copper up to 20, Mithril up to 170); taps heal 1/5.
+7. Metal wands hit very hard against today's mobs - tell me if it feels broken (damage % per wand is a live Server Setup row).
