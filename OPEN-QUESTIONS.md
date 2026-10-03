@@ -203,6 +203,14 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   own vanilla art AT BUILD TIME (shared kit tools/skyyart.py, nothing vanilla committed). Art proof running: two styles (full metal / wood
   handle + metal head) on a preview sheet for Skyy to pick before the build. Default home: a new content mod SkyyArmory (our own weapons
   and armor; later the Crude armor and Lv 50+ gear) so it does not wait behind the SkyyGear queue. [art proof -> Skyy picks -> build]
+- LOCKED 2026-10-02 (Skyy): mod name "SkyyArmory is a good name, go with it". WANDS: tap = a cheaper FAST SHOT (blue, smaller projectile,
+  3x faster, 1/5 the Mana and 1/5 the damage); click-and-hold = the CHARGED shot. Mana cost scales per metal and damage grows "slightly
+  more": Wood (stick) 5 / quick 1 = 1x; Copper 10 / 2 (~2.25x); Iron 15 / 3 = 3.5x (Skyy's numbers); "the next 3 will be bigger jumps"
+  (Thorium, Cobalt, Adamantite). Proposed defaults (rule: damage = 1.25 x cost multiple - 0.25; checked against the Priest's real max Mana
+  in the spec): Thorium 25 / 5 (6x), Cobalt 40 / 8 (9.75x), Adamantite 60 / 12 (14.75x), Mithril + Onyxium 85 / 17 (21x). The wand's level
+  still raises damage like all gear; the metal sets the Mana cost and its matching multiplier. Asked whether to merge SkyyArmory into
+  SkyyGear: recommended separate (content mod ships without waiting behind the SkyyGear queue; SkyyGear's levels / rarity / reforge apply
+  to the wands through the metal bands anyway). [spec running: research/SkyyArmory-Spec.md; art proof running; build after Skyy picks a style]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
