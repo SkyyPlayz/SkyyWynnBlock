@@ -58,23 +58,22 @@ OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" (rounds 1-9) is the source of truth
 **2026-10-02 status:** DEPLOYED today, NOT tested by Skyy yet (TEST-CHECKLIST: the five newest sections): phase 1 (deploy-20261002-1300)
 SkyySacks 0.7.11, SkyyCollections 0.2.5, SkyyEssentials 0.1.7, SkyyUiProbe 0.3, SkyyHud 0.3.11; the big round (deploy-20261002-1303)
 SkyySkills 0.4.12 + SkyyGear 0.2 stage 1 (Gear ROLLBACK FLOOR in deploy_set.py); SkyyMobs 0.1 NEW (deploy-20261002-1643); SkyySacks 0.7.12
-bags in bench + inventory crafting (deploy-20261002-1707); SkyyMenu 0.3.5 Mods list (deploy-20261002-1812). RUNNING (2026-10-02 evening; resume any with Workflow({scriptPath, resumeFromRunId})): SkyyUiProbe 0.3.1 secgrid fix (wf_7c7020a4-0ff),
-SkyyGear 0.2.1 stages 2-3 damage + armor by level (wf_f0004b09-dd1), combat widget SkyySkills 0.4.13 + SkyyHud 0.3.12 (wf_f99a61a7-ad4),
-SkyyMobs 0.1.1 new difficulty ladder + short labels (wf_ec5ef19b-ea7), trees + 0.7 PLAN (wf_c941cbd4-a5b -> research/Skill-Trees-2-Spec.md +
-research/PreRelease-Compat-Audit-1002.md), SkyyWorldGen stage 0 proofs + 0.1 Zone 1 test island (wf_505b1d4b-329, Skyy said go),
-Night Vision accessory research -> SkyyAccessories 0.5.3 if feasible (wf_4726d526-aa2).
-QUEUED after SkyySkills 0.4.13 lands: the next SkyySkills = roll-landing Acrobatics XP + early XP boost x3 -> x1.5 for Mining, Foraging
-and Farming + Mana keeps regenerating while charging an attack (OPEN-QUESTIONS Q&A). QUEUED after SkyyGear 0.2.1 lands: SkyyGear 0.2.2 TOOL LEVELS (gate by Mining / Foraging / Farming,
-crafted at your level, speed + Fortune by level, reforgeable tools) from research/Tool-Levels-Spec.md (spec being written now,
-wf_c0c52e96-7aa). THEN SkyyGear 0.2.3 LOOT round (spec first, when a workflow slot frees): drop boost (4% extra per leveled
-kill, ~1 in 3 chests) + Wynncraft-style mystery unidentified items (level + rarity shown, type hidden until identified) + the
-Smithing-tree identify-rarity hook. QUEUED after the Night Vision round:
-ACCESSORY TABLE (all accessories + Accessory Bag + every Magic Bag move to their own bench; bench accessory for /craft; Omni covers it)
-= SkyyAccessories next + SkyySacks 0.7.13, which also makes /craft respect vanilla's Memories level (OPEN-QUESTIONS Q&A).
-NEXT (needs Skyy): their test results; /mobs platetest (which colour markup works); /skyprobe win + secgrid -> SkyyVault
-0.1.6 one-click arrow; then SkyyGear 0.2 stages 2-3 (damage + armor by level) once stage 1 + SkyyMobs feel right; SkyyMobs stage 2
-(rewards: XP gap rule, drop bonus, gear rarity); the open questions added today in OPEN-QUESTIONS (bag stacking cap, idle-stack refill,
-Priest material wands, in-combat Mana for non-casters, class coin rate).
+bags in bench + inventory crafting (deploy-20261002-1707); SkyyMenu 0.3.5 Mods list (deploy-20261002-1812). READY, NOT DEPLOYED (game open): SkyyMobs 0.1.1 difficulty ladder (pinned; deploy at the next game close).
+RUNNING (2026-10-02 late evening; resume any with Workflow({scriptPath, resumeFromRunId})): SkyyGear 0.2.1 stages 2-3 damage + armor by
+level (wf_f0004b09-dd1); SkyySkills 0.4.13 FIX round (world-switch combat stamp, CMB prune, + Mana regenerates while charging) then deploy
+with SkyyHud 0.3.12 (wf_3dbcfe12-fe4); SkyyMobs 0.1.2 level health floor 50 HP (wf_1f9a2b82-87b); trees + 0.7 PLAN (wf_c941cbd4-a5b ->
+research/Skill-Trees-2-Spec.md + research/PreRelease-Compat-Audit-1002.md); SkyyWorldGen stage 0 proofs + 0.1 Zone 1 test island
+(wf_505b1d4b-329); Night Vision -> SkyyAccessories 0.5.3 (wf_4726d526-aa2, research said feasible, building); SPECS: tool levels
+(wf_c0c52e96-7aa -> research/Tool-Levels-Spec.md), loot round (wf_cefcd0b5-cd1 -> research/Loot-Unid-Spec.md), SkyyArmory metal wands
+(wf_0f61c6f1-4fe -> research/SkyyArmory-Spec.md) + the wand ART PROOF agent (tools/skyyart.py + preview sheet for Skyy to pick style A/B).
+QUEUED: next SkyySkills (0.4.14) = kill XP level bonus +5%/level + gap rule (max +250%, min 10%) + roll-landing Acrobatics XP + early XP
+boost x3 -> x1.5 for Mining / Foraging / Farming. SkyyGear 0.2.2 TOOL LEVELS after 0.2.1; SkyyGear 0.2.3 LOOT round after 0.2.2 (drop boost
+4% per leveled kill + ~1 in 3 chests, Wynncraft-style mystery unidentified items, Smithing-tree identify-rarity hook). SkyyArmory 0.1 (NEW
+mod: Copper -> Mithril/Onyxium wands, tap = blue quick shot, hold = charged shot, Mana + damage per metal) after Skyy picks the art style.
+ACCESSORY TABLE after the Night Vision round = SkyyAccessories next + SkyySacks 0.7.13 (+ /craft respects vanilla's Memories level).
+SkyyTrees 0.3 after the trees spec (Smithing tree incl. identify-rarity node; Mining Dust default 5 XP per Dust).
+NEXT (needs Skyy): test results; the art style pick; the trees/0.7 questions when that plan lands; open questions in OPEN-QUESTIONS (bag
+stacking cap, idle-stack refill, in-combat Mana for non-casters, class coin rate).
 
 1. **Skyy tests the 2026-10-01 deploys**; fix what they report first (auto-deploy each fixed round with the game closed).
 2. **THE BIG ROUND (phase 2, after the quick fixes), all decided by Skyy 2026-10-01 / 2026-10-02:**
