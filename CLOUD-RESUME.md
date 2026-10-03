@@ -17,8 +17,6 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Open tasks (top = next)
 
-- [ ] **The Tab economy design** - the endgame coin sink from `research/Isles-of-the-Void-Lore.md` (20 million coins per in-game day + interest,
-      payable, "Paid in Full" ending, prestige). Work out the numbers vs expected income, title/cosmetic rewards, exploit checks. Output: `research/cloud/Tab-Economy.md`.
 - [ ] **Dragon hatching quest line** from `research/Dragon-Pets-Idea.md`: egg -> specialist -> element choice -> items -> mini dungeon -> hatch;
       9 elements (5 + secret Blood / Void / Light / Crystal), growth and flying unlock. Output: `research/cloud/Dragon-Quest-Spec.md`.
 - [ ] **Class ability drafts** - research Wynncraft class ability trees on the web and draft SkyWynn abilities for Archer, Warrior, Mage, Berserker,
@@ -34,3 +32,4 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 ## Done (delete after logging - see the rules above)
 
 - [x] Zone 2-5 story chains - 2026-10-03 - `research/cloud/Story-Script-Zones-2-5.md`
+- [x] The Tab economy design - 2026-10-03 - `research/cloud/Tab-Economy.md`
