@@ -15,3 +15,4 @@ section 6 when it reviews the results.
 - 2026-10-03: Zone 2-5 story chains -> research/cloud/Story-Script-Zones-2-5.md (Registrar Dune / Archivist Frostwick / Dr. Voidwright / the Dragon; honours the 2026-10-02 locks: Zone 2 stable quest, Zone 5 Lv 60-75 dragon 75, one dragon per profile; 6 local checks)
 - 2026-10-03: Tab economy design -> research/cloud/Tab-Economy.md (rate defined per online hour; payability model; interest + accrual caps; milestone ladder, prestige, exploit table; day length and endgame income UNVERIFIED)
 - 2026-10-03: Dragon hatching quest line -> research/cloud/Dragon-Quest-Spec.md (8 quests, 5 elements + 4 secret triggers, growth/flight, upgrade stones, mate quest outline; flight engine UNVERIFIED)
+- 2026-10-03: Class ability drafts -> research/cloud/Class-Abilities-Draft.md (5 classes x 4 spells + modifiers + archetypes on the 0.7 rune system; Wynn wiki pages blocked, names from search snippets; 7 local checks, mana-scale question)

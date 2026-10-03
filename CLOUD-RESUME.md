@@ -17,8 +17,6 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Open tasks (top = next)
 
-- [ ] **Class ability drafts** - research Wynncraft class ability trees on the web and draft SkyWynn abilities for Archer, Warrior, Mage, Berserker,
-      Priest (names, cost, effect; Hytale 0.7 runes as the base - `research/Hytale-Runes-Research.md`). Output: `research/cloud/Class-Abilities-Draft.md`.
 - [ ] **NPC shops spec (SkyyEconomy 0.2)** - read `SkyyEconomy-Plan.md`; research SkyBlock NPC shop/sell prices; propose shop lists, buy/sell price
       rules per zone town and anti-inflation guards. Output: `research/cloud/NPC-Shops-Spec.md`.
 - [ ] **Starter shard chain map** - paper layout for the starting shard + shards 2-3 (sizes, trees, cave, bridges, spawn points, mob camp, portal
@@ -32,3 +30,4 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 - [x] Zone 2-5 story chains - 2026-10-03 - `research/cloud/Story-Script-Zones-2-5.md`
 - [x] The Tab economy design - 2026-10-03 - `research/cloud/Tab-Economy.md`
 - [x] Dragon hatching quest line - 2026-10-03 - `research/cloud/Dragon-Quest-Spec.md`
+- [x] Class ability drafts - 2026-10-03 - `research/cloud/Class-Abilities-Draft.md`
