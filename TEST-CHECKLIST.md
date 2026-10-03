@@ -1301,3 +1301,10 @@ Gear (damage and armor are still vanilla in this stage):
 5. Mage staffs: tap = quick shot, hold = charged; costs 2x the wand of the same metal (Wood staff 10 / 2).
 6. Priest heals: a charged metal-wand hit on an ally heals more the higher the metal (Copper up to 20, Mithril up to 170); taps heal 1/5.
 7. Metal wands hit very hard against today's mobs - tell me if it feels broken (damage % per wand is a live Server Setup row).
+## SkyyTrees 0.3.1 - waiting class nodes skipped (DEPLOYED 2026-10-03, backup deploy-20261003-1226)
+1. Log "[SkyyTrees] 0.3.1 ready ... class trees OFF".
+2. Admin, Warrior / Archer / Berserker profile: /tree probe -> Respec twice (free in the probe), Unlock ROOT; Might I shows "Coming" ("Waits for
+   SkyyGear - skipped until then"); Vitality I shows "Unlock 1 AP" - unlock it, the bars through Might I turn gold; Next > on a Warrior: Battle
+   Monk III "Unlock 2 AP". Answers end "(probe - not saved)".
+3. Optional: Server Setup -> Trees -> Class trees ON, /tree class on a Warrior, unlock ROOT + Vitality I, relog - picks stay. Then OFF again
+   (or leave ON if the page looks right).

@@ -430,6 +430,14 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   mod (e.g. Strength before SkyyGear's gear:extras) does NOT block the nodes after it, so Archer / Warrior / Berserker can progress now;
   (2) physical classes keep one 5% Mana Regen node until 0.7; (3) template-tree tier skip while every node of a tier waits = yes (as built);
   (4) a deleted "class minimum level" row = NO requirement. [SkyyTrees 0.3.1 lean round; class trees switch ON once Skyy has seen /tree probe]
+- ANSWERED 2026-10-03 (Skyy, SkyyArmory round questions): staff tap stays the quick shot; keep today's strong wand / staff damage until the
+  mob curve round; heal floor 'Most HP per hit' -> 10 so heals climb every metal (Skyy sets it: Server Setup -> Classes); STAFF DAMAGE: "mage is
+  a magic dps class. they should have a little higher damage to mana cost ratio. priest trades damage for healing. (compared to classes like
+  warrior and archer, mage trades defense for high damage, kina a glass cannon class. good mobility and range, but really low defense and
+  health, and really high damage." -> staves get ~20-25% more damage per Mana than wands (live 'Damage by staff (%)' rows ~120-125%, new
+  default in the next SkyyArmory build); class identity for SkyyClasses: Mage = glass cannon (high damage, range + mobility, low health +
+  defence), Priest = healer (less damage). Defaults kept: Onyxium staff = Onyxium wand recipe, Mage +10 Mana / Sorcery, 2 HP heal per Mana,
+  other staffs / wands / spellbooks and Mana regen growth later.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
