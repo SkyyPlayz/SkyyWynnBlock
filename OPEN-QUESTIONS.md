@@ -426,6 +426,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   MINIMAP WIDGET in SkyyHud as a full round: reads the engine's own map stream (UpdateWorldMap / markers - never BetterMap's AGPL code),
   sends each map piece once as a small cached picture, no world-thread map work; defaults ROUND, TOP-RIGHT, ~160 px, north-up (the client
   cannot rotate HUD pictures); mob dots OFF by default (throttled when a player turns them on). [queued after the current rounds]
+- ANSWERED 2026-10-03 (Skyy, SkyyTrees 0.3 questions): (1) "Let waiting nodes be skipped" - a class-tree node still waiting for its reader
+  mod (e.g. Strength before SkyyGear's gear:extras) does NOT block the nodes after it, so Archer / Warrior / Berserker can progress now;
+  (2) physical classes keep one 5% Mana Regen node until 0.7; (3) template-tree tier skip while every node of a tier waits = yes (as built);
+  (4) a deleted "class minimum level" row = NO requirement. [SkyyTrees 0.3.1 lean round; class trees switch ON once Skyy has seen /tree probe]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
