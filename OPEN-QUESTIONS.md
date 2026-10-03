@@ -125,6 +125,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   unidentified gear (better rolls / a chance at a higher rarity on identify); (4) CRAFTING gear, REFORGING and IDENTIFYING all pay Smithing XP
   (check what pays today - reforge pays per rarity; add crafting gear + identifying where missing). Today's craft odds (Server Setup -> Gear ->
   Drops): Normal 60 / Unique 25 / Rare 10 / Legendary 4 / Fabled 1 / Mythic 0 (crafting max Fabled); a reforge never changes the rarity.
+- LOCKED 2026-10-02 (Skyy): a COMBAT INDICATOR HUD widget - red while in combat, with a small countdown and a shrinking bar showing how close
+  you are to being out of combat (same rule as the in-combat Mana regen: 6 s after taking damage); out of combat hidden by default (widget
+  setting). [building: SkyySkills 0.4.13 bridge skill:fn:combat + SkyyHud 0.3.12 widget]
+- VERIFIED 2026-10-02 (Skyy's screenshot): /skills mana works ("out of combat - vanilla refills 5/s"; "In combat: 50% of (vanilla + boosts)
+  = 2.5/s"); reforges pay Smithing XP (+5 / +10).
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
