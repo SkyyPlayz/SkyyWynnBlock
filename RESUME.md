@@ -67,8 +67,8 @@ defaults; wf_3f431935-177) and the Accessory Table spec (wf_7abd78e6-aa2 -> rese
 (wf_505b1d4b-329); SPECS: tool levels
 (wf_c0c52e96-7aa -> research/Tool-Levels-Spec.md), loot round (wf_cefcd0b5-cd1 -> research/Loot-Unid-Spec.md), SkyyArmory metal wands
 (wf_0f61c6f1-4fe -> research/SkyyArmory-Spec.md) + the wand ART PROOF agent (tools/skyyart.py + preview sheet for Skyy to pick style A/B).
-QUEUED: next SkyySkills (0.4.14) = kill XP level bonus +5%/level + gap rule (max +250%, min 10%) + roll-landing Acrobatics XP + early XP
-boost x3 -> x1.5 for Mining / Foraging / Farming. SkyyGear 0.2.2 TOOL LEVELS after 0.2.1; SkyyGear 0.2.3 LOOT round after 0.2.2 (drop boost
+RUNNING: SkyySkills 0.4.14 full round (wf_9f8b4cc7-2d3) = kill XP level bonus +5%/level + gap rule (max +250%, min 10%) + roll-landing
+Acrobatics XP + early XP boost x3 -> x1.5 for Mining / Foraging / Farming + sickle-swing Farming XP. QUEUED: SkyyGear 0.2.2 TOOL LEVELS after 0.2.1; SkyyGear 0.2.3 LOOT round after 0.2.2 (drop boost
 4% per leveled kill + ~1 in 3 chests, Wynncraft-style mystery unidentified items, Smithing-tree identify-rarity hook). SkyyArmory 0.1 (NEW
 mod: Copper -> Mithril/Onyxium wands, tap = blue quick shot, hold = charged shot, Mana + damage per metal) after Skyy picks the art style.
 ACCESSORY TABLE after the Night Vision round = SkyyAccessories next + SkyySacks 0.7.13 (+ /craft respects vanilla's Memories level).
