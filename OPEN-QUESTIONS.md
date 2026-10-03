@@ -237,6 +237,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-10-02 (Skyy): FOOD GRADE STRENGTH "+32% per Grade": heal / regen / boosts x(1 + 0.32 x Grade) - Grade 1 x1.32 (today's Grade 2),
   Grade 2 x1.64, Grade 5 x2.6, Grade 10 x4.2, tree-only Grades 11 / 12 x4.52 / x4.84. DURATION UNCHANGED ("id leave the duration buff, its
   good"): x2^(Grade/5) as today. [SkyyCooking 0.1.4 with the Cooking XP default 0.5 and the tooltip wording]
+- LOCKED 2026-10-02 (Skyy, recorded late): "lets give alchemy and smithing a tree too. they look left out. (and add a class skill tree,
+  wynncraft. add the slots for the ability's but hold off on building them till 0.7 update with the runes." -> research/Skill-Trees-2-Spec.md
+  (Alchemy + Smithing trees on the 12-slot template; one Wynncraft-style 37-node class tree template with 3 archetype lanes per class, Ability
+  Points from the class skill, 4 rune ability slots + capstones greyed "coming" until 0.7) and research/PreRelease-Compat-Audit-1002.md (24
+  mods vs 0.7.0-pre.4: BROKEN 3 Islands / Menu / Profiles, RISKY 9, OK 12; a 16-item release-day fix list). The Smithing tree carries Skyy's
+  wishes: craft-rarity nodes, reforge "roll twice keep the higher", identify + higher-rarity chance, Smithing XP for crafting and identifying.
+  [questions for Skyy being asked; build = SkyyTrees 0.3 full round with the next SkyySkills / SkyyGear / SkyySacks readers]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
