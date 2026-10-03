@@ -347,6 +347,20 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   to the pickaxe glow white under the wearer-only DynamicLight). Research running -> research/NightVision-Glare-Research.md (why, values to
   try, a no-point-light alternative such as per-player PostFX) -> SkyyAccessories 0.5.4.
 - VERIFIED 2026-10-03 (Skyy): "mana keeps regening when charging now" (SkyySkills 0.4.13).
+- VERIFIED 2026-10-03 (Skyy): "i can open the menu before my screen loads from the teleport! good work! buttons working, bank, sacks,
+  bizzar, collection. all seems good." (SkyyMenu 0.3.6) + the combat widget works + "xp seems better im on hard" (SkyySkills 0.4.14).
+- LOCKED 2026-10-03 (Skyy): HUD - "make the game clock box smaller so it can go closer in a corner. (try to keep the boxes pretty small,
+  whatever the gap above and below for the border, keep the same gap on the sides." + "in the settings add the in combat and out of combat
+  colors." -> every widget box: the side padding equals the top / bottom padding, boxes as small as their text; the Game Clock box can reach
+  the corners; Combat widget Settings get an In-combat colour and an Out-of-combat colour. [SkyyHud 0.3.13 lean round]
+- LOCKED 2026-10-03 (Skyy, after a Lv 33 Void Larva died in 3 hits on Hard and barely hurt them): MOB TOUGHNESS = "Wynncraft-style curve" -
+  mob health and damage grow exponentially with level (about 10x health / 5x damage by Lv 33), gear damage / armor get a steeper curve to
+  match, and a mob ~20 levels above you should feel BRUTAL (Skyy's pick for that question: you deal ~20%, take ~2.6x). Kill XP must not explode
+  with the bigger health (move it to a level-based base). [big rebalance - spec first: SkyyMobs + SkyyGear + SkyySkills kill XP]
+- RESEARCH DONE 2026-10-03: research/Crit-Indicator-Research.md - the numbers have no colour / size / crit flag of their own (one shared
+  CombatText asset; bold is fixed by the client). Possible: a red + bigger crit number by switching that mob's number style for the attacker for
+  ~0.5 s (needs a probe build), plus zero-risk extras: a "CRIT!" popup and the vanilla Impact_Critical sparks. Plan: popup + sparks + the red
+  number behind a switch (off until Skyy sees the probe) in the next SkyyGear build.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
