@@ -37,6 +37,9 @@ Server Setup), research/Settings-Spec.md 1.2-1.3 (player switches), tools/PROFIL
 - NEVER pass --deploy. Never run tools/deploy_set.py except with --check.
 - Never write inside C:\Users\SkyLo\AppData. Scratch only under tools/dev/scratch/<your-task>/ and delete it afterwards; point TEMP/TMP
   there for Java runs and use -XX:-UsePerfData.
+- Delete ONLY your own scratch folder (the exact tools/dev/scratch/<your-task>/ you created). NEVER delete, empty or "clean" other
+  folders under tools/dev/scratch/ - other agents run in parallel and their live work sits there (2026-10-02: a cleanup wiped
+  several running agents' folders).
 - Build with plain python (must end 'assembled ...jar'), then python tools/ci/lint.py (0 fails).
 - Do not git commit. Edit ONLY the files your task names. Never edit HANDOFF.md, TEST-CHECKLIST.md, DESIGN-STATUS.md, OPEN-QUESTIONS.md,
   tools/deploy_set.py, SkyyGear-Plan.md or SkyyGear-Stat-Catalog.md (Skyy's design docs are read-only).
