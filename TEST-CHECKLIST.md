@@ -1159,3 +1159,8 @@ Gear (damage and armor are still vanilla in this stage):
 8. Close a bench mid timed craft: the started unit returns to your inventory, totals right. Hotbar refill keeps working with a bench open.
 9. Server log: "craft link: benches and inventory crafting use the bags you carry (outbound filter true, pre-craft filter true, pocket window
    true)", "craft link: attached ..." lines, no "craft link failed", no "would go below zero".
+## SkyyMenu 0.3.5 - Mods list for today's versions (DEPLOYED 2026-10-02)
+1. Server log "[SkyyMenu] 0.3.5 ready". SkyWynn Menu -> Mods: 24 mods, SkyyMobs after SkyyGear, SkyyUiProbe last; versions read Hud 0.3.11,
+   Sacks 0.7.12, Gear 0.2, Mobs 0.1, Skills 0.4.12 ...
+2. Hover SkyyMobs: zone bands + "/mobs (or /mobs info)"; as admin also inspect / set / platetest / reload. A non-admin sees no admin lines.
+3. Main menu tiles: Pocket Dimension mentions stack refill, Crafting says vanilla benches use your bags.
