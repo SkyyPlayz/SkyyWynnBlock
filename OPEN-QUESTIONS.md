@@ -232,6 +232,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   preview. [SkyyArmory 0.1 build after its spec; art kit tools/skyyart.py committed]
 - LOCKED 2026-10-02 (Skyy, minutes later): "actually do B" -> EVERY metal wand uses style B (wood handle + metal head and bands), Copper
   through Onyxium; tier-coloured leaf crystals, gold bands on Mithril, as in the preview's bottom row.
+- CHECKED 2026-10-02 (Skyy: "im lvl 15 cooking not 20 and i still got grade 2"): correct - Grade = floor(Cooking level / 10) + 1 from the
+  Master Chef tree node (Skyy has it); the dish tooltip line "Grade 2 food - cooked at Cooking 20 or higher" ignores tree bonuses -> reword.
+- LOCKED 2026-10-02 (Skyy): FOOD GRADE STRENGTH "+32% per Grade": heal / regen / boosts x(1 + 0.32 x Grade) - Grade 1 x1.32 (today's Grade 2),
+  Grade 2 x1.64, Grade 5 x2.6, Grade 10 x4.2, tree-only Grades 11 / 12 x4.52 / x4.84. DURATION UNCHANGED ("id leave the duration buff, its
+  good"): x2^(Grade/5) as today. [SkyyCooking 0.1.4 with the Cooking XP default 0.5 and the tooltip wording]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
