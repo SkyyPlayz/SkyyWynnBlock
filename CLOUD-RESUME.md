@@ -17,8 +17,6 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Open tasks (top = next)
 
-- [ ] **NPC shops spec (SkyyEconomy 0.2)** - read `SkyyEconomy-Plan.md`; research SkyBlock NPC shop/sell prices; propose shop lists, buy/sell price
-      rules per zone town and anti-inflation guards. Output: `research/cloud/NPC-Shops-Spec.md`.
 - [ ] **Starter shard chain map** - paper layout for the starting shard + shards 2-3 (sizes, trees, cave, bridges, spawn points, mob camp, portal
       frame) matching `Story-Script-Draft.md` quests 1-12. Output: `research/cloud/Starter-Shard-Layout.md`.
 - [ ] **Elites and world events spec** (Mob-Levels-Plan section 11 stage 3): elite rules, event ideas per zone, rewards. Output: `research/cloud/Elites-Events-Spec.md`.
@@ -31,3 +29,4 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 - [x] The Tab economy design - 2026-10-03 - `research/cloud/Tab-Economy.md`
 - [x] Dragon hatching quest line - 2026-10-03 - `research/cloud/Dragon-Quest-Spec.md`
 - [x] Class ability drafts - 2026-10-03 - `research/cloud/Class-Abilities-Draft.md`
+- [x] NPC shops spec - 2026-10-03 - `research/cloud/NPC-Shops-Spec.md`

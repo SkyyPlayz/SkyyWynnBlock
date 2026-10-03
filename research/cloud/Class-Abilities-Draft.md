@@ -126,9 +126,9 @@ Heal XP: every heal the Priest does goes through the live bridge `skill:fn:healx
 |---|---|---|
 | Spell unlock (rune) | 4 | Arrow Storm, Escape, Arrow Bomb, Arrow Shield |
 | Spell modifier (rune) | 8 | the 8 listed per class |
-| Archetype passives | 9 (3 per branch) | Boltslinger nodes |
-| Capstone | 4 (one per archetype x ...) -> use 3 + 1 shared | a final upgrade per branch + one shared |
-| Total | about 25 | matches Decisions 6.3 default |
+| Archetype passives | 9 (3 per branch) | the Boltslinger nodes |
+| Capstones | 4 (one per archetype, plus one shared) | a final upgrade per branch |
+| Total | 4 + 8 + 9 + 4 = **25** | matches Decisions 6.3 default |
 
 Costs: Class Level points; early nodes 1 point, capstones 3 points. A player cannot afford every branch - the build choice is the Wynn feeling.
 Respec: free to swap slotted spells; node refunds cost coins (a coin sink; setting).
