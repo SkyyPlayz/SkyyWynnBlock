@@ -29,7 +29,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - R2 LOCKED (Skyy): bags keep collecting from the MAIN inventory only. Skyy's worry - pull 8 stacks of stone out for building, only 1 fits the
   hotbar: today the withdrawn item is EXEMPT from auto-collect for 10 minutes (SkyySacks SackPool.exempt 600000 ms; "Deposit all" clears it);
   after that, leftovers still in the main inventory go back into the bag. See round 3 for the timer.
-- R2 LOCKED (Skyy): try the one-click vault arrow row on our own vanilla-look page next to the vault slots (one probe first; the in-chest arrows
+- R2 LOCKED (Skyy) [TRIED 2026-10-02: NOT POSSIBLE with the current client - probes P1 + P2 showed no chest slots on our own page; the in-chest arrows stay; re-check on 0.7]: try the one-click vault arrow row on our own vanilla-look page next to the vault slots (one probe first; the in-chest arrows
   stay as a fallback). [next SkyyVault]
 - R2 LOCKED (Skyy): Magic Bags are blocked in /trade too (same rule as the AH). [next SkyyEssentials]
 - R3 LOCKED (Skyy) [LIVE 2026-10-02 SkyySacks 0.7.11 + Collections 0.2.5]: withdrawn bag items - auto-collect LEAVES ALONE THE AMOUNT YOU TOOK (take out 512 stone -> up to 512 stone stay in your
