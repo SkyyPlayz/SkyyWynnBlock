@@ -252,6 +252,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Dust; (7) Archer crossbow nodes stay as locked (Bolt Rack I + II at Archery 15, Holstered Reload at 50). Main-session calls: Smithing
   readers + gear:extras ride the SkyyGear 0.2.3 loot build; one SkyyTrees 0.3 round, class tab off until its probe page is seen; nodes whose
   reader mod is not live yet are not buyable (shown "coming with <mod>").
+- SPEC DONE 2026-10-02: research/Tool-Levels-Spec.md (861 lines, critic + editor checked; build = SkyyGear 0.2.2 full round, a copy of the
+  final 0.2.1 script). Open for Skyy (defaults the build ships with, change any): (1) stat names "Mining Speed" / "Chopping Speed" (Skyy's
+  pick) working as fewer hits per block - the swing-speed version would share the trees' +40% swing cap [Speed names, fewer hits];
+  (2) a too-low hoe also cannot till / a too-low sickle cannot harvest (hidden-marker trick, sickles still hit mobs) [built, switch OFF until
+  Skyy tests it]; (3) sickle swing harvests pay Farming XP + double drops in the next SkyySkills (Hytale sends no event, the item pickup is
+  used) [yes]; (4) tools without the new level mark (old ones, chest loot, AH buys) work at min(their level, your skill) - a known loophole
+  [keep]; (5) an Iron hatchet one-chops logs with Heavy Hatchet at Lv 20 [OK, same level = same speed].
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
