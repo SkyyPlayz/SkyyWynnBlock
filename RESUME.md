@@ -69,6 +69,11 @@ QUEUED: SkyyGear 0.2.2 TOOL LEVELS after 0.2.1; SkyyGear 0.2.3 LOOT round after 
 mod: Copper -> Mithril/Onyxium wands, tap = blue quick shot, hold = charged shot, Mana + damage per metal) after Skyy picks the art style.
 ACCESSORY TABLE after the Night Vision round = SkyyAccessories next + SkyySacks 0.7.13 (+ /craft respects vanilla's Memories level).
 SkyyTrees 0.3 after the trees spec (Smithing tree incl. identify-rarity node; Mining Dust default 5 XP per Dust).
+RUNNING (2026-10-03 morning, Skyy's pacing = 1-2 big rounds at a time): SkyyTrees 0.3 ultracode build RESUMED (wf_3f431935-177) and the
+SkyyArmory 0.1 ultracode round (wf_6443292c-425: staff ladder + Mana design, then SkyyArmory 0.1 + SkyySkills 0.4.15 Priest/Mage Mana rows +
+SkyyClasses 0.1.11 heal caps, 3 reviewers, fixer, cross-check). After them: revise Tool-Levels-Spec (Power names, hoe/sickle lock ON, every new
+tool levelled, hatchet power lower + earlier swing speed) -> SkyyGear 0.2.2; revise Loot-Unid-Spec (level range, rarity loot boxes, tiered craft
+XP) -> SkyyGear 0.2.3; finish the paused Accessory Table spec -> build; SkyyMobs 0.1.3 HP-bar fix; SkyyCollections sickle crops.
 PAUSED 2026-10-03 ~06:35 UTC to save the 5-hour window (74%, weekly 53%) - resume with Workflow({scriptPath, resumeFromRunId}); finished
 agents replay from cache, the interrupted one re-runs (its half-written work files get rewritten):
 - SkyyTrees 0.3 ultracode build: part 1 done, part 2 (class tree) was running. scriptPath C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK-SkyWynn-PROJECT\077f1485-8367-478d-8718-87cb80a267c4\workflows\scripts\skywynn-trees03-ultracode-wf_3f431935-177.js, run wf_3f431935-177.
