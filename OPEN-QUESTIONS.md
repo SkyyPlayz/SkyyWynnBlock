@@ -332,6 +332,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   zone island in ONE world, far enough apart to need the portal / warp, close enough to see the next zone across the void. [part of the
   WorldGen stage 2 research; open design point for the spec: block bridging / flying across the void so the guardian + portal unlock still
   matters]
+- LOCKED 2026-10-03 (Skyy): WAND TOOLTIP - "since we are removing the hit and replacing it with a quick shot. make sure the flavor text reads
+  something like Charge shot 5 mana at lvl 6 35-45 damage. quick shot 1 mana at lvl 6 7-9 damage (instead of showing the mele damage like it
+  does now." -> wand (and staff) tooltips show "Charged shot - N Mana - damage at Lv X" and "Quick shot - M Mana - damage at Lv X" instead of
+  the melee line (real numbers: today's Lv 6 orb is 43, so about 43 / 9; a range only where the damage really varies). SkyyArmory publishes
+  each wand's shots (bridge), SkyyGear's tooltip reads them. [follow-up SkyyGear build right after the SkyyArmory round - the Armory round was
+  already past the point where it could take new requirements without throwing away work]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
