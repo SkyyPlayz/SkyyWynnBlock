@@ -80,6 +80,10 @@ remove the grey "Damage Data box is vanilla" note and HIDE the vanilla box where
 ALSO RUNNING: SkyyBazaar 0.1.3 (bag -> Bazaar rule, wf_bf4ba7e9-266), SkyyHud 0.3.13 (equal padding, combat colours, wf_e42acf10-8e3), Night Vision
 glare research agent. The follow-up SkyyGear build also gets the crit indicator (CRIT! popup + Impact_Critical sparks; red number behind a
 switch - research/Crit-Indicator-Research.md).
+QUEUE AFTER THE CURRENT ROUNDS (weekly 69% on 2026-10-03 midday, resets Mon 15:00 UTC - keep ~10% for test fixes): (1) SkyyAccessories
+0.5.4 LANTERN line replacing Night Vision (glow like a torch, range up with a hidden helper light above the wearer, brightness capped;
+each tier crafted from the previous - research/NightVision-Glare-Research.md), (2) the SkyyGear tooltip / crit follow-up, (3) SKYY'S
+POCKET DIMENSION spec + build (public bags mod; release files to Desktop\Hytale mods WORK\Your new mods), then the items below.
 NEXT BIG ROUNDS after Armory / Trees: FIRST (Skyy: "on the next run") the /ISLAND STARTER SHARDS upgrade - SkyyIslands: island 3x with a
 small hill, more trees, a cave, a bridge to a 2nd island with mobs, a 3rd island with the portal (boss later); spec first from
 research/cloud/Starter-Shard-Layout.md. Then (a) MOB CURVE REBALANCE spec - Wynncraft-style exponential mob health /

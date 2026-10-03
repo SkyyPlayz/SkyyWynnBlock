@@ -391,6 +391,14 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   caves). Try now, no build: Server Setup -> Accessories -> Night Vision -> Light radius 12 (torch-like) or 15 (brightest vanilla); avoid 255 /
   30+. Glare-free big area = a light on an invisible helper entity ~6 blocks above the wearer (later). 0.5.4 plan: one Brightness row (level
   1-30, default 12).
+- LOCKED 2026-10-03 (Skyy): "forget night vision, just do the lantern accessory we talked about. that just makes you glow like the backpack
+  torch mod. (brighter the higher rarity." -> retire the Night Vision accessory (owned copies stay harmless items) and add the LANTERN line:
+  you glow like carrying a torch (everyone sees it); higher rarities REACH FARTHER with brightness capped at torch level - the extra range
+  from a hidden helper light above the wearer, so no particle glare (Skyy picked "Range up, brightness capped").
+- LOCKED 2026-10-03 (Skyy, GENERAL RULE): "all accessories and bags cost the last rarity/size to craft the next one. so id need a uncommon
+  lantern to craft a rare lantern." -> every accessory tier and bag size is crafted FROM the previous tier / size (check that every existing
+  line already follows it; fix any that do not).
+- ANSWERED 2026-10-03 (Skyy): Pocket Dimension spec + build AFTER the current rounds (usage).
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
