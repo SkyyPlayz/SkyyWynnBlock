@@ -19,7 +19,7 @@ SET = [
     ("SkyyHud", "0.3.13"), ("SkyySacks", "0.7.12"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.5"), ("SkyyParty", "0.1.6"),
     ("SkyyBank", "0.1.6"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.2"), ("SkyyGear", "0.2.1"), ("SkyySkills", "0.4.14"),
     ("SkyyAccessories", "0.5.3"), ("SkyyClasses", "0.1.10"), ("SkyyMenu", "0.3.6"), ("SkyyEssentials", "0.1.7"), ("SkyyProfiles", "0.1.5"),
-    ("SkyyCooking", "0.1.4"), ("SkyyTrees", "0.2.5"),
+    ("SkyyCooking", "0.1.4"), ("SkyyTrees", "0.3"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -84,6 +84,9 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees"]
 # Saves/HUD mod/universe/worlds/skywynn_z1 FIRST (the saved island names the WorldStructure SkyWynn_Z1_Small from the jar; without the
 # jar the generator falls back to empty chunks and saves void into the island), then take it out of SET and add "SkyyWorldGen" to
 # RETIRED. Settings stay in mods/Skyy_SkyyWorldGen.
+# SkyyTrees 0.3 (2026-10-03): ROLLBACK FLOOR - never roll SkyyTrees below 0.3 once it saved a player file (0.2.5 drops every Alchemy /
+# Smithing / class node level on its next save and leaves the skyytree_mana modifier unmanaged; Tokens / Dust are computed, nothing else is
+# lost). Respec Alchemy + Smithing (+ class) first if a rollback is unavoidable.
 RETIRED = ["SkyyRolls"]
 
 

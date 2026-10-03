@@ -201,7 +201,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-10-02 (Skyy): "id increase the amount of mining dust you get too, by probably double" -> Mining tree Dust rate 10 -> 5 XP
   per Dust (double). Live today in game: SkyWynn Menu > Server Setup > Trees > "Dust rate per tree" > add Mining = 5 (no restart; Dust
   is computed from total Mining XP and never stored, so everyone's Mining Dust doubles at once, spent Dust included). New pack default
-  in SkyyTrees 0.3 (a file with no dust.xpPerDust.Mining line gets Mining=5; a hand-set value is kept). Note: the coming x3 early
+  in SkyyTrees 0.3 (a file with no dust.xpPerDust.Mining line gets Mining=5; a hand-set value is kept). [LIVE: SkyyTrees 0.3, 2026-10-03] Note: the coming x3 early
   gathering XP boost also raises Dust (Dust comes from XP).
 - LOCKED 2026-10-02 (Skyy): PRIEST WEAPON PATH = "custom metal wands. can you create the art?" -> our own Copper, Iron, Thorium, Cobalt,
   Adamantite, Mithril (+ Onyxium) wands, one per metal like the Mage staffs, same cast as the Wood Wand, levels from the metal bands

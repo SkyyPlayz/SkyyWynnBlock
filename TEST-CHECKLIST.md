@@ -1275,3 +1275,11 @@ Gear (damage and armor are still vanilla in this stage):
 4. Widgets / Settings -> Combat Indicator: pick In combat = Gold, Out of combat = Aqua (two preview rows), set Out of combat to Show, get hit:
    gold "In combat 6s" then aqua "Out of combat". Reset style -> red / grey again.
 5. Existing layouts stay where they were (only the boxes got narrower).
+## SkyyTrees 0.3 - Alchemy + Smithing trees, class trees (OFF) (DEPLOYED 2026-10-03, backup deploy-20261003-0848)
+1. Log "[SkyyTrees] 0.3 ready"; trees.properties got one update (317 lines appended, Server Setup -> Changes shows "dust.perTree[Mining] 10 -> 5").
+2. /tree: two tab rows; /tree alchemy and /tree smithing open the new trees. Most of their nodes say "Coming with SkyySkills / SkyyGear /
+   SkyySacks" (they light up when those mods' reader builds ship); Deep Reserves (Alchemy) and Forge Hardened (Smithing) can be bought now.
+3. Deep Reserves at level 3: "Now: +3 max Mana" / "Level 4: +4 max Mana".
+4. Mining tree Dust: 1 per 5 Mining XP now (your Mining Dust doubled at once).
+5. Admin /tree probe: shows the class-tree page pieces (two tab rows, rune strip, grid) - screenshot it so we can check the client draws them.
+   Class trees stay OFF in Server Setup until you decide question 1.
