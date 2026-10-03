@@ -189,8 +189,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   after 0.2.2 tools; spec first]
 - LOCKED 2026-10-02 (Skyy, from testing): "mana doesn't continue regening while charging an attack, id change that" -> vanilla Mana.json
   pauses regen while Charging (and 6 s after damage); SkyySkills 0.4.12 treats charging as "no regen" too. Change: Mana keeps regenerating
-  while you charge (full rate out of combat, the half in-combat rate in combat). [next SkyySkills after 0.4.13, with the roll-landing XP and
-  the x3 -> x1.5 gathering XP boost]
+  while you charge (full rate out of combat, the half in-combat rate in combat). [LIVE: SkyySkills 0.4.13, deployed 2026-10-03]
 - LOCKED 2026-10-02 (Skyy): "id increase the amount of mining dust you get too, by probably double" -> Mining tree Dust rate 10 -> 5 XP
   per Dust (double). Live today in game: SkyWynn Menu > Server Setup > Trees > "Dust rate per tree" > add Mining = 5 (no restart; Dust
   is computed from total Mining XP and never stored, so everyone's Mining Dust doubles at once, spent Dust included). New pack default

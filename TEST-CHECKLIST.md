@@ -1208,3 +1208,13 @@ Gear (damage and armor are still vanilla in this stage):
    x1.32 longer." - restores 24.6% health, +24.6% max health, duration 7:55. A Grade 2 Vegetable Skewer: heals 16.4% (was 13.2%).
 5. Graded food you already carry switches to the new numbers on its own.
 6. Restart: no second update line; Server Setup -> Changes has the Undo line.
+## SkyySkills 0.4.13 + SkyyHud 0.3.12 - combat widget, world-switch fix, Mana while charging (DEPLOYED 2026-10-03, backup deploy-20261003-0009)
+1. Logs: "[SkyySkills] 0.4.13 ready ... + skill:fn:combat" and "[SkyyHud] 0.3.12 ready".
+2. Get hit by a mob: within about 1 s a red "In combat 6s" box with a bar appears top centre and counts 6s ... 1s, then hides. IF YOU GET
+   DISCONNECTED or see "Failed to parse or resolve document" at the first hit, tell me - rollback is SkyyHud 0.3.11.
+3. Get hit again mid-countdown: back to 6s. Hitting a mob without taking damage does not start it.
+4. /skyyhud: the editor shows the Combat Indicator; drag / resize it; Widgets -> Combat Indicator -> Out of combat: Show = a grey line.
+5. Take a hit in the overworld and go to your island within ~2 s: the box keeps counting and ends ~6 s after the hit (not red for hours).
+6. Out of combat with Mana below max, hold a charged wand / staff / bow attack: Mana keeps rising (5/s). After a hit while charging: 2.5/s.
+   Admin /skills mana while holding says "charging - Mana still regenerates".
+7. Profile switch right after a hit is refused for about 10 s (SkyyProfiles' combat lock), then allowed.
