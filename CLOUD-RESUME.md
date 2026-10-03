@@ -31,10 +31,17 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 - [ ] **Prestige system spec** from `research/cloud/Tab-Economy.md` section 5: what resets, what is kept, perks, caps, the ticket number joke, per-profile storage. Output: `research/cloud/Prestige-Spec.md`.
 - [ ] **Zone specials / "mayor lite"** - rotating global buffs announced by the Board (Elites-Events-Spec 2.5): research SkyBlock mayor perks, propose a small rotating-buff system with
       rows, schedule and anti-stacking. Output: `research/cloud/Zone-Specials-Spec.md`.
-- [ ] **Skill-tree pass 2 notes** - OPEN-QUESTIONS 2026-10-02 locks a Smithing tree (craft rarity chance etc.): read `research/Skill-Trees-Spec.md` and the lock, list what a
-      `Skill-Trees-2-Spec` must contain (new nodes for Smithing and Cooking, hook ideas, numbers). Output: `research/cloud/Skill-Trees-2-Notes.md`.
+- [ ] **SkyyArmory roadmap** - Skyy named a new content mod SkyyArmory (2026-10-02): our own weapons and armor, starting with metal
+      Priest wands made by recolouring the vanilla Wood Wand (same model, new texture, like the vanilla Rotten Wand; OPEN-QUESTIONS Q&A).
+      Propose the next items per class (Mage / Archer / Warrior / Berserker / Priest) and our own Lv 50-100 tiers: names, tier ladder,
+      which vanilla model each could reuse, stat identity per class (Wynncraft-inspired, web research). Output: `research/cloud/SkyyArmory-Roadmap.md`.
+- [ ] **Tool progression research** - tools are getting levels gated by Mining / Foraging / Farming (OPEN-QUESTIONS 2026-10-02 tool lock).
+      Research Wynncraft gathering tool tiers / levels / gathering speed and Hypixel Mining Speed / Fortune numbers on the web; compare
+      with our bands (Wood 1-13, Copper 10-18, Iron 15-23 ...) and the x3 -> x1.5 early XP boost; flag pacing risks. Output:
+      `research/cloud/Tool-Progression-Research.md`.
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
+<!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
 
 ## Done (delete after logging - see the rules above)
 
