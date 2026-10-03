@@ -219,7 +219,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   your class skill gives +5% per extra level, at most +250%; more than 5 levels BELOW gives -5% per level, at least 10%; the party share uses
   each member's own skill. (Lv 33 skeleton at Divinity 11: 108 -> ~520 XP.) [next SkyySkills after 0.4.13]
 - LOCKED 2026-10-02 (Skyy): LEVEL HEALTH FLOOR - no leveled mob has less health than a 50-HP mob of its level (a Lv 32 cobra ~100 -> ~143
-  HP at 6%, more on the new Hard); stronger mobs unchanged; kill XP follows the health. [SkyyMobs 0.1.2]
+  HP at 6%, more on the new Hard); stronger mobs unchanged; kill XP follows the health. [LIVE: SkyyMobs 0.1.2, deployed 2026-10-02, + live re-apply on difficulty change]
 - LOCKED 2026-10-02 (Skyy, from testing: "cooking levels really fast" - Vegetable Skewer batches at the Chef's Stove paid ~3,760 XP each,
   Cooking 12 -> 15 in minutes): "id probably half the speed cooking levels at / your cooking xp gain" -> Cooking XP x0.5. Live now via
   SkyWynn Menu > Server Setup > Cooking > Cooking XP > XP multiplier = 0.5; new pack default 0.5 in the next SkyyCooking build (a file still on

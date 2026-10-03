@@ -53,6 +53,9 @@ def arg(name, default=None):
 SCRATCH = os.path.abspath(arg("--dir", os.path.join(TOOLS, "dev", "scratch", "mobs01", "harness")))
 JAR = os.path.abspath(arg("--jar", os.path.join(HERE, "SkyyMobs-%s.jar" % VERSION)))
 KEEP = "--keep" in sys.argv
+# cleanup fix (2026-10-02, the 0.1.1 harness's fix + an own-folder marker): nothing is deleted unless main() validated --dir
+SCRATCH_OK = [False]
+MARKER = ".skyymobs01-harness"    # written into the scratch folder this harness made; only a folder holding it is ever deleted
 FAILS, OKS = [], [0]
 COUNT = collections.Counter()
 HY = os.path.join(os.environ.get("APPDATA", r"C:\Users\SkyLo\AppData\Roaming"), "Hytale", "install")
@@ -1512,14 +1515,40 @@ public static float maxOf(java.util.HashMap mods, float base) {
         print("L. link check: release %d refs; no pre-release jar at %s" % (n_rel, PRE_JAR))
 
 
+def guard_scratch():
+    """None when --dir may be used (and deleted afterwards): a folder INSIDE a task folder of tools/dev/scratch
+    (tools/dev/scratch/<task>/<sub>) - never the scratch root or a top-level task folder (other agents' live work sits there) - that is
+    missing, empty or this harness's own (its MARKER file). Else the reason it is refused (nothing is deleted then)."""
+    root_ = os.path.normcase(os.path.realpath(os.path.join(TOOLS, "dev", "scratch")))
+    s_ = os.path.normcase(os.path.realpath(SCRATCH))
+    try:
+        rel = os.path.relpath(s_, root_)
+    except ValueError:
+        return "not on the drive of tools/dev/scratch"
+    parts = [p for p in rel.replace("\\", "/").split("/") if p]
+    if os.path.isabs(rel) or not parts or parts[0] in (".", ".."):
+        return "outside tools/dev/scratch (or the scratch root itself)"
+    if len(parts) < 2:
+        return "a top-level folder of tools/dev/scratch - use tools/dev/scratch/<task>/<sub>"
+    if os.path.lexists(SCRATCH):
+        if os.path.islink(SCRATCH) or not os.path.isdir(SCRATCH):
+            return "exists and is not a plain folder"
+        if os.listdir(SCRATCH) and not os.path.isfile(os.path.join(SCRATCH, MARKER)):
+            return "exists, is not empty and is not this harness's folder (no %s)" % MARKER
+    return None
+
+
 def main():
     if not os.path.isfile(JAR):
         print("no jar at", JAR, "- build it first")
         return 1
-    if not SCRATCH.replace("\\", "/").lower().startswith(os.path.join(TOOLS, "dev", "scratch").replace("\\", "/").lower()):
-        print("--dir must be inside tools/dev/scratch/ (it is deleted afterwards):", SCRATCH)
+    why = guard_scratch()
+    if why:
+        print("--dir refused (%s): %s - nothing was deleted" % (why, SCRATCH))
         return 1
+    SCRATCH_OK[0] = True
     os.makedirs(SCRATCH, exist_ok=True)
+    open(os.path.join(SCRATCH, MARKER), "w").write("SkyyMobs %s harness scratch - deleted at the end of the run (unless --keep)\n" % VERSION)
     tmp = os.path.join(SCRATCH, "tmp")
     os.makedirs(tmp, exist_ok=True)
     os.environ["TEMP"] = tmp
@@ -1538,7 +1567,9 @@ def main():
 
 if __name__ == "__main__":
     code_ = main()
-    if not KEEP:
+    # cleanup fix (2026-10-02): only the folder main() validated AND marked is deleted - this harness used to delete --dir even after
+    # refusing it, and its old guard let the scratch ROOT through, so a --dir naming tools/dev/scratch wiped every builder's folder
+    if not KEEP and SCRATCH_OK[0] and os.path.isfile(os.path.join(SCRATCH, MARKER)):
         shutil.rmtree(SCRATCH, ignore_errors=True)
     sys.stdout.flush()
     os._exit(code_)

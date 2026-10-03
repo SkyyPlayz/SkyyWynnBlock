@@ -1190,3 +1190,12 @@ Gear (damage and armor are still vanilla in this stage):
 6. Server Setup -> Accessories -> Night Vision: switch off -> light gone within a second; on again. Brightness: try 255,15,15,15 and
    15,15,15,15 first (the client probably uses 0-15 per colour); tell me which looks best. If you see a flicker every 10 s, set the re-send row to 0.
 7. Switch to a profile without it: light off; switch back: on.
+## SkyyMobs 0.1.2 - level health floor + live re-apply (DEPLOYED 2026-10-02, backup deploy-20261002-2355)
+1. Log "[SkyyMobs] 0.1.2 ready ... health floor 50 HP".
+2. /mobs inspect a Lv ~32 Snake_Cobra: "floor 50 HP applied (base 36 HP)", about 143 HP on Normal / 174 on Hard (was ~103 / ~125).
+3. /mobs inspect a Skeleton_Scout: "base 61 HP (at or above the 50 HP floor)", same HP as before.
+4. Hurt a mob to about half, then switch Difficulty Normal <-> Hard: its max health changes at once and it stays at about half (the log says
+   "re-applied the health of N loaded levelled mobs"). WATCH THE HEALTH BAR: if it jumps (to ~36% or ~69%) the client missed the new max -
+   walk away and back to fix it, and tell me (fix queued as 0.1.3).
+5. Server Setup -> Mobs -> Strength -> Health floor 0: weak mobs drop to the old numbers at once; set it back to 50.
+6. Kill a floored mob: kill XP is higher (it follows max health). Weak Lv 1 mobs (rats 21 HP) now have 50 HP too.
