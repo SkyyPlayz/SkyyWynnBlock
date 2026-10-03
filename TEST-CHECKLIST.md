@@ -1227,3 +1227,14 @@ Gear (damage and armor are still vanilla in this stage):
 4. Click DEPOSIT twice fast with 500 typed: each real click moves 500 once; purse + bank always add up to the same total.
 5. KNOWN until the SkyyMenu fix: other pages (Vault, Menu, Sacks) can still ignore clicks after the menu's Island / Hub tile - /hub or
    /island clears it.
+## SkyyGear 0.2.1 - damage + armor by level (DEPLOYED 2026-10-03, backup deploy-20261003-0107)
+1. Hold your crafted Lv 6 Wood Wand: "Lv 6 - Requires Divinity 6", "Damage at Lv 6: 10-14" and a grey line "(the Damage Data box below is
+   vanilla - before levels)"; the vanilla box still says 6.0-8.0 (it cannot be changed per item).
+2. Hit a mob: about 10 and 14 (the kit wand still 6 and 8). A charged orb: about 43 (kit wand 25). The Priest heal still tops out at 10 HP.
+3. Wear a Copper chestplate made at Lv 6: tooltip "Health at Lv 6: +16", "Resistance at Lv 6: 7.9%"; max Health +16. Take it off: back
+   within a second. Put it on again: +16, not more.
+4. Let a mob hit you with and without a higher-level chestplate: noticeably less damage with it.
+5. Admin /gear read on the wand: "base stats: Lv 6 ... x1.733 per hit (10-14)".
+6. Server Setup -> Gear -> Level stats: base.curve "1:1.0,6:3.0" -> the wand shows 18-24 and hits follow at once; put it back. part.base off =
+   vanilla numbers at once.
+7. Watch for odd weapons (axes / longswords / clubs above Lv 25 feel weak; some special shortbows very strong) and tell me which.
