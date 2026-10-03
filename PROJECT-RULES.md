@@ -102,10 +102,12 @@ Respect the rollback floors written in `tools/deploy_set.py` (for example: never
 - **Cloud sessions** (no access to Skyy's PC or the game files) work from `CLOUD-RESUME.md` - a rolling to-do - and write only that file
   and `research/cloud/` straight to `main`; anything else goes through a pull request. The local session reviews `research/cloud/LOG.md`
   and folds finished work into HANDOFF.md. Subagents that need no local files may run in the cloud (Skyy 2026-10-02).
-- **Multi-agent workflows ("ultracode") are OFF by default** (Skyy 2026-10-02). Skyy gave standing permission to run a full multi-agent
-  round whenever the main session judges a build needs it (section 4 "Round size"); small work stays lean or agent-free.
+- **Use ultracode on BIG jobs** (Skyy 2026-10-02, late: "remember to use ultracode on big jobs"): new systems or mods, several mods at
+  once, coins / economy, saved data, item loss / dupes, permissions -> a full multi-agent workflow (parallel research / spec, adversarial
+  multi-lens critics, build, review, fix, cross-check). Small work stays lean or agent-free (section 4 "Round size").
 - **Models per agent:** builders Opus (the javassist / engine work is hard), reviews / cross-checks / web research Sonnet, tiny lookups
-  Haiku. If the main session ever runs on Fable, set builders to Opus explicitly so they don't inherit it.
-- **Usage pacing (Max 5x plan):** at most 3-4 workflows at once; sonnet for reviews and cross-checks, Opus for builds and hard specs;
+  Haiku. Fable may be used where it helps (Skyy 2026-10-02: "you can use fable if it helps") - e.g. spec synthesis or the hardest
+  engine builds; name the model explicitly per agent.
+- **Usage pacing:** big Max plan since 2026-10-02 (about 6+ workflows at once is fine; on Max 5x it was 3-4); sonnet for reviews and cross-checks, Opus for builds and hard specs;
   check usage between rounds; near the weekly limit finish and deploy what is running, write the next round into RESUME.md and wait for
   the reset unless Skyy says otherwise.
