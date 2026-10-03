@@ -311,7 +311,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   section, and a new smithing section with everything the smithing sack holds (and for things like orevs smelted bars, make the smelted bars
   and tanned leather a good bit more expensive like +15%-25% so so it actually costs you to save time and buy processed materials" -> Combat
   tab = every Combat-sack item + light / medium / heavy hides and leathers; new Smithing tab = every Smithing-sack item; processed goods
-  +20% (row, 15-25%) over their raw inputs per the vanilla recipes; items can show in two tabs (one market). [SkyyBazaar 0.1.3 round running]
+  +20% (row, 0-22% - above 22.2% a buy-ore-smelt-sell loop pays) over their raw inputs per the vanilla recipes; items can show in two tabs (one market). [LIVE: SkyyBazaar 0.1.3, 2026-10-03]
 - LOCKED 2026-10-03 (Skyy, GENERAL RULE): "if it goes in the bag, it goes in a matching section in the bizzar." -> every item any Magic Bag
   holds is listed in the matching Bazaar tab (Mining / Foraging / Farming / Combat / Smithing); the Bazaar build derives the lists from SkyySacks'
   bag definitions and fails if a bag item has no product. [in the SkyyBazaar 0.1.3 round, relaunched with the rule]

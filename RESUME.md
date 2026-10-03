@@ -58,7 +58,7 @@ OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" (rounds 1-9) is the source of truth
 **2026-10-02 status:** DEPLOYED today, NOT tested by Skyy yet (TEST-CHECKLIST: the five newest sections): phase 1 (deploy-20261002-1300)
 SkyySacks 0.7.11, SkyyCollections 0.2.5, SkyyEssentials 0.1.7, SkyyUiProbe 0.3, SkyyHud 0.3.11; the big round (deploy-20261002-1303)
 SkyySkills 0.4.12 + SkyyGear 0.2 stage 1 (Gear ROLLBACK FLOOR in deploy_set.py); SkyyMobs 0.1 NEW (deploy-20261002-1643); SkyySacks 0.7.12
-bags in bench + inventory crafting (deploy-20261002-1707); SkyyMenu 0.3.5 Mods list (deploy-20261002-1812). DEPLOYED 2026-10-02: 22:40 SkyyMobs 0.1.1 difficulty ladder; 23:35 SkyyAccessories 0.5.3 Night Vision; 23:55 SkyyMobs 0.1.2 health floor + live re-apply; 2026-10-03 00:03 SkyyCooking 0.1.4 Grade strength + XP x0.5; 00:09 SkyySkills 0.4.13 + SkyyHud 0.3.12 combat widget + Mana while charging; 00:28 SkyyBank 0.1.6 stuck-page fix; 01:07 SkyyGear 0.2.1 damage + armor by level; 02:09 SkyyWorldGen 0.1 NEW Zone 1 test island (/zone 1, admin); 03:36 SkyySkills 0.4.14 kill XP by level + roll XP + gathering x3 + sickle XP; 05:21 SkyyMenu 0.3.6 stuck-page fix; 07:53 SkyyHud 0.3.13 small boxes + combat colours; 08:48 SkyyTrees 0.3 Alchemy + Smithing trees, class trees OFF (TEST-CHECKLIST newest sections).
+bags in bench + inventory crafting (deploy-20261002-1707); SkyyMenu 0.3.5 Mods list (deploy-20261002-1812). DEPLOYED 2026-10-02: 22:40 SkyyMobs 0.1.1 difficulty ladder; 23:35 SkyyAccessories 0.5.3 Night Vision; 23:55 SkyyMobs 0.1.2 health floor + live re-apply; 2026-10-03 00:03 SkyyCooking 0.1.4 Grade strength + XP x0.5; 00:09 SkyySkills 0.4.13 + SkyyHud 0.3.12 combat widget + Mana while charging; 00:28 SkyyBank 0.1.6 stuck-page fix; 01:07 SkyyGear 0.2.1 damage + armor by level; 02:09 SkyyWorldGen 0.1 NEW Zone 1 test island (/zone 1, admin); 03:36 SkyySkills 0.4.14 kill XP by level + roll XP + gathering x3 + sickle XP; 05:21 SkyyMenu 0.3.6 stuck-page fix; 07:53 SkyyHud 0.3.13 small boxes + combat colours; 08:48 SkyyTrees 0.3 Alchemy + Smithing trees, class trees OFF; 09:28 SkyyBazaar 0.1.3 every bag item + Smithing tab (TEST-CHECKLIST newest sections).
 RUNNING (2026-10-02 late evening; resume any with Workflow({scriptPath, resumeFromRunId})): 
 ULTRACODE (Skyy: "use ultracode on big jobs", Fable allowed): SkyyTrees 0.3 build (Alchemy + Smithing + class trees, coin respec, Dust
 defaults; wf_3f431935-177) and the Accessory Table spec (wf_7abd78e6-aa2 -> research/Accessory-Table-Spec.md); SPECS: tool levels
@@ -77,7 +77,7 @@ XP) -> SkyyGear 0.2.3; finish the paused Accessory Table spec -> build; SkyyMobs
 RIGHT AFTER THE ARMORY ROUND: a small SkyyGear tooltip build - wands / staffs show "Charged shot - N Mana - damage at Lv X" + "Quick shot - M Mana
 - damage" instead of the melee line (SkyyArmory bridge with each wand's shots; renumber the tool build to the next free SkyyGear version);
 remove the grey "Damage Data box is vanilla" note and HIDE the vanilla box where an item-type way exists (Skyy: hide it, no note).
-ALSO RUNNING: SkyyBazaar 0.1.3 (bag -> Bazaar rule, wf_bf4ba7e9-266), Night Vision
+ALSO RUNNING: Night Vision
 glare research agent. The follow-up SkyyGear build also gets the crit indicator (CRIT! popup + Impact_Critical sparks; red number behind a
 switch - research/Crit-Indicator-Research.md).
 QUEUE AFTER THE CURRENT ROUNDS (weekly 69% on 2026-10-03 midday, resets Mon 15:00 UTC - keep ~10% for test fixes): (1) SkyyAccessories

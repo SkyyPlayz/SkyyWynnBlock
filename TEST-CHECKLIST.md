@@ -1283,3 +1283,11 @@ Gear (damage and armor are still vanilla in this stage):
 4. Mining tree Dust: 1 per 5 Mining XP now (your Mining Dust doubled at once).
 5. Admin /tree probe: shows the class-tree page pieces (two tab rows, rune strip, grid) - screenshot it so we can check the client draws them.
    Class trees stay OFF in Server Setup until you decide question 1.
+## SkyyBazaar 0.1.3 - every bag item + Smithing tab + processed premium (DEPLOYED 2026-10-03, backup deploy-20261003-0928)
+1. Log: "0.1.3 ready ... products in 5 tabs ... premium 20%" and the one-time update line (products added, a .v012bak backup made).
+2. /bazaar: tabs Mining / Foraging / Farming / Combat / Smithing, a 13x4 icon grid with Prev / Next pages, Sell inventory, the purse.
+3. Smithing lists bars, charcoal, hides, leathers, scraps, bolts, strap, stud; Combat ends with light / medium / heavy hides and leathers.
+4. Copper Ingot detail: "costs 20% more than buying the Copper Ore and smelting it yourself" (ore 6 -> ingot 7 at buy).
+5. Light Leather: same price in Combat and Smithing ("listed in the Combat and Smithing tabs").
+6. Buy 1 / 64, Sell 1 / 64 / all, a custom amount: all work. Sell inventory now sells every listed kind - check the confirm count first.
+7. Server Setup -> Bazaar -> Processed goods premium: allowed 0-22%.
