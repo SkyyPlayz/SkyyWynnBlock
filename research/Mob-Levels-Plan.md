@@ -686,3 +686,5 @@ New read-only checks for this plan (release 0.6.8 and 0.7.0-pre.4, in memory, no
   - `BlockChunk.getEnvironment` bytecode (tools/dev/bcfull.py)
   - the `EnvironmentCommand` constant pool (`setenvironment`, `setenv`)
   - the command classes' constant pools (no vanilla `/mobs`)
+
+> 2026-10-03 note (main session): for loot levels, `mob:fn:levelAt(world, x, y, z)` (research/Loot-Unid-Spec.md) replaces the `mob:fn:band` call of section 8; zone bands are the 2026-10-01 ones (1-20 / 20-30 / 30-45 / 45-60).

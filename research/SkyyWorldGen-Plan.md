@@ -407,9 +407,9 @@ blocks; 0.7 only, VERIFIED in the pre-release jar).
 ### 5.4 Chest and drop gear levels (Gear-Levels-Wynn-Spec 5)
 
 - **Lookup 1 (new, for SkyyWorldGen worlds):** `wg:fn:ring(world, x, z)`: pure maths, any thread, no cache. A chest on the rim rolls Lv 1-2,
-  in the Zone 1 core 8-10. Do **not** route this through `mob:fn:band`: that call reads SkyyMobs' per-chunk cache and returns null for a
-  chunk where no mob has spawned yet (Mob-Levels-Plan 8), which is exactly the chest case. **Lookup 2:** `mob:fn:band(world, x, z)` for
-  other worlds (SkyyMobs stage 2). **Lookup 3:** `loot.level.world.skywynn_zN` (default rows 1-10 / 15-25 / 30-40 / 45-60) when neither mod
+  in the Zone 1 core 18-20 (new bands, LOCKED 2026-10-01). Do **not** route this through `mob:fn:band`: that call reads SkyyMobs' per-chunk cache and returns null for a
+  chunk where no mob has spawned yet (Mob-Levels-Plan 8), which is exactly the chest case. **Lookup 2:** `mob:fn:levelAt(world, x, y, z)` for
+  other worlds (replaces `mob:fn:band` for loot - research/Loot-Unid-Spec.md). **Lookup 3:** `loot.level.world.skywynn_zN` (default rows 1-20 / 20-30 / 30-45 / 45-60, the 2026-10-01 bands) when neither mod
   answers. **4:** the material band start. This adds one step to Gear-Levels-Wynn-Spec 5 (its chain is mob band, world row, band start).
 - Then the material clamp: a Wood sword from the Zone 3 rim stays 13; an Iron sword is never below 15.
 - Guardian drops: the guardian's level +/- `loot.mobSpread` (the gap levels 11-14, 26-29, 41-44), so the guardian is the bridge to
