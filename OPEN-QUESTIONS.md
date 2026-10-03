@@ -404,6 +404,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   cartographer works, and just make a Bettermaps+minimap mod that adds a minimap that piggybacks off of better maps. using the same map, system,
   just adding a minimap." (matches the roster's SkyyMap: one renderer for full map + minimap). Research running (read-only, ideas only, licences
   checked) -> research/Minimap-Research.md, then a plan for Skyy.
+- TESTED 2026-10-03 (Skyy, separate world): DAPPERMAP (third-party minimap) - looks better than Cartographer; settings menu with Display
+  (minimap on/off, zoom radius 160 blocks, size 240 px, interface scale, circle / square, rotation, update speed, texture resolution), Markers,
+  Info Panel, Position, Colours, Integrations (Hytale world-map markers; BetterMap markers + BetterMap cave mode when BetterMap is installed).
+  Skyy: "if we can id like to just add the minimap as another widget (i really like dapper maps settings menu (but we dont need the info
+  panel. next ill test with better maps" -> wanted: the minimap as a SkyyHud widget (placed with the other widgets in the HUD editor), a
+  DapperMap-like settings page, no info panel, sharing BetterMap's map instead of loading it twice. [waiting on Skyy's BetterMap test + the
+  minimap research (licences: can DapperMap ship in the pack / be integrated, or do we build our own widget from the ideas)]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
