@@ -1218,3 +1218,12 @@ Gear (damage and armor are still vanilla in this stage):
 6. Out of combat with Mana below max, hold a charged wand / staff / bow attack: Mana keeps rising (5/s). After a hit while charging: 2.5/s.
    Admin /skills mana while holding says "charging - Mana still regenerates".
 7. Profile switch right after a hit is refused for about 10 s (SkyyProfiles' combat lock), then allowed.
+## SkyyBank 0.1.6 - stuck-page fix (DEPLOYED 2026-10-03, backup deploy-20261003-0028)
+1. Open the SkyWynn Menu and click the Island tile; on the island type /bank. Within 1-2 s the page may redraw once with a blue line ("The
+   game was holding back this page's clicks... fixed") and the log gets one "[SkyyBank] the game was dropping ... clicks" WARNING.
+2. Click DEPOSIT ALL: a green "Deposited N coins" line and new numbers, no lasting "Loading...". (Clicked within the first second? you get
+   the blue line instead - click again.)
+3. WITHDRAW ALL, then 500 -> DEPOSIT, 2k -> WITHDRAW, REFRESH, Close: each answers.
+4. Click DEPOSIT twice fast with 500 typed: each real click moves 500 once; purse + bank always add up to the same total.
+5. KNOWN until the SkyyMenu fix: other pages (Vault, Menu, Sacks) can still ignore clicks after the menu's Island / Hub tile - /hub or
+   /island clears it.
