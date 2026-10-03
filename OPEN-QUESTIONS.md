@@ -187,6 +187,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   per weapon family and armor slot; they do not stack; vanilla gear drops become mystery items too; unidentified items already owned stay
   as they are and identify normally. [build: SkyyGear 0.2.3 LOOT round = this + the drop boost + the Smithing-tree identify-rarity hook,
   after 0.2.2 tools; spec first]
+- LOCKED 2026-10-02 (Skyy, from testing): "mana doesn't continue regening while charging an attack, id change that" -> vanilla Mana.json
+  pauses regen while Charging (and 6 s after damage); SkyySkills 0.4.12 treats charging as "no regen" too. Change: Mana keeps regenerating
+  while you charge (full rate out of combat, the half in-combat rate in combat). [next SkyySkills after 0.4.13, with the roll-landing XP and
+  the x3 -> x1.5 gathering XP boost]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

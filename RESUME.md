@@ -64,7 +64,7 @@ SkyyMobs 0.1.1 new difficulty ladder + short labels (wf_ec5ef19b-ea7), trees + 0
 research/PreRelease-Compat-Audit-1002.md), SkyyWorldGen stage 0 proofs + 0.1 Zone 1 test island (wf_505b1d4b-329, Skyy said go),
 Night Vision accessory research -> SkyyAccessories 0.5.3 if feasible (wf_4726d526-aa2).
 QUEUED after SkyySkills 0.4.13 lands: the next SkyySkills = roll-landing Acrobatics XP + early XP boost x3 -> x1.5 for Mining, Foraging
-and Farming (OPEN-QUESTIONS Q&A). QUEUED after SkyyGear 0.2.1 lands: SkyyGear 0.2.2 TOOL LEVELS (gate by Mining / Foraging / Farming,
+and Farming + Mana keeps regenerating while charging an attack (OPEN-QUESTIONS Q&A). QUEUED after SkyyGear 0.2.1 lands: SkyyGear 0.2.2 TOOL LEVELS (gate by Mining / Foraging / Farming,
 crafted at your level, speed + Fortune by level, reforgeable tools) from research/Tool-Levels-Spec.md (spec being written now,
 wf_c0c52e96-7aa). THEN SkyyGear 0.2.3 LOOT round (spec first, when a workflow slot frees): drop boost (4% extra per leveled
 kill, ~1 in 3 chests) + Wynncraft-style mystery unidentified items (level + rarity shown, type hidden until identified) + the
