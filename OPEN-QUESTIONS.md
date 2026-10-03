@@ -244,6 +244,14 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   mods vs 0.7.0-pre.4: BROKEN 3 Islands / Menu / Profiles, RISKY 9, OK 12; a 16-item release-day fix list). The Smithing tree carries Skyy's
   wishes: craft-rarity nodes, reforge "roll twice keep the higher", identify + higher-rarity chance, Smithing XP for crafting and identifying.
   [questions for Skyy being asked; build = SkyyTrees 0.3 full round with the next SkyySkills / SkyyGear / SkyySacks readers]
+- ANSWERED 2026-10-02 (Skyy, research/Skill-Trees-2-Spec.md questions): (1) Ability Points FROM THE CLASS SKILL - 1 at skill 1, +1 every 2
+  levels, max 50 (replaces the never-built separate Class Level); (2) 37 nodes / 64 AP now, grow at 0.7; (3) 4 ability slots x 2 modifier
+  slots + 1 capstone per lane, any 2 equipped (greyed "coming" until 0.7); (4) class respec COSTS COINS = class skill level x a per-level
+  amount (default 100 coins / level, editable); (5) Mana Regen nodes for EVERY class, but more / a higher max for Mage and Priest; (6)
+  Smithing XP x10 faster than the spec's rows (craft 500-16,000, identify 250-8,000; Smithing 20 about 530 crafts), Smithing Dust 5 XP per
+  Dust; (7) Archer crossbow nodes stay as locked (Bolt Rack I + II at Archery 15, Holstered Reload at 50). Main-session calls: Smithing
+  readers + gear:extras ride the SkyyGear 0.2.3 loot build; one SkyyTrees 0.3 round, class tab off until its probe page is seen; nodes whose
+  reader mod is not live yet are not buyable (shown "coming with <mod>").
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
