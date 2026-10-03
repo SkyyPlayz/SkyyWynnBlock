@@ -74,7 +74,7 @@ agents replay from cache, the interrupted one re-runs (its half-written work fil
 - SkyyTrees 0.3 ultracode build: part 1 done, part 2 (class tree) was running. scriptPath C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK-SkyWynn-PROJECT\077f1485-8367-478d-8718-87cb80a267c4\workflows\scripts\skywynn-trees03-ultracode-wf_3f431935-177.js, run wf_3f431935-177.
 - Accessory Table spec: research + Fable spec done, the 3 critics were running. scriptPath C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK\077f1485-8367-478d-8718-87cb80a267c4\workflows\scripts\skywynn-accessory-table-spec-wf_7abd78e6-aa2.js, run wf_7abd78e6-aa2.
 - SkyyMobs 0.1.3 HP-bar fix: builder was running. scriptPath C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK-SkyWynn-PROJECT\077f1485-8367-478d-8718-87cb80a267c4\workflows\scripts\skywynn-mobs013-hpbar-wf_edf71a00-cec.js, run wf_edf71a00-cec.
-NEXT FIX (high priority, not started - usage): SkyyMenu 0.3.6 - after the menu's Island / Hub tile, CloseTask's setPage(None) on the new world
+RUNNING (lean, wf_7d01eb67-cc7): SkyyMenu 0.3.6 - after the menu's Island / Hub tile, CloseTask's setPage(None) on the new world
 leaves the engine's page-ack counter stuck, so EVERY custom page ignores clicks until the next world change (Bank 0.1.6 heals itself; the
 rest do not). Fix: skip / Dismiss instead of setPage(None) after a world change + a generic guard that forgets a stale page at world join.
 CROSS-BUILD NOTES (2026-10-03): the loot round needs SkyyMobs mob:fn:levelAt (next SkyyMobs after the 0.1.3 HP-bar fix) and SkyyAuctions
