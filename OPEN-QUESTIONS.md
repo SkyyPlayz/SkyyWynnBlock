@@ -138,7 +138,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   [queued: next SkyySkills after 0.4.13 (the combat-widget bridge) lands]
 - LOCKED 2026-10-02 (Skyy): "boost the mining xp a little, kinda flatten the curve. at least through the early game." -> proposed defaults
   (editable rows): Mining XP x2 up to level 10, easing down to x1.25 by level 20 and staying x1.25 after (so early Mining levels come about
-  twice as fast, later ones a bit faster); other gathering skills unchanged for now. [queued with the roll-landing XP: next SkyySkills after 0.4.13]
+  twice as fast, later ones a bit faster); other gathering skills unchanged for now. [REPLACED 2026-10-02 by the tool-levels answer (4): x3 to Lv 10 -> x1.5 by Lv 20 for Mining, Foraging and Farming]
 - LOCKED 2026-10-02 (Skyy): WAIT FOR THE 0.7 RELEASE - no pre-release pack / test world. Groundwork now on the current release: class skill
   trees with passive nodes + EMPTY ability slots shaped for runes (research/Skill-Trees-2-Spec.md, being written), the 0.7 compatibility audit
   of all 24 mods (research/PreRelease-Compat-Audit-1002.md), rune research. On release day: fix the audit's list, then build the abilities
@@ -148,6 +148,33 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   per-player light the server can send. If one works: SkyyAccessories 0.5.3 adds a Night Vision accessory (its own line so it stacks with the
   boosters, admin-give like the other boosters for now, only on while it sits in the Accessory Bag, off at once when removed; Server Setup
   switch). If nothing works, it waits for 0.7.
+- LOCKED 2026-10-02 (Skyy): TOOL LEVELS like weapons - "tools like the pickaxe to have levels, linked to the users mining. (need a to be
+  mining lvl 13 to use a lvl 13 pickaxe. like weapons, crafted tools are made at your level." + "same for foraging and farming" + "they
+  need to be reformable [reforgeable] too". Gate skill: pickaxe + shovel = Mining, hatchet = Foraging, hoe + sickle = Farming. Crafted
+  tools come out at that skill level inside the material band (Copper tools keep 10-18, locked 10-01).
+  Answers (all picked 2026-10-02): (1) UNDER-LEVEL = the tool cannot break blocks; popup "Requires Mining 13 (you: 9)" (like weapons
+  doing 0 damage). (2) The tool's LEVEL raises its breaking speed AND a small Fortune (double-drop chance); the better material a little
+  more; hoes / sickles get Fortune only. (3) REFORGE pool: pickaxe / shovel = Mining Fortune, Mining Wisdom, Mining Speed; hatchet =
+  Foraging Fortune, Foraging Wisdom, Chopping Speed; hoe / sickle = Farming Fortune, Farming Wisdom; rarity like weapons, reforge keeps
+  rarity. (4) PACING ("Bigger boost for all 3", replaces the Mining-only x2 plan): Mining, Foraging AND Farming XP x3 up to Lv 10,
+  easing to x1.5 by Lv 20, x1.5 after (editable rows; next SkyySkills after 0.4.13, with the roll-landing Acrobatics XP).
+  R1 (gathering skills keep the Hypixel table "revisit when tools get levels") is answered by (4). [spec being written:
+  research/Tool-Levels-Spec.md; build = SkyyGear 0.2.2 after 0.2.1 lands]
+- LOCKED 2026-10-02 (Skyy): ACCESSORY TABLE - "instead of rolling it all into the normal crafting table, we should make our accessory's
+  their own crafting table. (and an accessory for /craft. + added to omni." Answer (picked): EVERYTHING moves to the new table -
+  every accessory (stat lines, bench accessories, the Omni), the Accessory Bag + its upgrades AND every Magic Bag (sack); the Workbench
+  "Accessories & Sacks" tab goes away. The table itself is crafted at the Workbench. A new bench accessory for it unlocks its recipes in
+  /craft (like the other bench accessories), and the Omni covers it (grant + recipe). Order inside the table as before: low levels first,
+  Legendaries and Omnis last. [build: SkyyAccessories next version (after the Night Vision round) + SkyySacks 0.7.13, one shared bench
+  definition so both mods stay standalone]
+- LOCKED 2026-10-02 (Skyy): "make sure your memory crafting limiters work on /craft. so you cant bypass vanilla progression with /craft."
+  Today /craft already checks recipe knowledge (KnowledgeRequired, SkyySacks 0.7.12 recipeAllowed) but NOT vanilla's Memories level
+  (RequiredMemoriesLevel on 38 vanilla recipes: chests, trophies, morph potions ...). SkyySacks 0.7.13 adds that check and re-checks bench
+  tiers, so /craft can never craft what the real bench would refuse.
+- LOCKED 2026-10-02 (Skyy): "boost the drop rates of unidentified weapons and armor." Today SkyyGear only TAGS vanilla's own gear drops
+  as unidentified (vanilla drop odds). Answer (picked): each kill of a leveled hostile mob gets an EXTRA 4% roll (1 in 25) for one
+  unidentified weapon or armor piece matching the mob's level; about 1 in 3 world chests gets an extra unidentified piece matching the
+  zone. Both editable in Server Setup. [build: SkyyGear 0.2.2 with the tool levels, after 0.2.1 lands]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

@@ -63,7 +63,12 @@ SkyyGear 0.2.1 stages 2-3 damage + armor by level (wf_f0004b09-dd1), combat widg
 SkyyMobs 0.1.1 new difficulty ladder + short labels (wf_ec5ef19b-ea7), trees + 0.7 PLAN (wf_c941cbd4-a5b -> research/Skill-Trees-2-Spec.md +
 research/PreRelease-Compat-Audit-1002.md), SkyyWorldGen stage 0 proofs + 0.1 Zone 1 test island (wf_505b1d4b-329, Skyy said go),
 Night Vision accessory research -> SkyyAccessories 0.5.3 if feasible (wf_4726d526-aa2).
-QUEUED after SkyySkills 0.4.13 lands: the next SkyySkills = roll-landing Acrobatics XP + Mining early-game XP boost (OPEN-QUESTIONS Q&A).
+QUEUED after SkyySkills 0.4.13 lands: the next SkyySkills = roll-landing Acrobatics XP + early XP boost x3 -> x1.5 for Mining, Foraging
+and Farming (OPEN-QUESTIONS Q&A). QUEUED after SkyyGear 0.2.1 lands: SkyyGear 0.2.2 TOOL LEVELS (gate by Mining / Foraging / Farming,
+crafted at your level, speed + Fortune by level, reforgeable tools) from research/Tool-Levels-Spec.md (spec being written now,
+wf_c0c52e96-7aa) + the unidentified gear drop boost (4% extra per leveled kill, ~1 in 3 chests). QUEUED after the Night Vision round:
+ACCESSORY TABLE (all accessories + Accessory Bag + every Magic Bag move to their own bench; bench accessory for /craft; Omni covers it)
+= SkyyAccessories next + SkyySacks 0.7.13, which also makes /craft respect vanilla's Memories level (OPEN-QUESTIONS Q&A).
 NEXT (needs Skyy): their test results; /mobs platetest (which colour markup works); /skyprobe win + secgrid -> SkyyVault
 0.1.6 one-click arrow; then SkyyGear 0.2 stages 2-3 (damage + armor by level) once stage 1 + SkyyMobs feel right; SkyyMobs stage 2
 (rewards: XP gap rule, drop bonus, gear rarity); the open questions added today in OPEN-QUESTIONS (bag stacking cap, idle-stack refill,
