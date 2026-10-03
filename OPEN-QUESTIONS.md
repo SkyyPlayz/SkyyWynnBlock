@@ -259,6 +259,15 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Skyy tests it]; (3) sickle swing harvests pay Farming XP + double drops in the next SkyySkills (Hytale sends no event, the item pickup is
   used) [yes]; (4) tools without the new level mark (old ones, chest loot, AH buys) work at min(their level, your skill) - a known loophole
   [keep]; (5) an Iron hatchet one-chops logs with Heavy Hatchet at Lv 20 [OK, same level = same speed].
+- SPEC DONE 2026-10-03: research/Loot-Unid-Spec.md (1,046 lines, critic + editor; build = SkyyGear 0.2.3 full round in parts 0/A/B/C after
+  0.2.2, + SkyyMobs mob:fn:levelAt, + SkyyAuctions 0.1.3 AH categories). 18 mystery items (Skyy_Unid_Weapon_* / Skyy_Unid_Armor_*), real id
+  sealed (AES-GCM, padded) so modded clients cannot peek, identify swaps in place (coins first, refund on failure), 4% extra per levelled
+  kill (cap 20 / hour, higher-level mobs a bit better rarity - the R5 lock), 33% extra per freshly filled chest, Smithing XP x10 rows (craft
+  500-16,000, identify 250-8,000; only weapons + armor pay craft XP), Smithing tree readers + gear:extras + gear:tree:readers. Open for Skyy
+  (defaults the build ships with): (1) half of extra weapon drops lean to your class [yes, 50%]; (2) gear the game already drops also gets the
+  mob / zone level [yes]; (3) grey "shadow" look + "?" icon, contact sheet first [yes]; (4) extra chest piece only in chests filled from now on
+  [new chests only]; (5) exact level, not a Wynn-style range [exact]; (6) Crude / Wood gear pays no craft Smithing XP (else 530 Crude Swords
+  = Smithing 20) [no XP for *_Crude, *_Wood].
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
