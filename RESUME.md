@@ -83,7 +83,8 @@ switch - research/Crit-Indicator-Research.md).
 QUEUE AFTER THE CURRENT ROUNDS (weekly 69% on 2026-10-03 midday, resets Mon 15:00 UTC - keep ~10% for test fixes): (1) SkyyAccessories
 0.5.4 LANTERN line replacing Night Vision (glow like a torch, range up with a hidden helper light above the wearer, brightness capped;
 each tier crafted from the previous - research/NightVision-Glare-Research.md), (2) the SkyyGear tooltip / crit follow-up, (3) SKYY'S
-POCKET DIMENSION spec + build (public bags mod; release files to Desktop\Hytale mods WORK\Your new mods), then the items below.
+POCKET DIMENSION spec + build, (4) MINIMAP: SkyyUiProbe map-picture probe then the SkyyHud minimap widget on the engine map stream
+(BetterMap joins the pack, hstats off; research/Minimap-Research.md) (public bags mod; release files to Desktop\Hytale mods WORK\Your new mods), then the items below.
 NEXT BIG ROUNDS after Armory / Trees: FIRST (Skyy: "on the next run") the /ISLAND STARTER SHARDS upgrade - SkyyIslands: island 3x with a
 small hill, more trees, a cave, a bridge to a 2nd island with mobs, a 3rd island with the portal (boss later); spec first from
 research/cloud/Starter-Shard-Layout.md. Then (a) MOB CURVE REBALANCE spec - Wynncraft-style exponential mob health /

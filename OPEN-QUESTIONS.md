@@ -420,6 +420,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   thread (a 30-tick world has ~33 ms per tick, so each one is a lag spike) plus 37-77 ms CompletableFuture tasks. Lesson for our design:
   no map work on the world thread (only cheap reads there), generate / send minimap images off-thread and only when the view really changed,
   throttle markers (creature markers were the big cost). [spec after research/Minimap-Research.md lands; build after the current rounds]
+- ANSWERED 2026-10-03 (Skyy, research/Minimap-Research.md questions): skip Cartographer and DapperMap; KEEP BetterMap (joins the pack's
+  third-party list - PACK.md + deploy_set PACK_THIRD_PARTY, install from CurseForge; its allowedWorlds needs the hub world; its usage stats
+  "hstats" OFF in the pack config); a quick SkyyUiProbe test build first (server-sent map pictures in a HUD, probe steps P1-P5), then OUR OWN
+  MINIMAP WIDGET in SkyyHud as a full round: reads the engine's own map stream (UpdateWorldMap / markers - never BetterMap's AGPL code),
+  sends each map piece once as a small cached picture, no world-thread map work; defaults ROUND, TOP-RIGHT, ~160 px, north-up (the client
+  cannot rotate HUD pictures); mob dots OFF by default (throttled when a player turns them on). [queued after the current rounds]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
