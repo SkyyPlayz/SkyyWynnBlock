@@ -58,7 +58,11 @@ OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" (rounds 1-9) is the source of truth
 **2026-10-02 status:** DEPLOYED today, NOT tested by Skyy yet (TEST-CHECKLIST: the five newest sections): phase 1 (deploy-20261002-1300)
 SkyySacks 0.7.11, SkyyCollections 0.2.5, SkyyEssentials 0.1.7, SkyyUiProbe 0.3, SkyyHud 0.3.11; the big round (deploy-20261002-1303)
 SkyySkills 0.4.12 + SkyyGear 0.2 stage 1 (Gear ROLLBACK FLOOR in deploy_set.py); SkyyMobs 0.1 NEW (deploy-20261002-1643); SkyySacks 0.7.12
-bags in bench + inventory crafting (deploy-20261002-1707); SkyyMenu 0.3.5 Mods list (deploy-20261002-1812). NOTHING RUNNING.
+bags in bench + inventory crafting (deploy-20261002-1707); SkyyMenu 0.3.5 Mods list (deploy-20261002-1812). RUNNING (2026-10-02 evening; resume any with Workflow({scriptPath, resumeFromRunId})): SkyyUiProbe 0.3.1 secgrid fix (wf_7c7020a4-0ff),
+SkyyGear 0.2.1 stages 2-3 damage + armor by level (wf_f0004b09-dd1), combat widget SkyySkills 0.4.13 + SkyyHud 0.3.12 (wf_f99a61a7-ad4),
+SkyyMobs 0.1.1 new difficulty ladder + short labels (wf_ec5ef19b-ea7), trees + 0.7 PLAN (wf_c941cbd4-a5b -> research/Skill-Trees-2-Spec.md +
+research/PreRelease-Compat-Audit-1002.md), SkyyWorldGen stage 0 proofs + 0.1 Zone 1 test island (wf_505b1d4b-329, Skyy said go).
+QUEUED after SkyySkills 0.4.13 lands: the next SkyySkills = roll-landing Acrobatics XP + Mining early-game XP boost (OPEN-QUESTIONS Q&A).
 NEXT (needs Skyy): their test results; /mobs platetest (which colour markup works); /skyprobe win + secgrid -> SkyyVault
 0.1.6 one-click arrow; then SkyyGear 0.2 stages 2-3 (damage + armor by level) once stage 1 + SkyyMobs feel right; SkyyMobs stage 2
 (rewards: XP gap rule, drop bonus, gear rarity); the open questions added today in OPEN-QUESTIONS (bag stacking cap, idle-stack refill,
