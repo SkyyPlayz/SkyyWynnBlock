@@ -1267,3 +1267,11 @@ Gear (damage and armor are still vanilla in this stage):
 5. Same world: menu Close and Esc both close; reopening works.
 6. Menu -> Mods shows 25 mods with tonight's versions (Hud 0.3.12, Bank 0.1.6, Gear 0.2.1, Skills 0.4.14, Accessories 0.5.3, Cooking
    0.1.4, Mobs 0.1.2, WorldGen 0.1).
+## SkyyHud 0.3.13 - small boxes + combat colours (DEPLOYED 2026-10-03, backup deploy-20261003-0753)
+1. Every HUD box hugs its text (turn Background ON for a widget to see the box); left / right gaps match the gap above / below.
+2. /skyyhud: drag Game Clock into each corner (then Step + arrows to x 0 y 0) - it sits ~14 px from both edges at 170%.
+3. Party, Skills and Guild boxes are as wide as their longest line. Walk until a coordinate gains a digit: the box widens at once, shrinks
+   ~15 s after the text gets shorter.
+4. Widgets / Settings -> Combat Indicator: pick In combat = Gold, Out of combat = Aqua (two preview rows), set Out of combat to Show, get hit:
+   gold "In combat 6s" then aqua "Out of combat". Reset style -> red / grey again.
+5. Existing layouts stay where they were (only the boxes got narrower).

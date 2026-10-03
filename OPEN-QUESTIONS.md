@@ -352,7 +352,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-10-03 (Skyy): HUD - "make the game clock box smaller so it can go closer in a corner. (try to keep the boxes pretty small,
   whatever the gap above and below for the border, keep the same gap on the sides." + "in the settings add the in combat and out of combat
   colors." -> every widget box: the side padding equals the top / bottom padding, boxes as small as their text; the Game Clock box can reach
-  the corners; Combat widget Settings get an In-combat colour and an Out-of-combat colour. [SkyyHud 0.3.13 lean round]
+  the corners; Combat widget Settings get an In-combat colour and an Out-of-combat colour. [LIVE: SkyyHud 0.3.13, 2026-10-03]
 - LOCKED 2026-10-03 (Skyy, after a Lv 33 Void Larva died in 3 hits on Hard and barely hurt them): MOB TOUGHNESS = "Wynncraft-style curve" -
   mob health and damage grow exponentially with level (about 10x health / 5x damage by Lv 33), gear damage / armor get a steeper curve to
   match, and a mob ~20 levels above you should feel BRUTAL (Skyy's pick for that question: you deal ~20%, take ~2.6x). Kill XP must not explode
