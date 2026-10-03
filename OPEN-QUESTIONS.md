@@ -15,6 +15,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - OPEN 2026-10-03 (SkyyWorldGen 0.1 fix round): deaths on the Zone 1 test island KEEP all items (the void would destroy gear; plan: void
   deaths cost coins, not items). Keep it, use the vanilla 50% drop, or add a coin loss later? [keep items for now]
 
+- OPEN 2026-10-03 (SkyySkills 0.4.14 review): with the party share on each member's own class skill, a Skill-1 friend near a Divinity-60
+  killer gets ~330 XP per Lv 33 kill while the killer gets ~28 - easy power-levelling. Cap a member's gap BONUS at the killer's own gap
+  factor (penalties still per member)? [cap it - recommended]  Also: sickle-harvested crops count for Collections too? [yes, next
+  SkyyCollections]
+
 ## Q&A with Skyy 2026-10-02 (all open questions, round by round - newest answers win)
 
 - R1 LOCKED (Skyy) [LIVE 2026-10-02 SkyySkills 0.4.12]: CLASS SKILL CURVE = the cloud proposal as written (research/cloud/Class-Skill-Curve-Proposal.md): a separate table for
@@ -219,7 +224,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Lv 10, Fen_Stalker Lv 16, Skeleton_Fighter Lv 9 all match; the cobra's real base is only 36 HP, so ~100 HP at Lv 31-32.
 - LOCKED 2026-10-02 (Skyy): KILL XP = "level bonus + gap rule max +250%": kill XP x (1 + 5% per mob level); a mob more than 5 levels ABOVE
   your class skill gives +5% per extra level, at most +250%; more than 5 levels BELOW gives -5% per level, at least 10%; the party share uses
-  each member's own skill. (Lv 33 skeleton at Divinity 11: 108 -> ~520 XP.) [next SkyySkills after 0.4.13]
+  each member's own skill. (Lv 33 skeleton at Divinity 11: 108 -> ~520 XP.) [LIVE: SkyySkills 0.4.14, 2026-10-03]
 - LOCKED 2026-10-02 (Skyy): LEVEL HEALTH FLOOR - no leveled mob has less health than a 50-HP mob of its level (a Lv 32 cobra ~100 -> ~143
   HP at 6%, more on the new Hard); stronger mobs unchanged; kill XP follows the health. [LIVE: SkyyMobs 0.1.2, deployed 2026-10-02, + live re-apply on difficulty change]
 - LOCKED 2026-10-02 (Skyy, from testing: "cooking levels really fast" - Vegetable Skewer batches at the Chef's Stove paid ~3,760 XP each,

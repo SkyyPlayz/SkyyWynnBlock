@@ -58,14 +58,13 @@ OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" (rounds 1-9) is the source of truth
 **2026-10-02 status:** DEPLOYED today, NOT tested by Skyy yet (TEST-CHECKLIST: the five newest sections): phase 1 (deploy-20261002-1300)
 SkyySacks 0.7.11, SkyyCollections 0.2.5, SkyyEssentials 0.1.7, SkyyUiProbe 0.3, SkyyHud 0.3.11; the big round (deploy-20261002-1303)
 SkyySkills 0.4.12 + SkyyGear 0.2 stage 1 (Gear ROLLBACK FLOOR in deploy_set.py); SkyyMobs 0.1 NEW (deploy-20261002-1643); SkyySacks 0.7.12
-bags in bench + inventory crafting (deploy-20261002-1707); SkyyMenu 0.3.5 Mods list (deploy-20261002-1812). DEPLOYED 2026-10-02: 22:40 SkyyMobs 0.1.1 difficulty ladder; 23:35 SkyyAccessories 0.5.3 Night Vision; 23:55 SkyyMobs 0.1.2 health floor + live re-apply; 2026-10-03 00:03 SkyyCooking 0.1.4 Grade strength + XP x0.5; 00:09 SkyySkills 0.4.13 + SkyyHud 0.3.12 combat widget + Mana while charging; 00:28 SkyyBank 0.1.6 stuck-page fix; 01:07 SkyyGear 0.2.1 damage + armor by level; 02:09 SkyyWorldGen 0.1 NEW Zone 1 test island (/zone 1, admin) (TEST-CHECKLIST newest sections).
+bags in bench + inventory crafting (deploy-20261002-1707); SkyyMenu 0.3.5 Mods list (deploy-20261002-1812). DEPLOYED 2026-10-02: 22:40 SkyyMobs 0.1.1 difficulty ladder; 23:35 SkyyAccessories 0.5.3 Night Vision; 23:55 SkyyMobs 0.1.2 health floor + live re-apply; 2026-10-03 00:03 SkyyCooking 0.1.4 Grade strength + XP x0.5; 00:09 SkyySkills 0.4.13 + SkyyHud 0.3.12 combat widget + Mana while charging; 00:28 SkyyBank 0.1.6 stuck-page fix; 01:07 SkyyGear 0.2.1 damage + armor by level; 02:09 SkyyWorldGen 0.1 NEW Zone 1 test island (/zone 1, admin); 03:36 SkyySkills 0.4.14 kill XP by level + roll XP + gathering x3 + sickle XP (TEST-CHECKLIST newest sections).
 RUNNING (2026-10-02 late evening; resume any with Workflow({scriptPath, resumeFromRunId})): 
 ULTRACODE (Skyy: "use ultracode on big jobs", Fable allowed): SkyyTrees 0.3 build (Alchemy + Smithing + class trees, coin respec, Dust
 defaults; wf_3f431935-177) and the Accessory Table spec (wf_7abd78e6-aa2 -> research/Accessory-Table-Spec.md); SPECS: tool levels
 (wf_c0c52e96-7aa -> research/Tool-Levels-Spec.md), loot round (wf_cefcd0b5-cd1 -> research/Loot-Unid-Spec.md), SkyyArmory metal wands
 (wf_0f61c6f1-4fe -> research/SkyyArmory-Spec.md) + the wand ART PROOF agent (tools/skyyart.py + preview sheet for Skyy to pick style A/B).
-RUNNING: SkyySkills 0.4.14 full round (wf_9f8b4cc7-2d3) = kill XP level bonus +5%/level + gap rule (max +250%, min 10%) + roll-landing
-Acrobatics XP + early XP boost x3 -> x1.5 for Mining / Foraging / Farming + sickle-swing Farming XP. QUEUED: SkyyGear 0.2.2 TOOL LEVELS after 0.2.1; SkyyGear 0.2.3 LOOT round after 0.2.2 (drop boost
+QUEUED: SkyyGear 0.2.2 TOOL LEVELS after 0.2.1; SkyyGear 0.2.3 LOOT round after 0.2.2 (drop boost
 4% per leveled kill + ~1 in 3 chests, Wynncraft-style mystery unidentified items, Smithing-tree identify-rarity hook). SkyyArmory 0.1 (NEW
 mod: Copper -> Mithril/Onyxium wands, tap = blue quick shot, hold = charged shot, Mana + damage per metal) after Skyy picks the art style.
 ACCESSORY TABLE after the Night Vision round = SkyyAccessories next + SkyySacks 0.7.13 (+ /craft respects vanilla's Memories level).

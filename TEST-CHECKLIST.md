@@ -1249,3 +1249,13 @@ Gear (damage and armor are still vanilla in this stage):
 7. Server Setup -> World Gen -> Zone 1 landing point "0 1 0" is refused; /zone setlanding on the ground is accepted; set the default back.
 8. /zone leave returns you to where you ran /zone 1; /hub from the island goes to the hub. Restart -> /zone 1 says "Teleporting..." (same island).
 9. DON'T run /instances spawn SkyWynn_Zone1 (extra copies) or /sethub while standing on the island. The HUD shows the raw name skywynn_z1 (cosmetic).
+## SkyySkills 0.4.14 - kill XP by level, roll XP, gathering boost, sickle XP (DEPLOYED 2026-10-03, backup deploy-20261003-0336)
+1. Kill a levelled mob, e.g. a Lv 33 Skeleton Scout at Divinity 11: about 520 XP (was 108). An animal with no level pays as before.
+2. Drop from a height that would cost a little health and CROUCH as you land: no damage and Acrobatics XP (~150-225); higher drops +50%.
+   (If a crouch-landing gives nothing, tell me - the roll flag comes from the client.)
+3. At Mining / Foraging / Farming 0-10: 3x XP; /skills stats shows the "Gathering XP x3 up to level 10..." line; it eases to x1.5 at 20.
+4. Swing a sickle through ripe wheat: each ripe crop gives Farming XP (12 at Farming <= 10) and can double drop; unripe crops / potion plants
+   give nothing from a swing. F on a ripe crop still pays exactly once.
+5. Server Setup: new rows under Parts ("Kill XP by mob level"), Combat (six gap rows), Acrobatics ("Extra XP for a rolled landing"),
+   Gathering (seven rows). Type decimals with a DOT (1.5) - a comma (1,5) is read as 15.
+6. With tree bonus nodes, the Stats page line reads "Bonuses (trees + tools): ...".
