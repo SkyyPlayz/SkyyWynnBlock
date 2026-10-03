@@ -373,6 +373,24 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   ideas only), Common = a normal torch's light, each rarity step doubles brightness / range, Legendary = 8x a torch; (b) the NIGHT VISION
   accessory switches to per-player SCREEN BRIGHTNESS (post-processing, no light on the player) as a test. [SkyyAccessories 0.5.4 after the
   night-vision research report; the Accessory Table build moves to the next free version]
+- LOCKED 2026-10-03 (Skyy): PUBLIC MODS on CurseForge, same codebase as the pack, each standalone OR together:
+  (1) "SKYY'S POCKET DIMENSION" first = the Magic Bags mod (SkyySacks code) standalone: all bag types + tiers, /sacks, auto-pickup, Deposit
+  all, benches and pocket crafting pull from bags, the inventory / hotbar auto-refill, the Workbench tab for bag recipes (kept, "the current
+  method"); WITHOUT /craft; bag tiers unlock by crafting the previous tier when SkyyCollections is absent. Skyy: "since the benches now pull
+  from the sacks, we can make the sacks their own standalone mod. without the / craft."
+  (2) "SKYY ACCESSORIES" later = the crafting-related accessories + the Accessory Bag + /craft ("post the accessories mod as a separate mod
+  that adds to it (with /craft disable able with commands.) when disabled the craft button in pocket dimension should be hidden"); /craft must
+  respect vanilla progression (Memories level, knowledge, bench tiers) before it ships.
+  (3) "SKYY MENU" later = shows settings and controls only for the Skyy mods that are installed ("if someone has skyymenu and only 2 of my mods
+  installed, it will only show controls for those 2 mods").
+  Release files go to C:\Users\SkyLo\Desktop\Hytale mods WORK\Your new mods (Skyy tests multiplayer on a separate world before posting);
+  I prepare everything (jar, CurseForge page text, feature list, changelog, screenshot shot-list, licence / asset check); Skyy uploads.
+- RESEARCH DONE 2026-10-03: research/NightVision-Glare-Research.md - the "radius" byte is really a MINIMUM LIGHT LEVEL per colour channel, so
+  0.5.3's (255,1,1,1) = level 255 (17x the brightest vanilla light); the particle shader multiplies lit particles by up to 4x the dynamic light
+  with no cap -> white glare. Per-player "screen brightness" does NOT exist: UpdatePostFxSettings is bloom only (would add halos, not light
+  caves). Try now, no build: Server Setup -> Accessories -> Night Vision -> Light radius 12 (torch-like) or 15 (brightest vanilla); avoid 255 /
+  30+. Glare-free big area = a light on an invisible helper entity ~6 blocks above the wearer (later). 0.5.4 plan: one Brightness row (level
+  1-30, default 12).
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
