@@ -223,7 +223,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-10-02 (Skyy, from testing: "cooking levels really fast" - Vegetable Skewer batches at the Chef's Stove paid ~3,760 XP each,
   Cooking 12 -> 15 in minutes): "id probably half the speed cooking levels at / your cooking xp gain" -> Cooking XP x0.5. Live now via
   SkyWynn Menu > Server Setup > Cooking > Cooking XP > XP multiplier = 0.5; new pack default 0.5 in the next SkyyCooking build (a file still on
-  the old default 1 is moved to 0.5 once, a hand-set value is kept).
+  the old default 1 is moved to 0.5 once, a hand-set value is kept). [LIVE: SkyyCooking 0.1.4, 2026-10-03]
 - ART PROOF 2026-10-02: metal wand preview sent to Skyy (tools/dev/scratch/wandart/preview.png; kit tools/skyyart.py renders true icons from
   the generated textures; colours = each tier's pickaxe head + ingot, leaf crystals = that tier's staff gem, Mithril bands = the mithril
   staff's gold trim). Waiting for Skyy's pick: style A full metal or style B wood handle + metal head.
@@ -236,7 +236,7 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Master Chef tree node (Skyy has it); the dish tooltip line "Grade 2 food - cooked at Cooking 20 or higher" ignores tree bonuses -> reword.
 - LOCKED 2026-10-02 (Skyy): FOOD GRADE STRENGTH "+32% per Grade": heal / regen / boosts x(1 + 0.32 x Grade) - Grade 1 x1.32 (today's Grade 2),
   Grade 2 x1.64, Grade 5 x2.6, Grade 10 x4.2, tree-only Grades 11 / 12 x4.52 / x4.84. DURATION UNCHANGED ("id leave the duration buff, its
-  good"): x2^(Grade/5) as today. [SkyyCooking 0.1.4 with the Cooking XP default 0.5 and the tooltip wording]
+  good"): x2^(Grade/5) as today. [LIVE: SkyyCooking 0.1.4, deployed 2026-10-03, with the Cooking XP default 0.5 and the tooltip wording]
 - LOCKED 2026-10-02 (Skyy, recorded late): "lets give alchemy and smithing a tree too. they look left out. (and add a class skill tree,
   wynncraft. add the slots for the ability's but hold off on building them till 0.7 update with the runes." -> research/Skill-Trees-2-Spec.md
   (Alchemy + Smithing trees on the 12-slot template; one Wynncraft-style 37-node class tree template with 3 archetype lanes per class, Ability

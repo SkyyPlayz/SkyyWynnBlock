@@ -58,11 +58,11 @@ OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" (rounds 1-9) is the source of truth
 **2026-10-02 status:** DEPLOYED today, NOT tested by Skyy yet (TEST-CHECKLIST: the five newest sections): phase 1 (deploy-20261002-1300)
 SkyySacks 0.7.11, SkyyCollections 0.2.5, SkyyEssentials 0.1.7, SkyyUiProbe 0.3, SkyyHud 0.3.11; the big round (deploy-20261002-1303)
 SkyySkills 0.4.12 + SkyyGear 0.2 stage 1 (Gear ROLLBACK FLOOR in deploy_set.py); SkyyMobs 0.1 NEW (deploy-20261002-1643); SkyySacks 0.7.12
-bags in bench + inventory crafting (deploy-20261002-1707); SkyyMenu 0.3.5 Mods list (deploy-20261002-1812). DEPLOYED 2026-10-02: 22:40 SkyyMobs 0.1.1 difficulty ladder; 23:35 SkyyAccessories 0.5.3 Night Vision; 23:55 SkyyMobs 0.1.2 health floor + live re-apply (TEST-CHECKLIST newest sections).
+bags in bench + inventory crafting (deploy-20261002-1707); SkyyMenu 0.3.5 Mods list (deploy-20261002-1812). DEPLOYED 2026-10-02: 22:40 SkyyMobs 0.1.1 difficulty ladder; 23:35 SkyyAccessories 0.5.3 Night Vision; 23:55 SkyyMobs 0.1.2 health floor + live re-apply; 2026-10-03 00:03 SkyyCooking 0.1.4 Grade strength + XP x0.5 (TEST-CHECKLIST newest sections).
 RUNNING (2026-10-02 late evening; resume any with Workflow({scriptPath, resumeFromRunId})): SkyyGear 0.2.1 stages 2-3 damage + armor by
 level (wf_f0004b09-dd1); SkyySkills 0.4.13 FIX round (world-switch combat stamp, CMB prune, + Mana regenerates while charging) then deploy
 with SkyyHud 0.3.12 (wf_3dbcfe12-fe4); SkyyBank 0.1.6 Deposit All
-"Loading..." fix (wf_9abad234-3f7); SkyyCooking 0.1.4 Grade strength + XP 0.5 (wf_9e455ab5-eb4);
+"Loading..." fix (wf_9abad234-3f7); 
 ULTRACODE (Skyy: "use ultracode on big jobs", Fable allowed): SkyyTrees 0.3 build (Alchemy + Smithing + class trees, coin respec, Dust
 defaults; wf_3f431935-177) and the Accessory Table spec (wf_7abd78e6-aa2 -> research/Accessory-Table-Spec.md); SkyyWorldGen stage 0 proofs + 0.1 Zone 1 test island
 (wf_505b1d4b-329); SPECS: tool levels

@@ -1199,3 +1199,12 @@ Gear (damage and armor are still vanilla in this stage):
    walk away and back to fix it, and tell me (fix queued as 0.1.3).
 5. Server Setup -> Mobs -> Strength -> Health floor 0: weak mobs drop to the old numbers at once; set it back to 50.
 6. Kill a floored mob: kill XP is higher (it follows max health). Weak Lv 1 mobs (rats 21 HP) now have 50 HP too.
+## SkyyCooking 0.1.4 - Grade strength + Cooking XP x0.5 (DEPLOYED 2026-10-03, backup deploy-20261003-0003)
+1. Log: "cooking.properties updated to the 0.1.4 Cooking XP default: xpMultiplier 1.0 -> 0.5" (only if you had not set 0.5 yourself),
+   then "0.1.4 ready ... xpMultiplier 0.5".
+2. Cook Vegetable Skewers: about half the XP of before (was ~3,760 per craft).
+3. /cooking at Cooking 15 with Master Chef: "Grade 2: heal and buffs x1.64 stronger, buffs last x1.32 longer." and "Next: Grade 3 ... at Cooking 20".
+4. A Grade 2 Meat Pie tooltip: "Grade 2 food - Cooking 20, or sooner with Cooking tree bonuses. Heal and buffs x1.64 stronger, buffs last
+   x1.32 longer." - restores 24.6% health, +24.6% max health, duration 7:55. A Grade 2 Vegetable Skewer: heals 16.4% (was 13.2%).
+5. Graded food you already carry switches to the new numbers on its own.
+6. Restart: no second update line; Server Setup -> Changes has the Undo line.
