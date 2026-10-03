@@ -6,7 +6,7 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 - **Rolling list:** do the top open task, then mark it `[x]` with the date and the output file. When you open this file and see `[x]`
   items, first add one line per item to `research/cloud/LOG.md`, then DELETE those items here and top the list back up to about 8
-  open tasks (ideas: RESUME.md section 3, OPEN-QUESTIONS.md open lines, the plans in `research/`). Keep this file under ~80 lines.
+  open tasks (ideas: RESUME.md section 3, OPEN-QUESTIONS.md open lines, the plans in `research/`). Keep this file under ~110 lines.
 - **Cloud limits:** no access to Skyy's PC, the Hytale game files (`HytaleServer.jar`, `Assets.zip`), installed mods or the test world.
   You cannot build, test or deploy. Only add tasks that need none of that. Any fact you cannot check without the game files: mark it
   **UNVERIFIED** and list it under "For the local session" in your output.
@@ -17,6 +17,37 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Open tasks (top = next)
 
+<!-- 2026-10-03 local session (Skyy: "make sure the cloud agent has a good list to work on, so i can keep em going when token limit runs
+out"): the list is LONG ON PURPOSE this week - work top-down; the first 8 feed builds the local session runs next. Decisions behind them:
+OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" block, 2026-10-03 lines. -->
+- [ ] **Pocket Dimension release kit** - Skyy will post "Skyy's Pocket Dimension" (the Magic Bags mod: bag types + tiers, /sacks, auto-pickup,
+      benches + pocket crafting pull from bags, auto-refill, Workbench tab; NO /craft; tiers unlock by crafting the previous tier) on CurseForge.
+      Write the page: summary, feature list, commands + permissions, config, compatibility, FAQ, install steps, changelog template, a
+      screenshot shot-list, a licence note. Read SkyySacks/build_skyysacks_0.7.12.py (docstring) + OPEN-QUESTIONS. Output: `research/cloud/PocketDimension-Release-Kit.md`.
+- [ ] **Wynncraft level-curve research** - Skyy picked a Wynncraft-style curve: mob health / damage grow exponentially with level, gear damage
+      gets steeper to match, a mob 20 levels above you is BRUTAL (you deal ~20%, take ~2.6x), kill XP moves off raw health. Research Wynncraft
+      mob HP / damage / XP per level and weapon damage per level (web); propose curves + Lv 1-60 tables for SkyyMobs, SkyyGear F(L) and kill XP.
+      Read research/Mob-Levels-Plan.md, research/Gear-Levels-Wynn-Spec.md. Output: `research/cloud/Level-Curve-Research.md`.
+- [ ] **Zone islands layout (one world)** - Skyy: every zone island in ONE world so you see Zone 2 from Zone 1; islands ~3x bigger, random
+      coastline, a mountain rising to the middle, vanilla features (rivers, caves, goblin camps), harder biomes toward the middle as a tendency.
+      Design sizes, distances, heights, hub town + temple, portal + guardian spots, travel, anti-bridging / anti-flying rules, view-distance
+      notes. Read research/SkyyWorldGen-Plan.md. Output: `research/cloud/Zone-Islands-Layout.md`.
+- [ ] **Starter shards plan 2** - Skyy: the /island becomes 3x bigger with a small hill, more trees and a cave, a bridge to a 2nd island with
+      mobs, a 3rd island with the portal (boss later). Turn research/cloud/Starter-Shard-Layout.md into a buildable plan: sizes, cave, bridge,
+      shard-2 mob list (Zone 1 Lv 1-3), portal plaza, resource budget, options for islands that already exist. Output: `research/cloud/Starter-Shards-Plan-2.md`.
+- [ ] **Class tree texts** - names + one-line effects for the 37-node class tree of each class and archetype (research/Skill-Trees-2-Spec.md
+      template; Archer Boltslinger / Trapper / Sharpshooter, Warrior Fallen / Battle Monk / Paladin, Mage Riftwalker / Light Bender / Arcanist,
+      Berserker Bloodbound / Smasher / Warbringer, Priest Smiter / Healer / Guardian). Output: `research/cloud/Class-Tree-Texts.md`.
+- [ ] **Lantern design** - the Lantern accessory line replaces Night Vision: you glow like carrying a torch, higher rarities reach farther
+      (brightness capped at torch level), each tier crafted FROM the previous tier (Skyy's general rule). Propose names, recipes per tier
+      (follow SkyyAccessories' recipe patterns), reach per tier, tooltips. Output: `research/cloud/Lantern-Design.md`.
+- [ ] **Loot box design** - unidentified drops become Wynncraft-style rarity loot boxes ("better looking"): box colours per SkyyGear rarity,
+      names ("Unidentified Sword"), a level RANGE (Skyy's pick), tooltip mockups, identify messages, art direction for the generated art.
+      Read research/Loot-Unid-Spec.md. Output: `research/cloud/Loot-Box-Design.md`.
+- [ ] **Minimap widget UX** - our own minimap becomes a SkyyHud widget that needs BetterMap and reuses its map (DapperMap lagged: its tick ran
+      40-57 ms on the world thread). Design the settings Skyy liked in DapperMap (zoom, size, circle / square, rotation, refresh speed,
+      resolution, markers, colours; NO info panel), HUD-editor placement, defaults, a performance budget, marker throttles. Design only - the
+      local session checks engine + licences. Output: `research/cloud/Minimap-Widget-UX.md`.
 - [ ] **SkyyQuests design** (OPEN-QUESTIONS: "quest hooks ship with SkyyQuests"). The story scripts need a quest system that does not exist: quest steps and flags per
       profile, NPC dialogue windows (vanilla look), objectives (kill / collect / craft / reach / talk), rewards, quest log page, bridge keys other mods can call. Read
       `research/cloud/Story-Script-*.md`, `Dragon-Quest-Spec.md`, `tools/PROFILES-CONTRACT.md`. Output: `research/cloud/SkyyQuests-Spec.md`.
