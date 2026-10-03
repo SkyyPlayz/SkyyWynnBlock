@@ -61,7 +61,8 @@ SkyySkills 0.4.12 + SkyyGear 0.2 stage 1 (Gear ROLLBACK FLOOR in deploy_set.py);
 bags in bench + inventory crafting (deploy-20261002-1707); SkyyMenu 0.3.5 Mods list (deploy-20261002-1812). DEPLOYED 2026-10-02 22:40 (deploy-20261002-2240): SkyyMobs 0.1.1 difficulty ladder (TEST-CHECKLIST newest section).
 RUNNING (2026-10-02 late evening; resume any with Workflow({scriptPath, resumeFromRunId})): SkyyGear 0.2.1 stages 2-3 damage + armor by
 level (wf_f0004b09-dd1); SkyySkills 0.4.13 FIX round (world-switch combat stamp, CMB prune, + Mana regenerates while charging) then deploy
-with SkyyHud 0.3.12 (wf_3dbcfe12-fe4); SkyyMobs 0.1.2 level health floor 50 HP (wf_1f9a2b82-87b); trees + 0.7 PLAN (wf_c941cbd4-a5b ->
+with SkyyHud 0.3.12 (wf_3dbcfe12-fe4); SkyyMobs 0.1.2 level health floor 50 HP + live health re-apply on difficulty change (wf_1f9a2b82-87b); SkyyBank 0.1.6 Deposit All
+"Loading..." fix (wf_9abad234-3f7); SkyyCooking 0.1.4 Grade strength + XP 0.5 (wf_9e455ab5-eb4); trees + 0.7 PLAN (wf_c941cbd4-a5b ->
 research/Skill-Trees-2-Spec.md + research/PreRelease-Compat-Audit-1002.md); SkyyWorldGen stage 0 proofs + 0.1 Zone 1 test island
 (wf_505b1d4b-329); Night Vision -> SkyyAccessories 0.5.3 (wf_4726d526-aa2, research said feasible, building); SPECS: tool levels
 (wf_c0c52e96-7aa -> research/Tool-Levels-Spec.md), loot round (wf_cefcd0b5-cd1 -> research/Loot-Unid-Spec.md), SkyyArmory metal wands
