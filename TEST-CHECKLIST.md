@@ -1169,3 +1169,13 @@ Gear (damage and armor are still vanilla in this stage):
 2. Do the 9 slots on the page show the 3 iron items? (screenshot) Drag an iron item inside the 9 slots: it should snap back.
 3. If an inventory shows, drag bread / stone into the grid, to another slot, and back; chat says "Move seen" with the same count before and
    after. If no inventory shows, say so. Esc / Close returns anything of yours.
+## SkyyMobs 0.1.1 - difficulty ladder + short labels (DEPLOYED 2026-10-02, backup deploy-20261002-2240)
+1. Start the world. The server log shows "[SkyyMobs] 0.1.1 ready ... Hard 8% / 4% (caps x6 / x3.5)", the cap update line and "Difficulty
+   kept (hard): Hard is now 8% health / 4% damage per level".
+2. SkyWynn Menu -> Server Setup -> Mobs: tabs read Which mobs / Strength / Level bands / Nameplate, nothing cut off.
+3. Strength tab: buttons Easy / Normal / Hard / Custom with Hard highlighted; the help line shows the numbers; caps read 6 and 3.5.
+4. /mobs inspect on a Lv 19 mob: "Health x2.44 ... damage x1.72 - Hard 8% / 4%, caps x6 / x3.5".
+5. Fight it: it should hit harder than before (old Hard was x1.54 damage / x2.08 health at Lv 19). Click Normal and inspect again:
+   x2.08 / x1.54 (the old Hard).
+6. Server Setup -> Changes: two "SkyyMobs 0.1.1" cap lines with Undo; History has "before the 0.1.1 difficulty update".
+7. Restart: no second update line in the log.
