@@ -130,6 +130,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   setting). [building: SkyySkills 0.4.13 bridge skill:fn:combat + SkyyHud 0.3.12 widget]
 - VERIFIED 2026-10-02 (Skyy's screenshot): /skills mana works ("out of combat - vanilla refills 5/s"; "In combat: 50% of (vanilla + boosts)
   = 2.5/s"); reforges pay Smithing XP (+5 / +10).
+- LOCKED 2026-10-02 (Skyy, after testing Hard): "make the current hard mode the normal and give hard mode a little better bump. i can still
+  beat lvl 19 at lvl 7 with my accessories off, when im careful." -> mob difficulty presets Easy 4% / 2%, NORMAL 6% / 3% (default), HARD 8% / 4%;
+  caps raised to health x6 / damage x3.5. The chosen word is kept on update (Skyy is on Hard = the new 8% / 4%). [building: SkyyMobs 0.1.1 with
+  the short labels]
+- LOCKED 2026-10-02 (Skyy): crouching as you land (vanilla's roll) takes less fall damage - make that ROLL pay EXTRA Acrobatics XP.
+  [queued: next SkyySkills after 0.4.13 (the combat-widget bridge) lands]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
