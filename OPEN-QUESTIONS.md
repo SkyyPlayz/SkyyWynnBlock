@@ -175,6 +175,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   as unidentified (vanilla drop odds). Answer (picked): each kill of a leveled hostile mob gets an EXTRA 4% roll (1 in 25) for one
   unidentified weapon or armor piece matching the mob's level; about 1 in 3 world chests gets an extra unidentified piece matching the
   zone. Both editable in Server Setup. [build: SkyyGear 0.2.2 with the tool levels, after 0.2.1 lands]
+- LOCKED 2026-10-02 (Skyy): SMITHING TREE - "you can also add a chance to boost the rarity when identifying." -> a Smithing tree node:
+  chance that identifying an item steps it up one rarity (joins Skyy's earlier Smithing tree list: better crafted-rarity chance, better
+  reforge rolls, the identifier upgrade for better loot, Smithing XP from crafting / reforging / identifying). [goes into
+  research/Skill-Trees-2-Spec.md + SkyyTrees 0.3; SkyyGear 0.2.2 reads the tree bonuses at craft / identify / reforge through skill:bonus
+  so the nodes work the day the tree ships]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
