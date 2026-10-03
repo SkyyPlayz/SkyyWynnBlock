@@ -307,6 +307,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   (SkyyClasses); Onyxium wand recipe = the Mithril shortbow recipe with Onyxium bars; MAGE STAFFS get their Mana / damage ladder WITH the
   wands (same SkyyArmory round).
   WORLDGEN: island deaths keep items. COLLECTIONS: sickle-harvested crops count too (next SkyyCollections).
+- LOCKED 2026-10-03 (Skyy): BAZAAR - "small medium and large leather, (allong with everything else the combat sack holds.) in the combat
+  section, and a new smithing section with everything the smithing sack holds (and for things like orevs smelted bars, make the smelted bars
+  and tanned leather a good bit more expensive like +15%-25% so so it actually costs you to save time and buy processed materials" -> Combat
+  tab = every Combat-sack item + light / medium / heavy hides and leathers; new Smithing tab = every Smithing-sack item; processed goods
+  +20% (row, 15-25%) over their raw inputs per the vanilla recipes; items can show in two tabs (one market). [SkyyBazaar 0.1.3 round running]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
