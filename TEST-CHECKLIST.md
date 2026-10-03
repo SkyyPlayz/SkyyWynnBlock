@@ -1164,3 +1164,8 @@ Gear (damage and armor are still vanilla in this stage):
    Sacks 0.7.12, Gear 0.2, Mobs 0.1, Skills 0.4.12 ...
 2. Hover SkyyMobs: zone bands + "/mobs (or /mobs info)"; as admin also inspect / set / platetest / reload. A non-admin sees no admin lines.
 3. Main menu tiles: Pocket Dimension mentions stack refill, Crafting says vanilla benches use your bags.
+## SkyyUiProbe 0.3.1 - vault arrow probe P2 (DEPLOYED 2026-10-02)
+1. Log "[SkyyUiProbe] 0.3.1 ready". With bread or stone and 6+ free slots, run /skyprobe secgrid: the page opens (no "could not be opened").
+2. Do the 9 slots on the page show the 3 iron items? (screenshot) Drag an iron item inside the 9 slots: it should snap back.
+3. If an inventory shows, drag bread / stone into the grid, to another slot, and back; chat says "Move seen" with the same count before and
+   after. If no inventory shows, say so. Esc / Close returns anything of yours.
