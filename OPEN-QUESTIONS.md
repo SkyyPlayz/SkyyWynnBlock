@@ -574,6 +574,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   20; T4 (Azure, Petrified 6) x8 = 48; T5 (Crystalwood, Fire, Frostwood, Stormbark 8) x16 = 128. RULE (progression tree): every tiered material
   family costs x2 per tier step. [default for the SkyyBazaar 0.1.4 build: the same x2 rule for the other tiered families too (hides / leathers
   light-medium-heavy, cloth, gems) unless Skyy says no; planks stay as they are (made from logs, no loop); money-loop check re-run]
+- LOCKED 2026-10-04 (Skyy): "and the crops in the vanilla expansion path. so what and carrots are the cheapest, and then get more expensive as
+  you go especially for the eternal seeds." -> crops + seeds follow the vanilla farming path (tiers to be checked against the vanilla Farming
+  Bench recipe tiers by the build), x2 per tier step; today's price tiers: T1 Wheat, Carrot, Lettuce, Potato 2 (stay); T2 Corn, Cotton, Onion,
+  Rice, Tomato, Turnip 3 -> 6; T3 Aubergine, Cauliflower, Chilli 4 -> 16; T4 Pumpkin 5 -> 40; normal seeds follow their crop tier (1 / 2 / 4 / 8);
+  ETERNAL seeds (today 31-201, uneven) get the steepest climb [default: x4 per tier step from a T1 base ~50 -> 50 / 200 / 800 / 3,200]. [SkyyBazaar
+  0.1.4 with the metals + woods; the money-loop check must cover eternal-seed recipes and cooking (crops -> food)]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
