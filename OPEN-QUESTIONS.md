@@ -732,6 +732,8 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   nodes, NOT the modifier upgrades in the ability's own tree (those come from using the ability). [spec: class-tree ability nodes = behaviour
   changes / choose-one sidegrades with trade-offs; ability-tree levels = small numbers + modifiers; a power budget table per ability so the
   two layers together stay balanced]
+- LOCKED 2026-10-04 (Skyy): "the shield moving with you will be a modifier, not a class tree upgrade" -> the Priest shield bubble's
+  "lock around you" is a MODIFIER in the shield's own ability tree (2 equipped), not a class-tree node (corrects the earlier "tree modifier").
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
