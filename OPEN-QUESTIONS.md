@@ -559,6 +559,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Live test given to Skyy: Accessories -> Lantern -> "Legendary: reach" 48 -> 32 (the light sits much lower), or Advanced "Hidden light:
   highest" 128 -> 64. [fix in the next SkyyAccessories build if the squares stay: several lower helper lights spread around the wearer, or a
   shorter max reach]
+- ANSWERED 2026-10-04 (Skyy, Lantern squares test): "2, try to smooth the edges" -> option 2 (Advanced "Hidden light: highest" 128 -> 64,
+  the light sits lower) looked better; next SkyyAccessories build (0.5.5, lean, after the reset): default highest 64 + SMOOTH the lit edge (several
+  lower helper lights spread around the wearer and/or a softer falloff so no square dark patches at the edge).
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
