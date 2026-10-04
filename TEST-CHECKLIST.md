@@ -1323,3 +1323,19 @@ Gear (damage and armor are still vanilla in this stage):
 9. Trial: "Red + bigger crit number (trial)" on, hit slowly: crit numbers red + bigger, white again within ~0.5 s. Tell me if it works - it stays off by default.
 10. KNOWN (fix in the next Gear build): after editing Armory -> Damage by wand / staff the tooltip can keep the old numbers until you move an item.
     Unidentified weapons and recipe previews show no damage numbers now (the box is hidden per item type; Gear -> "Hide the vanilla Damage Data box" off + restart brings it back).
+## SkyyUiProbe 0.4 - minimap probes (dev mod, op only; DEPLOYED 2026-10-03, backup deploy-20261003-2340)
+Each step ~30 s; a disconnect or error is a result too (note the step). /skyprobe map lists the steps, /skyprobe map status shows what runs,
+/skyprobe map off stops all. At the end copy the server log lines with [SkyyUiProbe] P1a / P1b / P2 / P3 / P4 / P5.
+1. /skyprobe map p1a: a dark box top-right with a 4-colour picture (white ring, gold triangle), caption "P1a - no rebuild". Picture, empty box or a
+   hitch? SkyyHud widgets still there? (screenshot)
+2. /skyprobe map p1b: a green picture, "P1b - one rebuild" - did it show, any freeze / flicker?
+3. /skyprobe map p2: a round minimap top-right (gold tick = north, white arrow = you). Walk / sprint / turn 20 s onto new ground (green-blue test
+   squares get replaced by real map pieces). Smooth or jumpy? Blurry? Clean round edge? Arrow turns? Screenshot with the caption numbers.
+4. /skyprobe map p2sharp: sharper than p2, same, or worse? Then /skyprobe map off BEFORE any world change.
+5. /skyprobe map p3, then /island: ~2 s after arriving chat says the picture was NOT re-sent - picture in the box or blank?
+6. Within 10 minutes of step 5: disconnect + rejoin - picture or blank?
+7. /skyprobe map p3resend, then change world (from an island or zone: /hub) - chat says re-sent; picture there? (the control)
+8. /skyprobe map p4: walk onto new ground 60 s, copy the P4 line. For the BetterMap comparison: tick BetterMap in the world's mod list + restart and
+   repeat (BetterMap only tracks worlds named default / world; turn its stats 'hstats' off in its settings) - send both lines.
+9. /skyprobe map p5, then /island, then /zone 1 - wait ~60 s in each world; send the 3 "P5 world" lines (is the map on in island worlds?).
+10. /skyprobe map off: probe box gone, SkyyHud widgets exactly as before?
