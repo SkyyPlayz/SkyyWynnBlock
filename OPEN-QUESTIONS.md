@@ -469,6 +469,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   old max) -> SkyyMobs 0.1.3 fix relaunched (wf_5300d8b6-004), deploy when the game is closed; mob curve spec relaunched with this test.
   ALSO SEEN in today's log: "[SkyySkills] Staff handover: 8 of 8 ladder staffs do NOT come from SkyyArmory" + SkyyArmory "ANOTHER PACK WINS
   for 8" although SkyySkills 0.4.15 ships none of those files - side check running (staffs may not run SkyyArmory's quick / charged shots).
+- REPORTED 2026-10-03 evening (Skyy, Priest, Iron Wand): "you could scale back the priest healing a bit. charge attacks heal like half my
+  health" -> live file still has Skyy's old caps priestHeal.maxPerHit=50 / maxPerSecond=1000 (defaults 10 / 10; Skyy picked "heal floor 10" on
+  2026-10-03 but had not set it): a ~200 charged hit x the 25% share = 50 HP, capped at max(50, 2 x 15 Mana) = 50 (~1/3 of 141-165 HP). Told
+  Skyy (no build - live rows, Server Setup -> Classes -> Priest): Most HP per hit (at least) 50 -> 10 and Most HP per second (at least) 1000 -> 10
+  -> Iron charged heal at most 30, Copper 20, a tap 6; still too strong -> Charged heal cap per wand Mana 2 -> 1 (Iron 15, Mithril 85).
+  [the mob curve spec re-checks Priest healing against the new mob damage]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
