@@ -63,7 +63,10 @@ Mana per second per tether stays about the same up the ladder (a few small steps
    tiers stabilize faster). A new tether looks **wispy** and turns **solid** once stable.
 3. **Once stable you can look away** - the tether holds while you keep holding right-click (or until your Mana runs out) - so you can
    look at the **next group** and tether them too, until you reach the cap.
-4. Steady damage for a steady Mana drain per tether; no Mana regen while any tether is active; damage is stored as bonus healing.
+4. Steady damage for a steady Mana drain per tether; damage is stored as bonus healing.
+5. **No natural Mana regen while any tether is active - but MANA STEAL still works** (tether damage counts for it). With enough Mana
+   Steal you can tether forever on the lower tiers. **Balance target:** max Mana Steal from gear = the Mana drain of a full
+   **Cobalt Soul Cage** (10 tethers); the Adamantite+ cages drain more than max Mana Steal, so they cannot run forever.
 
 ## Abilities
 
@@ -144,6 +147,7 @@ Mana per second per tether stays about the same up the ladder (a few small steps
 - Priest A2-alt (Guardian Spirit proposed); A1-alt pair; Soul Cage essences + colours for Thorium and up.
 
 ## Change log
+- 2026-10-04: no Mana regen while tethering, but Mana Steal works; max Mana Steal = a full Cobalt cage's drain (Skyy).
 - 2026-10-04: Wings of Fate always heals on arrival - a smaller base heal when no soul healing is stored (Skyy).
 - 2026-10-04: soul tethers corrected - lock onto every enemy in a small radius where you look, stabilize in 1.5-2.5 s (faster at higher tiers), wispy -> solid, look away only once stable (Skyy).
 - 2026-10-04: modifier pool table added under the abilities (Skyy).

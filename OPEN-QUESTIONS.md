@@ -747,6 +747,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   (base; faster at higher tiers) until the tether STABILIZES (wispy -> solid); only then can you look away and tether the next group.
 - LOCKED 2026-10-04 (Skyy): Wings of Fate heals the ally on arrival even with no stored soul healing (a smaller base heal); stored soul
   healing adds on top.
+- LOCKED 2026-10-04 (Skyy): while soul-tethering natural Mana regen is blocked but MANA STEAL still works (tether damage triggers it) - enough
+  Mana Steal = tether forever on lower tiers; balance target: max Mana Steal = the drain of a full Cobalt Soul Cage (10 tethers); Adamantite+
+  drains more, so not forever. [SkyyGear Mana Steal is a flat amount per steal window today - tune its cap to this target in the build]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
