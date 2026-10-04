@@ -1339,3 +1339,20 @@ Each step ~30 s; a disconnect or error is a result too (note the step). /skyprob
    repeat (BetterMap only tracks worlds named default / world; turn its stats 'hstats' off in its settings) - send both lines.
 9. /skyprobe map p5, then /island, then /zone 1 - wait ~60 s in each world; send the 3 "P5 world" lines (is the map on in island worlds?).
 10. /skyprobe map off: probe box gone, SkyyHud widgets exactly as before?
+## SkyyAccessories 0.5.4 - Lantern line replaces Night Vision (DEPLOYED 2026-10-04, backup deploy-20261004-0046)
+1. Log "[SkyyAccessories] 0.5.4 ready". Profile 3: the old Night Vision shows as retired, gives no light; Unequip takes it out.
+2. /accessories givetier <you> NightVision Rare -> the retired reply; /accessories lines: the Lantern line ends "everyone sees your glow, only you see
+   the far light".
+3. Workbench -> Accessories & Bags: Normal Lantern right after Normal Speed (recipe: 1 Lantern + 4 Crude Torch + 2 Copper Ingot); each higher tier
+   needs the one below (Unique: + 3 Yellow Crystal Shard, 4 Copper, 5 Tree Sap; Rare: + Topaz, 10 Iron, 5 Essence of Fire; Legendary: + 3 Topaz,
+   10 Thorium, 15 Essence of Fire). Or /accessories givetier <you> Lantern <rarity>.
+4. At night equip a Normal Lantern: you glow like a torch and a second player sees it; take it out - gone for both.
+5. Unique / Rare / Legendary: the ground lit about 12 / 24 / 48 blocks in neutral white (not red); your hands and nearby blocks no brighter than
+   with Normal. Mine stone (also the block above your head) with Legendary: at most a slight glow - no blinding particles.
+6. A second player beside you and one 20-30 blocks above while you wear Legendary in a cave: they see only your torch glow (no lit patch).
+   Server Setup -> Accessories -> Lantern -> "Others see the reach light" ON: now they see your lit area; turn it OFF again.
+7. Sprint / fly with Legendary: the lit area follows (watch the far edge for steps); low client view distance = smaller area.
+8. Profile switch, death + respawn, world change, logout / login, restart: the light comes back as expected; line off = all Lantern light out within
+   1 s; Legendary reach 48 -> 24 shrinks within 1 s (set both back).
+9. Creative library: 4 Lanterns, Night Vision hidden; check the icons and the held look. KNOWN: the SkyyMenu help text still says Night Vision (next
+   SkyyMenu build).
