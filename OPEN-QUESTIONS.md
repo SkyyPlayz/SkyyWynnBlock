@@ -580,6 +580,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Rice, Tomato, Turnip 3 -> 6; T3 Aubergine, Cauliflower, Chilli 4 -> 16; T4 Pumpkin 5 -> 40; normal seeds follow their crop tier (1 / 2 / 4 / 8);
   ETERNAL seeds (today 31-201, uneven) get the steepest climb [default: x4 per tier step from a T1 base ~50 -> 50 / 200 / 800 / 3,200]. [SkyyBazaar
   0.1.4 with the metals + woods; the money-loop check must cover eternal-seed recipes and cooking (crops -> food)]
+- LOCKED 2026-10-04 (Skyy): "and leather id moost the cost of leather but keep the small meduim and large close to similar prices" then "(price
+  ranges on leather are good, just double the price of all of them)" -> every HIDE x2 flat (Soft 4 -> 8, Light 6 -> 12, Medium 12 -> 24, Heavy
+  18 -> 36, Scaled 24 -> 48, Storm 30 -> 60, Dark 36 -> 72, Prismatic 45 -> 90); leathers follow (auto, +20%: Light 14.4, Medium 28.8, Heavy
+  43.2); NOT the x2-per-tier rule. [cloth + gems still open - default x2 per tier step]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
