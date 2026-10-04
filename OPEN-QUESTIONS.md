@@ -519,6 +519,17 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   easy" -> SkyyParty page: a TPA button on each member row (a /tpa request to that member) + an ACCEPT TPA button while a request to you is
   waiting; SkyyEssentials already has /tpa, /tpahere, /tpaccept (it needs a bridge for SkyyParty to call). [SkyyParty 0.1.7 + SkyyEssentials
   0.1.8, a full round (teleports / commands) after the weekly reset - usage 90%]
+- SPEC DONE 2026-10-04 ~00:00: research/Mob-Curve-Spec.md (896 lines; Wynncraft research + numbers model + balance / feasibility critics +
+  editor). Same-level fights = today's Hard at every level 1-60 (all classes checked); after Lv 20 mobs AND gear grow Wynncraft-style (Lv 40
+  mob x13 health vs x4 today, Lv 40 sword x9.6, Lv 40 armor set +269 Health vs +84); out-levelled fights brutal (+20 levels: 5-9x longer to kill,
+  2.7-3.5x harder hits); kill XP from mob level (today's Hard XP within 2%); casters keep up (Mana regen +7% per class level above 20); Reforge
+  raises an item to your level; Life Steal capped at 5% of max Health per second. Skyy's Yeti under the new rules: a Divinity 21 Priest needs
+  11 charged shots on a Lv 34 Yeti (was 4) and dies in 6 hits. QUESTIONS FOR SKYY (defaults): (1) same-level = today's Hard [yes]; (2) gap: free
+  5 levels, then -2.5% your damage / +1.5% its damage per level, floor 40% / cap x1.5 [yes]; (3) gap only above you, "your level" = class weapon
+  skill [yes/yes]; (4) Mana regen +7%/class level above 20 [yes]; (5) Reforge raises the level [yes]; (6) XP gap rows to free 3 / +8% / -7.5%
+  [keep locked rows]; (7) damage floor above Lv 20 [off]; (8) Lv 50-60 grow like Hard [yes]; (9) fixed level by role for bosses [table empty];
+  (10) Life Steal cap 5%/s [yes]. Build = SkyyMobs 0.1.4 + SkyyGear next free version + SkyySkills 0.4.16, full ultracode round, deploy +
+  roll back together (add a deploy_set STOP pair rule) - after the weekly reset. Now (no build): Priest "Charged heal cap per wand Mana" 2 -> 1.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
