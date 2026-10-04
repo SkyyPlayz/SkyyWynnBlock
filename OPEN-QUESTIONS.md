@@ -716,6 +716,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   is still to choose. (2) WARRIOR as proposed: A1 Rallying Guard (party takes less damage + mobs turn to you), A2 Shield Shockwave (cone stun).
   (3) The main session PROPOSES the remaining A2 swap-outs + improved A1s for every class in the class-ability spec after the reset (Skyy picks).
   (4) ASSASSIN A2 swap-out = GOD KILLER: the next attack on a boss or mini-boss does 2x damage, 3x if it is a backstab; stacks with First Strike.
+- LOCKED 2026-10-04 (Skyy): "each ability gets its own upgrade tree where you unlock the modifiers. ability upgrade points are gained by using
+  the ability." -> per-ability upgrade trees (modifiers, variations and upgrades like the Priest heal's Cleanse / radius / HoT % live in that
+  ability's tree); ability points come from USING that ability. [spec: count only uses that do something - hit an enemy, heal a hurt ally,
+  absorb damage - so spamming at nothing earns nothing; points saved per profile]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
