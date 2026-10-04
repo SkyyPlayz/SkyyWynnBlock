@@ -23,7 +23,8 @@ build gear for."*
 >   tree upgrades + custom distance; a lingering light trail does AoE damage); wand = hop opposite to where you look (look down = straight up) +
 >   an exploding orb (AoE 6) leaving a 9-block healing orb (20% of the explosion damage per second, 3-4 s); MONK = Bo staff, charged = pole-vault
 >   lunge kicking enemies in the way for 2x, slow 'flowing' fall, and timed bounds on landing that chain like a skipping stone (no damage,
->   extra Stamina).
+>   extra Stamina); one free MID-AIR jump right after the vault (the first bound needs no ground timing); a timed ground jump takes no fall
+>   damage and launches farther the farther you fell.
 > - Skyy finds the Priest "a little Op" next to a new Mage (healing caps are being tuned live; a staff asset bug is being checked).
 
 > **Skyy's direction 2026-10-04 (replaces "one ability = one job" in section 1 / rule 2):**

@@ -625,6 +625,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   still falling slower - "skip across the battlefield like a stone on water"; the bound chains as long as your timing holds; bounds do no
   damage but cost more Stamina than a normal jump. [engine checks before building: slow-fall / glide (fall speed control), catching the jump
   right at landing, Stamina per bound, no fall damage while flowing - a probe first; comes with the Monk class round after the ability core]
+- LOCKED 2026-10-04 (Skyy, Monk traversal add-on): ONE free MID-AIR jump during the vault, as long as it is the first jump after the traversal
+  (so the first bound need not be timed on the ground); a correctly timed ground jump takes NO fall damage, and the FURTHER you fell, the
+  FURTHER that timed bound launches you (fall height -> bound distance). [engine check: mid-air jump input during the vault (SkyySkills'
+  double jump already reads crouch-in-air - bridge skill:dj:key), fall height at landing]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
