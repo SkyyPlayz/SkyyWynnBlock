@@ -445,6 +445,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   "Health:" line under it comes from the item type and stays at the Lv 1 number. Armor above your level gives no Health (level.armorNative).
   [the MOB CURVE round tunes armor Health together with the new mob damage (its own armor curve row if mobs climb faster than weapons); the
   armor tooltip gets the Damage Data box rule (hide the vanilla lines where possible, no grey note) if SkyyGear 0.2.2 left the armor note]
+- REPORTED 2026-10-03 evening (Skyy, playing): "just crafted 10 iron wands and didnt get any smithing xp." -> as built: Smithing XP comes only
+  from smelting (Furnace / the /craft Furnace tab; SkyySkills RecipeXp.classify pays Alchemybench + Furnace only) and reforging. Craft XP for
+  weapons + armor was planned inside the loot round (research/Loot-Unid-Spec.md 2.4: xp.craft by rarity 500 / 1000 / 2000 / 4000 / 8000 /
+  16000 = Skyy's x10, tools pay on reforge, + Skyy's later answer "the harder it is to craft, the more xp" = steep tier scaling, Crude / Wood
+  much less). Seen in the same screenshots: wand tooltips "Spell at Lv 15: 25-125" (Copper) / "41-199" (Iron) = quick-charged range, replaced
+  by the Charged shot / Quick shot lines in SkyyGear 0.2.2 (running). [PULLED FORWARD: SkyyGear 0.2.3 = gear craft Smithing XP (full round,
+  XP -> level-up coins = economy), launched as soon as 0.2.2 is READY; tool levels -> 0.2.4, the loot round -> 0.2.5 keeps identify XP]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
