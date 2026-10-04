@@ -663,6 +663,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   [OPEN: Mage = staffs + SPELLBOOKS then, with a new non-heal spellbook traversal (proposed: RUNE RECALL - cast drops a glowing rune, cast again
   within ~8 s to snap back to it, knocking enemies back where you left); how extra tethers pick targets (default: nearest enemies within ~8
   blocks of the first)]
+- LOCKED 2026-10-04 (Skyy): "mage can have the spell book" / "but we need a mageish traversal for it." -> Mage = staffs + SPELLBOOKS; Priest =
+  wands + SOUL ORB (Wings of Fate). Spellbook traversal options offered: (1) RUNE RECALL [recommended]; (2) LEVITATE (float up ~8 blocks, hover
+  ~3 s drifting the way you look, no fall damage); (3) PAGE STORM (turn into a whirl of pages and fly ~12 blocks forward through enemies).
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

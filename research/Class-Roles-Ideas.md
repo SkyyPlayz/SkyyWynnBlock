@@ -33,8 +33,8 @@ build gear for."*
 >   top; hits on airborne enemies send them flying; crouch near the top = Plunge Punch dragging them down into the slam (no fall damage, no
 >   Acrobatics XP); no plunge = a 15%-slower steerable fall. Both Monk falls: 15% slower, 15% less fall damage.
 > - **2026-10-04 weapons** (Skyy): 2 weapon types per class, NO sharing for now - Warrior swords + spears, Archer shortbows + crossbows,
->   Berserker axes + maces / clubs, Priest wands + spellbooks, Assassin daggers + kunai, Monk Bo staff + fist weapons (hand wraps, gauntlets,
->   claws), Mage staffs + OPEN. Section 4's shared-weapon ideas wait until sharing is allowed; later class idea: Martial Artist (kicks + fists).
+>   Berserker axes + maces / clubs, Priest wands + SOUL ORB, Assassin daggers + kunai, Monk Bo staff + fist weapons (hand wraps, gauntlets,
+>   claws), Mage staffs + SPELLBOOKS (traversal open). Section 4's shared-weapon ideas wait until sharing is allowed; later class idea: Martial Artist (kicks + fists).
 > - Skyy finds the Priest "a little Op" next to a new Mage (healing caps are being tuned live; a staff asset bug is being checked).
 
 > **Skyy's direction 2026-10-04 (replaces "one ability = one job" in section 1 / rule 2):**
