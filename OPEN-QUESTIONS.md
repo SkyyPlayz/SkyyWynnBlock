@@ -666,6 +666,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-10-04 (Skyy): "mage can have the spell book" / "but we need a mageish traversal for it." -> Mage = staffs + SPELLBOOKS; Priest =
   wands + SOUL ORB (Wings of Fate). Spellbook traversal options offered: (1) RUNE RECALL [recommended]; (2) LEVITATE (float up ~8 blocks, hover
   ~3 s drifting the way you look, no fall damage); (3) PAGE STORM (turn into a whirl of pages and fly ~12 blocks forward through enemies).
+- LOCKED 2026-10-04 (Skyy): Mage SPELLBOOK traversal = LEVITATE (float up ~8 blocks, hover ~3 s drifting the way you look, land with no fall
+  damage). "the recall sounds more like a assassin ability" -> ASSASSIN KUNAI traversal: click + hold to charge, throw - you TELEPORT to where it
+  lands (within ~20 blocks; if it flies out of range you appear where it left your range); hold right-click to RETURN to where you were before
+  the teleport, with the AoE knockback. An ASSASSIN class ability will be like RotMG's Rogue CLOAK (invisibility) -> cloak, teleport in, hit,
+  teleport out. [defaults: the return works for ~8 s after the throw; Soul Orb extra tethers jump to the nearest enemies within ~8 blocks of the
+  first target (Skyy did not object); open: daggers' traversal - keep the vanilla dagger charged move?]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

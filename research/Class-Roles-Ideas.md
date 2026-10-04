@@ -29,6 +29,8 @@ build gear for."*
 >   for steady Mana, no Mana regen while active, damage stored as bonus healing; tiers add tethers - Mithril ~8); its traversal = WINGS OF FATE
 >   (gliding bounds the way you look, locks onto an ally that way and carries you to them; blue wings + glowing trail). Spellbooks move to
 >   the Mage (traversal open - proposed Rune Recall).
+> - **2026-10-04 more traversals** (Skyy): Mage spellbook = LEVITATE; Assassin kunai = throw-and-teleport (~20 blocks) + hold right-click to
+>   return with an AoE knockback; an Assassin class ability = a RotMG-style CLOAK (cloak, teleport in, hit, teleport out).
 > - **2026-10-04 FIST traversal** (Skyy): Rising Strike - uppercut leap that knocks enemies up; brief slow hang time for you and them at the
 >   top; hits on airborne enemies send them flying; crouch near the top = Plunge Punch dragging them down into the slam (no fall damage, no
 >   Acrobatics XP); no plunge = a 15%-slower steerable fall. Both Monk falls: 15% slower, 15% less fall damage.
