@@ -691,6 +691,25 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   4 red gems / tethers, same 1.1x; THORIUM = 6 tethers at 1.5x; COBALT = 10 tethers at 1.5x; "and so on" (tiers alternate: more damage per
   Mana, then more tethers; Mana per second per tether stays about the same). [PROPOSED rest: Adamantite 14 tethers 2.0x, Mithril 16 tethers 2.0x,
   Onyxium 20 tethers 2.5x; essences / gem colours for Thorium+ picked from vanilla essences in the spec; recipes follow the previous-tier rule]
+- LOCKED 2026-10-04 (Skyy, CLASS ABILITIES - structure): each class unlocks ABILITY 1 first, later ABILITY 2, then a SWAP-OUT alternative for
+  ability 2, and a good bit later an IMPROVED ALTERNATIVE to ability 1 -> 4 abilities per class (traversal not counted), 2 equipped at a time.
+  PRIEST - A1 (RotMG tome style): AoE heal, radius starts at 9 blocks (tree upgrades); the Priest heals 20% more than allies from it; everyone
+  in it also gets a short heal-over-time = a % of the instant heal (tree upgrades the instant heal, the %, and the duration separately).
+  A2: SHIELD BUBBLE, stationary (placed); a tree modifier makes it lock around YOU (not an ally).
+  MAGE - as proposed: A1 Meteor (burst AoE), A2 Mana Barrier (Mana soaks damage).
+  BERSERKER - A1 War Cry/Enrage: the party gets a damage buff and the Berserker gets the same buff but bigger; rage GROWS for 10 s, holds 5 s,
+  then ends abruptly. A2 Whirlwind (spinning AoE + life steal) as proposed.
+  MONK - A1 keeps the name FLOWING FORM but: an aura where enemies are AWED by your speed and skill; only YOU gain flat move + attack speed;
+  every hit you land = a combo, each combo slows Awed enemies and lowers their defence; at 15 combo your flat buff doubles; drains Mana AND
+  Stamina over time, lasts 30 s (tree upgrades), ends when either runs out; enemies stay Awed 10 s after it ends or after they leave the aura.
+  A2 PALM STRIKE: like the Warrior's stun but SINGLE target with knockback; low cost, quick, spammable at higher levels.
+  ARCHER - A1 combined: Pinning Shot roots and MARKS (rooted enemies take more damage). A2 = swap between RAPID FIRE (15 arrows in 3 s,
+  upgradable) and EXPLOSIVE ARROW (the next charged shot does 2x damage in an explosive AoE, upgradable) - its A2 + A2 alternative.
+  ASSASSIN - A1 CLOAK for a limited time + FIRST STRIKE kept even after the cloak ends: the next hit gets +100% crit chance (100% crit is
+  reachable, so 100% + 100% = 200% = a guaranteed overcrit); MAX CRIT CHANCE becomes 150% (50% overcrit chance at the cap; with First Strike
+  250% = a 50% chance of a TRIPLE crit). A2 Toxin as proposed. [cross-mod: SkyyGear crit cap 150% + a triple-crit tier above 200%]
+  OPEN: Warrior (Rallying Guard + Shield Shockwave proposed, no answer yet); the A2 alternatives and improved A1s for every class except the
+  Archer's A2 pair.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

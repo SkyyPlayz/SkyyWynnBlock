@@ -29,6 +29,11 @@ build gear for."*
 >   for steady Mana, no Mana regen while active, damage stored as bonus healing; tiers add tethers - Mithril ~8); its traversal = WINGS OF FATE
 >   (gliding bounds the way you look, locks onto an ally that way and carries you to them; blue wings + glowing trail). Spellbooks move to
 >   the Mage (traversal open - proposed Rune Recall).
+> - **2026-10-04 CLASS ABILITIES LOCKED** (Skyy; full text in OPEN-QUESTIONS 'LOCKED 2026-10-04 (Skyy, CLASS ABILITIES - structure)'): 4 per
+>   class (A1, A2, A2 swap-out, improved A1 later), 2 equipped. Priest AoE heal + HoT / placed shield bubble; Mage Meteor / Mana Barrier;
+>   Berserker growing Enrage (party + bigger self buff) / Whirlwind; Monk Flowing Form = self speed + 'Awed' combo aura / spammable single-target
+>   Palm Strike; Archer Pinning Shot that marks / Rapid Fire or Explosive Arrow; Assassin Cloak + First Strike (+100% crit; crit cap 150%,
+>   triple crit above 200%) / Toxin. Warrior still open.
 > - **2026-10-04 Soul Orb ladder** (Skyy): base Soul Orb (blue, 1 tether) -> Copper Soul Cage (life essence, green, 2 tethers, 1.1x) -> Iron
 >   (fire essence, red, 4, 1.1x) -> Thorium (6, 1.5x) -> Cobalt (10, 1.5x) -> ... -> max 20 tethers (a gem on each of a dodecahedron's 20 points).
 > - **2026-10-04 more traversals** (Skyy): Mage spellbook = LEVITATE; Assassin kunai = throw-and-teleport (~20 blocks) + hold right-click to
