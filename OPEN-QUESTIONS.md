@@ -598,6 +598,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   rows Food_Kebab_Vegetable / _Fruit 1,800, _Mushroom 1,400, _Meat 2,600 (about half). RULE for the next SkyyCooking build (0.1.5, lean): XP by
   craft DIFFICULTY - crafting steps in the chain, recipe knowledge, bench tier, ingredient tier (the Bazaar progression) - easy one-step dishes
   pay least, multi-step dishes (bread, pies, Caesar) most; one-time update of lines still at the old defaults.
+- LOCKED 2026-10-04 (Skyy, class abilities): 2 class abilities per class (the two rune lines; 3 if Q becomes changeable), both changeable in the
+  class tree; built on runes - unlock 2 skills, up to 2 modifiers each (vanilla rule), later variations of each skill (RotMG UT-style twists);
+  later up to 3 saved rune loadouts per class swapped by hotkey / macro. OPEN: traversal = the 2nd class ability, or every charged attack?
+  [recommended: ability 2 = a class movement skill with a class effect, swappable for a non-movement variant; weapon charged attacks stay
+  attacks; Acrobatics = base movement; Q = weapon Signature] - research/Class-Roles-Ideas.md top block.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

@@ -21,6 +21,21 @@ build gear for."*
 >   keep the single-target charged shot. Priest **Mend** below would come on top of that.
 > - Skyy finds the Priest "a little Op" next to a new Mage (healing caps are being tuned live; a staff asset bug is being checked).
 
+> **Skyy's direction 2026-10-04 (replaces "one ability = one job" in section 1 / rule 2):**
+> - Hytale has **2 ability slots** (the two 0.7 rune lines; 3 if Q is made changeable) -> every class gets **2 class abilities**, both changeable
+>   in the class skill tree -> 1-3 ability options per class, not RotMG's one.
+> - Abilities are built on the **rune system**: unlock 2 skills, then **modifiers** (up to 2 per ability, like vanilla), and later
+>   **variations** of each skill (same base ability with a twist - like RotMG's UT abilities).
+> - Later: **saved rune loadouts** - up to 3 saved setups per class, swapped with a hotkey / macro (needs SkyyProfiles to save the rune
+>   sections - research/Hytale-Runes-Research.md 4.4).
+> - OPEN (Skyy): traversal - Wynncraft gives every class a movement skill, and most Hytale weapons already have a traversal charged attack:
+>   make the 2nd class ability the traversal, or make every charged attack traversal? Main-session recommendation: ability 1 = the team
+>   job, ability 2 = a class MOVEMENT skill that also does a class thing (Warrior charge + taunt, Mage blink + rune, Archer leap back +
+>   snare, Priest dash to an ally + heal, Assassin shadowstep, Berserker leap slam, Monk flowing step + party haste), swappable in the tree
+>   for a non-movement variant; weapon charged attacks stay weapon attacks (ranged / magic charged shots are their damage, wands get the
+>   burst, and forced lunges near island edges mean void deaths); Acrobatics (double jump, roll) stays everyone's base movement; Q stays
+>   the weapon's own Signature for now.
+
 ## 0. For Skyy
 
 1. Right now a class is mostly "the weapon you're allowed to hold". In RotMG, each class also has ONE ability that does a job for the team.
