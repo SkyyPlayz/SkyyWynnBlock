@@ -553,6 +553,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   mob gear the zone / mob level.
 - LOCKED 2026-10-04 (Skyy): Reforge LEVEL UP cap = +6 levels over the level the item was found / made at ("6"); never above the metal's top
   level or the player's own level; coins per level (rising with level + rarity). [mob curve SkyyGear build]
+- REPORTED 2026-10-04 (Skyy, Zone 1 at night, screenshot): "the lantern shows weird square dark spaces in the distance." -> the reach comes from
+  ONE hidden light placed as low as the brightness cap allows (Legendary: level 208, ~123 blocks up); far, lower-lying ground shows dark
+  square patches (likely the client's light grid stopping at 32-block chunk sections / a height limit around that high light - UNVERIFIED).
+  Live test given to Skyy: Accessories -> Lantern -> "Legendary: reach" 48 -> 32 (the light sits much lower), or Advanced "Hidden light:
+  highest" 128 -> 64. [fix in the next SkyyAccessories build if the squares stay: several lower helper lights spread around the wearer, or a
+  shorter max reach]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
