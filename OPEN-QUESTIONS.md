@@ -745,6 +745,8 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-10-04 (Skyy, soul tether targeting - replaces "extra tethers jump within ~8 blocks"): holding right-click tethers EVERY enemy
   in a small radius around where you look, all at once (up to the tier cap); damage starts at once but you must keep looking 1.5-2.5 s
   (base; faster at higher tiers) until the tether STABILIZES (wispy -> solid); only then can you look away and tether the next group.
+- LOCKED 2026-10-04 (Skyy): Wings of Fate heals the ally on arrival even with no stored soul healing (a smaller base heal); stored soul
+  healing adds on top.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
