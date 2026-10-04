@@ -562,6 +562,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - ANSWERED 2026-10-04 (Skyy, Lantern squares test): "2, try to smooth the edges" -> option 2 (Advanced "Hidden light: highest" 128 -> 64,
   the light sits lower) looked better; next SkyyAccessories build (0.5.5, lean, after the reset): default highest 64 + SMOOTH the lit edge (several
   lower helper lights spread around the wearer and/or a softer falloff so no square dark patches at the edge).
+- LOCKED 2026-10-04 (Skyy): "bizzar looks good, but in increase the prices of the more difficult items by a good margin. right now i can easily
+  buy a stack of mithril like its nothing ... id probbly 2x each material. so copper stays. iron gets 2x. thorium gets 4x ect" -> metal ore base
+  prices x2 per tier step: Copper 5 (x1), Iron 8 -> 16 (x2), Thorium 12 -> 48 (x4), Cobalt 18 -> 144 (x8), Adamantite 30 -> 480 (x16), Mithril
+  45 -> 1,440 (x32), Onyxium 58 -> 3,712 (x64); ingots follow (auto = ore x ratio + the 20% premium); selling pays the same scale. Silver / Gold
+  (not in the tool ladder) unchanged unless Skyy says. Live now via /bazaaradmin price <ore id> <base> (told Skyy). [next SkyyBazaar build:
+  these as defaults + the money-loop check re-run over the new table (salvage / alloy loops) - full round after the reset]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
