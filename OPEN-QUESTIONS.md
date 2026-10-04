@@ -486,6 +486,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   no saved profiles) becomes MONK; Shaman stays an idea for later; our own classes, not Wynncraft's. [OPEN: which staff - the melee Bo staffs
   (vanilla Weapon_Staff_Bo_Bamboo / Bo_Wood, + metal Bo staffs we build) or the Mage's magic staffs? default: Bo staffs, so Mage keeps the
   spell staffs; Monk's role + ability come from research/Class-Roles-Ideas.md (RotMG-style roles, research running)]
+- REPORTED 2026-10-03 evening (Skyy): "i think priest is just a little Op i made a new mage, and its quite a bit harder." -> Priest side: the live
+  heal caps 50 / 1000 + self-heal 100% (Skyy is tuning); the wand burst (lower per-enemy damage) also trims Priest damage. Mage side: SUSPECTED
+  BUG - today's log WARNs that all 8 ladder staffs come from "Skyy:0.4.15 SkyySkills" (which ships none of them; SkyyArmory ships all 8) and
+  says they then run the vanilla file (spends 50 Mana behind the 10-Mana check, no quick shot) - a new Mage (30-40 Mana) would get one cast;
+  side check running. Asked Skyy: does a staff tap fire the blue quick shot, and how much Mana does one Wood staff charged cast take (should be
+  10)? Also the staff damage boost (Armory -> Damage by staff 120-125%) is still at 100 in the live file.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
