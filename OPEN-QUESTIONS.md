@@ -500,6 +500,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Skylancer, Gunslinger, Hemomancer, Ascetic = Monk, Blightcaller, Hexer, Sunderer, Warden, Duelist, Spellblade), 11 need custom gear, 7 need a
   big new system. 15 questions for Skyy with defaults in section 7 [wave 0 = an ability core + engine probe; wave 1 = Priest Mend, Berserker War
   Cry, Archer Pinning Shot, Tinker - after the weekly reset].
+- TESTED 2026-10-03 evening (Skyy, new Mage): "staff is working right. and it does good damage, but without the healing from priest, you die
+  really easy." -> staffs VERIFIED (the staff-handover WARN is the check, not the staffs); the Mage is very fragile solo. [the mob curve spec
+  and the class roles plan must give the Mage a survival tool (e.g. a blink / Mana shield / spell life steal) instead of only "-15% health"]
+- VERIFIED 2026-10-03 evening (Skyy): "the crafting in benches from your sack works perfectly even in multiplayer."
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
