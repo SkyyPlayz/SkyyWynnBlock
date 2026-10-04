@@ -734,6 +734,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   two layers together stay balanced]
 - LOCKED 2026-10-04 (Skyy): "the shield moving with you will be a modifier, not a class tree upgrade" -> the Priest shield bubble's
   "lock around you" is a MODIFIER in the shield's own ability tree (2 equipped), not a class-tree node (corrects the earlier "tree modifier").
+- LOCKED 2026-10-04 (Skyy): class-tree ability upgrades are Wynncraft-style PATHS - choosing a path to build into LOCKS OUT the other paths
+  (choose-one picks with trade-offs, like the 1-of-5 element). The IMPROVED A1 ALTERNATIVE comes in TWO options per class and you pick ONE
+  (both better than A1 but different); the A2 alternative stays a single option -> 5 abilities designed per class (A1, A1-alt x2, A2,
+  A2-alt), 4 obtainable by one character, 2 equipped. [spec proposes both A1-alt options per class; whether a respec can switch the A1-alt
+  pick follows the trees' respec rules]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
