@@ -684,6 +684,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   as you fight / Palm Strike: stun + knockback); Archer CROWD CONTROL + focus marker (Pinning Shot: roots a line / Hunter's Mark: party deals
   more to the target, shows it); Assassin PRIORITY KILLER + debuffer (Cloak: invisible, next hit a crit backstab - Skyy's pick / Toxin: poison
   cloud that Weakens). Buffers split so they stack: Berserker = damage, Monk = speed. No summoner yet (later classes). [waiting for Skyy]
+- LOCKED 2026-10-04 (Skyy, SOUL ORB ladder): the first is just a SOUL ORB (blue soul, 1 tether, 1.0x damage per Mana). Each next tier crafts a
+  SOUL CAGE around the previous one - a soul inside a DODECAHEDRON metal lattice (20 points = at most 20 gems = 20 tethers); the soul, gems and
+  tethers take the colour of the tier's ESSENCE: COPPER SOUL CAGE = soul orb + copper + LIFE essence -> green soul, 2 green gems, 2 green
+  tethers, each 1.1x the soul orb's damage for the same Mana per tether; IRON = copper cage + iron + FIRE essence (deep-cave mobs) -> red soul,
+  4 red gems / tethers, same 1.1x; THORIUM = 6 tethers at 1.5x; COBALT = 10 tethers at 1.5x; "and so on" (tiers alternate: more damage per
+  Mana, then more tethers; Mana per second per tether stays about the same). [PROPOSED rest: Adamantite 14 tethers 2.0x, Mithril 16 tethers 2.0x,
+  Onyxium 20 tethers 2.5x; essences / gem colours for Thorium+ picked from vanilla essences in the spec; recipes follow the previous-tier rule]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

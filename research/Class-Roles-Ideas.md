@@ -29,6 +29,8 @@ build gear for."*
 >   for steady Mana, no Mana regen while active, damage stored as bonus healing; tiers add tethers - Mithril ~8); its traversal = WINGS OF FATE
 >   (gliding bounds the way you look, locks onto an ally that way and carries you to them; blue wings + glowing trail). Spellbooks move to
 >   the Mage (traversal open - proposed Rune Recall).
+> - **2026-10-04 Soul Orb ladder** (Skyy): base Soul Orb (blue, 1 tether) -> Copper Soul Cage (life essence, green, 2 tethers, 1.1x) -> Iron
+>   (fire essence, red, 4, 1.1x) -> Thorium (6, 1.5x) -> Cobalt (10, 1.5x) -> ... -> max 20 tethers (a gem on each of a dodecahedron's 20 points).
 > - **2026-10-04 more traversals** (Skyy): Mage spellbook = LEVITATE; Assassin kunai = throw-and-teleport (~20 blocks) + hold right-click to
 >   return with an AoE knockback; an Assassin class ability = a RotMG-style CLOAK (cloak, teleport in, hit, teleport out).
 > - **2026-10-04 FIST traversal** (Skyy): Rising Strike - uppercut leap that knocks enemies up; brief slow hang time for you and them at the
