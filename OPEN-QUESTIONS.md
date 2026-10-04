@@ -675,6 +675,15 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 - LOCKED 2026-10-04 (Skyy): daggers keep their VANILLA charged traversal for now ("we can change it up later"; Smoke Roll stays an idea). Every
   class weapon now has its traversal: custom for staff / spellbook / wand / soul orb / Bo staff / fists / kunai; vanilla for daggers, swords,
   spears, bows, crossbows, axes, maces / clubs.
+- PROPOSED 2026-10-04 (main session; Skyy: "the next step is deciding which roles each class should play to help set their ability's up
+  correctly"): each class = a PRIMARY role (ability 1) + a SECONDARY role (ability 2), both abilities also help the caster solo:
+  Warrior TANK + crowd control (Rallying Guard: party takes less damage + mobs turn to you / Shield Shockwave: cone stun); Priest HEALER +
+  protector (Mend: party heal + heal-over-time / Divine Shield: a damage-absorbing bubble on an ally); Mage BURST AoE + survival (Meteor /
+  Mana Barrier: Mana soaks damage - Skyy's "you die really easy" note); Berserker DAMAGE BUFFER + sustained melee (War Cry: party Empowered +
+  self Enrage / Whirlwind: spinning AoE with life steal); Monk SPEED BUFFER + disruptor (Flowing Form: party attack + move speed that grows
+  as you fight / Palm Strike: stun + knockback); Archer CROWD CONTROL + focus marker (Pinning Shot: roots a line / Hunter's Mark: party deals
+  more to the target, shows it); Assassin PRIORITY KILLER + debuffer (Cloak: invisible, next hit a crit backstab - Skyy's pick / Toxin: poison
+  cloud that Weakens). Buffers split so they stack: Berserker = damage, Monk = speed. No summoner yet (later classes). [waiting for Skyy]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
