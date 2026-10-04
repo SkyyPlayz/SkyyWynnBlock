@@ -710,6 +710,8 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   250% = a 50% chance of a TRIPLE crit). A2 Toxin as proposed. [cross-mod: SkyyGear crit cap 150% + a triple-crit tier above 200%]
   OPEN: Warrior (Rallying Guard + Shield Shockwave proposed, no answer yet); the A2 alternatives and improved A1s for every class except the
   Archer's A2 pair.
+- LOCKED 2026-10-04 (Skyy): "3. priest ability 2 cleanse" -> read as the Priest's 3rd unlock = the A2 SWAP-OUT: CLEANSE (removes debuffs from
+  allies in range) as the alternative to the shield bubble (A2). [confirm with Skyy; improved A1 still to design]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
