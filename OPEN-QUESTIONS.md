@@ -592,6 +592,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   xpMultiplier 0.5; levels 11-13 cost 5,000 + 7,500 + 10,000) -> live row Server Setup -> Cooking -> "Cooking XP multiplier" 0.5 -> 0.15 (about
   1 level per 7 skewers at Cooking 10-12) - told Skyy. [the SkyySkills 0.4.16 per-skill level lists could also give Cooking its own steeper list;
   update the SkyyCooking default once Skyy settles a number]
+- LOCKED 2026-10-04 (Skyy): "lower the skewers a bit. the easier to craft the less xp. the harder to craft the more." -> today the "XP per craft"
+  table pays 85% of the raw gathering in a dish's whole ingredient chain x 950 per item (x1.25 pies / Caesar): one-step skewers with several raw
+  items pay a lot (Kebab Vegetable / Fruit 3,650, Mushroom 2,850, Meat 5,250). Live now (told Skyy): Server Setup -> Cooking -> "XP per craft"
+  rows Food_Kebab_Vegetable / _Fruit 1,800, _Mushroom 1,400, _Meat 2,600 (about half). RULE for the next SkyyCooking build (0.1.5, lean): XP by
+  craft DIFFICULTY - crafting steps in the chain, recipe knowledge, bench tier, ingredient tier (the Bazaar progression) - easy one-step dishes
+  pay least, multi-step dishes (bread, pies, Caesar) most; one-time update of lines still at the old defaults.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
