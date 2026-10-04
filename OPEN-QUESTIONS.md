@@ -530,6 +530,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   [keep locked rows]; (7) damage floor above Lv 20 [off]; (8) Lv 50-60 grow like Hard [yes]; (9) fixed level by role for bosses [table empty];
   (10) Life Steal cap 5%/s [yes]. Build = SkyyMobs 0.1.4 + SkyyGear next free version + SkyySkills 0.4.16, full ultracode round, deploy +
   roll back together (add a deploy_set STOP pair rule) - after the weekly reset. Now (no build): Priest "Charged heal cap per wand Mana" 2 -> 1.
+- TESTED 2026-10-04 (Skyy screenshots): SkyyGear 0.2.2 tooltips in game - Wooden Earth Staff Lv 6: "Charged shot - 10 Mana - 87 damage at Lv 6" /
+  "Quick shot - 2 Mana - 17 damage at Lv 6", no vanilla Damage Data box, no grey note. Copper Greaves Lv 6 (Unique): "Health at Lv 6: +12",
+  "Resistance at Lv 6: 6.2%", and the vanilla lines below still show the BASE "+7" / "+5%" (the armor box stays because the engine applies those
+  asset stats; the grey note is gone, so two Health numbers show). [proposed: hide the armor box too by moving the whole armor Health /
+  resistance into SkyyGear (empty the asset stats per type, apply the levelled stats as modifiers) - fits the mob curve's SkyyGear part (its new
+  armor Health curve); asked Skyy]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
