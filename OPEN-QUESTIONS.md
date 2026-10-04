@@ -568,6 +568,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   45 -> 1,440 (x32), Onyxium 58 -> 3,712 (x64); ingots follow (auto = ore x ratio + the 20% premium); selling pays the same scale. Silver / Gold
   (not in the tool ladder) unchanged unless Skyy says. Live now via /bazaaradmin price <ore id> <base> (told Skyy). [next SkyyBazaar build:
   these as defaults + the money-loop check re-run over the new table (salvage / alloy loops) - full round after the reset]
+- LOCKED 2026-10-04 (Skyy): "same fore the more rare woods. we are building a progresson tree" -> logs x2 per tier step, tiers from today's
+  Bazaar prices: T1 common (Oak, Birch, Ash, Aspen, Beech, Cedar, Dry, Fir, Jungle, Palm 3; Bamboo / Burnt 2) x1; T2 (Apple, Banyan,
+  Bottletree, Camphor, Blue Fig, Gumboab, Maple, Palo, Poisoned, Sallow, Spiral, Windwillow, Wild Wisteria 4) x2 = 8; T3 (Amber, Redwood 5) x4 =
+  20; T4 (Azure, Petrified 6) x8 = 48; T5 (Crystalwood, Fire, Frostwood, Stormbark 8) x16 = 128. RULE (progression tree): every tiered material
+  family costs x2 per tier step. [default for the SkyyBazaar 0.1.4 build: the same x2 rule for the other tiered families too (hides / leathers
+  light-medium-heavy, cloth, gems) unless Skyy says no; planks stay as they are (made from logs, no loop); money-loop check re-run]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
