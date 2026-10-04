@@ -463,6 +463,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   damage, mining and foraging fortune. ect. pretty much all the stats." -> a SkyBlock-style Stats page behind Your Profile: every stat with
   its live total + a per-source breakdown (gear, accessories, skills, class, trees, food, base); also fixes the cut-off Your Profile text.
   [spec drafted by the cloud (CLOUD-RESUME top task), multi-mod build after the weekly reset (Mon 2026-10-06) - usage 83%]
+- TESTED 2026-10-03 evening (Skyy set the stopgap Custom 20% / 8%, caps 20 / 6): /mobs inspect "[Lv 32] Yeti - Health x7.2 (1627 / 1627 HP),
+  base 226 HP, damage x3.48"; "still almost 3 shot him" then "the second one i tried took like 8 hits, but its hp bar looked empty long before it
+  died." -> damage is as the tooltip says (~200 per Iron Wand charged shot); the bar is SkyyMobs bug F1 (a live re-apply leaves the client on the
+  old max) -> SkyyMobs 0.1.3 fix relaunched (wf_5300d8b6-004), deploy when the game is closed; mob curve spec relaunched with this test.
+  ALSO SEEN in today's log: "[SkyySkills] Staff handover: 8 of 8 ladder staffs do NOT come from SkyyArmory" + SkyyArmory "ANOTHER PACK WINS
+  for 8" although SkyySkills 0.4.15 ships none of those files - side check running (staffs may not run SkyyArmory's quick / charged shots).
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
