@@ -475,6 +475,17 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Skyy (no build - live rows, Server Setup -> Classes -> Priest): Most HP per hit (at least) 50 -> 10 and Most HP per second (at least) 1000 -> 10
   -> Iron charged heal at most 30, Copper 20, a tap 6; still too strong -> Charged heal cap per wand Mana 2 -> 1 (Iron 15, Mithril 85).
   [the mob curve spec re-checks Priest healing against the new mob damage]
+- LOCKED 2026-10-03 evening (Skyy): "id like the separate the wand from the staff a bit. swap its charged attack to an AOE. so it explodes on
+  contact doing less damage but in a big area. and if you or allies are in that area you heal for a little more. (like +10% more.)" -> WANDS
+  (Priest; Wood + every SkyyArmory metal wand): the charged shot becomes a BURST - explodes on contact, lower damage to every enemy in a big
+  area, and the Priest + allies standing inside get +10% on their Priest heal (live row); STAFFS (Mage) keep the single-target charged shot.
+  [defaults until Skyy says otherwise: radius ~4 blocks, ~60% of today's charged damage per enemy, same Mana, heal caps unchanged; build =
+  SkyyArmory 0.1.1 + SkyyClasses 0.1.12 (+ the SkyyGear tooltip words), full round]
+- LOCKED 2026-10-03 evening (Skyy): "lets swap shaman out for a monk, that uses a staff (we might bring back shaman later, but idk of we should
+  completely copy wynncrafs classes. id rather build our own.)" -> the not-yet-playable Shaman slot (SkyyClasses: enabled false, no weapons,
+  no saved profiles) becomes MONK; Shaman stays an idea for later; our own classes, not Wynncraft's. [OPEN: which staff - the melee Bo staffs
+  (vanilla Weapon_Staff_Bo_Bamboo / Bo_Wood, + metal Bo staffs we build) or the Mage's magic staffs? default: Bo staffs, so Mage keeps the
+  spell staffs; Monk's role + ability come from research/Class-Roles-Ideas.md (RotMG-style roles, research running)]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
