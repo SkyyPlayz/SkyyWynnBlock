@@ -504,6 +504,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   really easy." -> staffs VERIFIED (the staff-handover WARN is the check, not the staffs); the Mage is very fragile solo. [the mob curve spec
   and the class roles plan must give the Mage a survival tool (e.g. a blink / Mana shield / spell life steal) instead of only "-15% health"]
 - VERIFIED 2026-10-03 evening (Skyy): "the crafting in benches from your sack works perfectly even in multiplayer."
+- ANSWERED 2026-10-03 ~22:40 (Skyy, on the new Mage): "i turend it back to what he have hard set at and it feels good right now" -> Strength is
+  Hard again (8% / 4%, caps x6 / x3.5); the Custom 20 / 8 stopgap is dropped. Reading: Hard is right for a Mage, the Priest made mobs feel too
+  easy. The mob curve spec (resumed with this, research cached) keeps Lv 1-20 close to today's Hard, grows mobs toward high levels, puts the
+  brutal part in the LEVEL GAP, and fixes Priest-vs-Mage on the class side (wand burst, Priest healing down, a Mage survival tool).
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
