@@ -544,6 +544,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   L20 710 (~5,450 total), L30 1,510 (~16k), L50 4,010 (~70k), L100 15,510 (~520k). [build = SkyySkills 0.4.16 after the reset: optional per-skill
   lists levels.<Skill> (Mining filled), Mining out of gather.boost.skills (one-time update), saved XP kept and levels recomputed with the
   normal level-up rewards; the mob curve's SkyySkills part becomes 0.4.17; asked Skyy to OK the numbers]
+- IDEA 2026-10-04 (Skyy; Legendary Copper Greaves from a chest, identified, "Lv 1 - Requires Sorcery 1"): "their level is way to low. should we
+  add a way to level the item? like in reforge you can spend coins to level it. (with a cap of like 6 or 10 so you cant always run the same
+  gear.)" -> merges with Mob-Curve-Spec question 5 ("Reforge raises the item's level"): a Reforge LEVEL UP - +1 level per click for coins
+  (cost rising with the level and the rarity), at most +N levels over the level the item was made / found at, never above the metal's top level
+  or the player's own level. [OPEN: cap 6 or 10 - default 6; coin costs set in the spec/build, coins = full round; rides the mob curve's
+  SkyyGear build]. Why Lv 1: chest gear gets the bottom of its metal band today (Armor_Copper 1-18); the loot round (Gear 0.2.5) gives chest /
+  mob gear the zone / mob level.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
