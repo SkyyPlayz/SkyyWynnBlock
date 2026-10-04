@@ -629,6 +629,15 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   (so the first bound need not be timed on the ground); a correctly timed ground jump takes NO fall damage, and the FURTHER you fell, the
   FURTHER that timed bound launches you (fall height -> bound distance). [engine check: mid-air jump input during the vault (SkyySkills'
   double jump already reads crouch-in-air - bridge skill:dj:key), fall height at landing]
+- LOCKED 2026-10-04 (Skyy, class weapons): 2 weapon types per class and NO weapon sharing between classes for now ("we can add it later if we
+  want more classes"). Monk = Bo staff + FIST weapons (cloth hand wraps, gauntlets, claws); Priest = wands + spellbooks ("ill add something
+  later"); Assassin = daggers + kunai; Warrior = swords (incl. longswords) + spears; Archer = shortbows + crossbows; Berserker = axes (incl.
+  battleaxes) + maces / clubs. OPEN: Mage's second type (spellbooks are the Priest's now) [ask]. Idea for later: a MARTIAL ARTIST class
+  (kicks + fists).
+- LOCKED 2026-10-04 (Skyy, quick shots): WAND quick shot PIERCES (passes through several enemies, hitting each), range ~16 blocks, vanishes on
+  blocks; STAFF quick shot does NOT pierce, range ~24 blocks, a little more damage per Mana than the wand's. Later: special staffs that pierce
+  and a special wand whose shots pass through blocks. [SkyyArmory 0.1.1 with the traversal charged attacks; today the quick orb flies 90
+  blocks/s for 5 s]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
