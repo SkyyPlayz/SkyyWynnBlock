@@ -551,6 +551,8 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   or the player's own level. [OPEN: cap 6 or 10 - default 6; coin costs set in the spec/build, coins = full round; rides the mob curve's
   SkyyGear build]. Why Lv 1: chest gear gets the bottom of its metal band today (Armor_Copper 1-18); the loot round (Gear 0.2.5) gives chest /
   mob gear the zone / mob level.
+- LOCKED 2026-10-04 (Skyy): Reforge LEVEL UP cap = +6 levels over the level the item was found / made at ("6"); never above the metal's top
+  level or the player's own level; coins per level (rising with level + rarity). [mob curve SkyyGear build]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
