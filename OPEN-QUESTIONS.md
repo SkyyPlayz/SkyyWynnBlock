@@ -651,6 +651,18 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   the Bo staff flow so you can steer. Both Monk falls (fists + Bo staff) = ~15% slower and 15% less fall damage; the plunge's ground slam takes
   NO fall damage but gives NO Acrobatics XP. [engine checks: slowing / dragging other entities (mobs) in the air, knockback on airborne mobs,
   crouch in mid-air (SkyySkills' double jump already reads it)]
+- LOCKED 2026-10-04 (Skyy): "WINGS OF FATE" (was Guardian Step): you bound across the battlefield in long fast gliding steps, seeming to teleport
+  to your friend's side; glowing blue wings during it leave a glowing trail (looks only; later tree perks could make it slow or stun); goes the
+  way you look - an ally that way gets locked on and it carries you to them (farther than without an ally), so it works with no allies near.
+  "but that would give the mage heal. lets make that its own weapon, and do something else for the spell books."
+- LOCKED 2026-10-04 (Skyy, NEW WEAPON idea "SOUL ORB" - read as the Priest's 2nd weapon, Wings of Fate its traversal; confirm with Skyy): hold
+  right-click -> a line of light locks onto the enemy you look at (then you may look away; it holds until you release or run out of Mana);
+  it pulls life force = steady DPS for a steady Mana drain; NO Mana regen while active; damage done is STORED as bonus healing for its ability
+  (max stored healing by weapon tier); higher tiers mostly add SOUL TETHERS (more targets; Mithril ~8 max) and a slightly better damage-per-Mana,
+  little raw damage boost; Mana per second per tether stays about the same (only a few steps up across tiers).
+  [OPEN: Mage = staffs + SPELLBOOKS then, with a new non-heal spellbook traversal (proposed: RUNE RECALL - cast drops a glowing rune, cast again
+  within ~8 s to snap back to it, knocking enemies back where you left); how extra tethers pick targets (default: nearest enemies within ~8
+  blocks of the first)]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
