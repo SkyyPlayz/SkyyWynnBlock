@@ -603,6 +603,20 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   later up to 3 saved rune loadouts per class swapped by hotkey / macro. OPEN: traversal = the 2nd class ability, or every charged attack?
   [recommended: ability 2 = a class movement skill with a class effect, swappable for a non-movement variant; weapon charged attacks stay
   attacks; Acrobatics = base movement; Q = weapon Signature] - research/Class-Roles-Ideas.md top block.
+- LOCKED 2026-10-04 (Skyy; REPLACES the 2026-10-03 "wand charged = AoE burst +10% heal" plan): "in hytale the traversal moves already do damage.
+  so we just change up how the charge attacks work on the wand and staff." TRAVERSAL = the magic weapons' CHARGED attacks:
+  - STAFF (Mage) charged: TELEPORT in the look direction - starts at 10 blocks, upgradable in the skill tree, and the player can set a shorter
+    custom distance there (max 20 but set 15); it leaves a TRAIL OF LIGHT along the path that lingers a few seconds doing AoE damage over time
+    (no bomb). [defaults until Skyy says: trail 1.5 blocks wide, lasts 3 s, each enemy in it takes ~30% of the staff's charged damage per
+    second; never teleports into blocks or out over open void]
+  - WAND (Priest) charged ("for now unless you have a better idea"): LAUNCH straight BACKWARDS (Wynncraft archer escape) and shoot the
+    exploding orb: explosion AoE ~6 blocks, which also leaves a slightly larger LINGERING ORB (~9 blocks) for 3-4 s healing allies inside for
+    20% of the explosion's damage EVERY SECOND (3 s inside = 3x the heal). [default: the backward hop shrinks when there is no ground behind
+    you (void safety)]
+  - The Priest's heal moves to abilities over time - this is step 1; the current AoE life-steal heal (heal share of damage) STAYS until all
+    abilities exist. Teleport distance upgrades / the custom-distance setting come with the class trees (the Mage tree already has a
+    Riftwalker lane). [build = SkyyArmory 0.1.1 + SkyyClasses 0.1.12 (+ staff casts stop costing Stamina) - spec first, full round, after
+    the reset]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
