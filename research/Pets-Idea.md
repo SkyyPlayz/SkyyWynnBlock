@@ -51,3 +51,5 @@ speed); Priest - a gentle support creature (healing done, Mana regen). Later ski
 3. Pet XP: from the skill the pet belongs to (SkyBlock: a mining pet levels from Mining XP), or from everything you do? [Its skill, plus a
    small share of all XP.]
 4. Pets per profile or per player? [Per profile, like the rest of SkyWynn's progression.]
+
+- 2026-10-04: Skyy found the VANILLA item "Egg Spawner - Pet Lantern" (Epic) in game and liked it ("didnt realize these pet lantern things were in the game. thats pretty cool"). Vanilla already has spawnable pets - check its NPC (follow / light behaviour) before building our own pet code; a candidate first pet, and a natural partner for the Lantern accessory line.
