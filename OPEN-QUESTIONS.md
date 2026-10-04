@@ -588,6 +588,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   (Staff_Cast_Summon_StaminaCost = ChangeStat Stamina -5 + StaminaRegenDelay 1.5 s; SkyyArmory_Staff_Stamina / _Stamina_Delay in every
   SkyyArmory_Staff_Cast_<metal>) - with ~11-13 max Stamina one cast costs ~40%. [fix in SkyyArmory 0.1.1 (the wand burst build): staff casts
   cost Mana only - drop the 5 Stamina + the regen pause (a Server Setup row "Staff cast Stamina cost", default 0)]
+- REPORTED 2026-10-04 (Skyy): "cooking is still fast. i crafted 7 skewers and got 3 levels." (Cooking 10 -> 13: ~2,900-5,750 XP per skewer at
+  xpMultiplier 0.5; levels 11-13 cost 5,000 + 7,500 + 10,000) -> live row Server Setup -> Cooking -> "Cooking XP multiplier" 0.5 -> 0.15 (about
+  1 level per 7 skewers at Cooking 10-12) - told Skyy. [the SkyySkills 0.4.16 per-skill level lists could also give Cooking its own steeper list;
+  update the SkyyCooking default once Skyy settles a number]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
