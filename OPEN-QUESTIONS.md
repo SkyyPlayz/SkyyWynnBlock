@@ -515,6 +515,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Mining 0 -> 10 today 9,925 XP at x3; with all three ~9,335 XP at x5 (about 40% fewer blocks), Mining 5 after ~587 XP. A pickaxe-only band
   (an entry Tool_Pickaxe_Copper beats Copper in the matcher) needs a SkyyGear build if Skyy wants swords to stay at 10.
   [update the pack defaults once Skyy settles the numbers]
+- REQUEST 2026-10-03 evening (Skyy, Party page screenshot): "here in the party and a tpa button and a tpa accept to make it quick and
+  easy" -> SkyyParty page: a TPA button on each member row (a /tpa request to that member) + an ACCEPT TPA button while a request to you is
+  waiting; SkyyEssentials already has /tpa, /tpahere, /tpaccept (it needs a bridge for SkyyParty to call). [SkyyParty 0.1.7 + SkyyEssentials
+  0.1.8, a full round (teleports / commands) after the weekly reset - usage 90%]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

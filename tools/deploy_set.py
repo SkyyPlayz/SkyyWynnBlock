@@ -45,7 +45,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.2"), ("SkyyWorldGen", "0.1"),
+    ("SkyyMobs", "0.1.3"), ("SkyyWorldGen", "0.1"),
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     ("SkyyArmory", "0.1"),
@@ -80,6 +80,7 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees"]
 # SkyyGear 0.2 (2026-10-02): ROLLBACK FLOOR - never roll SkyyGear below 0.2 without first restoring the config History copy
 # 'before the 0.2 level bands' (Server Setup -> History): 0.1.3 cannot read '<min>,<cap>' rows, so items would fall back to Hytale's
 # own item level (the kit wand / staff would read about Lv 40). Items themselves are safe to roll back.
+# SkyyMobs 0.1.3 (2026-10-03): client health-bar fix only (MobLevel.writeValue: min/maxStatValue after a modifier change); no saved-data change - rolling back to 0.1.2 is safe.
 # SkyyMobs 0.1 (2026-10-02): rolling it back = take it out of SET and add "SkyyMobs" to RETIRED. Saved mobs keep a Health modifier
 # 'skyymobs_lv<N>' and a '[Lv N] Name' plate until they die; to strip them first: Server Setup > Mobs > Never level these = * , then
 # walk / reload the chunks, then retire. Settings stay in mods/Skyy_SkyyMobs.

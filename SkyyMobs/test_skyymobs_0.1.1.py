@@ -4,7 +4,11 @@ Made from test_skyymobs_0.1.py (every 0.1 check still runs; C / D / F / K expect
 HytaleServer.jar + tools/javassist.jar + the SkyyMobs 0.1.1 jar + SkyyMenu/SkyyMenu-0.3.5.jar (the label check draws with it) on the
 classpath; SkyyMobs-0.1.jar is read from a child-first loader (O, U) and as zip bytes (Z). Nothing is deployed and nothing outside the
 scratch folder is written (default tools/dev/scratch/mobs011/harness, deleted at the end unless --keep; TEMP / TMP and java.io.tmpdir
-point into it). Read-only: Assets.zip, the two HytaleServer.jar files (release + 0.7 pre-release), the client font tables, the installed
+point into it). SCRATCH SAFETY (2026-10-03, F2 of the SkyyMobs 0.1.2 cross-check - the 0.1.2 harness guard ported): --dir must be a
+folder INSIDE a task folder (tools/dev/scratch/<task>/<sub>) - never the scratch root or a top-level task folder, no '..' in the
+argument, no link / junction on its path - and, if it exists, empty or this harness's own (its marker file); anything else is refused
+and NOTHING is deleted; the end-of-run cleanup deletes only that validated, marked folder.
+Read-only: Assets.zip, the two HytaleServer.jar files (release + 0.7 pre-release), the client font tables, the installed
 Mods folder (X scan, the deployed SkyyMenu.jar / SkyyMobs.jar hashes) and Skyy's live Skyy_SkyyMobs folder - COPIED into the scratch
 folder before anything runs on it (U).
 0.1.1 sections:
@@ -76,7 +80,9 @@ def arg(name, default=None):
     return default
 
 
-SCRATCH = os.path.abspath(arg("--dir", os.path.join(TOOLS, "dev", "scratch", "mobs011", "harness")))
+DIR_ARG = arg("--dir")
+SCRATCH = os.path.abspath(DIR_ARG or os.path.join(TOOLS, "dev", "scratch", "mobs011", "harness"))
+MARKER = ".skyymobs011-harness"   # written into the scratch folder this harness made; only a folder holding it is ever deleted
 JAR = os.path.abspath(arg("--jar", os.path.join(HERE, "SkyyMobs-%s.jar" % VERSION)))
 OLD_JAR = os.path.join(HERE, "SkyyMobs-%s.jar" % OLDVER)                               # the SET pin (read-only)
 MENU_JAR = os.path.join(ROOT, "SkyyMenu", "SkyyMenu-0.3.5.jar")                         # the SET pin of SkyyMenu (read-only)
@@ -2308,6 +2314,91 @@ protected Class loadClass(String n, boolean r) throws ClassNotFoundException {
         print("L. link check: release %d refs; no pre-release jar at %s" % (n_rel, PRE_JAR))
 
 
+def is_link(p):
+    """True for a symbolic link or a Windows junction / mount point (any reparse point): never followed, never deleted through"""
+    try:
+        if os.path.islink(p):
+            return True
+        isj = getattr(os.path, "isjunction", None)
+        if isj is not None and isj(p):
+            return True
+        return bool(getattr(os.lstat(p), "st_file_attributes", 0) & 0x400)     # FILE_ATTRIBUTE_REPARSE_POINT
+    except OSError:
+        return False
+
+
+def guard_scratch():
+    """None when --dir may be used (and deleted): a folder INSIDE a task folder of tools/dev/scratch (tools/dev/scratch/<task>/<sub>) -
+    never the scratch root or a top-level task folder (other agents' live work sits there), no '..' in the argument, no link / junction
+    on its path (it or a folder above it, up to the scratch root) - that is missing, empty or this harness's own (its MARKER file).
+    Else the reason it is refused (nothing is deleted then)."""
+    if DIR_ARG is not None and ".." in re.split(r"[\\/]+", DIR_ARG):
+        return "'..' in the --dir argument"
+    root_ = os.path.normcase(os.path.realpath(os.path.join(TOOLS, "dev", "scratch")))
+    s_ = os.path.normcase(os.path.realpath(SCRATCH))
+    try:
+        rel = os.path.relpath(s_, root_)
+    except ValueError:
+        return "not on the drive of tools/dev/scratch"
+    parts = [p for p in rel.replace("\\", "/").split("/") if p]
+    if os.path.isabs(rel) or not parts or parts[0] in (".", ".."):
+        return "outside tools/dev/scratch (or the scratch root itself)"
+    if len(parts) < 2:
+        return "a top-level folder of tools/dev/scratch - use tools/dev/scratch/<task>/<sub>"
+    # the path as given must be the real one: no link / junction on it (realpath above already resolved any, so compare and check each level)
+    a_ = os.path.normcase(os.path.abspath(SCRATCH))
+    if a_ != s_:
+        return "a link / junction on its path (it resolves to %s)" % s_
+    p_ = os.path.abspath(SCRATCH)
+    while os.path.normcase(p_) != root_ and len(p_) > len(root_):
+        if os.path.lexists(p_) and is_link(p_):
+            return "%s is a link / junction" % p_
+        p_ = os.path.dirname(p_)
+    if os.path.lexists(SCRATCH):
+        if is_link(SCRATCH) or not os.path.isdir(SCRATCH):
+            return "exists and is not a plain folder"
+        if os.listdir(SCRATCH) and not os.path.isfile(os.path.join(SCRATCH, MARKER)):
+            return "exists, is not empty and is not this harness's folder (no %s)" % MARKER
+    return None
+
+
+def empty_dir(d, keep=None):
+    """delete everything inside the validated folder d but the file `keep`: files, then the emptied sub-folders; a link / junction inside
+    is never followed (only the link itself goes); a file this process still holds is left where it is"""
+    for e_ in list(os.scandir(d)):
+        p_ = e_.path
+        try:
+            if is_link(p_):
+                if os.path.islink(p_):
+                    os.unlink(p_)
+                else:
+                    os.rmdir(p_)
+            elif e_.is_dir(follow_symlinks=False):
+                empty_dir(p_, keep)
+                os.rmdir(p_)
+            elif keep is None or os.path.normcase(p_) != os.path.normcase(keep):
+                os.remove(p_)
+        except OSError:
+            pass
+
+
+def cleanup_scratch():
+    """the end-of-run delete of the validated, marked folder; a file this process still holds (the zstd-jni library the JVM unpacked into
+    java.io.tmpdir) cannot go before os._exit - then the marker stays with it, so the next run knows the folder as its own and empties it
+    (the guard refuses an unmarked, non-empty folder)"""
+    mk_ = os.path.join(SCRATCH, MARKER)
+    empty_dir(SCRATCH, mk_)
+    left = [x for x in os.listdir(SCRATCH) if x != MARKER]
+    if left:
+        print("scratch: %s kept with its marker (still held by this process: %s) - the next run empties it" % (SCRATCH, left))
+        return
+    try:
+        os.remove(mk_)
+        os.rmdir(SCRATCH)
+    except OSError:
+        pass
+
+
 def main():
     if not os.path.isfile(JAR):
         print("no jar at", JAR, "- build it first")
@@ -2316,13 +2407,15 @@ def main():
         if not os.path.isfile(p_):
             print("missing %s: %s" % (what, p_))
             return 1
-    root_ = os.path.join(TOOLS, "dev", "scratch").replace("\\", "/").lower().rstrip("/") + "/"
-    if not SCRATCH.replace("\\", "/").lower().startswith(root_) or len(SCRATCH.replace("\\", "/").lower()) <= len(root_):
-        print("--dir must be a folder inside tools/dev/scratch/ (it is deleted before and after the run):", SCRATCH)
+    why = guard_scratch()
+    if why:
+        print("--dir refused (%s): %s - nothing was deleted" % (why, SCRATCH))
         return 1
     SCRATCH_OK[0] = True
-    shutil.rmtree(SCRATCH, ignore_errors=True)          # 0.1.1: start clean (a --keep run leaves its folders behind)
+    if os.path.isdir(SCRATCH):                          # start clean: missing, empty or this harness's own (marker checked above)
+        empty_dir(SCRATCH)
     os.makedirs(SCRATCH, exist_ok=True)
+    open(os.path.join(SCRATCH, MARKER), "w").write("SkyyMobs %s harness scratch - deleted at the end of the run (unless --keep)\n" % VERSION)
     tmp = os.path.join(SCRATCH, "tmp")
     os.makedirs(tmp, exist_ok=True)
     os.environ["TEMP"] = tmp
@@ -2341,9 +2434,10 @@ def main():
 
 if __name__ == "__main__":
     code_ = main()
-    # 0.1.1 fix: only a folder main() validated is deleted (0.1's harness deleted --dir even after refusing it - a --dir naming the
-    # scratch ROOT would wipe every builder's scratch folder)
-    if not KEEP and SCRATCH_OK[0]:
-        shutil.rmtree(SCRATCH, ignore_errors=True)
+    # only the folder main() validated AND marked is deleted (0.1's harness deleted --dir even after refusing it - a --dir naming the
+    # scratch ROOT wiped every builder's scratch folder on 2026-10-02; until 2026-10-03 this harness still took a top-level or foreign
+    # folder inside tools/dev/scratch)
+    if not KEEP and SCRATCH_OK[0] and os.path.isfile(os.path.join(SCRATCH, MARKER)) and guard_scratch() is None:
+        cleanup_scratch()
     sys.stdout.flush()
     os._exit(code_)
