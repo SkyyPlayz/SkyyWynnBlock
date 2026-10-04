@@ -726,6 +726,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   doubling the same modifier (no 2x ricochet - level the one ricochet up for more bounces). A SHARED MODIFIER POOL across abilities (no 60+
   unique modifiers), but every modifier is unlocked and levelled PER ABILITY (A2 and its swap-out both using ricochet still unlock / level it
   separately).
+- LOCKED 2026-10-04 (Skyy, TWO UPGRADE LAYERS): the CLASS SKILL TREE also sells upgrades for each of the 4 abilities - they change HOW / WHAT the
+  ability does more than buff it (keep it balanced). Example: the Priest SHIELD (it has HP and can be broken) gets a node that makes it damage
+  enemies that bump into or hit it, then a follow-up node that makes that damage ELEMENTAL - pick ONE of the 5 elements. These are CLASS TREE
+  nodes, NOT the modifier upgrades in the ability's own tree (those come from using the ability). [spec: class-tree ability nodes = behaviour
+  changes / choose-one sidegrades with trade-offs; ability-tree levels = small numbers + modifiers; a power budget table per ability so the
+  two layers together stay balanced]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
