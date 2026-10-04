@@ -93,9 +93,9 @@ flowchart TD
 | Power+ | stronger main effect (damage, heal, shield, buff) | more % |
 | Efficiency | costs less Mana / Stamina | lower cost |
 | Split | splits into 3 weaker copies (projectiles, lines) | stronger copies |
-| Ricochet | bounces to more targets | +1 bounce |
+| Ricochet | PROJECTILES only: the shot flies on to the next enemy after a hit (walls block it, it can miss) | +1 bounce |
 | Pierce | passes through enemies | +1 enemy |
-| Chain | jumps between nearby enemies or allies | +1 jump |
+| Chain | EFFECTS only (heals, buffs, debuffs, poison, hooks): jumps instantly to the next target in range - enemies, or allies for support | +1 jump |
 | Lingering | leaves a zone behind (fire, poison, light) | longer zone |
 | Slow | adds a slow | stronger slow |
 | Knockback+ | pushes enemies away | farther |

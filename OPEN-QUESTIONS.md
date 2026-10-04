@@ -739,6 +739,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   (both better than A1 but different); the A2 alternative stays a single option -> 5 abilities designed per class (A1, A1-alt x2, A2,
   A2-alt), 4 obtainable by one character, 2 equipped. [spec proposes both A1-alt options per class; whether a respec can switch the A1-alt
   pick follows the trees' respec rules]
+- LOCKED 2026-10-04 (Skyy, "beautiful! i love it"): RICOCHET = projectile abilities only (the shot flies on to the next enemy; walls block it,
+  it can miss); CHAIN = non-projectile effects only (heals, buffs, debuffs, poison, hooks; jumps instantly, enemies or allies). Per-class
+  files live in research/classes/ (graph, weapons + traversals, 5 abilities + modifiers, modifier pool, open items, change log).
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
