@@ -1308,3 +1308,18 @@ Gear (damage and armor are still vanilla in this stage):
    Monk III "Unlock 2 AP". Answers end "(probe - not saved)".
 3. Optional: Server Setup -> Trees -> Class trees ON, /tree class on a Warrior, unlock ROOT + Vitality I, relog - picks stay. Then OFF again
    (or leave ON if the page looks right).
+## SkyyMobs 0.1.3 + SkyyGear 0.2.2 - health bars follow live changes; wand / staff shot lines, no Damage Data box, crit popup (DEPLOYED 2026-10-03, backup deploy-20261003-2317)
+1. Logs: "[SkyyMobs] 0.1.3 ready"; SkyyGear lists the crit effects, "vanilla Damage Data box hidden on N gear weapon types" and "crit style asset
+   SkyyGear_CritText = index ..." - no asset error.
+2. Mobs: stand near levelled mobs (e.g. Lv 32 Yetis), hurt one, then change Server Setup -> Mobs -> Strength (Hard -> Custom 20%) with them in view:
+   the bars show the new max at once, a full mob stays full, the hurt one keeps its percent; a Yeti's bar is empty only on the killing hit.
+3. With a FULL-health mob in view switch to an easier setting, then hit it: the bar must drop on the first hit. Switch back to Hard afterwards.
+4. /mobs set 40 on a mob you look at (admin): the bar shows the new max at once; /mobs set 0 = vanilla health.
+5. Hover a Lv 6 Wood wand: "Charged shot - 5 Mana - 43 damage at Lv 6" + "Quick shot - 1 Mana - 9 damage at Lv 6"; no melee line, no grey note, no
+   vanilla Damage Data box. A Lv 10 Copper wand: 115 / 23; a Lv 1 Wood staff: 50 / 10.
+6. Hover a sword: only "Damage at Lv N: x-y" and no empty "Damage Data" header; armor: no grey note (its vanilla Health / Resistance lines stay).
+7. Server Setup -> Gear -> Combat -> Base Crit Chance 100, hit a mob: "CRIT!" next to the number + a spark burst (200 = "CRIT!!"). Put it back to 0.
+8. "Who sees the crit sparks": Everyone nearby / Nobody; Settings -> Combat -> Crit effects off = no popup, no sparks.
+9. Trial: "Red + bigger crit number (trial)" on, hit slowly: crit numbers red + bigger, white again within ~0.5 s. Tell me if it works - it stays off by default.
+10. KNOWN (fix in the next Gear build): after editing Armory -> Damage by wand / staff the tooltip can keep the old numbers until you move an item.
+    Unidentified weapons and recipe previews show no damage numbers now (the box is hidden per item type; Gear -> "Hide the vanilla Damage Data box" off + restart brings it back).
