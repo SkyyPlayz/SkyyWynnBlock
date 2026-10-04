@@ -638,6 +638,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   blocks; STAFF quick shot does NOT pierce, range ~24 blocks, a little more damage per Mana than the wand's. Later: special staffs that pierce
   and a special wand whose shots pass through blocks. [SkyyArmory 0.1.1 with the traversal charged attacks; today the quick orb flies 90
   blocks/s for 5 s]
+- ASKED 2026-10-04 (Skyy): "so we need traversals for fists and for spell book. (fists, claws and gauntlets are different versions of the same
+  fist weapon, so they will all use the same traversal)" -> PROPOSED (main session, waiting for Skyy): FIST WEAPONS (Monk alt; wraps /
+  gauntlets / claws share it) = RISING STRIKE - an uppercut leap ~6 blocks up with a little forward drift that knocks enemies in front into
+  the air; charge again in mid-air for a PLUNGE PUNCH that slams down with a small AoE (vertical, so it differs from the Bo staff's forward
+  vault + skipping bounds). SPELLBOOK (Priest alt) = GUARDIAN STEP - glide to the ally you aim at (within ~15 blocks; 8 blocks forward with no
+  ally), heal them a little and give you both a short shield (the wand escapes away, the book goes TO the team). [engine checks: vertical
+  launch + air charge, ally targeting by look, a short absorb shield]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
