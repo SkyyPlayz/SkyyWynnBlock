@@ -438,6 +438,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   default in the next SkyyArmory build); class identity for SkyyClasses: Mage = glass cannon (high damage, range + mobility, low health +
   defence), Priest = healer (less damage). Defaults kept: Onyxium staff = Onyxium wand recipe, Mage +10 Mana / Sorcery, 2 HP heal per Mana,
   other staffs / wands / spellbooks and Mana regen growth later.
+- ANSWERED 2026-10-03 (Skyy): "oh, and idk if they do or not, but the hp you get from armor should also go up with the level." -> it already
+  does since SkyyGear 0.2.1 (live, base.armorOn=true): worn armor Health = the slot's Lv 1 Health x F(level) x the material bonus (base.curve
+  1:1.0,4:1.6,10:2.0,40:3.0,100:5.0) - a Copper chestplate gives 9 at Lv 1, 14 at Lv 4, 18 at Lv 10, 27 at Lv 40; a full set 25 -> 50 (Lv 10)
+  -> 75 (Lv 40); Physical / Projectile resistance grows too (base.resCurve). Our tooltip line shows it ("Health at Lv 10: +18"); the vanilla
+  "Health:" line under it comes from the item type and stays at the Lv 1 number. Armor above your level gives no Health (level.armorNative).
+  [the MOB CURVE round tunes armor Health together with the new mob damage (its own armor curve row if mobs climb faster than weapons); the
+  armor tooltip gets the Damage Data box rule (hide the vanilla lines where possible, no grey note) if SkyyGear 0.2.2 left the armor note]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

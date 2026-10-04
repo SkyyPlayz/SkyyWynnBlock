@@ -64,8 +64,8 @@ QUEUE ORDER (Skyy 2026-10-03 evening, LATEST - wins over every queue line below;
 bag tier is crafted from the previous one); 2) SkyyGear tooltip / crit build (wand + staff "Charged shot - N Mana - dmg" / "Quick shot" lines,
 drop the Damage Data note + hide the box where possible, CRIT! popup + Impact_Critical sparks, red crit number behind a switch) + SkyyArmory
 staff damage default ~120-125% (Mage glass cannon); 3) MINIMAP: SkyyUiProbe map-picture probe -> SkyyHud minimap widget (BetterMap joins the
-pack, hstats off, hub in allowedWorlds); 4) /island STARTER SHARDS (SkyyIslands); 5) MOB CURVE rebalance spec -> build; 6) WORLDGEN STAGE 2
-spec -> build; 7) SkyyGear TOOL LEVELS (revise research/Tool-Levels-Spec.md with Skyy's answers first); 8) SkyyGear LOOT round (revise
+pack, hstats off, hub in allowedWorlds); 4) /island STARTER SHARDS (SkyyIslands); 5) MOB CURVE rebalance spec -> build (+ armor Health keeps pace with mob damage - Skyy: "the hp you get from armor should also go up with the level"; it does since Gear 0.2.1 via base.curve, tune it WITH the mob curve, own armor curve row if needed); 6) WORLDGEN STAGE 2
+spec -> build; 7) SkyyGear TOOL LEVELS (revise research/Tool-Levels-Spec.md with Skyy's answers first; + the armor tooltip box rule if 0.2.2 left the grey armor note); 8) SkyyGear LOOT round (revise
 research/Loot-Unid-Spec.md: rarity loot boxes, level range, tiered craft XP; + Smithing readers + gear:extras); 9) ACCESSORY TABLE (paused spec -
 decide whether the pack still wants it now that Pocket Dimension keeps the Workbench tab); 10) small follow-ups (SkyyMobs 0.1.3 HP-bar fix
 paused, Collections sickle crops, Menu Mods list, tree:reads readers in Skills / Gear / Sacks, Auctions mystery categories, class trees ON
