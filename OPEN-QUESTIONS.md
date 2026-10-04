@@ -720,6 +720,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   the ability." -> per-ability upgrade trees (modifiers, variations and upgrades like the Priest heal's Cleanse / radius / HoT % live in that
   ability's tree); ability points come from USING that ability. [spec: count only uses that do something - hit an enemy, heal a hurt ally,
   absorb damage - so spamming at nothing earns nothing; points saved per profile]
+- LOCKED 2026-10-04 (Skyy, MODIFIERS): vanilla rule - 2 modifiers equipped per ability. Each of the 4 abilities LEVELS UP BY USE (each level a
+  little stronger); ability levels give POINTS to unlock and upgrade that ability's modifiers in its own upgrade / modifier tree. Aim 3-4
+  modifiers per ability, 2 usable at once. Vanilla-style simple modifiers (duration+, split, ricochet ...) that make sense for the ability; NO
+  doubling the same modifier (no 2x ricochet - level the one ricochet up for more bounces). A SHARED MODIFIER POOL across abilities (no 60+
+  unique modifiers), but every modifier is unlocked and levelled PER ABILITY (A2 and its swap-out both using ricochet still unlock / level it
+  separately).
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
