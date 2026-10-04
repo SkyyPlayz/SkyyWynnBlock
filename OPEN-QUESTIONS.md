@@ -645,6 +645,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   vault + skipping bounds). SPELLBOOK (Priest alt) = GUARDIAN STEP - glide to the ally you aim at (within ~15 blocks; 8 blocks forward with no
   ally), heal them a little and give you both a short shield (the wand escapes away, the book goes TO the team). [engine checks: vertical
   launch + air charge, ally targeting by look, a short absorb shield]
+- LOCKED 2026-10-04 (Skyy, FIST traversal = Rising Strike, refined): at the top of the uppercut leap you AND the enemies you knocked up slow
+  down slightly (hang time for a few attacks); hitting those airborne enemies adds extra knockback ("sending them flying"); CROUCH near the top
+  of the jump = PLUNGE PUNCH, which drags the knocked-up enemies down with you so they get hit by it; skip the plunge and you fall slower like
+  the Bo staff flow so you can steer. Both Monk falls (fists + Bo staff) = ~15% slower and 15% less fall damage; the plunge's ground slam takes
+  NO fall damage but gives NO Acrobatics XP. [engine checks: slowing / dragging other entities (mobs) in the air, knockback on airborne mobs,
+  crouch in mid-air (SkyySkills' double jump already reads it)]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

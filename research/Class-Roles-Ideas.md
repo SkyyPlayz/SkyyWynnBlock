@@ -25,6 +25,9 @@ build gear for."*
 >   lunge kicking enemies in the way for 2x, slow 'flowing' fall, and timed bounds on landing that chain like a skipping stone (no damage,
 >   extra Stamina); one free MID-AIR jump right after the vault (the first bound needs no ground timing); a timed ground jump takes no fall
 >   damage and launches farther the farther you fell.
+> - **2026-10-04 FIST traversal** (Skyy): Rising Strike - uppercut leap that knocks enemies up; brief slow hang time for you and them at the
+>   top; hits on airborne enemies send them flying; crouch near the top = Plunge Punch dragging them down into the slam (no fall damage, no
+>   Acrobatics XP); no plunge = a 15%-slower steerable fall. Both Monk falls: 15% slower, 15% less fall damage.
 > - **2026-10-04 weapons** (Skyy): 2 weapon types per class, NO sharing for now - Warrior swords + spears, Archer shortbows + crossbows,
 >   Berserker axes + maces / clubs, Priest wands + spellbooks, Assassin daggers + kunai, Monk Bo staff + fist weapons (hand wraps, gauntlets,
 >   claws), Mage staffs + OPEN. Section 4's shared-weapon ideas wait until sharing is allowed; later class idea: Martial Artist (kicks + fists).
