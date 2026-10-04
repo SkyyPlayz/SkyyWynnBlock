@@ -38,7 +38,7 @@ flowchart TD
 | Weapon | Attack | Charged attack / traversal | Status |
 |---|---|---|---|
 | Wands (Wood -> Onyxium, SkyyArmory) | **Tap = quick shot** that **pierces** (hits every enemy in a line), ~16 blocks, vanishes on blocks | **Hop BACKWARDS** (opposite to where you look - look down = straight up; shorter hop when there is no ground behind you) and fire an **exploding orb** (AoE ~6 blocks) that leaves a **healing orb** (~9 blocks, 3-4 s): allies inside heal **20% of the explosion's damage every second** | LOCKED (Skyy 2026-10-04) |
-| Soul Orb (new weapon) | **Hold right-click = soul tethers**: a line of light locks onto the enemy you look at (you can then look away); steady damage for a steady Mana drain; **no Mana regen while active**; damage is **stored as bonus healing** for its ability (cap by tier); extra tethers jump to the nearest enemies within ~8 blocks of the first | **WINGS OF FATE**: long fast gliding bounds the way you look; if an ally is that way it locks on and carries you to them (farther than without); glowing blue wings + trail (looks only; tree perks later could slow / stun); arriving heals with the stored soul healing | LOCKED (Skyy 2026-10-04) |
+| Soul Orb (new weapon) | **Hold right-click = soul tethers**: a line of light locks onto the enemy you look at (you can then look away); steady damage for a steady Mana drain; **no Mana regen while active**; damage is **stored as bonus healing** for its ability (cap by tier); it tethers EVERY enemy in a small radius around where you look (up to the tier's tether cap) - see "How soul tethers work" below | **WINGS OF FATE**: long fast gliding bounds the way you look; if an ally is that way it locks on and carries you to them (farther than without); glowing blue wings + trail (looks only; tree perks later could slow / stun); arriving heals with the stored soul healing | LOCKED (Skyy 2026-10-04) |
 
 Later (Skyy): a special wand whose shots pass through blocks.
 
@@ -55,6 +55,15 @@ Later (Skyy): a special wand whose shots pass through blocks.
 | Onyxium (*proposed*) | ... | ? | 20 (a gem on each dodecahedron point) | 2.5x |
 
 Mana per second per tether stays about the same up the ladder (a few small steps).
+
+### How soul tethers work (LOCKED, Skyy 2026-10-04)
+1. **Hold right-click** and look at enemies: every enemy in a **small radius around where you look** gets a tether at once
+   (6 mobs packed in a 3-block space = 6 tethers in one go), up to your orb's tether cap.
+2. **Damage starts immediately**, but the tether must **stabilize** first: keep looking at them for **1.5-2.5 s** (base orb; higher
+   tiers stabilize faster). A new tether looks **wispy** and turns **solid** once stable.
+3. **Once stable you can look away** - the tether holds while you keep holding right-click (or until your Mana runs out) - so you can
+   look at the **next group** and tether them too, until you reach the cap.
+4. Steady damage for a steady Mana drain per tether; no Mana regen while any tether is active; damage is stored as bonus healing.
 
 ## Abilities
 
@@ -135,6 +144,7 @@ Mana per second per tether stays about the same up the ladder (a few small steps
 - Priest A2-alt (Guardian Spirit proposed); A1-alt pair; Soul Cage essences + colours for Thorium and up.
 
 ## Change log
+- 2026-10-04: soul tethers corrected - lock onto every enemy in a small radius where you look, stabilize in 1.5-2.5 s (faster at higher tiers), wispy -> solid, look away only once stable (Skyy).
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
 - 2026-10-04: file created; wand hop + healing orb, Soul Orb + Wings of Fate + ladder, Sacred Heal, Shield Bubble (+ Follow modifier),
   Cleanse = class-tree upgrade - all LOCKED (Skyy).
