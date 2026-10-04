@@ -536,6 +536,14 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   asset stats; the grey note is gone, so two Health numbers show). [proposed: hide the armor box too by moving the whole armor Health /
   resistance into SkyyGear (empty the asset stats per type, apply the levelled stats as modifiers) - fits the mob curve's SkyyGear part (its new
   armor Health curve); asked Skyy]
+- LOCKED 2026-10-04 (Skyy): "for mining specifically id start a little lower, and make it scale slower. even with the increases i added, it is
+  taking forever. (and id rather players see the xp cost go up than their xp gain go down." -> MINING gets its own level list and leaves the
+  gathering-pace boost (XP per block never shrinks as you level; only the cost rises). Live today: one shared list 50,125,...,3500 (L10),
+  200,000 (L20), +100k/level after; Skyy's boost x8 to L10 fading to x1.5 at L20; stone pays 1, copper 5, iron 8, thorium 18, mithril 25 ->
+  Mining 20 needs ~100k+ stone-equivalents. PROPOSED Mining list = 10 + 5L + 1.5L^2 per level: L1 17, L5 73, L10 210 (Mining 10 after ~955 XP),
+  L20 710 (~5,450 total), L30 1,510 (~16k), L50 4,010 (~70k), L100 15,510 (~520k). [build = SkyySkills 0.4.16 after the reset: optional per-skill
+  lists levels.<Skill> (Mining filled), Mining out of gather.boost.skills (one-time update), saved XP kept and levels recomputed with the
+  normal level-up rewards; the mob curve's SkyySkills part becomes 0.4.17; asked Skyy to OK the numbers]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
