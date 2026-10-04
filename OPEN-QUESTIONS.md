@@ -452,6 +452,12 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   much less). Seen in the same screenshots: wand tooltips "Spell at Lv 15: 25-125" (Copper) / "41-199" (Iron) = quick-charged range, replaced
   by the Charged shot / Quick shot lines in SkyyGear 0.2.2 (running). [PULLED FORWARD: SkyyGear 0.2.3 = gear craft Smithing XP (full round,
   XP -> level-up coins = economy), launched as soon as 0.2.2 is READY; tool levels -> 0.2.4, the loot round -> 0.2.5 keeps identify XP]
+- REPORTED 2026-10-03 evening (Skyy, playing, Lv 15 Iron Wand + Fabled Lv 15 armor): "i just killed a lvl 33 yeti with like 4 charged shots.
+  i defiantly think enemies need to scale higher with level." -> the MOB CURVE round moves up: spec running now (wf_370790aa-947 ->
+  research/Mob-Curve-Spec.md: Wynncraft-style curve, steeper gear + separate armor Health curve, BRUTAL level gap, kill XP off raw health),
+  build after Skyy answers its questions (SkyyMobs next version folds in the paused 0.1.3 health-bar fix). STOPGAP Skyy can set live now:
+  Server Setup -> Mobs -> Strength -> Custom, health per level 20%, damage per level 8%, health cap 20, damage cap 6 (a Lv 33 mob x7.4 health
+  / x3.56 damage instead of Hard's x3.56 / x2.28; kill XP follows max health today, so it about doubles too).
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
