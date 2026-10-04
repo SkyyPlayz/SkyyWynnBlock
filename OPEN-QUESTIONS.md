@@ -584,6 +584,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   ranges on leather are good, just double the price of all of them)" -> every HIDE x2 flat (Soft 4 -> 8, Light 6 -> 12, Medium 12 -> 24, Heavy
   18 -> 36, Scaled 24 -> 48, Storm 30 -> 60, Dark 36 -> 72, Prismatic 45 -> 90); leathers follow (auto, +20%: Light 14.4, Medium 28.8, Heavy
   43.2); NOT the x2-per-tier rule. [cloth + gems still open - default x2 per tier step]
+- REPORTED 2026-10-04 (Skyy): "charge attack on the staff costs stamina" -> as built: SkyyArmory 0.1 kept vanilla's staff cast vars
+  (Staff_Cast_Summon_StaminaCost = ChangeStat Stamina -5 + StaminaRegenDelay 1.5 s; SkyyArmory_Staff_Stamina / _Stamina_Delay in every
+  SkyyArmory_Staff_Cast_<metal>) - with ~11-13 max Stamina one cast costs ~40%. [fix in SkyyArmory 0.1.1 (the wand burst build): staff casts
+  cost Mana only - drop the 5 Stamina + the regen pause (a Server Setup row "Staff cast Stamina cost", default 0)]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
