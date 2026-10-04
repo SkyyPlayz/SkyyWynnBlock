@@ -458,6 +458,11 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   build after Skyy answers its questions (SkyyMobs next version folds in the paused 0.1.3 health-bar fix). STOPGAP Skyy can set live now:
   Server Setup -> Mobs -> Strength -> Custom, health per level 20%, damage per level 8%, health cap 20, damage cap 6 (a Lv 33 mob x7.4 health
   / x3.56 damage instead of Hard's x3.56 / x2.28; kill XP follows max health today, so it about doubles too).
+- REQUEST 2026-10-03 evening (Skyy, playing, SkyWynn Menu screenshot): "this menus should show me all my stats with my current gear,
+  accessory's skill and class bonuses. and everything. like on skyblock it should show health, mana, stamina, strength, crit chance, crit
+  damage, mining and foraging fortune. ect. pretty much all the stats." -> a SkyBlock-style Stats page behind Your Profile: every stat with
+  its live total + a per-source breakdown (gear, accessories, skills, class, trees, food, base); also fixes the cut-off Your Profile text.
+  [spec drafted by the cloud (CLOUD-RESUME top task), multi-mod build after the weekly reset (Mon 2026-10-06) - usage 83%]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

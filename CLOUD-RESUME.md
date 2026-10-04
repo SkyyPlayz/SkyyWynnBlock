@@ -20,6 +20,17 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 <!-- 2026-10-03 local session (Skyy: "make sure the cloud agent has a good list to work on, so i can keep em going when token limit runs
 out"): the list is LONG ON PURPOSE this week - work top-down; the first 8 feed builds the local session runs next. Decisions behind them:
 OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" block, 2026-10-03 lines. -->
+- [ ] **Stats page spec (SkyBlock-style "Your Profile" stats)** - Skyy 2026-10-03 (playing, screenshot of the SkyWynn Menu's Your Profile
+      tile): "this menus should show me all my stats with my current gear, accessory's skill and class bonuses. and everything. like on
+      skyblock it should show health, mana, stamina, strength, crit chance, crit damage, mining and foraging fortune. ect. pretty much all
+      the stats." Today the tile shows purse / bank / skill levels / bag counts and its text is cut off ("Skills: Mining 6, Forag...").
+      Design a vanilla-look Stats page (Your Profile -> Stats; tools/skyyui.py + research/Vanilla-UI-Style-Guide.md): every stat with its
+      live total and a per-source breakdown on hover (gear worn + held, accessories, skills, class, trees, food buffs, base). Inventory the
+      stats each mod really has from the build scripts (SkyyGear stat keys + GearFx, SkyyAccessories effects, SkyySkills skill / class
+      bonuses + /skills stats, SkyyClasses, SkyyTrees tree:fn:bonus nodes, SkyyCooking buffs, vanilla Health / Mana / Stamina / armor),
+      which exist today vs later (Mining / Foraging / Farming Fortune, Mining / Chopping Power from the tool-levels spec), SkyBlock's stat
+      list for comparison, and a bridge contract (each mod publishes e.g. stats:contrib:<Mod> with plain java types; SkyyMenu sums and
+      draws), build parts + versions. Output: `research/cloud/Stats-Page-Spec.md`.
 - [ ] **Pocket Dimension release kit** - Skyy will post "Skyy's Pocket Dimension" (the Magic Bags mod: bag types + tiers, /sacks, auto-pickup,
       benches + pocket crafting pull from bags, auto-refill, Workbench tab; NO /craft; tiers unlock by crafting the previous tier) on CurseForge.
       Write the page: summary, feature list, commands + permissions, config, compatibility, FAQ, install steps, changelog template, a
