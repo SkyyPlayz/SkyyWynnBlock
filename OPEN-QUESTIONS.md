@@ -712,6 +712,10 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Archer's A2 pair.
 - LOCKED 2026-10-04 (Skyy): "3. priest ability 2 cleanse" -> read as the Priest's 3rd unlock = the A2 SWAP-OUT: CLEANSE (removes debuffs from
   allies in range) as the alternative to the shield bubble (A2). [confirm with Skyy; improved A1 still to design]
+- LOCKED 2026-10-04 (Skyy, answers): (1) CLEANSE is a CLASS TREE UPGRADE to the Priest's A1 AoE heal (not an ability); the Priest's A2 swap-out
+  is still to choose. (2) WARRIOR as proposed: A1 Rallying Guard (party takes less damage + mobs turn to you), A2 Shield Shockwave (cone stun).
+  (3) The main session PROPOSES the remaining A2 swap-outs + improved A1s for every class in the class-ability spec after the reset (Skyy picks).
+  (4) ASSASSIN A2 swap-out = GOD KILLER: the next attack on a boss or mini-boss does 2x damage, 3x if it is a backstab; stacks with First Strike.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
