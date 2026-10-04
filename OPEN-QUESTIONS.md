@@ -492,6 +492,14 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   says they then run the vanilla file (spends 50 Mana behind the 10-Mana check, no quick shot) - a new Mage (30-40 Mana) would get one cast;
   side check running. Asked Skyy: does a staff tap fire the blue quick shot, and how much Mana does one Wood staff charged cast take (should be
   10)? Also the staff damage boost (Armory -> Damage by staff 120-125%) is still at 100 in the live file.
+- RESEARCH DONE 2026-10-03 (Skyy: "look into realm of the mad god ... they all have something special they do that makes them valuable to the
+  team ... a big list of good class ideas, then list the ones that would work well with vanilla vs the ones we would have to build gear for"):
+  research/Class-Roles-Ideas.md - every class gets ONE Class Ability (Mana) = its team job + a passive + a solo answer; a shared list of ~13
+  status effects with icons; 7 existing classes given jobs (Warrior tank, Archer crowd control, Mage burst, Berserker party buffer, Priest
+  healer, Assassin priority killer; Shaman -> Monk per Skyy); 31 new ideas: 13 work with vanilla items now (Tinker, Bombardier, Galewalker,
+  Skylancer, Gunslinger, Hemomancer, Ascetic = Monk, Blightcaller, Hexer, Sunderer, Warden, Duelist, Spellblade), 11 need custom gear, 7 need a
+  big new system. 15 questions for Skyy with defaults in section 7 [wave 0 = an ability core + engine probe; wave 1 = Priest Mend, Berserker War
+  Cry, Archer Pinning Shot, Tinker - after the weekly reset].
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
