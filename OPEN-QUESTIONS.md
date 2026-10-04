@@ -672,6 +672,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   the teleport, with the AoE knockback. An ASSASSIN class ability will be like RotMG's Rogue CLOAK (invisibility) -> cloak, teleport in, hit,
   teleport out. [defaults: the return works for ~8 s after the throw; Soul Orb extra tethers jump to the nearest enemies within ~8 blocks of the
   first target (Skyy did not object); open: daggers' traversal - keep the vanilla dagger charged move?]
+- LOCKED 2026-10-04 (Skyy): daggers keep their VANILLA charged traversal for now ("we can change it up later"; Smoke Roll stays an idea). Every
+  class weapon now has its traversal: custom for staff / spellbook / wand / soul orb / Bo staff / fists / kunai; vanilla for daggers, swords,
+  spears, bows, crossbows, axes, maces / clubs.
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
