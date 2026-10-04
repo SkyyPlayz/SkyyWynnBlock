@@ -508,6 +508,13 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
   Hard again (8% / 4%, caps x6 / x3.5); the Custom 20 / 8 stopgap is dropped. Reading: Hard is right for a Mage, the Priest made mobs feel too
   easy. The mob curve spec (resumed with this, research cached) keeps Lv 1-20 close to today's Hard, grows mobs toward high levels, puts the
   brutal part in the LEVEL GAP, and fixes Priest-vs-Mage on the class side (wand burst, Priest healing down, a Mage survival tool).
+- REQUEST 2026-10-03 evening (Skyy): "we need to make the first 10 levels of mining go much faster. or lower copper pick to lvl 5. and still
+  lower the xp cost for the first 5 levels" -> all LIVE rows (no build): Skills -> Gathering -> Early gathering XP boost x3 -> x5 (Mining,
+  Foraging, Farming up to level 10); Skills -> Levels -> XP per level, other skills (list) (Advanced ON) first five 50,125,200,300,500 ->
+  25,60,100,150,250 (all non-class skills); Gear -> level bands: Copper 10,18 -> 5,18 (every copper weapon + tool; copper armor is already 1-18).
+  Mining 0 -> 10 today 9,925 XP at x3; with all three ~9,335 XP at x5 (about 40% fewer blocks), Mining 5 after ~587 XP. A pickaxe-only band
+  (an entry Tool_Pickaxe_Copper beats Copper in the matcher) needs a SkyyGear build if Skyy wants swords to stay at 10.
+  [update the pack defaults once Skyy settles the numbers]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
