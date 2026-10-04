@@ -617,6 +617,14 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
     abilities exist. Teleport distance upgrades / the custom-distance setting come with the class trees (the Mage tree already has a
     Riftwalker lane). [build = SkyyArmory 0.1.1 + SkyyClasses 0.1.12 (+ staff casts stop costing Stamina) - spec first, full round, after
     the reset]
+- LOCKED 2026-10-04 (Skyy): "backwards hop can also be used tro go straight up. (so can the teleport.)" -> both magic traversals follow the
+  look direction incl. vertical: staff teleport looking up goes up; the wand hop goes opposite to where you look (look down = straight up).
+- LOCKED 2026-10-04 (Skyy): MONK uses a BO STAFF (answers the staff question). Its traversal = the Bo staff CHARGED attack: lunge forward and
+  POLE-VAULT up and forward, kicking any enemy in the way for 2x a normal hit (only the vault kicks); then "flowing gracefully" he falls
+  slightly slower (almost gliding); jump right as you land and he bounds forward - a little higher than a normal jump, much more forward,
+  still falling slower - "skip across the battlefield like a stone on water"; the bound chains as long as your timing holds; bounds do no
+  damage but cost more Stamina than a normal jump. [engine checks before building: slow-fall / glide (fall speed control), catching the jump
+  right at landing, Stamina per bound, no fall damage while flowing - a probe first; comes with the Monk class round after the ability core]
 
 ## Numbers picked in the beta round (live now)
 (2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)

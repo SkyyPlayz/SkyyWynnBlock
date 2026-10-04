@@ -19,6 +19,11 @@ build gear for."*
 > - **Wand vs staff** ("swap its charged attack to an AOE ... if you or allies are in that area you heal for a little more (like +10% more)"):
 >   Priest wands get a charged BURST (explodes on contact, less damage per enemy, big area, +10% Priest heal for anyone inside); Mage staffs
 >   keep the single-target charged shot. Priest **Mend** below would come on top of that.
+> - **2026-10-04 traversal = the CHARGED attacks** (Skyy; OPEN-QUESTIONS LOCKED 2026-10-04): staff = teleport in the look direction (10 blocks,
+>   tree upgrades + custom distance; a lingering light trail does AoE damage); wand = hop opposite to where you look (look down = straight up) +
+>   an exploding orb (AoE 6) leaving a 9-block healing orb (20% of the explosion damage per second, 3-4 s); MONK = Bo staff, charged = pole-vault
+>   lunge kicking enemies in the way for 2x, slow 'flowing' fall, and timed bounds on landing that chain like a skipping stone (no damage,
+>   extra Stamina).
 > - Skyy finds the Priest "a little Op" next to a new Mage (healing caps are being tuned live; a staff asset bug is being checked).
 
 > **Skyy's direction 2026-10-04 (replaces "one ability = one job" in section 1 / rule 2):**
