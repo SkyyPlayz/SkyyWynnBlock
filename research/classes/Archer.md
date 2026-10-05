@@ -22,10 +22,10 @@ flowchart TD
   CLS --> ABL["ABILITIES<br/>own 4, equip 2"]
   WPN --> BOW["Shortbows"]
   BOW --> BOWa["Attack: draw + shoot<br/>draw strength 0-4"]
-  BOW --> BOWc["Charged: full draw<br/>no traversal yet"]
+  BOW --> BOWc["Charged: full draw<br/>vanilla for now"]
   WPN --> XB["Crossbows"]
   XB --> XBa["Attack: load + shoot<br/>3rd bolt bonus"]
-  XB --> XBc["Charged: none in vanilla<br/>no traversal yet"]
+  XB --> XBc["Charged: none in vanilla<br/>vanilla for now"]
   ABL --> A1["A1 Pinning Shot"]
   A1 --> A1A["A1-alt A Arrow Rain"]
   A1 --> A1B["A1-alt B Hunter's Net"]
@@ -40,9 +40,8 @@ flowchart TD
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
   classDef open fill:#e65100,color:#fff,stroke:#bf360c
   classDef mods fill:#1a237e,color:#fff,stroke:#0d1442
-  class A1,A2,A2X locked
+  class A1,A2,A2X,BOWc,XBc locked
   class A1A,A1B proposed
-  class BOWc,XBc open
   class M1,M2,M3,M4,M5 mods
 ```
 
@@ -52,23 +51,23 @@ flowchart TD
 
 ### Shortbows
 
-🟠 **Open** - needs a traversal
+🟢 **Locked** - vanilla for now (Skyy 2026-10-05: custom traversals come later)
 
 - **Attack:** vanilla draw-and-shoot (draw strength 0-4). Vanilla Signature Volley.
 
 - **Charged:** a full draw = the strongest shot. **No movement** in vanilla.
 
-- 🔵 **Proposed traversal - Grapple Arrow:** a full-draw shot into a block pulls you to it.
+- 💡 **Idea for later - Grapple Arrow:** a full-draw shot into a block pulls you to it.
 
 ### Crossbows
 
-🟠 **Open** - needs a traversal
+🟢 **Locked** - vanilla for now (Skyy 2026-10-05: custom traversals come later)
 
 - **Attack:** vanilla load + shoot. The 3rd bolt in a row on one target hits harder. Bolts stay loaded (SkyySkills).
 
 - **Charged:** vanilla has no hold-to-charge.
 
-- 🔵 **Proposed traversal - Dodge Roll:** roll the way you move and reload instantly.
+- 💡 **Idea for later - Dodge Roll:** roll the way you move and reload instantly.
 
 &nbsp;
 
@@ -218,11 +217,13 @@ Ideas - pick one.
 
 ## 🟠 Open
 
-- Traversals for shortbows and crossbows (Grapple Arrow / Dodge Roll proposed).
+- Nothing open right now (bow + crossbow traversals stay vanilla for now - Skyy 2026-10-05).
 
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-05: weapon traversals stay VANILLA FOR NOW (Skyy: "they stay vanilla FOR NOW. they will change later.") - the proposals are ideas for later.
 
 - 2026-10-05: refined for easy reading (same facts, new layout).
 

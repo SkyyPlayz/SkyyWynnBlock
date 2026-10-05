@@ -31,6 +31,7 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - ANSWERED 2026-10-04 (Skyy, Lantern squares test): "2, try to smooth the edges" -> option 2 (Advanced "Hidden light: highest" 128 -> 64, the light sits lower) looked better; next SkyyAccessories build (0.5.5, lean, after the reset): default highest 64 + SMOOTH the lit edge (several lower helper lights spread around the wearer and/or a softer falloff so no square dark patches at the edge).
 
 ## Answer first (they block or shape the next builds)
+> Answered later (2026-10-05 note): the sickle-crops part of the OPEN line below was answered in the Q&A block above - 'ANSWERED 2026-10-03 morning (Skyy, the overnight questions)': COLLECTIONS: sickle-harvested crops count too.
 3. ANSWERED 2026-09-25: Mining bag from **Iron**. Was: **Bags:** do the Mining bag upgrades come from the Cobblestone or the Iron collection? Which collections grow Foraging, Farming, Combat and the new Smithing bag? [today every bag is crafted at a Workbench]
 - OPEN 2026-10-03 (SkyySkills 0.4.14 review): with the party share on each member's own class skill, a Skill-1 friend near a Divinity-60 killer gets ~330 XP per Lv 33 kill while the killer gets ~28 - easy power-levelling. Cap a member's gap BONUS at the killer's own gap factor (penalties still per member)? [cap it - recommended] Also: sickle-harvested crops count for Collections too? [yes, next SkyyCollections]  *(also in: skills)*
 

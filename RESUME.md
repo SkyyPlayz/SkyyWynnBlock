@@ -7,7 +7,7 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 - LIVE: the 26-mod SET in HANDOFF section 1 (= `tools/deploy_set.py`); last deploy SkyyAccessories 0.5.4 Lantern, 2026-10-04 00:46
   (backup `backups\deploy-20261004-0046`). NOTHING is running.
 - USAGE: weekly 94% on 2026-10-05 -> no new build rounds until the reset Mon 2026-10-06 15:00 UTC (Skyy: stop near 95%); test fixes only.
-- DOCS were consolidated on 2026-10-05 (this layout; `python tools/docs_check.py` proves no line of the old docs was lost). The old
+- DOCS were consolidated on 2026-10-05 in PR SkyyPlayz/SkyyWynnBlock#6 (merge it, then `git pull` on the PC; this layout; `python tools/docs_check.py` proves no line of the old docs was lost). The old
   RESUME (full PC path table, the stacked 10-02..10-04 status notes) is `docs/archive/RESUME-2026-10-05.md`.
 - ALWAYS READY TO HAND OFF (Skyy 2026-10-05): the moment something is done, log it + update HANDOFF (versions) + this file, then
   commit + push - before starting the next thing (PROJECT-RULES section 5).
@@ -34,8 +34,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 10. Stats page (Your Profile -> SkyBlock-style stats; spec = cloud task -> `research/cloud/Stats-Page-Spec.md`), multi-mod build.
 - Also queued: the CLASS-ABILITY SPEC (proposes every class's A2 alternative + two improved A1 options for Skyy to pick, + the engine probe:
   glide / slow fall, air-jump timing, dragging mobs, ally lock-on, absorb shield, beams / tethers, invisibility); the Monk class; /island
-  STARTER SHARDS (SkyyIslands); WORLDGEN STAGE 2 spec -> build; the Accessory Table (paused - ask Skyy); small follow-ups (skills /
-  collections leaderboards skip deleted profiles, config kit KEEP 20 -> 10, vanilla UI restyle leftovers, retire SkyyUiProbe);
+  STARTER SHARDS (SkyyIslands); WORLDGEN STAGE 2 spec -> build; the Accessory Table (paused - ask Skyy); small follow-ups (Archery 15+ extra crossbow bolts + the late-game holstered reload -
+  approved, later; skills / collections leaderboards skip deleted profiles, config kit KEEP 20 -> 10, vanilla UI restyle leftovers, retire SkyyUiProbe);
   SkyyEconomy 0.1 merge after Skyy tests the separate mods; Hytale 0.7 release-day fix list (`research/PreRelease-Compat-Audit-1002.md`).
   LAST (Skyy): "Skyy's Pocket Dimension" spec + release build + CurseForge kit.
 
@@ -57,5 +57,7 @@ Project = this repo: `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\`.
 release\package\game\latest\` (`Server\HytaleServer.jar`, `Assets.zip`). Mods: `...\Hytale\UserData\Mods\`. Test world: `...\UserData\
 Saves\HUD mod\` (`config.json`, mod data `mods\Skyy_Skyy<Mod>\`, server logs `logs\`); client logs `...\UserData\Logs\`. Backups:
 `backups\` (git-ignored). Claude's memory: `C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK\memory\`.
-Toolchain: Python 3.12 + jpype1 + jdk4py (no javac). LOCAL ONLY, never in git: game files, UserData, backups, built jars (except
+Release files for public mods: `Desktop\Hytale mods WORK\Your new mods\`. The other folders in `Hytale mods WORK` (`Hytale mods`,
+`Your new mods`, `lynk to Hytale Game`, the new `Hytale Projects`) are Skyy's, not part of the build. Toolchain: Python 3.12 + jpype1 +
+jdk4py (no javac). LOCAL ONLY, never in git: game files, UserData, backups, built jars (except
 `tools\javassist.jar`), `build_classes\`, `tools\dev\scratch\`.

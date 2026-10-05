@@ -23,7 +23,7 @@ flowchart TD
   SW --> SWc["Charged: Thrust dash<br/>vanilla traversal"]
   WPN --> SP["Spears"]
   SP --> SPa["Attack: stab"]
-  SP --> SPc["Charged: spear throw<br/>no traversal yet"]
+  SP --> SPc["Charged: spear throw<br/>vanilla for now"]
   ABL --> A1["A1 Rallying Guard"]
   A1 --> A1A["A1-alt A Bulwark Stance"]
   A1 --> A1B["A1-alt B Unbreakable"]
@@ -38,9 +38,8 @@ flowchart TD
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
   classDef open fill:#e65100,color:#fff,stroke:#bf360c
   classDef mods fill:#1a237e,color:#fff,stroke:#0d1442
-  class A1,A2,SWc locked
+  class A1,A2,SWc,SPc locked
   class A1A,A1B,A2X proposed
-  class SPc open
   class M1,M2,M3,M4,M5 mods
 ```
 
@@ -50,23 +49,23 @@ flowchart TD
 
 ### Swords (incl. longswords)
 
-🟢 **Locked** - sword: vanilla · 🟠 **Open** - longsword traversal
+🟢 **Locked** - vanilla for now (Skyy 2026-10-05: custom traversals come later)
 
 - **Attack:** vanilla swing combo. Longswords: a stab combo.
 
 - **Charged / traversal:** swords use the vanilla **Thrust dash** (needs a little Stamina). Longswords: a charged stab with no movement.
 
-- 🟠 **Open:** longswords have no traversal. Share the sword's dash?
+- 💡 **Idea for later - not decided yet:** longswords have no traversal of their own; share the sword's dash?
 
 ### Spears
 
-🟠 **Open** - needs a traversal
+🟢 **Locked** - vanilla for now (Skyy 2026-10-05: custom traversals come later)
 
 - **Attack:** vanilla stab.
 
 - **Charged:** vanilla **spear throw** (a projectile, no movement).
 
-- 🔵 **Proposed traversal - Spear Leap:** leap to where you aim and slam down, knocking enemies back.
+- 💡 **Idea for later - Spear Leap:** leap to where you aim and slam down, knocking enemies back.
 
 &nbsp;
 
@@ -222,15 +221,13 @@ Ideas, Wynncraft-style - pick one.
 
 ## 🟠 Open
 
-- Spear traversal (Spear Leap proposed).
-
-- Longsword traversal.
-
 - Engine check: can a mod make mobs target the Warrior (taunt)? If not, Rallying Guard uses a stun instead.
 
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-05: weapon traversals stay VANILLA FOR NOW (Skyy: "they stay vanilla FOR NOW. they will change later.") - the proposals are ideas for later.
 
 - 2026-10-05: refined for easy reading (same facts, new layout).
 

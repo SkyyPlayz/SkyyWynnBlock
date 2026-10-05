@@ -19,6 +19,7 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - LOCKED 2026-10-03 (Skyy): /ISLAND UPGRADE "on the next run" - "make the island 3x with small hill, more trees, a cave, and that bridge to the second island with mobs. and add the 3rd island with the portal and we can add the boss later." -> SkyyIslands starter shards: the personal island 3x bigger with a small hill, more trees and a cave; a bridge to a 2nd island with mobs; a 3rd island with the portal (the guardian / boss comes later). Base the layout on research/cloud/Starter-Shard-Layout.md (3 shards, gaps, resource budget) + the lore. [spec first: what happens to islands that already exist (keep / upgrade on request), how the shards generate, the portal's target until the boss exists]
 
 ## Answer first (they block or shape the next builds)
+> Answered later (2026-10-05 note): the OPEN island-death line below was answered in the Q&A block above - 'ANSWERED 2026-10-03 morning (Skyy, the overnight questions)': WORLDGEN: island deaths keep items.
 - OPEN 2026-10-03 (SkyyWorldGen 0.1 fix round): deaths on the Zone 1 test island KEEP all items (the void would destroy gear; plan: void deaths cost coins, not items). Keep it, use the vanilla 50% drop, or add a coin loss later? [keep items for now]
 
 ## Round 9 + SkyyGear defaults (live 2026-09-29)

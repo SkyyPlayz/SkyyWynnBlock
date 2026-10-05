@@ -13,19 +13,23 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 2. SkyyClasses 0.1.10 - Warrior Wood Shield in the kit; Priest self-heal 100%.
 3. SkyyGuilds 0.1.5 + 0.1.6 - % disband refunds, Contribution column, 35% leave refund.
 4. SkyyMenu 0.3.4 - the menu item per profile; Server Setup times in seconds.
-5. SkyySkills 0.4.11 - Priest heal XP 1 / 1.25 per HP.
-6. SkyyAccessories 0.5.2 + SkyySacks 0.7.10 - Workbench "Accessories & Bags" tab; Charcoal goes in the Smithing bag.
-7. SkyyIslands 0.5.5 - a deleted owner's island closes to co-op members.
-8. Phase 1 of the 2026-10-02 answers - SkyyCollections 0.2.5 (coins never buy tiers / recipes / bags) + SkyyEssentials 0.1.7 (bags
+5. SkyyGear 0.1.3 - every world-chest weapon / armor drops unidentified; the 59 non-metal level rows in Server Setup -> Gear -> Levels.
+6. SkyySkills 0.4.11 - Priest heal XP 1 / 1.25 per HP.
+7. SkyyAccessories 0.5.2 + SkyySacks 0.7.10 - Workbench "Accessories & Bags" tab; Charcoal goes in the Smithing bag.
+8. SkyyIslands 0.5.5 - a deleted owner's island closes to co-op members.
+9. Phase 1 of the 2026-10-02 answers - SkyyCollections 0.2.5 (coins never buy tiers / recipes / bags) + SkyyEssentials 0.1.7 (bags
    blocked in /trade). (Auto-refill and the Skills widget from the same section are already seen working.)
-9. SkyyMenu 0.3.5 - the Mods list matches today's versions.
-10. SkyyHud 0.3.13 - small widget boxes (Game Clock reaches the corner) + combat widget colours.
-11. SkyyTrees 0.3 - the Alchemy + Smithing trees (the class-tree probe page is already seen).
-12. SkyyMobs 0.1.3 - the mob health bar follows a live Strength change (the Gear 0.2.2 half of that section is seen).
+10. SkyyMenu 0.3.5 / 0.3.6 - the Mods list matches today's versions (0.3.6's stuck-page fix is already seen; the list itself is not).
+11. SkyyHud 0.3.13 - small widget boxes (Game Clock reaches the corner) + combat widget colours.
+12. SkyyTrees 0.3 - the Alchemy + Smithing trees (the class-tree probe page is already seen).
+13. SkyyMobs 0.1.3 - the mob health bar follows a live Strength change (the Gear 0.2.2 half of that section is seen).
+14. SkyyCooking 0.1.4 - food Grade strength (+32% per Grade); you saw the XP rate (still too fast - tuned live), not the Grade strength.
+15. SkyyBazaar 0.1.3 - the Smithing tab, every bag item listed, processed goods +20% (you only said "bizzar looks good").
+16. SkyySkills 0.4.15 - class Mana pools (Priest +5 / Mage +10 max Mana per class level); staffs work, the pools were not checked.
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
-bench + inventory crafting, SkyySkills 0.4.12 - 0.4.15, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6,
-SkyyCooking 0.1.4, SkyyBazaar 0.1.3, SkyyArmory 0.1 staffs + wands, SkyyTrees 0.3.1 probe page, SkyyGear 0.2.2 tooltips, SkyyUiProbe 0.4
+bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
+(stuck-page fix), SkyyArmory 0.1 staffs (+ the Iron wand in play), SkyyTrees 0.3.1 probe page, SkyyGear 0.2.2 tooltips, SkyyUiProbe 0.4
 minimap probes, SkyyAccessories 0.5.4 Lantern.
 
 ## If anything crashes or misbehaves

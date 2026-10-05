@@ -92,4 +92,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 13. LOCKED 2026-09-25 (Skyy): SkyyClasses' class-switch settings are greyed out while switching is locked. Players can see the option and cannot use it. Was: hidden, with one read-only line. Future, to build: class changes unlock later through a special item earned from a quest, or a similar progression gate. [greyed out; 0.1.6 still leaves switchCost and cooldownMinutes off the page]
 
 ## New answers (2026-10-05 on - newest last, beats everything above)
-
+- LOCKED 2026-10-05 (Skyy, asked whether the vanilla-traversal line or the class files' open traversal proposals win): "they stay vanilla FOR NOW. they will change later." -> swords (+ longswords), spears, shortbows, crossbows, axes (+ battleaxes) and maces / clubs keep their VANILLA charged attack as their traversal for now; custom traversals for them come later. The proposals (Spear Leap, Grapple Arrow, Dodge Roll, Leap Slam, Bull Rush, longswords sharing the sword dash) stay as ideas for that later change - not open questions now. research/classes/ Warrior / Archer / Berserker updated.

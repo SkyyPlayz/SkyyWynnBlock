@@ -23,6 +23,7 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - LOCKED 2026-10-04 (Skyy): "and leather id moost the cost of leather but keep the small meduim and large close to similar prices" then "(price ranges on leather are good, just double the price of all of them)" -> every HIDE x2 flat (Soft 4 -> 8, Light 6 -> 12, Medium 12 -> 24, Heavy 18 -> 36, Scaled 24 -> 48, Storm 30 -> 60, Dark 36 -> 72, Prismatic 45 -> 90); leathers follow (auto, +20%: Light 14.4, Medium 28.8, Heavy 43.2); NOT the x2-per-tier rule. [cloth + gems still open - default x2 per tier step]
 
 ## Answer first (they block or shape the next builds)
+> Answered later (2026-10-05 note): the SkyyEconomy-merge question below was answered by 'R3 LOCKED (Skyy): SkyyEconomy merge ... goes ahead after Skyy has tested the separate mods' in the Q&A block above.
 2. **SkyyEconomy merge:** go ahead once you have tested the separate Bank 0.1.3, Bazaar 0.1.2 and Auctions 0.1? [yes, next round after your test]
 
 ## Numbers picked in the beta round (live now)

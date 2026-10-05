@@ -23,7 +23,7 @@ flowchart TD
   AX --> AXc["Charged: battleaxe Downstrike<br/>axe: charged swing"]
   WPN --> MC["Maces + clubs"]
   MC --> MCa["Attack: swing chain"]
-  MC --> MCc["Charged: mace charged swings<br/>no traversal yet"]
+  MC --> MCc["Charged: mace charged swings<br/>vanilla for now"]
   ABL --> A1["A1 Enrage"]
   A1 --> A1A["A1-alt A Blood Frenzy"]
   A1 --> A1B["A1-alt B Warlord's Banner"]
@@ -38,9 +38,8 @@ flowchart TD
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
   classDef open fill:#e65100,color:#fff,stroke:#bf360c
   classDef mods fill:#1a237e,color:#fff,stroke:#0d1442
-  class A1,A2 locked
+  class A1,A2,AXc,MCc locked
   class A1A,A1B,A2X proposed
-  class AXc,MCc open
   class M1,M2,M3,M4,M5 mods
 ```
 
@@ -50,25 +49,25 @@ flowchart TD
 
 ### Axes (incl. battleaxes)
 
-🟠 **Open** - traversal
+🟢 **Locked** - vanilla for now (Skyy 2026-10-05: custom traversals come later)
 
 - **Attack:** vanilla swing combo.
 
 - **Charged:** battleaxes use the vanilla **Downstrike** (a heavy charged slam). Axes: a charged swing with no movement.
 
-- 🟠 **Open:** is the Downstrike enough of a traversal? Axes need one.
+- 💡 **Idea for later - not decided yet:** is the Downstrike enough of a traversal? Axes need one.
 
-- 🔵 **Proposed traversal - Leap Slam** (for both): leap forward and smash down.
+- 💡 **Idea for later - Leap Slam** (for both): leap forward and smash down.
 
 ### Maces + clubs
 
-🟠 **Open** - needs a traversal
+🟢 **Locked** - vanilla for now (Skyy 2026-10-05: custom traversals come later)
 
 - **Attack:** vanilla swing chain. Maces can charge each swing; plain clubs have no charged attack wired.
 
 - **Charged:** mace charged swings, no movement.
 
-- 🔵 **Proposed traversal - Bull Rush:** charge forward, knocking enemies aside.
+- 💡 **Idea for later - Bull Rush:** charge forward, knocking enemies aside.
 
 &nbsp;
 
@@ -226,8 +225,6 @@ Ideas - pick one.
 
 ## 🟠 Open
 
-- Traversals for axes and maces / clubs (Leap Slam / Bull Rush proposed).
-
 - A1-alt pair.
 
 - A2-alt.
@@ -235,6 +232,8 @@ Ideas - pick one.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-05: weapon traversals stay VANILLA FOR NOW (Skyy: "they stay vanilla FOR NOW. they will change later.") - the proposals are ideas for later.
 
 - 2026-10-05: refined for easy reading (same facts, new layout).
 

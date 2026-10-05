@@ -3,7 +3,8 @@ question from OPEN-QUESTIONS.md - so OPEN-QUESTIONS.md only ever holds questions
 
 Usage:  python tools/qa_append.py <topic> <file with the answer lines> [--close "<words that appear in the open question>"]
   topic = a file name in docs/answered/ without .md (classes, gear, skills, mobs, world, economy, bags, ui, social, pets, project)
-  --close may be given more than once; each must match exactly ONE question line in OPEN-QUESTIONS.md (its wrapped lines go with it).
+  --close may be given more than once; each must match exactly ONE question in OPEN-QUESTIONS.md - the words may come from any of
+  its lines (a wrapped line break counts as a space); the whole question, wrapped lines included, is deleted.
 Nothing is written unless every step succeeds. Line endings and bytes of both files are kept."""
 import os
 import sys
@@ -43,14 +44,19 @@ def main(argv):
     o = open(OPEN, "rb").read().decode("utf-8")
     lines = o.split("\n")
     for words in closes:
-        hits = [k for k, l in enumerate(lines) if l.startswith("- ") and words in l]
+        qs = []  # (start, end, the whole question as one line) - a question = its "- " line + its wrapped "  " lines
+        for k, l in enumerate(lines):
+            if l.startswith("- "):
+                end = k + 1
+                while end < len(lines) and lines[end].startswith("  "):
+                    end += 1
+                qs.append((k, end, " ".join(x.strip() for x in lines[k:end])))
+        want = " ".join(words.split())
+        hits = [q for q in qs if want in " ".join(q[2].split())]
         if len(hits) != 1:
-            fail("--close %r matches %d question lines in OPEN-QUESTIONS.md (needs exactly 1)" % (words, len(hits)))
-        k = hits[0]
-        end = k + 1
-        while end < len(lines) and lines[end].startswith("  "):
-            end += 1  # wrapped lines of the same question
-        del lines[k:end]
+            fail("--close %r matches %d questions in OPEN-QUESTIONS.md (needs exactly 1 - use words unique to that question)"
+                 % (words, len(hits)))
+        del lines[hits[0][0]:hits[0][1]]  # the "### topic" heading stays, ready for the next question of that topic
     open(ans, "wb").write(a.encode("utf-8"))
     if closes:
         open(OPEN, "wb").write("\n".join(lines).encode("utf-8"))

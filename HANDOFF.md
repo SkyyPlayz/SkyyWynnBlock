@@ -37,10 +37,20 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 Every version's notes: `docs/handoff/versions-history.md`. Every build / deploy / test: `docs/log/<YYYY-MM>.md`.
 
 **Deploy rules** (PROJECT-RULES section 3 is the procedure): `python tools/backup_deploy.py`, then `python tools/deploy_set.py --yes` with the
-game closed - the only deploy path. ROLLBACK FLOORS (each with its reason in the comments of `tools/deploy_set.py` - read them before
-any rollback): SkyyProfiles 0.1.5 once a profile was deleted; SkyyTrees 0.3 once it saved a player file; SkyyGear 0.2 (unless the config
-History copy is restored first); SkyySacks 0.7.7; SkyySkills 0.4.6 (and SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 roll back
-together); SkyyCollections 0.2.3 (unless rewards-0.2.properties is restored); never SkyyIslands 0.5 (security hole). HyperEssentials stays DISABLED.
+game closed - the only deploy path. `deploy_set.py` refuses a SET that splits SkyyArmory from SkyySkills 0.4.15+ / SkyyClasses 0.1.11+.
+ROLLBACK FLOORS + STEPS (each with its reason in the comments of `tools/deploy_set.py` - read them before any rollback):
+- Floors: SkyyProfiles 0.1.5 once a profile was deleted; SkyyTrees 0.3 once it saved a player file; SkyyGear 0.2 (unless the config
+  History copy 'before the 0.2 level bands' is restored first); SkyySacks 0.7.7; SkyyTrees 0.2.4; SkyyCollections 0.2.3 (unless
+  rewards-0.2.properties is restored); SkyySkills 0.4.6 (switch Base Mana + Overall Level OFF and let players log in once first);
+  never SkyyIslands 0.5 (security hole).
+- SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy and roll back TOGETHER: before SkyySkills goes below 0.4.15 switch
+  Base Mana off and let players log in once; rolling SkyyArmory back = out of SET, into RETIRED, and SkyySkills back to 0.4.14 in the
+  same deploy.
+- Removing SkyyWorldGen after /zone 1 ran: stop the server and delete `Saves/HUD mod/universe/worlds/skywynn_z1` FIRST (else void is
+  saved into the island), then out of SET, into RETIRED.
+- Removing SkyyMobs: out of SET, into RETIRED (to strip level plates first: Server Setup > Mobs > Never level these = `*`, reload chunks).
+- SkyyAuctions back to 0.1.1: restore `48h:1200` in its config.properties by hand first.
+- HyperEssentials stays DISABLED (it crashes the world on any player death) unless a newer release exists.
 
 ## 2. THE TWO RULES THAT COST 30 BUILDS (READ BEFORE WRITING ANY UI)
 
