@@ -7,8 +7,8 @@ tools/deploy_set.py SET pin, generated - never re-run its patch, never re-build 
      "forget night vision, just do the lantern accessory"; deployed 2026-10-04). The Accessories Mods entry (description + the Server
      Setup line) names the Lantern now; the build check asserts no Mods text says Night Vision any more.
   2. The Mods list = tools/deploy_set.py SET of 2026-10-05 + THIS ROUND (ROUND_PINS: SkyyExploration 0.2.3 page guard, SkyyAccessories
-     0.5.5, SkyyCooking 0.1.5 - built in parallel; MODS names the round's versions, the live-set check accepts them while SET still pins
-     0.2.2 / 0.5.4 / 0.1.4 and checks the round's set too). Version bumps since 0.3.6: Hud 0.3.13, Bazaar 0.1.3, Gear 0.2.2, Skills
+     0.5.5, SkyyCooking 0.1.6 - built in parallel; MODS names the round's versions, the live-set check accepts them while SET still pins
+     0.2.2 / 0.5.4 / 0.1.5 and checks the round's set too). Version bumps since 0.3.6: Hud 0.3.13, Bazaar 0.1.3, Gear 0.2.2, Skills
      0.4.15, Classes 0.1.11, Trees 0.3.1, UiProbe 0.4, Mobs 0.1.3. NEW entry SkyyArmory 0.1 (live since 2026-10-03, missing from 0.3.6's
      list): wands + staffs, no commands, Server Setup -> Armory. SkyyUiProbe 0.4: one admin line for its /skyprobe map steps.
 NOT CHANGED: every class but MenuData's data (the harness byte-compares), SET_KNOWN, the menu look, the config kit pin.
@@ -40,13 +40,13 @@ def rep(old, new):
 
 
 # THIS ROUND: the mods that deploy together with this SkyyMenu (mod: (the SET version now, the round's version))
-ROUND = {"SkyyExploration": ("0.2.2", "0.2.3"), "SkyyAccessories": ("0.5.4", "0.5.5"), "SkyyCooking": ("0.1.4", "0.1.5")}
+ROUND = {"SkyyExploration": ("0.2.2", "0.2.3"), "SkyyAccessories": ("0.5.4", "0.5.5"), "SkyyCooking": ("0.1.5", "0.1.6")}
 # THE ONE VERSION TABLE = tools/deploy_set.py SET of 2026-10-05 (SET order) with the ROUND versions. Bump here, regenerate, rebuild.
 MODS_VERSIONS = [
     ("SkyyHud", "0.3.13"), ("SkyySacks", "0.7.12"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.5"), ("SkyyParty", "0.1.6"),
     ("SkyyBank", "0.1.6"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.3"), ("SkyyGear", "0.2.2"), ("SkyySkills", "0.4.15"),
     ("SkyyAccessories", "0.5.5"), ("SkyyClasses", "0.1.11"), ("SkyyEssentials", "0.1.7"), ("SkyyProfiles", "0.1.5"),
-    ("SkyyCooking", "0.1.5"), ("SkyyTrees", "0.3.1"), ("SkyyExploration", "0.2.3"), ("SkyyGuilds", "0.1.6"), ("SkyyVault", "0.1.5"),
+    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.1"), ("SkyyExploration", "0.2.3"), ("SkyyGuilds", "0.1.6"), ("SkyyVault", "0.1.5"),
     ("SkyyAuctions", "0.1.2"), ("SkyyRanks", "0.1.1"), ("SkyyUiProbe", "0.4"), ("SkyyMobs", "0.1.3"), ("SkyyWorldGen", "0.1"),
     ("SkyyArmory", "0.1"),
 ]
@@ -80,7 +80,11 @@ rep('''"""SkyyMenu 0.1 - build script (javassist via jpype).
 0.3.6: THE STUCK-PAGE FIX''', '''"""SkyyMenu 0.1 - build script (javassist via jpype).
 0.3.7: DATA / TEXT ONLY (no behaviour change; notes: tools/menu_0_3_7_patch.py): the Night Vision help texts are gone (SkyyAccessories
        0.5.4 retired it for the Lantern line); the Mods list = tools/deploy_set.py SET of 2026-10-05 + this round (ROUND_PINS: SkyyExploration
-       0.2.3, SkyyAccessories 0.5.5, SkyyCooking 0.1.5) + the missing SkyyArmory 0.1 entry (26 mods); SkyyUiProbe 0.4 /skyprobe map line.
+       0.2.3, SkyyAccessories 0.5.5, SkyyCooking 0.1.6) + the missing SkyyArmory 0.1 entry (26 mods); SkyyUiProbe 0.4 /skyprobe map line;
+       the live-set check's two differences fixed (SkyyBazaar 0.1.3's Server Setup page Bazaar, SkyyGear 0.2.2's gear.critFx switch).
+  CHECKED 2026-10-05 with SkyyMenu/test_skyymenu_0.3.7.py (needs SkyyMenu-0.3.5.jar + SkyyMenu-0.3.6.jar): 975 checks, 0 fail -
+    every 0.3.6 check carried forward (P: 0.3.5 still reproduces the stuck page, 0.3.7 fixes it), F2 the 0.3.7 texts (no Night
+    Vision anywhere, the Lantern, SkyyArmory, /skyprobe map, Bazaar Server Setup, gear.critFx), K2 0.3.6 -> 0.3.7 data / version only.
 0.3.6: THE STUCK-PAGE FIX''')
 rep('VERSION = "0.3.6"', 'VERSION = "0.3.7"')
 rep('"set EXPECTED_KIT through tools/menu_0_3_6_patch.py (or its successor), regenerate, re-test"',
@@ -134,7 +138,7 @@ rep('''# 0.3.4 / 0.3.5 / 0.3.6: EMPTY - this SkyyMenu deploys on its own; MODS n
 # MODS_VERSIONS table above). To ship it together with e.g. SkyyGear 0.2.1: {"SkyyGear": ("0.2", "0.2.1")} + that version in MODS_VERSIONS.
 ROUND_PINS = {}''', '''# 0.3.4 / 0.3.5 / 0.3.6: EMPTY - this SkyyMenu deploys on its own; MODS names exactly what tools/deploy_set.py SET pins (the
 # MODS_VERSIONS table above). To ship it together with e.g. SkyyGear 0.2.1: {"SkyyGear": ("0.2", "0.2.1")} + that version in MODS_VERSIONS.
-# 0.3.7: deploys WITH SkyyExploration 0.2.3 (page guard), SkyyAccessories 0.5.5 and SkyyCooking 0.1.5 (tools/menu_0_3_7_patch.py ROUND).
+# 0.3.7: deploys WITH SkyyExploration 0.2.3 (page guard), SkyyAccessories 0.5.5 and SkyyCooking 0.1.6 (tools/menu_0_3_7_patch.py ROUND).
 # If one of them does not ship, set its MODS_VERSIONS entry back and drop it here (the live-set check names it).
 ROUND_PINS = %s''' % repr(dict((m, ROUND[m]) for m in sorted(ROUND))))
 

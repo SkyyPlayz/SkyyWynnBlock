@@ -1,7 +1,11 @@
 """SkyyMenu 0.1 - build script (javassist via jpype).
 0.3.7: DATA / TEXT ONLY (no behaviour change; notes: tools/menu_0_3_7_patch.py): the Night Vision help texts are gone (SkyyAccessories
        0.5.4 retired it for the Lantern line); the Mods list = tools/deploy_set.py SET of 2026-10-05 + this round (ROUND_PINS: SkyyExploration
-       0.2.3, SkyyAccessories 0.5.5, SkyyCooking 0.1.5) + the missing SkyyArmory 0.1 entry (26 mods); SkyyUiProbe 0.4 /skyprobe map line.
+       0.2.3, SkyyAccessories 0.5.5, SkyyCooking 0.1.6) + the missing SkyyArmory 0.1 entry (26 mods); SkyyUiProbe 0.4 /skyprobe map line;
+       the live-set check's two differences fixed (SkyyBazaar 0.1.3's Server Setup page Bazaar, SkyyGear 0.2.2's gear.critFx switch).
+  CHECKED 2026-10-05 with SkyyMenu/test_skyymenu_0.3.7.py (needs SkyyMenu-0.3.5.jar + SkyyMenu-0.3.6.jar): 975 checks, 0 fail -
+    every 0.3.6 check carried forward (P: 0.3.5 still reproduces the stuck page, 0.3.7 fixes it), F2 the 0.3.7 texts (no Night
+    Vision anywhere, the Lantern, SkyyArmory, /skyprobe map, Bazaar Server Setup, gear.critFx), K2 0.3.6 -> 0.3.7 data / version only.
 0.3.6: THE STUCK-PAGE FIX (root cause proven 2026-10-03 by the SkyyBank 0.1.6 round, re-read from the release HytaleServer.jar bytecode)
        + the Mods list = tools/deploy_set.py SET of 2026-10-03 (25 mods). Notes: tools/menu_0_3_6_patch.py.
   ENGINE: PageManager.handleEvent drops every page click (Data) while customPageRequiredAcknowledgments != 0 - silently; Dismiss only
@@ -373,7 +377,7 @@ NO_WARPS_SLOT, NO_PLAYERS_SLOT, PLAYER_HEAD_SLOT = 31, 22, 13
 MODS_VERSIONS = {
     "SkyyHud": "0.3.13", "SkyySacks": "0.7.12", "SkyyCoins": "0.1.5", "SkyyCollections": "0.2.5", "SkyyParty": "0.1.6",
     "SkyyBank": "0.1.6", "SkyyIslands": "0.5.5", "SkyyBazaar": "0.1.3", "SkyyGear": "0.2.2", "SkyySkills": "0.4.15",
-    "SkyyAccessories": "0.5.5", "SkyyClasses": "0.1.11", "SkyyEssentials": "0.1.7", "SkyyProfiles": "0.1.5", "SkyyCooking": "0.1.5",
+    "SkyyAccessories": "0.5.5", "SkyyClasses": "0.1.11", "SkyyEssentials": "0.1.7", "SkyyProfiles": "0.1.5", "SkyyCooking": "0.1.6",
     "SkyyTrees": "0.3.1", "SkyyExploration": "0.2.3", "SkyyGuilds": "0.1.6", "SkyyVault": "0.1.5", "SkyyAuctions": "0.1.2",
     "SkyyRanks": "0.1.1", "SkyyUiProbe": "0.4", "SkyyMobs": "0.1.3", "SkyyWorldGen": "0.1", "SkyyArmory": "0.1",
 }
@@ -769,9 +773,9 @@ CLASS_SKILLS   = ["Archery", "Swordsmanship", "Sorcery", "Fury", "Divinity"]    
 # on the SET the main session pins when the round deploys (see menu_check). Inert once SET pins it.
 # 0.3.4 / 0.3.5 / 0.3.6: EMPTY - this SkyyMenu deploys on its own; MODS names exactly what tools/deploy_set.py SET pins (the
 # MODS_VERSIONS table above). To ship it together with e.g. SkyyGear 0.2.1: {"SkyyGear": ("0.2", "0.2.1")} + that version in MODS_VERSIONS.
-# 0.3.7: deploys WITH SkyyExploration 0.2.3 (page guard), SkyyAccessories 0.5.5 and SkyyCooking 0.1.5 (tools/menu_0_3_7_patch.py ROUND).
+# 0.3.7: deploys WITH SkyyExploration 0.2.3 (page guard), SkyyAccessories 0.5.5 and SkyyCooking 0.1.6 (tools/menu_0_3_7_patch.py ROUND).
 # If one of them does not ship, set its MODS_VERSIONS entry back and drop it here (the live-set check names it).
-ROUND_PINS = {'SkyyAccessories': ('0.5.4', '0.5.5'), 'SkyyCooking': ('0.1.4', '0.1.5'), 'SkyyExploration': ('0.2.2', '0.2.3')}
+ROUND_PINS = {'SkyyAccessories': ('0.5.4', '0.5.5'), 'SkyyCooking': ('0.1.5', '0.1.6'), 'SkyyExploration': ('0.2.2', '0.2.3')}
 # mods a round RETIRES: mod: (the SET version that leaves, the MODS entry that replaces it). 0.3.3 retired SkyyRolls (in RETIRED now).
 ROUND_RETIRED = {}
 SET_ROWS = 8                    # rows per tab page (Prev / Next appear only when a tab has more; 0.3.1: 8, was 7)

@@ -569,7 +569,13 @@ def run_pages(jar, tag, out):
     pg = open_page(P, ExPage(P.pr, 0))
     world_change(P, W3, W3U, event=False)
     n0 = len(sent(P.net))
-    ran = run_checks(pg) if NEW else 0
+    if NEW:   # review F1: a check handed to the OLD world's thread (the player switched after the hop) touches nothing and keeps watching
+        drain_exec()
+        Watch(pg, P.pr, W1, 0).run()
+        R["p5_stale_thread"] = [P.pm.getCustomPage() == pg, len(sent(P.net)) - n0, acks(P.pm), checks_for(pg)]
+        ran = run_checks(pg)
+    else:
+        ran = 0
     R["p5_forget"] = [ran, P.pm.getCustomPage() is None, len(sent(P.net)) - n0, acks(P.pm), checks_for(pg)]
     n0 = len(sent(P.net))
     P.pm.setPage(P.ref, P.st, PNONE)
@@ -785,6 +791,8 @@ def main():
     check(pn["p5_forget"] == [1, True, 0, 0, 0] and pn["p5_close_after"] == [["SetPage(None)"], 0],
           "P5 0.2.3: without the event the check forgets the page on the new world (no packet), a later close adds nothing: %s %s"
           % (pn["p5_forget"], pn["p5_close_after"]))
+    check(pn.get("p5_stale_thread") == [True, 0, 0, 1], "P5 0.2.3 (review F1): a check run on the old world's thread after a switch "
+          "touches nothing and keeps watching: %s" % pn.get("p5_stale_thread"))
     check(po["p5_close_after"] == [["SetPage(None)"], 1], "P5 0.2.2: the same path leaves 1 pending: %s" % po["p5_close_after"])
     check(pn["p6_foreign"] == [True, 0] and pn["p6_admin"] == [True, 0, 0, 0] and pn["p6_joins"][1] == pn["p6_joins"][0] + 1,
           "P6 0.2.3: ExGuard leaves a foreign page to SkyyMenu, forgets the admin page at the event, counts the join: %s %s %s"

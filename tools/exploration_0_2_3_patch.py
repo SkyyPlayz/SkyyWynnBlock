@@ -111,7 +111,18 @@ Run:   python build_skyyexploration_0.2.3.py          -> SkyyExploration/SkyyExp
 
 0.2.2 notes (unchanged below):
 '''
-CHECKED = "  CHECKED: see SkyyExploration/test_skyyexploration_0.2.3.py (filled in after it passed)."
+CHECKED = """  CHECKED 2026-10-05 with SkyyExploration/test_skyyexploration_0.2.3.py (re-run it; it needs SkyyExploration-0.2.2.jar): 18758
+    checks, 0 fail. A 83 / 83 classes of 0.2.3 and 81 / 81 of 0.2.2 load + verify (-Xverify:all). B-D all 17 ExplorePage + 15
+    AdminPage states send EXACTLY 0.2.2's page (every command + binding; the 0.2.2 harness's markup / layout / text-fit checks pass).
+    E msgColor / stColor as 0.2.2. F only ExplorePage + AdminPage (build + handleDataEvent changed; answer / changedWorld / isOpen /
+    watchTick + 9 guard fields new), SkyyExplorationPlugin (setup / shutdown) and manifest differ; CfgFn / CfgRows / ExpCfg by the
+    version string only; new ExGuard + ExWatch. P on the engine's own PageManager with a model client, no SkyyMenu: 0.2.2 REPRODUCES
+    Skyy's report (Zones, then Overview within 1 s: no packet, the client stays on Loading..., 0 acknowledgements pending; a re-opened
+    /explore works) and the stuck counter (a page left open across a world change + a page close on the new world: 1 pending, the
+    re-opened page drops clicks); 0.2.3 shows Overview at once, answers quick / unknown / empty clicks without acting, forgets the page
+    at the world join (0 pending), heals a stray +1 (one WARNING, reset, answer; at most 3 answers), a healthy check sends nothing, the
+    check forgets the page on a new world without the event (and a check run on the old world thread after a switch touches nothing - review F1), a foreign page is left to SkyyMenu, no answer to a closed page, the admin
+    page the same; the real timer chain (a real scheduled executor -> World.execute -> watchTick) heals in ~1 s."""
 rep('''"""SkyyExploration 0.2.2 - build script (javassist via jpype, tools/skyybuild.py). Derived by COPY + EDIT from the LIVE 0.2.1
 (build_skyyexploration_0.2.1.py, the tools/deploy_set.py SET pin; SkyyExploration has no patch script, that file stays untouched).
 Owner: Skyy (they/them).
@@ -319,6 +330,7 @@ PROBE_CLICK = '''    if (data.indexOf("\\"@@CHECK@@\\"") >= 0) {
     }
 '''
 WATCH_TICK = '''# ================= 0.2.3 @@CLS2@@.watchTick: the page's check, on the player's world thread (ExWatch hands it here). true = again.
+#  - the player's store is not the executing world's (switched world after the hop) -> touch nothing, check again later;
 #  - the page is no longer the open page (closed / replaced) -> done;
 #  - the player changed world since it opened -> the client dropped it: forget it on the server (ExGuard.forget, no packet) -> done;
 #  - SETTLE after the page's last packet: a test click through the engine's own gate (PageManager.handleEvent Data -> this page's
@@ -331,6 +343,9 @@ public boolean watchTick(@WLD@ now) {
   if (ref == null || !ref.isValid()) return this.playerRef.isValid();
   @ST@ st = ref.getStore();
   if (st == null) return true;
+  // review F1: only on the thread of the world the player's store belongs to (the player may have switched world after the hop)
+  Object exw = st.getExternalData();
+  if (!(exw instanceof @EST@) || ((@EST@) exw).getWorld() != now) return true;
   @PLA@ p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
   if (p == null) return true;
   @PGM@ pm = p.getPageManager();
