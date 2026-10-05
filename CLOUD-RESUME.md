@@ -20,6 +20,40 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 <!-- 2026-10-03 local session (Skyy: "make sure the cloud agent has a good list to work on, so i can keep em going when token limit runs
 out"): the list is LONG ON PURPOSE this week - work top-down; the first 8 feed builds the local session runs next. Decisions behind them:
 OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" block, 2026-10-03 lines. -->
+<!-- 2026-10-05 local session (Skyy: "make sure the cloud agent has a good list to work on while tokens are out"; local weekly usage 94%, resets Mon
+2026-10-06 15:00 UTC). The first 9 feed the next local rounds; the class design is in research/classes/ (one file per class + README rules),
+Skyy's locks are in OPEN-QUESTIONS 'LOCKED 2026-10-04'. Removed as done / superseded: Wynncraft level-curve research (research/Mob-Curve-Spec.md),
+Lantern design (SkyyAccessories 0.5.4 is live), Class tree texts (replaced by per-ability trees + paths), Tool progression research (research/Tool-Levels-Spec.md). -->
+- [ ] **Docs consolidation map** - the local session will consolidate the docs after the reset (RESUME 'DOCS CONSOLIDATION'). Prepare a MAP,
+      read-only: for OPEN-QUESTIONS.md propose ~12 topic files (classes, gear, economy / bazaar, skills, mobs, worldgen, islands, UI / HUD, menu,
+      accessories / bags, profiles / guilds / party, cloud / process) and list every '## ' section + every Q&A entry (first 8 words + date) -> its
+      topic; same for TEST-CHECKLIST.md sections -> mod; HANDOFF.md log lines -> month. Output: `research/cloud/Docs-Consolidation-Map.md`.
+- [ ] **Class ability spec draft** - from research/classes/*.md: for every ability of the 7 classes give base numbers (Mana cost, cooldown,
+      radius, duration, damage / heal as a multiple of a weapon hit), per-level gains (levels by use), the 4 modifiers with per-level steps, and a
+      POWER BUDGET table (each ability fully levelled + both modifiers + its class-tree path must not break a fight). Keep LOCKED rows as written;
+      improve the *proposed* rows. Output: `research/cloud/Class-Ability-Spec-Draft.md`.
+- [ ] **Modifier pool spec** - the 17 shared modifiers (research/classes/README.md): exact effect per ability kind (projectile, zone, buff,
+      heal, shield, stance), per-level steps + caps, the no-doubling rule, Ricochet = projectiles only, Chain = effects only, and which abilities
+      offer each. Output: `research/cloud/Modifier-Pool-Spec.md`.
+- [ ] **Class tree paths** - 3 Wynncraft-style locked paths per class (picking one locks the others) with nodes that CHANGE how abilities work
+      (example LOCKED: the Priest shield damages enemies that touch it, then pick 1 of 5 elements; Cleanse = a Sacred Heal upgrade); path ideas
+      are at the bottom of each class file. Output: `research/cloud/Class-Tree-Paths.md`.
+- [ ] **Soul Orb spec** - research/classes/Priest.md: tiers + recipes (essences + gems per tier - vanilla item names UNVERIFIED), tether numbers
+      (Mana per tether per second, stabilize time 1.5-2.5 s falling with tier, damage per Mana, stored-healing cap per tier), Wings of Fate numbers
+      (glide distance, ally lock range, base heal + stored bonus), and the Mana Steal balance (max Mana Steal = a full Cobalt cage's drain).
+      Output: `research/cloud/Soul-Orb-Spec.md`.
+- [ ] **Bazaar progression prices** - Skyy's x2-per-tier rule (OPEN-QUESTIONS 'LOCKED 2026-10-04' bazaar lines): a full proposed price table from
+      the product rows in SkyyBazaar/build_skyybazaar_0.1.3.py - metals x2 per tier (Onyxium x64), logs T1-T5, crops on the farming path + Eternal
+      seeds x4 per tier, hides x2 flat, and both options for cloth + gems; flag any buy -> craft -> sell loop risk. Output:
+      `research/cloud/Bazaar-Progression-Prices.md`.
+- [ ] **Skill curves + Cooking XP** - Mining's own list (10 + 5L + 1.5L^2, LOCKED pending Skyy's OK) as a Lv 1-100 table with blocks-per-level
+      at today's XP per block; propose lists for Foraging / Farming / Cooking in the same style; a Cooking XP-by-difficulty table (crafting steps,
+      recipe knowledge, bench + ingredient tier) from SkyyCooking's 'XP per craft' rows. Output: `research/cloud/Skill-Curves-and-Cooking-XP.md`.
+- [ ] **Monk kit spec** - research/classes/Monk.md: Bo staff + fist weapon (wraps / gauntlets / claws) metal ladders like SkyyArmory's wands
+      (recipes, level bands, damage), the traversal tuning numbers (vault, skipping bounds, Rising Strike, Plunge Punch) and the engine probe list.
+      Output: `research/cloud/Monk-Kit-Spec.md`.
+- [ ] **README draft** - rewrite the public README.md (today 26 lines): what SkyWynn is, the mod list from tools/deploy_set.py SET, build + deploy
+      steps, folder layout, local-only vs repo (RESUME section 1), licence notes. Output: `research/cloud/README-Draft.md` (the local session moves it).
 - [ ] **Stats page spec (SkyBlock-style "Your Profile" stats)** - Skyy 2026-10-03 (playing, screenshot of the SkyWynn Menu's Your Profile
       tile): "this menus should show me all my stats with my current gear, accessory's skill and class bonuses. and everything. like on
       skyblock it should show health, mana, stamina, strength, crit chance, crit damage, mining and foraging fortune. ect. pretty much all
@@ -35,10 +69,6 @@ OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" block, 2026-10-03 lines. -->
       benches + pocket crafting pull from bags, auto-refill, Workbench tab; NO /craft; tiers unlock by crafting the previous tier) on CurseForge.
       Write the page: summary, feature list, commands + permissions, config, compatibility, FAQ, install steps, changelog template, a
       screenshot shot-list, a licence note. Read SkyySacks/build_skyysacks_0.7.12.py (docstring) + OPEN-QUESTIONS. Output: `research/cloud/PocketDimension-Release-Kit.md`.
-- [ ] **Wynncraft level-curve research** - Skyy picked a Wynncraft-style curve: mob health / damage grow exponentially with level, gear damage
-      gets steeper to match, a mob 20 levels above you is BRUTAL (you deal ~20%, take ~2.6x), kill XP moves off raw health. Research Wynncraft
-      mob HP / damage / XP per level and weapon damage per level (web); propose curves + Lv 1-60 tables for SkyyMobs, SkyyGear F(L) and kill XP.
-      Read research/Mob-Levels-Plan.md, research/Gear-Levels-Wynn-Spec.md. Output: `research/cloud/Level-Curve-Research.md`.
 - [ ] **Zone islands layout (one world)** - Skyy: every zone island in ONE world so you see Zone 2 from Zone 1; islands ~3x bigger, random
       coastline, a mountain rising to the middle, vanilla features (rivers, caves, goblin camps), harder biomes toward the middle as a tendency.
       Design sizes, distances, heights, hub town + temple, portal + guardian spots, travel, anti-bridging / anti-flying rules, view-distance
@@ -46,12 +76,6 @@ OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" block, 2026-10-03 lines. -->
 - [ ] **Starter shards plan 2** - Skyy: the /island becomes 3x bigger with a small hill, more trees and a cave, a bridge to a 2nd island with
       mobs, a 3rd island with the portal (boss later). Turn research/cloud/Starter-Shard-Layout.md into a buildable plan: sizes, cave, bridge,
       shard-2 mob list (Zone 1 Lv 1-3), portal plaza, resource budget, options for islands that already exist. Output: `research/cloud/Starter-Shards-Plan-2.md`.
-- [ ] **Class tree texts** - names + one-line effects for the 37-node class tree of each class and archetype (research/Skill-Trees-2-Spec.md
-      template; Archer Boltslinger / Trapper / Sharpshooter, Warrior Fallen / Battle Monk / Paladin, Mage Riftwalker / Light Bender / Arcanist,
-      Berserker Bloodbound / Smasher / Warbringer, Priest Smiter / Healer / Guardian). Output: `research/cloud/Class-Tree-Texts.md`.
-- [ ] **Lantern design** - the Lantern accessory line replaces Night Vision: you glow like carrying a torch, higher rarities reach farther
-      (brightness capped at torch level), each tier crafted FROM the previous tier (Skyy's general rule). Propose names, recipes per tier
-      (follow SkyyAccessories' recipe patterns), reach per tier, tooltips. Output: `research/cloud/Lantern-Design.md`.
 - [ ] **Loot box design** - unidentified drops become Wynncraft-style rarity loot boxes ("better looking"): box colours per SkyyGear rarity,
       names ("Unidentified Sword"), a level RANGE (Skyy's pick), tooltip mockups, identify messages, art direction for the generated art.
       Read research/Loot-Unid-Spec.md. Output: `research/cloud/Loot-Box-Design.md`.
@@ -59,6 +83,7 @@ OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" block, 2026-10-03 lines. -->
       40-57 ms on the world thread). Design the settings Skyy liked in DapperMap (zoom, size, circle / square, rotation, refresh speed,
       resolution, markers, colours; NO info panel), HUD-editor placement, defaults, a performance budget, marker throttles. Design only - the
       local session checks engine + licences. Output: `research/cloud/Minimap-Widget-UX.md`.
+      UPDATE 2026-10-05: probe 0.4 results in HANDOFF (2026-10-04 MINIMAP PROBE RESULTS): pictures + round mask work, the client keeps them across world changes, engine map tiles are 96 px -> downscale; widget = its own HUD key.
 - [ ] **SkyyQuests design** (OPEN-QUESTIONS: "quest hooks ship with SkyyQuests"). The story scripts need a quest system that does not exist: quest steps and flags per
       profile, NPC dialogue windows (vanilla look), objectives (kill / collect / craft / reach / talk), rewards, quest log page, bridge keys other mods can call. Read
       `research/cloud/Story-Script-*.md`, `Dragon-Quest-Spec.md`, `tools/PROFILES-CONTRACT.md`. Output: `research/cloud/SkyyQuests-Spec.md`.
@@ -77,10 +102,6 @@ OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" block, 2026-10-03 lines. -->
       Priest wands made by recolouring the vanilla Wood Wand (same model, new texture, like the vanilla Rotten Wand; OPEN-QUESTIONS Q&A).
       Propose the next items per class (Mage / Archer / Warrior / Berserker / Priest) and our own Lv 50-100 tiers: names, tier ladder,
       which vanilla model each could reuse, stat identity per class (Wynncraft-inspired, web research). Output: `research/cloud/SkyyArmory-Roadmap.md`.
-- [ ] **Tool progression research** - tools are getting levels gated by Mining / Foraging / Farming (OPEN-QUESTIONS 2026-10-02 tool lock).
-      Research Wynncraft gathering tool tiers / levels / gathering speed and Hypixel Mining Speed / Fortune numbers on the web; compare
-      with our bands (Wood 1-13, Copper 10-18, Iron 15-23 ...) and the x3 -> x1.5 early XP boost; flag pacing risks. Output:
-      `research/cloud/Tool-Progression-Research.md`.
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
