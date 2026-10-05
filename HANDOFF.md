@@ -16,14 +16,14 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyBazaar | 0.1.3 | Bazaar market (a tab per bag type + Smithing) |
 | SkyyGear | 0.2.2 | gear rarity, item levels, identify, reforge, tooltips, crit popup |
 | SkyySkills | 0.4.15 | skills + class weapon skills, XP curves, Mana, Acrobatics |
-| SkyyAccessories | 0.5.4 | Accessory Bag, booster accessories, Lantern |
+| SkyyAccessories | 0.5.5 | Accessory Bag, booster accessories, Lantern |
 | SkyyClasses | 0.1.11 | class pick, class kits, Priest heal |
-| SkyyMenu | 0.3.6 | SkyWynn Menu, player Settings, Server Setup (admin) |
+| SkyyMenu | 0.3.7 | SkyWynn Menu, player Settings, Server Setup (admin) |
 | SkyyEssentials | 0.1.7 | /tpa, /trade and the few commands vanilla lacks |
 | SkyyProfiles | 0.1.5 | profiles = full saves (default cap 6), delete + 6 h undo |
-| SkyyCooking | 0.1.5 | Cooking dishes + food Grade; XP by craft difficulty |
+| SkyyCooking | 0.1.6 | Cooking dishes + food Grade; XP by craft difficulty |
 | SkyyTrees | 0.3.1 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees OFF) |
-| SkyyExploration | 0.2.2 | Exploration skill, spots, island checklist |
+| SkyyExploration | 0.2.3 | Exploration skill, spots, island checklist |
 | SkyyGuilds | 0.1.6 | guilds + guild bank |
 | SkyyVault | 0.1.5 | vault pages |
 | SkyyAuctions | 0.1.2 | auction house (buy-it-now) |

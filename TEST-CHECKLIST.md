@@ -26,7 +26,10 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 14. SkyyCooking 0.1.4 - food Grade strength (+32% per Grade); you saw the XP rate (still too fast - tuned live), not the Grade strength.
 15. SkyyBazaar 0.1.3 - the Smithing tab, every bag item listed, processed goods +20% (you only said "bizzar looks good").
 16. SkyySkills 0.4.15 - class Mana pools (Priest +5 / Mage +10 max Mana per class level); staffs work, the pools were not checked.
-17. SkyyCooking 0.1.5 - Cooking XP by difficulty (skewers much lower, pies about the same); set the XP multiplier back to 0.5 first.
+17. SkyyCooking 0.1.5 + 0.1.6 - Cooking XP by difficulty (skewers much lower, pies about the same, Flour 140); set the XP multiplier back to 0.5 first.
+18. SkyyAccessories 0.5.5 - Lantern far edge fades softly (no dark squares); highest 64.
+19. SkyyExploration 0.2.3 - Overview never sticks on "Loading..." (also after world changes).
+20. SkyyMenu 0.3.7 - Mods list says Lantern, lists SkyyArmory, today's versions.
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
