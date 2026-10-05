@@ -9,7 +9,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyHud | 0.3.13 | HUD widgets + Lunar-style editor (move / scale / toggle), skills + combat widgets |
 | SkyySacks | 0.7.12 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting |
 | SkyyCoins | 0.1.5 | coin purse, /pay, death penalty (merges into SkyyEconomy later) |
-| SkyyCollections | 0.2.5 | collections, tiers, recipe unlocks (coins never buy tiers) |
+| SkyyCollections | 0.2.6 | collections, tiers, recipe unlocks (coins never buy tiers) |
 | SkyyParty | 0.1.6 | parties (feeds the HUD party widget) |
 | SkyyBank | 0.1.6 | bank + interest |
 | SkyyIslands | 0.5.5 | private islands, co-op, visitors, island settings, /hub |
