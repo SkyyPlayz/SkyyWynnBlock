@@ -15,7 +15,10 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 
 ## Now
 - LIVE: the 26-mod SET in HANDOFF section 1 (= `tools/deploy_set.py`); last deploy SkyyAccessories 0.5.4 Lantern, 2026-10-04 00:46
-  (backup `backups\deploy-20261004-0046`). NOTHING is running.
+  (backup `backups\deploy-20261004-0046`). RUNNING (2026-10-05 ~19:00 UTC, Skyy: "work through the small projects until your tokens
+  are out"): 3 lean builders (Agent, Opus) - SkyyCooking 0.1.5 XP by difficulty; SkyyAccessories 0.5.5 Lantern edges; SkyyExploration
+  0.2.3 page guard + SkyyMenu 0.3.7 help text. Then one review + one-JVM cross-check (Sonnet), pin, deploy. If this session ends
+  mid-round: check which build_*.py / jars exist, rerun the review, never deploy unreviewed jars.
 - USAGE: weekly 94% at 2026-10-05 18:40 UTC (5-hour 0%); resets Tue 2026-10-06 15:00 UTC - no big rounds before it (Skyy: stop near 95%).
 - DOCS consolidated 2026-10-05 (PR #6, merged; `python tools/docs_check.py` proves no old line was lost); the old long RESUME is
   `docs/archive/RESUME-2026-10-05.md`. ALWAYS READY TO HAND OFF: log + HANDOFF + this file the moment something is done (PROJECT-RULES 5).
