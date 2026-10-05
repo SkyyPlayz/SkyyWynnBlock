@@ -2942,7 +2942,7 @@ class Kit(object):
             c.writeFile(out_dir)
 
 
-def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", RELOAD=None, KEEP=20, ALIASES=(),
+def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", RELOAD=None, KEEP=10, ALIASES=(),
          DEFAULTS=None, ITEMS=None, PERM_FN=None, ITEM_FN=None):
     """Checks the schema (spec 2.12 per-mod checks) and compiles CfgRows, CfgLog, CfgHist, CfgSaveTask, CfgFile, CfgFn, CfgPub into
     PKG. Returns a Kit; call kit.write(OUT) after the rest of the mod is compiled. PERM_FN / ITEM_FN are for the bare-JVM test

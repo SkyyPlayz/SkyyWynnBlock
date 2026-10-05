@@ -193,7 +193,7 @@ Hytale server). Players cannot call Java code, and reads expose nothing beyond t
 import skyycfg as CFG
 kit = CFG.emit(pool, PKG, MOD="SkyyParty", TITLE="Party", VERSION=VERSION, NODE="skyyparty.admin",
                CATS=[("party", "Party")], ROWS=ROWS, FILES=["Skyy_SkyyParty/config.properties"],
-               RELOAD=None, KEEP=20, ALIASES=(), DEFAULTS={"config.properties": DEFAULT_TEXT})
+               RELOAD=None, KEEP=10, ALIASES=(), DEFAULTS={"config.properties": DEFAULT_TEXT})
 # ... compile the rest of the mod ...
 kit.write(OUT)      # deferred checks (hook methods exist with the right signature), then writeFile for the 7 kit classes
 ```
