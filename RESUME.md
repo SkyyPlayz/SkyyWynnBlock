@@ -9,6 +9,10 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 - USAGE: weekly 94% on 2026-10-05 -> no new build rounds until the reset Mon 2026-10-06 15:00 UTC (Skyy: stop near 95%); test fixes only.
 - DOCS were consolidated on 2026-10-05 (this layout; `python tools/docs_check.py` proves no line of the old docs was lost). The old
   RESUME (full PC path table, the stacked 10-02..10-04 status notes) is `docs/archive/RESUME-2026-10-05.md`.
+- ALWAYS READY TO HAND OFF (Skyy 2026-10-05): the moment something is done, log it + update HANDOFF (versions) + this file, then
+  commit + push - before starting the next thing (PROJECT-RULES section 5).
+- OBSIDIAN: Skyy opens `SkyWynn PROJECT` as an Obsidian vault (shared settings in `.obsidian/`, how-to `docs/OBSIDIAN.md`). Skyy made
+  an empty `Hytale Projects` folder first - the recommendation is to open the project folder itself (no path changes); confirm with Skyy.
 - Skyy's standing rules for docs: answered questions move OUT of OPEN-QUESTIONS.md into `docs/answered/<topic>.md` as soon as Skyy
   answers (`tools/qa_append.py ... --close`); class designs live one file per class in `research/classes/` (easy-read layout + HTML).
 

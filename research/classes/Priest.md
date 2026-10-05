@@ -1,8 +1,21 @@
-# Priest - Healer
+# ✨ Priest
 
-**Main role:** healer. **Second role:** protector. **Class skill:** Divinity. **Identity (Skyy):** trades damage for healing. Max Mana +5
-per Divinity level. Today's heal-on-hit (a share of the damage dealt) STAYS until all Priest abilities exist. *Numbers are placeholders.
-Legend in [README.md](README.md).*
+| | |
+|---|---|
+| 🎯 **Main role** | Healer |
+| 🎯 **Second role** | Protector |
+| 📈 **Class skill** | Divinity |
+| 💬 **In one line** | Trades damage for healing (Skyy). |
+
+- Max Mana +5 per Divinity level.
+
+- Today's heal-on-hit (a share of the damage dealt) STAYS until all Priest abilities exist.
+
+Numbers are placeholders. Labels: 🟢 Locked · 🔵 Proposed · 🟠 Open - see [README.md](README.md).
+
+&nbsp;
+
+## 🗺️ Map
 
 ```mermaid
 flowchart TD
@@ -33,123 +46,259 @@ flowchart TD
   class M1,M2,M3,M4,M5 mods
 ```
 
-## Weapons
+&nbsp;
 
-| Weapon | Attack | Charged attack / traversal | Status |
-|---|---|---|---|
-| Wands (Wood -> Onyxium, SkyyArmory) | **Tap = quick shot** that **pierces** (hits every enemy in a line), ~16 blocks, vanishes on blocks | **Hop BACKWARDS** (opposite to where you look - look down = straight up; shorter hop when there is no ground behind you) and fire an **exploding orb** (AoE ~6 blocks) that leaves a **healing orb** (~9 blocks, 3-4 s): allies inside heal **20% of the explosion's damage every second** | LOCKED (Skyy 2026-10-04) |
-| Soul Orb (new weapon) | **Hold right-click = soul tethers**: a line of light locks onto the enemy you look at (you can then look away); steady damage for a steady Mana drain; **no Mana regen while active**; damage is **stored as bonus healing** for its ability (cap by tier); it tethers EVERY enemy in a small radius around where you look (up to the tier's tether cap) - see "How soul tethers work" below | **WINGS OF FATE**: long fast gliding bounds the way you look; if an ally is that way it locks on and carries you to them (farther than without); glowing blue wings + trail (looks only; tree perks later could slow / stun); arriving heals the ally (a base heal even with nothing stored, plus all the stored soul healing on top) | LOCKED (Skyy 2026-10-04) |
+## ⚔️ Weapons
 
-Later (Skyy): a special wand whose shots pass through blocks.
+### Wands (Wood → Onyxium, SkyyArmory)
 
-### Soul Orb ladder (each made from the one before; soul, gems and tethers take the essence colour)
+🟢 **Locked** (Skyy 2026-10-04)
+
+- **Tap = quick shot** that **pierces** (hits every enemy in a line). ~16 blocks. Vanishes on blocks.
+
+- **Charged = hop BACKWARDS** (opposite to where you look).
+
+  - Look down = straight up.
+
+  - Shorter hop when there is no ground behind you.
+
+- The charged shot fires an **exploding orb** (AoE ~6 blocks).
+
+- The explosion leaves a **healing orb** (~9 blocks, 3-4 s). Allies inside heal **20% of the explosion's damage every second**.
+
+- **Later (Skyy):** a special wand whose shots pass through blocks.
+
+### Soul Orb (new weapon)
+
+🟢 **Locked** (Skyy 2026-10-04)
+
+- **Hold right-click = soul tethers.** A line of light locks onto the enemy you look at (you can then look away).
+
+- Steady damage for a steady Mana drain. **No Mana regen while active.**
+
+- Damage is **stored as bonus healing** for its ability (cap by tier).
+
+- It tethers EVERY enemy in a small radius around where you look (up to the tier's tether cap) - see "How soul tethers work" below.
+
+- **Charged = WINGS OF FATE:**
+
+  - Long, fast gliding bounds the way you look.
+
+  - If an ally is that way, it locks on and carries you to them (farther than without).
+
+  - Glowing blue wings + trail (looks only; tree perks later could slow / stun).
+
+  - Arriving heals the ally: a base heal even with nothing stored, plus all the stored soul healing on top.
+
+### 🔢 Soul Orb ladder
+
+Each is made from the one before. The soul, gems and tethers take the essence colour.
+
 | Tier | Made from | Colour | Tethers | Damage per Mana |
 |---|---|---|---|---|
-| Soul Orb | - | blue | 1 | 1.0x |
-| Copper Soul Cage | Soul Orb + copper + Life Essence | green | 2 | 1.1x |
-| Iron Soul Cage | Copper Cage + iron + Fire Essence (deep-cave mobs) | red | 4 | 1.1x |
-| Thorium Soul Cage | Iron Cage + thorium + essence (**OPEN**) | ? | 6 | 1.5x |
-| Cobalt Soul Cage | Thorium Cage + cobalt + essence (**OPEN**) | ? | 10 | 1.5x |
-| Adamantite (*proposed*) | ... | ? | 14 | 2.0x |
-| Mithril (*proposed*) | ... | ? | 16 | 2.0x |
-| Onyxium (*proposed*) | ... | ? | 20 (a gem on each dodecahedron point) | 2.5x |
+| Soul Orb | - | 🔵 blue | 1 | 1.0x |
+| Copper Soul Cage | Soul Orb + copper + Life Essence | 🟢 green | 2 | 1.1x |
+| Iron Soul Cage | Copper Cage + iron + Fire Essence (deep-cave mobs) | 🔴 red | 4 | 1.1x |
+| Thorium Soul Cage | Iron Cage + thorium + essence (🟠 **OPEN**) | ? | 6 | 1.5x |
+| Cobalt Soul Cage | Thorium Cage + cobalt + essence (🟠 **OPEN**) | ? | 10 | 1.5x |
+| Adamantite (🔵 proposed) | ... | ? | 14 | 2.0x |
+| Mithril (🔵 proposed) | ... | ? | 16 | 2.0x |
+| Onyxium (🔵 proposed) | ... | ? | 20 (a gem on each dodecahedron point) | 2.5x |
 
 Mana per second per tether stays about the same up the ladder (a few small steps).
 
-### How soul tethers work (LOCKED, Skyy 2026-10-04)
-1. **Hold right-click** and look at enemies: every enemy in a **small radius around where you look** gets a tether at once
-   (6 mobs packed in a 3-block space = 6 tethers in one go), up to your orb's tether cap.
-2. **Damage starts immediately**, but the tether must **stabilize** first: keep looking at them for **1.5-2.5 s** (base orb; higher
-   tiers stabilize faster). A new tether looks **wispy** and turns **solid** once stable.
-3. **Once stable you can look away** - the tether holds while you keep holding right-click (or until your Mana runs out) - so you can
-   look at the **next group** and tether them too, until you reach the cap.
-4. Steady damage for a steady Mana drain per tether; damage is stored as bonus healing.
-5. **No natural Mana regen while any tether is active - but MANA STEAL still works** (tether damage counts for it). With enough Mana
-   Steal you can tether forever on the lower tiers. **Balance target:** max Mana Steal from gear = the Mana drain of a full
-   **Cobalt Soul Cage** (10 tethers); the Adamantite+ cages drain more than max Mana Steal, so they cannot run forever.
+### 🔗 How soul tethers work
 
-## Abilities
+🟢 **Locked** (Skyy 2026-10-04)
 
-### A1 - Sacred Heal (LOCKED)
-| | |
-|---|---|
-| Does | Instant heal for everyone within 9 blocks (radius upgrades in the tree); the Priest heals 20% more; everyone inside also gets a short heal-over-time worth a % of the instant heal (the instant heal, the % and the duration upgrade separately) |
-| Class tree | **Cleanse** (removes debuffs) is a class-tree upgrade of this ability (Skyy) |
-| Radius+ | bigger heal circle |
-| Power+ | bigger instant heal |
-| Duration+ | longer heal-over-time |
-| Efficiency | cheaper |
+1. **Hold right-click** and look at enemies. Every enemy in a **small radius around where you look** gets a tether at once (6 mobs packed in a 3-block space = 6 tethers in one go), up to your orb's tether cap.
 
-### A1-alt A - Sanctuary (*proposed*, pick A or B)
-| | |
-|---|---|
-| Does | A holy zone for 8 s (7 blocks): allies inside heal 4% max Health per second and take 10% less damage |
-| Radius+ / Duration+ | bigger / longer zone |
-| Follow | the zone moves with you |
-| Power+ | stronger heal |
+2. **Damage starts at once**, but the tether must **stabilize** first. Keep looking at them for **1.5-2.5 s** (base orb; higher tiers stabilize faster). A new tether looks **wispy** and turns **solid** once stable.
 
-### A1-alt B - Martyr's Grace (*proposed*, pick A or B)
-| | |
-|---|---|
-| Does | A big instant heal on the lowest-health ally within 15 blocks that chains to 2 more allies (each 25% less) |
-| Chain | +1 ally per level |
-| Power+ | bigger heal |
-| Ward | overhealing becomes a shield |
-| Efficiency | cheaper |
+3. **Once stable you can look away.** The tether holds while you keep holding right-click (or until your Mana runs out). Look at the **next group** and tether them too, until you reach the cap.
 
-### A2 - Shield Bubble (LOCKED)
-| | |
-|---|---|
-| Does | Place a bubble (5 blocks) for 8 s that blocks projectiles and absorbs damage for allies inside; it has HP and can break |
-| Follow | **LOCKED**: the bubble moves with you instead of staying put (a modifier, not a class-tree node) |
-| Radius+ | bigger bubble |
-| Power+ | more bubble HP |
-| Duration+ | lasts longer |
-| Class tree (example path) | the bubble damages enemies that touch or hit it -> then pick 1 of 5 elements for that damage |
+4. Steady damage for a steady Mana drain per tether. Damage is stored as bonus healing.
 
-### A2-alt - Guardian Spirit (*proposed*; Cleanse moved to the tree, so this slot needs a new ability)
-| | |
-|---|---|
-| Does | Mark an ally within 20 blocks for 10 s: if they would die, they survive at 30% Health instead (once) |
-| Duration+ | longer mark |
-| Power+ | more Health on the save |
-| Chain | marks +1 more ally |
-| Efficiency | cheaper |
+5. **No natural Mana regen while any tether is active - but MANA STEAL still works** (tether damage counts for it). With enough Mana Steal you can tether forever on the lower tiers.
 
-## Modifier pool - pick 4 for each ability (2 equipped)
+   **Balance target:** max Mana Steal from gear = the Mana drain of a full **Cobalt Soul Cage** (10 tethers). The Adamantite+ cages drain more than max Mana Steal, so they cannot run forever.
 
-| Modifier | What it does | Each level adds |
-|---|---|---|
-| Duration+ | lasts longer | more time |
-| Radius+ | bigger area | more blocks |
-| Power+ | stronger main effect (damage, heal, shield, buff) | more % |
-| Efficiency | costs less Mana / Stamina | lower cost |
-| Split | splits into 3 weaker copies (projectiles, lines) | stronger copies |
-| Ricochet | PROJECTILES only: the shot flies on to the next enemy after a hit (walls block it, it can miss) | +1 bounce |
-| Pierce | passes through enemies | +1 enemy |
-| Chain | EFFECTS only (heals, buffs, debuffs, poison, hooks): jumps instantly to the next target in range - enemies, or allies for support | +1 jump |
-| Lingering | leaves a zone behind (fire, poison, light) | longer zone |
-| Slow | adds a slow | stronger slow |
-| Knockback+ | pushes enemies away | farther |
-| Pull | draws enemies in | stronger pull |
-| Follow | a placed zone moves with you instead | bigger zone |
-| Leech | heals you for part of the damage | more % |
-| Ward | adds a small shield (you, or allies for support abilities) | bigger shield |
-| Haste | attack + move speed for a few seconds after use | longer |
-| Echo | repeats once after 1 s at reduced strength | stronger echo |
+&nbsp;
 
-## Class tree paths (ideas - pick one)
-- *Lightbringer* - big heals, Cleanse, heal-over-time.
-- *Aegis* - shields: bubble damage + element, Guardian Spirit.
-- *Soulweaver* - soul tethers, stored healing, Wings of Fate.
+## ✨ Abilities
 
-## Open
-- Priest A2-alt (Guardian Spirit proposed); A1-alt pair; Soul Cage essences + colours for Thorium and up.
+You own 4. You equip 2.
 
-## Change log
+### A1 · Sacred Heal
+
+🟢 **Locked**
+
+- **Does:** an **instant heal** for everyone within 9 blocks (radius upgrades in the tree).
+
+- The Priest heals 20% more.
+
+- Everyone inside also gets a short **heal-over-time** worth a % of the instant heal. The instant heal, the % and the duration upgrade separately.
+
+- **Class tree:** **Cleanse** (removes debuffs) is a class-tree upgrade of this ability (Skyy).
+
+**Modifiers**
+
+- ⭕ **Radius+** - bigger heal circle.
+
+- 💪 **Power+** - bigger instant heal.
+
+- ⏳ **Duration+** - longer heal-over-time.
+
+- 💧 **Efficiency** - cheaper.
+
+### A1-alt A · Sanctuary
+
+🔵 **Proposed** - pick A or B
+
+- **Does:** a holy zone for 8 s (7 blocks).
+
+- Allies inside heal **4% max Health per second** and take **10% less damage**.
+
+**Modifiers**
+
+- ⭕ **Radius+** / ⏳ **Duration+** - bigger / longer zone.
+
+- 👣 **Follow** - the zone moves with you.
+
+- 💪 **Power+** - stronger heal.
+
+### A1-alt B · Martyr's Grace
+
+🔵 **Proposed** - pick A or B
+
+- **Does:** a big instant heal on the **lowest-health ally** within 15 blocks.
+
+- It chains to 2 more allies (each 25% less).
+
+**Modifiers**
+
+- ⛓️ **Chain** - +1 ally per level.
+
+- 💪 **Power+** - bigger heal.
+
+- 🛡️ **Ward** - overhealing becomes a shield.
+
+- 💧 **Efficiency** - cheaper.
+
+### A2 · Shield Bubble
+
+🟢 **Locked**
+
+- **Does:** place a **bubble** (5 blocks) for 8 s.
+
+- It blocks projectiles and absorbs damage for allies inside. It has HP and can break.
+
+- **Class tree (example path):** the bubble damages enemies that touch or hit it → then pick 1 of 5 elements for that damage.
+
+**Modifiers**
+
+- 👣 **Follow** - 🟢 **Locked:** the bubble moves with you instead of staying put (a modifier, not a class-tree node).
+
+- ⭕ **Radius+** - bigger bubble.
+
+- 💪 **Power+** - more bubble HP.
+
+- ⏳ **Duration+** - lasts longer.
+
+### A2-alt · Guardian Spirit
+
+🔵 **Proposed** - Cleanse moved to the tree, so this slot needs a new ability
+
+- **Does:** mark an ally within 20 blocks for 10 s.
+
+- If they would die, they **survive at 30% Health** instead (once).
+
+**Modifiers**
+
+- ⏳ **Duration+** - longer mark.
+
+- 💪 **Power+** - more Health on the save.
+
+- ⛓️ **Chain** - marks +1 more ally.
+
+- 💧 **Efficiency** - cheaper.
+
+&nbsp;
+
+## 🧩 Modifier pool
+
+Each ability offers 4 of these. You equip 2.
+
+<!-- POOL START - tools/class_pages.py copies this block into every class file (python tools/class_pages.py --sync-pool) -->
+- ⏳ **Duration+** - lasts longer · each level: more time.
+
+- ⭕ **Radius+** - bigger area · each level: more blocks.
+
+- 💪 **Power+** - stronger main effect (damage, heal, shield, buff) · each level: more %.
+
+- 💧 **Efficiency** - costs less Mana / Stamina · each level: lower cost.
+
+- 🔱 **Split** - splits into 3 weaker copies (projectiles, lines) · each level: stronger copies.
+
+- 🎱 **Ricochet** - PROJECTILES only: the shot flies on to the next enemy after a hit (walls block it, it can miss) · each level: +1 bounce.
+
+- 📌 **Pierce** - passes through enemies · each level: +1 enemy.
+
+- ⛓️ **Chain** - EFFECTS only (heals, buffs, debuffs, poison, hooks): jumps instantly to the next target in range - enemies, or allies for support · each level: +1 jump.
+
+- 🔥 **Lingering** - leaves a zone behind (fire, poison, light) · each level: longer zone.
+
+- 🐌 **Slow** - adds a slow · each level: stronger slow.
+
+- 💥 **Knockback+** - pushes enemies away · each level: farther.
+
+- 🧲 **Pull** - draws enemies in · each level: stronger pull.
+
+- 👣 **Follow** - a placed zone moves with you instead · each level: bigger zone.
+
+- 🩸 **Leech** - heals you for part of the damage · each level: more %.
+
+- 🛡️ **Ward** - adds a small shield (you, or allies for support abilities) · each level: bigger shield.
+
+- ⚡ **Haste** - attack + move speed for a few seconds after use · each level: longer.
+
+- 🔁 **Echo** - repeats once after 1 s at reduced strength · each level: stronger echo.
+<!-- POOL END -->
+
+&nbsp;
+
+## 🌳 Class tree paths
+
+Ideas - pick one.
+
+- **Lightbringer** - big heals, Cleanse, heal-over-time.
+
+- **Aegis** - shields: bubble damage + element, Guardian Spirit.
+
+- **Soulweaver** - soul tethers, stored healing, Wings of Fate.
+
+&nbsp;
+
+## 🟠 Open
+
+- Priest A2-alt (Guardian Spirit proposed).
+
+- A1-alt pair.
+
+- Soul Cage essences + colours for Thorium and up.
+
+&nbsp;
+
+## 📜 Change log
+
+- 2026-10-05: refined for easy reading (same facts, new layout).
+
 - 2026-10-04: no Mana regen while tethering, but Mana Steal works; max Mana Steal = a full Cobalt cage's drain (Skyy).
+
 - 2026-10-04: Wings of Fate always heals on arrival - a smaller base heal when no soul healing is stored (Skyy).
+
 - 2026-10-04: soul tethers corrected - lock onto every enemy in a small radius where you look, stabilize in 1.5-2.5 s (faster at higher tiers), wispy -> solid, look away only once stable (Skyy).
+
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
-- 2026-10-04: file created; wand hop + healing orb, Soul Orb + Wings of Fate + ladder, Sacred Heal, Shield Bubble (+ Follow modifier),
-  Cleanse = class-tree upgrade - all LOCKED (Skyy).
+
+- 2026-10-04: file created; wand hop + healing orb, Soul Orb + Wings of Fate + ladder, Sacred Heal, Shield Bubble (+ Follow modifier), Cleanse = class-tree upgrade - all LOCKED (Skyy).

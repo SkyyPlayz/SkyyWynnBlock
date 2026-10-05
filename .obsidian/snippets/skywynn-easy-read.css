@@ -1,0 +1,33 @@
+/* SkyWynn easy-read style for Obsidian (Skyy is dyslexic): a clear font, big text, wide line + letter spacing, short lines.
+   Turn it on/off: Settings -> Appearance -> CSS snippets -> skywynn-easy-read. The font loads from Google Fonts when online;
+   offline Obsidian falls back to Verdana. */
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap");
+
+body {
+  --font-text-theme: "Atkinson Hyperlegible", Verdana, Arial, sans-serif;
+  --font-interface-theme: "Atkinson Hyperlegible", Verdana, Arial, sans-serif;
+  --line-height-normal: 1.75;
+  --file-line-width: 46rem;
+  --p-spacing: 1.1rem;
+  --list-spacing: 0.35em;
+  --h1-size: 2.1em;
+  --h2-size: 1.6em;
+  --h3-size: 1.3em;
+}
+
+.markdown-preview-view,
+.markdown-source-view.mod-cm6 .cm-content {
+  letter-spacing: 0.02em;
+  word-spacing: 0.12em;
+}
+
+/* no italics in reading view - slanted text is harder to read; italic words show bold instead */
+.markdown-rendered em { font-style: normal; font-weight: 600; }
+
+/* tables: roomy cells */
+.markdown-rendered table td,
+.markdown-rendered table th { padding: 0.55em 0.9em; }
+
+/* headings get space above, so sections stand apart */
+.markdown-rendered h2 { margin-top: 2.2em; padding-bottom: 0.2em; border-bottom: 2px solid var(--background-modifier-border); }
+.markdown-rendered h3 { margin-top: 1.6em; }

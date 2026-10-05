@@ -1,0 +1,17 @@
+{
+  "useMarkdownLinks": true,
+  "newLinkFormat": "relative",
+  "alwaysUpdateLinks": true,
+  "readableLineLength": true,
+  "showLineNumber": false,
+  "strictLineBreaks": false,
+  "attachmentFolderPath": "docs/attachments",
+  "userIgnoreFilters": [
+    "docs/archive/",
+    "research/classes/html/",
+    "build_classes/",
+    "backups/",
+    "tools/dev/",
+    "PROJECT/"
+  ]
+}

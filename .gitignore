@@ -23,5 +23,10 @@ desktop.ini
 backups/
 tools/dev/scratch/
 
-# Obsidian vault settings (Skyy may open the project as a vault; keep their workspace out of git)
-.obsidian/
+# Obsidian: the shared vault settings in .obsidian/ ARE committed (app.json, appearance.json, core-plugins.json, bookmarks.json,
+# snippets/); per-device window layout, community plugins and the trash are not
+.obsidian/workspace*.json
+.obsidian/graph.json
+.obsidian/plugins/
+.obsidian/themes/
+.trash/

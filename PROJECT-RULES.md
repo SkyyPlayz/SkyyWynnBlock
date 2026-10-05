@@ -76,7 +76,13 @@ Respect the rollback floors written in `tools/deploy_set.py` (for example: never
 
 ## 5. Docs to keep current
 
-Layout since 2026-10-05 (Skyy: keep the docs small, organized and cheap to search; map in `INDEX.md`):
+**ALWAYS READY TO HAND OFF (Skyy 2026-10-05, important):** the project must be ready for a new person or session at any moment.
+The moment something is done (a build, a deploy, a test result, a decision, a docs change), record it BEFORE starting the next thing:
+a line in `docs/log/<YYYY-MM>.md`, the versions table in `HANDOFF.md` if a version changed, and `RESUME.md` "Now" / "Next" - then
+commit and push. Never leave finished work only in chat or in memory.
+
+Layout since 2026-10-05 (Skyy: keep the docs small, organized and cheap to search; map in `INDEX.md`; the repo folder is also an
+Obsidian vault - `docs/OBSIDIAN.md`):
 - `HANDOFF.md` - section 1 versions table (= the SET) + rollback floors; sections 2 + 3 = the UI and COMMAND rules. Keep it short.
 - `docs/log/<YYYY-MM>.md` - the append-only running log: ONE line for every build, deploy, test result or decision, at the end of the
   newest month file (start a new month file on the 1st).

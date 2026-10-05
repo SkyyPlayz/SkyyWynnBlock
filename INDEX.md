@@ -28,6 +28,7 @@ grep hit is the whole thing: `grep -n "Lantern" docs/answered/*.md docs/log/*.md
 | `Skyy<Mod>/` | one build script per mod version (`build_skyy<mod>_<ver>.py`, Java inside Python) + tests; jars are git-ignored | |
 | `tools/` | `deploy_set.py` (SET + rollback floors), `backup_deploy.py`, `skyybuild.py`, kits `skyyui.py` / `skyycfg.py` / `skyymove.py` / `skyyart.py`, contracts `tools/AGENT-BRIEF.md` / `tools/CONFIG-CONTRACT.md` / `tools/PROFILES-CONTRACT.md`, `<mod>_<ver>_patch.py`, `tools/ci/lint.py`, `tools/dev/` (engine helpers), `qa_append.py`, `docs_check.py` | |
 | root | `SkyyGear-Plan.md` + `SkyyGear-Stat-Catalog.md` = Skyy's own gear design (never edit); `PACK.md` = third-party mods in the pack | |
+| `.obsidian/` + `docs/OBSIDIAN.md` | shared Obsidian vault settings (bookmarks, easy-read snippet, markdown links, hidden folders) + how to use the vault | the repo folder is the vault |
 
 ## Moved on 2026-10-05 (old name -> new place; old build-script comments still use the old names)
 | Old | New |
