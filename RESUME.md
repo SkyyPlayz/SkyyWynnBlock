@@ -15,8 +15,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 
 ## Now
 - LIVE: the 26-mod SET in HANDOFF section 1 (= `tools/deploy_set.py`); last deploy 2026-10-05 13:20 -0600 (backup `backups\deploy-20261005-1320`):
-  SkyyAccessories 0.5.5 Lantern edges, SkyyCooking 0.1.6 (XP by difficulty, Flour 140), SkyyExploration 0.2.3 page guard, SkyyMenu 0.3.7; 13:27 SkyyCollections 0.2.6 (backup deploy-20261005-1327). RUNNING: SkyyGear 0.2.3 builder (craft Smithing XP + F1) - if the session
-  ends mid-round, review it before any deploy.
+  SkyyAccessories 0.5.5 Lantern edges, SkyyCooking 0.1.6 (XP by difficulty, Flour 140), SkyyExploration 0.2.3 page guard, SkyyMenu 0.3.7; 13:27 SkyyCollections 0.2.6 (backup deploy-20261005-1327). 13:58 SkyyGear 0.2.3 craft Smithing XP (backup deploy-20261005-1358).
+  Nothing running.
   New helpers: `tools/ci/crosscheck.py` (the cross-check), `tools/tidy_local.py`.
 - USAGE: weekly 94% at 2026-10-05 18:40 UTC (5-hour 0%); resets Tue 2026-10-06 15:00 UTC - no big rounds before it (Skyy: stop near 95%).
 - DOCS consolidated 2026-10-05 (PR #6, merged; `python tools/docs_check.py` proves no old line was lost); the old long RESUME is
@@ -26,8 +26,7 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
   answers (`tools/qa_append.py ... --close`); class designs live one file per class in `research/classes/` (easy-read layout + HTML).
 
 ## Next, in order (Skyy's queue 2026-10-04; full detail of each item: `docs/answered/<topic>.md` + the old RESUME)
-1. SkyyGear 0.2.3 - Smithing XP for crafting weapons + armor (steeper per tier, Crude / Wood much less; level-up coins = full round) + the
-   0.2.2 check's F1 (stale tooltip after a tune edit). Then tool levels = 0.2.4, the loot round = 0.2.5.
+1. DONE 2026-10-05: SkyyGear 0.2.3 (craft Smithing XP + F1 + F7) - waiting for Skyy's test. Next Gear: tool levels = 0.2.4, the loot round = 0.2.5.
 2. SkyySkills 0.4.16 - Mining gets its own slower level list (numbers wait for Skyy's OK - OPEN-QUESTIONS).
 3. SkyyBazaar 0.1.4 - progression prices (metals / woods / crops x2 per tier, eternal seeds x4, hides x2 flat; cloth + gems open) +
    the money-loop check. Full round.
