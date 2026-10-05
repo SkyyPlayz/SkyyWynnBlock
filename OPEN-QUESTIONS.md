@@ -20,7 +20,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
   (Question 5, Reforge raises the item level, is answered: Reforge LEVEL UP, cap +6 - docs/answered/gear.md.)
 
 ### skills
-- Flour pays 1,425 Cooking XP per craft - more than a skewer now (1,050, SkyyCooking 0.1.5) though it is one step: lower the ingredient share? [leave it until Skyy has played with 0.1.5]
 - OK the new MINING level list = 10 + 5L + 1.5L^2 XP per level (Mining 10 after ~955 XP, 20 after ~5,450)? [as proposed;
   docs/answered/skills.md "LOCKED 2026-10-04 ... for mining specifically"]
 - switch the CLASS TREES on now that the /tree probe page looked right in game (2026-10-04)? [recommended ON]

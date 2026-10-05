@@ -76,4 +76,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - LOCKED 2026-09-25 (Skyy): one-time chat notice about the swing-speed change, plus a free respec. The default was already yes.
 
 ## New answers (2026-10-05 on - newest last, beats everything above)
-
+- LOCKED 2026-10-05 (Skyy, on Flour paying 1,425 per craft > a skewer after SkyyCooking 0.1.5): "Flour should go way down. The less it takes to craft, and the earlier the items are to get, the less xp it should give you" -> ingredient crafts (flour, dough, salt, spices ...) follow the same difficulty rule as dishes: fewer inputs + earlier (lower-tier) items = less XP; Flour far below a skewer. [SkyyCooking 0.1.6, lean]
