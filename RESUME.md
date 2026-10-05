@@ -7,7 +7,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 1. On Skyy's PC: `git pull` in `SkyWynn PROJECT` (picks up the 2026-10-05 docs layout, PRs #6 + #7).
 2. Start Claude Code IN that folder - a LOCAL session (builds need `HytaleServer.jar`; the 2026-10-05 session was cloud-only by mistake).
    It reads CLAUDE.md -> this file -> INDEX.md.
-3. Wait for the weekly reset (Mon 2026-10-06 15:00 UTC), then work "Next, in order" below - SkyyGear 0.2.3 first. Full rounds per
+3. Check the weekly usage first: it resets every MONDAY 15:00 UTC, so it reset on Mon 2026-10-05 15:00 UTC (older notes say
+   "Mon 2026-10-06" - a date error, the 6th is a Tuesday). Then work "Next, in order" below - SkyyGear 0.2.3 first. Full rounds per
    PROJECT-RULES section 4; merge your own PRs once every check is green (section 6); log + update this file after each step.
 4. Cloud sessions meanwhile: the no-game-files specs (build 5 traversal spec, Stats page spec, class-ability spec) - CLOUD-RESUME.md.
 5. Obsidian: "Open folder as vault" -> `SkyWynn PROJECT` (settings ship in `.obsidian/`, how-to `docs/OBSIDIAN.md`).
@@ -15,7 +16,7 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 ## Now
 - LIVE: the 26-mod SET in HANDOFF section 1 (= `tools/deploy_set.py`); last deploy SkyyAccessories 0.5.4 Lantern, 2026-10-04 00:46
   (backup `backups\deploy-20261004-0046`). NOTHING is running.
-- USAGE: weekly 94% on 2026-10-05 -> no new build rounds until the reset Mon 2026-10-06 15:00 UTC (Skyy: stop near 95%); test fixes only.
+- USAGE: weekly 94% on the morning of 2026-10-05; the weekly reset is Mondays 15:00 UTC (= Mon 2026-10-05) - check usage before a big round.
 - DOCS consolidated 2026-10-05 (PR #6, merged; `python tools/docs_check.py` proves no old line was lost); the old long RESUME is
   `docs/archive/RESUME-2026-10-05.md`. ALWAYS READY TO HAND OFF: log + HANDOFF + this file the moment something is done (PROJECT-RULES 5).
 - OBSIDIAN: Skyy made an empty `Hytale Projects` vault folder first; the recommendation (step 5) opens the project folder itself so no
