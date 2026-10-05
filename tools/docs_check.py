@@ -126,7 +126,8 @@ def main():
 
     old_set, now_set = set(old_files), set(now)
     old_text = {}
-    old_bad = broken_refs(old_md, lambda p: p in old_set or any(x.startswith(p + "/") for x in ()),
+    old_dirs = {d for f in old_files for d in (f.rsplit("/", k)[0] for k in range(1, f.count("/") + 1))}
+    old_bad = broken_refs(old_md, lambda p: p in old_set or p.rstrip("/") in old_dirs,
                           lambda f: old_text.setdefault(f, read_at(base, f)))
     old_bad_paths = {p for _, p in old_bad}
     now_bad = broken_refs(now_md, lambda p: p in now_set or os.path.exists(os.path.join(ROOT, p)),
