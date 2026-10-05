@@ -7,7 +7,7 @@ folder - never UserData, never the game. Run it after every deploy (PROJECT-RULE
 
 1. Build caches: deletes every __pycache__/ and build_classes/ folder (each build recreates them; skyybuild.class_out wipes it anyway).
 2. Old jars: per mod keeps the SET jar (tools/deploy_set.py), the newest older jar (one-step rollback) and anything newer than the SET
-   (built, not deployed yet); retired mods keep their newest jar. The rest go into backups/archive/old-jars-<date>.tar.xz.
+   (built, not deployed yet) and every jar the mod's newest 2 test harnesses name; retired mods keep their newest jar. The rest go into backups/archive/old-jars-<date>.tar.xz.
 3. Old deploy backups: keeps the newest KEEP backups/deploy-* folders; older ones go into backups/archive/deploys-<YYYY-MM>[-n].tar.xz.
 4. --scratch: packs the named tools/dev/scratch/<name> folders into backups/archive/scratch-<name>-<date>.tar.xz. Junk folders
    (_avast_, hsperfdata_*) inside scratch are always deleted.
@@ -119,8 +119,26 @@ def step_caches():
             shutil.rmtree(p, ignore_errors=True)
 
 
+def harness_jars():
+    """Jar names the newest 2 test harnesses of every mod load by name (they compare against older versions)."""
+    want = set()
+    for mod in os.listdir(ROOT):
+        mdir = os.path.join(ROOT, mod)
+        if not (mod.startswith("Skyy") and os.path.isdir(mdir)):
+            continue
+        tests = []
+        for f in os.listdir(mdir):
+            m = re.match(r"^test_\w+?_(\d+(?:\.\d+)*)\.py$", f)
+            if m:
+                tests.append((ver(m.group(1)), f))
+        for _, f in sorted(tests)[-2:]:
+            want |= set(re.findall(r"(Skyy[A-Za-z]+-\d+(?:\.\d+)*\.jar)", open(os.path.join(mdir, f), encoding="utf-8", errors="replace").read()))
+    return want
+
+
 def step_jars(pins):
     old = []
+    needed = harness_jars()
     for mod in sorted(os.listdir(ROOT)):
         mdir = os.path.join(ROOT, mod)
         if not (mod.startswith("Skyy") and os.path.isdir(mdir)):
@@ -139,7 +157,7 @@ def step_jars(pins):
             keep = {j[2] for j in jars if j[0] >= pv and not j[1]} | ({plain_old[-1][2]} if plain_old else set())
         else:  # retired / never pinned: keep the newest
             keep = {[j for j in jars if not j[1]][-1][2]} if any(not j[1] for j in jars) else set()
-        old += [os.path.join(mdir, j[2]) for j in jars if j[2] not in keep]
+        old += [os.path.join(mdir, j[2]) for j in jars if j[2] not in keep and j[2] not in needed]
     print("2. old jars: %d to pack (%s)" % (len(old), mb(size(old))))
     if old:
         pack(old, free_name("old-jars-" + TODAY), ROOT)
