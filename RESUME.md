@@ -19,7 +19,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
   14:51 SkyyBazaar 0.1.4 progression prices (backup deploy-20261005-1451). 15:16 SkyyParty 0.1.7 + SkyyEssentials
   0.1.8 TPA buttons (backup deploy-20261005-1516). 17:24 SkyySkills 0.4.16 Mining curve +
   leaderboards (backup deploy-20261005-1724). 17:45 SkyyMenu 0.3.8 + SkyyTrees 0.3.2
-  class trees ON (backup deploy-20261005-1745). Nothing running.
+  class trees ON (backup deploy-20261005-1745). RUNNING: the staff + wand traversal SPEC (Fable agent ->
+  research/Magic-Traversal-Spec.md; docs only).
   New helpers: `tools/ci/crosscheck.py` (the cross-check), `tools/tidy_local.py`.
 - USAGE: weekly 94% at 2026-10-05 18:40 UTC (5-hour 0%); resets Tue 2026-10-06 15:00 UTC - no big rounds before it (Skyy: stop near 95%).
 - DOCS consolidated 2026-10-05 (PR #6, merged; `python tools/docs_check.py` proves no old line was lost); the old long RESUME is
