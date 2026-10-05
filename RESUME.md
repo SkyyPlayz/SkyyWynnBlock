@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-01)
+# SkyWynn - RESUME HERE (updated 2026-10-05)
 
 Read this first when picking the project back up. It says where everything lives on Skyy's PC, what state things are in, and exactly
 what to do next. Detail: `HANDOFF.md` (section 3 = current state, section 6 = the full running log), `OPEN-QUESTIONS.md` (every
@@ -19,13 +19,18 @@ decision with its default or LOCKED answer), `SkyWynn-Decisions.md` (change note
 | Builder brief (the rules every build agent must follow) | `tools\AGENT-BRIEF.md` |
 | Engine inspection helpers (reflect, constant-pool grep, bytecode dump, callers) | `tools\dev\` (`reflect.py`, `cpgrep.py` - run inside tools\dev, `bc.py`, `bcfull.py`, `bcfull2.py`, `callers.py`) |
 | Scratch for agents (git-ignored, delete after use) | `tools\dev\scratch\` |
-| Backups made before every deploy (Skyy jars + world config.json + Skyy_* mod data; git-ignored) | `backups\deploy-<date>-<time>\` (newest: `deploy-20261001-0737`) |
+| Backups made before every deploy (Skyy jars + world config.json + Skyy_* mod data; git-ignored) | `backups\deploy-<date>-<time>\` (newest: `deploy-20261004-0046`; make one with `python tools\backup_deploy.py` - refuses while HytaleServer runs) |
 | Hytale server jar + game assets (read-only) | `C:\Users\SkyLo\AppData\Roaming\Hytale\install\release\package\game\latest\Server\HytaleServer.jar`, `...\latest\Assets.zip` |
 | Installed mods (deploy target; other authors' mods read-only) | `C:\Users\SkyLo\AppData\Roaming\Hytale\UserData\Mods\` |
 | The test world | `C:\Users\SkyLo\AppData\Roaming\Hytale\UserData\Saves\HUD mod\` (`config.json` = which mods are enabled) |
 | Skyy mods' saved data in that world | `...\Saves\HUD mod\mods\Skyy_Skyy<Mod>\` (stable across versions) |
 | Server logs / client logs | `...\Saves\HUD mod\logs\<time>_server.log`, `C:\Users\SkyLo\AppData\Roaming\Hytale\UserData\Logs\<time>_client.log` |
 | Claude's memory for this project (outside the repo) | `C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK\memory\` |
+| Decision-log helper (appends lines to OPEN-QUESTIONS' Q&A block) | `python tools\qa_append.py <file with the lines>` |
+| Class design (one file per class: weapons, traversals, abilities, modifiers) | `research\classes\` (start at `README.md`) |
+| Cloud sessions' to-do (no game files) + their output | `CLOUD-RESUME.md`, `research\cloud\` |
+| LOCAL ONLY - never in the repo (`.gitignore`) | game install + `HytaleServer.jar` / `Assets.zip`, all of `UserData` (Mods, Saves, logs), `backups\`, every built `*.jar` (except `tools\javassist.jar`), `build_classes\`, `tools\dev\scratch\` (agent scratch + workflow script copies), Claude's memory + session scratchpad |
+| IN THE REPO (public) | build / patch / test scripts, `tools\` (incl. `deploy_set.py`, `backup_deploy.py`, `qa_append.py`, kits, contracts, lint), all docs (`*.md`, `research\`), `tools\javassist.jar` - no game files, no personal data |
 | Toolchain | Python 3.12 + `jpype1` + `jdk4py` (no javac anywhere); Git Bash / PowerShell |
 
 Other folders next to the project (`Hytale mods WORK\Hytale mods`, `Your new mods`, `lynk to Hytale Game`) are Skyy's, not part of the build.

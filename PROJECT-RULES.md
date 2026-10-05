@@ -38,7 +38,8 @@ Skyy: "just deploy things as they are ready, so I don't have to ask you to deplo
 
 1. A round is **ready** when it is built, reviewed, fixed, cross-checked, pinned in `tools/deploy_set.py` and committed.
 2. Check the game is closed (no `HytaleServer` java process). Never kill it.
-3. Back up the live Skyy jars + the world `config.json` + every `Skyy_*` data folder into `backups/deploy-<date>-<time>/`.
+3. Back up the live Skyy jars + the world `config.json` + every `Skyy_*` data folder into `backups/deploy-<date>-<time>/`
+   (`python tools/backup_deploy.py`).
 4. `python tools/deploy_set.py --yes` - the **only** deploy path. Build scripts never get `--deploy`.
 5. Add the TEST-CHECKLIST section, the HANDOFF version row + log line, update RESUME / OPEN-QUESTIONS, commit and push.
 
