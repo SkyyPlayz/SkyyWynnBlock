@@ -20,7 +20,7 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 <!-- 2026-10-03 local session (Skyy: "make sure the cloud agent has a good list to work on, so i can keep em going when token limit runs
 out"): the list is LONG ON PURPOSE this week - work top-down; the first 8 feed builds the local session runs next. Decisions behind them:
 OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" block, 2026-10-03 lines. -->
-<!-- 2026-10-05 15:30 UTC (Skyy): WAIT FOR THE USAGE RESET (Mon 2026-10-06 15:00 UTC) before any new work. After it: the local session runs the
+<!-- 2026-10-05 15:30 UTC (Skyy): WAIT FOR THE USAGE RESET (Mondays 15:00 UTC = Mon 2026-10-05; "2026-10-06" in older notes was a date error) before any new work. After it: the local session runs the
 RESUME 'Next' build list (Gear 0.2.3 first); cloud sessions then do the no-game-files specs - build 5 traversal spec (SkyyArmory 0.1.1 +
 SkyyClasses 0.1.12), the Stats page spec (task below), the class-ability spec. Docs consolidation PRs #6 + #7 are merged. -->
 <!-- 2026-10-05 cloud session: the docs consolidation is DONE in a pull request (Docs consolidation map + README draft tasks removed);
