@@ -29,3 +29,6 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 
 ## New answers (2026-10-05 on - newest last, beats everything above)
 - LOCKED 2026-10-05 (Skyy): "You have to go ahead to auto merge when things are ready. Do all the proper checks first." -> Claude merges its own pull requests once ready: CI green on the head, every review bot finished and each finding fixed or answered, no merge conflict, local checks pass (lint 0 fails; docs_check OK for docs changes); merge commit, then a log line + RESUME (PROJECT-RULES section 6).
+- ANSWERED 2026-10-05 (Skyy): Obsidian vault = "Project file" -> open `SkyWynn PROJECT` itself as the vault (not the empty `Hytale Projects` vault).
+- ANSWERED 2026-10-05 (Skyy): "Go ahead and delete them" -> the merged claude/* branches on GitHub were deleted; the unmerged cursor/* branches stay.
+- RULE 2026-10-05 (Skyy): "id like all the project files to remain clean and organized throughout the project. so once done, keep things organized." (PROJECT-RULES section 5 "Keep it tidy", tools/tidy_local.py)
