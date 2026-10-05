@@ -1,4 +1,4 @@
-# 🔮 Mage
+# 🔮 Mage - Burst damage (glass cannon)
 
 | | |
 |---|---|
@@ -68,7 +68,7 @@ flowchart TD
 
   - No Stamina cost.
 
-- **Later (Skyy):** special staffs whose quick shots pierce.
+- 💡 **Idea for later (Skyy) - not decided yet:** special staffs whose quick shots pierce.
 
 ### Spellbooks
 

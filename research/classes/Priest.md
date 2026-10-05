@@ -1,4 +1,4 @@
-# ✨ Priest
+# ✨ Priest - Healer
 
 | | |
 |---|---|
@@ -66,7 +66,7 @@ flowchart TD
 
 - The explosion leaves a **healing orb** (~9 blocks, 3-4 s). Allies inside heal **20% of the explosion's damage every second**.
 
-- **Later (Skyy):** a special wand whose shots pass through blocks.
+- 💡 **Idea for later (Skyy) - not decided yet:** a special wand whose shots pass through blocks.
 
 ### Soul Orb (new weapon)
 

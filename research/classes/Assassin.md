@@ -1,4 +1,4 @@
-# 🗡️ Assassin
+# 🗡️ Assassin - Priority killer
 
 | | |
 |---|---|
@@ -54,7 +54,7 @@ flowchart TD
 
 - **Charged:** vanilla **Pounce** (a sweep / stab lunge).
 
-- **Idea for later:** Smoke Roll.
+- 💡 **Idea for later - not decided yet:** Smoke Roll.
 
 ### Kunai
 

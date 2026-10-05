@@ -1,4 +1,4 @@
-# 🪓 Berserker
+# 🪓 Berserker - Damage buffer
 
 | | |
 |---|---|

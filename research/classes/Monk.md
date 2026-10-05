@@ -1,4 +1,4 @@
-# 🥋 Monk
+# 🥋 Monk - Self-speed disruptor
 
 | | |
 |---|---|
