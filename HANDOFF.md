@@ -18,11 +18,11 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyySkills | 0.4.16 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics |
 | SkyyAccessories | 0.5.5 | Accessory Bag, booster accessories, Lantern |
 | SkyyClasses | 0.1.11 | class pick, class kits, Priest heal |
-| SkyyMenu | 0.3.7 | SkyWynn Menu, player Settings, Server Setup (admin) |
+| SkyyMenu | 0.3.8 | SkyWynn Menu, player Settings, Server Setup (admin) |
 | SkyyEssentials | 0.1.8 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.5 | profiles = full saves (default cap 6), delete + 6 h undo |
 | SkyyCooking | 0.1.6 | Cooking dishes + food Grade; XP by craft difficulty |
-| SkyyTrees | 0.3.1 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees OFF) |
+| SkyyTrees | 0.3.2 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
 | SkyyExploration | 0.2.3 | Exploration skill, spots, island checklist |
 | SkyyGuilds | 0.1.6 | guilds + guild bank |
 | SkyyVault | 0.1.5 | vault pages |
