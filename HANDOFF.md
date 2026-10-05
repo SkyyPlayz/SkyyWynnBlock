@@ -13,7 +13,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyParty | 0.1.6 | parties (feeds the HUD party widget) |
 | SkyyBank | 0.1.6 | bank + interest |
 | SkyyIslands | 0.5.5 | private islands, co-op, visitors, island settings, /hub |
-| SkyyBazaar | 0.1.3 | Bazaar market (a tab per bag type + Smithing) |
+| SkyyBazaar | 0.1.4 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier |
 | SkyyGear | 0.2.3 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear |
 | SkyySkills | 0.4.15 | skills + class weapon skills, XP curves, Mana, Acrobatics |
 | SkyyAccessories | 0.5.5 | Accessory Bag, booster accessories, Lantern |

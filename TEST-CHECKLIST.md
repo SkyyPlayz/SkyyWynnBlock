@@ -32,6 +32,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 20. SkyyMenu 0.3.7 - Mods list says Lantern, lists SkyyArmory, today's versions.
 21. SkyyCollections 0.2.6 - /collections top hides deleted (undo window) and archived profiles.
 22. SkyyGear 0.2.3 - crafting weapons + armor pays Smithing XP (10 Iron wands = ~2,500+); wand tooltip follows Armory damage edits.
+23. SkyyBazaar 0.1.4 - progression prices (ores / logs / crops / seeds / saplings / hides / cloth x2 per tier).
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
