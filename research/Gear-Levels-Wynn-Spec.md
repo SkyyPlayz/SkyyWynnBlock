@@ -2,7 +2,7 @@
 
 > **Skyy's decisions 2026-10-02 win over this draft:** OPEN-QUESTIONS.md, section "Q&A with Skyy 2026-10-02", rounds 1 (magic weapon recipes match vanilla weapons).
 
-*Written 2026-10-01 from Skyy's request of the same day and its same-day follow-up (OPEN-QUESTIONS.md:50-57), SkyWynn-Decisions.md change
+*Written 2026-10-01 from Skyy's request of the same day and its same-day follow-up (docs/answered/gear.md "REQUEST 2026-10-01 (Skyy): gear levels like Wynncraft"), docs/plans/SkyWynn-Decisions.md change
 notes 2026-09-25 #5 and #6, the SkyyGear 0.1.3 code (B = `SkyyGear/build_skyygear_0.1.3.py`), Assets.zip (read only) and
 research/Mob-Levels-Plan.md. Reviewed the same day by a critic + editor pass: section 12 lists every correction.
 Nothing here is built yet. Skyy's docs SkyyGear-Plan.md and SkyyGear-Stat-Catalog.md were only read.*

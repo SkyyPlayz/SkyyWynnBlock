@@ -1,6 +1,6 @@
 # Berserker, Priest and class kits: build spec (SkyyClasses 0.1.6, SkyySkills 0.4.4, SkyyProfiles 0.1.2)
 
-*Written 2026-09-25 from Skyy's decisions of the same day (SkyWynn-Decisions.md "Change notes (2026-09-25)" 1-4, HANDOFF section 1
+*Written 2026-09-25 from Skyy's decisions of the same day (docs/plans/SkyWynn-Decisions.md "Change notes (2026-09-25)" 1-4, HANDOFF section 1
 "Classes" row). Builds on the LIVE set (tools/deploy_set.py SET, live since 2026-09-25 04:11): SkyyClasses 0.1.5, SkyySkills 0.4.3,
 SkyyProfiles 0.1.1. Every engine and asset fact below was checked on this machine (section 1 says how). Nothing here is built yet.*
 

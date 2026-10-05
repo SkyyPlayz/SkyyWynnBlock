@@ -1,14 +1,15 @@
 # SkyWynn - project rules (read before working on this repo)
 
 These are the standing rules for anyone who picks this project up - a person or an AI session. They were collected from Skyy's
-instructions over many sessions (2026-09-22 to 2026-10-01). When something here and an older doc disagree, this file and the newest
-`OPEN-QUESTIONS.md` / `HANDOFF.md` lines win.
+instructions over many sessions (2026-09-22 to 2026-10-05). When something here and an older doc disagree, this file and the newest
+`docs/answered/` / `HANDOFF.md` lines win.
 
 - **Owner:** Skyy (GitHub **SkyyPlayz**) - uses **they/them**. A design partner also pushes to this repo.
 - **What it is:** SkyWynn, a Hytale server pack of standalone `Skyy*` mods blending Hypixel SkyBlock and Wynncraft (name idea for the
   pack: *Isles of the Void* - nothing renamed yet).
-- **Where to start:** `RESUME.md` (where things live, where we got to, what is next) -> `HANDOFF.md` (section 3 = current state,
-  section 6 = running log) -> `OPEN-QUESTIONS.md` (every decision) -> `TEST-CHECKLIST.md`. Build agents: `tools/AGENT-BRIEF.md`.
+- **Where to start:** `RESUME.md` (where we are, what is next) -> `INDEX.md` (where every file is + cheap search recipes) -> then only
+  the file the task needs: `HANDOFF.md` (versions + build rules), `OPEN-QUESTIONS.md` (open only), `docs/answered/` (every answer),
+  `docs/log/` (running log), `TEST-CHECKLIST.md`. Build agents: `tools/AGENT-BRIEF.md`.
 
 ## 1. Skyy's PC - safety rules (never break these)
 
@@ -75,11 +76,27 @@ Respect the rollback floors written in `tools/deploy_set.py` (for example: never
 
 ## 5. Docs to keep current
 
-- `HANDOFF.md` - section 3 current state (versions table = the SET), section 6 append-only log: one line for every build, deploy,
-  test result or decision.
-- `RESUME.md` - where we are and the next steps; keep it current at the end of every working session.
-- `OPEN-QUESTIONS.md` - record every answer Skyy gives as a LOCKED / ANSWERED line; open questions keep their current default in brackets.
-- `TEST-CHECKLIST.md` - one section per deploy with numbered in-game steps.
+**ALWAYS READY TO HAND OFF (Skyy 2026-10-05, important):** the project must be ready for a new person or session at any moment.
+The moment something is done (a build, a deploy, a test result, a decision, a docs change), record it BEFORE starting the next thing:
+a line in `docs/log/<YYYY-MM>.md`, the versions table in `HANDOFF.md` if a version changed, and `RESUME.md` "Now" / "Next" - then
+commit and push. Never leave finished work only in chat or in memory.
+
+Layout since 2026-10-05 (Skyy: keep the docs small, organized and cheap to search; map in `INDEX.md`; the repo folder is also an
+Obsidian vault - `docs/OBSIDIAN.md`):
+- `HANDOFF.md` - section 1 versions table (= the SET) + rollback floors; sections 2 + 3 = the UI and COMMAND rules. Keep it short.
+- `docs/log/<YYYY-MM>.md` - the append-only running log: ONE line for every build, deploy, test result or decision, at the end of the
+  newest month file (start a new month file on the 1st).
+- `RESUME.md` - where we are and the next steps, at most ~60 lines, current only (history goes to the log); keep it current at the end
+  of every working session.
+- `OPEN-QUESTIONS.md` - ONLY questions still waiting on Skyy, each with today's default in [brackets]. **When Skyy answers (Skyy
+  2026-10-05):** write the answer word for word as a LOCKED / ANSWERED line in `docs/answered/<topic>.md` ("New answers" block) and DELETE
+  the question from OPEN-QUESTIONS.md in the same step: `python tools/qa_append.py <topic> <file> --close "<words from the question>"`
+  (`--no-question` instead when Skyy answers something that was never an open question).
+- `TEST-CHECKLIST.md` - the "Test next" list; each deploy adds one numbered in-game section at the end of `docs/tests/<newest month>.md`
+  plus a line in that list (remove the line once Skyy has tested it); `docs/tests/README.md` indexes every section.
+- Class designs: one file per class in `research/classes/` (easy-read: short lines, big spacing); after editing one, run
+  `python tools/class_pages.py` to rebuild its HTML page.
+- Before committing a docs move / split: `python tools/docs_check.py` must say OK (nothing lost, no new broken paths).
 - Skyy's ideas go into `research/*.md` even when they are "just ideas" (world gen, pets, dragons, story ...).
 - **Never edit `SkyyGear-Plan.md` or `SkyyGear-Stat-Catalog.md`** - Skyy's own design docs.
 - Many docs have mixed line endings (`.gitattributes` keeps bytes exact): edit them without converting line endings; append in the
@@ -102,7 +119,7 @@ Respect the rollback floors written in `tools/deploy_set.py` (for example: never
   `tools/AGENT-BRIEF.md` instead** (no commits, no deploys, no edits to the docs above, only the files their task names).
 - **Cloud sessions** (no access to Skyy's PC or the game files) work from `CLOUD-RESUME.md` - a rolling to-do - and write only that file
   and `research/cloud/` straight to `main`; anything else goes through a pull request. The local session reviews `research/cloud/LOG.md`
-  and folds finished work into HANDOFF.md. Subagents that need no local files may run in the cloud (Skyy 2026-10-02).
+  and folds finished work into the log (`docs/log/`). Subagents that need no local files may run in the cloud (Skyy 2026-10-02).
 - **Use ultracode on BIG jobs** (Skyy 2026-10-02, late: "remember to use ultracode on big jobs"): new systems or mods, several mods at
   once, coins / economy, saved data, item loss / dupes, permissions -> a full multi-agent workflow (parallel research / spec, adversarial
   multi-lens critics, build, review, fix, cross-check). Small work stays lean or agent-free (section 4 "Round size").

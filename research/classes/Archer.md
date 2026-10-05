@@ -1,7 +1,19 @@
-# Archer - Crowd control
+# 🏹 Archer - Crowd control
 
-**Main role:** crowd control. **Second role:** focus marker / ranged damage. **Class skill:** Archery. **Identity:** sturdy at range, pins
-mobs in place, marks targets for the party. Crossbows stay loaded (live since SkyySkills 0.4.5). *Numbers are placeholders. Legend in [README.md](README.md).*
+| | |
+|---|---|
+| 🎯 **Main role** | Crowd control |
+| 🎯 **Second role** | Focus marker / ranged damage |
+| 📈 **Class skill** | Archery |
+| 💬 **In one line** | Sturdy at range. Pins mobs in place. Marks targets for the party. |
+
+Crossbows stay loaded (live since SkyySkills 0.4.5).
+
+Numbers are placeholders. Labels: 🟢 Locked · 🔵 Proposed · 🟠 Open - see [README.md](README.md).
+
+&nbsp;
+
+## 🗺️ Map
 
 ```mermaid
 flowchart TD
@@ -10,10 +22,10 @@ flowchart TD
   CLS --> ABL["ABILITIES<br/>own 4, equip 2"]
   WPN --> BOW["Shortbows"]
   BOW --> BOWa["Attack: draw + shoot<br/>draw strength 0-4"]
-  BOW --> BOWc["Charged: full draw<br/>no traversal yet"]
+  BOW --> BOWc["Charged: full draw<br/>vanilla for now"]
   WPN --> XB["Crossbows"]
   XB --> XBa["Attack: load + shoot<br/>3rd bolt bonus"]
-  XB --> XBc["Charged: none in vanilla<br/>no traversal yet"]
+  XB --> XBc["Charged: none in vanilla<br/>vanilla for now"]
   ABL --> A1["A1 Pinning Shot"]
   A1 --> A1A["A1-alt A Arrow Rain"]
   A1 --> A1B["A1-alt B Hunter's Net"]
@@ -28,95 +40,193 @@ flowchart TD
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
   classDef open fill:#e65100,color:#fff,stroke:#bf360c
   classDef mods fill:#1a237e,color:#fff,stroke:#0d1442
-  class A1,A2,A2X locked
+  class A1,A2,A2X,BOWc,XBc locked
   class A1A,A1B proposed
-  class BOWc,XBc open
   class M1,M2,M3,M4,M5 mods
 ```
 
-## Weapons
+&nbsp;
 
-| Weapon | Attack | Charged attack / traversal | Status |
-|---|---|---|---|
-| Shortbows | Vanilla draw-and-shoot (draw strength 0-4); vanilla Signature Volley | Full draw = the strongest shot; **no movement** in vanilla | **OPEN**: needs a traversal. *Proposed:* **Grapple Arrow** - a full-draw shot into a block pulls you to it |
-| Crossbows | Vanilla load + shoot; the 3rd bolt in a row on one target hits harder; bolts stay loaded (SkyySkills) | Vanilla has no hold-to-charge | **OPEN**: needs a traversal. *Proposed:* **Dodge Roll** - roll the way you move and reload instantly |
+## ⚔️ Weapons
 
-## Abilities
+### Shortbows
 
-### A1 - Pinning Shot (LOCKED: rooted enemies are marked)
-| | |
-|---|---|
-| Does | A piercing arrow (30 blocks): every enemy hit is Rooted ~2 s and Marked 6 s (takes 15% more damage from everyone) |
-| Levels | +1% Mark per level |
-| Pierce | +1 enemy per level |
-| Split | fires a fan of 3 arrows |
-| Duration+ | longer root and mark |
-| Power+ | bigger Mark bonus |
+🟢 **Locked** - vanilla for now (Skyy 2026-10-05: custom traversals come later)
 
-### A1-alt A - Arrow Rain (*proposed*, pick A or B)
-| | |
-|---|---|
-| Does | Arrows rain on a 6-block area for 3 s: enemies inside are Slowed; those still inside after 2 s are Rooted 1.5 s and Marked |
-| Radius+ / Duration+ | bigger / longer rain |
-| Lingering | the ground stays a slowing zone after the rain |
-| Power+ | more damage + stronger Mark |
+- **Attack:** vanilla draw-and-shoot (draw strength 0-4). Vanilla Signature Volley.
 
-### A1-alt B - Hunter's Net (*proposed*, pick A or B)
-| | |
-|---|---|
-| Does | A net shot bursts into a 4-block root zone for 3 s; everything caught is Marked 8 s |
-| Radius+ / Duration+ | bigger net / longer root |
-| Pull | the net drags enemies toward its centre |
-| Split | fires 3 smaller nets |
+- **Charged:** a full draw = the strongest shot. **No movement** in vanilla.
 
-### A2 - Rapid Fire (LOCKED)
-| | |
-|---|---|
-| Does | 15 arrows in 3 s (each about half a normal shot) |
-| Ricochet | arrows bounce to +1 enemy per level |
-| Pierce | arrows pass through +1 enemy per level |
-| Duration+ | more arrows |
-| Slow | each hit slows a little |
+- 💡 **Idea for later - Grapple Arrow:** a full-draw shot into a block pulls you to it.
 
-### A2-alt - Explosive Arrow (LOCKED)
-| | |
-|---|---|
-| Does | Your next charged shot does 2x damage in an explosive 4-block AoE |
-| Radius+ | bigger blast |
-| Split | the blast throws out 3 bomblets |
-| Lingering | leaves a burning patch |
-| Knockback+ | blast pushes enemies away |
+### Crossbows
 
-## Modifier pool - pick 4 for each ability (2 equipped)
+🟢 **Locked** - vanilla for now (Skyy 2026-10-05: custom traversals come later)
 
-| Modifier | What it does | Each level adds |
-|---|---|---|
-| Duration+ | lasts longer | more time |
-| Radius+ | bigger area | more blocks |
-| Power+ | stronger main effect (damage, heal, shield, buff) | more % |
-| Efficiency | costs less Mana / Stamina | lower cost |
-| Split | splits into 3 weaker copies (projectiles, lines) | stronger copies |
-| Ricochet | PROJECTILES only: the shot flies on to the next enemy after a hit (walls block it, it can miss) | +1 bounce |
-| Pierce | passes through enemies | +1 enemy |
-| Chain | EFFECTS only (heals, buffs, debuffs, poison, hooks): jumps instantly to the next target in range - enemies, or allies for support | +1 jump |
-| Lingering | leaves a zone behind (fire, poison, light) | longer zone |
-| Slow | adds a slow | stronger slow |
-| Knockback+ | pushes enemies away | farther |
-| Pull | draws enemies in | stronger pull |
-| Follow | a placed zone moves with you instead | bigger zone |
-| Leech | heals you for part of the damage | more % |
-| Ward | adds a small shield (you, or allies for support abilities) | bigger shield |
-| Haste | attack + move speed for a few seconds after use | longer |
-| Echo | repeats once after 1 s at reduced strength | stronger echo |
+- **Attack:** vanilla load + shoot. The 3rd bolt in a row on one target hits harder. Bolts stay loaded (SkyySkills).
 
-## Class tree paths (ideas - pick one)
-- *Trapper* - roots and nets last longer, rooted enemies take more.
-- *Sharpshooter* - long-range single-target damage, Marks stack harder.
-- *Stormbow* - Rapid Fire / Explosive Arrow multi-target.
+- **Charged:** vanilla has no hold-to-charge.
 
-## Open
-- Traversals for shortbows and crossbows (Grapple Arrow / Dodge Roll proposed).
+- 💡 **Idea for later - Dodge Roll:** roll the way you move and reload instantly.
 
-## Change log
+&nbsp;
+
+## ✨ Abilities
+
+You own 4. You equip 2.
+
+### A1 · Pinning Shot
+
+🟢 **Locked** - rooted enemies are marked
+
+- **Does:** a piercing arrow (30 blocks).
+
+- Every enemy hit is **Rooted ~2 s** and **Marked 6 s** (takes 15% more damage from everyone).
+
+- **Levels:** +1% Mark per level.
+
+**Modifiers**
+
+- 📌 **Pierce** - +1 enemy per level.
+
+- 🔱 **Split** - fires a fan of 3 arrows.
+
+- ⏳ **Duration+** - longer root and mark.
+
+- 💪 **Power+** - bigger Mark bonus.
+
+### A1-alt A · Arrow Rain
+
+🔵 **Proposed** - pick A or B
+
+- **Does:** arrows rain on a 6-block area for 3 s. Enemies inside are **Slowed**.
+
+- Enemies still inside after 2 s are **Rooted 1.5 s** and **Marked**.
+
+**Modifiers**
+
+- ⭕ **Radius+** / ⏳ **Duration+** - bigger / longer rain.
+
+- 🔥 **Lingering** - the ground stays a slowing zone after the rain.
+
+- 💪 **Power+** - more damage + stronger Mark.
+
+### A1-alt B · Hunter's Net
+
+🔵 **Proposed** - pick A or B
+
+- **Does:** a net shot bursts into a **4-block root zone** for 3 s.
+
+- Everything caught is **Marked 8 s**.
+
+**Modifiers**
+
+- ⭕ **Radius+** / ⏳ **Duration+** - bigger net / longer root.
+
+- 🧲 **Pull** - the net drags enemies toward its centre.
+
+- 🔱 **Split** - fires 3 smaller nets.
+
+### A2 · Rapid Fire
+
+🟢 **Locked**
+
+- **Does:** **15 arrows in 3 s** (each about half a normal shot).
+
+**Modifiers**
+
+- 🎱 **Ricochet** - arrows bounce to +1 enemy per level.
+
+- 📌 **Pierce** - arrows pass through +1 enemy per level.
+
+- ⏳ **Duration+** - more arrows.
+
+- 🐌 **Slow** - each hit slows a little.
+
+### A2-alt · Explosive Arrow
+
+🟢 **Locked**
+
+- **Does:** your next charged shot does **2x damage** in an explosive 4-block AoE.
+
+**Modifiers**
+
+- ⭕ **Radius+** - bigger blast.
+
+- 🔱 **Split** - the blast throws out 3 bomblets.
+
+- 🔥 **Lingering** - leaves a burning patch.
+
+- 💥 **Knockback+** - the blast pushes enemies away.
+
+&nbsp;
+
+## 🧩 Modifier pool
+
+Each ability offers 4 of these. You equip 2.
+
+<!-- POOL START - tools/class_pages.py copies this block into every class file (python tools/class_pages.py --sync-pool) -->
+- ⏳ **Duration+** - lasts longer · each level: more time.
+
+- ⭕ **Radius+** - bigger area · each level: more blocks.
+
+- 💪 **Power+** - stronger main effect (damage, heal, shield, buff) · each level: more %.
+
+- 💧 **Efficiency** - costs less Mana / Stamina · each level: lower cost.
+
+- 🔱 **Split** - splits into 3 weaker copies (projectiles, lines) · each level: stronger copies.
+
+- 🎱 **Ricochet** - PROJECTILES only: the shot flies on to the next enemy after a hit (walls block it, it can miss) · each level: +1 bounce.
+
+- 📌 **Pierce** - passes through enemies · each level: +1 enemy.
+
+- ⛓️ **Chain** - EFFECTS only (heals, buffs, debuffs, poison, hooks): jumps instantly to the next target in range - enemies, or allies for support · each level: +1 jump.
+
+- 🔥 **Lingering** - leaves a zone behind (fire, poison, light) · each level: longer zone.
+
+- 🐌 **Slow** - adds a slow · each level: stronger slow.
+
+- 💥 **Knockback+** - pushes enemies away · each level: farther.
+
+- 🧲 **Pull** - draws enemies in · each level: stronger pull.
+
+- 👣 **Follow** - a placed zone moves with you instead · each level: bigger zone.
+
+- 🩸 **Leech** - heals you for part of the damage · each level: more %.
+
+- 🛡️ **Ward** - adds a small shield (you, or allies for support abilities) · each level: bigger shield.
+
+- ⚡ **Haste** - attack + move speed for a few seconds after use · each level: longer.
+
+- 🔁 **Echo** - repeats once after 1 s at reduced strength · each level: stronger echo.
+<!-- POOL END -->
+
+&nbsp;
+
+## 🌳 Class tree paths
+
+Ideas - pick one.
+
+- **Trapper** - roots and nets last longer, rooted enemies take more.
+
+- **Sharpshooter** - long-range single-target damage, Marks stack harder.
+
+- **Stormbow** - Rapid Fire / Explosive Arrow multi-target.
+
+&nbsp;
+
+## 🟠 Open
+
+- Nothing open right now (bow + crossbow traversals stay vanilla for now - Skyy 2026-10-05).
+
+&nbsp;
+
+## 📜 Change log
+
+- 2026-10-05: weapon traversals stay VANILLA FOR NOW (Skyy: "they stay vanilla FOR NOW. they will change later.") - the proposals are ideas for later.
+
+- 2026-10-05: refined for easy reading (same facts, new layout).
+
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
+
 - 2026-10-04: file created; Pinning Shot + Mark combined, Rapid Fire / Explosive Arrow LOCKED (Skyy).

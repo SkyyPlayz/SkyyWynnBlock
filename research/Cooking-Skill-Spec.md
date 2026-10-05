@@ -170,7 +170,7 @@ w.execute(new CraftTask(e, u, w.getName(), rc, rule, units, SkillStore.pkey(u), 
 
 ### 3.3 SkyySacks /craft (the Crafting tab)
 
-- Per Skyy's 22:45 call, **cooking recipes leave /craft** (SkyySacks-Plan.md "table-only"). SkyySacks crafts by its own counted removal and gives `new ItemStack(outId, total)` itself; it never calls `CraftingManager`, so no engine event sees its crafts (VERIFIED `build_skyysacks_0.7.2.py` ~line 2389-2459).
+- Per Skyy's 22:45 call, **cooking recipes leave /craft** (docs/plans/SkyySacks-Plan.md "table-only"). SkyySacks crafts by its own counted removal and gives `new ItemStack(outId, total)` itself; it never calls `CraftingManager`, so no engine event sees its crafts (VERIFIED `build_skyysacks_0.7.2.py` ~line 2389-2459).
 - **Open point `[SKYY?]`:** does the **Campfire** bench accessory (still listed in the merged Crafting tab, HANDOFF section 5) count as "cooking recipes"? Recommendation: yes, remove its recipes from /craft too (the placed Campfire and the new Cooking Bench recipes cover them).
 - **If any cooking recipe stays in /craft**, SkyySacks needs two calls (for its next build; nothing is edited here):
   1. XP: it already calls the Alchemy spec's **`skill:fn:craftxp`** for every tab; `RecipeXp.classify` routes Cookingbench/Campfire recipes to Cooking. Nothing extra.
@@ -626,7 +626,7 @@ Use this only if the generated effect or interaction assets fail to load (sectio
 
 **Installed mods** (read-only): `More Foods.zip` (food items parenting `Template_Food`, custom food effects, vanilla-id override), `MMOSkillTree-1.6.0.jar` (`ConsumeItemEventSystem`), `Aetherhaven-3.1.3.jar` (`GaiaDraughtCraftSystem`, `GaiaDraughtService`, `ReputationUnlocksBootstrap` interaction registration, `JewelryNativeTooltipManager`), `SimpleEnchantments-1.2.0.jar` (`NativeTooltipManager`, `CraftRecipeCancelSystem`), `EndgameAndQoL5.4.1.jar` (`RecipeOverrideSystem`), `NotEnoughPotions-2.3.0.jar` (effect assets), plus a scan of every jar/zip for effect and interaction assets.
 
-**Our code and docs:** `SkyySkills/build_skyyskills_0.3.2.py`, `SkyySacks/build_skyysacks_0.7.2.py`, `SkyyAccessories/build_skyyaccessories_0.4.1.py`, `SkyyBazaar/build_skyybazaar_0.1.1.py`, `tools/skyybuild.py`, `tools/PROFILES-CONTRACT.md`, `HANDOFF.md`, `SkyySkills-Plan.md`, `SkyySacks-Plan.md`, `SkyyAccessories-Plan.md`, `research/Alchemy-Skill-Spec.md`, `research/Skill-Trees-Spec.md`.
+**Our code and docs:** `SkyySkills/build_skyyskills_0.3.2.py`, `SkyySacks/build_skyysacks_0.7.2.py`, `SkyyAccessories/build_skyyaccessories_0.4.1.py`, `SkyyBazaar/build_skyybazaar_0.1.1.py`, `tools/skyybuild.py`, `tools/PROFILES-CONTRACT.md`, `HANDOFF.md`, `docs/plans/SkyySkills-Plan.md`, `docs/plans/SkyySacks-Plan.md`, `docs/plans/SkyyAccessories-Plan.md`, `research/Alchemy-Skill-Spec.md`, `research/Skill-Trees-Spec.md`.
 
 **Web** (summarized in our own words):
 - Wynncraft Cooking: a cooked food's duration grows with Cooking level, from about 18 min for a level-1 cook to 48 min at the level-105 cap; its charges go 1/2/3 by level band; the level does not raise strength, only the material tier does (top tiers add about 40%). https://wynncraft.wiki.gg/wiki/Cooking (fetched 2026-09-23, VERIFIED). The closest real precedent for "cooking level makes food last longer".

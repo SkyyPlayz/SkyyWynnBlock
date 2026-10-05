@@ -141,7 +141,7 @@
 ---
 
 # PART 2 — THE MERGE DESIGN
-*Updated 2026-09-23 night to the voice-call locks. Where this part disagrees with a Part 1 "draft call," this part wins. Worksheet rows: `SkyWynn-Decisions.md`.*
+*Updated 2026-09-23 night to the voice-call locks. Where this part disagrees with a Part 1 "draft call," this part wins. Worksheet rows: `docs/plans/SkyWynn-Decisions.md`.*
 
 ## 2A. One unified skill list (SkyWynn Skills)
 SkyBlock's skill tree, kept ambitious, **plus** extras SkyBlock does not have. Trim later. Do not drop Smithing or Exploration in this pass.
@@ -256,7 +256,7 @@ These sit on the loop above. They do not replace it.
 ## Locked 2026-09-23 night, batch 2 (same call — does not replace batch 1)
 1. **Death penalty** stays **10–25%** coin loss.
 2. **Sacks / Magic Bags** stay, and they are **core QoL**.
-3. **Accessories + magical power** are **core**, not later-game. **2026-09-24:** each accessory gives its own buff and adds accessory power. Total power feeds one selectable buff. Warrior and Elementalist are locked examples. The full list and the numbers stay open (`SkyyAccessories-Plan.md`). A loadout saves the selected buff.
+3. **Accessories + magical power** are **core**, not later-game. **2026-09-24:** each accessory gives its own buff and adds accessory power. Total power feeds one selectable buff. Warrior and Elementalist are locked examples. The full list and the numbers stay open (`docs/plans/SkyyAccessories-Plan.md`). A loadout saves the selected buff.
 4. **IDs + reforges** are **core**. Every item has rarity and stats. Reforge swaps bonuses. **Tightened 2026-09-24** (`SkyyGear-Plan.md`): every gear item has a level requirement and a rarity tier; higher rarity means a better reforge roll range; mobs drop unidentified weapons and armor; Smithing level feeds a smithing rarity stat; combat gear copies Wynncraft; gathering armor is SkyBlock-style; wardrobe + loadouts are in (placeholders, not on the inventory screen). **Tightened again the same day (change note 8):** `/identify` now, an NPC later, coin cost scaling with rarity and level; drops of any rarity; set bonuses; some sets drop-only and some craft-only; an Equipment bar (name not final); loadouts save armor, that bar, and the selected Accessory Power buff. Rarity names, level type, the identify cost formula, the Equipment name, the full Power list and numbers stay open. Movement is locked (change note 10). Gathering is locked (change note 11). **Stats (change note 9):** the five Wynn skill points are not the gear sheet. Combat, defence, and mana are locked in `SkyyGear-Plan.md`. Loot and luck is finished (change notes 12 and 13). Pet Luck is keep later. Fear and Tracking are scrap. XP and wisdom is locked (change note 14). The Other table is scrap as gear IDs (change note 15). Oxygen and water swim speed are accessory effects, not a Respiration ID (change note 16). Accessory progression and enrichments are change notes 17–18. Custom starters and Ferocity caps are change note 20. The Combat 15 ladder is change note 21. Magical Power and the Combat 15 confirm are change note 22. The next blank table is stone powers. Do not block the build on it. No Power is scrap (change note 24). The default profile is Balance. Change note 25: combat gear first. Gathering gear is later. Class skill trees are Borderlands-style research, not designed yet.
 5. **Wynn's five elements + powders.** Powders replace SkyBlock runes.
 6. **Co-op islands:** players can share and visit each other's private islands.
@@ -269,9 +269,9 @@ These sit on the loop above. They do not replace it.
 13. **UI:** best placeholders, refined continuously. No buttons or custom UI on the inventory screen.
 14. **Magic system: open.** Wait on Hytale Chapter 1 runes before choosing the approach. Not locked.
 
-Worksheet: `SkyWynn-Decisions.md` (batch 1, then batch 2). Feature plans: `SkyyIslands-Plan.md`, `SkyyClasses-Plan.md`, `SkyySkills-Plan.md`, `SkyyMinions-Plan.md`, `SkyyDungeons-Plan.md`, `SkyyGuilds-Plan.md`, `SkyyAccessories-Plan.md`, `SkyySacks-Plan.md`.
+Worksheet: `docs/plans/SkyWynn-Decisions.md` (batch 1, then batch 2). Feature plans: `docs/plans/SkyyIslands-Plan.md`, `docs/plans/SkyyClasses-Plan.md`, `docs/plans/SkyySkills-Plan.md`, `docs/plans/SkyyMinions-Plan.md`, `docs/plans/SkyyDungeons-Plan.md`, `docs/plans/SkyyGuilds-Plan.md`, `docs/plans/SkyyAccessories-Plan.md`, `docs/plans/SkyySacks-Plan.md`.
 
-**STATUS:** Both call batches are written down, and the 2026-09-24 owner decisions are in `SkyWynn-Decisions.md` (change notes). Mod builds already in progress are an engineering journal in `HANDOFF.md`. SkyyClasses 0.1.2+ removed the paid class switch (`ALLOW_SWITCH=false`) and removed Berserker; the current jar is 0.1.4 and still has no Berserker. Design now wants Berserker back, status PENDING — future code, not a rebuild of the 0.1.1 spike. A new class is still a new profile. Unmarked decision-sheet rows are still open. The magic rows 9.1, 9.2, 9.4, and 9.5 are open on purpose.
+**STATUS:** Both call batches are written down, and the 2026-09-24 owner decisions are in `docs/plans/SkyWynn-Decisions.md` (change notes). Mod builds already in progress are an engineering journal in `HANDOFF.md`. SkyyClasses 0.1.2+ removed the paid class switch (`ALLOW_SWITCH=false`) and removed Berserker; the current jar is 0.1.4 and still has no Berserker. Design now wants Berserker back, status PENDING — future code, not a rebuild of the 0.1.1 spike. A new class is still a new profile. Unmarked decision-sheet rows are still open. The magic rows 9.1, 9.2, 9.4, and 9.5 are open on purpose.
 
 *Sources: Hypixel wiki (wiki.hypixel.net — Skills, Auction House, Collections, Minions, Slayer, Crafting/Supercraft), Wynncraft wiki (wynncraft.wiki.gg — Ability Tree, Professions, Crafting, Raids, Lootrunning, World Events, Guilds, Version 2.1).*
 

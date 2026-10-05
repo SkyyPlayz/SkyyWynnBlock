@@ -30,7 +30,7 @@ and Auctions 0.1 are tested first. A bug found after the merge is then a merge b
    11 mods that call coins need no change.
 3. **Same command names and admin permission nodes** (`skyycoins.admin`, ...), so a server's permission setup keeps working.
 4. **Coins start first; every other part starts inside its own try/catch.** A broken bazaar switches off only the bazaar, never coins.
-5. **An on/off switch per part** (bazaar, auction house, bank, NPC shops) in the config AND in game (see `SkyWynn-Server-Setup-Plan.md`),
+5. **An on/off switch per part** (bazaar, auction house, bank, NPC shops) in the config AND in game (see `docs/plans/SkyWynn-Server-Setup-Plan.md`),
    for servers that want coins without a market.
 6. **Deploy:** `tools/deploy_set.py` gets a RETIRED list that switches off the old SkyyCoins, SkyyBank, SkyyBazaar and SkyyAuctions keys in
    the world config. Today it only switches off older versions of the SAME mod, so without this both would load: duplicate commands and

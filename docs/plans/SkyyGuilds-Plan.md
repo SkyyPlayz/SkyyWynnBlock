@@ -1,5 +1,5 @@
 # SkyyGuilds — plan
-*Design lock 2026-09-23 night. See `SkyWynn-Master-Plan.md` Part 2B step 8 and 2E (P1, P7), and `SkyWynn-Decisions.md` rows 8.1–8.3, 10.25, 10.27.*
+*Design lock 2026-09-23 night. See `docs/plans/SkyWynn-Master-Plan.md` Part 2B step 8 and 2E (P1, P7), and `docs/plans/SkyWynn-Decisions.md` rows 8.1–8.3, 10.25, 10.27.*
 
 ## Where they sit
 
@@ -26,9 +26,9 @@ That is the core-loop scope. This plan does not add ranks, perks, or a guild isl
 
 ## What stays later
 
-**Territory war** (row 8.3) stays a later, public-server endgame system. It is side content in P7, with raids and the other non-spine systems (`SkyyDungeons-Plan.md`). Slayers are core loop, not in that pile. Pulling guilds forward does not pull the war map forward.
+**Territory war** (row 8.3) stays a later, public-server endgame system. It is side content in P7, with raids and the other non-spine systems (`docs/plans/SkyyDungeons-Plan.md`). Slayers are core loop, not in that pile. Pulling guilds forward does not pull the war map forward.
 
-The hub town is the shared social point (`SkyyIslands-Plan.md`). Guilds and parties gather there. The leveling path is still the zone island chain.
+The hub town is the shared social point (`docs/plans/SkyyIslands-Plan.md`). Guilds and parties gather there. The leveling path is still the zone island chain.
 
 ## Status 2026-09-24 (built, next deploy)
 SkyyGuilds 0.1 = the core-loop scope: /guild create|tag|invite|accept|leave|kick|promote|demote|disband|info, /gc guild chat, guild bank

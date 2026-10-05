@@ -29,7 +29,7 @@
 | Source | Decision | How this spec applies it |
 |---|---|---|
 | Skyy focus call (HANDOFF section 1) | "Alchemy (build it)" | Full skill: slot, XP, perks, page |
-| Skyy, 22:45 log + `SkyySkills-Plan.md` + `SkyySacks-Plan.md` (commit 67ed1ea) | Alchemy is **table use only**. The Alchemy Bench accessory and the /craft Alchemy tab go away. The vanilla table draws from the sacks | The vanilla bench is the main source. The bridge covers any Alchemy recipe SkyySacks still crafts (the 0.7.2 tab, the Collections tab) at no cost |
+| Skyy, 22:45 log + `docs/plans/SkyySkills-Plan.md` + `docs/plans/SkyySacks-Plan.md` (commit 67ed1ea) | Alchemy is **table use only**. The Alchemy Bench accessory and the /craft Alchemy tab go away. The vanilla table draws from the sacks | The vanilla bench is the main source. The bridge covers any Alchemy recipe SkyySacks still crafts (the 0.7.2 tab, the Collections tab) at no cost |
 | Same commit | "Smelting in the furnace (vanilla Furnace and the SkyySacks Furnace tab) gives Smithing XP" | The Smithing row gets smelting XP now (SkyySacks tab). The vanilla Furnace hook is in `research/Smithing-Smelting-Spec.md` section 3 (see 10.3) |
 | Workflow brief | "Smithing row with no XP source yet" | **Conflict:** Skyy's newer plan row adds smelting, and Skyy's word wins. To match the brief instead, set `smithing.smelt.enabled=false` |
 | Design lock | No shared Combat skill | Slot 3 is retired from the UI; storage is kept (section 9) |
@@ -727,7 +727,7 @@ Every question below already has a default in section 12, so the build is not bl
 - `SkyySacks/build_skyysacks_0.7.2.py`
 - `SkyyMenu/build_skyymenu_0.1.2.py`
 - `tools/PROFILES-CONTRACT.md`
-- `HANDOFF.md`, `SkyySkills-Plan.md`, `SkyySacks-Plan.md`
+- `HANDOFF.md`, `docs/plans/SkyySkills-Plan.md`, `docs/plans/SkyySacks-Plan.md`
 - Live log `Saves/HUD mod/mods/Skyy_SkyySacks/crafts.log`
 
 **Web** (summarized in our own words):

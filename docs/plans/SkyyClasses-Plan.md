@@ -1,9 +1,9 @@
 # SkyyClasses — plan
-*Design lock 2026-09-23 night. Does not rebuild the mod. See `SkyWynn-Master-Plan.md` Part 2A, 2E (P4), and Part 3, and `SkyWynn-Decisions.md` rows 1.5, 2.5, 6.1.*
+*Design lock 2026-09-23 night. Does not rebuild the mod. See `docs/plans/SkyWynn-Master-Plan.md` Part 2A, 2E (P4), and Part 3, and `docs/plans/SkyWynn-Decisions.md` rows 1.5, 2.5, 6.1.*
 
 ## Roster
 
-Wynn's five stay, plus Priest. **Berserker and Priest are locked (Skyy, 2026-09-25, `SkyWynn-Decisions.md` "Change notes (2026-09-25)") and live in SkyyClasses 0.1.6:** Berserker (weapon skill Fury) owns axes, battleaxes, maces and clubs; Priest (new, weapon skill Divinity) is an AoE healing support class that owns wands and spellbooks. The 2026-09-24 PENDING status is over.
+Wynn's five stay, plus Priest. **Berserker and Priest are locked (Skyy, 2026-09-25, `docs/plans/SkyWynn-Decisions.md` "Change notes (2026-09-25)") and live in SkyyClasses 0.1.6:** Berserker (weapon skill Fury) owns axes, battleaxes, maces and clubs; Priest (new, weapon skill Divinity) is an AoE healing support class that owns wands and spellbooks. The 2026-09-24 PENDING status is over.
 
 | Class | When | Weapon skill | Weapons already named |
 |---|---|---|---|
@@ -17,7 +17,7 @@ Wynn's five stay, plus Priest. **Berserker and Priest are locked (Skyy, 2026-09-
 
 The 2026-09-23 "no Berserker" line is reversed. Archetype count and ability-tree size stay open on the decision sheet (6.2–6.4). Rows 9.1–9.2 are the **open magic thread**, not a rune-gating lock. This plan does not pick new numbers for them.
 
-Ability keys are the standing input note from 2026-09-21 (no click-combos). **The magic system is an open thread** (batch 2): wait to see how Hytale Chapter 1 handles runes before deciding how class abilities are built. Do not treat "abilities are engine runes" as locked. Wynn's five elements and powders are gear (`SkyWynn-Decisions.md` 5.7, 5.8), separate from that thread.
+Ability keys are the standing input note from 2026-09-21 (no click-combos). **The magic system is an open thread** (batch 2): wait to see how Hytale Chapter 1 handles runes before deciding how class abilities are built. Do not treat "abilities are engine runes" as locked. Wynn's five elements and powders are gear (`docs/plans/SkyWynn-Decisions.md` 5.7, 5.8), separate from that thread.
 
 ## How you pick a class
 

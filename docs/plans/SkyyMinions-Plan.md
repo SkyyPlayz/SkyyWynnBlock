@@ -1,11 +1,11 @@
 # SkyyMinions — plan
 
 > **Skyy's decisions 2026-10-02 win over this draft:** OPEN-QUESTIONS.md, section "Q&A with Skyy 2026-10-02", rounds 7.
-*Design lock 2026-09-23 night. See `SkyWynn-Master-Plan.md` Part 2B and 2E (P2), and `SkyWynn-Decisions.md` rows 3.3–3.7.*
+*Design lock 2026-09-23 night. See `docs/plans/SkyWynn-Master-Plan.md` Part 2B and 2E (P2), and `docs/plans/SkyWynn-Decisions.md` rows 3.3–3.7.*
 
 ## Where they live
 
-Minions live on the **private island** (`SkyyIslands-Plan.md`). That island is the progression home and the free building space. Minions are one of the progression systems there, next to upgrades, co-op, and size tiers.
+Minions live on the **private island** (`docs/plans/SkyyIslands-Plan.md`). That island is the progression home and the free building space. Minions are one of the progression systems there, next to upgrades, co-op, and size tiers.
 
 ## How required they are
 

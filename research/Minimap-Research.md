@@ -1,6 +1,6 @@
 # Minimap research: BetterMap + Cartographer (2026-10-03)
 
-Request (Skyy, 2026-10-03, OPEN-QUESTIONS line 402): add the Cartographer minimap, but last time BetterMap + Cartographer together were
+Request (Skyy, 2026-10-03, docs/answered/ui.md "REQUEST 2026-10-03 (Skyy): MINIMAP"): add the Cartographer minimap, but last time BetterMap + Cartographer together were
 "hella laggy" because "it loads the maps twice" -> make a "Bettermaps+minimap mod that adds a minimap that piggybacks off of better maps".
 Roster row 20 already plans **SkyyMap**: ONE renderer for full map + minimap + party + quest layers.
 

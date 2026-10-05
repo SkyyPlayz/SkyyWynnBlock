@@ -1,7 +1,7 @@
 # Starter shard chain - paper layout
 
 Cloud draft, 2026-10-03. Paper design only; no prefab, no world edit. Matches the 12 quests in `research/cloud/Story-Script-Draft.md` and the lock **R8 (2026-10-02): the first gap has a broken bridge you repair; the later gaps you
-build across with your own blocks**. Engine facts used: a chunk is 32 blocks (VERIFIED, `SkyyIslands-Plan.md`); the island template box defaults to 3 x 3 chunks (96 x 96 blocks), y 96-191 (LOCKED 2026-09-25);
+build across with your own blocks**. Engine facts used: a chunk is 32 blocks (VERIFIED, `docs/plans/SkyyIslands-Plan.md`); the island template box defaults to 3 x 3 chunks (96 x 96 blocks), y 96-191 (LOCKED 2026-09-25);
 the island world is a copied template, so extra shards live in the same world (lore note). Everything about spawns, protection and coordinates beyond that is a proposal.
 
 ## 0. At a glance

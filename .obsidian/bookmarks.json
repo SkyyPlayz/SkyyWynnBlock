@@ -1,0 +1,58 @@
+{
+  "items": [
+    {
+      "type": "file",
+      "ctime": 1759622400000,
+      "path": "RESUME.md",
+      "title": "1 Resume - where we are + next"
+    },
+    {
+      "type": "file",
+      "ctime": 1759622400000,
+      "path": "INDEX.md",
+      "title": "2 Index - where everything is"
+    },
+    {
+      "type": "file",
+      "ctime": 1759622400000,
+      "path": "OPEN-QUESTIONS.md",
+      "title": "3 Open questions"
+    },
+    {
+      "type": "file",
+      "ctime": 1759622400000,
+      "path": "TEST-CHECKLIST.md",
+      "title": "4 Test next"
+    },
+    {
+      "type": "file",
+      "ctime": 1759622400000,
+      "path": "HANDOFF.md",
+      "title": "5 Handoff - versions + rules"
+    },
+    {
+      "type": "file",
+      "ctime": 1759622400000,
+      "path": "PROJECT-RULES.md",
+      "title": "6 Project rules"
+    },
+    {
+      "type": "file",
+      "ctime": 1759622400000,
+      "path": "research/classes/README.md",
+      "title": "7 Classes"
+    },
+    {
+      "type": "file",
+      "ctime": 1759622400000,
+      "path": "docs/answered/README.md",
+      "title": "8 Answered questions"
+    },
+    {
+      "type": "file",
+      "ctime": 1759622400000,
+      "path": "docs/log/2026-10.md",
+      "title": "9 Log - this month"
+    }
+  ]
+}

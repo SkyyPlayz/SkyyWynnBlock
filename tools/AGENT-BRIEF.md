@@ -3,9 +3,10 @@
 Project: SkyWynn, Skyy's public Hytale server mods (Hypixel SkyBlock + Wynncraft) as standalone "Skyy*" mods.
 Folder: C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT (git repo). Skyy uses they/them.
 
-Read first: HANDOFF.md (the BUILDER / STATUS block at the top, sections 1-3, and the newest section-6 log lines - especially the
-2026-09-28 line about generated scripts edited in commit ab75b6c), SkyWynn-Decisions.md 'Change notes (2026-09-25)', OPEN-QUESTIONS.md
-(every "LOCKED 2026-09-25 (Skyy)" line is a decision to follow), tools/CONFIG-CONTRACT.md (admin settings kit tools/skyycfg.py -> SkyyMenu
+Read first (map of every file: INDEX.md): RESUME.md ('Never forget': the 4 generated scripts Skyy edited in commit ab75b6c), HANDOFF.md
+(section 1 versions + rollback floors, section 2 UI rules, section 3 COMMAND RULES), the newest lines of docs/log/<YYYY-MM>.md that name
+your mod, docs/plans/SkyWynn-Decisions.md 'Change notes (2026-09-25)', docs/answered/<topic>.md for your mod (every LOCKED / ANSWERED
+line is a decision to follow; grep your mod's name), tools/CONFIG-CONTRACT.md (admin settings kit tools/skyycfg.py -> SkyyMenu
 Server Setup), research/Settings-Spec.md 1.2-1.3 (player switches), tools/PROFILES-CONTRACT.md. The LIVE set = tools/deploy_set.py SET.
 
 ## Toolchain
@@ -41,8 +42,9 @@ Server Setup), research/Settings-Spec.md 1.2-1.3 (player switches), tools/PROFIL
   folders under tools/dev/scratch/ - other agents run in parallel and their live work sits there (2026-10-02: a cleanup wiped
   several running agents' folders).
 - Build with plain python (must end 'assembled ...jar'), then python tools/ci/lint.py (0 fails).
-- Do not git commit. Edit ONLY the files your task names. Never edit HANDOFF.md, TEST-CHECKLIST.md, DESIGN-STATUS.md, OPEN-QUESTIONS.md,
-  tools/deploy_set.py, SkyyGear-Plan.md or SkyyGear-Stat-Catalog.md (Skyy's design docs are read-only).
+- Do not git commit. Edit ONLY the files your task names. Never edit RESUME.md, INDEX.md, HANDOFF.md, TEST-CHECKLIST.md, OPEN-QUESTIONS.md,
+  anything under docs/ (answered, log, tests, handoff, plans, archive), tools/deploy_set.py, SkyyGear-Plan.md or SkyyGear-Stat-Catalog.md
+  (Skyy's design docs are read-only).
 - Other builders work in parallel on other mods; do not touch their files.
 
 ## Return

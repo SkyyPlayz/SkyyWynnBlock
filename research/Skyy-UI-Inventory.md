@@ -42,7 +42,7 @@ buttons); "vanilla" = a page built from the game's own frame textures, styles an
 8. **Engine popups are already vanilla and need no restyle**: `NotificationUtil.sendNotification` (Classes, Gear), `EventTitleUtil` banners + sounds
    (Exploration). Item tooltips / qualities are asset JSON or `ItemGridSlot.setDescription` markup (Menu, Gear, Sacks, Accessories) and are outside this inventory
    except where noted.
-9. **The economy trio is scheduled to merge**: Coins + Bank + Bazaar + Auctions become SkyyEconomy 0.1 (RESUME step 5, `SkyyEconomy-Plan.md`). Restyle their
+9. **The economy trio is scheduled to merge**: Coins + Bank + Bazaar + Auctions become SkyyEconomy 0.1 (RESUME step 5, `docs/plans/SkyyEconomy-Plan.md`). Restyle their
    pages on the shared kit anyway (the merge can copy them), but keep those builds thin.
 10. **Patch-based rule for the restyle versions.** 14 of the 20 mods derive by patch script (`tools/<mod>_<ver>_patch.py`, edit the patch, never the generated
     file): a restyle needs a NEW patch that `rep()`-replaces whole page blocks with asserts. Copy+edit mods (no patch): Party, Bank, Exploration, Gear, Vault, Ranks.

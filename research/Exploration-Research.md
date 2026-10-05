@@ -181,4 +181,4 @@ Wynncraft:
 - https://wynncraft.wiki.gg/wiki/Version_2.0.3
 
 Our own:
-- HANDOFF.md sections 1 and 3, SkyySkills-Plan.md, SkyWynn-Master-Plan.md (row "Exploration collectibles"), SkyWynn-Decisions.md (rows 2.12, 7.11), SkyyIslands-Plan.md.
+- HANDOFF.md sections 1 and 3, docs/plans/SkyySkills-Plan.md, docs/plans/SkyWynn-Master-Plan.md (row "Exploration collectibles"), docs/plans/SkyWynn-Decisions.md (rows 2.12, 7.11), docs/plans/SkyyIslands-Plan.md.

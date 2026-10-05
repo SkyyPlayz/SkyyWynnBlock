@@ -9,8 +9,8 @@ Input: the two read-only research briefs of 2026-10-01 (web, and engine: release
 plus the World Gen V2 mods installed in `UserData/Mods`). Re-checked for this plan, release only: `Server/HytaleGenerator/WorldStructures/Portals_Oasis.json`
 and `Density/Map_Portals.json` (a warped `Distance` island with void around it already ships in **release**), and the vanilla
 `Server/Instances/Regions/Zone1_Plains1..Zone4_Volcanic1` instances. The plan has to fit these locks and plans:
-SkyWynn-Decisions.md (batch 1 #2, change notes 2026-09-24 #4, row 7.1), SkyyIslands-Plan.md, DESIGN-STATUS.md open question 12,
-research/Mob-Levels-Plan.md + Mob-Levels-Research.md, research/Gear-Levels-Wynn-Spec.md, SkyyExploration-Plan.md, and the pacing answer
+docs/plans/SkyWynn-Decisions.md (batch 1 #2, change notes 2026-09-24 #4, row 7.1), docs/plans/SkyyIslands-Plan.md, docs/archive/DESIGN-STATUS.md open question 12,
+research/Mob-Levels-Plan.md + Mob-Levels-Research.md, research/Gear-Levels-Wynn-Spec.md, docs/plans/SkyyExploration-Plan.md, and the pacing answer
 in OPEN-QUESTIONS.md (2026-10-01: flatten the class skill curve).
 
 *Reviewed 2026-10-01 by a critic + editor pass (engine facts re-read from `Assets.zip` and `HytaleServer.jar`, read only). Section 9 lists
@@ -75,7 +75,7 @@ Rules that shape this plan:
 - **No painted-map node.** The 81 density types include no image or bitmap node (VERIFIED). Hand-drawn layouts must be built from shapes
   (positions lists, cells, ellipsoids) or a custom Java density type (engine-internal, untested).
 - **Height is 320 blocks, y 0-319** (`ChunkUtil.HEIGHT` 320, `MIN_Y` 0; VERIFIED). Entities below y -32 die (`ChunkUtil.MIN_ENTITY_Y` -32,
-  VERIFIED; SkyyIslands-Plan.md 0.4 note).
+  VERIFIED; docs/plans/SkyyIslands-Plan.md 0.4 note).
 - **Mobs follow the environment**, not the biome: `Server/NPC/Spawn/World/**` files list `"Environments":[...]` with mob ids and
   weights (`WorldNPCSpawn`, `WorldSpawnManager`; VERIFIED). Vanilla already tiers them: `Wander_Zone1_Tier1` = `Env_Zone1_Plains`
   (Skeleton_Fighter), `Tier2` = Forests / Mountains / Autumn (+ Burnt_Praetorian_Wander), `Tier3` = Swamps / Azure (+ Skeleton_Mage,
@@ -188,7 +188,7 @@ the rim is where Lv 1-2 players fight and knockback would otherwise drop them in
 - **Inside a ring, the zone's Hytale biomes appear as patches** (a `PositionsCellNoise` value added on top of the ring value; 3.4).
   The biome's rarity rating (RR) orders the rings (rarer biomes sit further in); ties inside the same RR are placed by hand in section 4.
 - **Landing point:** south rim, flat clearing, later the landing town (free warp, SkyyExploration D1).
-- **Core summit:** the zone's hardest biome, the guardian arena and the story-dungeon entrance (Decisions batch 1 #7, SkyyDungeons-Plan.md),
+- **Core summit:** the zone's hardest biome, the guardian arena and the story-dungeon entrance (Decisions batch 1 #7, docs/plans/SkyyDungeons-Plan.md),
   placed by a Prefab prop at a fixed position (0, y, 0).
 - **Exploration:** each ring is a named discovery (the V2 stand-in for A6 zone discovery, which cannot fire on V2). SkyyExploration spots are
   circles (position + radius), so the summit and the landing town can be normal spots, but a ring is an annulus: ring discoveries must be
@@ -626,6 +626,6 @@ deleted afterwards):
   `Assignments/Boreal1/Boreal1_Hedera_Boulders.json`, `Server/Instances/Regions/Zone1_Plains1/instance.bson`, `Server/Environments/**`, `Server/NPC/Spawn/World/**`,
   `Server/World/Default/Zones.json` + `Zones/*/Tile.*.json`, `Server/World/Void/`, `Server/Entity/MovementConfig/Default.json`, `Server/Languages/en-US/server.lang`),
   the same under `install\pre-release\...` (`Portals_Goblins.json`), `Server\HytaleServer.jar` (classes named above), `UserData\Mods\` (installed V2 mods)
-- Repo: SkyWynn-Decisions.md, SkyyIslands-Plan.md, DESIGN-STATUS.md (question 12), SkyyExploration-Plan.md, OPEN-QUESTIONS.md (2026-10-01),
+- Repo: docs/plans/SkyWynn-Decisions.md, docs/plans/SkyyIslands-Plan.md, docs/archive/DESIGN-STATUS.md (question 12), docs/plans/SkyyExploration-Plan.md, OPEN-QUESTIONS.md (2026-10-01),
   RESUME.md 3i, research/Mob-Levels-Plan.md, research/Mob-Levels-Research.md, research/Gear-Levels-Wynn-Spec.md,
   research/PreRelease-Compat-Report.md, research/Island-Settings-Spec.md, SkyyIslands/build_skyyislands_0.5.5.py

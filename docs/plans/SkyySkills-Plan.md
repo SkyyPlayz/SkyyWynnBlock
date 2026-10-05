@@ -1,5 +1,5 @@
 # SkyySkills — plan
-*Design lock 2026-09-23 night. See `SkyWynn-Master-Plan.md` Part 2A and Part 3, and `SkyWynn-Decisions.md` section 2.*
+*Design lock 2026-09-23 night. See `docs/plans/SkyWynn-Master-Plan.md` Part 2A and Part 3, and `docs/plans/SkyWynn-Decisions.md` section 2.*
 
 ## The list
 
@@ -9,11 +9,11 @@ Keep the full SkyBlock-style tree, **plus** extras. Trim later. Do not drop Smit
 **Artisan:** Smithing (ingredient crafting + reforging — headline, keep; Smithing level raises smithing rarity, 2026-09-24), Enchanting, Alchemy, Cooking (its own skill for now)
 **Life / meta:** Taming, Carpentry, Exploration (keep), Hunting, Runecrafting (cosmetic), Social (cosmetic)
 **Combat:** no shared Combat skill. See below.
-**Later, not the spine:** Dungeoneering as a skill (`SkyWynn-Decisions.md` 2.14). Dungeons themselves are story beats plus a capstone (`SkyyDungeons-Plan.md`), not a skill you have to grind to level.
+**Later, not the spine:** Dungeoneering as a skill (`docs/plans/SkyWynn-Decisions.md` 2.14). Dungeons themselves are story beats plus a capstone (`docs/plans/SkyyDungeons-Plan.md`), not a skill you have to grind to level.
 
 **HOTM-style mini-trees** are in, and each one is **tied to its skill**. Mining levels unlock Mining's tree. The same pattern for the other gathering skills. They are not locked to a zone or a mine you have to stand in. Mining can still be the first tree we build (row 2.13).
 
-**Farming** stays a skill. It happens on the private island and on the zone islands. **The Garden is parked** (2026-09-24, `SkyyIslands-Plan.md`): the dedicated farming island is on the back burner, so it is not where farming lives for now.
+**Farming** stays a skill. It happens on the private island and on the zone islands. **The Garden is parked** (2026-09-24, `docs/plans/SkyyIslands-Plan.md`): the dedicated farming island is on the back burner, so it is not where farming lives for now.
 
 Level cap 100 for every skill is an existing engineering lock in `HANDOFF.md`. This plan does not retune per-level perks.
 
@@ -30,7 +30,7 @@ Level cap 100 for every skill is an existing engineering lock in `HANDOFF.md`. T
 | Archery, Swordsmanship, Sorcery | **NOW** (live) | Class weapon skills |
 | Smithing | **KEEP** | Leveled by reforging and adding powders, **and by smelting in the furnace** (vanilla Furnace + the SkyySacks Furnace tab). **2026-09-24:** higher Smithing level = higher **smithing rarity**, which raises the chance of crafting a higher-rarity item. Not built |
 | Alchemy | **BUILD NOW** | **Table use only**: the Alchemy Bench accessory is removed; the vanilla Alchemy Bench draws ingredients from your sacks |
-| Exploration | **BUILD NOW** (SkyyExploration) | Skyy's call 2026-09-24 in SkyyExploration-Plan.md: stamina + coins per level, world chests, chest luck, map coverage, zone discovery, titles, its own tree; server-only parts later |
+| Exploration | **BUILD NOW** (SkyyExploration) | Skyy's call 2026-09-24 in docs/plans/SkyyExploration-Plan.md: stamina + coins per level, world chests, chest luck, map coverage, zone discovery, titles, its own tree; server-only parts later |
 | Skill tree per gathering skill | **YES** | Mining, Foraging, Farming (Fishing's tree waits with Fishing) |
 | Fishing | SHELF | |
 | Enchanting | SHELF | Hytale has no enchanting |
@@ -58,7 +58,7 @@ Class Level (ability points) is not this skill. Per-class combat XP is still sto
 
 ### Divinity XP from healing (SkyySkills 0.4.4, locked 2026-09-25)
 
-Priest is the one weapon skill that also pays XP outside kills: healing a party member (not yourself) with a Priest weapon hit pays **0.2 Divinity XP per HP healed**, capped at **300 XP a minute** per Priest (both editable in Server Setup). Kills still pay Divinity like every other class skill. The heal itself (SkyyClasses' placeholder AoE party heal) always happens even if this XP is switched off. See `SkyyClasses-Plan.md` and `research/Classes-Berserker-Priest-Spec.md` for the heal mechanic itself — this skill only reacts to it.
+Priest is the one weapon skill that also pays XP outside kills: healing a party member (not yourself) with a Priest weapon hit pays **0.2 Divinity XP per HP healed**, capped at **300 XP a minute** per Priest (both editable in Server Setup). Kills still pay Divinity like every other class skill. The heal itself (SkyyClasses' placeholder AoE party heal) always happens even if this XP is switched off. See `docs/plans/SkyyClasses-Plan.md` and `research/Classes-Berserker-Priest-Spec.md` for the heal mechanic itself — this skill only reacts to it.
 
 Gathering skills do not care which class you are.
 

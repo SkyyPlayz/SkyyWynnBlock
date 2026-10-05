@@ -2,7 +2,7 @@
 
 Cloud draft, 2026-10-03. Paper design; nothing built. Source: `research/Isles-of-the-Void-Lore.md` (Skyy 2026-10-01: about 20 million coins per in-game day plus
 interest, "something outrageous", payable, the Receipt / "Paid in Full" ending, optional prestige - approved, "thats beautiful! its perfect"). Money facts read from
-`research/Server-Setup-Research.md` (starter grant 10,000 coins, Bank 2% per real hour up to 10,000,000 principal, Bazaar base prices) and `SkyyEconomy-Plan.md`.
+`research/Server-Setup-Research.md` (starter grant 10,000 coins, Bank 2% per real hour up to 10,000,000 principal, Bazaar base prices) and `docs/plans/SkyyEconomy-Plan.md`.
 All numbers are placeholders to be set from a real income measurement (section 3).
 
 ## 0. The one-line design

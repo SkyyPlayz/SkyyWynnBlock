@@ -429,7 +429,7 @@ New total: 26 + 2 + 7 + 5 + 1 = **41 rows**; the T:4172 assert becomes 26 exact 
 - `tools/AGENT-BRIEF.md`; T, S, G (0.2 and the 0.2.1 header), K; `SkyyClasses/build_skyyclasses_0.1.10.py` (bridge keys, no-class text); `SkyyCooking/build_skyycooking_0.1.3.py`; `SkyyAccessories/build_skyyaccessories_0.5.2.py`.
 - Spec1, Runes, Audit; `research/PreRelease-Compat-Report.md`; `research/Crossbow-Loaded-Spec.md`; `research/Smithing-Smelting-Spec.md`; `research/Alchemy-Skill-Spec.md`; `research/Gear-Levels-Wynn-Spec.md` (grep); the parallel `research/Loot-Unid-Spec.md` (SkyyGear 0.2.3) and `research/Tool-Levels-Spec.md` (0.2.2), read for overlaps with sections 3 and 12.
 - `research/cloud/Class-Skill-Curve-Proposal.md`; `research/cloud/Class-Abilities-Draft.md`.
-- `OPEN-QUESTIONS.md`; `SkyWynn-Decisions.md`; `SkyyGear-Plan.md` and `SkyyGear-Stat-Catalog.md` (read-only); `SkyyClasses-Plan.md`; `RESUME.md`; `tools/CONFIG-CONTRACT.md` (tables).
+- `OPEN-QUESTIONS.md`; `docs/plans/SkyWynn-Decisions.md`; `SkyyGear-Plan.md` and `SkyyGear-Stat-Catalog.md` (read-only); `docs/plans/SkyyClasses-Plan.md`; `RESUME.md`; `tools/CONFIG-CONTRACT.md` (tables).
 - `tools/skyyui.py`; `tools/deploy_set.py`; both `Assets.zip` files (read-only id check); the Wynncraft wiki page and API (fetched 2026-10-02).
 
 ## 16. Critic pass 2026-10-02: what was corrected

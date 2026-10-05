@@ -1,9 +1,9 @@
 # SkyyDungeons — plan
-*Design lock 2026-09-23 night. See `SkyWynn-Master-Plan.md` Part 2B steps 7–9 and 2E (P6–P7), and `SkyWynn-Decisions.md` rows 6.7, 7.4, 7.5, 7.6.*
+*Design lock 2026-09-23 night. See `docs/plans/SkyWynn-Master-Plan.md` Part 2B steps 7–9 and 2E (P6–P7), and `docs/plans/SkyWynn-Decisions.md` rows 6.7, 7.4, 7.5, 7.6.*
 
 ## The spine
 
-Dungeons on the way up are **story beats** woven through the **island chain** (`SkyyIslands-Plan.md`).
+Dungeons on the way up are **story beats** woven through the **island chain** (`docs/plans/SkyyIslands-Plan.md`).
 
 - The chain is one floating island per Hytale zone, with biomes that ramp difficulty as you cross it.
 - A zone's story-beat dungeon is part of crossing that island, not a separate leveling world.
