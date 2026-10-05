@@ -106,6 +106,10 @@ Obsidian vault - `docs/OBSIDIAN.md`):
 
 - Pull before pushing: `git pull --rebase --autostash` (the design partner pushes too). Commit and push after every meaningful change.
 - Commits use the repo-local GitHub noreply identity that is already configured (Skyy's personal email must not be published).
+- **Pull requests: merge them yourself when ready (Skyy 2026-10-05: "go ahead to auto merge when things are ready. Do all the proper
+  checks first.")** Ready = CI green on the head commit, every review bot finished and each finding fixed (or answered when it is not a
+  bug), no merge conflict, and the local checks pass (`python tools/ci/lint.py` 0 fails, `python tools/docs_check.py` OK for docs
+  changes). Merge with a merge commit, then record it (log line + RESUME) per the hand-off rule.
 
 ## 7. Working with Skyy
 

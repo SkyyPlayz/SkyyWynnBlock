@@ -28,4 +28,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - `/r` (reply), `/hub` (SkyyIslands) and `/p` (party) take over vanilla shortcuts (/redo, CreativeHub's /hub, /prefab's alias) on purpose.
 
 ## New answers (2026-10-05 on - newest last, beats everything above)
-
+- LOCKED 2026-10-05 (Skyy): "You have to go ahead to auto merge when things are ready. Do all the proper checks first." -> Claude merges its own pull requests once ready: CI green on the head, every review bot finished and each finding fixed or answered, no merge conflict, local checks pass (lint 0 fails; docs_check OK for docs changes); merge commit, then a log line + RESUME (PROJECT-RULES section 6).
