@@ -15,7 +15,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyIslands | 0.5.5 | private islands, co-op, visitors, island settings, /hub |
 | SkyyBazaar | 0.1.4 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier |
 | SkyyGear | 0.2.3 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear |
-| SkyySkills | 0.4.15 | skills + class weapon skills, XP curves, Mana, Acrobatics |
+| SkyySkills | 0.4.16 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics |
 | SkyyAccessories | 0.5.5 | Accessory Bag, booster accessories, Lantern |
 | SkyyClasses | 0.1.11 | class pick, class kits, Priest heal |
 | SkyyMenu | 0.3.7 | SkyWynn Menu, player Settings, Server Setup (admin) |

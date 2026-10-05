@@ -17,8 +17,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 - LIVE: the 26-mod SET in HANDOFF section 1 (= `tools/deploy_set.py`); last deploy 2026-10-05 13:20 -0600 (backup `backups\deploy-20261005-1320`):
   SkyyAccessories 0.5.5 Lantern edges, SkyyCooking 0.1.6 (XP by difficulty, Flour 140), SkyyExploration 0.2.3 page guard, SkyyMenu 0.3.7; 13:27 SkyyCollections 0.2.6 (backup deploy-20261005-1327). 13:58 SkyyGear 0.2.3 craft Smithing XP (backup deploy-20261005-1358).
   14:51 SkyyBazaar 0.1.4 progression prices (backup deploy-20261005-1451). 15:16 SkyyParty 0.1.7 + SkyyEssentials
-  0.1.8 TPA buttons (backup deploy-20261005-1516). RUNNING: SkyySkills 0.4.16 builder (Mining curve +
-  leaderboards) - review before any deploy.
+  0.1.8 TPA buttons (backup deploy-20261005-1516). 17:24 SkyySkills 0.4.16 Mining curve +
+  leaderboards (backup deploy-20261005-1724). Nothing running.
   New helpers: `tools/ci/crosscheck.py` (the cross-check), `tools/tidy_local.py`.
 - USAGE: weekly 94% at 2026-10-05 18:40 UTC (5-hour 0%); resets Tue 2026-10-06 15:00 UTC - no big rounds before it (Skyy: stop near 95%).
 - DOCS consolidated 2026-10-05 (PR #6, merged; `python tools/docs_check.py` proves no old line was lost); the old long RESUME is
@@ -29,7 +29,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 
 ## Next, in order (Skyy's queue 2026-10-04; full detail of each item: `docs/answered/<topic>.md` + the old RESUME)
 1. DONE 2026-10-05: SkyyGear 0.2.3 (craft Smithing XP + F1 + F7) - waiting for Skyy's test. Next Gear: tool levels = 0.2.4, the loot round = 0.2.5.
-2. SkyySkills 0.4.16 - Mining's own slower level list 10 + 5L + 1.5L^2 (Skyy OK'd 2026-10-05) + leaderboards skip deleted profiles.
+2. DONE 2026-10-05: SkyySkills 0.4.16 Mining curve + leaderboards - waiting for Skyy's test. Small follow-up: SkyyMenu 0.3.8 Mods list
+   refresh (it lags Gear / Bazaar / Collections / Party / Essentials / Skills versions) + SkyyTrees next build: class trees default ON.
 3. DONE 2026-10-05: SkyyBazaar 0.1.4 progression prices (incl. seeds + saplings by tier) - waiting for Skyy's test.
 4. DONE 2026-10-05: SkyyCooking 0.1.5 + 0.1.6 (XP by difficulty, Flour 140) - waiting for Skyy's test.
 5. SkyyArmory 0.1.1 + SkyyClasses 0.1.12 - magic charged attacks become traversals (staff teleport + light trail; wand backward hop +
