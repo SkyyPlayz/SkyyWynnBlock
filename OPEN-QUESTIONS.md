@@ -12,25 +12,14 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ## Still open (newest at the bottom of each topic)
 
 ### mobs
-- the MOB CURVE spec's questions (research/Mob-Curve-Spec.md; docs/answered/mobs.md "SPEC DONE 2026-10-04"): (1) same-level fights
-  = today's Hard [yes]; (2) level gap: 5 levels free, then -2.5% of your damage / +1.5% of its damage per level, floor 40% / cap x1.5 [yes];
-  (3) the gap counts only for mobs above you, and "your level" = your class weapon skill [yes / yes]; (4) Mana regen +7% per class level
-  above 20 [yes]; (6) XP gap rows to free 3 / +8% / -7.5% [keep the locked rows]; (7) a damage floor above Lv 20 [off]; (8) Lv 50-60 grow
-  like Hard [yes]; (9) a fixed level by role for bosses [table empty]; (10) Life Steal cap 5% of max Health per second [yes].
-  (Question 5, Reforge raises the item level, is answered: Reforge LEVEL UP, cap +6 - docs/answered/gear.md.)
 
 ### skills
-- OK the new MINING level list = 10 + 5L + 1.5L^2 XP per level (Mining 10 after ~955 XP, 20 after ~5,450)? [as proposed;
-  docs/answered/skills.md "LOCKED 2026-10-04 ... for mining specifically"]
-- switch the CLASS TREES on now that the /tree probe page looked right in game (2026-10-04)? [recommended ON]
 - which of your live Server Setup test values become the pack defaults - Cooking XP multiplier, early gathering XP boost, the
   XP-per-level list, the Copper level band? [today's pack defaults until you say]
 - OPEN 2026-10-02 (SkyySkills 0.4.12 review): everyone has 10 base Mana, so Warriors / Archers also get the in-combat Mana refill. Limit it to classes that use Mana (Mage, Priest)? [everyone - harmless today]
 - NOTE 2026-10-02 (same review): with the flatter class curve, class level-up coins arrive much faster (xp.properties coinsPerLevel). Your live profiles gained nothing (little class XP yet); check the coin rate before a public launch.
 
 ### gear
-- HIDE the vanilla armor box too, by moving all armor Health / resistance into SkyyGear (rides the mob curve build)? [recommended
-  yes; docs/answered/gear.md "TESTED 2026-10-04"]
 
 ### economy
 - Bazaar CLOTH and GEM prices [x2 per tier step, like metals / woods / crops - built into SkyyBazaar 0.1.4: cloth scraps 4 / 16 / 40 / 96 / 256 / 640, Diamond + Voidstone 120]

@@ -28,7 +28,7 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 
 ## Next, in order (Skyy's queue 2026-10-04; full detail of each item: `docs/answered/<topic>.md` + the old RESUME)
 1. DONE 2026-10-05: SkyyGear 0.2.3 (craft Smithing XP + F1 + F7) - waiting for Skyy's test. Next Gear: tool levels = 0.2.4, the loot round = 0.2.5.
-2. SkyySkills 0.4.16 - Mining gets its own slower level list (numbers wait for Skyy's OK - OPEN-QUESTIONS).
+2. SkyySkills 0.4.16 - Mining's own slower level list 10 + 5L + 1.5L^2 (Skyy OK'd 2026-10-05) + leaderboards skip deleted profiles.
 3. DONE 2026-10-05: SkyyBazaar 0.1.4 progression prices (incl. seeds + saplings by tier) - waiting for Skyy's test.
 4. DONE 2026-10-05: SkyyCooking 0.1.5 + 0.1.6 (XP by difficulty, Flour 140) - waiting for Skyy's test.
 5. SkyyArmory 0.1.1 + SkyyClasses 0.1.12 - magic charged attacks become traversals (staff teleport + light trail; wand backward hop +
@@ -36,8 +36,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 6. DONE 2026-10-05: SkyyParty 0.1.7 + SkyyEssentials 0.1.8 TPA buttons - waiting for Skyy's 2-player test.
 7. DONE 2026-10-05: SkyyAccessories 0.5.5 Lantern edges, SkyyExploration 0.2.3 page guard, SkyyMenu 0.3.7 text. LEFT: a page guard for the
    ~18 other mods' pages (list in docs/log/2026-10.md 2026-10-05; they rely on SkyyMenu 0.3.6's join guard - only if Skyy sees a stuck page).
-8. MOB CURVE build once Skyy answers its questions: SkyyMobs 0.1.4 + SkyyGear (Reforge level-up, cap +6; armor-box hide if Skyy says yes)
-   + SkyySkills 0.4.17 - ultracode round, deploy + roll back together.
+8. MOB CURVE build (Skyy accepted every spec default 2026-10-05 - docs/answered/mobs.md): SkyyMobs 0.1.4 + SkyyGear (Reforge level-up, cap +6;
+   armor-box hide = YES) + SkyySkills next - ultracode round, deploy + roll back together.
 9. SkyyHud minimap widget (BetterMap joins the pack, stats off; downscale the engine's 96 px tiles on its own worker thread).
 10. Stats page (Your Profile -> SkyBlock-style stats; spec = cloud task -> `research/cloud/Stats-Page-Spec.md`), multi-mod build.
 - Also queued: the CLASS-ABILITY SPEC (proposes every class's A2 alternative + two improved A1 options for Skyy to pick, + the engine probe:

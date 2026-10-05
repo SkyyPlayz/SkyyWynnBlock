@@ -50,4 +50,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - SkyyGear new stats Loot Bonus, Loot Quality, Stealing, Trophy Hunter, XP Bonus are listed as "coming later" (weight 2, weapons + armor). [later]
 
 ## New answers (2026-10-05 on - newest last, beats everything above)
-
+- LOCKED 2026-10-05 (Skyy): HIDE the vanilla armor box ("Yes, hide it") - SkyyGear shows and applies all armor Health / resistance; rides the mob curve build.

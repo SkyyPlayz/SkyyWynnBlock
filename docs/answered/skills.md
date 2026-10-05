@@ -77,3 +77,5 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 
 ## New answers (2026-10-05 on - newest last, beats everything above)
 - LOCKED 2026-10-05 (Skyy, on Flour paying 1,425 per craft > a skewer after SkyyCooking 0.1.5): "Flour should go way down. The less it takes to craft, and the earlier the items are to get, the less xp it should give you" -> ingredient crafts (flour, dough, salt, spices ...) follow the same difficulty rule as dishes: fewer inputs + earlier (lower-tier) items = less XP; Flour far below a skewer. [SkyyCooking 0.1.6, lean]
+- LOCKED 2026-10-05 (Skyy): MINING level list = 10 + 5L + 1.5L^2 XP per level ("Yes, build it"); Mining leaves the early XP boost; levels recomputed from saved XP with normal rewards. [SkyySkills 0.4.16; the Skills half of "leaderboards skip deleted profiles" rides it]
+- LOCKED 2026-10-05 (Skyy): CLASS TREES "On" (the /tree probe page looked right 2026-10-04); ability slots stay greyed until the 0.7 runes.
