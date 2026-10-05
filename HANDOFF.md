@@ -10,7 +10,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyySacks | 0.7.12 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting |
 | SkyyCoins | 0.1.5 | coin purse, /pay, death penalty (merges into SkyyEconomy later) |
 | SkyyCollections | 0.2.6 | collections, tiers, recipe unlocks (coins never buy tiers) |
-| SkyyParty | 0.1.6 | parties (feeds the HUD party widget) |
+| SkyyParty | 0.1.7 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
 | SkyyBank | 0.1.6 | bank + interest |
 | SkyyIslands | 0.5.5 | private islands, co-op, visitors, island settings, /hub |
 | SkyyBazaar | 0.1.4 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier |
@@ -19,7 +19,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyAccessories | 0.5.5 | Accessory Bag, booster accessories, Lantern |
 | SkyyClasses | 0.1.11 | class pick, class kits, Priest heal |
 | SkyyMenu | 0.3.7 | SkyWynn Menu, player Settings, Server Setup (admin) |
-| SkyyEssentials | 0.1.7 | /tpa, /trade and the few commands vanilla lacks |
+| SkyyEssentials | 0.1.8 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.5 | profiles = full saves (default cap 6), delete + 6 h undo |
 | SkyyCooking | 0.1.6 | Cooking dishes + food Grade; XP by craft difficulty |
 | SkyyTrees | 0.3.1 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees OFF) |

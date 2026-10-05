@@ -16,8 +16,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 ## Now
 - LIVE: the 26-mod SET in HANDOFF section 1 (= `tools/deploy_set.py`); last deploy 2026-10-05 13:20 -0600 (backup `backups\deploy-20261005-1320`):
   SkyyAccessories 0.5.5 Lantern edges, SkyyCooking 0.1.6 (XP by difficulty, Flour 140), SkyyExploration 0.2.3 page guard, SkyyMenu 0.3.7; 13:27 SkyyCollections 0.2.6 (backup deploy-20261005-1327). 13:58 SkyyGear 0.2.3 craft Smithing XP (backup deploy-20261005-1358).
-  14:51 SkyyBazaar 0.1.4 progression prices (backup deploy-20261005-1451). RUNNING: SkyyParty 0.1.7 +
-  SkyyEssentials 0.1.8 TPA buttons builder - review before any deploy.
+  14:51 SkyyBazaar 0.1.4 progression prices (backup deploy-20261005-1451). 15:16 SkyyParty 0.1.7 + SkyyEssentials
+  0.1.8 TPA buttons (backup deploy-20261005-1516). Nothing running.
   New helpers: `tools/ci/crosscheck.py` (the cross-check), `tools/tidy_local.py`.
 - USAGE: weekly 94% at 2026-10-05 18:40 UTC (5-hour 0%); resets Tue 2026-10-06 15:00 UTC - no big rounds before it (Skyy: stop near 95%).
 - DOCS consolidated 2026-10-05 (PR #6, merged; `python tools/docs_check.py` proves no old line was lost); the old long RESUME is
@@ -34,7 +34,7 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 4. DONE 2026-10-05: SkyyCooking 0.1.5 + 0.1.6 (XP by difficulty, Flour 140) - waiting for Skyy's test.
 5. SkyyArmory 0.1.1 + SkyyClasses 0.1.12 - magic charged attacks become traversals (staff teleport + light trail; wand backward hop +
    exploding orb + heal orb; replaces the wand-burst plan), wand quick shot pierces, staff casts cost no Stamina. Spec first, full round.
-6. SkyyParty 0.1.7 + SkyyEssentials 0.1.8 - TPA buttons on the Party page (bridge to /tpa + /tpaccept). Full round.
+6. DONE 2026-10-05: SkyyParty 0.1.7 + SkyyEssentials 0.1.8 TPA buttons - waiting for Skyy's 2-player test.
 7. DONE 2026-10-05: SkyyAccessories 0.5.5 Lantern edges, SkyyExploration 0.2.3 page guard, SkyyMenu 0.3.7 text. LEFT: a page guard for the
    ~18 other mods' pages (list in docs/log/2026-10.md 2026-10-05; they rely on SkyyMenu 0.3.6's join guard - only if Skyy sees a stuck page).
 8. MOB CURVE build once Skyy answers its questions: SkyyMobs 0.1.4 + SkyyGear (Reforge level-up, cap +6; armor-box hide if Skyy says yes)
