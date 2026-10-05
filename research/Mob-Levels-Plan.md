@@ -665,7 +665,7 @@ next to the blue forest 8-10). Crossing into the next zone always jumps at least
 ## Sources
 
 `research/Mob-Levels-Research.md` (all mod comparisons, web sources and appendix A engine facts), `research/PreRelease-Compat-Report.md`,
-OPEN-QUESTIONS.md (SkyyGear material levels, mob level request), HANDOFF.md (raids / shards note 2026-09-30), docs/plans/SkyWynn-Decisions.md
+docs/answered/gear.md (SkyyGear material levels) + docs/answered/mobs.md (mob level request), docs/log/2026-09.md (raids / shards note 2026-09-30), docs/plans/SkyWynn-Decisions.md
 (island chain, dungeons, raids), docs/plans/SkyyDungeons-Plan.md, `tools/CONFIG-CONTRACT.md`, `research/Vanilla-UI-Style-Guide.md` (colours),
 `research/Overall-Level-Spec.md`, SkyySkills/build_skyyskills_0.4.8.py (KillSys, level curve, `skill:fn:level`),
 SkyyGear/build_skyygear_0.1.2.py (`odds.mob`, `stat.levelFull`, `class:skill:`), SkyyIslands/build_skyyislands_0.5.4.py

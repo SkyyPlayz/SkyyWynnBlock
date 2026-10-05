@@ -90,7 +90,8 @@ Obsidian vault - `docs/OBSIDIAN.md`):
   of every working session.
 - `OPEN-QUESTIONS.md` - ONLY questions still waiting on Skyy, each with today's default in [brackets]. **When Skyy answers (Skyy
   2026-10-05):** write the answer word for word as a LOCKED / ANSWERED line in `docs/answered/<topic>.md` ("New answers" block) and DELETE
-  the question from OPEN-QUESTIONS.md in the same step: `python tools/qa_append.py <topic> <file> --close "<words from the question>"`.
+  the question from OPEN-QUESTIONS.md in the same step: `python tools/qa_append.py <topic> <file> --close "<words from the question>"`
+  (`--no-question` instead when Skyy answers something that was never an open question).
 - `TEST-CHECKLIST.md` - the "Test next" list; each deploy adds one numbered in-game section at the end of `docs/tests/<newest month>.md`
   plus a line in that list (remove the line once Skyy has tested it); `docs/tests/README.md` indexes every section.
 - Class designs: one file per class in `research/classes/` (easy-read: short lines, big spacing); after editing one, run

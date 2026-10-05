@@ -34,8 +34,20 @@ NO_EDIT = {"SkyyGear-Plan.md", "SkyyGear-Stat-Catalog.md"}  # Skyy's own docs: n
 MOVE_RE = re.compile(r"(?<![\w/.-])(%s)" % "|".join(re.escape(k) for k in MOVES))
 
 
+# citations into OPEN-QUESTIONS.md / HANDOFF.md by LINE that the consolidation re-pointed to the moved text (old -> new, exact)
+CITES = [("(OPEN-QUESTIONS.md:50-57)", '(docs/answered/gear.md "REQUEST 2026-10-01 (Skyy): gear levels like Wynncraft")'),
+         ("OPEN-QUESTIONS line 402", 'docs/answered/ui.md "REQUEST 2026-10-03 (Skyy): MINIMAP"'),
+         ("OPEN-QUESTIONS.md (SkyyGear material levels, mob level request), HANDOFF.md (raids / shards note 2026-09-30)",
+          "docs/answered/gear.md (SkyyGear material levels) + docs/answered/mobs.md (mob level request), docs/log/2026-09.md (raids / shards "
+          "note 2026-09-30)")]
+LINK = re.compile(r"\]\(([^)\s]+)\)")  # a markdown link's target: always a path (or a URL / #anchor)
+
+
 def moved(s):
-    return MOVE_RE.sub(lambda m: MOVES[m.group(1)], s)
+    s = MOVE_RE.sub(lambda m: MOVES[m.group(1)], s)
+    for a, b in CITES:
+        s = s.replace(a, b)
+    return s
 # a repo path inside a doc: optional folders + a file with a doc / code extension
 PATH = re.compile(r"(?<![\w/.\\-])((?:[\w.-]+[/\\])*[\w.-]+\.(?:md|py|js|json|txt|ui))(?![\w/])")
 
@@ -66,7 +78,14 @@ def broken_refs(md_files, exists, read):
     bad = set()
     for f in md_files:
         d = os.path.dirname(f)
-        for m in PATH.findall(read(f)):
+        text = read(f)
+        for m in LINK.findall(text):  # every markdown link target, lowercase bare names included
+            p = m.split("#")[0].replace("%20", " ")
+            if not p or p.startswith(("http:", "https:", "mailto:")):
+                continue
+            if not (exists(os.path.normpath(os.path.join(d, p)).replace("\\", "/")) or exists(p)):
+                bad.add((f, p))
+        for m in PATH.findall(text):
             p = m.replace("\\", "/")
             if p.startswith(("http", "www.")) or "/" not in p and not re.match(r"^[A-Z][\w-]*\.md$", p):
                 continue  # bare names like foo.py / x.json are usually code words, not repo paths; root .md docs are checked

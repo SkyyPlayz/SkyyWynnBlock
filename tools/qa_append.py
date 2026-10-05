@@ -1,10 +1,12 @@
 """Record Skyy's answers (2026-10-05 layout): append answer lines to docs/answered/<topic>.md and, with --close, delete the answered
 question from OPEN-QUESTIONS.md - so OPEN-QUESTIONS.md only ever holds questions that are still open (Skyy's rule).
 
-Usage:  python tools/qa_append.py <topic> <file with the answer lines> [--close "<words that appear in the open question>"]
+Usage:  python tools/qa_append.py <topic> <file with the answer lines> --close "<words that appear in the open question>"
+        python tools/qa_append.py <topic> <file with the answer lines> --no-question   (an answer no open question asked for)
   topic = a file name in docs/answered/ without .md (classes, gear, skills, mobs, world, economy, bags, ui, social, pets, project)
   --close may be given more than once; each must match exactly ONE question in OPEN-QUESTIONS.md - the words may come from any of
   its lines (a wrapped line break counts as a space); the whole question, wrapped lines included, is deleted.
+  One of --close / --no-question is REQUIRED, so an answer can never be recorded while its question stays open.
 Nothing is written unless every step succeeds. Line endings and bytes of both files are kept."""
 import os
 import sys
@@ -22,12 +24,18 @@ def main(argv):
     if len(argv) < 3 or argv[1].startswith("-"):
         fail(__doc__)
     topic, src = argv[1], argv[2]
-    closes, i = [], 3
+    closes, no_question, i = [], False, 3
     while i < len(argv):
+        if argv[i] == "--no-question":
+            no_question = True
+            i += 1
+            continue
         if argv[i] != "--close" or i + 1 >= len(argv):
             fail("unknown argument %r" % argv[i])
         closes.append(argv[i + 1])
         i += 2
+    if bool(closes) == no_question:
+        fail("give --close \"<words from the open question>\" (one per answered question), or --no-question when no open question asked for it")
     ans = os.path.join(ROOT, "docs", "answered", topic + ".md")
     if not os.path.exists(ans):
         fail("no topic file %s (topics: %s)" % (ans, ", ".join(sorted(f[:-3] for f in os.listdir(os.path.dirname(ans))

@@ -6,7 +6,7 @@ Covers: skill XP curves, Mana, Cooking, Smithing, Acrobatics, skill trees (SkyyS
 the 'Q&A with Skyy 2026-10-02' block (rounds R1-R9, then dated lines up to 2026-10-04) BEATS every older block below it; inside a
 block the LOWER line is newer and wins. Each line starts with its status: LOCKED / ANSWERED / DECIDED = Skyy
 decided; LIVE / VERIFIED / TESTED = shipped + seen. An OPEN / QUESTION / ASKED line here was answered by a later line - unless OPEN-QUESTIONS.md still lists it.
-New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md (`python tools/qa_append.py skills <file>`). Index of all topics: [README.md](README.md).
+New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md (`python tools/qa_append.py skills <file> --close "<words from the question>"`, or `--no-question`). Index of all topics: [README.md](README.md).
 
 ## Q&A with Skyy 2026-10-02 (all open questions, round by round - newest answers win)
 - R1 LOCKED (Skyy) [LIVE 2026-10-02 SkyySkills 0.4.12]: CLASS SKILL CURVE = the cloud proposal as written (research/cloud/Class-Skill-Curve-Proposal.md): a separate table for class skills only, XP per level = 50 x L + 0.25 x L^3 (rounded); skill 20 ~4 h, 40 ~17 h, 100 ~200 h of fighting; never below today at any level (levels only go up); editable rows levels.class / .scale / .max / .sameAsOthers. [next SkyySkills]

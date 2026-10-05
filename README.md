@@ -24,7 +24,7 @@ make the pack (name idea: *Isles of the Void*). Owner: Skyy (GitHub **SkyyPlayz*
   line wins; each answered file ends with a "New answers" block that beats everything above it.
 - **Record work the moment it is done** (Skyy's rule): a log line in the newest `docs/log/` file, the versions table in `HANDOFF.md`
   when a version changed, `RESUME.md` "Now" / "Next", then commit + push. Finished work never lives only in chat.
-- **When Skyy answers a question:** `python tools/qa_append.py <topic> <answer file> --close "<words from the question>"` - the answer
+- **When Skyy answers a question:** `python tools/qa_append.py <topic> <answer file> --close "<words from the question>"` (or `--no-question` for an answer nobody asked) - the answer
   goes word for word into `docs/answered/<topic>.md` and the question leaves `OPEN-QUESTIONS.md`.
 - **After a deploy:** one numbered test section at the end of the newest `docs/tests/` file + a line in TEST-CHECKLIST's "Test next".
 - **After editing a class file:** `python tools/class_pages.py` rebuilds its HTML page.
