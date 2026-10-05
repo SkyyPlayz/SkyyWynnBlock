@@ -5,8 +5,8 @@
 *Does not touch SkyyGear, SkyyAuctions, SkyyMenu or SkyyRolls (another workflow owns them). Adds no stat modifiers, so no modifier key can clash with SkyyGear's.*
 
 **Skyy's calls.**
-- HANDOFF section 1, Exploration rules: "each bag's main expansion will come from a collection in its field (e.g. Mining bag per Iron tier), Exploration gives slight boosts - a later bag restructure". Same in `SkyyExploration-Plan.md` answer 4.
-- `SkyWynn-Decisions.md` change notes 2026-09-25 #7 (e): **Mining bag upgrades come from the Iron collection.**
+- HANDOFF section 1, Exploration rules: "each bag's main expansion will come from a collection in its field (e.g. Mining bag per Iron tier), Exploration gives slight boosts - a later bag restructure". Same in `docs/plans/SkyyExploration-Plan.md` answer 4.
+- `docs/plans/SkyWynn-Decisions.md` change notes 2026-09-25 #7 (e): **Mining bag upgrades come from the Iron collection.**
 - Change note #8: **bags use rarities, not sizes.** Normal, Unique, Rare, Legendary replace Small / Medium / Large. A **Mythic Omni Bag** combines all the Legendary bags. It holds **100,000 of each item for every bag type**, keeps each bag type on its own tab, and is the only bag you need to carry.
 
 **Legend.** VERIFIED = seen in `HytaleServer.jar` bytecode (tools/dev and a scratch copy of its bytecode printer), in `Assets.zip` (read in memory), in our build scripts, in Skyy's save or in a server log (read-only). UNVERIFIED = design, inference or not yet tested in game. `[SKYY?]` = a default for Skyy (they/them) to confirm.
@@ -623,7 +623,7 @@ Every read is optional and a missing key has a defined meaning, so the zero-depe
   - `SkyyVault/build_skyyvault_0.1.2.py` (own quality asset + lang).
   - `SkyyAccessories/build_skyyaccessories_0.4.4.py` (rarities from vanilla qualities).
   - `tools/deploy_set.py` (SET), `tools/skyybuild.py`, `tools/skyycfg.py` (KIT_VERSION 1.1).
-- **Docs:** `HANDOFF.md` sections 1-3, `SkyWynn-Decisions.md` change notes 2026-09-25 #5, #7, #8, `research/SkyyGear-Stage1-Spec.md` 2.1 (rarity look, read only), `SkyyExploration-Plan.md` (answer 4), `SkyySacks-Plan.md`, `research/Collections-Spec.md` (1, 2, 4.1-4.4, Appendix B 8), `tools/CONFIG-CONTRACT.md`, `research/Settings-Spec.md` (2.3, 3.4), `tools/PROFILES-CONTRACT.md`, `OPEN-QUESTIONS.md` (bags 3, AH 15), `SkyyGear-Plan.md` (rarity notes).
+- **Docs:** `HANDOFF.md` sections 1-3, `docs/plans/SkyWynn-Decisions.md` change notes 2026-09-25 #5, #7, #8, `research/SkyyGear-Stage1-Spec.md` 2.1 (rarity look, read only), `docs/plans/SkyyExploration-Plan.md` (answer 4), `docs/plans/SkyySacks-Plan.md`, `research/Collections-Spec.md` (1, 2, 4.1-4.4, Appendix B 8), `tools/CONFIG-CONTRACT.md`, `research/Settings-Spec.md` (2.3, 3.4), `tools/PROFILES-CONTRACT.md`, `OPEN-QUESTIONS.md` (bags 3, AH 15), `SkyyGear-Plan.md` (rarity notes).
 - **Jar (VERIFIED, bytecode):**
   - `CraftingManager.isValidBenchForRecipe` (knowledge check on the primary output), and its callers `craftItem` / `queueCraft`.
   - `CraftingPlugin.learnRecipe/forgetRecipe/sendKnownRecipes` (public static) and `CraftingPlugin$PlayerAddedSystem.onEntityAdded`.

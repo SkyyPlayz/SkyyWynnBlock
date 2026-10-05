@@ -5,7 +5,7 @@
 booster accessories (+Strength, +% movement speed, +Stamina, +Health, +Mana and more) that start basic and upgrade, Hypixel style, with
 many of them coming from mob drops and world loot chests later. Nothing was built, committed or deployed. **Every number is a
 PLACEHOLDER** that Skyy can change in game (Server Setup). Inputs: `research/Hypixel-Accessories-Research.md`,
-`research/Accessory-Pack-Inventory.md` (called "the inventory" below), `SkyyAccessories-Plan.md`, `SkyyGear-Plan.md`,
+`research/Accessory-Pack-Inventory.md` (called "the inventory" below), `docs/plans/SkyyAccessories-Plan.md`, `SkyyGear-Plan.md`,
 `SkyyGear-Stat-Catalog.md`, `OPEN-QUESTIONS.md`, `HANDOFF.md`, the live build scripts and the engine jar. Where a LOCKED line disagrees
 with this file, the lock wins. Section 8 lists every clash and how this file handles it.*
 
@@ -96,7 +96,7 @@ Proposal, a placeholder that stays inside the locked range:
 | 10 | 13 | 16 | 19 | 22 | 25 |
 
 - Each step is +3, so it is easy to guess. Fabled and Mythic are reserved for the later rare finds (4.1); the top (Mythic, 25) is 2.5
-  times the bottom, as the lock implies. The old 3/5/8/12/16 draft in `SkyyAccessories-Plan.md` is obsolete.
+  times the bottom, as the lock implies. The old 3/5/8/12/16 draft in `docs/plans/SkyyAccessories-Plan.md` is obsolete.
 - **No Accessory Power code exists yet** (inventory G6). In 0.5 the table is a **build constant** and a field in `acc:defs` (5.9). It
   is **not** a Server Setup row and not on any tooltip or page: Skyy's 2026-09-30 rule "if its not in the game yet, dont leave it in the
   list" rules out a setting or a number that does nothing (Q9).
@@ -256,7 +256,7 @@ Setup entry each.
   "Vitality is scrap" (lock 20) and "No Intelligence ID" (lock 67). The commands still accept them as aliases (5.9).
 - The drop-line names do not say the stat, so the **first tooltip line always names the stat** (5.7). Brawler is not melee-only: it
   also boosts arrows, thrown weapons and staff melee, and its tooltip says so. The names Hawkeye and Bulwark were dropped because the
-  draft crystal table in `SkyyAccessories-Plan.md` section 2 uses them for the Archer and Warrior crystals.
+  draft crystal table in `docs/plans/SkyyAccessories-Plan.md` section 2 uses them for the Archer and Warrior crystals.
 
 ### 2.2 The five folded lines (the 25 talismans; part 1)
 
@@ -620,7 +620,7 @@ drain, so it makes sprinting free, and several armor pieces can each roll it. Wo
   only.
   - 18 means players choose: the Omni (which stands for all 11 bench accessories) plus the 10 lines fit with 7 spare, but 11 bench
     accessories plus 10 lines (21, or 22 with the Omni) do not, until unlocks exist.
-  - `SkyyAccessories-Plan.md` section 3 (a draft) starts at 9 and adds +51 from collections (+12), skills (+20), coins (+16) and quests
+  - `docs/plans/SkyyAccessories-Plan.md` section 3 (a draft) starts at 9 and adds +51 from collections (+12), skills (+20), coins (+16) and quests
     (+3), capped at 60. Starting at 18, those sources are **rebased to +42** so the cap stays 60 (for example coins +16 to +10 and
     collections +12 to +9); the exact split is set when unlocks are built.
 - **Page:** the vanilla-kit window grows from 1210 x 780 to about **1210 x 950** (fits 1080 high). The BAG SLOTS well shows 9 rows per
@@ -919,7 +919,7 @@ Still open:
 | "Vitality" and "Intelligence" in player and admin text | locks 20, 67 | display and admin names change; family keys stay in item ids only; build check (2.1, 6) |
 | "Not in the game yet" / "stats that do nothing must never be on a booster" | Skyy 2026-09-30 locks | stat allowlist and build check; no line ships switched off; Accessory Power a build constant, no setting, not shown (1.3, 1.4, 5.8) |
 | Old Accessory Power draft 3/5/8/12/16 | Plan section 1 vs locks 111-113 | new table inside +10 to +25 (1.3) |
-| Default 18 slots vs start 9 + 51 unlock slots, cap 60 | `SkyyAccessories-Plan.md` section 3 (draft) | Skyy: 18 to 60; unlock sources rebased to +42 (5.5) |
+| Default 18 slots vs start 9 + 51 unlock slots, cap 60 | `docs/plans/SkyyAccessories-Plan.md` section 3 (draft) | Skyy: 18 to 60; unlock sources rebased to +42 (5.5) |
 | Collection-gated craft tiers | lock 64 | not wired in 0.5: today's Workbench recipes stay ungated; the later acquisition pass adds the gate (2.2, 4.2) |
 | Life Steal numbers | SkyyGear-Plan open item 9 ("do not invent"), catalog row | Leech waits for Skyy's Life Steal shape (section 3) |
 | `acc:pct` combat plan vs shipped `gear:extra` | Plan technical notes vs SkyyGear 0.1 | `gear:extra` (5.4) |
@@ -931,8 +931,8 @@ Still open:
 
 Skyy's design files (read only): `tools/AGENT-BRIEF.md`, `HANDOFF.md` (status block, movement layer rule, versions table, newest log
 lines), `OPEN-QUESTIONS.md` (LOCKED lines, including the 2026-09-30 booster lock, the SkyyGear level lock, the SkyySkills 0.4.8 Mana line
-and the "Seen in game" probe line), `SkyyAccessories-Plan.md` (sections 2, 3, 5), `SkyyGear-Plan.md` (locks 1-126, open item 9),
-`SkyyGear-Stat-Catalog.md` (placement rows, regen, Sprint Regen and Life Steal rows, accessory sections), `SkyWynn-Decisions.md`
+and the "Seen in game" probe line), `docs/plans/SkyyAccessories-Plan.md` (sections 2, 3, 5), `SkyyGear-Plan.md` (locks 1-126, open item 9),
+`SkyyGear-Stat-Catalog.md` (placement rows, regen, Sprint Regen and Life Steal rows, accessory sections), `docs/plans/SkyWynn-Decisions.md`
 (accessory change notes), `tools/CONFIG-CONTRACT.md` (table rules, help cap, `config-history/` and `config-changes.log`). Research:
 `research/Hypixel-Accessories-Research.md` (sections 2 and 5), `research/Accessory-Pack-Inventory.md`, `research/SkyyGear-Stage1-Spec.md`
 (rarity ladder, migration map), `research/Bag-Restructure-Spec.md` (quality index and restamp). Build scripts:

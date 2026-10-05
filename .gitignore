@@ -22,3 +22,6 @@ Thumbs.db
 desktop.ini
 backups/
 tools/dev/scratch/
+
+# Obsidian vault settings (Skyy may open the project as a vault; keep their workspace out of git)
+.obsidian/

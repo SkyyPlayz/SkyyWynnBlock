@@ -38,7 +38,7 @@ Jar checked: `...\game\latest\Server\HytaleServer.jar`. Our code checked: `SkyyS
 ## 1. What the design lock says
 
 - "HOTM-style trees unlock from that skill's levels, not from a location." (HANDOFF section 1, batch 2 item 8.) **VERIFIED**
-- "A skill tree per gathering skill: YES (Mining, Foraging, Farming)." Fishing's tree waits with Fishing. (HANDOFF focus call; SkyySkills-Plan.md.) **VERIFIED**
+- "A skill tree per gathering skill: YES (Mining, Foraging, Farming)." Fishing's tree waits with Fishing. (HANDOFF focus call; docs/plans/SkyySkills-Plan.md.) **VERIFIED**
 - Level cap is 100 for every skill. The XP table is Hypixel's up to level 60, then +300k per level: level 30 = 8,022,425 XP, level 60 = 111,672,425, level 100 = 637,672,425. (`LEVELS` in build_skyyskills_0.3.2.py.) **VERIFIED**
 - "Powders" is already taken: Wynn's five elements + powders replace SkyBlock runes (batch 2 item 5), and Smithing is leveled "by reforging and adding powders". **VERIFIED**. So the tree currency must not be called powder.
 

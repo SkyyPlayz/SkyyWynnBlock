@@ -1,6 +1,6 @@
 # SkyyExploration 0.2 build spec: server backbones
 
-*For the build agent of SkyyExploration 0.2. Written 2026-09-24. Sources: `SkyyExploration-Plan.md` ("Next (SkyyExploration 0.2): backbones for server content"), HANDOFF section 1 ("Exploration call", "Pack goal", "In-game server setup"), `SkyWynn-Server-Setup-Plan.md`, `research/Exploration-Research.md` (options A1, A2, C2), `research/Exploration-Build-Spec.md` (the 0.1 spec), `research/Settings-Spec.md` 3.12, `tools/PROFILES-CONTRACT.md`, and `SkyyExploration/build_skyyexploration_0.1.py` (the LIVE version, deployed 2026-09-24 22:53). I re-checked every engine name below this pass with `tools/dev` (reflect.py, bc.py, bcfull.py, cpgrep.py) against the release `HytaleServer.jar`, and with python `zipfile` against `Assets.zip`. **VERIFIED** = seen in bytecode, assets or shipped Skyy code. **NEEDS A TEST** = the pieces are verified, but nobody has seen the behaviour in game yet.*
+*For the build agent of SkyyExploration 0.2. Written 2026-09-24. Sources: `docs/plans/SkyyExploration-Plan.md` ("Next (SkyyExploration 0.2): backbones for server content"), HANDOFF section 1 ("Exploration call", "Pack goal", "In-game server setup"), `docs/plans/SkyWynn-Server-Setup-Plan.md`, `research/Exploration-Research.md` (options A1, A2, C2), `research/Exploration-Build-Spec.md` (the 0.1 spec), `research/Settings-Spec.md` 3.12, `tools/PROFILES-CONTRACT.md`, and `SkyyExploration/build_skyyexploration_0.1.py` (the LIVE version, deployed 2026-09-24 22:53). I re-checked every engine name below this pass with `tools/dev` (reflect.py, bc.py, bcfull.py, cpgrep.py) against the release `HytaleServer.jar`, and with python `zipfile` against `Assets.zip`. **VERIFIED** = seen in bytecode, assets or shipped Skyy code. **NEEDS A TEST** = the pieces are verified, but nobody has seen the behaviour in game yet.*
 
 **Skyy's ask (they/them):** build the backbones now and leave the content for the server. That means admin-placed discovery and secret spots, plus an island checklist with a % on `/explore`. Everything a server owner changes must work **in game**, and the files must always match the game. The pack must be 100% usable solo and in private multiplayer.
 
@@ -553,7 +553,7 @@ It keeps its content. The columns grow to 530, rows are 24 px at font 15, and he
   - **`/explore quiet`:**
     - With `settings:fn:set` present: when the line is shown, set `explore.chunkXp` false. When it is hidden, set it true and clear `d.quiet`. Reply `"(also in /settings)"`.
     - Without it: flip `d.quiet` (0.1).
-- **Admin editor (SkyWynn-Server-Setup-Plan.md; research/Server-Setup-Spec.md is being written by another workflow):**
+- **Admin editor (docs/plans/SkyWynn-Server-Setup-Plan.md; research/Server-Setup-Spec.md is being written by another workflow):**
   - 0.2 does not guess that contract.
   - Every config write already goes through `ExpCfg.setKey(key, value)`, and every island value through `ExAdminOps`, both logged. When the shared editor's register-on-the-bridge contract lands, SkyyExploration 0.2.x registers its keys and hands the editor `setKey` as the setter.
   - Until then: the admin page covers spots, checklists, island values and the two master switches; `/exploreadmin set|get` covers every other key; and the file always matches.

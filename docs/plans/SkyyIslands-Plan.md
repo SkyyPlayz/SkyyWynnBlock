@@ -6,7 +6,7 @@
 The private island is the **progression home** and free creative building. It is not a creative-only plot.
 
 On the island:
-- Minions (helpful, not mandatory — see `SkyyMinions-Plan.md`)
+- Minions (helpful, not mandatory — see `docs/plans/SkyyMinions-Plan.md`)
 - Upgrades and size tiers
 - Co-op (shared island). Multiplayer: other players can **share and visit** this island.
 - Free building. Building is not a gated mode. Progression systems still run here.
@@ -14,7 +14,7 @@ On the island:
 
 Teleport home stays. The hub is not this island.
 
-A **profile** owns this island. Swapping profile is a different island and different everything. Starting a new class starts a new profile and a new island from zero (`SkyyClasses-Plan.md`). The default cap is **6** profiles (2026-09-24, raised from 4). In-game ways to raise it are TBD. SkyyProfiles 0.1 still caps at 4.
+A **profile** owns this island. Swapping profile is a different island and different everything. Starting a new class starts a new profile and a new island from zero (`docs/plans/SkyyClasses-Plan.md`). The default cap is **6** profiles (2026-09-24, raised from 4). In-game ways to raise it are TBD. SkyyProfiles 0.1 still caps at 4.
 
 ## What the world spine is
 
@@ -23,15 +23,15 @@ The main leveling path is a **zone island chain**, not hub + level-gated open-wo
 - One floating island per Hytale zone.
 - That island's biomes ramp difficulty as you cross it.
 - Finish a zone's island before the next unlocks.
-- Story-beat dungeons sit on this chain (`SkyyDungeons-Plan.md`). The chain is the spine; extra dungeons are not.
+- Story-beat dungeons sit on this chain (`docs/plans/SkyyDungeons-Plan.md`). The chain is the spine; extra dungeons are not.
 
 **Hub** stays the shared spawn, gathering, and social point. `/hub` still leaves the private island for that town. The hub is not where you level through the zones.
 
 **How the chain is built (2026-09-24).** Much of it will be **server-side**: hand-built shared worlds (the line below about chain islands as shared worlds still holds for a server). For **solo** players, a new planned mod, **SkyyWorldGen** (name TBD), uses Hytale's World Gen 2 to auto-generate the world as flying islands split by zone. Status: planned, not started. Whether World Gen 2 can do that is open research. The spine rules above do not change either way.
 
-Parties and guilds are core-loop social systems (`SkyyGuilds-Plan.md`); they are not an islands feature, but the hub is where that gathering happens.
+Parties and guilds are core-loop social systems (`docs/plans/SkyyGuilds-Plan.md`); they are not an islands feature, but the hub is where that gathering happens.
 
-Full loop: `SkyWynn-Master-Plan.md` Part 2B and Part 3. Rows: `SkyWynn-Decisions.md` 1.7, 3.1, 3.2, 3.3, 3.9, 7.1.
+Full loop: `docs/plans/SkyWynn-Master-Plan.md` Part 2B and Part 3. Rows: `docs/plans/SkyWynn-Decisions.md` 1.7, 3.1, 3.2, 3.3, 3.9, 7.1.
 
 ## Engine notes (research 2026-09-23, agent-verified against HytaleServer.jar)
 

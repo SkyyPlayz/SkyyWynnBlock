@@ -60,8 +60,8 @@ It also **corrected** two claims in that spec. The Alchemy spec has since adopte
    - `research/Cooking-Skill-Spec.md` 3.3 recommends the same (its open question 3).
 
 Corrections for the plan docs (for the main session; this pass edits nothing else):
-- `SkyySacks-Plan.md` / `SkyyAccessories-Plan.md` say "the SkyySacks bag link already feeds every vanilla bench window". That is true for instant benches, false for timed-bench inputs (point 4).
-- `SkyySacks-Plan.md` says "Accessories already owned stay as items but do nothing (no recipe)". That is right, but it needs the acc:has filter from section 6.2. Today an equipped old copy would keep unlocking /craft recipes, because `AccDefs.benchList` does not check the bench table for real held items (VERIFIED).
+- `docs/plans/SkyySacks-Plan.md` / `docs/plans/SkyyAccessories-Plan.md` say "the SkyySacks bag link already feeds every vanilla bench window". That is true for instant benches, false for timed-bench inputs (point 4).
+- `docs/plans/SkyySacks-Plan.md` says "Accessories already owned stay as items but do nothing (no recipe)". That is right, but it needs the acc:has filter from section 6.2. Today an equipped old copy would keep unlocking /craft recipes, because `AccDefs.benchList` does not check the bench table for real held items (VERIFIED).
 
 ---
 

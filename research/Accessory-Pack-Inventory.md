@@ -325,7 +325,7 @@ Accessory Bag but not the accessories; the vanilla-assets-by-reference rule is a
 ## 7. Sources read
 
 Skyy's design files (read only): `tools/AGENT-BRIEF.md`, `HANDOFF.md` (status block, sections 1 to 3, newest log lines),
-`OPEN-QUESTIONS.md`, `RESUME.md`, `SkyyAccessories-Plan.md`, `SkyyGear-Stat-Catalog.md`, `SkyWynn-Decisions.md` (accessory rows),
+`OPEN-QUESTIONS.md`, `RESUME.md`, `docs/plans/SkyyAccessories-Plan.md`, `SkyyGear-Stat-Catalog.md`, `docs/plans/SkyWynn-Decisions.md` (accessory rows),
 `SkyyGear-Plan.md` (accessory locks). Build scripts: `SkyyAccessories/build_skyyaccessories_0.4.5.py`,
 `SkyyGear/build_skyygear_0.1.py` and `0.1.1.py`, `SkyySkills/build_skyyskills_0.4.7.py`, `SkyyTrees/build_skyytrees_0.2.5.py`,
 `SkyyCollections/build_skyycollections_0.2.4.py`, `SkyyExploration/build_skyyexploration_0.2.2.py`, `SkyySacks/build_skyysacks_0.7.7.py`,

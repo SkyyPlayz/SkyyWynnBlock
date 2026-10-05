@@ -1,6 +1,6 @@
 # Exploration build spec (this round)
 
-*For the build agents of the Exploration round. Written 2026-09-24 from `SkyyExploration-Plan.md` (Skyy's picks, they/them), `research/Exploration-Research.md` and a fresh engine pass. Every engine name below was re-checked this pass with `tools/dev` (reflect.py, reflectmod.py, bc.py, bcfull.py, callers.py, cpgrep.py, clinit.py) against the release `HytaleServer.jar`, and with python `zipfile` against `Assets.zip`. VERIFIED = seen in bytecode or assets. NEEDS A TEST = the pieces are verified but the behavior has not been seen in game.*
+*For the build agents of the Exploration round. Written 2026-09-24 from `docs/plans/SkyyExploration-Plan.md` (Skyy's picks, they/them), `research/Exploration-Research.md` and a fresh engine pass. Every engine name below was re-checked this pass with `tools/dev` (reflect.py, reflectmod.py, bc.py, bcfull.py, callers.py, cpgrep.py, clinit.py) against the release `HytaleServer.jar`, and with python `zipfile` against `Assets.zip`. VERIFIED = seen in bytecode or assets. NEEDS A TEST = the pieces are verified but the behavior has not been seen in game.*
 
 **Scope = the 'Build now' table only:** SkyyExploration 0.1 (new), SkyySkills 0.4.1 (patch on 0.4), SkyyTrees 0.2 (on 0.1). No deploy. Build with plain `python <script>` (it must end with `assembled ...jar`), then `python tools/ci/lint.py` (0 fails). Do not commit.
 

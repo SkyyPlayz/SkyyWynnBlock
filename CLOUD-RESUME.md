@@ -6,7 +6,7 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 - **Rolling list:** do the top open task, then mark it `[x]` with the date and the output file. When you open this file and see `[x]`
   items, first add one line per item to `research/cloud/LOG.md`, then DELETE those items here and top the list back up to about 8
-  open tasks (ideas: RESUME.md section 3, OPEN-QUESTIONS.md open lines, the plans in `research/`). Keep this file under ~110 lines.
+  open tasks (ideas: RESUME.md 'Next', OPEN-QUESTIONS.md (open only), the plans in `research/` + `docs/plans/`). Keep this file under ~110 lines.
 - **Cloud limits:** no access to Skyy's PC, the Hytale game files (`HytaleServer.jar`, `Assets.zip`), installed mods or the test world.
   You cannot build, test or deploy. Only add tasks that need none of that. Any fact you cannot check without the game files: mark it
   **UNVERIFIED** and list it under "For the local session" in your output.
@@ -20,14 +20,13 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 <!-- 2026-10-03 local session (Skyy: "make sure the cloud agent has a good list to work on, so i can keep em going when token limit runs
 out"): the list is LONG ON PURPOSE this week - work top-down; the first 8 feed builds the local session runs next. Decisions behind them:
 OPEN-QUESTIONS.md "Q&A with Skyy 2026-10-02" block, 2026-10-03 lines. -->
+<!-- 2026-10-05 cloud session: the docs consolidation is DONE in a pull request (Docs consolidation map + README draft tasks removed);
+OPEN-QUESTIONS.md now holds only open questions - every answer (incl. the 'Q&A with Skyy 2026-10-02' / 'LOCKED 2026-10-04' lines named below)
+is word for word in docs/answered/<topic>.md; map of everything: INDEX.md. -->
 <!-- 2026-10-05 local session (Skyy: "make sure the cloud agent has a good list to work on while tokens are out"; local weekly usage 94%, resets Mon
 2026-10-06 15:00 UTC). The first 9 feed the next local rounds; the class design is in research/classes/ (one file per class + README rules),
 Skyy's locks are in OPEN-QUESTIONS 'LOCKED 2026-10-04'. Removed as done / superseded: Wynncraft level-curve research (research/Mob-Curve-Spec.md),
 Lantern design (SkyyAccessories 0.5.4 is live), Class tree texts (replaced by per-ability trees + paths), Tool progression research (research/Tool-Levels-Spec.md). -->
-- [ ] **Docs consolidation map** - the local session will consolidate the docs after the reset (RESUME 'DOCS CONSOLIDATION'). Prepare a MAP,
-      read-only: for OPEN-QUESTIONS.md propose ~12 topic files (classes, gear, economy / bazaar, skills, mobs, worldgen, islands, UI / HUD, menu,
-      accessories / bags, profiles / guilds / party, cloud / process) and list every '## ' section + every Q&A entry (first 8 words + date) -> its
-      topic; same for TEST-CHECKLIST.md sections -> mod; HANDOFF.md log lines -> month. Output: `research/cloud/Docs-Consolidation-Map.md`.
 - [ ] **Class ability spec draft** - from research/classes/*.md: for every ability of the 7 classes give base numbers (Mana cost, cooldown,
       radius, duration, damage / heal as a multiple of a weapon hit), per-level gains (levels by use), the 4 modifiers with per-level steps, and a
       POWER BUDGET table (each ability fully levelled + both modifiers + its class-tree path must not break a fight). Keep LOCKED rows as written;
@@ -52,8 +51,6 @@ Lantern design (SkyyAccessories 0.5.4 is live), Class tree texts (replaced by pe
 - [ ] **Monk kit spec** - research/classes/Monk.md: Bo staff + fist weapon (wraps / gauntlets / claws) metal ladders like SkyyArmory's wands
       (recipes, level bands, damage), the traversal tuning numbers (vault, skipping bounds, Rising Strike, Plunge Punch) and the engine probe list.
       Output: `research/cloud/Monk-Kit-Spec.md`.
-- [ ] **README draft** - rewrite the public README.md (today 26 lines): what SkyWynn is, the mod list from tools/deploy_set.py SET, build + deploy
-      steps, folder layout, local-only vs repo (RESUME section 1), licence notes. Output: `research/cloud/README-Draft.md` (the local session moves it).
 - [ ] **Stats page spec (SkyBlock-style "Your Profile" stats)** - Skyy 2026-10-03 (playing, screenshot of the SkyWynn Menu's Your Profile
       tile): "this menus should show me all my stats with my current gear, accessory's skill and class bonuses. and everything. like on
       skyblock it should show health, mana, stamina, strength, crit chance, crit damage, mining and foraging fortune. ect. pretty much all
@@ -83,18 +80,18 @@ Lantern design (SkyyAccessories 0.5.4 is live), Class tree texts (replaced by pe
       40-57 ms on the world thread). Design the settings Skyy liked in DapperMap (zoom, size, circle / square, rotation, refresh speed,
       resolution, markers, colours; NO info panel), HUD-editor placement, defaults, a performance budget, marker throttles. Design only - the
       local session checks engine + licences. Output: `research/cloud/Minimap-Widget-UX.md`.
-      UPDATE 2026-10-05: probe 0.4 results in HANDOFF (2026-10-04 MINIMAP PROBE RESULTS): pictures + round mask work, the client keeps them across world changes, engine map tiles are 96 px -> downscale; widget = its own HUD key.
+      UPDATE 2026-10-05: probe 0.4 results in docs/log/2026-10.md (2026-10-04 MINIMAP PROBE RESULTS): pictures + round mask work, the client keeps them across world changes, engine map tiles are 96 px -> downscale; widget = its own HUD key.
 - [ ] **SkyyQuests design** (OPEN-QUESTIONS: "quest hooks ship with SkyyQuests"). The story scripts need a quest system that does not exist: quest steps and flags per
       profile, NPC dialogue windows (vanilla look), objectives (kill / collect / craft / reach / talk), rewards, quest log page, bridge keys other mods can call. Read
       `research/cloud/Story-Script-*.md`, `Dragon-Quest-Spec.md`, `tools/PROFILES-CONTRACT.md`. Output: `research/cloud/SkyyQuests-Spec.md`.
 - [ ] **Outposts list** - LOCKED R9: about 30-35 outpost towns, one per biome group, each an unlockable warp. List every outpost per zone (shared between near-identical
-      biome variants) with name, biome, ring, what it sells, warp rules. Read `research/Mob-Levels-Refit.md`, `SkyyWorldGen-Plan.md`. Output: `research/cloud/Outposts-List.md`.
-- [ ] **Slayers spec** (`SkyyDungeons-Plan.md`: core loop, not the spine) - research Hypixel Slayers on the web, propose SkyWynn slayer quests per zone (boss, tiers, rewards,
+      biome variants) with name, biome, ring, what it sells, warp rules. Read `research/cloud/Mob-Levels-Refit.md`, `research/SkyyWorldGen-Plan.md`. Output: `research/cloud/Outposts-List.md`.
+- [ ] **Slayers spec** (`docs/plans/SkyyDungeons-Plan.md`: core loop, not the spine) - research Hypixel Slayers on the web, propose SkyWynn slayer quests per zone (boss, tiers, rewards,
       XP, anti-farm). Output: `research/cloud/Slayers-Spec.md`.
-- [ ] **Capstone dungeon spec** - the one endgame dungeon after Zone 4/5 (`SkyyDungeons-Plan.md`, Decisions row 7.5): research Hypixel Catacombs / Wynncraft raids, propose floors,
+- [ ] **Capstone dungeon spec** - the one endgame dungeon after Zone 4/5 (`docs/plans/SkyyDungeons-Plan.md`, Decisions row 7.5): research Hypixel Catacombs / Wynncraft raids, propose floors,
       rooms, bosses, party size, scaling, rewards. Output: `research/cloud/Capstone-Dungeon-Spec.md`.
-- [ ] **Accessory acquisition** - Accessories are admin-give only today ("drops / chests later", HANDOFF 2026-09-30). Propose how players earn the booster accessories:
-      zone chests, boss drops, event tokens, shop, crafting; per rarity. Read `SkyyAccessories-Plan.md`, `research/Booster-Accessories-Spec.md`. Output: `research/cloud/Accessory-Acquisition.md`.
+- [ ] **Accessory acquisition** - Accessories are admin-give only today ("drops / chests later", docs/log/2026-09.md 2026-09-30). Propose how players earn the booster accessories:
+      zone chests, boss drops, event tokens, shop, crafting; per rarity. Read `docs/plans/SkyyAccessories-Plan.md`, `research/Booster-Accessories-Spec.md`. Output: `research/cloud/Accessory-Acquisition.md`.
 - [ ] **Prestige system spec** from `research/cloud/Tab-Economy.md` section 5: what resets, what is kept, perks, caps, the ticket number joke, per-profile storage. Output: `research/cloud/Prestige-Spec.md`.
 - [ ] **Zone specials / "mayor lite"** - rotating global buffs announced by the Board (Elites-Events-Spec 2.5): research SkyBlock mayor perks, propose a small rotating-buff system with
       rows, schedule and anti-stacking. Output: `research/cloud/Zone-Specials-Spec.md`.

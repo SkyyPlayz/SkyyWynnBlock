@@ -1,6 +1,6 @@
 # SKYWYNN MOD ROSTER — every module we need, and what's buildable today
 
-> **Stale as of 2026-09-22.** Prefer `DESIGN-STATUS.md` and `HANDOFF.md` for what is built, what is locked, and current versions. The tiers and statuses below were not refreshed. One 2026-09-24 addition is recorded at the bottom so it is not only in the newer docs.
+> **Stale as of 2026-09-22.** Prefer `docs/archive/DESIGN-STATUS.md` and `HANDOFF.md` for what is built, what is locked, and current versions. The tiers and statuses below were not refreshed. One 2026-09-24 addition is recorded at the bottom so it is not only in the newer docs.
 
 *2026-09-22. Each ships standalone-capable (zero external deps, version-first names) and slots into the pack later.
 "NOW" = no dependency on the NoesisGUI UI rework, the rune system, Chapter 2 crafting rework, or the hand-built world.*
@@ -78,8 +78,8 @@ Shared code (player-data store, UI doc builder w/ the single-line rules, ledger 
 
 | Mod | What | Status |
 |---|---|---|
-| **SkyyEconomy** | ONE mod for money (Skyy 2026-09-24): SkyyCoins + SkyyBank + SkyyBazaar + SkyyAuctions (BIN auction house) merged; later NPC shops (set up in game) and item value / networth. `/trade` goes to SkyyEssentials instead. | **Next round** after the separate versions are tested. `SkyyEconomy-Plan.md` |
-| **In-game server setup** | Not a mod: every Skyy mod gets an in-game config page under SkyWynn Menu -> Mods (admins), plus big editors (NPC shops, quests, ranks + permissions). | **Planned.** `SkyWynn-Server-Setup-Plan.md` |
-| **SkyyWorldGen** (name TBD) | Solo path for the zone island chain. Uses Hytale's World Gen 2 to auto-generate the world as flying islands split by zone. The server chain stays hand-built shared worlds. | **Planned, not started.** Whether World Gen 2 can do this is open research. See `SkyWynn-Decisions.md` change notes, `SkyyIslands-Plan.md`, `DESIGN-STATUS.md`. |
+| **SkyyEconomy** | ONE mod for money (Skyy 2026-09-24): SkyyCoins + SkyyBank + SkyyBazaar + SkyyAuctions (BIN auction house) merged; later NPC shops (set up in game) and item value / networth. `/trade` goes to SkyyEssentials instead. | **Next round** after the separate versions are tested. `docs/plans/SkyyEconomy-Plan.md` |
+| **In-game server setup** | Not a mod: every Skyy mod gets an in-game config page under SkyWynn Menu -> Mods (admins), plus big editors (NPC shops, quests, ranks + permissions). | **Planned.** `docs/plans/SkyWynn-Server-Setup-Plan.md` |
+| **SkyyWorldGen** (name TBD) | Solo path for the zone island chain. Uses Hytale's World Gen 2 to auto-generate the world as flying islands split by zone. The server chain stays hand-built shared worlds. | **Planned, not started.** Whether World Gen 2 can do this is open research. See `docs/plans/SkyWynn-Decisions.md` change notes, `docs/plans/SkyyIslands-Plan.md`, `docs/archive/DESIGN-STATUS.md`. |
 
-Mods that exist in `HANDOFF.md` and are missing from the 2026-09-22 tables (Profiles, Guilds, Trees, Cooking, Exploration, and later versions of the mods above) are tracked there and in `DESIGN-STATUS.md`, not by rewriting this file.
+Mods that exist in `HANDOFF.md` and are missing from the 2026-09-22 tables (Profiles, Guilds, Trees, Cooking, Exploration, and later versions of the mods above) are tracked there and in `docs/archive/DESIGN-STATUS.md`, not by rewriting this file.

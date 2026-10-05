@@ -1,6 +1,6 @@
 # SkyyGear 0.1 (stage 1: combat weapons + armor): build spec
 
-*Written 2026-09-25 from Skyy's answers of the same day (SkyWynn-Decisions.md "Change notes (2026-09-25)" #5 and #6, HANDOFF
+*Written 2026-09-25 from Skyy's answers of the same day (docs/plans/SkyWynn-Decisions.md "Change notes (2026-09-25)" #5 and #6, HANDOFF
 BUILDER / STATUS block), SkyyGear-Plan.md locks 1-126 plus the tooltip note, SkyyGear-Stat-Catalog.md (Keep rows), and the live
 build scripts (SkyyRolls 0.1.5, SkyyClasses 0.1.6, SkyySkills 0.4.5, SkyyAccessories 0.4.4, SkyyExploration 0.2.1, SkyySacks 0.7.6,
 SkyyAuctions 0.1.1, SkyyMenu 0.3.2). Engine facts were checked read-only against `HytaleServer.jar` bytecode and `Assets.zip` JSON on

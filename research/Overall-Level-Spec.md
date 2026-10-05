@@ -4,7 +4,7 @@
 (TEMP/TMP pointed there, JVM started with `-XX:-UsePerfData`) and were deleted afterwards. No build script, jar, doc or game file was
 touched. Skyy uses they/them.*
 
-*Skyy's answers (2026-09-25, `SkyWynn-Decisions.md` change notes 2026-09-25 #7 (b) and (c)): **Base Mana 10 for every player; magic
+*Skyy's answers (2026-09-25, `docs/plans/SkyWynn-Decisions.md` change notes 2026-09-25 #7 (b) and (c)): **Base Mana 10 for every player; magic
 users (Mage, Priest) start at 20** (their base IS 20, not 10 + 20). **Overall Level = the average of all your skills; every Overall
 Level gives a small amount of Health and Mana** (placeholder numbers, editable in Server Setup). This closes `OPEN-QUESTIONS.md`
 "Mana" and the "amount per level" of Decisions rows 6.4 / 6.11 only as PLACEHOLDERS; Skyy still owns the real numbers.*

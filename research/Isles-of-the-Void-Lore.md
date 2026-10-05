@@ -69,10 +69,10 @@ Main-session suggestions to build on it (pick what you like):
   SkyyIslands already builds island worlds from prefabs). Falling into the void = respawn on your starting shard. Open: do you bridge the
   gaps with blocks you gathered, or repair broken bridges? [bridge with your own blocks - it uses what you just gathered]
 
-## Pocket Shards = SkyWynn's minions (Skyy 2026-10-01; see SkyyMinions-Plan.md)
+## Pocket Shards = SkyWynn's minions (Skyy 2026-10-01; see docs/plans/SkyyMinions-Plan.md)
 
 A small block you place that holds its **own mini shard inside**, which collects one resource - the same idea as SkyBlock minions with
-similar upgrades, but it takes **one block instead of a big area**, and it fits the story. Details in SkyyMinions-Plan.md "Pocket Shards".
+similar upgrades, but it takes **one block instead of a big area**, and it fits the story. Details in docs/plans/SkyyMinions-Plan.md "Pocket Shards".
 
 ## Starter-shard progression (first main-session sketch, superseded by the chain above)
 

@@ -430,6 +430,6 @@ Web:
   https://wynncraft.fandom.com/wiki/Mobs
 - https://hypixelskyblock.minecraft.wiki/w/Mobs
 
-Our own: HANDOFF.md, SkyWynn-Decisions.md (zone island chain, SkyyWorldGen), OPEN-QUESTIONS.md (2026-09-30 request),
+Our own: HANDOFF.md, docs/plans/SkyWynn-Decisions.md (zone island chain, SkyyWorldGen), OPEN-QUESTIONS.md (2026-09-30 request),
 research/Exploration-Research.md (zone discovery engine names), SkyySkills/build_skyyskills_0.4.8.py (KillSys), SkyyGear/build_skyygear_0.1.1.py
 (GearDeathMark, GearHitSys).

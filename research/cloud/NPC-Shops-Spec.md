@@ -2,7 +2,7 @@
 
 Cloud draft, 2026-10-03. Paper design; nothing built. Locks used: OPEN-QUESTIONS 2026-09-25 (shops have **buy and sell-back per item, infinite stock by default, optional limited stock with a restock
 timer; they live in SkyyEconomy 0.2**) and R3 2026-10-02 (**coins never skip collections, tiers, recipes or bags** - coins may buy items you have not unlocked on the AH / Bazaar, but never the unlock itself).
-Reads: `SkyyEconomy-Plan.md`, `research/Server-Setup-Research.md` (Bazaar and Bank rules), `SkyyBazaar/build_skyybazaar_0.1.py` (the real 36-item catalogue and prices). Item ids for non-Bazaar items are UNVERIFIED.
+Reads: `docs/plans/SkyyEconomy-Plan.md`, `research/Server-Setup-Research.md` (Bazaar and Bank rules), `SkyyBazaar/build_skyybazaar_0.1.py` (the real 36-item catalogue and prices). Item ids for non-Bazaar items are UNVERIFIED.
 
 ## 0. Research (SkyBlock NPC shops, from web search snippets)
 

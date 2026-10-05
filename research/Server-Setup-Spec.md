@@ -1,7 +1,7 @@
 # In-game server setup: build spec (SkyyMenu Mods section, the admin config registry, and the big editors)
 
 *Written 2026-09-24 by the research workflow for Skyy's in-game server setup direction. Research only: no build script, jar, mod folder or
-game file was changed. Sources: `HANDOFF.md` section 1, `SkyWynn-Server-Setup-Plan.md`, `SkyyEconomy-Plan.md`, `research/Settings-Spec.md`
+game file was changed. Sources: `HANDOFF.md` section 1, `docs/plans/SkyWynn-Server-Setup-Plan.md`, `docs/plans/SkyyEconomy-Plan.md`, `research/Settings-Spec.md`
 (sections 1.1-1.5, 4), `research/Server-Setup-Research.md` (Server tools, Engine, Config inventory), `research/Auction-House-Spec.md`
 (sections 3, 4.4, 8), and the newest build script of every Skyy mod on disk (versions in section 4). Owner: Skyy (they/them).
 Review pass applied the same day: see "Review notes" at the end.*
@@ -59,7 +59,7 @@ the list finds a setting or an editor by name ("warps", "shops", "interest") acr
 
 **Skyy's economy question ("roll them into one economy mod, or leave separate for now?"):** it is already decided and it still holds:
 **one SkyyEconomy** (coins, bank, bazaar, auction house, later NPC shops and item value), built **the round after** the separate Bank 0.1.3,
-Bazaar 0.1.2 and Auctions 0.1 are tested (`SkyyEconomy-Plan.md`), so a bug found after the merge is a merge bug. The in-game setup
+Bazaar 0.1.2 and Auctions 0.1 are tested (`docs/plans/SkyyEconomy-Plan.md`), so a bug found after the merge is a merge bug. The in-game setup
 direction makes the merge more useful, not less: one config page with four part switches instead of four mods to manage. `/trade` goes in
 SkyyEssentials (locked). This spec makes **SkyyEconomy 0.1 the first mod built on the admin registry from day one**; the old SkyyCoins,
 SkyyBank, SkyyBazaar and SkyyAuctions do not adopt it, they retire into SkyyEconomy.
@@ -593,7 +593,7 @@ row's file key appears there as `1` or `0` without the `01` token.
 **Convention:** a part switch is a `bool` row, key `part.<id>`, category `parts`, flags `live,part,danger`, stored in the mod's own config
 file (`part.bank=true`). The mod asks for the confirm **only when switching a part OFF** (`Turn the Bazaar OFF for everyone on this
 server? Prices and files are kept.`); switching it back ON asks nothing (1.4.2: the mod decides which changes need `confirm`). The Mods list shows every `part` row. A part that **failed to start** (every part starts inside its own `try/catch`,
-`SkyyEconomy-Plan.md` rule 4) shows `FAILED - see the server log` and cannot be switched on until a restart.
+`docs/plans/SkyyEconomy-Plan.md` rule 4) shows `FAILED - see the server log` and cannot be switched on until a restart.
 
 **What "off" means, for every mod:**
 1. Its commands stay registered (the name is not freed for another mod) and answer `<Part> is turned off on this server.` The pages refuse
@@ -604,7 +604,7 @@ server? Prices and files are kept.`); switching it back ON asks nothing (1.4.2: 
 5. Its bridge functions answer as if the part were not installed (other mods already handle that case), except where rule 3 needs a path.
 6. Live: checked at every command, click and tick. No restart.
 
-**SkyyEconomy (the four switches in `SkyyEconomy-Plan.md`; coins is the core and has no switch):**
+**SkyyEconomy (the four switches in `docs/plans/SkyyEconomy-Plan.md`; coins is the core and has no switch):**
 
 | Part | Off means | Still works |
 |---|---|---|
@@ -758,7 +758,7 @@ int 2. bypass: `bypass.enabled` (part), `bypass.multiplier` 5, `bypass.minPrice`
 bool false (D), `exclude.benches` text, `cap.perCredit` 256 / `cap.perMinute` 20000 (A), `bridge.add.sources` text (A), `bridge.add.felled`
 bool, `migrate` choice `convert|reset` (A). registry (A): tables `coll` (the 105 `coll.<Id>` lines, one text column validated by the mod's
 own line parser) and `rewards` (the `rewards.properties` lines).
-Make configurable later: per-collection bypass and the level walls (open design, `DESIGN-STATUS.md` 11; do not guess).
+Make configurable later: per-collection bypass and the level walls (open design, `docs/archive/DESIGN-STATUS.md` 11; do not guess).
 
 ### 4.12 SkyySacks [0.7.5]
 `craftSearch` bool true (L; binding `reload:SackCfg.reload`: the value lives in an `AtomicBoolean` `SEARCH`, not a `field:` type, and
@@ -1008,12 +1008,12 @@ and wrong for branching scripts. So SkyyQuests will ship an in-game **linear** q
   its config load uses, so a bad tier string is refused with the reason.
 - **Late-game "can't be sold" list:** the `market.blocked` table over `Skyy_Market/blocked.txt` (id or `Prefix*`, reason column), shared by the
   auction house and later the bazaar (AH spec 4.4). Entries other mods add at runtime (owner not `file`) are shown `ro` with their owner.
-  The cutoff itself is still open (`DESIGN-STATUS.md` 11), so nothing ships blocked.
+  The cutoff itself is still open (`docs/archive/DESIGN-STATUS.md` 11), so nothing ships blocked.
 
 ### 5.7 Progression numbers (Skills, Trees, Collections, Exploration, Cooking)
 No separate editor: these are the tables and rows of 4.9-4.13 and 4.18 (block XP rules, node tables, curves, zone XP). The two actions for the
 level curve (scale by %, set max level) are the only new logic. SkyyExploration 0.2's discovery spots stay the in-game placement already
-planned there (`SkyyExploration-Plan.md`).
+planned there (`docs/plans/SkyyExploration-Plan.md`).
 
 ---
 
@@ -1044,7 +1044,7 @@ planned there (`SkyyExploration-Plan.md`).
 |---|---|---|
 | 1 | `tools/skyycfg.py` (the kit + its bare-JVM test harness, 8.2) | nothing |
 | 2 | **SkyyMenu 0.3** (Mods section, `/modconfig`, its own config page). LOCKED 2026-09-25 (Skyy): SkyyMenu 0.2 (player Settings) and 0.3 (Server Setup) stay two versions. That was already the default. | step 1 |
-| 3 | **SkyyEconomy 0.1**: the merge round (`SkyyEconomy-Plan.md`), built on the kit from day one: parts, coins, bank, bazaar, auctions, market tables; `/bankconfig` etc. through the kit | step 1; the separate Bank 0.1.3 / Bazaar 0.1.2 / Auctions 0.1 tested |
+| 3 | **SkyyEconomy 0.1**: the merge round (`docs/plans/SkyyEconomy-Plan.md`), built on the kit from day one: parts, coins, bank, bazaar, auctions, market tables; `/bankconfig` etc. through the kit | step 1; the separate Bank 0.1.3 / Bazaar 0.1.2 / Auctions 0.1 tested |
 | 4 | **SkyyRanks 0.1** (5.1): ranks, grants, members, per-player denies, chat prefix. Staff and permission setup is one of the first things an owner does, so it comes before the waves. First in-game test: the `hytale:Adventurer` check (8.4.5). Until it ships, ranks are vanilla `/op`, `/perm group|user`, `/setgroup` or `permissions.json` | step 1 (its `link` row shows in the Mods list once step 2 exists; it needs nothing from SkyyEconomy) |
 | 5 | Wave 1, the gaps (each mod's next version): SkyyParty (+`/partyadmin reload`), SkyyEssentials (+tpa timings, warps editor; world spawn is the owner/ops command in 5.4, not a page row), SkyyIslands (starter kit row + all defaults + the `volatile` / `DEF_PERM` field changes), SkyyProfiles (with the 4 -> 6 follow-up), SkyyVault, SkyyGuilds, SkyyRolls (+`/rolls` permission fix) | step 1 |
 | 6 | Wave 2, progression: SkyySkills (+curve actions), SkyyTrees, SkyyCollections, SkyyExploration (+stamina read over the bridge), SkyyCooking, SkyyClasses, SkyySacks, SkyyAccessories (new config file), SkyyHud (default layout) | step 1 |
@@ -1188,7 +1188,7 @@ interim (5.5); Q16 cross-reference (0, 9).
   check still enforces the rule mechanically.
 - *Danger on parts and `ah.paused`:* the confirm is asked only for the risky direction (switching OFF, pausing, raising a confirm threshold).
   Turning something back on restores normal play and asks nothing.
-- *NPC quests "Bigger editors table":* that table is in `SkyWynn-Server-Setup-Plan.md`, which this workflow may not edit; the carve-out went
+- *NPC quests "Bigger editors table":* that table is in `docs/plans/SkyWynn-Server-Setup-Plan.md`, which this workflow may not edit; the carve-out went
   into this spec's section 0 table and the 5.3 heading instead.
 - *World spawn:* the finding's premise matched the old text, but the old text itself was wrong: an API exists and vanilla `/spawn set`
   already sets the world spawn in game (verified this session), so the gap is closed rather than tracked as research.

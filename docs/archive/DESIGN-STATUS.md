@@ -6,7 +6,7 @@ collections, bags, bazaar, accessories) with Wynncraft (classes, a chain of zone
 
 **BUILDER / STATUS (2026-09-25):** **SkyGear is planned enough to START BUILDING.** Implement locked systems. Do not block on open tables. Gear themes through Magical Power and the Combat 15 ladder are locked enough to implement. Accessory Power: each accessory has its own buffs and adds flat +10 to +25 by rarity (exact table not set). Total is the sum. The selected profile scales from that total. No Power is scrap. The default profile is Balance. Still open, and do not block the build: tuning, stone powers (do not extend the Hypixel stone list), Wynn Major IDs, accessory-power number curves, Magical Power on enrichments or tuning, gathering gear, and later content (pets, fishing, hunting). Combat gear is the first build (change note 25). Full note is at the top of `HANDOFF.md` and `SkyyGear-Plan.md`.
 
-Where the detail lives: `HANDOFF.md` (the locked decisions + current state), `SkyWynn-Decisions.md`, `SkyWynn-Master-Plan.md`,
+Where the detail lives: `HANDOFF.md` (the locked decisions + current state), `docs/plans/SkyWynn-Decisions.md`, `docs/plans/SkyWynn-Master-Plan.md`,
 the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-party mods), `TEST-CHECKLIST.md`.
 **Every choice the builds made for Skyy (with the live default): `OPEN-QUESTIONS.md`.**
 
@@ -64,7 +64,7 @@ the `Skyy*-Plan.md` files, the build specs in `research/`, `PACK.md` (third-part
 - Auction House (live 2026-09-25): Buy It Now only (bids later), `/ah` with categories, search, sort, rarity; Hypixel fees; listings belong to
   the profile that made them. `/vault`: item storage shared by all your profiles. Page buy confirm is locked 2026-09-25: below 50,000 coins the page buys at once; at or above that a dialog asks "Buy page X for Y coins?" (`buyConfirmCoins`). 0.1.2 still uses a second click within 10 s. `/trade`: two-player trade window with coins.
 - **SkyyEconomy (Skyy, 2026-09-24):** Coins, Bank, Bazaar and the Auction House become one mod in the next round; later NPC shops (set up
-  in game) and an item value / networth tool. `/trade` goes in SkyyEssentials. Plan: `SkyyEconomy-Plan.md`.
+  in game) and an item value / networth tool. `/trade` goes in SkyyEssentials. Plan: `docs/plans/SkyyEconomy-Plan.md`.
 
 **Social**
 - Parties (invite, kick, promote, party chat, a party page, shared combat XP) and guilds (Leader / Admin / Member, guild chat, guild bank
@@ -92,7 +92,7 @@ buttons, spacing). New pages follow it from now on; existing Skyy pages get a va
 ## Direction: everything editable in game (Skyy, 2026-09-24)
 Everything a server owner might change should be editable in game: SkyWynn Menu -> Mods (admins) -> click a mod -> its config page, plus
 editors for NPC shops, NPC quests, ranks and permissions, the island template and the market. Files stay and always match the game.
-Plan: `SkyWynn-Server-Setup-Plan.md`.
+Plan: `docs/plans/SkyWynn-Server-Setup-Plan.md`.
 
 ## Direction: our own content
 Eventually every mod in the pack is SkyWynn's own; third-party mods (crossbow tiers, saplings) are stopgaps. The gear line is locked in `SkyyGear-Plan.md` (2026-09-24): combat armor and weapons copy Wynncraft (unidentified drops, level + rarity on every piece), gathering armor is SkyBlock-style farming and foraging sets (mining likely the same), and Smithing level feeds smithing rarity. It still sits on the item rolls + tooltip system that works now. Reforging and powders remain later Smithing XP. We rebuild features ourselves rather than copying other authors' files.
@@ -122,7 +122,7 @@ islands split by zone. Status: planned, not started. ANSWERED 2026-10-01: World 
 5. **Campfire accessory:** it gives only the guaranteed Grade (no skill-tree Grade chances or extra-dish perks) - right for an emergency cook?
 6. **Islands:** what should visitors be allowed to use by default (today: doors only)? The island settings menu will make it the owner's call.
 7. **Exploration:** what else should level it past about level 25 (it is one-time only for now)? The rest of the Exploration tree.
-8. **Accessories:** The shape of Accessory Power is locked (own buff plus one selectable buff that scales with total power). Change notes 17–19: most accessories are crafted; collections unlock the next craft tier; the next rarity needs the previous rarity. Enrichments keep Speed, Crit Damage, Crit Chance, Strength, Defense, Health, and Attack Speed. Intelligence Enrichment is Mana % enrichment (no Intelligence ID). Sea Creature Chance is later. Magic Find Enrichment is scrap. Ferocity Enrichment is pending. Ferocity the stat stays. Enchant cap 300. Total cap 600. Combat, gear, and accessories. Custom starters: Tank, Balance, Slayer, Lucky, Fast, Magical. Hypixel names Fortuitous, Pretty, Protected, Simple, and Warrior are scrap. Powers use flat mana. Dedicated mana accessories use +% mana. Change note 22: Magical Power is the spell-damage stat, not the bag score. Fortress, Harmony, Glass Cannon, Fortune, Blitz, and Arcane are Keep. Hypixel names Commando, Disciplined, Inspired, Ominous, and Prepared are scrap. Still open: stone powers, Fortress's extra debuff, whether Magical Power joins enrichments or tuning, the numbers, and tuning. No Power is scrap (change note 24). The default profile is Balance. Bag-slot prices in `SkyyAccessories-Plan.md` stay a draft.
+8. **Accessories:** The shape of Accessory Power is locked (own buff plus one selectable buff that scales with total power). Change notes 17–19: most accessories are crafted; collections unlock the next craft tier; the next rarity needs the previous rarity. Enrichments keep Speed, Crit Damage, Crit Chance, Strength, Defense, Health, and Attack Speed. Intelligence Enrichment is Mana % enrichment (no Intelligence ID). Sea Creature Chance is later. Magic Find Enrichment is scrap. Ferocity Enrichment is pending. Ferocity the stat stays. Enchant cap 300. Total cap 600. Combat, gear, and accessories. Custom starters: Tank, Balance, Slayer, Lucky, Fast, Magical. Hypixel names Fortuitous, Pretty, Protected, Simple, and Warrior are scrap. Powers use flat mana. Dedicated mana accessories use +% mana. Change note 22: Magical Power is the spell-damage stat, not the bag score. Fortress, Harmony, Glass Cannon, Fortune, Blitz, and Arcane are Keep. Hypixel names Commando, Disciplined, Inspired, Ominous, and Prepared are scrap. Still open: stone powers, Fortress's extra debuff, whether Magical Power joins enrichments or tuning, the numbers, and tuning. No Power is scrap (change note 24). The default profile is Balance. Bag-slot prices in `docs/plans/SkyyAccessories-Plan.md` stay a draft.
 9. **Classes:** Assassin and Shaman design (Shaman gets a custom weapon; its skill name); the ability system waits on Hytale's Chapter 1
    runes. Berserker and Priest were locked 2026-09-25 (the Priest's real AoE heals come with the spell system).
 10. **Profile cap:** how does a player raise the cap above the new default of 6? (Method TBD. SkyyProfiles 0.1 still enforces 4; 0.1.1 in the adoption round raises it to 6.)

@@ -1,0 +1,62 @@
+# Answered - UI
+
+Covers: HUD widgets, SkyWynn Menu, Server Setup, player Settings, vanilla look, minimap, Stats page (SkyyHud, SkyyMenu).
+
+**How to read:** one decision per line, word for word from OPEN-QUESTIONS.md (moved 2026-10-05; still-open questions stay in OPEN-QUESTIONS.md), in that file's order:
+the 'Q&A with Skyy 2026-10-02' block (rounds R1-R9, then dated lines up to 2026-10-04) BEATS every older block below it; inside a
+block the LOWER line is newer and wins. Each line starts with its status: LOCKED / ANSWERED / DECIDED = Skyy
+decided; LIVE / VERIFIED / TESTED = shipped + seen. An OPEN / QUESTION / ASKED line here was answered by a later line - unless OPEN-QUESTIONS.md still lists it.
+New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md (`python tools/qa_append.py ui <file>`). Index of all topics: [README.md](README.md).
+
+## Q&A with Skyy 2026-10-02 (all open questions, round by round - newest answers win)
+- R4 LOCKED (Skyy): Overall Level +0.5 max Health / +0.2 max Mana per level stays until a playtest. NEW REQUEST: a HUD WIDGET for the Overall Level and skills, where each skill can be toggled on / off in the widget (show all, or just the class level, or Overall + Mining - any combo). [next SkyyHud]  *(also in: skills)*
+- R9 LOCKED (Skyy): KEEP ALL the small live defaults not otherwise marked in this file - tree felling XP (felled logs full XP + collections, leaves normal XP, placed logs never), party combat XP 50% within 48 blocks, menu hover tooltips on, staff bypass on, two crossbows share one big-arrow meter, AH 48h never cheaper than 24h (xFloorPrev on), old SkyyRolls rolls not clamped (clampToLevel off), SkyyRanks placeholders (Admin = kick + Server Setup + staff bypass, no ban; Developer = Admin's; Owner = rank editor; only real ops grant op-level nodes; no grants below Member), the vanilla UI look defaults (readable text, footer Close, vanilla colours / tabs / frames, Mythic #CC66CC, current text-box look), no sickle / gear swing-speed for now, a deleted profile's AH claims stay in its archive (admin can regrant), rank perks later, the picked non-metal gear levels (ranges in SkyyGear 0.2).  *(also in: project, skills, social, economy, gear, classes)*
+- LOCKED 2026-10-02 (Skyy): a COMBAT INDICATOR HUD widget - red while in combat, with a small countdown and a shrinking bar showing how close you are to being out of combat (same rule as the in-combat Mana regen: 6 s after taking damage); out of combat hidden by default (widget setting). [building: SkyySkills 0.4.13 bridge skill:fn:combat + SkyyHud 0.3.12 widget]  *(also in: skills)*
+- VERIFIED 2026-10-03 (Skyy): "i can open the menu before my screen loads from the teleport! good work! buttons working, bank, sacks, bizzar, collection. all seems good." (SkyyMenu 0.3.6) + the combat widget works + "xp seems better im on hard" (SkyySkills 0.4.14).  *(also in: skills)*
+- LOCKED 2026-10-03 (Skyy): HUD - "make the game clock box smaller so it can go closer in a corner. (try to keep the boxes pretty small, whatever the gap above and below for the border, keep the same gap on the sides." + "in the settings add the in combat and out of combat colors." -> every widget box: the side padding equals the top / bottom padding, boxes as small as their text; the Game Clock box can reach the corners; Combat widget Settings get an In-combat colour and an Out-of-combat colour. [LIVE: SkyyHud 0.3.13, 2026-10-03]
+- REQUEST 2026-10-03 (Skyy): MINIMAP - "add the cartographer minimap mod to the pack. BUT ... better maps replaces (or hides and covers, the vanilla map ...) but the minimap adds its own second minimap on top of it. so it loads the maps twice, and it hella laggy. So ... look at how cartographer works, and just make a Bettermaps+minimap mod that adds a minimap that piggybacks off of better maps. using the same map, system, just adding a minimap." (matches the roster's SkyyMap: one renderer for full map + minimap). Research running (read-only, ideas only, licences checked) -> research/Minimap-Research.md, then a plan for Skyy.
+- TESTED 2026-10-03 (Skyy, separate world): DAPPERMAP (third-party minimap) - looks better than Cartographer; settings menu with Display (minimap on/off, zoom radius 160 blocks, size 240 px, interface scale, circle / square, rotation, update speed, texture resolution), Markers, Info Panel, Position, Colours, Integrations (Hytale world-map markers; BetterMap markers + BetterMap cave mode when BetterMap is installed). Skyy: "if we can id like to just add the minimap as another widget (i really like dapper maps settings menu (but we dont need the info panel. next ill test with better maps" -> wanted: the minimap as a SkyyHud widget (placed with the other widgets in the HUD editor), a DapperMap-like settings page, no info panel, sharing BetterMap's map instead of loading it twice. [waiting on Skyy's BetterMap test + the minimap research (licences: can DapperMap ship in the pack / be integrated, or do we build our own widget from the ideas)]
+- LOCKED 2026-10-03 (Skyy, after testing DapperMap + BetterMap on the "maps" world): "dapper map was laggy, but got a lot better when i disabled creature markers still laggy though. i think option 2. learn from dapper map, and make our own desiged to piggyback off of better maps (not a standalone mod.) that should help reduce the lag. then we can use or own system." -> our own MINIMAP as a SkyyHud widget, REQUIRING BetterMap and reusing its map data (no second map generator), DapperMap-like settings, no info panel, creature markers optional. LOG FINDINGS (maps world, 2026-10-03 07:01 + 07:06 sessions, read-only): BetterMap 1.3.8 + DapperMap 3.0.1 enabled (Cartographer 0.1.4 and FastMiniMap 2.4.1 present, Cartographer disabled); the server logged "Task took 37-57 ms: DapperMap tick" several times on the WORLD thread (a 30-tick world has ~33 ms per tick, so each one is a lag spike) plus 37-77 ms CompletableFuture tasks. Lesson for our design: no map work on the world thread (only cheap reads there), generate / send minimap images off-thread and only when the view really changed, throttle markers (creature markers were the big cost). [spec after research/Minimap-Research.md lands; build after the current rounds]
+- ANSWERED 2026-10-03 (Skyy, research/Minimap-Research.md questions): skip Cartographer and DapperMap; KEEP BetterMap (joins the pack's third-party list - PACK.md + deploy_set PACK_THIRD_PARTY, install from CurseForge; its allowedWorlds needs the hub world; its usage stats "hstats" OFF in the pack config); a quick SkyyUiProbe test build first (server-sent map pictures in a HUD, probe steps P1-P5), then OUR OWN MINIMAP WIDGET in SkyyHud as a full round: reads the engine's own map stream (UpdateWorldMap / markers - never BetterMap's AGPL code), sends each map piece once as a small cached picture, no world-thread map work; defaults ROUND, TOP-RIGHT, ~160 px, north-up (the client cannot rotate HUD pictures); mob dots OFF by default (throttled when a player turns them on). [queued after the current rounds]
+- REQUEST 2026-10-03 evening (Skyy, playing, SkyWynn Menu screenshot): "this menus should show me all my stats with my current gear, accessory's skill and class bonuses. and everything. like on skyblock it should show health, mana, stamina, strength, crit chance, crit damage, mining and foraging fortune. ect. pretty much all the stats." -> a SkyBlock-style Stats page behind Your Profile: every stat with its live total + a per-source breakdown (gear, accessories, skills, class, trees, food, base); also fixes the cut-off Your Profile text. [spec drafted by the cloud (CLOUD-RESUME top task), multi-mod build after the weekly reset (Mon 2026-10-06) - usage 83%]
+
+## Answer first (they block or shape the next builds)
+1. ANSWERED 2026-09-25: **block** (refuse the sender). Was: **Settings menu: refuse or hide?** When a player switches off party invites, teleport requests or private messages, should the other player be refused (Hypixel style), or should the message just be hidden? Staff bypass? [not built yet - these 3 switches wait for you] (`research/Settings-Spec.md` section 6)
+
+## Numbers picked in the beta round (live now)
+(2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
+- **Menu hover tooltips:** on by default; the book switch turns them off if the stuck tooltip after Esc still happens. Default off? [on]
+
+## Round 9 + SkyyGear defaults (live 2026-09-29)
+(2026-10-02: every line below that is not marked otherwise was confirmed or changed in the Q&A block above - the Q&A wins.)
+- LOCKED 2026-10-01 (Skyy): Server Setup shows every time setting in SECONDS, not milliseconds, and accepts decimals like 0.24 (files keep their old units, the menu converts). [SkyyMenu 0.3.4 - queued with the per-profile menu item]
+- LIVE 2026-10-01 (SkyyMenu 0.3.4; Server Setup now shows the 24 ms settings in seconds too): every profile gets the SkyWynn Menu item the first time it is used (today: once per player, so new profiles have none - /skymenu gives it back). [SkyyMenu 0.3.4]
+
+## Vanilla UI look (kit tools/skyyui.py, 2026-09-29) - defaults picked, change any
+- Text size: "readable" - vanilla's 11-14 px lines are shown at 14-18 px (vanilla list text tops out at 14). Exact vanilla sizes are one switch. [readable]
+- Leaving a page: Esc + a footer Close button (Secondary, cancel sound) like vanilla pages; the corner X is optional (vanilla hides it). [footer Close]
+- Result lines: vanilla green for done, vanilla red for refused, info blue #7caacc for notes (vanilla BarterPage); gold stays for highlights. [blue notes]
+- Tabs: like vanilla's spawn page - the active tab is a Primary button (blue in game), the others Secondary, equal widths. [vanilla tabs]
+- Window: decorated frame (title bar with runes + gold ornaments) for forms and dialogs, the plain frame for long list pages - both are vanilla. [both]
+- Mythic on pages stays #CC66CC (your lock); HUD widgets get vanilla's #000000(0.2) background when the HUD is restyled. [as listed]
+- Not possible inline: vanilla's full-screen dim and bottom-left Back button (a page's root may only have a width and height).
+- Seen in game 2026-09-30 (/skyprobe): dropdowns, tooltips, progress bars, item slots with rarity backgrounds, search boxes, tiles, text gradients, stretching layouts all WORK; checkboxes half-work; rarity FRAMES and empty-slot backgrounds do not. Text box look (3 candidates on probe page 2): not picked yet - the current look stays. [current look]
+
+## In-game server setup (`research/Server-Setup-Spec.md` section 9)
+1. LOCKED 2026-09-25 (Skyy): who sees Server Setup is ops only. The node skyymenu.modconfig can be given to staff. [ops only, already the default]
+2. LOCKED 2026-09-25 (Skyy): which changes ask for a confirm are money, penalties, rates, caps, curves, switching a part off, imports, restores, undos. [already the default]
+3. LOCKED 2026-09-25 (Skyy): old config file versions kept is 10. Was: 20. [10; skyycfg still defaults KEEP=20]
+4. LOCKED 2026-09-25 (Skyy): when a part is off, players can still take out what is theirs (bank withdraw, auction claims). [yes, already the default]
+11. LOCKED 2026-09-25 (Skyy): Player Settings and Server Setup are two menu versions, done as 0.2 + 0.3. [two, already the default]
+18. LOCKED 2026-09-25 (Skyy): the warps page does not move the world spawn. Was: yes, with a confirm. World spawn movement is an owner/ops-only command, for example /setspawn. [command, not the warps page]
+
+## Server Setup pages (round 4, live)
+- LOCKED 2026-09-25 (Skyy): changing the Furnace / Tannery caps does not ask for a confirm. They stay quick to tweak. [no confirm, already the default]
+
+## Player Settings (`research/Settings-Spec.md` section 6)
+- LOCKED 2026-09-25 (Skyy): the Settings icon sits next to the Mods button (slot 39, left of Mods at 40). Was: slot 51, the bottom row. [next to Mods; SkyyMenu 0.3.2 still uses slot 51]
+- LOCKED 2026-09-25 (Skyy): the always-on list stays as written in Settings-Spec section 2.3. [keep as-is]
+- LOCKED 2026-09-25 (Skyy), to be built: settings visibility is permission-based. A player sees only the settings they have permission to change. A basic player does not see admin-only or restricted settings. Those rows are hidden, with no greyed-out or disabled entry. [hidden; SkyyMenu 0.3.2 still shows every row]
+
+## New answers (2026-10-05 on - newest last, beats everything above)
+
