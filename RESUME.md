@@ -4,7 +4,7 @@ Read this first, then only what the task needs. Map of every file + search tips:
 rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests next: `TEST-CHECKLIST.md`.
 
 ## START HERE - the next local session (Skyy 2026-10-05: wait for the usage reset, then work the build list)
-1. On Skyy's PC: `git pull` in `SkyWynn PROJECT` (picks up the 2026-10-05 docs layout, PRs #6 + #7).
+1. On Skyy's PC: `git pull --rebase --autostash` in `SkyWynn PROJECT` (DONE 2026-10-05 ~12:20 -0600: docs layout pulled, local files tidied).
 2. Start Claude Code IN that folder - a LOCAL session (builds need `HytaleServer.jar`; the 2026-10-05 session was cloud-only by mistake).
    It reads CLAUDE.md -> this file -> INDEX.md.
 3. Check the weekly usage first: it resets every MONDAY 15:00 UTC, so it reset on Mon 2026-10-05 15:00 UTC (older notes say
@@ -51,14 +51,15 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 Build (never `--deploy`) -> review (sonnet) -> fix -> cross-check the whole SET (one JVM, -Xverify:all, the Adventurer permission audit,
 `python tools/ci/lint.py` 0 fails) -> pin in `tools/deploy_set.py` -> commit + push -> `python tools/backup_deploy.py` ->
 `python tools/deploy_set.py --yes` with the game closed -> a test section at the end of `docs/tests/2026-10.md` + a "Test next" line in
-TEST-CHECKLIST.md -> HANDOFF versions table + a log line in `docs/log/2026-10.md` -> update this file.
+TEST-CHECKLIST.md -> HANDOFF versions table + a log line in `docs/log/2026-10.md` -> update this file -> `python tools/tidy_local.py --yes`.
 
 ## Never forget
 - Commit ab75b6c: Skyy hand-edited 4 GENERATED scripts (`SkyySkills\build_skyyskills_0.4.5.py`, `SkyyTrees\build_skyytrees_0.2.3.py`,
   `SkyyClasses\build_skyyclasses_0.1.6.py`, `SkyyVault\build_skyyvault_0.1.2.py`); never regenerate them from their old patches - their
   successors are built from the edited scripts.
 - Rollback floors: HANDOFF section 1 + the comments in `tools/deploy_set.py`. Never edit `SkyyGear-Plan.md` / `SkyyGear-Stat-Catalog.md`.
-- Housekeeping: a stray untracked `PROJECT\` folder in the repo root on Skyy's PC - never commit it; Skyy deletes it.
+- Local files (git-ignored) stay tidy: `python tools/tidy_local.py --yes` after every deploy; where everything is: INDEX.md "Local only" +
+  `backups/README.md` (every backup, incl. the packed ones in `backups/archive/`).
 
 ## On Skyy's PC (read-only except the deploy)
 Project = this repo: `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\`. Game: `C:\Users\SkyLo\AppData\Roaming\Hytale\install\

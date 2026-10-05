@@ -22,13 +22,24 @@ grep hit is the whole thing: `grep -n "Lantern" docs/answered/*.md docs/log/*.md
 | `docs/handoff/` | old HANDOFF parts: `design-locks.md` (goal, gear locks, design calls), `versions-history.md` (every step per mod), `state-2026-09.md`, `design-notes-2026-09.md` | history - newer answers beat them |
 | `docs/plans/` | design plans: `docs/plans/SkyWynn-Master-Plan.md`, `docs/plans/SkyWynn-Decisions.md` (change notes), `docs/plans/SkyWynn-Server-Setup-Plan.md`, `docs/plans/SkyWynn-QoL-Catalog.md`, `docs/plans/Skyy<Mod>-Plan.md` | the 2026-09 plans; later answers in `docs/answered/` win |
 | `docs/archive/` | snapshots nobody needs day to day: `docs/archive/DESIGN-STATUS.md` (2026-09-25), `docs/archive/BETA-TEST.md` (2026-09-24), `docs/archive/SkyWynn-Mod-Roster.md` (stale 2026-09-22), `docs/archive/RESUME-2026-10-05.md` (the old long RESUME) | history only |
-| `research/` | specs + research per feature (e.g. `research/Mob-Curve-Spec.md`, `research/Tool-Levels-Spec.md`, `research/Loot-Unid-Spec.md`, `research/SkyyArmory-Spec.md`, `research/SkyyWorldGen-Plan.md`, `research/Vanilla-UI-Style-Guide.md`) | `ls research/`; grep |
+| `research/` | specs + research per feature (e.g. `research/Mob-Curve-Spec.md`, `research/Tool-Levels-Spec.md`, `research/Loot-Unid-Spec.md`, `research/SkyyArmory-Spec.md`, `research/SkyyWorldGen-Plan.md`, `research/Vanilla-UI-Style-Guide.md`; `research/Accessory-Table-Spec.md` = PAUSED draft) | `ls research/`; grep |
 | `research/classes/` | ONE FILE PER CLASS (Warrior, Archer, Mage, Priest, Berserker, Monk, Assassin) + `README.md` (rules + modifier pool); easy-read HTML pages in `research/classes/html/` | edit the `.md`; `python tools/class_pages.py` rebuilds the HTML |
 | `research/cloud/` | cloud sessions' specs + their log `research/cloud/LOG.md` | |
 | `Skyy<Mod>/` | one build script per mod version (`build_skyy<mod>_<ver>.py`, Java inside Python) + tests; jars are git-ignored | |
-| `tools/` | `deploy_set.py` (SET + rollback floors), `backup_deploy.py`, `skyybuild.py`, kits `skyyui.py` / `skyycfg.py` / `skyymove.py` / `skyyart.py`, contracts `tools/AGENT-BRIEF.md` / `tools/CONFIG-CONTRACT.md` / `tools/PROFILES-CONTRACT.md`, `<mod>_<ver>_patch.py`, `tools/ci/lint.py`, `tools/dev/` (engine helpers), `qa_append.py`, `docs_check.py` | |
+| `tools/` | `deploy_set.py` (SET + rollback floors), `backup_deploy.py`, `skyybuild.py`, kits `skyyui.py` / `skyycfg.py` / `skyymove.py` / `skyyart.py`, contracts `tools/AGENT-BRIEF.md` / `tools/CONFIG-CONTRACT.md` / `tools/PROFILES-CONTRACT.md`, `<mod>_<ver>_patch.py`, `tools/ci/lint.py`, `tools/dev/` (engine helpers), `qa_append.py`, `docs_check.py`, `tidy_local.py` (local clean-up) | |
 | root | `SkyyGear-Plan.md` + `SkyyGear-Stat-Catalog.md` = Skyy's own gear design (never edit); `PACK.md` = third-party mods in the pack | |
 | `.obsidian/` + `docs/OBSIDIAN.md` | shared Obsidian vault settings (bookmarks, easy-read snippet, markdown links, hidden folders) + how to use the vault | the repo folder is the vault |
+
+## Local only (Skyy's PC, git-ignored - tidy with `python tools/tidy_local.py --yes`)
+| Where | What |
+|---|---|
+| `Skyy<Mod>/Skyy<Mod>-<ver>.jar` | built jars: only the SET version, the one before it (one-step rollback) and anything newer than the SET; older ones are in `backups/archive/old-jars-*.tar.xz` |
+| `backups/README.md` | START HERE for backups: every deploy backup (folder or archive) with the jar versions that changed + how to restore |
+| `backups/deploy-<date>-<time>/` | the newest 5 pre-deploy backups (`Mods/` Skyy jars, world `config.json`, `data/Skyy_*`); made by `tools/backup_deploy.py` |
+| `backups/archive/` | verified `.tar.xz` packs: `deploys-<YYYY-MM>` (older deploy backups), `old-jars-<date>`, `scratch-<task>-<date>` (finished agent scratch) |
+| `tools/dev/scratch/<task>/` | live agent scratch only (now: `mobcurve-numbers/` = the mob curve spec's number model, kept for the mob curve build); pack or delete when the task is done |
+| `.claude/worktrees/` | Claude Code agent worktrees (removed automatically) |
+| outside the repo | game files + `UserData` (read-only except the deploy), Claude's memory (`C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK\memory\`); the other folders in `Hytale mods WORK` are Skyy's |
 
 ## Moved on 2026-10-05 (old name -> new place; old build-script comments still use the old names)
 | Old | New |

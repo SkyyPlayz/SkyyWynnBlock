@@ -31,7 +31,7 @@ instructions over many sessions (2026-09-22 to 2026-10-05). When something here 
   their licence allows it), or personal data (emails, tokens). Built jars, `backups/` and scratch are git-ignored.
 - Don't copy other authors' code or assets unless their licence allows it. Ideas are fine: "never build new when you can steal what
   already works" means **vanilla Hytale first**, then borrow ideas or allowed code from others.
-- Never commit the stray `PROJECT/` folder (an old agent-scratch accident) or anything under `tools/dev/scratch/`.
+- Never commit anything under `tools/dev/scratch/`, `backups/` or `.claude/worktrees/` (all git-ignored).
 
 ## 3. Deploying (Skyy's standing auto-deploy rule)
 
@@ -43,6 +43,7 @@ Skyy: "just deploy things as they are ready, so I don't have to ask you to deplo
    (`python tools/backup_deploy.py`).
 4. `python tools/deploy_set.py --yes` - the **only** deploy path. Build scripts never get `--deploy`.
 5. Add the TEST-CHECKLIST section, the HANDOFF version row + log line, update RESUME / OPEN-QUESTIONS, commit and push.
+6. `python tools/tidy_local.py --yes` - keeps the local-only files small (section 5 "Keep it tidy").
 
 Respect the rollback floors written in `tools/deploy_set.py` (for example: never roll SkyyProfiles below 0.1.5 once a profile was deleted).
 
@@ -97,6 +98,11 @@ Obsidian vault - `docs/OBSIDIAN.md`):
 - Class designs: one file per class in `research/classes/` (easy-read: short lines, big spacing); after editing one, run
   `python tools/class_pages.py` to rebuild its HTML page.
 - Before committing a docs move / split: `python tools/docs_check.py` must say OK (nothing lost, no new broken paths).
+- **Keep it tidy (Skyy 2026-10-05: "id like all the project files to remain clean and organized throughout the project"):** every new
+  file goes where `INDEX.md` says that kind of file lives (no new top-level files or folders without adding them to INDEX.md); finished
+  scratch is packed or deleted the same day (`python tools/tidy_local.py --yes --scratch <name>`); after every deploy run
+  `python tools/tidy_local.py --yes` (packs old jars + all but the newest 5 deploy backups into verified `backups/archive/*.tar.xz`,
+  clears build caches, rewrites `backups/README.md`). The local-only layout is in INDEX.md "Local only".
 - Skyy's ideas go into `research/*.md` even when they are "just ideas" (world gen, pets, dragons, story ...).
 - **Never edit `SkyyGear-Plan.md` or `SkyyGear-Stat-Catalog.md`** - Skyy's own design docs.
 - Many docs have mixed line endings (`.gitattributes` keeps bytes exact): edit them without converting line endings; append in the
