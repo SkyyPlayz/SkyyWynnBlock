@@ -28,6 +28,7 @@ REWRITTEN = {
     "PROJECT-RULES.md": "'Where to start' + section 5 describe the new docs layout",
     "CLOUD-RESUME.md": "the 'Docs consolidation map' + 'README draft' tasks are done; paths updated",
     "tools/AGENT-BRIEF.md": "builders' reading list + never-edit list use the new layout",
+    "tools/CONFIG-CONTRACT.md": "emit() example: KEEP 20 -> 10 (config History keeps 10 versions, 2026-10-05)",
 }
 REWRITTEN_DIRS = ("research/classes/",)  # Skyy 2026-10-05: class files refined for easy reading (facts kept - see the PR review)
 NO_EDIT = {"SkyyGear-Plan.md", "SkyyGear-Stat-Catalog.md"}  # Skyy's own docs: never edited, so their old names resolve through MOVES
