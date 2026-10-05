@@ -76,4 +76,6 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 7. LOCKED 2026-09-25 (Skyy): NPC shops are in SkyyEconomy 0.2. [0.2, already the default]
 
 ## New answers (2026-10-05 on - newest last, beats everything above)
-
+- LOCKED 2026-10-05 (Skyy, SkyyBazaar 0.1.4 review questions): CROPS follow the VANILLA Farming Bench order ("Vanilla order") - Wheat / Carrot / Lettuce / Corn 2, Cauliflower / Turnip / Aubergine / Pumpkin 6, Chilli / Tomato / Cotton / Rice 16, Potato / Onion 40.
+- LOCKED 2026-10-05 (Skyy): SEEDS + SAPLINGS "Raise with their tier" - they climb x2 per tier like their crop / log (still capped wherever a buy-craft-sell loop would open), so buy -> grow -> sell still pays, just less.
+- LOCKED 2026-10-05 (Skyy): Prisma Ore 75, Silver 14, Gold 20 stay as they are ("Leave them"); changeable live with /bazaaradmin price.

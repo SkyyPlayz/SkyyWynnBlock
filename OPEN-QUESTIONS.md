@@ -33,7 +33,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
   yes; docs/answered/gear.md "TESTED 2026-10-04"]
 
 ### economy
-- Bazaar CLOTH and GEM prices [x2 per tier step, like metals / woods / crops]
+- Bazaar CLOTH and GEM prices [x2 per tier step, like metals / woods / crops - built into SkyyBazaar 0.1.4: cloth scraps 4 / 16 / 40 / 96 / 256 / 640, Diamond + Voidstone 120]
 - which late-game items can never be bought or sold (the market wall)? [list empty until you name items]
 
 ### bags
