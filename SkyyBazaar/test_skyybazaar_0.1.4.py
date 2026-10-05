@@ -131,7 +131,7 @@ def build_namespace():
               "auto_prices", "loop_check", "loop_check_selftest", "edge_table", "edge_loops", "set_jars", "set_model", "farming_path"}
     want_v = {"SPREAD", "BAG_TABS", "ALL_OF_BAG", "SKIP", "NOSRC", "PREMIUM_BENCHES", "PREMIUM_ITEMS", "PREMIUM_DEF",
               "PREMIUM_MIN", "PREMIUM_MAX", "AUTO", "PRODUCTS", "EXTRA_TABS", "PRODUCTS_012", "PRICE_014", "VANILLA_SEED_TIER",
-              "PRICE_TIER", "CROP_PRICE", "SEED_PRICE", "ETERNAL_PRICE", "SEED_CAP", "ETERNAL_CAP"}
+              "PRICE_TIER", "CROP_PRICE", "SEED_PRICE", "ETERNAL_PRICE", "SEED_CAP", "ETERNAL_CAP", "SAPLING_TIER", "SAPLING_ESSENCE"}
     body = []
     got_f, got_v = set(), set()
     for n in t.body:
@@ -677,6 +677,18 @@ def run():
         for i_, want_, cap_ in (("Plant_Crop_%s_Item" % c_, NS["CROP_PRICE"][t_], None), ("Plant_Seeds_%s" % c_, NS["SEED_PRICE"][t_], NS["SEED_CAP"].get(c_)),
                                 ("Plant_Seeds_%s_Eternal" % c_, NS["ETERNAL_PRICE"][t_], NS["ETERNAL_CAP"].get(c_))):
             check(abs(base_of(i_) - (want_ if cap_ is None else cap_)) < 1e-9, "N: %s (vanilla tier %d -> price tier %d) = %s" % (i_, vt, t_, base_of(i_)))
+    # saplings: x2 per log tier of the 0.1.3 sapling price, capped at floor-to-0.5 of 0.6 x the Essence of Life of their recipe (own or
+    # inherited); the same cap rule gives the seed caps; every capped price keeps buy essence -> craft -> sell below 1.0
+    old_sap = dict((str(x).split("=", 1)[0], float(str(x).split(",")[1])) for x in JClass(Cls.forName("com.skyy.bazaar.Catalog", True, old_loader)).SEED)
+    for s_, tier_ in NS["SAPLING_TIER"].items():
+        i_ = "Plant_Sapling_" + s_
+        n_ess = NS["SAPLING_ESSENCE"][s_]
+        cap_ = None if n_ess is None else math.floor(0.6 * n_ess * 2 + 1e-9) / 2.0
+        want_ = old_sap[i_] * 2 ** (tier_ - 1)
+        exp_ = want_ if cap_ is None or want_ <= cap_ else cap_
+        check(abs(base_of(i_) - exp_) < 1e-9 and base_of(i_) >= old_sap[i_], "N: %s tier %d: %s (0.1.3 %s, cap %s)" % (i_, tier_, base_of(i_), old_sap[i_], cap_))
+        if n_ess is not None:
+            check(base_of(i_) * 0.9 < n_ess * 0.5 * 1.1, "N: %s: buy %d essence -> craft -> sell does not pay" % (i_, n_ess))
     ladder = [base_of(o) for o in ("Ore_Copper", "Ore_Iron", "Ore_Thorium", "Ore_Cobalt", "Ore_Adamantite", "Ore_Mithril", "Ore_Onyxium")]
     check(ladder == [5.0, 16.0, 48.0, 144.0, 480.0, 1440.0, 3712.0] and all(abs(ladder[k] - [5, 8, 12, 18, 30, 45, 58][k] * 2 ** k) < 1e-9 for k in range(7)),
           "N: ores = 0.1.3 x 2^tier step: %s" % ladder)

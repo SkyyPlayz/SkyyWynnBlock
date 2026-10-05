@@ -13,7 +13,7 @@ name are 0.1.3's (asserted byte-identical by tools/bazaar_0_1_4_patch.py).
  - PRICE_014 (the table below PRODUCTS): ores x2 per tier step of the tool ladder (Copper 5, Iron 16, Thorium 48, Cobalt 144,
    Adamantite 480, Mithril 1,440, Onyxium 3,712; ingots stay AUTO = ore + fuel x (1 + premium); Silver, Gold, Prisma unchanged); logs x2
    per tier step (T1 3 / Bamboo, Burnt 2 stay; T2 8; T3 Amber, Redwood 20; T4 Azure, Petrified 48; T5 Crystalwood, Fire, Frostwood,
-   Stormbark 128; planks and saplings unchanged); hides x2 flat (Soft 8 ... Prismatic 90; leathers AUTO); cloth scraps x2 per tier step
+   Stormbark 128; planks unchanged); hides x2 flat (Soft 8 ... Prismatic 90; leathers AUTO); cloth scraps x2 per tier step
    (Wool / Linen / Cotton 4, Silk 16, Shadoweave 40, Cindercloth 96, Stormsilk 256, Prismaloom 640; bolts AUTO from 1 Cotton / Wool
    Scraps - the vanilla Loombench weaves EVERY bolt but Wool from 1 Cotton, so a bolt can never cost more than ~1.22 x Cotton);
    Diamond / Voidstone 60 -> 120 (the 40 gems stay). Bronze Ingot 21 -> 40 (Bazaar-only: from 38.5 the latent buy Bronze + log +
@@ -26,6 +26,10 @@ name are 0.1.3's (asserted byte-identical by tools/bazaar_0_1_4_patch.py).
    vanilla recipe needs it (Essence of Life 0.5: seed <= essence x 0.5 x 1.1 / 0.9; eternal <= its recipe cost x 1.1 / 0.9):
    Chilli / Tomato seeds 3.5, Onion / Potato seeds 6, Lettuce / Wheat eternal 37, Chilli / Tomato eternal 600, Onion / Potato eternal
    2,400. NOTE: the vanilla path is NOT today's price order (Potato / Onion are the LAST vanilla tier but were 2 / 3 coins).
+ - SAPLINGS (Skyy 2026-10-05 LOCKED: seeds + saplings "Raise with their tier"): x2 per tier step of their log (today a sapling costs
+   what its log costs, so this is also the same sapling:log ratio), capped where the vanilla Farmingbench recipe (N Essence of Life -> 1;
+   SAPLING_ESSENCE, checked against Assets.zip) would let buy -> craft -> sell pay. ONE cap rule for seeds and saplings: floor to 0.5 of
+   0.6 x N (the loop bound is 0.611 x N). Crystal / Poisoned inherit Oak's 15-essence recipe; Apple's needs Greater Essence + Apples: uncapped.
  - MONEY LOOPS: everything 0.1.3 checks (check_assets at premium 0 / 15 / 20 / 22, loop_check at every premium 0..22 - fuel, charcoal,
    co-products, liquidation - and the admin price guard) on the new table, PLUS (0.1.4) the same loop_check over the vanilla recipes
    UNIONED with the item / recipe assets of every tools/deploy_set.py SET jar (their recipes added, their items' resource types added -
@@ -561,27 +565,27 @@ PRODUCTS = [  # (item id, base price or AUTO, official en-US name) - display ord
     ("Plant_Sapling_Palm", 3, "Palm Sapling"),
     ("Plant_Sapling_Spruce", 3, "Spruce Sapling"),
     ("Plant_Sapling_Spruce_Frozen", 3, "Frozen Spruce Sapling"),
-    ("Plant_Sapling_Apple", 4, "Apple Sapling"),
-    ("Plant_Sapling_Banyan", 4, "Banyan Sapling"),
-    ("Plant_Sapling_Bottletree", 4, "Bottletree Sapling"),
-    ("Plant_Sapling_Camphor", 4, "Camphor Sapling"),
-    ("Plant_Sapling_Fig_Blue", 4, "Blue Fig Sapling"),
-    ("Plant_Sapling_Gumboab", 4, "Gumboab Sapling"),
-    ("Plant_Sapling_Maple", 4, "Maple Sapling"),
-    ("Plant_Sapling_Palo", 4, "Palo Sapling"),
-    ("Plant_Sapling_Poisoned", 4, "Poisoned Sapling"),
-    ("Plant_Sapling_Sallow", 4, "Sallow Sapling"),
-    ("Plant_Sapling_Spiral", 4, "Spiral Sapling"),
-    ("Plant_Sapling_Windwillow", 4, "Willow Sapling"),
-    ("Plant_Sapling_Wisteria_Wild", 4, "Wild Wisteria Sapling"),
-    ("Plant_Sapling_Amber", 5, "Amber Sapling"),
-    ("Plant_Sapling_Redwood", 5, "Redwood Sapling"),
-    ("Plant_Sapling_Azure", 6, "Azure Sapling"),
-    ("Plant_Sapling_Petrified", 6, "Petrified Pine Sapling"),
-    ("Plant_Sapling_Crystal", 8, "Crystal Sapling"),
-    ("Plant_Sapling_Fire", 8, "Fire Sapling"),
-    ("Plant_Sapling_Ice", 8, "Frostwood Sapling"),
-    ("Plant_Sapling_Stormbark", 8, "Stormbark Sapling"),
+    ("Plant_Sapling_Apple", 8, "Apple Sapling"),
+    ("Plant_Sapling_Banyan", 8, "Banyan Sapling"),
+    ("Plant_Sapling_Bottletree", 8, "Bottletree Sapling"),
+    ("Plant_Sapling_Camphor", 6, "Camphor Sapling"),
+    ("Plant_Sapling_Fig_Blue", 8, "Blue Fig Sapling"),
+    ("Plant_Sapling_Gumboab", 6, "Gumboab Sapling"),
+    ("Plant_Sapling_Maple", 8, "Maple Sapling"),
+    ("Plant_Sapling_Palo", 8, "Palo Sapling"),
+    ("Plant_Sapling_Poisoned", 8, "Poisoned Sapling"),
+    ("Plant_Sapling_Sallow", 8, "Sallow Sapling"),
+    ("Plant_Sapling_Spiral", 8, "Spiral Sapling"),
+    ("Plant_Sapling_Windwillow", 8, "Willow Sapling"),
+    ("Plant_Sapling_Wisteria_Wild", 8, "Wild Wisteria Sapling"),
+    ("Plant_Sapling_Amber", 9, "Amber Sapling"),
+    ("Plant_Sapling_Redwood", 12, "Redwood Sapling"),
+    ("Plant_Sapling_Azure", 12, "Azure Sapling"),
+    ("Plant_Sapling_Petrified", 18, "Petrified Pine Sapling"),
+    ("Plant_Sapling_Crystal", 9, "Crystal Sapling"),
+    ("Plant_Sapling_Fire", 18, "Fire Sapling"),
+    ("Plant_Sapling_Ice", 9, "Frostwood Sapling"),
+    ("Plant_Sapling_Stormbark", 9, "Stormbark Sapling"),
     ("Plant_Fruit_Berries_Red", 1, "Wild Berries"),
     ("Plant_Fruit_Apple", 2, "Apple"),
     ("Plant_Fruit_Pinkberry", 2, "Pinkberry"),
@@ -792,6 +796,27 @@ PRICE_014 = {
     "Plant_Crop_Rice_Item": (3, 16),
     "Plant_Crop_Tomato_Item": (3, 16),
     "Plant_Crop_Turnip_Item": (3, 6),
+    "Plant_Sapling_Amber": (5, 9),
+    "Plant_Sapling_Apple": (4, 8),
+    "Plant_Sapling_Azure": (6, 12),
+    "Plant_Sapling_Banyan": (4, 8),
+    "Plant_Sapling_Bottletree": (4, 8),
+    "Plant_Sapling_Camphor": (4, 6),
+    "Plant_Sapling_Crystal": (8, 9),
+    "Plant_Sapling_Fig_Blue": (4, 8),
+    "Plant_Sapling_Fire": (8, 18),
+    "Plant_Sapling_Gumboab": (4, 6),
+    "Plant_Sapling_Ice": (8, 9),
+    "Plant_Sapling_Maple": (4, 8),
+    "Plant_Sapling_Palo": (4, 8),
+    "Plant_Sapling_Petrified": (6, 18),
+    "Plant_Sapling_Poisoned": (4, 8),
+    "Plant_Sapling_Redwood": (5, 12),
+    "Plant_Sapling_Sallow": (4, 8),
+    "Plant_Sapling_Spiral": (4, 8),
+    "Plant_Sapling_Stormbark": (8, 9),
+    "Plant_Sapling_Windwillow": (4, 8),
+    "Plant_Sapling_Wisteria_Wild": (4, 8),
     "Plant_Seeds_Aubergine": (1, 2),
     "Plant_Seeds_Aubergine_Eternal": (151, 200),
     "Plant_Seeds_Carrot_Eternal": (46, 50),
@@ -846,6 +871,8 @@ PRICE_TIER = {1: 1, 2: 1, 3: 2, 4: 2, 5: 3, 6: 3, 7: 4}
 CROP_PRICE, SEED_PRICE, ETERNAL_PRICE = {1: 2, 2: 6, 3: 16, 4: 40}, {1: 1, 2: 2, 3: 4, 4: 8}, {1: 50, 2: 200, 3: 800, 4: 3200}
 SEED_CAP = {'Chilli': 3.5, 'Tomato': 3.5, 'Onion': 6, 'Potato': 6}
 ETERNAL_CAP = {'Lettuce': 37, 'Wheat': 37, 'Chilli': 600, 'Tomato': 600, 'Onion': 2400, 'Potato': 2400}
+SAPLING_TIER = {'Bamboo': 1, 'Ash': 1, 'Aspen': 1, 'Beech': 1, 'Birch': 1, 'Cedar': 1, 'Dry': 1, 'Jungle': 1, 'Oak': 1, 'Palm': 1, 'Spruce': 1, 'Spruce_Frozen': 1, 'Apple': 2, 'Banyan': 2, 'Bottletree': 2, 'Camphor': 2, 'Fig_Blue': 2, 'Gumboab': 2, 'Maple': 2, 'Palo': 2, 'Poisoned': 2, 'Sallow': 2, 'Spiral': 2, 'Windwillow': 2, 'Wisteria_Wild': 2, 'Amber': 3, 'Redwood': 3, 'Azure': 4, 'Petrified': 4, 'Crystal': 5, 'Fire': 5, 'Ice': 5, 'Stormbark': 5}
+SAPLING_ESSENCE = {'Bamboo': 15, 'Ash': 15, 'Aspen': 5, 'Beech': 5, 'Birch': 10, 'Cedar': 25, 'Dry': 30, 'Jungle': 15, 'Oak': 15, 'Palm': 35, 'Spruce': 15, 'Spruce_Frozen': 15, 'Apple': None, 'Banyan': 15, 'Bottletree': 30, 'Camphor': 10, 'Fig_Blue': 20, 'Gumboab': 10, 'Maple': 20, 'Palo': 15, 'Poisoned': 15, 'Sallow': 15, 'Spiral': 20, 'Windwillow': 15, 'Wisteria_Wild': 25, 'Amber': 15, 'Redwood': 20, 'Azure': 20, 'Petrified': 30, 'Crystal': 15, 'Fire': 30, 'Ice': 15, 'Stormbark': 15}
 
 # 0.1.2's product table, VERBATIM (renamed): the one-time update tells a 0.1.2 default line from a hand-edited one with it
 PRODUCTS_012 = [
@@ -1525,6 +1552,30 @@ def farming_path(data):
     return out
 
 
+def sapling_essence(data):
+    """{sapling: Essence of Life count of its Recipe, own or inherited (None: another input)} from the item assets"""
+    out = {}
+    for sname in SAPLING_TIER:
+        k, r, seen = "Plant_Sapling_%s" % sname, None, set()
+        while k in data and k not in seen and r is None:          # a recipe inherited through Parent counts (Crystal, Poisoned: Oak's)
+            seen.add(k)
+            r = (data.get(k) or {}).get("Recipe")
+            k = (data.get(k) or {}).get("Parent")
+        ins = (r or {}).get("Input") or []
+        e = [int(i.get("Quantity", 1) or 1) for i in ins if isinstance(i, dict) and i.get("ItemId") == "Ingredient_Life_Essence"]
+        out[sname] = e[0] if (len(ins) == 1 and len(e) == 1) else None
+    return out
+
+
+_se = sapling_essence(DATA)
+if _se != SAPLING_ESSENCE:
+    raise SystemExit("0.1.4: the vanilla sapling recipes changed - %s, the table says %s" % (_se, SAPLING_ESSENCE))
+for _s, _t in SAPLING_TIER.items():
+    _i = "Plant_Sapling_%s" % _s
+    _cap = None if _se[_s] is None else math.floor(0.6 * _se[_s] * 2 + 1e-9) / 2.0
+    _old = PRICE_014[_i][0] if _i in PRICE_014 else float(_new[_i][1])
+    _want = _old * 2 ** (_t - 1)
+    assert float(_new[_i][1]) == (_want if _cap is None or _want <= _cap else _cap), (_i, _new[_i], _want, _cap)
 _fp = farming_path(DATA)
 if _fp != VANILLA_SEED_TIER:
     raise SystemExit("0.1.4: the vanilla farming path changed - Farmingbench seed tiers %s, the table says %s" % (_fp, VANILLA_SEED_TIER))
