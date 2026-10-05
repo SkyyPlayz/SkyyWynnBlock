@@ -29,6 +29,8 @@ Server Setup), research/Settings-Spec.md 1.2-1.3 (player switches), tools/PROFIL
 - UI RULES (HANDOFF section 2): inline pages only; no underscores in element ids; root anchor only Width/Height; TextButton + EventData;
   never periodic page updates; never close a page right before opening another; BIG readable pages (fit 1080 high); no UI on the vanilla
   inventory screen; NEVER put an ItemStack that may carry metadata into an ItemGridSlot (client disconnect) - use new ItemStack(id, qty).
+- Config kit history: emit(... KEEP=10) or omit KEEP (kit default 10 since 2026-10-05, Skyy); change an explicit KEEP=20 to 10 in any
+  mod you build.
 - Cross-mod calls only through System.getProperties().get("skyy.bridge") with java.lang types.
 - Engine inspection: tools/dev/reflect.py, cpgrep.py (run inside tools/dev), bc.py, bcfull.py, bcfull2.py, callers.py. Server jar and
   Assets.zip: C:\Users\SkyLo\AppData\Roaming\Hytale\install\release\package\game\latest (read-only). Installed mods read-only in
