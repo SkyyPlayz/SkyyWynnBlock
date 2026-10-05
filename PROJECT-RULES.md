@@ -66,7 +66,7 @@ Respect the rollback floors written in `tools/deploy_set.py` (for example: never
   `tools/PROFILES-CONTRACT.md`.
 - **Round size (Skyy 2026-10-02: "full round only for big builds ... better safe than sorry - just use it if you think it might need
   it"):**
-  - **Full round** - build -> review -> fix -> cross-check (all SET jars in one JVM with `-Xverify:all`, the Adventurer permission audit,
+  - **Full round** - build -> review -> fix -> cross-check (`python tools/ci/crosscheck.py --jar <new jars> --baseline`: all SET jars in one JVM with `-Xverify:all`, access + Adventurer permission audit,
     `python tools/ci/lint.py` with 0 fails) -> pin -> commit -> deploy (section 3). Use it for anything that touches coins / the economy,
     saved data or migrations, permissions or commands, items that could be lost or duplicated, several mods at once, or a new system -
     and whenever in doubt.

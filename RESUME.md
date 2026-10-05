@@ -50,7 +50,7 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
   LAST (Skyy): "Skyy's Pocket Dimension" spec + release build + CurseForge kit.
 
 ## Every round (PROJECT-RULES sections 3 + 4)
-Build (never `--deploy`) -> review (sonnet) -> fix -> cross-check the whole SET (one JVM, -Xverify:all, the Adventurer permission audit,
+Build (never `--deploy`) -> review (sonnet) -> fix -> cross-check the whole SET (`python tools/ci/crosscheck.py --jar <new jars> --baseline` = one JVM, -Xverify:all, access + Adventurer audit,
 `python tools/ci/lint.py` 0 fails) -> pin in `tools/deploy_set.py` -> commit + push -> `python tools/backup_deploy.py` ->
 `python tools/deploy_set.py --yes` with the game closed -> a test section at the end of `docs/tests/2026-10.md` + a "Test next" line in
 TEST-CHECKLIST.md -> HANDOFF versions table + a log line in `docs/log/2026-10.md` -> update this file -> `python tools/tidy_local.py --yes`.
