@@ -21,7 +21,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyMenu | 0.3.6 | SkyWynn Menu, player Settings, Server Setup (admin) |
 | SkyyEssentials | 0.1.7 | /tpa, /trade and the few commands vanilla lacks |
 | SkyyProfiles | 0.1.5 | profiles = full saves (default cap 6), delete + 6 h undo |
-| SkyyCooking | 0.1.4 | Cooking dishes + food Grade |
+| SkyyCooking | 0.1.5 | Cooking dishes + food Grade; XP by craft difficulty |
 | SkyyTrees | 0.3.1 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees OFF) |
 | SkyyExploration | 0.2.2 | Exploration skill, spots, island checklist |
 | SkyyGuilds | 0.1.6 | guilds + guild bank |
