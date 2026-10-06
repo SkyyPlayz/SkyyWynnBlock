@@ -64,8 +64,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       Story-Script-Draft, starter shards, the first outpost, classes, bags, the Board. Players, not admins. Output: `research/cloud/Player-Guide-First-Hour.md`.
 - [ ] **NPC barks, signs and Board texts** - short ambient lines in the Department voice: 6 barks per town NPC type (clerk, banker, smith, guide, guard,
       shopkeeper), 40 signs, 20 Board announcements (for Zone Specials), 20 loading-screen tips. Output: `research/cloud/Barks-Signs-Tips.md`.
-- [ ] **Mining and Farming gathering armor** - Foraging armor is designed (task above); do the same for Mining (Fortune, mining speed) and Farming
-      (Fortune, sickle range, crop XP): tiers, materials from `research/cloud/Gathering-Tiers-Draft.md`, stats. Output: `research/cloud/Gathering-Armor-Mining-Farming.md`.
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
@@ -78,3 +76,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] SkyyArmory roadmap - 2026-10-06 - `research/cloud/SkyyArmory-Roadmap.md`
 - [x] Foraging armor design - 2026-10-06 - `research/cloud/Foraging-Armor-Design.md`
 - [x] Capstone sets - 2026-10-06 - `research/cloud/Capstone-Sets.md`
+- [x] Mining and Farming gathering armor - 2026-10-06 - `research/cloud/Gathering-Armor-Mining-Farming.md`
