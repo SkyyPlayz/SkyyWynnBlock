@@ -64,6 +64,32 @@ Iron studs are a plain dull grey on purpose: this tier is below Copper, so no ti
 - Shapes that likely need new 3D geometry (if the vanilla heavy leather model has none): the wide layered pauldrons, the tassets, the
   knee bosses and the cheek / nose guards. Texture-only fallback: paint the bands, studs and padding on the vanilla model as is.
 
+## 6. v2 detail pass (2026-10-06)
+
+Skyy approved the design ("Both good", `docs/answered/gear.md` 2026-10-06 art review) and asked for 2x-4x detail on every sheet.
+v2 = the **same design**, redrawn at 2x; the v1 files above stay unchanged for comparison.
+
+| File | What |
+|---|---|
+| `make_heavy_v2.py` | v2 generator (Python + Pillow, deterministic). Imports the v2 painter of `../light-armor/make_sheets_v2.py` (unchanged). |
+| `heavy-armor-sheet-v2.png` | Overview: Light Copper v2 for scale, Heavy front, back, cuirass close-up (5x) + palette |
+| `heavy-leather-set-v2.png` | Front + back at 4x (512 x 768 per figure) |
+| `heavy-leather-chest-v2.png` | Cuirass + pauldrons close-up at 4x |
+
+What changed (detail only - every part keeps its v1 place, v1 (x, y) -> v2 (2x, 2y + 22)):
+
+- Figure grid **128 x 192** (v1 64 x 84), 7-step ramps (v1 5) from the same v1 colours, whole-part gradient lit top-left, 2-px bevel.
+- **Boiled leather:** mottled hide, pores, wax flecks, scuffs; a pressed (tooled) groove inside the chest plates, cuirass and top
+  pauldron caps; light saddle stitching (dashes) along plate edges and under every band seam.
+- **Overlapping bands:** shadow above each seam, dark seam, lit top lip of the band below (greaves, tassets, abdomen, bracers, neck guard).
+- **Padding:** puffed quilted channels with stitched seams and a linen weave (gambeson, sleeves, trousers); rolled padding on the
+  collar, boot cuffs, tasset and pauldron rims.
+- **Studs:** 4 x 4 domed iron studs with a highlight and a cast shadow; brass studs on the belt; small rivets on the strap tabs.
+- **Brass:** bevelled 16 x 16 belt buckle with prong and the strap passing through; boot buckles with prongs; belt holes.
+- Gauntlets get finger lines + knuckle pads, boots a hobnailed sole and a toe cap, the helm stitched panel seams + a top knob, the
+  back bracers a lacing.
+- Sizes: sheet 42 KB, set 19 KB, close-up 7 KB.
+
 ## For the local session (UNVERIFIED)
 
 1. **Look at vanilla `Armor_Leather_Heavy_*`** (Head, Chest, Hands, Legs) in Assets.zip / in game: if it is already brown + studded,

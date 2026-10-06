@@ -65,6 +65,33 @@ on the front (2.8%): "a few shards", the robe stays cloth.
 - Shapes that likely need new 3D geometry: the hood (up), the long skirt below the knees, bell sleeves, the mantle and the hanging rope
   ends. Texture-only fallback: paint the weave, trims, runes and shards on the vanilla tunic model.
 
+## 6. v2 detail pass (2026-10-06)
+
+Skyy approved the design ("Both good", `docs/answered/gear.md` 2026-10-06 art review) and asked for 2x-4x detail on every sheet.
+v2 = the **same design**, redrawn at 2x; the v1 files above stay unchanged for comparison.
+
+| File | What |
+|---|---|
+| `make_robe_v2.py` | v2 generator (Python + Pillow, deterministic). Imports the v2 painter of `../light-armor/make_sheets_v2.py` (unchanged). |
+| `crude-robe-sheet-v2.png` | Overview: front, back, hood + chest close-up (4x), Light Copper v2 for scale + palette |
+| `crude-robe-set-v2.png` | Front + back at 4x (512 x 768 per figure) |
+| `crude-robe-chest-v2.png` | Hood, clasp, mantle, rope belt + medallion close-up at 4x |
+
+What changed (detail only - every part keeps its v1 place, v1 (x, y) -> v2 (2x, 2y + 22)):
+
+- Figure grid **128 x 192** (v1 64 x 84), 7-step ramps (v1 5) from the same v1 colours, whole-part gradient lit top-left, 2-px bevel.
+- **Fibre weave:** 2 x 2 plain weave, warp threads, slubs and pulled threads, uneven dye; soft cloth folds that widen towards the
+  hem on the skirt, cloak panels and sleeves; seam stitches on the robe front, sleeves and hood back.
+- **Tattered edges:** zig-zag ragged hems on the mantle, the under-mantle and the cloak panels; V-notches + loose fibre ends on the
+  robe hem; frayed rope ends and a hood-point tassel.
+- **Rope:** 3-strand twist (lit crowns, dark grooves) on the belt, knot, hanging cords and clasp cord; twine whipping on the cord ends.
+- **Trims:** fibre bands with a twisted top / bottom cord and 6 stitched rune glyphs (5 x 5); cloak edge strips with stitched
+  crosses; wound fibre on the cuffs, shoes and medallion setting.
+- **Crystals:** faceted shards (bright crown facets, lit left facet, shaded right facet, centre ridge, glint) with a 3-px soft
+  green glow halo and a small sparkle; the hood clasp shard is 22 px tall.
+- Hood: deep lining shadow with a dithered fade onto the face, fibre rim with stitching.
+- Sizes: sheet 40 KB, set 17 KB, close-up 9 KB.
+
 ## For the local session (UNVERIFIED)
 
 1. Which vanilla model the Crude Robe uses (the cloth tunic models? a hooded head piece?) and its texture size / UV islands.
