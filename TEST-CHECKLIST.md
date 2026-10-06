@@ -34,6 +34,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 24. SkyyParty 0.1.7 + SkyyEssentials 0.1.8 - TPA button per party member + Accept TPA (needs 2 players).
 25. SkyySkills 0.4.16 - Mining's own slower curve (your Mining levels go up once, with coins); no Mining XP boost.
 26. SkyyTrees 0.3.2 + SkyyMenu 0.3.8 - class trees are ON (/tree class); the Mods list shows today's versions.
+27. Pack mods HyFishing + Dynamic Seasons + NoCube's Orchard - no errors; fishing, seasons, orchard work next to our mods.
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
