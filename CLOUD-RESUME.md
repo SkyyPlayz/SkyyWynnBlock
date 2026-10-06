@@ -63,8 +63,6 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
       2x-4x detail (art review 2026-10-06, docs/answered/gear.md). Output: `research/cloud/fishing-art/` (sheet + README + generator).
 - [ ] **Fishing minigame UI mockup** - the click-bar minigame + Fishing Bench tabs as vanilla-look page mockups (`research/Vanilla-UI-Style-Guide.md`,
       HANDOFF section 2 UI rules: inline pages, fit 1080 high). Output: `research/cloud/Fishing-UI-Mockup.md` (+ PNG).
-- [ ] **Enchanted material icons** - one icon per compressed material in `research/cloud/Enchanted-Materials-Draft.md` (base item look + a
-      SkyBlock-style glint / tint, 64x64 like vanilla icons). Output: `research/cloud/enchanted-art/`.
 - [ ] **Class emblem icons** - one emblem per class (Warrior, Berserker, Archer, Assassin, Mage, Priest, Monk; `research/classes/`) for the
       Profiles class cards + Stats page, vanilla UI palette, 64x64 + 128x128. Output: `research/cloud/class-art/`.
 - [ ] **WorldGen stage 2 draft** - next stage after `research/SkyyWorldGen-Plan.md` (zones 2-5 islands from `research/cloud/Zone-Islands-Layout.md`
@@ -81,3 +79,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [x] Pets v2 concept sheet - 2026-10-06 - `research/cloud/pet-art/`
 - [x] Mining armor v2 - 2026-10-06 - `research/cloud/gathering-armor-art/mining-sheet-v2.png`
 - [x] Foraging + Farming detail pass - 2026-10-06 - `research/cloud/foraging-armor/foraging-armor-sheet-v2.png`
+- [x] Enchanted material icons - 2026-10-06 - `research/cloud/enchanted-art/`
