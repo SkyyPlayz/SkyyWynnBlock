@@ -38,7 +38,7 @@ Key collections: Cobblestone (B), Copper (S), Iron (S), Thorium (R), Cobalt (R),
 | Collection | Curve | I | II | III | IV | V | VI | VII | VIII | IX / X |
 |---|---|---|---|---|---|---|---|---|---|---|
 | **Cobblestone** (+ the S1 stone group) | B 10 tiers | Cobblestone Pocket Shard | +500 Mining XP | **Copper pickaxe + shovel** (T1 tools) | Enchanted Cobblestone | Compactor (Pocket Shard upgrade: compresses to blocks) | +1,000 Mining XP | Haste accessory I (Miner's Charm) | Haste accessory II | **X: Super Compactor** (to Enchanted form) |
-| **Copper Ore** | S 9 | Copper Pocket Shard | +400 XP | Copper Bag? (no - Mining bag key is Iron) -> Smelter recipe tip | **Iron pickaxe + shovel** | Enchanted Copper | Mining gear T1 (Copper-trimmed Miner's set, later idea) | Auto-Smelter upgrade | +2,000 XP | **IX: Enchanted Copper Block** + Mining Fortune +2 |
+| **Copper Ore** | S 9 | Copper Pocket Shard | +400 XP | Smelter recipe tip (the Mining bag key is Iron, not Copper) | **Iron pickaxe + shovel** | Enchanted Copper | Mining gear T1 (Copper-trimmed Miner's set, later idea) | Auto-Smelter upgrade | +2,000 XP | **IX: Enchanted Copper Block** + Mining Fortune +2 |
 | **Iron Ore / Ingot** | S 9 | Iron Pocket Shard; **Mining Bag (Normal)** (existing bag key, tiers I / III / V / VII) | +600 XP | Mining Bag (Unique) | **Thorium pickaxe + shovel** | Enchanted Iron; Mining Bag (Rare) at V | Mining gear T2 | Mining Bag (Legendary); Storage upgrade | +3,000 XP | Enchanted Iron Block + Fortune +2 |
 | **Thorium Ore** | R 8 | Thorium Pocket Shard | +800 XP | Thorium Compactor chain tier | **Cobalt pickaxe + shovel** | Enchanted Thorium | Mining gear T3 | - | +4,000 XP | Enchanted Thorium Block + Fortune +3 |
 | **Cobalt Ore** | R 8 | Cobalt Pocket Shard | +1,000 XP | - | **Adamantite pickaxe + shovel** | Enchanted Cobalt | Mining gear T4 | - | +5,000 XP | Enchanted Cobalt Block + Fortune +3 |
@@ -86,7 +86,7 @@ Skyy asked for fortune and speed on the ladder. Proposal: each **maxed key colle
 | Rule | Detail |
 |---|---|
 | What counts | items you receive from breaking / harvesting / killing yourself, and from **your own Pocket Shards when you collect them** (Pocket-Shards-Spec) |
-| Enchanted items | count as their base amount (160 each); an Enchanted Block counts as 160 x 160? **No:** as 160 Enchanted = 25,600 base (SkyBlock behaviour; see `Enchanted-Materials-Draft.md`) |
+| Enchanted items | count as their base amount (160 each); an Enchanted Block (160 Enchanted) counts as 160 x 160 = 25,600 base (SkyBlock behaviour; see `Enchanted-Materials-Draft.md`) |
 | Not counted | Bazaar / AH / NPC / trade / bag withdrawals / admin gives / player-placed blocks |
 | Coins | never buy a tier or a recipe (R3) |
 
