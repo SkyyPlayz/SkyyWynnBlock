@@ -59,10 +59,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
-- [ ] **Gathering numbers reconciliation** - `research/cloud/Tool-Levels-Revision.md` proposes one Fortune stacking rule (per-source caps under
-      doubleDropMax 1.0) and rescales `research/cloud/Foraging-Armor-Design.md`, `research/cloud/Gathering-Armor-Mining-Farming.md`, `research/cloud/Pets-Spec.md`
-      and `research/cloud/Collection-Unlocks-Draft.md`. Make ONE table of every Fortune / speed / Tree Feller source with the agreed numbers; list the edits each
-      draft needs. Output: `research/cloud/Gathering-Numbers-Reconciled.md`.
 - [ ] **Kunai ladder** - Assassin kunai (research/classes/Assassin.md): metal ladder mirroring daggers, stack/return rules, throw-teleport numbers per tier,
       speed tier (`research/cloud/Weapon-Speed-Tiers.md`). Output: `research/cloud/Kunai-Ladder.md`.
 - [ ] **Archer bolts + holster** - RESUME follow-up: Archery 15+ extra crossbow bolts and the late-game holstered reload (approved, later); design numbers,
@@ -79,3 +75,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Spellbook ladder - 2026-10-06 - `research/cloud/Spellbook-Ladder.md`
 - [x] Loot round revision - 2026-10-06 - `research/cloud/Loot-Round-Revision.md`
 - [x] Bank + Tab calibration - 2026-10-06 - `research/cloud/Bank-Tab-Calibration.md`
+- [x] Gathering numbers reconciliation - 2026-10-06 - `research/cloud/Gathering-Numbers-Reconciled.md`
