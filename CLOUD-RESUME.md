@@ -47,16 +47,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
-- [ ] **NoCube mods survey** (Skyy 2026-10-06: "look into all this guys mods! he has 2 that add food") - web: every Hytale mod by NoCube
-      on CurseForge (Orchard is in the pack; Cultivation + Undead Warriors are candidates; find the 2 food mods + the rest): what each
-      adds (items, benches, mobs, recipes), its PERMISSIONS text (Orchard: modpacks OK with a page link, no content reuse), last update /
-      game version, dependencies, and how it fits or clashes with our mods (SkyyCooking food system + Skyy's food families, SkyyMobs
-      levels, SkyySacks bags vs NoCube bags, Bazaar / collections listing by item id). Recommend add / skip per mod. ALSO (Skyy, same day): NoCube's Bakehouse + Culinary (the 2 food
-      mods - vs SkyyCooking, vanilla bread / Flour XP) and Aures - Rare Monsters by BlackAuresArt (8+ creatures, mounts, companions,
-      armor, loot - vs SkyyMobs levels + SkyyGear loot / levels; permissions = CurseForge modpacks only, no content reuse) + Aures -
-      Dragon Nestkeeper (vs our dragon plan: research/Dragon-Pets-Idea.md + research/cloud/Dragon-Quest-Spec.md) + any other
-      BlackAuresArt mods. Also: what 'CurseForge modpacks only' means for a public server pack (how SkyWynn should ship).
-      Output: `research/cloud/NoCube-Mods-Survey.md`.
 - [ ] **SkyyFishing spec draft** (Skyy 2026-10-06, docs/answered/skills.md 'LOCKED 2026-10-06 ... FISHING') - web research first:
       Angler's Almanac (docs https://rm20killer.github.io/Anglers-Almanac-Doc/ + its CurseForge page), HyFishing (CurseForge), their
       LICENCES (jars carry none of their own -> ideas only unless a page allows reuse), Hypixel SkyBlock fishing (rods, rod parts, sea
@@ -88,3 +78,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 ## Done (delete after logging - see the rules above)
 - [x] Cloud drafts consistency pass - 2026-10-06 - `research/cloud/Consistency-Pass-1006.md`
+- [x] NoCube + Aures mods survey - 2026-10-06 - `research/cloud/NoCube-Mods-Survey.md`
