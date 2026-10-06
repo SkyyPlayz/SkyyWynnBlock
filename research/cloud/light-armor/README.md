@@ -103,3 +103,30 @@ on a 64 x 84 grid; set images are scaled x5, chest close-ups x8, NEAREST).
 | 4 | Buckles: tier metal on every tier, or brass buckles always (only trims in the tier metal)? | [tier metal] |
 | 5 | Helmet for Light armor: hood, leather cap, or hidden? | [leather hood with a metal rim per tier] |
 | 6 | Colour guesses for Thorium (green), Mithril (pale silver-blue) and Onyxium (violet + gold) - fix after the local screenshot check? | [yes, match vanilla] |
+
+## 6. Helmet options (added 2026-10-06)
+
+Cloud draft, 2026-10-06. Answers "For the local session" item 4 / Question 5 above with pictures: Skyy's reference has no helmet, so
+here are 3 options, each for **Copper** (plainest tier) and **Onyxium** (most ornate), drawn on the same figure as the sets.
+
+**File:** `research/cloud/light-armor/helmets.png` (generator `research/cloud/light-armor/make_helmets.py`; it imports
+`make_sheets.py` and reuses its painter, palettes and figure - `make_sheets.py` is unchanged and its 15 PNGs stay byte-identical).
+The figure grid gets 6 empty rows on top (64 x 90) so a hood can rise over the head; crops show head + shoulders at x6, NEAREST.
+
+| Option | Shape | Copper | Onyxium | Fits the class? |
+|---|---|---|---|---|
+| A Hood + metal rim | black-leather hood draped over the collar, face open, metal rim round the face opening, small peak | copper rim, copper leaves at the temples, ring clasp at the throat | gold rim, violet crown band, gold-set gem on the brow (glow), glow studs, gold throat clasp | Assassin / Archer feel; hides hair; one silhouette for all tiers |
+| B Half-mask cowl | snug quilted cowl (same diamond quilt as the chest), open eye band, leather mask over nose + mouth with breathing slits | copper brow band, copper nose ridge, rivets | gold brow band + mask edge, gold crest with a glowing gem, glow dots at the temples | most "rogue / Assassin"; hides the whole face except the eyes |
+| C Open leather cap | rounded leather cap with ear flaps, metal brow band, brown chin strap | copper brow band with rivets, copper ridge strip | gold brow band with violet studs, gold crest fin with an onyx gem | lightest, face fully visible; closest to vanilla leather caps (UNVERIFIED) |
+
+Recommendation: **A (hood)** as the default - it reads clearly at game distance, keeps the black-leather look and gives each tier an easy
+place for its metal (the face rim) and its signature piece (brow gem / clasp). B as a later "Assassin" variant if Skyy wants one.
+
+For the local session (UNVERIFIED): the vanilla leather helmet model's shape decides what is texture-only - a hood that hangs over the
+collar or a peak above the head needs new geometry (or a different vanilla head model, e.g. a hooded cloth head piece, if one exists).
+Check Assets.zip for a hood-shaped head model before choosing.
+
+| # | Question for Skyy | Default |
+|---|---|---|
+| 7 | Which helmet: A hood + metal rim, B half-mask cowl, C open leather cap (or none)? | [A hood] |
+| 8 | Same helmet shape for every tier, only the metal changes? | [yes] |

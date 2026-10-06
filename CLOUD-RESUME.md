@@ -47,12 +47,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
-- [ ] **Light armor helmet options** - Skyy's reference has no helmet; draw 3 helmet options (hood with metal rim, half-mask cowl, open leather cap) for
-      Copper and Onyxium with the same script style (`research/cloud/light-armor/make_sheets.py`). Output: `research/cloud/light-armor/helmets.png` + README note.
-- [ ] **Heavy armor tier 1 concept** - HEAVY ARMOR tier 1 = a heavy leather set below Copper (vanilla Armor_Leather_Heavy, restyle): concept sheet in the
-      light-armor script style + notes. Output: `research/cloud/heavy-armor/`.
-- [ ] **Crude Robe concept** - CLOTH tier 1 = Crude Robe (Fibre + green crystal), the green hooded mage-robe look in words (docs/answered/gear.md 2026-10-05):
-      concept sheet in the same style. Output: `research/cloud/cloth-armor/`.
 - [ ] **Foraging armor concept sheets** - Wood + Softwood..Goldenwood (`research/cloud/Foraging-Armor-Design.md` section 7: bark plates, vine trims,
       sap veins, echoing Copper..Onyxium shapes). Output: `research/cloud/foraging-armor/`.
 - [ ] **Mining + Farming armor concept sheets** - from `research/cloud/Gathering-Armor-Mining-Farming.md` looks (miner's leather + lamp helmet; straw/linen
@@ -66,3 +60,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Questions digest for Skyy - 2026-10-06 - `research/cloud/Questions-Digest-1006.md`
 - [x] Food expansion draft - 2026-10-06 - `research/cloud/Food-Expansion-Draft.md`
 - [x] SkyyFishing spec draft - 2026-10-06 - `research/cloud/SkyyFishing-Spec-Draft.md`
+- [x] Light armor helmet options - 2026-10-06 - `research/cloud/light-armor/helmets.png`
+- [x] Heavy armor tier 1 concept - 2026-10-06 - `research/cloud/heavy-armor/`
+- [x] Crude Robe concept - 2026-10-06 - `research/cloud/cloth-armor/`
