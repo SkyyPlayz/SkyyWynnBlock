@@ -16,8 +16,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
-    ("SkyyHud", "0.3.13"), ("SkyySacks", "0.7.12"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.6"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.4"), ("SkyyGear", "0.2.3"), ("SkyySkills", "0.4.16"),
+    ("SkyyHud", "0.3.13"), ("SkyySacks", "0.7.13"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
+    ("SkyyBank", "0.1.6"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.3"), ("SkyySkills", "0.4.16"),
     ("SkyyAccessories", "0.5.6"), ("SkyyClasses", "0.1.11"), ("SkyyMenu", "0.3.8"), ("SkyyEssentials", "0.1.8"), ("SkyyProfiles", "0.1.5"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.2"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -49,6 +49,8 @@ SET = [
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     ("SkyyArmory", "0.1"),
+    # Sell from bags (2026-10-06): SkyyBazaar 0.1.5 needs SkyySacks 0.7.13 for bag sales (sacks:fn:count/all/take/put/commit); with an older
+    # SkyySacks it behaves like 0.1.4. No data migration - rolling either back is safe.
     # Lantern-behind-Tree-Sap (2026-10-06): SkyyCollections 0.2.7 + SkyyAccessories 0.5.6 deploy TOGETHER (coll:lantern bridge; Accessories 0.5.6
     # with Collections 0.2.6 = every Lantern craftable). Rolling back is safe (no data rewritten; Lanterns go back to plain Workbench recipes).
 ]
