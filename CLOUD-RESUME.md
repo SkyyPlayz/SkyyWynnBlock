@@ -55,9 +55,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [ ] **Weapon speed tiers** - Skyy 2026-10-05: weapon speed tiers Slow / Medium / Fast / Super Fast with the same DPS (per-hit damage scales).
       Assign every weapon type of `research/cloud/SkyyArmory-Roadmap.md` section 5 a tier, compute per-hit multipliers from attack times (keep
       the engine values UNVERIFIED), and show how crits, Strength, Mana-per-cast and on-hit effects scale. Output: `research/cloud/Weapon-Speed-Tiers.md`.
-- [ ] **Foraging armor ladder** - docs/answered/gear.md 2026-10-05: tier 1 vanilla Wood armor, then the Farmer's Workbench wood ladder (Softwood to
-      Goldenwood, 7 tiers echoing Copper to Onyxium), Foraging Fortune + chopping speed + Foraging XP, Tree Feller on higher tiers. Design the 7 tiers:
-      stats per tier, recipes (read `research/cloud/Gathering-Tiers-Draft.md`), set bonus idea, level bands. Output: `research/cloud/Foraging-Armor-Design.md`.
 - [ ] **Capstone sets** - the Set rarity (green) drops only in the capstone (Capstone-Dungeon-Spec 5). Design 3 sets (3 pieces each, Voidglass and
       Aetherium tiers, one per armor type): names, lore lines in the Department voice, the 2-piece / 3-piece bonuses within the SkyyGear stat catalog
       (read-only). Output: `research/cloud/Capstone-Sets.md`.
@@ -82,3 +79,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Prestige system spec - 2026-10-06 - `research/cloud/Prestige-Spec.md`
 - [x] Zone specials / mayor lite - 2026-10-06 - `research/cloud/Zone-Specials-Spec.md`
 - [x] SkyyArmory roadmap - 2026-10-06 - `research/cloud/SkyyArmory-Roadmap.md`
+- [x] Foraging armor design - 2026-10-06 - `research/cloud/Foraging-Armor-Design.md`
