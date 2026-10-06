@@ -78,3 +78,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - LOCKED 2026-10-06 (Skyy, cloud art review): accessory icons (11 kinds x 4 rarities) "Love them".
 - LOCKED 2026-10-06 (Skyy, accessory icons, later the same review): "i know on my response to these i said they look great. and they do! but scale up their detail with everything else. i want to at least match hytale or 2x-4x." -> accessory icons keep their design but get the same detail pass: at least vanilla icon density (64x64), 2x-4x if possible.
 - LOCKED 2026-10-06 (Skyy, research/cloud/Weapon-Speed-Tiers.md open question): weapon speed tier is "Fully random per item" - any weapon can roll any tier (Slow / Medium / Fast / Super Fast), same DPS (per-hit damage scales with the hit weight).
+- LOCKED 2026-10-06 (Skyy): "Those speed tiers only roll on weapons. Not tools" -> weapon speed tiers never roll on pickaxes / hatchets / shovels / hoes / sickles or other tools.
