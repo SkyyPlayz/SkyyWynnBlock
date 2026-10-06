@@ -48,10 +48,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       docs/answered/gear.md 2026-10-05: speed + Mining / Foraging / Farming Fortune by tool level, tool rarities + rolls + reforges, modifier
       list incl. SICKLE RANGE, axes get Tree Feller (reuse SkyyTrees' Tree Feller), tied to research/cloud/Gathering-Tiers-Draft.md.
       Output: `research/cloud/Tool-Levels-Revision.md`.
-- [ ] **Armor types spec draft** - docs/answered/gear.md 2026-10-05: Heavy / Light / Cloth ladders (Heavy = heavy leather then vanilla
-      metal; Light = vanilla leather then leather + metal upgrades; Cloth = Crude Robe then tunics), per-level Health / Defense next to
-      research/Mob-Curve-Spec.md, trade-offs (anyone) vs class bonuses (on-type) with numbers, recipes per tier.
-      Output: `research/cloud/Armor-Types-Spec-Draft.md`.
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
@@ -70,3 +66,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Hytale 0.7 watch - 2026-10-06 - `research/cloud/Hytale-0.7-Watch.md`
 - [x] Weapon speed tiers - 2026-10-06 - `research/cloud/Weapon-Speed-Tiers.md`
 - [x] Economy faucet / sink audit - 2026-10-06 - `research/cloud/Economy-Audit.md`
+- [x] Armor types spec draft - 2026-10-06 - `research/cloud/Armor-Types-Spec-Draft.md`
