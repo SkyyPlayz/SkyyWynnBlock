@@ -36,8 +36,6 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **Slayers spec** (`docs/plans/SkyyDungeons-Plan.md`: core loop, not the spine) - research Hypixel Slayers on the web, propose SkyWynn slayer quests per zone (boss, tiers, rewards,
-      XP, anti-farm). Output: `research/cloud/Slayers-Spec.md`.
 - [ ] **Capstone dungeon spec** - the one endgame dungeon after Zone 4/5 (`docs/plans/SkyyDungeons-Plan.md`, Decisions row 7.5): research Hypixel Catacombs / Wynncraft raids, propose floors,
       rooms, bosses, party size, scaling, rewards. Output: `research/cloud/Capstone-Dungeon-Spec.md`.
 - [ ] **Accessory acquisition** - Accessories are admin-give only today ("drops / chests later", docs/log/2026-09.md 2026-09-30). Propose how players earn the booster accessories:
@@ -72,3 +70,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Minimap widget UX - 2026-10-06 - `research/cloud/Minimap-Widget-UX.md`
 - [x] SkyyQuests design - 2026-10-06 - `research/cloud/SkyyQuests-Spec.md`
 - [x] Outposts list - 2026-10-06 - `research/cloud/Outposts-List.md`
+- [x] Slayers spec - 2026-10-06 - `research/cloud/Slayers-Spec.md`
