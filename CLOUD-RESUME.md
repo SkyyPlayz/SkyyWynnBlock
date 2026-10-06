@@ -49,9 +49,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
-- [ ] **Magic + new weapons concept sheet** - icons/side views in the `research/cloud/light-armor/make_sheets.py` pixel style: metal wands (style B: wood
-      handle + metal head, LOCKED), staffs, spellbooks (`research/cloud/Spellbook-Ladder.md`), Soul Orb cages (`research/cloud/Soul-Orb-Spec.md`), kunai
-      (`research/cloud/Kunai-Ladder.md`), Bo staff + fists (`research/cloud/Monk-Kit-Spec.md`) for Copper..Onyxium. Output: `research/cloud/weapon-art/`.
 
 
 ## Done (delete after logging - see the rules above)
@@ -63,3 +60,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Accessory icons sheet - 2026-10-06 - `research/cloud/accessory-art/`
 - [x] Farming (crop) armor concept sheet - 2026-10-06 - `research/cloud/gathering-armor-art/`
 - [x] Pets concept sheet - 2026-10-06 - `research/cloud/pet-art/`
+- [x] Magic + new weapons concept sheet - 2026-10-06 - `research/cloud/weapon-art/`
