@@ -77,6 +77,16 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [ ] **Accessory icon sizes + vanilla icon check list** - list exactly what the local session must read in Assets.zip for icon size/paths
       for items, accessories, weapons and armor concepts (one checklist for all the art folders). Output: `research/cloud/Art-Checklist-Local.md`.
 - [ ] **Capstone set art** - concept sheet for the 3 capstone sets (`research/cloud/Capstone-Sets.md`) in the same pixel style. Output: `research/cloud/capstone-set-art/`.
-
+- [ ] **Fishing gear concept sheet** - rods + reels (8 tiers), hooks / lines / sinkers from `research/cloud/SkyyFishing-Spec-Draft.md`, at the NEW
+      2x-4x detail (art review 2026-10-06, docs/answered/gear.md). Output: `research/cloud/fishing-art/` (sheet + README + generator).
+- [ ] **Fishing minigame UI mockup** - the click-bar minigame + Fishing Bench tabs as vanilla-look page mockups (`research/Vanilla-UI-Style-Guide.md`,
+      HANDOFF section 2 UI rules: inline pages, fit 1080 high). Output: `research/cloud/Fishing-UI-Mockup.md` (+ PNG).
+- [ ] **Enchanted material icons** - one icon per compressed material in `research/cloud/Enchanted-Materials-Draft.md` (base item look + a
+      SkyBlock-style glint / tint, 64x64 like vanilla icons). Output: `research/cloud/enchanted-art/`.
+- [ ] **Class emblem icons** - one emblem per class (Warrior, Berserker, Archer, Assassin, Mage, Priest, Monk; `research/classes/`) for the
+      Profiles class cards + Stats page, vanilla UI palette, 64x64 + 128x128. Output: `research/cloud/class-art/`.
+- [ ] **WorldGen stage 2 draft** - next stage after `research/SkyyWorldGen-Plan.md` (zones 2-5 islands from `research/cloud/Zone-Islands-Layout.md`
+      + `research/cloud/Zone-4-5-Materials.md`): what each zone generates, resources per tier (match the Gathering ladder), UNVERIFIED engine
+      list for local. Output: `research/cloud/WorldGen-Stage-2-Draft.md`.
 
 ## Done (delete after logging - see the rules above)
