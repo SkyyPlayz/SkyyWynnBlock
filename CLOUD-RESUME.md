@@ -65,9 +65,6 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [ ] **Pets v2** - Skyy liked none except maybe the rabbit: more detail, match the vanilla Hytale creature style (proportions, palettes, chunky
       voxel-model look); start from the rabbit. Output: `research/cloud/pet-art/` v2.
       Dragon icon: match the Dragon Nestkeeper (Aures) dragons' look (Skyy) - original drawing in their style only; no tracing their files until Aures says OK.
-- [ ] **Zone 1 town v2** - Skyy likes the districts but it is "too square": redo `research/cloud/Zone-1-Town-Layout.md` + the map PNG organic like
-      the Hypixel SkyBlock Hub (winding roads, irregular plazas); vanilla temple at the CENTRE right behind spawn - the town grew around an ancient
-      temple (docs/answered/world.md 2026-10-06). Keep the v1 map as Zone-1-Town-Map-v1.png.
 - [ ] **Spellbook table re-run** - re-run the staff columns of `research/cloud/Spellbook-Ladder.md` section 2 with the refreshed staff costs
       (210 / 240 / 270 / 310 / 350, `research/cloud/SkyyArmory-Roadmap.md` section 6); keep book costs. Output: the edited file.
 - [ ] **Mining helmet lamp spec** - Skyy: helmet lamps must really light (reuse the SkyyAccessories Lantern light code, docs/answered/bags.md + gear.md):
@@ -92,3 +89,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
       list for local. Output: `research/cloud/WorldGen-Stage-2-Draft.md`.
 
 ## Done (delete after logging - see the rules above)
+- [x] Zone 1 town v2 - 2026-10-06 - `research/cloud/Zone-1-Town-Layout.md` + `research/cloud/Zone-1-Town-Map.png`
