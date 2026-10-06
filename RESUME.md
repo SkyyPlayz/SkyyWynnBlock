@@ -23,7 +23,10 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 - LIVE: the 26-mod SET (HANDOFF section 1 = `tools/deploy_set.py`). Deployed 2026-10-05 (newest backup `backups\deploy-20261005-1745`;
   every backup listed in `backups/README.md`): Cooking 0.1.5 + 0.1.6, Accessories 0.5.5, Exploration 0.2.3, Menu 0.3.7 + 0.3.8,
   Collections 0.2.6, Gear 0.2.3, Bazaar 0.1.4, Party 0.1.7 + Essentials 0.1.8, Skills 0.4.16, Trees 0.3.2. NONE tested by Skyy yet.
-- NOTHING RUNNING. Weekly usage 98% at ~18:15 -0600 (stopped new rounds; a multi-mod round would not finish).
+- RUNNING (2026-10-06 from ~09:15 -0600, weekly reset to 0%): 4 workflows - (a) SkyyBazaar 0.1.5 + SkyySacks 0.7.13 sell-from-bags + Sap 12 +
+  stack sizes; (b) SkyyCollections 0.2.7 + SkyyAccessories 0.5.6 Lanterns behind Tree Sap; (c) SkyyArmory 0.1.1 + SkyyClasses 0.1.12 + SkyyGear 0.2.4
+  traversal (item 5 below); (d) research/Gathering-Progression-Spec.md (spec round). If this session ended: their files are untracked in the
+  mod folders - check the workflow journals before rebuilding. Mob curve (item 8) waits for (c) (both touch SkyyGear: mob curve = Gear 0.2.5).
 - Specs ready to build: `research/Magic-Traversal-Spec.md` (+ its section 8 = Skyy's answers), `research/Mob-Curve-Spec.md` (all defaults
   accepted 2026-10-05). Helpers new this session: `tools/ci/crosscheck.py`, `tools/tidy_local.py`.
 - Rules for docs: answers go word for word into `docs/answered/<topic>.md` and leave OPEN-QUESTIONS.md (`tools/qa_append.py ... --close`);
