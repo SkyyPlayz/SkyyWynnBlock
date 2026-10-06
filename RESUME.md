@@ -23,11 +23,14 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 - LIVE: the 26-mod SET (HANDOFF section 1 = `tools/deploy_set.py`). Deployed 2026-10-05 (newest backup `backups\deploy-20261005-1745`;
   every backup listed in `backups/README.md`): Cooking 0.1.5 + 0.1.6, Accessories 0.5.5, Exploration 0.2.3, Menu 0.3.7 + 0.3.8,
   Collections 0.2.6, Gear 0.2.3, Bazaar 0.1.4, Party 0.1.7 + Essentials 0.1.8, Skills 0.4.16, Trees 0.3.2. NONE tested by Skyy yet.
-- 2026-10-06 DEPLOYED (untested): SkyyCollections 0.2.7 + SkyyAccessories 0.5.6 (Lanterns behind Tree Sap, TEST-CHECKLIST 28), SkyyBazaar 0.1.5 +
-  SkyySacks 0.7.13 (sell from bags, Sap 12, Hytale stacks, TEST-CHECKLIST 29). START HERE item 3 is DONE.
-- RUNNING: (c) SkyyArmory 0.1.1 + SkyyClasses 0.1.12 + SkyyGear 0.2.4 traversal workflow; (d) research/Gathering-Progression-Spec.md spec workflow;
-  (e) research/Grapple-Bolt-Spec.md (crossbow Grapple Bolt + Dodge Roll, one agent). Untracked files in the mod folders = (c). Mob curve (item 8)
-  waits for (c) (both touch SkyyGear: mob curve = Gear 0.2.5).
+- 2026-10-06 DEPLOYED (untested): Collections 0.2.7 + Accessories 0.5.6 (Lanterns behind Tree Sap, TEST-CHECKLIST 28), Bazaar 0.1.5 + Sacks
+  0.7.13 (sell from bags, 29), Classes 0.1.12 + Armory 0.1.1 + Gear 0.2.4 (staff / wand traversals, 30). START HERE items 3 + 5 are DONE.
+- RUNNING (started ~14:00 -0600): (f) MOB CURVE ultracode = SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 (renumbered; deploy + roll back
+  together, add the pairing STOP to deploy_set.py); (g) SkyyArmory 0.1.2 Grapple Bolt (+ trav Stamina cap 10 -> 5); (h) SkyyGatherProbe 0.1 =
+  gathering phase P0 probe pack (op-only dev mod for ONE test session with Skyy, then removed). Untracked files in mod folders = these.
+- SPECS DONE + ANSWERED today: research/Gathering-Progression-Spec.md (all 11 questions answered - docs/answered/bags.md 2026-10-06: hard ore
+  gates, Mithril hidden until 0.7, ratio 100, Enchanted premium + Fortune on all tiers); research/Grapple-Bolt-Spec.md (Dodge Roll part waits
+  for a free SkyySkills slot = 0.4.18 after the mob curve).
 - Specs ready to build: `research/Magic-Traversal-Spec.md` (+ its section 8 = Skyy's answers), `research/Mob-Curve-Spec.md` (all defaults
   accepted 2026-10-05). Helpers new this session: `tools/ci/crosscheck.py`, `tools/tidy_local.py`.
 - Rules for docs: answers go word for word into `docs/answered/<topic>.md` and leave OPEN-QUESTIONS.md (`tools/qa_append.py ... --close`);
