@@ -13,6 +13,10 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 - **Where results go:** new files in `research/cloud/` (one file per task). You may push straight to `main` ONLY changes to this file and
   to `research/cloud/` (always `git pull --rebase --autostash` first). Any change to another file goes through a pull request.
 - **Never touch:** build / patch scripts, `tools/deploy_set.py`, jars, `SkyyGear-Plan.md`, `SkyyGear-Stat-Catalog.md`.
+- **Before every push (local session 2026-10-06):** run `python tools/docs_check.py` - it must print OK (needs only git + Python).
+  Write file mentions as FULL repo paths (e.g. `research/classes/Monk.md`, never the bare file name); a planned output of a task named here is fine.
+- **Every draft:** start with the decisions it follows (docs/answered/<topic>.md lines), end with "Questions for Skyy" (each with a
+  recommended default) and "For the local session" (every UNVERIFIED item needing Assets.zip / HytaleServer.jar). Don't re-decide LOCKED lines.
 - Follow `PROJECT-RULES.md`. Skyy uses they/them. Plain English, tables, short.
 
 ## Open tasks (top = next)
