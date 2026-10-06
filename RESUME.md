@@ -46,8 +46,9 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 - NEW (Skyy 2026-10-05): ARMOR TYPES (soft) - HEAVY = Warrior / Berserker (heavy leather tier 1, then vanilla metal sets), LIGHT (leather) = Archer / Assassin / Monk, Cloth = Mage / Priest
   (tier 1 Crude Robe = Fibre + green crystal, then vanilla tunics Wool -> Cindercloth);
   Light armor = vanilla leather tier 1, then OUR metal tiers (black leather + metal accents, Iron+ echo the vanilla metal style) -
-  ART PROOF (tools/skyyart.py preview sheet for Skyy) before the build; anyone
-  wears anything, only your type gives its bonus; each family covers Lv 1-49 - rides the mob-curve round (docs/answered/gear.md).
+  ART PROOF (tools/skyyart.py preview sheet for Skyy) before the build; stats: Heavy slower +Def +HP
+  (+crit dmg), Light a bit faster (+attack speed, +crit chance), Cloth fastest +HP +Mana least Def (+Mana regen higher tiers); trade-offs for
+  anyone, the bracketed bonus only for your class's type; each family covers Lv 1-49 - rides the mob-curve round (docs/answered/gear.md).
 - NEW (Skyy 2026-10-05): TOOL LEVELS must DO something - level raises speed + Mining / Foraging / Farming Fortune; axes, pickaxes,
   farming tools get rarities, rolls, reforges; new SICKLE RANGE modifier (research/Tool-Levels-Spec.md top note; docs/answered/gear.md).
 - NEW (Skyy 2026-10-05): SkyyGear WEAPON SPEED tiers Slow / Medium / Fast / Super Fast, same DPS (per-hit damage scales) - next SkyyGear pass (docs/answered/gear.md).
