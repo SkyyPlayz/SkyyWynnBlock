@@ -65,8 +65,6 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [ ] **Pets v2** - Skyy liked none except maybe the rabbit: more detail, match the vanilla Hytale creature style (proportions, palettes, chunky
       voxel-model look); start from the rabbit. Output: `research/cloud/pet-art/` v2.
       Dragon icon: match the Dragon Nestkeeper (Aures) dragons' look (Skyy) - original drawing in their style only; no tracing their files until Aures says OK.
-- [ ] **Mining helmet lamp spec** - Skyy: helmet lamps must really light (reuse the SkyyAccessories Lantern light code, docs/answered/bags.md + gear.md):
-      reach per tier, one light per player (helmet vs Lantern accessory), cost, edge cases. Output: `research/cloud/Mining-Lamp-Spec.md`.
 - [ ] **Crop armor stats** - stats/recipes for the crop sets on `research/cloud/gathering-armor-art/farming-sheet.png` (Wheat..Onion), replacing the
       metal Farming set numbers in `research/cloud/Gathering-Armor-Mining-Farming.md`. Output: `research/cloud/Crop-Armor-Spec.md`.
 - [ ] **Pet zones + rarities** - fill the gaps `research/cloud/pet-art/README.md` section 3 lists (zone and starting rarity per pet) with drop sources
@@ -89,3 +87,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 ## Done (delete after logging - see the rules above)
 - [x] Zone 1 town v2 - 2026-10-06 - `research/cloud/Zone-1-Town-Layout.md` + `research/cloud/Zone-1-Town-Map.png`
 - [x] Spellbook table re-run - 2026-10-06 - `research/cloud/Spellbook-Ladder.md`
+- [x] Mining helmet lamp spec - 2026-10-06 - `research/cloud/Mining-Lamp-Spec.md`
