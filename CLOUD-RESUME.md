@@ -36,10 +36,6 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **Collection unlocks draft** - using the two outputs above + research/Collections-Spec.md: for every Farming / Mining / Foraging
-      collection give tier amounts and the unlock per tier, SkyBlock style - recipes for the next tier's tools, Foraging armor tiers (tier 1
-      vanilla Wood armor, then Softwood ... Goldenwood), gathering accessories (Lantern tiers behind the Tree Sap collection), bags, Enchanted
-      materials, XP / fortune perks. Respect R3 (coins never skip collections). Output: `research/cloud/Collection-Unlocks-Draft.md`.
 - [ ] **Enchanted materials draft** - which materials get an Enchanted form (and Enchanted blocks), ratios, recipes (bench / /craft),
       how they count toward collections (their base amount), Bazaar prices (base price x ratio + premium, no buy-craft-sell loop at the
       buy / sell spread - see docs/log/2026-10.md SkyyBazaar 0.1.4 money-loop line), bag / sack handling. Output:
@@ -114,3 +110,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Class ability spec draft - 2026-10-06 - `research/cloud/Class-Ability-Spec-Draft.md`
 - [x] SkyBlock gathering progression research - 2026-10-06 - `research/cloud/SkyBlock-Gathering-Progression.md`
 - [x] SkyWynn gathering tiers draft - 2026-10-06 - `research/cloud/Gathering-Tiers-Draft.md`
+- [x] Collection unlocks draft - 2026-10-06 - `research/cloud/Collection-Unlocks-Draft.md`
