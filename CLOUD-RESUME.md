@@ -53,7 +53,9 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       redo research/cloud/gathering-armor-art/farming-sheet.png as crop armor like SkyBlock's Pumpkin / Melon armor - tier 1 WHEAT armor,
       then one set per vanilla Farming Bench crop step (Wheat / Lettuce, Carrot / Corn, Cauliflower / Turnip, Aubergine / Pumpkin,
       Chilli / Tomato, Cotton / Rice, Onion / Potato; propose which crop names each set), made from + looking like the crop, shapes may
-      echo the metal tiers like the foraging-armor sheet does. Same style + script as the other sheets. Skyy liked all the other sheets.
+      echo the metal tiers like the foraging-armor sheet does. Same style + script as the other sheets. Skyy liked all the other sheets - and "i love the design" of the current
+      farming sheet: KEEP its look, re-theme it to crops. Mining helmets with a lamp: note in the README that the light must really work
+      (our SkyyAccessories Lantern light code).
 - [ ] **Magic + new weapons concept sheet** - icons/side views in the `research/cloud/light-armor/make_sheets.py` pixel style: metal wands (style B: wood
       handle + metal head, LOCKED), staffs, spellbooks (`research/cloud/Spellbook-Ladder.md`), Soul Orb cages (`research/cloud/Soul-Orb-Spec.md`), kunai
       (`research/cloud/Kunai-Ladder.md`), Bo staff + fists (`research/cloud/Monk-Kit-Spec.md`) for Copper..Onyxium. Output: `research/cloud/weapon-art/`.
