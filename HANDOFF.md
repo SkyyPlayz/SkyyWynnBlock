@@ -9,14 +9,14 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyHud | 0.3.13 | HUD widgets + Lunar-style editor (move / scale / toggle), skills + combat widgets |
 | SkyySacks | 0.7.12 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting |
 | SkyyCoins | 0.1.5 | coin purse, /pay, death penalty (merges into SkyyEconomy later) |
-| SkyyCollections | 0.2.6 | collections, tiers, recipe unlocks (coins never buy tiers) |
+| SkyyCollections | 0.2.7 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8 |
 | SkyyParty | 0.1.7 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
 | SkyyBank | 0.1.6 | bank + interest |
 | SkyyIslands | 0.5.5 | private islands, co-op, visitors, island settings, /hub |
 | SkyyBazaar | 0.1.4 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier |
 | SkyyGear | 0.2.3 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear |
 | SkyySkills | 0.4.16 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics |
-| SkyyAccessories | 0.5.5 | Accessory Bag, booster accessories, Lantern |
+| SkyyAccessories | 0.5.6 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections) |
 | SkyyClasses | 0.1.11 | class pick, class kits, Priest heal |
 | SkyyMenu | 0.3.8 | SkyWynn Menu, player Settings, Server Setup (admin) |
 | SkyyEssentials | 0.1.8 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |

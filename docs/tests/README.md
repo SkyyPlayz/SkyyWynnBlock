@@ -101,3 +101,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyMobs 0.1.3 + SkyyGear 0.2.2 - health bars follow live changes; wand / staff shot lines, no Damage Data box, crit popup (DEPLOYED 2026-10-03, backup deploy-20261003-2317) | [2026-10](2026-10.md) |
 | SkyyUiProbe 0.4 - minimap probes (dev mod, op only; DEPLOYED 2026-10-03, backup deploy-20261003-2340) | [2026-10](2026-10.md) |
 | SkyyAccessories 0.5.4 - Lantern line replaces Night Vision (DEPLOYED 2026-10-04, backup deploy-20261004-0046) | [2026-10](2026-10.md) |
+| SkyyCollections 0.2.7 + SkyyAccessories 0.5.6 - Lantern recipes behind the Tree Sap tiers (DEPLOYED 2026-10-06, backup deploy-20261006-1245) | [2026-10](2026-10.md) |
