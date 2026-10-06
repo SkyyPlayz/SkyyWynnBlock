@@ -19,8 +19,7 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
   14:51 SkyyBazaar 0.1.4 progression prices (backup deploy-20261005-1451). 15:16 SkyyParty 0.1.7 + SkyyEssentials
   0.1.8 TPA buttons (backup deploy-20261005-1516). 17:24 SkyySkills 0.4.16 Mining curve +
   leaderboards (backup deploy-20261005-1724). 17:45 SkyyMenu 0.3.8 + SkyyTrees 0.3.2
-  class trees ON (backup deploy-20261005-1745). RUNNING: the staff + wand traversal SPEC (Fable agent ->
-  research/Magic-Traversal-Spec.md; docs only).
+  class trees ON (backup deploy-20261005-1745). Nothing running.
   New helpers: `tools/ci/crosscheck.py` (the cross-check), `tools/tidy_local.py`.
 - USAGE: weekly 94% at 2026-10-05 18:40 UTC (5-hour 0%); resets Tue 2026-10-06 15:00 UTC - no big rounds before it (Skyy: stop near 95%).
 - DOCS consolidated 2026-10-05 (PR #6, merged; `python tools/docs_check.py` proves no old line was lost); the old long RESUME is
@@ -34,8 +33,9 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 2. DONE 2026-10-05: SkyySkills 0.4.16 Mining curve + leaderboards - waiting for Skyy's test. (Menu 0.3.8 Mods list + Trees 0.3.2 class trees ON also deployed.)
 3. DONE 2026-10-05: SkyyBazaar 0.1.4 progression prices (incl. seeds + saplings by tier) - waiting for Skyy's test.
 4. DONE 2026-10-05: SkyyCooking 0.1.5 + 0.1.6 (XP by difficulty, Flour 140) - waiting for Skyy's test.
-5. SkyyArmory 0.1.1 + SkyyClasses 0.1.12 - magic charged attacks become traversals (staff teleport + light trail; wand backward hop +
-   exploding orb + heal orb; replaces the wand-burst plan), wand quick shot pierces, staff casts cost no Stamina. Spec first, full round.
+5. SkyyArmory 0.1.1 + SkyyClasses 0.1.12 + SkyyGear 0.2.4 - staff blink + light trail, wand hop + burst + heal orb, quick-shot ranges /
+   pierce, no staff Stamina. SPEC DONE 2026-10-05: research/Magic-Traversal-Spec.md (12 questions with defaults in OPEN-QUESTIONS classes).
+   Full round after the reset (deploy order Classes -> Armory -> Gear). NOTE: Gear 0.2.4 was 'tool levels' - renumber (tool levels 0.2.5, loot 0.2.6).
 6. DONE 2026-10-05: SkyyParty 0.1.7 + SkyyEssentials 0.1.8 TPA buttons - waiting for Skyy's 2-player test.
 7. DONE 2026-10-05: SkyyAccessories 0.5.5 Lantern edges, SkyyExploration 0.2.3 page guard, SkyyMenu 0.3.7 text. LEFT: a page guard for the
    ~18 other mods' pages (list in docs/log/2026-10.md 2026-10-05; they rely on SkyyMenu 0.3.6's join guard - only if Skyy sees a stuck page).

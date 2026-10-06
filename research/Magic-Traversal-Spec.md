@@ -1,6 +1,6 @@
 # Magic traversals: SkyyArmory 0.1.1 + SkyyClasses 0.1.12 (+ SkyyGear tooltip words) - build spec
 
-Date 2026-10-05. Locks: docs/answered/classes.md lines 30-33 + 37 (LOCKED 2026-10-04), research/classes/Mage.md + Priest.md.
+Date 2026-10-05. Locks: docs/answered/classes.md lines 30-33 + 37 (LOCKED 2026-10-04), research/classes/Mage.md + research/classes/Priest.md.
 Current code: SkyyArmory 0.1 (`SkyyArmory/build_skyyarmory_0.1.py`, spec `research/SkyyArmory-Spec.md`, S:), SkyyClasses 0.1.11
 (`SkyyClasses/build_skyyclasses_0.1.11.py`, C:), SkyyGear 0.2.3 (`SkyyGear/build_skyygear_0.2.3.py`, G:).
 Marks: **VERIFIED** = read in HytaleServer.jar bytecode / reflection, Assets.zip, or our own build scripts (class + method or asset path
