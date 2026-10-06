@@ -83,3 +83,44 @@ nothing traced from vanilla or other mods.
 | 3 | Objects OK (heart amulet, boot charm, mana vial, winged anklet, leaf ring, fist, rune stone, stone bracer, fang necklace, feather, lantern)? | [yes] |
 | 4 | Legendary halo + sparkles: keep, or too busy in the bag? | [keep] |
 | 5 | Normal gem is small and white: bump it to 3 x 3 so it reads at 1x? | [keep 2 x 2; Normal should look plain] |
+
+## v2 - vanilla icon density (2026-10-06)
+
+Skyy's art review (`docs/answered/gear.md`, LOCKED 2026-10-06: accessory icons "Love them"; other sheets: 2x-4x more detail, vanilla
+item icons are 64 x 64). So v2 keeps **the same 11 designs x 4 rarities** and the same rarity rule (gem in the name colour that grows +
+iron / gold / rose gold / platinum metal + Legendary halo), but redraws every icon natively at **64 x 64**. All v1 files above are
+unchanged, so the two can be compared side by side.
+
+**Start here:** `research/cloud/accessory-art/accessory-sheet-v2.png` (same layout: rows = line, columns = rarity; each icon 3x on a dark
+slot, plus 1x at the right).
+
+| File | What |
+|---|---|
+| `research/cloud/accessory-art/accessory-sheet-v2.png` | All 44 v2 icons, labelled, 3x on a dark slot + 1x (1532 x 2718, about 210 KB) |
+| `research/cloud/accessory-art/icons-v2/<line>-<rarity>.png` | The 44 icons, 64 x 64 RGBA, transparent (e.g. `icons-v2/health-legendary.png`) |
+| `research/cloud/accessory-art/make_icons_v2.py` | The v2 generator (Python + Pillow, deterministic: same code -> same bytes) |
+
+### What is new in v2 (detail, not design)
+
+- **Painter:** each part is shaded from a distance field (a real bevel / dome, not a 1-px rim), 7 levels per ramp (outline, dark,
+  dark-mid, mid, mid-light, light, highlight), a soft top-left gradient across the part, and a 1-px cast shadow on what lies below it.
+- **Metal:** chains are real links (open ovals alternating with side-on bars); rings, bands and caps are bevelled with a bright
+  top-left rim; rivets on bands, caps, eyelets; vent slots on the lantern cap.
+- **Gems:** Normal / Unique are round cabochons (4 x 4 / 6 x 6) with a specular spot; Rare (9 wide) / Legendary (13 wide) are cut
+  diamonds with a table, 4 crown facets and girdle lines; claws on Rare+, milgrain beads on the Legendary bezel.
+- **Glow:** Legendary halo is now 3 px soft (alpha 150 / 70 / 28) with 4-point sparkles; Rare keeps one pink glint (now a small star).
+- **Per line:** heart enamel gloss + rim light; boot leather grain, stitched seams, eyelets + criss-cross laces with loose ends, treaded
+  sole; mana flask glass reflections, meniscus, bubbles, cork grain, riveted neck band; five separate primary feathers + coverts per
+  wing; leaves with midrib + side veins and a dew drop; fist with knuckle shine, finger creases, thumb stitching, strapped wrist wrap;
+  rune stone speckle, chipped facets, cracks, carved rune with a purple glow and bright core; stone bracer block seams + dark arm hole;
+  twisted cord, ridged fangs with darker tips, metal fang caps; feather barbs, two natural splits, rachis highlight, down at the quill;
+  lantern frame posts, cross bar, wick + holder, glass glint, warm light that still grows per rarity.
+
+### Notes / doubts
+
+- The Legendary halo and a few wing / chain tips reach the 64 px edge, so the outer halo is clipped by 1-3 px on 9 Legendary icons
+  (all but Runic and Stonehide). Invisible at 1x; v1 kept a 2-px margin. If the real
+  slot crops icons, shrink the object by 2 px.
+- **UNVERIFIED (local session):** 64 x 64 is the vanilla item icon size per the art brief (no game files in the cloud). Same open points
+  as v1 above: icon path in `Assets.zip`, whether a mod jar can ship its own icon PNG, and how the semi-transparent halo looks on the real
+  slot background.

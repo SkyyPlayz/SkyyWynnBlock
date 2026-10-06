@@ -52,8 +52,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 <!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
 lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
-- [ ] **Accessory icons v2** - same designs (Skyy loves them) at vanilla icon density 64x64 or 2x-4x more detail (docs/answered/gear.md
-      2026-10-06). Output: `research/cloud/accessory-art/` v2 (keep v1 sheet).
 
 ## Done (delete after logging - see the rules above)
 - [x] Zone 1 town v2 - 2026-10-06 - `research/cloud/Zone-1-Town-Layout.md` + `research/cloud/Zone-1-Town-Map.png`
@@ -73,3 +71,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [x] Art checklist for the local session - 2026-10-06 - `research/cloud/Art-Checklist-Local.md`
 - [x] WorldGen stage 2 draft - 2026-10-06 - `research/cloud/WorldGen-Stage-2-Draft.md`
 - [x] Light armor v2 - 2026-10-06 - `research/cloud/light-armor/`
+- [x] Accessory icons v2 - 2026-10-06 - `research/cloud/accessory-art/`
