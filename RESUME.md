@@ -43,6 +43,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
    armor-box hide = YES) + SkyySkills next - ultracode round, deploy + roll back together.
 9. SkyyHud minimap widget (BetterMap joins the pack, stats off; downscale the engine's 96 px tiles on its own worker thread).
 10. Stats page (Your Profile -> SkyBlock-style stats; spec = cloud task -> `research/cloud/Stats-Page-Spec.md`), multi-mod build.
+- NEW (Skyy 2026-10-05): ARMOR TYPES (soft) - Plate = Warrior / Berserker, Leather = Archer / Assassin / Monk, Cloth = Mage / Priest; anyone
+  wears anything, only your type gives its bonus; each family covers Lv 1-49 - rides the mob-curve round (docs/answered/gear.md).
 - NEW (Skyy 2026-10-05): TOOL LEVELS must DO something - level raises speed + Mining / Foraging / Farming Fortune; axes, pickaxes,
   farming tools get rarities, rolls, reforges; new SICKLE RANGE modifier (research/Tool-Levels-Spec.md top note; docs/answered/gear.md).
 - NEW (Skyy 2026-10-05): SkyyGear WEAPON SPEED tiers Slow / Medium / Fast / Super Fast, same DPS (per-hit damage scales) - next SkyyGear pass (docs/answered/gear.md).
