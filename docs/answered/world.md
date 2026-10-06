@@ -49,4 +49,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 12. LOCKED 2026-09-25 (Skyy): island template box default stays 3 x 3 chunks, y 96-191. Future, to build: players upgrade 3 x 3, then 4 x 4, 5 x 5, 6 x 6, 7 x 7, 8 x 8, up to 9 x 9. [3 x 3 default; max 9 x 9 later]
 
 ## New answers (2026-10-05 on - newest last, beats everything above)
-
+- LOCKED 2026-10-06 (Skyy, Zone 1 town map review): "i like the basic layout, but its too square, look at skyblocks hub. (and id keep the vanilla temple right behind where you spawn in and the center of the town. (ill upgrade the exteriors later to integrate it into the town better. but the idea is, the town was built around an accent temple." -> keep the district layout; make it organic / less grid-square like the Hypixel SkyBlock Hub (winding roads, irregular plazas); the VANILLA temple stays at the centre, right behind the spawn point; the town grew around this ancient temple (Skyy upgrades its exterior later).
