@@ -32,6 +32,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
   Dimension keeps the Workbench tab? [spec paused until you say]
 
 ### classes
+- the STAFF / WAND TRAVERSAL spec's 12 questions (research/Magic-Traversal-Spec.md section 7): blink with no free spot [spend Mana], keep falling speed [yes], hop = server push [yes], direct hit = full shot only [yes], burst knockback [off], heal orb = party only + Divinity XP [yes], trail hurts players where PvP is on [yes], pierce count [3], staff quick bonus [+15%], cooldowns [none], glass / fences / leaves block the blink [yes], hide quick.life + read-only rows [yes]
 - the missing ability picks - every class's A2 alternative and its two improved A1 options (the Priest's A2 alternative too).
   The class-ability spec PROPOSES them after the reset, then you pick. [proposals pending; research/classes/<Class>.md]
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]

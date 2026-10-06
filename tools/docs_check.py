@@ -43,6 +43,7 @@ CITES = [("(OPEN-QUESTIONS.md:50-57)", '(docs/answered/gear.md "REQUEST 2026-10-
           "note 2026-09-30)")]
 # paths inside the game's Assets.zip (cited by specs, never repo files) and planned outputs named by specs added after BASE
 ASSET_DIRS = ("Server/", "Common/")
+PATCH_RE = re.compile(r"^tools/\w+_\d+(?:_\d+)+_patch\.py$")  # a spec naming the patch script a future build will write
 PLANNED = {"tools/sacks_0_7_13_patch.py", "tools/skyyacctable.py", "tools/skyyacctable_test.py"}  # research/Accessory-Table-Spec.md (paused)
 LINK = re.compile(r"\]\(([^)\s]+)\)")  # a markdown link's target: always a path (or a URL / #anchor)
 
@@ -93,7 +94,7 @@ def broken_refs(md_files, exists, read):
             p = m.replace("\\", "/")
             if p.startswith(("http", "www.")) or "/" not in p and not re.match(r"^[A-Z][\w-]*\.md$", p):
                 continue  # bare names like foo.py / x.json are usually code words, not repo paths; root .md docs are checked
-            if "scratch" in p or "<" in p or "*" in p or p.startswith(ASSET_DIRS) or p in PLANNED:
+            if "scratch" in p or "<" in p or "*" in p or p.startswith(ASSET_DIRS) or p in PLANNED or PATCH_RE.match(p):
                 continue
             cands = [p, os.path.normpath(os.path.join(d, p)).replace("\\", "/")]
             if (f in NO_EDIT or f == "INDEX.md") and p in MOVES:  # INDEX.md's moved-files table names the old places on purpose
