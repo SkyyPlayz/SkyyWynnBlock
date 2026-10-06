@@ -116,6 +116,9 @@ Obsidian vault - `docs/OBSIDIAN.md`):
 ## 6. Git
 
 - Pull before pushing: `git pull --rebase --autostash` (the design partner pushes too). Commit and push after every meaningful change.
+- **One task per commit (2026-10-06, from Skyy's "6 Claude Code habits" link):** stage ONLY the files that task changed (`git add <files>`,
+  never `git add -A` while builders run - it once swept a running builder's half-done scripts into a commit); never bundle unrelated work.
+  Commit only when `python tools/docs_check.py` says OK (docs) and the round's checks pass. A bad step = `git revert <commit>`.
 - Commits use the repo-local GitHub noreply identity that is already configured (Skyy's personal email must not be published).
 - **Pull requests: merge them yourself when ready (Skyy 2026-10-05: "go ahead to auto merge when things are ready. Do all the proper
   checks first.")** Ready = CI green on the head commit, every review bot finished and each finding fixed (or answered when it is not a
@@ -141,6 +144,9 @@ Obsidian vault - `docs/OBSIDIAN.md`):
 - **Models per agent:** builders Opus (the javassist / engine work is hard), reviews / cross-checks / web research Sonnet, tiny lookups
   Haiku. Fable may be used where it helps (Skyy 2026-10-02: "you can use fable if it helps") - e.g. spec synthesis or the hardest
   engine builds; name the model explicitly per agent.
+- **Fresh session per big round (2026-10-06, same link):** a long main session costs more every turn and gets sloppier. When the main
+  session's context passes ~50% (ccd get_usage), finish the current step, make RESUME.md + the log hand-off ready, and start a NEW
+  session (it reads CLAUDE.md -> RESUME.md). Agents already start fresh; keep it that way (name the files, don't paste history).
 - **Usage pacing:** big Max plan since 2026-10-02 - about 4-5 heavy workflows at once (10+ with ultracode rounds burned ~12% of the week in 90 minutes on 2026-10-03; on Max 5x it was 3-4); sonnet for reviews and cross-checks, Opus for builds and hard specs;
   check usage between rounds; near the weekly limit finish and deploy what is running, write the next round into RESUME.md and wait for
   the reset unless Skyy says otherwise.
