@@ -71,8 +71,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [ ] **Bank + Tab calibration** - `research/cloud/Economy-Audit.md` C1/C2: bank 2% per real hour offline on every profile is the biggest faucet; the Tab is
       ~70x endgame income. Propose the bank change (per day / online only / per account), a Tab rate tied to measured income, the profile-grant fix (C5),
       with simulations. Output: `research/cloud/Bank-Tab-Calibration.md`.
-- [ ] **Spellbook ladder** - `research/cloud/SkyyArmory-Roadmap.md` Q3: spellbooks have no metal versions; design the 7-metal ladder (leather + metal clasp),
-      Mana costs vs pools, area-based power, the Levitate charged attack per tier. Output: `research/cloud/Spellbook-Ladder.md`.
 - [ ] **Kunai ladder** - Assassin kunai (research/classes/Assassin.md): metal ladder mirroring daggers, stack/return rules, throw-teleport numbers per tier,
       speed tier (`research/cloud/Weapon-Speed-Tiers.md`). Output: `research/cloud/Kunai-Ladder.md`.
 - [ ] **Archer bolts + holster** - RESUME follow-up: Archery 15+ extra crossbow bolts and the late-game holstered reload (approved, later); design numbers,
@@ -86,3 +84,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 
 ## Done (delete after logging - see the rules above)
+- [x] Spellbook ladder - 2026-10-06 - `research/cloud/Spellbook-Ladder.md`
