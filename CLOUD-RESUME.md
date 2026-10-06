@@ -44,18 +44,6 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **LIGHT ARMOR CONCEPT SHEETS** (Skyy 2026-10-06: "im excited to see them" - DO THIS FIRST) - docs/answered/gear.md 2026-10-05 lines
-      (Light armor + "light armor concept"). Skyy's reference picture stays local (other people's art); its look in words: dark/black leather
-      armor, a diamond-quilted scale pattern on the chest, a raised stand-up collar, layered rounded shoulder caps (2-3 overlapping plates),
-      segmented upper-arm / elbow / forearm guards and finger-less hand guards, a brown leather diagonal chest strap and a wide double waist
-      belt with brass buckles + a belt pouch, a skirt of long rectangular leather tassels (front / side / back), small brass leaf-shaped accent
-      pieces. Make ORIGINAL pixel-art concept sheets (Python + Pillow, generated - no copied art): one front-view chest + full-set preview
-      per tier, Hytale-ish chunky pixel style (CORRECTION Skyy: tier 1 = vanilla leather, NO design; the black leather STARTS at
-      COPPER): Copper = black leather + small copper trims (buckles, collar + shoulder rims,
-      accents); Iron, Thorium, Cobalt, Adamantite, Mithril, Onyxium = the same black-leather base, metal accents in that metal's colours AND
-      shapes that echo that metal's vanilla armor style (web screenshots of Hytale's metal armors; mark guesses UNVERIFIED). Use sub agents
-      if useful (an Opus agent for the image script). Output: `research/cloud/light-armor/` (PNGs + `README.md` with one note per tier +
-      the script), a combined `light-armor-sheet.png`. Ask Skyy nothing - they will react to the sheet.
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
@@ -72,3 +60,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Archer bolts + holster - 2026-10-06 - `research/cloud/Archer-Bolts-Holster.md`
 - [x] Tab reveal + prestige scripts - 2026-10-06 - `research/cloud/Tab-Prestige-Scripts.md`
 - [x] Zone 4-5 materials - 2026-10-06 - `research/cloud/Zone-4-5-Materials.md`
+- [x] Light armor concept sheets - 2026-10-06 - `research/cloud/light-armor/`
