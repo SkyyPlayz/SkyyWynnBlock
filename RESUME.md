@@ -6,12 +6,15 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 ## START HERE - the next session (local, in `SkyWynn PROJECT`; it reads CLAUDE.md -> this file -> INDEX.md)
 1. `git pull --rebase --autostash`. Check weekly usage (ccd get_usage) - it resets TUESDAYS 15:00 UTC (next: Tue 2026-10-06 15:00 UTC = 9:00
    Skyy's time). Lean round ~0.3-0.5% weekly, full round ~0.7-1%, ultracode ~3%+.
-2. Skyy's test results first (TEST-CHECKLIST.md items 17-26 = everything deployed 2026-10-05); fix what they report.
-3. Then "Next, in order" below: item 5 (traversal build - spec + Skyy's answers ready), item 8 (mob curve, ultracode - all answers in),
+2. FIRST JOB AFTER THE RESET (Skyy 2026-10-05): sell from BAGS at the Bazaar (SkyySacks take bridge + SkyyBazaar sell buttons / Sell
+   Inventory; full round, item + coin safety) + Tree Sap default 12; then the Lantern recipes behind the Tree Sap collection tiers
+   (SkyyCollections + SkyyAccessories). All in docs/answered/economy.md 2026-10-05.
+3. Skyy's test results first (TEST-CHECKLIST.md items 17-26 = everything deployed 2026-10-05); fix what they report.
+4. Then "Next, in order" below: item 5 (traversal build - spec + Skyy's answers ready), item 8 (mob curve, ultracode - all answers in),
    item 9 minimap, item 10 Stats page, SkyyGear weapon speed tiers.
-4. Round recipe: one Opus builder (task names the files) -> one Sonnet review -> fix -> `python tools/ci/crosscheck.py --jar <new> --baseline`
+5. Round recipe: one Opus builder (task names the files) -> one Sonnet review -> fix -> `python tools/ci/crosscheck.py --jar <new> --baseline`
    -> pin -> commit -> `python tools/backup_deploy.py` -> `python tools/deploy_set.py --yes` -> docs (below) -> `python tools/tidy_local.py --yes`.
-5. Obsidian vault = this folder (`docs/OBSIDIAN.md`). Cloud sessions: CLOUD-RESUME.md.
+6. Obsidian vault = this folder (`docs/OBSIDIAN.md`). Cloud sessions: CLOUD-RESUME.md.
 
 ## Now (2026-10-05 evening)
 - LIVE: the 26-mod SET (HANDOFF section 1 = `tools/deploy_set.py`). Deployed 2026-10-05 (newest backup `backups\deploy-20261005-1745`;
