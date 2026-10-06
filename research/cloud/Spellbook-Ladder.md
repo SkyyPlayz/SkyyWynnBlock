@@ -42,17 +42,17 @@ Cloud draft, 2026-10-06. Paper design; nothing built. Inputs read: `research/cla
 | Adamantite (35-43) | 380.6 | 115 (30.2%) | 120 | 0.96 | 6.15 | 283 | 4.25 | 6 | 0.40 / 0.80 / 1.20 / 2.40 |
 | Mithril (40-49) | 430.8 | 130 (30.2%) | 170 | 0.76 | 6.18 | 321 | 4.50 | 6 | 0.40 / 0.80 / 1.20 / 2.40 |
 | Onyxium (40-49) | 430.8 | 130 (30.2%) | 170 | 0.76 | 6.18 | 321 | 4.50 | 6 | same as Mithril |
-| *Cindersteel (50-59)* | 531.0 | 160 (30.1%) | 220 | 0.73 | 6.19 | 396 | 5.00 | 7 | 0.40 / 0.80 / 1.20 / 2.80 |
-| *Amberite (58-67)* | 611.2 | 185 (30.3%) | 250 | 0.74 | 6.20 | 459 | 5.25 | 7 | 0.40 / 0.80 / 1.20 / 2.80 |
-| *Drakonite (66-75)* | 691.4 | 205 (29.6%) | 280 | 0.73 | 6.21 | 509 | 5.50 | 8 | 0.40 / 0.80 / 1.20 / 3.20 |
-| *Voidglass (76-88)* | 791.6 | 235 (29.7%) | 320 | 0.73 | 6.21 | 584 | 5.75 | 8 | 0.40 / 0.80 / 1.20 / 3.20 |
-| *Aetherium (86-100)* | 891.8 | 270 (30.3%) | 360 | 0.75 | 6.22 | 671 | 6.00 | 10 | 0.40 / 0.80 / 1.20 / 4.00 |
+| *Cindersteel (50-59)* | 531.0 | 160 (30.1%) | 210 | 0.76 | 6.19 | 396 | 5.00 | 7 | 0.40 / 0.80 / 1.20 / 2.80 |
+| *Amberite (58-67)* | 611.2 | 185 (30.3%) | 240 | 0.77 | 6.20 | 459 | 5.25 | 7 | 0.40 / 0.80 / 1.20 / 2.80 |
+| *Drakonite (66-75)* | 691.4 | 205 (29.6%) | 270 | 0.76 | 6.21 | 509 | 5.50 | 8 | 0.40 / 0.80 / 1.20 / 3.20 |
+| *Voidglass (76-88)* | 791.6 | 235 (29.7%) | 310 | 0.76 | 6.21 | 584 | 5.75 | 8 | 0.40 / 0.80 / 1.20 / 3.20 |
+| *Aetherium (86-100)* | 891.8 | 270 (30.3%) | 350 | 0.77 | 6.22 | 671 | 6.00 | 10 | 0.40 / 0.80 / 1.20 / 4.00 |
 
 Notes on the table:
 - Damage is the **base-50, before-level** figure like `research/SkyyArmory-Spec.md` 15.2; SkyyGear's level damage multiplies book and staff the same way, so the ratios hold at every level.
-- Staff Mana for the new tiers = the Roadmap section 6 column (220 / 250 / 280 / 320 / 360). Mithril and Onyxium match, as for the staffs. (updated 2026-10-06: the Roadmap section 6 refresh moved the new staff costs to 210 / 240 / 270 / 310 / 350 on the real 15.4 pools; book costs stay, B/staff becomes about 0.76-0.77 - re-run the staff columns of this table before building.)
+- Staff Mana for the new tiers = the Roadmap section 6 column (210 / 240 / 270 / 310 / 350). Mithril and Onyxium match, as for the staffs. Staff columns re-run 2026-10-06 on those costs (python3): staff damage multiples 26.0 / 29.75 / 33.5 / 38.5 / 43.5, staff damage per Mana 6.19 / 6.20 / 6.20 / 6.21 / 6.21, B / staff 0.76 / 0.77 / 0.76 / 0.76 / 0.77; book damage per target, radius, caps and the 1 / 2 / 3 / cap ratios do not move (they depend on B, not on the staff cost).
 - The cost ladder is **flatter than 2 x staff**: Copper is exactly 2 x (the live 20 vs 10 ratio), but by Mithril the book is 0.76 x the staff, and 2 x would have been 340 (79% of the pool; the Roadmap said it would not fit).
-- The Roadmap section 6 pool column (280 at Lv 50) uses 5 Mana per level, the Priest rate. For a Mage the 15.4 row is 10 per level (531 at Lv 50), so the staff charged shot is 41% there. The book share stays about 30% under either rule only if the pool is the Mage one (Q2).
+- The Roadmap section 6 pool column once used 5 Mana per level (the Priest rate, 280 at Lv 50). That is fixed: it now uses the Mage rate (10 per level, 531 at Lv 50), so the staff charged share is 39.5% and the book share about 30% (Q2).
 - Cadence: the tap is the spell, no quick/charged split. Medium speed (0.50 s between casts), so Mana, not the timer, limits a Mage to about 3 casts, then regen (5/s, 2.5/s in combat).
 - Wood: the live vanilla books (20 Mana, orb 25) stay as they are for now (the same call as Spec RS5); no Wood rung is proposed.
 
