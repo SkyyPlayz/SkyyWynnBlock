@@ -95,7 +95,7 @@ def broken_refs(md_files, exists, read):
             p = m.replace("\\", "/")
             if p.startswith(("http", "www.")) or "/" not in p and not re.match(r"^[A-Z][\w-]*\.md$", p):
                 continue  # bare names like foo.py / x.json are usually code words, not repo paths; root .md docs are checked
-            if "scratch" in p or "<" in p or "*" in p or p.startswith(ASSET_DIRS) or p in PLANNED or PATCH_RE.match(p) or TEST_RE.match(p):
+            if "scratch" in p or "<" in p or "*" in p or p.startswith(ASSET_DIRS) or p in PLANNED or PATCH_RE.match(p) or TEST_RE.match(p) \n                    or (f == "CLOUD-RESUME.md" and p.startswith("research/cloud/")):  # a cloud task's planned output
                 continue
             cands = [p, os.path.normpath(os.path.join(d, p)).replace("\\", "/")]
             if (f in NO_EDIT or f == "INDEX.md") and p in MOVES:  # INDEX.md's moved-files table names the old places on purpose

@@ -30,6 +30,31 @@ is word for word in docs/answered/<topic>.md; map of everything: INDEX.md. -->
 2026-10-06 15:00 UTC). The first 9 feed the next local rounds; the class design is in research/classes/ (one file per class + README rules),
 Skyy's locks are in OPEN-QUESTIONS 'LOCKED 2026-10-04'. Removed as done / superseded: Wynncraft level-curve research (research/Mob-Curve-Spec.md),
 Lantern design (SkyyAccessories 0.5.4 is live), Class tree texts (replaced by per-ability trees + paths), Tool progression research (research/Tool-Levels-Spec.md). -->
+<!-- 2026-10-05 evening local session (Skyy: "if you need more research done, put it on the cloud agents list. im going to start it now"):
+the 4 GATHERING PROGRESSION tasks below come FIRST - Skyy's big direction (docs/answered/bags.md 'LOCKED 2026-10-05 ... BIG DIRECTION'):
+SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock the next tier's recipes, compressed Enchanted materials,
+trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
+docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
+progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
+- [ ] **SkyBlock gathering progression research** - web research (wiki + guides) on how Hypixel SkyBlock's Farming, Mining and Foraging
+      ladders work: every collection's tier amounts + what each tier unlocks (recipes, tools, armor, minions, sacks, enchanted items, perks),
+      the Enchanted material ratios (160 base = 1 Enchanted, Enchanted blocks ...) and which materials have them, how islands / zones gate
+      the next tier, tools + armor per tier (e.g. foraging axes, Park islands, mining pickaxes / Deep Caverns, farming hoes / armor), and
+      fortune / speed stats. Tables, cite pages. Output: `research/cloud/SkyBlock-Gathering-Progression.md`.
+- [ ] **SkyWynn gathering tiers draft** - from repo data only: the material tiers already decided (docs/answered/economy.md: metals,
+      woods T1-T5, crops in vanilla Farming Bench order; the Farmer's Workbench wood ladder Softwood -> Goldenwood in docs/answered/gear.md),
+      the collections that exist (`add(` lines in SkyyCollections/build_skyycollections_0.2.6.py), the zone bands (Zone 1 1-20, 2 20-30,
+      3 30-45, 4 45-60; research/SkyyWorldGen-Plan.md). Propose per skill a FEW tiers per zone (GROUP the many trees - Skyy: not 6 tree tiers
+      in Zone 1), which materials sit in each tier, and the gathering tool / armor tier needed. Mark anything needing Assets.zip UNVERIFIED.
+      Output: `research/cloud/Gathering-Tiers-Draft.md`.
+- [ ] **Collection unlocks draft** - using the two outputs above + research/Collections-Spec.md: for every Farming / Mining / Foraging
+      collection give tier amounts and the unlock per tier, SkyBlock style - recipes for the next tier's tools, Foraging armor tiers (tier 1
+      vanilla Wood armor, then Softwood ... Goldenwood), gathering accessories (Lantern tiers behind the Tree Sap collection), bags, Enchanted
+      materials, XP / fortune perks. Respect R3 (coins never skip collections). Output: `research/cloud/Collection-Unlocks-Draft.md`.
+- [ ] **Enchanted materials draft** - which materials get an Enchanted form (and Enchanted blocks), ratios, recipes (bench / /craft),
+      how they count toward collections (their base amount), Bazaar prices (base price x ratio + premium, no buy-craft-sell loop at the
+      buy / sell spread - see docs/log/2026-10.md SkyyBazaar 0.1.4 money-loop line), bag / sack handling. Output:
+      `research/cloud/Enchanted-Materials-Draft.md`.
 - [ ] **Class ability spec draft** - from research/classes/*.md: for every ability of the 7 classes give base numbers (Mana cost, cooldown,
       radius, duration, damage / heal as a multiple of a weapon hit), per-level gains (levels by use), the 4 modifiers with per-level steps, and a
       POWER BUDGET table (each ability fully levelled + both modifiers + its class-tree path must not break a fight). Keep LOCKED rows as written;
@@ -44,13 +69,6 @@ Lantern design (SkyyAccessories 0.5.4 is live), Class tree texts (replaced by pe
       (Mana per tether per second, stabilize time 1.5-2.5 s falling with tier, damage per Mana, stored-healing cap per tier), Wings of Fate numbers
       (glide distance, ally lock range, base heal + stored bonus), and the Mana Steal balance (max Mana Steal = a full Cobalt cage's drain).
       Output: `research/cloud/Soul-Orb-Spec.md`.
-- [ ] **Bazaar progression prices** - Skyy's x2-per-tier rule (OPEN-QUESTIONS 'LOCKED 2026-10-04' bazaar lines): a full proposed price table from
-      the product rows in SkyyBazaar/build_skyybazaar_0.1.3.py - metals x2 per tier (Onyxium x64), logs T1-T5, crops on the farming path + Eternal
-      seeds x4 per tier, hides x2 flat, and both options for cloth + gems; flag any buy -> craft -> sell loop risk. Output:
-      `research/cloud/Bazaar-Progression-Prices.md`.
-- [ ] **Skill curves + Cooking XP** - Mining's own list (10 + 5L + 1.5L^2, LOCKED pending Skyy's OK) as a Lv 1-100 table with blocks-per-level
-      at today's XP per block; propose lists for Foraging / Farming / Cooking in the same style; a Cooking XP-by-difficulty table (crafting steps,
-      recipe knowledge, bench + ingredient tier) from SkyyCooking's 'XP per craft' rows. Output: `research/cloud/Skill-Curves-and-Cooking-XP.md`.
 - [ ] **Monk kit spec** - research/classes/Monk.md: Bo staff + fist weapon (wraps / gauntlets / claws) metal ladders like SkyyArmory's wands
       (recipes, level bands, damage), the traversal tuning numbers (vault, skipping bounds, Rising Strike, Plunge Punch) and the engine probe list.
       Output: `research/cloud/Monk-Kit-Spec.md`.
