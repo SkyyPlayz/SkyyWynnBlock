@@ -6,19 +6,19 @@
 
 **Legend.** VERIFIED = seen in `HytaleServer.jar` bytecode or reflection (tools/dev), in `Assets.zip`, in an installed mod jar, in our own build scripts, or in a cited web source. UNVERIFIED = design, estimate, inference, or not yet tested in game. `[SKYY?]` = a number or choice Skyy should confirm.
 
-**Skyy's call (2026-09-23, HANDOFF log 22:30):** build Cooking next to Alchemy *if* cooking level can raise the strength and duration of the food you cook: x2 at level 50, x4 at level 100, and skill-tree modifiers make it even better. Later the same night (22:45): Cooking is **table use only** (Cooking Bench accessory removed; the vanilla bench draws from your sacks).
+**Skyy's call (2026-09-23, HANDOFF log 22:30):** build Cooking next to Alchemy *if* cooking level can raise the strength and duration of the food you cook: x2 at level 50, x4 at level 100, and skill-tree modifiers make it even better. (updated 2026-10-06: strength formula -> x(1 + 0.32 x Grade) per `docs/answered/skills.md` lock "FOOD GRADE STRENGTH +32% per Grade" 2026-10-02: strength is now x2.6 at level 50 and x4.2 at level 100; duration keeps x2 / x4.) Later the same night (22:45): Cooking is **table use only** (Cooking Bench accessory removed; the vanilla bench draws from your sacks).
 
 ---
 
 ## 0. Feasibility verdict (plain words)
 
-**Yes, it can be built, with one design choice: a dish carries a "Grade" (0 to 12) instead of an exact number.** Your Cooking level sets the Grade (one Grade per 10 levels), and the Grade multiplies both the strength and the duration of everything the dish does: x1 at level 0, **x2 at level 50, x4 at level 100** exactly. Skill-tree nodes push dishes to Grade 11 and 12 (x4.59 and x5.28); the engine allows that part too, but the Cooking tree itself waits for Skyy's OK on a 4th SkyyTrees tree (section 7).
+**Yes, it can be built, with one design choice: a dish carries a "Grade" (0 to 12) instead of an exact number.** Your Cooking level sets the Grade (one Grade per 10 levels), and the Grade multiplies both the strength and the duration of everything the dish does: strength x(1 + 0.32 x Grade) = x1 at level 0, **x2.6 at level 50, x4.2 at level 100**; duration x2^(Grade/5) = **x2 at level 50, x4 at level 100** exactly. Skill-tree nodes push dishes to Grade 11 and 12 (strength x4.52 and x4.84, duration x4.59 and x5.28); the engine allows that part too, but the Cooking tree itself waits for Skyy's OK on a 4th SkyyTrees tree (section 7).
 
 | Skyy's condition | Can it be done? | Verified mechanism |
 |---|---|---|
 | Food remembers the cook's power | **Yes** | At the vanilla Cooking Bench every finished dish fires `CraftRecipeEvent$Post` on the cook's own entity, before the engine hands out the item, and the event is cancellable (VERIFIED bytecode, both the instant and the timed-queue path). SkyySkills cancels it and hands out the **graded item** instead (e.g. `Skyy_Cook_Food_Pie_Meat_G5`), exactly the way the engine would have handed out the plain one. The Grade lives in the item id, so it survives chests, trades, drops, relogs and Magic Bags. |
-| Eating scales **strength** | **Yes** | A graded dish is a normal food item whose eat chain points at **pre-scaled effect assets** (heal %, regen per tick, max-Health / max-Stamina bonus, damage resistance all x the Grade multiplier). Vanilla `ApplyEffectInteraction` looks the effect up by id and applies its own numbers (VERIFIED bytecode), so no runtime trick is needed. |
-| Eating scales **duration** | **Yes** | The same assets carry `Duration` x the multiplier (45 s buff becomes 90 s at Grade 5, 180 s at Grade 10). |
+| Eating scales **strength** | **Yes** | A graded dish is a normal food item whose eat chain points at **pre-scaled effect assets** (heal %, regen per tick, max-Health / max-Stamina bonus, damage resistance all x the Grade strength factor S = 1 + 0.32 x Grade). Vanilla `ApplyEffectInteraction` looks the effect up by id and applies its own numbers (VERIFIED bytecode), so no runtime trick is needed. |
+| Eating scales **duration** | **Yes** | The same assets carry `Duration` x the duration factor D = 2^(Grade/5) (45 s buff becomes 90 s at Grade 5, 180 s at Grade 10). |
 | Instant heals scale | **Yes, in amount** | Instant heals are 0.1 s effects (`Food_Instant_Heal_T1/T2/T3/Bread`, +5/10/15/15% max Health, VERIFIED). Their amount scales (15% becomes 60% at Grade 10). They have no duration to extend, and we never touch their 0.1 s duration. |
 | Skill-tree modifiers push it further | **Yes (engine)**, scope pending | Tree nodes add Grades (a guaranteed +1 from the capstone, chances of +1/+2), extra dishes, ingredient refunds and XP. All hooks run in our own craft code (VERIFIED event). The engine allows it; what is still open is scope: the Cooking tree would be a 4th SkyyTrees tree, and the trees spec ships only the 3 gathering trees. It is not built until Skyy says yes (section 7, question 5). Cooking works on levels alone until then. |
 
@@ -26,7 +26,7 @@
 
 1. **Scaling a vanilla food effect per bite at runtime** is impossible: `EffectControllerComponent.addEffect` has a duration override but **no strength/magnitude argument**, and `EntityEffect` is an immutable asset (VERIFIED reflection). → We pre-build 12 scaled copies of each food effect (the "Grade" assets).
 2. **A placed Campfire cannot know who cooked.** It is a Processing bench: `ProcessingBenchBlock` has no owner field and completes recipes with no event (VERIFIED). → Campfire food stays Grade 0 and pays no XP; the 3 campfire dishes (cooked meat, grilled fish, cooked vegetables) get **Cooking Bench recipes** (vanilla "Variant recipe" pattern) so a leveled cook can grade them.
-3. **An exact per-level number on every dish** would stop food from stacking and would need unlimited assets. → 12 Grades, one per 10 levels (the curve `2^(level/50)` sampled every 10 levels).
+3. **An exact per-level number on every dish** would stop food from stacking and would need unlimited assets. → 12 Grades, one per 10 levels (strength `1 + 0.32 x Grade` and duration `2^(level/50)`, both sampled every 10 levels).
 4. **Separate "+% strength only" or "+% duration only" tree nodes** would need a second Grade axis (12 x 12 variants per dish). → Tree nodes raise the Grade, which raises both together. A duration-only node is possible later only through the runtime fallback (section 11).
 5. **Vanilla food eaten while a Cook buff runs** can run its own vanilla buff of the same family next to the Cook buff, because vanilla's tier checks do not know our ids and overriding vanilla assets is UNVERIFIED. → Documented limit; worst case is one extra vanilla-strength buff (section 5.4).
 6. **Faster cooking per player** is impossible: bench speed comes from the bench's tier asset (`CraftingTimeReductionModifier`), not from the player (VERIFIED, Alchemy spec 5.4). The Cooking Bench has no tiers at all (VERIFIED).
@@ -35,43 +35,45 @@
 
 ## 1. How it plays (one paragraph)
 
-You cook at a placed vanilla **Cooking Bench**; its ingredients can come from your Magic Bags (the existing SkyySacks bench link). Each finished dish earns Cooking XP. From Cooking 10 on, dishes come out graded: "Meat Pie (Grade 5)" heals twice as much and its buffs are twice as strong and last twice as long. Anyone who eats it gets that power (the eater's own level does not matter). Food of the same Grade stacks. If Skyy approves it, Cooking also gets its own small skill tree on the SkyyTrees template that raises Grades further (section 7).
+You cook at a placed vanilla **Cooking Bench**; its ingredients can come from your Magic Bags (the existing SkyySacks bench link). Each finished dish earns Cooking XP. From Cooking 10 on, dishes come out graded: "Meat Pie (Grade 5)" heals x2.6 as much and its buffs are x2.6 as strong and last twice as long. Anyone who eats it gets that power (the eater's own level does not matter). Food of the same Grade stacks. If Skyy approves it, Cooking also gets its own small skill tree on the SkyyTrees template that raises Grades further (section 7).
 
 ---
 
 ## 2. The power curve and Grades
 
-### 2.1 Formula (recommended: exponential, sampled every 10 levels)
+### 2.1 Formulas (strength LOCKED linear per Grade; duration exponential, sampled every 10 levels)
+
+*(updated 2026-10-06: strength formula -> x(1 + 0.32 x Grade) per `docs/answered/skills.md` (LOCKED 2026-10-02, Skyy: FOOD GRADE STRENGTH "+32% per Grade"; duration unchanged); live in SkyyCooking 0.1.4.)*
 
 - **Grade** `g = floor(CookingLevel / 10)` + tree bonuses, capped at `12`.
-- **Multiplier** `M(g) = 2^(g/5)` (strength and duration both).
-- This is exactly `2^(level/50)` read at levels 0, 10, 20 ... 100, so it hits Skyy's anchors: level 50 → Grade 5 → **x2.00**, level 100 → Grade 10 → **x4.00** (VERIFIED arithmetic).
+- **Strength factor** `S(g) = 1 + 0.32 x g` (LOCKED). Level 50 → Grade 5 → **x2.60**, level 100 → Grade 10 → **x4.20**; Grades 11 / 12 (tree) x4.52 / x4.84. Every Grade adds the same +0.32 of the base (VERIFIED arithmetic).
+- **Duration factor** `D(g) = 2^(g/5)` (LOCKED unchanged: "id leave the duration buff"). This is exactly `2^(level/50)` read at levels 0, 10, 20 ... 100: level 50 → Grade 5 → **x2.00**, level 100 → Grade 10 → **x4.00** (VERIFIED arithmetic).
 
-**Why `2^(level/50)` and not piecewise-linear** (`1 + L/50` to 50, then `2 + (L-50)/25`):
+**Why duration stays `2^(level/50)` and not piecewise-linear** (`1 + L/50` to 50, then `2 + (L-50)/25`):
 - One formula hits both anchors with no kink. Piecewise-linear doubles its slope at level 50.
-- Every step is the same relative gain (+14.9% per Grade), so each new Grade feels the same size.
-- Tree bonuses compose cleanly: one more Grade is always another x1.149, at any level.
-- Cost: early levels give a bit less than linear (level 30: x1.52 instead of x1.60). That is acceptable for a skill whose headline numbers are at 50 and 100.
+- Every duration step is the same relative gain (+14.9% per Grade), so each new Grade feels the same size. Strength steps are the same absolute gain (+0.32 of the base).
+- Tree bonuses compose cleanly: one more Grade is always another x1.149 duration and +0.32 strength, at any level.
+- Cost: early levels give a bit less than linear (duration at level 30: x1.52 instead of x1.60). That is acceptable for a skill whose headline numbers are at 50 and 100.
 
 **Why Grades every 10 levels** (not smaller steps): 12 steps keep the asset count sane (section 4), give a simple rule players can remember ("a new Grade every 10 Cooking levels"), and keep food from cooks in the same 10-level band identical, so it stacks and trades as one item.
 
 ### 2.2 Grade table (VERIFIED arithmetic)
 
-| Grade | Reached at | Multiplier | Name suffix | Rarity colour (never below the dish's own) |
+| Grade | Reached at | Strength / Duration | Name suffix | Rarity colour (never below the dish's own) |
 |---|---|---|---|---|
-| 0 | Cooking 0-9 | x1.00 | (plain vanilla item) | vanilla |
-| 1 | 10 | x1.15 | (Grade 1) | Uncommon |
-| 2 | 20 | x1.32 | (Grade 2) | Uncommon |
-| 3 | 30 | x1.52 | (Grade 3) | Rare |
-| 4 | 40 | x1.74 | (Grade 4) | Rare |
-| 5 | **50** | **x2.00** | (Grade 5) | Rare |
-| 6 | 60 | x2.30 | (Grade 6) | Epic |
-| 7 | 70 | x2.64 | (Grade 7) | Epic |
-| 8 | 80 | x3.03 | (Grade 8) | Epic |
-| 9 | 90 | x3.48 | (Grade 9) | Legendary |
-| 10 | **100** | **x4.00** | (Grade 10) | Legendary |
-| 11 | tree only | x4.59 | (Grade 11) | Legendary |
-| 12 | tree only (cap) | x5.28 | (Grade 12) | Legendary |
+| 0 | Cooking 0-9 | x1.00 / x1.00 | (plain vanilla item) | vanilla |
+| 1 | 10 | x1.32 / x1.15 | (Grade 1) | Uncommon |
+| 2 | 20 | x1.64 / x1.32 | (Grade 2) | Uncommon |
+| 3 | 30 | x1.96 / x1.52 | (Grade 3) | Rare |
+| 4 | 40 | x2.28 / x1.74 | (Grade 4) | Rare |
+| 5 | **50** | **x2.60 / x2.00** | (Grade 5) | Rare |
+| 6 | 60 | x2.92 / x2.30 | (Grade 6) | Epic |
+| 7 | 70 | x3.24 / x2.64 | (Grade 7) | Epic |
+| 8 | 80 | x3.56 / x3.03 | (Grade 8) | Epic |
+| 9 | 90 | x3.88 / x3.48 | (Grade 9) | Legendary |
+| 10 | **100** | **x4.20 / x4.00** | (Grade 10) | Legendary |
+| 11 | tree only | x4.52 / x4.59 | (Grade 11) | Legendary |
+| 12 | tree only (cap) | x4.84 / x5.28 | (Grade 12) | Legendary |
 
 Rarity names Common..Legendary are the vanilla `Server/Item/Qualities` ids SkyyAccessories already uses (VERIFIED). The colour mapping is a suggestion `[SKYY?]`.
 
@@ -79,7 +81,7 @@ Rarity names Common..Legendary are the vanilla `Server/Item/Qualities` ids SkyyA
 
 - **On the item (native tooltip):** the graded item has its own name and description through `Server/Languages/en-US/server.lang` in the SkyySkills jar, the same way SkyyAccessories, SkyySacks and SkyyMenu name their items (VERIFIED: all three ship their own `server.lang` and are live together). Example:
   - Name: `Meat Pie (Grade 5)`
-  - Description: `Grade 5 food, cooked at Cooking 50 or higher. Heal and buffs x2.00 stronger, buffs last x2.00 longer.` followed by the vanilla description text (read from the vanilla `server.lang` at build time, as SkyyAccessories' `vname()` does, VERIFIED).
+  - Description: `Grade 5 food, cooked at Cooking 50 or higher. Heal and buffs x2.60 stronger, buffs last x2.00 longer.` followed by the vanilla description text (read from the vanilla `server.lang` at build time, as SkyyAccessories' `vname()` does, VERIFIED).
 - **On the Stats page** (section 8.4): your current Grade, its multiplier, the level of the next Grade, and your tree chances.
 - **Not used:** per-stack `ItemDisplay` metadata. It exists (`ItemDisplayMetadata`, key `ItemDisplay`, read by `ItemStack.getDisplayName()`; the client binary knows the key; VERIFIED), but graded ids make it unnecessary. It is the display path of the fallback in section 11.
 
@@ -226,33 +228,33 @@ The build script generates everything from `Assets.zip` (read in memory, like Sk
 | `Meat_Buff_T1` / `_T2` / `_T3` | max Health x1.05 / 1.10 / 1.15 (Multiplicative, Max) for 45 / 150 / 360 s; T3 also 5% Physical and Projectile resistance |
 | `FruitVeggie_Buff_T1` / `_T2` / `_T3` | max Stamina x1.10 / 1.20 / 1.30 for 45 / 150 / 360 s; T2/T3 also +0.025 / 0.05 Stamina every 0.1 s |
 
-**Scaling rules** (copy the base JSON, then change only these fields). `M = 2^(g/5)`; the two build-time exponents `a` and `b` (knobs below, both 1.0 by default) turn it into a **strength factor `S = M^a`** and a **duration factor `D = M^b`**. With the defaults `S = D = M`.
+**Scaling rules** (copy the base JSON, then change only these fields). The **strength factor** is `S = 1 + 0.32 x g` and the **duration factor** is `D = 2^(g/5)` (both LOCKED, section 2.1; updated 2026-10-06, the old shared `M = 2^(g/5)` and its exponents `a` / `b` are gone).
 - **Strength fields use `S`:**
   - `StatModifiers.<stat>` → value x S.
-  - `RawStatModifiers.<stat>[].Amount` with `CalculationType: Multiplicative` → `1 + (Amount - 1) x S` (the bonus part scales, so x1.15 becomes x1.60 at Grade 10 with a = 1). Additive → Amount x S.
+  - `RawStatModifiers.<stat>[].Amount` with `CalculationType: Multiplicative` → `1 + (Amount - 1) x S` (the bonus part scales, so x1.15 becomes x1.63 at Grade 10). Additive → Amount x S.
   - `DamageResistance.<type>[].Amount` → Amount x S.
 - **The duration field uses `D`:** `Duration` → x D **only if the base Duration is above 0.5 s**. Instant effects keep 0.1 s. Reason: a cooldown-0 effect applies once whatever its duration (VERIFIED pulse rule, Alchemy spec section 2), so there is nothing to gain and it avoids surprises.
 - No other field uses either factor. `DamageCalculatorCooldown`, `ValueType`, `OverlapBehavior` (Overwrite), `StatusEffectIcon`: unchanged.
-- **Safety caps** (applied after scaling; never reached at or below Grade 10 with a = b = 1): instant heal ≤ 100%, regen ≤ 12% per tick, max-stat bonus ≤ +150%, resistance ≤ 50%, Duration ≤ 2400 s. At Grade 12 only FruitVeggie T3's stamina bonus is clipped (+158% → +150%).
-- **Balance knobs (build time):** `COOK_STRENGTH_EXP = 1.0` (a), `COOK_DURATION_EXP = 1.0` (b). Skyy asked for x4 strength **and** x4 duration, which makes the total healing of a regen buff x16 at level 100. If that is too much, `a = b = 0.5` gives x2 x x2 = x4 total. `[SKYY?]` These numbers are baked into the assets, so a change means a rebuild; everything else in this spec is a runtime key.
-- **Text follows the factors:** the item description (2.3) and the Stats page (8.4) print S ("x.. stronger") and D ("last x.. longer") from the same build-time constants, not M, so they stay true if a or b changes. The build-time check 4.5.1 stays on M (`M(5) == 2.0`, `M(10) == 4.0`); add `S` and `D` to the generator's printed summary.
+- **Safety caps** (applied after scaling; never reached at any Grade up to 12 with the locked S and D): instant heal ≤ 100%, regen ≤ 12% per tick, max-stat bonus ≤ +150%, resistance ≤ 50%, Duration ≤ 2400 s. At Grade 12 the largest values are FruitVeggie T3's stamina bonus +145%, instant heal 73%, regen 9.7% per tick, resistance 24% and Duration 1900 s, so no cap bites.
+- **Build-time constants:** `COOK_STRENGTH_PER_GRADE = 0.32` (S) and the duration base `2^(g/5)` (D) are LOCKED, so the old balance exponents `COOK_STRENGTH_EXP` / `COOK_DURATION_EXP` are dropped. The total healing of a regen buff (strength x duration) is x4.2 x 4 = x16.8 at level 100. These numbers are baked into the assets, so a change means a rebuild; everything else in this spec is a runtime key.
+- **Text follows the factors:** the item description (2.3) and the Stats page (8.4) print S ("x.. stronger") and D ("last x.. longer") from the same build-time constants, so they stay true if a constant changes. The build-time check 4.5.1 is on S and D (`S(5) == 2.6`, `S(10) == 4.2`, `D(5) == 2.0`, `D(10) == 4.0`); print `S` and `D` in the generator's summary.
 
-What players get with the default a = b = 1 (VERIFIED arithmetic):
+What players get with the locked S and D (VERIFIED arithmetic, python-recomputed 2026-10-06):
 
 | Effect | Grade 0 (vanilla) | Grade 5 (level 50) | Grade 10 (level 100) | Grade 12 (tree cap) |
 |---|---|---|---|---|
-| Instant heal T1 / T2 / T3 | 5 / 10 / 15 % | 10 / 20 / 30 % | 20 / 40 / 60 % | 26 / 53 / 79 % |
-| HealthRegen T1 | 1 %/2 s, 45 s | 2 %, 90 s | 4 %, 180 s | 5.3 %, 238 s |
-| HealthRegen T2 | 1.5 %, 150 s | 3 %, 300 s | 6 %, 600 s | 7.9 %, 792 s |
-| HealthRegen T3 | 2 %, 360 s | 4 %, 720 s | 8 %, 1440 s (24 min) | 10.6 %, 1900 s |
-| Meat T3 | max HP +15 %, resist 5 %, 360 s | +30 %, 10 %, 720 s | +60 %, 20 %, 1440 s | +79 %, 26 %, 1900 s |
-| FruitVeggie T3 | max Stamina +30 %, 360 s | +60 %, 720 s | +120 %, 1440 s | +150 % (cap), 1900 s |
+| Instant heal T1 / T2 / T3 | 5 / 10 / 15 % | 13 / 26 / 39 % | 21 / 42 / 63 % | 24 / 48 / 73 % |
+| HealthRegen T1 | 1 %/2 s, 45 s | 2.6 %, 90 s | 4.2 %, 180 s | 4.8 %, 238 s |
+| HealthRegen T2 | 1.5 %, 150 s | 3.9 %, 300 s | 6.3 %, 600 s | 7.3 %, 792 s |
+| HealthRegen T3 | 2 %, 360 s | 5.2 %, 720 s | 8.4 %, 1440 s (24 min) | 9.7 %, 1900 s |
+| Meat T3 | max HP +15 %, resist 5 %, 360 s | +39 %, 13 %, 720 s | +63 %, 21 %, 1440 s | +73 %, 24 %, 1900 s |
+| FruitVeggie T3 | max Stamina +30 %, 360 s | +78 %, 720 s | +126 %, 1440 s | +145 %, 1900 s |
 
 ### 4.2 Family checks: `Server/Item/Interactions/SkyyCook/Skyy_Cook_<Family>_Check_T<t>_G<g>.json`
 
 3 families (HealthRegen, Meat, FruitVeggie) x 3 tiers x Grades 1-12 = **108 files**. They replace vanilla's `<Family>_TierCheck_T<t>` for graded dishes and keep vanilla's rule ("a weaker buff never replaces a stronger one", VERIFIED: `Meat_TierCheck_T2` = `EffectCondition` on `Meat_Buff_T3`, `Match: None`, then `ClearEntityEffect` T1 + `ApplyEffect` T2).
 
-- **Rank** of a family member = (strength value, then duration). Members = the 3 vanilla buffs (Grade 0) + the 36 graded ones. Ties in strength exist (HealthRegen T1 Grade 5 = T3 Grade 0 = 2%/tick) and are broken by duration.
+- **Rank** of a family member = (strength value, then duration). Members = the 3 vanilla buffs (Grade 0) + the 36 graded ones. Ties in strength do not occur with S = 1 + 0.32 g (HealthRegen T1 Grade 5 = 2.6%/tick, T3 Grade 0 = 2%/tick; the old 2^(g/5) curve tied them at 2%), but keep the duration tie-break in the generator.
 - Generated JSON for member X:
   ```json
   { "Type": "EffectCondition", "EntityEffectIds": [ "<every member ranked above X>" ], "Match": "None",
@@ -281,7 +283,7 @@ The 3 items of section 3.2 (`Skyy_Cook_Recipe_*`). Total generated: 156 + 108 + 
 
 ### 4.5 Build-time checks (the build fails if one is false)
 
-1. `M(5) == 2.0` and `M(10) == 4.0`.
+1. `S(5) == 2.6`, `S(10) == 4.2`, `D(5) == 2.0` and `D(10) == 4.0`.
 2. Every effect / interaction id referenced by a generated file exists among the generated files or in Assets.zip.
 3. No generated dish has a `Recipe`; each recipe variant's `Output` is one of the 15 dishes.
 4. The 15 dish ids, their eat chains and the 13 base effects still look as this spec expects (a Hytale update that changes them stops the build instead of shipping wrong numbers).
@@ -299,7 +301,7 @@ There is no "food eaten" event in the jar (VERIFIED absence); none is needed.
 
 ### 5.2 Strength and duration
 
-Both come straight from the assets (section 4.1). The instant heal fires once per bite. Buffs last `base x M` seconds.
+Both come straight from the assets (section 4.1). The instant heal fires once per bite. Buffs last `base x D` seconds; strength is `base x S`.
 
 ### 5.3 Stacking rules when eating again
 
@@ -359,8 +361,8 @@ A full Meat Pie chain, one craft of each (flour, dough, spices, salt, pie), pays
 | Level 10 | 9,925 | about 100 | 1 |
 | Level 20 | 522,425 | about 5,200 | 2 |
 | Level 30 | 8,022,425 | about 80,000 | 3 |
-| Level 50 | 55,172,425 | about 552,000 | **5 (x2)** |
-| Level 100 | 637,672,425 | about 6.4 million | **10 (x4)** |
+| Level 50 | 55,172,425 | about 552,000 | **5 (x2.6 / x2)** |
+| Level 100 | 637,672,425 | about 6.4 million | **10 (x4.2 / x4)** |
 
 This is far slower than the Alchemy spec's pace (level 50 in about 27 h, because a Greater potion pays 18,000). Cooking's dishes are cheap to make, so per-dish XP is small; the curve is the shared lock. **Decision for Skyy:** either accept that Grade 5 is a long-term goal like Mining 50, or scale Cooking up with `cook.xpMultiplier` (for example x20 puts level 50 at about 27,000 pies, near Alchemy's pace). Recommendation: pick one crafting pace for Alchemy and Cooking together. `[SKYY?]`
 
@@ -456,7 +458,7 @@ All new keys are published in `setup()` and removed in `shutdown()`, next to `sk
 ### 8.3 /skills row
 
 - Row order from the Alchemy spec plus Cooking: **Mining, Foraging, Farming, Alchemy, Smithing, Cooking, Acrobatics, class skill** = 8 rows. The Alchemy spec already sized this: root Group height 624 with a Cooking row; more than 8 rows needs tabs.
-- Row text: `Cooking 37` + bar + `12.3k/20.0k`, and a small second label `Grade 3 food x1.52`. No underscores in ids (e.g. `#SkyySRowCookG`), text through `b.set(...)`.
+- Row text: `Cooking 37` + bar + `12.3k/20.0k`, and a small second label `Grade 3 food x1.96`. No underscores in ids (e.g. `#SkyySRowCookG`), text through `b.set(...)`.
 - Footer hint gains "cook at the Cooking Bench".
 
 ### 8.4 Stats page (`StatsPage.lines` / `how` for slot 12)
@@ -465,8 +467,8 @@ Example at level 37 with a few tree levels:
 
 | Section | Lines |
 |---|---|
-| Boosts right now (level 37) | "Food you cook - Grade 3 (heal and buffs x1.52 stronger - buffs last x1.52 longer)"; "Next Grade - Grade 4 (x1.74) at Cooking 40"; "Skill tree - 12% chance of a higher Grade - 5% extra dish - 4% ingredient back" (only when above 0) |
-| Level 38 adds | "+3800 coins when you reach level 38". On a level ending in 9: "Level 40 adds - Grade 4 food (x1.74)" |
+| Boosts right now (level 37) | "Food you cook - Grade 3 (heal and buffs x1.96 stronger - buffs last x1.52 longer)"; "Next Grade - Grade 4 (x2.28 / x1.74) at Cooking 40"; "Skill tree - 12% chance of a higher Grade - 5% extra dish - 4% ingredient back" (only when above 0) |
+| Level 38 adds | "+3800 coins when you reach level 38". On a level ending in 9: "Level 40 adds - Grade 4 food (x2.28 / x1.74)" |
 | How (grey footer) | "Earn XP by cooking at a Cooking Bench (ingredients can come from your bags) - pies and Caesar salad pay the most - a placed Campfire gives no XP" |
 
 Dashes instead of commas and colons, as the Alchemy spec does.
@@ -483,7 +485,7 @@ Dashes instead of commas and colons, as the Alchemy spec does.
 # ---------- Cooking (SkyySkills 0.4) ----------
 # Comments must stay on their own lines.
 cook.enabled=true
-# Grade = floor(level / 10) + tree. The x2 at 50 / x4 at 100 numbers are baked into the generated effect assets.
+# Grade = floor(level / 10) + tree. The strength x2.6 at 50 / x4.2 at 100 and duration x2 / x4 numbers are baked into the generated effect assets.
 # maxGrade can only LOWER the cap: the jar only has assets for Grades 1-12, so values above 12 are read as 12. Raising it needs a rebuild.
 cook.maxGrade=12
 # Base XP per finished craft at the Cooking Bench, keyed by the craft's primary OUTPUT item id. 0 = no XP.
@@ -604,7 +606,7 @@ Use this only if the generated effect or interaction assets fail to load (sectio
 
 ## 14. Open questions for Skyy
 
-1. Is **x4 strength and x4 duration** (so regen heals x16 in total at level 100) what you want, or x4 overall (`a = b = 0.5`)?
+1. ~~Is x4 strength and x4 duration what you want?~~ Answered 2026-10-02 (`docs/answered/skills.md`): strength x(1 + 0.32 x Grade) (x4.2 at level 100), duration unchanged 2^(Grade/5) (x4); regen total x16.8 at level 100.
 2. **Pace:** at these XP values Grade 5 is about 550,000 pies away. Raise `cook.xpMultiplier` to match Alchemy's pace?
 3. Does the **Campfire accessory** leave /craft too (table-only)?
 4. **Cheese:** keep it ungraded (so Caesar salad and the mouse potion still work)?
