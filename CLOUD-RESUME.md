@@ -54,8 +54,6 @@ lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
 - [ ] **Light armor v2** - 2x-4x the detail (at least vanilla density); half-mask cowl helmets: Copper + Iron plain cowl, Thorium..Onyxium keep the
       half mask but echo each vanilla metal helmet (Mithril gets the vanilla Mithril helmet wings). Output: `research/cloud/light-armor/` v2 sheets.
-- [ ] **Mining armor v2** - starts at COPPER (drop the T0 Miner's Leather); Iron and up echo the vanilla metal armors more (not recolours of one outfit);
-      2x-4x detail. Output: `research/cloud/gathering-armor-art/mining-sheet.png` v2.
 - [ ] **Foraging + Farming detail pass** - 2x-4x detail on both sheets; Goldenwood helmet echoes the vanilla Mithril helmet; farming v2 look unchanged.
       Output: the two sheets v2.
 - [ ] **Accessory icons v2** - same designs (Skyy loves them) at vanilla icon density 64x64 or 2x-4x more detail (docs/answered/gear.md
@@ -83,3 +81,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [x] Pet zones + rarities - 2026-10-06 - `research/cloud/Pet-Sources.md`
 - [x] Weapons v2 concept sheet - 2026-10-06 - `research/cloud/weapon-art/`
 - [x] Pets v2 concept sheet - 2026-10-06 - `research/cloud/pet-art/`
+- [x] Mining armor v2 - 2026-10-06 - `research/cloud/gathering-armor-art/mining-sheet-v2.png`
