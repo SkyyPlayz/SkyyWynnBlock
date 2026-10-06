@@ -31,7 +31,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyUiProbe | 0.4 | dev / test probes, op only (retire later) |
 | SkyyMobs | 0.1.3 | mob levels + difficulty |
 | SkyyWorldGen | 0.1 | Zone 1 test island (/zone 1, admin) |
-| SkyyArmory | 0.1.1 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce |
+| SkyyArmory | 0.1.2 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt |
 | third-party (`PACK.md`) | - | More Crossbow Tiers (Serj), Saplings From Trees (Helios); SkyyRolls is RETIRED |
 
 Every version's notes: `docs/handoff/versions-history.md`. Every build / deploy / test: `docs/log/<YYYY-MM>.md`.
