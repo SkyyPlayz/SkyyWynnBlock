@@ -36,11 +36,6 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **Minimap widget UX** - our own minimap becomes a SkyyHud widget that needs BetterMap and reuses its map (DapperMap lagged: its tick ran
-      40-57 ms on the world thread). Design the settings Skyy liked in DapperMap (zoom, size, circle / square, rotation, refresh speed,
-      resolution, markers, colours; NO info panel), HUD-editor placement, defaults, a performance budget, marker throttles. Design only - the
-      local session checks engine + licences. Output: `research/cloud/Minimap-Widget-UX.md`.
-      UPDATE 2026-10-05: probe 0.4 results in docs/log/2026-10.md (2026-10-04 MINIMAP PROBE RESULTS): pictures + round mask work, the client keeps them across world changes, engine map tiles are 96 px -> downscale; widget = its own HUD key.
 - [ ] **SkyyQuests design** (OPEN-QUESTIONS: "quest hooks ship with SkyyQuests"). The story scripts need a quest system that does not exist: quest steps and flags per
       profile, NPC dialogue windows (vanilla look), objectives (kill / collect / craft / reach / talk), rewards, quest log page, bridge keys other mods can call. Read
       `research/cloud/Story-Script-*.md`, `Dragon-Quest-Spec.md`, `tools/PROFILES-CONTRACT.md`. Output: `research/cloud/SkyyQuests-Spec.md`.
@@ -79,3 +74,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Starter shards plan 2 - 2026-10-06 - `research/cloud/Starter-Shards-Plan-2.md`
 - [x] Loot box design - 2026-10-06 - `research/cloud/Loot-Box-Design.md`
 - [x] Stats page spec - 2026-10-06 - `research/cloud/Stats-Page-Spec.md`
+- [x] Minimap widget UX - 2026-10-06 - `research/cloud/Minimap-Widget-UX.md`
