@@ -60,6 +60,8 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
       2x-4x detail. Output: `research/cloud/gathering-armor-art/mining-sheet.png` v2.
 - [ ] **Foraging + Farming detail pass** - 2x-4x detail on both sheets; Goldenwood helmet echoes the vanilla Mithril helmet; farming v2 look unchanged.
       Output: the two sheets v2.
+- [ ] **Accessory icons v2** - same designs (Skyy loves them) at vanilla icon density 64x64 or 2x-4x more detail (docs/answered/gear.md
+      2026-10-06). Output: `research/cloud/accessory-art/` v2 (keep v1 sheet).
 - [ ] **Pets v2** - Skyy liked none except maybe the rabbit: more detail, match the vanilla Hytale creature style (proportions, palettes, chunky
       voxel-model look); start from the rabbit. Output: `research/cloud/pet-art/` v2.
       Dragon icon: match the Dragon Nestkeeper (Aures) dragons' look (Skyy) - original drawing in their style only; no tracing their files until Aures says OK.
