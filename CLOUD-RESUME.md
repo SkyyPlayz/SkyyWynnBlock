@@ -56,8 +56,6 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
       half mask but echo each vanilla metal helmet (Mithril gets the vanilla Mithril helmet wings). Output: `research/cloud/light-armor/` v2 sheets.
 - [ ] **Accessory icons v2** - same designs (Skyy loves them) at vanilla icon density 64x64 or 2x-4x more detail (docs/answered/gear.md
       2026-10-06). Output: `research/cloud/accessory-art/` v2 (keep v1 sheet).
-- [ ] **Accessory icon sizes + vanilla icon check list** - list exactly what the local session must read in Assets.zip for icon size/paths
-      for items, accessories, weapons and armor concepts (one checklist for all the art folders). Output: `research/cloud/Art-Checklist-Local.md`.
 - [ ] **WorldGen stage 2 draft** - next stage after `research/SkyyWorldGen-Plan.md` (zones 2-5 islands from `research/cloud/Zone-Islands-Layout.md`
       + `research/cloud/Zone-4-5-Materials.md`): what each zone generates, resources per tier (match the Gathering ladder), UNVERIFIED engine
       list for local. Output: `research/cloud/WorldGen-Stage-2-Draft.md`.
@@ -77,3 +75,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [x] Capstone set art - 2026-10-06 - `research/cloud/capstone-set-art/`
 - [x] Fishing gear concept sheet - 2026-10-06 - `research/cloud/fishing-art/`
 - [x] Fishing minigame UI mockup - 2026-10-06 - `research/cloud/Fishing-UI-Mockup.md`
+- [x] Art checklist for the local session - 2026-10-06 - `research/cloud/Art-Checklist-Local.md`
