@@ -36,6 +36,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 26. SkyyTrees 0.3.2 + SkyyMenu 0.3.8 - class trees are ON (/tree class); the Mods list shows today's versions.
 27. Pack mods HyFishing + Dynamic Seasons + NoCube's Orchard - no errors; fishing, seasons, orchard work next to our mods.
 28. SkyyCollections 0.2.7 + SkyyAccessories 0.5.6 - Lantern recipes unlock at Tree Sap tiers I / III / V / VIII; locks follow profile switches.
+29. SkyyBazaar 0.1.5 + SkyySacks 0.7.13 - sell straight from your bags (sap, ore ...); Buy/Sell buttons use Hytale stacks (ore 25).
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6

@@ -102,3 +102,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyUiProbe 0.4 - minimap probes (dev mod, op only; DEPLOYED 2026-10-03, backup deploy-20261003-2340) | [2026-10](2026-10.md) |
 | SkyyAccessories 0.5.4 - Lantern line replaces Night Vision (DEPLOYED 2026-10-04, backup deploy-20261004-0046) | [2026-10](2026-10.md) |
 | SkyyCollections 0.2.7 + SkyyAccessories 0.5.6 - Lantern recipes behind the Tree Sap tiers (DEPLOYED 2026-10-06, backup deploy-20261006-1245) | [2026-10](2026-10.md) |
+| SkyyBazaar 0.1.5 + SkyySacks 0.7.13 - sell from bags, Tree Sap 12, Hytale stack sizes (DEPLOYED 2026-10-06, backup deploy-20261006-1258) | [2026-10](2026-10.md) |
