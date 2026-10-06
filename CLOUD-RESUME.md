@@ -36,8 +36,6 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **Zone specials / "mayor lite"** - rotating global buffs announced by the Board (Elites-Events-Spec 2.5): research SkyBlock mayor perks, propose a small rotating-buff system with
-      rows, schedule and anti-stacking. Output: `research/cloud/Zone-Specials-Spec.md`.
 - [ ] **SkyyArmory roadmap** - Skyy named a new content mod SkyyArmory (2026-10-02): our own weapons and armor, starting with metal
       Priest wands made by recolouring the vanilla Wood Wand (same model, new texture, like the vanilla Rotten Wand; OPEN-QUESTIONS Q&A).
       Propose the next items per class (Mage / Archer / Warrior / Berserker / Priest) and our own Lv 50-100 tiers: names, tier ladder,
@@ -50,3 +48,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 - [x] Accessory acquisition - 2026-10-06 - `research/cloud/Accessory-Acquisition.md`
 - [x] Prestige system spec - 2026-10-06 - `research/cloud/Prestige-Spec.md`
+- [x] Zone specials / mayor lite - 2026-10-06 - `research/cloud/Zone-Specials-Spec.md`
