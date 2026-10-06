@@ -38,7 +38,7 @@ grep hit is the whole thing: `grep -n "Lantern" docs/answered/*.md docs/log/*.md
 | `backups/deploy-<date>-<time>/` | the newest 5 pre-deploy backups (`Mods/` Skyy jars, world `config.json`, `data/Skyy_*`); made by `tools/backup_deploy.py` |
 | `backups/archive/` | verified `.tar.xz` packs: `deploys-<YYYY-MM>` (older deploy backups), `old-jars-<date>`, `scratch-<task>-<date>` (finished agent scratch) |
 | `tools/dev/scratch/<task>/` | live agent scratch only (now: `mobcurve-numbers/` = the mob curve spec's number model, kept for the mob curve build); pack or delete when the task is done |
-| `research/refs/` | Skyy's reference images (other people's art - style inspiration only, never committed); e.g. `armor-style-black-leather.jpg` |
+| `research/refs/` | Skyy's reference images (other people's art - style inspiration only, never committed); e.g. `armor-style-black-leather.jpg`, `robe-style-green-mage.jpg` |
 | `.claude/worktrees/` | Claude Code agent worktrees (removed automatically) |
 | outside the repo | game files + `UserData` (read-only except the deploy), Claude's memory (`C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK\memory\`); the other folders in `Hytale mods WORK` are Skyy's |
 
