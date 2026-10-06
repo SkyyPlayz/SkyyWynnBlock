@@ -32,6 +32,11 @@ instructions over many sessions (2026-09-22 to 2026-10-05). When something here 
 - Don't copy other authors' code or assets unless their licence allows it. Ideas are fine: "never build new when you can steal what
   already works" means **vanilla Hytale first**, then borrow ideas or allowed code from others.
 - Never commit anything under `tools/dev/scratch/`, `backups/` or `.claude/worktrees/` (all git-ignored).
+- **Respect every pack mod's rules (Skyy 2026-10-06: "we will have to be sure to respect the rules of the mods we added").** Each mod's
+  permissions are in `PACK.md`. Allowed: our OWN code reacting to their items by item id at runtime (our Grades / healing / buffs on their
+  foods, Bazaar / collections / XP listings). NOT allowed: shipping a file that overrides one of their item ids, copying their recipes /
+  numbers / models / textures into our mods, bundling or re-uploading their files (owners install them from CurseForge). If a change
+  needs their data edited, ask the author first (their pages link a Discord).
 
 ## 3. Deploying (Skyy's standing auto-deploy rule)
 
