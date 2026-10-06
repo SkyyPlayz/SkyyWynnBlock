@@ -63,8 +63,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       Regeneration, Brawler, Runic, Stonehide, Razorfang, Feather, Lantern) with rarity frames/colours. Output: `research/cloud/accessory-art/`.
 - [ ] **Fish species catalog** - the species for `research/cloud/SkyyFishing-Spec-Draft.md`: per zone/biome/season (Dynamic Seasons) names, rarity,
       weight range, length, bite time, sell base, food family; lore-voice names. Output: `research/cloud/Fish-Species-Catalog.md`.
-- [ ] **Tab-Economy refresh** - rewrite `research/cloud/Tab-Economy.md` sections 2-5 and 7-10 to the `research/cloud/Bank-Tab-Calibration.md`
-      recommendations (Void Marks display, tab.perHour, interest per online day); keep Skyy's lines word for word. Output: the edited file + a LOG line.
 - [ ] **Roadmap Mana table refresh** - re-run `research/cloud/SkyyArmory-Roadmap.md` section 6 with the SkyyArmory-Spec 15.4 Mage/Priest pool rows
       (10 per level for Mage) and `research/cloud/Weapon-Speed-Tiers.md` mana scaling; align with `research/cloud/Spellbook-Ladder.md`. Output: the edited file.
 - [ ] **Cooking spec formula PR** - `research/Cooking-Skill-Spec.md` 2.2 / 4.1 still use 2^(Grade/5); the locked rule is x(1 + 0.32 x Grade)
@@ -77,3 +75,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 
 ## Done (delete after logging - see the rules above)
+- [x] Tab-Economy refresh - 2026-10-06 - `research/cloud/Tab-Economy.md`
