@@ -49,6 +49,20 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
+<!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
+lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
+Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
+- [ ] **Light armor v2** - 2x-4x the detail (at least vanilla density); half-mask cowl helmets: Copper + Iron plain cowl, Thorium..Onyxium keep the
+      half mask but echo each vanilla metal helmet (Mithril gets the vanilla Mithril helmet wings). Output: `research/cloud/light-armor/` v2 sheets.
+- [ ] **Weapons v2** - 2x-4x detail; richer spellbook covers; soul cage reworked (floats above the palm; note for local: slow cage spin around the
+      soul = engine animation check); claws = long straight Wolverine-style knuckle blades, black part reads as black leather. Output: `research/cloud/weapon-art/` v2.
+- [ ] **Mining armor v2** - starts at COPPER (drop the T0 Miner's Leather); Iron and up echo the vanilla metal armors more (not recolours of one outfit);
+      2x-4x detail. Output: `research/cloud/gathering-armor-art/mining-sheet.png` v2.
+- [ ] **Foraging + Farming detail pass** - 2x-4x detail on both sheets; Goldenwood helmet echoes the vanilla Mithril helmet; farming v2 look unchanged.
+      Output: the two sheets v2.
+- [ ] **Pets v2** - Skyy liked none except maybe the rabbit: more detail, match the vanilla Hytale creature style (proportions, palettes, chunky
+      voxel-model look); start from the rabbit. Output: `research/cloud/pet-art/` v2.
+      Dragon icon: match the Dragon Nestkeeper (Aures) dragons' look (Skyy) - original drawing in their style only; no tracing their files until Aures says OK.
 - [ ] **Spellbook table re-run** - re-run the staff columns of `research/cloud/Spellbook-Ladder.md` section 2 with the refreshed staff costs
       (210 / 240 / 270 / 310 / 350, `research/cloud/SkyyArmory-Roadmap.md` section 6); keep book costs. Output: the edited file.
 - [ ] **Mining helmet lamp spec** - Skyy: helmet lamps must really light (reuse the SkyyAccessories Lantern light code, docs/answered/bags.md + gear.md):

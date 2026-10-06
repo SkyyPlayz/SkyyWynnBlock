@@ -62,7 +62,7 @@ Shared: wood `#24140a` - `#c48e56`; book leather `#1e0e07` - `#ae6a42`; pages `#
 Adamantite ember orange-red, Mithril white-aqua, Onyxium magenta. All hex values are in `CRYSTAL`, `ESSENCE` and `CLOTH` at the top of
 the script.
 
-Note: `Spellbook-Ladder.md` 1 and `Kunai-Ladder.md` 7 describe Thorium as "pale green-grey", Adamantite "deep red-bronze", Mithril
+Note: `research/cloud/Spellbook-Ladder.md` 1 and `research/cloud/Kunai-Ladder.md` 7 describe Thorium as "pale green-grey", Adamantite "deep red-bronze", Mithril
 "silver-blue" and Onyxium "black with violet lines". This sheet uses the light-armor ramps instead (one palette for all SkyWynn metal
 art); both are guesses until the vanilla colours are checked.
 
@@ -81,7 +81,7 @@ One `draw_<type>(tier)` function per row; palettes at the top; `ROWS` sets the s
    wand head shape here is only a mood picture; the leaf-crystal colours should come from each tier's vanilla staff gem (as in the
    2026-10-02 art proof), not from my guesses.
 2. **Metal colours:** pick the 5 ramp colours from the vanilla ingots / pickaxe heads (Thorium green?, Mithril, Onyxium are the
-   biggest guesses), then update both this script and `light-armor/make_sheets.py`.
+   biggest guesses), then update both this script and `research/cloud/light-armor/make_sheets.py`.
 3. **Models:** the vanilla Spellbook, Kunai and Bo staff models / textures (names UNVERIFIED) - which parts can be recoloured
    (corners, clasp, blade, caps) vs need new geometry (emblem plate, Soul Cage lattice, claw blades, gauntlet spikes).
 4. Vanilla cloth colours (Linen, Cotton, Silk, Cindercloth, Shadoweave) for the wraps.
