@@ -54,11 +54,10 @@ lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
 - [ ] **Fish icons v2 touch-up** - fix the weak spots listed in `research/cloud/fish-art/README.md` (thin eels, Blizzard Halibut as a flatfish, the three
       sturgeons too alike, Slag Ray view). Output: regenerated `research/cloud/fish-art/` (keep v1 sheet).
-- [ ] **Ember coin check** - `research/cloud/Ore-Regrow-Spec.md` cut Ember density 3x; re-check Ember's 11,000-coin price and the coin faucet against
-      `research/cloud/Economy-Audit.md` + `research/cloud/Bank-Tab-Calibration.md`. Output: `research/cloud/Ember-Economy-Check.md`.
 - [ ] **Concept art index page** - one `research/cloud/ART-INDEX.md` listing every art folder, its newest sheet, version, status (approved / v2 /
       waiting on Skyy) and open questions, so Skyy can review everything in one place. Output: `research/cloud/ART-INDEX.md`.
 
 
 ## Done (delete after logging - see the rules above)
 - [x] Monk colour options - 2026-10-06 - `research/cloud/Monk-Colour-Options.md`
+- [x] Ember economy check - 2026-10-06 - `research/cloud/Ember-Economy-Check.md`
