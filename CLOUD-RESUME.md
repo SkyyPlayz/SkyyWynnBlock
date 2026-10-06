@@ -52,12 +52,14 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 <!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
 lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
+- [ ] **Fish icons v2 touch-up** - fix the weak spots listed in `research/cloud/fish-art/README.md` (thin eels, Blizzard Halibut as a flatfish, the three
+      sturgeons too alike, Slag Ray view). Output: regenerated `research/cloud/fish-art/` (keep v1 sheet).
+- [ ] **Ember coin check** - `research/cloud/Ore-Regrow-Spec.md` cut Ember density 3x; re-check Ember's 11,000-coin price and the coin faucet against
+      `research/cloud/Economy-Audit.md` + `research/cloud/Bank-Tab-Calibration.md`. Output: `research/cloud/Ember-Economy-Check.md`.
+- [ ] **Monk class colour + emblem check** - the Monk has no class colour in the repo (`research/cloud/class-art/README.md` proposes #ff7a5c); write the
+      options vs the other 6 class colours (contrast, colour-blind check). Output: `research/cloud/Monk-Colour-Options.md`.
+- [ ] **Concept art index page** - one `research/cloud/ART-INDEX.md` listing every art folder, its newest sheet, version, status (approved / v2 /
+      waiting on Skyy) and open questions, so Skyy can review everything in one place. Output: `research/cloud/ART-INDEX.md`.
 
 
 ## Done (delete after logging - see the rules above)
-- [x] Ore regrow spec - 2026-10-06 - `research/cloud/Ore-Regrow-Spec.md`
-- [x] Capstone sets slot fix - 2026-10-06 - `research/cloud/Capstone-Sets.md` + `research/cloud/capstone-set-art/`
-- [x] Accessory icons v2 margin fix - 2026-10-06 - `research/cloud/accessory-art/`
-- [x] Enchanted icons touch-up - 2026-10-06 - `research/cloud/enchanted-art/`
-- [x] Heavy Leather + Crude Robe v2 detail - 2026-10-06 - `research/cloud/heavy-armor/` + `research/cloud/cloth-armor/` v2 sheets
-- [x] Fish species icons - 2026-10-06 - `research/cloud/fish-art/`
