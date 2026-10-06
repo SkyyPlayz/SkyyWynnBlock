@@ -36,12 +36,6 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **SkyWynn gathering tiers draft** - from repo data only: the material tiers already decided (docs/answered/economy.md: metals,
-      woods T1-T5, crops in vanilla Farming Bench order; the Farmer's Workbench wood ladder Softwood -> Goldenwood in docs/answered/gear.md),
-      the collections that exist (`add(` lines in SkyyCollections/build_skyycollections_0.2.6.py), the zone bands (Zone 1 1-20, 2 20-30,
-      3 30-45, 4 45-60; research/SkyyWorldGen-Plan.md). Propose per skill a FEW tiers per zone (GROUP the many trees - Skyy: not 6 tree tiers
-      in Zone 1), which materials sit in each tier, and the gathering tool / armor tier needed. Mark anything needing Assets.zip UNVERIFIED.
-      Output: `research/cloud/Gathering-Tiers-Draft.md`.
 - [ ] **Collection unlocks draft** - using the two outputs above + research/Collections-Spec.md: for every Farming / Mining / Foraging
       collection give tier amounts and the unlock per tier, SkyBlock style - recipes for the next tier's tools, Foraging armor tiers (tier 1
       vanilla Wood armor, then Softwood ... Goldenwood), gathering accessories (Lantern tiers behind the Tree Sap collection), bags, Enchanted
@@ -119,3 +113,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 - [x] Class ability spec draft - 2026-10-06 - `research/cloud/Class-Ability-Spec-Draft.md`
 - [x] SkyBlock gathering progression research - 2026-10-06 - `research/cloud/SkyBlock-Gathering-Progression.md`
+- [x] SkyWynn gathering tiers draft - 2026-10-06 - `research/cloud/Gathering-Tiers-Draft.md`
