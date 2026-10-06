@@ -36,6 +36,14 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
+- [ ] **Tool levels revision** (local session 2026-10-06, Skyy's request - do first) - revise research/Tool-Levels-Spec.md with
+      docs/answered/gear.md 2026-10-05: speed + Mining / Foraging / Farming Fortune by tool level, tool rarities + rolls + reforges, modifier
+      list incl. SICKLE RANGE, axes get Tree Feller (reuse SkyyTrees' Tree Feller), tied to research/cloud/Gathering-Tiers-Draft.md.
+      Output: `research/cloud/Tool-Levels-Revision.md`.
+- [ ] **Armor types spec draft** - docs/answered/gear.md 2026-10-05: Heavy / Light / Cloth ladders (Heavy = heavy leather then vanilla
+      metal; Light = vanilla leather then leather + metal upgrades; Cloth = Crude Robe then tunics), per-level Health / Defense next to
+      research/Mob-Curve-Spec.md, trade-offs (anyone) vs class bonuses (on-type) with numbers, recipes per tier.
+      Output: `research/cloud/Armor-Types-Spec-Draft.md`.
 - [ ] **Weapon speed tiers** - Skyy 2026-10-05: weapon speed tiers Slow / Medium / Fast / Super Fast with the same DPS (per-hit damage scales).
       Assign every weapon type of `research/cloud/SkyyArmory-Roadmap.md` section 5 a tier, compute per-hit multipliers from attack times (keep
       the engine values UNVERIFIED), and show how crits, Strength, Mana-per-cast and on-hit effects scale. Output: `research/cloud/Weapon-Speed-Tiers.md`.

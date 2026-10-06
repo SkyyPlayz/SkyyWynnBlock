@@ -138,7 +138,7 @@ It fills the Shaman placeholder slot; the `skill:fn:level` prefixes (the three-l
 | 1 | The Monk's Stamina pool (about 12) is the limiting factor: a vault (7) + a bound (3) already uses 10. Without a per-level Stamina row the Monk cannot chain. |
 | 2 | Fists need cloth items at every tier (a cloth ladder that only the Monk uses): reuse the same cloth items as robes and bags (Wool, Linen, Cotton, Silk, Cindercloth, Shadoweave). |
 | 3 | The vanilla armor gauntlets suggest a natural recipe source for the fist gauntlets; check that a Weapon_ item can reuse the armor texture/model (the SkyyArmory art route). |
-| 4 | Three variants x 8 tiers = 24 fist items + 9 Bo staffs; start with **Wraps (cloth) + Gauntlets** only, claws later (Monk.md "later class idea: a Martial Artist with kicks + fists"). |
+| 4 | Three variants x 8 tiers = 24 fist items + 9 Bo staffs; start with **Wraps (cloth) + Gauntlets** only, claws later (research/classes/Monk.md "later class idea: a Martial Artist with kicks + fists"). |
 
 ## 8. For the local session (UNVERIFIED)
 | # | Check |
