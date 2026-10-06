@@ -51,7 +51,9 @@ SET = [
     ("SkyyMobs", "0.1.3"), ("SkyyWorldGen", "0.1"),
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
-    ("SkyyArmory", "0.1.1"),
+    ("SkyyArmory", "0.1.2"),
+    # SkyyArmory 0.1.2 (2026-10-06): crossbow Grapple Bolt (right click = grapple, replaces the guard) + trav.staminaCap 10 -> 5 (one-time
+    # migration of an untouched 10 only). Rolling back to 0.1.1 brings the guard back; the cap line stays 5 (hand-edit back if wanted).
     # Traversal round (2026-10-06): SkyyClasses 0.1.12 -> SkyyArmory 0.1.1 -> SkyyGear 0.2.4 together (staff blink, wand hop / burst / heal orb,
     # quick shots; research/Magic-Traversal-Spec.md). No saved-data change; roll back all three together.
     # Sell from bags (2026-10-06): SkyyBazaar 0.1.5 needs SkyySacks 0.7.13 for bag sales (sacks:fn:count/all/take/put/commit); with an older
