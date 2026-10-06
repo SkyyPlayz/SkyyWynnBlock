@@ -38,7 +38,7 @@ Every number is a placeholder and a Server Setup row (section 8). This touches i
 
 ## 2. Our four tiers
 
-Skyy asked for four tiers. Hytale facts from `Swing-Speed-Spec.md` (VERIFIED for pickaxes only): the default left-click cooldown is
+Skyy asked for four tiers. Hytale facts from `research/Swing-Speed-Spec.md` (VERIFIED for pickaxes only): the default left-click cooldown is
 **0.35 s**, and the fastest vanilla swing is **0.25 s**. So the proposal sits Fast on the engine default and Super Fast on the swing floor:
 
 | Tier | Interval (s) | Hits / s | Hit weight w = interval / 0.5 | Wynn equivalent factor |
@@ -147,8 +147,8 @@ Without the flat fix the Super Fast wand would do **+14%** DPS against everythin
 
 - `SkyyGear-Plan.md` / the catalog keep **Attack Speed**: "the weapon has a built-in swing speed, Wynn-style. +Attack Speed % can roll on
   weapons, armor, Equipment, and accessories. Cap 150%." The **built-in swing speed is this spec's tier**.
-- SkyyGear marks the stat key `as` **"later"** (`SkyyGear-Stage1-Spec.md` line 511, `Stats-Page-Spec.md`): it needs the per-family root
-  override mechanism from `Swing-Speed-Spec.md`. The tier needs **the same mechanism** - so both go live together, and the tier is the
+- SkyyGear marks the stat key `as` **"later"** (`research/SkyyGear-Stage1-Spec.md` line 511, `Stats-Page-Spec.md`): it needs the per-family root
+  override mechanism from `research/Swing-Speed-Spec.md`. The tier needs **the same mechanism** - so both go live together, and the tier is the
   first user of it.
 - How they stack: real interval = tier interval / (1 + Attack Speed %); **w stays the tier's w** (from the base interval). So Attack Speed
   raises hits per second without lowering the hit = more DPS (as intended for Light armor's class bonus, Monk Flowing Form, the Fast /
@@ -186,7 +186,7 @@ Without the flat fix the Super Fast wand would do **+14%** DPS against everythin
 ## For the local session (UNVERIFIED)
 
 1. The real time per hit of every vanilla weapon family (sword / longsword / spear / axe / battleaxe / mace / club / dagger combos, bow
-   draw, crossbow reload, wand / staff / spellbook taps) - read the interaction chains in `Assets.zip` like `Swing-Speed-Spec.md` section 1.
+   draw, crossbow reload, wand / staff / spellbook taps) - read the interaction chains in `Assets.zip` like `research/Swing-Speed-Spec.md` section 1.
 2. Whether the `EffectCondition` + `TriggerCooldown` root override (Swing-Speed-Spec) works for weapon roots and combo chains, both
    slower (longer cooldown) and faster (where the chain has headroom).
 3. Whether Hytale's armour resistance on mobs/players has any flat part (if yes: x w).

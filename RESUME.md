@@ -49,6 +49,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
   ART PROOF (tools/skyyart.py preview sheet for Skyy) before the build; stats: Heavy slower +Def +HP
   (+crit dmg), Light a bit faster (+attack speed, +crit chance), Cloth fastest +HP +Mana least Def (+Mana regen higher tiers); trade-offs for
   anyone, the bracketed bonus only for your class's type; each family covers Lv 1-49 - rides the mob-curve round (docs/answered/gear.md).
+- NEW (Skyy 2026-10-06): LOOT - drop-only vanilla gear ranked into the unidentified pool, item decided AT IDENTIFY, a bit more mob
+  drops, Wynncraft vanishing / respawning surface loot chests (never player chests). Cloud revises the loot spec; local lists the gear.
 - NEW BIG DIRECTION (Skyy 2026-10-05): GATHERING PROGRESSION LADDER like SkyBlock - tier the Farming / Mining / Foraging materials (group
   trees, few tiers per zone), collection levels unlock the recipes for the next tier's gear + other progress, compressed 'Enchanted'
   materials. SPEC FIRST (ultracode spec round after the reset), builds on research/Collections-Spec.md; docs/answered/bags.md.

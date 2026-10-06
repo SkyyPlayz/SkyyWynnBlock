@@ -44,6 +44,11 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
+- [ ] **Loot round revision** (Skyy 2026-10-06, docs/answered/gear.md 'LOCKED 2026-10-06 ... LOOT') - web research Wynncraft loot chests
+      (tiers, respawn timers, spawn rules near players, vanish-on-loot) + identify / re-roll; then revise research/Loot-Unid-Spec.md +
+      research/cloud/Loot-Box-Design.md: item decided AT IDENTIFY (not sealed), drop-only vanilla gear ranked into levels (the list itself
+      = local task, Assets.zip), mob drop rate a little higher, our own vanishing / respawning surface loot chests that never touch
+      player-placed chests. Output: `research/cloud/Loot-Round-Revision.md`.
 - [ ] **Tool levels revision** (local session 2026-10-06, Skyy's request - do first) - revise research/Tool-Levels-Spec.md with
       docs/answered/gear.md 2026-10-05: speed + Mining / Foraging / Farming Fortune by tool level, tool rarities + rolls + reforges, modifier
       list incl. SICKLE RANGE, axes get Tree Feller (reuse SkyyTrees' Tree Feller), tied to research/cloud/Gathering-Tiers-Draft.md.
