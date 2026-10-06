@@ -22,6 +22,8 @@ Thumbs.db
 desktop.ini
 backups/
 tools/dev/scratch/
+# Skyy's reference images (other people's art - local only, never public)
+research/refs/
 # agent worktrees (Claude Code)
 .claude/worktrees/
 
