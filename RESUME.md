@@ -49,6 +49,9 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
   ART PROOF (tools/skyyart.py preview sheet for Skyy) before the build; stats: Heavy slower +Def +HP
   (+crit dmg), Light a bit faster (+attack speed, +crit chance), Cloth fastest +HP +Mana least Def (+Mana regen higher tiers); trade-offs for
   anyone, the bracketed bonus only for your class's type; each family covers Lv 1-49 - rides the mob-curve round (docs/answered/gear.md).
+- NEW (Skyy 2026-10-05): FORAGING ARMOR (gathering set) - tier 1 vanilla Wood armor, then the Farmer's Workbench wood ladder Softwood ->
+  Goldenwood (7 tiers, designs echo Copper -> Onyxium); Foraging Fortune + chopping speed (+ Foraging XP), TREE FELLER on higher tiers
+  (reuse SkyyTrees' Tree Feller); axes get Tree Feller too. Mining / Farming armor later.
 - NEW (Skyy 2026-10-05): TOOL LEVELS must DO something - level raises speed + Mining / Foraging / Farming Fortune; axes, pickaxes,
   farming tools get rarities, rolls, reforges; new SICKLE RANGE modifier (research/Tool-Levels-Spec.md top note; docs/answered/gear.md).
 - NEW (Skyy 2026-10-05): SkyyGear WEAPON SPEED tiers Slow / Medium / Fast / Super Fast, same DPS (per-hit damage scales) - next SkyyGear pass (docs/answered/gear.md).
