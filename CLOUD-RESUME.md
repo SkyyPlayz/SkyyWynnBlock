@@ -52,23 +52,18 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 <!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
 lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
+- [ ] **Heavy Leather + Crude Robe v2 detail** - Skyy approved both ("Both good"); redo `research/cloud/heavy-armor/` and `research/cloud/cloth-armor/` at the
+      2x-4x detail rule (docs/answered/gear.md 2026-10-06 art review), designs unchanged, keep v1 files. Output: the two folders' v2 sheets.
+- [ ] **Accessory icons v2 margin fix** - the Legendary halo / tips touch the 64 px edge on 9 icons (`research/cloud/accessory-art/README.md` v2 notes): keep a
+      2 px margin, regenerate `icons-v2/` + `accessory-sheet-v2.png`. Output: the regenerated files.
+- [ ] **Capstone sets slot fix** - vanilla armor slots look like Head / Chest / Hands / Legs (no Boots, UNVERIFIED): rework the 3-of-4 piece choice in
+      `research/cloud/Capstone-Sets.md` + the art in `research/cloud/capstone-set-art/` to fit 4 real slots. Output: edited spec + art.
+- [ ] **Ore regrow spec** - `research/cloud/WorldGen-Stage-2-Draft.md` Q1: shared-world ore runs out (one player = 23% of Zone 1 Iron); spec vein regrow
+      (timers per tier, anti-camp, player-placed blocks never touched, chunk load rules, Ember density Q2). Output: `research/cloud/Ore-Regrow-Spec.md`.
+- [ ] **Fish species icons** - one 64x64 icon per species in `research/cloud/Fish-Species-Catalog.md` (39 + junk / Lost Property), same art rules.
+      Output: `research/cloud/fish-art/`.
+- [ ] **Enchanted icons touch-up** - redraw Enchanted Rice and Cotton (weakest per `research/cloud/enchanted-art/README.md`) and add the two new crop
+      Enchanted forms from `research/cloud/Crop-Armor-Spec.md` if missing. Output: regenerated `research/cloud/enchanted-art/`.
+
 
 ## Done (delete after logging - see the rules above)
-- [x] Zone 1 town v2 - 2026-10-06 - `research/cloud/Zone-1-Town-Layout.md` + `research/cloud/Zone-1-Town-Map.png`
-- [x] Spellbook table re-run - 2026-10-06 - `research/cloud/Spellbook-Ladder.md`
-- [x] Mining helmet lamp spec - 2026-10-06 - `research/cloud/Mining-Lamp-Spec.md`
-- [x] Crop armor stats - 2026-10-06 - `research/cloud/Crop-Armor-Spec.md`
-- [x] Pet zones + rarities - 2026-10-06 - `research/cloud/Pet-Sources.md`
-- [x] Weapons v2 concept sheet - 2026-10-06 - `research/cloud/weapon-art/`
-- [x] Pets v2 concept sheet - 2026-10-06 - `research/cloud/pet-art/`
-- [x] Mining armor v2 - 2026-10-06 - `research/cloud/gathering-armor-art/mining-sheet-v2.png`
-- [x] Foraging + Farming detail pass - 2026-10-06 - `research/cloud/foraging-armor/foraging-armor-sheet-v2.png`
-- [x] Enchanted material icons - 2026-10-06 - `research/cloud/enchanted-art/`
-- [x] Class emblem icons - 2026-10-06 - `research/cloud/class-art/`
-- [x] Capstone set art - 2026-10-06 - `research/cloud/capstone-set-art/`
-- [x] Fishing gear concept sheet - 2026-10-06 - `research/cloud/fishing-art/`
-- [x] Fishing minigame UI mockup - 2026-10-06 - `research/cloud/Fishing-UI-Mockup.md`
-- [x] Art checklist for the local session - 2026-10-06 - `research/cloud/Art-Checklist-Local.md`
-- [x] WorldGen stage 2 draft - 2026-10-06 - `research/cloud/WorldGen-Stage-2-Draft.md`
-- [x] Light armor v2 - 2026-10-06 - `research/cloud/light-armor/`
-- [x] Accessory icons v2 - 2026-10-06 - `research/cloud/accessory-art/`
