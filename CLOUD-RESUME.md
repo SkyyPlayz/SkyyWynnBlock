@@ -36,9 +36,6 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **Modifier pool spec** - the 17 shared modifiers (research/classes/README.md): exact effect per ability kind (projectile, zone, buff,
-      heal, shield, stance), per-level steps + caps, the no-doubling rule, Ricochet = projectiles only, Chain = effects only, and which abilities
-      offer each. Output: `research/cloud/Modifier-Pool-Spec.md`.
 - [ ] **Class tree paths** - 3 Wynncraft-style locked paths per class (picking one locks the others) with nodes that CHANGE how abilities work
       (example LOCKED: the Priest shield damages enemies that touch it, then pick 1 of 5 elements; Cleanse = a Sacred Heal upgrade); path ideas
       are at the bottom of each class file. Output: `research/cloud/Class-Tree-Paths.md`.
@@ -108,3 +105,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] SkyWynn gathering tiers draft - 2026-10-06 - `research/cloud/Gathering-Tiers-Draft.md`
 - [x] Collection unlocks draft - 2026-10-06 - `research/cloud/Collection-Unlocks-Draft.md`
 - [x] Enchanted materials draft - 2026-10-06 - `research/cloud/Enchanted-Materials-Draft.md`
+- [x] Modifier pool spec - 2026-10-06 - `research/cloud/Modifier-Pool-Spec.md`
