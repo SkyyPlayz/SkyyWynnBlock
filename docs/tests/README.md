@@ -103,3 +103,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyAccessories 0.5.4 - Lantern line replaces Night Vision (DEPLOYED 2026-10-04, backup deploy-20261004-0046) | [2026-10](2026-10.md) |
 | SkyyCollections 0.2.7 + SkyyAccessories 0.5.6 - Lantern recipes behind the Tree Sap tiers (DEPLOYED 2026-10-06, backup deploy-20261006-1245) | [2026-10](2026-10.md) |
 | SkyyBazaar 0.1.5 + SkyySacks 0.7.13 - sell from bags, Tree Sap 12, Hytale stack sizes (DEPLOYED 2026-10-06, backup deploy-20261006-1258) | [2026-10](2026-10.md) |
+| SkyyClasses 0.1.12 + SkyyArmory 0.1.1 + SkyyGear 0.2.4 - staff blink + trail, wand hop / burst / heal orb, quick shots (DEPLOYED 2026-10-06, backup deploy-20261006-1347) | [2026-10](2026-10.md) |
