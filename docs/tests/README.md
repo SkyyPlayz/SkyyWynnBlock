@@ -106,3 +106,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyClasses 0.1.12 + SkyyArmory 0.1.1 + SkyyGear 0.2.4 - staff blink + trail, wand hop / burst / heal orb, quick shots (DEPLOYED 2026-10-06, backup deploy-20261006-1347) | [2026-10](2026-10.md) |
 | SkyyGatherProbe 0.1 + B - gathering probe pack P0 (op-only, one session; DEPLOYED 2026-10-06, backup deploy-20261006-1529) | [2026-10](2026-10.md) |
 | SkyyArmory 0.1.2 - crossbow Grapple Bolt, traversal Stamina cap 5 (DEPLOYED 2026-10-06, backup deploy-20261006-1615) | [2026-10](2026-10.md) |
+| SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 - mob curve, level gap, kill XP by level, Reforge level-up (DEPLOYED 2026-10-06, backup deploy-20261006-1640) | [2026-10](2026-10.md) |

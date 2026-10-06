@@ -14,8 +14,8 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyBank | 0.1.6 | bank + interest |
 | SkyyIslands | 0.5.5 | private islands, co-op, visitors, island settings, /hub |
 | SkyyBazaar | 0.1.5 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons |
-| SkyyGear | 0.2.4 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words |
-| SkyySkills | 0.4.16 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics |
+| SkyyGear | 0.2.5 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden |
+| SkyySkills | 0.4.17 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level |
 | SkyyAccessories | 0.5.6 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections) |
 | SkyyClasses | 0.1.12 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
 | SkyyMenu | 0.3.8 | SkyWynn Menu, player Settings, Server Setup (admin) |
@@ -29,7 +29,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyAuctions | 0.1.2 | auction house (buy-it-now) |
 | SkyyRanks | 0.1.1 | ranks + permissions made in game |
 | SkyyUiProbe | 0.4 | dev / test probes, op only (retire later) |
-| SkyyMobs | 0.1.3 | mob levels + difficulty |
+| SkyyMobs | 0.1.4 | mob levels + difficulty; level curves + level gap (mob:fn:info) |
 | SkyyWorldGen | 0.1 | Zone 1 test island (/zone 1, admin) |
 | SkyyArmory | 0.1.2 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt |
 | third-party (`PACK.md`) | - | More Crossbow Tiers (Serj), Saplings From Trees (Helios); SkyyRolls is RETIRED |

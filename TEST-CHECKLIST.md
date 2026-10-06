@@ -40,6 +40,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 30. SkyyClasses 0.1.12 + SkyyArmory 0.1.1 + SkyyGear 0.2.4 - staff blink + light trail, wand hop / burst / heal orb, quick-shot ranges + pierce.
 31. SkyyGatherProbe 0.1 + B (op-only probe pack, ONE session, then removed) - /gprobe kit, P1-P6, trees; answers the gathering ladder unknowns.
 32. SkyyArmory 0.1.2 - crossbow Grapple Bolt (right click shoot / pull / let go; hooks mobs); blink + hop Stamina cap 5.
+33. MOB CURVE: SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 - higher-level mobs much tougher, level gap, gear curves, Reforge level-up, kill XP by level.
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
