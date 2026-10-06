@@ -60,9 +60,6 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
       Output: the two sheets v2.
 - [ ] **Accessory icons v2** - same designs (Skyy loves them) at vanilla icon density 64x64 or 2x-4x more detail (docs/answered/gear.md
       2026-10-06). Output: `research/cloud/accessory-art/` v2 (keep v1 sheet).
-- [ ] **Pets v2** - Skyy liked none except maybe the rabbit: more detail, match the vanilla Hytale creature style (proportions, palettes, chunky
-      voxel-model look); start from the rabbit. Output: `research/cloud/pet-art/` v2.
-      Dragon icon: match the Dragon Nestkeeper (Aures) dragons' look (Skyy) - original drawing in their style only; no tracing their files until Aures says OK.
 - [ ] **Accessory icon sizes + vanilla icon check list** - list exactly what the local session must read in Assets.zip for icon size/paths
       for items, accessories, weapons and armor concepts (one checklist for all the art folders). Output: `research/cloud/Art-Checklist-Local.md`.
 - [ ] **Capstone set art** - concept sheet for the 3 capstone sets (`research/cloud/Capstone-Sets.md`) in the same pixel style. Output: `research/cloud/capstone-set-art/`.
@@ -85,3 +82,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [x] Crop armor stats - 2026-10-06 - `research/cloud/Crop-Armor-Spec.md`
 - [x] Pet zones + rarities - 2026-10-06 - `research/cloud/Pet-Sources.md`
 - [x] Weapons v2 concept sheet - 2026-10-06 - `research/cloud/weapon-art/`
+- [x] Pets v2 concept sheet - 2026-10-06 - `research/cloud/pet-art/`

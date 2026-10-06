@@ -7,7 +7,65 @@ Inputs read: `research/cloud/Pets-Spec.md` (launch list section 5, rarities sect
 `OPEN-QUESTIONS.md` (pets section), `CLOUD-RESUME.md` (the "Pets concept sheet" item). Style copied from
 `research/cloud/light-armor/make_sheets.py` (chunky pixels, 1-px outline, 4-step shading lit top-left, labels).
 
-**Start here:** `research/cloud/pet-art/pet-sheet.png` (all 16 pets in 3 rows + the 9 dragon element recolours).
+**Start here (v2, 2026-10-06):** `research/cloud/pet-art/pet-sheet-v2.png`. The v1 sheet (`pet-sheet.png`, flat side-view sprites)
+is kept for comparison; sections 1-4 below describe v1.
+
+## 0. v2 - redo in the vanilla Hytale creature style
+
+Why: Skyy's review (`docs/answered/pets.md`, LOCKED 2026-10-06): "i dont really like any accept maybe the rabbit. more drtail, and
+match the hytale style/look"; dragon icon: "make the inventory icon look like the dragons in the mod were using".
+
+**How v2 is made (`research/cloud/pet-art/make_pets_v2.py`, Python + Pillow, deterministic).** Instead of painting flat sprites, every
+pet is BUILT like a Hytale creature model: 15-40 boxes (head, snout, cheeks, ears, body, legs, horns, wings, saddle ...), each with
+its own painted-style texture at about one texel per model unit (fur strokes, wool clumps, feather rows, dragon scales, horn rings,
+leather; painted top-to-bottom gradient, bevel highlight on top edges, warm highlights and cool shadows, subtle noise; eyes, noses,
+socks, spots and stripes as texel decals). A small ray-caster renders the boxes in a 3/4 view onto a 128 x 128 canvas (the vanilla
+model-icon size), lit top-left, with a 1-px dark outline and a ground shadow. Started from the rabbit (Skyy's favourite), then every
+other pet was matched to it and re-checked side by side (same camera, light, eye style, texture rules).
+
+| File | What |
+|---|---|
+| `research/cloud/pet-art/pet-sheet-v2.png` | All 16 pets at 2x (1904 x 1202) + the 9 dragon elements + the dragon inventory icon |
+| `research/cloud/pet-art/pet-<name>-v2.png` | One card per pet at 3x (16 files, rabbit ... dragon-hatchling) |
+| `research/cloud/pet-art/dragon-elements-v2.png` | The dragon in all 9 elements (5 quest + 4 secret), one model recoloured |
+| `research/cloud/pet-art/icon-dragon-128-v2.png`, `icon-dragon-64-v2.png` | Dragon inventory icon concept, transparent, 128 x 128 and 64 x 64 |
+| `research/cloud/pet-art/make_pets_v2.py` | The generator. `python3 research/cloud/pet-art/make_pets_v2.py` (all), or add pet names to write a 3x `preview-v2.png` (delete after) |
+
+Folder total about 540 KB (v1 + v2). Same 16 pets, families, zones and rarity bars as v1 (section 3 proposals unchanged).
+
+**What changed per pet (v1 -> v2).** All: real 3D box bodies, big boxy heads, short thick legs, big eyes (dark rim, coloured iris, tall
+pupil, white 2-3 px glint, small lower reflection, lid line), painted texture. Rabbit: tan fur, cream belly / muzzle / feet, pink inner
+ears and nose, darker back saddle and ear tips, white puff tail. Chicken: feathered body, red comb + wattles, raised tail. Goat: two-part
+curved horns, beard, amber eyes. Warthog / Boar / Tusker: one hog rig (bristle crest, snout pad, tusks) - grey, dark brown, and
+rust-red with white war paint for the Tusker. Bear: shoulder hump, light muzzle, claws. Turkey: 7-feather fan with banded tips, blue
+head, red snood. Wolf: neck ruff, light chest / socks / tail tip, amber eyes. Hawk: on a perch, barred chest, yellow cere + dark hook.
+Ram / Mouflon: four-box curled horns, saddle (mount marker kept from v1). Skrill: still the original "stormwing" (bat wing on a spar,
+spark crest), hovering. Horse: long neck + mane, blaze, bridle, saddle. Camel: hump, striped blanket with tassels.
+
+**Dragon (original - NOT Nestkeeper's).** We have no files from Aures - Dragon Nestkeeper and must not copy or trace them (PROJECT-RULES 2;
+Skyy's permission request was sent 2026-10-06). From web snippets only (UNVERIFIED): Nestkeeper has custom dragon models, 4 growth
+stages, a "Plain Dragon" in green plains / forests, every dragon with its own look, small dragons carried with cloth, adults ridden
+(CurseForge page). No look details were found in text. So v2 draws an ORIGINAL juvenile dragon in a chunky Hytale-like spirit: four
+legs, big boxy head with a blunt snout, fangs and jaw plate, long swept-back horns plus a smaller pair, cheek frills, folded wings on
+a spar, back and tail spines, ribbed belly plates, tail curling toward the viewer with a spade tip. The inventory icon is the same model
+(no shadow, fit to 124 px). **When Aures says OK, the icon should be re-rendered from their dragon model instead** (local session; the
+renderer here is only for our own box models).
+
+**What I learned about the Hytale look (web, UNVERIFIED - no game files here):**
+- Official modding docs: "a modern, stylized voxel game, with retro pixel-art textures"; models use only cubes and quads (no
+  triangles, no edge loops) made in Blockbench with the Hytale plugin; mobs / players / equipment use 64 px pixel density (vs 32 px
+  for blocks) - hytale.com "an introduction to making models for hytale" and hytalemodding.dev "art assets".
+- A guide describes characters as relatively detailed with expressive animation on a block world, character textures sharper than older
+  sandbox games.
+- Not found in text (my guesses, to check against Assets.zip): exact palettes of Rabbit / Boar / Sheep / Kweebec, eye construction,
+  how much noise vanilla creature textures carry. The v2 look (warm natural colours, painted gradients, big glinting eyes, chunky
+  short-legged boxes) is my reading of the trailers' style, not a measurement.
+
+Sources: [hytale.com - an introduction to making models for hytale](https://hytale.com/news/2025/12/an-introduction-to-making-models-for-hytale),
+[hytalemodding.dev - art assets](https://hytalemodding.dev/en/docs/established-information/server/content-categories/art-assets),
+[allthings.how guide](https://allthings.how/?p=3233), [CurseForge - Aures - Dragon Nestkeeper](https://www.curseforge.com/hytale/mods/aures-dragon-nestkeeper).
+
+**v2 open points.** v2 local checks: rows 4-6 of "For the local session" below. v2 questions: rows 7-9 of "Questions for Skyy".
 
 ## 1. Files
 
@@ -72,6 +130,9 @@ Every pet can still be raised with the per-skill Upgrade Stones (R9), so the bar
 | 1 | Whether the vanilla models in Pets-Spec (Rabbit, Chicken, Goat, Warthog, Bear_Grizzly, Turkey, Wolf, Boar, Hawk, Ram, Skrill, Mouflon, Horse, Camel) exist and how they look next to these concepts (Assets.zip, read-only). |
 | 2 | Whether a saddle / tint / recolour (Tusker, dragon elements) can be done at build time without committing vanilla assets. |
 | 3 | Whether item icons for pets can be generated from these 60 x 46 drawings (icon size and style of vanilla item icons). |
+| 4 | v2: open the vanilla Rabbit, Boar, Sheep, Goat, Wolf, Bear_Grizzly, Horse, Camel models + textures (read-only) and note per creature: texture size, how big the eyes are (px), how much noise / gradient the textures carry, leg and head proportions - then tune `make_pets_v2.py` (palettes, eye size, `tex_offset` noise) to match. |
+| 5 | v2: vanilla model-icon size and camera (assumed 128 x 128, 3/4 view from the front-left, lit top-left) and item icon size (assumed 64 x 64). |
+| 6 | v2 dragon: once Aures allows it, render the pet inventory icon from the Nestkeeper dragon model (their files stay in their mod; nothing of theirs committed). Until then the original icon here is a placeholder. |
 
 ## Questions for Skyy
 
@@ -83,3 +144,6 @@ Every pet can still be raised with the per-skill Upgrade Stones (R9), so the bar
 | 4 | Should mount pets show a saddle when summoned? | yes, small saddle |
 | 5 | Skrill (Mage): keep the vanilla Skrill, or an original "stormwing" like the sheet? | vanilla Skrill model in game |
 | 6 | Dragon hatchling: our own design (this sheet) or wait for the Nestkeeper decision? | wait for the Nestkeeper answer; this art stays a concept |
+| 7 | v2: is this box-model look close enough to vanilla Hytale animals, and is the rabbit still the best one? Which pets need another pass? | v2 look; redo only the ones you name |
+| 8 | v2: in game, should pets use vanilla models (Pets-Spec section 5) with these renders only as menu / inventory icons, or should we build our own models from these box layouts? | vanilla models in game, these as icons |
+| 9 | Dragon icon: keep this original dragon until Aures answers, then switch to a render of their dragon? | yes |
