@@ -49,6 +49,9 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
   ART PROOF (tools/skyyart.py preview sheet for Skyy) before the build; stats: Heavy slower +Def +HP
   (+crit dmg), Light a bit faster (+attack speed, +crit chance), Cloth fastest +HP +Mana least Def (+Mana regen higher tiers); trade-offs for
   anyone, the bracketed bonus only for your class's type; each family covers Lv 1-49 - rides the mob-curve round (docs/answered/gear.md).
+- NEW (Skyy 2026-10-06): FISHING = our own mod (bench, hook / line / sinker / rod / reel, click-bar minigame, length + weight, collections,
+  treasure; ideas from Angler's Almanac + HyFishing) - cloud spec draft first; FOOD = all vanilla foods + faster eating / hits don't cancel;
+  add DYNAMIC SEASONS to the pack after a compatibility check (docs/answered/skills.md + project.md 2026-10-06).
 - NEW (Skyy 2026-10-06): LOOT - drop-only vanilla gear ranked into the unidentified pool, item decided AT IDENTIFY, a bit more mob
   drops, Wynncraft vanishing / respawning surface loot chests (never player chests). Cloud revises the loot spec; local lists the gear.
 - NEW BIG DIRECTION (Skyy 2026-10-05): GATHERING PROGRESSION LADDER like SkyBlock - tier the Farming / Mining / Foraging materials (group

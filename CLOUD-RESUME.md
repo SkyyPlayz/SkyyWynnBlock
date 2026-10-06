@@ -47,6 +47,17 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
+- [ ] **SkyyFishing spec draft** (Skyy 2026-10-06, docs/answered/skills.md 'LOCKED 2026-10-06 ... FISHING') - web research first:
+      Angler's Almanac (docs https://rm20killer.github.io/Anglers-Almanac-Doc/ + its CurseForge page), HyFishing (CurseForge), their
+      LICENCES (jars carry none of their own -> ideas only unless a page allows reuse), Hypixel SkyBlock fishing (rods, rod parts, sea
+      creatures, treasure, fishing collections + armor, trophy / lava fishing) + Minecraft treasure fishing. Then the spec: bench + 5 part
+      kinds (hook / line / sinker / rod / reel) with tiers, rod = max weight / length, reel = reel power per click, the click-bar minigame
+      numbers, fish length + weight + weight-based sell price, treasure table (coins, unidentified gear), collections gates (fishing + metal
+      collection per rod / reel tier), fishing armor, accessories, later sea creatures + Zone 4 lava fishing, fish foods. Use an Opus agent
+      for the engine-free design if useful. Output: `research/cloud/SkyyFishing-Spec-Draft.md`.
+- [ ] **Food expansion draft** (Skyy 2026-10-06: food = primary healing) - every vanilla food (names from the web / wiki; exact ids
+      UNVERIFIED) placed into SkyyCooking's healing / Grade system, our own new foods, and the eating rule (faster eating vs hits no longer
+      cancel eating - recommend one). Output: `research/cloud/Food-Expansion-Draft.md`.
 - [ ] **Questions digest for Skyy** - collect every "Questions for Skyy" row from the 2026-10-06 `research/cloud/*.md` drafts (`research/cloud/LOG.md`
       lists them) into one prioritized list: blockers for the next local builds first, each with its default and the file. Output: `research/cloud/Questions-Digest-1006.md`.
 - [ ] **Apply the gathering reconciliation** - make the old -> new edits listed in `research/cloud/Gathering-Numbers-Reconciled.md` to the cloud drafts it
