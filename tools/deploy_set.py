@@ -59,7 +59,9 @@ SET = [
 # 2026-10-06 (Skyy: "add hyfishing right now, along side dynamic season"): HyFishing (fishing until our own fishing mod replaces it) + Dynamic
 # Seasons (its fishing seasons must keep working with our fishing mod later). Both only need Hytale modules; Dynamic Seasons optionally
 # integrates Angler's Almanac / HyFishing.
-PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "TheRedlotus:HyFishing", "BlueOrbit:DynamicSeasons"]
+PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "TheRedlotus:HyFishing", "BlueOrbit:DynamicSeasons",
+                    "Counter:Advanced Farming"]  # 2026-10-06 Skyy: metal hoes / sickles / watering cans, shears
+# Advanced Farming AND Saplings From Trees both override Plant_Leaves_Oak - check in game that oak leaves still drop saplings.
 # Skyy mods that were MERGED into another mod and must be switched OFF in the world config on every deploy (their jar may stay in Mods;
 # a disabled key is not loaded). Without this, deploy_set only disables older versions of the SAME mod name, and a retired mod would keep
 # loading next to its replacement (duplicate commands, two systems). Example: SkyyRolls once SkyyGear replaces it; SkyyCoins, SkyyBank,

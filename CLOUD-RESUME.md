@@ -57,7 +57,9 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       for the engine-free design if useful. Output: `research/cloud/SkyyFishing-Spec-Draft.md`.
 - [ ] **Food expansion draft** (Skyy 2026-10-06: food = primary healing) - every vanilla food (names from the web / wiki; exact ids
       UNVERIFIED) placed into SkyyCooking's healing / Grade system, our own new foods, and the eating rule (faster eating vs hits no longer
-      cancel eating - recommend one). Output: `research/cloud/Food-Expansion-Draft.md`.
+      cancel eating - recommend one) + Skyy's POTION vs FOOD design (docs/answered/skills.md 'LOCKED 2026-10-06 ... POTIONS'):
+      focused potions with flat numbers by grade, mixed foods with family focus (veggies HP, fruit Mana, meat Stamina, mushrooms bonus
+      effects, combos stack). Output: `research/cloud/Food-Expansion-Draft.md`.
 - [ ] **Questions digest for Skyy** - collect every "Questions for Skyy" row from the 2026-10-06 `research/cloud/*.md` drafts (`research/cloud/LOG.md`
       lists them) into one prioritized list: blockers for the next local builds first, each with its default and the file. Output: `research/cloud/Questions-Digest-1006.md`.
 - [ ] **Apply the gathering reconciliation** - make the old -> new edits listed in `research/cloud/Gathering-Numbers-Reconciled.md` to the cloud drafts it
