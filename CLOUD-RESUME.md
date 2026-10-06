@@ -56,11 +56,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       shapes that echo that metal's vanilla armor style (web screenshots of Hytale's metal armors; mark guesses UNVERIFIED). Use sub agents
       if useful (an Opus agent for the image script). Output: `research/cloud/light-armor/` (PNGs + `README.md` with one note per tier +
       the script), a combined `light-armor-sheet.png`. Ask Skyy nothing - they will react to the sheet.
-- [ ] **Loot round revision** (Skyy 2026-10-06, docs/answered/gear.md 'LOCKED 2026-10-06 ... LOOT') - web research Wynncraft loot chests
-      (tiers, respawn timers, spawn rules near players, vanish-on-loot) + identify / re-roll; then revise research/Loot-Unid-Spec.md +
-      research/cloud/Loot-Box-Design.md: item decided AT IDENTIFY (not sealed), drop-only vanilla gear ranked into levels (the list itself
-      = local task, Assets.zip), mob drop rate a little higher, our own vanishing / respawning surface loot chests that never touch
-      player-placed chests. Output: `research/cloud/Loot-Round-Revision.md`.
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
@@ -85,3 +80,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 ## Done (delete after logging - see the rules above)
 - [x] Spellbook ladder - 2026-10-06 - `research/cloud/Spellbook-Ladder.md`
+- [x] Loot round revision - 2026-10-06 - `research/cloud/Loot-Round-Revision.md`
