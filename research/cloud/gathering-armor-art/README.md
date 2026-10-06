@@ -120,3 +120,75 @@ are copied from `research/cloud/light-armor/make_sheets.py` (not imported).
 | 7 | The other crop of each pair: a dye / variant of the same set, its own set later, or nothing? | [nothing for now] |
 | 8 | Farming coats on Cotton + Onion (as drawn) - or keep the apron look all the way? | [coats on Cotton + Onion] |
 | 9 | Mining lamp reach per tier: Copper = Common Lantern reach up to Mithril / Onyxium = Legendary? | [yes, as Server Setup rows] |
+
+## v2 (2026-10-06) - Mining v2 + Farming v2-detail
+
+Cloud draft, 2026-10-06. Paper design; nothing built. Inputs: Skyy's art review LOCKED in `docs/answered/gear.md` (lines 76-77: "mining
+armor starts at copper ... make the iron and up echo the vanilla style a little more ... for the farm V2 i love the looks ... id liker 2x-4x
+the detail"; the working-lamp lock), `CLOUD-RESUME.md` ("Mining armor v2", "Foraging + Farming detail pass"), the v1 sheets above.
+
+**Start here:** `research/cloud/gathering-armor-art/mining-sheet-v2.png` and `research/cloud/gathering-armor-art/farming-sheet-v2-detail.png`.
+The v1 PNGs and `make_sheets.py` are unchanged (compare side by side).
+
+| File | What |
+|---|---|
+| `research/cloud/gathering-armor-art/mining-sheet-v2.png` | Mining v2: T1 Copper ... T7 Onyxium Miner, front + back, 2x detail |
+| `research/cloud/gathering-armor-art/farming-sheet-v2-detail.png` | Farming crop armor (approved look, unchanged design), 2x detail |
+| `research/cloud/gathering-armor-art/make_sheets_v2.py` | Generator (imports `make_sheets.py` read only; deterministic, checked: two runs give the same bytes). `python3 research/cloud/gathering-armor-art/make_sheets_v2.py [mining] [farming]` |
+
+**Detail (both sheets):** figures are 128 x 168 fine pixels (v1: 64 x 84), shown at x3. A ramp-aware 2x renderer (`up2`) rounds stair-step
+corners (EPX), makes every outline 1 fine px (v1 outlines were 2), adds a 1-px bevel per part (lit top-left) and a texture per material:
+leather grain + stitching 2 px inside the seams, cloth twill, denim, straw basket weave, metal rim light + brushed streaks + glints, fur
+tufts, crop skins with gloss flecks. The real item textures should still be painted at >= vanilla density (Mithril: Chest 192 x 64, Head
+160 x 64) - this sheet is the look target, not the texture.
+
+### Mining v2 - one silhouette per tier
+
+Mining **starts at Copper** (T0 Miner's Leather dropped). Every tier keeps the miner kit: helmet lamp, wide tool belt + buckle, ore pouch,
+a little pick on the left hip, lamp battery clipped on the back of the belt with a cable up to the helmet. Copper is the approved v1 Copper
+Miner unchanged. Iron and up each echo their vanilla metal armor (**the vanilla looks are UNVERIFIED guesses** - no game files and no
+picture descriptions found on the web; only recipe hints: Thorium uses Venom Sacs, Cobalt Shadoweave, Adamantite Cindercloth, Mithril
+Storm Leather + Void essence).
+
+| T | Set | Lv (placeholder) | Helmet + lamp | Body | Echo (UNVERIFIED) |
+|---|---|---|---|---|---|
+| 1 | Copper Miner | 10-18 | copper hard hat, lamp in a leather housing | v1: black leather vest, copper rivets, knee pads, strap | the approved v1 design |
+| 2 | Iron Miner | 15-23 | brimmed iron kettle hat over a mail coif, riveted band, lamp on the dome | breastplate with a centre ridge + lames, mail skirt, 3-lame pauldrons, couters, vambraces, knee cops, greaves, sabatons | knight plate |
+| 3 | Thorium Miner | 20-28 | cone helm with a sand turban wrap, havelock (neck veil), face scarf, lamp on the cone | lamellar scale vest, sand sash + tail, baggy desert trousers, wrapped shins, scale knee guards, a glowing venom vial on the belt | desert / Howling Sands |
+| 4 | Cobalt Miner | 25-38 | angular blue helm with a ridge, fur-lined face ring, goggles, lamp | chevron cuirass, fur mantle, big square pauldrons, chunky gauntlets with fur cuffs, fur-topped boots, shadoweave cloak | frost / Whisperfrost |
+| 5 | Adamantite Miner | 35-43 | closed horned great-helm, T slit glowing ember, ridge crest, lamp on the brow | ribbed heavy breastplate with ember seams, cindercloth tabard, huge spiked pauldrons, elbow + knee spikes, heavy greaves, sabatons | heavy / Devastated Lands |
+| 6 | Mithril Miner | 40-49 | winged helm (3 feathers per side), brow band, cheek guards, nasal, crest, glowing crystal lamp | smooth fitted plate with a glowing gem, layered feather-lame pauldrons, finned vambraces, ankle wing fins, storm-leather cape with mithril hem | the Mithril helmet wings (same idea as the Light-armor lock and the Goldenwood helmet) |
+| 7 | Onyxium Miner | 40-49 (50+ later) | onyx dome crown with 5 violet crystals, gold brow band + cheek plates, violet lamp | onyx plate with gold rim + gold centre line + crystal gem, crystal-spiked pauldrons with gold rims, crystal knee gems, gold toe caps, onyx cloak with gold hem | onyx + gold, crystalline |
+
+Metal ramps are the v1 / Light-armor guesses. New ramps: fur `#a4a8b2`...`#ffffff`, shadoweave `#1c2038`...`#444e78`, cindercloth
+`#4a1208`...`#c44a1a`, storm leather `#24303e`...`#56687e`, onyx `#170e22`...`#432c5c`, crystal `#6a2aa0`...`#f4dcff`, venom `#2e7a22`...`#d4ffb0`,
+ember glow `#ff8a2a`.
+
+**The lamps must REALLY light (LOCKED 2026-10-06):** every v2 helmet still shows a lamp, so each one needs real light through **our
+SkyyAccessories Lantern light code** (hidden helper lights around the wearer, torch-level glare cap, smooth edges from 0.5.5), not the other
+mod. One light per player: if the player also carries a Lantern accessory, the stronger of the two wins. Reach per tier = Server Setup rows
+(proposal: Copper = Common Lantern reach ... Mithril / Onyxium = Legendary). If real light cannot be done for helmets, the lamp is removed
+from the model (no fake glow). The glow halo on the sheet is only there to show the tier brightness.
+
+### Farming v2-detail
+
+Same crop sets, colours and shapes as the approved `farming-sheet.png` (T1 Wheat ... T7 Onion); only the detail changed (straw weave on hats
+and the wheat shirt, twill on linen / cotton, denim trousers, leather boots with stitching, glossy crop skins, rounded pods / bolls / flowers).
+
+### For the local session (UNVERIFIED)
+
+1. Compare each Mining v2 tier with the real vanilla Armor_Iron ... Armor_Onyxium (front + back screenshots) and move the shapes closer
+   where the guess is off (helmet shape first - Skyy cares most about the helmets).
+2. Geometry: kettle-hat brim, cone helm, horns, helmet wings, crystal crown, pauldron spikes, capes and the tabard need model parts beyond the
+   base armor model (or a vanilla model that has them); otherwise flat painted.
+3. Helmet lamp light via the SkyyAccessories Lantern helper (current version per HANDOFF): driven by "wearing a Mining helmet", one light per
+   player, emissive lamp texture if the engine allows.
+
+### Questions for Skyy (v2)
+
+| # | Question | Default |
+|---|---|---|
+| 10 | Mining v2: which tiers feel right as "vanilla echo + miner"? | [keep all; tweak what Skyy points at] |
+| 11 | Adamantite Miner: closed great-helm (face hidden, as drawn) or open-faced like the other tiers? | [closed, as drawn] |
+| 12 | Capes / cloaks on Cobalt, Mithril and Onyxium (as drawn), or no capes on mining armor? | [as drawn] |
+| 13 | Farming v2-detail: OK to use as the look target for the real textures? | [yes] |

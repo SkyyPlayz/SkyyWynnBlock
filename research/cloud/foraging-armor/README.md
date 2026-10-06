@@ -85,3 +85,41 @@ imported, so that folder can change freely).
 | 4 | Softwood "open plates" (a laced gap down the chest) - keep, or a closed chest like the rest? | [keep] |
 | 5 | Lightwood as birch (white bark with dark marks) - right wood for the Iron echo? | [yes] |
 | 6 | Goldenwood: dark heartwood with gold streaks (as drawn) or mostly gold wood? | [dark heartwood + gold streaks] |
+
+## v2 (2026-10-06) - detail pass + new Goldenwood helmet
+
+Cloud draft, 2026-10-06. Paper design; nothing built. Inputs: Skyy's art review LOCKED in `docs/answered/gear.md` (line 76, FORAGING ARMOR:
+"i love everything but the helmet of the gold wood. make it more like the mithril armors helmet."; line 77: every concept sheet 2x-4x the
+detail), `CLOUD-RESUME.md` ("Foraging + Farming detail pass").
+
+**Start here:** `research/cloud/foraging-armor/foraging-armor-sheet-v2.png`. The v1 PNGs and `make_sheets.py` are unchanged.
+
+| File | What |
+|---|---|
+| `research/cloud/foraging-armor/foraging-armor-sheet-v2.png` | All tiers (front + back) at 2x detail, Goldenwood with the new helmet |
+| `research/cloud/foraging-armor/make_sheets_v2.py` | Generator (imports `make_sheets.py` read only; deterministic, checked: two runs give the same bytes). `python3 research/cloud/foraging-armor/make_sheets_v2.py` |
+
+**Same approved designs**, drawn at 128 x 168 fine pixels (v1: 64 x 84), shown at x3. A ramp-aware 2x renderer (`up2`, same code as
+`research/cloud/gathering-armor-art/make_sheets_v2.py`, copied) rounds stair-step corners, makes outlines 1 fine px, adds a 1-px bevel per
+part and a texture per material: bark grain streaks, leaf / vine gloss, rope weave (Softwood), moss-cloth twill, gold rim light + glints.
+
+**The only design change - Goldenwood helmet** (the v1 peaked hood is gone): a **winged helm** carved from goldenwood, echoing the vanilla
+Mithril helmet (its wings - **UNVERIFIED**, no game files here; same idea as the Mithril Miner and the Light-armor Mithril helmet lock):
+rounded heartwood dome with gold streaks, raised gold crest ridge, gold brow band, cheek guards with gold rims, gold nasal, the gold-leaf
+gem on the brow (kept from v1, glowing sap core), and on each side **three stacked gold-leaf "feathers"** sweeping up and back as the
+wings, plus a small leaf where each wing meets the dome; a goldenwood gorget with a gold rim where the hood used to end. Back: same dome,
+crest and wings, a closed nape guard and the sap line up the back of the helm.
+
+### For the local session (UNVERIFIED)
+
+1. Compare the Goldenwood helmet with the real vanilla Mithril helmet (front + side screenshots): wing count, angle and where they attach;
+   copy the shape idea (not the texture).
+2. The wings need helmet geometry (or a vanilla model that has wings); if the Mithril helmet model is reused, check it may carry a
+   recoloured / re-textured goldenwood texture generated at build time (never commit vanilla assets).
+
+### Questions for Skyy (v2)
+
+| # | Question | Default |
+|---|---|---|
+| 7 | Goldenwood helmet: winged helm with gold-leaf wings (as drawn) - right echo of the Mithril helmet? | [yes; fix shape after the screenshot check] |
+| 8 | Wings: gold leaves (as drawn) or carved goldenwood feathers? | [gold leaves] |
