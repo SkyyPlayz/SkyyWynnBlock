@@ -15,7 +15,7 @@ Deterministic: same code -> same bytes.
 """
 import math
 import os
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageFont
 
 OUT = os.path.dirname(os.path.abspath(__file__))
 W = H = 64
@@ -413,9 +413,8 @@ def finish(ic, r):
         return
     a = {(x, y) for x in range(W) for y in range(H) if ic.px[x, y][3] > 0}
     g1 = grow(a, 1) - a
-    g2 = grow(a, 2) - a - g1
-    g3 = grow(a, 3) - a - g1 - g2
-    for gset, al in ((g3, 28), (g2, 70), (g1, 150)):
+    g2 = grow(a, 2) - a - g1        # 2-px halo (was 3) so it stays inside the margin
+    for gset, al in ((g2, 60), (g1, 150)):
         for x, y in gset:
             ic.set(x, y, GLOW[:3] + (al,))
     for sx, sy, arm in ((55, 8, 4), (8, 55, 2), (56, 51, 2)):
@@ -891,9 +890,97 @@ LINES = [
 ]
 
 
+# ---------------------------------------------------------------- 2-px edge margin
+MARGIN = 2          # transparent border every icon keeps (halo + sparkles included)
+HALO = 2            # Legendary halo width; the object box is the same for all rarities
+LO, HI = MARGIN + HALO, W - 1 - MARGIN - HALO      # object pixels live in 4..59
+
+
+def _drop(im, axis, k, sym):
+    """Fit the drawn object by deleting k whole rows (axis 1) or columns (axis 0)
+    that are the closest copies of their neighbour - the inside of a pixel-art
+    fill, never an outline or the gem - so outlines stay 1 px and the design is
+    unchanged, only 1-6 px smaller. sym: remove columns in mirror pairs so
+    symmetric icons stay symmetric. Deterministic (ties -> lowest index)."""
+    for _ in range(k):
+        w, hgt = im.size
+        px = im.load()
+        n = w if axis == 0 else hgt
+        m = hgt if axis == 0 else w
+
+        def at(i, j):
+            return px[i, j] if axis == 0 else px[j, i]
+
+        def cost(i):
+            if i + 1 >= n:
+                return None
+            c = 0
+            for j in range(m):
+                a, b = at(i, j), at(i + 1, j)
+                if a[3] == 0 and b[3] == 0:
+                    continue
+                c += sum(abs(a[q] - b[q]) for q in range(4)) + (40 if (a[3] == 0) != (b[3] == 0) else 0)
+            # a line that is fully empty costs nothing, but only inside the object
+            return c
+        bb = im.getchannel('A').getbbox()
+        lo, hi = (bb[0], bb[2] - 1) if axis == 0 else (bb[1], bb[3] - 1)
+        best = None
+        for i in range(lo + 1, hi - 1):
+            c = cost(i)
+            if sym:
+                j = w - 2 - i
+                if j <= i:
+                    continue
+                c += cost(j)
+            if best is None or c < best[0]:
+                best = (c, i)
+        idx = [best[1]] + ([w - 2 - best[1]] if sym else [])
+        for i in sorted(idx, reverse=True):
+            if axis == 0:
+                left, right = im.crop((0, 0, i, hgt)), im.crop((i + 1, 0, w, hgt))
+                out = Image.new('RGBA', (w - 1, hgt), (0, 0, 0, 0))
+                out.paste(left, (0, 0)); out.paste(right, (i, 0))
+            else:
+                top, bot = im.crop((0, 0, w, i)), im.crop((0, i + 1, w, hgt))
+                out = Image.new('RGBA', (w, hgt - 1), (0, 0, 0, 0))
+                out.paste(top, (0, 0)); out.paste(bot, (0, i))
+            im = out
+            w, hgt = im.size
+    return im
+
+
+def fit(ic):
+    """Keep the object inside LO..HI on both axes: drop k near-duplicate
+    rows / columns when it is too big, then shift it the least amount
+    needed (the composition keeps its place in the frame)."""
+    im = ic.im
+    bb = im.getchannel('A').getbbox()
+    sym = ImageChops.difference(im.getchannel('A'), im.getchannel('A').transpose(Image.FLIP_LEFT_RIGHT)).getbbox() is None
+    span = HI - LO + 1
+    kx = (bb[2] - bb[0]) - span
+    ky = (bb[3] - bb[1]) - span
+    if kx > 0:
+        im = _drop(im, 0, (kx + 1) // 2 if sym else kx, sym)
+    if ky > 0:
+        im = _drop(im, 1, ky, False)
+    bb = im.getchannel('A').getbbox()
+    obj = im.crop(bb)
+    x0, y0 = bb[0], bb[1]
+    x1, y1 = x0 + obj.width - 1, y0 + obj.height - 1
+    dx = LO - x0 if x0 < LO else HI - x1 if x1 > HI else 0
+    dy = LO - y0 if y0 < LO else HI - y1 if y1 > HI else 0
+    if sym:
+        dx = round((W - obj.width) / 2) - x0      # keep symmetric icons centred
+    out = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    out.paste(obj, (x0 + dx, y0 + dy))
+    ic.im = out
+    ic.px = out.load()
+
+
 def make(fn, r):
     ic = Icon()
     fn(ic, r)
+    fit(ic)
     finish(ic, r)
     return ic.im
 

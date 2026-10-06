@@ -54,8 +54,6 @@ lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
 - [ ] **Heavy Leather + Crude Robe v2 detail** - Skyy approved both ("Both good"); redo `research/cloud/heavy-armor/` and `research/cloud/cloth-armor/` at the
       2x-4x detail rule (docs/answered/gear.md 2026-10-06 art review), designs unchanged, keep v1 files. Output: the two folders' v2 sheets.
-- [ ] **Accessory icons v2 margin fix** - the Legendary halo / tips touch the 64 px edge on 9 icons (`research/cloud/accessory-art/README.md` v2 notes): keep a
-      2 px margin, regenerate `icons-v2/` + `accessory-sheet-v2.png`. Output: the regenerated files.
 - [ ] **Fish species icons** - one 64x64 icon per species in `research/cloud/Fish-Species-Catalog.md` (39 + junk / Lost Property), same art rules.
       Output: `research/cloud/fish-art/`.
 - [ ] **Enchanted icons touch-up** - redraw Enchanted Rice and Cotton (weakest per `research/cloud/enchanted-art/README.md`) and add the two new crop
@@ -65,3 +63,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 ## Done (delete after logging - see the rules above)
 - [x] Ore regrow spec - 2026-10-06 - `research/cloud/Ore-Regrow-Spec.md`
 - [x] Capstone sets slot fix - 2026-10-06 - `research/cloud/Capstone-Sets.md` + `research/cloud/capstone-set-art/`
+- [x] Accessory icons v2 margin fix - 2026-10-06 - `research/cloud/accessory-art/`

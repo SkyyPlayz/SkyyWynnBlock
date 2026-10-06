@@ -108,7 +108,7 @@ slot, plus 1x at the right).
   top-left rim; rivets on bands, caps, eyelets; vent slots on the lantern cap.
 - **Gems:** Normal / Unique are round cabochons (4 x 4 / 6 x 6) with a specular spot; Rare (9 wide) / Legendary (13 wide) are cut
   diamonds with a table, 4 crown facets and girdle lines; claws on Rare+, milgrain beads on the Legendary bezel.
-- **Glow:** Legendary halo is now 3 px soft (alpha 150 / 70 / 28) with 4-point sparkles; Rare keeps one pink glint (now a small star).
+- **Glow:** Legendary halo is 2 px soft (alpha 150 / 60) with 4-point sparkles; Rare keeps one pink glint (now a small star).
 - **Per line:** heart enamel gloss + rim light; boot leather grain, stitched seams, eyelets + criss-cross laces with loose ends, treaded
   sole; mana flask glass reflections, meniscus, bubbles, cork grain, riveted neck band; five separate primary feathers + coverts per
   wing; leaves with midrib + side veins and a dew drop; fist with knuckle shine, finger creases, thumb stitching, strapped wrist wrap;
@@ -118,9 +118,12 @@ slot, plus 1x at the right).
 
 ### Notes / doubts
 
-- The Legendary halo and a few wing / chain tips reach the 64 px edge, so the outer halo is clipped by 1-3 px on 9 Legendary icons
-  (all but Runic and Stonehide). Invisible at 1x; v1 kept a 2-px margin. If the real
-  slot crops icons, shrink the object by 2 px.
+- **Margin fix (2026-10-06):** every icon now keeps a **2 px fully transparent margin** (halo and sparkles included), checked by
+  script on all 44 icons (no pixel with alpha > 0 within 2 px of the edge). How (`fit()` in `make_icons_v2.py`): the object of every
+  rarity sits in a 4..59 px box (2 px margin + 2 px halo), the Legendary halo went from 3 px (150 / 70 / 28) to 2 px (150 / 60), and
+  objects that were too big lose 1-3 near-duplicate inside rows / columns (6 columns in mirror pairs on Speed, 3 on Razorfang) and
+  shift the least amount needed - outlines stay 1 px and no design changed. Before: the halo / wing / chain tips touched the edge on 9
+  Legendary icons and Stamina / Speed / Mana / Razorfang / Regeneration objects came within 1-2 px on the other rarities too.
 - **UNVERIFIED (local session):** 64 x 64 is the vanilla item icon size per the art brief (no game files in the cloud). Same open points
   as v1 above: icon path in `Assets.zip`, whether a mod jar can ship its own icon PNG, and how the semi-transparent halo looks on the real
   slot background.
