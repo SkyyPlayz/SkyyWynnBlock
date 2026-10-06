@@ -51,7 +51,9 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       on CurseForge (Orchard is in the pack; Cultivation + Undead Warriors are candidates; find the 2 food mods + the rest): what each
       adds (items, benches, mobs, recipes), its PERMISSIONS text (Orchard: modpacks OK with a page link, no content reuse), last update /
       game version, dependencies, and how it fits or clashes with our mods (SkyyCooking food system + Skyy's food families, SkyyMobs
-      levels, SkyySacks bags vs NoCube bags, Bazaar / collections listing by item id). Recommend add / skip per mod.
+      levels, SkyySacks bags vs NoCube bags, Bazaar / collections listing by item id). Recommend add / skip per mod. ALSO (Skyy, same day): NoCube's Bakehouse + Culinary (the 2 food
+      mods - vs SkyyCooking, vanilla bread / Flour XP) and Aures - Rare Monsters by BlackAuresArt (8+ creatures, mounts, companions,
+      armor, loot - vs SkyyMobs levels + SkyyGear loot / levels; read its permissions).
       Output: `research/cloud/NoCube-Mods-Survey.md`.
 - [ ] **SkyyFishing spec draft** (Skyy 2026-10-06, docs/answered/skills.md 'LOCKED 2026-10-06 ... FISHING') - web research first:
       Angler's Almanac (docs https://rm20killer.github.io/Anglers-Almanac-Doc/ + its CurseForge page), HyFishing (CurseForge), their
