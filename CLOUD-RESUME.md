@@ -49,15 +49,17 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
+- [ ] **Spellbook table re-run** - re-run the staff columns of `research/cloud/Spellbook-Ladder.md` section 2 with the refreshed staff costs
+      (210 / 240 / 270 / 310 / 350, `research/cloud/SkyyArmory-Roadmap.md` section 6); keep book costs. Output: the edited file.
+- [ ] **Mining helmet lamp spec** - Skyy: helmet lamps must really light (reuse the SkyyAccessories Lantern light code, docs/answered/bags.md + gear.md):
+      reach per tier, one light per player (helmet vs Lantern accessory), cost, edge cases. Output: `research/cloud/Mining-Lamp-Spec.md`.
+- [ ] **Crop armor stats** - stats/recipes for the crop sets on `research/cloud/gathering-armor-art/farming-sheet.png` (Wheat..Onion), replacing the
+      metal Farming set numbers in `research/cloud/Gathering-Armor-Mining-Farming.md`. Output: `research/cloud/Crop-Armor-Spec.md`.
+- [ ] **Pet zones + rarities** - fill the gaps `research/cloud/pet-art/README.md` section 3 lists (zone and starting rarity per pet) with drop sources
+      and odds, aligned with `research/cloud/Pets-Spec.md`. Output: `research/cloud/Pet-Sources.md`.
+- [ ] **Accessory icon sizes + vanilla icon check list** - list exactly what the local session must read in Assets.zip for icon size/paths
+      for items, accessories, weapons and armor concepts (one checklist for all the art folders). Output: `research/cloud/Art-Checklist-Local.md`.
+- [ ] **Capstone set art** - concept sheet for the 3 capstone sets (`research/cloud/Capstone-Sets.md`) in the same pixel style. Output: `research/cloud/capstone-set-art/`.
 
 
 ## Done (delete after logging - see the rules above)
-- [x] Tab-Economy refresh - 2026-10-06 - `research/cloud/Tab-Economy.md`
-- [x] Roadmap Mana table refresh - 2026-10-06 - `research/cloud/SkyyArmory-Roadmap.md`
-- [x] Cooking spec formula PR - 2026-10-06 - PR #10 (`research/Cooking-Skill-Spec.md`)
-- [x] Zone 1 starter town layout - 2026-10-06 - `research/cloud/Zone-1-Town-Layout.md`
-- [x] Fish species catalog - 2026-10-06 - `research/cloud/Fish-Species-Catalog.md`
-- [x] Accessory icons sheet - 2026-10-06 - `research/cloud/accessory-art/`
-- [x] Farming (crop) armor concept sheet - 2026-10-06 - `research/cloud/gathering-armor-art/`
-- [x] Pets concept sheet - 2026-10-06 - `research/cloud/pet-art/`
-- [x] Magic + new weapons concept sheet - 2026-10-06 - `research/cloud/weapon-art/`
