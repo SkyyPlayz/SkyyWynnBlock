@@ -59,8 +59,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
-- [ ] **Kunai ladder** - Assassin kunai (research/classes/Assassin.md): metal ladder mirroring daggers, stack/return rules, throw-teleport numbers per tier,
-      speed tier (`research/cloud/Weapon-Speed-Tiers.md`). Output: `research/cloud/Kunai-Ladder.md`.
 - [ ] **Archer bolts + holster** - RESUME follow-up: Archery 15+ extra crossbow bolts and the late-game holstered reload (approved, later); design numbers,
       Archer tree hooks (`research/cloud/Class-Tree-Paths.md`). Output: `research/cloud/Archer-Bolts-Holster.md`.
 - [ ] **Return Visit + Tab reveal scripts** - dialogue for the Tab reveal (dragon "fees" line), the clerk pay-off scene, prestige "go home anyway" and the
@@ -76,3 +74,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Loot round revision - 2026-10-06 - `research/cloud/Loot-Round-Revision.md`
 - [x] Bank + Tab calibration - 2026-10-06 - `research/cloud/Bank-Tab-Calibration.md`
 - [x] Gathering numbers reconciliation - 2026-10-06 - `research/cloud/Gathering-Numbers-Reconciled.md`
+- [x] Kunai ladder - 2026-10-06 - `research/cloud/Kunai-Ladder.md`
