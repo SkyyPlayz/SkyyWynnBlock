@@ -7,7 +7,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 1. `git pull --rebase --autostash`. Check weekly usage (ccd get_usage) - it resets TUESDAYS 15:00 UTC (next: Tue 2026-10-06 15:00 UTC = 9:00
    Skyy's time). Lean round ~0.3-0.5% weekly, full round ~0.7-1%, ultracode ~3%+.
 2. FIRST JOB AFTER THE RESET (Skyy 2026-10-05): sell from BAGS at the Bazaar (SkyySacks take bridge + SkyyBazaar sell buttons / Sell
-   Inventory; full round, item + coin safety) + Tree Sap default 12; then the Lantern recipes behind the Tree Sap collection tiers
+   Inventory; full round, item + coin safety) + Tree Sap default 12 + Hytale stack sizes on the BUY / SELL stack buttons (ore 25,
+   most 100 - the item's real max stack); then the Lantern recipes behind the Tree Sap collection tiers
    (SkyyCollections + SkyyAccessories). All in docs/answered/economy.md 2026-10-05.
 3. Skyy's test results first (TEST-CHECKLIST.md items 17-26 = everything deployed 2026-10-05); fix what they report.
 4. Then "Next, in order" below: item 5 (traversal build - spec + Skyy's answers ready), item 8 (mob curve, ultracode - all answers in),
