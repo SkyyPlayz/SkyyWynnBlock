@@ -61,8 +61,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       (`research/cloud/Kunai-Ladder.md`), Bo staff + fists (`research/cloud/Monk-Kit-Spec.md`) for Copper..Onyxium. Output: `research/cloud/weapon-art/`.
 - [ ] **Accessory icons sheet** - one icon per booster line x 4 rarities (`research/Booster-Accessories-Spec.md` 2.x: Health, Stamina, Mana, Speed,
       Regeneration, Brawler, Runic, Stonehide, Razorfang, Feather, Lantern) with rarity frames/colours. Output: `research/cloud/accessory-art/`.
-- [ ] **Fish species catalog** - the species for `research/cloud/SkyyFishing-Spec-Draft.md`: per zone/biome/season (Dynamic Seasons) names, rarity,
-      weight range, length, bite time, sell base, food family; lore-voice names. Output: `research/cloud/Fish-Species-Catalog.md`.
 - [ ] **Pets concept sheet** - pixel concepts for the pets in `research/cloud/Pets-Spec.md` (one per zone family + the dragon hatchling), same style.
       Output: `research/cloud/pet-art/`.
 
@@ -72,3 +70,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Roadmap Mana table refresh - 2026-10-06 - `research/cloud/SkyyArmory-Roadmap.md`
 - [x] Cooking spec formula PR - 2026-10-06 - PR #10 (`research/Cooking-Skill-Spec.md`)
 - [x] Zone 1 starter town layout - 2026-10-06 - `research/cloud/Zone-1-Town-Layout.md`
+- [x] Fish species catalog - 2026-10-06 - `research/cloud/Fish-Species-Catalog.md`
