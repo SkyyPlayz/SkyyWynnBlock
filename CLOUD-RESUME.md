@@ -58,8 +58,6 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
       2026-10-06). Output: `research/cloud/accessory-art/` v2 (keep v1 sheet).
 - [ ] **Accessory icon sizes + vanilla icon check list** - list exactly what the local session must read in Assets.zip for icon size/paths
       for items, accessories, weapons and armor concepts (one checklist for all the art folders). Output: `research/cloud/Art-Checklist-Local.md`.
-- [ ] **Fishing gear concept sheet** - rods + reels (8 tiers), hooks / lines / sinkers from `research/cloud/SkyyFishing-Spec-Draft.md`, at the NEW
-      2x-4x detail (art review 2026-10-06, docs/answered/gear.md). Output: `research/cloud/fishing-art/` (sheet + README + generator).
 - [ ] **Fishing minigame UI mockup** - the click-bar minigame + Fishing Bench tabs as vanilla-look page mockups (`research/Vanilla-UI-Style-Guide.md`,
       HANDOFF section 2 UI rules: inline pages, fit 1080 high). Output: `research/cloud/Fishing-UI-Mockup.md` (+ PNG).
 - [ ] **WorldGen stage 2 draft** - next stage after `research/SkyyWorldGen-Plan.md` (zones 2-5 islands from `research/cloud/Zone-Islands-Layout.md`
@@ -79,3 +77,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [x] Enchanted material icons - 2026-10-06 - `research/cloud/enchanted-art/`
 - [x] Class emblem icons - 2026-10-06 - `research/cloud/class-art/`
 - [x] Capstone set art - 2026-10-06 - `research/cloud/capstone-set-art/`
+- [x] Fishing gear concept sheet - 2026-10-06 - `research/cloud/fishing-art/`
