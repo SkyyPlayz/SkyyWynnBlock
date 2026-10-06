@@ -36,8 +36,6 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **Outposts list** - LOCKED R9: about 30-35 outpost towns, one per biome group, each an unlockable warp. List every outpost per zone (shared between near-identical
-      biome variants) with name, biome, ring, what it sells, warp rules. Read `research/cloud/Mob-Levels-Refit.md`, `research/SkyyWorldGen-Plan.md`. Output: `research/cloud/Outposts-List.md`.
 - [ ] **Slayers spec** (`docs/plans/SkyyDungeons-Plan.md`: core loop, not the spine) - research Hypixel Slayers on the web, propose SkyWynn slayer quests per zone (boss, tiers, rewards,
       XP, anti-farm). Output: `research/cloud/Slayers-Spec.md`.
 - [ ] **Capstone dungeon spec** - the one endgame dungeon after Zone 4/5 (`docs/plans/SkyyDungeons-Plan.md`, Decisions row 7.5): research Hypixel Catacombs / Wynncraft raids, propose floors,
@@ -73,3 +71,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Stats page spec - 2026-10-06 - `research/cloud/Stats-Page-Spec.md`
 - [x] Minimap widget UX - 2026-10-06 - `research/cloud/Minimap-Widget-UX.md`
 - [x] SkyyQuests design - 2026-10-06 - `research/cloud/SkyyQuests-Spec.md`
+- [x] Outposts list - 2026-10-06 - `research/cloud/Outposts-List.md`
