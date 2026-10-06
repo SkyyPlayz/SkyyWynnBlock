@@ -74,6 +74,36 @@ python3 research/cloud/weapon-art/make_weapons.py
 
 One `draw_<type>(tier)` function per row; palettes at the top; `ROWS` sets the sheet order and the row notes.
 
+## 5. v2 (2026-10-06, after Skyy's art review)
+
+Skyy's lock (`docs/answered/gear.md`, WEAPONS 2026-10-06): 2x-4x the pixel density, richer spellbooks, a Soul Cage that floats above
+the palm with the cage slowly spinning round the soul, Wolverine-like claws, the black part as black leather. v2 answers it; the v1
+files above are unchanged so the two can be compared.
+
+**Start here (v2):** `research/cloud/weapon-art/weapon-sheet-v2.png`.
+
+| File | What |
+|---|---|
+| `research/cloud/weapon-art/weapon-sheet-v2.png` | 9 rows x 7 metals + a "Cage spin" row (Cobalt, 4 frames) |
+| `research/cloud/weapon-art/<type>-v2.png` | One strip per type: `wand-v2`, `staff-v2`, `spellbook-v2`, `soul-cage-v2`, `kunai-v2`, `bo-staff-v2`, `gauntlets-v2`, `claws-v2`, `hand-wraps-v2` |
+| `research/cloud/weapon-art/soul-cage-spin-v2.png` | Every tier x 4 frames of the slow cage spin |
+| `research/cloud/weapon-art/soul-cage-spin-v2.gif` | The spin as a loop (all 7 tiers, 12 frames = one 72-degree turn) |
+| `research/cloud/weapon-art/make_weapons_v2.py` | The v2 generator (deterministic: two runs give the same bytes) |
+
+What changed:
+
+| Area | v1 | v2 |
+|---|---|---|
+| Density | 48 x 48 grid, shown x4 | **96 x 96 grid** (2x; vanilla icons are 64 x 64, so this is 1.5x vanilla), shown x2 - same sheet size |
+| Shading | 1-px rim light / dark | 1-px outline + 2-px bevel lit top-left, soft gradient on big parts, per-material texture: wood grain, pebbled leather, metal scratches + pits + rivets, crystal facets (lit / shaded half + ridge), cloth weave |
+| Spellbook | brown on every tier, small plate | cover leather **tinted per tier** (tan, dark brown, green, navy, oxblood, slate, black-violet); embossed double tooled frame + tooling dots, diamond tooling from Cobalt; raised leather medallion under a bigger metal **emblem** (Copper sun ring, Iron riveted square, Thorium boss, Cobalt diamond + gem, Adamantite shards, Mithril star, Onyxium violet gem in gold); metal **filigree corners** (curls from Thorium, gold vines on Mithril / Onyxium); page edges right + bottom (gilded on Mithril / Onyxium); **bookmark ribbon**; stitched clasp strap; riveted spine bands |
+| Soul Cage | lattice with a hanging loop | no loop: it **floats above an open palm** (palm-up hand hint, side view; essence glow on the palm, float marks); thicker bars (back bars dark, front bars lit), soul orb with swirl + core glow + halo; gems = diamond-cut tethers on fixed corners; finials on the spin axis (top + bottom). The cage is turned so a 5-fold axis points up, so a 72-degree turn loops seamlessly |
+| Claws | short blades over a black block | **3 long straight parallel blades** out of the finger gaps (blades about 47 px above the knuckles vs a 29 px fist, longer than the whole glove with its cuff), bevelled (lit facet, ridge, dark facet), tip glints, tier-metal sockets; glove = **black leather**: grain, stitched seams, joint creases, sheen highlights, wrist strap with tier buckle |
+| Others | as v1 | same designs, more detail: faceted crystals + riveted collars (wand / staff), bevelled kunai blade with honed edge and criss-cross cord, engraved Bo caps + stitched grip, plate lames + jointed finger plates (gauntlets), crossed straps (wraps) |
+
+Palettes: as section 3, plus `BOOK_LEATHER` (per-tier cover leather) and the leather `SHEEN` / `STITCH` colours at the top of the v2
+script. Regenerate: `python3 research/cloud/weapon-art/make_weapons_v2.py`.
+
 ## For the local session (UNVERIFIED)
 
 1. **Vanilla wand / staff look:** compare with the real `Weapon_Wand_Wood` / `Weapon_Wand_Wood_Rotten` icons and the vanilla metal
@@ -86,6 +116,11 @@ One `draw_<type>(tier)` function per row; palettes at the top; `ROWS` sets the s
    (corners, clasp, blade, caps) vs need new geometry (emblem plate, Soul Cage lattice, claw blades, gauntlet spikes).
 4. Vanilla cloth colours (Linen, Cotton, Silk, Cindercloth, Shadoweave) for the wraps.
 5. Is there a vanilla gauntlet / claw / fist item to reuse (the Monk spec mentions armor "Gauntlets" hand pieces)?
+6. **v2 - Soul Cage spin (UNVERIFIED):** can a held item play a looping animation in the hand (the cage child part turning slowly about
+   its vertical axis while the soul part stays still, item floating a little above the palm)? Check the vanilla item model / animation
+   format (blockymodel + animation files, item "idle in hand" animation slot) - names UNVERIFIED. Fallback: a still cage (frame 1).
+7. **v2 - density:** confirm vanilla item icon / held-item texture sizes (64 x 64 icons from the art review; whether 128 x 128 is allowed
+   for our textures).
 
 ## Questions for Skyy
 
@@ -98,3 +133,6 @@ One `draw_<type>(tier)` function per row; palettes at the top; `ROWS` sets the s
 | 5 | Bo staff and kunai: gold bands / collar on Mithril AND Onyxium (wands: gold on Mithril only, as locked)? | [gold on both for Bo / kunai; wands stay as locked] |
 | 6 | Fists: keep all three (gauntlets, claws, cloth wraps), and wraps on the cloth ladder rather than metal? | [yes, as the Monk spec] |
 | 7 | Leaf-crystal colours: my guesses, or always the tier's vanilla staff gem colour? | [vanilla staff gem] |
+| 8 | v2: spellbook cover leather tinted per tier (green Thorium, navy Cobalt ...), or brown on every tier with only the metal changing? | [tinted per tier] |
+| 9 | v2: Soul Cage spin speed - one 72-degree turn every ~2.2 seconds (the GIF), slower, or no spin? | [as the GIF; Server Setup row "cage spin seconds"] |
+| 10 | v2: claws - blades out of the finger gaps with small metal sockets (drawn), or straight from a metal knuckle plate? | [finger gaps + sockets] |
