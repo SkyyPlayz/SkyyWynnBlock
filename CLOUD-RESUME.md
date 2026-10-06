@@ -36,9 +36,6 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **Monk kit spec** - research/classes/Monk.md: Bo staff + fist weapon (wraps / gauntlets / claws) metal ladders like SkyyArmory's wands
-      (recipes, level bands, damage), the traversal tuning numbers (vault, skipping bounds, Rising Strike, Plunge Punch) and the engine probe list.
-      Output: `research/cloud/Monk-Kit-Spec.md`.
 - [ ] **Stats page spec (SkyBlock-style "Your Profile" stats)** - Skyy 2026-10-03 (playing, screenshot of the SkyWynn Menu's Your Profile
       tile): "this menus should show me all my stats with my current gear, accessory's skill and class bonuses. and everything. like on
       skyblock it should show health, mana, stamina, strength, crit chance, crit damage, mining and foraging fortune. ect. pretty much all
@@ -101,3 +98,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Modifier pool spec - 2026-10-06 - `research/cloud/Modifier-Pool-Spec.md`
 - [x] Class tree paths - 2026-10-06 - `research/cloud/Class-Tree-Paths.md`
 - [x] Soul Orb spec - 2026-10-06 - `research/cloud/Soul-Orb-Spec.md`
+- [x] Monk kit spec - 2026-10-06 - `research/cloud/Monk-Kit-Spec.md`
