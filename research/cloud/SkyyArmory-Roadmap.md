@@ -87,7 +87,7 @@ Each **tier** has a small signature so tiers feel different, not just bigger. Th
 
 Each **armor type** keeps its locked identity: Heavy = most Defense/Health + crit damage, Light = speed, attack speed, crit chance, Cloth = Health, Mana, even more speed, Mana regen on high tiers (all per `docs/answered/gear.md`).
 
-**Weapon pace** (a Wynncraft idea; the engine value is UNVERIFIED, SkyyGear lists Attack Speed as a "later" stat so it must not be advertised until it works): slow big hits (battleaxe, mace, club, longsword, staff), normal (sword, axe, spear, bo staff, wand), fast small hits (dagger, kunai, fists). Damage numbers per hit compensate: slow x1.6, normal x1.0, fast x0.6 (placeholder, to tune with the Mob-Curve numbers).
+**Weapon pace:** superseded by `research/cloud/Weapon-Speed-Tiers.md` (Skyy's four tiers Slow / Medium / Fast / Super Fast, same DPS, per-hit weight from the real attack interval; it replaces the x1.6 / x1.0 / x0.6 placeholders that were here).
 
 ## 6. Magic weapons: extending the Mana ladder (the one math job here)
 
@@ -142,4 +142,4 @@ Each stage deploys alone, and no stage needs another to **exist** (item ids stay
 | 2 | Capstone tiers (Voidglass, Aetherium) drop only, or also craftable from shards? | drop only at launch |
 | 3 | Spellbooks: leather + metal clasp ladder (7 metals), area-based power instead of raw Mana? | yes |
 | 4 | First wave (stage G): only the main weapon per class plus 3 armor sets? | yes |
-| 5 | Weapon pace multipliers (slow x1.6, normal x1.0, fast x0.6) once Attack Speed is live? | yes |
+| 5 | Weapon pace: see `research/cloud/Weapon-Speed-Tiers.md` questions | - |

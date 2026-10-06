@@ -52,9 +52,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       metal; Light = vanilla leather then leather + metal upgrades; Cloth = Crude Robe then tunics), per-level Health / Defense next to
       research/Mob-Curve-Spec.md, trade-offs (anyone) vs class bonuses (on-type) with numbers, recipes per tier.
       Output: `research/cloud/Armor-Types-Spec-Draft.md`.
-- [ ] **Weapon speed tiers** - Skyy 2026-10-05: weapon speed tiers Slow / Medium / Fast / Super Fast with the same DPS (per-hit damage scales).
-      Assign every weapon type of `research/cloud/SkyyArmory-Roadmap.md` section 5 a tier, compute per-hit multipliers from attack times (keep
-      the engine values UNVERIFIED), and show how crits, Strength, Mana-per-cast and on-hit effects scale. Output: `research/cloud/Weapon-Speed-Tiers.md`.
 - [ ] **Economy faucet / sink audit** - read every `research/cloud/*.md` spec and `research/Server-Setup-Research.md`; list each coin faucet and sink with
       a rough size per hour, check the R3 rules, the Bazaar loop (22.2% rule), the Tab (20M per day), prestige. Flag anything that breaks. Output:
       `research/cloud/Economy-Audit.md`.
@@ -74,3 +71,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] New-player guide (first hour) - 2026-10-06 - `research/cloud/Player-Guide-First-Hour.md`
 - [x] NPC barks, signs, Board texts, tips - 2026-10-06 - `research/cloud/Barks-Signs-Tips.md`
 - [x] Hytale 0.7 watch - 2026-10-06 - `research/cloud/Hytale-0.7-Watch.md`
+- [x] Weapon speed tiers - 2026-10-06 - `research/cloud/Weapon-Speed-Tiers.md`
