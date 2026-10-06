@@ -3,30 +3,25 @@
 Read this first, then only what the task needs. Map of every file + search tips: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions + build
 rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests next: `TEST-CHECKLIST.md`.
 
-## START HERE - the next local session (Skyy 2026-10-05: wait for the usage reset, then work the build list)
-1. On Skyy's PC: `git pull --rebase --autostash` in `SkyWynn PROJECT` (DONE 2026-10-05 ~12:20 -0600: docs layout pulled, local files tidied).
-2. Start Claude Code IN that folder - a LOCAL session (builds need `HytaleServer.jar`; the 2026-10-05 session was cloud-only by mistake).
-   It reads CLAUDE.md -> this file -> INDEX.md.
-3. Check the weekly usage first (ccd get_usage): the reset is TUESDAYS 15:00 UTC - next Tue 2026-10-06 15:00 UTC (the app's usage
-   card, read 2026-10-05; the "Mondays / Mon 2026-10-05" fix in PR #8 was wrong - 2026-10-05 is a Monday and usage stayed at 94%). Then work "Next, in order" below - SkyyGear 0.2.3 first. Full rounds per
-   PROJECT-RULES section 4; merge your own PRs once every check is green (section 6); log + update this file after each step.
-4. Cloud sessions meanwhile: the no-game-files specs (build 5 traversal spec, Stats page spec, class-ability spec) - CLOUD-RESUME.md.
-5. Obsidian: "Open folder as vault" -> `SkyWynn PROJECT` (settings ship in `.obsidian/`, how-to `docs/OBSIDIAN.md`).
+## START HERE - the next session (local, in `SkyWynn PROJECT`; it reads CLAUDE.md -> this file -> INDEX.md)
+1. `git pull --rebase --autostash`. Check weekly usage (ccd get_usage) - it resets TUESDAYS 15:00 UTC (next: Tue 2026-10-06 15:00 UTC = 9:00
+   Skyy's time). Lean round ~0.3-0.5% weekly, full round ~0.7-1%, ultracode ~3%+.
+2. Skyy's test results first (TEST-CHECKLIST.md items 17-26 = everything deployed 2026-10-05); fix what they report.
+3. Then "Next, in order" below: item 5 (traversal build - spec + Skyy's answers ready), item 8 (mob curve, ultracode - all answers in),
+   item 9 minimap, item 10 Stats page, SkyyGear weapon speed tiers.
+4. Round recipe: one Opus builder (task names the files) -> one Sonnet review -> fix -> `python tools/ci/crosscheck.py --jar <new> --baseline`
+   -> pin -> commit -> `python tools/backup_deploy.py` -> `python tools/deploy_set.py --yes` -> docs (below) -> `python tools/tidy_local.py --yes`.
+5. Obsidian vault = this folder (`docs/OBSIDIAN.md`). Cloud sessions: CLOUD-RESUME.md.
 
-## Now
-- LIVE: the 26-mod SET in HANDOFF section 1 (= `tools/deploy_set.py`); last deploy 2026-10-05 13:20 -0600 (backup `backups\deploy-20261005-1320`):
-  SkyyAccessories 0.5.5 Lantern edges, SkyyCooking 0.1.6 (XP by difficulty, Flour 140), SkyyExploration 0.2.3 page guard, SkyyMenu 0.3.7; 13:27 SkyyCollections 0.2.6 (backup deploy-20261005-1327). 13:58 SkyyGear 0.2.3 craft Smithing XP (backup deploy-20261005-1358).
-  14:51 SkyyBazaar 0.1.4 progression prices (backup deploy-20261005-1451). 15:16 SkyyParty 0.1.7 + SkyyEssentials
-  0.1.8 TPA buttons (backup deploy-20261005-1516). 17:24 SkyySkills 0.4.16 Mining curve +
-  leaderboards (backup deploy-20261005-1724). 17:45 SkyyMenu 0.3.8 + SkyyTrees 0.3.2
-  class trees ON (backup deploy-20261005-1745). Nothing running.
-  New helpers: `tools/ci/crosscheck.py` (the cross-check), `tools/tidy_local.py`.
-- USAGE: weekly 94% at 2026-10-05 18:40 UTC (5-hour 0%); resets Tue 2026-10-06 15:00 UTC - no big rounds before it (Skyy: stop near 95%).
-- DOCS consolidated 2026-10-05 (PR #6, merged; `python tools/docs_check.py` proves no old line was lost); the old long RESUME is
-  `docs/archive/RESUME-2026-10-05.md`. ALWAYS READY TO HAND OFF: log + HANDOFF + this file the moment something is done (PROJECT-RULES 5).
-- OBSIDIAN (Skyy 2026-10-05): the vault IS the project folder `SkyWynn PROJECT` (the empty `Hytale Projects` vault next to it is unused).
-- Skyy's standing rules for docs: answered questions move OUT of OPEN-QUESTIONS.md into `docs/answered/<topic>.md` as soon as Skyy
-  answers (`tools/qa_append.py ... --close`); class designs live one file per class in `research/classes/` (easy-read layout + HTML).
+## Now (2026-10-05 evening)
+- LIVE: the 26-mod SET (HANDOFF section 1 = `tools/deploy_set.py`). Deployed 2026-10-05 (newest backup `backups\deploy-20261005-1745`;
+  every backup listed in `backups/README.md`): Cooking 0.1.5 + 0.1.6, Accessories 0.5.5, Exploration 0.2.3, Menu 0.3.7 + 0.3.8,
+  Collections 0.2.6, Gear 0.2.3, Bazaar 0.1.4, Party 0.1.7 + Essentials 0.1.8, Skills 0.4.16, Trees 0.3.2. NONE tested by Skyy yet.
+- NOTHING RUNNING. Weekly usage 98% at ~18:15 -0600 (stopped new rounds; a multi-mod round would not finish).
+- Specs ready to build: `research/Magic-Traversal-Spec.md` (+ its section 8 = Skyy's answers), `research/Mob-Curve-Spec.md` (all defaults
+  accepted 2026-10-05). Helpers new this session: `tools/ci/crosscheck.py`, `tools/tidy_local.py`.
+- Rules for docs: answers go word for word into `docs/answered/<topic>.md` and leave OPEN-QUESTIONS.md (`tools/qa_append.py ... --close`);
+  log + HANDOFF + this file the moment anything is done (PROJECT-RULES 5); keep files where INDEX.md says ("Keep it tidy").
 
 ## Next, in order (Skyy's queue 2026-10-04; full detail of each item: `docs/answered/<topic>.md` + the old RESUME)
 1. DONE 2026-10-05: SkyyGear 0.2.3 (craft Smithing XP + F1 + F7) - waiting for Skyy's test. Next Gear: tool levels = 0.2.4, the loot round = 0.2.5.
