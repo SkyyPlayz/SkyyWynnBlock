@@ -47,9 +47,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       which exist today vs later (Mining / Foraging / Farming Fortune, Mining / Chopping Power from the tool-levels spec), SkyBlock's stat
       list for comparison, and a bridge contract (each mod publishes e.g. stats:contrib:<Mod> with plain java types; SkyyMenu sums and
       draws), build parts + versions. Output: `research/cloud/Stats-Page-Spec.md`.
-- [ ] **Starter shards plan 2** - Skyy: the /island becomes 3x bigger with a small hill, more trees and a cave, a bridge to a 2nd island with
-      mobs, a 3rd island with the portal (boss later). Turn research/cloud/Starter-Shard-Layout.md into a buildable plan: sizes, cave, bridge,
-      shard-2 mob list (Zone 1 Lv 1-3), portal plaza, resource budget, options for islands that already exist. Output: `research/cloud/Starter-Shards-Plan-2.md`.
 - [ ] **Loot box design** - unidentified drops become Wynncraft-style rarity loot boxes ("better looking"): box colours per SkyyGear rarity,
       names ("Unidentified Sword"), a level RANGE (Skyy's pick), tooltip mockups, identify messages, art direction for the generated art.
       Read research/Loot-Unid-Spec.md. Output: `research/cloud/Loot-Box-Design.md`.
@@ -93,3 +90,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Monk kit spec - 2026-10-06 - `research/cloud/Monk-Kit-Spec.md`
 - [x] Pocket Dimension release kit - 2026-10-06 - `research/cloud/PocketDimension-Release-Kit.md`
 - [x] Zone islands layout (one world) - 2026-10-06 - `research/cloud/Zone-Islands-Layout.md`
+- [x] Starter shards plan 2 - 2026-10-06 - `research/cloud/Starter-Shards-Plan-2.md`
