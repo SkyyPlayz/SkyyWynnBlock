@@ -63,9 +63,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       doubleDropMax 1.0) and rescales `research/cloud/Foraging-Armor-Design.md`, `research/cloud/Gathering-Armor-Mining-Farming.md`, `research/cloud/Pets-Spec.md`
       and `research/cloud/Collection-Unlocks-Draft.md`. Make ONE table of every Fortune / speed / Tree Feller source with the agreed numbers; list the edits each
       draft needs. Output: `research/cloud/Gathering-Numbers-Reconciled.md`.
-- [ ] **Bank + Tab calibration** - `research/cloud/Economy-Audit.md` C1/C2: bank 2% per real hour offline on every profile is the biggest faucet; the Tab is
-      ~70x endgame income. Propose the bank change (per day / online only / per account), a Tab rate tied to measured income, the profile-grant fix (C5),
-      with simulations. Output: `research/cloud/Bank-Tab-Calibration.md`.
 - [ ] **Kunai ladder** - Assassin kunai (research/classes/Assassin.md): metal ladder mirroring daggers, stack/return rules, throw-teleport numbers per tier,
       speed tier (`research/cloud/Weapon-Speed-Tiers.md`). Output: `research/cloud/Kunai-Ladder.md`.
 - [ ] **Archer bolts + holster** - RESUME follow-up: Archery 15+ extra crossbow bolts and the late-game holstered reload (approved, later); design numbers,
@@ -81,3 +78,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 ## Done (delete after logging - see the rules above)
 - [x] Spellbook ladder - 2026-10-06 - `research/cloud/Spellbook-Ladder.md`
 - [x] Loot round revision - 2026-10-06 - `research/cloud/Loot-Round-Revision.md`
+- [x] Bank + Tab calibration - 2026-10-06 - `research/cloud/Bank-Tab-Calibration.md`
