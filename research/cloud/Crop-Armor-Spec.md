@@ -113,7 +113,7 @@ Recipes appear only through collections (R3): no shop sells them, coins never sk
 | Cotton | Cotton V | 1,000 | group C |
 | Onion | Onion V | 1,000 | group D: Cotton IV + Rice IV |
 
-(Thresholds from `Collections-Spec.md` 4.1: S curve 50 / 100 / 250 / 500 / 1,000 / 2,500 / 5,000 / 10,000 / 20,000; tier V = 1,000, VI = 2,500.) Cotton / Onion use tier V like Adamantite / Mithril in the Mining set. The gate rarely binds a player who farms the crop (the recipe needs 2,560 to 4,160 base crops, more than the gate), which is the point: it stops a buyer. The old placeholder cells "Farm armor T1..T4" in `Collection-Unlocks-Draft.md` (Wheat, Pumpkin, Tomato / Cotton, Potato / Onion) are replaced by this table.
+(Thresholds from `research/Collections-Spec.md` 4.1: S curve 50 / 100 / 250 / 500 / 1,000 / 2,500 / 5,000 / 10,000 / 20,000; tier V = 1,000, VI = 2,500.) Cotton / Onion use tier V like Adamantite / Mithril in the Mining set. The gate rarely binds a player who farms the crop (the recipe needs 2,560 to 4,160 base crops, more than the gate), which is the point: it stops a buyer. The old placeholder cells "Farm armor T1..T4" in `research/cloud/Collection-Unlocks-Draft.md` (Wheat, Pumpkin, Tomato / Cotton, Potato / Onion) are replaced by this table.
 
 **Money checks (python3):**
 - Base crop value per set at the vanilla price order (2 / 6 / 16 / 40 coins per crop): Wheat 400, Carrot 2,760 own + 640 previous, Cauliflower 15,360 own, Pumpkin 23,040 own, Chilli 61,440, Cotton 61,440, Onion 153,600 coins of crops at base. The coin value of a set therefore climbs with the crop group, as the economy locks want ("cheapest early, dearer later").
