@@ -10,17 +10,20 @@ lines 73-78 (art review 2026-10-06: 2x-4x detail, half-mask cowl for Light helme
 
 **Start here:** `research/cloud/capstone-set-art/capstone-sets-sheet.png` (3 sets x Voidglass / Aetherium x front / back).
 
+**(updated 2026-10-06: slot fix)** Vanilla armor slots appear to be Head / Chest / Hands / Legs (no Boots, UNVERIFIED), so the sets were redrawn to the new `Capstone-Sets.md` slots: **Bailiff = Head + Chest + Legs** (greaves + sabatons are the lower Legs piece; Hands bare), **Clerk = Head + Chest + Hands** (new Quick-Reference Mitts; the Trousers are gone, Legs bare), **Notary = Chest + Legs + Hands** (slippers sewn to the Margin Skirts; new Signing Gloves; Head bare). The old sheet is kept as `capstone-sets-sheet-v1.png`; the per-set PNGs were overwritten.
+
 ## 1. Files
 
 | File | What |
 |---|---|
-| `capstone-sets-sheet.png` | All 12 views: rows = Bailiff / Clerk / Notary, columns = Voidglass front, back, Aetherium front, back; colour swatches (glass, base, trim, Set green) |
+| `capstone-sets-sheet-v1.png` | The first sheet (Bailiff / Notary with Boots, Clerk with Trousers) - kept to compare |
+| `capstone-sets-sheet.png` | All 12 views (slot-fixed): rows = Bailiff / Clerk / Notary, columns = Voidglass front, back, Aetherium front, back; colour swatches (glass, base, trim, Set green) |
 | `bailiff-voidglass.png`, `bailiff-aetherium.png` | The Bailiff's Plate / The Chief Bailiff's Plate, front + back |
 | `clerk-voidglass.png`, `clerk-aetherium.png` | The Clerk's Leathers / The Senior Clerk's Leathers, front + back |
 | `notary-voidglass.png`, `notary-aetherium.png` | The Notary's Robes / The High Notary's Robes, front + back |
 | `make_capstone.py` | The generator (run it to rebuild every PNG) |
 
-Total folder size about 250 KB. There is no v1 of these sets (first drawing), so nothing was renamed to `-v1`.
+Total folder size about 350 KB. The pre-slot-fix sheet is `capstone-sets-sheet-v1.png`.
 
 ## 2. Detail level (art review 2026-10-06)
 
@@ -34,14 +37,14 @@ Total folder size about 250 KB. There is no v1 of these sets (first drawing), so
 
 ## 3. The three sets (what is drawn)
 
-Bare grey mannequin parts = the **free 4th slot** (Capstone-Sets section 2) and the Hands slot. Every set piece carries a small
+Bare grey mannequin parts = the **free 4th slot** (Capstone-Sets section 2): Hands for the Bailiff, Legs (and feet) for the Clerk, Head for the Notary. Every set piece carries a small
 green wax **set stamp** (Set rarity `#55FF55`); the chest piece has a big one with red-tape ribbons.
 
 | Set (type) | Pieces drawn | Theme details |
 |---|---|---|
-| **Bailiff's Plate** (Heavy) | Stamped Visor, Overruling Cuirass, Footnote Greaves | great helm whose crest **is a rubber stamp** (knob, stem, block, green ink-pad edge); glass face plate with violet eye-slit glow; dents on the cuirass each with a paper tag ("every dent is a filed complaint"); a gavel on the hip; tally marks on the vambraces; greaves engraved with 4 rows of tiny "small print"; back: crossed red tape + seal, brass case plaque `27-B/6` (Form 27-B/6) |
-| **Clerk's Leathers** (Light) | Eyeshade, Filing Jerkin, Quick-Reference Trousers | half-mask cowl (the Light-helmet lock) with a voidglass **accountant's eyeshade** and a quill tucked behind the band; jerkin covered in pockets with receipts poking out ("forty pockets"); red-tape **sleeve garters**; ledger with bookmark on the hip; trousers with coloured **index tabs** on the outer seam and glass knee guards; back: scroll case of rolled forms, stuffed back pocket |
-| **Notary's Robes** (Cloth) | Sealed Robe, Margin Skirts, Waiting-Room Slippers | bell-sleeved robe with a scalloped glass-edged mantle, standing collar, glass buttons, stole printed with stamps, big seal with ribbons, quill + inkpot on the sash; A-line skirts with a red **margin rule** and hand-written lines; fluffy slippers with a queue ticket "404"; back: embroidered Department seal, sash knot with tails |
+| **Bailiff's Plate** (Heavy) | Stamped Visor (Head), Overruling Cuirass (Chest), Footnote Greaves (Legs: cuisses, knee cops, greaves, sabatons) | great helm whose crest **is a rubber stamp** (knob, stem, block, green ink-pad edge); glass face plate with violet eye-slit glow; dents on the cuirass each with a paper tag ("every dent is a filed complaint"); a gavel on the hip; tally marks on the vambraces; greaves engraved with 4 rows of tiny "small print", glass panels on the cuisses; bare mannequin hands (free slot); back: crossed red tape + seal, brass case plaque `27-B/6` (Form 27-B/6) |
+| **Clerk's Leathers** (Light) | Eyeshade (Head), Filing Jerkin (Chest), Quick-Reference Mitts (Hands) | half-mask cowl (the Light-helmet lock) with a voidglass **accountant's eyeshade** and a quill tucked behind the band; jerkin covered in pockets with receipts poking out ("forty pockets"); red-tape **sleeve garters**; ledger with bookmark on the hip; fingerless **mitts** with a glass knuckle plate, a metal cuff over the bracer, coloured **index tabs** (green / red / glass / gold) out of the outer cuff, ink-stained bare fingertips, set stamp on the cuff; bare mannequin legs and feet (free slot); back: scroll case of rolled forms, stuffed back pocket |
+| **Notary's Robes** (Cloth) | Sealed Robe (Chest), Margin Skirts with the Waiting-Room Slippers sewn on (Legs), Signing Gloves (Hands) | bell-sleeved robe with a scalloped glass-edged mantle, standing collar, glass buttons, stole printed with stamps, big seal with ribbons, quill + inkpot on the sash; A-line skirts with a red **margin rule** and hand-written lines; fluffy slippers (part of the Legs piece) with a queue ticket "404"; cream **Signing Gloves** out of the bell sleeves with a glass cuff, ink-stained writing finger, green seal ring and set stamp; bare mannequin head (free slot); back: embroidered Department seal, sash knot with tails |
 
 **Aetherium versions** (same shapes, pale silver-blue + pale gold trim + blue-white crystal): **floating runes** around the figure
 (6 original glyphs, soft halo) and runes etched on shoulders / sleeves; rank marks: **Chief** Bailiff = small wings beside the stamp crest
@@ -62,7 +65,7 @@ pin on the eyeshade band; **High** Notary = taller collar + a floating seal halo
 
 | # | Check |
 |---|---|
-| 1 | **Armor slots:** the vanilla texture list in the art brief (Chest, Head, Legs, Hands) suggests Hytale has **no Boots slot**. research/cloud/Capstone-Sets.md gives the Heavy and Cloth sets "Boots". If so, the "Footnote Greaves" fit the **Legs** slot (they are shin armor) and the Notary needs Hands instead of Slippers (or slippers become part of the Legs piece). Check the real slot list in the game files. |
+| 1 | **Armor slots** (applied 2026-10-06 as the slot fix, still to confirm): the vanilla texture list in the art brief (Chest, Head, Legs, Hands) suggests Hytale has **no Boots slot**. research/cloud/Capstone-Sets.md gives the Heavy and Cloth sets "Boots". If so, the "Footnote Greaves" fit the **Legs** slot (they are shin armor) and the Notary needs Hands instead of Slippers (or slippers become part of the Legs piece). Check the real slot list in the game files. |
 | 2 | Whether a model can render a translucent material (the voidglass panels) or only alpha-cut; if not, fake it with the darker glass colours baked in. |
 | 3 | Floating runes / halo: needs a separate model part or particles that follow the player (same question as the soul cage spin in the weapon review). |
 | 4 | Texture sizes: these figures are concept views, not UV textures; the real textures should match vanilla Mithril density (Chest 192x64, Head 160x64, Legs 128x64, Hands 64x64) or 2x. |
@@ -73,6 +76,6 @@ pin on the eyeshade band; **High** Notary = taller collar + a floating seal halo
 |---|---|---|
 | 1 | Do the bureaucracy jokes (stamp crest, eyeshade + quill, margin skirts, ticket 404) read well, or tone them down for end-game gear? | keep them, they are the capstone's identity |
 | 2 | Big green wax seal on each chest = the Set badge: OK, or use a smaller badge? | big seal on the chest, small seals on the other pieces |
-| 3 | If Hytale has no Boots slot: Heavy = Helmet / Chest / Legs (greaves), Cloth = Chest / Legs / Hands (slippers folded into the Legs piece, new "Notary's Signing Gloves")? | yes |
+| 3 | (updated 2026-10-06: slot fix - now drawn this way) Heavy = Head / Chest / Legs (greaves), Light = Head / Chest / Hands (mitts), Cloth = Chest / Legs / Hands (slippers in the Legs piece, Signing Gloves)? Or all 4 slots with a 2 / 4-piece bonus (Capstone-Sets Q1)? | 3 of 4 as drawn |
 | 4 | Aetherium rank marks (Chief wings, Senior pin + stripe, High Notary halo) - keep? | keep |
 | 5 | Floating runes around Aetherium wearers - always on, or only when the full 3-piece set is worn? | only with the full set (a visible reward) |

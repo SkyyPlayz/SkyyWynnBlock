@@ -56,8 +56,6 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
       2x-4x detail rule (docs/answered/gear.md 2026-10-06 art review), designs unchanged, keep v1 files. Output: the two folders' v2 sheets.
 - [ ] **Accessory icons v2 margin fix** - the Legendary halo / tips touch the 64 px edge on 9 icons (`research/cloud/accessory-art/README.md` v2 notes): keep a
       2 px margin, regenerate `icons-v2/` + `accessory-sheet-v2.png`. Output: the regenerated files.
-- [ ] **Capstone sets slot fix** - vanilla armor slots look like Head / Chest / Hands / Legs (no Boots, UNVERIFIED): rework the 3-of-4 piece choice in
-      `research/cloud/Capstone-Sets.md` + the art in `research/cloud/capstone-set-art/` to fit 4 real slots. Output: edited spec + art.
 - [ ] **Fish species icons** - one 64x64 icon per species in `research/cloud/Fish-Species-Catalog.md` (39 + junk / Lost Property), same art rules.
       Output: `research/cloud/fish-art/`.
 - [ ] **Enchanted icons touch-up** - redraw Enchanted Rice and Cotton (weakest per `research/cloud/enchanted-art/README.md`) and add the two new crop
@@ -66,3 +64,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 
 ## Done (delete after logging - see the rules above)
 - [x] Ore regrow spec - 2026-10-06 - `research/cloud/Ore-Regrow-Spec.md`
+- [x] Capstone sets slot fix - 2026-10-06 - `research/cloud/Capstone-Sets.md` + `research/cloud/capstone-set-art/`

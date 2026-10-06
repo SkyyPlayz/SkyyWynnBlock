@@ -3,9 +3,12 @@
 
 The three Set-rarity sets from research/cloud/Capstone-Sets.md, each in its
 Voidglass (F1-F4) and Aetherium (F5-F7) version, front + back:
-  The Bailiff's Plate   (Heavy: Helmet, Chest, Boots)
-  The Clerk's Leathers  (Light: Helmet, Chest, Legs)
-  The Notary's Robes    (Cloth: Chest, Legs, Boots)
+  The Bailiff's Plate   (Heavy: Head, Chest, Legs - Hands free)
+  The Clerk's Leathers  (Light: Head, Chest, Hands - Legs free)
+  The Notary's Robes    (Cloth: Chest, Legs, Hands - Head free)
+Slot fix 2026-10-06: vanilla armor slots are Head / Chest / Hands / Legs
+(no Boots, UNVERIFIED), so boots / greaves / slippers are drawn as the lower
+part of the Legs piece and the free slot is drawn as the bare mannequin.
 
 Original pixel art drawn from code (no copied art, no game files).
 Run:  python3 research/cloud/capstone-set-art/make_capstone.py
@@ -438,7 +441,12 @@ def bailiff(T, back):
     mannequin(f, back, head=False, legs=True, feet=False)
     mt = tex_metal(21)
 
-    # --- BOOTS: "Footnote Greaves" (knee cop, shin greave, layered sabaton)
+    # --- LEGS: "Footnote Greaves" (cuisses under the tassets, knee cop, shin greave,
+    #     layered sabaton - the feet are part of the Legs piece: no Boots slot)
+    for side in (0, 1):
+        cu = S(rect(42, 108, 63, 130), side)
+        f.paint(cu, P, tex=mt)
+        f.paint(S(rect(46, 118, 59, 128), side), G, tex=tex_glass(9 + side), alpha=a)
     for side in (0, 1):
         gm = S(poly([(42, 136), (63, 136), (62, 162), (43, 162)]), side)
         f.paint(gm, P, tex=mt)
@@ -604,31 +612,10 @@ def clerk(T, back):
     a = T['glass_alpha']
     aeth = T['runes']
     lt = tex_leather(31)
-    mannequin(f, back, head=True, legs=False, feet=True)
+    mannequin(f, back, head=True, legs=True, feet=True)
 
-    # --- LEGS: "Quick-Reference Trousers"
-    for side in (0, 1):
-        lm = S(rect(42, 106, 63, 161), side)
-        f.paint(lm, L, tex=lt)
-        stitch(f, S(vline(44, 112, 158), side) if side == 0 else [(127 - 44, y) for y in range(112, 159)], L, 4, 2)
-        km = S(ell(42, 128, 63, 146), side)
-        f.paint(km, P, tex=tex_metal(3))
-        f.paint(S(ell(46, 131, 59, 143), side), G, tex=tex_glass(4 + side), alpha=a)
-        f.paint(rim(km, 1, 'bottom') & km, R, edge_ref=km, outline=False)
-        for y in (150, 156):                   # shin straps
-            f.paint(S(rect(42, y, 63, y + 2), side), BRASS if aeth else T['trim'])
-        if not back:
-            # index tabs sticking out of the outer seam (green / red / blue / gold)
-            for k, (yy, cc) in enumerate(((112, SET_G), (118, TAPE), (124, T['glass']), (147, BRASS))):
-                f.paint(S(rect(38, yy, 42, yy + 4), side), cc, grad=False)
-            if side == 0:
-                seal(f, 55, 115, 3, emblem='dot')           # set stamp badge (thigh)
-        else:
-            pk = S(rect(46, 112, 59, 124), side)            # back pocket stuffed with receipts
-            f.paint(S(rect(48, 108, 52, 114), side), PAPER, grad=False)
-            f.paint(S(rect(53, 109, 56, 114), side), PAPER, grad=False)
-            f.paint(pk, L, tex=lt)
-            stitch(f, [(x, y) for x, y in rim(pk, 1, 'top')], L, 5, 2)
+    # (slot fix 2026-10-06: the Legs slot is the free one now - bare mannequin legs;
+    #  the index tabs moved to the Hands piece "Quick-Reference Mitts")
 
     # --- CHEST: "Filing Jerkin" (forty pockets)
     torso = rect(39, 54, 88, 110) | rect(42, 52, 85, 54)
@@ -696,6 +683,25 @@ def clerk(T, back):
         f.paint(bm, P, tex=tex_metal(9))
         f.paint(S(poly([(28, 107), (37, 107), (38, 118), (27, 118)]), side), G, tex=tex_glass(6), alpha=a)
         f.paint(rim(bm, 1, 'top') & bm, R, edge_ref=bm, outline=False)
+        # --- HANDS: "Quick-Reference Mitts" (fingerless gloves, glass knuckle plate,
+        #     coloured index tabs out of the outer cuff, inked fingertips)
+        f.paint(S(rect(26, 130, 39, 135), side), DUMMY, tex=tex_leather(11))      # bare fingertips
+        f.dots([(X(x, side), y, 1) for x in (30, 33, 36) for y in (132, 133, 134)], DUMMY)
+        if not back:
+            f.col([(X(x, side), y) for x in (27, 28) for y in (133, 134)], INKC)   # ink-stained tip
+        gm = S(rect(25, 119, 40, 131), side)
+        f.paint(gm, L, tex=lt)
+        stitch(f, S(hline(26, 39, 129), side), L, 4, 2)
+        cf = S(rect(24, 117, 41, 121), side)                                    # cuff over the bracer
+        f.paint(cf, P, tex=tex_metal(10))
+        f.paint(rim(cf, 1, 'top') & cf, R, edge_ref=cf, outline=False)
+        f.paint(S(rect(28, 123, 37, 127), side), G, tex=tex_glass(11 + side), alpha=a)   # knuckle plate
+        for x in (29, 32, 35):
+            f.dots([(X(x, side), 125, 5)], G)
+        for k, (yy, cc) in enumerate(((107, SET_G), (112, TAPE), (117, T['glass']), (122, BRASS))):
+            f.paint(S(rect(20, yy, 24, yy + 3), side), cc, grad=False)          # index tabs
+        if side == 0 and not back:
+            seal(f, 32, 121, 2, emblem='dot')                                   # set stamp badge (cuff)
         # shoulder pads: two layers with glass edge
         for pm in (clip(ell(19, 56, 45, 76), y0=64), poly([(24, 50), (44, 47), (47, 58), (43, 66), (21, 68), (19, 58)])):
             pm = S(pm, side)
@@ -747,7 +753,8 @@ def notary(T, back):
     ct = tex_cloth(41)
     mannequin(f, back, head=True, legs=True, feet=False)
 
-    # --- BOOTS: "Waiting-Room Slippers" (soft, worn, a queue ticket on a loop)
+    # --- LEGS, lower part: "Waiting-Room Slippers" are sewn to the Margin Skirts
+    #     (one Legs piece - no Boots slot; soft, worn, a queue ticket on a loop)
     for side in (0, 1):
         sm = S(ell(38, 156, 64, 172) | rect(42, 156, 63, 165), side)
         f.paint(sm, Ln, tex=tex_cloth(5))
@@ -840,6 +847,24 @@ def notary(T, back):
         f.paint(rect(56, 98, 71, 108), R if aeth else TAPE, tex=tex_cloth(5))       # sash knot
         ribbon(f, 60, 106, 56, 128, 4, R if aeth else TAPE)
         ribbon(f, 67, 106, 71, 126, 4, R if aeth else TAPE)
+    # --- HANDS: "Signing Gloves" (cream kid gloves out of the bell sleeves, glass cuff,
+    #     ink-stained writing finger, green seal ring)
+    GL = PAPER if not aeth else T['plate']
+    for side in (0, 1):
+        hm = S(rect(20, 124, 33, 138) | ell(19, 132, 34, 143) | rect(16, 128, 20, 136), side)
+        f.paint(hm, GL, tex=tex_cloth(12))
+        for x in (24, 27, 30):                                                  # finger splits
+            f.dots([(X(x, side), y, 1) for y in range(137, 142)], GL)
+        cf = S(rect(18, 122, 35, 127), side)
+        f.paint(cf, G, tex=tex_glass(15 + side), alpha=a)
+        f.dots([(X(x, side), 126, 5) for x in range(19, 35, 3)], R)
+        if not back:
+            f.col([(X(x, side), y) for x in (22, 23) for y in (138, 139, 140)], INKC)   # writing finger
+            if side == 1:
+                f.paint(S(rect(28, 134, 31, 136), side), BRASS if not aeth else T['trim'], grad=False)
+                f.put(X(29, side), 135, SET_G[3])                               # seal ring
+            else:
+                seal(f, 27, 131, 2, emblem='dot')                               # set stamp badge
     # standing collar (tall for the High Notary)
     tall = 6 if aeth else 0
     for side in (0, 1):
@@ -857,11 +882,11 @@ def notary(T, back):
 # ---------------------------------------------------------------- output
 SETS = [
     ('bailiff', bailiff, ("The Bailiff's Plate", "The Chief Bailiff's Plate"), 'Heavy',
-     'Helmet + Chest + Boots (Legs free)'),
+     'Head + Chest + Legs (Hands free)'),
     ('clerk', clerk, ("The Clerk's Leathers", "The Senior Clerk's Leathers"), 'Light',
-     'Helmet + Chest + Legs (Boots free)'),
+     'Head + Chest + Hands (Legs free)'),
     ('notary', notary, ("The Notary's Robes", "The High Notary's Robes"), 'Cloth',
-     'Chest + Legs + Boots (Helmet free)'),
+     'Chest + Legs + Hands (Head free)'),
 ]
 RUNE_SPOTS = [(2, 40), (139, 30), (1, 98), (141, 92), (3, 140), (139, 148)]
 
@@ -923,10 +948,10 @@ def main():
     sheet_h = top + 3 * (fh + labh + gap) + 10
     sheet = Image.new('RGBA', (sheet_w, sheet_h), BG)
     d = ImageDraw.Draw(sheet)
-    d.text((sheet_w // 2, 16), "SkyWynn capstone sets - the Department's issued uniforms (concept, cloud draft v2)",
+    d.text((sheet_w // 2, 16), "SkyWynn capstone sets - the Department's issued uniforms (concept, cloud draft v2, slot fix)",
            font=font(34), fill=INK, anchor='mt')
     d.text((sheet_w // 2, 58), 'Set rarity (green) - drops only in The Final Audit.  Columns: Voidglass front / back, Aetherium front / back.  '
-           'Bare grey mannequin parts = the free 4th slot (and the Hands slot).', font=font(17), fill=(60, 64, 70, 255), anchor='mt')
+           'Bare grey mannequin parts = the free 4th slot (slots: Head / Chest / Hands / Legs).', font=font(17), fill=(60, 64, 70, 255), anchor='mt')
     for r, (key, fn, names, typ, slots) in enumerate(SETS):
         y = top + r * (fh + labh + gap)
         for c in range(4):
