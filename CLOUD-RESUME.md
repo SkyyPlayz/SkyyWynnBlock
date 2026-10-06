@@ -47,10 +47,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
-- [ ] **Foraging armor concept sheets** - Wood + Softwood..Goldenwood (`research/cloud/Foraging-Armor-Design.md` section 7: bark plates, vine trims,
-      sap veins, echoing Copper..Onyxium shapes). Output: `research/cloud/foraging-armor/`.
-- [ ] **Mining + Farming armor concept sheets** - from `research/cloud/Gathering-Armor-Mining-Farming.md` looks (miner's leather + lamp helmet; straw/linen
-      farmer clothes). Output: `research/cloud/gathering-armor-art/`.
 
 
 ## Done (delete after logging - see the rules above)
@@ -63,3 +59,5 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Light armor helmet options - 2026-10-06 - `research/cloud/light-armor/helmets.png`
 - [x] Heavy armor tier 1 concept - 2026-10-06 - `research/cloud/heavy-armor/`
 - [x] Crude Robe concept - 2026-10-06 - `research/cloud/cloth-armor/`
+- [x] Foraging armor concept sheets - 2026-10-06 - `research/cloud/foraging-armor/`
+- [x] Mining + Farming armor concept sheets - 2026-10-06 - `research/cloud/gathering-armor-art/`
