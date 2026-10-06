@@ -74,9 +74,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       lists them) into one prioritized list: blockers for the next local builds first, each with its default and the file. Output: `research/cloud/Questions-Digest-1006.md`.
 - [ ] **Apply the gathering reconciliation** - make the old -> new edits listed in `research/cloud/Gathering-Numbers-Reconciled.md` to the cloud drafts it
       names (only files under `research/cloud/`; anything outside goes in a PR). Output: the edited drafts + `research/cloud/Gathering-Reconciliation-Applied.md` (what changed).
-- [ ] **Cloud drafts consistency pass** - fold today's findings back into older cloud drafts: Archer Holster at Lv 75 (`research/cloud/Class-Tree-Paths.md`),
-      Zone 5.5 "Go home" vs the Paid-in-Full gate (`research/cloud/Story-Script-Zones-2-5.md`), zone-special slayer discount = coin effect (Economy-Audit C8),
-      Spellbook class gate (Mage, not Priest). Output: the edits + `research/cloud/Consistency-Pass-1006.md`.
 - [ ] **Light armor helmet options** - Skyy's reference has no helmet; draw 3 helmet options (hood with metal rim, half-mask cowl, open leather cap) for
       Copper and Onyxium with the same script style (`research/cloud/light-armor/make_sheets.py`). Output: `research/cloud/light-armor/helmets.png` + README note.
 - [ ] **Heavy armor tier 1 concept** - HEAVY ARMOR tier 1 = a heavy leather set below Copper (vanilla Armor_Leather_Heavy, restyle): concept sheet in the
@@ -90,3 +87,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 
 ## Done (delete after logging - see the rules above)
+- [x] Cloud drafts consistency pass - 2026-10-06 - `research/cloud/Consistency-Pass-1006.md`

@@ -64,8 +64,8 @@ Order inside a class = the order of the build list in section 6. "Vanilla" means
 | Class | Weapons (types) | Now | Next to build | Lv 50-100 version |
 |---|---|---|---|---|
 | **Priest** | Wand, Soul Orb | wands spec'd, orb spec'd | 1. Wands 0.1 (live next) 2. Soul Orb ladder (8 tiers incl. Wood/Cobalt cage) | Wand and Orb at T8-T12 |
-| **Mage** | Staff, Spellbook | staffs spec'd | 1. Staffs 2. **Spellbooks**: no metals exist; a book is **leather + metal clasp/cover** (same "keep the base, add metal" idea as Light armor); 7 books Copper to Onyxium | Staff + Spellbook at T8-T12; Spellbook cost = 2 x staff in Mana (the spec's spellbook 20, so x4 of the wand) |
-| **Archer** | Shortbow, Crossbow | vanilla | 1. **Crossbow ladder check**: vanilla has crossbows? (UNVERIFIED which metals) 2. add a **quiver/holster** accessory slot later | Shortbow, Crossbow at T8-T12 |
+| **Mage** | Staff, Spellbook (updated 2026-10-06: spellbooks are a **Mage** weapon, but SkyyClasses gates the `Weapon_Spellbook_` prefix as **Priest** today - the books need the class gate moved to Mage and the Priest heal-cap / hit-block handling to drop the prefix, UNVERIFIED; see Spellbook-Ladder.md section 7) | staffs spec'd | 1. Staffs 2. **Spellbooks**: no metals exist; a book is **leather + metal clasp/cover** (same "keep the base, add metal" idea as Light armor); 7 books Copper to Onyxium | Staff + Spellbook at T8-T12; Spellbook cost = 2 x staff in Mana (the spec's spellbook 20, so x4 of the wand) |
+| **Archer** | Shortbow, Crossbow | vanilla | 1. **Crossbow ladder check**: vanilla has crossbows? (UNVERIFIED which metals) 2. add a **quiver/holster** accessory slot later (updated 2026-10-06: the locked "holstered crossbow reloads in 30 s" is a tree node at Archery Lv 75, not an accessory - Archer-Bolts-Holster.md; "extra bolts" = magazine 6 -> 10) | Shortbow, Crossbow at T8-T12 |
 | **Warrior** | Sword (+longsword), Spear | vanilla | 1. nothing new at Lv 1-49 2. **Spear Leap** traversal (idea) | Sword, Longsword, Spear at T8-T12 |
 | **Berserker** | Axe, Battleaxe, Mace, Club | vanilla | 1. nothing new at Lv 1-49 2. Leap Slam / Bull Rush (ideas) | Axe, Battleaxe, Mace at T8-T12 (Club stays crude) |
 | **Monk** | Bo staff, Fists (wraps/gauntlets/claws) | spec'd (Monk-Kit) | 1. **Bo staff ladder** (Wood to Onyxium) 2. **Fist family** (cloth wraps, leather-and-metal gauntlets, claws) | Bo staff, Gauntlets, Claws at T8-T12 |
@@ -87,7 +87,7 @@ Each **tier** has a small signature so tiers feel different, not just bigger. Th
 
 Each **armor type** keeps its locked identity: Heavy = most Defense/Health + crit damage, Light = speed, attack speed, crit chance, Cloth = Health, Mana, even more speed, Mana regen on high tiers (all per `docs/answered/gear.md`).
 
-**Weapon pace:** superseded by `research/cloud/Weapon-Speed-Tiers.md` (Skyy's four tiers Slow / Medium / Fast / Super Fast, same DPS, per-hit weight from the real attack interval; it replaces the x1.6 / x1.0 / x0.6 placeholders that were here).
+**Weapon pace:** superseded by `research/cloud/Weapon-Speed-Tiers.md` (checked 2026-10-06: pointer is present and current) (Skyy's four tiers Slow / Medium / Fast / Super Fast, same DPS, per-hit weight from the real attack interval; it replaces the x1.6 / x1.0 / x0.6 placeholders that were here).
 
 ## 6. Magic weapons: extending the Mana ladder (the one math job here)
 
@@ -126,7 +126,7 @@ Each stage deploys alone, and no stage needs another to **exist** (item ids stay
 
 ## 8. Server Setup rows (sketch)
 
-`armory.tier.<name>.enabled`, `armory.tier.<name>.levelMin/Max` (the bands), `armory.mana.<weapon>.<tier>` (charged cost; quick = /5), `armory.pace.slow/normal/fast` (damage multipliers), `armory.craft.collectionGate` (on). All times in seconds.
+`armory.tier.<name>.enabled`, `armory.tier.<name>.levelMin/Max` (the bands), `armory.mana.<weapon>.<tier>` (charged cost; quick = /5), `armory.pace.*` (updated 2026-10-06: replaced by the `speed.*` rows of Weapon-Speed-Tiers.md section 8: four tiers slow / medium / fast / superfast, not three), `armory.craft.collectionGate` (on). All times in seconds.
 
 ## For the local session (UNVERIFIED)
 

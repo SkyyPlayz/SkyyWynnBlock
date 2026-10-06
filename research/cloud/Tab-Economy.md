@@ -24,6 +24,8 @@ if you do not pay.
 
 ## 2. The numbers - what "20 million per day" really means
 
+(updated 2026-10-06: **read `research/cloud/Bank-Tab-Calibration.md` first.** It supersedes the rate and bank figures below: the Tab is shown in Void Marks and paid in coins at a posted rate, `tab.perHour` placeholder 90,000 coins (about 25% of a good endgame player's hourly income, not the 40-50% used here), interest per 24 online hours, and the bank changes to once-a-day falling brackets (audit C1, C2). Section 2's tables are kept as the original reasoning.)
+
 How long an in-game day lasts is **UNVERIFIED**: web guides disagree (about 48 minutes per day in one, a 15 minute server default of 600 s day + 300 s night in another, a full
 cycle "about one hour" in a third). Check the Hytale world config locally (the day-length setting) and the Server Setup row; the design below uses a row `tab.dayMinutes`.
 

@@ -56,9 +56,9 @@ means a stack of 64 cobblestone gives 64 coins (SkyBlock gives 1 each too).
 | Limit | Default | Notes |
 |---|---|---|
 | **Daily buy limit per item per profile** (SkyBlock model) | **640** items, resets at a fixed hour (row, shown in seconds) | stops stockpiling cheap resources from NPCs |
-| **Daily sell-back cap per profile** (coins from NPC sell-backs) | 20,000 coins per day in Zone 1, scaling x1.5 per zone | a faucet cap: NPC sell-back creates coins from nothing, the Bazaar/AH only move them |
+| **Daily sell-back cap per profile** (coins from NPC sell-backs) | 20,000 coins per day in Zone 1, scaling x1.5 per zone | a faucet cap: NPC sell-back creates coins from nothing; the AH only moves them, and the **Bazaar's instant sell also creates coins** (the market maker pays, Economy-Audit.md F3) - the Bazaar is not capped here (updated 2026-10-06: was "the Bazaar/AH only move them", Economy-Audit.md C11) |
 | Stock | **infinite** by default (locked); optional per-item limited stock + restock timer (locked) | |
-| Auto-sell hoppers (Pocket Shards) | pay **half** of the NPC sell-back, count toward the same daily cap | see `Pocket-Shards-Spec.md` |
+| Auto-sell hoppers (Pocket Shards) | pay **half** of the NPC sell-back, count toward the **same single** daily cap `shops.dailySellCap` (no separate auto-sell cap; Pocket-Shards-Spec.md no longer has its own 50,000) | see `Pocket-Shards-Spec.md` (updated 2026-10-06: Economy-Audit.md C9) |
 
 ## 4. What each shop sells (by zone town)
 

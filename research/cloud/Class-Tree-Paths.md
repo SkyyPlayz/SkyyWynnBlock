@@ -11,7 +11,7 @@ Path names come from the "tree path ideas" at the bottom of each class file. Num
 | **Trunk** (shared, 6 nodes) | class-wide upgrades every path gets: weapon / traversal / survival basics. Not locked |
 | **3 paths x 5 nodes** | pick **one path** at its first node (**N1**); the other two lock; nodes in a path are taken in order |
 | Points | **1 class-tree point per 3 class-skill levels** (33 by Lv 99); costs below; a full tree (trunk + one path) costs **25 points**, reached at class level 75 (8 spare for respec or a later extra node) |
-| Level gates | Trunk: Lv 5 / 10 / 15 / 25 / 40 / 55 (cost 1 / 1 / 2 / 2 / 2 / 3). Path nodes: Lv **20 / 30 / 45 / 65 / 75** (cost 2 / 2 / 3 / 3 / 4). Check: points available at a gate always cover the cumulative cost (script-checked) |
+| Level gates | Trunk: Lv 5 / 10 / 15 / 25 / 40 / 55 (cost 1 / 1 / 2 / 2 / 2 / 3) (updated 2026-10-06: Archer T6 Holster Reload is Lv 75; other classes' T6 stay at 55). Path nodes: Lv **20 / 30 / 45 / 65 / 75** (cost 2 / 2 / 3 / 3 / 4). Check: points available at a gate always cover the cumulative cost (script-checked) |
 | Respec | swapping paths costs coins (a sink; row `tree.respecCoins`) and refunds all path points; trunk stays |
 | Balance | one **power ledger slot** of about +20% (Class-Ability-Spec-Draft section 4); a node that adds a behaviour also carries a downside (listed) |
 The five elements for elemental nodes = the engine's **Fire, Water, Earth, Wind, Lightning** (the same five as SkyyGear's element damage).
@@ -62,10 +62,10 @@ The five elements for elemental nodes = the engine's **Fire, Water, Earth, Wind,
 |---|---|---|---|
 | T1 Steady Hands | 5 | 1 | draw strength 4 reached 8% faster |
 | T2 Quiver Craft | 10 | 1 | 10% chance to recover a fired arrow |
-| T3 Extra Bolts | 15 | 2 | crossbows hold **+1 bolt** (up to +4 more at Lv 55; LOCKED 2026-09-25 "up to +4") |
+| T3 Extra Bolts | 15 | 2 | crossbows hold **+1 bolt** (up to +4 more at Lv 55; LOCKED 2026-09-25 "up to +4") (updated 2026-10-06: "extra bolts" = the magazine cap goes **6 -> 10** in four ranks at Lv 15 / 30 / 42 / 55, not a bigger reload - see Archer-Bolts-Holster.md section 2) |
 | T4 Light Step | 25 | 2 | +4% move speed while holding a bow / crossbow |
 | T5 Eagle Eye | 40 | 2 | +6% crit chance at range over 15 blocks |
-| T6 Holster Reload | 55 | 3 | a holstered crossbow **reloads in 30 s** (LOCKED 2026-09-25, late game) |
+| T6 Holster Reload | **75** | 3 | a holstered crossbow **reloads in 30 s** (LOCKED 2026-09-25, late game) (updated 2026-10-06: moved from Lv 55 to **Lv 75**, near the top of the tree - Archer-Bolts-Holster.md Q2 default; the trunk gate is now Lv 75; points still fit: 25 of 25 at Lv 75, and at Lv 55 the Archer needs only 15 of 18) |
 
 **Path A - Trapper** (roots and nets)
 | Node | Lv | Pts | Ability | What changes | Trade-off |

@@ -119,7 +119,7 @@ SkyBlock minions have 2 upgrade slots, 1 fuel slot, 1 shipping slot. Ours: **fue
 | Auto-Sell Hopper | sells full storage to the nearest NPC buyer at 50% of the NPC sell price | late, **capped** (below) | Budget Hopper |
 
 Auto-Sell inflation guard (Decisions 3.5 "watch inflation on public"): sell price 50% of NPC value, a daily cap on coins per profile
-(`shards.autosell.dailyCoins`, default placeholder 50,000) and the sold items still count for collections but pay **no** skill XP and **no** extra
+(updated 2026-10-06: auto-sell has **no cap of its own**; it pays 50% and counts toward the ONE shared NPC sell-back cap `shops.dailySellCap`, 20,000 a day in Zone 1 x1.5 per zone, see NPC-Shops-Spec.md section 3; the old separate `shards.autosell.dailyCoins` 50,000 row is dropped - Economy-Audit.md C9, F9) and the sold items still count for collections but pay **no** skill XP and **no** extra
 tree bonus. Admin switch to turn auto-sell off.
 
 ## 6. Slots
@@ -159,7 +159,7 @@ SkyBlock's ladder is slower and has 300 types to go through. Ours must be reacha
 
 `shards.enabled`, `shards.baseSlots` (5), the slot ladder, `shards.types` (table: id, group, item, base delay, collection key, unlock tier),
 `shards.tier.delayFactor` / `shards.tier.storage` lists, `shards.maxOffline` (seconds shown as hours/days), fuel table, upgrade rows (effect %),
-autosell switch + percent + daily cap. All times in seconds.
+autosell switch + percent (the daily cap is the shared `shops.dailySellCap`, updated 2026-10-06). All times in seconds.
 
 ## 10. Story fit (suggested)
 

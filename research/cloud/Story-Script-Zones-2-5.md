@@ -162,8 +162,9 @@ Zone 5 is the cave land under the Zone 4 caldera (OPEN-QUESTIONS R8): raptors, r
 > **Dragon:** I can fly you to your dimension. Hytale. The one with the bears. Or you can stay and raise the egg.
 > *(Player: What happens if I go?)*
 > **Dragon:** You go home. Then... hic. We probably end up here again.
+> **Dragon** *(updated 2026-10-06, if "Go home" is chosen)*: Home. Lovely. Hic. But first: paperwork. Your shard has a balance. Ask the clerk in the waiting room - prestige needs a Receipt. *(opens `tab.q1_fees`; Prestige-Spec.md section 1, Tab-Prestige-Scripts.md 3.1)*
 > *(Choice A: "Stay and raise the egg" -> the dragon quest line starts (Dragon-Quest-Spec).)*
-> *(Choice B: "Go home" -> prestige reset: permanent perks; a hiccup pulls you straight back: "Welcome back! Your ticket number is #4,000,000,002." - Skyy's favourite ending, kept exactly.)*
+> *(Choice B: "Go home" -> (updated 2026-10-06: the dragon first sends you to the clerk; prestige needs **Paid in Full** and runs through the clerk's Prestige page, not straight from the dragon - Prestige-Spec.md section 1, Tab-Prestige-Scripts.md section 3.1 and Q1) the clerk's prestige reset: permanent perks; a hiccup pulls you straight back: "Welcome back! Your ticket number is #4,000,000,002." - Skyy's favourite ending, kept exactly.)*
 
 **The Tab hand-off:** the dragon mentions in passing that "your shard has accrued some fees". That opens the Tab (rent) quest line - see the Tab-Economy task.
 

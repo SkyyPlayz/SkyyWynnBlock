@@ -28,8 +28,8 @@ The Board (a notice board in every town, "Department of Arrivals" lore) shows bo
 
 | Rule | Why |
 |---|---|
-| **Allowed:** skill XP %, double-drop % (skills' own `dd` key), Exploration XP %, movement speed % (small), fall damage %, slayer boss cost %, elite spawn %, event frequency %, pet XP % (the last four when their mods exist) | each has a live or planned hook |
-| **Forbidden:** coin faucets, sell/buy price changes, **Bazaar spread**, Bazaar/AH fees, anything that unlocks a recipe or a collection tier, rarity weights of gear | R3 + the Bazaar loop: buy = base x 1.10, sell = base x 0.90 (spread 22.2%) and crafted premiums above 22.2% break it; any spread change reopens loops |
+| **Allowed:** skill XP %, double-drop % (skills' own `dd` key), Exploration XP %, movement speed % (small), fall damage %, slayer XP %, bounty-bar fill rate %, elite spawn %, event frequency %, pet XP % (the last five when their mods exist) (updated 2026-10-06: "slayer boss cost %" removed - the cost is coins, a sink cut = a coin effect, Economy-Audit.md C8) | each has a live or planned hook |
+| **Forbidden:** coin faucets, **coin sink cuts (slayer boss cost, shop or cooking costs paid in coins)**, sell/buy price changes, **Bazaar spread**, Bazaar/AH fees, anything that unlocks a recipe or a collection tier, rarity weights of gear | R3 + the Bazaar loop: buy = base x 1.10, sell = base x 0.90 (spread 22.2%) and crafted premiums above 22.2% break it; any spread change reopens loops |
 | **No stacking of the same kind:** two specials of the same kind take the **larger**, not the sum (zone XP special and Clerk XP perk on the same skill = the bigger one + half the smaller) | prevents 60% XP weeks |
 | **Overall cap per skill:** specials + Clerk <= **+30%** XP, and all sources together (gear Wisdom, accessories, **prestige +20%**) <= **+60%** | SkySkills already clamps the sum (0 to 5); the design cap is ours |
 | Drawback allowed in **one** Clerk perk (Hypixel-style trade-off), max -10% and never on survival stats | adds flavour, never hurts progress |
@@ -57,9 +57,9 @@ Values are +% to the named skill's XP while you are on that island, unless said 
 | **4 Devastated Lands** | Forge Week | Smithing XP +25% (furnaces) | P1 |
 | | Ember Surge | event frequency x1.5, elite spawn x1.2 | P2 |
 | | Cinder Day | all gathering XP +10% | P1 |
-| | Hunter's Notice | slayer boss spawn cost -20% | P2 |
+| | Hunter's Notice | slayer XP +20% (updated 2026-10-06: was "slayer boss spawn cost -20%", a coin effect, Economy-Audit.md C8) | P2 |
 | **5 Dinosaur caves** | Fossil Fever | Mining XP +20% and mining double drops +5% | P1 |
-| | Rex Alert | slayer boss spawn cost -20% and elite spawn x1.3 | P2 |
+| | Rex Alert | bounty bar fills 25% faster (each qualifying kill counts x1.25) and elite spawn x1.3 (updated 2026-10-06: was "slayer boss spawn cost -20%", Economy-Audit.md C8; bounty bar = Slayers-Spec.md section 2) | P2 |
 | | Egg Hunt | pet XP +25%, egg chance on the zone's events x1.2 | P2 |
 | | Deep Dig | Exploration XP x1.5 (cave layer first visits) | P1 |
 | **Void Hiccup** (any zone, 1 in 10 days) | Hiccup: **Double Trouble** | a random zone special of its zone at **x2** value, and a random drawback of -5% movement speed | P1 |
@@ -76,7 +76,7 @@ Names are jokes in the Department voice (placeholders). A clerk is picked in a s
 | **Clerk Voss - "Safety Inspection"** | fall damage -25% | movement speed +4% | Stamina regen +10% (the accessory top-up mechanic) |
 | **Clerk Penwright - "Training Day"** | class XP +10% (P2) | ability use progress x1.2 (P2) | Mana regen +10% |
 | **Clerk Okonkwo - "Staff Picnic"** | Cooking XP +20% | campfire cooking cost -20% (sacks use) | food gives Stamina regen +10% (P2, UNVERIFIED food hooks) |
-| **Clerk Lindqvist - "Audit Week"** | slayer boss cost -15% (P2) | elite spawn x1.15 (P2) | Exploration XP +25% |
+| **Clerk Lindqvist - "Audit Week"** | slayer XP +15% (P2) (updated 2026-10-06: was "slayer boss cost -15%", a coin effect, Economy-Audit.md C8) | elite spawn x1.15 (P2) | Exploration XP +25% |
 | **Clerk Abara - "Casual Friday"** | pet XP +20% (P2) | movement speed +3% | Smithing XP +10% |
 | **Clerk Harrow - "Rush Season"** | all gathering XP +12% | **Drawback:** Stamina max -10% | farming double drops +3% |
 | **Clerk Dumont - "Open Door Policy"** | Exploration XP x1.5 | warp cooldown -50% (outposts) | fall damage -15% |
@@ -92,7 +92,7 @@ Rule: **a perk that does nothing yet must not be listed** (Skyy 2026-09-30), so 
 | **Zone resolver** | `zone:fn:of` Function(uuid) -> "1".."5" from the player's position and the island geometry (`Zone-Islands-Layout.md`); checked on a 2 s tick, published per player when it changes |
 | **Applying XP and drops** | publish into the existing `skill:bonus:<uuid>` map under source `special` (keys `xp.<skill>`, `dd.<skill>`); SkySkills clamps the sum. **No SkySkills change** if the key already exists (UNVERIFIED) |
 | **Speed / fall** | the movement protocol, one new source name `specials` (Booster spec 5.4: fields `pct`, `jump`, `fallDamage`) |
-| **Other effects (P2)** | read keys `special:val:<kind>:<zone>` Double (slayer cost, elite chance, event frequency, pet XP) by the mod that owns the effect. Plain `java.lang` types |
+| **Other effects (P2)** | read keys `special:val:<kind>:<zone>` Double (slayer XP, bounty-bar rate, elite chance, event frequency, pet XP) (updated 2026-10-06: "slayer cost" dropped, Economy-Audit.md C8) by the mod that owns the effect. Plain `java.lang` types |
 | **Board page** | SkyyMenu tab "The Board": today's five specials, the clerk and perks, countdown, "next" preview. Vanilla look. Action-bar hint on entering a zone: `Today: Harvest Festival +20% Farming XP`. No hover info |
 | **Admin** | `/special show`, `/special set <zone> <id>`, `/special clerk <id>`, `/special reroll`, `/special off`: every change is written to `config-changes.log` |
 | **Per profile?** | no; specials are server-wide. Each effect applies per player |
