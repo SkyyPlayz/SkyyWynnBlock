@@ -47,8 +47,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
-- [ ] **Capstone floors 4-7** - `research/cloud/Capstone-Dungeon-Spec.md` ships 3 floors; design floors 4-7 (themes, rooms, puzzles, bosses with phases,
-      Set piece drops from `research/cloud/Capstone-Sets.md`). Output: `research/cloud/Capstone-Floors-4-7.md`.
 
 
 ## Done (delete after logging - see the rules above)
@@ -61,3 +59,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Tab reveal + prestige scripts - 2026-10-06 - `research/cloud/Tab-Prestige-Scripts.md`
 - [x] Zone 4-5 materials - 2026-10-06 - `research/cloud/Zone-4-5-Materials.md`
 - [x] Light armor concept sheets - 2026-10-06 - `research/cloud/light-armor/`
+- [x] Capstone floors 4-7 - 2026-10-06 - `research/cloud/Capstone-Floors-4-7.md`
