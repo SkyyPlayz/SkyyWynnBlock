@@ -63,9 +63,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       Regeneration, Brawler, Runic, Stonehide, Razorfang, Feather, Lantern) with rarity frames/colours. Output: `research/cloud/accessory-art/`.
 - [ ] **Fish species catalog** - the species for `research/cloud/SkyyFishing-Spec-Draft.md`: per zone/biome/season (Dynamic Seasons) names, rarity,
       weight range, length, bite time, sell base, food family; lore-voice names. Output: `research/cloud/Fish-Species-Catalog.md`.
-- [ ] **Zone 1 starter town layout** - the main town around a vanilla temple (docs/answered/world.md R9): districts (Department of Arrivals desk, bank,
-      Bazaar, smith, Board, Event Vendor, warps, portal), sizes, a top-down ASCII/PNG map, NPC list from `research/cloud/NPC-Shops-Spec.md` and
-      `research/cloud/Barks-Signs-Tips.md`. Output: `research/cloud/Zone-1-Town-Layout.md`.
 - [ ] **Pets concept sheet** - pixel concepts for the pets in `research/cloud/Pets-Spec.md` (one per zone family + the dragon hatchling), same style.
       Output: `research/cloud/pet-art/`.
 
@@ -74,3 +71,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Tab-Economy refresh - 2026-10-06 - `research/cloud/Tab-Economy.md`
 - [x] Roadmap Mana table refresh - 2026-10-06 - `research/cloud/SkyyArmory-Roadmap.md`
 - [x] Cooking spec formula PR - 2026-10-06 - PR #10 (`research/Cooking-Skill-Spec.md`)
+- [x] Zone 1 starter town layout - 2026-10-06 - `research/cloud/Zone-1-Town-Layout.md`
