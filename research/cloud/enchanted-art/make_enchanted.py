@@ -702,47 +702,216 @@ def d_tomato(cv, seed=181):
     shade(cv, st, GREEN, 'grad')
 
 
+def tube(cv, pts, rp, seed=0, outline=True, spec=True):
+    """a round body that follows a curve: pts = [(x, y, radius), ...] sampled densely;
+    each pixel is lit as a cylinder across the nearest centre point (curved fruit, stems)."""
+    dense = []
+    for (x0, y0, r0), (x1, y1, r1) in zip(pts, pts[1:]):
+        n = max(2, int(math.hypot(x1 - x0, y1 - y0) * 2))
+        for k in range(n):
+            t = k / n
+            dense.append((x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, r0 + (r1 - r0) * t))
+    dense.append(pts[-1])
+    m = set()
+    for x, y, r in dense:
+        m |= ell(cv, x, y, max(0.8, r), max(0.8, r))
+
+    def light(x, y):
+        px, py = x + 0.5, y + 0.5
+        best = min(dense, key=lambda c: (px - c[0]) ** 2 + (py - c[1]) ** 2)
+        nx, ny = (px - best[0]) / max(1.0, best[2]), (py - best[1]) / max(1.0, best[2])
+        d2 = min(1.0, nx * nx + ny * ny)
+        lam = nx * LIGHT[0] + ny * LIGHT[1] + math.sqrt(1 - d2) * LIGHT[2]
+        return 0.08 + 0.95 * max(0.0, lam)
+    shade(cv, m, rp, 'flat', v=0.0, tex=light, bevel=0.0, outline=outline, spec=spec)
+    return m, dense
+
+
 def d_cotton(cv, seed=191):
-    st = thick(cv, [(30, 60), (32, 44)], 3)
-    shade(cv, st, ramp('#6a4a2e', 5), 'grad')
-    brp = ramp('#7a5634', 6)
-    wrp = ramp('#f2eef0', 6, light=0.1)
-    for (bx, by) in [(20, 30), (44, 30), (32, 20)]:
+    """three open cotton bolls on a woody branching stem: each boll = 4 fat white
+    locks with soft cool shadows between them, dry brown bract points behind,
+    two lobed leaves low on the stem."""
+    wood = ramp('#7a5434', 5)
+    bract = ramp('#6e4a2c', 6)
+    white = ramp('#f1eef0', 7, dark=0.42, light=0.12)
+    bolls = [(32, 16, 11.5, 0.15), (15, 32, 10.5, 0.9), (49, 32, 10.5, -0.6)]
+    # stem + branches first (behind everything)
+    for pts, w in (([(32, 63), (32, 50), (32, 40), (32, 26)], 4), ([(32, 47), (24, 42), (18, 38)], 3),
+                   ([(32, 45), (41, 41), (46, 38)], 3)):
+        shade(cv, thick(cv, pts, w), wood, 'grad', bevel=0.12)
+    # lobed leaves (3 lobes each) low on the stem
+    for side in (-1, 1):
+        lx, ly = 32 + side * 2, 54
+        base_a = PI if side < 0 else 0.0
+        lm = set()
+        for da, L in ((-0.55, 11), (0.0, 13), (0.55, 10)):
+            a = base_a - side * 0.35 + da * side
+            lm |= rell(cv, lx + math.cos(a) * L / 2, ly + math.sin(a) * L / 2 - 2, L / 2, 3.6, a)
+        shade(cv, lm, GREEN if side < 0 else DGREEN, 'grad', bevel=0.18)
+        for da, L in ((-0.55, 11), (0.0, 13), (0.55, 10)):
+            a = base_a - side * 0.35 + da * side
+            crack(cv, lm, [(lx, ly - 2), (lx + math.cos(a) * L * 0.8, ly - 2 + math.sin(a) * L * 0.8)],
+                  (GREEN if side < 0 else DGREEN)['f'][1])
+    for bx, by, r, rot in bolls:
+        # bract: 5 dry pointed sepals poking out between the locks
+        bm = set()
+        for k in range(5):
+            a = rot + k * 2 * PI / 5 + PI / 5
+            tip = (bx + math.cos(a) * (r + 3.5), by + math.sin(a) * (r + 3.5))
+            l = (bx + math.cos(a - 0.38) * r * 0.55, by + math.sin(a - 0.38) * r * 0.55)
+            rr = (bx + math.cos(a + 0.38) * r * 0.55, by + math.sin(a + 0.38) * r * 0.55)
+            bm |= poly(cv, [(bx, by), l, tip, rr])
+        shade(cv, bm, bract, 'grad', bevel=0.2)
+        # four locks
+        locks = []
+        um = set()
         for k in range(4):
-            a = k * PI / 2 + PI / 4
-            m = poly(cv, [(bx, by), (bx + math.cos(a - 0.4) * 9, by + math.sin(a - 0.4) * 9), (bx + math.cos(a) * 11, by + math.sin(a) * 11),
-                          (bx + math.cos(a + 0.4) * 9, by + math.sin(a + 0.4) * 9)])
-            shade(cv, m, brp, 'grad')
-    for (bx, by) in [(20, 30), (44, 30), (32, 20)]:
-        for (dx, dy, r) in [(-4, -2, 5.5), (4, -2, 5.5), (0, 3, 6), (0, -5, 5)]:
-            m = ell(cv, bx + dx, by + dy, r, r * 0.9)
-            shade(cv, m, wrp, 'sphere', cx=bx + dx - 1, cy=by + dy - 1, rx=r + 1, ry=r + 1)
-    for (bx, by) in [(22, 44), (40, 44)]:
-        leaf(cv, 31, 50, 14, 3.5, math.atan2(by - 50, bx - 31), DGREEN)
+            a = rot + k * PI / 2
+            lx, ly = bx + math.cos(a) * r * 0.42, by + math.sin(a) * r * 0.42
+            rr = r * 0.62
+            locks.append((lx, ly, rr, ell(cv, lx, ly, rr, rr * 0.94)))
+        # draw the lower / right locks first so the upper-left ones sit in front
+        for lx, ly, rr, lm in sorted(locks, key=lambda q: -(q[0] + q[1])):
+            shade(cv, lm, white, 'sphere', cx=lx - rr * 0.25, cy=ly - rr * 0.3, rx=rr * 1.15, ry=rr * 1.15,
+                  outline=False, noise=0.05, seed=seed)
+            um |= lm
+            # soft cool crease where this lock meets the ones already drawn behind it
+            for p in edge(lm):
+                q = (p[0] + 1, p[1] + 1)
+                if q in um and q not in lm:
+                    cv.put(q[0], q[1], white['f'][1])
+            for p in edge(lm):
+                if any((p[0] + dx, p[1] + dy) in um and (p[0] + dx, p[1] + dy) not in lm
+                       for dx, dy in ((1, 0), (0, 1), (-1, 0), (0, -1))):
+                    cv.put(p[0], p[1], white['f'][2])
+        # fluffy rim: a few 1-px tufts off the edge
+        for p in sorted(edge(um)):
+            if nz(p[0], p[1], seed + 3) < 0.10:
+                dx, dy = p[0] - bx, p[1] - by
+                d = max(1.0, math.hypot(dx, dy))
+                q = (int(round(p[0] + dx / d)), int(round(p[1] + dy / d)))
+                if cv.get(*q) is None:
+                    um.add(q)
+                    cv.put(q[0], q[1], white['f'][4])
+        outer_line(cv, um, white['o'])
+        # bright tops on each lock + dark seed-pit in the middle
+        for lx, ly, rr, lm in locks:
+            hx_, hy_ = int(lx - rr * 0.35), int(ly - rr * 0.4)
+            for q in ((hx_, hy_), (hx_ + 1, hy_), (hx_, hy_ + 1)):
+                if q in lm:
+                    cv.put(q[0], q[1], white['f'][-1])
+        cv.put(int(bx), int(by), white['f'][0])
+
+
+def grow(m):
+    return m | {(x + dx, y + dy) for x, y in m for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))}
 
 
 def d_rice(cv, seed=201):
-    straw = ramp('#a8b860', 6)
-    grain = ramp('#ece0b0', 6, light=0.2)
-    hull = ramp('#d6b86a', 6)
-    stalks = [[(30, 60), (26, 34), (20, 16), (12, 12)], [(32, 60), (33, 32), (36, 12), (44, 8)],
-              [(34, 60), (40, 36), (50, 22), (56, 22)]]
-    for s in stalks:
-        shade(cv, thick(cv, s, 3), straw, 'grad', bevel=0.1)
-    heads = set()
-    for i, s in enumerate(stalks):
-        (ax, ay), (bx, by) = s[2], s[3]
-        for k in range(7):
-            t = k / 6.0
-            x = s[1][0] + (bx - s[1][0]) * (0.35 + 0.65 * t)
-            y = s[1][1] + (by - s[1][1]) * (0.35 + 0.65 * t) + (t * t * 6 if i != 1 else t * 4)
+    """a small burlap sack, open, heaped with white rice grains; a tied rice
+    panicle (drooping golden heads) tucked in behind; a few grains spilled."""
+    straw = ramp('#a8b05a', 6)
+    hull = ramp('#d8b25a', 6)
+    sackc = ramp('#b48c58', 6)
+    rice = ramp('#f2ecd8', 6, dark=0.40, light=0.15)
+    # --- two rice panicles tucked in behind the heap, heads drooping out to each side
+    for (sx, sy), (tx, ty), (ex, ey) in (((34, 24), (40, 5), (58, 19)), ((24, 24), (20, 6), (5, 18))):
+        shade(cv, thick(cv, [(sx, sy), ((sx + tx) / 2, (sy + ty) / 2 + 1), (tx, ty)], 2), straw, 'grad', bevel=0.1)
+        arc = [(tx + (ex - tx) * t, ty + (ey - ty) * t - math.sin(t * PI) * 4) for t in [k / 9 for k in range(10)]]
+        for a_, b_ in zip(arc, arc[1:]):
+            for q in thick(cv, [a_, b_], 1):
+                cv.put(q[0], q[1], straw['f'][2])
+        gm = set()
+        sgn = 1 if ex > tx else -1
+        for k, (gx, gy) in enumerate(arc[1:]):
             for side in (-1, 1):
-                g = rell(cv, x + side * 2.5, y + 1.5, 2.4, 1.5, 1.2 * side)
-                shade(cv, g, grain if (k + side) % 2 else hull, 'grad', bevel=0.3, outline=False)
-                heads |= g
-    outer_line(cv, heads, hull['o'])
-    tie = rect(cv, 27, 46, 38, 49)
-    shade(cv, tie, GREEN, 'grad')
+                ang = (1.2 + side * 0.45) if sgn > 0 else (PI - 1.2 - side * 0.45)
+                g = rell(cv, gx + side * 1.4 * sgn, gy + 2.4, 2.3, 1.35, ang)
+                shade(cv, g, hull, 'grad', bevel=0.35, outline=False, level=-0.18 if (k + (side > 0)) % 2 else 0.0)
+                gm |= g
+        outer_line(cv, gm, hull['o'])
+    # --- the sack: rounded body, pinched neck, folded-open lip
+    body = ell(cv, 29, 46, 19, 15) | poly(cv, [(14, 44), (17, 32), (41, 32), (44, 44)])
+    def weave(x, y):
+        return (-0.07 if (x % 3 == 0) else 0.0) + (-0.05 if (y % 3 == 1) else 0.03) + (nz(x, y, seed) - 0.5) * 0.1
+    shade(cv, body, sackc, 'sphere', cx=24, cy=40, rx=24, ry=20, tex=weave)
+    # seam + stitches down the right side, a patch stripe
+    for y in range(36, 58, 3):
+        for q in ((41, y), (42, y + 1)):
+            if q in body and q not in edge(body):
+                cv.put(q[0], q[1], sackc['f'][0])
+    for x in range(16, 43):
+        for y in (49, 50):
+            if (x, y) in body and (x, y) not in edge(body):
+                cv.put(x, y, mix(cv.get(x, y)[:3], hx('#6e8a46'), 0.55))
+    lip = ell(cv, 28, 28, 17, 6.5)
+    shade(cv, lip, sackc, 'grad', bevel=0.25, noise=0.06, seed=seed + 1)
+    inner = ell(cv, 28, 28, 14, 4.2)
+    shade(cv, inner, sackc, 'flat', v=0.05, outline=False, bevel=0)
+    # --- the heap of rice in the mouth (dome + individual grains, no grid)
+    heap = (ell(cv, 28, 26, 13, 9) & rect(cv, 0, 0, 63, 29)) | (inner & rect(cv, 0, 26, 63, 63))
+    shade(cv, heap, rice, 'sphere', cx=24, cy=21, rx=15, ry=12, outline=False)
+    outer_line(cv, heap - inner, rice['o'])
+    taken = set()
+    for k in range(260):
+        x = 15 + int(nz(k, 1, seed + 2) * 27)
+        y = 18 + int(nz(k, 2, seed + 2) * 12)
+        diag = nz(k, 3, seed + 2) < 0.4
+        cells = [(x, y), (x + 1, y)] if not diag else [(x, y), (x + 1, y - 1)]
+        if any(c not in heap or c in edge(heap) or c in taken for c in cells):
+            continue
+        if any((c[0] + dx, c[1] + dy) in taken for c in cells for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+            continue
+        lit = (x - 28) * 0.8 + (y - 22) < 3
+        cv.put(cells[0][0], cells[0][1], rice['f'][5 if lit else 4])
+        cv.put(cells[1][0], cells[1][1], rice['f'][4 if lit else 3])
+        sh = (cells[0][0], cells[0][1] + 1)
+        if sh in heap and sh not in taken:
+            cv.put(sh[0], sh[1], rice['f'][1 if lit else 0])
+        taken |= set(cells) | {sh}
+    # --- twine round the neck with a knot and two ends
+    tw = ramp('#8a6a3a', 5)
+    band = (ell(cv, 28, 34, 16, 3.2) - ell(cv, 28, 32.5, 16, 2.4)) & body
+    shade(cv, band, tw, 'grad', bevel=0.2, outline=False)
+    knot = ell(cv, 16, 35, 2.4, 2.2)
+    shade(cv, knot, tw, 'sphere', cx=15, cy=34, rx=3, ry=3)
+    for pts_ in ([(15, 37), (12, 42), (13, 46)], [(17, 37), (18, 43)]):
+        shade(cv, thick(cv, pts_, 1), tw, 'flat', v=0.5, bevel=0, outline=False)
+    # --- spilled grains in front, bottom-right (3 x 2 px each, own outline)
+    gm = set()
+    for (x, y, d) in [(48, 56, 0), (52, 59, 1), (56, 55, 0), (45, 60, 0), (57, 60, 1), (52, 53, 1)]:
+        cells = [(x, y), (x + 1, y), (x + 2, y), (x, y + 1), (x + 1, y + 1), (x + 2, y + 1)] if not d else \
+                [(x + 1, y), (x + 2, y), (x, y + 1), (x + 1, y + 1), (x + 2, y + 1), (x, y + 2), (x + 1, y + 2)]
+        g = set(cells)
+        shade(cv, g, rice, 'grad', bevel=0.0, outline=False, level=0.15)
+        gm |= g
+    outer_line(cv, grow(gm), rice['o'])
+
+
+def d_chilli(cv, seed=231):
+    """one curved red chilli, glossy, green calyx + hooked stem (Crop-Armor-Spec Chilli)."""
+    red = ramp('#d8301e', 6, light=0.55)
+    body = [(44, 16, 7.0), (40, 26, 7.4), (33, 37, 6.6), (25, 46, 5.4), (17, 53, 3.8), (10, 57, 2.2), (6, 58, 0.9)]
+    m, dense = tube(cv, body, red, seed)
+    # gloss streak + a second small one, wrinkles near the shoulder
+    for x, y, r in dense[4:-12:3]:
+        hx_, hy_ = int(round(x - r * 0.45)), int(round(y - r * 0.5))
+        if (hx_, hy_) in m and (hx_, hy_) not in edge(m):
+            cv.put(hx_, hy_, red['f'][-1])
+    for x, y, r in dense[::6]:
+        q = (int(round(x + r * 0.55)), int(round(y + r * 0.25)))
+        if q in m and q not in edge(m) and y < 40:
+            cv.put(q[0], q[1], red['f'][1])
+    crack(cv, m, [(38, 20), (35, 27)], red['f'][2])
+    # calyx (cap) + stem
+    cal = set()
+    for a in (-2.4, -1.75, -1.1, -0.45, 0.25):
+        cal |= poly(cv, [(46, 12), (46 + math.cos(a - 0.35) * 5, 12 + math.sin(a - 0.35) * 5),
+                         (46 + math.cos(a) * 9.5, 13 + math.sin(a) * 6 + 5),
+                         (46 + math.cos(a + 0.35) * 5, 12 + math.sin(a + 0.35) * 5)])
+    cal |= ell(cv, 45, 12, 6.5, 4.2)
+    shade(cv, cal, DGREEN, 'grad', bevel=0.22)
+    tube(cv, [(46, 10, 2.0), (48, 5, 1.8), (52, 3, 1.5), (55, 5, 1.3)], GREEN)
 
 
 def d_potato(cv, seed=211):
@@ -1002,6 +1171,7 @@ ITEMS = [
     ('turnip', 'Ench. Turnip', 'Farming', d_turnip),
     ('aubergine', 'Ench. Aubergine', 'Farming', d_aubergine),
     ('tomato', 'Ench. Tomato', 'Farming', d_tomato),
+    ('chilli', 'Ench. Chilli', 'Farming', d_chilli),
     ('cotton', 'Ench. Cotton', 'Farming', d_cotton),
     ('rice', 'Ench. Rice', 'Farming', d_rice),
     ('potato', 'Ench. Potato', 'Farming', d_potato),

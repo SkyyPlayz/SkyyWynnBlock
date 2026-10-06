@@ -56,11 +56,10 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
       2x-4x detail rule (docs/answered/gear.md 2026-10-06 art review), designs unchanged, keep v1 files. Output: the two folders' v2 sheets.
 - [ ] **Fish species icons** - one 64x64 icon per species in `research/cloud/Fish-Species-Catalog.md` (39 + junk / Lost Property), same art rules.
       Output: `research/cloud/fish-art/`.
-- [ ] **Enchanted icons touch-up** - redraw Enchanted Rice and Cotton (weakest per `research/cloud/enchanted-art/README.md`) and add the two new crop
-      Enchanted forms from `research/cloud/Crop-Armor-Spec.md` if missing. Output: regenerated `research/cloud/enchanted-art/`.
 
 
 ## Done (delete after logging - see the rules above)
 - [x] Ore regrow spec - 2026-10-06 - `research/cloud/Ore-Regrow-Spec.md`
 - [x] Capstone sets slot fix - 2026-10-06 - `research/cloud/Capstone-Sets.md` + `research/cloud/capstone-set-art/`
 - [x] Accessory icons v2 margin fix - 2026-10-06 - `research/cloud/accessory-art/`
+- [x] Enchanted icons touch-up - 2026-10-06 - `research/cloud/enchanted-art/`
