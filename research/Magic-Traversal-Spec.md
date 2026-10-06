@@ -327,3 +327,13 @@ without the new Armory prints the old lines). Rollback floors unchanged. SkyyMen
 10. Cooldowns: none (default; Mana + hold time) - or a `blink.cooldown` of 2 s?
 11. Glass / fences / leaves as blink blockers: block (default, like walking) - or let the blink pass transparent blocks?
 12. `quick.life` row: hide (default) or remove; `hop.mode` / `staff.stamina` shown as read-only info rows (default yes).
+
+## 8. Skyy's answers 2026-10-05 (BEAT the defaults above - docs/answered/classes.md, LOCKED 2026-10-05)
+
+- A blink that does not move you costs NOTHING (no Mana, no Stamina) - not "spend" as in question 1.
+- Every traversal costs Mana AND Stamina. Magical ones (staff blink, wand hop) = 2 parts Mana : 1 part Stamina (e.g. 10 + 5, 20 + 10);
+  physical ones (Monk ...) more Stamina than Mana. Section 1's Stamina removal applies to the quick / normal staff casts only.
+- Wand heal orb heals EVERYONE in range who is not hostile, party members MORE (pick a default ratio, e.g. party 100% / others 50%, as a row);
+  any traversal lock-on targets party members only.
+- Wand quick-shot pierce has NO cap - only its range (16 blocks) limits it.
+- Everything else = the recommended defaults in section 7.

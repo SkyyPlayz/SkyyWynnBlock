@@ -34,7 +34,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 3. DONE 2026-10-05: SkyyBazaar 0.1.4 progression prices (incl. seeds + saplings by tier) - waiting for Skyy's test.
 4. DONE 2026-10-05: SkyyCooking 0.1.5 + 0.1.6 (XP by difficulty, Flour 140) - waiting for Skyy's test.
 5. SkyyArmory 0.1.1 + SkyyClasses 0.1.12 + SkyyGear 0.2.4 - staff blink + light trail, wand hop + burst + heal orb, quick-shot ranges /
-   pierce, no staff Stamina. SPEC DONE 2026-10-05: research/Magic-Traversal-Spec.md (12 questions with defaults in OPEN-QUESTIONS classes).
+   pierce, no staff Stamina. SPEC DONE 2026-10-05: research/Magic-Traversal-Spec.md + Skyy's answers (its section 8: free no-move blink,
+   traversals cost Mana 2 : Stamina 1, heal orb heals everyone / party more, pierce uncapped).
    Full round after the reset (deploy order Classes -> Armory -> Gear). NOTE: Gear 0.2.4 was 'tool levels' - renumber (tool levels 0.2.5, loot 0.2.6).
 6. DONE 2026-10-05: SkyyParty 0.1.7 + SkyyEssentials 0.1.8 TPA buttons - waiting for Skyy's 2-player test.
 7. DONE 2026-10-05: SkyyAccessories 0.5.5 Lantern edges, SkyyExploration 0.2.3 page guard, SkyyMenu 0.3.7 text. LEFT: a page guard for the
@@ -43,6 +44,7 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
    armor-box hide = YES) + SkyySkills next - ultracode round, deploy + roll back together.
 9. SkyyHud minimap widget (BetterMap joins the pack, stats off; downscale the engine's 96 px tiles on its own worker thread).
 10. Stats page (Your Profile -> SkyBlock-style stats; spec = cloud task -> `research/cloud/Stats-Page-Spec.md`), multi-mod build.
+- NEW (Skyy 2026-10-05): SkyyGear WEAPON SPEED tiers Slow / Medium / Fast / Super Fast, same DPS (per-hit damage scales) - next SkyyGear pass (docs/answered/gear.md).
 - Also queued: the CLASS-ABILITY SPEC (proposes every class's A2 alternative + two improved A1 options for Skyy to pick, + the engine probe:
   glide / slow fall, air-jump timing, dragging mobs, ally lock-on, absorb shield, beams / tethers, invisibility); the Monk class; /island
   STARTER SHARDS (SkyyIslands); WORLDGEN STAGE 2 spec -> build; the Accessory Table (paused - ask Skyy); small follow-ups (Archery 15+ extra crossbow bolts + the late-game holstered reload -
