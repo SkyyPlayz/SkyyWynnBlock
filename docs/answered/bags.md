@@ -58,3 +58,10 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - LOCKED 2026-10-06 (Skyy, spec Q2): keep the locked log prices ("Keep locked prices").
 - LOCKED 2026-10-06 (Skyy, spec Q3): Enchanted ratio "Always 100" (100 base = 1 Enchanted, works from bags too; no 160 probe needed).
 - LOCKED 2026-10-06 (Skyy, spec Q4): launch with 18 Enchanted items, Enchanted Mithril later with the Mithril veins, no Enchanted Blocks yet ("Yes").
+- LOCKED 2026-10-06 (Skyy, research/Gathering-Progression-Spec.md Q5): "Add hard gates" -> hard pickaxe gates on Iron / Thorium / Cobalt ore too (not speed-only); needs the bytecode read + probe P6 (Quality on an ore block) to confirm it works.
+- LOCKED 2026-10-06 (Skyy, spec Q6): "Wait for 0.7" -> no Zone 4 Mithril veins; Mithril collection rows + Mithril gathering gear stay hidden until Hytale 0.7.
+- LOCKED 2026-10-06 (Skyy, spec Q7): next-tool gate at collection IV (S / R curves) and III (E curve); armor sets cost about their unlock threshold (6 / 3 / 1 Enchanted) ("Yes").
+- LOCKED 2026-10-06 (Skyy, spec Q9): no grandfather grant when tool locks turn on ("No grant").
+- LOCKED 2026-10-06 (Skyy, spec Q8): seed recipes gate on the previous pair's key collection III, AND the Bazaar refuses to sell a seed until its recipe is unlocked.
+- LOCKED 2026-10-06 (Skyy, spec Q10 tweak): "Enchanted premium, and fortune on all tiers" -> Enchanted items sell a bit ABOVE 100x base (a premium, capped below any buy -> compress -> sell loop, like the processed-goods 22% rule); Fortune is spread over ALL tiers of the key collections, not only the top.
+- LOCKED 2026-10-06 (Skyy, spec Q11): Thorium hoe bench tier 6 -> 3; Goldenwood armor Lv 45-49 ("Yes to both").
