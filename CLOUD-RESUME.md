@@ -55,9 +55,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [ ] **Weapon speed tiers** - Skyy 2026-10-05: weapon speed tiers Slow / Medium / Fast / Super Fast with the same DPS (per-hit damage scales).
       Assign every weapon type of `research/cloud/SkyyArmory-Roadmap.md` section 5 a tier, compute per-hit multipliers from attack times (keep
       the engine values UNVERIFIED), and show how crits, Strength, Mana-per-cast and on-hit effects scale. Output: `research/cloud/Weapon-Speed-Tiers.md`.
-- [ ] **Capstone sets** - the Set rarity (green) drops only in the capstone (Capstone-Dungeon-Spec 5). Design 3 sets (3 pieces each, Voidglass and
-      Aetherium tiers, one per armor type): names, lore lines in the Department voice, the 2-piece / 3-piece bonuses within the SkyyGear stat catalog
-      (read-only). Output: `research/cloud/Capstone-Sets.md`.
 - [ ] **Economy faucet / sink audit** - read every `research/cloud/*.md` spec and `research/Server-Setup-Research.md`; list each coin faucet and sink with
       a rough size per hour, check the R3 rules, the Bazaar loop (22.2% rule), the Tab (20M per day), prestige. Flag anything that breaks. Output:
       `research/cloud/Economy-Audit.md`.
@@ -80,3 +77,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Zone specials / mayor lite - 2026-10-06 - `research/cloud/Zone-Specials-Spec.md`
 - [x] SkyyArmory roadmap - 2026-10-06 - `research/cloud/SkyyArmory-Roadmap.md`
 - [x] Foraging armor design - 2026-10-06 - `research/cloud/Foraging-Armor-Design.md`
+- [x] Capstone sets - 2026-10-06 - `research/cloud/Capstone-Sets.md`
