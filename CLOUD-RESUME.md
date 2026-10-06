@@ -58,8 +58,6 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
       2 px margin, regenerate `icons-v2/` + `accessory-sheet-v2.png`. Output: the regenerated files.
 - [ ] **Capstone sets slot fix** - vanilla armor slots look like Head / Chest / Hands / Legs (no Boots, UNVERIFIED): rework the 3-of-4 piece choice in
       `research/cloud/Capstone-Sets.md` + the art in `research/cloud/capstone-set-art/` to fit 4 real slots. Output: edited spec + art.
-- [ ] **Ore regrow spec** - `research/cloud/WorldGen-Stage-2-Draft.md` Q1: shared-world ore runs out (one player = 23% of Zone 1 Iron); spec vein regrow
-      (timers per tier, anti-camp, player-placed blocks never touched, chunk load rules, Ember density Q2). Output: `research/cloud/Ore-Regrow-Spec.md`.
 - [ ] **Fish species icons** - one 64x64 icon per species in `research/cloud/Fish-Species-Catalog.md` (39 + junk / Lost Property), same art rules.
       Output: `research/cloud/fish-art/`.
 - [ ] **Enchanted icons touch-up** - redraw Enchanted Rice and Cotton (weakest per `research/cloud/enchanted-art/README.md`) and add the two new crop
@@ -67,3 +65,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 
 
 ## Done (delete after logging - see the rules above)
+- [x] Ore regrow spec - 2026-10-06 - `research/cloud/Ore-Regrow-Spec.md`
