@@ -50,7 +50,8 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       segmented upper-arm / elbow / forearm guards and finger-less hand guards, a brown leather diagonal chest strap and a wide double waist
       belt with brass buckles + a belt pouch, a skirt of long rectangular leather tassels (front / side / back), small brass leaf-shaped accent
       pieces. Make ORIGINAL pixel-art concept sheets (Python + Pillow, generated - no copied art): one front-view chest + full-set preview
-      per tier, Hytale-ish chunky pixel style: tier 1 plain black leather; Copper = small copper trims (buckles, collar + shoulder rims,
+      per tier, Hytale-ish chunky pixel style (CORRECTION Skyy: tier 1 = vanilla leather, NO design; the black leather STARTS at
+      COPPER): Copper = black leather + small copper trims (buckles, collar + shoulder rims,
       accents); Iron, Thorium, Cobalt, Adamantite, Mithril, Onyxium = the same black-leather base, metal accents in that metal's colours AND
       shapes that echo that metal's vanilla armor style (web screenshots of Hytale's metal armors; mark guesses UNVERIFIED). Use sub agents
       if useful (an Opus agent for the image script). Output: `research/cloud/light-armor/` (PNGs + `README.md` with one note per tier +
