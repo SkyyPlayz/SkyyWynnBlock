@@ -36,17 +36,6 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **Stats page spec (SkyBlock-style "Your Profile" stats)** - Skyy 2026-10-03 (playing, screenshot of the SkyWynn Menu's Your Profile
-      tile): "this menus should show me all my stats with my current gear, accessory's skill and class bonuses. and everything. like on
-      skyblock it should show health, mana, stamina, strength, crit chance, crit damage, mining and foraging fortune. ect. pretty much all
-      the stats." Today the tile shows purse / bank / skill levels / bag counts and its text is cut off ("Skills: Mining 6, Forag...").
-      Design a vanilla-look Stats page (Your Profile -> Stats; tools/skyyui.py + research/Vanilla-UI-Style-Guide.md): every stat with its
-      live total and a per-source breakdown on hover (gear worn + held, accessories, skills, class, trees, food buffs, base). Inventory the
-      stats each mod really has from the build scripts (SkyyGear stat keys + GearFx, SkyyAccessories effects, SkyySkills skill / class
-      bonuses + /skills stats, SkyyClasses, SkyyTrees tree:fn:bonus nodes, SkyyCooking buffs, vanilla Health / Mana / Stamina / armor),
-      which exist today vs later (Mining / Foraging / Farming Fortune, Mining / Chopping Power from the tool-levels spec), SkyBlock's stat
-      list for comparison, and a bridge contract (each mod publishes e.g. stats:contrib:<Mod> with plain java types; SkyyMenu sums and
-      draws), build parts + versions. Output: `research/cloud/Stats-Page-Spec.md`.
 - [ ] **Minimap widget UX** - our own minimap becomes a SkyyHud widget that needs BetterMap and reuses its map (DapperMap lagged: its tick ran
       40-57 ms on the world thread). Design the settings Skyy liked in DapperMap (zoom, size, circle / square, rotation, refresh speed,
       resolution, markers, colours; NO info panel), HUD-editor placement, defaults, a performance budget, marker throttles. Design only - the
@@ -89,3 +78,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Zone islands layout (one world) - 2026-10-06 - `research/cloud/Zone-Islands-Layout.md`
 - [x] Starter shards plan 2 - 2026-10-06 - `research/cloud/Starter-Shards-Plan-2.md`
 - [x] Loot box design - 2026-10-06 - `research/cloud/Loot-Box-Design.md`
+- [x] Stats page spec - 2026-10-06 - `research/cloud/Stats-Page-Spec.md`
