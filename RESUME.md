@@ -51,8 +51,8 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
   anyone, the bracketed bonus only for your class's type; each family covers Lv 1-49 - rides the mob-curve round (docs/answered/gear.md).
 - NEW (Skyy 2026-10-06): FISHING = our own mod (bench, hook / line / sinker / rod / reel, click-bar minigame, length + weight, collections,
   treasure; ideas from Angler's Almanac + HyFishing) - cloud spec draft first; FOOD = all vanilla foods + faster eating / hits don't cancel;
-  PACK + HyFishing, Dynamic Seasons, Advanced Farming (pinned 2026-10-06; DEPLOY PENDING - game was running: run backup_deploy + deploy_set --yes
-  when closed; then check oak leaves still drop saplings). POTIONS focused + flat by grade, FOODS mixed by ingredient family.
+  PACK + HyFishing, Dynamic Seasons, NoCube's Orchard (pinned 2026-10-06; DEPLOY PENDING - game was running: run backup_deploy +
+  deploy_set --yes when closed). Advanced Farming NOT added - its tools go into ours. POTIONS focused + flat by grade, FOODS mixed by ingredient family.
 - NEW (Skyy 2026-10-06): LOOT - drop-only vanilla gear ranked into the unidentified pool, item decided AT IDENTIFY, a bit more mob
   drops, Wynncraft vanishing / respawning surface loot chests (never player chests). Cloud revises the loot spec; local lists the gear.
 - NEW BIG DIRECTION (Skyy 2026-10-05): GATHERING PROGRESSION LADDER like SkyBlock - tier the Farming / Mining / Foraging materials (group
