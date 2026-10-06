@@ -47,16 +47,23 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
+- [ ] **Questions digest for Skyy** - collect every "Questions for Skyy" row from the 2026-10-06 `research/cloud/*.md` drafts (`research/cloud/LOG.md`
+      lists them) into one prioritized list: blockers for the next local builds first, each with its default and the file. Output: `research/cloud/Questions-Digest-1006.md`.
+- [ ] **Apply the gathering reconciliation** - make the old -> new edits listed in `research/cloud/Gathering-Numbers-Reconciled.md` to the cloud drafts it
+      names (only files under `research/cloud/`; anything outside goes in a PR). Output: the edited drafts + `research/cloud/Gathering-Reconciliation-Applied.md` (what changed).
+- [ ] **Cloud drafts consistency pass** - fold today's findings back into older cloud drafts: Archer Holster at Lv 75 (`research/cloud/Class-Tree-Paths.md`),
+      Zone 5.5 "Go home" vs the Paid-in-Full gate (`research/cloud/Story-Script-Zones-2-5.md`), zone-special slayer discount = coin effect (Economy-Audit C8),
+      Spellbook class gate (Mage, not Priest). Output: the edits + `research/cloud/Consistency-Pass-1006.md`.
+- [ ] **Light armor helmet options** - Skyy's reference has no helmet; draw 3 helmet options (hood with metal rim, half-mask cowl, open leather cap) for
+      Copper and Onyxium with the same script style (`research/cloud/light-armor/make_sheets.py`). Output: `research/cloud/light-armor/helmets.png` + README note.
+- [ ] **Heavy armor tier 1 concept** - HEAVY ARMOR tier 1 = a heavy leather set below Copper (vanilla Armor_Leather_Heavy, restyle): concept sheet in the
+      light-armor script style + notes. Output: `research/cloud/heavy-armor/`.
+- [ ] **Crude Robe concept** - CLOTH tier 1 = Crude Robe (Fibre + green crystal), the green hooded mage-robe look in words (docs/answered/gear.md 2026-10-05):
+      concept sheet in the same style. Output: `research/cloud/cloth-armor/`.
+- [ ] **Foraging armor concept sheets** - Wood + Softwood..Goldenwood (`research/cloud/Foraging-Armor-Design.md` section 7: bark plates, vine trims,
+      sap veins, echoing Copper..Onyxium shapes). Output: `research/cloud/foraging-armor/`.
+- [ ] **Mining + Farming armor concept sheets** - from `research/cloud/Gathering-Armor-Mining-Farming.md` looks (miner's leather + lamp helmet; straw/linen
+      farmer clothes). Output: `research/cloud/gathering-armor-art/`.
 
 
 ## Done (delete after logging - see the rules above)
-- [x] Spellbook ladder - 2026-10-06 - `research/cloud/Spellbook-Ladder.md`
-- [x] Loot round revision - 2026-10-06 - `research/cloud/Loot-Round-Revision.md`
-- [x] Bank + Tab calibration - 2026-10-06 - `research/cloud/Bank-Tab-Calibration.md`
-- [x] Gathering numbers reconciliation - 2026-10-06 - `research/cloud/Gathering-Numbers-Reconciled.md`
-- [x] Kunai ladder - 2026-10-06 - `research/cloud/Kunai-Ladder.md`
-- [x] Archer bolts + holster - 2026-10-06 - `research/cloud/Archer-Bolts-Holster.md`
-- [x] Tab reveal + prestige scripts - 2026-10-06 - `research/cloud/Tab-Prestige-Scripts.md`
-- [x] Zone 4-5 materials - 2026-10-06 - `research/cloud/Zone-4-5-Materials.md`
-- [x] Light armor concept sheets - 2026-10-06 - `research/cloud/light-armor/`
-- [x] Capstone floors 4-7 - 2026-10-06 - `research/cloud/Capstone-Floors-4-7.md`
