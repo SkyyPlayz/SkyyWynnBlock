@@ -42,6 +42,9 @@ SET = [
     # vanilla UI pass (2026-09-29): DEV/TEST mod - /skyprobe (admin only) opens the shared kit's probe pages so Skyy can confirm the
     # vanilla look works inline before any restyled page ships. Move it to RETIRED once the probe results are in.
     ("SkyyUiProbe", "0.4"),
+    # gathering probe pack P0 (2026-10-06, research/Gathering-Progression-Spec.md): op-only dev mods for ONE test session - remove BOTH after Skyy's
+    # test. SkyyGatherProbeB-0.1.jar is built into SkyyGatherProbe/ and moved to SkyyGatherProbeB/ by hand.
+    ("SkyyGatherProbe", "0.1"), ("SkyyGatherProbeB", "0.1"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
