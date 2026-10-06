@@ -342,7 +342,7 @@ Setup entry each.
 
 - Wisdom is sent as a fraction under one source name, `accessories.boosters` (0.03 = +3%). SkyySkills clamps the sum (XP 0 to 5,
   double drops 0 to 1, VERIFIED); `skill:bonus` is a per-source map, as SkyyTrees uses it with source `trees`.
-- Before building, check the Fortune numbers against the skills' own double-drop perk (cap `perk.doubleDropMax` 1.0).
+- Checked 2026-10-06: Rare +3 / Legendary +6 stays; accessory Fortune cap 10 (`accessories.fortune.cap`); no swing line (see `research/cloud/Gathering-Numbers-Reconciled.md`).
 - Leech gets its numbers once Skyy sets the Life Steal shape; when it does, keep its Legendary step within the 48%-of-gear-max rule (1.5).
   (The old draft ran Leech from Rare to Fabled; Skyy's lock puts every line on Normal to Legendary.)
 - Cooking Wisdom works the same way if Skyy wants a cooking line.
