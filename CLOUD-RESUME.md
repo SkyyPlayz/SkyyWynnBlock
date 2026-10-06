@@ -36,11 +36,6 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **SkyBlock gathering progression research** - web research (wiki + guides) on how Hypixel SkyBlock's Farming, Mining and Foraging
-      ladders work: every collection's tier amounts + what each tier unlocks (recipes, tools, armor, minions, sacks, enchanted items, perks),
-      the Enchanted material ratios (160 base = 1 Enchanted, Enchanted blocks ...) and which materials have them, how islands / zones gate
-      the next tier, tools + armor per tier (e.g. foraging axes, Park islands, mining pickaxes / Deep Caverns, farming hoes / armor), and
-      fortune / speed stats. Tables, cite pages. Output: `research/cloud/SkyBlock-Gathering-Progression.md`.
 - [ ] **SkyWynn gathering tiers draft** - from repo data only: the material tiers already decided (docs/answered/economy.md: metals,
       woods T1-T5, crops in vanilla Farming Bench order; the Farmer's Workbench wood ladder Softwood -> Goldenwood in docs/answered/gear.md),
       the collections that exist (`add(` lines in SkyyCollections/build_skyycollections_0.2.6.py), the zone bands (Zone 1 1-20, 2 20-30,
@@ -123,3 +118,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 ## Done (delete after logging - see the rules above)
 
 - [x] Class ability spec draft - 2026-10-06 - `research/cloud/Class-Ability-Spec-Draft.md`
+- [x] SkyBlock gathering progression research - 2026-10-06 - `research/cloud/SkyBlock-Gathering-Progression.md`
