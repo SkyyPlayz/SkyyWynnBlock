@@ -11,6 +11,9 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 
 ## Still open (newest at the bottom of each topic)
 
+### project
+- allow a SMOKE-TEST SERVER before each deploy (habit 6 'prove it'): start HytaleServer.jar offline on a COPY of the test world in tools/dev/scratch/, check every '[Skyy...] ready' line + errors, stop it - never the real game / world / saves? Today's rule says never start the game. [recommended yes - docs/log/2026-10.md 2026-10-06]
+
 ### mobs
 
 ### skills
