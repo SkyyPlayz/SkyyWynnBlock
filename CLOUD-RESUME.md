@@ -60,8 +60,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       cancel eating - recommend one) + Skyy's POTION vs FOOD design (docs/answered/skills.md 'LOCKED 2026-10-06 ... POTIONS'):
       focused potions with flat numbers by grade, mixed foods with family focus (veggies HP, fruit Mana, meat Stamina, mushrooms bonus
       effects, combos stack). Output: `research/cloud/Food-Expansion-Draft.md`.
-- [ ] **Questions digest for Skyy** - collect every "Questions for Skyy" row from the 2026-10-06 `research/cloud/*.md` drafts (`research/cloud/LOG.md`
-      lists them) into one prioritized list: blockers for the next local builds first, each with its default and the file. Output: `research/cloud/Questions-Digest-1006.md`.
 - [ ] **Light armor helmet options** - Skyy's reference has no helmet; draw 3 helmet options (hood with metal rim, half-mask cowl, open leather cap) for
       Copper and Onyxium with the same script style (`research/cloud/light-armor/make_sheets.py`). Output: `research/cloud/light-armor/helmets.png` + README note.
 - [ ] **Heavy armor tier 1 concept** - HEAVY ARMOR tier 1 = a heavy leather set below Copper (vanilla Armor_Leather_Heavy, restyle): concept sheet in the
@@ -78,3 +76,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Cloud drafts consistency pass - 2026-10-06 - `research/cloud/Consistency-Pass-1006.md`
 - [x] NoCube + Aures mods survey - 2026-10-06 - `research/cloud/NoCube-Mods-Survey.md`
 - [x] Apply the gathering reconciliation - 2026-10-06 - `research/cloud/Gathering-Reconciliation-Applied.md`
+- [x] Questions digest for Skyy - 2026-10-06 - `research/cloud/Questions-Digest-1006.md`
