@@ -36,5 +36,8 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
   The class-ability spec PROPOSES them after the reset, then you pick. [proposals pending; research/classes/<Class>.md]
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]
 
+### pets
+- DRAGON as a pet with Aures' Dragon Nestkeeper: our secondary pet slot summons their dragon, or their mod owns the dragon and our slot links it, or our own dragons later? [(1) summon via our slot if Aures allows + it works, else (2) - docs/answered/pets.md 2026-10-06; decide after the survey + Aures' answer]
+
 ### social
 - how a player raises the profile cap above 6 (likely ranks). [parked - no way above 6 yet]
