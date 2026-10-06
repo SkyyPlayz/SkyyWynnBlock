@@ -47,17 +47,24 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
+- [ ] **Magic + new weapons concept sheet** - icons/side views in the `research/cloud/light-armor/make_sheets.py` pixel style: metal wands (style B: wood
+      handle + metal head, LOCKED), staffs, spellbooks (`research/cloud/Spellbook-Ladder.md`), Soul Orb cages (`research/cloud/Soul-Orb-Spec.md`), kunai
+      (`research/cloud/Kunai-Ladder.md`), Bo staff + fists (`research/cloud/Monk-Kit-Spec.md`) for Copper..Onyxium. Output: `research/cloud/weapon-art/`.
+- [ ] **Accessory icons sheet** - one icon per booster line x 4 rarities (`research/Booster-Accessories-Spec.md` 2.x: Health, Stamina, Mana, Speed,
+      Regeneration, Brawler, Runic, Stonehide, Razorfang, Feather, Lantern) with rarity frames/colours. Output: `research/cloud/accessory-art/`.
+- [ ] **Fish species catalog** - the species for `research/cloud/SkyyFishing-Spec-Draft.md`: per zone/biome/season (Dynamic Seasons) names, rarity,
+      weight range, length, bite time, sell base, food family; lore-voice names. Output: `research/cloud/Fish-Species-Catalog.md`.
+- [ ] **Tab-Economy refresh** - rewrite `research/cloud/Tab-Economy.md` sections 2-5 and 7-10 to the `research/cloud/Bank-Tab-Calibration.md`
+      recommendations (Void Marks display, tab.perHour, interest per online day); keep Skyy's lines word for word. Output: the edited file + a LOG line.
+- [ ] **Roadmap Mana table refresh** - re-run `research/cloud/SkyyArmory-Roadmap.md` section 6 with the SkyyArmory-Spec 15.4 Mage/Priest pool rows
+      (10 per level for Mage) and `research/cloud/Weapon-Speed-Tiers.md` mana scaling; align with `research/cloud/Spellbook-Ladder.md`. Output: the edited file.
+- [ ] **Cooking spec formula PR** - `research/Cooking-Skill-Spec.md` 2.2 / 4.1 still use 2^(Grade/5); the locked rule is x(1 + 0.32 x Grade)
+      (`research/cloud/Food-Expansion-Draft.md`). PR "[cloud] ..." fixing the formula and its tables. Output: PR + LOG line.
+- [ ] **Zone 1 starter town layout** - the main town around a vanilla temple (docs/answered/world.md R9): districts (Department of Arrivals desk, bank,
+      Bazaar, smith, Board, Event Vendor, warps, portal), sizes, a top-down ASCII/PNG map, NPC list from `research/cloud/NPC-Shops-Spec.md` and
+      `research/cloud/Barks-Signs-Tips.md`. Output: `research/cloud/Zone-1-Town-Layout.md`.
+- [ ] **Pets concept sheet** - pixel concepts for the pets in `research/cloud/Pets-Spec.md` (one per zone family + the dragon hatchling), same style.
+      Output: `research/cloud/pet-art/`.
 
 
 ## Done (delete after logging - see the rules above)
-- [x] Cloud drafts consistency pass - 2026-10-06 - `research/cloud/Consistency-Pass-1006.md`
-- [x] NoCube + Aures mods survey - 2026-10-06 - `research/cloud/NoCube-Mods-Survey.md`
-- [x] Apply the gathering reconciliation - 2026-10-06 - `research/cloud/Gathering-Reconciliation-Applied.md`
-- [x] Questions digest for Skyy - 2026-10-06 - `research/cloud/Questions-Digest-1006.md`
-- [x] Food expansion draft - 2026-10-06 - `research/cloud/Food-Expansion-Draft.md`
-- [x] SkyyFishing spec draft - 2026-10-06 - `research/cloud/SkyyFishing-Spec-Draft.md`
-- [x] Light armor helmet options - 2026-10-06 - `research/cloud/light-armor/helmets.png`
-- [x] Heavy armor tier 1 concept - 2026-10-06 - `research/cloud/heavy-armor/`
-- [x] Crude Robe concept - 2026-10-06 - `research/cloud/cloth-armor/`
-- [x] Foraging armor concept sheets - 2026-10-06 - `research/cloud/foraging-armor/`
-- [x] Mining + Farming armor concept sheets - 2026-10-06 - `research/cloud/gathering-armor-art/`
