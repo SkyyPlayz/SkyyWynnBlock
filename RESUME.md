@@ -44,7 +44,7 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 9. SkyyHud minimap widget (BetterMap joins the pack, stats off; downscale the engine's 96 px tiles on its own worker thread).
 10. Stats page (Your Profile -> SkyBlock-style stats; spec = cloud task -> `research/cloud/Stats-Page-Spec.md`), multi-mod build.
 - NEW (Skyy 2026-10-05): ARMOR TYPES (soft) - HEAVY = Warrior / Berserker (heavy leather tier 1, then vanilla metal sets), LIGHT (leather) = Archer / Assassin / Monk, Cloth = Mage / Priest
-  (ROBES, tier 1 Crude Robe = Fibre + green crystal);
+  (tier 1 Crude Robe = Fibre + green crystal, then vanilla tunics Wool -> Cindercloth);
   Light armor = black leather, upgraded tier by tier with each metal (keeps the leather look + adds metal, like the wands); anyone
   wears anything, only your type gives its bonus; each family covers Lv 1-49 - rides the mob-curve round (docs/answered/gear.md).
 - NEW (Skyy 2026-10-05): TOOL LEVELS must DO something - level raises speed + Mining / Foraging / Farming Fortune; axes, pickaxes,
