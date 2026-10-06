@@ -50,7 +50,7 @@ Cloud draft, 2026-10-06. Paper design; nothing built. Inputs read: `research/cla
 
 Notes on the table:
 - Damage is the **base-50, before-level** figure like `research/SkyyArmory-Spec.md` 15.2; SkyyGear's level damage multiplies book and staff the same way, so the ratios hold at every level.
-- Staff Mana for the new tiers = the Roadmap section 6 column (220 / 250 / 280 / 320 / 360). Mithril and Onyxium match, as for the staffs.
+- Staff Mana for the new tiers = the Roadmap section 6 column (220 / 250 / 280 / 320 / 360). Mithril and Onyxium match, as for the staffs. (updated 2026-10-06: the Roadmap section 6 refresh moved the new staff costs to 210 / 240 / 270 / 310 / 350 on the real 15.4 pools; book costs stay, B/staff becomes about 0.76-0.77 - re-run the staff columns of this table before building.)
 - The cost ladder is **flatter than 2 x staff**: Copper is exactly 2 x (the live 20 vs 10 ratio), but by Mithril the book is 0.76 x the staff, and 2 x would have been 340 (79% of the pool; the Roadmap said it would not fit).
 - The Roadmap section 6 pool column (280 at Lv 50) uses 5 Mana per level, the Priest rate. For a Mage the 15.4 row is 10 per level (531 at Lv 50), so the staff charged shot is 41% there. The book share stays about 30% under either rule only if the pool is the Mage one (Q2).
 - Cadence: the tap is the spell, no quick/charged split. Medium speed (0.50 s between casts), so Mana, not the timer, limits a Mage to about 3 casts, then regen (5/s, 2.5/s in combat).

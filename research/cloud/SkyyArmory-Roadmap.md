@@ -91,20 +91,38 @@ Each **armor type** keeps its locked identity: Heavy = most Defense/Health + cri
 
 ## 6. Magic weapons: extending the Mana ladder (the one math job here)
 
-Skyy's rule (SkyyArmory section 15): staff cost = 2 x wand; damage multiple `1.25 x (C / 10) - 0.25` for staff cost C. Extending the wand charged cost with a **steady cast count** (about 2.5 casts per full pool at the band start), using the pool rule "Mana about 30 + 5 per class level" (read from "Sorcery 40 = 231 Mana" in the spec; UNVERIFIED for 50+):
+Skyy's rule (SkyyArmory section 15): staff cost = 2 x wand; damage multiple `1.25 x (C / 10) - 0.25` for staff cost C. (updated 2026-10-06: the pools now come from `research/SkyyArmory-Spec.md` 15.4, not the old "30 + 5 per level" guess.) Fighter pool at a band start = `30 + r x L + 0.2 x floor(L / 9)` with **r = 5 for the Priest (wand)** and **r = 10 for the Mage (staff)**; 15.4 prints 230.8 / 430.8 at Lv 40 and 531 at Lv 50 (Lv 50+ is the same rule carried up, UNVERIFIED above Lv 49). Rule for the 5 new tiers: **keep casts per full pool at the Mithril rung's figure** (wand 2.7, staff 2.5), i.e. the charged share of the pool stays at Mithril's (wand 36.8%, staff 39.5%, the 15.4 caps of 37% / 40%), rounded to 5.
 
-| Tier | Level (band start) | Wand charged Mana | Staff charged Mana | Pool at start | Wand casts per pool | Staff damage multiple |
-|---|---|---|---|---|---|---|
-| Mithril (today) | 40 | 85 | 170 | 230 | 2.7 | 21.0 |
-| **Cindersteel** | 50 | 110 | 220 | 280 | 2.5 | 27.3 |
-| **Amberite** | 58 | 125 | 250 | 320 | 2.6 | 31.0 |
-| **Drakonite** | 66 | 140 | 280 | 360 | 2.6 | 34.8 |
-| **Voidglass** | 76 | 160 | 320 | 410 | 2.6 | 39.8 |
-| **Aetherium** | 86 | 180 | 360 | 460 | 2.6 | 44.8 |
+| Tier | Level (band start) | Wand charged Mana | Staff charged Mana | Priest pool | Mage pool | Wand share / casts per pool | Staff share / casts per pool | Staff damage multiple |
+|---|---|---|---|---|---|---|---|---|
+| Copper | 10 | 10 | 20 | 80.2 | 130.2 | 12.5% / 8.0 | 15.4% / 6.5 | 2.25 |
+| Iron | 15 | 15 | 30 | 105.2 | 180.2 | 14.3% / 7.0 | 16.6% / 6.0 | 3.5 |
+| Thorium | 20 | 25 | 50 | 130.4 | 230.4 | 19.2% / 5.2 | 21.7% / 4.6 | 6.0 |
+| Cobalt | 25 | 40 | 80 | 155.4 | 280.4 | 25.7% / 3.9 | 28.5% / 3.5 | 9.75 |
+| Adamantite | 35 | 60 | 120 | 205.6 | 380.6 | 29.2% / 3.4 | 31.5% / 3.2 | 14.75 |
+| Mithril / Onyxium (today) | 40 | 85 | 170 | 230.8 | 430.8 | 36.8% / 2.7 | 39.5% / 2.5 | 21.0 |
+| **Cindersteel** | 50 | **105** | **210** | 281.0 | 531.0 | 37.4% / 2.7 | 39.5% / 2.5 | 26.0 |
+| **Amberite** | 58 | **120** | **240** | 321.2 | 611.2 | 37.4% / 2.7 | 39.3% / 2.5 | 29.75 |
+| **Drakonite** | 66 | **135** | **270** | 361.4 | 691.4 | 37.4% / 2.7 | 39.1% / 2.6 | 33.5 |
+| **Voidglass** | 76 | **155** | **310** | 411.6 | 791.6 | 37.7% / 2.7 | 39.2% / 2.6 | 38.5 |
+| **Aetherium** | 86 | **175** | **350** | 461.8 | 891.8 | 37.9% / 2.6 | 39.2% / 2.5 | 43.5 |
 
-**Pool correction (2026-10-06):** research/SkyyArmory-Spec.md 15.4 gives the Mage pool at about 10 Mana per level (531 at Lv 50), not the 5 per level read above; `research/cloud/Spellbook-Ladder.md` uses the 15.4 row. Re-run this table from 15.4 before building.
+The first 7 rungs are **LOCKED and unchanged**, and they stay sane under the real pools: shares climb 12.5% to 36.8% (wand) and 15.4% to 39.5% (staff), never over the 37% / 40% caps; casts per pool fall 8 to 2.7 (wand) and 6.5 to 2.5 (staff). Quick shot stays C / 5.
 
-Notes: the steady cast count keeps spell economy the same shape as the Mithril rung; if the pool rows in SkyyArmory 15.4 differ, only the Mana column changes. Quick shot stays C / 5. Spellbook charged = 2 x staff (the live ratio, 20 vs 10), so 440 Mana at Cindersteel is more than the pool: spellbooks therefore keep a **flat-ish** cost ladder (cap 40% of the pool at the band start) and make up the difference with **area**, to be designed when books are built (Q3).
+**Change from the first draft:** the old table (wand 110 / 125 / 140 / 160 / 180, staff 220 / 250 / 280 / 320 / 360) was built on a Priest-rate pool used for both classes. Against the real Mage pool its staff share was 41.4% / 40.9% / 40.5% / 40.4% / 40.4%, just over the 40% cap, and 5 Mana per rung too dear for the wand. The new costs are 5 / 5 / 5 / 5 / 5 lower, so the share at every new rung sits at Mithril's. The staff damage multiple drops a little with them (27.3 / 31.0 / 34.8 / 39.8 / 44.8 become 26.0 / 29.75 / 33.5 / 38.5 / 43.5); damage per Mana is unchanged (6.2 per Mana at base 50).
+
+**Speed-tier scaling** (`research/cloud/Weapon-Speed-Tiers.md` section 5: cost = base x w, damage = base x w, so damage per Mana is unchanged). The wand is Medium (w 1.0): the table is exact. The staff is Slow (w 1.4), so with `speed.manaScale` on its real charged cost is the staff column x 1.4:
+
+| Rung | Staff column | Slow staff cost (x 1.4) | Share of Mage pool | Casts per pool |
+|---|---|---|---|---|
+| Copper | 20 | 28 | 22% | 4.6 |
+| Adamantite | 120 | 168 | 44% | 2.3 |
+| Mithril | 170 | 238 | 55% | 1.8 |
+| Cindersteel | 210 | 294 | 55% | 1.8 |
+| Aetherium | 350 | 490 | 55% | 1.8 |
+
+Notes: the steady share keeps the spell economy the same shape at every rung, Slow or not (Slow staff: about 1.8 casts per pool, the cost of a heavy hit; a Fast w 0.7 staff would give about 3.6). The 40% cap is for the w = 1 column; with Slow the staff passes it from Cobalt up already (Mithril 55% today), so that is a Slow-staff property, not a new-tier problem (Q6). `research/cloud/Spellbook-Ladder.md` is Medium (w 1.0), costs 30% of the Mage pool (book 160 / 185 / 205 / 235 / 270, unchanged by this table) and uses the 15.4 Mage row already; only its "Staff charged Mana" column and "B / staff" ratio still read 220 / 250 / 280 / 320 / 360 and become 210 / 240 / 270 / 310 / 350 (ratios 0.76 / 0.77 / 0.76 / 0.76 / 0.77), and its note on the 5-per-level pool can go. Spellbook charged Mana = 2 x staff would exceed the pool, so books keep a flatter cost ladder and make up the difference with **area** (Q3).
+
 
 ## 7. Build stages (the main session decides rounds; weapons are items + recipes + assets, usually a **lean round** each, a **full round** when it touches several mods)
 
@@ -133,7 +151,7 @@ Each stage deploys alone, and no stage needs another to **exist** (item ids stay
 - The vanilla item ids of the Onyxium/Mithril sets (weapons and armor) and whether recolouring them as assets is allowed (files stay in Assets.zip; textures are generated at build time).
 - Which vanilla crossbow/longsword/club metals exist.
 - Whether SkyyGear's level range and stat curve are sound above Lv 49 (the Mob-Curve spec covers up to Lv 60).
-- The real Mana pool rule above 40 (SkyySkills pool rows).
+- The real Mana pool rule above 40 (the 15.4 rows are a proposal for SkyySkills 0.4.15 and carried up to Lv 86 here); whether the cost path takes fractional Mana (Slow x 1.4 gives tenths).
 - Whether a recoloured Onyxium set would clash with a future vanilla release that makes Onyxium obtainable (the build check in SkyyArmory 1.1 already stops on an id clash).
 
 ## Questions for Skyy
@@ -145,3 +163,4 @@ Each stage deploys alone, and no stage needs another to **exist** (item ids stay
 | 3 | Spellbooks: leather + metal clasp ladder (7 metals), area-based power instead of raw Mana? | yes |
 | 4 | First wave (stage G): only the main weapon per class plus 3 armor sets? | yes |
 | 5 | Weapon pace: see `research/cloud/Weapon-Speed-Tiers.md` questions | - |
+| 6 | New-tier Mana 105 / 120 / 135 / 155 / 175 (wand) and double (staff) instead of the first draft 110 ... 180? A Slow staff then costs 55% of the Mage pool per charged shot (x 1.4): keep, or make speed damage-only for casters? | new costs; keep `speed.manaScale` |
