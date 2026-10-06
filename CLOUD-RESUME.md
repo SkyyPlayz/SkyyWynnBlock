@@ -59,8 +59,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
-- [ ] **Return Visit + Tab reveal scripts** - dialogue for the Tab reveal (dragon "fees" line), the clerk pay-off scene, prestige "go home anyway" and the
-      Return Visit quest (`research/cloud/Prestige-Spec.md` 4, `research/cloud/Tab-Economy.md` 8) in SkyyQuests property format. Output: `research/cloud/Tab-Prestige-Scripts.md`.
 - [ ] **Capstone floors 4-7** - `research/cloud/Capstone-Dungeon-Spec.md` ships 3 floors; design floors 4-7 (themes, rooms, puzzles, bosses with phases,
       Set piece drops from `research/cloud/Capstone-Sets.md`). Output: `research/cloud/Capstone-Floors-4-7.md`.
 - [ ] **Zone 4-5 materials for the new tiers** - Cindersteel, Amberite, Drakonite (`research/cloud/SkyyArmory-Roadmap.md`): ores / drops, where they
@@ -74,3 +72,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Gathering numbers reconciliation - 2026-10-06 - `research/cloud/Gathering-Numbers-Reconciled.md`
 - [x] Kunai ladder - 2026-10-06 - `research/cloud/Kunai-Ladder.md`
 - [x] Archer bolts + holster - 2026-10-06 - `research/cloud/Archer-Bolts-Holster.md`
+- [x] Tab reveal + prestige scripts - 2026-10-06 - `research/cloud/Tab-Prestige-Scripts.md`
