@@ -55,7 +55,7 @@ def set_jars():
 
 
 def mod_of(path):
-    m = re.match(r"^(Skyy\w+?)-(\d+(?:\.\d+)*)\.jar$", os.path.basename(path))
+    m = re.match(r"^([A-Za-z]\w*?)-(\d+(?:\.\d+)*)\.jar$", os.path.basename(path))  # Skyy jars + pack mods (e.g. HyFishing-0.6.8.jar)
     if not m:
         raise SystemExit("cannot read <Mod>-<version>.jar from %s" % path)
     return m.group(1), m.group(2)

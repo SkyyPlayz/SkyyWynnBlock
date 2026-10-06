@@ -12,6 +12,8 @@ them in the world (PACK_THIRD_PARTY) but never copies their files.
 |---|---|---|---|---|
 | More Crossbow Tiers (`Serj:More Crossbow Tiers`) | Serj (SergioGMN) | 1.1.0 | More_Crossbow_Tiers.zip | Cobalt, Thorium, Mithril and Adamantite crossbows at the Weapon Bench (Skyy, 2026-09-24). SkyyClasses already treats every `Weapon_Crossbow_*` as an Archer weapon, and the /craft Smithing tab lists them. No dependencies. |
 | Saplings From Trees (`Helios:Saplings From Trees`) | Helios | 1.0.4 | SaplingFromTrees-1.0.4.zip | Leaves of Ash, Azure, Beech, Birch, Cedar, Dry and Oak trees can drop their sapling (plus sapling recipes) - a sky island needs replantable trees (Skyy, 2026-09-24). Overrides the vanilla leaf item files; no other pack mod touches leaves. No dependencies. |
+| HyFishing (`TheRedlotus:HyFishing`) | TheRedlotus | 0.6.8 | HyFishing-0.6.8.jar | Fishing now: rods, fish with length + weight, a fishing table with fish foods, a fishing bag (Skyy, 2026-10-06). Stopgap until our own fishing mod (docs/answered/skills.md 2026-10-06). Needs only Hytale modules; optional DynamicTooltipsLib. No licence file in the jar. |
+| Dynamic Seasons (`BlueOrbit:DynamicSeasons`) | BlueOrbit | 6.1.2 | DynamicSeasons-6.1.2.jar | Seasons (Skyy, 2026-10-06: "really cool"), incl. fishing seasons our fishing mod must work with. Needs only Hytale modules; optional integrations Angler's Almanac, HyFishing, WiFlow placeholders, Aetherhaven. No licence file in the jar. |
 
 Not included: "Endgame&QoL expansion - Crossbow Tiers" (adds Onyxium + Prisma crossbows) needs the large Endgame&QoL mod.
 Also not included (yet): SaplingOnLog (Helios; only tweaks two sapling items); Seed Drops (Familiar) - not needed, Hytale has its own seed system (Skyy, 2026-09-24).
