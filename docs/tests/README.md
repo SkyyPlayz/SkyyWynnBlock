@@ -104,3 +104,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyCollections 0.2.7 + SkyyAccessories 0.5.6 - Lantern recipes behind the Tree Sap tiers (DEPLOYED 2026-10-06, backup deploy-20261006-1245) | [2026-10](2026-10.md) |
 | SkyyBazaar 0.1.5 + SkyySacks 0.7.13 - sell from bags, Tree Sap 12, Hytale stack sizes (DEPLOYED 2026-10-06, backup deploy-20261006-1258) | [2026-10](2026-10.md) |
 | SkyyClasses 0.1.12 + SkyyArmory 0.1.1 + SkyyGear 0.2.4 - staff blink + trail, wand hop / burst / heal orb, quick shots (DEPLOYED 2026-10-06, backup deploy-20261006-1347) | [2026-10](2026-10.md) |
+| SkyyGatherProbe 0.1 + B - gathering probe pack P0 (op-only, one session; DEPLOYED 2026-10-06, backup deploy-20261006-1529) | [2026-10](2026-10.md) |
