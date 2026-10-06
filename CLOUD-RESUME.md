@@ -60,8 +60,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       `research/cloud/Economy-Audit.md`.
 - [ ] **Hytale 0.7 research** - web research (snippets): what is announced or released for Hytale 0.7 and later (mods API, UI, items, worldgen, combat).
       Compare against `research/PreRelease-Compat-Audit-1002.md` and list likely breaks for our mods. Output: `research/cloud/Hytale-0.7-Watch.md`.
-- [ ] **New-player guide** - a plain English "your first hour on SkyWynn" guide for players (what to do, where, what the menus are): tutorial flow from
-      Story-Script-Draft, starter shards, the first outpost, classes, bags, the Board. Players, not admins. Output: `research/cloud/Player-Guide-First-Hour.md`.
 - [ ] **NPC barks, signs and Board texts** - short ambient lines in the Department voice: 6 barks per town NPC type (clerk, banker, smith, guide, guard,
       shopkeeper), 40 signs, 20 Board announcements (for Zone Specials), 20 loading-screen tips. Output: `research/cloud/Barks-Signs-Tips.md`.
 
@@ -77,3 +75,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Foraging armor design - 2026-10-06 - `research/cloud/Foraging-Armor-Design.md`
 - [x] Capstone sets - 2026-10-06 - `research/cloud/Capstone-Sets.md`
 - [x] Mining and Farming gathering armor - 2026-10-06 - `research/cloud/Gathering-Armor-Mining-Farming.md`
+- [x] New-player guide (first hour) - 2026-10-06 - `research/cloud/Player-Guide-First-Hour.md`
