@@ -4,6 +4,7 @@ Cloud draft, 2026-10-06. Paper design; nothing built.
 Inputs read: `docs/answered/gear.md` (LOCKED 2026-10-05 Foraging armor set + "Mining / Farming later"; armor types; tool levels), `research/cloud/Gathering-Tiers-Draft.md`, `Collection-Unlocks-Draft.md`, `Enchanted-Materials-Draft.md`, `research/Tool-Levels-Spec.md` (Fortune curve 4.1, double-drop totals 4.3), `research/Skill-Trees-Spec.md` (Vein Burst S12, Tree Feller, Rich Veins), `research/Swing-Speed-Spec.md` (+40% swing cap), `research/Booster-Accessories-Spec.md`.
 `research/cloud/Foraging-Armor-Design.md` did not exist yet when this was written; naming below copies the locked Foraging wording (tier 1 vanilla-style start, then 7 tiers echoing Copper..Onyxium). Align when it lands.
 Every number is a placeholder and a Server Setup row (times in seconds). Anything that needs game files is **UNVERIFIED**.
+Reconciled 2026-10-06, see research/cloud/Gathering-Numbers-Reconciled.md (sections 1.2, 1.3, 2.2, 3.1, 3.2, 5 and question 6 changed).
 
 ## 0. The rule for all three gathering sets
 
@@ -44,8 +45,8 @@ Pieces share the set total: Head 25%, Chest 35%, Legs 25%, Feet 15%.
 | 5 | +7.5% | +8% | +4% | low |
 | 6 | +10% | +10% | +6% | low |
 | 7 | +12% | +12% | +8% | low |
-(T1-T6 Fortune follows the 1.0 / 1.5 / 2.5 / 4 / 5.5 / 7.5 / 10 ladder with T0 = 1.0 and T7 = 12; real Defense / Health come from SkyyGear's armor curve.) Rarity multiplies like tools: Normal x1.0, Unique x1.1, Rare x1.2, Legendary x1.35, Fabled x1.5, Mythic x1.7 (placeholder).
-- **Mining Speed** is the swing-speed layer (shares the 40% swing cap with the Mining tree and tools), not Mining Power.
+(T1-T6 Fortune follows the 1.0 / 1.5 / 2.5 / 4 / 5.5 / 7.5 / 10 ladder with T0 = 1.0 and T7 = 12; real Defense / Health come from SkyyGear's armor curve.) Rarity multiplies Fortune and Wisdom only (not swing, not range): Normal x1.0, Unique x1.1, Rare x1.2, Legendary x1.3, Fabled x1.3, Mythic x1.3 (placeholder).
+- **Mining Speed** is the swing-speed layer (shares the 40% swing cap with the Mining tree and tools; armor swing cap 12 (`armor.swing.cap`), no rarity multiplier), not Mining Power.
 - Reforge pool: Mining Fortune, Mining Wisdom, Mining Speed, Defense (small).
 
 ### 1.3 Signature perks
@@ -54,7 +55,7 @@ Pieces share the set total: Head 25%, Chest 35%, Legs 25%, Feet 15%.
 | **Vein Burst** (set bonus 2 / 4 pieces) | T5+ (Adamantite) | Full set breaks up to **N** touching ore blocks of the same id (N = 4 at T5, 6 at T6, 8 at T7). Cooldown 40 s | reuses the SkyyTrees Vein Burst (S12 "BREAK" hook, never chains); armor only grants levels of it, the tree can still add its own (the higher wins, they do not add) |
 | **Rich Seam** | T3+ | 2 pieces: +2% chance a paid ore drops once more (the Rich Veins EXTRA hook) | reuse S6 |
 | **Tunnel Runner** | T1+ | 2 pieces: +1% move speed while holding a pickaxe (Skyy's S9 idea) | reuse S9 MOVE |
-| **Set bonus** | all | 4 pieces: the tier's Fortune is multiplied x1.15 when held tool = pickaxe or shovel | - |
+| **Set bonus** | all | 4 pieces: the tier's Fortune is multiplied x1.15 (applied before the 15 cap; same rule in all three sets) when held tool = pickaxe or shovel | - |
 
 ## 2. FARMING set - "Farmer's clothes"
 
@@ -76,14 +77,14 @@ Crop groups A-D + eternal seeds I-III (Gathering-Tiers 3.2); cloth from Cotton /
 | T | Farming Fortune | Sickle Range | Farming XP | Crop-growth help |
 |---|---|---|---|---|
 | 0 | +1.0% | - | - | - |
-| 1 | +1.5% | +0 | - | - |
-| 2 | +2.5% | +1 block (3x3 -> row of 3) | - | - |
-| 3 | +4.0% | +1 | - | - |
-| 4 | +5.5% | +2 | +2% | - |
-| 5 | +7.5% | +2 | +4% | auto-replant chance 25% |
-| 6 | +10% | +3 | +6% | 50% |
-| 7 | +12% | +3 | +8% | 75% |
-- **Sickle Range** is the same modifier as the tool's (Tool-Levels-Spec SICKLE RANGE); armor adds to it, total capped at **+4 blocks** (row `farm.armor.rangeCap`) so one swing cannot clear a field.
+| 1 | +1.5% | 0 | - | - |
+| 2 | +2.5% | 0 | - | - |
+| 3 | +4.0% | +1 block (3x3 -> row of 3) | - | - |
+| 4 | +5.5% | +1 | +2% | - |
+| 5 | +7.5% | +1 | +4% | auto-replant chance 25% |
+| 6 | +10% | +2 | +6% | 50% |
+| 7 | +12% | +2 | +8% | 75% |
+- **Sickle Range** is the same modifier as the tool's (Tool-Levels-Spec SICKLE RANGE); armor adds to it, total capped by ONE row shared with the tool: **min(4, 1 + floor(Farming / 25))** blocks (tool part max 3, armor part max 2) so one swing cannot clear a field.
 - Farming Wisdom is the XP column. Reforge pool: Farming Fortune, Farming Wisdom, Sickle Range (small), Defense.
 - Fortune stays Fortune-only for hoes and sickles (LOCKED); armor Fortune works with any held tool except bare hands (rule 3.3).
 
@@ -97,17 +98,17 @@ Crop groups A-D + eternal seeds I-III (Gathering-Tiers 3.2); cloth from Cotton /
 ### 3.1 Fortune against the double-drop cap (`perk.doubleDropMax` 1.0)
 Tool-Levels-Spec 4.3 totals: Mining 63.5% at skill 50 / 88.5% at 100; Foraging and Farming already hit 100% at skill 84-85. Armor is an extra source of the same `dd.<skill>` bonus map (source `gear.armor`).
 
-| Skill | Skill perk (50 / 100) | Tree max | Tool (Lv 49 + Mythic) | Armor T7 (Mythic x1.7) | Total at skill 50 | at skill 100 |
+| Skill | Skill perk (50 / 100) | Tree max | Tool (cap `tool.fortune.cap`) | Armor T7 (Mythic, capped) | Total at skill 50 | at skill 100 |
 |---|---|---|---|---|---|---|
-| Mining | 25 / 50 | 20 | 18.5 | 20.4 | 83.9 | 108.9 -> **cap 100** |
-| Farming | 25 / 50 | 45 | 13 | 20.4 | 103.4 -> **cap 100** | cap 100 |
+| Mining | 25 / 50 | 20 | 25 | 15 | 85 | 110 -> **cap 100** |
+| Farming | 25 / 50 | 45 | 25 | 15 | 110 -> **cap 100** | cap 100 |
 
-(Sums: Mining 25+20+18.5+20.4 = 83.9; at 100: 50+20+18.5+20.4 = 108.9; Farming at 50: 25+45+13+20.4 = 103.4.) Result: armor pushes top players to the 100% cap earlier (Mining at skill ~92). To protect the economy keep two caps: **`armor.fortune.cap` 15% total from all worn gathering armor** (a Mythic Onyxium set would be 20.4, so it is cut to 15) and the global 100%. At 15% the Mining total at 100 is still 103.5 -> 100 cap, only 3.5 points of waste. Recommendation: lower Mythic armor mult to x1.3 so T7 Mythic = 15.6 and Mining skill-100 total = 104.1.
+(Sums: Mining at 50: 25+20+25+15 = 85, before pets, accessories and collections; at 100: 50+20+25+15 = 110 -> cap 100; Farming at 50: 25+45+25+15 = 110 -> cap 100.) Armor still pushes top players to the 100% cap early, so keep two caps: **`armor.fortune.cap` 15 total from all worn gathering armor** and the global 100. T7 Mythic = min(15, 12 x 1.3 x 1.15 = 17.9) = 15; only the best Mythic Onyxium set wastes 2.9. Mythic armor multiplier lowered to x1.3 (adopted, was a recommendation).
 - Armor Fortune is **additive** with the tree and tool (no multiplication), except the 4-piece set bonus x1.15 on the armor's own share.
 - The multiplicative total never exceeds the cap; excess is simply not rolled (no refund, no extra coins).
 
 ### 3.2 Speed
-Mining Speed (armor) adds to the Mining tree's swing speed and the pickaxe's roll; all three share the +40% swing cap (Swing-Speed-Spec 3.4). T7 Mythic armor 12% x 1.3 = 15.6%; with tree 20% (per level 1% to 25) the total is 35.6% - under the cap. No tool-power change: armor never touches Mining Power.
+Mining Speed (armor) adds to the Mining tree's swing speed and the pickaxe's roll; all three share the +40% swing cap (Swing-Speed-Spec 3.4). Armor swing cap 12 (no rarity multiplier, T7 = 12); the Mining tree gives up to 40% (1.6% x 25), so tree + armor reaches the +40% ceiling by itself. No tool-power change: armor never touches Mining Power.
 
 ### 3.3 Mixing sets
 - Wearing one set (Mining) and one other-skill set at once is allowed (hat from one, chest from another): each piece pays 1/4 of its own set's total, and its stats only count while **the matching tool is held** (pickaxe -> Mining, hatchet -> Foraging, hoe / sickle -> Farming). No stat leaks between skills.
@@ -132,7 +133,7 @@ Mining Speed (armor) adds to the Mining tree's swing speed and the pickaxe's rol
 | Set pieces share (Head / Chest / Legs / Feet) | 25 / 35 / 25 / 15 |
 | Rarity multipliers | 1 / 1.1 / 1.2 / 1.3 / 1.3 / 1.3 (recommended) |
 | `armor.fortune.cap` (all gathering armor) | 15% |
-| `farm.armor.rangeCap` | 4 blocks |
+| `armor.swing.cap` | 12 |
 | Vein Burst: blocks per tier, cooldown (40 s) | 4 / 6 / 8, 40 |
 | Green Thumb chance per tier | 25 / 50 / 75 % |
 | Swap delay between sets (seconds) | 0.5 |
@@ -162,7 +163,7 @@ Mining: dark leather body (black-leather look Skyy picked for Light armor) + eac
 | 3 | Is the Mining set a leather-body miner kit with metal plates, or a full metal set? | leather body + metal plates |
 | 4 | Should the helmet lamp give real light (night / caves), not just a glow? | glow only |
 | 5 | Name the armor stat "Mining Speed" (swing) or "Mining Power" (fewer hits)? | Mining Speed (swing), per the Power / Speed split |
-| 6 | Is a total armor Fortune cap of 15% right, or let top sets reach more because the economy cap (100%) already limits? | 15% |
+| 6 | Is a total armor Fortune cap of 15% right, or let top sets reach more because the economy cap (100%) already limits? (confirmed 2026-10-06 in `research/cloud/Gathering-Numbers-Reconciled.md` 1.1 F5; still Skyy's call) | 15% |
 | 7 | Is Vein Burst on armor OK (reuses the tree perk), or armor only boosts it? | armor gives the perk at T5+, higher level wins |
 | 8 | Is auto-replant (Green Thumb) wanted at all, since crops regrow in vanilla? | yes, T5+, if the engine allows |
 | 9 | May Mining / Farming sets also have a rare Onyxium variant at Lv 50+ now, or wait for Cindersteel+? | wait |

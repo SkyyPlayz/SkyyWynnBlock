@@ -4,6 +4,7 @@ Cloud draft, 2026-10-06. Paper design; nothing built. A revision of `research/To
 Inputs read: `docs/answered/gear.md`, `docs/answered/skills.md`, `research/Tool-Levels-Spec.md` (sections 0-9, 13-14), `research/Swing-Speed-Spec.md`, `research/cloud/Gathering-Tiers-Draft.md`, `research/cloud/Collection-Unlocks-Draft.md`,
 `research/cloud/Foraging-Armor-Design.md`, `research/cloud/Gathering-Armor-Mining-Farming.md`, `research/Booster-Accessories-Spec.md`, `research/cloud/Pets-Spec.md`, `SkyyGear/build_skyygear_0.2.3.py` (rarity table), `SkyyTrees/build_skyytrees_0.3.py` (Feller rows), `RESUME.md`, `docs/log/2026-10.md`.
 Every number is a placeholder and a Server Setup row (times in seconds). All arithmetic python-checked.
+Reconciled 2026-10-06, see research/cloud/Gathering-Numbers-Reconciled.md (sections 2, 3, 4, 9, 11, 14 changed).
 
 ## 0. The decisions this follows (not re-decided)
 
@@ -45,7 +46,7 @@ Two parts, as Skyy split them: **Power** (fewer hits per block) and **Swing** (f
 - **Power** = the run-time ladder of `research/Tool-Levels-Spec.md` 3.2 (never below vanilla), with two changes: the material bonus is `tool.matBonus` 1.5 % **per tier** (Copper +1.5 %, Iron +3 %, Mithril +9 %; no longer tied to the band start, so Skyy's band edits do not move it) and hatchets use `tool.power.strength.Hatchet` **50 %** (halfway between vanilla and the ladder - Skyy's "one chop comes later").
   `power = vanilla + (max(vanilla, ladder(L) x (1 + 1.5 % x tier)) - vanilla) x strength`; hits = smallest n with n x power >= 1.
 - **Swing %** = min(`tool.swing.max`, floor(`tool.swing.perLevel` x L)). Pickaxe + shovel 0.3 / max 15; hatchet 0.5 / max 20 ("a little earlier"); hoe + sickle 0 (locked: Fortune only).
-  Total swing = tree + tool level + armor, **capped at +40 %** (engine ceiling, `research/Swing-Speed-Spec.md`). Seconds per swing = 0.35 / (1 + swing). A maxed Mining tree (+40 %) leaves no room; Chopping tree max +25 % leaves 15 %.
+  Total swing = tree + tool level + armor + pet, each source capped (tool 15 / 20, armor 12, pet 5), **total capped at +40 %** (engine ceiling, `research/Swing-Speed-Spec.md`). Seconds per swing = 0.35 / (1 + swing). A maxed Mining tree (+40 %) leaves no room; Chopping tree max +25 % leaves 15 %.
 
 | Lv | 1 | 5 | 10 | 15 | 20 | 25 | 30 | 35 | 40 | 49 | 60+ |
 |---|---|---|---|---|---|---|---|---|---|---|---|
@@ -68,10 +69,10 @@ Tool alone, the on-band tool, no tree (time = hits x seconds per swing; vanilla 
 
 `Fortune = tool.fortune.perLevel x L x (1 + 2 % x tier)`; pickaxe / shovel / hatchet **0.2**, hoe / sickle **0.3** (they get no speed). 1 Fortune = +1 % chance of one extra drop (= `dd.<skill>` 0.01).
 
-| Lv (tier) | 1 (0) | 10 (1) | 15 (2) | 20 (3) | 25 (4) | 30 (4) | 35 (5) | 40 (6) | 49 (6) | 60 (7) | 100 (11) |
+| Lv (tier) | 1 (0) | 10 (1) | 15 (2) | 20 (3) | 25 (4) | 30 (4) | 35 (5) | 40 (6) | 49 (6) | 60 (8) | 100 (11) |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Pickaxe / shovel / hatchet | 0.2 | 2.0 | 3.1 | 4.2 | 5.4 | 6.5 | 7.7 | 9.0 | 11.0 | 13.7 | 24.4 |
-| Hoe / sickle | 0.3 | 3.1 | 4.7 | 6.4 | 8.1 | 9.7 | 11.6 | 13.4 | 16.5 | 20.5 | 36.6 -> cap 25 |
+| Pickaxe / shovel / hatchet | 0.2 | 2.0 | 3.1 | 4.2 | 5.4 | 6.5 | 7.7 | 9.0 | 11.0 | 13.9 | 24.4 |
+| Hoe / sickle | 0.3 | 3.1 | 4.7 | 6.4 | 8.1 | 9.7 | 11.6 | 13.4 | 16.5 | 20.9 | 36.6 -> cap 25 |
 
 Old spec: 0.1 x L (Lv 49 Mithril 5.5). Foraging Fortune still doubles **trunks only** (`perk.foraging.doubleDropOnly=_Trunk`, live).
 
@@ -86,15 +87,20 @@ Old spec: 0.1 x L (Lv 49 Mithril 5.5). Foraging Fortune still doubles **trunks o
 | Skill level perk (SkyySkills) | 0.5 a level = 50 at 100 | LIVE |
 | Skill trees (`"trees"`) | Mining 20 / Foraging 40 / Farming 45 | LIVE |
 | Held tool, level + rolls (`"gear"`) | `tool.fortune.cap` **25** | needs code (this round) |
-| Worn gathering armor, all sets (`"gear.armor"`) | `armor.fortune.cap` **15** - one armor ladder 1 / 1.5 / 2.5 / 4 / 5.5 / 7.5 / 10 / 12 for Mining, Foraging AND Farming (`research/cloud/Foraging-Armor-Design.md`'s 4 ... 40 becomes this; Q2) | paper |
+| Worn gathering armor, all sets (`"gear.armor"`) | `armor.fortune.cap` **15** - one armor ladder 1 / 1.5 / 2.5 / 4 / 5.5 / 7.5 / 10 / 12 for Mining, Foraging AND Farming (`research/cloud/Foraging-Armor-Design.md`'s 4 ... 40 becomes this; Q2). Rarity x1 / 1.1 / 1.2 / 1.3 / 1.3 / 1.3, 4-piece x1.15 before the cap, no 2-piece Fortune | paper |
 | Accessories (`"accessories.boosters"`) | 10 (Legendary booster +6 today) | paper |
-| Pets | 10 (`research/cloud/Pets-Spec.md`'s +40 / +60 would be cut to 10; Q1) | paper |
-| Maxed collections | 10 per skill (`research/cloud/Collection-Unlocks-Draft.md` 4 sums to ~19; halve it) | paper |
+| Pets | 10 (`research/cloud/Pets-Spec.md`: Legendary Lv 100 +10 / +7; Q1) | paper |
+| Maxed collections | 10 per skill (`research/cloud/Collection-Unlocks-Draft.md` 4: ladder 1 / 1 / 1.5 / 2 / 2 / 2.5 = 10, same for Farming) | paper |
+| Armor swing (`"gear.armor"`) | `armor.swing.cap` 12 (no rarity multiplier) | paper |
+| Pets swing | `pets.swing.cap` 5 | paper |
+| Accessories swing | 0 (until Skyy gives a number, Q3 of the reconciliation) | paper |
+| Tool Wisdom (rolls) | `tool.wisdom.cap` 15 | paper |
+| Armor Wisdom | `armor.wisdom.cap` 10 | paper |
 
 4. **Extra blocks** (Tree Feller logs, Sickle Range crops) roll Fortune at `bonusBlock.fortuneRate` **50 %**, never chain, count once for XP / Collections.
 5. Overflow above 100 is wasted (no triple drops) - Q1. The Stats page shows "Mining Fortune 129 (cap 100)".
 
-On-level player, Legendary gear, tree grown with the skill (python): Mining 16 / 44 / 75 / 98 / 100 at skill 10 / 20 / 35 / 49 / 100; Foraging 20 / 52 / 89 / 100 / 100; Farming 22 / 56 / 96 / 100 / 100. So Fortune is a mid-game climb that caps around skill 40-50; **speed** stays the late-game tool reward.
+Progression check (python, `research/cloud/Gathering-Numbers-Reconciled.md` section 2; typical = Rare gear one tier behind, half the tree Fortune; maxed = best possible at that skill): Fortune before the 100 clamp, Mining typical / maxed at skill 10 / 25 / 50 / 75 / 100 = 12.6 / 36.8 / 77.2 / 102.2 / 118.5 and 24.4 / 63.6 / 106.0 / 121.0 / 136.0; Foraging typical 14.3 / 40.9 / 85.6 / 112.2 / 128.5, maxed 30.1 / 77.8 / 126.0 / 141.0 / 156.0; Farming typical 15.7 / 44.7 / 93.3 / 117.0 / 131.0, maxed 32.6 / 84.1 / 131.0 / 146.0 / 161.0. The 100 clamp is first hit by a maxed player at skill 41 (Mining) / 35 (Foraging) / 32 (Farming), by a typical one at 73 / 60 / 56. So Fortune is a mid-game climb; **speed** stays the late-game tool reward.
 
 ## 5. Rarity
 
@@ -145,7 +151,7 @@ Example rolls (python, spare boost in): Fortune Lv 23 Rare 3-5, Mythic 5-12; Lv 
 
 - Range N = the swing also harvests ripe crops up to N blocks left and right of the hit crop, along the swing (+1 = row of 3, +2 = row of 5).
 - Rolls (max 3 x rarity x level factor, whole, at least 1): Iron Lv 23 Normal / Unique +1, Rare / Legendary 1-2, Fabled 1-3, Mythic 2-3; Lv 13 Mythic 1-3.
-- Cap: tool + Farming armor (`research/cloud/Gathering-Armor-Mining-Farming.md` 2.2) <= `tool.range.cap` **4** (row of 9).
+- Cap: tool + Farming armor (`research/cloud/Gathering-Armor-Mining-Farming.md` 2.2) <= min(4, 1 + floor(Farming / 25)) (row of 9 at most); tool part max 3, armor part max 2.
 - Extra crops: same ripe / placed rules as a normal harvest, Fortune at 50 % (section 4), Farming XP + Collections only once sickle-swing XP exists (old spec Q3, SkyySkills).
 
 ## 10. Tooltip (vanilla look, `GearView.lines`)
@@ -177,6 +183,9 @@ Hatchet adds `Tree Feller II: +2 logs on the cut's level (3 s)`; sickle adds `Si
 | `feller.stackBonus` (SkyyTrees) / `bonusBlock.fortuneRate` | 0 / 50 % |
 | `tool.range.on` / `stats.srng` / `tool.range.cap` | off until stage 0 / 3, weight 10 / 4 |
 | `armor.fortune.cap`, `pets.fortune.cap`, `coll.fortune.cap`, accessories cap | 15 / 10 / 10 / 10 (each in its own mod) |
+| `armor.swing.cap` / `pets.swing.cap` | 12 / 5 |
+| `tool.wisdom.cap` / `armor.wisdom.cap` | 15 / 10 |
+| `tool.range.capPerFarming` | 25 (range cap = min(4, 1 + floor(Farming / 25))) |
 | `tool.popupSec` | 1.5 s (replaces `tool.popupMs`) |
 | `tool.farmLock` | **on** (Skyy 2026-10-03) |
 | `tool.legacyLenient` | on = tools made before this build only |
@@ -226,8 +235,8 @@ Hatchet adds `Tree Feller II: +2 logs on the cut's level (3 s)`; sickle adds `Si
 
 | # | Question | Default |
 |---|---|---|
-| 1 | Fortune cap: keep 100 with per-source caps (tool 25, armor 15, accessories / pets / collections 10 each), or let Fortune above 100 give a chance at a 2nd extra drop? | keep 100, no overflow |
-| 2 | One armor Fortune ladder (1 ... 12, cap 15) for all three gathering sets, so Goldenwood = 12 not 40? | yes |
+| 1 | Fortune cap: keep 100 with per-source caps (tool 25, armor 15, accessories / pets / collections 10 each), or let Fortune above 100 give a chance at a 2nd extra drop? (now also Q1 in `research/cloud/Gathering-Numbers-Reconciled.md`) | keep 100, no overflow |
+| 2 | One armor Fortune ladder (1 ... 12, cap 15) for all three gathering sets, so Goldenwood = 12 not 40? (see also Q7 in `research/cloud/Gathering-Numbers-Reconciled.md`) | yes |
 | 3 | Axe Tree Feller by tier (Iron 1 ... Mithril 5, Legendary+ +1, max 6), MAX with perk and armor? | yes |
 | 4 | Hatchet one-chop from Thorium (with max Heavy Hatchet). Note: 2 hits can never beat a vanilla 1-hit (0.25 s swing floor), so "faster" = faster than the same vanilla hatchet. OK? | yes |
 | 5 | Sickle Range as a row along the swing, or a square (+1 = 3x3)? | row |

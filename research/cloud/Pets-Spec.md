@@ -4,6 +4,7 @@
 
 Cloud draft, 2026-10-02. Paper design; nothing built. Direction: `research/Pets-Idea.md` (agreed 2026-10-01) and `research/Dragon-Pets-Idea.md`
 (dragons are the top tier, later). Creature model ids are **UNVERIFIED** (no game files in the cloud).
+Reconciled 2026-10-06, see research/cloud/Gathering-Numbers-Reconciled.md (section 1 rules, section 5.1 skill-pet numbers).
 
 ## 0. What I could check on the web
 
@@ -26,6 +27,9 @@ Cloud draft, 2026-10-02. Paper design; nothing built. Direction: `research/Pets-
 | Per profile | yes (PROFILES-CONTRACT) |
 | Buff strength | from **rarity and level only**. Fighting/riding are bonuses on top |
 | Pet XP | 100% of the XP you gain in the pet's own skill, 20% of XP in other skills (rows). Class pets use your class skill |
+| Pet Fortune cap | `pets.fortune.cap` 10 (one active gathering pet; "+10" pets and "+7" pets at Legendary Lv 100) |
+| Pet swing cap | `pets.swing.cap` 5 (Goat, Bear) |
+| Mythic gathering pet | none (Mythic factor 1.25 would exceed the cap; dragons stay out of the gathering list) |
 
 ## 2. Rarity
 
@@ -89,12 +93,12 @@ Level 100 Legendary values; the lists are **placeholders** to tune. Stat names f
 
 | Pet | Model (UNVERIFIED) | Skill | Perks at Legendary Lv 100 | Mount? |
 |---|---|---|---|---|
-| Rabbit | `Rabbit` | Farming | +60 Farming Fortune; +5% crop double-drop; fast crops | no |
-| Chicken | `Chicken` | Farming | +40 Farming Fortune; eggs (a small item drop every few minutes, capped); +10 Stamina | no |
-| Goat | `Goat` | Mining | +60 Mining Fortune; +10% Mining Speed; no fall damage from ledges | no |
-| Warthog | `Warthog` | Mining | +40 Mining Fortune; +15 Defence while below ground; ore finder (shows ore through walls briefly - UI risk, optional) | no |
-| Bear (grizzly) | `Bear_Grizzly` | Foraging | +60 Foraging Fortune; trees fall faster; +5 Strength while in forests | no |
-| Turkey | `Turkey` | Foraging | +40 Foraging Fortune; +5% sapling chance (works with Saplings From Trees) | no |
+| Rabbit | `Rabbit` | Farming | +10 Farming Fortune; fast crops | no |
+| Chicken | `Chicken` | Farming | +7 Farming Fortune; eggs (a small item drop every few minutes, capped); +10 Stamina | no |
+| Goat | `Goat` | Mining | +10 Mining Fortune; +5 swing; no fall damage from ledges | no |
+| Warthog | `Warthog` | Mining | +7 Mining Fortune; +15 Defence while below ground; ore finder (shows ore through walls briefly - UI risk, optional) | no |
+| Bear (grizzly) | `Bear_Grizzly` | Foraging | +10 Foraging Fortune; +5 swing (UNVERIFIED how); +5 Strength while in forests | no |
+| Turkey | `Turkey` | Foraging | +7 Foraging Fortune; +5% sapling chance (works with Saplings From Trees) | no |
 
 ### 5.2 General combat pets
 
@@ -138,7 +142,7 @@ Mount slot unlock: a quest at the Zone 2 town (stable master gives the slot and 
 ## 7. Server Setup rows (sketch)
 
 `pets.enabled`, `pets.xp.matchPercent` (100), `pets.xp.otherPercent` (20), `pets.curve.linear` (60), `pets.curve.cubic` (0.04), `pets.rarity.*` (factor / perks / fights-from-level),
-`pets.mountSlot.buffPercent` (50), `pets.fight.damagePercent`, per-pet rows (id, model, skill, perks), `pets.trade.minLevel`. Everything editable (PROJECT-RULES 4).
+`pets.mountSlot.buffPercent` (50), `pets.fortune.cap` (10), `pets.swing.cap` (5), `pets.fight.damagePercent`, per-pet rows (id, model, skill, perks), `pets.trade.minLevel`. Everything editable (PROJECT-RULES 4).
 
 ## 8. Build order (matches Pets-Idea)
 

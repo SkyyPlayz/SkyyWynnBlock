@@ -39,6 +39,8 @@ Matches `acc:defs` source words. "Craft" for a folded line means the existing Wo
 | Lantern (Tree Sap line) | Craft | Craft | Craft | Craft (collection tier gate only) |
 | Wave 2 (Prospector, Woodcutter, Harvester...) | Craft | Craft | Chest | Boss |
 
+Wave 2 stat note: Normal / Unique Prospector / Woodsman / Harvester give Wisdom only, Fortune starts at Rare (+3, Legendary +6). Reconciled 2026-10-06, see research/cloud/Gathering-Numbers-Reconciled.md.
+
 Rules that stop it going wrong:
 
 - **Craft is always open.** A player who never finds a drop can still reach Legendary on every line by crafting, as fast as their collections allow. Drops and chests are only a **shortcut and a sidegrade** (R3 spirit: nothing is only luck).

@@ -4,6 +4,7 @@ Cloud draft, 2026-10-06. Paper design; nothing built. Inputs read: `docs/answere
 cloth section ...", the REFERENCE line about bark armor, the NOTE about Tree Feller, the ARMOR TYPES lock), `docs/answered/skills.md` (Tree Feller lock 2026-09-25),
 `research/cloud/Gathering-Tiers-Draft.md`, `Collection-Unlocks-Draft.md`, `Enchanted-Materials-Draft.md`, `Crude-Armor-Design.md` (set stat style), `research/Tool-Levels-Spec.md` (axe / Fortune).
 Every number below is a placeholder and a Server Setup row (times in seconds).
+Reconciled 2026-10-06, see research/cloud/Gathering-Numbers-Reconciled.md (sections 4, 5, 6, 8, 9 and questions 3 / 8 changed).
 
 ## 1. What Skyy locked (short)
 
@@ -54,33 +55,32 @@ Craft level: crafted at **your Foraging level**, clamped to the tier band (Gear 
 
 ## 4. Stats
 
-Fortune scale (placeholder, question 3): 100 = one guaranteed extra log per log. A Lv 49 tool gives about 5.5 (Tool-Levels-Spec), collections about +20 per skill by the end, armor target is about 30% of the Fortune budget, so a full Goldenwood set = **40**.
+Fortune scale (placeholder, question 3): 1 point = +1% double drop (the same unit as tools, skill perk and trees); armor cap 15 (`armor.fortune.cap`); a full Goldenwood set = **12** (x1.15 set bonus, x rarity, before the cap).
 
 | Tier | Foraging Fortune (set) | Chopping speed (set) | Foraging XP (set) | Health (set) | Resist (set) |
 |---|---|---|---|---|---|
-| Wood | 4 | +2% | - | 10 | 7% |
-| Softwood | 8 | +4% | - | 12 | 9% |
-| Lightwood | 12 | +6% | - | 23 | 12% |
-| Hardwood | 16 | +9% | - | 30 | 16% |
-| Drywood | 22 | +12% | +2% | 30 | 16% |
-| Darkwood | 28 | +16% | +4% | 34 | 20% |
-| Redwood | 34 | +20% | +6% | 34 | 20% |
-| Goldenwood | 40 | +25% | +8% | 35 | 22% |
+| Wood | 1 | +1% | - | 10 | 7% |
+| Softwood | 1.5 | +2% | - | 12 | 9% |
+| Lightwood | 2.5 | +3% | - | 23 | 12% |
+| Hardwood | 4 | +4% | - | 30 | 16% |
+| Drywood | 5.5 | +6% | +2% | 30 | 16% |
+| Darkwood | 7.5 | +8% | +4% | 34 | 20% |
+| Redwood | 10 | +10% | +6% | 34 | 20% |
+| Goldenwood | 12 | +12% | +8% | 35 | 22% |
 
 - Health / resist = **about 50% of the echoed metal set** (Copper 25 HP, Iron 46, Thorium / Cobalt 61, Adamantite / Mithril 68; python-checked 12 / 23 / 30 / 34). Low Defense is the price of gathering stats. Wood armor stays vanilla's own numbers.
 - Piece split of Fortune and speed: Head 20% / Chest 35% / Legs 30% / Hands 15%, rounded, the remainder to Chest. Health and resist follow the usual armor piece split (Head 5 / Chest 9 / Legs 7 / Hands 4 shares).
 - Fortune and speed work **while worn** (like tool Fortune while held). They add to the tool's own, so a Mithril hatchet plus a Redwood set stack.
 - Reforge allowed, same pools as hatchets: Foraging Fortune, Foraging Wisdom, Chopping Speed.
-- Rarities: gathering armor is crafted, so it is **Normal** (Unique+ only through reforge or a later Foraging drop); Set rarity is not used.
+- Rarities: gathering armor is crafted, so it is **Normal** (Unique+ only through reforge or a later Foraging drop); reforge / drops may raise it; Fortune x1 / 1.1 / 1.2 / 1.3 / 1.3 / 1.3 (no multiplier on chopping speed); Set rarity is not used.
 
 ## 5. Set bonus (2 / 4 piece)
 
 | Pieces worn | Bonus | Why |
 |---|---|---|
-| 2 | **+25% of the set's Fortune** on top (rounded) | rewards two pieces without Tree Feller |
-| 4 | **Tree Feller level** from the table in section 6, plus **Sap Sense**: a leaf / sap glow shows trees of the matching tier within 8 blocks (a small, harmless indicator) | the lock says Feller on higher tiers |
+| 4 | **Fortune x1.15** (before the cap), **Tree Feller level** from the table in section 6, plus **Sap Sense**: a leaf / sap glow shows trees of the matching tier within 8 blocks (a small, harmless indicator) | the lock says Feller on higher tiers |
 
-Wood and Softwood have only the 2-piece bonus. Mixed tiers: the bonus uses the **lowest tier** of the worn pieces, the stats add per piece. That blocks "one Goldenwood piece plus junk".
+Wood and Softwood have no set bonus (no 2-piece Fortune any more). Mixed tiers: the bonus uses the **lowest tier** of the worn pieces, the stats add per piece. That blocks "one Goldenwood piece plus junk".
 
 ## 6. Tree Feller per tier
 
@@ -90,7 +90,6 @@ Levels use the **same table as the perk**: extra logs 1 / 2 / 4 / 5 / 6 / 10, co
 |---|---|---|---|---|---|---|---|---|
 | Feller level (4 pieces) | - | - | **1** (+1 log) | **2** (+2) | **3** (+4) | **4** (+5) | **5** (+6) | **6** (+10) |
 
-This matches the collection draft: Feller I appears at Birch (the Lightwood tier), II at Maple (Hardwood).
 Extra logs break **only through the normal break path** (same tool, so the Foraging gate applies), as SkyyTrees already does.
 
 ### How the sources stack (no doubling)
@@ -128,7 +127,8 @@ The glow only brightens up the ladder (Skyy's note). Hands = wrapped bark gauntl
 | Foraging XP % per tier (8 rows) | section 4 |
 | Health / resist share of the echoed metal | 50% |
 | Enchanted + log cost per tier (8 rows) | section 3 |
-| 2-piece Fortune bonus % | 25 |
+| 4-piece Fortune multiplier | 1.15 |
+| `armor.fortune.cap` / `armor.swing.cap` | 15 / 12 |
 | 4-piece Feller level per tier (8 rows) | section 6 |
 | `foraging.feller.stackBonus` (+1 if perk + axe + armor) | 0 (off) |
 | `foraging.feller.maxLogs` (cap per swing) | 10 |
@@ -142,7 +142,7 @@ The glow only brightens up the ladder (Skyy's note). Hands = wrapped bark gauntl
 
 | Risk | Guard |
 |---|---|
-| **Fortune on every Feller log** multiplies logs (10 extra x Fortune 40 x Foraging Bag) | Fortune rolls on the **block you hit**; Feller logs get Fortune at **half rate** (setting), and the whole swing is capped at `maxLogs` + the Fortune cap |
+| **Fortune on every Feller log** multiplies logs (10 extra x Fortune 40 x Foraging Bag) | Fortune rolls on the **block you hit**; Feller logs get Fortune at `bonusBlock.fortuneRate` **50%** (setting, same number as before), and the whole swing is capped at `maxLogs` + the Fortune cap |
 | Feller log counts for Collections and XP repeatedly | each log counts once; no bonus-log chains (a bonus log never triggers more bonus logs) |
 | Collection dupes: Fortune logs counted again for the Enchanted item | collections count **real drops once**; Enchanted crafting never returns the base counted twice |
 | Salvage returns Enchanted wood (loop) | salvage returns no Enchanted items; Bazaar spread is 22.2%, so a crafted set must not sell above the sum of its parts x 0.9 / 1.1 loop break |
@@ -150,7 +150,7 @@ The glow only brightens up the ladder (Skyy's note). Hands = wrapped bark gauntl
 | Low-level player in Goldenwood gear | the Foraging gate: under-level gear gives **no stats** (the same under-level rule as tools, with the red "Requires Foraging N" popup) |
 | Server crash from a huge tree | layers capped at 10 logs; a per-swing cap; Feller never breaks non-log blocks (leaves untouched) |
 | Axe + armor + perk summing to a 20-log swing | MAX rule, cap 10 (section 6) |
-| Pets / accessories pushing Fortune past the budget | total Foraging Fortune cap row (`foraging.fortune.cap`, default 200) |
+| Pets / accessories pushing Fortune past the budget | per-source caps (tool 25, armor 15, accessories 10, pets 10, collections 10) + the global `perk.doubleDropMax` 1.0 |
 
 ## For the local session (UNVERIFIED)
 
@@ -169,9 +169,9 @@ The glow only brightens up the ladder (Skyy's note). Hands = wrapped bark gauntl
 |---|---|---|
 | 1 | Is the vanilla Wood armor its own tier (8 rows) or the Softwood step (7 rows)? | 8 rows, Wood is tier 0 |
 | 2 | Tree Feller on the armor: full set only, or per piece (1 level per 1-2 pieces)? | full set (4 pieces) |
-| 3 | Foraging Fortune scale: points where 100 = +1 log per log, or percent chance? | points, full Goldenwood = 40 |
+| 3 | Foraging Fortune scale: points where 100 = +1 log per log, or percent chance? | points, 1 point = +1% double drop, full Goldenwood = 12 (was 40; reconciled 2026-10-06) |
 | 4 | Should each tier eat the previous tier's piece (bench upgrade style)? | no, raw wood + Enchanted only |
 | 5 | Stack rule for Feller sources: MAX of three, or MAX +1 when all three? | MAX only |
 | 6 | Goldenwood gate: 50-59 (later band) or 40-49 with Onyxium? | 50-59, comes later |
 | 7 | Should the glowing sap veins be a real light source or just a bright texture? | texture only |
-| 8 | Should Wood armor give any Fortune at all (it is the vanilla item)? | yes, 4 (a small gift) |
+| 8 | Should Wood armor give any Fortune at all (it is the vanilla item)? | yes, 1 (a small gift; was 4, reconciled 2026-10-06) |
