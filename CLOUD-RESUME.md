@@ -56,10 +56,9 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
       sturgeons too alike, Slag Ray view). Output: regenerated `research/cloud/fish-art/` (keep v1 sheet).
 - [ ] **Ember coin check** - `research/cloud/Ore-Regrow-Spec.md` cut Ember density 3x; re-check Ember's 11,000-coin price and the coin faucet against
       `research/cloud/Economy-Audit.md` + `research/cloud/Bank-Tab-Calibration.md`. Output: `research/cloud/Ember-Economy-Check.md`.
-- [ ] **Monk class colour + emblem check** - the Monk has no class colour in the repo (`research/cloud/class-art/README.md` proposes #ff7a5c); write the
-      options vs the other 6 class colours (contrast, colour-blind check). Output: `research/cloud/Monk-Colour-Options.md`.
 - [ ] **Concept art index page** - one `research/cloud/ART-INDEX.md` listing every art folder, its newest sheet, version, status (approved / v2 /
       waiting on Skyy) and open questions, so Skyy can review everything in one place. Output: `research/cloud/ART-INDEX.md`.
 
 
 ## Done (delete after logging - see the rules above)
+- [x] Monk colour options - 2026-10-06 - `research/cloud/Monk-Colour-Options.md`
