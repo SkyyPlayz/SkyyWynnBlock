@@ -47,14 +47,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
-- [ ] **SkyyFishing spec draft** (Skyy 2026-10-06, docs/answered/skills.md 'LOCKED 2026-10-06 ... FISHING') - web research first:
-      Angler's Almanac (docs https://rm20killer.github.io/Anglers-Almanac-Doc/ + its CurseForge page), HyFishing (CurseForge), their
-      LICENCES (jars carry none of their own -> ideas only unless a page allows reuse), Hypixel SkyBlock fishing (rods, rod parts, sea
-      creatures, treasure, fishing collections + armor, trophy / lava fishing) + Minecraft treasure fishing. Then the spec: bench + 5 part
-      kinds (hook / line / sinker / rod / reel) with tiers, rod = max weight / length, reel = reel power per click, the click-bar minigame
-      numbers, fish length + weight + weight-based sell price, treasure table (coins, unidentified gear), collections gates (fishing + metal
-      collection per rod / reel tier), fishing armor, accessories, later sea creatures + Zone 4 lava fishing, fish foods. Use an Opus agent
-      for the engine-free design if useful. Output: `research/cloud/SkyyFishing-Spec-Draft.md`.
 - [ ] **Light armor helmet options** - Skyy's reference has no helmet; draw 3 helmet options (hood with metal rim, half-mask cowl, open leather cap) for
       Copper and Onyxium with the same script style (`research/cloud/light-armor/make_sheets.py`). Output: `research/cloud/light-armor/helmets.png` + README note.
 - [ ] **Heavy armor tier 1 concept** - HEAVY ARMOR tier 1 = a heavy leather set below Copper (vanilla Armor_Leather_Heavy, restyle): concept sheet in the
@@ -73,3 +65,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Apply the gathering reconciliation - 2026-10-06 - `research/cloud/Gathering-Reconciliation-Applied.md`
 - [x] Questions digest for Skyy - 2026-10-06 - `research/cloud/Questions-Digest-1006.md`
 - [x] Food expansion draft - 2026-10-06 - `research/cloud/Food-Expansion-Draft.md`
+- [x] SkyyFishing spec draft - 2026-10-06 - `research/cloud/SkyyFishing-Spec-Draft.md`
