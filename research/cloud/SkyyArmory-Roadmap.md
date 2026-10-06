@@ -102,6 +102,8 @@ Skyy's rule (SkyyArmory section 15): staff cost = 2 x wand; damage multiple `1.2
 | **Voidglass** | 76 | 160 | 320 | 410 | 2.6 | 39.8 |
 | **Aetherium** | 86 | 180 | 360 | 460 | 2.6 | 44.8 |
 
+**Pool correction (2026-10-06):** research/SkyyArmory-Spec.md 15.4 gives the Mage pool at about 10 Mana per level (531 at Lv 50), not the 5 per level read above; `research/cloud/Spellbook-Ladder.md` uses the 15.4 row. Re-run this table from 15.4 before building.
+
 Notes: the steady cast count keeps spell economy the same shape as the Mithril rung; if the pool rows in SkyyArmory 15.4 differ, only the Mana column changes. Quick shot stays C / 5. Spellbook charged = 2 x staff (the live ratio, 20 vs 10), so 440 Mana at Cindersteel is more than the pool: spellbooks therefore keep a **flat-ish** cost ladder (cap 40% of the pool at the band start) and make up the difference with **area**, to be designed when books are built (Q3).
 
 ## 7. Build stages (the main session decides rounds; weapons are items + recipes + assets, usually a **lean round** each, a **full round** when it touches several mods)
