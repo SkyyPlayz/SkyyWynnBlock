@@ -62,7 +62,7 @@ pin on the eyeshade band; **High** Notary = taller collar + a floating seal halo
 
 | # | Check |
 |---|---|
-| 1 | **Armor slots:** the vanilla texture list in the art brief (Chest, Head, Legs, Hands) suggests Hytale has **no Boots slot**. Capstone-Sets.md gives the Heavy and Cloth sets "Boots". If so, the "Footnote Greaves" fit the **Legs** slot (they are shin armor) and the Notary needs Hands instead of Slippers (or slippers become part of the Legs piece). Check the real slot list in the game files. |
+| 1 | **Armor slots:** the vanilla texture list in the art brief (Chest, Head, Legs, Hands) suggests Hytale has **no Boots slot**. research/cloud/Capstone-Sets.md gives the Heavy and Cloth sets "Boots". If so, the "Footnote Greaves" fit the **Legs** slot (they are shin armor) and the Notary needs Hands instead of Slippers (or slippers become part of the Legs piece). Check the real slot list in the game files. |
 | 2 | Whether a model can render a translucent material (the voidglass panels) or only alpha-cut; if not, fake it with the darker glass colours baked in. |
 | 3 | Floating runes / halo: needs a separate model part or particles that follow the player (same question as the soul cage spin in the weapon review). |
 | 4 | Texture sizes: these figures are concept views, not UV textures; the real textures should match vanilla Mithril density (Chest 192x64, Head 160x64, Legs 128x64, Hands 64x64) or 2x. |

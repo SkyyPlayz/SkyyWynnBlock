@@ -2,8 +2,8 @@
 
 Written 2026-10-06 (spec author, Fable; SPEC round - nothing built, nothing deployed); revised the same day after three critic passes
 (economy + loops, progression, engine + phasing - see "Review notes" at the end). Merges the cloud drafts
-(`research/cloud/SkyBlock-Gathering-Progression.md`, `Gathering-Tiers-Draft.md`, `Collection-Unlocks-Draft.md`,
-`Enchanted-Materials-Draft.md`, `Gathering-Numbers-Reconciled.md`, `Foraging-Armor-Design.md`, `Gathering-Armor-Mining-Farming.md`)
+(`research/cloud/SkyBlock-Gathering-Progression.md`, `research/cloud/Gathering-Tiers-Draft.md`, `research/cloud/Collection-Unlocks-Draft.md`,
+`research/cloud/Enchanted-Materials-Draft.md`, `research/cloud/Gathering-Numbers-Reconciled.md`, `research/cloud/Foraging-Armor-Design.md`, `research/cloud/Gathering-Armor-Mining-Farming.md`)
 with the four verifier fact sheets of this round (mining, foraging, farming, engine-collections; Assets.zip + live build scripts, read only).
 Where a draft and a fact sheet disagree, the fact sheet wins; the wrong draft lines are listed in section 9.
 
@@ -249,7 +249,7 @@ would leak in, the per-species type `Wood_<Species>` is used. Exact species ids 
   Zone 1 Maple also carries - it would have let Maple pay for the Mithril-tier set.
 - The first two armor tiers sit in Zone 1 in every skill (Copper / Iron in Mining, Wheat / Carrot need no zone); that matches the two
   Zone 1 tree tiers and is intended.
-- Stats, Feller levels, set bonus, look: as `Foraging-Armor-Design.md` after the reconciliation (Fortune 1 / 1.5 / 2.5 / 4 / 5.5 / 7.5 /
+- Stats, Feller levels, set bonus, look: as `research/cloud/Foraging-Armor-Design.md` after the reconciliation (Fortune 1 / 1.5 / 2.5 / 4 / 5.5 / 7.5 /
   10 / 12, speed +1 ... +12%, Feller 1-6 from Lightwood, 4-piece x1.15), Health / resist from the Gear level curve at 50% of Heavy
   (Armor-Types draft Q12). Tier 0 keeps vanilla's own numbers (46 HP / 25%); the drafts' other two figures (10 HP / 7%, 12 HP / 9%) go.
 
@@ -272,7 +272,7 @@ would leak in, the per-species type `Wood_<Species>` is used. Exact species ids 
   drop from unripe crops, Kweebec camps and encounters still drop - that is gathering, not coins.
 - **Farming armor sets** (made from + looking like the crop, LOCKED): 6 Enchanted of the key crop (1 / 2 / 2 / 1; = 960 crops against
   the 1,000-crop unlock) + 40 of the pair's other crop + cloth (Linen T1-T3, Cotton bolt T4-T6, Silk T7) - PLACEHOLDER. Stats per
-  `Gathering-Armor-Mining-Farming.md` section 2.2 (reconciled); Green Thumb at T5+ is a real auto-replant.
+  `research/cloud/Gathering-Armor-Mining-Farming.md` section 2.2 (reconciled); Green Thumb at T5+ is a real auto-replant.
 - **Mining armor sets** (start at Copper, LOCKED): Enchanted per the armor cost rule (Copper / Iron 6 = 1 / 2 / 2 / 1; Thorium / Cobalt 3
   = 1 / 1 / 1 / 0; Adamantite 1 = chest) + the vanilla set's bar count halved + 8 leather (PLACEHOLDER); helmet lamp = real light through
   the Lantern helper-light code (LOCKED).

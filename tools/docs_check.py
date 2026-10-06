@@ -46,7 +46,8 @@ CITES = [("(OPEN-QUESTIONS.md:50-57)", '(docs/answered/gear.md "REQUEST 2026-10-
 ASSET_DIRS = ("Server/", "Common/")
 PATCH_RE = re.compile(r"^tools/\w+_\d+(?:_\d+)+_patch\.py$")  # a spec naming the patch script a future build will write
 TEST_RE = re.compile(r"^Skyy\w+/(?:test|build)_skyy\w+_\d+(?:\.\d+)+\.py$")  # planned harness / build of a future version
-PLANNED = {"tools/sacks_0_7_13_patch.py", "tools/skyyacctable.py", "tools/skyyacctable_test.py"}  # research/Accessory-Table-Spec.md (paused)
+PLANNED = {"tools/sacks_0_7_13_patch.py", "tools/skyyacctable.py", "tools/skyyacctable_test.py",  # research/Accessory-Table-Spec.md (paused)
+           "tools/skyyench.py", "tools/skyywbtab.py"}  # research/Gathering-Progression-Spec.md phase A
 LINK = re.compile(r"\]\(([^)\s]+)\)")  # a markdown link's target: always a path (or a URL / #anchor)
 
 
