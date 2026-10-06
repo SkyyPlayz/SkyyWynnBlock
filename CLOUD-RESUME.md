@@ -55,11 +55,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       numbers, fish length + weight + weight-based sell price, treasure table (coins, unidentified gear), collections gates (fishing + metal
       collection per rod / reel tier), fishing armor, accessories, later sea creatures + Zone 4 lava fishing, fish foods. Use an Opus agent
       for the engine-free design if useful. Output: `research/cloud/SkyyFishing-Spec-Draft.md`.
-- [ ] **Food expansion draft** (Skyy 2026-10-06: food = primary healing) - every vanilla food (names from the web / wiki; exact ids
-      UNVERIFIED) placed into SkyyCooking's healing / Grade system, our own new foods, and the eating rule (faster eating vs hits no longer
-      cancel eating - recommend one) + Skyy's POTION vs FOOD design (docs/answered/skills.md 'LOCKED 2026-10-06 ... POTIONS'):
-      focused potions with flat numbers by grade, mixed foods with family focus (veggies HP, fruit Mana, meat Stamina, mushrooms bonus
-      effects, combos stack). Output: `research/cloud/Food-Expansion-Draft.md`.
 - [ ] **Light armor helmet options** - Skyy's reference has no helmet; draw 3 helmet options (hood with metal rim, half-mask cowl, open leather cap) for
       Copper and Onyxium with the same script style (`research/cloud/light-armor/make_sheets.py`). Output: `research/cloud/light-armor/helmets.png` + README note.
 - [ ] **Heavy armor tier 1 concept** - HEAVY ARMOR tier 1 = a heavy leather set below Copper (vanilla Armor_Leather_Heavy, restyle): concept sheet in the
@@ -77,3 +72,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] NoCube + Aures mods survey - 2026-10-06 - `research/cloud/NoCube-Mods-Survey.md`
 - [x] Apply the gathering reconciliation - 2026-10-06 - `research/cloud/Gathering-Reconciliation-Applied.md`
 - [x] Questions digest for Skyy - 2026-10-06 - `research/cloud/Questions-Digest-1006.md`
+- [x] Food expansion draft - 2026-10-06 - `research/cloud/Food-Expansion-Draft.md`
