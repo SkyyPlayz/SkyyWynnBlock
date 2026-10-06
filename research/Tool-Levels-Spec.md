@@ -1,5 +1,7 @@
 # SkyyGear 0.2.2 "tool levels": build spec
 
+> **REVISE FIRST - Skyy 2026-10-05 (docs/answered/gear.md "REQUEST 2026-10-05"):** tool level raises gathering SPEED and FORTUNE (pickaxe: mining speed + Mining Fortune; axe: chopping speed + Foraging Fortune; hoe / sickle: Farming Fortune); axes, pickaxes and farming tools get RARITIES, rolls and REFORGES; a new SICKLE RANGE modifier. Earlier revise notes in RESUME still apply (Power names, hoe / sickle lock ON, every new tool levelled, hatchet power lower + earlier swing speed).
+
 > **Skyy's words win over this draft:** OPEN-QUESTIONS.md, "Q&A with Skyy 2026-10-02", the LOCKED 2026-10-02 TOOL LEVELS block
 > (gate skills, crafted at your level, answers 1-4). Older locks that still apply are named where they bite.
 
