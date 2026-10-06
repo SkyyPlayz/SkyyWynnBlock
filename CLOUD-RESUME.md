@@ -36,8 +36,6 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **Capstone dungeon spec** - the one endgame dungeon after Zone 4/5 (`docs/plans/SkyyDungeons-Plan.md`, Decisions row 7.5): research Hypixel Catacombs / Wynncraft raids, propose floors,
-      rooms, bosses, party size, scaling, rewards. Output: `research/cloud/Capstone-Dungeon-Spec.md`.
 - [ ] **Accessory acquisition** - Accessories are admin-give only today ("drops / chests later", docs/log/2026-09.md 2026-09-30). Propose how players earn the booster accessories:
       zone chests, boss drops, event tokens, shop, crafting; per rarity. Read `docs/plans/SkyyAccessories-Plan.md`, `research/Booster-Accessories-Spec.md`. Output: `research/cloud/Accessory-Acquisition.md`.
 - [ ] **Prestige system spec** from `research/cloud/Tab-Economy.md` section 5: what resets, what is kept, perks, caps, the ticket number joke, per-profile storage. Output: `research/cloud/Prestige-Spec.md`.
@@ -71,3 +69,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] SkyyQuests design - 2026-10-06 - `research/cloud/SkyyQuests-Spec.md`
 - [x] Outposts list - 2026-10-06 - `research/cloud/Outposts-List.md`
 - [x] Slayers spec - 2026-10-06 - `research/cloud/Slayers-Spec.md`
+- [x] Capstone dungeon spec - 2026-10-06 - `research/cloud/Capstone-Dungeon-Spec.md`

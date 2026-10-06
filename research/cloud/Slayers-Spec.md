@@ -129,7 +129,7 @@ Perks apply only vs the line's mob family and to **max Health**; no global stat 
 | **Dungeon progression** | slayers are optional; they never gate a zone or the capstone (spine rule) |
 
 ## 8. Server Setup rows (sketch)
-`slayer.enabled`, per-line enable, `slayer.tierCosts` (a 5 x 5 table), `slayer.bountyKills` (15,25,40,60,80), `slayer.bossHealthMult` (6,12,24,48,96), `slayer.xpPerTier` (5,25,150?,...), `slayer.levelXp` (7 numbers), `slayer.timerSeconds` (1200), `slayer.partyMax` (4), `slayer.partyHealthPercent` (50), `slayer.rngMeter` (on), `slayer.failCooldownSeconds` (60), `slayer.instance` (on; off = option B).
+`slayer.enabled`, per-line enable, `slayer.tierCosts` (a 5 x 5 table), `slayer.bountyKills` (15,25,40,60,80), `slayer.bossHealthMult` (6,12,24,48,96), `slayer.xpPerTier` (5,25,100,500,1500), `slayer.levelXp` (7 numbers), `slayer.timerSeconds` (1200), `slayer.partyMax` (4), `slayer.partyHealthPercent` (50), `slayer.rngMeter` (on), `slayer.failCooldownSeconds` (60), `slayer.instance` (on; off = option B).
 
 ## 9. Build plan
 | Phase | Content |
