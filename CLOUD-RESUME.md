@@ -65,8 +65,6 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [ ] **Pets v2** - Skyy liked none except maybe the rabbit: more detail, match the vanilla Hytale creature style (proportions, palettes, chunky
       voxel-model look); start from the rabbit. Output: `research/cloud/pet-art/` v2.
       Dragon icon: match the Dragon Nestkeeper (Aures) dragons' look (Skyy) - original drawing in their style only; no tracing their files until Aures says OK.
-- [ ] **Pet zones + rarities** - fill the gaps `research/cloud/pet-art/README.md` section 3 lists (zone and starting rarity per pet) with drop sources
-      and odds, aligned with `research/cloud/Pets-Spec.md`. Output: `research/cloud/Pet-Sources.md`.
 - [ ] **Accessory icon sizes + vanilla icon check list** - list exactly what the local session must read in Assets.zip for icon size/paths
       for items, accessories, weapons and armor concepts (one checklist for all the art folders). Output: `research/cloud/Art-Checklist-Local.md`.
 - [ ] **Capstone set art** - concept sheet for the 3 capstone sets (`research/cloud/Capstone-Sets.md`) in the same pixel style. Output: `research/cloud/capstone-set-art/`.
@@ -87,3 +85,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [x] Spellbook table re-run - 2026-10-06 - `research/cloud/Spellbook-Ladder.md`
 - [x] Mining helmet lamp spec - 2026-10-06 - `research/cloud/Mining-Lamp-Spec.md`
 - [x] Crop armor stats - 2026-10-06 - `research/cloud/Crop-Armor-Spec.md`
+- [x] Pet zones + rarities - 2026-10-06 - `research/cloud/Pet-Sources.md`
