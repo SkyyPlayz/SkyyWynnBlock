@@ -36,10 +36,26 @@ SkyBlock-style ladder for Farming / Mining / Foraging, collection levels unlock 
 trees grouped into few tiers. Also read docs/answered/gear.md 2026-10-05 lines (Foraging armor, tool levels, armor types) and
 docs/answered/economy.md 2026-10-05 lines (Tree Sap, Lantern behind the Sap collection). Removed as done locally 2026-10-05: Bazaar
 progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkills 0.4.16 + SkyyCooking 0.1.6 live). -->
-- [ ] **SkyyArmory roadmap** - Skyy named a new content mod SkyyArmory (2026-10-02): our own weapons and armor, starting with metal
-      Priest wands made by recolouring the vanilla Wood Wand (same model, new texture, like the vanilla Rotten Wand; OPEN-QUESTIONS Q&A).
-      Propose the next items per class (Mage / Archer / Warrior / Berserker / Priest) and our own Lv 50-100 tiers: names, tier ladder,
-      which vanilla model each could reuse, stat identity per class (Wynncraft-inspired, web research). Output: `research/cloud/SkyyArmory-Roadmap.md`.
+- [ ] **Weapon speed tiers** - Skyy 2026-10-05: weapon speed tiers Slow / Medium / Fast / Super Fast with the same DPS (per-hit damage scales).
+      Assign every weapon type of `research/cloud/SkyyArmory-Roadmap.md` section 5 a tier, compute per-hit multipliers from attack times (keep
+      the engine values UNVERIFIED), and show how crits, Strength, Mana-per-cast and on-hit effects scale. Output: `research/cloud/Weapon-Speed-Tiers.md`.
+- [ ] **Foraging armor ladder** - docs/answered/gear.md 2026-10-05: tier 1 vanilla Wood armor, then the Farmer's Workbench wood ladder (Softwood to
+      Goldenwood, 7 tiers echoing Copper to Onyxium), Foraging Fortune + chopping speed + Foraging XP, Tree Feller on higher tiers. Design the 7 tiers:
+      stats per tier, recipes (read `research/cloud/Gathering-Tiers-Draft.md`), set bonus idea, level bands. Output: `research/cloud/Foraging-Armor-Design.md`.
+- [ ] **Capstone sets** - the Set rarity (green) drops only in the capstone (Capstone-Dungeon-Spec 5). Design 3 sets (3 pieces each, Voidglass and
+      Aetherium tiers, one per armor type): names, lore lines in the Department voice, the 2-piece / 3-piece bonuses within the SkyyGear stat catalog
+      (read-only). Output: `research/cloud/Capstone-Sets.md`.
+- [ ] **Economy faucet / sink audit** - read every `research/cloud/*.md` spec and `research/Server-Setup-Research.md`; list each coin faucet and sink with
+      a rough size per hour, check the R3 rules, the Bazaar loop (22.2% rule), the Tab (20M per day), prestige. Flag anything that breaks. Output:
+      `research/cloud/Economy-Audit.md`.
+- [ ] **Hytale 0.7 research** - web research (snippets): what is announced or released for Hytale 0.7 and later (mods API, UI, items, worldgen, combat).
+      Compare against `research/PreRelease-Compat-Audit-1002.md` and list likely breaks for our mods. Output: `research/cloud/Hytale-0.7-Watch.md`.
+- [ ] **New-player guide** - a plain English "your first hour on SkyWynn" guide for players (what to do, where, what the menus are): tutorial flow from
+      Story-Script-Draft, starter shards, the first outpost, classes, bags, the Board. Players, not admins. Output: `research/cloud/Player-Guide-First-Hour.md`.
+- [ ] **NPC barks, signs and Board texts** - short ambient lines in the Department voice: 6 barks per town NPC type (clerk, banker, smith, guide, guard,
+      shopkeeper), 40 signs, 20 Board announcements (for Zone Specials), 20 loading-screen tips. Output: `research/cloud/Barks-Signs-Tips.md`.
+- [ ] **Mining and Farming gathering armor** - Foraging armor is designed (task above); do the same for Mining (Fortune, mining speed) and Farming
+      (Fortune, sickle range, crop XP): tiers, materials from `research/cloud/Gathering-Tiers-Draft.md`, stats. Output: `research/cloud/Gathering-Armor-Mining-Farming.md`.
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
@@ -49,3 +65,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Accessory acquisition - 2026-10-06 - `research/cloud/Accessory-Acquisition.md`
 - [x] Prestige system spec - 2026-10-06 - `research/cloud/Prestige-Spec.md`
 - [x] Zone specials / mayor lite - 2026-10-06 - `research/cloud/Zone-Specials-Spec.md`
+- [x] SkyyArmory roadmap - 2026-10-06 - `research/cloud/SkyyArmory-Roadmap.md`
