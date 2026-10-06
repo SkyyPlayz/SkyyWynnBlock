@@ -47,10 +47,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       which exist today vs later (Mining / Foraging / Farming Fortune, Mining / Chopping Power from the tool-levels spec), SkyBlock's stat
       list for comparison, and a bridge contract (each mod publishes e.g. stats:contrib:<Mod> with plain java types; SkyyMenu sums and
       draws), build parts + versions. Output: `research/cloud/Stats-Page-Spec.md`.
-- [ ] **Pocket Dimension release kit** - Skyy will post "Skyy's Pocket Dimension" (the Magic Bags mod: bag types + tiers, /sacks, auto-pickup,
-      benches + pocket crafting pull from bags, auto-refill, Workbench tab; NO /craft; tiers unlock by crafting the previous tier) on CurseForge.
-      Write the page: summary, feature list, commands + permissions, config, compatibility, FAQ, install steps, changelog template, a
-      screenshot shot-list, a licence note. Read SkyySacks/build_skyysacks_0.7.12.py (docstring) + OPEN-QUESTIONS. Output: `research/cloud/PocketDimension-Release-Kit.md`.
 - [ ] **Zone islands layout (one world)** - Skyy: every zone island in ONE world so you see Zone 2 from Zone 1; islands ~3x bigger, random
       coastline, a mountain rising to the middle, vanilla features (rivers, caves, goblin camps), harder biomes toward the middle as a tendency.
       Design sizes, distances, heights, hub town + temple, portal + guardian spots, travel, anti-bridging / anti-flying rules, view-distance
@@ -99,3 +95,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Class tree paths - 2026-10-06 - `research/cloud/Class-Tree-Paths.md`
 - [x] Soul Orb spec - 2026-10-06 - `research/cloud/Soul-Orb-Spec.md`
 - [x] Monk kit spec - 2026-10-06 - `research/cloud/Monk-Kit-Spec.md`
+- [x] Pocket Dimension release kit - 2026-10-06 - `research/cloud/PocketDimension-Release-Kit.md`
