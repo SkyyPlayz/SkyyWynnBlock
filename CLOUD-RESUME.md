@@ -55,10 +55,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       how they count toward collections (their base amount), Bazaar prices (base price x ratio + premium, no buy-craft-sell loop at the
       buy / sell spread - see docs/log/2026-10.md SkyyBazaar 0.1.4 money-loop line), bag / sack handling. Output:
       `research/cloud/Enchanted-Materials-Draft.md`.
-- [ ] **Class ability spec draft** - from research/classes/*.md: for every ability of the 7 classes give base numbers (Mana cost, cooldown,
-      radius, duration, damage / heal as a multiple of a weapon hit), per-level gains (levels by use), the 4 modifiers with per-level steps, and a
-      POWER BUDGET table (each ability fully levelled + both modifiers + its class-tree path must not break a fight). Keep LOCKED rows as written;
-      improve the *proposed* rows. Output: `research/cloud/Class-Ability-Spec-Draft.md`.
 - [ ] **Modifier pool spec** - the 17 shared modifiers (research/classes/README.md): exact effect per ability kind (projectile, zone, buff,
       heal, shield, stance), per-level steps + caps, the no-doubling rule, Ricochet = projectiles only, Chain = effects only, and which abilities
       offer each. Output: `research/cloud/Modifier-Pool-Spec.md`.
@@ -126,4 +122,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 
 ## Done (delete after logging - see the rules above)
 
-(none; the finished tasks are logged in `research/cloud/LOG.md`)
+- [x] Class ability spec draft - 2026-10-06 - `research/cloud/Class-Ability-Spec-Draft.md`
