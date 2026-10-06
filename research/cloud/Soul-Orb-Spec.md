@@ -42,7 +42,7 @@ Notes:
 
 ### 2.1 Damage
 - **Damage per Mana at the Soul Orb = 0.08 H** (H = one charged wand shot at the player's level). That is **below** the Mage staff's 0.10 H per Mana (Mage = more damage per Mana, Priest trades damage for healing: LOCKED).
-- Damage per second **per tether** = `0.08 H x multiplier x Mana rate`: Orb 0.08, Copper 0.09, Iron 0.10, Thorium 0.14, Cobalt 0.14, Adamantite 0.25, Mithril 0.26, Onyxium 0.27 H per second **on each tethered enemy**.
+- Damage per second **per tether** = `0.08 H x multiplier x Mana rate`: Orb 0.08, Copper 0.09, Iron 0.10, Thorium 0.14, Cobalt 0.14, Adamantite 0.20, Mithril 0.21, Onyxium 0.27 H per second **on each tethered enemy**.
 - **Whole-cage output** (all tethers on different enemies): Orb 0.08 / Copper 0.19 / Iron 0.39 / Thorium 0.83 / Cobalt 1.44 / Adamantite 2.80 / Mithril 3.33 / Onyxium 5.4 H per second in total. Single-target it is weak by design (0.08-0.27 H/s against a boss): the orb is a **crowd tool** that feeds healing.
 - Budget check (Class-Ability-Spec-Draft): the orb's damage is **not** an ability; the budget rule used is "total sustained output at most 1.5x the weapon's sustained DPS (about 1 H/s)" - Onyxium at 5.4 H/s only happens when 20 enemies are packed within the small radius; Cobalt at 1.44 H/s is in range.
 - **Targeting radius**: a **3-block sphere** around where you look; lock-on range up to **25 blocks**; a tether breaks if the enemy is farther than **30 blocks**, line of sight is blocked for **3 s**, or it dies.
