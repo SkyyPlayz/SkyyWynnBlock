@@ -25,9 +25,11 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
   Collections 0.2.6, Gear 0.2.3, Bazaar 0.1.4, Party 0.1.7 + Essentials 0.1.8, Skills 0.4.16, Trees 0.3.2. NONE tested by Skyy yet.
 - 2026-10-06 DEPLOYED (untested): Collections 0.2.7 + Accessories 0.5.6 (Lanterns behind Tree Sap, TEST-CHECKLIST 28), Bazaar 0.1.5 + Sacks
   0.7.13 (sell from bags, 29), Classes 0.1.12 + Armory 0.1.1 + Gear 0.2.4 (staff / wand traversals, 30). START HERE items 3 + 5 are DONE.
-- RUNNING (started ~14:00 -0600): (f) MOB CURVE ultracode = SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 (renumbered; deploy + roll back
-  together, add the pairing STOP to deploy_set.py); (g) SkyyArmory 0.1.2 Grapple Bolt (+ trav Stamina cap 10 -> 5); (h) SkyyGatherProbe 0.1 =
-  gathering phase P0 probe pack (op-only dev mod for ONE test session with Skyy, then removed). Untracked files in mod folders = these.
+- ALSO DEPLOYED 2026-10-06: SkyyGatherProbe 0.1 + B (op-only probe pack, TEST-CHECKLIST 31 - REMOVE both from SET after Skyy's session),
+  SkyyArmory 0.1.2 crossbow Grapple Bolt + Stamina cap 5 (32).
+- RUNNING: MOB CURVE ultracode = SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 (deploy + roll back together; add the pairing STOP to
+  deploy_set.py). Untracked SkyyMobs / SkyyGear / SkyySkills files = this round. NEXT after it: Dodge Roll (SkyySkills 0.4.18, research/Grapple-Bolt-Spec.md),
+  then gathering phase A (after the probe results).
 - SPECS DONE + ANSWERED today: research/Gathering-Progression-Spec.md (all 11 questions answered - docs/answered/bags.md 2026-10-06: hard ore
   gates, Mithril hidden until 0.7, ratio 100, Enchanted premium + Fortune on all tiers); research/Grapple-Bolt-Spec.md (Dodge Roll part waits
   for a free SkyySkills slot = 0.4.18 after the mob curve).
