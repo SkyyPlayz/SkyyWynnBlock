@@ -47,9 +47,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       which exist today vs later (Mining / Foraging / Farming Fortune, Mining / Chopping Power from the tool-levels spec), SkyBlock's stat
       list for comparison, and a bridge contract (each mod publishes e.g. stats:contrib:<Mod> with plain java types; SkyyMenu sums and
       draws), build parts + versions. Output: `research/cloud/Stats-Page-Spec.md`.
-- [ ] **Loot box design** - unidentified drops become Wynncraft-style rarity loot boxes ("better looking"): box colours per SkyyGear rarity,
-      names ("Unidentified Sword"), a level RANGE (Skyy's pick), tooltip mockups, identify messages, art direction for the generated art.
-      Read research/Loot-Unid-Spec.md. Output: `research/cloud/Loot-Box-Design.md`.
 - [ ] **Minimap widget UX** - our own minimap becomes a SkyyHud widget that needs BetterMap and reuses its map (DapperMap lagged: its tick ran
       40-57 ms on the world thread). Design the settings Skyy liked in DapperMap (zoom, size, circle / square, rotation, refresh speed,
       resolution, markers, colours; NO info panel), HUD-editor placement, defaults, a performance budget, marker throttles. Design only - the
@@ -91,3 +88,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Pocket Dimension release kit - 2026-10-06 - `research/cloud/PocketDimension-Release-Kit.md`
 - [x] Zone islands layout (one world) - 2026-10-06 - `research/cloud/Zone-Islands-Layout.md`
 - [x] Starter shards plan 2 - 2026-10-06 - `research/cloud/Starter-Shards-Plan-2.md`
+- [x] Loot box design - 2026-10-06 - `research/cloud/Loot-Box-Design.md`
