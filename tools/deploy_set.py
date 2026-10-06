@@ -17,7 +17,7 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.13"), ("SkyySacks", "0.7.13"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.6"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.4"), ("SkyySkills", "0.4.16"),
+    ("SkyyBank", "0.1.6"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.5"), ("SkyySkills", "0.4.17"),
     ("SkyyAccessories", "0.5.6"), ("SkyyClasses", "0.1.12"), ("SkyyMenu", "0.3.8"), ("SkyyEssentials", "0.1.8"), ("SkyyProfiles", "0.1.5"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.2"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -48,10 +48,12 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.3"), ("SkyyWorldGen", "0.1"),
+    ("SkyyMobs", "0.1.4"), ("SkyyWorldGen", "0.1"),
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     ("SkyyArmory", "0.1.2"),
+    # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
+    # one back alone; rolling all three back = Undo the "strength.shape linear -> curve" change first (or 0.1.3 runs per level with the file's values).
     # SkyyArmory 0.1.2 (2026-10-06): crossbow Grapple Bolt (right click = grapple, replaces the guard) + trav.staminaCap 10 -> 5 (one-time
     # migration of an untouched 10 only). Rolling back to 0.1.1 brings the guard back; the cap line stays 5 (hand-edit back if wanted).
     # Traversal round (2026-10-06): SkyyClasses 0.1.12 -> SkyyArmory 0.1.1 -> SkyyGear 0.2.4 together (staff blink, wand hop / burst / heal orb,
@@ -178,6 +180,14 @@ def main():
     # traversal round (2026-10-06): SkyyArmory 0.1.1 calls class:fn:heal (SkyyClasses 0.1.12) - never roll SkyyClasses below 0.1.12 while it is pinned
     if _v(_p.get("SkyyArmory", "0")) >= (0, 1, 1) and _v(_p.get("SkyyClasses", "0")) < (0, 1, 12):
         print("STOP: SkyyArmory 0.1.1+ needs SkyyClasses 0.1.12+ (class:fn:heal for the heal orb) in the same deploy"); return 1
+    # mob curve round (2026-10-06): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 deploy and roll back TOGETHER (mob:fn:info, gear:fn:curve, the level gap)
+    _mob = _v(_p.get("SkyyMobs", "0")) >= (0, 1, 4)
+    if _mob and _v(_p.get("SkyyGear", "0")) < (0, 2, 5):
+        print("STOP: SkyyMobs 0.1.4+ needs SkyyGear 0.2.5+ (gear:fn:curve, the gear level curves) in the same deploy"); return 1
+    if _mob and _v(_p.get("SkyySkills", "0")) < (0, 4, 17):
+        print("STOP: SkyyMobs 0.1.4+ needs SkyySkills 0.4.17+ (kill XP by mob level through mob:fn:info) in the same deploy"); return 1
+    if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 5) or _v(_p.get("SkyySkills", "0")) >= (0, 4, 17)) and not _mob:
+        print("STOP: SkyyGear 0.2.5+ / SkyySkills 0.4.17+ deploy with SkyyMobs 0.1.4+ (the mob curve round) - pin all three or none"); return 1
     missing = []
     plan = []
     for mod, ver in SET:
