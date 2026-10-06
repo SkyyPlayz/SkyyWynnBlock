@@ -58,8 +58,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [ ] **Economy faucet / sink audit** - read every `research/cloud/*.md` spec and `research/Server-Setup-Research.md`; list each coin faucet and sink with
       a rough size per hour, check the R3 rules, the Bazaar loop (22.2% rule), the Tab (20M per day), prestige. Flag anything that breaks. Output:
       `research/cloud/Economy-Audit.md`.
-- [ ] **Hytale 0.7 research** - web research (snippets): what is announced or released for Hytale 0.7 and later (mods API, UI, items, worldgen, combat).
-      Compare against `research/PreRelease-Compat-Audit-1002.md` and list likely breaks for our mods. Output: `research/cloud/Hytale-0.7-Watch.md`.
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
@@ -75,3 +73,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Mining and Farming gathering armor - 2026-10-06 - `research/cloud/Gathering-Armor-Mining-Farming.md`
 - [x] New-player guide (first hour) - 2026-10-06 - `research/cloud/Player-Guide-First-Hour.md`
 - [x] NPC barks, signs, Board texts, tips - 2026-10-06 - `research/cloud/Barks-Signs-Tips.md`
+- [x] Hytale 0.7 watch - 2026-10-06 - `research/cloud/Hytale-0.7-Watch.md`
