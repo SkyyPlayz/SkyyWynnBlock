@@ -130,3 +130,81 @@ Check Assets.zip for a hood-shaped head model before choosing.
 |---|---|---|
 | 7 | Which helmet: A hood + metal rim, B half-mask cowl, C open leather cap (or none)? | [A hood] |
 | 8 | Same helmet shape for every tier, only the metal changes? | [yes] |
+
+## 7. v2 - 2x detail + half-mask cowl helmets (added 2026-10-06)
+
+Cloud draft, 2026-10-06. Paper design; nothing built. Answers Skyy's art review (`docs/answered/gear.md` line 73, LOCKED 2026-10-06:
+"i love the armor! but it seems a little Pixley ... for the helmet lets go with the half masked cowl design, for copper and iron. for the
+higher tiers, keep the half mask, but make it resemble the vanilla helmets a little more. i want the mithril to have the same helmet wings")
+and the `CLOUD-RESUME.md` item "Light armor v2". The approved design is kept as it is: black leather + per-tier metal accents, Copper ..
+Onyxium, tier 1 = vanilla leather (greyed placeholder).
+
+**Start here:** `research/cloud/light-armor/light-armor-sheet-v2.png` (front row + back row, with helmets), then
+`research/cloud/light-armor/helmets-v2.png`.
+
+| File | What |
+|---|---|
+| `research/cloud/light-armor/light-armor-sheet-v2.png` | All tiers, front + back, wearing the half-mask cowl; tier 1 greyed placeholder (3216 x 1400) |
+| `research/cloud/light-armor/<tier>-set-v2.png` | Full set front + back at x4 (7 files: copper ... onyxium) |
+| `research/cloud/light-armor/<tier>-chest-v2.png` | Chest piece close-up, front (bust without head) |
+| `research/cloud/light-armor/helmets-v2.png` | Head + shoulders of every tier, front and back row |
+| `research/cloud/light-armor/make_sheets_v2.py` | The v2 generator (deterministic, checked by running twice) |
+
+The v1 files (`make_sheets.py`, `make_helmets.py`, the 16 v1 PNGs) are unchanged (md5 checked), so Skyy can compare v1 and v2 side by
+side. `make_sheets_v2.py` only imports the v1 palettes and the per-tier accent switches (`cfg_for`). The 16 v2 PNGs are about 330 KB.
+
+### 7.1 What changed (detail)
+
+| | v1 | v2 |
+|---|---|---|
+| Figure grid | 64 x 84 | 128 x 192 (same layout at 2x; v1 point (x, y) -> (2x, 2y + 22); 22 rows of headroom for crests / wings) |
+| Shading | 5-step ramp, flat parts | 7-step ramp per material, whole-part gradient lit top-left + 2-px bevel, 1-px dark outline kept |
+| Leather | flat quilt lattice | finer diamond quilting with outline-dark seams + thread stitches, grain noise, wear scuffs, thread stitching along every leather edge |
+| Metal | flat trims, 1-px dots | brushed metal with pits, 4-px domed rivets, bevelled buckles with prongs, faceted spikes / crystals / fins (lit half + shaded half) |
+| Small parts | - | belt holes, tan stitching on brown straps, boot laces + soles, glove fingers, bracer lacing, leaf veins, tassel creases + cut / notched ends, laced slit at the back of the cowl |
+
+Density: the chest front is now 48 px wide (v1: 24). Vanilla textures are UV sheets (Mithril Chest 192 x 64, Head 160 x 64), not
+front paintings, so the two numbers do not compare 1:1; the v2 front painting is drawn at roughly the density a 192-px chest texture
+gives the front face (UNVERIFIED until the local session lays it on the real UV).
+
+Metal share of the front view (script output; leather still the majority):
+
+| Copper | Iron | Thorium | Cobalt | Adamantite | Mithril | Onyxium |
+|---|---|---|---|---|---|---|
+| 13.3% | 21.4% | 30.8% | 28.8% | 29.6% | 35.3% (wings) | 32.5% |
+
+### 7.2 Helmets: half-mask cowl on every tier
+
+Base (all tiers): a soft quilted black-leather cowl with a domed crown, hood folds, a rolled leather rim round an open eye band (the
+faceless mannequin in shade), a leather half mask over nose + mouth (stitched edge, metal top rim, nose ridge, 3 breathing slits a side,
+strap rivets), a centre seam, and a laced slit with metal eyelets at the back of the neck. Then per tier:
+
+| Tier | Helmet | Echo of the vanilla helmet (my guess - UNVERIFIED) |
+|---|---|---|
+| Copper | plain cowl: copper brow band with 3 rivets, copper nose ridge | none (Skyy: plain) |
+| Iron | plain cowl: iron brow band with 5 rivets, riveted iron cheek straps, iron nose ridge | none (Skyy: plain) |
+| Thorium | + rounded green metal skullcap over the crown, thick riveted rim, top ridge, round brow boss, round ear guards | guess: the vanilla Thorium helmet is a heavy, rounded cap |
+| Cobalt | + widow's-peak brow plate down to the nose (glow pixel), swept angular temple fins, blade crest | guess: angular, pointed cuts |
+| Adamantite | + jagged band with a 5-crystal crown (tallest in the middle, glow pixel), crystal cheek shards, red mask edge | guess: spiky crystal shards |
+| Mithril | + smooth circlet, leaf-shaped brow gem (white glow), **two swept feathered wings at the temples** (4 feathers each, quill lines) | Skyy says the vanilla Mithril helmet has wings; their real shape, size, angle and feather count are UNVERIFIED |
+| Onyxium | + gold crown band with 3 crown points (glow tips), gold-set onyx brow gem, swept violet horns with gold tips, gold mask edge + nose ridge | guess: ornate, crowned / horned, violet + gold |
+
+### 7.3 For the local session (UNVERIFIED)
+
+1. Screenshot the vanilla helmets (Armor_Thorium / Cobalt / Adamantite / Mithril / Onyxium head pieces, front + back) and fix the
+   echo shapes in `helmet()` of `make_sheets_v2.py` - every echo above except "Mithril has wings" is a guess. Copy the real wing shape
+   for Mithril (Skyy: "the same helmet wings").
+2. Wings, horns, crowns, crests and fins stick out of the head box: check whether the vanilla Mithril helmet model already has wing
+   geometry we can reuse (the cowl must then sit on that model, or be a new model). Otherwise flat painted shapes only.
+3. Lay the v2 detail onto the real UV layout at >= vanilla density (Chest 192 x 64, Head 160 x 64, Legs 128 x 64, Hands 64 x 64; x2 if
+   the engine allows) - the sheets are front / back paintings, not UV maps.
+4. Item icons (64 x 64) per piece are not drawn yet.
+
+### 7.4 Questions for Skyy
+
+| # | Question | Default |
+|---|---|---|
+| 9 | Is v2 detailed enough, or go further (3x-4x)? | [v2 level; real textures at >= vanilla density] |
+| 10 | Mithril wings: right size, or smaller / larger once compared with the vanilla helmet? | [match the vanilla Mithril helmet] |
+| 11 | Onyxium: horns + crown, or crown only? | [horns + crown] |
+| 12 | Eye band: keep the face visible in shade, or a dark shadow with glowing eyes on high tiers? | [face in shade] |
