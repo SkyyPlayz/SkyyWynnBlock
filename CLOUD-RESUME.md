@@ -49,10 +49,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
       research/cloud/Loot-Box-Design.md: item decided AT IDENTIFY (not sealed), drop-only vanilla gear ranked into levels (the list itself
       = local task, Assets.zip), mob drop rate a little higher, our own vanishing / respawning surface loot chests that never touch
       player-placed chests. Output: `research/cloud/Loot-Round-Revision.md`.
-- [ ] **Tool levels revision** (local session 2026-10-06, Skyy's request - do first) - revise research/Tool-Levels-Spec.md with
-      docs/answered/gear.md 2026-10-05: speed + Mining / Foraging / Farming Fortune by tool level, tool rarities + rolls + reforges, modifier
-      list incl. SICKLE RANGE, axes get Tree Feller (reuse SkyyTrees' Tree Feller), tied to research/cloud/Gathering-Tiers-Draft.md.
-      Output: `research/cloud/Tool-Levels-Revision.md`.
 
 <!-- 2026-10-02 local session: the magic weapon recipes shipped in SkyyGear 0.2 (8 recipes) - removed from this list. -->
 <!-- 2026-10-02 local session: 'Skill-tree pass 2 notes' removed - the local research/Skill-Trees-2-Spec.md covers it. -->
@@ -72,3 +68,4 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 - [x] Weapon speed tiers - 2026-10-06 - `research/cloud/Weapon-Speed-Tiers.md`
 - [x] Economy faucet / sink audit - 2026-10-06 - `research/cloud/Economy-Audit.md`
 - [x] Armor types spec draft - 2026-10-06 - `research/cloud/Armor-Types-Spec-Draft.md`
+- [x] Tool levels revision - 2026-10-06 - `research/cloud/Tool-Levels-Revision.md`
