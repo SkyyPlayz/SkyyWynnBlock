@@ -239,6 +239,53 @@ def recolor(img, key, brown_mode):
     return out, touched
 
 
+# Skyy 2026-10-07: "see how the legs on the copper armor are like skin tight to the player, shift everything you can in on the armor sets
+# to make it tighter to the players skin, and a little slimmer without messing up the depth on the armor, to make it look slimmer and
+# lighter" -> every piece is squeezed toward its bone: x by SLIM_X, z by SLIM_Z (depth layering kept), y untouched; a box that wraps the
+# body never gets narrower / shallower than the bone + SLIM_MARGIN (no skin poking through). Our own legs (make_light_legs) are not slimmed.
+SLIM_X, SLIM_Z, SLIM_MARGIN = 0.88, 0.97, 0.6
+BONE_WD = {                                          # player bone width (x) and depth (z)
+    "Head": (30, 28), "Chest": (27.4, 19), "Belly": (26, 18), "Pelvis": (26, 18),
+    "L-Arm": (8, 12), "R-Arm": (8, 12), "L-Forearm": (8, 12), "R-Forearm": (8, 12), "L-Hand": (10, 14), "R-Hand": (10, 14),
+    "L-Thigh": (10, 12), "R-Thigh": (10, 12), "L-Calf": (10, 12), "R-Calf": (10, 12), "L-Foot": (14, 20), "R-Foot": (14, 20),
+}
+
+
+def slim(nodes, bone=None, cx=0.0, cz=0.0):
+    """Scale x / z of every non-bone node's position, shape offset and stretch about its bone centre; clamp body-wrapping boxes."""
+    for n in nodes:
+        name = n.get("name")
+        if name in BONE_WD:
+            slim(n.get("children") or [], name, 0.0, 0.0)
+            continue
+        pos = n.get("position") or {}
+        shape = n.get("shape") or {}
+        if bone is not None:
+            pos["x"] = pos.get("x", 0) * SLIM_X
+            pos["z"] = pos.get("z", 0) * SLIM_Z
+            off = shape.get("offset")
+            if off:
+                off["x"] = off.get("x", 0) * SLIM_X
+                off["z"] = off.get("z", 0) * SLIM_Z
+        nx = cx + pos.get("x", 0) + ((shape.get("offset") or {}).get("x", 0))
+        nz = cz + pos.get("z", 0) + ((shape.get("offset") or {}).get("z", 0))
+        size = (shape.get("settings") or {}).get("size")
+        st = shape.get("stretch")
+        if bone is not None and size and st and shape.get("type") in ("box", "quad"):
+            bw, bd = BONE_WD[bone]
+            for ax, f, bsz, c in (("x", SLIM_X, bw, nx), ("z", SLIM_Z, bd, nz)):
+                if ax not in size or not size[ax]:
+                    continue
+                old = abs(size[ax] * st.get(ax, 1))
+                new = old * f
+                wraps = old >= bsz * 0.9 and abs(c) < bsz / 2
+                if wraps:
+                    new = max(new, min(old, bsz + 2 * SLIM_MARGIN))
+                sign = -1 if st.get(ax, 1) < 0 else 1
+                st[ax] = sign * new / abs(size[ax])
+        slim(n.get("children") or [], bone, nx, nz)
+
+
 def strip(nodes, names):
     keep = []
     for n in nodes:
@@ -271,6 +318,8 @@ def main():
             if cfg.get("remove"):
                 model["nodes"] = strip(model["nodes"], cfg["remove"])
             img = SA.png_decode(z.read(src + "_Texture.png"))
+            slim(full["nodes"])
+            slim(model["nodes"])
             out, leather_px = recolor(img, (name, p), cfg["brown"])
             write(os.path.join(OUT, "base-" + name), p, model, out)
             for tier, tcfg in tiers_of(name):
