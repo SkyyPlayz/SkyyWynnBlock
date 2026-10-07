@@ -52,6 +52,9 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 <!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
 lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
+- [ ] **Fishing junk = vanilla items** - Skyy (docs/answered/skills.md 2026-10-06): junk catches are existing vanilla items (sticks, fibre, ...;
+      reuse the vanilla Fishing Trap junk drop list - ask local for the exact ids in Assets.zip `Drops_Fishing_Trap_*`), no new junk items unless they
+      have a real use. Update `research/cloud/SkyyFishing-Spec-Draft.md` section 7 + any junk icons. Output: the edited draft.
 - [ ] **Monk emblem v2** - wrapped fist (hand wraps) instead of claws, Saffron #f08a30 (LOCKED Monk colour); the soul-cage emblem uses the v2 soul
       cage (`research/cloud/weapon-art/soul-cage-v2.png`). Output: `research/cloud/class-art/` updated.
 - [ ] **Enchanted icons v2** - Skyy: real vanilla resources only (docs/answered/gear.md 2026-10-06): metals = Enchanted INGOTS, stone = Enchanted
