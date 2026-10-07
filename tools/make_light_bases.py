@@ -286,6 +286,58 @@ def slim(nodes, bone=None, cx=0.0, cz=0.0):
         slim(n.get("children") or [], bone, nx, nz)
 
 
+# Skyy 2026-10-07: "and give the gloves leather sleves on the cobalt set" -> a light-leather sleeve on each forearm (inside the vanilla
+# glove + cuff) and a new upper-arm root with a sleeve up to the shoulder pad. Hands roots anchor on the bone CENTRE (seen in Blockbench).
+# Root nodes need settings.isPiece = true to attach to the player bone. Texture grows 64x64 -> 64x96; the forearm sleeve uses free space of the vanilla atlas, the upper sleeve the new rows.
+SLEEVE_UV = {   # face -> (x, y, w, h); both sides share them
+    "fore": {"front": (32, 36, 9, 16), "back": (41, 36, 9, 16), "left": (50, 36, 13, 16), "right": (44, 16, 13, 16),
+             "top": (32, 36, 9, 13), "bottom": (41, 36, 9, 13)},
+    "upper": {"front": (0, 64, 9, 20), "back": (9, 64, 9, 20), "left": (18, 64, 13, 20), "right": (31, 64, 13, 20),
+              "top": (44, 64, 9, 13), "bottom": (53, 64, 9, 13)},
+}
+
+
+def _sleeve(name, size, pos, uv):
+    import make_light_chest as LC
+    n = LC.box(name, size, pos)
+    n["shape"]["textureLayout"] = {f: {"offset": {"x": r[0], "y": r[1]}, "mirror": {"x": False, "y": False}, "angle": 0}
+                                   for f, r in uv.items()}
+    n["shape"]["shadingMode"] = "standard"
+    return n
+
+
+def cobalt_sleeves(model, img, leather_px):
+    """Adds the sleeves to a Cobalt Hands model (in place) and returns the grown, painted texture."""
+    import make_light_chest as LC
+    for side in ("L", "R"):
+        fore = next(n for n in model["nodes"] if n["name"] == side + "-Forearm")
+        fore["children"].append(_sleeve(side + "-ForeSleeve", (9, 16, 13), (0, 0, 0), SLEEVE_UV["fore"]))
+        arm = LC.box(side + "-Arm", (0, 0, 0), (0, 0, 0))
+        arm["shape"] = {"offset": {"x": 0, "y": 0, "z": 0}, "stretch": {"x": 1, "y": 1, "z": 1}, "textureLayout": {}, "type": "none",
+                        "settings": {"isPiece": True}, "unwrapMode": "custom", "visible": True, "doubleSided": False, "shadingMode": "flat"}
+        arm["children"] = [_sleeve(side + "-UpperSleeve", (9, 19, 13), (0, -0.5, 0), SLEEVE_UV["upper"])]
+        model["nodes"].append(arm)
+    out = SA.Img(img.w, 96)
+    for y in range(img.h):
+        for x in range(img.w):
+            out.put(x, y, img.get(x, y))
+    for i, part in enumerate(("fore", "upper")):
+        for j, (face, r) in enumerate(sorted(SLEEVE_UV[part].items())):
+            if face in ("top", "bottom") and part == "fore":
+                continue                                    # re-uses the front / back pixels
+            f = LC.Face(out, r, 40 + i * 10 + j)
+            LL.leather_face(f, LIGHT, stitch=True)
+            if part == "upper":                             # a dark strap band near the top
+                for u in range(f.w):
+                    for v in (3, 4):
+                        if v < f.h:
+                            f.put(u, v, DARK[1] if v == 4 else DARK[2])
+            for yy in range(r[1], r[1] + r[3]):
+                for xx in range(r[0], r[0] + r[2]):
+                    leather_px.add((xx, yy))
+    return out
+
+
 def strip(nodes, names):
     keep = []
     for n in nodes:
@@ -321,6 +373,9 @@ def main():
             slim(full["nodes"])
             slim(model["nodes"])
             out, leather_px = recolor(img, (name, p), cfg["brown"])
+            if (name, p) == ("cobalt", "Hands"):
+                out = cobalt_sleeves(model, out, leather_px)
+                full = json.loads(json.dumps(model))
             write(os.path.join(OUT, "base-" + name), p, model, out)
             for tier, tcfg in tiers_of(name):
                 tm = json.loads(json.dumps(full if tier in TIER_UNSTRIP else model))
