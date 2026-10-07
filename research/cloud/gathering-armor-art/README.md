@@ -192,3 +192,59 @@ and the wheat shirt, twill on linen / cotton, denim trousers, leather boots with
 | 11 | Adamantite Miner: closed great-helm (face hidden, as drawn) or open-faced like the other tiers? | [closed, as drawn] |
 | 12 | Capes / cloaks on Cobalt, Mithril and Onyxium (as drawn), or no capes on mining armor? | [as drawn] |
 | 13 | Farming v2-detail: OK to use as the look target for the real textures? | [yes] |
+
+## v3 (2026-10-07) - Mining HALF PLATE
+
+Cloud draft, 2026-10-07. Paper design; nothing built. Inputs: `docs/answered/gear.md` 2026-10-06 "MINING ARMOR references" ("id go with
+the half plate style ... (accept the skirt looking part.)") + the clarification ("that armor in a half platge style, in the right metal
+colors"), the v2 review (Adamantite body disliked, heads liked), the working-lamp lock, `CLOUD-RESUME.md` "Mining armor v3 (half plate)".
+The reference pictures stay local; only their written description was used.
+
+**Start here:** `research/cloud/gathering-armor-art/mining-sheet-v3.png`. v1 + v2 PNGs and scripts are unchanged (compare side by side).
+
+| File | What |
+|---|---|
+| `research/cloud/gathering-armor-art/mining-sheet-v3.png` | Mining v3: T1 Copper ... T7 Onyxium Miner, front + back, 128 x 192 per figure shown x3 |
+| `research/cloud/gathering-armor-art/make_mining_v3.py` | Generator; imports `make_sheets.py` + `make_sheets_v2.py` read only. Deterministic (two runs, same bytes). `python3 research/cloud/gathering-armor-art/make_mining_v3.py` |
+
+**One outfit, seven metals.** Every tier wears the same half plate, the WHOLE armor in that tier's metal ramp (no dark base metal):
+
+| Part | Design |
+|---|---|
+| Pauldrons | big rounded domes + 2 lames below; raised rim, a pair of embossed scrolls, engraved arch over a centre boss, rivet ring, lame rivets, leather strap to the gorget |
+| Breastplate | sculpted chest plate (centre ridge, pec curves, engraved neckline) over 3 segmented belly lames with rivets at each end; back = backplate with spine ridge + 2 lames |
+| Arms | dark padded sleeve showing at the bicep (half plate = open arms), couter with an embossed rosette, banded vambrace, flared gauntlet cuff, gauntlet with finger lames + knuckle studs |
+| Straps + belts | two crossed leather straps (X, front and back) through a metal ring / boss; wide buckled belt + slung tool belt with a second buckle |
+| Sash | cloth sash wrapped under the belt with a SHORT knot tail at the left hip (not a skirt) - colours: Copper teal, Iron + Cobalt rust-ember, Thorium sand, Adamantite charcoal, Mithril storm, Onyxium onyx |
+| Legs | NO skirt / tabard: 2-lame cuisses, knee cops with a small side fan (front), ridged greaves with a strap behind the knee, leather boots with a buckled strap + metal toe cap |
+| Miner kit | kept from v2: ore pouch (right hip), little pick (left hip), lamp battery on the back of the belt with a cable up to the helmet |
+| Helmets | the v2 heads unchanged (Copper hard hat, Iron kettle hat + coif, Thorium turban cone, Cobalt fur-ring goggles helm, Adamantite horned great-helm, Mithril winged helm, Onyxium crystal crown) + their lamps |
+| Tier extras | Mithril: glowing ore gem in the strap ring; Onyxium: gold buckles / gorget / pauldron rims + crystal studs + crystal in the ring (the v2 Onyxium look) |
+| Wear | fine scratches on every tier; verdigris flecks on Copper, rust flecks on Iron (the reference's weathered look, kept light so the metal colour reads) |
+
+Mithril and Onyxium are drawn and labelled **STAGED** (Mithril 40-49 stays staged per the task; Onyxium 50+ later). Level bands are the
+metal bands, placeholders for Server Setup rows.
+
+**Detail:** the shapes are laid out on the 64 x 84 grid and rendered by the v2 2x renderer (`up2`), then a fine pass paints directly on
+the 128-px grid (embossed ridges = 1 light px + 1 shade px down-right, engravings reversed, 3 x 3 rivets, scratches, patina). This is the
+look target, not the texture; real textures still at >= vanilla density.
+
+**The lamps must REALLY light (LOCKED 2026-10-06):** unchanged from v2 - SkyyAccessories Lantern light code, one light per player (the
+stronger of helmet / Lantern wins), reach per tier as Server Setup rows; if helmet light cannot be done, no visible lamp. The halo on the
+sheet only shows the tier brightness.
+
+### For the local session (UNVERIFIED)
+
+1. Model geometry: the big round pauldrons, knee fans, gauntlet cuff flare and the v2 helmet parts (brim, cone, horns, wings, crown) need
+   model parts beyond the base armor model (or a vanilla model that has them); the scrolls, ridges, lames, straps and sash are flat paint.
+2. Check the metal ramps against the vanilla Armor_Copper ... Armor_Onyxium textures (still the Light-armor guesses).
+3. Lamp light as in v2 (SkyyAccessories Lantern helper, current version per HANDOFF).
+
+### Questions for Skyy (v3)
+
+| # | Question | Default |
+|---|---|---|
+| 14 | Mining v3: does the half plate match your references? | [yes; tweak what Skyy points at] |
+| 15 | Keep the short sash knot at the hip, or drop the sash entirely? | [keep, short tail only] |
+| 16 | Patina / rust flecks on Copper + Iron only, or light wear on every tier? | [Copper + Iron only] |
+| 17 | Same pauldron scroll motif on every tier, or a tier motif (e.g. waves on Cobalt, flames on Adamantite)? | [same motif] |
