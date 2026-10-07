@@ -60,3 +60,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 
 ## New answers (2026-10-05 on - newest last, beats everything above)
 - REQUEST 2026-10-06 (Skyy, screenshot: the Dynamic Seasons widget covers SkyyHud's skills list bottom-right): "i know its not our mod, but can you add the widget from dynamic season to our hud controller? so we can move it from there?" -> SkyyHud 0.3.15 editor entry that moves the Dynamic Seasons HUD at runtime (no edits to their files); probe + build running.
+- LOCKED 2026-10-06 (Skyy, minimap test): "player icon is huge!" then "it should scale with the amount of blocks shown on the minimap" -> the minimap player arrow is sized in WORLD BLOCKS (a fixed few blocks wide on the map), so it shrinks when the minimap shows more blocks (zoomed out) and grows when zoomed in. [SkyyHud 0.3.16]
