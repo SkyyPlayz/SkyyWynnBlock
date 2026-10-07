@@ -90,11 +90,11 @@ def build_model(vanilla):
         box("StrapBuckleTop", (5, 4, 1), (sc[0] + 7 * d[0], sc[1] + 7 * d[1], 4.3), rot_z=-48),
         box("StrapBuckleLow", (5, 4, 1), (sc[0] - 8 * d[0], sc[1] - 8 * d[1], 4.3), rot_z=-48),
         # collar instead of the vanilla shoulder straps (Skyy 2026-10-07): a thick ring on top of the torso, rising ~6 above the
-        # plates up to the head, front pushed forward so it shows under the head (head bottom = y 18 here); front / back / sides in the FrontPlate frame (torso = z -2..-20)
-        box("CollarFront", (26, 7, 4), (0, 14.5, 1.5)),
-        box("CollarBack", (26, 7, 4), (0, 14.5, -22.5)),
-        box("L-Collar", (4, 7, 21), (11, 14.5, -10.5)),
-        box("R-Collar", (4, 7, 21), (-11, 14.5, -10.5)),
+        # plates up to the head, pulled in tight to the neck (Skyy moved it in, 2026-10-07) (head bottom = y 18 here); front / back / sides in the FrontPlate frame (torso = z -2..-20)
+        box("CollarFront", (26, 7, 1), (0, 14.5, -0.5)),
+        box("CollarBack", (26, 7, 1), (0, 14.5, -21)),
+        box("L-Collar", (2, 7, 21), (12, 14.5, -10.5)),
+        box("R-Collar", (2, 7, 21), (-12, 14.5, -10.5)),
     ]
     back["children"] += [box("BandolierBack", (4, 34, 1), (sc[0], sc[1], -2.6), rot_z=-48)]
     # double belt: copper buckle on the top belt, a ring buckle on the lower belt, pouch on the wearer's left hip
