@@ -35,7 +35,8 @@ Standing rules for anyone working on this project, person or AI. Where this file
 2. Game closed (no `HytaleServer` java process) - never kill it.
 3. `python tools/backup_deploy.py` (live Skyy jars + world `config.json` + every `Skyy_*` data folder -> `backups/deploy-<stamp>/`).
 4. `python tools/deploy_set.py --yes` - the ONLY deploy path. Build scripts never get `--deploy`.
-5. TEST-CHECKLIST section, HANDOFF version row, log line, RESUME; commit and push.
+5. `python tools/record_deploy.py --title ... --mod MOD:OLD:NEW --steps <file> --checklist ... --log ...` (test section, index, HANDOFF,
+   TEST-CHECKLIST, log in one go), then RESUME; commit and push.
 6. `python tools/tidy_local.py --yes`.
 
 Respect the rollback floors in `tools/deploy_set.py`.
@@ -56,6 +57,8 @@ Respect the rollback floors in `tools/deploy_set.py`.
   - **Full round** - build -> review -> fix -> cross-check (`python tools/ci/crosscheck.py --jar <new jars> --baseline`, `python
     tools/ci/lint.py` 0 fails) -> pin -> commit -> deploy. For coins / economy, saved data or migrations, permissions or commands, items
     that could be lost or duplicated, several mods at once, a new system - and whenever in doubt.
+  - Launch rounds with the saved workflow `.claude/workflows/skywynn-round.js` (Workflow name `skywynn-round`; put Skyy's OWN words in
+    args `quotes` - without them builders refuse when Skyy keeps chatting about other things).
   - **Ultracode** (BIG jobs: new systems, several mods, economy, saved data, dupes, permissions) - a multi-agent workflow: parallel
     research / spec, adversarial multi-lens critics, build, review, fix, cross-check.
   - **Lean round** - one builder with its own harness + one review. Small behaviour change in one mod, no saved-data change.

@@ -23,6 +23,7 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
   right agent + effort for the job, as good as possible without wasting tokens: Haiku for tiny lookups, Sonnet for research / reviews /
   straightforward drafts, Opus for code and hard specs, Fable only where it is clearly necessary (hardest spec synthesis / engine design).
   Name the model per agent. Code you write cannot be compiled or tested here (no HytaleServer.jar) - mark it UNTESTED in the PR.
+- **Art:** before drawing ANY concept sheet or icon, read `.claude/skills/skywynn-art/SKILL.md` (Skyy's art rules, 2026-10-06).
 - Follow `PROJECT-RULES.md`. Skyy uses they/them. Plain English, tables, short.
 
 ## Open tasks (top = next)
