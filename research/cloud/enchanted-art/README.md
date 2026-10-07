@@ -6,7 +6,8 @@ Inputs read: `CLOUD-RESUME.md` ("Enchanted material icons"), `research/cloud/Enc
 and farming tables), `docs/answered/bags.md` (LOCKED 2026-10-05: compressed materials like SkyBlock's Enchanted Iron / Cobblestone),
 `docs/answered/gear.md` (ART RULES 2026-10-06: 64 x 64 icons, vanilla density), `research/cloud/accessory-art/` (painter style).
 
-**Start here:** `research/cloud/enchanted-art/enchanted-sheet.png`.
+**Start here:** `research/cloud/enchanted-art/enchanted-sheet-v2.png` (v2, 2026-10-07, section 6 - follows Skyy's 2026-10-06 review).
+The v1 sheet `enchanted-sheet.png` and `icons/` stay unchanged for comparison.
 
 ## 1. Files
 
@@ -92,3 +93,87 @@ Only three icons changed; the other 50 are byte-identical to the first pass (sam
 | 2 | Baked glint now, animated later if the engine allows? | [yes] |
 | 3 | Rice and Cotton were redrawn (touch-up below) - do the new Rice (sack + panicles) and Cotton (bolls on a stem) read right? | [yes, as drawn] |
 | 4 | Should Enchanted Blocks look more special (gold trim, second glint colour)? | [no, cube + same glint] |
+
+---
+
+# 6. v2 - shiny copies of the vanilla resources (2026-10-07)
+
+Cloud draft, 2026-10-07. Paper design; nothing built. Inputs read: `docs/answered/gear.md` (LOCKED 2026-10-06 ENCHANTED ICONS),
+`CLOUD-RESUME.md` ("Enchanted icons v2"), `research/Gathering-Progression-Spec.md` section 4 (+ the SKYY UPDATES box, tier tables 2.1-2.3),
+`tools/bazaar_0_1_3_patch.py` (the 17 `Rubble_*` ids), the v1 sheet and `make_enchanted.py`.
+
+Skyy's rule: every Enchanted icon is a shiny copy of the REAL vanilla resource. Metals = Enchanted **ingots**; stone = Enchanted
+Cobblestone + Enchanted Rubble; a log is a block, so an Enchanted Log is a shiny log block; sap, stick, farming, cobble block and rubble
+were approved and are reused as drawn.
+
+## 6.1 Files
+
+| File | What |
+|---|---|
+| `enchanted-sheet-v2.png` | All 29 v2 icons in 4 groups; under each: status, Enchanted id, vanilla base id |
+| `icons-v2/ench-<id>.png` | The 29 icons, 64 x 64, glint baked in (e.g. `icons-v2/ench-iron-ingot.png`, `icons-v2/ench-oak-log.png`) |
+| `make_enchanted_v2.py` | The v2 generator. It imports the painter, the approved drawings and `glint()` from `make_enchanted.py` (v1 untouched), so the glint recipe is byte-for-byte the same. Deterministic. Run `python3 research/cloud/enchanted-art/make_enchanted_v2.py` |
+
+v1 files (`enchanted-sheet.png`, `icons/`, `glint-animated-demo.gif`, `make_enchanted.py`) are unchanged. Folder about 1.4 MB.
+
+## 6.2 The list (matches Gathering-Progression-Spec section 4)
+
+| Group | Icon | Enchanted id | Vanilla base id | Status | Art |
+|---|---|---|---|---|---|
+| Mining | Enchanted Cobblestone | `Skyy_Ench_Cobblestone` | `Rock_Stone_Cobble` (Mossy counts toward the collection) | launch | v1 cobble block (approved) |
+| Mining | Enchanted Rubble | `Skyy_Ench_Rubble` | any `Rubble_*` (17 kinds: Stone, Stone_Mossy, Basalt, Shale, Slate, Volcanic, Marble, Quartzite, Sandstone, Sandstone_Red, Sandstone_White, Aqua, Calcite, Chalk, Lime, Magma_Cooled, Ice) | new (Skyy 2026-10-06; not yet in spec 4.1 id list) | v1 rubble (approved) |
+| Mining | Enchanted Copper Ingot | `Skyy_Ench_Copper` | `Ingredient_Bar_Copper` | launch | NEW ingot |
+| Mining | Enchanted Iron Ingot | `Skyy_Ench_Iron` | `Ingredient_Bar_Iron` | launch | NEW ingot |
+| Mining | Enchanted Thorium Ingot | `Skyy_Ench_Thorium` | `Ingredient_Bar_Thorium` | launch | NEW ingot |
+| Mining | Enchanted Cobalt Ingot | `Skyy_Ench_Cobalt` | `Ingredient_Bar_Cobalt` | launch | NEW ingot |
+| Mining | Enchanted Adamantite Ingot | `Skyy_Ench_Adamantite` | `Ingredient_Bar_Adamantite` | launch | NEW ingot |
+| Mining | Enchanted Mithril Ingot | `Skyy_Ench_Mithril` | `Ingredient_Bar_Mithril` | staged (phase G, with the veins) | NEW ingot |
+| Foraging | Enchanted Oak Log | `Skyy_Ench_Oak` | `Wood_Oak_Trunk` | launch (F1 key log) | NEW log block |
+| Foraging | Enchanted Maple Log | `Skyy_Ench_Maple` | `Wood_Maple_Trunk` | launch (F2) | NEW log block |
+| Foraging | Enchanted Gumboab Log | `Skyy_Ench_Gumboab` | `Wood_Gumboab_Trunk` | launch (F3) | NEW log block |
+| Foraging | Enchanted Redwood Log | `Skyy_Ench_Redwood` | `Wood_Redwood_Trunk` | launch (F4) | NEW log block |
+| Foraging | Enchanted Sallow Log | `Skyy_Ench_Sallow` | `Wood_Sallow_Trunk` | launch (F5) | NEW log block |
+| Farming | Wheat / Carrot / Cauliflower / Pumpkin / Tomato / Cotton / Potato | `Skyy_Ench_<Crop>` | `Plant_Crop_<Crop>_Item` | launch (7 key crops) | v1 (approved) |
+| Later | Tree Sap, Stick | `Skyy_Ench_Sap` ?, `Skyy_Ench_Stick` ? | `Ingredient_Tree_Sap`, `Ingredient_Stick` | not in spec 4.1 - kept because Skyy approved the art | v1 (approved) |
+| Later | Lettuce, Corn, Turnip, Aubergine, Chilli, Rice, Onion | `Skyy_Ench_<Crop>` | `Plant_Crop_<Crop>_Item` | not in spec 4.1 (second crop of each pair) - "other crops later, same generator" | v1 (approved) |
+
+Launch set = 19 (the spec's 18 + Rubble), + Mithril staged = 20; + 9 approved "later" icons = 29 drawn.
+All base ids above appear in the repo's live build scripts (Bazaar / Sacks / Collections); none was checked against `Assets.zip` here.
+
+**Dropped from v1** (not a vanilla resource we compress, or not on the section 4 list): the ore chunks (all 9, incl. Onyxium, Silver,
+Gold), Sand, Clay, Sandstone, Slate, Basalt, the loose cobble pile, the 5 made-up wood tiers (Common / Hard / Red / Azure / Crystal
+"wood" logs and blocks), Fiber (Rope), all metal blocks, Hay Bale and Pumpkin Block.
+
+## 6.3 What is drawn new
+
+| Icon | Look |
+|---|---|
+| Ingot (6) | one cast bar in 3/4 view: trapezoid prism (top narrower than the base), long face down-left, end face darkest; brushed streaks along the bar, a soft specular band, a sunken rectangular cast mark on top, casting pits, light scratches, bright rim where the sides meet the top, 1-px dark outline; 7-step metal ramp per metal |
+| Log block (5) | the vanilla trunk-block idea: a cube with bark on the sides and the cut on top (bark rim, pale sapwood ring, wobbly growth rings, pith, one radial check crack), a knot on the left face; each species its own bark: Oak blocky plates, Maple narrow furrows, Gumboab smooth pale with horizontal folds, Redwood stringy red fibres, Sallow criss-cross diamond furrows over olive-grey bark with golden heartwood |
+
+Glint = v1 recipe unchanged (7 % violet tint, two diagonal shimmer bands, 1-px halo, 4 sparkles).
+
+## For the local session (UNVERIFIED) - v2
+
+1. **Ingot look:** open the vanilla `Ingredient_Bar_<Metal>` icons in `Assets.zip` (Common/Icons/...). If the vanilla bar is a different
+   shape (e.g. a flat bar, a stack, a hexagonal ingot), redraw `ingot()` to that shape; then re-tune `METALS` colours. Best final route
+   (the spec 4.1 "Name / look" row): use the vanilla icon PNG itself + the glint at build time, generated into the jar, never committed.
+2. **Metal colours** guessed: Copper orange, Iron steel grey, Thorium green, Cobalt blue, Adamantite red, Mithril cyan. Check each.
+3. **Log look:** compare with the vanilla `Wood_<X>_Trunk` side + top textures and the inventory icon (does the inventory draw a 3D
+   block render or a flat icon?). Re-tune `LOGS` (bark, inner, ring colour, bark style). Maple / Gumboab / Sallow looks are pure guesses.
+4. **Rubble:** is there one vanilla Rubble icon or one per kind? Our Enchanted Rubble shows mixed grey pebbles; if the vanilla
+   `Rubble_Stone` icon differs, copy its shape. Confirm the 17 `Rubble_*` ids still exist in the current `Assets.zip`.
+5. **Ids:** `Wood_Gumboab_Trunk`, `Wood_Sallow_Trunk`, `Wood_Maple_Trunk`, `Plant_Crop_Chilli_Item`, `Ingredient_Tree_Sap` exist (they
+   appear in our scripts) - re-check they are still the live ids.
+6. Spec 4.1 still says "Enchanted Iron **Ore**", base `Ore_<Metal>`, ratio 160 and has no Rubble row - the SKYY UPDATES box above it
+   overrides that; the spec table needs the edit (bars, 100, + Rubble) by the local session.
+
+## Questions for Skyy - v2
+
+| # | Question | Default |
+|---|---|---|
+| 1 | Logs: one Enchanted Log per **key** log (5: Oak, Maple, Gumboab, Redwood, Sallow) as the spec says, or one for **every** vanilla log (about 25)? | [key logs only at launch; others later, same generator] |
+| 2 | Should the item id say ingot (`Skyy_Ench_Copper_Ingot`) or stay `Skyy_Ench_Copper` with the name "Enchanted Copper Ingot"? | [keep `Skyy_Ench_Copper`] |
+| 3 | Enchanted Sap and Stick: add them to the launch set, or keep them for later? | [later] |
+| 4 | Silver and Gold ingots (side metals, economy / accessories): Enchanted versions later? | [no, not until a recipe needs them] |
+| 5 | Final art: our drawn ingots / logs, or the real vanilla icon + glint generated at build time? | [vanilla icon + glint at build time; these drawings are the stand-in] |

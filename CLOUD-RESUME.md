@@ -54,10 +54,6 @@ lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
 - [ ] **Monk emblem v2** - wrapped fist (hand wraps) instead of claws, Saffron #f08a30 (LOCKED Monk colour); the soul-cage emblem uses the v2 soul
       cage (`research/cloud/weapon-art/soul-cage-v2.png`). Output: `research/cloud/class-art/` updated.
-- [ ] **Enchanted icons v2** - Skyy: real vanilla resources only (docs/answered/gear.md 2026-10-06): metals = Enchanted INGOTS, stone = Enchanted
-      Cobblestone + Enchanted Rubble, logs are blocks (one shiny Enchanted copy of each vanilla log), every icon a shiny copy of the vanilla item; keep
-      sap / stick / farming / cobble block / rubble. Match the list in `research/Gathering-Progression-Spec.md` section 4 (ask the local session for
-      Assets.zip ids you cannot check). Output: `research/cloud/enchanted-art/` v2.
 - [ ] **Stamina accessory icon v3** - redo the Stamina line (4 rarities) as a LIGHTNING BOLT like the vanilla Stamina symbol (Skyy 2026-10-06,
       docs/answered/gear.md); rest of `research/cloud/accessory-art/` v2 approved. Output: the v2 sheet + icons updated.
 - [ ] **Mining armor v3 (half plate)** - Skyy sent references (described in docs/answered/gear.md 2026-10-06 "MINING ARMOR references"; the
@@ -80,3 +76,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 
 ## Done (delete after logging - see the rules above)
 - [x] Fishing junk = vanilla items - 2026-10-06 - `research/cloud/SkyyFishing-Spec-Draft.md` section 7
+- [x] Enchanted icons v2 (vanilla resources) - 2026-10-06 - `research/cloud/enchanted-art/`
