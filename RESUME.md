@@ -27,11 +27,11 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
   0.7.13 (sell from bags, 29), Classes 0.1.12 + Armory 0.1.1 + Gear 0.2.4 (staff / wand traversals, 30). START HERE items 3 + 5 are DONE.
 - ALSO DEPLOYED 2026-10-06: SkyyGatherProbe 0.1 + B (op-only probe pack, TEST-CHECKLIST 31 - REMOVE both from SET after Skyy's session),
   SkyyArmory 0.1.2 crossbow Grapple Bolt + Stamina cap 5 (32).
-- MOB CURVE DEPLOYED 16:40 (SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17, TEST-CHECKLIST 33).
-- RUNNING (~17:00 -0600): Dodge Roll = SkyySkills 0.4.18 (+ KIT_FALLBACK Warrior shield); weapon speed tiers = SkyyGear 0.2.6 (fully random per item,
-  WEAPONS ONLY - never tools; script tools/dev/scratch/wfscripts/weaponspeed.js, run wf_00e51302-32b); SkyyHud minimap widget (spec
-  research/Minimap-Widget-Spec.md + build; BetterMap must join PACK_THIRD_PARTY + PACK.md at deploy). Untracked SkyySkills / SkyyGear / SkyyHud
-  files = these. NEXT: gathering phase A after Skyy's probe results (TEST-CHECKLIST 31), Stats page, armor types.
+- ALL DEPLOYED 2026-10-06 (untested; TEST-CHECKLIST 28-35): Lanterns / sell from bags / staff + wand traversals / gather probe pack (REMOVE
+  after Skyy's session) / Grapple Bolt / mob curve / Dodge Roll / Skills 0.4.19 + Hud 0.3.14 minimap (BetterMap) + Gear 0.2.6 weapon speed.
+- RUNNING (~19:00 -0600, Skyy away - deploy when READY): SkyyBank 0.1.7 daily bracketed interest (wfscripts/bank017.js) and SkyyHud 0.3.15
+  (move the Dynamic Seasons widget from the editor - may come back NOT BUILT if the engine can't do it).
+- Art: Skyy reviewed everything (docs/answered/gear.md 2026-10-06); cloud has the redo list; Skyy's reference pictures are in research/refs/.
 - SPECS DONE + ANSWERED today: research/Gathering-Progression-Spec.md (all 11 questions answered - docs/answered/bags.md 2026-10-06: hard ore
   gates, Mithril hidden until 0.7, ratio 100, Enchanted premium + Fortune on all tiers); research/Grapple-Bolt-Spec.md (Dodge Roll part waits
   for a free SkyySkills slot = 0.4.18 after the mob curve).
