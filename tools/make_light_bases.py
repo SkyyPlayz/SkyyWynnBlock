@@ -249,7 +249,7 @@ def recolor(img, key, brown_mode):
 SLIM_X, SLIM_Z, SLIM_MARGIN = 0.88, 0.97, 0.6
 # Skyy: "could you shrink all the armor pads amd scoot them in a little more, to make the sets slimmer?" -> everything on the upper-arm
 # bones (shoulder pads) shrinks by PAD_SCALE on every axis on top of the slim, and its sideways offsets shrink by PAD_IN
-PAD_BONES, PAD_SCALE, PAD_IN = ("L-Arm", "R-Arm"), 0.85, 0.75
+PAD_BONES, PAD_SCALE, PAD_IN = ("L-Arm", "R-Arm"), 0.92, 0.87   # was 0.85 / 0.75; Skyy: "scale the rest back up a little, but not all the way"
 BONE_WD = {                                          # player bone width (x) and depth (z)
     "Head": (30, 28), "Chest": (27.4, 19), "Belly": (26, 18), "Pelvis": (26, 18),
     "L-Arm": (8, 12), "R-Arm": (8, 12), "L-Forearm": (8, 12), "R-Forearm": (8, 12), "L-Hand": (10, 14), "R-Hand": (10, 14),
