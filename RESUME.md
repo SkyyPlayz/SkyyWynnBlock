@@ -20,6 +20,13 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 7. Obsidian vault = this folder (`docs/OBSIDIAN.md`). Cloud sessions: CLOUD-RESUME.md.
 
 ## Now (2026-10-05 evening)
+- **FIRST JOB for the new session (Skyy 2026-10-06): make the COPPER LIGHT-ARMOR CHEST in Blockbench.** Blockbench + the Hytale Models plugin +
+  the Blockbench MCP plugin are installed; ~/.claude.json has MCP server "blockbench" = http://localhost:3000/bb-mcp (works only while Blockbench is
+  OPEN). Personal skills in ~/.claude/skills: blockbench-use / -hytale / -modeling / -texturing / -animation (load blockbench-use first, then
+  blockbench-hytale; format hytale_character, 64 units per block, texture sides multiples of 32). Design = research/cloud/light-armor/
+  light-armor-sheet-v2.png Copper (black leather + copper trim; helmet NOT in this piece - helmets v3 pending) + .claude/skills/skywynn-art/SKILL.md;
+  vanilla reference model Assets.zip Common/Items/Armors/<metal>/Chest.blockymodel (vanilla-derived files stay LOCAL, never committed). Save the
+  .bbmodel + .blockymodel + texture where Skyy can open them (a git-ignored local folder - add it to INDEX.md 'Local only').
 - LIVE: the 26-mod SET (HANDOFF section 1 = `tools/deploy_set.py`). Deployed 2026-10-05 (newest backup `backups\deploy-20261005-1745`;
   every backup listed in `backups/README.md`): Cooking 0.1.5 + 0.1.6, Accessories 0.5.5, Exploration 0.2.3, Menu 0.3.7 + 0.3.8,
   Collections 0.2.6, Gear 0.2.3, Bazaar 0.1.4, Party 0.1.7 + Essentials 0.1.8, Skills 0.4.16, Trees 0.3.2. NONE tested by Skyy yet.
