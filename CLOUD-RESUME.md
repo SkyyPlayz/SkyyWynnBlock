@@ -56,7 +56,7 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
       reuse the vanilla Fishing Trap junk list; local read Assets.zip Drops_Fishing_Trap_Crude.json: Ingredient_Stick, Ingredient_Fabric_Scrap_Linen,
       Ingredient_Poop, Rubble_Stone, Rock_Salt, Deco_Trash / _Pile_Small / _Large, Deco_Coral_Shell (+ _Purple / _Sanddollar / _Swirly), Deco_Starfish,
       Plant_Flower_Water_* (Blue / Green / Purple / Red / White / Duckweed); treasure-ish: Ore_Gold, Ingredient_Water_Essence, Deco_Treasure*,
-      Weapon_Spear_Fishbone; Fibre = Ingredient_Fibre), no new junk items unless they
+      Weapon_Spear_Fishbone; Fibre = Ingredient_Fibre - verified), no new junk items unless they
       have a real use. Update `research/cloud/SkyyFishing-Spec-Draft.md` section 7 + any junk icons. Output: the edited draft.
 - [ ] **Monk emblem v2** - wrapped fist (hand wraps) instead of claws, Saffron #f08a30 (LOCKED Monk colour); the soul-cage emblem uses the v2 soul
       cage (`research/cloud/weapon-art/soul-cage-v2.png`). Output: `research/cloud/class-art/` updated.
