@@ -52,8 +52,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 <!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
 lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
-- [ ] **Enchanted chain premium fix** - Enchanted +10% x Block +5% = 1.155 (> the 15% cap in `research/cloud/Economy-Audit.md` C4); work out Block +4.5%
-      (or Enchanted +9.5%) across every material table in `research/cloud/Enchanted-Materials-Draft.md` + `research/cloud/Zone-4-5-Materials.md`. Output: `research/cloud/Chain-Premium-Fix.md`.
 - [ ] **Bazaar buy-side drift check** - `research/cloud/Ember-Economy-Check.md` UNVERIFIED: if the Bazaar buy price also follows the demand factor, a
       drift loop of up to 3.6x may exist; read the SkyyBazaar build script (read-only) and say whether it does. Output: `research/cloud/Bazaar-Drift-Check.md`.
 
@@ -66,3 +64,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [x] Mining armor v3 (half plate) - 2026-10-06 - `research/cloud/gathering-armor-art/`
 - [x] Light armor helmets v3 - 2026-10-06 - `research/cloud/light-armor/`
 - [x] Zone 5 ore prices - 2026-10-06 - `research/cloud/Zone-5-Ore-Prices.md`
+- [x] Enchanted chain premium fix - 2026-10-06 - `research/cloud/Chain-Premium-Fix.md`
