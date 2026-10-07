@@ -52,6 +52,10 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 <!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
 lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
+- [ ] **Stamina accessory icon v3** - redo the Stamina line (4 rarities) as a LIGHTNING BOLT like the vanilla Stamina symbol (Skyy 2026-10-06,
+      docs/answered/gear.md); rest of `research/cloud/accessory-art/` v2 approved. Output: the v2 sheet + icons updated.
+- [ ] **WAIT - Skyy is sending references:** Light armor HELMETS (no cloth-hood look; mask optional) and the Mining Adamantite BODY. Do not redo
+      these until the references land in this list.
 - [ ] **Amberite + Drakonite price check** - `research/cloud/Ember-Economy-Check.md` found Amberite (30,000) and Drakonite (75,000) at 8-12x endgame
       income; re-fit their prices (suggested ~9,300 / ~23,000) with the same python model. Output: `research/cloud/Zone-5-Ore-Prices.md`.
 - [ ] **Enchanted chain premium fix** - Enchanted +10% x Block +5% = 1.155 (> the 15% cap in `research/cloud/Economy-Audit.md` C4); work out Block +4.5%
