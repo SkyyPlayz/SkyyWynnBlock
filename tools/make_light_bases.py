@@ -4,7 +4,7 @@ Skyy: "we will use the Ornate bronz set as the bas for copper to iron, Cobalt as
 for adamantine+"; "swap the dark leather on the mithril set to darker, like black leather, then replace all the chain mail slightly lighter
 colored black leather., and take the wings off the helmet."; then "id swap the light and dark leather colors. so what was brown is the
 light leather, and what was chainmail becomes darker". Choices (docs/answered/gear.md): same treatment on all sets, no cape, Ornate Bronze
-gets our own legs (not built yet), metal recolored per tier (next step).
+gets our own legs (make_light_legs.py), metal recolored per tier; eye glow per tier, no plume on Thorium, wings back on the Mithril tier.
 
 Reads Assets.zip Common/Items/Armors/<set>/ (read-only) and writes edited copies to the git-ignored models-local/light-armor/base-<set>/
 (vanilla-derived - PROJECT-RULES 2: never commit the output):
@@ -25,15 +25,20 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "tools"))
 import skyyart as SA  # noqa: E402
+import make_light_legs as LL  # noqa: E402
 
 OUT = os.path.join(ROOT, "models-local", "light-armor")
 SETS = {
     "mithril": {"src": "Mithril", "pieces": ("Head", "Chest", "Hands", "Legs"), "brown": True, "remove": ("LFin", "RFin")},
     "cobalt": {"src": "Cobalt", "pieces": ("Head", "Chest", "Hands", "Legs"), "brown": True},
     "bronze": {"src": "Bronze_Ornate", "pieces": ("Head", "Chest", "Hands"), "brown": False},   # no Legs in vanilla; Cape dropped
+    # Skyy 2026-10-07: "im thinking we should change up onyx. pull up the onyx set, and the prisma set, and convert them both in to light
+    # leather armor, and well see what looks better." - their leather is a maroon / plum cloth ("red" mode); metal keeps its colours
+    "onyx": {"src": "Onyxium", "pieces": ("Head", "Chest", "Hands", "Legs"), "brown": "red"},
+    "prisma": {"src": "Prisma", "pieces": ("Head", "Chest", "Hands", "Legs"), "brown": "red"},
 }
 # which pixels count as the base metal: a hue window (degrees) or near-grey; everything else is an accent and keeps its colour
-METAL_HUE = {"mithril": (180, 260), "cobalt": (180, 250), "bronze": (10, 65)}
+METAL_HUE = {"mithril": (180, 260), "cobalt": (180, 250), "bronze": (10, 65), "onyx": (0, 360), "prisma": (0, 360)}
 # tier -> (base set, hue degrees or None = keep, saturation multiplier, saturation added, lightness multiplier)
 TIERS = {
     "copper": ("bronze", 22, 1.15, 0.05, 0.95),
@@ -43,7 +48,18 @@ TIERS = {
     "adamantite": ("mithril", 358, 2.6, 0.18, 0.85),
     "mithril": ("mithril", None, 1.0, 0.0, 1.0),
     "onyxium": ("mithril", 278, 2.4, 0.15, 0.8),
+    "onyxium-onyx": ("onyx", None, 1.0, 0.0, 1.0),      # Onyxium candidates (Skyy picks one)
+    "onyxium-prisma": ("prisma", None, 1.0, 0.0, 1.0),
 }
+# Skyy 2026-10-07: "match eye glow to tier, drop the plume on the thorium, add the wings back the the mithril helm on the mithril tier,
+# and  build copper legs"
+GLOW_SRC = {"mithril": (150, 182)}                  # the helmet eye glow (teal) on the base, hue window in degrees
+GLOW_HUE = {"adamantite": 0, "onyxium": 300}        # tier glow hue (tiers not listed keep the base glow)
+# nodes dropped per tier: Fluff = the Cobalt helmet plume; FrontBelt1 / BackBelt = the Mithril diagonal cross strap (Skyy deleted it in
+# Blockbench on Adamantite / Mithril / Onyxium: "i removed the cross straps on some of the armor")
+CROSS_STRAP = ("FrontBelt1", "BackBelt")
+TIER_REMOVE = {"thorium": ("Fluff",), "adamantite": CROSS_STRAP, "mithril": CROSS_STRAP, "onyxium": CROSS_STRAP}
+TIER_UNSTRIP = {"mithril"}                          # tiers that keep the nodes their base set removes (the Mithril wings)
 
 
 def hx(s):
@@ -70,6 +86,13 @@ def is_brown(c):
     r, g, b = c[0], c[1], c[2]
     mx, mn = max(r, g, b), min(r, g, b)
     return r >= g >= b - 4 and r - b >= 10 and mx <= 150 and (mx - mn) <= 0.8 * mx
+
+
+def is_red_cloth(c):
+    """Maroon / plum cloth (Onyxium, Prisma): dark, warm-red to purple hue, some saturation."""
+    h, l, s_ = colorsys.rgb_to_hls(c[0] / 255.0, c[1] / 255.0, c[2] / 255.0)
+    h *= 360
+    return s_ >= 0.15 and l <= 0.45 and (h >= 290 or h <= 20)
 
 
 def is_grey(c):
@@ -122,12 +145,14 @@ def quilt(col, x, y, on):
     return tuple(max(0, min(255, int(v * f))) for v in col)
 
 
-def tier_metal(img, base, tier_cfg, leather_px):
-    """Re-hue the base metal, keeping lightness (shading) and relative saturation; accents and leather untouched."""
+def tier_metal(img, base, tier_cfg, leather_px, glow=None):
+    """Re-hue the base metal, keeping lightness (shading) and relative saturation; leather untouched; accents kept, except the
+    eye glow, which takes the tier's GLOW_HUE."""
     _, hue, smul, sadd, lmul = tier_cfg
-    if hue is None:
+    if hue is None and glow is None:
         return img
     lo, hi = METAL_HUE[base]
+    glo, ghi = GLOW_SRC.get(base, (999, 999))
     out = img.copy()
     for y in range(img.h):
         for x in range(img.w):
@@ -135,8 +160,12 @@ def tier_metal(img, base, tier_cfg, leather_px):
             if c[3] < 8 or (x, y) in leather_px:
                 continue
             h, l, s_ = colorsys.rgb_to_hls(c[0] / 255.0, c[1] / 255.0, c[2] / 255.0)
-            if s_ > 0.12 and not (lo <= h * 360 <= hi):
-                continue                                            # accent (gold trim, eye glow)
+            if s_ > 0.12 and glow is not None and glo <= h * 360 <= ghi:
+                r, g, b = colorsys.hls_to_rgb(glow / 360.0, l, max(s_, 0.7))
+                out.put(x, y, (int(round(r * 255)), int(round(g * 255)), int(round(b * 255)), c[3]))
+                continue
+            if hue is None or (s_ > 0.12 and not (lo <= h * 360 <= hi)):
+                continue                                            # accent (gold trim) / tier keeps the base metal
             s2 = max(0.0, min(1.0, s_ * smul + sadd))
             r, g, b = colorsys.hls_to_rgb(hue / 360.0, max(0.0, min(1.0, l * lmul)), s2)
             out.put(x, y, (int(round(r * 255)), int(round(g * 255)), int(round(b * 255)), c[3]))
@@ -148,6 +177,8 @@ def is_leather(img, x, y, brown_mode, leather, keep):
         return False
     if leather:
         return in_rects(x, y, leather)
+    if brown_mode == "red":
+        return is_red_cloth(img.get(x, y))
     return brown_mode and is_brown(img.get(x, y))
 
 
@@ -226,21 +257,34 @@ def write(out_dir, piece, model, img):
         fh.write(SA.png_encode(img))
 
 
+def tiers_of(name):
+    return [(t, c) for t, c in TIERS.items() if c[0] == name]
+
+
 def main():
     z = SA.assets()
     for name, cfg in SETS.items():
         for p in cfg["pieces"]:
             src = "Common/Items/Armors/%s/%s" % (cfg["src"], p)
-            model = json.loads(z.read(src + ".blockymodel").decode("utf-8-sig"))
+            full = json.loads(z.read(src + ".blockymodel").decode("utf-8-sig"))
+            model = json.loads(json.dumps(full))
             if cfg.get("remove"):
                 model["nodes"] = strip(model["nodes"], cfg["remove"])
             img = SA.png_decode(z.read(src + "_Texture.png"))
             out, leather_px = recolor(img, (name, p), cfg["brown"])
             write(os.path.join(OUT, "base-" + name), p, model, out)
-            for tier, tcfg in TIERS.items():
-                if tcfg[0] == name:
-                    write(os.path.join(OUT, "sets", tier), p, model, tier_metal(out, name, tcfg, leather_px))
-        print("wrote base-%s + tiers %s" % (name, ", ".join(t for t, c in TIERS.items() if c[0] == name)))
+            for tier, tcfg in tiers_of(name):
+                tm = json.loads(json.dumps(full if tier in TIER_UNSTRIP else model))
+                if tier in TIER_REMOVE:
+                    tm["nodes"] = strip(tm["nodes"], TIER_REMOVE[tier])
+                write(os.path.join(OUT, "sets", tier), p, tm, tier_metal(out, name, tcfg, leather_px, GLOW_HUE.get(tier)))
+        if name == "bronze":                                # our own legs (make_light_legs.py) on the Cobalt legs rig
+            rig = json.loads(z.read("Common/Items/Armors/Cobalt/Legs.blockymodel").decode("utf-8-sig"))
+            model, img, leather_px = LL.make(rig, LIGHT, DARK)
+            write(os.path.join(OUT, "base-" + name), "Legs", model, img)
+            for tier, tcfg in tiers_of(name):
+                write(os.path.join(OUT, "sets", tier), "Legs", model, tier_metal(img, name, tcfg, leather_px))
+        print("wrote base-%s + tiers %s" % (name, ", ".join(t for t, _ in tiers_of(name))))
 
 
 if __name__ == "__main__":
