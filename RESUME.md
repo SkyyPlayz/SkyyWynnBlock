@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-06 night)
+# SkyWynn - RESUME HERE (updated 2026-10-07 morning)
 
 Read this first, then only what the task needs. Map of every file + search tips: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions:
 `HANDOFF.md`. Open questions: `OPEN-QUESTIONS.md`. Skyy's tests: `TEST-CHECKLIST.md`. Running log (all history): `docs/log/2026-10.md`.
@@ -13,8 +13,8 @@ Read this first, then only what the task needs. Map of every file + search tips:
    (pick a git-ignored folder, add it to INDEX.md "Local only"). Save .bbmodel + .blockymodel + texture for Skyy to open.
    DRAFT EXISTS (2026-10-06 night, made without Blockbench): `python tools/make_light_chest.py` -> `models-local/light-armor/copper/`
    (Chest.blockymodel + Chest_Texture.png 192x128 + previews; vanilla copy in `vanilla/`). Open it in Blockbench and refine with Skyy.
-   Blockbench MCP: open Blockbench BEFORE the session. Its plugin holds a reply ~37 s, so MCP_TIMEOUT=60000 is set in
-   ~/.claude/settings.json (2026-10-07); connecting takes ~40 s.
+   Blockbench MCP (fixed 2026-10-07): Avast breaks localhost HTTP, so ~/.claude.json runs `tools/bb_mcp_stdio.py` (stdio bridge).
+   Open Blockbench, then /mcp -> Reconnect blockbench (or a new session). Bridge test recipe: docs/log 2026-10-07 06:20.
 3. Then Skyy's test results (TEST-CHECKLIST.md "Test next": everything deployed 2026-10-05 / 06, items 17-40); fixes first.
 4. Rounds: launch with the saved workflow `skywynn-round` (`.claude/workflows/skywynn-round.js`; put Skyy's OWN words in args.quotes);
    record each deploy with `python tools/record_deploy.py` (PROJECT-RULES 3 + 4).
