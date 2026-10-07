@@ -51,11 +51,13 @@ SET = [
     ("SkyyMobs", "0.1.4"), ("SkyyWorldGen", "0.1"),
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
-    ("SkyyArmory", "0.1.2"),
+    ("SkyyArmory", "0.1.3"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
     # one back alone; rolling all three back = Undo the "strength.shape linear -> curve" change first (or 0.1.3 runs per level with the file's values).
+    # SkyyArmory 0.1.3 (2026-10-06 evening): bow leap + blast, wand hang, particle lifespans, hop.force 30, crossbows Weapon_Crossbow_Copper_Wynn /
+    # _Onyxium_Wynn. Rolling back below 0.1.3 leaves those crossbow stacks as unknown items - avoid once players crafted them.
     # SkyyArmory 0.1.2 (2026-10-06): crossbow Grapple Bolt (right click = grapple, replaces the guard) + trav.staminaCap 10 -> 5 (one-time
     # migration of an untouched 10 only). Rolling back to 0.1.1 brings the guard back; the cap line stays 5 (hand-edit back if wanted).
     # Traversal round (2026-10-06): SkyyClasses 0.1.12 -> SkyyArmory 0.1.1 -> SkyyGear 0.2.4 together (staff blink, wand hop / burst / heal orb,
