@@ -49,6 +49,8 @@ TIERS = {
     "adamantite": ("mithril", 358, 2.6, 0.18, 0.85),
     "mithril": ("mithril", None, 1.0, 0.0, 1.0),
     "onyxium": ("prisma", None, 1.0, 0.0, 1.0),         # Skyy: "the prisma one looks better for onyxium" (Prisma metal kept)
+    # Skyy 2026-10-07 "continue making the onyx armor": an onyx-coloured option of the Prisma set to compare (near-black, purple tint)
+    "onyxium-dark": ("prisma", 278, 0.55, 0.12, 0.5),
 }
 # Skyy 2026-10-07: "match eye glow to tier, drop the plume on the thorium, add the wings back the the mithril helm on the mithril tier,
 # and  build copper legs"
@@ -148,7 +150,7 @@ def quilt(col, x, y, on):
     return tuple(max(0, min(255, int(v * f))) for v in col)
 
 
-def tier_metal(img, base, tier_cfg, leather_px, glow=None):
+def tier_metal(img, base, tier_cfg, leather_px, glow=None, keep=()):
     """Re-hue the base metal, keeping lightness (shading) and relative saturation; leather untouched; accents kept, except the
     eye glow, which takes the tier's GLOW_HUE."""
     _, hue, smul, sadd, lmul = tier_cfg
@@ -160,7 +162,7 @@ def tier_metal(img, base, tier_cfg, leather_px, glow=None):
     for y in range(img.h):
         for x in range(img.w):
             c = img.get(x, y)
-            if c[3] < 8 or (x, y) in leather_px:
+            if c[3] < 8 or (x, y) in leather_px or in_rects(x, y, keep):
                 continue
             h, l, s_ = colorsys.rgb_to_hls(c[0] / 255.0, c[1] / 255.0, c[2] / 255.0)
             if s_ > 0.12 and glow is not None and glo <= h * 360 <= ghi:
@@ -400,7 +402,7 @@ def main():
                 tm = json.loads(json.dumps(full if tier in TIER_UNSTRIP else model))
                 if tier in TIER_REMOVE:
                     tm["nodes"] = strip(tm["nodes"], TIER_REMOVE[tier])
-                write(os.path.join(OUT, "sets", tier), p, tm, tier_metal(out, name, tcfg, leather_px, GLOW_HUE.get(tier)))
+                write(os.path.join(OUT, "sets", tier), p, tm, tier_metal(out, name, tcfg, leather_px, GLOW_HUE.get(tier), KEEP_RECTS.get((name, p), ())))
         if name == "bronze":                                # our own legs (make_light_legs.py) on the Cobalt legs rig
             rig = json.loads(z.read("Common/Items/Armors/Cobalt/Legs.blockymodel").decode("utf-8-sig"))
             model, img, leather_px = LL.make(rig, LIGHT, DARK)
