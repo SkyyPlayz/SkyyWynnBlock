@@ -157,9 +157,22 @@ already has a resource type (Fruit Skewer's "any fruit"), else exact ids. Bazaar
 ## 7. Fish foods (with research/cloud/SkyyFishing-Spec-Draft.md, written in parallel)
 
 Fish = Meat family (Stamina). Fish rarity sets the dish tier: Common -> T1 (Grilled Fish), Uncommon / Rare -> T2, Epic / Legendary
--> T3. New: Fish Skewer (Meat T2), Fish and Chips (fish + potato: Meat + Veggie T2), Sushi Roll (fish + rice + seaweed?: Meat +
-Veggie T3), Fish Stew (fish + veg + mushroom: 3 families T3). Weight / length only sets the sell price, never the food power (Grade
+-> T3. New: Fish Skewer (Meat T2), Fish and Chips (fish + potato: Meat + Veggie T2), Sushi Roll (fish + rice + seaweed: Meat +
+Veggie T3; seaweed source below), Fish Stew (fish + veg + mushroom: 3 families T3). Weight / length only sets the sell price, never the food power (Grade
 comes from Cooking). HyFishing's fish foods (deployed stopgap) stay as they are (no licence -> no changes; ids by reference only).
+
+**Sushi seaweed source (cloud update 2026-10-07).** Seaweed is no longer a junk catch (fishing junk = vanilla Fishing Trap items), so the
+Sushi Roll takes vanilla seaweed by id instead, two accepted inputs, no new item of ours:
+
+| Input | Vanilla id (read from `SkyyBazaar/build_skyybazaar_0.1.5.py`) | How players get it | Bazaar |
+|---|---|---|---|
+| Seaweed (default) | any `Plant_Seaweed_*` block (variants UNVERIFIED) | break underwater seaweed; it already goes in the Foraging bag (line 329) | skipped as a decoration plant (line 329) - gather it yourself |
+| Azure Kelp (also accepted) | `Plant_Crop_Mana3` | a vanilla farm crop, seed `Plant_Seeds_Mana3` | listed, base 8 (line 617) |
+
+Recipe: 1 fish (sets the tier, as above) + 1 rice + 1 seaweed or Azure Kelp. Seaweed counts as Veggie (Health), so Sushi stays
+Meat + Veggie. UNVERIFIED for the local session: the exact `Plant_Seaweed_*` ids, that breaking them drops the block itself (not
+nothing / fibre - the Collections Fiber row lists seaweed as a fibre source), and whether Azure Kelp is food or a magic crop
+(if magic only, drop it and keep seaweed). Fallback if seaweed gives no item: Sushi = fish + rice + any raw veg (no seaweed).
 
 ## 8. Potions vs food (focused, FLAT, graded)
 

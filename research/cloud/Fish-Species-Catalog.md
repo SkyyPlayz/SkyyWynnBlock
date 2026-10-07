@@ -232,7 +232,7 @@ change its season / time lists, weights, rarity or price without a rebuild, and 
 | 1 | Dynamic Seasons 6.1.2: season names, how many, and its API / event for the current season (spec UNVERIFIED 5). If it has more than four seasons or custom ones, map them to the four here |
 | 2 | World-gen: which of our zone biomes really have water / lava, pond vs river vs oasis vs ice-hole placement, and biome ids; the table's "water" column is a design, not a map |
 | 3 | The vanilla fish model / item / role ids to reuse as looks (vanilla fish tiers Common..Legendary, minnow, bluegill, trout, catfish, tropical, lobster; spec UNVERIFIED 6); species without a vanilla look need our own look or a recolour |
-| 4 | Seaweed, rice and similar ids for the Sushi Roll (Food-Expansion item "seaweed?"); seaweed is no longer a junk catch (updated 2026-10-06: vanilla junk), so Sushi needs its own source |
+| 4 | Seaweed, rice and similar ids for the Sushi Roll (Food-Expansion item "seaweed?"); seaweed is no longer a junk catch (updated 2026-10-06: vanilla junk), so Sushi needs its own source. Proposed 2026-10-07 in `research/cloud/Food-Expansion-Draft.md` section 7: vanilla `Plant_Seaweed_*` (gathered) or Azure Kelp `Plant_Crop_Mana3` (farmed); ids to confirm |
 | 5 | A python Monte Carlo of the whole rolled table (this file used the closed-form mean for the u^2 weight and ignored the +-5% length jitter) - re-measure income in a real session (Economy-Audit measure 1) |
 | 6 | Per-stack metadata for weight / length on a fish item (spec UNVERIFIED 4) - the whole table depends on it |
 | 7 | Whether lava can hold fish in the engine at all (spec stage 3); if not, Z4 species become "magma pool" water blocks |
