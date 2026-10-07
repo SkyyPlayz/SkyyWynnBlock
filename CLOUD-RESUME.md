@@ -52,15 +52,14 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 <!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
 lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
+- [ ] **Apply the chain premium fix** - make the exact Block +4.5% edits listed in `research/cloud/Chain-Premium-Fix.md` to the cloud drafts it names
+      (incl. the stale 1.21x table in `research/cloud/Enchanted-Materials-Draft.md`). Output: the edited drafts + a LOG line.
+- [ ] **Retire the junk fish icons** - `research/cloud/fish-art/make_fish.py` still draws the 7 retired junk items; drop them from the sheet (keep files
+      for comparison as the README says) and regenerate. Output: regenerated `research/cloud/fish-art/fish-sheet.png`.
+- [ ] **Sushi source** - seaweed is no longer a junk catch (`research/cloud/Fish-Species-Catalog.md` UNVERIFIED 4); find a vanilla seaweed / kelp source or
+      change the Sushi recipe in `research/cloud/Food-Expansion-Draft.md`. Output: the edited draft.
+- [ ] **ART-INDEX refresh** - add today's v3 / v2 sheets (mining v3, light helmets v3, enchanted v2, Monk emblem v2, Stamina v3) to `research/cloud/ART-INDEX.md`.
+      Output: the edited index.
 
 
 ## Done (delete after logging - see the rules above)
-- [x] Fishing junk = vanilla items - 2026-10-06 - `research/cloud/SkyyFishing-Spec-Draft.md` section 7
-- [x] Enchanted icons v2 (vanilla resources) - 2026-10-06 - `research/cloud/enchanted-art/`
-- [x] Monk emblem v2 - 2026-10-06 - `research/cloud/class-art/`
-- [x] Stamina accessory icon v3 - 2026-10-06 - `research/cloud/accessory-art/`
-- [x] Mining armor v3 (half plate) - 2026-10-06 - `research/cloud/gathering-armor-art/`
-- [x] Light armor helmets v3 - 2026-10-06 - `research/cloud/light-armor/`
-- [x] Zone 5 ore prices - 2026-10-06 - `research/cloud/Zone-5-Ore-Prices.md`
-- [x] Enchanted chain premium fix - 2026-10-06 - `research/cloud/Chain-Premium-Fix.md`
-- [x] Bazaar buy-side drift check - 2026-10-06 - `research/cloud/Bazaar-Drift-Check.md`
