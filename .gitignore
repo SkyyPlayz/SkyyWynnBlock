@@ -34,3 +34,5 @@ research/refs/
 .obsidian/plugins/
 .obsidian/themes/
 .trash/
+# Blockbench work models (built from vanilla models - local only, never public; generator: tools/make_light_chest.py)
+models-local/
