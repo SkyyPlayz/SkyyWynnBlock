@@ -288,6 +288,12 @@ would leak in, the per-species type `Wood_<Species>` is used. Exact species ids 
 
 ## 4. Enchanted materials
 
+> **SKYY UPDATES 2026-10-06 (beat this section; docs/answered/bags.md + gear.md):** ratio is ALWAYS **100** (no 160 probe);
+> metals compress from **INGOTS** (`Ingredient_Bar_<Metal>`, "Enchanted Copper Ingot" ...), not ore - ingots still count toward the ore
+> collection only when gathered as ore (crafting is not a credit hook); stone = Enchanted Cobblestone + **Enchanted Rubble** (every rubble kind
+> counts toward Rubble); logs are blocks in Hytale - one shiny Enchanted copy per key log, no separate log-block tier; every Enchanted icon is a
+> shiny copy of the vanilla resource; Enchanted items sell at a small premium above 100x base (capped below any loop); Fortune on all tiers.
+
 ### 4.1 Ids, set, ratios
 
 | Rule | Value | Note |
