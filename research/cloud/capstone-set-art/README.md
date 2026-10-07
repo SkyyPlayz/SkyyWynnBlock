@@ -10,7 +10,7 @@ lines 73-78 (art review 2026-10-06: 2x-4x detail, half-mask cowl for Light helme
 
 **Start here:** `research/cloud/capstone-set-art/capstone-sets-sheet.png` (3 sets x Voidglass / Aetherium x front / back).
 
-**(updated 2026-10-06: slot fix)** Vanilla armor slots appear to be Head / Chest / Hands / Legs (no Boots, UNVERIFIED), so the sets were redrawn to the new `Capstone-Sets.md` slots: **Bailiff = Head + Chest + Legs** (greaves + sabatons are the lower Legs piece; Hands bare), **Clerk = Head + Chest + Hands** (new Quick-Reference Mitts; the Trousers are gone, Legs bare), **Notary = Chest + Legs + Hands** (slippers sewn to the Margin Skirts; new Signing Gloves; Head bare). The old sheet is kept as `capstone-sets-sheet-v1.png`; the per-set PNGs were overwritten.
+**(updated 2026-10-06: slot fix)** Vanilla armor slots appear to be Head / Chest / Hands / Legs (no Boots, UNVERIFIED), so the sets were redrawn to the new `research/cloud/Capstone-Sets.md` slots: **Bailiff = Head + Chest + Legs** (greaves + sabatons are the lower Legs piece; Hands bare), **Clerk = Head + Chest + Hands** (new Quick-Reference Mitts; the Trousers are gone, Legs bare), **Notary = Chest + Legs + Hands** (slippers sewn to the Margin Skirts; new Signing Gloves; Head bare). The old sheet is kept as `capstone-sets-sheet-v1.png`; the per-set PNGs were overwritten.
 
 ## 1. Files
 
