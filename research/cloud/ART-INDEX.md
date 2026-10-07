@@ -1,6 +1,6 @@
 # Concept art index - everything in one place
 
-Cloud draft, 2026-10-06. Paper design; nothing built. One page to review all the concept art. Inputs read: every `research/cloud/*/README.md`,
+Cloud draft, 2026-10-06 (refreshed 2026-10-07: v3 / v2 redos below). Paper design; nothing built. One page to review all the concept art. Inputs read: every `research/cloud/*/README.md`,
 `docs/answered/gear.md` (lines 69-78), `docs/answered/pets.md` (29-30), `docs/answered/world.md` (52), `CLOUD-RESUME.md`.
 Images are relative links, so they render on GitHub / Obsidian. All art is original, drawn by Python + Pillow (deterministic), no game files.
 
@@ -11,13 +11,13 @@ Status words: **approved** = Skyy said so (LOCKED line) / **v2 done** = redone a
 
 1. [Weapons v2](#weapons) - most complaints last time (books, soul cage spin, claws, black leather).
 2. [Pets v2](#pets) - you liked only the rabbit; check the new box-model look and the dragon icon.
-3. [Light armor v2](#light-armor) - new half-mask cowl helmets (Mithril wings).
-4. [Foraging v2](#foraging-armor) (new Goldenwood helmet), then [Mining + Farming v2](#mining--farming-armor).
+3. [Light armor v3 helmets](#light-armor) - seven distinct helmet shapes (Corinthian, sallet, great helm, Spartan, horned, winged, crowned).
+4. [Foraging v2](#foraging-armor) (new Goldenwood helmet), then [Mining v3 + Farming v2](#mining--farming-armor) (Mining = half plate in each tier's metal).
 5. [Zone 1 town map v2](#zone-1-town-map) - organic layout, temple at the centre.
 6. [Capstone sets](#capstone-set-art) - never reviewed; bureaucracy jokes check.
 7. Never reviewed at all: [Fishing gear](#fishing-gear), [Fish species](#fish-species), [Fishing UI mockup](#fishing-ui-mockup),
-   [Enchanted](#enchanted-materials), [Class emblems](#class-emblems).
-8. Quick confirm only: [Heavy Leather](#heavy-leather), [Crude Robe](#crude-robe), [Accessories](#accessories) (already approved, v2 = detail only).
+   [Enchanted v2](#enchanted-materials), [Class emblems](#class-emblems) (Monk v2 in Saffron, Priest v2 soul cage).
+8. Quick confirm only: [Heavy Leather](#heavy-leather), [Crude Robe](#crude-robe), [Accessories](#accessories) (approved; Stamina line v3 = lightning-bolt charm).
 
 ## At a glance
 
@@ -25,17 +25,17 @@ Status words: **approved** = Skyy said so (LOCKED line) / **v2 done** = redone a
 |---|---|---|
 | `weapon-art/` | v2 | v2 done |
 | `pet-art/` | v2 | v2 done |
-| `light-armor/` | v2 | design approved, v2 done |
+| `light-armor/` | v3 helmets | design approved, v3 helmets done |
 | `foraging-armor/` | v2 | approved, v2 done (Goldenwood helmet) |
-| `gathering-armor-art/` | v2 | v2 done (Mining v2, Farming detail) |
+| `gathering-armor-art/` | v3 Mining | v3 done (Mining half plate), Farming v2 |
 | `heavy-armor/` | v2 | approved, v2 done |
 | `cloth-armor/` | v2 | approved, v2 done |
-| `accessory-art/` | v2 | approved, v2 done |
+| `accessory-art/` | v2 + Stamina v3 | approved, Stamina v3 done |
 | `capstone-set-art/` | v2 detail | not reviewed yet |
 | `fishing-art/` | v1 | not reviewed yet |
-| `enchanted-art/` | v1 (+ touch-up) | not reviewed yet |
-| `class-art/` | v1 | not reviewed yet |
-| `fish-art/` | v2 touch-up | not reviewed yet |
+| `enchanted-art/` | v2 (29 icons) | not reviewed yet |
+| `class-art/` | Monk + Priest v2 | not reviewed yet; Monk colour LOCKED Saffron |
+| `fish-art/` | v2.1 (junk retired) | not reviewed yet |
 | `Zone-1-Town-Map.png` | v2 | v2 done |
 | `Fishing-UI-Mockup.png` | v1 | not reviewed yet |
 
@@ -44,9 +44,11 @@ Status words: **approved** = Skyy said so (LOCKED line) / **v2 done** = redone a
 ### Light armor
 `research/cloud/light-armor/` - Copper ... Onyxium, black leather + metal accents. Status: **design approved** (gear.md 73), **v2 done**.
 
-![](light-armor/light-armor-sheet-v2.png)
+![](light-armor/light-armor-sheet-v3.png)
+![](light-armor/helmets-v3.png)
 
-- Also: [helmets-v2](light-armor/helmets-v2.png), per tier `<tier>-set-v2.png` / `<tier>-chest-v2.png` (7 each).
+- v3 (2026-10-07): new helmets only - Corinthian, sallet, great helm, Spartan, horned, winged, crowned; bodies as v2. Generator `make_helmets_v3.py`.
+- Also: [light-armor-sheet-v2](light-armor/light-armor-sheet-v2.png), [helmets-v2](light-armor/helmets-v2.png), per tier `<tier>-set-v2.png` / `<tier>-chest-v2.png` (7 each).
 - Older: v1 `light-armor-sheet.png`, `helmets.png`, per-tier v1 files (same names without `-v2`).
 - Generators: `make_sheets_v2.py` (v2), `make_sheets.py`, `make_helmets.py` (v1).
 - Changed in v2: 2x pixel density and half-mask cowl helmets; Thorium+ echo vanilla metal helmets, Mithril gets the vanilla-style wings.
@@ -86,10 +88,11 @@ Status words: **approved** = Skyy said so (LOCKED line) / **v2 done** = redone a
 `research/cloud/gathering-armor-art/` - Mining Copper ... Onyxium; Farming = crop armor (Wheat ... Onion). Status: Farming look **approved**
 (gear.md 70-71), Mining + Farming v2 **done**.
 
-![](gathering-armor-art/mining-sheet-v2.png)
+![](gathering-armor-art/mining-sheet-v3.png)
 ![](gathering-armor-art/farming-sheet-v2-detail.png)
 
-- Older: `mining-sheet.png` (v1), `farming-sheet.png` (v2 crop armor, 2026-10-06 first pass), `farming-sheet-v1.png` (old non-crop farmer).
+- v3 (2026-10-07): Mining = half plate drawn in each tier's metal. Generator `make_mining_v3.py`.
+- Older: [mining-sheet-v2.png](gathering-armor-art/mining-sheet-v2.png), `mining-sheet.png` (v1), `farming-sheet.png` (v2 crop armor, 2026-10-06 first pass), `farming-sheet-v1.png` (old non-crop farmer).
 - Generators: `make_sheets_v2.py [mining] [farming]`, `make_sheets.py`.
 - Changed in v2: Mining = same outfit in different colours per tier, iron+ echoes vanilla armor, working-lamp helmets; Farming at 2x detail.
 - Open: 9 questions - [README](gathering-armor-art/README.md#questions-for-skyy-v2) (the lamps need real light - local check).
@@ -132,6 +135,7 @@ Status: **v2 done**, waiting on Skyy (gear.md 74).
 
 ![](accessory-art/accessory-sheet-v2.png)
 
+- Stamina line v3 (2026-10-07): a lightning-bolt charm, now on the sheet above; the sheet before it is kept as [accessory-sheet-v2-before-stamina.png](accessory-art/accessory-sheet-v2-before-stamina.png).
 - Also: 44 icons in `icons-v2/<line>-<rarity>.png` (64x64).
 - Older: v1 `accessory-sheet.png`, `icons/`. Generators: `make_icons_v2.py`, `make_icons.py`.
 - Changed in v2: same 44 designs at vanilla 64x64 density; gem grows with rarity.
@@ -149,30 +153,30 @@ Status: **v2 done**, waiting on Skyy (gear.md 74).
 - Open: 4 questions - [README](fishing-art/README.md#questions-for-skyy).
 
 ### Fish species
-`research/cloud/fish-art/` - one icon per species, rows per zone + Junk + Lost Property. Status: **not reviewed yet**; v2 touch-up done 2026-10-06 (curled eels, flatfish halibut, three distinct sturgeons, clearer Slag Ray).
+`research/cloud/fish-art/` - one icon per species, rows per zone + Lost Property. Status: **not reviewed yet**; v2 touch-up done 2026-10-06 (curled eels, flatfish halibut, three distinct sturgeons, clearer Slag Ray); v2.1 2026-10-07 drops the Junk row (junk = vanilla Fishing Trap items).
 
 ![](fish-art/fish-sheet.png)
 
-- Also: 54 files in `icons/`. Older: [fish-sheet-v1.png](fish-art/fish-sheet-v1.png). Generator: `make_fish.py`.
-- Changed in newest: another agent is updating it (README still says v1) - check its README for the real list.
+- Also: 54 files in `icons/` (47 live + 7 retired junk kept to compare). Older: [fish-sheet-v2.png](fish-art/fish-sheet-v2.png) (with junk), [fish-sheet-v1.png](fish-art/fish-sheet-v1.png). Generator: `make_fish.py`.
+- Changed in newest: Junk row removed; 39 fish + 8 Lost Property.
 - Open: 6 questions - [README](fish-art/README.md#questions-for-skyy) (incl. keep the curled eels?).
 
 ### Enchanted materials
 `research/cloud/enchanted-art/` - 38 items + 15 blocks, SkyBlock-style glint. Status: **not reviewed yet** (Rice / Cotton / Chilli touched up 2026-10-06).
 
-![](enchanted-art/enchanted-sheet.png)
+![](enchanted-art/enchanted-sheet-v2.png)
 
-- Also: animated [glint-animated-demo.gif](enchanted-art/glint-animated-demo.gif), `icons/` (64x64). Generator: `make_enchanted.py`. Older: none.
-- Changed in newest: touch-up of Rice (sack + panicles) and Cotton (bolls on a stem).
+- v2 (2026-10-07): 29 icons at vanilla density in `icons-v2/` - Cobblestone, Rubble, 6 ingots (Mithril staged), 5 key log blocks, 7 crops + 9 later. Generator `make_enchanted_v2.py`.
+- Also: animated [glint-animated-demo.gif](enchanted-art/glint-animated-demo.gif), `icons/` (64x64). Older: [enchanted-sheet.png](enchanted-art/enchanted-sheet.png) (v1, `make_enchanted.py`).
 - Open: 4 questions - [README](enchanted-art/README.md#questions-for-skyy).
 
 ### Class emblems
-`research/cloud/class-art/` - 7 classes, 64 and 128 px + locked 64 px. Status: **not reviewed yet**.
+`research/cloud/class-art/` - 7 classes, 64 and 128 px + locked 64 px. Status: **not reviewed yet**; Monk v2 (wrapped fist) and Priest v2 (soul cage) redrawn 2026-10-07.
 
 ![](class-art/class-sheet.png)
 
-- Also: `icons/class-<name>-{64,64-locked,128}.png`. Generator: `make_emblems.py`. Older: none.
-- Monk colour options: [monk-colour-options.png](class-art/monk-colour-options.png) - 6 candidates; recommended Jade teal `#38c9a8` ([research/cloud/Monk-Colour-Options.md](Monk-Colour-Options.md)).
+- Also: `icons/class-<name>-{64,64-locked,128}.png`. Generator: `make_emblems.py`. Older: [class-sheet-v1.png](class-art/class-sheet-v1.png).
+- Monk colour: **LOCKED Saffron `#f08a30`** (`docs/answered/gear.md` line 87); the 6 candidates stay in [monk-colour-options.png](class-art/monk-colour-options.png) ([research/cloud/Monk-Colour-Options.md](Monk-Colour-Options.md)).
 - Open: 4 questions - [README](class-art/README.md#questions-for-skyy).
 
 ## Maps and screens
@@ -216,5 +220,4 @@ Before overwriting a sheet that Skyy has seen, rename the old PNG to `<name>-v1.
 | # | Question | Default |
 |---|---|---|
 | 1 | Is this review order right, or do you want it by system (armor / weapons / fishing)? | as listed |
-| 2 | Which Monk class colour? (see `research/cloud/Monk-Colour-Options.md`) | Jade teal `#38c9a8` |
-| 3 | Should the never-reviewed v1 folders (fishing gear, fish, enchanted, classes) get the 2x-4x density pass too? | yes, same rule as the rest |
+| 2 | Should the never-reviewed v1 folders (fishing gear, fish, enchanted, classes) get the 2x-4x density pass too? | yes, same rule as the rest |
