@@ -14,12 +14,17 @@ with its real 1x size next to it, name and rarity under it in the rarity colour)
 their own icons. Nothing deleted here (files kept to compare; they are not used by the mod); the 8 Lost Property icons and the 39 fish stay. The
 counts below (54 icons, 7 junk) are the pre-retirement counts: 47 live icons.
 
+**Update 2026-10-07 (sheet v2.1):** `fish-sheet.png` no longer has the Junk row (39 fish + 8 Lost Property = 47 icons, 2788 x 2228).
+The sheet with the junk row is kept as `research/cloud/fish-art/fish-sheet-v2.png`. `make_fish.py` still draws the 7 junk icons into
+`icons/` (bytes unchanged) so they can be compared; it just leaves them off the sheet.
+
 ## 1. Files
 
 | File | What |
 |---|---|
-| `research/cloud/fish-art/fish-sheet.png` | All 54 icons, labelled, grouped by zone (2788 x 2572) - v2 |
+| `research/cloud/fish-art/fish-sheet.png` | The 47 live icons, labelled, grouped by zone (2788 x 2228) - v2.1 |
 | `research/cloud/fish-art/fish-sheet-v1.png` | The v1 sheet, kept to compare |
+| `research/cloud/fish-art/fish-sheet-v2.png` | The v2 sheet with the retired Junk row, kept to compare |
 | `research/cloud/fish-art/icons/<id>.png` | 54 icons, 64 x 64, transparent: 39 species (`overdue_minnow.png` .. `final_notice_leviathan.png`), 7 junk, 8 Lost Property |
 | `research/cloud/fish-art/make_fish.py` | The generator. Deterministic (two runs give the same bytes). Dev preview: `FISH_PREVIEW=<id,..|zone no.|items|all> FISH_OUT=x.png FISH_SCALE=8` |
 

@@ -54,11 +54,10 @@ lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
 - [ ] **Apply the chain premium fix** - make the exact Block +4.5% edits listed in `research/cloud/Chain-Premium-Fix.md` to the cloud drafts it names
       (incl. the stale 1.21x table in `research/cloud/Enchanted-Materials-Draft.md`). Output: the edited drafts + a LOG line.
-- [ ] **Retire the junk fish icons** - `research/cloud/fish-art/make_fish.py` still draws the 7 retired junk items; drop them from the sheet (keep files
-      for comparison as the README says) and regenerate. Output: regenerated `research/cloud/fish-art/fish-sheet.png`.
 - [ ] **ART-INDEX refresh** - add today's v3 / v2 sheets (mining v3, light helmets v3, enchanted v2, Monk emblem v2, Stamina v3) to `research/cloud/ART-INDEX.md`.
       Output: the edited index.
 
 
 ## Done (delete after logging - see the rules above)
 - [x] Sushi source: vanilla seaweed or Azure Kelp - 2026-10-07 - `research/cloud/Food-Expansion-Draft.md`
+- [x] Retire the junk fish icons: sheet v2.1 - 2026-10-07 - `research/cloud/fish-art/fish-sheet.png`

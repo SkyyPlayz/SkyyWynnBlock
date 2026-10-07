@@ -2195,6 +2195,8 @@ def build():
                 ic = render_item(fn, fx)
                 ic.im.save(os.path.join(OUT, 'icons', iid + '.png'), optimize=True)
                 cells.append((ic.im, name, tier, TIER_COL[tier]))
+        if grp == 'Junk':
+            continue   # retired 2026-10-07: junk catches are vanilla Fishing Trap items with their own icons (icons kept on disk to compare)
         rows.append((head, '#c8c4b4', cells))
     # ---- sheet
     S, CW, CH, PAD = 3, 276, 300, 14
@@ -2209,8 +2211,8 @@ def build():
     Ht = 150 + sum(heights) + PAD
     im = Image.new('RGBA', (Wd, Ht), hx('#161a22'))
     d = ImageDraw.Draw(im)
-    d.text((PAD + 4, 14), 'SkyWynn fishing - species, junk and Lost Property icons (concept v2: eels, halibut, sturgeons, ray touched up)', font=fT, fill=hx('#f0ece0'))
-    d.text((PAD + 4, 56), 'Cloud draft 2026-10-06, original pixel art made by make_fish.py (no game art). Each icon is 64 x 64; shown 3x on a dark slot, '
+    d.text((PAD + 4, 14), 'SkyWynn fishing - species and Lost Property icons (concept v2.1: junk retired, vanilla Fishing Trap items)', font=fT, fill=hx('#f0ece0'))
+    d.text((PAD + 4, 56), 'Cloud draft 2026-10-07, original pixel art made by make_fish.py (no game art). Each icon is 64 x 64; shown 3x on a dark slot, '
            'with the real 1x size in the small slot on the right.', font=fS, fill=hx('#b8b4a8'))
     # legend
     x = PAD + 4
@@ -2222,8 +2224,8 @@ def build():
         d.rectangle((x, 86, x + 12, 98), fill=c, outline=hx('#000000'))
         d.text((x + 18, 84), '%s: %s' % (r, txt), font=fS, fill=c)
         x += 30 + d.textlength('%s: %s' % (r, txt), font=fS)
-    d.text((PAD + 4, 110), 'Lost Property tiers reuse the same marks: Good = none, Great = Rare mark, Outstanding = Legendary mark. Junk has none. '
-           'Lore touches: ticket, paperclip, ink stamp, ID badge, luggage tag, customs check, scorch stamp, Final Notice seal.',
+    d.text((PAD + 4, 110), 'Lost Property tiers reuse the same marks: Good = none, Great = Rare mark, Outstanding = Legendary mark. Junk is vanilla items (their own icons). '
+           'Lore touches: paperclip, ink stamp, ID badge, luggage tag, customs check, wax seal, Final Notice seal.',
            font=fS, fill=hx('#b8b4a8'))
     y = 150
     for (head, zc, cells), hh in zip(rows, heights):
