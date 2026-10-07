@@ -108,4 +108,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyArmory 0.1.2 - crossbow Grapple Bolt, traversal Stamina cap 5 (DEPLOYED 2026-10-06, backup deploy-20261006-1615) | [2026-10](2026-10.md) |
 | SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 - mob curve, level gap, kill XP by level, Reforge level-up (DEPLOYED 2026-10-06, backup deploy-20261006-1640) | [2026-10](2026-10.md) |
 | SkyySkills 0.4.18 - 8-way Dodge Roll (DEPLOYED 2026-10-06, backup deploy-20261006-1712) | [2026-10](2026-10.md) |
-| SkyySkills 0.4.19 + SkyyHud 0.3.14 + SkyyGear 0.2.6 - dodge move gate / minimap / weapon speed tiers (pinned 2026-10-06) | [2026-10](2026-10.md) |
+| SkyySkills 0.4.19 + SkyyHud 0.3.14 + SkyyGear 0.2.6 - dodge move gate / minimap / weapon speed tiers (DEPLOYED 2026-10-06, backup deploy-20261006-1823) | [2026-10](2026-10.md) |
