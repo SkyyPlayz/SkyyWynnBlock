@@ -208,3 +208,56 @@ strap rivets), a centre seam, and a laced slit with metal eyelets at the back of
 | 10 | Mithril wings: right size, or smaller / larger once compared with the vanilla helmet? | [match the vanilla Mithril helmet] |
 | 11 | Onyxium: horns + crown, or crown only? | [horns + crown] |
 | 12 | Eye band: keep the face visible in shade, or a dark shadow with glowing eyes on high tiers? | [face in shade] |
+
+## 8. v3 - hard metal helmets (added 2026-10-07)
+
+Cloud draft, 2026-10-07. Paper design; nothing built. Answers Skyy's helmet references (`docs/answered/gear.md`, LOCKED 2026-10-06
+"LIGHT ARMOR HELMET references": hard metal helms, never a cloth hood; Corinthian / Spartan, sallet, closed knight helms; contrasting trim;
+crests, wings, spikes / horns, forehead gem, chains, glowing eye slits on higher tiers) and the `CLOUD-RESUME.md` item "Light armor helmets v3".
+The half-mask cowl of v2 is replaced. No masks (Skyy: masks maybe later, as a separate slot). The v2 bodies are unchanged.
+
+**Start here:** `research/cloud/light-armor/helmets-v3.png` (front / side / back of every helm, head + shoulders), then
+`research/cloud/light-armor/light-armor-sheet-v3.png` (the v2 bodies wearing the v3 helms, front + back).
+
+| File | What |
+|---|---|
+| `research/cloud/light-armor/helmets-v3.png` | 7 helms x 3 views (front, side profile facing right, back), x4 (3354 x 1490) |
+| `research/cloud/light-armor/light-armor-sheet-v3.png` | Same layout as the v2 sheet, v3 helms on; trim colour chip next to each metal ramp (3216 x 1460) |
+| `research/cloud/light-armor/make_helmets_v3.py` | The v3 generator: imports `make_sheets_v2.py` (painter, textures, body) and swaps only its `helmet()`; deterministic (checked by running twice) |
+
+All v1 and v2 files are unchanged (git shows only the 3 new files). The figure grid is 128 x 202 (v2: 128 x 192): the body is moved
+10 rows down for headroom (crest, horns, wings, crown), with the same 2x detail as v2: 7-step ramps lit top-left, 1-px dark outline, 2-px
+bevel, brushed metal with pits, small scratches on each helm, domed rivets, quilted + stitched black leather.
+
+### 8.1 The ladder (proposal - Skyy reviews)
+
+| Tier | Helm | What makes it read at a glance | Trim |
+|---|---|---|---|
+| Copper | engraved Corinthian | almond eye holes, nose guard, open Y-gap, long pointed cheek guards; gold-inlay eyebrow arches, cheek scrolls, crown leaf; back: smooth dome + flared neck rim | gold inlay |
+| Iron | segmented sallet | flared skull brim with a centre keel, dark eye slit under the brim, 3-lame bevor with brass edges + 2 rows of breathing slots; side: long segmented tail | brass |
+| Thorium | closed great helm | flat-topped bucket, horizontal visor slit + steel cross bar, breathing crosses, steel rings at the sides with black leather straps + buckles down to the collar | steel |
+| Cobalt | Spartan | narrow T slit that glows pale blue, angular brow, faceted plates, dark navy horsehair crest (front: mohawk; side: the big arc; back: hangs down the neck) | steel |
+| Adamantite | horned + spiked closed helm | V-shaped glowing red-orange eye slit, row of black-steel spikes on top, two big curved ribbed horns, jaw ridge + fang vents | blackened steel |
+| Mithril | winged helm | two large swept feathered wings (7 primaries with gold quills + barbs, 4 coverts, gold diamond mount), gold spectacle eye guard + nose guard | gold |
+| Onyxium | crowned helm | gold crown with 5 ball-tipped points + small gems, big glowing forehead gem in a gold mount, pink-lit eye slits, gold face ridge, hanging gold chains | gold |
+
+Every helm meets the body in black leather: a quilted, stitched neck guard under the rim (and a 1-px padded liner edge inside the
+eye holes of the open helms). Iron's side view fills the gap between skull, tail and bevor with that leather.
+
+### 8.2 For the local session (UNVERIFIED)
+
+1. Crests, horns, wings and crowns stick out of the head box: check whether a head piece can carry extra model geometry (the vanilla
+   Mithril helmet's wings say yes, shape UNVERIFIED). If not, keep the silhouettes flat / smaller.
+2. The Mithril wing shape is my own; compare with the real vanilla Mithril helmet wings (Skyy wanted "the same helmet wings" in the v2
+   review) and copy the angle / size / feather count.
+3. Glowing eye slits (Cobalt, Adamantite, Onyxium) and the Onyxium gem: check whether armor can use an emissive / glow texture.
+4. These are front / side / back paintings, not UV maps; lay them onto the real Head UV (vanilla Mithril Head 160 x 64, x2 if allowed).
+
+### 8.3 Questions for Skyy
+
+| # | Question | Default |
+|---|---|---|
+| 13 | Is the ladder right (which helm on which tier)? | [as drawn: Corinthian, sallet, great helm, Spartan, horned, winged, crowned] |
+| 14 | Trim colours: Copper gold, Iron brass, Thorium + Cobalt steel, Adamantite black steel, Mithril + Onyxium gold - ok? | [as drawn] |
+| 15 | Cobalt crest colour: dark navy, or black / a dark red plume? | [dark navy] |
+| 16 | Glowing eye slits only on Cobalt, Adamantite, Onyxium, or on every tier from Cobalt up (Mithril too)? | [as drawn] |

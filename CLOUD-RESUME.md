@@ -52,13 +52,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 <!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
 lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
-- [ ] **Light armor helmets v3** - Skyy sent 12 helmet references (described in docs/answered/gear.md 2026-10-06 "LIGHT ARMOR HELMET
-      references"; pictures stay local). Hard metal helms, NO cloth hood. Proposed ladder (Skyy reviews): Copper = engraved Corinthian with long
-      cheek guards; Iron = segmented sallet with breathing slots; Thorium = closed helm with a horizontal visor slit + side straps / rings;
-      Cobalt = Spartan with a dark crest + glowing eye slits; Adamantite = spiked / horned closed helm; Mithril = winged helm (feathered wings,
-      keep the vanilla Mithril wing idea); Onyxium = crowned helm with a forehead gem. Each in its tier metal with a contrasting trim, black
-      leather where it meets the light-armor body. No masks (Skyy: masks maybe later, separate). 2x detail like v2.
-      Output: `research/cloud/light-armor/helmets-v3.png` + the v3 sheet.
 - [ ] **Amberite + Drakonite price check** - `research/cloud/Ember-Economy-Check.md` found Amberite (30,000) and Drakonite (75,000) at 8-12x endgame
       income; re-fit their prices (suggested ~9,300 / ~23,000) with the same python model. Output: `research/cloud/Zone-5-Ore-Prices.md`.
 - [ ] **Enchanted chain premium fix** - Enchanted +10% x Block +5% = 1.155 (> the 15% cap in `research/cloud/Economy-Audit.md` C4); work out Block +4.5%
@@ -73,3 +66,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [x] Monk emblem v2 - 2026-10-06 - `research/cloud/class-art/`
 - [x] Stamina accessory icon v3 - 2026-10-06 - `research/cloud/accessory-art/`
 - [x] Mining armor v3 (half plate) - 2026-10-06 - `research/cloud/gathering-armor-art/`
+- [x] Light armor helmets v3 - 2026-10-06 - `research/cloud/light-armor/`
