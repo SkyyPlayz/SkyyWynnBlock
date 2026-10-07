@@ -63,7 +63,6 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [ ] **Mining armor v3 (half plate)** - Skyy sent references (described in docs/answered/gear.md 2026-10-06 "MINING ARMOR references"; the
       pictures stay local): every Mining tier (Copper..Adamantite; Mithril staged) gets a HALF PLATE body - big rounded embossed pauldrons, a
       sculpted segmented breastplate, layered plate arms + gauntlets, crossed leather straps + buckled belts, the WHOLE armor in the tier's own metal colour (Skyy: "that armor in a half plate style, in the right metal colors"); NO skirt / tabard (plated greaves + boots); keep the v2 helmets (Skyy likes the heads) and the lamp. Output: v3 sheet.
-      NO skirt / tabard (plated greaves + boots); keep the v2 helmets (Skyy likes the heads) and the lamp. Output: v3 sheet.
 - [ ] **WAIT - Skyy is sending references:** Light armor HELMETS (no cloth-hood look; mask optional). Do not redo until they land in this list.
 - [ ] **Amberite + Drakonite price check** - `research/cloud/Ember-Economy-Check.md` found Amberite (30,000) and Drakonite (75,000) at 8-12x endgame
       income; re-fit their prices (suggested ~9,300 / ~23,000) with the same python model. Output: `research/cloud/Zone-5-Ore-Prices.md`.
