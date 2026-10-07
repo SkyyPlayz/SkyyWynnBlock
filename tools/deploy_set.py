@@ -16,7 +16,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
-    ("SkyyHud", "0.3.15"), ("SkyySacks", "0.7.13"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
+    ("SkyyHud", "0.3.16"), ("SkyySacks", "0.7.13"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
     ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.6"), ("SkyySkills", "0.4.20"),
     ("SkyyAccessories", "0.5.6"), ("SkyyClasses", "0.1.12"), ("SkyyMenu", "0.3.8"), ("SkyyEssentials", "0.1.8"), ("SkyyProfiles", "0.1.5"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.2"),
