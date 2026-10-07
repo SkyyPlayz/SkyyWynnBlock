@@ -18,7 +18,11 @@ Inputs read: `CLOUD-RESUME.md` ("Class emblem icons"), `research/classes/README.
 | `icons/class-<name>-64-locked.png` | grey "coming later" version (Assassin and Monk are not selectable yet) |
 | `make_emblems.py` | The generator. Deterministic. Run `python3 research/cloud/class-art/make_emblems.py` |
 
-Folder size about 0.35 MB.
+Folder size about 0.75 MB.
+
+**v2 (2026-10-07):** Monk = wrapped fist instead of claws, field Saffron `#f08a30` (locked colour); Priest = the v2 soul cage
+(dodecahedron) instead of the round barred orb. Only the Monk + Priest icons changed - the other 5 classes are byte-identical (md5
+checked). Old sheet kept as `class-sheet-v1.png` for comparison.
 
 ## 2. The crest (same for every class)
 
@@ -39,11 +43,10 @@ Folder size about 0.35 MB.
 | Archer | `#8fd67a` | recurve shortbow with a nocked red-fletched arrow (Shortbows) |
 | Assassin | `#b58cff` | dagger crossed with a ring-pommel kunai (Daggers, Kunai) |
 | Mage | `#7fb0e0` | staff with a violet orb in a gold claw + sparkles, spellbook at its foot (Staffs, Spellbooks) |
-| Priest | `#f2e6a0` | the Soul Orb (gold cage, glowing soul) under a halo, with a wand (Wands, Soul Orb) |
-| Monk | `#ff7a5c` **(proposal)** | bo staff crossed with three-blade claws on a black leather wrap, wind swirls for speed (Bo staff, Fist weapons) |
+| Priest | `#f2e6a0` | the **Soul Cage v2** (gold dodecahedron lattice round a glowing cyan soul, cyan gems on every other front corner, axis finials - the `weapon-art/soul-cage-v2.png` look) under a halo, with a wand (Wands, Soul Orb) |
+| Monk | `#f08a30` Saffron **(LOCKED)** | a raised **wrapped fist** (linen hand wraps with bands + crossed straps, loose tail at the wrist) in front of the bo staff, wind swirls for speed (Bo staff, Fist weapons) |
 
-- Monk has no class colour yet. Proposal: `#ff7a5c`, the old Shaman slot colour (the Monk replaces the Shaman slot).
-- Claws follow Skyy's weapon lock (long straight Wolverine-style blades, black leather).
+- Monk colour = Saffron `#f08a30`, LOCKED by Skyy 2026-10-06 (`docs/answered/gear.md`). The build scripts still hold the old Shaman `#ff7a5c` (local session: change `ClassDefs.COLORS` / `SkillDefs` in the next SkyyProfiles / SkyySkills round).
 - Colours are the live `ClassDefs.COLORS` values (SkyyProfiles 0.1.2 build script) - if those change, edit `CLASSES` in the script.
 
 ## For the local session (UNVERIFIED)
@@ -57,7 +60,7 @@ Folder size about 0.35 MB.
 
 | # | Question | Default |
 |---|---|---|
-| 1 | Monk class colour | [`#ff7a5c`, the old Shaman slot colour] |
+| 1 | Priest emblem: the soul cage is drawn in gold with a cyan soul + gems (a "generic" cage, not one tier). Keep, or show a specific tier (e.g. Copper cage, green soul)? | [gold + cyan] |
 | 2 | Archer shows the bow only - add a crossbow (crossed bow + crossbow)? | [bow only, clearer at 64] |
 | 3 | Locked classes: grey emblem (as drawn) or a padlock on top? | [grey emblem] |
 | 4 | Shield crest for all classes, or a different frame per role (tank / damage / support)? | [same crest for all] |

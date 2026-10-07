@@ -253,7 +253,7 @@ def font(sz, bold=True):
 OUT = os.path.dirname(os.path.abspath(__file__))
 PI = math.pi
 
-# class colours: ClassDefs.COLORS (SkyyProfiles build 0.1.2) - Monk has none yet (proposal: Shaman's old #ff7a5c slot)
+# class colours: ClassDefs.COLORS (SkyyProfiles build 0.1.2); Monk = Saffron #f08a30 (LOCKED by Skyy 2026-10-06, docs/answered/gear.md)
 CLASSES = [
     ('Warrior', '#e0b060', 'Tank + crowd control', 'Swords, Spears'),
     ('Berserker', '#d9443f', 'Damage buffer + sustained melee', 'Axes, Maces'),
@@ -261,7 +261,7 @@ CLASSES = [
     ('Assassin', '#b58cff', 'Priority killer + debuffer', 'Daggers, Kunai'),
     ('Mage', '#7fb0e0', 'Burst damage + survival', 'Staffs, Spellbooks'),
     ('Priest', '#f2e6a0', 'Healer + protector', 'Wands, Soul Orb'),
-    ('Monk', '#ff7a5c', 'Self-speed disruptor', 'Bo staff, Fist weapons'),
+    ('Monk', '#f08a30', 'Self-speed disruptor', 'Bo staff, Fist weapons'),
 ]
 
 TRIM = ramp('#c9a24a', 6, light=0.45)      # gold ornament (vanilla frame ornaments read gold; UNVERIFIED exact)
@@ -531,14 +531,147 @@ def swirl(cv, cx, cy, k, col):
                 cv.put(p[0], p[1], mix(cv.get(*p), col, 0.75))
 
 
+# ---- v2 (2026-10-07): Monk wrapped fist (cloth hand wraps) + Priest soul cage v2 (dodecahedron lattice)
+LINEN = ramp('#e2cfa2', 6, light=0.45)      # linen hand wraps (weapon-art hand-wraps-v2 "Linen" tier)
+SKIN = ramp('#d49a72', 6, light=0.45)
+CYANS = ramp('#9ff0ff', 6, light=0.6)
+
+
+def fist(cv, cx, cy, ang, k, sc=0.8):
+    """raised fist seen from the front (palm side), knuckles up, wrapped in linen; loose wrap tail at the wrist"""
+    def S(pts):
+        return [(x * sc, y * sc) for x, y in pts]
+    BAND = ramp('#9c8458', 4)
+    # loose wrap tail fluttering off the wrist (behind the arm)
+    part(cv, S([(5, 15), (10, 13), (15, 15), (21, 14), (27, 17), (22, 20), (16, 19), (10, 21), (6, 21)]), cx, cy, ang, k, LINEN, noise=0.04, seed=11)
+    # forearm + wrist, fully wrapped
+    part(cv, S([(-7, 4), (7, 4), (8, 28), (-8, 28)]), cx, cy, ang, k, LINEN, noise=0.04, seed=12)
+    # hand body (palm + back of hand), wrapped over the knuckles
+    hand = S([(-11, -15), (-7, -18), (7, -18), (11, -15), (11, 2), (8, 7), (-8, 7), (-11, 2)])
+    hm = part(cv, hand, cx, cy, ang, k, LINEN, noise=0.04, seed=13)
+    if k > 1:
+        for yy in (1, 5, 9, 13, 17, 21, 25):
+            w0 = 10.5 if yy < 4 else 7.5
+            part(cv, S([(-w0, yy), (w0, yy - 0.8), (w0, yy - 0.1), (-w0, yy + 0.7)]), cx, cy, ang, k, BAND, outline=False)
+        # crossed straps over the wrist
+        part(cv, S([(-7, 6), (-4, 6), (7, 20), (4, 20)]), cx, cy, ang, k, ramp('#cdb684', 5), outline=False, level=-0.08)
+        part(cv, S([(4, 6), (7, 6), (-4, 20), (-7, 20)]), cx, cy, ang, k, LINEN, outline=True, level=0.04)
+        scatter(cv, hm, LINEN['f'][1], 0.05, 21)
+    else:
+        for yy in (2, 9, 16, 23):
+            part(cv, S([(-9, yy), (9, yy - 0.8), (9, yy), (-9, yy + 0.8)]), cx, cy, ang, k, BAND, outline=False)
+    # wrap band over the knuckles
+    part(cv, S([(-11, -15), (-7, -18.5), (7, -18.5), (11, -15), (11, -13), (-11, -13)]), cx, cy, ang, k, LINEN, level=0.06)
+    # four curled fingers (skin): middle segments in a row across the top front
+    for i, fx in enumerate((-7.6, -2.6, 2.4, 7.2)):
+        top = (-13.5, -14.2, -14, -13)[i]
+        w = 2.5 if i < 3 else 2.2
+        part(cv, S([(fx - w, top + 1.2), (fx - w + 1, top), (fx + w - 1, top), (fx + w, top + 1.2), (fx + w, -4.5), (fx + w - 1, -3.5),
+                    (fx - w + 1, -3.5), (fx - w, -4.5)]), cx, cy, ang, k, SKIN, noise=0.03, seed=30 + i)
+        if k > 1:
+            part(cv, S([(fx - w + 0.8, top + 4.6), (fx + w - 0.8, top + 4.6), (fx + w - 0.8, top + 5.4), (fx - w + 0.8, top + 5.4)]),
+                 cx, cy, ang, k, ramp('#a06a4a', 4), outline=False)
+    # thumb folded across the fingers' lower ends (outlined, a shade lighter)
+    th = S([(-12, -2), (-9.5, -6), (0, -6.2), (4.6, -4.6), (5, -1.2), (2, 0.6), (-9, 0.8)])
+    part(cv, th, cx, cy, ang, k, SKIN, noise=0.03, seed=40, level=0.08)
+    if k > 1:
+        part(cv, S([(1.2, -5.2), (4, -4.1), (4.2, -1.6), (1.4, -1.2)]), cx, cy, ang, k, ramp('#f2cdb0', 4), outline=False)   # nail
+        part(cv, S([(-9, -0.4), (0, -0.3), (0, 0.4), (-9, 0.4)]), cx, cy, ang, k, ramp('#a06a4a', 4), outline=False)
+
+
+def _dodeca():
+    phi = (1 + 5 ** 0.5) / 2
+    v = [(x, y, z) for x in (-1, 1) for y in (-1, 1) for z in (-1, 1)]
+    for a in (-1, 1):
+        for b in (-1, 1):
+            v += [(0, a / phi, b * phi), (a / phi, b * phi, 0), (a * phi, 0, b / phi)]
+    e = [(i, j) for i in range(20) for j in range(i + 1, 20) if abs(math.dist(v[i], v[j]) - 2 / phi) < 1e-6]
+    n = math.sqrt(1 + phi * phi)
+    fy, fz = 1 / n, phi / n
+    a = math.atan2(fz, fy) - PI                               # 5-fold axis straight up (the spin axis, as soul-cage-v2)
+    ca, sa = math.cos(-a), math.sin(-a)
+    v = [(x, y * ca - z * sa, y * sa + z * ca) for x, y, z in v]
+    th, tl = 0.25, 0.30                                       # same view angles as weapon-art/soul-cage-v2.png
+    out = []
+    for x, y, z in v:
+        x, z = x * math.cos(th) - z * math.sin(th), x * math.sin(th) + z * math.cos(th)
+        y, z = y * math.cos(tl) - z * math.sin(tl), y * math.sin(tl) + z * math.cos(tl)
+        out.append((x, y, z))
+    return out, e
+
+
+def soul_cage(cv, cx, cy, k):
+    """Soul Cage v2: glowing soul inside a gold dodecahedron lattice, gems (tethers) on the front corners, axis finials"""
+    v, e = _dodeca()
+    R = 13.0 / 1.75
+    P = [((cx + x * R) * k, (cy + y * R) * k, z) for x, y, z in v]
+    gl = ell(cv, cx * k, cy * k, 15 * k, 15 * k)
+    for p in gl:
+        if cv.get(*p) is not None:
+            cv.put(p[0], p[1], mix(cv.get(*p), hx('#e8fbff'), 0.20))
+    bw = max(1, 0.9 * k)
+
+    def bar(i, j, w):
+        return thick(cv, [P[i][:2], P[j][:2]], w)
+    back = [(i, j) for i, j in e if P[i][2] + P[j][2] > 0]
+    front = [(i, j) for i, j in e if P[i][2] + P[j][2] <= 0]
+    for i, j in back:
+        for p in bar(i, j, bw):
+            cv.put(p[0], p[1], GOLDM['f'][1])
+    soul = ell(cv, cx * k, cy * k, 7.2 * k, 7.2 * k)
+    shade(cv, soul, CYANS, 'sphere', cx=(cx - 1) * k, cy=(cy - 1.5) * k, rx=7 * k, ry=7 * k, outline=False)
+    if k > 1:
+        sw = thick(cv, [((cx + 4 * math.cos(t)) * k, (cy + 4 * math.sin(t)) * k) for t in [0.4 + i * 0.25 for i in range(9)]], 1)
+        for p in sw:
+            if p in soul:
+                cv.put(p[0], p[1], CYANS['f'][2])
+        cv.put(int((cx - 2.5) * k), int((cy - 3) * k), (255, 255, 255))
+        cv.put(int((cx - 2) * k), int((cy - 3) * k), (255, 255, 255))
+    else:
+        cv.put(int(cx - 2), int(cy - 2), (255, 255, 255))
+    fw = max(1.5, 1.6 * k)
+    allf = set()
+    for i, j in front:
+        allf |= bar(i, j, fw)
+    for p in edge(allf):                                      # thin dark edge so the bars read over the bright soul
+        if p in soul or k > 1:
+            cv.put(p[0], p[1], GOLDM['o'])
+    for p in allf - edge(allf) if k > 1 else allf:
+        cv.put(p[0], p[1], GOLDM['f'][3] if k > 1 else GOLDM['f'][2])
+    if k > 1:
+        for i, j in front:                                    # highlight line on the upper side of each bar
+            hl = thick(cv, [(P[i][0], P[i][1] - 0.7 * k / 2), (P[j][0], P[j][1] - 0.7 * k / 2)], 1)
+            for p in hl & (allf - edge(allf)):
+                cv.put(p[0], p[1], GOLDM['f'][4])
+    # corner nodes: gold knobs, the lowest front corners carry cyan gems (tethers)
+    fr = sorted([i for i in range(20) if P[i][2] <= 0], key=lambda i: math.atan2(P[i][1] - cy * k, P[i][0] - cx * k))
+    gems = set(fr[::2])                                       # every other front corner carries a gem (a mid-tier cage)
+    for i in sorted(range(20), key=lambda i: -P[i][2]):
+        x, y = P[i][0], P[i][1]
+        if P[i][2] > 0:
+            continue
+        if i in gems:
+            g = poly(cv, [(x, y - 2.4 * k), (x + 1.7 * k, y), (x, y + 2.4 * k), (x - 1.7 * k, y)])
+            shade(cv, g, CYANS, 'grad', bevel=0.25, outline=k > 1)
+        else:
+            m = ell(cv, x, y, 1.2 * k, 1.2 * k)
+            shade(cv, m, GOLDM, 'sphere', cx=x - 0.5 * k, cy=y - 0.5 * k, rx=1.6 * k, ry=1.6 * k, outline=k > 1)
+    top = min(p[1] for p in P); bot = max(p[1] for p in P)
+    xs = cx * k
+    part(cv, [(-1.6, 0.2), (0, -3.4), (1.6, 0.2)], cx, top / k, 0, k, GOLDM)
+    part(cv, [(-1.6, -0.2), (0, 3.4), (1.6, -0.2)], cx, bot / k, 0, k, GOLDM)
+    kn = ell(cv, xs, top - 4.4 * k, 1.3 * k, 1.3 * k)
+    shade(cv, kn, CYANS, 'sphere', cx=xs - 0.4 * k, cy=top - 4.8 * k, rx=1.7 * k, ry=1.7 * k, outline=k > 1)
+
+
 SYMBOLS = {
     'Warrior': lambda cv, k, rp: (spear(cv, 32, 32, -0.62, k), sword(cv, 33, 36, 0.62, k)),
     'Berserker': lambda cv, k, rp: (mace(cv, 34, 35, 0.6, k), battleaxe(cv, 30, 36, -0.55, k)),
     'Archer': lambda cv, k, rp: bow(cv, 33, 32, -PI / 4 - PI / 2 + PI, k),
     'Assassin': lambda cv, k, rp: (kunai(cv, 33, 36, 0.62, k), dagger(cv, 31, 36, -0.62, k)),
     'Mage': lambda cv, k, rp: (book(cv, 24, 44, k, ramp('#3a5aa0', 6)), staff(cv, 34, 33, 0.38, k, ramp('#c49cff', 6, light=0.6))),
-    'Priest': lambda cv, k, rp: (wand(cv, 42, 38, 0.6, k), soul_orb(cv, 29, 30, k), halo(cv, 29, 16.5, k)),
-    'Monk': lambda cv, k, rp: (swirl(cv, 32, 32, k, hx('#fff0e0')), bo(cv, 32, 32, -0.75, k), claws(cv, 36, 39, 0.45, k)),
+    'Priest': lambda cv, k, rp: (wand(cv, 43, 39, 0.6, k), soul_cage(cv, 28, 32, k), halo(cv, 28, 12.5, k)),
+    'Monk': lambda cv, k, rp: (swirl(cv, 32, 32, k, hx('#fff0e0')), bo(cv, 32, 32, -0.75, k), fist(cv, 33, 33, 0.28, k)),
 }
 
 
@@ -641,7 +774,7 @@ def sheet(res):
         d.rectangle([x, y, x + 272, y + 272], fill=ROW, outline=SLOT_E, width=2)
         im.alpha_composite(i128.resize((256, 256), Image.NEAREST), (x + 8, y + 8))
         d.text((x, y + 282), name.upper(), fill=hx(col), font=font(20))
-        d.text((x, y + 310), col + ('  (proposal)' if name == 'Monk' else ''), fill=SUB, font=font(13, False))
+        d.text((x, y + 310), col + ('  (Saffron, locked)' if name == 'Monk' else ''), fill=SUB, font=font(13, False))
         y = 430
         d.rectangle([x, y, x + 132, y + 132], fill=ROW, outline=SLOT_E)
         im.alpha_composite(i128, (x + 2, y + 2))
