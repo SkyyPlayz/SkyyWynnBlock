@@ -1,20 +1,18 @@
-# SkyWynn - RESUME HERE (updated 2026-10-07 morning)
+# SkyWynn - RESUME HERE (updated 2026-10-07 10:00)
 
 Read this first, then only what the task needs. Map of every file + search tips: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions:
 `HANDOFF.md`. Open questions: `OPEN-QUESTIONS.md`. Skyy's tests: `TEST-CHECKLIST.md`. Running log (all history): `docs/log/2026-10.md`.
 
 ## START HERE (new session)
 1. `git pull --rebase --autostash`; check usage (ccd get_usage; weekly resets TUESDAYS 15:00 UTC; 2026-10-06 ended near 20% weekly).
-2. **FIRST JOB (Skyy): the COPPER LIGHT-ARMOR CHEST in Blockbench.** Skyy must have Blockbench OPEN. MCP server "blockbench" =
-   http://localhost:3000/bb-mcp (in ~/.claude.json); skills in ~/.claude/skills: load `blockbench-use` first, then `blockbench-hytale`
-   (format hytale_character, 64 units per block, texture sides multiples of 32), `-modeling`, `-texturing`. Design: the Copper body of
-   `research/cloud/light-armor/light-armor-sheet-v2.png` (black leather + copper trim) + `.claude/skills/skywynn-art/SKILL.md`; NO helmet
-   (helmets v3 pending). Vanilla reference: Assets.zip `Common/Items/Armors/<metal>/Chest.blockymodel` - vanilla-derived files stay LOCAL
-   (pick a git-ignored folder, add it to INDEX.md "Local only"). Save .bbmodel + .blockymodel + texture for Skyy to open.
-   DRAFT EXISTS (2026-10-06 night, made without Blockbench): `python tools/make_light_chest.py` -> `models-local/light-armor/copper/`
-   (Chest.blockymodel + Chest_Texture.png 192x128 + previews; vanilla copy in `vanilla/`). Open it in Blockbench and refine with Skyy.
-   Blockbench MCP (fixed 2026-10-07): Avast breaks localhost HTTP, so ~/.claude.json runs `tools/bb_mcp_stdio.py` (stdio bridge).
-   Open Blockbench, then /mcp -> Reconnect blockbench (or a new session). Bridge test recipe: docs/log 2026-10-07 06:20.
+2. **ART WORKFLOW** `skywynn-art-build` (run wf_bb62eb52-952, launched 2026-10-07 ~10:00 while Skyy is at work): 7 Opus builders
+   (accessory icons, metal staffs + bo staffs, spellbooks, kunai, Soul Cage, fist weapons, fishing) -> Sonnet review -> fix. Output:
+   `models-local/art/<family>/` (sheet.png, manifest.json, README.md) + generators `tools/art/make_*.py`. When done: look at every
+   sheet, load models in Blockbench, commit the generators, show Skyy. Wiring into mods (Accessories icons, Armory staffs) = a later round.
+   LIGHT ARMOR (paused, Skyy: "we can work on the armor more later"): `python tools/make_light_bases.py` (+ make_light_legs.py) ->
+   `models-local/light-armor/sets/<tier>/` (Copper/Iron = Ornate Bronze + our legs, Thorium/Cobalt = Cobalt + sleeves, Adamantite/Mithril =
+   black Mithril, Onyxium = Prisma; option `onyxium-dark`). Blockbench tabs saved in `models-local/blockbench-saves/`. Blockbench MCP =
+   stdio bridge `tools/bb_mcp_stdio.py` (Avast breaks localhost HTTP). Skyy's choices: docs/answered/gear.md 2026-10-07; log 06:50-09:55.
 3. Then Skyy's test results (TEST-CHECKLIST.md "Test next": everything deployed 2026-10-05 / 06, items 17-40); fixes first.
 4. Rounds: launch with the saved workflow `skywynn-round` (`.claude/workflows/skywynn-round.js`; put Skyy's OWN words in args.quotes);
    record each deploy with `python tools/record_deploy.py` (PROJECT-RULES 3 + 4).
@@ -28,7 +26,7 @@ Read this first, then only what the task needs. Map of every file + search tips:
   from SET after Skyy's probe session, TEST-CHECKLIST 31). Newest backup `backups\deploy-20261006-2315`.
 - Skyy tested 2026-10-06 (log): Grapple works; wand heal circle works; minimap works in the hub; live settings Skyy chose: hop.force 30,
   blink.distance 16, blink.floorCheck 0 (defaults since SkyyArmory 0.1.4, deployed 2026-10-06 23:15).
-- NOTHING RUNNING. Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
+- RUNNING: art workflow wf_bb62eb52-952 (see START HERE 2). Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
   Stamina icon; fishing junk; reference pictures are local in `research/refs/`, described in docs/answered/gear.md).
 
 ## Next, in order
