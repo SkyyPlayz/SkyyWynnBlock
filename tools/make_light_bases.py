@@ -55,7 +55,10 @@ GLOW_HUE = {"adamantite": 0}                        # tier glow hue (tiers not l
 # nodes dropped per tier: Fluff = the Cobalt helmet plume; FrontBelt1 / BackBelt = the Mithril diagonal cross strap (Skyy deleted it in
 # Blockbench on Adamantite / Mithril / Onyxium: "i removed the cross straps on some of the armor")
 CROSS_STRAP = ("FrontBelt1", "BackBelt")
-TIER_REMOVE = {"thorium": ("Fluff",), "adamantite": CROSS_STRAP, "mithril": CROSS_STRAP}
+# a (name, (x, y, z)) entry removes only the nodes of that name AND box size - Skyy's Thorium helmet edit in Blockbench ("i changed up the
+# thorium set a little") dropped the front crest plate (Block 13x13x5) and the two side plates (Block 11x10x3), kept the two back ones
+THORIUM_HELM = (("Block", (13, 13, 5)), ("Block", (11, 10, 3)))
+TIER_REMOVE = {"thorium": ("Fluff",) + THORIUM_HELM, "adamantite": CROSS_STRAP, "mithril": CROSS_STRAP}
 TIER_UNSTRIP = {"mithril"}                          # tiers that keep the nodes their base set removes (the Mithril wings)
 
 
@@ -114,6 +117,7 @@ LEATHER_RECTS = {                                  # sets whose metal is brown t
 }
 KEEP_RECTS = {
     ("cobalt", "Head"): [(112, 0, 128, 20)],       # the plume (Fluff quads)
+    ("prisma", "Head"): [(111, 2, 125, 42)],       # the black + red feathers (Skyy: "keep the black and red feathers on the Prisma set")
 }
 
 
@@ -241,6 +245,9 @@ def recolor(img, key, brown_mode):
 # lighter" -> every piece is squeezed toward its bone: x by SLIM_X, z by SLIM_Z (depth layering kept), y untouched; a box that wraps the
 # body never gets narrower / shallower than the bone + SLIM_MARGIN (no skin poking through). Our own legs (make_light_legs) are not slimmed.
 SLIM_X, SLIM_Z, SLIM_MARGIN = 0.88, 0.97, 0.6
+# Skyy: "could you shrink all the armor pads amd scoot them in a little more, to make the sets slimmer?" -> everything on the upper-arm
+# bones (shoulder pads) shrinks by PAD_SCALE on every axis on top of the slim, and its sideways offsets shrink by PAD_IN
+PAD_BONES, PAD_SCALE, PAD_IN = ("L-Arm", "R-Arm"), 0.85, 0.75
 BONE_WD = {                                          # player bone width (x) and depth (z)
     "Head": (30, 28), "Chest": (27.4, 19), "Belly": (26, 18), "Pelvis": (26, 18),
     "L-Arm": (8, 12), "R-Arm": (8, 12), "L-Forearm": (8, 12), "R-Forearm": (8, 12), "L-Hand": (10, 14), "R-Hand": (10, 14),
@@ -257,12 +264,14 @@ def slim(nodes, bone=None, cx=0.0, cz=0.0):
             continue
         pos = n.get("position") or {}
         shape = n.get("shape") or {}
+        pad = bone in PAD_BONES
+        fx = SLIM_X * (PAD_IN if pad else 1.0)
         if bone is not None:
-            pos["x"] = pos.get("x", 0) * SLIM_X
+            pos["x"] = pos.get("x", 0) * fx
             pos["z"] = pos.get("z", 0) * SLIM_Z
             off = shape.get("offset")
             if off:
-                off["x"] = off.get("x", 0) * SLIM_X
+                off["x"] = off.get("x", 0) * fx
                 off["z"] = off.get("z", 0) * SLIM_Z
         nx = cx + pos.get("x", 0) + ((shape.get("offset") or {}).get("x", 0))
         nz = cz + pos.get("z", 0) + ((shape.get("offset") or {}).get("z", 0))
@@ -270,7 +279,10 @@ def slim(nodes, bone=None, cx=0.0, cz=0.0):
         st = shape.get("stretch")
         if bone is not None and size and st and shape.get("type") in ("box", "quad"):
             bw, bd = BONE_WD[bone]
-            for ax, f, bsz, c in (("x", SLIM_X, bw, nx), ("z", SLIM_Z, bd, nz)):
+            ps = PAD_SCALE if pad else 1.0
+            if pad and size.get("y") and "y" in st:
+                st["y"] = st["y"] * PAD_SCALE
+            for ax, f, bsz, c in (("x", SLIM_X * ps, bw, nx), ("z", SLIM_Z * ps, bd, nz)):
                 if ax not in size or not size[ax]:
                     continue
                 old = abs(size[ax] * st.get(ax, 1))
@@ -335,10 +347,18 @@ def cobalt_sleeves(model, img, leather_px):
     return out
 
 
+def _strip_hit(n, names):
+    if n.get("name") in names:
+        return True
+    size = ((n.get("shape") or {}).get("settings") or {}).get("size") or {}
+    dims = (size.get("x"), size.get("y"), size.get("z"))
+    return any(isinstance(e, tuple) and e[0] == n.get("name") and tuple(e[1]) == dims for e in names)
+
+
 def strip(nodes, names):
     keep = []
     for n in nodes:
-        if n.get("name") in names:
+        if _strip_hit(n, names):
             continue
         n["children"] = strip(n.get("children") or [], names)
         keep.append(n)
