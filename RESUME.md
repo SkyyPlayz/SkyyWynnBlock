@@ -29,8 +29,11 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
   SkyyArmory 0.1.2 crossbow Grapple Bolt + Stamina cap 5 (32).
 - ALL DEPLOYED 2026-10-06 (untested; TEST-CHECKLIST 28-35): Lanterns / sell from bags / staff + wand traversals / gather probe pack (REMOVE
   after Skyy's session) / Grapple Bolt / mob curve / Dodge Roll / Skills 0.4.19 + Hud 0.3.14 minimap (BetterMap) + Gear 0.2.6 weapon speed.
-- RUNNING (~19:00 -0600, Skyy away - deploy when READY): SkyyBank 0.1.7 daily bracketed interest (wfscripts/bank017.js) and SkyyHud 0.3.15
-  (move the Dynamic Seasons widget from the editor - may come back NOT BUILT if the engine can't do it).
+- PINNED, deploy at next game close: SkyyHud 0.3.15 (Dynamic Seasons widget mover).
+- RUNNING (~21:00 -0600, Skyy away): SkyyBank 0.1.7 daily interest (wfscripts/bank017.js), SkyySkills 0.4.20 roll on a sprint-key tap,
+  SkyyHud 0.3.16 minimap fixes (wfscripts/hud0316.js: island blank, arrow in blocks, overlap), SkyyArmory 0.1.3 (wfscripts/armory013.js:
+  Wynncraft bow traversal + apex hang for bow + wand, ALL traversal particles fade (grapple dots, wand orbs, staff trail), hop 30,
+  Copper + Onyxium crossbows). NEXT Armory build: blink.distance 16 + blink.floorCheck 0 (Skyy set both live).
 - Art: Skyy reviewed everything (docs/answered/gear.md 2026-10-06); cloud has the redo list; Skyy's reference pictures are in research/refs/.
 - SPECS DONE + ANSWERED today: research/Gathering-Progression-Spec.md (all 11 questions answered - docs/answered/bags.md 2026-10-06: hard ore
   gates, Mithril hidden until 0.7, ratio 100, Enchanted premium + Fortune on all tiers); research/Grapple-Bolt-Spec.md (Dodge Roll part waits
