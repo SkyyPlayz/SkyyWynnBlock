@@ -52,8 +52,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 <!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
 lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
-- [ ] **Fish icons v2 touch-up** - fix the weak spots listed in `research/cloud/fish-art/README.md` (thin eels, Blizzard Halibut as a flatfish, the three
-      sturgeons too alike, Slag Ray view). Output: regenerated `research/cloud/fish-art/` (keep v1 sheet).
 - [ ] **Concept art index page** - one `research/cloud/ART-INDEX.md` listing every art folder, its newest sheet, version, status (approved / v2 /
       waiting on Skyy) and open questions, so Skyy can review everything in one place. Output: `research/cloud/ART-INDEX.md`.
 
@@ -61,3 +59,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 ## Done (delete after logging - see the rules above)
 - [x] Monk colour options - 2026-10-06 - `research/cloud/Monk-Colour-Options.md`
 - [x] Ember economy check - 2026-10-06 - `research/cloud/Ember-Economy-Check.md`
+- [x] Fish icons v2 touch-up - 2026-10-06 - `research/cloud/fish-art/`

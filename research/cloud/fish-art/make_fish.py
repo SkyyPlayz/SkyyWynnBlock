@@ -10,6 +10,8 @@ rotated fish frame (u along the body, tail -> snout; v across, back -> belly)
 and tested against the body profile, tail, fins, pectoral, eye, gill and
 pattern rules of the species. That keeps a clean 1-px outline at any angle.
 No game art was copied or looked at; all shapes and palettes are our own.
+v2 touch-up (2026-10-06): curled eels (curl_frame), flatfish halibut, three distinct
+sturgeons (x_plates / x_spikes / snout + barbel options), redrawn top-down Slag Ray.
 
 Run:  python3 research/cloud/fish-art/make_fish.py
 Writes: icons/<id>.png (64 x 64) and fish-sheet.png next to this file.
@@ -166,6 +168,7 @@ class Fish:
     snout = 0.0                    # extra jaw length (gar / pike), design units
     barbels = 0
     flat = False                   # flatfish (halibut): eyes on top, no belly split
+    curl = None                    # v2: [(fraction, degrees)] heading knots of a curled spine (eels)
     glow = None                    # crack / bio glow ramp
     extra = None                   # extra(ic, F, to) painter after the body
     k = 1.0                        # fitted scale
@@ -204,6 +207,136 @@ def fish_frame(F, k, ox=0.0, oy=0.0):
     return to_fish, to_px
 
 
+# ---- v2: curled spine for eels (F.curl = [(fraction of L, heading in degrees), ..])
+def spine(F):
+    """sample the curled centre line: list of (X, Y, tx, ty) per SPS design units, u = i / SPS"""
+    if getattr(F, '_spine', None):
+        return F._spine
+    SPS = 4
+    knots = F.curl
+    umax = F.L + F.snout + 2
+
+    def th(u):
+        f = u / F.L
+        if f <= knots[0][0]:
+            return math.radians(knots[0][1])
+        for (f0, a0), (f1, a1) in zip(knots, knots[1:]):
+            if f <= f1:
+                s = (f - f0) / (f1 - f0)
+                s = s * s * (3 - 2 * s)
+                return math.radians(a0 + (a1 - a0) * s)
+        return math.radians(knots[-1][1])
+    pts = []
+    X = Y = 0.0
+    n = int(umax * SPS) + 1
+    for i in range(n):
+        a = th(i / SPS)
+        pts.append([X, Y, math.cos(a), math.sin(a)])
+        X += math.cos(a) / SPS
+        Y += math.sin(a) / SPS
+    # centre the curve's box on the straight fish's pivot (L/2, 0)
+    xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+    cx, cy = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+    for p in pts:
+        p[0] += F.L / 2 - cx
+        p[1] -= cy
+    F._spine = (SPS, pts)
+    return F._spine
+
+
+def curl_maps(F):
+    """(u, v) on the curled fish <-> straight design (X, Y) used by the rotation"""
+    SPS, pts = spine(F)
+    n = len(pts)
+
+    def fwd(u, v):
+        i = u * SPS
+        if i <= 0:
+            X, Y, tx, ty = pts[0]
+            X, Y = X + tx * u, Y + ty * u
+        elif i >= n - 1:
+            X, Y, tx, ty = pts[-1]
+            d = u - (n - 1) / SPS
+            X, Y = X + tx * d, Y + ty * d
+        else:
+            j = int(i)
+            f = i - j
+            a, b = pts[j], pts[j + 1]
+            X, Y = a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f
+            tx, ty = a[2] + (b[2] - a[2]) * f, a[3] + (b[3] - a[3]) * f
+            m = math.hypot(tx, ty)
+            tx, ty = tx / m, ty / m
+        return X - ty * v, Y + tx * v
+
+    def back(X, Y):
+        best = None
+        for j in range(n):
+            px_, py_, tx, ty = pts[j]
+            dx, dy = X - px_, Y - py_
+            d2 = dx * dx + dy * dy
+            if best is None or d2 < best[0]:
+                best = (d2, j, dx, dy)
+        _, j, dx, dy = best
+        tx, ty = pts[j][2], pts[j][3]
+        along = dx * tx + dy * ty
+        if 0 < j < n - 1 or (j == 0 and along > 0) or (j == n - 1 and along < 0):
+            along = max(-0.5 / SPS, min(0.5 / SPS, along))
+        return j / SPS + along, -dx * ty + dy * tx
+    return fwd, back
+
+
+def curl_frame(F, k, ox=0.0, oy=0.0):
+    a = math.radians(F.ang)
+    ca, sa = math.cos(a), math.sin(a)
+    fwd, back = curl_maps(F)
+    cache = {}
+
+    def to_fish(x, y):
+        key = (x, y)
+        if key not in cache:
+            dx, dy = (x + 0.5 - 32 - ox) / k, (y + 0.5 - 32 - oy) / k
+            cache[key] = back(dx * ca - dy * sa + F.L / 2, dx * sa + dy * ca)
+        return cache[key]
+
+    def to_px(u, v):
+        X, Y = fwd(u, v)
+        X -= F.L / 2
+        dx = X * ca + Y * sa
+        dy = -X * sa + Y * ca
+        return dx * k + 32 + ox - 0.5, dy * k + 32 + oy - 0.5
+    return to_fish, to_px
+
+
+def curl_fit(F):
+    """largest k that keeps a curled fish inside LO..HI (sample fish space, then check pixels)"""
+    _, tp = curl_frame(F, 1.0)
+    pts = []
+    u = -1.0
+    while u <= F.L + F.snout + 1:
+        v = -18.0
+        while v <= 18:
+            if classify(F, u, v):
+                pts.append(tp(u, v))
+            v += 0.35
+        u += 0.35
+    xs, ys = [p[0] - 31.5 for p in pts], [p[1] - 31.5 for p in pts]
+    span = max(max(xs) - min(xs), max(ys) - min(ys))
+    kk = min(140, int((HI - LO - 3) / span * 100) // 2 * 2)
+    while kk > 50:
+        k = kk / 100
+        x0, x1 = 31.5 + k * min(xs), 31.5 + k * max(xs)
+        y0, y1 = 31.5 + k * min(ys), 31.5 + k * max(ys)
+        ox = round((LO + HI) / 2 - (x0 + x1) / 2)
+        oy = round((LO + HI) / 2 - (y0 + y1) / 2)
+        to_fish, _ = curl_frame(F, k, ox, oy)
+        on = [(x, y) for y in range(H) for x in range(W) if classify(F, *to_fish(x, y))]
+        if on and min(p[0] for p in on) > LO and max(p[0] for p in on) < HI and \
+                min(p[1] for p in on) > LO and max(p[1] for p in on) < HI:
+            return k, ox, oy
+        kk -= 2
+    return 0.5, 0, 0
+
+
 def fin_h(ft, kind, h_):
     if ft < 0 or ft > 1:
         return -1
@@ -233,8 +366,8 @@ def classify(F, u, v):
     if F.snout and L <= u <= L + F.snout:
         s = (u - L) / F.snout
         t, top, bot = F.edges(L - 0.01)
-        c = F.cl(L) + F.Hb * 0.15
-        hw = 1.6 * (1 - s) + 0.6
+        c = F.cl(L) + F.Hb * getattr(F, 'jaw_c', 0.15) - getattr(F, 'jaw_up', 0.0) * s * s
+        hw = getattr(F, 'jaw_w', 1.6) * (1 - s) ** getattr(F, 'jaw_p', 1.0) + 0.6
         if abs(v - c) <= hw:
             return ('jaw', s, (v - c + hw) / (2 * hw))
     if TL <= u <= L:
@@ -261,6 +394,12 @@ def classify(F, u, v):
             fh = fin_h(ft, 'back', ph)
             if fh > 0 and bot < v <= bot + fh:
                 return ('fin', ft, (v - bot) / fh, 'back')
+    # v2: a thread trailing from the upper tail lobe (shovelnose sturgeon)
+    fil = getattr(F, 'fil', 0)
+    if fil and u < 1.5:
+        q = (0.4 - u) / 0.95
+        if 0 <= q <= fil and abs(v - (-F.tw * 1.12 - q * 0.22)) <= 0.55:
+            return ('tail', 1.0, -1.0)
     # tail
     if F.tail != 'point' and TL - TL <= u < TL + 0.5:
         s = (TL - u) / TL        # 0 at peduncle, 1 at trailing edge
@@ -295,7 +434,9 @@ def classify(F, u, v):
 def render_fish(F, rarity):
     # fit: largest scale k whose drawing stays inside LO..HI
     best = None
-    for kk in range(140, 50, -2):
+    if getattr(F, 'curl', None):
+        best = curl_fit(F)
+    for kk in (range(140, 50, -2) if not best else ()):
         k = kk / 100
         to_fish, to_px = fish_frame(F, k)
         xs, ys = [], []
@@ -313,7 +454,7 @@ def render_fish(F, rarity):
             break
     k, ox, oy = best
     F.k = k
-    to_fish, to_px = fish_frame(F, k, ox, oy)
+    to_fish, to_px = (curl_frame if getattr(F, 'curl', None) else fish_frame)(F, k, ox, oy)
     ic = Icon()
     lab = {}
     for y in range(H):
@@ -516,6 +657,21 @@ def head_details(ic, F, to_fish, to_px):
     ve = top + (bot - top) * env_
     ex, ey = to_px(ue, ve)
     rr = er * F.k
+    draw_eye(ic, F, ex, ey, rr)
+    # mouth
+    if F.mouth is None:
+        return
+    ut = F.L - 0.6
+    t, top, bot = F.edges(F.L - 2.0)
+    vm = top + (bot - top) * F.mouth
+    for i in range(int(3 * F.k) + 1):
+        x, y = to_px(F.L + F.snout - 0.4 - i / F.k, vm + (0.4 if F.snout else 0))
+        x, y = int(round(x)), int(round(y))
+        if ic.get(x, y)[3]:
+            ic.px[x, y] = F.back[0]
+
+
+def draw_eye(ic, F, ex, ey, rr):
     cx, cy = ex, ey
     E = F.eyecol
     for y in range(int(cy - rr - 2), int(cy + rr + 3)):
@@ -544,34 +700,27 @@ def head_details(ic, F, to_fish, to_px):
         for x in range(int(cx - rr), int(cx + rr + 1)):
             yy = int(round(cy + 0.4 + 0.25 * abs(x - cx)))
             ic.px[x, yy] = F.back[0]
-    # mouth
-    if F.mouth is None:
-        return
-    ut = F.L - 0.6
-    t, top, bot = F.edges(F.L - 2.0)
-    vm = top + (bot - top) * F.mouth
-    for i in range(int(3 * F.k) + 1):
-        x, y = to_px(F.L + F.snout - 0.4 - i / F.k, vm + (0.4 if F.snout else 0))
-        x, y = int(round(x)), int(round(y))
-        if ic.get(x, y)[3]:
-            ic.px[x, y] = F.back[0]
 
 
 def barbels(ic, F, to_px):
     """short whiskers from the mouth, curling back and down (about 6-8 px)"""
     t, top, bot = F.edges(F.L - 2.0)
-    n = 7 if F.barbels < 3 else 9
+    n = getattr(F, 'barb_n', None) or (7 if F.barbels < 3 else 9)
     for i in range(F.barbels):
-        u0 = F.L - 1.2 - i * 1.4 / F.k
+        u0 = getattr(F, 'barb_u', F.L - 1.2) - i * getattr(F, 'barb_gap', 1.4) / F.k
         v0 = top + (bot - top) * min(0.95, F.mouth + 0.1 + 0.1 * i)
+        if getattr(F, 'barb_v', None) is not None:
+            v0 = F.barb_v
+        bs = getattr(F, 'barb_s', 1.0)
         for st in range(n):
             q = st / F.k
-            uu = u0 - q * (0.55 + 0.15 * i)
+            uu = u0 - q * (0.55 + 0.15 * i) * bs
             vv = v0 + q * 0.75 - 0.02 * q * q
             x, y = to_px(uu, vv)
             x, y = int(round(x)), int(round(y))
             if 0 <= x < W and 0 <= y < H and not (ic.get(x, y)[3] and F._lab.get((x, y), ('',))[0] == 'body' and st < 2):
-                ic.px[x, y] = F.belly[3] if st < n // 2 else F.belly[2]
+                BR = getattr(F, 'barb_r', None) or F.belly
+                ic.px[x, y] = BR[3] if st < n // 2 else BR[2]
 
 
 # ---------------------------------------------------------------- patterns
@@ -942,10 +1091,28 @@ def x_lamprey(ic, F, to_px):
 
 
 def x_halibut(ic, F, to_px):
-    # second eye on the top edge
-    x, y = at(F, to_px, 0.9, 0.12)
-    sprite(ic, x - 2, y - 2, ['.oo.', 'oggo', 'oggo', '.oo.'], {'o': EYE_ICE[0], 'g': hx('#0c1420')})
-    ic.set(x - 1, y - 1, hx('#ffffff'))
+    """v2 flatfish: pale blind-side rim along the belly edge, arched lateral line, both eyes on the top side"""
+    for (x, y), c in F._lab.items():
+        if c[0] == 'body' and c[2] > 0.9 and 0.06 < c[1] < 0.9:
+            ic.px[x, y] = ICE_W[4] if c[2] < 0.96 else ICE_W[2]
+    # lateral line arching high over the pectoral, then straight to the tail
+    for i in range(80):
+        t = 0.08 + 0.66 * i / 80
+        nv = 0.5 - 0.17 * max(0.0, math.sin((t - 0.45) / 0.3 * math.pi / 2 + math.pi / 2)) if t > 0.45 else 0.5 - 0.17 * (t - 0.08) / 0.37
+        x, y = at(F, to_px, t, nv)
+        if (x + y) % 3:
+            ic.set(x, y, F.back[1])
+    # both eyes on the top side: the lower one (renderer) + an upper one on the head ridge
+    u = F.TL + 0.815 * (F.L - F.TL)
+    t, top, bot = F.edges(u)
+    x, y = to_px(u, top + (bot - top) * 0.13)
+    draw_eye(ic, F, x, y, 2.2 * F.k)
+    # wide toothy mouth curving down at the snout
+    for i in range(4):
+        x, y = at(F, to_px, 0.985 - i * 0.022, 0.5 + i * 0.07)
+        ic.set(x, y, F.back[0])
+    x, y = at(F, to_px, 0.975, 0.56)
+    ic.set(x, y, hx('#ffffff'))
 
 
 def x_scorch(ic, F, to_px):
@@ -981,9 +1148,9 @@ def x_badge_notice(ic, F, to_px):
     sprite(ic, x - 1, y - 2, ['w.w', 'w.w', 'w.w', '...', '.w.'], {'w': R[5]})
 
 
-def x_horns(ic, F, to_px):
+def x_horns(ic, F, to_px, big=False):
     Bn = ramp('#2a2018', '#8a7a58', '#c8b890', '#e6dab8', '#fff8e8', '#ffffff')
-    for t, ln in ((0.9, 7), (0.83, 6)):
+    for t, ln in (((0.92, 10), (0.86, 9)) if big else ((0.9, 7), (0.83, 6))):
         u0 = F.TL + t * (F.L - F.TL)
         tt, top, bot = F.edges(u0)
         for j in range(ln):
@@ -996,6 +1163,8 @@ def x_horns(ic, F, to_px):
             if j < ln - 2:
                 ic.set(x + 1, y, Bn[1])
                 ic.set(x, y + 1, Bn[2]) if j < 2 else None
+                if big and j < ln - 4:
+                    ic.set(x - 1, y, Bn[4])
 
 
 # ---- the 39 species
@@ -1061,7 +1230,8 @@ add(1, 'stamped_catfish', 'Stamped Catfish', 'Unique', fish(
     pattern=[('spots', 0.25, hx('#2a2214'), 0.05, 0.5)], extra=x_catfish))
 
 add(1, 'mirebridge_eel', 'Mirebridge Eel', 'Unique', fish(
-    L=66, TL=0.5, Ht=4.2, Hb=4.2, tmax=0.7, b=1.6, p=0.05, tail='point', wave=7.0, waven=0.95, pa=1.5, scale=0, ang=22,
+    L=72, TL=0.5, Ht=7.0, Hb=6.6, tmax=0.6, b=1.6, p=0.05, tail='point', pa=1.0, scale=0, ang=35,
+    curl=[(0, 90), (0.3, -70), (0.65, 20), (1, -10)],
     dorsal=[(0.0, 0.62, 2.6, 'low')], anal=[(0.0, 0.5, 2.4, 'low')], pelvic=None,
     pect=(0.8, 0.5, 3, 1.3), eye=(0.94, 0.38, 1.6), eyecol=EYE_GOLD, gill=0.84, lateral=False,
     back=ramp('#0c1408', '#2a3a14', '#3e521c', '#566c26', '#748a36', '#a8bc60'),
@@ -1146,7 +1316,8 @@ def x_mirage(ic, F, to_px):
 
 
 add(2, 'mirage_eel', 'Mirage Eel', 'Unique', fish(
-    L=66, TL=0.5, Ht=4.4, Hb=4.4, tmax=0.7, b=1.6, p=0.05, tail='point', wave=7.0, waven=0.95, pa=1.5, scale=0, ang=22,
+    L=72, TL=0.5, Ht=7.0, Hb=6.6, tmax=0.6, b=1.6, p=0.05, tail='point', pa=1.0, scale=0, ang=30,
+    curl=[(0, 170), (0.25, 100), (0.55, -40), (1, 0)],
     dorsal=[(0.0, 0.62, 2.6, 'low')], anal=[(0.0, 0.5, 2.4, 'low')], pelvic=None,
     pect=(0.8, 0.5, 3, 1.3), eye=(0.94, 0.38, 1.6), eyecol=EYE_TEAL, gill=0.84, lateral=False,
     back=ramp('#2a1a0a', '#8a6a3a', '#b4925a', '#d4b67a', '#ecd4a0', '#fff0d0'),
@@ -1176,13 +1347,59 @@ add(2, 'tar_pit_gudgeon', 'Tar Pit Gudgeon', 'Unique', fish(
     pattern=[('blotch', ramp('#0a0a0a', '#2a4a5a', '#3a6a6a', '#5a8a5a', '#8a9a4a', '#c8b060'), 2.2, 2.05)],
     extra=x_tar))
 
+PLATE_S = ['..o..', '.oLo.', 'oLMDo', '.oDo.', '..o..']                 # 5 x 5 diamond scute
+PLATE_M = ['.ooo.', 'oLLMo', 'oLMDo', 'oMDDo', '.ooo.']                 # 5 x 5 rounded bone plate
+PLATE_L = ['..ooo..', '.oLLMo.', 'oLLMMDo', '.oMDDo.', '..ooo..']       # 7 x 5 big bone plate
+PLATE_T = ['.o.', 'oLo', '.o.']                                          # 3 x 3 stud
+
+
+def x_plates(ic, F, to_px, rows, R, shape=PLATE_S, t0=0.06, t1=0.86):
+    """v2 sturgeon scutes: crisp screen-aligned pixel plates stamped along rows (nv, spacing in t)"""
+    pal = {'o': R[1], 'L': R[5], 'M': R[4], 'D': R[2]}
+    for nv, step, off in rows:
+        t = t0 + off
+        while t < t1:
+            x, y = at(F, to_px, t, nv)
+            sprite(ic, x - len(shape[0]) // 2, y - len(shape) // 2, shape, pal)
+            t += step
+
+
+def x_spikes(ic, F, to_px, R, t0=0.08, t1=0.84, sp_=None, ht=1.8):
+    """v2: the dorsal scute row sticks out above the back as little bone spikes"""
+    sp_ = sp_ or F.plate_sp
+    u = F.TL + sp_ / 2
+    while u < F.L:
+        t = (u - F.TL) / (F.L - F.TL)
+        if t0 < t < t1:
+            tt, top, bot = F.edges(u)
+            for j in range(int(ht * F.k + 1)):
+                q = j / F.k
+                w = max(0, int(round((1 - q / ht) * 1.2 * F.k)))
+                for o in range(-w, w + 1):
+                    x, y = to_px(u + o / F.k - q * 0.35, top - 0.3 - q)
+                    x, y = int(round(x)), int(round(y))
+                    if not ic.get(x, y)[3] or F._lab.get((x, y), ('',))[0] != 'body':
+                        ic.set(x, y, R[4] if o <= 0 else R[2])
+        u += sp_
+
+
+def x_filament(ic, F, to_px):
+    """v2 shovelnose: three rows of small gold studs + little spikes along the back"""
+    x_plates(ic, F, to_px, ((0.5, 0.11, 0.0),), F.plate_r, PLATE_T, t0=0.1, t1=0.8)
+    x_spikes(ic, F, to_px, F.plate_r, ht=1.3)
+
+
 add(2, 'mirage_sturgeon', 'Mirage Sturgeon', 'Legendary', fish(
-    L=60, TL=12, Ht=6.5, Hb=6, tmax=0.4, b=1.25, p=0.3, tail='heter', tw=9, scale=0, ang=26, snout=1.0, barbels=2,
-    dorsal=[(0.08, 0.2, 4.5, 'tri')], anal=[(0.06, 0.16, 3.5, 'tri')], pelvic=(0.3, 3),
-    pect=(0.78, 0.72, 5, 1.8), eye=(0.86, 0.34, 1.6), eyecol=EYE_GOLD, gill=0.78, mouth=0.85, lateral=False,
+    L=58, TL=12, Ht=6.6, Hb=5.8, tmax=0.4, b=1.25, p=0.26, tail='heter', tw=9, scale=0, ang=28, fil=6,
+    snout=6.5, jaw_w=1.5, jaw_c=0.1, jaw_up=0.6, barbels=2, barb_u=61.0, barb_gap=1.6, barb_n=5, barb_v=1.6, barb_s=0.5, barb_r=AMBER_F,
+    dorsal=[(0.06, 0.16, 4.0, 'tri')], anal=[(0.05, 0.14, 3.0, 'tri')], pelvic=(0.3, 2.5),
+    pect=(0.8, 0.74, 5, 1.6), eye=(0.88, 0.32, 1.8), eyecol=EYE_GOLD, gill=0.78, mouth=0.9, lateral=False,
     back=ramp('#20160a', '#6a5030', '#8e6e44', '#b08e5e', '#d0b07e', '#f0d8a8'),
-    belly=SAND_L, fin=AMBER_F,
-    pattern=[('scutes', ramp('#2a1a04', '#a87a2a', '#d4a43a', '#f0c860', '#ffe898', '#fffad0'), (0.06, 0.45))]))
+    belly=SAND_L, fin=AMBER_F, plate_sp=3.4,
+    plate_r=ramp('#2a1a04', '#b07a1e', '#c8962e', '#e4b448', '#ffe08a', '#fffad0'),
+    pattern=[('stripe', 0.5, 0.6, ramp('#2a1a2a', '#8a7aa0', '#a898c0', '#c4b8d8', '#e0d8f0', '#ffffff')),
+             ],
+    extra=x_filament))
 
 add(2, 'customs_cleared_sandsalmon', 'Customs-Cleared Sandsalmon', 'Fabled', fish(
     L=58, TL=11, Ht=8.5, Hb=7.5, tmax=0.48, b=1.6, tw=8.5, fd=0.25, scale=2.5, ang=26,
@@ -1233,7 +1450,8 @@ add(3, 'glass_pike', 'Glass Pike', 'Rare', fish(
     pattern=[('frostfin',)], extra=x_glassbones))
 
 add(3, 'permit_lamprey', 'Permit Lamprey', 'Unique', fish(
-    L=66, TL=0.5, Ht=4.2, Hb=4.2, tmax=0.75, b=3.0, p=0.05, tail='point', wave=7.0, waven=0.95, pa=1.5, scale=0, ang=22,
+    L=72, TL=0.5, Ht=6.8, Hb=6.6, tmax=0.6, b=3.0, p=0.05, tail='point', pa=1.0, scale=0, ang=30,
+    curl=[(0, 120), (0.2, 120), (0.5, -60), (0.8, 10), (1, 0)],
     dorsal=[(0.0, 0.3, 2.4, 'low'), (0.32, 0.55, 2.4, 'round')], anal=[(0.0, 0.22, 2.0, 'low')], pelvic=None,
     pect=None, eye=(0.9, 0.34, 1.5), eyecol=EYE_SILV, gill=-1, lateral=False,
     back=ramp('#0c141e', '#34465a', '#4a6078', '#647c94', '#8aa2b6', '#c4d4e0'),
@@ -1249,21 +1467,25 @@ add(3, 'snowmelt_trout', 'Snowmelt Trout', 'Normal', fish(
              ('spots', 0.4, hx('#1a3a6a'), 0.05, 0.5), ('frostfin',)]))
 
 add(3, 'whisper_sturgeon', 'Whisper Sturgeon', 'Rare', fish(
-    L=60, TL=12, Ht=6.5, Hb=6, tmax=0.4, b=1.25, p=0.3, tail='heter', tw=9, scale=0, ang=26, snout=1.0, barbels=2,
-    dorsal=[(0.08, 0.2, 4.5, 'tri')], anal=[(0.06, 0.16, 3.5, 'tri')], pelvic=(0.3, 3),
-    pect=(0.78, 0.72, 5, 1.8), eye=(0.86, 0.34, 1.6), eyecol=EYE_ICE, gill=0.78, mouth=0.85, lateral=False,
-    back=ICE_B, belly=ICE_W, fin=ICE_F,
-    pattern=[('scutes', ICE_W, (0.06, 0.45)), ('frost', 0.06), ('frostfin',)]))
+    L=58, TL=11, Ht=9.5, Hb=8.0, tmax=0.45, b=1.5, p=0.24, tail='heter', tw=10, scale=0, ang=22,
+    snout=2.6, jaw_w=1.9, jaw_c=0.15, jaw_up=0.8, barbels=4, barb_u=59.6, barb_gap=1.1, barb_n=7, barb_v=2.4, barb_s=0.45, split=0.62,
+    dorsal=[(0.07, 0.19, 5.0, 'tri')], anal=[(0.06, 0.16, 4.0, 'tri')], pelvic=(0.32, 3.5),
+    pect=(0.76, 0.76, 6, 2.0), eye=(0.88, 0.3, 1.9), eyecol=EYE_ICE, gill=0.76, mouth=0.82, lateral=False,
+    back=ramp('#081220', '#18304a', '#244262', '#345a80', '#4e7aa0', '#7ea6cc'), belly=ICE_W, fin=ICE_F,
+    barb_r=ramp('#0a1626', '#3e6286', '#5a80a4', '#8ab0d0', '#c8e0f0', '#ffffff'),
+    pattern=[('frost', 0.03), ('frostfin',)],
+    extra=lambda ic, F, tp: x_plates(ic, F, tp, ((0.1, 0.13, 0.0), (0.44, 0.13, 0.06)),
+                                     ramp('#0a1626', '#0a1626', '#8eaecc', '#c4dcee', '#eef8ff', '#ffffff'), PLATE_S, t0=0.08, t1=0.8)))
 
 
 add(3, 'blizzard_halibut', 'Blizzard Halibut', 'Legendary', fish(
-    L=54, TL=9, Ht=12, Hb=12, tmax=0.5, b=2.2, p=0.22, tw=9, tail='trunc', scale=0, ang=14, flat=True,
-    dorsal=[(0.08, 0.86, 4, 'low')], anal=[(0.08, 0.72, 4, 'low')], pelvic=None,
-    pect=(0.7, 0.55, 5, 2.0), eye=(0.86, 0.22, 2.0), eyecol=EYE_ICE, gill=0.74, mouth=0.4, lateral=True,
-    back=ramp('#1a2230', '#5a6e84', '#7a90a6', '#9cb2c6', '#c4d6e4', '#f0f8ff'),
-    belly=ICE_W, fin=ICE_F,
-    pattern=[('blotch', ramp('#1a2230', '#3a4c62', '#4c6078', '#62788e', '#7c92a8', '#a0b4c8'), 0.9, 1.4),
-             ('spots', 0.14, hx('#e8f6ff'), 0.0, 1.0), ('frost', 0.05), ('frostfin',)], extra=x_halibut))
+    L=58, TL=8, Ht=12.5, Hb=11.5, tmax=0.5, b=1.8, p=0.16, tw=8.5, tail='round', scale=0, ang=10, flat=True, pa=0.55,
+    dorsal=[(0.04, 0.9, 5.2, 'round')], anal=[(0.03, 0.82, 5.2, 'round')], pelvic=None,
+    pect=(0.72, 0.52, 4.5, 1.6), eye=(0.895, 0.36, 2.3), eyecol=EYE_ICE, gill=0.76, mouth=None, lateral=False,
+    back=ramp('#0c1624', '#2a3e56', '#3a526c', '#4e6a86', '#6e8ca8', '#a4c0da'),
+    belly=ICE_W, fin=ramp('#0a1220', '#1e2e44', '#2e4460', '#466282', '#7a9cbc', '#d8ecfa'),
+    pattern=[('blotch', ramp('#0c1624', '#1e2e44', '#283c56', '#34506c', '#486684', '#62809c'), 0.9, 1.3),
+             ('spots', 0.16, hx('#e8f6ff'), 0.0, 0.88), ('frost', 0.05), ('frostfin',)], extra=x_halibut))
 
 add(3, 'the_sleeper_in_aisle_9', 'The Sleeper in Aisle 9', 'Mythic', fish(
     L=56, TL=10, Ht=12, Hb=12, tmax=0.5, b=2.5, p=0.34, tw=9, tail='round', scale=4.0, ang=10,
@@ -1289,47 +1511,76 @@ add(4, 'cinderfin', 'Cinderfin', 'Normal', fish(
 
 
 def ray_shape(F, u, v):
-    """Slag Ray seen from above: rounded diamond disc + whip tail (u: tail tip -> snout)"""
-    d0 = 22.0
+    """v2 Slag Ray seen from above: pointed wings, rounded snout, pelvic lobes, whip tail with a sting
+    (u: tail tip -> snout). Body 'nv' is folded so the raised middle is lit and the wing rims fall dark."""
+    d0, W_ = 24.0, 23.0
     if d0 <= u <= F.L:
         a = (u - d0) / (F.L - d0)
         if a < 0.42:
-            hw = 21 * (a / 0.42) ** 0.75
+            hw = W_ * math.sin(a / 0.42 * math.pi / 2) ** 0.7
         else:
-            hw = 21 * ((1 - a) / 0.58) ** 0.85
-        hw += 2.5 * math.sin(math.pi * a)
+            s_ = (a - 0.42) / 0.58
+            hw = W_ * (1 - s_) ** 1.25
+            hw = max(hw, 3.2 * math.sqrt(max(0.0, 1 - ((a - 0.93) / 0.07) ** 2)) if a > 0.86 else hw)
         if abs(v) <= hw:
-            return ('body', a, (v + hw) / (2 * hw))
+            q = abs(v) / max(0.01, hw)
+            return ('body', a, 0.22 + 0.7 * q ** 1.3)
+    # pelvic lobes behind the disc
+    if d0 - 6 <= u <= d0 + 2:
+        a = (u - (d0 - 6)) / 8
+        lw = 6.5 * math.sqrt(max(0.0, 1 - (2 * a - 1) ** 2))
+        if 1.0 <= abs(v) <= 1.0 + lw:
+            return ('fin', a, (abs(v) - 1.0) / max(0.01, lw), 'round')
+    # whip tail with a sting and two finlets
     if 0 <= u < d0 + 1:
-        w = 0.9 + 0.9 * (u / d0)
-        if abs(v - 0.8 * math.sin(u * 0.25)) <= w:
+        w = 0.7 + 1.1 * (u / d0)
+        cv = 0.8 * math.sin(u * 0.22)
+        if abs(v - cv) <= w:
             return ('tail', 1 - u / d0, 0.0)
+        if 9 <= u <= 12 and abs(v - cv) <= w + (u - 9) * 0.7:
+            return ('fin', (u - 9) / 3, 1.0, 'tri')
+        if 15 <= u <= 17.5 and v - cv < 0 and abs(v - cv) <= w + 1.4:
+            return ('fin', (u - 15) / 2.5, 0.6, 'tri')
     return None
 
 
 def x_ray(ic, F, to_px):
-    # eyes + spiracles on top, a ridge of spines along the spine, glowing wing rims
-    for side in (-1, 1):
-        x, y = to_px(F.L - 6.5, side * 3.2)
-        x, y = int(round(x)), int(round(y))
-        sprite(ic, x - 1, y - 1, ['.o.', 'oeo', '.o.'], {'o': hx('#06040a'), 'e': hx('#ffd04a')})
-        x, y = to_px(F.L - 9.5, side * 3.6)
-        ic.set(int(round(x)), int(round(y)), hx('#06040a'))
-    for i in range(14):
-        x, y = to_px(F.L - 12 - i * 1.6, 0)
-        ic.set(int(round(x)), int(round(y)), hx('#ffd04a') if i % 2 else hx('#c04a30'))
+    # eyes + spiracles on the raised head, a pale spine ridge, glowing wing rims
+    # solid (uncracked) head shield so the eyes read; cracks stay on the wings
     for (x, y), c in F._lab.items():
-        if c[0] == 'body' and (c[2] < 0.06 or c[2] > 0.94) and h(x, y, 111) < 0.4:
-            ic.px[x, y] = GLOW_LAVA[1] if c[2] < 0.5 else GLOW_LAVA[0]
+        if c[0] == 'body' and c[1] > 0.74 and c[2] < 0.62:
+            r = h(x, y, 113)
+            ic.px[x, y] = OBS[4] if c[2] < 0.36 else OBS[3] if r > 0.1 else OBS[2]
+    # spine ridge: pale raised vertebra bumps with a dark side
+    for i in range(15):
+        x, y = to_px(F.L - 12 - i * 1.6, 0)
+        x, y = int(round(x)), int(round(y))
+        ic.set(x, y, OBS[5] if i % 2 else OBS[4])
+        ic.set(x + 1, y + 1, OBS[1])
+    for side in (-1, 1):
+        x, y = to_px(F.L - 7.0, side * 3.6)
+        x, y = int(round(x)), int(round(y))
+        sprite(ic, x - 2, y - 2, ['.ooo.', 'oRYRo', 'oYPRo', 'oRRDo', '.ooo.'],
+               {'o': hx('#06040a'), 'Y': hx('#ffd04a'), 'R': hx('#ff8a1a'), 'D': hx('#c03a0e'), 'P': hx('#06040a')})
+        ic.set(x - 1, y - 1, hx('#ffffff'))
+        x, y = to_px(F.L - 11.0, side * 4.2)
+        sprite(ic, int(round(x)) - 1, int(round(y)) - 1, ['oo', 'oo'], {'o': hx('#06040a')})
+    for (x, y), c in F._lab.items():
+        if c[0] == 'body' and c[2] > 0.84 and h(x, y, 111) < 0.45:
+            ic.px[x, y] = GLOW_LAVA[1] if h(x, y, 112) < 0.5 else GLOW_LAVA[0]
+    # gill slits are underneath; on top a pale nose tip
+    x, y = to_px(F.L - 1.2, 0)
+    ic.set(int(round(x)), int(round(y)), OBS[5])
 
 
 add(4, 'slag_ray', 'Slag Ray', 'Unique', fish(
-    L=56, TL=0, Ht=1, Hb=1, ang=40, shape=ray_shape, eye=None, gill=-1, mouth=None, pect=None, flat=True,
+    L=56, TL=0, Ht=1, Hb=1, ang=68, shape=ray_shape, eye=None, gill=-1, mouth=None, pect=None, flat=True,
     scale=0, lateral=False, split=2, back=OBS, belly=OBS, fin=ramp('#06040a', '#2a2030', '#3c2e42', '#56425c', '#7a6280', '#a088a8'),
-    glow=GLOW_LAVA, pattern=[('cracks', 0.38)], extra=x_ray))
+    glow=GLOW_LAVA, pattern=[('cracks', 0.3)], extra=x_ray))
 
 add(4, 'ashen_eel', 'Ashen Eel', 'Unique', fish(
-    L=66, TL=0.5, Ht=4.4, Hb=4.4, tmax=0.7, b=1.6, p=0.05, tail='point', wave=7.0, waven=0.95, pa=1.5, scale=0, ang=22,
+    L=72, TL=0.5, Ht=7.0, Hb=6.6, tmax=0.6, b=1.6, p=0.05, tail='point', pa=1.0, scale=0, ang=20,
+    curl=[(0, -200), (0.35, -60), (0.7, 30), (1, 0)],
     dorsal=[(0.0, 0.62, 2.6, 'low')], anal=[(0.0, 0.5, 2.4, 'low')], pelvic=None,
     pect=(0.8, 0.5, 3, 1.3), eye=(0.94, 0.38, 1.6), eyecol=EYE_RED, gill=0.84, lateral=False,
     back=ramp('#0c0a0a', '#3a3634', '#54504c', '#706a64', '#948c84', '#c4bab0'),
@@ -1394,7 +1645,8 @@ def x_drake(ic, F, to_px):
 
 
 add(5, 'drake_eel', 'Drake-Eel', 'Rare', fish(
-    L=68, TL=0.5, Ht=5.0, Hb=4.4, tmax=0.78, b=1.9, p=0.05, tail='point', wave=7.0, waven=0.95, pa=1.5, scale=2.5, ang=22,
+    L=74, TL=0.5, Ht=7.6, Hb=6.6, tmax=0.6, b=1.9, p=0.05, tail='point', pa=1.0, scale=2.5, ang=25,
+    curl=[(0, -150), (0.3, -150), (0.55, -30), (0.8, 30), (1, 0)],
     dorsal=[(0.05, 0.8, 3.4, 'low')], anal=[(0.0, 0.5, 2.4, 'low')], pelvic=None,
     pect=(0.8, 0.55, 4.5, 1.8), eye=(0.93, 0.36, 1.8), eyecol=EYE_RED, gill=0.86, lateral=False,
     back=CAVE_T, belly=ramp('#1a0a1a', '#6a3a6a', '#8a4e86', '#a868a4', '#c890c4', '#ecc4e8'),
@@ -1402,13 +1654,20 @@ add(5, 'drake_eel', 'Drake-Eel', 'Rare', fish(
     pattern=[('bio', 0.25, 0.0, 0.45), ('finpat', ramp('#1a0614', '#3a0e24', '#4e1430', '#661c3e', '#80264e', '#a03462'), 'spots')],
     extra=x_drake))
 
+BONE_PL = ramp('#2a2018', '#9a8a68', '#c8b890', '#e6dab8', '#fff8e8', '#ffffff')
+BONE_PD = ramp('#1a1222', '#1a1222', '#a8987a', '#c8b890', '#e6dab8', '#fff8e8')   # plates: dark rim
+
 add(5, 'bone_pit_sturgeon', 'Bone Pit Sturgeon', 'Rare', fish(
-    L=60, TL=12, Ht=6.5, Hb=6, tmax=0.4, b=1.25, p=0.3, tail='heter', tw=9, scale=0, ang=26, snout=1.0, barbels=2,
-    dorsal=[(0.08, 0.2, 4.5, 'tri')], anal=[(0.06, 0.16, 3.5, 'tri')], pelvic=(0.3, 3),
-    pect=(0.78, 0.72, 5, 1.8), eye=(0.86, 0.34, 1.6), eyecol=EYE_TEAL, gill=0.78, mouth=0.85, lateral=False,
+    L=58, TL=12, Ht=7.8, Hb=6.6, tmax=0.42, b=1.3, p=0.28, tail='heter', tw=9.5, scale=0, ang=28,
+    snout=5.0, jaw_w=1.6, jaw_c=0.1, jaw_up=1.6, barbels=2, barb_u=61.0, barb_gap=1.8, barb_n=5, barb_v=1.8, barb_s=0.9,
+    dorsal=[(0.05, 0.15, 4.0, 'tri')], anal=[(0.05, 0.14, 3.2, 'tri')], pelvic=(0.3, 3),
+    pect=(0.78, 0.74, 5, 1.8), eye=(0.88, 0.34, 1.7), eyecol=EYE_TEAL, gill=0.78, mouth=0.85, lateral=False,
     back=CAVE_P, belly=ramp('#140e1e', '#5a5070', '#76698e', '#9284ac', '#b4a8c8', '#dcd4ea'), fin=CAVE_F,
-    glow=GLOW_BIO, pattern=[('scutes', ramp('#2a2018', '#9a8a68', '#c8b890', '#e6dab8', '#fff8e8', '#ffffff'), (0.06, 0.45, 0.85)),
-                            ('bio', 0.08, 0.2, 0.4)]))
+    glow=GLOW_BIO, plate_sp=9.2,
+    pattern=[('bio', 0.12, 0.2, 0.9)],
+    extra=lambda ic, F, tp: (x_spikes(ic, F, tp, BONE_PL, t0=0.1, t1=0.8, ht=2.6),
+                             x_plates(ic, F, tp, ((0.52, 0.2, 0.06),), BONE_PD, PLATE_L, t0=0.08, t1=0.8),
+                             x_plates(ic, F, tp, ((0.17, 0.2, 0.0),), BONE_PD, PLATE_M, t0=0.12, t1=0.8))))
 
 add(5, 'pondersaur', 'Pondersaur', 'Legendary', fish(
     L=58, TL=12, Ht=8.5, Hb=8, tmax=0.45, b=1.6, p=0.2, tail='lunate', tw=12, fd=0.7, scale=0, ang=22, snout=7,
@@ -1435,12 +1694,13 @@ def x_runes(ic, F, to_px):
 def x_leviathan(ic, F, to_px):
     x_runes(ic, F, to_px)
     x_teeth(ic, F, to_px)
-    x_horns(ic, F, to_px)
+    x_horns(ic, F, to_px, big=True)
     x_badge_notice(ic, F, to_px)
 
 
 add(5, 'final_notice_leviathan', 'Final Notice Leviathan', 'Mythic', fish(
-    L=72, TL=0.5, Ht=6.0, Hb=5.4, tmax=0.86, b=2.2, p=0.05, tail='point', wave=7.0, waven=0.95, pa=1.5, scale=3.0, ang=22,
+    L=84, TL=0.5, Ht=7.6, Hb=6.8, tmax=0.75, b=2.2, p=0.05, tail='point', pa=1.0, scale=3.0, ang=20,
+    curl=[(0, -330), (0.45, -150), (0.75, -30), (1, 0)],
     dorsal=[(0.04, 0.86, 3.6, 'spiny')], anal=[(0.0, 0.55, 2.4, 'low')], pelvic=None,
     pect=(0.8, 0.6, 5.5, 2.2), eye=(0.93, 0.36, 2.0), eyecol=EYE_RED, gill=0.86, lateral=False,
     back=CAVE_P, belly=ramp('#1a0a1a', '#4a2a5a', '#5e3872', '#76488c', '#9466ac', '#c094d8'),
@@ -1949,7 +2209,7 @@ def build():
     Ht = 150 + sum(heights) + PAD
     im = Image.new('RGBA', (Wd, Ht), hx('#161a22'))
     d = ImageDraw.Draw(im)
-    d.text((PAD + 4, 14), 'SkyWynn fishing - species, junk and Lost Property icons (concept v1)', font=fT, fill=hx('#f0ece0'))
+    d.text((PAD + 4, 14), 'SkyWynn fishing - species, junk and Lost Property icons (concept v2: eels, halibut, sturgeons, ray touched up)', font=fT, fill=hx('#f0ece0'))
     d.text((PAD + 4, 56), 'Cloud draft 2026-10-06, original pixel art made by make_fish.py (no game art). Each icon is 64 x 64; shown 3x on a dark slot, '
            'with the real 1x size in the small slot on the right.', font=fS, fill=hx('#b8b4a8'))
     # legend
