@@ -9,6 +9,11 @@ shows on an icon), `research/Vanilla-UI-Style-Guide.md` (Skyy's rarity colours).
 **Start here:** `research/cloud/fish-art/fish-sheet.png` (one row per zone, then Junk and Lost Property; each icon 3x on a dark slot,
 with its real 1x size next to it, name and rarity under it in the rarity colour).
 
+**Update 2026-10-06 (vanilla junk):** the 7 invented junk icons (`soggy_boot`, `form_27b`, `wet_queue_ticket`, `waterlogged_rubber_stamp`, `clump_of_seaweed`, `scorched_complaint_letter`,
+`gnawed_bone`) are **retired** - Skyy locked that junk catches are existing vanilla items (spec section 7.1, catalog section 7), and vanilla items use
+their own icons. Nothing deleted here (files kept to compare; they are not used by the mod); the 8 Lost Property icons and the 39 fish stay. The
+counts below (54 icons, 7 junk) are the pre-retirement counts: 47 live icons.
+
 ## 1. Files
 
 | File | What |

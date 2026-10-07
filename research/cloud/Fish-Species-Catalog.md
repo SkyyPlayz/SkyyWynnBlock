@@ -188,29 +188,31 @@ sell = base x 0.90; 70% sits far below the 22.2% spread limit and dishes follow 
 
 ## 7. Junk and Lost Property in voice
 
-Junk (10% of catches; spec) is flavour with pennies; the Clerk buys it for the shown coins (x1 in Z1; flat in every zone, a joke not an income). It is
-never a collection count. **Lost Property** items are the wrappers for the spec's treasure table (section 7): the contents (coin purse, materials,
-unidentified gear, part scrap) are unchanged, only the item the player lands is named in voice, and opens on use.
+Junk (10% of catches; spec) is **vanilla items** (updated 2026-10-06: vanilla junk - Skyy: "junk draws sticks and fiber and stuff thats already in the
+game"). The 7 invented junk items (Soggy Boot, Form 27-B, Wet Queue Ticket, Rubber Stamp, Clump of Seaweed, Scorched Complaint Letter, Gnawed Bone) are
+**retired**: none has a use beyond the joke. Junk is never a collection count; the Clerk pays each item its vanilla sell value, capped by
+`fish.junk.<id>.price` (a joke, not an income). The per-zone weights are in spec section 7.1. **Lost Property** items are the wrappers for the spec's
+treasure table (section 7): the contents (coin purse, materials, unidentified gear, part scrap, now also vanilla Water Essence / Deco_Treasure /
+Fishbone Spear) are listed there, only the item the player lands is named in voice, and opens on use. The wrappers stay because they are containers.
 
 | Kind | Item | Where | Sells / role |
 |---|---|---|---|
-| Junk | Soggy Boot of Unknown Owner | any | 2 coins |
-| Junk | Form 27-B (illegible) | any | 1 coin; the in-lore "paperwork" joke the spec already uses |
-| Junk | Wet Queue Ticket "No. 4,000,112" | Z1-Z3 | 3 coins; the Void's queue is long |
-| Junk | Waterlogged Rubber Stamp | any | 5 coins; "APPROVED" (or "DENIED", reading unclear) |
-| Junk | Clump of Seaweed | Z1-Z3 | 2 coins; also a Sushi Roll ingredient (UNVERIFIED 4) |
-| Junk | Scorched Complaint Letter | Z4 lava | 4 coins; "still smoking" |
-| Junk | Gnawed Bone of a Previous Applicant | Z5 | 4 coins |
+| Junk (vanilla) | `Ingredient_Stick`, `Ingredient_Fibre`, `Ingredient_Fabric_Scrap_Linen` | any | most common (Z1 52%, Z5 30%); real crafting uses (lines, cloth) |
+| Junk (vanilla) | `Plant_Flower_Water_*` (Blue / Green / Purple / Red / White / Duckweed) | Z1, Z3 (3 kinds) | ponds and ice holes |
+| Junk (vanilla) | `Ingredient_Poop` | Z1, Z2, Z5 | the joke item, fertiliser use |
+| Junk (vanilla) | `Rubble_Stone`, `Rock_Salt` | Z2-Z5 (rubble Z1 too) | rubble grows with depth (10% -> 30%) |
+| Junk (vanilla) | `Deco_Coral_Shell` (+ `_Purple` / `_Sanddollar` / `_Swirly`), `Deco_Starfish` | Z2 oasis | decor |
+| Junk (vanilla) | `Deco_Trash`, `Deco_Trash_Pile_Small`, `Deco_Trash_Pile_Large` | any (large Z3+) | generic junk, bigger deeper |
 | Good treasure | Lost Property Envelope | any | opens to a coin purse (spec Good table) |
-| Good treasure | Damp Parcel | any | zone materials |
+| Good treasure | Damp Parcel | any | zone materials (Z1-Z2 may include 1-3 `Ore_Gold`) |
 | Good treasure | Unclaimed Parcel | any | an unidentified gear box, Normal or Unique |
-| Good treasure | Bait Tin | any | bait / part scrap |
-| Great treasure | Locked Luggage Case | any | a bigger purse, or a Rare+ gear box, or Enchanted materials |
+| Good treasure | Bait Tin | any | bait / part scrap, or (5%) vanilla `Ingredient_Water_Essence` x1-3 |
+| Great treasure | Locked Luggage Case | any | a bigger purse, or a Rare+ gear box, or Enchanted materials, or (5% each) vanilla Water Essence x4-8, a `Deco_Treasure*`, a `Weapon_Spear_Fishbone` |
 | Great treasure | Clerk's Lucky Hook (drop-only part) | any | the spec's drop-only part |
 | Outstanding treasure | Diplomatic Pouch (Do Not Open) | any | huge purse, a Legendary+ gear box, a fishing accessory (bound) or a pet egg later |
 | Outstanding treasure | Sealed Envelope from the Director | Z3+ | same table, purely the name |
 
-Treasure coins stay at about 5-7% of fishing income (spec; python 8.6 treasures per hour).
+Treasure coins stay at about 5-7% of fishing income (spec; python 8.6 treasures per hour; purse shares unchanged by the vanilla contents).
 
 ## 8. Server Setup note (the species table is data)
 
@@ -221,7 +223,7 @@ change its season / time lists, weights, rarity or price without a rebuild, and 
 `fish.species.<id>.{name,zone,water,seasons,times,rarity,minKg,maxKg,k,biteFactor,spawnWeight,dish,enabled}`, `fish.price.zoneBase.<zone>`
 26 / 28 / 34 / 36 / 36, `fish.price.rarityMult` 1 / 1.5 / 2.5 / 6 / 12 / 25, `fish.season.inMult` 1.5, `fish.season.outMult` 0.5,
 `fish.time.inMult` 1.5, `fish.time.outMult` 0.5, `fish.z3.winterBiteMult` 0.67 (seconds mult), `fish.fillet.bazaarRatio` 0.7,
-`fish.junk.<id>.price`, `fish.trophy.enabled` on. The Ledger reads this table, so a changed species shows in the book. Times in seconds.
+`fish.junk.<id>.price` (vanilla item ids; weights `fish.junk.<zone>.<id>.weight`, spec 7.1), `fish.trophy.enabled` on. The Ledger reads this table, so a changed species shows in the book. Times in seconds.
 
 ## For the local session (UNVERIFIED)
 
@@ -230,7 +232,7 @@ change its season / time lists, weights, rarity or price without a rebuild, and 
 | 1 | Dynamic Seasons 6.1.2: season names, how many, and its API / event for the current season (spec UNVERIFIED 5). If it has more than four seasons or custom ones, map them to the four here |
 | 2 | World-gen: which of our zone biomes really have water / lava, pond vs river vs oasis vs ice-hole placement, and biome ids; the table's "water" column is a design, not a map |
 | 3 | The vanilla fish model / item / role ids to reuse as looks (vanilla fish tiers Common..Legendary, minnow, bluegill, trout, catfish, tropical, lobster; spec UNVERIFIED 6); species without a vanilla look need our own look or a recolour |
-| 4 | Seaweed, rice and similar ids for the Sushi Roll (Food-Expansion item "seaweed?") |
+| 4 | Seaweed, rice and similar ids for the Sushi Roll (Food-Expansion item "seaweed?"); seaweed is no longer a junk catch (updated 2026-10-06: vanilla junk), so Sushi needs its own source |
 | 5 | A python Monte Carlo of the whole rolled table (this file used the closed-form mean for the u^2 weight and ignored the +-5% length jitter) - re-measure income in a real session (Economy-Audit measure 1) |
 | 6 | Per-stack metadata for weight / length on a fish item (spec UNVERIFIED 4) - the whole table depends on it |
 | 7 | Whether lava can hold fish in the engine at all (spec stage 3); if not, Z4 species become "magma pool" water blocks |
@@ -245,4 +247,4 @@ change its season / time lists, weights, rarity or price without a rebuild, and 
 | 4 | Keep a Fabled / Mythic fish as a trophy (Ledger stamp, later a Trophy Case) instead of selling it? | [yes, sell or keep] |
 | 5 | Zone prices: Z3 is 15% under and Z5 14% over the spec's income targets. Nudge Z3 base 34 -> 40 and Z5 36 -> 32 later? | [leave until measured] |
 | 6 | Fillets by band (Raw / Fine / Prime) so rare fish give better food, or one fillet per zone (plain Meat, Food-Expansion question 8)? | [by band, since dish tier follows rarity] |
-| 7 | Joke level in the names (Form 27-B, Sleeper in Aisle 9, Final Notice Leviathan): keep, or plainer names for some? | [keep, sparing] |
+| 7 | Joke level in the names (Sleeper in Aisle 9, Final Notice Leviathan): keep, or plainer names for some? | [keep, sparing] |

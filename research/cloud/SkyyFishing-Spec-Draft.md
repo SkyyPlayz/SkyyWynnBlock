@@ -155,14 +155,56 @@ Income (python; 21 s per cast = 171 casts/h, 85% fish, 92% landed = 134 fish/h, 
 | Kind | Base | Changed by |
 |---|---|---|
 | Fish | 85% | Clean Sinker moves junk here; sea creatures (stage 3) take from it |
-| Junk | 10% | soggy boots, sticks, bones, seaweed, a "Form 27-B (illegible)" note; NPC sell-back pennies; no collection |
+| Junk | 10% | **vanilla items only** (7.1; updated 2026-10-06: vanilla junk - Skyy: "junk draws sticks and fiber and stuff thats already in the game"); no collection count |
 | Lost Property (treasure) | 5% | Treasure Chance (hook, rod reforge, armor, accessories; cap 15%) |
 
-| Grade | Odds | Contents (one roll) |
+| Grade | Odds | Contents (one roll; updated 2026-10-06: vanilla junk - vanilla items where sensible) |
 |---|---|---|
-| Good | 89% | 40% coin purse 40-120 x zone mult; 35% zone materials (ore, logs, a few Enchanted at Z3+); 15% unidentified gear box Normal / Unique; 10% bait / part scrap |
-| Great | 10% | 30% purse 300-700 x zone mult; 40% unidentified box Rare+; 20% Enchanted materials; 10% a drop-only part (e.g. "Clerk's Lucky Hook") |
+| Good | 89% | 40% coin purse 40-120 x zone mult; 30% zone materials (ore, logs, a few Enchanted at Z3+; Z1-Z2 may include 1-3 `Ore_Gold`); 15% unidentified gear box Normal / Unique; 10% bait / part scrap; 5% `Ingredient_Water_Essence` x1-3 |
+| Great | 10% | 30% purse 300-700 x zone mult; 35% unidentified box Rare+; 15% Enchanted materials; 10% a drop-only part (e.g. "Clerk's Lucky Hook"); 5% `Ingredient_Water_Essence` x4-8; 5% a vanilla `Deco_Treasure*` (display chest) or one `Weapon_Spear_Fishbone` |
 | Outstanding | 1% | 25% purse 2,000-4,000 x zone mult; 40% box Legendary+ (Mythic 5% of these); 25% a fishing accessory (section 9, bound); 10% a pet egg (Pets-Spec, later) |
+
+The Lost Property wrappers (Envelope, Damp Parcel, Unclaimed Parcel, Bait Tin, Luggage Case, Diplomatic Pouch; catalog section 7) stay: they are real
+containers that open into the table above, so they are "a new item with a real use". Purse shares did not change (Good 40%, Great 30%, Outstanding
+25%), so the coin share of income is unchanged. Vanilla `Ore_Gold` / `Water_Essence` / `Deco_Treasure*` from here are plain items (they are not a
+mining or other collection count; see question 9).
+
+### 7.1 Junk = the vanilla Fishing Trap list (updated 2026-10-06: vanilla junk)
+
+No new junk items. A junk catch is one vanilla item from the Fishing Trap junk list (ids read locally from `Drops_Fishing_Trap_Crude.json`, per
+`CLOUD-RESUME.md`): `Ingredient_Stick`, `Ingredient_Fibre`, `Ingredient_Fabric_Scrap_Linen`, `Ingredient_Poop`, `Rubble_Stone`, `Rock_Salt`,
+`Deco_Trash`, `Deco_Trash_Pile_Small`, `Deco_Trash_Pile_Large`, `Deco_Coral_Shell` (+ `_Purple` / `_Sanddollar` / `_Swirly`), `Deco_Starfish`,
+`Plant_Flower_Water_*` (Blue / Green / Purple / Red / White / Duckweed). The kind roll stays 10% junk (the Minecraft split), then one weighted roll
+per zone (weights are a Server Setup table, `fish.junk.<zone>.<id>.weight`; every row sums to 100):
+
+| Item | Z1 | Z2 | Z3 | Z4 | Z5 | Why there |
+|---|---|---|---|---|---|---|
+| Ingredient_Stick | 22 | 8 | 12 | 6 | 10 | most common; real crafting use |
+| Ingredient_Fibre | 18 | 10 | 10 | 6 | 12 | feeds Braided / Steady Line (section 4.2) |
+| Ingredient_Fabric_Scrap_Linen | 12 | 10 | 14 | 10 | 8 | line / cloth crafting |
+| Plant_Flower_Water_* (6 kinds) | 18 | - | 6 (Blue / White / Duckweed) | - | - | ponds and ice holes only |
+| Ingredient_Poop | 8 | 4 | - | - | 8 | the classic joke; fertiliser use |
+| Rubble_Stone | 10 | 14 | 22 | 30 | 26 | grows with depth and rock |
+| Rock_Salt | - | 16 | 14 | 16 | 8 | desert + frost + lava rock |
+| Deco_Coral_Shell (4 kinds) | - | 12 | - | - | - | oasis shells |
+| Deco_Starfish | - | 10 | - | - | - | oasis |
+| Deco_Trash | 10 | 10 | 12 | 12 | 10 | the generic "junk" |
+| Deco_Trash_Pile_Small | 2 | 6 | 8 | 12 | 10 | bigger junk deeper in |
+| Deco_Trash_Pile_Large | - | - | 2 | 8 | 8 | rare big junk |
+| **Sum** | 100 | 100 | 100 | 100 | 100 | python-checked |
+
+**Junk share stays as intended (python):** kind roll 85 / 10 / 5 unchanged; Clean Sinker I-IV (-25 / 50 / 75 / 100% junk, section 4.2) gives junk
+7.5 / 5 / 2.5 / 0% and fish 87.5 / 90 / 92.5 / 95% at base treasure 5%. At 171 casts per hour that is 17.1 junk catches per hour (no sinker). The
+zone and the Clean Sinker tier change which junk and how much; rod tier does not (junk is flat, not a progression).
+
+**Selling:** the Clerk (and any NPC) pays each vanilla item its own vanilla sell value if it has one (UNVERIFIED 10), capped by `fish.junk.<id>.price`
+(default 1-5 coins, a joke not an income). Junk is a free source of sticks / fibre / rubble, so it must not undercut the Bazaar: junk counts toward no
+collection (Fishing collections count fish only), and the Clerk's cap keeps junk coins near 17 x 3 = ~50 coins per hour.
+
+**Invented junk, kept or retired:** all 7 retired (Soggy Boot, Form 27-B, Wet Queue Ticket, Rubber Stamp, Clump of Seaweed, Scorched Complaint Letter,
+Gnawed Bone) - none has a use beyond a joke. **Kept (real use):** the Lost Property wrappers above (containers), "Clerk's Lucky Hook" (a part), and the
+fishing accessories. Seaweed is the one near miss: it was a Sushi Roll ingredient (Food-Expansion); if Sushi needs it, it comes from a seaweed
+plant / the Cooking Skill, not from junk (question 9).
 
 Zone coin mult Z1 x1, Z2 x2.5, Z3 x10, Z4 x30, Z5 x60. Python: 8.6 treasures/h; treasure coins = **4.5-6.7% of fishing income** in every zone
 (Z1 ~440/h, Z5 ~26,000/h). Coins are allowed here because Skyy locked "money" (R5's no-coins rule is about mobs); they buy nothing locked (R3).
@@ -260,6 +302,7 @@ Tag** (Treasure Chance +0.5 / +1 / +1.5), **Angler's Ledger Page** (Fishing Wisd
 | 7 | Whether every click of Use reaches the server fast enough for a 12 cps bar (or a HUD key input is needed) and HUD bar refresh rate |
 | 8 | Fibre / Silk / Cindercloth / Basalt / Slate item ids for parts |
 | 9 | Income numbers are paper (Economy-Audit section 8 measure 1 should add a fishing session) |
+| 10 | Vanilla junk list: exact ids / weights in `Drops_Fishing_Trap_Crude.json` (this table is our own weighting of the ids `CLOUD-RESUME.md` lists), each item's sell value, whether `Deco_*` / `Plant_Flower_Water_*` stack and can sit in SkyySacks, and what `Deco_Treasure*` ids exist |
 
 ## Questions for Skyy
 
@@ -273,3 +316,4 @@ Tag** (Treasure Chance +0.5 / +1 / +1.5), **Angler's Ledger Page** (Fishing Wisd
 | 6 | Keep HyFishing until our stage 2 passes your test, then remove it with a one-week fish trade-in? | [yes] |
 | 7 | Whole fish don't stack (each has its own weight): a Fish Cooler list storage (27 -> 81 fish), or round weights so fish stack? | [Fish Cooler] |
 | 8 | Zone 3 ice fishing: break a hole in the ice, or only open water? | [break a hole] |
+| 9 | Vanilla `Ore_Gold`, Water Essence and Deco_Treasure in treasure and vanilla junk from fishing: OK that they are plain items and count toward no collection? (R3: coins never skip a collection) | [yes, no collection count] |
