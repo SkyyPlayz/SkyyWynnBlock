@@ -127,3 +127,19 @@ slot, plus 1x at the right).
 - **UNVERIFIED (local session):** 64 x 64 is the vanilla item icon size per the art brief (no game files in the cloud). Same open points
   as v1 above: icon path in `Assets.zip`, whether a mod jar can ship its own icon PNG, and how the semi-transparent halo looks on the real
   slot background.
+
+## v3 Stamina - lightning bolt (2026-10-07)
+
+Skyy (`docs/answered/gear.md`, LOCKED 2026-10-06): "the stamina one mooks strange, id do a lightning bolt style like the vanilla
+symbol for stamina. other than that, they look great!" So only the **Stamina** line (4 rarities) is redrawn; the other 10 lines are
+byte-identical (md5 checked on all 40 icons).
+
+- **Design:** a lightning-bolt charm - a zig-zag bolt of amber enamel (grain, glossy streak down the upper stroke, engraved crackle
+  lines) set in a 2 px frame of the rarity metal (iron / gold / rose gold / platinum), two frame rivets, a bail cap and hang ring on
+  top. The rarity gem sits where the bolt kinks and grows as before (4 x 4 cabochon -> 13-wide diamond), Rare glint, Legendary halo
+  + sparkles, 2 px transparent margin (checked: all 4 icons stay 2..61).
+- **Colour:** amber `#e8820e` enamel rather than pure yellow, so the Unique gold frame and yellow gem still stand out from it.
+- Files: `icons-v2/stamina-<rarity>.png` (regenerated), `accessory-sheet-v2.png` (regenerated, row label now "lightning bolt charm"),
+  the sheet before this change kept as `accessory-sheet-v2-before-stamina.png`.
+- **UNVERIFIED (local session):** the shape and colour of the vanilla Stamina symbol in `Assets.zip` (no game files in the cloud) -
+  if the vanilla bolt leans the other way or is a different colour, change the `bolt` points / `STAM` ramp in `stamina()`.

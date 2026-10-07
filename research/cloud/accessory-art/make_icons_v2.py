@@ -445,49 +445,46 @@ def health(ic, r):
     gem(ic, 32, 37, r)
 
 
+STAM = ramp('#4a1c00', '#a84c00', '#e8820e', '#ffb43a', '#ffe8a8')   # amber enamel, so the Unique gold frame + yellow gem still read (vanilla Stamina = a lightning bolt; its colour UNVERIFIED)
+
+
+def shrink(m, n=1):
+    for _ in range(n):
+        m = {(x, y) for x, y in m if all(q in m for q in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)))}
+    return m
+
+
 def stamina(ic, r):
+    """v3 (2026-10-07, Skyy: 'a lightning bolt style like the vanilla symbol for stamina'):
+    a lightning-bolt charm - yellow enamel bolt set in a rarity-metal frame, hung from a ring"""
     M = RARITIES[r][3]
-    ic.paint(ring(26, 1, 37, 12, 3), M, depth=2)                          # hang ring
-    shaft = rect(22, 16, 43, 42)
-    foot = (ell(14, 32, 55, 55) & rect(0, 40, 63, 55)) | rect(22, 32, 43, 50)
-    leather = shaft | foot
-    grain = noise(0.3, 11, 1, 5)
-    ic.paint(leather, LEATHER, depth=4, tex=grain)
-    LL = lv(LEATHER)
-    # toe cap seam + heel counter seam
-    for x, y in (ring(38, 38, 62, 62, 1) & leather):
-        if y < 53 and x < 56:
-            ic.set(x, y, LL[1])
-    stitch(ic, [(41, 39), (52, 46)], LEATHER, mask=leather)
-    stitch(ic, [(23, 44), (41, 44)], LEATHER, lvl=5, mask=leather)
-    # sole with tread
-    sole = (ell(13, 36, 56, 59) & rect(0, 51, 63, 58)) | rect(21, 51, 44, 58)
-    ic.paint(sole, SOLE, depth=2, light=0.3)
-    SL = lv(SOLE)
-    for x in range(20, 54, 4):
-        ic.set(x, 57, SL[0]); ic.set(x + 1, 57, SL[0])
-    for x in range(18, 54):
-        if (x, 51) in sole:
-            ic.set(x, 51, SL[4] if x % 2 else SL[3])
-    # cuff (turned-down top)
-    cuff = rect(20, 13, 45, 21)
-    ic.paint(cuff, LEATHER, depth=3, tex=noise(0.25, 12, 1, 6))
-    stitch(ic, [(21, 20), (44, 20)], LEATHER, lvl=6, mask=cuff)
-    # laces: eyelets + criss-cross
-    LC = lv(LACE)
-    ys = (25, 30, 35, 40)
-    for y in ys:
-        for x in (26, 38):
-            rivet(ic, x, y, M)
-    for y0, y1 in zip(ys, ys[1:]):
-        for (a, b) in (((27, y0 + 1), (37, y1)), ((37, y0 + 1), (27, y1))):
-            for x, y in line([a, b]):
-                ic.set(x, y, LC[5] if (x + y) % 3 else LC[3])
-                ic.set(x + 1, y + 1, LL[1]) if ic.get(x + 1, y + 1) not in LC else None
-    for x, y in line([(37, 41), (43, 47)]) | line([(37, 42), (40, 49)]):   # loose lace ends
-        ic.set(x, y, LC[4])
-    ic.set(43, 47, LC[6]); ic.set(40, 49, LC[6])
-    gem(ic, 32, 17, r)
+    ML = lv(M)
+    ic.paint(ring(33, 4, 44, 15, 3), M, depth=2)                          # hang ring
+    bolt = poly([(29, 13), (47, 13), (39, 29), (50, 29), (22, 59), (29, 37), (16, 37)])
+    ic.paint(bolt, M, depth=2, light=0.5)                                  # metal frame
+    enamel = shrink(bolt, 2)
+    ic.paint(enamel, STAM, depth=4, gl=0.3, tex=noise(0.05, 31, 1, 5))
+    SL = lv(STAM)
+    # glossy streak down the upper-left stroke + a soft one on the long lower stroke
+    for x, y in line([(31, 17), (23, 33)]):
+        if (x, y) in enamel and (x + 1, y) in enamel:
+            ic.set(x + 1, y, SL[6])
+    for x, y in line([(42, 35), (33, 47)]):
+        if (x, y) in enamel:
+            ic.set(x, y, SL[5])
+    # engraved energy crackle in the enamel (darker, broken)
+    for k, (x, y) in enumerate(sorted(line([(37, 18), (34, 24)]) | line([(36, 41), (29, 52)]), key=lambda p: p[1])):
+        if (x, y) in enamel and k % 4 != 3:
+            ic.set(x, y, SL[2])
+    # frame details: rivets in the two inner corners, bevel glints on the metal
+    rivet(ic, 40, 27, M)
+    rivet(ic, 26, 38, M)
+    for x, y in ((30, 14), (31, 14), (17, 36), (48, 30)):
+        if (x, y) in bolt:
+            ic.set(x, y, ML[6])
+    # bail cap where the ring meets the frame
+    ic.paint(poly([(34, 11), (43, 11), (42, 15), (35, 15)]), M, depth=2)
+    gem(ic, 33, 32, r)
 
 
 def mana(ic, r):
@@ -877,7 +874,7 @@ def lantern(ic, r):
 
 LINES = [
     ('Health', 'heart amulet', health),
-    ('Stamina', 'boot charm', stamina),
+    ('Stamina', 'lightning bolt charm', stamina),
     ('Mana', 'mana vial pendant', mana),
     ('Speed', 'winged anklet', speed),
     ('Regeneration', 'leaf ring', regeneration),

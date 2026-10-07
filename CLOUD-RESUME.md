@@ -52,8 +52,6 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 <!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
 lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
-- [ ] **Stamina accessory icon v3** - redo the Stamina line (4 rarities) as a LIGHTNING BOLT like the vanilla Stamina symbol (Skyy 2026-10-06,
-      docs/answered/gear.md); rest of `research/cloud/accessory-art/` v2 approved. Output: the v2 sheet + icons updated.
 - [ ] **Mining armor v3 (half plate)** - Skyy sent references (described in docs/answered/gear.md 2026-10-06 "MINING ARMOR references"; the
       pictures stay local): every Mining tier (Copper..Adamantite; Mithril staged) gets a HALF PLATE body - big rounded embossed pauldrons, a
       sculpted segmented breastplate, layered plate arms + gauntlets, crossed leather straps + buckled belts, the WHOLE armor in the tier's own metal colour (Skyy: "that armor in a half plate style, in the right metal colors"); NO skirt / tabard (plated greaves + boots); keep the v2 helmets (Skyy likes the heads) and the lamp. Output: v3 sheet.
@@ -76,3 +74,4 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 - [x] Fishing junk = vanilla items - 2026-10-06 - `research/cloud/SkyyFishing-Spec-Draft.md` section 7
 - [x] Enchanted icons v2 (vanilla resources) - 2026-10-06 - `research/cloud/enchanted-art/`
 - [x] Monk emblem v2 - 2026-10-06 - `research/cloud/class-art/`
+- [x] Stamina accessory icon v3 - 2026-10-06 - `research/cloud/accessory-art/`
