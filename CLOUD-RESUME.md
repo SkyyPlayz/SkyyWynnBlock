@@ -68,7 +68,7 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
       cheek guards; Iron = segmented sallet with breathing slots; Thorium = closed helm with a horizontal visor slit + side straps / rings;
       Cobalt = Spartan with a dark crest + glowing eye slits; Adamantite = spiked / horned closed helm; Mithril = winged helm (feathered wings,
       keep the vanilla Mithril wing idea); Onyxium = crowned helm with a forehead gem. Each in its tier metal with a contrasting trim, black
-      leather where it meets the light-armor body. Optional: one half-face mask variant per tier (upper face, eye slits). 2x detail like v2.
+      leather where it meets the light-armor body. No masks (Skyy: masks maybe later, separate). 2x detail like v2.
       Output: `research/cloud/light-armor/helmets-v3.png` + the v3 sheet.
 - [ ] **Amberite + Drakonite price check** - `research/cloud/Ember-Economy-Check.md` found Amberite (30,000) and Drakonite (75,000) at 8-12x endgame
       income; re-fit their prices (suggested ~9,300 / ~23,000) with the same python model. Output: `research/cloud/Zone-5-Ore-Prices.md`.
