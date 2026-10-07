@@ -43,6 +43,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 33. MOB CURVE: SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 - higher-level mobs much tougher, level gap, gear curves, Reforge level-up, kill XP by level.
 34. SkyySkills 0.4.18 - dodge key = real roll in all 8 directions (standing still = back roll), i-frames, Acrobatics XP.
 35. SkyySkills 0.4.19 + SkyyHud 0.3.14 + SkyyGear 0.2.6 (deployed 18:23) - dodge move gate, no Acro XP cap; minimap (BetterMap); weapon speed tiers.
+36. SkyyHud 0.3.15 + SkyyBank 0.1.7 - move the Dynamic Seasons widget in /skyyhud; bank interest once a day with brackets.
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
