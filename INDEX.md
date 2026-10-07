@@ -40,6 +40,7 @@ grep hit is the whole thing: `grep -n "Lantern" docs/answered/*.md docs/log/*.md
 | `backups/archive/` | verified `.tar.xz` packs: `deploys-<YYYY-MM>` (older deploy backups), `old-jars-<date>`, `scratch-<task>-<date>` (finished agent scratch) |
 | `tools/dev/scratch/<task>/` | live agent scratch only (now: `mobcurve-numbers/` = the mob curve spec's number model, kept for the mob curve build); pack or delete when the task is done |
 | `research/refs/` | Skyy's reference images (other people's art - style inspiration only, never committed); e.g. `armor-style-black-leather.jpg`, `robe-style-green-mage.jpg`, `foraging-armor-bark.jpg` |
+| `models-local/player/` | vanilla Player.blockymodel + Player_Texture.png (Outlander_1) for Blockbench fit checks (vanilla, never committed) |
 | `models-local/light-armor/<tier>/` | Blockbench work models: `Chest.blockymodel` + `Chest_Texture.png` + previews made by `python tools/make_light_chest.py <Tier>` from the vanilla chest (vanilla-derived, never committed); `vanilla/` = the untouched vanilla copy |
 | `.claude/worktrees/` | Claude Code agent worktrees (removed automatically) |
 | outside the repo | game files + `UserData` (read-only except the deploy), Claude's memory (`C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK\memory\`); the other folders in `Hytale mods WORK` are Skyy's |

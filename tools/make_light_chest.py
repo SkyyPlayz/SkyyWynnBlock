@@ -65,31 +65,48 @@ def find(nodes, name):
 
 
 def build_model(vanilla):
+    """v2 (2026-10-07, Skyy's EVA-foam reference): closed sides, upper chest yoke + copper wing badge, strap front +
+    back with two buckles, double belt, slim layered shoulder caps with a copper leaf. No tassel skirt (Skyy: skip it).
+    Child positions are relative to the parent's shape centre; FrontPlate = 28x20x4 (stretch 1.05 x 1.22): front face z +2, top y +12.2."""
     m = copy.deepcopy(vanilla)
     nodes = m["nodes"]
     front = find(nodes, "FrontPlate")
     back = find(nodes, "BackPlate")
     belt = find(nodes, "Belt")
-    # chest: bandolier (viewer's upper left -> lower right) + buckle, copper collar strips front + back
+    d = (math.sin(math.radians(48)), math.cos(math.radians(48)))     # strap direction (towards the wearer's left shoulder)
+    sc = (3.0, -1.0)                                                     # strap centre
     front["children"] += [
-        box("Bandolier", (4, 33, 1), (0, 0, 2.5), rot_z=-48),
-        box("BandolierBuckle", (5, 5, 1), (0.5, 0.5, 3.2)),
-        box("CollarFront", (30, 3, 5), (0, 11.5, 0.5)),
+        # quilted side panels close the gap between the front and back plates (FrontPlate frame: the back plate sits at z -22)
+        box("L-SidePanel", (3, 24, 24), (14, 0, -11)),
+        box("R-SidePanel", (3, 24, 24), (-14, 0, -11)),
+        # upper chest plate + copper wing badge
+        box("ChestUpper", (27, 5, 1), (0, 9.7, 2.5)),
+        box("BadgeCore", (3, 4, 1), (0, 4.5, 2.5)),
+        box("L-BadgeWing", (4, 2, 1), (3, 5.3, 2.5), rot_z=25),
+        box("R-BadgeWing", (4, 2, 1), (-3, 5.3, 2.5), rot_z=-25),
+        # chest strap: viewer's upper right -> lower left, two copper buckles
+        box("Bandolier", (4, 34, 1), (sc[0], sc[1], 3.6), rot_z=-48),
+        box("StrapBuckleTop", (5, 4, 1), (sc[0] + 7 * d[0], sc[1] + 7 * d[1], 4.3), rot_z=-48),
+        box("StrapBuckleLow", (5, 4, 1), (sc[0] - 8 * d[0], sc[1] - 8 * d[1], 4.3), rot_z=-48),
+        # no standing collar: the Hytale head (30 wide) sits on the torso and swallows it (tried 2026-10-07)
     ]
-    back["children"] += [box("CollarBack", (30, 3, 5), (0, 11.5, -0.5))]
-    # belt: big copper buckle + a pouch on the right hip with a copper button
+    back["children"] += [box("BandolierBack", (4, 34, 1), (sc[0], sc[1], -2.6), rot_z=-48)]
+    # double belt: copper buckle on the top belt, a ring buckle on the lower belt, pouch on the wearer's left hip
     belt["children"] += [
         box("BeltBuckle", (6, 6, 1), (0, 0, 11.5)),
-        box("Pouch", (8, 8, 3), (9, -4.5, 12.3), children=[box("PouchButton", (2, 2, 1), (0, 1.5, 1.8))]),
+        box("BeltLower", (28, 3, 23), (0, -4.5, 0), children=[box("LowerBuckle", (4, 4, 1), (-6, 0, 12))]),
+        box("Pouch", (8, 8, 3), (9, -4.5, 12.6), children=[box("PouchButton", (2, 2, 1), (0, 1.5, 1.8))]),
     ]
-    # shoulders: a lower leather plate, a copper rim round the upper plate, a copper emblem on top
+    # shoulders: slim layered caps - a thin top cap, a copper edge, a leather layer below, a copper leaf accent
     for side, sx in (("L", 1), ("R", -1)):
         sh = find(nodes, side + "-ShoulderWoodenArmor")
         sh["name"] = side + "-Pauldron"
+        sh["shape"]["settings"]["size"] = {"x": 13, "y": 4, "z": 18}
+        sh["shape"]["stretch"] = {"x": sx, "y": 1, "z": 1}
         sh["children"] = (sh.get("children") or []) + [
-            box(side + "-PauldronLower", (14, 4, 22), (sx * 2.5, -5, 0), rot_z=-sx * 12),
-            box(side + "-PauldronRim", (16, 2, 24), (0, -3, 0)),
-            box(side + "-PauldronEmblem", (5, 1, 5), (sx * 1, 4.5, 0)),
+            box(side + "-PauldronRim", (14, 1, 19), (0, -2.2, 0)),
+            box(side + "-PauldronLower", (12, 3, 17), (sx * 2, -4, 0), rot_z=-sx * 14),
+            box(side + "-PauldronLeaf", (3, 1, 6), (sx * 1, 2.4, 0)),
         ]
     return m
 
@@ -184,6 +201,38 @@ def leather(f, quilt=False, stitch=True, shade=1.0):
             f.put(f.w - 2, v, THREAD)
 
 
+def quilt(f, v0=0, v1=None, cell=8):
+    """Puffy diamond quilting (Skyy's reference): dark seams, lit upper-left edge, shaded lower-right edge per diamond."""
+    v1 = f.h if v1 is None else v1
+    for v in range(v0, v1):
+        g = 1.08 - 0.22 * (v / max(1, f.h - 1))
+        for u in range(f.w):
+            a, b = (u + v) % cell, (u - v) % cell
+            c = mix(LEATHER[2], LEATHER[3], f.n(u, v) * 0.3)
+            if a == 0 or b == 0:
+                c = LEATHER[0]
+            elif a == 1 or b == cell - 1:
+                c = mix(c, LEATHER[4], 0.45)
+            elif a == cell - 1 or b == 1:
+                c = mix(c, LEATHER[1], 0.6)
+            f.put(u, v, mul(c, g))
+
+
+def plates(f, v0, v1, band=4):
+    """Segmented belly plates: horizontal bands with a lit top row, a dark seam and a centre seam."""
+    for v in range(v0, v1):
+        k = (v - v0) % band
+        for u in range(f.w):
+            c = mix(LEATHER[2], LEATHER[3], f.n(u, v) * 0.3)
+            if k == 0:
+                c = mix(c, LEATHER[4], 0.4)
+            elif k == band - 1:
+                c = LEATHER[1]
+            if u == f.w // 2:
+                c = LEATHER[0]
+            f.put(u, v, mul(c, 0.95))
+
+
 def edge(f, dark, light):
     for u in range(f.w):
         f.put(u, f.h - 1, dark)
@@ -256,10 +305,42 @@ def paint(model, place, height, M):
         f = Face(img, rect, i * 7 + 3)
         big = face in ("front", "back")
         if name in ("FrontPlate", "BackPlate"):
-            leather(f, quilt=big)
-            if big and f.w > 8 and f.h > 8:
-                for (u, v) in ((2, 2), (f.w - 4, 2), (2, f.h - 4), (f.w - 4, f.h - 4)):
-                    rivet(f, u, v, M)
+            leather(f, stitch=not big)
+            if big:
+                split = int(f.h * 0.7)
+                quilt(f, 0, split, cell=6)
+                plates(f, split, f.h)
+                edge(f, LEATHER[0], LEATHER[3])
+        elif name.endswith("-SidePanel"):
+            if face in ("left", "right"):
+                quilt(f, cell=6)
+                edge(f, LEATHER[0], LEATHER[3])
+            else:
+                leather(f, stitch=False)
+        elif name == "ChestUpper":
+            leather(f, shade=1.05)
+            if big:                                       # chevron seam like the reference's upper chest piece
+                for u in range(f.w):
+                    v = 1 + abs(u - f.w // 2) // 6
+                    f.put(u, min(v, f.h - 2), LEATHER[1])
+        elif name in ("CollarFront", "CollarBack", "L-Collar", "R-Collar"):
+            leather(f, stitch=False, shade=1.05)
+            if face != "bottom":
+                for u in range(f.w):
+                    f.put(u, 0, M[3])
+        elif name == "BandolierBack":
+            strap(f, along_v=(face in ("front", "back", "left", "right")))
+        elif name == "BeltLower":
+            strap(f, along_v=False)
+            for u in range(f.w):
+                for v in range(f.h):
+                    if v == f.h - 1:
+                        f.put(u, v, STRAP[0])
+        elif name in ("StrapBuckleTop", "StrapBuckleLow", "LowerBuckle"):
+            if face == "front":
+                buckle(f, M)
+            else:
+                metal(f, M, pits=False)
         elif name in ("Braces", "R-Braces"):
             leather(f, shade=0.9)
         elif name == "Belt":
