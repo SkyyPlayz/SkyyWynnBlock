@@ -52,6 +52,12 @@ progression prices (SkyyBazaar 0.1.4 live), Skill curves + Cooking XP (SkyySkill
 <!-- 2026-10-06 local session: Skyy reviewed every concept sheet (answers word for word: docs/answered/gear.md + pets.md, 'cloud art review'
 lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally): armor model textures Mithril Chest 192x64, Head 160x64,
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
+- [ ] **Monk emblem v2** - wrapped fist (hand wraps) instead of claws, Saffron #f08a30 (LOCKED Monk colour); the soul-cage emblem uses the v2 soul
+      cage (`research/cloud/weapon-art/soul-cage-v2.png`). Output: `research/cloud/class-art/` updated.
+- [ ] **Enchanted icons v2** - Skyy: real vanilla resources only (docs/answered/gear.md 2026-10-06): metals = Enchanted INGOTS, stone = Enchanted
+      Cobblestone + Enchanted Rubble, logs are blocks (one shiny Enchanted copy of each vanilla log), every icon a shiny copy of the vanilla item; keep
+      sap / stick / farming / cobble block / rubble. Match the list in `research/Gathering-Progression-Spec.md` section 4 (ask the local session for
+      Assets.zip ids you cannot check). Output: `research/cloud/enchanted-art/` v2.
 - [ ] **Stamina accessory icon v3** - redo the Stamina line (4 rarities) as a LIGHTNING BOLT like the vanilla Stamina symbol (Skyy 2026-10-06,
       docs/answered/gear.md); rest of `research/cloud/accessory-art/` v2 approved. Output: the v2 sheet + icons updated.
 - [ ] **WAIT - Skyy is sending references:** Light armor HELMETS (no cloth-hood look; mask optional) and the Mining Adamantite BODY. Do not redo
