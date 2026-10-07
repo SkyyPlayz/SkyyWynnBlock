@@ -23,6 +23,8 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - NOTE 2026-10-02 (same review): with the flatter class curve, class level-up coins arrive much faster (xp.properties coinsPerLevel). Your live profiles gained nothing (little class XP yet); check the coin rate before a public launch.
 
 ### gear
+- ONYXIUM CROSSBOW recipe (SkyyArmory 0.1.3): today 10 Mithril bars + 2 Voidheart + 3 Storm leather at the tier-3 Weapon Bench (Onyxium bars have no world source in 0.6) - keep it, use Onyxium bars like the Onyxium wand, or make it an upgrade of the Mithril crossbow? [keep the current recipe]
+- BOW LEAP on the 6 prototype / developer bows (Combat, Bomb, Pull, Ricochet, Vampire, Test_Zoom - own fire chains, still vanilla): give them the leap too? [no - only the 13 normal shortbows]
 
 ### economy
 - Bazaar CLOTH and GEM prices [x2 per tier step, like metals / woods / crops - built into SkyyBazaar 0.1.4: cloth scraps 4 / 16 / 40 / 96 / 256 / 640, Diamond + Voidstone 120]
