@@ -65,8 +65,8 @@ def find(nodes, name):
 
 
 def build_model(vanilla):
-    """v2 (2026-10-07, Skyy's EVA-foam reference): closed sides, upper chest yoke + copper wing badge, strap front +
-    back with two buckles, double belt, slim layered shoulder caps with a copper leaf. No tassel skirt (Skyy: skip it).
+    """v2 (2026-10-07, Skyy's EVA-foam reference): closed sides, collar (no shoulder straps), upper chest yoke + copper wing badge, strap front +
+    back with two buckles, double belt, rounded stacked shoulder caps with a copper leaf. No tassel skirt (Skyy: skip it).
     Child positions are relative to the parent's shape centre; FrontPlate = 28x20x4 (stretch 1.05 x 1.22): front face z +2, top y +12.2."""
     m = copy.deepcopy(vanilla)
     nodes = m["nodes"]
@@ -75,6 +75,7 @@ def build_model(vanilla):
     belt = find(nodes, "Belt")
     d = (math.sin(math.radians(48)), math.cos(math.radians(48)))     # strap direction (towards the wearer's left shoulder)
     sc = (3.0, -1.0)                                                     # strap centre
+    front["children"] = [c for c in front["children"] if c.get("name") not in ("Braces", "R-Braces")]   # collar replaces them
     front["children"] += [
         # quilted side panels close the gap between the front and back plates (FrontPlate frame: the back plate sits at z -22)
         box("L-SidePanel", (3, 24, 24), (14, 0, -11)),
@@ -88,7 +89,12 @@ def build_model(vanilla):
         box("Bandolier", (4, 34, 1), (sc[0], sc[1], 3.6), rot_z=-48),
         box("StrapBuckleTop", (5, 4, 1), (sc[0] + 7 * d[0], sc[1] + 7 * d[1], 4.3), rot_z=-48),
         box("StrapBuckleLow", (5, 4, 1), (sc[0] - 8 * d[0], sc[1] - 8 * d[1], 4.3), rot_z=-48),
-        # no standing collar: the Hytale head (30 wide) sits on the torso and swallows it (tried 2026-10-07)
+        # collar instead of the vanilla shoulder straps (Skyy 2026-10-07): a thick ring on top of the torso, rising ~6 above the
+        # plates up to the head, front pushed forward so it shows under the head (head bottom = y 18 here); front / back / sides in the FrontPlate frame (torso = z -2..-20)
+        box("CollarFront", (26, 7, 4), (0, 14.5, 1.5)),
+        box("CollarBack", (26, 7, 4), (0, 14.5, -22.5)),
+        box("L-Collar", (4, 7, 21), (11, 14.5, -10.5)),
+        box("R-Collar", (4, 7, 21), (-11, 14.5, -10.5)),
     ]
     back["children"] += [box("BandolierBack", (4, 34, 1), (sc[0], sc[1], -2.6), rot_z=-48)]
     # double belt: copper buckle on the top belt, a ring buckle on the lower belt, pouch on the wearer's left hip
@@ -97,16 +103,21 @@ def build_model(vanilla):
         box("BeltLower", (28, 3, 23), (0, -4.5, 0), children=[box("LowerBuckle", (4, 4, 1), (-6, 0, 12))]),
         box("Pouch", (8, 8, 3), (9, -4.5, 12.6), children=[box("PouchButton", (2, 2, 1), (0, 1.5, 1.8))]),
     ]
-    # shoulders: slim layered caps - a thin top cap, a copper edge, a leather layer below, a copper leaf accent
+    # shoulders: rounded stacked caps that stick out (Skyy 2026-10-07): base plate, dome + crown on top, copper rim, two lames
+    # stepping down + out over the upper arm, copper leaf on the crown. Frame = the vanilla shoulder plate (tilted 24 deg).
     for side, sx in (("L", 1), ("R", -1)):
         sh = find(nodes, side + "-ShoulderWoodenArmor")
         sh["name"] = side + "-Pauldron"
-        sh["shape"]["settings"]["size"] = {"x": 13, "y": 4, "z": 18}
+        sh["position"]["x"] += sx * 1.5
+        sh["shape"]["settings"]["size"] = {"x": 14, "y": 3, "z": 19}
         sh["shape"]["stretch"] = {"x": sx, "y": 1, "z": 1}
         sh["children"] = (sh.get("children") or []) + [
-            box(side + "-PauldronRim", (14, 1, 19), (0, -2.2, 0)),
-            box(side + "-PauldronLower", (12, 3, 17), (sx * 2, -4, 0), rot_z=-sx * 14),
-            box(side + "-PauldronLeaf", (3, 1, 6), (sx * 1, 2.4, 0)),
+            box(side + "-PauldronTop", (10, 2, 15), (-sx * 0.5, 2.5, 0)),
+            box(side + "-PauldronCrown", (6, 1, 11), (-sx * 1, 4, 0)),
+            box(side + "-PauldronRim", (15, 1, 20), (0, -1.8, 0)),
+            box(side + "-PauldronLower", (13, 3, 18), (sx * 3.5, -3.5, 0), rot_z=-sx * 20),
+            box(side + "-PauldronLower2", (11, 3, 16), (sx * 6.5, -6.5, 0), rot_z=-sx * 35),
+            box(side + "-PauldronLeaf", (2, 1, 5), (-sx * 1, 4.8, 0)),
         ]
     return m
 
@@ -359,7 +370,9 @@ def paint(model, place, height, M):
                     f.put(u, f.h - 2, M[1])
         elif name.endswith("-Pauldron"):
             leather(f, quilt=(face == "top"))
-        elif name.endswith("-PauldronLower"):
+        elif name.endswith(("-PauldronTop", "-PauldronCrown")):
+            leather(f, stitch=False, shade=1.08)
+        elif name.endswith(("-PauldronLower", "-PauldronLower2")):
             leather(f, shade=0.85)
         elif name in ("Bandolier",):
             strap(f, along_v=(face in ("front", "back", "left", "right")))
