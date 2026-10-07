@@ -111,3 +111,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyySkills 0.4.19 + SkyyHud 0.3.14 + SkyyGear 0.2.6 - dodge move gate / minimap / weapon speed tiers (DEPLOYED 2026-10-06, backup deploy-20261006-1823) | [2026-10](2026-10.md) |
 | SkyyHud 0.3.15 + SkyyBank 0.1.7 - Dynamic Seasons widget mover / daily bank interest (DEPLOYED 2026-10-06) | [2026-10](2026-10.md) |
 | SkyySkills 0.4.20 - roll on a sprint-key tap (DEPLOYED 2026-10-06, backup deploy-20261006-1930) | [2026-10](2026-10.md) |
+| SkyyHud 0.3.16 - minimap island fix, arrow in blocks, no overlap (DEPLOYED 2026-10-06) | [2026-10](2026-10.md) |

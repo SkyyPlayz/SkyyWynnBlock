@@ -6,7 +6,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 
 | Mod | Version | What it does |
 |---|---|---|
-| SkyyHud | 0.3.15 | HUD widgets + Lunar-style editor (move / scale / toggle), skills + combat widgets; minimap widget (needs BetterMap); moves the Dynamic Seasons widget |
+| SkyyHud | 0.3.16 | HUD widgets + Lunar-style editor (move / scale / toggle), skills + combat widgets; minimap widget (needs BetterMap); moves the Dynamic Seasons widget; minimap island / arrow / spot fixes |
 | SkyySacks | 0.7.13 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting; take bridge for other mods |
 | SkyyCoins | 0.1.5 | coin purse, /pay, death penalty (merges into SkyyEconomy later) |
 | SkyyCollections | 0.2.7 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8 |

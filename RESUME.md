@@ -29,9 +29,9 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
   SkyyArmory 0.1.2 crossbow Grapple Bolt + Stamina cap 5 (32).
 - ALL DEPLOYED 2026-10-06 (untested; TEST-CHECKLIST 28-35): Lanterns / sell from bags / staff + wand traversals / gather probe pack (REMOVE
   after Skyy's session) / Grapple Bolt / mob curve / Dodge Roll / Skills 0.4.19 + Hud 0.3.14 minimap (BetterMap) + Gear 0.2.6 weapon speed.
-- DEPLOYED 19:15: SkyyHud 0.3.15 (Seasons widget mover) + SkyyBank 0.1.7 (daily interest), TEST-CHECKLIST 36; SkyySkills 0.4.20 sprint-tap roll 19:30 (37).
+- DEPLOYED 19:15: SkyyHud 0.3.15 (Seasons widget mover) + SkyyBank 0.1.7 (daily interest), TEST-CHECKLIST 36; SkyySkills 0.4.20 sprint-tap roll 19:30 (37); SkyyHud 0.3.16 minimap fixes ~19:50 (38).
 - RUNNING (~19:00 -0600, Skyy away): SkyyBank 0.1.7 daily interest (wfscripts/bank017.js),
-  SkyyHud 0.3.16 minimap fixes (wfscripts/hud0316.js: island blank, arrow in blocks, overlap), SkyyArmory 0.1.3 (wfscripts/armory013.js:
+  SkyyArmory 0.1.3 (wfscripts/armory013.js:
   Wynncraft bow traversal + apex hang for bow + wand, ALL traversal particles fade (grapple dots, wand orbs, staff trail), hop 30,
   Copper + Onyxium crossbows). NEXT Armory build: blink.distance 16 + blink.floorCheck 0 (Skyy set both live).
 - Art: Skyy reviewed everything (docs/answered/gear.md 2026-10-06); cloud has the redo list; Skyy's reference pictures are in research/refs/.
