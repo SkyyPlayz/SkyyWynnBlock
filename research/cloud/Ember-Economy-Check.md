@@ -7,7 +7,7 @@ Cloud draft, 2026-10-06. Paper design; nothing built. Inputs read: `research/clo
 1. **Lower it: Ember Ore 11,000 -> 4,300** (= Mithril 1,440 x 3.0, one ladder step; Onyxium has no source, so Ember is the next step after Mithril, not after Onyxium).
 2. At 11,000 an endgame Ember miner earns **~1.04M coins/h after the density cut (1.41M before)** = 3.1x (4.2x) the audit's endgame ~336-360k/h and ~11x `tab.perHour` 90,000. The cut helps (-26%) but is nowhere near enough. At 4,300 the same miner earns **~419k/h** (1.2x the audit) and the audit's basket with Ember in the unobtainable Onyxium's slot gives 363k/h (audit: 336k).
 3. The Tab then keeps its calibration: `tab.perHour` stays 90,000 (or 105,000 = 25% of 419k; payoff times barely move, section 6). Left at 11,000 a regular player pays the Tab in ~34 online hours (11 days) instead of ~205 h (68 days).
-4. Side finding: the Enchanted chain rule as written is **15.5%, not <= 15%** (1.10 x 1.05 = 1.155). Fix = Block +4.5% (section 5). Not an Ember problem; it is in all Blocks.
+4. Side finding: the Enchanted chain rule as written is **15.5%, not <= 15%** (1.10 x 1.05 = 1.155). Fix = Block +4.5% (section 5) - adopted 2026-10-07 in the cloud drafts (`research/cloud/Chain-Premium-Fix.md`). Not an Ember problem; it is in all Blocks.
 
 ## 1. The Bazaar model used (so the numbers can be checked)
 
@@ -63,7 +63,7 @@ Rule used: price step x3.0 from Mithril (Gathering fit in Zone-4-5 section 5), t
 | Bazaar buy / sell | 12,100 / 9,900 | **4,730 / 3,870** | x1.10 / x0.90 |
 | Cindersteel Bar (+20%, 1 ore) | 13,200 | **5,160** | loop 0.982 (C13) |
 | Enchanted Ember (160 raw x 1.10) | 1,936,000 | **756,800** | from raw only |
-| Enchanted Ember Block (25,600 raw x 1.155) | 325,248,000 | **127,142,400** | see 5 for 1.155 |
+| Enchanted Ember Block (160 Enchanted x 1.045, Fix A) | 323,699,200 | **126,536,960** | chain 1.1495 (5) |
 | Block under the 1e9 ceiling? | yes (33%) | yes (13%) | |
 
 Step ratios after the change: Mithril -> Ember x3.0 (was 7.6). Kit costs in coin terms fall too (Cindersteel armor, 3,840 ore: 46.5M at the old buy price, 18.2M at the new), but a player who mines it needs 9.3 h at 412 items/h (the Tab and gear gate are about time, not coins).
@@ -77,10 +77,10 @@ Step ratios after the change: Mithril -> Ember x3.0 (was 7.6). Kit costs in coin
 | Block (from Enchanted) | x1.05 |
 | **Cumulative** | 1.10 x 1.05 = **1.155 = 15.5%** > the 15% rule (`bazaar.maxChainPremium`) |
 | Loop line (buy x1.10, sell x0.90) | 22.2%; 15.5% is safe, but the written rule is broken by 0.5 pt |
-| Fix A (default) | Block +4.5%: 1.10 x 1.045 = 1.1495 (Block = 160 Enchanted x 1.045) |
+| Fix A (adopted 2026-10-07 in the cloud drafts) | Block +4.5%: 1.10 x 1.045 = 1.1495 (Block = 160 Enchanted x 1.045) |
 | Fix B | state the row as 15.5% |
 
-Not Ember-specific: Zone-4-5 section 5 and Economy-Audit C4 both write "1.155 <= 15%", which is wrong by 0.5 pt. Ember is checked against the rule above; at 4,300 the Block would be 126,536,960 under Fix A.
+Not Ember-specific: Zone-4-5 section 5 and Economy-Audit C4 both wrote "1.155 <= 15%", wrong by 0.5 pt (fixed to 1.1495 on 2026-10-07). Ember is checked against the rule above; at 4,300 the Block would be 126,536,960 under Fix A.
 Bars: Enchanted Ember still comes from RAW ore only (a bar premium of 20% + 10% = 1.32 / 1.10 x 0.9 = 1.08, a loop).
 Selling Enchanted instead of raw (sim, 412 items/h = 2.6 Enchanted/h): at 4,300 it pays 746k/h over 2 hours (+78% vs raw) but 587k over 6 hours (+45%), because each sale floors the Enchanted's own factor and the half-life is 2 h. That is more than the +10% premium: the gain comes from selling into a fresh factor. At the old 11,000 the same gain is +83% / +46%. It adds pressure to the faucet; the lower base shrinks the absolute coins (see exploit 2).
 

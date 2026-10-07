@@ -111,29 +111,29 @@ The "obtained, not crafted" rule is how SkyBlock avoids double counting while En
 ## 6. Bazaar prices (the loop check)
 The Bazaar prices a crafted product as `inputs x ratio + premium`. Instant buy `= base x factor x 1.10`, instant sell `= base x factor x 0.90`, factor clamped 0.25-4.0. A buy -> craft -> sell loop pays if
 `sell(Enchanted) x 1 > buy(160 base)`, i.e. `0.90 x (1 + premium) x 160 > 1.10 x 160`, i.e. **premium > 22.2%**. At 20% the margin is 0.9818 (the live tightest); with the Bazaar's ~2% multi-player demand drift that is too tight.
-**Proposal: premium 10% per compression step** (margin 0.90). It also keeps coin creation small: crafting 160 ore into an Enchanted item and selling it pays **10% more** than selling the ore (a Block 21%), the price of convenience.
+**Proposal: premium 10% per compression step** (margin 0.90). It also keeps coin creation small: crafting 160 ore into an Enchanted item and selling it pays **10% more** than selling the ore (a Block 14.95%), the price of convenience. Block = 160 Enchanted x 1.045 (rounded down), so the whole chain stays under the 15% cap (`research/cloud/Chain-Premium-Fix.md`, 2026-10-07; this table was the first draft's 1.21x until then).
 
-| Material | base | Enchanted (160 base) | Enchanted Block (160 Enchanted) | block vs 25,600 base |
+| Material | base | Enchanted (160 base x 1.10) | Enchanted Block (160 Enchanted x 1.045) | block vs 25,600 base |
 |---|---|---|---|---|
-| Cobblestone / Sand / Fiber | 1 | 176 | 30,977 | 1.21x |
-| Copper Ore | 5 | 881 | 155,056 | 1.21x |
-| Iron Ore | 16 | 2,816 | 495,617 | 1.21x |
-| Thorium Ore | 48 | 8,448 | 1,486,849 | 1.21x |
-| Cobalt Ore | 144 | 25,345 | 4,460,720 | 1.21x |
-| Adamantite Ore | 480 | 84,480 | 14,868,481 | 1.21x |
-| Mithril Ore | 1,440 | 253,441 | 44,605,616 | 1.21x |
-| Onyxium Ore | 3,712 | 653,312 | 114,982,913 | 1.21x |
-| Common wood (F1) | 3 | 528 | 92,929 | 1.21x |
-| Uncommon wood (F2) | 8 | 1,408 | 247,809 | 1.21x |
-| Northern wood (F3) | 20 | 3,521 | 619,696 | 1.21x |
-| Strange wood (F4) | 48 | 8,448 | 1,486,849 | 1.21x |
-| Elemental wood (F5) | 128 | 22,528 | 3,964,929 | 1.21x |
-| Crop A (Wheat, Carrot, Corn) | 2 | 352 | 61,953 | 1.21x |
-| Crop B (Pumpkin ...) | 6 | 1,056 | 185,857 | 1.21x |
-| Crop C (Tomato, Cotton, Rice) | 16 | 2,816 | 495,617 | 1.21x |
-| Crop D (Potato, Onion) | 40 | 7,041 | 1,239,216 | 1.21x |
-| Tree Sap | 4 | 704 | 123,905 | 1.21x |
-(Base prices are the 2026-10-04 / 05 locks in docs/answered/economy.md.) The highest product, the Onyxium Block at 115M, is under the Bazaar's per-product ceiling (1e9).
+| Cobblestone / Sand / Fiber | 1 | 176 | 29,427 | 1.15x (1.1495) |
+| Copper Ore | 5 | 880 | 147,136 | 1.15x (1.1495) |
+| Iron Ore | 16 | 2,816 | 470,835 | 1.15x (1.1495) |
+| Thorium Ore | 48 | 8,448 | 1,412,505 | 1.15x (1.1495) |
+| Cobalt Ore | 144 | 25,344 | 4,237,516 | 1.15x (1.1495) |
+| Adamantite Ore | 480 | 84,480 | 14,125,056 | 1.15x (1.1495) |
+| Mithril Ore | 1,440 | 253,440 | 42,375,168 | 1.15x (1.1495) |
+| Onyxium Ore | 3,712 | 653,312 | 109,233,766 | 1.15x (1.1495) |
+| Common wood (F1) | 3 | 528 | 88,281 | 1.15x (1.1495) |
+| Uncommon wood (F2) | 8 | 1,408 | 235,417 | 1.15x (1.1495) |
+| Northern wood (F3) | 20 | 3,520 | 588,544 | 1.15x (1.1495) |
+| Strange wood (F4) | 48 | 8,448 | 1,412,505 | 1.15x (1.1495) |
+| Elemental wood (F5) | 128 | 22,528 | 3,766,681 | 1.15x (1.1495) |
+| Crop A (Wheat, Carrot, Corn) | 2 | 352 | 58,854 | 1.15x (1.1495) |
+| Crop B (Pumpkin ...) | 6 | 1,056 | 176,563 | 1.15x (1.1495) |
+| Crop C (Tomato, Cotton, Rice) | 16 | 2,816 | 470,835 | 1.15x (1.1495) |
+| Crop D (Potato, Onion) | 40 | 7,040 | 1,177,088 | 1.15x (1.1495) |
+| Tree Sap | 4 | 704 | 117,708 | 1.15x (1.1495) |
+(Base prices are the 2026-10-04 / 05 locks in docs/answered/economy.md.) The highest product, the Onyxium Block at 109M, is under the Bazaar's per-product ceiling (1e9).
 
 ### 6.1 Other money checks
 | Risk | Check |
@@ -146,7 +146,7 @@ The Bazaar prices a crafted product as `inputs x ratio + premium`. Instant buy `
 | Auction House | Enchanted items may be listed (not "Bazaar items"); AH refuses Bazaar items by default - decide if Enchanted are exempt |
 
 ## 7. Server Setup rows (sketch)
-`ench.enabled`, `ench.ratio` (160), `ench.blockRatio` (160), `ench.stack` (64), `ench.blockStack` (16), `ench.bazaarPremium` (10), per-material table (id, base item(s), Enchanted id, Block id, unlock tier), `ench.collectionRule` (obtained / crafted), `ench.compactor.*`.
+`ench.enabled`, `ench.ratio` (160), `ench.blockRatio` (160), `ench.stack` (64), `ench.blockStack` (16), `ench.bazaarPremium` (10), `ench.blockPremium` (4.5), per-material table (id, base item(s), Enchanted id, Block id, unlock tier), `ench.collectionRule` (obtained / crafted), `ench.compactor.*`.
 
 ## 8. For the local session (UNVERIFIED)
 | # | Check |

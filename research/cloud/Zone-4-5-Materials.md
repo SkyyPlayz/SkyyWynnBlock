@@ -12,7 +12,7 @@ Cloud draft, 2026-10-06. Paper design; nothing built. Inputs read: `research/clo
 | `docs/answered/economy.md` LOCKED 2026-10-03 + R3 | coins never skip a collection, tier or recipe; NPC shops never sell unlocks |
 | `docs/answered/skills.md` LOCKED 2026-10-04 | Mining XP per block never shrinks as you level, only the level cost rises; live pay: stone 1, copper 5, iron 8, thorium 18, mithril 25 |
 | `docs/answered/skills.md` LOCKED 2026-10-02 | need Mining N to use a level-N pickaxe; new tools always get a level |
-| `research/cloud/Economy-Audit.md` C4 (proposal, applied as asked) | cumulative premium along any chain from a Bazaar-buyable input <= 15% (`bazaar.maxChainPremium`): Enchanted +10%, Block +5% (1.155x); Enchanted only from **raw** items, never from bars |
+| `research/cloud/Economy-Audit.md` C4 (proposal, applied as asked) | cumulative premium along any chain from a Bazaar-buyable input <= 15% (`bazaar.maxChainPremium`): Enchanted +10%, Block +4.5% (1.1495x; `research/cloud/Chain-Premium-Fix.md`); Enchanted only from **raw** items, never from bars |
 | `research/cloud/Collection-Unlocks-Draft.md` grammar | I shard, II XP, IV next-tier tools (E curve: III), V Enchanted (E: IV), VI armor, IX capstone |
 
 ## 1. The three materials at a glance
@@ -79,18 +79,18 @@ Item rate check (python): Fossil Shard base 600 x 10% = 60 coins per ore (+0.2% 
 
 Fit of the live metal ladder (python, `research/cloud/Enchanted-Materials-Draft.md` 6): 5 / 16 / 48 / 144 / 480 / 1,440 / 3,712 gives step ratios 3.2, 3.0, 3.0, 3.33, 3.0, 2.58; a log-linear fit gives **x3.0 per tier**, so T8 / T9 / T10 would be 12.2k / 36.9k / 111k. I set them lower (x2.96 / x2.73 / x2.5 per tier) because the Enchanted Block must stay under the Bazaar's 1e9 per-product ceiling.
 
-| Material | Base | Bazaar buy / sell | Bar (+20%) | Enchanted (160 raw x 1.10) | Enchanted Block (25,600 raw x 1.155) | Block under 1e9? |
+| Material | Base | Bazaar buy / sell | Bar (+20%) | Enchanted (160 raw x 1.10) | Enchanted Block (160 Enchanted x 1.045) | Block under 1e9? |
 |---|---|---|---|---|---|---|
-| Mithril (ref) | 1,440 | 1,584 / 1,296 | 1,728 | 253,440 | 42,577,920 | yes |
-| Onyxium (ref) | 3,712 | 4,083 / 3,341 | 4,454 | 653,312 | 109,756,416 | yes |
-| **Ember Ore** | **11,000** | 12,100 / 9,900 | **13,200** | 1,936,000 | 325,248,000 | yes |
-| **Amberite Ore** | **30,000** | 33,000 / 27,000 | **36,000** | 5,280,000 | 887,040,000 | yes (89%) |
-| **Drakonite Ore** | **75,000** | 82,500 / 67,500 | **90,000** (+ scale: priced as inputs x 1.2) | 13,200,000 | 2,217,600,000 | **no** |
+| Mithril (ref) | 1,440 | 1,584 / 1,296 | 1,728 | 253,440 | 42,375,168 | yes |
+| Onyxium (ref) | 3,712 | 4,083 / 3,341 | 4,454 | 653,312 | 109,233,766 | yes |
+| **Ember Ore** | **11,000** | 12,100 / 9,900 | **13,200** | 1,936,000 | 323,699,200 | yes |
+| **Amberite Ore** | **30,000** | 33,000 / 27,000 | **36,000** | 5,280,000 | 882,816,000 | yes (88%) |
+| **Drakonite Ore** | **75,000** | 82,500 / 67,500 | **90,000** (+ scale: priced as inputs x 1.2) | 13,200,000 | 2,207,040,000 | **no** |
 | Fossil Shard | 600 | - | - | no Enchanted form | - | - |
 | Drake Scale | 9,000 | - | - | no Enchanted form | - | - |
 
 - **No Drakonite Block** at launch (default). An Enchanted Drakonite is capped by the price ceiling; the only fixes are a lower price (33k would break the ladder) or a higher ceiling (a local check, Q5).
-- Loop check (python): buy ore x1.10 -> bar sells at 0.9 x 1.2 / 1.10 = **0.982** of cost (matches the live tightest, `research/cloud/Economy-Audit.md` C13); Enchanted from raw: 0.9 x 1.10 / 1.10 = **0.900**; Block 0.9 x 1.155 / 1.10 = **0.945**; cumulative chain premium 1.10 x 1.05 = **1.155 <= 15%**. An Enchanted made from **bars** would pay 1.08 (a loop) - so the recipe takes **ore only**, never bars (C4).
+- Loop check (python): buy ore x1.10 -> bar sells at 0.9 x 1.2 / 1.10 = **0.982** of cost (matches the live tightest, `research/cloud/Economy-Audit.md` C13); Enchanted from raw: 0.9 x 1.10 / 1.10 = **0.900**; Block 0.9 x 1.1495 / 1.10 = **0.9405**; cumulative chain premium 1.10 x 1.045 = **1.1495 <= 15%**. An Enchanted made from **bars** would pay 1.08 (a loop) - so the recipe takes **ore only**, never bars (C4).
 - Drakonite Bar with a scale: the +20% applies on ore + scale together; the scale is not an Enchanted input.
 - Pocket Shard output of these ores is allowed only at the shard tiers Skyy sets in `research/cloud/Pocket-Shards-Spec.md` (ores stay plain items; no compaction before collection V).
 

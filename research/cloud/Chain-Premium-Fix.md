@@ -88,7 +88,7 @@ Why A: it keeps the 10% that the Enchanted draft, the Zone-4-5 tables and the lo
 
 `enchanted.premiumStep` 10 (%), **`enchanted.blockStep` 4.5** (was 5), `bazaar.maxChainPremium` 15. The Bazaar build should refuse a pair of rows whose product (1 + step1)(1 + step2) - 1 exceeds `bazaar.maxChainPremium`, the same way the 0.1.5 build asserts the processed-goods bound (line 1625: `(1 + PREMIUM_MAX/100) x (1 - SPREAD) <= 1 + SPREAD`).
 
-## 5. Exact edits per file (for the local session; none made here)
+## 5. Exact edits per file (applied 2026-10-07 by the cloud session - all rows below are done)
 
 | File | Where | Change |
 |---|---|---|
