@@ -1,14 +1,14 @@
-# SkyWynn - RESUME HERE (updated 2026-10-07 10:00)
+# SkyWynn - RESUME HERE (updated 2026-10-07 10:45)
 
 Read this first, then only what the task needs. Map of every file + search tips: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions:
 `HANDOFF.md`. Open questions: `OPEN-QUESTIONS.md`. Skyy's tests: `TEST-CHECKLIST.md`. Running log (all history): `docs/log/2026-10.md`.
 
 ## START HERE (new session)
 1. `git pull --rebase --autostash`; check usage (ccd get_usage; weekly resets TUESDAYS 15:00 UTC; 2026-10-06 ended near 20% weekly).
-2. **ART WORKFLOW** `skywynn-art-build` (run wf_bb62eb52-952, launched 2026-10-07 ~10:00 while Skyy is at work): 7 Opus builders
-   (accessory icons, metal staffs + bo staffs, spellbooks, kunai, Soul Cage, fist weapons, fishing) -> Sonnet review -> fix. Output:
-   `models-local/art/<family>/` (sheet.png, manifest.json, README.md) + generators `tools/art/make_*.py`. When done: look at every
-   sheet, load models in Blockbench, commit the generators, show Skyy. Wiring into mods (Accessories icons, Armory staffs) = a later round.
+2. **ART DONE 2026-10-07** (workflow wf_bb62eb52-952): `models-local/art/<family>/` (accessories, staffs + bo, spellbooks, kunai,
+   soulcage, fists, fishing; each sheet.png + manifest.json + README.md), generators `tools/art/make_*.py`. Skyy reviews the sheets ->
+   answers OPEN-QUESTIONS gear "ART" lines -> then a build round wires them in (SkyyAccessories icons, SkyyArmory staffs; new item
+   families need specs + items). Existing-mods check: `research/Existing-Mods-Gear-Survey.md` (nothing covers our gear).
    LIGHT ARMOR (paused, Skyy: "we can work on the armor more later"): `python tools/make_light_bases.py` (+ make_light_legs.py) ->
    `models-local/light-armor/sets/<tier>/` (Copper/Iron = Ornate Bronze + our legs, Thorium/Cobalt = Cobalt + sleeves, Adamantite/Mithril =
    black Mithril, Onyxium = Prisma; option `onyxium-dark`). Blockbench tabs saved in `models-local/blockbench-saves/`. Blockbench MCP =
@@ -26,7 +26,7 @@ Read this first, then only what the task needs. Map of every file + search tips:
   from SET after Skyy's probe session, TEST-CHECKLIST 31). Newest backup `backups\deploy-20261006-2315`.
 - Skyy tested 2026-10-06 (log): Grapple works; wand heal circle works; minimap works in the hub; live settings Skyy chose: hop.force 30,
   blink.distance 16, blink.floorCheck 0 (defaults since SkyyArmory 0.1.4, deployed 2026-10-06 23:15).
-- RUNNING: art workflow wf_bb62eb52-952 (see START HERE 2). Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
+- NOTHING RUNNING. Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
   Stamina icon; fishing junk; reference pictures are local in `research/refs/`, described in docs/answered/gear.md).
 
 ## Next, in order
