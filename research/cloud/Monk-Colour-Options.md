@@ -1,5 +1,7 @@
 # Monk class colour options
 
+LOCKED: Saffron #f08a30 (Skyy, 2026-10-06 - docs/answered/gear.md line 87). The options below are history.
+
 Cloud draft, 2026-10-06. Paper design; nothing built. Inputs read: `CLOUD-RESUME.md` ("Monk class colour + emblem check"),
 `research/cloud/class-art/README.md`, `research/cloud/class-art/make_emblems.py` (read-only, used to draw the emblems),
 `SkyyProfiles/build_skyyprofiles_0.1.2.py` + `0.1.5.py` (`ClassDefs.COLORS`), `tools/skills_0_4_4_patch.py` (`SkillDefs.COLORS`),
