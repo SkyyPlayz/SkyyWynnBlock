@@ -34,11 +34,10 @@ SETS = {
     "bronze": {"src": "Bronze_Ornate", "pieces": ("Head", "Chest", "Hands"), "brown": False},   # no Legs in vanilla; Cape dropped
     # Skyy 2026-10-07: "im thinking we should change up onyx. pull up the onyx set, and the prisma set, and convert them both in to light
     # leather armor, and well see what looks better." - their leather is a maroon / plum cloth ("red" mode); metal keeps its colours
-    "onyx": {"src": "Onyxium", "pieces": ("Head", "Chest", "Hands", "Legs"), "brown": "red"},
     "prisma": {"src": "Prisma", "pieces": ("Head", "Chest", "Hands", "Legs"), "brown": "red"},
 }
 # which pixels count as the base metal: a hue window (degrees) or near-grey; everything else is an accent and keeps its colour
-METAL_HUE = {"mithril": (180, 260), "cobalt": (180, 250), "bronze": (10, 65), "onyx": (0, 360), "prisma": (0, 360)}
+METAL_HUE = {"mithril": (180, 260), "cobalt": (180, 250), "bronze": (10, 65), "prisma": (0, 360)}
 # tier -> (base set, hue degrees or None = keep, saturation multiplier, saturation added, lightness multiplier)
 TIERS = {
     "copper": ("bronze", 22, 1.15, 0.05, 0.95),
@@ -47,18 +46,16 @@ TIERS = {
     "cobalt": ("cobalt", None, 1.0, 0.0, 1.0),
     "adamantite": ("mithril", 358, 2.6, 0.18, 0.85),
     "mithril": ("mithril", None, 1.0, 0.0, 1.0),
-    "onyxium": ("mithril", 278, 2.4, 0.15, 0.8),
-    "onyxium-onyx": ("onyx", None, 1.0, 0.0, 1.0),      # Onyxium candidates (Skyy picks one)
-    "onyxium-prisma": ("prisma", None, 1.0, 0.0, 1.0),
+    "onyxium": ("prisma", None, 1.0, 0.0, 1.0),         # Skyy: "the prisma one looks better for onyxium" (Prisma metal kept)
 }
 # Skyy 2026-10-07: "match eye glow to tier, drop the plume on the thorium, add the wings back the the mithril helm on the mithril tier,
 # and  build copper legs"
 GLOW_SRC = {"mithril": (150, 182)}                  # the helmet eye glow (teal) on the base, hue window in degrees
-GLOW_HUE = {"adamantite": 0, "onyxium": 300}        # tier glow hue (tiers not listed keep the base glow)
+GLOW_HUE = {"adamantite": 0}                        # tier glow hue (tiers not listed keep the base glow)
 # nodes dropped per tier: Fluff = the Cobalt helmet plume; FrontBelt1 / BackBelt = the Mithril diagonal cross strap (Skyy deleted it in
 # Blockbench on Adamantite / Mithril / Onyxium: "i removed the cross straps on some of the armor")
 CROSS_STRAP = ("FrontBelt1", "BackBelt")
-TIER_REMOVE = {"thorium": ("Fluff",), "adamantite": CROSS_STRAP, "mithril": CROSS_STRAP, "onyxium": CROSS_STRAP}
+TIER_REMOVE = {"thorium": ("Fluff",), "adamantite": CROSS_STRAP, "mithril": CROSS_STRAP}
 TIER_UNSTRIP = {"mithril"}                          # tiers that keep the nodes their base set removes (the Mithril wings)
 
 
