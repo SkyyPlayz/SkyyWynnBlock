@@ -25,6 +25,14 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### gear
 - ONYXIUM CROSSBOW recipe (SkyyArmory 0.1.3): today 10 Mithril bars + 2 Voidheart + 3 Storm leather at the tier-3 Weapon Bench (Onyxium bars have no world source in 0.6) - keep it, use Onyxium bars like the Onyxium wand, or make it an upgrade of the Mithril crossbow? [keep the current recipe]
 - BOW LEAP on the 6 prototype / developer bows (Combat, Bomb, Pull, Ricochet, Vampire, Test_Zoom - own fire chains, still vanilla): give them the leap too? [no - only the 13 normal shortbows]
+- ART 2026-10-07 (models-local/art/<family>/sheet.png): MITHRIL + ONYXIUM weapon colours - the concept's cyan Mithril / purple Onyxium,
+  or the vanilla metals (silver-blue Mithril, black-violet Onyxium, like the built wands)? Builders split (fists, kunai = concept; staffs,
+  fishing = vanilla). [concept colours on new families; wands unchanged until you say]
+- ART: metal STAFFS keep each tier's vanilla head shape (recoloured) instead of the concept's big crystal in a metal cradle (needs new
+  models)? [keep vanilla heads]
+- ART: Stamina accessory bolt amber #e8820e (vanilla stamina gold would clash with the Unique gold setting)? [amber]
+- ART: Silk / Shadoweave hand wraps in the concept colours (pink / purple) or the vanilla bolt colours (light blue / brown-grey)? [concept]
+- ART: fishing rod icon = 3D render (sheet row 1) or the concept look with the bobber (row 2)? [3D render]
 
 ### economy
 - Bazaar CLOTH and GEM prices [x2 per tier step, like metals / woods / crops - built into SkyyBazaar 0.1.4: cloth scraps 4 / 16 / 40 / 96 / 256 / 640, Diamond + Voidstone 120]
