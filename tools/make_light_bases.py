@@ -31,7 +31,9 @@ OUT = os.path.join(ROOT, "models-local", "light-armor")
 SETS = {
     "mithril": {"src": "Mithril", "pieces": ("Head", "Chest", "Hands", "Legs"), "brown": True, "remove": ("LFin", "RFin")},
     "cobalt": {"src": "Cobalt", "pieces": ("Head", "Chest", "Hands", "Legs"), "brown": True},
-    "bronze": {"src": "Bronze_Ornate", "pieces": ("Head", "Chest", "Hands"), "brown": False},   # no Legs in vanilla; Cape dropped
+    # no Legs in vanilla; Cape dropped; pads False = no extra shoulder-pad shrink (Skyy: "sscale copper and iron back up" -> "Undo the
+    # pad shrink only")
+    "bronze": {"src": "Bronze_Ornate", "pieces": ("Head", "Chest", "Hands"), "brown": False, "pads": False},
     # Skyy 2026-10-07: "im thinking we should change up onyx. pull up the onyx set, and the prisma set, and convert them both in to light
     # leather armor, and well see what looks better." - their leather is a maroon / plum cloth ("red" mode); metal keeps its colours
     "prisma": {"src": "Prisma", "pieces": ("Head", "Chest", "Hands", "Legs"), "brown": "red"},
@@ -255,16 +257,16 @@ BONE_WD = {                                          # player bone width (x) and
 }
 
 
-def slim(nodes, bone=None, cx=0.0, cz=0.0):
+def slim(nodes, bone=None, cx=0.0, cz=0.0, pads=True):
     """Scale x / z of every non-bone node's position, shape offset and stretch about its bone centre; clamp body-wrapping boxes."""
     for n in nodes:
         name = n.get("name")
         if name in BONE_WD:
-            slim(n.get("children") or [], name, 0.0, 0.0)
+            slim(n.get("children") or [], name, 0.0, 0.0, pads)
             continue
         pos = n.get("position") or {}
         shape = n.get("shape") or {}
-        pad = bone in PAD_BONES
+        pad = pads and bone in PAD_BONES
         fx = SLIM_X * (PAD_IN if pad else 1.0)
         if bone is not None:
             pos["x"] = pos.get("x", 0) * fx
@@ -292,7 +294,7 @@ def slim(nodes, bone=None, cx=0.0, cz=0.0):
                     new = max(new, min(old, bsz + 2 * SLIM_MARGIN))
                 sign = -1 if st.get(ax, 1) < 0 else 1
                 st[ax] = sign * new / abs(size[ax])
-        slim(n.get("children") or [], bone, nx, nz)
+        slim(n.get("children") or [], bone, nx, nz, pads)
 
 
 # Skyy 2026-10-07: "and give the gloves leather sleves on the cobalt set" -> a light-leather sleeve on each forearm (inside the vanilla
@@ -387,8 +389,8 @@ def main():
             if cfg.get("remove"):
                 model["nodes"] = strip(model["nodes"], cfg["remove"])
             img = SA.png_decode(z.read(src + "_Texture.png"))
-            slim(full["nodes"])
-            slim(model["nodes"])
+            slim(full["nodes"], pads=cfg.get("pads", True))
+            slim(model["nodes"], pads=cfg.get("pads", True))
             out, leather_px = recolor(img, (name, p), cfg["brown"])
             if (name, p) == ("cobalt", "Hands"):
                 out = cobalt_sleeves(model, out, leather_px)
