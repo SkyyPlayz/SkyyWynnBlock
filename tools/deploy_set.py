@@ -16,8 +16,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
-    ("SkyyHud", "0.3.13"), ("SkyySacks", "0.7.13"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.6"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.5"), ("SkyySkills", "0.4.18"),
+    ("SkyyHud", "0.3.14"), ("SkyySacks", "0.7.13"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
+    ("SkyyBank", "0.1.6"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.6"), ("SkyySkills", "0.4.19"),
     ("SkyyAccessories", "0.5.6"), ("SkyyClasses", "0.1.12"), ("SkyyMenu", "0.3.8"), ("SkyyEssentials", "0.1.8"), ("SkyyProfiles", "0.1.5"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.2"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -52,6 +52,8 @@ SET = [
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     ("SkyyArmory", "0.1.2"),
+    # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
+    # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
     # one back alone; rolling all three back = Undo the "strength.shape linear -> curve" change first (or 0.1.3 runs per level with the file's values).
     # SkyyArmory 0.1.2 (2026-10-06): crossbow Grapple Bolt (right click = grapple, replaces the guard) + trav.staminaCap 10 -> 5 (one-time
@@ -73,7 +75,8 @@ SET = [
 # Seasons (its fishing seasons must keep working with our fishing mod later). Both only need Hytale modules; Dynamic Seasons optionally
 # integrates Angler's Almanac / HyFishing.
 PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "TheRedlotus:HyFishing", "BlueOrbit:DynamicSeasons",
-                    "NoCube:[NoCube's] Orchard"]  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
+                    "NoCube:[NoCube's] Orchard",
+                    "dev.ninesliced:BetterMap"]  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
 # Advanced Farming was NOT added (Skyy 2026-10-06: out of date, no longer updated -> build its tools into our own mod).
 # Skyy mods that were MERGED into another mod and must be switched OFF in the world config on every deploy (their jar may stay in Mods;
 # a disabled key is not loaded). Without this, deploy_set only disables older versions of the SAME mod name, and a retired mod would keep
