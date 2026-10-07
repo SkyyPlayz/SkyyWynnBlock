@@ -59,4 +59,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - LOCKED 2026-09-25 (Skyy), to be built: settings visibility is permission-based. A player sees only the settings they have permission to change. A basic player does not see admin-only or restricted settings. Those rows are hidden, with no greyed-out or disabled entry. [hidden; SkyyMenu 0.3.2 still shows every row]
 
 ## New answers (2026-10-05 on - newest last, beats everything above)
-
+- REQUEST 2026-10-06 (Skyy, screenshot: the Dynamic Seasons widget covers SkyyHud's skills list bottom-right): "i know its not our mod, but can you add the widget from dynamic season to our hud controller? so we can move it from there?" -> SkyyHud 0.3.15 editor entry that moves the Dynamic Seasons HUD at runtime (no edits to their files); probe + build running.
