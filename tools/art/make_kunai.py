@@ -2,7 +2,7 @@
 
 Concept (approved by Skyy 2026-10-07): research/cloud/weapon-art/kunai-v2.png (+ make_weapons_v2.py draw_kunai), Kunai-Ladder.md 7,
 weapon-art README "Kunai" row: black cord-wrapped handle + ring pommel on every tier, leaf blade in the tier metal, a ridge line from
-Iron, Cobalt angular (hard facets), Adamantite serrated back, gold collar on Mithril + Onyxium, a glow pixel on the high tiers.
+Iron, Cobalt angular (hard facets), Adamantite serrated back, gold collar on Mithril (wand bands; the concept's Onyxium gold collar dropped to match the wands), a glow pixel on the high tiers.
 
 Route R1 (vanilla re-texture, like the metal wands in tools/skyyart.py): the vanilla Weapon_Kunai model
 (Items/Weapons/Throwing_Knife/Kunai.blockymodel: Handle, Pommel + Pommel_Inner ring, Blade = collar, Blade2/3 boxes + Blade4 quad tip)
@@ -11,8 +11,10 @@ Per node: Handle -> black cord (the vanilla rope's own light/dark wrap pattern g
 light-armor sheets), Pommel* -> tier metal, Blade (collar) -> tier metal or the vanilla gold trim, Blade2-4 -> tier metal; then the
 per-tier details are painted on the same texels (ridge, facets, serration cut into the Blade4 quad's alpha, glow texel).
 Colours come from Assets.zip at RUN time (SA.metal_gradient = the tier's vanilla pickaxe head + ingot, SA.band_gradient('Mithril') =
-the vanilla gold trim, SA.gem_gradient = the tier's vanilla staff gem). This file holds NO vanilla pixels; only the cord ramp and the
-Mithril / Onyxium concept ramps below are ours (black leather of the light-armor sheet; concept cyan / violet of make_weapons_v2.py).
+the vanilla gold trim, SA.gem_gradient = the tier's vanilla staff gem). This file holds NO vanilla pixels; only the cord ramp below is
+ours (black leather of the light-armor sheet).
+Skyy 2026-10-07 (docs/answered/gear.md, ART answers): "Match the wands." -> every tier's metal, collar and glow use the metal wand
+recipe and its tune numbers (SA.WAND_TUNE / SA.WAND_METAL_TUNE); the earlier cyan / violet concept pull on Mithril / Onyxium is gone.
 
 Icons: SA.render_icon with the vanilla Weapon_Kunai IconProperties; SA.check_icon on the vanilla kunai is run first and printed
 (2026-10-07: colour 1.88 / alpha 0.15 of 255 - as good as the wand family).
@@ -57,28 +59,29 @@ CORD = tuple(tuple(float(v) for v in hx(c)) for c in ("#0a090c", "#1c191f", "#2b
 RIDGE = ("Iron", "Thorium", "Cobalt", "Adamantite", "Mithril", "Onyxium")
 FACET = ("Cobalt",)
 SERRATED = ("Adamantite",)
-GOLD_COLLAR = ("Mithril", "Onyxium")
+GOLD_COLLAR = ("Mithril",)   # = SA.BAND_SOURCE: only vanilla Mithril has a gold trim (the wand bands)
 GLOW = ("Adamantite", "Mithril", "Onyxium")
 
-# recolor() settings per part (+ rim = edge lift on the part's outline texels)
+# recolor() settings per part (+ rim = edge lift on the part's outline texels). Answer 1 (Skyy 2026-10-07 "Match the wands"):
+# every metal part uses the SAME recipe numbers as the built metal wands (SA.WAND_TUNE / SA.WAND_METAL_TUNE): ring + blade = the
+# wand "head" settings, collar = the wand "bands" settings (+ SA.band_gradient: the vanilla gold trim on Mithril, the tier metal
+# elsewhere), so a tier reads the same on wand, staff, kunai, book, cage and fist. Only the cord (ours: black leather) is extra.
+def _wand(part):
+    p = dict(SA.WAND_TUNE[part])
+    rim = p.pop("rim", None)
+    if rim:
+        p["rim"] = rim[0]
+    return p
+
+
 TUNE = {
     "cord": {"lo": 0.0, "hi": 1.0, "rank": 0.6},
-    "ring": {"lo": 0.15, "hi": 1.0, "smooth": 0.4, "rank": 0.5, "rim": 0.12},
-    "collar": {"lo": 0.25, "hi": 1.0, "smooth": 0.3, "rank": 0.5, "rim": 0.10},
-    "blade": {"lo": 0.08, "hi": 0.95, "smooth": 0.6, "rank": 0.5, "rim": 0.10},
+    "ring": _wand("head"),
+    "collar": _wand("bands"),
+    "blade": _wand("head"),
 }
-METAL_TUNE = {   # per-metal changes (same idea as SA.WAND_METAL_TUNE: dark metals need a higher floor to read)
-    "Onyxium": {"ring": {"rank": 0.8, "lo": 0.4}, "blade": {"rank": 0.8, "lo": 0.22, "hi": 1.0}, "collar": {"lo": 0.15, "hi": 0.9}},
-    "Mithril": {"collar": {"lo": 0.1, "hi": 0.9}},   # the gold trim: rich gold, not the top yellow (= the wand bands)
-}
-# Concept hue pull (review 2026-10-07: Mithril read as pale silver, Onyxium as near-black grey). The vanilla Mithril / Onyxium
-# pickaxe + ingot ramps are almost neutral, so their blade + ring gradient is mixed toward the approved concept ramp of
-# research/cloud/weapon-art/make_weapons_v2.py TIERS (our own colours: light cyan, saturated violet). The gold collar is untouched.
-CONCEPT_RAMP = {
-    "Mithril": ("#1e3a44", "#4e8c98", "#7ec4cc", "#b4ecee", "#f2ffff"),
-    "Onyxium": ("#160c22", "#3e2460", "#6b3fa0", "#a06cda", "#e4c8ff"),
-}
-CONCEPT_MIX = {"Mithril": 0.75, "Onyxium": 0.85}
+WAND_PART = {"ring": "head", "collar": "bands", "blade": "head"}   # kunai part -> the wand part whose per-metal changes it takes
+
 RIDGE_LIFT, RIDGE_SHADOW = 0.30, -0.12
 FACET_LIFT = 0.10        # Cobalt: upper half of the blade lit, lower half shaded, hard split on the ridge
 SERRATION_STEP = 3       # Adamantite: a notch every 3 texels along the back (top) edge of the tip quad, painted on the boxes
@@ -86,7 +89,7 @@ SERRATION_STEP = 3       # Adamantite: a notch every 3 texels along the back (to
 
 def tuned(metal, part):
     p = dict(TUNE[part])
-    p.update(METAL_TUNE.get(metal, {}).get(part, {}))
+    p.update(SA.WAND_METAL_TUNE.get(metal, {}).get(WAND_PART.get(part), {}))
     return p
 
 
@@ -167,11 +170,8 @@ def glow(img, model, gem):
 
 def kunai_texture(z, metal, model, base_tex):
     rects = dict((k, SA.node_rects(model, v)) for k, v in PARTS.items())
-    metal_g = SA.metal_gradient(z, metal)
-    if metal in CONCEPT_RAMP:
-        concept = tuple(tuple(float(v) for v in hx(c)) for c in CONCEPT_RAMP[metal])
-        metal_g = SA.grad_mix(metal_g, concept, CONCEPT_MIX[metal])
-    gold_g = SA.band_gradient(z, "Mithril")      # the vanilla Mithril staff's gold trim
+    metal_g = SA.metal_gradient(z, metal)        # = the wand head / shaft metal
+    band_g = SA.band_gradient(z, metal)          # = the wand bands: vanilla gold trim on Mithril, the tier metal elsewhere
     img = SA.png_decode(base_tex)
 
     def part(img, grad, name, lift=None):
@@ -183,7 +183,7 @@ def kunai_texture(z, metal, model, base_tex):
 
     img = part(img, CORD, "cord")
     img = part(img, metal_g, "ring")
-    img = part(img, gold_g if metal in GOLD_COLLAR else metal_g, "collar")
+    img = part(img, band_g, "collar")
     img = part(img, metal_g, "blade", lift=blade_lift(img, model, metal, tuned(metal, "blade")["rim"]))
     if metal in SERRATED:
         serrate(img, model)
@@ -279,10 +279,8 @@ def main():
                                                                     (34, 38, 50))))
         icons.append(ic)
         notes = ["R1: vanilla Kunai model unchanged, new %dx%d texture on its UV" % (tw, th), "black cord handle, %s ring pommel"
-                 % metal, ("vanilla gold-trim collar" if metal in GOLD_COLLAR else "%s collar" % metal)]
-        if metal in CONCEPT_RAMP:
-            notes.append("blade + ring metal mixed %d%% toward the concept %s ramp" % (round(CONCEPT_MIX[metal] * 100),
-                                                                                  "cyan" if metal == "Mithril" else "violet"))
+                 % metal, ("vanilla gold-trim collar (= the Mithril wand bands)" if metal in GOLD_COLLAR else "%s collar" % metal)]
+        notes.append("metal = the metal wand recipe (SA.metal_gradient + SA.WAND_TUNE head / bands settings)")
         if metal in RIDGE:
             notes.append("ridge line")
         if metal in FACET:

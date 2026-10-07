@@ -5,8 +5,10 @@ weapons, and fishing stuff are all ready to make"); Monk-Kit-Spec 2. Skyy locks:
 knuckles, the black part = black LEATHER.
 
 Route R3 (own models): every model is built here from boxes, its UVs packed into a fresh atlas and the texture painted from code. No
-vanilla pixel is copied; only COLOURS are sampled from Assets.zip at run time (metal = SA.metal_gradient like the metal wands, gold
-trim = the vanilla Mithril staff band, set gems = SA.gem_gradient, cloth = the vanilla cloth bolt of that cloth). The outputs are
+vanilla pixel is copied; only COLOURS are sampled from Assets.zip at run time, by the SAME recipe as the built metal wands
+(SA.wand_art; Skyy 2026-10-07 "Match the wands"): metal = SA.metal_gradient (head span), trim = SA.band_gradient (the vanilla Mithril
+staff's gold band on Mithril, the tier's own metal elsewhere), set gems = SA.gem_gradient; cloth = the vanilla cloth bolt of that cloth
+("Vanilla cloth colors"). The outputs are
 therefore vanilla-derived and go ONLY to the git-ignored models-local/art/fists/ (PROJECT-RULES 2). This script holds no vanilla bytes.
 
 Anchor: the HELD-weapon frame (root node "R-Attachment", isPiece), the way the vanilla claw weapons are built
@@ -20,7 +22,6 @@ The glove shells are 1 unit bigger than the bare hand, so the player's own hand 
 Run:  python tools/art/make_fists.py            (reads Assets.zip read-only, writes models-local/art/fists/)
 Deterministic: no clocks, no randomness, fixed zlib -> two runs give the same bytes (checked with --check).
 """
-import colorsys
 import json
 import math
 import os
@@ -40,7 +41,6 @@ BANDS = {"Copper": "10-18", "Iron": "15-23", "Thorium": "20-28", "Cobalt": "25-3
 GOLD_TIERS = ("Mithril", "Onyxium")          # gold rims / straps / sockets (concept v2)
 STITCHED = ("Cindercloth", "Shadoweave")     # stitched wrap edges (concept)
 BOLT = "Server/Item/Items/Ingredient/Bolt/Ingredient_Bolt_%s.json"
-GOLD_SOURCE = "Mithril"                      # SA.band_gradient(z, "Mithril") = the vanilla Mithril staff's gold band
 
 
 def hx(s):
@@ -60,12 +60,9 @@ ICON_ROT = [-65.0, 50.0, 10.0]
 # views that keep the blades in the screen plane).
 FAMILY_ROT = {"Claws": [-40.0, 50.0, 50.0]}
 
-# Tier tints over the vanilla colour ramps (keep the vanilla tonal ramp, move hue / saturation / brightness to the approved concept
-# colours). Skyy locked the same tier colours for the light armor (docs/answered/gear.md 2026-10-07: "Mithril pale blue, Onyxium
-# purple"; Cobalt blue). (hue deg, saturation, brightness multiplier); None = untouched vanilla ramp.
-METAL_TINT = {"Cobalt": (218.0, 0.62, 1.12), "Mithril": (188.0, 0.38, 1.08), "Onyxium": (272.0, 0.55, 1.9)}
-# Cloth: the concept shows Silk PINK and Shadoweave PURPLE (vanilla bolts: light blue / brown-grey) -> concept colours.
-CLOTH_TINT = {"Silk": (335.0, 0.34, 1.0), "Shadoweave": (275.0, 0.42, 1.25)}
+# Tier colours = the metal-wand recipe, no re-hue (Skyy 2026-10-07, docs/answered/gear.md: "Match the wands." + "Vanilla cloth
+# colors."): metal = SA.metal_gradient cut to the wand HEAD span, trim = SA.band_gradient cut to the wand BANDS span (SA._tuned, so a
+# per-metal wand tune applies here too); cloth = the plain vanilla bolt colours.
 ICON_MARGIN = 3.0                             # px kept free round the item in the 64 x 64 icon
 TEX_W = 64
 
@@ -267,26 +264,11 @@ def cloth_gradient(z, cloth):
     return SA.palette_from([strip])
 
 
-def tint(grad, spec):
-    """Re-hue a gradient: every step gets hue spec[0], saturation spec[1] (scaled by the step's own saturation relative to the
-    gradient's mean, so the ramp keeps its shape) and its luminance times spec[2]; luminance order is kept."""
-    if not spec:
-        return grad
-    hue, sat, bright = spec
-    sats = [colorsys.rgb_to_hsv(*[v / 255.0 for v in c[:3]])[1] for c in grad]
-    mean = sum(sats) / len(sats) or 1.0
-    out = []
-    for c, s0 in zip(grad, sats):
-        L = SA.luma(c) * bright
-        s = min(1.0, sat * (0.75 + 0.25 * s0 / mean))
-        r, g, b = colorsys.hsv_to_rgb(hue / 360.0, s, 1.0)
-        k = L / (SA.luma((r * 255, g * 255, b * 255)) or 1.0)
-        rgb = [r * 255 * k, g * 255 * k, b * 255 * k]
-        top = max(rgb)
-        if top > 255.0:                       # too bright for this hue: desaturate towards white instead of clipping
-            rgb = [L + (v - L) * (255.0 - L) / (top - L) for v in rgb] if top > L else [L] * 3
-        out.append(tuple(min(255.0, max(0.0, v)) for v in rgb))
-    return tuple(out)
+def wand_metal(z, m):
+    """(metal, trim) gradients of tier m exactly as the metal wands colour them (SA.wand_texture: head + bands parts)."""
+    head, bands = SA._tuned(m, "head"), SA._tuned(m, "bands")
+    return (SA.grad_span(SA.metal_gradient(z, m), head["lo"], head["hi"]),
+            SA.grad_span(SA.band_gradient(z, m), bands["lo"], bands["hi"]))
 
 
 def view_light(rot):
@@ -526,17 +508,16 @@ def write(rel, data):
 
 def main():
     z = SA.assets()
-    gold = SA.band_gradient(z, GOLD_SOURCE)
     families = []          # (family, [(item, tier, builder, palette, label)])
     claws, gaunts, wraps = [], [], []
     for m in METALS:
-        metal = tint(SA.metal_gradient(z, m), METAL_TINT.get(m))
+        metal, gold = wand_metal(z, m)
         pal = {"metal": metal, "gold": gold, "gem": SA.gem_gradient(z, m), "gold_trim": m in GOLD_TIERS,
                "rivets": m not in ("Copper",), "vplate": m == "Cobalt"}
         gaunts.append(("Gauntlets", m, m, build_gauntlets(m), pal))
         claws.append(("Claws", m, m, build_claws(m), pal))
     for cloth, col in CLOTHS:
-        pal = {"cloth": tint(cloth_gradient(z, cloth), CLOTH_TINT.get(cloth)), "stitched": cloth in STITCHED}
+        pal = {"cloth": cloth_gradient(z, cloth), "stitched": cloth in STITCHED}
         wraps.append(("Wraps", cloth, col, build_wraps(cloth), pal))
     families = [gaunts, claws, wraps]
 
@@ -563,14 +544,12 @@ def main():
             notes = []
             if family == "Wraps":
                 notes.append("cloth column %s (Lv %s); cloth colour = vanilla Ingredient_Bolt_%s" % (col, BANDS[col], tier))
-                if tier in CLOTH_TINT:
-                    notes.append("re-hued to the concept colour (hue/sat/bright %s)" % (CLOTH_TINT[tier],))
             else:
-                notes.append("Lv %s; metal = SA.metal_gradient (vanilla pickaxe head + ingot, like the metal wands)" % BANDS[tier])
-                if tier in METAL_TINT:
-                    notes.append("ramp re-hued to the concept / locked tier colour (hue/sat/bright %s)" % (METAL_TINT[tier],))
+                notes.append("Lv %s; colours = the metal-wand recipe (SA.metal_gradient head span: vanilla pickaxe head + ingot; "
+                             "trim = SA.band_gradient bands span)" % BANDS[tier])
                 if tier in GOLD_TIERS:
-                    notes.append("gold trim = vanilla Mithril staff band")
+                    notes.append("trim = vanilla Mithril staff gold band" if tier == "Mithril" else
+                                 "trim = the tier's own metal (the Onyxium wand has no gold band)")
             notes.append("held model, root R-Attachment (isPiece); item JSON: Model/Texture/Icon as here, IconProperties %s, "
                          "Weapon.RenderDualWielded true (UNVERIFIED for fists)" % json.dumps(props, separators=(",", ":")))
             notes.append("texture %dx%d, %d boxes" % (TEX_W, hgt, len(b.nodes)))

@@ -4,20 +4,24 @@ Concept (approved by Skyy; "richer spellbooks", docs/answered/gear.md WEAPONS 20
 (+ make_weapons_v2.py draw_book / emblem), Spellbook-Ladder.md 1, weapon-art README spellbook row: tooled leather cover (tinted per
 tier in v2), cream pages, tooled border, clasp, metal corner caps that grow per tier, metal spine bands (2, then 3 from Cobalt), a
 leather medallion with the tier's cover EMBLEM (Copper sun ring, Iron riveted square, Thorium round boss, Cobalt diamond + gem,
-Adamantite crystal shards, Mithril star, Onyxium violet gem in gold), gold trim on Mithril, gilded page edges on Mithril / Onyxium,
+Adamantite crystal shards, Mithril star, Onyxium gem in an oval setting), gold trim on Mithril, gilded page edges on Mithril / Onyxium,
 a bookmark ribbon in the concept's ribbon colour.
 
 Route: R1 + own boxes. Base = the vanilla Weapon_Spellbook_Grimoire_Brown (Items/Weapons/Spellbook/Grimoire.blockymodel: Handle =
 spine, Book-Top / Book-Bot = the two boards, Lock-* = clasp, Gem = a fullbright gem box on the cover, Bookmark, Page-* quads). Every
 vanilla node keeps its UV; the vanilla texels are recoloured per node rect (leather from the tier ramp below, clasp from the tier's
-vanilla metal, bookmark + emblem gems in the concept's colours (CONCEPT_RIBBON / CONCEPT_GEM), gilded page edges from the vanilla gold trim). The vanilla Gem node is
-removed; our own boxes are added (children of the node that animates them - the book opens in the cast animations):
+wand metal, bookmark in the concept's ribbon colour (CONCEPT_RIBBON), gilded page edges from the wand gold trim). The vanilla Gem
+node is removed; our own boxes are added (children of the node that animates them - the book opens in the cast animations):
   Book-Top : 4 corner caps + the emblem (one box per run of texels per layer, so the cut-out shape has real side walls)
   Book-Bot : 4 corner caps on the back board
   Handle   : 2 / 3 spine bands
 The texture grows from 64x64 to 64x96; the new rows hold our boxes' UV (painted from code). Colours come from Assets.zip at RUN
-time (SA.metal_gradient / band_gradient). This file holds NO vanilla pixels; the cover leather, gem and ribbon ramps are ours
-(BOOK_LEATHER / CRYSTAL / ESSENCE / TIERS of research/cloud/weapon-art/make_weapons_v2.py).
+time. "Match the wands" (Skyy, LOCKED 2026-10-07, docs/answered/gear.md ART answers): every metal part (corner caps, spine bands,
+clasp, emblem metal) and the emblem gems use the SAME colours as the built metal wands - wand_ramps() samples SA.wand_texture
+(metal, "A") per part: head + shaft = the tier metal (SA.metal_gradient: vanilla pickaxe head + ingot, silver-blue Mithril,
+black-violet Onyxium), bands = the band trim (the vanilla Mithril staff gold on Mithril, else the tier metal), leaves = the tier's
+vanilla staff gem (SA.gem_gradient). Gold tooling / gilded page edges = the Mithril wand's gold bands. This file holds NO vanilla
+pixels; the cover leather and ribbon ramps are ours (BOOK_LEATHER / CRYSTAL / ESSENCE of research/cloud/weapon-art/make_weapons_v2.py).
 
 Icons: the vanilla IconProperties of Grimoire_Brown. Measured 2026-10-07 (SA.check_icon on the vanilla Grimoire_Brown icon):
 geometry exact (alpha error 0.17 / 255) but colour 16.9 / 255, because the game's icon generator darkens faces whose shadingMode is
@@ -79,8 +83,8 @@ BOOK_LEATHER = {
     "Mithril": ramp("#141c22", "#34444e", "#4c606a", "#687e88", "#8aa2aa"),      # slate blue-grey
     "Onyxium": ramp("#0a0610", "#1e1428", "#2e2040", "#40305a", "#5a4878"),      # black-violet
 }
-# emblem gems + bookmark ribbons = the approved v2 concept (make_weapons_v2.py emblem() / draw_book(); our own colours, not the
-# vanilla staff gems the wands use - reviewer 2026-10-07: Onyxium gem violet, ribbons as drawn)
+# bookmark ribbons = the approved v2 concept (make_weapons_v2.py draw_book(); our own colours - cloth, not metal or gem). Emblem
+# gems + all metal come from the built metal wands (wand_ramps; Skyy 2026-10-07 "Match the wands").
 CONCEPT_RIBBON = {
     "Copper": ramp("#3e0806", "#8a1610", "#d22e1e", "#ff7448", "#ffd8b8"),       # ESSENCE Fire red
     "Iron": ramp("#0c2c4a", "#1f5f9a", "#3a8fd6", "#7cc0f2", "#e0f4ff"),         # CRYSTAL[1] blue
@@ -90,16 +94,10 @@ CONCEPT_RIBBON = {
     "Mithril": ramp("#1c3a40", "#5aa0aa", "#a8e4e4", "#e0fbf8", "#ffffff"),      # CRYSTAL[5] pale cyan
     "Onyxium": ramp("#2a0626", "#6e1466", "#b42aa8", "#ec6ad8", "#ffd0f6"),      # CRYSTAL[6] magenta
 }
-CONCEPT_GEM = {   # only tiers whose emblem has gem texels
-    "Cobalt": CONCEPT_RIBBON["Cobalt"],                                          # diamond's gem = CRYSTAL[3]
-    "Adamantite": ramp("#3a0c10", "#7a1a20", "#b42c30", "#e0574f", "#ffa192"),   # shards = the concept Adamantite red
-    "Mithril": ramp("#5aa0aa", "#a8e4e4", "#e0fbf8", "#ffffff", "#ffffff"),      # heart = white glow
-    "Onyxium": ramp("#160c22", "#3e2460", "#6b3fa0", "#a06cda", "#e4c8ff"),      # violet gem = the concept Onyxium ramp
-}
 CAP = {"Copper": 3, "Iron": 3, "Thorium": 4, "Cobalt": 4, "Adamantite": 4, "Mithril": 5, "Onyxium": 5}   # corner cap size (grows)
 BANDS = {"Copper": (-7, 7), "Iron": (-7, 7), "Thorium": (-7, 7)}   # spine band z; 3 bands from Cobalt
 BANDS_3 = (-9, 0, 9)
-GOLD_TRIM = ("Mithril",)                 # spine bands = the vanilla gold trim (the wand rule: gold bands on Mithril)
+GEM_TIERS = ("Cobalt", "Adamantite", "Mithril", "Onyxium")   # emblems with gem texels
 GILDED = ("Mithril", "Onyxium")         # gold tooled frame + gilded page edges
 LATTICE = ("Cobalt", "Adamantite", "Mithril", "Onyxium")   # diamond tooling inside the frame (concept: from Cobalt)
 EMBLEM_C = (8.5, 13.5)                   # emblem / medallion centre in cover texels (u from the spine, v from the top)
@@ -194,8 +192,8 @@ def emblem(metal):
         l1 = _grid(lambda dx, dy: "#" if abs(dx) + abs(dy) <= 4 else ".")
         l2 = _grid(lambda dx, dy: ("h" if (dx, dy) in ((0, -1), (-1, 0)) else "g") if abs(dx) + abs(dy) <= 2 else ".")
         return l1, l2
-    # Onyxium
-    l1 = _grid(lambda dx, dy: "o" if (dx / 3.6) ** 2 + (dy / 4.5) ** 2 <= 1.0 else ".")
+    # Onyxium: the gem in an Onyxium-metal oval setting (was gold; the wands keep gold trim for Mithril only)
+    l1 = _grid(lambda dx, dy: "#" if (dx / 3.6) ** 2 + (dy / 4.5) ** 2 <= 1.0 else ".")
     l2 = _grid(lambda dx, dy: ("h" if (dx, dy) in ((-1, -2), (-1, -1)) else "g") if (dx / 2.2) ** 2 + (dy / 3.2) ** 2 <= 1.0 else ".")
     return l1, l2
 
@@ -447,7 +445,7 @@ def metal_face(f, grad, base=0.55, seed=1, bevel=True):
 
 def paint_ours(img, b, place, metal, G):
     M = G["metal"]
-    band = G["gold"] if metal in GOLD_TRIM else M
+    band = G["band"]   # the wand's band texels: gold trim on Mithril, the tier metal elsewhere
     done = set()
     for node, skin, faces, info in b.boxes:
         if skin in done:
@@ -506,8 +504,20 @@ def paint_emblem_face(f, fname, info, metal, G):
         f.put(0, 0, mul(c, 0.8 if fname == "left" else 0.6))
 
 
+def wand_ramps(z, metal):
+    """The tier's colours exactly as on the built metal wand (Skyy 2026-10-07 "Match the wands"): SA.wand_texture(metal, "A") is
+    the wand recipe (metal_gradient = vanilla pickaxe head + ingot, band_gradient = the vanilla Mithril gold trim, gem_gradient =
+    the tier's vanilla staff gem, with the wand's per-part tuning); each ramp = palette_from over that wand's texels of one part."""
+    _d, wmodel, _t, _i = SA.item_parts(z, SA.WAND_ITEM)
+    tex = SA.wand_texture(z, metal, "A")
+    part = lambda names: SA.palette_from([(tex, SA.node_rects(wmodel, names))])   # noqa: E731
+    return {"metal": part(SA.WAND_PARTS["head"] + SA.WAND_PARTS["shaft"]), "band": part(SA.WAND_PARTS["bands"]),
+            "gem": part(SA.WAND_PARTS["leaves"])}
+
+
 def make_texture(z, base_tex, vmodel, metal, b, place):
-    G = {"metal": SA.metal_gradient(z, metal), "gold": SA.band_gradient(z, "Mithril"), "gem": CONCEPT_GEM.get(metal, CONCEPT_RIBBON[metal]),
+    W = wand_ramps(z, metal)
+    G = {"metal": W["metal"], "band": W["band"], "gold": wand_ramps(z, "Mithril")["band"], "gem": W["gem"],
          "ribbon": CONCEPT_RIBBON[metal]}
     van = SA.png_decode(base_tex)
     img = SA.Img(64, TEX_H)
@@ -656,7 +666,7 @@ def main():
         b = Builder()
         model = build_model(vanilla, metal, b)
         place = pack(b, 64)
-        tex, _G = make_texture(z, vtex, vanilla, metal, b, place)
+        tex, G = make_texture(z, vtex, vanilla, metal, b, place)
         icon = render(model, tex, props)
         icons.append(icon)
         mpath = "%s/SkyyArmory_%s.blockymodel" % (MODEL_DIR, metal)
@@ -675,8 +685,11 @@ def main():
             "texture_path": tpath, "icon_path": ipath,
             "icon_properties": props,
             "notes": "R1 + own boxes: vanilla Grimoire nodes keep their UV (recoloured), Gem node removed, %d own boxes "
-                     "(8 corner caps %dx5x%d, %d spine bands, emblem); texture 64x%d" % (
-                         n_ours, CAP[metal], CAP[metal], len(BANDS.get(metal, BANDS_3)), TEX_H),
+                     "(8 corner caps %dx5x%d, %d spine bands, emblem); texture 64x%d. Colours = the built %s metal wand (wand_ramps: metal %s, "
+                     "bands %s, gem %s); ribbon = concept" % (
+                         n_ours, CAP[metal], CAP[metal], len(BANDS.get(metal, BANDS_3)), TEX_H, metal,
+                         SA.grad_hex(SA.grad_span(G["metal"], 0, 1, 3)), SA.grad_hex(SA.grad_span(G["band"], 0, 1, 3)),
+                         SA.grad_hex(SA.grad_span(G["gem"], 0, 1, 3)) if metal in GEM_TIERS else "none (no gem in this emblem)"),
         })
     write(os.path.join(OUT, "manifest.json"), json.dumps(manifest, indent=2) + "\n")
     write(os.path.join(OUT, "sheet.png"), SA.png_encode(sheet(icons)))

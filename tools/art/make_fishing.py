@@ -13,16 +13,19 @@ research/cloud/fishing-art/fishing-gear-sheet.png + icons/ (61 icons), research/
                          our tier ornament boxes (collars, butt cap, Cobalt fin, Adamantite crystal shards, Mithril wing, Onyxium
                          gold + gem); the texture is widened to 64x128 - the left 32 columns keep the vanilla UV (recoloured),
                          the right columns hold the ornament texels painted from code.
-    Colours: blank / reel / hook / guides = the tier metal (SA.metal_gradient: vanilla pickaxe head + ingot, like the metal wands),
-    EXCEPT Mithril (pale cyan) and Onyxium (purple): Skyy's concept colour lock -> the concept's own ramps (vanilla Mithril is silver,
-    vanilla Onyxium near-black). Onyxium trim = the vanilla Mithril gold trim (SA.band_gradient); gems = the tier's vanilla staff
-    accent (SA.gem_gradient) except Adamantite (red shards = its metal) and Onyxium (concept pink); Mithril wing = Mithril cyan;
-    grip = our cork ramp (T1-T5) / the approved black leather ramp (T6-T7). Line and red / white bobber keep the vanilla texels.
+    Colours = the metal WAND recipe for every tier (Skyy 2026-10-07 "Match the wands", docs/answered/gear.md): blank / reel / hook /
+    guides = the tier metal (SA.metal_gradient: vanilla pickaxe head + ingot) - silver-blue Mithril, black-violet Onyxium (with the
+    wands' Onyxium floor so it reads); trim = the vanilla gold trim (SA.band_gradient('Mithril')) on Mithril (= the Mithril wand's
+    gold bands) and Onyxium (the concept's gold wraps), the tier metal elsewhere; gems / crystals (Cobalt fin edge, Adamantite shards,
+    Onyxium gem) = the tier's vanilla staff gem (SA.gem_gradient = the wand leaf crystals); Mithril wing = Mithril metal; grip = our
+    cork ramp (T1-T5) / the approved black leather ramp (T6-T7). Line and red / white bobber keep the vanilla texels.
     Rod icon (shipped) = the approved concept-look icon (metal ramps -> the same gradients); the SA.render_icon of the model
     WITHOUT the hanging line (Rotation [45, 90, 0], one shared Scale / Translation) is written to alt/<key>_Render.png.
 (b) PARTS (reel, hook, line, sinker): icon-only items (route R2c). Source = the approved concept icons (tracked, original art,
     research/cloud/fishing-art/icons/); their hand-picked metal ramps are swapped for the same metal gradients the rods
-    use (Mithril / Onyxium keep the concept ramps) (so a Cobalt reel matches the Cobalt rod); fibres, stones, wood, paper, bobber colours stay as approved.
+    use (all tiers, Mithril / Onyxium too - so a Cobalt reel matches the Cobalt rod and wand); the concept's glowing pink gem pixel
+    -> the Onyxium staff gem; fibres, stones, wood, paper, bobber colours stay as approved.
+rod-icon-options.png: Skyy has not picked the rod icon yet - top row the main (concept-look) icons, bottom row the alt/ model renders, 3x.
 
 Every output is vanilla-derived -> ONLY models-local/art/fishing/ (git-ignored). This script holds no vanilla bytes / pixels: it
 reads Assets.zip (read-only) at run time. Python stdlib + tools/skyyart.py only.
@@ -48,11 +51,11 @@ ICON_VIEW = [45, 90, 0]          # the vanilla spear / staff icon rotation (chec
 
 TIERS = ("Bamboo", "Copper", "Iron", "Thorium", "Cobalt", "Adamantite", "Mithril", "Onyxium")
 R1_PLAIN = ("Copper", "Iron")    # vanilla model, texture swap only
-GOLD_TRIM = ("Onyxium",)          # concept: gold wraps / cap ring only on T7
+GOLD_TRIM = ("Mithril", "Onyxium")  # vanilla gold trim: Mithril = the Mithril wand's gold bands, Onyxium = the concept's gold wraps
 LOW_COLLAR = ("Mithril", "Onyxium")
-# Skyy's concept colour lock (2026-10-06): Mithril = pale blue / cyan, Onyxium = purple. Vanilla Mithril is silver and vanilla
-# Onyxium near-black, so these two tiers use the concept's OWN ramps (no vanilla colour) for metal, gem and wing.
-CONCEPT_LOCK = ("Mithril", "Onyxium")
+# Skyy 2026-10-07 "Match the wands": every tier (Mithril / Onyxium too) uses the metal wand colours - no concept colour lock any more.
+# Per-metal recolour floor (same idea as SA.WAND_METAL_TUNE: the near-black Onyxium needs a higher floor / rank to read).
+METAL_TUNE = {"Onyxium": {"lo": 0.22, "rank": 0.8}}
 PART_TIERS = ("I", "II", "III", "IV")
 PART_METAL = ("Copper", "Iron", "Cobalt", "Mithril")      # concept README section 3 (hook metal / spool flanges per part tier)
 HOOKS = (("barbed-hook", "Barbed"), ("lost-property-hook", "LostProperty"), ("lure-hook", "Lure"), ("monster-hook", "Monster"))
@@ -71,7 +74,6 @@ def ramp_grad(cols):
 
 
 CORK = ramp_grad(("#3a2414", "#8a6038", "#b08050", "#cfa070", "#ead0a4"))       # concept CORK ramp (own colours)
-PINK = ramp_grad(("#4a0c40", "#a02c90", "#e050c8", "#ff7af0", "#ffd8fa"))       # concept GLOW_PINK gem (own colours)
 LEATHER = ramp_grad(("#0a090c", "#1c191f", "#2b2730", "#3f3946", "#58515f"))    # approved light-armor black leather
 # the concept's own metal ramps (research/cloud/fishing-art/make_fishing.py) -> which vanilla gradient replaces each
 CONCEPT_RAMPS = {
@@ -85,6 +87,8 @@ CONCEPT_RAMPS = {
     "Gold": ("#4a3208", "#9a6e18", "#d4a234", "#f0c860", "#fff0b0"),
 }
 RAMP_POS = (0.0, 0.3, 0.6, 0.85, 1.0)    # where the 5 ramp steps land on the vanilla gradient
+RAMP_RANGE = {"Onyxium": (0.22, 1.0)}     # icons: RAMP_POS squeezed into this part of the gradient (the wand Onyxium head floor)
+GLOW_PINK = "#ff7af0"                     # the concept's glowing Onyxium gem pixel -> the Onyxium staff gem
 OUTLINE_MUL = 0.55                          # the outline step = the darkest vanilla tone darkened (icons need a dark rim)
 
 
@@ -116,13 +120,19 @@ def palettes(z):
     P = {}
     for m in SA.METALS:
         P[m] = {"metal": SA.metal_gradient(z, m), "gem": SA.gem_gradient(z, m)}
-    P["Gold"] = {"metal": SA.band_gradient(z, "Mithril")}     # vanilla Mithril staff gold trim
-    for m in CONCEPT_LOCK:                                      # concept colour lock (own ramps)
-        P[m] = {"metal": ramp_grad(CONCEPT_RAMPS[m]), "gem": ramp_grad(CONCEPT_RAMPS[m])}
-    P["Onyxium"]["gem"] = PINK                                  # concept: glowing pink gem
-    P["Adamantite"]["gem"] = P["Adamantite"]["metal"]           # concept: red crystal shards (vanilla staff gem is blue)
-    P["Wing"] = P["Mithril"]["metal"]                           # concept: the wing is Mithril cyan
+    P["Gold"] = {"metal": SA.band_gradient(z, "Mithril")}     # vanilla Mithril staff gold trim (= the Mithril wand bands)
+    P["Wing"] = P["Mithril"]["metal"]                           # the wing is Mithril metal (silver-blue, like the wand)
     return P
+
+
+def mt(tier, **kw):
+    """recolor() settings for a metal part, with the tier's METAL_TUNE floor applied."""
+    t = METAL_TUNE.get(tier, {})
+    if "lo" in t:
+        kw["lo"] = max(kw.get("lo", 0.0), t["lo"])
+    if "rank" in t:
+        kw["rank"] = t["rank"]
+    return kw
 
 
 # ======================================================================================================== (a) rods
@@ -241,7 +251,7 @@ def inside(poly, x, y):
 FACE_T = {"top": 0.82, "front": 0.62, "right": 0.56, "left": 0.5, "back": 0.46, "bottom": 0.3}
 
 
-def paint_face(img, rect, grad, face, seed, mask=None):
+def paint_face(img, rect, grad, face, seed, mask=None, floor=0.0):
     x0, y0, w, h = rect
     base = FACE_T.get(face, 0.6)
     for v in range(h):
@@ -257,7 +267,7 @@ def paint_face(img, rect, grad, face, seed, mask=None):
                 t -= 0.18
             n = h01(x0 + u, y0 + v, seed)
             t += 0.06 if n > 0.92 else (-0.05 if n < 0.1 else 0.0)
-            c = SA.sample(grad, t)
+            c = SA.sample(grad, floor + (1.0 - floor) * max(0.0, min(1.0, t)) if floor else t)
             img.put(x0 + u, y0 + v, (c[0], c[1], c[2], 255))
 
 
@@ -300,13 +310,13 @@ def rod_texture(z, P, base_model, tier, width):
     trim = P["Gold"]["metal"] if tier in GOLD_TRIM else metal
     R = lambda *names: SA.node_rects(base_model, list(names))   # noqa: E731
     img = van
-    img = SA.recolor(img, metal, R("Blank1", "Blank2", "Blank3"), lo=0.05, hi=0.95, rank=0.5, smooth=0.3, as_img=True)
+    img = SA.recolor(img, metal, R("Blank1", "Blank2", "Blank3"), as_img=True, **mt(tier, lo=0.05, hi=0.95, rank=0.5, smooth=0.3))
     img = SA.recolor(img, LEATHER if tier in LOW_COLLAR else CORK, R("Grip"), lo=0.05, hi=0.95, rank=0.6, as_img=True)
-    img = SA.recolor(img, metal, R("Reel"), lo=0.0, hi=0.92, rank=0.6, smooth=0.2,
-                     lift=SA.rim_lift(R("Reel"), 0.12, 0.0), as_img=True)
+    img = SA.recolor(img, metal, R("Reel"), lift=SA.rim_lift(R("Reel"), 0.12, 0.0), as_img=True,
+                     **mt(tier, lo=0.0, hi=0.92, rank=0.6, smooth=0.2))
     img = SA.recolor(img, trim, R("Crank"), lo=0.3, hi=1.0, rank=0.5, as_img=True)
     img = recolor_where(img, trim, R("Guides"), lambda c: SA.luma(c) < 200, lo=0.25, hi=0.95, rank=0.6)
-    img = SA.recolor(img, metal, R("Hook"), lo=0.25, hi=1.0, rank=0.5, as_img=True)
+    img = SA.recolor(img, metal, R("Hook"), as_img=True, **mt(tier, lo=0.25, hi=1.0, rank=0.5))
     if width == van.w:
         return img
     out = SA.Img(width, img.h)
@@ -358,6 +368,7 @@ def build_rod(z, P, tier):
         node = ornament_node(nid, name, kind, size, pos, q or (0.0, 0.0, 0.0, 1.0))
         nid += 1
         grad = pal[paint]
+        floor = METAL_TUNE.get(tier, {}).get("lo", 0.0) if paint == "metal" else 0.0
         lay = node["shape"]["textureLayout"]
         if kind == "box":
             sx, sy, sz = size
@@ -365,13 +376,13 @@ def build_rod(z, P, tier):
             for fname, fw, fh in faces:
                 r = shelf.take(fw, fh)
                 lay[fname] = {"offset": {"x": r[0], "y": r[1]}, "mirror": {"x": False, "y": False}, "angle": 0}
-                paint_face(tex, (r[0], r[1], fw, fh), grad, fname, 11 + k)
+                paint_face(tex, (r[0], r[1], fw, fh), grad, fname, 11 + k, floor=floor)
         else:
             fw, fh = size
             r = shelf.take(fw, fh)
             lay["front"] = {"offset": {"x": r[0], "y": r[1]}, "mirror": {"x": False, "y": False}, "angle": 0}
             msk = lambda u, v: 0 <= u < fw and 0 <= v < fh and inside(WING_POLY, u + 0.5, v + 0.5)   # noqa: E731
-            paint_face(tex, (r[0], r[1], fw, fh), grad, "front", 11 + k, mask=msk)
+            paint_face(tex, (r[0], r[1], fw, fh), grad, "front", 11 + k, mask=msk, floor=floor)
         grip["children"].append(node)
     return m, tex, True
 
@@ -418,19 +429,19 @@ def colour_map(P):
     """concept ramp colour -> vanilla-gradient colour, for every metal ramp of the concept."""
     cmap = {}
     for name, cols in sorted(CONCEPT_RAMPS.items()):
-        if name in CONCEPT_LOCK:      # locked tiers keep the concept colours as drawn
-            for c in cols:
-                cmap[hx(c)] = tuple(float(v) for v in hx(c))
-            continue
         g = P[name]["metal"]
+        lo, hi = RAMP_RANGE.get(name, (0.0, 1.0))
         for i, c in enumerate(cols):
-            nc = SA.sample(g, RAMP_POS[i])
+            nc = SA.sample(g, lo + (hi - lo) * RAMP_POS[i])
             if i == 0:
                 nc = tuple(v * OUTLINE_MUL for v in nc)
             key = hx(c)
             if key in cmap:
                 raise SA.ArtCheckError("make_fishing: concept ramps share colour %s" % c)
             cmap[key] = nc
+    if hx(GLOW_PINK) in cmap:
+        raise SA.ArtCheckError("make_fishing: the glow pixel colour is also a ramp colour")
+    cmap[hx(GLOW_PINK)] = SA.sample(P["Onyxium"]["gem"], 0.95)
     return cmap
 
 
@@ -493,6 +504,29 @@ def strip_imgs(imgs, bg=BACK):
     return out
 
 
+OPT_BACK = (28, 30, 38)
+OPT_SLOT = (40, 44, 56)
+
+
+def rod_options(top, bottom, scale=3, gap=8):
+    """rod-icon-options.png: top row the main rod icons, bottom row the alt/ model renders, each at `scale` on a slot."""
+    cell = 64 * scale
+    rows = (top, bottom)
+    W, H = gap + len(top) * (cell + gap), gap + len(rows) * (cell + gap)
+    img = SA.Img(W, H)
+    for i in range(0, len(img.px), 4):
+        img.px[i:i + 4] = bytes(OPT_BACK + (255,))
+    for ri, row in enumerate(rows):
+        for ci, ic in enumerate(row):
+            ox, oy = gap + ci * (cell + gap), gap + ri * (cell + gap)
+            for y in range(cell):
+                for x in range(cell):
+                    r, g, b, a = ic.get(x // scale, y // scale)
+                    k = 1.0 - a / 255.0
+                    img.put(ox + x, oy + y, (r + OPT_SLOT[0] * k, g + OPT_SLOT[1] * k, b + OPT_SLOT[2] * k, 255))
+    return img
+
+
 # ======================================================================================================== main
 def main():
     z = SA.assets()
@@ -529,7 +563,7 @@ def main():
                 "/".join(o[0] for o in ornaments(tier)))
         manifest.append({"item": key, "tier": "T%d %s" % (ti, tier), "model_path": mp, "model_base": base,
                          "texture_path": tp, "icon_path": "%s/%s.png" % (ICON_DIR, key),
-                         "notes": "%s. Icon = the approved concept look (concept ramps -> vanilla metal gradients, Mithril / Onyxium concept-locked). Model render (no hanging line, IconProperties %s): alt/%s_Render.png"
+                         "notes": "%s. Colours = the metal wand recipe (Skyy 2026-10-07 'Match the wands'). Icon (rod icon NOT picked yet, see rod-icon-options.png) = the approved concept look (concept ramps -> vanilla metal gradients). Model render (no hanging line, IconProperties %s): alt/%s_Render.png"
                                   % (route, json.dumps(props, sort_keys=True), key)})
     # ---- reels
     reel_icons = []
@@ -542,7 +576,7 @@ def main():
                          "texture_path": None, "icon_path": "%s/%s.png" % (ICON_DIR, key),
                          "notes": "R2c icon-only: approved concept icon, metal ramps -> %s" % (
                              "(none: bamboo / wood)" if tier == "Bamboo" else
-                             ("the concept %s ramp (colour lock)" % tier if tier in CONCEPT_LOCK else "vanilla %s gradient" % tier))})
+                             "vanilla %s gradient (the %s wand metal)" % (tier, tier))})
     # ---- parts
     part_rows = []
     for group, kind in ((HOOKS, "Hook"), (LINES, "Line"), (SINKERS, "Sinker")):
@@ -556,8 +590,7 @@ def main():
                 manifest.append({"item": key, "tier": "part %s" % pt, "model_path": None, "model_base": "own",
                                  "texture_path": None, "icon_path": "%s/%s.png" % (ICON_DIR, key),
                                  "notes": "R2c icon-only: approved concept icon; metal ramps -> %s"
-                                          % ("the concept Mithril ramp (colour lock)" if PART_METAL[pi] in CONCEPT_LOCK
-                                             else "vanilla %s gradient" % PART_METAL[pi])})
+                                          % ("vanilla %s gradient (the %s wand metal)" % (PART_METAL[pi], PART_METAL[pi]))})
             part_rows.append(row)
     key = "SkyyFishing_Sinker_Ember"
     ember = concept_icon(cmap, "ember-sinker-IV.png")
@@ -571,6 +604,7 @@ def main():
     for i in range(0, len(part_rows), 2):
         rows.append(part_rows[i] + (part_rows[i + 1] if i + 1 < len(part_rows) else []))
     write("sheet.png", SA.png_encode(sheet(rows)))
+    write("rod-icon-options.png", SA.png_encode(rod_options(rod_icons, rod_alt)))
     write("preview/rods-3d.png", SA.png_encode(strip_imgs(previews)))
     wprops = fit_props([m for _t, m, _x, _s in built], [0, 90, -45], fill=60.0)
     full = [SA.render_icon(m, tx, wprops, 192, as_img=True) for _t, m, tx, _s in built]

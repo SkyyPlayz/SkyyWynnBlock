@@ -14,8 +14,9 @@ What this writes (all under models-local/art/soulcage/, git-ignored: the colours
   sheet.png, spin-preview.png, preview-<Metal>.png, manifest.json
 
 No vanilla pixels or bytes live in this file: it reads Assets.zip (read-only) at run time only for colour gradients
-(metal = skyyart.metal_gradient = the tier's vanilla pickaxe head + ingot; essence = the vanilla essence / crystal / voidheart texture;
-Mithril finial trim = skyyart.band_gradient = the vanilla Mithril staff's gold band). Deterministic: two runs give the same bytes.
+(metal = skyyart.metal_gradient = the tier's vanilla pickaxe head + ingot with the metal wand's head span, exactly the wand colours
+(Skyy 2026-10-07 "Match the wands."); essence = the vanilla essence / crystal / voidheart texture; finial trim = skyyart.band_gradient
+with the wand band span = the vanilla Mithril staff's gold band on Mithril, the tier metal elsewhere). Deterministic: two runs give the same bytes.
 
 Run:  python tools/art/make_soulcage.py
 """
@@ -48,14 +49,14 @@ ESSENCE = (
     ("Wind (White crystal fallback, mint tint)", "Resources/Crystals/Crystal_Fragment_Textures/White.png"),
     ("Voidheart", "Resources/Ingredients/Voidheart_Texture.png"),
 )
-# per tier: (metal lo, metal hi) = which part of the vanilla metal gradient the bars use (Onyxium is near-black: lift it so the
-# lattice still reads, like the wand recipe does), (essence lo, hi) for the soul / gems
-METAL_SPAN = {"Onyxium": (0.3, 1.0), "Iron": (0.05, 1.0), "Mithril": (0.0, 0.65)}
+# per tier: (metal lo, metal hi) = which part of the metal gradient the lattice uses, (essence lo, hi) for the soul / gems.
+# Skyy 2026-10-07 (docs/answered/gear.md ART, "Match the wands."): the lattice metal is the SAME as the built metal wands - the wand
+# recipe's head span (skyyart.WAND_TUNE["head"] + WAND_METAL_TUNE, read below) on skyyart.metal_gradient, no hue tint (the old cyan
+# Mithril tint is gone: Mithril = the wands' silver-blue with the vanilla gold trim, Onyxium = the wands' black-violet); finials use
+# the wand BAND span on skyyart.band_gradient (gold on Mithril, the tier metal elsewhere). Soul + gem essence stay as designed.
 ESS_SPAN = {"Voidheart": (0.3, 1.0), "Void": (0.10, 1.0)}
-# hue tints (target rgb, strength 0..1), luminance kept: the vanilla source keeps the shading, the concept sets the hue. Mithril
-# metal -> the concept's cyan lattice (#7ec4cc, make_weapons_v2 Mithril ramp mid); Mithril essence (White crystal fallback) -> the
-# concept's mint "white-green" wind soul. Concept hex values only, no vanilla pixels.
-METAL_TINT = {"Mithril": ((0x7e, 0xc4, 0xcc), 0.75)}
+# essence hue tint (target rgb, strength 0..1), luminance kept: Mithril essence (White crystal fallback) -> the concept's mint
+# "white-green" wind soul. Concept hex values only, no vanilla pixels.
 ESS_TINT = {"Wind (White crystal fallback, mint tint)": ((0x9c, 0xf0, 0xc0), 0.7)}
 
 # ------------------------------------------------------------------------------------------------------------------ geometry
@@ -461,10 +462,10 @@ def main():
     write(ANIM_PATH, jbytes(build_anim()))
     for t, metal in enumerate(METALS):
         ess_name, ess_tex = ESSENCE[t]
-        mlo, mhi = METAL_SPAN.get(metal, (0.0, 1.0))
+        head, band = SA._tuned(metal, "head"), SA._tuned(metal, "bands")     # the metal wand's head / band spans
         elo, ehi = ESS_SPAN.get(ess_name, (0.0, 1.0))
-        M = ramp_fn(SA.metal_gradient(z, metal), mlo, mhi, METAL_TINT.get(metal))
-        T = ramp_fn(SA.band_gradient(z, metal), *((0.1, 0.9) if metal == "Mithril" else (mlo, mhi)))
+        M = ramp_fn(SA.metal_gradient(z, metal), head["lo"], head["hi"])
+        T = ramp_fn(SA.band_gradient(z, metal), band["lo"], band["hi"])
         E = ramp_fn(SA.palette_from([SA._read(z, ess_tex)]), elo, ehi, ESS_TINT.get(ess_name))
         model = build_model(t)
         tex = SA.png_encode(paint(M, T, E))
@@ -483,6 +484,7 @@ def main():
             "item": "SkyyArmory_SoulCage_%s" % metal, "tier": metal, "level_band": LEVELS[t], "tethers": TETHERS[t],
             "essence": ess_name, "model_path": mp, "model_base": "own", "texture_path": tp, "icon_path": ip,
             "animation_path": ANIM_PATH, "icon_properties": ICON_PROPS,
+            "metal": "wand recipe (skyyart.metal_gradient, wand head span %.2f-%.2f; finial = wand band span)" % (head["lo"], head["hi"]),
             "notes": "R3 own model (%d gems + %d bare knobs, 30 bars, 2 finials + 10 spokes, 2-box soul); soul + gems fullbright; "
                      "item JSON: Model/Texture/Icon as here, Animation = animation_path (the vanilla Weapon_Staff_Crystal_Flame "
                      "pattern), IconProperties = icon_properties; Light colour = the essence (UNVERIFIED)."
