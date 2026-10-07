@@ -54,8 +54,15 @@ lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
 
 
+- [ ] **Consistency pass 2026-10-07** - grep every `research/cloud/` draft for numbers today's drafts replaced (Ember 11,000, Amberite 30,000,
+      Drakonite 75,000, Block 1.155 / +5%, junk seaweed, Monk Jade teal). Fix stale cloud lines (mark proposals as proposals). Output: `research/cloud/Consistency-Pass-1007.md`.
+- [ ] **Questions digest 2026-10-07** - one short table of every open "Questions for Skyy" from the 2026-10-06 / 07 cloud drafts (default in
+      [brackets]), top 10 first. Output: `research/cloud/Questions-Digest-1007.md`.
+- [ ] **Fishing gear icons v2** - 2x-4x density pass of `research/cloud/fishing-art/` (rods, reels, hooks, lines, sinkers; ART-INDEX Q2 default yes).
+      Keep the v1 sheet as `fishing-gear-sheet-v1.png`. Output: `research/cloud/fishing-art/fishing-gear-sheet.png` + README.
+- [ ] **Class emblems v2 (other 5)** - Warrior, Berserker, Archer, Assassin, Mage at the Monk / Priest v2 detail level (`research/cloud/class-art/`).
+      Output: regenerated `research/cloud/class-art/class-sheet.png` + README.
+- [ ] **Enchanted v2 (rest)** - the v1 Enchanted items / blocks not yet in `research/cloud/enchanted-art/icons-v2/` (see its README). Output: v2 sheet + README.
+- [ ] **Fishing UI mockup v2** - redo `research/cloud/Fishing-UI-Mockup.png` against `research/Vanilla-UI-Style-Guide.md` (keep v1). Output: the PNG + `research/cloud/Fishing-UI-Mockup.md`.
+
 ## Done (delete after logging - see the rules above)
-- [x] Sushi source: vanilla seaweed or Azure Kelp - 2026-10-07 - `research/cloud/Food-Expansion-Draft.md`
-- [x] Retire the junk fish icons: sheet v2.1 - 2026-10-07 - `research/cloud/fish-art/fish-sheet.png`
-- [x] Apply the chain premium fix: Block +4.5% in the drafts - 2026-10-07 - `research/cloud/Enchanted-Materials-Draft.md`
-- [x] ART-INDEX refresh: v3 / v2 redos - 2026-10-07 - `research/cloud/ART-INDEX.md`
