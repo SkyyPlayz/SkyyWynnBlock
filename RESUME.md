@@ -30,10 +30,10 @@ rules: `HANDOFF.md`. Still-open questions: `OPEN-QUESTIONS.md`. What Skyy tests 
 - ALL DEPLOYED 2026-10-06 (untested; TEST-CHECKLIST 28-35): Lanterns / sell from bags / staff + wand traversals / gather probe pack (REMOVE
   after Skyy's session) / Grapple Bolt / mob curve / Dodge Roll / Skills 0.4.19 + Hud 0.3.14 minimap (BetterMap) + Gear 0.2.6 weapon speed.
 - DEPLOYED 19:15: SkyyHud 0.3.15 (Seasons widget mover) + SkyyBank 0.1.7 (daily interest), TEST-CHECKLIST 36; SkyySkills 0.4.20 sprint-tap roll 19:30 (37); SkyyHud 0.3.16 minimap fixes 19:39 (38).
-- RUNNING (~19:00 -0600, Skyy away): SkyyBank 0.1.7 daily interest (wfscripts/bank017.js),
-  SkyyArmory 0.1.3 (wfscripts/armory013.js:
-  Wynncraft bow traversal + apex hang for bow + wand, ALL traversal particles fade (grapple dots, wand orbs, staff trail), hop 30,
-  Copper + Onyxium crossbows). NEXT Armory build: blink.distance 16 + blink.floorCheck 0 (Skyy set both live).
+- ALL BUILT + DEPLOYED (2026-10-06 evening): Bank 0.1.7, Hud 0.3.15 + 0.3.16, Skills 0.4.20, Armory 0.1.3 (TEST-CHECKLIST 36-39). NOTHING RUNNING.
+- NEXT small follow-ups: SkyyArmory 0.1.4 = blink.distance 16 + blink.floorCheck 0 defaults (live already); SkyyGear next = add
+  Weapon_Crossbow_Copper_Wynn / _Onyxium_Wynn to its crossbow trust list (PACK_TRUST, Charged combo); OPEN: Onyxium crossbow recipe,
+  leap for the 6 developer bows; remove SkyyGatherProbe after Skyy's session; gathering phase A after the probe results.
 - Art: Skyy reviewed everything (docs/answered/gear.md 2026-10-06); cloud has the redo list; Skyy's reference pictures are in research/refs/.
 - SPECS DONE + ANSWERED today: research/Gathering-Progression-Spec.md (all 11 questions answered - docs/answered/bags.md 2026-10-06: hard ore
   gates, Mithril hidden until 0.7, ratio 100, Enchanted premium + Fortune on all tiers); research/Grapple-Bolt-Spec.md (Dodge Roll part waits

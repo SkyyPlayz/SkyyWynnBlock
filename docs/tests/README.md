@@ -112,3 +112,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyHud 0.3.15 + SkyyBank 0.1.7 - Dynamic Seasons widget mover / daily bank interest (DEPLOYED 2026-10-06) | [2026-10](2026-10.md) |
 | SkyySkills 0.4.20 - roll on a sprint-key tap (DEPLOYED 2026-10-06, backup deploy-20261006-1930) | [2026-10](2026-10.md) |
 | SkyyHud 0.3.16 - minimap island fix, arrow in blocks, no overlap (DEPLOYED 2026-10-06) | [2026-10](2026-10.md) |
+| SkyyArmory 0.1.3 - bow leap, wand hang, fading effects, hop 30, Copper + Onyxium crossbows (DEPLOYED 2026-10-06, backup deploy-20261006-2015) | [2026-10](2026-10.md) |
