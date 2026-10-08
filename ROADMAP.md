@@ -30,7 +30,7 @@ Each phase is a playable step.
 
 | Phase | What it covers | Status (estimate) |
 |---|---|---|
-| P0 Foundation | private islands, coins, item stats that survive saves | Done (NPC shops are still a spec) |
+| P0 Foundation | private islands, coins, one NPC shop, item stats that survive saves | Part done: islands, coins and saved stats are live; the NPC shop is still a spec |
 | P1 Core loop | skills, collections, Magic Bags, profiles, party, guilds, accessories | Live - Skyy testing + tuning |
 | P2 Island life | private island, co-op, island size upgrades, minions | Part done: islands + co-op live; upgrades + minions not built yet |
 | P3 Economy | coins, bank, Bazaar, auction house | Live as 4 mods; SkyyEconomy merge waits for Skyy's tests |

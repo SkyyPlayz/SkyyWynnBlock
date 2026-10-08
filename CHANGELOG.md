@@ -11,7 +11,7 @@ Skyy's test results: [TEST-CHECKLIST.md](TEST-CHECKLIST.md).
 
 ## 2026-10-08
 
-- **Monk prep:** SkyyArmory 0.1.11 - Bo staffs lose the charged magic orb (Pole-Vault comes next).
+- **Monk prep:** SkyyArmory 0.1.11 - the 7 metal Bo staffs lose the charged magic orb (Pole-Vault comes next). Wood and Bamboo Bo still come from SkyySkills 0.4.21 and keep the orb until the 0.4.22 handover.
 - **Bag art:** SkyySacks 0.7.14 + SkyyAccessories 0.5.8 - new bag models, type emblems, open swirl, sparkles.
 - **Hotfix:** SkyyArmory 0.1.10 - the world would not start (spellbook Levitate). Fixed and tested.
 - **Class path trees:** SkyyTrees 0.3.3 + SkyyArmory 0.1.9 - all 7 classes get paths.

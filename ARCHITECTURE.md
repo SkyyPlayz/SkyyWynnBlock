@@ -9,7 +9,7 @@ Short on purpose. Each part links to the file that holds the detail.
 - Every mod works alone. Together they make the pack.
 - Mods never depend on each other. They share data through one JVM map: `skyy.bridge`.
 - Player data is per profile (`tools/PROFILES-CONTRACT.md`).
-- Each mod saves under `<world>/mods/Skyy_<Mod>/` (no version in the name, so data survives updates).
+- Each mod saves under `<world>/mods/Skyy_Skyy<Mod>/` (example `Skyy_SkyyVault`). No version in the name, so data survives updates.
 - Every setting an owner might change is editable in game: SkyWynn Menu -> Server Setup (`tools/CONFIG-CONTRACT.md`).
 
 ## 2. The mods
@@ -88,8 +88,9 @@ Third-party mods in the pack: `PACK.md`.
 | 2 | The script compiles the Java with javassist through jpype. No javac. | `tools/skyybuild.py`, `tools/javassist.jar` |
 | 3 | It reads the game's `HytaleServer.jar` + `Assets.zip` read-only. Game files are never committed. | - |
 | 4 | Vanilla-based art is made at build time, straight into the jar. | `tools/skyyart.py` |
-| 5 | Each version has its own test harness. | `Skyy<Mod>/test_skyy<mod>_<ver>.py` |
+| 5 | A new round's harness runs every new code path. Not every older version has one. | `Skyy<Mod>/test_skyy<mod>_<ver>.py` |
 
+- **No harness yet:** SkyySacks before 0.7.8, and the live SkyyAuctions 0.1.2, SkyyRanks 0.1.1 and SkyyCoins 0.1.5. The rule is in `.claude/workflows/skywynn-round.js`.
 - **New version = a patch script.** `tools/<mod>_<ver>_patch.py` makes the next script from the current one.
   Edit the patch, never the generated script (except the 4 Skyy hand-edited - see RESUME "Never forget").
 - **Shared kits** (copied into each jar, so still no runtime links):
@@ -123,7 +124,7 @@ All mods ship together as one pinned set: the SET in `tools/deploy_set.py`.
 |---|---|---|
 | `tools/ci/lint.py` | GitHub Actions on every push + PR, and locally | Python parses, no game files / big files, no `.ui` files, no underscores in UI ids, command permission rules |
 | `tools/ci/crosscheck.py` | locally (needs the game's jar) | every SET jar in ONE JVM: bytecode verify, access audit, player-permission audit |
-| `tools/docs_check.py` | locally, before docs commits | no doc line lost, no broken paths |
+| `tools/docs_check.py` | locally, before docs commits | no doc line lost, no new broken paths |
 
 Lint must show 0 fails before a pin. The cross-check must say READY.
 
