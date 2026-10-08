@@ -718,7 +718,8 @@ public static void push(@PKG@.MpState s, @PR@ pr, @CB@ cb, @REF@ r, @V3D@ p, lon
   if (k == 3) {
     if (s.costs && take(cb, r, C_RISE_S, C_RISE_M) == 0) { tell(pr, "M9: not enough for the rise (" + f1(C_RISE_S) + " Stamina + " + f1(C_RISE_M) + " Mana) - refused. " + statText(cb, r)); s.rs = 0; return; }
     double vy = @PKG@.MpLogic.vyFor(RISE_UP, g);
-    double vh = RISE_FWD / (vy / g);
+    // m7 (rs 1) hangs at the top, so it should cover RISE_FWD by the apex; a plain rise lands without a hang, so spread it over the whole air time
+    double vh = s.rs == 1 ? RISE_FWD / (vy / g) : RISE_FWD / (2.0 * vy / g);
     if (setVel(cb, r, lk[6] * vh, vy, lk[7] * vh, false)) s.sets = s.sets + 1L;
     flight(s, p, "m7 rise", RISE_FWD, RISE_UP, now);
     if (s.rs != 1) { tell(pr, "Rise: vy " + f1(vy) + " (target " + f1(RISE_UP) + " up, " + f1(RISE_FWD) + " forward)."); return; }
@@ -1399,4 +1400,5 @@ print("classes written: %d" % len(ALL))
 
 jar = os.path.join(HERE, "SkyyMonkProbe-%s.jar" % VERSION)
 man = B.manifest("SkyyMonkProbe", VERSION, "SkyWynn THROWAWAY dev pack: Monk engine probes M1-M13 (/mprobe, admin only) - slow fall, timed landings, air jump, fall damage, pushes, mob knock-up / hang / drag, costs, aura. Pinned for one test session, then removed.", PKG + ".SkyyMonkProbePlugin")
+man["IncludesAssetPack"] = False   # class-only jar, like SkyyUiProbe 0.4 / SkyyClasses 0.1.13
 B.assemble(jar, man, OUT, {})

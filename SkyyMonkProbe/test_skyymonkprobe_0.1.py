@@ -56,6 +56,7 @@ def main():
     # ---------------- J
     man = json.loads(z.read("manifest.json"))
     check(man["Main"] == PKG + "SkyyMonkProbePlugin", "J. manifest Main")
+    check(man.get("IncludesAssetPack") is False, "J. manifest IncludesAssetPack false (no assets shipped)")
     cls = sorted(n[:-6].replace("/", ".") for n in z.namelist() if n.endswith(".class"))
     check(cls == CLASSES, "J. classes: %s" % cls)
     other = sorted(n for n in z.namelist() if not n.endswith(".class") and n != "manifest.json")
