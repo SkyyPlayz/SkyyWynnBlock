@@ -65,9 +65,8 @@ class design changes all over docs/answered/classes.md 2026-10-07 lines; the loc
 Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-Paths.md or research/cloud/Class-Tree-Build-Map.md - a local agent owns them). -->
 
 
-- [ ] **Ability engine probe plan (E0)** - turn the 15 engine probes P1-P15 in `research/cloud/Class-Ability-Engine-Spec.md` into a probe-jar design
-      like `research/cloud/Monk-Probe-Plan.md` (commands, measures, pass / fail, fallback); draft code in a [cloud] PR, UNTESTED. Output: `research/cloud/Ability-Probe-Plan.md`.
 
 ## Done (delete after logging - see the rules above)
 - [x] Echo options for Skyy - 2026-10-08 - `research/cloud/Echo-Options.md`
 - [x] Class tree stale nodes - 2026-10-08 - `research/cloud/Class-Tree-Stale-Fix-1008.md`
+- [x] Ability engine probe plan (E0) - 2026-10-08 - `research/cloud/Ability-Probe-Plan.md`

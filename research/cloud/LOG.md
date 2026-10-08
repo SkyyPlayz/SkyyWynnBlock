@@ -137,3 +137,4 @@ section 6 when it reviews the results.
 - 2026-10-08: Monk moves probe plan -> research/cloud/Monk-Probe-Plan.md (13 probes, test script, fallbacks; draft probe jar in a [cloud] PR (UNTESTED))
 - 2026-10-08: Echo options for Skyy -> research/cloud/Echo-Options.md (3 options recomputed; default A (20-30% for all); B per-ability caps; C extra cost)
 - 2026-10-08: Class tree stale nodes -> research/cloud/Class-Tree-Stale-Fix-1008.md (stale nodes fixed against live SkyyTrees 0.3.3; 3 replacements proposed; Build-Map section 9 text changes; Armory KEYS misses Monk.PB1)
+- 2026-10-08: Ability engine probe plan (E0) -> research/cloud/Ability-Probe-Plan.md (P1-P15 probe design; draft jar held for a PR after PR 11 merges; stunlock reuse, GearSpeed, rune bag profile findings)

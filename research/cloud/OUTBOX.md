@@ -70,3 +70,8 @@ Done: research/cloud/Echo-Options.md (one page). A = Echo 20-30% for all (every 
 ## 2026-10-08 06:41 Class tree stale nodes
 Done: research/cloud/Class-Tree-Stale-Fix-1008.md + edits in research/cloud/Class-Tree-Paths.md and research/cloud/Class-Tree-Build-Map.md (new section 9 = text changes for the next SkyyTrees build; ids kept, no migration). W1 War Horn + B3 Crimson Frenzy already match live 0.3.3. Proposed: Mage PA3 Phase Step = Mana Barrier Follow upgrade; Priest PA2 Radiant Pulse -> Guiding Light (aim Sacred Heal at an ally); Berserker PA2 Shared Fury -> rage swap; Monk E5 text only.
 CHECK (verified): SkyyArmory/build_skyyarmory_0.1.9.py line 6264 ArmoryTree.KEYS lists 11 nodes and leaves out Class.Monk.PB1 (Hard Knuckles), but line 9963 reads it - the tree page may still say 'Coming with SkyyArmory' for Hard Knuckles while it works (or the reverse is intended).
+
+## 2026-10-08 07:14 Ability engine probe plan (E0)
+Done: research/cloud/Ability-Probe-Plan.md - P1-P15 as /aprobe commands (0.7 classes by reflection, so P5-P13 + P15 run on 0.6.8 now; P1-P4 + P14 wait for 0.7), pass / fail + fallbacks, two short test sessions. Draft jar SkyyAbilityProbe 0.1 is written (UNTESTED; stub-compiled, 55/55 logic checks) and will come as a [cloud] PR once PR 11 is merged (my one branch is in use).
+Findings: boss stunlock breakout already live in SkyyArmory 0.1.9 (reuse it); SkyyGear GearSpeed strips foreign speed effects every second (P6 will fail -> SkyyGear 'ability haste' bridge); SkyyProfiles 0.1.6 saves 6 inventory sections, so runes would leak across profiles (P14).
+Questions: one shared boss breakout clock [yes]; attack-speed buff bumps the weapon tier [yes]; two probe sessions (0.6.8 now, 0.7 later) [yes].
