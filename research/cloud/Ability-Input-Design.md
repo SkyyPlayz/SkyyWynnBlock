@@ -1,5 +1,8 @@
 # Ability input design - keys, combos and hotbar ability items (flow first)
 
+> **SKYY DECISION 2026-10-08 (overrides sections 1 and 8 where they differ; docs/answered/classes.md):** each class has 4 abilities, the player picks 2 as PRIMARY (Ability 2 / Ability 3 while standing, walking or sprinting); the other 2 are ALT abilities on crouch + Ability 2 / crouch + Ability 3 - a different ability, not a stance variant. Ability 1 = weapon signature; the roll stays on the sprint press. Mid-air and hotbar items: follow-up question in OPEN-QUESTIONS.
+
+
 Cloud draft, 2026-10-08. Design only, no code. It answers "how does a player TRIGGER a class ability so it feels seamless", not what
 the abilities do (`research/classes/*.md`, `research/cloud/Class-Ability-Spec-Draft.md`) nor how the engine runs them
 (`research/cloud/Class-Ability-Engine-Spec.md`). Marks: **VERIFIED** (read in our scripts / the jar by the local session), **PROBE**
