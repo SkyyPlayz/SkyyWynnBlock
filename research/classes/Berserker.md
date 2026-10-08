@@ -104,15 +104,13 @@ You own 4. You equip 2.
 
 🔵 **Proposed** - pick A or B
 
-- **Does:** the rage grows with **every hit you land** instead of over time.
+- **Does:** a **toggle** - while it is on, the rage grows with **every hit you land**: +2% per stack for you, +1% for the party, up to **25 stacks**; **each stack decays 6 s after it was gained** (Skyy 2026-10-07).
 
-- +2% per hit for you, +1% for the party, up to 20 stacks.
-
-- Ends 5 s after your last hit.
+- **Cost:** **Mana + Stamina per ATTACK** (every swing, hit or miss) and only a **small drain over time**; Mana / Stamina still regenerate while it is on, so a high-level Berserker can leave it on as a passive buff. It switches off when either runs out (or when you toggle it off).
 
 **Modifiers**
 
-- ⏳ **Duration+** - longer grace before it ends.
+- ⏳ **Duration+** - stacks decay slower.
 
 - 💪 **Power+** - more per stack.
 
@@ -235,6 +233,8 @@ Ideas - pick one.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-07: Blood Frenzy = a toggle; max 25 stacks, 6 s decay per stack; Mana + Stamina per attack (hit or miss) + a small drain over time (Skyy).
 
 - 2026-10-07: Enrage range = players within 8 + party within 16 at activation; the buff stays (not an aura) (Skyy).
 

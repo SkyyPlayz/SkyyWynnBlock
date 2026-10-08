@@ -116,3 +116,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyArmory 0.1.4 (blink 16 / air blink) + SkyyGear 0.2.7 (Charged on the Copper / Onyxium crossbows) (DEPLOYED 2026-10-06, backup deploy-20261006-2315) | [2026-10](2026-10.md) |
 | Accessory icons + new metal staffs (DEPLOYED 2026-10-07, backup deploy-20261007-1854) | [2026-10](2026-10.md) |
 | Reel look probe (DEPLOYED 2026-10-07, backup deploy-20261007-1921) | [2026-10](2026-10.md) |
+| Spellbooks + kunai (DEPLOYED 2026-10-07, backup deploy-20261007-2020) | [2026-10](2026-10.md) |
