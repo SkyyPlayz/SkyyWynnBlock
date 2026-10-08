@@ -1,0 +1,406 @@
+{
+  "item": "Class ability icons - Mage + Priest (ART-RESUME NEXT ITEM 5)",
+  "status": "candidate for Skyy's review; NOT committed, NOT wired in, NOT seen in game",
+  "generator": [
+    "tools/art/make_ability_icons.py",
+    "tools/art/ability_icon_core.py",
+    "tools/art/ability_icon_meta.py",
+    "tools/art/make_ability_sheet.py",
+    "tools/art/validate_ability_icons.py"
+  ],
+  "deterministic": true,
+  "defaults_used": {
+    "frame": "round dark slate frame band with a class-colour rim (bevelled, top lit)",
+    "background": "dark field tinted toward the class colour (Mage navy #26335e -> #0e1226, Priest warm umber #43381e -> #15100c, radial)"
+  },
+  "class_colours": {
+    "Mage": "#7fb0e0",
+    "Priest": "#f2e6a0"
+  },
+  "frame_geometry_px": {
+    "outer_radius": 31.6,
+    "dark_band_inner": 28.6,
+    "rim_inner": 26.2,
+    "field_radius": 25.6,
+    "centre": [
+      32,
+      32
+    ]
+  },
+  "ramps_dark_to_light": {
+    "FRAME": [
+      "#0e111a",
+      "#171c28",
+      "#212838",
+      "#2d3649",
+      "#3e4a60",
+      "#55627a"
+    ],
+    "MAGE_RIM": [
+      "#1f2f5c",
+      "#2f4f88",
+      "#4f7fba",
+      "#7fb0e0",
+      "#b2d4f2",
+      "#e0eefa"
+    ],
+    "PRIEST_RIM": [
+      "#4a3416",
+      "#7c6028",
+      "#b39a4c",
+      "#dccb7c",
+      "#f2e6a0",
+      "#fcf5d4"
+    ],
+    "FIRE": [
+      "#4c1020",
+      "#8a1e1a",
+      "#c8401a",
+      "#ec7424",
+      "#ffaa3c",
+      "#ffd878",
+      "#fff1c0"
+    ],
+    "ROCK": [
+      "#1c1222",
+      "#2e1c30",
+      "#47293c",
+      "#653a46",
+      "#865450",
+      "#a8725e",
+      "#c8987a"
+    ],
+    "ARCANE": [
+      "#22104a",
+      "#3a1a7e",
+      "#5a2cb4",
+      "#8250e2",
+      "#ab82f6",
+      "#d2bcff",
+      "#f1e8ff"
+    ],
+    "MANA": [
+      "#0e1f56",
+      "#16378e",
+      "#2356c4",
+      "#2f6fe0",
+      "#5c9af2",
+      "#9cc8fc",
+      "#def0ff"
+    ],
+    "ICE": [
+      "#173a6e",
+      "#22609e",
+      "#3a8cc6",
+      "#62b6e0",
+      "#98d8f0",
+      "#cdeefa",
+      "#f0fbff"
+    ],
+    "STARLIGHT": [
+      "#3a2c78",
+      "#5e4cae",
+      "#8c80d6",
+      "#bab4ee",
+      "#e2def8",
+      "#fbf6e6"
+    ],
+    "GOLD": [
+      "#3e2208",
+      "#6c4210",
+      "#a06a1c",
+      "#cf9a30",
+      "#ecc458",
+      "#f9e290",
+      "#fff4cc"
+    ],
+    "HOLY": [
+      "#6e4e1c",
+      "#a07a34",
+      "#cfa850",
+      "#ead27e",
+      "#f8ecb4",
+      "#fff9e4"
+    ],
+    "SOUL": [
+      "#0f4a58",
+      "#1c7686",
+      "#2ea8b4",
+      "#5ed2d8",
+      "#a2eeee",
+      "#dcfcf8"
+    ],
+    "ROSE": [
+      "#4a0f26",
+      "#801c34",
+      "#b72e44",
+      "#de4c58",
+      "#f47c7c",
+      "#ffb4a8",
+      "#ffe2d6"
+    ],
+    "FEATHER": [
+      "#5a4c64",
+      "#867a8c",
+      "#b2a8b2",
+      "#d6cec8",
+      "#eee6da",
+      "#fbf6ea"
+    ],
+    "STEEL": [
+      "#2a2c40",
+      "#43475e",
+      "#62687e",
+      "#868ca0",
+      "#aeb4c2",
+      "#d6dae2",
+      "#f0f2f4"
+    ]
+  },
+  "files": [
+    {
+      "path": "Common/Icons/Abilities/Mage/Meteor.png",
+      "bytes": 6860,
+      "sha256": "e283626da2c4e1709861da920b03162a1286dc30992331d40eb503509a4c6626",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Mage",
+      "ability": "Meteor",
+      "file_name": "Meteor.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "30 Mana / 14 s",
+      "ability_does": "Pick a spot within 25 blocks; after 1 s a meteor hits a 4-block area for 3.0 H. Shapes: Comet (sprint), Under Me (mid-air), Meteor on Me (crouch).",
+      "icon_shows": "a faceted burning rock diving toward the lower left with a three-tongued fire trail (violet arcane fringe at the tail) and embers",
+      "palettes": [
+        "FIRE",
+        "ROCK",
+        "ARCANE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Mage/ManaBarrier.png",
+      "bytes": 6669,
+      "sha256": "c8faa999dff16371b0f4e5fdd70377a6af74b21e6e302880e34916009d1c1a8e",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Mage",
+      "ability": "Mana Barrier",
+      "file_name": "ManaBarrier.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "20 Mana / 30 s",
+      "ability_does": "Dome placed where you look (up to 8 blocks) for 12 s; inside it, damage drains Mana instead of Health (1 Mana per 2 HP). Crouch = Pocket Dome on you.",
+      "icon_shows": "a glassy blue hex-panel dome on a rune ring with a glowing mana crystal inside",
+      "palettes": [
+        "MANA"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Mage/FrostNova.png",
+      "bytes": 7527,
+      "sha256": "296908ea1bfc5cdf8964c13119671eb1e4e2d67561bf83def28ba25c8af4f34f",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Mage",
+      "ability": "Frost Nova",
+      "file_name": "FrostNova.png",
+      "slot": "A2-alt",
+      "status": "PROPOSED",
+      "cost_cooldown": "24 Mana / 22 s",
+      "ability_does": "Freeze enemies within 5 blocks for 2 s (a hit breaks it after 1 s), then Chill 3 s; 1.0 H. Crouch = Deep Freeze.",
+      "icon_shows": "a six-armed ice crystal (snowflake) with a hex gem core and six ice shards bursting outward between the arms",
+      "palettes": [
+        "ICE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Mage/Starfall.png",
+      "bytes": 7192,
+      "sha256": "ae527bb9384ac86565770555e49e7c84ae62cdea301e41032f68b2b06a742bea",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Mage",
+      "ability": "Starfall",
+      "file_name": "Starfall.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED",
+      "cost_cooldown": "36 Mana / 18 s",
+      "ability_does": "12 stars fall over 3 s on a 6-block area you aim at, each 0.3 H. Crouch = Star Shower on you.",
+      "icon_shows": "three pale starlight stars (big, medium, small) falling toward the lower left with violet streak trails",
+      "palettes": [
+        "STARLIGHT",
+        "ARCANE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Mage/ArcaneBeam.png",
+      "bytes": 7155,
+      "sha256": "ee9b8715e4879f3b9dccf7205316d2a5c8be44750addb5e2b6216de4a6e14115",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Mage",
+      "ability": "Arcane Beam",
+      "file_name": "ArcaneBeam.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED",
+      "cost_cooldown": "30 Mana / 18 s",
+      "ability_does": "Channel a 20-block beam for up to 3 s that ramps 1x -> 3x (0.5 / 1.0 / 1.5 H per second). Crouch = Focused Beam.",
+      "icon_shows": "a violet orb in a gold 4-prong cradle firing a beam of light that widens as it goes (the ramp), one rune ring round it",
+      "palettes": [
+        "ARCANE",
+        "GOLD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Priest/SacredHeal.png",
+      "bytes": 6760,
+      "sha256": "27399ae373634bdc2cb6d61f7f631edc8485d37146e35995ba7ffbda20c07b99",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Priest",
+      "ability": "Sacred Heal",
+      "file_name": "SacredHeal.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "25 Mana / 14 s",
+      "ability_does": "Instant heal of 25% max Health (Priest 30%) for everyone within 9 blocks + a heal over time of 40% of it over 4 s. Crouch = Kneel.",
+      "icon_shows": "a bold gold healing cross with flared ends and an ivory inset, bursting a 12-ray sunburst",
+      "palettes": [
+        "GOLD",
+        "HOLY"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Priest/ShieldBubble.png",
+      "bytes": 7413,
+      "sha256": "8783dfd6f2924aac6587de841f3fa78585cd86533a0b061b9f2c78c70a499df0",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Priest",
+      "ability": "Shield Bubble",
+      "file_name": "ShieldBubble.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "28 Mana / 24 s",
+      "ability_does": "A 6-block bubble where you look (up to 8 blocks) for 12 s; its HP = 100% of your max Health; 4 heal pulses as it drops to 75 / 50 / 25 / 0%. Crouch = Around Me.",
+      "icon_shows": "a translucent soul-cyan bubble with a highlight streak round a gold-rimmed heater shield with a soul gem",
+      "palettes": [
+        "SOUL",
+        "GOLD",
+        "STEEL"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Priest/GuardianSpirit.png",
+      "bytes": 7580,
+      "sha256": "b455ea7c613b63add7f0f9e23f5dc8275d000ec181968146f27831ca3cfccf76",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Priest",
+      "ability": "Guardian Spirit",
+      "file_name": "GuardianSpirit.png",
+      "slot": "A2-alt",
+      "status": "PROPOSED (passive)",
+      "cost_cooldown": "passive (Mana per save)",
+      "ability_does": "Passive 30-block aura: a party member (or you) who would die survives at 30% Health if you have the Mana; per-player cooldown 12 s, doubling each save (12, 24, 48 ...).",
+      "icon_shows": "spread angel wings and a gold halo round a glowing cyan soul flame (the guardian angel that catches a falling ally)",
+      "palettes": [
+        "FEATHER",
+        "SOUL",
+        "GOLD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Priest/Sanctuary.png",
+      "bytes": 6689,
+      "sha256": "ca8548988cf72b5b86319f5375e7815c5be531c5a41a38e4c103db7a0ac01a33",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Priest",
+      "ability": "Sanctuary",
+      "file_name": "Sanctuary.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED (numbers LOCKED by Skyy 2026-10-07)",
+      "cost_cooldown": "35 Mana / 28 s",
+      "ability_does": "Holy zone placed under you for 12 s, 8 blocks: allies heal 5% max Health per second and take 10% less damage. Crouch = Inner Sanctum.",
+      "icon_shows": "a pointed (gothic) arch of ivory stone with a soul-gem keystone, holy light filling the doorway, standing in a glowing gold rune circle on the ground",
+      "palettes": [
+        "HOLY",
+        "GOLD",
+        "SOUL"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Priest/MartyrsGrace.png",
+      "bytes": 7132,
+      "sha256": "ff750973ba8f522035e263dc09ae3e6bbab30b90ff4963032a192d789ca66143",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Priest",
+      "ability": "Martyr's Grace",
+      "file_name": "MartyrsGrace.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED (numbers LOCKED by Skyy 2026-10-07)",
+      "cost_cooldown": "30 Mana / 18 s",
+      "ability_does": "75% heal on the lowest ally within 30 blocks, then chains to the next lowest, -15 per jump (75 / 60 / 45 / 30 / 15); party first, the Priest counts as party.",
+      "icon_shows": "a big haloed rose heart with a heal plus, chaining golden light bolts to a smaller and then a smallest heart (the heal drops each jump)",
+      "palettes": [
+        "ROSE",
+        "GOLD",
+        "HOLY"
+      ]
+    },
+    {
+      "path": "sheet.png",
+      "bytes": 338915,
+      "what": "review sheet for Skyy: every icon at 4x / 2x / 64 / 32 px, grouped by class with the class colour swatch, plus a dark HUD strip",
+      "sha256": "f899b7b10ada06360857ada044e96f66a20e7f36aab78066e2f8e31ab9caf446"
+    },
+    {
+      "path": "README.md",
+      "bytes": 9255,
+      "what": "what this is, ability -> meaning, colours, defaults, UNVERIFIED, open questions"
+    }
+  ]
+}

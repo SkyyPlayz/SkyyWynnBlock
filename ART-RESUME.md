@@ -42,18 +42,11 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
-### 5. Class ability icons - Mage + Priest first (10 icons)
-**Why:** class abilities go on the Ability 2 / 3 keys (Skyy, 2026-10-08: 4 abilities per class, 2 primary + 2 on crouch). The HUD
-Abilities widget and the class / tree page need one icon per ability. The ability list + what each does:
-`research/cloud/Class-Ability-Shapes.md` (sections 4 Mage, 5 Priest). Build order says Mage + Priest come first.
-**Make:** 64x64 icons in vanilla item-icon style (clean bevelled shapes, readable at 32x32), one per ability:
-- Mage: Meteor, Mana Barrier, Frost Nova, Starfall, Arcane Beam
-- Priest: Sacred Heal, Shield Bubble, Guardian Spirit, Sanctuary, Martyr's Grace
-Class colours: use the emblem colours in `research/cloud/class-art/README.md` (Mage / Priest) as an accent ring or background tint so
-abilities read as that class. Path: `art/ability-icons/Common/Icons/Abilities/<Class>/<AbilityName>.png` (no spaces: `ManaBarrier.png`,
-`MartyrsGrace.png`). One `sheet.png` with all 10 + names. Original pixels only.
-**Ask Skyy (defaults):** frame style [round dark frame, class-colour rim], background [dark, class tint].
-Then do the other 5 classes the same way (Monk, Assassin, Warrior, Berserker, Archer - names in the same spec), one class per commit.
+### 6. Class ability icons - Monk (then Assassin, Warrior, Berserker, Archer)
+Mage + Priest (10 icons) are Done. Continue the same style for the remaining classes, **one class per commit**.
+Ability names and what each does: `research/cloud/Class-Ability-Shapes.md`. Class colours: `research/cloud/class-art/README.md`.
+Same defaults Skyy approved for Mage/Priest: round dark frame, class-colour rim; dark background with class tint.
+Path: `art/ability-icons/Common/Icons/Abilities/<Class>/<AbilityName>.png`. Update the shared `sheet.png` (or add a per-class sheet) and commit.
 
 ## Queue (check with Skyy before starting each)
 6. **Monk claws** (Blockbench, full items): Wolverine-style long blades from the knuckles on a black LEATHER glove (skywynn-art skill,
@@ -67,6 +60,14 @@ Then do the other 5 classes the same way (Monk, Assassin, Warrior, Berserker, Ar
    are in the skywynn-art skill, section 3. A separate candidate dark-leather design is in Done (#3).
 
 ## Done
+### 4. Class ability icons - Mage + Priest (2026-10-08)
+- Folder: `art/ability-icons/` - 10 icons under `Common/Icons/Abilities/Mage/` and `.../Priest/` (64x64), `sheet.png`,
+  `manifest.json`, `README.md`. Scripts: `tools/art/make_ability_icons.py`, `make_ability_sheet.py`, `validate_ability_icons.py`.
+- Mage: Meteor, ManaBarrier, FrostNova, Starfall, ArcaneBeam. Priest: SacredHeal, ShieldBubble, GuardianSpirit, Sanctuary, MartyrsGrace.
+- Frame: round dark frame with class-colour rim; dark class-tinted background (defaults from ART-RESUME).
+- Skyy's answer, word for word: "The ability icons look great, commit them"
+- Not yet seen in game. Remaining classes (Monk, Assassin, Warrior, Berserker, Archer) are Next / Queue — one class per commit.
+
 ### 3. Dark Leather light armor - candidate design (2026-10-08)
 - Folder: `art/dark-leather-armor/` - Head/Chest/Hands/Legs `.blockymodel` + textures under
   `Common/Items/Armors/SkyyDarkLeather/`, icons `Common/Icons/ItemsGenerated/Armor_SkyyDarkLeather_*.png` (64x64),
