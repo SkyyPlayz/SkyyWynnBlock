@@ -30,6 +30,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyRanks | 0.1.1 | ranks + permissions made in game |
 | SkyyUiProbe | 0.4 | dev / test probes, op only (retire later) |
 | SkyyReelProbe | 0.1 | rod + reel look probe, op only (remove after Skyy's test, before SkyyFishing) |
+| SkyyMonkProbe | new | Monk moves engine probe, op only (remove after Skyy's test) |
 | SkyyMobs | 0.1.4 | mob levels + difficulty; level curves + level gap (mob:fn:info) |
 | SkyyWorldGen | 0.1 | Zone 1 test island (/zone 1, admin) |
 | SkyyArmory | 0.1.9 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults |
