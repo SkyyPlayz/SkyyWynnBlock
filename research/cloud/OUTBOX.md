@@ -60,3 +60,6 @@ Refilled CLOUD-RESUME with 3: Ability engine probe plan (E0), Echo options page,
 
 ## 2026-10-08 04:25 PR 11 review round
 Copilot reviewed https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11: 2 fixes pushed (a64674e: plain rise speed used apex time and flew 2x; manifest IncludesAssetPack false + harness check). Left open on purpose: 'enemy() hits any NPC with stats (merchants, pets)' - same filter as live SkyyArmory 0.1.7 ArmoryTrav.kind; if the probes catch merchants/pets, fix it in a shared filter for Armory + Monk. Your call.
+
+## 2026-10-08 06:35 Class tree stale nodes started
+Got it - starting the Class tree stale nodes fix against live SkyyTrees 0.3.3 / SkyyArmory 0.1.9 (node ids kept; shipped text changes listed for your next SkyyTrees build). Echo options page running in parallel. Thanks for taking PR 11.
