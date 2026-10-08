@@ -179,3 +179,55 @@ no pager needed (nothing here moves under the cursor except Fillet, where the se
 | 4 | Fillet a Rare or better fish: ask once first? | [yes, ask from Rare] |
 | 5 | Horizontal bar (as drawn) or a vertical bar like Stardew? | [horizontal - matches the combat widget] |
 | 6 | Recipes tab: list only (cook at the Cooking Bench), or also cook right at the Fishing Bench? | [list only - spec Q3] |
+
+## v2 (cloud draft, 2026-10-08)
+
+Picture: `research/cloud/Fishing-UI-Mockup.png` (v2; v1 kept as `research/cloud/Fishing-UI-Mockup-v1.png`). Generator:
+`research/cloud/fishing-ui/make_fishing_ui_v2.py` (Pillow, deterministic - two runs give the same bytes; it asserts both pages use exactly
+their inner height, 688 / 688). Parts A-F: A the screen during a fight (50 %), B the minigame widget states, C the catch card, D the Fishing
+Bench RIG tab, E the Pond Fish collection page, F the kit colours used.
+
+**Decisions followed (v2 adds to the v1 list above):** `docs/answered/skills.md` 87 (junk = vanilla items, LOCKED 2026-10-06), 88 (all 4 hooks /
+lines / sinkers, one of each on a rod), 90 (8 rod items, the fitted reel lives on the rod, icon shows the default reel, LOCKED 2026-10-07);
+`docs/answered/gear.md` 102 (rod icons = the local 3D renders, LOCKED 2026-10-07); `research/Rod-Reel-Look.md`; `HANDOFF.md` section 2;
+`research/Vanilla-UI-Style-Guide.md` sections 2-6 and 13.
+
+### What changed vs v1
+
+| Area | v1 | v2 |
+|---|---|---|
+| Sizes / text | vanilla 13-14 px text | the kit's **readable** scale (row names 18, subs 15, property rows 16 / 26 px, captions 15); buttons + tabs 44 px, small row actions 92 x 32 |
+| Buttons | mixed-case labels | vanilla labels: bold, UPPERCASE, `#bfcdd5` / `#bdcbd3`; Disabled look `#797b7c` (empty LINE row) |
+| Property rows | values right-aligned | `property_row` layout: bold key column, value left-aligned beside it (WorldEventPropertyRow) |
+| Bench page | all 4 tabs | the **RIG** tab only (the gear-slot page asked for): rod slot 72 px + REEL / HOOK / LINE / SINKER rows, Rig total well, a 13 x 2 `item_grid` of parts. Parts / Fillet / Recipes stay as drawn in v1 |
+| Rod + reel | rod and reel as separate rows | reel fitted ON the rod (skills.md 90): example Copper Rod with an Iron Reel; the icon shows the rod's default reel, the text shows the fitted one |
+| Catch card | one LANDED line inside the widget | its own HUD card (460 x 132, same `#000000(0.2)` panel): 68 px slot, name in rarity colour, weight + length, record line in gold. Variants: record fish, plain fish, Lost Property, junk |
+| Junk | "Junk - Old Boot" | a vanilla item (Stick) shown with an empty labelled slot - the real build uses the vanilla icon by item id, nothing copied |
+| Fish names / icons | working names, rough icons | the catalog species (`research/cloud/Fish-Species-Catalog.md`) with our own icons from `research/cloud/fish-art/icons/`; lengths from the spec formula, K fitted to each species' min weight / min length |
+| Collection page | not drawn | **new**: Pond Fish page (plain list window): tier + progress bar, 8 tier rows on the well, species grid 5 x 2 (found = icon + rarity bar, missing = dark shape + "?"), detail well for the picked fish (where, when, your best, caught, server record, sell price per kg) |
+| Background | flat grey strip | the HUD states drawn over water, so the translucent panel is judged where it really sits |
+
+Rarity on fish uses the pack ladder (`SUI.RARITY`), following the catalog proposal (species rarity = grade). That is still an open catalog
+question; if Skyy keeps the spec's separate grade roll, only the word + colour swap to `SUI.QUALITY`.
+
+### Questions for Skyy
+
+| # | Question | Default |
+|---|---|---|
+| 1 | Catch card: a separate card for 3 s after a catch (as drawn), or only a chat line? | [card + one chat line] |
+| 2 | Fish rarity: the pack ladder (Normal / Unique / Rare / Legendary / Fabled / Mythic, as drawn), or the game's item qualities (Common .. Legendary)? | [pack ladder - matches the fish icons] |
+| 3 | Collection page: show the species grid (found / missing, your best, server record) here, or keep that for the Angler's Ledger book later? | [here now; the Ledger adds seasons and records later] |
+| 4 | Show the server record weight to everyone on the collection page? | [yes, weight only, no player name] |
+| 5 | Rig tab: one-click fit from the parts grid (click a part = it goes into its slot, the old one back to your bag)? | [yes] |
+| 6 | v1 questions 1-6 above still stand (HUD widget, click rate, hidden species, fillet confirm, horizontal bar, recipes list only). | [as in v1] |
+
+### For the local session
+
+| # | Check |
+|---|---|
+| 1 | All v1 UNVERIFIED items (HUD refresh rate, click input, HUD positions, `quality_frame`, sound ids) still apply |
+| 2 | Real textures: frame, tabs, buttons, ornaments are flat stand-ins; render the RIG and collection pages with `page_shell` / `tab_row` / `static_row` / `item_grid` and compare with this sheet |
+| 3 | Rod icons in the rig slot and the parts grid are stand-ins drawn by the generator; use the local renders (`models-local/art/fishing`, `tools/art/make_fishing.py`) |
+| 4 | Junk icon: the vanilla item's own icon by id (`Ingredient_Stick` etc.) via `ItemIcon` - confirm the ids from `Drops_Fishing_Trap_Crude.json` |
+| 5 | Does a HUD document allow an `ItemIcon` (catch card)? If not: the fish name + weight only, icon in the chat line |
+| 6 | Collection page: does SkyyCollections own it (a detail page) or SkyyFishing (its own page)? Cross-mod data only through `skyy.bridge` |

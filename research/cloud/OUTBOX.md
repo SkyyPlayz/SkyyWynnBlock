@@ -35,3 +35,7 @@ Questions: Enchanted forms for Sand / Clay / stone cobbles [no, only Cobblestone
 ## 2026-10-08 04:06 Class emblems v2 (other 5)
 Done: research/cloud/class-art/class-sheet.png - Warrior (sword + spear), Berserker (battleaxe + mace), Archer (recurve bow + arrow), Assassin (kunai + dagger), Mage (crystal staff + spellbook) at the Monk / Priest v2 detail; Monk + Priest bytes unchanged.
 Questions: Archer bow only [yes]; locked = grey emblem [yes]; Mage crystal violet [yes]. Weak spots: Berserker axe busy at 64 px, kunai hides the dagger grip.
+
+## 2026-10-08 04:08 Fishing UI mockup v2
+Done: research/cloud/Fishing-UI-Mockup.png (v1 kept as research/cloud/Fishing-UI-Mockup-v1.png), generator research/cloud/fishing-ui/make_fishing_ui_v2.py, notes in research/cloud/Fishing-UI-Mockup.md v2 section. Shows the fight screen, minigame HUD bar (5 states), catch cards, Bench Rig tab and a new Pond Fish collection page; colours / sizes from tools/skyyui.py.
+Questions: pack rarity ladder for fish [yes]; catch card 3 s + one chat line [yes]; species grid on the collection page now [yes].

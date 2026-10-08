@@ -75,7 +75,6 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 - [ ] **Monk moves probe plan** - turn `research/cloud/Monk-Kit-Spec.md` section 5 (13 engine probes: slow-fall, jump-at-landing, air jump,
       fall-damage cancel, push, path sweep, knock-up + hang, drag-down, crouch detect ...) into a probe-jar design like SkyyGatherProbe / SkyyReelProbe
       (commands, what each measures, pass / fail). Draft code in a PR, UNTESTED. Output: `research/cloud/Monk-Probe-Plan.md`.
-- [ ] **Fishing UI mockup v2** - redo `research/cloud/Fishing-UI-Mockup.png` against `research/Vanilla-UI-Style-Guide.md` (keep v1). Output: the PNG + `research/cloud/Fishing-UI-Mockup.md`.
 
 ## Done (delete after logging - see the rules above)
 - [x] OUTBOX test - 2026-10-08 - `research/cloud/OUTBOX.md`
@@ -84,3 +83,4 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 - [x] Questions digest 2026-10-07 - 2026-10-08 - `research/cloud/Questions-Digest-1007.md`
 - [x] Enchanted v2 (rest): 43 icons - 2026-10-08 - `research/cloud/enchanted-art/enchanted-sheet-v2.png`
 - [x] Class emblems v2 (other 5) - 2026-10-08 - `research/cloud/class-art/class-sheet.png`
+- [x] Fishing UI mockup v2 - 2026-10-08 - `research/cloud/Fishing-UI-Mockup.png`
