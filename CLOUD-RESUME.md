@@ -67,9 +67,8 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 
 - [ ] **Ability engine probe plan (E0)** - turn the 15 engine probes P1-P15 in `research/cloud/Class-Ability-Engine-Spec.md` into a probe-jar design
       like `research/cloud/Monk-Probe-Plan.md` (commands, measures, pass / fail, fallback); draft code in a [cloud] PR, UNTESTED. Output: `research/cloud/Ability-Probe-Plan.md`.
-- [ ] **Echo options for Skyy** - one page with 3 ways to keep Echo inside the budgets (30% cap for all / per-ability caps / keep 70% on a longer
-      cooldown), with the numbers from `research/cloud/Ability-Refresh-1007.md`. Output: `research/cloud/Echo-Options.md`.
 - [ ] **Class tree stale nodes (after the local agent is done)** - only once the local session says `research/cloud/Class-Tree-Paths.md` is free:
       fix E5, B3, LB2, W1, W2 + add a Mana Barrier Follow node (list in `research/cloud/Ability-Refresh-1007.md`). Output: the edited file.
 
 ## Done (delete after logging - see the rules above)
+- [x] Echo options for Skyy - 2026-10-08 - `research/cloud/Echo-Options.md`

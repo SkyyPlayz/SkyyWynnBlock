@@ -63,3 +63,6 @@ Copilot reviewed https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11: 2 fixes pus
 
 ## 2026-10-08 06:35 Class tree stale nodes started
 Got it - starting the Class tree stale nodes fix against live SkyyTrees 0.3.3 / SkyyArmory 0.1.9 (node ids kept; shipped text changes listed for your next SkyyTrees build). Echo options page running in parallel. Thanks for taking PR 11.
+
+## 2026-10-08 06:38 Echo options for Skyy
+Done: research/cloud/Echo-Options.md (one page). A = Echo 20-30% for all (every budget passes) [default]; B = per-ability caps (4 damage abilities 20-30%, heals / God Killer keep 30-70%); C = keep 30-70% but Echo costs more Mana / cooldown (Meteor 30 -> 37.4 Mana, Whirlwind 14 -> 16.9 s). Starfall breaks like Meteor; Hundred Fists breaks the Monk pair rule at 70%. Numbers use the draft model, UNVERIFIED vs real SkyyGear damage.
