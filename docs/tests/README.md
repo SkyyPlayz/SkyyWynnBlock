@@ -118,3 +118,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Reel look probe (DEPLOYED 2026-10-07, backup deploy-20261007-1921) | [2026-10](2026-10.md) |
 | Spellbooks + kunai (DEPLOYED 2026-10-07, backup deploy-20261007-2020) | [2026-10](2026-10.md) |
 | Monk weapons + right-click block + no void protection (DEPLOYED 2026-10-07, backup deploy-20261007-2141) | [2026-10](2026-10.md) |
+| Shadow Step (DEPLOYED 2026-10-07, backup deploy-20261007-2249) | [2026-10](2026-10.md) |
