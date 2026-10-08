@@ -1,6 +1,7 @@
 # Ability input design - keys, combos and hotbar ability items (flow first)
 
 > **SKYY DECISION 2026-10-08 (overrides sections 1 and 8 where they differ; docs/answered/classes.md):** each class has 4 abilities, the player picks 2 as PRIMARY (Ability 2 / Ability 3 while standing, walking or sprinting); the other 2 are ALT abilities on crouch + Ability 2 / crouch + Ability 3 - a different ability, not a stance variant. Ability 1 = weapon signature; the roll stays on the sprint press. Mid-air and hotbar items: follow-up question in OPEN-QUESTIONS.
+> **SKYY 2026-10-08, later:** every ability keeps up to 4 SHAPES - as a primary: walking / sprinting / mid-air; as an alt: its own crouch shape (a little different from its primary shapes). So sprint state IS read at cast time (the roll stays on the sprint press).
 
 
 Cloud draft, 2026-10-08. Design only, no code. It answers "how does a player TRIGGER a class ability so it feels seamless", not what
