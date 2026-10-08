@@ -30,7 +30,7 @@ flowchart TD
   ABL --> A2["A2 Whirlwind"]
   A2 --> A2X["A2-alt Earthsplitter"]
   A1 -.-> M1["Duration+ | Radius+ | Power+ | Leech"]
-  A1A -.-> M2["Duration+ | Power+ | Leech | Haste"]
+  A1A -.-> M2["Duration+ | Power+ | Leech | Haste | Floor"]
   A1B -.-> M3["Radius+ | Duration+ | Power+ | Ward"]
   A2 -.-> M4["Duration+ | Radius+ | Pull | Leech"]
   A2X -.-> M5["Power+ | Split | Slow | Knockback+"]
@@ -104,13 +104,15 @@ You own 4. You equip 2.
 
 🔵 **Proposed** - pick A or B
 
-- **Does:** a **toggle** - while it is on, the rage grows with **every hit you land**: +2% per stack for you, +1% for the party, up to **25 stacks**; **each stack decays 6 s after it was gained** (Skyy 2026-10-07).
+- **Does:** a **toggle** - while it is on, the rage grows with **every hit you land**: +2% per stack for you, +1% per stack for allies, up to **25 stacks**; allies get it through an **AoE aura**: players within 8 blocks and party members within 16 blocks of you (the Enrage ranges) are buffed **only while they are inside it** (unlike Enrage, which is picked once) - so it works as a late-game passive; **each stack decays 6 s after it was gained** (Skyy 2026-10-07).
 
 - **Cost:** **Mana + Stamina per ATTACK** (every swing, hit or miss) and only a **small drain over time**; Mana / Stamina still regenerate while it is on, so a high-level Berserker can leave it on as a passive buff. It switches off when either runs out (or when you toggle it off).
 
 **Modifiers**
 
 - ⏳ **Duration+** - stacks decay slower.
+
+- 🧱 **Floor** - a minimum stack: you still start at 0, but once you pass 5 (level 1) or 10 (level 2) your stacks never decay below it · **cannot be paired with Duration+**.
 
 - 💪 **Power+** - more per stack.
 
@@ -233,6 +235,8 @@ Ideas - pick one.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-07: Blood Frenzy buffs allies through an aura (players 8 / party 16, only while inside); new Floor modifier (min stack 5 / 10, not with Duration+) (Skyy).
 
 - 2026-10-07: Blood Frenzy = a toggle; max 25 stacks, 6 s decay per stack; Mana + Stamina per attack (hit or miss) + a small drain over time (Skyy).
 
