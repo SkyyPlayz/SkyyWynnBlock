@@ -20,7 +20,7 @@ flowchart TD
   CLS --> ABL["ABILITIES<br/>own 4, equip 2"]
   WPN --> AX["Axes + battleaxes"]
   AX --> AXa["Attack: swing combo"]
-  AX --> AXc["Charged: axe LUNGE (far forward leap + down slash)<br/>battleaxe: vanilla Downstrike"]
+  AX --> AXc["Charged: battleaxe LUNGE (far forward leap + down slash)<br/>axe: Whirlwind Dash (proposed)"]
   WPN --> MC["Maces + clubs"]
   MC --> MCa["Attack: swing chain"]
   MC --> MCc["Charged (proposed): club BULL RUSH<br/>mace EARTHSHAKER leap-slam"]
@@ -55,7 +55,8 @@ flowchart TD
 
 - **Charged:** battleaxes use the vanilla **Downstrike** (a heavy charged slam). Axes: a charged swing with no movement.
 
-- 🟢 **Axes - Lunge** (Skyy 2026-10-07: "for the axes do a lunge forward with a down slash. (lunge/far leap, goes more froward than up.)"): hold + release to leap far FORWARD (more forward than up) and land with a down slash. Battleaxes keep the vanilla Downstrike (default until Skyy says otherwise).
+- 🟢 **Axes - Lunge** (Skyy 2026-10-07: "for the axes do a lunge forward with a down slash. (lunge/far leap, goes more froward than up.)"): hold + release to leap far FORWARD (more forward than up) and land with a down slash. **Battleaxes get the Lunge** (Skyy 2026-10-07: "battleaxes get the lunge too, if you have a better idea for the normal axes, we would change that one instead.").
+- 🔵 **Proposed for one-handed axes - Whirlwind Dash:** hold + release to spin forward along the ground (~6 blocks), slashing every enemy around you as you pass (the light axe = crowds; the battleaxe Lunge = one big hit). Until picked, axes use the Lunge too.
 
 ### Maces + clubs
 
