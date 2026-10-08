@@ -75,7 +75,7 @@ flowchart TD
 🟢 **Locked** (Skyy 2026-10-04)
 
 - **Attack** (Skyy 2026-10-07, lighter = faster; wraps + gauntlets hit ONE enemy, claws hit several):
-  - **Hand wraps:** several jabs per click, a power hit on the Nth jab, no gap after it (fast enough to stunlock one enemy) - T1 Linen + T2 Cotton: 2 jabs per click, power hit on jab 6 · T3 Silk: 2 per click, power on 4 · T4 Cindercloth: 3 per click, power on 6 · T5 Shadoweave: 5 per click, power on the 5th.
+  - **Hand wraps:** several jabs per click, a power hit on the Nth jab, no gap after it (fast enough to stunlock one enemy; bosses + mini-bosses break out after ~2.5-3 s of stunlock and hit you - Skyy 2026-10-07) - T1 Linen + T2 Cotton: 2 jabs per click, power hit on jab 6 · T3 Silk: 2 per click, power on 4 · T4 Cindercloth: 3 per click, power on 6 · T5 Shadoweave: 5 per click, power on the 5th.
   - **Gauntlets:** 1 jab per click, a chain of 4 with a harder finisher; more damage per hit, slower; after the finisher there is always a gap long enough for most mobs to hit back.
   - **Claws** (later): a little faster than gauntlets, 1 click = 1 slash, fast chained slashes, no power hit, hits several enemies (less DPS); higher tiers = more damage + a wider (and slightly longer) slash.
 
