@@ -125,3 +125,4 @@ section 6 when it reviews the results.
 - 2026-10-07: Retire the junk fish icons: sheet v2.1 -> research/cloud/fish-art/fish-sheet.png (Junk row dropped from the sheet (47 live icons); v2 sheet kept as fish-sheet-v2.png; junk icons still drawn to icons/ to compare)
 - 2026-10-07: Apply the chain premium fix: Block +4.5% in the drafts -> research/cloud/Enchanted-Materials-Draft.md (Block = 160 Enchanted x 1.045, chain 1.1495 under the 15% cap; stale 1.21x table replaced (exact floor maths); Economy-Audit C4/s7/Q6, Zone-4-5 s5, Ember check updated)
 - 2026-10-07: ART-INDEX refresh: v3 / v2 redos -> research/cloud/ART-INDEX.md (mining v3, light helmets v3, enchanted v2, Monk + Priest v2 (Saffron locked), Stamina v3, fish v2.1 added; Monk colour question closed; all image links checked)
+- 2026-10-08: OUTBOX test -> research/cloud/OUTBOX.md (test block 2026-10-08 03:50 pushed (5ff12a3); channel works from the cloud side)

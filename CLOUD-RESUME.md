@@ -64,8 +64,6 @@ Context of today: 4 deploys (accessory icons, metal staffs, spellbooks + kunai, 
 class design changes all over docs/answered/classes.md 2026-10-07 lines; the local session is building Monk + Assassin classes, Shadow
 Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-Paths.md or Class-Tree-Build-Map.md - a local agent owns them). -->
 
-- [ ] **OUTBOX test (FIRST, 1 minute)** - append "## <date time> OUTBOX test" with one line to `research/cloud/OUTBOX.md` and push, so the
-      local cloud-link mod can prove the channel works.
 - [ ] **Class ability spec refresh** - bring `research/cloud/Class-Ability-Spec-Draft.md` + `research/cloud/Modifier-Pool-Spec.md` in line with
       every docs/answered/classes.md line dated 2026-10-07 (Echo on many abilities, Mana Barrier dome + Follow, Guardian Spirit passive aura,
       Flowing Form combo stacks, Blood Frenzy toggle aura + Floor, Warlord's Banner, Enrage targeting, Still Water Echo, Sanctuary, Martyr's
@@ -90,3 +88,4 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 - [ ] **Fishing UI mockup v2** - redo `research/cloud/Fishing-UI-Mockup.png` against `research/Vanilla-UI-Style-Guide.md` (keep v1). Output: the PNG + `research/cloud/Fishing-UI-Mockup.md`.
 
 ## Done (delete after logging - see the rules above)
+- [x] OUTBOX test - 2026-10-08 - `research/cloud/OUTBOX.md`
