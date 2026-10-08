@@ -66,7 +66,7 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 
 
 
+- [ ] **SkyyAbilityProbe PR** - once https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 is merged: open a [cloud] PR with the held draft
+      `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED.
+
 ## Done (delete after logging - see the rules above)
-- [x] Echo options for Skyy - 2026-10-08 - `research/cloud/Echo-Options.md`
-- [x] Class tree stale nodes - 2026-10-08 - `research/cloud/Class-Tree-Stale-Fix-1008.md`
-- [x] Ability engine probe plan (E0) - 2026-10-08 - `research/cloud/Ability-Probe-Plan.md`
