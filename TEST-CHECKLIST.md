@@ -51,6 +51,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 41. Accessory icons (44) + new metal staff models - check the icons and how the staffs sit in the hand
 42. Reel probe: does a rod show a different reel when /reelprobe changes the number (first + third person, dropped rod, second player)
 43. Spellbooks (Page Burst tap, Levitate hold, Mage-only) + kunai (throw, hold-teleport, no durability)
+44. Monk weapons (bo staffs, wraps, gauntlets), right-click block on casters, traversals over the void
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
