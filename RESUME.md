@@ -31,9 +31,10 @@ Read this first, then only what the task needs. Map of every file + search tips:
   after Skyy's test, before SkyyFishing); 20:20 Armory 0.1.6 spellbooks + kunai, Classes 0.1.13, Gear 0.2.8 (TEST 43); 21:41 Armory
   0.1.7 Monk bo / wraps / gauntlets + right-click block + NO void protection, Gear 0.2.9 (TEST 44).
 - OVERNIGHT 2026-10-07 (Skyy asleep: "work through everything you can do on the mudpack. and ill answer all the questions on everything
-  else tomorrow. try to get the new updated class skill trees out tonight if you can."): RUNNING classes014 (wf_678ba01d-370: Monk +
-  Assassin playable), armory018 (wf_64bef864-aaf: Shadow Step), spec agent refreshing research/cloud/Class-Tree-Paths.md + writing
-  research/cloud/Class-Tree-Build-Map.md. NEXT: when classes014 pins -> class TREES round (SkyyTrees 0.3.3, path trees per the build map, ultracode),
+  else tomorrow. try to get the new updated class skill trees out tonight if you can."): DONE 22:49 Shadow Step (Armory 0.1.8,
+  TEST 45); class tree spec refreshed + research/cloud/Class-Tree-Build-Map.md; bag art (models-local/art/bags, Qs in OPEN-QUESTIONS bags);
+  cloud session started (OUTBOX test pending). RUNNING classes014 (wf_678ba01d-370: Monk + Assassin playable). NEXT: when classes014
+  pins -> class TREES round = SkyyTrees 0.3.3 + SkyyArmory 0.1.9 reader (per the build map, defaults for its 13 open choices),
   deploy each READY round (auto-deploy), queue every question for Skyy in OPEN-QUESTIONS. cloud-link mod: ~/.claude/dev-mods/.../cloud-link.
 LATER round: dagger Shadow Step (research/Shadow-Step-Spec.md; no void protection). Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
   Stamina icon; fishing junk; reference pictures are local in `research/refs/`, described in docs/answered/gear.md).
