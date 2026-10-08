@@ -49,6 +49,8 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
   The class-ability spec PROPOSES them after the reset, then you pick. [proposals pending; research/classes/<Class>.md]
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]
 
+- ABILITY INPUT DESIGN (research/cloud/Ability-Input-Design.md section 8, 10 questions): Ability1 = signature, Ability2 / 3 = your two class lines; the SAME ability changes shape grounded / crouching / mid-air (same cost + cooldown) [yes]; crouch versions never move you or cost more (safe at a ledge) [yes]; hotbar ability items = the 2 equipped + utility, cast on select and snap back at once [yes]; unequipped abilities on items [no, server toggle]; ready sound + flash [on]; one first-use hint per stance [yes]; Pick (middle mouse) = loadout swap later [yes if the probe passes]; 0.7 Ability4 key [keep free]; first classes: Mage + Priest, then Monk + Assassin, Warrior + Berserker, Archer last [as listed]
+
 ### pets
 - DRAGON as a pet with Aures' Dragon Nestkeeper: our secondary pet slot summons their dragon, or their mod owns the dragon and our slot links it, or our own dragons later? [(1) summon via our slot if Aures allows + it works, else (2) - docs/answered/pets.md 2026-10-06; decide after the survey + Aures' answer]
 
