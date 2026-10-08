@@ -24,6 +24,21 @@ Folder size about 0.75 MB.
 (dodecahedron) instead of the round barred orb. Only the Monk + Priest icons changed - the other 5 classes are byte-identical (md5
 checked). Old sheet kept as `class-sheet-v1.png` for comparison.
 
+**v2 other 5 (2026-10-08):** Warrior, Berserker, Archer, Assassin and Mage redrawn at the Monk / Priest v2 detail level (bevelled
+blades with a centre ridge + honed bright edge, fullers, wood grain, criss-cross grip wraps, rivets, gems). Each shows the class's current
+signature weapons (`research/classes/README.md` weapon table; Kunai = `docs/answered/gear.md` lines 103 + 105, staff head = line 101
+"New like the concept", spellbook = `research/cloud/weapon-art/spellbook-v2.png` look). Colours unchanged (no answered line changed them).
+Monk + Priest icons are byte-identical to the 2026-10-07 v2 (md5 checked before / after); `class-sheet-v1.png` kept. The script
+is still deterministic (two runs = same bytes). The v1 drawing functions stay in the script, unused, for reference.
+
+| Class | v2 shows |
+|---|---|
+| Warrior | a longsword (fuller, gold ricasso rune, curved gold quillons with a ruby, cross-wrapped leather grip, ruby pommel) crossed over a spear (grained shaft, wrapped grip, gold-ringed riveted socket, red tassel, ridged leaf head) |
+| Berserker | a bearded double-bit battleaxe (dark forged blades with bright honed crescent edges, engraved line + rivets, ruby on the socket, red-wrapped haft, spike) crossed over a 7-flange mace (studded head, gold collar, wrapped grip, round pommel) |
+| Archer | a recurve shortbow with tapered limbs (wood back + horn belly laminate, gold tip caps, cross-wrapped grip with gold bands), nocked broadhead arrow with barred red fletching + cream cock feather |
+| Assassin | the kunai in front (kunai-v2 look: bevelled leaf blade with ridge, black criss-cross cord, ring pommel with a cord tail) crossed with a dagger (fuller, downswept guard with a violet gem, wrapped grip, violet pommel gem) |
+| Mage | a staff with the new head (one big faceted violet crystal in a gold 4-prong cradle, black stitched leather grip, gold bands, grained shaft, sparkles) and a tooled-leather spellbook at its foot (double tooled frame, medallion + gold star, gold corners, page edges, red ribbon, clasp strap) |
+
 ## 2. The crest (same for every class)
 
 | Layer | Colour | Why |
@@ -38,11 +53,11 @@ checked). Old sheet kept as `class-sheet-v1.png` for comparison.
 
 | Class | Colour | Symbol |
 |---|---|---|
-| Warrior | `#e0b060` | sword crossed over a spear (Swords, Spears) |
-| Berserker | `#d9443f` | double-bit battleaxe crossed with a flanged mace (Axes, Maces) |
-| Archer | `#8fd67a` | recurve shortbow with a nocked red-fletched arrow (Shortbows) |
-| Assassin | `#b58cff` | dagger crossed with a ring-pommel kunai (Daggers, Kunai) |
-| Mage | `#7fb0e0` | staff with a violet orb in a gold claw + sparkles, spellbook at its foot (Staffs, Spellbooks) |
+| Warrior | `#e0b060` | longsword crossed over a spear (Swords, Spears) - v2 detail, see the v2 table above |
+| Berserker | `#d9443f` | bearded double-bit battleaxe crossed with a flanged mace (Axes, Maces) - v2 detail |
+| Archer | `#8fd67a` | recurve shortbow with a nocked red-fletched arrow (Shortbows) - v2 detail |
+| Assassin | `#b58cff` | kunai (v2 look, in front) crossed with a dagger (Daggers, Kunai) |
+| Mage | `#7fb0e0` | staff with the new head (big faceted violet crystal in a gold cradle) + sparkles, tooled spellbook at its foot (Staffs, Spellbooks) |
 | Priest | `#f2e6a0` | the **Soul Cage v2** (gold dodecahedron lattice round a glowing cyan soul, cyan gems on every other front corner, axis finials - the `weapon-art/soul-cage-v2.png` look) under a halo, with a wand (Wands, Soul Orb) |
 | Monk | `#f08a30` Saffron **(LOCKED)** | a raised **wrapped fist** (linen hand wraps with bands + crossed straps, loose tail at the wrist) in front of the bo staff, wind swirls for speed (Bo staff, Fist weapons) |
 
