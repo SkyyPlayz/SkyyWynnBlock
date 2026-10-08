@@ -32,7 +32,7 @@ flowchart TD
   A1 -.-> M1["Duration+ | Radius+ | Power+ | Leech"]
   A1A -.-> M2["Duration+ | Power+ | Leech | Haste | Floor"]
   A1B -.-> M3["Radius+ | Duration+ | Power+ | Ward | Echo"]
-  A2 -.-> M4["Duration+ | Radius+ | Pull | Leech"]
+  A2 -.-> M4["Duration+ | Radius+ | Pull | Leech | Echo"]
   A2X -.-> M5["Power+ | Split | Slow | Knockback+"]
   classDef locked fill:#2e7d32,color:#fff,stroke:#1b5e20
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
@@ -162,6 +162,8 @@ You own 4. You equip 2.
 
 - 🩸 **Leech** - more healing.
 
+- 🔁 **Echo** - when the spin ends, a weaker spin repeats once 1 s later · each level: stronger echo.
+
 ### A2-alt · Earthsplitter
 
 🔵 **Proposed**
@@ -245,6 +247,8 @@ Ideas - pick one.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-07: Whirlwind gains Echo (Skyy).
 
 - 2026-10-07: Warlord's Banner = 30 s, 12 blocks; +8% / +12% / +16% damage AND defence (players / party / you); Echo modifier (Skyy).
 
