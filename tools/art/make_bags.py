@@ -109,11 +109,15 @@ SACK_CATS = ("Mining", "Foraging", "Farming", "Combat", "Smithing")      # SkyyS
 # the front emblem per type (Skyy 2026-10-08 "option 1"); the item ids are Skyy_Sack_<Type>_<Small/Medium/Rare/Large> (MANAGED_IDS)
 EMBLEM_NAMES = {"Mining": "pickaxe", "Foraging": "leaf", "Farming": "wheat", "Combat": "sword", "Smithing": "anvil"}
 ACC_ITEM = "Skyy_Accessory_Bag"
-ACC_GEMS = [ramp("#4a0a0e", "#8a1a20", "#d23a3a", "#ff8a80", "#ffe0dc"),      # health red
-            ramp("#0a2050", "#163f8f", "#2f6fe0", "#86b4ff", "#e2eeff"),      # mana blue
-            ramp("#4d3a00", "#8a6800", "#d6a800", "#ffe066", "#fff8d6"),      # stamina yellow
-            ramp("#0b3d1a", "#17702f", "#2fb34f", "#86eb98", "#e2ffe6"),      # speed green
-            ramp("#3c0c44", "#6c1c78", "#a63cb8", "#d886e4", "#ffe2ff")]      # luck violet
+# the 5 clasp gems, LEFT TO RIGHT = Option B (Skyy 2026-10-08: "Use Option B gem colors"): the first 5 SkyyAccessories booster lines in
+# their table order, matching the approved menu icon art/accessory-bag-icon/ (README "Gem colours"). Mid hexes: Health #d23a3a, Stamina
+# #d6a800, Mana #2f6fe0, Regeneration #2fb34f, Speed #4ac0cc. Cyan = the approved Speed icon's wing ramp (tools/art/make_accessory_icons.py
+# WING). Until SkyyAccessories 0.5.8 the order was red, blue, yellow, green + a violet 5th gem (#a63cb8).
+ACC_GEMS = [ramp("#4a0a0e", "#8a1a20", "#d23a3a", "#ff8a80", "#ffe0dc"),      # Health red
+            ramp("#4d3a00", "#8a6800", "#d6a800", "#ffe066", "#fff8d6"),      # Stamina yellow
+            ramp("#0a2050", "#163f8f", "#2f6fe0", "#86b4ff", "#e2eeff"),      # Mana blue
+            ramp("#0b3d1a", "#17702f", "#2fb34f", "#86eb98", "#e2ffe6"),      # Regeneration green
+            ramp("#0c3a44", "#2a8a9a", "#4ac0cc", "#8ae6ee", "#dafcff")]      # Speed cyan
 ACC_STITCH = ramp("#2e2214", "#4a3820", "#6a5230", "#8a7044")              # muted brass thread (2026-10-08: less decoration)
 
 # ------------------------------------------------------------------------------------------------------------------ math
