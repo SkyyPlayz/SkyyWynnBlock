@@ -144,7 +144,7 @@ You own 4. You equip 2.
 
 🟢 **Locked**
 
-- **Does:** drops a **barrier dome on the ground** for **12 s** (at least - Skyy 2026-10-07). While you stand inside it, damage you take **drains Mana instead of Health** (1 Mana per 2 HP). The dome stays where you cast it.
+- **Does:** drops a **barrier dome on the ground** for **12 s** (at least - Skyy 2026-10-07). While you stand inside it, damage you take **drains Mana instead of Health** (1 Mana per 2 HP). The dome stays where you cast it. **Look:** clearly visible but easy to see through - a faint, mostly transparent tint with a soft brighter edge, never blocking the view or flashing (Skyy 2026-10-07).
 
 - It ends early if your Mana runs out.
 
@@ -241,6 +241,8 @@ Ideas - pick one. The Mage tree already has three lanes.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-07: dome look = visible but easy to see through, not distracting (Skyy: "make sure the dome is visible, but still easily see through so it isnt distracting or disruptive.").
 
 - 2026-10-07: Mana Barrier = a placed dome on the ground; Follow modifier / tree upgrade makes it move with you (Skyy picked "Placed dome + Follow").
 
