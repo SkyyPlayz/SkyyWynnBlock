@@ -58,7 +58,7 @@ flowchart TD
 
 - **Tap = quick shot:** no pierce, ~24 blocks range, 1/5 Mana. A little more damage per Mana than the Priest's wand.
 
-- **Charged = TELEPORT** the way you look (up too). Air is fine, never over the void - the teleport is shortened instead (Skyy 2026-10-07).
+- **Charged = TELEPORT** the way you look (up too). No void protection - part of the fun / challenge (Skyy 2026-10-07).
 
   - 10 blocks to start, upgradable in the tree. You can set a shorter custom distance there.
 

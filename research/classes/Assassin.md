@@ -54,7 +54,7 @@ flowchart TD
 
 - **Charged:** vanilla **Pounce** (a sweep / stab lunge).
 
-- 🟢 **Next (Skyy 2026-10-07): Shadow Step** replaces Pounce - vanish (a fading shadow stays), appear behind the mob nearest your aim within 24 blocks, facing its back; next hit = guaranteed backstab + a small bonus. No mob: step 18 blocks where you look (air OK, never over the void). Spec: `research/Shadow-Step-Spec.md`.
+- 🟢 **Next (Skyy 2026-10-07): Shadow Step** replaces Pounce - vanish (a fading shadow stays), appear behind the mob nearest your aim within 24 blocks, facing its back; next hit = guaranteed backstab + a small bonus. No mob: step 18 blocks where you look (air and void are fair game). Spec: `research/Shadow-Step-Spec.md`.
 
 ### Kunai
 
