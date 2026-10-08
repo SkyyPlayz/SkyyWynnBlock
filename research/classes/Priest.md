@@ -25,8 +25,8 @@ flowchart TD
   WPN --> WD["Wands<br/>Wood to Onyxium"]
   WD --> WDa["Tap: quick shot<br/>PIERCES, 16 blocks"]
   WD --> WDc["Charged: hop backwards<br/>+ exploding orb + heal orb"]
-  WPN --> SO["Soul Orb<br/>Soul Cages up to 20 tethers"]
-  SO --> SOa["Hold: soul tethers<br/>life drain, stores healing"]
+  WPN --> SO["Soul Orb<br/>Soul Cages up to 20 Bindings"]
+  SO --> SOa["Hold: soul Bindings<br/>life drain, stores healing"]
   SO --> SOc["Charged: WINGS OF FATE<br/>glide to an ally"]
   ABL --> A1["A1 Sacred Heal"]
   A1 --> A1A["A1-alt A Sanctuary"]
@@ -72,13 +72,13 @@ flowchart TD
 
 🟢 **Locked** (Skyy 2026-10-04)
 
-- **Hold right-click = soul tethers.** A line of light locks onto the enemy you look at (you can then look away).
+- **Hold right-click = soul Bindings.** A line of light locks onto the enemy you look at (you can then look away).
 
 - Steady damage for a steady Mana drain. **No Mana regen while active.**
 
 - Damage is **stored as bonus healing** for its ability (cap by tier).
 
-- It tethers EVERY enemy in a small radius around where you look (up to the tier's tether cap) - see "How soul tethers work" below.
+- It binds EVERY enemy in a small radius around where you look (up to the tier's Binding cap) - see "How soul Bindings work" below.
 
 - **Charged = WINGS OF FATE:**
 
@@ -92,9 +92,9 @@ flowchart TD
 
 ### 🔢 Soul Orb ladder
 
-Each is made from the one before. The soul, gems and tethers take the essence colour.
+Each is made from the one before. The soul, gems and Bindings take the essence colour.
 
-| Tier | Made from | Colour | Tethers | Damage per Mana |
+| Tier | Made from | Colour | Bindings | Damage per Mana |
 |---|---|---|---|---|
 | Soul Orb | - | 🔵 blue | 1 | 1.0x |
 | Copper Soul Cage | Soul Orb + copper + Life Essence | 🟢 green | 2 | 1.1x |
@@ -105,23 +105,25 @@ Each is made from the one before. The soul, gems and tethers take the essence co
 | Mithril (🔵 proposed) | ... | ? | 16 | 2.0x |
 | Onyxium (🔵 proposed) | ... | ? | 20 (a gem on each dodecahedron point) | 2.5x |
 
-Mana per second per tether stays about the same up the ladder (a few small steps).
+Mana per second per Binding stays about the same up the ladder (a few small steps).
 
-### 🔗 How soul tethers work
+### 🔗 How soul Bindings work
 
 🟢 **Locked** (Skyy 2026-10-04)
 
-1. **Hold right-click** and look at enemies. Every enemy in a **small radius around where you look** gets a tether at once (6 mobs packed in a 3-block space = 6 tethers in one go), up to your orb's tether cap.
+1. **Hold right-click** and look at enemies. Every enemy in a **small radius around where you look** gets a Binding at once (6 mobs packed in a 3-block space = 6 Bindings in one go), up to your orb's Binding cap.
 
-2. **Damage starts at once**, but the tether must **stabilize** first. Keep looking at them for **1.5-2.5 s** (base orb; higher tiers stabilize faster). A new tether looks **wispy** and turns **solid** once stable.
+2. **Damage starts at once**, but the Binding must **stabilize** first. Keep looking at them for **1.5-2.5 s** (base orb; higher tiers stabilize faster). A new Binding looks **wispy** and turns **solid** once stable.
 
-3. **Once stable you can look away.** The tether holds while you keep holding right-click (or until your Mana runs out). Look at the **next group** and tether them too, until you reach the cap.
+3. **Walls (Skyy 2026-10-07):** you cannot lock a Binding on THROUGH a block (you need line of sight to start it), but once locked it keeps draining even when the line passes through blocks.
 
-4. Steady damage for a steady Mana drain per tether. Damage is stored as bonus healing.
+4. **Once stable you can look away.** The Binding holds while you keep holding right-click (or until your Mana runs out). Look at the **next group** and bind them too, until you reach the cap.
 
-5. **No natural Mana regen while any tether is active - but MANA STEAL still works** (tether damage counts for it). With enough Mana Steal you can tether forever on the lower tiers.
+5. Steady damage for a steady Mana drain per Binding. Damage is stored as bonus healing.
 
-   **Balance target:** max Mana Steal from gear = the Mana drain of a full **Cobalt Soul Cage** (10 tethers). The Adamantite+ cages drain more than max Mana Steal, so they cannot run forever.
+6. **No natural Mana regen while any Binding is active - but MANA STEAL still works** (Binding damage counts for it). With enough Mana Steal you can keep binding forever on the lower tiers.
+
+   **Balance target:** max Mana Steal from gear = the Mana drain of a full **Cobalt Soul Cage** (10 Bindings). The Adamantite+ cages drain more than max Mana Steal, so they cannot run forever.
 
 &nbsp;
 
@@ -275,7 +277,7 @@ Ideas - pick one.
 
 - **Aegis** - shields: bubble damage + element, Guardian Spirit.
 
-- **Soulweaver** - soul tethers, stored healing, Wings of Fate.
+- **Soulweaver** - soul Bindings, stored healing, Wings of Fate.
 
 &nbsp;
 
@@ -293,11 +295,13 @@ Ideas - pick one.
 
 - 2026-10-05: refined for easy reading (same facts, new layout).
 
-- 2026-10-04: no Mana regen while tethering, but Mana Steal works; max Mana Steal = a full Cobalt cage's drain (Skyy).
+- 2026-10-07: soul tethers renamed **Bindings** (a caged soul binds souls and pulls them into the cage, empowering it to heal later); lock-on needs line of sight, a locked Binding works through walls (Skyy).
+
+- 2026-10-04: no Mana regen while binding, but Mana Steal works; max Mana Steal = a full Cobalt cage's drain (Skyy).
 
 - 2026-10-04: Wings of Fate always heals on arrival - a smaller base heal when no soul healing is stored (Skyy).
 
-- 2026-10-04: soul tethers corrected - lock onto every enemy in a small radius where you look, stabilize in 1.5-2.5 s (faster at higher tiers), wispy -> solid, look away only once stable (Skyy).
+- 2026-10-04: soul Bindings corrected - lock onto every enemy in a small radius where you look, stabilize in 1.5-2.5 s (faster at higher tiers), wispy -> solid, look away only once stable (Skyy).
 
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
 

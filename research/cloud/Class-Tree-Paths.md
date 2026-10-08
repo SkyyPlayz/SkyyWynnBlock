@@ -163,13 +163,13 @@ The five elements for elemental nodes = the engine's **Fire, Water, Earth, Wind,
 | A4 Spirit Shield | 65 | 3 | Guardian Spirit | the save also gives a **bubble** around the ally for 4 s | save Health -10% |
 | A5 Aegis | 75 | 4 | Shield Bubble | bubble **explodes** when it breaks (1.5 H element damage, 4 blocks) | duration -1 s |
 
-**Path C - Soulweaver** (soul tethers + Wings of Fate; needs the Soul Orb weapon)
+**Path C - Soulweaver** (soul Bindings + Wings of Fate; needs the Soul Orb weapon)
 | Node | Lv | Pts | Ability | What changes | Trade-off |
 |---|---|---|---|---|---|
-| S1 Soul Link | 20 | 2 | Soul Orb | tethers **stabilize 0.4 s faster** | Mana drain +10% |
+| S1 Soul Link | 20 | 2 | Soul Orb | Bindings **stabilize 0.4 s faster** | Mana drain +10% |
 | S2 Stored Light | 30 | 2 | Soul Orb | stored soul healing cap +25% | stored healing decays 3% / s after you release |
 | S3 Wings of Mercy | 45 | 3 | Wings of Fate | arrival heal +50% and **cleanses** the ally | the glide costs +20% Stamina |
-| S4 Soul Harvest | 65 | 3 | Soul Orb | tether kills grant **+2 Mana** each and +5% damage per tether (max 5) | wand damage -10% |
+| S4 Soul Harvest | 65 | 3 | Soul Orb | Binding kills grant **+2 Mana** each and +5% damage per Binding (max 5) | wand damage -10% |
 | S5 Soulweaver | 75 | 4 | Soul Orb | Wings of Fate can **carry one ally** back to you | longer cooldown (+8 s) |
 
 ## 5. 🪓 Berserker
