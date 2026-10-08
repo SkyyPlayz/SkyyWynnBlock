@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""make_ability_icons - SkyWynn class ability icons, Mage + Priest (10 x 64x64 RGBA), our own art drawn from code.
+"""make_ability_icons - SkyWynn class ability icons, Mage + Priest + Monk + Assassin + Warrior (5 per class, 64x64 RGBA), our own art drawn from code.
 
 Each icon = a round dark frame with a CLASS-COLOUR RIM (Mage #7fb0e0, Priest #f2e6a0 - the class emblem colours,
 research/cloud/class-art/README.md) around a dark field tinted toward the class colour, with one bold bevelled symbol that
@@ -950,6 +950,271 @@ def vanishing_act():
     return back, g, front, glints
 
 
+# ================================================================================================================= WARRIOR
+# Warrior (class colour #e0b060 - the class emblem colour): tank + crowd control - amber-gold rim, dark gunmetal field (cool
+# steel-teal, so the warm gold rim is not the Priest's gold-on-umber or the Monk's saffron-on-rust), steel + iron, oak wood,
+# crimson banner cloth, warm amber light for shouts / shockwaves.
+WAR_RIM = ramp("#4a2a10", "#7e5220", "#b4823a", "#e0b060", "#f2d08c", "#fbeccc")         # from Warrior #e0b060
+AMBER = ramp("#5a2c0e", "#8e521a", "#c4842c", "#e0b060", "#f4d48c", "#fff0cc")          # shout / shockwave light
+CRIMSON = ramp("#2e0c18", "#561424", "#86202c", "#b23634", "#d65a44", "#f08c66")        # banner + tabard cloth
+OAK = ramp("#2c1a14", "#4a2c1c", "#6e4426", "#94643a", "#b88a56", "#d8b47e")            # shield planks, spear shaft
+
+WARRIOR = K.Style("Warrior", "#e0b060", WAR_RIM, field_c="#2a3a44", field_e="#0b1216",
+                  outline="#05090c", frame=FRAME, glow_c="#e0b060")
+
+
+def rallying_guard():
+    """Rallying Guard: a crimson war banner on a spear with a steel guard-shield emblem, rally-cry arcs off the spear tip
+    (you + party take less damage, mobs turn to you)"""
+    back, g, front = L3()
+    glow(back, circle(34.0, 32.0, 13), "#e0b060", 7.0, 0.55)
+    # rally-cry arcs either side of the spear head (the shout that turns mobs to you)
+    hx_, hy_ = 21.0, 19.0
+    for r0, r1, al in ((5.4, 7.0, 1.0), (8.6, 10.2, 0.8)):
+        for a0, a1 in ((150.0, 215.0), (-35.0, 30.0)):
+            back.put(arc_band(hx_, hy_, r0, r1, a0, a1), rs(AMBER, 0.86), alpha=al)
+    # spear shaft (oak), slightly leaning
+    sx0, sy0, sx1, sy1 = 19.2, 56.0, 21.0, 23.0
+    shaft = capsule(sx0, sy0, sx1, sy1, 1.55)
+    g.bevel(shaft, OAK, face=0.62, bevel=0.7, grad=0.3, gain=0.85)
+    # banner cloth: swallow-tailed, gentle wave, hanging from a crossbar
+    top, bot, x0, x1 = 24.5, 47.0, 21.5, 46.5
+    pts_top = [(x0 + (x1 - x0) * k / 8.0, top + 1.2 * math.sin(k / 8.0 * math.pi * 1.4)) for k in range(9)]
+    pts_bot = [(x0 + (x1 - 4.0 - x0) * k / 8.0, bot + 1.6 * math.sin(k / 8.0 * math.pi * 1.4 + 0.4) - 3.0 * (k / 8.0))
+               for k in range(9)]
+    notch = (x1 - 8.0, (top + bot) / 2.0 + 0.6)
+    cloth_pts = pts_top + [(x1 + 0.5, bot - 5.5), notch, pts_bot[-1]] + pts_bot[::-1][1:]
+    cloth = poly(cloth_pts)
+    wave = np.sin((X - x0) / (x1 - x0) * math.pi * 1.4) * 0.12
+    g.bevel(cloth, CRIMSON, face=0.58, bevel=1.3, grad=0.4, gain=0.85, tone=wave)
+    # gold trim band along the cloth's top + bottom edge
+    trim = cloth & ~K._erode(K._erode(K._erode(K._erode(K._erode(K._erode(K._erode(K._erode(cloth, True), False), True), False),
+                                                         True), False), True), False)
+    g.put(trim, rs(GOLD, 0.62))
+    # crossbar (gold) and the steel guard-shield emblem on the banner
+    bar = capsule(19.8, 24.6, 44.0, 24.6 + 1.2 * math.sin(1.4 * math.pi) * 0.5, 1.15)
+    g.bevel(bar, GOLD, face=0.62, bevel=0.6, grad=0.3, gain=0.8)
+    ex, ey = 32.0, 35.0
+    sh = poly([(ex - 6.0, ey - 6.5), (ex + 6.0, ey - 6.5), (ex + 6.0, ey + 0.5), (ex + 3.6, ey + 5.0), (ex, ey + 7.6),
+               (ex - 3.6, ey + 5.0), (ex - 6.0, ey + 0.5)])
+    g.bevel(sh, GOLD, face=0.62, bevel=0.8, grad=0.3, gain=0.85)
+    shf = poly([(ex - 4.4, ey - 5.0), (ex + 4.4, ey - 5.0), (ex + 4.4, ey + 0.2), (ex + 2.6, ey + 3.8), (ex, ey + 5.8),
+                (ex - 2.6, ey + 3.8), (ex - 4.4, ey + 0.2)])
+    g.bevel(shf, STEEL, face=0.72, bevel=0.7, grad=0.4, gain=0.8)
+    g.bevel(shf & (X > ex), STEEL, face=0.52, bevel=0.0001, grad=0.3, gain=0.0)
+    # spear head (leaf blade) + gold socket ring
+    head = poly([(hx_, hy_ - 9.0), (hx_ + 3.2, hy_ - 2.0), (hx_ + 1.4, hy_ + 3.6), (hx_ - 1.4, hy_ + 3.6), (hx_ - 3.2, hy_ - 2.0)])
+    g.bevel(head, STEEL, face=0.74, bevel=0.9, grad=0.25, gain=0.95)
+    g.bevel(head & (X > hx_), STEEL, face=0.52, bevel=0.0001, grad=0.2, gain=0.0)
+    g.bevel(capsule(hx_ - 2.2, hy_ + 4.6, hx_ + 2.2, hy_ + 4.6, 1.2), GOLD, face=0.65, bevel=0.5, grad=0.3, gain=0.8)
+    glints = [(20, 12, "#f0f2f4"), (28, 30, "#f0f2f4")]
+    return back, g, front, glints
+
+
+def shield_shockwave():
+    """Shield Shockwave: a round oak shield (iron rim, steel boss) slamming forward, three amber shock arcs fanning out in a
+    cone, stun stars (cone stun)"""
+    back, g, front = L3()
+    cx, cy, R = 22.5, 33.0, 12.6
+    glow(back, circle(cx + 10, cy, 10), "#e0b060", 6.0, 0.6)
+    # shock arcs (cone to the right), getting wider + fainter
+    for r0, w, al, half in ((15.2, 2.6, 1.0, 38.0), (19.8, 2.3, 0.85, 34.0), (24.2, 2.0, 0.7, 30.0)):
+        back.put(arc_band(cx, cy, r0, r0 + w, -half, half), rs(AMBER, 0.88), alpha=al)
+    # speed lines behind the shield (the slam)
+    for dy in (-7.0, 0.0, 7.0):
+        front.put(capsule(cx - R - 1.0, cy + dy, cx - R - 5.0, cy + dy, 0.55), rs(AMBER, 0.75), alpha=0.9)
+    sh = circle(cx, cy, R)
+    # oak planks with dark seams
+    g.bevel(sh, OAK, face=0.62, bevel=1.4, grad=0.4, gain=0.8)
+    for k in (-6.2, -2.0, 2.2, 6.4):
+        g.put((np.abs(X - (cx + k)) < 0.38) & sh, rs(OAK, 0.18))
+    # iron rim + rivets
+    rim = ring(cx, cy, R, R - 2.2)
+    ang = np.arctan2(Y - cy, X - cx)
+    g.put(rim, rs(STEEL, 0.52 + 0.30 * np.clip(-np.sin(ang) * 0.8 - np.cos(ang) * 0.45, -1, 1)))
+    for k in range(8):
+        a = math.radians(k * 45 + 22.5)
+        g.bevel(circle(cx + math.cos(a) * (R - 1.1), cy + math.sin(a) * (R - 1.1), 0.75), STEEL, face=0.85, bevel=0.3,
+                grad=0.2, gain=0.6)
+    # steel boss (dome) + its flange
+    g.bevel(circle(cx, cy, 5.6), IRON, face=0.55, bevel=0.6, grad=0.3, gain=0.8)
+    boss = circle(cx, cy, 4.3)
+    d = np.sqrt((X - (cx - 1.4)) ** 2 + (Y - (cy - 1.6)) ** 2) / 4.6
+    g.put(boss, rs(STEEL, 0.92 - d * 0.62))
+    # stun stars ahead of the shield
+    for sx, sy, ro in ((45.0, 22.0, 3.6), (47.5, 40.0, 3.0)):
+        st = star(sx, sy, ro, ro * 0.42, 5, -90)
+        g.bevel(st, GOLD, face=0.82, bevel=0.5, grad=0.2, gain=0.6)
+    glints = [(20, 30, "#f0f2f4"), (15, 23, "#d6dae2")]
+    return back, g, front, glints
+
+
+def chain_link(g, cx, cy, ang, face_on, L=8.4, W=5.8):
+    """one iron chain link centred (cx, cy) along direction ang (deg); face_on = ring with a hole, else an edge-on bar"""
+    a = math.radians(ang)
+    if face_on:
+        outer = ellipse(cx, cy, L / 2.0, W / 2.0, ang)
+        hole = ellipse(cx, cy, L / 2.0 - 2.0, W / 2.0 - 1.9, ang)
+        m = outer & ~hole
+        g.bevel(m, STEEL, face=0.62, bevel=0.6, grad=0.35, gain=0.95)
+        return outer
+    ux, uy = math.cos(a), math.sin(a)
+    m = capsule(cx - ux * L / 2.0, cy - uy * L / 2.0, cx + ux * L / 2.0, cy + uy * L / 2.0, 1.25)
+    g.bevel(m, IRON, face=0.78, bevel=0.5, grad=0.3, gain=0.9)
+    return m
+
+
+def iron_chain():
+    """Iron Chain: a heavy iron hook flying out on a chain, amber pull streaks along the chain (hook one enemy, drag it in)"""
+    back, g, front = L3()
+    # chain path: from the lower left (you) up to the hook (upper right)
+    p0, p1 = (13.0, 48.5), (36.0, 26.0)
+    dx, dy = p1[0] - p0[0], p1[1] - p0[1]
+    Lc = math.hypot(dx, dy)
+    ux, uy = dx / Lc, dy / Lc
+    ang = math.degrees(math.atan2(dy, dx))
+    glow(back, circle(41.0, 22.0, 9), "#e0b060", 5.0, 0.75)
+    # pull streaks either side of the chain, pointing back toward you
+    nx, ny = -uy, ux
+    for off, t0, t1 in ((7.6, 0.18, 0.55), (-7.6, 0.40, 0.80)):
+        a0 = (p0[0] + dx * t0 + nx * off, p0[1] + dy * t0 + ny * off)
+        a1 = (p0[0] + dx * t1 + nx * off, p0[1] + dy * t1 + ny * off)
+        back.put(capsule(a0[0], a0[1], a1[0], a1[1], 0.9), rs(AMBER, 0.8), alpha=0.85)
+    n = 5
+    step = 6.4
+    for k in range(n):
+        c = (p0[0] + ux * step * k, p0[1] + uy * step * k)
+        if k % 2 == 1:
+            chain_link(g, c[0], c[1], ang, face_on=False)
+    for k in range(0, n, 2):
+        c = (p0[0] + ux * step * k, p0[1] + uy * step * k)
+        chain_link(g, c[0], c[1], ang, face_on=True)
+    # hook: eye ring at the chain end, shank, J curve + barb (built in a local frame, shank along +y, then rotated)
+    ex, ey = p0[0] + ux * step * n - ux * 0.8, p0[1] + uy * step * n - uy * 0.8
+    rot = ang - 90.0                     # local +y -> chain direction
+
+    def T(pts):
+        return rotpts([(ex + x, ey + y) for x, y in pts], ex, ey, rot)
+    eye = ring(ex, ey, 3.3, 1.6)
+    shank = poly(T([(-2.5, 2.4), (2.5, 2.4), (2.7, 11.5), (-2.3, 11.5)]))
+    jc = (-5.2, 11.5)
+    outer, inner = [], []
+    for k in range(13):
+        a = math.radians(0 + k * 15.0)
+        outer.append((jc[0] + math.cos(a) * 7.7, jc[1] + math.sin(a) * 7.7))
+        inner.append((jc[0] + math.cos(a) * 2.8, jc[1] + math.sin(a) * 2.8))
+    curve = poly(T(outer + inner[::-1]))
+    barb = poly(T([(-13.2, 12.0), (-7.6, 12.0), (-10.0, 2.0)]))
+    hook = shank | curve | barb
+    g.bevel(hook, STEEL, face=0.68, bevel=1.0, grad=0.3, gain=0.95)
+    g.bevel(eye, STEEL, face=0.62, bevel=0.5, grad=0.3, gain=0.9)
+    glints = [(40, 25, "#f0f2f4")]
+    return back, g, front, glints
+
+
+def arrow(g, x0, y0, x1, y1, broken=False):
+    """an arrow, tail (x0, y0) -> tip (x1, y1); the tip is buried in the shield (not drawn); fletching at the tail"""
+    dx, dy = x1 - x0, y1 - y0
+    L = math.hypot(dx, dy)
+    ux, uy = dx / L, dy / L
+    nx, ny = -uy, ux
+    shaft = capsule(x0, y0, x1, y1, 0.85)
+    g.bevel(shaft, OAK, face=0.75, bevel=0.4, grad=0.2, gain=0.7)
+    for s in (1, -1):
+        fl = poly([(x0 + ux * 0.5, y0 + uy * 0.5), (x0 + ux * 5.0, y0 + uy * 5.0),
+                   (x0 + ux * 1.0 + nx * 2.6 * s, y0 + uy * 1.0 + ny * 2.6 * s), (x0 - ux * 0.8 + nx * 2.4 * s, y0 - uy * 0.8 + ny * 2.4 * s)])
+        g.bevel(fl, CRIMSON, face=0.66, bevel=0.4, grad=0.2, gain=0.7)
+    if broken:
+        g.bevel(poly([(x1 - ux * 0.5 + nx * 1.6, y1 - uy * 0.5 + ny * 1.6), (x1 + ux * 3.6, y1 + uy * 3.6),
+                      (x1 - ux * 0.5 - nx * 1.6, y1 - uy * 0.5 - ny * 1.6)]), STEEL, face=0.7, bevel=0.4, grad=0.2, gain=0.7)
+
+
+def bulwark_stance():
+    """Bulwark Stance: a tall tower shield planted in the ground, arrows stuck in its face and one glancing off (front
+    projectiles blocked, allies behind you safe)"""
+    back, g, front = L3()
+    cx = 29.0
+    top, bot, hw = 13.0, 50.5, 10.8
+    glow(back, circle(cx + 4, 32.0, 14), "#e0b060", 7.0, 0.5)
+    # ground shadow where it is planted
+    back.put(ellipse(cx, 52.0, 14.0, 2.4), rs(IRON, 0.05), alpha=0.75)
+    outline_pts = [(cx - hw, top + 4.0), (cx - hw + 2.5, top + 0.6), (cx, top - 1.6), (cx + hw - 2.5, top + 0.6), (cx + hw, top + 4.0),
+                   (cx + hw, bot - 6.0), (cx + hw - 3.5, bot - 1.5), (cx, bot + 0.8), (cx - hw + 3.5, bot - 1.5), (cx - hw, bot - 6.0)]
+    shield = poly(outline_pts)
+    g.bevel(shield, GOLD, face=0.62, bevel=1.2, grad=0.45, gain=0.9)
+    inset = shield & K._erode(shield, True)
+    for _ in range(14):
+        inset = K._erode(inset, _ % 2 == 0)
+    g.bevel(inset, STEEL, face=0.66, bevel=1.0, grad=0.5, gain=0.8)
+    g.bevel(inset & (X > cx), STEEL, face=0.48, bevel=0.0001, grad=0.45, gain=0.0)
+    # crimson pale (vertical stripe) + a gold boss on it
+    pale = inset & (np.abs(X - cx) < 3.0)
+    g.bevel(pale, CRIMSON, face=0.6, bevel=0.5, grad=0.45, gain=0.6)
+    g.bevel(circle(cx, 31.0, 3.6), GOLD, face=0.66, bevel=0.8, grad=0.4, gain=0.9)
+    # rivets down both sides
+    for yy in (19.0, 27.0, 35.0, 43.0):
+        for xx in (cx - hw + 2.6, cx + hw - 2.6):
+            g.bevel(circle(xx, yy, 0.8), GOLD, face=0.8, bevel=0.3, grad=0.2, gain=0.6)
+    # arrows from the right, stuck in the face (front projectiles blocked)
+    arrow(g, 53.0, 30.0, cx + 6.0, 30.5)
+    arrow(g, 51.0, 44.5, cx + 6.0, 41.0)
+    arrow(g, 50.0, 15.5, cx + 7.0, 18.0)
+    sparkle(front, cx + 7.4, 31.5, 2.4, "#fff0cc", None, 0.55)
+    glints = [(22, 15, "#f0f2f4")]
+    return back, g, front, glints
+
+
+def unbreakable():
+    """Unbreakable: a closed great helm, cracked all over but held together - the cracks glow amber (you cannot drop below
+    1 HP), chips flying off"""
+    back, g, front = L3()
+    cx, cy = 32.0, 33.0
+    glow(back, circle(cx, cy, 14), "#e0b060", 7.0, 0.8)
+    # helm silhouette: flat-ish top, straight sides, flared lower edge
+    helm = poly([(cx - 12.0, cy - 9.0), (cx - 8.5, cy - 15.5), (cx, cy - 17.0), (cx + 8.5, cy - 15.5), (cx + 12.0, cy - 9.0),
+                 (cx + 12.5, cy + 9.0), (cx + 14.0, cy + 15.0), (cx, cy + 17.0), (cx - 14.0, cy + 15.0), (cx - 12.5, cy + 9.0)])
+    g.bevel(helm, STEEL, face=0.63, bevel=1.6, grad=0.55, gain=0.95)
+    # shading: right half darker (rounded barrel)
+    g.bevel(helm & (X > cx + 2.0), STEEL, face=0.45, bevel=0.0001, grad=0.5, gain=0.0, tone=None)
+    g.bevel(helm & (X > cx + 2.0) & (X < cx + 3.2), STEEL, face=0.55, bevel=0.0001, grad=0.4, gain=0.0)
+    # riveted iron bands (vertical brow-to-chin band + brow band)
+    vband = helm & (np.abs(X - cx) < 1.9) & (Y < cy + 16.5)
+    brow = helm & (np.abs(Y - (cy - 6.5)) < 1.6)
+    g.bevel(vband | brow, IRON, face=0.62, bevel=0.6, grad=0.4, gain=0.85)
+    for rx_, ry_ in ((cx, cy - 13.0), (cx, cy + 3.0), (cx, cy + 10.0), (cx - 8.0, cy - 6.5), (cx + 8.0, cy - 6.5)):
+        g.bevel(circle(rx_, ry_, 0.8), STEEL, face=0.85, bevel=0.3, grad=0.2, gain=0.6)
+    # eye slits (dark) either side of the band
+    for s in (-1, 1):
+        slit = poly([(cx + s * 2.6, cy - 3.4), (cx + s * 10.6, cy - 3.4), (cx + s * 10.2, cy - 1.0), (cx + s * 2.6, cy - 1.0)])
+        g.put(slit, rs(IRON, 0.06))
+    # breath holes (lower right)
+    for bx, by in ((cx + 5.0, cy + 6.0), (cx + 8.0, cy + 6.0), (cx + 5.0, cy + 9.0), (cx + 8.0, cy + 9.0), (cx + 6.5, cy + 12.0)):
+        g.put(circle(bx, by, 0.75), rs(IRON, 0.1))
+    # glowing cracks (kintsugi): jagged lines held together with gold light
+    cracks = line([(cx - 11.0, cy - 12.0), (cx - 7.0, cy - 9.0), (cx - 8.5, cy - 4.5), (cx - 5.0, cy + 1.0), (cx - 8.0, cy + 6.0),
+                   (cx - 6.0, cy + 11.0)], 2.0)
+    cracks |= line([(cx + 12.0, cy - 6.0), (cx + 9.0, cy - 9.5), (cx + 6.0, cy - 12.0), (cx + 4.0, cy - 16.5)], 2.0)
+    cracks |= line([(cx + 13.5, cy + 13.0), (cx + 10.0, cy + 10.0), (cx + 11.0, cy + 4.5)], 1.8)
+    cracks &= helm
+    edge = cracks.copy()
+    for _ in range(6):
+        edge = ~K._erode(~edge, _ % 2 == 0)
+    g.put(edge & helm, rs(IRON, 0.10))
+    g.put(cracks, rs(AMBER, 0.66))
+    core = cracks.copy()
+    for _ in range(3):
+        core = K._erode(core, _ % 2 == 0)
+    g.put(core, rs(AMBER, 0.93))
+    glow(front, cracks, "#f4d48c", 0.9, 0.35)
+    # chips flying off
+    for px, py, pr in ((15.0, 18.0, 1.4), (49.0, 22.0, 1.2), (47.5, 45.0, 1.1)):
+        g.bevel(poly([(px - pr, py), (px, py - pr * 1.3), (px + pr, py + 0.2), (px + 0.2, py + pr)]), STEEL, face=0.7, bevel=0.3,
+                grad=0.2, gain=0.6)
+    sparkle(front, 46.0, 14.5, 2.4, "#fff0cc", None, 0.55)
+    glints = [(25, 18, "#f0f2f4"), (26, 19, "#d6dae2")]
+    return back, g, front, glints
+
+
 ICONS = [
     # (class style, file name, display name, painter)
     (MAGE, "Meteor", "Meteor", meteor),
@@ -972,6 +1237,11 @@ ICONS = [
     (ASSASSIN, "GodKiller", "God Killer", god_killer),
     (ASSASSIN, "ShadowClone", "Shadow Clone", shadow_clone),
     (ASSASSIN, "VanishingAct", "Vanishing Act", vanishing_act),
+    (WARRIOR, "RallyingGuard", "Rallying Guard", rallying_guard),
+    (WARRIOR, "ShieldShockwave", "Shield Shockwave", shield_shockwave),
+    (WARRIOR, "IronChain", "Iron Chain", iron_chain),
+    (WARRIOR, "BulwarkStance", "Bulwark Stance", bulwark_stance),
+    (WARRIOR, "Unbreakable", "Unbreakable", unbreakable),
 ]
 
 

@@ -1,10 +1,11 @@
 {
-  "item": "Class ability icons - Mage, Priest, Monk, Assassin",
+  "item": "Class ability icons - Mage, Priest, Monk, Assassin, Warrior",
   "status": {
     "Mage": "APPROVED by Skyy + committed (answer: \"The ability icons look great, commit them\")",
     "Priest": "APPROVED by Skyy + committed (answer: \"The ability icons look great, commit them\")",
     "Monk": "APPROVED by Skyy + committed (answer: \"Yes, the shoe looks good, commit the Monk icons\")",
-    "Assassin": "APPROVED by Skyy + committed"
+    "Assassin": "APPROVED by Skyy + committed (answer: \"Yes, the Assassin hood looks good, commit them\")",
+    "Warrior": "APPROVED by Skyy + committed (answer: \"Yes, the Warrior icons look good, commit them\")"
   },
   "in_game": "NOT wired in, NOT seen in game",
   "generator": [
@@ -18,13 +19,14 @@
   "deterministic": true,
   "defaults_used": {
     "frame": "round dark slate frame band with a class-colour rim (bevelled, top lit)",
-    "background": "dark field tinted toward the class colour, radial: Mage #26335e -> #0e1226, Priest #43381e -> #15100c, Monk #4a2416 -> #170b09, Assassin #33224e -> #0e0916"
+    "background": "dark field tinted toward the class colour, radial: Mage #26335e -> #0e1226, Priest #43381e -> #15100c, Monk #4a2416 -> #170b09, Assassin #33224e -> #0e0916, Warrior #2a3a44 -> #0b1216"
   },
   "class_colours": {
     "Mage": "#7fb0e0",
     "Priest": "#f2e6a0",
     "Monk": "#f08a30",
-    "Assassin": "#b58cff"
+    "Assassin": "#b58cff",
+    "Warrior": "#e0b060"
   },
   "frame_geometry_px": {
     "outer_radius": 31.6,
@@ -296,6 +298,38 @@
       "#86582e",
       "#ae7e48",
       "#d0a868"
+    ],
+    "WAR_RIM": [
+      "#4a2a10",
+      "#7e5220",
+      "#b4823a",
+      "#e0b060",
+      "#f2d08c",
+      "#fbeccc"
+    ],
+    "AMBER": [
+      "#5a2c0e",
+      "#8e521a",
+      "#c4842c",
+      "#e0b060",
+      "#f4d48c",
+      "#fff0cc"
+    ],
+    "CRIMSON": [
+      "#2e0c18",
+      "#561424",
+      "#86202c",
+      "#b23634",
+      "#d65a44",
+      "#f08c66"
+    ],
+    "OAK": [
+      "#2c1a14",
+      "#4a2c1c",
+      "#6e4426",
+      "#94643a",
+      "#b88a56",
+      "#d8b47e"
     ]
   },
   "files": [
@@ -776,10 +810,136 @@
       ]
     },
     {
+      "path": "Common/Icons/Abilities/Warrior/RallyingGuard.png",
+      "bytes": 6690,
+      "sha256": "78d739c0435f89e2e3438e333ddefead1e7aa8f86446ff8e9377365a5783c9b7",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Warrior",
+      "ability": "Rallying Guard",
+      "file_name": "RallyingGuard.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "12 Mana / 24 s",
+      "ability_does": "You + party within 6 blocks take 20% less damage for 6 s; mobs within 8 blocks turn to you for 4 s. Shapes: Charge Rally (sprint), Rally on landing (mid-air), Hold the Line (crouch).",
+      "icon_shows": "a swallow-tailed crimson war banner (gold trim) on an oak spear with a steel leaf head, a small steel guard-shield emblem on the cloth, amber rally-cry arcs either side of the spear head",
+      "palettes": [
+        "CRIMSON",
+        "GOLD",
+        "STEEL",
+        "OAK",
+        "AMBER"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Warrior/ShieldShockwave.png",
+      "bytes": 7018,
+      "sha256": "289fa6707b09a4066ba11912687c32b79edc2d0950d1a23d0989c63767fc1ea6",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Warrior",
+      "ability": "Shield Shockwave",
+      "file_name": "ShieldShockwave.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "10 Mana / 12 s",
+      "ability_does": "6-block cone in front: stun 1.5 s, 1.0 H. Shapes: Charging Slam (sprint), Ground Pound (mid-air), Ring (crouch, 360 degrees).",
+      "icon_shows": "a round oak-plank shield (riveted iron rim, steel boss) slamming to the right, three amber shock arcs fanning out in a cone, two gold stun stars",
+      "palettes": [
+        "OAK",
+        "STEEL",
+        "IRON",
+        "AMBER",
+        "GOLD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Warrior/IronChain.png",
+      "bytes": 6824,
+      "sha256": "7f57c018be1c9d41a57c020fb35c0914860102feec17ac0662aaab1cc1d11779",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Warrior",
+      "ability": "Iron Chain",
+      "file_name": "IronChain.png",
+      "slot": "A2-alt",
+      "status": "PROPOSED",
+      "cost_cooldown": "12 Mana / 14 s",
+      "ability_does": "A 15-block chain hooks the first enemy and drags it to you, stun 1 s, 0.6 H. Shapes: Meet Halfway (sprint), Hook Down (mid-air), Anchor (crouch).",
+      "icon_shows": "a heavy steel hook (eye, shank, J curve + barb) flying out to the upper right on a chain of interlocking iron links, amber pull streaks along the chain",
+      "palettes": [
+        "STEEL",
+        "IRON",
+        "AMBER"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Warrior/BulwarkStance.png",
+      "bytes": 6637,
+      "sha256": "f5cc265a3ec4525dbbc35a6b9c125c54ac2926e5617e57155b947e27b6c0d838",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Warrior",
+      "ability": "Bulwark Stance",
+      "file_name": "BulwarkStance.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED",
+      "cost_cooldown": "14 Mana / 28 s",
+      "ability_does": "8 s stance: 50% less damage from the front, front projectiles blocked, you move 30% slower, allies behind you take 25% less. Crouch = Bulwark Wall.",
+      "icon_shows": "a tall gold-rimmed steel tower shield planted on the ground (crimson pale, gold boss, rivets), three red-fletched arrows stuck in its face, an impact spark",
+      "palettes": [
+        "STEEL",
+        "GOLD",
+        "CRIMSON",
+        "OAK",
+        "IRON"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Warrior/Unbreakable.png",
+      "bytes": 6920,
+      "sha256": "85f18b94982bfe7256b8783950e9993101895159063c164b23e023d1bfdda246",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Warrior",
+      "ability": "Unbreakable",
+      "file_name": "Unbreakable.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED",
+      "cost_cooldown": "16 Mana / 40 s",
+      "ability_does": "Taunt 8 blocks; for 5 s you cannot drop below 1 HP; at the end heal 20% of the damage taken. Crouch = Dig In.",
+      "icon_shows": "a closed steel great helm (eye slits, breath holes, riveted iron cross bands) cracked all over but held together - the cracks glow amber-gold - chips flying off",
+      "palettes": [
+        "STEEL",
+        "IRON",
+        "AMBER"
+      ]
+    },
+    {
       "path": "sheet.png",
-      "bytes": 674449,
+      "bytes": 833421,
       "what": "review sheet with EVERY done class: each icon at 4x / 2x / 64 / 32 px, grouped by class with the class colour swatch + APPROVED / FOR REVIEW tag, plus a dark HUD strip",
-      "sha256": "e455dbb7fbd8f6af0b50281465301b30eb43c9b9a50c7c5768c08e6259590bcb"
+      "sha256": "6a65f3a81f8b9efbfda01db71922c14641e2ae586b6ff687bb4f1d6779f70117"
     },
     {
       "path": "sheet-monk.png",
@@ -794,8 +954,14 @@
       "sha256": "3a93ffc888294a409bce2a874f3974e570b677f1b47299f90351309a9d56029b"
     },
     {
+      "path": "sheet-warrior.png",
+      "bytes": 192667,
+      "what": "the Warrior review sheet as Skyy reviewed + approved it (same layout)",
+      "sha256": "5780ffe07970c264b551a67789e6ac63e2fce771ede7e2f5dd6ceb2f7403ae39"
+    },
+    {
       "path": "README.md",
-      "bytes": 22812,
+      "bytes": 28233,
       "what": "what this is, ability -> meaning, colours, defaults, UNVERIFIED, open questions"
     }
   ]

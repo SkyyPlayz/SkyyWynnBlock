@@ -159,7 +159,7 @@ def build_manifest(out):
     ramps = {}
     for name in ("FRAME", "MAGE_RIM", "PRIEST_RIM", "MONK_RIM", "FIRE", "ROCK", "ARCANE", "MANA", "ICE", "STARLIGHT", "GOLD",
                  "HOLY", "SOUL", "ROSE", "FEATHER", "STEEL", "SAFFRON", "LINEN", "SKIN", "SHOE", "SOLE", "WIND", "WATER", "ASSN_RIM", "SHADE",
-                 "LILAC", "POISON", "GLASS", "SMOKE", "IRON", "WOOD"):
+                 "LILAC", "POISON", "GLASS", "SMOKE", "IRON", "WOOD", "WAR_RIM", "AMBER", "CRIMSON", "OAK"):
         ramps[name] = [M.K.hexs(c) for c in getattr(M, name)]
     return {
         "item": "Class ability icons - " + ", ".join(classes_done()),
@@ -174,7 +174,7 @@ def build_manifest(out):
         "defaults_used": {"frame": "round dark slate frame band with a class-colour rim (bevelled, top lit)",
                           "background": "dark field tinted toward the class colour, radial: " + ", ".join(
                               "%s %s -> %s" % (st.name, M.K.hexs(st.field_c), M.K.hexs(st.field_e))
-                              for st in [M.MAGE, M.PRIEST, M.MONK, M.ASSASSIN] if st.name in classes_done())},
+                              for st in [M.MAGE, M.PRIEST, M.MONK, M.ASSASSIN, M.WARRIOR] if st.name in classes_done())},
         "class_colours": {k: v["hex"] for k, v in CLASS_INFO.items()},
         "frame_geometry_px": {"outer_radius": M.K.R_OUT, "dark_band_inner": M.K.R_FRAME_IN, "rim_inner": M.K.R_RIM_IN,
                               "field_radius": M.K.R_FIELD, "centre": [32, 32]},

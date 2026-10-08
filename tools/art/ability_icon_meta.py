@@ -1,5 +1,5 @@
 """ability_icon_meta - what each SkyWynn class ability icon means (from research/cloud/Class-Ability-Shapes.md sections 4 Mage,
-5 Priest, 7 Monk, 8 Assassin; docs/answered/classes.md lines 142-146 for the Priest numbers) and what the icon shows. Used by the sheet +
+5 Priest, 7 Monk, 8 Assassin, 2 Warrior; docs/answered/classes.md lines 142-146 for the Priest numbers) and what the icon shows. Used by the sheet +
 manifest. CLASS_INFO "review": "approved" = Skyy OK'd + committed (its sheet-<class>.png is kept as reviewed, no longer rebuilt);
 "review" = waiting for Skyy (gets its own sheet-<class>.png); "answer" = Skyy's OK word for word (None = not relayed)."""
 
@@ -13,7 +13,10 @@ CLASS_INFO = {
              "answer": "Yes, the shoe looks good, commit the Monk icons"},
     "Assassin": {"hex": "#b58cff", "role": "priority killer + debuffer (Assassination)",
                  "theme": "stealth / poison / the kill - lilac rim, dark plum field", "review": "approved",
-                 "answer": None},  # approved for commit 2026-10-08 after hood v2 (exact words not relayed to the art agent)
+                 "answer": "Yes, the Assassin hood looks good, commit them"},
+    "Warrior": {"hex": "#e0b060", "role": "tank + crowd control (Swordsmanship)",
+                "theme": "shield wall / steel / rally - amber-gold rim, gunmetal field",
+                "review": "approved", "answer": "Yes, the Warrior icons look good, commit them"},
 }
 
 META = {
@@ -136,6 +139,37 @@ META = {
         "does": "Instant 3 s cloak + a 4-block smoke cloud: enemies inside lose you for 2 s and are Slowed 25%. Crouch = Ambush Smoke.",
         "shows": "an iron smoke bomb with a violet band and a lit fuse, bursting into a big billowing cloud of violet-grey smoke",
         "palette": ["SMOKE", "IRON", "LILAC", "WOOD"],
+    },
+    # ---- Warrior (research/cloud/Class-Ability-Shapes.md section 2)
+    "RallyingGuard": {
+        "slot": "A1", "status": "LOCKED", "cost_cd": "12 Mana / 24 s",
+        "does": "You + party within 6 blocks take 20% less damage for 6 s; mobs within 8 blocks turn to you for 4 s. Shapes: Charge Rally (sprint), Rally on landing (mid-air), Hold the Line (crouch).",
+        "shows": "a swallow-tailed crimson war banner (gold trim) on an oak spear with a steel leaf head, a small steel guard-shield emblem on the cloth, amber rally-cry arcs either side of the spear head",
+        "palette": ["CRIMSON", "GOLD", "STEEL", "OAK", "AMBER"],
+    },
+    "ShieldShockwave": {
+        "slot": "A2", "status": "LOCKED", "cost_cd": "10 Mana / 12 s",
+        "does": "6-block cone in front: stun 1.5 s, 1.0 H. Shapes: Charging Slam (sprint), Ground Pound (mid-air), Ring (crouch, 360 degrees).",
+        "shows": "a round oak-plank shield (riveted iron rim, steel boss) slamming to the right, three amber shock arcs fanning out in a cone, two gold stun stars",
+        "palette": ["OAK", "STEEL", "IRON", "AMBER", "GOLD"],
+    },
+    "IronChain": {
+        "slot": "A2-alt", "status": "PROPOSED", "cost_cd": "12 Mana / 14 s",
+        "does": "A 15-block chain hooks the first enemy and drags it to you, stun 1 s, 0.6 H. Shapes: Meet Halfway (sprint), Hook Down (mid-air), Anchor (crouch).",
+        "shows": "a heavy steel hook (eye, shank, J curve + barb) flying out to the upper right on a chain of interlocking iron links, amber pull streaks along the chain",
+        "palette": ["STEEL", "IRON", "AMBER"],
+    },
+    "BulwarkStance": {
+        "slot": "A1-alt A", "status": "PROPOSED", "cost_cd": "14 Mana / 28 s",
+        "does": "8 s stance: 50% less damage from the front, front projectiles blocked, you move 30% slower, allies behind you take 25% less. Crouch = Bulwark Wall.",
+        "shows": "a tall gold-rimmed steel tower shield planted on the ground (crimson pale, gold boss, rivets), three red-fletched arrows stuck in its face, an impact spark",
+        "palette": ["STEEL", "GOLD", "CRIMSON", "OAK", "IRON"],
+    },
+    "Unbreakable": {
+        "slot": "A1-alt B", "status": "PROPOSED", "cost_cd": "16 Mana / 40 s",
+        "does": "Taunt 8 blocks; for 5 s you cannot drop below 1 HP; at the end heal 20% of the damage taken. Crouch = Dig In.",
+        "shows": "a closed steel great helm (eye slits, breath holes, riveted iron cross bands) cracked all over but held together - the cracks glow amber-gold - chips flying off",
+        "palette": ["STEEL", "IRON", "AMBER"],
     },
 }
 
