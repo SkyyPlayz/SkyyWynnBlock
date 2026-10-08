@@ -42,28 +42,8 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
-### 1. Pebble - the talking rock NPC (Zone 1 town + starter shards)
-**Who:** Pebble is the guide of SkyWynn: a talking rock who has been "here four thousand years" (ticket #2, "been next" for 4,000 years),
-gives terrible advice with total confidence, rounds every number up, cheerful and wrong. Stands in the Waiting Square in front of the Zone 1
-temple; later walks new players through the starter shards. Lines like "Pebble would be impressed. Pebble is a rock." Background:
-`research/cloud/Barks-Signs-Tips.md`, `research/cloud/Player-Guide-First-Hour.md`, `research/cloud/Zone-1-Town-Layout.md` (section 8).
-
-**Why now:** the Zone 1 town build needs an NPC model for Pebble, and vanilla Hytale has no rock creature.
-
-**What to make (game-ready):**
-- A chunky Hytale-style mossy grey stone, about **knee to hip high on a player** (roughly 0.9-1.1 blocks), with a simple friendly face
-  (eyes + a mouth line, maybe moss eyebrows), small stubby stone feet so it can waddle, moss + a tiny sprout on top. Stone / moss colours
-  in the vanilla palette (match the look, paint your own pixels).
-- Pixel density at least vanilla creature level (the vanilla Rabbit uses a 160x160 texture; more detail is welcome).
-- Model + texture: `Common/NPC/SkyyTowns/Pebble/Pebble.blockymodel` + `Common/NPC/SkyyTowns/Pebble/Pebble_Texture.png`.
-- Icon: `Common/Icons/ModelsGenerated/Pebble.png` (128x128, like vanilla model icons).
-- Animations: `Common/NPC/SkyyTowns/Pebble/Animations/Default/` **Idle** (slow breathing wobble, blink), **Walk** (waddle on the stubby feet),
-  **Talk** (mouth moves, little bounce), **Wave** (a pebble-arm or a hop - your call, keep it cute); if quick, `Animations/Damage/`
-  **Hurt** (a wince) + **Death** (crumble, then pop back - it is a rock). Use the same folder layout and naming as vanilla creatures
-  (e.g. the Rabbit: `Common/NPC/Livestock/Rabbit/Animations/Default/Idle.blockyanim`).
-- List the node names in the manifest (the main session hangs a nameplate / chat bubble on the head node).
-
-**Ask Skyy (defaults in brackets):** size [knee-to-hip], face style [simple dot eyes + mouth line], extras on top [moss + one small sprout].
+### 2. Accessory Bag menu icon
+Next in the queue below - check with Skyy before starting.
 
 ## Queue (after Pebble - check with Skyy before starting each)
 2. **Accessory Bag menu icon** (64x64): the SkyWynn Menu tile and the Workbench "Accessories & Bags" tab still show the vanilla bag. The new
@@ -75,4 +55,11 @@ temple; later walks new players through the starter shards. Lines like "Pebble w
    skywynn-art skill, section 3.
 
 ## Done
-(nothing yet)
+### 1. Pebble - the talking rock NPC (2026-10-08)
+- Folder: `art/pebble/` (model, 256x192 texture, 128x128 icon, Idle/Walk/Talk/Wave + Damage/Hurt/Death animations,
+  `source/Pebble.bbmodel`, `sheet.png`, `manifest.json`, `README.md`). Generator scripts: `tools/art/` (make_pebble.py etc.).
+- About 0.99 blocks tall to the sprout tip, 25 nodes; hang the nameplate / chat bubble on the `Head` node (see manifest + README).
+- Loads in Blockbench 5.2.1 + Hytale Models 0.10.0; NOT yet tested in game (see README "UNVERIFIED").
+- Skyy's answer, word for word: "Pebble looks great, keep it as is"
+- Defaults kept: knee-to-hip size, dot eyes + mouth line, moss brows + faint blush, tiny pebble arms, moss + one sprout,
+  invulnerable recommended (Death kept as a spare gag), requested `Pebble/Pebble.blockymodel` path kept.
