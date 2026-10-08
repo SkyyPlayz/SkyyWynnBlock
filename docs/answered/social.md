@@ -44,4 +44,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - Profiles: the default cap is now 6 (your 2026-09-24 decision); lowering it never deletes a profile.
 
 ## New answers (2026-10-05 on - newest last, beats everything above)
-
+- BUG 2026-10-08 (Skyy, screenshot: new Assassin profile 'Lime' right after the Monk 'Pineapple', Health bar about half): "damage from the monk carried over to a new assassin profile." -> a profile switch keeps the player's current Health; a NEW profile must start at full Health, and a switch should restore that profile's own saved Health (or full) - not carry the other profile's damage. Fix in the queued SkyyProfiles lean round (with the big-SWITCH confirm). Also seen: Assassin kit Daggers Crude x1, 10,000 starter coins, island created (TEST 46 Assassin start PASSED).
