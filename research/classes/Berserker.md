@@ -31,7 +31,7 @@ flowchart TD
   A2 --> A2X["A2-alt Earthsplitter"]
   A1 -.-> M1["Duration+ | Radius+ | Power+ | Leech"]
   A1A -.-> M2["Duration+ | Power+ | Leech | Haste | Floor"]
-  A1B -.-> M3["Radius+ | Duration+ | Power+ | Ward"]
+  A1B -.-> M3["Radius+ | Duration+ | Power+ | Ward | Echo"]
   A2 -.-> M4["Duration+ | Radius+ | Pull | Leech"]
   A2X -.-> M5["Power+ | Split | Slow | Knockback+"]
   classDef locked fill:#2e7d32,color:#fff,stroke:#1b5e20
@@ -124,9 +124,11 @@ You own 4. You equip 2.
 
 🔵 **Proposed** - pick A or B
 
-- **Does:** plant a **war banner** for 15 s.
+- **Does:** plant a **war banner** for **30 s** with a **12-block** range (Skyy 2026-10-07).
 
-- The party within 8 blocks gets **+15% damage**. You get **+25%** while near it.
+- While in range: players **+8% damage + 8% defence**, party members **+12% / +12%**, you **+16% / +16%**.
+
+- The trade-off: less damage than Enrage / Blood Frenzy, but defence too - and it swaps mobility (you must stay near it) for a long duration.
 
 **Modifiers**
 
@@ -135,6 +137,8 @@ You own 4. You equip 2.
 - 💪 **Power+** - stronger buff.
 
 - 🛡️ **Ward** - allies near the banner get a small shield.
+
+- 🔁 **Echo** - when the banner ends, its buff lingers on everyone who was in range for a few seconds at reduced strength · each level: stronger echo.
 
 ### A2 · Whirlwind
 
@@ -235,6 +239,8 @@ Ideas - pick one.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-07: Warlord's Banner = 30 s, 12 blocks; +8% / +12% / +16% damage AND defence (players / party / you); Echo modifier (Skyy).
 
 - 2026-10-07: Blood Frenzy buffs allies through an aura (players 8 / party 16, only while inside); new Floor modifier (min stack 5 / 10, not with Duration+) (Skyy).
 
