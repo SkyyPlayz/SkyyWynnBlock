@@ -1,4 +1,4 @@
-# Class ability icons - Mage, Priest, Monk, Assassin, Warrior, Berserker (30 icons, 64 x 64)
+# Class ability icons - Mage, Priest, Monk, Assassin, Warrior, Berserker, Archer (35 icons, 64 x 64)
 
 ART-RESUME items 4 (Mage + Priest) and 6 (the other classes, one class per commit).
 
@@ -8,13 +8,15 @@ ART-RESUME items 4 (Mage + Priest) and 6 (the other classes, one class per commi
 | Monk | **APPROVED + committed** (59913fc). Review sheet as approved: `sheet-monk.png`. Skyy, word for word (2026-10-08): "They all look great, except the cyclone kick. The foot looks weird" -> Cyclone Kick redrawn (v2 foot); then Skyy, word for word: "Either wrap the foot or give his shoes don’t leave it bare" -> v3: the foot is wrapped in linen (no bare skin); then Skyy, word for word: "Use shoes instead, make the foot vertical like the first image" -> v4: the foot stands up again like the first image, in a soft Monk shoe. The other 4 Monk icons unchanged; then Skyy, word for word: "Yes, the shoe looks good, commit the Monk icons" |
 | Assassin | **APPROVED + committed** (dbe4bd8). Review sheet as approved: `sheet-assassin.png`. Skyy, word for word (2026-10-08): "The hood looks a little weird, do an assassins creed style hood, with a face mask" -> hood v2 (beak hood + face mask) on Cloak + First Strike and Shadow Clone. Toxin, God Killer, Vanishing Act unchanged; then Skyy, word for word: "Yes, the Assassin hood looks good, commit them" |
 | Warrior | **APPROVED + committed** (1cf4d85). Review sheet as approved: `sheet-warrior.png`. Skyy, word for word (2026-10-08): "Yes, the Warrior icons look good, commit them" (draft v1 approved as drawn, all defaults kept) |
-| Berserker | **APPROVED + committed** (the Berserker commit after 1cf4d85). Review sheet as approved: `sheet-berserker.png`. Skyy, word for word (2026-10-08): "Yes, the Berserker icons look good, commit them" (draft v1 approved as drawn, all defaults kept) |
+| Berserker | **APPROVED + committed** (b617dd7). Review sheet as approved: `sheet-berserker.png`. Skyy, word for word (2026-10-08): "Yes, the Berserker icons look good, commit them" (draft v1 approved as drawn, all defaults kept) |
+| Archer | **APPROVED + committed** (the Archer commit after b617dd7). Review sheet as approved: `sheet-archer.png` (the last class). Skyy on v1, word for word (2026-10-08): "If you can, give the arrows a bit more detail." -> v2: arrow detail pass on Pinning Shot, Rapid Fire, Explosive Arrow and Arrow Rain; Hunter's Net unchanged; then Skyy, word for word: "Yes, the Archer icons look good, commit them" (v2 approved as drawn, all defaults kept) |
 
 None of them is wired in or seen in game yet. Original pixels drawn from code (Python + numpy + Pillow). No vanilla Hytale file,
 other mod or reference picture was read, copied, traced or recoloured. The approved Mage + Priest PNGs are byte-identical to the
 committed ones (checked after adding Monk + Assassin).
 
-`sheet.png` shows every class together; `sheet-monk.png` / `sheet-assassin.png` / `sheet-warrior.png` / `sheet-berserker.png` are the per-class sheets Skyy approved.
+`sheet.png` shows every class together; `sheet-monk.png` / `sheet-assassin.png` / `sheet-warrior.png` / `sheet-berserker.png` /
+`sheet-archer.png` are the per-class sheets Skyy approved.
 
 ## 1. Files
 
@@ -26,10 +28,12 @@ committed ones (checked after adding Monk + Assassin).
 | `Common/Icons/Abilities/Assassin/CloakFirstStrike.png`, `Toxin.png`, `GodKiller.png`, `ShadowClone.png`, `VanishingAct.png` | 5 Assassin icons (approved) |
 | `Common/Icons/Abilities/Warrior/RallyingGuard.png`, `ShieldShockwave.png`, `IronChain.png`, `BulwarkStance.png`, `Unbreakable.png` | 5 Warrior icons (approved) |
 | `Common/Icons/Abilities/Berserker/Enrage.png`, `Whirlwind.png`, `Earthsplitter.png`, `BloodFrenzy.png`, `WarlordsBanner.png` | 5 Berserker icons (approved) |
+| `Common/Icons/Abilities/Archer/PinningShot.png`, `RapidFire.png`, `ExplosiveArrow.png`, `ArrowRain.png`, `HuntersNet.png` | 5 Archer icons (approved, v2 arrow detail) |
 | `sheet.png` | every done class: big labels, plain page, class colour swatch + APPROVED / FOR REVIEW tag per class, dark HUD strip |
 | `sheet-monk.png`, `sheet-assassin.png` | the same layout for ONE class each (kept as Skyy reviewed + approved them) |
 | `sheet-warrior.png` | the same layout for the Warrior icons only (kept as Skyy reviewed + approved it) |
 | `sheet-berserker.png` | the same layout for the Berserker icons only (kept as Skyy reviewed + approved it) |
+| `sheet-archer.png` | the same layout for the Archer icons only (kept as Skyy reviewed + approved it) |
 | `manifest.json` | every file: path, bytes, sha256, size, class, slot, ability text, what the icon shows, colour ramps |
 | `README.md` | this file |
 
@@ -39,7 +43,7 @@ matter). No pure `#000000` / `#ffffff` pixel. File names have no spaces or symbo
 
 ## 2. Ability -> meaning -> icon
 
-From `research/cloud/Class-Ability-Shapes.md` sections 4 Mage, 5 Priest, 7 Monk, 8 Assassin, 2 Warrior, 6 Berserker (Priest numbers:
+From `research/cloud/Class-Ability-Shapes.md` sections 4 Mage, 5 Priest, 7 Monk, 8 Assassin, 2 Warrior, 6 Berserker, 3 Archer (Priest numbers:
 `docs/answered/classes.md` lines 142-146).
 One icon per ability - all 4 shapes (walking / sprinting / mid-air / crouch) share it.
 
@@ -121,6 +125,24 @@ Berserker's red-on-oxblood stay apart at 32 px (checked side by side in `review/
 gunmetal. The battleaxe is the class emblem's bearded double-bit axe (red-wrapped haft, ruby). Warlord's Banner is a HANGING dark
 war standard on an iron pole (vs the Warrior's sideways crimson swallowtail on a spear) so the two banners do not mix up.
 
+### Archer (class colour `#8fd67a`; crowd control + focus marker - the hunt / roots / volleys) - APPROVED
+
+| Icon | Slot | What the ability does | What the icon shows |
+|---|---|---|---|
+| **Pinning Shot** (`PinningShot.png`) | A1, LOCKED, 10 / 12 s | piercing arrow 30 blocks (2 enemies), 1.2 H, Rooted 2 s, Marked 6 s (+15%) | a big detailed arrow driven into the ground (broadhead half buried), two thick green roots curling up out of the earth to grip its shaft, a green root ring round the impact |
+| **Rapid Fire** (`RapidFire.png`) | A2, LOCKED, 14 / 20 s | 15 arrows in 3 s, each 0.5 H | three detailed arrows flying side by side to the upper right, staggered like shots loosed one after another, green speed streaks behind each |
+| **Explosive Arrow** (`ExplosiveArrow.png`) | A2-alt, LOCKED, 12 / 14 s | your next charged shot does 2x in a 4-block explosion | a detailed arrow with a dark canvas powder pouch lashed behind its head (red cord) flying into a jagged orange fire blast, sparks |
+| **Arrow Rain** (`ArrowRain.png`) | A1-alt A, PROPOSED, 16 / 20 s | 6-block area 3 s, 2.0 H total, Slowed 30%; still inside after 2 s = Rooted 1.5 s + Marked | four arrows falling steeply (three big in front, one smaller behind) onto a glowing green target zone on the ground, two already stuck in it |
+| **Hunter's Net** (`HuntersNet.png`) | A1-alt B, PROPOSED, 14 / 18 s | net bursts into a 4-block root zone 3 s, 0.5 H, Marked 8 s | a rope net thrown open on its point (diamond), cords bowed under tension, knots at the crossings, iron weights on the four corners, green glow behind |
+
+Archer look: leaf-green rim from the class colour `#8fd67a`, dark FOREST field (`#24381c` -> `#091108`, a deep moss green). Why:
+Archer is the only green class, so the rim already reads; the field stays in the rim's hue family like Mage navy / Assassin plum /
+Berserker oxblood, and says "woods / the hunt". It is warmer and greener than the Warrior's steel-teal gunmetal `#2a3a44`, so the
+two dark fields do not mix up beside each other (checked side by side in `review/archer-v1.png`). Every arrow is the class
+emblem's arrow (v2 detail, see section 5): oak shaft, steel broadhead, barred red fletching with a cream cock feather (the emblem's red + cream). Green is
+used for the Archer's "control" effects (roots, root ring, rain zone, net glow) - the Assassin's Toxin is a yellower poison green
+inside a lilac rim, so the two stay apart. Fire only on Explosive Arrow (the Mage FIRE ramp, so it reads as "boom" at a glance).
+
 Mage vs Priest at a glance: blue rim + navy field + cool arcane colours vs gold rim + warm umber field + gold / ivory / soul-cyan.
 The Priest's cyan is the soul-cage v2 cyan from the Priest class emblem, so the two families match.
 
@@ -129,14 +151,14 @@ The Priest's cyan is the soul-cage v2 cyan from the Priest class emblem, so the 
 | Choice | Default used |
 |---|---|
 | Frame style | **round dark frame, class-colour rim**: a dark slate band (r 31.6 -> 28.6 px), a bevelled class-colour rim (28.6 -> 26.2 px), a 1 px dark line, all top-lit |
-| Background | **dark, class tint**: radial field, Mage navy `#26335e` -> `#0e1226`, Priest warm umber `#43381e` -> `#15100c`, Monk dark rust `#4a2416` -> `#170b09`, Assassin dark plum `#33224e` -> `#0e0916`, Warrior gunmetal `#2a3a44` -> `#0b1216`, Berserker oxblood `#42161e` -> `#120609` |
+| Background | **dark, class tint**: radial field, Mage navy `#26335e` -> `#0e1226`, Priest warm umber `#43381e` -> `#15100c`, Monk dark rust `#4a2416` -> `#170b09`, Assassin dark plum `#33224e` -> `#0e0916`, Warrior gunmetal `#2a3a44` -> `#0b1216`, Berserker oxblood `#42161e` -> `#120609`, Archer forest `#24381c` -> `#091108` |
 
-Skyy approved both defaults with the Mage + Priest set; Monk, Assassin, Warrior and Berserker use the same frame and the same kind of field.
+Skyy approved both defaults with the Mage + Priest set; Monk, Assassin, Warrior, Berserker and Archer use the same frame and the same kind of field.
 
 ## 4. Colours
 
 Class colours (= the class emblem colours, `research/cloud/class-art/README.md`): Mage `#7fb0e0`, Priest `#f2e6a0`,
-Monk Saffron `#f08a30` (LOCKED by Skyy), Assassin `#b58cff`, Warrior `#e0b060`, Berserker `#d9443f`.
+Monk Saffron `#f08a30` (LOCKED by Skyy), Assassin `#b58cff`, Warrior `#e0b060`, Berserker `#d9443f`, Archer `#8fd67a`.
 
 | Ramp (dark -> light) | Used for |
 |---|---|
@@ -164,6 +186,8 @@ Monk Saffron `#f08a30` (LOCKED by Skyy), Assassin `#b58cff`, Warrior `#e0b060`, 
 | AMBER `#5a2c0e ... #fff0cc`, CRIMSON `#2e0c18 ... #f08c66`, OAK `#2c1a14 ... #d8b47e` | Warrior shout / shock arcs + glowing cracks; banner, pale + fletching; spear shaft, shield planks, arrow shafts. STEEL + GOLD reused for blades, shields, helm, trim |
 | BERS_RIM `#4a0e16 #7e1a22 #b02c30 #d9443f #ee7a64 #f8b8a0` | Berserker rim (from `#d9443f`) |
 | BLOOD `#2a0612 ... #ffc8a8`, BONE `#3c2e2a ... #f4ecd8`, STONE `#1c161c ... #a8968a`, CHAR `#120c12 ... #544044` | Berserker rage fire, slashes, haft wraps, banner sign + aura; beast skull, stack pip; scorched ground + rocks; dark banner cloth. FIRE (Mage) reused for the ember crack + inner flames; IRON / STEEL / OAK for the axe + standard |
+| ARCH_RIM `#1c461e #2c6a2e #549c44 #8fd67a #bce8a4 #e6f8da` | Archer rim (from `#8fd67a`) |
+| LEAF `#122a16 ... #d8f2b4`, ROPE `#36261a ... #eadaac`, EARTH `#1a1410 ... #7a5c40` | Archer roots, grass edge, root ring, rain zone, speed streaks, net glow; Hunter's Net cords + knots, powder pouch; Pinning Shot ground. OAK + STEEL (arrow shaft + broadhead), CRIMSON + FEATHER (barred red fletching + cream cock feather), IRON (net weights), FIRE (Explosive Arrow blast) reused |
 
 Full ramps: `manifest.json` -> `ramps_dark_to_light`. Shadows lean violet / blue, lights lean warm (hue-shifted).
 
@@ -227,6 +251,43 @@ Strike: the fade-out now starts lower (below the mask) so the masked face stays 
 dark. Lilac rim, plum field, gold crit star, clone sparks unchanged.
 Before / after: `/workspace/ability-icons-art/review/assassin-hood-v2.png`.
 
+### Archer (draft v1)
+Built at 64 px, checked at 32 px (box-filtered) and fixed before the review sheet:
+- Pinning Shot: the first vines spiralled round the shaft and turned to green mud - now two thick roots curl out of the ground and
+  hook the shaft, with a root ring on the ground; a bigger arrow; the earth covers the buried tip.
+- Hunter's Net: the first mesh was too fine (read as a checkerboard) - now 4 x 4 cells with thicker cords, knots at the crossings,
+  the weights sit right on the corners, a stronger green glow behind.
+- Arrow Rain: the first arrows lined up into one long stick - now two staggered rows of slimmer arrows; a brighter green target zone.
+- Rapid Fire: arrows 20% bigger, the glow behind made small (it made it look like Hunter's Net at 32 px); the glint is on the top arrow's head.
+- Explosive Arrow: the powder pouch is canvas (ROPE) instead of iron (it vanished on the dark field). Otherwise unchanged.
+Validator (v1): all 35 PASS; the closest pair at 32 px is Pinning Shot vs Arrow Rain (10.8, want > 10) - both show arrows + ground,
+the brown earth vs the green rain zone keep them apart. Earlier tries failed the check (Rapid Fire vs Hunter's Net 8.9) and were fixed.
+Review image: `/workspace/ability-icons-art/review/archer-v1.png` (review only, outside this folder).
+
+**Arrow detail pass v2 (after Skyy: "If you can, give the arrows a bit more detail."):** one shared arrow drawing (`war_arrow`
+in `make_ability_icons.py`), so every Archer arrow changed the same way:
+- Shaft: a little thicker (2.2 -> 2.6 px at full size), three tones across it - a lit oak edge on the light side, mid oak, a
+  shadow edge - plus faint darker grain dashes on long shafts (big arrows only, so it is not noisy). A dark nock cap on the tail.
+- Head: a bigger barbed broadhead (two swept-back barbs) on a short iron socket; the head is split down the middle into a lit half
+  and a shaded half, with a bright edge on the lit side and a centre ridge, so it reads as sharp steel, not a grey blob.
+- Fletching: two SEPARATE swept vanes, one either side of the shaft (the shaft is drawn over their roots, so they do not merge):
+  the red feather with one bold cream bar (two thin bars turned to pink mush at 64 px - tried and dropped), and the cream cock
+  feather with a soft grey tip. A thin dark-red thread wrap on the shaft just in front of the feathers.
+Per icon:
+- Pinning Shot: the arrow is 1.5 px shorter at the tail so the bigger feathers clear the rim; the old shaft glint is gone (it sat
+  on the feathers) - the broadhead's lit edge is the highlight now. Roots, ground, root ring unchanged.
+- Rapid Fire: the same three arrows with the new detail. Layout, streaks, glow unchanged.
+- Explosive Arrow: the powder pouch moved 2.5 px back (the bigger head + socket covered it) and is a darker canvas so it stands
+  off the lit oak shaft. Blast, sparks unchanged.
+- Arrow Rain: small arrows turned into "all feather + head" blobs with the bigger detail, so the volley is now FOUR falling
+  arrows - three bigger ones in front (length 19, was 14) and one smaller one behind - instead of five small ones. Target zone,
+  streaks, the two stuck arrows unchanged.
+- Hunter's Net: no arrow in it - unchanged (byte-identical to v1).
+Validator: all 35 PASS; the closest Archer pair at 32 px is now Pinning Shot vs Arrow Rain (13.1, want > 10; v1 was 10.8) -
+the closest pair overall is still Warrior Rallying Guard vs Unbreakable (12.9).
+Before / after: `/workspace/ability-icons-art/review/archer-v1-vs-v2.png`; review image: `/workspace/ability-icons-art/review/archer-v2.png`
+(both review only, outside this folder). Approved as drawn (v2).
+
 ### Berserker (draft v1)
 Built at 64 px, checked at 32 px (box-filtered) and fixed before the review sheet:
 - Enrage: first horns were short stubs (read as ears) - now long, upswept, tapering horns, so the skull reads as a horned beast.
@@ -288,6 +349,18 @@ python3 tools/art/validate_ability_icons.py  # size, RGBA, hard alpha, no #000/#
 
 ## 8. Open questions for Skyy (each with a default)
 
+### Archer (answered - all defaults kept)
+| # | Question | Default |
+|---|---|---|
+| 1 | Field: dark forest green (same hue as the rim, like the other classes) - OK, or a neutral dark brown / bark so the green rim pops more? | **[forest `#24381c` -> `#091108`]** |
+| 2 | Arrows use the class emblem's barred red fletching + cream cock feather - OK, or green fletching to match the rim? | **[red + cream, like the emblem - contrast with the green]** |
+| 3 | Pinning Shot shows the ROOT (green roots gripping a stuck arrow) but not the MARK (+15% damage taken). Add a small mark sign, or leave it? | **[roots only - keeps the icon simple at 32 px (a mark sign was not tried yet)]** |
+| 4 | Explosive Arrow: an arrow with a powder pouch flying into a fire blast - OK, or a bomb-headed arrow with a lit fuse? | **[powder pouch + blast]** |
+| 5 | Arrow Rain vs Rapid Fire: both are "many arrows" - steep falling volley on a target zone vs three flat flying arrows. Different enough? | **[yes - falling + ground zone vs flying + streaks]** |
+| 6 | Hunter's Net: rope net with iron corner weights - OK, or a green "root net" (vines) to match Pinning Shot's roots? | **[rope net - reads as a net, not a plant]** |
+| 7 | Arrow detail v2: the red feather has ONE cream bar (two bars blurred into pink at 64 px). OK, or try two thin bars anyway? | **[one bold bar]** |
+| 8 | Arrow Rain v2 shows four bigger falling arrows instead of five small ones (the detail needs the room). OK? | **[four - each arrow reads]** |
+
 ### Berserker (answered - all defaults kept)
 | # | Question | Default |
 |---|---|---|
@@ -312,6 +385,7 @@ Monk: answered ("Yes, the shoe looks good, commit the Monk icons" - the defaults
 Assassin: answered ("Yes, the Assassin hood looks good, commit them" - the defaults below were kept as drawn).
 Warrior: answered ("Yes, the Warrior icons look good, commit them" - the defaults above were kept as drawn).
 Berserker: answered ("Yes, the Berserker icons look good, commit them" - the defaults above were kept as drawn).
+Archer: answered ("Yes, the Archer icons look good, commit them" - the defaults above were kept as drawn, v2 arrows).
 
 ### Monk
 | # | Question | Default |

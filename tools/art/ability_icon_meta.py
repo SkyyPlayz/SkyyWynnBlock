@@ -1,5 +1,5 @@
 """ability_icon_meta - what each SkyWynn class ability icon means (from research/cloud/Class-Ability-Shapes.md sections 4 Mage,
-5 Priest, 7 Monk, 8 Assassin, 2 Warrior, 6 Berserker; docs/answered/classes.md lines 142-146 for the Priest numbers) and what the icon shows. Used by the sheet +
+5 Priest, 7 Monk, 8 Assassin, 2 Warrior, 6 Berserker, 3 Archer; docs/answered/classes.md lines 142-146 for the Priest numbers) and what the icon shows. Used by the sheet +
 manifest. CLASS_INFO "review": "approved" = Skyy OK'd + committed (its sheet-<class>.png is kept as reviewed, no longer rebuilt);
 "review" = waiting for Skyy (gets its own sheet-<class>.png); "answer" = Skyy's OK word for word (None = not relayed)."""
 
@@ -20,6 +20,9 @@ CLASS_INFO = {
     "Berserker": {"hex": "#d9443f", "role": "party damage buffer + sustained melee (Fury)",
                   "theme": "fury / blood / the axe - blood-red rim, oxblood field",
                   "review": "approved", "answer": "Yes, the Berserker icons look good, commit them"},
+    "Archer": {"hex": "#8fd67a", "role": "crowd control + focus marker (Archery)",
+               "theme": "the hunt / roots / volleys - leaf-green rim, dark forest field",
+               "review": "approved", "answer": "Yes, the Archer icons look good, commit them"},
 }
 
 META = {
@@ -204,6 +207,37 @@ META = {
         "does": "Plant a banner at your feet: 30 s, 12 blocks, +8 / 12 / 16% damage + defence + attack speed; kills extend it; it falls when you leave. Crouch = Rooted Banner.",
         "shows": "a tall iron war standard (spear finial, crossbar) planted in a glowing blood-red aura ring, a tattered dark banner with a red border and red crossed-axe sign hanging from the crossbar",
         "palette": ["CHAR", "BLOOD", "IRON", "STEEL", "BONE"],
+    },
+    # ---- Archer (research/cloud/Class-Ability-Shapes.md section 3)
+    "PinningShot": {
+        "slot": "A1", "status": "LOCKED", "cost_cd": "10 Mana / 12 s",
+        "does": "Piercing arrow, 30 blocks, up to 2 enemies, 1.2 H, Rooted 2 s + Marked 6 s (+15% damage taken). Shapes: Running Pin (sprint), Rain Pin (mid-air), Steady Aim (crouch).",
+        "shows": "a big arrow (oak shaft with a lit edge + grain, red thread wrap, the emblem's red feather with a cream bar + cream cock feather, steel broadhead) driven into the ground, two thick green roots curling up out of the earth to grip the shaft, a green root ring round the impact",
+        "palette": ["OAK", "STEEL", "CRIMSON", "FEATHER", "LEAF", "EARTH"],
+    },
+    "RapidFire": {
+        "slot": "A2", "status": "LOCKED", "cost_cd": "14 Mana / 20 s",
+        "does": "Loose 15 arrows over 3 s, each 0.5 H. Shapes: Running Fire (sprint), Hover Fire (mid-air), Braced (crouch).",
+        "shows": "three detailed arrows (barbed steel broadheads with a lit edge, iron sockets, lit oak shafts, red + cream feathers, dark nocks) flying side by side toward the upper right, staggered like shots loosed one after another, green speed streaks behind each",
+        "palette": ["OAK", "STEEL", "CRIMSON", "FEATHER", "LEAF"],
+    },
+    "ExplosiveArrow": {
+        "slot": "A2-alt", "status": "LOCKED", "cost_cd": "12 Mana / 14 s",
+        "does": "Your next charged shot does 2x damage in a 4-block explosion. Shapes: Quick Fuse (sprint), Mortar (mid-air), Set Charge (crouch).",
+        "shows": "a detailed arrow (barbed steel broadhead, lit oak shaft, red + cream feathers) with a dark canvas powder pouch lashed behind its head (red cord) flying into a jagged orange fire blast with a hot core, sparks flying",
+        "palette": ["OAK", "STEEL", "CRIMSON", "FEATHER", "ROPE", "FIRE"],
+    },
+    "ArrowRain": {
+        "slot": "A1-alt A", "status": "PROPOSED", "cost_cd": "16 Mana / 20 s",
+        "does": "6-block area for 3 s, 2.0 H total, Slowed 30%; still inside after 2 s = Rooted 1.5 s + Marked. Shapes: Trailing Rain (sprint), Overhead Rain (mid-air), Kneeling Volley (crouch).",
+        "shows": "a volley of four arrows falling steeply (three big in front, one smaller behind; steel broadheads, red + cream feathers, green streaks above them) onto a glowing green target zone on the ground, two arrows already stuck inside it",
+        "palette": ["OAK", "STEEL", "CRIMSON", "FEATHER", "LEAF"],
+    },
+    "HuntersNet": {
+        "slot": "A1-alt B", "status": "PROPOSED", "cost_cd": "14 Mana / 18 s",
+        "does": "Throw a net that bursts into a 4-block root zone for 3 s, 0.5 H, Marked 8 s. Shapes: Snare Line (sprint), Drop Net (mid-air), Set Trap (crouch).",
+        "shows": "a rope net thrown open on its point (diamond), cords bowed under tension, knots at the crossings, four iron weights on the corners, a faint green glow behind",
+        "palette": ["ROPE", "IRON", "LEAF"],
     },
 }
 

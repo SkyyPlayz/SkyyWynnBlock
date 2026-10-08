@@ -1451,6 +1451,226 @@ def warlords_banner():
     return back, g, front, glints
 
 
+# ================================================================================================================= ARCHER
+# Archer (class colour #8fd67a - the class emblem colour): crowd control + focus marker - leaf-green rim, dark FOREST field (a deep
+# moss green, warmer + greener than the Warrior's steel-teal gunmetal), oak shafts with steel broadheads and the emblem's barred red
+# fletching with a cream cock feather, rope nets, green root vines, fire for the explosive head.
+ARCH_RIM = ramp("#1c461e", "#2c6a2e", "#549c44", "#8fd67a", "#bce8a4", "#e6f8da")        # from Archer #8fd67a
+LEAF = ramp("#122a16", "#1c4420", "#2c642a", "#4a8a36", "#74b44c", "#a6da76", "#d8f2b4")  # vines, grass, leaves, motion light
+ROPE = ramp("#36261a", "#5a4228", "#82643a", "#aa8c56", "#ccb07a", "#eadaac")            # hunter's net cord
+EARTH = ramp("#1a1410", "#2c2018", "#443022", "#5e4430", "#7a5c40")                      # ground under the pinned arrow
+
+ARCHER = K.Style("Archer", "#8fd67a", ARCH_RIM, field_c="#24381c", field_e="#091108",
+                 outline="#040904", frame=FRAME, glow_c="#8fd67a")
+
+
+def war_arrow(g, x0, y0, x1, y1, w=1.0, head=True, fletch=True):
+    """an Archer arrow, tail (x0, y0) -> tip (x1, y1), drawn like the class emblem's arrow (v2 detail pass): oak shaft with a lit
+    edge, a shadow edge and a faint grain dash; a dark nock; two separate vanes - a red feather with two cream bars and a cream cock
+    feather - with a red thread wrap in front; an iron socket and a barbed steel broadhead split into a lit + a shaded half with a
+    bright edge. w scales everything. Returns the mask."""
+    dx, dy = x1 - x0, y1 - y0
+    L = math.hypot(dx, dy)
+    ux, uy = dx / L, dy / L
+    nx, ny = -uy, ux
+    if nx * -0.55 + ny * -0.83 < 0:                          # n = the side facing the light (up-left)
+        nx, ny = -nx, -ny
+    A = (X - x0) * ux + (Y - y0) * uy                         # along the arrow, 0 at the tail
+    P = (X - x0) * nx + (Y - y0) * ny                         # across it, > 0 = lit side
+
+    def pt(a, p):
+        return (x0 + ux * a + nx * p, y0 + uy * a + ny * p)
+
+    r = 1.1 * w                                               # shaft half-width
+    hl = 6.6 * w if head else 0.0                             # head length
+    m = np.zeros(X.shape, bool)
+    if fletch:
+        fl = 7.0 * w
+        for side, rmp in ((1, CRIMSON), (-1, FEATHER)):
+            h = 2.9 * w
+            vane = poly([pt(0.4, side * r * 0.6), pt(fl, side * r * 0.6), pt(fl * 0.5, side * (r + h)),
+                         pt(-0.6 * w, side * (r + h * 0.92)), pt(-0.2, side * r * 0.6)])
+            g.bevel(vane, rmp, face=0.6 if rmp is CRIMSON else 0.66, bevel=0.5, grad=0.0, gain=0.7)
+            if rmp is CRIMSON:                                # the emblem's barred red feather: two cream bars, slanted like the vane
+                q = A + 0.5 * (P * side - r)
+                g.put(vane & (q > fl * 0.36) & (q < fl * 0.36 + 1.45 * w), rs(FEATHER, 0.8))   # one bold cream bar
+            else:
+                g.put(vane & (P * side > r + h * 0.7), rs(FEATHER, 0.45))        # soft grey tip on the cream cock feather
+            m |= vane
+    # shaft: mid oak, lit edge, shadow edge, faint grain dashes
+    shaft = capsule(x0 - ux * 0.8 * w, y0 - uy * 0.8 * w, x1 - ux * hl * 0.7, y1 - uy * hl * 0.7, r)
+    g.put(shaft, rs(OAK, 0.6))
+    g.put(shaft & (P > r * 0.3), rs(OAK, 0.95))
+    g.put(shaft & (P < -r * 0.45), rs(OAK, 0.3))
+    if w >= 1.0:
+        per = 7.0 * w
+        grain = shaft & (np.abs(P + r * 0.05) < 0.28) & (np.mod(A - 2.0, per) < 2.2 * w) & (A > (7.0 * w if fletch else 1.0)) \
+            & (A < L - hl - 1.5)
+        g.put(grain, rs(OAK, 0.4))
+    m |= shaft
+    # nock: a dark cap on the tail
+    nock = capsule(x0 - ux * 1.0 * w, y0 - uy * 1.0 * w, x0 + ux * 0.6 * w, y0 + uy * 0.6 * w, r * 1.05)
+    g.put(nock, rs(OAK, 0.15))
+    g.put(nock & (P > r * 0.3), rs(OAK, 0.4))
+    m |= nock
+    if fletch:                                                 # red thread wrap in front of the feathers
+        wrap = shaft & (A > 7.0 * w + 1.3 * w) & (A < 7.0 * w + 2.2 * w)
+        g.put(wrap, rs(CRIMSON, 0.3))
+        g.put(wrap & (P > r * 0.3), rs(CRIMSON, 0.55))
+    if head:
+        # iron socket
+        sk = capsule(x1 - ux * (hl * 0.8 + 1.6 * w), y1 - uy * (hl * 0.8 + 1.6 * w), x1 - ux * hl * 0.8, y1 - uy * hl * 0.8, r * 1.1)
+        g.put(sk, rs(IRON, 0.45))
+        g.put(sk & (P > r * 0.3), rs(IRON, 0.85))
+        m |= sk
+        hw = 2.75 * w
+        pts = [pt(L, 0), pt(L - hl * 0.66, hw), pt(L - hl * 1.02, hw * 0.78), pt(L - hl * 0.8, r * 0.7),
+               pt(L - hl * 0.8, -r * 0.7), pt(L - hl * 1.02, -hw * 0.78), pt(L - hl * 0.66, -hw)]
+        hd = poly(pts)
+        g.put(hd, rs(STEEL, 0.48))                                         # shaded half
+        g.put(hd & (P > -0.15), rs(STEEL, 0.74))                           # lit half
+        inner = poly([(px - nx * 0.75 - ux * 0.5, py - ny * 0.75 - uy * 0.5) for px, py in pts])
+        g.put(hd & (P > 0.6) & ~inner, rs(STEEL, 1.0))                     # bright lit edge
+        g.put(hd & (np.abs(P + 0.1) < 0.32) & (A > L - hl * 0.85) & (A < L - 0.8), rs(STEEL, 0.55))   # centre ridge
+        m |= hd
+    return m
+
+
+def pinning_shot():
+    """Pinning Shot: a big arrow driven into the ground, two thick green roots curling up out of the earth to grip its shaft,
+    a green root ring round the impact (Rooted 2 s + Marked)"""
+    back, g, front = L3()
+    tip = (27.0, 47.0)
+    tail = (45.5, 13.5)
+    gy = 41.5
+    glow(back, circle(30.0, 30.0, 7), "#8fd67a", 5.0, 0.35)
+    ground = (Y > gy + 0.8 * np.sin((X - 6.0) / 5.0)) & K.field_disc()
+    tg = np.clip((Y - gy) / 14.0, 0, 1)
+    war_arrow(g, tail[0], tail[1], tip[0], tip[1], 1.55)
+    g.put(ground, rs(EARTH, 1.0 - tg * 0.5))                                                     # earth over the buried tip
+    g.put(ground & (Y < gy + 1.4 + 0.8 * np.sin((X - 6.0) / 5.0)), rs(LEAF, 0.45))              # grass edge
+    g.put(ering(28.0, 46.5, 11.0, 2.6, 1.1) & ground, rs(LEAF, 0.8))                             # root ring on the ground
+    # two thick roots curling out of the ground and hooking round the shaft
+    for pts in ([(20.5, 45.5), (19.0, 40.0), (21.5, 35.0), (26.5, 33.5), (30.5, 35.5)],
+                [(36.0, 45.5), (38.0, 40.5), (36.5, 36.0), (32.0, 34.5), (29.0, 30.5), (31.0, 27.5)]):
+        root = line(pts, 1.8)
+        g.bevel(root, LEAF, face=0.78, bevel=0.5, grad=0.4, gain=0.85)
+        lx, ly = pts[-1]
+        g.bevel(circle(lx, ly, 1.6), LEAF, face=0.85, bevel=0.4, grad=0.2, gain=0.7)
+    glints = []
+    return back, g, front, glints
+
+
+def rapid_fire():
+    """Rapid Fire: three arrows loosed one after another, flying side by side to the upper right with green speed streaks"""
+    back, g, front = L3()
+    ang = math.radians(-38.0)
+    ux, uy = math.cos(ang), math.sin(ang)
+    nx, ny = -uy, ux
+    glow(back, circle(32.0, 32.0, 6), "#8fd67a", 4.0, 0.3)
+    for k, (off, along) in enumerate(((-10.0, -3.0), (0.0, 3.0), (10.0, -1.0))):
+        cx, cy = 31.0 + nx * off + ux * along, 33.0 + ny * off + uy * along
+        x0, y0 = cx - ux * 14.0, cy - uy * 14.0
+        x1, y1 = cx + ux * 13.0, cy + uy * 13.0
+        # speed streaks behind each arrow
+        for s_ in (-1.6, 1.6):
+            sx0, sy0 = x0 - ux * 1.5 + nx * s_, y0 - uy * 1.5 + ny * s_
+            back.put(capsule(sx0, sy0, sx0 - ux * 8.0, sy0 - uy * 8.0, 0.55, 0.2), rs(LEAF, 0.85), alpha=0.85)
+        war_arrow(g, x0, y0, x1, y1, 1.2)
+        if k == 0:
+            glints = [(int(round(x1 - ux * 2.5)), int(round(y1 - uy * 2.5)), "#f0f2f4")]
+    return back, g, front, glints
+
+
+def explosive_arrow():
+    """Explosive Arrow: an arrow with a powder charge lashed behind its head, bursting into a fiery blast (2x in 4 blocks)"""
+    back, g, front = L3()
+    bx, by = 41.0, 23.0
+    # the blast: a jagged star of fire with a hot core, smoke puffs round it
+    pts = []
+    for k in range(20):
+        a = math.radians(k * 18 - 90)
+        r = 14.0 if k % 2 == 0 else 8.0
+        r *= (1.0, 0.82, 1.08, 0.9)[k % 4] if k % 2 == 0 else 1.0
+        pts.append((bx + r * math.cos(a), by + r * math.sin(a)))
+    blast = poly(pts)
+    glow(back, blast, "#ff7a2c", 4.0, 0.8)
+    d = np.sqrt((X - bx) ** 2 + (Y - by) ** 2) / 14.0
+    g.put(blast, rs(FIRE, 0.95 - d * 0.75))
+    g.put(circle(bx, by, 4.0), rs(FIRE, 1.0))
+    # the arrow coming in from the lower left, tip in the blast
+    x0, y0, x1, y1 = 12.0, 50.0, bx - 4.0, by + 4.5
+    war_arrow(g, x0, y0, x1, y1, 1.25)
+    # powder charge: a small dark pouch tied behind the head, red cord
+    ux, uy = (x1 - x0), (y1 - y0)
+    L = math.hypot(ux, uy)
+    ux, uy = ux / L, uy / L
+    px, py = x1 - ux * 12.0, y1 - uy * 12.0
+    pouch = ellipse(px, py, 4.2, 3.0, math.degrees(math.atan2(uy, ux)))
+    g.bevel(pouch, ROPE, face=0.4, bevel=0.8, grad=0.4, gain=0.9)
+    g.put(capsule(px - uy * 2.6, py + ux * 2.6, px + uy * 2.6, py - ux * 2.6, 0.5), rs(CRIMSON, 0.6))
+    # flying sparks
+    for sx, sy, sr in ((24.0, 16.0, 2.0), (52.0, 39.0, 1.8)):
+        sparkle(front, sx, sy, sr, "#ffd878", None, 0.5)
+    glints = [(17, 45, "#f0f2f4")]
+    return back, g, front, glints
+
+
+def arrow_rain():
+    """Arrow Rain: a volley of arrows falling steeply onto a green target ring on the ground (6-block area, Slowed, then Rooted)"""
+    back, g, front = L3()
+    cx, gy = 30.0, 47.0
+    glow(back, ering(cx, gy, 15.0, 4.2, 1.6), "#8fd67a", 2.0, 0.8)
+    glow(back, ellipse(cx, gy - 3.0, 17.0, 8.0, 0), "#8fd67a", 6.0, 1.0)
+    back.put(ellipse(cx, gy, 14.0, 3.8, 0), rs(LEAF, 0.62), alpha=0.9)
+    back.put(ering(cx, gy, 14.0, 3.8, 1.3), rs(LEAF, 0.8), alpha=0.95)
+    back.put(ering(cx, gy, 7.0, 1.9, 1.0), rs(LEAF, 0.7), alpha=0.85)
+    ang = math.radians(112.0)                  # steep, falling down-left
+    ux, uy = math.cos(ang), math.sin(ang)
+    # falling arrows (tips toward the ring), staggered heights
+    for tx, ty, ln, w in ((33.5, 18.5, 10.5, 0.74), (18.0, 37.0, 19.0, 0.95), (30.0, 41.0, 19.0, 0.95), (42.0, 37.0, 19.0, 0.95)):
+        war_arrow(g, tx - ux * ln, ty - uy * ln, tx, ty, w)
+        back.put(capsule(tx - ux * (ln + 1.5), ty - uy * (ln + 1.5), tx - ux * (ln + 7.0), ty - uy * (ln + 7.0), 0.5, 0.2),
+                 rs(LEAF, 0.85), alpha=0.8)
+    # two already stuck in the ground inside the ring
+    for tx, ty in ((24.0, 49.5), (37.5, 48.5)):
+        war_arrow(g, tx - ux * 8.0, ty - uy * 8.0, tx, ty, 0.8, head=False)
+    glints = [(31, 37, "#f0f2f4")]
+    return back, g, front, glints
+
+
+def hunters_net():
+    """Hunter's Net: a thrown rope net spreading open, iron weights on its corners (bursts into a 4-block root zone, Marked)"""
+    back, g, front = L3()
+    cx, cy, R = 32.0, 31.0, 19.0
+    glow(back, circle(cx, cy, 15), "#8fd67a", 7.0, 0.9)
+    # net: a diamond (square on its point) with bowed-in edges (cords under tension); mesh lines along both diagonals
+    u = ((X - cx) + (Y - cy)) / math.sqrt(2)
+    v = ((X - cx) - (Y - cy)) / math.sqrt(2)
+    h = R / math.sqrt(2) * 0.92
+    lim_u = h - 1.6 * (1 - (v / h) ** 2)
+    lim_v = h - 1.6 * (1 - (u / h) ** 2)
+    inside = (np.abs(u) <= lim_u) & (np.abs(v) <= lim_v)
+    step = h * 2 / 4.0
+    mesh = ((np.abs(np.mod(u + h, step) - step / 2) > step / 2 - 0.75) |
+            (np.abs(np.mod(v + h, step) - step / 2) > step / 2 - 0.75)) & inside
+    border = inside & ~((np.abs(u) <= lim_u - 1.4) & (np.abs(v) <= lim_v - 1.4))
+    back.put(inside, rs(LEAF, 0.42), alpha=0.75)
+    g.bevel(mesh | border, ROPE, face=0.72, bevel=0.35, grad=0.45, gain=0.85)
+    # knots where the cords cross
+    for i in range(1, 4):
+        for j in range(1, 4):
+            uu, vv = -h + i * step, -h + j * step
+            kx, ky = cx + (uu + vv) / math.sqrt(2), cy + (uu - vv) / math.sqrt(2)
+            g.put(circle(kx, ky, 1.15), rs(ROPE, 0.92))
+    # iron weights on the four corners
+    for k in range(4):
+        a = math.radians(-90 + k * 90)
+        wx, wy = cx + math.cos(a) * (R * 0.92 + 0.8), cy + math.sin(a) * (R * 0.92 + 0.8)
+        g.bevel(circle(wx, wy, 3.0), IRON, face=0.66, bevel=0.7, grad=0.4, gain=0.95)
+    glints = [(25, 20, "#eadaac")]
+    return back, g, front, glints
+
 ICONS = [
     # (class style, file name, display name, painter)
     (MAGE, "Meteor", "Meteor", meteor),
@@ -1483,6 +1703,11 @@ ICONS = [
     (BERSERKER, "Earthsplitter", "Earthsplitter", earthsplitter),
     (BERSERKER, "BloodFrenzy", "Blood Frenzy", blood_frenzy),
     (BERSERKER, "WarlordsBanner", "Warlord's Banner", warlords_banner),
+    (ARCHER, "PinningShot", "Pinning Shot", pinning_shot),
+    (ARCHER, "RapidFire", "Rapid Fire", rapid_fire),
+    (ARCHER, "ExplosiveArrow", "Explosive Arrow", explosive_arrow),
+    (ARCHER, "ArrowRain", "Arrow Rain", arrow_rain),
+    (ARCHER, "HuntersNet", "Hunter's Net", hunters_net),
 ]
 
 

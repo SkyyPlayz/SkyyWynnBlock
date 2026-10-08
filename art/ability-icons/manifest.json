@@ -1,12 +1,13 @@
 {
-  "item": "Class ability icons - Mage, Priest, Monk, Assassin, Warrior, Berserker",
+  "item": "Class ability icons - Mage, Priest, Monk, Assassin, Warrior, Berserker, Archer",
   "status": {
     "Mage": "APPROVED by Skyy + committed (answer: \"The ability icons look great, commit them\")",
     "Priest": "APPROVED by Skyy + committed (answer: \"The ability icons look great, commit them\")",
     "Monk": "APPROVED by Skyy + committed (answer: \"Yes, the shoe looks good, commit the Monk icons\")",
     "Assassin": "APPROVED by Skyy + committed (answer: \"Yes, the Assassin hood looks good, commit them\")",
     "Warrior": "APPROVED by Skyy + committed (answer: \"Yes, the Warrior icons look good, commit them\")",
-    "Berserker": "APPROVED by Skyy + committed (answer: \"Yes, the Berserker icons look good, commit them\")"
+    "Berserker": "APPROVED by Skyy + committed (answer: \"Yes, the Berserker icons look good, commit them\")",
+    "Archer": "APPROVED by Skyy + committed (answer: \"Yes, the Archer icons look good, commit them\")"
   },
   "in_game": "NOT wired in, NOT seen in game",
   "generator": [
@@ -20,7 +21,7 @@
   "deterministic": true,
   "defaults_used": {
     "frame": "round dark slate frame band with a class-colour rim (bevelled, top lit)",
-    "background": "dark field tinted toward the class colour, radial: Mage #26335e -> #0e1226, Priest #43381e -> #15100c, Monk #4a2416 -> #170b09, Assassin #33224e -> #0e0916, Warrior #2a3a44 -> #0b1216, Berserker #42161e -> #120609"
+    "background": "dark field tinted toward the class colour, radial: Mage #26335e -> #0e1226, Priest #43381e -> #15100c, Monk #4a2416 -> #170b09, Assassin #33224e -> #0e0916, Warrior #2a3a44 -> #0b1216, Berserker #42161e -> #120609, Archer #24381c -> #091108"
   },
   "class_colours": {
     "Mage": "#7fb0e0",
@@ -28,7 +29,8 @@
     "Monk": "#f08a30",
     "Assassin": "#b58cff",
     "Warrior": "#e0b060",
-    "Berserker": "#d9443f"
+    "Berserker": "#d9443f",
+    "Archer": "#8fd67a"
   },
   "frame_geometry_px": {
     "outer_radius": 31.6,
@@ -372,6 +374,38 @@
       "#2c2028",
       "#3e2e34",
       "#544044"
+    ],
+    "ARCH_RIM": [
+      "#1c461e",
+      "#2c6a2e",
+      "#549c44",
+      "#8fd67a",
+      "#bce8a4",
+      "#e6f8da"
+    ],
+    "LEAF": [
+      "#122a16",
+      "#1c4420",
+      "#2c642a",
+      "#4a8a36",
+      "#74b44c",
+      "#a6da76",
+      "#d8f2b4"
+    ],
+    "ROPE": [
+      "#36261a",
+      "#5a4228",
+      "#82643a",
+      "#aa8c56",
+      "#ccb07a",
+      "#eadaac"
+    ],
+    "EARTH": [
+      "#1a1410",
+      "#2c2018",
+      "#443022",
+      "#5e4430",
+      "#7a5c40"
     ]
   },
   "files": [
@@ -1103,10 +1137,140 @@
       ]
     },
     {
+      "path": "Common/Icons/Abilities/Archer/PinningShot.png",
+      "bytes": 6302,
+      "sha256": "f6381bc3a44f77ec2db5cd46ba25969fe81da0918e086e60c262bbb312639418",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Archer",
+      "ability": "Pinning Shot",
+      "file_name": "PinningShot.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "10 Mana / 12 s",
+      "ability_does": "Piercing arrow, 30 blocks, up to 2 enemies, 1.2 H, Rooted 2 s + Marked 6 s (+15% damage taken). Shapes: Running Pin (sprint), Rain Pin (mid-air), Steady Aim (crouch).",
+      "icon_shows": "a big arrow (oak shaft with a lit edge + grain, red thread wrap, the emblem's red feather with a cream bar + cream cock feather, steel broadhead) driven into the ground, two thick green roots curling up out of the earth to grip the shaft, a green root ring round the impact",
+      "palettes": [
+        "OAK",
+        "STEEL",
+        "CRIMSON",
+        "FEATHER",
+        "LEAF",
+        "EARTH"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Archer/RapidFire.png",
+      "bytes": 6809,
+      "sha256": "89d59da81224a353bf2dcb9d69512f68ff8a8c98dcb71b9787911dc54e1ce19e",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Archer",
+      "ability": "Rapid Fire",
+      "file_name": "RapidFire.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "14 Mana / 20 s",
+      "ability_does": "Loose 15 arrows over 3 s, each 0.5 H. Shapes: Running Fire (sprint), Hover Fire (mid-air), Braced (crouch).",
+      "icon_shows": "three detailed arrows (barbed steel broadheads with a lit edge, iron sockets, lit oak shafts, red + cream feathers, dark nocks) flying side by side toward the upper right, staggered like shots loosed one after another, green speed streaks behind each",
+      "palettes": [
+        "OAK",
+        "STEEL",
+        "CRIMSON",
+        "FEATHER",
+        "LEAF"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Archer/ExplosiveArrow.png",
+      "bytes": 6680,
+      "sha256": "b7b7a5748f2ca4427d881f053cd23991ada92aa7435d2c3428877d8a91c67c3e",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Archer",
+      "ability": "Explosive Arrow",
+      "file_name": "ExplosiveArrow.png",
+      "slot": "A2-alt",
+      "status": "LOCKED",
+      "cost_cooldown": "12 Mana / 14 s",
+      "ability_does": "Your next charged shot does 2x damage in a 4-block explosion. Shapes: Quick Fuse (sprint), Mortar (mid-air), Set Charge (crouch).",
+      "icon_shows": "a detailed arrow (barbed steel broadhead, lit oak shaft, red + cream feathers) with a dark canvas powder pouch lashed behind its head (red cord) flying into a jagged orange fire blast with a hot core, sparks flying",
+      "palettes": [
+        "OAK",
+        "STEEL",
+        "CRIMSON",
+        "FEATHER",
+        "ROPE",
+        "FIRE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Archer/ArrowRain.png",
+      "bytes": 7101,
+      "sha256": "3d477a8e6e65342093c74c378bc5ae5255e80acad9a03268dc1031ff8b8212e8",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Archer",
+      "ability": "Arrow Rain",
+      "file_name": "ArrowRain.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED",
+      "cost_cooldown": "16 Mana / 20 s",
+      "ability_does": "6-block area for 3 s, 2.0 H total, Slowed 30%; still inside after 2 s = Rooted 1.5 s + Marked. Shapes: Trailing Rain (sprint), Overhead Rain (mid-air), Kneeling Volley (crouch).",
+      "icon_shows": "a volley of four arrows falling steeply (three big in front, one smaller behind; steel broadheads, red + cream feathers, green streaks above them) onto a glowing green target zone on the ground, two arrows already stuck inside it",
+      "palettes": [
+        "OAK",
+        "STEEL",
+        "CRIMSON",
+        "FEATHER",
+        "LEAF"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Archer/HuntersNet.png",
+      "bytes": 7269,
+      "sha256": "c6a639b67193f6c0a46b83dbe7010798c26f0882f0983b4be8330f40226bffc1",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Archer",
+      "ability": "Hunter's Net",
+      "file_name": "HuntersNet.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED",
+      "cost_cooldown": "14 Mana / 18 s",
+      "ability_does": "Throw a net that bursts into a 4-block root zone for 3 s, 0.5 H, Marked 8 s. Shapes: Snare Line (sprint), Drop Net (mid-air), Set Trap (crouch).",
+      "icon_shows": "a rope net thrown open on its point (diamond), cords bowed under tension, knots at the crossings, four iron weights on the corners, a faint green glow behind",
+      "palettes": [
+        "ROPE",
+        "IRON",
+        "LEAF"
+      ]
+    },
+    {
       "path": "sheet.png",
-      "bytes": 987980,
+      "bytes": 1141391,
       "what": "review sheet with EVERY done class: each icon at 4x / 2x / 64 / 32 px, grouped by class with the class colour swatch + APPROVED / FOR REVIEW tag, plus a dark HUD strip",
-      "sha256": "1b7debcdf9ee704ed58fb33c4390ac0a057d44b5851c9a2aba69d9f5bbf6728a"
+      "sha256": "908d408bb6bf518645e4bd5072df021be7e0f94981cfe82c2d8afc73d13a3959"
     },
     {
       "path": "sheet-monk.png",
@@ -1133,8 +1297,14 @@
       "sha256": "93f9ab88558c8b696010330c80e2251be9799af15ea1d5551f46ce28fb158b3f"
     },
     {
+      "path": "sheet-archer.png",
+      "bytes": 188885,
+      "what": "the Archer review sheet as Skyy reviewed + approved it (same layout)",
+      "sha256": "606e47307927c427bed0d6c932fa98622f29f87c168eddd3027a0cf87873d5b3"
+    },
+    {
       "path": "README.md",
-      "bytes": 33577,
+      "bytes": 42660,
       "what": "what this is, ability -> meaning, colours, defaults, UNVERIFIED, open questions"
     }
   ]

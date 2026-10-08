@@ -42,10 +42,9 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
-### 12. Class ability icons - Archer (the last class)
-Mage, Priest, Monk, Assassin, Warrior and Berserker are Done. Same style, **one class per commit**. Archer icons are next (draft in the
-art agent's working copy, for Skyy's review). Ability names: `research/cloud/Class-Ability-Shapes.md`. Colours: `research/cloud/class-art/README.md`.
-Path: `art/ability-icons/Common/Icons/Abilities/<Class>/<AbilityName>.png`.
+None ready to start. All class ability icons (Mage, Priest, Monk, Assassin, Warrior, Berserker, Archer) are Done. Every item left in
+the Queue below says to check with Skyy first (Monk claws and Pets: ask before starting; hotbar icons: on hold; light armor: paused) -
+ask Skyy which one to start. Queue #6 (Monk claws) is first in line.
 
 ## Queue (check with Skyy before starting each)
 6. **Monk claws** (Blockbench, full items): Wolverine-style long blades from the knuckles on a black LEATHER glove (skywynn-art skill,
@@ -59,6 +58,15 @@ Path: `art/ability-icons/Common/Icons/Abilities/<Class>/<AbilityName>.png`.
    are in the skywynn-art skill, section 3. A separate candidate dark-leather design is in Done (#3).
 
 ## Done
+### 12. Class ability icons - Archer (2026-10-08)
+- Folder: `art/ability-icons/Common/Icons/Abilities/Archer/` - PinningShot, RapidFire, ExplosiveArrow, ArrowRain, HuntersNet (64x64).
+  Shared sheet/manifest/README/scripts updated + `sheet-archer.png`. Leaf-green rim (`#8fd67a`), dark forest field (`#24381c` -> `#091108`).
+  Arrow detail pass (v2), as Skyy asked: lit oak shafts with a grain hint + dark nock, barbed steel broadheads with a lit bevel on an
+  iron socket, two separate vanes (red with a cream bar + cream cock feather), red thread wrap; Arrow Rain now shows 4 bigger arrows.
+  Hunter's Net unchanged (no arrow).
+- Skyy's answers, word for word: "If you can, give the arrows a bit more detail." / "Yes, the Archer icons look good, commit them"
+- Not yet seen in game. All 7 classes now have ability icons (35 icons).
+
 ### 11. Class ability icons - Berserker (2026-10-08)
 - Folder: `art/ability-icons/Common/Icons/Abilities/Berserker/` - Enrage, Whirlwind, Earthsplitter, BloodFrenzy, WarlordsBanner (64x64).
   Shared sheet/manifest/README/scripts updated + `sheet-berserker.png`. Blood-red rim (`#d9443f`), dark oxblood field (`#42161e` -> `#120609`).
