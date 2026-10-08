@@ -104,6 +104,8 @@ Never leave finished work only in chat or memory.
 - The main session plans, launches agents, commits and deploys. Build / review / cross-check agents follow `tools/AGENT-BRIEF.md` (no
   commits, no deploys, no edits to the docs above, only the files their task names).
 - **Cloud sessions** work from `CLOUD-RESUME.md` and push only that file + `research/cloud/` straight to `main`; anything else via PR.
+  Talking to the local session: it sends by message (SendMessage); the cloud answers by appending a block to
+  `research/cloud/OUTBOX.md` and pushing (the local `cloud-link` mod polls it every 3 min and wakes the local session).
   The local session folds `research/cloud/LOG.md` into `docs/log/`. Subagents that need no local files may run in the cloud.
 - **Models:** builders Opus; reviews / cross-checks / web research Sonnet; tiny lookups Haiku; Fable only where it clearly helps (spec
   synthesis, hardest engine builds). Name the model per agent.

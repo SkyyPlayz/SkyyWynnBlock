@@ -26,6 +26,9 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 - **Art:** before drawing ANY concept sheet or icon, read `.claude/skills/skywynn-art/SKILL.md` (Skyy's art rules, 2026-10-06).
 - Follow `PROJECT-RULES.md`. Skyy uses they/them. Plain English, tables, short.
 
+- **Answering the local session (2026-10-07):** messages from the local session arrive by SendMessage; reply by appending a
+  "## <date time> <title>" block to `research/cloud/OUTBOX.md` and pushing to main (the local cloud-link mod picks it up in ~3 min).
+
 ## Open tasks (top = next)
 
 <!-- 2026-10-03 local session (Skyy: "make sure the cloud agent has a good list to work on, so i can keep em going when token limit runs

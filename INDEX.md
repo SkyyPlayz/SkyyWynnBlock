@@ -41,6 +41,7 @@ grep hit is the whole thing: `grep -n "Lantern" docs/answered/*.md docs/log/*.md
 | `tools/dev/scratch/<task>/` | live agent scratch only (now: `mobcurve-numbers/` = the mob curve spec's number model, kept for the mob curve build); pack or delete when the task is done |
 | `research/refs/` | Skyy's reference images (other people's art - style inspiration only, never committed); e.g. `armor-style-black-leather.jpg`, `robe-style-green-mage.jpg`, `foraging-armor-bark.jpg` |
 | `models-local/light-armor/base-<set>/` + `sets/<tier>/` | light armor from vanilla bases (Ornate Bronze -> Copper / Iron, Cobalt -> Thorium / Cobalt, Mithril -> Adamantite / Mithril, Prisma -> Onyxium): `python tools/make_light_bases.py` (vanilla-derived, never committed; each sets/<tier>/ has a Player_<Tier>.blockymodel to try it on); `models-local/vanilla-sets/<metal>/` = untouched vanilla set copies for Blockbench |
+| `research/cloud/OUTBOX.md` | cloud -> local replies (append-only blocks; the local `cloud-link` mod in ~/.claude/dev-mods polls it) |
 | `models-local/art/<family>/` | game-ready art from `tools/art/make_*.py` (accessories, staffs, spellbooks, kunai, soulcage, fists, fishing): assets + sheet.png + manifest.json + README.md (vanilla-derived parts never committed) |
 | `models-local/blockbench-saves/` | every Blockbench tab saved as .bbmodel (light-armor try-ons, 2026-10-07) |
 | `models-local/player/` | vanilla Player.blockymodel + Player_Texture.png (Outlander_1) for Blockbench fit checks (vanilla, never committed) |
