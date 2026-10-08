@@ -35,7 +35,7 @@ flowchart TD
   A1 --> A1B["A1-alt B Arcane Beam"]
   ABL --> A2["A2 Mana Barrier"]
   A2 --> A2X["A2-alt Frost Nova"]
-  A1 -.-> M1["Radius+ | Power+ | Lingering | Split"]
+  A1 -.-> M1["Radius+ | Power+ | Lingering | Split | Echo"]
   A1A -.-> M2["Duration+ | Radius+ | Echo | Power+"]
   A1B -.-> M3["Pierce | Duration+ | Power+ | Slow"]
   A2 -.-> M4["Duration+ | Power+ | Ward | Knockback+"]
@@ -103,6 +103,8 @@ You own 4. You equip 2.
 - 🔥 **Lingering** - the ground keeps burning for 3 s.
 
 - 🔱 **Split** - 3 smaller meteors around the spot.
+
+- 🔁 **Echo** - a second, weaker meteor hits the same spot 1 s later · each level: stronger echo.
 
 ### A1-alt A · Starfall
 
@@ -237,6 +239,8 @@ Ideas - pick one. The Mage tree already has three lanes.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-07: Echo modifier added to Meteor too (Skyy: "the modifier, echo.  that should be available on the metro too.").
 
 - 2026-10-05: refined for easy reading (same facts, new layout).
 
