@@ -4,15 +4,22 @@ Skyy 2026-10-07: "lets make new items for the accessory bag, and the pocket dime
 pocket dimension to be a bag in the hot bar icon, and when you scroll to it, you pull it up Infront of you, then pull the mouth of the
 bag open and it has a swirling portal inside the bag."
 
+Skyy 2026-10-08 (docs/answered/bags.md): keep the pouch; each bag TYPE gets a front emblem in place of the gem (Mining pickaxe,
+Foraging leaf, Farming wheat, Combat sword, Smithing anvil), rarity stays in the trim + rope colours, the Mythic Omni keeps its gem;
+"mouth stays open while you hold it" (no close / re-open loop); vanilla portal sparkles on top of the swirl; the Accessory Bag toned
+down (black leather + gold handle / clasp, no hanging ring / amulet, plain trim) but keeping small gems in the 5 accessory-line colours.
+
 Art + animation assets only (no item JSON wiring, no build, no deploy). Everything lands in models-local/art/bags/ (git-ignored):
-  Common/Items/SkyyAccessories/SkyyAccessories_Bag.blockymodel + _Texture.png   own jewellery satchel (black leather, gold, gems)
-  Common/Items/SkyySacks/SkyySacks_Bag_<Rarity>.blockymodel + _Texture.png       own drawstring bag per rarity (Normal .. Mythic)
-  Common/Items/SkyySacks/SkyySacks_Bag_Open.blockyanim                           item-model anim: mouth opens, portal swirls (20 s)
-  Common/Items/SkyySacks/SkyySacks_Bag_OpenLoop.blockyanim                       fallback: always open, portal swirls (no re-open)
+  Common/Items/SkyyAccessories/SkyyAccessories_Bag.blockymodel + _Texture.png   own jewellery satchel (black leather, gold, 5 small gems)
+  Common/Items/SkyySacks/SkyySacks_Bag_<Rarity>.blockymodel                      own drawstring bag per rarity (Normal .. Legendary, Mythic)
+  Common/Items/SkyySacks/SkyySacks_Bag_<Type>_<Rarity>_Texture.png               one texture per type x rarity (the emblem differs)
+  Common/Items/SkyySacks/SkyySacks_Bag_Mythic_Texture.png                        the Omni bag (gem, no emblem)
+  Common/Items/SkyySacks/SkyySacks_Bag_Open.blockyanim                           item-model anim: always open, portal swirls (20 s loop)
   Common/Characters/Animations/Items/SkyySacks/SkyySack_Lift(_FPS).blockyanim    player one-shot: lift the bag up + tug the mouth
   Server/Item/Animations/SkyySack.json                                           DRAFT player animation set (Parent Block + SackLift)
-  Common/Icons/ItemsGenerated/SkyyAccessories_Bag.png, SkyySacks_Bag_<Rarity>.png 64x64 icons (premultiplied, skyyart.render_icon)
-  sheet.png (icons + held poses closed / opening / open / swirl), preview-*.png, manifest.json
+  Server/Particles/SkyySacks/SkyySack_PortalSparkle.particlesystem + spawner     DRAFT hand-sized copy of the vanilla portal sparks
+  Common/Icons/ItemsGenerated/SkyyAccessories_Bag.png, SkyySacks_Bag_<Type>_<Rarity>.png, SkyySacks_Bag_Mythic.png   64x64 icons
+  sheet.png (a row per type: the 4 rarity icons + the emblem; Omni + Accessory Bag; held poses), preview-*.png, manifest.json
 
 Models, textures and icons are our own geometry and pixels painted from code with hex palettes (no vanilla pixels). The two player
 lift animations are DERIVED from vanilla player animations (Item idle -> Block idle frame-0 poses, read from Assets.zip at run time),
@@ -36,7 +43,13 @@ ACC_DIR = "Common/Items/SkyyAccessories"
 ICON_DIR = "Common/Icons/ItemsGenerated"
 CHAR_DIR = "Common/Characters/Animations/Items/SkyySacks"
 ANIM_OPEN = SACK_DIR + "/SkyySacks_Bag_Open.blockyanim"
-ANIM_LOOP = SACK_DIR + "/SkyySacks_Bag_OpenLoop.blockyanim"
+PART_DIR = "Server/Particles/SkyySacks"
+SPARKLE_ID = "SkyySack_PortalSparkle"            # our hand-sized sparkle system (DRAFT, derived from the vanilla portal sparks)
+SPARKLE_SRC = "Server/Particles/Spell/Portal/Spawners/Round/Purple/Portal_Sparks_Around.particlespawner"
+VANILLA_PORTAL_SYSTEM = "Portal_Purple"          # Server/Particles/Spell/Portal/Portal_Purple.particlesystem (VoidInvasion_Portal)
+SPARKLE_K = 0.07           # emit radius / attractor scale vs the vanilla portal (2-3 blocks -> 0.14-0.21, like Staff_Bronze_Sparks 0-0.2)
+SPARKLE_SIZE = 0.4         # particle size scale (0.2-0.4 -> 0.08-0.16, like the vanilla staff sparks 0.1-0.2)
+SPARKLE_COLS = ("#f2ecff", "#c9b6ff", "#6d4cff")  # start / mid / end colour (the vanilla sparks are yellow -> red; ours match the swirl)
 LIFT_3P = CHAR_DIR + "/SkyySack_Lift.blockyanim"
 LIFT_FPS = CHAR_DIR + "/SkyySack_Lift_FPS.blockyanim"
 ANIMSET_ID = "SkyySack"
@@ -92,14 +105,16 @@ RARITIES = [
      ramp("#3c0c44", "#6c1c78", "#a63cb8", "#d886e4", "#ffe2ff"), 8, 4, True, True, True, ramp("#2a1c06", "#5a3e10", "#9a7020", "#d8b050"),
      "#cc66cc"),
 ]
-SACK_CATS = ("Mining", "Foraging", "Farming", "Combat", "Smithing")      # SkyySacks BAG_CATS (one look per rarity, all 5 types share it)
+SACK_CATS = ("Mining", "Foraging", "Farming", "Combat", "Smithing")      # SkyySacks BAG_CATS (build_skyysacks_0.7.13.py line 270)
+# the front emblem per type (Skyy 2026-10-08 "option 1"); the item ids are Skyy_Sack_<Type>_<Small/Medium/Rare/Large> (MANAGED_IDS)
+EMBLEM_NAMES = {"Mining": "pickaxe", "Foraging": "leaf", "Farming": "wheat", "Combat": "sword", "Smithing": "anvil"}
 ACC_ITEM = "Skyy_Accessory_Bag"
 ACC_GEMS = [ramp("#4a0a0e", "#8a1a20", "#d23a3a", "#ff8a80", "#ffe0dc"),      # health red
             ramp("#0a2050", "#163f8f", "#2f6fe0", "#86b4ff", "#e2eeff"),      # mana blue
             ramp("#4d3a00", "#8a6800", "#d6a800", "#ffe066", "#fff8d6"),      # stamina yellow
             ramp("#0b3d1a", "#17702f", "#2fb34f", "#86eb98", "#e2ffe6"),      # speed green
             ramp("#3c0c44", "#6c1c78", "#a63cb8", "#d886e4", "#ffe2ff")]      # luck violet
-ACC_MAIN_GEM = ramp("#2c0a46", "#521682", "#8a34c8", "#c28af0", "#f4e6ff")   # the clasp amethyst
+ACC_STITCH = ramp("#2e2214", "#4a3820", "#6a5230", "#8a7044")              # muted brass thread (2026-10-08: less decoration)
 
 # ------------------------------------------------------------------------------------------------------------------ math
 
@@ -370,6 +385,177 @@ def portal_arms_fn(face, u, v, w, h):
     return rs(PORTAL, 0.62 + 0.36 * (s - 0.55) / 0.45 * (1.0 - r * 0.5)) + (255,)
 
 
+# ------------------------------------------------------------------------------------------------------------------ type emblems
+# Each emblem is a few vector shapes rasterised at EMBLEM_PX x EMBLEM_PX (pixel centres, no anti-aliasing = crisp pixel art), then
+# bevel-shaded per shape (lit top-left edge, dark bottom-right edge) with a near-black outline on the dark inset, so it reads at 64 px.
+EMBLEM_PX = 16
+PLATE_RIM = 2
+PLATE_TX = EMBLEM_PX + 2 * PLATE_RIM       # the front plate, texels (10 units)
+INSET = ramp("#0c090b", "#161114", "#211a1d")
+OUTLINE = (6, 4, 6)
+E_IRON = ramp("#3a4049", "#68717d", "#a2abb7", "#dde4ec", "#ffffff")
+E_WOOD = ramp("#3b2414", "#6a4224", "#9a6a3c", "#cf9f66")
+E_LEAF = ramp("#0f3a12", "#1d6a22", "#38a23a", "#78d65c", "#c8f59a")
+E_VEIN = ramp("#5fbf4c", "#a6ea7c", "#e4ffc8")
+E_STEM = ramp("#2a3a12", "#4a6420", "#6f8f30")
+E_WHEAT = ramp("#5a3a08", "#9a6a12", "#d6a42a", "#f4d264", "#fff2b8")
+E_STEEL = ramp("#46505e", "#7d8a9a", "#b6c4d2", "#e6eef7", "#ffffff")
+E_GRIP = ramp("#2a160c", "#4e2c18", "#7a4a28", "#a06a3c")
+E_ANVIL = ramp("#24282e", "#454c56", "#737c88", "#a9b2bd", "#e2e8ee")
+
+
+def _seg_d(px, py, a, b):
+    ax, ay = a
+    bx, by = b
+    dx, dy = bx - ax, by - ay
+    t = max(0.0, min(1.0, ((px - ax) * dx + (py - ay) * dy) / float(dx * dx + dy * dy)))
+    return math.hypot(px - ax - t * dx, py - ay - t * dy)
+
+
+def e_cap(a, b, r):
+    return lambda x, y: _seg_d(x, y, a, b) <= r
+
+
+def e_ell(c, rx, ry, deg=0.0):
+    ca, sa = math.cos(math.radians(deg)), math.sin(math.radians(deg))
+
+    def f(x, y):
+        dx, dy = x - c[0], y - c[1]
+        u, v = dx * ca + dy * sa, -dx * sa + dy * ca
+        return (u / rx) ** 2 + (v / ry) ** 2 <= 1.0
+    return f
+
+
+def e_poly(pts):
+    def f(x, y):
+        inside = False
+        j = len(pts) - 1
+        for i in range(len(pts)):
+            xi, yi = pts[i]
+            xj, yj = pts[j]
+            if (yi > y) != (yj > y) and x < (xj - xi) * (y - yi) / (yj - yi) + xi:
+                inside = not inside
+            j = i
+        return inside
+    return f
+
+
+def e_arc(c, r, thick, a0, a1, tip=0.45):
+    """a crescent band around c (y down), angles in degrees (0 = right, 90 = up), thickness tapering to `tip` x at both ends."""
+    def f(x, y):
+        dx, dy = x - c[0], c[1] - y
+        ang = math.degrees(math.atan2(dy, dx))
+        if not (a0 <= ang <= a1):
+            return False
+        s = (ang - a0) / float(a1 - a0)
+        th = thick * (tip + (1 - tip) * math.sin(math.pi * s) ** 0.6)
+        return abs(math.hypot(dx, dy) - r) <= th / 2.0
+    return f
+
+
+def e_leaf(a, b, wmax):
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    ln = math.hypot(dx, dy)
+
+    def f(x, y):
+        s = ((x - a[0]) * dx + (y - a[1]) * dy) / (ln * ln)
+        if not 0.0 <= s <= 1.0:
+            return False
+        perp = abs((x - a[0]) * dy - (y - a[1]) * dx) / ln
+        return perp <= wmax * math.sin(math.pi * s) ** 0.75 * (1.0 - 0.25 * s)
+    return f
+
+
+def _sword_shapes():
+    g, tip = (5.6, 10.4), (14.3, 1.7)
+    d = (tip[0] - g[0], tip[1] - g[1])
+    ln = math.hypot(*d)
+    d = (d[0] / ln, d[1] / ln)
+    n = (-d[1], d[0])
+    w = 1.55
+    shoulder = (g[0] + d[0] * (ln - 2.6), g[1] + d[1] * (ln - 2.6))
+
+    def at(p, k, m=0.0):
+        return (p[0] + d[0] * k + n[0] * m, p[1] + d[1] * k + n[1] * m)
+    blade = e_poly([at(g, 0, w), at(shoulder, 0, w), tip, at(shoulder, 0, -w), at(g, 0, -w)])
+    return [(blade, E_STEEL, 0.55), (e_cap(at(g, 1.2), at(tip, -2.8), 0.42), E_STEEL, 0.95),
+            (e_cap(at(g, 0, 3.6), at(g, 0, -3.6), 0.95), GOLD, 0.6), (e_cap(at(g, -0.8), at(g, -3.4), 0.8), E_GRIP, 0.5),
+            (e_ell(at(g, -4.6), 1.3, 1.3), GOLD, 0.6)]
+
+
+# (shape, ramp, base t) painted in order (later shapes on top)
+EMBLEMS = {
+    "pickaxe": [(e_cap((2.2, 13.8), (11.6, 4.4), 1.05), E_WOOD, 0.5),
+                (e_arc((4.6, 11.4), 9.4, 3.0, -28.0, 118.0), E_IRON, 0.55)],
+    "leaf": [(e_cap((0.8, 15.2), (3.6, 12.4), 0.75), E_STEM, 0.5),
+             (e_leaf((2.6, 13.4), (14.6, 1.4), 5.0), E_LEAF, 0.5),
+             (e_cap((3.4, 12.6), (12.4, 3.6), 0.5), E_VEIN, 0.55),
+             (e_cap((6.4, 9.6), (5.6, 6.4), 0.42), E_VEIN, 0.4), (e_cap((6.4, 9.6), (9.6, 10.4), 0.42), E_VEIN, 0.4),
+             (e_cap((9.0, 7.0), (8.4, 4.0), 0.42), E_VEIN, 0.4), (e_cap((9.0, 7.0), (12.0, 7.6), 0.42), E_VEIN, 0.4)],
+    "wheat": [(e_cap((8.0, 15.6), (8.0, 5.0), 0.55), E_STEM, 0.75),
+              (e_cap((8.0, 2.4), (8.0, 0.2), 0.45), E_WHEAT, 0.75),
+              (e_cap((5.4, 5.0), (3.8, 1.8), 0.45), E_WHEAT, 0.75), (e_cap((10.6, 5.0), (12.2, 1.8), 0.45), E_WHEAT, 0.75),
+              (e_ell((8.0, 4.0), 1.2, 2.0), E_WHEAT, 0.62),
+              (e_ell((5.7, 7.0), 1.3, 2.0, -38), E_WHEAT, 0.62), (e_ell((10.3, 7.0), 1.3, 2.0, 38), E_WHEAT, 0.62),
+              (e_ell((5.7, 10.2), 1.3, 2.0, -38), E_WHEAT, 0.58), (e_ell((10.3, 10.2), 1.3, 2.0, 38), E_WHEAT, 0.58),
+              (e_cap((8.0, 15.6), (8.0, 12.0), 0.55), E_STEM, 0.75),
+              (e_cap((8.0, 12.6), (12.0, 15.0), 0.5), E_STEM, 0.6)],
+    "sword": _sword_shapes(),
+    "anvil": [(e_poly([(0.4, 4.6), (4.2, 3.2), (15.6, 3.2), (15.6, 6.9), (4.2, 6.9), (3.2, 5.9)]), E_ANVIL, 0.62),
+              (e_poly([(5.6, 6.9), (13.6, 6.9), (11.6, 10.1), (7.6, 10.1)]), E_ANVIL, 0.42),
+              (e_poly([(7.6, 10.1), (11.6, 10.1), (14.4, 12.6), (14.4, 14.6), (4.8, 14.6), (4.8, 12.6)]), E_ANVIL, 0.5)],
+}
+
+
+def emblem_grid(name):
+    """EMBLEM_PX x EMBLEM_PX rgb rows: dark leather inset, the shapes bevel-shaded, a near-black outline around them."""
+    n = EMBLEM_PX
+    shapes = EMBLEMS[name]
+    sid = [[-1] * n for _ in range(n)]
+    for y in range(n):
+        for x in range(n):
+            for k, (f, _r, _b) in enumerate(shapes):
+                if f(x + 0.5, y + 0.5):
+                    sid[y][x] = k
+
+    def at(x, y):
+        return sid[y][x] if 0 <= x < n and 0 <= y < n else -1
+    rows = []
+    for y in range(n):
+        row = []
+        for x in range(n):
+            k = sid[y][x]
+            if k < 0:
+                near = any(at(x + dx, y + dy) >= 0 for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)))
+                if near:
+                    row.append(OUTLINE)
+                else:
+                    row.append(rs(INSET, 0.45 + 0.35 * (hsh(x, y, 71) - 0.5) - 0.25 * (x + y) / (2.0 * n)))
+                continue
+            _f, r, base = shapes[k]
+            t = base + 0.12 * (1.0 - (x + y) / float(n))
+            if at(x - 1, y) != k or at(x, y - 1) != k:
+                t += 0.28
+            if at(x + 1, y) != k or at(x, y + 1) != k:
+                t -= 0.26
+            row.append(rs(r, t))
+        rows.append(row)
+    return rows
+
+
+def plate_fn(M, holder):
+    """the front plate: a bevelled rarity-metal rim (PLATE_RIM texels) around the current type's emblem (holder['emblem'])."""
+    m = metal(M)
+
+    def fn(face, u, v, w, h):
+        if face == "front" and PLATE_RIM <= u < w - PLATE_RIM and PLATE_RIM <= v < h - PLATE_RIM:
+            return holder["emblem"][v - PLATE_RIM][u - PLATE_RIM]
+        if face == "front" and (u == PLATE_RIM - 1 or v == PLATE_RIM - 1 or u == w - PLATE_RIM or v == h - PLATE_RIM):
+            return lit(rs(M, 0.3), face)                                   # inner bevel of the rim
+        return m(face, u, v, w, h)
+    return fn
+
+
 # ------------------------------------------------------------------------------------------------------------------ the sack
 # profile (units, y up from the bag bottom): (y0, y1, half width) - each level = two crossed boxes (an octagonal pouch)
 SACK_LEVELS = ((0.0, 1.5, 5.0, False), (1.5, 4.0, 7.5, False), (4.0, 11.0, 9.0, True), (11.0, 14.0, 8.0, False),
@@ -384,7 +570,13 @@ BAG_DROP = -10.0           # the bag node below the grip (R-Attachment) so the b
 CORD_TILT = 10.0
 
 
-def build_sack(spec):
+EMBLEM_Y = 8.2             # the type plate's centre height (sits on the bulge, over the belly band)
+EMBLEM_TILT = -7.0         # the plate leans back a little, following the bulge
+
+
+def build_sack(spec, holder=None):
+    """one model per rarity. holder = {'emblem': rows} -> a type plate whose front face paints holder['emblem'] (swap the rows and
+    repaint the atlas for each type; the layout is identical). holder None (the Mythic Omni) -> the diamond gem plate."""
     name, _ids, M, G, gsz, side, band, feet, rune, C, _col = spec
     b = Builder()
     bag = b.node("Bag", (0, BAG_DROP, 0), parent=b.root)
@@ -445,9 +637,13 @@ def build_sack(spec):
         b.box("BandCB", (36, 3, 1), (0, by, -z_b - 0.25), bm, bag, key="bandc", shading="flat")
         b.box("BandCL", (1, 3, 36), (-z_b - 0.25, by, 0), bm, bag, key="bandc2", shading="flat")
         b.box("BandCR", (1, 3, 36), (z_b + 0.25, by, 0), bm, bag, key="bandc2", shading="flat")
-    plate = gsz + 4
-    b.box("Emblem", (plate, plate, 2), (0, by, 9.25), metal(GOLD if rune else M), bag, quat=axis_quat((0, 0, 1), 45), shading="flat")
-    b.box("Gem", (gsz, gsz, 3), (0, by, 9.7), gem(G), bag, quat=axis_quat((0, 0, 1), 45), shading="fullbright")
+    if holder is None:
+        plate = gsz + 4
+        b.box("Emblem", (plate, plate, 2), (0, by, 9.25), metal(GOLD if rune else M), bag, quat=axis_quat((0, 0, 1), 45), shading="flat")
+        b.box("Gem", (gsz, gsz, 3), (0, by, 9.7), gem(G), bag, quat=axis_quat((0, 0, 1), 45), shading="fullbright")
+    else:
+        b.box("Emblem", (PLATE_TX, PLATE_TX, 2), (0, EMBLEM_Y, 9.65), plate_fn(M, holder), bag, quat=axis_quat((1, 0, 0), EMBLEM_TILT),
+              shading="flat")
     sides = [(-5.6, by, 7.9), (5.6, by, 7.9), (-5.6, by, -7.9), (5.6, by, -7.9)][:side]
     for k, p in enumerate(sides):
         yaw = math.degrees(math.atan2(p[0], p[2]))
@@ -461,51 +657,28 @@ def build_sack(spec):
 
 # ------------------------------------------------------------------------------------------------------------------ accessory bag
 def build_accessory():
-    """a jewellery satchel hanging from the hand: black leather body + flap, gold piping / corners / handle, an amethyst clasp,
-    five small line gems on the flap (the accessory lines), a ring and an amulet hanging on the sides."""
+    """a plain jewellery satchel hanging from the hand (toned down 2026-10-08, Skyy: "a little too over decorated"): black leather
+    body + flap with muted brass stitching, a gold carry handle, and a small gold clasp bar on the flap tongue holding five small
+    gems in the accessory-line colours. No piping, corner caps, big clasp gem, hanging ring or amulet."""
     b = Builder()
     s = b.node("Satchel", (0, -1.0, 0), parent=b.root)
-    st = GOLD
+    st = ACC_STITCH
     # handle (gold arch)
     b.box("HandleTop", (20, 3, 3), (0, 0, 0), metal(GOLD), s, shading="flat")
     for side, x in (("L", -4.6), ("R", 4.6)):
-        b.box("HandleLeg" + side, (3, 9, 3), (x, -2.6, 0), metal(GOLD), s, key="handleleg", shading="flat")
-        b.box("HandleRing" + side, (5, 3, 5), (x, -4.9, 0), metal(GOLD), s, key="handlering", shading="flat")
+        b.box("HandleLeg" + side, (3, 10, 3), (x, -2.9, 0), metal(GOLD), s, key="handleleg", shading="flat")
     # body
     b.box("Body", (36, 24, 14), (0, -11.5, 0), leather(st, seam=3, seed=3), s)
     b.box("BodyBase", (34, 2, 12), (0, -18.0, 0), leather(None, seed=4, wrinkle=False, base=0.35), s)
     for side, x in (("L", -9.25), ("R", 9.25)):
         b.box("Gusset" + side, (2, 20, 10), (x, -11.5, 0), leather(None, seed=6, base=0.3), s, key="gusset")
-    # flap: top + front, gold piping along its lower edge, a tongue with the clasp
+    # flap: top + front, a leather tongue with the gold clasp bar (5 small line gems, standard shading = no glow)
     b.box("FlapTop", (38, 2, 15), (0, -5.0, 0.2), leather(st, seam=2, seed=8, base=0.52), s)
     b.box("FlapFront", (38, 14, 2), (0, -8.5, 4.0), leather(st, seam=2, seed=9, base=0.52), s)
-    b.box("FlapPiping", (38, 1, 3), (0, -12.1, 4.1), metal(GOLD, glint=False), s, shading="flat")
-    b.box("FlapTongue", (10, 6, 2), (0, -13.5, 4.0), leather(st, seam=1, seed=12, base=0.5), s)
-    b.box("ClaspPlate", (8, 8, 2), (0, -13.6, 4.6), metal(GOLD), s, shading="flat")
-    b.box("ClaspGem", (6, 6, 3), (0, -13.6, 5.0), gem(ACC_MAIN_GEM), s, quat=axis_quat((0, 0, 1), 45), shading="fullbright")
+    b.box("FlapTongue", (12, 7, 2), (0, -13.6, 4.0), leather(None, seed=12, base=0.5), s)
+    b.box("Clasp", (16, 5, 1), (0, -13.4, 4.75), metal(GOLD, glint=False), s, shading="flat")
     for k, g in enumerate(ACC_GEMS):
-        x = -5.2 + 2.6 * k
-        b.box("LineSet%d" % k, (4, 4, 1), (x, -7.6, 4.6), metal(GOLD, glint=False), s, key="lineset", shading="flat")
-        b.box("LineGem%d" % k, (3, 3, 2), (x, -7.6, 4.85), gem(g), s, quat=axis_quat((0, 0, 1), 45), shading="fullbright")
-    # gold corner caps on the bottom
-    for k, (x, z) in enumerate(((-8.4, 2.9), (8.4, 2.9), (-8.4, -2.9), (8.4, -2.9))):
-        b.box("Corner%d" % k, (4, 4, 4), (x, -17.2, z), metal(GOLD), s, key="corner", shading="flat")
-    # hanging charms: a gold ring with a ruby (left), an amulet on a chain (right)
-    ch = b.node("CharmL", (-9.9, -7.0, 2.0), axis_quat((0, 0, 1), -8), s)
-    for k in range(3):
-        b.box("ChainL%d" % k, (2, 3, 2), (0, -1.0 - 1.4 * k, 0), metal(GOLD, glint=False), ch, key="chain", shading="flat",
-              quat=axis_quat((0, 1, 0), 90 * (k % 2)))
-    ring = b.node("Ring", (0, -6.4, 0), axis_quat((0, 1, 0), 70), ch)
-    for k, (pos, size) in enumerate((((0, 1.6, 0), (6, 2, 2)), ((0, -1.6, 0), (6, 2, 2)), ((1.6, 0, 0), (2, 6, 2)),
-                                     ((-1.6, 0, 0), (2, 6, 2)))):
-        b.box("RingBand%d" % k, size, pos, metal(GOLD), ring, key="ringband%d" % (k // 2), shading="flat")
-    b.box("RingGem", (3, 3, 3), (0, 2.6, 0), gem(ACC_GEMS[0]), ring, quat=axis_quat((0, 1, 0), 45), shading="fullbright")
-    ch2 = b.node("CharmR", (9.9, -7.0, 2.0), axis_quat((0, 0, 1), 8), s)
-    for k in range(4):
-        b.box("ChainR%d" % k, (2, 3, 2), (0, -1.0 - 1.4 * k, 0), metal(GOLD, glint=False), ch2, key="chain", shading="flat",
-              quat=axis_quat((0, 1, 0), 90 * (k % 2)))
-    b.box("AmuletFrame", (7, 9, 2), (0, -8.6, 0), metal(GOLD), ch2, shading="flat")
-    b.box("AmuletGem", (5, 7, 3), (0, -8.6, 0.2), gem(ACC_GEMS[1]), ch2, shading="fullbright")
+        b.box("LineGem%d" % k, (2, 2, 1), (-2.8 + 1.4 * k, -13.4, 5.05), gem(g), s)
     return b
 
 
@@ -536,21 +709,14 @@ def spin_keys(dur, turn, sign):
     return out
 
 
-def build_open_anim(loop_only):
-    """Item-model animation. Open: frames 0-20 the mouth flaps swing open (closed rest -> open, small overshoot), the drawstrings
-    loosen, the portal appears at frame 8; it stays open and swirling; frames 1180-1200 it closes again and the loop re-opens it
-    (a 'breath' every 20 s). OpenLoop: open the whole time (no closing)."""
+def build_open_anim():
+    """Item-model animation while held (Skyy 2026-10-08: "mouth stays open while you hold it"): the mouth flaps are open on every
+    frame, the portal is shown, the swirl strip + both spins loop seamlessly and the drawstrings sway. No close / re-open. The model's
+    rest pose (icon, dropped item) stays closed with the portal hidden."""
     na = {}
     d_open = OPEN_DEG - CLOSED_DEG
-    if loop_only:
-        pk = [key(0, qd(axis_quat((1, 0, 0), d_open))), key(OPEN_DUR, qd(axis_quat((1, 0, 0), d_open)))]
-        vis = [key(0, True, None)]
-    else:
-        pk = [key(0, qd(axis_quat((1, 0, 0), 0))), key(6, qd(axis_quat((1, 0, 0), d_open * 0.35))),
-              key(14, qd(axis_quat((1, 0, 0), d_open + 7))), key(20, qd(axis_quat((1, 0, 0), d_open))),
-              key(OPEN_DUR - 20, qd(axis_quat((1, 0, 0), d_open))), key(OPEN_DUR - 8, qd(axis_quat((1, 0, 0), d_open * 0.4))),
-              key(OPEN_DUR, qd(axis_quat((1, 0, 0), 0)))]
-        vis = [key(0, False, None), key(8, True, None), key(OPEN_DUR - 6, False, None)]
+    pk = [key(0, qd(axis_quat((1, 0, 0), d_open))), key(OPEN_DUR, qd(axis_quat((1, 0, 0), d_open)))]
+    vis = [key(0, True, None)]
     for k in range(PETALS):
         na["Flap%d" % k] = chan(orientation=pk)
     uv = []
@@ -561,19 +727,13 @@ def build_open_anim(loop_only):
     na["PortalSpinA"] = chan(orientation=spin_keys(OPEN_DUR, DISC_TURN, -1))
     na["PortalSpinB"] = chan(orientation=spin_keys(OPEN_DUR, ARMS_TURN, 1))
     for side, sx in (("L", -1), ("R", 1)):
-        ck = []
-        if not loop_only:
-            ck += [key(0, qd(axis_quat((0, 0, 1), 0))), key(10, qd(axis_quat((0, 0, 1), sx * 16))), key(20, qd(axis_quat((0, 0, 1), sx * 8)))]
-            t0 = 60
-        else:
-            ck += [key(0, qd(axis_quat((0, 0, 1), sx * 8)))]
-            t0 = 60
-        t, n = t0, 0
-        while t < OPEN_DUR - (20 if not loop_only else 0):
+        ck = [key(0, qd(axis_quat((0, 0, 1), sx * 8)))]
+        t, n = 60, 0
+        while t < OPEN_DUR:
             ck.append(key(t, qd(axis_quat((0, 0, 1), sx * (8 + (3 if n % 2 == 0 else -1))))))
             t += 60
             n += 1
-        ck.append(key(OPEN_DUR, qd(axis_quat((0, 0, 1), 0 if not loop_only else sx * 8))))
+        ck.append(key(OPEN_DUR, qd(axis_quat((0, 0, 1), sx * 8))))
         na["Cord" + side] = chan(orientation=ck)
     return {"formatVersion": 1, "duration": OPEN_DUR, "holdLastKeyframe": False, "nodeAnimations": na}
 
@@ -655,6 +815,52 @@ def animset_draft(z):
         if k in blk:
             d[k] = blk[k]
     return d
+
+
+def _scale_range(d, k):
+    """scale every number in a {Min, Max} / {X: {Min, Max}} / {X, Y, Z} value tree by k (in place)."""
+    for key_ in list(d):
+        v = d[key_]
+        if isinstance(v, dict):
+            _scale_range(v, k)
+        elif isinstance(v, (int, float)) and not isinstance(v, bool):
+            d[key_] = r6(v * k)
+
+
+def sparkle_draft(z):
+    """DRAFT hand-sized portal sparkles (Skyy 2026-10-08 "3. yes"). Every vanilla portal particle system (Portal_Purple,
+    Portal_Round_Blue, MagicPortal_*) is built for a 5-block portal: its spawners sit 3 blocks up and emit 2-3 blocks out. So this is
+    the vanilla purple-portal spark spawner (Portal_Sparks_Around: small sparks swirling in round the portal centre, read from
+    Assets.zip at run time) scaled to the bag (SPARKLE_K / SPARKLE_SIZE, the held-staff spark sizes) and recoloured to the swirl.
+    The system turns it face-up (Pitch 90, like vanilla MagicPortal_SmokeMiddle) to lie flat on the Portal node."""
+    sp = json.loads(z.read(SPARKLE_SRC).decode("utf-8-sig"))
+    sp["$Comment"] = ("DRAFT (SkyWynn tools/art/make_bags.py): the vanilla Portal_Sparks_Around spawner scaled down to a held bag's "
+                      "portal and recoloured violet. UNVERIFIED in game.")
+    sp["MaxConcurrentParticles"] = 12
+    sp["SpawnRate"] = {"Min": 8, "Max": 14}
+    for k in ("EmitOffset",):
+        if k in sp:
+            _scale_range(sp[k], SPARKLE_K)
+    for att in sp.get("Attractors") or []:
+        for k in list(att):
+            if k != "RadialAxis" and isinstance(att[k], (int, float)):
+                att[k] = r6(att[k] * SPARKLE_K)
+    part = sp["Particle"]
+    # only the start size: the Animation keys' Scale look like multipliers of it (vanilla key 0 = 1 while the start size is 0.2-0.4)
+    if "Scale" in part.get("InitialAnimationFrame", {}):
+        _scale_range(part["InitialAnimationFrame"]["Scale"], SPARKLE_SIZE)
+    part["InitialAnimationFrame"]["Color"] = SPARKLE_COLS[0]
+    anim = part.get("Animation", {})
+    keys = sorted(anim, key=int)
+    for k in keys:
+        if "Color" in anim[k]:
+            anim[k]["Color"] = SPARKLE_COLS[0] if int(k) == 0 else (SPARKLE_COLS[2] if int(k) == 100 else SPARKLE_COLS[1])
+    system = {"$Comment": "DRAFT (SkyWynn tools/art/make_bags.py): hand-sized vanilla portal sparkles for the Pocket Dimension bag's "
+                          "Portal node. UNVERIFIED in game.",
+              "Spawners": [{"SpawnerId": SPARKLE_ID, "RotationOffset": {"Yaw": 0, "Pitch": 90, "Roll": 0},
+                            "PositionOffset": {"X": 0, "Y": 0, "Z": 0}}],
+              "CullDistance": 32, "IsImportant": False}
+    return system, sp
 
 
 # ------------------------------------------------------------------------------------------------------------------ posing (previews)
@@ -749,20 +955,28 @@ def fill(img, x0, y0, w, h, c):
 
 
 def sheet(rows, gap=8):
-    """rows = [(cell px, scale k, [Img])] stacked; each row its own cell size."""
-    W = max(gap + len(r[2]) * (r[0] * r[1] + gap) for r in rows)
-    H = gap + sum(r[0] * r[1] + gap for r in rows)
+    """rows = [[(Img, scale k), ...]] stacked; each cell is its image at k x, rows as tall as their tallest cell (cells top-aligned)."""
+    W = max(gap + sum(im.w * k + gap for im, k in r) for r in rows)
+    H = gap + sum(max(im.h * k for im, k in r) + gap for r in rows)
     img = SA.Img(W, H)
     fill(img, 0, 0, W, H, BG)
     y = gap
-    for cell, k, ims in rows:
+    for r in rows:
         x = gap
-        for im in ims:
-            fill(img, x, y, cell * k, cell * k, SLOT)
+        for im, k in r:
+            fill(img, x, y, im.w * k, im.h * k, SLOT)
             blit(img, im, x, y, k)
-            x += cell * k + gap
-        y += cell * k + gap
+            x += im.w * k + gap
+        y += max(im.h * k for im, k in r) + gap
     return img
+
+
+def grid_img(rows):
+    im = SA.Img(len(rows[0]), len(rows))
+    for y, row in enumerate(rows):
+        for x, c in enumerate(row):
+            im.put(x, y, (int(round(c[0])), int(round(c[1])), int(round(c[2])), 255))
+    return im
 
 
 # ------------------------------------------------------------------------------------------------------------------ main
@@ -778,30 +992,66 @@ def jbytes(obj):
     return (json.dumps(obj, indent=2) + "\n").encode("utf-8")
 
 
-SACK_ICON_ROT = (16.0, 32.0, 0.0)
+SACK_ICON_ROT = (16.0, 22.0, 0.0)         # 2026-10-08: 32 -> 22 deg so the type emblem faces the viewer more
 ACC_ICON_ROT = (12.0, 28.0, 0.0)
 POSE_ROT = (48.0, 28.0, 0.0)          # previews from above, to look into the mouth
-POSE_FRAMES = ((0, "closed"), (6, "opening"), (20, "open"), (20 + PORTAL_STEP * 4, "open, swirl +4 frames"))
+POSE_FRAMES = ((None, "closed (rest: icon / dropped)"), (0, "held, open"), (PORTAL_STEP * 4, "held, swirl +4 frames"))
+POSE_LOOKS = (("Mining", "Normal"), ("Combat", "Legendary"), (None, "Mythic"))   # the held-pose rows on the sheet
+STALE = ("Common/Items/SkyySacks/SkyySacks_Bag_OpenLoop.blockyanim",)               # outputs of the 2026-10-07 version, removed
+
+
+def clean_old():
+    """remove generated files this version no longer makes (only inside OUT, only names this generator ever wrote)."""
+    for rel in STALE:
+        p = os.path.join(OUT, *rel.split("/"))
+        if os.path.isfile(p):
+            os.remove(p)
+    for folder, prefix in ((os.path.join(OUT, "Common", "Items", "SkyySacks"), "SkyySacks_Bag_"),
+                           (os.path.join(OUT, "Common", "Icons", "ItemsGenerated"), "SkyySacks_Bag_"), (OUT, "preview-Sack-")):
+        if os.path.isdir(folder):
+            for f in sorted(os.listdir(folder)):
+                if f.startswith(prefix) and f.endswith((".png", ".blockymodel")):
+                    os.remove(os.path.join(folder, f))
+
+
+def render_poses(sm, stx, open_anim):
+    pp = fit_props(pose(sm, open_anim, 0), POSE_ROT, fill=52.0)
+    return [SA.render_icon(sm if t is None else pose(sm, open_anim, t), stx, pp, 192, as_img=True) for t, _lbl in POSE_FRAMES]
 
 
 def main():
     z = SA.assets()
-    manifest = {"accessory_bag": None, "sacks": [], "animations": {}, "notes": "see README.md"}
-    open_anim, loop_anim = build_open_anim(False), build_open_anim(True)
+    clean_old()
+    manifest = {"accessory_bag": None, "sacks": [], "animations": {}, "particles": {}, "notes": "see README.md"}
+    open_anim = build_open_anim()
     write(ANIM_OPEN, jbytes(open_anim))
-    write(ANIM_LOOP, jbytes(loop_anim))
     lift3 = lift_anim(z, "Main_Handed/Item/Idle.blockyanim", "Dual_Handed/Block/Idle.blockyanim", 30, LIFT_PLAN_3P)
     liftf = lift_anim(z, "Main_Handed/Item/Idle_FPS.blockyanim", "Dual_Handed/Block/Idle_FPS.blockyanim", 22, LIFT_PLAN_FPS)
     write(LIFT_3P, jbytes(lift3))
     write(LIFT_FPS, jbytes(liftf))
     write(ANIMSET, jbytes(animset_draft(z)))
+    vanilla_sys = "Server/Particles/Spell/Portal/%s.particlesystem" % VANILLA_PORTAL_SYSTEM
+    z.getinfo(vanilla_sys)                                   # KeyError if the vanilla id ever goes away
+    psys, pspawn = sparkle_draft(z)
+    sys_path, spawn_path = "%s/%s.particlesystem" % (PART_DIR, SPARKLE_ID), "%s/%s.particlespawner" % (PART_DIR, SPARKLE_ID)
+    write(sys_path, jbytes(psys))
+    write(spawn_path, jbytes(pspawn))
     z.close()
     manifest["animations"] = {
-        "item_open": ANIM_OPEN, "item_open_loop": ANIM_LOOP, "player_lift_3p": LIFT_3P, "player_lift_fps": LIFT_FPS,
+        "item_open": ANIM_OPEN, "player_lift_3p": LIFT_3P, "player_lift_fps": LIFT_FPS,
         "player_set_draft": ANIMSET, "player_set_id": ANIMSET_ID, "lift_key": LIFT_KEY,
-        "durations": {"item_open": OPEN_DUR, "player_lift_3p": 30, "player_lift_fps": 22}}
+        "durations": {"item_open": OPEN_DUR, "player_lift_3p": 30, "player_lift_fps": 22},
+        "item_open_note": "always open while held (no close / re-open), seamless 20 s loop"}
+    item_particles = [{"SystemId": SPARKLE_ID, "TargetNodeName": "Portal"}]
+    manifest["particles"] = {
+        "status": "UNVERIFIED (not tested in game)",
+        "vanilla_portal_system_id": VANILLA_PORTAL_SYSTEM, "vanilla_portal_system_path": vanilla_sys,
+        "vanilla_note": "portal-sized (spawners 3 blocks up, sparks 2-3 blocks out): far too big on a held bag",
+        "recommended_system_id": SPARKLE_ID, "recommended_system_path": sys_path, "recommended_spawner_path": spawn_path,
+        "derived_from_vanilla_spawner": SPARKLE_SRC,
+        "item_fields": {"Particles": item_particles, "FirstPersonParticles": item_particles}}
 
-    icons, poses = [], []
+    sheet_rows = []
     # accessory bag
     ab = build_accessory()
     am = ab.model()
@@ -812,38 +1062,58 @@ def main():
     write(mp, jbytes(am))
     write(tp, at)
     write(ip, aicon)
+    apre = SA.render_icon(am, at, ap, 192, as_img=True)
     write("preview-AccessoryBag.png", SA.render_icon(am, at, ap, 256))
-    icons.append(SA.png_decode(aicon))
     manifest["accessory_bag"] = {"item": ACC_ITEM, "model_path": mp, "texture_path": tp, "icon_path": ip, "icon_properties": ap,
                                  "texture_size": [TEX_W, ab.atlas.height()], "player_animations": "Item (unchanged)"}
-    # sacks
+    # sacks: one model per rarity, one texture + icon per type x rarity (Mythic Omni: one look)
+    grids = dict((c, emblem_grid(EMBLEM_NAMES[c])) for c in SACK_CATS)
+    type_icons = dict((c, []) for c in SACK_CATS)
+    pose_rows = {}
+    omni_icon = None
     for spec in RARITIES:
         name, ids = spec[0], spec[1]
-        sb = build_sack(spec)
+        holder = None if name == "Mythic" else {"emblem": None}
+        sb = build_sack(spec, holder)
         sm = sb.model()
-        stx = SA.png_encode(sb.atlas.paint())
-        sp = fit_props(sm, SACK_ICON_ROT)
-        sicon = SA.render_icon(sm, stx, sp, 64)
         mp = "%s/SkyySacks_Bag_%s.blockymodel" % (SACK_DIR, name)
-        tp = "%s/SkyySacks_Bag_%s_Texture.png" % (SACK_DIR, name)
-        ip = "%s/SkyySacks_Bag_%s.png" % (ICON_DIR, name)
         write(mp, jbytes(sm))
-        write(tp, stx)
-        write(ip, sicon)
-        icons.append(SA.png_decode(sicon))
-        pp = fit_props(pose(sm, open_anim, 20), POSE_ROT, fill=52.0)
-        row = [SA.render_icon(pose(sm, open_anim, t), stx, pp, 192, as_img=True) for t, _lbl in POSE_FRAMES]
-        if name in ("Normal", "Legendary", "Mythic"):
-            poses.append(row)
-        write("preview-Sack-%s-open.png" % name, SA.png_encode(row[2]))
-        item_ids = [i % c for i in ids for c in SACK_CATS] if "%s" in ids[0] else list(ids)
-        manifest["sacks"].append({"rarity": name, "rarity_colour": spec[10], "items": item_ids, "model_path": mp, "texture_path": tp,
-                                  "icon_path": ip, "icon_properties": sp, "texture_size": [TEX_W, sb.atlas.height()],
-                                  "animation_path": ANIM_OPEN, "animation_fallback": ANIM_LOOP, "player_animations_id": ANIMSET_ID})
-    rows = [(64, 2, icons)] + [(192, 1, r) for r in poses]
-    write("sheet.png", SA.png_encode(sheet(rows)))
+        sp = fit_props(sm, SACK_ICON_ROT)
+        entry = {"rarity": name, "rarity_colour": spec[10], "model_path": mp, "icon_properties": sp,
+                 "texture_size": [TEX_W, sb.atlas.height()], "animation_path": ANIM_OPEN, "player_animations_id": ANIMSET_ID,
+                 "particles": item_particles, "items": []}
+        looks = [(None, ids[0])] if holder is None else [(c, ids[0] % c) for c in SACK_CATS]
+        for cat, item in looks:
+            if cat is not None:
+                holder["emblem"] = grids[cat]
+            tag = name if cat is None else "%s_%s" % (cat, name)
+            stx = SA.png_encode(sb.atlas.paint())
+            sicon = SA.render_icon(sm, stx, sp, 64)
+            tp = "%s/SkyySacks_Bag_%s_Texture.png" % (SACK_DIR, tag)
+            ip = "%s/SkyySacks_Bag_%s.png" % (ICON_DIR, tag)
+            write(tp, stx)
+            write(ip, sicon)
+            entry["items"].append({"item": item, "type": cat or "Omni (all types)", "look": EMBLEM_NAMES[cat] if cat else "gem",
+                                   "texture_path": tp, "icon_path": ip})
+            if cat is None:
+                omni_icon = SA.png_decode(sicon)
+            else:
+                type_icons[cat].append(SA.png_decode(sicon))
+            if (cat, name) in POSE_LOOKS:
+                rows = render_poses(sm, stx, open_anim)
+                pose_rows[(cat, name)] = rows
+                write("preview-Sack-%s-open.png" % tag, SA.png_encode(rows[1]))
+        manifest["sacks"].append(entry)
+    for c in SACK_CATS:
+        sheet_rows.append([(im, 2) for im in type_icons[c]] + [(grid_img(grids[c]), 8)])
+    sheet_rows.append([(omni_icon, 2), (SA.png_decode(aicon), 2), (apre, 1)])
+    for look in POSE_LOOKS:
+        sheet_rows.append([(im, 1) for im in pose_rows[look]])
+    write("sheet.png", SA.png_encode(sheet(sheet_rows)))
     write("manifest.json", jbytes(manifest))
-    print("bags: 1 accessory bag + %d sack looks, 2 item anims, 2 player anims, 1 set draft -> %s" % (len(RARITIES), OUT))
+    n_tex = sum(len(e["items"]) for e in manifest["sacks"])
+    print("bags: 1 accessory bag + %d sack models / %d sack textures, 1 item anim, 2 player anims, 1 set draft, 1 sparkle draft -> %s"
+          % (len(RARITIES), n_tex, OUT))
 
 
 if __name__ == "__main__":
