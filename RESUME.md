@@ -26,6 +26,7 @@ Read this first, then only what the task needs. Map of every file + search tips:
   from SET after Skyy's probe session, TEST-CHECKLIST 31). Newest backup `backups\deploy-20261006-2315`.
 - Skyy tested 2026-10-06 (log): Grapple works; wand heal circle works; minimap works in the hub; live settings Skyy chose: hop.force 30,
   blink.distance 16, blink.floorCheck 0 (defaults since SkyyArmory 0.1.4, deployed 2026-10-06 23:15).
+- 2026-10-08 05:45 HOTFIX DEPLOYED SkyyArmory 0.1.10 (the world would not start: one-entry Parallel in the 7 spellbook Levitate interactions, since 0.1.6; TEST 49). Bag art answers recorded (docs/answered/bags.md), art redo agent ran on tools/art/make_bags.py.
 - DEPLOYED 19:21: SkyyReelProbe 0.1 (TEST-CHECKLIST 42; REMOVE from SET after Skyy's test, before SkyyFishing).
 - DEPLOYED 2026-10-07: 18:54 Accessories 0.5.7 icons + Armory 0.1.5 staffs (TEST 41); 19:21 SkyyReelProbe 0.1 (TEST 42; remove
   after Skyy's test, before SkyyFishing); 20:20 Armory 0.1.6 spellbooks + kunai, Classes 0.1.13, Gear 0.2.8 (TEST 43); 21:41 Armory
