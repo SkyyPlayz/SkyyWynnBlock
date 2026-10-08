@@ -14,7 +14,7 @@ Standing rules for anyone working on this project, person or AI. Where this file
 - Touch only what you need to build and test the mods.
 - Game files are read-only: `HytaleServer.jar`, `Assets.zip`, other people's mods, and everything under
   `C:\Users\SkyLo\AppData\Roaming\Hytale\UserData`. To test against real data, copy it into scratch first.
-- The only write into UserData is the deploy (`python tools/deploy_set.py --yes`).
+- The only write into UserData is the deploy (`python tools/deploy_set.py --yes`) - plus, once a log has been read, moving old game logs (`UserData\Logs\*.log`, `Saves\<world>\logs\*.log`, all but the newest of each) to the Recycle Bin (Skyy 2026-10-08: "be sure to delete logs when you are done with them, so they dont take up my storage space"). Never hard-delete.
 - Never write anywhere else in `C:\Users\SkyLo\AppData`. Scratch only under `tools/dev/scratch/<task>/` (full path), deleted afterwards;
   point TEMP/TMP there for Java runs and use `-XX:-UsePerfData`.
 - Never kill or start the game. If Hytale is running, the deploy waits until Skyy closes it.
