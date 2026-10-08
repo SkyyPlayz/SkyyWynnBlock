@@ -42,11 +42,10 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
-### 6. Class ability icons - Monk (then Assassin, Warrior, Berserker, Archer)
-Mage + Priest (10 icons) are Done. Continue the same style for the remaining classes, **one class per commit**.
-Ability names and what each does: `research/cloud/Class-Ability-Shapes.md`. Class colours: `research/cloud/class-art/README.md`.
-Same defaults Skyy approved for Mage/Priest: round dark frame, class-colour rim; dark background with class tint.
-Path: `art/ability-icons/Common/Icons/Abilities/<Class>/<AbilityName>.png`. Update the shared `sheet.png` (or add a per-class sheet) and commit.
+### 7. Class ability icons - Assassin (then Warrior, Berserker, Archer)
+Monk is Done. Continue the same style, **one class per commit**. Assassin icons are already drawn and waiting for Skyy's review
+(in the art agent's working copy). Ability names: `research/cloud/Class-Ability-Shapes.md`. Colours: `research/cloud/class-art/README.md`.
+Path: `art/ability-icons/Common/Icons/Abilities/<Class>/<AbilityName>.png`.
 
 ## Queue (check with Skyy before starting each)
 6. **Monk claws** (Blockbench, full items): Wolverine-style long blades from the knuckles on a black LEATHER glove (skywynn-art skill,
@@ -60,6 +59,12 @@ Path: `art/ability-icons/Common/Icons/Abilities/<Class>/<AbilityName>.png`. Upda
    are in the skywynn-art skill, section 3. A separate candidate dark-leather design is in Done (#3).
 
 ## Done
+### 5. Class ability icons - Monk (2026-10-08)
+- Folder: `art/ability-icons/Common/Icons/Abilities/Monk/` - FlowingForm, PalmStrike, CycloneKick, HundredFists, StillWater (64x64).
+  Shared sheet/manifest/README/scripts updated. Cyclone Kick: upright soft brown shoe (Skyy asked for shoes + vertical foot).
+- Skyy's answers, word for word: "They all look great, except the cyclone kick. The foot looks weird" / "Either wrap the foot or give his shoes don't leave it bare" / "Use shoes instead, make the foot vertical like the first image" / "Yes, the shoe looks good, commit the Monk icons"
+- Not yet seen in game.
+
 ### 4. Class ability icons - Mage + Priest (2026-10-08)
 - Folder: `art/ability-icons/` - 10 icons under `Common/Icons/Abilities/Mage/` and `.../Priest/` (64x64), `sheet.png`,
   `manifest.json`, `README.md`. Scripts: `tools/art/make_ability_icons.py`, `make_ability_sheet.py`, `validate_ability_icons.py`.

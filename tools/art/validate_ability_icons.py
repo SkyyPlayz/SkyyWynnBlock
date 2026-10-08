@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""validate_ability_icons - checks the 10 Mage + Priest ability icons.
+"""validate_ability_icons - checks every class ability icon in make_ability_icons.ICONS.
 
 Checks: file exists at Common/Icons/Abilities/<Class>/<Name>.png, 64x64 RGBA, alpha only 0 / 255, corners transparent and centre
 opaque, no pure #000000 / #ffffff pixel, the symbol is not a near-copy of another icon (mean abs diff of the 32 px versions),

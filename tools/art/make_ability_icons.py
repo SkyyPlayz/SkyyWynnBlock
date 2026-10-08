@@ -451,6 +451,480 @@ def martyrs_grace():
     return back, g, front, glints
 
 
+# ================================================================================================================= MONK
+# Monk (class colour Saffron #f08a30, LOCKED): martial / wind / speed - saffron rim, dark rust field, linen hand wraps (the
+# class emblem's wrapped fist), teal-white wind, calm water.
+MONK_RIM = ramp("#5a2208", "#8e3a10", "#c45c1c", "#f08a30", "#f8b462", "#fde0b0")      # from Monk Saffron #f08a30
+SAFFRON = ramp("#561a0c", "#8c3010", "#c4521a", "#f08a30", "#f8b25a", "#fdd890", "#fff2d0")
+LINEN = ramp("#4e3a34", "#7a6252", "#a68e74", "#cbb796", "#e6d8b8", "#f8f0dc")        # hand wraps: violet-brown shadows
+SKIN = ramp("#4a2220", "#7a3c2e", "#a65e44", "#cc845e", "#e8aa80", "#f8d0aa")
+WIND = ramp("#163e4e", "#25687a", "#4498a6", "#78c4c4", "#b4e6dc", "#eafaf2")
+WATER = ramp("#10304e", "#1a5078", "#2a78a4", "#4ea4c8", "#88cee0", "#ccf0f4")
+
+MONK = K.Style("Monk", "#f08a30", MONK_RIM, field_c="#4a2416", field_e="#170b09",
+               outline="#120706", frame=FRAME, glow_c="#f08a30")
+
+
+def arc_band(cx, cy, r0, r1, a0, a1):
+    """part of a ring (radii r0..r1) between angles a0..a1 (degrees, screen: 0 = right, 90 = down), any span"""
+    ang = (np.degrees(np.arctan2(Y - cy, X - cx)) - a0) % 360.0
+    return ring(cx, cy, r1, r0) & (ang <= (a1 - a0) % 360.0 + (360.0 if (a1 - a0) >= 360 else 0.0))
+
+
+def swirl(cx, cy, a_head, span, r_in, r_out, w_head, w_tail):
+    """one spiral ribbon: head at angle a_head (radius r_out, width w_head), sweeping BACK span degrees toward the centre
+    (radius r_in, width w_tail). Returns (mask, t) where t = 0 at the head .. 1 at the tail."""
+    ang = np.degrees(np.arctan2(Y - cy, X - cx))
+    back = (a_head - ang) % 360.0                 # degrees behind the head (counter-clockwise on screen = travel clockwise)
+    t = back / span
+    rr = np.sqrt((X - cx) ** 2 + (Y - cy) ** 2)
+    r_mid = r_out + (r_in - r_out) * t
+    w = w_head + (w_tail - w_head) * t
+    m = (t <= 1.0) & (np.abs(rr - r_mid) <= w / 2.0)
+    m |= circle(cx + r_out * math.cos(math.radians(a_head)), cy + r_out * math.sin(math.radians(a_head)), w_head / 2.0)
+    return m, np.clip(t, 0, 1)
+
+
+def wrap_bands(layer, m, x0, y0, x1, y1, step, w, rmp, t_dark=0.18):
+    """dark diagonal band lines (hand-wrap layers) across mask m: lines perpendicular to the direction (x0,y0)->(x1,y1)"""
+    dx, dy = x1 - x0, y1 - y0
+    L = math.hypot(dx, dy)
+    ux, uy = dx / L, dy / L
+    s = (X - x0) * ux + (Y - y0) * uy
+    # slight slant so bands look wrapped (spiral), not stacked
+    s = s + ((X - x0) * (-uy) + (Y - y0) * ux) * 0.28
+    band = (np.mod(s, step) < w) & m
+    layer.put(band, rs(rmp, t_dark))
+
+
+def flowing_form():
+    """Flowing Form: a saffron chi orb inside three teal-white wind ribbons swirling round it (speed aura, combo stacks)"""
+    back, g, front = L3()
+    cx, cy = 32.0, 32.0
+    glow(back, circle(cx, cy, 8), "#f08a30", 6.0, 0.7)
+    glow(back, ring(cx, cy, 22, 12), "#4498a6", 4.0, 0.35)
+    for k in range(3):
+        m, t = swirl(cx, cy, -70 + k * 120, 165, 8.0, 20.5, 5.6, 1.0)
+        g.bevel(m, WIND, face=0.80, bevel=0.9, grad=0.25, gain=0.7, tone=-0.55 * t)
+    # chi orb: saffron with a lit top-left and a hot core
+    orb = circle(cx, cy, 7.0)
+    d = np.sqrt((X - (cx - 2.0)) ** 2 + (Y - (cy - 2.2)) ** 2) / 9.0
+    g.put(orb, rs(SAFFRON, 0.98 - d * 0.85))
+    g.put(ring(cx, cy, 7.0, 6.0) & (Y > cy + 1), rs(SAFFRON, 0.3))
+    # three combo pips round the orb (stacks)
+    for a in (-90, 30, 150):
+        r = math.radians(a)
+        front.put(circle(cx + math.cos(r) * 10.2, cy + math.sin(r) * 10.2, 1.05), rs(SAFFRON, 0.9))
+    glints = [(29, 28, "#fff2d0"), (30, 28, "#fdd890")]
+    return back, g, front, glints
+
+
+def palm_strike():
+    """Palm Strike: an open, wrist-wrapped palm thrust forward with a saffron impact burst behind it (stun + knockback)"""
+    back, g, front = L3()
+    cx, cy, rot = 31.0, 34.0, -12.0
+    # impact: two shock rings + burst rays behind the hand
+    glow(back, circle(cx + 1, cy - 4, 12), "#f08a30", 6.0, 0.85)
+    rays = np.zeros(X.shape, bool)
+    for k in range(10):
+        a = math.radians(k * 36 + 8)
+        ca, sa = math.cos(a), math.sin(a)
+        r0, r1, w = 15.0, 24.5, 1.9
+        rays |= poly([(cx + 1 + ca * r0 - sa * w, cy - 4 + sa * r0 + ca * w), (cx + 1 + ca * r1, cy - 4 + sa * r1),
+                      (cx + 1 + ca * r0 + sa * w, cy - 4 + sa * r0 - ca * w)])
+    back.put(rays, rs(SAFFRON, 0.72), alpha=0.85)
+
+    def R(p):
+        return rotpts(p, cx, cy, rot)
+
+    # wrist + wraps (linen)
+    wr = R([(cx - 6.4, cy + 7.0), (cx + 6.4, cy + 7.0), (cx + 6.0, cy + 19.0), (cx - 6.0, cy + 19.0)])
+    wrist = poly(wr)
+    g.bevel(wrist, LINEN, face=0.6, bevel=1.2, grad=0.3, gain=0.8)
+    a = math.radians(rot)
+    wrap_bands(g, wrist, cx - 6 * math.sin(-a), cy + 7, cx - 6 * math.sin(-a) + math.sin(a) * -1, cy + 19, 3.0, 0.75, LINEN)
+    # palm
+    palm = poly(R([(cx - 8.2, cy - 3.0), (cx + 8.2, cy - 3.0), (cx + 7.6, cy + 6.0), (cx + 4.5, cy + 9.0), (cx - 4.5, cy + 9.0),
+                   (cx - 7.8, cy + 6.0)]))
+    # fingers (index .. pinky) and thumb
+    fing = np.zeros(X.shape, bool)
+    tips = [(-5.8, -16.2), (-1.9, -18.6), (2.0, -17.8), (5.9, -14.4)]
+    for fx, ty in tips:
+        (x0, y0), (x1, y1) = R([(cx + fx, cy - 2.0), (cx + fx * 1.05, cy + ty)])
+        fing |= capsule(x0, y0, x1 + fx * 0.06, y1, 2.1, 1.9)
+    (tx0, ty0), (tx1, ty1) = R([(cx - 6.5, cy + 4.5), (cx - 13.0, cy - 2.5)])
+    thumb = capsule(tx0, ty0, tx1, ty1, 2.5, 2.1)
+    g.bevel(thumb, SKIN, face=0.64, bevel=1.0, grad=0.3, gain=0.8)
+    g.bevel(fing, SKIN, face=0.74, bevel=1.0, grad=0.35, gain=0.85)
+    g.bevel(palm, SKIN, face=0.70, bevel=1.4, grad=0.3, gain=0.8)
+    # palm crease + heel shade
+    cr = line(R([(cx - 5.0, cy + 1.0), (cx - 0.5, cy + 3.0), (cx + 5.5, cy + 0.5)]), 0.7)
+    g.put(cr & palm, rs(SKIN, 0.3))
+    # a linen band across the knuckle line (the palm wrap)
+    kb = poly(R([(cx - 8.4, cy + 4.6), (cx + 8.4, cy + 4.6), (cx + 8.3, cy + 7.4), (cx - 8.3, cy + 7.4)])) & palm
+    g.bevel(kb, LINEN, face=0.7, bevel=0.6, grad=0.3, gain=0.7)
+    glints = [(26, 18, "#f8d0aa"), (30, 16, "#f8d0aa")]
+    return back, g, front, glints
+
+
+SHOE = ramp("#22120e", "#381e14", "#542e1c", "#723f26", "#915433", "#ae6e46", "#c88c62")  # soft warm earth-brown cloth shoe
+SOLE = ramp("#3a2818", "#664a2e", "#94764e", "#bea06e", "#e0c896", "#f2e2b8")      # light tan felt / leather sole
+
+
+def cyclone_kick():
+    """Cyclone Kick: a kick with the shoe standing up at the end of a linen-wrapped shin, sole toward the kick, in a saffron whirl"""
+    back, g, front = L3()
+    cx, cy = 32.0, 33.0
+    # whirl: two sweeping arcs (motion trail of the spin) - thick at the head, thin at the tail; placed so they pass above-left
+    # and below-right of the leg and never cross the shoe
+    # (the shoe fills the upper-right quarter, so one long arc sweeps right -> bottom and a short one sits upper-left)
+    for a_head, span, rr in ((118, 135, 20.0), (252, 72, 19.0)):
+        m, t = swirl(cx, cy, a_head, span, 15.0, rr, 6.8, 1.6)
+        glow(back, m, "#f08a30", 2.5, 0.7)
+        g.bevel(m, SAFFRON, face=0.90, bevel=0.8, grad=0.2, gain=0.6, tone=-0.5 * t)
+    # v4 (Skyy 2026-10-08: "Use shoes instead, make the foot vertical like the first image"): the FIRST pose again - linen-wrapped
+    # shin coming in from the lower left, the foot standing UP at its end (toes up, sole facing the kick, heel at the bottom) -
+    # now in a soft dark earth-brown Monk shoe with a light tan sole edge, a padded collar and an instep strap.
+    piv, rot = (32.0, 34.0), -16.0
+
+    def F(pts):
+        return rotpts(pts, piv[0], piv[1], rot)
+
+    (s0x, s0y), (s1x, s1y) = F([(9.0, 39.0), (29.0, 36.0)])
+    shin = capsule(s0x, s0y, s1x, s1y, 4.8, 4.2)
+    g.bevel(shin, LINEN, face=0.55, bevel=1.2, grad=0.3, gain=0.8)
+    wrap_bands(g, shin, s0x, s0y, s1x, s1y, 3.2, 0.8, LINEN)
+    # sole: a thick light tan sole along the kicking face (right) - ball pad at the top, thinner arch, heel block at the bottom
+    sole = poly(F([(35.4, 18.2), (38.4, 18.8), (40.8, 21.2), (41.4, 25.0), (41.0, 28.6), (40.0, 31.6), (40.2, 35.0),
+                   (41.0, 38.6), (39.8, 42.6), (36.6, 44.8), (31.0, 45.0), (28.6, 43.6), (29.0, 41.4), (33.0, 41.2),
+                   (35.8, 39.6), (36.6, 35.0), (37.0, 30.0), (36.8, 22.0), (35.4, 20.0)]))
+    g.bevel(sole, SOLE, face=0.72, bevel=1.0, grad=0.35, gain=0.8)
+    # arch gap shading + heel-block line on the sole
+    g.put(line(F([(36.8, 35.4), (40.6, 35.4)]), 0.7) & sole, rs(SOLE, 0.25))
+    # the shoe upper: soft cloth, rounded toe box at the top, heel at the bottom, opening on the left where the shin goes in
+    upper = poly(F([(25.2, 32.0), (28.6, 29.4), (30.0, 24.0), (31.6, 20.6), (33.6, 18.8), (35.6, 18.6), (36.8, 20.2),
+                    (37.2, 22.0), (37.2, 30.0), (36.6, 35.0), (35.8, 39.6), (33.0, 41.4), (29.0, 41.6), (26.2, 40.6),
+                    (25.0, 37.0)]))
+    g.bevel(upper, SHOE, face=0.62, bevel=1.4, grad=0.35, gain=0.9)
+    # stitched seam just inside the sole (lighter dashes) and a toe-box seam
+    seam = line(F([(35.6, 21.6), (35.9, 30.0), (35.2, 36.4), (33.6, 39.4), (29.6, 40.2)]), 0.55)
+    dash = np.mod((X + Y) * 0.9, 2.2) < 1.1
+    g.put(seam & dash & upper, rs(SOLE, 0.55))
+    g.put(line(F([(30.8, 25.0), (33.6, 23.6), (37.2, 23.6)]), 0.6) & upper, rs(SHOE, 0.22))
+    # instep strap (tan) with a small knot
+    strap = line(F([(28.4, 30.2), (32.6, 28.6), (37.4, 28.2)]), 2.0) & upper
+    g.bevel(strap, SOLE, face=0.70, bevel=0.5, grad=0.2, gain=0.7)
+    # padded collar at the opening (where the wrapped shin goes in)
+    collar = line(F([(26.4, 31.6), (25.4, 34.6), (25.4, 38.6), (26.8, 41.0)]), 2.2) & (upper | shin)
+    g.bevel(collar, SHOE, face=0.40, bevel=0.6, grad=0.2, gain=0.7)
+    (gx1, gy1), = F([(32.8, 20.6)])
+    (gx2, gy2), = F([(39.4, 21.6)])
+    glints = [(int(gx1), int(gy1), "#c88c62"), (int(gx2), int(gy2), "#f2e2b8"), (15, 41, "#f8f0dc")]
+    return back, g, front, glints
+
+
+def fist(g, cx, cy, s=1.0, faint=None, tint=None):
+    """front view of a linen-wrapped fist (knuckles to the viewer) centred (cx, cy); faint = (layer, alpha) for after-images"""
+    def P(dx, dy):
+        return cx + dx * s, cy + dy * s
+    parts = []
+    body = poly([P(-9.5, -5.0), P(9.5, -5.0), P(10.0, 4.0), P(7.0, 9.0), P(-7.0, 9.0), P(-10.0, 4.0)])
+    fingers = [capsule(*P(fx, -6.0), *P(fx, 1.5), 2.55 * s) for fx in (-7.0, -2.35, 2.35, 7.0)]
+    thumb = capsule(*P(-10.0, 4.4), *P(1.6, 5.4), 2.6 * s)
+    wrist = poly([P(-6.6, 8.0), P(6.6, 8.0), P(6.0, 17.0), P(-6.0, 17.0)])
+    if faint is not None:
+        lay, al = faint
+        sil = body | wrist | thumb
+        for f in fingers:
+            sil |= f
+        lay.put(sil, rs(SAFFRON, 0.50), alpha=al)
+        edge = sil & ~K._erode(K._erode(sil, True), False)
+        lay.put(edge, rs(SAFFRON, 0.80), alpha=min(1.0, al + 0.3))
+        return sil
+    lin = LINEN if tint is None else tint
+    skn = SKIN if tint is None else tint
+    g.bevel(wrist, lin, face=0.52, bevel=1.1 * s, grad=0.3, gain=0.8)
+    wrap_bands(g, wrist, *P(0, 8.0), *P(0, 17.0), 3.0 * s, 0.75 * s, lin)
+    g.bevel(body, lin, face=0.5, bevel=1.2 * s, grad=0.3, gain=0.7)
+    for f, fc in zip(fingers, (0.70, 0.74, 0.72, 0.66)):
+        g.bevel(f, lin, face=fc, bevel=1.1 * s, grad=0.4, gain=0.85)
+    g.bevel(thumb, lin, face=0.60, bevel=1.0 * s, grad=0.3, gain=0.8)
+    g.bevel(thumb & circle(*P(1.0, 5.3), 2.7 * s), skn, face=0.62, bevel=0.8 * s, grad=0.3, gain=0.7)
+    return None
+
+
+def hundred_fists():
+    """Hundred Fists: a wrapped fist punching forward between two saffron after-image fists, impact sparks round it (a flurry)"""
+    back, g, front = L3()
+    cx, cy = 32.0, 29.5
+    glow(back, circle(cx, cy, 12), "#f08a30", 6.0, 0.6)
+    # after-image fists left + right, apart from the real fist so each reads on its own at 32 px
+    for fx in (-19.0, 19.0):
+        glow(back, circle(cx + fx, cy + 2.0, 5.0), "#f08a30", 2.5, 0.5)
+        fist(g, cx + fx, cy - 1.0, 0.47, tint=SAFFRON)
+        # motion streaks under each after-image (moving toward the centre)
+        for k, dy in enumerate((8.0, 10.6)):
+            x0 = cx + fx * (1.12 - 0.1 * k)
+            front.put(capsule(x0, cy + dy, x0 - math.copysign(3.5, fx), cy + dy, 0.6), rs(SAFFRON, 0.8))
+    fist(g, cx, cy + 0.5, 1.08)
+    # impact sparks above the knuckles
+    for sx, sy, sr in ((32.0, 15.5, 2.2), (22.5, 19.0, 1.6), (41.5, 19.0, 1.6)):
+        sparkle(front, sx, sy, sr, "#fdd890", None, 0.5)
+    glints = [(24, 24, "#f8f0dc"), (29, 24, "#f8f0dc"), (34, 24, "#f8f0dc")]
+    return back, g, front, glints
+
+
+def still_water():
+    """Still Water: one drop falling on a calm pond - rings spreading - under a saffron sun on the horizon (a calm counter stance)"""
+    back, g, front = L3()
+    cx, hy = 32.0, 37.0
+    # sun on the horizon
+    sun = circle(cx, hy, 13.5) & (Y <= hy)
+    glow(back, sun, "#f08a30", 5.0, 0.55)
+    srays = np.zeros(X.shape, bool)
+    for k in range(7):
+        a = math.radians(-180 + 15 + k * 25)
+        ca, sa = math.cos(a), math.sin(a)
+        srays |= poly([(cx + ca * 15.0 - sa * 1.3, hy + sa * 15.0 + ca * 1.3), (cx + ca * 21.5, hy + sa * 21.5),
+                       (cx + ca * 15.0 + sa * 1.3, hy + sa * 15.0 - ca * 1.3)])
+    back.put(srays & (Y < hy - 0.5), rs(SAFFRON, 0.75), alpha=0.8)
+    g.bevel(sun, SAFFRON, face=0.66, bevel=1.4, grad=0.55, gain=0.6)
+    # horizon / water surface
+    water = (Y > hy) & K.field_disc()
+    tw = np.clip((Y - hy) / 14.0, 0, 1)
+    back.put(water, rs(WATER, 0.40 - tw * 0.28), alpha=0.9)
+    # sun reflection strips
+    for k, (wd, yy) in enumerate(((10.5, hy + 2.0), (7.5, hy + 4.4), (4.8, hy + 6.8), (2.6, hy + 9.0))):
+        back.put((np.abs(X - cx) < wd) & (np.abs(Y - yy) < 0.6), rs(SAFFRON, 0.78 - k * 0.08), alpha=0.85)
+    g.put((Y > hy - 0.6) & (Y < hy + 0.6) & K.field_disc(), rs(SAFFRON, 0.86))
+    # ripples spreading from where the drop lands (thin rings, no filled centre)
+    for rx, ry, w, t in ((19.0, 5.2, 1.4, 0.80), (10.5, 2.9, 1.4, 0.96)):
+        g.put(ering(cx, hy + 7.5, rx, ry, w), rs(WATER, t))
+    # the drop, falling
+    drop = circle(cx, 25.5, 5.0) | poly([(cx - 4.7, 24.0), (cx, 12.5), (cx + 4.7, 24.0)])
+    g.bevel(drop, WATER, face=0.72, bevel=1.1, grad=0.45, gain=0.85)
+    glints = [(29, 22, "#ccf0f4"), (29, 23, "#ccf0f4")]
+    return back, g, front, glints
+
+
+# ================================================================================================================= ASSASSIN
+# Assassin (class colour #b58cff): stealth / poison / the kill - lilac rim, dark plum field, shadow-violet cloth, toxic green,
+# steel blades with violet gems (the class emblem's dagger), gold for the boss crown.
+ASSN_RIM = ramp("#2e1c5a", "#4c3290", "#7a5cc8", "#b58cff", "#d4bcff", "#f0e8ff")       # from Assassin #b58cff
+SHADE = ramp("#100a1a", "#1c142c", "#2a1f42", "#3c2d5a", "#544076", "#705a94", "#8e7ab0")  # shadow-violet cloth
+LILAC = ramp("#3e2478", "#6440b0", "#8e68e0", "#b58cff", "#d4bcff", "#f0e8ff")
+POISON = ramp("#123214", "#1e5418", "#327c20", "#56a82e", "#86d24a", "#bff08a", "#ecffd0")
+GLASS = ramp("#22303e", "#3a5060", "#5c7884", "#88a6ac", "#bcd6d6", "#e6f6f2")
+SMOKE = ramp("#241e30", "#3a3248", "#554c66", "#766e88", "#9c96ac", "#c6c2d2", "#e6e4ee")
+IRON = ramp("#12121c", "#1e1e2c", "#2e2e40", "#444458", "#5e5e76", "#7c7c94")
+WOOD = ramp("#3a2214", "#5e3a20", "#86582e", "#ae7e48", "#d0a868")
+
+ASSASSIN = K.Style("Assassin", "#b58cff", ASSN_RIM, field_c="#33224e", field_e="#0e0916",
+                   outline="#07040c", frame=FRAME, glow_c="#b58cff")
+
+
+def hood(g, cx, cy, s=1.0, ghost=None):
+    """front view of a pointed hood with a shadowed face and two glowing lilac eyes; ghost=(layer, alpha) = a shadow copy"""
+    def P(dx, dy):
+        return cx + dx * s, cy + dy * s
+    outer = poly([P(0, -21.0), P(6.5, -17.0), P(11.5, -9.0), P(14.0, 1.0), P(15.0, 10.0), P(19.0, 16.0), P(19.5, 24.0),
+                  P(-19.5, 24.0), P(-19.0, 16.0), P(-15.0, 10.0), P(-14.0, 1.0), P(-11.5, -9.0), P(-6.5, -17.0)])
+    face = ellipse(*P(0, 0.5), 8.0 * s, 10.2 * s) & (Y > cy - 11.0 * s)
+    eyes = np.zeros(X.shape, bool)
+    for sx in (-1, 1):
+        eyes |= poly([P(sx * 1.6, 0.6), P(sx * 5.6, -0.6), P(sx * 5.0, 1.4), P(sx * 2.0, 2.0)])
+    if ghost is not None:
+        lay, al = ghost
+        lay.put(outer, rs(LILAC, 0.36), alpha=al)
+        edge = outer & ~K._erode(K._erode(K._erode(outer, True), False), True)
+        lay.put(edge, rs(LILAC, 0.72), alpha=min(1.0, al + 0.25))
+        lay.put(face, rs(SHADE, 0.05), alpha=al)
+        lay.put(eyes, rs(LILAC, 0.95), alpha=1.0)
+        return outer
+    g.bevel(outer, SHADE, face=0.80, bevel=1.6 * s, grad=0.45, gain=0.9)
+    # hood folds: a centre crease from the peak + two side folds
+    folds = line([P(0, -20.0), P(0.6, -12.0)], 0.9 * s) | line([P(-12.5, 4.0), P(-10.0, 14.0), P(-12.0, 23.0)], 0.9 * s) | \
+        line([P(12.5, 4.0), P(10.0, 14.0), P(12.0, 23.0)], 0.9 * s)
+    g.put(folds & outer, rs(SHADE, 0.45))
+    # face opening: inner rim lit, depth dark
+    g.put(ellipse(*P(0, 0.5), 9.4 * s, 11.6 * s) & outer & (Y > cy - 12.5 * s), rs(SHADE, 1.0))
+    d = np.sqrt((X - cx) ** 2 + ((Y - (cy - 3.0 * s)) * 0.8) ** 2) / (10.0 * s)
+    g.put(face, rs(SHADE, 0.02 + d * 0.12))
+    g.put(eyes, rs(LILAC, 0.95))
+    return outer
+
+
+def dagger(g, x0, y0, x1, y1, w=2.6, guard=5.5, grip=7.0, rmp_gem=None):
+    """a straight dagger, pommel at (x0, y0), point at (x1, y1): wrapped grip, gold guard, bevelled steel blade with ridge"""
+    rmp_gem = LILAC if rmp_gem is None else rmp_gem
+    dx, dy = x1 - x0, y1 - y0
+    L = math.hypot(dx, dy)
+    ux, uy = dx / L, dy / L
+    nx, ny = -uy, ux
+    gx, gy = x0 + ux * (grip + 2.0), y0 + uy * (grip + 2.0)          # guard centre
+    blade = poly([(gx + nx * w, gy + ny * w), (x1 - ux * w * 2.2 + nx * w * 0.8, y1 - uy * w * 2.2 + ny * w * 0.8), (x1, y1),
+                  (x1 - ux * w * 2.2 - nx * w * 0.8, y1 - uy * w * 2.2 - ny * w * 0.8), (gx - nx * w, gy - ny * w)])
+    g.bevel(blade, STEEL, face=0.74, bevel=0.9, grad=0.2, gain=0.9)
+    half = blade & (((X - gx) * nx + (Y - gy) * ny) > 0)
+    g.bevel(half, STEEL, face=0.50, bevel=0.0001, grad=0.15, gain=0.0)
+    gp = capsule(x0 + ux * 1.5, y0 + uy * 1.5, gx, gy, w * 0.62)
+    g.bevel(gp, IRON, face=0.55, bevel=0.6, grad=0.2, gain=0.8)
+    # criss-cross wrap lines on the grip
+    wrap_bands(g, gp, x0, y0, gx, gy, 2.0, 0.6, IRON, t_dark=0.05)
+    gd = capsule(gx + nx * guard, gy + ny * guard, gx - nx * guard, gy - ny * guard, 1.35)
+    g.bevel(gd, GOLD, face=0.62, bevel=0.6, grad=0.3, gain=0.8)
+    pm = circle(x0, y0, w * 0.95)
+    g.bevel(pm, rmp_gem, face=0.6, bevel=0.6, grad=0.4, gain=0.8)
+    return blade | gp | gd | pm
+
+
+def cloak_first_strike():
+    """Cloak + First Strike: a hooded assassin fading into the shadows (lower half dissolving), a bright crit star = the first hit"""
+    back, g, front = L3()
+    cx, cy = 31.0, 31.0
+    glow(back, circle(cx, cy + 2, 15), "#8e68e0", 7.0, 0.85)
+    full = hood(None, cx, cy, 1.0, ghost=(Layer(), 0.0))           # silhouette only
+    solid = full & (Y < cy + 9.0)
+    # the solid upper hood (glyph) ...
+    tmp = Layer()
+    hood(tmp, cx, cy, 1.0)
+    g.rgb = g.rgb * (1 - solid[..., None]) + tmp.rgb * solid[..., None]
+    g.a = np.where(solid, 1.0, g.a)
+    # ... and the lower part fading out into the field (back layer, no outline): invisibility
+    fade = full & ~solid
+    al = np.clip(1.0 - (Y - (cy + 9.0)) / 14.0, 0, 1) ** 1.3
+    back.rgb = back.rgb * (1 - (fade * al)[..., None]) + tmp.rgb / np.maximum(tmp.a[..., None], 1e-6) * (fade * al)[..., None]
+    back.a = np.clip(back.a + fade * al, 0, 1)
+    # wisps rising off the fade
+    for wx, wy, wr in ((19.0, 46.0, 1.3), (44.0, 44.5, 1.1), (25.0, 50.5, 0.9), (39.0, 51.0, 0.9)):
+        back.put(circle(wx, wy, wr), rs(LILAC, 0.55), alpha=0.7)
+    # crit star (First Strike: next hit is a sure crit)
+    glow(back, circle(46.0, 18.0, 3.5), "#ecc458", 3.5, 0.8)
+    cs = star(46.0, 18.0, 8.2, 2.5, 4, -90)
+    g.bevel(cs, GOLD, face=0.82, bevel=0.8, grad=0.2, gain=0.6)
+    glints = [(28, 15, "#8e7ab0"), (45, 14, "#fff4cc")]
+    return back, g, front, glints
+
+
+def toxin():
+    """Toxin: a corked glass vial of bubbling green poison, a toxic green cloud spilling out behind it"""
+    back, g, front = L3()
+    # poison cloud (behind, upper right)
+    puffs = [(38.0, 24.0, 8.0), (46.0, 30.0, 6.4), (30.5, 19.0, 5.6), (44.0, 18.5, 5.2), (40.5, 35.5, 5.2)]
+    cloud = np.zeros(X.shape, bool)
+    for px, py, pr in puffs:
+        cloud |= circle(px, py, pr)
+    glow(back, cloud, "#56a82e", 3.5, 0.55)
+    g.bevel(cloud, POISON, face=0.52, bevel=2.2, grad=0.5, gain=0.8)
+    for px, py, pr in puffs[:3]:
+        g.put(circle(px - pr * 0.3, py - pr * 0.35, pr * 0.42) & cloud, rs(POISON, 0.72))
+    # the vial: round flask + neck + cork, tilted
+    cx, cy, rot = 25.0, 39.0, 28.0
+
+    def R(p):
+        return rotpts(p, cx, cy, rot)
+    body = circle(cx, cy, 10.0)
+    neck = poly(R([(cx - 3.4, cy - 8.0), (cx + 3.4, cy - 8.0), (cx + 3.4, cy - 15.5), (cx - 3.4, cy - 15.5)]))
+    lip = poly(R([(cx - 4.6, cy - 15.0), (cx + 4.6, cy - 15.0), (cx + 4.6, cy - 17.0), (cx - 4.6, cy - 17.0)]))
+    cork = poly(R([(cx - 3.0, cy - 16.5), (cx + 3.0, cy - 16.5), (cx + 2.6, cy - 21.5), (cx - 2.6, cy - 21.5)]))
+    g.bevel(body | neck, GLASS, face=0.55, bevel=1.4, grad=0.4, gain=0.8)
+    # poison liquid inside (level tilts with the vial: stays horizontal)
+    liq = circle(cx, cy, 8.4) & (Y > cy - 2.0)
+    d = np.sqrt((X - (cx - 2.5)) ** 2 + (Y - (cy + 1.0)) ** 2) / 10.0
+    g.put(liq, rs(POISON, 0.88 - d * 0.6))
+    g.put(liq & (Y < cy - 0.8), rs(POISON, 0.95))
+    for bx, by, br in ((cx + 2.5, cy + 3.0, 1.2), (cx - 1.5, cy + 5.5, 0.9), (cx + 4.5, cy + 0.5, 0.8)):
+        g.put(ring(bx, by, br + 0.5, br - 0.2), rs(POISON, 1.0))
+    g.bevel(lip, GLASS, face=0.75, bevel=0.6, grad=0.3, gain=0.7)
+    g.bevel(cork, WOOD, face=0.6, bevel=0.8, grad=0.4, gain=0.8)
+    # glass highlight streak (front)
+    hl = ring(cx, cy, 7.8, 6.6) & (np.degrees(np.arctan2(Y - cy, X - cx)) > -170) & (np.degrees(np.arctan2(Y - cy, X - cx)) < -110)
+    front.put(hl, hx("#e6f6f2"), alpha=0.9)
+    # drips falling from the cloud
+    for dx_, dy_ in ((48.0, 41.0), (36.0, 46.0)):
+        front.put(circle(dx_, dy_, 1.1) | poly([(dx_ - 1.0, dy_ - 0.3), (dx_, dy_ - 2.8), (dx_ + 1.0, dy_ - 0.3)]), rs(POISON, 0.8))
+    glints = [(36, 19, "#ecffd0"), (21, 36, "#e6f6f2")]
+    return back, g, front, glints
+
+
+def god_killer():
+    """God Killer: a dagger stabbing down through a gold boss crown (2x on bosses, 3x from behind)"""
+    back, g, front = L3()
+    cx, cy = 32.0, 40.0
+    glow(back, circle(cx, cy - 2, 12), "#ecc458", 6.0, 0.45)
+    # crown: band + 5 points with gem tips
+    band = poly([(cx - 15.0, cy + 1.0), (cx + 15.0, cy + 1.0), (cx + 14.0, cy + 8.5), (cx - 14.0, cy + 8.5)])
+    pts = [(cx - 15.5, cy + 1.5), (cx - 17.0, cy - 11.0), (cx - 9.0, cy - 3.0), (cx - 6.0, cy - 15.0), (cx, cy - 5.0),
+           (cx + 6.0, cy - 15.0), (cx + 9.0, cy - 3.0), (cx + 17.0, cy - 11.0), (cx + 15.5, cy + 1.5)]
+    crown = poly(pts) | band
+    g.bevel(crown, GOLD, face=0.6, bevel=1.5, grad=0.45, gain=0.9)
+    g.bevel(band, GOLD, face=0.48, bevel=1.0, grad=0.3, gain=0.8)
+    for gx_, gy_, gr, rmp in ((cx - 17.0, cy - 11.5, 2.0, ROSE), (cx - 6.0, cy - 15.5, 2.0, LILAC),
+                              (cx + 6.0, cy - 15.5, 2.0, LILAC), (cx + 17.0, cy - 11.5, 2.0, ROSE)):
+        g.bevel(circle(gx_, gy_, gr), rmp, face=0.62, bevel=0.6, grad=0.4, gain=0.8)
+    for gx_ in (cx - 8.0, cx + 8.0):
+        g.bevel(poly([(gx_, cy + 2.4), (gx_ + 2.4, cy + 4.8), (gx_, cy + 7.2), (gx_ - 2.4, cy + 4.8)]), ROSE, face=0.6, bevel=0.6,
+                grad=0.3, gain=0.8)
+    # crack where the blade goes in
+    crk = line([(cx + 1.0, cy - 2.0), (cx - 1.5, cy + 2.5), (cx + 1.5, cy + 5.5)], 0.9)
+    g.put(crk & crown, rs(GOLD, 0.15))
+    # the dagger: point down through the crown's centre, pommel up-right
+    dagger(g, cx + 13.5, cy - 33.0, cx - 1.0, cy + 4.5, w=3.8, guard=6.6, grip=8.0)
+    glow(back, circle(cx + 13.5, cy - 33.0, 2.0), "#b58cff", 2.5, 0.6)
+    # kill sparks round the strike point
+    sparkle(front, cx - 9.5, cy - 7.0, 2.0, "#fff4cc", None, 0.5)
+    sparkle(front, cx + 10.5, cy - 4.5, 1.6, "#fff4cc", None, 0.45)
+    glints = [(26, 31, "#fff4cc"), (24, 47, "#fff4cc")]
+    return back, g, front, glints
+
+
+def shadow_clone():
+    """Shadow Clone: the hooded assassin with a glowing shadow copy of themselves beside it (the decoy that bursts)"""
+    back, g, front = L3()
+    glow(back, circle(22.0, 30.0, 10), "#8e68e0", 6.0, 0.8)
+    glow(back, circle(38.0, 36.0, 10), "#7a5cc8", 6.0, 0.5)
+    # the clone (behind, left): a lilac-edged shadow copy
+    hood(None, 22.5, 28.0, 0.78, ghost=(back, 0.85))
+    # the real assassin (front, right)
+    hood(g, 38.0, 33.5, 0.86)
+    # burst sparks off the clone (it explodes when hit)
+    for sx, sy, sr in ((11.5, 21.0, 1.8), (14.5, 40.5, 1.4), (27.5, 12.0, 1.4)):
+        sparkle(front, sx, sy, sr, "#d4bcff", None, 0.45)
+    glints = [(36, 18, "#8e7ab0")]
+    return back, g, front, glints
+
+
+def vanishing_act():
+    """Vanishing Act: a smoke bomb with a lit fuse bursting into a big cloud of violet-grey smoke (cloak + smoke screen)"""
+    back, g, front = L3()
+    puffs = [(36.0, 26.0, 9.0), (25.0, 23.0, 7.4), (46.0, 31.0, 6.6), (30.5, 14.5, 6.0), (43.5, 18.0, 6.2), (38.0, 37.0, 6.6),
+             (19.0, 31.5, 5.6)]
+    cloud = np.zeros(X.shape, bool)
+    for px, py, pr in puffs:
+        cloud |= circle(px, py, pr)
+    glow(back, cloud, "#766e88", 3.0, 0.5)
+    g.bevel(cloud, SMOKE, face=0.55, bevel=2.4, grad=0.55, gain=0.85)
+    for px, py, pr in puffs:
+        g.put(circle(px - pr * 0.3, py - pr * 0.35, pr * 0.40) & cloud, rs(SMOKE, 0.76))
+    # puff separation lines (shade where puffs overlap)
+    for (ax, ay, ar), (bx, by, br) in ((puffs[0], puffs[1]), (puffs[0], puffs[2]), (puffs[0], puffs[5]), (puffs[3], puffs[1])):
+        g.put(ring(ax, ay, ar + 0.6, ar - 0.4) & circle(bx, by, br) & cloud, rs(SMOKE, 0.30))
+    # the bomb, lower left, in front of the smoke
+    bx, by = 21.5, 43.0
+    bomb = circle(bx, by, 8.6)
+    glow(back, bomb, "#8e68e0", 2.5, 0.6)
+    g.bevel(bomb, IRON, face=0.66, bevel=1.6, grad=0.5, gain=0.9)
+    g.put(ellipse(bx, by + 0.5, 8.6, 2.0) & bomb, rs(LILAC, 0.72))         # violet band
+    cap = poly([(bx + 3.0, by - 8.8), (bx + 7.6, by - 5.8), (bx + 5.8, by - 3.0), (bx + 1.6, by - 5.8)])
+    g.bevel(cap, IRON, face=0.7, bevel=0.6, grad=0.3, gain=0.7)
+    fuse = line([(bx + 5.8, by - 7.0), (bx + 8.6, by - 10.0), (bx + 8.2, by - 12.6)], 1.4)
+    g.put(fuse, rs(WOOD, 0.75))
+    glow(back, circle(bx + 8.2, by - 13.2, 2.2), "#ffaa3c", 2.5, 1.0)
+    sparkle(front, bx + 8.2, by - 13.4, 3.2, "#ffd878", "#fff1c0", 0.7)
+    glints = [(17, 38, "#7c7c94"), (33, 19, "#e6e4ee")]
+    return back, g, front, glints
+
+
 ICONS = [
     # (class style, file name, display name, painter)
     (MAGE, "Meteor", "Meteor", meteor),
@@ -463,6 +937,16 @@ ICONS = [
     (PRIEST, "GuardianSpirit", "Guardian Spirit", guardian_spirit),
     (PRIEST, "Sanctuary", "Sanctuary", sanctuary),
     (PRIEST, "MartyrsGrace", "Martyr's Grace", martyrs_grace),
+    (MONK, "FlowingForm", "Flowing Form", flowing_form),
+    (MONK, "PalmStrike", "Palm Strike", palm_strike),
+    (MONK, "CycloneKick", "Cyclone Kick", cyclone_kick),
+    (MONK, "HundredFists", "Hundred Fists", hundred_fists),
+    (MONK, "StillWater", "Still Water", still_water),
+    (ASSASSIN, "CloakFirstStrike", "Cloak + First Strike", cloak_first_strike),
+    (ASSASSIN, "Toxin", "Toxin", toxin),
+    (ASSASSIN, "GodKiller", "God Killer", god_killer),
+    (ASSASSIN, "ShadowClone", "Shadow Clone", shadow_clone),
+    (ASSASSIN, "VanishingAct", "Vanishing Act", vanishing_act),
 ]
 
 

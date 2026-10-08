@@ -1,8 +1,15 @@
 {
-  "item": "Class ability icons - Mage + Priest (ART-RESUME NEXT ITEM 5)",
-  "status": "candidate for Skyy's review; NOT committed, NOT wired in, NOT seen in game",
+  "item": "Class ability icons - Mage, Priest, Monk, Assassin",
+  "status": {
+    "Mage": "APPROVED by Skyy + committed (answer: \"The ability icons look great, commit them\")",
+    "Priest": "APPROVED by Skyy + committed (answer: \"The ability icons look great, commit them\")",
+    "Monk": "NEW - waiting for Skyy's review, NOT committed",
+    "Assassin": "NEW - waiting for Skyy's review, NOT committed"
+  },
+  "in_game": "NOT wired in, NOT seen in game",
   "generator": [
     "tools/art/make_ability_icons.py",
+    "tools/art/preview_ability_icons.py",
     "tools/art/ability_icon_core.py",
     "tools/art/ability_icon_meta.py",
     "tools/art/make_ability_sheet.py",
@@ -11,11 +18,13 @@
   "deterministic": true,
   "defaults_used": {
     "frame": "round dark slate frame band with a class-colour rim (bevelled, top lit)",
-    "background": "dark field tinted toward the class colour (Mage navy #26335e -> #0e1226, Priest warm umber #43381e -> #15100c, radial)"
+    "background": "dark field tinted toward the class colour, radial: Mage #26335e -> #0e1226, Priest #43381e -> #15100c, Monk #4a2416 -> #170b09, Assassin #33224e -> #0e0916"
   },
   "class_colours": {
     "Mage": "#7fb0e0",
-    "Priest": "#f2e6a0"
+    "Priest": "#f2e6a0",
+    "Monk": "#f08a30",
+    "Assassin": "#b58cff"
   },
   "frame_geometry_px": {
     "outer_radius": 31.6,
@@ -51,6 +60,14 @@
       "#dccb7c",
       "#f2e6a0",
       "#fcf5d4"
+    ],
+    "MONK_RIM": [
+      "#5a2208",
+      "#8e3a10",
+      "#c45c1c",
+      "#f08a30",
+      "#f8b462",
+      "#fde0b0"
     ],
     "FIRE": [
       "#4c1020",
@@ -155,6 +172,130 @@
       "#aeb4c2",
       "#d6dae2",
       "#f0f2f4"
+    ],
+    "SAFFRON": [
+      "#561a0c",
+      "#8c3010",
+      "#c4521a",
+      "#f08a30",
+      "#f8b25a",
+      "#fdd890",
+      "#fff2d0"
+    ],
+    "LINEN": [
+      "#4e3a34",
+      "#7a6252",
+      "#a68e74",
+      "#cbb796",
+      "#e6d8b8",
+      "#f8f0dc"
+    ],
+    "SKIN": [
+      "#4a2220",
+      "#7a3c2e",
+      "#a65e44",
+      "#cc845e",
+      "#e8aa80",
+      "#f8d0aa"
+    ],
+    "SHOE": [
+      "#22120e",
+      "#381e14",
+      "#542e1c",
+      "#723f26",
+      "#915433",
+      "#ae6e46",
+      "#c88c62"
+    ],
+    "SOLE": [
+      "#3a2818",
+      "#664a2e",
+      "#94764e",
+      "#bea06e",
+      "#e0c896",
+      "#f2e2b8"
+    ],
+    "WIND": [
+      "#163e4e",
+      "#25687a",
+      "#4498a6",
+      "#78c4c4",
+      "#b4e6dc",
+      "#eafaf2"
+    ],
+    "WATER": [
+      "#10304e",
+      "#1a5078",
+      "#2a78a4",
+      "#4ea4c8",
+      "#88cee0",
+      "#ccf0f4"
+    ],
+    "ASSN_RIM": [
+      "#2e1c5a",
+      "#4c3290",
+      "#7a5cc8",
+      "#b58cff",
+      "#d4bcff",
+      "#f0e8ff"
+    ],
+    "SHADE": [
+      "#100a1a",
+      "#1c142c",
+      "#2a1f42",
+      "#3c2d5a",
+      "#544076",
+      "#705a94",
+      "#8e7ab0"
+    ],
+    "LILAC": [
+      "#3e2478",
+      "#6440b0",
+      "#8e68e0",
+      "#b58cff",
+      "#d4bcff",
+      "#f0e8ff"
+    ],
+    "POISON": [
+      "#123214",
+      "#1e5418",
+      "#327c20",
+      "#56a82e",
+      "#86d24a",
+      "#bff08a",
+      "#ecffd0"
+    ],
+    "GLASS": [
+      "#22303e",
+      "#3a5060",
+      "#5c7884",
+      "#88a6ac",
+      "#bcd6d6",
+      "#e6f6f2"
+    ],
+    "SMOKE": [
+      "#241e30",
+      "#3a3248",
+      "#554c66",
+      "#766e88",
+      "#9c96ac",
+      "#c6c2d2",
+      "#e6e4ee"
+    ],
+    "IRON": [
+      "#12121c",
+      "#1e1e2c",
+      "#2e2e40",
+      "#444458",
+      "#5e5e76",
+      "#7c7c94"
+    ],
+    "WOOD": [
+      "#3a2214",
+      "#5e3a20",
+      "#86582e",
+      "#ae7e48",
+      "#d0a868"
     ]
   },
   "files": [
@@ -392,14 +533,267 @@
       ]
     },
     {
+      "path": "Common/Icons/Abilities/Monk/FlowingForm.png",
+      "bytes": 7437,
+      "sha256": "3a6c30d4dde75497e76e76aee14f66baf5df432b393fd9224c99663c58798b97",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Monk",
+      "ability": "Flowing Form",
+      "file_name": "FlowingForm.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "6 Mana + 0.5 Mana / 0.3 Stamina per s / 40 s",
+      "ability_does": "30 s aura, 5 blocks: enemies are Awed; every hit = 1 combo stack (max 20, 5 s decay), +2% move / +1.5% attack speed per stack. Crouch = Centred.",
+      "icon_shows": "a glowing saffron chi orb inside three teal-white wind ribbons swirling round it, three small combo pips",
+      "palettes": [
+        "SAFFRON",
+        "WIND"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Monk/PalmStrike.png",
+      "bytes": 7486,
+      "sha256": "848b5bb8a22ccb02b832bde19de449cc0d9e7f9bd9bc7aff18b7f11041ec5172",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Monk",
+      "ability": "Palm Strike",
+      "file_name": "PalmStrike.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "8 Mana / 6 s",
+      "ability_does": "Single-target strike: stun 0.75 s + knockback 4 blocks, 1.2 H. Crouch = Rooting Palm (no knockback, longer stun, Awe).",
+      "icon_shows": "an open palm thrust forward (bare hand, linen-wrapped wrist + palm band) with a saffron impact glow and 10 burst rays behind it",
+      "palettes": [
+        "SKIN",
+        "LINEN",
+        "SAFFRON"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Monk/CycloneKick.png",
+      "bytes": 7285,
+      "sha256": "4ec057ede62c3e97a9c05980eda7e60acd7017f156aa17c8074e31b6dc29667e",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Monk",
+      "ability": "Cyclone Kick",
+      "file_name": "CycloneKick.png",
+      "slot": "A2-alt",
+      "status": "PROPOSED",
+      "cost_cooldown": "10 Mana / 8 s",
+      "ability_does": "Spinning kick: everything within 3 blocks takes 0.8 H and is pushed 5 blocks. Crouch = Leg Sweep (knock down, no push).",
+      "icon_shows": "a kick (v4): linen-wrapped shin from the lower left, the foot standing UP at its end (toes up, sole facing the kick, heel at the bottom) in a soft earth-brown Monk shoe with a light tan sole edge, instep strap and padded collar; a long saffron whirl arc sweeping right-to-bottom and a short one upper-left, clear of the shoe",
+      "palettes": [
+        "LINEN",
+        "SHOE",
+        "SOLE",
+        "SAFFRON"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Monk/HundredFists.png",
+      "bytes": 6724,
+      "sha256": "8dd02fa8f1df0a408512c03db785d5f5eae7f59a8f70e45d0861854cb3ab009e",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Monk",
+      "ability": "Hundred Fists",
+      "file_name": "HundredFists.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED",
+      "cost_cooldown": "8 Mana + drain / 40 s",
+      "ability_does": "Flowing Form where every 10th hit releases a shockwave on all Awed enemies (1.0 H, max one per 8 s). Crouch = Tempest Palms.",
+      "icon_shows": "a big linen-wrapped fist (knuckles to the viewer) between two small saffron after-image fists with motion streaks, impact sparks above",
+      "palettes": [
+        "LINEN",
+        "SKIN",
+        "SAFFRON"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Monk/StillWater.png",
+      "bytes": 6000,
+      "sha256": "fb2a562d8aea6a028b5c750e29f2e6cc13d6a917aab8b7bcb896ee5087ed46ce",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Monk",
+      "ability": "Still Water",
+      "file_name": "StillWater.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED",
+      "cost_cooldown": "18 Mana / 25 s",
+      "ability_does": "10 s stance: deflect projectiles from the front, counter melee hits (1.0 H each), every counter adds Awe. Crouch = Deep Still (360-degree).",
+      "icon_shows": "a single water drop falling toward a calm pond (two ripple rings) under a saffron sun with rays on the horizon, sun reflection on the water",
+      "palettes": [
+        "WATER",
+        "SAFFRON"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Assassin/CloakFirstStrike.png",
+      "bytes": 7002,
+      "sha256": "a5cebec147697c22384fe43ea427f52344f4d0ee8d326157d36a91a100082495",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Assassin",
+      "ability": "Cloak + First Strike",
+      "file_name": "CloakFirstStrike.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "14 Mana / 30 s",
+      "ability_does": "Invisible for 8 s (breaks on attack); First Strike: your next hit within 10 s gets +100% crit chance. Crouch = Still Shadow.",
+      "icon_shows": "a pointed shadow-violet hood with glowing lilac eyes whose lower half fades into the dark (invisibility), and a big gold 4-point crit star (First Strike)",
+      "palettes": [
+        "SHADE",
+        "LILAC",
+        "GOLD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Assassin/Toxin.png",
+      "bytes": 6972,
+      "sha256": "1c89ab1eaecf91215b39ea171ef5875eddce9d36ad03aa4e1a1e161e5759b261",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Assassin",
+      "ability": "Toxin",
+      "file_name": "Toxin.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "12 Mana / 16 s",
+      "ability_does": "A vial thrown where you look (up to 20 blocks): a 4-block poison cloud for 5 s, Poison 0.25 H/s + Weakened 15%. Crouch = Pool at your feet.",
+      "icon_shows": "a tilted, corked round glass vial of bubbling green poison with a toxic green cloud spilling out behind it and drips",
+      "palettes": [
+        "GLASS",
+        "POISON",
+        "WOOD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Assassin/GodKiller.png",
+      "bytes": 6844,
+      "sha256": "94dd94dc9794b2183245661fc9928fc362e89c8f118b42e6f7819a361eba03be",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Assassin",
+      "ability": "God Killer",
+      "file_name": "GodKiller.png",
+      "slot": "A2-alt",
+      "status": "LOCKED",
+      "cost_cooldown": "14 Mana / 45 s",
+      "ability_does": "Your next attack on a boss / mini-boss within 12 s does 2x damage, 3x on a backstab; stacks with First Strike. Crouch = Patient Kill.",
+      "icon_shows": "a steel dagger (gold guard, wrapped grip, violet pommel gem) stabbing down through a cracked gold boss crown with rose + lilac gems",
+      "palettes": [
+        "STEEL",
+        "GOLD",
+        "IRON",
+        "LILAC",
+        "ROSE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Assassin/ShadowClone.png",
+      "bytes": 6881,
+      "sha256": "c991d792fc8747f036ed31850fa03d372410107153003e1fb79f0ba65ea4fffa",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Assassin",
+      "ability": "Shadow Clone",
+      "file_name": "ShadowClone.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED",
+      "cost_cooldown": "20 Mana / 35 s",
+      "ability_does": "Cloak + a decoy at your spot that mobs attack for 5 s; it bursts for 2.0 H in 4 blocks. Crouch = Patient Clone.",
+      "icon_shows": "the hooded assassin in front with a glowing lilac shadow copy of itself behind and to the left, burst sparks off the copy",
+      "palettes": [
+        "SHADE",
+        "LILAC"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Assassin/VanishingAct.png",
+      "bytes": 7367,
+      "sha256": "24b6bc5d4fcf0d03dce713e845774802f667446ea24ee3a95a9df644400b1691",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Assassin",
+      "ability": "Vanishing Act",
+      "file_name": "VanishingAct.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED",
+      "cost_cooldown": "16 Mana / 28 s",
+      "ability_does": "Instant 3 s cloak + a 4-block smoke cloud: enemies inside lose you for 2 s and are Slowed 25%. Crouch = Ambush Smoke.",
+      "icon_shows": "an iron smoke bomb with a violet band and a lit fuse, bursting into a big billowing cloud of violet-grey smoke",
+      "palettes": [
+        "SMOKE",
+        "IRON",
+        "LILAC",
+        "WOOD"
+      ]
+    },
+    {
       "path": "sheet.png",
-      "bytes": 338915,
-      "what": "review sheet for Skyy: every icon at 4x / 2x / 64 / 32 px, grouped by class with the class colour swatch, plus a dark HUD strip",
-      "sha256": "f899b7b10ada06360857ada044e96f66a20e7f36aab78066e2f8e31ab9caf446"
+      "bytes": 673462,
+      "what": "review sheet with EVERY done class: each icon at 4x / 2x / 64 / 32 px, grouped by class with the class colour swatch + APPROVED / FOR REVIEW tag, plus a dark HUD strip",
+      "sha256": "e50ac89a074ef47e5e01c6c30565613e3cac40a00f2e239901b07c0b1e1ad363"
+    },
+    {
+      "path": "sheet-monk.png",
+      "bytes": 198287,
+      "what": "review sheet for the NEW Monk icons only (same layout)",
+      "sha256": "e47dfdf9720e4ee06fe8f76b083f4d1d917f866e4b2c729567e2c9002672f2a2"
+    },
+    {
+      "path": "sheet-assassin.png",
+      "bytes": 194064,
+      "what": "review sheet for the NEW Assassin icons only (same layout)",
+      "sha256": "80f931cc1d20d7fb0ead17c755b1f5750e960ad96b2b12a3ab72f0a980ddb66d"
     },
     {
       "path": "README.md",
-      "bytes": 9255,
+      "bytes": 20545,
       "what": "what this is, ability -> meaning, colours, defaults, UNVERIFIED, open questions"
     }
   ]

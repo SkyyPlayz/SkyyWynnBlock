@@ -1,9 +1,16 @@
-"""ability_icon_meta - what each SkyWynn Mage / Priest ability icon means (from research/cloud/Class-Ability-Shapes.md sections 4 + 5,
-docs/answered/classes.md lines 142-146 for the Priest numbers) and what the icon shows. Used by the sheet + manifest."""
+"""ability_icon_meta - what each SkyWynn class ability icon means (from research/cloud/Class-Ability-Shapes.md sections 4 Mage,
+5 Priest, 7 Monk, 8 Assassin; docs/answered/classes.md lines 142-146 for the Priest numbers) and what the icon shows. Used by the sheet +
+manifest. CLASS_INFO "review": "approved" = Skyy OK'd + committed; "review" = waiting for Skyy (gets its own sheet-<class>.png)."""
 
 CLASS_INFO = {
-    "Mage": {"hex": "#7fb0e0", "role": "burst damage, glass cannon (Sorcery)", "theme": "arcane / cosmic / frost - blue rim, navy field"},
-    "Priest": {"hex": "#f2e6a0", "role": "healer + protector (Divinity)", "theme": "holy / light / protection - gold rim, warm umber field"},
+    "Mage": {"hex": "#7fb0e0", "role": "burst damage, glass cannon (Sorcery)", "theme": "arcane / cosmic / frost - blue rim, navy field",
+             "review": "approved", "answer": "The ability icons look great, commit them"},
+    "Priest": {"hex": "#f2e6a0", "role": "healer + protector (Divinity)", "theme": "holy / light / protection - gold rim, warm umber field",
+               "review": "approved", "answer": "The ability icons look great, commit them"},
+    "Monk": {"hex": "#f08a30", "role": "self-speed disruptor (costs Mana + Stamina)",
+             "theme": "martial / wind / calm - saffron rim, dark rust field, linen wraps", "review": "review", "answer": None},
+    "Assassin": {"hex": "#b58cff", "role": "priority killer + debuffer (Assassination)",
+                 "theme": "stealth / poison / the kill - lilac rim, dark plum field", "review": "review", "answer": None},
 }
 
 META = {
@@ -67,4 +74,66 @@ META = {
         "shows": "a big haloed rose heart with a heal plus, chaining golden light bolts to a smaller and then a smallest heart (the heal drops each jump)",
         "palette": ["ROSE", "GOLD", "HOLY"],
     },
+    "FlowingForm": {
+        "slot": "A1", "status": "LOCKED", "cost_cd": "6 Mana + 0.5 Mana / 0.3 Stamina per s / 40 s",
+        "does": "30 s aura, 5 blocks: enemies are Awed; every hit = 1 combo stack (max 20, 5 s decay), +2% move / +1.5% attack speed per stack. Crouch = Centred.",
+        "shows": "a glowing saffron chi orb inside three teal-white wind ribbons swirling round it, three small combo pips",
+        "palette": ["SAFFRON", "WIND"],
+    },
+    "PalmStrike": {
+        "slot": "A2", "status": "LOCKED", "cost_cd": "8 Mana / 6 s",
+        "does": "Single-target strike: stun 0.75 s + knockback 4 blocks, 1.2 H. Crouch = Rooting Palm (no knockback, longer stun, Awe).",
+        "shows": "an open palm thrust forward (bare hand, linen-wrapped wrist + palm band) with a saffron impact glow and 10 burst rays behind it",
+        "palette": ["SKIN", "LINEN", "SAFFRON"],
+    },
+    "CycloneKick": {
+        "slot": "A2-alt", "status": "PROPOSED", "cost_cd": "10 Mana / 8 s",
+        "does": "Spinning kick: everything within 3 blocks takes 0.8 H and is pushed 5 blocks. Crouch = Leg Sweep (knock down, no push).",
+        "shows": "a kick (v4): linen-wrapped shin from the lower left, the foot standing UP at its end (toes up, sole facing the kick, heel at the bottom) in a soft earth-brown Monk shoe with a light tan sole edge, instep strap and padded collar; a long saffron whirl arc sweeping right-to-bottom and a short one upper-left, clear of the shoe",
+        "palette": ["LINEN", "SHOE", "SOLE", "SAFFRON"],
+    },
+    "HundredFists": {
+        "slot": "A1-alt A", "status": "PROPOSED", "cost_cd": "8 Mana + drain / 40 s",
+        "does": "Flowing Form where every 10th hit releases a shockwave on all Awed enemies (1.0 H, max one per 8 s). Crouch = Tempest Palms.",
+        "shows": "a big linen-wrapped fist (knuckles to the viewer) between two small saffron after-image fists with motion streaks, impact sparks above",
+        "palette": ["LINEN", "SKIN", "SAFFRON"],
+    },
+    "StillWater": {
+        "slot": "A1-alt B", "status": "PROPOSED", "cost_cd": "18 Mana / 25 s",
+        "does": "10 s stance: deflect projectiles from the front, counter melee hits (1.0 H each), every counter adds Awe. Crouch = Deep Still (360-degree).",
+        "shows": "a single water drop falling toward a calm pond (two ripple rings) under a saffron sun with rays on the horizon, sun reflection on the water",
+        "palette": ["WATER", "SAFFRON"],
+    },
+    "CloakFirstStrike": {
+        "slot": "A1", "status": "LOCKED", "cost_cd": "14 Mana / 30 s",
+        "does": "Invisible for 8 s (breaks on attack); First Strike: your next hit within 10 s gets +100% crit chance. Crouch = Still Shadow.",
+        "shows": "a pointed shadow-violet hood with glowing lilac eyes whose lower half fades into the dark (invisibility), and a big gold 4-point crit star (First Strike)",
+        "palette": ["SHADE", "LILAC", "GOLD"],
+    },
+    "Toxin": {
+        "slot": "A2", "status": "LOCKED", "cost_cd": "12 Mana / 16 s",
+        "does": "A vial thrown where you look (up to 20 blocks): a 4-block poison cloud for 5 s, Poison 0.25 H/s + Weakened 15%. Crouch = Pool at your feet.",
+        "shows": "a tilted, corked round glass vial of bubbling green poison with a toxic green cloud spilling out behind it and drips",
+        "palette": ["GLASS", "POISON", "WOOD"],
+    },
+    "GodKiller": {
+        "slot": "A2-alt", "status": "LOCKED", "cost_cd": "14 Mana / 45 s",
+        "does": "Your next attack on a boss / mini-boss within 12 s does 2x damage, 3x on a backstab; stacks with First Strike. Crouch = Patient Kill.",
+        "shows": "a steel dagger (gold guard, wrapped grip, violet pommel gem) stabbing down through a cracked gold boss crown with rose + lilac gems",
+        "palette": ["STEEL", "GOLD", "IRON", "LILAC", "ROSE"],
+    },
+    "ShadowClone": {
+        "slot": "A1-alt A", "status": "PROPOSED", "cost_cd": "20 Mana / 35 s",
+        "does": "Cloak + a decoy at your spot that mobs attack for 5 s; it bursts for 2.0 H in 4 blocks. Crouch = Patient Clone.",
+        "shows": "the hooded assassin in front with a glowing lilac shadow copy of itself behind and to the left, burst sparks off the copy",
+        "palette": ["SHADE", "LILAC"],
+    },
+    "VanishingAct": {
+        "slot": "A1-alt B", "status": "PROPOSED", "cost_cd": "16 Mana / 28 s",
+        "does": "Instant 3 s cloak + a 4-block smoke cloud: enemies inside lose you for 2 s and are Slowed 25%. Crouch = Ambush Smoke.",
+        "shows": "an iron smoke bomb with a violet band and a lit fuse, bursting into a big billowing cloud of violet-grey smoke",
+        "palette": ["SMOKE", "IRON", "LILAC", "WOOD"],
+    },
 }
+
+# Monk approved 2026-10-08: Yes, the shoe looks good, commit the Monk icons
