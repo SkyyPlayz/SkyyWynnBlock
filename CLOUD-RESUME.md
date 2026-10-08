@@ -64,9 +64,6 @@ Context of today: 4 deploys (accessory icons, metal staffs, spellbooks + kunai, 
 class design changes all over docs/answered/classes.md 2026-10-07 lines; the local session is building Monk + Assassin classes, Shadow
 Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-Paths.md or research/cloud/Class-Tree-Build-Map.md - a local agent owns them). -->
 
-- [ ] **Monk moves probe plan** - turn `research/cloud/Monk-Kit-Spec.md` section 5 (13 engine probes: slow-fall, jump-at-landing, air jump,
-      fall-damage cancel, push, path sweep, knock-up + hang, drag-down, crouch detect ...) into a probe-jar design like SkyyGatherProbe / SkyyReelProbe
-      (commands, what each measures, pass / fail). Draft code in a PR, UNTESTED. Output: `research/cloud/Monk-Probe-Plan.md`.
 
 ## Done (delete after logging - see the rules above)
 - [x] OUTBOX test - 2026-10-08 - `research/cloud/OUTBOX.md`
@@ -78,3 +75,4 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 - [x] Fishing UI mockup v2 - 2026-10-08 - `research/cloud/Fishing-UI-Mockup.png`
 - [x] Class ability spec refresh - 2026-10-08 - `research/cloud/Ability-Refresh-1007.md`
 - [x] Class ability ENGINE spec - 2026-10-08 - `research/cloud/Class-Ability-Engine-Spec.md`
+- [x] Monk moves probe plan - 2026-10-08 - `research/cloud/Monk-Probe-Plan.md`

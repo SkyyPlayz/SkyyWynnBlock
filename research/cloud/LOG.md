@@ -134,3 +134,4 @@ section 6 when it reviews the results.
 - 2026-10-08: Fishing UI mockup v2 -> research/cloud/Fishing-UI-Mockup.png (fight screen, HUD bar 5 states, catch cards, Bench Rig tab, Pond Fish collection page; skyyui kit colours)
 - 2026-10-08: Class ability spec refresh -> research/cloud/Ability-Refresh-1007.md (both specs synced to classes.md 2026-10-07; Floor 18th modifier; Echo 20-30% proposed to keep budgets; tables recomputed)
 - 2026-10-08: Class ability ENGINE spec -> research/cloud/Class-Ability-Engine-Spec.md (cast pipeline, 9 ability kinds, Echo as data, Server Setup rows, HUD, 8-step build plan, 15 probes UNVERIFIED)
+- 2026-10-08: Monk moves probe plan -> research/cloud/Monk-Probe-Plan.md (13 probes, test script, fallbacks; draft probe jar in a [cloud] PR (UNTESTED))

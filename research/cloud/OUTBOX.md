@@ -48,3 +48,8 @@ Local: research/classes/README.md pool needs --sync-pool (no Floor, 'offers 4');
 ## 2026-10-08 04:11 Class ability ENGINE spec
 Done: research/cloud/Class-Ability-Engine-Spec.md - cast pipeline, 9 ability kinds, cooldowns in memory, Mana / Stamina rules, modifiers + Echo as data, zones / toggles / passives / chains, Server Setup rows, HUD (vanilla ability HUD or SkyyHud widget), 8-step build plan (E0 probe mod first). SkyyClasses 0.1.13 has no ability code yet; hooks cited by line.
 Questions: 0.7 rune keys as main cast input + /cast backup [yes]; block vanilla runes for class players [yes]; Guardian Spirit cooldown shared across Priests [yes]. 15 engine probes (P1-P15) for the local session.
+
+## 2026-10-08 04:18 Monk moves probe plan
+Done: research/cloud/Monk-Probe-Plan.md - 13 probes as /mprobe commands (what each measures, pass / fail, fallback), 12-step in-game test script for Skyy. Draft probe jar SkyyMonkProbe/build_skyymonkprobe_0.1.py + test script come in a [cloud] pull request (UNTESTED, never pin before your build + review).
+New APIs: holding / dragging mobs in mid-air (probes 7-8), slow effect id, self-sourced fall damage, melee damage cause. Findings: vault '7 blocks in 0.8 s' lands ~1.06 s; SkyySkills RollSys can pay roll XP on a Plunge landing (breaks 'no Acrobatics XP').
+Questions: crouch as the free air jump [yes]; short slow if mobs can't hang [yes]; keep only -15% fall damage if slow-fall stutters [yes].
