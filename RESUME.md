@@ -26,7 +26,8 @@ Read this first, then only what the task needs. Map of every file + search tips:
   from SET after Skyy's probe session, TEST-CHECKLIST 31). Newest backup `backups\deploy-20261006-2315`.
 - Skyy tested 2026-10-06 (log): Grapple works; wand heal circle works; minimap works in the hub; live settings Skyy chose: hop.force 30,
   blink.distance 16, blink.floorCheck 0 (defaults since SkyyArmory 0.1.4, deployed 2026-10-06 23:15).
-- NOTHING RUNNING. Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
+- RUNNING (2026-10-07 11:40): rounds SkyyReelProbe 0.1 (wf_a5a6b908-f90), SkyyAccessories 0.5.7 icons (wf_224a47f2-2ae), SkyyArmory
+  0.1.5 staffs (wf_45d822c3-eb7) -> pin + deploy + TEST-CHECKLIST when done. Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
   Stamina icon; fishing junk; reference pictures are local in `research/refs/`, described in docs/answered/gear.md).
 
 ## Next, in order
