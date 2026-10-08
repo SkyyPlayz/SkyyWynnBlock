@@ -58,12 +58,32 @@ lines). These ART REDOS come first. Vanilla density (Assets.zip, checked locally
 Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, model icon 128x128. Keep the old sheets as *-v1.png. -->
 
 
+<!-- 2026-10-07 night local session (Skyy: "update the cloud agents todo list, and ill start em working real quick."). Removed: Fishing
+gear icons v2 (DONE locally today: models-local/art/fishing via tools/art/make_fishing.py - final rods/reels/parts + rod 3D renders).
+Context of today: 4 deploys (accessory icons, metal staffs, spellbooks + kunai, Monk weapons + right-click block + NO void protection);
+class design changes all over docs/answered/classes.md 2026-10-07 lines; the local session is building Monk + Assassin classes, Shadow
+Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-Paths.md or Class-Tree-Build-Map.md - a local agent owns them). -->
+
+- [ ] **OUTBOX test (FIRST, 1 minute)** - append "## <date time> OUTBOX test" with one line to `research/cloud/OUTBOX.md` and push, so the
+      local cloud-link mod can prove the channel works.
+- [ ] **Class ability spec refresh** - bring `research/cloud/Class-Ability-Spec-Draft.md` + `research/cloud/Modifier-Pool-Spec.md` in line with
+      every docs/answered/classes.md line dated 2026-10-07 (Echo on many abilities, Mana Barrier dome + Follow, Guardian Spirit passive aura,
+      Flowing Form combo stacks, Blood Frenzy toggle aura + Floor, Warlord's Banner, Enrage targeting, Still Water Echo, Sanctuary, Martyr's
+      Grace chain, Shield Bubble pulses, stunlock breakout). Recompute the balance tables. Output: the two files + `research/cloud/Ability-Refresh-1007.md` (what changed).
+- [ ] **Class ability ENGINE spec** - how class abilities get CAST and run in SkyyClasses: keybind / hotbar slot / menu choice (Hytale input
+      options - mark UNVERIFIED), cooldown + Mana / Stamina bookkeeping, auras that target at activation vs while inside, toggles (Blood Frenzy),
+      passives (Guardian Spirit), placed zones (dome, banner), the modifier + Echo system, Server Setup rows, HUD cooldown display. The next big
+      build. Output: `research/cloud/Class-Ability-Engine-Spec.md` (+ "For the local session" engine checks).
+- [ ] **Monk moves probe plan** - turn `research/cloud/Monk-Kit-Spec.md` section 5 (13 engine probes: slow-fall, jump-at-landing, air jump,
+      fall-damage cancel, push, path sweep, knock-up + hang, drag-down, crouch detect ...) into a probe-jar design like SkyyGatherProbe / SkyyReelProbe
+      (commands, what each measures, pass / fail). Draft code in a PR, UNTESTED. Output: `research/cloud/Monk-Probe-Plan.md`.
+- [ ] **Class review prep** - Skyy will "go over the other classes later": one page per class NOT reviewed tonight (Archer, Warrior, Mage,
+      Assassin) - current abilities + modifiers in a table, which abilities could get Echo (Skyy added it to many), gaps, 3 suggestions each
+      with a default. Output: `research/cloud/Class-Review-Prep-1008.md`.
 - [ ] **Consistency pass 2026-10-07** - grep every `research/cloud/` draft for numbers today's drafts replaced (Ember 11,000, Amberite 30,000,
-      Drakonite 75,000, Block 1.155 / +5%, junk seaweed, Monk Jade teal). Fix stale cloud lines (mark proposals as proposals). Output: `research/cloud/Consistency-Pass-1007.md`.
-- [ ] **Questions digest 2026-10-07** - one short table of every open "Questions for Skyy" from the 2026-10-06 / 07 cloud drafts (default in
-      [brackets]), top 10 first. Output: `research/cloud/Questions-Digest-1007.md`.
-- [ ] **Fishing gear icons v2** - 2x-4x density pass of `research/cloud/fishing-art/` (rods, reels, hooks, lines, sinkers; ART-INDEX Q2 default yes).
-      Keep the v1 sheet as `fishing-gear-sheet-v1.png`. Output: `research/cloud/fishing-art/fishing-gear-sheet.png` + README.
+      Drakonite 75,000, Block 1.155 / +5%, junk seaweed, Monk Jade teal; void protection - Skyy: none on any traversal). Fix stale cloud lines (mark proposals as proposals). Output: `research/cloud/Consistency-Pass-1007.md`.
+- [ ] **Questions digest 2026-10-07** - one short table of every open "Questions for Skyy" from the 2026-10-06 / 07 cloud drafts + `research/Shadow-Step-Spec.md`
+      + `research/Rod-Reel-Look.md` (default in [brackets]), top 10 first. Output: `research/cloud/Questions-Digest-1007.md`.
 - [ ] **Class emblems v2 (other 5)** - Warrior, Berserker, Archer, Assassin, Mage at the Monk / Priest v2 detail level (`research/cloud/class-art/`).
       Output: regenerated `research/cloud/class-art/class-sheet.png` + README.
 - [ ] **Enchanted v2 (rest)** - the v1 Enchanted items / blocks not yet in `research/cloud/enchanted-art/icons-v2/` (see its README). Output: v2 sheet + README.
