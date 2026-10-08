@@ -132,3 +132,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyHud 0.3.17 - mod icon (DEPLOYED 2026-10-08, backup deploy-20261008-0751) | [2026-10](2026-10.md) |
 | Monk moves: SkyyArmory 0.1.12 + SkyySkills 0.4.22 (DEPLOYED 2026-10-08, backup deploy-20261008-0800) | [2026-10](2026-10.md) |
 | Roll rework + dagger charge: SkyySkills 0.4.23 + SkyyArmory 0.1.13 (DEPLOYED 2026-10-08, backup deploy-20261008-0911) | [2026-10](2026-10.md) |
+| SkyyGear 0.2.10 - signature charge kept on swap (DEPLOYED 2026-10-08, backup deploy-20261008-0928) | [2026-10](2026-10.md) |
