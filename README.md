@@ -9,8 +9,18 @@ make the pack (name idea: *Isles of the Void*). Owner: Skyy (GitHub **SkyyPlayz*
 1. [RESUME.md](RESUME.md) - where we are and the next steps (~60 lines).
 2. [PROJECT-RULES.md](PROJECT-RULES.md) - the standing rules (PC safety, public repo, deploying, how we build, how docs are kept).
 3. [INDEX.md](INDEX.md) - where every file is, what moved where, cheap search recipes.
-4. Then open ONLY what your task needs:
-   - [HANDOFF.md](HANDOFF.md) - the 26 mods in the current set, rollback floors, the UI + COMMAND rules every build follows.
+4. The five project docs - short, easy-read hubs that link to the source files:
+
+   | File | What it is |
+   |---|---|
+   | [README.md](README.md) | this page: what SkyWynn is + how to start |
+   | [ROADMAP.md](ROADMAP.md) | the goal, the phases, later, not doing (the to-do stays in RESUME) |
+   | [ARCHITECTURE.md](ARCHITECTURE.md) | the mod list, builds, deploy + rollback, checks, sessions, the UI rule |
+   | [CHANGELOG.md](CHANGELOG.md) | big changes by day, newest first (full record: `docs/log/`) |
+   | [DECISIONS.md](DECISIONS.md) | index of Skyy's big locked decisions (newest `docs/answered/` line wins) |
+
+5. Then open ONLY what your task needs:
+   - [HANDOFF.md](HANDOFF.md) - every mod in the current set, rollback floors, the UI + COMMAND rules every build follows.
    - [OPEN-QUESTIONS.md](OPEN-QUESTIONS.md) - only questions still waiting on Skyy.
    - [docs/answered/](docs/answered/README.md) - every answer Skyy gave, word for word, one per line, by topic.
    - [TEST-CHECKLIST.md](TEST-CHECKLIST.md) - what Skyy tests next; every test section in [docs/tests/](docs/tests/README.md).
@@ -51,7 +61,7 @@ work on GitHub too, noise folders hidden). How to open it and use it: [docs/OBSI
 Needs Python with `jpype1` + `jdk4py` and a local Hytale install (the build reads `HytaleServer.jar` from it; it is never committed).
 
 ```
-python SkyySacks/build_skyysacks_0.7.12.py   # build only -> SkyySacks/SkyySacks-0.7.12.jar
+python SkyySacks/build_skyysacks_0.7.14.py   # build only -> SkyySacks/SkyySacks-0.7.14.jar
 python tools/deploy_set.py --check            # are all pinned jars built?
 python tools/deploy_set.py --yes              # deploy the whole pinned set to the test world (game closed, back up first)
 ```

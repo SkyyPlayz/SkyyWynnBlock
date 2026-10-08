@@ -12,6 +12,10 @@ grep hit is the whole thing: `grep -n "Lantern" docs/answered/*.md docs/log/*.md
 | `OPEN-QUESTIONS.md` | ONLY the questions still waiting on Skyy, with today's default | short |
 | `TEST-CHECKLIST.md` | what Skyy tests next (deployed, not tested yet) | short |
 | `CLOUD-RESUME.md` | cloud sessions' rolling to-do (they write only it + `research/cloud/`) | ~110 lines |
+| `ROADMAP.md` | the goal, the phases with status (estimates for Skyy to confirm), later, not doing - the to-do stays in RESUME | ~80 lines |
+| `ARCHITECTURE.md` | every `Skyy<Mod>` folder in one line, how builds / deploys / rollbacks / CI checks work, local vs cloud sessions, the native-UI rule | ~155 lines |
+| `CHANGELOG.md` | big changes by day, newest first (summary of `docs/log/` + `docs/handoff/versions-history.md`) | ~110 lines |
+| `DECISIONS.md` | one-line index of Skyy's big locked decisions with date + source link (newest `docs/answered/` line wins) | ~100 lines |
 
 ## Folders
 | Where | What | How to use it |
