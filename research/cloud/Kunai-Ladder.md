@@ -126,7 +126,7 @@ The landing point is computed on the server from the projectile's hit position, 
 | Not through walls | Flight stops at the first solid block (glass, fences and leaves block it like walking); the 0.5-block step scan keeps a one-block wall from being skipped |
 | Hit on a mob | Land 1.0 block in front of the mob on the line back toward you, never inside it, never behind it (behind = a free backstab; `kunai.behindMob` off) |
 | Out of range | Appear at the last safe point of the flight (the lock: "where it left range") |
-| Over void | Needs ground within `kunai.floorCheck` (12 blocks below, like `blink.floorCheck`); otherwise land at the last spot on the path that has ground. Never ends over open void |
+| Over void | **No void protection** (Skyy 2026-10-07, `docs/answered/classes.md` line 117): the throw may land over open void; falling is a race to get back out. The old `kunai.floorCheck` ground rule is dropped |
 | Other players' islands | A SkyyIslands island you are not on the list for (owner, party, visitors) cannot be entered by the throw: it stops at the island edge. SkyyIslands protects by events and has no border walls (Magic-Traversal-Spec 2.7), so this needs a new bridge check (UNVERIFIED, section 9) |
 | Pocket Shards (minions) | A throw may not land on a block inside someone else's claimed island; minions on your own island are fine. No special rule for the shard itself (it is on the island) |
 | Locked arenas | Boss arenas and dungeon rooms with locked doors (Capstone, Elites) are not teleported out of, into or past (`kunai.noArena`): the throw stops at the door |
@@ -164,7 +164,7 @@ The landing point is computed on the server from the projectile's hit position, 
 | `ret.radius.<metal>` / `ret.force` | section 4 / 1.0 | knockback blocks / push strength |
 | `ret.damage` | 0 | % of a kunai hit the return knockback deals |
 | `kunai.flightTtl` | 1.5 | seconds the thrown picture lives |
-| `kunai.floorCheck` | 12 | ground needed below the landing point (0 = off) |
+| `kunai.floorCheck` | 0 | no void protection (Skyy 2026-10-07): the setting stays at 0 (was 12); drop the row if nothing else needs it |
 | `kunai.behindMob` | off | allow landing behind a mob |
 | `kunai.noArena` | on | no teleporting across locked arena doors |
 | `kunai.noCombat` / `kunai.noCombatBoss` | off / off | block the teleport while in combat / during a boss fight |

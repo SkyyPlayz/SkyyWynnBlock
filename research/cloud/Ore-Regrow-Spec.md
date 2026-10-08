@@ -109,7 +109,7 @@ A camper at one 6-ore vein with T = 900 gets 6 ore per 15 min = 24 ore/h, far un
 
 ## 8. Ember density fix (Q2)
 
-Zone 4 Ember is 3.0 veins / cell x 7 = **21 ore / cell**, 10x the Z4 Mithril (2.1) and almost 6x Z1 Iron (3.6). With regrow the pile is no longer the limit, so the extra density only makes the ore cheap to find (shorter walks = faster than the 280 / h pace) and fills the world with 11,000-coin ore (the Zone-4-5 Bazaar base). Proposal:
+Zone 4 Ember is 3.0 veins / cell x 7 = **21 ore / cell**, 10x the Z4 Mithril (2.1) and almost 6x Z1 Iron (3.6). With regrow the pile is no longer the limit, so the extra density only makes the ore cheap to find (shorter walks = faster than the 280 / h pace) and fills the world with 11,000-coin ore (the Zone-4-5 Bazaar base; proposed 4,300 in `research/cloud/Ember-Economy-Check.md`). Proposal:
 
 | Row | Old | New |
 |---|---|---|

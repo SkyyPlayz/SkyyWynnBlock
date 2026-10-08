@@ -127,3 +127,4 @@ section 6 when it reviews the results.
 - 2026-10-07: ART-INDEX refresh: v3 / v2 redos -> research/cloud/ART-INDEX.md (mining v3, light helmets v3, enchanted v2, Monk + Priest v2 (Saffron locked), Stamina v3, fish v2.1 added; Monk colour question closed; all image links checked)
 - 2026-10-08: OUTBOX test -> research/cloud/OUTBOX.md (test block 2026-10-08 03:50 pushed (5ff12a3); channel works from the cloud side)
 - 2026-10-08: Class review prep -> research/cloud/Class-Review-Prep-1008.md (Archer, Warrior, Mage, Assassin prep pages; Echo candidates; 3 suggestions each; Mage + Assassin only partly reviewed 2026-10-07)
+- 2026-10-08: Consistency pass 2026-10-07 -> research/cloud/Consistency-Pass-1007.md (stale ore prices marked proposed, kunai void check dropped, Monk colour Q closed, Sushi seaweed, Sanctuary locked numbers; spec-draft stale lines handed to the refresh)

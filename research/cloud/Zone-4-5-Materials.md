@@ -73,7 +73,7 @@ Mob ids are UNVERIFIED (seen in `research/cloud/Zone-Bosses-Ideas.md`: `Emberwul
 | Dragon Scale (side) | Zone 5 deep mini-boss "Brood Rex" (Lv 66-70) | 2% | 1 | so a Lv 66 player is not locked out of Drakonite by a Lv 75 boss (Q4) |
 | Ember Shard (junk) | Zone 4 mobs | 12% | 1-2 | sells to NPC for a small coin amount; no recipe (filler for the Cinder Day special) |
 
-Item rate check (python): Fossil Shard base 600 x 10% = 60 coins per ore (+0.2% on a 30,000 ore); Drake Scale base 9,000 x 8% = 720 per kill, in line with mob coin drops of that level (UNVERIFIED mob coin table).
+Item rate check (python): Fossil Shard base 600 x 10% = 60 coins per ore (+0.2% on a 30,000 ore; +0.65% at the proposed 9,300, `research/cloud/Zone-5-Ore-Prices.md`); Drake Scale base 9,000 x 8% = 720 per kill, in line with mob coin drops of that level (UNVERIFIED mob coin table).
 
 ## 5. Bazaar base prices
 
@@ -83,13 +83,13 @@ Fit of the live metal ladder (python, `research/cloud/Enchanted-Materials-Draft.
 |---|---|---|---|---|---|---|
 | Mithril (ref) | 1,440 | 1,584 / 1,296 | 1,728 | 253,440 | 42,375,168 | yes |
 | Onyxium (ref) | 3,712 | 4,083 / 3,341 | 4,454 | 653,312 | 109,233,766 | yes |
-| **Ember Ore** | **11,000** | 12,100 / 9,900 | **13,200** | 1,936,000 | 323,699,200 | yes |
-| **Amberite Ore** | **30,000** | 33,000 / 27,000 | **36,000** | 5,280,000 | 882,816,000 | yes (88%) |
-| **Drakonite Ore** | **75,000** | 82,500 / 67,500 | **90,000** (+ scale: priced as inputs x 1.2) | 13,200,000 | 2,207,040,000 | **no** |
+| **Ember Ore** | **11,000** (proposed 4,300, `research/cloud/Ember-Economy-Check.md`) | 12,100 / 9,900 | **13,200** | 1,936,000 | 323,699,200 | yes |
+| **Amberite Ore** | **30,000** (proposed 9,300, `research/cloud/Zone-5-Ore-Prices.md`) | 33,000 / 27,000 | **36,000** | 5,280,000 | 882,816,000 | yes (88%) |
+| **Drakonite Ore** | **75,000** (proposed 23,000, `research/cloud/Zone-5-Ore-Prices.md`) | 82,500 / 67,500 | **90,000** (+ scale: priced as inputs x 1.2) | 13,200,000 | 2,207,040,000 | **no** |
 | Fossil Shard | 600 | - | - | no Enchanted form | - | - |
 | Drake Scale | 9,000 | - | - | no Enchanted form | - | - |
 
-- **No Drakonite Block** at launch (default). An Enchanted Drakonite is capped by the price ceiling; the only fixes are a lower price (33k would break the ladder) or a higher ceiling (a local check, Q5).
+- **No Drakonite Block** at launch (default). An Enchanted Drakonite is capped by the price ceiling; the only fixes are a lower price (33k would break the ladder; proposed 23,000 gives a Block of 676,825,600 under 1e9, `research/cloud/Zone-5-Ore-Prices.md`) or a higher ceiling (a local check, Q5).
 - Loop check (python): buy ore x1.10 -> bar sells at 0.9 x 1.2 / 1.10 = **0.982** of cost (matches the live tightest, `research/cloud/Economy-Audit.md` C13); Enchanted from raw: 0.9 x 1.10 / 1.10 = **0.900**; Block 0.9 x 1.1495 / 1.10 = **0.9405**; cumulative chain premium 1.10 x 1.045 = **1.1495 <= 15%**. An Enchanted made from **bars** would pay 1.08 (a loop) - so the recipe takes **ore only**, never bars (C4).
 - Drakonite Bar with a scale: the +20% applies on ore + scale together; the scale is not an Enchanted input.
 - Pocket Shard output of these ores is allowed only at the shard tiers Skyy sets in `research/cloud/Pocket-Shards-Spec.md` (ores stay plain items; no compaction before collection V).

@@ -104,7 +104,7 @@ Reuse of vanilla runes keeps the build cheap (they exist as engine assets).
 | # | Spell | Element | Block | Cost / CD | Effect |
 |---|---|---|---|---|---|
 | 1 | **Mend** | - | AoE heal effect | 20 / 8 s | Heals everyone in 5 blocks: 20% of the Priest's Magical Power-scaled amount (self 100% per the 0.1.10 lock) |
-| 2 | **Sanctuary** | - | AoE zone entity | 30 / 20 s | A glowing circle for 8 s: heals allies in it each second; enemies inside are slowed |
+| 2 | **Sanctuary** | - | AoE zone entity | 30 / 20 s | A glowing circle for 8 s (LOCKED 2026-10-07: 12 s, radius 8 blocks, heals 5% max Health per second, `docs/answered/classes.md` line 142): heals allies in it each second; enemies inside are slowed |
 | 3 | **Smite** | Light (use Fire/Wind placeholder) | Fireball-like | 20 / 10 s | A holy bolt x1.8 D; heals the lowest ally by 20% of the damage |
 | 4 | **Blessing** | - | buff | 25 / 18 s | Party buff: +10% Health regen and +10% resist for 12 s |
 

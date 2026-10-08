@@ -203,8 +203,8 @@ collection (Fishing collections count fish only), and the Clerk's cap keeps junk
 
 **Invented junk, kept or retired:** all 7 retired (Soggy Boot, Form 27-B, Wet Queue Ticket, Rubber Stamp, Clump of Seaweed, Scorched Complaint Letter,
 Gnawed Bone) - none has a use beyond a joke. **Kept (real use):** the Lost Property wrappers above (containers), "Clerk's Lucky Hook" (a part), and the
-fishing accessories. Seaweed is the one near miss: it was a Sushi Roll ingredient (Food-Expansion); if Sushi needs it, it comes from a seaweed
-plant / the Cooking Skill, not from junk (question 9).
+fishing accessories. Seaweed is the one near miss: it was a Sushi Roll ingredient (Food-Expansion); Sushi now takes vanilla seaweed (`Plant_Seaweed_*`, gathered) or Azure Kelp,
+proposed in `research/cloud/Food-Expansion-Draft.md` section 7 - never from junk.
 
 Zone coin mult Z1 x1, Z2 x2.5, Z3 x10, Z4 x30, Z5 x60. Python: 8.6 treasures/h; treasure coins = **4.5-6.7% of fishing income** in every zone
 (Z1 ~440/h, Z5 ~26,000/h). Coins are allowed here because Skyy locked "money" (R5's no-coins rule is about mobs); they buy nothing locked (R3).

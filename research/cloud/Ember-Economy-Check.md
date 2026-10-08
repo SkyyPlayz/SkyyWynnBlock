@@ -26,7 +26,7 @@ Model: time per ore = fixed part (swing, smelt-free) + walking part. Swing at en
 | **60% (central)** | 280 | 222 / **206** / 195 | **412** | 560 |
 | 92% (walking is everything) | 280 | 199 / **180** / 168 | 360 | 560 |
 
-Z5 Ember (1.0 -> 0.5 veins / cell, a further x1.26-1.41 gap): ~140-170 blocks/h (central 169), 280-340 items/h. Z5 players choose between this and Amberite (200/h, 30,000).
+Z5 Ember (1.0 -> 0.5 veins / cell, a further x1.26-1.41 gap): ~140-170 blocks/h (central 169), 280-340 items/h. Z5 players choose between this and Amberite (200/h, 30,000; proposed 9,300 below, line 70).
 **Result: the cut costs an endgame miner 15-36% (central -26%).** It is the right direction but it does not fix the price (section 3).
 **Regrow check** (Ore-Regrow-Spec 4): 20 miners x 206 = 4,120 blocks/h against a supply of 35,500/h (71,000 blocks, 25% access, T 1,800 s) = **12% utilisation** (the spec's 16% used 280). Z5: 834 / 7,200 = 12%. Regrow is not the limit, so the walking time is the real throttle and the density cut is what holds the rate, not the pile.
 

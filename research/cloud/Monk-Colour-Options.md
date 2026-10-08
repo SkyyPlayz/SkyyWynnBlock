@@ -65,7 +65,7 @@ on the dark row: Warrior 8.9, Berserker 4.1 (the weakest), Archer 10.2, Assassin
 
 ## 4. Recommendation
 
-**C Jade teal `#38c9a8`.** Best worst-case over all three colour-blind views (8.7) with a free hue, good contrast on the dark background (8.49, passes text),
+(History - superseded by the LOCKED Saffron `#f08a30`.) **C Jade teal `#38c9a8`.** Best worst-case over all three colour-blind views (8.7) with a free hue, good contrast on the dark background (8.49, passes text),
 and a theme fit. Runner-up **D Rose pink `#ff7fb5`** if Skyy wants the boldest standout. Drop A.
 
 - White text on any of the colours fails (2.1 to 2.6), as it already does for 5 of the 6 existing classes (only Berserker passes at 4.3). Rule: class
@@ -93,6 +93,6 @@ and a theme fit. Runner-up **D Rose pink `#ff7fb5`** if Skyy wants the boldest s
 
 | # | Question | Default |
 |---|---|---|
-| 1 | Monk class colour | [C Jade teal `#38c9a8`; runner-up D Rose pink `#ff7fb5`; A Coral dropped] |
+| 1 | Monk class colour | CLOSED: LOCKED Saffron `#f08a30` (`docs/answered/gear.md` line 87); the old default was C Jade teal `#38c9a8` |
 | 2 | Should I also nudge Archer so Warrior / Archer is readable for deuteranopia (not the Monk's fault)? | [no, leave as is] |
 | 3 | Class colour on a badge: dark text instead of white (white fails contrast on 5 of the 6 existing colours) | [yes, dark text] |
