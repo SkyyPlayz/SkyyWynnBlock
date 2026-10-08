@@ -168,10 +168,26 @@ def glow(img, model, gem):
             img.put(px, py, (c[0], c[1], c[2], 255))
 
 
-def kunai_texture(z, metal, model, base_tex):
+CRUDE_ITEM = "Server/Item/Items/Weapon/Daggers/Weapon_Daggers_Crude.json"
+
+
+def crude_gradients(z):
+    """The Crude kunai (research/cloud/Kunai-Ladder.md 7: "a plain dark grey stone-and-wood version (reuse the Crude dagger's palette)";
+    SkyyArmory 0.1.6 builds it at build time): blade + ring from the vanilla Crude dagger's stone blade texels, the collar from its wood
+    handle texels. -> (metal gradient, band gradient) for kunai_texture(..., grads=...)."""
+    _d, model, tex, _icon = SA.item_parts(z, CRUDE_ITEM)
+    stone = SA.palette_from([(tex, SA.node_rects(model, ["Blade", "Blade-Tip"]))])
+    wood = SA.palette_from([(tex, SA.node_rects(model, ["Handle", "Handle2"]))])
+    return stone, wood
+
+
+def kunai_texture(z, metal, model, base_tex, grads=None):
     rects = dict((k, SA.node_rects(model, v)) for k, v in PARTS.items())
-    metal_g = SA.metal_gradient(z, metal)        # = the wand head / shaft metal
-    band_g = SA.band_gradient(z, metal)          # = the wand bands: vanilla gold trim on Mithril, the tier metal elsewhere
+    if grads is not None:                        # the Crude kunai: crude_gradients() (not a wand metal)
+        metal_g, band_g = grads
+    else:
+        metal_g = SA.metal_gradient(z, metal)        # = the wand head / shaft metal
+        band_g = SA.band_gradient(z, metal)          # = the wand bands: vanilla gold trim on Mithril, the tier metal elsewhere
     img = SA.png_decode(base_tex)
 
     def part(img, grad, name, lift=None):
