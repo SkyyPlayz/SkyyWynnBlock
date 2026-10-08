@@ -35,9 +35,9 @@ flowchart TD
   A2 --> A2X["A2-alt Guardian Spirit"]
   A1 -.-> M1["Radius+ | Power+ | Duration+ | Efficiency | Echo"]
   A1A -.-> M2["Radius+ | Duration+ | Follow | Power+"]
-  A1B -.-> M3["Chain | Power+ | Ward | Efficiency"]
-  A2 -.-> M4["Follow | Radius+ | Power+ | Duration+"]
-  A2X -.-> M5["Duration+ | Power+ | Chain | Efficiency"]
+  A1B -.-> M3["Chain | Power+ | Ward | Efficiency | Echo"]
+  A2 -.-> M4["Follow | Radius+ | Power+ | Duration+ | Echo"]
+  A2X -.-> M5["Power+ | Radius+ | Efficiency | Ward"]
   classDef locked fill:#2e7d32,color:#fff,stroke:#1b5e20
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
   classDef mods fill:#1a237e,color:#fff,stroke:#0d1442
@@ -195,11 +195,13 @@ You own 4. You equip 2.
 
 - 💧 **Efficiency** - cheaper.
 
+- 🔁 **Echo** - the whole chain repeats once 1 s later at reduced strength · each level: stronger echo.
+
 ### A2 · Shield Bubble
 
 🟢 **Locked**
 
-- **Does:** place a **bubble** (5 blocks) for 8 s.
+- **Does:** place a **bubble** (**6 blocks**) for **12 s** (Skyy 2026-10-07).
 
 - It blocks projectiles and absorbs damage for allies inside. It has HP and can break.
 
@@ -215,23 +217,25 @@ You own 4. You equip 2.
 
 - ⏳ **Duration+** - lasts longer.
 
+- 🔁 **Echo** - when the bubble ends or breaks, a weaker bubble forms once in the same place · each level: stronger echo.
+
 ### A2-alt · Guardian Spirit
 
-🔵 **Proposed** - Cleanse moved to the tree, so this slot needs a new ability
+🔵 **Proposed** - a **PASSIVE** (Skyy 2026-10-07)
 
-- **Does:** mark an ally within 20 blocks for 10 s.
+- **Does:** when a **party member** (or a player you have **tagged**) would die within **30 blocks** of you - **or you would die** - they survive at **30% Health** instead, **if you have enough Mana** for it (the Mana is paid then; not enough Mana = no save).
 
-- If they would die, they **survive at 30% Health** instead (once).
+- **Cooldown per player, doubling:** the first save of a player (say Jeff) puts Jeff on a 12 s cooldown, the next save 24 s, then 48 s, and so on; it **resets after a while out of combat** (default 30 s) - so you cannot keep one tank alive forever from the back.
 
 **Modifiers**
 
-- ⏳ **Duration+** - longer mark.
-
 - 💪 **Power+** - more Health on the save.
 
-- ⛓️ **Chain** - marks +1 more ally.
+- ⭕ **Radius+** - longer save range.
 
-- 💧 **Efficiency** - cheaper.
+- 💧 **Efficiency** - cheaper save.
+
+- 🛡️ **Ward** - a saved player also gets a small shield.
 
 &nbsp;
 
@@ -302,6 +306,8 @@ Ideas - pick one.
 ## 📜 Change log
 
 - 2026-10-05: refined for easy reading (same facts, new layout).
+
+- 2026-10-07: Martyr's Grace + Shield Bubble gain Echo; Shield Bubble 6 blocks / 12 s; Guardian Spirit = a passive save (30 blocks, 30% Health, Mana-gated, doubling per-player cooldown) (Skyy).
 
 - 2026-10-07: Sacred Heal gains Echo (Skyy).
 
