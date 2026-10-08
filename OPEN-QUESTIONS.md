@@ -14,6 +14,9 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### project
 - allow a SMOKE-TEST SERVER before each deploy (habit 6 'prove it'): start HytaleServer.jar offline on a COPY of the test world in tools/dev/scratch/, check every '[Skyy...] ready' line + errors, stop it - never the real game / world / saves? Today's rule says never start the game. [recommended yes - docs/log/2026-10.md 2026-10-06]
 
+### world
+- ZONE 1 TOWN build (research/Zone-1-Town-Build-Plan.md section 11): vanilla spawn temple (today's /hub one), door to the sea, spawn at the foot of its causeway [yes]; its crypt (Forgotten Temple portal, Earth Crystal Golem, 2 mob spawners) - keep all, portal only, or seal? [keep all; safe zone stops at the hall floor]; plain stone-and-timber halls for Bank / Bazaar / AH / Forge that you restyle later [yes]; build P0 on the test island first [yes]; Kweebec Oak stalls + vanilla cottages, tree houses only in homes [yes]; layout Q2-7 (outside-steps spawn, protected town, Pebble leaves in Z1.2, walks 17-24 s, walk-in buildings with NPCs, sealed plots visible) [yes to all]
+
 ### mobs
 
 ### skills
