@@ -17,7 +17,7 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.16"), ("SkyySacks", "0.7.13"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.8"), ("SkyySkills", "0.4.20"),
+    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.9"), ("SkyySkills", "0.4.20"),
     ("SkyyAccessories", "0.5.7"), ("SkyyClasses", "0.1.13"), ("SkyyMenu", "0.3.8"), ("SkyyEssentials", "0.1.8"), ("SkyyProfiles", "0.1.5"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.2"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -48,6 +48,8 @@ SET = [
     # FLOOR (2026-10-07): never roll SkyyArmory below 0.1.6 once spellbooks / kunai exist in player hands (15 new item ids -> unknown
     # items). SkyyGear below 0.2.8 with Armory 0.1.6 shows the new kunai as Lv 20-27 and changes the vanilla Weapon_Kunai damage base
     # (no data loss). Armory 0.1.6 + Classes 0.1.13 + Gear 0.2.8 deploy TOGETHER.
+    # FLOOR (2026-10-07): never roll SkyyArmory below 0.1.7 once Bo staffs / hand wraps / gauntlets exist in player hands (new item
+    # ids -> unknown items). Armory 0.1.7 + Gear 0.2.9 deploy TOGETHER (Gear 0.2.9 scales the Monk weapons; 0.2.8 under-scales them).
     # Reel probe (2026-10-07): 8 SkyyFishing_Rod_* + SkyyFishing_Reel stat look test - REMOVE after Skyy tests it (TEST-CHECKLIST) and
     # BEFORE SkyyFishing ships (same item / stat names).
     ("SkyyReelProbe", "0.1"),
@@ -57,7 +59,7 @@ SET = [
     ("SkyyMobs", "0.1.4"), ("SkyyWorldGen", "0.1"),
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
-    ("SkyyArmory", "0.1.6"),
+    ("SkyyArmory", "0.1.7"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
