@@ -36,7 +36,7 @@ flowchart TD
   A1 -.-> M1["Duration+ | Radius+ | Efficiency | Power+"]
   A1A -.-> M2["Power+ | Radius+ | Echo | Efficiency"]
   A1B -.-> M3["Duration+ | Power+ | Knockback+ | Ward"]
-  A2 -.-> M4["Knockback+ | Ricochet | Slow | Power+"]
+  A2 -.-> M4["Knockback+ | Ricochet | Slow | Power+ | Echo"]
   A2X -.-> M5["Radius+ | Knockback+ | Slow | Haste"]
   classDef locked fill:#2e7d32,color:#fff,stroke:#1b5e20
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
@@ -171,6 +171,8 @@ You own 4. You equip 2.
 
 - 💪 **Power+** - longer stun / more damage.
 
+- 🔁 **Echo** - a second, weaker palm strike hits the same target 1 s later · each level: stronger echo.
+
 ### A2-alt · Cyclone Kick
 
 🔵 **Proposed**
@@ -258,5 +260,7 @@ Ideas - pick one.
 - 2026-10-05: refined for easy reading (same facts, new layout).
 
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
+
+- 2026-10-07: Palm Strike gains Echo (Skyy: "give monks palm strike echo too"); fist attacks, stunlock breakout, gauntlet speed (Skyy).
 
 - 2026-10-04: file created; Bo staff pole-vault + skipping bounds, fist Rising Strike + Plunge Punch, Flowing Form (Awe combo), Palm Strike - all LOCKED (Skyy).
