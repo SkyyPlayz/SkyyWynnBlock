@@ -1,0 +1,2030 @@
+"""Derive SkyyTrees/build_skyytrees_0.3.3.py from the LIVE SkyyTrees/build_skyytrees_0.3.2.py (the tools/deploy_set.py SET pin).
+Run:  python tools/trees_0_3_3_patch.py   then   python SkyyTrees/build_skyytrees_0.3.3.py   (never --deploy: coordinated deploy)
+      then python SkyyTrees/test_skyytrees_0.3.3.py (the bare-JVM harness; needs SkyyTrees-0.3.2.jar, the SET pin, next to it)
+EDITED-SCRIPTS RULE (commit ab75b6c): the lineage is Skyy's EDITED 0.2.3 -> trees_0_2_4_patch.py -> ... -> trees_0_3_2_patch.py -> the
+generated 0.3.2 read here; tools/trees_0_2_3_patch.py and older are NEVER re-run. Edit THIS file, never the generated build script. Same
+style as trees_0_3_2_patch.py (rep() with asserted single anchors, newline-agnostic; 0.3.2's line endings are kept; KEEP blocks assert the
+parts 0.3.3 must not touch).
+
+0.3.3 = THE CLASS PATH TREES (Skyy 2026-10-07 overnight: "try to get the new updated class skill trees out tonight if you can"; the contract
+= research/cloud/Class-Tree-Paths.md + research/cloud/Class-Tree-Build-Map.md, every open choice at the map's recommended default):
+  (1) PAGE 2 = TRUNK + 3 LOCKED PATHS for all 7 classes (Archer, Warrior, Mage, Berserker, Priest + Assassin (Assassination) and Monk
+      (Discipline; "Shaman" = an alias)): page 1 stays the live 0.3.2 page (spine + rune slots); page 2's stat lanes L / C / R and the
+      capstones are gone; T1-T6 down column 1 (T1's parent = ROOT, page 1), paths PA / PB / PC 1-5 off T1 through the column-2 bars, the
+      elements LE / CE / RE after N5 (lane count 5, still "Coming later"), P4 a leaf top right, the Priest switch TS (hidden on the other 6).
+  (2) RULES (TreeClass): ONE PATH PER TREE - a path node (lane 1-3) cannot be unlocked while an owned intact node of another path exists
+      ("Path locked"; a file owning two paths keeps the one with the most AP, tie the lower lane, the other breaks + refunds); the first
+      OWNED path node picks the path (waiting nodes never do); new kinds V / B / C / F (move speed, while a bow / crossbow is held, while
+      crouching, fall damage: movement source trees.class) applied by SkyyTrees, A (SkyyArmory), G (SkyyGear), K (the class abilities,
+      reader SkyyClasses, "Comes with the class abilities"), L (a later build), T (a switch); every waiting kind is SKIPPED (0.3.1 rule),
+      so a Mage can take Riftwalker while Barrier Lore waits; level RANKS (Archer T3, Mage T3: tree:fn:bonus answers the ranked Amount);
+      the SWITCH TS (0 AP, Lv 1): bought OFF (party only), the Switch button flips it (Class.Priest.on=TS); tree:fn:bonus("Class.Priest.TS") = 1
+      only while owned AND on (OFF = party only, the LOCKED default); Mage Rift Master's -10 max Mana from SkyyTrees while it is intact.
+  (3) LIVE NOW (SkyyTrees alone): Warrior T2, Archer T4, Mage T1 T5, Priest T2 T5 (+ TS), Berserker T1, Monk T1 T2, Assassin T1 T4.
+      SkyyArmory 0.1.9 lists 12 of the map's 13 armory keys (Rift Master waits: wall pass + slow not built).
+  (4) ONE-TIME MIGRATIONS: players (TreeStore.readFile, ClassMig33): a Class.<Class> line holding retired ids (L1-L4 C1-C4 R1-R4 LS CS RS)
+      -> the ids drop (AP is computed: they refund), Class.<Class>.retired=<ids> (the run-once marker + the copy), Class.<Class>.freeRespec=1
+      (the next class respec is free and skips the cooldown), Class.<Class>.notice=<AP> (one chat line at the next login, then removed), one
+      INFO line, saved within 10 s. trees.properties (TreeMig33, marker skyytrees-0.3.3-paths, TreeMig's machinery: History first and
+      verified, append-only, the file's own line endings, nothing rewritten): the new class.nodes / class.minLevel lines a file lacks; the
+      retired lines stay byte for byte (one INFO; a hand-edited one named). No change-log line: no value changes (the map; History restore
+      in Server Setup undoes the append).
+  (5) Server Setup: + class.nodes.Assassin, class.nodes.Monk (41 -> 43 rows); the help texts name the new ids.
+  UNCHANGED: page 1, the AP formula, Undo, respec price (level x perLevel), the reader contract, class.enabled, TreeMig / TreeMig32, the
+    template trees, commands, permissions, the probe (its owned set ROOT P1 P2 X1 P3 P4 T1 T2 PA1).
+  ROLLBACK 0.3.3 -> 0.3.2: 0.3.2 ignores the new ids (the path picks are lost at its next save; AP computed, nothing else lost), keeps the
+    retired / freeRespec / notice / on lines (cextra) and shows Assassin / Monk "no tree yet". Never below 0.3.
+"""
+import os
+import re
+import json
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+src = os.path.join(ROOT, "SkyyTrees", "build_skyytrees_0.3.2.py")
+dst = os.path.join(ROOT, "SkyyTrees", "build_skyytrees_0.3.3.py")
+raw = open(src, "rb").read()
+NL = "\r\n" if b"\r\n" in raw else "\n"
+assert NL == "\n" or raw.count(b"\r\n") == raw.count(b"\n"), "mixed line endings in 0.3.2"
+s = raw.decode("utf8").replace("\r\n", "\n")
+LF = "\n"
+OLD = s
+assert 'VERSION = "0.3.2"' in s and "GENERATED by tools/trees_0_3_2_patch.py from the LIVE build_skyytrees_0.3.1.py" in s, \
+    "build_skyytrees_0.3.2.py is not the live 0.3.2 of the edited lineage"
+for _a in ('MG_WHO = "SkyyTrees 0.3"', "public static boolean[] intactOf(boolean[] own, int ci) {", "def class_page_java():",
+           'mig32 = pool.makeClass(PKG + ".TreeMig32")', "import skyyui as SUI"):
+    assert _a in s, "not the live 0.3.2: missing %r" % _a
+REG0 = s.count("registerSystem(")
+CMD0 = s.count("registerCommand(")
+
+
+def rep(old, new, count=1):
+    global s
+    assert s.count(old) == count, "anchor count %d != %d: %s" % (s.count(old), count, old[:140])
+    s = s.replace(old, new)
+
+
+def block(a, b):
+    assert s.count(a) == 1 and s.count(b) == 1, (a[:60], b[:60])
+    return s[s.index(a):s.index(b)]
+
+
+def swap(a, b, new):
+    """replace the text from anchor a (included) up to anchor b (excluded)"""
+    global s
+    old = block(a, b)
+    s = s.replace(old, new)
+    return old
+
+
+# blocks that must come out of this patch byte-identical: the template node table, TreeMig (0.3) + TreeMig32, the commands' bodies
+KEEP = [block("# ================= the node table (spec 5 + 6, Cooking spec 7.2) =================",
+              "# 0.2.5: DATA colours for the vanilla UI kit's lint"),
+        block("# ================= 0.3 TreeMig: the ONE-TIME Alchemy + Smithing update of an existing trees.properties =================",
+              "# ================= commands (HANDOFF command rules) ================="),
+        block("# ================= TreeAbil: Spread / Vein Burst / Tree Feller (BREAK hook) =================",
+              "# ================= TreeFn / TreeBonusFn: tree:fn:level and tree:fn:bonus =================")]
+
+# ================================================================================================================ the OLD class block -> the
+# retired lines' 0.3.2 defaults (TreeMig33 names a hand-edited one) and the retired ids' AP (the player notice), computed from 0.3.2 itself
+OLD_CLASS = block("# ================= 0.3 PART 2: the class tree template (research/Skill-Trees-2-Spec.md 5-7, Skyy's answers 1-5 + 7) =================",
+                  "# ================= default trees.properties =================")
+
+
+class _SUIStub(object):
+    @staticmethod
+    def text_width(*a, **k):
+        return 0
+
+
+_ns = {"re": re, "json": json, "SUI": _SUIStub, "must_icon": lambda i: i, "ON": "on", "CCOLOR": ["#000000"] * 5}
+exec(compile(OLD_CLASS, "build_skyytrees_0.3.2.py (class block)", "exec"), _ns)
+RET_IDS_ALL = ["L1", "L2", "L3", "L4", "C1", "C2", "C3", "C4", "R1", "R2", "R3", "R4", "LS", "CS", "RS"]
+RETIRED_IDS_PATCH = list(RET_IDS_ALL)   # = RETIRED_IDS of the class block (asserted there too)
+OLD_NAP = dict((n[0], n[1]) for n in _ns["CT"])
+RET_AP = [OLD_NAP[i] if i[1] != "S" else 0 for i in RET_IDS_ALL]          # LS / CS / RS were never buyable: no AP to give back
+assert RET_AP == [1, 1, 2, 3, 1, 1, 2, 3, 1, 1, 2, 3, 0, 0, 0], RET_AP
+RET_DEF = []          # (key, the 0.3.2 default value) of every retired line a 0.3.2 file holds
+for _c in _ns["CN"]:
+    _id = _ns["CT_ID"][_c["n"]]
+    if _id in RET_IDS_ALL:
+        RET_DEF.append(("class.nodes.%s.%s" % (_ns["CLASSES"][_c["ci"]], _id), "true,%d,%d" % (_c["amt"], OLD_NAP[_id])))
+    if _id in RET_IDS_ALL and _c["min"]:
+        RET_DEF.append(("class.minLevel.%s.%s" % (_ns["CLASSES"][_c["ci"]], _id), str(_c["min"])))
+assert len(RET_DEF) == 5 * 15 + 3 and ("class.minLevel.Archer.R4", "50") in RET_DEF and ("class.nodes.Archer.R4", "true,30,3") in RET_DEF
+OLD_CLASS_LINES = [l for l in s[s.index("CLASS_LINES = list(CLASS_HEAD)"):].split(LF)[:1]]   # (only to assert the anchor below)
+
+# ================================================================================================================ the new class template (Python)
+CLASS_BLOCK = r'''# ================= 0.3 PART 2: the class tree template (research/Skill-Trees-2-Spec.md 5-7, Skyy's answers 1-5 + 7) =================
+# 0.3.3 (2026-10-07, research/cloud/Class-Tree-Build-Map.md + Class-Tree-Paths.md): page 1 is the live 0.3.2 page (stat spine + rune
+# slots); page 2's three stat lanes became the TRUNK T1-T6 + THREE LOCKED PATHS PA / PB / PC (5 nodes each, the first owned path node picks
+# the path) + the elements LE / CE / RE after N5 + the Priest switch TS; Assassin and Monk have trees. A node: (id, AP, parents (any one),
+# need, lock (the pick-one twin), lane (0 none, 1 path A, 2 path B, 3 path C), lane count needed, page, row, col, role). Roles: 0 spine
+# stat, 1 pick-one passive, 2 ability rune slot, 3 / 4 modifier rune slots, 5 trunk node, 6 path node, 7 element (coming later), 9 switch.
+CLASSES = ["Archer", "Warrior", "Mage", "Berserker", "Priest", "Assassin", "Monk"]   # 0.3.3: + Assassin, Monk (SkyyClasses 0.1.14)
+CSKILL = ["Archery", "Swordsmanship", "Sorcery", "Fury", "Divinity", "Assassination", "Discipline"]   # skill:fn:level names (SkyySkills 0.4.21)
+CMAGIC = [False, False, True, False, True, False, False]
+CICON = ["Weapon_Shortbow_Iron", "Weapon_Sword_Iron", "Weapon_Staff_Iron", "Weapon_Battleaxe_Iron", "Weapon_Wand_Wood", "Weapon_Daggers_Iron",
+         "Weapon_Staff_Bo_Wood"]
+CALIAS = [("Shaman", "Monk")]   # 0.3.3: SkyyClasses 0.1.14 keeps "Shaman" as an alias of the Monk (profile:class may still say it)
+assert len(CLASSES) == len(CSKILL) == len(CMAGIC) == len(CICON) == len(CCOLOR) == 7
+NC = len(CLASSES)
+CT = [  # id, AP, parents, need, lock, lane, laneN, page, row, col, role
+  ("ROOT", 1, [], None, None, 0, 0, 0, 0, 4, 0),
+  ("P1", 1, ["ROOT"], None, None, 0, 0, 0, 1, 4, 0),
+  ("A1", 1, ["P1"], None, None, 0, 0, 0, 1, 2, 2),
+  ("M1A", 1, ["A1"], "A1", None, 0, 0, 0, 1, 1, 3),
+  ("M1B", 2, ["M1A"], "A1", None, 0, 0, 0, 1, 0, 4),
+  ("A2", 1, ["P1"], None, None, 0, 0, 0, 1, 6, 2),
+  ("M2A", 1, ["A2"], "A2", None, 0, 0, 0, 1, 7, 3),
+  ("M2B", 2, ["M2A"], "A2", None, 0, 0, 0, 1, 8, 4),
+  ("P2", 1, ["P1"], None, None, 0, 0, 0, 3, 4, 0),
+  ("A3", 1, ["P2"], None, None, 0, 0, 0, 3, 2, 2),
+  ("M3A", 1, ["A3"], "A3", None, 0, 0, 0, 3, 1, 3),
+  ("M3B", 2, ["M3A"], "A3", None, 0, 0, 0, 3, 0, 4),
+  ("A4", 1, ["P2"], None, None, 0, 0, 0, 3, 6, 2),
+  ("M4A", 1, ["A4"], "A4", None, 0, 0, 0, 3, 7, 3),
+  ("M4B", 2, ["M4A"], "A4", None, 0, 0, 0, 3, 8, 4),
+  ("X1", 1, ["P2"], None, "X2", 0, 0, 0, 4, 3, 1),
+  ("X2", 1, ["P2"], None, "X1", 0, 0, 0, 4, 5, 1),
+  ("P3", 1, ["X1", "X2"], None, None, 0, 0, 0, 5, 4, 0),
+  ("P4", 1, ["P3"], None, None, 0, 0, 1, 0, 8, 0),          # 0.3.3: page 2 top right, a leaf (the spine's last stat node)
+]
+# 0.3.3 page 2: the trunk down column 1 (T1's parent = ROOT on page 1: the Lv 5-25 gates stay reachable), the switch TS (Priest only; its
+# parent = ROOT too, so the free switch needs only the Root), the three paths off T1 through the column-2 bars, each path's element after N5
+CT += [("T1", 1, ["ROOT"], None, None, 0, 0, 1, 0, 0, 5)]
+CT += [("T%d" % _k, (1, 1, 2, 2, 2, 3)[_k - 1], ["T%d" % (_k - 1)], None, None, 0, 0, 1, _k - 1, 0, 5) for _k in range(2, 7)]
+CT += [("TS", 0, ["ROOT"], None, None, 0, 0, 1, 0, 2, 9)]
+PATH_AP = [2, 2, 3, 3, 4]
+for _ln, (_pre, _el, _row) in enumerate((("PA", "LE", 1), ("PB", "CE", 3), ("PC", "RE", 5))):
+    _lane = _ln + 1
+    CT += [(_pre + str(_k), PATH_AP[_k - 1], ["T1" if _k == 1 else _pre + str(_k - 1)], None, None, _lane, 0, 1, _row, 1 + _k, 6) for _k in range(1, 6)]
+    CT += [(_el, 3, [_pre + "5"], None, None, _lane, 5, 1, _row, 7, 7)]
+NN = len(CT)
+CT_ID = [n[0] for n in CT]
+assert NN == 44 and len(set(CT_ID)) == 44 and all(re.fullmatch(r"[A-Z][A-Z0-9]*", i) for i in CT_ID), CT_ID
+assert CT_ID[:19] == ["ROOT", "P1", "A1", "M1A", "M1B", "A2", "M2A", "M2B", "P2", "A3", "M3A", "M3B", "A4", "M4A", "M4B", "X1", "X2", "P3", "P4"], \
+    "0.3.3: the 0.3.2 page-1 ids keep their places"
+assert len(set((n[7], n[8], n[9]) for n in CT)) == 44 and all(0 <= n[8] < 6 and 0 <= n[9] < 9 for n in CT), "one node per cell"
+def ct_idx(i): return CT_ID.index(i)
+assert all(all(ct_idx(p) < k for p in n[2]) for k, n in enumerate(CT)), "parents come before their children"
+# the ids 0.3.3 retired (the 0.3.2 stat lanes and capstones; LE / CE / RE stay as the path elements): a saved one refunds itself
+RETIRED_IDS = ["L1", "L2", "L3", "L4", "C1", "C2", "C3", "C4", "R1", "R2", "R3", "R4", "LS", "CS", "RS"]
+assert not set(RETIRED_IDS) & set(CT_ID)
+# AP (map section 2): page 1 = 21 with the pick-one pair once, P4 1, trunk 11, one path 14 + its element 3 = 50 = class.ap.max
+assert sum(n[1] for n in CT if n[7] == 0) - 1 == 21 and sum(n[1] for n in CT if n[10] == 5) == 11 and sum(PATH_AP) == 14
+assert 21 + 1 + 11 + 14 + 3 == 50
+# the kinds (the TreeClass.K_* numbers). H +Health, S Strength (SkyyGear gear:extras), M +Mana, R +% Mana Regen (skill:fn:manaregen), X a
+# crossbow perk (SkyySkills), V +% move speed, B +% move speed while a bow / crossbow is held, C +% move speed while crouching, F % less fall
+# damage (V / B / C / F: SkyyTrees' movement source trees.class), A SkyyArmory applies it, G SkyyGear applies it, K the class abilities,
+# L a hook nobody has yet (a later build), T a switch (Class.<Class>.<Id> = 1 while on)
+UNIT = {"H": 4, "S": 2, "M": 5, "R": 5}
+KIND_NUM = {"-": 0, "H": 1, "S": 2, "M": 3, "R": 4, "X": 5, "V": 6, "B": 7, "C": 8, "F": 9, "A": 10, "G": 11, "K": 12, "L": 13, "T": 14}
+KIND_WORD = {"H": "Vitality", "S": "Might", "M": "Reservoir", "R": "Focus"}
+KIND_ICON = {"H": "Plant_Fruit_Apple", "S": "Weapon_Sword_Iron", "M": "Potion_Mana", "R": "Potion_Regen_Mana", "X": "Weapon_Crossbow_Iron"}
+CT_SPINE = {False: {"ROOT": ("H", 1), "P1": ("S", 1), "P2": ("H", 1), "X1": ("S", 1.5), "X2": ("H", 2), "P3": ("R", 1), "P4": ("S", 1)},
+            True: {"ROOT": ("H", 1), "P1": ("M", 1), "P2": ("R", 1), "X1": ("M", 1.6), "X2": ("H", 2), "P3": ("H", 1), "P4": ("R", 1)}}
+ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
+# reader gating per kind: (the mod that applies it; "" = SkyyTrees itself)
+KIND_READER = {"S": "SkyyGear", "X": "SkyySkills", "R": "SkyySkills", "A": "SkyyArmory", "G": "SkyyGear", "K": "SkyyClasses", "L": "later"}
+GEN_HOW = {
+    "A": "SkyyArmory applies it once it lists Class.%s.%s (tree:reads:SkyyArmory)",
+    "G": "SkyyGear applies it once it lists Class.%s.%s (tree:reads:SkyyGear)",
+    "K": "Comes with the class abilities: the ability reads Class.%s.%s - until then it waits and is skipped",
+    "L": "Needs a hook no mod has yet - a later build applies Class.%s.%s",
+    "X": "SkyySkills applies it (the crossbow) once it lists Class.%s.%s - coming until then",
+}
+MOVE_HOW = "SkyyTrees applies it through the movement protocol (source trees.class), checked once a second"
+# ---- the class paths (Class-Tree-Paths.md 2026-10-07; status = Class-Tree-Build-Map.md section 5). Per class: (path names A / B / C,
+# the trunk T1-T6, then path A, B, C nodes 1-5). A node: (name, kind, amount, effect text with %A = the live Amount, how text or None = the
+# kind's text, icon or None = the path / trunk default). The amount is what tree:fn:bonus answers (a percent as a whole number).
+CPATHS = {
+ "Warrior": (("Guardian", "Warlord", "Juggernaut"), ("Weapon_Shield_Iron", "Weapon_Longsword_Iron", "Armor_Iron_Chest"), [
+   ("Shield Training", "K", 15, "Shield Shockwave stuns 0.25 s longer; blocking costs %A% less Stamina", None, "Weapon_Shield_Iron"),
+   ("Fortitude", "H", 8, "+%A max Health", None, "Plant_Fruit_Apple"),
+   ("Longer Thrust", "A", 20, "The sword Thrust dash goes %A% farther and costs 10% less Stamina",
+    "Waits for a custom sword move in SkyyArmory (the vanilla Thrust is client-side) - SkyyArmory lists Class.Warrior.T3 when it exists", "Weapon_Sword_Iron"),
+   ("Second Wind", "L", 15, "Once per 60 s, below 30% Health you heal %A%", "Needs a low-Health hook no mod has yet - a later build", "Potion_Health"),
+   ("Tempered Steel", "G", 5, "+%A% damage while holding a sword or spear", "SkyyGear applies it (Strength while a sword or spear is held) once it lists Class.Warrior.T5", "Weapon_Spear_Iron"),
+   ("Veteran", "K", 5, "All Warrior ability cooldowns -%A%", None, "Deco_Scroll")], [
+   ("Shield Wall", "K", 0, "Rallying Guard: party radius +2, allies inside cannot be knocked back - your defence -4", None, None),
+   ("Interpose", "K", 0, "Rallying Guard: allies behind you take 25% less from the front - you 10% slower", None, None),
+   ("Guardian's Oath", "K", 0, "Ally under 25% Health: you take 30% of their hits for 3 s - you cannot heal above 80%", None, None),
+   ("Bastion", "K", 0, "Bulwark Stance becomes a 5-block wall for 8 s - you cannot move, front only", None, None),
+   ("Aegis Core", "K", 0, "Rallying Guard +3 s and the party heals 3% a second - your damage -15%", None, None)], [
+   ("Thorns of Command", "K", 0, "Rallying Guard: enemies that hit you take 15% back - you take +5% damage", None, None),
+   ("Battle Cry", "K", 0, "Rallying Guard ends with a shockwave on every taunted enemy - cooldown +3 s", None, None),
+   ("Barbed Chain", "K", 0, "Iron Chain: dragged enemies take 25% of the damage you take for 5 s - range -3", None, None),
+   ("Retribution", "K", 0, "After losing 20% Health in 5 s the next Shockwave is free and stuns twice as long", None, None),
+   ("Presence", "K", 0, "Taunt range +4, taunted mobs deal 20% less to others - you take +10% from them", None, None)], [
+   ("Stalwart", "L", 2, "Each blocked hit heals %A% max Health (4 times per 10 s) - move speed -3%", "Needs a blocked-hit event no mod has yet - a later build", None),
+   ("Last Stand", "K", 0, "Unbreakable: end heal +15 - the 1 HP window is 1 s shorter", None, None),
+   ("Plate Mastery", "G", 15, "In full Heavy armour Defence +%A% - move speed -5%", "SkyyGear applies it (armour type Heavy + Defence) once it lists Class.Warrior.PC3", None),
+   ("Shockwave Surge", "K", 0, "Shield Shockwave heals you 3% max Health per enemy hit (max 5) - damage -20%", None, None),
+   ("Juggernaut", "G", 50, "Once per 30 s a hit below 20% Health is %A% smaller - Stamina regen -20%", "SkyyGear applies it (a damage-taken filter) once it lists Class.Warrior.PC5", None)]),
+ "Archer": (("Trapper", "Sharpshooter", "Stormbow"), ("Weapon_Arrow_Iron", "Weapon_Arrow_Deadeye", "Weapon_Arrow_Trueshot"), [
+   ("Steady Hands", "A", 8, "Bow draw strength 4 is reached %A% faster",
+    "Waits for a custom bow move in SkyyArmory (the vanilla draw is client-side) - SkyyArmory lists Class.Archer.T1 when it exists", "Weapon_Shortbow_Iron"),
+   ("Quiver Craft", "L", 10, "%A% chance to get a fired arrow back", "Needs an arrow-recovery hook no mod has yet - a later build", "Weapon_Arrow_Crude"),
+   ("Extra Bolts", "X", 1, "Crossbows hold +%A bolt (+1 more at Archery 30, 42 and 55: up to +4)",
+    "SkyySkills applies it (the crossbow magazine; tree:fn:bonus answers the ranked number) once it lists Class.Archer.T3", "Weapon_Crossbow_Iron"),
+   ("Light Step", "B", 4, "+%A% move speed while a bow or crossbow is in your hand", MOVE_HOW, "Ingredient_Feathers_Light"),
+   ("Eagle Eye", "G", 6, "+%A% crit chance at range over 15 blocks", None, "Weapon_Arrow_Deadeye"),
+   ("Holster Reload", "X", 30, "A crossbow on your hotbar reloads by itself in %A s",
+    "SkyySkills applies it (a holstered crossbow) once it lists Class.Archer.T6 - Archery 75", "Weapon_Arrow_Iron")], [
+   ("Lasting Roots", "K", 0, "Pinning Shot roots 1 s longer, rooted enemies take +10% from you - Mark -5", None, None),
+   ("Trap Arrows", "K", 0, "Pinning Shot leaves a root trap (2 s root, lasts 8 s) - cost +2 Mana", None, None),
+   ("Deep Net", "K", 0, "Hunter's Net drags enemies to its centre and roots 1 s longer - radius -1", None, None),
+   ("Marksman's Snare", "K", 0, "Arrow Rain roots enemies still inside after 1.5 s - rain damage -15%", None, None),
+   ("Grand Trapper", "K", 0, "Boss roots last half, rooted enemies take +15% from the party - cooldowns +10%", None, None)], [
+   ("Far Sight", "K", 0, "Pinning Shot reaches 45 blocks, +10% beyond 20 blocks - -10% closer than 8", None, None),
+   ("Focus Mark", "K", 0, "The Mark stacks per hit (3 stacks, +5% each) - one target at a time", None, None),
+   ("Deadeye", "K", 0, "The first shot at a Marked target crits (once per 6 s each) - attack speed -5%", None, None),
+   ("Piercing Aim", "K", 0, "Rapid Fire: one focused shot every 0.4 s at the Mark for +25% - no spread", None, None),
+   ("Executioner", "G", 30, "+%A% damage to targets below 25% Health - -10% above 75%", None, None)], [
+   ("Wide Volley", "K", 0, "Rapid Fire arrows fan out 20 degrees - -10% damage per arrow", None, None),
+   ("Chain Reaction", "K", 0, "Explosive Arrow leaves fire for 3 s and blasts a Marked target - cooldown +2 s", None, None),
+   ("Quick Hands", "K", 0, "Rapid Fire shoots 18 arrows in 3 s - each arrow -8% damage", None, None),
+   ("Storm Cloud", "K", 0, "Explosive Arrow radius +1.5 and a 0.5 s knock-up - single target -15%", None, None),
+   ("Arrow Tempest", "K", 0, "Rapid Fire and Explosive Arrow cut each other's cooldown 30% - both +20% Mana", None, None)]),
+ "Mage": (("Riftwalker", "Light Bender", "Arcanist"), ("Rock_Gem_Voidstone", "Rock_Gem_Topaz", "Weapon_Spellbook_Grimoire_Purple"), [
+   ("Mana Flow", "R", 10, "+%A% Mana Regen (its out-of-combat part is not built yet)", None, "Potion_Regen_Mana"),
+   ("Spell Focus", "A", 5, "The staff blink trail and the spellbook Page Burst deal +%A% damage",
+    "SkyyArmory applies it (blink trail damage, Page Burst damage) once it lists Class.Mage.T2", "Weapon_Staff_Iron"),
+   ("Long Blink", "A", 2, "Staff blink +%A blocks (+1 more at Sorcery 30, 42, 55) and its trail lasts 1 s longer",
+    "SkyyArmory applies it (blink distance + trail time; tree:fn:bonus answers the ranked number) once it lists Class.Mage.T3", "Rock_Gem_Voidstone"),
+   ("Barrier Lore", "K", 10, "Mana Barrier takes 1 Mana per 2.2 HP instead of 2 HP", None, "Potion_Mana_Large"),
+   ("Arcane Reserve", "M", 10, "+%A max Mana", None, "Potion_Mana"),
+   ("Quick Hands", "K", 5, "All Mage ability cooldowns -%A%", None, "Deco_Scroll")], [
+   ("Blink Slash", "A", 50, "Blink trail damage +%A% - the blink costs 20% more Mana", "SkyyArmory applies it (trail damage, blink Mana) once it lists Class.Mage.PA1", None),
+   ("Rift Echo", "A", 3, "A second blink within 2 s is free (no Mana, half Stamina) - then %A s cooldown",
+    "SkyyArmory applies it (the blink handler) once it lists Class.Mage.PA2", None),
+   ("Phase Step", "K", 0, "Mana Barrier: blink 5 blocks back, the dome lands where you land - dome 10 s", None, None),
+   ("Meteor from the Rift", "K", 0, "Cast Meteor at your blink destination while teleporting - Meteor -10%", None, None),
+   ("Rift Master", "A", 25, "Blink through 1-block walls and the trail slows %A% - max Mana -10",
+    "SkyyArmory applies the blink part once it lists Class.Mage.PA5 (wall pass + slow not built yet); SkyyTrees then takes the 10 Mana", None)], [
+   ("Radiant Trail", "A", 5, "Your blink trail heals allies %A% max Health a second - trail damage -25%",
+    "SkyyArmory applies it (the trail tick heals you and your party) once it lists Class.Mage.PB1", None),
+   ("Prism", "K", 0, "Starfall stars split into 2 beams - star damage -15%", None, None),
+   ("Beam Focus", "K", 0, "Arcane Beam refracts to a second target at 60% - it starts 0.3 s later", None, None),
+   ("Brilliance", "K", 0, "Spells hitting 3+ enemies refund 10% Mana - single-target ones cost 5% more", None, None),
+   ("Sunburst", "K", 0, "Starfall ends with a 1.5 H burst - cooldown +4 s", None, None)], [
+   ("Overcharge", "K", 0, "A spell cast at full Mana deals +15% - -10% below 25% Mana", None, None),
+   ("Siphon", "K", 0, "Kills restore 3 Mana - max Health -5%", None, None),
+   ("Charged Dome", "K", 0, "Mana Barrier bursts for 50% of what it took when it ends - 1 Mana per 1.5 HP", None, None),
+   ("Deep Beam", "K", 0, "Arcane Beam ramps to 4x and channels 0.5 s longer - cost +10 Mana", None, None),
+   ("Arch-Mage", "K", 0, "Meteor leaves a 2 s star well that pulls enemies in - cooldown +4 s", None, None)]),
+ "Berserker": (("Warbringer", "Bloodbound", "Smasher"), ("Furniture_Human_Ruins_Banner", "Rock_Gem_Ruby", "Weapon_Mace_Iron"), [
+   ("Thick Skin", "H", 6, "+%A max Health", None, "Plant_Fruit_Apple"),
+   ("Heavy Hands", "G", 5, "Charged swings deal +%A% damage", None, "Weapon_Battleaxe_Iron"),
+   ("Warpath", "A", 15, "Lunge, Whirlwind Dash, Bull Rush and Earthshaker go %A% farther, 10% less Stamina",
+    "Waits for the Berserker weapon moves in SkyyArmory (none built yet) - SkyyArmory lists Class.Berserker.T3 when they exist", "Weapon_Axe_Iron"),
+   ("Rage Reserve", "K", 3, "Enrage's peak +%A%", None, "Deco_Scroll"),
+   ("Bloodied", "G", 5, "+%A% damage below 50% Health", None, "Rock_Gem_Ruby"),
+   ("Unyielding", "K", 5, "All Berserker cooldowns -%A%", None, "Deco_Scroll")], [
+   ("War Horn", "K", 0, "Enrage calls again after 3 s, allies start at +15% - your peak -5", None, None),
+   ("Shared Fury", "K", 0, "Allies' kills extend Enrage 1 s each (max +5 s) - cooldown +3 s", None, None),
+   ("Banner Bearer", "K", 0, "Warlord's Banner heals 1% max Health a second in range - it lasts 25 s", None, None),
+   ("Rally", "K", 0, "At Enrage's peak the party gets a 10% max Health shield - cast +6 Mana", None, None),
+   ("Warbringer", "K", 0, "Enrage fades over 3 s instead of dropping - peak -10%", None, None)], [
+   ("Hunger", "G", 4, "Heal %A% of damage dealt while below 50% Health - max Health -4%", None, None),
+   ("Bleed", "K", 0, "Whirlwind hits bleed (0.2 H a second for 4 s) - Whirlwind damage -10%", None, None),
+   ("Crimson Frenzy", "K", 0, "Each Blood Frenzy stack heals you 0.5% and allies 0.25% - +20% cost", None, None),
+   ("Blood Pact", "K", 0, "Earthsplitter: pay 10% of your Health for +30% damage - it cannot kill you", None, None),
+   ("Bloodbound", "G", 40, "Once per 90 s a lethal hit leaves you at 1 HP with +%A% damage for 3 s", None, None)], [
+   ("Crushing Blows", "L", 4, "Heavy charged hits stun 0.4 s - attack speed -5%", "Needs a server check for a heavy charged hit - a later build", None),
+   ("Seismic", "K", 0, "Earthsplitter becomes a 3-block-wide wave - length 12 -> 9", None, None),
+   ("Staggering Spin", "K", 0, "Whirlwind pushes enemies 1 block each tick - no lifesteal", None, None),
+   ("Ground Pound", "K", 0, "Earthsplitter's end slams (1.5 H, 1 s stun) - cooldown +3 s", None, None),
+   ("Smasher", "L", 5, "Every 5th heavy hit sends enemies flying 3 blocks - -10% on other hits", "Needs a heavy-hit counter no mod has yet - a later build", None)]),
+ "Priest": (("Lightbringer", "Aegis", "Soulweaver"), ("Weapon_Wand_Wood", "Weapon_Shield_Orbis_Incandescent", "Rock_Gem_Sapphire"), [
+   ("Gentle Hands", "A", 10, "The wand's healing orb heals %A% more", "SkyyArmory applies it (the wand heal orb) once it lists Class.Priest.T1", "Weapon_Wand_Wood"),
+   ("Faith", "M", 5, "+%A max Mana", None, "Potion_Mana"),
+   ("Wide Prayer", "K", 2, "Sacred Heal radius 9 -> 10.5 and its instant heal +%A", None, "Potion_Health_Large"),
+   ("Warm Light", "K", 10, "Sacred Heal's heal over time +%A% of the instant heal", None, "Potion_Health"),
+   ("Sustained", "R", 10, "+%A% Mana Regen (its not-casting-for-4-s part is not built yet)", None, "Potion_Regen_Mana"),
+   ("Patient Spirit", "K", 5, "All Priest ability cooldowns -%A%", None, "Deco_Scroll")], [
+   ("Cleanse", "K", 0, "Sacred Heal cleanses poison, slow, root, weaken - cost +5 Mana, heal -10%", None, None),
+   ("Radiant Pulse", "K", 0, "Sacred Heal pulses again after 2 s at 50% - cooldown +3 s", None, None),
+   ("Beacon", "K", 0, "Martyr's Grace targets regenerate 2% a second for 10 s - first heal 65%", None, None),
+   ("Dawnlight", "K", 0, "Sanctuary cleanses every 2 s and grows 8 -> 10 blocks - it lasts 10 s", None, None),
+   ("Lightbringer", "K", 0, "Sacred Heal: your bonus 40%, allies under 30% get 25% more - cooldown +4 s", None, None)], [
+   ("Thorned Bubble", "K", 0, "Shield Bubble hurts enemies that touch or hit it (0.5 H) - bubble HP -15%", None, None),
+   ("Elemental Bubble", "K", 0, "Pick 1 of 5 elements for the bubble's damage - changed only by a respec", None, None),
+   ("Layered Ward", "K", 0, "The bubble gets two layers, the inner one regrows 3% a second - it lasts 10 s", None, None),
+   ("Spirit Shield", "K", 0, "Guardian Spirit saves also get a 4 s bubble - saved at 20% Health", None, None),
+   ("Aegis", "K", 0, "The bubble explodes when it breaks (1.5 H, 4 blocks) - duration -1 s", None, None)], [
+   ("Soul Link", "A", 0, "Bindings stabilize 0.4 s faster - Mana drain +10%", "Waits for the Soul Orb weapon in SkyyArmory (not built) - it lists Class.Priest.PC1 then", None),
+   ("Stored Light", "A", 0, "Stored soul healing cap +25% - it decays 3% a second after release", "Waits for the Soul Orb weapon in SkyyArmory (not built)", None),
+   ("Wings of Mercy", "A", 0, "Wings of Fate: arrival heal +50% and a cleanse - glide Stamina +20%", "Waits for the Soul Orb weapon and Wings of Fate (not built)", None),
+   ("Soul Harvest", "A", 0, "Binding kills give 2 Mana and +5% damage each (max 5) - wand damage -10%", "Waits for the Soul Orb weapon in SkyyArmory (not built)", None),
+   ("Soulweaver", "A", 0, "Wings of Fate can carry one ally back to you - cooldown +8 s", "Waits for the Soul Orb weapon and Wings of Fate (not built)", None)]),
+ "Assassin": (("Shadow", "Venom", "Blink"), ("Ingredient_Feathers_Dark", "Plant_Fruit_Poison", "Weapon_Kunai"), [
+   ("Quiet Feet", "C", 10, "+%A% move speed while crouching", MOVE_HOW, "Ingredient_Feathers_Dark"),
+   ("Sharp Eye", "G", 4, "+%A% crit chance", None, "Rock_Gem_Emerald"),
+   ("Long Reach", "A", 3, "Kunai teleport +%A blocks; Shadow Step reaches 24 -> 27 (no target 18 -> 20)",
+    "SkyyArmory applies it (kunai range + Shadow Step reach) once it lists Class.Assassin.T3", "Weapon_Kunai"),
+   ("Nimble", "F", 15, "%A% less fall damage", MOVE_HOW, "Ingredient_Feathers_Light"),
+   ("Deadly Focus", "G", 10, "+%A% damage from behind (also on Shadow Step's backstab)", None, "Weapon_Daggers_Iron"),
+   ("Shadow's Patience", "K", 5, "All Assassin cooldowns -%A%", None, "Deco_Scroll")], [
+   ("Longer Cloak", "K", 0, "Cloak +2 s with a 0.3 s break-on-hit grace - cooldown +4 s", None, None),
+   ("Lethal Opener", "K", 0, "First Strike crit damage +15%, a 2nd hit within 2 s +50% crit chance - window -2 s", None, None),
+   ("Boss Hunter", "K", 0, "God Killer 2x -> 2.3x and it works on elites - cooldown +10 s", None, None),
+   ("Slip Away", "K", 0, "A kill cloaks you again for 2 s (once per 20 s) - cost +4 Mana", None, None),
+   ("Death Mark", "K", 0, "First Strike marks: your next hit within 5 s x1.5 - the first strike -10%", None, None)], [
+   ("Potent Mix", "K", 0, "Toxin poison stacks (3 stacks, +30% each) - cloud radius -1", None, None),
+   ("Cripple", "K", 0, "Toxin Weaken 15% -> 25% - the cloud is 1 s shorter", None, None),
+   ("Contagion", "K", 0, "Poisoned enemies spread poison within 2 blocks - poison damage -15%", None, None),
+   ("Venom Blade", "K", 0, "Daggers add 1 poison stack per hit (max 3) - dagger damage -5%", None, None),
+   ("Plague", "K", 0, "The Toxin cloud lasts twice as long, Weakened enemies take +10% - cooldown +6 s", None, None)], [
+   ("Long Throw", "A", 6, "Kunai teleport range +%A blocks (20 -> 26) - kunai damage -10%",
+    "SkyyArmory applies it (kunai teleport range, kunai damage) once it lists Class.Assassin.PC1", None),
+   ("Hard Return", "A", 2, "Kunai return knockback x%A and a 0.4 s stun - return window 2 s shorter",
+    "SkyyArmory applies it (the return ring; the stun is the vanilla Stun effect - UNVERIFIED on mobs) once it lists Class.Assassin.PC2", None),
+   ("Double Step", "A", 3, "A 2nd kunai teleport within 3 s: half Stamina, no Mana - then %A s more cooldown",
+    "SkyyArmory applies it (the kunai throw) once it lists Class.Assassin.PC3", None),
+   ("Blink Strike", "A", 10, "Arriving within 3 blocks of an enemy hits it (1 kunai hit) - 10% more cost",
+    "SkyyArmory applies it after a kunai teleport and a targeted Shadow Step once it lists Class.Assassin.PC4 (Amount 10 = 1.0 hit)", None),
+   ("Shadow Blink", "K", 0, "A kunai arrival cloaks you for 1.5 s - teleport range -4", None, None)]),
+ "Monk": (("Wind Dancer", "Iron Fist", "Serene"), ("Weapon_Staff_Bo_Wood", "Armor_Iron_Hands", "Rock_Gem_Emerald"), [
+   ("Light Step", "V", 3, "+%A% move speed", MOVE_HOW, "Ingredient_Feathers_Light"),
+   ("Soft Landing", "F", 10, "%A% less fall damage", MOVE_HOW, "Ingredient_Feathers_Blue"),
+   ("Vault Mastery", "A", 10, "Pole-Vault and Rising Strike go %A% higher and farther",
+    "Waits for the Pole-Vault and Rising Strike moves in SkyyArmory (not built) - it lists Class.Monk.T3 then", "Weapon_Staff_Bo_Wood"),
+   ("Skipping Rhythm", "A", 0, "The skipping-bound timing window is 0.1 s wider", "Waits for the skipping bounds in SkyyArmory (not built)", "Ingredient_Feathers_Blue"),
+   ("Calm Breath", "L", 10, "+%A% Stamina regen", "Needs a Stamina-regen registry no mod has yet - a later build (or Skyy swaps it to max Stamina)", "Potion_Stamina"),
+   ("Master's Poise", "K", 5, "All Monk cooldowns -%A%", None, "Deco_Scroll")], [
+   ("Airborne", "A", 0, "A second free mid-air jump after a vault - +10% Stamina cost", "Waits for the bo Pole-Vault in SkyyArmory (not built)", None),
+   ("Skip Chain", "A", 0, "Skipping bounds chain 2 more times - bounds give no fall resist", "Waits for the skipping bounds in SkyyArmory (not built)", None),
+   ("Aerial Palm", "K", 0, "Palm Strike works in the air and sends the target up - stun -10%", None, None),
+   ("Wind Step", "K", 0, "Hits while airborne give 2 combo stacks - stacks decay after 4 s", None, None),
+   ("Wind Master", "A", 0, "Rising Strike and Pole-Vault chain into a vault twice - cooldown +4 s", "Waits for the vault chains in SkyyArmory (not built)", None)], [
+   ("Hard Knuckles", "A", 20, "Wrap power hits and gauntlet finishers deal +%A% - the other jabs -5%",
+    "SkyyArmory applies it (the fist damage filter tells the power hit apart - UNVERIFIED) once it lists Class.Monk.PB1", None),
+   ("Plunge Power", "A", 0, "Plunge Punch damages the area (1.5 H, 3 blocks) - 0.3 s landing lag", "Waits for Plunge Punch in SkyyArmory (not built)", None),
+   ("Concussive Palm", "K", 0, "Palm Strike stuns 1 s and enemies take +10% for 2 s - cost +3 Mana", None, None),
+   ("Iron Skin", "K", 0, "-10% damage taken at 10+ Flowing Form stacks - move speed -5%", None, None),
+   ("Iron Fist", "K", 0, "Every third Palm Strike on one target crits - cooldown +1 s", None, None)], [
+   ("Calm Aura", "K", 0, "Awed enemies deal less (-0.4% per combo, max -8%) - stack speed 1.5%", None, None),
+   ("Reflexes", "K", 0, "Still Water counters also stun 0.5 s - the stance is 2 s shorter", None, None),
+   ("Deep Breath", "K", 0, "Flowing Form stacks last 7.5 s instead of 5 s - start cost +2 Mana", None, None),
+   ("Tranquility", "K", 0, "Still Water heals 1% max Health a second - 20% slower movement", None, None),
+   ("Serenity", "K", 0, "Awed enemies attack 15% slower and hesitate 2 s - max combo 18", None, None)]),
+}
+CPRIEST_TS = ("Open Aura", "T", 1, "Guardian Spirit saves every player in its 30-block aura, not only your party",
+              "A switch (0 AP): flip it any time with Switch below, no respec. OFF = party only (the default). Guardian Spirit (class abilities) reads Class.Priest.TS",
+              "Rock_Gem_Zephyr")
+assert sorted(CPATHS) == sorted(CLASSES)
+# level ranks (map rule 5): tree:fn:bonus answers Amount + the steps the class skill level has reached; (level, add) up to 3 steps
+CRANKS = {("Archer", "T3"): [(30, 1), (42, 1), (55, 1)], ("Mage", "T3"): [(30, 1), (42, 1), (55, 1)]}
+# extra max Mana SkyyTrees applies while the node is intact (its reader-applied half waits like the node): Mage Rift Master -10
+CMANA2 = {("Mage", "PA5"): -10}
+TRUNK_LV = [5, 10, 15, 25, 40, 55]
+PATH_LV = [20, 30, 45, 65, 75]
+CLANES = dict((cn, tuple((CPATHS[cn][0][l], "", "") for l in range(3))) for cn in CLASSES)   # LANE = the path names (0.3.2 field shape)
+CN = []   # per class x node: dict(kind, amt, name, icon, min, now, how, hid, rk, m2)
+for ci, cn in enumerate(CLASSES):
+    pnames, picons, trunk, pa, pb, pc = CPATHS[cn][0], CPATHS[cn][1], CPATHS[cn][2], CPATHS[cn][3], CPATHS[cn][4], CPATHS[cn][5]
+    assert len(trunk) == 6 and len(pa) == len(pb) == len(pc) == 5, cn
+    seen = {}
+    for n in CT:
+        nid, ap, _par, _need, _lock, lane, _lc, _pg, _r, _c, role = n
+        kind, amt, name, icon, mn, now, how, hid = "-", 0, nid, "Deco_Scroll", 0, "", "", False
+        node = None
+        if role in (0, 1):
+            k, units = CT_SPINE[CMAGIC[ci]][nid]
+            kind, amt = k, int(round(UNIT[k] * units))
+            if nid == "ROOT": name, icon = "Root", CICON[ci]
+            elif role == 1: name, icon = ("Bulwark" if nid == "X2" else ("Wellspring" if CMAGIC[ci] else "Edge")), KIND_ICON[k]
+            else:
+                seen[k] = seen.get(k, 0) + 1
+                name, icon = KIND_WORD[k] + " " + ROMAN[seen[k] - 1], KIND_ICON[k]
+        elif role == 5:
+            node = trunk[int(nid[1]) - 1]
+            mn = TRUNK_LV[int(nid[1]) - 1]
+            if cn == "Archer" and nid == "T6": mn = 75          # Class-Tree-Paths 2026-10-06: Holster Reload is Lv 75
+        elif role == 6:
+            node = (pa, pb, pc)[lane - 1][int(nid[2]) - 1]
+            mn = PATH_LV[int(nid[2]) - 1]
+        elif role == 9:
+            if cn == "Priest": node = CPRIEST_TS
+            else: hid, name, now, how = True, "Switch", "", ""
+            mn = 1
+        elif role == 7:
+            pn = pnames[lane - 1]
+            name, icon, now, mn = pn + " Element", "Rock_Gem_Ruby", "Element of the " + pn + " path - later (needs SkyyGear elements)", 75
+        elif role == 2:
+            name, now = "Ability " + ROMAN[int(nid[1]) - 1], "Ability rune slot - coming with runes (Hytale 0.7)"
+        else:
+            name, now = "Modifier " + ROMAN[int(nid[1]) - 1] + "-" + nid[2], "Modifier rune slot - coming with runes (Hytale 0.7)"
+        if node is not None:
+            name, kind, amt, now, how0, ic0 = node
+            icon = ic0 or (picons[lane - 1] if lane else CICON[ci])
+            how = how0 or (GEN_HOW[kind] % (cn, nid) if kind in GEN_HOW else "")
+        if kind == "H": how = how or ON
+        elif kind == "S": now, how = "+%A Strength", "SkyyGear applies it (1 Strength = +1% physical damage) through the gear:extras bridge - coming until the SkyyGear build that reads it is live"
+        elif kind == "M": how = how or ON
+        elif kind == "R": how = how or "SkyySkills applies it as a percent of the vanilla Mana refill (skill:fn:manaregen) - /skills mana lists it as trees"
+        if role in (0, 1):
+            if kind == "H": now = "+%A max Health"
+            elif kind == "M": now = "+%A max Mana"
+            elif kind == "R": now = "+%A% Mana Regen"
+        if role == 7: how = "Waits for SkyyGear's elemental stats - the element of the " + pnames[lane - 1] + " path"
+        elif role in (2, 3, 4): how = "Rune slot: with Hytale 0.7 you equip any 2 unlocked abilities at the bench (1 ability + 2 modifiers per line) - nothing to buy before"
+        if not hid: must_icon(icon)
+        rk = CRANKS.get((cn, nid), [])
+        CN.append(dict(ci=ci, n=ct_idx(nid), kind=kind, amt=amt, name=name, icon=icon, min=mn, now=now, how=how, hid=hid, rk=rk,
+                       m2=CMANA2.get((cn, nid), 0)))
+assert len(CN) == NC * NN and all(c["ci"] * NN + c["n"] == k for k, c in enumerate(CN)), "CN is class-major"
+assert all(len(c["name"]) <= 24 and "," not in c["name"] and "_" not in c["name"] for c in CN)
+# every stat kind SkyyTrees applies shows its live amount (exactly one %A); no text holds a baked %d
+assert all(c["now"].count("%A") == 1 for c in CN if c["kind"] in "HSMRVBCF" and c["kind"] != "-"), [c["name"] for c in CN if c["kind"] in "HSMRVBCF" and c["now"].count("%A") != 1]
+assert all(c["now"].count("%A") <= 1 and "%d" not in c["now"] for c in CN)
+assert [c["name"] for c in CN if CT_ID[c["n"]] == "X1"] == ["Edge", "Edge", "Wellspring", "Edge", "Wellspring", "Edge", "Edge"]
+# the NOW nodes of the map (SkyyTrees alone): Warrior T2; Archer T4; Mage T1 T5; Priest T2 T5; Berserker T1; Monk T1 T2; Assassin T1 T4 (+ TS)
+_now = sorted((CLASSES[c["ci"]], CT_ID[c["n"]]) for c in CN if c["n"] >= 19 and c["kind"] in "HMRVBCF" and c["kind"] != "-")
+assert _now == sorted([("Warrior", "T2"), ("Archer", "T4"), ("Mage", "T1"), ("Mage", "T5"), ("Priest", "T2"), ("Priest", "T5"), ("Berserker", "T1"),
+                       ("Monk", "T1"), ("Monk", "T2"), ("Assassin", "T1"), ("Assassin", "T4")]), _now
+# the 13 SkyyArmory-backed nodes of the map + the WAIT-MOVE ones (kind A as well; SkyyArmory lists them only when the move exists)
+ARM13 = ["Mage.T2", "Mage.T3", "Mage.PA1", "Mage.PA2", "Mage.PA5", "Mage.PB1", "Priest.T1", "Monk.PB1", "Assassin.T3", "Assassin.PC1",
+         "Assassin.PC2", "Assassin.PC3", "Assassin.PC4"]
+assert all(CN[CLASSES.index(k.split(".")[0]) * NN + ct_idx(k.split(".")[1])]["kind"] == "A" for k in ARM13)
+assert [c["name"] for c in CN if c["hid"]] == ["Switch"] * 6 and CN[CLASSES.index("Priest") * NN + ct_idx("TS")]["kind"] == "T"
+assert all(c["min"] == 0 for c in CN if c["n"] < 19) and all(c["min"] > 0 for c in CN if c["n"] >= 19 and CT_ID[c["n"]] != "P4")
+def _ctot(cn, kind, pick="X1"):
+    ci = CLASSES.index(cn)
+    return sum(c["amt"] for c in CN if c["ci"] == ci and c["kind"] == kind and CT_ID[c["n"]] != ("X2" if pick == "X1" else "X1") and c["n"] < 19)
+# page 1 + P4 keep 0.3.2's numbers (spine only now: the lanes are gone)
+assert (_ctot("Warrior", "S"), _ctot("Warrior", "H"), _ctot("Warrior", "R")) == (7, 8, 5) == (_ctot("Monk", "S"), _ctot("Monk", "H"), _ctot("Monk", "R"))
+assert (_ctot("Mage", "M"), _ctot("Mage", "R"), _ctot("Mage", "H")) == (13, 10, 8) == (_ctot("Priest", "M"), _ctot("Priest", "R"), _ctot("Priest", "H"))
+# links (a parent -> child pair on the same page; P3 -> P4, ROOT -> T1 and ROOT -> TS cross the page break without a bar) and their bars
+CT_LINKS = [(ct_idx(p), k) for k, n in enumerate(CT) for p in n[2] if CT[ct_idx(p)][7] == n[7]]
+assert len(CT_LINKS) == 18 + 5 + 18 and (ct_idx("P3"), ct_idx("P4")) not in CT_LINKS and (ct_idx("ROOT"), ct_idx("T1")) not in CT_LINKS
+CT_CELL = dict(((n[7], n[8], n[9]), k) for k, n in enumerate(CT))
+# the bent links go through junction cells (a corner with no node); every other link is a straight bar
+CT_BENT = {("P2", "X1"): [(4, 4)], ("P2", "X2"): [(4, 4)], ("X1", "P3"): [(5, 3)], ("X2", "P3"): [(5, 5)],
+           ("T1", "PA1"): [(0, 1), (1, 1)], ("T1", "PB1"): [(0, 1), (3, 1)], ("T1", "PC1"): [(0, 1), (5, 1)]}
+# a slot's pieces (role): 0 the single bar of a straight pass-through cell, 1 up arm, 2 left arm, 3 centre, 4 right arm, 5 down arm,
+# 6 the stub in the slot's right 4 px gap, 7 the stub in its bottom 4 px gap. PIECES[(page, row, col, role)] = [link indices]
+PIECES, JUNCTION, HPASS = {}, set(), set()   # HPASS = the horizontal pass-through cells
+def _piece(pg, r, c, role, li):
+    PIECES.setdefault((pg, r, c, role), [])
+    if li not in PIECES[(pg, r, c, role)]: PIECES[(pg, r, c, role)].append(li)
+for (a, b) in CT_LINKS:   # 0.3.3: every bend first (a later link may pass through an earlier link's corner)
+    for w in CT_BENT.get((CT_ID[a], CT_ID[b]), []): JUNCTION.add((CT[a][7],) + w)
+for li, (a, b) in enumerate(CT_LINKS):
+    pg = CT[a][7]
+    way = [(CT[a][8], CT[a][9])] + CT_BENT.get((CT_ID[a], CT_ID[b]), []) + [(CT[b][8], CT[b][9])]
+    for s in range(len(way) - 1):
+        (r1, c1), (r2, c2) = way[s], way[s + 1]
+        assert r1 == r2 or c1 == c2, "a diagonal link: %s" % (way,)
+        if r1 == r2:
+            lo, hi = min(c1, c2), max(c1, c2)
+            for c in range(lo, hi): _piece(pg, r1, c, 6, li)
+            for c in range(lo + 1, hi):
+                assert (pg, r1, c) not in CT_CELL, "a bar through a node cell"
+                if (pg, r1, c) in JUNCTION: _piece(pg, r1, c, 2, li); _piece(pg, r1, c, 3, li); _piece(pg, r1, c, 4, li)
+                else: _piece(pg, r1, c, 0, li); HPASS.add((pg, r1, c))
+        else:
+            lo, hi = min(r1, r2), max(r1, r2)
+            for r in range(lo, hi): _piece(pg, r, c1, 7, li)
+            for r in range(lo + 1, hi):
+                assert (pg, r, c1) not in CT_CELL, "a bar through a node cell"
+                if (pg, r, c1) in JUNCTION: _piece(pg, r, c1, 1, li); _piece(pg, r, c1, 3, li); _piece(pg, r, c1, 5, li)
+                else: _piece(pg, r, c1, 0, li)
+    for w in range(1, len(way) - 1):   # the corner's arms: towards the cell before and the cell after
+        (r, c) = way[w]
+        for (rr, cc) in (way[w - 1], way[w + 1]):
+            role = 1 if rr < r else (5 if rr > r else (2 if cc < c else 4))
+            _piece(pg, r, c, role, li)
+        _piece(pg, r, c, 3, li)
+assert all(not (pg, r, c) in CT_CELL for (pg, r, c) in JUNCTION) and len(JUNCTION) == 7
+assert all(len(v) <= 3 for v in PIECES.values()), "a piece carries at most three links (0.3.3: the three paths share T1's corner)"
+assert all(role not in (0,) or (pg, r, c) not in JUNCTION for (pg, r, c, role) in PIECES)
+# slots: kind 0 empty, 1 node, 2 a horizontal pass-through bar, 3 a vertical one, 4 a junction; arms = 1 up, 2 left, 4 right, 8 down
+NSLOT = 54
+SLOT_KIND, SLOT_NODE, SLOT_ARMS, SLOT_R, SLOT_D = [0] * (2 * NSLOT), [-1] * (2 * NSLOT), [0] * (2 * NSLOT), [False] * (2 * NSLOT), [False] * (2 * NSLOT)
+for pg in range(2):
+    for r in range(6):
+        for c in range(9):
+            k = pg * NSLOT + r * 9 + c
+            if (pg, r, c) in CT_CELL: SLOT_KIND[k], SLOT_NODE[k] = 1, CT_CELL[(pg, r, c)]
+            elif (pg, r, c) in JUNCTION:
+                SLOT_KIND[k] = 4
+                for bit, role in ((1, 1), (2, 2), (4, 4), (8, 5)):
+                    if (pg, r, c, role) in PIECES: SLOT_ARMS[k] |= bit
+            elif (pg, r, c, 0) in PIECES: SLOT_KIND[k] = 2 if (pg, r, c) in HPASS else 3
+            SLOT_R[k] = (pg, r, c, 6) in PIECES
+            SLOT_D[k] = (pg, r, c, 7) in PIECES
+assert SLOT_KIND.count(1) == 44 and SLOT_KIND.count(4) == 7 and SLOT_KIND.count(2) == 4 and SLOT_KIND.count(3) == 3, (SLOT_KIND.count(2), SLOT_KIND.count(3))
+assert all(SLOT_ARMS[k] in (0, 1 | 2 | 4, 1 | 4, 1 | 2, 8 | 4, 8 | 2, 1 | 4 | 8) for k in range(2 * NSLOT)) and sum(1 for k in range(2 * NSLOT) if SLOT_ARMS[k]) == 7
+assert [SLOT_ARMS[NSLOT + r * 9 + 1] for r in range(6)] == [2 | 8, 1 | 4 | 8, 0, 1 | 4 | 8, 0, 1 | 4] and [SLOT_KIND[NSLOT + r * 9 + 1] for r in range(6)] == [4, 4, 3, 4, 3, 4]
+assert not any(SLOT_R[k] or SLOT_D[k] for k in range(2 * NSLOT) if SLOT_KIND[k] == 0), "a stub in an empty slot"
+PL1, PL2, PL3 = [-1] * (2 * NSLOT * 8), [-1] * (2 * NSLOT * 8), [-1] * (2 * NSLOT * 8)
+for (pg, r, c, role), ls in PIECES.items():
+    q = (pg * NSLOT + r * 9 + c) * 8 + role
+    PL1[q] = ls[0]
+    if len(ls) > 1: PL2[q] = ls[1]
+    if len(ls) > 2: PL3[q] = ls[2]
+assert sum(1 for x in PL1 if x >= 0) == len(PIECES) and sum(1 for x in PL3 if x >= 0) >= 4
+assert all(any(PL1[q] == li for q in range(len(PL1))) for li in range(len(CT_LINKS))), "every link is drawn"
+# the cell state line (15 px bold, 96 px): every text the page can show fits
+for _tx in ["Locked", "Owned", "Coming", "Pick one", "Turned off", "Respec", "Lv 100", "Lane 5", "Need 999 AP", "Unlock 9 AP", "Path locked",
+            "All players", "Party only"] + ["Needs " + i for i in CT_ID]:
+    assert SUI.text_width(_tx, 15, True) <= 96, (_tx, SUI.text_width(_tx, 15, True))
+assert SUI.text_width("Ability Points 50 of 50", 16, True) <= 190 and SUI.text_width("Swordsmanship 100", 18, True) <= 349
+assert SUI.text_width("Assassination 100", 18, True) <= 349 and SUI.text_width("Respec 1,000,000,000 coins", 16, True) <= 230
+assert SUI.text_width("Rune slots - coming with 0.7", 15, True, upper=True) <= 260 and all(SUI.text_width(cn, 17, True, upper=True) <= 172 - 48 for cn in CLASSES)
+assert all(SUI.text_width(c["name"] + "  (" + CT_ID[c["n"]] + ")", 18, True) <= 344 for c in CN)
+assert all(len(c["now"]) <= 90 and len(c["how"]) <= 170 for c in CN), [(c["name"], len(c["now"]), len(c["how"])) for c in CN if len(c["now"]) > 90 or len(c["how"]) > 170]
+'''
+
+
+# ================================================================================================================ docstring + version
+rep('''"""SkyyTrees 0.3.2 - build script (javassist via jpype, tools/skyybuild.py). Owner: Skyy (they/them).
+GENERATED by tools/trees_0_3_2_patch.py from the LIVE build_skyytrees_0.3.1.py (the SET pin) - edit the patch, not this file. 0.3.1
+was GENERATED by tools/trees_0_3_1_patch.py from the LIVE build_skyytrees_0.3.py.''',
+    '''"""SkyyTrees 0.3.3 - build script (javassist via jpype, tools/skyybuild.py). Owner: Skyy (they/them).
+GENERATED by tools/trees_0_3_3_patch.py from the LIVE build_skyytrees_0.3.2.py (the SET pin) - edit the patch, not this file. 0.3.2
+was GENERATED by tools/trees_0_3_2_patch.py from the LIVE build_skyytrees_0.3.1.py; 0.3.1 by tools/trees_0_3_1_patch.py from 0.3.''')
+rep('''0.3.2 (2026-10-05; Skyy LOCKED 2026-10-05 "CLASS TREES On"; full notes: tools/trees_0_3_2_patch.py):''',
+    '''0.3.3 (2026-10-07; the CLASS PATH TREES - research/cloud/Class-Tree-Paths.md + Class-Tree-Build-Map.md; notes: tools/trees_0_3_3_patch.py):
+  (1) page 2 = trunk T1-T6 + three locked paths PA / PB / PC (5 nodes each) + elements LE / CE / RE + the Priest switch TS, for all 7
+    classes (+ Assassin, Monk); page 1 as in 0.3.2. (2) one path per tree (the first owned path node picks it), waiting kinds skipped,
+    level ranks, the switch (tree:fn:bonus 1 only while on), new movement kinds (source trees.class). (3) one-time migrations: retired
+    lane ids refund + Class.<Class>.retired / freeRespec / notice in the player file; TreeMig33 appends the new class lines once.
+  CHECKED: SkyyTrees/test_skyytrees_0.3.3.py (bare JVM; the class model, the migrations on copies of the live files, 0.3.2 rollback).
+
+=== SkyyTrees 0.3.2 notes (history; still true unless 0.3.3 above says otherwise) ===
+0.3.2 (2026-10-05; Skyy LOCKED 2026-10-05 "CLASS TREES On"; full notes: tools/trees_0_3_2_patch.py):''')
+rep('''Run:   python build_skyytrees_0.3.2.py            -> SkyyTrees/SkyyTrees-0.3.2.jar
+       python build_skyytrees_0.3.2.py --deploy   -> also''', '''Run:   python build_skyytrees_0.3.3.py            -> SkyyTrees/SkyyTrees-0.3.3.jar
+       python build_skyytrees_0.3.3.py --deploy   -> also''')
+rep('VERSION = "0.3.2"', 'VERSION = "0.3.3"')
+
+# ================================================================================================================ engine members (crouch)
+rep('''    "I2O": "it.unimi.dsi.fastutil.ints.Int2ObjectMap",
+}''', '''    "I2O": "it.unimi.dsi.fastutil.ints.Int2ObjectMap",
+    # 0.3.3: Assassin Quiet Feet reads the crouch state (the SkyyArmory 0.1.6 Levitate read, probed below)
+    "MSC": "com.hypixel.hytale.server.core.entity.movement.MovementStatesComponent",
+    "MST": "com.hypixel.hytale.protocol.MovementStates",
+}''')
+rep('''             ("RIN", "getInteractionIds"), ("com.hypixel.hytale.assetstore.map.IndexedLookupTableAssetMap", "getIndex"),''',
+    '''             ("RIN", "getInteractionIds"), ("com.hypixel.hytale.assetstore.map.IndexedLookupTableAssetMap", "getIndex"),
+             ("MSC", "getComponentType"), ("MSC", "getMovementStates"), ("MST", "crouching"),''')
+
+# ================================================================================================================ class colours (+ Assassin, Monk)
+rep('''CCOLOR = ["#8fd67a", "#e0b060", "#7fb0e0", "#d9443f", "#f2e6a0"]''',
+    '''CCOLOR = ["#8fd67a", "#e0b060", "#7fb0e0", "#d9443f", "#f2e6a0", "#b58cff", "#f08a30"]   # 0.3.3: + Assassin, Monk (SkyySkills 0.4.21 rows)''')
+
+# ================================================================================================================ (1) the class template
+swap("# ================= 0.3 PART 2: the class tree template (research/Skill-Trees-2-Spec.md 5-7, Skyy's answers 1-5 + 7) =================",
+     "# ================= default trees.properties =================", CLASS_BLOCK + LF)
+
+# ================================================================================================================ the class block of the files
+MK33 = "skyytrees-0.3.3-paths"
+rep('''MK32_ID = 'skyytrees-0.3.2-classon'   # 0.3.2: TreeMig32's marker''', '''MK33_ID = %r   # 0.3.3: TreeMig33's marker (in the class block's comment lines: the default file and the 0.3 block carry it)
+MK32_ID = 'skyytrees-0.3.2-classon'   # 0.3.2: TreeMig32's marker''' % MK33)
+rep('''              "# class.enabled=true: class trees are ON by default since SkyyTrees 0.3.2 (Skyy 2026-10-05; marker %s)." % MK32_ID,''',
+    '''              "# class.enabled=true: class trees are ON by default since SkyyTrees 0.3.2 (Skyy 2026-10-05; marker %s)." % MK32_ID,
+              # 0.3.3: the marker of the one-time class paths update (TreeMig33 never touches a file whose comment lines hold it)
+              "# Page 2 = trunk T1-T6 + 3 locked paths PA / PB / PC since SkyyTrees 0.3.3 (2026-10-07; marker %s)." % MK33_ID,''')
+rep('''CLASS_LVL_HEAD = ["# Class skill level a node needs: class.minLevel.<Class>.<Id>=<level> (a deleted line or 0 = no level needed).",   # 0.3.1
+                  "# LOCKED 2026-10-02: Archer Bolt Rack I + II (R2, R3) at Archery 15, Holstered Reload (R4) at 50."]''',
+    '''CLASS_LVL_HEAD = ["# Class skill level a node needs: class.minLevel.<Class>.<Id>=<level> (a deleted line or 0 = no level needed).",   # 0.3.1
+                  "# 0.3.3: trunk T1-T6 at 5 / 10 / 15 / 25 / 40 / 55 (Archer T6 Holster Reload 75), path nodes 1-5 at 20 / 30 / 45 / 65 / 75,",
+                  "# the elements LE / CE / RE at 75, the Priest switch TS at 1."]''')
+rep('''CLASS_NODE_HEAD = ["# Nodes: class.nodes.<Class>.<Id>=<on>,<amount>,<AP>. amount = the node's stat (Health / Strength / Mana points, Mana Regen %,",
+                   "# bolts, seconds); ability / modifier / capstone slots (A*, M*, *S) and the element nodes (*E) come later and are never buyable.",''',
+    '''CLASS_NODE_HEAD = ["# Nodes: class.nodes.<Class>.<Id>=<on>,<amount>,<AP>. amount = the node's number (Health / Strength / Mana points, a percent,",
+                   "# blocks, bolts, seconds - what tree:fn:bonus answers); rune slots (A*, M*) and the elements (LE CE RE) come later, never buyable.",''')
+rep('''                   "# Ids: ROOT P1 P2 X1 X2 P3 P4 (the spine; X1 / X2 = pick one), A1-A4 + M1A-M4B (rune slots), L1-L4 LE LS / C1-C4 CE CS / R1-R4 RE RS (lanes)."]''',
+    '''                   "# Ids: ROOT P1 P2 X1 X2 P3 P4 (the spine; X1 / X2 = pick one), A1-A4 + M1A-M4B (rune slots), T1-T6 (trunk), PA1-PA5 PB1-PB5",
+                   "# PC1-PC5 (the paths: the first one you own locks the other two), LE CE RE (elements), TS (Priest switch). The 0.3.2 lane lines",
+                   "# (L1-L4 C1-C4 R1-R4 LS CS RS) are no longer read."]''')
+rep('''    out = ["# %s (%s): lanes %s (left) / %s (centre) / %s (right)" % (cn, CSKILL[ci], lanes[0][0], lanes[1][0], lanes[2][0])]
+    for n in range(NN):
+        c = CN[ci * NN + n]
+        out.append("class.nodes.%s.%s=true,%d,%d" % (cn, CT_ID[n], c["amt"], CT[n][1]))
+    return out''', '''    out = ["# %s (%s): paths %s (PA) / %s (PB) / %s (PC)" % (cn, CSKILL[ci], lanes[0][0], lanes[1][0], lanes[2][0])]
+    for n in range(NN):
+        c = CN[ci * NN + n]
+        if c["hid"]: continue          # 0.3.3: the switch slot of the classes without one has no line
+        out.append("class.nodes.%s.%s=true,%d,%d" % (cn, CT_ID[n], c["amt"], CT[n][1]))
+    return out''')
+rep('''              ["class.minLevel.%s.%s=%d" % (CLASSES[c["ci"]], CT_ID[c["n"]], c["min"]) for c in CN if c["min"]] + list(CLASS_NODE_HEAD)''',
+    '''              ["class.minLevel.%s.%s=%d" % (CLASSES[c["ci"]], CT_ID[c["n"]], c["min"]) for c in CN if c["min"] and not c["hid"]] + list(CLASS_NODE_HEAD)''')
+rep('''assert sum(1 for l in CLASS_LINES if not l.startswith("#")) == 7 + 3 + NC * NN and all(ord(ch) < 128 and len(l) <= 160 for l in CLASS_LINES for ch in l)''',
+    '''NHID = sum(1 for c in CN if c["hid"])
+NMIN = sum(1 for c in CN if c["min"] and not c["hid"])
+assert NHID == 6 and NMIN == NC * 24 + 1, (NHID, NMIN)    # per class trunk 6 + paths 15 + elements 3; TS only on the Priest
+assert sum(1 for l in CLASS_LINES if not l.startswith("#")) == 7 + NMIN + NC * NN - NHID and all(ord(ch) < 128 and len(l) <= 160 for l in CLASS_LINES for ch in l)
+CLASS_KEYED = [l for l in CLASS_LINES if not l.startswith("#")]''')
+rep('''assert "class.nodes.Archer.R4=true,30,3\\n" in DEFAULTS and "class.minLevel.Archer.R4=50\\n" in DEFAULTS and "class.nodes.Priest.RS=true,0,4\\n" in DEFAULTS''',
+    '''assert "class.nodes.Archer.T6=true,30,3\\n" in DEFAULTS and "class.minLevel.Archer.T6=75\\n" in DEFAULTS and "class.nodes.Priest.TS=true,1,0\\n" in DEFAULTS
+assert "class.nodes.Archer.R4" not in DEFAULTS and "class.minLevel.Archer.R2" not in DEFAULTS and "class.nodes.Monk.PB1=true,20,2\\n" in DEFAULTS
+assert "class.nodes.Mage.TS" not in DEFAULTS and DEFAULTS.count(MK33_ID) == 1 and [l for l in DEFAULTS.splitlines() if MK33_ID in l][0].startswith("# ")''')
+rep('''assert sum(1 for k, _l in ADD03 if k) == 2 + 24 * 5 + 7 + 3 + NC * NN == 317 and sum(1 for _k, l in ADD03 if MG_MARK_ID in l) == 1
+assert len(set(k for k, _l in ADD03 if k)) == 317, "a key twice in the update block"''',
+    '''assert sum(1 for k, _l in ADD03 if k) == 2 + 24 * 5 + len(CLASS_KEYED) and sum(1 for _k, l in ADD03 if MG_MARK_ID in l) == 1
+assert len(set(k for k, _l in ADD03 if k)) == 2 + 24 * 5 + len(CLASS_KEYED), "a key twice in the update block"
+assert sum(1 for _k, l in ADD03 if MK33_ID in l and l.startswith("# ")) == 1, "0.3.3: the 0.3 block of a pre-0.3 file carries the 0.3.3 marker (TreeMig33 skips it)"''')
+
+# ================================================================================================================ TreeClass constants
+CONST_OLD_A = "# ---- 0.3 part 2: TreeClass constants (the template of the Python block above, class-major where a value is per class)"
+CONST_OLD_B = "M(defs, r\"\"\"\npublic static boolean soon(int i) {"
+CONST_NEW = r'''# ---- 0.3 part 2: TreeClass constants (the template of the Python block above, class-major where a value is per class)
+F(cls, "public static final int NN = %d;" % NN)
+F(cls, "public static final int NC = %d;" % NC)
+F(cls, "public static final int NL = %d;" % len(CT_LINKS))
+F(cls, "public static final int NSLOT = %d;" % NSLOT)
+for _k, _v in KIND_NUM.items():
+    if _k != "-": F(cls, "public static final int K_%s = %d;" % (_k, _v))
+F(cls, "public static final String[] CLASSES = %s;" % jstr(CLASSES))
+F(cls, "public static final String[] CSKILL = %s;" % jstr(CSKILL))
+F(cls, "public static final String[] CICON = %s;" % jstr(CICON))
+F(cls, "public static final String[] CCOLOR = %s;" % jstr(CCOLOR))
+F(cls, "public static final boolean[] CMAGIC = %s;" % jbool(CMAGIC))
+F(cls, "public static final String[] ALIAS_FROM = %s;" % jstr([a for a, b in CALIAS]))          # 0.3.3: "Shaman" -> the Monk
+F(cls, "public static final int[] ALIAS_TO = %s;" % jint([CLASSES.index(b) for a, b in CALIAS]))
+F(cls, "public static final String[] LANE = %s;" % jstr([CLANES[cn][l][0] for cn in CLASSES for l in range(3)]))
+F(cls, "public static final String[] NID = %s;" % jstr(CT_ID))
+F(cls, "public static final int[] NAP = %s;" % jint([n[1] for n in CT]))
+F(cls, "public static final int[] NPAGE = %s;" % jint([n[7] for n in CT]))
+F(cls, "public static final int[] NROW = %s;" % jint([n[8] for n in CT]))
+F(cls, "public static final int[] NCOL = %s;" % jint([n[9] for n in CT]))
+F(cls, "public static final int[] NLANE = %s;" % jint([n[5] for n in CT]))
+F(cls, "public static final int[] NLANEN = %s;" % jint([n[6] for n in CT]))
+F(cls, "public static final int[] NPAR1 = %s;" % jint([ct_idx(n[2][0]) if n[2] else -1 for n in CT]))
+F(cls, "public static final int[] NPAR2 = %s;" % jint([ct_idx(n[2][1]) if len(n[2]) > 1 else -1 for n in CT]))
+F(cls, "public static final int[] NNEED = %s;" % jint([ct_idx(n[3]) if n[3] else -1 for n in CT]))
+F(cls, "public static final int[] NLOCK = %s;" % jint([ct_idx(n[4]) if n[4] else -1 for n in CT]))
+F(cls, "public static final int[] NROLE = %s;" % jint([n[10] for n in CT]))
+F(cls, "public static final int[] CK = %s;" % jint([KIND_NUM[c["kind"]] for c in CN]))
+F(cls, "public static final int[] CAMT = %s;" % jint([c["amt"] for c in CN]))
+F(cls, "public static final int[] CMIN = %s;" % jint([c["min"] for c in CN]))
+F(cls, "public static final String[] CNM = %s;" % jstr([c["name"] for c in CN]))
+F(cls, "public static final String[] CIC = %s;" % jstr([c["icon"] for c in CN]))
+F(cls, "public static final String[] CNOW = %s;" % jstr([c["now"] for c in CN]))
+F(cls, "public static final String[] CHOW = %s;" % jstr([c["how"] for c in CN]))
+F(cls, "public static final boolean[] CHID = %s;" % jbool([c["hid"] for c in CN]))          # 0.3.3: the switch slot of the classes without one
+F(cls, "public static final int[] CRKL = %s;" % jint([(c["rk"] + [(0, 0)] * 3)[r][0] for c in CN for r in range(3)]))   # 0.3.3: rank levels (3 per node)
+F(cls, "public static final int[] CRKA = %s;" % jint([(c["rk"] + [(0, 0)] * 3)[r][1] for c in CN for r in range(3)]))   # 0.3.3: + what each rank adds
+F(cls, "public static final int[] CM2 = %s;" % jint([c["m2"] for c in CN]))          # 0.3.3: max Mana SkyyTrees adds while intact (Mage Rift Master -10)
+F(cls, "public static final String[] RET_IDS = %s;" % jstr(RETIRED_IDS))          # 0.3.3: the retired 0.3.2 lane / capstone ids
+F(cls, "public static final int[] RET_AP = %s;" % jint(RET_AP))
+F(cls, "public static final int[] LA = %s;" % jint([a for a, b in CT_LINKS]))
+F(cls, "public static final int[] LB = %s;" % jint([b for a, b in CT_LINKS]))
+F(cls, "public static final int[] SK = %s;" % jint(SLOT_KIND))
+F(cls, "public static final int[] SN = %s;" % jint(SLOT_NODE))
+F(cls, "public static final int[] SARMS = %s;" % jint(SLOT_ARMS))
+F(cls, "public static final boolean[] SR = %s;" % jbool(SLOT_R))
+F(cls, "public static final boolean[] SD = %s;" % jbool(SLOT_D))
+F(cls, "public static final int[] PL1 = %s;" % jint(PL1))
+F(cls, "public static final int[] PL2 = %s;" % jint(PL2))
+F(cls, "public static final int[] PL3 = %s;" % jint(PL3))          # 0.3.3: the three paths share T1's corner
+F(cls, "public static final java.util.concurrent.ConcurrentHashMap LAST_REGEN = new java.util.concurrent.ConcurrentHashMap();")   # UUID -> Double posted
+F(cls, "public static final java.util.concurrent.ConcurrentHashMap POSTN = new java.util.concurrent.ConcurrentHashMap();")        # UUID -> Integer posts
+M(cls, r"""
+public static int classIdx(String c) {
+  if (c == null) return -1;
+  String t = c.trim();
+  for (int i = 0; i < NC; i++) if (CLASSES[i].equalsIgnoreCase(t)) return i;
+  for (int i = 0; i < ALIAS_FROM.length && i < ALIAS_TO.length; i++) if (ALIAS_FROM[i].equalsIgnoreCase(t)) return ALIAS_TO[i];   // 0.3.3: Shaman = Monk
+  return -1;
+}""")
+M(cls, r"""
+public static int nodeIdx(String id) {
+  if (id == null) return -1;
+  String t = id.trim();
+  for (int i = 0; i < NN; i++) if (NID[i].equalsIgnoreCase(t)) return i;
+  return -1;
+}""")
+# 0.3.3: a retired 0.3.2 id (its index into RET_IDS) or -1
+M(cls, r"""
+public static int retIdx(String id) {
+  if (id == null) return -1;
+  String t = id.trim();
+  for (int i = 0; i < RET_IDS.length; i++) if (RET_IDS[i].equalsIgnoreCase(t)) return i;
+  return -1;
+}""")
+M(cls, r"""
+public static boolean slotComing(int n) {
+  if (n < 0 || n >= NN) return false;
+  int r = NROLE[n];
+  return r == 2 || r == 3 || r == 4 || r == 7;
+}""")
+# 0.3.3: the switch slot of a class without one (never shown, bought or counted)
+M(cls, r"""
+public static boolean hidden(int ci, int n) {
+  return ci >= 0 && ci < NC && n >= 0 && n < NN && CHID[ci * NN + n];
+}""")
+M(cls, r"""
+public static boolean isSwitch(int n) {
+  return n >= 0 && n < NN && NROLE[n] == 9;
+}""")
+M(cls, r"""
+public static int firstOf(int pg) {
+  for (int n = 0; n < NN; n++) if (NPAGE[n] == pg) return n;
+  return 0;
+}""")
+'''
+assert RETIRED_IDS_PATCH == RET_IDS_ALL
+swap(CONST_OLD_A, CONST_OLD_B, CONST_NEW.replace("jint(RET_AP)", "jint(%r)" % (RET_AP,)))
+# fix 2 (critic: a failed / reverted TreeMig33 append dropped every new level gate): NEW33 = the (class, node) pairs 0.3.2 did not have. While
+# trees.properties holds NO class.nodes line of such a pair (the 0.3.3 lines were never appended - a refused / failed TreeMig33, or History
+# put a pre-0.3.3 file back), a missing class.minLevel line of a NEW pair reads the built-in level; once the 0.3.3 lines are in the file the
+# 0.3.1 rule (Skyy 2026-10-03: a deleted line = no level needed) applies to every line as before.
+OLD32_PAIRS = sorted(set("%s.%s" % (_ns["CLASSES"][_c["ci"]], _ns["CT_ID"][_c["n"]]) for _c in _ns["CN"]))
+assert "Archer.R4" in OLD32_PAIRS and "Mage.ROOT" in OLD32_PAIRS and "Mage.T1" not in OLD32_PAIRS and not any(_x.startswith(("Monk.", "Assassin.")) for _x in OLD32_PAIRS)
+rep('''F(cls, "public static final int[] CMIN = %s;" % jint([c["min"] for c in CN]))''',
+    '''F(cls, "public static final int[] CMIN = %s;" % jint([c["min"] for c in CN]))
+OLD32_PAIRS = ''' + repr(OLD32_PAIRS) + '''   # 0.3.3 fix 2: the (class, node) pairs of 0.3.2 (computed by the patch from 0.3.2's class block)
+F(cls, "public static final boolean[] NEW33 = %s;" % jbool([("%s.%s" % (CLASSES[c["ci"]], CT_ID[c["n"]])) not in OLD32_PAIRS for c in CN]))   # 0.3.3 fix 2''')
+rep('''    cmn[j] = p.getProperty(mk) == null ? 0 : (int) clampL(lng(p, mk, (long) @PKG@.TreeClass.CMIN[j]), 0L, 100L);
+  }''', '''    cmn[j] = p.getProperty(mk) == null ? 0 : (int) clampL(lng(p, mk, (long) @PKG@.TreeClass.CMIN[j]), 0L, 100L);
+  }
+  // 0.3.3 fix 2: no class.nodes line of a pair new in 0.3.3 = the 0.3.3 lines are not in this file (TreeMig33 refused / failed, or a
+  // pre-0.3.3 History version was put back): a missing class.minLevel line of a NEW pair keeps its built-in level until they are appended
+  boolean has33 = false;
+  for (int j = 0; j < cnn && !has33; j++) {
+    if (!@PKG@.TreeClass.NEW33[j]) continue;
+    if (p.getProperty("class.nodes." + @PKG@.TreeClass.CLASSES[j / @PKG@.TreeClass.NN] + "." + @PKG@.TreeClass.NID[j % @PKG@.TreeClass.NN]) != null) has33 = true;
+  }
+  if (!has33) {
+    for (int j = 0; j < cnn; j++) {
+      if (!@PKG@.TreeClass.NEW33[j]) continue;
+      String mk2 = "class.minLevel." + @PKG@.TreeClass.CLASSES[j / @PKG@.TreeClass.NN] + "." + @PKG@.TreeClass.NID[j % @PKG@.TreeClass.NN];
+      if (p.getProperty(mk2) == null) cmn[j] = @PKG@.TreeClass.CMIN[j];
+    }
+  }
+  HAS33 = has33;''')
+
+# ================================================================================================================ TreeCfg: the class AP defaults
+rep('''             "int[] C_AP = " + jint([CT[c["n"]][1] for c in CN]), "int[] C_MIN = @PKG@.TreeClass.CMIN",''',
+    '''             "int[] C_AP = " + jint([CT[c["n"]][1] for c in CN]), "int[] C_MIN = @PKG@.TreeClass.CMIN",   # 0.3.3: 7 classes x 44 nodes''')
+rep('''             "int[] C_AP = " + jint([CT[c["n"]][1] for c in CN]), "int[] C_MIN = @PKG@.TreeClass.CMIN",   # 0.3.3: 7 classes x 44 nodes''',
+    '''             "int[] C_AP = " + jint([CT[c["n"]][1] for c in CN]), "int[] C_MIN = @PKG@.TreeClass.CMIN", "boolean HAS33 = true",   # 0.3.3: 7 classes x 44 nodes; fix 2: HAS33''')
+
+# ================================================================================================================ TreeData + TreeStore
+rep('''F(dat, "public java.util.ArrayList cextra = new java.util.ArrayList();")   # 0.3 part 2: Class.* lines of a class this build does not know (kept)''',
+    '''F(dat, "public java.util.ArrayList cextra = new java.util.ArrayList();")   # 0.3 part 2: Class.* lines of a class this build does not know (kept)
+F(dat, "public boolean[] con = new boolean[%d];" % (NC * NN))       # 0.3.3 fix: switch nodes turned ON (file Class.<Class>.on=<ids>; missing = OFF = party only, the LOCKED default)
+F(dat, "public boolean[] cfree = new boolean[%d];" % NC)            # 0.3.3: the free class respec of the paths update (Class.<Class>.freeRespec=1)
+F(dat, "public int[] cnote = new int[%d];" % NC)                    # 0.3.3: the pending one-time chat line: AP back (Class.<Class>.notice=<n>)
+F(dat, "public String[] cret = new String[%d];" % NC)               # 0.3.3: the retired ids copy = the run-once marker (Class.<Class>.retired)''')
+rep('''    // 0.3 part 2: the class trees - Class.<Class>=<owned ids> and Class.<Class>.respecAt=<ms>; unknown ids are ignored (a removed node
+    // refunds itself), a Class.* line of a class this build does not know is kept as it is and written back
+    java.util.Iterator cit = p.stringPropertyNames().iterator();
+    while (cit.hasNext()) {
+      String ck = (String) cit.next();
+      if (!ck.startsWith("Class.")) continue;
+      String rest = ck.substring(6);
+      int cdot = rest.indexOf('.');
+      String cnm = cdot < 0 ? rest : rest.substring(0, cdot);
+      String cfield = cdot < 0 ? "" : rest.substring(cdot + 1);
+      String cv = p.getProperty(ck);
+      int ci = @PKG@.TreeClass.classIdx(cnm);
+      if (ci < 0 || !(cfield.length() == 0 || cfield.equals("respecAt"))) { d.cextra.add(new String[] { ck, cv == null ? "" : cv }); continue; }
+      if (cfield.length() == 0) {
+        String[] ids = cv.split(",");
+        for (int j = 0; j < ids.length; j++) { int cn = @PKG@.TreeClass.nodeIdx(ids[j]); if (cn >= 0) d.cown[ci * @PKG@.TreeClass.NN + cn] = true; }
+      } else { try { d.crespecAt[ci] = Long.parseLong(cv.trim()); } catch (Throwable t7) { } }
+    }''', '''    // 0.3 part 2: the class trees - Class.<Class>=<owned ids> and Class.<Class>.respecAt=<ms>; unknown ids are ignored (a removed node
+    // refunds itself), a Class.* line of a class this build does not know is kept as it is and written back. 0.3.3: + .on (switches
+    // turned ON; no line = OFF), .freeRespec, .notice, .retired; only the exact class name is read (a hand-made Class.Shaman line is kept, not read)
+    // 0.3.3 ONE-TIME CLASS PATHS UPDATE (ClassMig33): a Class.<Class> line holding retired 0.3.2 lane ids and no .retired line -> the ids drop
+    // (AP is computed: they come back), .retired=<ids> (the copy + the run-once marker), .freeRespec=1, .notice=<AP back>, one INFO line
+    String[] retFound = new String[@PKG@.TreeClass.NC];
+    int[] retAp = new int[@PKG@.TreeClass.NC];
+    java.util.Iterator cit = p.stringPropertyNames().iterator();
+    while (cit.hasNext()) {
+      String ck = (String) cit.next();
+      if (!ck.startsWith("Class.")) continue;
+      String rest = ck.substring(6);
+      int cdot = rest.indexOf('.');
+      String cnm = cdot < 0 ? rest : rest.substring(0, cdot);
+      String cfield = cdot < 0 ? "" : rest.substring(cdot + 1);
+      String cv = p.getProperty(ck);
+      int ci = @PKG@.TreeClass.classIdx(cnm);
+      boolean exact = ci >= 0 && @PKG@.TreeClass.CLASSES[ci].equals(cnm);
+      boolean known = cfield.length() == 0 || cfield.equals("respecAt") || cfield.equals("on") || cfield.equals("freeRespec") || cfield.equals("notice") || cfield.equals("retired");
+      if (ci < 0 || !exact || !known) { d.cextra.add(new String[] { ck, cv == null ? "" : cv }); continue; }
+      if (cfield.length() == 0) {
+        String[] ids = cv.split(",");
+        for (int j = 0; j < ids.length; j++) {
+          int cn = @PKG@.TreeClass.nodeIdx(ids[j]);
+          if (cn >= 0) { if (!@PKG@.TreeClass.hidden(ci, cn)) d.cown[ci * @PKG@.TreeClass.NN + cn] = true; continue; }
+          int ri = @PKG@.TreeClass.retIdx(ids[j]);
+          if (ri < 0) continue;
+          if (retFound[ci] != null && ("," + retFound[ci] + ",").indexOf("," + @PKG@.TreeClass.RET_IDS[ri] + ",") >= 0) continue;   // fix 2: a repeated id counts once
+          retFound[ci] = retFound[ci] == null ? @PKG@.TreeClass.RET_IDS[ri] : retFound[ci] + "," + @PKG@.TreeClass.RET_IDS[ri];
+          retAp[ci] = retAp[ci] + @PKG@.TreeClass.RET_AP[ri];
+        }
+      } else if (cfield.equals("respecAt")) { try { d.crespecAt[ci] = Long.parseLong(cv.trim()); } catch (Throwable t7) { } }
+      else if (cfield.equals("on")) {
+        String[] ids = cv.split(",");
+        for (int j = 0; j < ids.length; j++) { int cn = @PKG@.TreeClass.nodeIdx(ids[j]); if (cn >= 0 && @PKG@.TreeClass.isSwitch(cn)) d.con[ci * @PKG@.TreeClass.NN + cn] = true; }
+      } else if (cfield.equals("freeRespec")) d.cfree[ci] = "1".equals(cv.trim());
+      else if (cfield.equals("notice")) { try { int nx = Integer.parseInt(cv.trim()); d.cnote[ci] = nx < 0 ? 0 : (nx > 1000 ? 1000 : nx); } catch (Throwable t8) { } }
+      else d.cret[ci] = cv;
+    }
+    for (int ci = 0; ci < @PKG@.TreeClass.NC; ci++) {
+      if (retFound[ci] == null || d.cret[ci] != null) continue;          // nothing retired here, or the update ran already (the .retired line)
+      d.cret[ci] = retFound[ci];
+      d.mig = true;
+      if (retAp[ci] < 1) {          // fix 2: only never-buyable capstones (LS / CS / RS - a hand edit): the copy, no free respec, no notice
+        @PKG@.TreeCfg.info("class paths update (0.3.3) for " + k + ": the " + @PKG@.TreeClass.CLASSES[ci] + " ids " + retFound[ci] + " are retired - they held no AP (nothing back, no free respec, no notice)");
+        continue;
+      }
+      d.cfree[ci] = true;
+      d.cnote[ci] = retAp[ci];
+      @PKG@.TreeCfg.info("class paths update (0.3.3) for " + k + ": the " + @PKG@.TreeClass.CLASSES[ci] + " lane nodes " + retFound[ci] + " are retired - " + retAp[ci] + " AP back, one free class respec, a chat notice at the next login");
+    }''')
+rep('''    if (cs.length() > 0) p.setProperty("Class." + @PKG@.TreeClass.CLASSES[ci], cs.toString());
+    if (d.crespecAt[ci] > 0L) p.setProperty("Class." + @PKG@.TreeClass.CLASSES[ci] + ".respecAt", String.valueOf(d.crespecAt[ci]));
+  }''', '''    if (cs.length() > 0) p.setProperty("Class." + @PKG@.TreeClass.CLASSES[ci], cs.toString());
+    if (d.crespecAt[ci] > 0L) p.setProperty("Class." + @PKG@.TreeClass.CLASSES[ci] + ".respecAt", String.valueOf(d.crespecAt[ci]));
+    StringBuilder co = new StringBuilder();          // 0.3.3 fix: the switches turned ON (owned ones only; no line = OFF = party only)
+    for (int n = 0; n < @PKG@.TreeClass.NN; n++) {
+      if (!d.con[ci * @PKG@.TreeClass.NN + n] || !d.cown[ci * @PKG@.TreeClass.NN + n]) continue;
+      if (co.length() > 0) co.append(',');
+      co.append(@PKG@.TreeClass.NID[n]);
+    }
+    if (co.length() > 0) p.setProperty("Class." + @PKG@.TreeClass.CLASSES[ci] + ".on", co.toString());
+    if (d.cfree[ci]) p.setProperty("Class." + @PKG@.TreeClass.CLASSES[ci] + ".freeRespec", "1");
+    if (d.cnote[ci] > 0) p.setProperty("Class." + @PKG@.TreeClass.CLASSES[ci] + ".notice", String.valueOf(d.cnote[ci]));
+    if (d.cret[ci] != null) p.setProperty("Class." + @PKG@.TreeClass.CLASSES[ci] + ".retired", d.cret[ci]);
+  }''')
+rep('''public static synchronized void clearClass(@PKG@.TreeData d, int ci, long now) {
+  if (d == null || ci < 0 || ci >= @PKG@.TreeClass.NC) return;
+  for (int n = 0; n < @PKG@.TreeClass.NN; n++) d.cown[ci * @PKG@.TreeClass.NN + n] = false;
+  d.crespecAt[ci] = now;
+}""")''', '''public static synchronized void clearClass(@PKG@.TreeData d, int ci, long now) {
+  if (d == null || ci < 0 || ci >= @PKG@.TreeClass.NC) return;
+  for (int n = 0; n < @PKG@.TreeClass.NN; n++) { d.cown[ci * @PKG@.TreeClass.NN + n] = false; d.con[ci * @PKG@.TreeClass.NN + n] = false; }
+  d.crespecAt[ci] = now;
+}""")
+# 0.3.3: a switch node ON / OFF (the same monitor); the free respec of the paths update is used once (a respec that went through)
+M(sto, r"""
+public static synchronized void setOn(@PKG@.TreeData d, int ci, int n, boolean v) {
+  if (d == null || ci < 0 || ci >= @PKG@.TreeClass.NC || n < 0 || n >= @PKG@.TreeClass.NN) return;
+  d.con[ci * @PKG@.TreeClass.NN + n] = v;
+}""")
+M(sto, r"""
+public static synchronized boolean useFree(@PKG@.TreeData d, int ci) {
+  if (d == null || ci < 0 || ci >= @PKG@.TreeClass.NC || !d.cfree[ci]) return false;
+  d.cfree[ci] = false;
+  return true;
+}""")
+# 0.3.3: the pending paths-update notices (AP back per class; null = none), cleared once taken (the caller marks the file dirty and sends it)
+M(sto, r"""
+public static synchronized int[] takeNote033(@PKG@.TreeData d) {
+  if (d == null) return null;
+  int[] r = null;
+  for (int ci = 0; ci < @PKG@.TreeClass.NC; ci++) {
+    if (d.cnote[ci] <= 0) continue;
+    if (r == null) r = new int[@PKG@.TreeClass.NC];
+    r[ci] = d.cnote[ci];
+    d.cnote[ci] = 0;
+  }
+  return r;
+}""")''')
+
+# ================================================================================================================ TreeClass rules (whole block)
+TCLS_A = "# ================= 0.3 part 2 TreeClass: the class tree's rules (spec 5: AP, the unlock rule, integrity), reader gating, bridge posts ======"
+TCLS_B = "# ================= TreeFx: per-player effect vector + everything published from it ================="
+TCLS_NEW = r'''# ================= 0.3 part 2 TreeClass: the class tree's rules (spec 5: AP, the unlock rule, integrity), reader gating, bridge posts ======
+# Pure functions over a TreeData + class index (the page in probe mode hands in its own TreeData). Methods before their callers.
+# 0.3.3: + the path lock (one path per tree), the new kinds and their readers, the switch, level ranks, the trees.class movement numbers.
+M(cls, r"""
+public static String classOf(java.util.UUID u) {
+  if (u == null) return null;
+  try {
+    java.util.Map b = @PKG@.TreeStore.bridge();
+    Object o = b.get("profile:class:" + u.toString());
+    if (o instanceof String && ((String) o).trim().length() > 0) return ((String) o).trim();
+    o = b.get("class:" + u.toString());
+    if (o instanceof String && ((String) o).trim().length() > 0) return ((String) o).trim();
+  } catch (Throwable t) { }
+  return null;
+}""")
+# -1 = SkyySkills not loaded, or its answer was no number / threw (0.3 fix C: a failed read is never level 0 - 0 would make the class
+# respec free and skip its cooldown); else the class skill level of the active profile (0 without a class)
+M(cls, r"""
+public static int level(java.util.UUID u, int ci) {
+  java.util.function.Function f = @PKG@.TreeCalc.fn("skill:fn:level");
+  if (f == null) return -1;
+  if (ci < 0 || ci >= NC) return 0;
+  try {
+    Object r = f.apply(new Object[] { u, CSKILL[ci] });
+    if (r instanceof Number) { int l = ((Number) r).intValue(); return l < 0 ? 0 : l; }
+  } catch (Throwable e) { }
+  return -1;
+}""")
+# Ability Points of a class skill level (answer 1): 0 below level 1 (like Tokens), else first + level / every, capped; + debug extra
+M(cls, r"""
+public static int ap(int lvl) {
+  long x = @PKG@.TreeCfg.C_EXTRA_AP;
+  if (lvl >= 1) {
+    long base = (long) @PKG@.TreeCfg.AP_FIRST + (long) (lvl / @PKG@.TreeCfg.AP_EVERY);
+    long mx = (long) @PKG@.TreeCfg.AP_MAX;
+    x = x + (base > mx ? mx : base);
+  }
+  return (int) (x > 100000L ? 100000L : x);
+}""")
+M(cls, r"""
+public static int kind(int ci, int n) {
+  return (ci < 0 || n < 0) ? 0 : CK[ci * NN + n];
+}""")
+M(cls, r"""
+public static String name(int ci, int n) {
+  return (ci < 0 || n < 0) ? NID[n < 0 ? 0 : n] : CNM[ci * NN + n];
+}""")
+M(cls, r"""
+public static String icon(int ci, int n) {
+  return (ci < 0 || n < 0) ? "Deco_Scroll" : CIC[ci * NN + n];
+}""")
+# 0.3 fix B: the effect text with the LIVE amount (class.nodes.<Class>.<Id> Amount, TreeCfg.C_AMT) - CNOW holds %A where the number goes
+M(cls, r"""
+public static String now(int ci, int n) {
+  if (ci < 0 || ci >= NC || n < 0 || n >= NN) return "";
+  String t = CNOW[ci * NN + n];
+  int p = t.indexOf("%A");
+  if (p < 0) return t;
+  return t.substring(0, p) + @PKG@.TreeCfg.C_AMT[ci * NN + n] + t.substring(p + 2);
+}""")
+M(cls, r"""
+public static String key(int ci, int n) {
+  return "Class." + CLASSES[ci] + "." + NID[n];
+}""")
+# who still has to ship for node n of class ci ("" = live): rune slots and elements wait for their round; Strength for SkyyGear's reader
+# flag (the token gear:extras), the crossbow nodes for SkyySkills listing their keys, Mana Regen for SkyySkills' registry function.
+# 0.3.3: A = SkyyArmory, G = SkyyGear, K = SkyyClasses ("the class abilities") listing the node's key; L = never (a later build)
+M(cls, r"""
+public static String comingWho(int ci, int n) {
+  if (slotComing(n)) return NROLE[n] == 7 ? "SkyyGear's elemental stats (later)" : "runes (Hytale 0.7)";
+  if (ci < 0 || ci >= NC || n < 0 || n >= NN) return "";
+  int k = CK[ci * NN + n];
+  if (k == K_S) return @PKG@.TreeCalc.reads("SkyyGear", "gear:extras") ? "" : "SkyyGear";
+  if (k == K_X) return @PKG@.TreeCalc.reads("SkyySkills", key(ci, n)) ? "" : "SkyySkills";
+  if (k == K_R) return @PKG@.TreeCalc.fn("skill:fn:manaregen") != null ? "" : "SkyySkills";
+  if (k == K_A) return @PKG@.TreeCalc.reads("SkyyArmory", key(ci, n)) ? "" : "SkyyArmory";
+  if (k == K_G) return @PKG@.TreeCalc.reads("SkyyGear", key(ci, n)) ? "" : "SkyyGear";
+  if (k == K_K) return @PKG@.TreeCalc.reads("SkyyClasses", key(ci, n)) ? "" : "the class abilities";
+  if (k == K_L) return "a later build";
+  return "";
+}""")
+M(cls, r"""
+public static boolean coming(int ci, int n) {
+  return comingWho(ci, n).length() > 0;
+}""")
+# 0.3.3: the waiting line of the detail panel / the buy box ("Comes with the class abilities" - the map's text for every ability node)
+M(cls, r"""
+public static String comingLine(int ci, int n) {
+  String w = comingWho(ci, n);
+  if (w.equals("the class abilities")) return "Comes with the class abilities";
+  if (w.equals("a later build")) return "Coming in a later build";
+  return "Coming with " + w;
+}""")
+M(cls, r"""
+public static boolean[] ownOf(@PKG@.TreeData d, int ci) {
+  boolean[] o = new boolean[NN];
+  if (d == null || ci < 0 || ci >= NC) return o;
+  for (int n = 0; n < NN; n++) o[n] = d.cown[ci * NN + n];
+  return o;
+}""")
+M(cls, r"""
+public static boolean on(int ci, int n) {
+  return ci >= 0 && ci < NC && n >= 0 && n < NN && @PKG@.TreeCfg.C_ON[ci * NN + n];
+}""")
+# 0.3.1 (Skyy 2026-10-03, "Let waiting nodes be skipped"): the node kinds that can wait for a reader mod. 0.3.3: + A / G / K / L (map rule 2:
+# a waiting trunk or path node is passed through). Health / Mana / movement nodes, the switch, the rune / element slots, the ROOT never.
+M(cls, r"""
+public static boolean skipKind(int ci, int n) {
+  if (ci < 0 || ci >= NC || n < 0 || n >= NN || slotComing(n) || hidden(ci, n)) return false;
+  int k = CK[ci * NN + n];
+  return k == K_S || k == K_X || k == K_R || k == K_A || k == K_G || k == K_K || k == K_L;
+}""")
+# 0.3.1: the SKIPPED nodes of an owned set - unowned, switched on, of a kind that can wait, and either waiting for its reader right now
+# or still holding up an owned node below it (a node bought through it while it waited, so nothing breaks or refunds when the reader
+# appears). Computed from the leaves up (a child always comes after its parents in the table).
+M(cls, r"""
+public static boolean[] skips(boolean[] own, int ci) {
+  boolean[] sk = new boolean[NN];
+  if (own == null || ci < 0 || ci >= NC) return sk;
+  boolean[] hold = new boolean[NN];
+  for (int n = NN - 1; n >= 0; n--) {
+    boolean h = false;
+    for (int c = n + 1; c < NN && !h; c++) {
+      if (NPAR1[c] != n && NPAR2[c] != n) continue;
+      if ((own[c] && on(ci, c) && !slotComing(c) && !hidden(ci, c)) || (sk[c] && hold[c])) h = true;
+    }
+    hold[n] = h;
+    if (own[n] || !on(ci, n) || !skipKind(ci, n)) continue;
+    sk[n] = h || coming(ci, n);
+  }
+  return sk;
+}""")
+# 0.3.3 PATH LOCK integrity: a file owning nodes of two or three paths (a hand edit, an admin) keeps the path with the most owned AP (tie:
+# the lower lane); 0 = at most one path is owned (nothing to drop)
+M(cls, r"""
+public static int keepLane(boolean[] own, int ci) {
+  if (own == null || ci < 0 || ci >= NC) return 0;
+  int[] apl = new int[4];
+  boolean[] has = new boolean[4];
+  for (int n = 0; n < NN; n++) {
+    int l = NLANE[n];
+    if (l < 1 || l > 3 || !own[n] || !on(ci, n) || slotComing(n) || hidden(ci, n)) continue;
+    has[l] = true;
+    apl[l] = apl[l] + @PKG@.TreeCfg.C_AP[ci * NN + n];
+  }
+  int cnt = 0;
+  int best = 0;
+  for (int l = 1; l <= 3; l++) {
+    if (!has[l]) continue;
+    cnt++;
+    if (best == 0 || apl[l] > apl[best]) best = l;
+  }
+  return cnt > 1 ? best : 0;
+}""")
+# INTEGRITY (spec 5 + 0.3.1 + 0.3.3): an owned node counts only while its chain is intact - the root, an owned intact parent or a SKIPPED
+# parent leads to it, every Need intact, no Lock owned, switched on, not a coming slot, not hidden, on the kept path. Iterated to a fixpoint.
+M(cls, r"""
+public static boolean[] intactOf(boolean[] own, int ci) {
+  boolean[] it = new boolean[NN];
+  if (own == null || ci < 0 || ci >= NC) return it;
+  boolean[] sk = skips(own, ci);
+  int keep = keepLane(own, ci);
+  boolean[] ok = new boolean[NN];
+  for (int n = 0; n < NN; n++) ok[n] = own[n] && on(ci, n) && !slotComing(n) && !hidden(ci, n) && (keep == 0 || NLANE[n] == 0 || NLANE[n] == keep);
+  boolean[] ps = new boolean[NN];
+  boolean again = true;
+  while (again) {
+    again = false;
+    for (int n = 0; n < NN; n++) { it[n] = false; ps[n] = false; }
+    if (ok[0]) {
+      it[0] = true;
+      boolean ch = true;
+      while (ch) {
+        ch = false;
+        for (int n = 1; n < NN; n++) {
+          if (it[n] || ps[n] || !(ok[n] || sk[n])) continue;
+          int p1 = NPAR1[n];
+          int p2 = NPAR2[n];
+          if ((p1 >= 0 && (it[p1] || ps[p1])) || (p2 >= 0 && (it[p2] || ps[p2]))) {
+            if (ok[n]) it[n] = true; else ps[n] = true;
+            ch = true;
+          }
+        }
+      }
+    }
+    for (int n = 0; n < NN; n++) {
+      if (!it[n]) continue;
+      int nd = NNEED[n];
+      int lk = NLOCK[n];
+      if ((nd >= 0 && !it[nd]) || (lk >= 0 && own[lk])) { ok[n] = false; again = true; }
+    }
+  }
+  return it;
+}""")
+M(cls, r"""
+public static boolean[] intact(@PKG@.TreeData d, int ci) {
+  if (d == null || ci < 0 || ci >= NC || d.bad) return new boolean[NN];
+  return intactOf(ownOf(d, ci), ci);
+}""")
+# 0.3.1: the skipped nodes a player passes right now - a skip whose parent is intact or passed itself (one pass in table order)
+M(cls, r"""
+public static boolean[] passed(boolean[] own, boolean[] it, int ci) {
+  boolean[] ps = new boolean[NN];
+  if (own == null || it == null || ci < 0 || ci >= NC || !it[0]) return ps;
+  boolean[] sk = skips(own, ci);
+  for (int n = 1; n < NN; n++) {
+    if (!sk[n]) continue;
+    int p1 = NPAR1[n];
+    int p2 = NPAR2[n];
+    if ((p1 >= 0 && (it[p1] || ps[p1])) || (p2 >= 0 && (it[p2] || ps[p2]))) ps[n] = true;
+  }
+  return ps;
+}""")
+# 0.3.1: the passed nodes a chain really runs through (their bars turn gold)
+M(cls, r"""
+public static boolean[] used(boolean[] it, boolean[] ps) {
+  boolean[] us = new boolean[NN];
+  if (it == null || ps == null) return us;
+  for (int c = NN - 1; c >= 1; c--) {
+    if (!(it[c] || us[c])) continue;
+    int p1 = NPAR1[c];
+    int p2 = NPAR2[c];
+    if ((p1 >= 0 && it[p1]) || (p2 >= 0 && it[p2])) continue;
+    if (p1 >= 0 && ps[p1]) us[p1] = true;
+    else if (p2 >= 0 && ps[p2]) us[p2] = true;
+  }
+  return us;
+}""")
+M(cls, r"""
+public static boolean[] lit(boolean[] own, boolean[] it, int ci) {
+  boolean[] r = new boolean[NN];
+  if (it == null) return r;
+  boolean[] us = used(it, passed(own, it, ci));
+  for (int n = 0; n < NN; n++) r[n] = it[n] || us[n];
+  return r;
+}""")
+# the lane rule counts the owned intact AND the passed nodes of the lane (0.3.3: the elements need 5 of their path)
+M(cls, r"""
+public static int laneHas(boolean[] it, boolean[] ps, int lane) {
+  int s = 0;
+  for (int n = 0; n < NN; n++) if ((it[n] || (ps != null && ps[n])) && NLANE[n] == lane) s++;
+  return s;
+}""")
+M(cls, r"""
+public static int gate(boolean[] sk, int p) {
+  int g = p;
+  int guard = 0;
+  while (g >= 0 && sk[g] && guard < NN) { g = NPAR1[g]; guard++; }
+  return g < 0 ? p : g;
+}""")
+M(cls, r"""
+public static int spent(boolean[] it, int ci) {
+  if (ci < 0 || ci >= NC) return 0;
+  int s = 0;
+  for (int n = 0; n < NN; n++) if (it[n]) s = s + @PKG@.TreeCfg.C_AP[ci * NN + n];
+  return s;
+}""")
+M(cls, r"""
+public static int laneOwned(boolean[] it, int lane) {
+  int s = 0;
+  for (int n = 0; n < NN; n++) if (it[n] && NLANE[n] == lane) s++;
+  return s;
+}""")
+# 0.3.3: the path a player follows = the lane of an owned intact path node (the first one picks it), 0 = none yet
+M(cls, r"""
+public static int pathOf(boolean[] it) {
+  if (it == null) return 0;
+  for (int n = 0; n < NN; n++) if (it[n] && NLANE[n] >= 1 && NLANE[n] <= 3 && NROLE[n] == 6) return NLANE[n];
+  return 0;
+}""")
+M(cls, r"""
+public static double sum(boolean[] it, int ci, int kd) {
+  if (ci < 0 || ci >= NC) return 0.0;
+  double s = 0.0;
+  for (int n = 0; n < NN; n++) if (it[n] && CK[ci * NN + n] == kd) s = s + (double) @PKG@.TreeCfg.C_AMT[ci * NN + n];
+  return s;
+}""")
+# 0.3.3 level RANKS (map rule 5): the Amount + every rank step the class skill level has reached (Archer T3 bolts, Mage T3 blink)
+M(cls, r"""
+public static int ranked(int ci, int n, int lvl) {
+  if (ci < 0 || ci >= NC || n < 0 || n >= NN) return 0;
+  int j = ci * NN + n;
+  int a = @PKG@.TreeCfg.C_AMT[j];
+  for (int r = 0; r < 3; r++) if (CRKL[j * 3 + r] > 0 && lvl >= CRKL[j * 3 + r]) a = a + CRKA[j * 3 + r];
+  return a;
+}""")
+# why node n cannot be unlocked now (the unlock rule, spec 5, re-checked on every click): 0 fine, 1 off (or hidden), 2 coming, 3 no owned
+# parent, 4 its Need, 5 its Lock (the pick-one twin), 11 (0.3.3) another path is owned, 6 the lane count, 7 the class level, 8 a negative AP
+# balance, 9 not enough AP, 10 owned
+M(cls, r"""
+public static int reason(boolean[] own, boolean[] it, int ci, int n, int lvl, int apFree) {
+  if (ci < 0 || n < 0 || n >= NN) return 3;
+  if (own[n]) return 10;
+  if (!on(ci, n) || hidden(ci, n)) return 1;
+  if (coming(ci, n)) return 2;
+  int p1 = NPAR1[n];
+  int p2 = NPAR2[n];
+  boolean par = n == 0 || (p1 >= 0 && it[p1]) || (p2 >= 0 && it[p2]);
+  boolean[] ps = null;
+  if (!par) {   // 0.3.1: a skipped (waiting) parent the player passes counts like an owned one
+    ps = passed(own, it, ci);
+    par = (p1 >= 0 && ps[p1]) || (p2 >= 0 && ps[p2]);
+  }
+  if (!par) return 3;
+  int nd = NNEED[n];
+  if (nd >= 0 && !it[nd]) return 4;
+  int lk = NLOCK[n];
+  if (lk >= 0 && own[lk]) return 5;
+  int ln = NLANE[n];
+  if (ln >= 1 && ln <= 3) {   // 0.3.3: ONE PATH PER TREE
+    int pth = pathOf(it);
+    if (pth != 0 && pth != ln) return 11;
+  }
+  if (NLANEN[n] > 0) {
+    if (ps == null) ps = passed(own, it, ci);
+    if (laneHas(it, ps, NLANE[n]) < NLANEN[n]) return 6;
+  }
+  int mn = @PKG@.TreeCfg.C_MIN[ci * NN + n];
+  if ((lvl < 0 ? 0 : lvl) < mn) return 7;
+  if (apFree < 0) return 8;
+  if (apFree < @PKG@.TreeCfg.C_AP[ci * NN + n]) return 9;
+  return 0;
+}""")
+# 0 locked, 1 unlockable, 2 owned (intact), 3 coming, 4 owned but its chain is broken
+M(cls, r"""
+public static int state(boolean[] own, boolean[] it, int ci, int n, int lvl, int apFree) {
+  if (ci < 0 || n < 0 || n >= NN) return 0;
+  if (own[n]) return it[n] ? 2 : 4;
+  if (coming(ci, n)) return 3;
+  return reason(own, it, ci, n, lvl, apFree) == 0 ? 1 : 0;
+}""")
+M(cls, r"""
+public static int[] states(boolean[] own, boolean[] it, int ci, int lvl, int apFree) {
+  int[] r = new int[NN];
+  if (ci < 0) return r;
+  for (int n = 0; n < NN; n++) r[n] = state(own, it, ci, n, lvl, apFree);
+  return r;
+}""")
+# 0.3.3: a switch is ON while owned, intact and not turned off in the player's file
+M(cls, r"""
+public static boolean switchOn(@PKG@.TreeData d, boolean[] it, int ci, int n) {
+  if (d == null || it == null || ci < 0 || ci >= NC || !isSwitch(n) || !it[n]) return false;
+  return d.con[ci * NN + n];
+}""")
+# the cell's state line (one 15 px bold line in 96 px; the build asserts every text fits)
+M(cls, r"""
+public static String cardText(boolean[] own, boolean[] it, int ci, int n, int lvl, int apFree, int stt) {
+  if (stt == 2) return "Owned";
+  if (stt == 3) return "Coming";
+  if (stt == 4) return "Locked";
+  int cost = ci < 0 ? NAP[n] : @PKG@.TreeCfg.C_AP[ci * NN + n];
+  if (stt == 1) return cost <= 9 ? "Unlock " + cost + " AP" : "Unlock";
+  int why = reason(own, it, ci, n, lvl, apFree);
+  if (why == 1) return "Turned off";
+  if (why == 3) return NPAR2[n] >= 0 || NPAR1[n] < 0 ? "Locked" : "Needs " + NID[gate(skips(own, ci), NPAR1[n])];
+  if (why == 4) return "Needs " + NID[NNEED[n]];
+  if (why == 5) return "Pick one";
+  if (why == 11) return "Path locked";
+  if (why == 6) return "Lane " + NLANEN[n];
+  if (why == 7) return "Lv " + @PKG@.TreeCfg.C_MIN[ci * NN + n];
+  if (why == 8) return "Respec";
+  if (why == 9) return "Need " + cost + " AP";
+  return "Locked";
+}""")
+# 0.3.3: the card of an owned switch says which way it is set
+M(cls, r"""
+public static String cardText2(@PKG@.TreeData d, boolean[] own, boolean[] it, int ci, int n, int lvl, int apFree, int stt) {
+  if (stt == 2 && isSwitch(n)) return switchOn(d, it, ci, n) ? "All players" : "Party only";
+  return cardText(own, it, ci, n, lvl, apFree, stt);
+}""")
+M(cls, r"""
+public static String pathName(int ci, int lane) {
+  if (ci < 0 || ci >= NC || lane < 1 || lane > 3) return "";
+  return LANE[ci * 3 + lane - 1];
+}""")
+# the whole sentence (the buy answer and the detail panel's Needs line)
+M(cls, r"""
+public static String reasonText(boolean[] own, boolean[] it, int ci, int n, int lvl, int apFree, int why) {
+  String nm = name(ci, n);
+  if (why == 10) return "You already own " + nm;
+  if (why == 1) return hidden(ci, n) ? "No such node" : nm + " is turned off on this server";
+  if (why == 2) {
+    String w = comingWho(ci, n);
+    if (w.equals("the class abilities")) return nm + " comes with the class abilities - it cannot be unlocked yet";
+    if (w.equals("a later build")) return nm + " comes in a later build - it cannot be unlocked yet";
+    return nm + " is coming with " + w + " - it cannot be unlocked yet";
+  }
+  if (why == 3) {
+    int p1 = NPAR1[n];
+    int p2 = NPAR2[n];
+    if (p1 < 0) return nm + " cannot be unlocked";
+    boolean[] sk = skips(own, ci);   // 0.3.1: name the node to buy, not the skipped one in between
+    int g1 = gate(sk, p1);
+    int g2 = p2 < 0 ? -1 : gate(sk, p2);
+    String s = nm + " needs " + name(ci, g1) + " (" + NID[g1] + ")";
+    if (g2 >= 0 && g2 != g1) s = s + " or " + name(ci, g2) + " (" + NID[g2] + ")";
+    s = s + " first";
+    int w = sk[p1] ? p1 : ((p2 >= 0 && sk[p2]) ? p2 : -1);
+    if (w >= 0) s = s + " (" + NID[w] + (coming(ci, w) ? " waits for " + comingWho(ci, w) + " and is skipped)" : " is skipped)");
+    return s;
+  }
+  if (why == 4) return nm + " needs its ability " + name(ci, NNEED[n]) + " (" + NID[NNEED[n]] + ") first";
+  if (why == 5) return nm + " cannot be taken together with " + name(ci, NLOCK[n]) + " - pick one of the two (a respec resets the choice)";
+  if (why == 11) return nm + " is on the " + pathName(ci, NLANE[n]) + " path - you follow " + pathName(ci, pathOf(it)) + " - respec to change paths";
+  if (why == 6) {   // 0.3.1: passed (skipped) path nodes count too
+    int lo = laneOwned(it, NLANE[n]);
+    int lp = laneHas(it, passed(own, it, ci), NLANE[n]) - lo;
+    return nm + " needs " + NLANEN[n] + " nodes of the " + pathName(ci, NLANE[n]) + " path first (you own " + lo + (lp > 0 ? ", " + lp + " skipped" : "") + ")";
+  }
+  if (why == 7) return nm + " needs " + CSKILL[ci] + " " + @PKG@.TreeCfg.C_MIN[ci * NN + n] + " (you are " + (lvl < 0 ? 0 : lvl) + ")";
+  if (why == 8) return "Your Ability Point balance is negative (the AP rules changed) - respec first, it is free right now";
+  if (why == 9) return nm + " needs " + @PKG@.TreeCfg.C_AP[ci * NN + n] + " AP - you have " + apFree;
+  return "";
+}""")
+# gold bars: a link is gold when both of its nodes are lit; per drawn piece of page pg (8 piece roles per slot; 0.3.3: up to 3 links)
+M(cls, r"""
+public static boolean[] pieceGold(int pg, boolean[] it) {
+  boolean[] g = new boolean[NSLOT * 8];
+  if (pg < 0 || pg > 1) return g;
+  int base = pg * NSLOT * 8;
+  for (int q = 0; q < g.length; q++) {
+    int l1 = PL1[base + q];
+    int l2 = PL2[base + q];
+    int l3 = PL3[base + q];
+    g[q] = (l1 >= 0 && it[LA[l1]] && it[LB[l1]]) || (l2 >= 0 && it[LA[l2]] && it[LB[l2]]) || (l3 >= 0 && it[LA[l3]] && it[LB[l3]]);
+  }
+  return g;
+}""")
+M(cls, r"""
+public static long respecPrice(int lvl) {
+  if (lvl <= 0) return 0L;
+  long p = (long) lvl * @PKG@.TreeCfg.C_RESPEC_PER;
+  return p > 1000000000000L ? 1000000000000L : p;
+}""")
+# 0.3.3: the info line names the path you follow (was the three lane counts)
+M(cls, r"""
+public static String laneNote(boolean[] it, int ci) {
+  if (ci < 0) return "";
+  int p = pathOf(it);
+  if (p == 0) return "No path yet - your first path node picks it";
+  return "Path: " + pathName(ci, p);
+}""")
+# "Class.<Class>.<Id>" -> class * NN + node, or -1
+M(cls, r"""
+public static int parseKey(String key) {
+  if (key == null || !key.startsWith("Class.")) return -1;
+  String rest = key.substring(6);
+  int dot = rest.indexOf('.');
+  if (dot <= 0) return -1;
+  int ci = classIdx(rest.substring(0, dot));
+  int n = nodeIdx(rest.substring(dot + 1));
+  if (ci < 0 || n < 0 || hidden(ci, n)) return -1;
+  return ci * NN + n;
+}""")
+# tree:fn:level / tree:fn:bonus for a class key: 1 / the Amount while class.enabled is on, the node is intact and the key names the
+# player's own class; 0 otherwise. 0.3.3: a switch answers 1 only while it is ON; tree:fn:bonus answers the RANKED Amount
+M(cls, r"""
+public static int bonusLevel(java.util.UUID u, String key) {
+  if (!@PKG@.TreeCfg.CLASS_ON || u == null) return 0;
+  int j = parseKey(key);
+  if (j < 0) return 0;
+  int ci = j / NN;
+  if (classIdx(classOf(u)) != ci) return 0;
+  @PKG@.TreeData d = @PKG@.TreeStore.data(u);
+  boolean[] it = intact(d, ci);
+  if (!it[j % NN]) return 0;
+  if (isSwitch(j % NN) && !switchOn(d, it, ci, j % NN)) return 0;
+  return 1;
+}""")
+M(cls, r"""
+public static double bonus(java.util.UUID u, String key) {
+  if (bonusLevel(u, key) <= 0) return 0.0;
+  int j = parseKey(key);
+  int ci = j / NN;
+  int n = j % NN;
+  if (CRKL[j * 3] <= 0) return (double) @PKG@.TreeCfg.C_AMT[j];
+  int lv = level(u, ci);
+  return (double) ranked(ci, n, lv < 0 ? 0 : lv);
+}""")
+# the stats SkyyTrees applies itself (TreeFx.extraStat: k 0 Health, 2 Mana) - 0 while class trees are off. 0.3.3: + CM2 (Rift Master)
+M(cls, r"""
+public static double stat(java.util.UUID u, int k) {
+  if (!@PKG@.TreeCfg.CLASS_ON || u == null || (k != 0 && k != 2)) return 0.0;
+  int ci = classIdx(classOf(u));
+  if (ci < 0) return 0.0;
+  boolean[] it = intact(@PKG@.TreeStore.data(u), ci);
+  double s = sum(it, ci, k == 0 ? K_H : K_M);
+  if (k == 2) { for (int n = 0; n < NN; n++) if (it[n]) s = s + (double) CM2[ci * NN + n]; }
+  return s;
+}""")
+# 0.3.3: the class movement numbers (movement protocol source trees.class, layer flat): { speed fraction, fallDamage (negative = less) };
+# held = the item in the hand (Weapon_Shortbow_* / Weapon_Crossbow_* turn the B kind on), crouch = MovementStates.crouching (the C kind)
+M(cls, r"""
+public static double[] moveOf(java.util.UUID u, String held, boolean crouch) {
+  double[] r = new double[2];
+  if (!@PKG@.TreeCfg.CLASS_ON || u == null) return r;
+  int ci = classIdx(classOf(u));
+  if (ci < 0) return r;
+  boolean[] it = intact(@PKG@.TreeStore.data(u), ci);
+  double sp = sum(it, ci, K_V);
+  boolean bow = held != null && (held.startsWith("Weapon_Shortbow_") || held.startsWith("Weapon_Crossbow_"));
+  if (bow) sp = sp + sum(it, ci, K_B);
+  if (crouch) sp = sp + sum(it, ci, K_C);
+  r[0] = sp / 100.0;
+  r[1] = 0.0 - sum(it, ci, K_F) / 100.0;
+  return r;
+}""")
+# the bridge posts of the class stats other mods apply (called from TreeFx.publish: every tick and after every change):
+#   Strength -> gear:extras:<uuid> (ConcurrentHashMap source -> String; ours: "trees" -> "str:N", removed at 0; the map stays shared)
+#   Mana Regen -> skill:fn:manaregen {"add", uuid, "trees", percent} (0 removes); re-sent when the value changes and every 30th post
+M(cls, r"""
+public static void post(java.util.UUID u) {
+  if (u == null) return;
+  try {
+    double str = 0.0;
+    double regen = 0.0;
+    if (@PKG@.TreeCfg.CLASS_ON) {
+      int ci = classIdx(classOf(u));
+      if (ci >= 0) {
+        boolean[] it = intact(@PKG@.TreeStore.data(u), ci);
+        str = sum(it, ci, K_S);
+        regen = sum(it, ci, K_R);
+      }
+    }
+    java.util.Map b = @PKG@.TreeStore.bridge();
+    String gk = "gear:extras:" + u.toString();
+    Object o = b.get(gk);
+    if (str <= 0.0) {
+      if (o instanceof java.util.Map) ((java.util.Map) o).remove("trees");
+    } else {
+      java.util.Map m = null;
+      if (o instanceof java.util.Map) m = (java.util.Map) o;
+      else {
+        java.util.concurrent.ConcurrentHashMap nm = new java.util.concurrent.ConcurrentHashMap();
+        Object prev = b.putIfAbsent(gk, nm);
+        if (prev instanceof java.util.Map) m = (java.util.Map) prev; else m = nm;
+      }
+      String want = "str:" + Math.round(str);
+      if (!want.equals(m.get("trees"))) m.put("trees", want);
+    }
+    java.util.function.Function f = @PKG@.TreeCalc.fn("skill:fn:manaregen");
+    if (f != null) {
+      Object last = LAST_REGEN.get(u);
+      Object cnt = POSTN.get(u);
+      int c = cnt instanceof Integer ? ((Integer) cnt).intValue() + 1 : 1;
+      POSTN.put(u, Integer.valueOf(c));
+      double want = Math.round(regen * 1000000.0) / 1000000.0;
+      boolean same = last instanceof Double && ((Double) last).doubleValue() == want;
+      if (!same || (want != 0.0 && c % 30 == 0)) {
+        f.apply(new Object[] { "add", u, "trees", Double.valueOf(want) });
+        LAST_REGEN.put(u, Double.valueOf(want));
+      }
+    }
+  } catch (Throwable t) { }
+}""")
+# a player left (TreeFx.clearOne) or the plugin stops: take our entries back
+M(cls, r"""
+public static void clear(java.util.UUID u) {
+  if (u == null) return;
+  try {
+    LAST_REGEN.remove(u);
+    POSTN.remove(u);
+    java.util.Map b = @PKG@.TreeStore.bridge();
+    Object o = b.get("gear:extras:" + u.toString());
+    if (o instanceof java.util.Map) ((java.util.Map) o).remove("trees");
+    java.util.function.Function f = @PKG@.TreeCalc.fn("skill:fn:manaregen");
+    if (f != null) f.apply(new Object[] { "remove", u, "trees" });
+  } catch (Throwable t) { }
+}""")
+# /tree class | /tree <class name> (3-letter prefixes after the tree names): null = not a class word; "" = open the class tab; else a refusal
+M(cls, r"""
+public static String cmdClass(java.util.UUID u, String a) {
+  if (a == null) return null;
+  String t = a.trim().toLowerCase();
+  if (t.length() == 0) return null;
+  int want = -1;
+  if (t.equals("class") || t.equals("cla") || t.equals("clas")) want = -2;
+  else {
+    for (int i = 0; i < NC; i++) if (CLASSES[i].toLowerCase().equals(t)) want = i;
+    if (want < 0 && t.length() >= 3) { for (int i = 0; i < NC; i++) if (CLASSES[i].toLowerCase().startsWith(t)) want = i; }
+  }
+  if (want == -1) return null;
+  if (!@PKG@.TreeCfg.CLASS_ON) return "[Trees] Class trees are not switched on yet on this server";   // 0.3 fix H: players get no admin path
+  String uc = classOf(u);
+  int ci = classIdx(uc);
+  if (ci < 0 && uc != null) return "[Trees] Your class " + uc + " has no skill tree yet - it comes in a later build";
+  if (want >= 0 && ci < 0) return "[Trees] You have no class yet - choose one with /class (or create a profile)";
+  if (want >= 0 && ci != want) return "[Trees] Your class is " + CLASSES[ci] + " - /tree class opens its tree";
+  return "";
+}""")
+
+'''
+swap(TCLS_A, TCLS_B, TCLS_NEW)
+
+# ================================================================================================================ TreeFx: the trees.class source
+rep('''F(fx, 'public static final String ACRO_SRC = "trees.acrobatics";')''', '''F(fx, 'public static final String ACRO_SRC = "trees.acrobatics";')
+F(fx, 'public static final String CLASS_SRC = "trees.class";')   # 0.3.3: the class tree's move speed / fall damage nodes''')
+rep('''M(fx, r"""
+public static double toolSpeed(double[] v, String held) {''', '''# 0.3.3: the class tree's movement source "trees.class" (layer flat: speed = fraction of the default speed, fallDamage added to the
+# multiplier - negative = less; SkyySkills / SkyyAccessories apply it). All zeros removes our entry; never touches another source.
+M(fx, r"""
+public static void classPost(java.util.UUID u, String held, boolean crouch) {
+  double[] mv = @PKG@.TreeClass.moveOf(u, held, crouch);
+  float sp = (float) r6(mv[0]);
+  float fd = (float) r6(mv[1]);
+  java.util.Map b = @PKG@.TreeStore.bridge();
+  String k = "move:" + u.toString();
+  Object o = b.get(k);
+  if (sp == 0.0f && fd == 0.0f) { if (o instanceof java.util.Map) ((java.util.Map) o).remove(CLASS_SRC); return; }
+  java.util.Map m = null;
+  if (o instanceof java.util.Map) m = (java.util.Map) o;
+  else {
+    java.util.concurrent.ConcurrentHashMap n = new java.util.concurrent.ConcurrentHashMap();
+    Object prev = b.putIfAbsent(k, n);
+    if (prev instanceof java.util.Map) m = (java.util.Map) prev; else m = n;
+  }
+  java.util.HashMap e = new java.util.HashMap();
+  e.put("layer", "flat");
+  e.put("speed", Float.valueOf(sp));
+  e.put("jump", Float.valueOf(0.0f));
+  e.put("fallDamage", Float.valueOf(fd));
+  if (e.equals(m.get(CLASS_SRC))) return;
+  m.put(CLASS_SRC, e);
+}""")
+M(fx, r"""
+public static double toolSpeed(double[] v, String held) {''')
+rep('''    if (mv instanceof java.util.Map) ((java.util.Map) mv).remove(ACRO_SRC);''', '''    if (mv instanceof java.util.Map) ((java.util.Map) mv).remove(ACRO_SRC);
+    if (mv instanceof java.util.Map) ((java.util.Map) mv).remove(CLASS_SRC);   // 0.3.3''')
+
+# ================================================================================================================ TreeTick: crouch + the class source
+rep('''M(tick, r"""
+public void tick(float dt, int idx, @ACH@ chunk, @ST@ store, @CB@ cb) {''', '''# 0.3.3: the crouch state (Assassin Quiet Feet) - the SkyyArmory 0.1.6 Levitate read; unreadable = not crouching
+M(tick, r"""
+public static boolean crouching(@CB@ cb, @REF@ r) {
+  try {
+    Object o = cb.getComponent(r, @MSC@.getComponentType());
+    if (!(o instanceof @MSC@)) return false;
+    @MST@ m = ((@MSC@) o).getMovementStates();
+    return m != null && m.crouching;
+  } catch (Throwable t) { return false; }
+}""")
+M(tick, r"""
+public void tick(float dt, int idx, @ACH@ chunk, @ST@ store, @CB@ cb) {''')
+rep('''    @PKG@.TreeFx.acroPost(u, v);
+    @PKG@.TreeFx.FX.put(u, v);''', '''    @PKG@.TreeFx.acroPost(u, v);
+    @PKG@.TreeFx.classPost(u, hid, crouching(cb, ref));   // 0.3.3: the class tree's move speed / fall damage (source trees.class)
+    @PKG@.TreeFx.FX.put(u, v);''')
+rep('''    @PKG@.TreeMsg.note024(pr, u);
+    if (((long) s[1]) % 5L == 0L) @PKG@.TreeGather.ensure();''', '''    @PKG@.TreeMsg.note024(pr, u);
+    @PKG@.TreeMsg.note033(pr, u);   // 0.3.3: the one-time class paths line
+    if (((long) s[1]) % 5L == 0L) @PKG@.TreeGather.ensure();''')
+
+# ================================================================================================================ TreeMsg: the one-time paths line
+rep('''
+# ================= TreeAbil: Spread / Vein Burst / Tree Feller (BREAK hook) =================''', '''# 0.3.3: the one-time line after the class paths update of this profile file (TreeTick, world thread; skipped while profile:busy)
+M(msg, r"""
+public static void note033(@PR@ pr, java.util.UUID u) {
+  if (@PKG@.TreeStore.busy(u)) return;
+  String k = @PKG@.TreeStore.pkey(u);
+  @PKG@.TreeData d = @PKG@.TreeStore.dataK(k, u);
+  if (d == null || d.bad) return;
+  int[] n = @PKG@.TreeStore.takeNote033(d);
+  if (n == null) return;
+  @PKG@.TreeStore.dirty(k);
+  for (int ci = 0; ci < n.length; ci++) {
+    if (n[ci] <= 0) continue;
+    pr.sendMessage(@MSG@.raw("[Trees] Your " + @PKG@.TreeClass.CLASSES[ci] + " tree has new paths: " + n[ci] + " Ability Point" + (n[ci] == 1 ? "" : "s") + " came back from the old lanes. Your next class respec is free (/tree class).").color("#9cd8ff"));
+  }
+}""")
+
+# ================= TreeAbil: Spread / Vein Burst / Tree Feller (BREAK hook) =================''')
+
+# ================================================================================================================ TreeClassOps (whole block)
+OPS_A = "# ================= 0.3 part 2 TreeClassOps: buy / Undo / respec of the class tree + the page texts (world thread; every rule re-checked) ===="
+OPS_B = "# ================= TreePage: the inline tree page (0.2.5: the vanilla UI kit, tools/skyyui.py) ================="
+OPS_NEW = r'''# ================= 0.3 part 2 TreeClassOps: buy / Undo / respec of the class tree + the page texts (world thread; every rule re-checked) ====
+# probe = the probe page: the same rules on a page-local TreeData, nothing saved, no coins, no cooldown, every answer marked.
+# 0.3.3: + the switch (Switch flips an owned switch), the free respec of the paths update, the path texts.
+F(cops, "public static final int PROBE_LVL = 30;")
+F(cops, "public static final int[] PROBE_OWN = %s;" % jint([ct_idx(i) for i in ("ROOT", "P1", "P2", "X1", "P3", "P4", "T1", "T2", "PA1")]))
+M(cops, r"""
+public static @PKG@.TreeData probeData(int ci) {
+  @PKG@.TreeData d = new @PKG@.TreeData();
+  if (ci >= 0 && ci < @PKG@.TreeClass.NC) for (int k = 0; k < PROBE_OWN.length; k++) d.cown[ci * @PKG@.TreeClass.NN + PROBE_OWN[k]] = true;
+  return d;
+}""")
+M(cops, r"""
+public static String suffix(boolean probe) {
+  return probe ? " (probe - not saved)" : "";
+}""")
+M(cops, r"""
+public static boolean negBalance(@PKG@.TreeData d, int ci, int lvl) {
+  if (d == null || d.bad || ci < 0 || lvl < 1) return false;
+  boolean[] it = @PKG@.TreeClass.intact(d, ci);
+  return @PKG@.TreeClass.ap(lvl) - @PKG@.TreeClass.spent(it, ci) < 0;
+}""")
+# 0.3.3: the one free respec of the class paths update (Class.<Class>.freeRespec=1) - the probe never uses it
+M(cops, r"""
+public static boolean freeOf(@PKG@.TreeData d, int ci, boolean probe) {
+  return !probe && d != null && !d.bad && ci >= 0 && ci < @PKG@.TreeClass.NC && d.cfree[ci];
+}""")
+M(cops, r"""
+public static long priceOf(@PKG@.TreeData d, int ci, int lvl, boolean probe) {
+  if (probe || d == null || d.bad || ci < 0 || lvl < 1) return 0L;
+  if (freeOf(d, ci, probe)) return 0L;
+  boolean[] it = @PKG@.TreeClass.intact(d, ci);
+  int sp = @PKG@.TreeClass.spent(it, ci);
+  if (sp <= 0) return 0L;
+  if (@PKG@.TreeClass.ap(lvl) - sp < 0) return 0L;
+  return @PKG@.TreeClass.respecPrice(lvl);
+}""")
+# 0.3.3: an owned switch: Switch (the buy click) flips it - no AP, no respec
+M(cops, r"""
+public static String flip(java.util.UUID u, @PKG@.TreeData d, int ci, int n, boolean probe) {
+  int j = ci * @PKG@.TreeClass.NN + n;
+  boolean off = d.con[j];
+  @PKG@.TreeStore.setOn(d, ci, n, !off);
+  if (!probe) { @PKG@.TreeStore.dirty(@PKG@.TreeStore.pkey(u)); @PKG@.TreeFx.refresh(u); }
+  String nm = @PKG@.TreeClass.name(ci, n);
+  return (off ? nm + " is OFF - Guardian Spirit saves party members only (the default)" : nm + " is ON - " + @PKG@.TreeClass.now(ci, n)) + suffix(probe);
+}""")
+M(cops, r"""
+public static String buy(java.util.UUID u, @PKG@.TreeData d, int ci, int lvl, int n, java.util.ArrayList undo, boolean probe) {
+  if (!probe && !@PKG@.TreeCfg.CLASS_ON) return "Class trees are switched off on this server";
+  if (ci < 0) return "Choose a class first (/class, or create a profile) - your class tree opens here";
+  if (d == null || d.bad) return "Your tree file could not be read - nothing can change until an admin fixes it";
+  if (!probe && lvl < 0) return "Skill trees need SkyySkills - it is not loaded or did not answer (try again)";
+  if (n < 0 || n >= @PKG@.TreeClass.NN || @PKG@.TreeClass.hidden(ci, n)) return "No such node";
+  boolean[] own = @PKG@.TreeClass.ownOf(d, ci);
+  boolean[] it = @PKG@.TreeClass.intact(d, ci);
+  if (@PKG@.TreeClass.isSwitch(n) && own[n] && it[n]) return flip(u, d, ci, n, probe);   // 0.3.3
+  int apFree = @PKG@.TreeClass.ap(lvl < 0 ? 0 : lvl) - @PKG@.TreeClass.spent(it, ci);
+  int why = @PKG@.TreeClass.reason(own, it, ci, n, lvl, apFree);
+  if (why != 0) return @PKG@.TreeClass.reasonText(own, it, ci, n, lvl, apFree, why) + suffix(probe);
+  int cost = @PKG@.TreeCfg.C_AP[ci * @PKG@.TreeClass.NN + n];
+  @PKG@.TreeStore.setClassOwn(d, ci, n, true);
+  if (@PKG@.TreeClass.isSwitch(n)) @PKG@.TreeStore.setOn(d, ci, n, false);   // 0.3.3 fix: a bought switch starts OFF = party only (the LOCKED default)
+  if (undo != null) undo.add(Integer.valueOf(ci * @PKG@.TreeClass.NN + n));   // 0.3 fix O: class-qualified
+  if (!probe) { @PKG@.TreeStore.dirty(@PKG@.TreeStore.pkey(u)); @PKG@.TreeFx.refresh(u); }
+  String pick = "";
+  int ln = @PKG@.TreeClass.NLANE[n];
+  if (@PKG@.TreeClass.NROLE[n] == 6 && @PKG@.TreeClass.pathOf(it) == 0) pick = " You follow the " + @PKG@.TreeClass.pathName(ci, ln) + " path now - the other two are locked (a respec frees them).";
+  return "Unlocked " + @PKG@.TreeClass.name(ci, n) + "! " + cost + " AP spent - " + (apFree - cost) + " left." + pick + suffix(probe);
+}""")
+# Undo (class.undo): the newest unlock made while this page is open comes back when nothing you own still needs it (its AP return)
+M(cops, r"""
+public static String undo(java.util.UUID u, @PKG@.TreeData d, int ci, java.util.ArrayList undo, boolean probe) {
+  if (!probe && !@PKG@.TreeCfg.CLASS_ON) return "Class trees are switched off on this server";
+  if (!probe && !@PKG@.TreeCfg.C_UNDO) return "Undo is switched off on this server";
+  if (ci < 0) return "Choose a class first (/class, or create a profile) - your class tree opens here";
+  if (d == null || d.bad) return "Your tree file could not be read - nothing can change until an admin fixes it";
+  if (undo == null || undo.size() == 0) return "Nothing to undo - only unlocks made while this page is open can be undone" + suffix(probe);
+  int j = ((Integer) undo.get(undo.size() - 1)).intValue();
+  if (j < 0 || j / @PKG@.TreeClass.NN != ci) { undo.clear(); return "Nothing to undo - your class changed since those unlocks" + suffix(probe); }
+  int n = j % @PKG@.TreeClass.NN;
+  boolean[] own = @PKG@.TreeClass.ownOf(d, ci);
+  if (n < 0 || n >= @PKG@.TreeClass.NN || !own[n]) { undo.remove(undo.size() - 1); return "Nothing to undo - that node is not yours any more" + suffix(probe); }
+  // 0.3.1: refused only when ANOTHER intact node would break - simulated on a copy without n
+  boolean[] it0 = @PKG@.TreeClass.intactOf(own, ci);
+  boolean[] own2 = @PKG@.TreeClass.ownOf(d, ci);
+  own2[n] = false;
+  boolean[] it2 = @PKG@.TreeClass.intactOf(own2, ci);
+  for (int m = 0; m < @PKG@.TreeClass.NN; m++) {
+    if (m == n || !it0[m] || it2[m]) continue;
+    return @PKG@.TreeClass.name(ci, n) + " cannot be undone - " + @PKG@.TreeClass.name(ci, m) + " (" + @PKG@.TreeClass.NID[m] + ") still needs it" + suffix(probe);
+  }
+  int cost = @PKG@.TreeCfg.C_AP[ci * @PKG@.TreeClass.NN + n];
+  @PKG@.TreeStore.setClassOwn(d, ci, n, false);
+  @PKG@.TreeStore.setOn(d, ci, n, false);
+  undo.remove(undo.size() - 1);
+  if (!probe) { @PKG@.TreeStore.dirty(@PKG@.TreeStore.pkey(u)); @PKG@.TreeFx.refresh(u); }
+  return "Undo done - " + @PKG@.TreeClass.name(ci, n) + " is open again and its " + cost + " AP are back" + suffix(probe);
+}""")
+# the class respec (answer 4): coins = class skill level x class.respec.perLevel through coins:fn:take, taken FIRST, then the in-memory reset;
+# the cooldown of every tree; a negative balance respecs free and at once. 0.3.3: the free respec of the paths update - no coins, no
+# cooldown, used once
+M(cops, r"""
+public static String respec(java.util.UUID u, @PKG@.TreeData d, int ci, int lvl, boolean probe) {
+  if (!probe && !@PKG@.TreeCfg.CLASS_ON) return "Class trees are switched off on this server";
+  if (ci < 0) return "Choose a class first (/class, or create a profile) - your class tree opens here";
+  if (d == null || d.bad) return "Your tree file could not be read - nothing can change until an admin fixes it";
+  if (!probe && lvl < 0) return "Skill trees need SkyySkills - it is not loaded or did not answer (try again)";
+  String cn = @PKG@.TreeClass.CLASSES[ci];
+  boolean any = false;
+  for (int n = 0; n < @PKG@.TreeClass.NN; n++) if (d.cown[ci * @PKG@.TreeClass.NN + n]) any = true;
+  if (!any) return "Nothing to respec in your " + cn + " tree" + suffix(probe);
+  boolean neg = negBalance(d, ci, lvl);   // 0.3 fix C: only a real level (>= 1) can waive the cooldown
+  boolean free = freeOf(d, ci, probe);    // 0.3.3
+  long now = System.currentTimeMillis();
+  long wait = d.crespecAt[ci] + @PKG@.TreeCfg.RESPEC_CD_MS - now;
+  if (!probe && !neg && !free && wait > 0L) return "You can respec your " + cn + " tree again in " + @PKG@.TreeOps.waitText(wait);
+  long price = priceOf(d, ci, lvl, probe);   // 0.3 fix N: the same number the page armed with
+  if (price > 0L) {
+    java.util.function.Function f = @PKG@.TreeCalc.fn("coins:fn:take");
+    if (f == null) return "A class respec costs " + @PKG@.TreeDefs.grp(price) + " coins but SkyyCoins is not loaded";
+    Object r = null;
+    boolean broke = false;
+    try { r = f.apply(new Object[] { u, Long.valueOf(price) }); } catch (Throwable t) { broke = true; }
+    if (broke || r == null) return "A class respec costs " + @PKG@.TreeDefs.grp(price) + " coins - SkyyCoins could not take them right now (nothing changed) - try again";
+    if (!Boolean.TRUE.equals(r)) return "A class respec costs " + @PKG@.TreeDefs.grp(price) + " coins - you do not have enough";
+  }
+  @PKG@.TreeStore.clearClass(d, ci, now);
+  if (free) @PKG@.TreeStore.useFree(d, ci);
+  if (!probe) {
+    String k = @PKG@.TreeStore.pkey(u);
+    @PKG@.TreeStore.saveSoon(k);
+    @PKG@.TreeFx.refresh(u);
+    @PKG@.TreeCfg.info("class respec " + cn + " for " + k + (price > 0L ? " (" + price + " coins)" : (free ? " (the free respec of the 0.3.3 class paths update)" : "")));
+  }
+  return "Respec done - every Ability Point of your " + cn + " tree is back" + (price > 0L ? " (" + @PKG@.TreeDefs.grp(price) + " coins paid)" : (free ? " (your free respec)" : "")) + suffix(probe);
+}""")
+M(cops, r"""
+public static String armText(int ci, int lvl, boolean neg, boolean probe, long price) {
+  String cn = ci < 0 ? "class" : @PKG@.TreeClass.CLASSES[ci];
+  String cost = probe ? "free in the probe" : (neg ? "free right now - your balance is negative" : (price > 0L ? "it costs " + @PKG@.TreeDefs.grp(price) + " coins (" + @PKG@.TreeClass.CSKILL[ci] + " " + lvl + " x " + @PKG@.TreeCfg.C_RESPEC_PER + ")" : "free"));
+  return "Click Respec again within 10 s to reset your whole " + cn + " tree - every Ability Point comes back - " + cost;
+}""")
+# the detail panel texts of the selected class node (0.3.3: d - the switch's setting)
+M(cops, r"""
+public static String stateLine(@PKG@.TreeData d, boolean[] it, int stt, int ci, int n) {
+  if (stt == 2 && @PKG@.TreeClass.isSwitch(n)) return @PKG@.TreeClass.switchOn(d, it, ci, n) ? "Owned - switch ON" : "Owned - switch OFF";
+  if (stt == 2) return "Owned";
+  if (stt == 4) return "Owned - chain broken (see Needs)";
+  if (stt == 3) return @PKG@.TreeClass.comingLine(ci, n);
+  if (stt == 1) return "Unlockable";
+  return "Locked";
+}""")
+M(cops, r"""
+public static String typeLine(int ci, int n) {
+  int r = @PKG@.TreeClass.NROLE[n];
+  int ap = ci < 0 ? @PKG@.TreeClass.NAP[n] : @PKG@.TreeCfg.C_AP[ci * @PKG@.TreeClass.NN + n];
+  String pn = (ci >= 0 && @PKG@.TreeClass.NLANE[n] > 0) ? @PKG@.TreeClass.pathName(ci, @PKG@.TreeClass.NLANE[n]) : "";
+  String what = "Passive";
+  if (r == 1) what = "Passive - pick one of two";
+  else if (r == 2) what = "Ability rune slot";
+  else if (r == 3 || r == 4) what = "Modifier rune slot";
+  else if (r == 5) what = "Trunk";
+  else if (r == 6) what = (pn.length() > 0 ? pn : "Path") + " " + @PKG@.TreeClass.NID[n].substring(2) + "/5";
+  else if (r == 7) what = "Element" + (pn.length() > 0 ? " - " + pn + " path" : "");
+  else if (r == 9) what = "Switch";
+  String id = @PKG@.TreeClass.NID[n];
+  String more = id.equals("P3") ? " - continues on page 2" : (id.equals("P4") ? " - continues on page 1" : "");
+  return what + " - " + ap + " AP" + more;
+}""")
+M(cops, r"""
+public static String nowLine(@PKG@.TreeData d, boolean[] it, int stt, int ci, int n) {
+  if (ci < 0) return "Now: no class";
+  if (@PKG@.TreeClass.isSwitch(n)) return @PKG@.TreeClass.switchOn(d, it, ci, n) ? "Now: ON - " + @PKG@.TreeClass.now(ci, n) : "Now: OFF - party members only (the default)";
+  if (stt == 2) return "Now: " + @PKG@.TreeClass.now(ci, n);
+  if (stt == 4) return "Now: nothing - the chain is broken";
+  return "Now: not unlocked";
+}""")
+M(cops, r"""
+public static String givesLine(int ci, int n) {
+  if (ci < 0) return "";
+  return "Gives: " + @PKG@.TreeClass.now(ci, n);
+}""")
+M(cops, r"""
+public static String costLine(int stt, int ci, int n) {
+  if (stt == 3) return "Cost: -";
+  return "Cost: " + (ci < 0 ? @PKG@.TreeClass.NAP[n] : @PKG@.TreeCfg.C_AP[ci * @PKG@.TreeClass.NN + n]) + " AP";
+}""")
+M(cops, r"""
+public static String needLine(boolean[] own, boolean[] it, int ci, int n, int lvl, int apFree, int stt) {
+  if (ci < 0) return "Needs: a class (/class, or create a profile)";
+  if (stt == 2) return "";
+  if (stt == 4) return "Chain broken - a needed node is missing or off, or its path is locked: no AP spent, no effect. A respec resets the tree";
+  if (stt == 3) {
+    String w = @PKG@.TreeClass.comingLine(ci, n);
+    if (w.startsWith("Coming with ")) w = "Waits for " + w.substring(12);
+    return w + (@PKG@.TreeClass.skipKind(ci, n) ? " - skipped until then: the nodes after it can be unlocked without it" : " - until then it cannot be unlocked");
+  }
+  int why = @PKG@.TreeClass.reason(own, it, ci, n, lvl, apFree);
+  if (why == 0) return @PKG@.TreeClass.NROLE[n] == 6 && @PKG@.TreeClass.pathOf(it) == 0 ? "Picking a path locks the other two (a respec frees them)" : "";
+  // fix 2 (critic: T1 / TS on page 2 read "Needs ROOT" with no bar to the Root): a missing parent on the OTHER page is named with its page
+  int p1 = @PKG@.TreeClass.NPAR1[n];
+  String pg = (why == 3 && p1 >= 0 && @PKG@.TreeClass.NPAGE[p1] != @PKG@.TreeClass.NPAGE[n]) ? " - it is on page " + (@PKG@.TreeClass.NPAGE[p1] + 1) : "";
+  return "Needs: " + @PKG@.TreeClass.reasonText(own, it, ci, n, lvl, apFree, why) + pg;
+}""")
+M(cops, r"""
+public static String howLine(int ci, int n) {
+  if (ci < 0) return "";
+  return @PKG@.TreeClass.CHOW[ci * @PKG@.TreeClass.NN + n];
+}""")
+M(cops, r"""
+public static String buyText(@PKG@.TreeData d, boolean[] own, boolean[] it, int ci, int n, int lvl, int apFree, int stt) {
+  if (ci < 0) return "No class";
+  if (stt == 3) return @PKG@.TreeClass.comingLine(ci, n);
+  if (stt == 2 && @PKG@.TreeClass.isSwitch(n)) return @PKG@.TreeClass.switchOn(d, it, ci, n) ? "ON - every player - Switch for party only" : "OFF - party only - Switch for every player";
+  if (stt == 2) return "Owned";
+  if (stt == 4) return "Owned - chain broken";
+  int cost = @PKG@.TreeCfg.C_AP[ci * @PKG@.TreeClass.NN + n];
+  if (stt == 1) return "Unlock - " + cost + " AP";
+  int why = @PKG@.TreeClass.reason(own, it, ci, n, lvl, apFree);
+  if (why == 9) return "Need " + (cost - apFree) + " more AP";
+  return @PKG@.TreeClass.cardText(own, it, ci, n, lvl, apFree, stt);
+}""")
+M(cops, r"""
+public static String note(int ci, int lvl, boolean[] it, int apFree, boolean probe, boolean bad, String ucls) {
+  if (bad) return "Your tree file could not be read - ask an admin (nothing is saved until it is fixed)";
+  if (ci < 0 && ucls != null && ucls.length() > 0) return "Your class " + ucls + " has no tree yet - it comes in a later build";
+  if (ci < 0) return "Choose a class with /class (or create a profile) - your class tree opens here";
+  if (!probe && lvl < 0) return "Skill trees need SkyySkills - it is not loaded on this server";
+  if (apFree < 0) return "The AP rules changed - your balance is negative: effects keep working, buying is blocked, a respec is free right now";
+  String ln = @PKG@.TreeClass.laneNote(it, ci);
+  if (probe) return "PROBE - nothing is saved: " + ln + " - click cells, pages, Unlock, Undo and Respec";
+  return ln + " - Ability Points come from your " + @PKG@.TreeClass.CSKILL[ci] + " level (" + @PKG@.TreeCfg.AP_FIRST + " + 1 per " + @PKG@.TreeCfg.AP_EVERY + " levels, max " + @PKG@.TreeCfg.AP_MAX + ")";
+}""")
+
+'''
+swap(OPS_A, OPS_B, OPS_NEW)
+
+# ================================================================================================================ the class page
+rep('''  boolean canUndo = ci >= 0 && (pb || @PKG@.TreeCfg.C_UNDO) && this.undo != null && this.undo.size() > 0;
+  long price = (ci < 0 || lvl < 0 || pb) ? 0L : @PKG@.TreeClass.respecPrice(lvl);''',
+    '''  boolean canUndo = ci >= 0 && (pb || @PKG@.TreeCfg.C_UNDO) && this.undo != null && this.undo.size() > 0;
+  boolean freeR = @PKG@.TreeClassOps.freeOf(d, ci, pb);   // 0.3.3: the free respec of the class paths update
+  long price = (ci < 0 || lvl < 0 || pb || freeR) ? 0L : @PKG@.TreeClass.respecPrice(lvl);
+  boolean sw = ci >= 0 && st0 == 2 && @PKG@.TreeClass.isSwitch(sel);   // 0.3.3: an owned switch - the buy button is Switch''')
+rep('''  b.set("#SkyyTrDust.Text", pb ? "Respec free (probe)" : (price > 0L ? "Respec " + @PKG@.TreeDefs.grp(price) + " coins" : "Respec free"));''',
+    '''  b.set("#SkyyTrDust.Text", pb ? "Respec free (probe)" : (freeR ? "Respec free (once)" : (price > 0L ? "Respec " + @PKG@.TreeDefs.grp(price) + " coins" : "Respec free")));''')
+rep('''    b.set("#SkyyTrNoClass.Text", ucls != null ? "Your class " + ucls + " has no skill tree yet - it comes in a later build (Assassin and Shaman get the same 37-node map with their own stats and lanes)." : "Choose a class with /class - or create a profile - and your class tree opens here. Every class gets the same 37-node map with its own stats and lanes.");''',
+    '''    b.set("#SkyyTrNoClass.Text", ucls != null ? "Your class " + ucls + " has no skill tree yet - it comes in a later build." : "Choose a class with /class - or create a profile - and your class tree opens here. Page 1 is your stat spine, page 2 the trunk and three paths (the first path node you unlock picks your path).");''')
+rep('''        int arms = @PKG@.TreeClass.SARMS[base + k];''', '''        int arms = @PKG@.TreeClass.SARMS[base + k];
+        if (sk == 1 && @PKG@.TreeClass.hidden(ci, n)) sk = 0;   // 0.3.3: the switch slot of a class without one stays empty''')
+rep('''          b.set("#SkyyTrC" + (n + 1) + "Sb.Text", @PKG@.TreeClass.cardText(own, it, ci, n, lvl, apFree, cst[n]));''',
+    '''          b.set("#SkyyTrC" + (n + 1) + "Sb.Text", @PKG@.TreeClass.cardText2(d, own, it, ci, n, lvl, apFree, cst[n]));''')
+rep('''  b.set("#SkyyTrDetState.Text", @PKG@.TreeClassOps.stateLine(st0, ci, sel));
+  b.set("#SkyyTrDetNow.Text", @PKG@.TreeClassOps.nowLine(st0, ci, sel));''', '''  b.set("#SkyyTrDetState.Text", @PKG@.TreeClassOps.stateLine(d, it, st0, ci, sel));
+  b.set("#SkyyTrDetNow.Text", @PKG@.TreeClassOps.nowLine(d, it, st0, ci, sel));''')
+rep('''  b.set("#SkyyTrBuyTx.Text", safe(@PKG@.TreeClassOps.buyText(own, it, ci, sel, lvl, apFree, st0)));''',
+    '''  b.set("#SkyyTrBuyTx.Text", safe(@PKG@.TreeClassOps.buyText(d, own, it, ci, sel, lvl, apFree, st0)));''')
+rep('''           chain(["st0 == 3", "st0 == 2 || st0 == 4"], "SkyyTrBuyRow", [
+               SUI.button("SkyyTrBuy", "Coming soon", "secondary", w=TR_BUY_W, disabled=True),
+               SUI.button("SkyyTrBuy", "Owned", "secondary", w=TR_BUY_W, disabled=True),''', '''           chain(["st0 == 3", "sw", "st0 == 2 || st0 == 4"], "SkyyTrBuyRow", [          # 0.3.3: an owned switch -> Switch
+               SUI.button("SkyyTrBuy", "Coming soon", "secondary", w=TR_BUY_W, disabled=True),
+               SUI.button("SkyyTrBuy", "Switch", "primary", w=TR_BUY_W),
+               SUI.button("SkyyTrBuy", "Owned", "secondary", w=TR_BUY_W, disabled=True),''')
+
+# ================================================================================================================ Server Setup rows (+ 2 tables)
+rep('''    ("class.minLevel", "Class level per node", "classes", "table", "", "0", "100", "int;type;Class level", "", "live,danger",
+     "Entry = <Class>.<Id> (Archer.R2). Class skill level the node needs. Removed or 0 = no level needed.",   # 0.3.1''',
+    '''    ("class.minLevel", "Class level per node", "classes", "table", "", "0", "100", "int;type;Class level", "", "live,danger",
+     "Entry = <Class>.<Id> (Mage.PA1). Class skill level the node needs. Removed or 0 = no level needed.",   # 0.3.1; 0.3.3 example''')
+rep('''      "Entry = node id (ROOT, P1, X1, L3 ...). On, the stat amount and the AP cost. Removed = built-in.",''',
+    '''      "Entry = node id (ROOT, P1, T2, PA1 ...). On, the node's number and the AP cost. Removed = built-in.",''')
+rep('''EXTRA_EXACT_ROWS, EXTRA_TABLE_ROWS = 7, 1 + NC   # 0.3 part 2: class.enabled .. class.debug.extraAp; class.minLevel + five class.nodes.<Class>
+assert len(_exact) == 19 + EXTRA_EXACT_ROWS and len(CFG_ROWS) == 20 + len(TREES) + EXTRA_EXACT_ROWS + EXTRA_TABLE_ROWS and len(CFG_ROWS) == 41
+assert [r[0] for r in CFG_ROWS].count("class.enabled") == 1 and len(set(r[0] for r in CFG_ROWS)) == 41''',
+    '''EXTRA_EXACT_ROWS, EXTRA_TABLE_ROWS = 7, 1 + NC   # 0.3 part 2: class.enabled .. class.debug.extraAp; class.minLevel + one class.nodes.<Class> each
+assert len(_exact) == 19 + EXTRA_EXACT_ROWS and len(CFG_ROWS) == 20 + len(TREES) + EXTRA_EXACT_ROWS + EXTRA_TABLE_ROWS and len(CFG_ROWS) == 43   # 0.3.3: + Assassin, Monk
+assert [r[0] for r in CFG_ROWS].count("class.enabled") == 1 and len(set(r[0] for r in CFG_ROWS)) == 43''')
+rep('''  if (n < 0) {
+    if (near != null) return "?" + e + " does nothing - capitals matter, the node is " + near + ". Save it anyway?";
+    return "?" + e + " is not a class node (ROOT P1 P2 X1 X2 P3 P4, A1-A4, M1A-M4B, L1-L4 LE LS, C1-C4 CE CS, R1-R4 RE RS) - this line would do nothing. Save it anyway?";
+  }''', '''  if (n < 0) {
+    if (near != null) return "?" + e + " does nothing - capitals matter, the node is " + near + ". Save it anyway?";
+    if (@PKG@.TreeClass.retIdx(e) >= 0) return "?" + e + " was a 0.3.2 lane node - the class paths replaced it (0.3.3), this line does nothing. Save it anyway?";
+    return "?" + e + " is not a class node (ROOT P1 P2 X1 X2 P3 P4, A1-A4, M1A-M4B, T1-T6, PA1-PA5, PB1-PB5, PC1-PC5, LE CE RE, TS) - this line would do nothing. Save it anyway?";
+  }
+  if (@PKG@.TreeClass.hidden(ci, n)) return "?" + e + " is only on the Priest tree (the Open Aura switch) - this line does nothing. Save it anyway?";''')
+rep('''  if (kd == @PKG@.TreeClass.K_M && amt > 100L) return "?" + nm + " would give +" + amt + " max Mana. Save it anyway?";
+  return null;''', '''  if (kd == @PKG@.TreeClass.K_M && amt > 100L) return "?" + nm + " would give +" + amt + " max Mana. Save it anyway?";
+  if ((kd == @PKG@.TreeClass.K_V || kd == @PKG@.TreeClass.K_B || kd == @PKG@.TreeClass.K_C) && amt > 50L) return "?" + nm + " would give +" + amt + "% move speed. Save it anyway?";
+  if (kd == @PKG@.TreeClass.K_F && amt > 100L) return "?" + nm + " would take " + amt + "% off fall damage (100 = none at all). Save it anyway?";
+  return null;''')
+rep('''  if (ci < 0 || !@PKG@.TreeClass.CLASSES[ci].equals(cn)) return "?" + cn + " is not a class (Archer, Warrior, Mage, Berserker, Priest - capitals matter) - this line would do nothing. Save it anyway?";''',
+    '''  if (ci < 0 || !@PKG@.TreeClass.CLASSES[ci].equals(cn)) return "?" + cn + " is not a class (Archer, Warrior, Mage, Berserker, Priest, Assassin, Monk - capitals matter) - this line would do nothing. Save it anyway?";''')
+rep('''  if (n < 0 || !@PKG@.TreeClass.NID[n].equals(id)) return "?" + id + " is not a class node id (capitals matter; the ids are in trees.properties) - this line would do nothing. Save it anyway?";''',
+    '''  if (n < 0 || !@PKG@.TreeClass.NID[n].equals(id)) return "?" + id + " is not a class node id (capitals matter; the ids are in trees.properties) - this line would do nothing. Save it anyway?";
+  if (@PKG@.TreeClass.hidden(ci, n)) return "?" + id + " is only on the Priest tree - this line does nothing. Save it anyway?";''')
+
+# ================================================================================================================ (4) TreeMig33
+MIG33 = (LF + "RET_DEF = %r   # 0.3.3: the retired 0.3.2 class lines + their 0.3.2 defaults (the patch computed them from 0.3.2's class block)" % (RET_DEF,)) + r'''
+# 0.3.3: TreeMig33's block for an EXISTING 0.3+ file (appended once after its bytes): the marker + 2 comment lines, then every keyed line
+# of the class block (a keyed line only when the file has no such key - an admin's line is kept)
+ADD33 = [("", "# ---------- SkyyTrees 0.3.3 (added once - marker %s): class trunk + 3 locked paths, Assassin and Monk ----------" % MK33_ID),
+         ("", "# The 0.3.2 lane lines (class.nodes.<Class>.L1-L4 / C1-C4 / R1-R4 / LS CS RS, class.minLevel.Archer.R2-R4) are kept and no"),
+         ("", "# longer read. The lines below are the class nodes this file did not have yet (Server Setup -> Trees -> Class trees).")]
+ADD33 += [(_l.split("=", 1)[0], _l) for _l in CLASS_KEYED]
+assert [_l for k, _l in ADD33 if k] == CLASS_KEYED and len(set(k for k, _l in ADD33 if k)) == len(CLASS_KEYED) and ADD33[0][1].count(MK33_ID) == 1
+assert all(ord(ch) < 128 for _k, l in ADD33 for ch in l) and not any(CR_ in l for _k, l in ADD33 for CR_ in (chr(10), chr(13)))
+assert not set(k for k, _v in RET_DEF) & set(k for k, _l in ADD33), "a retired key is never appended again"
+# ================= 0.3.3 TreeMig33: the ONE-TIME class paths update of an existing trees.properties =================
+# setup() only, right AFTER TreeMig32.run (a pre-0.3 file has the 0.3 block - the 0.3.3 class lines + this marker - by then) and BEFORE
+# CfgPub.start. PROJECT-RULES 4, TreeMig's machinery: the marker in a comment line = never again; m33Update APPENDS one block after the old
+# bytes (kept byte for byte, the file's own line ending, a missing final newline added first; a keyed line only when the file has no such
+# key - an admin's line is kept); TreeMig.sameAfter (Properties: the old keys keep their values + exactly the appended ones); CfgHist.snapshot
+# + TreeMig.mgSaved before the write; no change-log line (no value changes - the map; Server Setup -> Trees -> History restores the old
+# file). The retired 0.3.2 lane lines stay as they are: one INFO line, and one per line an admin edited (named, never carried to a new node).
+mig33 = pool.makeClass(PKG + ".TreeMig33")
+for _d in ("public static final String MK = %s;" % json.dumps(MK33_ID),
+           'public static final String WHO = "SkyyTrees 0.3.3";',
+           "public static final String[] ADD_KEY = %s;" % jstr([_k for _k, _l in ADD33]),
+           "public static final String[] ADD_LINE = %s;" % jstr([_l for _k, _l in ADD33]),
+           "public static final String[] RET_KEY = %s;" % jstr([_k for _k, _v in RET_DEF]),
+           "public static final String[] RET_VAL = %s;" % jstr([_v for _k, _v in RET_DEF])):
+    F(mig33, _d)
+M(mig33, r"""
+public static boolean marked(java.util.ArrayList l) {
+  int k = 0;
+  while (k < l.size()) {
+    String s = (String) l.get(k);
+    if (@PKG@.CfgFile.isComment(s)) { if (s.indexOf(MK) >= 0) return true; k++; continue; }
+    k = @PKG@.CfgFile.end(l, k) + 1;
+  }
+  return false;
+}""")
+# pure text step (ISO-8859-1 chars in and out). null = the marker is already in a comment line or the text cannot be read as Properties.
+# Else { new text, Integer lines added, String[] { appended key, value }*, String[] notes }. Never throws.
+M(mig33, r"""
+public static Object[] m33Update(String text) {
+  try {
+    java.util.ArrayList l = @PKG@.CfgFile.split(text);
+    if (marked(l)) return null;
+    java.util.Properties p = new java.util.Properties();
+    p.load(new java.io.StringReader(text));
+    String eol = text.indexOf("\r\n") >= 0 ? "\r\n" : "\n";
+    StringBuilder sb = new StringBuilder(text.length() + 32768);
+    sb.append(text);
+    if (text.length() > 0 && !text.endsWith("\n")) sb.append(eol);
+    if (text.length() > 0) sb.append(eol);
+    java.util.ArrayList keys = new java.util.ArrayList();
+    int added = 0;
+    int missing = 0;
+    for (int i = 0; i < ADD_LINE.length; i++) if (ADD_KEY[i].length() > 0 && p.getProperty(ADD_KEY[i]) == null) missing++;
+    for (int i = 0; i < ADD_LINE.length; i++) {
+      String k = ADD_KEY[i];
+      if (k.length() > 0 && p.getProperty(k) != null) continue;
+      if (missing == 0 && i > 0) continue;
+      sb.append(ADD_LINE[i]).append(eol);
+      if (k.length() > 0) {
+        added++;
+        keys.add(k);
+        keys.add(ADD_LINE[i].substring(k.length() + 1));
+      }
+    }
+    java.util.ArrayList notes = new java.util.ArrayList();
+    int kept = 0;
+    for (int i = 0; i < RET_KEY.length; i++) {
+      String v = p.getProperty(RET_KEY[i]);
+      if (v == null) continue;
+      kept++;
+      if (!v.trim().equals(RET_VAL[i])) notes.add(RET_KEY[i] + "=" + @PKG@.CfgRows.oneLine(v.trim()) + " kept - an admin changed it (built-in " + RET_VAL[i] + "); its node is gone since SkyyTrees 0.3.3, so it does nothing now (nothing was carried to a new node)");
+    }
+    if (kept > 0) notes.add(0, kept + " retired class line(s) of SkyyTrees 0.3.2 (the stat lanes, their capstones, Archer.R2-R4 levels) kept as they are - no longer read");
+    return new Object[] { sb.toString(), Integer.valueOf(added), (String[]) keys.toArray(new String[0]), (String[]) notes.toArray(new String[0]) };
+  } catch (Throwable t) { return null; }
+}""")
+M(mig33, r"""
+public static synchronized String run(java.nio.file.Path base) {
+  if (base == null) return "";
+  java.nio.file.Path f = base.resolve("trees.properties");
+  try {
+    if (!java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) return "";
+    byte[] old = java.nio.file.Files.readAllBytes(f);
+    Object[] r = m33Update(new String(old, "ISO-8859-1"));
+    if (r == null) return "";
+    byte[] data = ((String) r[0]).getBytes("ISO-8859-1");
+    String[] keys = (String[]) r[2];
+    if (!@PKG@.TreeMig.sameAfter(old, data, keys)) {
+      @PKG@.TreeCfg.warn("trees.properties NOT updated for SkyyTrees 0.3.3 (class paths): the update would change more than the added lines (the file is used as it is; the next start tries again)");
+      return "";
+    }
+    int fi = @PKG@.TreeMig.fileIdx();
+    if (fi < 0) return "";
+    @PKG@.TreeMig.mgKit(f.toAbsolutePath().getParent());
+    @PKG@.CfgHist.snapshot(fi, old, @PKG@.CfgHist.stamp(), WHO, "before the 0.3.3 class paths update");
+    if (!@PKG@.TreeMig.mgSaved(fi, old)) {
+      @PKG@.TreeCfg.warn("trees.properties NOT updated for SkyyTrees 0.3.3 (class paths): the old file could not be kept in " + @PKG@.CfgHist.DIR + " (the file is used as it is; the next start tries again)");
+      return "";
+    }
+    @PKG@.CfgRows.atomicWrite(f, data);
+    @PKG@.TreeCfg.load();          // the appended class lines (minLevel gates, the new nodes) apply from this start on
+    int added = ((Integer) r[1]).intValue();
+    String msg = "trees.properties updated for SkyyTrees 0.3.3: " + added + " line(s) added - the class trunk + paths and the Assassin / Monk trees (the old file is in config-history; Server Setup -> Trees -> History can put it back) [marker " + MK + ", runs once]";
+    @PKG@.TreeCfg.info(msg);
+    StringBuilder all = new StringBuilder(msg);
+    String[] notes = (String[]) r[3];
+    for (int i = 0; i < notes.length; i++) { @PKG@.TreeCfg.info(notes[i]); all.append('\n').append(notes[i]); }
+    return all.toString();
+  } catch (Throwable t) {
+    @PKG@.TreeCfg.warn("could not update trees.properties for SkyyTrees 0.3.3 (class paths; the file is used as it is): " + t);
+    return "";
+  }
+}""")
+
+'''
+rep('''
+# ================= commands (HANDOFF command rules) =================''', MIG33 + '''# ================= commands (HANDOFF command rules) =================''')
+rep('''  @PKG@.TreeMig32.run(base);   // 0.3.2: class.enabled false -> true once, only while it holds the old default (History first; Undo)''',
+    '''  @PKG@.TreeMig32.run(base);   // 0.3.2: class.enabled false -> true once, only while it holds the old default (History first; Undo)
+  @PKG@.TreeMig33.run(base);   // 0.3.3: the class trunk + path lines appended once (History first; nothing rewritten)''')
+rep('''ALL = (defs, cfg, dat, sto, stk, calc, cls, fx, swg, msg, abil, gat, tfn, bfn, ffn, dmg, tick, svr, ops, cops, page, kitc, mig, mig32, vcmd,''',
+    '''ALL = (defs, cfg, dat, sto, stk, calc, cls, fx, swg, msg, abil, gat, tfn, bfn, ffn, dmg, tick, svr, ops, cops, page, kitc, mig, mig32, mig33, vcmd,''')
+
+# ================================================================================================================ the detail line fit (build time)
+rep('''TR_CBUILD_JAVA, TRC_MARKUPS = class_page_java()''', '''TR_CBUILD_JAVA, TRC_MARKUPS = class_page_java()
+# 0.3.3: the class detail's "Gives: <effect> - <type>" line (TreeClassOps.givesLine + typeLine, at the default Amounts) fits its 2 lines
+def _type_py(ci_, n_):
+    nid_, r_ = CT_ID[n_], CT[n_][10]
+    pn_ = CLANES[CLASSES[ci_]][CT[n_][5] - 1][0] if CT[n_][5] else ""
+    w_ = {1: "Passive - pick one of two", 2: "Ability rune slot", 3: "Modifier rune slot", 4: "Modifier rune slot", 5: "Trunk", 9: "Switch"}.get(r_, "Passive")
+    if r_ == 6: w_ = pn_ + " " + nid_[2:] + "/5"
+    if r_ == 7: w_ = "Element - " + pn_ + " path"
+    return w_ + " - %d AP" % CT[n_][1] + (" - continues on page 2" if nid_ == "P3" else (" - continues on page 1" if nid_ == "P4" else ""))
+for _c in CN:
+    if _c["hid"]: continue
+    _g = "Gives: " + _c["now"].replace("%A", str(_c["amt"])) + " - " + _type_py(_c["ci"], _c["n"])
+    assert SUI.text_lines(_g, TR_DET_IN_W, 16) <= 2, "the class detail line takes 3 lines: %s" % _g
+for _t in ("Chain broken - a needed node is missing or off, or its path is locked: no AP spent, no effect. A respec resets the tree",
+           "Needs: Meteor from the Rift is on the Riftwalker path - you follow Light Bender - respec to change paths"):
+    assert SUI.text_lines(_t, TR_DET_IN_W, 16) <= 2, _t''')
+
+# ================================================================================================================ checks on the result
+assert s.count("registerSystem(") == REG0, "0.3.3 adds no system"
+assert s.count("registerCommand(") == CMD0, "command registrations changed"
+for kb in KEEP:
+    assert kb in s, "a block that must stay 0.3.2's changed: %s" % kb[:80]
+_ix = s.index
+assert _ix("public static boolean mgSaved(int f, byte[] old) {") < _ix('mig33 = pool.makeClass(PKG + ".TreeMig33")') < _ix("public static Object[] m33Update(String text) {") \
+    < _ix("@PKG@.TreeMig33.run(base);"), "javassist: methods before their callers"
+assert _ix("public static boolean hidden(int ci, int n) {") < _ix("public static @PKG@.TreeData readFile(String k) {")
+assert _ix("public static int retIdx(String id) {") < _ix("int ri = @PKG@.TreeClass.retIdx(ids[j]);")
+assert _ix("public static synchronized int[] takeNote033(") < _ix("public static void note033(")
+assert _ix("public static synchronized void setOn(") < _ix("public static String flip(")
+assert _ix("public static double[] moveOf(") < _ix("public static void classPost(")
+assert _ix("public static boolean switchOn(") < _ix("public static String cardText2(") < _ix("public static String stateLine(@PKG@.TreeData d")
+assert _ix("public static boolean crouching(@CB@ cb, @REF@ r) {") < _ix("@PKG@.TreeFx.classPost(u, hid, crouching(cb, ref));")
+assert 'MG_WHO = "SkyyTrees 0.3"' in s and 'MG_MARK_ID = "skyytrees-0.3-trees"' in s and 'public static final String WHO = "SkyyTrees 0.3.2";' in s
+assert "KEEP=10" in s and "KEEP=20" not in s
+assert all(len(_l) <= 140 for _l in s[:s.index("=== SkyyTrees 0.3.2 notes")].split(LF)), "docstring lines <= 140: %s" % [_l for _l in s[:s.index("=== SkyyTrees 0.3.2 notes")].split(LF) if len(_l) > 140]
+compile(s, dst, "exec")
+open(dst, "w", encoding="utf8", newline=NL).write(s)   # keep the line endings of 0.3.2
+print("wrote", dst, "(%d lines; 0.3.2 had %d)" % (s.count(LF), OLD.count(LF)))

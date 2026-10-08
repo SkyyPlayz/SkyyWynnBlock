@@ -19,7 +19,7 @@ SET = [
     ("SkyyHud", "0.3.16"), ("SkyySacks", "0.7.13"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
     ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.9"), ("SkyySkills", "0.4.21"),
     ("SkyyAccessories", "0.5.7"), ("SkyyClasses", "0.1.14"), ("SkyyMenu", "0.3.9"), ("SkyyEssentials", "0.1.8"), ("SkyyProfiles", "0.1.6"),
-    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.2"),
+    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.3"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -53,6 +53,8 @@ SET = [
     # FLOOR (2026-10-07, Monk + Assassin playable): SkyyClasses 0.1.14 + SkyySkills 0.4.21 + SkyyProfiles 0.1.6 + SkyyMenu 0.3.9 deploy
     # TOGETHER (never Classes 0.1.14 without Skills 0.4.21 - the Monk would earn no XP). Roll back below them only if no Monk profile
     # exists; otherwise roll back all four together and expect classless Monk profiles (no items / coins / XP lost; Combat.Shaman kept).
+    # FLOOR (2026-10-08, class path trees): rolling SkyyTrees back to 0.3.2 loses players' path picks (nothing else; 0.3.2 reads the
+    # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # Reel probe (2026-10-07): 8 SkyyFishing_Rod_* + SkyyFishing_Reel stat look test - REMOVE after Skyy tests it (TEST-CHECKLIST) and
     # BEFORE SkyyFishing ships (same item / stat names).
     ("SkyyReelProbe", "0.1"),
@@ -62,7 +64,7 @@ SET = [
     ("SkyyMobs", "0.1.4"), ("SkyyWorldGen", "0.1"),
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
-    ("SkyyArmory", "0.1.8"),
+    ("SkyyArmory", "0.1.9"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
