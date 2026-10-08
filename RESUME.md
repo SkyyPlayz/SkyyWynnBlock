@@ -33,7 +33,7 @@ Read this first, then only what the task needs. Map of every file + search tips:
 - OVERNIGHT 2026-10-07 (Skyy asleep: "work through everything you can do on the mudpack. and ill answer all the questions on everything
   else tomorrow. try to get the new updated class skill trees out tonight if you can."): RUNNING classes014 (wf_678ba01d-370: Monk +
   Assassin playable), armory018 (wf_64bef864-aaf: Shadow Step), spec agent refreshing research/cloud/Class-Tree-Paths.md + writing
-  Class-Tree-Build-Map.md. NEXT: when classes014 pins -> class TREES round (SkyyTrees 0.3.3, path trees per the build map, ultracode),
+  research/cloud/Class-Tree-Build-Map.md. NEXT: when classes014 pins -> class TREES round (SkyyTrees 0.3.3, path trees per the build map, ultracode),
   deploy each READY round (auto-deploy), queue every question for Skyy in OPEN-QUESTIONS. cloud-link mod: ~/.claude/dev-mods/.../cloud-link.
 LATER round: dagger Shadow Step (research/Shadow-Step-Spec.md; no void protection). Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
   Stamina icon; fishing junk; reference pictures are local in `research/refs/`, described in docs/answered/gear.md).

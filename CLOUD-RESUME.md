@@ -62,7 +62,7 @@ Legs 128x64, Hands 64x64; item icons 64x64; Rabbit creature texture 160x160, mod
 gear icons v2 (DONE locally today: models-local/art/fishing via tools/art/make_fishing.py - final rods/reels/parts + rod 3D renders).
 Context of today: 4 deploys (accessory icons, metal staffs, spellbooks + kunai, Monk weapons + right-click block + NO void protection);
 class design changes all over docs/answered/classes.md 2026-10-07 lines; the local session is building Monk + Assassin classes, Shadow
-Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-Paths.md or Class-Tree-Build-Map.md - a local agent owns them). -->
+Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-Paths.md or research/cloud/Class-Tree-Build-Map.md - a local agent owns them). -->
 
 - [ ] **Class ability spec refresh** - bring `research/cloud/Class-Ability-Spec-Draft.md` + `research/cloud/Modifier-Pool-Spec.md` in line with
       every docs/answered/classes.md line dated 2026-10-07 (Echo on many abilities, Mana Barrier dome + Follow, Guardian Spirit passive aura,
