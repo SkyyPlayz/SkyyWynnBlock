@@ -54,7 +54,7 @@ flowchart TD
 
 - **Charged:** vanilla **Pounce** (a sweep / stab lunge).
 
-- 💡 **Idea for later - not decided yet:** Smoke Roll.
+- 💡 **Idea for later - not decided yet:** Smoke Roll - hold and release to roll past your target and come up behind it, leaving a see-through smoke puff; mobs lose track of you for a moment and your next stab is a backstab. Draft: `research/Smoke-Roll-Idea.md`.
 
 ### Kunai
 
