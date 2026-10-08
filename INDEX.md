@@ -12,6 +12,7 @@ grep hit is the whole thing: `grep -n "Lantern" docs/answered/*.md docs/log/*.md
 | `OPEN-QUESTIONS.md` | ONLY the questions still waiting on Skyy, with today's default | short |
 | `TEST-CHECKLIST.md` | what Skyy tests next (deployed, not tested yet) | short |
 | `CLOUD-RESUME.md` | cloud sessions' rolling to-do (they write only it + `research/cloud/`) | ~110 lines |
+| `ART-RESUME.md` | the Blockbench ART agent's start file + queue (it writes only it, `tools/art/` and git-ignored `models-local/`) | ~90 lines |
 
 ## Folders
 | Where | What | How to use it |
