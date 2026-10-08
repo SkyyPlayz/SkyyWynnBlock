@@ -35,7 +35,7 @@ flowchart TD
   A2 --> A2X["A2-alt Cyclone Kick"]
   A1 -.-> M1["Duration+ | Radius+ | Efficiency | Power+"]
   A1A -.-> M2["Power+ | Radius+ | Echo | Efficiency"]
-  A1B -.-> M3["Duration+ | Power+ | Knockback+ | Ward"]
+  A1B -.-> M3["Duration+ | Power+ | Knockback+ | Ward | Echo"]
   A2 -.-> M4["Knockback+ | Ricochet | Slow | Power+ | Echo"]
   A2X -.-> M5["Radius+ | Knockback+ | Slow | Haste"]
   classDef locked fill:#2e7d32,color:#fff,stroke:#1b5e20
@@ -153,6 +153,8 @@ You own 4. You equip 2.
 
 - 🛡️ **Ward** - a small shield while in the stance.
 
+- 🔁 **Echo** - when the stance ends, the melee COUNTERS come back for ~3 s while you move freely: break stance to attack and still block + counter. A block + counter interrupts your own attack - get hit mid-swing and you block and counter instead · each level: a longer echo.
+
 ### A2 · Palm Strike
 
 🟢 **Locked**
@@ -260,6 +262,8 @@ Ideas - pick one.
 - 2026-10-05: refined for easy reading (same facts, new layout).
 
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
+
+- 2026-10-07: Still Water gains Echo (counters return ~3 s while moving; block + counter interrupts your attack) (Skyy).
 
 - 2026-10-07: Palm Strike gains Echo (Skyy: "give monks palm strike echo too"); fist attacks, stunlock breakout, gauntlet speed (Skyy).
 
