@@ -26,6 +26,10 @@ research/cloud/fishing-art/fishing-gear-sheet.png + icons/ (61 icons), research/
     use (all tiers, Mithril / Onyxium too - so a Cobalt reel matches the Cobalt rod and wand); the concept's glowing pink gem pixel
     -> the Onyxium staff gem; fibres, stones, wood, paper, bobber colours stay as approved.
 rod-icon-options.png: Skyy has not picked the rod icon yet - top row the main (concept-look) icons, bottom row the alt/ model renders, 3x.
+(c) ROD x REEL LOOKS (2026-10-07, Skyy "do the 8 rods with the reel stat" + "second row for the rod"): reel_looks() returns, for every
+    rod tier and reel option K (0 = no reel, 1..8 = reel tiers), the model + texture for the item's ItemAppearanceConditions on the
+    SkyyFishing_Reel stat (reel K painted on the Reel + Crank nodes, same UV; K 0 = the model without them) + the render icon. It
+    writes nothing: SkyyReelProbe (and later SkyyFishing) calls it at BUILD time and ships the bytes inside the jar. main() is unchanged.
 
 Every output is vanilla-derived -> ONLY models-local/art/fishing/ (git-ignored). This script holds no vanilla bytes / pixels: it
 reads Assets.zip (read-only) at run time. Python stdlib + tools/skyyart.py only.
@@ -300,23 +304,30 @@ def recolor_where(img, grad, rects, keep, **kw):
     return rec
 
 
-def rod_texture(z, P, base_model, tier, width):
+def rod_texture(z, P, base_model, tier, width, reel=None):
     """The rod texture for a tier: vanilla UV recoloured in the left 32 columns (+ clamp-to-edge for faces that run past the
-    vanilla width), widened to `width` columns."""
+    vanilla width), widened to `width` columns. reel = the reel tier painted on the Reel + Crank nodes (None = the rod's own tier,
+    the shipped look; "Bamboo" = the vanilla reel texels) - same UV, same size, only those two nodes change."""
     van = SA.png_decode(SA._read(z, ROD_TEX))
-    if tier == "Bamboo":
+    rt = tier if reel is None else reel
+    if tier == "Bamboo" and rt == "Bamboo":
         return van
-    metal = P[tier]["metal"]
-    trim = P["Gold"]["metal"] if tier in GOLD_TRIM else metal
     R = lambda *names: SA.node_rects(base_model, list(names))   # noqa: E731
     img = van
-    img = SA.recolor(img, metal, R("Blank1", "Blank2", "Blank3"), as_img=True, **mt(tier, lo=0.05, hi=0.95, rank=0.5, smooth=0.3))
-    img = SA.recolor(img, LEATHER if tier in LOW_COLLAR else CORK, R("Grip"), lo=0.05, hi=0.95, rank=0.6, as_img=True)
-    img = SA.recolor(img, metal, R("Reel"), lift=SA.rim_lift(R("Reel"), 0.12, 0.0), as_img=True,
-                     **mt(tier, lo=0.0, hi=0.92, rank=0.6, smooth=0.2))
-    img = SA.recolor(img, trim, R("Crank"), lo=0.3, hi=1.0, rank=0.5, as_img=True)
-    img = recolor_where(img, trim, R("Guides"), lambda c: SA.luma(c) < 200, lo=0.25, hi=0.95, rank=0.6)
-    img = SA.recolor(img, metal, R("Hook"), as_img=True, **mt(tier, lo=0.25, hi=1.0, rank=0.5))
+    if tier != "Bamboo":
+        metal = P[tier]["metal"]
+        img = SA.recolor(img, metal, R("Blank1", "Blank2", "Blank3"), as_img=True, **mt(tier, lo=0.05, hi=0.95, rank=0.5, smooth=0.3))
+        img = SA.recolor(img, LEATHER if tier in LOW_COLLAR else CORK, R("Grip"), lo=0.05, hi=0.95, rank=0.6, as_img=True)
+    if rt != "Bamboo":
+        rmetal = P[rt]["metal"]
+        rtrim = P["Gold"]["metal"] if rt in GOLD_TRIM else rmetal
+        img = SA.recolor(img, rmetal, R("Reel"), lift=SA.rim_lift(R("Reel"), 0.12, 0.0), as_img=True,
+                         **mt(rt, lo=0.0, hi=0.92, rank=0.6, smooth=0.2))
+        img = SA.recolor(img, rtrim, R("Crank"), lo=0.3, hi=1.0, rank=0.5, as_img=True)
+    if tier != "Bamboo":
+        trim = P["Gold"]["metal"] if tier in GOLD_TRIM else metal
+        img = recolor_where(img, trim, R("Guides"), lambda c: SA.luma(c) < 200, lo=0.25, hi=0.95, rank=0.6)
+        img = SA.recolor(img, metal, R("Hook"), as_img=True, **mt(tier, lo=0.25, hi=1.0, rank=0.5))
     if width == van.w:
         return img
     out = SA.Img(width, img.h)
@@ -340,14 +351,14 @@ def overflow_rects(model, w):
     return out
 
 
-def build_rod(z, P, tier):
-    """(model dict, texture Img, shipped_model: bool)."""
+def build_rod(z, P, tier, reel=None):
+    """(model dict, texture Img, shipped_model: bool). reel = the reel tier painted on the rod (None = the rod's own tier)."""
     base = rod_base(z)
     if tier == "Bamboo" or tier in R1_PLAIN:
-        return base, rod_texture(z, P, base, tier, 32), False
+        return base, rod_texture(z, P, base, tier, 32, reel), False
     W = 64
     m = copy.deepcopy(base)
-    tex = rod_texture(z, P, base, tier, W)
+    tex = rod_texture(z, P, base, tier, W, reel)
     grip = find(m["nodes"], "Grip")
     ids = []
 
@@ -422,6 +433,76 @@ def fit_props(models, view, fill=58.0, focus=None, span=None):
 def icon_props(models):
     """One shared IconProperties (Rotation ICON_VIEW) that fits every rod (without its hanging line) into the 64 px icon."""
     return fit_props(models, ICON_VIEW)
+
+
+# ======================================================================================================== rod x reel looks
+REEL_NODES = ("Reel", "Crank")     # the vanilla rod's reel box + crank (children of the Grip; renamed by rod_base)
+
+
+def strip_reel(model):
+    """The rod model without its reel (Reel + Crank nodes) - the look for reel option 0 ("no reel")."""
+    m = copy.deepcopy(model)
+    gone = []
+
+    def walk(n):
+        kids = n.get("children") or []
+        gone.extend(c.get("name") for c in kids if c.get("name") in REEL_NODES)
+        n["children"] = [c for c in kids if c.get("name") not in REEL_NODES]
+        for c in n["children"]:
+            walk(c)
+    for n in m["nodes"]:
+        walk(n)
+    if sorted(gone) != sorted(REEL_NODES):
+        raise SA.ArtCheckError("make_fishing: strip_reel removed %s, expected %s" % (gone, list(REEL_NODES)))
+    return m
+
+
+def reel_looks(z=None):
+    """Rod x reel looks for ONE item per rod tier (Skyy 2026-10-07 "do the 8 rods with the reel stat", research/Rod-Reel-Look.md).
+    For every rod tier and reel option K (0 = no reel, 1..8 = reel tier TIERS[K-1]) the Model + Texture an ItemAppearanceConditions
+    entry on the SkyyFishing_Reel stat needs:
+      K 1..8: the rod's own model + its texture with reel K painted on the Reel + Crank nodes (same UV, same size - rod_texture(reel=));
+              K = the rod's own tier is the shipped texture itself (the default look)
+      K 0:    the rod model without the Reel + Crank nodes (strip_reel) + the rod's default texture
+    Icon per rod = the 3D model render (Skyy 2026-10-07 "second row for the rod" = the alt/ render: no hanging line, the shared
+    ICON_VIEW props, default reel = the rod's own matching-tier reel; Bamboo = the vanilla reel).
+    Vanilla-derived bytes: the caller ships `files` only inside a jar (or models-local), never in a tracked file. Deterministic.
+    Returns {"icon_props": {...}, "rods": [8 x {"tier", "number" (1..8), "item", "default_reel" (= number), "model" / "noreel_model" /
+    "texture" / "icon" ("Common/..." paths), "looks": [9 x {"reel": K, "model", "texture"}] (K = 0..8), "files": {"Common/...": bytes}
+    (every non-vanilla file the rod needs: models, textures, icon - never a path that is in Assets.zip)}]}."""
+    z = z or SA.assets()
+    P = palettes(z)
+    built = [(t,) + build_rod(z, P, t) for t in TIERS]
+    props = icon_props([strip_line(m) for _t, m, _x, _s in built])
+    rods = []
+    for ti, (tier, model, tex, shipped) in enumerate(built):
+        key = "SkyyFishing_Rod_%s" % tier
+        files = {}
+        if shipped:
+            mp = "%s/%s.blockymodel" % (ROD_DIR, key)
+            files[mp] = (json.dumps(model, indent=2) + "\n").encode("utf-8")
+        else:
+            mp = ROD_MODEL
+        if tier == "Bamboo":
+            tp = ROD_TEX
+        else:
+            tp = "%s/%s_Texture.png" % (ROD_DIR, key)
+            files[tp] = SA.png_encode(tex)
+        nm = "%s/%s_NoReel.blockymodel" % (ROD_DIR, key)
+        files[nm] = (json.dumps(strip_reel(model), indent=2) + "\n").encode("utf-8")
+        looks = [{"reel": 0, "model": nm, "texture": tp}]
+        for ki, rt in enumerate(TIERS):
+            if rt == tier:
+                looks.append({"reel": ki + 1, "model": mp, "texture": tp})
+                continue
+            vtp = "%s/%s_Reel_%s_Texture.png" % (ROD_DIR, key, rt)
+            files[vtp] = SA.png_encode(build_rod(z, P, tier, rt)[1])
+            looks.append({"reel": ki + 1, "model": mp, "texture": vtp})
+        ip = "%s/%s.png" % (ICON_DIR, key)
+        files[ip] = SA.png_encode(SA.render_icon(strip_line(model), tex, props, 64, as_img=True))
+        rods.append({"tier": tier, "number": ti + 1, "item": key, "default_reel": ti + 1, "model": mp,
+                     "noreel_model": nm, "texture": tp, "icon": ip, "looks": looks, "files": files})
+    return {"icon_props": props, "rods": rods}
 
 
 # ======================================================================================================== (b) concept icons
