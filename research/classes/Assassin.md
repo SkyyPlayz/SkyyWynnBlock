@@ -33,7 +33,7 @@ flowchart TD
   A1A -.-> M2["Duration+ | Power+ | Split | Knockback+"]
   A1B -.-> M3["Radius+ | Duration+ | Slow | Efficiency"]
   A2 -.-> M4["Radius+ | Duration+ | Lingering | Chain"]
-  A2X -.-> M5["Power+ | Duration+ | Efficiency | Haste"]
+  A2X -.-> M5["Power+ | Duration+ | Efficiency | Haste | Echo"]
   classDef locked fill:#2e7d32,color:#fff,stroke:#1b5e20
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
   classDef mods fill:#1a237e,color:#fff,stroke:#0d1442
@@ -166,6 +166,8 @@ You own 4. You equip 2.
 
 - ⚡ **Haste** - speed boost after the strike to get away.
 
+- 🔁 **Echo** - the empowered strike repeats once 1 s later at reduced strength · each level: stronger echo.
+
 &nbsp;
 
 ## 🧩 Modifier pool
@@ -233,5 +235,7 @@ Ideas - pick one.
 - 2026-10-05: refined for easy reading (same facts, new layout).
 
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
+
+- 2026-10-07: God Killer gains the Echo modifier (Skyy: "for the assassin, id give god killer the echo modification").
 
 - 2026-10-04: file created; daggers vanilla, kunai throw-teleport + return, Cloak + First Strike (crit cap 150%, triple crit), Toxin, God Killer - all LOCKED (Skyy).
