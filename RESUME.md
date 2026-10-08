@@ -34,7 +34,7 @@ Read this first, then only what the task needs. Map of every file + search tips:
   else tomorrow. try to get the new updated class skill trees out tonight if you can."): DONE 22:49 Shadow Step (Armory 0.1.8,
   TEST 45); class tree spec refreshed + research/cloud/Class-Tree-Build-Map.md; bag art (models-local/art/bags, Qs in OPEN-QUESTIONS bags);
   cloud session started (OUTBOX test pending). DONE 22:51 Monk + Assassin playable (Classes 0.1.14, Skills 0.4.21, Profiles
-  0.1.6, Menu 0.3.9; TEST 46). DONE 00:34 class PATH TREES (Trees 0.3.3 + Armory 0.1.9 reader; TEST 47). DONE 01:09 SkyyMonkProbe 0.1 (TEST 48; PR #11 closed - local build replaces it). NOTHING
+  0.1.6, Menu 0.3.9; TEST 46). DONE 00:34 class PATH TREES (Trees 0.3.3 + Armory 0.1.9 reader; TEST 47). DONE 01:09 SkyyMonkProbe 0.1 (TEST 48; PR #11 still OPEN - close it with a note: the local build 69d7c80 replaces it; gh CLI not installed here). NOTHING
   RUNNING locally. Probes to REMOVE after Skyy tests: SkyyReelProbe (TEST 42), SkyyMonkProbe (TEST 48), SkyyGatherProbe + B. Cloud: all 10 tasks done (OUTBOX), refilled with 3; told it the tree
   files are free. OPEN-QUESTIONS has tonight's questions (bags, class trees, Monk skill name). Fold research/cloud/LOG.md into docs/log.
   deploy each READY round (auto-deploy), queue every question for Skyy in OPEN-QUESTIONS. cloud-link mod: ~/.claude/dev-mods/.../cloud-link.
