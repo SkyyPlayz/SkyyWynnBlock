@@ -121,3 +121,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Shadow Step (DEPLOYED 2026-10-07, backup deploy-20261007-2249) | [2026-10](2026-10.md) |
 | Monk + Assassin playable (DEPLOYED 2026-10-07, backup deploy-20261007-2251) | [2026-10](2026-10.md) |
 | Class path trees (DEPLOYED 2026-10-08, backup deploy-20261008-0034) | [2026-10](2026-10.md) |
+| Monk moves probe (DEPLOYED 2026-10-08, backup deploy-20261008-0109) | [2026-10](2026-10.md) |
