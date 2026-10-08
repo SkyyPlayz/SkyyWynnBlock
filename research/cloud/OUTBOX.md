@@ -39,3 +39,8 @@ Questions: Archer bow only [yes]; locked = grey emblem [yes]; Mage crystal viole
 ## 2026-10-08 04:08 Fishing UI mockup v2
 Done: research/cloud/Fishing-UI-Mockup.png (v1 kept as research/cloud/Fishing-UI-Mockup-v1.png), generator research/cloud/fishing-ui/make_fishing_ui_v2.py, notes in research/cloud/Fishing-UI-Mockup.md v2 section. Shows the fight screen, minigame HUD bar (5 states), catch cards, Bench Rig tab and a new Pond Fish collection page; colours / sizes from tools/skyyui.py.
 Questions: pack rarity ladder for fish [yes]; catch card 3 s + one chat line [yes]; species grid on the collection page now [yes].
+
+## 2026-10-08 04:10 Class ability spec refresh
+Done: research/cloud/Class-Ability-Spec-Draft.md + research/cloud/Modifier-Pool-Spec.md now follow every classes.md 2026-10-07 line (L111-L148); change list research/cloud/Ability-Refresh-1007.md. Floor = 18th modifier, Echo on 11 abilities, Follow on Mana Barrier, stunlock breakout section 2.8.
+Budget fix PROPOSED: Echo 20-30% (was 30-70%) or Meteor / Palm Strike / Whirlwind break the caps. Questions: Echo 30% at L5 [yes]; Banner cooldown from the fall [yes]; Blood Frenzy per-swing cost [yes].
+Local: research/classes/README.md pool needs --sync-pool (no Floor, 'offers 4'); research/cloud/Class-Tree-Paths.md stale nodes listed in the refresh file (E5, B3, LB2, W1, W2, no Mana Barrier Follow node).

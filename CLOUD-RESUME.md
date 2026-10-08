@@ -64,10 +64,6 @@ Context of today: 4 deploys (accessory icons, metal staffs, spellbooks + kunai, 
 class design changes all over docs/answered/classes.md 2026-10-07 lines; the local session is building Monk + Assassin classes, Shadow
 Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-Paths.md or research/cloud/Class-Tree-Build-Map.md - a local agent owns them). -->
 
-- [ ] **Class ability spec refresh** - bring `research/cloud/Class-Ability-Spec-Draft.md` + `research/cloud/Modifier-Pool-Spec.md` in line with
-      every docs/answered/classes.md line dated 2026-10-07 (Echo on many abilities, Mana Barrier dome + Follow, Guardian Spirit passive aura,
-      Flowing Form combo stacks, Blood Frenzy toggle aura + Floor, Warlord's Banner, Enrage targeting, Still Water Echo, Sanctuary, Martyr's
-      Grace chain, Shield Bubble pulses, stunlock breakout). Recompute the balance tables. Output: the two files + `research/cloud/Ability-Refresh-1007.md` (what changed).
 - [ ] **Class ability ENGINE spec** - how class abilities get CAST and run in SkyyClasses: keybind / hotbar slot / menu choice (Hytale input
       options - mark UNVERIFIED), cooldown + Mana / Stamina bookkeeping, auras that target at activation vs while inside, toggles (Blood Frenzy),
       passives (Guardian Spirit), placed zones (dome, banner), the modifier + Echo system, Server Setup rows, HUD cooldown display. The next big
@@ -84,3 +80,4 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 - [x] Enchanted v2 (rest): 43 icons - 2026-10-08 - `research/cloud/enchanted-art/enchanted-sheet-v2.png`
 - [x] Class emblems v2 (other 5) - 2026-10-08 - `research/cloud/class-art/class-sheet.png`
 - [x] Fishing UI mockup v2 - 2026-10-08 - `research/cloud/Fishing-UI-Mockup.png`
+- [x] Class ability spec refresh - 2026-10-08 - `research/cloud/Ability-Refresh-1007.md`
