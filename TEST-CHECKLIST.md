@@ -62,6 +62,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 53. SkyyKeyProbe 0.1 - /keyprobe give, press every key, /keyprobe report (then remove)
 54. SkyyProfiles 0.1.7 - big SWITCH confirms; each profile keeps its own Health; new profiles start full
 55. SkyyHud 0.3.17 - new 256x256 mod icon, no 'wrong dimensions' client warning
+56. Monk moves - Pole-Vault on every Bo, Skipping Bounds, Rising Strike + Plunge Punch on fists (/armory debug monk on)
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6

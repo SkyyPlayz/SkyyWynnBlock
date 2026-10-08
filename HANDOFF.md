@@ -15,7 +15,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyIslands | 0.5.5 | private islands, co-op, visitors, island settings, /hub |
 | SkyyBazaar | 0.1.5 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons |
 | SkyyGear | 0.2.9 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows |
-| SkyySkills | 0.4.21 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap |
+| SkyySkills | 0.4.22 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap |
 | SkyyAccessories | 0.5.8 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections) |
 | SkyyClasses | 0.1.14 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
 | SkyyMenu | 0.3.10 | SkyWynn Menu, player Settings, Server Setup (admin) |
@@ -30,12 +30,11 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyRanks | 0.1.1 | ranks + permissions made in game |
 | SkyyUiProbe | 0.4 | dev / test probes, op only (retire later) |
 | SkyyReelProbe | 0.1 | rod + reel look probe, op only (remove after Skyy's test, before SkyyFishing) |
-| SkyyMonkProbe | 0.1 | Monk moves engine probe, op only (remove after Skyy's test) |
 | SkyyTownProbe | 0.1 | Zone 1 town probe, op only, test island (run /townprobe undo until 'Nothing to undo', then remove) |
 | SkyyKeyProbe | 0.1 | key probe, op only: /keyprobe give, press keys, /keyprobe report (remove after Skyy's test) |
 | SkyyMobs | 0.1.4 | mob levels + difficulty; level curves + level gap (mob:fn:info) |
 | SkyyWorldGen | 0.1 | Zone 1 test island (/zone 1, admin) |
-| SkyyArmory | 0.1.11 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults |
+| SkyyArmory | 0.1.12 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults |
 | third-party (`PACK.md`) | - | More Crossbow Tiers (Serj), Saplings From Trees (Helios); SkyyRolls is RETIRED |
 
 Every version's notes: `docs/handoff/versions-history.md`. Every build / deploy / test: `docs/log/<YYYY-MM>.md`.
