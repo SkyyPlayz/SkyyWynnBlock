@@ -724,32 +724,57 @@ ASSASSIN = K.Style("Assassin", "#b58cff", ASSN_RIM, field_c="#33224e", field_e="
 
 
 def hood(g, cx, cy, s=1.0, ghost=None):
-    """front view of a pointed hood with a shadowed face and two glowing lilac eyes; ghost=(layer, alpha) = a shadow copy"""
+    """front view of an Assassin's-Creed-style hood (v2, Skyy 2026-10-08): pointed eagle-beak peak that dips down over the
+    forehead, draped sides falling to the shoulders, a cloth face mask over nose + mouth, two glowing lilac eyes in the shadow
+    between beak and mask; ghost=(layer, alpha) = a shadow copy"""
     def P(dx, dy):
         return cx + dx * s, cy + dy * s
-    outer = poly([P(0, -21.0), P(6.5, -17.0), P(11.5, -9.0), P(14.0, 1.0), P(15.0, 10.0), P(19.0, 16.0), P(19.5, 24.0),
-                  P(-19.5, 24.0), P(-19.0, 16.0), P(-15.0, 10.0), P(-14.0, 1.0), P(-11.5, -9.0), P(-6.5, -17.0)])
-    face = ellipse(*P(0, 0.5), 8.0 * s, 10.2 * s) & (Y > cy - 11.0 * s)
+    outer = poly([P(0, -23.4), P(4.4, -19.6), P(9.4, -14.0), P(12.8, -7.0), P(13.8, 1.0), P(14.6, 9.0), P(18.6, 15.0),
+                  P(20.0, 24.0), P(-20.0, 24.0), P(-18.6, 15.0), P(-14.6, 9.0), P(-13.8, 1.0), P(-12.8, -7.0), P(-9.4, -14.0),
+                  P(-4.4, -19.6)])
+    # face opening: the beak comes down to a sharp point between the eyes, the draped sides frame the face
+    opening = poly([P(0, -0.6), P(2.6, -6.6), P(6.4, -8.8), P(9.0, -6.2), P(10.0, 0.0), P(9.6, 7.0), P(7.4, 12.0),
+                    P(3.6, 14.6), P(-3.6, 14.6), P(-7.4, 12.0), P(-9.6, 7.0), P(-10.0, 0.0), P(-9.0, -6.2), P(-6.4, -8.8),
+                    P(-2.6, -6.6)])
     eyes = np.zeros(X.shape, bool)
     for sx in (-1, 1):
-        eyes |= poly([P(sx * 1.6, 0.6), P(sx * 5.6, -0.6), P(sx * 5.0, 1.4), P(sx * 2.0, 2.0)])
+        eyes |= poly([P(sx * 2.4, -1.6), P(sx * 7.0, -3.4), P(sx * 6.8, -1.0), P(sx * 3.0, 0.2)])
+    # cloth mask over nose + mouth: top edge peaks over the nose, bottom tucked into the hood
+    mask = poly([P(-10.4, 2.4), P(-5.0, 2.2), P(0, 0.6), P(5.0, 2.2), P(10.4, 2.4), P(10.2, 8.0), P(7.8, 12.8), P(3.6, 15.4),
+                 P(-3.6, 15.4), P(-7.8, 12.8), P(-10.2, 8.0)]) & opening
     if ghost is not None:
         lay, al = ghost
         lay.put(outer, rs(LILAC, 0.36), alpha=al)
         edge = outer & ~K._erode(K._erode(K._erode(outer, True), False), True)
         lay.put(edge, rs(LILAC, 0.72), alpha=min(1.0, al + 0.25))
-        lay.put(face, rs(SHADE, 0.05), alpha=al)
+        lay.put(opening, rs(SHADE, 0.05), alpha=al)
+        lay.put(mask, rs(LILAC, 0.22), alpha=al)
+        lay.put(line([P(-8.6, 2.5), P(-4.6, 2.3), P(0, 0.7), P(4.6, 2.3), P(8.6, 2.5)], 0.8 * s) & mask, rs(LILAC, 0.6),
+                alpha=min(1.0, al + 0.1))
         lay.put(eyes, rs(LILAC, 0.95), alpha=1.0)
         return outer
     g.bevel(outer, SHADE, face=0.80, bevel=1.6 * s, grad=0.45, gain=0.9)
-    # hood folds: a centre crease from the peak + two side folds
-    folds = line([P(0, -20.0), P(0.6, -12.0)], 0.9 * s) | line([P(-12.5, 4.0), P(-10.0, 14.0), P(-12.0, 23.0)], 0.9 * s) | \
-        line([P(12.5, 4.0), P(10.0, 14.0), P(12.0, 23.0)], 0.9 * s)
+    # beak ridge: a lit centre seam from the peak down to the beak point, with a darker side to give the peak its edge
+    g.put(line([P(0.2, -22.4), P(0.2, -1.8)], 0.9 * s) & outer, rs(SHADE, 1.0))
+    g.put(poly([P(0.7, -21.4), P(3.4, -7.4), P(0.7, -1.4)]) & outer, rs(SHADE, 0.60))
+    # brim edge of the beak: a lit line along each side of the point (so the beak reads against the dark face)
+    g.put(line([P(-6.2, -8.6), P(-2.6, -6.4), P(0, -0.8), P(2.6, -6.4), P(6.2, -8.6)], 0.8 * s) & outer, rs(SHADE, 0.92))
+    # draped side folds falling from the cheeks to the shoulders
+    folds = line([P(-12.2, 2.0), P(-11.6, 12.0), P(-14.0, 23.0)], 0.9 * s) | line([P(12.2, 2.0), P(11.6, 12.0), P(14.0, 23.0)], 0.9 * s) | \
+        line([P(-15.2, 13.0), P(-17.4, 23.0)], 0.8 * s) | line([P(15.2, 13.0), P(17.4, 23.0)], 0.8 * s)
     g.put(folds & outer, rs(SHADE, 0.45))
-    # face opening: inner rim lit, depth dark
-    g.put(ellipse(*P(0, 0.5), 9.4 * s, 11.6 * s) & outer & (Y > cy - 12.5 * s), rs(SHADE, 1.0))
-    d = np.sqrt((X - cx) ** 2 + ((Y - (cy - 3.0 * s)) * 0.8) ** 2) / (10.0 * s)
-    g.put(face, rs(SHADE, 0.02 + d * 0.12))
+    # face opening: lit inner rim, dark depth under the beak
+    rim = opening & ~K._erode(K._erode(opening, True), False)
+    d = np.sqrt((X - cx) ** 2 + ((Y - (cy - 4.0 * s)) * 0.8) ** 2) / (11.0 * s)
+    g.put(opening, rs(SHADE, 0.02 + d * 0.10))
+    g.put(rim & (Y > cy - 2.0 * s), rs(SHADE, 0.30))
+    # the mask: grey-violet cloth, bevelled, with two soft creases and a lit top hem
+    # the mask: dark grey-violet wrapped cloth, bevelled, diagonal wrap folds meeting under the nose, lit top hem over the nose
+    g.bevel(mask, SMOKE, face=0.34, bevel=0.8 * s, grad=0.35, gain=0.8)
+    for sx in (-1, 1):
+        g.put(line([P(sx * 9.6, 5.0), P(sx * 1.2, 8.6)], 0.6 * s) & mask, rs(SMOKE, 0.14))
+        g.put(line([P(sx * 8.8, 10.0), P(sx * 1.6, 13.0)], 0.6 * s) & mask, rs(SMOKE, 0.14))
+    g.put(line([P(-9.0, 2.5), P(-4.8, 2.3), P(0, 0.7), P(4.8, 2.3), P(9.0, 2.5)], 0.7 * s) & mask, rs(SMOKE, 0.70))
     g.put(eyes, rs(LILAC, 0.95))
     return outer
 
@@ -784,7 +809,7 @@ def cloak_first_strike():
     cx, cy = 31.0, 31.0
     glow(back, circle(cx, cy + 2, 15), "#8e68e0", 7.0, 0.85)
     full = hood(None, cx, cy, 1.0, ghost=(Layer(), 0.0))           # silhouette only
-    solid = full & (Y < cy + 9.0)
+    solid = full & (Y < cy + 15.0)          # (v2: lower so the face mask stays solid)
     # the solid upper hood (glyph) ...
     tmp = Layer()
     hood(tmp, cx, cy, 1.0)
@@ -792,7 +817,7 @@ def cloak_first_strike():
     g.a = np.where(solid, 1.0, g.a)
     # ... and the lower part fading out into the field (back layer, no outline): invisibility
     fade = full & ~solid
-    al = np.clip(1.0 - (Y - (cy + 9.0)) / 14.0, 0, 1) ** 1.3
+    al = np.clip(1.0 - (Y - (cy + 15.0)) / 10.0, 0, 1) ** 1.3
     back.rgb = back.rgb * (1 - (fade * al)[..., None]) + tmp.rgb / np.maximum(tmp.a[..., None], 1e-6) * (fade * al)[..., None]
     back.a = np.clip(back.a + fade * al, 0, 1)
     # wisps rising off the fade

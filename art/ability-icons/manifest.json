@@ -3,8 +3,8 @@
   "status": {
     "Mage": "APPROVED by Skyy + committed (answer: \"The ability icons look great, commit them\")",
     "Priest": "APPROVED by Skyy + committed (answer: \"The ability icons look great, commit them\")",
-    "Monk": "NEW - waiting for Skyy's review, NOT committed",
-    "Assassin": "NEW - waiting for Skyy's review, NOT committed"
+    "Monk": "APPROVED by Skyy + committed (answer: \"Yes, the shoe looks good, commit the Monk icons\")",
+    "Assassin": "APPROVED by Skyy + committed"
   },
   "in_game": "NOT wired in, NOT seen in game",
   "generator": [
@@ -653,8 +653,8 @@
     },
     {
       "path": "Common/Icons/Abilities/Assassin/CloakFirstStrike.png",
-      "bytes": 7002,
-      "sha256": "a5cebec147697c22384fe43ea427f52344f4d0ee8d326157d36a91a100082495",
+      "bytes": 7031,
+      "sha256": "37676eeb4d382018d6c2d470bd9fecb04ab19f470172a5b4716cc814a3e4a275",
       "image_size": [
         64,
         64
@@ -668,10 +668,11 @@
       "status": "LOCKED",
       "cost_cooldown": "14 Mana / 30 s",
       "ability_does": "Invisible for 8 s (breaks on attack); First Strike: your next hit within 10 s gets +100% crit chance. Crouch = Still Shadow.",
-      "icon_shows": "a pointed shadow-violet hood with glowing lilac eyes whose lower half fades into the dark (invisibility), and a big gold 4-point crit star (First Strike)",
+      "icon_shows": "an Assassin's-Creed-style hood (v2): sharp eagle-beak peak dipping down between two glowing lilac eyes, draped sides, a dark grey-violet cloth face mask over nose + mouth; the hood's lower edge fades into the dark (invisibility); a big gold 4-point crit star (First Strike)",
       "palettes": [
         "SHADE",
         "LILAC",
+        "SMOKE",
         "GOLD"
       ]
     },
@@ -727,8 +728,8 @@
     },
     {
       "path": "Common/Icons/Abilities/Assassin/ShadowClone.png",
-      "bytes": 6881,
-      "sha256": "c991d792fc8747f036ed31850fa03d372410107153003e1fb79f0ba65ea4fffa",
+      "bytes": 7051,
+      "sha256": "916570a16b3d7b78e904e76389b4a350fd7731f1e6fefc6852c5b23ae3a69ccc",
       "image_size": [
         64,
         64
@@ -742,10 +743,11 @@
       "status": "PROPOSED",
       "cost_cooldown": "20 Mana / 35 s",
       "ability_does": "Cloak + a decoy at your spot that mobs attack for 5 s; it bursts for 2.0 H in 4 blocks. Crouch = Patient Clone.",
-      "icon_shows": "the hooded assassin in front with a glowing lilac shadow copy of itself behind and to the left, burst sparks off the copy",
+      "icon_shows": "the assassin in the Assassin's-Creed-style beak hood + face mask (v2) in front, with a glowing lilac shadow copy of itself (same hood + mask) behind and to the left, burst sparks off the copy",
       "palettes": [
         "SHADE",
-        "LILAC"
+        "LILAC",
+        "SMOKE"
       ]
     },
     {
@@ -775,25 +777,25 @@
     },
     {
       "path": "sheet.png",
-      "bytes": 673462,
+      "bytes": 674449,
       "what": "review sheet with EVERY done class: each icon at 4x / 2x / 64 / 32 px, grouped by class with the class colour swatch + APPROVED / FOR REVIEW tag, plus a dark HUD strip",
-      "sha256": "e50ac89a074ef47e5e01c6c30565613e3cac40a00f2e239901b07c0b1e1ad363"
+      "sha256": "e455dbb7fbd8f6af0b50281465301b30eb43c9b9a50c7c5768c08e6259590bcb"
     },
     {
       "path": "sheet-monk.png",
       "bytes": 198287,
-      "what": "review sheet for the NEW Monk icons only (same layout)",
+      "what": "the Monk review sheet as Skyy reviewed + approved it (same layout)",
       "sha256": "e47dfdf9720e4ee06fe8f76b083f4d1d917f866e4b2c729567e2c9002672f2a2"
     },
     {
       "path": "sheet-assassin.png",
-      "bytes": 194064,
-      "what": "review sheet for the NEW Assassin icons only (same layout)",
-      "sha256": "80f931cc1d20d7fb0ead17c755b1f5750e960ad96b2b12a3ab72f0a980ddb66d"
+      "bytes": 195338,
+      "what": "the Assassin review sheet as Skyy reviewed + approved it (same layout)",
+      "sha256": "3a93ffc888294a409bce2a874f3974e570b677f1b47299f90351309a9d56029b"
     },
     {
       "path": "README.md",
-      "bytes": 20545,
+      "bytes": 22812,
       "what": "what this is, ability -> meaning, colours, defaults, UNVERIFIED, open questions"
     }
   ]

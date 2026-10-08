@@ -145,8 +145,11 @@ def build_manifest(out):
         })
     extras = [("sheet.png", "review sheet with EVERY done class: each icon at 4x / 2x / 64 / 32 px, grouped by class with the "
                             "class colour swatch + APPROVED / FOR REVIEW tag, plus a dark HUD strip")]
-    for c in review_classes():
-        extras.append(("sheet-%s.png" % c.lower(), "review sheet for the NEW %s icons only (same layout)" % c))
+    for c in classes_done():
+        if c in review_classes():
+            extras.append(("sheet-%s.png" % c.lower(), "review sheet for the NEW %s icons only (same layout)" % c))
+        else:  # approved class: its per-class sheet stays as Skyy reviewed it (not rebuilt)
+            extras.append(("sheet-%s.png" % c.lower(), "the %s review sheet as Skyy reviewed + approved it (same layout)" % c))
     extras.append(("README.md", "what this is, ability -> meaning, colours, defaults, UNVERIFIED, open questions"))
     for extra, what in extras:
         p = os.path.join(out, extra)
@@ -160,7 +163,8 @@ def build_manifest(out):
         ramps[name] = [M.K.hexs(c) for c in getattr(M, name)]
     return {
         "item": "Class ability icons - " + ", ".join(classes_done()),
-        "status": {c: ("APPROVED by Skyy + committed (answer: \"%s\")" % CLASS_INFO[c]["answer"]
+        "status": {c: (("APPROVED by Skyy + committed" + (" (answer: \"%s\")" % CLASS_INFO[c]["answer"]
+                                                          if CLASS_INFO[c].get("answer") else ""))
                        if CLASS_INFO[c].get("review") == "approved" else "NEW - waiting for Skyy's review, NOT committed")
                    for c in classes_done()},
         "in_game": "NOT wired in, NOT seen in game",

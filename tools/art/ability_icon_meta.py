@@ -1,6 +1,7 @@
 """ability_icon_meta - what each SkyWynn class ability icon means (from research/cloud/Class-Ability-Shapes.md sections 4 Mage,
 5 Priest, 7 Monk, 8 Assassin; docs/answered/classes.md lines 142-146 for the Priest numbers) and what the icon shows. Used by the sheet +
-manifest. CLASS_INFO "review": "approved" = Skyy OK'd + committed; "review" = waiting for Skyy (gets its own sheet-<class>.png)."""
+manifest. CLASS_INFO "review": "approved" = Skyy OK'd + committed (its sheet-<class>.png is kept as reviewed, no longer rebuilt);
+"review" = waiting for Skyy (gets its own sheet-<class>.png); "answer" = Skyy's OK word for word (None = not relayed)."""
 
 CLASS_INFO = {
     "Mage": {"hex": "#7fb0e0", "role": "burst damage, glass cannon (Sorcery)", "theme": "arcane / cosmic / frost - blue rim, navy field",
@@ -8,9 +9,11 @@ CLASS_INFO = {
     "Priest": {"hex": "#f2e6a0", "role": "healer + protector (Divinity)", "theme": "holy / light / protection - gold rim, warm umber field",
                "review": "approved", "answer": "The ability icons look great, commit them"},
     "Monk": {"hex": "#f08a30", "role": "self-speed disruptor (costs Mana + Stamina)",
-             "theme": "martial / wind / calm - saffron rim, dark rust field, linen wraps", "review": "review", "answer": None},
+             "theme": "martial / wind / calm - saffron rim, dark rust field, linen wraps", "review": "approved",
+             "answer": "Yes, the shoe looks good, commit the Monk icons"},
     "Assassin": {"hex": "#b58cff", "role": "priority killer + debuffer (Assassination)",
-                 "theme": "stealth / poison / the kill - lilac rim, dark plum field", "review": "review", "answer": None},
+                 "theme": "stealth / poison / the kill - lilac rim, dark plum field", "review": "approved",
+                 "answer": None},  # approved for commit 2026-10-08 after hood v2 (exact words not relayed to the art agent)
 }
 
 META = {
@@ -107,8 +110,8 @@ META = {
     "CloakFirstStrike": {
         "slot": "A1", "status": "LOCKED", "cost_cd": "14 Mana / 30 s",
         "does": "Invisible for 8 s (breaks on attack); First Strike: your next hit within 10 s gets +100% crit chance. Crouch = Still Shadow.",
-        "shows": "a pointed shadow-violet hood with glowing lilac eyes whose lower half fades into the dark (invisibility), and a big gold 4-point crit star (First Strike)",
-        "palette": ["SHADE", "LILAC", "GOLD"],
+        "shows": "an Assassin's-Creed-style hood (v2): sharp eagle-beak peak dipping down between two glowing lilac eyes, draped sides, a dark grey-violet cloth face mask over nose + mouth; the hood's lower edge fades into the dark (invisibility); a big gold 4-point crit star (First Strike)",
+        "palette": ["SHADE", "LILAC", "SMOKE", "GOLD"],
     },
     "Toxin": {
         "slot": "A2", "status": "LOCKED", "cost_cd": "12 Mana / 16 s",
@@ -125,8 +128,8 @@ META = {
     "ShadowClone": {
         "slot": "A1-alt A", "status": "PROPOSED", "cost_cd": "20 Mana / 35 s",
         "does": "Cloak + a decoy at your spot that mobs attack for 5 s; it bursts for 2.0 H in 4 blocks. Crouch = Patient Clone.",
-        "shows": "the hooded assassin in front with a glowing lilac shadow copy of itself behind and to the left, burst sparks off the copy",
-        "palette": ["SHADE", "LILAC"],
+        "shows": "the assassin in the Assassin's-Creed-style beak hood + face mask (v2) in front, with a glowing lilac shadow copy of itself (same hood + mask) behind and to the left, burst sparks off the copy",
+        "palette": ["SHADE", "LILAC", "SMOKE"],
     },
     "VanishingAct": {
         "slot": "A1-alt B", "status": "PROPOSED", "cost_cd": "16 Mana / 28 s",

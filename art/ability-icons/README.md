@@ -5,14 +5,14 @@ ART-RESUME items 4 (Mage + Priest) and 6 (the other classes, one class per commi
 | Class | Status |
 |---|---|
 | Mage, Priest | **APPROVED + committed** (e87a4d9). Skyy, word for word: "The ability icons look great, commit them" |
-| Monk | **Reviewed once, waiting for Skyy's OK on the fix**, not committed. Review sheet: `sheet-monk.png`. Skyy, word for word (2026-10-08): "They all look great, except the cyclone kick. The foot looks weird" -> Cyclone Kick redrawn (v2 foot); then Skyy, word for word: "Either wrap the foot or give his shoes don’t leave it bare" -> v3: the foot is wrapped in linen (no bare skin); then Skyy, word for word: "Use shoes instead, make the foot vertical like the first image" -> v4: the foot stands up again like the first image, in a soft Monk shoe. The other 4 Monk icons unchanged |
-| Assassin | **NEW - waiting for Skyy's review**, not committed. Review sheet: `sheet-assassin.png` |
+| Monk | **APPROVED + committed** (59913fc). Review sheet as approved: `sheet-monk.png`. Skyy, word for word (2026-10-08): "They all look great, except the cyclone kick. The foot looks weird" -> Cyclone Kick redrawn (v2 foot); then Skyy, word for word: "Either wrap the foot or give his shoes don’t leave it bare" -> v3: the foot is wrapped in linen (no bare skin); then Skyy, word for word: "Use shoes instead, make the foot vertical like the first image" -> v4: the foot stands up again like the first image, in a soft Monk shoe. The other 4 Monk icons unchanged; then Skyy, word for word: "Yes, the shoe looks good, commit the Monk icons" |
+| Assassin | **APPROVED + committed** (the Assassin commit after 59913fc). Review sheet as approved: `sheet-assassin.png`. Skyy, word for word (2026-10-08): "The hood looks a little weird, do an assassins creed style hood, with a face mask" -> hood v2 (beak hood + face mask) on Cloak + First Strike and Shadow Clone. Toxin, God Killer, Vanishing Act unchanged; then Skyy approved hood v2 for commit (2026-10-08) |
 
 None of them is wired in or seen in game yet. Original pixels drawn from code (Python + numpy + Pillow). No vanilla Hytale file,
 other mod or reference picture was read, copied, traced or recoloured. The approved Mage + Priest PNGs are byte-identical to the
 committed ones (checked after adding Monk + Assassin).
 
-**Start here:** `sheet-monk.png`, then `sheet-assassin.png` (one class at a time). `sheet.png` shows every done class together.
+`sheet.png` shows every done class together; `sheet-monk.png` / `sheet-assassin.png` are the per-class sheets Skyy approved.
 
 ## 1. Files
 
@@ -20,10 +20,10 @@ committed ones (checked after adding Monk + Assassin).
 |---|---|
 | `Common/Icons/Abilities/Mage/Meteor.png` ... `ArcaneBeam.png` | 5 Mage icons, 64 x 64 RGBA |
 | `Common/Icons/Abilities/Priest/SacredHeal.png` ... `MartyrsGrace.png` | 5 Priest icons, 64 x 64 RGBA |
-| `Common/Icons/Abilities/Monk/FlowingForm.png`, `PalmStrike.png`, `CycloneKick.png`, `HundredFists.png`, `StillWater.png` | 5 Monk icons (NEW) |
-| `Common/Icons/Abilities/Assassin/CloakFirstStrike.png`, `Toxin.png`, `GodKiller.png`, `ShadowClone.png`, `VanishingAct.png` | 5 Assassin icons (NEW) |
+| `Common/Icons/Abilities/Monk/FlowingForm.png`, `PalmStrike.png`, `CycloneKick.png`, `HundredFists.png`, `StillWater.png` | 5 Monk icons (approved) |
+| `Common/Icons/Abilities/Assassin/CloakFirstStrike.png`, `Toxin.png`, `GodKiller.png`, `ShadowClone.png`, `VanishingAct.png` | 5 Assassin icons (approved) |
 | `sheet.png` | every done class: big labels, plain page, class colour swatch + APPROVED / FOR REVIEW tag per class, dark HUD strip |
-| `sheet-monk.png`, `sheet-assassin.png` | the same layout for ONE new class each (for review one class at a time) |
+| `sheet-monk.png`, `sheet-assassin.png` | the same layout for ONE class each (kept as Skyy reviewed + approved them) |
 | `manifest.json` | every file: path, bytes, sha256, size, class, slot, ability text, what the icon shows, colour ramps |
 | `README.md` | this file |
 
@@ -57,7 +57,7 @@ One icon per ability - all 4 shapes (walking / sprinting / mid-air / crouch) sha
 | **Sanctuary** | A1-alt A, PROPOSED (numbers LOCKED) | holy zone 12 s, 8 blocks: allies heal 5% max Health / s, take 10% less damage | an ivory gothic arch with a soul-gem keystone, holy light in the doorway, on a glowing gold rune circle |
 | **Martyr's Grace** | A1-alt B, PROPOSED (numbers LOCKED) | 75% heal on the lowest ally within 30 blocks, chains -15 per jump | a big haloed rose heart with a heal plus, gold light bolts chaining to a smaller and a smallest heart |
 
-### Monk (class colour Saffron `#f08a30`, LOCKED; martial / wind / calm) - NEW
+### Monk (class colour Saffron `#f08a30`, LOCKED; martial / wind / calm) - APPROVED
 
 | Icon | Slot | What the ability does | What the icon shows |
 |---|---|---|---|
@@ -69,14 +69,14 @@ One icon per ability - all 4 shapes (walking / sprinting / mid-air / crouch) sha
 
 Monk look: saffron rim, dark rust field (`#4a2416` -> `#170b09`), linen hand wraps like the Monk class emblem's wrapped fist.
 
-### Assassin (class colour `#b58cff`; stealth / poison / the kill) - NEW
+### Assassin (class colour `#b58cff`; stealth / poison / the kill) - APPROVED
 
 | Icon | Slot | What the ability does | What the icon shows |
 |---|---|---|---|
-| **Cloak + First Strike** (`CloakFirstStrike.png`) | A1, LOCKED, 14 / 30 s | invisible 8 s (breaks on attack); next hit within 10 s gets +100% crit chance | a pointed shadow-violet hood with lilac eyes, its lower half fading into the dark; a big gold 4-point crit star |
+| **Cloak + First Strike** (`CloakFirstStrike.png`) | A1, LOCKED, 14 / 30 s | invisible 8 s (breaks on attack); next hit within 10 s gets +100% crit chance | (hood v2) an Assassin's-Creed-style hood: sharp eagle-beak peak dipping down between two glowing lilac eyes, draped sides, a dark cloth face mask over nose + mouth; the hood's lower edge fades into the dark; a big gold 4-point crit star |
 | **Toxin** | A2, LOCKED, 12 / 16 s | thrown vial: 4-block poison cloud 5 s, Poison 0.25 H/s + Weakened 15% | a tilted corked glass vial of bubbling green poison, a toxic green cloud spilling out, drips |
 | **God Killer** | A2-alt, LOCKED, 14 / 45 s | next hit on a boss / mini-boss within 12 s does 2x, 3x on a backstab | a steel dagger (gold guard, wrapped grip, violet pommel gem) stabbing down through a cracked gold boss crown |
-| **Shadow Clone** | A1-alt A, PROPOSED, 20 / 35 s | cloak + a decoy mobs attack for 5 s; it bursts for 2.0 H | the hooded assassin in front with a glowing lilac shadow copy of itself behind, burst sparks off the copy |
+| **Shadow Clone** | A1-alt A, PROPOSED, 20 / 35 s | cloak + a decoy mobs attack for 5 s; it bursts for 2.0 H | (hood v2) the assassin in the beak hood + face mask in front, a glowing lilac shadow copy of itself (same hood + mask) behind, burst sparks off the copy |
 | **Vanishing Act** | A1-alt B, PROPOSED, 16 / 28 s | instant 3 s cloak + 4-block smoke: enemies inside lose you 2 s, Slowed 25% | an iron smoke bomb (violet band, lit fuse) bursting into a big cloud of violet-grey smoke |
 
 Assassin look: lilac rim, dark plum field (`#33224e` -> `#0e0916`) - redder and darker than the Mage's navy, so the two violet-ish
@@ -120,7 +120,7 @@ Monk Saffron `#f08a30` (LOCKED by Skyy), Assassin `#b58cff`.
 | ASSN_RIM `#2e1c5a #4c3290 #7a5cc8 #b58cff #d4bcff #f0e8ff` | Assassin rim (from `#b58cff`) |
 | SHADE `#100a1a ... #8e7ab0`, LILAC `#3e2478 ... #f0e8ff` | Assassin hoods, eyes, shadow clone, bomb band |
 | POISON `#123214 ... #ecffd0`, GLASS `#22303e ... #e6f6f2`, WOOD `#3a2214 ... #d0a868` | Toxin vial, cloud, cork; bomb fuse |
-| SMOKE `#241e30 ... #e6e4ee`, IRON `#12121c ... #7c7c94` | Vanishing Act smoke + bomb; dagger grip |
+| SMOKE `#241e30 ... #e6e4ee`, IRON `#12121c ... #7c7c94` | Vanishing Act smoke + bomb; dagger grip; SMOKE also the Assassin face mask (hood v2) |
 
 Full ramps: `manifest.json` -> `ramps_dark_to_light`. Shadows lean violet / blue, lights lean warm (hue-shifted).
 
@@ -172,6 +172,18 @@ First fix before the pass: hoods were too dark on the plum field - brighter clot
 - Toxin, Shadow Clone: unchanged (read fine).
 Before / after: `/workspace/ability-icons-art/review/readability-32px-assassin.png`.
 
+**Hood v2 (after Skyy: "The hood looks a little weird, do an assassins creed style hood, with a face mask"):** one shared
+hood drawing, so both icons that show the hooded assassin changed - Cloak + First Strike and Shadow Clone (no other icon uses
+it). The old hood was a soft rounded cowl with an oval face hole. New hood: a taller, sharp triangular peak with a lit centre
+seam; at the front the peak comes DOWN as an eagle beak - a sharp point that dips into the face opening right between the
+eyes, with a lit brim edge along both sides of the point so it reads against the dark face. Draped sides fall from the cheeks
+to wide shoulders (side folds). Lower face: a dark grey-violet cloth face mask over nose and mouth (top hem peaks over the
+nose and is lit, diagonal wrap folds meeting under the nose); the two glowing lilac eyes sit in the shadow between beak and
+mask, set a bit wider and higher than before. Shadow Clone's copy has the same beak hood and mask in lilac. Cloak + First
+Strike: the fade-out now starts lower (below the mask) so the masked face stays solid and only the shoulders melt into the
+dark. Lilac rim, plum field, gold crit star, clone sparks unchanged.
+Before / after: `/workspace/ability-icons-art/review/assassin-hood-v2.png`.
+
 ### Mage + Priest (approved set)
 The first full set was checked at 32 px (box-filtered), then fixed:
 - Meteor: brighter rock + lit facet, one crack instead of two (the rock was muddy).
@@ -211,6 +223,8 @@ python3 tools/art/validate_ability_icons.py  # size, RGBA, hard alpha, no #000/#
 ## 8. Open questions for Skyy (each with a default)
 
 Mage + Priest: answered ("The ability icons look great, commit them" - frame + background defaults kept).
+Monk: answered ("Yes, the shoe looks good, commit the Monk icons" - the defaults below were kept as drawn).
+Assassin: answered (approved for commit after hood v2 - the defaults below were kept as drawn).
 
 ### Monk
 | # | Question | Default |
@@ -227,6 +241,7 @@ Mage + Priest: answered ("The ability icons look great, commit them" - frame + b
 | 2 | Cloak and Shadow Clone both use the hood (Cloak = one fading hood, Clone = hood + shadow copy). OK, or Cloak as something else (e.g. a fading dagger)? | **[hood for both - same assassin, reads as "me" vs "two of me"]** |
 | 3 | Toxin poison green, or violet poison to match the class colour? | **[green - reads as poison at a glance]** |
 | 4 | God Killer: gold crown = "boss". OK? | **[yes]** |
+| 5 | Hood v2 (Assassin's-Creed-style beak hood + face mask): mask colour dark grey-violet - OK, or same violet as the hood / black? | **[dark grey-violet - separates mask from hood at 32 px]** |
 
 ### All classes
 | # | Question | Default |
