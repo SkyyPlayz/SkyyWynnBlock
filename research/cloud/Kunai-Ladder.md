@@ -15,7 +15,7 @@ Cloud draft, 2026-10-06. Paper design; nothing built. Inputs read: `/home/user/S
 
 ## 1. Plain words (for Skyy)
 
-- The Kunai is **one reusable weapon, a stack of 1, like every gear item**. The thrown kunai you see is only a flying picture. **Nothing leaves your inventory**, so there is nothing to lose, drop or duplicate.
+- The Kunai is **one reusable weapon, a stack of 1, like every gear item**, with **no durability** (Skyy 2026-10-07: "a single item you hold onto without durability, that shoots kunai projectiles" - never stacks of thrown kunai). The thrown kunai you see is only a flying picture. **Nothing leaves your inventory**, so there is nothing to lose, drop or duplicate.
 - A new ladder Crude, Copper, Iron, Thorium, Cobalt, Adamantite, Mithril, Onyxium (same metals as the daggers), later Cindersteel to Aetherium.
 - Per hit the kunai hits a little harder than a dagger, but it swings slower and carries range, so its damage per second is **80% of the dagger's**. The teleport is the rest of its value.
 - Better metals: cheaper, shorter cooldown, longer return window, wider return knockback. **Range stays about 20 blocks** on every metal (your lock); the class tree is what extends it.
