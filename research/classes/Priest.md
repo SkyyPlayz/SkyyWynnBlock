@@ -187,7 +187,7 @@ You own 4. You equip 2.
 
 **Modifiers**
 
-- ⛓️ **Chain** - each jump loses less (−1% less drop per level), so the chain reaches further down.
+- ⛓️ **Chain** - **+1 target per level AND a smaller drop per jump**, so big parties (and players outside the party) still get healed: max level = **10 targets** with a 7% drop (75% → 68% → 61% … → 12%) (Skyy 2026-10-07: "10 chain would be cool to see").
 
 - 💪 **Power+** - bigger heal.
 
