@@ -126,7 +126,7 @@ You own 4. You equip 2.
 
 - **Does:** plant a **war banner** for **30 s** with a **12-block** range (Skyy 2026-10-07).
 
-- While in range: players **+8% damage + 8% defence**, party members **+12% / +12%**, you **+16% / +16%**.
+- While in range: players **+8% damage, defence and attack speed**, party members **+12%** of each, you **+16%** of each (attack speed added by Skyy 2026-10-07; same numbers by default).
 
 - **Every mob killed inside the banner's range extends it** (default +1 s per kill, mini-boss +3 s, boss +5 s; capped at 60 s total - Server Setup rows; Skyy 2026-10-07).
 
