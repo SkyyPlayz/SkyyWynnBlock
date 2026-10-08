@@ -66,3 +66,7 @@ Got it - starting the Class tree stale nodes fix against live SkyyTrees 0.3.3 / 
 
 ## 2026-10-08 06:38 Echo options for Skyy
 Done: research/cloud/Echo-Options.md (one page). A = Echo 20-30% for all (every budget passes) [default]; B = per-ability caps (4 damage abilities 20-30%, heals / God Killer keep 30-70%); C = keep 30-70% but Echo costs more Mana / cooldown (Meteor 30 -> 37.4 Mana, Whirlwind 14 -> 16.9 s). Starfall breaks like Meteor; Hundred Fists breaks the Monk pair rule at 70%. Numbers use the draft model, UNVERIFIED vs real SkyyGear damage.
+
+## 2026-10-08 06:41 Class tree stale nodes
+Done: research/cloud/Class-Tree-Stale-Fix-1008.md + edits in research/cloud/Class-Tree-Paths.md and research/cloud/Class-Tree-Build-Map.md (new section 9 = text changes for the next SkyyTrees build; ids kept, no migration). W1 War Horn + B3 Crimson Frenzy already match live 0.3.3. Proposed: Mage PA3 Phase Step = Mana Barrier Follow upgrade; Priest PA2 Radiant Pulse -> Guiding Light (aim Sacred Heal at an ally); Berserker PA2 Shared Fury -> rage swap; Monk E5 text only.
+CHECK (verified): SkyyArmory/build_skyyarmory_0.1.9.py line 6264 ArmoryTree.KEYS lists 11 nodes and leaves out Class.Monk.PB1 (Hard Knuckles), but line 9963 reads it - the tree page may still say 'Coming with SkyyArmory' for Hard Knuckles while it works (or the reverse is intended).

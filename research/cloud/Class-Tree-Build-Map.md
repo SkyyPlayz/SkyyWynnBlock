@@ -295,3 +295,25 @@ ARM 13 (Mage T2 T3 PA1 PA2 PA5 PB1; Priest T1; Monk PB1; Assassin T3 PC1-PC4) + 
 12. Round shape: SkyyTrees 0.3.3 tonight (after classes014 pins), SkyyArmory 0.1.9 reader as the next round (nodes stay "Coming with
     SkyyArmory" until it ships)? [yes - SkyyTrees alone is safe to ship; the reader adds no saved data]
 13. Respec price for Monk / Assassin = the same `class.respec.perLevel`? [yes]
+
+## 9. Text changes for the next SkyyTrees build (added 2026-10-08, cloud)
+
+From research/cloud/Class-Tree-Stale-Fix-1008.md (design in research/cloud/Class-Tree-Paths.md, rows marked "live 0.3.3 text differs").
+Live texts = `CPATHS` in `SkyyTrees/build_skyytrees_0.3.3.py` (VERIFIED, read-only). **Ids, kind (K), AP, level gates and Amount 0 stay**:
+only the name / effect text in `CPATHS` changes. All four are WAITING nodes (kind K, reader SkyyClasses, "Comes with the class
+abilities"), so no player owns them - no migration, no refund, no `trees.properties` line (`class.nodes.<Class>.<Id>` rows hold On / Amount /
+AP only). Do it in the next SkyyTrees patch (a lean change riding on whatever round touches SkyyTrees next); waits on Skyy's answers in
+research/cloud/Class-Tree-Stale-Fix-1008.md (the defaults are safe to ship).
+
+| Class | Id | Live 0.3.3 name / text | Next build name / text (default) | Why |
+|---|---|---|---|---|
+| Mage | PA3 | Phase Step - "Mana Barrier: blink 5 blocks back, the dome lands where you land - dome 10 s" | Phase Step - "Mana Barrier: blink 5 blocks back and the dome moves with you at full strength - dome 10 s, no Follow modifier on it" | docs/answered/classes.md L113: Follow is also a skill-tree upgrade |
+| Priest | PA2 | Radiant Pulse - "Sacred Heal pulses again after 2 s at 50% - cooldown +3 s" | Guiding Light - "Sacred Heal can be aimed at an ally within 20 blocks: the circle forms on them - cast 0.5 s slower" | copied the Sacred Heal Echo modifier (L141) |
+| Berserker | PA2 | Shared Fury - "Allies' kills extend Enrage 1 s each (max +5 s) - cooldown +3 s" | Shared Fury - "Enrage: the ally you look at gets your doubled buff and you get theirs - cooldown +3 s" | copied the Warlord's Banner kill extension (L133) |
+| Monk | PC5 | Serenity - "Awed enemies attack 15% slower and hesitate 2 s - max combo 18" | no change (already right) | doc-only cleanup |
+
+Checked, no build change: Berserker PA1 War Horn ("Enrage calls again after 3 s, allies start at +15% - your peak -5") and PB3 Crimson
+Frenzy ("Each Blood Frenzy stack heals you 0.5% and allies 0.25% - +20% cost") already match the 2026-10-07 design. Ability side (later,
+whoever builds Mana Barrier): owning `Class.Mage.PA3` makes the dome follow at 100% and blocks the Follow modifier on that ability (an
+exclusive rule like Floor + Duration+, research/cloud/Modifier-Pool-Spec.md section 3); `Class.Priest.PA2` adds a look-at target to Sacred
+Heal; `Class.Berserker.PA2` swaps the self / ally Enrage values for one looked-at party member.

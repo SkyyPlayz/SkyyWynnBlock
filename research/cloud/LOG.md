@@ -136,3 +136,4 @@ section 6 when it reviews the results.
 - 2026-10-08: Class ability ENGINE spec -> research/cloud/Class-Ability-Engine-Spec.md (cast pipeline, 9 ability kinds, Echo as data, Server Setup rows, HUD, 8-step build plan, 15 probes UNVERIFIED)
 - 2026-10-08: Monk moves probe plan -> research/cloud/Monk-Probe-Plan.md (13 probes, test script, fallbacks; draft probe jar in a [cloud] PR (UNTESTED))
 - 2026-10-08: Echo options for Skyy -> research/cloud/Echo-Options.md (3 options recomputed; default A (20-30% for all); B per-ability caps; C extra cost)
+- 2026-10-08: Class tree stale nodes -> research/cloud/Class-Tree-Stale-Fix-1008.md (stale nodes fixed against live SkyyTrees 0.3.3; 3 replacements proposed; Build-Map section 9 text changes; Armory KEYS misses Monk.PB1)
