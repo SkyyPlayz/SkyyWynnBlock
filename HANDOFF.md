@@ -19,7 +19,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyAccessories | 0.5.8 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections) |
 | SkyyClasses | 0.1.14 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
 | SkyyMenu | 0.3.10 | SkyWynn Menu, player Settings, Server Setup (admin) |
-| SkyyEssentials | 0.1.8 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
+| SkyyEssentials | 0.1.9 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.6 | profiles = full saves (default cap 6), delete + 6 h undo |
 | SkyyCooking | 0.1.6 | Cooking dishes + food Grade; XP by craft difficulty |
 | SkyyTrees | 0.3.3 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
@@ -31,6 +31,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyUiProbe | 0.4 | dev / test probes, op only (retire later) |
 | SkyyReelProbe | 0.1 | rod + reel look probe, op only (remove after Skyy's test, before SkyyFishing) |
 | SkyyMonkProbe | 0.1 | Monk moves engine probe, op only (remove after Skyy's test) |
+| SkyyTownProbe | 0.1 | Zone 1 town probe, op only, test island (run /townprobe undo until 'Nothing to undo', then remove) |
 | SkyyMobs | 0.1.4 | mob levels + difficulty; level curves + level gap (mob:fn:info) |
 | SkyyWorldGen | 0.1 | Zone 1 test island (/zone 1, admin) |
 | SkyyArmory | 0.1.11 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults |
