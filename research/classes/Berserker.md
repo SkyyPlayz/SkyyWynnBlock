@@ -20,10 +20,10 @@ flowchart TD
   CLS --> ABL["ABILITIES<br/>own 4, equip 2"]
   WPN --> AX["Axes + battleaxes"]
   AX --> AXa["Attack: swing combo"]
-  AX --> AXc["Charged: battleaxe Downstrike<br/>axe: charged swing"]
+  AX --> AXc["Charged: axe LUNGE (far forward leap + down slash)<br/>battleaxe: vanilla Downstrike"]
   WPN --> MC["Maces + clubs"]
   MC --> MCa["Attack: swing chain"]
-  MC --> MCc["Charged: mace charged swings<br/>vanilla for now"]
+  MC --> MCc["Charged (proposed): club BULL RUSH<br/>mace EARTHSHAKER leap-slam"]
   ABL --> A1["A1 Enrage"]
   A1 --> A1A["A1-alt A Blood Frenzy"]
   A1 --> A1B["A1-alt B Warlord's Banner"]
@@ -55,9 +55,7 @@ flowchart TD
 
 - **Charged:** battleaxes use the vanilla **Downstrike** (a heavy charged slam). Axes: a charged swing with no movement.
 
-- 💡 **Idea for later - not decided yet:** is the Downstrike enough of a traversal? Axes need one.
-
-- 💡 **Idea for later - Leap Slam** (for both): leap forward and smash down.
+- 🟢 **Axes - Lunge** (Skyy 2026-10-07: "for the axes do a lunge forward with a down slash. (lunge/far leap, goes more froward than up.)"): hold + release to leap far FORWARD (more forward than up) and land with a down slash. Battleaxes keep the vanilla Downstrike (default until Skyy says otherwise).
 
 ### Maces + clubs
 
@@ -67,7 +65,9 @@ flowchart TD
 
 - **Charged:** mace charged swings, no movement.
 
-- 💡 **Idea for later - Bull Rush:** charge forward, knocking enemies aside.
+- 🔵 **Proposed (2026-10-07, one traversal per weapon):**
+  - **Clubs - Bull Rush:** hold + release to charge forward along the ground, knocking enemies aside (the crude brute weapon; clubs have no charged attack today).
+  - **Maces - Earthshaker:** hold + release to jump straight up (~4 blocks) and slam down; the shockwave knocks nearby enemies up and staggers them briefly (axes go forward, clubs go along the ground, maces go up).
 
 &nbsp;
 
@@ -232,6 +232,8 @@ Ideas - pick one.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-07: axe Lunge LOCKED (Skyy); one traversal per weapon - proposed Bull Rush for clubs, Earthshaker for maces.
 
 - 2026-10-05: weapon traversals stay VANILLA FOR NOW (Skyy: "they stay vanilla FOR NOW. they will change later.") - the proposals are ideas for later.
 
