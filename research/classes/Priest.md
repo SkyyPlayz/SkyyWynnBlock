@@ -33,7 +33,7 @@ flowchart TD
   A1 --> A1B["A1-alt B Martyr's Grace"]
   ABL --> A2["A2 Shield Bubble"]
   A2 --> A2X["A2-alt Guardian Spirit"]
-  A1 -.-> M1["Radius+ | Power+ | Duration+ | Efficiency"]
+  A1 -.-> M1["Radius+ | Power+ | Duration+ | Efficiency | Echo"]
   A1A -.-> M2["Radius+ | Duration+ | Follow | Power+"]
   A1B -.-> M3["Chain | Power+ | Ward | Efficiency"]
   A2 -.-> M4["Follow | Radius+ | Power+ | Duration+"]
@@ -152,6 +152,8 @@ You own 4. You equip 2.
 - ⏳ **Duration+** - longer heal-over-time.
 
 - 💧 **Efficiency** - cheaper.
+
+- 🔁 **Echo** - a second, weaker instant heal pulses 1 s later in the same circle · each level: stronger echo.
 
 ### A1-alt A · Sanctuary
 
@@ -294,6 +296,8 @@ Ideas - pick one.
 ## 📜 Change log
 
 - 2026-10-05: refined for easy reading (same facts, new layout).
+
+- 2026-10-07: Sacred Heal gains Echo (Skyy).
 
 - 2026-10-07: soul tethers renamed **Bindings** (a caged soul binds souls and pulls them into the cage, empowering it to heal later); lock-on needs line of sight, a locked Binding works through walls (Skyy).
 
