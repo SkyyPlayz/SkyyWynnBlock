@@ -38,7 +38,7 @@ flowchart TD
   A1 -.-> M1["Radius+ | Power+ | Lingering | Split | Echo"]
   A1A -.-> M2["Duration+ | Radius+ | Echo | Power+"]
   A1B -.-> M3["Pierce | Duration+ | Power+ | Slow"]
-  A2 -.-> M4["Duration+ | Power+ | Ward | Knockback+"]
+  A2 -.-> M4["Duration+ | Power+ | Ward | Knockback+ | Follow"]
   A2X -.-> M5["Radius+ | Duration+ | Slow | Power+"]
   classDef locked fill:#2e7d32,color:#fff,stroke:#1b5e20
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
@@ -144,7 +144,7 @@ You own 4. You equip 2.
 
 🟢 **Locked**
 
-- **Does:** for **12 s** (at least - Skyy 2026-10-07), damage you take **drains Mana instead of Health** (1 Mana per 2 HP).
+- **Does:** drops a **barrier dome on the ground** for **12 s** (at least - Skyy 2026-10-07). While you stand inside it, damage you take **drains Mana instead of Health** (1 Mana per 2 HP). The dome stays where you cast it.
 
 - It ends early if your Mana runs out.
 
@@ -155,6 +155,8 @@ You own 4. You equip 2.
 - 💪 **Power+** - better ratio (more HP per Mana).
 
 - 🛡️ **Ward** - allies within 4 blocks also get a small shield.
+
+- 👣 **Follow** - the dome moves with you instead of staying where you cast it (also a skill-tree upgrade).
 
 - 💥 **Knockback+** - the barrier bursts when it ends, pushing enemies away.
 
@@ -239,6 +241,8 @@ Ideas - pick one. The Mage tree already has three lanes.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-07: Mana Barrier = a placed dome on the ground; Follow modifier / tree upgrade makes it move with you (Skyy picked "Placed dome + Follow").
 
 - 2026-10-07: Mana Barrier lasts at least 12 s (was 6 s), still drains Mana instead of Health (Skyy: "mana barier should last at least 12 seconds keep the mana drain instead of hp").
 

@@ -63,7 +63,7 @@ Level gains are written to add up to about **+28%** of the ability's main effect
 | 🟢 **A1 Meteor** | 30 Mana / 14 s | Pick a spot within 25 blocks; after 1 s a meteor hits a **4-block area** for **3.0 H** | +2% damage | 3.84 H |
 | 🔵 **A1-alt A Starfall** | 36 / 18 s | For 3 s, **12 stars** fall on a 6-block area, each 0.3 H (about 4 stars hit one enemy = 3.6 H); more total damage, spread out | +2% damage | 4.6 H |
 | 🔵 **A1-alt B Arcane Beam** | 30 / 18 s | Channel a 20-block beam up to 3 s; damage ramps **1x -> 3x** (0.5, 1.0, 1.5 H per second = 3.0 H), single-target | +2% damage, ramp start +1% | 3.84 H |
-| 🟢 **A2 Mana Barrier** | 20 / 30 s | 12 s (Skyy 2026-10-07: "at least 12 seconds"): damage you take **drains Mana instead of Health** (1 Mana per 2 HP); ends early at 0 Mana | ratio +0.05 HP per Mana (2.0 -> 2.7); **absorbs at most 100% of your max Health per cast** | 2.7 HP per Mana |
+| 🟢 **A2 Mana Barrier** | 20 / 30 s | 12 s (Skyy 2026-10-07: "at least 12 seconds"), a placed DOME on the ground (Follow upgrade = moves with you): while inside, damage you take **drains Mana instead of Health** (1 Mana per 2 HP); ends early at 0 Mana | ratio +0.05 HP per Mana (2.0 -> 2.7); **absorbs at most 100% of your max Health per cast** | 2.7 HP per Mana |
 | 🔵 **A2-alt Frost Nova** | 24 / 22 s | **Freeze** enemies within 5 blocks 2 s (a hit breaks it after 1 s: 0.5 H), then **Chill** 3 s; 1.0 H on freeze | damage +2%, freeze +0.03 s | 1.9 H total, 2.4 s freeze |
 Note: Mage Mana scale (+10/Sorcery level) makes 30-36 Mana a clear but affordable cost; at Sorcery 1 the pool is 40.
 
