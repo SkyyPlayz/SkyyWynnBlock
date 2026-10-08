@@ -128,6 +128,10 @@ You own 4. You equip 2.
 
 - While in range: players **+8% damage, defence and attack speed**, party members **+12%** of each, you **+16%** of each (attack speed added by Skyy 2026-10-07; same numbers by default).
 
+- **Cost:** a **big Mana cost to plant it** (default 40 Mana, double the old 20), nothing while it stands - Mana regenerates normally while it is up.
+
+- **The banner falls** when its time runs out **or as soon as you leave its range** (Skyy 2026-10-07).
+
 - **Every mob killed inside the banner's range extends it** (default +1 s per kill, mini-boss +3 s, boss +5 s; capped at 60 s total - Server Setup rows; Skyy 2026-10-07).
 
 - The trade-off: less damage than Enrage / Blood Frenzy, but defence too - and it swaps mobility (you must stay near it) for a long duration.
