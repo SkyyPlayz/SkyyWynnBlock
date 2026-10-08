@@ -26,7 +26,8 @@ Read this first, then only what the task needs. Map of every file + search tips:
   from SET after Skyy's probe session, TEST-CHECKLIST 31). Newest backup `backups\deploy-20261006-2315`.
 - Skyy tested 2026-10-06 (log): Grapple works; wand heal circle works; minimap works in the hub; live settings Skyy chose: hop.force 30,
   blink.distance 16, blink.floorCheck 0 (defaults since SkyyArmory 0.1.4, deployed 2026-10-06 23:15).
-- RUNNING (2026-10-07 18:55): SkyyReelProbe 0.1 (wf_a5a6b908-f90) and SkyyArmory 0.1.6 spellbooks + kunai (+ SkyyClasses gate,
+- DEPLOYED 19:21: SkyyReelProbe 0.1 (TEST-CHECKLIST 42; REMOVE from SET after Skyy's test, before SkyyFishing).
+- RUNNING (2026-10-07 18:55): SkyyArmory 0.1.6 spellbooks + kunai (+ SkyyClasses gate,
   wf_ec3955fa-a7c, recheck on) -> pin + deploy + TEST-CHECKLIST when done. BEFORE PINNING 0.1.6: every Weapon_Kunai_* item
   must have NO MaxDurability / DurabilityLossOnHit (Skyy 2026-10-07; vanilla Weapon_Kunai has none, daggers have 120) - else fix round;
   note any kunai void check for the 0.1.7 removal. DEPLOYED 18:54: Accessories 0.5.7 icons + Armory 0.1.5
