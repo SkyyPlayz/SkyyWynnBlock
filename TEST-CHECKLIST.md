@@ -55,6 +55,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 46. Monk + Assassin playable (7 profile cards, Monk kit, Discipline / Assassination XP, weapon blocks)
 47. New class path trees: trunk + 3 locked paths per class, Priest Open Aura switch, free respec
 48. Monk moves probe: one ~15 min session of /mprobe tests, then send the server log
+49. SkyySacks 0.7.14 + SkyyAccessories 0.5.8 - new bag art (emblems, open swirl, sparkles, lift; toned-down Accessory Bag)
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6

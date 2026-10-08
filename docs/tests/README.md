@@ -123,3 +123,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Class path trees (DEPLOYED 2026-10-08, backup deploy-20261008-0034) | [2026-10](2026-10.md) |
 | Monk moves probe (DEPLOYED 2026-10-08, backup deploy-20261008-0109) | [2026-10](2026-10.md) |
 | SkyyArmory 0.1.10 hotfix (world would not start) (DEPLOYED 2026-10-08, backup deploy-20261008-0545) | [2026-10](2026-10.md) |
+| Bag art: SkyySacks 0.7.14 + SkyyAccessories 0.5.8 (DEPLOYED 2026-10-08, backup deploy-20261008-0642) | [2026-10](2026-10.md) |
