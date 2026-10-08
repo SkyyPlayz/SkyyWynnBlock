@@ -24,3 +24,6 @@ Stale for local: research/classes/Assassin.md:23 still says Pounce (now Shadow S
 ## 2026-10-08 04:04 Consistency pass 2026-10-07
 Done: research/cloud/Consistency-Pass-1007.md. Fixed stale cloud lines: Zone 4-5 ore prices marked 'proposed 4,300 / 9,300 / 23,000', kunai void rule dropped (floorCheck 12 -> 0, no void protection), Monk colour Q closed (Saffron), Sushi seaweed, Sanctuary locked numbers in the old draft.
 Open: does 'no void protection' also cover the dragon catching you over void (research/cloud/Dragon-Quest-Spec.md:82) and the Knockback+ void check (research/cloud/Modifier-Pool-Spec.md:35)?
+
+## 2026-10-08 04:04 Questions digest 2026-10-07
+Done: research/cloud/Questions-Digest-1007.md - 40 open questions not in the 1006 digest, top 10 = build blockers (Mana for physical classes, ability cap 15 / 14 points, tree size, Shadow Step +10%, Block +4.5%, Ember 4,300, Amberite 9,300 / Drakonite 23,000, Bazaar buy floor 0.9, ore regrow, fishing grade). Skyy can answer by row numbers.

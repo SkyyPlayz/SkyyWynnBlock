@@ -75,8 +75,6 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 - [ ] **Monk moves probe plan** - turn `research/cloud/Monk-Kit-Spec.md` section 5 (13 engine probes: slow-fall, jump-at-landing, air jump,
       fall-damage cancel, push, path sweep, knock-up + hang, drag-down, crouch detect ...) into a probe-jar design like SkyyGatherProbe / SkyyReelProbe
       (commands, what each measures, pass / fail). Draft code in a PR, UNTESTED. Output: `research/cloud/Monk-Probe-Plan.md`.
-- [ ] **Questions digest 2026-10-07** - one short table of every open "Questions for Skyy" from the 2026-10-06 / 07 cloud drafts + `research/Shadow-Step-Spec.md`
-      + `research/Rod-Reel-Look.md` (default in [brackets]), top 10 first. Output: `research/cloud/Questions-Digest-1007.md`.
 - [ ] **Class emblems v2 (other 5)** - Warrior, Berserker, Archer, Assassin, Mage at the Monk / Priest v2 detail level (`research/cloud/class-art/`).
       Output: regenerated `research/cloud/class-art/class-sheet.png` + README.
 - [ ] **Enchanted v2 (rest)** - the v1 Enchanted items / blocks not yet in `research/cloud/enchanted-art/icons-v2/` (see its README). Output: v2 sheet + README.
@@ -86,3 +84,4 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 - [x] OUTBOX test - 2026-10-08 - `research/cloud/OUTBOX.md`
 - [x] Class review prep - 2026-10-08 - `research/cloud/Class-Review-Prep-1008.md`
 - [x] Consistency pass 2026-10-07 - 2026-10-08 - `research/cloud/Consistency-Pass-1007.md`
+- [x] Questions digest 2026-10-07 - 2026-10-08 - `research/cloud/Questions-Digest-1007.md`
