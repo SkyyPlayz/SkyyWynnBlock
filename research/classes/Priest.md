@@ -205,6 +205,8 @@ You own 4. You equip 2.
 
 - It blocks projectiles and absorbs damage for allies inside. It has HP and can break.
 
+- **Heal pulses tied to its HP** (Skyy 2026-10-07): each time the bubble drops to **75%, 50%, 25% and 0%** of its HP it releases a heal pulse for everyone inside - **4 pulses** in total (the last one as it breaks); default 8% max Health per pulse. The harder enemies hit the bubble, the faster the heals come.
+
 - **Class tree (example path):** the bubble damages enemies that touch or hit it → then pick 1 of 5 elements for that damage.
 
 **Modifiers**
