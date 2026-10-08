@@ -42,6 +42,12 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
   Dimension keeps the Workbench tab? [spec paused until you say]
 
 ### classes
+- CLASS TREES (SkyyTrees 0.3.3, live 2026-10-08): the 13 open choices of research/cloud/Class-Tree-Build-Map.md all use its recommended
+  default (page 2 replaced, paths from T1, first owned node locks, whole-tree respec, refund + 1 free respec, flat points, Monk Calm
+  Breath waits, capstones retired, same respec price for Monk/Assassin) - change any? [as built]
+- CLASS TREES builder choices to confirm: Open Aura hangs off Root (buyable now); Mage Long Blink +2/+3/+4/+5 (21 blocks max); Radiant
+  Trail heals you + party only (no Divinity XP); Blink Strike also after a targeted Shadow Step; Long Reach = kunai teleport range only. [as built]
+- MONK class skill name: Discipline, Zen, Kenpo, Harmony or Focus? (a small 3-mod rebuild to change) [Discipline]
 - the missing ability picks - every class's A2 alternative and its two improved A1 options (the Priest's A2 alternative too).
   The class-ability spec PROPOSES them after the reset, then you pick. [proposals pending; research/classes/<Class>.md]
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]
