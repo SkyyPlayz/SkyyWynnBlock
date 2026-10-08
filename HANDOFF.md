@@ -32,6 +32,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyReelProbe | 0.1 | rod + reel look probe, op only (remove after Skyy's test, before SkyyFishing) |
 | SkyyMonkProbe | 0.1 | Monk moves engine probe, op only (remove after Skyy's test) |
 | SkyyTownProbe | 0.1 | Zone 1 town probe, op only, test island (run /townprobe undo until 'Nothing to undo', then remove) |
+| SkyyKeyProbe | - | key probe, op only: /keyprobe give, press keys, /keyprobe report (remove after Skyy's test) |
 | SkyyMobs | 0.1.4 | mob levels + difficulty; level curves + level gap (mob:fn:info) |
 | SkyyWorldGen | 0.1 | Zone 1 test island (/zone 1, admin) |
 | SkyyArmory | 0.1.11 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults |
