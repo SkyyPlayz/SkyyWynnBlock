@@ -784,7 +784,9 @@ public static void m1Tick(@PKG@.MpState s, @PR@ pr, @CB@ cb, @REF@ r, @V3D@ p, d
 # ---- the flowing fall after a vault / a hang (analytic 15 % slower from the top); stops at the landing
 M(cmds, r"""
 public static void flowTick(@PKG@.MpState s, @CB@ cb, @REF@ r, double[] cv, boolean ground, long now) {
-  if (!s.flowFall || ground || cv == null) return;
+  if (!s.flowFall || cv == null) return;
+  // on the ground: forget the old apex, so the next takeoff (a bound, a late FALL window) starts a fresh slow fall from its own top
+  if (ground) { if (s.flowTop != 0L) armFlow(s, now); return; }
   if (s.flowTop == 0L) {
     if (cv[1] > 1.0) s.flowRose = true;
     if (cv[1] <= 0.0 && (s.flowRose || now - s.flowArm > 1500L)) s.flowTop = now;
@@ -1247,6 +1249,8 @@ public static void run(@REF@ ref, @ST@ st, @PR@ pr, String what, String arg) {
     s.rs = 1;
     s.sweep = false;
     s.pend = 3;
+    s.airUntil = 0L;      // no m3 / vault free air jump during the rise: its crouch is the plunge, not an air jump
+    s.airCrouch = false;
     tell(pr, "M7 armed: face 1-3 mobs within 3 blocks. Crouch near the top = plunge (M8 / M10 / M11).");
     return;
   }
