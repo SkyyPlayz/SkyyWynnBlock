@@ -42,11 +42,28 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
-(none ready) - item 3 waits on Skyy's ability-input design approval and item 4 is paused; ask Skyy what's next.
+### 5. Class ability icons - Mage + Priest first (10 icons)
+**Why:** class abilities go on the Ability 2 / 3 keys (Skyy, 2026-10-08: 4 abilities per class, 2 primary + 2 on crouch). The HUD
+Abilities widget and the class / tree page need one icon per ability. The ability list + what each does:
+`research/cloud/Class-Ability-Shapes.md` (sections 4 Mage, 5 Priest). Build order says Mage + Priest come first.
+**Make:** 64x64 icons in vanilla item-icon style (clean bevelled shapes, readable at 32x32), one per ability:
+- Mage: Meteor, Mana Barrier, Frost Nova, Starfall, Arcane Beam
+- Priest: Sacred Heal, Shield Bubble, Guardian Spirit, Sanctuary, Martyr's Grace
+Class colours: use the emblem colours in `research/cloud/class-art/README.md` (Mage / Priest) as an accent ring or background tint so
+abilities read as that class. Path: `art/ability-icons/Common/Icons/Abilities/<Class>/<AbilityName>.png` (no spaces: `ManaBarrier.png`,
+`MartyrsGrace.png`). One `sheet.png` with all 10 + names. Original pixels only.
+**Ask Skyy (defaults):** frame style [round dark frame, class-colour rim], background [dark, class tint].
+Then do the other 5 classes the same way (Monk, Assassin, Warrior, Berserker, Archer - names in the same spec), one class per commit.
 
-## Queue (after Pebble - check with Skyy before starting each)
-3. **Hotbar ability item icons** - WAIT until Skyy approves the ability-input design (`research/cloud/Ability-Input-Design.md`).
-4. **Light armor** - paused by Skyy ("we can work on the armor more later"); ask Skyy before touching it. Approved looks are in the
+## Queue (check with Skyy before starting each)
+6. **Monk claws** (Blockbench, full items): Wolverine-style long blades from the knuckles on a black LEATHER glove (skywynn-art skill,
+   section 3: "CLAWS = Wolverine-style long blades from the knuckles on a black LEATHER glove"), one per metal tier Copper ... Onyxium
+   in the shared metal tier colours. Skyy chose "wraps + gauntlets only" for now, so ASK Skyy before starting. Model like the vanilla
+   fist / dagger items (look at Assets.zip `Common/Items/Weapons/...`), icon 64x64 per tier.
+7. **Pets** (Blockbench, full models): 15 launch pets in Hytale chunky voxel style (research/cloud/Pets-Spec.md + research/cloud/pet-art/
+   README.md for the list and the approved v2 look). The pet system is not built yet - ASK Skyy before starting.
+8. **Hotbar ability item icons** - on hold (default: keys only, Skyy has not answered yet); skip unless Skyy asks.
+9. **Light armor** - paused by Skyy ("we can work on the armor more later"); ask Skyy before touching it. Approved looks are in the
    skywynn-art skill, section 3.
 
 ## Done
