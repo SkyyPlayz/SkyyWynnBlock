@@ -17,8 +17,8 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.16"), ("SkyySacks", "0.7.13"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.9"), ("SkyySkills", "0.4.20"),
-    ("SkyyAccessories", "0.5.7"), ("SkyyClasses", "0.1.13"), ("SkyyMenu", "0.3.8"), ("SkyyEssentials", "0.1.8"), ("SkyyProfiles", "0.1.5"),
+    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.9"), ("SkyySkills", "0.4.21"),
+    ("SkyyAccessories", "0.5.7"), ("SkyyClasses", "0.1.14"), ("SkyyMenu", "0.3.9"), ("SkyyEssentials", "0.1.8"), ("SkyyProfiles", "0.1.6"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.2"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -50,6 +50,9 @@ SET = [
     # (no data loss). Armory 0.1.6 + Classes 0.1.13 + Gear 0.2.8 deploy TOGETHER.
     # FLOOR (2026-10-07): never roll SkyyArmory below 0.1.7 once Bo staffs / hand wraps / gauntlets exist in player hands (new item
     # ids -> unknown items). Armory 0.1.7 + Gear 0.2.9 deploy TOGETHER (Gear 0.2.9 scales the Monk weapons; 0.2.8 under-scales them).
+    # FLOOR (2026-10-07, Monk + Assassin playable): SkyyClasses 0.1.14 + SkyySkills 0.4.21 + SkyyProfiles 0.1.6 + SkyyMenu 0.3.9 deploy
+    # TOGETHER (never Classes 0.1.14 without Skills 0.4.21 - the Monk would earn no XP). Roll back below them only if no Monk profile
+    # exists; otherwise roll back all four together and expect classless Monk profiles (no items / coins / XP lost; Combat.Shaman kept).
     # Reel probe (2026-10-07): 8 SkyyFishing_Rod_* + SkyyFishing_Reel stat look test - REMOVE after Skyy tests it (TEST-CHECKLIST) and
     # BEFORE SkyyFishing ships (same item / stat names).
     ("SkyyReelProbe", "0.1"),
