@@ -233,4 +233,6 @@ Ideas, Wynncraft-style - pick one.
 
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
 
+- 2026-10-07: SHELVED - a shield traversal (e.g. a shield charge / bash dash) only if we ever add a NEW shield weapon type (Skyy: "id only give the warriors shield traversal IF we make a new shield weapon type. but that sounds like a lot of work, so shelf it for now.").
+
 - 2026-10-04: file created from Skyy's locks (Warrior roles + Rallying Guard + Shield Shockwave LOCKED).
