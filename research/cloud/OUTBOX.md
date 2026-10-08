@@ -75,3 +75,7 @@ CHECK (verified): SkyyArmory/build_skyyarmory_0.1.9.py line 6264 ArmoryTree.KEYS
 Done: research/cloud/Ability-Probe-Plan.md - P1-P15 as /aprobe commands (0.7 classes by reflection, so P5-P13 + P15 run on 0.6.8 now; P1-P4 + P14 wait for 0.7), pass / fail + fallbacks, two short test sessions. Draft jar SkyyAbilityProbe 0.1 is written (UNTESTED; stub-compiled, 55/55 logic checks) and will come as a [cloud] PR once PR 11 is merged (my one branch is in use).
 Findings: boss stunlock breakout already live in SkyyArmory 0.1.9 (reuse it); SkyyGear GearSpeed strips foreign speed effects every second (P6 will fail -> SkyyGear 'ability haste' bridge); SkyyProfiles 0.1.6 saves 6 inventory sections, so runes would leak across profiles (P14).
 Questions: one shared boss breakout clock [yes]; attack-speed buff bumps the weapon tier [yes]; two probe sessions (0.6.8 now, 0.7 later) [yes].
+
+## 2026-10-08 12:39 Skyy answered the ability probe questions
+Skyy, word for word (2026-10-08, to the cloud session): "1. yes.  2. yes temporarily, 3. wait till 0.7" - for research/cloud/Ability-Probe-Plan.md Q1-Q3. Please record in docs/answered/classes.md (qa_append):
+Q1 ability hits share the boss breakout clock (reuse the SkyyArmory 0.1.9 stunlock counter); Q2 attack-speed buffs bump the weapon one speed tier - TEMPORARILY (small SkyyGear change); Q3 no 0.6.8 probe session - all P1-P15 in one session after Hytale 0.7. Noted in the plan file.

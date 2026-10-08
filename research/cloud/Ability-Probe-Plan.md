@@ -176,6 +176,12 @@ state map is empty). They stay separate jars: each is removed after its test.
 | 3 | Two short probe sessions: one now (0.6.8, about 12 minutes) and one after Hytale 0.7 is out (about 8 minutes)? | [Yes] |
 | 4 | P11 puts a real block in the test world for 10 seconds (removed automatically) and P10 deletes every projectile not yours inside 6 blocks - OK on a test world, alone? | [Yes, test world only, solo] |
 
+**Skyy's answers (2026-10-08, word for word, given to the cloud session):** "1. yes.  2. yes temporarily, 3. wait till 0.7"
+- Q1: one shared boss breakout clock - ability hits feed the live SkyyArmory 0.1.9 stunlock counter.
+- Q2: yes, but **temporarily** - the attack-speed buff bumps the weapon one speed tier for now (small SkyyGear change); revisit once a real stacking path exists.
+- Q3: **no probe session on 0.6.8** - run ALL probes (P1-P15) in one session after Hytale 0.7 is out. The 0.6.8-only session is dropped.
+- Q4: not answered yet (default stays).
+
 ## For the local session
 
 | # | Check (UNVERIFIED here - needs `HytaleServer.jar` / `Assets.zip`) |
