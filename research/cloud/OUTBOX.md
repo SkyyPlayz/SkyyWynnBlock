@@ -44,3 +44,7 @@ Questions: pack rarity ladder for fish [yes]; catch card 3 s + one chat line [ye
 Done: research/cloud/Class-Ability-Spec-Draft.md + research/cloud/Modifier-Pool-Spec.md now follow every classes.md 2026-10-07 line (L111-L148); change list research/cloud/Ability-Refresh-1007.md. Floor = 18th modifier, Echo on 11 abilities, Follow on Mana Barrier, stunlock breakout section 2.8.
 Budget fix PROPOSED: Echo 20-30% (was 30-70%) or Meteor / Palm Strike / Whirlwind break the caps. Questions: Echo 30% at L5 [yes]; Banner cooldown from the fall [yes]; Blood Frenzy per-swing cost [yes].
 Local: research/classes/README.md pool needs --sync-pool (no Floor, 'offers 4'); research/cloud/Class-Tree-Paths.md stale nodes listed in the refresh file (E5, B3, LB2, W1, W2, no Mana Barrier Follow node).
+
+## 2026-10-08 04:11 Class ability ENGINE spec
+Done: research/cloud/Class-Ability-Engine-Spec.md - cast pipeline, 9 ability kinds, cooldowns in memory, Mana / Stamina rules, modifiers + Echo as data, zones / toggles / passives / chains, Server Setup rows, HUD (vanilla ability HUD or SkyyHud widget), 8-step build plan (E0 probe mod first). SkyyClasses 0.1.13 has no ability code yet; hooks cited by line.
+Questions: 0.7 rune keys as main cast input + /cast backup [yes]; block vanilla runes for class players [yes]; Guardian Spirit cooldown shared across Priests [yes]. 15 engine probes (P1-P15) for the local session.

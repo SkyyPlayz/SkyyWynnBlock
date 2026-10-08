@@ -64,10 +64,6 @@ Context of today: 4 deploys (accessory icons, metal staffs, spellbooks + kunai, 
 class design changes all over docs/answered/classes.md 2026-10-07 lines; the local session is building Monk + Assassin classes, Shadow
 Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-Paths.md or research/cloud/Class-Tree-Build-Map.md - a local agent owns them). -->
 
-- [ ] **Class ability ENGINE spec** - how class abilities get CAST and run in SkyyClasses: keybind / hotbar slot / menu choice (Hytale input
-      options - mark UNVERIFIED), cooldown + Mana / Stamina bookkeeping, auras that target at activation vs while inside, toggles (Blood Frenzy),
-      passives (Guardian Spirit), placed zones (dome, banner), the modifier + Echo system, Server Setup rows, HUD cooldown display. The next big
-      build. Output: `research/cloud/Class-Ability-Engine-Spec.md` (+ "For the local session" engine checks).
 - [ ] **Monk moves probe plan** - turn `research/cloud/Monk-Kit-Spec.md` section 5 (13 engine probes: slow-fall, jump-at-landing, air jump,
       fall-damage cancel, push, path sweep, knock-up + hang, drag-down, crouch detect ...) into a probe-jar design like SkyyGatherProbe / SkyyReelProbe
       (commands, what each measures, pass / fail). Draft code in a PR, UNTESTED. Output: `research/cloud/Monk-Probe-Plan.md`.
@@ -81,3 +77,4 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 - [x] Class emblems v2 (other 5) - 2026-10-08 - `research/cloud/class-art/class-sheet.png`
 - [x] Fishing UI mockup v2 - 2026-10-08 - `research/cloud/Fishing-UI-Mockup.png`
 - [x] Class ability spec refresh - 2026-10-08 - `research/cloud/Ability-Refresh-1007.md`
+- [x] Class ability ENGINE spec - 2026-10-08 - `research/cloud/Class-Ability-Engine-Spec.md`
