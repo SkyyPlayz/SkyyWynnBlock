@@ -129,3 +129,4 @@ section 6 when it reviews the results.
 - 2026-10-08: Class review prep -> research/cloud/Class-Review-Prep-1008.md (Archer, Warrior, Mage, Assassin prep pages; Echo candidates; 3 suggestions each; Mage + Assassin only partly reviewed 2026-10-07)
 - 2026-10-08: Consistency pass 2026-10-07 -> research/cloud/Consistency-Pass-1007.md (stale ore prices marked proposed, kunai void check dropped, Monk colour Q closed, Sushi seaweed, Sanctuary locked numbers; spec-draft stale lines handed to the refresh)
 - 2026-10-08: Questions digest 2026-10-07 -> research/cloud/Questions-Digest-1007.md (40 open questions beyond Digest-1006, top 10 build blockers first)
+- 2026-10-08: Enchanted v2 (rest): 43 icons -> research/cloud/enchanted-art/enchanted-sheet-v2.png (+14 v2 icons (ingots, stones, logs, fibre, hay); 29 old v2 bytes unchanged; 13 v1 icons dropped on purpose)

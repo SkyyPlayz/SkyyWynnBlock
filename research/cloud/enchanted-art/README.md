@@ -6,7 +6,8 @@ Inputs read: `CLOUD-RESUME.md` ("Enchanted material icons"), `research/cloud/Enc
 and farming tables), `docs/answered/bags.md` (LOCKED 2026-10-05: compressed materials like SkyBlock's Enchanted Iron / Cobblestone),
 `docs/answered/gear.md` (ART RULES 2026-10-06: 64 x 64 icons, vanilla density), `research/cloud/accessory-art/` (painter style).
 
-**Start here:** `research/cloud/enchanted-art/enchanted-sheet-v2.png` (v2, 2026-10-07, section 6 - follows Skyy's 2026-10-06 review).
+**Start here:** `research/cloud/enchanted-art/enchanted-sheet-v2.png` (v2, 2026-10-07, section 6 - follows Skyy's 2026-10-06 review;
+2026-10-08 the rest of v1 added, section 7 - now 43 icons).
 The v1 sheet `enchanted-sheet.png` and `icons/` stay unchanged for comparison.
 
 ## 1. Files
@@ -177,3 +178,59 @@ Glint = v1 recipe unchanged (7 % violet tint, two diagonal shimmer bands, 1-px h
 | 3 | Enchanted Sap and Stick: add them to the launch set, or keep them for later? | [later] |
 | 4 | Silver and Gold ingots (side metals, economy / accessories): Enchanted versions later? | [no, not until a recipe needs them] |
 | 5 | Final art: our drawn ingots / logs, or the real vanilla icon + glint generated at build time? | [vanilla icon + glint at build time; these drawings are the stand-in] |
+
+---
+
+# 7. v2 rest - the remaining v1 items (2026-10-08)
+
+Cloud draft, 2026-10-08. Paper design; nothing built. Follows `docs/answered/gear.md` line 88 (LOCKED 2026-10-06 ENCHANTED ICONS:
+shiny copy of the REAL vanilla resource, ingots not ore, logs are blocks, "the rest doesnt really work") and `docs/answered/bags.md`
+line 60 (LOCKED 2026-10-06: launch with 18 Enchanted, Mithril later, **no Enchanted Blocks yet**). Skill rules:
+`.claude/skills/skywynn-art/SKILL.md`.
+
+Every v1 entry that had no v2 icon was mapped to the real vanilla resource behind it and drawn at the v2 detail level (same ingot
+painter, same log cube, same glint). **+14 icons -> 43 in `research/cloud/enchanted-art/icons-v2/`.** The first 29 icons are
+byte-identical (md5 checked before / after); v1 files unchanged; two runs = same bytes. Sheet 2290 x 2366, folder about 1.8 MB.
+None of these is in the launch set - they are "later" art so the generator already has them.
+
+## 7.1 What the 27 leftover v1 icons became
+
+| v1 icon(s) | v2 now | Enchanted id (suggestion) | Vanilla base id | Status |
+|---|---|---|---|---|
+| Onyxium, Silver (later), Gold (later) ore chunks | **ingots** (purple bar with gold sheen; cool bright silver; gold) | `Skyy_Ench_Onyxium` ?, `_Silver` ?, `_Gold` ? | `Ingredient_Bar_Onyxium` / `_Silver` / `_Gold` | LATER |
+| Sand | **sand block** (fine grains, wind ripples on top, dark + quartz grains) | `Skyy_Ench_Sand` ? | `Soil_Sand` | OPTION |
+| Clay | **clay block** (smooth, drying cracks with raised lips, wet sheen) | `Skyy_Ench_Clay` ? | `Soil_Clay` | OPTION |
+| Sandstone, Slate, Basalt | **their cobble blocks** (cobble like Enchanted Cobblestone; sandstone strata, slate flat cleavage plates, basalt dark with gas pits) | `Skyy_Ench_Sandstone` ?, `_Slate` ?, `_Basalt` ? | `Rock_Sandstone_Cobble` / `Rock_Slate_Cobble` / `Rock_Basalt_Cobble` | OPTION |
+| Common Wood (log + block) | **Birch log** (white bark, black lenticel dashes, scar) | `Skyy_Ench_Birch` ? | `Wood_Birch_Trunk` (F1) | LATER |
+| Hardwood (log + block) | **Ash log** (grey bark, interlacing diamond ridges) | `Skyy_Ench_Ash` ? | `Wood_Ash_Trunk` (F1, Hardwood category) | LATER |
+| Azurewood (log + block) | **Azure log** (blue bark, pale streaks) | `Skyy_Ench_Azure` | `Wood_Azure_Trunk` (F2; spec: "Enchanted (later)") | LATER |
+| Crystalwood (log + block) | **Crystal log** (violet bark, glowing cyan veins, crystal prisms, cyan core) | `Skyy_Ench_Crystal` ? | `Wood_Crystal_Trunk` (F5) | LATER |
+| Redwood (log + block) | already v2 (`ench-redwood-log.png`) | - | - | - |
+| Fiber (Rope) | **Fibre bundle** (15 strands, fanned ends, three twine wraps + knot) - the real item is fibre, not rope | `Skyy_Ench_Fibre` ? | `Ingredient_Fibre` | LATER |
+| Hay Bale block | **Bundle of Hay** (straw block, cut ends on top, two twine bands, stray straws) | `Skyy_Ench_Hay` ? | `Plant_Hay_Bundle` | OPTION |
+| Copper ... Onyxium metal blocks (7) | **not drawn** - no vanilla metal block found in the repo, and Skyy: no Enchanted Blocks yet (bags.md line 60) | - | - | dropped |
+| Common / Hard / Red / Azure / Crystal wood blocks (5) | **not drawn** - merged into the logs above (Skyy: "in the game the logs are blocks!") | - | - | merged |
+| Pumpkin Block | **not drawn** - the spec found no Pumpkin block item (`research/Gathering-Progression-Spec.md` errata); Enchanted Pumpkin already covers it | - | - | dropped |
+
+- OPTION = a vanilla resource that has a collection but no Enchanted form in the spec; Skyy decides if it gets one. Skyy said stone =
+  Cobblestone + Rubble (sandstone / slate / basalt rubble already count as Rubble), so the three cobble options may simply stay unused.
+- The v1 names "Common Wood / Hardwood" were made up; Birch and Ash are the closest real F1 logs (Hardwood / Redwood names clash with
+  the vanilla wood categories - spec errata).
+
+## For the local session (UNVERIFIED) - v2 rest
+
+1. Check the ids exist in the current `Assets.zip`: `Ingredient_Bar_Onyxium`, `Ingredient_Bar_Silver`, `Ingredient_Bar_Gold`, `Soil_Sand`,
+   `Soil_Clay`, `Rock_Sandstone_Cobble`, `Rock_Slate_Cobble`, `Rock_Basalt_Cobble`, `Wood_Birch_Trunk`, `Wood_Ash_Trunk`,
+   `Wood_Azure_Trunk`, `Wood_Crystal_Trunk`, `Ingredient_Fibre`, `Plant_Hay_Bundle` (all appear in our build scripts / specs).
+2. Compare colours / looks with the vanilla icons and block textures; re-tune `METALS` (onyxium, silver, gold), `LOGS2`, `tex_sand`,
+   `tex_clay` and the three `tex_stonecob` palettes in `research/cloud/enchanted-art/make_enchanted_v2.py`. Clay colour is a pure guess.
+3. Does vanilla have metal storage blocks (a block of bars)? If yes and Skyy ever wants Enchanted Blocks, draw shiny copies of those.
+
+## Questions for Skyy - v2 rest
+
+| # | Question | Default |
+|---|---|---|
+| 1 | Sand, Clay, Sandstone, Slate, Basalt: give them Enchanted forms, or only Cobblestone + Rubble as you said? | [only Cobblestone + Rubble; keep the art for later] |
+| 2 | Bundle of Hay as a second Wheat step (like SkyBlock's Enchanted Hay Bale), or not at all? | [not at launch] |
+| 3 | Enchanted Onyxium / Silver / Gold ingots: later, when a recipe needs them? | [later] |
+| 4 | Enchanted logs for Birch / Ash / Azure / Crystal (non-key logs): later with the "every log" question (section 6, Q1)? | [later, same generator] |

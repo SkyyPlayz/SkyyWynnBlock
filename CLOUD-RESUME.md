@@ -77,7 +77,6 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
       (commands, what each measures, pass / fail). Draft code in a PR, UNTESTED. Output: `research/cloud/Monk-Probe-Plan.md`.
 - [ ] **Class emblems v2 (other 5)** - Warrior, Berserker, Archer, Assassin, Mage at the Monk / Priest v2 detail level (`research/cloud/class-art/`).
       Output: regenerated `research/cloud/class-art/class-sheet.png` + README.
-- [ ] **Enchanted v2 (rest)** - the v1 Enchanted items / blocks not yet in `research/cloud/enchanted-art/icons-v2/` (see its README). Output: v2 sheet + README.
 - [ ] **Fishing UI mockup v2** - redo `research/cloud/Fishing-UI-Mockup.png` against `research/Vanilla-UI-Style-Guide.md` (keep v1). Output: the PNG + `research/cloud/Fishing-UI-Mockup.md`.
 
 ## Done (delete after logging - see the rules above)
@@ -85,3 +84,4 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 - [x] Class review prep - 2026-10-08 - `research/cloud/Class-Review-Prep-1008.md`
 - [x] Consistency pass 2026-10-07 - 2026-10-08 - `research/cloud/Consistency-Pass-1007.md`
 - [x] Questions digest 2026-10-07 - 2026-10-08 - `research/cloud/Questions-Digest-1007.md`
+- [x] Enchanted v2 (rest): 43 icons - 2026-10-08 - `research/cloud/enchanted-art/enchanted-sheet-v2.png`

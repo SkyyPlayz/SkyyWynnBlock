@@ -27,3 +27,7 @@ Open: does 'no void protection' also cover the dragon catching you over void (re
 
 ## 2026-10-08 04:04 Questions digest 2026-10-07
 Done: research/cloud/Questions-Digest-1007.md - 40 open questions not in the 1006 digest, top 10 = build blockers (Mana for physical classes, ability cap 15 / 14 points, tree size, Shadow Step +10%, Block +4.5%, Ember 4,300, Amberite 9,300 / Drakonite 23,000, Bazaar buy floor 0.9, ore regrow, fishing grade). Skyy can answer by row numbers.
+
+## 2026-10-08 04:05 Enchanted v2 (rest)
+Done: research/cloud/enchanted-art/enchanted-sheet-v2.png now 43 icons (+14: Onyxium / Silver / Gold ingots, Sand, Clay, Sandstone / Slate / Basalt cobble, Birch / Ash / Azure / Crystal logs, Fibre, Hay Bundle). 13 v1 icons left out on purpose (metal + wood blocks, Pumpkin Block) - README section 7.1.
+Questions: Enchanted forms for Sand / Clay / stone cobbles [no, only Cobblestone + Rubble]; Hay Bundle as a 2nd Wheat step [not at launch]. All 14 base ids UNVERIFIED.
