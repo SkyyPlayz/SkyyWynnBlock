@@ -28,6 +28,8 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - ONYXIUM CROSSBOW recipe (SkyyArmory 0.1.3): today 10 Mithril bars + 2 Voidheart + 3 Storm leather at the tier-3 Weapon Bench (Onyxium bars have no world source in 0.6) - keep it, use Onyxium bars like the Onyxium wand, or make it an upgrade of the Mithril crossbow? [keep the current recipe]
 - BOW LEAP on the 6 prototype / developer bows (Combat, Bomb, Pull, Ricochet, Vampire, Test_Zoom - own fire chains, still vanilla): give them the leap too? [no - only the 13 normal shortbows]
 
+- SIGNATURES for the new weapons (research/cloud/Signature-Proposals.md, wands already = ricochet bolt): Bo staff [B Whirling Staff - a timed multi-hit spin]; wraps / gauntlets (+ claws later) [A Flurry - 6 fast jabs]; kunai [A Kunai Fan - 5 kunai in a fan]; spellbooks [A Page Storm - 2 s page swirl around you]; daggers keep vanilla Razorstrike [yes]
+
 ### economy
 - Bazaar CLOTH and GEM prices [x2 per tier step, like metals / woods / crops - built into SkyyBazaar 0.1.4: cloth scraps 4 / 16 / 40 / 96 / 256 / 640, Diamond + Voidstone 120]
 - which late-game items can never be bought or sold (the market wall)? [list empty until you name items]
