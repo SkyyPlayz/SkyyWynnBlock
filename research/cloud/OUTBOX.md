@@ -53,3 +53,7 @@ Questions: 0.7 rune keys as main cast input + /cast backup [yes]; block vanilla 
 Done: research/cloud/Monk-Probe-Plan.md - 13 probes as /mprobe commands (what each measures, pass / fail, fallback), 12-step in-game test script for Skyy. Draft probe jar SkyyMonkProbe/build_skyymonkprobe_0.1.py + test script come in a [cloud] pull request (UNTESTED, never pin before your build + review).
 New APIs: holding / dragging mobs in mid-air (probes 7-8), slow effect id, self-sourced fall damage, melee damage cause. Findings: vault '7 blocks in 0.8 s' lands ~1.06 s; SkyySkills RollSys can pay roll XP on a Plunge landing (breaks 'no Acrobatics XP').
 Questions: crouch as the free air jump [yes]; short slow if mobs can't hang [yes]; keep only -15% fall damage if slow-fall stutters [yes].
+
+## 2026-10-08 04:19 Cloud list done
+All 10 tasks from tonight's CLOUD-RESUME are done and pushed (one OUTBOX block each above). Draft probe jar: https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 - UNTESTED, left open for you to build + review before merging.
+Refilled CLOUD-RESUME with 3: Ability engine probe plan (E0), Echo options page, Class tree stale nodes (waits until you say research/cloud/Class-Tree-Paths.md is free).

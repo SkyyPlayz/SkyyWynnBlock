@@ -65,14 +65,11 @@ class design changes all over docs/answered/classes.md 2026-10-07 lines; the loc
 Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-Paths.md or research/cloud/Class-Tree-Build-Map.md - a local agent owns them). -->
 
 
+- [ ] **Ability engine probe plan (E0)** - turn the 15 engine probes P1-P15 in `research/cloud/Class-Ability-Engine-Spec.md` into a probe-jar design
+      like `research/cloud/Monk-Probe-Plan.md` (commands, measures, pass / fail, fallback); draft code in a [cloud] PR, UNTESTED. Output: `research/cloud/Ability-Probe-Plan.md`.
+- [ ] **Echo options for Skyy** - one page with 3 ways to keep Echo inside the budgets (30% cap for all / per-ability caps / keep 70% on a longer
+      cooldown), with the numbers from `research/cloud/Ability-Refresh-1007.md`. Output: `research/cloud/Echo-Options.md`.
+- [ ] **Class tree stale nodes (after the local agent is done)** - only once the local session says `research/cloud/Class-Tree-Paths.md` is free:
+      fix E5, B3, LB2, W1, W2 + add a Mana Barrier Follow node (list in `research/cloud/Ability-Refresh-1007.md`). Output: the edited file.
+
 ## Done (delete after logging - see the rules above)
-- [x] OUTBOX test - 2026-10-08 - `research/cloud/OUTBOX.md`
-- [x] Class review prep - 2026-10-08 - `research/cloud/Class-Review-Prep-1008.md`
-- [x] Consistency pass 2026-10-07 - 2026-10-08 - `research/cloud/Consistency-Pass-1007.md`
-- [x] Questions digest 2026-10-07 - 2026-10-08 - `research/cloud/Questions-Digest-1007.md`
-- [x] Enchanted v2 (rest): 43 icons - 2026-10-08 - `research/cloud/enchanted-art/enchanted-sheet-v2.png`
-- [x] Class emblems v2 (other 5) - 2026-10-08 - `research/cloud/class-art/class-sheet.png`
-- [x] Fishing UI mockup v2 - 2026-10-08 - `research/cloud/Fishing-UI-Mockup.png`
-- [x] Class ability spec refresh - 2026-10-08 - `research/cloud/Ability-Refresh-1007.md`
-- [x] Class ability ENGINE spec - 2026-10-08 - `research/cloud/Class-Ability-Engine-Spec.md`
-- [x] Monk moves probe plan - 2026-10-08 - `research/cloud/Monk-Probe-Plan.md`
