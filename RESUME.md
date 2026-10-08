@@ -31,7 +31,9 @@ Read this first, then only what the task needs. Map of every file + search tips:
   must have NO MaxDurability / DurabilityLossOnHit (Skyy 2026-10-07; vanilla Weapon_Kunai has none, daggers have 120) - else fix round. DEPLOYED 18:54: Accessories 0.5.7 icons + Armory 0.1.5
   staffs (TEST-CHECKLIST 41, backup deploy-20261007-1854). QUEUED after Armory 0.1.6 pins: SkyyArmory 0.1.7 = Bo staffs
   (Copper..Onyxium + vanilla Wood/Bamboo kept) + hand wraps + gauntlets as items with NORMAL attacks (Skyy: items now, moves later;
-  claws later) - art tools/art/make_staffs.py (Bo) + make_fists.py; Monk-Kit-Spec 1-2; charged moves need the spec-5 probes first. Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
+  claws later) - art tools/art/make_staffs.py (Bo) + make_fists.py; Monk-Kit-Spec 1-2; charged moves need the spec-5 probes first. ALSO in 0.1.7: RIGHT-CLICK = BLOCK
+  (vanilla guard) on wands, staffs, spellbooks, bo staffs, fists (Skyy 2026-10-07; not crossbow / kunai) + own animation sets with a
+  Guard pose (vanilla Staff / Wand / Spellbook sets have none). Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
   Stamina icon; fishing junk; reference pictures are local in `research/refs/`, described in docs/answered/gear.md).
 
 ## Next, in order
