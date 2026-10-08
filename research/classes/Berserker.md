@@ -128,6 +128,8 @@ You own 4. You equip 2.
 
 - While in range: players **+8% damage + 8% defence**, party members **+12% / +12%**, you **+16% / +16%**.
 
+- **Every mob killed inside the banner's range extends it** (default +1 s per kill, mini-boss +3 s, boss +5 s; capped at 60 s total - Server Setup rows; Skyy 2026-10-07).
+
 - The trade-off: less damage than Enrage / Blood Frenzy, but defence too - and it swaps mobility (you must stay near it) for a long duration.
 
 **Modifiers**
