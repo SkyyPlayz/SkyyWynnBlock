@@ -101,11 +101,9 @@ You own 4. You equip 2.
 
 - **Does:** while active, enemies in an aura around you are **Awed**.
 
-- Only YOU gain flat **move speed + attack speed**.
+- **Combo stacks** (Skyy 2026-10-07): every hit you land = **1 combo stack**, max **20**. Each stack raises YOUR **move speed + attack speed** (default +2% move, +1.5% attack per stack = +40% / +30% at 20). **Each stack decays 5 s after it was gained**, so you only reach / stay at 20 by hitting non-stop.
 
-- Every hit you land = 1 combo. Each combo slows Awed enemies and lowers their defence.
-
-- At **15 combo your flat buff doubles**.
+- **Awed enemies** get **distracted for a moment** when they become Awed (they lose their target, ~1 s), then take **lowered defence and slightly lower move speed per TOTAL combo** you landed during the ability (default -1% defence, -0.5% move per total combo; caps -20% / -10%).
 
 - Drains **Mana AND Stamina** over time. Lasts 30 s (upgradable). Ends early when either runs out.
 
@@ -119,7 +117,7 @@ You own 4. You equip 2.
 
 - 💧 **Efficiency** - slower Mana / Stamina drain.
 
-- 💪 **Power+** - bigger flat buff / stronger Awe per combo.
+- 💪 **Power+** - bigger buff per combo stack / stronger Awe per total combo.
 
 ### A1-alt A · Hundred Fists
 
@@ -262,6 +260,8 @@ Ideas - pick one.
 - 2026-10-05: refined for easy reading (same facts, new layout).
 
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
+
+- 2026-10-07: Flowing Form reworked into combo stacks (each hit +1, max 20, 5 s decay per stack, speed buffs per stack; Awed = distracted, then defence / speed debuff per total combo) (Skyy).
 
 - 2026-10-07: Still Water gains Echo (counters return ~3 s while moving; block + counter interrupts your attack) (Skyy).
 
