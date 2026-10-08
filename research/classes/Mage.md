@@ -144,7 +144,7 @@ You own 4. You equip 2.
 
 🟢 **Locked**
 
-- **Does:** for 6 s, damage you take **drains Mana instead of Health** (1 Mana per 2 HP).
+- **Does:** for **12 s** (at least - Skyy 2026-10-07), damage you take **drains Mana instead of Health** (1 Mana per 2 HP).
 
 - It ends early if your Mana runs out.
 
@@ -239,6 +239,8 @@ Ideas - pick one. The Mage tree already has three lanes.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-07: Mana Barrier lasts at least 12 s (was 6 s), still drains Mana instead of Health (Skyy: "mana barier should last at least 12 seconds keep the mana drain instead of hp").
 
 - 2026-10-07: Echo modifier added to Meteor too (Skyy: "the modifier, echo.  that should be available on the metro too.").
 
