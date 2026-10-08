@@ -17,7 +17,7 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.17"), ("SkyySacks", "0.7.14"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.10"), ("SkyySkills", "0.4.23"),
+    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.10"), ("SkyySkills", "0.4.24"),
     ("SkyyAccessories", "0.5.8"), ("SkyyClasses", "0.1.14"), ("SkyyMenu", "0.3.10"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.7"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.3"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -217,6 +217,9 @@ def main():
     # monk moves round (2026-10-08): SkyySkills 0.4.22 stops shipping the vanilla Wood / Bamboo Bo -> SkyyArmory 0.1.11+ must own them
     if _v(_p.get("SkyySkills", "0")) >= (0, 4, 22) and _v(_p.get("SkyyArmory", "0")) < (0, 1, 11):
         print("STOP: SkyySkills 0.4.22+ needs SkyyArmory 0.1.11+ (the Wood / Bamboo Bo handover) in the same deploy"); return 1
+    # wood wand signature (2026-10-08): SkyySkills 0.4.24 wands name SkyyArmory_Wand_Signature (SkyyArmory 0.1.14) - never roll Armory below 0.1.14 while Skills is 0.4.24+
+    if _v(_p.get("SkyySkills", "0")) >= (0, 4, 24) and _v(_p.get("SkyyArmory", "0")) < (0, 1, 14):
+        print("STOP: SkyySkills 0.4.24+ needs SkyyArmory 0.1.14+ (the root SkyyArmory_Wand_Signature it names) in the same deploy"); return 1
     missing = []
     plan = []
     for mod, ver in SET:
