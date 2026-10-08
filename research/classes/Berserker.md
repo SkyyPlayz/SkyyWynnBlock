@@ -104,7 +104,7 @@ You own 4. You equip 2.
 
 🔵 **Proposed** - pick A or B
 
-- **Does:** a **toggle** - while it is on, the rage grows with **every hit you land**: +2% per stack for you, +1% per stack for allies, up to **25 stacks**; allies get it through an **AoE aura**: players within 8 blocks and party members within 16 blocks of you (the Enrage ranges) are buffed **only while they are inside it** (unlike Enrage, which is picked once) - so it works as a late-game passive; **each stack decays 6 s after it was gained** (Skyy 2026-10-07).
+- **Does:** a **toggle** - while it is on, the rage grows with **every hit you land**: per stack you get **+1.5% damage and +1.5% attack speed**, allies **+0.75% of each** (Skyy 2026-10-07: a bit less damage for more attack speed - "fits the name"), up to **25 stacks** (you +37.5% / +37.5%, allies about +19% / +19%); allies get it through an **AoE aura**: players within 8 blocks and party members within 16 blocks of you (the Enrage ranges) are buffed **only while they are inside it** (unlike Enrage, which is picked once) - so it works as a late-game passive; **each stack decays 6 s after it was gained** (Skyy 2026-10-07).
 
 - **Cost:** **Mana + Stamina per ATTACK** (every swing, hit or miss) and only a **small drain over time**; Mana / Stamina still regenerate while it is on, so a high-level Berserker can leave it on as a passive buff. It switches off when either runs out (or when you toggle it off).
 
