@@ -20,7 +20,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyClasses | 0.1.14 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
 | SkyyMenu | 0.3.10 | SkyWynn Menu, player Settings, Server Setup (admin) |
 | SkyyEssentials | 0.1.9 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
-| SkyyProfiles | 0.1.6 | profiles = full saves (default cap 6), delete + 6 h undo |
+| SkyyProfiles | 0.1.7 | profiles = full saves (default cap 6), delete + 6 h undo |
 | SkyyCooking | 0.1.6 | Cooking dishes + food Grade; XP by craft difficulty |
 | SkyyTrees | 0.3.3 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
 | SkyyExploration | 0.2.3 | Exploration skill, spots, island checklist |

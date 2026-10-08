@@ -60,6 +60,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 51. SkyyMenu 0.3.10 - Your Profile -> Stats page (5 tabs), Change Profile button, /stats
 52. SkyyEssentials 0.1.9 chat mirror (chat -> server log) + SkyyTownProbe 0.1 (/townprobe on /zone 1; undo everything before removal)
 53. SkyyKeyProbe 0.1 - /keyprobe give, press every key, /keyprobe report (then remove)
+54. SkyyProfiles 0.1.7 - big SWITCH confirms; each profile keeps its own Health; new profiles start full
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6

@@ -128,3 +128,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyMenu 0.3.10 - Stats page (DEPLOYED 2026-10-08, backup deploy-20261008-0652) | [2026-10](2026-10.md) |
 | SkyyEssentials 0.1.9 chat mirror + SkyyTownProbe 0.1 (DEPLOYED 2026-10-08, backup deploy-20261008-0712) | [2026-10](2026-10.md) |
 | SkyyKeyProbe 0.1 - key probe (DEPLOYED 2026-10-08, backup deploy-20261008-0728) | [2026-10](2026-10.md) |
+| SkyyProfiles 0.1.7 - switch confirm + Health per profile (DEPLOYED 2026-10-08, backup deploy-20261008-0729) | [2026-10](2026-10.md) |
