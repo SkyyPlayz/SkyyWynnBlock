@@ -64,7 +64,7 @@ flowchart TD
 
   - Leaves a **trail of light** along the path that hurts enemies in it for a few seconds (default: 1.5 blocks wide, 3 s, ~30% of the charged damage per second).
 
-  - Never into blocks or out over open void.
+  - Never into blocks; over open void is allowed (no void protection, Skyy 2026-10-07).
 
   - No Stamina cost.
 

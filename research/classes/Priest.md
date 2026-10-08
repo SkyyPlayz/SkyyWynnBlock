@@ -60,7 +60,7 @@ flowchart TD
 
   - Look down = straight up.
 
-  - Shorter hop when there is no ground behind you.
+  - Full hop everywhere - no void protection (Skyy 2026-10-07); falling into the void is a race to get back out.
 
 - The charged shot fires an **exploding orb** (AoE ~6 blocks).
 
