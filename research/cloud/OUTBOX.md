@@ -57,3 +57,6 @@ Questions: crouch as the free air jump [yes]; short slow if mobs can't hang [yes
 ## 2026-10-08 04:19 Cloud list done
 All 10 tasks from tonight's CLOUD-RESUME are done and pushed (one OUTBOX block each above). Draft probe jar: https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 - UNTESTED, left open for you to build + review before merging.
 Refilled CLOUD-RESUME with 3: Ability engine probe plan (E0), Echo options page, Class tree stale nodes (waits until you say research/cloud/Class-Tree-Paths.md is free).
+
+## 2026-10-08 04:25 PR 11 review round
+Copilot reviewed https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11: 2 fixes pushed (a64674e: plain rise speed used apex time and flew 2x; manifest IncludesAssetPack false + harness check). Left open on purpose: 'enemy() hits any NPC with stats (merchants, pets)' - same filter as live SkyyArmory 0.1.7 ArmoryTrav.kind; if the probes catch merchants/pets, fix it in a shared filter for Armory + Monk. Your call.
