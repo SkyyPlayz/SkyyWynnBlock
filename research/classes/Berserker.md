@@ -80,7 +80,9 @@ You own 4. You equip 2.
 
 🟢 **Locked**
 
-- **Does:** the party within 8 blocks gets a **damage buff that GROWS** for 10 s (+10% → +20%).
+- **Does:** on activation, every **player within 8 blocks** and every **party member within 16 blocks** gets a **damage buff that GROWS** for 10 s (+10% → +20%).
+
+- The range is checked **once, when you activate it** - the buff then stays on each player, it is **not an aura**: group up, activate, split up and attack (Skyy 2026-10-07).
 
 - It holds 5 s, then ends abruptly.
 
@@ -92,7 +94,7 @@ You own 4. You equip 2.
 
 - ⏳ **Duration+** - longer hold.
 
-- ⭕ **Radius+** - bigger party circle.
+- ⭕ **Radius+** - bigger activation circles (both the 8-block player and the 16-block party range).
 
 - 💪 **Power+** - higher peak.
 
@@ -233,6 +235,8 @@ Ideas - pick one.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-07: Enrage range = players within 8 + party within 16 at activation; the buff stays (not an aura) (Skyy).
 
 - 2026-10-07: axe Lunge LOCKED (Skyy); one traversal per weapon - proposed Bull Rush for clubs, Earthshaker for maces.
 
