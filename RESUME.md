@@ -33,7 +33,8 @@ Read this first, then only what the task needs. Map of every file + search tips:
   note any kunai void check for the 0.1.7 removal. DEPLOYED 18:54: Accessories 0.5.7 icons + Armory 0.1.5
   staffs (TEST-CHECKLIST 41, backup deploy-20261007-1854). QUEUED after Armory 0.1.6 pins: SkyyArmory 0.1.7 = Bo staffs
   (Copper..Onyxium + vanilla Wood/Bamboo kept) + hand wraps + gauntlets as items with NORMAL attacks (Skyy: items now, moves later;
-  claws later) - art tools/art/make_staffs.py (Bo) + make_fists.py; Monk-Kit-Spec 1-2; charged moves need the spec-5 probes first. ALSO in 0.1.7: RIGHT-CLICK = BLOCK
+  claws later) - art tools/art/make_staffs.py (Bo) + make_fists.py; Monk-Kit-Spec 1-2; FIST ATTACKS per docs/answered/classes.md
+  2026-10-07 (wraps: jabs per click + power hit on jab N by tier; gauntlets: 1 jab, chain of 4, finisher + gap); charged moves need the spec-5 probes first. ALSO in 0.1.7: RIGHT-CLICK = BLOCK
   (vanilla guard) on wands, staffs, spellbooks, bo staffs, fists (Skyy 2026-10-07; not crossbow / kunai) + own animation sets with a
   Guard pose (vanilla Staff / Wand / Spellbook sets have none). ALSO 0.1.7: REMOVE all void protection (Skyy: none on any
   traversal): wand hop void halving, blink floorCheck (default -> off / row gone), and any void check 0.1.6 put on the kunai teleport.
