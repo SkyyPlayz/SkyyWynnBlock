@@ -159,9 +159,9 @@ You own 4. You equip 2.
 
 🔵 **Proposed** - pick A or B
 
-- **Does:** a holy zone for 8 s (7 blocks).
+- **Does:** a holy zone for **12 s**, starting at **8 blocks** (Skyy 2026-10-07).
 
-- Allies inside heal **4% max Health per second** and take **10% less damage**.
+- Allies inside heal **5% max Health per second** and take **10% less damage**.
 
 **Modifiers**
 

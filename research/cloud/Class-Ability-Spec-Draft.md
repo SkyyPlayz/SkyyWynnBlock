@@ -71,7 +71,7 @@ Note: Mage Mana scale (+10/Sorcery level) makes 30-36 Mana a clear but affordabl
 | Ability | Cost / CD | Base | Per level | At Lv 15 |
 |---|---|---|---|---|
 | 🟢 **A1 Sacred Heal** | 25 Mana / 14 s | **Instant heal** for everyone within 9 blocks: **25% max Health** (the Priest heals themself 20% more = 30%); plus a heal-over-time of **40% of the instant heal over 4 s** | instant +0.5% of max Health, HoT % +0.5 points, HoT duration +0.05 s (the three upgrade separately in the tree) | 32% (38% Priest), HoT 47% over 4.7 s |
-| 🔵 **A1-alt A Sanctuary** | 35 / 28 s | Holy zone, 8 s, 7 blocks: allies inside heal **4% max Health per second** and take **10% less damage** | heal +0.1%/s, reduction +0.4% | 5.4%/s, 15.6% less |
+| 🔵 **A1-alt A Sanctuary** | 35 / 28 s | Holy zone, **12 s, 8 blocks** (Skyy 2026-10-07): allies inside heal **5% max Health per second** and take **10% less damage** | heal +0.1%/s, reduction +0.4% | 5.4%/s, 15.6% less |
 | 🔵 **A1-alt B Martyr's Grace** | 30 / 18 s | Instant **45% max Health** heal on the lowest-health ally within 15 blocks; chains to 2 more allies (each 25% less) | heal +0.7% | 55% |
 | 🟢 **A2 Shield Bubble** | 28 / 24 s | Place a **5-block bubble** for 8 s; blocks projectiles, absorbs damage for allies inside; **HP = 100% of the caster's max Health**; it can break | HP +3% of caster's max Health | 142% |
 | 🔵 **A2-alt Guardian Spirit** | 30 / 45 s | Mark an ally within 20 blocks for 10 s; if they would die they **survive at 30% Health** once | survive Health +1% | 44% |
