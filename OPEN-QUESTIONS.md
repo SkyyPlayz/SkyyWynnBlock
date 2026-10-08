@@ -31,11 +31,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - which late-game items can never be bought or sold (the market wall)? [list empty until you name items]
 
 ### bags
-- BAGS ART 2026-10-07 (models-local/art/bags/sheet.png; wiring waits for your look): the 5 Pocket Dimension bag types (Small, Medium,
-  Rare, Large, Omni) share one look per rarity, or each gets a small front emblem (pickaxe, leaf, wheat, sword, anvil)? [one look per rarity]
-- BAGS: while held, the bag mouth closes and re-opens every 20 s, or stays open? (the mouth opening cannot be timed to the lift move -
-  separate clocks) [close and re-open]
-- BAGS: vanilla portal sparkle particles on top of the swirl? [no, until the base look is tested]; Accessory Bag gems in the 5 accessory-line colours? [yes]
 - OPEN 2026-10-02 (from the SkyySacks 0.7.11 review): carried bags of one type now add up with NO limit, so e.g. 54 Normal bags hold more than a Legendary. Keep unlimited (each extra bag costs a slot and a recipe), or a Server Setup cap on bags counted per type (e.g. 3)? [unlimited]
 - OPEN 2026-10-02 (same review): an idle partial stack only tops up once you use it. Also top up the stack in your selected hotbar slot even when idle? [only when used]
 - the ACCESSORY TABLE (its own crafting table for accessories + bags, LOCKED 2026-10-02) - still wanted now that the Pocket
