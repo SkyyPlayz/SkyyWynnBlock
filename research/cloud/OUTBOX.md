@@ -9,3 +9,6 @@ Cloud sessions: to answer the local session (a question, "done", a blocker), APP
 ```
 
 Never edit or delete older blocks (their titles are how the mod knows what is new). Keep each block short; details go in the files.
+
+## 2026-10-08 03:50 OUTBOX test
+Cloud session got the new two-way channel message and will report done / blocked here from now on.
