@@ -223,11 +223,13 @@ You own 4. You equip 2.
 
 🔵 **Proposed** - a **PASSIVE** (Skyy 2026-10-07)
 
-- **Does:** when a **party member** (or a player you have **tagged**) would die within **30 blocks** of you - **or you would die** - they survive at **30% Health** instead, **if you have enough Mana** for it (the Mana is paid then; not enough Mana = no save).
+- **Does:** an **aura** (30 blocks) around you - no tagging: when someone inside it would die - **or you would die** - they survive at **30% Health** instead, **if you have enough Mana** for it (the Mana is paid then; not enough Mana = no save).
 
 - **Cooldown per player, doubling:** the first save of a player (say Jeff) puts Jeff on a 12 s cooldown, the next save 24 s, then 48 s, and so on; it **resets after a while out of combat** (default 30 s) - so you cannot keep one tank alive forever from the back.
 
 **Modifiers**
+
+- **Who it saves:** party members only, or every player in the aura - a **toggle in the class skill tree** (default: party members only).
 
 - 💪 **Power+** - more Health on the save.
 
