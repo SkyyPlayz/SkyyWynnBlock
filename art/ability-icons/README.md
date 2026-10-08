@@ -1,4 +1,4 @@
-# Class ability icons - Mage, Priest, Monk, Assassin, Warrior (25 icons, 64 x 64)
+# Class ability icons - Mage, Priest, Monk, Assassin, Warrior, Berserker (30 icons, 64 x 64)
 
 ART-RESUME items 4 (Mage + Priest) and 6 (the other classes, one class per commit).
 
@@ -7,13 +7,14 @@ ART-RESUME items 4 (Mage + Priest) and 6 (the other classes, one class per commi
 | Mage, Priest | **APPROVED + committed** (e87a4d9). Skyy, word for word: "The ability icons look great, commit them" |
 | Monk | **APPROVED + committed** (59913fc). Review sheet as approved: `sheet-monk.png`. Skyy, word for word (2026-10-08): "They all look great, except the cyclone kick. The foot looks weird" -> Cyclone Kick redrawn (v2 foot); then Skyy, word for word: "Either wrap the foot or give his shoes don’t leave it bare" -> v3: the foot is wrapped in linen (no bare skin); then Skyy, word for word: "Use shoes instead, make the foot vertical like the first image" -> v4: the foot stands up again like the first image, in a soft Monk shoe. The other 4 Monk icons unchanged; then Skyy, word for word: "Yes, the shoe looks good, commit the Monk icons" |
 | Assassin | **APPROVED + committed** (dbe4bd8). Review sheet as approved: `sheet-assassin.png`. Skyy, word for word (2026-10-08): "The hood looks a little weird, do an assassins creed style hood, with a face mask" -> hood v2 (beak hood + face mask) on Cloak + First Strike and Shadow Clone. Toxin, God Killer, Vanishing Act unchanged; then Skyy, word for word: "Yes, the Assassin hood looks good, commit them" |
-| Warrior | **APPROVED + committed** (the Warrior commit after dbe4bd8). Review sheet as approved: `sheet-warrior.png`. Skyy, word for word (2026-10-08): "Yes, the Warrior icons look good, commit them" (draft v1 approved as drawn, all defaults kept) |
+| Warrior | **APPROVED + committed** (1cf4d85). Review sheet as approved: `sheet-warrior.png`. Skyy, word for word (2026-10-08): "Yes, the Warrior icons look good, commit them" (draft v1 approved as drawn, all defaults kept) |
+| Berserker | **APPROVED + committed** (the Berserker commit after 1cf4d85). Review sheet as approved: `sheet-berserker.png`. Skyy, word for word (2026-10-08): "Yes, the Berserker icons look good, commit them" (draft v1 approved as drawn, all defaults kept) |
 
 None of them is wired in or seen in game yet. Original pixels drawn from code (Python + numpy + Pillow). No vanilla Hytale file,
 other mod or reference picture was read, copied, traced or recoloured. The approved Mage + Priest PNGs are byte-identical to the
 committed ones (checked after adding Monk + Assassin).
 
-`sheet.png` shows every class together; `sheet-monk.png` / `sheet-assassin.png` / `sheet-warrior.png` are the per-class sheets Skyy approved.
+`sheet.png` shows every class together; `sheet-monk.png` / `sheet-assassin.png` / `sheet-warrior.png` / `sheet-berserker.png` are the per-class sheets Skyy approved.
 
 ## 1. Files
 
@@ -24,9 +25,11 @@ committed ones (checked after adding Monk + Assassin).
 | `Common/Icons/Abilities/Monk/FlowingForm.png`, `PalmStrike.png`, `CycloneKick.png`, `HundredFists.png`, `StillWater.png` | 5 Monk icons (approved) |
 | `Common/Icons/Abilities/Assassin/CloakFirstStrike.png`, `Toxin.png`, `GodKiller.png`, `ShadowClone.png`, `VanishingAct.png` | 5 Assassin icons (approved) |
 | `Common/Icons/Abilities/Warrior/RallyingGuard.png`, `ShieldShockwave.png`, `IronChain.png`, `BulwarkStance.png`, `Unbreakable.png` | 5 Warrior icons (approved) |
+| `Common/Icons/Abilities/Berserker/Enrage.png`, `Whirlwind.png`, `Earthsplitter.png`, `BloodFrenzy.png`, `WarlordsBanner.png` | 5 Berserker icons (approved) |
 | `sheet.png` | every done class: big labels, plain page, class colour swatch + APPROVED / FOR REVIEW tag per class, dark HUD strip |
 | `sheet-monk.png`, `sheet-assassin.png` | the same layout for ONE class each (kept as Skyy reviewed + approved them) |
 | `sheet-warrior.png` | the same layout for the Warrior icons only (kept as Skyy reviewed + approved it) |
+| `sheet-berserker.png` | the same layout for the Berserker icons only (kept as Skyy reviewed + approved it) |
 | `manifest.json` | every file: path, bytes, sha256, size, class, slot, ability text, what the icon shows, colour ramps |
 | `README.md` | this file |
 
@@ -36,7 +39,7 @@ matter). No pure `#000000` / `#ffffff` pixel. File names have no spaces or symbo
 
 ## 2. Ability -> meaning -> icon
 
-From `research/cloud/Class-Ability-Shapes.md` sections 4 Mage, 5 Priest, 7 Monk, 8 Assassin, 2 Warrior (Priest numbers:
+From `research/cloud/Class-Ability-Shapes.md` sections 4 Mage, 5 Priest, 7 Monk, 8 Assassin, 2 Warrior, 6 Berserker (Priest numbers:
 `docs/answered/classes.md` lines 142-146).
 One icon per ability - all 4 shapes (walking / sprinting / mid-air / crouch) share it.
 
@@ -101,6 +104,23 @@ steel field keeps the three warm-rimmed classes apart at a glance, reads as "ste
 navy. The Warrior rim ramp is more orange and more saturated than the Priest's pale lemon-gold. Spear + crimson banner match the
 Warrior class emblem (longsword + spear, ruby / red accents).
 
+### Berserker (class colour `#d9443f`; party damage buffer + sustained melee - fury / blood / the axe) - APPROVED
+
+| Icon | Slot | What the ability does | What the icon shows |
+|---|---|---|---|
+| **Enrage** | A1, LOCKED, 14 / 30 s | players within 8 + party within 16: damage +10 -> +20% over 10 s, holds 5 s; you x2 | a horned beast skull (bone, long upswept horns, cracked brow) with glowing red eyes in a blaze of blood-red + ember rage fire |
+| **Whirlwind** | A2, LOCKED, 12 / 14 s | spin 3 s, hit everything within 3 blocks every 0.5 s, heal 10% of the damage | the class emblem's bearded double-bit battleaxe (red-wrapped haft, ruby socket) mid-spin, a faint red after-image, two blood-red whirl ribbons |
+| **Earthsplitter** | A2-alt, PROPOSED, 14 / 12 s | 12-block shockwave line, 2.0 H, knock-up 1 s; stronger the lower your Health | the battleaxe buried blade-first in scorched ground, a glowing ember-orange crack splitting the earth toward you, rock chunks flung up |
+| **Blood Frenzy** (`BloodFrenzy.png`) | A1-alt A, PROPOSED toggle | every swing stacks (max 25, 6 s decay); aura buffs allies half | three curved blood-red claw slashes with bright cores, blood drops, three stack pips (two lit red, one bone) |
+| **Warlord's Banner** (`WarlordsBanner.png`) | A1-alt B, PROPOSED, 40 / 40 s | plant a banner 30 s, 12 blocks: +8 / 12 / 16% damage + defence + attack speed; kills extend it | a tall iron war standard (spear finial, crossbar) in a glowing red aura ring, a tattered dark banner with a red border + red crossed-axe sign |
+
+Berserker look: blood-red rim from the class colour `#d9443f`, dark OXBLOOD field (`#42161e` -> `#120609`, a deep wine red). Why: red is
+the only red class, so the rim already reads; the field stays in the same hue family (like Mage navy / Assassin plum) for a hot, angry
+read. It is cooler (wine, not orange) and a little darker than the Monk's rust `#4a2416`, so the Monk's saffron-on-rust and the
+Berserker's red-on-oxblood stay apart at 32 px (checked side by side in `review/berserker-v1.png`); far from the Warrior's cool
+gunmetal. The battleaxe is the class emblem's bearded double-bit axe (red-wrapped haft, ruby). Warlord's Banner is a HANGING dark
+war standard on an iron pole (vs the Warrior's sideways crimson swallowtail on a spear) so the two banners do not mix up.
+
 Mage vs Priest at a glance: blue rim + navy field + cool arcane colours vs gold rim + warm umber field + gold / ivory / soul-cyan.
 The Priest's cyan is the soul-cage v2 cyan from the Priest class emblem, so the two families match.
 
@@ -109,14 +129,14 @@ The Priest's cyan is the soul-cage v2 cyan from the Priest class emblem, so the 
 | Choice | Default used |
 |---|---|
 | Frame style | **round dark frame, class-colour rim**: a dark slate band (r 31.6 -> 28.6 px), a bevelled class-colour rim (28.6 -> 26.2 px), a 1 px dark line, all top-lit |
-| Background | **dark, class tint**: radial field, Mage navy `#26335e` -> `#0e1226`, Priest warm umber `#43381e` -> `#15100c`, Monk dark rust `#4a2416` -> `#170b09`, Assassin dark plum `#33224e` -> `#0e0916`, Warrior gunmetal `#2a3a44` -> `#0b1216` |
+| Background | **dark, class tint**: radial field, Mage navy `#26335e` -> `#0e1226`, Priest warm umber `#43381e` -> `#15100c`, Monk dark rust `#4a2416` -> `#170b09`, Assassin dark plum `#33224e` -> `#0e0916`, Warrior gunmetal `#2a3a44` -> `#0b1216`, Berserker oxblood `#42161e` -> `#120609` |
 
-Skyy approved both defaults with the Mage + Priest set; Monk, Assassin and Warrior use the same frame and the same kind of field.
+Skyy approved both defaults with the Mage + Priest set; Monk, Assassin, Warrior and Berserker use the same frame and the same kind of field.
 
 ## 4. Colours
 
 Class colours (= the class emblem colours, `research/cloud/class-art/README.md`): Mage `#7fb0e0`, Priest `#f2e6a0`,
-Monk Saffron `#f08a30` (LOCKED by Skyy), Assassin `#b58cff`, Warrior `#e0b060`.
+Monk Saffron `#f08a30` (LOCKED by Skyy), Assassin `#b58cff`, Warrior `#e0b060`, Berserker `#d9443f`.
 
 | Ramp (dark -> light) | Used for |
 |---|---|
@@ -142,6 +162,8 @@ Monk Saffron `#f08a30` (LOCKED by Skyy), Assassin `#b58cff`, Warrior `#e0b060`.
 | SMOKE `#241e30 ... #e6e4ee`, IRON `#12121c ... #7c7c94` | Vanishing Act smoke + bomb; dagger grip; SMOKE also the Assassin face mask (hood v2); IRON also the Warrior chain links, helm bands, shield boss flange |
 | WAR_RIM `#4a2a10 #7e5220 #b4823a #e0b060 #f2d08c #fbeccc` | Warrior rim (from `#e0b060`) |
 | AMBER `#5a2c0e ... #fff0cc`, CRIMSON `#2e0c18 ... #f08c66`, OAK `#2c1a14 ... #d8b47e` | Warrior shout / shock arcs + glowing cracks; banner, pale + fletching; spear shaft, shield planks, arrow shafts. STEEL + GOLD reused for blades, shields, helm, trim |
+| BERS_RIM `#4a0e16 #7e1a22 #b02c30 #d9443f #ee7a64 #f8b8a0` | Berserker rim (from `#d9443f`) |
+| BLOOD `#2a0612 ... #ffc8a8`, BONE `#3c2e2a ... #f4ecd8`, STONE `#1c161c ... #a8968a`, CHAR `#120c12 ... #544044` | Berserker rage fire, slashes, haft wraps, banner sign + aura; beast skull, stack pip; scorched ground + rocks; dark banner cloth. FIRE (Mage) reused for the ember crack + inner flames; IRON / STEEL / OAK for the axe + standard |
 
 Full ramps: `manifest.json` -> `ramps_dark_to_light`. Shadows lean violet / blue, lights lean warm (hue-shifted).
 
@@ -205,6 +227,17 @@ Strike: the fade-out now starts lower (below the mask) so the masked face stays 
 dark. Lilac rim, plum field, gold crit star, clone sparks unchanged.
 Before / after: `/workspace/ability-icons-art/review/assassin-hood-v2.png`.
 
+### Berserker (draft v1)
+Built at 64 px, checked at 32 px (box-filtered) and fixed before the review sheet:
+- Enrage: first horns were short stubs (read as ears) - now long, upswept, tapering horns, so the skull reads as a horned beast.
+- Whirlwind: axe 25% bigger, whirl ribbons thicker (the axe was lost inside the spin).
+- Earthsplitter: the axe floated over the ground - now drawn first and covered by the ground, so the blade is buried; the haft
+  now runs up-right out of the ground and the head sits higher so the blade still shows at 32 px.
+- Blood Frenzy: slashes were pink - darker blood red with a lighter core.
+- Warlord's Banner: unchanged (read fine).
+Validator: all 30 PASS; the closest pair at 32 px is still Rallying Guard vs Unbreakable (12.9, want > 10).
+Review image: `/workspace/ability-icons-art/review/berserker-v1.png` (review only, outside this folder). Approved as drawn.
+
 ### Warrior (draft v1)
 Built straight at 64 px, then checked at 32 px (box-filtered) and fixed before the review sheet:
 - Rallying Guard: moved the whole banner + spear down 5 px (the spear head ran into the rim).
@@ -255,6 +288,15 @@ python3 tools/art/validate_ability_icons.py  # size, RGBA, hard alpha, no #000/#
 
 ## 8. Open questions for Skyy (each with a default)
 
+### Berserker (answered - all defaults kept)
+| # | Question | Default |
+|---|---|---|
+| 1 | Field: dark oxblood (wine red, like the rim) - OK, or a neutral scorched-charcoal so the red rim pops more? | **[oxblood `#42161e` -> `#120609`]** |
+| 2 | Enrage as a horned beast skull in rage fire (the beast within), or a roaring face / war cry? | **[horned skull - big silhouette at 32 px]** |
+| 3 | Whirlwind + Earthsplitter both show the emblem's double-bit battleaxe - OK, or a mace for one of them (the emblem's second weapon)? | **[axe for both - spin vs buried; different poses]** |
+| 4 | Blood Frenzy as three claw slashes - the Berserker uses axes / maces, not claws; OK as a "frenzy of hits" sign, or axe-cut slashes (straighter)? | **[curved slashes as drawn]** |
+| 5 | Warlord's Banner: dark cloth with a red crossed-axe sign hanging from an iron standard (so it is not the Warrior's crimson swallowtail) - OK? | **[yes]** |
+
 ### Warrior (answered - all defaults kept)
 | # | Question | Default |
 |---|---|---|
@@ -269,6 +311,7 @@ Mage + Priest: answered ("The ability icons look great, commit them" - frame + b
 Monk: answered ("Yes, the shoe looks good, commit the Monk icons" - the defaults below were kept as drawn).
 Assassin: answered ("Yes, the Assassin hood looks good, commit them" - the defaults below were kept as drawn).
 Warrior: answered ("Yes, the Warrior icons look good, commit them" - the defaults above were kept as drawn).
+Berserker: answered ("Yes, the Berserker icons look good, commit them" - the defaults above were kept as drawn).
 
 ### Monk
 | # | Question | Default |

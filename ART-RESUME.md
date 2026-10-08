@@ -42,9 +42,9 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
-### 11. Class ability icons - Berserker (then Archer)
-Mage, Priest, Monk, Assassin and Warrior are Done. Continue the same style, **one class per commit**. Berserker icons are next (draft in
-the art agent's working copy, for Skyy's review). Ability names: `research/cloud/Class-Ability-Shapes.md`. Colours: `research/cloud/class-art/README.md`.
+### 12. Class ability icons - Archer (the last class)
+Mage, Priest, Monk, Assassin, Warrior and Berserker are Done. Same style, **one class per commit**. Archer icons are next (draft in the
+art agent's working copy, for Skyy's review). Ability names: `research/cloud/Class-Ability-Shapes.md`. Colours: `research/cloud/class-art/README.md`.
 Path: `art/ability-icons/Common/Icons/Abilities/<Class>/<AbilityName>.png`.
 
 ## Queue (check with Skyy before starting each)
@@ -59,6 +59,12 @@ Path: `art/ability-icons/Common/Icons/Abilities/<Class>/<AbilityName>.png`.
    are in the skywynn-art skill, section 3. A separate candidate dark-leather design is in Done (#3).
 
 ## Done
+### 11. Class ability icons - Berserker (2026-10-08)
+- Folder: `art/ability-icons/Common/Icons/Abilities/Berserker/` - Enrage, Whirlwind, Earthsplitter, BloodFrenzy, WarlordsBanner (64x64).
+  Shared sheet/manifest/README/scripts updated + `sheet-berserker.png`. Blood-red rim (`#d9443f`), dark oxblood field (`#42161e` -> `#120609`).
+- Skyy's answer, word for word: "Yes, the Berserker icons look good, commit them"
+- Not yet seen in game.
+
 ### 10. Class ability icons - Warrior (2026-10-08)
 - Folder: `art/ability-icons/Common/Icons/Abilities/Warrior/` - RallyingGuard, ShieldShockwave, IronChain, BulwarkStance, Unbreakable (64x64).
   Shared sheet/manifest/README/scripts updated + `sheet-warrior.png`. Amber-gold rim (`#e0b060`), dark gunmetal field (`#2a3a44` -> `#0b1216`).

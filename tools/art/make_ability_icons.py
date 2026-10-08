@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""make_ability_icons - SkyWynn class ability icons, Mage + Priest + Monk + Assassin + Warrior (5 per class, 64x64 RGBA), our own art drawn from code.
+"""make_ability_icons - SkyWynn class ability icons, Mage + Priest + Monk + Assassin + Warrior + Berserker (5 per class, 64x64 RGBA), our own art drawn from code.
 
 Each icon = a round dark frame with a CLASS-COLOUR RIM (Mage #7fb0e0, Priest #f2e6a0 - the class emblem colours,
 research/cloud/class-art/README.md) around a dark field tinted toward the class colour, with one bold bevelled symbol that
@@ -1215,6 +1215,242 @@ def unbreakable():
     return back, g, front, glints
 
 
+# ================================================================================================================= BERSERKER
+# Berserker (class colour #d9443f - the class emblem colour): party damage buffer + sustained melee, fury - blood-red rim, dark
+# OXBLOOD field (a deep wine red, cooler and darker than the Monk's orange rust), the emblem's bearded double-bit battleaxe,
+# bone, scorched stone, blood red light with ember-orange highlights.
+BERS_RIM = ramp("#4a0e16", "#7e1a22", "#b02c30", "#d9443f", "#ee7a64", "#f8b8a0")        # from Berserker #d9443f
+BLOOD = ramp("#2a0612", "#540c1a", "#8a1622", "#c02a2a", "#e65040", "#f88a6a", "#ffc8a8")  # rage light, slashes, banner cloth
+BONE = ramp("#3c2e2a", "#66564a", "#948470", "#bcae94", "#ddd2b8", "#f4ecd8")            # horned skull, emblem
+STONE = ramp("#1c161c", "#30262c", "#4a3c40", "#665656", "#857470", "#a8968a")           # scorched ground + rock chunks
+CHAR = ramp("#120c12", "#1e151c", "#2c2028", "#3e2e34", "#544044")                        # dark banner cloth
+
+BERSERKER = K.Style("Berserker", "#d9443f", BERS_RIM, field_c="#42161e", field_e="#120609",
+                    outline="#0a0306", frame=FRAME, glow_c="#d9443f")
+
+
+def battleaxe(g, cx, cy, rot=0.0, s=1.0, haft_len=(16.0, 16.0)):
+    """the Berserker emblem's bearded double-bit battleaxe: head centred (cx, cy), haft along local +y, rotated rot degrees.
+    Dark forged blades with bright honed crescent edges, a red-wrapped oak haft, steel socket + spike. Returns the mask."""
+    def T(pts):
+        return rotpts([(cx + x * s, cy + y * s) for x, y in pts], cx, cy, rot)
+    a = math.radians(rot)
+    ux, uy = -math.sin(a), math.cos(a)                     # local +y on screen
+    up, down_ = haft_len
+    h0 = (cx - ux * up * 0.25 * s, cy - uy * up * 0.25 * s)
+    h1 = (cx + ux * down_ * s, cy + uy * down_ * s)
+    haft = capsule(h0[0], h0[1], h1[0], h1[1], 1.5 * s)
+    g.bevel(haft, OAK, face=0.6, bevel=0.7, grad=0.3, gain=0.85)
+    grip = capsule(cx + ux * (down_ - 7.0) * s, cy + uy * (down_ - 7.0) * s, h1[0], h1[1], 1.75 * s)
+    g.bevel(grip, BLOOD, face=0.5, bevel=0.6, grad=0.3, gain=0.8)
+    wrap_bands(g, grip, cx + ux * (down_ - 7.0) * s, cy + uy * (down_ - 7.0) * s, h1[0], h1[1], 1.8 * s, 0.55 * s, BLOOD, t_dark=0.08)
+    m = haft | grip
+    for sx in (-1, 1):
+        # bearded blade: narrow at the socket, wide crescent edge, the lower horn (beard) hangs down
+        edge = [(sx * (9.0 + 3.2 * math.cos(math.radians(t))), 7.6 * math.sin(math.radians(t)) + 0.8) for t in range(-90, 91, 15)]
+        pts = [(sx * 2.0, -3.4)] + [(sx * 6.0, -6.2)] + edge + [(sx * 6.0, 6.0), (sx * 2.0, 3.2)]
+        bl = poly(T(pts))
+        g.bevel(bl, IRON, face=0.62, bevel=1.0 * s, grad=0.35, gain=0.95)
+        hon = bl & ~poly(T([(sx * 2.0, -3.4), (sx * 6.0, -5.0)] + [(sx * (7.7 + 3.0 * math.cos(math.radians(t))),
+                                                                          6.4 * math.sin(math.radians(t)) + 0.8)
+                                                                  for t in range(-90, 91, 15)] + [(sx * 6.0, 5.0), (sx * 2.0, 3.2)]))
+        g.bevel(hon, STEEL, face=0.84, bevel=0.4, grad=0.3, gain=0.6)
+        m |= bl
+    sock = poly(T([(-2.4, -5.0), (2.4, -5.0), (2.4, 5.0), (-2.4, 5.0)]))
+    g.bevel(sock, STEEL, face=0.62, bevel=0.6, grad=0.3, gain=0.85)
+    g.bevel(circle(cx, cy, 1.1 * s), BLOOD, face=0.75, bevel=0.4, grad=0.3, gain=0.8)        # ruby on the socket
+    spike = poly(T([(-1.6, -5.0), (1.6, -5.0), (0.0, -10.5)]))
+    g.bevel(spike, STEEL, face=0.72, bevel=0.5, grad=0.3, gain=0.8)
+    return m | sock | spike
+
+
+def flames(cx, base, tongues):
+    """a row of flame tongues standing on y=base: tongues = [(dx, height, half_width)]"""
+    m = np.zeros(X.shape, bool)
+    for dx, h, w in tongues:
+        x = cx + dx
+        m |= poly([(x - w, base), (x - w * 0.7, base - h * 0.45), (x - w * 0.15, base - h * 0.8), (x + w * 0.1, base - h),
+                   (x + w * 0.45, base - h * 0.55), (x + w, base)])
+        m |= circle(x, base - w * 0.3, w)
+    return m
+
+
+def enrage():
+    """Enrage: a horned beast skull with glowing red eyes in a blaze of rage fire (the fury that grows over 10 s, you x2)"""
+    back, g, front = L3()
+    cx, cy = 32.0, 33.0
+    # rage fire behind
+    fire = flames(cx, 52.0, [(-14.0, 26.0, 5.0), (-7.0, 36.0, 5.6), (0.0, 44.0, 6.4), (7.0, 36.0, 5.6), (14.0, 26.0, 5.0)])
+    glow(back, fire, "#e65040", 4.0, 0.7)
+    tf = np.clip((52.0 - Y) / 44.0, 0, 1)
+    back.put(fire, rs(BLOOD, 0.62 - tf * 0.3), alpha=0.95)
+    inner = flames(cx, 52.0, [(-7.0, 24.0, 3.4), (0.0, 30.0, 4.0), (7.0, 24.0, 3.4)])
+    back.put(inner, rs(FIRE, 0.66 - tf * 0.2), alpha=0.9)
+    # horns: thick curved cones sweeping out and up
+    horns = np.zeros(X.shape, bool)
+    for sx in (-1, 1):
+        pts = []
+        for k in range(13):
+            t = k / 12.0
+            ang = math.radians(200 - 120 * t) if sx < 0 else math.radians(-20 + 120 * t)
+            r = 10.0 + 6.0 * t
+            px = cx + sx * (7.0 + 13.0 * math.sin(t * math.pi * 0.62))
+            py = cy - 7.0 + 3.0 * math.sin(t * math.pi) - 15.0 * t ** 2.2
+            pts.append((px, py, 3.3 * (1 - t) + 0.45))
+        for (x0, y0, r0), (x1, y1, r1) in zip(pts[:-1], pts[1:]):
+            horns |= capsule(x0, y0, x1, y1, r0, r1)
+    g.bevel(horns, BONE, face=0.66, bevel=1.0, grad=0.5, gain=0.9)
+    # horn ridges
+    for sx in (-1, 1):
+        for k in (0.25, 0.45, 0.65):
+            px = cx + sx * (7.0 + 13.0 * math.sin(k * math.pi * 0.62))
+            py = cy - 7.0 + 3.0 * math.sin(k * math.pi) - 15.0 * k ** 2.2
+            g.put(capsule(px - 1.6, py + sx * 0.0 + 1.4, px + 1.6, py - 1.4, 0.32) & horns if sx > 0 else
+                  capsule(px + 1.6, py + 1.4, px - 1.6, py - 1.4, 0.32) & horns, rs(BONE, 0.3))
+    # skull: wide brow, tapering muzzle
+    skull = poly([(cx - 9.5, cy - 9.0), (cx - 4.0, cy - 11.0), (cx + 4.0, cy - 11.0), (cx + 9.5, cy - 9.0), (cx + 9.0, cy - 2.0),
+                  (cx + 6.0, cy + 4.0), (cx + 5.0, cy + 13.0), (cx + 2.5, cy + 16.0), (cx - 2.5, cy + 16.0), (cx - 5.0, cy + 13.0),
+                  (cx - 6.0, cy + 4.0), (cx - 9.0, cy - 2.0)])
+    g.bevel(skull, BONE, face=0.72, bevel=1.4, grad=0.5, gain=0.9)
+    # eye sockets (dark) with glowing red eyes
+    for sx in (-1, 1):
+        sock = poly([(cx + sx * 2.0, cy - 5.6), (cx + sx * 7.6, cy - 6.6), (cx + sx * 6.8, cy - 1.0), (cx + sx * 2.6, cy - 1.6)])
+        g.put(sock, rs(BLOOD, 0.04))
+        eye = circle(cx + sx * 4.8, cy - 3.8, 1.5)
+        glow(front, eye, "#ff5a3c", 1.6, 0.9)
+        g.put(eye, rs(BLOOD, 0.96))
+    # nostrils + a crack on the brow
+    for sx in (-1, 1):
+        g.put(ellipse(cx + sx * 1.8, cy + 11.0, 0.9, 1.6, sx * 15), rs(BONE, 0.08))
+    g.put(line([(cx + 1.0, cy - 10.6), (cx - 0.6, cy - 8.0), (cx + 0.8, cy - 6.4)], 0.6) & skull, rs(BONE, 0.25))
+    glints = [(28, 22, "#f4ecd8")]
+    return back, g, front, glints
+
+
+def whirlwind():
+    """Whirlwind: the double-bit battleaxe mid-spin, blood-red whirl ribbons round it (3 s spin, hits everything round you)"""
+    back, g, front = L3()
+    cx, cy = 32.0, 32.0
+    glow(back, circle(cx, cy, 14), "#c02a2a", 6.0, 0.6)
+    for a_head in (20.0, 200.0):
+        m, t = swirl(cx, cy, a_head, 150.0, 14.0, 22.8, 4.2, 1.0)
+        back.put(m, rs(BLOOD, 0.88 - t * 0.5), alpha=1.0 - t * 0.35)
+    # faint after-image of the axe a few degrees behind
+    ghost = Layer()
+    sil = battleaxe(ghost, cx, cy, -72.0, 1.15, (15.0, 12.0))
+    back.put(sil, rs(BLOOD, 0.55), alpha=0.45)
+    battleaxe(g, cx, cy, -35.0, 1.3, (15.0, 12.0))
+    for sx, sy, sr in ((14.0, 18.0, 1.8), (50.0, 44.0, 1.8)):
+        sparkle(front, sx, sy, sr, "#ffc8a8", None, 0.5)
+    glints = [(26, 24, "#f0f2f4")]
+    return back, g, front, glints
+
+
+def earthsplitter():
+    """Earthsplitter: the battleaxe buried in the ground, a glowing crack splitting the earth toward you, rocks flung up (a
+    12-block shockwave line, stronger the lower your Health)"""
+    back, g, front = L3()
+    gy = 36.0
+    # the axe: blade buried at the impact (drawn first, the ground covers its lower half), haft up to the upper right
+    glow(back, circle(32.0, 36.0, 6), "#ff8a3c", 4.0, 0.6)
+    battleaxe(g, 32.0, 36.0, 180.0 + 28.0, 1.25, (4.0, 19.0))
+    ground = (Y > gy + 1.2 * np.sin((X - 10.0) / 7.0)) & K.field_disc()
+    tg = np.clip((Y - gy) / 20.0, 0, 1)
+    g.put(ground, rs(STONE, 0.55 - tg * 0.35))
+    g.put(ground & (Y < gy + 1.6 + 1.2 * np.sin((X - 10.0) / 7.0)), rs(STONE, 0.78))
+    # the crack: from the impact (centre) down to the bottom, widening, glowing lava light
+    path = [(32.0, 37.0), (30.5, 41.0), (33.5, 45.0), (31.0, 49.5), (34.0, 54.0), (32.5, 60.0)]
+    crack = np.zeros(X.shape, bool)
+    for k, ((x0, y0), (x1, y1)) in enumerate(zip(path[:-1], path[1:])):
+        crack |= capsule(x0, y0, x1, y1, 0.9 + k * 0.45, 1.3 + k * 0.45)
+    crack &= ground
+    glow(front, crack, "#ff8a3c", 2.0, 0.55)
+    g.put(crack, rs(FIRE, 0.5 + (1 - tg) * 0.4))
+    for bx, by, ex, ey in ((30.5, 41.0, 25.0, 43.5), (33.5, 45.0, 39.5, 47.5), (31.0, 49.5, 25.5, 53.0)):
+        g.put(capsule(bx, by, ex, ey, 0.6, 0.25) & ground, rs(FIRE, 0.6))
+    # rock chunks flung up
+    for px, py, pr, rot in ((17.0, 26.0, 3.2, 10), (46.5, 24.0, 2.8, -20), (22.0, 16.5, 2.0, 30), (42.0, 13.0, 1.8, 0),
+                            (12.5, 35.5, 1.6, 45)):
+        rk = poly(rotpts([(px - pr, py - pr * 0.4), (px - pr * 0.2, py - pr), (px + pr, py - pr * 0.5), (px + pr * 0.8, py + pr * 0.7),
+                          (px - pr * 0.6, py + pr * 0.8)], px, py, rot))
+        g.bevel(rk, STONE, face=0.7, bevel=0.7, grad=0.4, gain=0.9)
+    glints = [(17, 24, "#a8968a")]
+    return back, g, front, glints
+
+
+def blood_frenzy():
+    """Blood Frenzy: three blood-red claw slashes with blood drops and stack pips (every swing stacks the frenzy)"""
+    back, g, front = L3()
+    glow(back, circle(32.0, 30.0, 14), "#c02a2a", 7.0, 0.7)
+    for k, off in enumerate((-8.0, 0.0, 8.0)):
+        # each slash: a curved crescent from upper right to lower left, thick in the middle
+        pts_a, pts_b = [], []
+        for i in range(13):
+            t = i / 12.0
+            x = 44.0 + off - 26.0 * t
+            y = 12.0 + off * 0.35 + 32.0 * t
+            bend = 3.0 * math.sin(t * math.pi)
+            w = 2.6 * math.sin(t * math.pi) + 0.15
+            pts_a.append((x + bend + w * 0.78, y + w * 0.62))
+            pts_b.append((x + bend - w * 0.78, y - w * 0.62))
+        sl = poly(pts_a + pts_b[::-1])
+        g.bevel(sl, BLOOD, face=0.50 + 0.05 * (1 - abs(k - 1)), bevel=0.8, grad=0.4, gain=0.9)
+        core = K._erode(K._erode(K._erode(K._erode(sl, True), False), True), False)
+        g.put(core, rs(BLOOD, 0.80))
+    # blood drops falling from the slashes
+    for dx_, dy_, r in ((16.0, 47.0, 1.6), (24.0, 51.0, 1.3), (45.0, 40.0, 1.2)):
+        g.bevel(circle(dx_, dy_, r) | poly([(dx_ - r * 0.92, dy_ - r * 0.3), (dx_, dy_ - r * 2.6), (dx_ + r * 0.92, dy_ - r * 0.3)]),
+                BLOOD, face=0.6, bevel=0.5, grad=0.4, gain=0.8)
+    # stack pips (the frenzy stacks), top left
+    for i, (px, py) in enumerate(((15.0, 22.0), (19.0, 17.0), (24.5, 13.5))):
+        pip = poly([(px, py - 2.2), (px + 2.2, py), (px, py + 2.2), (px - 2.2, py)])
+        g.bevel(pip, BLOOD if i < 2 else BONE, face=0.78, bevel=0.5, grad=0.3, gain=0.8)
+    glints = [(40, 18, "#ffc8a8")]
+    return back, g, front, glints
+
+
+def warlords_banner():
+    """Warlord's Banner: a tall iron war standard planted in the ground, a tattered dark banner with the blood-red crossed-axe
+    sign hanging from its crossbar, a red aura ring on the ground (12-block damage + defence + attack-speed zone)"""
+    back, g, front = L3()
+    cx = 32.0
+    # aura ring on the ground round the foot of the standard
+    glow(back, ering(cx, 50.0, 18.0, 4.6, 1.6), "#e65040", 2.0, 0.8)
+    back.put(ering(cx, 50.0, 17.0, 4.2, 1.4), rs(BLOOD, 0.8), alpha=0.95)
+    glow(back, circle(cx, 30.0, 12), "#c02a2a", 7.0, 0.55)
+    # pole (iron) + spear-point finial + crossbar with end knobs
+    pole = capsule(cx, 50.5, cx, 12.0, 1.4)
+    g.bevel(pole, IRON, face=0.72, bevel=0.6, grad=0.3, gain=0.85)
+    fin = poly([(cx, 6.6), (cx + 2.6, 11.5), (cx, 14.0), (cx - 2.6, 11.5)])
+    g.bevel(fin, STEEL, face=0.74, bevel=0.6, grad=0.3, gain=0.85)
+    bar = capsule(cx - 12.5, 16.0, cx + 12.5, 16.0, 1.2)
+    g.bevel(bar, IRON, face=0.72, bevel=0.5, grad=0.3, gain=0.85)
+    for sx in (-1, 1):
+        g.bevel(circle(cx + sx * 13.0, 16.0, 1.6), STEEL, face=0.7, bevel=0.5, grad=0.3, gain=0.8)
+    # banner: hangs from the bar, tattered bottom (three tails)
+    bpts = [(cx - 11.0, 17.0), (cx + 11.0, 17.0), (cx + 11.0, 39.0), (cx + 8.5, 44.0), (cx + 5.5, 39.5), (cx + 2.0, 45.5),
+            (cx - 1.5, 40.0), (cx - 5.0, 45.0), (cx - 8.0, 39.5), (cx - 11.0, 43.0)]
+    ban = poly(bpts)
+    wave = np.sin((Y - 17.0) / 6.0) * 0.06
+    g.bevel(ban, CHAR, face=0.62, bevel=1.1, grad=0.4, gain=0.9, tone=wave)
+    # red border band down both sides + top
+    brd = ban & ~K._erode(K._erode(K._erode(K._erode(K._erode(K._erode(K._erode(K._erode(ban, True), False), True), False), True),
+                                           False), True), False)
+    g.put(brd & (Y < 39.5), rs(BLOOD, 0.62))
+    # the sign: blood-red crossed axes (simple silhouettes) on the cloth
+    for sgn in (-1, 1):
+        a0 = (cx - sgn * 6.5, 36.0)
+        a1 = (cx + sgn * 6.0, 21.5)
+        g.put(capsule(a0[0], a0[1], a1[0], a1[1], 0.9), rs(BLOOD, 0.72))
+        hx0, hy0 = a1
+        head = poly([(hx0 - sgn * 1.0, hy0 - 1.0), (hx0 + sgn * 3.6, hy0 - 3.4), (hx0 + sgn * 4.6, hy0 + 0.6),
+                     (hx0 + sgn * 2.6, hy0 + 3.6), (hx0 + sgn * 0.6, hy0 + 1.8)])
+        g.bevel(head, BLOOD, face=0.78, bevel=0.5, grad=0.3, gain=0.7)
+    g.put(circle(cx, 29.0, 1.6), rs(BONE, 0.8))
+    glints = [(31, 9, "#f0f2f4")]
+    return back, g, front, glints
+
+
 ICONS = [
     # (class style, file name, display name, painter)
     (MAGE, "Meteor", "Meteor", meteor),
@@ -1242,6 +1478,11 @@ ICONS = [
     (WARRIOR, "IronChain", "Iron Chain", iron_chain),
     (WARRIOR, "BulwarkStance", "Bulwark Stance", bulwark_stance),
     (WARRIOR, "Unbreakable", "Unbreakable", unbreakable),
+    (BERSERKER, "Enrage", "Enrage", enrage),
+    (BERSERKER, "Whirlwind", "Whirlwind", whirlwind),
+    (BERSERKER, "Earthsplitter", "Earthsplitter", earthsplitter),
+    (BERSERKER, "BloodFrenzy", "Blood Frenzy", blood_frenzy),
+    (BERSERKER, "WarlordsBanner", "Warlord's Banner", warlords_banner),
 ]
 
 

@@ -1,5 +1,5 @@
 """ability_icon_meta - what each SkyWynn class ability icon means (from research/cloud/Class-Ability-Shapes.md sections 4 Mage,
-5 Priest, 7 Monk, 8 Assassin, 2 Warrior; docs/answered/classes.md lines 142-146 for the Priest numbers) and what the icon shows. Used by the sheet +
+5 Priest, 7 Monk, 8 Assassin, 2 Warrior, 6 Berserker; docs/answered/classes.md lines 142-146 for the Priest numbers) and what the icon shows. Used by the sheet +
 manifest. CLASS_INFO "review": "approved" = Skyy OK'd + committed (its sheet-<class>.png is kept as reviewed, no longer rebuilt);
 "review" = waiting for Skyy (gets its own sheet-<class>.png); "answer" = Skyy's OK word for word (None = not relayed)."""
 
@@ -17,6 +17,9 @@ CLASS_INFO = {
     "Warrior": {"hex": "#e0b060", "role": "tank + crowd control (Swordsmanship)",
                 "theme": "shield wall / steel / rally - amber-gold rim, gunmetal field",
                 "review": "approved", "answer": "Yes, the Warrior icons look good, commit them"},
+    "Berserker": {"hex": "#d9443f", "role": "party damage buffer + sustained melee (Fury)",
+                  "theme": "fury / blood / the axe - blood-red rim, oxblood field",
+                  "review": "approved", "answer": "Yes, the Berserker icons look good, commit them"},
 }
 
 META = {
@@ -170,6 +173,37 @@ META = {
         "does": "Taunt 8 blocks; for 5 s you cannot drop below 1 HP; at the end heal 20% of the damage taken. Crouch = Dig In.",
         "shows": "a closed steel great helm (eye slits, breath holes, riveted iron cross bands) cracked all over but held together - the cracks glow amber-gold - chips flying off",
         "palette": ["STEEL", "IRON", "AMBER"],
+    },
+    # ---- Berserker (research/cloud/Class-Ability-Shapes.md section 6)
+    "Enrage": {
+        "slot": "A1", "status": "LOCKED", "cost_cd": "14 Mana / 30 s",
+        "does": "Players within 8 + party within 16 picked once; damage +10 -> +20% over 10 s, holds 5 s; you x2. Shapes: War Charge (sprint), War Leap (mid-air), Lone Rage (crouch, self only).",
+        "shows": "a horned beast skull (bone, long upswept horns, cracked brow) with glowing red eyes in a blaze of blood-red + ember rage fire",
+        "palette": ["BONE", "BLOOD", "FIRE"],
+    },
+    "Whirlwind": {
+        "slot": "A2", "status": "LOCKED", "cost_cd": "12 Mana / 14 s",
+        "does": "Spin 3 s, hit everything within 3 blocks every 0.5 s (0.5 H a tick), heal 10% of the damage. Shapes: Cyclone Charge (sprint), Spinning Drop (mid-air), Grinder (crouch).",
+        "shows": "the class emblem's bearded double-bit battleaxe (dark forged blades, bright honed edges, red-wrapped haft, ruby socket) mid-spin, a faint red after-image behind, two blood-red whirl ribbons round it",
+        "palette": ["IRON", "STEEL", "OAK", "BLOOD"],
+    },
+    "Earthsplitter": {
+        "slot": "A2-alt", "status": "PROPOSED", "cost_cd": "14 Mana / 12 s",
+        "does": "12-block shockwave line, 2.0 H, knock-up 1 s; +1% damage per 1% Health missing (cap +50%). Shapes: Running Split (sprint), Crater (mid-air), Fissure (crouch).",
+        "shows": "the battleaxe buried blade-first in scorched ground, a glowing ember-orange crack splitting the earth toward the viewer, rock chunks flung up",
+        "palette": ["STONE", "FIRE", "IRON", "STEEL", "OAK", "BLOOD"],
+    },
+    "BloodFrenzy": {
+        "slot": "A1-alt A", "status": "PROPOSED (toggle)", "cost_cd": "1 Mana + 0.5 Stamina per swing (+ per second) / 10 s re-toggle",
+        "does": "Toggle: every swing adds a stack (max 25, 6 s decay); the aura buffs allies half. Crouch = Blood Bank (restarts with half your last stacks).",
+        "shows": "three curved blood-red claw slashes (bright cores) with blood drops falling, three stack pips at the top left (two lit red, one bone)",
+        "palette": ["BLOOD", "BONE"],
+    },
+    "WarlordsBanner": {
+        "slot": "A1-alt B", "status": "PROPOSED", "cost_cd": "40 Mana / 40 s after the fall",
+        "does": "Plant a banner at your feet: 30 s, 12 blocks, +8 / 12 / 16% damage + defence + attack speed; kills extend it; it falls when you leave. Crouch = Rooted Banner.",
+        "shows": "a tall iron war standard (spear finial, crossbar) planted in a glowing blood-red aura ring, a tattered dark banner with a red border and red crossed-axe sign hanging from the crossbar",
+        "palette": ["CHAR", "BLOOD", "IRON", "STEEL", "BONE"],
     },
 }
 

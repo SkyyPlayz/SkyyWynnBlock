@@ -1,11 +1,12 @@
 {
-  "item": "Class ability icons - Mage, Priest, Monk, Assassin, Warrior",
+  "item": "Class ability icons - Mage, Priest, Monk, Assassin, Warrior, Berserker",
   "status": {
     "Mage": "APPROVED by Skyy + committed (answer: \"The ability icons look great, commit them\")",
     "Priest": "APPROVED by Skyy + committed (answer: \"The ability icons look great, commit them\")",
     "Monk": "APPROVED by Skyy + committed (answer: \"Yes, the shoe looks good, commit the Monk icons\")",
     "Assassin": "APPROVED by Skyy + committed (answer: \"Yes, the Assassin hood looks good, commit them\")",
-    "Warrior": "APPROVED by Skyy + committed (answer: \"Yes, the Warrior icons look good, commit them\")"
+    "Warrior": "APPROVED by Skyy + committed (answer: \"Yes, the Warrior icons look good, commit them\")",
+    "Berserker": "APPROVED by Skyy + committed (answer: \"Yes, the Berserker icons look good, commit them\")"
   },
   "in_game": "NOT wired in, NOT seen in game",
   "generator": [
@@ -19,14 +20,15 @@
   "deterministic": true,
   "defaults_used": {
     "frame": "round dark slate frame band with a class-colour rim (bevelled, top lit)",
-    "background": "dark field tinted toward the class colour, radial: Mage #26335e -> #0e1226, Priest #43381e -> #15100c, Monk #4a2416 -> #170b09, Assassin #33224e -> #0e0916, Warrior #2a3a44 -> #0b1216"
+    "background": "dark field tinted toward the class colour, radial: Mage #26335e -> #0e1226, Priest #43381e -> #15100c, Monk #4a2416 -> #170b09, Assassin #33224e -> #0e0916, Warrior #2a3a44 -> #0b1216, Berserker #42161e -> #120609"
   },
   "class_colours": {
     "Mage": "#7fb0e0",
     "Priest": "#f2e6a0",
     "Monk": "#f08a30",
     "Assassin": "#b58cff",
-    "Warrior": "#e0b060"
+    "Warrior": "#e0b060",
+    "Berserker": "#d9443f"
   },
   "frame_geometry_px": {
     "outer_radius": 31.6,
@@ -330,6 +332,46 @@
       "#94643a",
       "#b88a56",
       "#d8b47e"
+    ],
+    "BERS_RIM": [
+      "#4a0e16",
+      "#7e1a22",
+      "#b02c30",
+      "#d9443f",
+      "#ee7a64",
+      "#f8b8a0"
+    ],
+    "BLOOD": [
+      "#2a0612",
+      "#540c1a",
+      "#8a1622",
+      "#c02a2a",
+      "#e65040",
+      "#f88a6a",
+      "#ffc8a8"
+    ],
+    "BONE": [
+      "#3c2e2a",
+      "#66564a",
+      "#948470",
+      "#bcae94",
+      "#ddd2b8",
+      "#f4ecd8"
+    ],
+    "STONE": [
+      "#1c161c",
+      "#30262c",
+      "#4a3c40",
+      "#665656",
+      "#857470",
+      "#a8968a"
+    ],
+    "CHAR": [
+      "#120c12",
+      "#1e151c",
+      "#2c2028",
+      "#3e2e34",
+      "#544044"
     ]
   },
   "files": [
@@ -936,10 +978,135 @@
       ]
     },
     {
+      "path": "Common/Icons/Abilities/Berserker/Enrage.png",
+      "bytes": 6753,
+      "sha256": "5a1d79ae72e414120086282c80cd68c78ef2fd98969d48a6aad5cf193b72b62c",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Berserker",
+      "ability": "Enrage",
+      "file_name": "Enrage.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "14 Mana / 30 s",
+      "ability_does": "Players within 8 + party within 16 picked once; damage +10 -> +20% over 10 s, holds 5 s; you x2. Shapes: War Charge (sprint), War Leap (mid-air), Lone Rage (crouch, self only).",
+      "icon_shows": "a horned beast skull (bone, long upswept horns, cracked brow) with glowing red eyes in a blaze of blood-red + ember rage fire",
+      "palettes": [
+        "BONE",
+        "BLOOD",
+        "FIRE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Berserker/Whirlwind.png",
+      "bytes": 7052,
+      "sha256": "3a8509dbaece90a939a4adcd50015e7b26b8d6e81151c1e661f293c3e890915b",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Berserker",
+      "ability": "Whirlwind",
+      "file_name": "Whirlwind.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "12 Mana / 14 s",
+      "ability_does": "Spin 3 s, hit everything within 3 blocks every 0.5 s (0.5 H a tick), heal 10% of the damage. Shapes: Cyclone Charge (sprint), Spinning Drop (mid-air), Grinder (crouch).",
+      "icon_shows": "the class emblem's bearded double-bit battleaxe (dark forged blades, bright honed edges, red-wrapped haft, ruby socket) mid-spin, a faint red after-image behind, two blood-red whirl ribbons round it",
+      "palettes": [
+        "IRON",
+        "STEEL",
+        "OAK",
+        "BLOOD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Berserker/Earthsplitter.png",
+      "bytes": 6396,
+      "sha256": "1220ad8f314047cb32e78b2a5558dae7be0429eb2934254f1efc8bb9ca00d75c",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Berserker",
+      "ability": "Earthsplitter",
+      "file_name": "Earthsplitter.png",
+      "slot": "A2-alt",
+      "status": "PROPOSED",
+      "cost_cooldown": "14 Mana / 12 s",
+      "ability_does": "12-block shockwave line, 2.0 H, knock-up 1 s; +1% damage per 1% Health missing (cap +50%). Shapes: Running Split (sprint), Crater (mid-air), Fissure (crouch).",
+      "icon_shows": "the battleaxe buried blade-first in scorched ground, a glowing ember-orange crack splitting the earth toward the viewer, rock chunks flung up",
+      "palettes": [
+        "STONE",
+        "FIRE",
+        "IRON",
+        "STEEL",
+        "OAK",
+        "BLOOD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Berserker/BloodFrenzy.png",
+      "bytes": 6773,
+      "sha256": "668e4e3316c02c8f46c39efacde5143f1f1fc519795dbcfd19f90c401dd2e178",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Berserker",
+      "ability": "Blood Frenzy",
+      "file_name": "BloodFrenzy.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED (toggle)",
+      "cost_cooldown": "1 Mana + 0.5 Stamina per swing (+ per second) / 10 s re-toggle",
+      "ability_does": "Toggle: every swing adds a stack (max 25, 6 s decay); the aura buffs allies half. Crouch = Blood Bank (restarts with half your last stacks).",
+      "icon_shows": "three curved blood-red claw slashes (bright cores) with blood drops falling, three stack pips at the top left (two lit red, one bone)",
+      "palettes": [
+        "BLOOD",
+        "BONE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Berserker/WarlordsBanner.png",
+      "bytes": 6355,
+      "sha256": "bb675af7180472590e17c95edff3b2ac872b4ae72e439d411e8a96eeb5b9f57f",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Berserker",
+      "ability": "Warlord's Banner",
+      "file_name": "WarlordsBanner.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED",
+      "cost_cooldown": "40 Mana / 40 s after the fall",
+      "ability_does": "Plant a banner at your feet: 30 s, 12 blocks, +8 / 12 / 16% damage + defence + attack speed; kills extend it; it falls when you leave. Crouch = Rooted Banner.",
+      "icon_shows": "a tall iron war standard (spear finial, crossbar) planted in a glowing blood-red aura ring, a tattered dark banner with a red border and red crossed-axe sign hanging from the crossbar",
+      "palettes": [
+        "CHAR",
+        "BLOOD",
+        "IRON",
+        "STEEL",
+        "BONE"
+      ]
+    },
+    {
       "path": "sheet.png",
-      "bytes": 833421,
+      "bytes": 987980,
       "what": "review sheet with EVERY done class: each icon at 4x / 2x / 64 / 32 px, grouped by class with the class colour swatch + APPROVED / FOR REVIEW tag, plus a dark HUD strip",
-      "sha256": "6a65f3a81f8b9efbfda01db71922c14641e2ae586b6ff687bb4f1d6779f70117"
+      "sha256": "1b7debcdf9ee704ed58fb33c4390ac0a057d44b5851c9a2aba69d9f5bbf6728a"
     },
     {
       "path": "sheet-monk.png",
@@ -960,8 +1127,14 @@
       "sha256": "5780ffe07970c264b551a67789e6ac63e2fce771ede7e2f5dd6ceb2f7403ae39"
     },
     {
+      "path": "sheet-berserker.png",
+      "bytes": 189697,
+      "what": "the Berserker review sheet as Skyy reviewed + approved it (same layout)",
+      "sha256": "93f9ab88558c8b696010330c80e2251be9799af15ea1d5551f46ce28fb158b3f"
+    },
+    {
       "path": "README.md",
-      "bytes": 28233,
+      "bytes": 33577,
       "what": "what this is, ability -> meaning, colours, defaults, UNVERIFIED, open questions"
     }
   ]
