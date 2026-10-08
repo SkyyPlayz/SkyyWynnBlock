@@ -14,7 +14,8 @@ Replaces the vanilla Pounce as the daggers' charged move. Not built yet.
 **Hold the attack (charge) with daggers and release**: you vanish, a **fading shadow** of you stays where you stood,
 and you appear **behind the enemy nearest to where you are looking** (within 24 blocks), **facing its back**. Your next hit is a
 **guaranteed backstab** plus a small bonus. No enemy that way: you step **straight where you look, up to 18 blocks** - you may end up in
-the air or over the void (Skyy: no void protection, "its part of the fun/ challenge").
+the air or over the void (Skyy: no void protection, "its part of the fun/ challenge"; "if you fall, you have to try to quickly get back
+out before you die"; "dont put any void protection on any traversal.").
 
 ## 2. How it works (defaults)
 

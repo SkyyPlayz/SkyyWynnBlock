@@ -1,5 +1,8 @@
 # Magic traversals: SkyyArmory 0.1.1 + SkyyClasses 0.1.12 (+ SkyyGear tooltip words) - build spec
 
+> **2026-10-07 Skyy: NO VOID PROTECTION on any traversal** ("dont put any void protection on any traversal."). The void rules below
+> (blink floorCheck, the void hop halving) are being REMOVED in SkyyArmory 0.1.7; falling into the void is a race to get back out.
+
 Date 2026-10-05. Locks: docs/answered/classes.md lines 30-33 + 37 (LOCKED 2026-10-04), research/classes/Mage.md + research/classes/Priest.md.
 Current code: SkyyArmory 0.1 (`SkyyArmory/build_skyyarmory_0.1.py`, spec `research/SkyyArmory-Spec.md`, S:), SkyyClasses 0.1.11
 (`SkyyClasses/build_skyyclasses_0.1.11.py`, C:), SkyyGear 0.2.3 (`SkyyGear/build_skyygear_0.2.3.py`, G:).

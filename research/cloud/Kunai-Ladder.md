@@ -19,7 +19,7 @@ Cloud draft, 2026-10-06. Paper design; nothing built. Inputs read: `/home/user/S
 - A new ladder Crude, Copper, Iron, Thorium, Cobalt, Adamantite, Mithril, Onyxium (same metals as the daggers), later Cindersteel to Aetherium.
 - Per hit the kunai hits a little harder than a dagger, but it swings slower and carries range, so its damage per second is **80% of the dagger's**. The teleport is the rest of its value.
 - Better metals: cheaper, shorter cooldown, longer return window, wider return knockback. **Range stays about 20 blocks** on every metal (your lock); the class tree is what extends it.
-- The teleport never puts you inside a block, through a wall, over open void, into someone else's island or out of a locked boss arena.
+- The teleport never puts you inside a block, through a wall, into someone else's island or out of a locked boss arena. **Over the void is allowed** (Skyy 2026-10-07: "dont put any void protection on any traversal.").
 
 ## 2. Items and ids (research/SkyyArmory-Spec.md 1.1 id rules)
 

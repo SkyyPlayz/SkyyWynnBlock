@@ -28,12 +28,15 @@ Read this first, then only what the task needs. Map of every file + search tips:
   blink.distance 16, blink.floorCheck 0 (defaults since SkyyArmory 0.1.4, deployed 2026-10-06 23:15).
 - RUNNING (2026-10-07 18:55): SkyyReelProbe 0.1 (wf_a5a6b908-f90) and SkyyArmory 0.1.6 spellbooks + kunai (+ SkyyClasses gate,
   wf_ec3955fa-a7c, recheck on) -> pin + deploy + TEST-CHECKLIST when done. BEFORE PINNING 0.1.6: every Weapon_Kunai_* item
-  must have NO MaxDurability / DurabilityLossOnHit (Skyy 2026-10-07; vanilla Weapon_Kunai has none, daggers have 120) - else fix round. DEPLOYED 18:54: Accessories 0.5.7 icons + Armory 0.1.5
+  must have NO MaxDurability / DurabilityLossOnHit (Skyy 2026-10-07; vanilla Weapon_Kunai has none, daggers have 120) - else fix round;
+  note any kunai void check for the 0.1.7 removal. DEPLOYED 18:54: Accessories 0.5.7 icons + Armory 0.1.5
   staffs (TEST-CHECKLIST 41, backup deploy-20261007-1854). QUEUED after Armory 0.1.6 pins: SkyyArmory 0.1.7 = Bo staffs
   (Copper..Onyxium + vanilla Wood/Bamboo kept) + hand wraps + gauntlets as items with NORMAL attacks (Skyy: items now, moves later;
   claws later) - art tools/art/make_staffs.py (Bo) + make_fists.py; Monk-Kit-Spec 1-2; charged moves need the spec-5 probes first. ALSO in 0.1.7: RIGHT-CLICK = BLOCK
   (vanilla guard) on wands, staffs, spellbooks, bo staffs, fists (Skyy 2026-10-07; not crossbow / kunai) + own animation sets with a
-  Guard pose (vanilla Staff / Wand / Spellbook sets have none). LATER round: dagger Shadow Step (research/Shadow-Step-Spec.md; no void protection). Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
+  Guard pose (vanilla Staff / Wand / Spellbook sets have none). ALSO 0.1.7: REMOVE all void protection (Skyy: none on any
+  traversal): wand hop void halving, blink floorCheck (default -> off / row gone), and any void check 0.1.6 put on the kunai teleport.
+  LATER round: dagger Shadow Step (research/Shadow-Step-Spec.md; no void protection). Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
   Stamina icon; fishing junk; reference pictures are local in `research/refs/`, described in docs/answered/gear.md).
 
 ## Next, in order
