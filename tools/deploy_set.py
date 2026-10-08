@@ -17,7 +17,7 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.17"), ("SkyySacks", "0.7.14"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.9"), ("SkyySkills", "0.4.21"),
+    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.9"), ("SkyySkills", "0.4.22"),
     ("SkyyAccessories", "0.5.8"), ("SkyyClasses", "0.1.14"), ("SkyyMenu", "0.3.10"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.7"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.3"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -58,9 +58,6 @@ SET = [
     # Reel probe (2026-10-07): 8 SkyyFishing_Rod_* + SkyyFishing_Reel stat look test - REMOVE after Skyy tests it (TEST-CHECKLIST) and
     # BEFORE SkyyFishing ships (same item / stat names).
     ("SkyyReelProbe", "0.1"),
-    # Monk moves probe (2026-10-08, built from cloud PR #11, research/cloud/Monk-Probe-Plan.md): op-only, ONE test session - REMOVE after
-    # Skyy's test (TEST-CHECKLIST).
-    ("SkyyMonkProbe", "0.1"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
@@ -73,7 +70,7 @@ SET = [
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.11"),
+    ("SkyyArmory", "0.1.12"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
@@ -142,7 +139,7 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "T
 # SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 (2026-10-03): deploy and roll back TOGETHER. Before SkyySkills goes below 0.4.15:
 # switch Base Mana off and let players log in once. To roll SkyyArmory back: take it out of SET, add it to RETIRED and put SkyySkills back
 # to 0.4.14 in the same deploy (vanilla staff files would charge 50 Mana behind a 10-Mana check otherwise). SkyyClasses back to 0.1.10 is safe.
-RETIRED = ["SkyyRolls"]
+RETIRED = ["SkyyRolls", "SkyyMonkProbe"]   # SkyyMonkProbe: tested 2026-10-08 (TEST 48), the real moves are SkyyArmory 0.1.12
 
 
 def retire_in_world(world, mod):
@@ -217,6 +214,9 @@ def main():
         print("STOP: SkyyMobs 0.1.4+ needs SkyySkills 0.4.17+ (kill XP by mob level through mob:fn:info) in the same deploy"); return 1
     if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 5) or _v(_p.get("SkyySkills", "0")) >= (0, 4, 17)) and not _mob:
         print("STOP: SkyyGear 0.2.5+ / SkyySkills 0.4.17+ deploy with SkyyMobs 0.1.4+ (the mob curve round) - pin all three or none"); return 1
+    # monk moves round (2026-10-08): SkyySkills 0.4.22 stops shipping the vanilla Wood / Bamboo Bo -> SkyyArmory 0.1.11+ must own them
+    if _v(_p.get("SkyySkills", "0")) >= (0, 4, 22) and _v(_p.get("SkyyArmory", "0")) < (0, 1, 11):
+        print("STOP: SkyySkills 0.4.22+ needs SkyyArmory 0.1.11+ (the Wood / Bamboo Bo handover) in the same deploy"); return 1
     missing = []
     plan = []
     for mod, ver in SET:
