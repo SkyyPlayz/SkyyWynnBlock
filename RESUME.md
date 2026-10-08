@@ -29,10 +29,13 @@ Read this first, then only what the task needs. Map of every file + search tips:
 - DEPLOYED 19:21: SkyyReelProbe 0.1 (TEST-CHECKLIST 42; REMOVE from SET after Skyy's test, before SkyyFishing).
 - DEPLOYED 2026-10-07: 18:54 Accessories 0.5.7 icons + Armory 0.1.5 staffs (TEST 41); 19:21 SkyyReelProbe 0.1 (TEST 42; remove
   after Skyy's test, before SkyyFishing); 20:20 Armory 0.1.6 spellbooks + kunai, Classes 0.1.13, Gear 0.2.8 (TEST 43); 21:41 Armory
-  0.1.7 Monk bo / wraps / gauntlets + right-click block + NO void protection, Gear 0.2.9 (TEST 44). NOTHING RUNNING.
-- Open for Skyy: Monk weapons + kunai are blocked for classed players while "Block weapons no class owns" is on (small SkyyClasses
-  change if they should work for all until Monk / Assassin exist); Shadoweave wraps fixed Lv 35 (no level row); cloud-session mod idea
-  (/cloud + OUTBOX pane) waiting for a yes. LATER round: dagger Shadow Step (research/Shadow-Step-Spec.md; no void protection). Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
+  0.1.7 Monk bo / wraps / gauntlets + right-click block + NO void protection, Gear 0.2.9 (TEST 44).
+- OVERNIGHT 2026-10-07 (Skyy asleep: "work through everything you can do on the mudpack. and ill answer all the questions on everything
+  else tomorrow. try to get the new updated class skill trees out tonight if you can."): RUNNING classes014 (wf_678ba01d-370: Monk +
+  Assassin playable), armory018 (wf_64bef864-aaf: Shadow Step), spec agent refreshing research/cloud/Class-Tree-Paths.md + writing
+  Class-Tree-Build-Map.md. NEXT: when classes014 pins -> class TREES round (SkyyTrees 0.3.3, path trees per the build map, ultracode),
+  deploy each READY round (auto-deploy), queue every question for Skyy in OPEN-QUESTIONS. cloud-link mod: ~/.claude/dev-mods/.../cloud-link.
+LATER round: dagger Shadow Step (research/Shadow-Step-Spec.md; no void protection). Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
   Stamina icon; fishing junk; reference pictures are local in `research/refs/`, described in docs/answered/gear.md).
 
 ## Next, in order
