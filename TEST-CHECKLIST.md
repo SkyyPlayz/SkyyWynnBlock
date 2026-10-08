@@ -66,6 +66,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 57. Roll rework (sprint press, spammable, hold = sprint out) + Shadow Step on release
 58. SkyyGear 0.2.10 - signature meter stays per weapon when you swap away and back
 59. SkyyArmory 0.1.14 - metal wands: signature bolt ricochets through up to 8 enemies
+60. SkyySkills 0.4.24 - Wood / Rotten / Tribal wands: ricochet signature too
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6

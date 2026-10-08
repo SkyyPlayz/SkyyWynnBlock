@@ -134,3 +134,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Roll rework + dagger charge: SkyySkills 0.4.23 + SkyyArmory 0.1.13 (DEPLOYED 2026-10-08, backup deploy-20261008-0911) | [2026-10](2026-10.md) |
 | SkyyGear 0.2.10 - signature charge kept on swap (DEPLOYED 2026-10-08, backup deploy-20261008-0928) | [2026-10](2026-10.md) |
 | SkyyArmory 0.1.14 - wand ricochet signature (DEPLOYED 2026-10-08, backup deploy-20261008-0955) | [2026-10](2026-10.md) |
+| SkyySkills 0.4.24 - Wood wand signature (DEPLOYED 2026-10-08, backup deploy-20261008-1027) | [2026-10](2026-10.md) |
