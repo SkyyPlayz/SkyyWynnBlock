@@ -22,7 +22,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyEssentials | 0.1.8 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.6 | profiles = full saves (default cap 6), delete + 6 h undo |
 | SkyyCooking | 0.1.6 | Cooking dishes + food Grade; XP by craft difficulty |
-| SkyyTrees | 0.3.2 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
+| SkyyTrees | 0.3.3 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
 | SkyyExploration | 0.2.3 | Exploration skill, spots, island checklist |
 | SkyyGuilds | 0.1.6 | guilds + guild bank |
 | SkyyVault | 0.1.5 | vault pages |
@@ -32,7 +32,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyReelProbe | 0.1 | rod + reel look probe, op only (remove after Skyy's test, before SkyyFishing) |
 | SkyyMobs | 0.1.4 | mob levels + difficulty; level curves + level gap (mob:fn:info) |
 | SkyyWorldGen | 0.1 | Zone 1 test island (/zone 1, admin) |
-| SkyyArmory | 0.1.8 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults |
+| SkyyArmory | 0.1.9 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults |
 | third-party (`PACK.md`) | - | More Crossbow Tiers (Serj), Saplings From Trees (Helios); SkyyRolls is RETIRED |
 
 Every version's notes: `docs/handoff/versions-history.md`. Every build / deploy / test: `docs/log/<YYYY-MM>.md`.
