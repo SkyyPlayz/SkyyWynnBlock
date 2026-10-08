@@ -63,10 +63,21 @@ Then do the other 5 classes the same way (Monk, Assassin, Warrior, Berserker, Ar
 7. **Pets** (Blockbench, full models): 15 launch pets in Hytale chunky voxel style (research/cloud/Pets-Spec.md + research/cloud/pet-art/
    README.md for the list and the approved v2 look). The pet system is not built yet - ASK Skyy before starting.
 8. **Hotbar ability item icons** - on hold (default: keys only, Skyy has not answered yet); skip unless Skyy asks.
-9. **Light armor** - paused by Skyy ("we can work on the armor more later"); ask Skyy before touching it. Approved looks are in the
-   skywynn-art skill, section 3.
+9. **Light armor (tier sets)** - paused by Skyy ("we can work on the armor more later"); ask Skyy before touching it. Approved looks
+   are in the skywynn-art skill, section 3. A separate candidate dark-leather design is in Done (#3).
 
 ## Done
+### 3. Dark Leather light armor - candidate design (2026-10-08)
+- Folder: `art/dark-leather-armor/` - Head/Chest/Hands/Legs `.blockymodel` + textures under
+  `Common/Items/Armors/SkyyDarkLeather/`, icons `Common/Icons/ItemsGenerated/Armor_SkyyDarkLeather_*.png` (64x64),
+  `source/*.bbmodel`, `sheet.png`, `manifest.json`, `README.md`. Scripts: `tools/art/make_dark_leather.py` and related `dl_*.py`.
+- Dark charcoal leather, navy tabard, brown straps, amber trim. Half-plate chest with ONE LEFT wrapping pauldron. Slim leather
+  half-helm (crest, V brow + amber gem, swept fins, grille visor). 45 boxes / 540 tris. Loads in Blockbench + Hytale plugin; NOT in game.
+- Skyy's answers, word for word: "It looks great! But it's supposed to be light armor, so I try to slim it up and scale it down,
+  especially the shoulder pads and the helmet, try to make them slim" / "Looks great! If just try to make the shoulder pad wrap
+  around the shoulder a little bit if you can" / "Yes commit it as a new possible light armor design"
+- This is a **new possible** light armor look, not a wire-in of the existing tier light armor. Main session decides how/whether to use it.
+
 ### 2. Accessory Bag menu icon (2026-10-08)
 - Folder: `art/accessory-bag-icon/` - icon `Common/Icons/ItemsGenerated/SkyyAccessories_Bag_Menu.png` (64x64), `sheet.png`,
   `manifest.json`, `README.md`. Generator scripts: `tools/art/make_accessory_bag_icon.py`, `make_accessory_bag_sheet.py`.
