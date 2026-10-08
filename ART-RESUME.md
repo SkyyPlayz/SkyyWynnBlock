@@ -42,19 +42,25 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
-### 2. Accessory Bag menu icon
-Next in the queue below - check with Skyy before starting.
+(none ready) - item 3 waits on Skyy's ability-input design approval and item 4 is paused; ask Skyy what's next.
 
 ## Queue (after Pebble - check with Skyy before starting each)
-2. **Accessory Bag menu icon** (64x64): the SkyWynn Menu tile and the Workbench "Accessories & Bags" tab still show the vanilla bag. The new
-   Accessory Bag is a black leather satchel with a gold handle + small gold clasp and 5 tiny gems in a row (the 5 accessory-line
-   colours). Ask Skyy for a screenshot of it in game, then draw an ORIGINAL 64x64 icon in vanilla item-icon framing ->
-   `art/accessory-bag-icon/Common/Icons/ItemsGenerated/SkyyAccessories_Bag_Menu.png`.
 3. **Hotbar ability item icons** - WAIT until Skyy approves the ability-input design (`research/cloud/Ability-Input-Design.md`).
 4. **Light armor** - paused by Skyy ("we can work on the armor more later"); ask Skyy before touching it. Approved looks are in the
    skywynn-art skill, section 3.
 
 ## Done
+### 2. Accessory Bag menu icon (2026-10-08)
+- Folder: `art/accessory-bag-icon/` - icon `Common/Icons/ItemsGenerated/SkyyAccessories_Bag_Menu.png` (64x64), `sheet.png`,
+  `manifest.json`, `README.md`. Generator scripts: `tools/art/make_accessory_bag_icon.py`, `make_accessory_bag_sheet.py`.
+- Gems left to right (Option B): Health red #d23a3a, Stamina yellow #d6a800, Mana blue #2f6fe0, Regeneration green #2fb34f,
+  Speed cyan #4ac0cc (cyan = approved Speed accessory wing colour, `tools/art/make_accessory_icons.py`).
+- Skyy's answers, word for word: "Use Option B gem colors" / "Make it a little brighter with a more leather look (still black leather,
+  just lighter" / "Yes, the bag icon looks good, commit it"
+- For the main session: the in-game bag model (`ACC_GEMS` in `tools/art/make_bags.py`) still uses red, blue, yellow, green, violet, so it
+  no longer matches this icon - recommend updating it to the Option B order. The Workbench tab can use the same PNG at
+  `Icons/CraftingCategories/<Mod>/AccessoriesBags.png` (per `skyywbtab.py`). Not yet seen in game.
+
 ### 1. Pebble - the talking rock NPC (2026-10-08)
 - Folder: `art/pebble/` (model, 256x192 texture, 128x128 icon, Idle/Walk/Talk/Wave + Damage/Hurt/Death animations,
   `source/Pebble.bbmodel`, `sheet.png`, `manifest.json`, `README.md`). Generator scripts: `tools/art/` (make_pebble.py etc.).
