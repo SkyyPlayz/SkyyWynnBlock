@@ -175,13 +175,19 @@ You own 4. You equip 2.
 
 🔵 **Proposed** - pick A or B
 
-- **Does:** a big instant heal on the **lowest-health ally** within 15 blocks.
+- **Does:** a big instant heal on the **lowest-health** target within **30 blocks**: **75% of max Health** (Skyy 2026-10-07).
 
-- It chains to 2 more allies (each 25% less).
+- It **chains** to the next-lowest target, **15% less each jump** (75% → 60% → 45% → 30% → 15%), so it reaches up to 5 targets.
+
+- **Order:** all **party members in range first** (lowest health first), and only **after every party member in range is healed** does it chain on to non-party players.
+
+- **The Priest counts as a party member:** if you are the closest to death it heals you first and chains from you; if you are near full you are the last party member it reaches.
+
+- Trades AoE for targeted heals at a much longer range.
 
 **Modifiers**
 
-- ⛓️ **Chain** - +1 ally per level.
+- ⛓️ **Chain** - each jump loses less (−1% less drop per level), so the chain reaches further down.
 
 - 💪 **Power+** - bigger heal.
 
