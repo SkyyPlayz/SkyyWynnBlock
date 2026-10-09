@@ -17,7 +17,8 @@ Standing rules for anyone working on this project, person or AI. Where this file
 - The only write into UserData is the deploy (`python tools/deploy_set.py --yes`) - plus, once a log has been read, moving old game logs (`UserData\Logs\*.log`, `Saves\<world>\logs\*.log`, all but the newest of each) to the Recycle Bin (Skyy 2026-10-08: "be sure to delete logs when you are done with them, so they dont take up my storage space"). Never hard-delete.
 - Never write anywhere else in `C:\Users\SkyLo\AppData`. Scratch only under `tools/dev/scratch/<task>/` (full path), deleted afterwards;
   point TEMP/TMP there for Java runs and use `-XX:-UsePerfData`.
-- Never kill or start the game. If Hytale is running, the deploy waits until Skyy closes it.
+- Never kill or start the game. If Hytale is running, the deploy waits until Skyy closes it. ONE exception (Skyy 2026-10-08): the SMOKE TEST -
+  start HytaleServer.jar offline (no client) on a COPY of the test world under tools/dev/scratch/, read its log, stop it; never the real world.
 - Never enter passwords or tokens.
 
 ## 2. The repo is PUBLIC
@@ -34,6 +35,8 @@ Standing rules for anyone working on this project, person or AI. Where this file
 1. A round is **ready** when built, reviewed, fixed, cross-checked, pinned in `tools/deploy_set.py` and committed.
 2. Game closed (no `HytaleServer` java process) - never kill it.
 3. `python tools/backup_deploy.py` (live Skyy jars + world `config.json` + every `Skyy_*` data folder -> `backups/deploy-<stamp>/`).
+3b. Smoke test (allowed since 2026-10-08): run the new set on an offline server against a scratch COPY of the world; every '[Skyy...] ready'
+    line present, no asset-validation failure, no SEVERE from our mods - else fix first.
 4. `python tools/deploy_set.py --yes` - the ONLY deploy path. Build scripts never get `--deploy`.
 5. `python tools/record_deploy.py --title ... --mod MOD:OLD:NEW --steps <file> --checklist ... --log ...` (test section, index, HANDOFF,
    TEST-CHECKLIST, log in one go), then RESUME; commit and push.

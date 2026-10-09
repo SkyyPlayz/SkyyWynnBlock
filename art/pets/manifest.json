@@ -1,0 +1,2256 @@
+{
+ "item": "pets (ART-RESUME queue #7)",
+ "status": "DRAFT for Skyy's review - not committed",
+ "units": "64 = 1 block, 1 unit = 1 texel",
+ "format": "Hytale Models plugin 0.10.0 'character' (64 px/block), shading flat, Blockbench 5.2.1",
+ "pets": {
+  "Rabbit": {
+   "role": "skill pet - Farming",
+   "model": "Common/NPC/SkyyPets/Rabbit/Models/Rabbit.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Rabbit/Models/Rabbit_Texture.png",
+   "texture_size": [
+    128,
+    64
+   ],
+   "nodes": 17,
+   "boxes": 12,
+   "quads": 4,
+   "tris": 152,
+   "node_names": [
+    "Origin",
+    "Body",
+    "L-Front-Leg",
+    "R-Front-Leg",
+    "L-Back-Leg",
+    "R-Back-Leg",
+    "Head",
+    "Snout",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "L-Ear",
+    "R-Ear",
+    "Tail",
+    "L-Haunch",
+    "R-Haunch"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Rabbit/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 180,
+     "seconds": 3.0,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Ear",
+      "L-Eyelid",
+      "R-Ear",
+      "R-Eyelid",
+      "Snout",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Rabbit/Animations/Default/Run.blockyanim",
+     "frames_60fps": 26,
+     "seconds": 0.433,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Rabbit/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 36,
+     "seconds": 0.6,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "rabbit",
+   "mount": false,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": null
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Rabbit",
+    "pet_item": "SkyyPets_Pet_Rabbit",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Rabbit.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Rabbit.png",
+    "name_key": "skyypets.pet.rabbit.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Chicken": {
+   "role": "skill pet - Farming",
+   "model": "Common/NPC/SkyyPets/Chicken/Models/Chicken.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Chicken/Models/Chicken_Texture.png",
+   "texture_size": [
+    128,
+    64
+   ],
+   "nodes": 18,
+   "boxes": 13,
+   "quads": 4,
+   "tris": 164,
+   "node_names": [
+    "Origin",
+    "Body",
+    "Head",
+    "Beak",
+    "Wattle",
+    "Comb",
+    "Comb-Top",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "Tail",
+    "L-Wing",
+    "R-Wing",
+    "L-Leg",
+    "L-Foot",
+    "R-Leg",
+    "R-Foot"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Chicken/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 160,
+     "seconds": 2.667,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Eyelid",
+      "L-Wing",
+      "R-Eyelid",
+      "R-Wing",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Chicken/Animations/Default/Run.blockyanim",
+     "frames_60fps": 18,
+     "seconds": 0.3,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Leg",
+      "L-Wing",
+      "R-Leg",
+      "R-Wing",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Chicken/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 30,
+     "seconds": 0.5,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Leg",
+      "L-Wing",
+      "R-Leg",
+      "R-Wing",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "bird",
+   "mount": false,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": null
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Chicken",
+    "pet_item": "SkyyPets_Pet_Chicken",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Chicken.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Chicken.png",
+    "name_key": "skyypets.pet.chicken.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Goat": {
+   "role": "skill pet - Mining",
+   "model": "Common/NPC/SkyyPets/Goat/Models/Goat.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Goat/Models/Goat_Texture.png",
+   "texture_size": [
+    128,
+    64
+   ],
+   "nodes": 20,
+   "boxes": 15,
+   "quads": 4,
+   "tris": 188,
+   "node_names": [
+    "Origin",
+    "Body",
+    "L-Front-Leg",
+    "R-Front-Leg",
+    "L-Back-Leg",
+    "R-Back-Leg",
+    "Head",
+    "Snout",
+    "Beard",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "L-Ear",
+    "R-Ear",
+    "L-Horn",
+    "R-Horn",
+    "L-Horn-Tip",
+    "R-Horn-Tip",
+    "Tail"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Goat/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 180,
+     "seconds": 3.0,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Ear",
+      "L-Eyelid",
+      "R-Ear",
+      "R-Eyelid",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Goat/Animations/Default/Run.blockyanim",
+     "frames_60fps": 24,
+     "seconds": 0.4,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Goat/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 40,
+     "seconds": 0.667,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "quad",
+   "mount": false,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": null
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Goat",
+    "pet_item": "SkyyPets_Pet_Goat",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Goat.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Goat.png",
+    "name_key": "skyypets.pet.goat.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Warthog": {
+   "role": "skill pet - Mining",
+   "model": "Common/NPC/SkyyPets/Warthog/Models/Warthog.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Warthog/Models/Warthog_Texture.png",
+   "texture_size": [
+    128,
+    64
+   ],
+   "nodes": 19,
+   "boxes": 14,
+   "quads": 4,
+   "tris": 176,
+   "node_names": [
+    "Origin",
+    "Body",
+    "L-Front-Leg",
+    "R-Front-Leg",
+    "L-Back-Leg",
+    "R-Back-Leg",
+    "Head",
+    "Snout",
+    "L-Tusk",
+    "R-Tusk",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "L-Ear",
+    "R-Ear",
+    "Mane-Head",
+    "Tail",
+    "Mane"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Warthog/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 180,
+     "seconds": 3.0,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Ear",
+      "L-Eyelid",
+      "R-Ear",
+      "R-Eyelid",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Warthog/Animations/Default/Run.blockyanim",
+     "frames_60fps": 24,
+     "seconds": 0.4,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Warthog/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 40,
+     "seconds": 0.667,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "quad",
+   "mount": false,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": null
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Warthog",
+    "pet_item": "SkyyPets_Pet_Warthog",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Warthog.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Warthog.png",
+    "name_key": "skyypets.pet.warthog.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Boar": {
+   "role": "combat pet",
+   "model": "Common/NPC/SkyyPets/Boar/Models/Boar.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Boar/Models/Boar_Texture.png",
+   "texture_size": [
+    128,
+    64
+   ],
+   "nodes": 15,
+   "boxes": 10,
+   "quads": 4,
+   "tris": 128,
+   "node_names": [
+    "Origin",
+    "Body",
+    "L-Front-Leg",
+    "R-Front-Leg",
+    "L-Back-Leg",
+    "R-Back-Leg",
+    "Head",
+    "Snout",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "L-Ear",
+    "R-Ear",
+    "Tail"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Boar/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 180,
+     "seconds": 3.0,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Ear",
+      "L-Eyelid",
+      "R-Ear",
+      "R-Eyelid",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Boar/Animations/Default/Run.blockyanim",
+     "frames_60fps": 24,
+     "seconds": 0.4,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Boar/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 40,
+     "seconds": 0.667,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "quad",
+   "mount": false,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": null
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Boar",
+    "pet_item": "SkyyPets_Pet_Boar",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Boar.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Boar.png",
+    "name_key": "skyypets.pet.boar.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Tusker": {
+   "role": "class pet - Berserker",
+   "model": "Common/NPC/SkyyPets/Tusker/Models/Tusker.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Tusker/Models/Tusker_Texture.png",
+   "texture_size": [
+    128,
+    64
+   ],
+   "nodes": 21,
+   "boxes": 16,
+   "quads": 4,
+   "tris": 200,
+   "node_names": [
+    "Origin",
+    "Body",
+    "L-Front-Leg",
+    "R-Front-Leg",
+    "L-Back-Leg",
+    "R-Back-Leg",
+    "Head",
+    "Snout",
+    "L-Tusk",
+    "R-Tusk",
+    "L-Tusk-Tip",
+    "R-Tusk-Tip",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "L-Ear",
+    "R-Ear",
+    "Mane-Head",
+    "Tail",
+    "Mane"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Tusker/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 180,
+     "seconds": 3.0,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Ear",
+      "L-Eyelid",
+      "R-Ear",
+      "R-Eyelid",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Tusker/Animations/Default/Run.blockyanim",
+     "frames_60fps": 24,
+     "seconds": 0.4,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Tusker/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 40,
+     "seconds": 0.667,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "quad",
+   "mount": false,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": null
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Tusker",
+    "pet_item": "SkyyPets_Pet_Tusker",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Tusker.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Tusker.png",
+    "name_key": "skyypets.pet.tusker.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Bear": {
+   "role": "skill pet - Foraging",
+   "model": "Common/NPC/SkyyPets/Bear/Models/Bear.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Bear/Models/Bear_Texture.png",
+   "texture_size": [
+    128,
+    64
+   ],
+   "nodes": 15,
+   "boxes": 10,
+   "quads": 4,
+   "tris": 128,
+   "node_names": [
+    "Origin",
+    "Body",
+    "L-Front-Leg",
+    "R-Front-Leg",
+    "L-Back-Leg",
+    "R-Back-Leg",
+    "Head",
+    "Snout",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "L-Ear",
+    "R-Ear",
+    "Tail"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Bear/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 180,
+     "seconds": 3.0,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Ear",
+      "L-Eyelid",
+      "R-Ear",
+      "R-Eyelid",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Bear/Animations/Default/Run.blockyanim",
+     "frames_60fps": 24,
+     "seconds": 0.4,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Bear/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 40,
+     "seconds": 0.667,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "quad",
+   "mount": false,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": null
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Bear",
+    "pet_item": "SkyyPets_Pet_Bear",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Bear.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Bear.png",
+    "name_key": "skyypets.pet.bear.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Turkey": {
+   "role": "skill pet - Foraging",
+   "model": "Common/NPC/SkyyPets/Turkey/Models/Turkey.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Turkey/Models/Turkey_Texture.png",
+   "texture_size": [
+    128,
+    64
+   ],
+   "nodes": 24,
+   "boxes": 19,
+   "quads": 4,
+   "tris": 236,
+   "node_names": [
+    "Origin",
+    "Body",
+    "Head",
+    "Beak",
+    "Snood",
+    "Wattle",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "Neck",
+    "Fan-1",
+    "Fan-2",
+    "Fan-3",
+    "Fan-4",
+    "Fan-5",
+    "Fan-6",
+    "Fan-7",
+    "L-Wing",
+    "R-Wing",
+    "L-Leg",
+    "L-Foot",
+    "R-Leg",
+    "R-Foot"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Turkey/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 160,
+     "seconds": 2.667,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Fan-4",
+      "Head",
+      "L-Eyelid",
+      "L-Wing",
+      "R-Eyelid",
+      "R-Wing"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Turkey/Animations/Default/Run.blockyanim",
+     "frames_60fps": 18,
+     "seconds": 0.3,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Leg",
+      "L-Wing",
+      "R-Leg",
+      "R-Wing"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Turkey/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 30,
+     "seconds": 0.5,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Leg",
+      "L-Wing",
+      "R-Leg",
+      "R-Wing"
+     ]
+    }
+   ],
+   "rig": "bird",
+   "mount": false,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": null
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Turkey",
+    "pet_item": "SkyyPets_Pet_Turkey",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Turkey.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Turkey.png",
+    "name_key": "skyypets.pet.turkey.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Wolf": {
+   "role": "combat pet",
+   "model": "Common/NPC/SkyyPets/Wolf/Models/Wolf.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Wolf/Models/Wolf_Texture.png",
+   "texture_size": [
+    128,
+    64
+   ],
+   "nodes": 18,
+   "boxes": 13,
+   "quads": 4,
+   "tris": 164,
+   "node_names": [
+    "Origin",
+    "Body",
+    "L-Front-Leg",
+    "R-Front-Leg",
+    "L-Back-Leg",
+    "R-Back-Leg",
+    "Head",
+    "Snout",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "L-Ear",
+    "R-Ear",
+    "L-Ear-Tip",
+    "R-Ear-Tip",
+    "Tail",
+    "Ruff"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Wolf/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 180,
+     "seconds": 3.0,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Ear",
+      "L-Eyelid",
+      "R-Ear",
+      "R-Eyelid",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Wolf/Animations/Default/Run.blockyanim",
+     "frames_60fps": 24,
+     "seconds": 0.4,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Wolf/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 40,
+     "seconds": 0.667,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "quad",
+   "mount": false,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": null
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Wolf",
+    "pet_item": "SkyyPets_Pet_Wolf",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Wolf.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Wolf.png",
+    "name_key": "skyypets.pet.wolf.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Hawk": {
+   "role": "class pet - Archer",
+   "model": "Common/NPC/SkyyPets/Hawk/Models/Hawk.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Hawk/Models/Hawk_Texture.png",
+   "texture_size": [
+    128,
+    32
+   ],
+   "nodes": 18,
+   "boxes": 13,
+   "quads": 4,
+   "tris": 164,
+   "node_names": [
+    "Origin",
+    "Body",
+    "Head",
+    "Beak",
+    "Beak-Tip",
+    "L-Tuft",
+    "R-Tuft",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "Tail",
+    "L-Wing",
+    "R-Wing",
+    "L-Leg",
+    "L-Foot",
+    "R-Leg",
+    "R-Foot"
+   ],
+   "animations": [
+    {
+     "name": "Fly",
+     "file": "Common/NPC/SkyyPets/Hawk/Animations/Default/Fly.blockyanim",
+     "frames_60fps": 30,
+     "seconds": 0.5,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Leg",
+      "L-Wing",
+      "R-Leg",
+      "R-Wing",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Hawk/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 200,
+     "seconds": 3.333,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Eyelid",
+      "L-Tuft",
+      "L-Wing",
+      "R-Eyelid",
+      "R-Tuft",
+      "R-Wing"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Hawk/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 30,
+     "seconds": 0.5,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "L-Leg",
+      "R-Leg",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "hawk",
+   "mount": false,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": null
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Hawk",
+    "pet_item": "SkyyPets_Pet_Hawk",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Hawk.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Hawk.png",
+    "name_key": "skyypets.pet.hawk.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Ram": {
+   "role": "class pet - Warrior + mount",
+   "model": "Common/NPC/SkyyPets/Ram/Models/Ram.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Ram/Models/Ram_Texture.png",
+   "texture_size": [
+    256,
+    160
+   ],
+   "nodes": 46,
+   "boxes": 41,
+   "quads": 4,
+   "tris": 500,
+   "node_names": [
+    "Origin",
+    "Body",
+    "Wool-Front",
+    "Chest-Plate",
+    "Wool-Back",
+    "Neck",
+    "Head",
+    "Muzzle",
+    "Brow",
+    "Topknot",
+    "L-Horn-Base",
+    "R-Horn-Base",
+    "L-Horn-Back",
+    "R-Horn-Back",
+    "L-Horn-Curl",
+    "R-Horn-Curl",
+    "L-Horn-Tip",
+    "R-Horn-Tip",
+    "L-Ear",
+    "R-Ear",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "Tail",
+    "Saddle-Blanket",
+    "Saddle",
+    "Saddle-Pommel",
+    "Saddle-Horn",
+    "Saddle-Cantle",
+    "L-Strap",
+    "L-Stirrup",
+    "R-Strap",
+    "R-Stirrup",
+    "L-Front-Leg",
+    "L-Front-Hoof",
+    "L-Front-Cuff",
+    "R-Front-Leg",
+    "R-Front-Hoof",
+    "R-Front-Cuff",
+    "L-Back-Leg",
+    "L-Back-Hoof",
+    "L-Back-Cuff",
+    "R-Back-Leg",
+    "R-Back-Hoof",
+    "R-Back-Cuff"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Ram/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 180,
+     "seconds": 3.0,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Ear",
+      "L-Eyelid",
+      "Neck",
+      "R-Ear",
+      "R-Eyelid",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Ram/Animations/Default/Run.blockyanim",
+     "frames_60fps": 24,
+     "seconds": 0.4,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Ram/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 40,
+     "seconds": 0.667,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "quad",
+   "mount": true,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": "Saddle"
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Ram",
+    "pet_item": "SkyyPets_Pet_Ram",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Ram.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Ram.png",
+    "name_key": "skyypets.pet.ram.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Mouflon": {
+   "role": "class pet - Priest + mount",
+   "model": "Common/NPC/SkyyPets/Mouflon/Models/Mouflon.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Mouflon/Models/Mouflon_Texture.png",
+   "texture_size": [
+    256,
+    96
+   ],
+   "nodes": 41,
+   "boxes": 36,
+   "quads": 4,
+   "tris": 440,
+   "node_names": [
+    "Origin",
+    "Body",
+    "Chest",
+    "Neck",
+    "Head",
+    "Muzzle",
+    "Browband",
+    "L-Horn-Base",
+    "R-Horn-Base",
+    "L-Horn-Up",
+    "R-Horn-Up",
+    "L-Horn-Back",
+    "R-Horn-Back",
+    "L-Horn-Low",
+    "R-Horn-Low",
+    "L-Horn-Tip",
+    "R-Horn-Tip",
+    "L-Ear",
+    "R-Ear",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "Tail",
+    "L-Front-Leg",
+    "L-Front-Hoof",
+    "R-Front-Leg",
+    "R-Front-Hoof",
+    "L-Back-Leg",
+    "L-Back-Hoof",
+    "R-Back-Leg",
+    "R-Back-Hoof",
+    "Saddle-Blanket",
+    "Saddle",
+    "Saddle-Pommel",
+    "Saddle-Horn",
+    "Saddle-Cantle",
+    "L-Strap",
+    "L-Stirrup",
+    "R-Strap",
+    "R-Stirrup"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Mouflon/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 180,
+     "seconds": 3.0,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Ear",
+      "L-Eyelid",
+      "Neck",
+      "R-Ear",
+      "R-Eyelid",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Mouflon/Animations/Default/Run.blockyanim",
+     "frames_60fps": 24,
+     "seconds": 0.4,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Mouflon/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 40,
+     "seconds": 0.667,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "quad",
+   "mount": true,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": "Saddle"
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Mouflon",
+    "pet_item": "SkyyPets_Pet_Mouflon",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Mouflon.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Mouflon.png",
+    "name_key": "skyypets.pet.mouflon.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Horse": {
+   "role": "mount pet",
+   "model": "Common/NPC/SkyyPets/Horse/Models/Horse.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Horse/Models/Horse_Texture.png",
+   "texture_size": [
+    256,
+    192
+   ],
+   "nodes": 45,
+   "boxes": 40,
+   "quads": 4,
+   "tris": 488,
+   "node_names": [
+    "Origin",
+    "Body",
+    "Chest",
+    "Neck",
+    "Mane",
+    "Head",
+    "Jaw",
+    "Muzzle",
+    "Noseband",
+    "Forelock",
+    "Forelock-Hang",
+    "L-Ear",
+    "R-Ear",
+    "L-Cheekstrap",
+    "R-Cheekstrap",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "Tail",
+    "L-Front-Leg",
+    "L-Front-Hoof",
+    "L-Front-Cuff",
+    "L-Front-Upper",
+    "R-Front-Leg",
+    "R-Front-Hoof",
+    "R-Front-Cuff",
+    "R-Front-Upper",
+    "L-Back-Leg",
+    "L-Back-Hoof",
+    "L-Back-Cuff",
+    "L-Back-Upper",
+    "R-Back-Leg",
+    "R-Back-Hoof",
+    "R-Back-Cuff",
+    "R-Back-Upper",
+    "Saddle-Blanket",
+    "Saddle",
+    "Saddle-Pommel",
+    "Saddle-Horn",
+    "Saddle-Cantle",
+    "L-Strap",
+    "L-Stirrup",
+    "R-Strap",
+    "R-Stirrup"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Horse/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 180,
+     "seconds": 3.0,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Ear",
+      "L-Eyelid",
+      "Neck",
+      "R-Ear",
+      "R-Eyelid",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Horse/Animations/Default/Run.blockyanim",
+     "frames_60fps": 24,
+     "seconds": 0.4,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Horse/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 40,
+     "seconds": 0.667,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "quad",
+   "mount": true,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": "Saddle"
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Horse",
+    "pet_item": "SkyyPets_Pet_Horse",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Horse.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Horse.png",
+    "name_key": "skyypets.pet.horse.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Camel": {
+   "role": "mount pet",
+   "model": "Common/NPC/SkyyPets/Camel/Models/Camel.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Camel/Models/Camel_Texture.png",
+   "texture_size": [
+    256,
+    160
+   ],
+   "nodes": 47,
+   "boxes": 42,
+   "quads": 4,
+   "tris": 512,
+   "node_names": [
+    "Origin",
+    "Body",
+    "Hump-Front",
+    "Hump-Front-Mid",
+    "Hump-Front-Top",
+    "Hump-Back",
+    "Hump-Back-Mid",
+    "Hump-Back-Top",
+    "Neck-Low",
+    "Neck-Shag",
+    "Neck",
+    "Head",
+    "Muzzle",
+    "Lip",
+    "L-Ear",
+    "R-Ear",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "Tail",
+    "Tail-Tuft",
+    "L-Front-Leg",
+    "L-Front-Knee",
+    "L-Front-Shin",
+    "L-Front-Foot",
+    "R-Front-Leg",
+    "R-Front-Knee",
+    "R-Front-Shin",
+    "R-Front-Foot",
+    "L-Back-Leg",
+    "L-Back-Knee",
+    "L-Back-Shin",
+    "L-Back-Foot",
+    "R-Back-Leg",
+    "R-Back-Knee",
+    "R-Back-Shin",
+    "R-Back-Foot",
+    "Saddle-Blanket",
+    "L-Blanket-Side",
+    "L-Tassel",
+    "L-Stirrup",
+    "R-Blanket-Side",
+    "R-Tassel",
+    "R-Stirrup",
+    "Saddle",
+    "Saddle-Horn"
+   ],
+   "animations": [
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Camel/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 180,
+     "seconds": 3.0,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Ear",
+      "L-Eyelid",
+      "Neck",
+      "Neck-Low",
+      "R-Ear",
+      "R-Eyelid",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Run",
+     "file": "Common/NPC/SkyyPets/Camel/Animations/Default/Run.blockyanim",
+     "frames_60fps": 24,
+     "seconds": 0.4,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Camel/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 40,
+     "seconds": 0.667,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Head",
+      "L-Back-Leg",
+      "L-Ear",
+      "L-Front-Leg",
+      "R-Back-Leg",
+      "R-Ear",
+      "R-Front-Leg",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "quad",
+   "mount": true,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": "Saddle"
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Camel",
+    "pet_item": "SkyyPets_Pet_Camel",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Camel.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Camel.png",
+    "name_key": "skyypets.pet.camel.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  },
+  "Skrill": {
+   "role": "class pet - Mage",
+   "model": "Common/NPC/SkyyPets/Skrill/Models/Skrill.blockymodel",
+   "texture": "Common/NPC/SkyyPets/Skrill/Models/Skrill_Texture.png",
+   "texture_size": [
+    128,
+    64
+   ],
+   "nodes": 21,
+   "boxes": 16,
+   "quads": 4,
+   "tris": 200,
+   "node_names": [
+    "Origin",
+    "Body",
+    "Head",
+    "Beak",
+    "Crest-1",
+    "Crest-2",
+    "Crest-3",
+    "L-Ear",
+    "R-Ear",
+    "L-Eye",
+    "R-Eye",
+    "L-Eyelid",
+    "R-Eyelid",
+    "Tail",
+    "Tail-Spark",
+    "L-Wing",
+    "L-Wing-Skin",
+    "R-Wing",
+    "R-Wing-Skin",
+    "L-Foot",
+    "R-Foot"
+   ],
+   "animations": [
+    {
+     "name": "Fly",
+     "file": "Common/NPC/SkyyPets/Skrill/Animations/Default/Fly.blockyanim",
+     "frames_60fps": 18,
+     "seconds": 0.3,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Crest-1",
+      "Crest-2",
+      "Crest-3",
+      "Head",
+      "L-Foot",
+      "L-Wing",
+      "L-Wing-Skin",
+      "R-Foot",
+      "R-Wing",
+      "R-Wing-Skin",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Idle",
+     "file": "Common/NPC/SkyyPets/Skrill/Animations/Default/Idle.blockyanim",
+     "frames_60fps": 36,
+     "seconds": 0.6,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Crest-1",
+      "Crest-2",
+      "Crest-3",
+      "Head",
+      "L-Eyelid",
+      "L-Foot",
+      "L-Wing",
+      "L-Wing-Skin",
+      "R-Eyelid",
+      "R-Foot",
+      "R-Wing",
+      "R-Wing-Skin",
+      "Tail"
+     ]
+    },
+    {
+     "name": "Walk",
+     "file": "Common/NPC/SkyyPets/Skrill/Animations/Default/Walk.blockyanim",
+     "frames_60fps": 24,
+     "seconds": 0.4,
+     "loops": true,
+     "nodes": [
+      "Body",
+      "Crest-1",
+      "Crest-2",
+      "Crest-3",
+      "Head",
+      "L-Foot",
+      "L-Wing",
+      "L-Wing-Skin",
+      "R-Foot",
+      "R-Wing",
+      "R-Wing-Skin",
+      "Tail"
+     ]
+    }
+   ],
+   "rig": "flyer",
+   "mount": false,
+   "attach": {
+    "nameplate": "Head",
+    "rider_seat": null
+   },
+   "proposed_ids": {
+    "npc_model": "SkyyPets_Skrill",
+    "pet_item": "SkyyPets_Pet_Skrill",
+    "item_icon": "Icons/ItemsGenerated/SkyyPets_Pet_Skrill.png",
+    "model_icon": "Icons/ModelsGenerated/SkyyPets_Skrill.png",
+    "name_key": "skyypets.pet.skrill.name"
+   },
+   "scale_note": "files are the Lv 100 (1.0x) size; Pets-Spec 6: 0.6x at Lv 1"
+  }
+ },
+ "files": [
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Bear.png",
+   "bytes": 5050,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Boar.png",
+   "bytes": 6484,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Camel.png",
+   "bytes": 4872,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Chicken.png",
+   "bytes": 4824,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Goat.png",
+   "bytes": 4639,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Hawk.png",
+   "bytes": 4920,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Horse.png",
+   "bytes": 5762,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Mouflon.png",
+   "bytes": 5210,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Rabbit.png",
+   "bytes": 4623,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Ram.png",
+   "bytes": 7576,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Skrill.png",
+   "bytes": 4489,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Turkey.png",
+   "bytes": 6395,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Tusker.png",
+   "bytes": 6378,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Warthog.png",
+   "bytes": 6077,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyPets_Pet_Wolf.png",
+   "bytes": 5233,
+   "what": "item icon 64x64"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Bear.png",
+   "bytes": 13721,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Boar.png",
+   "bytes": 17131,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Camel.png",
+   "bytes": 14367,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Chicken.png",
+   "bytes": 12486,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Goat.png",
+   "bytes": 12175,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Hawk.png",
+   "bytes": 13726,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Horse.png",
+   "bytes": 17204,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Mouflon.png",
+   "bytes": 15198,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Rabbit.png",
+   "bytes": 12795,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Ram.png",
+   "bytes": 22320,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Skrill.png",
+   "bytes": 12414,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Turkey.png",
+   "bytes": 17894,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Tusker.png",
+   "bytes": 17558,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Warthog.png",
+   "bytes": 16136,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/Icons/ModelsGenerated/SkyyPets_Wolf.png",
+   "bytes": 14039,
+   "what": "model icon 128x128"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Bear/Animations/Default/Idle.blockyanim",
+   "bytes": 7362,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Bear/Animations/Default/Run.blockyanim",
+   "bytes": 6396,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Bear/Animations/Default/Walk.blockyanim",
+   "bytes": 6406,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Bear/Models/Bear.blockymodel",
+   "bytes": 37546,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Bear/Models/Bear_Texture.png",
+   "bytes": 6328,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Boar/Animations/Default/Idle.blockyanim",
+   "bytes": 7362,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Boar/Animations/Default/Run.blockyanim",
+   "bytes": 6396,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Boar/Animations/Default/Walk.blockyanim",
+   "bytes": 6406,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Boar/Models/Boar.blockymodel",
+   "bytes": 37600,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Boar/Models/Boar_Texture.png",
+   "bytes": 5267,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Camel/Animations/Default/Idle.blockyanim",
+   "bytes": 8904,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Camel/Animations/Default/Run.blockyanim",
+   "bytes": 6396,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Camel/Animations/Default/Walk.blockyanim",
+   "bytes": 6406,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Camel/Models/Camel.blockymodel",
+   "bytes": 153229,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Camel/Models/Camel_Texture.png",
+   "bytes": 24874,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Chicken/Animations/Default/Idle.blockyanim",
+   "bytes": 8330,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Chicken/Animations/Default/Run.blockyanim",
+   "bytes": 5073,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Chicken/Animations/Default/Walk.blockyanim",
+   "bytes": 5081,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Chicken/Models/Chicken.blockymodel",
+   "bytes": 48752,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Chicken/Models/Chicken_Texture.png",
+   "bytes": 3712,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Goat/Animations/Default/Idle.blockyanim",
+   "bytes": 7362,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Goat/Animations/Default/Run.blockyanim",
+   "bytes": 6396,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Goat/Animations/Default/Walk.blockyanim",
+   "bytes": 6406,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Goat/Models/Goat.blockymodel",
+   "bytes": 55127,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Goat/Models/Goat_Texture.png",
+   "bytes": 4831,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Hawk/Animations/Default/Fly.blockyanim",
+   "bytes": 3621,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Hawk/Animations/Default/Idle.blockyanim",
+   "bytes": 8487,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Hawk/Animations/Default/Walk.blockyanim",
+   "bytes": 4944,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Hawk/Models/Hawk.blockymodel",
+   "bytes": 48308,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Hawk/Models/Hawk_Texture.png",
+   "bytes": 4412,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Horse/Animations/Default/Idle.blockyanim",
+   "bytes": 8131,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Horse/Animations/Default/Run.blockyanim",
+   "bytes": 6396,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Horse/Animations/Default/Walk.blockyanim",
+   "bytes": 6406,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Horse/Models/Horse.blockymodel",
+   "bytes": 145926,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Horse/Models/Horse_Texture.png",
+   "bytes": 31663,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Mouflon/Animations/Default/Idle.blockyanim",
+   "bytes": 8131,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Mouflon/Animations/Default/Run.blockyanim",
+   "bytes": 6396,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Mouflon/Animations/Default/Walk.blockyanim",
+   "bytes": 6406,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Mouflon/Models/Mouflon.blockymodel",
+   "bytes": 133406,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Mouflon/Models/Mouflon_Texture.png",
+   "bytes": 15906,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Rabbit/Animations/Default/Idle.blockyanim",
+   "bytes": 8398,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Rabbit/Animations/Default/Run.blockyanim",
+   "bytes": 8822,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Rabbit/Animations/Default/Walk.blockyanim",
+   "bytes": 8828,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Rabbit/Models/Rabbit.blockymodel",
+   "bytes": 43520,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Rabbit/Models/Rabbit_Texture.png",
+   "bytes": 6159,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Ram/Animations/Default/Idle.blockyanim",
+   "bytes": 8131,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Ram/Animations/Default/Run.blockyanim",
+   "bytes": 6396,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Ram/Animations/Default/Walk.blockyanim",
+   "bytes": 6406,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Ram/Models/Ram.blockymodel",
+   "bytes": 149715,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Ram/Models/Ram_Texture.png",
+   "bytes": 32412,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Skrill/Animations/Default/Fly.blockyanim",
+   "bytes": 6701,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Skrill/Animations/Default/Idle.blockyanim",
+   "bytes": 9141,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Skrill/Animations/Default/Walk.blockyanim",
+   "bytes": 6711,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Skrill/Models/Skrill.blockymodel",
+   "bytes": 58048,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Skrill/Models/Skrill_Texture.png",
+   "bytes": 5283,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Turkey/Animations/Default/Idle.blockyanim",
+   "bytes": 8136,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Turkey/Animations/Default/Run.blockyanim",
+   "bytes": 4504,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Turkey/Animations/Default/Walk.blockyanim",
+   "bytes": 4511,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Turkey/Models/Turkey.blockymodel",
+   "bytes": 65868,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Turkey/Models/Turkey_Texture.png",
+   "bytes": 7437,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Tusker/Animations/Default/Idle.blockyanim",
+   "bytes": 7362,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Tusker/Animations/Default/Run.blockyanim",
+   "bytes": 6396,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Tusker/Animations/Default/Walk.blockyanim",
+   "bytes": 6406,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Tusker/Models/Tusker.blockymodel",
+   "bytes": 59367,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Tusker/Models/Tusker_Texture.png",
+   "bytes": 7320,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Warthog/Animations/Default/Idle.blockyanim",
+   "bytes": 7362,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Warthog/Animations/Default/Run.blockyanim",
+   "bytes": 6396,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Warthog/Animations/Default/Walk.blockyanim",
+   "bytes": 6406,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Warthog/Models/Warthog.blockymodel",
+   "bytes": 51652,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Warthog/Models/Warthog_Texture.png",
+   "bytes": 5617,
+   "what": "texture"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Wolf/Animations/Default/Idle.blockyanim",
+   "bytes": 7362,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Wolf/Animations/Default/Run.blockyanim",
+   "bytes": 6396,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Wolf/Animations/Default/Walk.blockyanim",
+   "bytes": 6406,
+   "what": "animation"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Wolf/Models/Wolf.blockymodel",
+   "bytes": 47370,
+   "what": "model"
+  },
+  {
+   "path": "Common/NPC/SkyyPets/Wolf/Models/Wolf_Texture.png",
+   "bytes": 6526,
+   "what": "texture"
+  },
+  {
+   "path": "README.md",
+   "bytes": 6559,
+   "what": "doc"
+  },
+  {
+   "path": "manifest.json",
+   "bytes": 47656,
+   "what": "doc"
+  },
+  {
+   "path": "sheet.png",
+   "bytes": 2317400,
+   "what": "review sheet"
+  },
+  {
+   "path": "source/Bear.bbmodel",
+   "bytes": 46518,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Boar.bbmodel",
+   "bytes": 44837,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Camel.bbmodel",
+   "bytes": 123643,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Chicken.bbmodel",
+   "bytes": 45926,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Goat.bbmodel",
+   "bytes": 51723,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Hawk.bbmodel",
+   "bytes": 45525,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Horse.bbmodel",
+   "bytes": 133038,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Mouflon.bbmodel",
+   "bytes": 99510,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Rabbit.bbmodel",
+   "bytes": 54340,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Ram.bbmodel",
+   "bytes": 132447,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Skrill.bbmodel",
+   "bytes": 54167,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Turkey.bbmodel",
+   "bytes": 58311,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Tusker.bbmodel",
+   "bytes": 56288,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Warthog.bbmodel",
+   "bytes": 51183,
+   "what": "Blockbench project"
+  },
+  {
+   "path": "source/Wolf.bbmodel",
+   "bytes": 51352,
+   "what": "Blockbench project"
+  }
+ ]
+}

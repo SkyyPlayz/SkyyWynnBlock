@@ -1,0 +1,4032 @@
+"""SkyyFishing 0.1 - build script (javassist via jpype). NEW MOD: stage 1 of research/cloud/SkyyFishing-Spec-Draft.md section 12.
+Run:   python SkyyFishing/build_skyyfishing_0.1.py   -> SkyyFishing/SkyyFishing-0.1.jar
+       (no --deploy on purpose: tools/deploy_set.py installs the set once Skyy says deploy)
+Check: python SkyyFishing/test_skyyfishing_0.1.py    (-Xverify:all, engine asset validators, every new code path executed, start twice on
+       a scratch copy of live data, engine-access audit; scratch tools/dev/scratch/fishing01/)
+
+SKYY'S WORDS (docs/answered/skills.md + gear.md; LOCKED lines win over the spec draft):
+  "yes, start building skyyfishing" (2026-10-08) - "add hyfishing right now, along side dynamic season. (which has fishing seasons we will
+  have to make sure work with our mod" - "i like the fishing stuff, but unless they have a good use, id just make the junk draws sticks and
+  fiber and stuff thats already in the game." - fishing parts "Keep all" - "do the 8 rods with the reel stat" - rod icon "second row for
+  the rod" (the 3D model renders).
+
+WHAT STAGE 1 IS (spec section 12, row 1) and how it is built
+  FISHING BENCH (item SkyyFishing_Bench, crafted at the vanilla Workbench, Crafting tab): a placed block whose Use opens our inline page
+    "SkyyFishingBench" (vanilla OpenCustomUI on Use, like Bench_Memories). Model / texture / hitbox = the vanilla Farming bench's
+    (referenced by path, nothing copied); icon = the vanilla bench icon with our Bamboo rod render on top (made at build time, jar only).
+    Tabs: PARTS (craft rods, reels, hooks, lines, sinkers - recipes open with the Pond Fish count and, for rods / reels, the metal's
+    collection through SkyyCollections' coll:fn:tier), RIG (pick a rod you carry, fit / remove its reel, hook, line and sinker - one of
+    each; nothing is ever destroyed, a removed part goes back to your inventory), FILLET AND SELL (every whole fish you carry: sell it
+    whole for coins, or fillet it into vanilla Raw Fish).
+  RODS = the 8 SkyyReelProbe ids SkyyFishing_Rod_<Tier> (taken over; T0-T2 Bamboo / Copper / Iron have recipes, T3-T7 exist so a probe
+    rod left in an inventory stays a working item). The fitted reel / hook / line / sinker live in the rod's metadata (BsonDocument
+    "SkyyFishing"); the tooltip lists them (ItemDisplayMetadata). REELS: SkyyFishing_Reel_<Bamboo|Copper|Iron> items, fitted onto a rod.
+    LOOK (LOCKED "do the 8 rods with the reel stat"): stat SkyyFishing_Reel (the probe's id; Max 18 here): 0..8 = the reel on the rod
+    in your hand (0 none), 10..18 = the same while your line is out - that look hides the rod's built-in hanging line + bobber (the real
+    bobber floats on the water). The tick sets it for the rod you hold; 0 for anything else. ICON and a DROPPED rod show the rod's own
+    tier reel (per item id - an engine limit, Rod-Reel-Look.md); the tooltip names the reel really fitted.
+  PARTS (LOCKED "Keep all"): part tier I-II of Barbed / Lost Property / Lure Hook, Braided / Steady / Twin / Scholar's Line, Weighted /
+    Clean / Deep Sinker (20 items; Monster Hook + Ember Sinker are stage 3). Icons = the approved concept icons with the vanilla metal
+    gradients (tools/art/make_fishing.py helpers, build time).
+  CASTING: right click with a rigged rod (the rod's Secondary = root SkyyFishing_Rod_Use -> ApplyEffect SkyyFishing_Click; the server
+    consumes the effect every tick - the SkyyArmory grapple click path, deployed + seen working). The cast looks along your aim for
+    water (at least fish.minDepth deep and 3 wide, within fish.castRange). The bobber = a NonSerialized prop entity (vanilla
+    ChangeModelPage preview recipe: NetworkId + NonSerialized + Transform + ModelComponent + HeadRotation; + Nameplate + Intangible) with
+    our model SkyyFishing_Bobber (the vanilla rod's own red / white bobber node, extracted at build time). The line = small particle dots
+    from your rod to the bobber (a recoloured vanilla trail light, like the grapple rope), with a little sag.
+  BITE: after fish.biteMin..biteMax s (x the catch's bite factor, / (1 + Fishing Speed / 100)) the bobber dips, shows "!" (nameplate), a
+    splash + sound, and the HUD widget says BITE: right click within fish.biteWindow s to hook it; missed = it swims off and you wait for
+    the next one. Right click while waiting = reel in (nothing caught).
+  THE FIGHT (OUR minigame, a HUD widget - pages cannot tick): the bar starts at fish.barStart, every click adds Reel Power / heft (heft =
+    max(0.6, kg ^ 0.3)), the fish pulls fish.pull.<rarity> per second and surges (x fish.surgeMult for fish.surgeLength s every
+    fish.surgeEvery s). 100 = landed, 0 or fish.timeLimit = lost. Clicks over fish.maxCps per second are ignored. HUD: our own keyed
+    CustomUIHud "SkyyFishingHud" (HudManager.addCustomHud - SkyyHud's own widgets are untouched); one full document per state, then
+    every fish.hud.tickMs only the bar Value + the timer / click-rate texts (the SkyyHud combat widget pattern).
+  CATCH: kind roll fish / junk / Lost Property (fish.kind.*), Clean Sinker moves junk to fish, the Lost Property Hook adds treasure
+    points (cap fish.cap.treasure). FISH = the Zone 1 table of research/cloud/Fish-Species-Catalog.md 3.1 (10 species; the catalog's
+    proposal "the species' rarity IS the grade" - one roll), only species whose min weight your rod can hold; weight = min + (max' - min)
+    x u ^ p (max' = min(max, rod max) - a fish heavier than the rod never bites, spec Q1 default), length = (100 x grams / K) ^ (1/3) x
+    0.95..1.05 (K fitted from the catalog's min weight / min length). Fish items: SkyyFishing_Fish_<Species>, MaxStack 1, weight +
+    length + catcher in the metadata, tooltip text. JUNK = existing vanilla items only (spec 7.1 Z1 column: sticks, fibre, linen scraps,
+    water flowers, poop, rubble, trash) - LOCKED. LOST PROPERTY (treasure, spec 7) = coins (SkyyCoins coins:fn:add) + vanilla materials
+    (ores, logs, bars, Water Essence, Deco_Treasure, the Fishbone spear); the wrapper names (Envelope, Damp Parcel, ...) are the catch's
+    name only and it opens at once (no container item in stage 1); the purse keeps the spec's shares (Good 40 / Great 30 / Outstanding
+    25 %); the unidentified gear boxes / bait + part scrap / drop-only parts / accessories / pet eggs are later stages - their shares give
+    vanilla materials of that grade meanwhile (bars, gold, raw fish, Water Essence, Deco_Treasure, the Fishbone spear).
+  SELLING (FILLET AND SELL tab; the Clerk NPC comes with the town round): whole fish = kg x fish.price.perKg x the rarity multiplier x a
+    per-species demand factor (each sale lowers it fish.demand.perSale %, it recovers with fish.demand.halfLife, never below
+    fish.demand.floor; server-wide, saved). FILLET = 1 vanilla Raw Fish per fish.fillet.kgPer kg (max fish.fillet.max; Normal fish ->
+    Food_Fish_Raw, Unique and up -> Food_Fish_Raw_Uncommon): a normal Bazaar product already (SkyyBazaar's own table), cooks at the
+    vanilla Cooking Bench; whole fish are never Bazaar products, fillets never become fish (no buy-craft-sell loop).
+  PROGRESS (saved per PROFILE, tools/PROFILES-CONTRACT.md: Skyy_SkyyFishing/players/<pkey>.properties): the Pond Fish count (1 per fish
+    landed by fishing - never fillets / bought fish) with the spec's R curve tiers (25 / 50 / 100 / 250 / 500 / 1,000 / 2,500 / 5,000)
+    that open the recipes (spec section 8), your best weight / length per species, fish caught per species, and undelivered catches (a
+    full inventory -> the catch waits and is handed over as soon as there is room). EVERY catch (fish, junk, Lost Property items and coins)
+    is SAVED FIRST as such a claim on the cast's profile and handed over by a world task (FishGiveTask, never inside the tick - the
+    world-thread rule; a crash in between leaves the claim, not a lost fish; a claim of another profile waits for that profile; nothing
+    is handed over within 31 s of a profile switch - SkyyProfiles' crash-marker window, PROFILES-CONTRACT; coin claims wait for
+    SkyyCoins). KNOWN LIMIT: the claim is dropped (file written within 2 s) just before the item is given, and the engine saves the
+    inventory on its own ~10 s timer - a hard crash inside those seconds can still lose that one delivery (giving first would risk a
+    duplicate instead). Fish claims name the species KEY (stable when later rounds add species); a rod keeps its rig (R claim). A
+    profile file that exists but cannot be read is never treated as empty: the changes are kept apart and merged once it reads (at
+    shutdown: <key>.properties.unmerged). Files are UTF-8 both ways. Server
+    records per species (weight only,
+    Skyy_SkyyFishing/records.properties) and the demand factors (demand.properties). Writes are atomic (tmp + move) on the scheduler.
+  FISHING XP: each catch offers skill:fn:addxp {uuid, "Fishing", xp, "fishing", pkey} to SkyySkills. SkyySkills 0.4.24 has NO Fishing
+    skill yet, so it answers FALSE and nothing happens - the hook is ready for the SkyySkills round that adds the row (spec "Fishing skill
+    un-hidden"). Rod / reel Fishing-level gates wait for that too.
+  HyFishing STAYS installed (stage 2 removes it): our items, stat, effects, interactions, models and page ids are all new (Assets.zip checked
+    at build time, every installed mod by the harness); we react only to our own rods. Dynamic Seasons: stage 2 (API noted
+    in the build report, UNVERIFIED).
+
+SERVER SETUP (tools/skyycfg.py, KEEP=10, node skyyfishing.admin): Skyy_SkyyFishing/config.properties - every number above, spec 13 +
+  the UI mockup's HUD rows; the species table (spawn weight | min kg | max kg) and the Zone 1 junk table (item -> weight) are editable.
+COMMANDS: /fishing (alias /fish; every player): your Pond Fish tier and what it unlocks next, your records, how to fish.
+  /fishadmin (admin: requirePermission skyyfishing.admin + no permission groups): kit (every T0-T2 rod with its reel, the 3 reels, the
+  20 parts, a bench), pond <n> (set your Pond Fish count - tests the unlocks), give <species> (a test fish; not counted), treasure
+  <grade> (your next cast catches Lost Property of that grade), bite (your line bites in 1 s), status.
+"""
+import sys, os, json, zipfile, re, math, copy, hashlib, colorsys, random
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools"))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools", "art"))
+import skyybuild as B
+import skyyui as SUI
+import skyycfg as CFG
+import skyyart as SA
+import make_fishing as MF
+
+if "--deploy" in sys.argv:
+    raise SystemExit("SkyyFishing: --deploy is not supported here - deploys go through tools/deploy_set.py")
+
+VERSION = "0.1"
+MOD = "SkyyFishing"
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+ASSETS_ZIP = os.path.join(B.HYTALE, "install", "release", "package", "game", "latest", "Assets.zip")
+NODE = "skyyfishing.admin"
+PKG = "com.skyy.fishing"
+SUI.verify()
+KIT_ID = SUI.kit_id()
+COL = SUI.COLOR
+UI_DATA_COLORS = dict(SUI.RARITY)      # fish rarity colours = the pack ladder (Fishing-UI-Mockup v2 default; SkyySacks' bag colours)
+
+# ================================================================= data (every number is a Server Setup row default below)
+TIERS = list(MF.TIERS)
+assert TIERS == ["Bamboo", "Copper", "Iron", "Thorium", "Cobalt", "Adamantite", "Mithril", "Onyxium"], TIERS
+ROD_IDS = ["SkyyFishing_Rod_%s" % t for t in TIERS]                 # = SkyyReelProbe 0.1's ids (taken over)
+ROD_MAXKG = [3, 6, 10, 16, 25, 40, 60, 90]                          # spec 4.1
+REEL_TIERS = ["Bamboo", "Copper", "Iron"]                            # stage 1 reels (T0-T2)
+REEL_IDS = ["SkyyFishing_Reel_%s" % t for t in REEL_TIERS]
+REEL_POWER = [4.0, 4.9, 5.7]                                         # spec 4.1
+STAT = "SkyyFishing_Reel"
+LINE_OUT = 10                                                        # stat = reel + 10 while the line is out (rod look without the hanging line)
+RARITIES = ["Normal", "Unique", "Rare", "Legendary", "Fabled", "Mythic"]
+RAR_QUALITY = ["Common", "Legendary", "Epic", "Rare", "Epic", "Epic"]   # vanilla quality frames by hue = SkyySacks 0.7.14 BAG_RARITY
+RAR_HEX = [SUI.RARITY[r] for r in RARITIES]
+RAR_MULT = [1.0, 1.5, 2.5, 6.0, 12.0, 25.0]                          # Fish-Species-Catalog 1 (price x)
+RAR_PULL = [6.0, 7.5, 9.5, 11.5, 14.0, 14.0]                         # spec 3 pulls (Common .. Legendary), Mythic = Fabled
+RAR_XP = [10, 15, 25, 60, 120, 250]                                  # Fishing XP per landed fish (offered; SkyySkills has no Fishing yet)
+# parts: (kind key, slot, item name part, shown name, stat index, tier I value, tier II value, effect words)
+# stat index into the rig stats array (FishRig.ST_*): 2 speed, 3 treasure, 4 grade luck, 5 bar start, 6 time limit, 7 surge cut, 8 double,
+# 9 junk cut, 10 wisdom, 11 deep
+PARTS = [
+    ("barbed", "hook", "Barbed", "Barbed Hook", 4, 5.0, 10.0, "grade luck +%s%%"),
+    ("lostproperty", "hook", "LostProperty", "Lost Property Hook", 3, 1.0, 2.0, "treasure chance +%s"),
+    ("lure", "hook", "Lure", "Lure Hook", 2, 5.0, 10.0, "fishing speed +%s"),
+    ("braided", "line", "Braided", "Braided Line", 6, 1.0, 1.5, "fight time +%s s"),
+    ("steady", "line", "Steady", "Steady Line", 7, 15.0, 25.0, "surge pull -%s%%"),
+    ("twin", "line", "Twin", "Twin Line", 8, 2.0, 4.0, "double catch %s%%"),
+    ("scholars", "line", "Scholars", "Scholar's Line", 10, 2.0, 4.0, "fishing wisdom +%s%%"),
+    ("weighted", "sinker", "Weighted", "Weighted Sinker", 5, 5.0, 10.0, "bar start +%s"),
+    ("clean", "sinker", "Clean", "Clean Sinker", 9, 25.0, 50.0, "junk -%s%%"),
+    ("deep", "sinker", "Deep", "Deep Sinker", 11, 5.0, 10.0, "average weight +%s%%"),
+]
+PART_TIERS = ["I", "II"]
+SLOT_PREFIX = {"hook": "SkyyFishing_Hook_", "line": "SkyyFishing_Line_", "sinker": "SkyyFishing_Sinker_"}
+PART_IDS = []                       # (item id, kind index, tier index)
+for _ki, _p in enumerate(PARTS):
+    for _ti, _t in enumerate(PART_TIERS):
+        PART_IDS.append(("%s%s_%s" % (SLOT_PREFIX[_p[1]], _p[2], _t), _ki, _ti))
+CAPS = [("speed", 2, 100.0), ("treasure", 3, 15.0), ("double", 8, 20.0), ("barStart", 5, 60.0), ("timeLimit", 6, 16.0), ("surgeCut", 7, 50.0)]
+# Zone 1 species (Fish-Species-Catalog 3.1): key, name, rarity, min kg, max kg, min cm, max cm, bite factor (bite s / 6), spawn weight, vanilla look
+SPECIES = [
+    ("OverdueMinnow", "Overdue Minnow", 0, 0.05, 0.4, 18, 35, 0.8, 22.0, "Fish_Minnow_Item", "overdue_minnow"),
+    ("Bluegill", "Bluegill of Good Standing", 0, 0.1, 1.2, 20, 46, 0.9, 22.0, "Fish_Bluegill_Item", "bluegill_of_good_standing"),
+    ("RustbackTrout", "Rustback Trout", 0, 0.5, 5.0, 37, 79, 1.0, 20.0, "Fish_Trout_Rainbow_Item", "rustback_trout"),
+    ("QueuePerch", "Queue Perch", 0, 0.3, 2.5, 30, 61, 1.0, 16.0, "Fish_Bluegill_Item", "queue_perch"),
+    ("MisfiledCarp", "Misfiled Carp", 1, 2.0, 9.0, 52, 86, 1.1, 10.0, "Fish_Salmon_Item", "misfiled_carp"),
+    ("StampedCatfish", "Stamped Catfish", 1, 3.5, 12.0, 73, 110, 1.2, 10.0, "Fish_Catfish_Item", "stamped_catfish"),
+    ("MirebridgeEel", "Mirebridge Eel", 1, 1.0, 6.0, 55, 100, 1.2, 9.0, "Fish_Eel_Moray_Item", "mirebridge_eel"),
+    ("PonderingPike", "Pondering Pike", 2, 6.5, 18.0, 93, 131, 1.3, 6.0, "Fish_Pike_Item", "pondering_pike"),
+    ("GoldenKoi", "Golden Receipt Koi", 3, 1.5, 7.0, 47, 79, 1.5, 1.6, "Fish_Tang_Lemon_Peel_Item", "golden_receipt_koi"),
+    ("Goldfish", "Departmental Goldfish", 4, 0.2, 1.0, 26, 44, 1.8, 0.25, "Fish_Clownfish_Item", "departmental_goldfish"),
+]
+SP_K = [round(100.0 * s[3] * 1000.0 / (s[5] ** 3), 4) for s in SPECIES]     # shape K from the catalog's min weight / min length
+for _s, _k in zip(SPECIES, SP_K):     # the max end of the formula lands near the catalog's max length (+-12 %)
+    _lmax = (100.0 * _s[4] * 1000.0 / _k) ** (1.0 / 3.0)
+    assert abs(_lmax - _s[6]) / _s[6] < 0.12, (_s[0], _lmax, _s[6])
+FISH_IDS = ["SkyyFishing_Fish_%s" % s[0] for s in SPECIES]
+# junk (spec 7.1, Zone 1 column; vanilla items only - LOCKED 2026-10-06). Plant_Flower_Water_* = 6 kinds sharing 18.
+JUNK_Z1 = [("Ingredient_Stick", 22), ("Ingredient_Fibre", 18), ("Ingredient_Fabric_Scrap_Linen", 12), ("Plant_Flower_Water_Blue", 3),
+           ("Plant_Flower_Water_Green", 3), ("Plant_Flower_Water_Purple", 3), ("Plant_Flower_Water_Red", 3), ("Plant_Flower_Water_White", 3),
+           ("Plant_Flower_Water_Duckweed", 3), ("Ingredient_Poop", 8), ("Rubble_Stone", 10), ("Deco_Trash", 10), ("Deco_Trash_Pile_Small", 2)]
+assert sum(w for _i, w in JUNK_Z1) == 100
+# Lost Property (spec 7): grade odds 89 / 10 / 1; contents per grade = (share %, kind, a, b, item ids). kind purse = coins a..b;
+# items = one of the ids, a..b of it. The purse shares are the spec's (40 / 30 / 25 - "Purse shares did not change"); gear boxes / bait +
+# part scrap / drop-only parts / accessories / pet eggs come later: their shares give vanilla materials of that grade meanwhile.
+TREASURE = [
+    ("Good", "Lost Property Envelope", [(40, "purse", 40, 120, []), (30, "items", 2, 5, ["Ore_Copper", "Ore_Iron", "Wood_Oak_Trunk"]),
+                                        (15, "items", 1, 3, ["Ore_Gold", "Ingredient_Bar_Copper"]), (10, "items", 2, 4, ["Food_Fish_Raw"]),
+                                        (5, "items", 1, 3, ["Ingredient_Water_Essence"])]),
+    ("Great", "Locked Luggage Case", [(30, "purse", 300, 700, []), (50, "items", 2, 4, ["Ingredient_Bar_Iron", "Ingredient_Bar_Copper", "Ingredient_Bar_Gold"]),
+                                      (10, "items", 2, 4, ["Ore_Gold"]), (5, "items", 4, 8, ["Ingredient_Water_Essence"]),
+                                      (5, "items", 1, 1, ["Deco_Treasure", "Weapon_Spear_Fishbone"])]),
+    ("Outstanding", "Diplomatic Pouch (Do Not Open)", [(25, "purse", 2000, 4000, []), (40, "items", 6, 10, ["Ingredient_Bar_Gold", "Ingredient_Bar_Iron"]),
+                                                       (25, "items", 1, 1, ["Deco_Treasure", "Weapon_Spear_Fishbone"]),
+                                                       (10, "items", 8, 16, ["Ingredient_Water_Essence"])]),
+]
+for _g in TREASURE:
+    assert sum(r[0] for r in _g[2]) == 100, _g[0]
+assert [r[0] for g in TREASURE for r in g[2] if r[1] == "purse"] == [40, 30, 25]       # spec 7: purse shares unchanged
+TREASURE_ODDS = [89, 10, 1]
+WRAPPERS = {"purse": "Lost Property Envelope", "items": "Damp Parcel"}
+POND_TIERS = [25, 50, 100, 250, 500, 1000, 2500, 5000]
+ROMAN = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII"]
+# recipes at the bench: (output id, [(input id, qty)], previous item consumed or None, Pond Fish tier, (metal collection, tier) or None)
+RECIPES = [
+    ("SkyyFishing_Rod_Bamboo", [("Wood_Bamboo_Trunk", 3), ("Ingredient_Fibre", 6), ("Ingredient_Stick", 2)], None, 0, None),
+    ("SkyyFishing_Reel_Bamboo", [("Ingredient_Stick", 4), ("Ingredient_Fibre", 3)], None, 0, None),
+    ("SkyyFishing_Rod_Copper", [("Ingredient_Bar_Copper", 6), ("Ingredient_Fibre", 8)], "SkyyFishing_Rod_Bamboo", 3, ("Copper", 4)),
+    ("SkyyFishing_Reel_Copper", [("Ingredient_Bar_Copper", 8)], "SkyyFishing_Reel_Bamboo", 4, ("Copper", 4)),
+    ("SkyyFishing_Rod_Iron", [("Ingredient_Bar_Iron", 8), ("Ingredient_Fabric_Scrap_Linen", 6)], "SkyyFishing_Rod_Copper", 6, ("Iron", 4)),
+    ("SkyyFishing_Reel_Iron", [("Ingredient_Bar_Iron", 10)], "SkyyFishing_Reel_Copper", 7, ("Iron", 4)),
+    ("SkyyFishing_Hook_Barbed_I", [("Ingredient_Bar_Copper", 2)], None, 2, None),
+    ("SkyyFishing_Hook_Barbed_II", [("Ingredient_Bar_Iron", 3)], "SkyyFishing_Hook_Barbed_I", 6, None),
+    ("SkyyFishing_Hook_Lure_I", [("Ingredient_Bar_Copper", 2), ("Food_Fish_Raw", 2)], None, 2, None),
+    ("SkyyFishing_Hook_Lure_II", [("Ingredient_Bar_Iron", 3), ("Food_Fish_Raw", 4)], "SkyyFishing_Hook_Lure_I", 6, None),
+    ("SkyyFishing_Hook_LostProperty_I", [("Ingredient_Bar_Copper", 2), ("Ingredient_Bar_Gold", 1)], None, 5, None),
+    ("SkyyFishing_Hook_LostProperty_II", [("Ingredient_Bar_Iron", 3), ("Ingredient_Bar_Gold", 2)], "SkyyFishing_Hook_LostProperty_I", 6, None),
+    ("SkyyFishing_Line_Braided_I", [("Ingredient_Fibre", 10)], None, 5, None),
+    ("SkyyFishing_Line_Braided_II", [("Ingredient_Fabric_Scrap_Linen", 6)], "SkyyFishing_Line_Braided_I", 6, None),
+    ("SkyyFishing_Line_Steady_I", [("Ingredient_Fibre", 8), ("Ingredient_Tree_Sap", 2)], None, 5, None),
+    ("SkyyFishing_Line_Steady_II", [("Ingredient_Fabric_Scrap_Linen", 6), ("Ingredient_Tree_Sap", 2)], "SkyyFishing_Line_Steady_I", 6, None),
+    ("SkyyFishing_Line_Twin_I", [("Ingredient_Fibre", 8), ("Food_Fish_Raw", 4)], None, 7, None),
+    ("SkyyFishing_Line_Twin_II", [("Ingredient_Fabric_Scrap_Linen", 6), ("Food_Fish_Raw", 4)], "SkyyFishing_Line_Twin_I", 7, None),
+    ("SkyyFishing_Line_Scholars_I", [("Ingredient_Fibre", 8), ("Ingredient_Fabric_Scrap_Linen", 2)], None, 5, None),
+    ("SkyyFishing_Line_Scholars_II", [("Ingredient_Fabric_Scrap_Linen", 8)], "SkyyFishing_Line_Scholars_I", 6, None),
+    ("SkyyFishing_Sinker_Weighted_I", [("Rock_Stone_Cobble", 6)], None, 4, None),
+    ("SkyyFishing_Sinker_Weighted_II", [("Rock_Sandstone_Cobble", 6)], "SkyyFishing_Sinker_Weighted_I", 6, None),
+    ("SkyyFishing_Sinker_Clean_I", [("Rock_Stone_Cobble", 4), ("Ingredient_Fibre", 4)], None, 4, None),
+    ("SkyyFishing_Sinker_Clean_II", [("Rock_Sandstone_Cobble", 6)], "SkyyFishing_Sinker_Clean_I", 6, None),
+    ("SkyyFishing_Sinker_Deep_I", [("Rock_Stone_Cobble", 8)], None, 4, None),
+    ("SkyyFishing_Sinker_Deep_II", [("Rock_Sandstone_Cobble", 8)], "SkyyFishing_Sinker_Deep_I", 6, None),
+]
+assert sorted(r[0] for r in RECIPES) == sorted(ROD_IDS[:3] + REEL_IDS + [p[0] for p in PART_IDS])
+BENCH_ID = "SkyyFishing_Bench"
+BENCH_PAGE = "SkyyFishingBench"
+BENCH_RECIPE = {"TimeSeconds": 3, "Input": [{"ResourceTypeId": "Wood_Trunk", "Quantity": 4}, {"ItemId": "Ingredient_Fibre", "Quantity": 12},
+                                            {"ItemId": "Ingredient_Stick", "Quantity": 6}],
+                "BenchRequirement": [{"Type": "Crafting", "Id": "Workbench", "Categories": ["Workbench_Crafting"]}]}
+FILLET_ITEMS = ["Food_Fish_Raw", "Food_Fish_Raw_Uncommon"]          # Normal fish -> Raw Fish; Unique and up -> Raw Fish (Uncommon)
+# effects / sounds / particles (vanilla ids, checked below)
+SND_CAST, SND_BITE, SND_LAND, SND_LOST = "SFX_Water_MoveIn", "SFX_Water_MoveOut", "SFX_Player_Pickup_Item", "SFX_Fish_Flee"
+PS_SPLASH = "Water_Can_Splash"
+LINE_DOT = "SkyyFishing_Line_Dot"
+LINE_COLOR = "#e6e6dc"                       # fishing line: an off-white thread (a particle colour, not a UI colour)  ui-data
+CLICK_FX = "SkyyFishing_Click"
+ROOT_ID = "SkyyFishing_Rod_Use"
+CLICK_INT = "SkyyFishing_Click_Apply"
+BOBBER = "SkyyFishing_Bobber"
+HUD_KEY = "SkyyFishingHud"
+
+# ================================================================= Assets.zip (read only) + every installed mod (read only): ids must be new
+az = zipfile.ZipFile(ASSETS_ZIP)
+AZ_NAMES = set(az.namelist())
+
+
+def vjson(path):
+    return json.loads(az.read(path).decode("utf-8-sig"))
+
+
+ITEM_PATH = dict((n.rsplit("/", 1)[1][:-5], n) for n in AZ_NAMES if n.startswith("Server/Item/Items/") and n.endswith(".json"))
+for _iid in [i for i, _q in sum([r[1] for r in RECIPES], [])] + [j for j, _w in JUNK_Z1] + FILLET_ITEMS + \
+        [i for _g, _n, rows in TREASURE for row in rows for i in row[4]] + [s[9] for s in SPECIES] + ["Bench_Farming", "Bench_WorkBench"]:
+    if _iid not in ITEM_PATH:
+        raise SystemExit("vanilla item %s is not in Assets.zip" % _iid)
+_wb = vjson(ITEM_PATH["Bench_WorkBench"])
+assert "Workbench_Crafting" in [c["Id"] for c in _wb["BlockType"]["Bench"]["Categories"]], "the Workbench lost its Crafting tab"
+SOUND_IDS = set(n.rsplit("/", 1)[1][:-5] for n in AZ_NAMES if n.startswith("Server/Audio/SoundEvents/") and n.endswith(".json"))
+for _s in (SND_CAST, SND_BITE, SND_LAND, SND_LOST):
+    assert _s in SOUND_IDS, "sound event %s missing" % _s
+PSYS = dict((n.rsplit("/", 1)[1][:-len(".particlesystem")], n) for n in AZ_NAMES if n.endswith(".particlesystem"))
+PSPAWN = dict((n.rsplit("/", 1)[1][:-len(".particlespawner")], n) for n in AZ_NAMES if n.endswith(".particlespawner"))
+assert PS_SPLASH in PSYS and "GreenOrbTrail" in PSYS, "particle systems missing"
+FLUIDS = set(n.rsplit("/", 1)[1][:-5] for n in AZ_NAMES if n.startswith("Server/Item/Block/Fluids/") and n.endswith(".json"))
+assert {"Water", "Water_Source", "Water_Finite"} <= FLUIDS, FLUIDS
+
+# ================================================================= ASSETS (built now, shipped only in the jar)
+ASSETS = {}
+LANG = []
+
+
+def put(path, obj):
+    if path in ASSETS:
+        raise SystemExit("asset %s twice" % path)
+    if path in AZ_NAMES and not path.endswith("server.lang"):
+        raise SystemExit("asset path %s exists in Assets.zip (override)" % path)
+    ASSETS[path] = obj if isinstance(obj, (bytes, str)) else json.dumps(obj, indent=2)
+
+
+def rel(p):
+    assert p.startswith("Common/"), p
+    return p[len("Common/"):]
+
+
+def name_lines(iid, name, desc):
+    for pre in ("", "server."):
+        LANG.append("%sitems.%s.name=%s" % (pre, iid, name))
+        LANG.append("%sitems.%s.description=%s" % (pre, iid, desc))
+
+
+# ---- the stat (SkyyReelProbe 0.1's shape = vanilla GlidingActive's keys + HideFromTooltip), Max 18 (0..8 reel, 10..18 line out)
+GLIDE = vjson("Server/Entity/Stats/GlidingActive.json")
+if [k for k in GLIDE] != ["InitialValue", "Min", "Max", "Shared", "IgnoreInvulnerability", "Regenerating", "MinValueEffects"]:
+    raise SystemExit("GlidingActive.json changed shape: %s" % list(GLIDE))
+if vjson("Server/Entity/Stats/MagicCharges.json").get("HideFromTooltip") is not True:
+    raise SystemExit("MagicCharges.json no longer carries HideFromTooltip")
+STAT_OBJ = dict((k, GLIDE[k]) for k in ("InitialValue", "Min", "Max", "Shared", "IgnoreInvulnerability"))
+STAT_OBJ["Max"] = LINE_OUT + 8
+STAT_OBJ["HideFromTooltip"] = True
+put("Server/Entity/Stats/%s.json" % STAT, STAT_OBJ)
+
+# ---- rods: models / textures / icons from make_fishing (reel looks + our no-line variants)
+LOOKS = MF.reel_looks(az)
+PROPS = LOOKS["icon_props"]
+RODS = LOOKS["rods"]
+assert [r["item"] for r in RODS] == ROD_IDS
+P_ART = MF.palettes(az)
+ROD_DIR = MF.ROD_DIR
+for r in RODS:
+    for p, b in sorted(r["files"].items()):
+        put(p, b)
+# no-line models (the look while the line is out): the rod's model and its NoReel model without Line1-4 / Bait / Hook
+NOLINE = {}
+for ti, tier in enumerate(TIERS):
+    model, _tex, _shipped = MF.build_rod(az, P_ART, tier)
+    nl = MF.strip_line(model)
+    nlr = MF.strip_line(MF.strip_reel(model))
+    p1 = "%s/SkyyFishing_Rod_%s_NoLine.blockymodel" % (ROD_DIR, tier)
+    p2 = "%s/SkyyFishing_Rod_%s_NoReel_NoLine.blockymodel" % (ROD_DIR, tier)
+    put(p1, (json.dumps(nl, indent=2) + "\n").encode("utf-8"))
+    put(p2, (json.dumps(nlr, indent=2) + "\n").encode("utf-8"))
+    NOLINE[tier] = (p1, p2)
+WAND = vjson(ITEM_PATH["Weapon_Wand_Wood"])
+if WAND.get("PlayerAnimationsId") != "Wand" or "Parent" in WAND:
+    raise SystemExit("Weapon_Wand_Wood changed - re-check the rod hold")
+HOLD = dict((k, WAND[k]) for k in ("PlayerAnimationsId", "DroppedItemAnimation", "ItemSoundSetId"))
+ITEMS = {}
+for ti, r in enumerate(RODS):
+    iid, tier = r["item"], r["tier"]
+    conds = []
+    for lk in r["looks"]:
+        conds.append({"Condition": [lk["reel"], lk["reel"]], "Model": rel(lk["model"]), "Texture": rel(lk["texture"])})
+    for lk in r["looks"]:
+        nm = NOLINE[tier][1] if lk["reel"] == 0 else NOLINE[tier][0]
+        conds.append({"Condition": [LINE_OUT + lk["reel"], LINE_OUT + lk["reel"]], "Model": rel(nm), "Texture": rel(lk["texture"])})
+    d = {"TranslationProperties": {"Name": "server.items.%s.name" % iid, "Description": "server.items.%s.description" % iid},
+         "Icon": rel(r["icon"]), "IconProperties": json.loads(json.dumps(PROPS)), "Model": rel(r["model"]), "Texture": rel(r["texture"])}
+    d.update(HOLD)
+    d["Quality"] = WAND["Quality"]
+    d["MaxStack"] = 1
+    d["Categories"] = ["Items.Tools"]
+    d["Interactions"] = {"Secondary": ROOT_ID}
+    d["ItemAppearanceConditions"] = {STAT: conds}
+    ITEMS[iid] = d
+    put("Server/Item/Items/SkyyFishing/Rods/%s.json" % iid, d)
+    name_lines(iid, "%s Fishing Rod" % tier, "Max fish weight %d kg. Fit a reel, hook, line and sinker at a Fishing Bench, then right click "
+               "water to cast." % ROD_MAXKG[ti])
+# ---- reels + parts: the approved concept icons with the vanilla metal gradients (make_fishing helpers, build time)
+CMAP = MF.colour_map(P_ART)
+ICON_DIR = MF.ICON_DIR
+
+
+def part_item(iid, icon_file, name, desc, quality):
+    ip = "%s/%s.png" % (ICON_DIR, iid)
+    put(ip, SA.png_encode(MF.concept_icon(CMAP, icon_file)))
+    d = {"TranslationProperties": {"Name": "server.items.%s.name" % iid, "Description": "server.items.%s.description" % iid},
+         "Icon": rel(ip), "Quality": quality, "MaxStack": 16, "Categories": ["Items.Tools"], "PlayerAnimationsId": "Item",
+         "ItemSoundSetId": "ISS_Items_Metal"}
+    ITEMS[iid] = d
+    put("Server/Item/Items/SkyyFishing/Parts/%s.json" % iid, d)
+    name_lines(iid, name, desc)
+
+
+assert "ISS_Items_Metal" in set(n.rsplit("/", 1)[1][:-5] for n in AZ_NAMES if n.startswith("Server/Audio/ItemSounds/"))
+for ri, t in enumerate(REEL_TIERS):
+    part_item(REEL_IDS[ri], "reel-t%d-%s.png" % (ri, t.lower()), "%s Reel" % t,
+              "Reel Power %s per click. Fit it on a rod at a Fishing Bench." % (("%.1f" % REEL_POWER[ri])), ["Common", "Uncommon", "Uncommon"][ri])
+for iid, ki, ti in PART_IDS:
+    p = PARTS[ki]
+    slug = {"Barbed": "barbed-hook", "LostProperty": "lost-property-hook", "Lure": "lure-hook", "Braided": "braided-line",
+            "Steady": "steady-line", "Twin": "twin-line", "Scholars": "scholars-line", "Weighted": "weighted-sinker",
+            "Clean": "clean-sinker", "Deep": "deep-sinker"}[p[2]]
+    v = p[5] if ti == 0 else p[6]
+    vt = ("%g" % v)
+    part_item(iid, "%s-%s.png" % (slug, PART_TIERS[ti]), "%s %s" % (p[3], PART_TIERS[ti]),
+              "%s: %s. One %s per rod, fitted at a Fishing Bench." % (p[1].capitalize(), p[7] % vt, p[1]), ["Common", "Uncommon"][ti])
+# ---- fish: our own icons (research/cloud/fish-art, original art) + the vanilla fish model / texture by path
+FISH_ART = os.path.join(ROOT, "research", "cloud", "fish-art", "icons")
+for si, s in enumerate(SPECIES):
+    iid = FISH_IDS[si]
+    src = os.path.join(FISH_ART, s[10] + ".png")
+    raw = open(src, "rb").read()
+    img = SA.png_decode(raw)
+    assert (img.w, img.h) == (64, 64), src
+    ip = "%s/%s.png" % (ICON_DIR, iid)
+    put(ip, raw)
+    v = vjson(ITEM_PATH[s[9]])
+    vp = vjson(ITEM_PATH[v["Parent"]]) if "Parent" in v else {}
+    model, tex = v.get("Model") or vp.get("Model"), v.get("Texture") or vp.get("Texture")
+    assert ("Common/" + model) in AZ_NAMES and ("Common/" + tex) in AZ_NAMES, (s[9], model, tex)
+    d = {"TranslationProperties": {"Name": "server.items.%s.name" % iid, "Description": "server.items.%s.description" % iid},
+         "Icon": rel(ip), "IconProperties": {"Scale": 0.3, "Rotation": [22.5, 45, 22.5], "Translation": [4, -13.5]},
+         "Model": model, "Texture": tex, "Quality": RAR_QUALITY[s[2]], "MaxStack": 1, "Categories": ["Items.Ingredients"],
+         "PlayerAnimationsId": "Item", "ItemSoundSetId": "ISS_Items_Splatty", "Scale": 1}
+    ITEMS[iid] = d
+    put("Server/Item/Items/SkyyFishing/Fish/%s.json" % iid, d)
+    name_lines(iid, s[1], "%s fish from Zone 1. Sell it whole or fillet it at a Fishing Bench." % RARITIES[s[2]])
+assert "ISS_Items_Splatty" in set(n.rsplit("/", 1)[1][:-5] for n in AZ_NAMES if n.startswith("Server/Audio/ItemSounds/"))
+assert "Items.Ingredients" in json.dumps([vjson(ITEM_PATH[i]).get("Categories") for i in ("Ingredient_Fibre", "Ingredient_Stick")])
+# ---- the bench block: the vanilla Farming bench's look (by path) + our page on Use; icon = the vanilla bench icon + our rod render
+VB = vjson(ITEM_PATH["Bench_Farming"])
+bt = dict((k, json.loads(json.dumps(VB["BlockType"][k]))) for k in ("Material", "DrawType", "Opacity", "CustomModel", "CustomModelTexture",
+                                                                     "HitboxType", "VariantRotation", "Gathering", "BlockParticleSetId",
+                                                                     "ParticleColor", "Support", "BlockSoundSetId", "PhysicalMaterialId",
+                                                                     "TextureComputedColor"))
+bt["Interactions"] = {"Use": {"Interactions": [{"Type": "OpenCustomUI", "Page": {"Id": BENCH_PAGE}}]}}
+_bicon = SA.png_decode(az.read("Common/" + VB["Icon"]))
+_ricon = SA.png_decode(ASSETS["Common/" + ITEMS["SkyyFishing_Rod_Bamboo"]["Icon"]])
+assert (_bicon.w, _bicon.h) == (64, 64) and (_ricon.w, _ricon.h) == (64, 64)
+_out = _bicon.copy()
+for _y in range(64):              # the rod render at 75 %, top-right corner, premultiplied "over"
+    for _x in range(64):
+        sx, sy = int((_x - 16) / 0.75), int(_y / 0.75)
+        if _x < 16 or sx >= 64 or sy >= 64:
+            continue
+        r_, g_, b_, a_ = _ricon.get(sx, sy)
+        if not a_:
+            continue
+        R, G, Bb, A = _out.get(_x, _y)
+        k = 1.0 - a_ / 255.0
+        _out.put(_x, _y, (r_ + R * k, g_ + G * k, b_ + Bb * k, a_ + A * k))
+BENCH_ICON = "%s/%s.png" % (ICON_DIR, BENCH_ID)
+put(BENCH_ICON, SA.png_encode(_out))
+BENCH_ITEM = {"TranslationProperties": {"Name": "server.items.%s.name" % BENCH_ID, "Description": "server.items.%s.description" % BENCH_ID},
+              "Icon": rel(BENCH_ICON), "Categories": ["Furniture.Benches"], "BlockType": bt, "PlayerAnimationsId": "Block",
+              "IconProperties": json.loads(json.dumps(VB["IconProperties"])), "Tags": {"Type": ["Bench"]}, "Recipe": BENCH_RECIPE, "MaxStack": 1,
+              "ItemLevel": 2, "ItemSoundSetId": VB["ItemSoundSetId"]}
+ITEMS[BENCH_ID] = BENCH_ITEM
+put("Server/Item/Items/SkyyFishing/%s.json" % BENCH_ID, BENCH_ITEM)
+name_lines(BENCH_ID, "Fishing Bench", "Craft rods, reels, hooks, lines and sinkers, rig your rod, and fillet or sell your fish.")
+# ---- the click chain: root (fast clicks: new click each, tiny cooldown) -> ApplyEffect SkyyFishing_Click (the server consumes it)
+put("Server/Item/RootInteractions/SkyyFishing/%s.json" % ROOT_ID, {"RequireNewClick": True, "Cooldown": {"Cooldown": 0.05}, "Interactions": [CLICK_INT]})
+put("Server/Item/Interactions/SkyyFishing/%s.json" % CLICK_INT, {"Type": "ApplyEffect", "EffectId": CLICK_FX})
+put("Server/Entity/Effects/SkyyFishing/%s.json" % CLICK_FX, {"Duration": 0.5, "OverlapBehavior": "Overwrite"})
+# ---- the bobber model: the vanilla rod's own Bait node (+ its Hook) as a standalone model, the vanilla rod texture (by path)
+_rod = json.loads(az.read(MF.ROD_MODEL).decode("utf-8-sig"))
+
+
+def _find(nodes, name):
+    for n in nodes:
+        if n.get("name") == name:
+            return n
+        f = _find(n.get("children") or [], name)
+        if f is not None:
+            return f
+    return None
+
+
+_bait = copy.deepcopy(_find(_rod["nodes"], "Bait"))
+assert _bait is not None and _bait["shape"]["settings"]["size"] == {"x": 8, "y": 8, "z": 8}, "the vanilla rod's Bait node changed"
+_bait["position"] = {"x": 0, "y": 4, "z": 0}
+BOBBER_MODEL = dict((k, v) for k, v in _rod.items() if k != "nodes")
+BOBBER_MODEL["nodes"] = [_bait]
+P_BOBBER = "%s/%s.blockymodel" % (ROD_DIR, BOBBER)
+put(P_BOBBER, (json.dumps(BOBBER_MODEL, indent=2) + "\n").encode("utf-8"))
+_rock = vjson("Server/Models/Projectiles/Items/Rubble/Rubble_Stone_Mossy.json")
+assert sorted(_rock) == ["HitBox", "MaxScale", "MinScale", "Model", "Texture", "Trails"], sorted(_rock)
+put("Server/Models/SkyyFishing/%s.json" % BOBBER, {"Model": rel(P_BOBBER), "Texture": rel(MF.ROD_TEX),
+                                                 "HitBox": {"Max": {"X": 0.15, "Y": 0.3, "Z": 0.15}, "Min": {"X": -0.15, "Y": 0.0, "Z": -0.15}},
+                                                 "MinScale": 1, "MaxScale": 1, "Trails": []})
+# ---- the line dots: the vanilla GreenOrbTrail light (the blink trail, deployed) recoloured to the line colour (the grapple rope recipe)
+
+
+def line_color(x):
+    m = re.match(r"^(rgba\()?#([0-9a-fA-F]{6})([0-9a-fA-F]{2})?(.*)$", x)
+    if not m:
+        return x
+    r_, g_, b_ = (int(m.group(2)[i:i + 2], 16) / 255.0 for i in (0, 2, 4))
+    _h, _s, vv = colorsys.rgb_to_hsv(r_, g_, b_)
+    th, ts, tv = colorsys.rgb_to_hsv(*(int(LINE_COLOR[i:i + 2], 16) / 255.0 for i in (1, 3, 5)))
+    r2, g2, b2 = colorsys.hsv_to_rgb(th, ts, max(vv, tv * 0.85))
+    return (m.group(1) or "") + "#%02x%02x%02x" % tuple(int(round(c * 255)) for c in (r2, g2, b2)) + (m.group(3) or "") + m.group(4)
+
+
+def line_tree(x):
+    if isinstance(x, dict):
+        return dict((k, (line_color(v) if (k == "Color" and isinstance(v, str)) else line_tree(v))) for k, v in x.items())
+    if isinstance(x, list):
+        return [line_tree(v) for v in x]
+    return x
+
+
+_ld = json.loads(az.read(PSYS["GreenOrbTrail"]).decode("utf-8-sig"))
+for _sp in _ld["Spawners"]:
+    _src = _sp["SpawnerId"]
+    _dst = "SkyyFishing_Line_" + _src.replace("GreenOrb", "")
+    assert _src in PSPAWN and _dst not in PSPAWN, _src
+    if ("Server/Particles/SkyyFishing/Spawners/%s.particlespawner" % _dst) not in ASSETS:
+        put("Server/Particles/SkyyFishing/Spawners/%s.particlespawner" % _dst,
+            json.dumps(line_tree(json.loads(az.read(PSPAWN[_src]).decode("utf-8-sig"))), indent=2))
+    _sp["SpawnerId"] = _dst
+put("Server/Particles/SkyyFishing/%s.particlesystem" % LINE_DOT, json.dumps(_ld, indent=2))
+put("Server/Languages/en-US/server.lang", "\n".join(LANG) + "\n")
+# every Parallel in the jar has 2+ entries (the 2026-10-08 lesson: a one-entry Parallel refuses the whole pack) - we ship none at all
+for _p, _t in ASSETS.items():
+    if _p.endswith(".json"):
+        assert '"Parallel"' not in _t, "a Parallel in %s" % _p
+# no override of a vanilla id
+for _iid in ITEMS:
+    if _iid in ITEM_PATH:
+        raise SystemExit("item id %s would override a vanilla id" % _iid)
+print("assets: %d files (%d items, %d art bytes), stat %s max %d, %d lang lines"
+      % (len(ASSETS), len(ITEMS), sum(len(v) for p, v in ASSETS.items() if p.startswith("Common/")), STAT, STAT_OBJ["Max"], len(LANG)))
+
+# ================================================================= Server Setup (tools/skyycfg.py, KEEP=10): one file, scalar rows bound
+# field: (the kit sets the field at once, after=FishCfg.derive re-derives), the three tables reload@ (FishCfg.reloadAll re-reads the file)
+CFG_FILE = "Skyy_SkyyFishing/config.properties"
+CFG_CATS = [("general", "General"), ("cast", "Casting and bites"), ("fight", "The fight"), ("hud", "Fight widget"), ("gear", "Rods and parts"),
+            ("catch", "Catches"), ("money", "Selling"), ("treasure", "Lost Property"), ("tables", "Species and junk")]
+# (key, label, cat, type, default, min, max, opts, unit, flags, help, FIELD, java type)
+SCALARS = [
+    ("part.fishing", "Fishing", "general", "bool", "true", "", "", "", "", "live,part,danger",
+     "Off = rods do not cast and lines out are reeled in. The bench still opens.", "ON", "boolean"),
+    ("fish.records", "Personal and server records", "general", "bool", "true", "", "", "", "", "live",
+     "Off = no record lines and no server record updates (your best weights are still kept).", "RECORDS", "boolean"),
+    ("fish.pondTiers", "Pond Fish tier counts", "general", "text", ",".join(str(t) for t in POND_TIERS), "", "120", "", "", "live",
+     "8 counts, low to high: fish landed for Pond Fish I to VIII (they open the bench recipes).", "POND_TEXT", "java.lang.String"),
+    ("fish.xp.mult", "Fishing XP multiplier", "general", "dec", "1", "0", "100", "", "x", "live",
+     "Fishing XP per catch x this. Needs a SkyySkills with a Fishing skill (not yet).", "XP_MULT", "double"),
+    ("fish.castRange", "Cast range", "cast", "int", "12", "4", "32", "", "blocks", "live",
+     "How far out the bobber can land.", "CAST_RANGE", "int"),
+    ("fish.minDepth", "Water depth needed", "cast", "int", "2", "1", "8", "", "blocks", "live",
+     "Water must be at least this deep under the bobber.", "MIN_DEPTH", "int"),
+    ("fish.needWide", "Water must be 3 wide", "cast", "bool", "true", "", "", "", "", "live",
+     "On = the 4 blocks around the bobber must be water too (no puddles).", "NEED_WIDE", "boolean"),
+    ("fish.biteMin", "Bite time, shortest", "cast", "dec", "6", "1", "120", "", "s", "live",
+     "Shortest wait for a bite (rare fish wait longer, Fishing Speed shortens it).", "BITE_MIN", "double"),
+    ("fish.biteMax", "Bite time, longest", "cast", "dec", "18", "1", "300", "", "s", "live",
+     "Longest wait for a bite. A value under the shortest wait counts as the shortest.", "BITE_MAX", "double"),
+    ("fish.biteWindow", "Time to hook a bite", "cast", "dec", "1.2", "0.3", "5", "", "s", "live",
+     "After the bite you have this long to right click, or the fish swims off.", "BITE_WINDOW", "double"),
+    ("fish.idleSeconds", "Line out without a bite", "cast", "int", "60", "10", "600", "", "s", "live",
+     "The line is reeled in by itself after this long with no bite.", "IDLE_S", "int"),
+    ("fish.leash", "Walk away distance", "cast", "int", "8", "2", "64", "", "blocks", "live",
+     "Walk this far past the cast range from your bobber and the line is reeled in.", "LEASH", "int"),
+    ("fish.line.show", "Show the fishing line", "cast", "bool", "true", "", "", "", "", "live",
+     "Off = no line particles from the rod to the bobber.", "LINE_SHOW", "boolean"),
+    ("fish.line.spacing", "Line dot spacing", "cast", "dec", "0.8", "0.3", "4", "", "blocks", "live,adv",
+     "One line particle every this many blocks (smaller = denser line, more particles).", "LINE_SPACING", "double"),
+    ("fish.line.everyTicks", "Line refresh (ticks)", "cast", "int", "5", "1", "30", "", "", "live,adv",
+     "The line is redrawn every this many server ticks (30 ticks = 1 s).", "LINE_EVERY", "int"),
+    ("fish.barStart", "Bar starts at", "fight", "int", "35", "1", "99", "", "", "live",
+     "The fight bar (0-100) starts here. 100 = landed, 0 = it got away.", "BAR_START", "int"),
+    ("fish.timeLimit", "Fight time limit", "fight", "dec", "12", "3", "120", "", "s", "live",
+     "A fight not won in this time is lost (Braided Line adds time).", "TIME_LIMIT", "double"),
+    ("fish.maxCps", "Clicks counted per second", "fight", "int", "12", "2", "40", "", "", "live",
+     "Clicks above this many per second are ignored (anti macro).", "MAX_CPS", "int"),
+] + [("fish.pull.%s" % RARITIES[i].lower(), "%s fish pull per second" % RARITIES[i], "fight", "dec", "%g" % RAR_PULL[i], "0", "200", "", "",
+      "live", "How fast a %s fish drags the bar down." % RARITIES[i], "PULL_%d" % i, "double") for i in range(6)] + [
+    ("fish.surgeMult", "Surge strength", "fight", "dec", "1.6", "1", "10", "", "x", "live",
+     "During a surge the fish pulls this many times harder (Steady Line softens it).", "SURGE_MULT", "double"),
+    ("fish.surgeEvery", "Surge every", "fight", "dec", "3", "0.5", "60", "", "s", "live", "Time between surges.", "SURGE_EVERY", "double"),
+    ("fish.surgeLength", "Surge length", "fight", "dec", "0.6", "0.1", "10", "", "s", "live", "How long a surge lasts.", "SURGE_LEN", "double"),
+    ("fish.hud.tickMs", "Widget update time", "hud", "int", "100", "50", "1000", "", "ms", "live,adv",
+     "The fight bar is sent this often (smaller = smoother, more packets).", "HUD_MS", "int"),
+    ("fish.hud.resultSec", "Catch card time", "hud", "dec", "3", "0.5", "20", "", "s", "live",
+     "How long the LANDED card stays.", "HUD_RESULT", "double"),
+    ("fish.hud.lostSec", "Got away card time", "hud", "dec", "2", "0.5", "20", "", "s", "live",
+     "How long the IT GOT AWAY card stays.", "HUD_LOST", "double"),
+    ("fish.hud.offsetY", "Widget height from bottom", "hud", "int", "200", "0", "900", "", "", "live",
+     "Pixels from the bottom of a 1080 screen to the fight widget (centred).", "HUD_Y", "int"),
+] + [("fish.rod.%s.maxKg" % TIERS[i].lower(), "%s rod max fish weight" % TIERS[i], "gear", "dec", "%g" % ROD_MAXKG[i], "0.1", "1000", "", "",
+      "live", "Kilograms. Heavier fish never bite this rod.", "ROD_KG_%d" % i, "double") for i in range(8)] + \
+    [("fish.reel.%s.power" % REEL_TIERS[i].lower(), "%s reel power" % REEL_TIERS[i], "gear", "dec", "%g" % REEL_POWER[i], "0.1", "100", "", "",
+      "live", "Bar points per click on a fish of 1 kg (heavier fish get less).", "REEL_P_%d" % i, "double") for i in range(3)] + \
+    [("fish.cap.%s" % k, "Cap: %s" % w, "gear", "dec", "%g" % v, "0", "1000", "", "", "live,adv", "Parts never add more than this.",
+      "CAP_%d" % n, "double")
+     for n, (k, _st, v), w in zip(range(6), CAPS, ["fishing speed", "treasure chance", "double catch %", "bar start", "fight time",
+                                                   "surge pull cut %"])] + [
+    ("fish.kind.fish", "Catch: fish", "catch", "int", "85", "0", "100", "", "%", "live", "Share of catches that are fish.", "KIND_FISH", "int"),
+    ("fish.kind.junk", "Catch: junk", "catch", "int", "10", "0", "100", "", "%", "live",
+     "Share of catches that are junk (vanilla items, the junk table).", "KIND_JUNK", "int"),
+    ("fish.kind.treasure", "Catch: Lost Property", "catch", "int", "5", "0", "100", "", "%", "live",
+     "Share of catches that are Lost Property (coins and materials).", "KIND_TREASURE", "int"),
+    ("fish.weightSkew", "Weight skew", "catch", "dec", "2", "0.2", "8", "", "", "live,adv",
+     "Higher = more small fish and fewer big ones (1 = even).", "SKEW", "double"),
+    ("fish.price.perKg", "Price per kg", "money", "dec", "26", "0", "100000", "", "coins", "live",
+     "A whole Normal fish sells for its weight x this.", "PRICE_KG", "double"),
+] + [("fish.price.%s" % RARITIES[i].lower(), "%s price multiplier" % RARITIES[i], "money", "dec", "%g" % RAR_MULT[i], "0", "1000", "", "x",
+      "live", "Whole %s fish sell for this times the Normal price." % RARITIES[i], "PRICE_M_%d" % i, "double") for i in range(6)] + [
+    ("fish.demand.perSale", "Demand drop per sale", "money", "dec", "0.5", "0", "50", "", "%", "live",
+     "Each sale of a species lowers its price by this % (server wide).", "DEM_PER", "double"),
+    ("fish.demand.halfLife", "Demand recovery half life", "money", "int", "7200", "60", "604800", "", "s", "live",
+     "A lowered price gets half way back to full in this time.", "DEM_HALF", "int"),
+    ("fish.demand.floor", "Lowest demand", "money", "dec", "0.25", "0.01", "1", "", "x", "live",
+     "Prices never drop below this share of the full price.", "DEM_FLOOR", "double"),
+    ("fish.fillet.kgPer", "Kg per fillet", "money", "dec", "0.5", "0.05", "10", "", "", "live",
+     "One Raw Fish per this many kg of fish.", "FIL_KG", "double"),
+    ("fish.fillet.max", "Most fillets from one fish", "money", "int", "40", "1", "200", "", "", "live", "Fillet cap per fish.", "FIL_MAX", "int"),
+    ("fish.fillet.confirmFrom", "Ask before filleting", "money", "choice", "rare", "", "", "unique|Unique,rare|Rare,legendary|Legendary,never|Never",
+     "", "live", "Filleting a fish of this rarity or better asks first (selling whole pays more).", "FIL_CONFIRM", "java.lang.String"),
+    ("fish.treasure.good", "Lost Property: Good", "treasure", "int", "89", "0", "100", "", "%", "live",
+     "Share of Good finds (small purse or materials).", "TR_0", "int"),
+    ("fish.treasure.great", "Lost Property: Great", "treasure", "int", "10", "0", "100", "", "%", "live",
+     "Share of Great finds (bigger purse, bars, treasure).", "TR_1", "int"),
+    ("fish.treasure.outstanding", "Lost Property: Outstanding", "treasure", "int", "1", "0", "100", "", "%", "live",
+     "Share of Outstanding finds (a big purse or rare materials).", "TR_2", "int"),
+    ("fish.treasure.purse.good", "Good purse", "treasure", "range", "40-120", "0", "1000000", "", "coins", "live",
+     "Coins in a Good purse.", "TRP_0", "java.lang.String"),
+    ("fish.treasure.purse.great", "Great purse", "treasure", "range", "300-700", "0", "1000000", "", "coins", "live",
+     "Coins in a Great purse.", "TRP_1", "java.lang.String"),
+    ("fish.treasure.purse.outstanding", "Outstanding purse", "treasure", "range", "2000-4000", "0", "10000000", "", "coins", "live",
+     "Coins in an Outstanding purse.", "TRP_2", "java.lang.String"),
+]
+TABLES = [
+    ("fish.species", "Zone 1 species", "tables", "table", "", "0", "100000", "dec|dec|dec;none;Spawn weight|Min kg|Max kg", "", "live",
+     "Spawn weight 0 = never. Max kg above the rod's max = only the rod's max."),
+    ("fish.junk", "Zone 1 junk", "tables", "table", "", "0", "1000", "int;both;Weight", "", "live",
+     "Vanilla items a junk catch can be, with their weight. Add or remove items here."),
+    ("fish.parts", "Part effects", "tables", "table", "", "0", "1000", "dec|dec;none;Tier I|Tier II", "", "live",
+     "Each part's effect at tier I and II (see the part tooltips for what the number does)."),
+]
+for _r in SCALARS + TABLES:
+    assert len(_r[1]) <= 40 and len(_r[10]) <= 100, (_r[0], len(_r[1]), len(_r[10]))
+CFG_ROWS = [r[:11] + ("field:FishCfg.%s;after=FishCfg.derive" % r[11],) for r in SCALARS]
+CFG_ROWS += [r + ("reload@%s:%s." % (CFG_FILE, r[0]) + (";entry=item" if r[0] == "fish.junk" else ""),) for r in TABLES]
+_d = []
+_d.append("# SkyyFishing %s - settings. Also in game: SkyWynn Menu > Server Setup > Fishing (admins). Times in seconds." % VERSION)
+_d.append("# Hand edits: Server Setup > Fishing > Reload (or restart).")
+_d.append("")
+for _r in SCALARS:
+    _d.append("# %s - %s" % (_r[1], _r[10]))
+    _d.append("%s=%s" % (_r[0], _r[4]))
+_d.append("")
+_d.append("# Zone 1 species: fish.species.<id>=spawn weight,min kg,max kg (Fish-Species-Catalog 3.1; weight 0 = the species never bites)")
+for _s in SPECIES:
+    _d.append("fish.species.%s=%g,%g,%g" % (_s[0], _s[8], _s[3], _s[4]))
+_d.append("")
+_d.append("# Zone 1 junk: fish.junk.<vanilla item id>=weight (spec 7.1; vanilla items only)")
+for _i, _w in JUNK_Z1:
+    _d.append("fish.junk.%s=%d" % (_i, _w))
+_d.append("")
+_d.append("# Part effects: fish.parts.<part>=tier I,tier II")
+for _p in PARTS:
+    _d.append("fish.parts.%s=%g,%g" % (_p[0], _p[5], _p[6]))
+_d.append("")
+DEFAULT_TEXT = "\n".join(_d)
+_dp = CFG.parse_props(DEFAULT_TEXT)
+for _r in SCALARS:
+    assert _dp.get(_r[0]) == _r[4], _r[0]
+CFG_NOTE = "Chat: /fishing (players), /fishadmin kit, pond, give, treasure, bite, status (admins)."
+
+# ================================================================= JVM + engine classes (every member probed: a missing one stops the build)
+J = B.start()
+pool, CtField, CtNewMethod, CtNewConstructor = J["pool"], J["CtField"], J["CtNewMethod"], J["CtNewConstructor"]
+OUT = B.class_out(HERE)
+T = {
+    "PKG": PKG, "VERSION": VERSION, "NODE": NODE, "KITID": KIT_ID,
+    "JP": "com.hypixel.hytale.server.core.plugin.JavaPlugin",
+    "JPI": "com.hypixel.hytale.server.core.plugin.JavaPluginInit",
+    "PR": "com.hypixel.hytale.server.core.universe.PlayerRef",
+    "REF": "com.hypixel.hytale.component.Ref",
+    "ST": "com.hypixel.hytale.component.Store",
+    "CAC": "com.hypixel.hytale.component.ComponentAccessor",
+    "CB": "com.hypixel.hytale.component.CommandBuffer",
+    "ACH": "com.hypixel.hytale.component.ArchetypeChunk",
+    "QRY": "com.hypixel.hytale.component.query.Query",
+    "ETS": "com.hypixel.hytale.component.system.tick.EntityTickingSystem",
+    "HOL": "com.hypixel.hytale.component.Holder",
+    "ADR": "com.hypixel.hytale.component.AddReason",
+    "RR": "com.hypixel.hytale.component.RemoveReason",
+    "NSER": "com.hypixel.hytale.component.NonSerialized",
+    "WLD": "com.hypixel.hytale.server.core.universe.world.World",
+    "EST": "com.hypixel.hytale.server.core.universe.world.storage.EntityStore",
+    "CHS": "com.hypixel.hytale.server.core.universe.world.storage.ChunkStore",
+    "BSC": "com.hypixel.hytale.server.core.universe.world.chunk.section.BlockSection",
+    "FSC": "com.hypixel.hytale.server.core.universe.world.chunk.section.FluidSection",
+    "FLU": "com.hypixel.hytale.server.core.asset.type.fluid.Fluid",
+    "BTY": "com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType",
+    "BMAT": "com.hypixel.hytale.protocol.BlockMaterial",
+    "PLA": "com.hypixel.hytale.server.core.entity.entities.Player",
+    "TC": "com.hypixel.hytale.server.core.modules.entity.component.TransformComponent",
+    "HR": "com.hypixel.hytale.server.core.modules.entity.component.HeadRotation",
+    "MC": "com.hypixel.hytale.server.core.modules.entity.component.ModelComponent",
+    "MDL": "com.hypixel.hytale.server.core.asset.type.model.config.Model",
+    "MDA": "com.hypixel.hytale.server.core.asset.type.model.config.ModelAsset",
+    "NID": "com.hypixel.hytale.server.core.modules.entity.tracker.NetworkId",
+    "NPL": "com.hypixel.hytale.server.core.entity.nameplate.Nameplate",
+    "INT": "com.hypixel.hytale.server.core.modules.entity.component.Intangible",
+    "V3D": "org.joml.Vector3d",
+    "R3F": "com.hypixel.hytale.math.vector.Rotation3f",
+    "ECC": "com.hypixel.hytale.server.core.entity.effect.EffectControllerComponent",
+    "EFX": "com.hypixel.hytale.server.core.asset.type.entityeffect.config.EntityEffect",
+    "ESM": "com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap",
+    "ESV": "com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue",
+    "ESTT": "com.hypixel.hytale.server.core.modules.entitystats.asset.EntityStatType",
+    "INVC": "com.hypixel.hytale.server.core.inventory.InventoryComponent",
+    "HOTB": "com.hypixel.hytale.server.core.inventory.InventoryComponent$Hotbar",
+    "IC": "com.hypixel.hytale.server.core.inventory.container.ItemContainer",
+    "IS": "com.hypixel.hytale.server.core.inventory.ItemStack",
+    "IST": "com.hypixel.hytale.server.core.inventory.transaction.ItemStackTransaction",
+    "ISST": "com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransaction",
+    "ITM": "com.hypixel.hytale.server.core.asset.type.item.config.Item",
+    "IDM": "com.hypixel.hytale.server.core.asset.type.item.config.metadata.ItemDisplayMetadata",
+    "BD": "org.bson.BsonDocument",
+    "BV": "org.bson.BsonValue",
+    "MSG": "com.hypixel.hytale.server.core.Message",
+    "PTU": "com.hypixel.hytale.server.core.universe.world.ParticleUtil",
+    "SNU": "com.hypixel.hytale.server.core.universe.world.SoundUtil",
+    "SEV": "com.hypixel.hytale.server.core.asset.type.soundevent.config.SoundEvent",
+    "SCAT": "com.hypixel.hytale.protocol.SoundCategory",
+    "HUD": "com.hypixel.hytale.server.core.entity.entities.player.hud.CustomUIHud",
+    "HM": "com.hypixel.hytale.server.core.entity.entities.player.hud.HudManager",
+    "UCB": "com.hypixel.hytale.server.core.ui.builder.UICommandBuilder",
+    "UEB": "com.hypixel.hytale.server.core.ui.builder.UIEventBuilder",
+    "EVD": "com.hypixel.hytale.server.core.ui.builder.EventData",
+    "BT": "com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType",
+    "PAGE": "com.hypixel.hytale.server.core.entity.entities.player.pages.CustomUIPage",
+    "LIFE": "com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime",
+    "OCU": "com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.OpenCustomUIInteraction",
+    "PRE": "com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent",
+    "PDE": "com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent",
+    "APC": "com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand",
+    "CTX": "com.hypixel.hytale.server.core.command.system.CommandContext",
+    "ATY": "com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes",
+    "RA": "com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg",
+    "LOG": "com.hypixel.hytale.logger.HytaleLogger",
+    "HSV": "com.hypixel.hytale.server.core.HytaleServer",
+    "UNI": "com.hypixel.hytale.server.core.universe.Universe",
+    "ADV": 'setPermissionGroups(new String[] { "hytale:Adventurer" });',
+    "ADMIN": 'requirePermission("%s"); setPermissionGroups(new String[0]);' % NODE,
+}
+AC = "com.hypixel.hytale.server.core.command.system.AbstractCommand"
+PB = "com.hypixel.hytale.server.core.plugin.PluginBase"
+S_ = "java.lang.String"
+CT = "com.hypixel.hytale.component.ComponentType"
+
+
+def jdesc(t):
+    if t.endswith("[]"):
+        return "[" + jdesc(t[:-2])
+    prim = {"int": "I", "long": "J", "float": "F", "double": "D", "boolean": "Z", "void": "V", "char": "C", "byte": "B", "short": "S"}
+    return prim[t] if t in prim else "L" + t.replace(".", "/") + ";"
+
+
+PROBED = []
+PROBE_FAILS = []
+
+
+def probe_sig(cls, name, ret, args):
+    """the exact member cls.name(args) -> ret (own or inherited); a missing one stops the build (Hytale 0.7 lands 2026-10-12)"""
+    desc = "(" + "".join(jdesc(a) for a in args) + ")" + jdesc(ret)
+    c = pool.get(cls)
+    try:
+        if name == "<init>":
+            c.getConstructor(desc)
+        else:
+            c.getMethod(name, desc)
+    except Exception:
+        PROBE_FAILS.append("%s.%s%s" % (cls, name, desc))
+        return
+    PROBED.append("%s.%s%s" % (cls.rsplit(".", 1)[1], name, desc))
+
+
+def probe_field(cls, name):
+    B.probe(pool, cls, name)
+    PROBED.append("%s.%s" % (cls.rsplit(".", 1)[1], name))
+
+
+SIGS = [
+    # entity + world access (world thread)
+    (T["CAC"], "getComponent", "com.hypixel.hytale.component.Component", [T["REF"], CT]),
+    (T["ST"], "getExternalData", "java.lang.Object", []), (T["EST"], "getWorld", T["WLD"], []),
+    (T["ST"], "addEntity", T["REF"], [T["HOL"], T["ADR"]]), (T["ST"], "removeEntity", T["HOL"], [T["REF"], T["RR"]]),
+    (T["ST"], "getRegistry", "com.hypixel.hytale.component.ComponentRegistry", []),
+    ("com.hypixel.hytale.component.ComponentRegistry", "newHolder", T["HOL"], []),
+    ("com.hypixel.hytale.component.ComponentRegistry", "getNonSerializedComponentType", CT, []),
+    (T["NSER"], "get", T["NSER"], []), (T["EST"], "takeNextNetworkId", "int", []),
+    (T["HOL"], "addComponent", "void", [CT, "com.hypixel.hytale.component.Component"]),
+    (T["WLD"], "execute", "void", ["java.lang.Runnable"]), (T["WLD"], "getEntityStore", T["EST"], []), (T["WLD"], "getChunkStore", T["CHS"], []),
+    (T["EST"], "getStore", T["ST"], []), (T["CHS"], "getStore", T["ST"], []),
+    (T["CHS"], "getChunkSectionReferenceAtBlock", T["REF"], ["int", "int", "int"]),
+    (T["BSC"], "getComponentType", CT, []), (T["BSC"], "get", "int", ["int", "int", "int"]),
+    (T["FSC"], "getComponentType", CT, []), (T["FSC"], "getFluidId", "int", ["int", "int", "int"]),
+    (T["FLU"], "getAssetMap", "com.hypixel.hytale.assetstore.map.IndexedLookupTableAssetMap", []),
+    (T["BTY"], "getAssetMap", "com.hypixel.hytale.assetstore.map.BlockTypeAssetMap", []),
+    ("com.hypixel.hytale.assetstore.map.BlockTypeAssetMap", "getAsset", "com.hypixel.hytale.assetstore.map.JsonAssetWithMap", ["int"]),
+    ("com.hypixel.hytale.assetstore.map.IndexedLookupTableAssetMap", "getAsset", "com.hypixel.hytale.assetstore.map.JsonAssetWithMap", ["int"]),
+    ("com.hypixel.hytale.assetstore.map.IndexedLookupTableAssetMap", "getIndex", "int", ["java.lang.Object"]),
+    (T["BTY"], "getMaterial", T["BMAT"], []), (T["FLU"], "getId", S_, []),
+    (T["REF"], "isValid", "boolean", []), (T["REF"], "getStore", T["ST"], []),
+    (T["PLA"], "getComponentType", CT, []), (T["PLA"], "getHudManager", T["HM"], []),
+    (T["PLA"], "getPageManager", "com.hypixel.hytale.server.core.entity.entities.player.pages.PageManager", []),
+    ("com.hypixel.hytale.server.core.entity.entities.player.pages.PageManager", "openCustomPage", "void", [T["REF"], T["ST"], T["PAGE"]]),
+    (T["PR"], "getComponentType", CT, []), (T["PR"], "getUuid", "java.util.UUID", []), (T["PR"], "getUsername", S_, []),
+    (T["PR"], "sendMessage", "void", [T["MSG"]]), (T["PR"], "getReference", T["REF"], []),
+    (T["TC"], "getComponentType", CT, []), (T["TC"], "getPosition", T["V3D"], []), (T["TC"], "setPosition", "void", ["org.joml.Vector3dc"]),
+    (T["TC"], "<init>", "void", ["org.joml.Vector3dc", "com.hypixel.hytale.math.vector.Rotation3fc"]),
+    (T["HR"], "getComponentType", CT, []), (T["HR"], "getDirection", T["V3D"], []),
+    (T["HR"], "<init>", "void", ["com.hypixel.hytale.math.vector.Rotation3fc"]), (T["R3F"], "<init>", "void", []),
+    (T["MC"], "getComponentType", CT, []), (T["MC"], "<init>", "void", [T["MDL"]]),
+    (T["MC"], "getEyeHeight", "float", [T["REF"], T["CAC"]]),
+    (T["MDL"], "createScaledModel", T["MDL"], [T["MDA"], "float"]),
+    (T["MDA"], "getAssetMap", "com.hypixel.hytale.assetstore.map.DefaultAssetMap", []),
+    ("com.hypixel.hytale.assetstore.map.DefaultAssetMap", "getAsset", "com.hypixel.hytale.assetstore.JsonAsset", ["java.lang.Object"]),
+    ("com.hypixel.hytale.assetstore.map.DefaultAssetMap", "getAssetCount", "int", []),
+    (T["NID"], "getComponentType", CT, []), (T["NID"], "<init>", "void", ["int"]),
+    (T["NPL"], "getComponentType", CT, []), (T["NPL"], "<init>", "void", [S_]), (T["NPL"], "setText", "void", [S_]),
+    (T["INT"], "getComponentType", CT, []),
+    (T["V3D"], "<init>", "void", ["double", "double", "double"]),
+    # the click effect
+    (T["ECC"], "getComponentType", CT, []), (T["ECC"], "hasEffect", "boolean", ["int"]),
+    (T["ECC"], "removeEffect", "void", [T["REF"], "int", T["CAC"]]),
+    (T["EFX"], "getAssetMap", "com.hypixel.hytale.assetstore.map.IndexedLookupTableAssetMap", []),
+    # the reel look stat (SkyyReelProbe 0.1 path)
+    (T["ESM"], "getComponentType", CT, []), (T["ESM"], "get", T["ESV"], ["int"]), (T["ESM"], "setStatValue", "float", ["int", "float"]),
+    (T["ESV"], "get", "float", []), (T["ESTT"], "getAssetMap", "com.hypixel.hytale.assetstore.map.IndexedLookupTableAssetMap", []),
+    # inventory (world thread)
+    (T["INVC"], "getCombined", "com.hypixel.hytale.server.core.inventory.container.CombinedItemContainer", [T["CAC"], T["REF"], CT + "[]"]),
+    (T["HOTB"], "getComponentType", CT, []), (T["HOTB"], "getActiveItem", T["IS"], []), (T["HOTB"], "getActiveSlot", "byte", []),
+    (T["IC"], "getCapacity", "short", []), (T["IC"], "getItemStack", T["IS"], ["short"]), (T["IC"], "addItemStack", T["IST"], [T["IS"]]),
+    (T["IC"], "removeItemStackFromSlot", T["ISST"], ["short", "int"]), (T["IC"], "replaceItemStackInSlot", T["ISST"], ["short", T["IS"], T["IS"]]),
+    (T["IC"], "canAddItemStacks", "boolean", ["java.util.List"]),
+    ("com.hypixel.hytale.server.core.inventory.transaction.Transaction", "succeeded", "boolean", []),
+    (T["IST"], "getRemainder", T["IS"], []),
+    (T["IS"], "<init>", "void", [S_, "int"]), (T["IS"], "getItemId", S_, []), (T["IS"], "getQuantity", "int", []),
+    (T["IS"], "isEmpty", "boolean", []), (T["IS"], "getMetadata", T["BD"], []), (T["IS"], "withMetadata", T["IS"], [S_, T["BV"]]),
+    (T["IS"], "withMetadata", T["IS"], ["com.hypixel.hytale.codec.KeyedCodec", "java.lang.Object"]),
+    (T["IDM"], "<init>", "void", [T["MSG"], T["MSG"]]),
+    (T["ITM"], "getAssetMap", "com.hypixel.hytale.assetstore.map.DefaultAssetMap", []),
+    (T["MSG"], "raw", T["MSG"], [S_]), (T["MSG"], "color", T["MSG"], [S_]), (T["MSG"], "empty", T["MSG"], []),
+    (T["MSG"], "insert", T["MSG"], [T["MSG"]]),
+    # fx
+    (T["PTU"], "spawnParticleEffect", "void", [S_, "org.joml.Vector3dc", T["CAC"]]),
+    (T["SNU"], "playSoundEvent3d", "void", ["int", T["SCAT"], "double", "double", "double", T["CAC"]]),
+    (T["SEV"], "getAssetMap", "com.hypixel.hytale.assetstore.map.IndexedLookupTableAssetMap", []),
+    # the HUD (our own key) + the bench page
+    (T["HUD"], "<init>", "void", [T["PR"], S_, "int"]), (T["HUD"], "update", "void", ["boolean", T["UCB"]]),
+    (T["HM"], "addCustomHud", "void", [T["PR"], T["HUD"]]), (T["HM"], "removeCustomHud", "void", [T["PR"], S_]),
+    (T["HM"], "getCustomHud", T["HUD"], [S_]),
+    (T["UCB"], "appendInline", T["UCB"], [S_, S_]), (T["UCB"], "set", T["UCB"], [S_, S_]), (T["UCB"], "set", T["UCB"], [S_, "float"]),
+    (T["UEB"], "addEventBinding", T["UEB"], [T["BT"], S_, T["EVD"]]), (T["EVD"], "of", T["EVD"], [S_, S_]),
+    (T["EVD"], "append", T["EVD"], [S_, S_]),
+    (T["PAGE"], "<init>", "void", [T["PR"], T["LIFE"]]), (T["PAGE"], "rebuild", "void", []), (T["PAGE"], "close", "void", []),
+    (T["OCU"], "registerSimple", "void", [PB, "java.lang.Class", S_, "java.util.function.Function"]),
+    # events, commands, plugin
+    (T["PRE"], "getPlayerRef", T["REF"], []), (T["PDE"], "getPlayerRef", T["PR"], []),
+    (PB, "getCommandRegistry", "com.hypixel.hytale.server.core.command.system.CommandRegistry", []),
+    (PB, "getEventRegistry", "com.hypixel.hytale.event.EventRegistry", []),
+    (PB, "getEntityStoreRegistry", "com.hypixel.hytale.component.ComponentRegistryProxy", []),
+    ("com.hypixel.hytale.component.ComponentRegistryProxy", "registerSystem", "void", ["com.hypixel.hytale.component.system.ISystem"]),
+    (PB, "getDataDirectory", "java.nio.file.Path", []), (PB, "getLogger", T["LOG"], []),
+    ("com.hypixel.hytale.event.EventRegistry", "registerGlobal", "com.hypixel.hytale.event.EventRegistration",
+     ["java.lang.Class", "java.util.function.Consumer"]),
+    ("com.hypixel.hytale.server.core.command.system.CommandRegistry", "registerCommand",
+     "com.hypixel.hytale.server.core.command.system.CommandRegistration", [AC]),
+    (AC, "setPermissionGroups", "void", ["java.lang.String[]"]), (AC, "requirePermission", "void", [S_]),
+    (AC, "addUsageVariant", "void", [AC]), (AC, "addAliases", "void", ["java.lang.String[]"]),
+    (AC, "withRequiredArg", T["RA"], [S_, S_, "com.hypixel.hytale.server.core.command.system.arguments.types.ArgumentType"]),
+    (T["CTX"], "get", "java.lang.Object", ["com.hypixel.hytale.server.core.command.system.arguments.system.Argument"]),
+    (T["LOG"], "at", "com.hypixel.hytale.logger.HytaleLogger$Api", ["java.util.logging.Level"]),
+]
+for _c, _m, _r, _a in SIGS:
+    probe_sig(_c, _m, _r, _a)
+if PROBE_FAILS:
+    raise SystemExit("API probe failed (%d): %s" % (len(PROBE_FAILS), " | ".join(PROBE_FAILS)))
+for _c, _m in ((T["V3D"], "x"), (T["V3D"], "y"), (T["V3D"], "z"), (T["INT"], "INSTANCE"), (T["ADR"], "SPAWN"), (T["RR"], "REMOVE"),
+               (T["EST"], "REGISTRY"), (T["BMAT"], "Solid"), (T["BTY"], "EMPTY_ID"), (T["SCAT"], "SFX"), (T["INVC"], "STORAGE_HOTBAR_BACKPACK"),
+               (T["IDM"], "KEYED_CODEC"), (T["ATY"], "STRING"), (T["ATY"], "INTEGER"), (T["LIFE"], "CanDismiss"), (T["BT"], "Activating"),
+               (T["HSV"], "SCHEDULED_EXECUTOR"), (T["FLU"], "EMPTY_ID")):
+    probe_field(_c, _m)
+print("engine members probed: %d" % len(PROBED))
+
+TOKEN = re.compile(r"@([A-Z0-9]{2,7})@")
+
+
+def jv(src):
+    def rep(m):
+        k = m.group(1)
+        if k not in T:
+            raise SystemExit("unknown token @%s@ in:\n%s" % (k, src[:300]))
+        return T[k]
+    return TOKEN.sub(rep, src)
+
+
+def F(cls, src):
+    try:
+        cls.addField(CtField.make(jv(src), cls))
+    except Exception as e:
+        raise SystemExit("field failed in %s:\n%s\n---\n%s" % (cls.getName(), e, jv(src)[:600]))
+
+
+def M(cls, src):
+    try:
+        cls.addMethod(CtNewMethod.make(jv(src), cls))
+    except Exception as e:
+        raise SystemExit("compile failed in %s:\n%s\n---\n%s" % (cls.getName(), e, jv(src)[:3000]))
+
+
+def C(cls, src):
+    try:
+        cls.addConstructor(CtNewConstructor.make(jv(src), cls))
+    except Exception as e:
+        raise SystemExit("constructor failed in %s:\n%s\n---\n%s" % (cls.getName(), e, jv(src)[:2000]))
+
+
+def jstr(s):
+    assert all(32 <= ord(c) < 127 for c in s), repr(s)
+    return '"' + s.replace("\\", "\\\\").replace('"', '\\"') + '"'
+
+
+def jarr(xs):
+    return "new String[] { " + ", ".join(jstr(x) for x in xs) + " }"
+
+
+def jints(xs):
+    return "new int[] { " + ", ".join(str(int(x)) for x in xs) + " }"
+
+
+def jdbls(xs):
+    return "new double[] { " + ", ".join(repr(float(x)) for x in xs) + " }"
+
+
+def mk(name, sup=None):
+    return pool.makeClass(PKG + "." + name, pool.get(sup)) if sup else pool.makeClass(PKG + "." + name)
+
+
+# ================================================================= classes (all top-level; members added callee-first)
+LOGC = mk("FishLog")
+DEFS = mk("FishDefs")
+CFGC = mk("FishCfg")
+MATH = mk("FishMath")
+BRG = mk("FishBridge")
+CTX = mk("FishCtx")
+STA = mk("FishState")
+API = pool.makeInterface(PKG + ".FishApi")
+ENG = mk("FishEng")
+DATA = mk("FishData")
+STORE = mk("FishStore")
+RIG = mk("FishRig")
+HDOC = mk("FishHudDoc")
+HUD = mk("FishHud", T["HUD"])
+BOB = mk("FishBobberTask")
+GIVE = mk("FishGiveTask")
+EAPI = mk("FishEngApi")
+CORE = mk("FishCore")
+TICK = mk("FishTick", T["ETS"])
+BENCH = mk("FishBench")
+PAGEC = mk("FishPage", T["PAGE"])
+PAGEFN = mk("FishPageFn")
+SAVE = mk("FishSaveTick")
+READY = mk("FishReady")
+QUIT = mk("FishQuit")
+CMDT = mk("FishCmds")
+CMD = mk("FishCmd", T["APC"])
+ACMD = mk("FishAdminCmd", T["APC"])
+ACMD1 = mk("FishAdminArgCmd", T["APC"])
+ACMD2 = mk("FishAdminArg2Cmd", T["APC"])
+PLUG = mk("SkyyFishingPlugin", T["JP"])
+ALL = [LOGC, DEFS, CFGC, MATH, BRG, CTX, STA, API, ENG, DATA, STORE, RIG, HDOC, HUD, BOB, GIVE, EAPI, CORE, TICK, BENCH, PAGEC, PAGEFN, SAVE,
+       READY, QUIT, CMDT, CMD, ACMD, ACMD1, ACMD2, PLUG]
+
+# ---------------------------------------------------------------- FishLog: server log lines "[SkyyFishing] ..."; SINK = harness hook (null in game)
+F(LOGC, "public static @LOG@ LOG;")
+F(LOGC, "public static java.util.List SINK;")
+F(LOGC, "public static final java.util.concurrent.ConcurrentHashMap ONCE = new java.util.concurrent.ConcurrentHashMap();")
+M(LOGC, r"""
+public static void info(String msg) {
+  try { if (SINK != null) SINK.add("I|" + msg); } catch (Throwable t0) { }
+  try { if (LOG != null) LOG.at(java.util.logging.Level.INFO).log("[SkyyFishing] " + msg); } catch (Throwable t) { }
+}""")
+M(LOGC, r"""
+public static void warn(String msg) {
+  try { if (SINK != null) SINK.add("W|" + msg); } catch (Throwable t0) { }
+  try { if (LOG != null) LOG.at(java.util.logging.Level.WARNING).log("[SkyyFishing] " + msg); } catch (Throwable t) { }
+}""")
+M(LOGC, r"""
+public static void warnOnce(String key, String msg) {
+  if (key == null || ONCE.putIfAbsent(key, Boolean.TRUE) != null) return;
+  warn(msg + " (logged once)");
+}""")
+
+# ---------------------------------------------------------------- FishDefs: the fixed data (ids, names, recipes; numbers live in FishCfg)
+def _flat_recipes():
+    ins, qty, start = [], [], []
+    for r in RECIPES:
+        start.append(len(ins))
+        for i, q in r[1]:
+            ins.append(i)
+            qty.append(q)
+    start.append(len(ins))
+    return ins, qty, start
+
+
+_RIN, _RQ, _RS = _flat_recipes()
+# treasure rows, flat: grade g rows from TR_START[g] to TR_START[g + 1]
+_TRS, _TRK, _TRA, _TRB, _TRI, _TRSH = [], [], [], [], [], []
+for g, (_gn, _wrap, rows) in enumerate(TREASURE):
+    _TRS.append(len(_TRK))
+    for share, kind, a, b_, ids in rows:
+        _TRSH.append(share)
+        _TRK.append(0 if kind == "purse" else 1)
+        _TRA.append(a)
+        _TRB.append(b_)
+        _TRI.append(",".join(ids))
+_TRS.append(len(_TRK))
+for _f in [
+        "public static final String[] TIERS = %s;" % jarr(TIERS),
+        "public static final String[] RODS = %s;" % jarr(ROD_IDS),
+        "public static final String[] REELS = %s;" % jarr(REEL_IDS),
+        "public static final String[] PART_IDS = %s;" % jarr([p[0] for p in PART_IDS]),
+        "public static final int[] PART_KIND = %s;" % jints([p[1] for p in PART_IDS]),
+        "public static final int[] PART_TIER = %s;" % jints([p[2] for p in PART_IDS]),
+        "public static final String[] KIND_KEY = %s;" % jarr([p[0] for p in PARTS]),
+        "public static final String[] KIND_SLOT = %s;" % jarr([p[1] for p in PARTS]),
+        "public static final String[] KIND_NAME = %s;" % jarr([p[3] for p in PARTS]),
+        "public static final int[] KIND_STAT = %s;" % jints([p[4] for p in PARTS]),
+        "public static final String[] KIND_PRE = %s;" % jarr([p[7].split("%s")[0] for p in PARTS]),
+        "public static final String[] KIND_POST = %s;" % jarr([p[7].split("%s")[1].replace("%%", "%") for p in PARTS]),
+        "public static final String[] PART_ROMAN = %s;" % jarr(PART_TIERS),
+        "public static final String[] SP_KEY = %s;" % jarr([s[0] for s in SPECIES]),
+        "public static final String[] SP_NAME = %s;" % jarr([s[1] for s in SPECIES]),
+        "public static final int[] SP_RAR = %s;" % jints([s[2] for s in SPECIES]),
+        "public static final double[] SP_K = %s;" % jdbls(SP_K),
+        "public static final double[] SP_BITE = %s;" % jdbls([s[7] for s in SPECIES]),
+        "public static final double[] SP_W0 = %s;" % jdbls([s[8] for s in SPECIES]),
+        "public static final double[] SP_MIN0 = %s;" % jdbls([s[3] for s in SPECIES]),
+        "public static final double[] SP_MAX0 = %s;" % jdbls([s[4] for s in SPECIES]),
+        "public static final String[] FISH = %s;" % jarr(FISH_IDS),
+        "public static final String[] RAR_NAME = %s;" % jarr(RARITIES),
+        "public static final String[] RAR_HEX = %s;" % jarr(RAR_HEX),
+        "public static final int[] RAR_XP = %s;" % jints(RAR_XP),
+        "public static final double[] PART_V0 = %s;" % jdbls([p[5] for p in PARTS]),
+        "public static final double[] PART_V1 = %s;" % jdbls([p[6] for p in PARTS]),
+        "public static final String[] JUNK0 = %s;" % jarr([j for j, _w in JUNK_Z1]),
+        "public static final int[] JUNK0_W = %s;" % jints([w for _j, w in JUNK_Z1]),
+        "public static final String[] R_OUT = %s;" % jarr([r[0] for r in RECIPES]),
+        "public static final String[] R_PREV = %s;" % jarr([r[2] or "" for r in RECIPES]),
+        "public static final int[] R_POND = %s;" % jints([r[3] for r in RECIPES]),
+        "public static final String[] R_COLL = %s;" % jarr([r[4][0] if r[4] else "" for r in RECIPES]),
+        "public static final int[] R_COLLT = %s;" % jints([r[4][1] if r[4] else 0 for r in RECIPES]),
+        "public static final String[] R_IN = %s;" % jarr(_RIN),
+        "public static final int[] R_INQ = %s;" % jints(_RQ),
+        "public static final int[] R_START = %s;" % jints(_RS),
+        "public static final int[] TR_START = %s;" % jints(_TRS),
+        "public static final int[] TR_SHARE = %s;" % jints(_TRSH),
+        "public static final int[] TR_KIND = %s;" % jints(_TRK),
+        "public static final int[] TR_A = %s;" % jints(_TRA),
+        "public static final int[] TR_B = %s;" % jints(_TRB),
+        "public static final String[] TR_ITEMS = %s;" % jarr(_TRI),
+        "public static final String[] TR_GRADE = %s;" % jarr([t[0] for t in TREASURE]),
+        "public static final String[] TR_WRAP = %s;" % jarr([t[1] for t in TREASURE]),
+        "public static final String[] FILLET = %s;" % jarr(FILLET_ITEMS),
+        "public static final String[] ROMAN = %s;" % jarr(ROMAN),
+        "public static final String STAT = %s;" % jstr(STAT),
+        "public static final int LINE_OUT = %d;" % LINE_OUT,
+        "public static final String CLICK = %s;" % jstr(CLICK_FX),
+        "public static final String BOBBER = %s;" % jstr(BOBBER),
+        "public static final String HUD_KEY = %s;" % jstr(HUD_KEY),
+        "public static final String PAGE_ID = %s;" % jstr(BENCH_PAGE),
+        "public static final String BENCH = %s;" % jstr(BENCH_ID),
+        "public static final String LINE_DOT = %s;" % jstr(LINE_DOT),
+        "public static final String SPLASH = %s;" % jstr(PS_SPLASH),
+        "public static final String SND_CAST = %s;" % jstr(SND_CAST),
+        "public static final String SND_BITE = %s;" % jstr(SND_BITE),
+        "public static final String SND_LAND = %s;" % jstr(SND_LAND),
+        "public static final String SND_LOST = %s;" % jstr(SND_LOST),
+        "public static final String META = \"SkyyFishing\";",
+        "public static final String COL_OK = %s;" % jstr(COL["success"]),
+        "public static final String COL_ERR = %s;" % jstr(COL["error"]),
+        "public static final String COL_INFO = %s;" % jstr(COL["info"]),
+        "public static final String COL_GOLD = %s;" % jstr(COL["gold"]),
+        "public static final String COL_WARN = %s;" % jstr(COL["warning"]),
+        "public static final String COL_TEXT = %s;" % jstr(COL["text"]),
+        "public static final String COL_GRAY = %s;" % jstr(COL["caption"]),
+        "public static final String COL_VALUE = %s;" % jstr(COL["value"]),
+        "public static final String COL_TITLE = %s;" % jstr(COL["title"])]:
+    F(DEFS, _f)
+M(DEFS, r"""
+public static int indexOf(String[] a, String id) {
+  if (id == null || a == null) return -1;
+  for (int i = 0; i < a.length; i++) if (a[i].equals(id)) return i;
+  return -1;
+}""")
+M(DEFS, "public static int rodIndex(String id) { return indexOf(RODS, id); }")
+M(DEFS, "public static int fishIndex(String id) { return indexOf(FISH, id); }")
+M(DEFS, "public static int partIndex(String id) { return indexOf(PART_IDS, id); }")
+M(DEFS, "public static int recipeIndex(String id) { return indexOf(R_OUT, id); }")
+# a reel item id -> its tier NUMBER (1 = Bamboo .. 8 = Onyxium: the reel look stat's value); 0 = not a reel of ours
+M(DEFS, r"""
+public static int reelTier(String id) {
+  if (id == null || !id.startsWith("SkyyFishing_Reel_")) return 0;
+  String t = id.substring(17);
+  int i = indexOf(TIERS, t);
+  return i < 0 ? 0 : i + 1;
+}""")
+M(DEFS, r"""
+public static String reelId(int tier) {
+  if (tier < 1 || tier > TIERS.length) return null;
+  return "SkyyFishing_Reel_" + TIERS[tier - 1];
+}""")
+M(DEFS, r"""
+public static int reelPowerIndex(int tier) {
+  if (tier < 1) return -1;
+  return indexOf(REELS, reelId(tier));
+}""")
+M(DEFS, r"""
+public static int slotOfKind(String slot) {
+  if ("hook".equals(slot)) return 1;
+  if ("line".equals(slot)) return 2;
+  if ("sinker".equals(slot)) return 3;
+  return -1;
+}""")
+M(DEFS, r"""
+public static int partSlot(String id) {
+  int p = partIndex(id);
+  if (p < 0) return reelTier(id) > 0 ? 0 : -1;
+  return slotOfKind(KIND_SLOT[PART_KIND[p]]);
+}""")
+M(DEFS, r"""
+public static String partName(String id) {
+  int p = partIndex(id);
+  if (p >= 0) return KIND_NAME[PART_KIND[p]] + " " + PART_ROMAN[PART_TIER[p]];
+  int r = reelTier(id);
+  if (r > 0) return TIERS[r - 1] + " Reel";
+  return id;
+}""")
+M(DEFS, r"""
+public static String rodName(int ri) {
+  if (ri < 0 || ri >= TIERS.length) return "Fishing Rod";
+  return TIERS[ri] + " Fishing Rod";
+}""")
+M(DEFS, r"""
+public static boolean ours(String id) {
+  return id != null && id.startsWith("SkyyFishing_");
+}""")
+# an item id as words for chat (vanilla junk / treasure items): "Ingredient_Fabric_Scrap_Linen" -> "Fabric Scrap Linen"
+M(DEFS, r"""
+public static String pretty(String id) {
+  if (id == null) return "?";
+  String s = id;
+  if (s.startsWith("Ingredient_") || s.startsWith("Plant_") || s.startsWith("Deco_") || s.startsWith("Weapon_")) s = s.substring(s.indexOf('_') + 1);
+  return s.replace('_', ' ');
+}""")
+M(DEFS, r"""
+public static String roman(int t) {
+  if (t < 0 || t >= ROMAN.length) return String.valueOf(t);
+  return ROMAN[t];
+}""")
+
+# ---------------------------------------------------------------- FishCfg: the settings (public static volatile, bound by the kit) + derived arrays
+for r in SCALARS:
+    jt = r[12]
+    dv = r[4]
+    if jt == "boolean":
+        init = "true" if dv == "true" else "false"
+    elif jt == "int":
+        init = str(int(dv))
+    elif jt == "double":
+        init = repr(float(dv))
+    else:
+        init = jstr(dv)
+    F(CFGC, "public static volatile %s %s = %s;" % (jt, r[11], init))
+for _f in ["public static volatile java.nio.file.Path FILE = null;",
+           "public static volatile double[] PULL = %s;" % jdbls(RAR_PULL),
+           "public static volatile double[] PRICE_M = %s;" % jdbls(RAR_MULT),
+           "public static volatile double[] ROD_KG = %s;" % jdbls(ROD_MAXKG),
+           "public static volatile double[] REEL_P = %s;" % jdbls(REEL_POWER),
+           "public static volatile double[] CAP = %s;" % jdbls([c[2] for c in CAPS]),
+           "public static final int[] CAP_STAT = %s;" % jints([c[1] for c in CAPS]),
+           "public static volatile int[] POND = %s;" % jints(POND_TIERS),
+           "public static volatile double[] SP_W = %s;" % jdbls([s[8] for s in SPECIES]),
+           "public static volatile double[] SP_MIN = %s;" % jdbls([s[3] for s in SPECIES]),
+           "public static volatile double[] SP_MAX = %s;" % jdbls([s[4] for s in SPECIES]),
+           "public static volatile double[] PART_A = %s;" % jdbls([p[5] for p in PARTS]),
+           "public static volatile double[] PART_B = %s;" % jdbls([p[6] for p in PARTS]),
+           "public static volatile String[] JUNK = %s;" % jarr([j for j, _w in JUNK_Z1]),
+           "public static volatile int[] JUNK_W = %s;" % jints([w for _j, w in JUNK_Z1]),
+           "public static volatile long[] PURSE_LO = new long[] { 40L, 300L, 2000L };",
+           "public static volatile long[] PURSE_HI = new long[] { 120L, 700L, 4000L };",
+           "public static volatile int FIL_CONFIRM_R = 2;",
+           "public static volatile long LOADS = 0L;",
+           "public static final String DEFAULT_TEXT = %s;" % ('"' + DEFAULT_TEXT.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n") + '"')]:
+    F(CFGC, _f)
+M(CFGC, r"""
+public static int iv(java.util.Properties p, String k, int d, int lo, int hi) {
+  String s = p == null ? null : p.getProperty(k);
+  if (s == null) return d;
+  try {
+    int v = Integer.parseInt(s.trim());
+    if (v < lo) v = lo;
+    if (v > hi) v = hi;
+    return v;
+  } catch (Throwable t) { return d; }
+}""")
+M(CFGC, r"""
+public static double dv(java.util.Properties p, String k, double d, double lo, double hi) {
+  String s = p == null ? null : p.getProperty(k);
+  if (s == null) return d;
+  try {
+    double v = Double.parseDouble(s.trim());
+    if (v != v) return d;
+    if (v < lo) v = lo;
+    if (v > hi) v = hi;
+    return v;
+  } catch (Throwable t) { return d; }
+}""")
+M(CFGC, r"""
+public static boolean bv(java.util.Properties p, String k, boolean d) {
+  String s = p == null ? null : p.getProperty(k);
+  if (s == null) return d;
+  String t = s.trim().toLowerCase();
+  if (t.equals("true") || t.equals("on") || t.equals("yes") || t.equals("1")) return true;
+  if (t.equals("false") || t.equals("off") || t.equals("no") || t.equals("0")) return false;
+  return d;
+}""")
+M(CFGC, r"""
+public static String sv(java.util.Properties p, String k, String d) {
+  String s = p == null ? null : p.getProperty(k);
+  return s == null ? d : s.trim();
+}""")
+# "a,b,c" -> doubles (null when the count differs or a number is bad)
+M(CFGC, r"""
+public static double[] nums(String s, int n) {
+  if (s == null) return null;
+  String[] a = s.split("[,|]");
+  if (a.length != n) return null;
+  double[] r = new double[n];
+  try {
+    for (int i = 0; i < n; i++) { r[i] = Double.parseDouble(a[i].trim()); if (r[i] != r[i] || r[i] < 0.0) return null; }
+  } catch (Throwable t) { return null; }
+  return r;
+}""")
+# "lo-hi" or "n" -> {lo, hi}; null = bad
+M(CFGC, r"""
+public static long[] range(String s) {
+  if (s == null) return null;
+  String t = s.trim().replace(" ", "");
+  if (t.length() == 0) return null;
+  try {
+    int i = t.indexOf('-', 1);
+    long a = Long.parseLong(i < 0 ? t : t.substring(0, i));
+    long b = i < 0 ? a : Long.parseLong(t.substring(i + 1));
+    if (a < 0L || b < a) return null;
+    return new long[] { a, b };
+  } catch (Throwable e) { return null; }
+}""")
+# the generated loader: every scalar row, clamped like the kit validates (a bad / missing line = its default)
+_ap = ["public static void applyScalars(java.util.Properties p) {"]
+for r in SCALARS:
+    k, jt, fld, dv = r[0], r[12], r[11], r[4]
+    if jt == "boolean":
+        _ap.append('  %s = bv(p, %s, %s);' % (fld, jstr(k), "true" if dv == "true" else "false"))
+    elif jt == "int":
+        _ap.append('  %s = iv(p, %s, %d, %d, %d);' % (fld, jstr(k), int(dv), int(r[5]), int(r[6])))
+    elif jt == "double":
+        _ap.append('  %s = dv(p, %s, %r, %r, %r);' % (fld, jstr(k), float(dv), float(r[5]), float(r[6])))
+    else:
+        _ap.append('  %s = sv(p, %s, %s);' % (fld, jstr(k), jstr(dv)))
+_ap.append("}")
+M(CFGC, "\n".join(_ap))
+# derived arrays from the scalar fields (also the kit's after= hook: a field changed in game)
+_dr = ["public static void derive() {"]
+_dr.append("  PULL = new double[] { %s };" % ", ".join("PULL_%d" % i for i in range(6)))
+_dr.append("  PRICE_M = new double[] { %s };" % ", ".join("PRICE_M_%d" % i for i in range(6)))
+_dr.append("  ROD_KG = new double[] { %s };" % ", ".join("ROD_KG_%d" % i for i in range(8)))
+_dr.append("  REEL_P = new double[] { %s };" % ", ".join("REEL_P_%d" % i for i in range(3)))
+_dr.append("  CAP = new double[] { %s };" % ", ".join("CAP_%d" % i for i in range(6)))
+_dr.append(r"""  int[] pt = new int[8];
+  String[] a = POND_TEXT == null ? new String[0] : POND_TEXT.split(",");
+  boolean ok = a.length == 8;
+  for (int i = 0; ok && i < 8; i++) {
+    try { pt[i] = Integer.parseInt(a[i].trim()); } catch (Throwable t) { ok = false; }
+    if (ok && (pt[i] < 1 || (i > 0 && pt[i] <= pt[i - 1]))) ok = false;
+  }
+  if (ok) POND = pt;
+  else { POND = new int[] { %s }; @PKG@.FishLog.warnOnce("pond:" + POND_TEXT, "fish.pondTiers '" + POND_TEXT + "' is not 8 rising counts - using the defaults"); }
+  long[] lo = new long[3];
+  long[] hi = new long[3];
+  String[] ps = new String[] { TRP_0, TRP_1, TRP_2 };
+  long[] dlo = new long[] { 40L, 300L, 2000L };
+  long[] dhi = new long[] { 120L, 700L, 4000L };
+  for (int i = 0; i < 3; i++) {
+    long[] r = range(ps[i]);
+    lo[i] = r == null ? dlo[i] : r[0];
+    hi[i] = r == null ? dhi[i] : r[1];
+  }
+  PURSE_LO = lo;
+  PURSE_HI = hi;
+  String fc = FIL_CONFIRM == null ? "rare" : FIL_CONFIRM.trim().toLowerCase();
+  FIL_CONFIRM_R = fc.equals("unique") ? 1 : (fc.equals("legendary") ? 3 : (fc.equals("never") ? 99 : 2));
+}""" % ", ".join(str(t) for t in POND_TIERS))
+M(CFGC, "\n".join(_dr))
+M(CFGC, "public static void derive(String key) { derive(); }")
+# the three tables from the file's key families (a missing species / part line = its default; junk = exactly the lines there)
+M(CFGC, r"""
+public static void applyTables(java.util.Properties p) {
+  int n = @PKG@.FishDefs.SP_KEY.length;
+  double[] w = new double[n];
+  double[] mn = new double[n];
+  double[] mx = new double[n];
+  for (int i = 0; i < n; i++) {
+    double[] v = nums(p == null ? null : p.getProperty("fish.species." + @PKG@.FishDefs.SP_KEY[i]), 3);
+    if (v == null || v[1] <= 0.0 || v[2] < v[1]) {
+      if (p != null && p.getProperty("fish.species." + @PKG@.FishDefs.SP_KEY[i]) != null) @PKG@.FishLog.warnOnce("sp:" + p.getProperty("fish.species." + @PKG@.FishDefs.SP_KEY[i]), "fish.species." + @PKG@.FishDefs.SP_KEY[i] + " is not 'weight,min kg,max kg' - using the default");
+      v = new double[] { @PKG@.FishDefs.SP_W0[i], @PKG@.FishDefs.SP_MIN0[i], @PKG@.FishDefs.SP_MAX0[i] };
+    }
+    w[i] = v[0]; mn[i] = v[1]; mx[i] = v[2];
+  }
+  SP_W = w; SP_MIN = mn; SP_MAX = mx;
+  int k = @PKG@.FishDefs.KIND_KEY.length;
+  double[] a = new double[k];
+  double[] b = new double[k];
+  for (int i = 0; i < k; i++) {
+    double[] v = nums(p == null ? null : p.getProperty("fish.parts." + @PKG@.FishDefs.KIND_KEY[i]), 2);
+    a[i] = v == null ? @PKG@.FishDefs.PART_V0[i] : v[0];
+    b[i] = v == null ? @PKG@.FishDefs.PART_V1[i] : v[1];
+  }
+  PART_A = a; PART_B = b;
+  java.util.ArrayList ids = new java.util.ArrayList();
+  java.util.ArrayList ws = new java.util.ArrayList();
+  if (p != null) {
+    java.util.ArrayList keys = new java.util.ArrayList(p.stringPropertyNames());
+    java.util.Collections.sort(keys);
+    for (int i = 0; i < keys.size(); i++) {
+      String key = (String) keys.get(i);
+      if (!key.startsWith("fish.junk.")) continue;
+      String id = key.substring(10).trim();
+      int wt = iv(p, key, 0, 0, 1000);
+      if (id.length() == 0 || wt <= 0) continue;
+      ids.add(id);
+      ws.add(Integer.valueOf(wt));
+    }
+  }
+  if (p == null) {
+    for (int i = 0; i < @PKG@.FishDefs.JUNK0.length; i++) { ids.add(@PKG@.FishDefs.JUNK0[i]); ws.add(Integer.valueOf(@PKG@.FishDefs.JUNK0_W[i])); }
+  }
+  String[] ja = new String[ids.size()];
+  int[] jw = new int[ids.size()];
+  for (int i = 0; i < ja.length; i++) { ja[i] = (String) ids.get(i); jw[i] = ((Integer) ws.get(i)).intValue(); }
+  JUNK = ja; JUNK_W = jw;
+}""")
+M(CFGC, r"""
+public static java.util.Properties props(String text) {
+  java.util.Properties p = new java.util.Properties();
+  try { p.load(new java.io.StringReader(text)); } catch (Throwable t) { }
+  return p;
+}""")
+M(CFGC, r"""
+public static java.util.Properties read(java.nio.file.Path f) {
+  if (f == null) return null;
+  java.io.InputStream in = null;
+  try {
+    if (!java.nio.file.Files.isRegularFile(f, new java.nio.file.LinkOption[0])) return null;
+    in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+    java.util.Properties p = new java.util.Properties();
+    p.load(in);
+    return p;
+  } catch (Throwable t) {
+    @PKG@.FishLog.warn("could not read " + f + ": " + t + " - using the built-in defaults");
+    return null;
+  } finally {
+    try { if (in != null) in.close(); } catch (Throwable t2) { }
+  }
+}""")
+M(CFGC, r"""
+public static void seed(java.nio.file.Path f) {
+  if (f == null) return;
+  try {
+    if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) return;
+    java.nio.file.Path dir = f.getParent();
+    if (dir != null) java.nio.file.Files.createDirectories(dir, new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Path tmp = f.resolveSibling(f.getFileName().toString() + ".tmp");
+    java.nio.file.Files.write(tmp, DEFAULT_TEXT.getBytes("ISO-8859-1"), new java.nio.file.OpenOption[0]);
+    java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+    @PKG@.FishLog.info("wrote the default " + f.getFileName());
+  } catch (Throwable t) { @PKG@.FishLog.warn("could not write the default " + f + ": " + t); }
+}""")
+M(CFGC, r"""
+public static void applyAll(java.util.Properties p) {
+  java.util.Properties q = p != null ? p : props(DEFAULT_TEXT);
+  applyScalars(q);
+  derive();
+  applyTables(q);
+  LOADS = LOADS + 1L;
+}""")
+# the kit's RELOAD routine (a table edit, a hand edit + Reload) and the start: the file, or the defaults when it cannot be read
+M(CFGC, r"""
+public static void reloadAll() {
+  java.util.Properties p = read(FILE);
+  applyAll(p);
+}""")
+M(CFGC, r"""
+public static void load(java.nio.file.Path modsDir) {
+  FILE = modsDir == null ? null : modsDir.resolve("Skyy_SkyyFishing").resolve("config.properties");
+  seed(FILE);
+  reloadAll();
+}""")
+M(CFGC, r"""
+public static double rodKg(int ri) {
+  double[] a = ROD_KG;
+  if (ri < 0 || ri >= a.length) return 0.0;
+  return a[ri];
+}""")
+M(CFGC, r"""
+public static double reelPower(int tier) {
+  int i = @PKG@.FishDefs.reelPowerIndex(tier);
+  double[] a = REEL_P;
+  if (i < 0 || i >= a.length) return 0.0;
+  return a[i];
+}""")
+M(CFGC, r"""
+public static double partValue(int partIdx) {
+  if (partIdx < 0 || partIdx >= @PKG@.FishDefs.PART_IDS.length) return 0.0;
+  int k = @PKG@.FishDefs.PART_KIND[partIdx];
+  return @PKG@.FishDefs.PART_TIER[partIdx] == 0 ? PART_A[k] : PART_B[k];
+}""")
+
+# ---------------------------------------------------------------- the config kit (Server Setup > Fishing): FishCfg's fields exist now
+kit = CFG.emit(pool, PKG, MOD=MOD, TITLE="Fishing", VERSION=VERSION, NODE=NODE, CATS=CFG_CATS, ROWS=CFG_ROWS, FILES=[CFG_FILE], NOTE=CFG_NOTE,
+               RELOAD="FishCfg.reloadAll", KEEP=10, DEFAULTS={"config.properties": DEFAULT_TEXT})
+
+# ---------------------------------------------------------------- FishMath: pure functions (the harness calls them directly)
+M(MATH, r"""
+public static double clamp(double v, double lo, double hi) {
+  if (v != v) return lo;
+  return v < lo ? lo : (v > hi ? hi : v);
+}""")
+M(MATH, "public static double heft(double kg) { return Math.max(0.6, Math.pow(Math.max(kg, 0.0), 0.3)); }")
+M(MATH, r"""
+public static double gain(double power, double kg) {
+  return power / heft(kg);
+}""")
+# the weight exponent with the Deep Sinker: the mean of u^p is 1 / (p + 1); +x % average weight -> p' = (p + 1) / (1 + x) - 1 (>= 0.05)
+M(MATH, r"""
+public static double skew(double p, double deepPct) {
+  double q = (p + 1.0) / (1.0 + Math.max(deepPct, 0.0) / 100.0) - 1.0;
+  return q < 0.05 ? 0.05 : q;
+}""")
+M(MATH, r"""
+public static double weight(double lo, double hi, double p, double u) {
+  if (hi < lo) hi = lo;
+  return lo + (hi - lo) * Math.pow(clamp(u, 0.0, 1.0), p);
+}""")
+M(MATH, r"""
+public static double lengthCm(double kg, double k, double u) {
+  if (k <= 0.0) k = 1.0;
+  return Math.pow(100.0 * kg * 1000.0 / k, 1.0 / 3.0) * (0.95 + 0.1 * clamp(u, 0.0, 1.0));
+}""")
+M(MATH, r"""
+public static double biteWait(double lo, double hi, double factor, double speed, double u) {
+  if (hi < lo) hi = lo;
+  return (lo + (hi - lo) * clamp(u, 0.0, 1.0)) * factor / (1.0 + Math.max(speed, 0.0) / 100.0);
+}""")
+M(MATH, r"""
+public static long price(double kg, double perKg, double mult, double demand) {
+  double v = kg * perKg * mult * demand;
+  if (v != v || v < 1.0) return 1L;
+  return Math.round(v);
+}""")
+# the demand factor recovers toward 1 with a half life (seconds); each sale lowers it by perSale % but never below the floor
+M(MATH, r"""
+public static double demandNow(double d, long lastMs, long nowMs, int halfS) {
+  if (d >= 1.0 || lastMs <= 0L || nowMs <= lastMs) return Math.min(1.0, d);
+  double hl = Math.max(1, halfS) * 1000.0;
+  return 1.0 - (1.0 - d) * Math.pow(0.5, (nowMs - lastMs) / hl);
+}""")
+M(MATH, "public static double demandAfter(double d, double perPct, double floor) { return Math.max(floor, d * (1.0 - perPct / 100.0)); }")
+M(MATH, r"""
+public static int fillets(double kg, double kgPer, int max) {
+  if (kgPer <= 0.0) return 0;
+  int n = (int) Math.floor(kg / kgPer + 1.0E-9);
+  if (n > max) n = max;
+  return n < 0 ? 0 : n;
+}""")
+M(MATH, r"""
+public static int pondTier(int count, int[] tiers) {
+  int t = 0;
+  for (int i = 0; tiers != null && i < tiers.length; i++) if (count >= tiers[i]) t = i + 1;
+  return t;
+}""")
+M(MATH, r"""
+public static int pick(double[] w, double u) {
+  double sum = 0.0;
+  for (int i = 0; i < w.length; i++) if (w[i] > 0.0) sum = sum + w[i];
+  if (sum <= 0.0) return -1;
+  double x = clamp(u, 0.0, 0.999999999) * sum;
+  for (int i = 0; i < w.length; i++) {
+    if (w[i] <= 0.0) continue;
+    if (x < w[i]) return i;
+    x = x - w[i];
+  }
+  for (int i = w.length - 1; i >= 0; i--) if (w[i] > 0.0) return i;
+  return -1;
+}""")
+M(MATH, r"""
+public static String num(double v, int dp) {
+  if (v != v) return "0";
+  double m = Math.pow(10.0, (double) dp);
+  double r = ((double) Math.round(v * m)) / m;
+  if (dp <= 0 || r == Math.rint(r)) return String.valueOf(Math.round(r));
+  String s = java.math.BigDecimal.valueOf(r).setScale(dp, java.math.RoundingMode.HALF_UP).toPlainString();
+  return s;
+}""")
+M(MATH, r"""
+public static String coins(long v) {
+  String s = String.valueOf(Math.abs(v));
+  StringBuilder b = new StringBuilder();
+  int n = 0;
+  for (int i = s.length() - 1; i >= 0; i--) {
+    b.append(s.charAt(i));
+    n++;
+    if (n % 3 == 0 && i > 0) b.append(',');
+  }
+  if (v < 0L) b.append('-');
+  return b.reverse().toString();
+}""")
+M(MATH, "public static String kg(int grams) { return num(grams / 1000.0, 2) + \" kg\"; }")
+M(MATH, "public static String cm(int mm) { return Math.round(mm / 10.0) + \" cm\"; }")
+
+# ---------------------------------------------------------------- FishBridge: the shared skyy.bridge map (plain java.lang types only)
+M(BRG, r"""
+public static java.util.Map bridge() {
+  Object o = System.getProperties().get("skyy.bridge");
+  if (o instanceof java.util.Map) return (java.util.Map) o;
+  Object prev = System.getProperties().putIfAbsent("skyy.bridge", new java.util.concurrent.ConcurrentHashMap());
+  o = System.getProperties().get("skyy.bridge");
+  return o instanceof java.util.Map ? (java.util.Map) o : new java.util.concurrent.ConcurrentHashMap();
+}""")
+M(BRG, r"""
+public static Object fn(String key, Object arg) {
+  try {
+    Object f = bridge().get(key);
+    if (f instanceof java.util.function.Function) return ((java.util.function.Function) f).apply(arg);
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("bridge:" + key, "the bridge call " + key + " failed: " + t); }
+  return null;
+}""")
+M(BRG, "public static boolean has(String key) { return bridge().get(key) instanceof java.util.function.Function; }")
+# PROFILES-CONTRACT: the storage key of the ACTIVE profile (profile 1 / no SkyyProfiles = the uuid)
+M(BRG, r"""
+public static String pkey(java.util.UUID u) {
+  if (u == null) return null;
+  Object r = fn("profile:fn:key", u);
+  if (r instanceof String && ((String) r).length() > 0) return (String) r;
+  return u.toString();
+}""")
+M(BRG, r"""
+public static long epoch(java.util.UUID u) {
+  Object e = u == null ? null : bridge().get("profile:epoch:" + u);
+  return e instanceof Long ? ((Long) e).longValue() : -1L;
+}""")
+M(BRG, "public static boolean busy(java.util.UUID u) { return u != null && bridge().get(\"profile:busy:\" + u) != null; }")
+# coins:fn:add {UUID, Long} -> Long new balance; null = SkyyCoins missing / refused (profile busy)
+M(BRG, r"""
+public static boolean coinsAdd(java.util.UUID u, long amount) {
+  if (amount <= 0L) return true;
+  Object r = fn("coins:fn:add", new Object[] { u, Long.valueOf(amount) });
+  return r instanceof Long;
+}""")
+M(BRG, "public static boolean hasCoins() { return has(\"coins:fn:add\"); }")
+# coll:fn:tier {UUID, collection id} -> Integer; -1 = SkyyCollections missing (no gate), 0 = refused / unknown
+M(BRG, r"""
+public static int collTier(java.util.UUID u, String coll) {
+  if (!has("coll:fn:tier")) return -1;
+  Object r = fn("coll:fn:tier", new Object[] { u, coll });
+  return r instanceof Integer ? ((Integer) r).intValue() : 0;
+}""")
+# skill:fn:addxp {UUID, skill, base xp, source, expectKey} -> Boolean (SkyySkills 0.4.24: no Fishing skill yet -> FALSE, nothing happens)
+M(BRG, r"""
+public static boolean skillXp(java.util.UUID u, long xp, String key) {
+  if (xp <= 0L) return false;
+  Object r = fn("skill:fn:addxp", new Object[] { u, "Fishing", Long.valueOf(xp), "fishing", key });
+  return Boolean.TRUE.equals(r);
+}""")
+
+# ---------------------------------------------------------------- FishCtx: one call's player (uuid, name, entity ref, store, accessor, world)
+for _f in ("public java.util.UUID uuid;", "public String name;", "public @REF@ ref;", "public @ST@ store;", "public @CAC@ acc;",
+           "public @WLD@ world;", "public @PR@ pr;"):
+    F(CTX, _f)
+C(CTX, r"""
+public FishCtx(java.util.UUID uuid, String name, @REF@ ref, @ST@ store, @CAC@ acc, @WLD@ world, @PR@ pr) {
+  this.uuid = uuid; this.name = name; this.ref = ref; this.store = store; this.acc = acc; this.world = world; this.pr = pr;
+}""")
+
+# ---------------------------------------------------------------- FishState: one player's line (phases 1 waiting, 2 bite, 3 fight, 5 result card)
+for _f in ("public java.util.UUID uuid;", "public int phase;", "public long gen;", "public volatile boolean ended;", "public volatile @REF@ bobber;",
+           "public @WLD@ world;", "public @ST@ store;", "public double bx;", "public double by;", "public double bz;", "public double fx;",
+           "public double fy;", "public double fz;", "public String rodId;", "public int rodIdx;", "public int rodSlot;", "public String[] rig;",
+           "public double[] stat;", "public String pkey;", "public long castAt;", "public long biteAt;", "public long windowEnd;",
+           "public long idleEnd;", "public int kind;", "public int sp;", "public double kg;", "public double cm;", "public String item;",
+           "public int qty;", "public int tgrade;", "public long coins;", "public double bar;", "public long fightEnd;", "public long fightStart;",
+           "public long nextSurge;", "public long surgeEnd;", "public boolean surging;", "public double pull;", "public double gain;",
+           "public long lastMs;", "public long lastHud;", "public long[] clicks;", "public int clickN;", "public int ignored;", "public int cps;",
+           "public long hudUntil;", "public @PKG@.FishHud hud;", "public int ticks;", "public double windowS;", "public double fightS;"):
+    F(STA, _f)
+C(STA, r"""
+public FishState(java.util.UUID u) {
+  this.uuid = u;
+  this.phase = 0;
+  this.clicks = new long[64];
+  this.rig = new String[] { "0", "", "", "" };
+  this.stat = new double[12];
+  this.item = null;
+}""")
+
+# ---------------------------------------------------------------- FishApi: EVERY engine operation the fishing loop makes (the harness's seam)
+for _m in (
+        "public abstract double[] eye(@PKG@.FishCtx c);",                               # {x, y, z, dx, dy, dz} eye position + look; null
+        "public abstract double[] feet(@PKG@.FishCtx c);",                              # {x, y, z}; null
+        "public abstract int heldSlot(@PKG@.FishCtx c);",                               # the active hotbar slot, -1 none
+        "public abstract @IS@ held(@PKG@.FishCtx c);",                                  # the stack in hand (null / empty = none)
+        "public abstract boolean clicked(@PKG@.FishCtx c);",                            # a rod click since the last tick (consumed)
+        "public abstract int block(@PKG@.FishCtx c, int x, int y, int z);",             # 0 open, 1 water, 2 solid, -1 not loaded
+        "public abstract int getReel(@PKG@.FishCtx c);",                                # the look stat (-1 = no stat)
+        "public abstract void setReel(@PKG@.FishCtx c, int v);",
+        "public abstract void spawnBobber(@PKG@.FishCtx c, @PKG@.FishState s);",        # async (world task); sets s.bobber
+        "public abstract void moveBobber(@PKG@.FishCtx c, @PKG@.FishState s, double x, double y, double z);",
+        "public abstract void tagBobber(@PKG@.FishCtx c, @PKG@.FishState s, String text);",
+        "public abstract void removeBobber(@PKG@.FishState s);",                        # async (the state's world)
+        "public abstract void particle(@PKG@.FishCtx c, String id, double x, double y, double z);",
+        "public abstract void sound(@PKG@.FishCtx c, String id, double x, double y, double z);",
+        "public abstract void hudState(@PKG@.FishCtx c, @PKG@.FishState s, int state, String[] txt);",
+        "public abstract void hudSet(@PKG@.FishCtx c, @PKG@.FishState s, float bar, String time, String cps);",
+        "public abstract void hudHide(@PKG@.FishCtx c, @PKG@.FishState s);",
+        "public abstract void tell(@PKG@.FishCtx c, String text, String col);",
+        "public abstract @IC@ inv(@PKG@.FishCtx c);",                                   # the combined storage + hotbar + backpack container
+        "public abstract void later(@PKG@.FishCtx c, java.lang.Runnable r);",            # run on the player's world thread after this tick
+        "public abstract @PKG@.FishCtx fresh(@PKG@.FishCtx c);",                         # the player again (null = gone / another world)
+        "public abstract long now();"):
+    M(API, _m)
+
+# ---------------------------------------------------------------- FishEng: the API in use (FishEngApi in the game; the harness's stand-in in a test)
+F(ENG, "public static volatile @PKG@.FishApi API = null;")
+
+# ---------------------------------------------------------------- FishData: one profile's progress (only FishStore touches it, under its lock)
+for _f in ("public String key;", "public int pond;", "public int[] caught;", "public int[] bestG;", "public int[] bestMm;",
+           "public java.util.ArrayList claims;", "public boolean dirty;", "public boolean broken;", "public long retryAt;"):
+    F(DATA, _f)
+C(DATA, r"""
+public FishData(String key) {
+  this.key = key;
+  int n = @PKG@.FishDefs.SP_KEY.length;
+  this.caught = new int[n];
+  this.bestG = new int[n];
+  this.bestMm = new int[n];
+  this.claims = new java.util.ArrayList();
+}""")
+
+# ---------------------------------------------------------------- FishStore: per-profile files, server records, demand; atomic writes on the scheduler
+for _f in ("public static volatile java.nio.file.Path DIR = null;",
+           "public static final java.util.HashMap CACHE = new java.util.HashMap();",
+           "public static int[] REC_G = new int[%d];" % len(SPECIES),
+           "public static String[] REC_BY = new String[%d];" % len(SPECIES),
+           "public static double[] DEM = %s;" % jdbls([1.0] * len(SPECIES)),
+           "public static long[] DEM_T = new long[%d];" % len(SPECIES),
+           "public static boolean REC_DIRTY = false;", "public static boolean DEM_DIRTY = false;",
+           "public static volatile long WRITES = 0L;", "public static volatile long WRITE_FAILS = 0L;", "public static volatile long LOAD_FAILS = 0L;",
+           "public static volatile boolean STOPPING = false;", "public static volatile long HEALS = 0L;"):
+    F(STORE, _f)
+M(STORE, r"""
+public static boolean safeKey(String key) {
+  if (key == null || key.length() == 0 || key.length() > 80) return false;
+  for (int i = 0; i < key.length(); i++) {
+    char c = key.charAt(i);
+    if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '-' || c == '_')) return false;
+  }
+  return true;
+}""")
+M(STORE, r"""
+public static java.util.Properties readOnce(java.nio.file.Path f) throws Exception {
+  java.io.Reader in = null;
+  try {
+    in = new java.io.InputStreamReader(java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]), "UTF-8");
+    java.util.Properties p = new java.util.Properties();
+    p.load(in);
+    return p;
+  } finally { try { if (in != null) in.close(); } catch (Throwable t2) { } }
+}""")
+# 0 = no file, 1 = read (out[0]), 2 = the file is there but could not be read (3 tries): the caller must NOT treat it as empty
+M(STORE, r"""
+public static int readInto(java.nio.file.Path f, java.util.Properties[] out) {
+  if (f == null) return 0;
+  Throwable last = null;
+  for (int attempt = 0; attempt < 3; attempt++) {
+    try {
+      if (!java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) return 0;
+      out[0] = readOnce(f);
+      return 1;
+    } catch (Throwable t) {
+      last = t;
+      try { Thread.sleep(25L); } catch (Throwable ts) { }
+    }
+  }
+  LOAD_FAILS = LOAD_FAILS + 1L;
+  @PKG@.FishLog.warn("could not read " + f + ": " + last);
+  return 2;
+}""")
+M(STORE, r"""
+public static java.util.Properties readFile(java.nio.file.Path f) {
+  java.util.Properties[] out = new java.util.Properties[1];
+  return readInto(f, out) == 1 ? out[0] : null;
+}""")
+# atomic: tmp + move (REPLACE_EXISTING + ATOMIC_MOVE, a plain replace as the fallback), 5 tries on a busy Windows file
+M(STORE, r"""
+public static boolean writeFile(java.nio.file.Path f, String text) {
+  if (f == null) return false;
+  for (int attempt = 0; attempt < 5; attempt++) {
+    try {
+      java.nio.file.Path dir = f.getParent();
+      if (dir != null) java.nio.file.Files.createDirectories(dir, new java.nio.file.attribute.FileAttribute[0]);
+      java.nio.file.Path tmp = f.resolveSibling(f.getFileName().toString() + ".tmp");
+      java.nio.file.Files.write(tmp, text.getBytes("UTF-8"), new java.nio.file.OpenOption[0]);
+      try { java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE }); }
+      catch (Throwable am) { java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING }); }
+      WRITES = WRITES + 1L;
+      return true;
+    } catch (Throwable t) {
+      if (attempt == 4) { WRITE_FAILS = WRITE_FAILS + 1L; @PKG@.FishLog.warn("could not write " + f + ": " + t + " - retried at the next save"); }
+      try { Thread.sleep(20L); } catch (Throwable ts) { }
+    }
+  }
+  return false;
+}""")
+M(STORE, r"""
+public static int ip(java.util.Properties p, String k) {
+  String s = p == null ? null : p.getProperty(k);
+  if (s == null) return 0;
+  try { int v = Integer.parseInt(s.trim()); return v < 0 ? 0 : v; } catch (Throwable t) { return 0; }
+}""")
+M(STORE, r"""
+public static java.nio.file.Path playerFile(String key) {
+  if (DIR == null || !safeKey(key)) return null;
+  return DIR.resolve("players").resolve(key + ".properties");
+}""")
+M(STORE, r"""
+public static void fill(@PKG@.FishData d, java.util.Properties p) {
+  if (p != null) {
+    d.pond = ip(p, "pond");
+    for (int i = 0; i < d.caught.length; i++) {
+      String s = @PKG@.FishDefs.SP_KEY[i];
+      d.caught[i] = ip(p, "sp." + s + ".n");
+      d.bestG[i] = ip(p, "sp." + s + ".g");
+      d.bestMm[i] = ip(p, "sp." + s + ".mm");
+    }
+    int n = ip(p, "claims");
+    for (int i = 0; i < n && i < 1000; i++) {
+      String c = p.getProperty("claim." + i);
+      if (c != null && c.length() > 0) d.claims.add(c);
+    }
+  }
+}""")
+# a broken record (file unreadable at load) holds only the changes since; once the file reads again they are merged onto it
+M(STORE, r"""
+public static void heal(@PKG@.FishData d, long now) {
+  if (d == null || !d.broken || now < d.retryAt) return;
+  d.retryAt = now + 5000L;
+  java.util.Properties[] out = new java.util.Properties[1];
+  int st = readInto(playerFile(d.key), out);
+  if (st == 2) return;
+  @PKG@.FishData base = new @PKG@.FishData(d.key);
+  if (st == 1) fill(base, out[0]);
+  d.pond = base.pond + d.pond;
+  for (int i = 0; i < d.caught.length; i++) {
+    d.caught[i] = base.caught[i] + d.caught[i];
+    if (base.bestG[i] > d.bestG[i]) d.bestG[i] = base.bestG[i];
+    if (base.bestMm[i] > d.bestMm[i]) d.bestMm[i] = base.bestMm[i];
+  }
+  base.claims.addAll(d.claims);
+  d.claims = base.claims;
+  d.broken = false;
+  d.dirty = true;
+  HEALS = HEALS + 1L;
+  @PKG@.FishLog.info("the fishing file of " + d.key + " reads again - " + (st == 1 ? "merged" : "it is gone, kept") + " the changes made meanwhile");
+}""")
+M(STORE, r"""
+public static synchronized @PKG@.FishData data(String key) {
+  if (key == null) return null;
+  @PKG@.FishData d = (@PKG@.FishData) CACHE.get(key);
+  long now = System.currentTimeMillis();
+  if (d != null) { if (d.broken) heal(d, now); return d; }
+  d = new @PKG@.FishData(key);
+  java.util.Properties[] out = new java.util.Properties[1];
+  int st = readInto(playerFile(key), out);
+  if (st == 1) fill(d, out[0]);
+  else if (st == 2) { d.broken = true; d.retryAt = now + 5000L; @PKG@.FishLog.warn("the fishing file of " + key + " is kept as it is until it reads again (nothing is written over it)"); }
+  CACHE.put(key, d);
+  return d;
+}""")
+M(STORE, r"""
+public static String text(@PKG@.FishData d) {
+  StringBuilder b = new StringBuilder();
+  b.append("# SkyyFishing - one profile's fishing progress (written by the mod; hand edits apply at the next server start)\n");
+  b.append("pond=").append(d.pond).append('\n');
+  for (int i = 0; i < d.caught.length; i++) {
+    if (d.caught[i] == 0 && d.bestG[i] == 0) continue;
+    String s = @PKG@.FishDefs.SP_KEY[i];
+    b.append("sp.").append(s).append(".n=").append(d.caught[i]).append('\n');
+    b.append("sp.").append(s).append(".g=").append(d.bestG[i]).append('\n');
+    b.append("sp.").append(s).append(".mm=").append(d.bestMm[i]).append('\n');
+  }
+  b.append("claims=").append(d.claims.size()).append('\n');
+  for (int i = 0; i < d.claims.size(); i++) b.append("claim.").append(i).append('=').append((String) d.claims.get(i)).append('\n');
+  return b.toString();
+}""")
+M(STORE, r"""
+public static synchronized void loadServer() {
+  java.util.Properties r = DIR == null ? null : readFile(DIR.resolve("records.properties"));
+  java.util.Properties m = DIR == null ? null : readFile(DIR.resolve("demand.properties"));
+  for (int i = 0; i < REC_G.length; i++) {
+    String s = @PKG@.FishDefs.SP_KEY[i];
+    REC_G[i] = ip(r, "sp." + s + ".g");
+    REC_BY[i] = r == null ? null : r.getProperty("sp." + s + ".by");
+    DEM[i] = 1.0;
+    DEM_T[i] = 0L;
+    String dv = m == null ? null : m.getProperty("sp." + s + ".d");
+    String tv = m == null ? null : m.getProperty("sp." + s + ".t");
+    try { if (dv != null) DEM[i] = @PKG@.FishMath.clamp(Double.parseDouble(dv.trim()), 0.0, 1.0); } catch (Throwable t) { DEM[i] = 1.0; }
+    try { if (tv != null) DEM_T[i] = Long.parseLong(tv.trim()); } catch (Throwable t2) { DEM_T[i] = 0L; }
+  }
+}""")
+M(STORE, r"""
+public static synchronized String recordsText() {
+  StringBuilder b = new StringBuilder("# SkyyFishing - server records (heaviest fish per species)\n");
+  for (int i = 0; i < REC_G.length; i++) {
+    if (REC_G[i] <= 0) continue;
+    String s = @PKG@.FishDefs.SP_KEY[i];
+    b.append("sp.").append(s).append(".g=").append(REC_G[i]).append('\n');
+    if (REC_BY[i] != null) b.append("sp.").append(s).append(".by=").append(REC_BY[i].replace('\n', ' ').replace('=', ' ')).append('\n');
+  }
+  return b.toString();
+}""")
+M(STORE, r"""
+public static synchronized String demandText() {
+  StringBuilder b = new StringBuilder("# SkyyFishing - fish demand (each sale lowers a species' price; it recovers over time)\n");
+  for (int i = 0; i < DEM.length; i++) {
+    String s = @PKG@.FishDefs.SP_KEY[i];
+    b.append("sp.").append(s).append(".d=").append(DEM[i]).append('\n');
+    b.append("sp.").append(s).append(".t=").append(DEM_T[i]).append('\n');
+  }
+  return b.toString();
+}""")
+# copy every dirty file's text under the lock, then write outside it (the scheduler thread; and at shutdown)
+M(STORE, r"""
+public static synchronized java.util.ArrayList takeDirty() {
+  java.util.ArrayList out = new java.util.ArrayList();
+  java.util.Iterator it = CACHE.values().iterator();
+  while (it.hasNext()) {
+    @PKG@.FishData d = (@PKG@.FishData) it.next();
+    if (!d.dirty) continue;
+    if (d.broken) heal(d, System.currentTimeMillis());
+    java.nio.file.Path pf = playerFile(d.key);
+    if (pf == null) { d.dirty = false; @PKG@.FishLog.warnOnce("nofile:" + d.key, "fishing progress of '" + d.key + "' cannot be saved (not a file name) - kept for this session only"); continue; }
+    if (d.broken) {
+      if (!STOPPING) continue;
+      d.dirty = false;
+      @PKG@.FishLog.warn("the fishing file of " + d.key + " never read again - this session's changes are saved to " + d.key + ".properties.unmerged");
+      out.add(new Object[] { pf.resolveSibling(d.key + ".properties.unmerged"), text(d), d });
+      continue;
+    }
+    d.dirty = false;
+    out.add(new Object[] { pf, text(d), d });
+  }
+  if (REC_DIRTY && DIR != null) { REC_DIRTY = false; out.add(new Object[] { DIR.resolve("records.properties"), recordsText(), "rec" }); }
+  if (DEM_DIRTY && DIR != null) { DEM_DIRTY = false; out.add(new Object[] { DIR.resolve("demand.properties"), demandText(), "dem" }); }
+  return out;
+}""")
+M(STORE, r"""
+public static synchronized void redirty(Object who) {
+  if (who instanceof @PKG@.FishData) ((@PKG@.FishData) who).dirty = true;
+  else if ("rec".equals(who)) REC_DIRTY = true;
+  else if ("dem".equals(who)) DEM_DIRTY = true;
+}""")
+M(STORE, r"""
+public static void flush() {
+  java.util.ArrayList l = takeDirty();
+  for (int i = 0; i < l.size(); i++) {
+    Object[] w = (Object[]) l.get(i);
+    if (!writeFile((java.nio.file.Path) w[0], (String) w[1])) redirty(w[2]);
+  }
+}""")
+M(STORE, r"""
+public static synchronized void start(java.nio.file.Path modsDir) {
+  STOPPING = false;
+  DIR = modsDir == null ? null : modsDir.resolve("Skyy_SkyyFishing");
+  CACHE.clear();
+  loadServer();
+}""")
+# a landed fish: Pond Fish +1, caught +1, personal best; answers bits 1 = new personal best (heavier), 2 = first of the species
+M(STORE, r"""
+public static synchronized int onCatch(String key, int sp, int grams, int mm) {
+  @PKG@.FishData d = data(key);
+  if (d == null || sp < 0 || sp >= d.caught.length) return 0;
+  int r = 0;
+  if (d.caught[sp] == 0) r = r | 2;
+  d.pond = d.pond + 1;
+  d.caught[sp] = d.caught[sp] + 1;
+  if (grams > d.bestG[sp]) { if (d.bestG[sp] > 0) r = r | 1; d.bestG[sp] = grams; }
+  if (mm > d.bestMm[sp]) d.bestMm[sp] = mm;
+  d.dirty = true;
+  return r;
+}""")
+M(STORE, r"""
+public static synchronized boolean serverRecord(int sp, int grams, String who) {
+  if (sp < 0 || sp >= REC_G.length || grams <= REC_G[sp]) return false;
+  REC_G[sp] = grams;
+  REC_BY[sp] = who;
+  REC_DIRTY = true;
+  return true;
+}""")
+M(STORE, "public static synchronized int pond(String key) { @PKG@.FishData d = data(key); return d == null ? 0 : d.pond; }")
+M(STORE, r"""
+public static synchronized void setPond(String key, int n) {
+  @PKG@.FishData d = data(key);
+  if (d == null) return;
+  d.pond = n < 0 ? 0 : n;
+  d.dirty = true;
+}""")
+M(STORE, r"""
+public static synchronized void addClaim(String key, String claim) {
+  @PKG@.FishData d = data(key);
+  if (d == null || claim == null) return;
+  d.claims.add(claim);
+  d.dirty = true;
+}""")
+M(STORE, r"""
+public static synchronized String[] claims(String key) {
+  @PKG@.FishData d = data(key);
+  if (d == null || d.claims.isEmpty()) return new String[0];
+  String[] a = new String[d.claims.size()];
+  for (int i = 0; i < a.length; i++) a[i] = (String) d.claims.get(i);
+  return a;
+}""")
+M(STORE, r"""
+public static synchronized boolean hasClaims(String key) {
+  @PKG@.FishData d = data(key);
+  return d != null && !d.claims.isEmpty();
+}""")
+M(STORE, r"""
+public static synchronized boolean dropClaim(String key, String claim) {
+  @PKG@.FishData d = data(key);
+  if (d == null) return false;
+  boolean r = d.claims.remove(claim);
+  if (r) d.dirty = true;
+  return r;
+}""")
+M(STORE, r"""
+public static synchronized double demand(int sp, long now) {
+  if (sp < 0 || sp >= DEM.length) return 1.0;
+  return @PKG@.FishMath.demandNow(DEM[sp], DEM_T[sp], now, @PKG@.FishCfg.DEM_HALF);
+}""")
+M(STORE, r"""
+public static synchronized void sold(int sp, long now) {
+  if (sp < 0 || sp >= DEM.length) return;
+  double d = @PKG@.FishMath.demandNow(DEM[sp], DEM_T[sp], now, @PKG@.FishCfg.DEM_HALF);
+  DEM[sp] = @PKG@.FishMath.demandAfter(d, @PKG@.FishCfg.DEM_PER, @PKG@.FishCfg.DEM_FLOOR);
+  DEM_T[sp] = now;
+  DEM_DIRTY = true;
+}""")
+M(STORE, r"""
+public static synchronized int[] best(String key, int sp) {
+  @PKG@.FishData d = data(key);
+  if (d == null || sp < 0 || sp >= d.caught.length) return new int[] { 0, 0, 0 };
+  return new int[] { d.caught[sp], d.bestG[sp], d.bestMm[sp] };
+}""")
+M(STORE, r"""
+public static synchronized int recordG(int sp) {
+  return sp < 0 || sp >= REC_G.length ? 0 : REC_G[sp];
+}""")
+
+# ---------------------------------------------------------------- FishRig: what lives in an item's metadata (rod rigs, fish weights) + tooltips
+for _f in ("public static final int ST_MAXKG = 0;", "public static final int ST_POWER = 1;", "public static final int ST_SPEED = 2;",
+           "public static final int ST_TREASURE = 3;", "public static final int ST_LUCK = 4;", "public static final int ST_BAR = 5;",
+           "public static final int ST_TIME = 6;", "public static final int ST_SURGE = 7;", "public static final int ST_DOUBLE = 8;",
+           "public static final int ST_JUNK = 9;", "public static final int ST_WISDOM = 10;", "public static final int ST_DEEP = 11;"):
+    F(RIG, _f)
+M(RIG, r"""
+public static @BD@ doc(@IS@ s) {
+  try {
+    if (s == null || s.isEmpty()) return null;
+    @BD@ m = s.getMetadata();
+    if (m == null) return null;
+    @BV@ v = m.get(@PKG@.FishDefs.META);
+    return v != null && v.isDocument() ? v.asDocument() : null;
+  } catch (Throwable t) { return null; }
+}""")
+M(RIG, r"""
+public static String str(@BD@ d, String k) {
+  try {
+    @BV@ v = d == null ? null : d.get(k);
+    return v != null && v.isString() ? v.asString().getValue() : "";
+  } catch (Throwable t) { return ""; }
+}""")
+M(RIG, r"""
+public static int num(@BD@ d, String k) {
+  try {
+    @BV@ v = d == null ? null : d.get(k);
+    if (v == null) return 0;
+    if (v.isInt32()) return v.asInt32().getValue();
+    if (v.isInt64()) return (int) v.asInt64().getValue();
+    if (v.isDouble()) return (int) v.asDouble().getValue();
+  } catch (Throwable t) { }
+  return 0;
+}""")
+# a rod's rig: { reel tier "0".."8", hook id, line id, sinker id } ("" = empty); a rod with no metadata (a SkyyReelProbe rod already in an
+# inventory) = its own tier's reel when that reel is an item (Bamboo / Copper / Iron - what its icon shows), else none
+M(RIG, r"""
+public static String[] rigOf(@IS@ s) {
+  @BD@ d = doc(s);
+  String[] r = new String[] { "0", "", "", "" };
+  if (d == null) {
+    int ri = s == null || s.isEmpty() ? -1 : @PKG@.FishDefs.rodIndex(s.getItemId());
+    if (ri >= 0 && @PKG@.FishDefs.reelPowerIndex(ri + 1) >= 0) r[0] = String.valueOf(ri + 1);
+    return r;
+  }
+  int reel = num(d, "reel");
+  r[0] = String.valueOf(reel >= 0 && reel <= 8 ? reel : 0);
+  r[1] = str(d, "hook");
+  r[2] = str(d, "line");
+  r[3] = str(d, "sinker");
+  for (int i = 1; i < 4; i++) if (r[i].length() > 0 && @PKG@.FishDefs.partSlot(r[i]) != i) r[i] = "";
+  return r;
+}""")
+M(RIG, r"""
+public static int reelOf(String[] rig) {
+  try { return Integer.parseInt(rig[0]); } catch (Throwable t) { return 0; }
+}""")
+# the rig's numbers: rod max kg, reel power, then the parts' stats added up and capped (FishCfg caps)
+M(RIG, r"""
+public static double[] stats(int rodIdx, String[] rig) {
+  double[] s = new double[12];
+  s[ST_MAXKG] = @PKG@.FishCfg.rodKg(rodIdx);
+  s[ST_POWER] = @PKG@.FishCfg.reelPower(reelOf(rig));
+  for (int i = 1; i < 4; i++) {
+    int p = @PKG@.FishDefs.partIndex(rig[i]);
+    if (p < 0) continue;
+    int st = @PKG@.FishDefs.KIND_STAT[@PKG@.FishDefs.PART_KIND[p]];
+    s[st] = s[st] + @PKG@.FishCfg.partValue(p);
+  }
+  double[] cap = @PKG@.FishCfg.CAP;
+  for (int i = 0; i < cap.length && i < @PKG@.FishCfg.CAP_STAT.length; i++) {
+    int st = @PKG@.FishCfg.CAP_STAT[i];
+    if (s[st] > cap[i]) s[st] = cap[i];
+  }
+  if (s[ST_JUNK] > 100.0) s[ST_JUNK] = 100.0;
+  return s;
+}""")
+M(RIG, r"""
+public static String partLine(String id) {
+  int p = @PKG@.FishDefs.partIndex(id);
+  if (p < 0) return "-";
+  int k = @PKG@.FishDefs.PART_KIND[p];
+  return @PKG@.FishDefs.partName(id) + " (" + @PKG@.FishDefs.KIND_PRE[k] + @PKG@.FishMath.num(@PKG@.FishCfg.partValue(p), 1) + @PKG@.FishDefs.KIND_POST[k] + ")";
+}""")
+M(RIG, r"""
+public static java.util.ArrayList rodLines(int ri, String[] rig) {
+  java.util.ArrayList l = new java.util.ArrayList();
+  int reel = reelOf(rig);
+  l.add("Max fish weight: " + @PKG@.FishMath.num(@PKG@.FishCfg.rodKg(ri), 1) + " kg");
+  l.add("Reel: " + (reel > 0 ? @PKG@.FishDefs.TIERS[reel - 1] + " Reel (power " + @PKG@.FishMath.num(@PKG@.FishCfg.reelPower(reel), 1) + ")" : "none - fit one at a Fishing Bench"));
+  l.add("Hook: " + partLine(rig[1]));
+  l.add("Line: " + partLine(rig[2]));
+  l.add("Sinker: " + partLine(rig[3]));
+  return l;
+}""")
+M(RIG, r"""
+public static @MSG@ lines(java.util.ArrayList l, String col) {
+  @MSG@ m = @MSG@.empty();
+  for (int i = 0; i < l.size(); i++) {
+    if (i > 0) m.insert(@MSG@.raw("\n"));
+    m.insert(@MSG@.raw((String) l.get(i)).color(col));
+  }
+  return m;
+}""")
+# a rod stack with this rig: the metadata document + the tooltip (ItemDisplayMetadata: name + the rig lines)
+M(RIG, r"""
+public static @IS@ withRig(@IS@ rod, String[] rig) {
+  if (rod == null) return null;
+  int ri = @PKG@.FishDefs.rodIndex(rod.getItemId());
+  @BD@ d = new @BD@();
+  d.append("v", new org.bson.BsonInt32(1));
+  d.append("reel", new org.bson.BsonInt32(reelOf(rig)));
+  d.append("hook", new org.bson.BsonString(rig[1] == null ? "" : rig[1]));
+  d.append("line", new org.bson.BsonString(rig[2] == null ? "" : rig[2]));
+  d.append("sinker", new org.bson.BsonString(rig[3] == null ? "" : rig[3]));
+  @IS@ out = rod.withMetadata(@PKG@.FishDefs.META, (@BV@) d);
+  @IDM@ disp = new @IDM@(@MSG@.raw(@PKG@.FishDefs.rodName(ri)), lines(rodLines(ri, rig), @PKG@.FishDefs.COL_VALUE));
+  return out.withMetadata(@IDM@.KEYED_CODEC, disp);
+}""")
+M(RIG, r"""
+public static String[] freshRig(String rodId) {
+  if ("SkyyFishing_Rod_Bamboo".equals(rodId)) return new String[] { "1", "", "", "" };
+  return new String[] { "0", "", "", "" };
+}""")
+# the click-safety signature of a stack: id + quantity + the metadata's JSON hash (a stale page row never acts on another stack)
+M(RIG, r"""
+public static String sig(@IS@ s) {
+  if (s == null || s.isEmpty()) return "-";
+  String m = "";
+  try { @BD@ d = s.getMetadata(); if (d != null) m = Integer.toHexString(d.toJson().hashCode()); } catch (Throwable t) { m = "?"; }
+  return s.getItemId() + "|" + s.getQuantity() + "|" + m;
+}""")
+# a whole fish: id per species, weight (grams) + length (mm) + catcher in the metadata, the tooltip in the rarity colour
+M(RIG, r"""
+public static @IS@ makeFish(int sp, int grams, int mm, String by) {
+  @BD@ d = new @BD@();
+  d.append("v", new org.bson.BsonInt32(1));
+  d.append("g", new org.bson.BsonInt32(grams));
+  d.append("mm", new org.bson.BsonInt32(mm));
+  d.append("by", new org.bson.BsonString(by == null ? "" : by));
+  @IS@ s = new @IS@(@PKG@.FishDefs.FISH[sp], 1).withMetadata(@PKG@.FishDefs.META, (@BV@) d);
+  int r = @PKG@.FishDefs.SP_RAR[sp];
+  java.util.ArrayList l = new java.util.ArrayList();
+  l.add(@PKG@.FishDefs.RAR_NAME[r] + " fish - " + @PKG@.FishMath.kg(grams) + ", " + @PKG@.FishMath.cm(mm));
+  if (by != null && by.length() > 0) l.add("Caught by " + by);
+  l.add("Sell it or fillet it at a Fishing Bench.");
+  @IDM@ disp = new @IDM@(@MSG@.raw(@PKG@.FishDefs.SP_NAME[sp]).color(@PKG@.FishDefs.RAR_HEX[r]), lines(l, @PKG@.FishDefs.COL_VALUE));
+  return s.withMetadata(@IDM@.KEYED_CODEC, disp);
+}""")
+M(RIG, "public static int grams(@IS@ s) { return num(doc(s), \"g\"); }")
+M(RIG, "public static int mm(@IS@ s) { return num(doc(s), \"mm\"); }")
+M(RIG, r"""
+public static boolean itemOk(String id) {
+  if (id == null || id.length() == 0) return false;
+  try {
+    com.hypixel.hytale.assetstore.map.DefaultAssetMap m = @ITM@.getAssetMap();
+    if (m == null || m.getAssetCount() <= 0) return true;
+    return m.getAsset(id) != null;
+  } catch (Throwable t) { return true; }
+}""")
+
+# ---------------------------------------------------------------- FishHudDoc: the fight widget (one inline HUD document per state; kit colours)
+# Flat absolute layout inside one box (the SkyyHud widget structure, proven in game); the bar = the bare ProgressBar SkyyHud's combat widget
+# shows in game (kit TEX paths). Every text is b.set (punctuation-safe). 1080p canvas: the box is centred, fish.hud.offsetY from the bottom.
+HUD_W, HUD_H = 440, 96
+HUD_LEFT = 960 - HUD_W // 2
+HS = {"BITE": 1, "FIGHT": 2, "SURGE": 3, "LANDED": 4, "LOST": 5}
+_hj = SUI.J
+_box = SUI.group("SkyyFishW", None, w=HUD_W, h=HUD_H, anchor={"bottom": _hj("y", "200"), "left": HUD_LEFT}, bg="hud")
+_head = SUI.label("SkyyFishWHead", "", size=16, bold=True, col=_hj("hc", COL["warning"]), w=250, h=22, anchor={"left": 20, "top": 10})
+_right = SUI.label("SkyyFishWTime", "", size=16, bold=True, col=_hj("rc", COL["value"]), w=150, h=22, align="End", anchor={"left": 270, "top": 10})
+_hint = SUI.label("SkyyFishWHint", "", size=14, col=COL["caption"], w=270, h=22, anchor={"left": 20, "top": 64})
+_cps = SUI.label("SkyyFishWCps", "", size=14, bold=True, col=COL["info"], w=130, h=22, align="End", anchor={"left": 290, "top": 64})
+_l1 = SUI.label("SkyyFishWLine", "", size=16, bold=True, col=COL["white"], w=350, h=22, anchor={"left": 70, "top": 40})
+_l2 = SUI.label("SkyyFishWRec", "", size=14, bold=True, col=COL["gold"], w=350, h=22, anchor={"left": 70, "top": 64})
+_lost = SUI.label("SkyyFishWLine", "", size=16, col=COL["text"], w=400, h=22, anchor={"left": 20, "top": 46})
+_icon = SUI.item_icon("SkyyFishWIcon", _hj("icon", "Ingredient_Stick"), 40, anchor={"left": 20, "top": 40})
+BAR_MK = ('ProgressBar #SkyyFishWBar { Anchor: (Left: 20, Top: 38, Width: 400, Height: 18); Background: "%s"; BarTexturePath: "%s"; Value: 0.35; }'
+          % (SUI.TEX["progress"], SUI.TEX["progressFill"]))
+_tick = SUI.group("SkyyFishWTick", None, w=2, h=24, anchor={"left": _hj("tickX", "160"), "top": 35}, bg="gold")
+
+
+def _ja(parent, mk):
+    return SUI.java_append(parent, mk, page_root=False)
+
+
+HUD_ROOT_JAVA = 'b.appendInline((String) null, "Group #SkyyFishRoot { Anchor: (Full: 0); }");'
+_bar_java = "b.appendInline(\"#SkyyFishW\", %s);" % jstr(BAR_MK)
+M(HDOC, r"""
+public static double dnum(String s, double d) {
+  if (s == null) return d;
+  try { double v = Double.parseDouble(s.trim()); return v != v ? d : v; } catch (Throwable t) { return d; }
+}""")
+M(HDOC, r"""
+public static String safe(String s) {
+  return s == null ? "" : s;
+}""")
+M(HDOC, "public static String itemSafe(String s) {\n  if (s == null) return \"Ingredient_Stick\";\n"
+        "  for (int i = 0; i < s.length(); i++) { char c = s.charAt(i); if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_')) return \"Ingredient_Stick\"; }\n"
+        "  return @PKG@.FishRig.itemOk(s) ? s : \"Ingredient_Stick\";\n}")
+# txt: [0] head, [1] right text, [2] hint / line 1, [3] click rate / line 2, [4] icon item, [5] head colour, [6] right colour, [7] start tick %
+M(HDOC, ("public static void fill(@UCB@ b, int state, String[] txt, int y) {\n"
+         "  String hc = txt != null && txt.length > 5 && txt[5] != null ? txt[5] : @PKG@.FishDefs.COL_WARN;\n"
+         "  String rc = txt != null && txt.length > 6 && txt[6] != null ? txt[6] : @PKG@.FishDefs.COL_VALUE;\n"
+         "  String icon = itemSafe(txt != null && txt.length > 4 ? txt[4] : null);\n"
+         "  int tickX = 19 + (int) Math.round(4.0 * @PKG@.FishMath.clamp(dnum(txt != null && txt.length > 7 ? txt[7] : null, 35.0), 0.0, 100.0));\n"
+         "  %s\n  %s\n  %s\n  %s\n"
+         "  if (state == 1 || state == 2 || state == 3) {\n    %s\n    %s\n    %s\n  }\n"
+         "  if (state == 2 || state == 3) {\n    %s\n  }\n"
+         "  if (state == 4) {\n    %s\n    %s\n    %s\n  }\n"
+         "  if (state == 5) {\n    %s\n  }\n"
+         "  b.set(\"#SkyyFishWHead.Text\", safe(txt == null ? null : txt[0]));\n"
+         "  b.set(\"#SkyyFishWTime.Text\", safe(txt == null ? null : txt[1]));\n"
+         "  if (state <= 3) { b.set(\"#SkyyFishWHint.Text\", safe(txt == null ? null : txt[2])); b.set(\"#SkyyFishWCps.Text\", safe(txt == null ? null : txt[3])); }\n"
+         "  else { b.set(\"#SkyyFishWLine.Text\", safe(txt == null ? null : txt[2])); }\n"
+         "  if (state == 4) b.set(\"#SkyyFishWRec.Text\", safe(txt == null ? null : txt[3]));\n"
+         "}") % (HUD_ROOT_JAVA, _ja("SkyyFishRoot", _box), _ja("SkyyFishW", _head), _ja("SkyyFishW", _right),
+                 _bar_java, _ja("SkyyFishW", _hint), _ja("SkyyFishW", _cps), _ja("SkyyFishW", _tick),
+                 _ja("SkyyFishW", _icon), _ja("SkyyFishW", _l1), _ja("SkyyFishW", _l2), _ja("SkyyFishW", _lost)))
+M(HDOC, r"""
+public static void sets(@UCB@ b, float bar, String time, String cps) {
+  b.set("#SkyyFishWBar.Value", bar);
+  if (time != null) b.set("#SkyyFishWTime.Text", time);
+  if (cps != null) b.set("#SkyyFishWCps.Text", cps);
+}""")
+
+# ---------------------------------------------------------------- FishHud: our own keyed HUD "SkyyFishingHud" (SkyyHud's documents are never touched)
+for _f in ("public volatile int state;", "public volatile String[] txt;", "public volatile int y;", "public volatile boolean gone;"):
+    F(HUD, _f)
+C(HUD, "public FishHud(@PR@ pr) { super(pr, @PKG@.FishDefs.HUD_KEY, 4); this.state = 0; this.txt = new String[8]; this.y = 200; }")
+M(HUD, "protected void build(@UCB@ b) { @PKG@.FishHudDoc.fill(b, this.state, this.txt, this.y); }")
+M(HUD, "protected void onRemove() { this.gone = true; }")
+
+# ---------------------------------------------------------------- FishBobberTask: spawn / remove the bobber on its world thread (never inside a tick)
+# the vanilla ChangeModelPage preview recipe: NetworkId + NonSerialized (never saved - a crash leaves no bobber behind) + Transform + Model +
+# HeadRotation; + Nameplate (the "!") + Intangible (nothing collides with it)
+for _f in ("public int mode;", "public @PKG@.FishState s;", "public @WLD@ world;", "public @REF@ ref;", "public long gen;"):
+    F(BOB, _f)
+F(BOB, "public static volatile long SPAWNED = 0L;")
+F(BOB, "public static volatile long REMOVED = 0L;")
+F(BOB, "public static volatile String LAST_FAIL = null;")
+C(BOB, r"""
+public FishBobberTask(int mode, @PKG@.FishState s, @WLD@ world, @REF@ ref) {
+  this.mode = mode; this.s = s; this.world = world; this.ref = ref; this.gen = s == null ? 0L : s.gen;
+}""")
+M(BOB, r"""
+public static @HOL@ holder(@ST@ st, double x, double y, double z) {
+  @HOL@ h = st.getRegistry().newHolder();
+  h.addComponent(@NID@.getComponentType(), new @NID@(((@EST@) st.getExternalData()).takeNextNetworkId()));
+  h.addComponent(@EST@.REGISTRY.getNonSerializedComponentType(), @NSER@.get());
+  h.addComponent(@TC@.getComponentType(), new @TC@(new @V3D@(x, y, z), new @R3F@()));
+  Object ma = @MDA@.getAssetMap().getAsset(@PKG@.FishDefs.BOBBER);
+  if (ma instanceof @MDA@) h.addComponent(@MC@.getComponentType(), new @MC@(@MDL@.createScaledModel((@MDA@) ma, 1.0f)));
+  else @PKG@.FishLog.warnOnce("bobbermodel", "the bobber model " + @PKG@.FishDefs.BOBBER + " is not loaded - the bobber is invisible");
+  h.addComponent(@HR@.getComponentType(), new @HR@(new @R3F@()));
+  h.addComponent(@NPL@.getComponentType(), new @NPL@(""));
+  h.addComponent(@INT@.getComponentType(), @INT@.INSTANCE);
+  return h;
+}""")
+M(BOB, r"""
+public void run() {
+  try {
+    if (this.mode == 1) {
+      if (this.s == null || this.s.ended || this.s.gen != this.gen || this.world == null) return;
+      @ST@ st = this.world.getEntityStore().getStore();
+      @REF@ r = st.addEntity(holder(st, this.s.bx, this.s.by, this.s.bz), @ADR@.SPAWN);
+      SPAWNED = SPAWNED + 1L;
+      if (this.s.ended || this.s.gen != this.gen) {
+        if (r != null && r.isValid()) { st.removeEntity(r, @RR@.REMOVE); REMOVED = REMOVED + 1L; }
+        return;
+      }
+      this.s.bobber = r;
+      return;
+    }
+    @REF@ r2 = this.ref;
+    if (r2 != null && r2.isValid()) { r2.getStore().removeEntity(r2, @RR@.REMOVE); REMOVED = REMOVED + 1L; }
+  } catch (Throwable t) {
+    LAST_FAIL = String.valueOf(t);
+    @PKG@.FishLog.warnOnce("bobber:" + this.mode + ":" + t.getClass().getName(), "the bobber could not be " + (this.mode == 1 ? "placed" : "removed") + ": " + t);
+  }
+}""")
+BOB.addInterface(pool.get("java.lang.Runnable"))
+
+# ---------------------------------------------------------------- FishGiveTask: hand saved catches over on the world thread (never inside the tick)
+GIVE.addInterface(pool.get("java.lang.Runnable"))
+F(GIVE, "public @PKG@.FishCtx c;")
+F(GIVE, "public String key;")
+C(GIVE, "public FishGiveTask(@PKG@.FishCtx c, String key) { this.c = c; this.key = key; }")
+
+# ---------------------------------------------------------------- FishEngApi: the game's side of FishApi (world thread; every call guarded)
+EAPI.addInterface(API)
+for _f in ("public static volatile int CLICK_I = -1;", "public static volatile int STAT_I = -2;", "public static volatile long CLICKS = 0L;",
+           "public static final java.util.concurrent.ConcurrentHashMap SND = new java.util.concurrent.ConcurrentHashMap();"):
+    F(EAPI, _f)
+C(EAPI, "public FishEngApi() { }")
+M(EAPI, r"""
+public static @CAC@ acc(@PKG@.FishCtx c) {
+  return c.acc != null ? c.acc : (@CAC@) c.store;
+}""")
+M(EAPI, r"""
+public double[] eye(@PKG@.FishCtx c) {
+  try {
+    @TC@ tc = (@TC@) acc(c).getComponent(c.ref, @TC@.getComponentType());
+    @HR@ hr = (@HR@) acc(c).getComponent(c.ref, @HR@.getComponentType());
+    if (tc == null || hr == null) return null;
+    @V3D@ p = tc.getPosition();
+    @V3D@ d = hr.getDirection();
+    double eh = 1.6;
+    try { eh = (double) @MC@.getEyeHeight(c.ref, acc(c)); } catch (Throwable te) { eh = 1.6; }
+    double len = Math.sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
+    if (len < 1.0E-6) return null;
+    return new double[] { p.x, p.y + eh, p.z, d.x / len, d.y / len, d.z / len };
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("eye", "could not read where a player looks: " + t); return null; }
+}""")
+M(EAPI, r"""
+public double[] feet(@PKG@.FishCtx c) {
+  try {
+    @TC@ tc = (@TC@) acc(c).getComponent(c.ref, @TC@.getComponentType());
+    if (tc == null) return null;
+    @V3D@ p = tc.getPosition();
+    return new double[] { p.x, p.y, p.z };
+  } catch (Throwable t) { return null; }
+}""")
+M(EAPI, r"""
+public int heldSlot(@PKG@.FishCtx c) {
+  try {
+    @HOTB@ h = (@HOTB@) acc(c).getComponent(c.ref, @HOTB@.getComponentType());
+    if (h == null) return -1;
+    int s = (int) h.getActiveSlot();
+    return s < 0 ? -1 : s;
+  } catch (Throwable t) { return -1; }
+}""")
+M(EAPI, r"""
+public @IS@ held(@PKG@.FishCtx c) {
+  try {
+    @HOTB@ h = (@HOTB@) acc(c).getComponent(c.ref, @HOTB@.getComponentType());
+    return h == null ? null : h.getActiveItem();
+  } catch (Throwable t) { return null; }
+}""")
+M(EAPI, r"""
+public static int clickIndex() {
+  int i = CLICK_I;
+  if (i >= 0) return i;
+  try { i = @EFX@.getAssetMap().getIndex(@PKG@.FishDefs.CLICK); } catch (Throwable t) { i = -1; }
+  if (i >= 0) CLICK_I = i;
+  return i;
+}""")
+# a rod click = the SkyyFishing_Click effect our root interaction applies; consumed here (one click per tick)
+M(EAPI, r"""
+public boolean clicked(@PKG@.FishCtx c) {
+  try {
+    int i = clickIndex();
+    if (i < 0) return false;
+    @ECC@ e = (@ECC@) acc(c).getComponent(c.ref, @ECC@.getComponentType());
+    if (e == null || !e.hasEffect(i)) return false;
+    e.removeEffect(c.ref, i, acc(c));
+    CLICKS = CLICKS + 1L;
+    return true;
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("click", "could not read a rod click: " + t); return false; }
+}""")
+# the block at (x, y, z) of the player's world, never loading a chunk: 1 water (any Water* fluid), 2 solid, 0 open, -1 not loaded
+M(EAPI, r"""
+public int block(@PKG@.FishCtx c, int x, int y, int z) {
+  try {
+    if (y < 0 || y > 319 || c.world == null) return -1;
+    @CHS@ cs = c.world.getChunkStore();
+    @ST@ cst = cs.getStore();
+    @REF@ sr = cs.getChunkSectionReferenceAtBlock(x, y, z);
+    if (sr == null || !sr.isValid()) return -1;
+    @FSC@ fs = (@FSC@) cst.getComponent(sr, @FSC@.getComponentType());
+    if (fs != null) {
+      int fid = fs.getFluidId(x, y, z);
+      if (fid != @FLU@.EMPTY_ID) {
+        Object fl = @FLU@.getAssetMap().getAsset(fid);
+        if (fl instanceof @FLU@ && ((@FLU@) fl).getId() != null && ((@FLU@) fl).getId().startsWith("Water")) return 1;
+      }
+    }
+    @BSC@ sec = (@BSC@) cst.getComponent(sr, @BSC@.getComponentType());
+    if (sec == null) return -1;
+    int id = sec.get(x, y, z);
+    if (id == @BTY@.EMPTY_ID) return 0;
+    Object o = @BTY@.getAssetMap().getAsset(id);
+    if (!(o instanceof @BTY@)) return 2;
+    return ((@BTY@) o).getMaterial() == @BMAT@.Solid ? 2 : 0;
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("block", "could not read a block for a cast: " + t); return -1; }
+}""")
+M(EAPI, r"""
+public static int statIndex() {
+  int i = STAT_I;
+  if (i >= 0) return i;
+  try { i = @ESTT@.getAssetMap().getIndex(@PKG@.FishDefs.STAT); } catch (Throwable t) { i = -1; }
+  if (i >= 0) STAT_I = i;
+  return i;
+}""")
+M(EAPI, r"""
+public int getReel(@PKG@.FishCtx c) {
+  try {
+    int i = statIndex();
+    if (i < 0) return -1;
+    @ESM@ m = (@ESM@) acc(c).getComponent(c.ref, @ESM@.getComponentType());
+    @ESV@ v = m == null ? null : m.get(i);
+    return v == null ? -1 : Math.round(v.get());
+  } catch (Throwable t) { return -1; }
+}""")
+M(EAPI, r"""
+public void setReel(@PKG@.FishCtx c, int v) {
+  try {
+    int i = statIndex();
+    if (i < 0) { @PKG@.FishLog.warnOnce("stat", "the " + @PKG@.FishDefs.STAT + " stat is not loaded - rods show their default reel"); return; }
+    @ESM@ m = (@ESM@) acc(c).getComponent(c.ref, @ESM@.getComponentType());
+    if (m != null && m.get(i) != null) m.setStatValue(i, (float) v);
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("setstat", "could not set the reel look: " + t); }
+}""")
+M(EAPI, r"""
+public void spawnBobber(@PKG@.FishCtx c, @PKG@.FishState s) {
+  try { c.world.execute(new @PKG@.FishBobberTask(1, s, c.world, null)); }
+  catch (Throwable t) { @PKG@.FishLog.warnOnce("spawn", "could not queue the bobber: " + t); }
+}""")
+M(EAPI, r"""
+public static boolean here(@PKG@.FishCtx c, @REF@ r) {
+  return r != null && r.isValid() && r.getStore() == c.store;
+}""")
+M(EAPI, r"""
+public void moveBobber(@PKG@.FishCtx c, @PKG@.FishState s, double x, double y, double z) {
+  try {
+    @REF@ r = s.bobber;
+    if (!here(c, r)) return;
+    @TC@ tc = (@TC@) acc(c).getComponent(r, @TC@.getComponentType());
+    if (tc != null) tc.setPosition(new @V3D@(x, y, z));
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("move", "could not move the bobber: " + t); }
+}""")
+M(EAPI, r"""
+public void tagBobber(@PKG@.FishCtx c, @PKG@.FishState s, String text) {
+  try {
+    @REF@ r = s.bobber;
+    if (!here(c, r)) return;
+    @NPL@ n = (@NPL@) acc(c).getComponent(r, @NPL@.getComponentType());
+    if (n != null) n.setText(text == null ? "" : text);
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("tag", "could not show the bite mark: " + t); }
+}""")
+M(EAPI, r"""
+public void removeBobber(@PKG@.FishState s) {
+  try {
+    @REF@ r = s.bobber;
+    s.bobber = null;
+    if (r != null && s.world != null) s.world.execute(new @PKG@.FishBobberTask(2, s, s.world, r));
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("remove", "could not queue the bobber removal: " + t); }
+}""")
+M(EAPI, r"""
+public void particle(@PKG@.FishCtx c, String id, double x, double y, double z) {
+  try { @PTU@.spawnParticleEffect(id, new @V3D@(x, y, z), acc(c)); }
+  catch (Throwable t) { @PKG@.FishLog.warnOnce("particle:" + id, "particle " + id + " failed: " + t); }
+}""")
+M(EAPI, r"""
+public void sound(@PKG@.FishCtx c, String id, double x, double y, double z) {
+  try {
+    Object o = SND.get(id);
+    int i;
+    if (o instanceof Integer) i = ((Integer) o).intValue();
+    else { i = @SEV@.getAssetMap().getIndex(id); SND.put(id, Integer.valueOf(i)); }
+    if (i >= 0) @SNU@.playSoundEvent3d(i, @SCAT@.SFX, x, y, z, acc(c));
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("sound:" + id, "sound " + id + " failed: " + t); }
+}""")
+M(EAPI, r"""
+public static @PKG@.FishHud current(@PKG@.FishCtx c, @PKG@.FishState s) {
+  try {
+    if (s.hud == null || s.hud.gone) return null;
+    @PLA@ p = (@PLA@) acc(c).getComponent(c.ref, @PLA@.getComponentType());
+    if (p == null) return null;
+    return p.getHudManager().getCustomHud(@PKG@.FishDefs.HUD_KEY) == s.hud ? s.hud : null;
+  } catch (Throwable t) { return null; }
+}""")
+M(EAPI, r"""
+public void hudState(@PKG@.FishCtx c, @PKG@.FishState s, int state, String[] txt) {
+  try {
+    @PKG@.FishHud h = current(c, s);
+    if (h != null) {
+      h.state = state; h.txt = txt; h.y = @PKG@.FishCfg.HUD_Y;
+      @UCB@ b = new @UCB@();
+      @PKG@.FishHudDoc.fill(b, state, txt, h.y);
+      h.update(true, b);
+      return;
+    }
+    @PLA@ p = (@PLA@) acc(c).getComponent(c.ref, @PLA@.getComponentType());
+    if (p == null || c.pr == null) return;
+    h = new @PKG@.FishHud(c.pr);
+    h.state = state; h.txt = txt; h.y = @PKG@.FishCfg.HUD_Y;
+    s.hud = h;
+    p.getHudManager().addCustomHud(c.pr, h);
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("hud", "could not show the fishing widget: " + t); }
+}""")
+M(EAPI, r"""
+public void hudSet(@PKG@.FishCtx c, @PKG@.FishState s, float bar, String time, String cps) {
+  try {
+    @PKG@.FishHud h = current(c, s);
+    if (h == null) return;
+    @UCB@ b = new @UCB@();
+    @PKG@.FishHudDoc.sets(b, bar, time, cps);
+    h.update(false, b);
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("hudset", "could not update the fishing widget: " + t); }
+}""")
+M(EAPI, r"""
+public void hudHide(@PKG@.FishCtx c, @PKG@.FishState s) {
+  try {
+    @PKG@.FishHud h = current(c, s);
+    if (h == null) return;
+    @PLA@ p = (@PLA@) acc(c).getComponent(c.ref, @PLA@.getComponentType());
+    if (p != null) p.getHudManager().removeCustomHud(c.pr, @PKG@.FishDefs.HUD_KEY);
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("hudhide", "could not hide the fishing widget: " + t); }
+}""")
+M(EAPI, r"""
+public void tell(@PKG@.FishCtx c, String text, String col) {
+  try {
+    if (c.pr == null || text == null) return;
+    @MSG@ m = @MSG@.raw(text);
+    if (col != null) m = m.color(col);
+    c.pr.sendMessage(m);
+  } catch (Throwable t) { }
+}""")
+M(EAPI, r"""
+public @IC@ inv(@PKG@.FishCtx c) {
+  try { return @INVC@.getCombined(acc(c), c.ref, @INVC@.STORAGE_HOTBAR_BACKPACK); }
+  catch (Throwable t) { @PKG@.FishLog.warnOnce("inv", "could not open an inventory: " + t); return null; }
+}""")
+M(EAPI, "public long now() { return System.currentTimeMillis(); }")
+M(EAPI, r"""
+public void later(@PKG@.FishCtx c, java.lang.Runnable r) {
+  if (c.world == null) throw new IllegalStateException("no world");
+  c.world.execute(r);
+}""")
+M(EAPI, r"""
+public @PKG@.FishCtx fresh(@PKG@.FishCtx c) {
+  try {
+    if (c == null || c.pr == null) return null;
+    @REF@ r = c.pr.getReference();
+    if (r == null || !r.isValid()) return null;
+    @ST@ st = r.getStore();
+    if (c.world != null && st != c.world.getEntityStore().getStore()) return null;
+    return new @PKG@.FishCtx(c.uuid, c.name, r, st, (@CAC@) st, c.world, c.pr);
+  } catch (Throwable t) { return null; }
+}""")
+
+# ---------------------------------------------------------------- FishCore: the fishing loop (world thread: FishTick, once per player per tick)
+for _f in ("public static final java.util.concurrent.ConcurrentHashMap STATES = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.ConcurrentHashMap EPOCHS = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.ConcurrentHashMap SEEN = new java.util.concurrent.ConcurrentHashMap();",
+           "public static java.util.Random RNG = new java.util.Random();",
+           "public static volatile long GEN = 0L;", "public static volatile long CASTS = 0L;", "public static volatile long BITES = 0L;",
+           "public static volatile long LANDED = 0L;", "public static volatile long LOST = 0L;", "public static volatile long MISSED = 0L;",
+           "public static volatile long CANCELS = 0L;", "public static volatile long CLAIMED = 0L;", "public static volatile long DOTS = 0L;",
+           "public static volatile long DOT_WINDOW = 0L;", "public static volatile int DOT_USED = 0;",
+           "public static final int DOT_BUDGET = 120;", "public static final int MAX_DOTS = 20;", "public static volatile String LAST_WHY = \"\";",
+           "public static final java.util.concurrent.ConcurrentHashMap PAYING = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.ConcurrentHashMap FULLTOLD = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.ConcurrentHashMap EPOCH_AT = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final long SETTLE_MS = 31000L;", "public static final long PAY_STALE_MS = 10000L;",
+           "public static volatile long BAD_JUNK = 0L;",
+           "public static final java.util.concurrent.ConcurrentHashMap FORCE = new java.util.concurrent.ConcurrentHashMap();"):
+    F(CORE, _f)
+M(CORE, r"""
+public static void tell(@PKG@.FishCtx c, String s, String col) {
+  @PKG@.FishLog.info("to " + c.name + ": " + s);
+  try { @PKG@.FishEng.API.tell(c, s, col); } catch (Throwable t) { }
+}""")
+M(CORE, r"""
+public static String clean(String s) {
+  if (s == null) return "";
+  StringBuilder b = new StringBuilder();
+  for (int i = 0; i < s.length() && b.length() < 40; i++) {
+    char c = s.charAt(i);
+    b.append(c == '|' || c == '\\' || c == '=' || c == ':' || c < ' ' ? ' ' : c);
+  }
+  return b.toString();
+}""")
+M(CORE, r"""
+public static String claimOf(@IS@ s) {
+  if (s == null || s.isEmpty()) return null;
+  int sp = @PKG@.FishDefs.fishIndex(s.getItemId());
+  if (sp >= 0) {
+    String by = clean(@PKG@.FishRig.str(@PKG@.FishRig.doc(s), "by"));
+    return "F|" + @PKG@.FishDefs.SP_KEY[sp] + "|" + @PKG@.FishRig.grams(s) + "|" + @PKG@.FishRig.mm(s) + "|" + by;
+  }
+  if (@PKG@.FishDefs.rodIndex(s.getItemId()) >= 0) {
+    String[] rig = @PKG@.FishRig.rigOf(s);
+    return "R|" + s.getItemId() + "|" + rig[0] + "|" + rig[1] + "|" + rig[2] + "|" + rig[3];
+  }
+  return "I|" + s.getItemId() + "|" + s.getQuantity();
+}""")
+M(CORE, r"""
+public static @IS@ claimStack(String c) {
+  if (c == null) return null;
+  String[] a = c.split("\\|", -1);
+  try {
+    if (a[0].equals("F") && a.length >= 5) {
+      int sp = @PKG@.FishDefs.indexOf(@PKG@.FishDefs.SP_KEY, a[1]);
+      if (sp < 0) return null;
+      return @PKG@.FishRig.makeFish(sp, Integer.parseInt(a[2]), Integer.parseInt(a[3]), a[4]);
+    }
+    if (a[0].equals("R") && a.length >= 6) {
+      if (@PKG@.FishDefs.rodIndex(a[1]) < 0) return null;
+      return @PKG@.FishRig.withRig(new @IS@(a[1], 1), new String[] { a[2], a[3], a[4], a[5] });
+    }
+    if (a[0].equals("I") && a.length >= 3) {
+      int q = Integer.parseInt(a[2]);
+      if (q <= 0 || !@PKG@.FishRig.itemOk(a[1])) return null;
+      return new @IS@(a[1], q);
+    }
+  } catch (Throwable t) { }
+  return null;
+}""")
+# give storage-first (the combined storage -> hotbar -> backpack container); all or nothing; true = it is in the inventory
+M(CORE, r"""
+public static boolean give(@IC@ inv, @IS@ s) {
+  if (inv == null || s == null || s.isEmpty()) return false;
+  try {
+    java.util.ArrayList l = new java.util.ArrayList();
+    l.add(s);
+    if (!inv.canAddItemStacks(l)) return false;
+    @IST@ tx = inv.addItemStack(s);
+    @IS@ rem = tx == null ? null : tx.getRemainder();
+    return tx != null && tx.succeeded() && (rem == null || rem.isEmpty());
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("give", "could not add an item: " + t); return false; }
+}""")
+M(CORE, r"""
+public static boolean fits(@IC@ inv, @IS@ s) {
+  try {
+    java.util.ArrayList l = new java.util.ArrayList();
+    l.add(s);
+    return inv != null && inv.canAddItemStacks(l);
+  } catch (Throwable t) { return false; }
+}""")
+# a catch is SAVED FIRST as a claim on the profile it was caught on (FishStore, written within 2 s), then handed over by a world task
+# (FishGiveTask -> payClaims): a crash between the two leaves the claim, never a lost fish; a full inventory keeps it until there is room
+M(CORE, r"""
+public static void queue(String key, @IS@ s) {
+  String cl = claimOf(s);
+  if (cl != null && key != null) @PKG@.FishStore.addClaim(key, cl);
+}""")
+M(CORE, r"""
+public static boolean settling(java.util.UUID u, long now) {
+  Object t = u == null ? null : EPOCH_AT.get(u);
+  return t instanceof Long && now - ((Long) t).longValue() < SETTLE_MS;
+}""")
+M(CORE, r"""
+public static void kick(@PKG@.FishCtx c, String key) {
+  if (c == null || key == null) return;
+  long now = System.currentTimeMillis();
+  Long mine = Long.valueOf(now);
+  Object prev = PAYING.putIfAbsent(c.uuid, mine);
+  if (prev != null) {
+    if (prev instanceof Long && now - ((Long) prev).longValue() < PAY_STALE_MS) return;
+    if (!PAYING.replace(c.uuid, prev, mine)) return;
+  }
+  try { @PKG@.FishEng.API.later(c, new @PKG@.FishGiveTask(c, key)); }
+  catch (Throwable t) { PAYING.remove(c.uuid); }
+}""")
+# world thread, outside every tick (FishGiveTask); only for the ACTIVE profile (a claim of another profile waits for it)
+M(CORE, r"""
+public static void payClaims(@PKG@.FishCtx c, String key) {
+  if (c == null || key == null || !key.equals(@PKG@.FishBridge.pkey(c.uuid)) || @PKG@.FishBridge.busy(c.uuid)) return;
+  if (settling(c.uuid, @PKG@.FishEng.API.now())) return;
+  String[] cs = @PKG@.FishStore.claims(key);
+  if (cs.length == 0) return;
+  @IC@ inv = null;
+  try { inv = @PKG@.FishEng.API.inv(c); } catch (Throwable t) { inv = null; }
+  int full = 0;
+  int done = 0;
+  for (int i = 0; i < cs.length; i++) {
+    if (cs[i].startsWith("C|")) {
+      long n = 0L;
+      try { n = Long.parseLong(cs[i].substring(2)); } catch (Throwable tn) { n = 0L; }
+      if (n <= 0L) { @PKG@.FishStore.dropClaim(key, cs[i]); continue; }
+      if (!@PKG@.FishBridge.hasCoins()) continue;
+      if (!@PKG@.FishStore.dropClaim(key, cs[i])) continue;
+      if (@PKG@.FishBridge.coinsAdd(c.uuid, n)) { CLAIMED = CLAIMED + 1L; done++; }
+      else @PKG@.FishStore.addClaim(key, cs[i]);
+      continue;
+    }
+    @IS@ s = claimStack(cs[i]);
+    if (s == null) { @PKG@.FishStore.dropClaim(key, cs[i]); @PKG@.FishLog.warn("dropped an unreadable claim of " + c.name + ": " + cs[i]); continue; }
+    if (inv == null || !fits(inv, s)) { full++; continue; }
+    if (!@PKG@.FishStore.dropClaim(key, cs[i])) continue;
+    if (give(inv, s)) { CLAIMED = CLAIMED + 1L; done++; }
+    else { @PKG@.FishStore.addClaim(key, cs[i]); full++; }
+  }
+  long now = System.currentTimeMillis();
+  if (full > 0) {
+    Object last = FULLTOLD.get(c.uuid);
+    if (!(last instanceof Long) || now - ((Long) last).longValue() > 30000L) {
+      FULLTOLD.put(c.uuid, Long.valueOf(now));
+      tell(c, "Your inventory is full - " + full + (full == 1 ? " catch waits" : " catches wait") + " for you and " + (full == 1 ? "is" : "are") + " handed over as soon as you have room.", @PKG@.FishDefs.COL_WARN);
+    }
+  } else if (done > 0 && FULLTOLD.remove(c.uuid) != null) tell(c, "Your waiting catches are in your inventory now.", @PKG@.FishDefs.COL_OK);
+}""")
+# ---- the cast: find water along the aim (never loading a chunk); answers 1 ok, 0 no water in reach, 2 too shallow, 3 too narrow, 4 blocked
+M(CORE, r"""
+public static int water(@PKG@.FishCtx c, double[] eye, int[] out) {
+  @PKG@.FishApi a = @PKG@.FishEng.API;
+  int range = @PKG@.FishCfg.CAST_RANGE;
+  int lx = Integer.MIN_VALUE; int ly = 0; int lz = 0;
+  int hx = 0; int hy = 0; int hz = 0;
+  boolean hit = false;
+  boolean blocked = false;
+  int fx = (int) Math.floor(eye[0]); int fy = (int) Math.floor(eye[1]); int fz = (int) Math.floor(eye[2]);
+  for (double t = 1.0; t <= range + 0.001; t = t + 0.25) {
+    int x = (int) Math.floor(eye[0] + eye[3] * t);
+    int y = (int) Math.floor(eye[1] + eye[4] * t);
+    int z = (int) Math.floor(eye[2] + eye[5] * t);
+    if (x == lx && y == ly && z == lz) continue;
+    int b = a.block(c, x, y, z);
+    if (b == 1) { hit = true; hx = x; hy = y; hz = z; break; }
+    if (b == 2 || b == -1) { blocked = true; break; }
+    lx = x; ly = y; lz = z;
+  }
+  if (!hit) {
+    if (lx == Integer.MIN_VALUE) { lx = fx; ly = fy; lz = fz; }
+    for (int dy = 1; dy <= 10; dy++) {
+      int b2 = a.block(c, lx, ly - dy, lz);
+      if (b2 == 1) { hit = true; hx = lx; hy = ly - dy; hz = lz; break; }
+      if (b2 != 0) break;
+    }
+  }
+  if (!hit) return blocked ? 4 : 0;
+  for (int up = 0; up < 24 && a.block(c, hx, hy + 1, hz) == 1; up++) hy = hy + 1;
+  int depth = 0;
+  for (int d = 0; d < @PKG@.FishCfg.MIN_DEPTH && a.block(c, hx, hy - d, hz) == 1; d++) depth = depth + 1;
+  out[0] = hx; out[1] = hy; out[2] = hz;
+  if (depth < @PKG@.FishCfg.MIN_DEPTH) return 2;
+  if (@PKG@.FishCfg.NEED_WIDE && (a.block(c, hx + 1, hy, hz) != 1 || a.block(c, hx - 1, hy, hz) != 1 || a.block(c, hx, hy, hz + 1) != 1 || a.block(c, hx, hy, hz - 1) != 1)) return 3;
+  return 1;
+}""")
+# ---- the catch roll (hidden until it is landed): kind, then species + weight + length / junk item / Lost Property; and the bite time
+M(CORE, r"""
+public static void roll(@PKG@.FishState s, java.util.Random r, long now) {
+  double treasure = Math.min((double) @PKG@.FishCfg.KIND_TREASURE + s.stat[@PKG@.FishRig.ST_TREASURE], Math.max(@PKG@.FishCfg.CAP[1], (double) @PKG@.FishCfg.KIND_TREASURE));
+  double junk = @PKG@.FishCfg.KIND_JUNK * (1.0 - s.stat[@PKG@.FishRig.ST_JUNK] / 100.0);
+  double fish = @PKG@.FishCfg.KIND_FISH + (@PKG@.FishCfg.KIND_JUNK - junk);
+  if (fish < 0.0) fish = 0.0;
+  if (junk < 0.0) junk = 0.0;
+  if (treasure < 0.0) treasure = 0.0;
+  double tot = fish + junk + treasure;
+  double u = r.nextDouble() * (tot <= 0.0 ? 1.0 : tot);
+  s.kind = tot <= 0.0 ? 0 : (u < fish ? 0 : (u < fish + junk ? 1 : 2));
+  int forced = -1;
+  Object fz = s.uuid == null ? null : FORCE.remove(s.uuid);
+  if (fz instanceof Integer) { forced = ((Integer) fz).intValue(); s.kind = 2; }
+  s.sp = -1; s.item = null; s.qty = 0; s.coins = 0L; s.kg = 0.0; s.cm = 0.0; s.tgrade = 0;
+  double factor = 1.0;
+  if (s.kind == 0) {
+    int n = @PKG@.FishDefs.SP_KEY.length;
+    double[] w = new double[n];
+    double[] mn = @PKG@.FishCfg.SP_MIN;
+    double[] mx = @PKG@.FishCfg.SP_MAX;
+    double[] sw = @PKG@.FishCfg.SP_W;
+    for (int i = 0; i < n; i++) {
+      if (sw[i] <= 0.0 || mn[i] > s.stat[@PKG@.FishRig.ST_MAXKG]) continue;
+      w[i] = sw[i] * (@PKG@.FishDefs.SP_RAR[i] > 0 ? 1.0 + s.stat[@PKG@.FishRig.ST_LUCK] / 100.0 : 1.0);
+    }
+    int sp = @PKG@.FishMath.pick(w, r.nextDouble());
+    if (sp < 0) s.kind = 1;
+    else {
+      s.sp = sp;
+      double hi = Math.min(mx[sp], s.stat[@PKG@.FishRig.ST_MAXKG]);
+      s.kg = @PKG@.FishMath.weight(mn[sp], hi, @PKG@.FishMath.skew(@PKG@.FishCfg.SKEW, s.stat[@PKG@.FishRig.ST_DEEP]), r.nextDouble());
+      s.cm = @PKG@.FishMath.lengthCm(s.kg, @PKG@.FishDefs.SP_K[sp], r.nextDouble());
+      factor = @PKG@.FishDefs.SP_BITE[sp];
+    }
+  }
+  if (s.kind == 1) {
+    String[] ids = @PKG@.FishCfg.JUNK;
+    int[] jw = @PKG@.FishCfg.JUNK_W;
+    int jn = Math.min(ids.length, jw.length);
+    double[] w2 = new double[jn];
+    for (int i = 0; i < jn; i++) w2[i] = (double) jw[i];
+    int j = @PKG@.FishMath.pick(w2, r.nextDouble());
+    s.item = j < 0 ? "Ingredient_Stick" : ids[j];
+    if (!@PKG@.FishRig.itemOk(s.item)) {
+      BAD_JUNK = BAD_JUNK + 1L;
+      @PKG@.FishLog.warnOnce("junk:" + s.item, "fish.junk." + s.item + " is not an item of this server - a Stick is caught instead (fix the junk table in Server Setup)");
+      s.item = "Ingredient_Stick";
+    }
+    s.qty = 1;
+  }
+  if (s.kind == 2) {
+    double[] g = new double[] { (double) @PKG@.FishCfg.TR_0, (double) @PKG@.FishCfg.TR_1, (double) @PKG@.FishCfg.TR_2 };
+    int gr = forced >= 0 && forced <= 2 ? forced : @PKG@.FishMath.pick(g, r.nextDouble());
+    s.tgrade = gr < 0 ? 0 : gr;
+    int a0 = @PKG@.FishDefs.TR_START[s.tgrade];
+    int a1 = @PKG@.FishDefs.TR_START[s.tgrade + 1];
+    double[] sh = new double[a1 - a0];
+    for (int i = a0; i < a1; i++) sh[i - a0] = (double) @PKG@.FishDefs.TR_SHARE[i];
+    int row = a0 + Math.max(0, @PKG@.FishMath.pick(sh, r.nextDouble()));
+    if (@PKG@.FishDefs.TR_KIND[row] == 0) {
+      long lo = @PKG@.FishCfg.PURSE_LO[s.tgrade];
+      long hi2 = @PKG@.FishCfg.PURSE_HI[s.tgrade];
+      s.coins = lo + (long) Math.floor(r.nextDouble() * (double) (hi2 - lo + 1L));
+      if (s.coins > hi2) s.coins = hi2;
+    } else {
+      String[] its = @PKG@.FishDefs.TR_ITEMS[row].split(",");
+      s.item = its[Math.min(its.length - 1, (int) Math.floor(r.nextDouble() * its.length))];
+      int qa = @PKG@.FishDefs.TR_A[row];
+      int qb = @PKG@.FishDefs.TR_B[row];
+      s.qty = qa + (int) Math.floor(r.nextDouble() * (qb - qa + 1));
+      if (s.qty > qb) s.qty = qb;
+    }
+    factor = 1.2;
+  }
+  double wait = @PKG@.FishMath.biteWait(@PKG@.FishCfg.BITE_MIN, Math.max(@PKG@.FishCfg.BITE_MIN, @PKG@.FishCfg.BITE_MAX), factor, s.stat[@PKG@.FishRig.ST_SPEED], r.nextDouble());
+  s.biteAt = now + Math.round(wait * 1000.0);
+  s.idleEnd = now + (long) @PKG@.FishCfg.IDLE_S * 1000L;
+  if (s.biteAt > s.idleEnd - 500L) s.biteAt = Math.max(now + 500L, s.idleEnd - 500L);
+}""")
+M(CORE, r"""
+public static String[] txt(String head, String right, String hint, String cps, String icon, String hc, String rc, String tick) {
+  return new String[] { head, right, hint, cps, icon, hc, rc, tick };
+}""")
+# ---- ends: 0 = quiet (reeled in / cancelled: the widget goes at once), 1 = lost (IT GOT AWAY card), 2 = landed (catch card)
+M(CORE, r"""
+public static void finish(@PKG@.FishCtx c, @PKG@.FishState s, int how, String why, long now) {
+  s.ended = true;
+  LAST_WHY = why == null ? "" : why;
+  try { @PKG@.FishEng.API.removeBobber(s); } catch (Throwable t) { }
+  if (how == 0) {
+    CANCELS = CANCELS + 1L;
+    try { if (c != null) @PKG@.FishEng.API.hudHide(c, s); } catch (Throwable t2) { }
+    STATES.remove(s.uuid, s);
+  } else {
+    s.phase = 5;
+    s.hudUntil = now + Math.round((how == 2 ? @PKG@.FishCfg.HUD_RESULT : @PKG@.FishCfg.HUD_LOST) * 1000.0);
+  }
+}""")
+M(CORE, r"""
+public static void cancel(@PKG@.FishCtx c, @PKG@.FishState s, String msg, long now) {
+  finish(c, s, 0, msg, now);
+  if (msg != null && c != null) tell(c, msg, @PKG@.FishDefs.COL_INFO);
+}""")
+M(CORE, r"""
+public static void lose(@PKG@.FishCtx c, @PKG@.FishState s, String why, long now) {
+  @PKG@.FishApi a = @PKG@.FishEng.API;
+  LOST = LOST + 1L;
+  a.sound(c, @PKG@.FishDefs.SND_LOST, s.bx, s.by, s.bz);
+  a.hudState(c, s, 5, txt("IT GOT AWAY", "", why, "", null, @PKG@.FishDefs.COL_ERR, @PKG@.FishDefs.COL_VALUE, null));
+  tell(c, "It got away! " + why, @PKG@.FishDefs.COL_ERR);
+  finish(c, s, 1, why, now);
+}""")
+# ---- landing: the fish / junk / Lost Property goes to the player (or waits as a claim); progress, records and XP on the cast's profile
+M(CORE, r"""
+public static void land(@PKG@.FishCtx c, @PKG@.FishState s, long now) {
+  @PKG@.FishApi a = @PKG@.FishEng.API;
+  LANDED = LANDED + 1L;
+  String key = s.pkey != null ? s.pkey : @PKG@.FishBridge.pkey(c.uuid);
+  a.sound(c, @PKG@.FishDefs.SND_LAND, s.bx, s.by, s.bz);
+  if (s.kind == 0 && s.sp >= 0) {
+    int sp = s.sp;
+    int rr = @PKG@.FishDefs.SP_RAR[sp];
+    int g = (int) Math.round(s.kg * 1000.0);
+    int mm = (int) Math.round(s.cm * 10.0);
+    if (g < 1) g = 1;
+    int before = @PKG@.FishMath.pondTier(@PKG@.FishStore.pond(key), @PKG@.FishCfg.POND);
+    int flags = @PKG@.FishStore.onCatch(key, sp, g, mm);
+    boolean server = @PKG@.FishCfg.RECORDS && @PKG@.FishStore.serverRecord(sp, g, c.name);
+    queue(key, @PKG@.FishRig.makeFish(sp, g, mm, c.name));
+    int caught = 1;
+    if (s.stat[@PKG@.FishRig.ST_DOUBLE] > 0.0 && RNG.nextDouble() * 100.0 < s.stat[@PKG@.FishRig.ST_DOUBLE]) {
+      double hi = Math.min(@PKG@.FishCfg.SP_MAX[sp], s.stat[@PKG@.FishRig.ST_MAXKG]);
+      double kg2 = @PKG@.FishMath.weight(@PKG@.FishCfg.SP_MIN[sp], hi, @PKG@.FishMath.skew(@PKG@.FishCfg.SKEW, s.stat[@PKG@.FishRig.ST_DEEP]), RNG.nextDouble());
+      int g2 = Math.max(1, (int) Math.round(kg2 * 1000.0));
+      int mm2 = (int) Math.round(@PKG@.FishMath.lengthCm(kg2, @PKG@.FishDefs.SP_K[sp], RNG.nextDouble()) * 10.0);
+      @PKG@.FishStore.onCatch(key, sp, g2, mm2);
+      if (@PKG@.FishCfg.RECORDS) @PKG@.FishStore.serverRecord(sp, g2, c.name);
+      queue(key, @PKG@.FishRig.makeFish(sp, g2, mm2, c.name));
+      caught = 2;
+      tell(c, "Twin Line: a second " + @PKG@.FishDefs.SP_NAME[sp] + " came up too (" + @PKG@.FishMath.kg(g2) + ")!", @PKG@.FishDefs.COL_OK);
+    }
+    String rec = "";
+    if (server) rec = "Server record!";
+    else if (@PKG@.FishCfg.RECORDS && (flags & 1) != 0) rec = "New personal best!";
+    else if ((flags & 2) != 0) rec = "New species!";
+    tell(c, "You caught a " + @PKG@.FishDefs.SP_NAME[sp] + ": " + @PKG@.FishMath.kg(g) + ", " + @PKG@.FishMath.cm(mm) + " (" + @PKG@.FishDefs.RAR_NAME[rr] + ")." + (rec.length() > 0 ? " " + rec : ""), @PKG@.FishDefs.COL_OK);
+    long xp = Math.round(@PKG@.FishDefs.RAR_XP[rr] * caught * @PKG@.FishCfg.XP_MULT * (1.0 + s.stat[@PKG@.FishRig.ST_WISDOM] / 100.0));
+    @PKG@.FishBridge.skillXp(c.uuid, xp, key);
+    int after = @PKG@.FishMath.pondTier(@PKG@.FishStore.pond(key), @PKG@.FishCfg.POND);
+    if (after > before) tell(c, "Pond Fish " + @PKG@.FishDefs.roman(after) + "! New recipes may be open at the Fishing Bench.", @PKG@.FishDefs.COL_GOLD);
+    a.hudState(c, s, 4, txt("LANDED", @PKG@.FishDefs.RAR_NAME[rr], @PKG@.FishDefs.SP_NAME[sp] + "  " + @PKG@.FishMath.kg(g) + " - " + @PKG@.FishMath.cm(mm), rec,
+      @PKG@.FishDefs.FISH[sp], @PKG@.FishDefs.COL_OK, @PKG@.FishDefs.RAR_HEX[rr], null));
+  } else if (s.kind == 2 && s.coins > 0L) {
+    String wrap = @PKG@.FishDefs.TR_WRAP[s.tgrade];
+    @PKG@.FishStore.addClaim(key, "C|" + s.coins);
+    tell(c, "Lost Property (" + @PKG@.FishDefs.TR_GRADE[s.tgrade] + "): a " + wrap + " with " + @PKG@.FishMath.coins(s.coins) + " coins!", @PKG@.FishDefs.COL_GOLD);
+    a.hudState(c, s, 4, txt("LANDED", "Lost Property", wrap, "+" + @PKG@.FishMath.coins(s.coins) + " coins", "Deco_Treasure", @PKG@.FishDefs.COL_OK, @PKG@.FishDefs.COL_GOLD, null));
+  } else {
+    String id = s.item == null ? "Ingredient_Stick" : s.item;
+    int q = s.qty < 1 ? 1 : s.qty;
+    @IS@ st = new @IS@(id, q);
+    boolean tre = s.kind == 2;
+    String what = @PKG@.FishDefs.pretty(id) + (q > 1 ? " x" + q : "");
+    queue(key, st);
+    if (tre) tell(c, "Lost Property (" + @PKG@.FishDefs.TR_GRADE[s.tgrade] + "): a " + @PKG@.FishDefs.TR_WRAP[s.tgrade] + " holding " + what + "!", @PKG@.FishDefs.COL_GOLD);
+    else tell(c, "Junk: " + what + ".", @PKG@.FishDefs.COL_INFO);
+    a.hudState(c, s, 4, txt("LANDED", tre ? "Lost Property" : "Junk", what, tre ? @PKG@.FishDefs.TR_WRAP[s.tgrade] : "", id, @PKG@.FishDefs.COL_OK, tre ? @PKG@.FishDefs.COL_GOLD : @PKG@.FishDefs.COL_GRAY, null));
+    @PKG@.FishBridge.skillXp(c.uuid, Math.round((tre ? 15.0 : 2.0) * @PKG@.FishCfg.XP_MULT), key);
+  }
+  kick(c, key);
+  finish(c, s, 2, "landed", now);
+}""")
+M(CORE, r"""
+public static void cast(@PKG@.FishCtx c, String held, int slot, @IS@ stack, @PKG@.FishState old, long now) {
+  @PKG@.FishApi a = @PKG@.FishEng.API;
+  if (!@PKG@.FishCfg.ON) { tell(c, "Fishing is switched off on this server.", @PKG@.FishDefs.COL_ERR); return; }
+  if (@PKG@.FishBridge.busy(c.uuid)) return;
+  int ri = @PKG@.FishDefs.rodIndex(held);
+  String[] rig = @PKG@.FishRig.rigOf(stack);
+  if (@PKG@.FishRig.reelOf(rig) <= 0 || @PKG@.FishCfg.reelPower(@PKG@.FishRig.reelOf(rig)) <= 0.0) { tell(c, "This rod has no reel. Fit one at a Fishing Bench first.", @PKG@.FishDefs.COL_ERR); return; }
+  double[] eye = a.eye(c);
+  if (eye == null) return;
+  int[] w = new int[3];
+  int code = water(c, eye, w);
+  if (code == 0) { tell(c, "No water in reach - aim at water up to " + @PKG@.FishCfg.CAST_RANGE + " blocks away.", @PKG@.FishDefs.COL_ERR); return; }
+  if (code == 4) { tell(c, "Something is in the way - aim at open water.", @PKG@.FishDefs.COL_ERR); return; }
+  if (code == 2) { tell(c, "That water is too shallow - fish need at least " + @PKG@.FishCfg.MIN_DEPTH + " blocks of water.", @PKG@.FishDefs.COL_ERR); return; }
+  if (code == 3) { tell(c, "That water is too small - find water at least 3 blocks wide.", @PKG@.FishDefs.COL_ERR); return; }
+  @PKG@.FishState s = new @PKG@.FishState(c.uuid);
+  if (old != null && old.hud != null && !old.hud.gone) s.hud = old.hud;
+  GEN = GEN + 1L;
+  s.gen = GEN;
+  s.world = c.world;
+  s.store = c.store;
+  s.rodId = held;
+  s.rodIdx = ri;
+  s.rodSlot = slot;
+  s.rig = rig;
+  s.stat = @PKG@.FishRig.stats(ri, rig);
+  s.pkey = @PKG@.FishBridge.pkey(c.uuid);
+  s.bx = w[0] + 0.5; s.by = w[1] + 0.8; s.bz = w[2] + 0.5;
+  s.phase = 1;
+  s.castAt = now;
+  roll(s, RNG, now);
+  if (old != null) { old.ended = true; STATES.remove(c.uuid, old); }
+  STATES.put(c.uuid, s);
+  CASTS = CASTS + 1L;
+  a.spawnBobber(c, s);
+  a.sound(c, @PKG@.FishDefs.SND_CAST, s.bx, s.by, s.bz);
+  if (s.hud != null) a.hudHide(c, s);
+}""")
+M(CORE, r"""
+public static void bite(@PKG@.FishCtx c, @PKG@.FishState s, long now) {
+  @PKG@.FishApi a = @PKG@.FishEng.API;
+  s.phase = 2;
+  s.windowS = @PKG@.FishCfg.BITE_WINDOW;
+  s.windowEnd = now + Math.round(s.windowS * 1000.0);
+  s.lastHud = 0L;
+  BITES = BITES + 1L;
+  a.moveBobber(c, s, s.bx, s.by - 0.25, s.bz);
+  a.tagBobber(c, s, "!");
+  a.particle(c, @PKG@.FishDefs.SPLASH, s.bx, s.by, s.bz);
+  a.sound(c, @PKG@.FishDefs.SND_BITE, s.bx, s.by, s.bz);
+  a.hudState(c, s, 1, txt("BITE", "RIGHT CLICK", "Hook it now!", "", null, @PKG@.FishDefs.COL_WARN, @PKG@.FishDefs.COL_WARN, null));
+  a.hudSet(c, s, 1.0f, null, null);
+}""")
+M(CORE, r"""
+public static void missed(@PKG@.FishCtx c, @PKG@.FishState s, long now) {
+  @PKG@.FishApi a = @PKG@.FishEng.API;
+  MISSED = MISSED + 1L;
+  s.phase = 1;
+  a.tagBobber(c, s, "");
+  a.moveBobber(c, s, s.bx, s.by, s.bz);
+  a.hudHide(c, s);
+  tell(c, "It got away before you hooked it - wait for the next bite.", @PKG@.FishDefs.COL_INFO);
+  roll(s, RNG, now);
+}""")
+M(CORE, r"""
+public static void hook(@PKG@.FishCtx c, @PKG@.FishState s, long now) {
+  @PKG@.FishApi a = @PKG@.FishEng.API;
+  a.tagBobber(c, s, "");
+  if (s.kind != 0) { land(c, s, now); return; }
+  s.phase = 3;
+  s.bar = Math.min((double) @PKG@.FishCfg.BAR_START + s.stat[@PKG@.FishRig.ST_BAR], 99.0);
+  s.fightS = @PKG@.FishCfg.TIME_LIMIT + s.stat[@PKG@.FishRig.ST_TIME];
+  s.fightStart = now;
+  s.fightEnd = now + Math.round(s.fightS * 1000.0);
+  int rr = @PKG@.FishDefs.SP_RAR[s.sp];
+  s.pull = @PKG@.FishCfg.PULL[rr];
+  s.gain = @PKG@.FishMath.gain(s.stat[@PKG@.FishRig.ST_POWER], s.kg);
+  s.nextSurge = now + Math.round(@PKG@.FishCfg.SURGE_EVERY * 1000.0);
+  s.surgeEnd = 0L;
+  s.surging = false;
+  s.lastMs = now;
+  s.lastHud = 0L;
+  s.clickN = 0;
+  s.ignored = 0;
+  a.hudState(c, s, 2, txt("REEL IN", @PKG@.FishMath.num(s.fightS, 1) + " s", "Click fast to fill the bar", "", null, @PKG@.FishDefs.COL_TITLE, @PKG@.FishDefs.COL_VALUE, String.valueOf(s.bar)));
+  a.hudSet(c, s, (float) (s.bar / 100.0), null, null);
+}""")
+M(CORE, r"""
+public static int cps(@PKG@.FishState s, long now) {
+  int n = 0;
+  for (int i = 0; i < s.clickN && i < s.clicks.length; i++) if (now - s.clicks[i] < 1000L) n++;
+  return n;
+}""")
+M(CORE, r"""
+public static void addClick(@PKG@.FishState s, long now) {
+  long[] k = s.clicks;
+  int w = 0;
+  for (int i = 0; i < s.clickN && i < k.length; i++) if (now - k[i] < 1000L) { k[w] = k[i]; w++; }
+  if (w < k.length) { k[w] = now; w++; }
+  s.clickN = w;
+}""")
+M(CORE, r"""
+public static void fight(@PKG@.FishCtx c, @PKG@.FishState s, long now, boolean click) {
+  @PKG@.FishApi a = @PKG@.FishEng.API;
+  double dt = (now - s.lastMs) / 1000.0;
+  if (dt < 0.0) dt = 0.0;
+  if (dt > 0.25) dt = 0.25;
+  s.lastMs = now;
+  if (click) {
+    if (cps(s, now) < @PKG@.FishCfg.MAX_CPS) { addClick(s, now); s.bar = s.bar + s.gain; }
+    else s.ignored = s.ignored + 1;
+  }
+  boolean was = s.surging;
+  if (!s.surging && now >= s.nextSurge) { s.surging = true; s.surgeEnd = now + Math.round(@PKG@.FishCfg.SURGE_LEN * 1000.0); s.nextSurge = now + Math.round(@PKG@.FishCfg.SURGE_EVERY * 1000.0); }
+  if (s.surging && now >= s.surgeEnd) s.surging = false;
+  double mult = 1.0;
+  if (s.surging) mult = Math.max(1.0, @PKG@.FishCfg.SURGE_MULT * (1.0 - s.stat[@PKG@.FishRig.ST_SURGE] / 100.0));
+  s.bar = s.bar - s.pull * mult * dt;
+  if (s.bar >= 100.0) { s.bar = 100.0; land(c, s, now); return; }
+  if (s.bar <= 0.0) { s.bar = 0.0; lose(c, s, "The fish pulled the bar empty.", now); return; }
+  if (now >= s.fightEnd) { lose(c, s, "Out of time.", now); return; }
+  int k = cps(s, now);
+  if (was != s.surging) {
+    a.hudState(c, s, s.surging ? 3 : 2, txt(s.surging ? "SURGE" : "REEL IN", "", s.surging ? "The fish pulls hard!" : "Click fast to fill the bar", "",
+      null, s.surging ? @PKG@.FishDefs.COL_ERR : @PKG@.FishDefs.COL_TITLE, @PKG@.FishDefs.COL_VALUE, String.valueOf(@PKG@.FishCfg.BAR_START + s.stat[@PKG@.FishRig.ST_BAR])));
+    s.lastHud = 0L;
+  }
+  if (now - s.lastHud >= (long) @PKG@.FishCfg.HUD_MS) {
+    s.lastHud = now;
+    String left = @PKG@.FishMath.num(Math.max(0.0, (s.fightEnd - now) / 1000.0), 1) + " s";
+    a.hudSet(c, s, (float) (s.bar / 100.0), left, k >= @PKG@.FishCfg.MAX_CPS ? "max " + @PKG@.FishCfg.MAX_CPS + " per s" : k + " per s");
+  }
+}""")
+# the line: particle dots from the rod tip to the bobber with a little sag, every fish.line.everyTicks ticks (a global budget per 100 ms)
+M(CORE, r"""
+public static void line(@PKG@.FishCtx c, @PKG@.FishState s, long now) {
+  if (!@PKG@.FishCfg.LINE_SHOW) return;
+  double[] e = @PKG@.FishEng.API.eye(c);
+  if (e == null) return;
+  if (now - DOT_WINDOW >= 100L) { DOT_WINDOW = now; DOT_USED = 0; }
+  double tx = e[0] + e[3] * 0.9; double ty = e[1] + e[4] * 0.9 - 0.25; double tz = e[2] + e[5] * 0.9;
+  double by = s.phase == 2 ? s.by - 0.25 : s.by;
+  double dx = s.bx - tx; double dy = (by + 0.15) - ty; double dz = s.bz - tz;
+  double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+  int n = (int) Math.floor(d / Math.max(0.3, @PKG@.FishCfg.LINE_SPACING));
+  if (n > MAX_DOTS) n = MAX_DOTS;
+  double sag = Math.min(1.2, d * 0.06) * (s.phase == 3 ? 0.3 : 1.0);
+  for (int i = 1; i < n; i++) {
+    if (DOT_USED >= DOT_BUDGET) return;
+    double u = (double) i / (double) n;
+    @PKG@.FishEng.API.particle(c, @PKG@.FishDefs.LINE_DOT, tx + dx * u, ty + dy * u - sag * 4.0 * u * (1.0 - u), tz + dz * u);
+    DOT_USED = DOT_USED + 1;
+    DOTS = DOTS + 1L;
+  }
+}""")
+# ---- once per player per world tick (FishTick): the click, the reel look, the profile / world / rod checks, then the phase's work
+M(CORE, r"""
+public static void tickPlayer(@PKG@.FishCtx c) {
+  @PKG@.FishApi a = @PKG@.FishEng.API;
+  if (a == null || c == null || c.uuid == null) return;
+  long now = a.now();
+  @PKG@.FishState s = (@PKG@.FishState) STATES.get(c.uuid);
+  boolean click = a.clicked(c);
+  int slot = a.heldSlot(c);
+  @IS@ held = a.held(c);
+  String id = held == null || held.isEmpty() ? null : held.getItemId();
+  int ri = @PKG@.FishDefs.rodIndex(id);
+  boolean out = s != null && s.phase >= 1 && s.phase <= 3 && ri >= 0 && slot == s.rodSlot && id.equals(s.rodId);
+  int want = ri >= 0 ? @PKG@.FishRig.reelOf(@PKG@.FishRig.rigOf(held)) + (out ? @PKG@.FishDefs.LINE_OUT : 0) : 0;
+  int have = a.getReel(c);
+  if (have >= 0 && have != want) a.setReel(c, want);
+  Object tk = SEEN.get(c.uuid);
+  int ticks = tk instanceof Integer ? ((Integer) tk).intValue() + 1 : 0;
+  SEEN.put(c.uuid, Integer.valueOf(ticks));
+  if (ticks % 60 == 59) {
+    String pk = @PKG@.FishBridge.pkey(c.uuid);
+    if (@PKG@.FishStore.hasClaims(pk)) kick(c, pk);
+  }
+  if (ticks % 10 == 0) {
+    long ep = @PKG@.FishBridge.epoch(c.uuid);
+    Object last = EPOCHS.get(c.uuid);
+    if (ep >= 0L) EPOCHS.put(c.uuid, Long.valueOf(ep));
+    if (last instanceof Long && ep >= 0L && ((Long) last).longValue() != ep) EPOCH_AT.put(c.uuid, Long.valueOf(now));
+    if (s != null && last instanceof Long && ep >= 0L && ((Long) last).longValue() != ep && s.phase >= 1 && s.phase <= 3) { cancel(c, s, "You switched profile - your line is reeled in.", now); return; }
+  }
+  if (s == null || s.phase == 5) {
+    if (s != null && now >= s.hudUntil) { a.hudHide(c, s); STATES.remove(c.uuid, s); }
+    if (click && ri >= 0) cast(c, id, slot, held, s, now);
+    return;
+  }
+  if (s.store != c.store) { cancel(c, s, null, now); return; }
+  if (@PKG@.FishBridge.busy(c.uuid)) { cancel(c, s, null, now); return; }
+  if (!@PKG@.FishCfg.ON) { cancel(c, s, "Fishing was switched off - your line is reeled in.", now); return; }
+  if (ri < 0 || slot != s.rodSlot || !id.equals(s.rodId)) { cancel(c, s, "You put the rod away - your line is reeled in.", now); return; }
+  double[] f = a.feet(c);
+  if (f != null) {
+    double hx = f[0] - s.bx; double hz = f[2] - s.bz;
+    double lim = @PKG@.FishCfg.CAST_RANGE + @PKG@.FishCfg.LEASH;
+    if (hx * hx + hz * hz > lim * lim) { cancel(c, s, "You walked too far from your bobber - your line is reeled in.", now); return; }
+  }
+  s.ticks = s.ticks + 1;
+  if (s.phase == 1) {
+    if (click) { cancel(c, s, "You reel in your line.", now); return; }
+    if (now >= s.biteAt) bite(c, s, now);
+    else if (now >= s.idleEnd) { cancel(c, s, "Nothing is biting - your line is reeled in. Try again!", now); return; }
+  } else if (s.phase == 2) {
+    if (click) hook(c, s, now);
+    else if (now >= s.windowEnd) missed(c, s, now);
+    else if (now - s.lastHud >= (long) @PKG@.FishCfg.HUD_MS) {
+      s.lastHud = now;
+      a.hudSet(c, s, (float) Math.max(0.0, (s.windowEnd - now) / (s.windowS * 1000.0)), null, null);
+    }
+  } else if (s.phase == 3) fight(c, s, now, click);
+  if (s.phase >= 1 && s.phase <= 3 && @PKG@.FishCfg.LINE_EVERY > 0 && s.ticks % @PKG@.FishCfg.LINE_EVERY == 0) line(c, s, now);
+}""")
+# a world change / disconnect: the line ends where it was (the bobber is removed on ITS world thread)
+M(CORE, r"""
+public static @PKG@.FishState drop(java.util.UUID u, String why) {
+  if (u == null) return null;
+  @PKG@.FishState s = (@PKG@.FishState) STATES.remove(u);
+  SEEN.remove(u);
+  PAYING.remove(u);
+  if ("left the game".equals(why)) { EPOCHS.remove(u); EPOCH_AT.remove(u); FULLTOLD.remove(u); }
+  if (s == null) return null;
+  s.ended = true;
+  LAST_WHY = why;
+  try { @PKG@.FishEng.API.removeBobber(s); } catch (Throwable t) { }
+  return s;
+}""")
+# PlayerReady (a world change): the line ends AND our widget comes down (the HUD manager outlives a world change; hudHide -> current()
+# only removes OUR widget object, never another mod's)
+M(CORE, r"""
+public static void worldChange(java.util.UUID u, String name, @REF@ r, @ST@ st, @PR@ pr) {
+  @PKG@.FishState s = drop(u, "world change");
+  if (s != null && s.hud != null && @PKG@.FishEng.API != null) @PKG@.FishEng.API.hudHide(new @PKG@.FishCtx(u, name, r, st, (@CAC@) st, null, pr), s);
+}""")
+M(CORE, r"""
+public static void dropAll() {
+  java.util.Iterator it = new java.util.ArrayList(STATES.keySet()).iterator();
+  while (it.hasNext()) drop((java.util.UUID) it.next(), "shutdown");
+}""")
+# /fishadmin bite: the line bites a second from now
+M(CORE, r"""
+public static boolean biteSoon(java.util.UUID u, long now) {
+  @PKG@.FishState s = (@PKG@.FishState) STATES.get(u);
+  if (s == null || s.phase != 1) return false;
+  s.biteAt = now + 1000L;
+  return true;
+}""")
+
+M(GIVE, r"""
+public void run() {
+  try {
+    @PKG@.FishCtx f = @PKG@.FishEng.API.fresh(this.c);
+    if (f != null) @PKG@.FishCore.payClaims(f, this.key);
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("give:" + t.getClass().getName(), "handing over catches failed: " + t); }
+  if (this.c != null) @PKG@.FishCore.PAYING.remove(this.c.uuid);
+}""")
+
+# ---------------------------------------------------------------- FishTick: ONE EntityTickingSystem on Player (one registerSystem per class)
+C(TICK, "public FishTick() { super(); }")
+F(TICK, "public static volatile long TICKS = 0L;")
+M(TICK, "public @QRY@ getQuery() { return (@QRY@) @PLA@.getComponentType(); }")
+M(TICK, "public boolean isParallel(int a, int b) { return false; }")
+M(TICK, r"""
+public void tick(float dt, int idx, @ACH@ chunk, @ST@ store, @CB@ cb) {
+  try {
+    if (chunk == null) return;
+    @REF@ r = chunk.getReferenceTo(idx);
+    if (r == null) return;
+    @PR@ pr = (@PR@) cb.getComponent(r, @PR@.getComponentType());
+    if (pr == null) return;
+    Object ex = store.getExternalData();
+    @WLD@ w = ex instanceof @EST@ ? ((@EST@) ex).getWorld() : null;
+    TICKS = TICKS + 1L;
+    @PKG@.FishCore.tickPlayer(new @PKG@.FishCtx(pr.getUuid(), pr.getUsername(), r, store, cb, w, pr));
+  } catch (Throwable t) { @PKG@.FishLog.warnOnce("tick:" + t.getClass().getName(), "the fishing tick failed: " + t); }
+}""")
+
+# ---------------------------------------------------------------- FishBench: what the bench page does (world thread; the harness runs it on real containers)
+M(BENCH, r"""
+public static int count(@IC@ inv, String id) {
+  if (inv == null || id == null) return 0;
+  int n = 0;
+  int cap = inv.getCapacity();
+  for (int i = 0; i < cap; i++) {
+    @IS@ s = inv.getItemStack((short) i);
+    if (s != null && !s.isEmpty() && id.equals(s.getItemId())) n = n + s.getQuantity();
+  }
+  return n;
+}""")
+M(BENCH, r"""
+public static int firstSlot(@IC@ inv, String id) {
+  if (inv == null || id == null) return -1;
+  int cap = inv.getCapacity();
+  for (int i = 0; i < cap; i++) {
+    @IS@ s = inv.getItemStack((short) i);
+    if (s != null && !s.isEmpty() && id.equals(s.getItemId())) return i;
+  }
+  return -1;
+}""")
+M(BENCH, r"""
+public static boolean canAdd(@IC@ inv, @IS@ s) {
+  try {
+    java.util.ArrayList l = new java.util.ArrayList();
+    l.add(s);
+    return inv != null && inv.canAddItemStacks(l);
+  } catch (Throwable t) { return false; }
+}""")
+# remove exactly n of id (any slots), every removal checked by re-counting; the removed stacks go into undo (slot order) for a rollback
+M(BENCH, r"""
+public static boolean take(@IC@ inv, String id, int n, java.util.ArrayList ul) {
+  int before = count(inv, id);
+  if (before < n) return false;
+  int left = n;
+  int cap = inv.getCapacity();
+  for (int i = 0; i < cap && left > 0; i++) {
+    @IS@ s = inv.getItemStack((short) i);
+    if (s == null || s.isEmpty() || !id.equals(s.getItemId())) continue;
+    int q = Math.min(left, s.getQuantity());
+    @ISST@ tx = inv.removeItemStackFromSlot((short) i, q);
+    if (tx == null || !tx.succeeded()) return false;
+    ul.add(new @IS@(id, q));
+    left = left - q;
+  }
+  return left == 0 && count(inv, id) == before - n;
+}""")
+M(BENCH, r"""
+public static void undo(@IC@ inv, java.util.ArrayList ul) {
+  for (int i = 0; i < ul.size(); i++) {
+    @IS@ s = (@IS@) ul.get(i);
+    try { inv.addItemStack(s); } catch (Throwable t) { @PKG@.FishLog.warn("could not put back " + s + " after a failed bench action: " + t); }
+  }
+  ul.clear();
+}""")
+# the gates of recipe r: 0 open, 1 Pond Fish tier missing, 2 the metal's collection tier missing (SkyyCollections; none installed = open)
+M(BENCH, r"""
+public static int gate(java.util.UUID u, String key, int r) {
+  int t = @PKG@.FishMath.pondTier(@PKG@.FishStore.pond(key), @PKG@.FishCfg.POND);
+  if (t < @PKG@.FishDefs.R_POND[r]) return 1;
+  String coll = @PKG@.FishDefs.R_COLL[r];
+  if (coll.length() > 0) {
+    int ct = @PKG@.FishBridge.collTier(u, coll);
+    if (ct >= 0 && ct < @PKG@.FishDefs.R_COLLT[r]) return 2;
+  }
+  return 0;
+}""")
+M(BENCH, r"""
+public static String gateText(int r) {
+  String s = @PKG@.FishDefs.R_POND[r] > 0 ? "Pond Fish " + @PKG@.FishDefs.roman(@PKG@.FishDefs.R_POND[r]) : "";
+  if (@PKG@.FishDefs.R_COLL[r].length() > 0) s = s + (s.length() > 0 ? " + " : "") + @PKG@.FishDefs.R_COLL[r] + " " + @PKG@.FishDefs.roman(@PKG@.FishDefs.R_COLLT[r]);
+  return s;
+}""")
+M(BENCH, r"""
+public static String name(String id) {
+  int ri = @PKG@.FishDefs.rodIndex(id);
+  if (ri >= 0) return @PKG@.FishDefs.rodName(ri);
+  return @PKG@.FishDefs.partName(id);
+}""")
+M(BENCH, r"""
+public static String needText(@IC@ inv, int r) {
+  StringBuilder b = new StringBuilder();
+  String prev = @PKG@.FishDefs.R_PREV[r];
+  if (prev.length() > 0) b.append(name(prev)).append(" (").append(count(inv, prev) > 0 ? "have" : "missing").append(")");
+  for (int i = @PKG@.FishDefs.R_START[r]; i < @PKG@.FishDefs.R_START[r + 1]; i++) {
+    if (b.length() > 0) b.append(", ");
+    String id = @PKG@.FishDefs.R_IN[i];
+    b.append(@PKG@.FishDefs.R_INQ[i]).append(' ').append(@PKG@.FishDefs.pretty(id)).append(" (").append(Math.min(count(inv, id), 9999)).append('/').append(@PKG@.FishDefs.R_INQ[i]).append(')');
+  }
+  return b.toString();
+}""")
+# 0 ready, 1 locked, 2 missing items
+M(BENCH, r"""
+public static int state(@IC@ inv, java.util.UUID u, String key, int r) {
+  if (gate(u, key, r) != 0) return 1;
+  String prev = @PKG@.FishDefs.R_PREV[r];
+  if (prev.length() > 0 && count(inv, prev) < 1) return 2;
+  for (int i = @PKG@.FishDefs.R_START[r]; i < @PKG@.FishDefs.R_START[r + 1]; i++) if (count(inv, @PKG@.FishDefs.R_IN[i]) < @PKG@.FishDefs.R_INQ[i]) return 2;
+  return 0;
+}""")
+M(BENCH, r"""
+public static int free(@IC@ inv) {
+  int n = 0;
+  int cap = inv == null ? 0 : inv.getCapacity();
+  for (int i = 0; i < cap; i++) { @IS@ s = inv.getItemStack((short) i); if (s == null || s.isEmpty()) n++; }
+  return n;
+}""")
+# craft recipe r: gates, every input counted, then removed (re-counted), the output given; any failure puts everything back
+M(BENCH, r"""
+public static String craft(@IC@ inv, java.util.UUID u, String key, int r) {
+  if (inv == null || r < 0 || r >= @PKG@.FishDefs.R_OUT.length) return "-Could not open your inventory.";
+  String out = @PKG@.FishDefs.R_OUT[r];
+  int g = gate(u, key, r);
+  if (g == 1) return "-Locked: " + name(out) + " needs " + gateText(r) + " (you have " + @PKG@.FishStore.pond(key) + " Pond Fish).";
+  if (g == 2) return "-Locked: " + name(out) + " needs " + gateText(r) + ".";
+  if (state(inv, u, key, r) != 0) return "-Missing items for the " + name(out) + ": " + needText(inv, r);
+  String prev = @PKG@.FishDefs.R_PREV[r];
+  java.util.ArrayList ul = new java.util.ArrayList();
+  String[] rig = @PKG@.FishRig.freshRig(out);
+  if (prev.length() > 0) {
+    int ps = firstSlot(inv, prev);
+    @IS@ old = ps < 0 ? null : inv.getItemStack((short) ps);
+    if (old == null) return "-Missing the " + name(prev) + ".";
+    if (@PKG@.FishDefs.rodIndex(prev) >= 0) {
+      rig = @PKG@.FishRig.rigOf(old);
+    }
+    int before = count(inv, prev);
+    @ISST@ tx = inv.removeItemStackFromSlot((short) ps, 1);
+    if (tx == null || !tx.succeeded() || count(inv, prev) != before - 1) return "-Could not take the " + name(prev) + " - nothing was used.";
+    @IS@ back = old.getQuantity() == 1 ? old : new @IS@(prev, 1);
+    if (@PKG@.FishDefs.rodIndex(prev) >= 0) back = old;
+    ul.add(back);
+  }
+  for (int i = @PKG@.FishDefs.R_START[r]; i < @PKG@.FishDefs.R_START[r + 1]; i++) {
+    if (!take(inv, @PKG@.FishDefs.R_IN[i], @PKG@.FishDefs.R_INQ[i], ul)) { undo(inv, ul); return "-Your inventory changed - nothing was used. Try again."; }
+  }
+  @IS@ made = new @IS@(out, 1);
+  if (@PKG@.FishDefs.rodIndex(out) >= 0) made = @PKG@.FishRig.withRig(made, rig);
+  if (!@PKG@.FishCore.give(inv, made)) { undo(inv, ul); return "-No room for the " + name(out) + " - nothing was used."; }
+  return "+Crafted the " + name(out) + (prev.length() > 0 && @PKG@.FishDefs.rodIndex(prev) >= 0 ? " - its reel and parts moved over." : ".");
+}""")
+M(BENCH, r"""
+public static boolean sameAt(@IC@ inv, int slot, String sig) {
+  if (inv == null || slot < 0 || slot >= inv.getCapacity()) return false;
+  return @PKG@.FishRig.sig(inv.getItemStack((short) slot)).equals(sig);
+}""")
+# fit a reel / hook / line / sinker onto the rod at rodSlot (the old part goes back to the inventory; a full inventory = a claim, never lost)
+M(BENCH, r"""
+public static String fit(@IC@ inv, String key, int rodSlot, String rodSig, String partId) {
+  if (!sameAt(inv, rodSlot, rodSig)) return "-That rod moved - pick it again.";
+  @IS@ rod = inv.getItemStack((short) rodSlot);
+  int k = @PKG@.FishDefs.partSlot(partId);
+  if (k < 0) return "-That is not a rod part.";
+  int ps = firstSlot(inv, partId);
+  if (ps < 0) return "-You have no " + name(partId) + ".";
+  String[] rig = @PKG@.FishRig.rigOf(rod);
+  String old = k == 0 ? (@PKG@.FishRig.reelOf(rig) > 0 ? @PKG@.FishDefs.reelId(@PKG@.FishRig.reelOf(rig)) : "") : rig[k];
+  if (old == null) old = "";
+  if (old.equals(partId)) return "=The " + name(partId) + " is already on this rod.";
+  @IS@ pst = inv.getItemStack((short) ps);
+  if (old.length() > 0 && pst.getQuantity() > 1 && !canAdd(inv, new @IS@(old, 1))) return "-Make room for the " + name(old) + " first.";
+  String[] nr = new String[] { rig[0], rig[1], rig[2], rig[3] };
+  if (k == 0) nr[0] = String.valueOf(@PKG@.FishDefs.reelTier(partId)); else nr[k] = partId;
+  int before = count(inv, partId);
+  @ISST@ tx = inv.removeItemStackFromSlot((short) ps, 1);
+  if (tx == null || !tx.succeeded() || count(inv, partId) != before - 1) return "-Could not take the " + name(partId) + ".";
+  @IS@ nrod = @PKG@.FishRig.withRig(rod, nr);
+  @ISST@ rx = inv.replaceItemStackInSlot((short) rodSlot, rod, nrod);
+  if (rx == null || !rx.succeeded()) { inv.addItemStack(new @IS@(partId, 1)); return "-That rod moved - nothing changed."; }
+  if (old.length() > 0 && !@PKG@.FishCore.give(inv, new @IS@(old, 1))) @PKG@.FishStore.addClaim(key, "I|" + old + "|1");
+  return "+Fitted the " + name(partId) + (old.length() > 0 ? " - the " + name(old) + " is back in your inventory." : ".");
+}""")
+M(BENCH, r"""
+public static String unfit(@IC@ inv, int rodSlot, String rodSig, int k) {
+  if (!sameAt(inv, rodSlot, rodSig)) return "-That rod moved - pick it again.";
+  if (k < 0 || k > 3) return "-Nothing to remove.";
+  @IS@ rod = inv.getItemStack((short) rodSlot);
+  String[] rig = @PKG@.FishRig.rigOf(rod);
+  String old = k == 0 ? (@PKG@.FishRig.reelOf(rig) > 0 ? @PKG@.FishDefs.reelId(@PKG@.FishRig.reelOf(rig)) : "") : rig[k];
+  if (old == null || old.length() == 0) return "=That slot is already empty.";
+  @IS@ part = new @IS@(old, 1);
+  if (!canAdd(inv, part)) return "-Make room for the " + name(old) + " first.";
+  String[] nr = new String[] { rig[0], rig[1], rig[2], rig[3] };
+  if (k == 0) nr[0] = "0"; else nr[k] = "";
+  @ISST@ rx = inv.replaceItemStackInSlot((short) rodSlot, rod, @PKG@.FishRig.withRig(rod, nr));
+  if (rx == null || !rx.succeeded()) return "-That rod moved - nothing changed.";
+  if (!@PKG@.FishCore.give(inv, part)) {
+    inv.replaceItemStackInSlot((short) rodSlot, inv.getItemStack((short) rodSlot), rod);
+    return "-No room for the " + name(old) + " - nothing changed.";
+  }
+  return "+Took off the " + name(old) + ".";
+}""")
+M(BENCH, r"""
+public static long priceOf(@IS@ f, long now) {
+  int sp = @PKG@.FishDefs.fishIndex(f == null ? null : f.getItemId());
+  int g = @PKG@.FishRig.grams(f);
+  if (sp < 0 || g <= 0) return 0L;
+  return @PKG@.FishMath.price(g / 1000.0, @PKG@.FishCfg.PRICE_KG, @PKG@.FishCfg.PRICE_M[@PKG@.FishDefs.SP_RAR[sp]], @PKG@.FishStore.demand(sp, now));
+}""")
+# sell the fish at slot: re-read + signature, remove it (re-counted), pay; a refused payment puts the same stack back
+M(BENCH, r"""
+public static String sell(@IC@ inv, java.util.UUID u, int slot, String sig, long now) {
+  if (!sameAt(inv, slot, sig)) return "-That fish moved - here is the list again.";
+  @IS@ f = inv.getItemStack((short) slot);
+  int sp = @PKG@.FishDefs.fishIndex(f.getItemId());
+  long price = priceOf(f, now);
+  if (sp < 0 || price <= 0L) return "-That is not a fish this bench buys.";
+  if (!@PKG@.FishBridge.hasCoins()) return "-Selling needs SkyyCoins - it is not running.";
+  int before = count(inv, f.getItemId());
+  @ISST@ tx = inv.removeItemStackFromSlot((short) slot, 1);
+  if (tx == null || !tx.succeeded() || count(inv, f.getItemId()) != before - 1) return "-Could not take the fish - nothing was sold.";
+  if (!@PKG@.FishBridge.coinsAdd(u, price)) {
+    if (!@PKG@.FishCore.give(inv, f)) @PKG@.FishLog.warn("a sold fish could not be put back for " + u + " (" + f + ")");
+    return "-The sale did not go through - your fish is back.";
+  }
+  @PKG@.FishStore.sold(sp, now);
+  return "+Sold the " + @PKG@.FishDefs.SP_NAME[sp] + " (" + @PKG@.FishMath.kg(@PKG@.FishRig.grams(f)) + ") for " + @PKG@.FishMath.coins(price) + " coins.";
+}""")
+M(BENCH, r"""
+public static int filletsOf(@IS@ f) {
+  return @PKG@.FishMath.fillets(@PKG@.FishRig.grams(f) / 1000.0, @PKG@.FishCfg.FIL_KG, @PKG@.FishCfg.FIL_MAX);
+}""")
+M(BENCH, r"""
+public static String fillet(@IC@ inv, int slot, String sig) {
+  if (!sameAt(inv, slot, sig)) return "-That fish moved - here is the list again.";
+  @IS@ f = inv.getItemStack((short) slot);
+  int sp = @PKG@.FishDefs.fishIndex(f.getItemId());
+  if (sp < 0) return "-That is not a fish.";
+  int n = filletsOf(f);
+  if (n <= 0) return "-Too small to fillet - sell it whole.";
+  @IS@ out = new @IS@(@PKG@.FishDefs.FILLET[@PKG@.FishDefs.SP_RAR[sp] > 0 ? 1 : 0], n);
+  if (!canAdd(inv, out) && f.getQuantity() > 1) return "-Make room for the fillets first.";
+  int before = count(inv, f.getItemId());
+  @ISST@ tx = inv.removeItemStackFromSlot((short) slot, 1);
+  if (tx == null || !tx.succeeded() || count(inv, f.getItemId()) != before - 1) return "-Could not take the fish.";
+  if (!@PKG@.FishCore.give(inv, out)) {
+    @PKG@.FishCore.give(inv, f);
+    return "-No room for " + n + " fillets - your fish is back.";
+  }
+  return "+Filleted the " + @PKG@.FishDefs.SP_NAME[sp] + " into " + n + " Raw Fish.";
+}""")
+M(BENCH, r"""
+public static String sellAll(@IC@ inv, java.util.UUID u, long now) {
+  if (inv == null) return "-Could not open your inventory.";
+  int n = 0;
+  long sum = 0L;
+  int cap = inv.getCapacity();
+  for (int i = 0; i < cap; i++) {
+    @IS@ f = inv.getItemStack((short) i);
+    if (f == null || f.isEmpty()) continue;
+    int sp = @PKG@.FishDefs.fishIndex(f.getItemId());
+    if (sp < 0 || @PKG@.FishDefs.SP_RAR[sp] != 0) continue;
+    long p = priceOf(f, now);
+    String r = sell(inv, u, i, @PKG@.FishRig.sig(f), now);
+    if (r.startsWith("+")) { n++; sum = sum + p; }
+    else if (n == 0) return r;
+    else break;
+  }
+  if (n == 0) return "=You carry no Normal fish.";
+  return "+Sold " + n + " Normal fish for " + @PKG@.FishMath.coins(sum) + " coins.";
+}""")
+# the page's lists: slots of rods / fish, distinct part ids carried (fixed order: reels, then the parts)
+M(BENCH, r"""
+public static int[] slotsOf(@IC@ inv, boolean rods) {
+  java.util.ArrayList l = new java.util.ArrayList();
+  int cap = inv == null ? 0 : inv.getCapacity();
+  for (int i = 0; i < cap; i++) {
+    @IS@ s = inv.getItemStack((short) i);
+    if (s == null || s.isEmpty()) continue;
+    if (rods ? @PKG@.FishDefs.rodIndex(s.getItemId()) >= 0 : @PKG@.FishDefs.fishIndex(s.getItemId()) >= 0) l.add(Integer.valueOf(i));
+  }
+  int[] a = new int[l.size()];
+  for (int i = 0; i < a.length; i++) a[i] = ((Integer) l.get(i)).intValue();
+  return a;
+}""")
+M(BENCH, r"""
+public static String[] partsCarried(@IC@ inv) {
+  java.util.ArrayList l = new java.util.ArrayList();
+  for (int i = 0; i < @PKG@.FishDefs.REELS.length; i++) if (count(inv, @PKG@.FishDefs.REELS[i]) > 0) l.add(@PKG@.FishDefs.REELS[i]);
+  for (int i = 0; i < @PKG@.FishDefs.PART_IDS.length; i++) if (count(inv, @PKG@.FishDefs.PART_IDS[i]) > 0) l.add(@PKG@.FishDefs.PART_IDS[i]);
+  String[] a = new String[l.size()];
+  for (int i = 0; i < a.length; i++) a[i] = (String) l.get(i);
+  return a;
+}""")
+M(BENCH, r"""
+public static String partEffect(String id) {
+  int r = @PKG@.FishDefs.reelTier(id);
+  if (r > 0) return "reel power " + @PKG@.FishMath.num(@PKG@.FishCfg.reelPower(r), 1);
+  int p = @PKG@.FishDefs.partIndex(id);
+  if (p < 0) return "";
+  int k = @PKG@.FishDefs.PART_KIND[p];
+  return @PKG@.FishDefs.KIND_PRE[k] + @PKG@.FishMath.num(@PKG@.FishCfg.partValue(p), 1) + @PKG@.FishDefs.KIND_POST[k];
+}""")
+M(BENCH, r"""
+public static String[] statLines(int ri, String[] rig) {
+  double[] s = @PKG@.FishRig.stats(ri, rig);
+  return new String[] {
+    "Max fish weight " + @PKG@.FishMath.num(s[0], 1) + " kg  -  Reel power " + @PKG@.FishMath.num(s[1], 1) + "  -  Fishing speed +" + @PKG@.FishMath.num(s[2], 1),
+    "Treasure chance +" + @PKG@.FishMath.num(s[3], 1) + "  -  Grade luck +" + @PKG@.FishMath.num(s[4], 1) + "%  -  Bar start +" + @PKG@.FishMath.num(s[5], 1) + "  -  Fight time +" + @PKG@.FishMath.num(s[6], 1) + " s",
+    "Surge pull -" + @PKG@.FishMath.num(s[7], 1) + "%  -  Double catch " + @PKG@.FishMath.num(s[8], 1) + "%  -  Junk -" + @PKG@.FishMath.num(s[9], 1) + "%  -  Wisdom +" + @PKG@.FishMath.num(s[10], 1) + "%  -  Heavier fish +" + @PKG@.FishMath.num(s[11], 1) + "%" };
+}""")
+
+# ---------------------------------------------------------------- FishPage: the Fishing Bench (one inline page, tabs rebuilt on click; vanilla kit look)
+PW, PH = 1000, 760
+SH = SUI.page_shell("SkyyFb", PW, PH, "Fishing Bench", body_id="SkyyFbBody")
+IW = SH.inner_w
+TAB_IDS = ["SkyyFbTab0", "SkyyFbTab1", "SkyyFbTab2"]
+TAB_NAMES = ["Parts", "Rig", "Fillet and Sell"]
+TABS_H = SUI.BTN_H + 2 * SUI.TAB_MARGIN
+HINT_H, HINT_M = 24, 6
+STATUS_H, STATUS_M = 30, 6
+FOOT_H = SUI.BTN_H + 8
+LIST_H = SH.inner_h - TABS_H - (HINT_H + HINT_M) - (STATUS_H + STATUS_M) - FOOT_H
+assert SH.fit([TABS_H, HINT_H + HINT_M, LIST_H, STATUS_H + STATUS_M, FOOT_H]) == 0, "the bench page body must be filled exactly"
+assert LIST_H >= 400, LIST_H
+LIST_IN = IW - 2 * SUI.WELL_LIST_PAD - 12          # the scroll list's content width (padding 4 + scrollbar 6 + spacing 6)
+RIG_L = 330
+RIG_R = IW - RIG_L - 10
+RIG_L_IN = RIG_L - 2 * SUI.WELL_LIST_PAD - 12
+RIG_R_IN = RIG_R - 2 * SUI.WELL_LIST_PAD - 12
+J_ = SUI.J
+
+
+def jl(parent, mk, root=True):
+    return SUI.java_append(parent, mk, page_root=root)
+
+
+def jsets(mk):
+    return "\n".join(SUI.java_set(i, p, v) for i, p, v in getattr(mk, "sets", []))
+
+
+def rows_choice(cond, on, off):
+    assert [s[0] for s in on.sets] == [s[0] for s in off.sets]
+    return SUI.choose(J_(cond), on, off)
+
+
+def page_java():
+    out = []
+    ap = SUI.Appends()
+    ap.add(SH.body, SUI.label("SkyyFbHint", "", "default", h=HINT_H, anchor={"bottom": HINT_M}))
+    hint_java = ap.java("b")
+    # ---- tab 0: PARTS
+    t0 = SUI.tab_row(SH.body, "SkyyFbTabs", TAB_IDS, TAB_NAMES, 0).java("b")
+    t1 = SUI.tab_row(SH.body, "SkyyFbTabs", TAB_IDS, TAB_NAMES, 1).java("b")
+    t2 = SUI.tab_row(SH.body, "SkyyFbTabs", TAB_IDS, TAB_NAMES, 2).java("b")
+    lst = jl(SH.body, SUI.scroll_list("SkyyFbList", h=LIST_H, well=True))
+    rkw = dict(icon=J_("ic", "Ingredient_Stick"), name=J_("nm", "Copper Fishing Rod"), sub=J_("sb", "6 Copper Bar (2/6)"),
+               tag=J_("tg", "Ready"), tag_col=J_("tc", COL["success"]), tag_w=230, action="Craft")
+    r_on = SUI.static_row("SkyyFbR" + J_("i", "0"), LIST_IN, action_on=True, **rkw)
+    r_off = SUI.static_row("SkyyFbR" + J_("i", "0"), LIST_IN, action_on=False, **rkw)
+    parts_row = jl("SkyyFbList", rows_choice("stt == 0", r_on, r_off), False) + "\n" + jsets(r_on)
+    # ---- tab 1: RIG (rods on the left, the chosen rod's slots / stats / your parts on the right)
+    rig_grp = jl(SH.body, SUI.group("SkyyFbRig", "Left", h=LIST_H))
+    rig_l = jl("SkyyFbRig", SUI.scroll_list("SkyyFbRods", w=RIG_L, h=LIST_H, well=True), False)
+    rig_r = jl("SkyyFbRig", SUI.scroll_list("SkyyFbRigR", w=RIG_R, h=LIST_H, well=True, anchor={"left": 10}), False)
+    dkw = dict(icon=J_("ic", "SkyyFishing_Rod_Bamboo"), name=J_("nm", "Bamboo Fishing Rod"), sub=J_("sb", "Reel: Bamboo"))
+    d_sel = SUI.static_row("SkyyFbD" + J_("i", "0"), RIG_L_IN, state="selected", **dkw)
+    d_nrm = SUI.static_row("SkyyFbD" + J_("i", "0"), RIG_L_IN, state="normal", **dkw)
+    rod_row = jl("SkyyFbRods", rows_choice("i == this.selRod", d_sel, d_nrm), False) + "\n" + jsets(d_sel)
+    ap2 = SUI.Appends()
+    ap2.text("SkyyFbRods", "SkyyFbNoRod", J_("noRod", "You carry no fishing rod."), "caption", h=48, wrap=True, max_lines=2)
+    no_rod = ap2.java("b", page_root=False)
+    sec_fit = jl("SkyyFbRigR", SUI.section("SkyyFbSecFit", "Fitted"), False)
+    sec_st = jl("SkyyFbRigR", SUI.section("SkyyFbSecSt", "Rig total"), False)
+    sec_pt = jl("SkyyFbRigR", SUI.section("SkyyFbSecPt", "Parts you carry"), False)
+    kkw = dict(icon=J_("ic", "SkyyFishing_Reel_Bamboo"), name=J_("nm", "Reel"), sub=J_("sb", "Bamboo Reel"), action="Remove")
+    k_on = SUI.static_row("SkyyFbK" + J_("k", "0"), RIG_R_IN, action_on=True, **kkw)
+    k_off = SUI.static_row("SkyyFbK" + J_("k", "0"), RIG_R_IN, action_on=False, **kkw)
+    slot_row = jl("SkyyFbRigR", rows_choice("on", k_on, k_off), False) + "\n" + jsets(k_on)
+    ap3 = SUI.Appends()
+    for n in range(3):
+        ap3.text("SkyyFbRigR", "SkyyFbSt%d" % n, J_("stl[%d]" % n, "Max fish weight 3 kg"), "propValue", h=26)
+    stat_lines = ap3.java("b", page_root=False)
+    pkw = dict(icon=J_("ic", "SkyyFishing_Hook_Barbed_I"), name=J_("nm", "Barbed Hook I"), sub=J_("sb", "x2 - grade luck +5%"), action="Fit")
+    p_row = SUI.static_row("SkyyFbP" + J_("j", "0"), RIG_R_IN, **pkw)
+    part_row = jl("SkyyFbRigR", p_row, False) + "\n" + jsets(p_row)
+    ap4 = SUI.Appends()
+    ap4.text("SkyyFbRigR", "SkyyFbNoPart", "No reels or parts in your inventory - craft them in the PARTS tab.", "caption", h=30)
+    no_part = ap4.java("b", page_root=False)
+    # ---- tab 2: FILLET AND SELL (a Sell action + a Fillet button per fish)
+    fkw = dict(icon=J_("ic", FISH_IDS[0]), name=J_("nm", "Rustback Trout"), name_col=J_("col", RAR_HEX[0]),
+               sub=J_("sb", "2.41 kg - 52 cm - 63 coins - 4 fillets"), action="Sell")
+    f_row = SUI.static_row("SkyyFbF" + J_("i", "0"), LIST_IN - SUI.ROW_ACTION_W - 4, **fkw)
+    fil_on = SUI.button("SkyyFbF" + J_("i", "0") + "Fil", "Fillet", "secondary", "small", w=SUI.ROW_ACTION_W, h=SUI.ROW_H_READABLE, anchor={"left": 4})
+    fil_off = SUI.button("SkyyFbF" + J_("i", "0") + "Fil", "Fillet", "secondary", "small", w=SUI.ROW_ACTION_W, h=SUI.ROW_H_READABLE,
+                         anchor={"left": 4}, disabled=True)
+    fish_row = jl("SkyyFbList", f_row, False) + "\n" + jsets(f_row) + "\n" + \
+        SUI.java_append("SkyyFbF" + J_("i", "0"), SUI.choose(J_("nf > 0"), fil_on, fil_off), page_root=False)
+    ap5 = SUI.Appends()
+    ap5.text("SkyyFbList", "SkyyFbNoFish", "You carry no whole fish. Catch some, then come back to sell or fillet them.", "caption", h=30)
+    no_fish = ap5.java("b", page_root=False)
+    # ---- the status line, the separator and the footers
+    status = jl(SH.body, SUI.status_line("SkyyFbStatus", anchor={"top": STATUS_M}))
+    close_btn = SUI.button("SkyyFbClose", "Close", "secondary", sound="cancel")
+    foot1 = jl(SH.body, SUI.button_row("SkyyFbFoot", align="right", used=SUI.BTN_MIN_W, avail=IW)) + "\n" + jl("SkyyFbFoot", close_btn, False)
+    all_btn = SUI.button("SkyyFbAll", "Sell all Normal", "secondary", w=230, anchor={"right": 6})
+    foot2 = jl(SH.body, SUI.button_row("SkyyFbFoot", align="right", used=230 + 6 + SUI.BTN_MIN_W, avail=IW)) + "\n" + \
+        jl("SkyyFbFoot", all_btn, False) + "\n" + jl("SkyyFbFoot", close_btn, False)
+    return dict(shell=SH.java("b"), hint=hint_java, t0=t0, t1=t1, t2=t2, lst=lst, parts_row=parts_row, rig_grp=rig_grp, rig_l=rig_l,
+                rig_r=rig_r, rod_row=rod_row, no_rod=no_rod, sec_fit=sec_fit, sec_st=sec_st, sec_pt=sec_pt, slot_row=slot_row,
+                stat_lines=stat_lines, part_row=part_row, no_part=no_part, fish_row=fish_row, no_fish=no_fish, status=status,
+                foot1=foot1, foot2=foot2)
+
+
+PJ = page_java()
+
+
+def ind(s, n=2):
+    return "\n".join((" " * n) + l for l in s.split("\n"))
+
+
+for _f in ("public int tab;", "public int selRod;", "public String info;", "public String tok;", "public long base;", "public long seq;",
+           "public int[] rodSlots;", "public String[] rodSigs;", "public String[] partIds;", "public int[] fishSlots;", "public String[] fishSigs;",
+           "public int armSlot;", "public String armSig;", "public long armUntil;", "public static volatile long BUILDS = 0L;",
+           "public static volatile long CLICKS = 0L;", "public static volatile long STALE = 0L;"):
+    F(PAGEC, _f)
+C(PAGEC, r"""
+public FishPage(@PR@ pr) {
+  super(pr, @LIFE@.CanDismiss);
+  this.tab = 0; this.selRod = 0; this.info = ""; this.tok = "0"; this.base = System.nanoTime() & 0xffffffL; this.seq = 0L;
+  this.rodSlots = new int[0]; this.rodSigs = new String[0]; this.partIds = new String[0]; this.fishSlots = new int[0]; this.fishSigs = new String[0];
+  this.armSlot = -1; this.armSig = ""; this.armUntil = 0L;
+}""")
+for _l in SUI.java_status_methods():
+    M(PAGEC, _l)
+M(PAGEC, r"""
+public static String jsonStr(String data, String key) {
+  if (data == null || key == null) return "";
+  String qt = String.valueOf((char) 34);
+  int i = data.indexOf(qt + key + qt);
+  if (i < 0) return "";
+  i = data.indexOf(':', i + key.length() + 2);
+  if (i < 0) return "";
+  i++;
+  while (i < data.length() && Character.isWhitespace(data.charAt(i))) i++;
+  if (i >= data.length() || data.charAt(i) != 34) return "";
+  i++;
+  StringBuilder sb = new StringBuilder();
+  while (i < data.length() && sb.length() < 200) {
+    char c = data.charAt(i);
+    if (c == 34) break;
+    if (c == 92 && i + 1 < data.length()) { sb.append(data.charAt(i + 1)); i += 2; continue; }
+    sb.append(c);
+    i++;
+  }
+  return sb.toString();
+}""")
+M(PAGEC, r"""
+public static int toInt(String s) {
+  try { return Integer.parseInt(s.trim()); } catch (Throwable t) { return -1; }
+}""")
+M(PAGEC, r"""
+public @PKG@.FishCtx ctx(@REF@ ref, @ST@ st) {
+  @WLD@ w = null;
+  try { Object ex = st.getExternalData(); if (ex instanceof @EST@) w = ((@EST@) ex).getWorld(); } catch (Throwable t) { w = null; }
+  return new @PKG@.FishCtx(this.playerRef.getUuid(), this.playerRef.getUsername(), ref, st, (@CAC@) st, w, this.playerRef);
+}""")
+M(PAGEC, r"""
+public static String rodSub(@IS@ rs) {
+  String[] rig = @PKG@.FishRig.rigOf(rs);
+  int reel = @PKG@.FishRig.reelOf(rig);
+  int n = 0;
+  for (int k = 1; k < 4; k++) if (rig[k].length() > 0) n++;
+  return (reel > 0 ? @PKG@.FishDefs.TIERS[reel - 1] + " reel" : "no reel") + " - " + n + " of 3 parts";
+}""")
+BUILD_SRC = r"""
+public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
+  BUILDS = BUILDS + 1L;
+  java.util.UUID u = this.playerRef.getUuid();
+  @PKG@.FishCtx c = ctx(ref, st);
+  @IC@ inv = null;
+  try { inv = @PKG@.FishEng.API == null ? null : @PKG@.FishEng.API.inv(c); } catch (Throwable ti) { inv = null; }
+  String key = @PKG@.FishBridge.pkey(u);
+  long now = System.currentTimeMillis();
+  this.seq = this.seq + 1L;
+  this.tok = Long.toHexString(this.base + this.seq);
+  int pond = @PKG@.FishStore.pond(key);
+  int pt = @PKG@.FishMath.pondTier(pond, @PKG@.FishCfg.POND);
+  String hint;
+  if (this.tab == 0) hint = "Pond Fish " + (pt > 0 ? @PKG@.FishDefs.roman(pt) : "0") + " - " + pond + " fish landed" + (pt < 8 ? ". Pond Fish " + @PKG@.FishDefs.roman(pt + 1) + " at " + @PKG@.FishCfg.POND[pt] + "." : ".");
+  else if (this.tab == 1) hint = "Pick a rod, then fit a reel, hook, line and sinker. A part you take off goes back to your inventory.";
+  else hint = "Sell whole fish for coins, or fillet them into Raw Fish for cooking.";
+@SHELL@
+  if (this.tab == 0) {
+@T0@
+  } else if (this.tab == 1) {
+@T1@
+  } else {
+@T2@
+  }
+@HINT@
+  b.set("#SkyyFbHint.Text", hint);
+  if (this.tab == 0) {
+@LST@
+    for (int i = 0; i < @PKG@.FishDefs.R_OUT.length; i++) {
+      String ic = @PKG@.FishDefs.R_OUT[i];
+      int stt = @PKG@.FishBench.state(inv, u, key, i);
+      String nm = @PKG@.FishBench.name(ic);
+      String sb = @PKG@.FishBench.needText(inv, i);
+      String tg = stt == 0 ? "Ready" : (stt == 1 ? "Needs " + @PKG@.FishBench.gateText(i) : "Missing items");
+      String tc = stt == 0 ? @PKG@.FishDefs.COL_OK : (stt == 1 ? "@DISABLED@" : @PKG@.FishDefs.COL_ERR);
+@PARTSROW@
+      if (stt == 0) ev.addEventBinding(@BT@.Activating, "#SkyyFbR" + i + "Act", @EVD@.of("a", "craft").append("i", String.valueOf(i)).append("t", this.tok));
+    }
+  } else if (this.tab == 1) {
+    this.rodSlots = @PKG@.FishBench.slotsOf(inv, true);
+    this.rodSigs = new String[this.rodSlots.length];
+    if (this.selRod >= this.rodSlots.length) this.selRod = this.rodSlots.length - 1;
+    if (this.selRod < 0 && this.rodSlots.length > 0) this.selRod = 0;
+@RIGGRP@
+@RIGL@
+@RIGR@
+    for (int i = 0; i < this.rodSlots.length; i++) {
+      @IS@ rs = inv.getItemStack((short) this.rodSlots[i]);
+      this.rodSigs[i] = @PKG@.FishRig.sig(rs);
+      String ic = rs.getItemId();
+      String nm = @PKG@.FishDefs.rodName(@PKG@.FishDefs.rodIndex(ic));
+      String sb = rodSub(rs);
+@RODROW@
+      ev.addEventBinding(@BT@.Activating, "#SkyyFbD" + i + "P", @EVD@.of("a", "rod").append("i", String.valueOf(i)).append("t", this.tok));
+    }
+    if (this.rodSlots.length == 0) {
+      String noRod = "You carry no fishing rod. Craft one in the PARTS tab.";
+@NOROD@
+    }
+    this.partIds = new String[0];
+    if (this.selRod >= 0 && this.selRod < this.rodSlots.length) {
+      @IS@ rod = inv.getItemStack((short) this.rodSlots[this.selRod]);
+      int ri = @PKG@.FishDefs.rodIndex(rod.getItemId());
+      String[] rig = @PKG@.FishRig.rigOf(rod);
+@SECFIT@
+      String[] slotName = new String[] { "Reel", "Hook", "Line", "Sinker" };
+      String[] slotIcon = new String[] { "SkyyFishing_Reel_Bamboo", "SkyyFishing_Hook_Barbed_I", "SkyyFishing_Line_Braided_I", "SkyyFishing_Sinker_Weighted_I" };
+      for (int k = 0; k < 4; k++) {
+        String part = k == 0 ? (@PKG@.FishRig.reelOf(rig) > 0 ? @PKG@.FishDefs.reelId(@PKG@.FishRig.reelOf(rig)) : "") : rig[k];
+        boolean on = part != null && part.length() > 0;
+        String ic = on ? part : slotIcon[k];
+        String nm = slotName[k];
+        String sb = on ? @PKG@.FishDefs.partName(part) + " - " + @PKG@.FishBench.partEffect(part) : "empty";
+@SLOTROW@
+        if (on) ev.addEventBinding(@BT@.Activating, "#SkyyFbK" + k + "Act", @EVD@.of("a", "rm").append("i", String.valueOf(k)).append("t", this.tok));
+      }
+@SECST@
+      String[] stl = @PKG@.FishBench.statLines(ri, rig);
+@STATLINES@
+@SECPT@
+      this.partIds = @PKG@.FishBench.partsCarried(inv);
+      for (int j = 0; j < this.partIds.length; j++) {
+        String ic = this.partIds[j];
+        String nm = @PKG@.FishDefs.partName(ic);
+        String sb = "x" + @PKG@.FishBench.count(inv, ic) + " - " + @PKG@.FishBench.partEffect(ic);
+@PARTROW@
+        ev.addEventBinding(@BT@.Activating, "#SkyyFbP" + j + "Act", @EVD@.of("a", "fit").append("i", String.valueOf(j)).append("t", this.tok));
+      }
+      if (this.partIds.length == 0) {
+@NOPART@
+      }
+    }
+  } else {
+@LST@
+    this.fishSlots = @PKG@.FishBench.slotsOf(inv, false);
+    this.fishSigs = new String[this.fishSlots.length];
+    for (int i = 0; i < this.fishSlots.length; i++) {
+      @IS@ f = inv.getItemStack((short) this.fishSlots[i]);
+      this.fishSigs[i] = @PKG@.FishRig.sig(f);
+      int sp = @PKG@.FishDefs.fishIndex(f.getItemId());
+      int rr = @PKG@.FishDefs.SP_RAR[sp];
+      String ic = f.getItemId();
+      String nm = @PKG@.FishDefs.SP_NAME[sp];
+      String col = @PKG@.FishDefs.RAR_HEX[rr];
+      int nf = @PKG@.FishBench.filletsOf(f);
+      String sb = @PKG@.FishMath.kg(@PKG@.FishRig.grams(f)) + " - " + @PKG@.FishMath.cm(@PKG@.FishRig.mm(f)) + " - " + @PKG@.FishDefs.RAR_NAME[rr] + " - sells for " + @PKG@.FishMath.coins(@PKG@.FishBench.priceOf(f, now)) + " coins - " + (nf > 0 ? nf + " Raw Fish" : "too small to fillet");
+@FISHROW@
+      ev.addEventBinding(@BT@.Activating, "#SkyyFbF" + i + "Act", @EVD@.of("a", "sell").append("i", String.valueOf(i)).append("t", this.tok));
+      if (nf > 0) ev.addEventBinding(@BT@.Activating, "#SkyyFbF" + i + "Fil", @EVD@.of("a", "fil").append("i", String.valueOf(i)).append("t", this.tok));
+    }
+    if (this.fishSlots.length == 0) {
+@NOFISH@
+    }
+  }
+@STATUS@
+  b.set("#SkyyFbStatus.Text", textOf(this.info));
+  if (this.tab == 2) {
+@FOOT2@
+    ev.addEventBinding(@BT@.Activating, "#SkyyFbAll", @EVD@.of("a", "sellall").append("t", this.tok));
+  } else {
+@FOOT1@
+  }
+  ev.addEventBinding(@BT@.Activating, "#SkyyFbTab0", @EVD@.of("a", "tab").append("i", "0"));
+  ev.addEventBinding(@BT@.Activating, "#SkyyFbTab1", @EVD@.of("a", "tab").append("i", "1"));
+  ev.addEventBinding(@BT@.Activating, "#SkyyFbTab2", @EVD@.of("a", "tab").append("i", "2"));
+  ev.addEventBinding(@BT@.Activating, "#SkyyFbClose", @EVD@.of("a", "close"));
+}"""
+_rep = {"@SHELL@": ind(PJ["shell"]), "@T0@": ind(PJ["t0"], 4), "@T1@": ind(PJ["t1"], 4), "@T2@": ind(PJ["t2"], 4), "@HINT@": ind(PJ["hint"]),
+        "@LST@": ind(PJ["lst"], 4), "@PARTSROW@": ind(PJ["parts_row"], 6), "@RIGGRP@": ind(PJ["rig_grp"], 4), "@RIGL@": ind(PJ["rig_l"], 4),
+        "@RIGR@": ind(PJ["rig_r"], 4), "@RODROW@": ind(PJ["rod_row"], 6), "@NOROD@": ind(PJ["no_rod"], 6), "@SECFIT@": ind(PJ["sec_fit"], 6),
+        "@SLOTROW@": ind(PJ["slot_row"], 8), "@SECST@": ind(PJ["sec_st"], 6), "@STATLINES@": ind(PJ["stat_lines"], 6),
+        "@SECPT@": ind(PJ["sec_pt"], 6), "@PARTROW@": ind(PJ["part_row"], 8), "@NOPART@": ind(PJ["no_part"], 8),
+        "@FISHROW@": ind(PJ["fish_row"], 6), "@NOFISH@": ind(PJ["no_fish"], 6), "@STATUS@": ind(PJ["status"]),
+        "@FOOT1@": ind(PJ["foot1"], 4), "@FOOT2@": ind(PJ["foot2"], 4), "@DISABLED@": COL["disabled"]}
+for _k, _v in _rep.items():
+    assert _k in BUILD_SRC, _k
+    BUILD_SRC = BUILD_SRC.replace(_k, _v)
+M(PAGEC, BUILD_SRC)
+PAGE_ID = hashlib.sha256(BUILD_SRC.encode("utf-8")).hexdigest()[:12]
+M(PAGEC, r"""
+public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
+  CLICKS = CLICKS + 1L;
+  String a = jsonStr(data, "a");
+  int i = toInt(jsonStr(data, "i"));
+  try {
+    if (a.equals("close")) { close(); return; }
+    if (a.equals("tab")) {
+      if (i >= 0 && i <= 2) this.tab = i;
+      this.info = "";
+      this.armSlot = -1;
+      rebuild();
+      return;
+    }
+    if (!jsonStr(data, "t").equals(this.tok)) { STALE = STALE + 1L; this.info = "=The page changed - here it is again."; rebuild(); return; }
+    @PKG@.FishCtx c = ctx(ref, st);
+    @IC@ inv = @PKG@.FishEng.API == null ? null : @PKG@.FishEng.API.inv(c);
+    java.util.UUID u = this.playerRef.getUuid();
+    String key = @PKG@.FishBridge.pkey(u);
+    long now = System.currentTimeMillis();
+    if (inv == null) this.info = "-Could not open your inventory.";
+    else if (@PKG@.FishBridge.busy(u)) this.info = "-Your profile is busy - try again in a moment.";
+    else if (a.equals("craft")) this.info = @PKG@.FishBench.craft(inv, u, key, i);
+    else if (a.equals("rod")) { if (i >= 0 && i < this.rodSlots.length) this.selRod = i; this.info = ""; }
+    else if (a.equals("rm")) {
+      this.info = this.selRod >= 0 && this.selRod < this.rodSlots.length ? @PKG@.FishBench.unfit(inv, this.rodSlots[this.selRod], this.rodSigs[this.selRod], i) : "-Pick a rod first.";
+    } else if (a.equals("fit")) {
+      if (this.selRod < 0 || this.selRod >= this.rodSlots.length || i < 0 || i >= this.partIds.length) this.info = "-Pick a rod first.";
+      else this.info = @PKG@.FishBench.fit(inv, key, this.rodSlots[this.selRod], this.rodSigs[this.selRod], this.partIds[i]);
+    } else if (a.equals("sell")) {
+      this.info = i >= 0 && i < this.fishSlots.length ? @PKG@.FishBench.sell(inv, u, this.fishSlots[i], this.fishSigs[i], now) : "-That fish is gone.";
+    } else if (a.equals("fil")) {
+      if (i < 0 || i >= this.fishSlots.length) this.info = "-That fish is gone.";
+      else {
+        @IS@ f = inv.getItemStack((short) this.fishSlots[i]);
+        int sp = @PKG@.FishDefs.fishIndex(f == null ? null : f.getItemId());
+        int rr = sp < 0 ? 0 : @PKG@.FishDefs.SP_RAR[sp];
+        boolean armed = this.armSlot == this.fishSlots[i] && this.armSig.equals(this.fishSigs[i]) && now <= this.armUntil;
+        if (sp >= 0 && rr >= @PKG@.FishCfg.FIL_CONFIRM_R && !armed) {
+          this.armSlot = this.fishSlots[i]; this.armSig = this.fishSigs[i]; this.armUntil = now + 10000L;
+          this.info = "=Fillet the " + @PKG@.FishDefs.RAR_NAME[rr] + " " + @PKG@.FishDefs.SP_NAME[sp] + "? Selling it whole pays more - click FILLET again to fillet it.";
+        } else {
+          this.armSlot = -1;
+          this.info = @PKG@.FishBench.fillet(inv, this.fishSlots[i], this.fishSigs[i]);
+        }
+      }
+    } else if (a.equals("sellall")) this.info = @PKG@.FishBench.sellAll(inv, u, now);
+    else this.info = "";
+    if (this.info.length() > 0) @PKG@.FishLog.info(this.playerRef.getUsername() + " bench " + a + " " + i + ": " + this.info);
+  } catch (Throwable t) {
+    @PKG@.FishLog.warn("bench click " + a + " failed: " + t);
+    this.info = "-Something went wrong - check your inventory. The server log has the details.";
+  }
+  rebuild();
+}""")
+PAGEFN.addInterface(pool.get("java.util.function.Function"))
+C(PAGEFN, "public FishPageFn() { }")
+M(PAGEFN, "public Object apply(Object o) { return new @PKG@.FishPage((@PR@) o); }")
+
+# ---------------------------------------------------------------- the scheduler save (every 2 s: dirty profile / record / demand files)
+SAVE.addInterface(pool.get("java.lang.Runnable"))
+C(SAVE, "public FishSaveTick() { }")
+M(SAVE, r"""
+public void run() {
+  try { @PKG@.FishStore.flush(); } catch (Throwable t) { @PKG@.FishLog.warnOnce("save", "the fishing save failed: " + t); }
+}""")
+
+# ---------------------------------------------------------------- PlayerReady (a world change) / disconnect: the line ends
+READY.addInterface(pool.get("java.util.function.Consumer"))
+C(READY, "public FishReady() { }")
+M(READY, r"""
+public void accept(Object ev) {
+  try {
+    @REF@ r = ((@PRE@) ev).getPlayerRef();
+    if (r == null || !r.isValid()) return;
+    @PR@ pr = (@PR@) r.getStore().getComponent(r, @PR@.getComponentType());
+    if (pr != null) @PKG@.FishCore.worldChange(pr.getUuid(), pr.getUsername(), r, r.getStore(), pr);
+  } catch (Throwable t) { }
+}""")
+QUIT.addInterface(pool.get("java.util.function.Consumer"))
+C(QUIT, "public FishQuit() { }")
+M(QUIT, r"""
+public void accept(Object ev) {
+  try {
+    @PR@ pr = ((@PDE@) ev).getPlayerRef();
+    if (pr != null) @PKG@.FishCore.drop(pr.getUuid(), "left the game");
+  } catch (Throwable t) { }
+}""")
+
+# ---------------------------------------------------------------- commands: /fishing (every player) + /fishadmin (admin)
+M(CMDT, r"""
+public static void tell(@PR@ pr, String s, String col) {
+  @PKG@.FishLog.info("to " + pr.getUsername() + ": " + s);
+  try { @MSG@ m = @MSG@.raw(s); if (col != null) m = m.color(col); pr.sendMessage(m); } catch (Throwable t) { }
+}""")
+M(CMDT, r"""
+public static void status(@PR@ pr) {
+  java.util.UUID u = pr.getUuid();
+  String key = @PKG@.FishBridge.pkey(u);
+  int pond = @PKG@.FishStore.pond(key);
+  int pt = @PKG@.FishMath.pondTier(pond, @PKG@.FishCfg.POND);
+  tell(pr, "Fishing: Pond Fish " + (pt > 0 ? @PKG@.FishDefs.roman(pt) : "0") + " (" + pond + " fish landed" + (pt < 8 ? ", next tier at " + @PKG@.FishCfg.POND[pt] : "") + ").", @PKG@.FishDefs.COL_GOLD);
+  StringBuilder b = new StringBuilder();
+  for (int i = 0; i < @PKG@.FishDefs.SP_KEY.length; i++) {
+    int[] be = @PKG@.FishStore.best(key, i);
+    if (be[0] <= 0) continue;
+    if (b.length() > 0) b.append(", ");
+    b.append(@PKG@.FishDefs.SP_NAME[i]).append(' ').append(@PKG@.FishMath.kg(be[1])).append(" (x").append(be[0]).append(')');
+  }
+  tell(pr, b.length() > 0 ? "Your best: " + b.toString() + "." : "You have not landed a fish yet.", null);
+  tell(pr, "How: craft a Fishing Bench at the Workbench, make a Bamboo Fishing Rod there, then right click water with it. When the bobber shows ! right click to hook, then click fast to fill the bar.", @PKG@.FishDefs.COL_INFO);
+}""")
+M(CMDT, r"""
+public static void admin(@PR@ pr, @ST@ store, @REF@ ref, String what, String num) {
+  String w = what == null ? "" : what.trim().toLowerCase(java.util.Locale.ROOT);
+  java.util.UUID u = pr.getUuid();
+  String key = @PKG@.FishBridge.pkey(u);
+  @PKG@.FishLog.info(pr.getUsername() + " ran /fishadmin " + w + (num == null ? "" : " " + num));
+  if (w.equals("kit")) {
+    @PKG@.FishCtx c = new @PKG@.FishCtx(u, pr.getUsername(), ref, store, (@CAC@) store, null, pr);
+    @IC@ inv = @PKG@.FishEng.API == null ? null : @PKG@.FishEng.API.inv(c);
+    java.util.ArrayList l = new java.util.ArrayList();
+    l.add(@PKG@.FishRig.withRig(new @IS@("SkyyFishing_Rod_Bamboo", 1), new String[] { "1", "", "", "" }));
+    l.add(@PKG@.FishRig.withRig(new @IS@("SkyyFishing_Rod_Copper", 1), new String[] { "2", "", "", "" }));
+    l.add(@PKG@.FishRig.withRig(new @IS@("SkyyFishing_Rod_Iron", 1), new String[] { "3", "", "", "" }));
+    for (int i = 0; i < @PKG@.FishDefs.REELS.length; i++) l.add(new @IS@(@PKG@.FishDefs.REELS[i], 1));
+    for (int i = 0; i < @PKG@.FishDefs.PART_IDS.length; i++) l.add(new @IS@(@PKG@.FishDefs.PART_IDS[i], 1));
+    l.add(new @IS@(@PKG@.FishDefs.BENCH, 1));
+    int got = 0;
+    for (int i = 0; i < l.size(); i++) {
+      @IS@ s = (@IS@) l.get(i);
+      if (@PKG@.FishCore.give(inv, s)) got++;
+      else @PKG@.FishStore.addClaim(key, @PKG@.FishCore.claimOf(s));
+    }
+    tell(pr, "Fishing test kit: " + got + " of " + l.size() + " items given" + (got < l.size() ? " - the rest waits for room in your inventory." : "."), @PKG@.FishDefs.COL_OK);
+    return;
+  }
+  if (w.equals("pond")) {
+    int n = -1;
+    try { n = Integer.parseInt(num == null ? "" : num.trim()); } catch (Throwable t) { n = -1; }
+    if (n < 0 || n > 10000000) { tell(pr, "Usage: /fishadmin pond <count> (0 or more).", @PKG@.FishDefs.COL_ERR); return; }
+    @PKG@.FishStore.setPond(key, n);
+    tell(pr, "Your Pond Fish count is now " + n + " (Pond Fish " + @PKG@.FishDefs.roman(@PKG@.FishMath.pondTier(n, @PKG@.FishCfg.POND)) + ").", @PKG@.FishDefs.COL_OK);
+    return;
+  }
+  if (w.equals("give")) {
+    String q = num == null ? "" : num.trim().toLowerCase(java.util.Locale.ROOT);
+    int sp = -1;
+    for (int i = 0; i < @PKG@.FishDefs.SP_KEY.length; i++) if (@PKG@.FishDefs.SP_KEY[i].toLowerCase(java.util.Locale.ROOT).equals(q)) sp = i;
+    for (int i = 0; sp < 0 && q.length() > 0 && i < @PKG@.FishDefs.SP_KEY.length; i++) if (@PKG@.FishDefs.SP_KEY[i].toLowerCase(java.util.Locale.ROOT).indexOf(q) >= 0) sp = i;
+    if (sp < 0) {
+      StringBuilder b = new StringBuilder();
+      for (int i = 0; i < @PKG@.FishDefs.SP_KEY.length; i++) { if (i > 0) b.append(", "); b.append(@PKG@.FishDefs.SP_KEY[i]); }
+      tell(pr, "Usage: /fishadmin give <species> - one of " + b.toString() + ".", @PKG@.FishDefs.COL_ERR);
+      return;
+    }
+    double mn = @PKG@.FishCfg.SP_MIN[sp];
+    double mx = @PKG@.FishCfg.SP_MAX[sp];
+    double kg = mn + (mx - mn) * @PKG@.FishCore.RNG.nextDouble();
+    double cm = @PKG@.FishMath.lengthCm(kg, @PKG@.FishDefs.SP_K[sp], @PKG@.FishCore.RNG.nextDouble());
+    int g = (int) Math.round(kg * 1000.0);
+    if (g < 1) g = 1;
+    @IS@ f = @PKG@.FishRig.makeFish(sp, g, (int) Math.round(cm * 10.0), pr.getUsername());
+    @PKG@.FishCtx c = new @PKG@.FishCtx(u, pr.getUsername(), ref, store, (@CAC@) store, null, pr);
+    @IC@ inv = @PKG@.FishEng.API == null ? null : @PKG@.FishEng.API.inv(c);
+    boolean ok = @PKG@.FishCore.give(inv, f);
+    if (!ok) @PKG@.FishStore.addClaim(key, @PKG@.FishCore.claimOf(f));
+    tell(pr, "Test fish: " + @PKG@.FishDefs.SP_NAME[sp] + " (" + @PKG@.FishDefs.RAR_NAME[@PKG@.FishDefs.SP_RAR[sp]] + ", " + @PKG@.FishMath.kg(g) + ")" + (ok ? "." : " - it waits for room in your inventory.") + " It does not count for Pond Fish or records.", @PKG@.FishDefs.COL_OK);
+    return;
+  }
+  if (w.equals("treasure")) {
+    String q = num == null ? "" : num.trim().toLowerCase(java.util.Locale.ROOT);
+    int gr = -1;
+    for (int i = 0; i < @PKG@.FishDefs.TR_GRADE.length; i++) if (@PKG@.FishDefs.TR_GRADE[i].toLowerCase(java.util.Locale.ROOT).equals(q)) gr = i;
+    if (gr < 0) { tell(pr, "Usage: /fishadmin treasure <good, great or outstanding>.", @PKG@.FishDefs.COL_ERR); return; }
+    @PKG@.FishCore.FORCE.put(u, Integer.valueOf(gr));
+    tell(pr, "Your next cast's catch is Lost Property (" + @PKG@.FishDefs.TR_GRADE[gr] + "). Cast now (or cast again).", @PKG@.FishDefs.COL_OK);
+    return;
+  }
+  if (w.equals("bite")) {
+    boolean ok = @PKG@.FishCore.biteSoon(u, System.currentTimeMillis());
+    tell(pr, ok ? "Your line bites in a second." : "Cast your line first (it must be waiting for a bite).", ok ? @PKG@.FishDefs.COL_OK : @PKG@.FishDefs.COL_ERR);
+    return;
+  }
+  if (w.equals("status")) {
+    tell(pr, "SkyyFishing @VERSION@: casts " + @PKG@.FishCore.CASTS + ", bites " + @PKG@.FishCore.BITES + ", landed " + @PKG@.FishCore.LANDED + ", lost " + @PKG@.FishCore.LOST + ", missed " + @PKG@.FishCore.MISSED + ", reeled in " + @PKG@.FishCore.CANCELS + ", lines out " + @PKG@.FishCore.STATES.size() + ", bobbers placed " + @PKG@.FishBobberTask.SPAWNED + " removed " + @PKG@.FishBobberTask.REMOVED + ", files written " + @PKG@.FishStore.WRITES + ".", null);
+    return;
+  }
+  tell(pr, "/fishadmin kit - every T0-T2 rod (reel fitted), the 3 reels, the 20 parts and a bench", null);
+  tell(pr, "/fishadmin pond <count> - set your Pond Fish count (opens recipes)", null);
+  tell(pr, "/fishadmin bite - your waiting line bites in a second", null);
+  tell(pr, "/fishadmin give <species> - a test fish of that species (e.g. PonderingPike = Rare, GoldenKoi = Legendary)", null);
+  tell(pr, "/fishadmin treasure <good, great or outstanding> - your next cast catches Lost Property of that grade", null);
+  tell(pr, "/fishadmin status - counters", null);
+}""")
+EXEC = "protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world)"
+C(CMD, r"""
+public FishCmd() {
+  super("fishing", "Fishing: your Pond Fish tier, your best fish and how to fish");
+  setPermissionGroups(new String[] { "hytale:Adventurer" });
+  addAliases(new String[] { "fish" });
+}""")
+M(CMD, EXEC + " { @PKG@.FishCmds.status(pr); }")
+F(ACMD1, "public @RA@ whatArg;")
+C(ACMD1, r"""
+public FishAdminArgCmd() {
+  super("(admin) /fishadmin <kit, bite, status>");
+  requirePermission("skyyfishing.admin");
+  setPermissionGroups(new String[0]);
+  this.whatArg = withRequiredArg("option", "kit, bite or status", @ATY@.STRING);
+}""")
+M(ACMD1, EXEC + r""" {
+  String a = null;
+  try { a = String.valueOf(ctx.get(this.whatArg)); } catch (Throwable t) { a = ""; }
+  @PKG@.FishCmds.admin(pr, store, ref, a, null);
+}""")
+F(ACMD2, "public @RA@ whatArg;")
+F(ACMD2, "public @RA@ numArg;")
+C(ACMD2, r"""
+public FishAdminArg2Cmd() {
+  super("(admin) /fishadmin pond <count> | give <species> | treasure <grade>");
+  requirePermission("skyyfishing.admin");
+  setPermissionGroups(new String[0]);
+  this.whatArg = withRequiredArg("option", "pond, give or treasure", @ATY@.STRING);
+  this.numArg = withRequiredArg("value", "a Pond Fish count, a species or a Lost Property grade", @ATY@.STRING);
+}""")
+M(ACMD2, EXEC + r""" {
+  String a = null;
+  String n = null;
+  try { a = String.valueOf(ctx.get(this.whatArg)); n = String.valueOf(ctx.get(this.numArg)); } catch (Throwable t) { a = ""; }
+  @PKG@.FishCmds.admin(pr, store, ref, a, n);
+}""")
+C(ACMD, r"""
+public FishAdminCmd() {
+  super("fishadmin", "(admin) Fishing test tools: /fishadmin kit | pond <count> | give <species> | treasure <grade> | bite | status");
+  requirePermission("skyyfishing.admin");
+  setPermissionGroups(new String[0]);
+  addUsageVariant(new @PKG@.FishAdminArgCmd());
+  addUsageVariant(new @PKG@.FishAdminArg2Cmd());
+}""")
+M(ACMD, EXEC + " { @PKG@.FishCmds.admin(pr, store, ref, \"\", null); }")
+
+# ---------------------------------------------------------------- the plugin
+F(PLUG, "public static volatile Object SAVER = null;")
+C(PLUG, "public SkyyFishingPlugin(@JPI@ init) { super(init); }")
+M(PLUG, r"""
+public void setup() {
+  @PKG@.FishLog.LOG = getLogger();
+  java.nio.file.Path mods = getDataDirectory().getParent();
+  @PKG@.FishCfg.load(mods);
+  @PKG@.FishStore.start(mods);
+  @PKG@.FishEng.API = new @PKG@.FishEngApi();
+  @PKG@.CfgPub.start(mods, getLogger());
+  @OCU@.registerSimple(this, @PKG@.SkyyFishingPlugin.class, @PKG@.FishDefs.PAGE_ID, new @PKG@.FishPageFn());
+  getCommandRegistry().registerCommand(new @PKG@.FishCmd());
+  getCommandRegistry().registerCommand(new @PKG@.FishAdminCmd());
+  getEventRegistry().registerGlobal(@PRE@.class, new @PKG@.FishReady());
+  getEventRegistry().registerGlobal(@PDE@.class, new @PKG@.FishQuit());
+  try { getEntityStoreRegistry().registerSystem(new @PKG@.FishTick()); }
+  catch (Throwable t) { @PKG@.FishLog.warn("FishTick could not be registered: " + t + " - rods will not cast"); }
+  try { SAVER = @HSV@.SCHEDULED_EXECUTOR.scheduleWithFixedDelay(new @PKG@.FishSaveTick(), 2L, 2L, java.util.concurrent.TimeUnit.SECONDS); }
+  catch (Throwable t2) { @PKG@.FishLog.warn("the save timer could not start: " + t2 + " - progress is saved at shutdown only"); }
+  getLogger().at(java.util.logging.Level.INFO).log("[SkyyFishing] @VERSION@ ready - Fishing Bench page " + @PKG@.FishDefs.PAGE_ID + ", /fishing, /fishadmin (admin); kit @KITID@, page @PAGEID@");
+}""".replace("@PAGEID@", PAGE_ID))
+M(PLUG, r"""
+protected void shutdown() {
+  try { if (SAVER instanceof java.util.concurrent.Future) ((java.util.concurrent.Future) SAVER).cancel(false); } catch (Throwable t) { }
+  try { @PKG@.FishCore.dropAll(); } catch (Throwable t2) { }
+  try { @PKG@.FishStore.STOPPING = true; @PKG@.FishStore.flush(); } catch (Throwable t3) { @PKG@.FishLog.warn("the last fishing save failed: " + t3); }
+  try { @PKG@.CfgPub.shutdown(); } catch (Throwable t4) { }
+  super.shutdown();
+}""")
+
+# ================================================================= write + assemble
+kit.write(OUT)
+for c in ALL:
+    c.writeFile(OUT)
+print("classes written: %d (+ the config kit's 7); bench page id %s; engine members probed %d" % (len(ALL), PAGE_ID, len(PROBED)))
+jar = os.path.join(HERE, "SkyyFishing-%s.jar" % VERSION)
+man = B.manifest("SkyyFishing", VERSION, "SkyWynn fishing (stage 1): Fishing Bench, rods + reels + hooks / lines / sinkers, cast / bite / click "
+                 "fight, Zone 1 fish with weight and length, junk, Lost Property, selling and fillets.", PKG + ".SkyyFishingPlugin")
+B.assemble(jar, man, OUT, ASSETS)

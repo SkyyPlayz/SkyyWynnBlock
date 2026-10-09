@@ -57,6 +57,24 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 48. Monk moves probe: one ~15 min session of /mprobe tests, then send the server log
 49. SkyySacks 0.7.14 + SkyyAccessories 0.5.8 - new bag art (emblems, open swirl, sparkles, lift; toned-down Accessory Bag)
 50. SkyyArmory 0.1.11 - metal Bo staffs: hold attack casts nothing, swings + block stay
+51. SkyyMenu 0.3.10 - Your Profile -> Stats page (5 tabs), Change Profile button, /stats
+52. SkyyEssentials 0.1.9 chat mirror (chat -> server log) + SkyyTownProbe 0.1 (/townprobe on /zone 1; undo everything before removal)
+53. SkyyKeyProbe 0.1 - /keyprobe give, press every key, /keyprobe report (then remove)
+54. SkyyProfiles 0.1.7 - big SWITCH confirms; each profile keeps its own Health; new profiles start full
+55. SkyyHud 0.3.17 - new 256x256 mod icon, no 'wrong dimensions' client warning
+56. Monk moves - Pole-Vault on every Bo, Skipping Bounds, Rising Strike + Plunge Punch on fists (/armory debug monk on)
+57. Roll rework (sprint press, spammable, hold = sprint out) + Shadow Step on release
+58. SkyyGear 0.2.10 - signature meter stays per weapon when you swap away and back
+59. SkyyArmory 0.1.14 - metal wands: signature bolt ricochets through up to 8 enemies
+60. SkyySkills 0.4.24 - Wood / Rotten / Tribal wands: ricochet signature too
+61. Accessory Bag icon on the menu tile + Workbench tab; bag gems red / yellow / blue / green / cyan
+62. The Armory on - world starts, items present, Alteration Table vs SkyyGear rolls
+63. SkyyFishing 0.1 - bench, rods + reels, cast / bite / fight, Zone 1 fish, selling (/fishadmin kit)
+64. Loot round: Unclaimed Luggage chests, mystery bags from mobs, identify / re-identify
+65. SkyySkills 0.4.25: class Mana/Stamina pools, Mana on hit, mining Stamina, foraging Defense, class balance boost
+66. Better Mob Expansion test: new Zone 1-4 mobs, levels, Vermin behaviour, crowding
+67. SkyyMenu 0.3.12: Stats page Defense shows Skills part
+68. Luggage sacks vanish on claim, Bazaar search, /keyprobe sprint, Armory off = textures back
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6

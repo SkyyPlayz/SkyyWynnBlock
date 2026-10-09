@@ -70,3 +70,16 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - LOCKED 2026-10-08 (Skyy, bag mouth): "mouth stays open while you hold it." -> no 20 s close / re-open loop while held.
 - LOCKED 2026-10-08 (Skyy, sparkles + gems): "3. yes 4. yes" -> vanilla portal sparkle particles on top of the swirl; Accessory Bag gems in the 5 accessory-line colours (kept on the toned-down bag).
 - LOCKED 2026-10-08 (Skyy, bag art v2 sheet): "as drawn, violet. start the bag round" -> the 5 type emblems stay as drawn; sparkles violet (SkyySack_PortalSparkle); wiring round SkyySacks + SkyyAccessories started.
+- LOCKED 2026-10-08 (Skyy, popup batch 4): carried bags of one type -> "Keep unlimited (Recommended)"; idle partial stack top-up -> "Only when used (Recommended)"; ACCESSORY TABLE -> "Drop it (Recommended)" (the Pocket Dimension Workbench tab covers it; spec closed).
+  Questions closed 2026-10-08 (verbatim):
+  - OPEN 2026-10-02 (from the SkyySacks 0.7.11 review): carried bags of one type now add up with NO limit, so e.g. 54 Normal bags hold more
+  than a Legendary. Keep unlimited (each extra bag costs a slot and a recipe), or a Server Setup cap on bags counted per type (e.g. 3)?
+  [unlimited]
+  - OPEN 2026-10-02 (same review): an idle partial stack only tops up once you use it. Also top up the stack in your selected hotbar slot
+  even when idle? [only when used]
+- LOCKED 2026-10-09 (Skyy): "i see the omni bag, but no other bags in the crafting table" (bags unlock by collection tiers 1/3/5/7 - by design; the Omni recipe was not knowledge-gated) + "yes, hide the omni bag until unlocked (unlocked by unlocking all legendary bags" -> SkyySacks 0.7.15: Omni recipe hidden until the player knows all five Legendary bag recipes.
+- LOCKED 2026-10-09 (Skyy, Collections page screenshot): "any unlocked recopies shown here should open in the crafter if i click it." -> SkyyCollections 0.2.8: unlocked recipe rewards are clickable and open the crafter at that recipe.
+- LOCKED 2026-10-09 (Skyy): "lets use fiber for T1 bags, not wool. make they easy to get." -> the five Normal (T1) bags: Plant Fiber (+ sticks), no wool / copper; default 20 Plant Fiber + 4 Sticks (SkyySacks 0.7.15).
+- LOCKED 2026-10-09 (Skyy, first-person screenshot holding a Foraging bag): "i love the new bag! can we make the player hold it up a little higher, more infront of him?" -> raise the bag hold pose (our SkyySack player animation set) higher and more centred / forward in first person (and matching third person); queued as SkyySacks 0.7.16 right after 0.7.15.
+- LOCKED 2026-10-09 (Skyy, Collections home screenshot): "we have unlocked recopies, we need a locked recopies tab, that tells you which collection you unlock something in." -> SkyyCollections 0.2.8 adds LOCKED RECIPES (each locked recipe + the collection tier that unlocks it + progress, closest first, click = that collection).
+- LOCKED 2026-10-09 (Skyy): "the mining bag should come from cobble collection, not iron" -> the four Mining bag recipes unlock from the COBBLESTONE collection (tiers 1/3/5/7) instead of Iron (SkyyCollections 0.2.8, one-time migration; existing Iron unlocks kept). Replaces the earlier Mining = Iron lock.

@@ -1,0 +1,1311 @@
+{
+  "item": "Class ability icons - Mage, Priest, Monk, Assassin, Warrior, Berserker, Archer",
+  "status": {
+    "Mage": "APPROVED by Skyy + committed (answer: \"The ability icons look great, commit them\")",
+    "Priest": "APPROVED by Skyy + committed (answer: \"The ability icons look great, commit them\")",
+    "Monk": "APPROVED by Skyy + committed (answer: \"Yes, the shoe looks good, commit the Monk icons\")",
+    "Assassin": "APPROVED by Skyy + committed (answer: \"Yes, the Assassin hood looks good, commit them\")",
+    "Warrior": "APPROVED by Skyy + committed (answer: \"Yes, the Warrior icons look good, commit them\")",
+    "Berserker": "APPROVED by Skyy + committed (answer: \"Yes, the Berserker icons look good, commit them\")",
+    "Archer": "APPROVED by Skyy + committed (answer: \"Yes, the Archer icons look good, commit them\")"
+  },
+  "in_game": "NOT wired in, NOT seen in game",
+  "generator": [
+    "tools/art/make_ability_icons.py",
+    "tools/art/preview_ability_icons.py",
+    "tools/art/ability_icon_core.py",
+    "tools/art/ability_icon_meta.py",
+    "tools/art/make_ability_sheet.py",
+    "tools/art/validate_ability_icons.py"
+  ],
+  "deterministic": true,
+  "defaults_used": {
+    "frame": "round dark slate frame band with a class-colour rim (bevelled, top lit)",
+    "background": "dark field tinted toward the class colour, radial: Mage #26335e -> #0e1226, Priest #43381e -> #15100c, Monk #4a2416 -> #170b09, Assassin #33224e -> #0e0916, Warrior #2a3a44 -> #0b1216, Berserker #42161e -> #120609, Archer #24381c -> #091108"
+  },
+  "class_colours": {
+    "Mage": "#7fb0e0",
+    "Priest": "#f2e6a0",
+    "Monk": "#f08a30",
+    "Assassin": "#b58cff",
+    "Warrior": "#e0b060",
+    "Berserker": "#d9443f",
+    "Archer": "#8fd67a"
+  },
+  "frame_geometry_px": {
+    "outer_radius": 31.6,
+    "dark_band_inner": 28.6,
+    "rim_inner": 26.2,
+    "field_radius": 25.6,
+    "centre": [
+      32,
+      32
+    ]
+  },
+  "ramps_dark_to_light": {
+    "FRAME": [
+      "#0e111a",
+      "#171c28",
+      "#212838",
+      "#2d3649",
+      "#3e4a60",
+      "#55627a"
+    ],
+    "MAGE_RIM": [
+      "#1f2f5c",
+      "#2f4f88",
+      "#4f7fba",
+      "#7fb0e0",
+      "#b2d4f2",
+      "#e0eefa"
+    ],
+    "PRIEST_RIM": [
+      "#4a3416",
+      "#7c6028",
+      "#b39a4c",
+      "#dccb7c",
+      "#f2e6a0",
+      "#fcf5d4"
+    ],
+    "MONK_RIM": [
+      "#5a2208",
+      "#8e3a10",
+      "#c45c1c",
+      "#f08a30",
+      "#f8b462",
+      "#fde0b0"
+    ],
+    "FIRE": [
+      "#4c1020",
+      "#8a1e1a",
+      "#c8401a",
+      "#ec7424",
+      "#ffaa3c",
+      "#ffd878",
+      "#fff1c0"
+    ],
+    "ROCK": [
+      "#1c1222",
+      "#2e1c30",
+      "#47293c",
+      "#653a46",
+      "#865450",
+      "#a8725e",
+      "#c8987a"
+    ],
+    "ARCANE": [
+      "#22104a",
+      "#3a1a7e",
+      "#5a2cb4",
+      "#8250e2",
+      "#ab82f6",
+      "#d2bcff",
+      "#f1e8ff"
+    ],
+    "MANA": [
+      "#0e1f56",
+      "#16378e",
+      "#2356c4",
+      "#2f6fe0",
+      "#5c9af2",
+      "#9cc8fc",
+      "#def0ff"
+    ],
+    "ICE": [
+      "#173a6e",
+      "#22609e",
+      "#3a8cc6",
+      "#62b6e0",
+      "#98d8f0",
+      "#cdeefa",
+      "#f0fbff"
+    ],
+    "STARLIGHT": [
+      "#3a2c78",
+      "#5e4cae",
+      "#8c80d6",
+      "#bab4ee",
+      "#e2def8",
+      "#fbf6e6"
+    ],
+    "GOLD": [
+      "#3e2208",
+      "#6c4210",
+      "#a06a1c",
+      "#cf9a30",
+      "#ecc458",
+      "#f9e290",
+      "#fff4cc"
+    ],
+    "HOLY": [
+      "#6e4e1c",
+      "#a07a34",
+      "#cfa850",
+      "#ead27e",
+      "#f8ecb4",
+      "#fff9e4"
+    ],
+    "SOUL": [
+      "#0f4a58",
+      "#1c7686",
+      "#2ea8b4",
+      "#5ed2d8",
+      "#a2eeee",
+      "#dcfcf8"
+    ],
+    "ROSE": [
+      "#4a0f26",
+      "#801c34",
+      "#b72e44",
+      "#de4c58",
+      "#f47c7c",
+      "#ffb4a8",
+      "#ffe2d6"
+    ],
+    "FEATHER": [
+      "#5a4c64",
+      "#867a8c",
+      "#b2a8b2",
+      "#d6cec8",
+      "#eee6da",
+      "#fbf6ea"
+    ],
+    "STEEL": [
+      "#2a2c40",
+      "#43475e",
+      "#62687e",
+      "#868ca0",
+      "#aeb4c2",
+      "#d6dae2",
+      "#f0f2f4"
+    ],
+    "SAFFRON": [
+      "#561a0c",
+      "#8c3010",
+      "#c4521a",
+      "#f08a30",
+      "#f8b25a",
+      "#fdd890",
+      "#fff2d0"
+    ],
+    "LINEN": [
+      "#4e3a34",
+      "#7a6252",
+      "#a68e74",
+      "#cbb796",
+      "#e6d8b8",
+      "#f8f0dc"
+    ],
+    "SKIN": [
+      "#4a2220",
+      "#7a3c2e",
+      "#a65e44",
+      "#cc845e",
+      "#e8aa80",
+      "#f8d0aa"
+    ],
+    "SHOE": [
+      "#22120e",
+      "#381e14",
+      "#542e1c",
+      "#723f26",
+      "#915433",
+      "#ae6e46",
+      "#c88c62"
+    ],
+    "SOLE": [
+      "#3a2818",
+      "#664a2e",
+      "#94764e",
+      "#bea06e",
+      "#e0c896",
+      "#f2e2b8"
+    ],
+    "WIND": [
+      "#163e4e",
+      "#25687a",
+      "#4498a6",
+      "#78c4c4",
+      "#b4e6dc",
+      "#eafaf2"
+    ],
+    "WATER": [
+      "#10304e",
+      "#1a5078",
+      "#2a78a4",
+      "#4ea4c8",
+      "#88cee0",
+      "#ccf0f4"
+    ],
+    "ASSN_RIM": [
+      "#2e1c5a",
+      "#4c3290",
+      "#7a5cc8",
+      "#b58cff",
+      "#d4bcff",
+      "#f0e8ff"
+    ],
+    "SHADE": [
+      "#100a1a",
+      "#1c142c",
+      "#2a1f42",
+      "#3c2d5a",
+      "#544076",
+      "#705a94",
+      "#8e7ab0"
+    ],
+    "LILAC": [
+      "#3e2478",
+      "#6440b0",
+      "#8e68e0",
+      "#b58cff",
+      "#d4bcff",
+      "#f0e8ff"
+    ],
+    "POISON": [
+      "#123214",
+      "#1e5418",
+      "#327c20",
+      "#56a82e",
+      "#86d24a",
+      "#bff08a",
+      "#ecffd0"
+    ],
+    "GLASS": [
+      "#22303e",
+      "#3a5060",
+      "#5c7884",
+      "#88a6ac",
+      "#bcd6d6",
+      "#e6f6f2"
+    ],
+    "SMOKE": [
+      "#241e30",
+      "#3a3248",
+      "#554c66",
+      "#766e88",
+      "#9c96ac",
+      "#c6c2d2",
+      "#e6e4ee"
+    ],
+    "IRON": [
+      "#12121c",
+      "#1e1e2c",
+      "#2e2e40",
+      "#444458",
+      "#5e5e76",
+      "#7c7c94"
+    ],
+    "WOOD": [
+      "#3a2214",
+      "#5e3a20",
+      "#86582e",
+      "#ae7e48",
+      "#d0a868"
+    ],
+    "WAR_RIM": [
+      "#4a2a10",
+      "#7e5220",
+      "#b4823a",
+      "#e0b060",
+      "#f2d08c",
+      "#fbeccc"
+    ],
+    "AMBER": [
+      "#5a2c0e",
+      "#8e521a",
+      "#c4842c",
+      "#e0b060",
+      "#f4d48c",
+      "#fff0cc"
+    ],
+    "CRIMSON": [
+      "#2e0c18",
+      "#561424",
+      "#86202c",
+      "#b23634",
+      "#d65a44",
+      "#f08c66"
+    ],
+    "OAK": [
+      "#2c1a14",
+      "#4a2c1c",
+      "#6e4426",
+      "#94643a",
+      "#b88a56",
+      "#d8b47e"
+    ],
+    "BERS_RIM": [
+      "#4a0e16",
+      "#7e1a22",
+      "#b02c30",
+      "#d9443f",
+      "#ee7a64",
+      "#f8b8a0"
+    ],
+    "BLOOD": [
+      "#2a0612",
+      "#540c1a",
+      "#8a1622",
+      "#c02a2a",
+      "#e65040",
+      "#f88a6a",
+      "#ffc8a8"
+    ],
+    "BONE": [
+      "#3c2e2a",
+      "#66564a",
+      "#948470",
+      "#bcae94",
+      "#ddd2b8",
+      "#f4ecd8"
+    ],
+    "STONE": [
+      "#1c161c",
+      "#30262c",
+      "#4a3c40",
+      "#665656",
+      "#857470",
+      "#a8968a"
+    ],
+    "CHAR": [
+      "#120c12",
+      "#1e151c",
+      "#2c2028",
+      "#3e2e34",
+      "#544044"
+    ],
+    "ARCH_RIM": [
+      "#1c461e",
+      "#2c6a2e",
+      "#549c44",
+      "#8fd67a",
+      "#bce8a4",
+      "#e6f8da"
+    ],
+    "LEAF": [
+      "#122a16",
+      "#1c4420",
+      "#2c642a",
+      "#4a8a36",
+      "#74b44c",
+      "#a6da76",
+      "#d8f2b4"
+    ],
+    "ROPE": [
+      "#36261a",
+      "#5a4228",
+      "#82643a",
+      "#aa8c56",
+      "#ccb07a",
+      "#eadaac"
+    ],
+    "EARTH": [
+      "#1a1410",
+      "#2c2018",
+      "#443022",
+      "#5e4430",
+      "#7a5c40"
+    ]
+  },
+  "files": [
+    {
+      "path": "Common/Icons/Abilities/Mage/Meteor.png",
+      "bytes": 6860,
+      "sha256": "e283626da2c4e1709861da920b03162a1286dc30992331d40eb503509a4c6626",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Mage",
+      "ability": "Meteor",
+      "file_name": "Meteor.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "30 Mana / 14 s",
+      "ability_does": "Pick a spot within 25 blocks; after 1 s a meteor hits a 4-block area for 3.0 H. Shapes: Comet (sprint), Under Me (mid-air), Meteor on Me (crouch).",
+      "icon_shows": "a faceted burning rock diving toward the lower left with a three-tongued fire trail (violet arcane fringe at the tail) and embers",
+      "palettes": [
+        "FIRE",
+        "ROCK",
+        "ARCANE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Mage/ManaBarrier.png",
+      "bytes": 6669,
+      "sha256": "c8faa999dff16371b0f4e5fdd70377a6af74b21e6e302880e34916009d1c1a8e",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Mage",
+      "ability": "Mana Barrier",
+      "file_name": "ManaBarrier.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "20 Mana / 30 s",
+      "ability_does": "Dome placed where you look (up to 8 blocks) for 12 s; inside it, damage drains Mana instead of Health (1 Mana per 2 HP). Crouch = Pocket Dome on you.",
+      "icon_shows": "a glassy blue hex-panel dome on a rune ring with a glowing mana crystal inside",
+      "palettes": [
+        "MANA"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Mage/FrostNova.png",
+      "bytes": 7527,
+      "sha256": "296908ea1bfc5cdf8964c13119671eb1e4e2d67561bf83def28ba25c8af4f34f",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Mage",
+      "ability": "Frost Nova",
+      "file_name": "FrostNova.png",
+      "slot": "A2-alt",
+      "status": "PROPOSED",
+      "cost_cooldown": "24 Mana / 22 s",
+      "ability_does": "Freeze enemies within 5 blocks for 2 s (a hit breaks it after 1 s), then Chill 3 s; 1.0 H. Crouch = Deep Freeze.",
+      "icon_shows": "a six-armed ice crystal (snowflake) with a hex gem core and six ice shards bursting outward between the arms",
+      "palettes": [
+        "ICE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Mage/Starfall.png",
+      "bytes": 7192,
+      "sha256": "ae527bb9384ac86565770555e49e7c84ae62cdea301e41032f68b2b06a742bea",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Mage",
+      "ability": "Starfall",
+      "file_name": "Starfall.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED",
+      "cost_cooldown": "36 Mana / 18 s",
+      "ability_does": "12 stars fall over 3 s on a 6-block area you aim at, each 0.3 H. Crouch = Star Shower on you.",
+      "icon_shows": "three pale starlight stars (big, medium, small) falling toward the lower left with violet streak trails",
+      "palettes": [
+        "STARLIGHT",
+        "ARCANE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Mage/ArcaneBeam.png",
+      "bytes": 7155,
+      "sha256": "ee9b8715e4879f3b9dccf7205316d2a5c8be44750addb5e2b6216de4a6e14115",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Mage",
+      "ability": "Arcane Beam",
+      "file_name": "ArcaneBeam.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED",
+      "cost_cooldown": "30 Mana / 18 s",
+      "ability_does": "Channel a 20-block beam for up to 3 s that ramps 1x -> 3x (0.5 / 1.0 / 1.5 H per second). Crouch = Focused Beam.",
+      "icon_shows": "a violet orb in a gold 4-prong cradle firing a beam of light that widens as it goes (the ramp), one rune ring round it",
+      "palettes": [
+        "ARCANE",
+        "GOLD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Priest/SacredHeal.png",
+      "bytes": 6760,
+      "sha256": "27399ae373634bdc2cb6d61f7f631edc8485d37146e35995ba7ffbda20c07b99",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Priest",
+      "ability": "Sacred Heal",
+      "file_name": "SacredHeal.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "25 Mana / 14 s",
+      "ability_does": "Instant heal of 25% max Health (Priest 30%) for everyone within 9 blocks + a heal over time of 40% of it over 4 s. Crouch = Kneel.",
+      "icon_shows": "a bold gold healing cross with flared ends and an ivory inset, bursting a 12-ray sunburst",
+      "palettes": [
+        "GOLD",
+        "HOLY"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Priest/ShieldBubble.png",
+      "bytes": 7413,
+      "sha256": "8783dfd6f2924aac6587de841f3fa78585cd86533a0b061b9f2c78c70a499df0",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Priest",
+      "ability": "Shield Bubble",
+      "file_name": "ShieldBubble.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "28 Mana / 24 s",
+      "ability_does": "A 6-block bubble where you look (up to 8 blocks) for 12 s; its HP = 100% of your max Health; 4 heal pulses as it drops to 75 / 50 / 25 / 0%. Crouch = Around Me.",
+      "icon_shows": "a translucent soul-cyan bubble with a highlight streak round a gold-rimmed heater shield with a soul gem",
+      "palettes": [
+        "SOUL",
+        "GOLD",
+        "STEEL"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Priest/GuardianSpirit.png",
+      "bytes": 7580,
+      "sha256": "b455ea7c613b63add7f0f9e23f5dc8275d000ec181968146f27831ca3cfccf76",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Priest",
+      "ability": "Guardian Spirit",
+      "file_name": "GuardianSpirit.png",
+      "slot": "A2-alt",
+      "status": "PROPOSED (passive)",
+      "cost_cooldown": "passive (Mana per save)",
+      "ability_does": "Passive 30-block aura: a party member (or you) who would die survives at 30% Health if you have the Mana; per-player cooldown 12 s, doubling each save (12, 24, 48 ...).",
+      "icon_shows": "spread angel wings and a gold halo round a glowing cyan soul flame (the guardian angel that catches a falling ally)",
+      "palettes": [
+        "FEATHER",
+        "SOUL",
+        "GOLD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Priest/Sanctuary.png",
+      "bytes": 6689,
+      "sha256": "ca8548988cf72b5b86319f5375e7815c5be531c5a41a38e4c103db7a0ac01a33",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Priest",
+      "ability": "Sanctuary",
+      "file_name": "Sanctuary.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED (numbers LOCKED by Skyy 2026-10-07)",
+      "cost_cooldown": "35 Mana / 28 s",
+      "ability_does": "Holy zone placed under you for 12 s, 8 blocks: allies heal 5% max Health per second and take 10% less damage. Crouch = Inner Sanctum.",
+      "icon_shows": "a pointed (gothic) arch of ivory stone with a soul-gem keystone, holy light filling the doorway, standing in a glowing gold rune circle on the ground",
+      "palettes": [
+        "HOLY",
+        "GOLD",
+        "SOUL"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Priest/MartyrsGrace.png",
+      "bytes": 7132,
+      "sha256": "ff750973ba8f522035e263dc09ae3e6bbab30b90ff4963032a192d789ca66143",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Priest",
+      "ability": "Martyr's Grace",
+      "file_name": "MartyrsGrace.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED (numbers LOCKED by Skyy 2026-10-07)",
+      "cost_cooldown": "30 Mana / 18 s",
+      "ability_does": "75% heal on the lowest ally within 30 blocks, then chains to the next lowest, -15 per jump (75 / 60 / 45 / 30 / 15); party first, the Priest counts as party.",
+      "icon_shows": "a big haloed rose heart with a heal plus, chaining golden light bolts to a smaller and then a smallest heart (the heal drops each jump)",
+      "palettes": [
+        "ROSE",
+        "GOLD",
+        "HOLY"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Monk/FlowingForm.png",
+      "bytes": 7437,
+      "sha256": "3a6c30d4dde75497e76e76aee14f66baf5df432b393fd9224c99663c58798b97",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Monk",
+      "ability": "Flowing Form",
+      "file_name": "FlowingForm.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "6 Mana + 0.5 Mana / 0.3 Stamina per s / 40 s",
+      "ability_does": "30 s aura, 5 blocks: enemies are Awed; every hit = 1 combo stack (max 20, 5 s decay), +2% move / +1.5% attack speed per stack. Crouch = Centred.",
+      "icon_shows": "a glowing saffron chi orb inside three teal-white wind ribbons swirling round it, three small combo pips",
+      "palettes": [
+        "SAFFRON",
+        "WIND"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Monk/PalmStrike.png",
+      "bytes": 7486,
+      "sha256": "848b5bb8a22ccb02b832bde19de449cc0d9e7f9bd9bc7aff18b7f11041ec5172",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Monk",
+      "ability": "Palm Strike",
+      "file_name": "PalmStrike.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "8 Mana / 6 s",
+      "ability_does": "Single-target strike: stun 0.75 s + knockback 4 blocks, 1.2 H. Crouch = Rooting Palm (no knockback, longer stun, Awe).",
+      "icon_shows": "an open palm thrust forward (bare hand, linen-wrapped wrist + palm band) with a saffron impact glow and 10 burst rays behind it",
+      "palettes": [
+        "SKIN",
+        "LINEN",
+        "SAFFRON"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Monk/CycloneKick.png",
+      "bytes": 7285,
+      "sha256": "4ec057ede62c3e97a9c05980eda7e60acd7017f156aa17c8074e31b6dc29667e",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Monk",
+      "ability": "Cyclone Kick",
+      "file_name": "CycloneKick.png",
+      "slot": "A2-alt",
+      "status": "PROPOSED",
+      "cost_cooldown": "10 Mana / 8 s",
+      "ability_does": "Spinning kick: everything within 3 blocks takes 0.8 H and is pushed 5 blocks. Crouch = Leg Sweep (knock down, no push).",
+      "icon_shows": "a kick (v4): linen-wrapped shin from the lower left, the foot standing UP at its end (toes up, sole facing the kick, heel at the bottom) in a soft earth-brown Monk shoe with a light tan sole edge, instep strap and padded collar; a long saffron whirl arc sweeping right-to-bottom and a short one upper-left, clear of the shoe",
+      "palettes": [
+        "LINEN",
+        "SHOE",
+        "SOLE",
+        "SAFFRON"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Monk/HundredFists.png",
+      "bytes": 6724,
+      "sha256": "8dd02fa8f1df0a408512c03db785d5f5eae7f59a8f70e45d0861854cb3ab009e",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Monk",
+      "ability": "Hundred Fists",
+      "file_name": "HundredFists.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED",
+      "cost_cooldown": "8 Mana + drain / 40 s",
+      "ability_does": "Flowing Form where every 10th hit releases a shockwave on all Awed enemies (1.0 H, max one per 8 s). Crouch = Tempest Palms.",
+      "icon_shows": "a big linen-wrapped fist (knuckles to the viewer) between two small saffron after-image fists with motion streaks, impact sparks above",
+      "palettes": [
+        "LINEN",
+        "SKIN",
+        "SAFFRON"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Monk/StillWater.png",
+      "bytes": 6000,
+      "sha256": "fb2a562d8aea6a028b5c750e29f2e6cc13d6a917aab8b7bcb896ee5087ed46ce",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Monk",
+      "ability": "Still Water",
+      "file_name": "StillWater.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED",
+      "cost_cooldown": "18 Mana / 25 s",
+      "ability_does": "10 s stance: deflect projectiles from the front, counter melee hits (1.0 H each), every counter adds Awe. Crouch = Deep Still (360-degree).",
+      "icon_shows": "a single water drop falling toward a calm pond (two ripple rings) under a saffron sun with rays on the horizon, sun reflection on the water",
+      "palettes": [
+        "WATER",
+        "SAFFRON"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Assassin/CloakFirstStrike.png",
+      "bytes": 7031,
+      "sha256": "37676eeb4d382018d6c2d470bd9fecb04ab19f470172a5b4716cc814a3e4a275",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Assassin",
+      "ability": "Cloak + First Strike",
+      "file_name": "CloakFirstStrike.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "14 Mana / 30 s",
+      "ability_does": "Invisible for 8 s (breaks on attack); First Strike: your next hit within 10 s gets +100% crit chance. Crouch = Still Shadow.",
+      "icon_shows": "an Assassin's-Creed-style hood (v2): sharp eagle-beak peak dipping down between two glowing lilac eyes, draped sides, a dark grey-violet cloth face mask over nose + mouth; the hood's lower edge fades into the dark (invisibility); a big gold 4-point crit star (First Strike)",
+      "palettes": [
+        "SHADE",
+        "LILAC",
+        "SMOKE",
+        "GOLD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Assassin/Toxin.png",
+      "bytes": 6972,
+      "sha256": "1c89ab1eaecf91215b39ea171ef5875eddce9d36ad03aa4e1a1e161e5759b261",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Assassin",
+      "ability": "Toxin",
+      "file_name": "Toxin.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "12 Mana / 16 s",
+      "ability_does": "A vial thrown where you look (up to 20 blocks): a 4-block poison cloud for 5 s, Poison 0.25 H/s + Weakened 15%. Crouch = Pool at your feet.",
+      "icon_shows": "a tilted, corked round glass vial of bubbling green poison with a toxic green cloud spilling out behind it and drips",
+      "palettes": [
+        "GLASS",
+        "POISON",
+        "WOOD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Assassin/GodKiller.png",
+      "bytes": 6844,
+      "sha256": "94dd94dc9794b2183245661fc9928fc362e89c8f118b42e6f7819a361eba03be",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Assassin",
+      "ability": "God Killer",
+      "file_name": "GodKiller.png",
+      "slot": "A2-alt",
+      "status": "LOCKED",
+      "cost_cooldown": "14 Mana / 45 s",
+      "ability_does": "Your next attack on a boss / mini-boss within 12 s does 2x damage, 3x on a backstab; stacks with First Strike. Crouch = Patient Kill.",
+      "icon_shows": "a steel dagger (gold guard, wrapped grip, violet pommel gem) stabbing down through a cracked gold boss crown with rose + lilac gems",
+      "palettes": [
+        "STEEL",
+        "GOLD",
+        "IRON",
+        "LILAC",
+        "ROSE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Assassin/ShadowClone.png",
+      "bytes": 7051,
+      "sha256": "916570a16b3d7b78e904e76389b4a350fd7731f1e6fefc6852c5b23ae3a69ccc",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Assassin",
+      "ability": "Shadow Clone",
+      "file_name": "ShadowClone.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED",
+      "cost_cooldown": "20 Mana / 35 s",
+      "ability_does": "Cloak + a decoy at your spot that mobs attack for 5 s; it bursts for 2.0 H in 4 blocks. Crouch = Patient Clone.",
+      "icon_shows": "the assassin in the Assassin's-Creed-style beak hood + face mask (v2) in front, with a glowing lilac shadow copy of itself (same hood + mask) behind and to the left, burst sparks off the copy",
+      "palettes": [
+        "SHADE",
+        "LILAC",
+        "SMOKE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Assassin/VanishingAct.png",
+      "bytes": 7367,
+      "sha256": "24b6bc5d4fcf0d03dce713e845774802f667446ea24ee3a95a9df644400b1691",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Assassin",
+      "ability": "Vanishing Act",
+      "file_name": "VanishingAct.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED",
+      "cost_cooldown": "16 Mana / 28 s",
+      "ability_does": "Instant 3 s cloak + a 4-block smoke cloud: enemies inside lose you for 2 s and are Slowed 25%. Crouch = Ambush Smoke.",
+      "icon_shows": "an iron smoke bomb with a violet band and a lit fuse, bursting into a big billowing cloud of violet-grey smoke",
+      "palettes": [
+        "SMOKE",
+        "IRON",
+        "LILAC",
+        "WOOD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Warrior/RallyingGuard.png",
+      "bytes": 6690,
+      "sha256": "78d739c0435f89e2e3438e333ddefead1e7aa8f86446ff8e9377365a5783c9b7",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Warrior",
+      "ability": "Rallying Guard",
+      "file_name": "RallyingGuard.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "12 Mana / 24 s",
+      "ability_does": "You + party within 6 blocks take 20% less damage for 6 s; mobs within 8 blocks turn to you for 4 s. Shapes: Charge Rally (sprint), Rally on landing (mid-air), Hold the Line (crouch).",
+      "icon_shows": "a swallow-tailed crimson war banner (gold trim) on an oak spear with a steel leaf head, a small steel guard-shield emblem on the cloth, amber rally-cry arcs either side of the spear head",
+      "palettes": [
+        "CRIMSON",
+        "GOLD",
+        "STEEL",
+        "OAK",
+        "AMBER"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Warrior/ShieldShockwave.png",
+      "bytes": 7018,
+      "sha256": "289fa6707b09a4066ba11912687c32b79edc2d0950d1a23d0989c63767fc1ea6",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Warrior",
+      "ability": "Shield Shockwave",
+      "file_name": "ShieldShockwave.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "10 Mana / 12 s",
+      "ability_does": "6-block cone in front: stun 1.5 s, 1.0 H. Shapes: Charging Slam (sprint), Ground Pound (mid-air), Ring (crouch, 360 degrees).",
+      "icon_shows": "a round oak-plank shield (riveted iron rim, steel boss) slamming to the right, three amber shock arcs fanning out in a cone, two gold stun stars",
+      "palettes": [
+        "OAK",
+        "STEEL",
+        "IRON",
+        "AMBER",
+        "GOLD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Warrior/IronChain.png",
+      "bytes": 6824,
+      "sha256": "7f57c018be1c9d41a57c020fb35c0914860102feec17ac0662aaab1cc1d11779",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Warrior",
+      "ability": "Iron Chain",
+      "file_name": "IronChain.png",
+      "slot": "A2-alt",
+      "status": "PROPOSED",
+      "cost_cooldown": "12 Mana / 14 s",
+      "ability_does": "A 15-block chain hooks the first enemy and drags it to you, stun 1 s, 0.6 H. Shapes: Meet Halfway (sprint), Hook Down (mid-air), Anchor (crouch).",
+      "icon_shows": "a heavy steel hook (eye, shank, J curve + barb) flying out to the upper right on a chain of interlocking iron links, amber pull streaks along the chain",
+      "palettes": [
+        "STEEL",
+        "IRON",
+        "AMBER"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Warrior/BulwarkStance.png",
+      "bytes": 6637,
+      "sha256": "f5cc265a3ec4525dbbc35a6b9c125c54ac2926e5617e57155b947e27b6c0d838",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Warrior",
+      "ability": "Bulwark Stance",
+      "file_name": "BulwarkStance.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED",
+      "cost_cooldown": "14 Mana / 28 s",
+      "ability_does": "8 s stance: 50% less damage from the front, front projectiles blocked, you move 30% slower, allies behind you take 25% less. Crouch = Bulwark Wall.",
+      "icon_shows": "a tall gold-rimmed steel tower shield planted on the ground (crimson pale, gold boss, rivets), three red-fletched arrows stuck in its face, an impact spark",
+      "palettes": [
+        "STEEL",
+        "GOLD",
+        "CRIMSON",
+        "OAK",
+        "IRON"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Warrior/Unbreakable.png",
+      "bytes": 6920,
+      "sha256": "85f18b94982bfe7256b8783950e9993101895159063c164b23e023d1bfdda246",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Warrior",
+      "ability": "Unbreakable",
+      "file_name": "Unbreakable.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED",
+      "cost_cooldown": "16 Mana / 40 s",
+      "ability_does": "Taunt 8 blocks; for 5 s you cannot drop below 1 HP; at the end heal 20% of the damage taken. Crouch = Dig In.",
+      "icon_shows": "a closed steel great helm (eye slits, breath holes, riveted iron cross bands) cracked all over but held together - the cracks glow amber-gold - chips flying off",
+      "palettes": [
+        "STEEL",
+        "IRON",
+        "AMBER"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Berserker/Enrage.png",
+      "bytes": 6753,
+      "sha256": "5a1d79ae72e414120086282c80cd68c78ef2fd98969d48a6aad5cf193b72b62c",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Berserker",
+      "ability": "Enrage",
+      "file_name": "Enrage.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "14 Mana / 30 s",
+      "ability_does": "Players within 8 + party within 16 picked once; damage +10 -> +20% over 10 s, holds 5 s; you x2. Shapes: War Charge (sprint), War Leap (mid-air), Lone Rage (crouch, self only).",
+      "icon_shows": "a horned beast skull (bone, long upswept horns, cracked brow) with glowing red eyes in a blaze of blood-red + ember rage fire",
+      "palettes": [
+        "BONE",
+        "BLOOD",
+        "FIRE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Berserker/Whirlwind.png",
+      "bytes": 7052,
+      "sha256": "3a8509dbaece90a939a4adcd50015e7b26b8d6e81151c1e661f293c3e890915b",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Berserker",
+      "ability": "Whirlwind",
+      "file_name": "Whirlwind.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "12 Mana / 14 s",
+      "ability_does": "Spin 3 s, hit everything within 3 blocks every 0.5 s (0.5 H a tick), heal 10% of the damage. Shapes: Cyclone Charge (sprint), Spinning Drop (mid-air), Grinder (crouch).",
+      "icon_shows": "the class emblem's bearded double-bit battleaxe (dark forged blades, bright honed edges, red-wrapped haft, ruby socket) mid-spin, a faint red after-image behind, two blood-red whirl ribbons round it",
+      "palettes": [
+        "IRON",
+        "STEEL",
+        "OAK",
+        "BLOOD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Berserker/Earthsplitter.png",
+      "bytes": 6396,
+      "sha256": "1220ad8f314047cb32e78b2a5558dae7be0429eb2934254f1efc8bb9ca00d75c",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Berserker",
+      "ability": "Earthsplitter",
+      "file_name": "Earthsplitter.png",
+      "slot": "A2-alt",
+      "status": "PROPOSED",
+      "cost_cooldown": "14 Mana / 12 s",
+      "ability_does": "12-block shockwave line, 2.0 H, knock-up 1 s; +1% damage per 1% Health missing (cap +50%). Shapes: Running Split (sprint), Crater (mid-air), Fissure (crouch).",
+      "icon_shows": "the battleaxe buried blade-first in scorched ground, a glowing ember-orange crack splitting the earth toward the viewer, rock chunks flung up",
+      "palettes": [
+        "STONE",
+        "FIRE",
+        "IRON",
+        "STEEL",
+        "OAK",
+        "BLOOD"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Berserker/BloodFrenzy.png",
+      "bytes": 6773,
+      "sha256": "668e4e3316c02c8f46c39efacde5143f1f1fc519795dbcfd19f90c401dd2e178",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Berserker",
+      "ability": "Blood Frenzy",
+      "file_name": "BloodFrenzy.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED (toggle)",
+      "cost_cooldown": "1 Mana + 0.5 Stamina per swing (+ per second) / 10 s re-toggle",
+      "ability_does": "Toggle: every swing adds a stack (max 25, 6 s decay); the aura buffs allies half. Crouch = Blood Bank (restarts with half your last stacks).",
+      "icon_shows": "three curved blood-red claw slashes (bright cores) with blood drops falling, three stack pips at the top left (two lit red, one bone)",
+      "palettes": [
+        "BLOOD",
+        "BONE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Berserker/WarlordsBanner.png",
+      "bytes": 6355,
+      "sha256": "bb675af7180472590e17c95edff3b2ac872b4ae72e439d411e8a96eeb5b9f57f",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Berserker",
+      "ability": "Warlord's Banner",
+      "file_name": "WarlordsBanner.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED",
+      "cost_cooldown": "40 Mana / 40 s after the fall",
+      "ability_does": "Plant a banner at your feet: 30 s, 12 blocks, +8 / 12 / 16% damage + defence + attack speed; kills extend it; it falls when you leave. Crouch = Rooted Banner.",
+      "icon_shows": "a tall iron war standard (spear finial, crossbar) planted in a glowing blood-red aura ring, a tattered dark banner with a red border and red crossed-axe sign hanging from the crossbar",
+      "palettes": [
+        "CHAR",
+        "BLOOD",
+        "IRON",
+        "STEEL",
+        "BONE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Archer/PinningShot.png",
+      "bytes": 6302,
+      "sha256": "f6381bc3a44f77ec2db5cd46ba25969fe81da0918e086e60c262bbb312639418",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Archer",
+      "ability": "Pinning Shot",
+      "file_name": "PinningShot.png",
+      "slot": "A1",
+      "status": "LOCKED",
+      "cost_cooldown": "10 Mana / 12 s",
+      "ability_does": "Piercing arrow, 30 blocks, up to 2 enemies, 1.2 H, Rooted 2 s + Marked 6 s (+15% damage taken). Shapes: Running Pin (sprint), Rain Pin (mid-air), Steady Aim (crouch).",
+      "icon_shows": "a big arrow (oak shaft with a lit edge + grain, red thread wrap, the emblem's red feather with a cream bar + cream cock feather, steel broadhead) driven into the ground, two thick green roots curling up out of the earth to grip the shaft, a green root ring round the impact",
+      "palettes": [
+        "OAK",
+        "STEEL",
+        "CRIMSON",
+        "FEATHER",
+        "LEAF",
+        "EARTH"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Archer/RapidFire.png",
+      "bytes": 6809,
+      "sha256": "89d59da81224a353bf2dcb9d69512f68ff8a8c98dcb71b9787911dc54e1ce19e",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Archer",
+      "ability": "Rapid Fire",
+      "file_name": "RapidFire.png",
+      "slot": "A2",
+      "status": "LOCKED",
+      "cost_cooldown": "14 Mana / 20 s",
+      "ability_does": "Loose 15 arrows over 3 s, each 0.5 H. Shapes: Running Fire (sprint), Hover Fire (mid-air), Braced (crouch).",
+      "icon_shows": "three detailed arrows (barbed steel broadheads with a lit edge, iron sockets, lit oak shafts, red + cream feathers, dark nocks) flying side by side toward the upper right, staggered like shots loosed one after another, green speed streaks behind each",
+      "palettes": [
+        "OAK",
+        "STEEL",
+        "CRIMSON",
+        "FEATHER",
+        "LEAF"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Archer/ExplosiveArrow.png",
+      "bytes": 6680,
+      "sha256": "b7b7a5748f2ca4427d881f053cd23991ada92aa7435d2c3428877d8a91c67c3e",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Archer",
+      "ability": "Explosive Arrow",
+      "file_name": "ExplosiveArrow.png",
+      "slot": "A2-alt",
+      "status": "LOCKED",
+      "cost_cooldown": "12 Mana / 14 s",
+      "ability_does": "Your next charged shot does 2x damage in a 4-block explosion. Shapes: Quick Fuse (sprint), Mortar (mid-air), Set Charge (crouch).",
+      "icon_shows": "a detailed arrow (barbed steel broadhead, lit oak shaft, red + cream feathers) with a dark canvas powder pouch lashed behind its head (red cord) flying into a jagged orange fire blast with a hot core, sparks flying",
+      "palettes": [
+        "OAK",
+        "STEEL",
+        "CRIMSON",
+        "FEATHER",
+        "ROPE",
+        "FIRE"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Archer/ArrowRain.png",
+      "bytes": 7101,
+      "sha256": "3d477a8e6e65342093c74c378bc5ae5255e80acad9a03268dc1031ff8b8212e8",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Archer",
+      "ability": "Arrow Rain",
+      "file_name": "ArrowRain.png",
+      "slot": "A1-alt A",
+      "status": "PROPOSED",
+      "cost_cooldown": "16 Mana / 20 s",
+      "ability_does": "6-block area for 3 s, 2.0 H total, Slowed 30%; still inside after 2 s = Rooted 1.5 s + Marked. Shapes: Trailing Rain (sprint), Overhead Rain (mid-air), Kneeling Volley (crouch).",
+      "icon_shows": "a volley of four arrows falling steeply (three big in front, one smaller behind; steel broadheads, red + cream feathers, green streaks above them) onto a glowing green target zone on the ground, two arrows already stuck inside it",
+      "palettes": [
+        "OAK",
+        "STEEL",
+        "CRIMSON",
+        "FEATHER",
+        "LEAF"
+      ]
+    },
+    {
+      "path": "Common/Icons/Abilities/Archer/HuntersNet.png",
+      "bytes": 7269,
+      "sha256": "c6a639b67193f6c0a46b83dbe7010798c26f0882f0983b4be8330f40226bffc1",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA ability icon; round frame, alpha 0 outside the circle and 255 inside (hard alpha only)",
+      "class": "Archer",
+      "ability": "Hunter's Net",
+      "file_name": "HuntersNet.png",
+      "slot": "A1-alt B",
+      "status": "PROPOSED",
+      "cost_cooldown": "14 Mana / 18 s",
+      "ability_does": "Throw a net that bursts into a 4-block root zone for 3 s, 0.5 H, Marked 8 s. Shapes: Snare Line (sprint), Drop Net (mid-air), Set Trap (crouch).",
+      "icon_shows": "a rope net thrown open on its point (diamond), cords bowed under tension, knots at the crossings, four iron weights on the corners, a faint green glow behind",
+      "palettes": [
+        "ROPE",
+        "IRON",
+        "LEAF"
+      ]
+    },
+    {
+      "path": "sheet.png",
+      "bytes": 1141391,
+      "what": "review sheet with EVERY done class: each icon at 4x / 2x / 64 / 32 px, grouped by class with the class colour swatch + APPROVED / FOR REVIEW tag, plus a dark HUD strip",
+      "sha256": "908d408bb6bf518645e4bd5072df021be7e0f94981cfe82c2d8afc73d13a3959"
+    },
+    {
+      "path": "sheet-monk.png",
+      "bytes": 198287,
+      "what": "the Monk review sheet as Skyy reviewed + approved it (same layout)",
+      "sha256": "e47dfdf9720e4ee06fe8f76b083f4d1d917f866e4b2c729567e2c9002672f2a2"
+    },
+    {
+      "path": "sheet-assassin.png",
+      "bytes": 195338,
+      "what": "the Assassin review sheet as Skyy reviewed + approved it (same layout)",
+      "sha256": "3a93ffc888294a409bce2a874f3974e570b677f1b47299f90351309a9d56029b"
+    },
+    {
+      "path": "sheet-warrior.png",
+      "bytes": 192667,
+      "what": "the Warrior review sheet as Skyy reviewed + approved it (same layout)",
+      "sha256": "5780ffe07970c264b551a67789e6ac63e2fce771ede7e2f5dd6ceb2f7403ae39"
+    },
+    {
+      "path": "sheet-berserker.png",
+      "bytes": 189697,
+      "what": "the Berserker review sheet as Skyy reviewed + approved it (same layout)",
+      "sha256": "93f9ab88558c8b696010330c80e2251be9799af15ea1d5551f46ce28fb158b3f"
+    },
+    {
+      "path": "sheet-archer.png",
+      "bytes": 188885,
+      "what": "the Archer review sheet as Skyy reviewed + approved it (same layout)",
+      "sha256": "606e47307927c427bed0d6c932fa98622f29f87c168eddd3027a0cf87873d5b3"
+    },
+    {
+      "path": "README.md",
+      "bytes": 42660,
+      "what": "what this is, ability -> meaning, colours, defaults, UNVERIFIED, open questions"
+    }
+  ]
+}

@@ -1,0 +1,778 @@
+{
+ "name": "Skyy Dark Leather light armor set",
+ "id_prefix": "SkyyDarkLeather",
+ "slots": [
+  "Head",
+  "Chest",
+  "Hands",
+  "Legs"
+ ],
+ "format": "Hytale .blockymodel (format: character), boxes only, 64 px per block",
+ "status": "draft for Skyy's review (light / slim revision) - not committed; NOT verified in game",
+ "skyy_feedback_round_1": "It looks great! But it's supposed to be light armor, so I try to slim it up and scale it down, especially the shoulder pads and the helmet, try to make them slim",
+ "skyy_feedback_round_2": "Looks great! If just try to make the shoulder pad wrap around the shoulder a little bit if you can",
+ "totals": {
+  "boxes": 45,
+  "triangles": 540
+ },
+ "pieces": {
+  "Head": {
+   "model": "Common/Items/Armors/SkyyDarkLeather/Head.blockymodel",
+   "texture": "Common/Items/Armors/SkyyDarkLeather/Head_Texture.png",
+   "texture_size": [
+    64,
+    128
+   ],
+   "icon": "Common/Icons/ItemsGenerated/Armor_SkyyDarkLeather_Head.png",
+   "attaches_to_bones": [
+    "Head"
+   ],
+   "boxes": 8,
+   "quads": 0,
+   "triangles": 96,
+   "nodes": [
+    {
+     "name": "Head",
+     "kind": "attach:Head",
+     "parent": null
+    },
+    {
+     "name": "Helm",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      31,
+      29,
+      30
+     ]
+    },
+    {
+     "name": "HelmCap",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      23,
+      2,
+      23
+     ]
+    },
+    {
+     "name": "BrowR",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      12,
+      3,
+      2
+     ]
+    },
+    {
+     "name": "BrowL",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      12,
+      3,
+      2
+     ]
+    },
+    {
+     "name": "Gem",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      6,
+      6,
+      2
+     ]
+    },
+    {
+     "name": "CrestFront",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      4,
+      20,
+      2
+     ]
+    },
+    {
+     "name": "FinR",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      2,
+      5,
+      10
+     ]
+    },
+    {
+     "name": "FinL",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      2,
+      5,
+      10
+     ]
+    }
+   ]
+  },
+  "Chest": {
+   "model": "Common/Items/Armors/SkyyDarkLeather/Chest.blockymodel",
+   "texture": "Common/Items/Armors/SkyyDarkLeather/Chest_Texture.png",
+   "texture_size": [
+    96,
+    160
+   ],
+   "icon": "Common/Icons/ItemsGenerated/Armor_SkyyDarkLeather_Chest.png",
+   "attaches_to_bones": [
+    "Pelvis",
+    "Belly",
+    "Chest",
+    "L-Arm",
+    "R-Arm"
+   ],
+   "boxes": 18,
+   "quads": 0,
+   "triangles": 216,
+   "nodes": [
+    {
+     "name": "Pelvis",
+     "kind": "attach:Pelvis",
+     "parent": null
+    },
+    {
+     "name": "HipBelt",
+     "kind": "box",
+     "parent": "Pelvis",
+     "size": [
+      27,
+      3,
+      21
+     ]
+    },
+    {
+     "name": "Tabard",
+     "kind": "box",
+     "parent": "Pelvis",
+     "size": [
+      12,
+      25,
+      1
+     ]
+    },
+    {
+     "name": "Sash",
+     "kind": "box",
+     "parent": "Pelvis",
+     "size": [
+      4,
+      28,
+      1
+     ]
+    },
+    {
+     "name": "TabardBack",
+     "kind": "box",
+     "parent": "Pelvis",
+     "size": [
+      19,
+      25,
+      1
+     ]
+    },
+    {
+     "name": "Belly",
+     "kind": "attach:Belly",
+     "parent": "Pelvis"
+    },
+    {
+     "name": "Plackart",
+     "kind": "box",
+     "parent": "Belly",
+     "size": [
+      27,
+      16,
+      20
+     ]
+    },
+    {
+     "name": "Belt",
+     "kind": "box",
+     "parent": "Belly",
+     "size": [
+      28,
+      3,
+      21
+     ]
+    },
+    {
+     "name": "Buckle",
+     "kind": "box",
+     "parent": "Belly",
+     "size": [
+      5,
+      4,
+      1
+     ]
+    },
+    {
+     "name": "Chest",
+     "kind": "attach:Chest",
+     "parent": "Belly"
+    },
+    {
+     "name": "Cuirass",
+     "kind": "box",
+     "parent": "Chest",
+     "size": [
+      29,
+      22,
+      21
+     ]
+    },
+    {
+     "name": "Breastplate",
+     "kind": "box",
+     "parent": "Chest",
+     "size": [
+      24,
+      10,
+      2
+     ]
+    },
+    {
+     "name": "BreastLow",
+     "kind": "box",
+     "parent": "Chest",
+     "size": [
+      18,
+      6,
+      2
+     ]
+    },
+    {
+     "name": "Gorget",
+     "kind": "box",
+     "parent": "Chest",
+     "size": [
+      19,
+      2,
+      16
+     ]
+    },
+    {
+     "name": "R-Brace",
+     "kind": "box",
+     "parent": "Chest",
+     "size": [
+      4,
+      1,
+      22
+     ]
+    },
+    {
+     "name": "L-Arm",
+     "kind": "attach:L-Arm",
+     "parent": "Chest"
+    },
+    {
+     "name": "L-Pauldron",
+     "kind": "box",
+     "parent": "L-Arm",
+     "size": [
+      13,
+      3,
+      16
+     ]
+    },
+    {
+     "name": "L-PauldronFront",
+     "kind": "box",
+     "parent": "L-Arm",
+     "size": [
+      8,
+      6,
+      1
+     ]
+    },
+    {
+     "name": "L-PauldronBack",
+     "kind": "box",
+     "parent": "L-Arm",
+     "size": [
+      8,
+      8,
+      1
+     ]
+    },
+    {
+     "name": "L-Pauldron2",
+     "kind": "box",
+     "parent": "L-Arm",
+     "size": [
+      2,
+      6,
+      14
+     ]
+    },
+    {
+     "name": "L-Sleeve",
+     "kind": "box",
+     "parent": "L-Arm",
+     "size": [
+      9,
+      22,
+      13
+     ]
+    },
+    {
+     "name": "R-Arm",
+     "kind": "attach:R-Arm",
+     "parent": "Chest"
+    },
+    {
+     "name": "R-Sleeve",
+     "kind": "box",
+     "parent": "R-Arm",
+     "size": [
+      9,
+      22,
+      13
+     ]
+    }
+   ]
+  },
+  "Hands": {
+   "model": "Common/Items/Armors/SkyyDarkLeather/Hands.blockymodel",
+   "texture": "Common/Items/Armors/SkyyDarkLeather/Hands_Texture.png",
+   "texture_size": [
+    96,
+    32
+   ],
+   "icon": "Common/Icons/ItemsGenerated/Armor_SkyyDarkLeather_Hands.png",
+   "attaches_to_bones": [
+    "R-Forearm",
+    "R-Hand",
+    "L-Forearm",
+    "L-Hand"
+   ],
+   "boxes": 8,
+   "quads": 0,
+   "triangles": 96,
+   "nodes": [
+    {
+     "name": "R-Forearm",
+     "kind": "attach:R-Forearm",
+     "parent": null
+    },
+    {
+     "name": "R-Bracer",
+     "kind": "box",
+     "parent": "R-Forearm",
+     "size": [
+      9,
+      14,
+      13
+     ]
+    },
+    {
+     "name": "R-BracerGuard",
+     "kind": "box",
+     "parent": "R-Forearm",
+     "size": [
+      3,
+      12,
+      11
+     ]
+    },
+    {
+     "name": "R-Hand",
+     "kind": "attach:R-Hand",
+     "parent": "R-Forearm"
+    },
+    {
+     "name": "R-Glove",
+     "kind": "box",
+     "parent": "R-Hand",
+     "size": [
+      11,
+      12,
+      15
+     ]
+    },
+    {
+     "name": "R-GloveCuff",
+     "kind": "box",
+     "parent": "R-Hand",
+     "size": [
+      12,
+      3,
+      16
+     ]
+    },
+    {
+     "name": "L-Forearm",
+     "kind": "attach:L-Forearm",
+     "parent": null
+    },
+    {
+     "name": "L-Bracer",
+     "kind": "box",
+     "parent": "L-Forearm",
+     "size": [
+      9,
+      14,
+      13
+     ]
+    },
+    {
+     "name": "L-BracerGuard",
+     "kind": "box",
+     "parent": "L-Forearm",
+     "size": [
+      3,
+      12,
+      11
+     ]
+    },
+    {
+     "name": "L-Hand",
+     "kind": "attach:L-Hand",
+     "parent": "L-Forearm"
+    },
+    {
+     "name": "L-Glove",
+     "kind": "box",
+     "parent": "L-Hand",
+     "size": [
+      11,
+      12,
+      15
+     ]
+    },
+    {
+     "name": "L-GloveCuff",
+     "kind": "box",
+     "parent": "L-Hand",
+     "size": [
+      12,
+      3,
+      16
+     ]
+    }
+   ]
+  },
+  "Legs": {
+   "model": "Common/Items/Armors/SkyyDarkLeather/Legs.blockymodel",
+   "texture": "Common/Items/Armors/SkyyDarkLeather/Legs_Texture.png",
+   "texture_size": [
+    64,
+    128
+   ],
+   "icon": "Common/Icons/ItemsGenerated/Armor_SkyyDarkLeather_Legs.png",
+   "attaches_to_bones": [
+    "Pelvis",
+    "R-Thigh",
+    "R-Calf",
+    "R-Foot",
+    "L-Thigh",
+    "L-Calf",
+    "L-Foot"
+   ],
+   "boxes": 11,
+   "quads": 0,
+   "triangles": 132,
+   "nodes": [
+    {
+     "name": "Pelvis",
+     "kind": "attach:Pelvis",
+     "parent": null
+    },
+    {
+     "name": "Breeches",
+     "kind": "box",
+     "parent": "Pelvis",
+     "size": [
+      26,
+      12,
+      20
+     ]
+    },
+    {
+     "name": "R-Thigh",
+     "kind": "attach:R-Thigh",
+     "parent": "Pelvis"
+    },
+    {
+     "name": "R-Skirt",
+     "kind": "box",
+     "parent": "R-Thigh",
+     "size": [
+      11,
+      21,
+      14
+     ]
+    },
+    {
+     "name": "R-Tasset",
+     "kind": "box",
+     "parent": "R-Thigh",
+     "size": [
+      8,
+      12,
+      1
+     ]
+    },
+    {
+     "name": "R-Calf",
+     "kind": "attach:R-Calf",
+     "parent": "R-Thigh"
+    },
+    {
+     "name": "R-Knee",
+     "kind": "box",
+     "parent": "R-Calf",
+     "size": [
+      8,
+      5,
+      2
+     ]
+    },
+    {
+     "name": "R-Greave",
+     "kind": "box",
+     "parent": "R-Calf",
+     "size": [
+      11,
+      23,
+      13
+     ]
+    },
+    {
+     "name": "R-Foot",
+     "kind": "attach:R-Foot",
+     "parent": "R-Calf"
+    },
+    {
+     "name": "R-Boot",
+     "kind": "box",
+     "parent": "R-Foot",
+     "size": [
+      14,
+      8,
+      20
+     ]
+    },
+    {
+     "name": "L-Thigh",
+     "kind": "attach:L-Thigh",
+     "parent": "Pelvis"
+    },
+    {
+     "name": "L-Skirt",
+     "kind": "box",
+     "parent": "L-Thigh",
+     "size": [
+      11,
+      21,
+      14
+     ]
+    },
+    {
+     "name": "L-Tasset",
+     "kind": "box",
+     "parent": "L-Thigh",
+     "size": [
+      8,
+      12,
+      1
+     ]
+    },
+    {
+     "name": "L-Calf",
+     "kind": "attach:L-Calf",
+     "parent": "L-Thigh"
+    },
+    {
+     "name": "L-Knee",
+     "kind": "box",
+     "parent": "L-Calf",
+     "size": [
+      8,
+      5,
+      2
+     ]
+    },
+    {
+     "name": "L-Greave",
+     "kind": "box",
+     "parent": "L-Calf",
+     "size": [
+      11,
+      23,
+      13
+     ]
+    },
+    {
+     "name": "L-Foot",
+     "kind": "attach:L-Foot",
+     "parent": "L-Calf"
+    },
+    {
+     "name": "L-Boot",
+     "kind": "box",
+     "parent": "L-Foot",
+     "size": [
+      14,
+      8,
+      20
+     ]
+    }
+   ]
+  }
+ },
+ "files": [
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_SkyyDarkLeather_Chest.png",
+   "bytes": 4133,
+   "sha256": "f9d55f5e81fb1316cc5cc2ed51d23a5e5fca0a5fb1d7c481ad8b0ee7fda89500",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_SkyyDarkLeather_Hands.png",
+   "bytes": 5388,
+   "sha256": "7e43e97e37272c1bc38ab5a0264f4e90fb9cd99e81e8be34935c291831734e16",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_SkyyDarkLeather_Head.png",
+   "bytes": 5095,
+   "sha256": "0b68395412829674ddf5660edcb42748e2af98fcf7f490e1d2225d3a00c80f67",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_SkyyDarkLeather_Legs.png",
+   "bytes": 3383,
+   "sha256": "676c52f7eea0e4055a9cdfb4d64621d0abec08ceaa0f537b96bb1038d8212659",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyDarkLeather/Chest.blockymodel",
+   "bytes": 58166,
+   "sha256": "8e5ee7b11fa3b551b0abaa2dfa0644cd07c966c9741c64f4ae3e9b923229ce58"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyDarkLeather/Chest_Texture.png",
+   "bytes": 14203,
+   "sha256": "144f1007127c4b6f4b0aac1ac8c43f6e328ece4278d1a8225d5858ff764414a4",
+   "image_size": [
+    96,
+    160
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyDarkLeather/Hands.blockymodel",
+   "bytes": 24041,
+   "sha256": "380c6e0e290771c5d39327a652ff1c80c51323e29afddbb217f1ed4d86e8e451"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyDarkLeather/Hands_Texture.png",
+   "bytes": 3139,
+   "sha256": "18d00ba327dd33243653de9f3cbc18b83eaf1c0910fd79bb24b7559b4f51b395",
+   "image_size": [
+    96,
+    32
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyDarkLeather/Head.blockymodel",
+   "bytes": 19226,
+   "sha256": "4b63802c6a78745b456e02a76290a8b7cb8226d29a68fdc0a9ce9937c088b228"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyDarkLeather/Head_Texture.png",
+   "bytes": 5660,
+   "sha256": "936c3be401f16e22c59f266b3df9087ed72a932f230d6cf1d8d292a7ccfe3063",
+   "image_size": [
+    64,
+    128
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyDarkLeather/Legs.blockymodel",
+   "bytes": 38117,
+   "sha256": "d6adcc1009030fdcf1975ba838ad16a020b504b135c5f656ee7ae9978deb343d"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyDarkLeather/Legs_Texture.png",
+   "bytes": 5666,
+   "sha256": "765360092dec762ebf1bc5753a8fdb6a7a7bbca2a645fb8d3e587e68c708343d",
+   "image_size": [
+    64,
+    128
+   ]
+  },
+  {
+   "path": "README.md",
+   "bytes": 7088,
+   "sha256": "c1677e825a36e082a9e376bf5930237028a7cbe351095604ae3392489a5e595d"
+  },
+  {
+   "path": "sheet.png",
+   "bytes": 996941,
+   "sha256": "ce55daf4fb19beff94d25b3540d4dea92fbe7bdab5e064a57ed9dff1f83b11e0",
+   "image_size": [
+    2370,
+    3076
+   ]
+  },
+  {
+   "path": "source/Chest.bbmodel",
+   "bytes": 43967,
+   "sha256": "b279cef3ac02bb279d9e50b328407d858d99e967eaf9a1c528a79a011a5ad18e"
+  },
+  {
+   "path": "source/Hands.bbmodel",
+   "bytes": 17403,
+   "sha256": "1eb86888d802329f56637a578ab0befce475cb8222c70bed9789eb0f24262020"
+  },
+  {
+   "path": "source/Head.bbmodel",
+   "bytes": 18908,
+   "sha256": "bdd54c77389ae3343ab0b3b4e63c6c59391eea8ae80f151b2dd2250ea1c588d4"
+  },
+  {
+   "path": "source/Legs.bbmodel",
+   "bytes": 25747,
+   "sha256": "87a34b9f2553fac4ba55d1e54b8f55f4dafc0081f9a3577cc7dd07c246e3d9ce"
+  }
+ ],
+ "local_only_not_for_repo": [
+  "sheet_with_refs.png (contains Skyy's reference images)"
+ ],
+ "generators": "tools/art/: make_dark_leather.py (models+textures), make_icons.py, make_sheet.py, validate.py, check_fit.py, bb_validate.js + bb_attach_shots.js (Blockbench checks), make_manifest.py",
+ "open_questions_defaults": {
+  "paths": "Common/Items/Armors/SkyyDarkLeather/* and Common/Icons/ItemsGenerated/Armor_SkyyDarkLeather_* (no repo convention found)",
+  "pauldron_side": "LEFT shoulder (right shoulder = leather sleeve + strap brace)",
+  "gem_colour": "amber/orange (ref 3 shows blue - easy texture swap)",
+  "crown_spikes": "dropped in the light revision (can come back as one small iron prong per side)",
+  "helmet_type": "close-fitting leather half-helm with a painted T/V visor (not a cloth hood - the art skill notes say Skyy dislikes hoods)",
+  "tabard": "front tabard + back panel (1.25 thick) hang from Pelvis like vanilla cloth; will pass through thighs when walking (vanilla does too)",
+  "triangle_budget": "540 tris (target ~600)",
+  "item_json": "no item/recipe JSON made - only art"
+ }
+}

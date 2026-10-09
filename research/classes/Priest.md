@@ -41,8 +41,7 @@ flowchart TD
   classDef locked fill:#2e7d32,color:#fff,stroke:#1b5e20
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
   classDef mods fill:#1a237e,color:#fff,stroke:#0d1442
-  class A1,A2,WDa,WDc,SOa,SOc locked
-  class A1A,A1B,A2X proposed
+  class A1,A2,WDa,WDc,SOa,SOc,A1A,A1B,A2X locked
   class M1,M2,M3,M4,M5 mods
 ```
 
@@ -157,7 +156,7 @@ You own 4. You equip 2.
 
 ### A1-alt A · Sanctuary
 
-🔵 **Proposed** - pick A or B
+🟢 **Locked** (Skyy 2026-10-09: both alternatives kept)
 
 - **Does:** a holy zone for **12 s**, starting at **8 blocks** (Skyy 2026-10-07).
 
@@ -173,7 +172,7 @@ You own 4. You equip 2.
 
 ### A1-alt B · Martyr's Grace
 
-🔵 **Proposed** - pick A or B
+🟢 **Locked** (Skyy 2026-10-09: both alternatives kept)
 
 - **Does:** a big instant heal on the **lowest-health** target within **30 blocks**: **75% of max Health** (Skyy 2026-10-07).
 
@@ -223,7 +222,7 @@ You own 4. You equip 2.
 
 ### A2-alt · Guardian Spirit
 
-🔵 **Proposed** - a **PASSIVE** (Skyy 2026-10-07)
+🟢 **Locked** (Skyy 2026-10-09) - a **PASSIVE** (Skyy 2026-10-07)
 
 - **Does:** an **aura** (30 blocks) around you - no tagging: when someone inside it would die - **or you would die** - they survive at **30% Health** instead, **if you have enough Mana** for it (the Mana is paid then; not enough Mana = no save).
 
@@ -299,15 +298,15 @@ Ideas - pick one.
 
 ## 🟠 Open
 
-- Priest A2-alt (Guardian Spirit proposed).
 
-- A1-alt pair.
 
 - Soul Cage essences + colours for Thorium and up.
 
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-08 Skyy: melee Mana costs dropped, Stamina costs added (every class now has its own Mana / Stamina split; Priest split 70 / 30 (costs 73 / 27)): Sacred Heal 18 Mana + 2 Stamina (was 25 Mana), Shield Bubble 20 Mana + 2 Stamina (was 28 Mana), Sanctuary 26 Mana + 2 Stamina (was 35 Mana), Martyr's Grace 22 Mana + 2 Stamina (was 30 Mana); Guardian Spirit 15 Mana + 1 Stamina per save (was 20 Mana) - full table in research/cloud/Class-Ability-Spec-Draft.md section 2; pools and the why per class in research/Class-Power-Split.md.
 
 - 2026-10-05: refined for easy reading (same facts, new layout).
 

@@ -232,6 +232,8 @@ Ideas - pick one.
 
 ## 📜 Change log
 
+- 2026-10-08 Skyy: melee Mana costs dropped, Stamina costs added (every class now has its own Mana / Stamina split; Assassin split 40 / 60 (costs 43 / 57)): Cloak + First Strike 6 Mana + 2 Stamina (was 14 Mana), Toxin 5 Mana + 2 Stamina (was 12 Mana), God Killer 6 Mana + 2 Stamina (was 14 Mana), Vanishing Act 7 Mana + 2 Stamina (was 16 Mana), Shadow Clone 9 Mana + 3 Stamina (was 20 Mana) - full table in research/cloud/Class-Ability-Spec-Draft.md section 2; pools and the why per class in research/Class-Power-Split.md.
+
 - 2026-10-05: refined for easy reading (same facts, new layout).
 
 - 2026-10-04: modifier pool table added under the abilities (Skyy).

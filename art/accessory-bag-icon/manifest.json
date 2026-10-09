@@ -1,0 +1,369 @@
+{
+  "item": "Accessory Bag menu icon (SkyWynn Menu tile + Workbench 'Accessories & Bags' tab)",
+  "status": "FINAL gems picked by Skyy (Option B) + leather tweak v2; not committed, not wired in",
+  "look": "v2",
+  "history": [
+    "v1: first FINAL - Option B gems (Skyy 2026-10-08: \"Use Option B gem colors\")",
+    "v2: leather tweak (Skyy 2026-10-08: \"Make it a little brighter with a more leather look (still black leather, just lighter\") - lighter charcoal-black leather, soft sheen, worn lighter edges + corners, faint grain, lighter dashed stitching on flap / tongue / body, soft body folds; gold handle, clasp and gems unchanged"
+  ],
+  "replaces": "vanilla Utility_Bag_Seed icon (SkyyMenu ENTRIES 'Accessory Bag'; tools/skyywbtab.py ICON_SRC)",
+  "files": [
+    {
+      "path": "Common/Icons/ItemsGenerated/SkyyAccessories_Bag_Menu.png",
+      "bytes": 5791,
+      "sha256": "3804f75b8f1ba34bca7283ebc2bc1649d916bd93891241baf52be67ba28ae423",
+      "image_size": [
+        64,
+        64
+      ],
+      "mode": "RGBA",
+      "what": "64x64 RGBA item icon, transparent background, alpha only 0 or 255 (no partial alpha, so straight vs premultiplied alpha makes no difference)",
+      "gems_left_to_right": [
+        {
+          "line": "Health",
+          "colour": "red",
+          "hex_mid": "#d23a3a",
+          "ramp_dark_mid_light_glint": [
+            "#8a1a20",
+            "#d23a3a",
+            "#ff8a80",
+            "#ffe0dc"
+          ]
+        },
+        {
+          "line": "Stamina",
+          "colour": "yellow",
+          "hex_mid": "#d6a800",
+          "ramp_dark_mid_light_glint": [
+            "#8a6800",
+            "#d6a800",
+            "#ffe066",
+            "#fff8d6"
+          ]
+        },
+        {
+          "line": "Mana",
+          "colour": "blue",
+          "hex_mid": "#2f6fe0",
+          "ramp_dark_mid_light_glint": [
+            "#163f8f",
+            "#2f6fe0",
+            "#86b4ff",
+            "#e2eeff"
+          ]
+        },
+        {
+          "line": "Regeneration",
+          "colour": "green",
+          "hex_mid": "#2fb34f",
+          "ramp_dark_mid_light_glint": [
+            "#17702f",
+            "#2fb34f",
+            "#86eb98",
+            "#e2ffe6"
+          ]
+        },
+        {
+          "line": "Speed",
+          "colour": "cyan",
+          "hex_mid": "#4ac0cc",
+          "ramp_dark_mid_light_glint": [
+            "#2a8a9a",
+            "#4ac0cc",
+            "#8ae6ee",
+            "#dafcff"
+          ]
+        }
+      ],
+      "gem_choice": "Skyy 2026-10-08: \"Use Option B gem colors\"",
+      "cyan_source": "tools/art/make_accessory_icons.py WING ramp (the approved Speed accessory icon's wings), stops 2-5 (its outline tone #0c3a44 skipped); red/yellow/blue/green ramps = tools/art/make_bags.py ACC_GEMS"
+    },
+    {
+      "path": "sheet.png",
+      "bytes": 171407,
+      "sha256": "21e591603d07e77584f04f72b8598c1746e4f15d1222ea31a22ef84d369ef18e",
+      "image_size": [
+        1520,
+        1580
+      ],
+      "mode": "RGBA",
+      "what": "FINAL review sheet (actual size, 32 px, 4x, 8x on dark + light, menu mock, gem list, before vs after at 4x)"
+    },
+    {
+      "path": "README.md",
+      "what": "what it is, how made, gem colour source, UNVERIFIED items, open questions"
+    }
+  ],
+  "generators": [
+    "tools/art/make_accessory_bag_icon.py",
+    "tools/art/make_accessory_bag_sheet.py"
+  ],
+  "view": {
+    "yaw_deg": 30.0,
+    "pitch_deg": 22.0,
+    "fill_px": 58.0,
+    "supersample": 8
+  },
+  "model_boxes": [
+    {
+      "name": "Body",
+      "material": "leather",
+      "from": [
+        -15.0,
+        1.5,
+        -6.0
+      ],
+      "to": [
+        15.0,
+        19.5,
+        6.0
+      ]
+    },
+    {
+      "name": "BodyBase",
+      "material": "leather",
+      "from": [
+        -14.0,
+        0.0,
+        -5.2
+      ],
+      "to": [
+        14.0,
+        1.5,
+        5.2
+      ]
+    },
+    {
+      "name": "GussetL",
+      "material": "leather",
+      "from": [
+        -15.8,
+        3.0,
+        -4.6
+      ],
+      "to": [
+        -15.0,
+        18.0,
+        4.6
+      ]
+    },
+    {
+      "name": "GussetR",
+      "material": "leather",
+      "from": [
+        15.0,
+        3.0,
+        -4.6
+      ],
+      "to": [
+        15.8,
+        18.0,
+        4.6
+      ]
+    },
+    {
+      "name": "FlapTop",
+      "material": "flap",
+      "from": [
+        -15.6,
+        19.5,
+        -6.6
+      ],
+      "to": [
+        15.6,
+        21.0,
+        6.6
+      ]
+    },
+    {
+      "name": "FlapCrown",
+      "material": "flap",
+      "from": [
+        -14.6,
+        21.0,
+        -5.6
+      ],
+      "to": [
+        14.6,
+        21.8,
+        5.6
+      ]
+    },
+    {
+      "name": "FlapFront",
+      "material": "flap",
+      "from": [
+        -15.6,
+        12.2,
+        6.0
+      ],
+      "to": [
+        15.6,
+        20.97,
+        7.6
+      ]
+    },
+    {
+      "name": "FlapHem",
+      "material": "flap",
+      "from": [
+        -14.4,
+        11.0,
+        6.0
+      ],
+      "to": [
+        14.4,
+        12.2,
+        7.6
+      ]
+    },
+    {
+      "name": "FlapTongue",
+      "material": "tongue",
+      "from": [
+        -6.6,
+        1.4,
+        6.0
+      ],
+      "to": [
+        6.6,
+        11.0,
+        7.4
+      ]
+    },
+    {
+      "name": "TongueTip",
+      "material": "tongue",
+      "from": [
+        -5.2,
+        0.4,
+        6.0
+      ],
+      "to": [
+        5.2,
+        1.4,
+        7.4
+      ]
+    },
+    {
+      "name": "Clasp",
+      "material": "gold",
+      "from": [
+        -8.4,
+        5.6,
+        7.4
+      ],
+      "to": [
+        8.4,
+        10.2,
+        8.4
+      ]
+    },
+    {
+      "name": "MountL",
+      "material": "gold",
+      "from": [
+        -10.0,
+        21.5,
+        -2.0
+      ],
+      "to": [
+        -5.0,
+        23.0,
+        2.0
+      ]
+    },
+    {
+      "name": "PostL",
+      "material": "gold",
+      "from": [
+        -9.2,
+        23.0,
+        -1.3
+      ],
+      "to": [
+        -5.8,
+        28.0,
+        1.3
+      ]
+    },
+    {
+      "name": "MountR",
+      "material": "gold",
+      "from": [
+        5.0,
+        21.5,
+        -2.0
+      ],
+      "to": [
+        10.0,
+        23.0,
+        2.0
+      ]
+    },
+    {
+      "name": "PostR",
+      "material": "gold",
+      "from": [
+        5.8,
+        23.0,
+        -1.3
+      ],
+      "to": [
+        9.2,
+        28.0,
+        1.3
+      ]
+    },
+    {
+      "name": "HandleTop",
+      "material": "gold",
+      "from": [
+        -9.2,
+        28.0,
+        -1.3
+      ],
+      "to": [
+        9.2,
+        30.8,
+        1.3
+      ]
+    }
+  ],
+  "palette": {
+    "leather_v2": [
+      "#0f0b16",
+      "#18131f",
+      "#221b28",
+      "#2d2431",
+      "#3a2e3b",
+      "#4c3e47",
+      "#67565c",
+      "#8c7a7a"
+    ],
+    "leather_v1_before": [
+      "#0c0914",
+      "#14101b",
+      "#1d1823",
+      "#28212c",
+      "#352b37",
+      "#4b3e48",
+      "#6b5a60"
+    ],
+    "stitch_thread_v2": [
+      "#4e4250",
+      "#7a6c70",
+      "#a39488"
+    ],
+    "gold": [
+      "#3e1f08",
+      "#6e3f0e",
+      "#a26818",
+      "#d39a2c",
+      "#efc552",
+      "#fbe49a",
+      "#fff2cc"
+    ]
+  },
+  "description": "Original 64x64 Hytale-style icon: a chunky black leather satchel (soft charcoal-black with cool violet shadows, a soft sheen, worn lighter edges, faint grain and lighter dashed stitching; never #000) with a gold carry handle, a front flap with a stepped (rounded) hem and a leather strap tongue, a small gold clasp bar on the tongue holding 5 small cut gems in the booster-line colours, left to right Health red, Stamina yellow, Mana blue, Regeneration green, Speed cyan. 3/4 view, light from above, hue-shifted shadows, 1 px dark outline."
+}

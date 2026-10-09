@@ -1,0 +1,375 @@
+{
+  "item": "Pebble - the talking rock NPC (SkyWynn guide)",
+  "repo_folder": "art/pebble",
+  "original_art": true,
+  "status": "made 2026-10-08, waiting for Skyy's review (not committed)",
+  "model": {
+    "path": "Common/NPC/SkyyTowns/Pebble/Pebble.blockymodel",
+    "format": "Hytale character (blockymodel), 64 units per block",
+    "height_units": 63.2,
+    "height_blocks": 0.99,
+    "body_top_blocks": 0.8,
+    "footprint_blocks": [
+      0.95,
+      0.71
+    ],
+    "texture": "Common/NPC/SkyyTowns/Pebble/Pebble_Texture.png",
+    "texture_size": [
+      256,
+      192
+    ],
+    "node_count": 25,
+    "max_nodes": 255,
+    "faces": "+Z",
+    "head_node": "Head",
+    "nameplate_hint": "Head pivot is 21 units above ground; top of model is 63 units; ~45 units above the Head pivot clears the sprout",
+    "nodes": [
+      {
+        "name": "Origin",
+        "parent": null,
+        "role": "root, empty, ground level (y 0)"
+      },
+      {
+        "name": "Body",
+        "parent": "Origin",
+        "role": "lower rock half; pivot near the ground so the rock rolls when it waddles"
+      },
+      {
+        "name": "Body-Wide",
+        "parent": "Body",
+        "role": "rounds the lower half"
+      },
+      {
+        "name": "Body-Base",
+        "parent": "Body",
+        "role": "rounded underside"
+      },
+      {
+        "name": "L-Foot",
+        "parent": "Body",
+        "role": "left stubby foot"
+      },
+      {
+        "name": "R-Foot",
+        "parent": "Body",
+        "role": "right stubby foot"
+      },
+      {
+        "name": "L-Arm",
+        "parent": "Body",
+        "role": "left pebble arm"
+      },
+      {
+        "name": "R-Arm",
+        "parent": "Body",
+        "role": "right pebble arm (waves)"
+      },
+      {
+        "name": "Head",
+        "parent": "Body",
+        "role": "upper rock half with the face - ATTACH NAMEPLATE / CHAT BUBBLE HERE"
+      },
+      {
+        "name": "Head-Wide",
+        "parent": "Head",
+        "role": "rounds the upper half"
+      },
+      {
+        "name": "Head-Bulge",
+        "parent": "Head",
+        "role": "side bulge (rounder silhouette)"
+      },
+      {
+        "name": "Head-Top",
+        "parent": "Head",
+        "role": "top step of the rock"
+      },
+      {
+        "name": "Crown",
+        "parent": "Head-Top",
+        "role": "top step, mossy"
+      },
+      {
+        "name": "Moss-Cap",
+        "parent": "Crown",
+        "role": "moss clump (sprout grows here)"
+      },
+      {
+        "name": "Moss-Tuft",
+        "parent": "Crown",
+        "role": "small moss clump"
+      },
+      {
+        "name": "Sprout",
+        "parent": "Moss-Cap",
+        "role": "sprout stem"
+      },
+      {
+        "name": "Sprout-Leaf-L",
+        "parent": "Sprout",
+        "role": "sprout leaf"
+      },
+      {
+        "name": "Sprout-Leaf-R",
+        "parent": "Sprout",
+        "role": "sprout leaf"
+      },
+      {
+        "name": "L-Eye",
+        "parent": "Head",
+        "role": "left dot eye (quad)"
+      },
+      {
+        "name": "R-Eye",
+        "parent": "Head",
+        "role": "right dot eye (quad)"
+      },
+      {
+        "name": "L-Eyelid",
+        "parent": "Head",
+        "role": "left blink lid (quad, rest stretch y 0.1)"
+      },
+      {
+        "name": "R-Eyelid",
+        "parent": "Head",
+        "role": "right blink lid (quad, rest stretch y 0.1)"
+      },
+      {
+        "name": "Mouth",
+        "parent": "Head",
+        "role": "smile (quad, stretched to open)"
+      },
+      {
+        "name": "L-Brow",
+        "parent": "Head",
+        "role": "left moss eyebrow"
+      },
+      {
+        "name": "R-Brow",
+        "parent": "Head",
+        "role": "right moss eyebrow"
+      }
+    ]
+  },
+  "animations": [
+    {
+      "name": "Idle",
+      "folder": "Default",
+      "path": "Common/NPC/SkyyTowns/Pebble/Animations/Default/Idle.blockyanim",
+      "duration_frames": 180,
+      "fps": 60,
+      "seconds": 3.0,
+      "holdLastKeyframe": false,
+      "loops": true,
+      "animated_nodes": [
+        "Body",
+        "Head",
+        "L-Arm",
+        "L-Brow",
+        "L-Eyelid",
+        "R-Arm",
+        "R-Brow",
+        "R-Eyelid",
+        "Sprout"
+      ]
+    },
+    {
+      "name": "Walk",
+      "folder": "Default",
+      "path": "Common/NPC/SkyyTowns/Pebble/Animations/Default/Walk.blockyanim",
+      "duration_frames": 40,
+      "fps": 60,
+      "seconds": 0.667,
+      "holdLastKeyframe": false,
+      "loops": true,
+      "animated_nodes": [
+        "Body",
+        "Head",
+        "L-Arm",
+        "L-Foot",
+        "R-Arm",
+        "R-Foot",
+        "Sprout"
+      ]
+    },
+    {
+      "name": "Talk",
+      "folder": "Default",
+      "path": "Common/NPC/SkyyTowns/Pebble/Animations/Default/Talk.blockyanim",
+      "duration_frames": 40,
+      "fps": 60,
+      "seconds": 0.667,
+      "holdLastKeyframe": false,
+      "loops": true,
+      "animated_nodes": [
+        "Body",
+        "Head",
+        "L-Arm",
+        "L-Brow",
+        "Mouth",
+        "R-Arm",
+        "R-Brow",
+        "Sprout"
+      ]
+    },
+    {
+      "name": "Wave",
+      "folder": "Default",
+      "path": "Common/NPC/SkyyTowns/Pebble/Animations/Default/Wave.blockyanim",
+      "duration_frames": 64,
+      "fps": 60,
+      "seconds": 1.067,
+      "holdLastKeyframe": false,
+      "loops": true,
+      "animated_nodes": [
+        "Body",
+        "Head",
+        "L-Arm",
+        "L-Brow",
+        "L-Eyelid",
+        "L-Foot",
+        "Mouth",
+        "R-Arm",
+        "R-Brow",
+        "R-Eyelid",
+        "R-Foot",
+        "Sprout"
+      ]
+    },
+    {
+      "name": "Hurt",
+      "folder": "Damage",
+      "path": "Common/NPC/SkyyTowns/Pebble/Animations/Damage/Hurt.blockyanim",
+      "duration_frames": 24,
+      "fps": 60,
+      "seconds": 0.4,
+      "holdLastKeyframe": false,
+      "loops": true,
+      "animated_nodes": [
+        "Body",
+        "Head",
+        "L-Arm",
+        "L-Brow",
+        "L-Eyelid",
+        "Mouth",
+        "R-Arm",
+        "R-Brow",
+        "R-Eyelid",
+        "Sprout"
+      ]
+    },
+    {
+      "name": "Death",
+      "folder": "Damage",
+      "path": "Common/NPC/SkyyTowns/Pebble/Animations/Damage/Death.blockyanim",
+      "duration_frames": 96,
+      "fps": 60,
+      "seconds": 1.6,
+      "holdLastKeyframe": true,
+      "loops": false,
+      "animated_nodes": [
+        "Body",
+        "Head",
+        "Head-Top",
+        "L-Arm",
+        "L-Eyelid",
+        "L-Foot",
+        "Moss-Cap",
+        "Mouth",
+        "R-Arm",
+        "R-Eyelid",
+        "R-Foot",
+        "Sprout"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "Common/Icons/ModelsGenerated/Pebble.png",
+      "size_bytes": 17517,
+      "description": "Model icon 128x128, 3/4 view like vanilla model icons, premultiplied edge pixels",
+      "pixels": [
+        128,
+        128
+      ]
+    },
+    {
+      "path": "Common/NPC/SkyyTowns/Pebble/Animations/Damage/Death.blockyanim",
+      "size_bytes": 26386,
+      "description": "Death: crumbles (head tips off, top slides, arms drop), holds, then pops back together"
+    },
+    {
+      "path": "Common/NPC/SkyyTowns/Pebble/Animations/Damage/Hurt.blockyanim",
+      "size_bytes": 11449,
+      "description": "Hurt: wince - lean back, eyes shut, brows down, arms out"
+    },
+    {
+      "path": "Common/NPC/SkyyTowns/Pebble/Animations/Default/Idle.blockyanim",
+      "size_bytes": 8451,
+      "description": "Idle: slow breathing wobble, sprout sway, brow lift, blink"
+    },
+    {
+      "path": "Common/NPC/SkyyTowns/Pebble/Animations/Default/Talk.blockyanim",
+      "size_bytes": 9460,
+      "description": "Talk: mouth opens/closes (stretch), little head bounce, brow + arm gestures"
+    },
+    {
+      "path": "Common/NPC/SkyyTowns/Pebble/Animations/Default/Walk.blockyanim",
+      "size_bytes": 9903,
+      "description": "Walk: waddle - body rolls foot to foot, feet stay flat on the ground, arms swing"
+    },
+    {
+      "path": "Common/NPC/SkyyTowns/Pebble/Animations/Default/Wave.blockyanim",
+      "size_bytes": 14396,
+      "description": "Wave: small hop, then R-Arm pebble wave with happy squint"
+    },
+    {
+      "path": "Common/NPC/SkyyTowns/Pebble/Pebble.blockymodel",
+      "size_bytes": 76472,
+      "description": "Pebble model, Hytale character format (64 units = 1 block), 25 nodes, boxes + quads only"
+    },
+    {
+      "path": "Common/NPC/SkyyTowns/Pebble/Pebble_Texture.png",
+      "size_bytes": 24636,
+      "description": "Pebble texture 256x192 RGBA, 1 texel per unit, painted top light, hue-shifted shadows, cut-out alpha",
+      "pixels": [
+        256,
+        192
+      ]
+    },
+    {
+      "path": "README.md",
+      "size_bytes": 9328,
+      "description": "What it is, sizes, how to edit, what is UNVERIFIED in game, open questions for Skyy"
+    },
+    {
+      "path": "manifest.json",
+      "size_bytes": null,
+      "description": "This file"
+    },
+    {
+      "path": "sheet.png",
+      "size_bytes": 597721,
+      "description": "Review sheet: front / side / back, icon, one frame per animation, large labels",
+      "pixels": [
+        2400,
+        1640
+      ]
+    },
+    {
+      "path": "source/Pebble.bbmodel",
+      "size_bytes": 143594,
+      "description": "Blockbench 5.2.1 project (Hytale Character format) with the texture and all 6 animations embedded"
+    }
+  ],
+  "generator": [
+    "tools/art/make_pebble.py",
+    "tools/art/pebble_model.py",
+    "tools/art/pebble_anims.py",
+    "tools/art/pebble_common.py",
+    "tools/art/make_pebble_previews.py",
+    "tools/art/render_blocky.py",
+    "tools/art/validate_pebble.py",
+    "tools/art/make_pebble_manifest.py"
+  ]
+}

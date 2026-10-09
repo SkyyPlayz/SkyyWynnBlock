@@ -125,3 +125,21 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyArmory 0.1.10 hotfix (world would not start) (DEPLOYED 2026-10-08, backup deploy-20261008-0545) | [2026-10](2026-10.md) |
 | Bag art: SkyySacks 0.7.14 + SkyyAccessories 0.5.8 (DEPLOYED 2026-10-08, backup deploy-20261008-0642) | [2026-10](2026-10.md) |
 | SkyyArmory 0.1.11 - Bo staffs: no magic orb (DEPLOYED 2026-10-08, backup deploy-20261008-0643) | [2026-10](2026-10.md) |
+| SkyyMenu 0.3.10 - Stats page (DEPLOYED 2026-10-08, backup deploy-20261008-0652) | [2026-10](2026-10.md) |
+| SkyyEssentials 0.1.9 chat mirror + SkyyTownProbe 0.1 (DEPLOYED 2026-10-08, backup deploy-20261008-0712) | [2026-10](2026-10.md) |
+| SkyyKeyProbe 0.1 - key probe (DEPLOYED 2026-10-08, backup deploy-20261008-0728) | [2026-10](2026-10.md) |
+| SkyyProfiles 0.1.7 - switch confirm + Health per profile (DEPLOYED 2026-10-08, backup deploy-20261008-0729) | [2026-10](2026-10.md) |
+| SkyyHud 0.3.17 - mod icon (DEPLOYED 2026-10-08, backup deploy-20261008-0751) | [2026-10](2026-10.md) |
+| Monk moves: SkyyArmory 0.1.12 + SkyySkills 0.4.22 (DEPLOYED 2026-10-08, backup deploy-20261008-0800) | [2026-10](2026-10.md) |
+| Roll rework + dagger charge: SkyySkills 0.4.23 + SkyyArmory 0.1.13 (DEPLOYED 2026-10-08, backup deploy-20261008-0911) | [2026-10](2026-10.md) |
+| SkyyGear 0.2.10 - signature charge kept on swap (DEPLOYED 2026-10-08, backup deploy-20261008-0928) | [2026-10](2026-10.md) |
+| SkyyArmory 0.1.14 - wand ricochet signature (DEPLOYED 2026-10-08, backup deploy-20261008-0955) | [2026-10](2026-10.md) |
+| SkyySkills 0.4.24 - Wood wand signature (DEPLOYED 2026-10-08, backup deploy-20261008-1027) | [2026-10](2026-10.md) |
+| Accessory Bag icon: SkyyMenu 0.3.11 + SkyyAccessories 0.5.9 (DEPLOYED 2026-10-08, backup deploy-20261008-1132) | [2026-10](2026-10.md) |
+| The Armory switched on (DEPLOYED 2026-10-08, backup deploy-20261008-1837) | [2026-10](2026-10.md) |
+| SkyyFishing 0.1 - our fishing, stage 1 (DEPLOYED 2026-10-08, backup deploy-20261008-2018) | [2026-10](2026-10.md) |
+| Loot round: mystery bags + Unclaimed Luggage (DEPLOYED 2026-10-08, backup deploy-20261008-2211) | [2026-10](2026-10.md) |
+| SkyySkills 0.4.25: class power split + stat perks (DEPLOYED 2026-10-08, backup deploy-20261008-2336) | [2026-10](2026-10.md) |
+| Better Mob Expansion switched on (test) (DEPLOYED 2026-10-09, backup deploy-20261009-0538) | [2026-10](2026-10.md) |
+| SkyyMenu 0.3.12: skill Defense on the Stats page (DEPLOYED 2026-10-09, backup deploy-20261009-0546) | [2026-10](2026-10.md) |
+| Luggage sacks + Bazaar search + sprint probe; The Armory off (DEPLOYED 2026-10-09, backup deploy-20261009-0707) | [2026-10](2026-10.md) |
