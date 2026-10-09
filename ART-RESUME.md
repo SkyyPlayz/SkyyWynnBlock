@@ -67,6 +67,16 @@ Hands 64x64), original pixels only. Per tier a `sheet-<tier>.png` (front / side 
 **Ask Skyy (defaults):** keep the concept looks as approved [yes]; helmet in every tier [yes].
 
 ## Queue (check with Skyy before starting each)
+16. **Chibi pets - start with the SKELETON** (Skyy 2026-10-08: "add the pet chibi list to quirks queue start with the skeleton, and well go
+   from there."). Pets are every neutral mob + many enemies; at launch each pet is the vanilla mob model shrunk, and you make CHIBI versions
+   of the favourites (docs/answered/pets.md 2026-10-08: "i want all the pets of them to be similar just a little smaller and cuter ... like
+   a skeleton pet would be about fox size"). Chibi = clearly the same creature (same colours, key features), bigger head, shorter stubbier
+   body / legs, big eyes or eye sockets, cute not scary. Size: about a vanilla Fox (look at `Common/NPC/Beast/Fox` and the vanilla Skeleton
+   in `Common/NPC/Undead/Skeleton` in Assets.zip - match its look, paint your own pixels). Make: model + texture + 128x128 icon + animations
+   Idle, Walk, Run, Sit (pets sit while you stand still), Happy (a little hop / spin when fed or petted), Hurt - same folder layout + names as a
+   vanilla creature (`Animations/Default/`). Paths `art/pets/<Creature>/Common/NPC/SkyyPets/<Creature>/<Creature>.blockymodel`, icon
+   `Common/Icons/ModelsGenerated/SkyyPet_<Creature>.png`. One sheet, then show Skyy. The full favourites list (top 15) comes from
+   `research/Pets-Roster.md` (being written) - after the Skeleton, ask Skyy which is next.
 15. **Mystery bags - unidentified loot, ONE per rarity (7)** (Skyy 2026-10-08: "make the mystery bags unidentified items come in before you
    identify them. we just need 1 per rarity."). A dropped / looted unidentified weapon or armor piece shows as a closed loot bag until the
    player identifies it (Wynncraft style: level + rarity shown, type hidden). Rarities + colours (placeholders from
