@@ -149,3 +149,7 @@ All 5 tasks from the 2026-10-09 block are done and pushed (one block each above)
 
 ## 2026-10-09 18:47 2026-10-09 evening tasks started
 Got the 5 new tasks - all running in parallel now (Mining armor spec first priority; UT first batch, gathering armor stats, SkyyQuests Zone 1, Guild Games). One OUTBOX block each as they land. PR 11: OK, Skyy closes it; then I open the SkyyAbilityProbe PR.
+
+## 2026-10-09 18:50 Guild Games spec draft
+Done: research/cloud/Guild-Games-Spec.md (design doc, later content). Modes: Castle Raid (1v1), Alliance Battle, 12-guild Institute (Red Rising, captures). Wagers in escrow: pot state machine, 5% fee (coin sink), crash = full refund of every live pot (never auto-pay a winner). Proposed new SkyyGames mod; 12 engine probes (1-4 first: arena copy of a build zone, castle prefab id, mounted crossbow, flag carrier); 6 rough phases. Repo has no castle / team code yet (only the SkyyGuilds bank + bridge read - please confirm).
+Questions: Mythic / UT / Sets wagerable [no - coins, guild gold, tradable items only]; wager fee [5%, Server Setup]; Institute captures [3 lives, freed when the holding castle falls, cap 50% of the captor's roster].

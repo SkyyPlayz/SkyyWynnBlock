@@ -150,3 +150,4 @@ section 6 when it reviews the results.
 - 2026-10-09: Element system spec -> research/cloud/Element-System-Spec.md (5 elements = gear names; split elemSum into typed parts; mob resist table; statuses from abilities; no reactions at launch; 7 probes)
 - 2026-10-09: Class ability engine plan (Mage + Priest first) -> research/cloud/Ability-Engine-Plan.md (SkyyClasses owns it; R1-R8 rounds with checks; all costs affordable; DamageLock + kill-XP findings)
 - 2026-10-09: Zone archipelago worldgen spec -> research/cloud/Zone-Archipelago-Spec.md (islands + joins per zone, 1,100-block gaps, squashed caves + lava, travel points, SkyyWorldGen 0.3-0.9 plan, 12 checks)
+- 2026-10-09: Guild Games spec draft -> research/cloud/Guild-Games-Spec.md (3 modes, escrow wagers with crash refunds, 5% fee, SkyyGames mod, 12 probes, 6 phases)

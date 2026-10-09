@@ -85,9 +85,8 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
 - [ ] **SkyyQuests Zone 1 spec** -> `research/cloud/SkyyQuests-Zone1-Spec.md`: a first quest line for the Zone 1 town (research/Zone-1-Town-Build-Plan.md,
       Pebble the talking rock NPC art in ART-RESUME Done), quest board idea from research/Mods-Folder-Survey.md Aetherhaven notes, quest rewards
       incl. Set / UT sources (UT can come from quests, never shops), NPC spawn via the SkyyMerchants spawnNPC + UseEntityEvent pattern; phases.
-- [ ] **Guild Games spec draft** -> `research/cloud/Guild-Games-Spec.md` from research/Guild-Games.md (castle raid, wagers in escrow, 1v1 +
-      alliance, Red Rising 12-guild mode with captures): systems, engine probes needed, phases. Later content - keep it a design doc.
 - [ ] **SkyyAbilityProbe PR** - once https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 is merged: open a [cloud] PR with the held draft
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
 ## Done (delete after logging - see the rules above)
+- [x] Guild Games spec draft - 2026-10-09 - `research/cloud/Guild-Games-Spec.md`
