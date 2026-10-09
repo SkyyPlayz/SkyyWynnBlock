@@ -38,8 +38,7 @@ flowchart TD
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
   classDef open fill:#e65100,color:#fff,stroke:#bf360c
   classDef mods fill:#1a237e,color:#fff,stroke:#0d1442
-  class A1,A2,AXc,MCc locked
-  class A1A,A1B,A2X proposed
+  class A1,A2,AXc,MCc,A1A,A1B,A2X locked
   class M1,M2,M3,M4,M5 mods
 ```
 
@@ -102,7 +101,7 @@ You own 4. You equip 2.
 
 ### A1-alt A · Blood Frenzy
 
-🔵 **Proposed** - pick A or B
+🟢 **Locked** (Skyy 2026-10-09: both alternatives kept)
 
 - **Does:** a **toggle** - while it is on, the rage grows with **every hit you land**: per stack you get **+1.5% damage, +1% attack speed and +0.5% move speed**, allies **half of each** (Skyy 2026-10-07: a bit less damage than Enrage, plus attack speed and a small move speed buff - "fits the name"), up to **25 stacks** (you +37.5% damage / +25% attack speed / +12.5% move speed - Enrage peaks at +40% damage; vs the Monk's Flowing Form at full stacks: more damage (it has none), less attack speed (it has +30%) - Skyy 2026-10-07); allies get it through an **AoE aura**: players within 8 blocks and party members within 16 blocks of you (the Enrage ranges) are buffed **only while they are inside it** (unlike Enrage, which is picked once) - so it works as a late-game passive; **each stack decays 6 s after it was gained** (Skyy 2026-10-07).
 
@@ -122,7 +121,7 @@ You own 4. You equip 2.
 
 ### A1-alt B · Warlord's Banner
 
-🔵 **Proposed** - pick A or B
+🟢 **Locked** (Skyy 2026-10-09: both alternatives kept)
 
 - **Does:** plant a **war banner** for **30 s** with a **12-block** range (Skyy 2026-10-07).
 
@@ -166,7 +165,7 @@ You own 4. You equip 2.
 
 ### A2-alt · Earthsplitter
 
-🔵 **Proposed**
+🟢 **Locked** (Skyy 2026-10-09)
 
 - **Does:** slam a **shockwave line** 12 blocks forward that knocks enemies up 1 s.
 
@@ -240,11 +239,7 @@ Ideas - pick one.
 
 ## 🟠 Open
 
-- A1-alt pair.
 
-- A2-alt.
-
-&nbsp;
 
 ## 📜 Change log
 

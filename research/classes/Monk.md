@@ -41,8 +41,7 @@ flowchart TD
   classDef locked fill:#2e7d32,color:#fff,stroke:#1b5e20
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
   classDef mods fill:#1a237e,color:#fff,stroke:#0d1442
-  class A1,A2,BOc,FIc locked
-  class A1A,A1B,A2X proposed
+  class A1,A2,BOc,FIc,A1A,A1B,A2X locked
   class M1,M2,M3,M4,M5 mods
 ```
 
@@ -121,7 +120,7 @@ You own 4. You equip 2.
 
 ### A1-alt A · Hundred Fists
 
-🔵 **Proposed** - pick A or B
+🟢 **Locked** (Skyy 2026-10-09: both alternatives kept)
 
 - **Does:** Flowing Form where every **10 combo** also releases a **shockwave** on all Awed enemies (one weapon hit each).
 
@@ -135,7 +134,7 @@ You own 4. You equip 2.
 
 ### A1-alt B · Still Water
 
-🔵 **Proposed** - pick A or B
+🟢 **Locked** (Skyy 2026-10-09: both alternatives kept)
 
 - **Does:** a calm stance for 10 s.
 
@@ -175,7 +174,7 @@ You own 4. You equip 2.
 
 ### A2-alt · Cyclone Kick
 
-🔵 **Proposed**
+🟢 **Locked** (Skyy 2026-10-09)
 
 - **Does:** a quick **spinning kick** that hits everything within 3 blocks and pushes it 5 blocks out (cheap).
 
@@ -245,11 +244,9 @@ Ideas - pick one.
 
 ## 🟠 Open
 
-- The Monk's class skill name.
+- The Monk's class skill name: LOCKED "Zen" (rename pending in the next SkyySkills round).
 
-- A1-alt pair.
 
-- A2-alt.
 
 - Engine checks: glide / slow fall, timed landing jump, mid-air jump, dragging mobs in the air, knockback on airborne mobs.
 

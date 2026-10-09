@@ -33,8 +33,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### bags
 
 ### classes
-- the missing ability picks - every class's A2 alternative and its two improved A1 options (the Priest's A2 alternative too).
-  The class-ability spec PROPOSES them after the reset, then you pick. [proposals pending; research/classes/<Class>.md]
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]
 
 

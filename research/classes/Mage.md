@@ -43,8 +43,7 @@ flowchart TD
   classDef locked fill:#2e7d32,color:#fff,stroke:#1b5e20
   classDef proposed fill:#546e7a,color:#fff,stroke:#37474f
   classDef mods fill:#1a237e,color:#fff,stroke:#0d1442
-  class A1,A2,STa,STc,BKc locked
-  class A1A,A1B,A2X proposed
+  class A1,A2,STa,STc,BKc,A1A,A1B,A2X locked
   class M1,M2,M3,M4,M5 mods
 ```
 
@@ -108,7 +107,7 @@ You own 4. You equip 2.
 
 ### A1-alt A · Starfall
 
-🔵 **Proposed** - pick A or B
+🟢 **Locked** (Skyy 2026-10-09: both alternatives kept)
 
 - **Does:** for 3 s, **12 stars** fall over a 6-block area (each ~40% of a Meteor).
 
@@ -124,7 +123,7 @@ You own 4. You equip 2.
 
 ### A1-alt B · Arcane Beam
 
-🔵 **Proposed** - pick A or B
+🟢 **Locked** (Skyy 2026-10-09: both alternatives kept)
 
 - **Does:** channel a **20-block beam** for up to 3 s.
 
@@ -162,7 +161,7 @@ You own 4. You equip 2.
 
 ### A2-alt · Frost Nova
 
-🔵 **Proposed**
+🟢 **Locked** (Skyy 2026-10-09)
 
 - **Does:** **freeze** enemies within 5 blocks for 2 s (a hit breaks it after 1 s).
 
@@ -234,9 +233,7 @@ Ideas - pick one. The Mage tree already has three lanes.
 
 ## 🟠 Open
 
-- Mage A2-alt (Frost Nova proposed).
-
-- A1-alt pair.
+- Nothing open right now (all ability picks locked 2026-10-09).
 
 &nbsp;
 
