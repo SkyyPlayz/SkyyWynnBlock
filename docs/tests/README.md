@@ -162,3 +162,6 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyySkills 0.4.29: pets get real XP (DEPLOYED 2026-10-09, backup deploy-20261009-1514) | [2026-10](2026-10.md) |
 | SkyyWorldGen 0.4: caves + lava caverns (proof world) (DEPLOYED 2026-10-09, backup deploy-20261009-1542) | [2026-10](2026-10.md) |
 | SkyyGear 0.2.15: mining armor sets (DEPLOYED 2026-10-09, backup deploy-20261009-1603) | [2026-10](2026-10.md) |
+| Ability R2+R3: HUD widget, Mana Barrier, Shield Bubble (DEPLOYED 2026-10-09, backup deploy-20261009-1631) | [2026-10](2026-10.md) |
+| SkyyTownProbe 0.2: quest engine probes (Q0) (DEPLOYED 2026-10-09, backup deploy-20261009-1631) | [2026-10](2026-10.md) |
+| SkyyPetProbe 0.1: pet engine probes P1-P10 (DEPLOYED 2026-10-09, backup deploy-20261009-1631) | [2026-10](2026-10.md) |
