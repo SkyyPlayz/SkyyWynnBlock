@@ -35,6 +35,8 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - LOOK SWAPS (research/Recolor-Plan.md): use The Armory's Alteration Table now - our own items join it with our own files, no override of theirs [yes]; our own Wardrobe station only if The Armory breaks on 0.7 or you want swaps from the menu / for coins [later]; get a tree look = craft the key-log set, then swap within the tier [yes]; farming = one design per crop [yes]; vanilla metal mining sets: 8 colours each, metal keeps its tier colour [8]; The Armory's 20 Iron colours = the miner's Iron looks [yes]; combat Armory looks on mining sets [no - different stats]; swap cost = The Armory's Alteration Kit (3 swaps) [yes]; recolour other pack mods' armor ourselves [no - only their own variants]. (Per-tree designs stay HAND-MADE by Quirk, as you asked.)
 
 
+- OWN SPECIALS (research/cloud/Own-Specials-Draft.md, 21 boss-drop weapons, every class ends at 4): keep all names + hooks [keep]; Monk 4 (not 3) [4]; The Counterclaim parry shield Warrior-only [yes]; drops 5% from their boss with x3 own-class lean, slayer bosses via the RNG meter [yes]; Legendary rarity + modifiers roll, drop as a Mystery Bag [yes]; office-humour names [keep]
+
 ### economy
 - Bazaar CLOTH and GEM prices [x2 per tier step, like metals / woods / crops - built into SkyyBazaar 0.1.4: cloth scraps 4 / 16 / 40 / 96 / 256 / 640, Diamond + Voidstone 120]
 - which late-game items can never be bought or sold (the market wall)? [list empty until you name items]
