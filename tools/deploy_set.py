@@ -17,13 +17,13 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.17"), ("SkyySacks", "0.7.14"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.10"), ("SkyySkills", "0.4.24"),
+    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.11"), ("SkyySkills", "0.4.24"),
     ("SkyyAccessories", "0.5.9"), ("SkyyClasses", "0.1.14"), ("SkyyMenu", "0.3.11"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.7"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.3"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
-    ("SkyyExploration", "0.2.3"),
+    ("SkyyExploration", "0.2.4"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
     ("SkyyGuilds", "0.1.6"),
@@ -53,6 +53,9 @@ SET = [
     # FLOOR (2026-10-07, Monk + Assassin playable): SkyyClasses 0.1.14 + SkyySkills 0.4.21 + SkyyProfiles 0.1.6 + SkyyMenu 0.3.9 deploy
     # TOGETHER (never Classes 0.1.14 without Skills 0.4.21 - the Monk would earn no XP). Roll back below them only if no Monk profile
     # exists; otherwise roll back all four together and expect classless Monk profiles (no items / coins / XP lost; Combat.Shaman kept).
+    # FLOOR (2026-10-08, loot round): never roll SkyyGear below 0.2.11 without first setting unid.bags=false and having players identify every
+    # mystery bag (bags become unknown items in 0.2.10). Never roll SkyyExploration below 0.2.4 without first setting luggage.enabled=false,
+    # visiting each world until /exploreadmin stats shows out 0 / claimed 0, then deleting Skyy_SkyyExploration/luggage/. SkyyMobs 0.1.5: no floor.
     # FLOOR (2026-10-08, class path trees): rolling SkyyTrees back to 0.3.2 loses players' path picks (nothing else; 0.3.2 reads the
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
@@ -61,7 +64,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.4"), ("SkyyWorldGen", "0.1"),
+    ("SkyyMobs", "0.1.5"), ("SkyyWorldGen", "0.1"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     ("SkyyTownProbe", "0.1"),
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
