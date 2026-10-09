@@ -77,3 +77,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
   [unlimited]
   - OPEN 2026-10-02 (same review): an idle partial stack only tops up once you use it. Also top up the stack in your selected hotbar slot
   even when idle? [only when used]
+- LOCKED 2026-10-09 (Skyy): "i see the omni bag, but no other bags in the crafting table" (bags unlock by collection tiers 1/3/5/7 - by design; the Omni recipe was not knowledge-gated) + "yes, hide the omni bag until unlocked (unlocked by unlocking all legendary bags" -> SkyySacks 0.7.15: Omni recipe hidden until the player knows all five Legendary bag recipes.
