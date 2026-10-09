@@ -65,8 +65,7 @@ purple of the bag swirl].
 ## Queue (check with Skyy before starting each)
 7. **Pets** (Blockbench, full models): 15 launch pets in Hytale chunky voxel style (research/cloud/Pets-Spec.md + research/cloud/pet-art/
    README.md for the list and the approved v2 look). The pet system is not built yet - ASK Skyy before starting.
-9. **Light armor (tier sets)** - NEW DIRECTION 2026-10-08 (docs/answered/gear.md): most armor will come from installed armor mods (e.g. The Armory) as mob drops, so our own armor sets are low priority - ask Skyy before any more armor work. Paused by Skyy ("we can work on the armor more later"); ask Skyy before touching it. Approved looks
-   are in the skywynn-art skill, section 3. A separate candidate dark-leather design is in Done (#3).
+9. **Armor** - DECIDED 2026-10-08 (docs/answered/gear.md): our own Light armor is DROPPED (combat armor = The Armory pack), MINING armor = vanilla metal sets (no art needed). Still OURS: FARMING (crop sets) + FORAGING (bark plates) armor - approved concept designs in research/cloud/gathering-armor-art/ + foraging-armor/; ask Skyy before starting them as full Blockbench items.
 
 ## Done
 ### 6. Monk claws - 7 metal tiers (2026-10-08)
