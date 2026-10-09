@@ -74,11 +74,6 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
       research/Mods-Folder-Survey.md "Welkin" section (cell grid ~470, jitter 90, ~80 gradient warp, Simplex tops faded by distance, noise
       underside). Write node-level HytaleGenerator JSON plans per zone (Zone 1-5), the gap width, cave band compression numbers, portal /
       dragon travel points, and a staged build plan for SkyyWorldGen 0.2+. Never copy Welkin or vanilla files.
-- [ ] **Pet core spec (slot pets)** -> `research/cloud/Pet-Core-Spec.md`. Inputs: research/Pets-Roster.md, docs/answered/pets.md, research/Tamework-Review.md
-      (BORROW: owned vs active cap, summon duration + resummon cooldown, auto-store on logout, revive cost + cooldown, Follow / Defend / Hold),
-      Forgotten Creatures / Better Mob Expansion pet candidates (research/Mods-Folder-Survey.md, research/Boss-Mods-Review.md). Slot 1 never fights,
-      slot 2 summon; per profile (tools/PROFILES-CONTRACT.md); shrunk vanilla models (Model.createScaledModel) + chibi art later; eggs (roaming
-      merchants sell eggs later - research/Mods-Folder-Survey.md Bio's Kobolds section). Build phases + probes needed.
 - [ ] **Element system spec** -> `research/cloud/Element-System-Spec.md`. Blocker for Spellblade Imbue + the shelved elemental weapons
       (research/classes/Spellblade.md "Elements" + docs/answered/gear.md). Five elements + statuses, how they show on gear (SkyyGear already rolls
       Raw Fire / Water / Earth / Thunder damage lines), resistances per mob, reactions (keep simple), which classes use which, UI colours.
@@ -91,3 +86,4 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 
 ## Done (delete after logging - see the rules above)
 - [x] Dynamic Seasons crash report draft - 2026-10-09 - `research/cloud/DynamicSeasons-Crash-Report.md`
+- [x] Pet core spec - 2026-10-09 - `research/cloud/Pet-Core-Spec.md`
