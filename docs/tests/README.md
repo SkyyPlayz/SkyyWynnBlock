@@ -151,3 +151,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyCollections 0.2.8: craft buttons, locked recipes, Mining bags from Cobble (DEPLOYED 2026-10-09, backup deploy-20261009-0737) | [2026-10](2026-10.md) |
 | Tool power + fortune (SkyyGear 0.2.12 + SkyySkills 0.4.26) (DEPLOYED 2026-10-09, backup deploy-20261009-0745) | [2026-10](2026-10.md) |
 | SkyyTrees 0.3.4: chop chain warnings fixed (DEPLOYED 2026-10-09, backup deploy-20261009-0752) | [2026-10](2026-10.md) |
+| SkyyGear 0.2.13: Crude weapon speed tiers + mace warnings (DEPLOYED 2026-10-09, backup deploy-20261009-0805) | [2026-10](2026-10.md) |
