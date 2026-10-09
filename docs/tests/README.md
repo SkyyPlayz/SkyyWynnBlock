@@ -147,3 +147,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyMerchants 0.1: roaming merchants (DEPLOYED 2026-10-09, backup deploy-20261009-0724) | [2026-10](2026-10.md) |
 | SkyySacks 0.7.16: bag hold pose (DEPLOYED 2026-10-09, backup deploy-20261009-0733) | [2026-10](2026-10.md) |
 | SkyyFishing 0.1.1: wooden T1 rod, bench uses bags (DEPLOYED 2026-10-09, backup deploy-20261009-0734) | [2026-10](2026-10.md) |
+| SkyyAuctions 0.1.3: sort + filters (DEPLOYED 2026-10-09, backup deploy-20261009-0736) | [2026-10](2026-10.md) |
