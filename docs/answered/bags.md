@@ -71,3 +71,9 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - LOCKED 2026-10-08 (Skyy, sparkles + gems): "3. yes 4. yes" -> vanilla portal sparkle particles on top of the swirl; Accessory Bag gems in the 5 accessory-line colours (kept on the toned-down bag).
 - LOCKED 2026-10-08 (Skyy, bag art v2 sheet): "as drawn, violet. start the bag round" -> the 5 type emblems stay as drawn; sparkles violet (SkyySack_PortalSparkle); wiring round SkyySacks + SkyyAccessories started.
 - LOCKED 2026-10-08 (Skyy, popup batch 4): carried bags of one type -> "Keep unlimited (Recommended)"; idle partial stack top-up -> "Only when used (Recommended)"; ACCESSORY TABLE -> "Drop it (Recommended)" (the Pocket Dimension Workbench tab covers it; spec closed).
+  Questions closed 2026-10-08 (verbatim):
+  - OPEN 2026-10-02 (from the SkyySacks 0.7.11 review): carried bags of one type now add up with NO limit, so e.g. 54 Normal bags hold more
+  than a Legendary. Keep unlimited (each extra bag costs a slot and a recipe), or a Server Setup cap on bags counted per type (e.g. 3)?
+  [unlimited]
+  - OPEN 2026-10-02 (same review): an idle partial stack only tops up once you use it. Also top up the stack in your selected hotbar slot
+  even when idle? [only when used]

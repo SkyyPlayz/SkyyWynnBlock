@@ -92,3 +92,6 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - LOCKED 2026-10-08 (Skyy, popup batch 4): in-combat Mana refill -> "Everyone (Recommended)" (revisit when abilities cost Mana).
 - LOCKED 2026-10-08 (Skyy, popup batch 5): live Server Setup test values -> "Keep pack defaults (Recommended)".
 - LOCKED 2026-10-08 (Skyy): "definetly add the +2 mana per level for physical classes." -> pack default mana.classPerLevel gains Warrior 2, Berserker 2, Archer 2, Monk 2, Assassin 2 (Priest 5, Mage 10 unchanged; Spellblade decided with its class build). Ships in the next SkyySkills round (with the Monk "Zen" rename) via a one-time migration that only adds missing class lines. Live today without a build: Server Setup > Skills > Overall and Mana > "Max Mana per class level".
+  Questions closed 2026-10-08 (verbatim):
+  - OPEN 2026-10-02 (SkyySkills 0.4.12 review): everyone has 10 base Mana, so Warriors / Archers also get the in-combat Mana refill. Limit it
+  to classes that use Mana (Mage, Priest)? [everyone - harmless today]

@@ -12,7 +12,7 @@ Review sheet as approved: `sheet.png` (mock hotbar at the top, then every item a
   ("Put on hotbar"); they cannot go in chests / trades / the Bazaar / AH.
 - Two kinds: **mirror** items (the same ability as its key - "Meteor" item = the Meteor on Ability 2) and **utility** items with no
   key of their own: **Loadout** (next saved rune loadout, later), **Hints** (replay the class tutorial), later pet / emote calls.
-- Design question 5 default: the two equipped mirrors + utility items. `Class-Ability-Shapes.md` question 10 default: a mirror item
+- Design question 5 default: the two equipped mirrors + utility items. `research/cloud/Class-Ability-Shapes.md` question 10 default: a mirror item
   casts the WALKING shape only.
 - Keys since then (`docs/answered/classes.md` line 153): 4 abilities, 2 primary on Ability 2 / 3, 2 alt on crouch + Ability 2 / 3.
   `OPEN-QUESTIONS.md` still asks "hotbar ability items still wanted as a backup way to cast? [no for now - keys only]" - Skyy's
