@@ -137,3 +137,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyySkills 0.4.24 - Wood wand signature (DEPLOYED 2026-10-08, backup deploy-20261008-1027) | [2026-10](2026-10.md) |
 | Accessory Bag icon: SkyyMenu 0.3.11 + SkyyAccessories 0.5.9 (DEPLOYED 2026-10-08, backup deploy-20261008-1132) | [2026-10](2026-10.md) |
 | The Armory switched on (DEPLOYED 2026-10-08, backup deploy-20261008-1837) | [2026-10](2026-10.md) |
+| SkyyFishing 0.1 - our fishing, stage 1 (DEPLOYED 2026-10-08, backup deploy-20261008-2018) | [2026-10](2026-10.md) |
