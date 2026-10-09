@@ -18,3 +18,10 @@ island. Then you battle and try to steal the enemy standard."
 ## Engine questions to probe later
 - Copying a player-built area (prefab save / paste API) into an instance world; mounted crossbow as a usable block / entity; flag carrier
   state + drop on death; instance per match; PvP toggles per instance.
+
+## More from Skyy (2026-10-09)
+- "I want guilds to be able to challenge each other and set rewards, so you can battle over loot and money" -> CHALLENGES with WAGERS:
+  a guild challenges another, both put up stakes (guild gold / coins / items) held in escrow by the server until the match ends; winner
+  takes the pot (escrow must be dupe-proof; Mythic / UT / Sets follow the market wall - decide if they can be wagered).
+- "I wana 1v1 guild battles, and group battles where guilds team up, for server wide events." -> MODES: 1v1 guild battles, and ALLIANCE
+  battles (several guilds team up per side) for server-wide events (scheduled, announced, bigger arena islands, event rewards).
