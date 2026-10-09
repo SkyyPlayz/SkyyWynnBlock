@@ -79,3 +79,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
   even when idle? [only when used]
 - LOCKED 2026-10-09 (Skyy): "i see the omni bag, but no other bags in the crafting table" (bags unlock by collection tiers 1/3/5/7 - by design; the Omni recipe was not knowledge-gated) + "yes, hide the omni bag until unlocked (unlocked by unlocking all legendary bags" -> SkyySacks 0.7.15: Omni recipe hidden until the player knows all five Legendary bag recipes.
 - LOCKED 2026-10-09 (Skyy, Collections page screenshot): "any unlocked recopies shown here should open in the crafter if i click it." -> SkyyCollections 0.2.8: unlocked recipe rewards are clickable and open the crafter at that recipe.
+- LOCKED 2026-10-09 (Skyy): "lets use fiber for T1 bags, not wool. make they easy to get." -> the five Normal (T1) bags: Plant Fiber (+ sticks), no wool / copper; default 20 Plant Fiber + 4 Sticks (SkyySacks 0.7.15).
