@@ -18,7 +18,7 @@ WORLD = "HUD mod"
 SET = [
     ("SkyyHud", "0.3.17"), ("SkyySacks", "0.7.14"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
     ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.5"), ("SkyyGear", "0.2.11"), ("SkyySkills", "0.4.25"),
-    ("SkyyAccessories", "0.5.9"), ("SkyyClasses", "0.1.14"), ("SkyyMenu", "0.3.11"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.7"),
+    ("SkyyAccessories", "0.5.9"), ("SkyyClasses", "0.1.14"), ("SkyyMenu", "0.3.12"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.7"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.3"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
