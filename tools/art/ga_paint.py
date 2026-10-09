@@ -80,6 +80,25 @@ RAMPS.update({
     LODEN: [(0.00, (18, 26, 22)), (0.20, (26, 38, 30)), (0.35, (36, 50, 38)), (0.50, (48, 64, 46)),
             (0.65, (62, 80, 56)), (0.80, (80, 98, 68)), (1.00, (112, 128, 92))],
 })
+# Ash (F1 Grove): hues sampled from the in-game Ash trunk / log end / hardwood planks / leaves (values only, own pixels):
+# dark plum-brown bark with lighter interlacing ridges, deep red-brown furrows, pale tan heartwood, the game's deep
+# blue-green ash leaves, straw-tan winged seed keys (samaras), cool slate cloth.
+ASH, ASHDK, ASHLEAF, SAMARA, ASHWOOD, SLATE = range(24, 30)
+MAT_NAMES += ["ash", "ashdark", "ashleaf", "samara", "ashwood", "slate"]
+RAMPS.update({
+    ASH: [(0.00, (28, 18, 16)), (0.20, (44, 28, 24)), (0.35, (58, 38, 32)), (0.50, (74, 50, 41)),
+          (0.65, (92, 64, 51)), (0.80, (114, 82, 64)), (1.00, (146, 112, 86))],
+    ASHDK: [(0.00, (16, 10, 10)), (0.25, (26, 16, 15)), (0.50, (38, 24, 21)), (0.75, (52, 33, 28)),
+            (1.00, (72, 48, 40))],
+    ASHLEAF: [(0.00, (10, 34, 24)), (0.20, (16, 52, 34)), (0.35, (22, 68, 44)), (0.50, (30, 86, 54)),
+              (0.65, (42, 104, 62)), (0.80, (60, 126, 74)), (1.00, (104, 162, 106))],
+    SAMARA: [(0.00, (70, 52, 30)), (0.25, (112, 88, 52)), (0.50, (150, 124, 78)), (0.75, (184, 160, 108)),
+             (1.00, (214, 196, 146))],
+    ASHWOOD: [(0.00, (70, 48, 36)), (0.20, (104, 76, 56)), (0.35, (130, 98, 72)), (0.50, (153, 122, 90)),
+              (0.65, (166, 138, 100)), (0.80, (180, 156, 114)), (1.00, (206, 188, 142))],
+    SLATE: [(0.00, (20, 24, 30)), (0.20, (30, 36, 44)), (0.35, (42, 50, 58)), (0.50, (56, 64, 72)),
+            (0.65, (72, 80, 88)), (0.80, (92, 100, 106)), (1.00, (126, 132, 136))],
+})
 WARM = np.array((104, 92, 64), float)       # sun-faded / worn bark tint
 QSTEP = 0.05                                # value quantisation -> flat painted clusters
 
@@ -296,7 +315,7 @@ def mottle(F, scale=7.0, amp=0.05, seed=3, levels=3):
 def wear(F, amount=0.5, scale=5.0, seed=11, thr=0.64):
     """warm scuffed patches on leather (blobs, not grain)."""
     n = vnoise(F.W + 31.7, scale, seed)
-    m = (n > thr) & np.isin(F.mat, [BARK, CLOTH, SAGE, UMBER, LODEN])
+    m = (n > thr) & np.isin(F.mat, [BARK, CLOTH, SAGE, UMBER, LODEN, SLATE])
     F.warm[m] = np.maximum(F.warm[m], amount * np.clip((n[m] - thr) / 0.12, 0.4, 1.0))
     return m
 
