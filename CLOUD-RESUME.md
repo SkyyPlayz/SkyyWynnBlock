@@ -72,8 +72,3 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
 ## Done (delete after logging - see the rules above)
-- [x] Dynamic Seasons crash report draft - 2026-10-09 - `research/cloud/DynamicSeasons-Crash-Report.md`
-- [x] Pet core spec - 2026-10-09 - `research/cloud/Pet-Core-Spec.md`
-- [x] Element system spec - 2026-10-09 - `research/cloud/Element-System-Spec.md`
-- [x] Class ability engine plan (Mage + Priest first) - 2026-10-09 - `research/cloud/Ability-Engine-Plan.md`
-- [x] Zone archipelago worldgen spec - 2026-10-09 - `research/cloud/Zone-Archipelago-Spec.md`
