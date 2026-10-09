@@ -105,7 +105,8 @@ SET = [
 PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "TheRedlotus:HyFishing", "BlueOrbit:DynamicSeasons",
                     "NoCube:[NoCube's] Orchard",
                     "dev.ninesliced:BetterMap",
-                    "LadyPaladra:TheArmory"]  # 2026-10-08 Skyy: "switch the armory on" - CC BY-NC (credit, never sell; PACK.md); combat armor + Warrior / Berserker / Assassin weapons + boss specials (research/Pack-Armor-Plan.md)  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
+                    "LadyPaladra:TheArmory",
+                    "Frah:Better Mob Expansion"]  # 2026-10-09 Skyy: test BME main mod (GPLv3, credit in PACK.md + server credits); Humans add-on stays OFF ("No guns")  # 2026-10-08 Skyy: "switch the armory on" - CC BY-NC (credit, never sell; PACK.md); combat armor + Warrior / Berserker / Assassin weapons + boss specials (research/Pack-Armor-Plan.md)  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
 # Advanced Farming was NOT added (Skyy 2026-10-06: out of date, no longer updated -> build its tools into our own mod).
 # Skyy mods that were MERGED into another mod and must be switched OFF in the world config on every deploy (their jar may stay in Mods;
 # a disabled key is not loaded). Without this, deploy_set only disables older versions of the SAME mod name, and a retired mod would keep

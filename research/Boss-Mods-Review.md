@@ -35,6 +35,6 @@ Skyy: "this could help for more mob verity, especially as we start making our ow
   Undead Antelope; oceans Shark, White Shark, Megalodon. Mini-bosses: Broodmother, Hellscourge, Elder Crocodile.
 - FIT: SkyyMobs bands use the same Env ids -> hostile BME mobs get zone levels + our mystery bags automatically (our own zone islands must
   use vanilla Env_Zone ids). Pet candidates: tortoises, fairy, butterfly, leopard, panther, bigfoot, imp, slimes, sharks.
-- RISKS: it REPLACES vanilla Groups/Vermin.json (only Broodmother - may change rats / snakes / spiders / scorpions behaviour) and the
+- RISKS: it REPLACES vanilla Vermin NPC group (only Broodmother - may change rats / snakes / spiders / scorpions behaviour) and the
   undead chicken / cow / pig; dense spawns with no config; Bandits + Hellscourge drop lots of bars (economy); 0.7 retest.
 - PLAN: main mod = stopgap variety for Zones 1-4 after a test + PACK.md row with credit; Humans later.
