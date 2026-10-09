@@ -74,9 +74,6 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
       research/Mods-Folder-Survey.md "Welkin" section (cell grid ~470, jitter 90, ~80 gradient warp, Simplex tops faded by distance, noise
       underside). Write node-level HytaleGenerator JSON plans per zone (Zone 1-5), the gap width, cave band compression numbers, portal /
       dragon travel points, and a staged build plan for SkyyWorldGen 0.2+. Never copy Welkin or vanilla files.
-- [ ] **Element system spec** -> `research/cloud/Element-System-Spec.md`. Blocker for Spellblade Imbue + the shelved elemental weapons
-      (research/classes/Spellblade.md "Elements" + docs/answered/gear.md). Five elements + statuses, how they show on gear (SkyyGear already rolls
-      Raw Fire / Water / Earth / Thunder damage lines), resistances per mob, reactions (keep simple), which classes use which, UI colours.
 - [ ] **Class ability engine plan (Mage + Priest first)** -> `research/cloud/Ability-Engine-Plan.md`: turn research/cloud/Class-Ability-Spec-Draft.md
       + research/Class-Power-Split.md (costs are Mana + Stamina by class split, affordable at unlock levels A1 1 / A2 10 / A2-alt 20 / A1-alt 30 -
       docs/answered/classes.md 2026-10-09) + research/cloud/Ability-Input-Design.md into a build plan: which mod, the 4-ability / 2-primary +
@@ -87,3 +84,4 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 ## Done (delete after logging - see the rules above)
 - [x] Dynamic Seasons crash report draft - 2026-10-09 - `research/cloud/DynamicSeasons-Crash-Report.md`
 - [x] Pet core spec - 2026-10-09 - `research/cloud/Pet-Core-Spec.md`
+- [x] Element system spec - 2026-10-09 - `research/cloud/Element-System-Spec.md`
