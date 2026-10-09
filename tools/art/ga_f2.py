@@ -410,7 +410,7 @@ def build(T):
     HANDS_ADD = [
         dict(name="R-Sprig", bone="R-Forearm", pivot=(-6.3, 3.0, 2.0), rot=(0, -90, 0), size=T.LEAF_SIZE,
              offset=(0, T.LEAF_SIZE[1] / 2.0, 0), mat=LEAF, paint=T.p_leaf, double=True, mirror=True),
-    ]
+    ] + list(getattr(T, "EXTRA_HANDS", ()))
 
     # ---------------- LEGS
     def p_breeches(F):
@@ -486,5 +486,5 @@ def build(T):
         "Head": derive(O.HEAD, HEAD_OVR, add=HEAD_ADD),
         "Chest": derive(O.CHEST, CHEST_OVR, drop=("Acorn", "AcornCap"), add=CHEST_ADD),
         "Hands": derive(O.HANDS, HANDS_OVR, add=HANDS_ADD),
-        "Legs": derive(O.LEGS, LEGS_OVR),
+        "Legs": derive(O.LEGS, LEGS_OVR, add=list(getattr(T, "EXTRA_LEGS", ()))),
     }

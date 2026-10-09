@@ -97,7 +97,7 @@ def build_sheet():
     d = ImageDraw.Draw(sheet)
 
     text(d, (M, y_title), "%s  -  Foraging Armor" % TREE.upper(), 68)
-    look = {"Oak": "oak bark + oak leaves", "Birch": "birch bark + birch leaves + catkins", "Beech": "beech wood + beech leaves + beechnut husk", "Ash": "ash wood + ash leaves + seed keys", "Aspen": "aspen wood + golden aspen leaves", "Maple": "maple wood + crimson leaves + seed pair"}.get(TREE, TREE.lower() + " bark")
+    look = {"Oak": "oak bark + oak leaves", "Birch": "birch bark + birch leaves + catkins", "Beech": "beech wood + beech leaves + beechnut husk", "Ash": "ash wood + ash leaves + seed keys", "Aspen": "aspen wood + golden aspen leaves", "Maple": "maple wood + crimson leaves + seed pair", "Azure": "azure wood + blue leaves + glowing petals"}.get(TREE, TREE.lower() + " bark")
     text(d, (M, y_title + 84), "Tier 1: Grove  |  Head, Chest, Hands, Legs  |  " + look, 36, False, SUB)
 
     def col_x(i):

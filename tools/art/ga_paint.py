@@ -135,6 +135,26 @@ RAMPS.update({
     MUSTARD: [(0.00, (40, 26, 12)), (0.20, (64, 42, 16)), (0.35, (90, 60, 22)), (0.50, (118, 82, 30)),
               (0.65, (142, 102, 38)), (0.80, (164, 124, 52)), (1.00, (198, 160, 88))],
 })
+# Azure (v3): v1 colours - hues sampled from the in-game Azure trunk / log end / leaves / glowing petals (own pixels): plum-purple
+# bark with swirling grain, indigo cloth - with only the parts that were already blue a little brighter (Skyy: "Take the V1 azure,
+# and make the parts that are already blue a little brighter blue"): brighter blue leaves, brighter blue-silver heartwood,
+# brighter cyan petals.
+AZURE, AZUREDK, ALEAF, AWOOD, PETAL, INDIGO = range(41, 47)
+MAT_NAMES += ["azure", "azuredark", "azureleaf", "azurewood", "azurepetal", "indigo"]
+RAMPS.update({
+    AZURE: [(0.00, (20, 11, 18)), (0.20, (36, 20, 30)), (0.35, (52, 29, 41)), (0.50, (70, 39, 53)),
+            (0.65, (86, 49, 64)), (0.80, (104, 62, 78)), (1.00, (134, 88, 106))],
+    AZUREDK: [(0.00, (10, 6, 9)), (0.25, (18, 10, 15)), (0.50, (28, 16, 22)), (0.75, (40, 23, 31)),
+              (1.00, (58, 34, 44))],
+    ALEAF: [(0.00, (10, 36, 64)), (0.20, (16, 58, 96)), (0.35, (24, 82, 128)), (0.50, (32, 106, 156)),
+            (0.65, (42, 130, 180)), (0.80, (58, 154, 200)), (1.00, (110, 196, 226))],
+    AWOOD: [(0.00, (48, 48, 68)), (0.20, (72, 76, 102)), (0.35, (96, 102, 132)), (0.50, (120, 128, 160)),
+            (0.65, (138, 148, 178)), (0.80, (156, 166, 196)), (1.00, (188, 198, 224))],
+    PETAL: [(0.00, (14, 60, 96)), (0.25, (28, 116, 164)), (0.50, (48, 168, 212)), (0.75, (96, 218, 240)),
+            (1.00, (164, 244, 250))],
+    INDIGO: [(0.00, (14, 14, 30)), (0.20, (22, 22, 46)), (0.35, (30, 32, 62)), (0.50, (42, 44, 80)),
+             (0.65, (56, 58, 98)), (0.80, (74, 76, 118)), (1.00, (108, 110, 150))],
+})
 WARM = np.array((104, 92, 64), float)       # sun-faded / worn bark tint
 QSTEP = 0.05                                # value quantisation -> flat painted clusters
 

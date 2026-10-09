@@ -237,6 +237,32 @@ Defaults kept: mustard cloth, maple leaf + seed pair mark, `F2_Autumn` folder, g
 - Checked like F1 (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no validator issues, all 4
   pieces attach to the vanilla player). Not checked in game.
 
+## AZURE (F2 Autumn)
+
+Status: APPROVED by Skyy 2026-10-09 (v3): "Yes, Azure v3 looks good, commit it". Not yet seen in game.
+Earlier feedback: v1 "They look great! A little more blue on the azure, and we should be good" / v2 "Thats a little too much.
+Take the V1 azure, and make the parts that are already blue a little brighter blue, and add some more leaves to the design."
+
+![sheet](sheet-azure.png)
+
+| What | Path |
+|---|---|
+| Models + textures | `Common/Items/Armors/SkyyForaging/F2_Autumn/Azure/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png` |
+| Icons (64x64) | `Common/Icons/ItemsGenerated/Armor_Foraging_Azure_{Head,Chest,Hands,Legs}.png` |
+| Blockbench projects | `source/F2_Autumn/Azure/{Head,Chest,Hands,Legs}.bbmodel` |
+| Review sheet | `sheet-azure.png` |
+
+- Colours start from the in-game Azure wood (hues sampled from the game's Azure trunk / log end / leaves / glowing
+  petals; our own pixels): plum-purple bark with swirling diagonal grain, indigo cloth; the blue parts (azure leaves,
+  blue-silver heartwood, glowing cyan petals) a little brighter in v3.
+- More leaves (v3): 12 small flat azure leaves - helmet crown, collar, shoulder caps, belt, bracers, knees.
+- Shape: CRESCENT plates (each lower edge curves up between sharp points), curved crescent crown points.
+- Azure mark: a spray of 3 GLOWING AZURE PETALS rising from the knot-boss belt clasp (2 blue leaves hang below it), and a
+  petal spray at the left temple.
+- Size: 48 boxes + 23 quads. Textures Head 96x128, Chest 128x96, Hands 96x32, Legs 64x128.
+- Checked like F1 (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no validator issues, all 4
+  pieces attach to the vanilla player). Not checked in game.
+
 ## Rebuild
 ```
 GA_DESIGN=ga_oak   python3 tools/art/make_foraging_armor.py      # models + textures (design ga_<tree>.py, painter ga_paint.py)
@@ -245,6 +271,7 @@ GA_DESIGN=ga_beech python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_ash   python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_aspen python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_maple python3 tools/art/make_foraging_armor.py   # F2 trees: tier upgrades in ga_f2.py
+GA_DESIGN=ga_azure python3 tools/art/make_foraging_armor.py
 python3 tools/art/make_foraging_icons.py art/gathering-armor F1_Grove Birch
 python3 tools/art/make_foraging_sheet.py art/gathering-armor F1_Grove Birch
 GA_TREE=Birch python3 tools/art/validate_foraging.py
