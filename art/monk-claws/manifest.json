@@ -1,0 +1,220 @@
+{
+  "item_family": "SkyyArmory_Fist_Claws",
+  "version": "v1 (skeletal frame redesign, 2026-10-08)",
+  "items": [
+    {
+      "item": "SkyyArmory_Fist_Claws_Copper",
+      "tier": "Copper",
+      "level_band": "10-18",
+      "model": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Copper.blockymodel",
+      "texture": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Copper_Texture.png",
+      "icon": "Common/Icons/ItemsGenerated/SkyyArmory_Fist_Claws_Copper.png",
+      "icon_size": [
+        64,
+        64
+      ],
+      "texture_size": [
+        64,
+        128
+      ]
+    },
+    {
+      "item": "SkyyArmory_Fist_Claws_Iron",
+      "tier": "Iron",
+      "level_band": "15-23",
+      "model": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Iron.blockymodel",
+      "texture": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Iron_Texture.png",
+      "icon": "Common/Icons/ItemsGenerated/SkyyArmory_Fist_Claws_Iron.png",
+      "icon_size": [
+        64,
+        64
+      ],
+      "texture_size": [
+        64,
+        128
+      ]
+    },
+    {
+      "item": "SkyyArmory_Fist_Claws_Thorium",
+      "tier": "Thorium",
+      "level_band": "20-28",
+      "model": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Thorium.blockymodel",
+      "texture": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Thorium_Texture.png",
+      "icon": "Common/Icons/ItemsGenerated/SkyyArmory_Fist_Claws_Thorium.png",
+      "icon_size": [
+        64,
+        64
+      ],
+      "texture_size": [
+        64,
+        128
+      ]
+    },
+    {
+      "item": "SkyyArmory_Fist_Claws_Cobalt",
+      "tier": "Cobalt",
+      "level_band": "25-38",
+      "model": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Cobalt.blockymodel",
+      "texture": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Cobalt_Texture.png",
+      "icon": "Common/Icons/ItemsGenerated/SkyyArmory_Fist_Claws_Cobalt.png",
+      "icon_size": [
+        64,
+        64
+      ],
+      "texture_size": [
+        64,
+        128
+      ]
+    },
+    {
+      "item": "SkyyArmory_Fist_Claws_Adamantite",
+      "tier": "Adamantite",
+      "level_band": "35-43",
+      "model": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Adamantite.blockymodel",
+      "texture": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Adamantite_Texture.png",
+      "icon": "Common/Icons/ItemsGenerated/SkyyArmory_Fist_Claws_Adamantite.png",
+      "icon_size": [
+        64,
+        64
+      ],
+      "texture_size": [
+        64,
+        128
+      ]
+    },
+    {
+      "item": "SkyyArmory_Fist_Claws_Mithril",
+      "tier": "Mithril",
+      "level_band": "40-49",
+      "model": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Mithril.blockymodel",
+      "texture": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Mithril_Texture.png",
+      "icon": "Common/Icons/ItemsGenerated/SkyyArmory_Fist_Claws_Mithril.png",
+      "icon_size": [
+        64,
+        64
+      ],
+      "texture_size": [
+        64,
+        128
+      ]
+    },
+    {
+      "item": "SkyyArmory_Fist_Claws_Onyxium",
+      "tier": "Onyxium",
+      "level_band": "50+",
+      "model": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Onyxium.blockymodel",
+      "texture": "Common/Items/Weapons/Fist/SkyyArmory_Claws_Onyxium_Texture.png",
+      "icon": "Common/Icons/ItemsGenerated/SkyyArmory_Fist_Claws_Onyxium.png",
+      "icon_size": [
+        64,
+        64
+      ],
+      "texture_size": [
+        64,
+        128
+      ]
+    }
+  ],
+  "nodes": [
+    "R-Attachment",
+    "Handle",
+    "Thumb",
+    "ThumbBone",
+    "PinkyBone",
+    "BackPlate",
+    "Bone1",
+    "Knuckle1",
+    "FingerMid1",
+    "FingerTip1",
+    "Bone2",
+    "Knuckle2",
+    "FingerMid2",
+    "FingerTip2",
+    "Bone3",
+    "Knuckle3",
+    "FingerMid3",
+    "FingerTip3",
+    "Bone4",
+    "Knuckle4",
+    "FingerMid4",
+    "FingerTip4",
+    "Blade1_1",
+    "Blade1_2",
+    "Blade1_3",
+    "Blade1_4",
+    "Blade1_5",
+    "Blade1_6",
+    "Blade2_1",
+    "Blade2_2",
+    "Blade2_3",
+    "Blade2_4",
+    "Blade2_5",
+    "Blade2_6",
+    "Blade3_1",
+    "Blade3_2",
+    "Blade3_3",
+    "Blade3_4",
+    "Blade3_5",
+    "Blade3_6",
+    "CuffRing",
+    "Wrap",
+    "Cord",
+    "Knot",
+    "EndRim"
+  ],
+  "boxes": 44,
+  "triangles": 528,
+  "texture_size": [
+    64,
+    128
+  ],
+  "animations": [
+    {
+      "path": "Common/Items/Weapons/Animations/SkyyArmory_Claws/SkyyArmory_Claws_Extend.blockyanim",
+      "name": "Claws_Extend",
+      "frames": 24,
+      "fps": 60,
+      "seconds": 0.4,
+      "holdLastKeyframe": true,
+      "nodes": [
+        "Blade1_1",
+        "Blade1_2",
+        "Blade1_3",
+        "Blade1_4",
+        "Blade1_5",
+        "Blade1_6",
+        "Blade2_1",
+        "Blade2_2",
+        "Blade2_3",
+        "Blade2_4",
+        "Blade2_5",
+        "Blade2_6",
+        "Blade3_1",
+        "Blade3_2",
+        "Blade3_3",
+        "Blade3_4",
+        "Blade3_5",
+        "Blade3_6"
+      ]
+    }
+  ],
+  "attach": {
+    "root": "R-Attachment (isPiece, held-weapon frame like tools/art/make_fists.py)",
+    "axes": "+z knuckles/blade direction, -z wrist, -x back of hand, +x palm, +y thumb side",
+    "glove_body_node": "Handle (so dagger-template particles with TargetNodeName Handle find it)",
+    "blade_tips": [
+      "Blade1_6",
+      "Blade2_6",
+      "Blade3_6"
+    ],
+    "blade_roots": [
+      "Blade1_1",
+      "Blade2_1",
+      "Blade3_1"
+    ]
+  },
+  "icon_view": "rendered by tools/art/make_monk_claws.py render_icon (orthographic, back of hand + pinky side, blades up-right); IconProperties for the item JSON not fitted (UNVERIFIED, local session)",
+  "blockbench_check": "all 7 open in Blockbench 5.2.1 + Hytale Models 0.10.0 as hytale_character, 45 groups / 44 cubes, texture 64x128 auto-loaded, Validator: no errors or warnings; Claws_Extend auto-loads (18 animators, all bound) and plays (stretch + visibility + position)",
+  "deterministic": true,
+  "model_note": "the 7 .blockymodel files are identical (one geometry); only the _Texture.png differs per tier"
+}

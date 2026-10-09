@@ -63,16 +63,26 @@ One `sheet.png` with all six + names, manifest with sizes and node names. Origin
 purple of the bag swirl].
 
 ## Queue (check with Skyy before starting each)
-6. **Monk claws** (Blockbench, full items): Wolverine-style long blades from the knuckles on a black LEATHER glove (skywynn-art skill,
-   section 3: "CLAWS = Wolverine-style long blades from the knuckles on a black LEATHER glove"), one per metal tier Copper ... Onyxium
-   in the shared metal tier colours. Skyy chose "wraps + gauntlets only" for now, so ASK Skyy before starting. Model like the vanilla
-   fist / dagger items (look at Assets.zip `Common/Items/Weapons/...`), icon 64x64 per tier.
 7. **Pets** (Blockbench, full models): 15 launch pets in Hytale chunky voxel style (research/cloud/Pets-Spec.md + research/cloud/pet-art/
    README.md for the list and the approved v2 look). The pet system is not built yet - ASK Skyy before starting.
 9. **Light armor (tier sets)** - NEW DIRECTION 2026-10-08 (docs/answered/gear.md): most armor will come from installed armor mods (e.g. The Armory) as mob drops, so our own armor sets are low priority - ask Skyy before any more armor work. Paused by Skyy ("we can work on the armor more later"); ask Skyy before touching it. Approved looks
    are in the skywynn-art skill, section 3. A separate candidate dark-leather design is in Done (#3).
 
 ## Done
+### 6. Monk claws - 7 metal tiers (2026-10-08)
+- Folder: `art/monk-claws/` - `Common/Items/Weapons/Fist/SkyyArmory_Claws_<Tier>.blockymodel` + `_Texture.png` (64x128) and icons
+  `Common/Icons/ItemsGenerated/SkyyArmory_Fist_Claws_<Tier>.png` (64x64) for Copper, Iron, Thorium, Cobalt, Adamantite, Mithril,
+  Onyxium; optional equip animation `Common/Items/Weapons/Animations/SkyyArmory_Claws/SkyyArmory_Claws_Extend.blockyanim` (0.4 s, holds),
+  `source/*.bbmodel`, `sheet.png`, `manifest.json`, `README.md`. Scripts: `tools/art/make_monk_claws.py`, `make_monk_claws_sheet.py`,
+  `mc_render.py`, `bb_validate_claws.js`. Same ids / paths as the local `models-local/art/fists` claws, so they replace those.
+- Redesign (original, own palettes): black leather fist glove under a metal skeletal frame (carpal plate with a saffron Monk diamond,
+  4 finger bones, knuckle caps, finger segments), 3 long curved stepped blades from between the knuckles (middle one longest), studded
+  wrist cuff + wound leather strap + saffron cord. Mithril gold trim, Onyxium black-violet. 44 boxes / 528 tris. Skyy's reference
+  picture stays local (not committed). Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0 (Validator: no errors / warnings).
+- Skyy's answers, word for word: "Monk claws next, but they need a redesign to look like this (with claws out. Ignore the collapse
+  stages, unless you want to animate them popping out when you equip them.)" / "Yes, the Monk claws look good, commit them"
+- Not yet seen in game. UNVERIFIED: equip-animation trigger, IconProperties, left-hand mirroring (see README).
+
 ### 8. Hotbar ability item icons (2026-10-08)
 - Folder: `art/hotbar-items/` - 37 icons (64x64) under `Common/Icons/ItemsGenerated/`: 35 mirror items
   `SkyyClasses_AbilityItem_<Class>_<Ability>.png` (the approved ability glyph on a square class-rimmed tablet with visible thickness,
