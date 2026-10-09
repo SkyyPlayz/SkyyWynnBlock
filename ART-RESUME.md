@@ -67,7 +67,7 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   Same bark-plate family look (approved concept), each tree its own variation; trees of one tier share stats and players swap looks at an
   alteration station later. Start with F1 Oak (key log), then the rest of F1, one tree per commit; show Skyy each sheet. Paths use the
   tree name: `SkyyForaging/<Tier>/<Tree>/<Piece>.blockymodel`, icons `Armor_Foraging_<Tree>_<Piece>.png`. Orchard trees: later.
-  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen. F2 AUTUMN COMPLETE (2/2, 2026-10-09): Maple, Azure. F3 Savanna: Gumboab, Dry DONE (Bottletree, Palo held for a colour fix). F4 Northern: Fir, Cedar DONE (Redwood, Spiral held for a colour fix); see Done.
+  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen. F2 AUTUMN COMPLETE (2/2, 2026-10-09): Maple, Azure. F3 Savanna: Gumboab, Dry DONE (Bottletree, Palo held for a colour fix). F4 Northern: Fir, Cedar, Poisoned DONE (Redwood, Spiral held for a colour fix); see Done.
   **Next: colour-fixed v2 re-review - Bottletree, Palo (F3), Redwood, Spiral (F4)** (approved v1s were drawn from web icons; the Assets.zip check on 2026-10-09 found them too dark / off - review/<tree>-v2.png); then **F5 Wastes** (Sallow, Burnt, Petrified, Bamboo, Camphor, Banyan, Jungle, Blue Fig, Fire, Crystalwood; shared `ga_f5.py`); START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game
   wood variant." - sample the tree's log / planks / leaves colours in Assets.zip; Beech v1
   in made-up colours read as "iron"). Reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter,
@@ -141,6 +141,15 @@ purple of the bag swirl].
   Skyy's answers, word for word: "fix pebble." / "Yes, the Pebble fix looks good, commit it"
 
 ## Done
+### 26. Foraging armor F4 Northern - Poisoned (2026-10-09)
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F4_Northern/Poisoned/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`,
+  icons `Common/Icons/ItemsGenerated/Armor_Foraging_Poisoned_<Piece>.png` (64), `source/F4_Northern/Poisoned/*.bbmodel`, `sheet-poisoned.png`;
+  `manifest.json` + `README.md` updated. Scripts: `ga_poisoned.py` (new). All earlier sets rebuild byte-identical.
+- Look: colours from the in-game Poisoned wood (checked against Assets.zip; own pixels): near-black purple bark with glowing yellow-green cracks, sickly olive heartwood, violet leaves, dark moss cloth; BARBED-HOOK plates, two-prong crown points. Mark: a violet THORN LEAF + TOXIC DROP.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0.
+- Skyy's answer, word for word: "all look great! commit all"
+- Defaults kept: cloth colour, mark, plate edge as drafted.
+- Not yet seen in game. No item / recipe JSON (art only).
 ### 25. Foraging armor F4 Northern - Cedar (2026-10-09)
 - Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F4_Northern/Cedar/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`,
   icons `Common/Icons/ItemsGenerated/Armor_Foraging_Cedar_<Piece>.png` (64), `source/F4_Northern/Cedar/*.bbmodel`, `sheet-cedar.png`;

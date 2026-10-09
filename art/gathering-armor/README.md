@@ -297,6 +297,7 @@ Skyy 2026-10-09 ("all look great! commit all"). Not seen in game.
 |---|---|---|---|---|
 | Fir | very dark brown, rough flakes | fir tiers (wide V + point) | little fir tree | oatmeal wool |
 | Cedar | orange-brown fibre strips | pointed arches | cedar rose | burgundy |
+| Poisoned | near-black purple, glowing yellow-green cracks | barbed hooks | violet thorn leaf + toxic drop | dark moss |
 
 Files: `Common/Items/Armors/SkyyForaging/F4_Northern/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`,
 `source/F4_Northern/<Tree>/`, `sheet-<tree>.png`. Each 65 boxes + 9 quads.
