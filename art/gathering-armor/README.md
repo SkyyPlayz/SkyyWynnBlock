@@ -70,6 +70,10 @@ Mirrored L-/R- parts share texels (negative stretch, no mirror flag). Original g
 
 ## BIRCH (F1 Grove)
 
+**v2 (2026-10-09, APPROVED by Skyy: "they all look great!"):** repainted in the in-game Birch wood colours (same Skyy quotes as
+Oak v2): warm cream bark with soft vertical fibre streaks, grey-brown lenticels and knots (softer than v1's black),
+pale tan heartwood, the game's lime yellow-green birch leaves. Same models, shapes and catkin mark (textures only).
+
 Status: APPROVED by Skyy 2026-10-09: "Yes, the Birch armor looks good, commit it". Not yet seen in game.
 Defaults kept: separate models per tree, catkins as the mark, rounded edges, vine + faint sap kept.
 

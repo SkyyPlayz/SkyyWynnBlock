@@ -31,16 +31,24 @@ def birch_base(F, seed=0, lent=1.0, knots=True):
     band = np.floor((vert + 5 * hash2(np.floor(h / 6).astype(np.int64), np.full(h.shape, 3, np.int64), seed)) / 4.0)
     lvl = np.floor(hash2(band.astype(np.int64), np.full(h.shape, 9, np.int64), seed) * 3) - 1
     F.val[m0] += 0.035 * lvl[m0]
+    # v2: soft vertical fibre streaks like the in-game birch log (grain reads as wood, not stone)
+    S = np.stack([h * 1.0, vert * 0.12, np.full(h.shape, 5.0 * seed)], -1)
+    fs = np.round((P.vnoise(S, 2.0, 60 + seed) - 0.5) * 4) / 4
+    F.val[m0] += 0.07 * fs[m0]
+    colv = np.floor(h).astype(np.int64)
+    segv = np.floor((vert + 7 * hash2(colv, np.zeros_like(colv), seed + 14)) / 7).astype(np.int64)
+    streak = (hash2(colv, segv, seed + 15) < 0.10) & m0
+    F.val[streak] -= 0.07
     # lenticels: 1-texel-tall horizontal dashes, 2-4 long, on about every other row
     r = np.floor(vert + 0.01).astype(np.int64)
-    rowok = hash2(r, np.full_like(r, 1), seed + 2) < 0.45
+    rowok = hash2(r, np.full_like(r, 1), seed + 2) < 0.32
     L = 3
     cell = np.floor((h + 11 * hash2(r, np.full_like(r, 4), seed)) / (L + 3)).astype(np.int64)
     within = np.mod(h + 11 * hash2(r, np.full_like(r, 4), seed), L + 3)
     dash = rowok & (hash2(cell, r, seed + 5) < 0.5 * lent) & (within < 2 + np.floor(2 * hash2(cell, r, seed + 6)))
     d = dash & m0
     F.mat[d] = BIRCHDK
-    F.val[d] = 0.12
+    F.val[d] = 0.25
     below = np.zeros_like(d)
     # light texel under each dash (papery lip)
     if F.is_side():
@@ -49,12 +57,12 @@ def birch_base(F, seed=0, lent=1.0, knots=True):
     if knots:
         # knot eyes: dark wedge shapes on a coarse grid
         gx = np.floor(h / 9).astype(np.int64); gy = np.floor(vert / 9).astype(np.int64)
-        has = hash2(gx, gy, seed + 7) < 0.22
+        has = hash2(gx, gy, seed + 7) < 0.16
         cx = gx * 9 + 2 + 5 * hash2(gx, gy, seed + 8); cy = gy * 9 + 2 + 5 * hash2(gx, gy, seed + 9)
         dx = np.abs(h - cx); dy = np.abs(vert - cy)
         eye = has & (dy < 1.01) & (dx < 3.2 - 1.6 * dy) & m0
         F.mat[eye] = BIRCHDK
-        F.val[eye] = 0.0
+        F.val[eye] = 0.08
         F.val[eye & (dx < 0.8)] -= 0.08
 
 

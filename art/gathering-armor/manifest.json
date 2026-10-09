@@ -732,7 +732,7 @@
    "tree": "Birch",
    "item_id_prefix_suggestion": "Armor_Foraging_Birch",
    "sheet": "sheet-birch.png",
-   "status": "approved by Skyy 2026-10-09 (\"Yes, the Birch armor looks good, commit it\"); NOT verified in game",
+   "status": "v2 (in-game Birch wood colours) approved by Skyy 2026-10-09 (\"they all look great!\"); v1 approved 2026-10-09 (\"Yes, the Birch armor looks good, commit it\"); NOT verified in game",
    "totals": {
     "boxes": 48,
     "quads": 11
@@ -2130,8 +2130,8 @@
   },
   {
    "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Birch_Chest.png",
-   "bytes": 6101,
-   "sha256": "0bb23ff5e4d863f0db14a981c157e0e32e569495fa820fd8c160cadc1e89cce8",
+   "bytes": 5843,
+   "sha256": "708d99b879d5f4de313d84b9c64ad49f1b9893b67a30432cf3783d59b78c8608",
    "image_size": [
     64,
     64
@@ -2139,8 +2139,8 @@
   },
   {
    "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Birch_Hands.png",
-   "bytes": 6624,
-   "sha256": "e677d9db4509369fb0e638e613be48955a00229385641d12af4695918ee69231",
+   "bytes": 6548,
+   "sha256": "2a7cbfec48f35fae9987ade414923152572f1fcbc8af2ac89e8c74710c894bd2",
    "image_size": [
     64,
     64
@@ -2148,8 +2148,8 @@
   },
   {
    "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Birch_Head.png",
-   "bytes": 4834,
-   "sha256": "61a3173b170c9234063c4a44ff1e6784b852bd0fb4f0f1653fc615f0143a5b03",
+   "bytes": 4722,
+   "sha256": "5a34b8c04805c2243600245a02eb4615e331cd5e04363cc9a4067a2304c79e53",
    "image_size": [
     64,
     64
@@ -2157,8 +2157,8 @@
   },
   {
    "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Birch_Legs.png",
-   "bytes": 3514,
-   "sha256": "93f4f2b3a2bd5d1e976fcef7e0392bacc151f6e502bbeda638fab8e186a5a3ac",
+   "bytes": 3381,
+   "sha256": "8be95173e7ba35d47825c0d808e8cc5537b1d696418cd310c48df1c25467376b",
    "image_size": [
     64,
     64
@@ -2263,8 +2263,8 @@
   },
   {
    "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Birch/Chest_Texture.png",
-   "bytes": 15736,
-   "sha256": "a95f122b82dc605d4c4b488526fdd6ca09ad7d140d7d8fe55a5fa1388c913c01",
+   "bytes": 15839,
+   "sha256": "f9a9e84431529ce6f6e5eeab193eb45449cff2b347eaac7bc20ab3a0eaaf1096",
    "image_size": [
     96,
     128
@@ -2277,8 +2277,8 @@
   },
   {
    "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Birch/Hands_Texture.png",
-   "bytes": 4435,
-   "sha256": "ee54641c65276aee0e49d1e4c87324d2e0e6d4e13893c454573ca462a0ac2c00",
+   "bytes": 4658,
+   "sha256": "12a72694129d253c370d321916a69e3f992935a01a3f118cfe53e22c8a160b8d",
    "image_size": [
     96,
     32
@@ -2291,8 +2291,8 @@
   },
   {
    "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Birch/Head_Texture.png",
-   "bytes": 9322,
-   "sha256": "32711c7198b1051abb466d8aaa67d249ec33ed522c0890fde7099fc7cd624dbd",
+   "bytes": 10398,
+   "sha256": "0a57d2c109189ab3cf199631d531e9fc3dbe60ec7f6d29a3902e83b5feb0b56d",
    "image_size": [
     96,
     128
@@ -2305,8 +2305,8 @@
   },
   {
    "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Birch/Legs_Texture.png",
-   "bytes": 5655,
-   "sha256": "8bc3b048de45f40033316f3cc183fe45d3208a2b09037660dd182868d4ae33cd",
+   "bytes": 5744,
+   "sha256": "d427044b234dcb90bba90a6800771842eba24f57e376def2a0e9ac212ce0e5be",
    "image_size": [
     96,
     64
@@ -2370,8 +2370,8 @@
   },
   {
    "path": "README.md",
-   "bytes": 8878,
-   "sha256": "cf044b421f933dd2ba23da2c8a58928a167d4a36aab417bcbd4d58a42ae097f4"
+   "bytes": 9239,
+   "sha256": "0a9ce6d8b743d3df20fc6cbbfabf678203ad732642c0f2217f2bf1f6d1270c53"
   },
   {
    "path": "sheet-beech.png",
@@ -2384,8 +2384,8 @@
   },
   {
    "path": "sheet-birch.png",
-   "bytes": 1284561,
-   "sha256": "20fcba0b847cebbbd9f0a0f07e9731e4c17fc0298901dedfae4cecb5819a4f88",
+   "bytes": 1228699,
+   "sha256": "f78c4e098b26f235867d9a4789ee8e55faaeb678546cd58a0950a13a14c762ab",
    "image_size": [
     2370,
     3076
@@ -2422,23 +2422,23 @@
   },
   {
    "path": "source/F1_Grove/Birch/Chest.bbmodel",
-   "bytes": 53131,
-   "sha256": "cc91dee467e35036f3750506b4fd8821c14167a5e972c856078422e2a0a1b0bd"
+   "bytes": 53255,
+   "sha256": "69c1f596ab1e164be1b121245d9d74a00d648cbfe89832104388e0c0144343ad"
   },
   {
    "path": "source/F1_Grove/Birch/Hands.bbmodel",
-   "bytes": 20413,
-   "sha256": "97749aff937da54f0e8570c2b871e256f1e5939e6a7fbde6f38d5907951d5b25"
+   "bytes": 20701,
+   "sha256": "19191b749e8c145cbef4f1aaef879fc43d05d4283f54deeb93434c6aa99862b9"
   },
   {
    "path": "source/F1_Grove/Birch/Head.bbmodel",
-   "bytes": 29723,
-   "sha256": "2683f3b211fb2b23d827d1003f86d42c700e5a2b7a3789ff0e2438ad1792d46c"
+   "bytes": 31523,
+   "sha256": "e43e921b4b7fe64cff53d3ad25ad98a77b8c23083e253f5747cc6430600f07ae"
   },
   {
    "path": "source/F1_Grove/Birch/Legs.bbmodel",
-   "bytes": 22874,
-   "sha256": "1ba08a0d0e390ecc935ac5199aefde3d17e1037baca1515195ca0eb7dfa0cced"
+   "bytes": 22858,
+   "sha256": "2104dd41c076ad1e50acd410f5d5c767282cbc645f4b88cb35a807f1b607eb08"
   },
   {
    "path": "source/F1_Grove/Oak/Chest.bbmodel",

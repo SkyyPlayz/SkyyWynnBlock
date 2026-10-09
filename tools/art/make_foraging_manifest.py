@@ -11,7 +11,7 @@ PIECES = ("Head", "Chest", "Hands", "Legs")
 STATUS = {
     "F1_Grove/Oak": "v2 (in-game Oak wood colours) approved by Skyy 2026-10-09 (\"they all look great!\"); v1 approved 2026-10-08 (\"Yes, the Oak armor looks good, commit it\"); NOT verified in game",
     "F1_Grove/Beech": "approved by Skyy 2026-10-09 (\"Yes, the Beech armor looks good, commit it\"; v2 after \"beech looks too much like iron, i need to look a little more like beech wood in the game\"); NOT verified in game",
-    "F1_Grove/Birch": "approved by Skyy 2026-10-09 (\"Yes, the Birch armor looks good, commit it\"); NOT verified in game",
+    "F1_Grove/Birch": "v2 (in-game Birch wood colours) approved by Skyy 2026-10-09 (\"they all look great!\"); v1 approved 2026-10-09 (\"Yes, the Birch armor looks good, commit it\"); NOT verified in game",
 }
 
 
