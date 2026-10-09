@@ -2,6 +2,10 @@
 
 ## OAK (F1 Grove)
 
+**v2 (2026-10-09, APPROVED by Skyy: "they all look great!"):** repainted in the in-game Oak wood colours (Skyy: "make sure to
+match each armor set to its in game wood variant." / "Yes, redo Oak and Birch to match their in-game wood"): red-brown
+oak bark, orange-tan heartwood on cut rims, the game's oak-leaf green. Same models, shapes and acorn mark (textures only).
+
 Status: APPROVED by Skyy 2026-10-08: "Yes, the Oak armor looks good, commit it". Not yet seen in game.
 
 Skyy: "lets still make the farming and gathering armor, but use vanilla for mining, and armory for combat gear."
@@ -66,6 +70,10 @@ Mirrored L-/R- parts share texels (negative stretch, no mirror flag). Original g
 
 ## BIRCH (F1 Grove)
 
+**v2 (2026-10-09, APPROVED by Skyy: "they all look great!"):** repainted in the in-game Birch wood colours (same Skyy quotes as
+Oak v2): warm cream bark with soft vertical fibre streaks, grey-brown lenticels and knots (softer than v1's black),
+pale tan heartwood, the game's lime yellow-green birch leaves. Same models, shapes and catkin mark (textures only).
+
 Status: APPROVED by Skyy 2026-10-09: "Yes, the Birch armor looks good, commit it". Not yet seen in game.
 Defaults kept: separate models per tree, catkins as the mark, rounded edges, vine + faint sap kept.
 
@@ -121,11 +129,39 @@ Defaults kept: small copper accent leaf, warmer + lighter than Oak with vertical
 - Checked the same way as Oak and Birch (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no
   validator issues, all 4 pieces attach to the vanilla player). Not checked in game.
 
+## ASH (F1 Grove)
+
+Status: APPROVED by Skyy 2026-10-09: "they all look great!". Not yet seen in game.
+Defaults kept: five seed keys on the belt, slate cloth, bark matched to the game.
+
+![sheet](sheet-ash.png)
+
+| What | Path |
+|---|---|
+| Models + textures | `Common/Items/Armors/SkyyForaging/F1_Grove/Ash/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png` |
+| Icons (64x64) | `Common/Icons/ItemsGenerated/Armor_Foraging_Ash_{Head,Chest,Hands,Legs}.png` |
+| Blockbench projects | `source/F1_Grove/Ash/{Head,Chest,Hands,Legs}.bbmodel` |
+| Review sheet | `sheet-ash.png` |
+
+- Same F1 family and the same fit as Oak (geometry derived from `tools/art/ga_oak.py` in `ga_ash.py`).
+- Colours follow the in-game Ash wood (hues only, sampled from the game's Ash trunk / log end / hardwood planks /
+  leaves; our own pixels): dark plum-brown bark with lighter ridges around long narrow diamond furrows (ash bark),
+  pale tan heartwood on cut edges, the game's deep blue-green ash leaves (pinnate: leaflet pairs on a stem),
+  straw-tan seed keys, cool slate cloth.
+- Ash mark: the SAMARA cluster - 5 winged seed keys fanning down from a carved heartwood clasp on the belt, and a
+  bunch of 3 keys at the left temple.
+- Shape vs Oak (jagged), Birch (rounded), Beech (broad smooth): CHEVRON plates (each plate ends in a shallow V, rows
+  offset so they make a diamond lattice), V-pointed hems, samara-wing crown points, a raised ridge along each shoulder.
+- Size: 47 boxes + 13 quads. Textures Head 96x128, Chest 96x128, Hands 96x32, Legs 96x64.
+- Checked the same way as the others (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no
+  validator issues, all 4 pieces attach to the vanilla player). Not checked in game.
+
 ## Rebuild
 ```
 GA_DESIGN=ga_oak   python3 tools/art/make_foraging_armor.py      # models + textures (design ga_<tree>.py, painter ga_paint.py)
 GA_DESIGN=ga_birch python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_beech python3 tools/art/make_foraging_armor.py
+GA_DESIGN=ga_ash   python3 tools/art/make_foraging_armor.py
 python3 tools/art/make_foraging_icons.py art/gathering-armor F1_Grove Birch
 python3 tools/art/make_foraging_sheet.py art/gathering-armor F1_Grove Birch
 GA_TREE=Birch python3 tools/art/validate_foraging.py

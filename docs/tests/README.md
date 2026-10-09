@@ -143,3 +143,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Better Mob Expansion switched on (test) (DEPLOYED 2026-10-09, backup deploy-20261009-0538) | [2026-10](2026-10.md) |
 | SkyyMenu 0.3.12: skill Defense on the Stats page (DEPLOYED 2026-10-09, backup deploy-20261009-0546) | [2026-10](2026-10.md) |
 | Luggage sacks + Bazaar search + sprint probe; The Armory off (DEPLOYED 2026-10-09, backup deploy-20261009-0707) | [2026-10](2026-10.md) |
+| SkyySacks 0.7.15: Omni hidden, fiber T1 bags (DEPLOYED 2026-10-09, backup deploy-20261009-0712) | [2026-10](2026-10.md) |

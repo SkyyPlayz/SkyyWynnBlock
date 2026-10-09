@@ -66,7 +66,28 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 
 
 
+<!-- 2026-10-09 local session (Skyy at work: "if you need, you can keep the cloud agent working at the same time. to speed things up."). 7 local
+builds run (merchants, sacks, tools, collections, fishing, auctions, trees). These 5 are specs only (no game files) - one commit + OUTBOX block each. -->
+- [ ] **Zone archipelago worldgen spec** -> `research/cloud/Zone-Archipelago-Spec.md`. Skyy's lock (docs/answered/world.md 2026-10-09 + the
+      "Island layout" section at the end of research/SkyyWorldGen-Plan.md): each zone = a few islands joined by land necks / arches / built
+      bridges, zones far apart (dragon / portal only), deep vanilla caves down to the lava caverns, vertically squashed. Technique notes:
+      research/Mods-Folder-Survey.md "Welkin" section (cell grid ~470, jitter 90, ~80 gradient warp, Simplex tops faded by distance, noise
+      underside). Write node-level HytaleGenerator JSON plans per zone (Zone 1-5), the gap width, cave band compression numbers, portal /
+      dragon travel points, and a staged build plan for SkyyWorldGen 0.2+. Never copy Welkin or vanilla files.
+- [ ] **Pet core spec (slot pets)** -> `research/cloud/Pet-Core-Spec.md`. Inputs: research/Pets-Roster.md, docs/answered/pets.md, research/Tamework-Review.md
+      (BORROW: owned vs active cap, summon duration + resummon cooldown, auto-store on logout, revive cost + cooldown, Follow / Defend / Hold),
+      Forgotten Creatures / Better Mob Expansion pet candidates (research/Mods-Folder-Survey.md, research/Boss-Mods-Review.md). Slot 1 never fights,
+      slot 2 summon; per profile (tools/PROFILES-CONTRACT.md); shrunk vanilla models (Model.createScaledModel) + chibi art later; eggs (roaming
+      merchants sell eggs later - research/Mods-Folder-Survey.md Bio's Kobolds section). Build phases + probes needed.
+- [ ] **Element system spec** -> `research/cloud/Element-System-Spec.md`. Blocker for Spellblade Imbue + the shelved elemental weapons
+      (research/classes/Spellblade.md "Elements" + docs/answered/gear.md). Five elements + statuses, how they show on gear (SkyyGear already rolls
+      Raw Fire / Water / Earth / Thunder damage lines), resistances per mob, reactions (keep simple), which classes use which, UI colours.
+- [ ] **Class ability engine plan (Mage + Priest first)** -> `research/cloud/Ability-Engine-Plan.md`: turn research/cloud/Class-Ability-Spec-Draft.md
+      + research/Class-Power-Split.md (costs are Mana + Stamina by class split, affordable at unlock levels A1 1 / A2 10 / A2-alt 20 / A1-alt 30 -
+      docs/answered/classes.md 2026-10-09) + research/cloud/Ability-Input-Design.md into a build plan: which mod, the 4-ability / 2-primary +
+      crouch-alt input, cooldown + cost handling, per-ability engine hooks and the probes to run first, round split for the local session.
 - [ ] **SkyyAbilityProbe PR** - once https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 is merged: open a [cloud] PR with the held draft
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
 ## Done (delete after logging - see the rules above)
+- [x] Dynamic Seasons crash report draft - 2026-10-09 - `research/cloud/DynamicSeasons-Crash-Report.md`

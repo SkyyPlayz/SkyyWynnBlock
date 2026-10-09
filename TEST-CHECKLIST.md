@@ -75,6 +75,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 66. Better Mob Expansion test: new Zone 1-4 mobs, levels, Vermin behaviour, crowding
 67. SkyyMenu 0.3.12: Stats page Defense shows Skills part
 68. Luggage sacks vanish on claim, Bazaar search, /keyprobe sprint, Armory off = textures back
+69. SkyySacks 0.7.15: Omni hidden until 5 Legendary, Normal bags = 20 Plant Fiber + 4 Sticks
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6

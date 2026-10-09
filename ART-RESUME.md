@@ -67,9 +67,10 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   Same bark-plate family look (approved concept), each tree its own variation; trees of one tier share stats and players swap looks at an
   alteration station later. Start with F1 Oak (key log), then the rest of F1, one tree per commit; show Skyy each sheet. Paths use the
   tree name: `SkyyForaging/<Tier>/<Tree>/<Piece>.blockymodel`, icons `Armor_Foraging_<Tree>_<Piece>.png`. Orchard trees: later.
-  **Progress:** F1 Oak DONE (2026-10-08, Skyy: "Yes, the Oak armor looks good, commit it") + F1 Birch DONE (2026-10-09, Skyy: "Yes,
-  the Birch armor looks good, commit it") + F1 Beech DONE (2026-10-09, v2, Skyy: "Yes, the Beech armor looks good, commit it"); see Done.
-  **Next: F1 Ash**, then Aspen - START FROM THE IN-GAME WOOD (sample the tree's log / planks / leaves colours in Assets.zip; Beech v1
+  **Progress:** F1 Oak DONE (2026-10-08) + F1 Birch DONE (2026-10-09) + F1 Beech DONE (2026-10-09, v2) + Oak v2 + Birch v2 repainted
+  in their in-game wood colours (2026-10-09) + F1 Ash DONE (2026-10-09, Skyy: "they all look great!"); see Done.
+  **Next: F1 Aspen** (last F1 tree) - START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game wood
+  variant." - sample the tree's log / planks / leaves colours in Assets.zip; Beech v1
   in made-up colours read as "iron"). Reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter,
   `make_foraging_*.py`), same piece shapes / fit, own colours + own small mark. Sources go in `source/<Tier>/<Tree>/`. Defaults Skyy kept for Oak: tier folder `F1_Grove`,
   open-face helmet with crown, faint sap, art only, 1 texel per unit.
@@ -131,6 +132,33 @@ purple of the bag swirl].
   Skyy's answers, word for word: "fix pebble." / "Yes, the Pebble fix looks good, commit it"
 
 ## Done
+### 18. Foraging armor F1 Grove - Ash (2026-10-09)
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F1_Grove/Ash/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
+  (1 texel per unit), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Ash_<Piece>.png` (64), `source/F1_Grove/Ash/*.bbmodel`,
+  `sheet-ash.png`; shared `manifest.json` + `README.md` updated. Scripts: `tools/art/ga_ash.py` (new, geometry derived from `ga_oak.py`),
+  `ga_paint.py` (ash colours added), `make_foraging_sheet.py`, `make_foraging_manifest.py`. Oak, Birch, Beech rebuild byte-identical.
+- Look: colours from the in-game Ash wood (hues sampled from the game's Ash trunk / log end / hardwood planks / leaves; own pixels):
+  dark plum-brown bark with lighter ridges around long narrow diamond furrows, pale tan heartwood, deep blue-green pinnate ash leaves,
+  straw-tan seed keys, slate cloth. CHEVRON plates (V ends, offset rows = diamond lattice), V-pointed hems, samara-wing crown points,
+  raised shoulder ridge. Mark: SAMARA cluster (5 winged seed keys from a heartwood clasp on the belt + 3 at the left temple).
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0 (no validator issues; plugin Import Attachment puts all 4 pieces on the vanilla player).
+- Skyy's answers, word for word: "make sure to match each armor set to its in game wood variant." / "they all look great!"
+- Defaults kept: five seed keys on the belt, slate cloth, bark matched to the game.
+- Not yet seen in game. No item / recipe JSON (art only).
+### 17. Foraging armor F1 Grove - Birch v2, in-game wood colours (2026-10-09)
+- Repainted Birch (#14) in the in-game Birch wood colours: warm cream bark with soft vertical fibre streaks, grey-brown lenticels + knots
+  (softer than v1's black), pale tan heartwood, the game's lime yellow-green leaves. Same models, shapes, catkin mark (textures, icons,
+  sheet, `source/` only). Scripts: `tools/art/ga_birch.py`, `ga_paint.py` (birch colours). Oak v2 + Beech rebuild byte-identical.
+- Skyy's answers, word for word: "make sure to match each armor set to its in game wood variant." / "Yes, redo Oak and Birch to match
+  their in-game wood" / "they all look great!"
+- Defaults kept: softer birch marks, sage cloth kept.
+### 16. Foraging armor F1 Grove - Oak v2, in-game wood colours (2026-10-09)
+- Repainted Oak (#13) in the in-game Oak wood colours (hues sampled from the game's Oak trunk / log end / hardwood planks / leaves; own
+  pixels): deep red-brown bark, warm tan heartwood, the game's oak greens. Same models, shapes, acorn mark (textures, icons, sheet,
+  `source/` only). Script: `tools/art/ga_paint.py` (oak colours). Birch + Beech rebuild byte-identical.
+- Skyy's answers, word for word: "make sure to match each armor set to its in game wood variant." / "Yes, redo Oak and Birch to match
+  their in-game wood" / "they all look great!"
+- Defaults kept: cloth kept, bark matched to the game.
 ### 15. Foraging armor F1 Grove - Beech (2026-10-09)
 - Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F1_Grove/Beech/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
   (1 texel per unit), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Beech_<Piece>.png` (64), `source/F1_Grove/Beech/*.bbmodel`,
