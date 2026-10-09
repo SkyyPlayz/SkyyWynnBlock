@@ -324,6 +324,7 @@ Colours sampled from each tree's own textures in Assets.zip (log side, log top, 
 |---|---|---|---|---|---|
 | Sallow | olive-gold, stringy | willow strands | golden catkins | plum | amber |
 | Burnt | charcoal, cracked | jagged ember teeth | ember on a char log | ash grey | ember orange |
+| Petrified | grey-brown stone cracks | stair steps | stone ring fossil | dusty violet | lilac |
 
 Files: `Common/Items/Armors/SkyyForaging/F5_Wastes/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`, `source/F5_Wastes/<Tree>/`,
 `sheet-<tree>.png`. Each 65 boxes + 9 quads from F4, plus 5 gem boxes and 2 wing quads. The `ga_<tree>.py`
