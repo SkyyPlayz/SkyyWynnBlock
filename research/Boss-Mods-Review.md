@@ -23,3 +23,18 @@ Skyy: "these could help with the bosses later." / "this one looks really cool to
   harvests into a chest around a Charging Station; 50 Copper Bars + Construct Core); Warrior Construct WIP.
 - FIT: Titan = good mid-tier boss (SkyyMobs level + our loot on top). Gardener is not a pet; decide whether its harvests give farming XP.
 - PLAN: Skyy tries it on a test world; then ask DanBagh for modpack permission.
+
+## Frah - Better Mob Expansion 3.5 + Humans 1.2 (2026-10-09)
+Skyy: "this could help for more mob verity, especially as we start making our own zones."
+- LICENCE: GPLv3 - modpacks + servers allowed WITH credit (name + CurseForge link in the pack description and a visible server credit /
+  MOTD / credits page); never strip in-mod credits. We still only reference ids at runtime (copying would put our repo under GPL).
+- Installed, DISABLED in the HUD mod world. JSON + models only, ServerVersion "*", no dependencies.
+- 30 roles (+6 Humans) spread over vanilla Env_Zone1-4 spawns (ADDED, not replacing): Zone 1 Fairy, Butterfly, 3 Tortoises, Fen
+  Crocodile, Lost Kweebec, Elite Skeleton, Slimes; Zone 2 Leopard, Feran Beastmaster, Sand Elite Skeleton, Bandits (guns, flock of 5);
+  Zone 3 Bigfoot, Broodmother (spider mini-boss), Frost Elite Skeleton; Zone 4 Elder Crocodile, Panther, Imp, Kamikaze, Trork Hellscourge,
+  Undead Antelope; oceans Shark, White Shark, Megalodon. Mini-bosses: Broodmother, Hellscourge, Elder Crocodile.
+- FIT: SkyyMobs bands use the same Env ids -> hostile BME mobs get zone levels + our mystery bags automatically (our own zone islands must
+  use vanilla Env_Zone ids). Pet candidates: tortoises, fairy, butterfly, leopard, panther, bigfoot, imp, slimes, sharks.
+- RISKS: it REPLACES vanilla Groups/Vermin.json (only Broodmother - may change rats / snakes / spiders / scorpions behaviour) and the
+  undead chicken / cow / pig; dense spawns with no config; Bandits + Hellscourge drop lots of bars (economy); 0.7 retest.
+- PLAN: main mod = stopgap variety for Zones 1-4 after a test + PACK.md row with credit; Humans later.
