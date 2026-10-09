@@ -69,11 +69,21 @@ purple of the bag swirl].
    fist / dagger items (look at Assets.zip `Common/Items/Weapons/...`), icon 64x64 per tier.
 7. **Pets** (Blockbench, full models): 15 launch pets in Hytale chunky voxel style (research/cloud/Pets-Spec.md + research/cloud/pet-art/
    README.md for the list and the approved v2 look). The pet system is not built yet - ASK Skyy before starting.
-8. **Hotbar ability item icons** - on hold (default: keys only, Skyy has not answered yet); skip unless Skyy asks.
 9. **Light armor (tier sets)** - NEW DIRECTION 2026-10-08 (docs/answered/gear.md): most armor will come from installed armor mods (e.g. The Armory) as mob drops, so our own armor sets are low priority - ask Skyy before any more armor work. Paused by Skyy ("we can work on the armor more later"); ask Skyy before touching it. Approved looks
    are in the skywynn-art skill, section 3. A separate candidate dark-leather design is in Done (#3).
 
 ## Done
+### 8. Hotbar ability item icons (2026-10-08)
+- Folder: `art/hotbar-items/` - 37 icons (64x64) under `Common/Icons/ItemsGenerated/`: 35 mirror items
+  `SkyyClasses_AbilityItem_<Class>_<Ability>.png` (the approved ability glyph on a square class-rimmed tablet with visible thickness,
+  so it never reads as the round HUD icon) + 2 utility items `SkyyClasses_AbilityItem_Loadout.png` / `..._Hints.png` (neutral steel
+  rim, gold studs). `sheet.png`, `manifest.json`, `README.md`. Scripts: `tools/art/make_hotbar_items.py`, `make_hotbar_sheet.py`,
+  `validate_hotbar_items.py` (glyphs reuse the `make_ability_icons.py` painters).
+- Spec: `research/cloud/Ability-Input-Design.md` section 2. Item ids / paths are PROPOSED (SkyyClasses phase I2 not built); the
+  OPEN-QUESTIONS "keys only" item is still the main session's call.
+- Skyy's answers, word for word: "Start the hotbar icons" / "Yes, the hotbar icons look good, commit them"
+- Not yet seen in game.
+
 ### 12. Class ability icons - Archer (2026-10-08)
 - Folder: `art/ability-icons/Common/Icons/Abilities/Archer/` - PinningShot, RapidFire, ExplosiveArrow, ArrowRain, HuntersNet (64x64).
   Shared sheet/manifest/README/scripts updated + `sheet-archer.png`. Leaf-green rim (`#8fd67a`), dark forest field (`#24381c` -> `#091108`).

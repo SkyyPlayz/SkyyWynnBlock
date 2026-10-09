@@ -1,0 +1,633 @@
+{
+ "item": "Hotbar ability item icons (ART-RESUME queue #8)",
+ "status": "APPROVED by Skyy + committed (answer: \"Yes, the hotbar icons look good, commit them\")",
+ "in_game": "NOT wired in (SkyyClasses phase I2 not built), NOT seen in game",
+ "spec": "research/cloud/Ability-Input-Design.md section 2 (select = cast, auto-return, cooldown = durability bar, soulbound); Q5 default: mirrors of the equipped abilities + utility items",
+ "generator": [
+  "tools/art/make_hotbar_items.py",
+  "tools/art/make_hotbar_sheet.py",
+  "tools/art/validate_hotbar_items.py",
+  "(reuses tools/art/make_ability_icons.py painters + ability_icon_core.py)"
+ ],
+ "deterministic": true,
+ "item_id_pattern": "SkyyClasses_AbilityItem_<Class>_<Ability> (mirror), SkyyClasses_AbilityItem_<Utility> (utility) - PROPOSED, the main session picks the real ids",
+ "tablet_geometry_px": {
+  "front": [
+   4.5,
+   4.0,
+   55.5,
+   55.0
+  ],
+  "chamfer": 6.0,
+  "depth_lower_right": 2.5,
+  "border": 2.8,
+  "glyph_scale": 0.95
+ },
+ "count": {
+  "mirror": 35,
+  "utility": 2
+ },
+ "files": [
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Mage_Meteor.png",
+   "bytes": 4416,
+   "sha256": "8212e3ce99f93fdd258b595597d88a9a0025a5d90107370bf7ded0bb316f0c07",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Mage_Meteor",
+   "kind": "mirror",
+   "class": "Mage",
+   "name": "Meteor",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Mage/Meteor.png",
+   "slot": "A1",
+   "shows": "the Meteor ability glyph (same painter as the approved round icon) on a square Mage tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Mage_ManaBarrier.png",
+   "bytes": 4293,
+   "sha256": "d217769bb54dfb13ae55f9e27699115164545f012c636d96eb459e43c9c00a4c",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Mage_ManaBarrier",
+   "kind": "mirror",
+   "class": "Mage",
+   "name": "Mana Barrier",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Mage/ManaBarrier.png",
+   "slot": "A2",
+   "shows": "the Mana Barrier ability glyph (same painter as the approved round icon) on a square Mage tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Mage_FrostNova.png",
+   "bytes": 4987,
+   "sha256": "34f9b19d3ea0591b534723d04ddbf293b5b14b1148b1e036772a89937640086d",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Mage_FrostNova",
+   "kind": "mirror",
+   "class": "Mage",
+   "name": "Frost Nova",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Mage/FrostNova.png",
+   "slot": "A2-alt",
+   "shows": "the Frost Nova ability glyph (same painter as the approved round icon) on a square Mage tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Mage_Starfall.png",
+   "bytes": 4777,
+   "sha256": "3c6a5e44d44dfb2b07b14fb13a4cb2abb117a052f96e3fec4bb815bc0e822f16",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Mage_Starfall",
+   "kind": "mirror",
+   "class": "Mage",
+   "name": "Starfall",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Mage/Starfall.png",
+   "slot": "A1-alt A",
+   "shows": "the Starfall ability glyph (same painter as the approved round icon) on a square Mage tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Mage_ArcaneBeam.png",
+   "bytes": 4859,
+   "sha256": "f95df8f7a6af337a00fc8804acb17b3bfc53e640f16cf651f4e6febdf2877086",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Mage_ArcaneBeam",
+   "kind": "mirror",
+   "class": "Mage",
+   "name": "Arcane Beam",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Mage/ArcaneBeam.png",
+   "slot": "A1-alt B",
+   "shows": "the Arcane Beam ability glyph (same painter as the approved round icon) on a square Mage tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Priest_SacredHeal.png",
+   "bytes": 4367,
+   "sha256": "03a9b900fce2111ef5f402dbfb23f2097077e841c353cea7f4b113f53858b79a",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Priest_SacredHeal",
+   "kind": "mirror",
+   "class": "Priest",
+   "name": "Sacred Heal",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Priest/SacredHeal.png",
+   "slot": "A1",
+   "shows": "the Sacred Heal ability glyph (same painter as the approved round icon) on a square Priest tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Priest_ShieldBubble.png",
+   "bytes": 5135,
+   "sha256": "6918227d2b8d2be689db18c229c916acba5c16b811ee11671adcaceab29924c3",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Priest_ShieldBubble",
+   "kind": "mirror",
+   "class": "Priest",
+   "name": "Shield Bubble",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Priest/ShieldBubble.png",
+   "slot": "A2",
+   "shows": "the Shield Bubble ability glyph (same painter as the approved round icon) on a square Priest tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Priest_GuardianSpirit.png",
+   "bytes": 5183,
+   "sha256": "f292606c40a2108e214ab6c6f5c329f90c0847d8e5a8c28fe9d059c7bea9f252",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Priest_GuardianSpirit",
+   "kind": "mirror",
+   "class": "Priest",
+   "name": "Guardian Spirit",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Priest/GuardianSpirit.png",
+   "slot": "A2-alt",
+   "shows": "the Guardian Spirit ability glyph (same painter as the approved round icon) on a square Priest tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Priest_Sanctuary.png",
+   "bytes": 4380,
+   "sha256": "ae928b152c8366284f34321270ecc7378f36d6eec6482378c23591622f3f61c2",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Priest_Sanctuary",
+   "kind": "mirror",
+   "class": "Priest",
+   "name": "Sanctuary",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Priest/Sanctuary.png",
+   "slot": "A1-alt A",
+   "shows": "the Sanctuary ability glyph (same painter as the approved round icon) on a square Priest tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Priest_MartyrsGrace.png",
+   "bytes": 4541,
+   "sha256": "4821f81bbcb18e74eac3e5e157d5cdd901e03f63ad017f597bc36c9b4f73b31b",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Priest_MartyrsGrace",
+   "kind": "mirror",
+   "class": "Priest",
+   "name": "Martyr's Grace",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Priest/MartyrsGrace.png",
+   "slot": "A1-alt B",
+   "shows": "the Martyr's Grace ability glyph (same painter as the approved round icon) on a square Priest tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Monk_FlowingForm.png",
+   "bytes": 5119,
+   "sha256": "a22019d00fee0dd2fdb4297ebeeadec3cc2c5a61779c1c210f883a6ce5f4096b",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Monk_FlowingForm",
+   "kind": "mirror",
+   "class": "Monk",
+   "name": "Flowing Form",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Monk/FlowingForm.png",
+   "slot": "A1",
+   "shows": "the Flowing Form ability glyph (same painter as the approved round icon) on a square Monk tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Monk_PalmStrike.png",
+   "bytes": 5126,
+   "sha256": "9ab8efdade5ea18844830f80c900d8eecf6a666d37968ae3e1cdbdab4d144675",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Monk_PalmStrike",
+   "kind": "mirror",
+   "class": "Monk",
+   "name": "Palm Strike",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Monk/PalmStrike.png",
+   "slot": "A2",
+   "shows": "the Palm Strike ability glyph (same painter as the approved round icon) on a square Monk tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Monk_CycloneKick.png",
+   "bytes": 4900,
+   "sha256": "1f25b005cd8a10ee24754e1cf0f603b50a14f7a5308850c0a4c1611ba70461eb",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Monk_CycloneKick",
+   "kind": "mirror",
+   "class": "Monk",
+   "name": "Cyclone Kick",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Monk/CycloneKick.png",
+   "slot": "A2-alt",
+   "shows": "the Cyclone Kick ability glyph (same painter as the approved round icon) on a square Monk tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Monk_HundredFists.png",
+   "bytes": 4603,
+   "sha256": "2f5f78702982462d76780b7190b241afc77aa705e9ae4babe08e2c3e6f1d6a3b",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Monk_HundredFists",
+   "kind": "mirror",
+   "class": "Monk",
+   "name": "Hundred Fists",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Monk/HundredFists.png",
+   "slot": "A1-alt A",
+   "shows": "the Hundred Fists ability glyph (same painter as the approved round icon) on a square Monk tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Monk_StillWater.png",
+   "bytes": 3797,
+   "sha256": "2ec29c9274c3d36d816b02d1e2be9d35996f2b35c4688b03d719a3c3c450b666",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Monk_StillWater",
+   "kind": "mirror",
+   "class": "Monk",
+   "name": "Still Water",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Monk/StillWater.png",
+   "slot": "A1-alt B",
+   "shows": "the Still Water ability glyph (same painter as the approved round icon) on a square Monk tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Assassin_CloakFirstStrike.png",
+   "bytes": 4695,
+   "sha256": "2d233dd6b315f9a1a4189e9b2e9e3a7ae742b17d2f98eaa9560f70213584408d",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Assassin_CloakFirstStrike",
+   "kind": "mirror",
+   "class": "Assassin",
+   "name": "Cloak + First Strike",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Assassin/CloakFirstStrike.png",
+   "slot": "A1",
+   "shows": "the Cloak + First Strike ability glyph (same painter as the approved round icon) on a square Assassin tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Assassin_Toxin.png",
+   "bytes": 4499,
+   "sha256": "01fafdab8807c6765e51afbec9bf86e4c4d3e2919725b0b99bab70e1da5e8b4a",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Assassin_Toxin",
+   "kind": "mirror",
+   "class": "Assassin",
+   "name": "Toxin",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Assassin/Toxin.png",
+   "slot": "A2",
+   "shows": "the Toxin ability glyph (same painter as the approved round icon) on a square Assassin tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Assassin_GodKiller.png",
+   "bytes": 4461,
+   "sha256": "6c911c19e296010fe4bcf3207e4a5ac73c92526c09200d64921579b330decf73",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Assassin_GodKiller",
+   "kind": "mirror",
+   "class": "Assassin",
+   "name": "God Killer",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Assassin/GodKiller.png",
+   "slot": "A2-alt",
+   "shows": "the God Killer ability glyph (same painter as the approved round icon) on a square Assassin tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Assassin_ShadowClone.png",
+   "bytes": 4631,
+   "sha256": "51d789fd7c94ac666a6d5fdeddd1f9a447546c66127fb97de8d7741d6ed3ec14",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Assassin_ShadowClone",
+   "kind": "mirror",
+   "class": "Assassin",
+   "name": "Shadow Clone",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Assassin/ShadowClone.png",
+   "slot": "A1-alt A",
+   "shows": "the Shadow Clone ability glyph (same painter as the approved round icon) on a square Assassin tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Assassin_VanishingAct.png",
+   "bytes": 4936,
+   "sha256": "f40b7a77f620e21f58ec0a5717c7bd3255a1a5d78bfe2b252fe1ee5947cf89c3",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Assassin_VanishingAct",
+   "kind": "mirror",
+   "class": "Assassin",
+   "name": "Vanishing Act",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Assassin/VanishingAct.png",
+   "slot": "A1-alt B",
+   "shows": "the Vanishing Act ability glyph (same painter as the approved round icon) on a square Assassin tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Warrior_RallyingGuard.png",
+   "bytes": 4247,
+   "sha256": "b13340f82a70b58ba9a77d7b4ecb5499cd2d7a0359d165b6e980c8c952ea0149",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Warrior_RallyingGuard",
+   "kind": "mirror",
+   "class": "Warrior",
+   "name": "Rallying Guard",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Warrior/RallyingGuard.png",
+   "slot": "A1",
+   "shows": "the Rallying Guard ability glyph (same painter as the approved round icon) on a square Warrior tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Warrior_ShieldShockwave.png",
+   "bytes": 4481,
+   "sha256": "2cb3426bd0ee4498ae0b04533f034d4f5d130fb5d3daaffe58047275f8a03c29",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Warrior_ShieldShockwave",
+   "kind": "mirror",
+   "class": "Warrior",
+   "name": "Shield Shockwave",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Warrior/ShieldShockwave.png",
+   "slot": "A2",
+   "shows": "the Shield Shockwave ability glyph (same painter as the approved round icon) on a square Warrior tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Warrior_IronChain.png",
+   "bytes": 4421,
+   "sha256": "a8d2f433ce2b0db6adc37c4a0aa93818031813a540d8b27a709706375ef976cf",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Warrior_IronChain",
+   "kind": "mirror",
+   "class": "Warrior",
+   "name": "Iron Chain",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Warrior/IronChain.png",
+   "slot": "A2-alt",
+   "shows": "the Iron Chain ability glyph (same painter as the approved round icon) on a square Warrior tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Warrior_BulwarkStance.png",
+   "bytes": 4204,
+   "sha256": "727f1a4ae63442396d0b2c0f645ec08181afb3af3b6eec2c5ab6de814585205c",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Warrior_BulwarkStance",
+   "kind": "mirror",
+   "class": "Warrior",
+   "name": "Bulwark Stance",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Warrior/BulwarkStance.png",
+   "slot": "A1-alt A",
+   "shows": "the Bulwark Stance ability glyph (same painter as the approved round icon) on a square Warrior tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Warrior_Unbreakable.png",
+   "bytes": 4626,
+   "sha256": "74915d1a49f3046bdd9c16993284341e686954550aac6eaf758e491d2770eaf5",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Warrior_Unbreakable",
+   "kind": "mirror",
+   "class": "Warrior",
+   "name": "Unbreakable",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Warrior/Unbreakable.png",
+   "slot": "A1-alt B",
+   "shows": "the Unbreakable ability glyph (same painter as the approved round icon) on a square Warrior tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Berserker_Enrage.png",
+   "bytes": 4549,
+   "sha256": "97629d3b4461647400b3ba7ddb661c1857f18ee92bd9b8dd079ec9c8f36a83a5",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Berserker_Enrage",
+   "kind": "mirror",
+   "class": "Berserker",
+   "name": "Enrage",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Berserker/Enrage.png",
+   "slot": "A1",
+   "shows": "the Enrage ability glyph (same painter as the approved round icon) on a square Berserker tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Berserker_Whirlwind.png",
+   "bytes": 4876,
+   "sha256": "69f26b01e6d20bccbaa06363fcf16421fd92811b7ac01e07d93e18190a2a995d",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Berserker_Whirlwind",
+   "kind": "mirror",
+   "class": "Berserker",
+   "name": "Whirlwind",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Berserker/Whirlwind.png",
+   "slot": "A2",
+   "shows": "the Whirlwind ability glyph (same painter as the approved round icon) on a square Berserker tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Berserker_Earthsplitter.png",
+   "bytes": 3933,
+   "sha256": "01ae448218893bba7b9e807a2e6fc760dc12652375945f5ae665246cffd883af",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Berserker_Earthsplitter",
+   "kind": "mirror",
+   "class": "Berserker",
+   "name": "Earthsplitter",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Berserker/Earthsplitter.png",
+   "slot": "A2-alt",
+   "shows": "the Earthsplitter ability glyph (same painter as the approved round icon) on a square Berserker tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Berserker_BloodFrenzy.png",
+   "bytes": 4478,
+   "sha256": "c865f0d337b8ea6f345ca8f8d14d08146a77bc0abaed72d2d0ba8d85eb9bffd9",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Berserker_BloodFrenzy",
+   "kind": "mirror",
+   "class": "Berserker",
+   "name": "Blood Frenzy",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Berserker/BloodFrenzy.png",
+   "slot": "A1-alt A",
+   "shows": "the Blood Frenzy ability glyph (same painter as the approved round icon) on a square Berserker tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Berserker_WarlordsBanner.png",
+   "bytes": 4083,
+   "sha256": "9adb889a4768adb60e1f1c9b7b59ff92d2bd72f3cc0dd0b8bffce95a24c35577",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Berserker_WarlordsBanner",
+   "kind": "mirror",
+   "class": "Berserker",
+   "name": "Warlord's Banner",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Berserker/WarlordsBanner.png",
+   "slot": "A1-alt B",
+   "shows": "the Warlord's Banner ability glyph (same painter as the approved round icon) on a square Berserker tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Archer_PinningShot.png",
+   "bytes": 3851,
+   "sha256": "a2c0fa71c72cd3be744052b240cd120c814162cdbba8adfd109dfba57c88727f",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Archer_PinningShot",
+   "kind": "mirror",
+   "class": "Archer",
+   "name": "Pinning Shot",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Archer/PinningShot.png",
+   "slot": "A1",
+   "shows": "the Pinning Shot ability glyph (same painter as the approved round icon) on a square Archer tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Archer_RapidFire.png",
+   "bytes": 4190,
+   "sha256": "943617d35a8830ad467b09aef666a2697beb234a692a2831d907a1de2560e6d9",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Archer_RapidFire",
+   "kind": "mirror",
+   "class": "Archer",
+   "name": "Rapid Fire",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Archer/RapidFire.png",
+   "slot": "A2",
+   "shows": "the Rapid Fire ability glyph (same painter as the approved round icon) on a square Archer tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Archer_ExplosiveArrow.png",
+   "bytes": 4294,
+   "sha256": "d6bdd52063fda50e9127ca65f2ffbd709e8fc2a863af260d4cc49122f9c9d014",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Archer_ExplosiveArrow",
+   "kind": "mirror",
+   "class": "Archer",
+   "name": "Explosive Arrow",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Archer/ExplosiveArrow.png",
+   "slot": "A2-alt",
+   "shows": "the Explosive Arrow ability glyph (same painter as the approved round icon) on a square Archer tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Archer_ArrowRain.png",
+   "bytes": 4933,
+   "sha256": "5a749781ed2e58bf2784861deb77fd4adc8b992964e4e9d0a6adb9023d64488a",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Archer_ArrowRain",
+   "kind": "mirror",
+   "class": "Archer",
+   "name": "Arrow Rain",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Archer/ArrowRain.png",
+   "slot": "A1-alt A",
+   "shows": "the Arrow Rain ability glyph (same painter as the approved round icon) on a square Archer tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Archer_HuntersNet.png",
+   "bytes": 4895,
+   "sha256": "bfe748095b994decfdda39da50b4c0d305fa2d4d1d9a310501f89c9d26e9a329",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Archer_HuntersNet",
+   "kind": "mirror",
+   "class": "Archer",
+   "name": "Hunter's Net",
+   "mirrors_ability_icon": "art/ability-icons/Common/Icons/Abilities/Archer/HuntersNet.png",
+   "slot": "A1-alt B",
+   "shows": "the Hunter's Net ability glyph (same painter as the approved round icon) on a square Archer tablet"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Loadout.png",
+   "bytes": 4703,
+   "sha256": "de930a4286d69ba176b67289b81721bec139400d8b8321d4509d6575b32b026a",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Loadout",
+   "kind": "utility",
+   "class": "Utility",
+   "name": "Loadout",
+   "what": "Swap to your next saved rune loadout (utility item, no key of its own; later, once loadouts exist)",
+   "shows": "two curved arrows chasing each other round a violet rune stone (swap to the next saved loadout)"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/SkyyClasses_AbilityItem_Hints.png",
+   "bytes": 4425,
+   "sha256": "0d29062e6c98b2e8431022c817dd419d7b8ff9cca0bb404c688593484f932c82",
+   "size": [
+    64,
+    64
+   ],
+   "item_id": "SkyyClasses_AbilityItem_Hints",
+   "kind": "utility",
+   "class": "Utility",
+   "name": "Hints",
+   "what": "Replay the class tutorial hints (utility item)",
+   "shows": "an open book (wine leather cover, warm pages with text lines) with a glowing gold question mark rising off it"
+  },
+  {
+   "path": "sheet.png",
+   "bytes": 580004,
+   "what": "review sheet: mock hotbar + every item at 4x / 64 / 32 px",
+   "sha256": "f0191c0b66e39c9a84e128f1bd63a73e2bee4035e8f90184d5fd2a67bc1b98f4"
+  },
+  {
+   "path": "README.md",
+   "bytes": 7379,
+   "what": "what this is, the spec, item list, defaults, UNVERIFIED, open questions"
+  }
+ ]
+}
