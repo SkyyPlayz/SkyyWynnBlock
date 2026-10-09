@@ -296,6 +296,7 @@ Skyy 2026-10-09 ("all look great! commit all"). Not seen in game.
 | Tree | Bark (in game) | Plate edge | Mark | Cloth |
 |---|---|---|---|---|
 | Fir | very dark brown, rough flakes | fir tiers (wide V + point) | little fir tree | oatmeal wool |
+| Cedar | orange-brown fibre strips | pointed arches | cedar rose | burgundy |
 
 Files: `Common/Items/Armors/SkyyForaging/F4_Northern/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`,
 `source/F4_Northern/<Tree>/`, `sheet-<tree>.png`. Each 65 boxes + 9 quads.
