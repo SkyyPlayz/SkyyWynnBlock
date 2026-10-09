@@ -67,6 +67,14 @@ Hands 64x64), original pixels only. Per tier a `sheet-<tier>.png` (front / side 
 **Ask Skyy (defaults):** keep the concept looks as approved [yes]; helmet in every tier [yes].
 
 ## Queue (check with Skyy before starting each)
+15. **Mystery bags - unidentified loot, ONE per rarity (7)** (Skyy 2026-10-08: "make the mystery bags unidentified items come in before you
+   identify them. we just need 1 per rarity."). A dropped / looted unidentified weapon or armor piece shows as a closed loot bag until the
+   player identifies it (Wynncraft style: level + rarity shown, type hidden). Rarities + colours (placeholders from
+   research/cloud/Loot-Box-Design.md, ask Skyy to confirm): Normal white, Unique yellow, Rare magenta, Legendary cyan, Fabled red, Mythic
+   purple, Set green - richer bags for higher rarities (more trim, a gem, a glow / sparkle on Mythic). Keep them clearly different from
+   our Pocket Dimension bags (art/../models-local bags: black pouch + portal) - e.g. a tied cloth sack with a wax seal / tag in the rarity
+   colour. Make: model + texture + 64x64 icon per rarity, a dropped look, `art/mystery-bags/Common/Items/SkyyGear/MysteryBag/<Rarity>.blockymodel`,
+   icons `Common/Icons/ItemsGenerated/SkyyGear_MysteryBag_<Rarity>.png`, one sheet. Ask Skyy which to do first: this or the gathering armor.
 13. **Zone 1 town props** (was NEXT; moved behind the gathering armor 2026-10-08) - - the Waiting Room + Waiting Square set (Blockbench, full models)
 **Why:** Skyy approved the Zone 1 town plan (docs/answered/world.md 2026-10-08: "keep v2, its hub enough" + yes to every town question).
 The town is "the Department of Arrivals": a vanilla temple turned into a cosmic waiting room. Its story props are ours to make (the
