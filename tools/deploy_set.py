@@ -70,7 +70,7 @@ SET = [
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     ("SkyyTownProbe", "0.1"),
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
-    ("SkyyKeyProbe", "0.1"),
+    ("SkyyKeyProbe", "0.2"),
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
@@ -105,7 +105,6 @@ SET = [
 PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "TheRedlotus:HyFishing", "BlueOrbit:DynamicSeasons",
                     "NoCube:[NoCube's] Orchard",
                     "dev.ninesliced:BetterMap",
-                    "LadyPaladra:TheArmory",
                     "Frah:Better Mob Expansion"]  # 2026-10-09 Skyy: test BME main mod (GPLv3, credit in PACK.md + server credits); Humans add-on stays OFF ("No guns")  # 2026-10-08 Skyy: "switch the armory on" - CC BY-NC (credit, never sell; PACK.md); combat armor + Warrior / Berserker / Assassin weapons + boss specials (research/Pack-Armor-Plan.md)  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
 # Advanced Farming was NOT added (Skyy 2026-10-06: out of date, no longer updated -> build its tools into our own mod).
 # Skyy mods that were MERGED into another mod and must be switched OFF in the world config on every deploy (their jar may stay in Mods;
@@ -147,6 +146,23 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "T
 # switch Base Mana off and let players log in once. To roll SkyyArmory back: take it out of SET, add it to RETIRED and put SkyySkills back
 # to 0.4.14 in the same deploy (vanilla staff files would charge 50 Mana behind a 10-Mana check otherwise). SkyyClasses back to 0.1.10 is safe.
 RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe"]   # SkyyMonkProbe: tested 2026-10-08 (TEST 48), the real moves are SkyyArmory 0.1.12
+
+
+# Third-party pack mods switched OFF in the world on every deploy (kept installed).
+# 2026-10-09 Skyy: "Armory off until 0.7" - The Armory (708 textures) overflowed the client item/creature texture atlas
+# (8192x16384 needed, max 8192x8192: 395 of 2808 images dropped = broken copper ore, talismans, swords). Re-test on Hytale 0.7.
+PACK_DISABLED = ["LadyPaladra:TheArmory"]
+
+
+def disable_third_party(world, key):
+    import json
+    cfg = os.path.join(B.USERDATA, "Saves", world, "config.json")
+    d = json.load(open(cfg, encoding="utf-8"))
+    mods = d.setdefault("Mods", {})
+    if mods.get(key, {}).get("Enabled"):
+        mods[key] = {"Enabled": False}
+        json.dump(d, open(cfg, "w", encoding="utf-8"), indent=2)
+        print("world", world, "switched off", key)
 
 
 def retire_in_world(world, mod):
@@ -263,6 +279,8 @@ def main():
         B.enable_in_world(WORLD, key)
     for mod in RETIRED:
         retire_in_world(WORLD, mod)
+    for key in PACK_DISABLED:
+        disable_third_party(WORLD, key)
     print("deployed %d mods. Start the world and watch the server log for every '[Skyy...] ready' line." % len(plan))
     return 0
 
