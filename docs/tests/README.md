@@ -154,3 +154,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyGear 0.2.13: Crude weapon speed tiers + mace warnings (DEPLOYED 2026-10-09, backup deploy-20261009-0805) | [2026-10](2026-10.md) |
 | SkyyFishing 0.1.2: real fishing line + idle bobber (DEPLOYED 2026-10-09, backup deploy-20261009-0836) | [2026-10](2026-10.md) |
 | Monk skill renamed to Zen + Stats class-balance damage (DEPLOYED 2026-10-09, backup deploy-20261009-0928) | [2026-10](2026-10.md) |
+| SkyyProfiles 0.1.9: 8 profile slots (DEPLOYED 2026-10-09, backup deploy-20261009-1322) | [2026-10](2026-10.md) |
