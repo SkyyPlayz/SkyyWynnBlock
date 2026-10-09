@@ -93,6 +93,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 84. Ability engine R1: /cast list / 1 / 2 / swap, Meteor, Sacred Heal, cooldowns, ability kill XP
 85. SkyySkills 0.4.29: pet XP immediately from skill XP, SkyyPets fallback off
 86. SkyyWorldGen 0.4: /zone proof caves (upper / deep / lava caverns y 50-57), solid island bottoms
+87. Mining armor: 28 metal pieces = 7 Mining Sets, Mining level gate, pickaxe/shovel-only stats, full-set Fortune
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
