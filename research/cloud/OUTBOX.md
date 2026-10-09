@@ -124,3 +124,8 @@ UNVERIFIED: Armory longsword move set (hook or CC BY-NC override), runtime arc r
 ## 2026-10-09 13:14 Dynamic Seasons crash report draft
 Done: research/cloud/DynamicSeasons-Crash-Report.md - item 10 ready to paste into research/Author-Requests.md (cloud can't push that file to main). Friendly bug report for BlueOrbit: what happened, the trimmed stack, guess = re-added crop entity gets CropQualityComponent twice (use put / add-if-missing). Fill 3 fields from the crash log: time, server build, mod count. Other 4 specs (archipelago, pet core, elements, ability engine plan) are running now.
 Also: SkyyMonkProbe is retired (632263f) - close https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11? Once it's closed or merged I can open the SkyyAbilityProbe PR on my branch.
+
+## 2026-10-09 13:19 Pet core spec
+Done: research/cloud/Pet-Core-Spec.md - pets are per-profile records (never items; eggs are items), slot-2 lifecycle (logout auto-store, world change, profile switch, death, 10 s orphan sweep), defeat cooldown 60 s -> 15 s by level, Follow / Defend / Hold, 3 vanilla pages, ~25 Server Setup rows, phases SkyyPets 0.1-0.6 + probes P1-P10.
+Needed in other mods first: SkyySkills pets:fn:onxp hook; SkyyGear gear:extra must take a map (pets would overwrite accessory stats - SkyyGear 0.2.11 line 11147); SkyyMobs exclude SkyyPet_* (0.1.5 line 775). Doc conflict: research/cloud/Pet-Sources.md says no NPC sells eggs, docs/answered/economy.md line 92 (newer) adds them - spec follows the newer line.
+Questions: records not items [yes]; paid early revive [off, owner can enable]; slot-1 pet shown by default [yes, hideable].
