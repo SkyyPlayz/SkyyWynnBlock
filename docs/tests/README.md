@@ -145,3 +145,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Luggage sacks + Bazaar search + sprint probe; The Armory off (DEPLOYED 2026-10-09, backup deploy-20261009-0707) | [2026-10](2026-10.md) |
 | SkyySacks 0.7.15: Omni hidden, fiber T1 bags (DEPLOYED 2026-10-09, backup deploy-20261009-0712) | [2026-10](2026-10.md) |
 | SkyyMerchants 0.1: roaming merchants (DEPLOYED 2026-10-09, backup deploy-20261009-0724) | [2026-10](2026-10.md) |
+| SkyySacks 0.7.16: bag hold pose (DEPLOYED 2026-10-09, backup deploy-20261009-0733) | [2026-10](2026-10.md) |
