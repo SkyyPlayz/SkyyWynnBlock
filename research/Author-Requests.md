@@ -113,3 +113,17 @@ Where: CurseForge comment or Discord
 > 1. Is it OK if our mods spawn your merchant roles at runtime and open our own shop pages for them (by role id, no file edits)?
 > 2. Do you plan a Hytale 0.7 update (the manifest is pinned to build 2026.03.26)?
 > Thanks!
+
+---
+
+## 9. wyvernling - Welkin (optional)
+Where: CurseForge page
+
+> Hi wyvernling! I'm Skyy from SkyWynn, a free Hytale server pack. Welkin looks amazing. Your page says All Rights Reserved, so I wanted
+> to ask:
+> 1. Can SkyWynn list Welkin as an optional pack mod? Players would install it from your CurseForge page (we never re-upload), with
+>    credit and a link.
+> 2. Is it OK if we use your cloud blocks and glider as credited assets, without the vanilla worldgen overrides (they replace current
+>    vanilla generator files with older copies)?
+> 3. Do you plan a Hytale 0.7 update? The manifest is pinned to 2026.05.07.
+> Thanks either way!

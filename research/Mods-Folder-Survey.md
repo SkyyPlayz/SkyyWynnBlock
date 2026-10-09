@@ -67,3 +67,14 @@ storage / stacks / backpacks, other maps / HUDs, farming overhauls, durability /
 - MIT (keep the notice). A world-wide on/off switch per mob (operator UI, restart needed) that patches copies of the vanilla spawn files;
   no per-zone control, no boss spawners / timers, no NPC spawning, no API; 124 MB jar with bundled server classes; Assets overlaps
   Forgotten Creatures' spawn files. VERDICT: skip - our own spawn files (SkyyWorldGen) + code-spawned NPCs cover these needs.
+
+## Welkin 1.0.2 (wyvernling) - Skyy: "this could help make better islands maybe take a look"
+- All Rights Reserved; pure asset zip pinned to pre-release build 2026.05.07; a separate sky INSTANCE world (portal pad crafted at the
+  Enchanted Loom); cloud blocks, Copperleaf glider, pumpkin staff, winged ram mount, tameable copper wolf, ~150 prefabs. Disabled in HUD mod.
+- RISK: overrides 196 vanilla HytaleGenerator files - 90 are STALE pre-release copies (Settings.json, zone + biome files) that would
+  downgrade vanilla worldgen and break SkyyWorldGen. Do not include.
+- TECHNIQUE for OUR islands (own words, vanilla nodes): a jittered cell grid (~470 blocks, jitter 90) warped by an ~80-block gradient warp
+  picks irregular island cells; island density = Min(2D Simplex "tops" scale 80-100 faded by distance from the cell centre, a
+  noise-shaped sloped underside); base height ~100; vertical warp for puffy undersides; cloud / rock / chain props. Fixes "round, flat,
+  boring": organic outline, hilly top, sloped underside. Cell grid = archipelagos; Distance-from-origin = single-centre islands.
+- Optional ask (glider + cloud blocks, or a no-override build): research/Author-Requests.md #9.
