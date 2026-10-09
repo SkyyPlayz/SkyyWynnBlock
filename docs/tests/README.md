@@ -142,3 +142,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyySkills 0.4.25: class power split + stat perks (DEPLOYED 2026-10-08, backup deploy-20261008-2336) | [2026-10](2026-10.md) |
 | Better Mob Expansion switched on (test) (DEPLOYED 2026-10-09, backup deploy-20261009-0538) | [2026-10](2026-10.md) |
 | SkyyMenu 0.3.12: skill Defense on the Stats page (DEPLOYED 2026-10-09, backup deploy-20261009-0546) | [2026-10](2026-10.md) |
+| Luggage sacks + Bazaar search + sprint probe; The Armory off (DEPLOYED 2026-10-09, backup deploy-20261009-0707) | [2026-10](2026-10.md) |
