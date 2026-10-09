@@ -94,11 +94,33 @@ models in Assets.zip for scale and file layout), in `art/town-props/Common/...`:
 One `sheet.png` with all six + names, manifest with sizes and node names. Original pixels only.
 **Ask Skyy (defaults in brackets):** Board colour [amber glow on dark stone], machine style [brass + stone], arch portal colour [the void
 purple of the bag swirl].
-7. **Pets** (Blockbench, full models): 15 launch pets in Hytale chunky voxel style (research/cloud/Pets-Spec.md + research/cloud/pet-art/
-   README.md for the list and the approved v2 look). The pet system is not built yet - ASK Skyy before starting.
 9. **Armor** - DECIDED 2026-10-08 (docs/answered/gear.md): our own Light armor is DROPPED (combat armor = The Armory pack), MINING armor = vanilla metal sets (no art needed). Still OURS: FARMING (crop sets) + FORAGING (bark plates) armor - approved concept designs in research/cloud/gathering-armor-art/ + foraging-armor/; ask Skyy before starting them as full Blockbench items.
 
+- **Known issue - Pebble mirrored UVs (fix pending Skyy's OK):** found while making the pets. Blockbench 5.2.1 + Hytale Models 0.10.0 read a
+  mirrored face's `offset.x` as the RIGHT edge of its texture region. The committed Pebble (`art/pebble/`) likely has the mirrored
+  right-side parts' offsets wrong (R-Foot, R-Arm, R-Brow, Sprout-Leaf-R use the same offset as their L twin), so those faces may sample
+  the wrong pixels / show seams. Not fixed - waiting for Skyy. The pets generator already writes mirrored offsets the right way.
+
 ## Done
+### 7. Pets - 15 launch pets (2026-10-08)
+- Folder: `art/pets/` - per pet `Common/NPC/SkyyPets/<Pet>/Models/<Pet>.blockymodel` + `<Pet>_Texture.png` and
+  `Animations/Default/{Idle,Walk,Run|Fly}.blockyanim`; icons `Common/Icons/ModelsGenerated/SkyyPets_<Pet>.png` (128) and
+  `Common/Icons/ItemsGenerated/SkyyPets_Pet_<Pet>.png` (64); `source/<Pet>.bbmodel`, `sheet.png`, `manifest.json`, `README.md`.
+  Pets: Rabbit, Chicken, Goat, Warthog, Bear, Turkey, Wolf, Boar, Hawk, Ram, Skrill (original "stormwing"), Tusker, Mouflon, Horse, Camel.
+  Scripts: `tools/art/make_pets.py`, `pets_models.py`, `pets_anims.py`, `pets_common.py`, `pets_render.py`, `make_pets_previews.py`,
+  `make_pets_manifest.py`, `validate_pets.py`, `bb_validate_pets.js`.
+- Look: cute Hytale chunky voxel (big friendly eyes, soft shapes, painted light). v2 redid the 4 rideables after Skyy's review: Horse on
+  vanilla-horse proportions (long neck + head, mane, feathered cuffs, hooves), two-hump Camel, a tough war Ram (spiral horns, heavy brow,
+  steel chest plate), a clearly wild Mouflon (red coat, white belly, crescent horns, Priest tack). Original art; vanilla only looked at.
+- Ids are PROPOSED (pet system not built): item `SkyyPets_Pet_<Pet>`, model / NPC `SkyyPets_<Pet>`, name key `skyypets.pet.<pet>.name`;
+  nameplate on `Head`, rider seat on `Saddle`. Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0 (no validator issues, all
+  45 animations bind).
+- Skyy's answers, word for word: "keep the kinda hytale style, and make the pets cute." / "Numbers 10 13 14 and 15 look a little weird.
+  Check the hytale horses skins, and make it look more like them. The Ram looks dorky. It needs to look a little more tough and
+  aggressive, and also a little more like an actual ram. The camel just looks a little weird and I'm not even sure what the other
+  creature is" / "Yes, the pets look good, commit them"
+- Not yet seen in game. UNVERIFIED: NPC/asset JSON, anim slot names, mount seat, 0.6x -> 1.0x level scaling (see README).
+
 ### 6. Monk claws - 7 metal tiers (2026-10-08)
 - Folder: `art/monk-claws/` - `Common/Items/Weapons/Fist/SkyyArmory_Claws_<Tier>.blockymodel` + `_Texture.png` (64x128) and icons
   `Common/Icons/ItemsGenerated/SkyyArmory_Fist_Claws_<Tier>.png` (64x64) for Copper, Iron, Thorium, Cobalt, Adamantite, Mithril,
