@@ -17032,6 +17032,940 @@
     }
    }
   },
+  "F5_Wastes/Crystalwood": {
+   "tier": "F5_Wastes",
+   "tree": "Crystalwood",
+   "item_id_prefix_suggestion": "Armor_Foraging_Crystalwood",
+   "sheet": "sheet-crystalwood.png",
+   "status": "approved by Skyy 2026-10-09 (\"All look great, commit the 4 colour fixes and all 10 F5 sets\"); NOT verified in game",
+   "totals": {
+    "boxes": 70,
+    "quads": 11
+   },
+   "pieces": {
+    "Head": {
+     "model": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Head.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Head_Texture.png",
+     "texture_size": [
+      64,
+      224
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Crystalwood_Head.png",
+     "source": "source/F5_Wastes/Crystalwood/Head.bbmodel",
+     "attaches_to_bones": [
+      "Head"
+     ],
+     "boxes": 14,
+     "quads": 5,
+     "nodes": [
+      {
+       "name": "Head",
+       "kind": "attach:Head",
+       "parent": null
+      },
+      {
+       "name": "HelmCap",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        32,
+        10,
+        31
+       ]
+      },
+      {
+       "name": "HelmUpper",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        28,
+        3,
+        27
+       ]
+      },
+      {
+       "name": "HelmDome",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        22,
+        2,
+        21
+       ]
+      },
+      {
+       "name": "HelmBrim",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        36,
+        2,
+        34
+       ]
+      },
+      {
+       "name": "HelmBack",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        32,
+        18,
+        2
+       ]
+      },
+      {
+       "name": "R-Cheek",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        14,
+        14
+       ]
+      },
+      {
+       "name": "L-Cheek",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        14,
+        14
+       ]
+      },
+      {
+       "name": "CrownMid",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        7,
+        19,
+        2
+       ]
+      },
+      {
+       "name": "R-CrownSide",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        7,
+        15,
+        2
+       ]
+      },
+      {
+       "name": "L-CrownSide",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        7,
+        15,
+        2
+       ]
+      },
+      {
+       "name": "R-HelmLeaf",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "L-HelmLeaf",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "HelmBadge",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        5,
+        5,
+        2
+       ]
+      },
+      {
+       "name": "L-HelmMark",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "R-HelmCrest",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        4,
+        16
+       ]
+      },
+      {
+       "name": "L-HelmCrest",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        4,
+        16
+       ]
+      },
+      {
+       "name": "BrowGem",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        5,
+        5,
+        1
+       ]
+      },
+      {
+       "name": "R-HelmWing",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "L-HelmWing",
+       "kind": "quad",
+       "parent": "Head"
+      }
+     ]
+    },
+    "Chest": {
+     "model": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Chest.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Chest_Texture.png",
+     "texture_size": [
+      64,
+      224
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Crystalwood_Chest.png",
+     "source": "source/F5_Wastes/Crystalwood/Chest.bbmodel",
+     "attaches_to_bones": [
+      "Pelvis",
+      "Belly",
+      "Chest",
+      "R-Arm",
+      "L-Arm"
+     ],
+     "boxes": 33,
+     "quads": 4,
+     "nodes": [
+      {
+       "name": "Pelvis",
+       "kind": "attach:Pelvis",
+       "parent": null
+      },
+      {
+       "name": "R-Tassel",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        12,
+        13,
+        1
+       ]
+      },
+      {
+       "name": "L-Tassel",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        12,
+        13,
+        1
+       ]
+      },
+      {
+       "name": "TasselBack",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        24,
+        13,
+        1
+       ]
+      },
+      {
+       "name": "Belly",
+       "kind": "attach:Belly",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "Plackart",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        27,
+        16,
+        20
+       ]
+      },
+      {
+       "name": "VineBelt",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        28,
+        3,
+        21
+       ]
+      },
+      {
+       "name": "Clasp",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        6,
+        6,
+        2
+       ]
+      },
+      {
+       "name": "CrystalwoodBadge",
+       "kind": "quad",
+       "parent": "Belly"
+      },
+      {
+       "name": "Chest",
+       "kind": "attach:Chest",
+       "parent": "Belly"
+      },
+      {
+       "name": "Cuirass",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        29,
+        22,
+        21
+       ]
+      },
+      {
+       "name": "R-Breast",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        12,
+        17,
+        2
+       ]
+      },
+      {
+       "name": "L-Breast",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        12,
+        17,
+        2
+       ]
+      },
+      {
+       "name": "Collar",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        22,
+        4,
+        19
+       ]
+      },
+      {
+       "name": "GorgetPlate",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        16,
+        6,
+        2
+       ]
+      },
+      {
+       "name": "ChestKnot",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        9,
+        9,
+        2
+       ]
+      },
+      {
+       "name": "R-Arm",
+       "kind": "attach:R-Arm",
+       "parent": "Chest"
+      },
+      {
+       "name": "R-Pauldron",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        15,
+        4,
+        18
+       ]
+      },
+      {
+       "name": "R-PauldronCap",
+       "kind": "box",
+       "parent": "R-Pauldron",
+       "size": [
+        11,
+        3,
+        15
+       ]
+      },
+      {
+       "name": "R-PauldronFin",
+       "kind": "box",
+       "parent": "R-PauldronCap",
+       "size": [
+        2,
+        2,
+        12
+       ]
+      },
+      {
+       "name": "R-CapThornA",
+       "kind": "box",
+       "parent": "R-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-CapThornB",
+       "kind": "box",
+       "parent": "R-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-ShoulderLeaf",
+       "kind": "quad",
+       "parent": "R-Pauldron"
+      },
+      {
+       "name": "R-PauldronGuard",
+       "kind": "box",
+       "parent": "R-Pauldron",
+       "size": [
+        2,
+        10,
+        16
+       ]
+      },
+      {
+       "name": "R-GuardGem",
+       "kind": "box",
+       "parent": "R-PauldronGuard",
+       "size": [
+        1,
+        5,
+        5
+       ]
+      },
+      {
+       "name": "R-PauldronLame",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        3,
+        8,
+        15
+       ]
+      },
+      {
+       "name": "R-Sleeve",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        9,
+        22,
+        13
+       ]
+      },
+      {
+       "name": "R-PauldronLame2",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        2,
+        6,
+        14
+       ]
+      },
+      {
+       "name": "L-Arm",
+       "kind": "attach:L-Arm",
+       "parent": "Chest"
+      },
+      {
+       "name": "L-Pauldron",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        15,
+        4,
+        18
+       ]
+      },
+      {
+       "name": "L-Vine",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        3,
+        2,
+        18
+       ]
+      },
+      {
+       "name": "L-VineLeafA",
+       "kind": "quad",
+       "parent": "L-Vine"
+      },
+      {
+       "name": "L-VineLeafB",
+       "kind": "quad",
+       "parent": "L-Vine"
+      },
+      {
+       "name": "L-PauldronCap",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        11,
+        3,
+        15
+       ]
+      },
+      {
+       "name": "L-PauldronFin",
+       "kind": "box",
+       "parent": "L-PauldronCap",
+       "size": [
+        2,
+        2,
+        12
+       ]
+      },
+      {
+       "name": "L-CapThornA",
+       "kind": "box",
+       "parent": "L-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-CapThornB",
+       "kind": "box",
+       "parent": "L-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-PauldronGuard",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        2,
+        10,
+        16
+       ]
+      },
+      {
+       "name": "L-GuardGem",
+       "kind": "box",
+       "parent": "L-PauldronGuard",
+       "size": [
+        1,
+        5,
+        5
+       ]
+      },
+      {
+       "name": "L-PauldronLame",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        3,
+        8,
+        15
+       ]
+      },
+      {
+       "name": "L-Sleeve",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        9,
+        22,
+        13
+       ]
+      },
+      {
+       "name": "L-PauldronLame2",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        2,
+        6,
+        14
+       ]
+      }
+     ]
+    },
+    "Hands": {
+     "model": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Hands.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Hands_Texture.png",
+     "texture_size": [
+      64,
+      64
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Crystalwood_Hands.png",
+     "source": "source/F5_Wastes/Crystalwood/Hands.bbmodel",
+     "attaches_to_bones": [
+      "R-Forearm",
+      "R-Hand",
+      "L-Forearm",
+      "L-Hand"
+     ],
+     "boxes": 12,
+     "quads": 2,
+     "nodes": [
+      {
+       "name": "R-Forearm",
+       "kind": "attach:R-Forearm",
+       "parent": null
+      },
+      {
+       "name": "R-Bracer",
+       "kind": "box",
+       "parent": "R-Forearm",
+       "size": [
+        9,
+        14,
+        13
+       ]
+      },
+      {
+       "name": "R-BracerPlate",
+       "kind": "box",
+       "parent": "R-Forearm",
+       "size": [
+        2,
+        12,
+        10
+       ]
+      },
+      {
+       "name": "R-BracerThornA",
+       "kind": "box",
+       "parent": "R-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-BracerThornB",
+       "kind": "box",
+       "parent": "R-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-Sprig",
+       "kind": "quad",
+       "parent": "R-Forearm"
+      },
+      {
+       "name": "R-Hand",
+       "kind": "attach:R-Hand",
+       "parent": "R-Forearm"
+      },
+      {
+       "name": "R-Glove",
+       "kind": "box",
+       "parent": "R-Hand",
+       "size": [
+        11,
+        12,
+        15
+       ]
+      },
+      {
+       "name": "R-GloveCuff",
+       "kind": "box",
+       "parent": "R-Hand",
+       "size": [
+        12,
+        2,
+        16
+       ]
+      },
+      {
+       "name": "L-Forearm",
+       "kind": "attach:L-Forearm",
+       "parent": null
+      },
+      {
+       "name": "L-Bracer",
+       "kind": "box",
+       "parent": "L-Forearm",
+       "size": [
+        9,
+        14,
+        13
+       ]
+      },
+      {
+       "name": "L-BracerPlate",
+       "kind": "box",
+       "parent": "L-Forearm",
+       "size": [
+        2,
+        12,
+        10
+       ]
+      },
+      {
+       "name": "L-BracerThornA",
+       "kind": "box",
+       "parent": "L-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-BracerThornB",
+       "kind": "box",
+       "parent": "L-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-Sprig",
+       "kind": "quad",
+       "parent": "L-Forearm"
+      },
+      {
+       "name": "L-Hand",
+       "kind": "attach:L-Hand",
+       "parent": "L-Forearm"
+      },
+      {
+       "name": "L-Glove",
+       "kind": "box",
+       "parent": "L-Hand",
+       "size": [
+        11,
+        12,
+        15
+       ]
+      },
+      {
+       "name": "L-GloveCuff",
+       "kind": "box",
+       "parent": "L-Hand",
+       "size": [
+        12,
+        2,
+        16
+       ]
+      }
+     ]
+    },
+    "Legs": {
+     "model": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Legs.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Legs_Texture.png",
+     "texture_size": [
+      64,
+      128
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Crystalwood_Legs.png",
+     "source": "source/F5_Wastes/Crystalwood/Legs.bbmodel",
+     "attaches_to_bones": [
+      "Pelvis",
+      "R-Thigh",
+      "R-Calf",
+      "R-Foot",
+      "L-Thigh",
+      "L-Calf",
+      "L-Foot"
+     ],
+     "boxes": 11,
+     "quads": 0,
+     "nodes": [
+      {
+       "name": "Pelvis",
+       "kind": "attach:Pelvis",
+       "parent": null
+      },
+      {
+       "name": "Breeches",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        26,
+        12,
+        20
+       ]
+      },
+      {
+       "name": "R-Thigh",
+       "kind": "attach:R-Thigh",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "R-Trouser",
+       "kind": "box",
+       "parent": "R-Thigh",
+       "size": [
+        11,
+        21,
+        14
+       ]
+      },
+      {
+       "name": "R-Calf",
+       "kind": "attach:R-Calf",
+       "parent": "R-Thigh"
+      },
+      {
+       "name": "R-Knee",
+       "kind": "box",
+       "parent": "R-Calf",
+       "size": [
+        7,
+        7,
+        2
+       ]
+      },
+      {
+       "name": "R-KneeGem",
+       "kind": "box",
+       "parent": "R-Knee",
+       "size": [
+        5,
+        5,
+        1
+       ]
+      },
+      {
+       "name": "R-Greave",
+       "kind": "box",
+       "parent": "R-Calf",
+       "size": [
+        11,
+        23,
+        13
+       ]
+      },
+      {
+       "name": "R-Foot",
+       "kind": "attach:R-Foot",
+       "parent": "R-Calf"
+      },
+      {
+       "name": "R-Boot",
+       "kind": "box",
+       "parent": "R-Foot",
+       "size": [
+        14,
+        8,
+        20
+       ]
+      },
+      {
+       "name": "L-Thigh",
+       "kind": "attach:L-Thigh",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "L-Trouser",
+       "kind": "box",
+       "parent": "L-Thigh",
+       "size": [
+        11,
+        21,
+        14
+       ]
+      },
+      {
+       "name": "L-Calf",
+       "kind": "attach:L-Calf",
+       "parent": "L-Thigh"
+      },
+      {
+       "name": "L-Knee",
+       "kind": "box",
+       "parent": "L-Calf",
+       "size": [
+        7,
+        7,
+        2
+       ]
+      },
+      {
+       "name": "L-KneeGem",
+       "kind": "box",
+       "parent": "L-Knee",
+       "size": [
+        5,
+        5,
+        1
+       ]
+      },
+      {
+       "name": "L-Greave",
+       "kind": "box",
+       "parent": "L-Calf",
+       "size": [
+        11,
+        23,
+        13
+       ]
+      },
+      {
+       "name": "L-Foot",
+       "kind": "attach:L-Foot",
+       "parent": "L-Calf"
+      },
+      {
+       "name": "L-Boot",
+       "kind": "box",
+       "parent": "L-Foot",
+       "size": [
+        14,
+        8,
+        20
+       ]
+      }
+     ]
+    }
+   }
+  },
   "F5_Wastes/Fire": {
    "tier": "F5_Wastes",
    "tree": "Fire",
@@ -22877,6 +23811,62 @@
    "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Camphor/Legs_Texture.png",
    "bytes": 5587,
    "sha256": "ae128b96f54c251586ebd9cf10556aa09364266e54b6a2d0a4f19833be9e2bce",
+   "image_size": [
+    64,
+    128
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Chest.blockymodel",
+   "bytes": 132348,
+   "sha256": "ab850a160262eee155c8a21deebebbc0daa2035475477310fd453246e9f724f6"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Chest_Texture.png",
+   "bytes": 17679,
+   "sha256": "43cf3303aecc2135bc772637688200abe96519e056158867655423ebddce823a",
+   "image_size": [
+    64,
+    224
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Hands.blockymodel",
+   "bytes": 37152,
+   "sha256": "3a806b3f6a6f7672217efeefd66d5a503eba7cdcd4c44a0fc97efa1844ddb53e"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Hands_Texture.png",
+   "bytes": 4834,
+   "sha256": "0f39cfc14f8acd4bc569d3fa6de5ab2051bb5fc2d54d0bd9447f557e6a0d7302",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Head.blockymodel",
+   "bytes": 38571,
+   "sha256": "f2f72484c383f4dcb4f143d342694f017e7cc23680a90e78fa9b7bf9ffdd25c4"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Head_Texture.png",
+   "bytes": 8850,
+   "sha256": "eb1e6d0e6848118ceb994bb4b816c7572859f5763ee7fb510822d3c9e0a20159",
+   "image_size": [
+    64,
+    224
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Legs.blockymodel",
+   "bytes": 40322,
+   "sha256": "32d1c1b65e103994c451e852397941dd2594fad568b6e344decde7bf2e28ce0b"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/Legs_Texture.png",
+   "bytes": 5617,
+   "sha256": "863984cce2d865be6bf0843fed97eb1fa28576b6980488df81c54fb976b9e597",
    "image_size": [
     64,
     128

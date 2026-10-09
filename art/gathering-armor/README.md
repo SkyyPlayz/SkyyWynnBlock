@@ -331,6 +331,7 @@ Colours sampled from each tree's own textures in Assets.zip (log side, log top, 
 | Jungle | olive, knotty | leaf hooks | big jungle leaf | red-brown | emerald |
 | Blue Fig | dusty red blocks | fig lobes | blue fig | deep blue | aqua |
 | Fire | red-black, lava cracks | flame tongues | flame | charcoal | lava |
+| Crystalwood | near-black slate plates | lopsided shards | pink crystal cluster | indigo | pink |
 
 Files: `Common/Items/Armors/SkyyForaging/F5_Wastes/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`, `source/F5_Wastes/<Tree>/`,
 `sheet-<tree>.png`. Each 65 boxes + 9 quads from F4, plus 5 gem boxes and 2 wing quads. The `ga_<tree>.py`
