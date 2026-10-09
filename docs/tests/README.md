@@ -141,3 +141,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Loot round: mystery bags + Unclaimed Luggage (DEPLOYED 2026-10-08, backup deploy-20261008-2211) | [2026-10](2026-10.md) |
 | SkyySkills 0.4.25: class power split + stat perks (DEPLOYED 2026-10-08, backup deploy-20261008-2336) | [2026-10](2026-10.md) |
 | Better Mob Expansion switched on (test) (DEPLOYED 2026-10-09, backup deploy-20261009-0538) | [2026-10](2026-10.md) |
+| SkyyMenu 0.3.12: skill Defense on the Stats page (DEPLOYED 2026-10-09, backup deploy-20261009-0546) | [2026-10](2026-10.md) |
