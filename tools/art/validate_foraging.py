@@ -125,8 +125,9 @@ def digest():
     return h
 if "--no-rebuild" not in sys.argv:
     before = digest()
-    subprocess.run([sys.executable, os.path.join(HERE, "make_foraging_armor.py")], check=True, capture_output=True)
-    subprocess.run([sys.executable, os.path.join(HERE, "make_foraging_icons.py")], check=True, capture_output=True)
+    subprocess.run([sys.executable, os.path.join(HERE, "make_foraging_armor.py"), ROOT], check=True, capture_output=True,
+                   env=dict(os.environ, GA_DESIGN="ga_" + TREE.lower()))
+    subprocess.run([sys.executable, os.path.join(HERE, "make_foraging_icons.py"), ROOT, TIER, TREE], check=True, capture_output=True)
     after = digest()
     diff = [k for k in before if before[k] != after.get(k)]
     print("determinism:", "OK (byte-identical rebuild)" if not diff else "CHANGED: %s" % diff)

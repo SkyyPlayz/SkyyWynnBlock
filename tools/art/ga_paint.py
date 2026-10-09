@@ -37,6 +37,24 @@ RAMPS = {
                (1.00, (176, 146, 102))],
     STITCH: [(0.00, (60, 50, 40)), (0.50, (110, 92, 64)), (1.00, (160, 138, 96))],
 }
+# Birch (F1 Grove): off-white papery bark (never pure white), charcoal lenticels / knot "eyes", pale yellow heartwood,
+# light spring-green leaves, olive-gold catkins, cool sage cloth.
+BIRCH, BIRCHDK, BLEAF, CATKIN, BWOOD, SAGE = range(10, 16)
+MAT_NAMES += ["birch", "birchdark", "birchleaf", "catkin", "birchwood", "sage"]
+RAMPS.update({
+    BIRCH: [(0.00, (88, 86, 96)), (0.20, (128, 124, 128)), (0.35, (166, 160, 156)), (0.50, (196, 190, 178)),
+            (0.65, (216, 211, 196)), (0.80, (230, 226, 212)), (1.00, (242, 239, 226))],
+    BIRCHDK: [(0.00, (22, 20, 26)), (0.25, (34, 30, 36)), (0.50, (50, 44, 48)), (0.75, (72, 64, 64)),
+              (1.00, (104, 94, 88))],
+    BLEAF: [(0.00, (40, 72, 34)), (0.20, (62, 102, 40)), (0.35, (88, 130, 48)), (0.50, (114, 156, 58)),
+            (0.65, (140, 180, 70)), (0.80, (170, 202, 92)), (1.00, (206, 226, 138))],
+    CATKIN: [(0.00, (66, 54, 30)), (0.25, (104, 88, 40)), (0.50, (144, 124, 54)), (0.75, (182, 162, 76)),
+             (1.00, (218, 202, 120))],
+    BWOOD: [(0.00, (92, 72, 52)), (0.20, (132, 106, 72)), (0.35, (166, 136, 92)), (0.50, (192, 162, 112)),
+            (0.65, (212, 184, 134)), (0.80, (228, 204, 158)), (1.00, (240, 224, 186))],
+    SAGE: [(0.00, (26, 30, 32)), (0.20, (38, 44, 44)), (0.35, (52, 60, 56)), (0.50, (68, 78, 70)),
+           (0.65, (86, 96, 86)), (0.80, (108, 118, 104)), (1.00, (142, 150, 132))],
+})
 WARM = np.array((104, 92, 64), float)       # sun-faded / worn bark tint
 QSTEP = 0.05                                # value quantisation -> flat painted clusters
 
@@ -253,7 +271,7 @@ def mottle(F, scale=7.0, amp=0.05, seed=3, levels=3):
 def wear(F, amount=0.5, scale=5.0, seed=11, thr=0.64):
     """warm scuffed patches on leather (blobs, not grain)."""
     n = vnoise(F.W + 31.7, scale, seed)
-    m = (n > thr) & np.isin(F.mat, [BARK, CLOTH])
+    m = (n > thr) & np.isin(F.mat, [BARK, CLOTH, SAGE])
     F.warm[m] = np.maximum(F.warm[m], amount * np.clip((n[m] - thr) / 0.12, 0.4, 1.0))
     return m
 

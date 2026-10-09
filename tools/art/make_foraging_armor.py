@@ -14,7 +14,8 @@ sys.path.insert(0, HERE)
 from ga_common import quat_from_euler_zyx, quat_to_mat, mat4, r6, FACE_NORMALS, face_uv_size, face_texel_to_local
 import ga_rig as RIG
 import ga_paint as P
-import ga_oak as D
+import importlib
+D = importlib.import_module(os.environ.get("GA_DESIGN", "ga_oak"))   # one design module per tree
 
 OUT = os.path.abspath(sys.argv[1]) if len(sys.argv) > 1 else os.path.normpath(os.path.join(HERE, "../../art/gathering-armor"))
 SET = "SkyyForaging"

@@ -56,8 +56,9 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   Same bark-plate family look (approved concept), each tree its own variation; trees of one tier share stats and players swap looks at an
   alteration station later. Start with F1 Oak (key log), then the rest of F1, one tree per commit; show Skyy each sheet. Paths use the
   tree name: `SkyyForaging/<Tier>/<Tree>/<Piece>.blockymodel`, icons `Armor_Foraging_<Tree>_<Piece>.png`. Orchard trees: later.
-  **Progress:** F1 Oak DONE (2026-10-08, Skyy: "Yes, the Oak armor looks good, commit it"; see Done). **Next: F1 Birch**, then Beech,
-  Ash, Aspen - reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter, `make_foraging_*.py`), same piece
+  **Progress:** F1 Oak DONE (2026-10-08, Skyy: "Yes, the Oak armor looks good, commit it") + F1 Birch DONE (2026-10-09, Skyy: "Yes,
+  the Birch armor looks good, commit it"); see Done. **Next: F1 Beech** (v1 shown; Skyy: "beech looks too much like iron, i need to look a
+  little more like beech wood in the game" - v2 in progress), then Ash, Aspen - reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter, `make_foraging_*.py`), same piece
   shapes / fit, own colours + own small mark. Sources go in `source/<Tier>/<Tree>/`. Defaults Skyy kept for Oak: tier folder `F1_Grove`,
   open-face helmet with crown, faint sap, art only, 1 texel per unit.
 - Farming: Wheat, Carrot, Cauliflower, Pumpkin, Chilli, Cotton, Onion ("more like the wood ones ... food armor, like in skyblock").
@@ -118,6 +119,23 @@ purple of the bag swirl].
   Skyy's answers, word for word: "fix pebble." / "Yes, the Pebble fix looks good, commit it"
 
 ## Done
+### 14. Foraging armor F1 Grove - Birch (2026-10-09)
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F1_Grove/Birch/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
+  (1 texel per unit), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Birch_<Piece>.png` (64), `source/F1_Grove/Birch/*.bbmodel`,
+  `sheet-birch.png`; shared `manifest.json` + `README.md` updated. Scripts: `tools/art/ga_birch.py` (new, geometry derived from `ga_oak.py`),
+  `ga_paint.py` (birch colours added, Oak unchanged), `make_foraging_armor.py` (GA_DESIGN=ga_<tree>), `make_foraging_sheet.py`,
+  `make_foraging_manifest.py`, `validate_foraging.py` (GA_TREE=<Tree>). Oak files rebuild byte-identical.
+- Look: same F1 family + fit as Oak. Off-white papery birch bark (never pure white) with dark lenticel dashes + black knot "eyes", pale
+  heartwood where bark peels, light green toothed leaves, sage cloth. Mark: hanging CATKINS (3 under a knot clasp on the belt, 2 at the
+  helmet temple). ROUNDED (scalloped) plate edges, rolled-bark curls on the shoulders + tassel tops, twisted bark belt, twig sprigs on
+  the bracers, taller thinner crown. Ideas from The Armory mod (nothing copied): smooth grain bands, outline + light rim on plate edges,
+  alpha-cut quads for small details.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0 (no validator issues; plugin Import Attachment puts all 4 pieces on the vanilla player).
+- Skyy's answers, word for word: "do a design per tree type in that set, so every hardwood gets its own design in that trees color" /
+  "We got a new armory mod we are using for most of the armor in the game, if you can find it in the file i sent, check its armor out for
+  ideas and examples on how to do things" / "Yes, the Birch armor looks good, commit it"
+- Defaults kept: separate models per tree, catkins as the mark, rounded edges, vine + faint sap kept.
+- Not yet seen in game. No item / recipe JSON (art only).
 ### 13. Foraging armor F1 Grove - Oak (2026-10-08)
 - Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F1_Grove/Oak/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
   (1 texel per unit, like vanilla), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Oak_<Piece>.png` (64), `source/F1_Grove/Oak/*.bbmodel`,

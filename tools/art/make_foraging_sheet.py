@@ -97,7 +97,8 @@ def build_sheet():
     d = ImageDraw.Draw(sheet)
 
     text(d, (M, y_title), "%s  -  Foraging Armor" % TREE.upper(), 68)
-    text(d, (M, y_title + 84), "Tier 1: Grove  |  Head, Chest, Hands, Legs  |  oak bark + oak leaves", 36, False, SUB)
+    look = {"Oak": "oak bark + oak leaves", "Birch": "birch bark + birch leaves + catkins"}.get(TREE, TREE.lower() + " bark")
+    text(d, (M, y_title + 84), "Tier 1: Grove  |  Head, Chest, Hands, Legs  |  " + look, 36, False, SUB)
 
     def col_x(i):
         return M + i * (COLW + GAP)
