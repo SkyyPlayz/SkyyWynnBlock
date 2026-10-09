@@ -98,19 +98,25 @@ def find_pack_mods(keys):
 
 
 def free_port():
-    for _ in range(50):
-        u = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        u.bind(("127.0.0.1", 0))
-        port = u.getsockname()[1]
-        u.close()
-        t = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        try:
-            t.bind(("127.0.0.1", port))
+    # Windows reserves random port ranges (Hyper-V / WinNAT), so OS-picked ephemeral ports can fail a TCP bind;
+    # scan a fixed range and take the first port that binds for both UDP (QUIC) and TCP.
+    import random
+    ports = list(range(25600, 26600))
+    random.shuffle(ports)
+    for port in ports:
+        ok = True
+        for kind in (socket.SOCK_DGRAM, socket.SOCK_STREAM):
+            s2 = socket.socket(socket.AF_INET, kind)
+            try:
+                s2.bind(("127.0.0.1", port))
+            except OSError:
+                ok = False
+            finally:
+                s2.close()
+            if not ok:
+                break
+        if ok:
             return port
-        except OSError:
-            continue
-        finally:
-            t.close()
     raise SystemExit("no free port found")
 
 

@@ -8,7 +8,7 @@ The class is chosen **when the profile is created** (like creating a Minecraft w
 
 ## Cap (design 2026-09-24; in code since SkyyProfiles 0.1.1)
 
-The default cap is **6 profiles** (raised from 4). There will be in-game ways for a player to go higher. **Open:** the method is TBD. This contract does not pick one.
+The default cap is **one per class = 8 profiles** since SkyyProfiles 0.1.9 (2026-10-09, Skyy: "profile cap should match the number of classes"; `maxProfiles=auto`; was 6, raised from 4). Extra slots: per-player `bonusSlots` (`/profileadmin bonus`, bridge `profile:fn:bonusSlots`) + the rank hook; total up to 16. There will be in-game ways for a player to go higher. **Open:** the method is TBD. This contract does not pick one.
 
 `SkyyProfiles` enforces it since 0.1.1 (deployed 2026-09-25 04:11); the live 0.1.2 keeps it: `DEF_MAX_PROFILES = 6`, config `maxProfiles` (default 6, clamped 1-6; admin row "Profile slots per player" in Server Setup > Profiles, or `/profileadmin set maxProfiles <n>`). With the default, a **7th** profile is refused ("All 6 profile slots are used."). Lowering the setting never deletes a profile; it only stops new ones. 0.1.1 replaced a `config.properties` that was still byte for byte the untouched 0.1 default file once at start; a file an owner had edited keeps its `maxProfiles` value (it may still say 4). Nothing goes above 6 yet: the in-game raise past 6 is the only open code follow-up (`HANDOFF.md`, waits on Skyy's pick). Adopters do not hardcode 4 or 6; they follow whatever cap SkyyProfiles enforces.
 
