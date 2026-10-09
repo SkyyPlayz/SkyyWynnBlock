@@ -85,6 +85,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 76. SkyyTrees 0.3.4: no Skyy_Tree missing-interaction lines; chopping speed same
 77. SkyyGear 0.2.13: Crude/Scrap weapons show Attack Speed; mace warnings gone
 78. SkyyFishing 0.1.2: string tip->bobber, no white cloud, idle bobber under tip, no false 'in the way' / 'too shallow'
+79. Monk skill shows Zen everywhere (XP kept); Stats Class Weapon Damage shows Class balance
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
