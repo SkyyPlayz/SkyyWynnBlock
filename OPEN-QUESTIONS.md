@@ -34,7 +34,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 
 - LOOK SWAPS (research/Recolor-Plan.md): use The Armory's Alteration Table now - our own items join it with our own files, no override of theirs [yes]; our own Wardrobe station only if The Armory breaks on 0.7 or you want swaps from the menu / for coins [later]; get a tree look = craft the key-log set, then swap within the tier [yes]; farming = one design per crop [yes]; vanilla metal mining sets: 8 colours each, metal keeps its tier colour [8]; The Armory's 20 Iron colours = the miner's Iron looks [yes]; combat Armory looks on mining sets [no - different stats]; swap cost = The Armory's Alteration Kit (3 swaps) [yes]; recolour other pack mods' armor ourselves [no - only their own variants]. (Per-tree designs stay HAND-MADE by Quirk, as you asked.)
 
-- WARDROBE (research/cloud/Wardrobe-Spec.md): its own mod SkyyWardrobe, SkyWynn Menu tile + /wardrobe [yes]; 18 slots on 2 pages, 4 free + more at Overall Level 10 / 20 / 30 / 40 (6 / 10 / 14 / 18) [yes]; your worn set goes into the slot you equip from [yes]; partial sets keep the worn piece [yes]; edit a stored set's look for 500 coins [yes]; edit the WORN set's look later (stage 3) [yes]; no unidentified pieces in the wardrobe [yes]; slot names [yes]
 
 ### economy
 - Bazaar CLOTH and GEM prices [x2 per tier step, like metals / woods / crops - built into SkyyBazaar 0.1.4: cloth scraps 4 / 16 / 40 / 96 / 256 / 640, Diamond + Voidstone 120]
