@@ -70,7 +70,7 @@ purple of the bag swirl].
 7. **Pets** (Blockbench, full models): 15 launch pets in Hytale chunky voxel style (research/cloud/Pets-Spec.md + research/cloud/pet-art/
    README.md for the list and the approved v2 look). The pet system is not built yet - ASK Skyy before starting.
 8. **Hotbar ability item icons** - on hold (default: keys only, Skyy has not answered yet); skip unless Skyy asks.
-9. **Light armor (tier sets)** - paused by Skyy ("we can work on the armor more later"); ask Skyy before touching it. Approved looks
+9. **Light armor (tier sets)** - NEW DIRECTION 2026-10-08 (docs/answered/gear.md): most armor will come from installed armor mods (e.g. The Armory) as mob drops, so our own armor sets are low priority - ask Skyy before any more armor work. Paused by Skyy ("we can work on the armor more later"); ask Skyy before touching it. Approved looks
    are in the skywynn-art skill, section 3. A separate candidate dark-leather design is in Done (#3).
 
 ## Done
