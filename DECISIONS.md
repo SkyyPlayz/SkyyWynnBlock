@@ -79,6 +79,8 @@ Skyy's own gear design: `SkyyGear-Plan.md` + `SkyyGear-Stat-Catalog.md` (never e
 
 | Date | Decision | Source |
 |---|---|---|
+| 2026-10-09 | The Omni bag stays hidden until every Legendary bag is known. Normal bags craft from plant fiber. | [bags.md](docs/answered/bags.md) |
+| 2026-10-09 | Normal bags unlock at collection tier 1. Mining bags unlock from Cobblestone, not Iron. Not built yet. | [bags.md](docs/answered/bags.md) |
 | 2026-10-09 | We build our own roaming merchants: every 20 min, a chat rumour, special weapons and mounts. | [economy.md](docs/answered/economy.md) |
 | 2026-10-08 | Mythic, untiered and set items are never bought or sold on the Bazaar or the auction house. | [economy.md](docs/answered/economy.md) |
 | 2026-10-06 | Gathering tiers: 5 tree tiers by zone, Enchanted = 100 base items, Mithril waits for 0.7. | [bags.md](docs/answered/bags.md) |

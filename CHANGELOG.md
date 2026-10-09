@@ -11,6 +11,7 @@ Skyy's test results: [TEST-CHECKLIST.md](TEST-CHECKLIST.md).
 
 ## 2026-10-09
 
+- **Bags:** SkyySacks 0.7.15 - the Omni bag stays hidden until all five Legendary bags are known. Normal bags craft from plant fiber and sticks.
 - **Luggage + search:** SkyyExploration 0.2.5 (claimed luggage vanishes at once) + SkyyBazaar 0.1.6 (search across every tab) + SkyyKeyProbe 0.2.
 - **Stats:** SkyyMenu 0.3.12 - the Defense row counts skill Defense.
 - **Pack:** Better Mob Expansion switched on for a test (`PACK.md`). The Armory pack mod switched back off.

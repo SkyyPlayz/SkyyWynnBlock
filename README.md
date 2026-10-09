@@ -61,7 +61,7 @@ work on GitHub too, noise folders hidden). How to open it and use it: [docs/OBSI
 Needs Python with `jpype1` + `jdk4py` and a local Hytale install (the build reads `HytaleServer.jar` from it; it is never committed).
 
 ```
-python SkyySacks/build_skyysacks_0.7.14.py   # build only -> SkyySacks/SkyySacks-0.7.14.jar
+python SkyySacks/build_skyysacks_0.7.15.py   # build only -> SkyySacks/SkyySacks-0.7.15.jar
 python tools/deploy_set.py --check            # are all pinned jars built?
 python tools/deploy_set.py --yes              # deploy the whole pinned set to the test world (game closed, back up first)
 ```

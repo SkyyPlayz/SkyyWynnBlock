@@ -36,7 +36,7 @@ One folder per mod. Live versions: [HANDOFF.md](HANDOFF.md) section 1 (= the SET
 | `SkyyGear` | gear rarity, item levels, identify, reforge, mystery bags, tooltips |
 | `SkyyArmory` | our own weapons: wands, staffs, spellbooks, kunai, Monk moves, wand signature |
 | `SkyyAccessories` | Accessory Bag, booster accessories, Lantern |
-| `SkyySacks` | Magic Bags (pocket dimension): auto-collect, refill, crafting from bags |
+| `SkyySacks` | Magic Bags: auto-collect, refill, crafting from bags; Omni stays hidden until every Legendary bag is known |
 | `SkyyMobs` | mob levels + difficulty |
 
 ### Money and trading
