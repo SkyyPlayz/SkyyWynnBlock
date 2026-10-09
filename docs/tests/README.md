@@ -155,3 +155,5 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyFishing 0.1.2: real fishing line + idle bobber (DEPLOYED 2026-10-09, backup deploy-20261009-0836) | [2026-10](2026-10.md) |
 | Monk skill renamed to Zen + Stats class-balance damage (DEPLOYED 2026-10-09, backup deploy-20261009-0928) | [2026-10](2026-10.md) |
 | SkyyProfiles 0.1.9: 8 profile slots (DEPLOYED 2026-10-09, backup deploy-20261009-1322) | [2026-10](2026-10.md) |
+| SkyyPets 0.1: slot pets phase 1 (DEPLOYED 2026-10-09, backup deploy-20261009-1348) | [2026-10](2026-10.md) |
+| SkyyWorldGen 0.3: archipelago proof world (DEPLOYED 2026-10-09, backup deploy-20261009-1348) | [2026-10](2026-10.md) |
