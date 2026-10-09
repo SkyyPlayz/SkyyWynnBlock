@@ -62,7 +62,7 @@ SET = [
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
     # fishing items, removing SkyyFishing turns rods / reels / parts / fish into unknown items.
-    ("SkyyFishing", "0.1.1"),
+    ("SkyyFishing", "0.1.2"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
