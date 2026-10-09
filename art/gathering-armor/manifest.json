@@ -727,6 +727,695 @@
     }
    }
   },
+  "F1_Grove/Aspen": {
+   "tier": "F1_Grove",
+   "tree": "Aspen",
+   "item_id_prefix_suggestion": "Armor_Foraging_Aspen",
+   "sheet": "sheet-aspen.png",
+   "status": "approved by Skyy 2026-10-09 (\"Yes, the Aspen armor looks good, commit it\"); NOT verified in game",
+   "totals": {
+    "boxes": 45,
+    "quads": 12
+   },
+   "pieces": {
+    "Head": {
+     "model": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Head.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Head_Texture.png",
+     "texture_size": [
+      96,
+      128
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Aspen_Head.png",
+     "source": "source/F1_Grove/Aspen/Head.bbmodel",
+     "attaches_to_bones": [
+      "Head"
+     ],
+     "boxes": 11,
+     "quads": 3,
+     "nodes": [
+      {
+       "name": "Head",
+       "kind": "attach:Head",
+       "parent": null
+      },
+      {
+       "name": "HelmCap",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        32,
+        10,
+        31
+       ]
+      },
+      {
+       "name": "HelmUpper",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        28,
+        3,
+        27
+       ]
+      },
+      {
+       "name": "HelmDome",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        22,
+        2,
+        21
+       ]
+      },
+      {
+       "name": "HelmBrim",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        36,
+        2,
+        34
+       ]
+      },
+      {
+       "name": "HelmBack",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        32,
+        18,
+        2
+       ]
+      },
+      {
+       "name": "R-Cheek",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        14,
+        14
+       ]
+      },
+      {
+       "name": "L-Cheek",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        14,
+        14
+       ]
+      },
+      {
+       "name": "CrownMid",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        5,
+        15,
+        2
+       ]
+      },
+      {
+       "name": "R-CrownSide",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        4,
+        12,
+        2
+       ]
+      },
+      {
+       "name": "L-CrownSide",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        4,
+        12,
+        2
+       ]
+      },
+      {
+       "name": "R-HelmLeaf",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "L-HelmLeaf",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "HelmBadge",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        4,
+        4,
+        2
+       ]
+      },
+      {
+       "name": "L-HelmLeaves",
+       "kind": "quad",
+       "parent": "Head"
+      }
+     ]
+    },
+    "Chest": {
+     "model": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Chest.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Chest_Texture.png",
+     "texture_size": [
+      96,
+      128
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Aspen_Chest.png",
+     "source": "source/F1_Grove/Aspen/Chest.bbmodel",
+     "attaches_to_bones": [
+      "Pelvis",
+      "Belly",
+      "Chest",
+      "R-Arm",
+      "L-Arm"
+     ],
+     "boxes": 17,
+     "quads": 7,
+     "nodes": [
+      {
+       "name": "Pelvis",
+       "kind": "attach:Pelvis",
+       "parent": null
+      },
+      {
+       "name": "R-Tassel",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        12,
+        15,
+        1
+       ]
+      },
+      {
+       "name": "L-Tassel",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        12,
+        15,
+        1
+       ]
+      },
+      {
+       "name": "TasselBack",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        24,
+        14,
+        1
+       ]
+      },
+      {
+       "name": "Belly",
+       "kind": "attach:Belly",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "Plackart",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        27,
+        16,
+        20
+       ]
+      },
+      {
+       "name": "VineBelt",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        28,
+        3,
+        21
+       ]
+      },
+      {
+       "name": "Clasp",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        5,
+        5,
+        2
+       ]
+      },
+      {
+       "name": "AspenLeaf1",
+       "kind": "quad",
+       "parent": "Belly"
+      },
+      {
+       "name": "AspenLeaf2",
+       "kind": "quad",
+       "parent": "Belly"
+      },
+      {
+       "name": "AspenLeaf3",
+       "kind": "quad",
+       "parent": "Belly"
+      },
+      {
+       "name": "AspenLeaf4",
+       "kind": "quad",
+       "parent": "Belly"
+      },
+      {
+       "name": "Chest",
+       "kind": "attach:Chest",
+       "parent": "Belly"
+      },
+      {
+       "name": "Cuirass",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        29,
+        22,
+        21
+       ]
+      },
+      {
+       "name": "R-Breast",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        12,
+        18,
+        2
+       ]
+      },
+      {
+       "name": "L-Breast",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        12,
+        18,
+        2
+       ]
+      },
+      {
+       "name": "Collar",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        20,
+        3,
+        17
+       ]
+      },
+      {
+       "name": "R-Arm",
+       "kind": "attach:R-Arm",
+       "parent": "Chest"
+      },
+      {
+       "name": "R-Pauldron",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        13,
+        4,
+        16
+       ]
+      },
+      {
+       "name": "R-ShoulderLeaf",
+       "kind": "quad",
+       "parent": "R-Pauldron"
+      },
+      {
+       "name": "R-PauldronLame",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        3,
+        10,
+        15
+       ]
+      },
+      {
+       "name": "R-Sleeve",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        9,
+        22,
+        13
+       ]
+      },
+      {
+       "name": "L-Arm",
+       "kind": "attach:L-Arm",
+       "parent": "Chest"
+      },
+      {
+       "name": "L-Pauldron",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        13,
+        4,
+        16
+       ]
+      },
+      {
+       "name": "L-Vine",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        3,
+        2,
+        18
+       ]
+      },
+      {
+       "name": "L-VineLeafA",
+       "kind": "quad",
+       "parent": "L-Vine"
+      },
+      {
+       "name": "L-VineLeafB",
+       "kind": "quad",
+       "parent": "L-Vine"
+      },
+      {
+       "name": "L-PauldronLame",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        3,
+        10,
+        15
+       ]
+      },
+      {
+       "name": "L-Sleeve",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        9,
+        22,
+        13
+       ]
+      }
+     ]
+    },
+    "Hands": {
+     "model": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Hands.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Hands_Texture.png",
+     "texture_size": [
+      96,
+      32
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Aspen_Hands.png",
+     "source": "source/F1_Grove/Aspen/Hands.bbmodel",
+     "attaches_to_bones": [
+      "R-Forearm",
+      "R-Hand",
+      "L-Forearm",
+      "L-Hand"
+     ],
+     "boxes": 8,
+     "quads": 2,
+     "nodes": [
+      {
+       "name": "R-Forearm",
+       "kind": "attach:R-Forearm",
+       "parent": null
+      },
+      {
+       "name": "R-Bracer",
+       "kind": "box",
+       "parent": "R-Forearm",
+       "size": [
+        9,
+        14,
+        13
+       ]
+      },
+      {
+       "name": "R-BracerPlate",
+       "kind": "box",
+       "parent": "R-Forearm",
+       "size": [
+        2,
+        12,
+        10
+       ]
+      },
+      {
+       "name": "R-Sprig",
+       "kind": "quad",
+       "parent": "R-Forearm"
+      },
+      {
+       "name": "R-Hand",
+       "kind": "attach:R-Hand",
+       "parent": "R-Forearm"
+      },
+      {
+       "name": "R-Glove",
+       "kind": "box",
+       "parent": "R-Hand",
+       "size": [
+        11,
+        12,
+        15
+       ]
+      },
+      {
+       "name": "R-GloveCuff",
+       "kind": "box",
+       "parent": "R-Hand",
+       "size": [
+        12,
+        2,
+        16
+       ]
+      },
+      {
+       "name": "L-Forearm",
+       "kind": "attach:L-Forearm",
+       "parent": null
+      },
+      {
+       "name": "L-Bracer",
+       "kind": "box",
+       "parent": "L-Forearm",
+       "size": [
+        9,
+        14,
+        13
+       ]
+      },
+      {
+       "name": "L-BracerPlate",
+       "kind": "box",
+       "parent": "L-Forearm",
+       "size": [
+        2,
+        12,
+        10
+       ]
+      },
+      {
+       "name": "L-Sprig",
+       "kind": "quad",
+       "parent": "L-Forearm"
+      },
+      {
+       "name": "L-Hand",
+       "kind": "attach:L-Hand",
+       "parent": "L-Forearm"
+      },
+      {
+       "name": "L-Glove",
+       "kind": "box",
+       "parent": "L-Hand",
+       "size": [
+        11,
+        12,
+        15
+       ]
+      },
+      {
+       "name": "L-GloveCuff",
+       "kind": "box",
+       "parent": "L-Hand",
+       "size": [
+        12,
+        2,
+        16
+       ]
+      }
+     ]
+    },
+    "Legs": {
+     "model": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Legs.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Legs_Texture.png",
+     "texture_size": [
+      96,
+      64
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Aspen_Legs.png",
+     "source": "source/F1_Grove/Aspen/Legs.bbmodel",
+     "attaches_to_bones": [
+      "Pelvis",
+      "R-Thigh",
+      "R-Calf",
+      "R-Foot",
+      "L-Thigh",
+      "L-Calf",
+      "L-Foot"
+     ],
+     "boxes": 9,
+     "quads": 0,
+     "nodes": [
+      {
+       "name": "Pelvis",
+       "kind": "attach:Pelvis",
+       "parent": null
+      },
+      {
+       "name": "Breeches",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        26,
+        12,
+        20
+       ]
+      },
+      {
+       "name": "R-Thigh",
+       "kind": "attach:R-Thigh",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "R-Trouser",
+       "kind": "box",
+       "parent": "R-Thigh",
+       "size": [
+        11,
+        21,
+        14
+       ]
+      },
+      {
+       "name": "R-Calf",
+       "kind": "attach:R-Calf",
+       "parent": "R-Thigh"
+      },
+      {
+       "name": "R-Knee",
+       "kind": "box",
+       "parent": "R-Calf",
+       "size": [
+        8,
+        6,
+        2
+       ]
+      },
+      {
+       "name": "R-Greave",
+       "kind": "box",
+       "parent": "R-Calf",
+       "size": [
+        11,
+        23,
+        13
+       ]
+      },
+      {
+       "name": "R-Foot",
+       "kind": "attach:R-Foot",
+       "parent": "R-Calf"
+      },
+      {
+       "name": "R-Boot",
+       "kind": "box",
+       "parent": "R-Foot",
+       "size": [
+        14,
+        8,
+        20
+       ]
+      },
+      {
+       "name": "L-Thigh",
+       "kind": "attach:L-Thigh",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "L-Trouser",
+       "kind": "box",
+       "parent": "L-Thigh",
+       "size": [
+        11,
+        21,
+        14
+       ]
+      },
+      {
+       "name": "L-Calf",
+       "kind": "attach:L-Calf",
+       "parent": "L-Thigh"
+      },
+      {
+       "name": "L-Knee",
+       "kind": "box",
+       "parent": "L-Calf",
+       "size": [
+        8,
+        6,
+        2
+       ]
+      },
+      {
+       "name": "L-Greave",
+       "kind": "box",
+       "parent": "L-Calf",
+       "size": [
+        11,
+        23,
+        13
+       ]
+      },
+      {
+       "name": "L-Foot",
+       "kind": "attach:L-Foot",
+       "parent": "L-Calf"
+      },
+      {
+       "name": "L-Boot",
+       "kind": "box",
+       "parent": "L-Foot",
+       "size": [
+        14,
+        8,
+        20
+       ]
+      }
+     ]
+    }
+   }
+  },
   "F1_Grove/Beech": {
    "tier": "F1_Grove",
    "tree": "Beech",
@@ -2843,6 +3532,42 @@
    ]
   },
   {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Aspen_Chest.png",
+   "bytes": 4860,
+   "sha256": "1c93e9774aaf4cea981fc58154a77155af449aea5423eac6b5c29779685a02be",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Aspen_Hands.png",
+   "bytes": 5978,
+   "sha256": "79205daf8c2832b05714c8a305e2c7d7edfd4dfe501446052ba28c797c6460c4",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Aspen_Head.png",
+   "bytes": 4307,
+   "sha256": "3e6e1f06389ff99caaf4b754e096cf5e3566d9303bf73220195dffb870fdfc6c",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Aspen_Legs.png",
+   "bytes": 3226,
+   "sha256": "abb1448e3cf0df37fc9f8c239115d88556c6f8e712c13acaac3a5808647c057e",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
    "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Beech_Chest.png",
    "bytes": 4974,
    "sha256": "56ba60ae12c018d23b4a166155c38608f29783e2ceb7ad7a21cdeafbecb75563",
@@ -3001,6 +3726,62 @@
    "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Ash/Legs_Texture.png",
    "bytes": 5369,
    "sha256": "ee85316e49800f1f54153dd37bdfd07d48dc06aa7d4a6c2d5d65f4e69181ad39",
+   "image_size": [
+    96,
+    64
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Chest.blockymodel",
+   "bytes": 69557,
+   "sha256": "644baf0bc910a0b3ce09d9348f6ca776e79e19212ed796a5c356c9c629550040"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Chest_Texture.png",
+   "bytes": 14284,
+   "sha256": "07448c06159bb331f654a42df7e95855e74df5c3c357f16d5e24ee37c867d080",
+   "image_size": [
+    96,
+    128
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Hands.blockymodel",
+   "bytes": 26410,
+   "sha256": "bcc2da0afd420622c3fa2d7f573270dd9b164676b450a3f2d0d64f6d26d60b5a"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Hands_Texture.png",
+   "bytes": 4095,
+   "sha256": "542d964a16db159d26a075de94e04eaa19ea5e7386df1498a843d7134af99b73",
+   "image_size": [
+    96,
+    32
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Head.blockymodel",
+   "bytes": 28763,
+   "sha256": "f93002d3ebeee90989361f3fcdf787eca88478be3e4bb93444cb90d862fed8ef"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Head_Texture.png",
+   "bytes": 8078,
+   "sha256": "b85dbce5a5260946b46903b7ce8d4b1e4318ece3ef6585196760d6ee9f08ad61",
+   "image_size": [
+    96,
+    128
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Legs.blockymodel",
+   "bytes": 33394,
+   "sha256": "45544d163fb094c553cb0ea31829fbd2f34669b64eb327d4f6c4fe3c08008af4"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/Legs_Texture.png",
+   "bytes": 5118,
+   "sha256": "977a8b88340387a778f9cae4937aa2c2c8cd794e27db7a8f52c6808df0af27b1",
    "image_size": [
     96,
     64
@@ -3176,13 +3957,22 @@
   },
   {
    "path": "README.md",
-   "bytes": 11041,
-   "sha256": "bab22eb8b134b877b86b80982fe5b0ffbcb4bd193c45c6d2ab1d773f49e78bfc"
+   "bytes": 13644,
+   "sha256": "dc7182cca23b60b94aff3b4c87e2ed52c57563305ce0fbc5e4dbc6057a2d800a"
   },
   {
    "path": "sheet-ash.png",
    "bytes": 1103488,
    "sha256": "43f7a67f7ed23e3f732c684681af97510e44bd78fc80c773932454ff2493a85e",
+   "image_size": [
+    2370,
+    3076
+   ]
+  },
+  {
+   "path": "sheet-aspen.png",
+   "bytes": 1087164,
+   "sha256": "0c2d40308db83e23dd5d179e51220bf3a3d43868c24c91a295f2ae7b7d811da7",
    "image_size": [
     2370,
     3076
@@ -3234,6 +4024,26 @@
    "path": "source/F1_Grove/Ash/Legs.bbmodel",
    "bytes": 22410,
    "sha256": "d9e694d582fa5ad8ce9c0b68c7170dd82a0dec94c9f9e8331cec9cc3f609b635"
+  },
+  {
+   "path": "source/F1_Grove/Aspen/Chest.bbmodel",
+   "bytes": 48231,
+   "sha256": "b1901fa8e0555c8fbb07ee87b2e92daa0ceaa019dfb76cd94dcd64551533abb2"
+  },
+  {
+   "path": "source/F1_Grove/Aspen/Hands.bbmodel",
+   "bytes": 19465,
+   "sha256": "a6fd7626e9ac4382128b3002de90432ad5d7a27e467dcf96aab3f8a55d9ab13f"
+  },
+  {
+   "path": "source/F1_Grove/Aspen/Head.bbmodel",
+   "bytes": 27637,
+   "sha256": "1dca50646919fe1a0b5274a290fc0b6be31061f13fd9b5967ff19c346d1a65e1"
+  },
+  {
+   "path": "source/F1_Grove/Aspen/Legs.bbmodel",
+   "bytes": 21878,
+   "sha256": "6325ae163b71f92f2c3c7940e7899fa4621aa444d19706deb36a266e35d9277f"
   },
   {
    "path": "source/F1_Grove/Beech/Chest.bbmodel",
