@@ -78,3 +78,14 @@ storage / stacks / backpacks, other maps / HUDs, farming overhauls, durability /
   noise-shaped sloped underside); base height ~100; vertical warp for puffy undersides; cloud / rock / chain props. Fixes "round, flat,
   boring": organic outline, hilly top, sloped underside. Cell grid = archipelagos; Distance-from-origin = single-centre islands.
 - Optional ask (glider + cloud blocks, or a no-override build): research/Author-Requests.md #9.
+
+## Aetherhaven 3.2.1 (Hexvane) - Skyy: "this one looks helpful too"
+- All Rights Reserved; ServerVersion <0.7.0 (all 14 sub-packs); 3,360 classes + 166 custom UI pages + 100+ commands; disabled in HUD mod.
+  No hard deps (optional RPGLeveling / EndlessLeveling bridges - the survey's "depends on RPGLeveling" was wrong).
+- A whole town game: charters + ~40 plot types, ~60 named townsfolk + 18 job villagers with schedules / dialogue / gifts, quest board +
+  story quests + raids + reputation, Guild hall (hire guards, patrol routes), 10 FESTIVALS with a calendar, town treasury / tithe / shops,
+  jewelry + geodes, extra Zone 1 caves. Overrides vanilla Friendly / Vermin NPC groups.
+- VERDICT: not in the pack (own economy, levels, UI, per-owner towns; 0.7 cap). DESIGN REFERENCE for our Zone 1 town: villager daily
+  schedules, festival list + calendar page, shops open by day / closed at night, quest board, guild guards.
+- Hexvane's AbilityAPI (CC BY 4.0) = passive perks only (no keys / cooldowns) - not our ability input; Pathfinder (CC BY) = biome finder
+  map markers, not NPC pathing; Dragonlings = ARR (pet idea only); Machinaria = MIT.
