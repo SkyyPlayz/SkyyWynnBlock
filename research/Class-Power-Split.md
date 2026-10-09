@@ -7,7 +7,7 @@ should be affordable when unlocked." / "make the split make sense for the class 
 
 ## Split per class (pack defaults, Server Setup editable)
 
-| Class | Mana % | Stamina % | Why (how it plays) | Base Mana (L1) | Base Stamina bonus (L1) | Mana / level | Stamina / level |
+| Class | Mana % | Stamina % | Why (how it plays) | Base Mana (L0; + per level from L1 - Mage 55 at L1) | Base Stamina bonus (L0) | Mana / level | Stamina / level |
 |---|---|---|---|---|---|---|---|
 | Mage | 75 | 25 | pure caster, stands back, every attack is a spell | 45 | +4 | 10 (kept) | 0.05 |
 | Priest | 70 | 30 | caster + healer, moves a bit more to reach allies | 42 | +5 | 5 (kept) | 0.06 |
