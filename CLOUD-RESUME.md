@@ -82,12 +82,6 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 - [ ] **Element system spec** -> `research/cloud/Element-System-Spec.md`. Blocker for Spellblade Imbue + the shelved elemental weapons
       (research/classes/Spellblade.md "Elements" + docs/answered/gear.md). Five elements + statuses, how they show on gear (SkyyGear already rolls
       Raw Fire / Water / Earth / Thunder damage lines), resistances per mob, reactions (keep simple), which classes use which, UI colours.
-- [ ] **Dynamic Seasons crash report draft** -> append to `research/Author-Requests.md` as item 10 (BlueOrbit, DynamicSeasons 6.1.3): on
-      2026-10-09 13:06 the world crashed: `java.lang.IllegalArgumentException: Entity already contains component type ... typeClass=class
-      DynamicSeasons.component.CropQualityComponent` thrown from `Store.addEntities` <- `CommandBuffer.consume` <- `Store.removeComponentIfExists` <-
-      `ChunkTracker.lambda$tick$1` (World tick) - i.e. a crop entity re-added with CropQualityComponent already present when a chunk reloads.
-      Short friendly report: what happened (player fighting near crops, chunks unloading / reloading), the stack, server 0.6.x build, pack size,
-      and a guess (addComponent instead of putComponent / ensure on re-add). Skyy sends it.
 - [ ] **Class ability engine plan (Mage + Priest first)** -> `research/cloud/Ability-Engine-Plan.md`: turn research/cloud/Class-Ability-Spec-Draft.md
       + research/Class-Power-Split.md (costs are Mana + Stamina by class split, affordable at unlock levels A1 1 / A2 10 / A2-alt 20 / A1-alt 30 -
       docs/answered/classes.md 2026-10-09) + research/cloud/Ability-Input-Design.md into a build plan: which mod, the 4-ability / 2-primary +
@@ -96,3 +90,4 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
 ## Done (delete after logging - see the rules above)
+- [x] Dynamic Seasons crash report draft - 2026-10-09 - `research/cloud/DynamicSeasons-Crash-Report.md`
