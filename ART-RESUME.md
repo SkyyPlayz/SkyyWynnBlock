@@ -42,25 +42,24 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
-### 13. Zone 1 town props - the Waiting Room + Waiting Square set (Blockbench, full models)
-**Why:** Skyy approved the Zone 1 town plan (docs/answered/world.md 2026-10-08: "keep v2, its hub enough" + yes to every town question).
-The town is "the Department of Arrivals": a vanilla temple turned into a cosmic waiting room. Its story props are ours to make (the
-buildings are vanilla prefabs). Read `research/cloud/Zone-1-Town-Layout.md` (sections 4, 7, 9), `research/cloud/Story-Script-Draft.md`
-(section 2: the Waiting Room, the Board) and `research/cloud/Barks-Signs-Tips.md` (the tone: cheerful bureaucracy, numbers always a bit
-wrong). Vanilla temple stone + wood palette so they sit in the temple hall.
-**Make (each = model + texture + 64x64 icon, block-sized props like vanilla furniture; look at vanilla `Common/Blocks/...` furniture
-models in Assets.zip for scale and file layout), in `art/town-props/Common/...`:**
-1. **The Board** - the big glowing "NOW SERVING #3" board (wall-mounted, ~3 blocks wide). Paint the frame and a glowing panel; leave the
-   number area plain (the server shows the text as a floating name), plus an "off" / flicker texture variant for Void hiccups.
-2. **Ticket machine** - a "PLEASE TAKE A NUMBER" pedestal dispenser (~1 x 2 blocks), with a ticket sticking out.
-3. **Waiting bench row** - a long stone + wood bench for the hall (3 blocks long), matching the temple.
-4. **Warp Pad** - a flat stone ring set in the paving (5 x 5), with a faint glowing rune inlay (glow texture / emissive if the format allows).
-5. **Door Home** - a standing stone arch with a shimmering portal plane (the shard arch players use to go to their island), ~3 x 4 blocks.
-6. **Town map sign** - a wooden stand with a painted map of the town ("You Are Here. The Temple Was Here First."), ~2 x 2 blocks; paint
-   a simplified version of `research/cloud/Zone-1-Town-Map.png` (our own map, OK to use).
-One `sheet.png` with all six + names, manifest with sizes and node names. Original pixels only.
-**Ask Skyy (defaults in brackets):** Board colour [amber glow on dark stone], machine style [brass + stone], arch portal colour [the void
-purple of the bag swirl].
+### 14. Gathering armor - FORAGING (bark plates) + FARMING (crop sets), full game-ready models
+**Why:** Skyy 2026-10-08 (docs/answered/gear.md, ARMOR SPLIT): "lets still make the farming and gathering armor, but use vanilla for
+mining, and armory for combat gear." Mining = vanilla metal armor, combat = The Armory pack, so these two families are the only armor we
+make ourselves. The LOOKS are approved: read every gear.md line about FORAGING / FARMING armor (2026-10-05 / 06; newest wins), the concept
+sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gathering-armor-art/` (farming = crop sets), and the specs
+`research/cloud/Foraging-Armor-Design.md` (section 2 tier table) and `research/cloud/Crop-Armor-Spec.md` (section 1 the seven sets).
+**Order:** Foraging first, lowest tier first, one tier per commit, show Skyy each tier's sheet:
+- Foraging: Softwood, Lightwood, Hardwood, Drywood, Darkwood, Redwood, Goldenwood (Goldenwood helmet = like the vanilla Mithril helmet,
+  Skyy 2026-10-06). The "Wood" tier 0 is vanilla - skip it. Tier names may still change with the gathering ladder; the looks will not.
+- Farming: Wheat, Carrot, Cauliflower, Pumpkin, Chilli, Cotton, Onion ("more like the wood ones ... food armor, like in skyblock").
+**Make, per tier:** 4 pieces - Head, Chest, Hands, Legs - exactly like a vanilla armor set (look at vanilla Iron in Assets.zip:
+`Common/Items/Armors/Iron/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png`, icons `Common/Icons/ItemsGenerated/Armor_Iron_<Piece>.png`;
+fit them on the vanilla player model). Our paths: `art/gathering-armor/Common/Items/Armors/SkyyForaging/<Tier>/<Piece>.blockymodel` +
+`<Piece>_Texture.png`, icons `Common/Icons/ItemsGenerated/Armor_Foraging_<Tier>_<Piece>.png` (Farming: `SkyyFarming/` and
+`Armor_Farming_<Crop>_<Piece>`). At least vanilla texture density (vanilla armor textures: Chest 192x64, Head 160x64, Legs 128x64,
+Hands 64x64), original pixels only. Per tier a `sheet-<tier>.png` (front / side / back on the player, the 4 icons); one shared
+`manifest.json` + `README.md` + `source/*.bbmodel`.
+**Ask Skyy (defaults):** keep the concept looks as approved [yes]; helmet in every tier [yes].
 
 ## Queue (check with Skyy before starting each)
 7. **Pets** (Blockbench, full models): 15 launch pets in Hytale chunky voxel style (research/cloud/Pets-Spec.md + research/cloud/pet-art/
