@@ -51,3 +51,36 @@ Where: Discord on the CurseForge page
 > 3. Do you plan a Hytale 0.7 update?
 >
 > Thanks!
+
+---
+
+## 4. Pedrijoe - Forgotten Creatures
+Where: Discord / YouTube links on the CurseForge page
+
+> Hi Pedrijoe! I'm Skyy from SkyWynn, a free Hytale server pack. Forgotten Creatures is exactly the kind of zone variety we want. Your
+> page says All Rights Reserved, so I wanted to ask:
+>
+> 1. Can SkyWynn list Forgotten Creatures as a pack mod? Players install it from your CurseForge page (no re-uploads), with credit + a
+>    link.
+> 2. Our pet system makes small "chibi" pets from mob models. Since your creatures use vanilla models, is it OK if we make pets of them
+>    (e.g. a Mushee pet) by referencing the vanilla models at runtime, with a credit to you for the idea?
+> 3. Any plans for a Hytale 0.7 update? (The manifest says exactly 0.6.0.)
+>
+> Thanks!
+
+---
+
+## 5. BlackAures - Dragon Nestkeeper (+ Rare Monsters)
+Where: CurseForge page links
+
+> Hi BlackAures! I'm Skyy from SkyWynn, a free Hytale server pack. Your page says Dragon Nestkeeper is made for modpacks - awesome! Two
+> quick questions: how would you like to be credited, and is it OK if our pet menu can summon a player's dragon from your mod (by its
+> id at runtime, no file edits)? Rare Monsters would also be great as mini-bosses - same question for that one. Thanks!
+
+---
+
+## 6. YUNG (Refresh Studios) - YUNG's HyDungeons
+Where: CurseForge page / YUNG's Discord
+
+> Hi! I'm Skyy from SkyWynn, a free Hytale server pack. Can SkyWynn list YUNG's HyDungeons as a pack mod? Players would install it from
+> your CurseForge page (no re-uploads), with credit + a link. Thanks!

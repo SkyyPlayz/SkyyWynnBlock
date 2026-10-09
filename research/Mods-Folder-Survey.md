@@ -28,3 +28,14 @@ AutoSort, CarryChest, ItemMagnet, Spyglass, TreeHarvester), ConnectedWindows, Di
 Levelling / skills / classes (EndlessLeveling, RPGLeveling, MMOSkillTree, PJ-HySkills...), mob scaling (MmoMobScaling, PJ-Difficulty,
 EndlessEliteMobs), movement (Zephyr, dodges, BetterMovement, grapple / jetpack / glider), magic weapons (Arcane Power, Robes & Spells),
 storage / stacks / backpacks, other maps / HUDs, farming overhauls, durability / repair mods, HyperEssentials / Essentials / boards.
+
+## Forgotten Creatures 1.3.1 (Pedrijoe) - Skyy: "this one looks cool too"
+- LICENCE: All Rights Reserved, no modpack line -> ask Pedrijoe. ServerVersion "0.6.0" exact (0.7 risk). Disabled in the HUD mod world.
+- Enables hidden vanilla-model creatures (recoloured textures): Zone 1 Mushee x4 (38 HP), Bramblekin Shaman (150) + Bramblekin armor;
+  swamps Ghoul (250), Zombie Aberrant (400), Golden Reptil Trork; Zone 2 seven Slothians (80-220, made hostile); Zone 3 Blue Shadow
+  Knight (750), Grooble + Mannequin (passive); Zone 4 Saurians (250), Rex Cave Blue (400), Golden / Red / Purple Shadow Knights (750),
+  Magma / Red Ghouls; Void Necromancers (200).
+- Patches 21 vanilla files incl. the Zone 1-4 predator spawn files - the SAME files Better Mob Expansion edits (last loaded wins): test
+  them together. Mob Events (in the folder) needs Champions / PJ-Money / PJ-HySkills (missing) - skip.
+- FIT: great zone variety (Shadow Knights / Saurians = elites / mini-bosses); PET candidates with vanilla models: Mushee x4 (colour =
+  rarity skins), Grooble, Mannequin, Slothian Kid, Rex Cave Blue chibi, Golden Reptil Trork.
