@@ -75,8 +75,3 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
 ## Done (delete after logging - see the rules above)
-- [x] Guild Games spec draft - 2026-10-09 - `research/cloud/Guild-Games-Spec.md`
-- [x] SkyyQuests Zone 1 spec - 2026-10-09 - `research/cloud/SkyyQuests-Zone1-Spec.md`
-- [x] Foraging + farming armor stats spec - 2026-10-09 - `research/cloud/Gathering-Armor-Stats.md`
-- [x] Mining armor build spec - 2026-10-09 - `research/cloud/Mining-Armor-Spec.md`
-- [x] UT first batch (G2) build spec - 2026-10-09 - `research/cloud/UT-First-Batch-Build.md`
