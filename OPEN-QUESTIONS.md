@@ -37,6 +37,8 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 
 - OWN SPECIALS (research/cloud/Own-Specials-Draft.md, 21 boss-drop weapons, every class ends at 4): keep all names + hooks [keep]; Monk 4 (not 3) [4]; The Counterclaim parry shield Warrior-only [yes]; drops 5% from their boss with x3 own-class lean, slayer bosses via the RNG meter [yes]; Legendary rarity + modifiers roll, drop as a Mystery Bag [yes]; office-humour names [keep]
 
+- UNTIERED / MYTHIC / SET (research/cloud/Untiered-Mythic-Spec.md section 7, 18 questions): UT tiers = the 6 zone bands (14 weapon types + 3 armor sets each, 156 eventually) [yes]; UTs tradable [yes]; UTs drop identified, orange name, no bag [yes]; level-up caps Mythic +2 / Untiered +3 / others +6 [yes]; first UT batch U1-U10 [keep]; Mythic boss-only (out of random drops + Smithing step-up) [yes]; Mythic 10% per kill (20% Challenge), each participant rolls, own-class lean x3 [yes]; sample boss pools [approve]; Mythic sets: bonus only at the full set [yes]; capstone uniforms become MYTHIC 4-piece sets split across floors [yes]; Set pieces tradable [yes]; gathering set bonus table [as tabled]; boss respawn = "Appeals Desk", boss level x 25 coins (x2 Challenge), 60 s cooldown [coins]; every participant with 15% credit rolls [yes]; desk + pools in SkyyMobs [yes]; world drops list [yes]; names Appeals Desk / Formal Complaint (challenge) / Untiered [keep]
+
 ### economy
 - Bazaar CLOTH and GEM prices [x2 per tier step, like metals / woods / crops - built into SkyyBazaar 0.1.4: cloth scraps 4 / 16 / 40 / 96 / 256 / 640, Diamond + Voidstone 120]
 - which late-game items can never be bought or sold (the market wall)? [list empty until you name items]
