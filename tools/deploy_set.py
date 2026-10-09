@@ -17,8 +17,8 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.17"), ("SkyySacks", "0.7.16"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.8"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.6"), ("SkyyGear", "0.2.13"), ("SkyySkills", "0.4.27"),
-    ("SkyyAccessories", "0.5.9"), ("SkyyClasses", "0.1.15"), ("SkyyMenu", "0.3.13"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.9"),
+    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.14"), ("SkyySkills", "0.4.28"),
+    ("SkyyAccessories", "0.5.9"), ("SkyyClasses", "0.1.16"), ("SkyyMenu", "0.3.13"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.9"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -254,6 +254,11 @@ def main():
         print("STOP: SkyyClasses 0.1.15+ needs SkyySkills 0.4.27+ (the Monk skill Zen) in the same deploy"); return 1
     if _v(_p.get("SkyySkills", "0")) >= (0, 4, 27) and _v(_p.get("SkyyClasses", "0")) < (0, 1, 15):
         print("STOP: SkyySkills 0.4.27+ deploys with SkyyClasses 0.1.15+ (else SkyyHud's class line shows '-')"); return 1
+    # Ability engine R1 (2026-10-09): SkyyClasses 0.1.16 tags ability damage; SkyySkills 0.4.28 credits ability kills (class XP after a weapon swap)
+    if _v(_p.get("SkyyClasses", "0")) >= (0, 1, 16) and _v(_p.get("SkyySkills", "0")) < (0, 4, 28):
+        print("STOP: SkyyClasses 0.1.16+ needs SkyySkills 0.4.28+ (ability kill XP) in the same deploy"); return 1
+    # SkyyGear 0.2.14 (rarity G1): do not roll back to 0.2.13 while any Skyy_Unid_Bag_Untiered exists (identify or clear them first); odds.mythic stays 0,0,0.
+    # SkyyBazaar 0.1.7: rollback to 0.1.6 safe; ship with SkyyGear 0.2.14 for the full market wall.
     missing = []
     plan = []
     for mod, ver in SET:
