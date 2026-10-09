@@ -91,6 +91,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 82. SkyyWorldGen 0.3: /zone proof - summit isle + 4 islands, necks, arch, bridge gap, no lava
 83. Rarity G1: Untiered table + orange bag, Mythic odds 0, level caps per rarity, Armor sets table, market wall
 84. Ability engine R1: /cast list / 1 / 2 / swap, Meteor, Sacred Heal, cooldowns, ability kill XP
+85. SkyySkills 0.4.29: pet XP immediately from skill XP, SkyyPets fallback off
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
