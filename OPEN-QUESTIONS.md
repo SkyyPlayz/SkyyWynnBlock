@@ -18,9 +18,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### mobs
 
 ### skills
-- which of your live Server Setup test values become the pack defaults - Cooking XP multiplier, early gathering XP boost, the
-  XP-per-level list, the Copper level band? [today's pack defaults until you say]
-- OPEN 2026-10-02 (SkyySkills 0.4.12 review): everyone has 10 base Mana, so Warriors / Archers also get the in-combat Mana refill. Limit it to classes that use Mana (Mage, Priest)? [everyone - harmless today]
 - NOTE 2026-10-02 (same review): with the flatter class curve, class level-up coins arrive much faster (xp.properties coinsPerLevel). Your live profiles gained nothing (little class XP yet); check the coin rate before a public launch.
 
 ### gear
@@ -32,14 +29,8 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 
 
 ### economy
-- Bazaar CLOTH and GEM prices [x2 per tier step, like metals / woods / crops - built into SkyyBazaar 0.1.4: cloth scraps 4 / 16 / 40 / 96 / 256 / 640, Diamond + Voidstone 120]
-- which late-game items can never be bought or sold (the market wall)? [list empty until you name items]
 
 ### bags
-- OPEN 2026-10-02 (from the SkyySacks 0.7.11 review): carried bags of one type now add up with NO limit, so e.g. 54 Normal bags hold more than a Legendary. Keep unlimited (each extra bag costs a slot and a recipe), or a Server Setup cap on bags counted per type (e.g. 3)? [unlimited]
-- OPEN 2026-10-02 (same review): an idle partial stack only tops up once you use it. Also top up the stack in your selected hotbar slot even when idle? [only when used]
-- the ACCESSORY TABLE (its own crafting table for accessories + bags, LOCKED 2026-10-02) - still wanted now that the Pocket
-  Dimension keeps the Workbench tab? [spec paused until you say]
 
 ### classes
 - the missing ability picks - every class's A2 alternative and its two improved A1 options (the Priest's A2 alternative too).
@@ -55,4 +46,3 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 
 
 ### social
-- how a player raises the profile cap above 6 (likely ranks). [parked - no way above 6 yet]

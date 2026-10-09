@@ -86,3 +86,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - LOCKED 2026-10-06 (Skyy): SkyySacks /craft may craft UNLOCKED Lanterns with no Workbench ("Fine, keep it") - same as Magic Bags.
 - LOCKED 2026-10-06 (Skyy): Lantern recipe tiers on Tree Sap stay Normal 50 (I), Unique 250 (III), Rare 1,000 (V), Legendary 10,000 (VIII) ("Keep these").
 - LOCKED 2026-10-06 (Skyy, after a 54,420-coin interest payout): bank interest "Once per real day, brackets (Recommended)" -> research/cloud/Bank-Tab-Calibration.md option E: paid once per real day, account-wide, brackets 2% / 1% / 0.5% (endgame 4.8M -> ~85k/day), with the section 1.5 one-time migration; the rest of that file (Tab, starter grant) still open.
+- LOCKED 2026-10-08 (Skyy, popup batch 5): Bazaar CLOTH + GEM prices -> "Yes, keep x2 (Recommended)"; MARKET WALL -> "Mythic + UT + Sets (Recommended)" (never bought or sold on Bazaar / Auctions; built in the UT/Mythic round).

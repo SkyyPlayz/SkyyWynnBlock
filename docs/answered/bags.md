@@ -70,3 +70,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - LOCKED 2026-10-08 (Skyy, bag mouth): "mouth stays open while you hold it." -> no 20 s close / re-open loop while held.
 - LOCKED 2026-10-08 (Skyy, sparkles + gems): "3. yes 4. yes" -> vanilla portal sparkle particles on top of the swirl; Accessory Bag gems in the 5 accessory-line colours (kept on the toned-down bag).
 - LOCKED 2026-10-08 (Skyy, bag art v2 sheet): "as drawn, violet. start the bag round" -> the 5 type emblems stay as drawn; sparkles violet (SkyySack_PortalSparkle); wiring round SkyySacks + SkyyAccessories started.
+- LOCKED 2026-10-08 (Skyy, popup batch 4): carried bags of one type -> "Keep unlimited (Recommended)"; idle partial stack top-up -> "Only when used (Recommended)"; ACCESSORY TABLE -> "Drop it (Recommended)" (the Pocket Dimension Workbench tab covers it; spec closed).
