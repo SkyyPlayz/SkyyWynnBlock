@@ -1,9 +1,3 @@
-# Arcblade class page - DRAFT COPY (cloud 2026-10-08)
-
-This is a copy of the proposed `research/classes/Arcblade.md`, pushed here because the cloud session cannot open a pull request itself. The real file is on branch `cloud/arcblade-class-page` (open the PR from it, or copy this file into `research/classes/`). Delete this copy once the class page is merged.
-
----
-
 # ⚔️ Arcblade - Melee mage
 
 | | |
