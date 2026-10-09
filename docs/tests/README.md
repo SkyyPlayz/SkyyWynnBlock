@@ -165,3 +165,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Ability R2+R3: HUD widget, Mana Barrier, Shield Bubble (DEPLOYED 2026-10-09, backup deploy-20261009-1631) | [2026-10](2026-10.md) |
 | SkyyTownProbe 0.2: quest engine probes (Q0) (DEPLOYED 2026-10-09, backup deploy-20261009-1631) | [2026-10](2026-10.md) |
 | SkyyPetProbe 0.1: pet engine probes P1-P10 (DEPLOYED 2026-10-09, backup deploy-20261009-1631) | [2026-10](2026-10.md) |
+| SkyyAccessories 0.5.10: mining helmet light (DEPLOYED 2026-10-09, backup deploy-20261009-1649) | [2026-10](2026-10.md) |

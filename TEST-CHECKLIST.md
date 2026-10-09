@@ -97,6 +97,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 88. Abilities widget (icons, cost, cooldown, crouch alts), Mana Barrier, Shield Bubble
 89. /townprobe all ... report: 17 quest probes incl. Pebble hat + alias swap
 90. /petprobe all ... clear: small pets, follow, fights, mount, lifecycle
+91. Mining helmet glows like a Lantern of its tier (stronger of lantern / helmet)
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
