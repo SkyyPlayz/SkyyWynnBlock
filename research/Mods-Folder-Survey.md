@@ -51,3 +51,14 @@ storage / stacks / backpacks, other maps / HUDs, farming overhauls, durability /
   (healing the Mage lacks); other spellbooks + Void Maw -> Mage; bows -> Archer specials; armor -> Mage / Priest Cloth ladder. SkyyGear must list the ArcanePower_ ids (not Armor_/Weapon_).
 - RISKS: flat Mana costs 15-75 and +50..+100 max Mana while held (would triple a Mage pool) -> runtime clamp in our code; Ability1 on
   maces / bows / Infernal clashes with our Q signature; nothing uses Ability2.
+
+## Bio's Kobolds 1.3.2 (Bio_the_LizardWizard) - Skyy: wandering traders / special shops
+- LICENCE: CC BY 4.0 (credit + licence link + say what we changed; reuse allowed). ServerVersion pinned to build 2026.03.26 (0.7 check).
+  No hard dependencies (Wardrobe / OrbisOrigins optional, not installed). Disabled in the HUD mod world. No vanilla overrides found.
+- Zone 1 plains caravans (leader + guard + Treasurer + Artificer merchant + Cargo Drake) using the VANILLA barter shop (gold / treasure
+  economy; sells kobold spear, emerald flail, a Cargo Drake crate -> mountable Tamed_Drake_Cargo for 27 gold bars worth). Hostile Kobold
+  Marauders + Elites in Zones 1-4, a Marauder boss model. Caravans only wander near their leader - no zone routes.
+- PLAN for Skyy's "special shops that move around each zone": build OUR OWN roaming merchants (code-spawned NPC on a vanilla template, a
+  mover that relocates it every N minutes per zone, UseEntityEvent opens our shop page: pet eggs + special weapons, never UT / Mythic,
+  SkyyCoins prices) - research/Server-Setup-Research.md already recommends spawnNPC + UseEntityEvent. Kobold models / drake mount =
+  optional later by role id (CC BY, credit).

@@ -101,3 +101,15 @@ Where: CurseForge page comment (no mod Discord listed)
 > 4. Do you plan a Hytale 0.7 update? (The manifest says below 0.7.0.)
 >
 > No money involved. Thanks either way!
+
+---
+
+## 8. Bio_the_LizardWizard - Bio's Kobolds (CC BY 4.0 - courtesy only, credit required)
+Where: CurseForge comment or Discord
+
+> Hi Bio! I'm Skyy from SkyWynn, a free Hytale server pack. Bio's Kobolds is great (the caravans with a drake are a fun idea), and your
+> page says CC BY 4.0, so I wanted to say thanks and check one thing: we'd like to list it as a pack mod (players install it from your
+> CurseForge page, no re-uploads, credit and link on our pack page and in game).
+> 1. Is it OK if our mods spawn your merchant roles at runtime and open our own shop pages for them (by role id, no file edits)?
+> 2. Do you plan a Hytale 0.7 update (the manifest is pinned to build 2026.03.26)?
+> Thanks!
