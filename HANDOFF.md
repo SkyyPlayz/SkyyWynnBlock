@@ -29,7 +29,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyAuctions | 0.1.2 | auction house (buy-it-now) |
 | SkyyRanks | 0.1.1 | ranks + permissions made in game |
 | SkyyUiProbe | 0.4 | dev / test probes, op only (retire later) |
-| SkyyReelProbe | 0.1 | rod + reel look probe, op only (remove after Skyy's test, before SkyyFishing) |
+| SkyyFishing | - | our fishing, stage 1: Fishing Bench (Parts / Rig / Fillet and Sell), rods + reels T0-T2, parts I-II, cast / bite / fight HUD, Zone 1 fish (HyFishing stays until stage 2) |
 | SkyyTownProbe | 0.1 | Zone 1 town probe, op only, test island (run /townprobe undo until 'Nothing to undo', then remove) |
 | SkyyKeyProbe | 0.1 | key probe, op only: /keyprobe give, press keys, /keyprobe report (remove after Skyy's test) |
 | SkyyMobs | 0.1.4 | mob levels + difficulty; level curves + level gap (mob:fn:info) |

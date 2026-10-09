@@ -55,9 +55,9 @@ SET = [
     # exists; otherwise roll back all four together and expect classless Monk profiles (no items / coins / XP lost; Combat.Shaman kept).
     # FLOOR (2026-10-08, class path trees): rolling SkyyTrees back to 0.3.2 loses players' path picks (nothing else; 0.3.2 reads the
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
-    # Reel probe (2026-10-07): 8 SkyyFishing_Rod_* + SkyyFishing_Reel stat look test - REMOVE after Skyy tests it (TEST-CHECKLIST) and
-    # BEFORE SkyyFishing ships (same item / stat names).
-    ("SkyyReelProbe", "0.1"),
+    # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
+    # fishing items, removing SkyyFishing turns rods / reels / parts / fish into unknown items.
+    ("SkyyFishing", "0.1"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
@@ -140,7 +140,7 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "T
 # SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 (2026-10-03): deploy and roll back TOGETHER. Before SkyySkills goes below 0.4.15:
 # switch Base Mana off and let players log in once. To roll SkyyArmory back: take it out of SET, add it to RETIRED and put SkyySkills back
 # to 0.4.14 in the same deploy (vanilla staff files would charge 50 Mana behind a 10-Mana check otherwise). SkyyClasses back to 0.1.10 is safe.
-RETIRED = ["SkyyRolls", "SkyyMonkProbe"]   # SkyyMonkProbe: tested 2026-10-08 (TEST 48), the real moves are SkyyArmory 0.1.12
+RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe"]   # SkyyMonkProbe: tested 2026-10-08 (TEST 48), the real moves are SkyyArmory 0.1.12
 
 
 def retire_in_world(world, mod):
