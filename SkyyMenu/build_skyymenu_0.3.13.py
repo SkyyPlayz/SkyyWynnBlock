@@ -1,0 +1,8433 @@
+"""SkyyMenu 0.1 - build script (javassist via jpype).
+0.3.13: THE MONK SKILL IS ZEN + CLASS BALANCE DAMAGE ON THE STATS PAGE (notes: tools/menu_0_3_13_patch.py; Skyy LOCKED 2026-10-08 Monk
+       skill "Zen"; "Show skill Defense and the class-balance damage % on the Stats page ... -> Yes, next (Recommended)"): CLASS_SKILLS
+       Monk = Zen (Mods texts, Skills tile); Stats page Class Weapon Damage = level part + SkyySkills 0.4.26's skill:dmg:<uuid> (a
+       Double percent), breakdown "Class balance +X%"; without it (older / no SkyySkills, any other type) the row is exactly 0.3.12's.
+       ROUND_PINS = SkyySkills 0.4.27, SkyyClasses 0.1.15, SkyyTrees 0.3.5, SkyyProfiles 0.1.8 (deploy together). No saved data.
+  CHECKED: see SkyyMenu/test_skyymenu_0.3.13.py (every 0.3.12 check carried forward + K7 0.3.12 -> 0.3.13 + ZN the Zen texts + DM the
+  Class Weapon Damage row).
+0.3.12: THE STATS PAGE DEFENSE ROW COUNTS THE SKILL DEFENSE (notes: tools/menu_0_3_12_patch.py; Skyy "Show skill Defense and the
+       class-balance damage % on the Stats page (a small SkyyMenu build)? -> Yes, next (Recommended)"): Main tab Defense = gear +
+       accessories + SkyySkills 0.4.25's skill:def:<uuid> (Foraging + class balance Defense, a Double), breakdown "Skills +X"; without
+       it (older / no SkyySkills, any other type) the row is exactly 0.3.11's. Class Weapon Damage unchanged (SkyySkills 0.4.25 publishes
+       no class balance damage %). No saved data, no layout change; ROUND_PINS = {}.
+  CHECKED: see SkyyMenu/test_skyymenu_0.3.12.py (every 0.3.11 check carried forward + K6 0.3.11 -> 0.3.12 + SD the Defense row).
+0.3.11: THE ACCESSORY BAG TILE SHOWS OUR OWN ICON (art only; notes: tools/menu_0_3_11_patch.py; Skyy 2026-10-08 "Yes, the bag icon looks
+       good, commit it"): the jar ships the icon-only item Skyy_Menu_Icon_AccessoryBag (hidden from the creative library) whose Icon is
+       art/accessory-bag-icon/.../SkyyAccessories_Bag_Menu.png (shipped at Common/Icons/ItemsGenerated/), and the main menu's Accessory Bag
+       tile uses it (was the vanilla Utility_Bag_Seed). No code change; ROUND_PINS = {}.
+  CHECKED: see SkyyMenu/test_skyymenu_0.3.11.py (every 0.3.10 check carried forward + K5 0.3.10 -> 0.3.11 + IC the icon item + V the
+  engine's asset validators on the jar).
+0.3.10: THE STATS PAGE, phase 1 (research/cloud/Stats-Page-Spec.md P1; notes: tools/menu_0_3_10_patch.py): the Your Profile tile and
+       /stats (/profilestats) open StatsPage - a vanilla-kit inline page (tools/skyyui.py) with every LIVE stat of the active profile
+       (Health / Mana / Stamina from the EntityStatMap split by modifier source, gear + accessory stats, speed / jump / fall damage,
+       Mana Regen, Fortune as double-drop %, Wisdom, skills, Overall, class, purse, bank, bags) in five tabs, and a Change Profile
+       button (runs the player's own /profiles; hidden without it). The Your Profile hover text is short lines. No saved data, no
+       setting, no other mod changed; ROUND_PINS = {} (deploys on its own).
+  CHECKED: see SkyyMenu/test_skyymenu_0.3.10.py (every 0.3.9 check carried forward + S the Stats page flows + K4 0.3.9 -> 0.3.10).
+0.3.9: CLASS TEXTS ONLY (no behaviour change; notes: tools/menu_0_3_9_patch.py): Assassin + Monk are playable (SkyyClasses 0.1.14,
+       SkyySkills 0.4.21 Discipline, SkyyProfiles 0.1.6 - ROUND_PINS, deploy together): CLASS_PLAYABLE = all seven, CLASS_LATER = none,
+       CLASS_SKILLS + Assassination + Discipline; the Classes / Profiles / Skills Mods texts + the main menu Skills tile name them. Every
+       other Mods version stays 0.3.8's (a version catch-up is a later round).
+  CHECKED: see SkyyMenu/test_skyymenu_0.3.9.py (every 0.3.8 check carried forward + F4 the 0.3.9 class texts + K4 0.3.8 -> 0.3.9 data only).
+0.3.8: DATA / TEXT ONLY (no behaviour change; notes: tools/menu_0_3_8_patch.py): the Mods list = tools/deploy_set.py SET of 2026-10-05
+       evening + this round (ROUND_PINS: SkyyTrees 0.3.2, class trees ON by default) - Collections 0.2.6, Party 0.1.7, Bazaar 0.1.4, Gear
+       0.2.3, Skills 0.4.16, Essentials 0.1.8 (26 mods); help texts: Gear crafting Smithing XP, Skills own XP list per skill, Party TPA /
+       Accept TPA buttons, Bazaar progression prices, Trees Alchemy / Smithing + the class tree (/tree class, /tree probe for admins).
+  CHECKED: see SkyyMenu/test_skyymenu_0.3.8.py (every 0.3.7 check carried forward + F3 the 0.3.8 texts + K3 0.3.7 -> 0.3.8 data only).
+0.3.7: DATA / TEXT ONLY (no behaviour change; notes: tools/menu_0_3_7_patch.py): the Night Vision help texts are gone (SkyyAccessories
+       0.5.4 retired it for the Lantern line); the Mods list = tools/deploy_set.py SET of 2026-10-05 + this round (ROUND_PINS: SkyyExploration
+       0.2.3, SkyyAccessories 0.5.5, SkyyCooking 0.1.6) + the missing SkyyArmory 0.1 entry (26 mods); SkyyUiProbe 0.4 /skyprobe map line;
+       the live-set check's two differences fixed (SkyyBazaar 0.1.3's Server Setup page Bazaar, SkyyGear 0.2.2's gear.critFx switch).
+  CHECKED 2026-10-05 with SkyyMenu/test_skyymenu_0.3.7.py (needs SkyyMenu-0.3.5.jar + SkyyMenu-0.3.6.jar): 975 checks, 0 fail -
+    every 0.3.6 check carried forward (P: 0.3.5 still reproduces the stuck page, 0.3.7 fixes it), F2 the 0.3.7 texts (no Night
+    Vision anywhere, the Lantern, SkyyArmory, /skyprobe map, Bazaar Server Setup, gear.critFx), K2 0.3.6 -> 0.3.7 data / version only.
+0.3.6: THE STUCK-PAGE FIX (root cause proven 2026-10-03 by the SkyyBank 0.1.6 round, re-read from the release HytaleServer.jar bytecode)
+       + the Mods list = tools/deploy_set.py SET of 2026-10-03 (25 mods). Notes: tools/menu_0_3_6_patch.py.
+  ENGINE: PageManager.handleEvent drops every page click (Data) while customPageRequiredAcknowledgments != 0 - silently; Dismiss only
+    runs customPage.onDismiss(ref, store) + customPage = null (no packet, no counter change). Every page packet adds 1 (openCustomPage,
+    rebuild, sendUpdate; setPage / close / setPageWithWindows only while a custom page is open), every client acknowledgement takes 1
+    off. World.addPlayer - the one way into a world - dispatches AddPlayerToWorldEvent (the player in no world store yet; a teleport
+    does it on the old world's thread right after PlayerRef.removeFromStore), then onSetupPlayerJoining clears the counter but keeps
+    PageManager.customPage, and only later adds the player to the new world's store. The client drops its page at a world change. So
+    a page open across a world change stayed "open" on the server, and SkyyMenu 0.3.5's CloseTask (~150 ms after the Island / Hub tile,
+    on the new world) closed it with setPage(None): +1 the client never acknowledges -> EVERY custom page (Bank, Vault, Menu, Sacks,
+    Server Setup ...) ignored clicks until the next world change. A bench after a world change did the same.
+  1. CloseTask / RefreshTask never close or redraw a menu the client no longer shows: if the player changed world since the menu was
+     opened (MenuPage.changedWorld - its first build's world differs, or PageGuard counted a world join since), the menu is forgotten
+     on the server the way Esc does it (PageGuard.forget = PageManager.handleEvent Dismiss: no packet, counter unchanged).
+  2. PageGuard (AddPlayerToWorldEvent, every page of every mod): the page a player still has on the server when the engine adds them
+     to a world is from before the world change. A page with the engine's empty onDismiss (the menu, Settings, Server Setup and most
+     pages) is forgotten right there (handleEvent Dismiss, no page code runs, no packet) - before the counter reset and before anything
+     of the new world can run, so no later setPage can add an unacknowledged count because of it. A page with its own onDismiss (Bank,
+     Vault, trades, Profiles, vanilla Respawn ...) is forgotten by StaleTask on the new world's thread as soon as the player is in its
+     store, with the player's real ref / store, and only while it is still that exact page.
+  3. MenuWatch, the safety net (BankWatch's pattern, the menu page only): 1 s checks while a menu is open; a world change -> forget; 1 s
+     after the menu's last packet a test click through the engine's gate; dropped -> clearCustomPageAcknowledgements + an answer (at most
+     3 per menu, later heals reset silently). A healthy menu sends nothing. A generic net is left out on purpose: it would need test
+     clicks into other mods' pages or the engine's private counter. A healed counter frees every page.
+  4. Mods list texts = the 2026-10-03 SET: NEW SkyyWorldGen 0.1 (every /zone command admin-only, Server Setup -> World Gen); Hud 0.3.12
+     combat indicator, Bank 0.1.6, Gear 0.2.1 damage + armor by level, Skills 0.4.14 kill XP by mob level / early gathering / roll
+     landings, Accessories 0.5.3 Night Vision, Cooking 0.1.4 +32% per Grade, UiProbe 0.3.1, Mobs 0.1.2 difficulty ladder + health floor.
+  CHECKED with SkyyMenu/test_skyymenu_0.3.6.py (committed - re-run it, it needs SkyyMenu-0.3.5.jar too) - 2026-10-03, 938 checks,
+    0 fail; ONE JVM, -Xverify:all, the 0.3.6 and 0.3.5 jars each in their own class loader over HytaleServer.jar: A all 40 + 37 classes
+    load, verify, initialise. B - J every 0.3.5 check on 0.3.6 (permissions, registry, Settings page, the round's rows, review fixes,
+    seconds rows, the item per profile, two starts on copies of the live Skyy_SkyyMenu data - as it is and as 0.3.3 left it: the second
+    start writes nothing). F the 25-mod Mods list = SET and the 0.3.6 texts. P on the engine's own PageManager with a model client:
+    THE ISLAND TILE (the real grid click -> MenuPage.click / runCmd -> /island -> a world change in the engine's order -> the CloseTask the
+    menu chained on the command): 0.3.5 sends setPage(None) on the new world, 1 acknowledgement pending, the next SkyWynn Menu and a
+    stand-in Bank page drop every click (the bug); 0.3.6 forgets the menu at the world join (no packet, counter untouched), the CloseTask
+    sends nothing, 0 pending, both next pages work - also without the event (the CloseTask's own world check) and on a re-join of the
+    same world; the other CloseTask timings are safe on both jars. RefreshTask and a bench after a world change: 0.3.5 stuck, 0.3.6
+    healthy. Unchanged on both jars: the Close button, a same-world CloseTask / RefreshTask, Esc. No packet to a player without a page.
+    PageGuard: the menu, Settings, Server Setup and a stand-in page forgotten at the event; pages with their own onDismiss forgotten by
+    StaleTask on the new world's thread with the NEW ref / store (replaced, throwing and leaving cases); joins counted, dropped at
+    disconnect. MenuWatch: healthy = silent, a stray packet healed once (one WARNING, one answer, the next click works), at most 3
+    answers per menu, a world change forgotten, the real timer chains (scheduler -> World.execute), no scheduler = still works.
+    K 29 of 37 classes byte-identical; MenuPage changed only build / clearGrid / handleDataEvent (+ who / changedWorld / watchFail /
+    watchTick), CloseTask / RefreshTask only run, MenuQuit only accept, SkyyMenuPlugin only setup / shutdown, CfgRows / CfgFn /
+    manifest only the version. X 12846 references pass MethodHandles.Lookup in their own class, 0 refused (control: an outside
+    MenuPage.rebuild is refused and throws IllegalAccessError). Also (scratch): the whole SET with 0.3.6 - 25 jars, 1101 classes,
+    -Xverify:all, 0 failures; lint 0 fails (26 warnings, all SkyySacks 0.7.12); tools/skyyui_test.py 10060 ok + the 1 known stale fail
+    (base-gated WrapMaxLines); tools/skyycfg_test.py PASS; tools/deploy_set.py --check all 25 jars present.
+  UNVERIFIED (needs the game): the client dropping its page at JoinWorld (the 0.1.6 bank round's model, matches Skyy's client log); the
+    menu's heal answer clearing a "Loading..." box (the bank's answer is the same kind of page update); the real timing of the 1 s checks
+    for a remote player (a client slower than 1 s to acknowledge can make a check reset early - the engine's own "unexpected
+    acknowledgement" line follows, harmless).
+0.3.5: DATA / TEXT REFRESH ONLY (no behaviour change): the Mods list = tools/deploy_set.py SET of 2026-10-02 (24 Skyy mods: the NEW
+       SkyyMobs 0.1 entry, SkyyUiProbe 0.3 still a dev mod) through ONE version table, MODS_VERSIONS in MENU DATA (every MODS entry
+       reads it; the build prints the table for the live SET when a version differs); help texts for what shipped on 2026-10-01 /
+       2026-10-02 - Sacks stack refill / bags add up / benches + inventory crafting use the bags, Collections coins never buy tiers,
+       Essentials no Magic Bags in /trade, Hud Skills widget, Skills class curve + in-combat Mana + /skills mana, Gear item levels +
+       /gear relevel, Mobs /mobs, UiProbe win / secgrid, Accessories Workbench tab, Guilds leave refund; the live-set check reads a
+       config kit emit with MOD=<module constant> (SkyyMobs). Notes: tools/menu_0_3_5_patch.py.
+0.3.4: Skyy's 2026-10-01 decisions: the SkyWynn Menu item once PER PROFILE (records given-profile/<storage key>.txt; the old
+       per-player flags given/<uuid>.txt only read: the profile active at the first 0.3.4 sight counts as given; never a second copy
+       while one is anywhere in the inventory incl. utility / tools; waits while profile:busy; PlayerReadyEvent + a 2 s profile
+       watch); Server Setup shows and takes millisecond rows (unit ms) in SECONDS with decimals (0.24 = 240 ms, rounded to whole ms,
+       the file keeps ms; log, undo and kit messages in seconds too); MODS data = tools/deploy_set.py SET of 2026-10-01 (Profiles
+       0.1.5 delete / restore / archive, Accessories 0.5.1, Gear 0.1.2, SkyyUiProbe as a dev mod). Notes: tools/menu_0_3_4_patch.py.
+0.3.3: SkyyGear compat + Skyy's Settings locks (research/SkyyGear-Stage1-Spec.md 7.3.2, research/Settings-Spec.md 4.1 / 4.4): an
+       Identify tile (main slot 26, /identify, greyed while SkyyGear is absent), Reforge text for SkyyGear, SkyyGear 0.1 replaces SkyyRolls
+       in the Mods list; the Settings torch at main slot 39 (left of Mods); settings visibility by permission (optional 7th registration
+       element = a node; rows the player may not change are hidden, never greyed; settings:fn:set refuses them); the refusing General
+       switches party.invites / tpa.requests / msg.private, skills.overallUp, the crossbow switches and SkyyGear's three in the known
+       list; Mods texts of rounds 8 + 9; the live-set check also accepts this round's SET (ROUND_PINS / ROUND_RETIRED); kit KEEP 10.
+       Review fixes: a bad node refuses the key for good (hidden, set refused, get = its default), plain nodes only, the stricter
+       node wins when two mods register one key; (admin) / (staff) Commands lines only in the admins' Mods text; /rank set <player> <rank>.
+       Notes: tools/menu_0_3_3_patch.py.
+0.3.2: menu data for round 6 (Berserker / Fury, Priest / Divinity, class kits): every class text names the 7-class roster (Archer,
+       Warrior, Mage, Berserker, Priest playable; Assassin, Shaman later) and the weapon skills; SkyyClasses /class kit + the admin
+       line /classadmin kit; Mods list versions = tools/deploy_set.py SET (SkyySkills 0.4.5 + SkyyGuilds 0.1.3 = the round's pins,
+       ROUND_PINS); the Priest heal switches classes.healGiven / healTaken in the known list and the defaults template; roster checks.
+       Notes: tools/menu_0_3_2_patch.py.
+0.3.1: menu data brought up to the live set (tools/deploy_set.py SET, round 4): Mods list versions, config files, reload commands and
+       a description of each mod's Server Setup page (the list itself still comes from the config:def: scan); SkyyRanks in the list;
+       admin-only command lines for admins (Essentials /warpadmin, Party /partyadmin, Hud /skyyhud default, Islands, ...); the guild
+       switches in the known list and the defaults template; Settings tabs hold 8 rows per page (paging stays); a build-time
+       cross-check against the live scripts. Notes: tools/menu_0_3_1_patch.py.
+0.3:   Server Setup, the admin Mods section (research/Server-Setup-Spec.md section 2): a book at menu slot 41 and /modconfig
+       (alias /serversetup, node skyymenu.modconfig) open one 1120 x 930 page with seven views - the mod list (every installed Skyy
+       mod; mods on the config registry first, the rest file only with their path and reload command; search), a mod's settings
+       (tabs, a widget per type, Default, drafts), table / list editor, confirm, Changes (log + undo), History (preview + restore),
+       Export / Import (codes + files). One guard() re-checks the node first in every build and click. SkyyMenu's own settings
+       (menu item, Mods tile, tooltip default, player settings defaults table) go through tools/skyycfg.py. Notes: tools/menu_0_3_patch.py.
+0.2:   the player Settings page (research/Settings-Spec.md): a settings registry on the skyy.bridge map (settings:fn:register / get /
+       set; settings:def:<key> drained at start and at every page open), per-player files Skyy_SkyyMenu/settings/<uuid>.properties
+       (saved 500 ms after a change, atomic writes, never overwritten when unreadable), server-wide defaults in
+       settings-defaults.properties (commented template written once, re-read within 30 s), /settings (alias /skysettings) and a torch
+       at menu slot 51 opening a 1120 x 930 page: 8 tabs, ON/OFF rows, Reset all (two clicks), < SkyWynn Menu, Close. SkyyMenu's own
+       switch menu.tooltips = the 0.1.3 Hover Tooltips book (0.1.3 notips/<uuid>.txt files move into it at the next join). New
+       Auction House entry (/ah, SkyyAuctions) + SkyyAuctions in the Mods list. Notes: tools/menu_0_2_patch.py.
+0.1.3: new entries Island Menu (/island menu), Vault (/vault), Reforge (/reforge), Guild (/guild); Party opens the /party page and Bank
+       the /bank page (all page commands keep the 0.1.2 open-over-the-menu rule; the Bank + Party submenus are gone); a per-player
+       Hover Tooltips switch (the only sure stuck-tooltip fix; saved off the world thread); stuck-tooltip mitigations (every server-side
+       close empties the grid first, an experimental Esc hook on the page root); Mods list = the live 19-mod set; Islands wording follows
+       the installed SkyyIslands; the menu item grant waits out profile:busy; a runtime check that /menu, /sbmenu, /skymenu are ours.
+       Notes + the tooltip investigation: tools/menu_0_1_3_patch.py.
+0.1.2: pages opened from the menu no longer hang on Loading... (the menu is not closed before a page command; CloseTask closes it
+       afterwards only if it is still open) and the page is 1.4x bigger. Notes: tools/menu_0_1_2_patch.py.
+0.1.1: menu commands switched to the short positional forms (/bank deposit all, /island visit <p>, /skyyhud export ...) now that the mods have usage variants/subcommands.
+Run:   python build_skyymenu_0.1.py            -> SkyyMenu/SkyyMenu-0.1.jar
+       python build_skyymenu_0.1.py --deploy   -> also copies to Mods/SkyyMenu.jar and enables it in the HUD mod world
+
+A Hypixel SkyBlock style menu ("SkyBlock Menu" = a Nether Star in hotbar slot 9 + /sbmenu) for everything the Skyy mods add.
+Skyy's request: an item you right-click to open, plus /skymenu if you lose it. First entry Teleport (island, hub, spawn, every
+warp that is set), then Pocket Dimension, Accessory Bag, HUD editor, ... and Mods (every mod with what it does and its commands,
+shown as items with flavor text like Minecraft).
+
+EDIT THE MENU HERE: everything a player sees (entries, icons, texts, the mod catalog) is Python data in the "MENU DATA" section
+right below. The Java is generated from it. Every icon id is checked against Assets.zip when you build.
+
+How it works (all patterns copied from working code, see the notes next to each class):
+ - Item Skyy_Menu ("SkyWynn Menu", Ingredient_Voidheart look, glows): right-click -> OpenCustomUI page "SkyyMenu"
+   (item JSON Interactions.Secondary + OpenCustomUIInteraction.registerSimple, the SkyySacks / SkyyAccessories pattern).
+ - Given once per PROFILE (0.3.4; once per player before): PlayerReadyEvent (fires on EVERY world switch) or the 2 s profile watch
+   (GivenTick) -> in-memory once-per-session guard keyed by the profile's storage key -> GrantTask polls
+   until the player's world resolves, re-runs itself on that world's thread (world.execute, SkyySacks GrantTask pattern), skips
+   if the player already holds the item, puts it in the LAST hotbar slot if free (Hypixel slot 9), else hotbar / storage /
+   backpack, count-verified. Persisted flag = Skyy_SkyyMenu/given/<uuid>.txt (atomic tmp + move) so it is never re-given
+   after a restart. Inventory full -> message, retried on the next login (PlayerDisconnectEvent clears the session guard).
+   0.3.4: the persisted record is Skyy_SkyyMenu/given-profile/<storage key>.txt (profile:fn:key; <uuid> = profile 1 or no SkyyProfiles);
+   the old given/<uuid>.txt flags are only read (Given.migrate: the profile active at the first 0.3.4 sight counts as given).
+ - /skymenu (+ /menu and /sbmenu when no vanilla or Skyy command uses them - checked at build time below) opens the page and
+   gives the item back if the player has none. Everyone may use it: setPermissionGroups({"hytale:Adventurer"}), the vanilla
+   /help /who /ping pattern (SkyyEssentials does the same).
+ - Page: ONE inline CustomUIPage, views switched with rebuild(). A 9 x 6 ItemGrid (AreItemsDraggable: false) of item icons;
+   every slot is an ItemGridSlot with setName + setDescription (the tooltip; multi-line, "Click to open!" footer in yellow
+   markup) and clicks arrive through the SlotClicking binding with "SlotIndex" in the payload. Proof it works on a non-draggable
+   grid: TheArmoryMod 1.22.0 ScribingPage (ItemGrid #PickerGrid AreItemsDraggable false + SlotClicking + regex on "SlotIndex",
+   ItemGridSlot.setDescription with <color>/<b>/<i> markup) and our own SkyyHud 0.3.x editor. Like TheArmoryMod the grid binding
+   does not lock the interface (addEventBinding(..., false)), so a click on an empty slot never leaves the UI waiting. Under the grid an info box
+   repeats the name + text of the last clicked entry (fallback if tooltips do not render), a status line, and a footer with
+   Back / Prev / Next / Close TextButtons (proven Activating binding) as a second way to navigate.
+ - Actions run the other mods' commands AS THE CLICKING PLAYER with CommandManager.get().handleCommand(playerRef, "cmd args")
+   (exactly what vanilla /su does; permission checks apply as if the player typed it). Before that the menu checks
+   resolveCommand(name) (mod installed?) and AbstractCommand.hasPermission(playerRef) and says what is wrong instead of failing.
+   (0.1.2+) The command runs with the menu still open: a page command replaces the menu, anything else closes it ~150 ms later.
+ - Warps: listed live from the vanilla TeleportPlugin.get().getWarps(); a click teleports with the exact vanilla WarpCommand.tryGo
+   calls (Warp.toTeleport() + Store.addComponent(Teleport)) instead of dispatching /warp, because vanilla gates /warp go to
+   hytale:Builder (normal players would get "no permission"). Per-warp locks later: MenuUtil.isWarpUnlocked(player, warpId).
+   Spawn: the default world's spawn point, same calls as vanilla SpawnCommand / SkyyIslands /hub fallback.
+ - Profile tooltip reads the JVM bridge: coins:fn:get (or coins:<uuid>), bank:<uuid>, skill:<uuid>, acc:has/acc:tal, coll:recipes.
+
+FOUND WHILE BUILDING THIS (affects other mods, NOT fixed here - see the report):
+ 1. Optional command arguments need "--name value". `/bank deposit all` fails with "wrong number of required parameters"
+    (verified live against the engine parser with the SkyyBank 0.1 jar); `/bank --action deposit --amount all` works. Same for
+    /island visit|invite|info, /skyyhud export|import|reset|profile|preview, /collections unlocks|reload, /rolls, /deathpenalty,
+    /bankconfig, /bazaaradmin. The menu dispatches the working "--name value" form and the Mods list shows that form.
+ 2. Commands without requirePermission get an auto-generated node "<group>.<name>.command.<cmd>" lower-cased with spaces -> "_"
+    (e.g. skyy.0.6.1_skyysacks.command.sacks - it changes with every version bump). Normal players (hytale:Adventurer) have no
+    permissions, so they cannot run /sacks /skills /island ... at all, typed or from the menu, until those mods call
+    setPermissionGroups(new String[] { "hytale:Adventurer" }) like SkyyEssentials, or Skyy grants the nodes. Admins ("*") are fine.
+"""
+import sys, os, json, re, struct, zipfile, glob
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools"))
+import skyybuild as B
+import skyycfg as CFG        # 0.3: the admin config kit (SkyyMenu's own settings, research/Server-Setup-Spec.md 1.4)
+import skyyui as SUI         # 0.3.10: the shared vanilla UI kit - the Stats page only (the older menu pages keep their own look)
+
+VERSION = "0.3.13"
+HERE = os.path.dirname(os.path.abspath(__file__))
+
+# 0.3.1: the config kit this jar carries (tools/menu_0_3_1_patch.py pins it, 0.3.2 and 0.3.3 keep the pin - change it with a rep in
+# tools/menu_0_3_3_patch.py; see the "config kit" lines of the build output)
+import hashlib, subprocess
+EXPECTED_KIT = "1.1"
+def kit_blob(path):
+    """git blob id of the kit source (= git rev-parse HEAD:tools/skyycfg.py when the file is the committed one)"""
+    d = open(path, "rb").read()
+    return hashlib.sha1(("blob %d" % len(d)).encode("ascii") + b"\x00" + d).hexdigest()
+KIT_FILE = os.path.abspath(CFG.__file__)
+KIT_NOW = getattr(CFG, "KIT_VERSION", "1.0")      # the committed kit 1.0 has no KIT_VERSION constant
+assert KIT_NOW == EXPECTED_KIT, ("tools/skyycfg.py is config kit %s, SkyyMenu %s pins kit %s - pick a kit change up on purpose: "
+                                 "set EXPECTED_KIT through tools/menu_0_3_10_patch.py (or its successor), regenerate, re-test" % (KIT_NOW, VERSION, EXPECTED_KIT))
+KIT_BLOB = kit_blob(KIT_FILE)
+try:
+    _head = subprocess.run(["git", "-C", os.path.dirname(os.path.dirname(KIT_FILE)), "rev-parse", "HEAD:tools/skyycfg.py"],
+                           capture_output=True, text=True, timeout=30).stdout.strip()
+except Exception:
+    _head = ""
+KIT_STATE = ("the committed file" if _head == KIT_BLOB else "NOT the committed file (git HEAD has %s)" % _head[:12]) if _head else "git not available"
+KIT_ID = "%s %s" % (KIT_NOW, KIT_BLOB[:12])
+print("config kit %s: tools/skyycfg.py blob %s, %s" % (KIT_NOW, KIT_BLOB[:12], KIT_STATE))
+if _head and _head != KIT_BLOB:
+    print("WARNING config kit: tools/skyycfg.py has uncommitted edits - this jar carries that exact revision (blob %s); "
+          "rebuild once the kit is committed" % KIT_BLOB[:12])
+
+# =====================================================================================================================
+# ================================================  MENU DATA (edit me)  ==============================================
+# =====================================================================================================================
+# Text rules: no double quotes, braces, semicolons or backslashes. Write command arguments as <player> - they are shown as
+# [player] because < > is tooltip markup. Each entry's text is a list of lines: the FIRST line is the description paragraph,
+# the others are detail lines. Slots: 0-53, row by row (9 per row, 6 rows). Row 5: 45 = Back, 48 = Prev, 49 = Close, 50 = Next.
+#
+# Actions:  view:<main|tp|players|mods>  open a submenu                   cmdc:<command line>  run it, then close the menu (a page
+#           cmd:<command line>  run it, keep the menu open (refreshes)         command simply replaces the menu)
+#           profile  open the Stats page (0.3.10; was: show stats in the box)  info   just show the text in the info box
+#           spawn  teleport to the main world spawn                       tips   switch this player's hover tooltips on / off
+#           settings  open the player Settings page (0.2, same as /settings)
+#           admin  open Server Setup (0.3; only admins see this entry - players never do)
+
+MENU_ITEM_ID = "Skyy_Menu"
+MENU_ITEM_NAME = "SkyWynn Menu"
+MENU_ITEM_LOOK = "Ingredient_Voidheart"      # vanilla item whose model / texture / icon / glow the menu item copies (not a backpack)
+MENU_ITEM_QUALITY = "Epic"
+MENU_ITEM_DESC = ("Right-click to open the SkyWynn Menu: teleports, your island menu, bags, vault, the HUD editor, skills, the bazaar, "
+                  "the auction house, the bank, reforging and identifying gear, your party and guild, your settings and a list of every mod with "
+                  "its commands."
+                  "\\n\\nLost it? Type /skymenu to get a new one.")
+PAGE_ID = "SkyyMenu"                          # OpenCustomUI page id used by the item
+# 0.3.11: OWN ICON ITEMS. A tile's icon is an ITEM id (MenuPage.put: new ItemGridSlot(new ItemStack(icon, 1))), so our own icon art rides
+# on an icon-only item this jar ships: id -> (the art file in the repo, its path under Common/ in the jar = the item's Icon, the
+# art folder's manifest.json, the item's name, the vanilla item whose held look it borrows). Hidden from the creative library (Variant
+# true, no Categories), no recipe, no interaction.
+ICON_ITEMS = {
+    "Skyy_Menu_Icon_AccessoryBag": ("art/accessory-bag-icon/Common/Icons/ItemsGenerated/SkyyAccessories_Bag_Menu.png",
+                                    "Icons/ItemsGenerated/SkyyAccessories_Bag_Menu.png", "art/accessory-bag-icon/manifest.json",
+                                    "Accessory Bag", "Utility_Bag_Seed"),
+}
+ICON_BAG = "Skyy_Menu_Icon_AccessoryBag"      # 0.3.11: the Accessory Bag tile (Skyy 2026-10-08: "Yes, the bag icon looks good, commit it")
+
+
+def icon_item_png(iid):
+    """0.3.11: the icon item's PNG, checked: = its art manifest (sha256 + bytes), a 64 x 64 RGBA8 PNG"""
+    import hashlib, struct
+    art, rel, man, _nm, _look = ICON_ITEMS[iid]
+    data = open(os.path.join(HERE, "..", *art.split("/")), "rb").read()
+    ent = [f for f in json.load(open(os.path.join(HERE, "..", *man.split("/")), encoding="utf8"))["files"] if f["path"] == "Common/" + rel]
+    assert len(ent) == 1 and hashlib.sha256(data).hexdigest() == ent[0]["sha256"] and len(data) == ent[0]["bytes"], \
+        "icon item %s: %s is not the art manifest's file" % (iid, art)
+    assert data[:8] == b"\x89PNG\r\n\x1a\n" and data[12:16] == b"IHDR" and struct.unpack(">II", data[16:24]) == (64, 64) \
+        and data[24:26] == b"\x08\x06", "icon item %s: not a 64 x 64 RGBA8 PNG" % iid
+    return data
+
+ICON_BACK   = "Weapon_Arrow_Iron"
+ICON_PREV   = "Weapon_Arrow_Crude"
+ICON_NEXT   = "Weapon_Arrow_Iron"
+ICON_CLOSE  = "Furniture_Flag_Small_Red"      # red flag with a white X (vanilla Barrier's icon is an empty wireframe cube)
+ICON_WARP   = "Tool_Map"
+ICON_PLAYER = "Armor_Leather_Light_Head"
+FILLER_ICON = None                            # None = empty grid slots; e.g. "Editor_Empty" for a Hypixel glass-pane look
+
+USE_MARKUP  = True                            # tooltip footer colors (<color is=...>); set False if raw tags show in game
+FOOT_COLOR  = "#ffff55"
+DIM_COLOR   = "#ff5555"
+
+# (view, title, intro lines) - the intro fills the info box until something is clicked
+VIEWS = [
+    ("main",    "SkyWynn Menu",   ["Everything the server adds, in one place. Hover an item to read about it and click it to use it.",
+                                   "Lost your menu item? Type /skymenu to get a new one."]),
+    ("tp",      "Teleport",       ["Your island, the hub, the server spawn and every warp that has been set.",
+                                   "Admins add warps with /warp set <name>."]),
+    ("players", "Players Online", ["Click a player to send a teleport request, visit their island or invite them to your party.",
+                                   "Teleport requests you receive can be accepted or denied at the bottom."]),
+    ("player",  "Player",         ["What do you want to do with this player?"]),
+    ("mods",    "Mods",           ["Every SkyWynn mod, what it does and all of its commands.",
+                                   "Click a mod to show its commands here - hovering shows the same text."]),
+]
+
+# (view, slot, icon item id, name, text lines, tooltip footer or None, action)
+ENTRIES = [
+    # ---- main menu. Row 1 = Skyy's order (Teleport, Pocket Dimension, Accessory Bag, HUD editor, then the rest), row 2 = your island +
+    # your stuff, row 3 = people, row 4 = the mod list; top right = the per-player tooltip switch (0.1.3 layout)
+    # 0.3.10: the tile opens the Stats page (StatsPage, also /stats); its hover text is MenuPage.profileBody (short lines)
+    ("main", 4,  "Armor_Iron_Head", "Your Profile", ["All your stats: health, mana, strength, crit, fortune, skills and more."],
+        "Click to open your Stats page", "profile"),
+    ("main", 8,  "Deco_Book_Pile_Small", "Hover Tooltips",
+        ["Switch the pop-up text of this menu on or off (saved for you).",
+         "Off: nothing pops up when you hover an item. Click an item to use it",
+         "and read what it does in this box.",
+         "The same switch is in Settings (/settings, General tab)."], "Click to switch", "tips"),
+    ("main", 10, "Instance_Gateway", "Teleport", ["Travel to your island, the hub, the server spawn and every warp that is set."], "Click to open!", "view:tp"),
+    ("main", 11, "Ingredient_Void_Essence", "Pocket Dimension",
+        ["Everything your Magic Bags swept up lives here. Pick items up or deposit them.",
+         "Carry a bag to use its tab. A bag you lack shows how to craft it.",
+         "Stack refill: Hotbar only, Full inventory or Off - pick it on that page.",
+         "Command: /sacks (or /pd, /bags)"], "Click to open!", "cmdc:sacks"),
+    ("main", 12, ICON_BAG, "Accessory Bag",                  # 0.3.11: our own icon (was the vanilla Utility_Bag_Seed)
+        ["Equip bench accessories and booster accessories - they work while they sit in the bag.", "Command: /accessories (or /acc)"],
+        "Click to open!", "cmdc:accessories"),
+    ("main", 13, "Deco_Map", "HUD Editor",
+        ["Move, resize and switch every widget of your on-screen HUD.", "Save layouts as profiles or share them as a code.",
+         "Command: /skyyhud (or /shud)"], "Click to open!", "cmdc:skyyhud"),
+    ("main", 14, "Bench_WorkBench", "Crafting",
+        ["Craft from your inventory and your Magic Bags.", "Bench accessories in your Accessory Bag unlock that bench's recipes.",
+         "Vanilla benches and inventory crafting use the bags you carry too.",
+         "Command: /craft"], "Click to open!", "cmdc:craft"),
+    ("main", 15, "Weapon_Sword_Iron", "Skills",
+        ["Your skill levels and XP: gathering, your class weapon skill (Archery, Swordsmanship, Sorcery, Fury, Divinity, Assassination "
+         "or Zen) and more. "
+         "Every level up pays coins.", "Command: /skills"],
+        "Click to open!", "cmdc:skills"),
+    ("main", 16, "Furniture_Village_Painting_1x1", "Collections",
+        ["Everything you have gathered, your milestones and the recipes they unlock.", "Command: /collections"], "Click to open!", "cmdc:collections"),
+    ("main", 20, "Plant_Sapling_Oak", "Island Menu",
+        ["Your island in one page: members, visitors and island settings.", "Command: /island menu (or /is menu)"],
+        "Click to open!", "cmdc:island menu"),
+    ("main", 21, "Furniture_Ancient_Chest_Large_Treasure", "Bank",
+        ["Deposit coins to earn interest. Bank coins are safe when you die.", "Deposit all, withdraw all or type any amount.",
+         "Command: /bank"], "Click to open!", "cmdc:bank"),
+    ("main", 22, "Furniture_Royal_Magic_Chest_Large", "Vault",
+        ["Item storage shared by ALL of your profiles - move items from one profile to another.", "Command: /vault"],
+        "Click to open!", "cmdc:vault"),
+    ("main", 23, "Rock_Gem_Emerald", "Bazaar",
+        ["Instantly buy and sell resources. Prices move as players trade.", "Command: /bazaar (or /bz)"], "Click to open!", "cmdc:bazaar"),
+    # 0.2: the Auction House (SkyyAuctions 0.1, /ah) sits next to the Bazaar; Reforge moved one slot right
+    ("main", 24, "Ingredient_Bar_Gold", "Auction House",
+        ["Buy items other players listed and sell your own for a fixed price (Buy It Now).",
+         "Claim the coins and items you are owed on the Manage page.",
+         "Command: /ah (or /auction, /auctionhouse)"], "Click to open!", "cmdc:ah"),
+    # 0.3.3: SkyyGear 0.1 owns /reforge (the same command SkyyRolls had): weapons and armor, tools are refused (SkyyGear spec 5.4)
+    ("main", 25, "Tool_Hammer_Iron", "Reforge",
+        ["Put in a weapon or armor piece and pay coins to reroll its modifiers.", "Command: /reforge"], "Click to open!", "cmdc:reforge"),
+    # 0.3.3: Identify right of Reforge (SkyyGear 0.1 /identify, spec 7.3.2); greyed "(not installed)" while no /identify command is loaded
+    ("main", 26, "Ingredient_Crystal_Purple", "Identify",
+        ["Reveal the modifiers of unidentified weapons and armor from mobs and loot chests. Costs coins by rarity and level.",
+         "Command: /identify"], "Click to open!", "cmdc:identify"),
+    ("main", 30, "Furniture_Village_Sign", "Players",
+        ["Everyone who is online: send teleport requests, visit islands, invite to your party."], "Click to open!", "view:players"),
+    ("main", 31, "Deco_Scroll", "Party",
+        ["Your party page: invite players, answer invites, see your party or leave it.", "Party chat: /pc <message>",
+         "Command: /party (or /p)"], "Click to open!", "cmdc:party"),
+    ("main", 32, "Furniture_Outlander_Banner", "Guild",
+        ["Your guild page: members and ranks, the guild bank and guild XP.", "Not in a guild? Create one or accept an invite there.",
+         "Guild chat: /gc <message>", "Command: /guild"], "Click to open!", "cmdc:guild"),
+    ("main", 40, "Furniture_Ancient_Bookshelf", "Mods",
+        ["Every SkyWynn mod on the server, what it does and all of its commands."], "Click to open!", "view:mods"),
+    # 0.3: Server Setup right of Mods (research/Server-Setup-Spec.md 2.2) - drawn ONLY for players with skyymenu.modconfig
+    ("main", 41, "Deco_Book_Pile_Large", "Server Setup",
+        ["Change every Skyy mod's settings in game - only admins see this.",
+         "Every change is saved to the mod's own file, logged and can be undone.",
+         "Command: /modconfig (or /serversetup)"], "Click to open!", "admin"),
+    # 0.3.3: Settings immediately LEFT of Mods (LOCKED 2026-09-25, research/Settings-Spec.md 4.1). 0.2 - 0.3.2 had it at slot 51 next to Close
+    ("main", 39, "Furniture_Crude_Torch", "Settings",
+        ["Turn chat messages on or off - one switch per message, for every mod.",
+         "Your settings are the same on every profile.", "Command: /settings (or /skysettings)"], "Click to open!", "settings"),
+    # ---- Teleport (warps are added automatically in rows 2-4, see WARP_SLOTS)
+    ("tp", 11, "Soil_Grass", "My Island",
+        ["Teleport to your own island. It is created the first time you go.", "Command: /island (or /is)"], "Click to teleport!", "cmdc:island"),
+    ("tp", 13, "Hub_Portal_Default", "Hub",
+        ["Go back to the hub from anywhere, including your island.", "Command: /hub (or /lobby)"], "Click to teleport!", "cmdc:hub"),
+    ("tp", 15, "Spawn_Portal", "Spawn", ["Teleport to the spawn point of the main world."], "Click to teleport!", "spawn"),
+    # ---- Players (online players are added automatically, see PLAYER_SLOTS)
+    # cmdc (close first): accepting a /tpahere request teleports YOU (SkyyEssentials accept(): mover = r.here ? r.to : r.from)
+    ("players", 47, "Ingredient_Crystal_Green", "Accept Teleport Request",
+        ["Accept the newest teleport request someone sent you.", "Command: /tpaccept"], "Click to accept", "cmdc:tpaccept"),
+    ("players", 51, "Ingredient_Crystal_Red", "Deny Teleport Request",
+        ["Refuse the newest teleport request someone sent you.", "Command: /tpdeny"], "Click to deny", "cmd:tpdeny"),
+]
+
+# Entries whose command is a SUBCOMMAND of another mod's command (0.1.3): (command, subcommand, what the server needs). The entry is
+# greyed "(update needed)" while that command exists WITHOUT the subcommand (checked live with AbstractCommand.getSubCommand).
+NEEDS_SUB = [("island", "menu", "SkyyIslands 0.5")]
+
+# Player actions whose WORDING depends on the installed version (review 2026-09-24): (player-action slot, NEEDS_SUB command line, old name,
+# old lines, old footer). While MenuUtil.needOf(line) says the server's mod is older, the old text is shown; the command is the same.
+# SkyyIslands 0.4.5's /island invite only gives build rights; 0.5 makes the invitee a member of your island.
+PA_LEGACY = [
+    (33, "island menu", "Give Island Build Rights", ["Let %P build on YOUR island. Only do this for friends.", "Command: /island invite %P"],
+        "Click to give build rights"),
+]
+
+# Things you can do with a selected player. %P = their name (letters, digits, _ only). (slot, icon, name, lines, footer, command, close menu first)
+PLAYER_ACTIONS = [
+    (29, "Hub_Portal_Default", "Send Teleport Request", ["Ask %P if you may teleport to them. They have 60 seconds to accept.", "Command: /tpa %P"],
+        "Click to send", "tpa %P", False),
+    (30, "Spawn_Portal", "Invite Them Here", ["Ask %P to teleport to you.", "Command: /tpahere %P"], "Click to send", "tpahere %P", False),
+    (31, "Soil_Grass", "Visit Their Island", ["Teleport to the island of %P and look around (you can only build with their build rights).",
+        "Command: /island visit %P"], "Click to visit", "island visit %P", True),
+    (32, "Deco_Scroll", "Invite to Party", ["Invite %P to your party.", "Command: /party invite %P"], "Click to invite", "party invite %P", False),
+    (33, "Tool_Hammer_Iron", "Invite to Your Island", ["Invite %P to join your island as a co-op member. Only do this for friends.",
+        "They join with /island accept.", "Command: /island invite %P"], "Click to invite", "island invite %P", False),
+    (34, "Tool_Pickaxe_Iron", "Let Them Build", ["Let %P build on YOUR island without making them a member.",
+        "Undo with /island untrust.", "Command: /island trust %P"], "Click to trust", "island trust %P", False),
+]
+
+WARP_SLOTS   = list(range(19, 26)) + list(range(28, 35)) + list(range(37, 44))                       # 21 warps per page
+PLAYER_SLOTS = list(range(10, 17)) + list(range(19, 26)) + list(range(28, 35)) + list(range(37, 44))  # 28 players per page
+MOD_SLOTS    = list(range(10, 17)) + list(range(19, 26)) + list(range(28, 35)) + list(range(37, 44))  # 28 mods per page (0.3.1: 22 mods)
+NO_WARPS_SLOT, NO_PLAYERS_SLOT, PLAYER_HEAD_SLOT = 31, 22, 13
+
+# The Mods submenu: one item per mod (icon = the item that represents it, tooltip = what it does + every command).
+# "check" = a command of that mod; the mod counts as installed when its plugin or that command is loaded. The live version is
+# read from the loaded plugin's manifest; "version" is only shown when the mod is not installed.
+# Commands use the short positional forms (SkyyIslands 0.4.3, SkyyHud 0.3.6, SkyyBank 0.1.1, ... added usage variants / subcommands).
+# ---- 0.3.5: THE ONE VERSION TABLE of the Mods list = tools/deploy_set.py SET (SET order; SkyyMenu's own entry is VERSION). Every MODS
+# entry below reads its "version" from here (asserted). To bump: the next tools/menu_<ver>_patch.py rewrites this one block (the table
+# line down to its closing brace - tools/menu_0_3_5_patch.py bump_table), regenerate, rebuild; the build's live-set check names every
+# difference and prints this table for the live SET.
+MODS_VERSIONS = {
+    "SkyyHud": "0.3.13", "SkyySacks": "0.7.12", "SkyyCoins": "0.1.5", "SkyyCollections": "0.2.6", "SkyyParty": "0.1.7",
+    "SkyyBank": "0.1.6", "SkyyIslands": "0.5.5", "SkyyBazaar": "0.1.4", "SkyyGear": "0.2.3", "SkyySkills": "0.4.27",
+    "SkyyAccessories": "0.5.5", "SkyyClasses": "0.1.15", "SkyyEssentials": "0.1.8", "SkyyProfiles": "0.1.8", "SkyyCooking": "0.1.6",
+    "SkyyTrees": "0.3.5", "SkyyExploration": "0.2.3", "SkyyGuilds": "0.1.6", "SkyyVault": "0.1.5", "SkyyAuctions": "0.1.2",
+    "SkyyRanks": "0.1.1", "SkyyUiProbe": "0.4", "SkyyMobs": "0.1.3", "SkyyWorldGen": "0.1", "SkyyArmory": "0.1",
+}
+MODS = [
+    {"mod": "SkyyMenu", "version": VERSION, "icon": "Ingredient_Voidheart", "check": "skymenu",
+     "config": "Skyy_SkyyMenu/config.properties,Skyy_SkyyMenu/settings-defaults.properties", "reload": "", "note": "Set up in game - Server Setup, Menu.",
+     "setup": ("0.3", "Menu", "the menu item, the Mods tile, player settings defaults"),
+     # 0.3.10: the Stats page (/stats)
+     "desc": "The all-in-one SkyWynn menu: teleports, your island menu, Pocket Dimension, Vault, Accessory Bag, the HUD editor, crafting, skills, collections, the bazaar, the auction house, the bank, reforging and identifying gear, players, your party and guild, your stats, your settings, this list of mods and Server Setup for admins.",
+     "commands": ["/skymenu%ALIASES% - open the menu or replace a lost menu item",
+                  "/stats (or /profilestats) - all your stats on one page",
+                  "/settings (or /skysettings) - turn chat messages on or off",
+                  "/modconfig (or /serversetup) - (admin) change every mod's settings in game"]},
+    {"mod": "SkyyProfiles", "version": MODS_VERSIONS["SkyyProfiles"], "icon": "Deco_Book_Pile_Large", "check": "profiles",
+     "config": "Skyy_SkyyProfiles/config.properties", "reload": "profileadmin reload", "note": "",
+     # 0.3.4: SkyyProfiles 0.1.5 - profile delete (confirm, then a 6-hour undo window by default), restore, the admin archive;
+     # /profileadmin reload joins the config line (the info box shows 8 Commands lines at most)
+     "setup": ("0.1.1", "Profiles", "profile slots, switching, inventory, delete undo hours"),
+     "admin": ["/profileadmin config | set <setting> <value> | reload - (admin)",
+               "/profileadmin archive list <player> - (admin) deleted and archived profiles",
+               "/profileadmin archive restore <player> <profile> - (admin) bring one back"],
+     "desc": "SkyBlock-style profiles: each profile is its own save with its own class (Archer, Warrior, Mage, Berserker, Priest, Assassin or Monk), island, inventory, coins, bank, bags, skills and collections. A new profile starts with its class kit. A deleted profile can be restored for a few hours (6 by default).",
+     "commands": ["/profiles (or /profile) - open your profiles", "/profiles create (or new) - a new profile: pick its class, get its kit",
+                  "/profiles switch <number or name> - switch to another profile", "/profiles list - your profiles in chat",
+                  "/profiles delete <number or name> - delete a profile (type it again to confirm)",
+                  "/profiles restore <number or name> - bring back a profile you deleted",
+                  "/profileadmin info <player> - (admin) a player's profiles",
+                  "/profileadmin setclass <player> <n> <class> - (admin) fix a class"]},
+    # 0.3.3: SkyyIslands 0.5.3 (round 9): island admins may invite co-op members, visitor limit 10, beds stay member-only
+    {"mod": "SkyyIslands", "version": MODS_VERSIONS["SkyyIslands"], "icon": "Soil_Grass", "check": "island",
+     "config": "Skyy_SkyyIslands/config.properties", "reload": "island reload", "note": "",
+     "setup": ("0.5.2", "Islands", "island defaults, visitors, co-op, limits, starter kit, hub"),
+     "admin": ["/modconfig islands - (admin) island defaults, starter kit from your hotbar",
+               "/island reload - (admin) re-read config.properties and every island file",
+               "/sethub - (admin) set the hub where you stand (also in Server Setup)"],
+     "desc": "Your own private island in the sky: teleport home any time, invite friends as co-op members and choose who may visit or build in the island menu.",
+     "commands": ["/island (or /is) - go to your island", "/island menu - members, visitors and island settings",
+                  "/island visit <player> - visit a player's island",
+                  "/island invite <player> - (owner or island admin) invite a co-op member",
+                  "/island trust <player> - give a player build rights only",
+                  "/island leave | kick <player> - leave a co-op | (owner) remove one",
+                  "/island reset - (owner) rebuild your island from scratch", "/hub (or /lobby) - back to the hub"],
+     "old": {"need": "island menu",
+             "desc": "Your own private island in the sky: teleport home any time (built with a starter chest the first time), give friends build rights or let anyone visit.",
+             "commands": ["/island (or /is) - go to your island", "/island visit <player> - visit a player's island",
+                          "/island invite <player> - give a player build rights", "/island info - about your island",
+                          "/hub (or /lobby) - back to the hub", "/sethub - (admin) set the hub point"]}},
+    # 0.3.3: SkyySacks 0.7.7 (round 8): Magic Bags by rarity + the Mythic Omni Bag, bag recipes unlocked by collections
+    {"mod": "SkyySacks", "version": MODS_VERSIONS["SkyySacks"], "icon": "Tool_Feedbag", "check": "sacks",
+     "config": "Skyy_SkyySacks/config.properties", "reload": "", "note": "It is read again by itself within about 10 seconds.",
+     # 0.3.5: SkyySacks 0.7.11 - 0.7.12 - the stack refill (a per-player choice on the bag page: Hotbar only = default / Full inventory /
+     # Off; Server Setup bags.refill + bags.refillDefault), bags of one type ADD UP (the Omni adds to every type), vanilla benches and
+     # inventory (pocket) crafting use the bags you carry (bags.pocketCraft, on); Charcoal goes in the Smithing bag (0.7.10)
+     "setup": ("0.7.6", "Bags and Crafting", "bag caps, free recipes, stack refill, benches, Furnace"),
+     "desc": "Magic Bags in four rarities (Normal, Unique, Rare, Legendary) send what you gather of their type - Mining, Foraging, Farming, Combat or Smithing - into your Pocket Dimension, and the Mythic Omni Bag does it for every type. Bags of one type add up. Collections unlock the bag recipes. Benches, inventory crafting and /craft use the bags you carry.",
+     "commands": ["/sacks (or /pd, /bags) - your Pocket Dimension, missing bags show recipes",
+                  "Stack refill (on the /sacks page): Hotbar only, Full inventory or Off",
+                  "/craft (or /recipes) - craft from your inventory and bags", "/craft <words> - open crafting with a search"]},
+    {"mod": "SkyyAccessories", "version": MODS_VERSIONS["SkyyAccessories"], "icon": "Utility_Bag_Seed", "check": "accessories",
+     "config": "Skyy_SkyyAccessories/config.properties", "reload": "accessories reload", "note": "",
+     # 0.3.4: SkyyAccessories 0.5 / 0.5.1 - booster accessories (one table, ten lines), 18 bag slots to start, /accessories lines,
+     # admin give / givetier (requirePermission skyyaccessories.admin)
+     # 0.3.6: SkyyAccessories 0.5.3 - the Night Vision accessory (Rare, admin give only; its Server Setup rows under Accessories)
+     # 0.3.7: SkyyAccessories 0.5.4 - the Lantern line REPLACES Night Vision (retired: it does nothing, cannot be equipped); Server
+     # Setup -> Accessories -> Lantern (on / off, glow and reach per rarity, the highest helper, shared reach)
+     "setup": ("0.4.4", "Accessories", "bag slots, booster lines, notices, Lantern"),
+     "admin": ["/accessories reload - (admin) re-read config.properties after hand edits",
+               "/accessories give <player> <item> [amount] - (admin) give an accessory",
+               "/accessories givetier <player> <line> <rarity> [amount] - (admin)"],
+     # 0.3.5: SkyyAccessories 0.5.2 - every accessory and bag recipe in the Workbench tab "Accessories & Bags" (no & in tooltip text)
+     "desc": "Your Accessory Bag: 18 slots to start for bench accessories (each unlocks its bench tab in /craft, the Campfire one cooks on the go) and booster accessories - Health, Stamina, Mana, Regeneration, Speed, the Lantern (you glow like a torch) and more - that work in the bag. Only the best rarity of each line counts. Craft them in the Workbench tab Accessories and Bags.",
+     "commands": ["/accessories (or /acc, /accbag) - open your Accessory Bag",
+                  "/accessories lines - every accessory line, its rarities and numbers"]},
+    {"mod": "SkyyHud", "version": MODS_VERSIONS["SkyyHud"], "icon": "Deco_Map", "check": "skyyhud",
+     "config": "Skyy_SkyyHud/config.properties", "reload": "", "note": "Hand edits are read at the next server start.",
+     "setup": ("0.3.10", "HUD", "the HUD layout new players start with"),
+     "admin": ["/skyyhud default - (admin) which layout new players start with",
+               "/skyyhud default use | clear - (admin) set it to your layout | the built-in one"],
+     # 0.3.5: SkyyHud 0.3.11 - the Skills widget (Overall Level + any skills, each line on / off in the widget's Settings; Overall + class
+     # skill by default) - no new command, player switch or Server Setup title
+     # 0.3.6: SkyyHud 0.3.12 - the Combat Indicator widget (red In combat + countdown + a shrinking bar; hidden out of combat by default)
+     "desc": "A customizable on-screen HUD: coordinates, zone, clocks, day counter, session timer, players online, coins, party, guild, skills (your Overall Level and the skills you pick in its Settings) and a combat indicator (red with a countdown while you are in combat). Move, resize and colour every widget, save profiles or share your layout as a code.",
+     "commands": ["/skyyhud (or /shud) - open the HUD editor", "/skyyhud export - print your layout as a code",
+                  "/skyyhud import <code> - load a layout code", "/skyyhud reset - back to the server's default layout",
+                  "/skyyhud profile save|load|delete <name> - named layouts", "/skyyhud profile list - your saved layouts"]},
+    # 0.3.3: SkyySkills 0.4.6 (round 8, pinned): base Mana, the Overall Level (skills.overallUp), crossbow extras (skills.xbow* switches)
+    {"mod": "SkyySkills", "version": MODS_VERSIONS["SkyySkills"], "icon": "Weapon_Sword_Iron", "check": "skills",
+     "config": "Skyy_SkyySkills/xp.properties", "reload": "skills reload", "note": "",
+     # 0.3.5: SkyySkills 0.4.12 - class skills level on their OWN XP table (levels.class rows), in-combat Mana regen (default 50%,
+     # row mana.regen.inCombat), the admin /skills mana (requirePermission skyyskills.admin); 0.4.11 Priest heal XP - no new player switch
+     # 0.3.8: SkyySkills 0.4.16 - Server Setup -> Skills -> Levels -> 'Own XP list per skill' (levels.skill; Mining by default)
+     "setup": ("0.4.3", "Skills", "own XP list per skill, XP rates, perks, Overall Level, Mana"),
+     # 0.3.6: SkyySkills 0.4.13 - 0.4.14 - kill XP by mob level + the level gap, gathering XP x3 to level 10, a rolled landing pays
+     # fall XP, sickle swings pay Farming XP; Mana keeps refilling while charging - no new command, player switch or Server Setup title
+     # 0.3.9: SkyySkills 0.4.21 - Assassination + Discipline ("Hypixel-style" + "as you play" dropped: the 390-character tooltip limit)
+     "desc": "Skills - Mining, Foraging, Farming, Alchemy, Smithing, Cooking, Acrobatics, Exploration and your class weapon skill (Archery, Swordsmanship, Sorcery, Fury, Divinity, Assassination or Zen, on its own XP curve) - level up and pay coins. Stronger mobs pay more kill XP and early gathering is faster. Your Overall Level adds Health and Mana, and Mana refills in combat at half speed.",
+     "commands": ["/skills (or /skill) - open your Skills", "/skills stats <skill> - the Stats page of a skill (or overall)",
+                  "/skills top <skill> - the top 10 players of a skill", "/skills quiet - hide the +XP chat messages",
+                  "/skills reload - (admin) re-read the XP settings", "/skills xp <skill> <amount> - (admin) test XP",
+                  "/skills mana - (admin) your live Mana regen: in or out of combat, boosts"]},
+    # 0.3.3: SkyyTrees 0.2.4 (round 9): Tree Feller 1/2/4/5/6/10, Double Jump in tier III - no new command, switch or page title
+    {"mod": "SkyyTrees", "version": MODS_VERSIONS["SkyyTrees"], "icon": "Plant_Sapling_Maple", "check": "tree",
+     "config": "Skyy_SkyyTrees/trees.properties", "reload": "tree reload", "note": "",
+     # 0.3.8: SkyyTrees 0.3 - 0.3.2 - the Alchemy + Smithing trees, the class tree (Ability Points from the class skill; ON by default
+     # since 0.3.2, Skyy LOCKED 2026-10-05; Server Setup -> Trees -> Class trees), /tree class, the admin /tree probe page
+     "setup": ("0.2.2", "Trees", "nodes, Dust, Tree Feller, Vein Burst, swings, class trees"),
+     "desc": "Skill trees: spend the points your skill levels earn on nodes for Mining, Foraging, Farming, Cooking, Alchemy, Smithing, Acrobatics and Exploration - and a class tree that spends the Ability Points your class skill earns.",
+     "commands": ["/tree (or /trees) - open your skill trees", "/tree <skill> - open one tree, for example /tree mining",
+                  "/tree class - your class tree (Ability Points from your class skill)",
+                  "/tree quiet - hide the Tree bonus chat line", "/tree reload - (admin) re-read the tree settings",
+                  "/tree probe - (admin) the class tree probe page (nothing saved)"]},
+    # 0.3.3: SkyyCollections 0.2.3 (round 8): the Magic Bag ladder - each bag type unlocks from one collection at tiers I / III / V / VII
+    {"mod": "SkyyCollections", "version": MODS_VERSIONS["SkyyCollections"], "icon": "Furniture_Village_Painting_1x1", "check": "collections",
+     "config": "Skyy_SkyyCollections/config.properties,Skyy_SkyyCollections/collections.properties,Skyy_SkyyCollections/rewards.properties", "reload": "collections reload", "note": "",
+     "setup": ("0.2.2", "Collections", "curves, tier rewards, bag ladder, coin unlocks, rules"),
+     # 0.3.5: SkyyCollections 0.2.5 - coins never buy a collection tier, a recipe unlock or a bag (Coin unlocks OFF by default; tiers
+     # already bought stay) - no new command, switch or Server Setup title
+     "desc": "Hypixel-style Collections: everything you gather counts toward tiers. Tiers unlock crafting recipes and pay rewards - each Magic Bag type climbs one collection: Normal, Unique, Rare and Legendary at tiers I, III, V and VII. Coins never buy a tier, recipe or bag.",
+     "commands": ["/collections (or /coll) - open your Collections", "/collections <name> - the tiers of one collection",
+                  "/collections unlocks (or recipes) - the recipes you unlocked",
+                  "/collections top <collection|score> - the top 10 players",
+                  "/collections give <collection> <amount> - (admin) test credit",
+                  "/collections reload - (admin) re-read the collection rules"]},
+    {"mod": "SkyyCooking", "version": MODS_VERSIONS["SkyyCooking"], "icon": "Food_Pie_Meat", "check": "cooking",
+     "config": "Skyy_SkyyCooking/cooking.properties", "reload": "cookadmin reload", "note": "",
+     "setup": ("0.1.2", "Cooking", "graded cooking, grades, Cooking XP, campfire, tree"),
+     # 0.3.6: SkyyCooking 0.1.4 - food strength +32% per Grade, buff durations as before (2^(Grade/5)), Cooking XP default x0.5
+     "desc": "Cooking: dishes you cook at a Cooking Bench get a Grade from your Cooking level and skill tree - every Grade makes the food 32% stronger and its buffs last longer.",
+     "commands": ["/cooking - your Cooking level, Grade and tree chances",
+                  "/cookadmin give <dish> <grade> - (admin) test dishes",
+                  "/cookadmin campfire <dish> <count> - (admin) test the Campfire cook",
+                  "/cookadmin reload - (admin) re-read the cooking settings"]},
+    {"mod": "SkyyExploration", "version": MODS_VERSIONS["SkyyExploration"], "icon": "Furniture_Human_Ruins_Chest_Small", "check": "explore",
+     "config": "Skyy_SkyyExploration/config.properties", "reload": "exploreadmin reload", "note": "Any key also in game: /exploreadmin set. titles.chatPriority needs a restart.",
+     "setup": ("0.2.1", "Exploration", "XP sources, chest luck, spots, checklists, titles"),
+     "admin": ["/exploreadmin set <key> <value> | get <key> - (admin) change or read a key"],
+     "desc": "Exploration: loot chests out in the world, uncover the map, discover zones, find discovery spots and finish each island's checklist - all of it pays Exploration XP and earns titles.",
+     "commands": ["/explore (or /exploration, /discoveries) - your exploration page",
+                  "/explore quiet - hide the chunk XP chat line (also in /settings)", "/title (or /titles) - your titles",
+                  "/title <name> or /title off - wear a title or none",
+                  "/exploreadmin - (admin) place discovery spots, edit island checklists",
+                  "/exploreadmin reload|stats|resetme - (admin)"]},
+    # 0.3.2: SkyyClasses 0.1.6 (round 6): Berserker (Fury) + Priest (Divinity) playable, class kits (/class kit, /classadmin kit)
+    # 0.3.3: SkyyClasses 0.1.7 (round 9): kits land in the hotbar at once (no wait), /class arrows (daily Archer arrows), Healing Totem = Priest
+    {"mod": "SkyyClasses", "version": MODS_VERSIONS["SkyyClasses"], "icon": "Weapon_Shortbow_Iron", "check": "class",
+     "config": "Skyy_SkyyClasses/config.properties", "reload": "classadmin reload", "note": "",
+     "setup": ("0.1.5", "Classes", "weapon lock, class picker, kits, Priest heal, Archer arrows"),
+     "admin": ["/classadmin kit <player> [class] - (admin) give a player a class kit now"],
+     # 0.3.9: SkyyClasses 0.1.14 - Assassin + Monk playable
+     "desc": "Classes: Archer, Warrior, Mage, Berserker, Priest (the party healer), Assassin or Monk. Each class has its own weapons and weapon skill and a kit with its basic weapon that lands in your hotbar at once. With SkyyProfiles the class is picked when you create a profile.",
+     "commands": ["/class (or /classes) - open the class page",
+                  "/class kit - collect kit items that did not fit your hotbar (or see your kit)",
+                  "/class arrows - (Archers) claim your free daily arrows",
+                  "/classadmin set <player> <class> - (admin) give a class",
+                  "/classadmin reset <player> - (admin) remove a class", "/classadmin info <player> - (admin) class and kit data",
+                  "/classadmin reload - (admin) re-read the settings"]},
+    {"mod": "SkyyBazaar", "version": MODS_VERSIONS["SkyyBazaar"], "icon": "Rock_Gem_Emerald", "check": "bazaar",
+     "config": "Skyy_SkyyBazaar/products.properties,Skyy_SkyyBazaar/market.properties,Skyy_SkyyBazaar/config.properties",
+     "reload": "bazaaradmin reload", "note": "",
+     # 0.3.7: SkyyBazaar 0.1.3 - its Server Setup page (Bazaar -> Market: the processed goods premium, config.properties)
+     "setup": ("0.1.3", "Bazaar", "the processed goods premium"),
+     # 0.3.8: SkyyBazaar 0.1.4 - progression prices (default prices only: about x2 per material tier step)
+     "desc": "A Hypixel-style Bazaar: instantly buy or sell dozens of resources against the server. Prices move as people trade, and each higher material tier is worth about twice the one before.",
+     "commands": ["/bazaar (or /bz) - open the Bazaar",
+                  "/bazaaradmin price <itemId> <price> - (admin) set a price",
+                  "/bazaaradmin reset|info <itemId|all> - (admin) reset or show prices",
+                  "/bazaaradmin reload - (admin) re-read the product list"]},
+    # 0.3.3: SkyyAuctions 0.1.2 = this round's pin (SkyyGear spec 7.3.1: gear rarity + modifiers through the bridge, 48h = double listing
+    # fee, other profiles may buy, Magic Bags blocked) - same commands and files
+    {"mod": "SkyyAuctions", "version": MODS_VERSIONS["SkyyAuctions"], "icon": "Ingredient_Bar_Gold", "check": "ah",
+     "config": "Skyy_SkyyAuctions/config.properties,Skyy_Market/blocked.txt", "reload": "ahadmin reload", "note": "",
+     "desc": "A Hypixel-style Auction House (Buy It Now): list an item for a fixed price, buy what other players list and claim the coins and items you are owed. Gear shows its rarity and modifiers. Magic Bags cannot be sold.",
+     "commands": ["/ah (or /auction, /auctionhouse) - open the Auction House",
+                  "/ah sell <price> [duration] - sell the item in your hand",
+                  "/ah claim - claim your coins and items", "/ah manage - your listings and claims",
+                  "/ah search <words> - search the listings",
+                  "/ahadmin list|info|remove|reload|pause|resume|regrant - (admin)"]},
+    {"mod": "SkyyBank", "version": MODS_VERSIONS["SkyyBank"], "icon": "Furniture_Ancient_Chest_Large_Treasure", "check": "bank",
+     "config": "Skyy_SkyyBank/config.properties", "reload": "", "note": "Change the interest in chat with /bankconfig - saved at once.",
+     "desc": "A SkyBlock-style bank next to your coin purse: deposit coins to earn interest and withdraw them any time. Bank coins are never lost when you die.",
+     "commands": ["/bank - open the bank page", "/bank deposit <n|all> - put coins in (500, 2k, 1.5m or all)",
+                  "/bank withdraw <n|all> - take coins out", "/bank status - your bank and purse in chat",
+                  "/bankconfig <percent> <minutes> - (admin) interest"]},
+    {"mod": "SkyyCoins", "version": MODS_VERSIONS["SkyyCoins"], "icon": "Rock_Gem_Ruby", "check": "balance",
+     "config": "Skyy_SkyyCoins/config.properties", "reload": "", "note": "Change the death penalty in chat with /deathpenalty - saved at once.",
+     "desc": "The server's coins. Check your balance and pay other players. When you die you lose a set share of the coins in your purse (bank coins are safe).",
+     "commands": ["/balance (or /bal, /coins, /purse) - your coins", "/pay <player> <amount> - send coins to a player",
+                  "/coinsgive <amount> - (admin) give yourself coins", "/deathpenalty 5% or 5%-10% - (admin) coins lost on death"]},
+    # 0.3.3: SkyyVault 0.1.3 (round 9): pages from buyConfirmCoins up ask in a confirm window (the 0.1.2 second-click buy is gone)
+    {"mod": "SkyyVault", "version": MODS_VERSIONS["SkyyVault"], "icon": "Furniture_Royal_Magic_Chest_Large", "check": "vault",
+     "config": "Skyy_SkyyVault/config.properties", "reload": "vaultadmin reload", "note": "",
+     "setup": ("0.1.1", "Vault", "free pages, prices, buy confirm, page size, arrows, waits"),
+     "admin": ["/vaultadmin config | config <key> <value> - (admin) settings in chat",
+               "/vaultadmin reload - (admin) re-read config.properties"],
+     "desc": "Your Vault: item storage shared by every profile you have, so you can move items from one profile to another. Buy more pages with coins.",
+     "commands": ["/vault - open your Vault", "/vault <page> - open one vault page", "/vault buy - buy the next page (a window may ask you to confirm)",
+                  "/vault info - your pages, slots used and the next price",
+                  "/vaultadmin open|info|setpages <player> - (admin)"]},
+    # 0.3.3: SkyyParty 0.1.5 (round 8, pinned): the party.invites switch refuses invites; staff bypass row privacy.staffBypass
+    {"mod": "SkyyParty", "version": MODS_VERSIONS["SkyyParty"], "icon": "Deco_Scroll", "check": "party",
+     "config": "Skyy_SkyyParty/config.properties", "reload": "partyadmin reload", "note": "",
+     "setup": ("0.1.4", "Party", "party size, invite time, staff bypass"),
+     "admin": ["/partyadmin - (admin) the party settings and how to change them",
+               "/partyadmin set <maxSize|inviteSeconds|privacy.staffBypass> <value> - (admin)",
+               "/partyadmin reload - (admin) re-read config.properties"],
+     # 0.3.8: SkyyParty 0.1.7 - TPA / Accept TPA buttons on the party page (SkyyEssentials 0.1.8's tpa bridge); no new command or switch
+     "desc": "Team up with friends: invite players to a party, chat privately and see your party on the HUD. The party page's TPA and Accept TPA buttons send or answer a teleport request in one click. Turn party invites off in /settings to refuse them (staff get through while privacy.staffBypass is on).",
+     "commands": ["/party (or /p) - open the party page", "/party invite <player> - invite a player",
+                  "/party accept | decline - answer an invite", "/party leave - leave your party", "/party list - list your party",
+                  "/party kick | promote <player> - (leader)", "/party disband - (leader) end the party", "/pc <message> - chat with your party"]},
+    # 0.3.2: SkyyGuilds 0.1.3 (pinned since round 7): Fury + Divinity count for guild XP; same commands, switches and page title
+    {"mod": "SkyyGuilds", "version": MODS_VERSIONS["SkyyGuilds"], "icon": "Furniture_Outlander_Banner", "check": "guild",
+     "config": "Skyy_SkyyGuilds/config.properties", "reload": "guildadmin reload", "note": "",
+     "setup": ("0.1.2", "Guilds", "guild size, guild XP, levels, the guild bank"),
+     "admin": ["/guildadmin config | set <key> <value> - (admin) settings in chat",
+               "/guildadmin reload - (admin) re-read config.properties", "/guildadmin xp <amount> <guild> - (admin) test guild XP"],
+     # 0.3.4: SkyyGuilds 0.1.5 (deployed 2026-10-01): a disband pays the guild bank back by each member's share of the deposits
+     # (net = deposited - withdrawn), the member list shows that Contribution - no new command, switch or Server Setup title
+     # 0.3.5: SkyyGuilds 0.1.6 - a member who leaves or is kicked gets back part of their contribution (Server Setup Leave refund, 35%)
+     "desc": "Guilds: found a guild with your friends - ranks, a shared guild bank, guild XP from your skills, guild levels and seasons. If a guild disbands, its bank goes back to the members by what each put in, and a member who leaves or is kicked gets part of theirs back (35% by default).",
+     "commands": ["/guild - open the guild page", "/guild create <name> - start a guild", "/guild invite <player> - (leader, admin) invite",
+                  "/guild accept | decline | leave - answer an invite or leave",
+                  "/guild bank deposit | withdraw <amount> | log - guild coins",
+                  "/guild bank limit admin|member <n|0|none> - (leader) daily withdraw limit",
+                  "/guild info | list - your guild | the top guilds", "/gc <message> - guild chat"]},
+    # 0.3.3: SkyyEssentials 0.1.5 (round 8, pinned): tpa.requests + msg.private refuse the sender, staff bypass row privacy.staffBypass,
+    # Server Setup parts / teleports / messages / privacy / warps / trade - the world-spawn rows are gone, /warpadmin is the Warps page
+    {"mod": "SkyyEssentials", "version": MODS_VERSIONS["SkyyEssentials"], "icon": "Tool_Map", "check": "tpa",
+     "config": "Skyy_SkyyEssentials/config.properties", "reload": "tradeadmin reload", "note": "Also in game: /tradeadmin config, /warpadmin. replyShortcut needs a restart.",
+     "setup": ("0.1.3", "Essentials", "parts, teleports, messages, staff bypass, warps, trade"),
+     "admin": ["/warpadmin - (admin) the Warps page: add, move, rename, remove and visit warps",
+               "/tradeadmin config - (admin) the trade settings page",
+               "/tradeadmin log [player] | return <player> - (admin) trade log, items back"],
+     # 0.3.5: SkyyEssentials 0.1.7 - Magic Bags + the Accessory Bag are blocked in /trade (Server Setup Essentials -> Trade list
+     # tradeBlockedItems, the AH's list); 0.1.6 item durability switch (Server Setup only)
+     # 0.3.8: SkyyEssentials 0.1.8 - the tpa bridge behind SkyyParty's TPA buttons; same commands, switches and Server Setup page
+     "desc": "Everyday commands the base game is missing: teleport requests between players (also from the party page), private messages and safe trades of items and coins (Magic Bags and the Accessory Bag can't be traded). Turn teleport requests or private messages off in /settings (staff get through while privacy.staffBypass is on).",
+     "commands": ["/tpa <player> - ask to teleport to a player", "/tpahere <player> - ask a player to teleport to you",
+                  "/tpaccept | /tpdeny [player] - answer a teleport request", "/tpacancel - cancel your requests",
+                  "/msg <player> <message> (or /tell, /w) - private message", "/reply <message> (or /r) - answer your last message",
+                  "/trade <player> | claim - trade items and coins safely (no Magic Bags)", "/fly - (staff) toggle flight"]},
+    # 0.3.3: SkyyGear 0.1 REPLACES SkyyRolls (research/SkyyGear-Stage1-Spec.md 7.3.2 + 8; ROUND_RETIRED below): /reforge moved, /identify,
+    # /gear and the admin /gear lines (every /gear sub-command needs skyygear.admin). Server Setup -> Gear comes from its config:def:SkyyGear
+    {"mod": "SkyyGear", "version": MODS_VERSIONS["SkyyGear"], "icon": "Weapon_Longsword_Copper", "check": "gear",
+     "config": "Skyy_SkyyGear/config.properties", "reload": "", "note": "Set up in game - Server Setup, Gear.",
+     # 0.3.5: SkyyGear 0.2 (stage 1 of the Wynn-style levels) - every item stores its own level = its requirement, crafted at your level
+     # inside overlapping material bands; the admin /gear relevel [player]; 0.1.3 every world chest's gear unidentified
+     # 0.3.6: SkyyGear 0.2.1 (stages 2-3) - weapon damage and armor Health / resistance grow with the item's level
+     # 0.3.8: SkyyGear 0.2.3 - crafted gear pays Smithing XP (Server Setup -> Gear rows 'Smithing XP per crafted gear', 'Craft XP tier factor')
+     "setup": ("0.1", "Gear", "level bands, damage and armor by level, crafting Smithing XP"),
+     "admin": ["/gear give <item> [--rarity <id>] [--unid true] - (admin) a gear item",
+               "/gear read | reroll | clear - (admin) the item in your hand",
+               "/gear rarity <id> | unid | identify - (admin) the item in your hand",
+               "/gear level <n|clear> | gate <skill|class> - (admin) the item in your hand",
+               "/gear migrate [player] - (admin) run the old rolled items scan now",
+               "/gear charged - (admin) charged attack probe for the held weapon",
+               "/gear relevel [player] - (admin) move stamped gear into today's level bands"],
+     "desc": "Rarity, level and modifiers on every weapon and armor piece. Each item has its own level - the class weapon skill you need to use it - and its damage or armor grows with that level. Crafted gear comes out at your level within its material's band, rolls and pays Smithing XP. Mob and chest gear drops unidentified, /identify reveals it, /reforge rerolls it.",
+     "commands": ["/reforge - reroll the modifiers of a weapon or armor piece for coins",
+                  "/identify - reveal the modifiers of unidentified gear for coins",
+                  "/gear - the held item's gear lines, your totals and your Smithing rarity"]},
+    # 0.3.7: SkyyArmory 0.1 (live since 2026-10-03, missing from 0.3.6's list): Priest wands in every metal + the Mage staff ladder (tap =
+    # quick shot, hold = charged shot, both cost Mana); no command at all (check "" - the Mods view finds it by its plugin name); Server
+    # Setup -> Armory (config kit, MOD=MOD constant); no player switch
+    {"mod": "SkyyArmory", "version": MODS_VERSIONS["SkyyArmory"], "icon": "Weapon_Wand_Wood", "check": "",
+     "config": "Skyy_SkyyArmory/config.properties", "reload": "", "note": "Change it in game: Server Setup -> Armory.",
+     "setup": ("0.1", "Armory", "wand and staff damage, quick shots, Mana check"),
+     "desc": "Wands and staffs: Priest wands in every metal from Copper to Onyxium and the Mage staff ladder. Tap for a quick shot, hold for a charged shot - both cost Mana, and better metals hit harder. Craft the metal wands at the Weapon Bench (Bow tab).",
+     "commands": ["No commands - hold a wand or staff: tap for a quick shot, hold to charge."]},
+    # 0.3.5: SkyyMobs 0.1 (NEW, deployed 2026-10-02): mob levels by zone / biome. /mobs + /mobs info for every player (hytale:Adventurer);
+    # /mobs inspect | set | platetest | reload need skyymobs.admin; Server Setup -> Mobs (config kit, MOD=MOD constant); no player switch
+    {"mod": "SkyyMobs", "version": MODS_VERSIONS["SkyyMobs"], "icon": "Armor_Trork_Head", "check": "mobs",
+     "config": "Skyy_SkyyMobs/config.properties,Skyy_SkyyMobs/bands.properties", "reload": "mobs reload", "note": "",
+     # 0.3.6: SkyyMobs 0.1.1 - 0.1.2 - Difficulty Easy / Normal / Hard / Custom, the level health floor (row strength.floor, 50 HP)
+     "setup": ("0.1", "Mobs", "difficulty, health floor, who gets levels, bands, plates"),
+     "admin": ["/mobs inspect - (admin) level, band and lookup of the mob you look at",
+               "/mobs set <level> - (admin) the level of the mob you look at (0 removes it)",
+               "/mobs platetest - (admin) try the three nameplate colour markups",
+               "/mobs reload - (admin) re-read config.properties and bands.properties"],
+     "desc": "Mob levels: hostile mobs and neutral fighters get a level from the zone and biome they spawn in (Zone 1 1-20, Zone 2 20-30, Zone 3 30-45, Zone 4 45-60). Each level adds health and damage (Difficulty Easy, Normal or Hard in Server Setup), weak mobs get a health floor, and the nameplate shows it, like [Lv 9] Trork Warrior. Animals, traders, pets and bosses never get one.",
+     "commands": ["/mobs (or /mobs info) - the mob level band where you stand"]},
+    # 0.3.6: SkyyWorldGen 0.1 (NEW, deployed 2026-10-03): the World Gen V2 Zone 1 TEST island (world skywynn_z1). Every /zone command is
+    # admin-only in this test version (requirePermission skyyworldgen.admin + setPermissionGroups(new String[0])); Server Setup -> World Gen
+    # (config kit, MOD=MOD constant); no player switch; no menu tile (its own notes: no SkyyMenu tile in 0.1)
+    {"mod": "SkyyWorldGen", "version": MODS_VERSIONS["SkyyWorldGen"], "icon": "Plant_Sapling_Azure", "check": "zone",
+     "config": "Skyy_SkyyWorldGen/config.properties", "reload": "zone reload", "note": "",
+     "setup": ("0.1", "World Gen", "zone islands on or off, the Zone 1 landing point"),
+     "admin": ["/zone - (admin) the zone islands and their status",
+               "/zone 1 - (admin) go to the Zone 1 test island (made the first time)",
+               "/zone info | leave - (admin) where you stand | back to where you came from",
+               "/zone setlanding - (admin) the landing point = where you stand",
+               "/zone reload - (admin) re-read config.properties"],
+     "desc": "Zone islands made with World Gen V2: a floating Zone 1 test island with void all around - a meadow rim, a birch forest and an azure core, with mob levels rising toward the middle. Test version: only admins can go there for now.",
+     "commands": ["No commands for players yet - the zone islands are an admin test."]},
+    # 0.3.1: SkyyRanks 0.1 (live since round 3) - every command is admin only, so players read the description alone
+    # 0.3.3: SkyyRanks 0.1.1 (round 9): seeds Member / Admin / Developer + the protected Owner rank; the editor = ops + the Owner rank
+    {"mod": "SkyyRanks", "version": MODS_VERSIONS["SkyyRanks"], "icon": "Furniture_Royal_Magic_Chair", "check": "rankadmin",
+     "config": "Skyy_SkyyRanks/config.properties,Skyy_SkyyRanks/ranks.properties", "reload": "rankadmin reload", "note": "",
+     "setup": ("0.1", "Ranks", "the ranks editor, the default rank, the chat prefix"),
+     "admin": ["/rankadmin - (admin) the ranks editor: ranks, prefixes, grants, members",
+               "/rankadmin player <player> - (admin) one player's rank and denies",
+               "/rank set <player> <rank> | clear <player> - (admin) give or take a rank in chat",
+               "/rankadmin reload | sync - (admin) re-read the files, fix the groups"],
+     "desc": "Server ranks with a chat prefix in front of your name - Member, Admin, Developer and Owner to start. Ops and the Owner rank make the ranks and what each rank may do, all in game.",
+     "commands": ["No commands for players - your rank shows in front of your name in chat."]},
+    # 0.3.4: SkyyUiProbe 0.2 is in tools/deploy_set.py SET as a DEVELOPER / TEST mod (the vanilla UI kit's probe pages, admins only:
+    # requirePermission skyyuiprobe.admin). It moves to RETIRED once the probe results are in - then drop this entry.
+    # 0.3.5: SkyyUiProbe 0.3 - + the two vault window probes P1 /skyprobe win and P2 /skyprobe secgrid (probe pages 23 and 24)
+    {"mod": "SkyyUiProbe", "version": MODS_VERSIONS["SkyyUiProbe"], "icon": "Ingredient_Crystal_Cyan", "check": "skyprobe",
+     "config": "", "reload": "", "note": "A developer test mod - nothing to set up.",
+     "admin": ["/skyprobe [n | name | list] - (admin) open the UI kit probe pages",
+               "/skyprobe win | secgrid - (admin) the two vault window probes (23, 24)",
+               # 0.3.7: SkyyUiProbe 0.4 - the minimap probe steps (each off by default, started only by an op for that player)
+               "/skyprobe map [step] - (admin) the minimap probe steps (off by default)"],
+     "desc": "Developer test mod, not a game feature: admins open the UI kit's probe pages and two vault window probes to check what works in game.",
+     "commands": ["No commands for players - this is a developer test mod."]},
+]
+# ---- Settings (0.2, research/Settings-Spec.md sections 2 + 4): the player Settings page (/settings, the torch at main slot 39 since 0.3.3).
+# Rows are NOT made from this list: a row appears only when its mod REGISTERS the key (settings:fn:register or a settings:def:<key>
+# fallback on the bridge). This list gives the known keys their order inside a tab (SET_ORDER), fills the commented
+# settings-defaults.properties template and is checked when you build (key format, label <= 40, help <= 90 characters).
+# Tabs, in display order: (category id, tab button text = ONE word, header, "always shown" line under the rows)
+SET_TABS = [
+    ("skills",      "Skills",      "Skills",             "Always shown: the one-time note when your old Combat XP moves to your class skill."),
+    ("collections", "Collections", "Collections",        "Always shown: the one-time note about how collections count items."),
+    ("sacks",       "Sacks",       "Sacks & Crafting",   "Always shown: the profile-changed notice on an open bag or craft page."),
+    ("combat",      "Combat",      "Combat & Classes",   "Always shown: the reminder to pick a class, your class kit and admin changes to your class. Blocked hits stay blocked."),
+    ("coins",       "Coins",       "Coins & Bank",       "Always shown: coins you lose when you die, and your starter coins."),
+    ("profiles",    "Profiles",    "Profiles & Islands", "Always shown: profile setup, switch problems, crash repairs and items that did not fit back."),
+    ("cooking",     "Cooking",     "Cooking & Trees",    "Everything on this tab can be switched off."),
+    ("general",     "General",     "General (party, guild, teleports, menu)",
+     "Always shown: accepted teleports, party or guild disbanded, lines about you, and replies to your own commands and clicks."),
+]
+# Every known switch, all default ON: (key, tab id, label, help line, registered by). Settings-Spec 2.2 order. 0.3.3: WITH the three
+# refusing General switches (party.invites, tpa.requests, msg.private) - Skyy answered "block" on 2026-09-25 (SkyyParty 0.1.5 and
+# SkyyEssentials 0.1.5 register them). A switch whose mod registers a permission node (7th element, 0.3.3) is shown only to holders.
+# Where a mod already ships its registration, its exact label / help is copied here (explore.* = SkyyExploration 0.2's regSetting,
+# research/Exploration-0.2-Spec.md 9). The page always shows the registering mod's own text and the defaults template lists keys
+# only, so for other mods' keys the label / help here are only length-checked documentation - keep them in step anyway.
+# Rows registered by "SkyyMenu" are this mod's own switches (registered at setup like any adopter).
+SET_KNOWN = [
+    ("skills.xpGain",        "skills",      "Skill XP gains",               "+12 Mining XP (340/500) while you gather, fight, smelt, brew and move", "SkyySkills"),
+    ("skills.levelUp",       "skills",      "Skill level-ups",              "SKILL LEVEL UP with the coins it paid and the XP for the next level", "SkyySkills"),
+    ("skills.doubleDrop",    "skills",      "Double drops",                 "Double drop x3! from the Mining, Foraging and Farming perks", "SkyySkills"),
+    ("skills.extraPotion",   "skills",      "Extra potions",                "Extra potion! from the Alchemy perk", "SkyySkills"),
+    ("skills.combatHints",   "skills",      "No combat XP hints",           "Why a kill gave no combat XP - once per reason each session", "SkyySkills"),
+    ("explore.chunkXp",      "skills",      "Exploration map XP",           "+1,240 Exploration XP from 18 new chunks - at most every 30 s", "SkyyExploration"),
+    ("explore.finds",        "skills",      "Exploration finds",            "Loot chests, chest luck, new zones, discoveries, checklists and new titles", "SkyyExploration"),
+    # 0.3.3: SkyySkills 0.4.6 (research/Overall-Level-Spec.md): the Overall Level line, Skills tab row 8
+    ("skills.overallUp",     "skills",      "Overall Level ups",            "OVERALL LEVEL UP 12 -> 13 with the max Health and Mana it added", "SkyySkills"),
+    ("coll.newCollection",   "collections", "New collections",              "New collection: Copper Ore! - the first item of a kind you gather", "SkyyCollections"),
+    ("coll.tierUp",          "collections", "Collection tier-ups",          "COLLECTION UP with its rewards and the recipes it unlocked", "SkyyCollections"),
+    ("sacks.benchDone",      "sacks",       "Furnace and Tannery done",     "Your Furnace is done - open /craft to collect", "SkyySacks"),
+    ("sacks.benchFuel",      "sacks",       "Furnace out of fuel",          "Your Furnace ran out of fuel - once until you add more", "SkyySacks"),
+    ("classes.blockedChat",  "combat",      "Blocked weapon - chat line",   "Only Archers can use bows... - at most every 3 s. The hit is blocked either way", "SkyyClasses"),
+    ("classes.blockedPopup", "combat",      "Blocked weapon - popup",       "The popup with the weapon's icon - at most every 1.5 s", "SkyyClasses"),
+    # 0.3.2: SkyyClasses 0.1.6's two Priest heal lines (its regSetting texts, category combat, default ON; the heal itself always happens)
+    # 0.3.3: SkyyClasses 0.1.7 texts: one line every 10 s (Skyy's edited priestHeal.feedbackMs default)
+    ("classes.healGiven",    "combat",      "Priest heals - your heals",    "Your heals: +23 HP to 2 party members and +6 HP to you - one line every 10 s at most", "SkyyClasses"),
+    ("classes.healTaken",    "combat",      "Priest heals - healed by others", "Skyy healed you +12 HP - one line every 10 s at most. The heal happens either way", "SkyyClasses"),
+    # 0.3.3: SkyyGear 0.1's three switches (spec 9.3, no permission node = every player sees them)
+    ("gear.blockedPopup",    "combat",      "Gear level popups",            "Popup when a weapon is too high level or unidentified", "SkyyGear"),
+    ("gear.armorWarn",       "combat",      "Armor level warning",          "Chat line when armor gives no stats because of its level", "SkyyGear"),
+    ("gear.notices",         "combat",      "Gear update notices",          "One-time line when your old rolled items move to the new gear system", "SkyyGear"),
+    # 0.3.7: SkyyGear 0.2.2 - the crit effects switch
+    ("gear.critFx",          "combat",      "Crit effects",                 "CRIT! popup, sparks and the red number on your critical hits", "SkyyGear"),
+    # 0.3.3: SkyySkills 0.4.6's crossbow switches (LOCKED 2026-09-25: meter, sound and hint each switchable)
+    ("skills.xbowMeter",     "combat",      "Crossbows keep the big-arrow meter", "Your crossbow's big-arrow meter comes back with its bolts when you switch back to it", "SkyySkills"),
+    ("skills.xbowSound",     "combat",      "Crossbow reload sound",        "The crossbow load sound when your kept bolts go back in (Archery perk)", "SkyySkills"),
+    ("skills.xbowHint",      "combat",      "Crossbow reload chat line",    "Crossbow reloaded - 6 bolts back in - when your kept bolts return", "SkyySkills"),
+    ("coins.payReceived",    "coins",       "Payments from players",        "Steve paid you 500 coins - the coins arrive either way", "SkyyCoins"),
+    ("bank.interest",        "coins",       "Bank interest",                "You earned 120 coins interest - one line per payout", "SkyyBank"),
+    ("rewards.late",         "coins",       "Late reward payouts",          "Coins and XP paid later because another mod was not ready", "SkyySkills + SkyyCollections"),
+    ("profiles.loginStatus", "profiles",    "Profile on login",             "Playing profile Strawberry (Archer) - when you join", "SkyyProfiles"),
+    ("islands.protection",   "profiles",    "Island protection warnings",   "You can only build on islands you are a member of - at most every 3 s", "SkyyIslands"),
+    ("islands.hubOnLogin",   "profiles",    "Hub on login",                 "Welcome back! You start in the hub - when you log in on an island", "SkyyIslands"),
+    ("islands.buildRights",  "profiles",    "Build rights given to you",    "Steve gave you build rights on their island", "SkyyIslands"),
+    ("islands.visitPing",    "profiles",    "Visitors on your island",      "Steve is visiting your island - the island's Visit ping must be on too", "SkyyIslands"),
+    ("islands.visitWelcome", "profiles",    "Welcome when you visit",       "What visitors may do, when you arrive on someone's island", "SkyyIslands"),
+    ("cooking.grade",        "cooking",     "Food Grade changes",           "Your food now comes out Grade 3 - and the campfire accessory hint", "SkyyCooking"),
+    ("cooking.procs",        "cooking",     "Cooking bonus procs",          "Gourmet!, Signature Dish!, Batch Cook!, Prep Cook! and Frugal!", "SkyyCooking"),
+    ("trees.bonus",          "cooking",     "Tree bonus totals",            "Tree bonus: +2 Copper Ore, extra drops x1, +3 coins", "SkyyTrees"),
+    ("trees.abilities",      "cooking",     "Vein Burst and Tree Feller",   "Vein Burst! +6 ore (ready again in 40 s)", "SkyyTrees"),
+    # 0.3.3: SkyyParty 0.1.5 - the FIRST General row (Settings-Spec 2.2); OFF refuses the inviter
+    ("party.invites",        "general",     "Party invites",                "OFF: other players can't invite you - they are told so", "SkyyParty"),
+    ("party.members",        "general",     "Party join, leave and leader", "Steve joined, left, disconnected or is now the party leader", "SkyyParty"),
+    ("party.chat",           "general",     "Party chat",                   "[Party] lines from other members - your own lines always show", "SkyyParty"),
+    # 0.3.1: SkyyGuilds 0.1.2's three hide-only switches (its regSetting texts, category general, all default ON)
+    ("guild.online",         "general",     "Guild members online/offline", "Steve is online / went offline - the server's guild online notices must be on too", "SkyyGuilds"),
+    ("guild.members",        "general",     "Guild join, leave and ranks",  "Steve joined, left, was removed or got a new rank - lines about you always show", "SkyyGuilds"),
+    ("guild.chat",           "general",     "Guild chat",                   "[Guild] lines from other members - your own lines always show", "SkyyGuilds"),
+    # 0.3.3: SkyyEssentials 0.1.5's refusing switches around tpa.updates (Settings-Spec 2.2 order)
+    ("tpa.requests",         "general",     "Teleport requests",            "OFF: nobody can send you /tpa or /tpahere - they are told (staff may still)", "SkyyEssentials"),
+    ("tpa.updates",          "general",     "Teleport request updates",     "Denied, expired and cancelled requests - accepted ones always show", "SkyyEssentials"),
+    ("msg.private",          "general",     "Private messages",             "OFF: /msg and /reply to you are refused and the sender is told (staff may still)", "SkyyEssentials"),
+    ("menu.tooltips",        "general",     "Menu hover tooltips",          "Pop-up text when you hover an item in the SkyWynn Menu - OFF stops stuck tooltips", "SkyyMenu"),
+]
+TIPS_KEY = "menu.tooltips"      # the 0.1.3 Hover Tooltips book (slot 8) and the Settings row are this one key
+# ---- 0.3.2: the class roster every class text names (SkyyClasses 0.1.6 CLASSES, in its display order; the build checks the texts
+# against these lists and the live-set cross-check checks these lists against the SkyyClasses build script SET pins)
+# 0.3.9: SkyyClasses 0.1.14 - Assassin + Monk playable (the Shaman slot is the Monk; its skill name Discipline is OPEN for Skyy)
+CLASS_PLAYABLE = ["Archer", "Warrior", "Mage", "Berserker", "Priest", "Assassin", "Monk"]
+CLASS_LATER    = []
+# 0.3.13: the Monk's skill is Zen (Skyy LOCKED 2026-10-08; SkyyClasses 0.1.15, SkyySkills 0.4.27)
+CLASS_SKILLS   = ["Archery", "Swordsmanship", "Sorcery", "Fury", "Divinity", "Assassination", "Zen"]      # the weapon skill of each CLASS_PLAYABLE class
+# 0.3.13: OLD class skill labels a SkyySkills before 0.4.27 still publishes in skill:<uuid> (StatsCalc.isClassSkill only - never shown by us)
+CLASS_SKILLS_OLD = ["Discipline"]
+# ---- the round this SkyyMenu deploys WITH: mod: (the SET version the round replaces - None for a mod the round ADDS -, the round's
+# version). MODS names the round's version; the live-set check accepts it while SET still pins the replaced version and runs a second time
+# on the SET the main session pins when the round deploys (see menu_check). Inert once SET pins it.
+# 0.3.4 / 0.3.5 / 0.3.6: EMPTY - this SkyyMenu deploys on its own; MODS names exactly what tools/deploy_set.py SET pins (the
+# MODS_VERSIONS table above). To ship it together with e.g. SkyyGear 0.2.1: {"SkyyGear": ("0.2", "0.2.1")} + that version in MODS_VERSIONS.
+# 0.3.7: deploys WITH SkyyExploration 0.2.3 (page guard), SkyyAccessories 0.5.5 and SkyyCooking 0.1.6 (tools/menu_0_3_7_patch.py ROUND).
+# If one of them does not ship, set its MODS_VERSIONS entry back and drop it here (the live-set check names it).
+# 0.3.8: deploys WITH SkyyTrees 0.3.2 (class trees ON by default; tools/menu_0_3_8_patch.py ROUND). 0.3.7's round is pinned in SET now.
+# 0.3.9: deploys WITH SkyyClasses 0.1.14 + SkyySkills 0.4.21 + SkyyProfiles 0.1.6 (Assassin + Monk; tools/menu_0_3_9_patch.py ROUND).
+# 0.3.8's round (SkyyTrees 0.3.2) is pinned in SET now.
+# 0.3.10: EMPTY - deploys on its own (the Stats page reads only what the live mods already publish). 0.3.9's round (SkyyClasses
+# 0.1.14, SkyySkills 0.4.21, SkyyProfiles 0.1.6) is pinned in SET now.
+# 0.3.11: EMPTY - ships with SkyyAccessories 0.5.9 (same icon on the Workbench tab) but needs nothing from it; the Mods list version
+# catch-up (SkyyAccessories 0.5.5 there) stays a later round.
+# 0.3.12: EMPTY - reads SkyySkills 0.4.25's skill:def:<uuid> (already the SET pin); without it the Defense row is 0.3.11's.
+# 0.3.13: deploys WITH SkyySkills 0.4.27 + SkyyClasses 0.1.15 + SkyyTrees 0.3.5 + SkyyProfiles 0.1.8 (the Monk skill Zen;
+# tools/menu_0_3_13_patch.py ROUND). If one of them does not ship, set its MODS_VERSIONS entry back and drop it here.
+ROUND_PINS = {'SkyyClasses': ('0.1.14', '0.1.15'), 'SkyyProfiles': ('0.1.7', '0.1.8'), 'SkyySkills': ('0.4.26', '0.4.27'), 'SkyyTrees': ('0.3.4', '0.3.5')}
+# mods a round RETIRES: mod: (the SET version that leaves, the MODS entry that replaces it). 0.3.3 retired SkyyRolls (in RETIRED now).
+ROUND_RETIRED = {}
+SET_ROWS = 8                    # rows per tab page (Prev / Next appear only when a tab has more; 0.3.1: 8, was 7)
+SET_TXT = {
+    "HINT":   "Your own settings - the same on every profile. Click ON or OFF, it saves at once.",
+    "EMPTY":  "Nothing to switch here yet - the mods for this tab are not installed or not updated.",
+    "BROKEN": "Your settings file could not be read - changes are not saved. Tell an admin.",
+    "ARM":    "Click Reset again within 10 seconds to reset EVERY tab to its default.",
+    "RESET":  "Every setting is back to its default.",
+    "GONE":   "You can no longer change that setting.",      # 0.3.3: a stale click on a row whose permission node the player lost
+}
+# ---- Server Setup (0.3, research/Server-Setup-Spec.md section 2): the admin Mods section (the book at main slot 41, /modconfig).
+# Every Skyy mod that adopted the config registry (tools/CONFIG-CONTRACT.md) publishes config:def:<Mod> + config:fn:<Mod>; this page
+# draws them and passes every click back to the mod, which validates, saves, logs and versions it. Other mods show their file (the
+# "config" / "reload" / "note" / "admin" fields of MODS above).
+ADMIN_NODE = "skyymenu.modconfig"   # who sees Server Setup (ops have it through hytale:Admin's built-in "*"); re-checked on every click
+ADMIN_CMD, ADMIN_ALIAS = "modconfig", "serversetup"
+ADM_CONTRACT = "1"                  # config contract this SkyyMenu reads (header element 0); a newer one shows "needs a newer SkyyMenu"
+ADM_TXT = {
+    "NOACCESS": "You no longer have access to Server Setup.",
+    "NEWER":    "This mod needs a newer SkyyMenu to be changed in game.",
+    "NOANSWER": "That mod did not answer - see the server log.",
+    "CHANGED":  "Changed again since - open the mod to edit it.",
+    "CANCEL":   "Cancelled - nothing was changed.",
+    "LISTSUB":  "Every Skyy mod on this server. Click Open to change its settings in game.",
+}
+# SkyyMenu's OWN admin config (spec 4.7), compiled by tools/skyycfg.py like every adopter; it appears in Server Setup as "Menu".
+MENU_CFG_NODE = "skyymenu.admin"    # who may change SkyyMenu's own settings (the kit re-checks it on every write)
+MENU_CFG_FILES = ["Skyy_SkyyMenu/config.properties", "Skyy_SkyyMenu/settings-defaults.properties"]
+MENU_CFG_CATS = [("menu", "Menu"), ("settings", "Player settings")]
+MENU_CFG_NOTE = "Players still change their own switches in /settings - these are the server defaults."
+MENU_CFG_ROWS = [  # (key, label, cat, type, default, min, max, opts, unit, flags, help, binding) - tools/CONFIG-CONTRACT.md
+    ("menu.giveItem", "Give the menu item", "menu", "bool", "true", "", "", "", "", "live",
+     "Every profile gets the SkyWynn Menu item the first time it is used. Off: only /skymenu gives one.",
+     "field:MenuCfg.GIVE_ITEM@config.properties:giveItem"),
+    ("menu.modsHelp", "Mods list for players", "menu", "bool", "true", "", "", "", "", "live",
+     "Players see the Mods tile (every mod and its commands). Admins always see it.",
+     "field:MenuCfg.MODS_HELP@config.properties:modsHelp"),
+    ("menu.tooltipsDefault", "Hover tooltips default", "settings", "bool", "true", "", "", "", "", "live",
+     "For players who never chose. The same line as Menu hover tooltips in the defaults table below.",
+     "custom:SetDefCfg@settings-defaults.properties:menu.tooltips"),
+    ("settings.defaults", "Player settings defaults", "settings", "table", "", "", "", "text;none;Default", "", "live",
+     "The server default of every /settings switch: on, off or unset. A player's own choice wins.",
+     "custom:SetDefCfg@settings-defaults.properties;check=SetDefCfg.check"),
+]
+MENU_CFG_TEXT = "\n".join([
+    "# SkyyMenu server settings. Change them in game (SkyWynn Menu - Server Setup - Menu, or /modconfig menu) or edit this file and",
+    "# click Reload file there. The server defaults of the player switches (/settings) live in settings-defaults.properties.",
+    "",
+    "# giveItem = give new players the SkyWynn Menu item at their first join (true or false). /skymenu always gives a lost one back.",
+    "giveItem=true",
+    "",
+    "# modsHelp = show players the Mods tile (every mod and its commands). Admins always see it.",
+    "modsHelp=true",
+]) + "\n"
+# =====================================================================================================================
+# ==============================================  end of MENU DATA  ===================================================
+# =====================================================================================================================
+
+# ================= build-time checks: icons exist, text is safe, slots are sane =================
+ASSETS = zipfile.ZipFile(os.path.join(B.HYTALE, "install", "release", "package", "game", "latest", "Assets.zip"))
+ITEMS = {}
+for _n in ASSETS.namelist():
+    if _n.startswith("Server/Item/Items/") and _n.endswith(".json"):
+        ITEMS[os.path.basename(_n)[:-5]] = _n
+COMMON = set(n for n in ASSETS.namelist() if n.startswith("Common/"))
+
+def need_item(iid):
+    if iid in ICON_ITEMS:              # 0.3.11: our icon-only items (shipped by this jar, checked below)
+        return
+    assert iid in ITEMS, "unknown vanilla item id: %s (not in Assets.zip)" % iid
+for _iid, (_art, _rel, _man, _nm, _lk) in ICON_ITEMS.items():
+    assert _iid not in ITEMS and _iid.startswith("Skyy_Menu_Icon_"), "0.3.11: icon item id %s must be ours, never a vanilla id" % _iid
+    assert "Common/" + _rel not in COMMON, "0.3.11: icon item %s would override the vanilla file %s" % (_iid, _rel)
+    assert _lk in ITEMS, "0.3.11: icon item %s borrows the look of an unknown item %s" % (_iid, _lk)
+    icon_item_png(_iid)
+
+VISUAL_KEYS = ("Model", "Texture", "IconProperties", "Scale", "PlayerAnimationsId", "ItemSoundSetId", "Light")
+def look_of(iid):
+    """icon + held look of a vanilla item (follows Parent, the child's value wins); files checked to exist under Common/"""
+    out, cur, seen = {}, iid, 0
+    while cur and seen < 8:
+        need_item(cur)
+        d = json.loads(ASSETS.read(ITEMS[cur]).decode("utf-8-sig"))
+        for k in VISUAL_KEYS + ("Icon",):
+            if k in d and k not in out:
+                out[k] = d[k]
+        cur = d.get("Parent"); seen += 1
+    for k in ("Model", "Texture", "Icon"):
+        assert k in out, "no %s for %s" % (k, iid)
+        assert "Common/" + out[k] in COMMON, "missing %s file for %s: %s" % (k, iid, out[k])
+    return out
+
+def txt(s):
+    """player-facing text: < > become [ ] (tooltip markup), forbidden characters fail the build"""
+    s = s.replace("<", "[").replace(">", "]")
+    for bad in ('"', "{", "}", ";", "\\"):
+        assert bad not in s, "character %r not allowed in menu text: %s" % (bad, s)
+    return s
+
+for ic in (ICON_BACK, ICON_PREV, ICON_NEXT, ICON_CLOSE, ICON_WARP, ICON_PLAYER, MENU_ITEM_LOOK) + ((FILLER_ICON,) if FILLER_ICON else ()):
+    need_item(ic)
+VIEW_KEYS = [v[0] for v in VIEWS]
+NAV = {45, 48, 49, 50}
+used = {}
+for view, slot, icon, name, lines, foot, act in ENTRIES:
+    need_item(icon)
+    assert view in VIEW_KEYS, view
+    assert 0 <= slot < 54 and slot not in NAV, "slot %d of %s is reserved or out of range" % (slot, name)
+    assert (view, slot) not in used, "two entries in slot %d of view %s" % (slot, view)
+    used[(view, slot)] = name
+    assert act in ("profile", "spawn", "info", "tips", "settings", "admin") or act.split(":", 1)[0] in ("view", "cmd", "cmdc"), "bad action " + act
+    if act.startswith("view:"):
+        assert act[5:] in VIEW_KEYS, act
+for view, slots in (("tp", WARP_SLOTS + [NO_WARPS_SLOT]), ("players", PLAYER_SLOTS + [NO_PLAYERS_SLOT]), ("mods", MOD_SLOTS)):
+    for s in slots:
+        assert (view, s) not in used and s not in NAV, "dynamic slot %d of view %s collides with an entry" % (s, view)
+for slot, icon, name, lines, foot, cmd, close in PLAYER_ACTIONS:
+    need_item(icon)
+    assert slot not in NAV and slot != PLAYER_HEAD_SLOT and 0 <= slot < 54
+for m in MODS:
+    need_item(m["icon"])
+    assert len(m["commands"]) <= 8, "the info box shows 8 command lines, %s has %d" % (m["mod"], len(m["commands"]))
+# 0.1.3: the icon PICTURE must exist too (Icon follows Parent like look_of; the grid shows that file)
+def need_icon(iid):
+    if iid in ICON_ITEMS:              # 0.3.11: the picture ships in this jar (icon_item_png checked it)
+        return
+    cur, hops, icon = iid, 0, None
+    while cur and hops < 8 and icon is None:
+        need_item(cur)
+        d = json.loads(ASSETS.read(ITEMS[cur]).decode("utf-8-sig"))
+        icon = d.get("Icon")
+        cur = d.get("Parent"); hops += 1
+    assert icon and "Common/" + icon in COMMON, "icon picture missing for %s: %s" % (iid, icon)
+for _ic in sorted(set([e[2] for e in ENTRIES] + [a[1] for a in PLAYER_ACTIONS] + [m["icon"] for m in MODS] +
+                      [ICON_BACK, ICON_PREV, ICON_NEXT, ICON_CLOSE, ICON_WARP, ICON_PLAYER])):
+    need_icon(_ic)
+_lines = [e[6].split(":", 1)[1] for e in ENTRIES if e[6].split(":", 1)[0] in ("cmd", "cmdc")] + [a[5] for a in PLAYER_ACTIONS]
+for _c, _sub, _need in NEEDS_SUB:
+    assert _c == _c.lower() and _sub == _sub.lower() and " " not in _c + _sub, "NEEDS_SUB words are single lower-case words"
+    assert any(l.split(" ")[:2] == [_c, _sub] for l in _lines), "NEEDS_SUB %s %s matches no menu command" % (_c, _sub)
+    txt(_need)
+# review 2026-09-24: version-dependent wording (MODS "old", PA_LEGACY) hangs on a NEEDS_SUB line
+_subs = [_c + " " + _sub for _c, _sub, _need in NEEDS_SUB]
+assert len(set(m["mod"] for m in MODS)) == len(MODS), "a mod is listed twice in MODS"
+for m in MODS:
+    if "old" in m:
+        assert m["old"]["need"] in _subs, "%s: old.need %s is no NEEDS_SUB line" % (m["mod"], m["old"]["need"])
+        assert len(m["old"]["commands"]) <= 8, "the info box shows 8 command lines, %s (old) has %d" % (m["mod"], len(m["old"]["commands"]))
+for _slot, _need, _name, _plines, _foot in PA_LEGACY:
+    assert _slot in [a[0] for a in PLAYER_ACTIONS], "PA_LEGACY slot %d is no player action" % _slot
+    assert _need in _subs, "PA_LEGACY need %s is no NEEDS_SUB line" % _need
+    assert _plines, "PA_LEGACY slot %d has no text" % _slot
+# 0.2 settings data (research/Settings-Spec.md 4.5): 8 tabs, valid unique keys, label <= 40, help <= 90, the torch at main slot 51
+KEY_RE = re.compile(r"^[a-z][A-Za-z0-9.]{2,47}$")           # = SetReg.validKey (keys go into properties files: no = : or spaces)
+SET_CAT_ID = [t[0] for t in SET_TABS]
+assert len(SET_TABS) == 8 and len(set(SET_CAT_ID)) == 8 and SET_CAT_ID[-1] == "general", "8 tabs, general last (unknown ids go there)"
+for _t in SET_TABS:
+    assert re.match(r"^[A-Za-z]+$", _t[1]), "tab button text must be one plain word (it is inline UI text): " + _t[1]
+    assert _t[2] and _t[3], "tab %s needs a header and an always-shown line" % _t[0]
+SET_ORDER = [k[0] for k in SET_KNOWN]
+assert len(set(SET_ORDER)) == len(SET_ORDER), "a settings key is listed twice"
+for _k, _cat, _label, _help, _by in SET_KNOWN:
+    assert KEY_RE.match(_k), "bad settings key " + _k
+    assert _cat in SET_CAT_ID, "settings key %s: unknown tab %s" % (_k, _cat)
+    assert 0 < len(_label) <= 40, "label of %s is %d characters (max 40)" % (_k, len(_label))
+    assert 0 < len(_help) <= 90, "help line of %s is %d characters (max 90)" % (_k, len(_help))
+# 0.3.3: Skyy answered "block" (2026-09-25): the three refusing General switches are known, in Settings-Spec 2.2 order - party.invites is
+# the FIRST General row, then tpa.requests before tpa.updates before msg.private
+_gen = [k[0] for k in SET_KNOWN if k[1] == "general"]
+assert _gen and _gen[0] == "party.invites", "party.invites is the first General row (Settings-Spec 2.2)"
+assert _gen.index("tpa.requests") < _gen.index("tpa.updates") < _gen.index("msg.private"), "General order: tpa.requests, tpa.updates, msg.private"
+SET_TAB_ROWS = [(t[0], len([k for k in SET_KNOWN if k[1] == t[0]])) for t in SET_TABS]
+assert all(n <= 3 * SET_ROWS for _c, n in SET_TAB_ROWS), "a tab would need more than 3 pages: %s" % SET_TAB_ROWS
+OWN_SETTINGS = [k for k in SET_KNOWN if k[4] == "SkyyMenu"]
+assert TIPS_KEY in [k[0] for k in OWN_SETTINGS], "the Hover Tooltips key must be one of SkyyMenu's own settings"
+assert 1 <= SET_ROWS <= 8
+for _n, _t in SET_TXT.items():
+    assert _t and "\n" not in _t, "SET_TXT %s" % _n
+assert used.get(("main", 39)) == "Settings" and used.get(("main", 40)) == "Mods", \
+    "the Settings torch belongs at main slot 39, immediately left of Mods (LOCKED 2026-09-25, Settings-Spec 4.1)"
+assert ("main", 51) not in used, "main slot 51 is free since 0.3.3 (the torch moved to 39)"
+# 0.3.3: Identify right of Reforge (SkyyGear spec 7.3.2)
+assert used.get(("main", 25)) == "Reforge" and used.get(("main", 26)) == "Identify", "Reforge at main slot 25, Identify at 26"
+assert [e for e in ENTRIES if e[:3] == ("main", 26, "Ingredient_Crystal_Purple") and e[6] == "cmdc:identify"], "Identify runs /identify"
+assert [e for e in ENTRIES if e[:2] == ("main", 25) and e[6] == "cmdc:reforge" and "modifiers" in e[4][0] and "tool" not in e[4][0]], \
+    "Reforge text is SkyyGear's (weapons and armor, modifiers)"
+assert [e for e in ENTRIES if e[6] == "settings"] and all(e[0] == "main" for e in ENTRIES if e[6] == "settings")
+assert [e for e in ENTRIES if e[6] == "cmdc:ah"], "the Auction House entry runs /ah"
+# the defaults template (settings-defaults.properties, written once when missing): every known key commented out, grouped by tab
+_tl = ["# Server-wide defaults for /settings (SkyyMenu). A player's own choice always wins; Reset all to defaults returns them here.",
+       "# Remove the # in front of a line and set true or false. The file is read again within 30 s. Bad lines are ignored (see the log).",
+       "# Only switches of installed, updated mods show up in game. Menu hover tooltips OFF for everyone: menu.tooltips=false"]
+for _t in SET_TABS:
+    _keys = [k for k in SET_KNOWN if k[1] == _t[0]]
+    if not _keys:
+        continue
+    _tl.append("")
+    _tl.append("# ---- " + _t[2])
+    for _k in _keys:
+        _tl.append("#%s=true" % _k[0])
+SET_TEMPLATE = "\n".join(_tl) + "\n"
+assert "@" not in SET_TEMPLATE
+# 0.3 Server Setup data (research/Server-Setup-Spec.md 2.2, 2.11, 2.12)
+assert used.get(("main", 41)) == "Server Setup", "the Server Setup book belongs at main slot 41, right of Mods (spec 2.2)"
+assert [e for e in ENTRIES if e[6] == "admin"] and all(e[0] == "main" for e in ENTRIES if e[6] == "admin")
+assert re.match(r"^[a-z][a-z0-9]*(\.[a-z0-9]+)+$", ADMIN_NODE) and re.match(r"^[a-z][a-z0-9]*(\.[a-z0-9]+)+$", MENU_CFG_NODE)
+for _m in MODS:
+    assert "config" in _m and "reload" in _m and "note" in _m, "%s: every MODS entry needs config / reload / note (spec 2.11)" % _m["mod"]
+    for _f in [x for x in _m["config"].split(",") if x]:
+        assert re.match(r"^Skyy_[A-Za-z]+/[A-Za-z0-9_.-]+$", _f), "%s: config path %r must be Skyy_<Folder>/<file>" % (_m["mod"], _f)
+    assert _m["reload"] == "" or re.match(r"^[a-z]+( [a-z]+)*$", _m["reload"]), "%s: reload must be a command line like tree reload" % _m["mod"]
+    assert _m["config"] or _m["note"], "%s: a mod without a config file needs a note that says so" % _m["mod"]
+    assert len(_m["note"]) <= 90 and '"' not in _m["note"], "%s: note too long" % _m["mod"]
+    for _a in _m.get("admin", []):
+        assert "(admin)" in _a or "(staff)" in _a, "%s: admin lines say (admin)" % _m["mod"]
+for _n, _t in ADM_TXT.items():
+    assert _t and "\n" not in _t and '"' not in _t, "ADM_TXT " + _n
+assert "@" not in MENU_CFG_TEXT and all(ord(c) < 127 for c in MENU_CFG_TEXT)
+# the file-only lines of the Mods section (spec 2.4 / 2.11)
+def adm_fline(m):
+    fs = [x for x in m["config"].split(",") if x]
+    if not fs:
+        return m["note"]
+    t = "File only: " + fs[0] + (" and %d more" % (len(fs) - 1) if len(fs) > 1 else "")
+    if m["reload"]:
+        return t + " - after editing: /" + m["reload"]
+    return t + (" - " + m["note"] if m["note"] else "")
+MOD_FLINE = [adm_fline(m) for m in MODS]
+for _l in MOD_FLINE:
+    assert len(_l) <= 120, "file-only line too long: " + _l
+MOD_ADMIN = ["\n".join([c.replace("%ALIASES%", "") for c in m["commands"] if "(admin)" in c or "(staff)" in c] + m.get("admin", []))
+             for m in MODS]
+
+# 0.3.1: "setup" = (first version with a Server Setup page, its page title, what is on it) - the fallback text while that mod publishes
+# no config:def (an older version, or it failed to start); "admin" = lines only admins see in the Mods view (and on the file-only page)
+VER_RE = re.compile(r"^\d+(\.\d+){1,3}$")
+def ver_t(v):
+    return tuple(int(x) for x in v.split("."))
+# 0.3.5: THE ONE VERSION TABLE - MODS_VERSIONS names exactly the MODS mods (SkyyMenu's own entry = VERSION) and every entry reads it
+_tbl_mods = sorted(m["mod"] for m in MODS if m["mod"] != "SkyyMenu")
+assert sorted(MODS_VERSIONS) == _tbl_mods, "MODS_VERSIONS and MODS name different mods: %s" % sorted(set(MODS_VERSIONS) ^ set(_tbl_mods))
+for _m in MODS:
+    _want = VERSION if _m["mod"] == "SkyyMenu" else MODS_VERSIONS[_m["mod"]]
+    assert _m["version"] == _want and VER_RE.match(_want), "%s: version %r, the table says %r" % (_m["mod"], _m["version"], _want)
+for _m in MODS:
+    if "setup" in _m:
+        _since, _title, _what = _m["setup"]
+        assert VER_RE.match(_since), "%s: setup version %r" % (_m["mod"], _since)
+        assert _m["mod"] == "SkyyMenu" or ver_t(_since) <= ver_t(_m["version"]), "%s: setup %s is newer than %s" % (_m["mod"], _since, _m["version"])
+        assert 0 < len(_title) <= 24 and 0 < len(_what) <= 60, "%s: setup title <= 24 and what <= 60 characters" % _m["mod"]
+        txt(_title); txt(_what)
+        assert _m["config"], "%s: a mod with a Server Setup page names its file(s)" % _m["mod"]
+    # "(admin)" / "(staff)" in every admin line: the 0.3 check above (MODS "admin" loop of the Server Setup data checks) still runs
+    for _a in _m.get("admin", []):
+        assert len(txt(_a.replace("%ALIASES%", ""))) <= 80, "%s: admin line longer than 80 characters: %s" % (_m["mod"], _a)
+        assert _a not in _m["commands"], "%s: admin line is also a Commands line (admins would read it twice): %s" % (_m["mod"], _a)
+    assert _m["commands"], "%s needs at least one line under Commands" % _m["mod"]
+assert len(MODS) <= len(MOD_SLOTS), "every mod fits on one Mods page (%d mods, %d slots)" % (len(MODS), len(MOD_SLOTS))
+
+# 0.3.2: every class text names the 7-class roster and the five weapon skills (CLASS_PLAYABLE / CLASS_LATER / CLASS_SKILLS)
+assert len(CLASS_PLAYABLE) == len(CLASS_SKILLS) and not set(CLASS_PLAYABLE) & set(CLASS_LATER)
+_bym = dict((m["mod"], m) for m in MODS)
+for _n in CLASS_PLAYABLE + CLASS_LATER:
+    assert _n in _bym["SkyyClasses"]["desc"], "SkyyClasses desc must name the class %s" % _n
+# 0.3.9: "later" only while CLASS_LATER names a class (all seven are playable since SkyyClasses 0.1.14)
+assert ("later" in _bym["SkyyClasses"]["desc"]) == bool(CLASS_LATER), "SkyyClasses desc says 'later' exactly when a class comes later"
+assert "Shaman" not in " ".join(m["desc"] for m in MODS) + " ".join(" ".join(e[4]) for e in ENTRIES), "0.3.9: no Mods / menu text names the Shaman"
+for _n in CLASS_PLAYABLE:
+    assert _n in _bym["SkyyProfiles"]["desc"], "SkyyProfiles desc must name the playable class %s" % _n
+_skills_entry = [e for e in ENTRIES if e[0] == "main" and e[3] == "Skills"]
+assert len(_skills_entry) == 1, "one Skills entry in the main menu"
+for _sk in CLASS_SKILLS:
+    assert _sk in _bym["SkyySkills"]["desc"], "SkyySkills desc must name the class skill %s" % _sk
+    assert _sk in _skills_entry[0][4][0], "the Skills menu entry must name the class skill %s" % _sk
+assert [c for c in _bym["SkyyClasses"]["commands"] if c.startswith("/class kit ")], "SkyyClasses Commands list /class kit (players)"
+assert [a for a in _bym["SkyyClasses"].get("admin", []) if a.startswith("/classadmin kit ")], "SkyyClasses admin lines list /classadmin kit"
+assert not [c for c in _bym["SkyyClasses"]["commands"] if c.startswith("/classadmin kit")], "/classadmin kit is an admin-only line"
+_alltext = " ".join([m["desc"] + " " + " ".join(m["commands"] + m.get("admin", [])) for m in MODS] +
+                    [" ".join(e[4]) for e in ENTRIES] + [t[3] for t in SET_TABS] + [k[3] for k in SET_KNOWN])
+assert "Warrior or Mage" not in _alltext, "the old 3-class wording is gone"
+for _t in SET_TABS:
+    assert len(_t[3]) <= 121, "always-shown line of tab %s is %d characters (one unwrapped label, max 121 = the General line of 0.3.1)" % (_t[0], len(_t[3]))
+# 0.3.3: round data - MODS names every round version, a retired mod is out of MODS and replaced by a MODS entry
+for _rm, (_rfrom, _rto) in ROUND_PINS.items():
+    assert _rm in _bym and _bym[_rm]["version"] == _rto and VER_RE.match(_rto), "ROUND_PINS %s: MODS must name %s" % (_rm, _rto)
+    assert _rfrom is None or (VER_RE.match(_rfrom) and ver_t(_rfrom) < ver_t(_rto)), "ROUND_PINS %s" % _rm
+for _rm, (_rv, _by) in ROUND_RETIRED.items():
+    assert _rm not in _bym and _by in _bym and VER_RE.match(_rv) and _rm not in ROUND_PINS, "ROUND_RETIRED %s" % _rm
+# 0.3.3: the SkyyGear entry (spec 7.3.2 item 1) and the round 8 + 9 texts the notes named (tools/menu_0_3_3_patch.py 5)
+_g = _bym["SkyyGear"]
+for _c in ("/reforge ", "/identify ", "/gear "):
+    assert [c for c in _g["commands"] if c.startswith(_c)], "SkyyGear Commands list %s" % _c.strip()
+for _sub in ("give", "read", "reroll", "clear", "rarity", "unid", "identify", "level", "gate", "migrate"):
+    assert [a for a in _g["admin"] if a.startswith("/gear ") and (" " + _sub + " " in a or " " + _sub + " |" in a)], "SkyyGear admin line /gear %s" % _sub
+assert _g["setup"][1] == "Gear" and _g["config"] == "Skyy_SkyyGear/config.properties" and _g["check"] == "gear"
+_ess = _bym["SkyyEssentials"]
+_esst = " ".join([_ess["desc"], _ess["setup"][2]] + _ess["commands"] + _ess["admin"])
+assert "spawn" not in _esst and [a for a in _ess["admin"] if a.startswith("/warpadmin ") and "Warps page" in a], "Essentials: no world spawn, /warpadmin = Warps"
+assert "privacy.staffBypass" in _ess["desc"] and "staff bypass" in _ess["setup"][2], "Essentials names the staff bypass row"
+assert [a for a in _bym["SkyyParty"]["admin"] if "privacy.staffBypass" in a] and "privacy.staffBypass" in _bym["SkyyParty"]["desc"], "Party names privacy.staffBypass"
+assert [c for c in _bym["SkyyClasses"]["commands"] if c.startswith("/class arrows ")] and "hotbar at once" in _bym["SkyyClasses"]["desc"]
+assert "Omni" in _bym["SkyySacks"]["desc"] and "Rare" in _bym["SkyySacks"]["desc"] and "Legendary" in _bym["SkyyCollections"]["desc"]
+_alltext3 = " ".join([m["desc"] + " " + " ".join(m["commands"] + m.get("admin", [])) for m in MODS] + [" ".join(e[4]) for e in ENTRIES])
+for _stale in ("type it twice", "on its way", "31 s", "world spawn", "SkyyRolls", "/rolls"):
+    assert _stale not in _alltext3, "stale menu text: " + _stale
+# 0.3.5: the help texts of the 2026-10-01 / 2026-10-02 builds (tools/menu_0_3_5_patch.py 3) - command names as their build scripts define them
+_mb = _bym["SkyyMobs"]
+assert _mb["check"] == "mobs" and _mb["setup"][1] == "Mobs" and _mb["reload"] == "mobs reload", "SkyyMobs: /mobs, Server Setup Mobs"
+assert [c for c in _mb["commands"] if c.startswith("/mobs (or /mobs info) ")], "SkyyMobs Commands: /mobs (or /mobs info)"
+for _sub in ("inspect", "set", "platetest", "reload"):
+    assert [a for a in _mb["admin"] if a.startswith("/mobs " + _sub + " ")], "SkyyMobs admin line /mobs %s" % _sub
+assert [a for a in _g["admin"] if a.startswith("/gear relevel ")] and "its own level" in _g["desc"], "SkyyGear 0.2: item levels, /gear relevel"
+assert [c for c in _bym["SkyySkills"]["commands"] if c.startswith("/skills mana ") and "(admin)" in c], "SkyySkills 0.4.12: /skills mana (admin)"
+assert "own XP curve" in _bym["SkyySkills"]["desc"] and "in combat" in _bym["SkyySkills"]["desc"], "SkyySkills 0.4.12: class curve, combat Mana"
+_upb = _bym["SkyyUiProbe"]
+assert [a for a in _upb["admin"] if a.startswith("/skyprobe win | secgrid ")] and not [c for c in _upb["commands"] if "/skyprobe" in c], \
+    "SkyyUiProbe 0.3: /skyprobe win | secgrid, admins only"
+_sk3 = _bym["SkyySacks"]
+assert [c for c in _sk3["commands"] if c.startswith("Stack refill ")] and "add up" in _sk3["desc"] and "Benches, inventory crafting" in _sk3["desc"], \
+    "SkyySacks 0.7.11 - 0.7.12: stack refill, bags add up, benches + inventory crafting"
+assert "Coins never buy" in _bym["SkyyCollections"]["desc"], "SkyyCollections 0.2.5: coins never buy tiers"
+assert "can't be traded" in _ess["desc"] and [c for c in _ess["commands"] if c.startswith("/trade ") and "no Magic Bags" in c], \
+    "SkyyEssentials 0.1.7: no Magic Bags in /trade"
+assert "skills" in _bym["SkyyHud"]["desc"] and "Overall Level" in _bym["SkyyHud"]["desc"], "SkyyHud 0.3.11: the Skills widget"
+assert "Accessories and Bags" in _bym["SkyyAccessories"]["desc"] and "leaves or is kicked" in _bym["SkyyGuilds"]["desc"], \
+    "SkyyAccessories 0.5.2 Workbench tab, SkyyGuilds 0.1.6 leave refund"
+assert "&" not in _alltext3, "no raw & in tooltip text (markup not proven)"
+# 0.3.6: the help texts of the 2026-10-02 / 2026-10-03 builds (tools/menu_0_3_6_patch.py DATA / TEXT) - command names as SkyyWorldGen 0.1 defines them
+_wg = _bym["SkyyWorldGen"]
+assert _wg["check"] == "zone" and _wg["setup"][1] == "World Gen" and _wg["reload"] == "zone reload" \
+    and _wg["config"] == "Skyy_SkyyWorldGen/config.properties", "SkyyWorldGen: /zone, Server Setup World Gen, its config file"
+for _sub in ("- ", "1 ", "info ", "leave ", "setlanding ", "reload "):
+    assert [a for a in _wg["admin"] if a.startswith("/zone " + _sub) or ("| " + _sub.strip() + " ") in a], "SkyyWorldGen admin line /zone %s" % _sub
+assert not [c for c in _wg["commands"] if "/zone" in c], "SkyyWorldGen 0.1: every /zone command is admin-only (no player Commands line)"
+assert [m["mod"] for m in MODS].index("SkyyWorldGen") == [m["mod"] for m in MODS].index("SkyyMobs") + 1, "SkyyWorldGen right after SkyyMobs"
+assert "combat indicator" in _bym["SkyyHud"]["desc"], "SkyyHud 0.3.12: the combat indicator"
+assert "grows with that level" in _g["desc"] and "damage and armor by level" in _g["setup"][2], "SkyyGear 0.2.1: damage and armor by level"
+assert "Stronger mobs pay more kill XP" in _bym["SkyySkills"]["desc"], "SkyySkills 0.4.14: kill XP by mob level"
+# 0.3.7: SkyyAccessories 0.5.4 retired Night Vision for the Lantern line - no Mods text names Night Vision any more
+assert "the Lantern" in _bym["SkyyAccessories"]["desc"] and "Lantern" in _bym["SkyyAccessories"]["setup"][2], "SkyyAccessories 0.5.4: the Lantern"
+assert "night vision" not in (_alltext3 + " " + " ".join(" ".join(m["setup"]) for m in MODS if "setup" in m)).lower(), \
+    "0.3.7: no Mods text names Night Vision (retired by SkyyAccessories 0.5.4)"
+_ar = _bym["SkyyArmory"]
+assert _ar["check"] == "" and _ar["setup"][1] == "Armory" and _ar["reload"] == "" and _ar["config"] == "Skyy_SkyyArmory/config.properties" \
+    and not _ar.get("admin") and not [c for c in _ar["commands"] if c.startswith("/")], "SkyyArmory 0.1: no command, Server Setup Armory"
+assert [m["mod"] for m in MODS].index("SkyyArmory") == [m["mod"] for m in MODS].index("SkyyGear") + 1, "SkyyArmory right after SkyyGear"
+assert [a for a in _bym["SkyyUiProbe"]["admin"] if a.startswith("/skyprobe map")], "SkyyUiProbe 0.4: the /skyprobe map line"
+# 0.3.9: the class texts of SkyyClasses 0.1.14 / SkyySkills 0.4.21 / SkyyProfiles 0.1.6 (Assassin + Monk playable)
+assert "Assassin or Monk" in _bym["SkyyClasses"]["desc"] and "Assassin or Monk" in _bym["SkyyProfiles"]["desc"], "0.3.9: Assassin + Monk named"
+assert "Assassination or Zen" in _bym["SkyySkills"]["desc"] and len(_bym["SkyySkills"]["desc"]) <= 390, "0.3.9: the Skills text (0.3.13: Zen)"
+assert "Discipline" not in " ".join(m["desc"] for m in MODS) + " ".join(" ".join(e[4]) for e in ENTRIES), "0.3.13: no Mods / menu text names Discipline"
+# 0.3.8: the texts of Gear 0.2.3, Skills 0.4.16, Party 0.1.7 / Essentials 0.1.8, Bazaar 0.1.4 and Trees 0.3 - 0.3.2
+assert "pays Smithing XP" in _bym["SkyyGear"]["desc"] and "crafting Smithing XP" in _bym["SkyyGear"]["setup"][2], "SkyyGear 0.2.3: craft Smithing XP"
+assert "own XP list per skill" in _bym["SkyySkills"]["setup"][2], "SkyySkills 0.4.16: Own XP list per skill"
+assert "TPA and Accept TPA" in _bym["SkyyParty"]["desc"] and "also from the party page" in _bym["SkyyEssentials"]["desc"], "SkyyParty 0.1.7 TPA buttons"
+assert "about twice" in _bym["SkyyBazaar"]["desc"], "SkyyBazaar 0.1.4: progression prices"
+_tr = _bym["SkyyTrees"]
+assert "Alchemy, Smithing" in _tr["desc"] and "class tree" in _tr["desc"] and "class trees" in _tr["setup"][2] \
+    and [c for c in _tr["commands"] if c.startswith("/tree class ")] and [c for c in _tr["commands"] if c.startswith("/tree probe ") and "(admin)" in c], \
+    "SkyyTrees 0.3 - 0.3.2: Alchemy / Smithing, the class tree, /tree class, /tree probe (admin)"
+assert "32% stronger" in _bym["SkyyCooking"]["desc"], "SkyyCooking 0.1.4: +32% per Grade"
+assert "Difficulty Easy, Normal or Hard" in _mb["desc"] and "health floor" in _mb["desc"] and "health floor" in _mb["setup"][2], \
+    "SkyyMobs 0.1.1 - 0.1.2: difficulty ladder, health floor"
+assert max(len(m["desc"]) for m in MODS) <= 390, "a Mods description is longer than 390 characters (the tooltip grows too tall; 0.3.5 max 350)"
+
+# 0.3.1: the menu data must follow the live set (tools/deploy_set.py SET) and every live mod's own texts. Differences are printed as
+# WARNINGs, never fail the build (a later SET bump must not stop this version from building) - read the build output: it ends the check
+# with "menu data matches the live set" when MODS versions, MODS entries, the known switches (label / tab / help) and the Server Setup
+# titles all agree with the newest build script of every mod SET pins.
+# 0.3.3: the check is ONE function (menu_check) run twice - on SET as tools/deploy_set.py pins it NOW ("the live set") and on the SET the
+# main session pins when this round deploys ("this round's set": SET with every ROUND_PINS version, the ROUND_PINS mods the round adds,
+# SkyyMenu VERSION, the ROUND_RETIRED mods out of SET and in RETIRED). Both runs must end in "menu data matches". Mods the round adds are
+# read too (their switches and Server Setup title), and a round version whose build script does not exist yet is checked against the
+# version it replaces (a note).
+import ast as _ast
+_ds_src = open(os.path.join(B.PROJECT, "tools", "deploy_set.py"), encoding="utf-8").read()
+_LIVE = None
+_LIVE_RETIRED = []
+for _n in _ast.parse(_ds_src).body:
+    if isinstance(_n, _ast.Assign) and any(isinstance(_t, _ast.Name) and _t.id == "SET" for _t in _n.targets):
+        _LIVE = _ast.literal_eval(_n.value)
+    if isinstance(_n, _ast.Assign) and any(isinstance(_t, _ast.Name) and _t.id == "RETIRED" for _t in _n.targets):
+        _LIVE_RETIRED = list(_ast.literal_eval(_n.value))
+assert _LIVE, "tools/deploy_set.py has no SET list"
+_modix = dict((m["mod"], m) for m in MODS)
+_known = dict((k[0], k) for k in SET_KNOWN)
+# 0.3.3: an optional 6th string argument (a permission node, the 7th registration element) is accepted
+_REG = re.compile(r'regSetting\(\s*"([^"]+)"\s*,\s*"([^"]*)"\s*,\s*"([^"]*)"\s*,\s*(true|false|True|False)\s*,\s*"([^"]*)"\s*(?:,\s*"([^"]*)"\s*)?\)')
+# 0.3.3 review: a registration node must be plain (= SetReg.validPerm, max 100 characters), else SkyyMenu refuses that key
+_NODE_RE = re.compile(r"^[a-z][a-z0-9]*(\.[a-z0-9]+)+$")
+_EMIT = re.compile(r'\.emit\(\s*pool\s*,\s*PKG\s*,\s*MOD\s*=\s*"(\w+)"\s*,\s*TITLE\s*=\s*"([^"]+)"')
+# 0.3.5: SkyyMobs 0.1 passes its module constant (CFG.emit(pool, PKG, MOD=MOD, TITLE="Mobs"), MOD = "SkyyMobs"): read that constant
+_EMIT_VAR = re.compile(r'\.emit\(\s*pool\s*,\s*PKG\s*,\s*MOD\s*=\s*([A-Za-z_]\w*)\s*,\s*TITLE\s*=\s*"([^"]+)"')
+_PATCH = "tools/menu_0_3_13_patch.py"
+
+
+def _emits(t):
+    """(MOD, TITLE) of every config kit emit of a build script: MOD="Name", or MOD=<module constant> = "Name" ("?<constant>" if unclear)"""
+    out = list(_EMIT.findall(t))
+    for _var, _title in _EMIT_VAR.findall(t):
+        _c = re.findall(r'^%s\s*=\s*"(\w+)"' % re.escape(_var), t, re.M)
+        out.append((_c[0] if len(_c) == 1 else "?" + _var, _title))
+    return out
+
+
+def _script(mod, ver):
+    return os.path.join(B.PROJECT, mod, "build_%s_%s.py" % (mod.lower(), ver))
+
+
+def menu_check(live, retired):
+    """the menu data against one SET (list of (mod, version)) + RETIRED list -> (drift, notes, registered switch keys)"""
+    drift, notes, keys, cls = [], [], set(), [None]
+    livemap = dict(live)
+    menu_pin = livemap.get("SkyyMenu", "")
+    pinned = bool(VER_RE.match(menu_pin)) and ver_t(menu_pin) >= ver_t(VERSION)     # SET pins this SkyyMenu = the round is pinned
+
+    def scan(mod, m, vers):
+        p = None
+        for v in vers:
+            if os.path.isfile(_script(mod, v)):
+                p = _script(mod, v)
+                break
+        if p is None:
+            drift.append("%s: no build script %s" % (mod, os.path.relpath(_script(mod, vers[0]), B.PROJECT)))
+            return
+        if p != _script(mod, vers[0]):
+            notes.append("%s %s: no build script yet (%s) - its switches and Server Setup title are checked against %s" %
+                         (mod, vers[0], os.path.relpath(_script(mod, vers[0]), B.PROJECT), os.path.basename(p)))
+        t = open(p, encoding="utf-8", errors="ignore").read()
+        if mod == "SkyyClasses":
+            cls[0] = t
+        for _k, _lab, _cat, _def, _hlp, _perm in _REG.findall(t):
+            keys.add(_k)
+            if _perm and not (len(_perm) <= 100 and _NODE_RE.match(_perm)):
+                drift.append("%s: switch %s registers the node %r - not a plain node, SkyyMenu refuses the key" % (mod, _k, _perm))
+            _kn = _known.get(_k)
+            if _kn is None:
+                drift.append("%s registers the player switch %s - not in SET_KNOWN" % (mod, _k))
+                continue
+            if (_kn[2], _kn[1], _kn[3]) != (_lab, _cat, _hlp):
+                drift.append("%s: switch %s is %r / %s / %r in the mod, SET_KNOWN differs" % (mod, _k, _lab, _cat, _hlp))
+            if _def.lower() != "true":
+                drift.append("%s: switch %s defaults to OFF in the mod" % (mod, _k))
+        _em = _emits(t)
+        _st = m.get("setup")
+        if _em and not _st:
+            drift.append("%s has a Server Setup page (%s) but no MODS setup entry" % (mod, _em[0][1]))
+        elif _st and not _em:
+            drift.append("%s: MODS describes a Server Setup page, its build script publishes none" % mod)
+        elif _st and _em and (_st[1] != _em[0][1] or _em[0][0] != mod):
+            drift.append("%s: MODS setup page %r, the mod publishes %s %r" % (mod, _st[1], _em[0][0], _em[0][1]))
+
+    for mod, ver in live:
+        if mod == "SkyyMenu":
+            continue    # its own entry carries VERSION; SET pins the SkyyMenu that is deployed now
+        if mod in ROUND_RETIRED:
+            rv, by = ROUND_RETIRED[mod]
+            if pinned:
+                drift.append("%s: SET pins SkyyMenu %s but still %s %s - this round retires it (%s replaces it): drop it from SET and add it "
+                             "to RETIRED in tools/deploy_set.py" % (mod, menu_pin, mod, ver, by))
+            elif ver == rv:
+                notes.append("%s %s leaves SET with this round - %s %s replaces it (MODS lists %s; tools/deploy_set.py: drop %s from SET, "
+                             "add it to RETIRED)" % (mod, ver, by, ROUND_PINS[by][1] if by in ROUND_PINS else _modix[by]["version"], by, mod))
+            else:
+                drift.append("%s: SET pins %s, this round retires %s %s" % (mod, ver, mod, rv))
+            continue
+        m = _modix.get(mod)
+        if m is None:
+            drift.append("%s %s is live but not in MODS" % (mod, ver))
+            continue
+        rp = ROUND_PINS.get(mod)
+        vers = [ver]
+        if m["version"] != ver:
+            if rp and rp[0] == ver and m["version"] == rp[1] and not pinned:
+                notes.append("%s: MODS says %s = this round's pin (tools/deploy_set.py SET pins %s until the round deploys; if the round does "
+                             "not ship %s %s, set its MODS version back to %s and drop its ROUND_PINS entry in %s)" %
+                             (mod, rp[1], ver, mod, rp[1], ver, _PATCH))
+                vers = [rp[1], ver]
+            elif rp and rp[0] == ver and m["version"] == rp[1]:
+                drift.append("%s: SET pins SkyyMenu %s but still %s %s - the round went without %s %s: set its MODS version back to %s "
+                             "and drop its ROUND_PINS entry in %s" % (mod, menu_pin, mod, ver, mod, rp[1], ver, _PATCH))
+            else:
+                drift.append("%s: MODS says %s, the live set runs %s" % (mod, m["version"], ver))
+        elif rp and rp[0] is not None and ver == rp[1]:
+            vers = [ver, rp[0]]     # the round's version is pinned: its own script, else the replaced version's (with a note)
+        scan(mod, m, vers)
+    for mod, (frm, to) in sorted(ROUND_PINS.items()):
+        if frm is not None or mod in livemap:
+            continue
+        if pinned:
+            drift.append("%s: SET pins SkyyMenu %s but not %s %s - this round adds it: add (%r, %r) to SET" % (mod, menu_pin, mod, to, mod, to))
+        else:
+            notes.append("%s %s is new with this round (not in SET yet) - its switches and Server Setup title are checked against its "
+                         "build script" % (mod, to))
+        scan(mod, _modix[mod], [to])
+    for mod, (rv, by) in sorted(ROUND_RETIRED.items()):
+        if mod not in livemap and mod not in retired:
+            drift.append("%s left SET but is not in tools/deploy_set.py RETIRED - its world key would stay enabled next to %s" % (mod, by))
+    # 0.3.2: the roster the class texts name = the CLASSES list of the SkyyClasses build script (name, weapon skill, enabled)
+    _CL = re.findall(r'\{"name": "(\w+)", "skill": "([^"]+)", "color": "[^"]*", "enabled": (True|False)', cls[0] or "")
+    if not _CL:
+        drift.append("SkyyClasses: no CLASSES roster found in its build script - check CLASS_PLAYABLE / CLASS_LATER / CLASS_SKILLS by hand")
+    else:
+        _cp = [(_n, _sk) for _n, _sk, _en in _CL if _en == "True"]
+        _cl = [_n for _n, _sk, _en in _CL if _en == "False"]
+        if [_n for _n, _sk in _cp] != CLASS_PLAYABLE or [_sk for _n, _sk in _cp] != CLASS_SKILLS or _cl != CLASS_LATER:
+            drift.append("SkyyClasses roster is playable %s, later %s - CLASS_PLAYABLE / CLASS_SKILLS / CLASS_LATER and the class texts differ" %
+                         (", ".join("%s (%s)" % x for x in _cp), ", ".join(_cl)))
+    return drift, notes, keys
+
+
+def menu_report(label, live, retired):
+    drift, notes, keys = menu_check(live, retired)
+    for _k in SET_KNOWN:
+        if _k[4] != "SkyyMenu" and _k[0] not in keys:
+            print("note (%s): known switch %s (%s) is not registered by any mod of that set" % (label, _k[0], _k[4]))
+    for _d in notes:
+        print("note (%s): %s" % (label, _d))
+    for _d in drift:
+        print("WARNING menu data (%s): %s" % (label, _d))
+    if drift:
+        print("WARNING: %d menu data difference(s) with %s - update MENU DATA (%s or its successor)" % (len(drift), label, _PATCH))
+    else:
+        print("menu data matches %s (%d mods in that SET, %d player switches registered by them, roster %s; later %s)" %
+              (label, len(live), len(keys), ", ".join(CLASS_PLAYABLE), ", ".join(CLASS_LATER)))
+    return drift
+
+
+DRIFT = menu_report("the live set", _LIVE, _LIVE_RETIRED)
+# 0.3.5: a version differs -> the ONE table for the live SET, ready for the next tools/menu_<ver>_patch.py (nothing is written)
+if [_d for _d in DRIFT if "the live set runs" in _d or "is live but not in MODS" in _d]:
+    print("MODS_VERSIONS for the live set (paste into the next menu patch, then regenerate): {" +
+          ", ".join('"%s": "%s"' % (_m, _v) for _m, _v in _LIVE if _m != "SkyyMenu") + "}")
+# the SET the main session pins when this round deploys (tools/deploy_set.py is never edited here)
+ROUND_SET = []
+for _mod, _ver in _LIVE:
+    if _mod in ROUND_RETIRED:
+        continue
+    if _mod == "SkyyMenu":
+        _ver = VERSION
+    elif _mod in ROUND_PINS and ROUND_PINS[_mod][0] == _ver:
+        _ver = ROUND_PINS[_mod][1]
+    ROUND_SET.append((_mod, _ver))
+for _mod, (_frm, _to) in sorted(ROUND_PINS.items()):
+    if _frm is None and _mod not in dict(ROUND_SET):
+        ROUND_SET.append((_mod, _to))
+ROUND_SET_RETIRED = sorted(set(_LIVE_RETIRED) | set(ROUND_RETIRED))
+print("this round's set: " + ", ".join("%s %s" % x for x in ROUND_SET if dict(_LIVE).get(x[0]) != x[1]) +
+      "; retired " + ", ".join(ROUND_SET_RETIRED) + " (everything else as SET pins it now)")
+ROUND_DRIFT = menu_report("this round's set", ROUND_SET, ROUND_SET_RETIRED)
+# 0.3.4: every MILLISECOND row of the live set (Skyy, LOCKED 2026-10-01: Server Setup shows and takes them in SECONDS, the file keeps ms).
+# The jar finds them at run time by the row's unit column (element 8 = "ms" on an int / dec row, AdminPage.msRow); this is the same rule
+# read off the live build scripts (kit rows = 11 / 12-element tuples and helper calls like SkyyExploration's crow(...)), plus a WARNING
+# for a row whose key reads like milliseconds (..Ms, ..Millis, .._MS) but whose unit is not ms (the menu would show it unconverted).
+_KIT_TYPES = {"bool", "int", "dec", "text", "choice", "items", "range", "table", "link", "action", "color"}
+_MS_NAME = re.compile(r"(Ms|MS|Millis|MILLIS|millis|_ms)$")
+
+
+def ms_rows(live):
+    """(rows, odd) - rows = (mod, key, type, default, min, max) of every unit-ms kit row; odd = (mod, key, unit) named ms, other unit"""
+    rows, odd = [], []
+    for mod, ver in live:
+        p = _script(mod, ver)
+        if mod == "SkyyMenu" or not os.path.isfile(p):
+            continue
+        for node in _ast.walk(_ast.parse(open(p, encoding="utf-8", errors="ignore").read())):
+            if isinstance(node, _ast.Tuple) and len(node.elts) in (11, 12):
+                a = [e.value if isinstance(e, _ast.Constant) else None for e in node.elts]
+                if not isinstance(a[0], str) or a[3] not in _KIT_TYPES:
+                    continue
+                key, typ, unit, d, lo, hi = a[0], a[3], a[8], a[4], a[5], a[6]
+            elif isinstance(node, _ast.Call) and len(node.args) >= 4:
+                a = [e.value if isinstance(e, _ast.Constant) else None for e in node.args]
+                if not isinstance(a[0], str) or a[3] not in _KIT_TYPES or " " in a[0]:
+                    continue
+                kw = dict((k.arg, k.value.value) for k in node.keywords if isinstance(k.value, _ast.Constant))
+                key, typ = a[0], a[3]
+                unit = "ms" if ("ms" in a[4:] or kw.get("unit") == "ms") else ""
+                nums = [x for x in a[4:] if isinstance(x, str) and re.match(r"^-?\d+$", x)]
+                d, lo, hi = None, (nums[0] if nums else None), (nums[1] if len(nums) > 1 else None)
+            else:
+                continue
+            if unit == "ms":
+                rows.append((mod, key, typ, d, lo, hi))
+            elif _MS_NAME.search(key) and typ in ("int", "dec", "range"):
+                odd.append((mod, key, unit))
+    return rows, odd
+
+
+MS_ROWS, MS_ODD = ms_rows(_LIVE)
+print("seconds rows (unit ms, shown and typed in seconds, the file keeps ms): %d - %s" % (len(MS_ROWS), "; ".join(
+    "%s %s" % (m, ", ".join(r[1] for r in MS_ROWS if r[0] == m)) for m in sorted(set(r[0] for r in MS_ROWS)))))
+for _m, _k, _u in MS_ODD:
+    print("WARNING seconds rows: %s %s reads like milliseconds but its unit is %r - Server Setup shows it as it is" % (_m, _k, _u))
+assert MS_ROWS and all(r[2] in ("int", "dec") for r in MS_ROWS), "every unit-ms row of the live set is an int / dec row (range rows keep ms)"
+print("settings rows per tab (%d per page): %s" % (SET_ROWS, ", ".join("%s %d%s" % (c, n, " (2 pages)" if n > SET_ROWS else "")
+                                                                  for c, n in SET_TAB_ROWS)))
+
+# ================= /menu and /sbmenu only when nothing else uses them (vanilla jar + every Skyy build script) =================
+def cp_utf8(data):
+    """CONSTANT_Utf8 strings of a class file (minimal constant-pool reader)"""
+    if data[:4] != b"\xca\xfe\xba\xbe":
+        return set()
+    n = struct.unpack(">H", data[8:10])[0]
+    i, p, out = 1, 10, set()
+    while i < n:
+        tag = data[p]; p += 1
+        if tag == 1:
+            ln = struct.unpack(">H", data[p:p + 2])[0]; p += 2
+            out.add(data[p:p + ln].decode("utf-8", "replace")); p += ln
+        elif tag in (7, 8, 16, 19, 20): p += 2
+        elif tag == 15: p += 3
+        elif tag in (3, 4, 9, 10, 11, 12, 17, 18): p += 4
+        elif tag in (5, 6): p += 8; i += 1
+        else: raise ValueError("bad constant pool tag %d" % tag)
+        i += 1
+    return out
+
+WANT = ["skymenu", "menu", "sbmenu"]
+TAKEN = set()
+VANILLA_SKYSETTINGS = []
+VANILLA_ADMINW = []
+with zipfile.ZipFile(B.SERVER_JAR) as zj:
+    for n in zj.namelist():
+        if n.startswith("com/hypixel/") and n.endswith(".class"):
+            try:
+                _cp = cp_utf8(zj.read(n))
+                TAKEN |= set(WANT) & _cp
+                if "skysettings" in _cp:
+                    VANILLA_SKYSETTINGS.append(n)
+                if "modconfig" in _cp or "serversetup" in _cp:
+                    VANILLA_ADMINW.append(n)
+            except Exception:
+                pass
+# 0.1.3: a Skyy build script takes a word only as a ROOT command or an alias: addAliases(... <word> ...) or super(<word>, ...) in a class that
+# is NOT passed to addSubCommand (SkyyIslands 0.5 has /island menu = a subcommand named "menu", which is no /menu command). The nearest
+# "public ClassName(" before the super call is its constructor. 0.1.2 counted any quoted "menu" anywhere and would drop /menu.
+# Review 2026-09-24: SkyyGuilds and SkyyVault write their super calls through a Python helper (super("%s", ...) % name), so the
+# literal scan cannot see them: cmd("Class", "<word>", ...) is a root command unless that class is in some subs=(...) or
+# variant="Class", and aliases=(... "<word>" ...) takes the word (even on a subcommand: that errs loud - the build prints "taken
+# elsewhere"). SkyyIslands 0.5 builds its subcommands with sub("Class", "menu", ...), never a root. Best effort only - the plugin also
+# checks the LIVE command map at the first PlayerReadyEvent and logs a WARNING when another command claims /menu, /sbmenu or /skymenu
+# (MenuUtil.checkAliases).
+SUB_RE = re.compile(r"addSubCommand\(\s*new\s+[^\s(]*?(\w+)\s*\(")
+CTOR_RE = re.compile(r"public\s+(\w+)\s*\(")
+HELPER_SUBS_RE = re.compile(r"(?:subs\s*=\s*\(([^)]*)\)|variant\s*=\s*(\"\w+\"))")
+def takes(text, w):
+    if re.search(r'addAliases\([^)]*"%s"' % re.escape(w), text):
+        return True
+    subs = set(SUB_RE.findall(text))
+    for mm in re.finditer(r'super\(\s*"%s"' % re.escape(w), text):
+        ctors = CTOR_RE.findall(text[:mm.start()])
+        if not ctors or ctors[-1] not in subs:
+            return True
+    hsubs = set()
+    for a, b in HELPER_SUBS_RE.findall(text):
+        hsubs |= set(re.findall(r'"(\w+)"', a + " " + b))
+    for mm in re.finditer(r'\bcmd\(\s*"(\w+)"\s*,\s*"%s"' % re.escape(w), text):
+        if mm.group(1) not in hsubs:
+            return True
+    if re.search(r'aliases\s*=\s*\([^)]*"%s"' % re.escape(w), text):
+        return True
+    return False
+# (the test strings are split after "super(" so tools/ci/lint.py does not read them as commands of this mod)
+assert takes('public MenuCmd() { super(' + '"menu", "d"); }', "menu")
+assert not takes('public IslandMenuCmd() { super(' + '"menu", "d"); } addSubCommand(new {PKG}.IslandMenuCmd());', "menu")
+assert takes('addAliases(new String[] { "menu" });', "menu")
+assert takes('cmd("GMenuCmd", "menu", "d", [], "")', "menu")
+assert not takes('cmd("GMenuCmd", "menu", "d", [], "")\nroot = cmd("GuildCmd", "guild", "d", [], "",\n    subs=("GHelpCmd",\n          "GMenuCmd"))', "menu")
+assert not takes('cmd("VMenuCmd", "menu", "d", [], "")\ncmd("VaultCmd", "vault", "d", [], "", variant="VMenuCmd")', "menu")
+assert takes('cmd("GuildCmd", "guild", "d", [], "", aliases=("g", "menu"))', "menu")
+assert not takes('cmd("GuildCmd", "guild", "d", [], "", aliases=("g",))', "menu")
+for p in glob.glob(os.path.join(B.PROJECT, "*", "build_*.py")):
+    if os.path.basename(os.path.dirname(p)) == "SkyyMenu":
+        continue
+    t = open(p, encoding="utf-8", errors="ignore").read()
+    for w in WANT:
+        if takes(t, w):
+            TAKEN.add(w)
+assert "skymenu" not in TAKEN, "/skymenu is already used by another command"
+ALIASES = [a for a in ("menu", "sbmenu") if a not in TAKEN]
+print("aliases:", ALIASES, "(taken elsewhere: %s)" % (sorted(TAKEN) or "none"))
+ALIAS_TEXT = (" (also " + ", ".join("/" + a for a in ALIASES) + ")") if ALIASES else ""
+# 0.2: /settings + /skysettings (Settings-Spec 4.1) - no other Skyy build script may take them (same takes() rule as the menu words)
+assert not VANILLA_SKYSETTINGS, "the vanilla jar already knows /skysettings: " + ", ".join(VANILLA_SKYSETTINGS[:3])
+# takes() counts ANY aliases=(... "word" ...) on purpose (loud for the menu words). For these two words an alias given to the SkyyIslands
+# sub("Class", ...) helper is a SUBCOMMAND alias (/island menu = /island settings), not a /settings command, so it is skipped here.
+HELPER_CALL_RE = re.compile(r'\b(sub|cmd)\(\s*"\w+"')
+def takes_root(text, w):
+    if not takes(text, w):
+        return False
+    t2 = text
+    for mm in reversed(list(re.finditer(r'aliases\s*=\s*\([^)]*"%s"' % re.escape(w), text))):
+        calls = list(HELPER_CALL_RE.finditer(text, 0, mm.start()))
+        if calls and calls[-1].group(1) == "sub":
+            t2 = t2[:mm.start()] + t2[mm.end():]
+    return takes(t2, w)
+assert not takes_root('sub("IslandMenuCmd", "menu", "d", r"""x""", aliases=("settings", "options"))', "settings")
+assert takes_root('cmd("SetCmd", "settings", "d", [], "")', "settings")
+assert takes_root('cmd("XCmd", "x", "d", [], "", aliases=("settings",))', "settings")
+SET_TAKEN = []
+for p in glob.glob(os.path.join(B.PROJECT, "*", "build_*.py")):
+    if os.path.basename(os.path.dirname(p)) == "SkyyMenu":
+        continue
+    t = open(p, encoding="utf-8", errors="ignore").read()
+    for w in ("settings", "skysettings"):
+        if takes_root(t, w):
+            SET_TAKEN.append((w, os.path.relpath(p, B.PROJECT)))
+assert not [x for x in SET_TAKEN if x[0] == "skysettings"], "/skysettings is taken elsewhere: %s" % SET_TAKEN
+if SET_TAKEN:
+    print("WARNING: /settings is also registered by", SET_TAKEN, "- players keep /skysettings and the menu torch")
+print("settings command: /settings /skysettings (taken elsewhere: %s)" % (SET_TAKEN or "none"))
+# 0.3: /modconfig + /serversetup (spec 2.2): no vanilla class and no other Skyy build script may know either word
+assert not VANILLA_ADMINW, "the vanilla jar already knows /modconfig or /serversetup: " + ", ".join(VANILLA_ADMINW[:3])
+ADM_TAKEN = []
+for p in glob.glob(os.path.join(B.PROJECT, "*", "build_*.py")):
+    if os.path.basename(os.path.dirname(p)) == "SkyyMenu":
+        continue
+    t = open(p, encoding="utf-8", errors="ignore").read()
+    for w in (ADMIN_CMD, ADMIN_ALIAS):
+        if takes_root(t, w):
+            ADM_TAKEN.append((w, os.path.relpath(p, B.PROJECT)))
+assert not ADM_TAKEN, "/%s or /%s is taken elsewhere: %s" % (ADMIN_CMD, ADMIN_ALIAS, ADM_TAKEN)
+print("server setup command: /%s /%s (free)" % (ADMIN_CMD, ADMIN_ALIAS))
+
+# ================= inline UI strings (validated here: balanced, no underscores in element ids) =================
+BS = ("Style: TextButtonStyle(Default: (Background: #5a4420, LabelStyle: (FontSize: 17, TextColor: #ffe9c9, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center)), "
+      "Hovered: (Background: #8a6a30, LabelStyle: (FontSize: 17, TextColor: #ffffff, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center)), "
+      "Pressed: (Background: #3a2a10, LabelStyle: (FontSize: 17, TextColor: #ffffff, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center)));")
+SLOT, COLS, ROWS = 84, 9, 6
+GW, GH = SLOT * COLS, SLOT * ROWS
+PW = GW + 44
+PH = 952
+UI = {
+    "ROOT":     "Group #SkyyMenu { Anchor: (Width: %d, Height: %d); Background: #0b1524(0.96); Padding: (Horizontal: 22, Vertical: 14); LayoutMode: Top; }" % (PW, PH),
+    "ACCENT":   "Group { Anchor: (Height: 3); Background: #e0b060; }",
+    "TITLE":    'Label #SkyyMTitle { Anchor: (Height: 38); Text: ""; Style: (FontSize: 23, RenderBold: true, TextColor: #ffe9c9, HorizontalAlignment: Center, VerticalAlignment: Center); }',
+    "HINT":     'Label #SkyyMHint { Anchor: (Height: 22); Text: ""; Style: (FontSize: 14, TextColor: #9fb8cc, HorizontalAlignment: Center, VerticalAlignment: Center); }',
+    "GRIDWRAP": "Group #SkyyMGridWrap { Anchor: (Height: %d); }" % (GH + 6),
+    "GRID":     "ItemGrid #SkyyMGrid { Anchor: (Horizontal: 0, Top: 3, Width: %d, Height: %d); SlotsPerRow: %d; AreItemsDraggable: false; Style: (SlotSize: %d, SlotIconSize: 62, SlotSpacing: 0); }" % (GW, GH, COLS, SLOT),
+    # 0.1.3: the same grid without hover tooltips (per-player switch). InfoDisplay: None is the inline markup EyeSpy / Tamework ship.
+    "GRIDNOTIPS": "ItemGrid #SkyyMGrid { Anchor: (Horizontal: 0, Top: 3, Width: %d, Height: %d); SlotsPerRow: %d; AreItemsDraggable: false; InfoDisplay: None; Style: (SlotSize: %d, SlotIconSize: 62, SlotSpacing: 0); }" % (GW, GH, COLS, SLOT),
+    "GAP":      "Group { Anchor: (Height: 8); }",
+    "INFOBOX":  "Group #SkyyMInfoBox { Anchor: (Height: 266); Background: #142030(0.9); Padding: (Horizontal: 14, Vertical: 8); LayoutMode: Top; }",
+    "INFONAME": 'Label #SkyyMInfoName { Anchor: (Height: 26); Text: ""; Style: (FontSize: 18, RenderBold: true, TextColor: #ffe9a0, VerticalAlignment: Center); }',
+    "INFODESC": 'Label #SkyyMInfoDesc { Anchor: (Height: 42); Text: ""; Style: (FontSize: 15, TextColor: #c9dff0, Wrap: true); }',
+    "STATUS":   'Label #SkyyMStatus { Anchor: (Height: 28); Text: ""; Style: (FontSize: 15, RenderBold: true, TextColor: #ffd27f, HorizontalAlignment: Center, VerticalAlignment: Center); }',
+    "FOOT":     "Group #SkyyMFoot { Anchor: (Height: 46); LayoutMode: Left; Padding: (Top: 3); }",
+    "SPACER":   'Label { Anchor: (Width: 11, Height: 40); Text: ""; }',
+    "LEAD":     'Label { Anchor: (Width: 28, Height: 40); Text: ""; }',
+    "BTNBACK":  'TextButton #SkyyMBack { Anchor: (Width: 168, Height: 40); Text: "< Back"; ' + BS + " }",
+    "BTNPREV":  'TextButton #SkyyMPrev { Anchor: (Width: 154, Height: 40); Text: "< Prev page"; ' + BS + " }",
+    "BTNNEXT":  'TextButton #SkyyMNext { Anchor: (Width: 154, Height: 40); Text: "Next page >"; ' + BS + " }",
+    "BTNCLOSE": 'TextButton #SkyyMClose { Anchor: (Width: 168, Height: 40); Text: "Close"; ' + BS + " }",
+}
+INFO_LINES = 9
+UI_INFO = ['Label #SkyyMInfo%d { Anchor: (Height: 20); Text: ""; Style: (FontSize: 14, TextColor: #9fb8cc, VerticalAlignment: Center); }' % i for i in range(INFO_LINES)]
+for s in list(UI.values()) + UI_INFO:
+    assert s.count("{") == s.count("}") and s.count("(") == s.count(")"), "unbalanced inline UI: " + s
+    for eid in re.findall(r"#([A-Za-z0-9_]+)\s*\{", s):
+        assert "_" not in eid, "underscore in element id #" + eid
+    assert "Anchow" not in s and ";;" not in s
+_tall = 2 * 14 + 3 + 38 + 22 + (GH + 6) + 8 + 266 + 28 + 46
+assert _tall <= PH, 'menu parts are %d px tall, page is %d' % (_tall, PH)
+assert 26 + 42 + 20 * INFO_LINES + 16 <= 266, 'info box too small for its lines'
+assert "Width" in UI["ROOT"] and "Top:" not in UI["ROOT"].split("Anchor: (")[1].split(")")[0], "page root anchor must be Width/Height only"
+
+# ================= 0.2 Settings page (research/Settings-Spec.md 4.2 + 4.3): 1120 x 930, every id starts with SkyyStg =================
+def _tbs(bg, fg, hov, pre):
+    lab = "LabelStyle: (FontSize: 18, TextColor: " + fg + ", RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center)"
+    return ("Style: TextButtonStyle(Default: (Background: " + bg + ", " + lab + "), Hovered: (Background: " + hov + ", " + lab + "), "
+            "Pressed: (Background: " + pre + ", " + lab + "));")
+SBS       = _tbs("#5a4420", "#ffe9c9", "#8a6a30", "#3a2a10")      # the menu's brown buttons at FontSize 18
+ON_SEL    = _tbs("#7fe07f", "#062a06", "#a0f0a0", "#5fb05f")      # SkyyHud WidgetsPage green (verified "beautiful")
+OFF_SEL   = _tbs("#e07070", "#2a0606", "#f09090", "#b05050")
+TAB_SEL   = _tbs("#e0b060", "#2a1a00", "#f0c880", "#b08840")
+RESET_ARM = _tbs("#a03030", "#ffffff", "#c04040", "#801818")
+SPW, SPH = 1120, 930
+UI_S = {
+    "SROOT":     "Group #SkyyStg { Anchor: (Width: %d, Height: %d); Background: #0b1524(0.96); Padding: (Horizontal: 20, Vertical: 14); LayoutMode: Top; }" % (SPW, SPH),
+    "SACCENT":   "Group { Anchor: (Height: 3); Background: #e0b060; }",
+    "STITLE":    'Label #SkyyStgTitle { Anchor: (Height: 48); Text: "Settings"; Style: (FontSize: 28, RenderBold: true, TextColor: #ffe9c9, HorizontalAlignment: Center, VerticalAlignment: Center); }',
+    "SHINT":     'Label #SkyyStgHint { Anchor: (Height: 26); Text: ""; Style: (FontSize: 16, TextColor: #9fb8cc, HorizontalAlignment: Center, VerticalAlignment: Center); }',
+    "STABS0":    "Group #SkyyStgTabs0 { Anchor: (Height: 58); LayoutMode: Left; Padding: (Top: 5); }",
+    "STABS1":    "Group #SkyyStgTabs1 { Anchor: (Height: 58); LayoutMode: Left; Padding: (Top: 5); }",
+    "SSP12":     'Label { Anchor: (Width: 12, Height: 48); Text: ""; }',
+    "SSP10":     'Label { Anchor: (Width: 10, Height: 52); Text: ""; }',
+    "SSP14":     'Label { Anchor: (Width: 14, Height: 52); Text: ""; }',
+    "SGAP8":     "Group { Anchor: (Height: 8); }",
+    "SGAP6":     "Group { Anchor: (Height: 6); }",
+    "SHEAD":     'Label #SkyyStgHead { Anchor: (Height: 40); Text: ""; Style: (FontSize: 24, RenderBold: true, TextColor: #e0b060, VerticalAlignment: Center); }',
+    "SROWS":     "Group #SkyyStgRows { Anchor: (Height: %d); LayoutMode: Top; }" % (SET_ROWS * 67),     # 0.3.1: rows 61 + gap 6
+    "SEMPTY":    'Label #SkyyStgEmpty { Anchor: (Height: 80); Text: ""; Style: (FontSize: 19, TextColor: #c9dff0, HorizontalAlignment: Center, VerticalAlignment: Center); }',
+    "SALWAYS":   'Label #SkyyStgAlways { Anchor: (Height: 26); Text: ""; Style: (FontSize: 15, TextColor: #8fa0b0, VerticalAlignment: Center); }',
+    "SSTATUS":   'Label #SkyyStgStatus { Anchor: (Height: 30); Text: ""; Style: (FontSize: 17, RenderBold: true, TextColor: #ffd27f, HorizontalAlignment: Center, VerticalAlignment: Center); }',
+    "SFOOT":     "Group #SkyyStgFoot { Anchor: (Height: 62); LayoutMode: Left; Padding: (Top: 6); }",
+    "SLEADA":    'Label { Anchor: (Width: 185, Height: 50); Text: ""; }',      # centres Reset + Menu + Close (710 px of 1080)
+    "SLEADB":    'Label { Anchor: (Width: 25, Height: 50); Text: ""; }',       # centres Prev + Next + Reset + Menu + Close (1030 px)
+    "SPREV":     'TextButton #SkyyStgPrev { Anchor: (Width: 150, Height: 50); Text: "< Prev"; ' + SBS + " }",
+    "SNEXT":     'TextButton #SkyyStgNext { Anchor: (Width: 150, Height: 50); Text: "Next >"; ' + SBS + " }",
+    "SRESET":    'TextButton #SkyyStgReset { Anchor: (Width: 300, Height: 50); Text: "Reset all to defaults"; ' + SBS + " }",
+    "SRESETARM": 'TextButton #SkyyStgReset { Anchor: (Width: 300, Height: 50); Text: "Click again to reset ALL"; ' + RESET_ARM + " }",
+    "SMENU":     'TextButton #SkyyStgMenu { Anchor: (Width: 220, Height: 50); Text: "< SkyWynn Menu"; ' + SBS + " }",
+    "SCLOSE":    'TextButton #SkyyStgClose { Anchor: (Width: 170, Height: 50); Text: "Close"; ' + SBS + " }",
+}
+UI_SARR = {
+    "STAB":    ['TextButton #SkyyStgTab%d { Anchor: (Width: 252, Height: 48); Text: "%s"; ' % (i, t[1]) + SBS + " }" for i, t in enumerate(SET_TABS)],
+    "STABSEL": ['TextButton #SkyyStgTab%d { Anchor: (Width: 252, Height: 48); Text: "%s"; ' % (i, t[1]) + TAB_SEL + " }" for i, t in enumerate(SET_TABS)],
+    "SROW":    ["Group #SkyyStgRow%d { Anchor: (Height: 61); Background: #142030(0.92); LayoutMode: Left; Padding: (Top: 4); }" % r for r in range(SET_ROWS)],
+    "STXT":    ["Group #SkyyStgTxt%d { Anchor: (Width: 774, Height: 52); LayoutMode: Top; }" % r for r in range(SET_ROWS)],
+    "SNAME":   ['Label #SkyyStgName%d { Anchor: (Height: 28); Text: ""; Style: (FontSize: 21, RenderBold: true, TextColor: #ffffff, VerticalAlignment: Center); }' % r for r in range(SET_ROWS)],
+    "SDESC":   ['Label #SkyyStgDesc%d { Anchor: (Height: 24); Text: ""; Style: (FontSize: 16, TextColor: #b8c8d8, VerticalAlignment: Center); }' % r for r in range(SET_ROWS)],
+    "SON":     ['TextButton #SkyyStgOn%d { Anchor: (Width: 120, Height: 52); Text: "ON"; ' % r + SBS + " }" for r in range(SET_ROWS)],
+    "SONSEL":  ['TextButton #SkyyStgOn%d { Anchor: (Width: 120, Height: 52); Text: "ON"; ' % r + ON_SEL + " }" for r in range(SET_ROWS)],
+    "SOFF":    ['TextButton #SkyyStgOff%d { Anchor: (Width: 120, Height: 52); Text: "OFF"; ' % r + SBS + " }" for r in range(SET_ROWS)],
+    "SOFFSEL": ['TextButton #SkyyStgOff%d { Anchor: (Width: 120, Height: 52); Text: "OFF"; ' % r + OFF_SEL + " }" for r in range(SET_ROWS)],
+}
+SET_UI_ALL = list(UI_S.values()) + [x for v in UI_SARR.values() for x in v]
+for s_ in SET_UI_ALL:
+    assert s_.count("{") == s_.count("}") and s_.count("(") == s_.count(")"), "unbalanced inline UI: " + s_
+    for eid in re.findall(r"#([A-Za-z0-9_]+)\s*\{", s_):
+        assert "_" not in eid, "underscore in element id #" + eid
+        assert eid.startswith("SkyyStg"), "settings page ids start with SkyyStg: #" + eid
+    assert "Anchow" not in s_ and ";;" not in s_
+    for txt_ in re.findall(r'Text: "([^"]*)"', s_):              # fixed inline text: only characters already proven inline
+        assert re.match(r"^[A-Za-z0-9 <>/-]*$", txt_), "inline text with unproven characters (use b.set): " + txt_
+assert "Width" in UI_S["SROOT"] and "Top:" not in UI_S["SROOT"].split("Anchor: (")[1].split(")")[0], "settings root anchor must be Width/Height only"
+_stall = 2 * 14 + 3 + 48 + 26 + 58 + 58 + 8 + 40 + SET_ROWS * 67 + 26 + 30 + 62
+assert 4 + 52 <= 61, 'a settings row must hold its 52 px text block and buttons'
+assert _stall <= SPH, "settings parts are %d px tall, page is %d" % (_stall, SPH)
+assert SPH <= 1080 - 100, "the settings page must fit a 1080 px high screen"
+assert 14 + 774 + 120 + 10 + 120 <= SPW - 40, "a settings row is wider than the page"
+assert 4 * 252 + 3 * 12 <= SPW - 40, "a tab row is wider than the page"
+assert 25 + 150 + 150 + 300 + 220 + 170 + 4 * 10 <= SPW - 40 and 185 + 300 + 220 + 170 + 2 * 10 <= SPW - 40, "the settings footer is wider than the page"
+
+# ================= 0.3 Server Setup page (research/Server-Setup-Spec.md 2.3-2.12): 1120 x 930, every id starts with SkyyAdm =================
+# Fixed parts are constants here (validated below and found again in MenuData.class after the build); parts that carry a mod's text are
+# built at run time by AdminPage.btn / lab / spc / field from the SAME patterns (the harness validated their output) with the text
+# reduced to letters, digits, space and < > / - (MenuUtil.inl); Labels get every mod text through b.set.
+def _tbsz(bg, fg, hov, pre, fs):
+    lab = "LabelStyle: (FontSize: %d, TextColor: %s, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center)" % (fs, fg)
+    return ("Style: TextButtonStyle(Default: (Background: " + bg + ", " + lab + "), Hovered: (Background: " + hov + ", " + lab + "), "
+            "Pressed: (Background: " + pre + ", " + lab + "));")
+APW, APH = 1120, 930
+A_INNER = APW - 40                                   # 1080: the root has Horizontal padding 20
+A_BODY = APH - 2 * 14 - 3 - 48 - 26 - 30 - 62        # 733: accent, title, subtitle, (body), status, footer
+ADM_ROWS, ADM_LROWS, ADM_GROWS, ADM_HROWS = 7, 8, 10, 8
+ADM_INFOLINES, ADM_MSGLINES, ADM_PLINES, ADM_FROWS = 24, 16, 12, 4
+ADM_STYLE = {
+    "BS":    SBS,                                                        # brown, FontSize 18 (the Settings page buttons)
+    "BS16":  _tbsz("#5a4420", "#ffe9c9", "#8a6a30", "#3a2a10", 16),     # tabs + choice buttons (longer texts)
+    "SEL":   TAB_SEL,
+    "SEL16": _tbsz("#e0b060", "#2a1a00", "#f0c880", "#b08840", 16),
+    "ONSEL": ON_SEL,
+    "OFFSEL": OFF_SEL,
+    "RED":   RESET_ARM,
+}
+_TXT = lambda i, h, fs, col, bold=False, center=False, w=0: ('Label #%s { Anchor: (%sHeight: %d); Text: ""; Style: (FontSize: %d%s, TextColor: %s%s, VerticalAlignment: Center); }'
+                                                            % (i, ("Width: %d, " % w) if w else "", h, fs, ", RenderBold: true" if bold else "", col, ", HorizontalAlignment: Center" if center else ""))
+UI_A = {
+    "AROOT":    "Group #SkyyAdm { Anchor: (Width: %d, Height: %d); Background: #0b1524(0.96); Padding: (Horizontal: 20, Vertical: 14); LayoutMode: Top; }" % (APW, APH),
+    "AACCENT":  "Group { Anchor: (Height: 3); Background: #e0b060; }",
+    "ATITLE":   _TXT("SkyyAdmTitle", 48, 28, "#ffe9c9", True, True),
+    "ASUB":     _TXT("SkyyAdmSub", 26, 16, "#9fb8cc", False, True),
+    "ABODY":    "Group #SkyyAdmBody { Anchor: (Height: %d); LayoutMode: Top; }" % A_BODY,
+    "AFOOT":    "Group #SkyyAdmFoot { Anchor: (Height: 62); LayoutMode: Left; Padding: (Top: 6); }",
+    "AGAP6":    "Group { Anchor: (Height: 6); }",
+    "AGAP8":    "Group { Anchor: (Height: 8); }",
+    "AGAP12":   "Group { Anchor: (Height: 12); }",
+    "AGAP20":   "Group { Anchor: (Height: 20); }",
+    "AHEAD":    _TXT("SkyyAdmHead", 40, 24, "#e0b060", True),
+    "AEMPTY":   _TXT("SkyyAdmEmpty", 80, 19, "#c9dff0", False, True),
+    # list
+    "ALSEARCH": "Group #SkyyAdmSearch { Anchor: (Height: 58); LayoutMode: Left; Padding: (Top: 4); }",
+    "ALROWS":   "Group #SkyyAdmLRows { Anchor: (Height: %d); LayoutMode: Top; }" % (ADM_LROWS * 76),
+    # mod
+    "ATABS0":   "Group #SkyyAdmTabs0 { Anchor: (Height: 58); LayoutMode: Left; Padding: (Top: 5); }",
+    "ATABS1":   "Group #SkyyAdmTabs1 { Anchor: (Height: 58); LayoutMode: Left; Padding: (Top: 5); }",
+    "AROWS":    "Group #SkyyAdmRows { Anchor: (Height: %d); LayoutMode: Top; }" % (ADM_ROWS * 76),
+    "AINFO":    "Group #SkyyAdmInfo { Anchor: (Height: 700); Background: #142030(0.92); Padding: (Horizontal: 24, Vertical: 12); LayoutMode: Top; }",
+    # table
+    "ATFIND":   "Group #SkyyAdmTFindRow { Anchor: (Height: 58); LayoutMode: Left; Padding: (Top: 4); }",
+    "ATCOLS":   "Group #SkyyAdmCols { Anchor: (Height: 30); LayoutMode: Left; }",
+    "ATROWS":   "Group #SkyyAdmTRows { Anchor: (Height: %d); LayoutMode: Top; }" % (ADM_ROWS * 76),
+    "ATADD":    "Group #SkyyAdmTAdd { Anchor: (Height: 62); LayoutMode: Left; Padding: (Top: 6); }",
+    # confirm
+    "AMSGBOX":  "Group #SkyyAdmMsgBox { Anchor: (Height: 560); Background: #142030(0.92); Padding: (Horizontal: 24, Vertical: 12); LayoutMode: Top; }",
+    "ACONF":    "Group #SkyyAdmConf { Anchor: (Height: 62); LayoutMode: Left; Padding: (Top: 3); }",
+    # log + history + io
+    "AGROWS":   "Group #SkyyAdmGRows { Anchor: (Height: %d); LayoutMode: Top; }" % (ADM_GROWS * 52),
+    "AHROWS8":  "Group #SkyyAdmHRows { Anchor: (Height: %d); LayoutMode: Top; }" % (ADM_HROWS * 58),
+    "AHROWS4":  "Group #SkyyAdmHRows { Anchor: (Height: %d); LayoutMode: Top; }" % (4 * 58),
+    "APREV":    "Group #SkyyAdmPrev { Anchor: (Height: 282); Background: #101c2c; Padding: (Horizontal: 16, Vertical: 8); LayoutMode: Top; }",
+    "APREVHEAD": _TXT("SkyyAdmPrevHead", 26, 17, "#e0b060", True),
+    "AIOL1":    _TXT("SkyyAdmIoL1", 34, 18, "#e0b060", True),
+    "AIOL2":    _TXT("SkyyAdmIoL2", 34, 18, "#e0b060", True),
+    "AIOR1":    "Group #SkyyAdmIoR1 { Anchor: (Height: 58); LayoutMode: Left; Padding: (Top: 4); }",
+    "AIOR2":    "Group #SkyyAdmIoR2 { Anchor: (Height: 58); LayoutMode: Left; Padding: (Top: 4); }",
+    "AIOF":     _TXT("SkyyAdmIoF", 30, 17, "#9fb8cc"),
+    "AIOFROWS": "Group #SkyyAdmIoFRows { Anchor: (Height: %d); LayoutMode: Top; }" % (ADM_FROWS * 48),
+}
+UI_AARR = {
+    "ASTATUS":  [_TXT("SkyyAdmStatus", 30, 17, c, True, True) for c in ("#ffd27f", "#7fe07f", "#ffb347", "#ff7a7a")],
+    "ALROW":    ["Group #SkyyAdmLRow%d { Anchor: (Height: 70); Background: #142030(0.92); LayoutMode: Left; Padding: (Top: 9); }" % r for r in range(ADM_LROWS)],
+    "ALTXT":    ["Group #SkyyAdmLTxt%d { Anchor: (Width: 736, Height: 52); LayoutMode: Top; }" % r for r in range(ADM_LROWS)],
+    "ALNAME":   [_TXT("SkyyAdmLName%d" % r, 28, 21, "#ffffff", True) for r in range(ADM_LROWS)],
+    "ALDESC":   [_TXT("SkyyAdmLDesc%d" % r, 24, 16, "#b8c8d8") for r in range(ADM_LROWS)],
+    "ALDESCRED": [_TXT("SkyyAdmLDesc%d" % r, 24, 16, "#ff8a8a", True) for r in range(ADM_LROWS)],
+    "AROW":     ["Group #SkyyAdmRow%d { Anchor: (Height: 70); Background: #142030(0.92); LayoutMode: Top; Padding: (Top: 3); }" % r for r in range(ADM_ROWS)],
+    "ALINE":    ["Group #SkyyAdmLine%d { Anchor: (Height: 42); LayoutMode: Left; }" % r for r in range(ADM_ROWS)],
+    "ANAME":    [_TXT("SkyyAdmName%d" % r, 42, 20, "#ffffff", True, False, 556) for r in range(ADM_ROWS)],
+    "AW":       ["Group #SkyyAdmW%d { Anchor: (Width: 380, Height: 42); LayoutMode: Left; }" % r for r in range(ADM_ROWS)],
+    "AHELP":    ["Group #SkyyAdmHelpRow%d { Anchor: (Height: 22); LayoutMode: Left; }" % r for r in range(ADM_ROWS)],
+    "ADESC":    [_TXT("SkyyAdmDesc%d" % r, 22, 15, "#b8c8d8", False, False, 1050) for r in range(ADM_ROWS)],
+    "ARO":      [_TXT("SkyyAdmRo%d" % r, 42, 19, "#ffe9a0", True, False, 380) for r in range(ADM_ROWS)],
+    "ACHV":     [_TXT("SkyyAdmChv%d" % r, 42, 18, "#ffe9a0", True, True, 268) for r in range(ADM_ROWS)],
+    "ATROW":    ["Group #SkyyAdmTRow%d { Anchor: (Height: 70); Background: #142030(0.92); LayoutMode: Left; Padding: (Top: 9); }" % r for r in range(ADM_ROWS)],
+    "ATKEY":    [_TXT("SkyyAdmTKey%d" % r, 52, 18, "#ffffff", True, False, 300) for r in range(ADM_ROWS)],
+    "ATCELLS":  ["Group #SkyyAdmTCols%d { Anchor: (Width: 450, Height: 52); LayoutMode: Left; }" % r for r in range(ADM_ROWS)],
+    "AINFOL":   [_TXT("SkyyAdmInfo%d" % i, 27, 18, "#e6f2ff") for i in range(ADM_INFOLINES)],
+    "AINFOB":   [_TXT("SkyyAdmInfo%d" % i, 27, 19, "#e0b060", True) for i in range(ADM_INFOLINES)],
+    "AMSGQ":    [_TXT("SkyyAdmMsg%d" % i, 33, 21, "#ffe9c9", True) for i in range(ADM_MSGLINES)],
+    "AMSGL":    [_TXT("SkyyAdmMsg%d" % i, 33, 18, "#c9dff0") for i in range(ADM_MSGLINES)],
+    "AGROW":    ["Group #SkyyAdmGRow%d { Anchor: (Height: 46); Background: #142030(0.92); LayoutMode: Left; Padding: (Top: 3); }" % r for r in range(ADM_GROWS)],
+    "AGTXT":    [_TXT("SkyyAdmGTxt%d" % r, 40, 16, "#e6f2ff", False, False, 890) for r in range(ADM_GROWS)],
+    "AHROW":    ["Group #SkyyAdmHRow%d { Anchor: (Height: 52); Background: #142030(0.92); LayoutMode: Left; Padding: (Top: 4); }" % r for r in range(ADM_HROWS)],
+    "AHTXT":    [_TXT("SkyyAdmHTxt%d" % r, 44, 16, "#e6f2ff", False, False, 780) for r in range(ADM_HROWS)],
+    "APL":      [_TXT("SkyyAdmPL%d" % i, 20, 15, "#c9dff0") for i in range(ADM_PLINES)],
+    "AFROW":    ["Group #SkyyAdmFRow%d { Anchor: (Height: 42); LayoutMode: Left; }" % r for r in range(ADM_FROWS)],
+    "AFTXT":    [_TXT("SkyyAdmFTxt%d" % r, 42, 17, "#e6f2ff", False, False, 900) for r in range(ADM_FROWS)],
+}
+# the run-time patterns (AdminPage.btn / spc / lab / field) with sample values, so the validation below also covers them
+def adm_btn(i, w, h, text, style):
+    return 'TextButton #%s { Anchor: (Width: %d, Height: %d); Text: "%s"; %s }' % (i, w, h, text, style)
+def adm_field(i, w, h, mx, ph):
+    p = (' PlaceholderText: "%s"; PlaceholderStyle: (TextColor: #6e7da1, FontSize: 17);' % ph) if ph else ""
+    return ["Group #%sBox { Anchor: (Width: %d, Height: %d); Background: #16263a; }" % (i, w, h),
+            "TextField #%s { Anchor: (Full: 0); Padding: (Horizontal: 10); MaxLength: %d;%s Style: (TextColor: #ffffff, FontSize: 19); }" % (i, mx, p)]
+ADM_SAMPLES = ([adm_btn("SkyyAdmTab3", 126, 48, "Player settings", ADM_STYLE["SEL16"]), adm_btn("SkyyAdmF0", 90, 50, "< Prev", ADM_STYLE["BS"]),
+                'Label { Anchor: (Width: 14, Height: 42); Text: ""; }', _TXT("SkyyAdmColv0x1", 52, 18, "#ffffff", False, False, 222)]
+               + adm_field("SkyyAdmVal3", 196, 42, 2000, "") + adm_field("SkyyAdmFind", 520, 50, 60, "search settings and editors"))
+ADM_UI_ALL = list(UI_A.values()) + [x for v in UI_AARR.values() for x in v] + list(ADM_STYLE.values())
+for s_ in list(UI_A.values()) + [x for v in UI_AARR.values() for x in v] + ADM_SAMPLES:
+    assert s_.count("{") == s_.count("}") and s_.count("(") == s_.count(")"), "unbalanced inline UI: " + s_
+    for eid in re.findall(r"#([A-Za-z0-9_]+)\s*\{", s_):
+        assert "_" not in eid, "underscore in element id #" + eid
+        assert eid.startswith("SkyyAdm"), "server setup ids start with SkyyAdm: #" + eid
+    assert "Anchow" not in s_ and ";;" not in s_
+    for txt_ in re.findall(r'Text: "([^"]*)"', s_):
+        assert re.match(r"^[A-Za-z0-9 <>/-]*$", txt_), "inline text with unproven characters (use b.set): " + txt_
+for s_ in ADM_STYLE.values():
+    assert s_.count("(") == s_.count(")") and "{" not in s_
+assert "Width" in UI_A["AROOT"] and "Top:" not in UI_A["AROOT"].split("Anchor: (")[1].split(")")[0], "server setup root anchor must be Width/Height only"
+# height budgets (spec 2.4 / 2.5 asserts, like the menu's _tall): the body of every view fits the fixed body group
+assert 2 * 14 + 3 + 48 + 26 + A_BODY + 30 + 62 == APH and APH <= 1080 - 100, "the server setup page must fit a 1080 px high screen"
+_abody = {"list": 58 + ADM_LROWS * 76, "mod": 2 * 58 + 8 + 40 + ADM_ROWS * 76, "file": 700, "table": 58 + 40 + 30 + ADM_ROWS * 76 + 62,
+          "confirm": 560 + 20 + 62, "log": 2 * 58 + 40 + ADM_GROWS * 52, "hist": 58 + 40 + ADM_HROWS * 58, "histprev": 58 + 40 + 4 * 58 + 282,
+          "io": 34 + 58 + 12 + 34 + 58 + 282 + 30 + ADM_FROWS * 48}
+for _v, _h in _abody.items():
+    assert _h <= A_BODY, "server setup view %s needs %d px, the body has %d" % (_v, _h, A_BODY)
+assert 24 + ADM_INFOLINES * 27 <= 700 and 24 + ADM_MSGLINES * 33 <= 560 and 16 + 26 + ADM_PLINES * 20 <= 282
+# width budgets (inner width 1080)
+assert 14 + 736 + 10 + 150 + 10 + 150 <= A_INNER, "a list row is wider than the page"
+assert 14 + 556 + 10 + 380 + 10 + 110 <= A_INNER and 156 + 6 + 84 + 6 + 60 + 6 + 60 <= 380 and 270 + 6 + 104 <= 380, "a mod row is wider than the page"
+assert 8 * 126 + 7 * 8 <= A_INNER, "a tab row is wider than the page"
+assert 14 + 300 + 10 + 450 + 10 + 100 + 6 + 150 <= A_INNER and 3 * 146 + 2 * 6 <= 450 and 2 * 222 + 6 <= 450, "a table row is wider than the page"
+assert 14 + 890 + 10 + 120 <= A_INNER and 14 + 780 + 10 + 120 + 6 + 120 <= A_INNER and 830 + 10 + 200 <= A_INNER and 780 + 10 + 130 + 10 + 130 <= A_INNER
+assert 90 + 90 + 120 + 180 + 140 + 160 + 110 + 100 + 7 * 8 <= A_INNER, "the mod footer is wider than the page"
+assert 120 + 120 + 150 + 150 + 130 + 200 + 120 + 6 * 8 <= A_INNER, "the list footer is wider than the page"
+
+# ================= Java data (generated) =================
+def jstr(s):
+    if s is None:
+        return "null"
+    return '"' + s.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n") + '"'
+def jarr(vals):
+    return "new String[] { " + ", ".join(jstr(v) for v in vals) + " }"
+def jints(vals):
+    return "new int[] { " + ", ".join(str(int(v)) for v in vals) + " }"
+def jbools(vals):
+    return "new boolean[] { " + ", ".join("true" if v else "false" for v in vals) + " }"
+def lines_of(lines):
+    return "\n".join(txt(l) for l in lines)
+
+E_VIEW = [e[0] for e in ENTRIES]; E_SLOT = [e[1] for e in ENTRIES]; E_ICON = [e[2] for e in ENTRIES]
+E_NAME = [txt(e[3]) for e in ENTRIES]; E_BODY = [lines_of(e[4]) for e in ENTRIES]
+E_FOOT = [txt(e[5]) if e[5] else None for e in ENTRIES]; E_ACT = [e[6] for e in ENTRIES]
+for a in E_ACT:
+    assert '"' not in a and "\\" not in a
+PA = PLAYER_ACTIONS
+# 0.3.3 (review): a Commands line marked (admin) or (staff) is admin-only too - it is never in MOD_BODY / MOD_OLD_BODY (the Mods text
+# every player reads); admins read it in the "Admin only:" block (MOD_AONLY below = exactly the lines MOD_ADMIN lists on the Server
+# Setup page: those Commands lines, then the MODS "admin" lines)
+def admin_line(c):
+    return "(admin)" in c or "(staff)" in c
+def player_lines(cmds):
+    return [c for c in cmds if not admin_line(c)]
+def admin_lines(m):
+    return [c for c in m["commands"] if admin_line(c)] + m.get("admin", [])
+for _m in MODS:
+    assert player_lines(_m["commands"]) and ("old" not in _m or player_lines(_m["old"]["commands"])), \
+        "%s: every Commands line is admin-only - players need one line (e.g. 'No commands for players - ...')" % _m["mod"]
+MOD_BODY = [txt(m["desc"]) + "\nCommands:\n" + "\n".join(txt(c.replace("%ALIASES%", ALIAS_TEXT)) for c in player_lines(m["commands"]))
+            for m in MODS]
+MOD_OLD_NEED = [m["old"]["need"] if "old" in m else "" for m in MODS]
+MOD_OLD_BODY = [(txt(m["old"]["desc"]) + "\nCommands:\n" + "\n".join(txt(c.replace("%ALIASES%", ALIAS_TEXT)) for c in player_lines(m["old"]["commands"])))
+                if "old" in m else "" for m in MODS]
+for _i, _m in enumerate(MODS):
+    assert MOD_ADMIN[_i] == "\n".join(c.replace("%ALIASES%", "") for c in admin_lines(_m)), "%s: MOD_ADMIN lines" % _m["mod"]
+for _b in MOD_BODY + MOD_OLD_BODY:
+    assert "(admin)" not in _b and "(staff)" not in _b, "an admin line in the players' Mods text: " + _b[:80]
+# 0.3.1: the admin-only lines of the Mods view (MODS "admin"): admins read them under MOD_AHEAD between the description and the
+# commands (MenuUtil.modBodyFor builds exactly MOD_ABODY at run time), players never see them. The tooltip opens ABOVE the icon, so
+# an admin tooltip keeps to 14 detail lines.
+MOD_AHEAD = "Admin only:"
+# 0.3.3 (review): + the (admin) / (staff) Commands lines (admin_lines = the MOD_ADMIN lines), which MOD_BODY no longer carries
+MOD_AONLY = ["\n".join(txt(c.replace("%ALIASES%", ALIAS_TEXT)) for c in admin_lines(m)) for m in MODS]
+# review 2026-09-25: MenuUtil.modBodyFor puts the admin block after the FIRST line of the text, so a description is one line (the
+# info box wraps it); MOD_ABODY is built from its parts and must equal what modBodyFor makes of MOD_BODY
+for _m in MODS:
+    for _d in [_m["desc"]] + ([_m["old"]["desc"]] if "old" in _m else []):
+        assert "\n" not in _d and "\r" not in _d, "%s: desc must be one line (the admin lines go after the first line)" % _m["mod"]
+MOD_ABODY = [(txt(m["desc"]) + "\n" + MOD_AHEAD + "\n" + MOD_AONLY[i] + "\nCommands:\n" +
+              "\n".join(txt(c.replace("%ALIASES%", ALIAS_TEXT)) for c in player_lines(m["commands"]))) if MOD_AONLY[i] else MOD_BODY[i]
+             for i, m in enumerate(MODS)]
+def java_abody(b, a):
+    """= MenuUtil.modBodyFor(k, true) on the text b (no "old" wording)"""
+    if not a:
+        return b
+    nl = b.find("\n")
+    return b + "\n" + MOD_AHEAD + "\n" + a if nl < 0 else b[:nl] + "\n" + MOD_AHEAD + "\n" + a + b[nl:]
+for _i, _b in enumerate(MOD_ABODY):
+    assert _b == java_abody(MOD_BODY[_i], MOD_AONLY[_i]), "%s: admin text differs from MenuUtil.modBodyFor" % MODS[_i]["mod"]
+    assert len(_b.split("\n")) - 1 <= 14, "%s: the admin tooltip has %d detail lines (max 14)" % (MODS[_i]["mod"], len(_b.split("\n")) - 1)
+MOD_SINCE = [m["setup"][0] if "setup" in m else "" for m in MODS]
+MOD_STITLE = [txt(m["setup"][1]) if "setup" in m else "" for m in MODS]
+MOD_SWHAT = [txt(m["setup"][2]) if "setup" in m else "" for m in MODS]
+# Info-box detail lines go into #SkyyMInfo0..8: fixed 14 px labels WITHOUT Wrap (a wrapped second row would spill into the next
+# label), about 730 px wide at FontSize 14 (0.1.2: everything 1.4x, so the same characters fit). Keep every static detail line short enough to fit on one row. The first line of each
+# body goes to #SkyyMInfoDesc (wraps) and the hover tooltips always carry the full text.
+INFO_MAX = 80
+for _body in (E_BODY + MOD_BODY + MOD_ABODY + [b for b in MOD_OLD_BODY if b] + [lines_of(v[2]) for v in VIEWS] +
+              [lines_of(a[3]).replace("%P", "W" * 16) for a in PA] + [lines_of(a[3]).replace("%P", "W" * 16) for a in PA_LEGACY]):
+    for _l in _body.split("\n")[1:]:
+        assert len(_l) <= INFO_MAX, "info line longer than %d characters (unwrapped label, may be cut off - shorten it): %s" % (INFO_MAX, _l)
+
+# ================= 0.3.10 THE STATS PAGE (research/cloud/Stats-Page-Spec.md P1): markup from the shared vanilla kit tools/skyyui.py =================
+# Built when this script runs: SUI.verify() proves every vanilla value / texture / sound against Assets.zip (read-only) and stops the
+# build on drift. Only properties the deployed kit pages use (SUI.assert_proven); every id starts with SkyyStat, no underscores.
+SUI.verify()
+SUI_KIT_ID = SUI.kit_id()
+ST_W, ST_H = 1100, 900               # fits 1080 px with the ornaments (asserted)
+ST_TABS = ["Main", "Combat", "Gathering", "Skills", "Profile"]
+ST_NOTES = [
+    "Health, Mana, Stamina: your max now. Base = the game's own part and armor.",
+    "Gear = your held weapon and worn armor. Stats not built yet are hidden.",
+    "Fortune = chance for a double drop (tools add more later). Wisdom = more XP.",
+    "Your skill levels on this profile. /skills shows your XP and rewards.",
+    "Each profile has its own class, skills and stats. Change Profile lists them.",
+]
+ST_SUB = "What applies to you right now. Click Refresh after you change your gear."
+ST_LINE_MAX = 79                     # a stat row (name + total + source + 2) and every header / note line stays under 80 characters
+ST_ROW_H, ST_ROW_GAP = 38, 2
+ST_NAME_W, ST_VAL_W, ST_MID_W = 300, 200, 30
+ST_NAME_FS, ST_VAL_FS, ST_SRC_FS = 18, 18, 15
+ST_FOOT_MENU_W, ST_FOOT_PROF_W, ST_FOOT_GAP = 220, 200, 6
+# the gear stats the page shows: SkyyGear's LIVE rows (key, page label, short label, unit). spd (Speed) is shown from the movement
+# map (what is applied), the "coming later" rows are hidden (spec default). Cross-checked against the SET SkyyGear script below.
+ST_GEAR = [("def", "Defense", "Defense", ""), ("str", "Strength", "Strength", ""), ("cc", "Crit Chance", "Crit", "%"),
+           ("cd", "Crit Damage", "Crit Dmg", "%"), ("mp", "Magical Power", "Magic", ""), ("stam", "Stamina Regen", "Stamina", ""),
+           ("dmg", "Damage", "Damage", "%"), ("chg", "Charged Attack Damage", "Charged", "%"), ("tdmg", "True Damage", "True", ""),
+           ("lsteal", "Life Steal", "Life Steal", "%"), ("msteal", "Mana Steal", "Mana Steal", ""),
+           ("hpr", "Health Regen", "Regen", ""), ("hprp", "Health Regen %", "Regen", "%")]
+ST_ELEM = [("fEarth", "Earth"), ("fThunder", "Thunder"), ("fWater", "Water"), ("fFire", "Fire"), ("fAir", "Air")]
+ST_RAW = [("rThunder", "Thunder"), ("rWater", "Water"), ("rElem", "Elemental")]
+ST_GROUPS = ["Gear", "Accessories", "Overall", "Class", "Base Mana", "Skills", "Trees"]   # short: a Health row holds five parts
+ST_FORTUNE = [("Mining", "mining"), ("Foraging", "foraging"), ("Farming", "farming")]
+ST_WISDOM = [("Mining", "mining"), ("Foraging", "foraging"), ("Farming", "farming"), ("Cooking", "cooking")]
+for _t in ST_NOTES + [ST_SUB]:
+    assert len(_t) <= ST_LINE_MAX, "stats line over %d characters: %s" % (ST_LINE_MAX, _t)
+# the SET SkyyGear script's LIVE stat rows (key, label, unit, live) - a row this page shows must still be a LIVE row with the same unit
+_gear_ver = dict(_LIVE).get("SkyyGear") if _LIVE else None
+_gear_py = os.path.join(B.PROJECT, "SkyyGear", "build_skyygear_%s.py" % _gear_ver) if _gear_ver else None
+if _gear_py and os.path.isfile(_gear_py):
+    _gt = open(_gear_py, encoding="utf-8").read()
+    _grows = dict((m.group(1), (m.group(2), m.group(3), m.group(4))) for m in
+                  re.finditer(r'\("(\w+)", "([^"]+)", "[wsae]+", "(%?)", \d+, \d+, ([01]), "\w*"\)', _gt))
+    for _k, _lab, _short, _u in ST_GEAR + [(k, l, l, "") for k, l in ST_ELEM + ST_RAW]:
+        assert _k in _grows, "SkyyGear %s has no stat %s any more" % (_gear_ver, _k)
+        assert _grows[_k][2] == "1", "SkyyGear %s: %s is not a LIVE stat (the Stats page hides planned stats)" % (_gear_ver, _k)
+        if _k in [g[0] for g in ST_GEAR]:
+            assert _grows[_k][1] == _u, "SkyyGear %s: %s unit %r, the page says %r" % (_gear_ver, _k, _grows[_k][1], _u)
+    print("stats page: %d gear stats checked against SkyyGear %s (LIVE rows, units)" % (len(ST_GEAR) + len(ST_ELEM) + len(ST_RAW), _gear_ver))
+else:
+    print("WARNING stats page: no SET SkyyGear script found - the gear stat list was not cross-checked")
+
+
+def stats_page():
+    """(shell, rows, tabs, foot): the Stats page's markup. The fixed parts are in the shell (one Java block); the tab buttons, the
+    stat rows and the footer are appended by StatsPage.build at run time from the markups returned here (J() ids / looks)."""
+    J = SUI.J
+    sh = SUI.page_shell("SkyyStatF", ST_W, ST_H, "Your Stats", body_id="SkyyStat")
+    ap, body, IW = sh.appends, sh.body, sh.inner_w
+    used = []
+    used.append(ap.add(body, SUI.label("SkyyStatHead", "", "heading", h=30, size=20, wrap=False)))
+    used.append(ap.add(body, SUI.label("SkyyStatSub", "", "caption", h=24, size=ST_SRC_FS)))
+    used.append(ap.add(body, SUI.group("SkyyStatTabs", "Left", h=SUI.BTN_H, anchor={"top": 8, "bottom": 8})))
+    well_pad = SUI.WELL_PAD
+    rows_h = ST_ROWS * (ST_ROW_H + ST_ROW_GAP)
+    used.append(ap.add(body, SUI.panel("SkyyStatList", "well", h=rows_h + 2 * well_pad)))
+    used.append(ap.add(body, SUI.label("SkyyStatNote", "", "caption", h=26, size=ST_SRC_FS, anchor={"top": 6})))
+    used.append(ap.add(body, SUI.label("SkyyStatMsg", "", "bold", h=26, size=16, col="info", align="Center")))
+    used.append(ap.add(body, SUI.separator("content", anchor={"top": SUI.SEP_MARGIN, "bottom": SUI.SEP_MARGIN})))
+    used.append(ap.add(body, SUI.group("SkyyStatFoot", "Left", h=SUI.BTN_H)))
+    left = sh.fit(used)
+    assert left >= 0, "stats page parts do not fit"
+    # tabs: equal widths, 5 px apart (the vanilla tab rule); the active one Primary
+    tab_w = (IW - (len(ST_TABS) - 1) * SUI.TAB_GAP) // len(ST_TABS)
+    tabs = []
+    for i, name in enumerate(ST_TABS):
+        anc = {"right": SUI.TAB_GAP} if i < len(ST_TABS) - 1 else None
+        tabs.append(SUI.choose(J("this.tab == %d" % i), SUI.button("SkyyStatTab%d" % i, name, "primary", w=tab_w, anchor=anc),
+                               SUI.button("SkyyStatTab%d" % i, name, "secondary", w=tab_w, anchor=anc)))
+    # one stat row: name | total (right-aligned) | gap | where it comes from
+    row_w = IW - 2 * well_pad
+    src_w = row_w - ST_NAME_W - ST_VAL_W - ST_MID_W
+    rid = J("i", "0")
+    rows = [("SkyyStatList", SUI.group("SkyyStatR" + rid, "Left", h=ST_ROW_H, anchor={"bottom": ST_ROW_GAP})),
+            ("SkyyStatR" + rid, SUI.label("SkyyStatN" + rid, "", "rowName", w=ST_NAME_W, h=ST_ROW_H, size=ST_NAME_FS, anchor={"left": 8})),
+            ("SkyyStatR" + rid, SUI.label("SkyyStatV" + rid, "", "rowName", w=ST_VAL_W - 8, h=ST_ROW_H, size=ST_VAL_FS, align="End")),
+            ("SkyyStatR" + rid, SUI.spacer(w=ST_MID_W, h=ST_ROW_H)),
+            ("SkyyStatR" + rid, SUI.label("SkyyStatS" + rid, "", "rowSub", w=src_w, h=ST_ROW_H, size=ST_SRC_FS))]
+    # the footer: < SkyWynn Menu, Refresh, Change Profile (or a spacer of its width), a filler, Close - filled exactly
+    g = ST_FOOT_GAP
+    fill = IW - (ST_FOOT_MENU_W + g + SUI.BTN_MIN_W + g + ST_FOOT_PROF_W) - SUI.BTN_MIN_W
+    assert fill >= 0, "the stats footer is wider than the page"
+    foot = {
+        "menu": SUI.button("SkyyStatMenu", "< SkyWynn Menu", "secondary", w=ST_FOOT_MENU_W, anchor={"right": g}),
+        "refresh": SUI.button("SkyyStatRefresh", "Refresh", "secondary", anchor={"right": g}),
+        "profile": SUI.button("SkyyStatProfile", "Change Profile", "primary", w=ST_FOOT_PROF_W),
+        "noprofile": SUI.spacer(w=ST_FOOT_PROF_W, h=SUI.BTN_H),
+        "fill": SUI.spacer(w=fill, h=SUI.BTN_H),
+        "close": SUI.button("SkyyStatClose", "Close", "secondary", sound="cancel"),
+    }
+    # every look this page can show, checked as one page (ids, parents, markup rules, proven properties only)
+    chk = SUI.Appends(list(ap))
+    for t in tabs:
+        chk.append(("SkyyStatTabs", t))
+    chk.extend(rows)
+    for k in ("menu", "refresh", "profile", "fill", "close"):
+        chk.append(("SkyyStatFoot", foot[k]))
+    chk.check("SkyyStat")
+    SUI.assert_proven(chk, what="stats page")
+    SUI.assert_proven([foot["noprofile"]], what="stats page footer spacer")
+    assert sum(SUI.outer_size(foot[k])[0] for k in ("menu", "refresh", "profile", "fill", "close")) == IW, "footer not filled exactly"
+    assert ST_H - SUI.DECO_TOP - SUI.DECO_BOTTOM <= 1080, "the stats page with its ornaments must fit a 1080 px screen"
+    # every fixed text fits its label (the client's own font tables)
+    for _t in ST_NOTES + [ST_SUB]:
+        assert SUI.text_width(_t, ST_SRC_FS) <= IW, "stats note too wide: " + _t
+    # the widest names / totals a row shows fit their columns (the client's font)
+    for _t in ("Charged Attack Damage", "Collection Recipes", "Other class skills"):
+        assert SUI.text_width(_t, ST_NAME_FS, bold=True) <= ST_NAME_W - 8, "stat name too wide: " + _t
+    for _t in ("1,000,000,000%", "999,999,999,999", "Level 100", "+1,000,000,000%"):
+        assert SUI.text_width(_t, ST_VAL_FS, bold=True) <= ST_VAL_W - 8, "stat total too wide: " + _t
+    return sh, rows, tabs, foot, src_w, left
+
+
+ST_ROWS = 14
+ST_SH, ST_ROW_MK, ST_TAB_MK, ST_FOOT_MK, ST_SRC_W, ST_LEFT = stats_page()
+# a stat row's longest source text (the Java clips name + total + source to ST_LINE_MAX characters) fits its column
+for _t in ("Gear +40, Accessories +12, Overall +7, Skills +18, Trees +5, base 9",
+           "Accessories +4, Overall +2.8, Class +10, Base Mana +10, Skills +2.4, base 9",
+           "W" * 8 + " level 100 +50%, Skill trees +50% (max 100%)",
+           "some blocks only: Foraging level 100 +50%, Skill trees +50% (max 100%)",
+           "Swordsmanship 100, Assassination 100, Zen 100, Sorcery 100",
+           "Swordsmanship level 100 +20%, Class balance +12.5%"):   # 0.3.13: the Class Weapon Damage row with skill:dmg
+    assert SUI.text_width(_t, ST_SRC_FS) <= ST_SRC_W, "source column too narrow for: " + _t
+ST_SHELL_JAVA = ST_SH.java("b")
+ST_TABS_JAVA = "\n".join(SUI.java_append(p, mk) for p, mk in [("SkyyStatTabs", t) for t in ST_TAB_MK])
+ST_ROW_JAVA = "\n".join(SUI.java_append(p, mk) for p, mk in ST_ROW_MK)
+ST_FOOT_JAVA = dict((k, SUI.java_append("SkyyStatFoot", mk)) for k, mk in ST_FOOT_MK.items())
+ST_STATIC = [SUI.render(mk) for _p, mk in ST_SH.appends if not SUI.has_j(mk)]
+print("stats page: %d x %d, %d rows per tab, %d px left in the body, kit %s" % (ST_W, ST_H, ST_ROWS, ST_LEFT, SUI_KIT_ID))
+
+JP  = "com.hypixel.hytale.server.core.plugin.JavaPlugin"
+JPI = "com.hypixel.hytale.server.core.plugin.JavaPluginInit"
+T = {  # @TOKEN@ -> class name, substituted into every Java block below
+    "PR":   "com.hypixel.hytale.server.core.universe.PlayerRef",
+    "REF":  "com.hypixel.hytale.component.Ref",
+    "ST":   "com.hypixel.hytale.component.Store",
+    "UNI":  "com.hypixel.hytale.server.core.universe.Universe",
+    "WLD":  "com.hypixel.hytale.server.core.universe.world.World",
+    "APC":  "com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand",
+    "CTX":  "com.hypixel.hytale.server.core.command.system.CommandContext",
+    "MSG":  "com.hypixel.hytale.server.core.Message",
+    "HSV":  "com.hypixel.hytale.server.core.HytaleServer",
+    "LOG":  "com.hypixel.hytale.logger.HytaleLogger",
+    "PAGE": "com.hypixel.hytale.server.core.entity.entities.player.pages.CustomUIPage",
+    "PGM":  "com.hypixel.hytale.server.core.entity.entities.player.pages.PageManager",
+    "LIFE": "com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime",
+    "PGE":  "com.hypixel.hytale.protocol.packets.interface_.Page",
+    "UCB":  "com.hypixel.hytale.server.core.ui.builder.UICommandBuilder",
+    "UEB":  "com.hypixel.hytale.server.core.ui.builder.UIEventBuilder",
+    "EVD":  "com.hypixel.hytale.server.core.ui.builder.EventData",
+    "BT":   "com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType",
+    "PLA":  "com.hypixel.hytale.server.core.entity.entities.Player",
+    "INV":  "com.hypixel.hytale.server.core.inventory.Inventory",
+    "IC":   "com.hypixel.hytale.server.core.inventory.container.ItemContainer",
+    "IS":   "com.hypixel.hytale.server.core.inventory.ItemStack",
+    "IGS":  "com.hypixel.hytale.server.core.ui.ItemGridSlot",
+    "OCU":  "com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.OpenCustomUIInteraction",
+    "CMGR": "com.hypixel.hytale.server.core.command.system.CommandManager",
+    "ACM":  "com.hypixel.hytale.server.core.command.system.AbstractCommand",
+    "PLM":  "com.hypixel.hytale.server.core.plugin.PluginManager",
+    "PLB":  "com.hypixel.hytale.server.core.plugin.PluginBase",
+    "PMF":  "com.hypixel.hytale.common.plugin.PluginManifest",
+    "TPP":  "com.hypixel.hytale.builtin.teleport.TeleportPlugin",
+    "WRP":  "com.hypixel.hytale.builtin.teleport.Warp",
+    "TRF":  "com.hypixel.hytale.math.vector.Transform",
+    "V3D":  "org.joml.Vector3d",
+    "R3F":  "com.hypixel.hytale.math.vector.Rotation3f",
+    "TP":   "com.hypixel.hytale.server.core.modules.entity.teleport.Teleport",
+    "TPH":  "com.hypixel.hytale.builtin.teleport.components.TeleportHistory",
+    "TC":   "com.hypixel.hytale.server.core.modules.entity.component.TransformComponent",
+    "HR":   "com.hypixel.hytale.server.core.modules.entity.component.HeadRotation",
+    "PRE":  "com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent",
+    "PDE":  "com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent",
+    "PKG":  "com.skyy.menu",
+    "MD":   "com.skyy.menu.MenuData",
+    "MU":   "com.skyy.menu.MenuUtil",
+    "RA":   "com.hypixel.hytale.server.core.command.system.arguments.system.RequiredArg",
+    "ATY":  "com.hypixel.hytale.server.core.command.system.arguments.types.ArgTypes",
+    # 0.3.3: settings visibility by permission - PlayerRef.hasPermission(node) IS PermissionsModule.get().hasPermission(uuid, node)
+    # (HytaleServer.jar bytecode), so the UUID form is the same check the menu uses for Server Setup
+    "PERM": "com.hypixel.hytale.server.core.permissions.PermissionsModule",
+    # 0.3.6: the stuck-page fix - the page event the engine itself handles (Dismiss / Data), the world of a store, the world-join event
+    "EST":  "com.hypixel.hytale.server.core.universe.world.storage.EntityStore",
+    "CPE":  "com.hypixel.hytale.protocol.packets.interface_.CustomPageEvent",
+    "CPT":  "com.hypixel.hytale.protocol.packets.interface_.CustomPageEventType",
+    "ATW":  "com.hypixel.hytale.server.core.event.events.player.AddPlayerToWorldEvent",
+    "HLD":  "com.hypixel.hytale.component.Holder",
+    # 0.3.10: the Stats page reads the player's Health / Mana / Stamina (max + the MAX modifiers by key) on the world thread
+    "ESM":  "com.hypixel.hytale.server.core.modules.entitystats.EntityStatMap",
+    "ESV":  "com.hypixel.hytale.server.core.modules.entitystats.EntityStatValue",
+    "DST":  "com.hypixel.hytale.server.core.modules.entitystats.asset.DefaultEntityStatTypes",
+    "SMO":  "com.hypixel.hytale.server.core.modules.entitystats.modifier.StaticModifier",
+    "MTG":  "com.hypixel.hytale.server.core.modules.entitystats.modifier.Modifier$ModifierTarget",
+    "CAL":  "com.hypixel.hytale.server.core.modules.entitystats.modifier.StaticModifier$CalculationType",
+}
+def jv(src):
+    for k, v in T.items():
+        src = src.replace("@" + k + "@", v)
+    assert "@" not in src, "unreplaced token in: " + src[:200]
+    return src
+
+# ================= javassist =================
+J = B.start()
+pool, CtField, CtNewMethod, CtNewConstructor = J["pool"], J["CtField"], J["CtNewMethod"], J["CtNewConstructor"]
+OUT = B.class_out(HERE)
+
+for c, m in ((T["PLA"], "getInventory"), (T["PLA"], "getPageManager"), (T["PLA"], "getComponentType"),
+             (T["PGM"], "openCustomPage"), (T["PGM"], "setPage"), (T["PGM"], "getCustomPage"), (T["PGE"], "None"),
+             (T["INV"], "getStorage"), (T["INV"], "getHotbar"), (T["INV"], "getBackpack"), (T["INV"], "getUtility"), (T["INV"], "getTools"),
+             (T["IC"], "getItemStack"), (T["IC"], "addItemStack"), (T["IC"], "addItemStackToSlot"), (T["IC"], "getCapacity"),
+             (T["IS"], "getItemId"), (T["IS"], "getQuantity"), (T["IS"], "isEmpty"),
+             (T["IGS"], "setName"), (T["IGS"], "setDescription"), (T["IGS"], "setActivatable"), (T["IGS"], "setItemIncompatible"),
+             (T["IGS"], "setSkipItemQualityBackground"),
+             (T["PR"], "getUuid"), (T["PR"], "getUsername"), (T["PR"], "sendMessage"), (T["PR"], "getWorldUuid"), (T["PR"], "getReference"),
+             (T["PR"], "isValid"), (T["PR"], "hasPermission"), (T["REF"], "isValid"), (T["REF"], "getStore"),
+             (T["ST"], "getComponent"), (T["ST"], "addComponent"), (T["ST"], "ensureAndGetComponent"),
+             (T["PAGE"], "rebuild"), (T["PAGE"], "build"), (T["PAGE"], "handleDataEvent"),
+             (T["UCB"], "appendInline"), (T["UCB"], "set"), (T["UEB"], "addEventBinding"), (T["EVD"], "of"),
+             (T["BT"], "Activating"), (T["BT"], "SlotClicking"), (T["BT"], "Dismissing"), (T["ACM"], "getSubCommand"), (T["PAGE"], "sendUpdate"),
+             (T["ACM"], "getName"), (T["ACM"], "getAliases"), (T["CMGR"], "getCommandRegistration"), (T["LIFE"], "CanDismiss"), (T["OCU"], "registerSimple"),
+             (T["CMGR"], "get"), (T["CMGR"], "resolveCommand"), (T["CMGR"], "handleCommand"),
+             (T["ACM"], "hasPermission"), (T["ACM"], "getPermission"), (T["ACM"], "addAliases"), (T["ACM"], "setPermissionGroups"),
+             (T["PLM"], "get"), (T["PLM"], "getPlugins"), (T["PLB"], "getManifest"), (T["PLB"], "isEnabled"),
+             (T["PLB"], "getDataDirectory"), (T["PLB"], "getCommandRegistry"), (T["PLB"], "getEventRegistry"), (T["PLB"], "getLogger"),
+             (T["PLB"], "shutdown"), (T["PMF"], "getName"), (T["PMF"], "getVersion"),
+             (T["TPP"], "get"), (T["TPP"], "getWarps"), (T["TPP"], "isWarpsLoaded"),
+             (T["WRP"], "getId"), (T["WRP"], "getWorld"), (T["WRP"], "getTransform"), (T["WRP"], "toTeleport"),
+             (T["TRF"], "getPosition"), (T["TP"], "createForPlayer"), (T["TP"], "getComponentType"),
+             (T["TPH"], "getComponentType"), (T["TPH"], "append"), (T["TC"], "getComponentType"), (T["TC"], "getPosition"),
+             (T["HR"], "getComponentType"), (T["HR"], "getRotation"),
+             (T["UNI"], "get"), (T["UNI"], "getWorld"), (T["UNI"], "getDefaultWorld"), (T["UNI"], "getPlayers"), (T["UNI"], "getPlayer"),
+             (T["WLD"], "execute"), (T["WLD"], "getWorldConfig"), (T["WLD"], "getName"),
+             ("com.hypixel.hytale.server.core.universe.world.WorldConfig", "getSpawnProvider"),
+             ("com.hypixel.hytale.server.core.universe.world.spawn.ISpawnProvider", "getSpawnPoint"),
+             (T["PRE"], "getPlayerRef"), (T["PDE"], "getPlayerRef"), (T["HSV"], "SCHEDULED_EXECUTOR"), (T["CTX"], "provided"),
+             (T["BT"], "Validating"), (T["INV"], "getItemInHand"), (T["EVD"], "append"), (T["ACM"], "requirePermission"),
+             (T["ACM"], "addUsageVariant"), (T["ACM"], "withRequiredArg"), (T["ATY"], "STRING"), (T["CTX"], "get"),
+             (T["PERM"], "get"), (T["PERM"], "hasPermission")):
+    B.probe(pool, c, m)
+# 0.3.6: every engine member the stuck-page fix uses (all public; rebuild stays on 'this' inside MenuPage)
+for c, m in ((T["PGM"], "handleEvent"), (T["PGM"], "clearCustomPageAcknowledgements"), (T["PAGE"], "onDismiss"), (T["CPE"], "type"),
+             (T["CPE"], "data"), (T["CPT"], "Dismiss"), (T["CPT"], "Data"), (T["EST"], "getWorld"), (T["ST"], "getExternalData"),
+             (T["ATW"], "getHolder"), (T["ATW"], "getWorld"), (T["HLD"], "getComponent"), (T["PR"], "getComponentType")):
+    B.probe(pool, c, m)
+# 0.3.10: every engine member the Stats page uses
+for c, m in ((T["ESM"], "getComponentType"), (T["ESM"], "get"), (T["ESV"], "getMax"), (T["ESV"], "getModifiers"),
+             (T["DST"], "getHealth"), (T["DST"], "getMana"), (T["DST"], "getStamina"), (T["SMO"], "getAmount"),
+             (T["SMO"], "getCalculationType"), (T["SMO"], "getTarget"), (T["MTG"], "MAX"), (T["CAL"], "ADDITIVE")):
+    B.probe(pool, c, m)
+
+PKG = T["PKG"]
+# 0.2: every class goes through mk(), and the writeFile list below is checked against MADE (Settings-Spec 1.4: a class left out of
+# that list is silently dead code - SkyySacks' self-test GrantTask). The 0.1.3 tooltip-file save task is gone (the switch lives in the registry).
+MADE = []
+def mk(name, sup=None):
+    c = pool.makeClass(PKG + "." + name, pool.get(sup)) if sup else pool.makeClass(PKG + "." + name)
+    MADE.append(c)
+    return c
+dat  = mk("MenuData")
+utl  = mk("MenuUtil")
+giv  = mk("Given")
+mcfg = mk("MenuCfg")
+sreg = mk("SetReg")
+sst  = mk("SetStore")
+ssv  = mk("SetSaveTask")
+tip  = mk("Tips")
+sld  = mk("SetLoadTask")
+sgf  = mk("SetGetFn")
+srf  = mk("SetRegFn")
+ssf  = mk("SetSetFn")
+sdc  = mk("SetDefCfg")
+page = mk("MenuPage", T["PAGE"])
+spg  = mk("SettingsPage", T["PAGE"])
+apg  = mk("AdminPage", T["PAGE"])
+ast  = mk("AdmSaveTask")
+ref_ = mk("RefreshTask")
+clo_ = mk("CloseTask")
+guard = mk("PageGuard")     # 0.3.6: the world-join page guard (AddPlayerToWorldEvent) + forget / joins helpers
+stale = mk("StaleTask")     # 0.3.6: forgets a page that has its own onDismiss on the new world's thread
+mwat = mk("MenuWatch")      # 0.3.6: the menu page's safety net (BankWatch pattern)
+fac  = mk("MenuPageFactory")
+cmd  = mk("MenuCmd", T["APC"])
+scmd = mk("SettingsCmd", T["APC"])
+acmv = mk("AdminModCmd", T["APC"])
+acmd = mk("AdminCmd", T["APC"])
+grt  = mk("GrantTask")
+rdy  = mk("MenuReady")
+seen = mk("SeenTick")
+quit_ = mk("MenuQuit")
+gtk  = mk("GivenTick")      # 0.3.4: the 2 s profile watch (a new profile gets its menu item without a world switch)
+scl  = mk("StatsCalc")      # 0.3.10: the Stats page's numbers (bridge reads + the EntityStatMap of the player)
+stp  = mk("StatsPage", T["PAGE"])
+sta  = mk("StatsTask")      # 0.3.10: the one answer after Change Profile when /profiles did not open its page
+stc  = mk("StatsCmd", T["APC"])
+pl   = mk("SkyyMenuPlugin", JP)
+
+def F(cls, src):
+    cls.addField(CtField.make(jv(src), cls))
+def M(cls, src):
+    cls.addMethod(CtNewMethod.make(jv(src), cls))
+def C(cls, src):
+    cls.addConstructor(CtNewConstructor.make(jv(src), cls))
+
+# ================= MenuData: everything from the MENU DATA section =================
+for name, val in (("ITEM_ID", jstr(MENU_ITEM_ID)), ("PAGE_ID", jstr(PAGE_ID)), ("ICON_BACK", jstr(ICON_BACK)), ("ICON_PREV", jstr(ICON_PREV)),
+                  ("ICON_NEXT", jstr(ICON_NEXT)), ("ICON_CLOSE", jstr(ICON_CLOSE)), ("ICON_WARP", jstr(ICON_WARP)),
+                  ("ICON_PLAYER", jstr(ICON_PLAYER)), ("FILLER", jstr(FILLER_ICON)), ("FOOT_COLOR", jstr(FOOT_COLOR)),
+                  ("DIM_COLOR", jstr(DIM_COLOR)), ("Q", jstr('"'))):
+    F(dat, "public static final String %s = %s;" % (name, val))
+F(dat, "public static final boolean USE_MARKUP = %s;" % ("true" if USE_MARKUP else "false"))
+F(dat, "public static final String[] V_KEY = %s;" % jarr([v[0] for v in VIEWS]))
+F(dat, "public static final String[] V_TITLE = %s;" % jarr([txt(v[1]) for v in VIEWS]))
+F(dat, "public static final String[] V_INTRO = %s;" % jarr([lines_of(v[2]) for v in VIEWS]))
+F(dat, "public static final String[] E_VIEW = %s;" % jarr(E_VIEW))
+F(dat, "public static final int[] E_SLOT = %s;" % jints(E_SLOT))
+F(dat, "public static final String[] E_ICON = %s;" % jarr(E_ICON))
+F(dat, "public static final String[] E_NAME = %s;" % jarr(E_NAME))
+F(dat, "public static final String[] E_BODY = %s;" % jarr(E_BODY))
+F(dat, "public static final String[] E_FOOT = %s;" % jarr(E_FOOT))
+F(dat, "public static final String[] E_ACT = %s;" % jarr(E_ACT))
+F(dat, "public static final int[] PA_SLOT = %s;" % jints([a[0] for a in PA]))
+F(dat, "public static final String[] PA_ICON = %s;" % jarr([a[1] for a in PA]))
+F(dat, "public static final String[] PA_NAME = %s;" % jarr([txt(a[2]) for a in PA]))
+F(dat, "public static final String[] PA_BODY = %s;" % jarr([lines_of(a[3]) for a in PA]))
+F(dat, "public static final String[] PA_FOOT = %s;" % jarr([txt(a[4]) for a in PA]))
+F(dat, "public static final String[] PA_CMD = %s;" % jarr([a[5] for a in PA]))
+F(dat, "public static final boolean[] PA_CLOSE = %s;" % jbools([a[6] for a in PA]))
+F(dat, "public static final int[] WARP_SLOTS = %s;" % jints(WARP_SLOTS))
+F(dat, "public static final int[] PLAYER_SLOTS = %s;" % jints(PLAYER_SLOTS))
+F(dat, "public static final int[] MOD_SLOTS = %s;" % jints(MOD_SLOTS))
+F(dat, "public static final int NO_WARPS_SLOT = %d;" % NO_WARPS_SLOT)
+F(dat, "public static final int NO_PLAYERS_SLOT = %d;" % NO_PLAYERS_SLOT)
+F(dat, "public static final int PLAYER_HEAD_SLOT = %d;" % PLAYER_HEAD_SLOT)
+F(dat, "public static final String[] MOD_NAME = %s;" % jarr([m["mod"] for m in MODS]))
+F(dat, "public static final String[] MOD_VER = %s;" % jarr([m["version"] for m in MODS]))
+F(dat, "public static final String[] MOD_ICON = %s;" % jarr([m["icon"] for m in MODS]))
+F(dat, "public static final String[] MOD_CHECK = %s;" % jarr([m["check"] for m in MODS]))
+F(dat, "public static final String[] MOD_BODY = %s;" % jarr(MOD_BODY))
+for k, v in UI.items():
+    F(dat, "public static final String UI_%s = %s;" % (k, jstr(v)))
+F(dat, "public static final String[] UI_INFO = %s;" % jarr(UI_INFO))
+F(dat, "public static final String[] ALIASES = %s;" % jarr(ALIASES))
+F(dat, "public static final String[] SUB_CMD = %s;" % jarr([n[0] for n in NEEDS_SUB]))
+F(dat, "public static final String[] SUB_SUB = %s;" % jarr([n[1] for n in NEEDS_SUB]))
+F(dat, "public static final String[] SUB_NEED = %s;" % jarr([txt(n[2]) for n in NEEDS_SUB]))
+F(dat, "public static final String[] MOD_OLD_NEED = %s;" % jarr(MOD_OLD_NEED))
+F(dat, "public static final String[] MOD_OLD_BODY = %s;" % jarr(MOD_OLD_BODY))
+F(dat, "public static final int[] PAL_SLOT = %s;" % jints([a[0] for a in PA_LEGACY]))
+F(dat, "public static final String[] PAL_NEED = %s;" % jarr([a[1] for a in PA_LEGACY]))
+F(dat, "public static final String[] PAL_NAME = %s;" % jarr([txt(a[2]) for a in PA_LEGACY]))
+F(dat, "public static final String[] PAL_BODY = %s;" % jarr([lines_of(a[3]) for a in PA_LEGACY]))
+F(dat, "public static final String[] PAL_FOOT = %s;" % jarr([txt(a[4]) for a in PA_LEGACY]))
+# 0.2 settings data + page strings
+F(dat, "public static final String[] SET_CAT_ID = %s;" % jarr([t[0] for t in SET_TABS]))
+F(dat, "public static final String[] SET_TAB = %s;" % jarr([t[1] for t in SET_TABS]))
+F(dat, "public static final String[] SET_HEAD = %s;" % jarr([t[2] for t in SET_TABS]))
+F(dat, "public static final String[] SET_ALWAYS = %s;" % jarr([t[3] for t in SET_TABS]))
+F(dat, "public static final String[] SET_ORDER = %s;" % jarr(SET_ORDER))
+F(dat, "public static final int SET_ROWS = %d;" % SET_ROWS)
+F(dat, "public static final String SET_TEMPLATE = %s;" % jstr(SET_TEMPLATE))
+for _n, _t in SET_TXT.items():
+    F(dat, "public static final String SET_TXT_%s = %s;" % (_n, jstr(_t)))
+F(dat, "public static final String TIPS_KEY = %s;" % jstr(TIPS_KEY))
+F(dat, "public static final String[] OWN_KEY = %s;" % jarr([k[0] for k in OWN_SETTINGS]))
+F(dat, "public static final String[] OWN_CAT = %s;" % jarr([k[1] for k in OWN_SETTINGS]))
+F(dat, "public static final String[] OWN_LABEL = %s;" % jarr([k[2] for k in OWN_SETTINGS]))
+F(dat, "public static final String[] OWN_HELP = %s;" % jarr([k[3] for k in OWN_SETTINGS]))
+F(dat, "public static final boolean[] OWN_DEF = %s;" % jbools([True for k in OWN_SETTINGS]))
+for _n, _t in UI_S.items():
+    F(dat, "public static final String UI_%s = %s;" % (_n, jstr(_t)))
+for _n, _v in UI_SARR.items():
+    F(dat, "public static final String[] UI_%s = %s;" % (_n, jarr(_v)))
+# 0.3 Server Setup data + page strings
+F(dat, "public static final String ADMIN_NODE = %s;" % jstr(ADMIN_NODE))
+F(dat, "public static final String ADM_CONTRACT = %s;" % jstr(ADM_CONTRACT))
+for _n, _v in (("ADM_ROWS", ADM_ROWS), ("ADM_LROWS", ADM_LROWS), ("ADM_GROWS", ADM_GROWS), ("ADM_HROWS", ADM_HROWS), ("ADM_INFOLINES", ADM_INFOLINES),
+               ("ADM_MSGLINES", ADM_MSGLINES), ("ADM_PLINES", ADM_PLINES), ("ADM_FROWS", ADM_FROWS), ("ADM_INNER", A_INNER)):
+    F(dat, "public static final int %s = %d;" % (_n, _v))
+for _n, _t in ADM_TXT.items():
+    F(dat, "public static final String ADM_%s = %s;" % (_n, jstr(_t)))
+for _n, _t in ADM_STYLE.items():
+    F(dat, "public static final String ADM_%s = %s;" % (_n, jstr(_t)))
+F(dat, "public static final String[] MOD_CFG = %s;" % jarr([m["config"] for m in MODS]))
+F(dat, "public static final String[] MOD_RELOAD = %s;" % jarr([m["reload"] for m in MODS]))
+F(dat, "public static final String[] MOD_NOTE = %s;" % jarr([m["note"] for m in MODS]))
+F(dat, "public static final String[] MOD_ADMIN = %s;" % jarr(MOD_ADMIN))
+F(dat, "public static final String[] MOD_FLINE = %s;" % jarr(MOD_FLINE))
+# 0.3.1: which config kit revision this jar carries ("<kit> <first 12 hex of the skyycfg.py git blob>"), shown in the ready line
+F(dat, "public static final String CFG_KIT = %s;" % jstr(KIT_ID))
+# 0.3.1: admin-only Mods view lines + the Server Setup page each mod has from which version (fallback texts)
+F(dat, "public static final String MOD_AHEAD = %s;" % jstr(MOD_AHEAD))
+F(dat, "public static final String[] MOD_AONLY = %s;" % jarr(MOD_AONLY))
+F(dat, "public static final String[] MOD_SINCE = %s;" % jarr(MOD_SINCE))
+F(dat, "public static final String[] MOD_STITLE = %s;" % jarr(MOD_STITLE))
+F(dat, "public static final String[] MOD_SWHAT = %s;" % jarr(MOD_SWHAT))
+F(dat, "public static final String MENU_CFG_TEXT = %s;" % jstr(MENU_CFG_TEXT))
+for _n, _t in UI_A.items():
+    F(dat, "public static final String UI_%s = %s;" % (_n, jstr(_t)))
+for _n, _v in UI_AARR.items():
+    F(dat, "public static final String[] UI_%s = %s;" % (_n, jarr(_v)))
+# tooltip = first line, blank line, detail lines, blank line, colored footer (ItemGridSlot.Description takes item-tooltip markup:
+# TheArmoryMod wraps its slot descriptions in <color is=...>, <b>, <i>; vanilla item descriptions use the same tags)
+M(dat, r"""
+public static String tooltip(String body, String foot, boolean dim) {
+  StringBuilder sb = new StringBuilder();
+  String b0 = body == null ? "" : body;
+  int nl = b0.indexOf('\n');
+  if (nl >= 0) sb.append(b0.substring(0, nl)).append("\n\n").append(b0.substring(nl + 1));
+  else sb.append(b0);
+  if (foot != null && foot.length() > 0) {
+    sb.append("\n\n");
+    if (USE_MARKUP) sb.append("<color is=").append(Q).append(dim ? DIM_COLOR : FOOT_COLOR).append(Q).append(">").append(foot).append("</color>");
+    else sb.append(foot);
+  }
+  return sb.toString();
+}""")
+M(dat, r"""
+public static int viewIndex(String v) {
+  for (int i = 0; i < V_KEY.length; i++) if (V_KEY[i].equals(v)) return i;
+  return 0;
+}""")
+
+# ================= MenuUtil: logging, bridge, text, inventory, commands, plugins =================
+F(utl, "public static @LOG@ LOG;")
+M(utl, r"""
+public static java.util.Map bridge() {
+  synchronized (java.lang.System.class) {
+    Object o = System.getProperties().get("skyy.bridge");
+    if (o == null) { o = new java.util.concurrent.ConcurrentHashMap(); System.getProperties().put("skyy.bridge", o); }
+    return (java.util.Map) o;
+  }
+}""")
+M(utl, r"""
+public static void warn(String msg) {
+  try { if (LOG != null) LOG.at(java.util.logging.Level.WARNING).log("[SkyyMenu] " + msg); } catch (Throwable t) { }
+}""")
+M(utl, r"""
+public static void info(String msg) {
+  try { if (LOG != null) LOG.at(java.util.logging.Level.INFO).log("[SkyyMenu] " + msg); } catch (Throwable t) { }
+}""")
+# 0.2 (Settings-Spec 1.4): SkyyProfiles' ProfCfg.atomicWrite verbatim - tmp file + fsync + atomic rename (a plain replace only where the
+# file system cannot rename atomically); Windows sharing violations are retried 5 x 20 ms before the write counts as failed.
+M(utl, r"""
+public static void atomicWrite(java.nio.file.Path f, byte[] data) throws java.io.IOException {
+  java.nio.file.Files.createDirectories(f.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+  java.nio.file.Path tmp = f.resolveSibling(f.getFileName().toString() + ".tmp");
+  java.io.FileOutputStream out = new java.io.FileOutputStream(tmp.toFile());
+  try {
+    out.write(data);
+    out.flush();
+    out.getFD().sync();
+  } finally { out.close(); }
+  java.io.IOException last = null;
+  for (int i = 0; i < 5; i++) {
+    try {
+      java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      return;
+    } catch (java.nio.file.AtomicMoveNotSupportedException e) {
+      java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      return;
+    } catch (java.nio.file.FileSystemException e) {
+      last = e;
+    }
+    try { Thread.sleep(20L); } catch (InterruptedException ie) { }
+  }
+  throw last;
+}""")
+# dynamic text (player names, warp names, world names) -> one safe line, no markup
+M(utl, r"""
+public static String safe(String t) {
+  if (t == null) return "";
+  String s = t.replace('"', '\'').replace('\\', '/').replace('{', '(').replace('}', ')').replace(';', ',')
+              .replace('<', '[').replace('>', ']').replace('\n', ' ').replace('\r', ' ');
+  if (s.length() > 120) s = s.substring(0, 120);
+  return s;
+}""")
+# a name that may be pasted into a command line: letters, digits and _ only
+M(utl, r"""
+public static String cleanName(String n) {
+  if (n == null) return "";
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < n.length() && i < 32; i++) {
+    char c = n.charAt(i);
+    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_') sb.append(c);
+  }
+  return sb.toString();
+}""")
+M(utl, r"""
+public static String fmt(long v) {
+  String s = String.valueOf(v < 0L ? -v : v);
+  StringBuilder sb = new StringBuilder();
+  int n = s.length();
+  for (int i = 0; i < n; i++) {
+    if (i > 0 && (n - i) % 3 == 0) sb.append(',');
+    sb.append(s.charAt(i));
+  }
+  return (v < 0L ? "-" : "") + sb.toString();
+}""")
+# SlotClicking payload: {"a":"mslot","SlotIndex":3} (value may be quoted) - same helper as SkyyHud EditorPage.jsonInt
+M(utl, r"""
+public static int jsonInt(String data, String key) {
+  int p = data.indexOf("\"" + key + "\"");
+  if (p < 0) return -1;
+  int c = data.indexOf(':', p);
+  if (c < 0) return -1;
+  int i = c + 1;
+  while (i < data.length() && (data.charAt(i) == ' ' || data.charAt(i) == '"')) i++;
+  int j = i;
+  while (j < data.length() && (Character.isDigit(data.charAt(j)) || data.charAt(j) == '-')) j++;
+  if (j == i) return -1;
+  try { return Integer.parseInt(data.substring(i, j)); } catch (Throwable t) { return -1; }
+}""")
+# ---- bridge reads (all optional: -1 / null when the mod is not loaded)
+M(utl, r"""
+public static long purse(java.util.UUID u) {
+  try {
+    Object f = bridge().get("coins:fn:get");
+    if (f instanceof java.util.function.Function) {
+      Object r = ((java.util.function.Function) f).apply(u);
+      if (r instanceof Number) return ((Number) r).longValue();
+    }
+    Object v = bridge().get("coins:" + u.toString());
+    if (v instanceof Number) return ((Number) v).longValue();
+  } catch (Throwable t) { }
+  return -1L;
+}""")
+M(utl, r"""
+public static long bank(java.util.UUID u) {
+  try {
+    Object v = bridge().get("bank:" + u.toString());
+    if (v instanceof Number) return ((Number) v).longValue();
+  } catch (Throwable t) { }
+  return -1L;
+}""")
+M(utl, r"""
+public static String skills(java.util.UUID u) {
+  try {
+    Object v = bridge().get("skill:" + u.toString());
+    if (!(v instanceof String)) return null;
+    String[] parts = ((String) v).split(",");
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < parts.length; i++) {
+      String p = parts[i].trim();
+      int c = p.indexOf(':');
+      if (c <= 0) continue;
+      if (sb.length() > 0) sb.append(", ");
+      sb.append(safe(p.substring(0, c))).append(' ').append(safe(p.substring(c + 1)));
+    }
+    return sb.length() == 0 ? null : sb.toString();
+  } catch (Throwable t) { return null; }
+}""")
+M(utl, r"""
+public static int csvCount(Object o) {
+  if (!(o instanceof String)) return 0;
+  String s = ((String) o).trim();
+  if (s.length() == 0) return 0;
+  String[] parts = s.split(",");
+  int n = 0;
+  for (int i = 0; i < parts.length; i++) if (parts[i].trim().length() > 0) n++;
+  return n;
+}""")
+# ---- inventory (world thread only; SkyyBazaar Inv pattern: every add is verified by re-counting)
+# 0.3.4: count() = every container the item can sit in (hotbar, storage, backpack, utility, tools) - "never a second copy" (Skyy)
+M(utl, r"""
+public static int countIn(@IC@ c, String id) {
+  if (c == null || id == null) return 0;
+  int n = 0;
+  short cap = c.getCapacity();
+  for (short s = 0; s < cap; s++) {
+    @IS@ it = c.getItemStack(s);
+    if (it == null || it.isEmpty() || !id.equals(it.getItemId())) continue;
+    n += it.getQuantity();
+  }
+  return n;
+}""")
+M(utl, r"""
+public static int count(@PLA@ p, String id) {
+  @INV@ inv = p == null ? null : p.getInventory();
+  if (inv == null) return 0;
+  return countIn(inv.getStorage(), id) + countIn(inv.getHotbar(), id) + countIn(inv.getBackpack(), id)
+       + countIn(inv.getUtility(), id) + countIn(inv.getTools(), id);
+}""")
+# last hotbar slot if free (Hypixel keeps the menu in slot 9), else any hotbar slot, else storage, else backpack
+M(utl, r"""
+public static boolean giveMenuItem(@PLA@ p) {
+  if (p == null) return false;
+  @INV@ inv = p.getInventory();
+  if (inv == null) return false;
+  String id = @PKG@.MenuData.ITEM_ID;
+  int before = count(p, id);
+  @IC@ hb = inv.getHotbar();
+  if (hb != null) {
+    try {
+      short last = (short) (hb.getCapacity() - 1);
+      if (last >= 0) {
+        @IS@ cur = hb.getItemStack(last);
+        if (cur == null || cur.isEmpty()) hb.addItemStackToSlot(last, new @IS@(id, 1));
+      }
+    } catch (Throwable t) { warn("hotbar slot add failed: " + t); }
+    if (count(p, id) > before) return true;
+    try { hb.addItemStack(new @IS@(id, 1)); } catch (Throwable t) { warn("hotbar add failed: " + t); }
+    if (count(p, id) > before) return true;
+  }
+  @IC@[] rest = new @IC@[] { inv.getStorage(), inv.getBackpack() };
+  for (int i = 0; i < rest.length; i++) {
+    if (rest[i] == null) continue;
+    try { rest[i].addItemStack(new @IS@(id, 1)); } catch (Throwable t) { warn("storage add failed: " + t); }
+    if (count(p, id) > before) return true;
+  }
+  return false;
+}""")
+# ---- commands / plugins
+M(utl, r"""
+public static @ACM@ cmd(String name) {
+  try { return @CMGR@.get().resolveCommand(name.toLowerCase()); } catch (Throwable t) { return null; }
+}""")
+M(utl, r"""
+public static String firstWord(String line) {
+  if (line == null) return null;
+  int sp = line.indexOf(' ');
+  return sp > 0 ? line.substring(0, sp) : line;
+}""")
+# 0.1.3: "island menu" -> null when /island has that subcommand (or /island is missing: the normal "not installed" path) or the check
+# fails (fail open: the command itself answers), else what the server needs ("SkyyIslands 0.5"). getSubCommand lower-cases + resolves aliases.
+M(utl, r"""
+public static String needOf(String line) {
+  if (line == null) return null;
+  String[] w = line.trim().split(" ");
+  if (w.length < 2) return null;
+  for (int i = 0; i < @PKG@.MenuData.SUB_CMD.length; i++) {
+    if (!@PKG@.MenuData.SUB_CMD[i].equals(w[0]) || !@PKG@.MenuData.SUB_SUB[i].equals(w[1])) continue;
+    @ACM@ c = cmd(w[0]);
+    if (c == null) return null;
+    try { if (c.getSubCommand(w[1]) != null) return null; } catch (Throwable t) { return null; }
+    return @PKG@.MenuData.SUB_NEED[i];
+  }
+  return null;
+}""")
+# review 2026-09-24: version-dependent wording. Index into PAL_* when that player action must show its OLD text, else -1.
+M(utl, r"""
+public static int legacyPa(int slot) {
+  for (int j = 0; j < @PKG@.MenuData.PAL_SLOT.length; j++) {
+    if (@PKG@.MenuData.PAL_SLOT[j] == slot && needOf(@PKG@.MenuData.PAL_NEED[j]) != null) return j;
+  }
+  return -1;
+}""")
+# the Mods-list text of mod k: its "old" wording while the installed version lacks the subcommand, else the normal one
+M(utl, r"""
+public static String modBody(int k) {
+  if (k < 0 || k >= @PKG@.MenuData.MOD_BODY.length) return "";
+  String need = @PKG@.MenuData.MOD_OLD_NEED[k];
+  if (need != null && need.length() > 0 && needOf(need) != null) return @PKG@.MenuData.MOD_OLD_BODY[k];
+  return @PKG@.MenuData.MOD_BODY[k];
+}""")
+# 0.3.1: the Mods-list text for this viewer: admins also read the mod's admin-only lines (MODS "admin") right under the description;
+# players get modBody unchanged. The "old" wording (an older installed version) carries its own lines only. = MOD_ABODY in Python.
+M(utl, r"""
+public static String modBodyFor(int k, boolean admin) {
+  String body = modBody(k);
+  if (!admin || k < 0 || k >= @PKG@.MenuData.MOD_AONLY.length) return body;
+  String a = @PKG@.MenuData.MOD_AONLY[k];
+  if (a == null || a.length() == 0) return body;
+  String need = @PKG@.MenuData.MOD_OLD_NEED[k];
+  if (need != null && need.length() > 0 && needOf(need) != null) return body;
+  int nl = body.indexOf('\n');
+  if (nl < 0) return body + "\n" + @PKG@.MenuData.MOD_AHEAD + "\n" + a;
+  return body.substring(0, nl) + "\n" + @PKG@.MenuData.MOD_AHEAD + "\n" + a + body.substring(nl);
+}""")
+# 0.3.1: version order of two manifest versions ("0.3.10" > "0.3.9"): -1, 0 or 1; parts are the leading digits of each dot part
+# (missing or non-numeric = 0), so an unknown "?" compares equal to "0" and never throws
+M(utl, r"""
+public static int verNum(String p) {
+  int n = 0;
+  if (p == null) return 0;
+  for (int i = 0; i < p.length() && i < 9; i++) {
+    char c = p.charAt(i);
+    if (c < '0' || c > '9') break;
+    n = n * 10 + (c - '0');
+  }
+  return n;
+}""")
+M(utl, r"""
+public static int verCmp(String a, String b) {
+  if (a == null || b == null) return 0;
+  String[] x = a.trim().split("\\.");
+  String[] y = b.trim().split("\\.");
+  int n = x.length > y.length ? x.length : y.length;
+  for (int i = 0; i < n; i++) {
+    int p = i < x.length ? verNum(x[i]) : 0;
+    int q = i < y.length ? verNum(y[i]) : 0;
+    if (p < q) return -1;
+    if (p > q) return 1;
+  }
+  return 0;
+}""")
+# tools/PROFILES-CONTRACT.md rule 5: while SkyyProfiles runs a crash recovery the live inventory may not belong to the active profile
+M(utl, r"""
+public static boolean profileBusy(java.util.UUID u) {
+  if (u == null) return false;
+  try { return Boolean.TRUE.equals(bridge().get("profile:busy:" + u.toString())); } catch (Throwable t) { return false; }
+}""")
+# once per server run (first PlayerReadyEvent - every plugin has registered its commands by then): every command word of the menu
+# must resolve to OUR MenuCmd, and no other root command may carry it as its name or an alias. The engine keeps one owner per word
+# (CommandManager.resolveCommand: root names first, then the alias map, where the last alias registered wins), so a clash is silent
+# in game - this makes it one WARNING line in the server log naming the other command's class.
+F(utl, "public static boolean CHECKED;")
+M(utl, r"""
+public static synchronized boolean firstCheck() {
+  if (CHECKED) return false;
+  CHECKED = true;
+  return true;
+}""")
+M(utl, r"""
+public static void checkAliases() {
+  try {
+    String mine = "@PKG@.MenuCmd";
+    String[] want = new String[@PKG@.MenuData.ALIASES.length + 1];
+    want[0] = "skymenu";
+    for (int i = 0; i < @PKG@.MenuData.ALIASES.length; i++) want[i + 1] = @PKG@.MenuData.ALIASES[i];
+    int bad = 0;
+    java.util.Map reg = @CMGR@.get().getCommandRegistration();
+    java.util.ArrayList all = reg == null ? new java.util.ArrayList() : new java.util.ArrayList(reg.values());
+    for (int i = 0; i < all.size(); i++) {
+      Object o = all.get(i);
+      if (!(o instanceof @ACM@) || mine.equals(o.getClass().getName())) continue;
+      @ACM@ c = (@ACM@) o;
+      String n = c.getName();
+      java.util.Set al = c.getAliases();
+      for (int k = 0; k < want.length; k++) {
+        boolean byName = n != null && n.equalsIgnoreCase(want[k]);
+        boolean byAlias = al != null && al.contains(want[k]);
+        if (!byName && !byAlias) continue;
+        bad++;
+        warn("/" + want[k] + " is also claimed by /" + n + " (" + o.getClass().getName() + ") - only one command can answer it. Remove it from one of the two mods.");
+      }
+    }
+    StringBuilder ok = new StringBuilder();
+    for (int k = 0; k < want.length; k++) {
+      @ACM@ r = cmd(want[k]);
+      if (r == null || !mine.equals(r.getClass().getName())) {
+        bad++;
+        warn("/" + want[k] + " does not open the SkyWynn Menu (" + (r == null ? "not registered" : "answered by " + r.getClass().getName()) + ").");
+      } else {
+        ok.append(" /").append(want[k]);
+      }
+    }
+    if (bad == 0) info("command check: " + ok.toString().trim() + " all belong to SkyyMenu");
+  } catch (Throwable t) { warn("command check failed: " + t); }
+}""")
+# 0.2: once per server run (first PlayerReadyEvent, all commands registered): /settings and /skysettings must answer with OUR SettingsCmd.
+# Duplicate command names are silently last-wins, so a clash is one WARNING line; the menu torch works whoever owns the name.
+M(utl, r"""
+public static void checkSettingsCmd() {
+  try {
+    String mine = "@PKG@.SettingsCmd";
+    @ACM@ a = cmd("settings");
+    @ACM@ b = cmd("skysettings");
+    boolean okA = a != null && mine.equals(a.getClass().getName());
+    boolean okB = b != null && mine.equals(b.getClass().getName());
+    if (!okA) warn("another mod owns /settings (" + (a == null ? "not registered" : a.getClass().getName()) + ") - players can use /skysettings or the SkyWynn Menu");
+    if (!okB) warn("/skysettings does not open the SkyyMenu settings (" + (b == null ? "not registered" : "answered by " + b.getClass().getName()) + ")");
+    if (okA && okB) info("command check: /settings /skysettings belong to SkyyMenu");
+  } catch (Throwable t) { warn("settings command check failed: " + t); }
+}""")
+# 0.3: is this player allowed into Server Setup (skyymenu.modconfig; false on any error)
+M(utl, r"""
+public static boolean isAdmin(@PR@ pr) {
+  try { return pr != null && pr.hasPermission(@PKG@.MenuData.ADMIN_NODE); } catch (Throwable t) { return false; }
+}""")
+# text a mod supplies that goes INTO inline markup (button texts): only the characters proven inline survive (letters, digits, space,
+# < > / -); & reads "and", everything else becomes a space. Labels never need this - they get their text through b.set.
+M(utl, r"""
+public static String inl(String s) {
+  if (s == null) return "";
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < s.length() && sb.length() < 40; i++) {
+    char c = s.charAt(i);
+    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == ' ' || c == '<' || c == '>' || c == '/' || c == '-') sb.append(c);
+    else if (c == '&') sb.append("and");
+    else sb.append(' ');
+  }
+  return sb.toString().trim();
+}""")
+M(utl, r"""
+public static String clip(String s, int n) {
+  if (s == null) return "";
+  if (s.length() <= n) return s;
+  if (n <= 3) return s.substring(0, n);
+  return s.substring(0, n - 3) + "...";
+}""")
+# a string value of a page event (the SkyyBank jsonStr, with a length cap): the key must be a JSON KEY (followed by ':'), not the same
+# text inside a value (values are JSON-escaped, so a quote inside one is preceded by a backslash)
+M(utl, r"""
+public static String jstr(String data, String key, int max) {
+  if (data == null || key == null) return "";
+  String qt = String.valueOf((char) 34);
+  String pat = qt + key + qt;
+  int from = 0;
+  int i = -1;
+  while (true) {
+    int p = data.indexOf(pat, from);
+    if (p < 0) return "";
+    int q = p + pat.length();
+    while (q < data.length() && Character.isWhitespace(data.charAt(q))) q++;
+    if ((p == 0 || data.charAt(p - 1) != 92) && q < data.length() && data.charAt(q) == ':') { i = q + 1; break; }
+    from = p + 1;
+  }
+  while (i < data.length() && Character.isWhitespace(data.charAt(i))) i++;
+  if (i >= data.length() || data.charAt(i) != 34) return "";
+  i++;
+  StringBuilder sb = new StringBuilder();
+  while (i < data.length() && sb.length() < max) {
+    char c = data.charAt(i);
+    if (c == 34) break;
+    if (c == 92 && i + 1 < data.length()) {
+      char n = data.charAt(i + 1);
+      if (n == 'u' && i + 5 < data.length()) {
+        try { sb.append((char) Integer.parseInt(data.substring(i + 2, i + 6), 16)); } catch (Throwable t) { }
+        i += 6;
+        continue;
+      }
+      if (n == 'n' || n == 'r' || n == 't' || n == 'b' || n == 'f') sb.append(' '); else sb.append(n);
+      i += 2;
+      continue;
+    }
+    sb.append(c);
+    i++;
+  }
+  return sb.toString();
+}""")
+# 0.3: once per server run (first PlayerReadyEvent): /modconfig and /serversetup must answer with OUR AdminCmd (duplicate names are
+# silently last-wins); the book in the menu works whoever owns the words
+M(utl, r"""
+public static void checkAdminCmd() {
+  try {
+    String mine = "@PKG@.AdminCmd";
+    @ACM@ a = cmd("modconfig");
+    @ACM@ b = cmd("serversetup");
+    boolean okA = a != null && mine.equals(a.getClass().getName());
+    boolean okB = b != null && mine.equals(b.getClass().getName());
+    if (!okA) warn("/modconfig does not open Server Setup (" + (a == null ? "not registered" : "answered by " + a.getClass().getName()) + ") - admins can use the SkyWynn Menu book");
+    if (!okB) warn("/serversetup does not open Server Setup (" + (b == null ? "not registered" : "answered by " + b.getClass().getName()) + ")");
+    if (okA && okB) info("command check: /modconfig /serversetup belong to SkyyMenu");
+  } catch (Throwable t) { warn("server setup command check failed: " + t); }
+}""")
+# version of a loaded Skyy mod read from its manifest ("0.6.1 SkyySacks" -> "0.6.1"); null when not loaded / disabled
+M(utl, r"""
+public static String liveVersion(String mod) {
+  try {
+    java.util.List ps = @PLM@.get().getPlugins();
+    for (int i = 0; i < ps.size(); i++) {
+      @PLB@ p = (@PLB@) ps.get(i);
+      if (p == null) continue;
+      @PMF@ m = p.getManifest();
+      if (m == null) continue;
+      String n = m.getName();
+      if (n == null || !(n.equals(mod) || n.endsWith(" " + mod))) continue;
+      if (!p.isEnabled()) return null;
+      Object v = m.getVersion();
+      return v == null ? "?" : safe(String.valueOf(v));
+    }
+  } catch (Throwable t) { }
+  return null;
+}""")
+# PERMISSIONS HOOK (Skyy: "we will figure out permissions later, to lock off warps till people unlock them").
+# Return false to lock a warp for this player: it is then shown greyed out with a Locked footer and cannot be used from the menu.
+# Ideas: return pr.hasPermission("skyymenu.warp." + warpId.toLowerCase());  or check an unlock list / collection tier / coins paid.
+M(utl, r"""
+public static boolean isWarpUnlocked(@PR@ pr, String warpId) {
+  return true;
+}""")
+
+# ================= Given: persisted "already got the menu item" records + session guards =================
+# 0.3.4 (Skyy, OPEN-QUESTIONS 2026-10-01): ONE RECORD PER PROFILE - DIR = Skyy_SkyyMenu/given-profile/<storage key>.txt, the key being
+# SkyyProfiles' profile:fn:key (tools/PROFILES-CONTRACT.md: <uuid> for profile 1, <uuid>-p<N> for profile N; <uuid> without SkyyProfiles).
+# LEGACY = Skyy_SkyyMenu/given/<uuid>.txt, the 0.1 - 0.3.3 per-PLAYER flags: only READ (a rollback to 0.3.3 still finds them). migrate():
+# a player with a legacy flag and no per-profile record gets ONE record for the profile active when 0.3.4 first sees them.
+F(giv, "public static java.nio.file.Path DIR;")
+F(giv, "public static java.nio.file.Path LEGACY;")
+F(giv, "public static final java.util.concurrent.ConcurrentHashMap SESSION = new java.util.concurrent.ConcurrentHashMap();")   # storage key -> TRUE: done this session
+F(giv, "public static final java.util.concurrent.ConcurrentHashMap INFLIGHT = new java.util.concurrent.ConcurrentHashMap();")  # UUID -> TRUE: a grant runs now
+F(giv, "public static final java.util.concurrent.ConcurrentHashMap CHECKED = new java.util.concurrent.ConcurrentHashMap();")   # uuid text -> TRUE: legacy flag looked at
+F(giv, "public static final java.util.concurrent.ConcurrentHashMap READY = new java.util.concurrent.ConcurrentHashMap();")     # UUID -> TRUE: past the first PlayerReadyEvent
+F(giv, "public static final java.util.concurrent.ConcurrentHashMap PENDING = new java.util.concurrent.ConcurrentHashMap();")   # UUID -> Long: a GrantTask is scheduled
+# a storage key is used in a file name: SkyyProfiles keys are <uuid> or <uuid>-p<N>; anything else falls back to the UUID
+M(giv, r"""
+public static boolean validKey(String k) {
+  if (k == null || k.length() < 1 || k.length() > 80) return false;
+  for (int i = 0; i < k.length(); i++) {
+    char c = k.charAt(i);
+    if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '-')) return false;
+  }
+  return true;
+}""")
+# the storage key of the player's ACTIVE profile (tools/PROFILES-CONTRACT.md pkey helper: never throws, safe from any thread, no lock held)
+M(giv, r"""
+public static String key(java.util.UUID u) {
+  if (u == null) return null;
+  try {
+    Object f = @PKG@.MenuUtil.bridge().get("profile:fn:key");
+    if (f instanceof java.util.function.Function) {
+      Object r = ((java.util.function.Function) f).apply(u);
+      if (r instanceof String && validKey((String) r)) return (String) r;
+    }
+  } catch (Throwable t) { }
+  return u.toString();
+}""")
+M(giv, r"""
+public static synchronized boolean isGiven(String key) {
+  try { return DIR != null && validKey(key) && java.nio.file.Files.exists(DIR.resolve(key + ".txt"), new java.nio.file.LinkOption[0]); }
+  catch (Throwable t) { return false; }
+}""")
+# written once (an existing record is never rewritten - no file churn), atomic tmp + move
+M(giv, r"""
+public static synchronized boolean markGiven(String key) {
+  try {
+    if (DIR == null || !validKey(key)) return false;
+    java.nio.file.Path f = DIR.resolve(key + ".txt");
+    if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) return true;
+    java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Path tmp = DIR.resolve(key + ".txt.tmp");
+    byte[] data = ("menu item given " + System.currentTimeMillis() + "\n").getBytes("UTF-8");
+    java.nio.file.Files.write(tmp, data, new java.nio.file.OpenOption[0]);
+    java.nio.file.Files.move(tmp, f, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+    return true;
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("could not save the menu-item record for " + key + ": " + t); return false; }
+}""")
+# a per-profile record of ANY profile of this player (<uuid>.txt or <uuid>-p<N>.txt); a read error answers true (= migrate nothing)
+M(giv, r"""
+public static synchronized boolean hasAnyFor(String us) {
+  if (DIR == null) return false;
+  try {
+    if (java.nio.file.Files.exists(DIR.resolve(us + ".txt"), new java.nio.file.LinkOption[0])) return true;
+    if (!java.nio.file.Files.isDirectory(DIR, new java.nio.file.LinkOption[0])) return false;
+    java.nio.file.DirectoryStream ds = java.nio.file.Files.newDirectoryStream(DIR, us + "-p*.txt");
+    boolean any = false;
+    try { any = ds.iterator().hasNext(); } finally { ds.close(); }
+    return any;
+  } catch (Throwable t) { return true; }
+}""")
+# the 0.1 - 0.3.3 per-PLAYER flag -> the profile active NOW counts as given (once per player and server run; true = recorded now)
+M(giv, r"""
+public static synchronized boolean migrate(java.util.UUID u, String key) {
+  if (u == null || !validKey(key)) return false;
+  String us = u.toString();
+  if (CHECKED.putIfAbsent(us, Boolean.TRUE) != null) return false;
+  try {
+    if (LEGACY == null || !java.nio.file.Files.exists(LEGACY.resolve(us + ".txt"), new java.nio.file.LinkOption[0])) return false;
+  } catch (Throwable t) { return false; }
+  if (hasAnyFor(us)) return false;
+  boolean ok = markGiven(key);
+  if (ok) @PKG@.MenuUtil.info("menu item: " + us + " got it from an older SkyyMenu - their current profile (" + key + ") counts as given");
+  return ok;
+}""")
+# the PlayerReadyEvent / profile watch question: does the player's CURRENT profile still need this session's check?
+M(giv, r"""
+public static boolean wants(java.util.UUID u) {
+  String k = key(u);
+  return k != null && !SESSION.containsKey(k);
+}""")
+# one scheduled GrantTask per player (an entry older than 90 s is stale: a task that died without releasing)
+M(giv, r"""
+public static synchronized boolean claim(java.util.UUID u, long now) {
+  if (u == null) return false;
+  Object o = PENDING.get(u);
+  if (o instanceof Long && now - ((Long) o).longValue() < 90000L) return false;
+  PENDING.put(u, Long.valueOf(now));
+  return true;
+}""")
+M(giv, r"""
+public static void forget(java.util.UUID u) {
+  if (u == null) return;
+  String us = u.toString();
+  java.util.Iterator it = new java.util.ArrayList(SESSION.keySet()).iterator();
+  while (it.hasNext()) {
+    Object k = it.next();
+    if (k instanceof String && ((String) k).startsWith(us)) SESSION.remove(k);
+  }
+  READY.remove(u);
+}""")
+M(giv, r"""
+public static void retainOnline(java.util.HashSet online, java.util.HashSet onlineK) {
+  java.util.Iterator it = new java.util.ArrayList(SESSION.keySet()).iterator();
+  while (it.hasNext()) {
+    Object k = it.next();
+    String ks = k instanceof String ? (String) k : "";
+    if (ks.length() < 36 || !onlineK.contains(ks.substring(0, 36))) SESSION.remove(k);
+  }
+  READY.keySet().retainAll(online);
+}""")
+
+# ================= 0.3 MenuCfg: SkyyMenu's own server settings (Skyy_SkyyMenu/config.properties), bound to the config kit =================
+# Fields are public static volatile (the kit writes them with the primitive Field setters, spec 1.4.1); load() is the kit's RELOAD
+# (hand edits + Reload file) and the start-up load. init() writes the commented default file once when it is missing.
+F(mcfg, "public static java.nio.file.Path FILE;")
+F(mcfg, "public static volatile boolean GIVE_ITEM = true;")
+F(mcfg, "public static volatile boolean MODS_HELP = true;")
+M(mcfg, r"""
+public static boolean flag(java.util.Properties p, String k, boolean def) {
+  String v = p.getProperty(k);
+  if (v == null) return def;
+  v = v.trim().toLowerCase();
+  if (v.equals("true") || v.equals("on") || v.equals("yes") || v.equals("1")) return true;
+  if (v.equals("false") || v.equals("off") || v.equals("no") || v.equals("0")) return false;
+  @PKG@.MenuUtil.warn("config.properties: " + k + "=" + v + " is not true or false - using " + def);
+  return def;
+}""")
+M(mcfg, r"""
+public static void load() {
+  java.nio.file.Path f = FILE;
+  if (f == null) return;
+  try {
+    if (!java.nio.file.Files.isRegularFile(f, new java.nio.file.LinkOption[0])) { GIVE_ITEM = true; MODS_HELP = true; return; }
+    java.util.Properties p = new java.util.Properties();
+    java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+    try { p.load(in); } finally { in.close(); }
+    GIVE_ITEM = flag(p, "giveItem", true);
+    MODS_HELP = flag(p, "modsHelp", true);
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("config.properties cannot be read (" + t + ") - the previous values stay"); }
+}""")
+M(mcfg, r"""
+public static void init() {
+  try {
+    if (FILE != null && !java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0])) {
+      @PKG@.MenuUtil.atomicWrite(FILE, @PKG@.MenuData.MENU_CFG_TEXT.getBytes("ISO-8859-1"));
+      @PKG@.MenuUtil.info("wrote config.properties (SkyyMenu server settings - change them in Server Setup or in the file)");
+    }
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("could not write the config.properties template: " + t); }
+  load();
+}""")
+# the kit: CfgRows, CfgLog, CfgHist, CfgSaveTask, CfgFile, CfgFn, CfgPub in this package (tools/CONFIG-CONTRACT.md). The hook class
+# SetDefCfg is compiled later (the kit calls hooks by reflection; KIT.write checks them). Started in setup() after the file loads.
+KIT = CFG.emit(pool, PKG, MOD="SkyyMenu", TITLE="Menu", VERSION=VERSION, NODE=MENU_CFG_NODE, CATS=MENU_CFG_CATS, ROWS=MENU_CFG_ROWS,
+               FILES=MENU_CFG_FILES, NOTE=MENU_CFG_NOTE, RELOAD="MenuCfg.load", KEEP=10,
+               DEFAULTS={"config.properties": MENU_CFG_TEXT, "settings-defaults.properties": SET_TEMPLATE})
+assert KIT.info.get("kit", "1.0") == EXPECTED_KIT, "the emitted config kit is %s, SkyyMenu pins %s" % (KIT.info.get("kit", "1.0"), EXPECTED_KIT)
+print("config kit: %d rows (kit %s, skyycfg.py blob %s), files %s" % (KIT.info["rows"], KIT.info.get("kit", "1.0"), KIT_BLOB[:12], ", ".join(KIT.info["files"])))
+
+# ================= 0.2 Settings registry (research/Settings-Spec.md 1.2-1.5) =================
+# Bridge contract (never removed; java.lang types only - every mod has its own classloader):
+#   settings:fn:register  apply(Object[] { String mod, String key, String label, String category, Boolean def, String help [, String perm] })
+#                         -> Boolean. 0.3.3: the optional 7th element = a permission node: only players holding it see the row (hidden, never
+#                         greyed) and may set it; null / "" / six elements = every player; any value that is not a plain node
+#                         (SetReg.validPerm) REFUSES THE KEY for this run (fail closed: hidden for all, set FALSE, get = its default).
+#                         Two mods on one key: the stricter wins (a node is never dropped; two different nodes refuse the key).
+#   settings:fn:get       apply(Object[] { UUID player, String key }) -> Boolean (choice, else admin default, else registered default; null = unknown;
+#                         0.3.3: a refused key answers its registered default - never a stored choice)
+#   settings:fn:set       apply(Object[] { UUID player, String key, Boolean value [, Boolean onlyIfUnset] }) -> Boolean (TRUE = stored state matches;
+#                         0.3.3: FALSE for a key whose permission node the player lacks)
+#   settings:def:<key>    the same Object[6] (or Object[7]) as register, written by every adopter at setup (drained here, so load order never matters)
+# Guarantees: never throws (bad input = null / FALSE); never calls another mod, never writes the bridge from get/set, never touches ECS or
+# inventories; the only locks are SetReg.class (register, memory only), SetStore.class (memory only - never held during file I/O) and
+# SetStore's 64 lock stripes (one player's own file read / write; a stripe holder never takes another lock or calls out), so calling it
+# from inside a caller's own lock is safe and no lock cycle exists. get is four ConcurrentHashMap reads + a HashMap read after the
+# player's first read (preloaded at join); set / resetAll of a loaded player never wait for any disk write, not even that player's own.
+# ---- SetReg: the registered switches (fields first - javassist) + the admin defaults file
+F(sreg, "public static final java.util.concurrent.ConcurrentHashMap DEFS = new java.util.concurrent.ConcurrentHashMap();")
+F(sreg, "public static final java.util.concurrent.ConcurrentHashMap WARNED = new java.util.concurrent.ConcurrentHashMap();")
+# 0.3.3 (review): keys refused for this server run (a registration with a node that is not plain, or two mods with two different nodes):
+# key -> the Boolean default settings:fn:get answers. Never cleared: hidden for everyone, may() false, set refused, later registrations
+# refused - load order never makes a refused key visible. PERM_MOD: key -> the mod whose node gates the key (DEFS stays Object[7]).
+F(sreg, "public static final java.util.concurrent.ConcurrentHashMap REFUSED = new java.util.concurrent.ConcurrentHashMap();")
+F(sreg, "public static final java.util.concurrent.ConcurrentHashMap PERM_MOD = new java.util.concurrent.ConcurrentHashMap();")
+F(sreg, "public static volatile java.util.HashMap ADMIN = new java.util.HashMap();")
+F(sreg, "public static java.nio.file.Path ADMIN_FILE = null;")
+F(sreg, "public static volatile long ADMIN_MTIME = -1L;")
+# 0.3: time of the last in-game edit of settings-defaults.properties (Server Setup -> Menu); the 30 s re-read waits 5 s after one
+F(sreg, "public static volatile long EDIT_AT = 0L;")
+M(sreg, r"""
+public static boolean validKey(String k) {
+  if (k == null || k.length() < 3 || k.length() > 48) return false;
+  char c0 = k.charAt(0);
+  if (c0 < 'a' || c0 > 'z') return false;
+  for (int i = 0; i < k.length(); i++) {
+    char c = k.charAt(i);
+    if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '.')) return false;
+  }
+  return true;
+}""")
+M(sreg, r"""
+public static String clip(Object o, int max) {
+  if (o == null) return "";
+  String s = String.valueOf(o).replace('\n', ' ').replace('\r', ' ').trim();
+  return s.length() > max ? s.substring(0, max) : s;
+}""")
+M(sreg, r"""
+public static int catIndex(String c) {
+  for (int i = 0; i < @PKG@.MenuData.SET_CAT_ID.length; i++) if (@PKG@.MenuData.SET_CAT_ID[i].equals(c)) return i;
+  return @PKG@.MenuData.SET_CAT_ID.length - 1;
+}""")
+# 0.3.3 (review): a permission node of a registration (element 7) must be PLAIN - the menu's own node pattern
+# ^[a-z][a-z0-9]*(\.[a-z0-9]+)+$ (ADMIN_NODE / MENU_CFG_NODE), 3-100 characters: no leading "-" (the engine's personal-deny syntax would
+# invert the check), no *, :, _, - or spaces, no "..", no trailing dot. Every literal node a Skyy mod uses passes (the harness scans them).
+# null / "" never reach this (= no node).
+M(sreg, r"""
+public static boolean validPerm(String p) {
+  if (p == null || p.length() < 3 || p.length() > 100) return false;
+  char prev = p.charAt(0);
+  if (prev < 'a' || prev > 'z') return false;
+  boolean dot = false;
+  for (int i = 1; i < p.length(); i++) {
+    char c = p.charAt(i);
+    if (c == '.') {
+      if (prev == '.') return false;
+      dot = true;
+    } else if (!((c >= 'a' && c <= 'z') || (c >= '0' && c <= '9'))) return false;
+    prev = c;
+  }
+  return dot && prev != '.';
+}""")
+# 0.3.3 (review): refuse a key for this run (register holds the SetReg lock): its registration leaves DEFS (whoever made it), REFUSED keeps
+# the default settings:fn:get answers (the kept first registration's, else this one's), one warning per key
+M(sreg, r"""
+public static void refuse(String key, Boolean def, String why) {
+  Object[] old = (Object[]) DEFS.remove(key);
+  PERM_MOD.remove(key);
+  Boolean d = old != null && old[4] instanceof Boolean ? (Boolean) old[4] : def;
+  if (d == null) d = Boolean.TRUE;
+  REFUSED.putIfAbsent(key, d);
+  if (WARNED.putIfAbsent("refused:" + key, Boolean.TRUE) == null)
+    @PKG@.MenuUtil.warn("setting " + key + ": " + why + " - the switch is refused until the next restart (hidden for every player, nobody can change it, it answers its default " + d + ")");
+}""")
+# idempotent: the same mod registering again updates label / help / tab / default; a different mod registering the same key (shared keys
+# such as rewards.late) is accepted and the FIRST registration's texts and default are kept - one warning if the defaults differ.
+# 0.3.3: DEFS values are Object[7] { mod, key, label, cat, def, help, perm } (perm null = every player).
+# 0.3.3 review fixes (fail closed, load order never matters):
+#   - a refused key (REFUSED) refuses every later registration (FALSE)
+#   - a 7th element that is neither null, "" nor a plain node refuses the KEY (refuse(): also an earlier weaker registration goes)
+#   - the stricter node wins: a node is never dropped (another mod's node gates the first mod's registration, a registration without
+#     a node keeps the node already there, one warning); two different nodes from two mods refuse the key; a mod may change its own node
+M(sreg, r"""
+public static synchronized boolean register(Object o) {
+  try {
+    if (!(o instanceof Object[])) return false;
+    Object[] a = (Object[]) o;
+    if (a.length < 5) return false;
+    String key = a[1] == null ? null : String.valueOf(a[1]);
+    if (!validKey(key)) return false;
+    String mod = clip(a[0], 32);
+    String label = clip(a[2], 48);
+    if (label.length() == 0) label = key;
+    String cat = @PKG@.MenuData.SET_CAT_ID[catIndex(a[3] == null ? "" : String.valueOf(a[3]))];
+    Boolean def = a[4] instanceof Boolean ? (Boolean) a[4] : Boolean.TRUE;
+    String help = a.length > 5 ? clip(a[5], 100) : "";
+    if (REFUSED.containsKey(key)) return false;
+    String perm = null;
+    if (a.length > 6 && a[6] != null) {
+      String p = a[6] instanceof String ? ((String) a[6]).trim() : null;
+      if (p == null || (p.length() > 0 && !validPerm(p))) {
+        refuse(key, def, mod + " gave '" + clip(a[6], 60) + "', which is not a plain permission node");
+        return false;
+      }
+      if (p.length() > 0) perm = p;
+    }
+    Object[] old = (Object[]) DEFS.get(key);
+    String op = old != null && old.length > 6 && old[6] instanceof String ? (String) old[6] : null;
+    Object pmo = PERM_MOD.get(key);
+    String om = pmo instanceof String ? (String) pmo : (old == null ? null : String.valueOf(old[0]));
+    if (old != null && !mod.equals(old[0])) {
+      if (!def.equals(old[4]) && WARNED.putIfAbsent(key, Boolean.TRUE) == null)
+        @PKG@.MenuUtil.warn("setting " + key + ": " + mod + " wants default " + def + ", " + old[0] + " registered " + old[4] + " first - keeping " + old[4]);
+      if (perm == null || perm.equals(op)) {
+        if (perm == null && op != null && WARNED.putIfAbsent("node:" + key, Boolean.TRUE) == null)
+          @PKG@.MenuUtil.warn("setting " + key + ": " + mod + " registers it for every player, " + om + " with the node " + op + " - keeping the node " + op);
+        return true;
+      }
+      if (op == null) {
+        DEFS.put(key, new Object[] { old[0], key, old[2], old[3], old[4], old[5], perm });
+        PERM_MOD.put(key, mod);
+        if (WARNED.putIfAbsent("node:" + key, Boolean.TRUE) == null)
+          @PKG@.MenuUtil.warn("setting " + key + ": " + old[0] + " registered it for every player, " + mod + " with the node " + perm + " - only holders of " + perm + " see and change it");
+        return true;
+      }
+      refuse(key, def, mod + " wants the node " + perm + ", " + om + " registered the node " + op);
+      return false;
+    }
+    if (old != null && op != null) {
+      if (perm == null) {
+        perm = op;
+        if (WARNED.putIfAbsent("node:" + key, Boolean.TRUE) == null)
+          @PKG@.MenuUtil.warn("setting " + key + ": " + mod + " registers it again without a node - keeping the node " + op + " (from " + om + ")");
+      } else if (!perm.equals(op) && !mod.equals(om)) {
+        refuse(key, def, mod + " wants the node " + perm + ", " + om + " registered the node " + op);
+        return false;
+      }
+    }
+    DEFS.put(key, new Object[] { mod, key, label, cat, def, help, perm });
+    if (perm == null) PERM_MOD.remove(key);
+    else if (!perm.equals(op)) PERM_MOD.put(key, mod);
+    return true;
+  } catch (Throwable t) { return false; }
+}""")
+M(sreg, r"""
+public static void drain() {
+  try {
+    java.util.Map br = @PKG@.MenuUtil.bridge();
+    java.util.Iterator it = new java.util.ArrayList(br.keySet()).iterator();
+    while (it.hasNext()) {
+      Object k = it.next();
+      if (!(k instanceof String) || !((String) k).startsWith("settings:def:")) continue;
+      Object v = br.get(k);
+      if (v != null) register(v);
+    }
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("settings drain failed: " + t); }
+}""")
+M(sreg, r"""
+public static Object[] info(String key) {
+  if (key == null) return null;
+  Object[] d = (Object[]) DEFS.get(key);
+  if (d == null && !REFUSED.containsKey(key)) {
+    Object v = @PKG@.MenuUtil.bridge().get("settings:def:" + key);
+    if (v != null && register(v)) d = (Object[]) DEFS.get(key);
+  }
+  return d;
+}""")
+# 0.3.3: may the player change (and so see) this switch? No node = yes. The node check = PermissionsModule.get().hasPermission(uuid, node),
+# exactly what PlayerRef.hasPermission(node) runs (the check MenuUtil.isAdmin uses for Server Setup). Fail closed (no module, an error,
+# no player = hidden). Never called under a SetReg / SetStore lock: info() returns before the engine is asked.
+# review fix: refusedDef = the default a REFUSED key answers (null = not refused). A key nobody drained yet is looked up first (info():
+# its settings:def: registration is registered - or refused - now), so the first call already fails closed.
+M(sreg, r"""
+public static Boolean refusedDef(String key) {
+  if (key == null) return null;
+  Object r = REFUSED.get(key);
+  if (r == null && DEFS.get(key) == null) {
+    info(key);
+    r = REFUSED.get(key);
+  }
+  return r instanceof Boolean ? (Boolean) r : null;
+}""")
+M(sreg, r"""
+public static String permOf(String key) {
+  Object[] d = info(key);
+  if (d == null || d.length < 7 || !(d[6] instanceof String)) return null;
+  return (String) d[6];
+}""")
+M(sreg, r"""
+public static boolean allowed(java.util.UUID u, String perm) {
+  if (perm == null) return true;
+  if (u == null) return false;
+  try {
+    @PERM@ pm = @PERM@.get();
+    return pm != null && pm.hasPermission(u, perm);
+  } catch (Throwable t) { return false; }
+}""")
+M(sreg, r"""
+public static boolean may(java.util.UUID u, String key) {
+  if (refusedDef(key) != null) return false;
+  return allowed(u, permOf(key));
+}""")
+M(sreg, r"""
+public static Boolean def(String key) {
+  Object a = ADMIN.get(key);
+  if (a instanceof Boolean) return (Boolean) a;
+  Object[] d = info(key);
+  return d == null ? null : (Boolean) d[4];
+}""")
+M(sreg, r"""
+public static int rank(String key) {
+  for (int i = 0; i < @PKG@.MenuData.SET_ORDER.length; i++) if (@PKG@.MenuData.SET_ORDER[i].equals(key)) return i;
+  return 9000;
+}""")
+M(sreg, r"""
+public static String[] keysOf(int cat) {
+  if (cat < 0 || cat >= @PKG@.MenuData.SET_CAT_ID.length) return new String[0];
+  String id = @PKG@.MenuData.SET_CAT_ID[cat];
+  java.util.ArrayList rows = new java.util.ArrayList();
+  java.util.Iterator it = DEFS.values().iterator();
+  while (it.hasNext()) {
+    Object[] d = (Object[]) it.next();
+    if (id.equals(d[3])) rows.add(String.valueOf(10000 + rank((String) d[1])) + "\t" + (String) d[1]);
+  }
+  java.util.Collections.sort(rows);
+  String[] out = new String[rows.size()];
+  for (int i = 0; i < out.length; i++) { String s = (String) rows.get(i); out[i] = s.substring(s.indexOf('\t') + 1); }
+  return out;
+}""")
+# 0.3.3: the rows of a tab this player may change (= sees), in SET_ORDER; the Settings page pages and counts only these
+M(sreg, r"""
+public static String[] visible(int cat, java.util.UUID u) {
+  String[] all = keysOf(cat);
+  java.util.ArrayList out = new java.util.ArrayList();
+  for (int i = 0; i < all.length; i++) if (may(u, all[i])) out.add(all[i]);
+  return (String[]) out.toArray(new String[0]);
+}""")
+# 0.3: ADMIN is replaced wholesale under ONE lock by both writers: the file re-read (adminSwap, refused for 5 s after an in-game edit so
+# it can never read the file between that edit and the kit's save 500 ms later) and Server Setup (adminPut, copy-on-write, at once)
+M(sreg, r"""
+public static synchronized boolean adminSwap(java.util.HashMap nx, boolean first) {
+  if (!first && System.currentTimeMillis() - EDIT_AT < 5000L) return false;
+  ADMIN = nx;
+  return true;
+}""")
+M(sreg, r"""
+public static synchronized void adminPut(String key, Boolean v) {
+  java.util.HashMap nx = new java.util.HashMap(ADMIN);
+  if (v == null) nx.remove(key); else nx.put(key, v);
+  ADMIN = nx;
+  EDIT_AT = System.currentTimeMillis();
+}""")
+# settings-defaults.properties: written as a commented template when missing (first = setup), re-read when lastModified changes
+# (SeenTick, every 30 s). Only setup and the single scheduler thread call it, so it needs no lock; ADMIN is replaced wholesale.
+M(sreg, r"""
+public static void loadAdmin(boolean first) {
+  java.nio.file.Path f = ADMIN_FILE;
+  if (f == null) return;
+  long mt = -1L;
+  try {
+    if (!java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
+      if (first) {
+        try {
+          @PKG@.MenuUtil.atomicWrite(f, @PKG@.MenuData.SET_TEMPLATE.getBytes("UTF-8"));
+          @PKG@.MenuUtil.info("wrote settings-defaults.properties (server-wide defaults for /settings, every line commented out)");
+        } catch (Throwable tw) { @PKG@.MenuUtil.warn("could not write the settings-defaults.properties template: " + tw); }
+      }
+      if (ADMIN.size() > 0) { ADMIN = new java.util.HashMap(); @PKG@.MenuUtil.info("settings-defaults.properties is gone - the mods' own defaults apply"); }
+      ADMIN_MTIME = -1L;
+      return;
+    }
+    mt = java.nio.file.Files.getLastModifiedTime(f, new java.nio.file.LinkOption[0]).toMillis();
+    if (!first && mt == ADMIN_MTIME) return;
+    java.util.Properties p = new java.util.Properties();
+    java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+    try { p.load(new java.io.InputStreamReader(in, "UTF-8")); } finally { in.close(); }
+    java.util.HashMap nx = new java.util.HashMap();
+    int bad = 0;
+    java.util.Iterator it = p.stringPropertyNames().iterator();
+    while (it.hasNext()) {
+      String k = (String) it.next();
+      String v = p.getProperty(k, "").trim();
+      if (!validKey(k)) { bad++; @PKG@.MenuUtil.warn("settings-defaults.properties: '" + k + "' is not a setting key - line ignored"); continue; }
+      if (v.equalsIgnoreCase("true")) nx.put(k, Boolean.TRUE);
+      else if (v.equalsIgnoreCase("false")) nx.put(k, Boolean.FALSE);
+      else { bad++; @PKG@.MenuUtil.warn("settings-defaults.properties: " + k + "=" + v + " is not true or false - line ignored"); }
+    }
+    if (!adminSwap(nx, first)) return;
+    ADMIN_MTIME = mt;
+    @PKG@.MenuUtil.info("settings defaults: " + nx.size() + " server-wide default(s) in use" + (bad > 0 ? ", " + bad + " bad line(s) ignored" : ""));
+  } catch (Throwable t) {
+    if (mt != -1L) ADMIN_MTIME = mt;
+    @PKG@.MenuUtil.warn("settings-defaults.properties cannot be read (" + t + ") - the previous defaults stay until the file changes");
+  }
+}""")
+# SkyyMenu's own switches (menu.tooltips), registered exactly like an adopter does it (def key + register)
+M(sreg, r"""
+public static void registerOwn() {
+  for (int i = 0; i < @PKG@.MenuData.OWN_KEY.length; i++) {
+    Object[] a = new Object[] { "SkyyMenu", @PKG@.MenuData.OWN_KEY[i], @PKG@.MenuData.OWN_LABEL[i], @PKG@.MenuData.OWN_CAT[i],
+                                Boolean.valueOf(@PKG@.MenuData.OWN_DEF[i]), @PKG@.MenuData.OWN_HELP[i] };
+    try { @PKG@.MenuUtil.bridge().put("settings:def:" + @PKG@.MenuData.OWN_KEY[i], a); } catch (Throwable t) { }
+    register(a);
+  }
+}""")
+
+# ---- SetStore: per-PLAYER values, <world>/mods/Skyy_SkyyMenu/settings/<uuid>.properties. VALS maps are copy-on-write (never changed
+# after they are published), so readers need no lock. BROKEN = unreadable files (never overwritten; read again after 30 s).
+# LOCKS (build review): SetStore.class guards memory only (setMem / resetMem / pruneOffline). A player's file read (readLocked) and write
+# (writeLocked: fsync + retries) run under lockOf(k), one of 64 ReentrantLock stripes by uuid hash - never under SetStore.class, so a
+# world-thread click or settings:fn:set never waits for another player's disk write. A stripe holder takes no other lock and calls no
+# other mod. Lock order: SetStore.class -> stripe only via tryLock (pruneOffline), so there is no cycle.
+F(sst, "public static java.nio.file.Path DIR;")
+F(sst, "public static final java.util.concurrent.ConcurrentHashMap VALS = new java.util.concurrent.ConcurrentHashMap();")
+F(sst, "public static final java.util.concurrent.ConcurrentHashMap BROKEN = new java.util.concurrent.ConcurrentHashMap();")
+F(sst, "public static final java.util.concurrent.ConcurrentHashMap DIRTY = new java.util.concurrent.ConcurrentHashMap();")
+F(sst, "public static final java.util.concurrent.ConcurrentHashMap NAMES = new java.util.concurrent.ConcurrentHashMap();")
+F(sst, "public static final java.util.concurrent.ConcurrentHashMap LOCKS = new java.util.concurrent.ConcurrentHashMap();")
+M(sst, r"""
+public static java.util.UUID uuidOf(Object o) {
+  if (o instanceof java.util.UUID) return (java.util.UUID) o;
+  if (o instanceof String) { try { return java.util.UUID.fromString((String) o); } catch (Throwable t) { return null; } }
+  return null;
+}""")
+M(sst, r"""
+public static java.nio.file.Path fileOf(String k) {
+  return DIR.resolve(k + ".properties");
+}""")
+# the lock stripe of one player's file (64 stripes, created on first use, never removed - bounded, no per-player leak)
+M(sst, r"""
+public static java.util.concurrent.locks.ReentrantLock lockOf(String k) {
+  Integer i = Integer.valueOf(k.hashCode() & 63);
+  Object l = LOCKS.get(i);
+  if (l == null) {
+    LOCKS.putIfAbsent(i, new java.util.concurrent.locks.ReentrantLock());
+    l = LOCKS.get(i);
+  }
+  return (java.util.concurrent.locks.ReentrantLock) l;
+}""")
+# the file read - the caller holds lockOf(k). Only this method creates a VALS entry (setMem / resetMem need an existing one), and two
+# reads of one player are serialized by the stripe, so the second one returns the first one's map.
+M(sst, r"""
+public static java.util.HashMap readLocked(String k) {
+  Object m = VALS.get(k);
+  if (m != null) return (java.util.HashMap) m;
+  long now = System.currentTimeMillis();
+  Long bad = (Long) BROKEN.get(k);
+  if (bad != null && now - bad.longValue() < 30000L) return null;
+  java.util.HashMap out = new java.util.HashMap();
+  try {
+    java.nio.file.Path f = fileOf(k);
+    if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
+      java.util.Properties p = new java.util.Properties();
+      java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+      try { p.load(new java.io.InputStreamReader(in, "UTF-8")); } finally { in.close(); }
+      java.util.Iterator it = p.stringPropertyNames().iterator();
+      while (it.hasNext()) {
+        String key = (String) it.next();
+        if (key.startsWith("_") || !@PKG@.SetReg.validKey(key)) continue;
+        String v = p.getProperty(key, "").trim();
+        if (v.equalsIgnoreCase("true")) out.put(key, Boolean.TRUE);
+        else if (v.equalsIgnoreCase("false")) out.put(key, Boolean.FALSE);
+      }
+    }
+  } catch (Throwable t) {
+    if (bad == null) @PKG@.MenuUtil.warn("settings/" + k + ".properties cannot be read (" + t + ") - defaults are used and the file is NOT overwritten; read again every 30 s");
+    BROKEN.put(k, Long.valueOf(now));
+    return null;
+  }
+  BROKEN.remove(k);
+  Object prev = VALS.putIfAbsent(k, out);
+  return prev != null ? (java.util.HashMap) prev : out;
+}""")
+# lock-free when the map is loaded (the normal case after the join preload); otherwise one small file read under the player's stripe
+M(sst, r"""
+public static java.util.HashMap load(String k) {
+  Object m = VALS.get(k);
+  if (m != null) return (java.util.HashMap) m;
+  if (DIR == null) return null;
+  java.util.concurrent.locks.ReentrantLock lk = lockOf(k);
+  java.util.HashMap out = null;
+  lk.lock();
+  try { out = readLocked(k); } finally { lk.unlock(); }
+  return out;
+}""")
+M(sst, r"""
+public static boolean isBroken(java.util.UUID u) {
+  return u != null && BROKEN.containsKey(u.toString());
+}""")
+# the player's OWN choice only (null = never chose / file unreadable) - Tips needs it to tell "chose ON" from "default"
+M(sst, r"""
+public static Boolean own(java.util.UUID u, String key) {
+  if (u == null || key == null) return null;
+  String k = u.toString();
+  Object m = VALS.get(k);
+  java.util.HashMap vals = m != null ? (java.util.HashMap) m : load(k);
+  if (vals == null) return null;
+  Object v = vals.get(key);
+  return v instanceof Boolean ? (Boolean) v : null;
+}""")
+M(sst, r"""
+public static Boolean get(java.util.UUID u, String key) {
+  if (u == null || key == null) return null;
+  Boolean rd = @PKG@.SetReg.refusedDef(key);
+  if (rd != null) return rd;
+  Boolean o = own(u, key);
+  if (o != null) return o;
+  return @PKG@.SetReg.def(key);
+}""")
+# the file write - the caller holds lockOf(k). DIRTY is cleared BEFORE the snapshot, so a change published after it marks DIRTY again
+# and schedules its own save; the snapshot map is never changed after publication (copy-on-write), so it is serialized without a lock.
+M(sst, r"""
+public static void writeLocked(String k) {
+  DIRTY.remove(k);
+  Object m = VALS.get(k);
+  if (m == null || DIR == null || BROKEN.containsKey(k)) return;
+  java.util.HashMap vals = (java.util.HashMap) m;
+  java.util.ArrayList keys = new java.util.ArrayList(vals.keySet());
+  java.util.Collections.sort(keys);
+  StringBuilder sb = new StringBuilder();
+  sb.append("# SkyyMenu settings of one player (uuid ").append(k).append("). Only the switches this player changed are listed - everything else uses the default.\n");
+  sb.append("# Change them in game with /settings. Hand edits while the player is online are overwritten.\n");
+  sb.append("_v=1\n");
+  Object nm = NAMES.get(k);
+  sb.append("_name=").append(@PKG@.MenuUtil.cleanName(nm == null ? "" : String.valueOf(nm))).append('\n');
+  for (int i = 0; i < keys.size(); i++) {
+    String key = (String) keys.get(i);
+    Object v = vals.get(key);
+    if (!(v instanceof Boolean)) continue;
+    sb.append(key).append('=').append(((Boolean) v).booleanValue() ? "true" : "false").append('\n');
+  }
+  try { @PKG@.MenuUtil.atomicWrite(fileOf(k), sb.toString().getBytes("UTF-8")); }
+  catch (Throwable t) {
+    @PKG@.MenuUtil.warn("could not save settings/" + k + ".properties (kept in memory, retried every 30 s and at shutdown): " + t);
+    DIRTY.put(k, Boolean.TRUE);
+  }
+}""")
+M(sst, r"""
+public static void saveNow(String k) {
+  java.util.concurrent.locks.ReentrantLock lk = lockOf(k);
+  lk.lock();
+  try { writeLocked(k); } finally { lk.unlock(); }
+}""")
+# ---- SetSaveTask: the 500 ms delayed save (saveNow writes the NEWEST map, so several quick clicks give one write)
+ssv.addInterface(pool.get("java.lang.Runnable"))
+F(ssv, "public String k;")
+C(ssv, "public SetSaveTask(String k) { this.k = k; }")
+M(ssv, r"""
+public void run() {
+  try { @PKG@.SetStore.saveNow(this.k); } catch (Throwable t) { @PKG@.MenuUtil.warn("settings save failed: " + t); }
+}""")
+# ---- SetStore (cont.)
+# schedules the save; the caller has already marked DIRTY (setMem / resetMem). Called OUTSIDE SetStore.class. The inline fallback only
+# runs when the executor refuses the task (the server is shutting down).
+M(sst, r"""
+public static void saveSoon(String k) {
+  try { @HSV@.SCHEDULED_EXECUTOR.schedule(new @PKG@.SetSaveTask(k), 500L, java.util.concurrent.TimeUnit.MILLISECONDS); }
+  catch (Throwable t) { saveNow(k); }
+}""")
+# memory only, under SetStore.class: 1 = the state already matches (onlyIfUnset and the player chose) or a save is already on its way,
+# 2 = changed and newly DIRTY (the caller schedules the save after leaving the lock), 3 = the map is not loaded (the caller loads it
+# outside this lock and tries again). The new map and its DIRTY mark are published in this one locked step (pruneOffline holds the same lock).
+M(sst, r"""
+public static synchronized int setMem(String k, String key, boolean val, boolean onlyIfUnset) {
+  Object m = VALS.get(k);
+  if (m == null) return 3;
+  java.util.HashMap cur = (java.util.HashMap) m;
+  if (onlyIfUnset && cur.containsKey(key)) return 1;
+  java.util.HashMap nx = new java.util.HashMap(cur);
+  nx.put(key, Boolean.valueOf(val));
+  VALS.put(k, nx);
+  return DIRTY.putIfAbsent(k, Boolean.TRUE) == null ? 2 : 1;
+}""")
+# 1 = the stored state matches the request (written, or skipped because onlyIfUnset and the player already chose), 0 = not saved
+M(sst, r"""
+public static int set(java.util.UUID u, String key, boolean val, boolean onlyIfUnset) {
+  if (u == null || !@PKG@.SetReg.validKey(key)) return 0;
+  String k = u.toString();
+  for (int i = 0; i < 3; i++) {
+    if (load(k) == null) return 0;
+    int r = setMem(k, key, val, onlyIfUnset);
+    if (r == 2) { saveSoon(k); return 1; }
+    if (r != 3) return r;
+  }
+  return 0;
+}""")
+# 0.3.3: keep = the keys whose own choice stays (switches the player may not change - Reset all only resets rows they can change); the
+# permission lookups run in resetAll BEFORE this lock, the kept values are taken from the map current under the lock
+M(sst, r"""
+public static synchronized int resetMem(String k, java.util.HashMap keep) {
+  Object m = VALS.get(k);
+  if (m == null) return 3;
+  java.util.HashMap cur = (java.util.HashMap) m;
+  java.util.HashMap nx = new java.util.HashMap();
+  if (keep != null) {
+    java.util.Iterator it = keep.keySet().iterator();
+    while (it.hasNext()) {
+      Object key = it.next();
+      Object v = cur.get(key);
+      if (v instanceof Boolean) nx.put(key, v);
+    }
+  }
+  VALS.put(k, nx);
+  return DIRTY.putIfAbsent(k, Boolean.TRUE) == null ? 2 : 1;
+}""")
+M(sst, r"""
+public static int resetAll(java.util.UUID u) {
+  if (u == null) return 0;
+  String k = u.toString();
+  for (int i = 0; i < 3; i++) {
+    java.util.HashMap vals = load(k);
+    if (vals == null) return 0;
+    java.util.HashMap keep = new java.util.HashMap();
+    java.util.Iterator it = vals.keySet().iterator();
+    while (it.hasNext()) {
+      Object key = it.next();
+      if (key instanceof String && !@PKG@.SetReg.may(u, (String) key)) keep.put(key, Boolean.TRUE);
+    }
+    int r = resetMem(k, keep);
+    if (r == 2) { saveSoon(k); return 1; }
+    if (r != 3) return r;
+  }
+  return 0;
+}""")
+M(sst, r"""
+public static int retryDirty() {
+  java.util.ArrayList ks = new java.util.ArrayList(DIRTY.keySet());
+  for (int i = 0; i < ks.size(); i++) saveNow((String) ks.get(i));
+  return ks.size();
+}""")
+# drop one offline player's cached map - only with the stripe got by tryLock (never while their file is being read or written; a busy
+# stripe is simply tried again at the next SeenTick) and only when nothing is waiting to be saved
+M(sst, r"""
+public static void dropIfIdle(String k) {
+  java.util.concurrent.locks.ReentrantLock lk = lockOf(k);
+  if (!lk.tryLock()) return;
+  try {
+    if (!DIRTY.containsKey(k)) { VALS.remove(k); NAMES.remove(k); }
+  } finally { lk.unlock(); }
+}""")
+# drop cached maps of players who left (not dirty ones), so a hand edit made while they are offline is read at their next join.
+# SetStore.class keeps setMem / resetMem out while it checks DIRTY; it never blocks on a stripe (tryLock).
+M(sst, r"""
+public static synchronized void pruneOffline(java.util.Set online) {
+  java.util.ArrayList ks = new java.util.ArrayList(VALS.keySet());
+  for (int i = 0; i < ks.size(); i++) {
+    String k = (String) ks.get(i);
+    if (online.contains(k) || DIRTY.containsKey(k)) continue;
+    dropIfIdle(k);
+  }
+  BROKEN.keySet().retainAll(online);
+}""")
+M(sst, r"""
+public static void flushAll() {
+  int n = retryDirty();
+  if (n > 0) @PKG@.MenuUtil.info("settings: saved " + n + " changed player file(s) at shutdown");
+}""")
+
+# ================= Tips (0.1.3 book, 0.2 on the registry): the per-player "hover tooltips" switch = settings key menu.tooltips =================
+# OFF renders the grid with InfoDisplay: None (the EyeSpy markup), so no tooltip can ever stick. 0.1.3 stored OFF as the file
+# Skyy_SkyyMenu/notips/<uuid>.txt; migrate() moves it into the registry at the next join (SetLoadTask) and deletes the file only after
+# the settings file is on disk. Until then an existing notips file still counts as OFF (legacyOff), so the switch never flips back on.
+F(tip, "public static java.nio.file.Path DIR;")
+F(tip, "public static final java.util.concurrent.ConcurrentHashMap LEGACY = new java.util.concurrent.ConcurrentHashMap();")
+M(tip, r"""
+public static boolean legacyOff(java.util.UUID u) {
+  if (u == null) return false;
+  Object v = LEGACY.get(u);
+  if (v instanceof Boolean) return ((Boolean) v).booleanValue();
+  boolean off = false;
+  try { off = DIR != null && java.nio.file.Files.exists(DIR.resolve(u.toString() + ".txt"), new java.nio.file.LinkOption[0]); }
+  catch (Throwable t) { off = false; }
+  LEGACY.put(u, off ? Boolean.TRUE : Boolean.FALSE);
+  return off;
+}""")
+M(tip, r"""
+public static boolean isOff(java.util.UUID u) {
+  if (u == null) return false;
+  Boolean own = @PKG@.SetStore.own(u, @PKG@.MenuData.TIPS_KEY);
+  if (own != null) return !own.booleanValue();
+  if (legacyOff(u)) return true;
+  Boolean v = @PKG@.SetStore.get(u, @PKG@.MenuData.TIPS_KEY);
+  return v != null && !v.booleanValue();
+}""")
+# scheduler thread only (SetLoadTask): the one-shot move of a 0.1.3 notips file
+M(tip, r"""
+public static void migrate(java.util.UUID u) {
+  if (u == null || DIR == null || !legacyOff(u)) return;
+  String k = u.toString();
+  if (@PKG@.SetStore.set(u, @PKG@.MenuData.TIPS_KEY, false, true) != 1) return;
+  @PKG@.SetStore.saveNow(k);
+  if (@PKG@.SetStore.DIRTY.containsKey(k) || @PKG@.SetStore.isBroken(u)) return;
+  try {
+    java.nio.file.Files.deleteIfExists(DIR.resolve(k + ".txt"));
+    LEGACY.put(u, Boolean.FALSE);
+    @PKG@.MenuUtil.info("moved the 0.1.3 Hover Tooltips switch of " + k + " to /settings (" + @PKG@.MenuData.TIPS_KEY + ", a choice already made there wins)");
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("could not remove notips/" + k + ".txt (the /settings value is saved; retried at the next join): " + t); }
+}""")
+# 1 = saved (memory now, file 500 ms later), 0 = the player's settings file is unreadable (nothing changed)
+M(tip, r"""
+public static int setOff(java.util.UUID u, boolean off) {
+  if (u == null) return 0;
+  return @PKG@.SetStore.set(u, @PKG@.MenuData.TIPS_KEY, !off, false);
+}""")
+
+# ---- SetLoadTask: the preload (off the world thread) + the notips migration. PlayerReadyEvent fires on EVERY world switch, so preload()
+# schedules the task only while there is work left: the player's map is not loaded yet (first ready of the session, or an unreadable
+# file waiting for its 30 s re-read), or the 0.1.3 notips state is unknown / not moved yet (LEGACY null / TRUE). Otherwise nothing.
+sld.addInterface(pool.get("java.lang.Runnable"))
+F(sld, "public String k;")
+F(sld, "public java.util.UUID u;")
+C(sld, "public SetLoadTask(String k, java.util.UUID u) { this.k = k; this.u = u; }")
+M(sld, r"""
+public void run() {
+  try {
+    @PKG@.SetStore.load(this.k);
+    @PKG@.Tips.migrate(this.u);
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("settings preload failed: " + t); }
+}""")
+M(sld, r"""
+public static void preload(@PR@ pr) {
+  try {
+    if (pr == null) return;
+    java.util.UUID u = pr.getUuid();
+    if (u == null) return;
+    String k = u.toString();
+    String n = pr.getUsername();
+    if (n != null) @PKG@.SetStore.NAMES.put(k, n);
+    if (@PKG@.SetStore.VALS.containsKey(k) && Boolean.FALSE.equals(@PKG@.Tips.LEGACY.get(u))) return;
+    @HSV@.SCHEDULED_EXECUTOR.schedule(new @PKG@.SetLoadTask(k, u), 0L, java.util.concurrent.TimeUnit.MILLISECONDS);
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("could not schedule the settings preload: " + t); }
+}""")
+
+# ---- the three bridge Functions
+sgf.addInterface(pool.get("java.util.function.Function"))
+C(sgf, "public SetGetFn() { }")
+M(sgf, r"""
+public Object apply(Object o) {
+  try {
+    if (!(o instanceof Object[])) return null;
+    Object[] a = (Object[]) o;
+    if (a.length < 2 || !(a[1] instanceof String)) return null;
+    java.util.UUID u = @PKG@.SetStore.uuidOf(a[0]);
+    String key = (String) a[1];
+    if (u == null || !@PKG@.SetReg.validKey(key)) return null;
+    return @PKG@.SetStore.get(u, key);
+  } catch (Throwable t) { return null; }
+}""")
+srf.addInterface(pool.get("java.util.function.Function"))
+C(srf, "public SetRegFn() { }")
+M(srf, r"""
+public Object apply(Object o) {
+  try { return @PKG@.SetReg.register(o) ? Boolean.TRUE : Boolean.FALSE; } catch (Throwable t) { return Boolean.FALSE; }
+}""")
+ssf.addInterface(pool.get("java.util.function.Function"))
+C(ssf, "public SetSetFn() { }")
+M(ssf, r"""
+public Object apply(Object o) {
+  try {
+    if (!(o instanceof Object[])) return Boolean.FALSE;
+    Object[] a = (Object[]) o;
+    if (a.length < 3 || !(a[1] instanceof String) || !(a[2] instanceof Boolean)) return Boolean.FALSE;
+    java.util.UUID u = @PKG@.SetStore.uuidOf(a[0]);
+    String key = (String) a[1];
+    if (u == null || !@PKG@.SetReg.validKey(key)) return Boolean.FALSE;
+    if (!@PKG@.SetReg.may(u, key)) return Boolean.FALSE;      // 0.3.3: the player lacks the switch's permission node
+    boolean only = a.length > 3 && Boolean.TRUE.equals(a[3]);
+    return @PKG@.SetStore.set(u, key, ((Boolean) a[2]).booleanValue(), only) == 1 ? Boolean.TRUE : Boolean.FALSE;
+  } catch (Throwable t) { return Boolean.FALSE; }
+}""")
+
+
+# ================= 0.3 SetDefCfg: kit hooks (custom: bindings) for Skyy_SkyyMenu/settings-defaults.properties =================
+# settings.defaults = a custom table: EVERY known + registered player switch is an entry (also the ones without a line yet), value
+# on / off / unset; menu.tooltipsDefault = the menu.tooltips line as an ON/OFF row. Memory changes at once (SetReg.adminPut); the kit
+# writes the returned file line (true / false, or null = remove the line) 500 ms later, versions it and logs it.
+M(sdc, r"""
+public static String norm(String v) {
+  if (v == null) return "unset";
+  String s = v.trim().toLowerCase();
+  if (s.equals("on") || s.equals("true") || s.equals("yes") || s.equals("1")) return "on";
+  if (s.equals("off") || s.equals("false") || s.equals("no") || s.equals("0")) return "off";
+  if (s.equals("unset") || s.equals("default") || s.equals("none") || s.length() == 0) return "unset";
+  return null;
+}""")
+M(sdc, r"""
+public static String entryOf(String key) {
+  String p = "settings.defaults[";
+  if (key == null || !key.startsWith(p) || !key.endsWith("]")) return null;
+  return key.substring(p.length(), key.length() - 1);
+}""")
+M(sdc, r"""
+public static String[] customKeys(String tableKey) {
+  java.util.ArrayList ks = new java.util.ArrayList();
+  java.util.HashSet seen = new java.util.HashSet();
+  java.util.ArrayList all = new java.util.ArrayList();
+  for (int i = 0; i < @PKG@.MenuData.SET_ORDER.length; i++) all.add(@PKG@.MenuData.SET_ORDER[i]);
+  all.addAll(new java.util.ArrayList(@PKG@.SetReg.DEFS.keySet()));
+  all.addAll(new java.util.ArrayList(@PKG@.SetReg.ADMIN.keySet()));
+  for (int i = 0; i < all.size(); i++) {
+    Object o = all.get(i);
+    if (!(o instanceof String)) continue;
+    String k = (String) o;
+    if (!@PKG@.SetReg.validKey(k) || !seen.add(k)) continue;
+    ks.add(String.valueOf(10000 + @PKG@.SetReg.rank(k)) + "\t" + k);
+  }
+  java.util.Collections.sort(ks);
+  String[] out = new String[ks.size()];
+  for (int i = 0; i < out.length; i++) { String s = (String) ks.get(i); out[i] = s.substring(s.indexOf('\t') + 1); }
+  return out;
+}""")
+M(sdc, r"""
+public static String customGet(String key) {
+  if ("menu.tooltipsDefault".equals(key)) {
+    Object v = @PKG@.SetReg.ADMIN.get(@PKG@.MenuData.TIPS_KEY);
+    if (v instanceof Boolean && !((Boolean) v).booleanValue()) return "false";
+    return "true";
+  }
+  String e = entryOf(key);
+  if (e == null || !@PKG@.SetReg.validKey(e)) return null;
+  Object v = @PKG@.SetReg.ADMIN.get(e);
+  if (v instanceof Boolean) return ((Boolean) v).booleanValue() ? "on" : "off";
+  return "unset";
+}""")
+M(sdc, r"""
+public static String check(String key, String value) {
+  String e = entryOf(key);
+  if (e == null) return null;
+  if (!@PKG@.SetReg.validKey(e)) return "Not a settings key: " + e + ".";
+  if (value == null) return null;
+  if (norm(value) == null) return "Type on, off or unset.";
+  return null;
+}""")
+M(sdc, r"""
+public static Object[] customSet(String key, String value) {
+  if ("menu.tooltipsDefault".equals(key)) {
+    boolean on = !"false".equals(value);
+    @PKG@.SetReg.adminPut(@PKG@.MenuData.TIPS_KEY, Boolean.valueOf(on));
+    return new Object[] { "ok", on ? "true" : "false", null, new String[] { @PKG@.MenuData.TIPS_KEY, on ? "true" : "false" } };
+  }
+  String e = entryOf(key);
+  if (e == null || !@PKG@.SetReg.validKey(e)) return new Object[] { "bad", null, "Not a settings key." };
+  String n = norm(value);
+  if (n == null) return new Object[] { "bad", null, "Type on, off or unset." };
+  if (n.equals("unset")) {
+    @PKG@.SetReg.adminPut(e, null);
+    return new Object[] { "ok", "unset", null, new String[] { e, null } };
+  }
+  boolean on = n.equals("on");
+  @PKG@.SetReg.adminPut(e, Boolean.valueOf(on));
+  return new Object[] { "ok", n, null, new String[] { e, on ? "true" : "false" } };
+}""")
+M(sdc, r"""
+public static String customRead(String key, java.util.Map vals) {
+  if (!"menu.tooltipsDefault".equals(key) || vals == null) return null;
+  Object v = vals.get(@PKG@.MenuData.TIPS_KEY);
+  if (v != null && String.valueOf(v).trim().equalsIgnoreCase("false")) return "false";
+  return "true";
+}""")
+
+# ================= 0.3.6 PageGuard: THE WORLD-JOIN PAGE GUARD (tools/menu_0_3_6_patch.py) =================
+# World.addPlayer - the one way into a world (cross-world teleport, login, instances, a world's drain) - dispatches AddPlayerToWorldEvent
+# while the player is in no world store (a teleport: on the OLD world's thread right after PlayerRef.removeFromStore), BEFORE
+# onSetupPlayerJoining clears the page acknowledgements (and keeps PageManager.customPage) and long before the new world adds the player
+# to its store. The client drops its page at the world change, so the page the server still has here is stale by construction. It is
+# forgotten without a packet: at once when its onDismiss is the engine's empty one (no page code runs), else by StaleTask on the new
+# world's thread with the player's real ref / store. EXEC = HytaleServer.SCHEDULED_EXECUTOR (set in setup(), the BankWatch.EXEC pattern;
+# null = not set up: no timers, said once a minute). JOINS = world joins seen per player (MenuPage.changedWorld), dropped at disconnect.
+guard.addInterface(pool.get("java.util.function.Consumer"))
+F(guard, "public static volatile boolean STOP = false;")
+F(guard, "public static volatile java.util.concurrent.ScheduledExecutorService EXEC;")
+F(guard, "public static final java.util.concurrent.ConcurrentHashMap JOINS = new java.util.concurrent.ConcurrentHashMap();")
+F(guard, "public static volatile long WARNED = 0L;")
+F(guard, "public static volatile int FORGOT = 0;")
+F(guard, "public static volatile int DEFERRED = 0;")
+C(guard, "public PageGuard() { }")
+M(guard, r"""
+public static int joins(java.util.UUID u) {
+  if (u == null) return 0;
+  Object o = JOINS.get(u);
+  return o instanceof Integer ? ((Integer) o).intValue() : 0;
+}""")
+M(guard, r"""
+public static void bump(java.util.UUID u) {
+  if (u == null) return;
+  JOINS.put(u, Integer.valueOf(joins(u) + 1));
+}""")
+# true = the page's onDismiss is the engine's empty CustomUIPage.onDismiss (public in the engine, so a page can only override it public)
+M(guard, r"""
+public static boolean plainDismiss(Object page) {
+  if (page == null) return false;
+  try {
+    java.lang.reflect.Method m = page.getClass().getMethod("onDismiss", new Class[] { @REF@.class, @ST@.class });
+    return m.getDeclaringClass() == @PAGE@.class;
+  } catch (Throwable t) { return false; }
+}""")
+M(guard, r"""
+public static String who(@PR@ pr) {
+  try {
+    if (pr == null) return "?";
+    String n = pr.getUsername();
+    return n == null ? String.valueOf(pr.getUuid()) : n;
+  } catch (Throwable t) { return "?"; }
+}""")
+M(guard, r"""
+public static void warnOnce(String msg) {
+  long now = System.currentTimeMillis();
+  if (now - WARNED < 60000L) return;
+  WARNED = now;
+  @PKG@.MenuUtil.warn(msg);
+}""")
+# forget `page` on the server the way the client's Esc does: PageManager.handleEvent Dismiss = page.onDismiss(ref, st), then no current
+# page - no packet, the acknowledgement counter untouched. Only while it is still the current page. true = it is gone now.
+M(guard, r"""
+public static boolean forget(@PGM@ pm, @REF@ ref, @ST@ st, @PAGE@ page) {
+  if (pm == null || page == null || pm.getCustomPage() != page) return false;
+  pm.handleEvent(ref, st, new @CPE@(@CPT@.Dismiss, (String) null));
+  return pm.getCustomPage() != page;
+}""")
+
+# ================= 0.3.6 StaleTask: a stale page with its OWN onDismiss, forgotten on the new world's thread =================
+# Scheduler hop (PageGuard.EXEC, every STEP ms while the player is not in the new world's store yet) -> World.execute -> the check on
+# that world's thread: still the same page -> PageGuard.forget with the player's real ref / store (what the engine would pass at the next
+# page action there - without the +1). Ends when the page was closed or replaced meanwhile, the player left / went on to another world
+# (that join has its own check), at shutdown (STOP) or after MAX tries (40 s: the engine waits up to 30 s for the client's chunks).
+stale.addInterface(pool.get("java.lang.Runnable"))
+F(stale, "public @PR@ pr;")
+F(stale, "public @PAGE@ page;")
+F(stale, "public @WLD@ target;")
+F(stale, "public boolean onWorld;")
+F(stale, "public int tries;")
+F(stale, "public static final long STEP = 50L;")
+F(stale, "public static final int MAX = 800;")
+C(stale, r"""
+public StaleTask(@PR@ pr, @PAGE@ page, @WLD@ target) {
+  this.pr = pr;
+  this.page = page;
+  this.target = target;
+  this.onWorld = false;
+  this.tries = 0;
+}""")
+M(stale, r"""
+public boolean later() {
+  this.onWorld = false;
+  this.tries = this.tries + 1;
+  if (this.tries > MAX || @PKG@.PageGuard.STOP) return false;
+  java.util.concurrent.ScheduledExecutorService ex = @PKG@.PageGuard.EXEC;
+  if (ex == null) {
+    @PKG@.PageGuard.warnOnce("no scheduler (SkyyMenu not set up) - a page with its own close code that was open across a world change is closed by the game later");
+    return false;
+  }
+  ex.schedule(this, STEP, java.util.concurrent.TimeUnit.MILLISECONDS);
+  return true;
+}""")
+M(stale, r"""
+public static boolean start(@PR@ pr, @PAGE@ page, @WLD@ target) {
+  if (pr == null || page == null || target == null) return false;
+  return new @PKG@.StaleTask(pr, page, target).later();
+}""")
+M(stale, r"""
+public void run() {
+  try {
+    if (@PKG@.PageGuard.STOP || this.pr == null || !this.pr.isValid()) return;
+    java.util.UUID wu = this.pr.getWorldUuid();
+    @UNI@ uni = @UNI@.get();
+    @WLD@ now = (wu == null || uni == null) ? null : uni.getWorld(wu);
+    if (now != this.target) return;
+    if (!this.onWorld) {
+      if (this.pr.getReference() == null) { later(); return; }
+      this.onWorld = true;
+      this.target.execute(this);
+      return;
+    }
+    @REF@ r = this.pr.getReference();
+    if (r == null || !r.isValid()) { later(); return; }
+    @ST@ st = r.getStore();
+    if (st == null) { later(); return; }
+    @PLA@ p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+    if (p == null) { later(); return; }
+    @PGM@ pm = p.getPageManager();
+    if (pm == null || pm.getCustomPage() != this.page) return;
+    if (@PKG@.PageGuard.forget(pm, r, st, this.page)) {
+      @PKG@.PageGuard.FORGOT = @PKG@.PageGuard.FORGOT + 1;
+      @PKG@.MenuUtil.info("forgot the page " + this.page.getClass().getName() + " of " + @PKG@.PageGuard.who(this.pr) + " in the new world (its own close code ran, no packet): no later page close or bench can leave the game waiting for an answer that never comes");
+    }
+  } catch (Throwable t) {
+    @PKG@.PageGuard.warnOnce("the world-change page check failed for " + @PKG@.PageGuard.who(this.pr) + ": " + t);
+  }
+}""")
+# the listener itself (after StaleTask: it starts one)
+M(guard, r"""
+public void accept(Object ev) {
+  try {
+    if (STOP || !(ev instanceof @ATW@)) return;
+    @ATW@ e = (@ATW@) ev;
+    @HLD@ h = e.getHolder();
+    if (h == null) return;
+    @PR@ pr = (@PR@) h.getComponent(@PR@.getComponentType());
+    if (pr != null) bump(pr.getUuid());
+    @PLA@ p = (@PLA@) h.getComponent(@PLA@.getComponentType());
+    if (p == null) return;
+    @PGM@ pm = p.getPageManager();
+    if (pm == null) return;
+    @PAGE@ cp = pm.getCustomPage();
+    if (cp == null) return;
+    String what = cp.getClass().getName();
+    if (plainDismiss(cp)) {
+      if (forget(pm, (@REF@) null, (@ST@) null, cp)) {
+        FORGOT = FORGOT + 1;
+        @PKG@.MenuUtil.info(who(pr) + " changed world with the page " + what + " still open on the server - forgot it there too (no packet; the game client closes every page at a world change), so no later page close or bench can leave the game waiting for an answer that never comes");
+      }
+      return;
+    }
+    if (@PKG@.StaleTask.start(pr, cp, e.getWorld())) {
+      DEFERRED = DEFERRED + 1;
+      @PKG@.MenuUtil.info(who(pr) + " changed world with the page " + what + " still open on the server - it has its own close code, so it is forgotten (no packet) as soon as " + who(pr) + " is in the new world");
+    }
+  } catch (Throwable t) {
+    warnOnce("the world-change page check failed: " + t);
+  }
+}""")
+
+# ================= 0.3.6 MenuWatch part 1: the menu page's safety net (BankWatch pattern; part 2 after MenuPage.watchTick) =========
+# target == null: the scheduler-thread tick; target != null: the check on that world's thread (MenuPage.watchTick does every PageManager
+# call). One check per second per open menu; it ends when the menu is closed or replaced, the player leaves, or at shutdown (STOP).
+mwat.addInterface(pool.get("java.lang.Runnable"))
+F(mwat, "public static final long PERIOD = 1000L;")
+F(mwat, "public @PKG@.MenuPage page;")
+F(mwat, "public @WLD@ target;")
+C(mwat, r"""
+public MenuWatch(@PKG@.MenuPage page, @WLD@ target) {
+  this.page = page;
+  this.target = target;
+}""")
+M(mwat, r"""
+public static void schedule(@PKG@.MenuPage page) {
+  if (@PKG@.PageGuard.STOP || page == null) return;
+  java.util.concurrent.ScheduledExecutorService ex = @PKG@.PageGuard.EXEC;
+  try {
+    if (ex == null) throw new java.lang.IllegalStateException("no scheduler (SkyyMenu not set up)");
+    ex.schedule(new @PKG@.MenuWatch(page, (@WLD@) null), PERIOD, java.util.concurrent.TimeUnit.MILLISECONDS);
+  } catch (Throwable t) {
+    @PKG@.PageGuard.warnOnce("the menu page check could not be scheduled (" + t + ") - the menu still works, a click the game drops is just not healed");
+  }
+}""")
+
+# ================= 0.3.10 StatsCalc: every number of the Stats page. Bridge reads only (java.lang types, tools/PROFILES-CONTRACT.md: the
+# UUID keys always hold the ACTIVE profile), plus the player's EntityStatMap (vitals(): world thread, called from StatsPage.build). A stat
+# whose mod is missing shows "-" and why; nothing here writes anything. Rows = String[] { name, total, source }: name + total + source
+# + 2 <= ST_LINE_MAX (the source is clipped). Health / Mana / Stamina: the Skyy parts by key prefix, then ", base <the rest>" if it fits.
+F(scl, "public static final int LINE_MAX = %d;" % ST_LINE_MAX)
+F(scl, "public static final double JUMP_H0 = 2.1756;")      # tools/skyymove.py: default JumpForce 11.8 -> 11.8^2 / (2 x 32) blocks
+F(scl, "public static final String[] GK = %s;" % jarr([g[0] for g in ST_GEAR]))
+F(scl, "public static final String[] GL = %s;" % jarr([g[1] for g in ST_GEAR]))
+F(scl, "public static final String[] GU = %s;" % jarr([g[3] for g in ST_GEAR]))
+F(scl, "public static final String[] ELEM_K = %s;" % jarr([g[0] for g in ST_ELEM]))
+F(scl, "public static final String[] ELEM_S = %s;" % jarr([g[1] for g in ST_ELEM]))
+F(scl, "public static final String[] RAW_K = %s;" % jarr([g[0] for g in ST_RAW]))
+F(scl, "public static final String[] RAW_S = %s;" % jarr([g[1] for g in ST_RAW]))
+F(scl, "public static final String[] GROUPS = %s;" % jarr(ST_GROUPS))
+F(scl, "public static final String[] FORT_N = %s;" % jarr([f[0] for f in ST_FORTUNE]))
+F(scl, "public static final String[] FORT_K = %s;" % jarr([f[1] for f in ST_FORTUNE]))
+F(scl, "public static final String[] WIS_N = %s;" % jarr([f[0] for f in ST_WISDOM]))
+F(scl, "public static final String[] WIS_K = %s;" % jarr([f[1] for f in ST_WISDOM]))
+F(scl, "public static final String[] CLASS_SKILLS = %s;" % jarr(CLASS_SKILLS + CLASS_SKILLS_OLD))   # 0.3.13: + the old Monk label
+F(scl, "public static final String[] TABS = %s;" % jarr(ST_TABS))
+F(scl, "public static final String[] NOTES = %s;" % jarr(ST_NOTES))
+F(scl, "public static final String SUB = %s;" % jstr(ST_SUB))
+F(scl, "public static final int ROWS = %d;" % ST_ROWS)
+M(scl, r"""
+public static java.util.Map br() { return @PKG@.MenuUtil.bridge(); }""")
+M(scl, r"""
+public static String num(double v) {
+  if (Double.isNaN(v) || Double.isInfinite(v)) return "0";
+  double x = v;
+  if (x > 1.0E9) x = 1.0E9;
+  if (x < -1.0E9) x = -1.0E9;
+  long r = Math.round(x * 10.0);
+  if (r % 10L == 0L) return @PKG@.MenuUtil.fmt(r / 10L);
+  long a = r < 0L ? -r : r;
+  return (r < 0L ? "-" : "") + String.valueOf(a / 10L) + "." + String.valueOf(a % 10L);
+}""")
+M(scl, r"""
+public static String signed(double v) {
+  return (Math.round(v * 10.0) > 0L ? "+" : "") + num(v);
+}""")
+M(scl, r"""
+public static java.util.HashMap kv(Object o) {
+  java.util.HashMap m = new java.util.HashMap();
+  if (!(o instanceof String)) return m;
+  String[] parts = ((String) o).split(",");
+  for (int i = 0; i < parts.length; i++) {
+    String p = parts[i].trim();
+    int c = p.lastIndexOf(':');
+    if (c <= 0 || c >= p.length() - 1) continue;
+    String k = p.substring(0, c).trim();
+    double v = Double.NaN;
+    try { v = Double.parseDouble(p.substring(c + 1).trim()); } catch (Throwable t) { v = Double.NaN; }
+    if (Double.isNaN(v) || Double.isInfinite(v)) continue;
+    Object old = m.get(k);
+    double nv = (old instanceof Double ? ((Double) old).doubleValue() : 0.0) + v;
+    if (nv > 1.0E9) nv = 1.0E9;
+    if (nv < -1.0E9) nv = -1.0E9;
+    m.put(k, Double.valueOf(nv));
+  }
+  return m;
+}""")
+M(scl, r"""
+public static double get(java.util.HashMap m, String k) {
+  Object o = m == null ? null : m.get(k);
+  return o instanceof Double ? ((Double) o).doubleValue() : 0.0;
+}""")
+# the skill string in its own order: [name, level] pairs
+M(scl, r"""
+public static java.util.ArrayList pairs(Object o) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  if (!(o instanceof String)) return out;
+  String[] parts = ((String) o).split(",");
+  for (int i = 0; i < parts.length; i++) {
+    String p = parts[i].trim();
+    int c = p.lastIndexOf(':');
+    if (c <= 0 || c >= p.length() - 1) continue;
+    int lv = -1;
+    try { lv = Integer.parseInt(p.substring(c + 1).trim()); } catch (Throwable t) { lv = -1; }
+    if (lv < 0) continue;
+    out.add(new String[] { @PKG@.MenuUtil.safe(p.substring(0, c).trim()), String.valueOf(lv) });
+  }
+  return out;
+}""")
+M(scl, r"""
+public static void add(java.util.ArrayList rows, String name, String value, String src) {
+  String n = @PKG@.MenuUtil.clip(@PKG@.MenuUtil.safe(name == null ? "" : name), 32);
+  String v = @PKG@.MenuUtil.clip(@PKG@.MenuUtil.safe(value == null ? "" : value), 24);
+  int room = LINE_MAX - n.length() - v.length() - 2;
+  if (room < 12) room = 12;
+  rows.add(new String[] { n, v, @PKG@.MenuUtil.clip(@PKG@.MenuUtil.safe(src == null ? "" : src), room) });
+}""")
+M(scl, r"""
+public static void part(StringBuilder sb, String label, double v, String unit) {
+  if (Math.abs(v) < 0.05) return;
+  if (sb.length() > 0) sb.append(", ");
+  sb.append(label).append(' ').append(signed(v)).append(unit);
+}""")
+M(scl, r"""
+public static Object call(String key, Object arg) {
+  try {
+    Object f = br().get(key);
+    if (f instanceof java.util.function.Function) return ((java.util.function.Function) f).apply(arg);
+  } catch (Throwable t) { }
+  return null;
+}""")
+# a value of another mod's Server Setup row (tools/CONFIG-CONTRACT.md op "get"; null = not a row / mod missing -> the default)
+M(scl, r"""
+public static String cfg(String mod, String key) {
+  Object r = call("config:fn:" + mod, new Object[] { "get", key });
+  return r instanceof String ? (String) r : null;
+}""")
+M(scl, r"""
+public static double cfgNum(String mod, String key, double def) {
+  String s = cfg(mod, key);
+  if (s == null) return def;
+  double d = def;
+  try { d = Double.parseDouble(s.trim()); } catch (Throwable t) { d = def; }
+  if (Double.isNaN(d) || Double.isInfinite(d)) return def;
+  return d;
+}""")
+M(scl, r"""
+public static boolean cfgOn(String mod, String key, boolean def) {
+  String s = cfg(mod, key);
+  if (s == null) return def;
+  String t = s.trim().toLowerCase();
+  if (t.equals("true")) return true;
+  if (t.equals("false")) return false;
+  return def;
+}""")
+# the summed skill-tree bonus of one key (skill:bonus:<uuid> = source -> Map{"dd.mining": 0.02, "xp.mining": 0.15, ...}) - the same sum
+# SkyySkills' SkillBonus.sum makes
+M(scl, r"""
+public static double bonus(java.util.UUID u, String key) {
+  double s = 0.0;
+  try {
+    Object o = br().get("skill:bonus:" + u.toString());
+    if (!(o instanceof java.util.Map)) return 0.0;
+    java.util.Iterator it = ((java.util.Map) o).values().iterator();
+    while (it.hasNext()) {
+      Object v = it.next();
+      if (!(v instanceof java.util.Map)) continue;
+      Object n = ((java.util.Map) v).get(key);
+      if (!(n instanceof Number)) continue;
+      double d = ((Number) n).doubleValue();
+      if (Double.isNaN(d) || Double.isInfinite(d)) continue;
+      s = s + d;
+    }
+  } catch (Throwable t) { return 0.0; }
+  return s;
+}""")
+M(scl, r"""
+public static String text(String key) {
+  Object o = br().get(key);
+  if (!(o instanceof String)) return null;
+  String t = ((String) o).trim();
+  return t.length() == 0 ? null : @PKG@.MenuUtil.safe(t);
+}""")
+# fix round: profile:class:<uuid> (SkyyProfiles) is AUTHORITATIVE (SkyyClasses 0.1.3+ / SkyySkills 0.3.2+ read it first); class:<uuid> +
+# class:skill:<uuid> lag a profile switch by up to ~2 s (SkyyClasses' ClassTick). classSyncing = SkyyClasses is loaded (class:fn:get) and
+# its class:<uuid> does not match the profile's class yet - then the class skill is stale and nothing class-skill based is shown.
+M(scl, r"""
+public static String className(java.util.UUID u) {
+  String c = text("profile:class:" + u.toString());
+  return c != null ? c : text("class:" + u.toString());
+}""")
+M(scl, r"""
+public static boolean classSyncing(java.util.UUID u) {
+  String pc = text("profile:class:" + u.toString());
+  if (pc == null) return false;
+  if (!(br().get("class:fn:get") instanceof java.util.function.Function)) return false;
+  String c = text("class:" + u.toString());
+  return c == null || !c.equalsIgnoreCase(pc);
+}""")
+M(scl, r"""
+public static String classSkill(java.util.UUID u) { return classSyncing(u) ? null : text("class:skill:" + u.toString()); }""")
+M(scl, r"""
+public static String profileName(java.util.UUID u) { return text("profile:name:" + u.toString()); }""")
+M(scl, r"""
+public static Object[] overallInfo(java.util.UUID u) {
+  Object r = call("skill:fn:overall", u);
+  if (r instanceof Object[] && ((Object[]) r).length >= 5 && ((Object[]) r)[0] instanceof Number) return (Object[]) r;
+  return null;
+}""")
+M(scl, r"""
+public static int overall(java.util.UUID u) {
+  Object[] o = overallInfo(u);
+  if (o != null) return ((Number) o[0]).intValue();
+  Object v = br().get("skill:overall:" + u.toString());
+  return v instanceof Number ? ((Number) v).intValue() : -1;
+}""")
+# "Mining 12, Foraging 8, Farming 5" - the n highest levels (ties: the skill string's order)
+M(scl, r"""
+public static String topSkills(java.util.UUID u, int n) {
+  java.util.ArrayList ps = pairs(br().get("skill:" + u.toString()));
+  if (ps.isEmpty()) return null;
+  boolean[] used = new boolean[ps.size()];
+  StringBuilder sb = new StringBuilder();
+  for (int k = 0; k < n; k++) {
+    int best = -1;
+    int bl = -1;
+    for (int i = 0; i < ps.size(); i++) {
+      if (used[i]) continue;
+      int lv = Integer.parseInt(((String[]) ps.get(i))[1]);
+      if (lv > bl) { bl = lv; best = i; }
+    }
+    if (best < 0) break;
+    used[best] = true;
+    if (sb.length() > 0) sb.append(", ");
+    sb.append(((String[]) ps.get(best))[0]).append(' ').append(bl);
+  }
+  return sb.toString();
+}""")
+M(scl, r"""
+public static String header(java.util.UUID u, String player) {
+  StringBuilder sb = new StringBuilder(@PKG@.MenuUtil.safe(player));
+  String c = className(u);
+  if (c != null) sb.append("  -  ").append(c);
+  String p = profileName(u);
+  if (p != null) sb.append("  -  profile ").append(p);
+  int ov = overall(u);
+  if (ov >= 0) sb.append("  -  Overall Level ").append(ov);
+  return @PKG@.MenuUtil.clip(sb.toString(), LINE_MAX);
+}""")
+# ---- Health / Mana / Stamina: the max the player has right now, split by the MAX modifiers' key prefixes (every Skyy mod names its own)
+M(scl, r"""
+public static int group(String key) {
+  if (key == null) return -1;
+  if (key.startsWith("skyygear_")) return 0;
+  if (key.startsWith("skyyacc_")) return 1;
+  if (key.startsWith("skyyskill_overall")) return 2;
+  if (key.startsWith("skyyskill_class")) return 3;
+  if (key.startsWith("skyyskill_base")) return 4;
+  if (key.startsWith("skyyskill_")) return 5;
+  if (key.startsWith("skyytree_")) return 6;
+  return -1;
+}""")
+M(scl, r"""
+public static String[] vital(@ESV@ v) {
+  if (v == null) return null;
+  float max = v.getMax();
+  double[] grp = new double[GROUPS.length];
+  double known = 0.0;
+  java.util.Map mods = v.getModifiers();
+  if (mods != null) {
+    java.util.Iterator it = mods.keySet().iterator();
+    while (it.hasNext()) {
+      Object k = it.next();
+      Object mo = mods.get(k);
+      if (!(mo instanceof @SMO@)) continue;
+      @SMO@ sm = (@SMO@) mo;
+      if (sm.getTarget() != @MTG@.MAX || sm.getCalculationType() != @CAL@.ADDITIVE) continue;
+      int gi = group(String.valueOf(k));
+      if (gi < 0) continue;
+      double a = (double) sm.getAmount();
+      if (Double.isNaN(a) || Double.isInfinite(a)) continue;
+      grp[gi] = grp[gi] + a;
+      known = known + a;
+    }
+  }
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < grp.length; i++) part(sb, GROUPS[i], grp[i], "");
+  return new String[] { num((double) max), sb.toString(), num((double) max - known) };
+}""")
+M(scl, r"""
+public static String[] vitalAt(@ESM@ m, int idx) {
+  try {
+    if (m == null || idx < 0) return null;
+    return vital(m.get(idx));
+  } catch (Throwable t) { return null; }
+}""")
+# world thread only (StatsPage.build): null = the stat map could not be read (the rows then say so)
+M(scl, r"""
+public static Object[] vitals(@ST@ st, @REF@ ref) {
+  try {
+    if (st == null || ref == null || !ref.isValid()) return null;
+    @ESM@ m = (@ESM@) st.getComponent(ref, @ESM@.getComponentType());
+    if (m == null) return null;
+    return new Object[] { vitalAt(m, @DST@.getHealth()), vitalAt(m, @DST@.getMana()), vitalAt(m, @DST@.getStamina()) };
+  } catch (Throwable t) { return null; }
+}""")
+M(scl, r"""
+public static void vitalRow(java.util.ArrayList rows, String name, Object[] vit, int i) {
+  String[] e = null;
+  if (vit != null && i < vit.length && vit[i] instanceof String[]) e = (String[]) vit[i];
+  if (e == null) { add(rows, name, "-", "not read - click Refresh"); return; }
+  String src = e[1];
+  String tail = (src.length() == 0 ? "Base " : ", base ") + e[2];
+  if (src.length() + tail.length() <= LINE_MAX - name.length() - e[0].length() - 2) src = src + tail;
+  add(rows, name, e[0], src);
+}""")
+# ---- gear + accessory stats (gear:stats:<uuid> = SkyyGear's active totals without the accessory part, gear:extra:<uuid> = that part)
+M(scl, r"""
+public static int gi(String key) {
+  for (int i = 0; i < GK.length; i++) if (GK[i].equals(key)) return i;
+  return -1;
+}""")
+M(scl, r"""
+public static void gearRow(java.util.ArrayList rows, java.util.HashMap g, java.util.HashMap a, boolean gearOn, String key) {
+  int k = gi(key);
+  if (k < 0) return;
+  double gv = get(g, key);
+  double av = get(a, key);
+  StringBuilder sb = new StringBuilder();
+  part(sb, "Gear", gv, GU[k]);
+  part(sb, "Accessories", av, GU[k]);
+  if (sb.length() == 0) sb.append(gearOn ? "nothing from your gear or accessories" : "SkyyGear is not on this server");
+  add(rows, GL[k], num(gv + av) + GU[k], sb.toString());
+}""")
+# 0.3.12: the skill Defense SkyySkills 0.4.25 publishes (skill:def:<uuid> = Double, Foraging + class balance Defense, the same units as gear
+# Defense - SkyySkills sums both in SkyyGear's formula). Only a Double > 0 counts (NaN / infinite / any other type / missing = 0, the
+# SkyySkills clamp 100000 kept); 0 = the row is exactly 0.3.11's gearRow. Fix round: with SkyyGear's part.stats "false" (config:fn:SkyyGear
+# get, cfgOn - the same test SkyySkills' SkillDef.gearCfg makes) SkyySkills reduces hits by the skill Defense ALONE, so the row then counts
+# only the skill Defense and says "gear stats off" (key absent: still exactly 0.3.11's row).
+M(scl, r"""
+public static double skillDef(java.util.UUID u) {
+  try {
+    Object o = u == null ? null : br().get("skill:def:" + u.toString());
+    if (!(o instanceof Double)) return 0.0;
+    double v = ((Double) o).doubleValue();
+    if (Double.isNaN(v) || Double.isInfinite(v) || !(v > 0.0)) return 0.0;
+    return v > 100000.0 ? 100000.0 : v;
+  } catch (Throwable t) { return 0.0; }
+}""")
+M(scl, r"""
+public static void defRow(java.util.ArrayList rows, java.util.UUID u, java.util.HashMap g, java.util.HashMap a, boolean gearOn) {
+  double sv = skillDef(u);
+  if (!(sv > 0.0)) { gearRow(rows, g, a, gearOn, "def"); return; }
+  int k = gi("def");
+  if (k < 0) return;
+  boolean gs = cfgOn("SkyyGear", "part.stats", true);
+  double gv = gs ? get(g, "def") : 0.0;
+  double av = gs ? get(a, "def") : 0.0;
+  StringBuilder sb = new StringBuilder();
+  part(sb, "Gear", gv, GU[k]);
+  part(sb, "Accessories", av, GU[k]);
+  part(sb, "Skills", sv, GU[k]);
+  if (!gs) sb.append(sb.length() == 0 ? "gear stats off" : ", gear stats off");
+  if (sb.length() == 0) sb.append(gearOn ? "nothing from your gear or accessories" : "SkyyGear is not on this server");
+  add(rows, GL[k], num(gv + av + sv) + GU[k], sb.toString());
+}""")
+M(scl, r"""
+public static void groupRow(java.util.ArrayList rows, java.util.HashMap g, java.util.HashMap a, String[] keys, String[] shorts, String name, boolean always) {
+  double t = 0.0;
+  StringBuilder sb = new StringBuilder();
+  for (int k = 0; k < keys.length; k++) {
+    double v = get(g, keys[k]) + get(a, keys[k]);
+    t = t + v;
+    part(sb, shorts[k], v, "");
+  }
+  if (Math.abs(t) < 0.05 && !always) return;
+  if (sb.length() == 0) sb.append("none - it comes from weapons");
+  add(rows, name, num(t), sb.toString());
+}""")
+# ---- movement (tools/skyymove.py: flat sources add on the default, pct sources multiply on top; speed clamp 0.3-5, jump h0 + 20, fall 0-2)
+M(scl, r"""
+public static String moveName(String src) {
+  String s = src == null ? "" : src;
+  if (s.startsWith("gear")) return "Gear";
+  if (s.startsWith("accessories")) return "Accessories";
+  if (s.startsWith("skills.acrobatics")) return "Acrobatics";
+  if (s.startsWith("skills")) return "Skills";
+  if (s.startsWith("trees")) return "Skill trees";
+  return @PKG@.MenuUtil.clip(@PKG@.MenuUtil.safe(s), 20);
+}""")
+M(scl, r"""
+public static String[] move(java.util.UUID u, String stat) {
+  double flat = 0.0;
+  double pct = 0.0;
+  boolean jump = "jump".equals(stat);
+  StringBuilder sb = new StringBuilder();
+  try {
+    Object o = br().get("move:" + u.toString());
+    if (o instanceof java.util.Map) {
+      java.util.Map mm = (java.util.Map) o;
+      java.util.Iterator it = mm.keySet().iterator();
+      while (it.hasNext()) {
+        Object src = it.next();
+        Object e = mm.get(src);
+        if (!(e instanceof java.util.Map)) continue;
+        Object n = ((java.util.Map) e).get(stat);
+        if (!(n instanceof Number)) continue;
+        double d = ((Number) n).doubleValue();
+        if (Double.isNaN(d) || Double.isInfinite(d) || d == 0.0) continue;
+        boolean isPct = "pct".equals(String.valueOf(((java.util.Map) e).get("layer")));
+        if (isPct) pct = pct + d; else flat = flat + d;
+        if (jump && !isPct) part(sb, moveName(String.valueOf(src)), d, " blocks");
+        else part(sb, moveName(String.valueOf(src)), d * 100.0, "%");
+      }
+    }
+  } catch (Throwable t) { }
+  double total = 0.0;
+  if (jump) {
+    double j = (JUMP_H0 + flat) * (1.0 + pct);
+    if (j < 0.0) j = 0.0;
+    if (j > JUMP_H0 + 20.0) j = JUMP_H0 + 20.0;
+    total = (j / JUMP_H0 - 1.0) * 100.0;
+  } else {
+    double f = (1.0 + flat) * (1.0 + pct);
+    if ("speed".equals(stat)) {
+      if (f < 0.3) f = 0.3;
+      if (f > 5.0) f = 5.0;
+    } else {
+      if (f < 0.0) f = 0.0;
+      if (f > 2.0) f = 2.0;
+    }
+    total = (f - 1.0) * 100.0;
+  }
+  if (sb.length() == 0) sb.append("no bonus right now");
+  return new String[] { signed(total) + "%", sb.toString() };
+}""")
+M(scl, r"""
+public static String sourceName(String src) {
+  String s = src == null ? "" : src.trim();
+  if (s.startsWith("tree")) return "Skill trees";
+  if (s.startsWith("acc")) return "Accessories";
+  if (s.startsWith("gear")) return "Gear";
+  return @PKG@.MenuUtil.clip(@PKG@.MenuUtil.safe(s), 20);
+}""")
+M(scl, r"""
+public static String[] manaRegen(java.util.UUID u) {
+  Object t = call("skill:fn:manaregen", new Object[] { "get", u });
+  if (!(t instanceof Number)) return new String[] { "-", "needs SkyySkills" };
+  double tot = ((Number) t).doubleValue();
+  StringBuilder sb = new StringBuilder();
+  Object s = call("skill:fn:manaregen", new Object[] { "sources", u });
+  if (s instanceof String[]) {
+    String[] a = (String[]) s;
+    for (int i = 0; i < a.length; i++) {
+      String x = a[i] == null ? "" : a[i];
+      int eq = x.indexOf('=');
+      if (x.length() == 0) continue;
+      if (sb.length() > 0) sb.append(", ");
+      if (eq > 0) sb.append(sourceName(x.substring(0, eq))).append(' ').append(x.substring(eq + 1).trim()).append('%');
+      else sb.append(x);
+    }
+  }
+  if (sb.length() == 0) sb.append("no bonus - skill tree nodes add Mana Regen");
+  return new String[] { signed(tot) + "%", sb.toString() };
+}""")
+# ---- gathering: Fortune = today's double-drop chance (SkyySkills Perks.chanceU: level x perk.<skill>.doubleDropPerLevel + the tree dd.<skill>,
+# capped by perk.doubleDropMax); Wisdom = the tree xp.<skill> part
+# fix round: perk.<skill>.doubleDropOnly (SkyySkills default foraging = _Trunk) leads the source: "logs only: " / "some blocks only: "
+M(scl, r"""
+public static void fortune(java.util.ArrayList rows, java.util.UUID u, java.util.HashMap sk, boolean skillsOn, int i) {
+  String name = FORT_N[i] + " Fortune";
+  if (!skillsOn) { add(rows, name, "-", "needs SkyySkills"); return; }
+  String key = FORT_K[i];
+  double lvl = get(sk, FORT_N[i]);
+  double rate = cfgOn("SkyySkills", "perk.enabled", true) ? cfgNum("SkyySkills", "perk." + key + ".doubleDropPerLevel", 0.005) : 0.0;
+  double tree = cfgOn("SkyySkills", "bridge.bonus.enabled", true) ? bonus(u, "dd." + key) : 0.0;
+  double max = cfgNum("SkyySkills", "perk.doubleDropMax", 1.0);
+  if (max > 1.0) max = 1.0;
+  if (max < 0.0) max = 0.0;
+  double perk = lvl * rate;
+  double tot = perk + tree;
+  if (tot > max) tot = max;
+  if (tot < 0.0) tot = 0.0;
+  StringBuilder sb = new StringBuilder();
+  part(sb, FORT_N[i] + " level " + (int) lvl, perk * 100.0, "%");
+  part(sb, "Skill trees", tree * 100.0, "%");
+  if (perk + tree > max) sb.append(" (max ").append(num(max * 100.0)).append("%)");
+  if (sb.length() == 0) sb.append("level up ").append(FORT_N[i]).append(" for double drops");
+  else {
+    String only = cfg("SkyySkills", "perk." + key + ".doubleDropOnly");
+    if (only == null) only = "foraging".equals(key) ? "_Trunk" : "";
+    only = only.trim();
+    if (only.equalsIgnoreCase("_Trunk")) sb.insert(0, "logs only: ");
+    else if (only.length() > 0) sb.insert(0, "some blocks only: ");
+  }
+  add(rows, name, num(tot * 100.0) + "%", sb.toString());
+}""")
+M(scl, r"""
+public static void wisdom(java.util.ArrayList rows, java.util.UUID u, boolean skillsOn, int i) {
+  String name = WIS_N[i] + " Wisdom";
+  if (!skillsOn) { add(rows, name, "-", "needs SkyySkills"); return; }
+  double w = cfgOn("SkyySkills", "bridge.bonus.enabled", true) ? bonus(u, "xp." + WIS_K[i]) : 0.0;
+  StringBuilder sb = new StringBuilder();
+  part(sb, "Skill trees", w * 100.0, "% XP");
+  if (sb.length() == 0) sb.append("Wisdom nodes in the skill trees add XP");
+  add(rows, name, signed(w * 100.0) + "%", sb.toString());
+}""")
+# 0.3.13: the class balance damage % SkyySkills 0.4.26 publishes (skill:dmg:<uuid> = Double PERCENT, the skill:def rules). Only a Double > 0
+# counts (NaN / infinite / any other type / missing = 0; the SkyySkills clamp 100000 kept); below 0.05 (the part() floor) = the row is exactly 0.3.12's.
+M(scl, r"""
+public static double skillDmg(java.util.UUID u) {
+  try {
+    Object o = u == null ? null : br().get("skill:dmg:" + u.toString());
+    if (!(o instanceof Double)) return 0.0;
+    double v = ((Double) o).doubleValue();
+    if (Double.isNaN(v) || Double.isInfinite(v) || !(v > 0.0)) return 0.0;
+    return v > 100000.0 ? 100000.0 : v;
+  } catch (Throwable t) { return 0.0; }
+}""")
+M(scl, r"""
+public static void classDamage(java.util.ArrayList rows, java.util.UUID u, java.util.HashMap sk) {
+  if (classSyncing(u)) { add(rows, "Class Weapon Damage", "-", "class syncing, Refresh in a moment"); return; }
+  String cs = classSkill(u);
+  if (cs == null) { add(rows, "Class Weapon Damage", "-", "no class on this profile yet"); return; }
+  double lvl = get(sk, cs);
+  double rate = cfgOn("SkyySkills", "perk.enabled", true) ? cfgNum("SkyySkills", "perk.combat.damagePerLevel", 0.002) : 0.0;
+  double cb = skillDmg(u);
+  if (!(cb >= 0.05)) {
+    add(rows, "Class Weapon Damage", signed(lvl * rate * 100.0) + "%", cs + " level " + (int) lvl + ", with your class weapons");
+    return;
+  }
+  double lp = lvl * rate * 100.0;
+  StringBuilder sb = new StringBuilder();
+  sb.append(cs).append(" level ").append((int) lvl);
+  if (Math.abs(lp) >= 0.05) sb.append(' ').append(signed(lp)).append('%');
+  part(sb, "Class balance", cb, "%");
+  add(rows, "Class Weapon Damage", signed(lp + cb) + "%", sb.toString());
+}""")
+M(scl, r"""
+public static boolean isClassSkill(String name) {
+  for (int i = 0; i < CLASS_SKILLS.length; i++) if (CLASS_SKILLS[i].equals(name)) return true;
+  return false;
+}""")
+# ---- the five tabs
+M(scl, r"""
+public static void mainTab(java.util.ArrayList rows, java.util.UUID u, Object[] vit) {
+  java.util.HashMap g = kv(br().get("gear:stats:" + u.toString()));
+  java.util.HashMap a = kv(br().get("gear:extra:" + u.toString()));
+  boolean gearOn = br().get("gear:fn:stats") instanceof java.util.function.Function;
+  vitalRow(rows, "Health", vit, 0);
+  vitalRow(rows, "Mana", vit, 1);
+  vitalRow(rows, "Stamina", vit, 2);
+  defRow(rows, u, g, a, gearOn);   // 0.3.12: + the skill Defense (skill:def:<uuid>); without it = gearRow(.., "def")
+  gearRow(rows, g, a, gearOn, "str");
+  gearRow(rows, g, a, gearOn, "cc");
+  gearRow(rows, g, a, gearOn, "cd");
+  gearRow(rows, g, a, gearOn, "mp");
+  String[] sp = move(u, "speed");
+  add(rows, "Speed", sp[0], sp[1]);
+  String[] jp = move(u, "jump");
+  add(rows, "Jump Height", jp[0], jp[1]);
+  String[] fd = move(u, "fallDamage");
+  add(rows, "Fall Damage", fd[0], fd[1]);
+  String[] mr = manaRegen(u);
+  add(rows, "Mana Regen", mr[0], mr[1]);
+  gearRow(rows, g, a, gearOn, "stam");
+}""")
+M(scl, r"""
+public static void combatTab(java.util.ArrayList rows, java.util.UUID u) {
+  java.util.HashMap g = kv(br().get("gear:stats:" + u.toString()));
+  java.util.HashMap a = kv(br().get("gear:extra:" + u.toString()));
+  boolean gearOn = br().get("gear:fn:stats") instanceof java.util.function.Function;
+  gearRow(rows, g, a, gearOn, "dmg");
+  gearRow(rows, g, a, gearOn, "chg");
+  gearRow(rows, g, a, gearOn, "tdmg");
+  groupRow(rows, g, a, ELEM_K, ELEM_S, "Elemental Damage", true);
+  groupRow(rows, g, a, RAW_K, RAW_S, "Raw Elemental Damage", false);
+  gearRow(rows, g, a, gearOn, "lsteal");
+  gearRow(rows, g, a, gearOn, "msteal");
+  gearRow(rows, g, a, gearOn, "hpr");
+  gearRow(rows, g, a, gearOn, "hprp");
+  classDamage(rows, u, kv(br().get("skill:" + u.toString())));
+}""")
+M(scl, r"""
+public static void gatheringTab(java.util.ArrayList rows, java.util.UUID u) {
+  java.util.HashMap sk = kv(br().get("skill:" + u.toString()));
+  boolean on = br().get("skill:fn:level") instanceof java.util.function.Function;
+  for (int i = 0; i < FORT_N.length; i++) fortune(rows, u, sk, on, i);
+  for (int i = 0; i < WIS_N.length; i++) wisdom(rows, u, on, i);
+}""")
+# fix round: the other class skills get one row each while the tab has room (ROWS), else they are packed into as few
+# "Other class skills" rows as fit LINE_MAX (never one clipped "..." row - a player who tried every class has 6)
+M(scl, r"""
+public static void otherRows(java.util.ArrayList rows, String joined, int n) {
+  String[] parts = joined.split(", ");
+  if (rows.size() + parts.length <= ROWS) {
+    for (int i = 0; i < parts.length; i++) {
+      int sp = parts[i].lastIndexOf(' ');
+      if (sp <= 0) continue;
+      add(rows, parts[i].substring(0, sp), "Level " + parts[i].substring(sp + 1), "another class's weapon skill");
+    }
+    return;
+  }
+  String name = "Other class skills";
+  String val = String.valueOf(n);
+  int room = LINE_MAX - name.length() - val.length() - 2;
+  StringBuilder line = new StringBuilder();
+  boolean first = true;
+  for (int i = 0; i < parts.length; i++) {
+    if (line.length() > 0 && line.length() + 2 + parts[i].length() > room) {
+      add(rows, name, first ? val : "", line.toString());
+      first = false;
+      line = new StringBuilder();
+    }
+    if (line.length() > 0) line.append(", ");
+    line.append(parts[i]);
+  }
+  if (line.length() > 0) add(rows, name, first ? val : "", line.toString());
+}""")
+M(scl, r"""
+public static void skillsTab(java.util.ArrayList rows, java.util.UUID u) {
+  Object[] ov = overallInfo(u);
+  int lv = overall(u);
+  if (ov != null) {
+    StringBuilder sb = new StringBuilder();
+    if (ov[1] instanceof Number) sb.append("average ").append(num(((Number) ov[1]).intValue() / 10.0));
+    if (ov[2] instanceof Number) sb.append(" over ").append(((Number) ov[2]).intValue()).append(" skills");
+    double hp = ov[3] instanceof Number ? ((Number) ov[3]).doubleValue() : 0.0;
+    double mn = ov[4] instanceof Number ? ((Number) ov[4]).doubleValue() : 0.0;
+    if (Math.abs(hp) >= 0.05) sb.append(", ").append(signed(hp)).append(" Health");
+    if (Math.abs(mn) >= 0.05) sb.append(", ").append(signed(mn)).append(" Mana");
+    add(rows, "Overall Level", String.valueOf(lv), sb.toString());
+  } else {
+    add(rows, "Overall Level", lv >= 0 ? String.valueOf(lv) : "-", lv >= 0 ? "" : "needs SkyySkills");
+  }
+  java.util.ArrayList ps = pairs(br().get("skill:" + u.toString()));
+  if (ps.isEmpty()) { add(rows, "Skills", "-", "no skill data yet - SkyySkills loads it when you play"); return; }
+  String cs = classSkill(u);
+  StringBuilder others = new StringBuilder();
+  int nOther = 0;
+  for (int i = 0; i < ps.size(); i++) {
+    String[] p = (String[]) ps.get(i);
+    if (isClassSkill(p[0])) {
+      if (cs != null && cs.equals(p[0])) add(rows, p[0], "Level " + p[1], "your class weapon skill");
+      else {
+        if (others.length() > 0) others.append(", ");
+        others.append(p[0]).append(' ').append(p[1]);
+        nOther++;
+      }
+    } else add(rows, p[0], "Level " + p[1], "");
+  }
+  if (nOther > 0) otherRows(rows, others.toString(), nOther);
+}""")
+M(scl, r"""
+public static void profileTab(java.util.ArrayList rows, java.util.UUID u) {
+  String p = profileName(u);
+  add(rows, "Profile", p == null ? "-" : p, "Change Profile opens your profile list");
+  String c = className(u);
+  String cs = classSkill(u);
+  add(rows, "Class", c == null ? "none yet" : c, classSyncing(u) ? "class syncing, Refresh in a moment" : cs == null ? "" : cs + " is your class weapon skill");
+  long pu = @PKG@.MenuUtil.purse(u);
+  add(rows, "Purse", pu < 0L ? "-" : @PKG@.MenuUtil.fmt(pu), pu < 0L ? "SkyyCoins is not on this server" : "coins you carry");
+  long bk = @PKG@.MenuUtil.bank(u);
+  add(rows, "Bank", bk < 0L ? "-" : @PKG@.MenuUtil.fmt(bk), bk < 0L ? "open the Bank to load it" : "coins in the bank - safe when you die");
+  java.util.Map b = br();
+  add(rows, "Accessory Bag", String.valueOf(@PKG@.MenuUtil.csvCount(b.get("acc:has:" + u.toString()))),
+      "bench accessories, and " + @PKG@.MenuUtil.csvCount(b.get("acc:tal:" + u.toString())) + " talismans");
+  add(rows, "Collection Recipes", String.valueOf(@PKG@.MenuUtil.csvCount(b.get("coll:recipes:" + u.toString()))),
+      "recipes your collections unlocked");
+}""")
+M(scl, r"""
+public static java.util.ArrayList rows(java.util.UUID u, int tab, Object[] vit) {
+  java.util.ArrayList rows = new java.util.ArrayList();
+  try {
+    if (tab == 0) mainTab(rows, u, vit);
+    else if (tab == 1) combatTab(rows, u);
+    else if (tab == 2) gatheringTab(rows, u);
+    else if (tab == 3) skillsTab(rows, u);
+    else profileTab(rows, u);
+  } catch (Throwable t) {
+    @PKG@.MenuUtil.warn("stats page rows failed: " + t);
+    add(rows, "Error", "-", "could not read your stats - see the server log");
+  }
+  return rows;
+}""")
+
+# ================= MenuPage (inline page; views switched with rebuild()) =================
+for f in ("public String view;", "public int pageNo;", "public java.util.UUID selU;", "public String[] acts;", "public String[] names;",
+          "public String[] bodies;", "public String infoName;", "public String infoBody;", "public String status;", "public String title;",
+          "public int pages;", "public boolean cleared;", "public String cfgArm;"):
+    F(page, f)
+# 0.3.6: the world the menu was first built in (openCustomPage) + the player's world joins then (PageGuard.JOINS), the send time of its
+# last packet (the check waits SETTLE after it), the safety net's state. A client acknowledges a page packet within a few frames, so 1 s
+# later a test click the engine still drops means the acknowledgements are stuck. At most HEAL_ANSWERS answers per menu.
+F(page, "public @WLD@ world;")
+F(page, "public int joinSeen;")
+F(page, "public volatile long lastSend;")
+F(page, "public boolean watching;")
+F(page, "public String probeNonce;")
+F(page, "public boolean probeSeen;")
+F(page, "public int heals;")
+F(page, "public int watchFails;")
+F(page, "public static final long SETTLE = 1000L;")
+F(page, "public static final int HEAL_ANSWERS = 3;")
+C(page, r"""
+public MenuPage(@PR@ pr, String view) {
+  super(pr, @LIFE@.CanDismiss);
+  this.view = view == null ? "main" : view;
+  this.pageNo = 0;
+  this.status = "";
+  this.pages = 1;
+}""")
+# 0.2 SettingsPage fields + constructor right here (javassist: MenuPage.openSettings and the page's "< SkyWynn Menu" button use each
+# other's constructors - the SkyyHud WidgetsPage / EditorPage pattern: constructors first, methods after). cat -1 = the first tab with rows.
+for f in ("public int cat;", "public int pageNo;", "public String status;", "public long armedAt;", "public String[] rowKeys;",
+          "public boolean drained;"):
+    F(spg, f)
+C(spg, r"""
+public SettingsPage(@PR@ pr, int cat) {
+  super(pr, @LIFE@.CanDismiss);
+  this.cat = cat;
+  this.pageNo = 0;
+  this.status = "";
+  this.armedAt = 0L;
+  this.rowKeys = new String[@PKG@.MenuData.SET_ROWS];
+  this.drained = false;
+}""")
+# 0.3.10 StatsPage fields + constructor here too (MenuPage.openStats and the page's "< SkyWynn Menu" button use each other's
+# constructors). tab = 0 Main, 1 Combat, 2 Gathering, 3 Skills, 4 Profile.
+for f in ("public int tab;", "public String status;"):
+    F(stp, f)
+C(stp, r"""
+public StatsPage(@PR@ pr, int tab) {
+  super(pr, @LIFE@.CanDismiss);
+  this.tab = tab < 0 || tab >= @PKG@.StatsCalc.TABS.length ? 0 : tab;
+  this.status = "";
+}""")
+# 0.3 AdminPage fields + constructor right here too (MenuPage.openAdmin and the page's "< SkyWynn Menu" button use each other's
+# constructors - constructors first, methods after). View = list / mod / table / confirm / log / hist / io (spec 2.3).
+for f in ("public String view;", "public String mod;", "public int cat;", "public int listPage;", "public int modPage;", "public int tPage;",
+          "public int logPage;", "public int histPage;", "public String tableKey;", "public String tFilter;", "public String tFilterDraft;",
+          "public String findDraft;", "public String status;", "public int statusKind;", "public boolean showAdv;", "public java.util.HashMap drafts;",
+          "public Object[] pending;", "public String pendingMod;", "public String pendingMsg;", "public int pendingKind;",
+          "public java.util.ArrayList pendingCodes;", "public String[] rowKeys;", "public String backView;", "public String search;",
+          "public boolean locked;", "public boolean jumpHit;", "public String[] listMods;", "public String[] listReload;", "public String[] tKeys;",
+          "public String[] tVals;", "public java.util.HashMap tDrafts;", "public String[] tAdd;", "public java.util.ArrayList items;",
+          "public String histFile;", "public String[] histIds;", "public String[] histFiles;", "public String histPreview;", "public String logMod;",
+          "public java.util.ArrayList logShown;", "public String[] logTabs;", "public boolean ioAll;", "public String ioScope;", "public String ioCode;",
+          "public String ioImport;", "public String ioPreview;", "public String ioPreviewCode;", "public java.util.ArrayList ioPlan;",
+          "public int ioPlanTotal;", "public String[] ioFiles;", "public java.util.ArrayList evKeys;", "public java.util.ArrayList evSels;",
+          "public java.util.ArrayList fT;", "public java.util.ArrayList fA;", "public java.util.ArrayList fW;"):
+    F(apg, f)
+C(apg, r"""
+public AdminPage(@PR@ pr, String view, String mod) {
+  super(pr, @LIFE@.CanDismiss);
+  this.view = view == null ? "list" : view;
+  this.mod = mod;
+  this.cat = 0;
+  this.listPage = 0;
+  this.modPage = 0;
+  this.tPage = 0;
+  this.logPage = 0;
+  this.histPage = 0;
+  this.tableKey = null;
+  this.tFilter = "";
+  this.tFilterDraft = "";
+  this.findDraft = "";
+  this.status = "";
+  this.statusKind = 0;
+  this.showAdv = false;
+  this.drafts = new java.util.HashMap();
+  this.pending = null;
+  this.pendingMod = null;
+  this.pendingMsg = "";
+  this.pendingKind = 0;
+  this.pendingCodes = null;
+  this.rowKeys = new String[@MD@.ADM_ROWS];
+  this.backView = "list";
+  this.search = "";
+  this.locked = false;
+  this.jumpHit = false;
+  this.listMods = new String[@MD@.ADM_LROWS];
+  this.listReload = new String[@MD@.ADM_LROWS];
+  this.tKeys = new String[@MD@.ADM_ROWS];
+  this.tVals = new String[@MD@.ADM_ROWS];
+  this.tDrafts = new java.util.HashMap();
+  this.tAdd = new String[4];
+  this.items = new java.util.ArrayList();
+  this.histFile = "";
+  this.histIds = new String[@MD@.ADM_HROWS];
+  this.histFiles = new String[0];
+  this.histPreview = null;
+  this.logMod = "";
+  this.logShown = new java.util.ArrayList();
+  this.logTabs = new String[0];
+  this.ioAll = false;
+  this.ioScope = "changed";
+  this.ioCode = null;
+  this.ioImport = "";
+  this.ioPreview = null;
+  this.ioPreviewCode = null;
+  this.ioPlan = new java.util.ArrayList();
+  this.ioPlanTotal = 0;
+  this.ioFiles = new String[0];
+  this.evKeys = new java.util.ArrayList();
+  this.evSels = new java.util.ArrayList();
+  this.fT = new java.util.ArrayList();
+  this.fA = new java.util.ArrayList();
+  this.fW = new java.util.ArrayList();
+}""")
+
+# ================= 0.3 AdmSaveTask: export copies written on the scheduler (never on the world thread) + the imports folder =================
+ast.addInterface(pool.get("java.lang.Runnable"))
+F(ast, "public static java.nio.file.Path BASE;")
+F(ast, "public String name;")
+F(ast, "public String text;")
+C(ast, "public AdmSaveTask(String name, String text) { this.name = name; this.text = text; }")
+# only ever exports/<one file name>: the same refusal readImport has (no / \ .. : in the file name), and the resolved file must sit
+# directly in exports/ (defence in depth behind AdminPage.validMod, which keeps odd <Mod> names off the page)
+M(ast, r"""
+public static boolean okExport(String name) {
+  if (BASE == null || name == null || !name.startsWith("exports/")) return false;
+  String fn = name.substring(8);
+  if (fn.length() == 0 || fn.length() > 120 || fn.indexOf('/') >= 0 || fn.indexOf('\\') >= 0 || fn.indexOf("..") >= 0 || fn.indexOf(':') >= 0) return false;
+  try {
+    java.nio.file.Path dir = BASE.resolve("exports").toAbsolutePath().normalize();
+    java.nio.file.Path f = dir.resolve(fn).normalize();
+    return dir.equals(f.getParent());
+  } catch (Throwable t) { return false; }
+}""")
+M(ast, r"""
+public void run() {
+  try {
+    if (BASE == null || this.name == null || this.text == null) return;
+    if (!okExport(this.name)) { @PKG@.MenuUtil.warn("Server Setup refused to save " + this.name + " - only a plain file name inside Skyy_SkyyMenu/exports/ is written"); return; }
+    java.nio.file.Path f = BASE.resolve(this.name);
+    @PKG@.MenuUtil.atomicWrite(f, this.text.getBytes("UTF-8"));
+    @PKG@.MenuUtil.info("Server Setup saved Skyy_SkyyMenu/" + this.name);
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("Server Setup could not save Skyy_SkyyMenu/" + this.name + ": " + t); }
+}""")
+M(ast, r"""
+public static void save(String name, String text) {
+  try { @HSV@.SCHEDULED_EXECUTOR.schedule(new @PKG@.AdmSaveTask(name, text), 0L, java.util.concurrent.TimeUnit.MILLISECONDS); }
+  catch (Throwable t) { new @PKG@.AdmSaveTask(name, text).run(); }
+}""")
+M(ast, r"""
+public static void ensureDirs() {
+  try {
+    if (BASE == null) return;
+    java.nio.file.Files.createDirectories(BASE.resolve("imports"), new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Files.createDirectories(BASE.resolve("exports"), new java.nio.file.attribute.FileAttribute[0]);
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("could not create Skyy_SkyyMenu/imports and exports: " + t); }
+}""")
+M(ast, r"""
+public static String[] importFiles() {
+  java.util.ArrayList out = new java.util.ArrayList();
+  try {
+    if (BASE == null) return new String[0];
+    java.nio.file.Path d = BASE.resolve("imports");
+    if (!java.nio.file.Files.isDirectory(d, new java.nio.file.LinkOption[0])) return new String[0];
+    java.nio.file.DirectoryStream ds = java.nio.file.Files.newDirectoryStream(d);
+    try {
+      java.util.Iterator it = ds.iterator();
+      while (it.hasNext() && out.size() < 200) {
+        java.nio.file.Path p = (java.nio.file.Path) it.next();
+        String n = p.getFileName().toString();
+        if (n.toLowerCase().endsWith(".txt") && java.nio.file.Files.isRegularFile(p, new java.nio.file.LinkOption[0])) out.add(n);
+      }
+    } finally { ds.close(); }
+  } catch (Throwable t) { }
+  java.util.Collections.sort(out);
+  return (String[]) out.toArray(new String[0]);
+}""")
+M(ast, r"""
+public static String readImport(String name) {
+  try {
+    if (BASE == null || name == null || name.indexOf('/') >= 0 || name.indexOf('\\') >= 0 || name.indexOf("..") >= 0) return null;
+    java.nio.file.Path p = BASE.resolve("imports").resolve(name);
+    if (java.nio.file.Files.size(p) > 1048576L) return null;
+    return new String(java.nio.file.Files.readAllBytes(p), "UTF-8");
+  } catch (Throwable t) { return null; }
+}""")
+# public wrapper so RefreshTask (another class) can rebuild - CustomUIPage.rebuild() is protected
+M(page, r"""
+public void refresh() { rebuild(); }""")
+# 0.3.6 (before RefreshTask / CloseTask, which use them): the page's player for MenuWatch (playerRef is a protected engine field);
+# did the player change world since this menu was opened? - the world of its first build differs from `now`, or PageGuard counted a
+# world join of that player since (a re-join of the same world counts too). Without a first build (no world known) only the join count.
+M(page, r"""
+public @PR@ who() { return this.playerRef; }""")
+M(page, r"""
+public boolean changedWorld(@WLD@ now) {
+  if (this.world != null && now != null && now != this.world) return true;
+  return this.watching && this.joinSeen != @PKG@.PageGuard.joins(this.playerRef.getUuid());
+}""")
+# one [SkyyMenu] line for the first failure of a menu's check, then quiet retries; it gives up after 30 (the menu still works)
+M(page, r"""
+public boolean watchFail(Throwable t) {
+  this.watchFails = this.watchFails + 1;
+  if (this.watchFails == 1) @PKG@.MenuUtil.warn("the menu page check for " + @PKG@.PageGuard.who(this.playerRef) + " failed (retried quietly): " + t);
+  return this.watchFails < 30;
+}""")
+
+# ================= RefreshTask: re-draw the menu shortly after a keep-open command ran (world thread) =================
+# 0.3.6: a menu the player no longer sees after a world change is forgotten (PageGuard.forget, no packet), never redrawn: a redraw of
+# a page the client dropped is +1 page acknowledgement the client never sends (every page would ignore clicks)
+ref_.addInterface(pool.get("java.lang.Runnable"))
+F(ref_, "public @PKG@.MenuPage page;")
+F(ref_, "public @PR@ pr;")
+F(ref_, "public @WLD@ expected;")
+C(ref_, r"""
+public RefreshTask(@PKG@.MenuPage page, @PR@ pr) { this.page = page; this.pr = pr; this.expected = null; }""")
+M(ref_, r"""
+public static void schedule(@PKG@.MenuPage page, @PR@ pr, long ms) {
+  try { @HSV@.SCHEDULED_EXECUTOR.schedule(new @PKG@.RefreshTask(page, pr), ms, java.util.concurrent.TimeUnit.MILLISECONDS); }
+  catch (Throwable t) { @PKG@.MenuUtil.warn("could not schedule a menu refresh: " + t); }
+}""")
+M(ref_, r"""
+public void run() {
+  try {
+    if (this.pr == null || !this.pr.isValid()) return;
+    if (this.expected == null) {
+      java.util.UUID wu = this.pr.getWorldUuid();
+      @WLD@ w = wu == null ? null : @UNI@.get().getWorld(wu);
+      if (w == null) return;
+      this.expected = w;
+      w.execute(this);
+      return;
+    }
+    java.util.UUID wu2 = this.pr.getWorldUuid();
+    if (wu2 == null || @UNI@.get().getWorld(wu2) != this.expected) return;
+    @REF@ r = this.pr.getReference();
+    if (r == null || !r.isValid()) return;
+    @ST@ st = r.getStore();
+    if (st == null) return;
+    @PLA@ p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+    if (p == null) return;
+    @PGM@ pm = p.getPageManager();
+    if (pm == null || pm.getCustomPage() != this.page) return;
+    if (this.page.changedWorld(this.expected)) {
+      if (@PKG@.PageGuard.forget(pm, r, st, this.page)) @PKG@.MenuUtil.info("the menu redraw after a command found the menu of " + @PKG@.PageGuard.who(this.pr) + " still open on the server after a world change - forgot it there too instead of redrawing it (no packet)");
+      return;
+    }
+    this.page.refresh();
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("menu refresh failed: " + t); }
+}""")
+
+# ---- MenuPage helpers (callees first)
+M(page, r"""
+public static @IGS@ filler() {
+  if (@PKG@.MenuData.FILLER == null) return new @IGS@();
+  @IGS@ g = new @IGS@(new @IS@(@PKG@.MenuData.FILLER, 1));
+  g.setName(" ");
+  g.setActivatable(false);
+  g.setSkipItemQualityBackground(true);
+  return g;
+}""")
+M(page, r"""
+public void put(java.util.ArrayList slots, int idx, String icon, String name, String body, String foot, String act, boolean dim) {
+  if (idx < 0 || idx >= 54) return;
+  try {
+    @IGS@ gs = new @IGS@(new @IS@(icon, 1));
+    gs.setName(name);
+    gs.setDescription(@PKG@.MenuData.tooltip(body, foot, dim));
+    gs.setActivatable(act != null);
+    if (dim) gs.setItemIncompatible(true);
+    gs.setSkipItemQualityBackground(true);
+    slots.set(idx, gs);
+    this.acts[idx] = act;
+    this.names[idx] = name;
+    this.bodies[idx] = body;
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("could not draw menu slot " + idx + " (" + icon + "): " + t); }
+}""")
+# page count for n items shown `per` at a time; clamps this.pageNo
+M(page, r"""
+public int paging(int n, int per) {
+  int p = n <= 0 ? 1 : (n + per - 1) / per;
+  if (this.pageNo >= p) this.pageNo = p - 1;
+  if (this.pageNo < 0) this.pageNo = 0;
+  return p;
+}""")
+M(page, r"""
+public String purseText() {
+  long v = @PKG@.MenuUtil.purse(this.playerRef.getUuid());
+  return v < 0L ? "SkyyCoins is not installed" : @PKG@.MenuUtil.fmt(v) + " coins";
+}""")
+M(page, r"""
+public String bankText() {
+  long v = @PKG@.MenuUtil.bank(this.playerRef.getUuid());
+  return v < 0L ? "not loaded yet - open the Bank" : @PKG@.MenuUtil.fmt(v) + " coins";
+}""")
+# 0.3.10: short lines (the info box's lines are 20 px, unwrapped, about 80 characters: the 0.3.9 "Skills:" list was cut off) - every
+# detail line clipped to StatsCalc.LINE_MAX; the whole list is on the Stats page the tile opens
+M(page, r"""
+public String profileBody() {
+  java.util.UUID u = this.playerRef.getUuid();
+  java.util.Map br = @PKG@.MenuUtil.bridge();
+  int max = @PKG@.StatsCalc.LINE_MAX;
+  StringBuilder sb = new StringBuilder();
+  sb.append("Your SkyWynn profile, ").append(@PKG@.MenuUtil.safe(this.playerRef.getUsername())).append(". Click for all your stats.");
+  String cls = @PKG@.StatsCalc.className(u);
+  int ov = @PKG@.StatsCalc.overall(u);
+  sb.append("\n").append(@PKG@.MenuUtil.clip("Class: " + (cls == null ? "none yet" : cls) + (ov >= 0 ? "   -   Overall Level " + ov : ""), max));
+  sb.append("\n").append(@PKG@.MenuUtil.clip("Purse: " + purseText(), max));
+  long bk = @PKG@.MenuUtil.bank(u);
+  sb.append("\n").append(@PKG@.MenuUtil.clip("Bank: " + (bk < 0L ? "open the Bank to load it" : @PKG@.MenuUtil.fmt(bk) + " coins"), max));
+  String top = @PKG@.StatsCalc.topSkills(u, 3);
+  sb.append("\n").append(@PKG@.MenuUtil.clip("Top skills: " + (top == null ? "no skill data yet" : top), max));
+  sb.append("\n").append(@PKG@.MenuUtil.clip("Accessory Bag: " + @PKG@.MenuUtil.csvCount(br.get("acc:has:" + u.toString())) + " accessories, "
+    + @PKG@.MenuUtil.csvCount(br.get("acc:tal:" + u.toString())) + " talismans", max));
+  sb.append("\n").append(@PKG@.MenuUtil.clip("Recipes unlocked by collections: " + @PKG@.MenuUtil.csvCount(br.get("coll:recipes:" + u.toString())), max));
+  return sb.toString();
+}""")
+# the command an action would run (for greying out entries whose mod is missing)
+M(page, r"""
+public static String cmdOf(String act) {
+  if (act == null) return null;
+  if (act.startsWith("cmd:")) return @PKG@.MenuUtil.firstWord(act.substring(4));
+  if (act.startsWith("cmdc:")) return @PKG@.MenuUtil.firstWord(act.substring(5));
+  return null;
+}""")
+M(page, r"""
+public static String lineOf(String act) {
+  if (act == null) return null;
+  if (act.startsWith("cmd:")) return act.substring(4);
+  if (act.startsWith("cmdc:")) return act.substring(5);
+  return null;
+}""")
+M(page, r"""
+public void fillStatic(java.util.ArrayList slots) {
+  java.util.UUID me = this.playerRef.getUuid();
+  boolean admin = @PKG@.MenuUtil.isAdmin(this.playerRef);
+  for (int i = 0; i < @PKG@.MenuData.E_VIEW.length; i++) {
+    if (!@PKG@.MenuData.E_VIEW[i].equals(this.view)) continue;
+    String act = @PKG@.MenuData.E_ACT[i];
+    if ("admin".equals(act) && !admin) continue;
+    if ("view:mods".equals(act) && !admin && !@PKG@.MenuCfg.MODS_HELP) continue;
+    String name = @PKG@.MenuData.E_NAME[i];
+    String body = @PKG@.MenuData.E_BODY[i];
+    if ("profile".equals(act)) body = profileBody();
+    if ("tips".equals(act)) name = name + (@PKG@.Tips.isOff(me) ? ": OFF" : ": ON");
+    if (body.indexOf("%PURSE%") >= 0) body = body.replace("%PURSE%", purseText());
+    if (body.indexOf("%BANK%") >= 0) body = body.replace("%BANK%", bankText());
+    String c = cmdOf(act);
+    boolean dim = c != null && @PKG@.MenuUtil.cmd(c) == null;
+    String need = dim ? null : @PKG@.MenuUtil.needOf(lineOf(act));
+    if (need != null) {
+      put(slots, @PKG@.MenuData.E_SLOT[i], @PKG@.MenuData.E_ICON[i], name + " (update needed)", body, "Needs " + need + " on this server", act, true);
+      continue;
+    }
+    put(slots, @PKG@.MenuData.E_SLOT[i], @PKG@.MenuData.E_ICON[i], name + (dim ? " (not installed)" : ""), body,
+        dim ? "Not installed on this server" : @PKG@.MenuData.E_FOOT[i], act, dim);
+  }
+}""")
+M(page, r"""
+public void fillWarps(java.util.ArrayList slots) {
+  @TPP@ tp = null;
+  try { tp = @TPP@.get(); } catch (Throwable t) { }
+  java.util.ArrayList keys = new java.util.ArrayList();
+  java.util.Map warps = null;
+  if (tp != null && tp.isWarpsLoaded()) {
+    warps = tp.getWarps();
+    java.util.Iterator it = warps.keySet().iterator();
+    while (it.hasNext()) keys.add(String.valueOf(it.next()));
+    java.util.Collections.sort(keys);
+  }
+  int per = @PKG@.MenuData.WARP_SLOTS.length;
+  this.pages = paging(keys.size(), per);
+  for (int i = 0; i < per; i++) {
+    int k = this.pageNo * per + i;
+    if (k >= keys.size()) break;
+    String key = (String) keys.get(k);
+    @WRP@ w = (@WRP@) warps.get(key);
+    if (w == null) continue;
+    String id = @PKG@.MenuUtil.safe(w.getId());
+    String pos = "";
+    try {
+      @V3D@ p = w.getTransform().getPosition();
+      pos = "\nX " + (long) Math.floor(p.x) + "   Y " + (long) Math.floor(p.y) + "   Z " + (long) Math.floor(p.z);
+    } catch (Throwable t) { }
+    boolean open = @PKG@.MenuUtil.isWarpUnlocked(this.playerRef, w.getId());
+    put(slots, @PKG@.MenuData.WARP_SLOTS[i], @PKG@.MenuData.ICON_WARP, open ? id : id + " (locked)",
+        "Warp " + id + ".\nWorld: " + @PKG@.MenuUtil.safe(w.getWorld()) + pos,
+        open ? "Click to warp!" : "Locked - you have not unlocked this warp yet", open ? "warp:" + key : "locked:" + key, !open);
+  }
+  if (keys.isEmpty()) {
+    put(slots, @PKG@.MenuData.NO_WARPS_SLOT, @PKG@.MenuData.ICON_WARP, "No warps yet",
+        tp == null || warps != null ? "No warps have been set on this server yet.\nAn admin can stand somewhere and type /warp set [name]." : "The warp list is still loading.\nOpen this menu again in a moment.",
+        null, "info", true);
+  }
+}""")
+M(page, r"""
+public void fillPlayers(java.util.ArrayList slots) {
+  java.util.ArrayList rows = new java.util.ArrayList();
+  java.util.UUID me = this.playerRef.getUuid();
+  java.util.Iterator it = @UNI@.get().getPlayers().iterator();
+  while (it.hasNext()) {
+    @PR@ p = (@PR@) it.next();
+    if (p == null || !p.isValid() || me.equals(p.getUuid())) continue;
+    String n = p.getUsername();
+    if (n == null) continue;
+    rows.add(n.toLowerCase() + "\t" + p.getUuid().toString() + "\t" + n);
+  }
+  java.util.Collections.sort(rows);
+  int per = @PKG@.MenuData.PLAYER_SLOTS.length;
+  this.pages = paging(rows.size(), per);
+  for (int i = 0; i < per; i++) {
+    int k = this.pageNo * per + i;
+    if (k >= rows.size()) break;
+    String[] parts = ((String) rows.get(k)).split("\t");
+    if (parts.length < 3) continue;
+    String n = @PKG@.MenuUtil.safe(parts[2]);
+    put(slots, @PKG@.MenuData.PLAYER_SLOTS[i], @PKG@.MenuData.ICON_PLAYER, n,
+        n + " is online.\nClick to send a teleport request, visit their island or invite them to your party.", "Click for options", "player:" + parts[1], false);
+  }
+  if (rows.isEmpty()) put(slots, @PKG@.MenuData.NO_PLAYERS_SLOT, @PKG@.MenuData.ICON_PLAYER, "Nobody else is online",
+      "You are the only player online right now.", null, "info", true);
+}""")
+M(page, r"""
+public @PR@ selected() {
+  if (this.selU == null) return null;
+  try {
+    @PR@ p = @UNI@.get().getPlayer(this.selU);
+    return p != null && p.isValid() ? p : null;
+  } catch (Throwable t) { return null; }
+}""")
+M(page, r"""
+public void fillPlayer(java.util.ArrayList slots) {
+  @PR@ target = selected();
+  if (target == null) {
+    this.title = "Player offline";
+    put(slots, @PKG@.MenuData.NO_PLAYERS_SLOT, @PKG@.MenuData.ICON_PLAYER, "Player offline", "That player is no longer online.", "Click to go back", "back", true);
+    return;
+  }
+  String n = @PKG@.MenuUtil.safe(target.getUsername());
+  this.title = n;
+  put(slots, @PKG@.MenuData.PLAYER_HEAD_SLOT, @PKG@.MenuData.ICON_PLAYER, n, n + " is online.\nPick what you want to do below.", null, "info", false);
+  for (int i = 0; i < @PKG@.MenuData.PA_SLOT.length; i++) {
+    String c = @PKG@.MenuUtil.firstWord(@PKG@.MenuData.PA_CMD[i]);
+    boolean dim = @PKG@.MenuUtil.cmd(c) == null;
+    String pname = @PKG@.MenuData.PA_NAME[i];
+    String pbody = @PKG@.MenuData.PA_BODY[i];
+    String pfoot = @PKG@.MenuData.PA_FOOT[i];
+    int li = dim ? -1 : @PKG@.MenuUtil.legacyPa(@PKG@.MenuData.PA_SLOT[i]);
+    if (li >= 0) { pname = @PKG@.MenuData.PAL_NAME[li]; pbody = @PKG@.MenuData.PAL_BODY[li]; pfoot = @PKG@.MenuData.PAL_FOOT[li]; }
+    put(slots, @PKG@.MenuData.PA_SLOT[i], @PKG@.MenuData.PA_ICON[i], pname + (dim ? " (not installed)" : ""),
+        pbody.replace("%P", n), dim ? "Not installed on this server" : pfoot, "pact:" + i, dim);
+  }
+}""")
+M(page, r"""
+public void fillMods(java.util.ArrayList slots) {
+  boolean admin = @PKG@.MenuUtil.isAdmin(this.playerRef);
+  int per = @PKG@.MenuData.MOD_SLOTS.length;
+  int n = @PKG@.MenuData.MOD_NAME.length;
+  this.pages = paging(n, per);
+  for (int i = 0; i < per; i++) {
+    int k = this.pageNo * per + i;
+    if (k >= n) break;
+    String live = @PKG@.MenuUtil.liveVersion(@PKG@.MenuData.MOD_NAME[k]);
+    boolean installed = live != null || @PKG@.MenuUtil.cmd(@PKG@.MenuData.MOD_CHECK[k]) != null;
+    String ver = live != null ? live : @PKG@.MenuData.MOD_VER[k];
+    boolean cfg = admin && installed && @PKG@.MenuUtil.bridge().get("config:def:" + @PKG@.MenuData.MOD_NAME[k]) instanceof Object[];
+    put(slots, @PKG@.MenuData.MOD_SLOTS[i], @PKG@.MenuData.MOD_ICON[k],
+        @PKG@.MenuData.MOD_NAME[k] + " " + ver + (installed ? "" : " (not installed)"), @PKG@.MenuUtil.modBodyFor(k, admin),
+        installed ? (cfg ? "Click to set up this mod" : "Click to show the commands below") : "Not installed on this server",
+        cfg ? "modcfg:" + k : "mod:" + k, !installed);
+  }
+}""")
+M(page, r"""
+public void nav(java.util.ArrayList slots) {
+  if (!this.view.equals("main")) {
+    String back = this.view.equals("player") ? "Players Online" : "the SkyWynn Menu";
+    put(slots, 45, @PKG@.MenuData.ICON_BACK, "Go Back", "Back to " + back + ".", "Click to go back", "back", false);
+  }
+  put(slots, 49, @PKG@.MenuData.ICON_CLOSE, "Close", "Close the menu.", "Click to close", "close", false);
+  if (this.pages > 1) {
+    if (this.pageNo > 0) put(slots, 48, @PKG@.MenuData.ICON_PREV, "Previous Page", "Page " + this.pageNo + " of " + this.pages + ".", "Click to go back a page", "prev", false);
+    if (this.pageNo < this.pages - 1) put(slots, 50, @PKG@.MenuData.ICON_NEXT, "Next Page", "Page " + (this.pageNo + 2) + " of " + this.pages + ".", "Click for the next page", "next", false);
+  }
+}""")
+M(page, r"""
+public void fill(java.util.ArrayList slots) {
+  int vi = @PKG@.MenuData.viewIndex(this.view);
+  this.view = @PKG@.MenuData.V_KEY[vi];
+  this.title = @PKG@.MenuData.V_TITLE[vi];
+  this.pages = 1;
+  fillStatic(slots);
+  if (this.view.equals("tp")) fillWarps(slots);
+  else if (this.view.equals("players")) fillPlayers(slots);
+  else if (this.view.equals("player")) fillPlayer(slots);
+  else if (this.view.equals("mods")) fillMods(slots);
+  if (this.pages <= 1) this.pageNo = 0;
+  nav(slots);
+  if (this.pages > 1) this.title = this.title + "  (page " + (this.pageNo + 1) + " of " + this.pages + ")";
+}""")
+M(page, r"""
+public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
+  this.cleared = false;
+  this.lastSend = System.currentTimeMillis();
+  if (!this.watching && ref != null && st != null) {
+    this.watching = true;
+    try {
+      Object ex = st.getExternalData();
+      if (ex instanceof @EST@) this.world = ((@EST@) ex).getWorld();
+    } catch (Throwable tw) { this.world = null; }
+    this.joinSeen = @PKG@.PageGuard.joins(this.playerRef.getUuid());
+    @PKG@.MenuWatch.schedule(this);
+  }
+  boolean tipsOff = @PKG@.Tips.isOff(this.playerRef.getUuid());
+  this.acts = new String[54];
+  this.names = new String[54];
+  this.bodies = new String[54];
+  java.util.ArrayList slots = new java.util.ArrayList();
+  for (int i = 0; i < 54; i++) slots.add(filler());
+  try { fill(slots); } catch (Throwable t) { @PKG@.MenuUtil.warn("menu view " + this.view + " failed: " + t); }
+  b.appendInline((String) null, @PKG@.MenuData.UI_ROOT);
+  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_ACCENT);
+  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_TITLE);
+  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_HINT);
+  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_INFOBOX);
+  b.appendInline("#SkyyMInfoBox", @PKG@.MenuData.UI_INFONAME);
+  b.appendInline("#SkyyMInfoBox", @PKG@.MenuData.UI_INFODESC);
+  for (int i = 0; i < @PKG@.MenuData.UI_INFO.length; i++) b.appendInline("#SkyyMInfoBox", @PKG@.MenuData.UI_INFO[i]);
+  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_GAP);
+  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_GRIDWRAP);
+  b.appendInline("#SkyyMGridWrap", tipsOff ? @PKG@.MenuData.UI_GRIDNOTIPS : @PKG@.MenuData.UI_GRID);
+  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_STATUS);
+  b.appendInline("#SkyyMenu", @PKG@.MenuData.UI_FOOT);
+  b.appendInline("#SkyyMFoot", @PKG@.MenuData.UI_LEAD);
+  if (!this.view.equals("main")) {
+    b.appendInline("#SkyyMFoot", @PKG@.MenuData.UI_BTNBACK);
+    b.appendInline("#SkyyMFoot", @PKG@.MenuData.UI_SPACER);
+    ev.addEventBinding(@BT@.Activating, "#SkyyMBack", @EVD@.of("a", "mback"));
+  }
+  if (this.pages > 1) {
+    b.appendInline("#SkyyMFoot", @PKG@.MenuData.UI_BTNPREV);
+    b.appendInline("#SkyyMFoot", @PKG@.MenuData.UI_SPACER);
+    b.appendInline("#SkyyMFoot", @PKG@.MenuData.UI_BTNNEXT);
+    b.appendInline("#SkyyMFoot", @PKG@.MenuData.UI_SPACER);
+    ev.addEventBinding(@BT@.Activating, "#SkyyMPrev", @EVD@.of("a", "mprev"));
+    ev.addEventBinding(@BT@.Activating, "#SkyyMNext", @EVD@.of("a", "mnext"));
+  }
+  b.appendInline("#SkyyMFoot", @PKG@.MenuData.UI_BTNCLOSE);
+  ev.addEventBinding(@BT@.Activating, "#SkyyMClose", @EVD@.of("a", "mclose"));
+  b.set("#SkyyMTitle.Text", this.title == null ? "SkyWynn Menu" : this.title);
+  b.set("#SkyyMHint.Text", tipsOff ? "Tooltips off - the book at the top right turns them on. Click an item to use it."
+                                   : "Hover an item for details - click it to use it. Esc closes the menu.");
+  String iname = this.infoName;
+  String ibody = this.infoBody;
+  if (iname == null) {
+    int vi = @PKG@.MenuData.viewIndex(this.view);
+    iname = this.title;
+    ibody = @PKG@.MenuData.V_INTRO[vi];
+  }
+  String[] lines = (ibody == null ? "" : ibody).split("\n");
+  b.set("#SkyyMInfoName.Text", iname == null ? "" : iname);
+  b.set("#SkyyMInfoDesc.Text", lines.length > 0 ? lines[0] : "");
+  int nInfo = @PKG@.MenuData.UI_INFO.length;
+  for (int i = 0; i < nInfo; i++) {
+    String t = i + 1 < lines.length ? lines[i + 1] : "";
+    if (i == nInfo - 1 && lines.length > nInfo + 1) t = t + "   ...";
+    b.set("#SkyyMInfo" + i + ".Text", t);
+  }
+  b.set("#SkyyMStatus.Text", this.status == null ? "" : this.status);
+  b.set("#SkyyMGrid.Slots", slots);
+  ev.addEventBinding(@BT@.SlotClicking, "#SkyyMGrid", @EVD@.of("a", "mslot"), false);
+  ev.addEventBinding(@BT@.Dismissing, "#SkyyMenu", @EVD@.of("a", "mesc"), false);
+}""")
+M(page, r"""
+public void open(String v) {
+  this.view = v;
+  this.pageNo = 0;
+  this.infoName = null;
+  this.infoBody = null;
+}""")
+M(page, r"""
+public void goBack() {
+  if (this.view.equals("player")) open("players");
+  else open("main");
+}""")
+# 0.1.3 stuck-tooltip mitigation: ONE update that empties every slot (the hovered one too) while the page is still open, sent before
+# the server closes the menu or hands it to a page command. Only called while this menu is the open page (click handlers, CloseTask
+# checks it). Acknowledged like any update (never a Dismiss); build() resets the flag.
+M(page, r"""
+public void clearGrid() {
+  if (this.cleared) return;
+  this.cleared = true;
+  try {
+    java.util.ArrayList empty = new java.util.ArrayList();
+    for (int i = 0; i < 54; i++) empty.add(new @IGS@());
+    @UCB@ b = new @UCB@();
+    b.set("#SkyyMGrid.Slots", empty);
+    sendUpdate(b);
+    this.lastSend = System.currentTimeMillis();
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("could not clear the menu grid: " + t); }
+}""")
+M(page, r"""
+public void closePage(@REF@ ref, @ST@ st) {
+  clearGrid();
+  try {
+    @PLA@ p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+    if (p != null) p.getPageManager().setPage(ref, st, @PGE@.None);
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("could not close the menu: " + t); }
+}""")
+# ================= CloseTask (0.1.2): close the menu after a command ONLY if the menu is still the open page =================
+# 0.3.6: ... and only if the player did not change world since the menu opened (the Island / Hub tile: this task runs on the NEW world,
+# where the client shows no page any more). Such a menu is forgotten on the server like Esc (PageGuard.forget: no packet, counter
+# unchanged); 0.3.5 closed it with setPage(None) = +1 page acknowledgement the client never sends -> every page ignored clicks.
+# (a page command replaces the menu by itself; closing first made the client's close answer dismiss the NEW page server-side)
+clo_.addInterface(pool.get("java.lang.Runnable"))
+clo_.addInterface(pool.get("java.util.function.BiConsumer"))
+F(clo_, "public @PKG@.MenuPage page;")
+F(clo_, "public @PR@ pr;")
+F(clo_, "public @WLD@ expected;")
+C(clo_, r"""
+public CloseTask(@PKG@.MenuPage page, @PR@ pr) { this.page = page; this.pr = pr; this.expected = null; }""")
+M(clo_, r"""
+public void accept(Object result, Object error) {
+  try { @HSV@.SCHEDULED_EXECUTOR.schedule(this, 150L, java.util.concurrent.TimeUnit.MILLISECONDS); }
+  catch (Throwable t) { @PKG@.MenuUtil.warn("could not schedule the menu close: " + t); }
+}""")
+M(clo_, r"""
+public void run() {
+  try {
+    if (this.pr == null || !this.pr.isValid()) return;
+    if (this.expected == null) {
+      java.util.UUID wu = this.pr.getWorldUuid();
+      @WLD@ w = wu == null ? null : @UNI@.get().getWorld(wu);
+      if (w == null) return;
+      this.expected = w;
+      w.execute(this);
+      return;
+    }
+    java.util.UUID wu2 = this.pr.getWorldUuid();
+    if (wu2 == null || @UNI@.get().getWorld(wu2) != this.expected) return;
+    @REF@ r = this.pr.getReference();
+    if (r == null || !r.isValid()) return;
+    @ST@ st = r.getStore();
+    if (st == null) return;
+    @PLA@ p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+    if (p == null) return;
+    @PGM@ pm = p.getPageManager();
+    if (pm == null || pm.getCustomPage() != this.page) return;
+    if (this.page.changedWorld(this.expected)) {
+      if (@PKG@.PageGuard.forget(pm, r, st, this.page)) @PKG@.MenuUtil.info("the menu close after a command found the menu of " + @PKG@.PageGuard.who(this.pr) + " still open on the server after a world change - forgot it there too instead of closing it (no packet)");
+      return;
+    }
+    this.page.closePage(r, st);
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("menu close failed: " + t); }
+}""")
+# run a command AS THIS PLAYER (vanilla /su pattern); installed + permission are checked first so the player gets a clear answer.
+# The permission check fails CLOSED: the engine's AbstractCommand.acceptCall0 calls the same hasPermission, so if it throws here the
+# command could not run anyway - say so in the menu instead of closing it and leaving a cryptic chat error.
+M(page, r"""
+public void runCmd(@REF@ ref, @ST@ st, String line, boolean close) {
+  String name = @PKG@.MenuUtil.firstWord(line);
+  @ACM@ c = @PKG@.MenuUtil.cmd(name);
+  if (c == null) { this.status = "/" + name + " is not on this server - that mod is not installed."; rebuild(); return; }
+  String need = @PKG@.MenuUtil.needOf(line);
+  if (need != null) { this.status = "/" + line + " needs " + need + " - this server has an older version."; rebuild(); return; }
+  boolean ok = false;
+  boolean checked = true;
+  try { ok = c.hasPermission(this.playerRef); }
+  catch (Throwable t) { @PKG@.MenuUtil.warn("permission check for /" + name + " failed: " + t); ok = false; checked = false; }
+  if (!checked) {
+    this.status = "Could not check your permission for /" + name + ". Ask an admin.";
+    rebuild();
+    return;
+  }
+  if (!ok) {
+    String node = null;
+    try { node = c.getPermission(); } catch (Throwable t) { }
+    this.status = "You do not have permission for /" + name + (node == null ? "" : " (" + @PKG@.MenuUtil.safe(node) + ")") + ". Ask an admin.";
+    rebuild();
+    return;
+  }
+  if (close) clearGrid();
+  java.util.concurrent.CompletableFuture fut = null;
+  try { fut = @CMGR@.get().handleCommand(this.playerRef, line); }
+  catch (Throwable t) { @PKG@.MenuUtil.warn("/" + line + " failed: " + t); this.status = "/" + name + " could not be run."; rebuild(); return; }
+  if (close) {
+    @PKG@.CloseTask ct = new @PKG@.CloseTask(this, this.playerRef);
+    if (fut != null) fut.whenComplete(ct); else ct.accept(null, null);
+  }
+  if (!close) {
+    this.status = "/" + line + "  - see your chat";
+    rebuild();
+    @PKG@.RefreshTask.schedule(this, this.playerRef, 900L);
+  }
+}""")
+# same calls as vanilla WarpCommand.tryGo / SpawnCommand: add a Teleport component on the player's world thread,
+# and record the old position in vanilla TeleportHistory so /tp back works (SkyyEssentials pattern)
+M(page, r"""
+public boolean teleport(@REF@ ref, @ST@ st, @TP@ t, String label) {
+  if (st.getComponent(ref, @TP@.getComponentType()) != null) { this.status = "You are already teleporting."; rebuild(); return false; }
+  @WLD@ here = null;
+  try { java.util.UUID wu = this.playerRef.getWorldUuid(); here = wu == null ? null : @UNI@.get().getWorld(wu); } catch (Throwable t0) { }
+  @TC@ mtc = (@TC@) st.getComponent(ref, @TC@.getComponentType());
+  @HR@ mhr = (@HR@) st.getComponent(ref, @HR@.getComponentType());
+  st.addComponent(ref, @TP@.getComponentType(), t);
+  try {
+    if (here != null && mtc != null && mtc.getPosition() != null) {
+      @V3D@ p = mtc.getPosition();
+      @R3F@ r = mhr != null ? mhr.getRotation() : null;
+      @TPH@ h = (@TPH@) st.ensureAndGetComponent(ref, @TPH@.getComponentType());
+      if (h != null) h.append(here, new @V3D@(p.x, p.y, p.z), r != null ? new @R3F@(r.x, r.y, r.z) : new @R3F@(), "Menu: " + label);
+    }
+  } catch (Throwable t2) { }
+  closePage(ref, st);
+  this.playerRef.sendMessage(@MSG@.raw("[Menu] Teleporting to " + label + "..."));
+  return true;
+}""")
+M(page, r"""
+public void doSpawn(@REF@ ref, @ST@ st) {
+  @WLD@ target = @UNI@.get().getDefaultWorld();
+  if (target == null) { this.status = "The main world is not loaded."; rebuild(); return; }
+  @TRF@ where = target.getWorldConfig().getSpawnProvider().getSpawnPoint(target, this.playerRef.getUuid());
+  if (where == null) { this.status = "The main world has no spawn point."; rebuild(); return; }
+  teleport(ref, st, @TP@.createForPlayer(target, where), "Spawn");
+}""")
+M(page, r"""
+public void doWarp(@REF@ ref, @ST@ st, String key) {
+  @TPP@ tp = @TPP@.get();
+  if (tp == null || !tp.isWarpsLoaded()) { this.status = "Warps are still loading - try again in a moment."; rebuild(); return; }
+  @WRP@ w = (@WRP@) tp.getWarps().get(key);
+  if (w == null) { this.status = "That warp was removed."; rebuild(); return; }
+  String id = @PKG@.MenuUtil.safe(w.getId());
+  if (!@PKG@.MenuUtil.isWarpUnlocked(this.playerRef, w.getId())) { this.status = "You have not unlocked the warp " + id + " yet."; rebuild(); return; }
+  @WLD@ target = @UNI@.get().getWorld(w.getWorld());
+  @TP@ t = w.toTeleport();
+  if (target == null || t == null) { this.status = "The world of warp " + id + " is not loaded."; rebuild(); return; }
+  teleport(ref, st, t, "warp " + id);
+}""")
+M(page, r"""
+public void playerAction(@REF@ ref, @ST@ st, int i) {
+  if (i < 0 || i >= @PKG@.MenuData.PA_CMD.length) return;
+  @PR@ target = selected();
+  if (target == null) { open("players"); this.status = "That player went offline."; rebuild(); return; }
+  String n = @PKG@.MenuUtil.cleanName(target.getUsername());
+  if (n.length() == 0) { this.status = "That player's name cannot be used in a command."; rebuild(); return; }
+  runCmd(ref, st, @PKG@.MenuData.PA_CMD[i].replace("%P", n), @PKG@.MenuData.PA_CLOSE[i]);
+}""")
+# 0.2: the torch (slot 51; 0.3.3: slot 39) opens the Settings page straight from the menu - never closing first (the 0.1.2 rule). The grid is emptied
+# once before the hand-off (the 0.1.3 stuck-tooltip rule for every page hand-off; an update is acknowledged like any other).
+M(page, r"""
+public void openSettings(@REF@ ref, @ST@ st) {
+  @PLA@ p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+  if (p == null) return;
+  clearGrid();
+  p.getPageManager().openCustomPage(ref, st, new @PKG@.SettingsPage(this.playerRef, -1));
+}""")
+# 0.3: the book (slot 41) and an admin's click on a set-up mod open Server Setup straight from the menu (never closing first); the grid
+# is emptied once before the hand-off like every page hand-off. The node is checked here AND by the page's own guard().
+M(page, r"""
+public void openAdmin(@REF@ ref, @ST@ st, String mod) {
+  if (!@PKG@.MenuUtil.isAdmin(this.playerRef)) { this.status = "You do not have access to Server Setup."; rebuild(); return; }
+  @PLA@ p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+  if (p == null) return;
+  clearGrid();
+  p.getPageManager().openCustomPage(ref, st, new @PKG@.AdminPage(this.playerRef, mod == null ? "list" : "mod", mod));
+}""")
+# 0.3.10: the Your Profile tile opens the Stats page straight from the menu (never closing first); the grid is emptied once before
+# the hand-off like every page hand-off (openSettings / openAdmin)
+M(page, r"""
+public void openStats(@REF@ ref, @ST@ st) {
+  @PLA@ p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+  if (p == null) return;
+  clearGrid();
+  p.getPageManager().openCustomPage(ref, st, new @PKG@.StatsPage(this.playerRef, 0));
+}""")
+M(page, r"""
+public void click(@REF@ ref, @ST@ st, int idx, String act) {
+  this.status = "";
+  String armed = this.cfgArm;
+  this.cfgArm = null;
+  if (act.equals("close")) { closePage(ref, st); return; }
+  if (act.equals("back")) { goBack(); rebuild(); return; }
+  if (act.equals("prev")) { if (this.pageNo > 0) this.pageNo = this.pageNo - 1; rebuild(); return; }
+  if (act.equals("next")) { this.pageNo = this.pageNo + 1; rebuild(); return; }
+  if (act.startsWith("view:")) { open(act.substring(5)); rebuild(); return; }
+  if (act.startsWith("player:")) {
+    try { this.selU = java.util.UUID.fromString(act.substring(7)); } catch (Throwable t) { this.selU = null; }
+    open("player");
+    rebuild();
+    return;
+  }
+  if (act.equals("settings")) { openSettings(ref, st); return; }
+  if (act.equals("admin")) { openAdmin(ref, st, null); return; }
+  if (act.equals("profile")) { openStats(ref, st); return; }
+  if (act.startsWith("modcfg:")) {
+    int mk = -1;
+    try { mk = Integer.parseInt(act.substring(7)); } catch (Throwable t) { mk = -1; }
+    if (mk >= 0 && mk < @PKG@.MenuData.MOD_NAME.length) {
+      if (!@PKG@.Tips.isOff(this.playerRef.getUuid()) || act.equals(armed)) { openAdmin(ref, st, @PKG@.MenuData.MOD_NAME[mk]); return; }
+      this.cfgArm = act;
+      this.infoName = this.names[idx];
+      this.infoBody = this.bodies[idx];
+      this.status = "Click it again to open its Server Setup page.";
+      rebuild();
+      return;
+    }
+  }
+  this.infoName = this.names[idx];
+  this.infoBody = this.bodies[idx];
+  if (act.equals("tips")) {
+    java.util.UUID u = this.playerRef.getUuid();
+    boolean off = !@PKG@.Tips.isOff(u);
+    if (@PKG@.Tips.setOff(u, off) != 1) {
+      this.infoName = @PKG@.Tips.isOff(u) ? "Hover Tooltips: OFF" : "Hover Tooltips: ON";
+      this.status = @PKG@.MenuData.SET_TXT_BROKEN;
+      rebuild();
+      return;
+    }
+    this.infoName = off ? "Hover Tooltips: OFF" : "Hover Tooltips: ON";
+    this.status = off ? "Hover tooltips are off - click an item and read it in the box above." : "Hover tooltips are on again.";
+    rebuild();
+    return;
+  }
+  if (act.equals("info") || act.equals("profile") || act.startsWith("mod:")) { rebuild(); return; }
+  if (act.startsWith("locked:")) { this.status = "That warp is locked."; rebuild(); return; }
+  if (act.startsWith("cmdc:")) { runCmd(ref, st, act.substring(5), true); return; }
+  if (act.startsWith("cmd:")) { runCmd(ref, st, act.substring(4), false); return; }
+  if (act.equals("spawn")) { doSpawn(ref, st); return; }
+  if (act.startsWith("warp:")) { doWarp(ref, st, act.substring(5)); return; }
+  if (act.startsWith("pact:")) { playerAction(ref, st, Integer.parseInt(act.substring(5))); return; }
+  @PKG@.MenuUtil.warn("unknown menu action " + act);
+}""")
+# 0.1.3 "mesc" = the experimental Esc hook: never send anything here (a page the client already closed may not acknowledge it and
+# PageManager would then drop every later click); CloseTask acts 150 ms later only while this menu is still the open page.
+M(page, r"""
+public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
+  try {
+    if (data == null) return;
+    if (data.indexOf("\"skyymenucheck\"") >= 0) {
+      if (this.probeNonce != null && this.probeNonce.length() > 0 && data.indexOf("\"" + this.probeNonce + "\"") >= 0) this.probeSeen = true;
+      return;
+    }
+    if (data.indexOf("mesc\"") >= 0) { new @PKG@.CloseTask(this, this.playerRef).accept(null, null); return; }
+    if (data.indexOf("mclose\"") >= 0) { closePage(ref, st); return; }
+    if (data.indexOf("mback\"") >= 0) { this.status = ""; goBack(); rebuild(); return; }
+    if (data.indexOf("mprev\"") >= 0) { this.status = ""; if (this.pageNo > 0) this.pageNo = this.pageNo - 1; rebuild(); return; }
+    if (data.indexOf("mnext\"") >= 0) { this.status = ""; this.pageNo = this.pageNo + 1; rebuild(); return; }
+    if (data.indexOf("mslot\"") < 0) return;
+    int idx = @PKG@.MenuUtil.jsonInt(data, "SlotIndex");
+    if (idx < 0 || idx >= 54 || this.acts == null) { @PKG@.MenuUtil.info("unexpected slot payload: " + data); return; }
+    String act = this.acts[idx];
+    if (act == null) return;
+    click(ref, st, idx, act);
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("menu click failed: " + t); }
+}""")
+
+# ================= 0.3.6 MenuPage.watchTick: the menu's check, on the player's world thread (MenuWatch hands it here). true = again.
+#  - the menu is no longer the open page (closed / replaced) -> done;
+#  - the player changed world since it opened -> the client dropped it: forget it on the server (PageGuard.forget, no packet) -> done;
+#  - SETTLE after the menu's last packet: a test click through the engine's own gate (PageManager.handleEvent Data -> this menu's
+#    handleDataEvent only while customPageRequiredAcknowledgments == 0). It arrives -> healthy, nothing is sent. It does not -> the game
+#    is dropping this menu's clicks: log, PageManager.clearCustomPageAcknowledgements() (what a world change runs) and, for the first
+#    HEAL_ANSWERS heals of this menu, an answer (the menu redrawn with a status line) so a waiting client stops waiting; later heals
+#    reset silently (never a periodic page update).
+M(page, r"""
+public boolean watchTick(@WLD@ now) {
+  @REF@ ref = this.playerRef.getReference();
+  if (ref == null || !ref.isValid()) return this.playerRef.isValid();
+  @ST@ st = ref.getStore();
+  if (st == null) return true;
+  @PLA@ p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+  if (p == null) return true;
+  @PGM@ pm = p.getPageManager();
+  if (pm == null) return true;
+  if (pm.getCustomPage() != this) return false;
+  if (changedWorld(now)) {
+    if (@PKG@.PageGuard.forget(pm, ref, st, this)) @PKG@.MenuUtil.info("the SkyWynn Menu of " + @PKG@.PageGuard.who(this.playerRef) + " was still open on the server after a world change - forgot it there too (no packet)");
+    return false;
+  }
+  long t = System.currentTimeMillis();
+  if (t - this.lastSend < SETTLE) return true;
+  this.probeNonce = Long.toHexString(System.nanoTime() ^ (((long) System.identityHashCode(this)) << 24));
+  this.probeSeen = false;
+  pm.handleEvent(ref, st, new @CPE@(@CPT@.Data, "{\"a\":\"skyymenucheck\",\"n\":\"" + this.probeNonce + "\"}"));
+  if (this.probeSeen) return true;
+  if (pm.getCustomPage() != this) return false;
+  this.heals = this.heals + 1;
+  boolean answer = this.heals <= HEAL_ANSWERS;
+  if (this.heals <= 3 || this.heals % 60 == 0) @PKG@.MenuUtil.warn("the game was dropping " + @PKG@.PageGuard.who(this.playerRef) + "'s menu clicks (it still waited for a page acknowledgement the client will never send - e.g. a page update or close sent to a page the client no longer shows); reset the page acknowledgements" + (answer ? " and answered the menu" : "") + " (" + this.heals + ")");
+  pm.clearCustomPageAcknowledgements();
+  if (answer) {
+    this.status = "Clicks were stuck (a game hiccup after a teleport) - fixed. Click again.";
+    rebuild();
+  }
+  return true;
+}""")
+# ================= 0.3.6 MenuWatch part 2: the scheduler-thread tick -> the player's world thread
+M(mwat, r"""
+public void hop() {
+  if (@PKG@.PageGuard.STOP) return;
+  @PR@ pr = this.page.who();
+  if (pr == null || !pr.isValid()) return;
+  java.util.UUID wu = pr.getWorldUuid();
+  @UNI@ uni = @UNI@.get();
+  @WLD@ w = null;
+  if (wu != null && uni != null) w = uni.getWorld(wu);
+  if (w == null) { schedule(this.page); return; }
+  w.execute(new @PKG@.MenuWatch(this.page, w));
+}""")
+M(mwat, r"""
+public void run() {
+  if (this.target == null) {
+    try { hop(); }
+    catch (Throwable t) { if (this.page.watchFail(t)) schedule(this.page); }
+    return;
+  }
+  boolean again = false;
+  try { again = this.page.watchTick(this.target); }
+  catch (Throwable t) { again = this.page.watchFail(t); }
+  if (again && !@PKG@.PageGuard.STOP) schedule(this.page);
+}""")
+
+# ================= 0.3.10 StatsPage: the Stats page (one inline page, tabs switched with rebuild(); no timers, no MouseEntered/Exited) =================
+# build() reads everything again (the vitals on this world thread), so Refresh / a tab click shows the current numbers. Click payloads
+# are matched with both quotes. Change Profile = the player's own /profiles through the engine command manager (installed + permission
+# checked first, like the menu tiles); the page never closes itself before another page opens.
+# fix round: /profiles counts only when it is SkyyProfiles' own command (PROFILES_CMD) - another pack mod (EndlessLeveling's /profile has
+# the alias "profiles") may win the name; then the button is hidden, exactly as without SkyyProfiles.
+F(stp, 'public static final String PROFILES_CMD = "com.skyy.profiles.ProfilesCmd";')
+M(stp, r"""
+public static @ACM@ profilesCmd() {
+  @ACM@ c = @PKG@.MenuUtil.cmd("profiles");
+  if (c == null) return null;
+  return PROFILES_CMD.equals(c.getClass().getName()) ? c : null;
+}""")
+M(stp, r"""
+public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
+  java.util.UUID u = this.playerRef.getUuid();
+  if (this.tab < 0 || this.tab >= @PKG@.StatsCalc.TABS.length) this.tab = 0;
+  Object[] vit = null;
+  if (this.tab == 0) vit = @PKG@.StatsCalc.vitals(st, ref);
+  java.util.ArrayList rows = @PKG@.StatsCalc.rows(u, this.tab, vit);
+  boolean prof = profilesCmd() != null;
+""" + "\n".join("  " + ln for ln in ST_SHELL_JAVA.split("\n")) + r"""
+""" + "\n".join("  " + ln for ln in ST_TABS_JAVA.split("\n")) + r"""
+  for (int t = 0; t < @PKG@.StatsCalc.TABS.length; t++) ev.addEventBinding(@BT@.Activating, "#SkyyStatTab" + t, @EVD@.of("a", "ttab" + t));
+  int n = rows.size() < @PKG@.StatsCalc.ROWS ? rows.size() : @PKG@.StatsCalc.ROWS;
+  for (int i = 0; i < n; i++) {
+    String[] r = (String[]) rows.get(i);
+""" + "\n".join("    " + ln for ln in ST_ROW_JAVA.split("\n")) + r"""
+    b.set("#SkyyStatN" + i + ".Text", r[0]);
+    b.set("#SkyyStatV" + i + ".Text", r[1]);
+    b.set("#SkyyStatS" + i + ".Text", r[2]);
+  }
+  """ + ST_FOOT_JAVA["menu"] + r"""
+  """ + ST_FOOT_JAVA["refresh"] + r"""
+  if (prof) {
+    """ + ST_FOOT_JAVA["profile"] + r"""
+    ev.addEventBinding(@BT@.Activating, "#SkyyStatProfile", @EVD@.of("a", "tprofile"));
+  } else {
+    """ + ST_FOOT_JAVA["noprofile"] + r"""
+  }
+  """ + ST_FOOT_JAVA["fill"] + r"""
+  """ + ST_FOOT_JAVA["close"] + r"""
+  ev.addEventBinding(@BT@.Activating, "#SkyyStatMenu", @EVD@.of("a", "tmenu"));
+  ev.addEventBinding(@BT@.Activating, "#SkyyStatRefresh", @EVD@.of("a", "trefresh"));
+  ev.addEventBinding(@BT@.Activating, "#SkyyStatClose", @EVD@.of("a", "tclose"));
+  b.set("#SkyyStatHead.Text", @PKG@.StatsCalc.header(u, this.playerRef.getUsername()));
+  b.set("#SkyyStatSub.Text", @PKG@.StatsCalc.SUB);
+  b.set("#SkyyStatNote.Text", @PKG@.StatsCalc.NOTES[this.tab]);
+  b.set("#SkyyStatMsg.Text", this.status == null ? "" : this.status);
+}""")
+# StatsTask's answer (before StatsTask, which calls it): the page is still open 0.9 s after Change Profile -> /profiles answered in chat
+M(stp, r"""
+public void answer() {
+  this.status = "Your profile list did not open - read your chat.";
+  rebuild();
+}""")
+M(stp, r"""
+public @PR@ who() { return this.playerRef; }""")
+
+# ================= StatsTask: one redraw 0.9 s after Change Profile, ONLY while the Stats page is still the player's open page in the
+# same world (RefreshTask pattern: scheduler -> World.execute -> check on the world thread; the scheduler = PageGuard.EXEC, which setup()
+# sets to HytaleServer.SCHEDULED_EXECUTOR - no scheduler = no answer, the page simply stays as it is). A page the client no longer shows is never
+# redrawn (a redraw it never acknowledges would make every page ignore clicks - the 0.3.6 rule).
+sta.addInterface(pool.get("java.lang.Runnable"))
+F(sta, "public @PKG@.StatsPage page;")
+F(sta, "public @PR@ pr;")
+F(sta, "public @WLD@ expected;")
+C(sta, r"""
+public StatsTask(@PKG@.StatsPage page, @PR@ pr) { this.page = page; this.pr = pr; this.expected = null; }""")
+M(sta, r"""
+public static boolean schedule(@PKG@.StatsPage page, @PR@ pr, long ms) {
+  java.util.concurrent.ScheduledExecutorService ex = @PKG@.PageGuard.EXEC;
+  if (ex == null) return false;
+  try { ex.schedule(new @PKG@.StatsTask(page, pr), ms, java.util.concurrent.TimeUnit.MILLISECONDS); return true; }
+  catch (Throwable t) { @PKG@.MenuUtil.warn("could not schedule the stats page check: " + t); return false; }
+}""")
+M(sta, r"""
+public void run() {
+  try {
+    if (this.pr == null || !this.pr.isValid()) return;
+    if (this.expected == null) {
+      java.util.UUID wu = this.pr.getWorldUuid();
+      @WLD@ w = wu == null ? null : @UNI@.get().getWorld(wu);
+      if (w == null) return;
+      this.expected = w;
+      w.execute(this);
+      return;
+    }
+    java.util.UUID wu2 = this.pr.getWorldUuid();
+    if (wu2 == null || @UNI@.get().getWorld(wu2) != this.expected) return;
+    @REF@ r = this.pr.getReference();
+    if (r == null || !r.isValid()) return;
+    @ST@ st = r.getStore();
+    if (st == null) return;
+    @PLA@ p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+    if (p == null) return;
+    @PGM@ pm = p.getPageManager();
+    if (pm == null || pm.getCustomPage() != this.page) return;
+    this.page.answer();
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("stats page check failed: " + t); }
+}""")
+M(stp, r"""
+public void changeProfile(@REF@ ref, @ST@ st) {
+  @ACM@ c = profilesCmd();
+  if (c == null) { this.status = "Profiles are not on this server."; rebuild(); return; }
+  boolean ok = false;
+  try { ok = c.hasPermission(this.playerRef); } catch (Throwable t) { @PKG@.MenuUtil.warn("permission check for /profiles failed: " + t); ok = false; }
+  if (!ok) { this.status = "You do not have permission for /profiles. Ask an admin."; rebuild(); return; }
+  try { @CMGR@.get().handleCommand(this.playerRef, "profiles"); }
+  catch (Throwable t) { @PKG@.MenuUtil.warn("/profiles from the stats page failed: " + t); this.status = "/profiles could not be run."; rebuild(); return; }
+  @PKG@.StatsTask.schedule(this, this.playerRef, 900L);
+}""")
+M(stp, r"""
+public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
+  try {
+    if (data == null) return;
+    if (data.indexOf("\"tclose\"") >= 0) {
+      @PLA@ pc = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+      if (pc != null) pc.getPageManager().setPage(ref, st, @PGE@.None);
+      return;
+    }
+    if (data.indexOf("\"tmenu\"") >= 0) {
+      @PLA@ pm = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+      if (pm != null) pm.getPageManager().openCustomPage(ref, st, new @PKG@.MenuPage(this.playerRef, "main"));
+      return;
+    }
+    if (data.indexOf("\"tprofile\"") >= 0) { this.status = ""; changeProfile(ref, st); return; }
+    for (int i = 0; i < @PKG@.StatsCalc.TABS.length; i++) {
+      if (data.indexOf("\"ttab" + i + "\"") >= 0) { this.tab = i; this.status = ""; rebuild(); return; }
+    }
+    if (data.indexOf("\"trefresh\"") >= 0) { this.status = "Refreshed - these are your stats right now."; rebuild(); return; }
+    rebuild();
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("stats page click failed: " + t); }
+}""")
+
+# ================= /stats (alias /profilestats): opens the Stats page; no arguments; everyone (hytale:Adventurer) =================
+C(stc, r"""
+public StatsCmd() {
+  super("stats", "Open your Stats page - every stat of your character");
+  addAliases(new String[] { "profilestats" });
+  setPermissionGroups(new String[] { "hytale:Adventurer" });
+}""")
+M(stc, r"""
+protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
+  try {
+    @PLA@ player = (@PLA@) store.getComponent(ref, @PLA@.getComponentType());
+    if (player == null) return;
+    player.getPageManager().openCustomPage(ref, store, new @PKG@.StatsPage(pr, 0));
+  } catch (Throwable t) {
+    @PKG@.MenuUtil.warn("/stats failed: " + t);
+    pr.sendMessage(@MSG@.raw("[Stats] Could not open your stats page."));
+  }
+}""")
+
+# ================= 0.2 SettingsPage (research/Settings-Spec.md 4.2-4.4): one inline page, tabs / rows switched with rebuild() =================
+# Rows = the REGISTERED keys of the tab (SetReg.keysOf), sorted by SET_ORDER. Labels / help lines of other mods only go through b.set.
+# 0.3.3: only the rows this player may change (SetReg.visible - a registration's permission node); the others are hidden, never greyed.
+# Paging and the header count visible rows; a tab with no visible row is not drawn (the tab buttons close up, same ids and styles).
+# Click payloads are matched with both quotes ("son1" can never match "son11" or "soff1"). No MouseEntered/Exited bindings, no timers:
+# the armed Reset reverts on the next click; a change made elsewhere shows at the next click. The settings:def:* drain (a scan of the
+# whole shared bridge map) runs once per opened page, on its first build - clicks only rebuild from SetReg.DEFS.
+M(spg, r"""
+public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
+  if (!this.drained) { this.drained = true; @PKG@.SetReg.drain(); }
+  java.util.UUID u = this.playerRef.getUuid();
+  int nCat = @PKG@.MenuData.SET_CAT_ID.length;
+  Object[] vis = new Object[nCat];
+  int first = -1;
+  for (int i = 0; i < nCat; i++) {
+    String[] vk = @PKG@.SetReg.visible(i, u);
+    vis[i] = vk;
+    if (first < 0 && vk.length > 0) first = i;
+  }
+  if (this.cat < 0 || this.cat >= nCat || (first >= 0 && ((String[]) vis[this.cat]).length == 0)) {
+    this.cat = first >= 0 ? first : 0;
+    this.pageNo = 0;
+  }
+  String[] keys = (String[]) vis[this.cat];
+  int per = @PKG@.MenuData.SET_ROWS;
+  int pages = keys.length <= 0 ? 1 : (keys.length + per - 1) / per;
+  if (this.pageNo >= pages) this.pageNo = pages - 1;
+  if (this.pageNo < 0) this.pageNo = 0;
+  this.rowKeys = new String[per];
+  b.appendInline((String) null, @PKG@.MenuData.UI_SROOT);
+  b.appendInline("#SkyyStg", @PKG@.MenuData.UI_SACCENT);
+  b.appendInline("#SkyyStg", @PKG@.MenuData.UI_STITLE);
+  b.appendInline("#SkyyStg", @PKG@.MenuData.UI_SHINT);
+  b.appendInline("#SkyyStg", @PKG@.MenuData.UI_STABS0);
+  b.appendInline("#SkyyStg", @PKG@.MenuData.UI_STABS1);
+  int shown = 0;
+  for (int i = 0; i < nCat; i++) {
+    if (((String[]) vis[i]).length == 0) continue;
+    String par = shown < 4 ? "#SkyyStgTabs0" : "#SkyyStgTabs1";
+    if (shown % 4 != 0) b.appendInline(par, @PKG@.MenuData.UI_SSP12);
+    b.appendInline(par, i == this.cat ? @PKG@.MenuData.UI_STABSEL[i] : @PKG@.MenuData.UI_STAB[i]);
+    ev.addEventBinding(@BT@.Activating, "#SkyyStgTab" + i, @EVD@.of("a", "stab" + i));
+    shown++;
+  }
+  b.appendInline("#SkyyStg", @PKG@.MenuData.UI_SGAP8);
+  b.appendInline("#SkyyStg", @PKG@.MenuData.UI_SHEAD);
+  b.appendInline("#SkyyStg", @PKG@.MenuData.UI_SROWS);
+  for (int r = 0; r < per; r++) {
+    int k = this.pageNo * per + r;
+    if (k >= keys.length) break;
+    String key = keys[k];
+    this.rowKeys[r] = key;
+    Object[] d = @PKG@.SetReg.info(key);
+    Boolean v = @PKG@.SetStore.get(u, key);
+    boolean on = v == null || v.booleanValue();
+    String row = "#SkyyStgRow" + r;
+    String txt = "#SkyyStgTxt" + r;
+    b.appendInline("#SkyyStgRows", @PKG@.MenuData.UI_SROW[r]);
+    b.appendInline(row, @PKG@.MenuData.UI_SSP14);
+    b.appendInline(row, @PKG@.MenuData.UI_STXT[r]);
+    b.appendInline(txt, @PKG@.MenuData.UI_SNAME[r]);
+    b.appendInline(txt, @PKG@.MenuData.UI_SDESC[r]);
+    b.appendInline(row, on ? @PKG@.MenuData.UI_SONSEL[r] : @PKG@.MenuData.UI_SON[r]);
+    b.appendInline(row, @PKG@.MenuData.UI_SSP10);
+    b.appendInline(row, on ? @PKG@.MenuData.UI_SOFF[r] : @PKG@.MenuData.UI_SOFFSEL[r]);
+    b.appendInline("#SkyyStgRows", @PKG@.MenuData.UI_SGAP6);
+    b.set("#SkyyStgName" + r + ".Text", d == null ? key : String.valueOf(d[2]));
+    b.set("#SkyyStgDesc" + r + ".Text", d == null ? "" : String.valueOf(d[5]));
+    ev.addEventBinding(@BT@.Activating, "#SkyyStgOn" + r, @EVD@.of("a", "son" + r));
+    ev.addEventBinding(@BT@.Activating, "#SkyyStgOff" + r, @EVD@.of("a", "soff" + r));
+  }
+  if (keys.length == 0) {
+    b.appendInline("#SkyyStgRows", @PKG@.MenuData.UI_SEMPTY);
+    b.set("#SkyyStgEmpty.Text", @PKG@.MenuData.SET_TXT_EMPTY);
+  }
+  b.appendInline("#SkyyStg", @PKG@.MenuData.UI_SALWAYS);
+  b.appendInline("#SkyyStg", @PKG@.MenuData.UI_SSTATUS);
+  b.appendInline("#SkyyStg", @PKG@.MenuData.UI_SFOOT);
+  boolean armed = this.armedAt > 0L && System.currentTimeMillis() - this.armedAt <= 10000L;
+  if (pages > 1) {
+    b.appendInline("#SkyyStgFoot", @PKG@.MenuData.UI_SLEADB);
+    b.appendInline("#SkyyStgFoot", @PKG@.MenuData.UI_SPREV);
+    b.appendInline("#SkyyStgFoot", @PKG@.MenuData.UI_SSP10);
+    b.appendInline("#SkyyStgFoot", @PKG@.MenuData.UI_SNEXT);
+    b.appendInline("#SkyyStgFoot", @PKG@.MenuData.UI_SSP10);
+    ev.addEventBinding(@BT@.Activating, "#SkyyStgPrev", @EVD@.of("a", "sprev"));
+    ev.addEventBinding(@BT@.Activating, "#SkyyStgNext", @EVD@.of("a", "snext"));
+  } else {
+    b.appendInline("#SkyyStgFoot", @PKG@.MenuData.UI_SLEADA);
+  }
+  b.appendInline("#SkyyStgFoot", armed ? @PKG@.MenuData.UI_SRESETARM : @PKG@.MenuData.UI_SRESET);
+  b.appendInline("#SkyyStgFoot", @PKG@.MenuData.UI_SSP10);
+  b.appendInline("#SkyyStgFoot", @PKG@.MenuData.UI_SMENU);
+  b.appendInline("#SkyyStgFoot", @PKG@.MenuData.UI_SSP10);
+  b.appendInline("#SkyyStgFoot", @PKG@.MenuData.UI_SCLOSE);
+  ev.addEventBinding(@BT@.Activating, "#SkyyStgReset", @EVD@.of("a", "sreset"));
+  ev.addEventBinding(@BT@.Activating, "#SkyyStgMenu", @EVD@.of("a", "smenu"));
+  ev.addEventBinding(@BT@.Activating, "#SkyyStgClose", @EVD@.of("a", "sclose"));
+  int n = keys.length;
+  b.set("#SkyyStgHint.Text", @PKG@.MenuData.SET_TXT_HINT);
+  b.set("#SkyyStgHead.Text", @PKG@.MenuData.SET_HEAD[this.cat] + "   -   " + n + (n == 1 ? " setting" : " settings")
+      + (pages > 1 ? "   -   page " + (this.pageNo + 1) + " of " + pages : ""));
+  b.set("#SkyyStgAlways.Text", @PKG@.MenuData.SET_ALWAYS[this.cat]);
+  String stt = this.status == null ? "" : this.status;
+  if (stt.length() == 0 && @PKG@.SetStore.isBroken(u)) stt = @PKG@.MenuData.SET_TXT_BROKEN;
+  b.set("#SkyyStgStatus.Text", stt);
+}""")
+M(spg, r"""
+public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
+  try {
+    if (data == null) return;
+    java.util.UUID u = this.playerRef.getUuid();
+    if (data.indexOf("\"sclose\"") >= 0) {
+      @PLA@ pc = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+      if (pc != null) pc.getPageManager().setPage(ref, st, @PGE@.None);
+      return;
+    }
+    if (data.indexOf("\"smenu\"") >= 0) {
+      @PLA@ pm = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+      if (pm != null) pm.getPageManager().openCustomPage(ref, st, new @PKG@.MenuPage(this.playerRef, "main"));
+      return;
+    }
+    long now = System.currentTimeMillis();
+    boolean wasArmed = this.armedAt > 0L && now - this.armedAt <= 10000L;
+    this.armedAt = 0L;
+    if (data.indexOf("\"sreset\"") >= 0) {
+      if (!wasArmed) {
+        this.armedAt = now;
+        this.status = @PKG@.MenuData.SET_TXT_ARM;
+      } else {
+        this.status = @PKG@.SetStore.resetAll(u) == 1 ? @PKG@.MenuData.SET_TXT_RESET : @PKG@.MenuData.SET_TXT_BROKEN;
+      }
+      rebuild();
+      return;
+    }
+    for (int i = 0; i < @PKG@.MenuData.SET_CAT_ID.length; i++) {
+      if (data.indexOf("\"stab" + i + "\"") >= 0) { this.cat = i; this.pageNo = 0; this.status = ""; rebuild(); return; }
+    }
+    if (data.indexOf("\"sprev\"") >= 0) { if (this.pageNo > 0) this.pageNo = this.pageNo - 1; this.status = ""; rebuild(); return; }
+    if (data.indexOf("\"snext\"") >= 0) { this.pageNo = this.pageNo + 1; this.status = ""; rebuild(); return; }
+    for (int r = 0; r < this.rowKeys.length; r++) {
+      boolean hitOn = data.indexOf("\"son" + r + "\"") >= 0;
+      boolean hitOff = !hitOn && data.indexOf("\"soff" + r + "\"") >= 0;
+      if (!hitOn && !hitOff) continue;
+      String key = this.rowKeys[r];
+      if (key == null) { rebuild(); return; }
+      if (!@PKG@.SetReg.may(u, key)) { this.status = @PKG@.MenuData.SET_TXT_GONE; rebuild(); return; }
+      int ok = @PKG@.SetStore.set(u, key, hitOn, false);
+      Object[] d = @PKG@.SetReg.info(key);
+      String label = d == null ? key : String.valueOf(d[2]);
+      this.status = ok == 1 ? label + (hitOn ? ": ON - saved." : ": OFF - saved.") : @PKG@.MenuData.SET_TXT_BROKEN;
+      rebuild();
+      return;
+    }
+    rebuild();
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("settings click failed: " + t); }
+}""")
+
+# ================= /settings (alias /skysettings): opens the page; no arguments; everyone (hytale:Adventurer) =================
+C(scmd, r"""
+public SettingsCmd() {
+  super("settings", "Open your settings - turn chat messages on or off");
+  addAliases(new String[] { "skysettings" });
+  setPermissionGroups(new String[] { "hytale:Adventurer" });
+}""")
+M(scmd, r"""
+protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
+  try {
+    @PLA@ player = (@PLA@) store.getComponent(ref, @PLA@.getComponentType());
+    if (player == null) return;
+    player.getPageManager().openCustomPage(ref, store, new @PKG@.SettingsPage(pr, -1));
+  } catch (Throwable t) {
+    @PKG@.MenuUtil.warn("/settings failed: " + t);
+    pr.sendMessage(@MSG@.raw("[Settings] Could not open your settings."));
+  }
+}""")
+
+# ================= 0.3 AdminPage (research/Server-Setup-Spec.md 2.3-2.10): Server Setup, one inline page, seven views =================
+# Talks to a mod ONLY through the bridge (config:def:<Mod> + config:fn:<Mod>, java.lang types, tools/CONFIG-CONTRACT.md). The mod
+# validates, saves, logs and versions; this page draws and passes clicks. No timers, no periodic updates, no MouseEntered/Exited.
+# ---- seams: the ONLY methods that touch the engine / other pages (the bare-JVM harness swaps exactly these)
+M(apg, r"""
+public boolean guard() {
+  boolean ok = false;
+  try { ok = this.playerRef != null && this.playerRef.hasPermission(@MD@.ADMIN_NODE); } catch (Throwable t) { ok = false; }
+  if (!ok) {
+    this.pending = null;
+    this.pendingCodes = null;
+    this.drafts = new java.util.HashMap();
+    this.tDrafts = new java.util.HashMap();
+    this.status = @MD@.ADM_NOACCESS;
+    this.statusKind = 3;
+  }
+  this.locked = !ok;
+  return ok;
+}""")
+M(apg, r"""
+public java.util.UUID me() {
+  try { return this.playerRef.getUuid(); } catch (Throwable t) { return null; }
+}""")
+M(apg, r"""
+public String myName() {
+  try { String n = this.playerRef.getUsername(); return n == null ? "" : n; } catch (Throwable t) { return ""; }
+}""")
+M(apg, r"""
+public boolean alive(String m) {
+  return m != null && @MU@.liveVersion(m) != null;
+}""")
+M(apg, r"""
+public boolean canEdit(String node) {
+  if (node == null || node.length() == 0) return false;
+  try { return this.playerRef.hasPermission(node); } catch (Throwable t) { return false; }
+}""")
+M(apg, r"""
+public String heldItem(@REF@ ref, @ST@ st) {
+  try {
+    @PLA@ p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+    if (p == null) return null;
+    @INV@ inv = p.getInventory();
+    if (inv == null) return null;
+    @IS@ it = inv.getItemInHand();
+    if (it == null || it.isEmpty()) return null;
+    return it.getItemId();
+  } catch (Throwable t) { return null; }
+}""")
+M(apg, r"""
+public void setStatus(String s, int kind) {
+  this.status = s == null ? "" : s;
+  this.statusKind = kind;
+}""")
+# run a command line AS THIS ADMIN (the menu's handleCommand path; vanilla /su pattern) - link rows and the Reload buttons
+M(apg, r"""
+public boolean runLine(String line) {
+  String name = @MU@.firstWord(line);
+  try {
+    if (name == null || @MU@.cmd(name) == null) { setStatus("/" + name + " is not on this server.", 3); return false; }
+    @CMGR@.get().handleCommand(this.playerRef, line);
+    return true;
+  } catch (Throwable t) {
+    @MU@.warn("Server Setup could not run /" + line + ": " + t);
+    setStatus("/" + line + " could not be run.", 3);
+    return false;
+  }
+}""")
+M(apg, r"""
+public void closeNow(@REF@ ref, @ST@ st) {
+  try {
+    @PLA@ p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+    if (p != null) p.getPageManager().setPage(ref, st, @PGE@.None);
+  } catch (Throwable t) { @MU@.warn("could not close Server Setup: " + t); }
+}""")
+M(apg, r"""
+public void openMenu(@REF@ ref, @ST@ st) {
+  try {
+    @PLA@ p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+    if (p != null) p.getPageManager().openCustomPage(ref, st, new @PKG@.MenuPage(this.playerRef, "main"));
+  } catch (Throwable t) { @MU@.warn("could not open the SkyWynn Menu: " + t); }
+}""")
+M(apg, r"""
+public void saveFile(String name, String text) {
+  @PKG@.AdmSaveTask.save(name, text);
+}""")
+# ---- header / row access (config:def:<Mod> = Object[10], rows = Object[11] of Strings; tools/CONFIG-CONTRACT.md)
+M(apg, r"""
+public static String hs(Object[] h, int i) {
+  if (h == null || i < 0 || i >= h.length) return "";
+  Object o = h[i];
+  return o instanceof String ? (String) o : "";
+}""")
+# a <Mod> name read back off the shared bridge must be Skyy[A-Z][A-Za-z]{1,30} (the kit's MOD_RE, checked at the PUBLISHER's build only):
+# this page shows it, runs it through commands and names export files after it, so a bogus config:def:<x> key (../, /, \, :) is ignored
+M(apg, r"""
+public static boolean validMod(String m) {
+  if (m == null || m.length() < 6 || m.length() > 35 || !m.startsWith("Skyy")) return false;
+  char c0 = m.charAt(4);
+  if (c0 < 'A' || c0 > 'Z') return false;
+  for (int i = 5; i < m.length(); i++) {
+    char c = m.charAt(i);
+    if (!((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))) return false;
+  }
+  return true;
+}""")
+M(apg, r"""
+public static Object[] hdr(String m) {
+  if (!validMod(m)) return null;
+  try {
+    Object o = @MU@.bridge().get("config:def:" + m);
+    if (!(o instanceof Object[])) return null;
+    Object[] h = (Object[]) o;
+    if (h.length < 10 || !(h[5] instanceof String[]) || !(h[6] instanceof String[]) || !(h[7] instanceof Object[])) return null;
+    return h;
+  } catch (Throwable t) { return null; }
+}""")
+M(apg, r"""
+public static boolean contractOk(Object[] h) {
+  return h != null && @MD@.ADM_CONTRACT.equals(hs(h, 0));
+}""")
+M(apg, r"""
+public static Object[] rowsOf(Object[] h) {
+  if (h == null) return new Object[0];
+  return (Object[]) h[7];
+}""")
+M(apg, r"""
+public static Object[] rowAt(Object[] h, int i) {
+  Object[] rs = rowsOf(h);
+  if (i < 0 || i >= rs.length || !(rs[i] instanceof Object[])) return null;
+  Object[] r = (Object[]) rs[i];
+  if (r.length < 11) return null;
+  return r;
+}""")
+M(apg, r"""
+public static String rv(Object[] r, int i) {
+  if (r == null || i < 0 || i >= r.length) return "";
+  Object o = r[i];
+  return o instanceof String ? (String) o : "";
+}""")
+M(apg, r"""
+public static int rowIdx(Object[] h, String key) {
+  if (key == null) return -1;
+  Object[] rs = rowsOf(h);
+  for (int i = 0; i < rs.length; i++) {
+    Object[] r = rowAt(h, i);
+    if (r != null && key.equals(rv(r, 0))) return i;
+  }
+  return -1;
+}""")
+M(apg, r"""
+public static boolean hasFlag(Object[] r, String f) {
+  return ("," + rv(r, 9) + ",").indexOf("," + f + ",") >= 0;
+}""")
+M(apg, r"""
+public static String[] catIds(Object[] h) {
+  if (h == null) return new String[0];
+  return (String[]) h[5];
+}""")
+M(apg, r"""
+public static String catLabel(Object[] h, int i) {
+  if (h == null) return "";
+  String[] l = (String[]) h[6];
+  if (i < 0 || i >= l.length || l[i] == null) return "";
+  return l[i];
+}""")
+M(apg, r"""
+public static int catOf(Object[] h, Object[] r) {
+  String[] ids = catIds(h);
+  String c = rv(r, 2);
+  for (int i = 0; i < ids.length; i++) if (ids[i] != null && ids[i].equals(c)) return i;
+  return ids.length - 1;
+}""")
+M(apg, r"""
+public static Object call(String m, Object[] args) {
+  if (m == null) return null;
+  try {
+    Object f = @MU@.bridge().get("config:fn:" + m);
+    if (!(f instanceof java.util.function.Function)) return null;
+    return ((java.util.function.Function) f).apply(args);
+  } catch (Throwable t) { @MU@.warn("config call to " + m + " failed: " + t); return null; }
+}""")
+M(apg, r"""
+public static String cur(String m, String key) {
+  Object o = call(m, new Object[] { "get", key });
+  return o instanceof String ? (String) o : null;
+}""")
+# ---- 0.3.4: MILLISECOND ROWS IN SECONDS (Skyy, LOCKED 2026-10-01: "use seconds ... make sure you can use part numbers like 0.24").
+# A row is milliseconds when its unit column (element 8) is "ms" on an int / dec row (tools/CONFIG-CONTRACT.md: the unit the file
+# stores). The page shows and takes seconds; the mod always gets canonical milliseconds (its file, export codes and chat commands stay ms).
+M(apg, r"""
+public static boolean msRow(Object[] r) {
+  if (r == null) return false;
+  String t = rv(r, 3);
+  return "ms".equals(rv(r, 8)) && (t.equals("int") || t.equals("dec"));
+}""")
+# milliseconds text -> seconds text, exact (BigDecimal, no float): 240 -> 0.24, 1500 -> 1.5, 30000 -> 30, 1 -> 0.001; not a number = as is
+M(apg, r"""
+public static String secText(String ms) {
+  if (ms == null) return null;
+  String t = ms.trim();
+  if (t.length() == 0) return ms;
+  try {
+    java.math.BigDecimal d = new java.math.BigDecimal(t).movePointLeft(3);
+    if (d.signum() == 0) return "0";
+    return d.stripTrailingZeros().toPlainString();
+  } catch (Throwable x) { return ms; }
+}""")
+# typed seconds -> canonical milliseconds text (whole = an int row: rounded half up, 0.2405 -> 241); "1.5s", "2 sec", "2 seconds" are
+# seconds, "240ms" is milliseconds; null = not a time (empty, letters, a comma, two dots, other suffixes, exponents)
+M(apg, r"""
+public static String msOf(String typed, boolean whole) {
+  if (typed == null) return null;
+  String t0 = typed.trim().toLowerCase();
+  StringBuilder sb = new StringBuilder();
+  for (int k = 0; k < t0.length(); k++) { char c = t0.charAt(k); if (c != ' ' && c != '_') sb.append(c); }
+  String t = sb.toString();
+  if (t.length() == 0 || t.length() > 40) return null;
+  int mul = 3;
+  if (t.endsWith("ms")) { mul = 0; t = t.substring(0, t.length() - 2); }
+  else if (t.endsWith("seconds")) t = t.substring(0, t.length() - 7);
+  else if (t.endsWith("second")) t = t.substring(0, t.length() - 6);
+  else if (t.endsWith("secs")) t = t.substring(0, t.length() - 4);
+  else if (t.endsWith("sec")) t = t.substring(0, t.length() - 3);
+  else if (t.endsWith("s")) t = t.substring(0, t.length() - 1);
+  if (t.length() == 0) return null;
+  int dots = 0;
+  int digits = 0;
+  for (int k = 0; k < t.length(); k++) {
+    char c = t.charAt(k);
+    if (c == '.') { dots++; continue; }
+    if (c >= '0' && c <= '9') { digits++; continue; }
+    if (k == 0 && (c == '-' || c == '+')) continue;
+    return null;
+  }
+  if (dots > 1 || digits == 0) return null;
+  try {
+    java.math.BigDecimal d = new java.math.BigDecimal(t).movePointRight(mul);
+    if (whole) d = d.setScale(0, java.math.RoundingMode.HALF_UP);
+    if (d.signum() == 0) return "0";
+    return d.stripTrailingZeros().toPlainString();
+  } catch (Throwable x) { return null; }
+}""")
+# the row's bounds in seconds: "0.25 to 60 seconds" / "at least 0.25 seconds" / "at most 60 seconds" / ""
+M(apg, r"""
+public static String secRange(Object[] r) {
+  String lo = rv(r, 5);
+  String hi = rv(r, 6);
+  if (lo.length() > 0 && hi.length() > 0) return secText(lo) + " to " + secText(hi) + " seconds";
+  if (lo.length() > 0) return "at least " + secText(lo) + " seconds";
+  if (hi.length() > 0) return "at most " + secText(hi) + " seconds";
+  return "";
+}""")
+# the start of a millisecond row's help line: "0.25 to 60 seconds, default 2"
+M(apg, r"""
+public static String secHint(Object[] r) {
+  String b = secRange(r);
+  String d = rv(r, 4);
+  if (b.length() == 0) b = "In seconds";
+  return d.length() > 0 ? b + ", default " + secText(d) : b;
+}""")
+# null = within the row's bounds (or not checkable here: the mod checks again), else the refusal for the status line, in seconds
+M(apg, r"""
+public static String msRange(Object[] r, String msv) {
+  try {
+    java.math.BigDecimal v = new java.math.BigDecimal(msv);
+    String lo = rv(r, 5);
+    String hi = rv(r, 6);
+    boolean low = lo.length() > 0 && v.compareTo(new java.math.BigDecimal(lo)) < 0;
+    boolean high = hi.length() > 0 && v.compareTo(new java.math.BigDecimal(hi)) > 0;
+    if (low || high) return rv(r, 1) + " must be " + secRange(r) + " - you typed " + secText(msv) + ".";
+  } catch (Throwable x) { return null; }
+  return null;
+}""")
+# what a typed value is SENT as: { value, null } (every row but a millisecond row: unchanged) or { null, the refusal }
+M(apg, r"""
+public static String[] typedValue(Object[] r, String v) {
+  if (!msRow(r)) return new String[] { v, null };
+  String m = msOf(v, !rv(r, 3).equals("dec"));
+  if (m == null) return new String[] { null, rv(r, 1) + ": type the time in seconds, like 0.25 or 1.5 (a dot for decimals; 240ms works too)." };
+  String bad = msRange(r, m);
+  if (bad != null) return new String[] { null, bad };
+  return new String[] { m, null };
+}""")
+# every message a mod's config kit sends back, in seconds: "240 ms" -> "0.24 s", "from 250 to 60000 ms" -> "from 0.25 to 60 s"
+M(apg, r"""
+public static String msWords(String s) {
+  if (s == null || s.indexOf(" ms") < 0) return s;
+  try {
+    java.util.regex.Matcher m = java.util.regex.Pattern.compile("(?<![\\w.])from (-?\\d+(?:\\.\\d+)?) to (-?\\d+(?:\\.\\d+)?) ms\\b").matcher(s);
+    StringBuffer sb = new StringBuffer();
+    while (m.find()) m.appendReplacement(sb, java.util.regex.Matcher.quoteReplacement("from " + secText(m.group(1)) + " to " + secText(m.group(2)) + " s"));
+    m.appendTail(sb);
+    java.util.regex.Matcher m2 = java.util.regex.Pattern.compile("(?<![\\w.])(-?\\d+(?:\\.\\d+)?) ms\\b").matcher(sb.toString());
+    StringBuffer sb2 = new StringBuffer();
+    while (m2.find()) m2.appendReplacement(sb2, java.util.regex.Matcher.quoteReplacement(secText(m2.group(1)) + " s"));
+    m2.appendTail(sb2);
+    return sb2.toString();
+  } catch (Throwable t) { return s; }
+}""")
+# a millisecond row's OWN help line (the mod wrote it in ms: "...once per this many ms.", SkyySkills feedbackMs / harvestCooldownMs /
+# acro.feedbackMs, SkyyGear regen.periodMs) in seconds too - a "(s)" row must not say "ms" under it: a number + ms goes through msWords
+# ("250 ms" -> "0.25 s"), a loose "ms" / "millisecond(s)" word becomes "seconds"; whole words only ("items", "msgs" stay)
+M(apg, r"""
+public static String secHelp(String h) {
+  if (h == null) return "";
+  String t = msWords(h);
+  try { t = t.replaceAll("(?i)\\b(?:milliseconds?|millis|ms)\\b", "seconds"); } catch (Throwable x) { }
+  return t;
+}""")
+M(apg, r"""
+public static String rStatus(Object r) {
+  if (!(r instanceof Object[])) return null;
+  Object[] a = (Object[]) r;
+  return a.length > 0 && a[0] instanceof String ? (String) a[0] : null;
+}""")
+M(apg, r"""
+public static String rMsg(Object r) {
+  if (!(r instanceof Object[])) return "";
+  Object[] a = (Object[]) r;
+  return a.length > 2 && a[2] instanceof String ? msWords((String) a[2]) : "";
+}""")
+M(apg, r"""
+public static String rVal(Object r) {
+  if (!(r instanceof Object[])) return null;
+  Object[] a = (Object[]) r;
+  return a.length > 1 && a[1] instanceof String ? (String) a[1] : null;
+}""")
+# a value as the admin reads it (the kit's own disp rule): bool ON/OFF, % glued on, other units after a space
+M(apg, r"""
+public static String disp(Object[] r, String v) {
+  if (v == null) return "(unknown)";
+  String t = rv(r, 3);
+  if (t.equals("bool")) { if (v.equals("true")) return "ON"; if (v.equals("false")) return "OFF"; return v; }
+  if (v.length() == 0) return "(empty)";
+  if (msRow(r)) return secText(v) + " s";
+  String u = rv(r, 8);
+  if (u.length() == 0) return v;
+  if (u.equals("%")) { if (t.equals("range")) return v.replace("-", "%-") + "%"; return v + "%"; }
+  return v + " " + u;
+}""")
+M(apg, r"""
+public static String tagOf(Object[] r) {
+  StringBuilder sb = new StringBuilder();
+  if (hasFlag(r, "ro")) sb.append("READ ONLY");
+  else if (hasFlag(r, "restart")) sb.append("RESTART");
+  else if (hasFlag(r, "new")) sb.append("NEW ONLY");
+  else if (hasFlag(r, "live")) sb.append("LIVE");
+  if (hasFlag(r, "danger")) { if (sb.length() > 0) sb.append(" - "); sb.append("CONFIRM"); }
+  if (hasFlag(r, "part")) { if (sb.length() > 0) sb.append(" - "); sb.append("PART"); }
+  if (hasFlag(r, "adv")) { if (sb.length() > 0) sb.append(" - "); sb.append("ADVANCED"); }
+  return sb.toString();
+}""")
+M(apg, r"""
+public static String[] chVals(String opts) {
+  String[] p = opts.split(",");
+  String[] out = new String[p.length];
+  for (int k = 0; k < p.length; k++) { int b = p[k].indexOf('|'); out[k] = (b < 0 ? p[k] : p[k].substring(0, b)).trim(); }
+  return out;
+}""")
+M(apg, r"""
+public static String[] chLabels(String opts) {
+  String[] p = opts.split(",");
+  String[] out = new String[p.length];
+  for (int k = 0; k < p.length; k++) { int b = p[k].indexOf('|'); out[k] = (b < 0 ? p[k] : p[k].substring(b + 1)).trim(); }
+  return out;
+}""")
+M(apg, r"""
+public static String[] tCols(String opts) {
+  String[] p = opts.split(";");
+  if (p.length < 3) return new String[] { "Value" };
+  return p[2].split("\\|");
+}""")
+M(apg, r"""
+public static String tMode(String opts) {
+  String[] p = opts.split(";");
+  if (p.length < 2) return "none";
+  return p[1].trim();
+}""")
+M(apg, r"""
+public static String stepOf(String opts) {
+  if (opts == null || !opts.startsWith("step=")) return null;
+  return opts.substring(5).trim();
+}""")
+M(apg, r"""
+public static boolean hasOpt(String opts, String t) {
+  return ("," + opts + ",").indexOf("," + t + ",") >= 0;
+}""")
+M(apg, r"""
+public static java.util.ArrayList csv(String s) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  if (s == null) return out;
+  String[] p = s.split(",");
+  for (int k = 0; k < p.length; k++) { String x = p[k].trim(); if (x.length() > 0) out.add(x); }
+  return out;
+}""")
+M(apg, r"""
+public static String joinList(java.util.ArrayList l, String sep) {
+  StringBuilder sb = new StringBuilder();
+  for (int k = 0; k < l.size(); k++) { if (k > 0) sb.append(sep); sb.append(String.valueOf(l.get(k))); }
+  return sb.toString();
+}""")
+M(apg, r"""
+public static String firstLine(String s) {
+  if (s == null) return "";
+  int n = s.indexOf('\n');
+  return n < 0 ? s : s.substring(0, n);
+}""")
+M(apg, r"""
+public static String timeShort(String t) {
+  if (t == null) return "";
+  if (t.length() >= 16 && t.charAt(10) == 'T') return t.substring(5, 10) + " " + t.substring(11, 16);
+  return t;
+}""")
+M(apg, r"""
+public static java.util.ArrayList wrap(String msg, int w) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  if (msg == null) return out;
+  String[] ls = msg.split("\n");
+  for (int k = 0; k < ls.length; k++) {
+    String s = ls[k].replace('\t', ' ').replace('\r', ' ');
+    while (s.length() > w) {
+      int cut = s.lastIndexOf(' ', w);
+      if (cut < w / 2) cut = w;
+      out.add(s.substring(0, cut).trim());
+      s = s.substring(cut).trim();
+    }
+    out.add(s);
+  }
+  return out;
+}""")
+M(apg, r"""
+public static boolean has(String hay, String needle) {
+  return hay != null && needle != null && needle.length() > 0 && hay.toLowerCase().indexOf(needle.toLowerCase()) >= 0;
+}""")
+# "@" starts a TextField read-back key (EventData "@Key" -> "#Id.Value"); built from a char so the build script's token check stays simple
+M(apg, r"""
+public static String at(String k) {
+  return String.valueOf((char) 64) + k;
+}""")
+M(apg, r"""
+public static String stamp() {
+  return java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd-HHmm"));
+}""")
+M(apg, r"""
+public static int tailNum(String a, String prefix) {
+  if (a == null || !a.startsWith(prefix) || a.length() == prefix.length()) return -1;
+  String t = a.substring(prefix.length());
+  for (int k = 0; k < t.length(); k++) if (t.charAt(k) < '0' || t.charAt(k) > '9') return -1;
+  try { return Integer.parseInt(t); } catch (Throwable x) { return -1; }
+}""")
+M(apg, r"""
+public static int modIndex(String m) {
+  for (int k = 0; k < @MD@.MOD_NAME.length; k++) if (@MD@.MOD_NAME[k].equals(m)) return k;
+  return -1;
+}""")
+M(apg, r"""
+public static boolean installed(int k) {
+  if (k < 0) return false;
+  return @MU@.liveVersion(@MD@.MOD_NAME[k]) != null || @MU@.cmd(@MD@.MOD_CHECK[k]) != null;
+}""")
+# every mod that publishes a readable config:def:<Mod> (the pull model: scanned at every build, so load order never matters)
+M(apg, r"""
+public static String[] cfgMods() {
+  java.util.ArrayList out = new java.util.ArrayList();
+  try {
+    java.util.Iterator it = new java.util.ArrayList(@MU@.bridge().keySet()).iterator();
+    while (it.hasNext()) {
+      Object k = it.next();
+      if (!(k instanceof String) || !((String) k).startsWith("config:def:")) continue;
+      String m = ((String) k).substring(11);
+      if (hdr(m) != null && !out.contains(m)) out.add(m);
+    }
+  } catch (Throwable t) { }
+  java.util.Collections.sort(out);
+  return (String[]) out.toArray(new String[0]);
+}""")
+M(apg, r"""
+public static String resolveMod(String arg) {
+  if (arg == null) return null;
+  String a = arg.trim();
+  if (a.length() == 0) return null;
+  String[] cm = cfgMods();
+  for (int i = 0; i < cm.length; i++) if (cm[i].equalsIgnoreCase(a) || cm[i].equalsIgnoreCase("Skyy" + a)) return cm[i];
+  for (int i = 0; i < cm.length; i++) if (hs(hdr(cm[i]), 2).equalsIgnoreCase(a)) return cm[i];
+  for (int k = 0; k < @MD@.MOD_NAME.length; k++) {
+    String m = @MD@.MOD_NAME[k];
+    if ((m.equalsIgnoreCase(a) || m.equalsIgnoreCase("Skyy" + a)) && installed(k)) return m;
+  }
+  return null;
+}""")
+M(apg, r"""
+public static java.util.ArrayList hitsOf(Object[] h, String q) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  String[] ids = catIds(h);
+  for (int i = 0; i < ids.length; i++) if (has(catLabel(h, i), q)) out.add("tab " + catLabel(h, i));
+  Object[] rs = rowsOf(h);
+  for (int i = 0; i < rs.length; i++) {
+    Object[] r = rowAt(h, i);
+    if (r != null && (has(rv(r, 1), q) || has(rv(r, 10), q))) out.add(rv(r, 1));
+  }
+  return out;
+}""")
+M(apg, r"""
+public static int firstHit(Object[] h, String q) {
+  Object[] rs = rowsOf(h);
+  for (int i = 0; i < rs.length; i++) {
+    Object[] r = rowAt(h, i);
+    if (r != null && (has(rv(r, 1), q) || has(rv(r, 10), q))) return i;
+  }
+  return -1;
+}""")
+M(apg, r"""
+public static java.util.ArrayList codesIn(String text) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  if (text == null || text.trim().length() == 0) return out;
+  String[] toks = text.trim().split("\\s+");
+  for (int i = 0; i < toks.length; i++) if (toks[i].startsWith("SKYY1.")) out.add(toks[i]);
+  return out;
+}""")
+M(apg, r"""
+public static String codeMod(String code) {
+  String[] p = code.split("\\.");
+  return p.length >= 2 ? p[1] : "";
+}""")
+# ---- inline pieces built at run time (the patterns are validated at build time with samples, and the harness checks the real output)
+M(apg, r"""
+public static String btn(String id, int w, int h, String text, String style) {
+  String t = @MU@.inl(text);
+  if (t.length() == 0) t = "-";
+  return "TextButton #" + id + " { Anchor: (Width: " + w + ", Height: " + h + "); Text: \"" + t + "\"; " + style + " }";
+}""")
+M(apg, r"""
+public static String spc(int w, int h) {
+  return "Label { Anchor: (Width: " + w + ", Height: " + h + "); Text: \"\"; }";
+}""")
+M(apg, r"""
+public static String lab(String id, int w, int h, int size, boolean bold, String color) {
+  return "Label #" + id + " { Anchor: (Width: " + w + ", Height: " + h + "); Text: \"\"; Style: (FontSize: " + size + (bold ? ", RenderBold: true" : "") + ", TextColor: " + color + ", VerticalAlignment: Center); }";
+}""")
+M(apg, r"""
+public static void field(@UCB@ b, String parent, String id, int w, int h, int max, String value, String ph) {
+  b.appendInline(parent, "Group #" + id + "Box { Anchor: (Width: " + w + ", Height: " + h + "); Background: #16263a; }");
+  String p = "";
+  if (ph != null && ph.length() > 0) p = " PlaceholderText: \"" + @MU@.inl(ph) + "\"; PlaceholderStyle: (TextColor: #6e7da1, FontSize: 17);";
+  b.appendInline("#" + id + "Box", "TextField #" + id + " { Anchor: (Full: 0); Padding: (Horizontal: 10); MaxLength: " + max + ";" + p + " Style: (TextColor: #ffffff, FontSize: 19); }");
+  if (value != null && value.length() > 0) b.set("#" + id + ".Value", value);
+}""")
+# ---- events: every button carries every TextField of the view (drafts survive any click, spec 2.5)
+M(apg, r"""
+public void evReset() {
+  this.evKeys = new java.util.ArrayList();
+  this.evSels = new java.util.ArrayList();
+}""")
+M(apg, r"""
+public void evField(String key, String id) {
+  this.evKeys.add(at(key));
+  this.evSels.add("#" + id + ".Value");
+}""")
+M(apg, r"""
+public @EVD@ evd(String a) {
+  @EVD@ d = @EVD@.of("a", a);
+  for (int k = 0; k < this.evKeys.size(); k++) d = d.append((String) this.evKeys.get(k), (String) this.evSels.get(k));
+  return d;
+}""")
+M(apg, r"""
+public void bind(@UEB@ ev, String id, String a) {
+  ev.addEventBinding(@BT@.Activating, "#" + id, evd(a));
+}""")
+M(apg, r"""
+public void bindEnter(@UEB@ ev, String id, String a) {
+  ev.addEventBinding(@BT@.Validating, "#" + id, evd(a), false);
+}""")
+# ---- frame: accent, title, subtitle, the fixed body group; tail: status (4 colours) + a centred footer
+M(apg, r"""
+public void frame(@UCB@ b, String title, String sub) {
+  b.appendInline((String) null, @MD@.UI_AROOT);
+  b.appendInline("#SkyyAdm", @MD@.UI_AACCENT);
+  b.appendInline("#SkyyAdm", @MD@.UI_ATITLE);
+  b.appendInline("#SkyyAdm", @MD@.UI_ASUB);
+  b.appendInline("#SkyyAdm", @MD@.UI_ABODY);
+  b.set("#SkyyAdmTitle.Text", title == null ? "" : title);
+  b.set("#SkyyAdmSub.Text", sub == null ? "" : sub);
+}""")
+M(apg, r"""
+public void fReset() {
+  this.fT = new java.util.ArrayList();
+  this.fA = new java.util.ArrayList();
+  this.fW = new java.util.ArrayList();
+}""")
+M(apg, r"""
+public void foot(String text, String act, int w) {
+  this.fT.add(text);
+  this.fA.add(act);
+  this.fW.add(Integer.valueOf(w));
+}""")
+M(apg, r"""
+public void tail(@UCB@ b, @UEB@ ev) {
+  int k = this.statusKind;
+  if (k < 0 || k > 3) k = 0;
+  b.appendInline("#SkyyAdm", @MD@.UI_ASTATUS[k]);
+  b.set("#SkyyAdmStatus.Text", firstLine(this.status));
+  b.appendInline("#SkyyAdm", @MD@.UI_AFOOT);
+  int total = 0;
+  for (int i = 0; i < this.fW.size(); i++) total = total + ((Integer) this.fW.get(i)).intValue() + (i > 0 ? 8 : 0);
+  if (total > @MD@.ADM_INNER) @MU@.warn("server setup footer is " + total + " px wide");
+  int lead = (@MD@.ADM_INNER - total) / 2;
+  if (lead > 0) b.appendInline("#SkyyAdmFoot", spc(lead, 50));
+  for (int i = 0; i < this.fT.size(); i++) {
+    if (i > 0) b.appendInline("#SkyyAdmFoot", spc(8, 50));
+    String id = "SkyyAdmF" + i;
+    b.appendInline("#SkyyAdmFoot", btn(id, ((Integer) this.fW.get(i)).intValue(), 50, (String) this.fT.get(i), @MD@.ADM_BS));
+    bind(ev, id, (String) this.fA.get(i));
+  }
+}""")
+M(apg, r"""
+public void tabRow(@UCB@ b, @UEB@ ev, int i, String label, boolean sel, String act) {
+  String par = i < 8 ? "#SkyyAdmTabs0" : "#SkyyAdmTabs1";
+  if (i % 8 != 0) b.appendInline(par, spc(8, 48));
+  b.appendInline(par, btn("SkyyAdmTab" + i, 126, 48, @MU@.clip(label, 14), sel ? @MD@.ADM_SEL16 : @MD@.ADM_BS16));
+  bind(ev, "SkyyAdmTab" + i, act + i);
+}""")
+M(apg, r"""
+public void preview(@UCB@ b, String head, String text) {
+  b.appendInline("#SkyyAdmBody", @MD@.UI_APREV);
+  b.appendInline("#SkyyAdmPrev", @MD@.UI_APREVHEAD);
+  b.set("#SkyyAdmPrevHead.Text", head == null ? "" : head);
+  java.util.ArrayList ls = wrap(text, 125);
+  int max = @MD@.ADM_PLINES;
+  for (int i = 0; i < ls.size() && i < max; i++) {
+    b.appendInline("#SkyyAdmPrev", @MD@.UI_APL[i]);
+    String t = (String) ls.get(i);
+    if (i == max - 1 && ls.size() > max) t = "and " + (ls.size() - max + 1) + " more";
+    b.set("#SkyyAdmPL" + i + ".Text", t);
+  }
+}""")
+M(apg, r"""
+public void drawLocked(@UCB@ b, @UEB@ ev) {
+  evReset();
+  fReset();
+  frame(b, "Server Setup", "");
+  foot("Close", "aclose", 170);
+  tail(b, ev);
+}""")
+
+# ---- view list (spec 2.4): mods on the registry first (summary or the red state), then every other installed mod as file only
+M(apg, r"""
+public String[] summary(String m, Object[] h) {
+  String state = "ok";
+  String smsg = "";
+  Object st = call(m, new Object[] { "status" });
+  if (st instanceof String[] && ((String[]) st).length >= 2) { state = ((String[]) st)[0]; smsg = ((String[]) st)[1]; }
+  if ("unreadable".equals(state)) return new String[] { "Its config file cannot be read - " + smsg, "1" };
+  if ("unsaved".equals(state)) return new String[] { "Changes not saved yet - retrying. " + smsg, "1" };
+  int n = 0;
+  StringBuilder parts = new StringBuilder();
+  StringBuilder eds = new StringBuilder();
+  Object[] rs = rowsOf(h);
+  for (int i = 0; i < rs.length; i++) {
+    Object[] r = rowAt(h, i);
+    if (r == null) continue;
+    String t = rv(r, 3);
+    if (t.equals("link")) { if (eds.length() > 0) eds.append(", "); eds.append(rv(r, 1)); continue; }
+    if (t.equals("action")) continue;
+    n++;
+    if (hasFlag(r, "part")) {
+      String v = cur(m, rv(r, 0));
+      if (parts.length() > 0) parts.append(" - ");
+      parts.append(rv(r, 1)).append("true".equals(v) ? " ON" : " OFF");
+    }
+  }
+  StringBuilder sb = new StringBuilder();
+  sb.append(n).append(n == 1 ? " setting" : " settings");
+  if ("restart".equals(state)) sb.append(" - ").append(smsg);
+  if (parts.length() > 0) sb.append(" - Parts: ").append(parts.toString());
+  if (eds.length() > 0) sb.append(" - Editors: ").append(eds.toString());
+  return new String[] { sb.toString(), "0" };
+}""")
+# { mod, kind, name, line 2, reload command, red } or null when a search leaves it out
+M(apg, r"""
+public String[] cfgRow(String m, Object[] h, String q) {
+  String name = m + " " + hs(h, 3);
+  if (!contractOk(h)) {
+    if (q != null && !has(m, q)) return null;
+    return new String[] { m, "cfg", name, "Needs a newer SkyyMenu (config contract " + hs(h, 0) + ") - update SkyyMenu to change it in game.", "", "1" };
+  }
+  if (!alive(m)) {
+    if (q != null && !has(m, q)) return null;
+    return new String[] { m, "cfg", name, "Not running - its settings cannot be changed now.", "", "1" };
+  }
+  if (q != null) {
+    java.util.ArrayList hits = hitsOf(h, q);
+    boolean nameHit = has(m, q) || has(hs(h, 2), q);
+    if (hits.isEmpty() && !nameHit) return null;
+    if (!hits.isEmpty()) {
+      StringBuilder sb = new StringBuilder("Hits: ");
+      for (int i = 0; i < hits.size() && i < 3; i++) { if (i > 0) sb.append(", "); sb.append((String) hits.get(i)); }
+      if (hits.size() > 3) sb.append(", and ").append(hits.size() - 3).append(" more");
+      return new String[] { m, "cfg", name, sb.toString(), "", "0" };
+    }
+  }
+  String[] sm = summary(m, h);
+  return new String[] { m, "cfg", name, sm[0], "", sm[1] };
+}""")
+M(apg, r"""
+public String[] fileRow(int k) {
+  String m = @MD@.MOD_NAME[k];
+  String live = @MU@.liveVersion(m);
+  String name = m + " " + (live != null ? live : @MD@.MOD_VER[k]);
+  String rl = @MD@.MOD_RELOAD[k];
+  if (rl.length() > 0 && @MU@.cmd(@MU@.firstWord(rl)) == null) rl = "";
+  String line = @MD@.MOD_FLINE[k];
+  String since = @MD@.MOD_SINCE[k];
+  String red = "0";
+  if (since.length() > 0) {
+    if (live == null) line = "Not running here (disabled or missing) - " + line;
+    else if (@MU@.verCmp(live, since) < 0) line = "Server Setup page from " + since + " on - " + line;
+    else { line = "Its Server Setup page did not load - see the server log. " + line; red = "1"; }
+  }
+  return new String[] { m, "file", name, line, rl, red };
+}""")
+M(apg, r"""
+public java.util.ArrayList listRows() {
+  java.util.ArrayList found = new java.util.ArrayList();
+  java.util.ArrayList keys = new java.util.ArrayList();
+  java.util.HashSet seen = new java.util.HashSet();
+  String q = this.search == null ? "" : this.search.trim();
+  boolean find = q.length() >= 2;
+  String[] cm = cfgMods();
+  for (int i = 0; i < cm.length; i++) {
+    seen.add(cm[i]);
+    String[] e = cfgRow(cm[i], hdr(cm[i]), find ? q : null);
+    if (e == null) continue;
+    keys.add("0" + cm[i].toLowerCase() + "\t" + found.size());
+    found.add(e);
+  }
+  for (int k = 0; k < @MD@.MOD_NAME.length; k++) {
+    String m = @MD@.MOD_NAME[k];
+    if (seen.contains(m) || !installed(k)) continue;
+    if (find && !has(m, q)) continue;
+    keys.add("1" + m.toLowerCase() + "\t" + found.size());
+    found.add(fileRow(k));
+  }
+  java.util.Collections.sort(keys);
+  java.util.ArrayList out = new java.util.ArrayList();
+  for (int i = 0; i < keys.size(); i++) {
+    String s = (String) keys.get(i);
+    out.add(found.get(Integer.parseInt(s.substring(s.indexOf('\t') + 1))));
+  }
+  return out;
+}""")
+M(apg, r"""
+public void drawList(@UCB@ b, @UEB@ ev) {
+  java.util.ArrayList lr = listRows();
+  int per = @MD@.ADM_LROWS;
+  int pages = lr.size() <= 0 ? 1 : (lr.size() + per - 1) / per;
+  if (this.listPage >= pages) this.listPage = pages - 1;
+  if (this.listPage < 0) this.listPage = 0;
+  String q = this.search == null ? "" : this.search.trim();
+  int ncfg = 0;
+  int nfile = 0;
+  for (int i = 0; i < lr.size(); i++) { if ("cfg".equals(((String[]) lr.get(i))[1])) ncfg++; else nfile++; }
+  String sub = @MD@.ADM_LISTSUB;
+  if (q.length() < 2 && nfile > 0) sub = ncfg + (ncfg == 1 ? " mod is" : " mods are") + " set up for in-game editing - the rest show their file. Click Open.";
+  if (q.length() >= 2 && this.status.length() == 0) {
+    if (lr.isEmpty()) setStatus("Nothing matches \"" + q + "\" - mods not set up yet are matched by name only.", 2);
+    else setStatus(lr.size() + (lr.size() == 1 ? " mod matches" : " mods match") + " \"" + q + "\" - Open shows the first hit.", 0);
+  }
+  evReset();
+  evField("Find", "SkyyAdmFind");
+  frame(b, "Server Setup", sub);
+  b.appendInline("#SkyyAdmBody", @MD@.UI_ALSEARCH);
+  b.appendInline("#SkyyAdmSearch", spc(140, 50));
+  field(b, "#SkyyAdmSearch", "SkyyAdmFind", 520, 50, 60, q, "search settings and editors");
+  b.appendInline("#SkyyAdmSearch", spc(10, 50));
+  b.appendInline("#SkyyAdmSearch", btn("SkyyAdmFindGo", 130, 50, "Search", @MD@.ADM_BS));
+  b.appendInline("#SkyyAdmSearch", spc(10, 50));
+  b.appendInline("#SkyyAdmSearch", btn("SkyyAdmFindClr", 130, 50, "Clear", @MD@.ADM_BS));
+  bind(ev, "SkyyAdmFindGo", "afind");
+  bind(ev, "SkyyAdmFindClr", "aclear");
+  bindEnter(ev, "SkyyAdmFind", "afind");
+  b.appendInline("#SkyyAdmBody", @MD@.UI_ALROWS);
+  this.listMods = new String[per];
+  this.listReload = new String[per];
+  for (int r = 0; r < per; r++) {
+    int k = this.listPage * per + r;
+    if (k >= lr.size()) break;
+    String[] e = (String[]) lr.get(k);
+    this.listMods[r] = e[0];
+    this.listReload[r] = e[4];
+    String rsel = "#SkyyAdmLRow" + r;
+    b.appendInline("#SkyyAdmLRows", @MD@.UI_ALROW[r]);
+    b.appendInline(rsel, spc(14, 52));
+    b.appendInline(rsel, @MD@.UI_ALTXT[r]);
+    b.appendInline("#SkyyAdmLTxt" + r, @MD@.UI_ALNAME[r]);
+    b.appendInline("#SkyyAdmLTxt" + r, "1".equals(e[5]) ? @MD@.UI_ALDESCRED[r] : @MD@.UI_ALDESC[r]);
+    b.set("#SkyyAdmLName" + r + ".Text", e[2]);
+    b.set("#SkyyAdmLDesc" + r + ".Text", @MU@.clip(e[3], 118));
+    b.appendInline(rsel, spc(10, 52));
+    b.appendInline(rsel, btn("SkyyAdmLOpen" + r, 150, 52, "Open", @MD@.ADM_BS));
+    bind(ev, "SkyyAdmLOpen" + r, "aopen" + r);
+    b.appendInline(rsel, spc(10, 52));
+    if (e[4].length() > 0) {
+      b.appendInline(rsel, btn("SkyyAdmLRel" + r, 150, 52, "Reload", @MD@.ADM_BS));
+      bind(ev, "SkyyAdmLRel" + r, "arel" + r);
+    }
+    b.appendInline("#SkyyAdmLRows", @MD@.UI_AGAP6);
+  }
+  if (lr.isEmpty()) {
+    b.appendInline("#SkyyAdmLRows", @MD@.UI_AEMPTY);
+    b.set("#SkyyAdmEmpty.Text", q.length() >= 2 ? "No mod matches - click Clear to see every mod." : "No Skyy mod found on this server.");
+  }
+  fReset();
+  if (pages > 1) { foot("< Prev", "aprev", 120); foot("Next >", "anext", 120); }
+  foot("Changes", "achanges", 150);
+  foot("Export all", "aexpall", 150);
+  foot("Refresh", "arefresh", 130);
+  foot("< SkyWynn Menu", "amenu", 200);
+  foot("Close", "aclose", 120);
+  tail(b, ev);
+}""")
+# ---- view mod (spec 2.5): tabs, 7 rows per page, a widget per type, Default; a mod not on the registry shows its file (spec 2.11)
+M(apg, r"""
+public int[] visible(Object[] h) {
+  Object[] rs = rowsOf(h);
+  int n = 0;
+  int[] tmp = new int[rs.length];
+  for (int i = 0; i < rs.length; i++) {
+    Object[] r = rowAt(h, i);
+    if (r == null || catOf(h, r) != this.cat) continue;
+    if (hasFlag(r, "adv") && !this.showAdv) continue;
+    tmp[n] = i;
+    n++;
+  }
+  int[] out = new int[n];
+  System.arraycopy(tmp, 0, out, 0, n);
+  return out;
+}""")
+M(apg, r"""
+public int hiddenAdv(Object[] h) {
+  if (this.showAdv) return 0;
+  Object[] rs = rowsOf(h);
+  int n = 0;
+  for (int i = 0; i < rs.length; i++) { Object[] r = rowAt(h, i); if (r != null && catOf(h, r) == this.cat && hasFlag(r, "adv")) n++; }
+  return n;
+}""")
+M(apg, r"""
+public void jump(Object[] h) {
+  String q = this.search == null ? "" : this.search.trim();
+  if (q.length() < 2) return;
+  int i = firstHit(h, q);
+  if (i < 0) {
+    String[] ids = catIds(h);
+    for (int c = 0; c < ids.length; c++) if (has(catLabel(h, c), q)) { this.cat = c; this.modPage = 0; return; }
+    return;
+  }
+  Object[] r = rowAt(h, i);
+  this.cat = catOf(h, r);
+  if (hasFlag(r, "adv")) this.showAdv = true;
+  int[] vis = visible(h);
+  for (int k = 0; k < vis.length; k++) if (vis[k] == i) { this.modPage = k / @MD@.ADM_ROWS; return; }
+}""")
+M(apg, r"""
+public static boolean typed(String t) {
+  return t.equals("int") || t.equals("dec") || t.equals("text") || t.equals("range") || t.equals("color");
+}""")
+M(apg, r"""
+public static String fileLine(Object[] h) {
+  String[] fs = hs(h, 8).split(",");
+  String f0 = fs.length > 0 ? fs[0].trim() : "";
+  String more = "";
+  if (fs.length == 2) more = " and 1 more file";
+  if (fs.length > 2) more = " and " + (fs.length - 1) + " more files";
+  return "Saved to " + f0 + more + " - changes are written at once.";
+}""")
+M(apg, r"""
+public void drawRow(@UCB@ b, @UEB@ ev, Object[] h, int i, int r, boolean edit, boolean ok, String q) {
+  Object[] w = rowAt(h, i);
+  String key = rv(w, 0);
+  String label = rv(w, 1);
+  String type = rv(w, 3);
+  String opts = rv(w, 7);
+  boolean ro = !edit || hasFlag(w, "ro");
+  String val = null;
+  if (ok && !type.equals("link") && !type.equals("action") && !type.equals("table")) val = cur(this.mod, key);
+  String draft = (String) this.drafts.get(key);
+  boolean ms = msRow(w);
+  String valShown = val == null ? null : (ms ? secText(val) : val);      // 0.3.4: (the choice widget below has its own "shown")
+  if (draft != null && val != null && (draft.trim().equals(valShown) || (ms && val.equals(msOf(draft, !type.equals("dec")))))) { this.drafts.remove(key); draft = null; }
+  String rsel = "#SkyyAdmRow" + r;
+  String line = "#SkyyAdmLine" + r;
+  String wsel = "#SkyyAdmW" + r;
+  b.appendInline("#SkyyAdmRows", @MD@.UI_AROW[r]);
+  b.appendInline(rsel, @MD@.UI_ALINE[r]);
+  b.appendInline(line, spc(14, 42));
+  b.appendInline(line, @MD@.UI_ANAME[r]);
+  b.appendInline(line, spc(10, 42));
+  b.appendInline(line, @MD@.UI_AW[r]);
+  b.appendInline(line, spc(10, 42));
+  boolean def = false;
+  if (type.equals("table")) {
+    Object k = null;
+    if (ok) k = call(this.mod, new Object[] { "keys", key, "" });
+    int n = (k instanceof Object[] && ((Object[]) k).length > 0 && ((Object[]) k)[0] instanceof String[]) ? ((String[]) ((Object[]) k)[0]).length : 0;
+    b.appendInline(wsel, btn("SkyyAdmEdit" + r, 240, 42, "Open - " + n + (n == 1 ? " entry" : " entries"), @MD@.ADM_BS));
+    bind(ev, "SkyyAdmEdit" + r, "aedit" + r);
+  } else if (type.equals("items")) {
+    int n = csv(val).size();
+    b.appendInline(wsel, btn("SkyyAdmEdit" + r, 240, 42, (ro ? "Open - " : "Edit - ") + n + (n == 1 ? " item" : " items"), @MD@.ADM_BS));
+    bind(ev, "SkyyAdmEdit" + r, "aedit" + r);
+    def = !ro;
+  } else if (type.equals("link")) {
+    b.appendInline(wsel, btn("SkyyAdmEdit" + r, 240, 42, "Open", @MD@.ADM_BS));
+    bind(ev, "SkyyAdmEdit" + r, "alink" + r);
+  } else if (ro) {
+    b.appendInline(wsel, @MD@.UI_ARO[r]);
+    b.set("#SkyyAdmRo" + r + ".Text", type.equals("action") ? "(admins with " + hs(h, 4) + " can run it)" : disp(w, val));
+  } else if (type.equals("bool")) {
+    boolean on = "true".equals(val);
+    b.appendInline(wsel, btn("SkyyAdmOn" + r, 120, 42, "ON", on ? @MD@.ADM_ONSEL : @MD@.ADM_BS));
+    b.appendInline(wsel, spc(10, 42));
+    b.appendInline(wsel, btn("SkyyAdmOff" + r, 120, 42, "OFF", on ? @MD@.ADM_BS : @MD@.ADM_OFFSEL));
+    bind(ev, "SkyyAdmOn" + r, "aon" + r);
+    bind(ev, "SkyyAdmOff" + r, "aoff" + r);
+    def = true;
+  } else if (typed(type)) {
+    String step = (type.equals("int") || type.equals("dec")) ? stepOf(opts) : null;
+    field(b, wsel, "SkyyAdmVal" + r, step != null ? 156 : 270, 42, 2000, draft != null ? draft : (valShown == null ? "" : valShown), "");
+    b.appendInline(wsel, spc(6, 42));
+    b.appendInline(wsel, btn("SkyyAdmSet" + r, step != null ? 84 : 104, 42, "Set", @MD@.ADM_BS));
+    bind(ev, "SkyyAdmSet" + r, "aset" + r);
+    bindEnter(ev, "SkyyAdmVal" + r, "aset" + r);
+    if (step != null) {
+      b.appendInline(wsel, spc(6, 42));
+      b.appendInline(wsel, btn("SkyyAdmMinus" + r, 60, 42, "Less", @MD@.ADM_BS));
+      b.appendInline(wsel, spc(6, 42));
+      b.appendInline(wsel, btn("SkyyAdmPlus" + r, 60, 42, "More", @MD@.ADM_BS));
+      bind(ev, "SkyyAdmMinus" + r, "aminus" + r);
+      bind(ev, "SkyyAdmPlus" + r, "aplus" + r);
+    }
+    def = true;
+  } else if (type.equals("choice")) {
+    String[] vs = chVals(opts);
+    String[] ls = chLabels(opts);
+    if (vs.length <= 4) {
+      int bw = (380 - 6 * (vs.length - 1)) / vs.length;
+      for (int j = 0; j < vs.length; j++) {
+        if (j > 0) b.appendInline(wsel, spc(6, 42));
+        String id = "SkyyAdmCh" + r + "x" + j;
+        b.appendInline(wsel, btn(id, bw, 42, @MU@.inl(ls[j]).length() > 0 ? ls[j] : vs[j], vs[j].equals(val) ? @MD@.ADM_SEL16 : @MD@.ADM_BS16));
+        bind(ev, id, "ach" + r + "x" + j);
+      }
+    } else {
+      String shown = val == null ? "" : val;
+      for (int j = 0; j < vs.length; j++) if (vs[j].equals(val)) shown = ls[j];
+      b.appendInline(wsel, btn("SkyyAdmCl" + r, 50, 42, "<", @MD@.ADM_BS));
+      b.appendInline(wsel, spc(6, 42));
+      b.appendInline(wsel, @MD@.UI_ACHV[r]);
+      b.appendInline(wsel, spc(6, 42));
+      b.appendInline(wsel, btn("SkyyAdmCr" + r, 50, 42, ">", @MD@.ADM_BS));
+      b.set("#SkyyAdmChv" + r + ".Text", shown);
+      bind(ev, "SkyyAdmCl" + r, "acl" + r);
+      bind(ev, "SkyyAdmCr" + r, "acr" + r);
+    }
+    def = true;
+  } else if (type.equals("action")) {
+    b.appendInline(wsel, btn("SkyyAdmEdit" + r, 380, 42, opts, hasFlag(w, "danger") ? @MD@.ADM_RED : @MD@.ADM_BS));
+    bind(ev, "SkyyAdmEdit" + r, "aact" + r);
+  } else {
+    b.appendInline(wsel, @MD@.UI_ARO[r]);
+    b.set("#SkyyAdmRo" + r + ".Text", disp(w, val));
+  }
+  if (def) {
+    b.appendInline(line, btn("SkyyAdmDef" + r, 110, 42, "Default", @MD@.ADM_BS));
+    bind(ev, "SkyyAdmDef" + r, "adef" + r);
+  } else b.appendInline(line, spc(110, 42));
+  b.appendInline(rsel, @MD@.UI_AHELP[r]);
+  b.appendInline("#SkyyAdmHelpRow" + r, spc(14, 22));
+  b.appendInline("#SkyyAdmHelpRow" + r, @MD@.UI_ADESC[r]);
+  boolean hit = q.length() >= 2 && (has(label, q) || has(rv(w, 10), q));
+  String unit = ms ? "s" : rv(w, 8);
+  String tg = tagOf(w);
+  String nm = (hit ? "> " : "") + label + (unit.length() > 0 ? " (" + unit + ")" : "") + (draft != null ? " *" : "");
+  String help = rv(w, 10);
+  if (ms) help = secHint(w) + (help.length() > 0 ? " - " + secHelp(help) : "");      // no dangling " - " on a row without help text
+  if (tg.length() > 0 && nm.length() + 4 + tg.length() <= 50) nm = nm + "    " + tg;
+  else if (tg.length() > 0) help = tg + "  -  " + help;
+  b.set("#SkyyAdmName" + r + ".Text", @MU@.clip(nm, 52));
+  b.set("#SkyyAdmDesc" + r + ".Text", @MU@.clip(help, 140));
+  b.appendInline("#SkyyAdmRows", @MD@.UI_AGAP6);
+}""")
+M(apg, r"""
+public void drawFileOnly(@UCB@ b, @UEB@ ev) {
+  int k = modIndex(this.mod);
+  evReset();
+  String live = this.mod == null ? null : @MU@.liveVersion(this.mod);
+  String nm = this.mod == null ? "" : this.mod;
+  String since = k < 0 ? "" : @MD@.MOD_SINCE[k];
+  boolean off = since.length() > 0 && live == null;
+  boolean older = since.length() > 0 && live != null && @MU@.verCmp(live, since) < 0;
+  frame(b, "Server Setup - " + nm + (live != null ? " " + live : ""), k < 0 ? "This mod has no settings page on this server."
+      : (since.length() == 0 ? "Not set up for in-game editing yet - edit its file, then reload it."
+      : (off ? "It is not running on this server - its file can still be edited."
+      : (older ? "This version has no Server Setup page yet - edit its file, then reload it."
+      : "Its Server Setup page did not load - edit its file, then reload it."))));
+  java.util.ArrayList txt = new java.util.ArrayList();
+  java.util.ArrayList bold = new java.util.ArrayList();
+  if (k >= 0) {
+    String[] fs = @MD@.MOD_CFG[k].length() == 0 ? new String[0] : @MD@.MOD_CFG[k].split(",");
+    if (fs.length > 0) {
+      txt.add(fs.length == 1 ? "Config file" : "Config files"); bold.add("1");
+      for (int i = 0; i < fs.length; i++) { txt.add("    <world>/mods/" + fs[i].trim()); bold.add("0"); }
+      txt.add(""); bold.add("0");
+      txt.add("After editing"); bold.add("1");
+      if (@MD@.MOD_RELOAD[k].length() > 0) { txt.add("    /" + @MD@.MOD_RELOAD[k] + " - reads the file again (the Reload button below runs it for you)"); bold.add("0"); }
+      if (@MD@.MOD_NOTE[k].length() > 0) { txt.add("    " + @MD@.MOD_NOTE[k]); bold.add("0"); }
+      if (@MD@.MOD_RELOAD[k].length() == 0 && @MD@.MOD_NOTE[k].length() == 0) { txt.add("    Restart the server."); bold.add("0"); }
+    } else {
+      txt.add(@MD@.MOD_NOTE[k]); bold.add("0");
+    }
+    String adm = @MD@.MOD_ADMIN[k];
+    if (adm.length() > 0) {
+      txt.add(""); bold.add("0");
+      txt.add("Admin commands"); bold.add("1");
+      String[] al = adm.split("\n");
+      for (int i = 0; i < al.length; i++) { txt.add("    " + al[i]); bold.add("0"); }
+    }
+    txt.add(""); bold.add("0");
+    if (since.length() == 0) { txt.add("Its settings show up here, with buttons, once its next version is set up for in-game editing."); bold.add("0"); }
+    else {
+      txt.add("Server Setup page: " + @MD@.MOD_STITLE[k] + " - " + @MD@.MOD_SWHAT[k] + "."); bold.add("1");
+      if (off) { txt.add("    " + nm + " is not running here (disabled or missing) - see the server log."); bold.add("0"); }
+      else if (older) { txt.add("    It comes with " + nm + " " + since + " - this server runs " + live + ". Update it, then restart."); bold.add("0"); }
+      else { txt.add("    It did not publish its settings - look for " + nm + " errors in the server log."); bold.add("0"); }
+    }
+  }
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AINFO);
+  for (int i = 0; i < txt.size() && i < @MD@.ADM_INFOLINES; i++) {
+    b.appendInline("#SkyyAdmInfo", "1".equals(bold.get(i)) ? @MD@.UI_AINFOB[i] : @MD@.UI_AINFOL[i]);
+    b.set("#SkyyAdmInfo" + i + ".Text", (String) txt.get(i));
+  }
+  fReset();
+  String rl = k >= 0 ? @MD@.MOD_RELOAD[k] : "";
+  if (rl.length() > 0 && @MU@.cmd(@MU@.firstWord(rl)) != null) foot("Reload", "afrel", 150);
+  foot("< Mods", "amods", 150);
+  foot("Close", "aclose", 150);
+  tail(b, ev);
+}""")
+M(apg, r"""
+public void drawMod(@UCB@ b, @UEB@ ev) {
+  Object[] h = hdr(this.mod);
+  if (h == null) { drawFileOnly(b, ev); return; }
+  String node = hs(h, 4);
+  boolean editor = canEdit(node);
+  boolean ok = contractOk(h) && alive(this.mod);
+  boolean edit = editor && ok;
+  String[] ids = catIds(h);
+  int nCat = ids.length;
+  if (this.jumpHit) { jump(h); this.jumpHit = false; }
+  if (this.cat >= nCat) this.cat = nCat - 1;
+  if (this.cat < 0) this.cat = 0;
+  int[] vis = visible(h);
+  int per = @MD@.ADM_ROWS;
+  int pages = vis.length <= 0 ? 1 : (vis.length + per - 1) / per;
+  if (this.modPage >= pages) this.modPage = pages - 1;
+  if (this.modPage < 0) this.modPage = 0;
+  evReset();
+  this.rowKeys = new String[per];
+  for (int r = 0; r < per; r++) {
+    int k = this.modPage * per + r;
+    if (k >= vis.length) break;
+    Object[] w = rowAt(h, vis[k]);
+    this.rowKeys[r] = rv(w, 0);
+    if (ok && edit && !hasFlag(w, "ro") && typed(rv(w, 3))) evField("V" + r, "SkyyAdmVal" + r);
+  }
+  String sub = fileLine(h);
+  if (!contractOk(h)) sub = @MD@.ADM_NEWER;
+  else if (!alive(this.mod)) sub = this.mod + " is not running - its settings cannot be changed now.";
+  else if (!editor) sub = "View only - changing " + this.mod + " needs " + node + ".";
+  frame(b, "Server Setup - " + hs(h, 2) + " (" + this.mod + " " + hs(h, 3) + ")", sub);
+  b.appendInline("#SkyyAdmBody", @MD@.UI_ATABS0);
+  if (nCat > 8) b.appendInline("#SkyyAdmBody", @MD@.UI_ATABS1);
+  for (int i = 0; i < nCat && i < 16; i++) tabRow(b, ev, i, catLabel(h, i), i == this.cat, "atab");
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AGAP8);
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AHEAD);
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AROWS);
+  String q = this.search == null ? "" : this.search.trim();
+  for (int r = 0; r < per; r++) {
+    int k = this.modPage * per + r;
+    if (k >= vis.length) break;
+    drawRow(b, ev, h, vis[k], r, edit, ok, q);
+  }
+  int adv = hiddenAdv(h);
+  if (vis.length == 0) {
+    b.appendInline("#SkyyAdmRows", @MD@.UI_AEMPTY);
+    b.set("#SkyyAdmEmpty.Text", adv > 0 ? "Only advanced settings on this tab - switch Advanced to ON (footer button) to show them." : "Nothing on this tab.");
+  }
+  int n = vis.length;
+  b.set("#SkyyAdmHead.Text", catLabel(h, this.cat) + "   -   " + n + (n == 1 ? " setting" : " settings")
+      + (pages > 1 ? "   -   page " + (this.modPage + 1) + " of " + pages : "") + (adv > 0 ? "   -   " + adv + " advanced hidden" : ""));
+  if (this.status.length() == 0 && ok) {
+    Object st = call(this.mod, new Object[] { "status" });
+    if (st instanceof String[] && ((String[]) st).length >= 2 && !"ok".equals(((String[]) st)[0])) {
+      String s0 = ((String[]) st)[0];
+      setStatus(((String[]) st)[1], "restart".equals(s0) ? 2 : 3);
+    } else if (hs(h, 9).length() > 0) setStatus(hs(h, 9), 0);
+  }
+  fReset();
+  if (pages > 1) { foot("< Prev", "aprev", 90); foot("Next >", "anext", 90); }
+  foot("History", "ahist", 120);
+  foot("Export / Import", "aio", 180);
+  if (edit) foot("Reload file", "areload", 140);
+  foot(this.showAdv ? "Advanced ON" : "Advanced OFF", "aadv", 160);
+  foot("< Mods", "amods", 110);
+  foot("Close", "aclose", 100);
+  tail(b, ev);
+}""")
+# ---- view table (spec 2.6): a table row's entries, or an items row edited as a list kept in this page and saved with ONE set
+M(apg, r"""
+public static int[] colW(int n) {
+  if (n >= 3) return new int[] { 146, 146, 146 };
+  if (n == 2) return new int[] { 222, 222 };
+  return new int[] { 450 };
+}""")
+M(apg, r"""
+public String entryLabel(String e) {
+  if ("SkyyMenu".equals(this.mod) && "settings.defaults".equals(this.tableKey)) {
+    Object[] d = @PKG@.SetReg.info(e);
+    if (d != null) return String.valueOf(d[2]);
+  }
+  return e;
+}""")
+M(apg, r"""
+public void drawTable(@UCB@ b, @UEB@ ev) {
+  Object[] h = hdr(this.mod);
+  Object[] w = rowAt(h, rowIdx(h, this.tableKey));
+  if (w == null) { this.view = "mod"; drawMod(b, ev); return; }
+  boolean itemsMode = rv(w, 3).equals("items");
+  boolean edit = canEdit(hs(h, 4)) && !hasFlag(w, "ro") && contractOk(h) && alive(this.mod);
+  String opts = rv(w, 7);
+  String[] cols = null;
+  String mode = null;
+  if (itemsMode) {
+    cols = hasOpt(opts, "qty") ? new String[] { "Amount" } : new String[0];
+    mode = "both";
+  } else {
+    cols = tCols(opts);
+    mode = tMode(opts);
+  }
+  if (cols.length > 3) { String[] c3 = new String[3]; System.arraycopy(cols, 0, c3, 0, 3); cols = c3; }
+  java.util.ArrayList eks = new java.util.ArrayList();
+  java.util.ArrayList evs = new java.util.ArrayList();
+  String flt = this.tFilter == null ? "" : this.tFilter.trim().toLowerCase();
+  if (itemsMode) {
+    for (int i = 0; i < this.items.size(); i++) {
+      String it = String.valueOf(this.items.get(i));
+      int c = it.lastIndexOf(':');
+      String id = c > 0 && cols.length > 0 ? it.substring(0, c) : it;
+      String qty = c > 0 && cols.length > 0 ? it.substring(c + 1) : "";
+      if (flt.length() > 0 && id.toLowerCase().indexOf(flt) < 0) continue;
+      eks.add(id);
+      evs.add(qty);
+    }
+  } else if (contractOk(h) && alive(this.mod)) {
+    Object o = call(this.mod, new Object[] { "keys", this.tableKey, flt });
+    if (o instanceof Object[] && ((Object[]) o).length >= 3 && ((Object[]) o)[0] instanceof String[] && ((Object[]) o)[2] instanceof String[]) {
+      String[] ks = (String[]) ((Object[]) o)[0];
+      String[] vs = (String[]) ((Object[]) o)[2];
+      for (int i = 0; i < ks.length; i++) { eks.add(ks[i]); evs.add(i < vs.length ? vs[i] : ""); }
+    }
+  }
+  int per = @MD@.ADM_ROWS;
+  int pages = eks.size() <= 0 ? 1 : (eks.size() + per - 1) / per;
+  if (this.tPage >= pages) this.tPage = pages - 1;
+  if (this.tPage < 0) this.tPage = 0;
+  boolean typeAdd = edit && (mode.equals("type") || mode.equals("both"));
+  boolean heldAdd = edit && (mode.equals("held") || mode.equals("both"));
+  int[] cw = colW(cols.length);
+  evReset();
+  evField("TF", "SkyyAdmTFind");
+  this.tKeys = new String[per];
+  this.tVals = new String[per];
+  for (int r = 0; r < per; r++) {
+    int k = this.tPage * per + r;
+    if (k >= eks.size()) break;
+    this.tKeys[r] = (String) eks.get(k);
+    this.tVals[r] = (String) evs.get(k);
+    if (edit) for (int c = 0; c < cols.length; c++) evField("C" + r + "x" + c, "SkyyAdmCol" + r + "x" + c);
+  }
+  if (typeAdd) evField("AK", "SkyyAdmAddKey");
+  if (typeAdd || heldAdd) for (int c = 0; c < cols.length; c++) evField("A" + c, "SkyyAdmAdd" + c);
+  String sub = null;
+  if (itemsMode) sub = edit ? "Edit the list, then click Save list - nothing changes until you save it." : "View only.";
+  else {
+    StringBuilder cn = new StringBuilder();
+    for (int c = 0; c < cols.length; c++) { if (c > 0) cn.append(" | "); cn.append(cols[c]); }
+    sub = "Columns: " + cn.toString() + (edit ? " - type in the boxes and click Set." : " - view only.");
+    if ("SkyyMenu".equals(this.mod) && "settings.defaults".equals(this.tableKey))
+      sub = (edit ? "Type on, off or unset and click Set. " : "View only. ") + "Menu hover tooltips is the same line as the Hover tooltips default row.";
+  }
+  frame(b, hs(h, 2) + " - " + rv(w, 1), sub);
+  b.appendInline("#SkyyAdmBody", @MD@.UI_ATFIND);
+  b.appendInline("#SkyyAdmTFindRow", spc(200, 50));
+  field(b, "#SkyyAdmTFindRow", "SkyyAdmTFind", 400, 50, 80, this.tFilter, "filter");
+  b.appendInline("#SkyyAdmTFindRow", spc(10, 50));
+  b.appendInline("#SkyyAdmTFindRow", btn("SkyyAdmTGo", 130, 50, "Search", @MD@.ADM_BS));
+  b.appendInline("#SkyyAdmTFindRow", spc(10, 50));
+  b.appendInline("#SkyyAdmTFindRow", btn("SkyyAdmTClr", 130, 50, "Clear", @MD@.ADM_BS));
+  bind(ev, "SkyyAdmTGo", "tfind");
+  bind(ev, "SkyyAdmTClr", "tclear");
+  bindEnter(ev, "SkyyAdmTFind", "tfind");
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AHEAD);
+  int n = eks.size();
+  b.set("#SkyyAdmHead.Text", rv(w, 1) + "   -   " + n + (itemsMode ? (n == 1 ? " item" : " items") : (n == 1 ? " entry" : " entries"))
+      + (flt.length() > 0 ? " match" : "") + (pages > 1 ? "   -   page " + (this.tPage + 1) + " of " + pages : ""));
+  b.appendInline("#SkyyAdmBody", @MD@.UI_ATCOLS);
+  b.appendInline("#SkyyAdmCols", spc(14, 30));
+  b.appendInline("#SkyyAdmCols", lab("SkyyAdmCh0", 300, 30, 16, true, "#9fb8cc"));
+  b.set("#SkyyAdmCh0.Text", itemsMode ? "Item" : "Entry");
+  b.appendInline("#SkyyAdmCols", spc(10, 30));
+  for (int c = 0; c < cols.length; c++) {
+    if (c > 0) b.appendInline("#SkyyAdmCols", spc(6, 30));
+    b.appendInline("#SkyyAdmCols", lab("SkyyAdmCh" + (c + 1), cw[c], 30, 16, true, "#9fb8cc"));
+    b.set("#SkyyAdmCh" + (c + 1) + ".Text", cols[c]);
+  }
+  b.appendInline("#SkyyAdmBody", @MD@.UI_ATROWS);
+  boolean canRemove = edit && (itemsMode || !mode.equals("none"));
+  for (int r = 0; r < per; r++) {
+    String e = this.tKeys[r];
+    if (e == null) break;
+    String rsel = "#SkyyAdmTRow" + r;
+    b.appendInline("#SkyyAdmTRows", @MD@.UI_ATROW[r]);
+    b.appendInline(rsel, spc(14, 52));
+    b.appendInline(rsel, @MD@.UI_ATKEY[r]);
+    b.set("#SkyyAdmTKey" + r + ".Text", @MU@.clip(itemsMode ? e : entryLabel(e), 30));
+    b.appendInline(rsel, spc(10, 52));
+    b.appendInline(rsel, @MD@.UI_ATCELLS[r]);
+    String[] parts = this.tVals[r].split("\\|", -1);
+    for (int c = 0; c < cols.length; c++) {
+      if (c > 0) b.appendInline("#SkyyAdmTCols" + r, spc(6, 52));
+      String v = c < parts.length ? parts[c] : "";
+      String d = (String) this.tDrafts.get(e + "\t" + c);
+      if (edit) {
+        field(b, "#SkyyAdmTCols" + r, "SkyyAdmCol" + r + "x" + c, cw[c], 52, 200, d != null ? d : v, "");
+        bindEnter(ev, "SkyyAdmCol" + r + "x" + c, "tset" + r);
+      } else {
+        b.appendInline("#SkyyAdmTCols" + r, lab("SkyyAdmColv" + r + "x" + c, cw[c], 52, 18, false, "#ffe9a0"));
+        b.set("#SkyyAdmColv" + r + "x" + c + ".Text", v);
+      }
+    }
+    b.appendInline(rsel, spc(10, 52));
+    if (edit && cols.length > 0) { b.appendInline(rsel, btn("SkyyAdmTSet" + r, 100, 52, "Set", @MD@.ADM_BS)); bind(ev, "SkyyAdmTSet" + r, "tset" + r); }
+    else b.appendInline(rsel, spc(100, 52));
+    b.appendInline(rsel, spc(6, 52));
+    if (canRemove) { b.appendInline(rsel, btn("SkyyAdmTRem" + r, 150, 52, "Remove", @MD@.ADM_BS)); bind(ev, "SkyyAdmTRem" + r, "trem" + r); }
+    b.appendInline("#SkyyAdmTRows", @MD@.UI_AGAP6);
+  }
+  if (eks.isEmpty()) {
+    b.appendInline("#SkyyAdmTRows", @MD@.UI_AEMPTY);
+    b.set("#SkyyAdmEmpty.Text", flt.length() > 0 ? "Nothing matches the filter - click Clear." : (itemsMode ? "The list is empty." : "No entries yet."));
+  }
+  if (typeAdd || heldAdd) {
+    b.appendInline("#SkyyAdmBody", @MD@.UI_ATADD);
+    b.appendInline("#SkyyAdmTAdd", spc(14, 50));
+    if (typeAdd) {
+      field(b, "#SkyyAdmTAdd", "SkyyAdmAddKey", 300, 50, 120, this.tAdd[0], itemsMode ? "item id" : "new entry");
+      bindEnter(ev, "SkyyAdmAddKey", "tadd");
+    } else b.appendInline("#SkyyAdmTAdd", spc(300, 50));
+    b.appendInline("#SkyyAdmTAdd", spc(10, 50));
+    for (int c = 0; c < cols.length; c++) {
+      if (c > 0) b.appendInline("#SkyyAdmTAdd", spc(6, 50));
+      field(b, "#SkyyAdmTAdd", "SkyyAdmAdd" + c, cw[c], 50, 200, this.tAdd[c + 1], cols[c]);
+    }
+    if (cols.length == 0) b.appendInline("#SkyyAdmTAdd", spc(450, 50));
+    b.appendInline("#SkyyAdmTAdd", spc(10, 50));
+    if (typeAdd) { b.appendInline("#SkyyAdmTAdd", btn("SkyyAdmTAddGo", 100, 50, "Add", @MD@.ADM_BS)); bind(ev, "SkyyAdmTAddGo", "tadd"); }
+    else b.appendInline("#SkyyAdmTAdd", spc(100, 50));
+    b.appendInline("#SkyyAdmTAdd", spc(6, 50));
+    if (heldAdd) { b.appendInline("#SkyyAdmTAdd", btn("SkyyAdmTHeld", 150, 50, "Add held item", @MD@.ADM_BS)); bind(ev, "SkyyAdmTHeld", "theld"); }
+  }
+  fReset();
+  if (pages > 1) { foot("< Prev", "aprev", 120); foot("Next >", "anext", 120); }
+  if (itemsMode && edit) { foot("Save list", "tsave", 150); foot("Undo edits", "tundo", 150); }
+  foot("< Back", "aback", 130);
+  foot("Close", "aclose", 110);
+  tail(b, ev);
+}""")
+# ---- view confirm (spec 2.7)
+M(apg, r"""
+public void drawConfirm(@UCB@ b, @UEB@ ev) {
+  evReset();
+  Object[] h = hdr(this.pendingMod);
+  String who = this.pendingKind == 1 ? "Every mod in the code" : (h != null ? hs(h, 2) + " (" + this.pendingMod + ")" : (this.pendingMod == null ? "" : this.pendingMod));
+  frame(b, "Please confirm", who);
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AMSGBOX);
+  java.util.ArrayList ls = wrap(this.pendingMsg, 92);
+  int max = @MD@.ADM_MSGLINES;
+  for (int i = 0; i < ls.size() && i < max; i++) {
+    b.appendInline("#SkyyAdmMsgBox", i == 0 ? @MD@.UI_AMSGQ[i] : @MD@.UI_AMSGL[i]);
+    String t = (String) ls.get(i);
+    if (i == max - 1 && ls.size() > max) t = "and " + (ls.size() - max + 1) + " more lines";
+    b.set("#SkyyAdmMsg" + i + ".Text", t);
+  }
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AGAP20);
+  b.appendInline("#SkyyAdmBody", @MD@.UI_ACONF);
+  b.appendInline("#SkyyAdmConf", spc(260, 56));
+  b.appendInline("#SkyyAdmConf", btn("SkyyAdmYes", 260, 56, "Confirm", @MD@.ADM_RED));
+  b.appendInline("#SkyyAdmConf", spc(40, 56));
+  b.appendInline("#SkyyAdmConf", btn("SkyyAdmNo", 260, 56, "Cancel", @MD@.ADM_BS));
+  bind(ev, "SkyyAdmYes", "ayes");
+  bind(ev, "SkyyAdmNo", "ano");
+  fReset();
+  tail(b, ev);
+}""")
+# ---- view log (spec 2.8): every set-up mod's log op (40 newest each), newest first
+M(apg, r"""
+public static String logText(Object[] h, String m, String[] f) {
+  String title = h == null ? m : hs(h, 2);
+  String key = f[4];
+  String when = timeShort(f[0]);
+  String tail = "  (" + f[3] + ")" + ("ok".equals(f[7]) ? "" : "  [" + f[7] + "]");
+  int bk = key.indexOf('[');
+  if (bk > 0 && key.endsWith("]")) {
+    String tk = key.substring(0, bk);
+    String e = key.substring(bk + 1, key.length() - 1);
+    Object[] w = rowAt(h, rowIdx(h, tk));
+    String lbl = w == null ? tk : rv(w, 1);
+    String what = null;
+    if (f[5].equals("(none)")) what = "added  " + f[6].replace("|", " / ");
+    else if (f[6].equals("(none)")) what = "removed";
+    else what = f[5].replace("|", " / ") + " -> " + f[6].replace("|", " / ");
+    return when + "  " + f[1] + "  " + title + "  " + lbl + ": " + e + "  " + what + tail;
+  }
+  Object[] w = rowAt(h, rowIdx(h, key));
+  String lbl = w == null ? key : rv(w, 1);
+  if (f[6].equals("(action)")) return when + "  " + f[1] + "  " + title + "  " + lbl + "  done" + tail;
+  String o = w == null ? f[5] : disp(w, f[5]);
+  String n = w == null ? f[6] : disp(w, f[6]);
+  return when + "  " + f[1] + "  " + title + "  " + lbl + "  " + o + " -> " + n + tail;
+}""")
+M(apg, r"""
+public void drawLog(@UCB@ b, @UEB@ ev) {
+  evReset();
+  java.util.ArrayList all = new java.util.ArrayList();
+  java.util.ArrayList mods = new java.util.ArrayList();
+  java.util.HashMap hdrs = new java.util.HashMap();
+  String[] cm = cfgMods();
+  for (int i = 0; i < cm.length; i++) {
+    String m = cm[i];
+    Object[] h = hdr(m);
+    if (h == null || !contractOk(h) || !alive(m)) continue;
+    hdrs.put(m, h);
+    Object o = call(m, new Object[] { "log", Integer.valueOf(40) });
+    if (!(o instanceof String[])) continue;
+    String[] ls = (String[]) o;
+    if (ls.length > 0 && mods.size() < 15) mods.add(m);
+    if (this.logMod.length() > 0 && !this.logMod.equals(m)) continue;
+    for (int k = 0; k < ls.length; k++) {
+      String[] f = ls[k].split("\t", -1);
+      if (f.length < 8) continue;
+      all.add(f[0] + "\t" + (900000 - k) + "\t" + m + "\t" + ls[k]);
+    }
+  }
+  java.util.Collections.sort(all);
+  java.util.Collections.reverse(all);
+  String[] tabs = new String[mods.size() + 1];
+  tabs[0] = "";
+  for (int i = 0; i < mods.size(); i++) tabs[i + 1] = (String) mods.get(i);
+  this.logTabs = tabs;
+  int per = @MD@.ADM_GROWS;
+  int pages = all.size() <= 0 ? 1 : (all.size() + per - 1) / per;
+  if (this.logPage >= pages) this.logPage = pages - 1;
+  if (this.logPage < 0) this.logPage = 0;
+  frame(b, "Server Setup - Changes", "Every change made in game, by command or by hand, newest first. Undo puts one value back.");
+  b.appendInline("#SkyyAdmBody", @MD@.UI_ATABS0);
+  if (tabs.length > 8) b.appendInline("#SkyyAdmBody", @MD@.UI_ATABS1);
+  for (int i = 0; i < tabs.length && i < 16; i++) {
+    String lbl = i == 0 ? "All" : hs((Object[]) hdrs.get(tabs[i]), 2);
+    tabRow(b, ev, i, lbl, tabs[i].equals(this.logMod), "ltab");
+  }
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AHEAD);
+  String scope = this.logMod.length() == 0 ? "All mods" : hs((Object[]) hdrs.get(this.logMod), 2);
+  b.set("#SkyyAdmHead.Text", scope + "   -   " + all.size() + (all.size() == 1 ? " change" : " changes") + (pages > 1 ? "   -   page " + (this.logPage + 1) + " of " + pages : ""));
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AGROWS);
+  this.logShown = new java.util.ArrayList();
+  for (int r = 0; r < per; r++) {
+    int k = this.logPage * per + r;
+    if (k >= all.size()) break;
+    String s = (String) all.get(k);
+    int t0 = s.indexOf('\t');
+    int t1 = s.indexOf('\t', t0 + 1);
+    int t2 = s.indexOf('\t', t1 + 1);
+    String m = s.substring(t1 + 1, t2);
+    String[] f = s.substring(t2 + 1).split("\t", -1);
+    Object[] h = (Object[]) hdrs.get(m);
+    String key = f[4];
+    int bk = key.indexOf('[');
+    String base = bk > 0 ? key.substring(0, bk) : key;
+    boolean undo = "ok".equals(f[7]) && !f[6].equals("(action)") && rowIdx(h, base) >= 0 && canEdit(hs(h, 4));
+    String rsel = "#SkyyAdmGRow" + r;
+    b.appendInline("#SkyyAdmGRows", @MD@.UI_AGROW[r]);
+    b.appendInline(rsel, spc(14, 40));
+    b.appendInline(rsel, @MD@.UI_AGTXT[r]);
+    b.set("#SkyyAdmGTxt" + r + ".Text", @MU@.clip(logText(h, m, f), 110));
+    b.appendInline(rsel, spc(10, 40));
+    if (undo) { b.appendInline(rsel, btn("SkyyAdmGUndo" + r, 120, 40, "Undo", @MD@.ADM_BS)); bind(ev, "SkyyAdmGUndo" + r, "lundo" + r); }
+    b.appendInline("#SkyyAdmGRows", @MD@.UI_AGAP6);
+    if (undo) this.logShown.add(new String[] { m, key, f[5], f[6] }); else this.logShown.add((Object) null);
+  }
+  if (all.isEmpty()) {
+    b.appendInline("#SkyyAdmGRows", @MD@.UI_AEMPTY);
+    b.set("#SkyyAdmEmpty.Text", "No changes logged yet.");
+  }
+  fReset();
+  if (pages > 1) { foot("< Prev", "aprev", 120); foot("Next >", "anext", 120); }
+  foot("Refresh", "arefresh", 130);
+  foot("< Mods", "amods", 130);
+  foot("Close", "aclose", 120);
+  tail(b, ev);
+}""")
+# ---- view hist (spec 2.9): versions per file, preview + restore of one file
+M(apg, r"""
+public static String baseName(String f) {
+  String s = f.trim();
+  int sl = s.lastIndexOf('/');
+  if (sl >= 0) s = s.substring(sl + 1);
+  int dot = s.lastIndexOf('.');
+  if (dot > 0) s = s.substring(0, dot);
+  return s;
+}""")
+M(apg, r"""
+public void drawHist(@UCB@ b, @UEB@ ev) {
+  Object[] h = hdr(this.mod);
+  if (h == null) { this.view = "list"; drawList(b, ev); return; }
+  evReset();
+  String[] fs = hs(h, 8).split(",");
+  for (int i = 0; i < fs.length; i++) fs[i] = fs[i].trim();
+  this.histFiles = fs;
+  Object o = null;
+  if (contractOk(h) && alive(this.mod)) o = call(this.mod, new Object[] { "versions" });
+  String[] vs = o instanceof String[] ? (String[]) o : new String[0];
+  java.util.ArrayList lines = new java.util.ArrayList();
+  for (int i = 0; i < vs.length; i++) {
+    String[] f = vs[i].split("\t", -1);
+    if (f.length < 5) continue;
+    if (this.histFile.length() > 0 && !this.histFile.equals(f[1])) continue;
+    lines.add(f);
+  }
+  boolean prev = this.histPreview != null;
+  int per = prev ? 4 : @MD@.ADM_HROWS;
+  int pages = lines.size() <= 0 ? 1 : (lines.size() + per - 1) / per;
+  if (this.histPage >= pages) this.histPage = pages - 1;
+  if (this.histPage < 0) this.histPage = 0;
+  boolean edit = canEdit(hs(h, 4));
+  frame(b, "History - " + hs(h, 2) + " (" + this.mod + ")", "Each config file keeps its newest versions. Preview one, then Restore it - a restore can be undone the same way.");
+  if (fs.length > 1) {
+    b.appendInline("#SkyyAdmBody", @MD@.UI_ATABS0);
+    tabRow(b, ev, 0, "All files", this.histFile.length() == 0, "htab");
+    for (int i = 0; i < fs.length && i < 7; i++) tabRow(b, ev, i + 1, baseName(fs[i]), fs[i].equals(this.histFile), "htab");
+  }
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AHEAD);
+  b.set("#SkyyAdmHead.Text", (this.histFile.length() == 0 ? "Every file" : this.histFile) + "   -   " + lines.size() + (lines.size() == 1 ? " version" : " versions")
+      + (pages > 1 ? "   -   page " + (this.histPage + 1) + " of " + pages : ""));
+  b.appendInline("#SkyyAdmBody", prev ? @MD@.UI_AHROWS4 : @MD@.UI_AHROWS8);
+  this.histIds = new String[@MD@.ADM_HROWS];
+  for (int r = 0; r < per; r++) {
+    int k = this.histPage * per + r;
+    if (k >= lines.size()) break;
+    String[] f = (String[]) lines.get(k);
+    this.histIds[r] = f[0];
+    String when = f[2].length() >= 16 ? f[2].substring(0, 16) : f[2];
+    String rsel = "#SkyyAdmHRow" + r;
+    b.appendInline("#SkyyAdmHRows", @MD@.UI_AHROW[r]);
+    b.appendInline(rsel, spc(14, 44));
+    b.appendInline(rsel, @MD@.UI_AHTXT[r]);
+    b.set("#SkyyAdmHTxt" + r + ".Text", @MU@.clip(f[1] + "  -  " + when + "  -  " + f[4], 96));
+    b.appendInline(rsel, spc(10, 44));
+    b.appendInline(rsel, btn("SkyyAdmHPrev" + r, 120, 44, "Preview", @MD@.ADM_BS));
+    bind(ev, "SkyyAdmHPrev" + r, "hprev" + r);
+    b.appendInline(rsel, spc(6, 44));
+    if (edit) { b.appendInline(rsel, btn("SkyyAdmHRes" + r, 120, 44, "Restore", @MD@.ADM_BS)); bind(ev, "SkyyAdmHRes" + r, "hres" + r); }
+    b.appendInline("#SkyyAdmHRows", @MD@.UI_AGAP6);
+  }
+  if (lines.isEmpty()) {
+    b.appendInline("#SkyyAdmHRows", @MD@.UI_AEMPTY);
+    b.set("#SkyyAdmEmpty.Text", "No versions yet - a copy is kept the first time a file is changed.");
+  }
+  if (prev) preview(b, "Preview - what Restore would change:", this.histPreview);
+  fReset();
+  if (pages > 1) { foot("< Prev", "aprev", 120); foot("Next >", "anext", 120); }
+  foot("Refresh", "arefresh", 130);
+  foot("< Back", "aback", 130);
+  foot("Close", "aclose", 120);
+  tail(b, ev);
+}""")
+# ---- view io (spec 2.10): export code + file, import code / file with preview; one mod, or every set-up mod from the list
+M(apg, r"""
+public void drawIo(@UCB@ b, @UEB@ ev) {
+  evReset();
+  evField("Imp", "SkyyAdmImp");
+  Object[] h = null;
+  if (!this.ioAll) h = hdr(this.mod);
+  String title = this.ioAll ? "Export / Import - every mod" : "Export / Import - " + (h == null ? String.valueOf(this.mod) : hs(h, 2) + " (" + this.mod + ")");
+  frame(b, title, "A code copies this setup to another world. It never holds player data.");
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AIOL1);
+  b.set("#SkyyAdmIoL1.Text", "Export - " + ("all".equals(this.ioScope) ? "every value" : "only the values that differ from the default") + ". Select the code and copy it, or use the file in Skyy_SkyyMenu/exports.");
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AIOR1);
+  String code = this.ioCode == null ? "" : this.ioCode;
+  if (code.length() > 4000) code = "(too long for this box - use the file in Skyy_SkyyMenu/exports)";
+  field(b, "#SkyyAdmIoR1", "SkyyAdmExp", 830, 50, 4000, code, "");
+  b.appendInline("#SkyyAdmIoR1", spc(10, 50));
+  b.appendInline("#SkyyAdmIoR1", btn("SkyyAdmScope", 200, 50, "all".equals(this.ioScope) ? "Changed only" : "Everything", @MD@.ADM_BS));
+  bind(ev, "SkyyAdmScope", "iscope");
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AGAP12);
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AIOL2);
+  b.set("#SkyyAdmIoL2.Text", this.ioAll ? "Import - paste one or more codes, click Preview (mod by mod), then Apply." : "Import - paste a code and click Preview, then Apply.");
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AIOR2);
+  String imp = this.ioImport == null ? "" : this.ioImport;
+  if (imp.length() > 4000) imp = "(from file - too long for this box)";
+  field(b, "#SkyyAdmIoR2", "SkyyAdmImp", 780, 50, 4000, imp, "paste a code");
+  bindEnter(ev, "SkyyAdmImp", "iprev");
+  b.appendInline("#SkyyAdmIoR2", spc(10, 50));
+  b.appendInline("#SkyyAdmIoR2", btn("SkyyAdmIPrev", 130, 50, "Preview", @MD@.ADM_BS));
+  bind(ev, "SkyyAdmIPrev", "iprev");
+  b.appendInline("#SkyyAdmIoR2", spc(10, 50));
+  b.appendInline("#SkyyAdmIoR2", btn("SkyyAdmIApply", 130, 50, "Apply", @MD@.ADM_BS));
+  bind(ev, "SkyyAdmIApply", "iapply");
+  preview(b, this.ioPreview == null ? "Preview - paste a code or pick a file, then click Preview." : "Preview:", this.ioPreview == null ? "" : this.ioPreview);
+  String[] files = @PKG@.AdmSaveTask.importFiles();
+  this.ioFiles = files;
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AIOF);
+  b.set("#SkyyAdmIoF.Text", files.length == 0 ? "Files in Skyy_SkyyMenu/imports: none yet - put .txt files with codes there to see them here."
+      : "Files in Skyy_SkyyMenu/imports (" + files.length + ")" + (files.length > @MD@.ADM_FROWS ? " - the first " + @MD@.ADM_FROWS + " by name:" : ":"));
+  b.appendInline("#SkyyAdmBody", @MD@.UI_AIOFROWS);
+  for (int r = 0; r < files.length && r < @MD@.ADM_FROWS; r++) {
+    b.appendInline("#SkyyAdmIoFRows", @MD@.UI_AFROW[r]);
+    b.appendInline("#SkyyAdmFRow" + r, spc(14, 42));
+    b.appendInline("#SkyyAdmFRow" + r, @MD@.UI_AFTXT[r]);
+    b.set("#SkyyAdmFTxt" + r + ".Text", files[r]);
+    b.appendInline("#SkyyAdmFRow" + r, spc(10, 42));
+    b.appendInline("#SkyyAdmFRow" + r, btn("SkyyAdmFPrev" + r, 130, 42, "Preview", @MD@.ADM_BS));
+    bind(ev, "SkyyAdmFPrev" + r, "ifile" + r);
+    b.appendInline("#SkyyAdmIoFRows", @MD@.UI_AGAP6);
+  }
+  fReset();
+  foot("< Back", "aback", 150);
+  foot("Close", "aclose", 150);
+  tail(b, ev);
+}""")
+
+# the two AdminPage methods the guard-order check reads (compiled below with M(apg, ADM_BUILD) / M(apg, ADM_HDE))
+ADM_BUILD = r"""
+public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
+  if (!guard()) { drawLocked(b, ev); return; }
+  try {
+    String v = this.view == null ? "list" : this.view;
+    if (v.equals("mod")) drawMod(b, ev);
+    else if (v.equals("table")) drawTable(b, ev);
+    else if (v.equals("confirm")) drawConfirm(b, ev);
+    else if (v.equals("log")) drawLog(b, ev);
+    else if (v.equals("hist")) drawHist(b, ev);
+    else if (v.equals("io")) drawIo(b, ev);
+    else { this.view = "list"; drawList(b, ev); }
+  } catch (Throwable t) { @MU@.warn("server setup view " + this.view + " failed: " + t); }
+}"""
+ADM_HDE = r"""
+public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
+  try {
+    if (!guard()) { lockedClick(ref, st, data); return; }
+    if (data == null) return;
+    String a = @MU@.jstr(data, "a", 40);
+    if (a.length() == 0) return;
+    captureDrafts(data);
+    if (a.equals("aclose")) { this.drafts = new java.util.HashMap(); closeNow(ref, st); return; }
+    if (a.equals("amenu")) { openMenu(ref, st); return; }
+    if (this.view.equals("confirm")) { clickConfirm(a); rebuild(); return; }
+    if (!clickView(ref, st, a)) rebuild();
+  } catch (Throwable t) { @MU@.warn("server setup click failed: " + t); }
+}"""
+# ================= 0.3 guard order (research/Server-Setup-Spec.md 2.3, 2.12, 8.1.4): the ONE permission gate comes first =================
+def adm_guard_ok(build_src, hde_src):
+    """build(): guard() is the first statement. handleDataEvent(): only 'try {' before guard(), and guard() before the first read or
+    comparison of the action (so a button added later cannot skip the check)."""
+    b = build_src.strip()
+    if not b[b.index("{") + 1:].lstrip().startswith("if (!guard())"):
+        return False
+    g = hde_src.find("if (!guard())")
+    if g < 0:
+        return False
+    marks = [hde_src.find(p) for p in ('jstr(data, "a"', '.equals("a', 'startsWith("a', 'indexOf("\\"a', "captureDrafts(", "clickView(")]
+    marks = [x for x in marks if x >= 0]
+    if not marks or g > min(marks):
+        return False
+    return hde_src[hde_src.index("{") + 1:g].strip() in ("", "try {")
+assert adm_guard_ok(ADM_BUILD, ADM_HDE), "AdminPage: guard() must be the first statement of build() and come before any action handling"
+_bad_hde = ADM_HDE.replace("    if (!guard())", '    if (@MU@.jstr(data, "a", 40).equals("aclose")) return;' + "\n" + "    if (!guard())", 1)
+_bad_build = ADM_BUILD.replace("  if (!guard())", "  evReset();\n  if (!guard())", 1)
+assert _bad_hde != ADM_HDE and not adm_guard_ok(ADM_BUILD, _bad_hde), "the guard-order check must refuse a handler branch before guard()"
+assert _bad_build != ADM_BUILD and not adm_guard_ok(_bad_build, ADM_HDE), "the guard-order check must refuse a statement before guard() in build()"
+print("server setup guard order: ok (and the crafted bad sources are refused)")
+
+# ---- clicks: results, drafts, one handler per view
+M(apg, r"""
+public void handleResult(String m, Object r, Object[] args, int ci, String draftKey) {
+  if (r == null) { setStatus(@MD@.ADM_NOANSWER, 3); return; }
+  String s = rStatus(r);
+  String msg = rMsg(r);
+  if (s == null) { setStatus(@MD@.ADM_NOANSWER, 3); return; }
+  if (s.equals("confirm")) {
+    if (ci < 0 || args == null) { setStatus(msg, 2); return; }
+    Object[] again = new Object[args.length];
+    System.arraycopy(args, 0, again, 0, args.length);
+    again[ci] = "yes";
+    this.pending = again;
+    this.pendingMod = m;
+    this.pendingKind = 0;
+    this.pendingMsg = msg;
+    this.backView = this.view;
+    this.view = "confirm";
+    return;
+  }
+  if (s.equals("ok") || s.equals("restart")) {
+    setStatus(firstLine(msg), s.equals("ok") ? 1 : 2);
+    if (draftKey != null) this.drafts.remove(draftKey);
+    return;
+  }
+  setStatus(firstLine(msg.length() > 0 ? msg : "Not changed."), 3);
+}""")
+M(apg, r"""
+public void doSet(String key, String value) {
+  Object[] a = new Object[] { "set", key, value, me(), myName(), "", "menu" };
+  handleResult(this.mod, call(this.mod, a), a, 5, key);
+}""")
+M(apg, r"""
+public void ask(String m, Object[] args, String msg) {
+  this.pending = args;
+  this.pendingMod = m;
+  this.pendingKind = 0;
+  this.pendingMsg = msg;
+  this.backView = this.view;
+  this.view = "confirm";
+}""")
+M(apg, r"""
+public boolean ready(Object[] h) {
+  if (h == null) { setStatus(this.mod + " has no in-game settings.", 3); return false; }
+  if (!contractOk(h)) { setStatus(@MD@.ADM_NEWER, 3); return false; }
+  if (!alive(this.mod)) { setStatus(this.mod + " is not running - its settings cannot be changed now.", 3); return false; }
+  return true;
+}""")
+M(apg, r"""
+public void clearEntryDrafts(String e) {
+  for (int c = 0; c < 4; c++) this.tDrafts.remove(e + "\t" + c);
+}""")
+M(apg, r"""
+public void captureDrafts(String data) {
+  String v = this.view;
+  if (v.equals("mod")) {
+    for (int r = 0; r < this.rowKeys.length; r++) {
+      String k = this.rowKeys[r];
+      String j = at("V" + r);
+      if (k == null || data.indexOf("\"" + j + "\"") < 0) continue;
+      String t = @MU@.jstr(data, j, 2000);
+      if (t.trim().length() > 0) this.drafts.put(k, t); else this.drafts.remove(k);
+    }
+  } else if (v.equals("table")) {
+    if (data.indexOf("\"" + at("TF") + "\"") >= 0) this.tFilterDraft = @MU@.jstr(data, at("TF"), 80);
+    for (int r = 0; r < this.tKeys.length; r++) {
+      String e = this.tKeys[r];
+      if (e == null) continue;
+      for (int c = 0; c < 3; c++) {
+        String j = at("C" + r + "x" + c);
+        if (data.indexOf("\"" + j + "\"") >= 0) this.tDrafts.put(e + "\t" + c, @MU@.jstr(data, j, 200));
+      }
+    }
+    if (data.indexOf("\"" + at("AK") + "\"") >= 0) this.tAdd[0] = @MU@.jstr(data, at("AK"), 120);
+    for (int c = 0; c < 3; c++) if (data.indexOf("\"" + at("A" + c) + "\"") >= 0) this.tAdd[c + 1] = @MU@.jstr(data, at("A" + c), 200);
+  } else if (v.equals("list")) {
+    if (data.indexOf("\"" + at("Find") + "\"") >= 0) this.findDraft = @MU@.jstr(data, at("Find"), 60);
+  } else if (v.equals("io")) {
+    if (data.indexOf("\"" + at("Imp") + "\"") >= 0) {
+      String t = @MU@.jstr(data, at("Imp"), 400000);
+      if (!t.startsWith("(from file")) this.ioImport = t;
+    }
+  }
+}""")
+M(apg, r"""
+public void lockedClick(@REF@ ref, @ST@ st, String data) {
+  if (data != null && "aclose".equals(@MU@.jstr(data, "a", 40))) { closeNow(ref, st); return; }
+  rebuild();
+}""")
+M(apg, r"""
+public void turn(int d) {
+  String v = this.view;
+  if (v.equals("list")) this.listPage = this.listPage + d;
+  else if (v.equals("mod")) this.modPage = this.modPage + d;
+  else if (v.equals("table")) this.tPage = this.tPage + d;
+  else if (v.equals("log")) this.logPage = this.logPage + d;
+  else if (v.equals("hist")) this.histPage = this.histPage + d;
+}""")
+M(apg, r"""
+public void toList() {
+  this.view = "list";
+  this.drafts = new java.util.HashMap();
+  this.tDrafts = new java.util.HashMap();
+  this.pending = null;
+}""")
+M(apg, r"""
+public void computeExport() {
+  if (this.ioAll) {
+    StringBuilder box = new StringBuilder();
+    StringBuilder fl = new StringBuilder();
+    StringBuilder bad = new StringBuilder();
+    int n = 0;
+    String[] cm = cfgMods();
+    for (int i = 0; i < cm.length; i++) {
+      Object[] h = hdr(cm[i]);
+      if (h == null || !contractOk(h) || !alive(cm[i])) continue;
+      Object o = call(cm[i], new Object[] { "export", this.ioScope });
+      if (o instanceof String) {
+        if (box.length() > 0) box.append(' ');
+        box.append((String) o);
+        fl.append((String) o).append('\n');
+        n++;
+      } else { if (bad.length() > 0) bad.append(", "); bad.append(cm[i]); }
+    }
+    this.ioCode = box.toString();
+    String name = "all-" + stamp() + ".txt";
+    if (n > 0) saveFile("exports/" + name, "# SkyWynn setup codes (one per mod), exported " + stamp() + " by " + myName() + ". Import them in Server Setup - Export all.\n" + fl.toString());
+    setStatus(n + " mod code(s)" + (n > 0 ? " - a copy is saved to Skyy_SkyyMenu/exports/" + name : "") + (bad.length() > 0 ? " - not exported (a file cannot be read): " + bad.toString() : ""), bad.length() > 0 ? 2 : 1);
+    return;
+  }
+  Object o = call(this.mod, new Object[] { "export", this.ioScope });
+  if (!(o instanceof String)) { this.ioCode = ""; setStatus("Cannot export " + this.mod + " while one of its files cannot be read.", 3); return; }
+  this.ioCode = (String) o;
+  String name = this.mod + "-" + stamp() + ".txt";
+  saveFile("exports/" + name, "# SkyWynn setup code for " + this.mod + ", exported " + stamp() + " by " + myName() + ". Import it in Server Setup - Export / Import.\n" + this.ioCode + "\n");
+  setStatus("Code ready - a copy is saved to Skyy_SkyyMenu/exports/" + name + (this.ioCode.length() > 4000 ? " (too long for the box - use the file)" : ""), 1);
+}""")
+M(apg, r"""
+public String modFor(String code) {
+  String m = codeMod(code);
+  Object[] h = hdr(m);
+  if (h != null && contractOk(h) && alive(m)) return m;
+  String[] cm = cfgMods();
+  for (int i = 0; i < cm.length; i++) {
+    Object[] hh = hdr(cm[i]);
+    if (hh == null || !contractOk(hh) || !alive(cm[i])) continue;
+    Object r = call(cm[i], new Object[] { "import", code, me(), myName(), "preview" });
+    String s = rStatus(r);
+    if (s == null) continue;
+    if ("bad".equals(s) && rMsg(r).startsWith("This code is for")) continue;
+    return cm[i];
+  }
+  return null;
+}""")
+M(apg, r"""
+public void importPreview() {
+  java.util.ArrayList cs = codesIn(this.ioImport);
+  this.ioPreviewCode = null;
+  this.ioPlan = new java.util.ArrayList();
+  this.ioPlanTotal = 0;
+  if (cs.isEmpty()) { this.ioPreview = null; setStatus("Paste a code that starts with SKYY1. first.", 3); return; }
+  if (!this.ioAll) {
+    String code = (String) cs.get(0);
+    for (int i = 0; i < cs.size(); i++) if (codeMod((String) cs.get(i)).equals(this.mod)) { code = (String) cs.get(i); break; }
+    Object r = call(this.mod, new Object[] { "import", code, me(), myName(), "preview" });
+    String s = rStatus(r);
+    this.ioPreview = r == null ? null : rMsg(r);
+    if ("ok".equals(s)) {
+      int n = 0;
+      try { n = Integer.parseInt(rVal(r)); } catch (Throwable t) { n = 0; }
+      this.ioPreviewCode = n > 0 ? code : null;
+      setStatus(n > 0 ? n + " change(s) - click Apply to import them." : firstLine(rMsg(r)), n > 0 ? 0 : 1);
+    } else setStatus(r == null ? @MD@.ADM_NOANSWER : firstLine(rMsg(r)), 3);
+    return;
+  }
+  StringBuilder pv = new StringBuilder();
+  for (int i = 0; i < cs.size(); i++) {
+    String code = (String) cs.get(i);
+    String m = modFor(code);
+    if (m == null) { pv.append(codeMod(code)).append(": no mod on this server takes this code\n"); continue; }
+    Object r = call(m, new Object[] { "import", code, me(), myName(), "preview" });
+    String s = rStatus(r);
+    String[] ls = rMsg(r).split("\n");
+    pv.append(m).append(": ").append(ls.length > 0 ? ls[0] : "").append('\n');
+    for (int k = 1; k < ls.length && k < 4; k++) pv.append("    ").append(ls[k]).append('\n');
+    if ("ok".equals(s)) {
+      int n = 0;
+      try { n = Integer.parseInt(rVal(r)); } catch (Throwable t) { n = 0; }
+      if (n > 0) { this.ioPlan.add(new String[] { m, code }); this.ioPlanTotal = this.ioPlanTotal + n; }
+    }
+  }
+  this.ioPreview = pv.toString();
+  setStatus(this.ioPlan.isEmpty() ? "Nothing to import." : this.ioPlanTotal + " change(s) in " + this.ioPlan.size() + " mod(s) - click Apply to import them.", this.ioPlan.isEmpty() ? 2 : 0);
+}""")
+M(apg, r"""
+public void importApply() {
+  if (this.ioAll) {
+    if (this.ioPlan == null || this.ioPlan.isEmpty()) { setStatus("Click Preview first - there is nothing to import yet.", 2); return; }
+    this.pendingKind = 1;
+    this.pendingCodes = this.ioPlan;
+    this.pendingMod = null;
+    this.pending = null;
+    this.pendingMsg = "Import " + this.ioPlanTotal + " change(s) into " + this.ioPlan.size() + " mod(s)? Each mod saves a version first, so History can undo it.\n" + (this.ioPreview == null ? "" : this.ioPreview);
+    this.backView = "io";
+    this.view = "confirm";
+    return;
+  }
+  if (this.ioPreviewCode == null) { setStatus("Click Preview first - there is nothing to import yet.", 2); return; }
+  if (!codesIn(this.ioImport).contains(this.ioPreviewCode)) { setStatus("The code changed - click Preview again.", 2); return; }
+  ask(this.mod, new Object[] { "import", this.ioPreviewCode, me(), myName(), "apply" },
+      "Import these changes into " + this.mod + "? It saves a version of each file first, so History can undo it.\n" + (this.ioPreview == null ? "" : this.ioPreview));
+}""")
+M(apg, r"""
+public void clickConfirm(String a) {
+  String back = this.backView == null ? "list" : this.backView;
+  this.view = back;
+  if (!a.equals("ayes")) {
+    this.pending = null;
+    this.pendingCodes = null;
+    setStatus(@MD@.ADM_CANCEL, 0);
+    return;
+  }
+  if (this.pendingKind == 1 && this.pendingCodes != null) {
+    int ok = 0;
+    StringBuilder bad = new StringBuilder();
+    StringBuilder all = new StringBuilder();
+    for (int k = 0; k < this.pendingCodes.size(); k++) {
+      String[] e = (String[]) this.pendingCodes.get(k);
+      Object r = call(e[0], new Object[] { "import", e[1], me(), myName(), "apply" });
+      String s = rStatus(r);
+      all.append(e[0]).append(": ").append(r == null ? "no answer" : firstLine(rMsg(r))).append('\n');
+      if ("ok".equals(s) || "restart".equals(s)) ok++;
+      else { if (bad.length() > 0) bad.append(", "); bad.append(e[0]); }
+    }
+    this.ioPreview = all.toString();
+    this.ioPlan = new java.util.ArrayList();
+    setStatus(bad.length() == 0 ? "Imported into " + ok + " mod(s)." : "Imported into " + ok + " mod(s) - problems with " + bad.toString() + " (see below).", bad.length() == 0 ? 1 : 3);
+  } else if (this.pending != null) {
+    Object[] args = this.pending;
+    String m = this.pendingMod;
+    Object[] h = hdr(m);
+    if (h == null || !contractOk(h) || !alive(m)) setStatus(m + " is not running - nothing was changed.", 3);
+    else {
+      Object r = call(m, args);
+      handleResult(m, r, args, -1, null);
+      String op = String.valueOf(args[0]);
+      String s = rStatus(r);
+      boolean done = "ok".equals(s) || "restart".equals(s);
+      if (op.equals("import") && r != null) { this.ioPreview = rMsg(r); if (done) this.ioPreviewCode = null; }
+      if (op.equals("restore") && r != null) this.histPreview = rMsg(r);
+      if (op.equals("set") && done) this.drafts.remove(String.valueOf(args[1]));
+      if ((op.equals("tset") || op.equals("add")) && done) clearEntryDrafts(String.valueOf(args[2]));
+    }
+  }
+  this.pending = null;
+  this.pendingCodes = null;
+}""")
+M(apg, r"""
+public void clickList(String a) {
+  if (a.equals("afind")) {
+    String q = this.findDraft == null ? "" : this.findDraft.trim();
+    if (q.length() == 1) { setStatus("Type at least 2 letters to search.", 2); return; }
+    this.search = q;
+    this.listPage = 0;
+    return;
+  }
+  if (a.equals("aclear")) { this.search = ""; this.findDraft = ""; this.listPage = 0; return; }
+  if (a.equals("achanges")) { this.view = "log"; this.logMod = ""; this.logPage = 0; return; }
+  if (a.equals("aexpall")) {
+    this.view = "io"; this.ioAll = true; this.ioScope = "changed"; this.ioPreview = null; this.ioPreviewCode = null; this.ioPlan = new java.util.ArrayList();
+    computeExport();
+    return;
+  }
+  int r = tailNum(a, "aopen");
+  if (r >= 0 && r < this.listMods.length && this.listMods[r] != null) {
+    String m = this.listMods[r];
+    Object[] h = hdr(m);
+    if (h != null && !contractOk(h)) { setStatus(m + ": " + @MD@.ADM_NEWER, 3); return; }
+    if (h != null && !alive(m)) { setStatus(m + " is not running - its settings cannot be changed now.", 3); return; }
+    this.mod = m;
+    this.view = "mod";
+    this.cat = 0;
+    this.modPage = 0;
+    this.showAdv = false;
+    this.drafts = new java.util.HashMap();
+    this.jumpHit = h != null && this.search != null && this.search.trim().length() >= 2;
+    return;
+  }
+  r = tailNum(a, "arel");
+  if (r >= 0 && r < this.listReload.length && this.listReload[r] != null && this.listReload[r].length() > 0) {
+    String rl = this.listReload[r];
+    if (runLine(rl)) setStatus("Ran /" + rl + " - the answer is in your chat.", 1);
+  }
+}""")
+M(apg, r"""
+public boolean clickMod(@REF@ ref, @ST@ st, String a) {
+  if (a.equals("afrel")) {
+    int k = modIndex(this.mod);
+    String rl = k >= 0 ? @MD@.MOD_RELOAD[k] : "";
+    if (rl.length() > 0 && runLine(rl)) setStatus("Ran /" + rl + " - the answer is in your chat.", 1);
+    return false;
+  }
+  Object[] h = hdr(this.mod);
+  if (h == null) return false;
+  int t = tailNum(a, "atab");
+  if (t >= 0) { this.cat = t; this.modPage = 0; return false; }
+  if (a.equals("aadv")) { this.showAdv = !this.showAdv; this.modPage = 0; return false; }
+  if (!ready(h)) return false;
+  if (a.equals("ahist")) { this.view = "hist"; this.histFile = ""; this.histPreview = null; this.histPage = 0; return false; }
+  if (a.equals("aio")) {
+    this.view = "io"; this.ioAll = false; this.ioScope = "changed"; this.ioPreview = null; this.ioPreviewCode = null;
+    computeExport();
+    return false;
+  }
+  if (a.equals("areload")) { handleResult(this.mod, call(this.mod, new Object[] { "reload", me(), myName(), "menu" }), null, -1, null); return false; }
+  int r = -1;
+  int j = -1;
+  String verb = null;
+  String[] verbs = new String[] { "aset", "adef", "aon", "aoff", "aminus", "aplus", "aedit", "alink", "aact", "acl", "acr" };
+  for (int k = 0; k < verbs.length && verb == null; k++) { int n = tailNum(a, verbs[k]); if (n >= 0) { r = n; verb = verbs[k]; } }
+  if (verb == null && a.startsWith("ach") && a.indexOf('x') > 3) {
+    r = tailNum(a.substring(0, a.indexOf('x')), "ach");
+    j = tailNum("x" + a.substring(a.indexOf('x') + 1), "x");
+    if (r >= 0 && j >= 0) verb = "ach";
+  }
+  if (verb == null || r < 0 || r >= this.rowKeys.length || this.rowKeys[r] == null) return false;
+  String key = this.rowKeys[r];
+  Object[] w = rowAt(h, rowIdx(h, key));
+  if (w == null) { setStatus("That setting is gone - the mod changed.", 3); return false; }
+  String opts = rv(w, 7);
+  if (verb.equals("aset")) {
+    String v = (String) this.drafts.get(key);
+    boolean typedSet = v != null;
+    if (v == null) v = cur(this.mod, key);
+    if (v == null || v.trim().length() == 0) { setStatus("Type a value first.", 2); return false; }
+    if (typedSet) {
+      String[] tv = typedValue(w, v);
+      if (tv[0] == null) { setStatus(tv[1], 3); return false; }
+      v = tv[0];
+    }
+    doSet(key, v);
+  } else if (verb.equals("adef")) doSet(key, (String) null);
+  else if (verb.equals("aon")) doSet(key, "true");
+  else if (verb.equals("aoff")) doSet(key, "false");
+  else if (verb.equals("ach")) { String[] vs = chVals(opts); if (j < vs.length) doSet(key, vs[j]); }
+  else if (verb.equals("acl") || verb.equals("acr")) {
+    String[] vs = chVals(opts);
+    String c = cur(this.mod, key);
+    int at0 = 0;
+    for (int k = 0; k < vs.length; k++) if (vs[k].equals(c)) at0 = k;
+    int nx = verb.equals("acr") ? (at0 + 1) % vs.length : (at0 + vs.length - 1) % vs.length;
+    doSet(key, vs[nx]);
+  } else if (verb.equals("aminus") || verb.equals("aplus")) {
+    String c = (String) this.drafts.get(key);
+    boolean typedNow = c != null;
+    if (typedNow && msRow(w)) { String mc = msOf(c, !rv(w, 3).equals("dec")); c = mc == null ? "?" : mc; }
+    if (c == null) c = cur(this.mod, key);
+    if (c == null) { setStatus(@MD@.ADM_NOANSWER, 3); return false; }
+    String step = stepOf(opts);
+    if (step == null) { setStatus("That setting is gone - the mod changed.", 3); return false; }
+    try {
+      java.math.BigDecimal v = new java.math.BigDecimal(c.trim());
+      java.math.BigDecimal sp = new java.math.BigDecimal(step);
+      v = verb.equals("aplus") ? v.add(sp) : v.subtract(sp);
+      String nv = v.signum() == 0 ? "0" : v.stripTrailingZeros().toPlainString();
+      doSet(key, nv);
+    } catch (Throwable x) { setStatus(typedNow ? "The value in the box is not a number - fix it or click Default." : "The current value is not a number - type one in the box.", 3); }
+  } else if (verb.equals("aedit")) {
+    this.view = "table";
+    this.tableKey = key;
+    this.tFilter = "";
+    this.tFilterDraft = "";
+    this.tPage = 0;
+    this.tDrafts = new java.util.HashMap();
+    this.tAdd = new String[4];
+    if (rv(w, 3).equals("items")) this.items = csv(cur(this.mod, key));
+  } else if (verb.equals("alink")) {
+    if (runLine(opts)) setStatus("Ran /" + opts + " - if no page opens, the answer is in your chat.", 1);
+  } else if (verb.equals("aact")) {
+    Object[] args = new Object[] { "action", key, me(), myName(), "", "menu" };
+    handleResult(this.mod, call(this.mod, args), args, 4, null);
+  }
+  return false;
+}""")
+M(apg, r"""
+public String entryNow(String m, String tk, String e) {
+  Object o = call(m, new Object[] { "keys", tk, e });
+  if (!(o instanceof Object[]) || ((Object[]) o).length < 3 || !(((Object[]) o)[0] instanceof String[]) || !(((Object[]) o)[2] instanceof String[])) return null;
+  String[] ks = (String[]) ((Object[]) o)[0];
+  String[] vs = (String[]) ((Object[]) o)[2];
+  for (int i = 0; i < ks.length; i++) if (ks[i].equals(e)) return i < vs.length ? vs[i] : "";
+  return null;
+}""")
+M(apg, r"""
+public void clickTable(@REF@ ref, @ST@ st, String a) {
+  Object[] h = hdr(this.mod);
+  Object[] w = rowAt(h, rowIdx(h, this.tableKey));
+  if (w == null) { this.view = "mod"; return; }
+  if (a.equals("tfind")) { this.tFilter = this.tFilterDraft == null ? "" : this.tFilterDraft.trim(); this.tPage = 0; return; }
+  if (a.equals("tclear")) { this.tFilter = ""; this.tFilterDraft = ""; this.tPage = 0; return; }
+  if (!ready(h)) return;
+  boolean itemsMode = rv(w, 3).equals("items");
+  String label = rv(w, 1);
+  String opts = rv(w, 7);
+  int nc = itemsMode ? (hasOpt(opts, "qty") ? 1 : 0) : tCols(opts).length;
+  if (nc > 3) nc = 3;
+  if (itemsMode) {
+    boolean qty = nc > 0;
+    int r = tailNum(a, "tset");
+    if (r >= 0 && r < this.tKeys.length && this.tKeys[r] != null && qty) {
+      String e = this.tKeys[r];
+      String q = (String) this.tDrafts.get(e + "\t0");
+      if (q == null) q = this.tVals[r];
+      int n = -1;
+      try { n = Integer.parseInt(q.trim()); } catch (Throwable x) { n = -1; }
+      if (n < 1 || n > 9999) { setStatus("The amount must be a whole number from 1 to 9999.", 3); return; }
+      for (int i = 0; i < this.items.size(); i++) {
+        String it = String.valueOf(this.items.get(i));
+        int c = it.lastIndexOf(':');
+        if ((c > 0 ? it.substring(0, c) : it).equals(e)) this.items.set(i, e + ":" + n);
+      }
+      clearEntryDrafts(e);
+      setStatus(e + " x" + n + " - click Save list to keep it.", 0);
+      return;
+    }
+    r = tailNum(a, "trem");
+    if (r >= 0 && r < this.tKeys.length && this.tKeys[r] != null) {
+      String e = this.tKeys[r];
+      for (int i = this.items.size() - 1; i >= 0; i--) {
+        String it = String.valueOf(this.items.get(i));
+        int c = it.lastIndexOf(':');
+        if ((qty && c > 0 ? it.substring(0, c) : it).equals(e)) this.items.remove(i);
+      }
+      clearEntryDrafts(e);
+      setStatus(e + " taken off the list - click Save list to keep it.", 0);
+      return;
+    }
+    if (a.equals("tadd") || a.equals("theld")) {
+      String id = a.equals("theld") ? heldItem(ref, st) : (this.tAdd[0] == null ? "" : this.tAdd[0].trim());
+      if (id == null || id.length() == 0) { setStatus(a.equals("theld") ? "Hold the item in your hand first." : "Type an item id first.", 2); return; }
+      for (int i = 0; i < this.items.size(); i++) {
+        String it = String.valueOf(this.items.get(i));
+        int c = it.lastIndexOf(':');
+        if ((qty && c > 0 ? it.substring(0, c) : it).equals(id)) { setStatus(id + " is already on the list.", 2); return; }
+      }
+      String q = qty ? (this.tAdd[1] == null || this.tAdd[1].trim().length() == 0 ? "1" : this.tAdd[1].trim()) : null;
+      this.items.add(qty ? id + ":" + q : id);
+      this.tAdd = new String[4];
+      setStatus(id + " added to the list - click Save list to keep it.", 0);
+      return;
+    }
+    if (a.equals("tsave")) {
+      doSet(this.tableKey, joinList(this.items, ","));
+      if (this.statusKind == 1) this.items = csv(cur(this.mod, this.tableKey));
+      return;
+    }
+    if (a.equals("tundo")) { this.items = csv(cur(this.mod, this.tableKey)); this.tDrafts = new java.util.HashMap(); setStatus("Back to the saved list.", 0); return; }
+    return;
+  }
+  int r = tailNum(a, "tset");
+  if (r >= 0 && r < this.tKeys.length && this.tKeys[r] != null) {
+    String e = this.tKeys[r];
+    String[] parts = this.tVals[r].split("\\|", -1);
+    StringBuilder v = new StringBuilder();
+    for (int c = 0; c < nc; c++) {
+      String d = (String) this.tDrafts.get(e + "\t" + c);
+      if (d == null) d = c < parts.length ? parts[c] : "";
+      if (c > 0) v.append('|');
+      v.append(d.trim());
+    }
+    Object[] args = new Object[] { "tset", this.tableKey, e, v.toString(), me(), myName(), "", "menu" };
+    handleResult(this.mod, call(this.mod, args), args, 6, null);
+    if (this.statusKind == 1) clearEntryDrafts(e);
+    return;
+  }
+  r = tailNum(a, "trem");
+  if (r >= 0 && r < this.tKeys.length && this.tKeys[r] != null) {
+    String e = this.tKeys[r];
+    ask(this.mod, new Object[] { "remove", this.tableKey, e, me(), myName(), "yes", "menu" }, "Remove " + e + " from " + label + "?");
+    return;
+  }
+  if (a.equals("tadd") || a.equals("theld")) {
+    String e = a.equals("theld") ? heldItem(ref, st) : (this.tAdd[0] == null ? "" : this.tAdd[0].trim());
+    if (e == null || e.length() == 0) { setStatus(a.equals("theld") ? "Hold the item in your hand first." : "Type the new entry first.", 2); return; }
+    StringBuilder v = new StringBuilder();
+    for (int c = 0; c < nc; c++) { if (c > 0) v.append('|'); v.append(this.tAdd[c + 1] == null ? "" : this.tAdd[c + 1].trim()); }
+    Object[] args = new Object[] { "add", this.tableKey, e, v.toString(), me(), myName(), "", "menu" };
+    handleResult(this.mod, call(this.mod, args), args, 6, null);
+    if (this.statusKind == 1) this.tAdd = new String[4];
+  }
+}""")
+M(apg, r"""
+public void clickLog(String a) {
+  int t = tailNum(a, "ltab");
+  if (t >= 0) { if (t < this.logTabs.length) this.logMod = this.logTabs[t]; this.logPage = 0; return; }
+  int r = tailNum(a, "lundo");
+  if (r < 0 || r >= this.logShown.size() || this.logShown.get(r) == null) return;
+  String[] e = (String[]) this.logShown.get(r);
+  String m = e[0];
+  String key = e[1];
+  String old = e[2];
+  String nw = e[3];
+  Object[] h = hdr(m);
+  if (h == null || !contractOk(h) || !alive(m)) { setStatus(m + " is not running - nothing was changed.", 3); return; }
+  int bk = key.indexOf('[');
+  if (bk > 0 && key.endsWith("]")) {
+    String tk = key.substring(0, bk);
+    String en = key.substring(bk + 1, key.length() - 1);
+    Object[] w = rowAt(h, rowIdx(h, tk));
+    String lbl = w == null ? tk : rv(w, 1);
+    String now = entryNow(m, tk, en);
+    boolean same = nw.equals("(none)") ? now == null : nw.equals(now);
+    if (!same) { setStatus(@MD@.ADM_CHANGED, 3); return; }
+    if (old.equals("(none)")) ask(m, new Object[] { "remove", tk, en, me(), myName(), "yes", "undo" }, "Undo: take " + en + " out of " + lbl + " again?");
+    else if (nw.equals("(none)")) ask(m, new Object[] { "add", tk, en, old, me(), myName(), "yes", "undo" }, "Undo: put " + en + " back into " + lbl + " (" + old.replace("|", " / ") + ")?");
+    else ask(m, new Object[] { "tset", tk, en, old, me(), myName(), "yes", "undo" }, "Undo: put " + en + " in " + lbl + " back from " + nw.replace("|", " / ") + " to " + old.replace("|", " / ") + "?");
+    return;
+  }
+  Object[] w = rowAt(h, rowIdx(h, key));
+  String now = cur(m, key);
+  if (now == null || !now.equals(nw)) { setStatus(@MD@.ADM_CHANGED, 3); return; }
+  String lbl = w == null ? key : rv(w, 1);
+  ask(m, new Object[] { "set", key, old, me(), myName(), "yes", "undo" }, "Undo: put " + lbl + " back from " + disp(w, nw) + " to " + disp(w, old) + "?");
+}""")
+M(apg, r"""
+public void clickHist(String a) {
+  int t = tailNum(a, "htab");
+  if (t >= 0) { this.histFile = t == 0 || t > this.histFiles.length ? "" : this.histFiles[t - 1]; this.histPage = 0; this.histPreview = null; return; }
+  Object[] h = hdr(this.mod);
+  if (!ready(h)) return;
+  int r = tailNum(a, "hprev");
+  if (r >= 0 && r < this.histIds.length && this.histIds[r] != null) {
+    Object res = call(this.mod, new Object[] { "restore", this.histIds[r], me(), myName(), "preview" });
+    if (res == null) { setStatus(@MD@.ADM_NOANSWER, 3); return; }
+    this.histPreview = rMsg(res);
+    setStatus("ok".equals(rStatus(res)) ? "Preview below - Restore applies exactly this." : firstLine(rMsg(res)), "ok".equals(rStatus(res)) ? 0 : 3);
+    return;
+  }
+  r = tailNum(a, "hres");
+  if (r >= 0 && r < this.histIds.length && this.histIds[r] != null) {
+    String id = this.histIds[r];
+    String file = "";
+    String when = "";
+    Object o = call(this.mod, new Object[] { "versions" });
+    String[] vs = o instanceof String[] ? (String[]) o : new String[0];
+    for (int i = 0; i < vs.length; i++) {
+      String[] f = vs[i].split("\t", -1);
+      if (f.length >= 3 && f[0].equals(id)) { file = f[1]; when = f[2].length() >= 16 ? f[2].substring(0, 16) : f[2]; }
+    }
+    int others = this.histFiles.length - 1;
+    ask(this.mod, new Object[] { "restore", id, me(), myName(), "apply" }, "Restore " + file + " to " + when + "?"
+        + (others > 0 ? " " + this.mod + "'s other " + others + (others == 1 ? " file is" : " files are") + " not changed." : "") + " A version of the file is saved first, so this can be undone the same way.");
+  }
+}""")
+M(apg, r"""
+public void clickIo(String a) {
+  if (!this.ioAll && !ready(hdr(this.mod))) return;
+  if (a.equals("iscope")) { this.ioScope = "all".equals(this.ioScope) ? "changed" : "all"; computeExport(); return; }
+  if (a.equals("iprev")) { importPreview(); return; }
+  if (a.equals("iapply")) { importApply(); return; }
+  int r = tailNum(a, "ifile");
+  if (r >= 0 && r < this.ioFiles.length) {
+    String t = @PKG@.AdmSaveTask.readImport(this.ioFiles[r]);
+    if (t == null) { setStatus("Could not read imports/" + this.ioFiles[r] + " (1 MB at most).", 3); return; }
+    this.ioImport = t;
+    importPreview();
+  }
+}""")
+# true = another page took over, so no rebuild (nothing returns true now: handleCommand runs the command later, on the common pool, so a
+# link row cannot know here whether its command opens a page; it rebuilds with a status line like the Reload buttons and the main
+# menu's page commands - the command's page, when it opens one, then replaces this page)
+M(apg, r"""
+public boolean clickView(@REF@ ref, @ST@ st, String a) {
+  String v = this.view;
+  setStatus("", 0);
+  if (a.equals("aprev")) { turn(-1); return false; }
+  if (a.equals("anext")) { turn(1); return false; }
+  if (a.equals("arefresh")) return false;
+  if (a.equals("amods")) { toList(); return false; }
+  if (a.equals("aback")) {
+    if (v.equals("table") || v.equals("hist")) this.view = "mod";
+    else if (v.equals("io")) this.view = this.ioAll ? "list" : "mod";
+    else toList();
+    return false;
+  }
+  if (v.equals("list")) { clickList(a); return false; }
+  if (v.equals("mod")) return clickMod(ref, st, a);
+  if (v.equals("table")) { clickTable(ref, st, a); return false; }
+  if (v.equals("log")) { clickLog(a); return false; }
+  if (v.equals("hist")) { clickHist(a); return false; }
+  if (v.equals("io")) { clickIo(a); return false; }
+  return false;
+}""")
+M(apg, ADM_BUILD)
+M(apg, ADM_HDE)
+# /modconfig [mod] opens the page (the command runs on the player's world thread; never close-then-open)
+M(apg, r"""
+public static void openFor(@PR@ pr, @ST@ store, @REF@ ref, String arg) {
+  try {
+    @PLA@ p = (@PLA@) store.getComponent(ref, @PLA@.getComponentType());
+    if (p == null) return;
+    String m = arg == null ? null : resolveMod(arg);
+    @PKG@.AdminPage pg = new @PKG@.AdminPage(pr, m == null ? "list" : "mod", m);
+    if (arg != null && m == null) {
+      String q = arg.trim();
+      pg.search = q.length() >= 2 ? q : "";
+      pg.findDraft = q;
+      pg.setStatus("No mod called " + q + " on this server - here is what matches.", 2);
+    }
+    p.getPageManager().openCustomPage(ref, store, pg);
+  } catch (Throwable t) {
+    @MU@.warn("/modconfig failed: " + t);
+    try { pr.sendMessage(@MSG@.raw("[Server Setup] Could not open Server Setup.")); } catch (Throwable t2) { }
+  }
+}""")
+
+# ================= /modconfig (alias /serversetup) + the usage variant /modconfig <mod>; admins only (requirePermission, HANDOFF rule 1) =================
+F(acmv, "public @RA@ modArg;")
+C(acmv, r"""
+public AdminModCmd() {
+  super("Open one mod's settings in Server Setup: /modconfig <mod>");
+  requirePermission(@MD@.ADMIN_NODE);
+  this.modArg = withRequiredArg("mod", "a mod name, e.g. menu, bank or SkyyEconomy (Skyy is optional)", @ATY@.STRING);
+}""")
+M(acmv, r"""
+protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
+  String a = null;
+  try { a = String.valueOf(ctx.get(this.modArg)); } catch (Throwable t) { a = null; }
+  @PKG@.AdminPage.openFor(pr, store, ref, a);
+}""")
+C(acmd, r"""
+public AdminCmd() {
+  super("modconfig", "(admin) Server Setup: change every Skyy mod's settings in game - /modconfig or /modconfig <mod>");
+  requirePermission(@MD@.ADMIN_NODE);
+  addAliases(new String[] { "serversetup" });
+  addUsageVariant(new @PKG@.AdminModCmd());
+}""")
+M(acmd, r"""
+protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
+  @PKG@.AdminPage.openFor(pr, store, ref, (String) null);
+}""")
+
+# ================= MenuPageFactory (right-click on the menu item -> OpenCustomUI "SkyyMenu") =================
+fac.addInterface(pool.get("java.util.function.Function"))
+C(fac, "public MenuPageFactory() { }")
+M(fac, r"""
+public Object apply(Object o) {
+  return new @PKG@.MenuPage((@PR@) o, "main");
+}""")
+
+# ================= /skymenu =================
+C(cmd, r"""
+public MenuCmd() {
+  super("skymenu", "Open the SkyWynn menu (gives you a new menu item if you lost it)");
+  if (@PKG@.MenuData.ALIASES.length > 0) addAliases(@PKG@.MenuData.ALIASES);
+  setPermissionGroups(new String[] { "hytale:Adventurer" });
+}""")
+M(cmd, r"""
+protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
+  try {
+    @PLA@ player = (@PLA@) store.getComponent(ref, @PLA@.getComponentType());
+    if (player == null) return;
+    java.util.UUID u = pr.getUuid();
+    boolean none = @PKG@.MenuUtil.count(player, @PKG@.MenuData.ITEM_ID) <= 0;
+    if (none && @PKG@.MenuUtil.profileBusy(u)) {
+      pr.sendMessage(@MSG@.raw("[Menu] Your profile is still loading, so you get no new menu item yet. Type /skymenu again in a moment."));
+    } else if (none) {
+      if (@PKG@.MenuUtil.giveMenuItem(player)) {
+        String gk = @PKG@.Given.key(u);
+        @PKG@.Given.markGiven(gk);
+        @PKG@.Given.SESSION.put(gk, Boolean.TRUE);
+        pr.sendMessage(@MSG@.raw("[Menu] You did not have a SkyWynn Menu item, so here is a new one. Right-click it any time to open this menu."));
+      } else {
+        pr.sendMessage(@MSG@.raw("[Menu] Your inventory is full, so you could not get a new menu item. Make room and type /skymenu again."));
+      }
+    }
+    player.getPageManager().openCustomPage(ref, store, new @PKG@.MenuPage(pr, "main"));
+  } catch (Throwable t) {
+    @PKG@.MenuUtil.warn("/skymenu failed: " + t);
+    pr.sendMessage(@MSG@.raw("[Menu] Could not open the menu."));
+  }
+}""")
+
+# ================= Given.plan (0.3.4; after MenuCfg - it reads MenuCfg.GIVE_ITEM) =================
+# what a grant does for player u whose ACTIVE profile has the storage key `key` and who holds `held` menu items (-1 = no player entity now):
+#   1 = nothing to do: this session did it, the item is switched off, the profile already got it (record), or it holds one (recorded now)
+#   2 = try again later: SkyyProfiles is busy with that player's inventory (profile:busy - checked BEFORE the inventory is trusted), or
+#       no player entity
+#   4 = give ONE now (the session mark is set first, so a full inventory is not retried on every world switch - next login)
+M(giv, r"""
+public static int plan(java.util.UUID u, String key, int held) {
+  if (u == null || !validKey(key)) return 2;
+  if (SESSION.containsKey(key)) return 1;
+  if (!@PKG@.MenuCfg.GIVE_ITEM) { SESSION.put(key, Boolean.TRUE); return 1; }
+  migrate(u, key);
+  if (isGiven(key)) { SESSION.put(key, Boolean.TRUE); return 1; }
+  if (@PKG@.MenuUtil.profileBusy(u)) return 2;
+  if (held < 0) return 2;
+  if (held > 0) { markGiven(key); SESSION.put(key, Boolean.TRUE); return 1; }
+  SESSION.put(key, Boolean.TRUE);
+  return 4;
+}""")
+
+# ================= GrantTask: give the menu item once per profile (scheduler -> the player's world thread) =================
+grt.addInterface(pool.get("java.lang.Runnable"))
+F(grt, "public @PR@ pr;")
+F(grt, "public @WLD@ expected;")
+F(grt, "public int tries;")
+C(grt, "public GrantTask(@PR@ pr) { this.pr = pr; this.expected = null; this.tries = 0; }")
+M(grt, r"""
+public void later(long ms) {
+  this.expected = null;
+  this.tries = this.tries + 1;
+  if (this.tries < 30) @HSV@.SCHEDULED_EXECUTOR.schedule(this, ms, java.util.concurrent.TimeUnit.MILLISECONDS);
+}""")
+# 0 = given now, 1 = nothing to do, 2 = retry later, 3 = inventory full (retried next login) - the decision is Given.plan; ONE storage key
+# for the whole grant (resolved here on the world thread, where a SkyyProfiles switch - one world task - can never be half done)
+M(grt, r"""
+public int grantNow(java.util.UUID u) {
+  String key = @PKG@.Given.key(u);
+  @PLA@ p = null;
+  @REF@ r = this.pr.getReference();
+  if (r != null && r.isValid()) {
+    @ST@ st = r.getStore();
+    if (st != null) p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+  }
+  int held = p == null ? -1 : @PKG@.MenuUtil.count(p, @PKG@.MenuData.ITEM_ID);
+  int d = @PKG@.Given.plan(u, key, held);
+  if (d != 4) return d;
+  if (@PKG@.MenuUtil.giveMenuItem(p)) {
+    @PKG@.Given.markGiven(key);
+    this.pr.sendMessage(@MSG@.raw("[SkyWynn] You got the SkyWynn Menu! Right-click it to open teleports, your bags, skills, the bazaar and more. Lost it? Type /skymenu."));
+    return 0;
+  }
+  this.pr.sendMessage(@MSG@.raw("[SkyWynn] Your inventory is full, so you did not get the SkyWynn Menu item. Make room and type /skymenu."));
+  return 3;
+}""")
+# true = this task runs again (re-scheduled, or queued on the world thread); false = done (Given.PENDING is released by run)
+M(grt, r"""
+public boolean step(java.util.UUID u) {
+  if (!@PKG@.Given.wants(u)) return false;
+  if (this.expected == null) {
+    java.util.UUID wu = this.pr.getWorldUuid();
+    @WLD@ w = wu == null ? null : @UNI@.get().getWorld(wu);
+    if (w == null) { later(1000L); return this.tries < 30; }
+    this.expected = w;
+    w.execute(this);
+    return true;
+  }
+  java.util.UUID wu2 = this.pr.getWorldUuid();
+  @WLD@ now = wu2 == null ? null : @UNI@.get().getWorld(wu2);
+  if (now != this.expected) { later(1000L); return this.tries < 30; }
+  if (@PKG@.Given.INFLIGHT.putIfAbsent(u, Boolean.TRUE) != null) return false;
+  int res = 2;
+  try { res = grantNow(u); } catch (Throwable t) { @PKG@.MenuUtil.warn("menu item grant failed for " + u + ": " + t); res = 3; }
+  @PKG@.Given.INFLIGHT.remove(u);
+  if (res == 2) { later(1000L); return this.tries < 30; }
+  return false;
+}""")
+M(grt, r"""
+public void run() {
+  java.util.UUID u = null;
+  boolean again = false;
+  try {
+    if (this.pr != null) u = this.pr.getUuid();
+    if (u != null && this.pr.isValid()) again = step(u);
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("menu item grant task failed: " + t); }
+  if (!again && u != null) @PKG@.Given.PENDING.remove(u);
+}""")
+# 0.3.4: ONE pending GrantTask per player, 4 s after the trigger (both triggers use it; the task decides on the world thread)
+M(giv, r"""
+public static boolean schedule(@PR@ pr, long ms) {
+  try {
+    if (pr == null || !claim(pr.getUuid(), System.currentTimeMillis())) return false;
+    @HSV@.SCHEDULED_EXECUTOR.schedule(new @PKG@.GrantTask(pr), ms, java.util.concurrent.TimeUnit.MILLISECONDS);
+    return true;
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("could not schedule the menu item grant: " + t); return false; }
+}""")
+
+# ================= MenuReady: PlayerReadyEvent (every world switch) -> GrantTask once per profile and session =================
+rdy.addInterface(pool.get("java.util.function.Consumer"))
+C(rdy, "public MenuReady() { }")
+M(rdy, r"""
+public void accept(Object ev) {
+  try {
+    if (@PKG@.MenuUtil.firstCheck()) { @PKG@.MenuUtil.checkAliases(); @PKG@.MenuUtil.checkSettingsCmd(); @PKG@.MenuUtil.checkAdminCmd(); }
+    @PRE@ e = (@PRE@) ev;
+    @REF@ r = e.getPlayerRef();
+    if (r == null) return;
+    @ST@ st = r.getStore();
+    if (st == null) return;
+    @PR@ pr = (@PR@) st.getComponent(r, @PR@.getComponentType());
+    if (pr == null) return;
+    @PKG@.SetLoadTask.preload(pr);
+    java.util.UUID u = pr.getUuid();
+    @PKG@.Given.READY.put(u, Boolean.TRUE);
+    if (!@PKG@.Given.wants(u)) return;
+    @PKG@.Given.schedule(pr, 4000L);
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("ready handler failed: " + t); }
+}""")
+
+# ================= GivenTick (0.3.4): the profile watch - a profile switch or a new profile (SkyyProfiles flips profile:fn:key) needs no
+# world switch to give that profile its menu item. Every 2 s, only while SkyyProfiles is loaded (without it the key never changes and
+# PlayerReadyEvent covers everything), only for players past their first PlayerReadyEvent (the join path schedules those): a player whose
+# CURRENT storage key has no session mark gets ONE GrantTask (Given.schedule / claim). Cheap: one bridge read + one map lookup each.
+gtk.addInterface(pool.get("java.lang.Runnable"))
+C(gtk, "public GivenTick() { }")
+M(gtk, r"""
+public void run() {
+  try {
+    if (!(@PKG@.MenuUtil.bridge().get("profile:fn:key") instanceof java.util.function.Function)) return;
+    java.util.Iterator it = @UNI@.get().getPlayers().iterator();
+    while (it.hasNext()) {
+      @PR@ pr = (@PR@) it.next();
+      if (pr == null || !pr.isValid()) continue;
+      java.util.UUID u = pr.getUuid();
+      if (!@PKG@.Given.READY.containsKey(u) || !@PKG@.Given.wants(u)) continue;
+      @PKG@.Given.schedule(pr, 4000L);
+    }
+  } catch (Throwable t) { }
+}""")
+
+# ================= SeenTick: forget players who logged out (SkyyIslands SeenTick pattern) =================
+seen.addInterface(pool.get("java.lang.Runnable"))
+C(seen, "public SeenTick() { }")
+M(seen, r"""
+public void run() {
+  java.util.HashSet online = new java.util.HashSet();
+  java.util.HashSet onlineK = new java.util.HashSet();
+  try {
+    java.util.Iterator it = @UNI@.get().getPlayers().iterator();
+    while (it.hasNext()) {
+      @PR@ pr = (@PR@) it.next();
+      if (pr != null && pr.isValid()) { online.add(pr.getUuid()); onlineK.add(pr.getUuid().toString()); }
+    }
+    @PKG@.Given.retainOnline(online, onlineK);
+    @PKG@.Tips.LEGACY.keySet().retainAll(online);
+  } catch (Throwable t) { return; }
+  try {
+    @PKG@.SetStore.retryDirty();
+    @PKG@.SetStore.pruneOffline(onlineK);
+    @PKG@.SetReg.loadAdmin(false);
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("settings upkeep failed: " + t); }
+}""")
+
+# ================= MenuQuit: PlayerDisconnectEvent -> drop the session guard at once (SkyyClasses ClassQuit pattern) =================
+# grantNow() sets SESSION before it tries the inventory, so a full inventory is not re-tried (and re-messaged) on every world switch.
+# Clearing it on disconnect makes "retried on the next login" exact even for a reconnect inside SeenTick's 30 s window.
+quit_.addInterface(pool.get("java.util.function.Consumer"))
+C(quit_, "public MenuQuit() { }")
+M(quit_, r"""
+public void accept(Object ev) {
+  try {
+    @PR@ pr = ((@PDE@) ev).getPlayerRef();
+    if (pr == null) return;
+    @PKG@.Given.forget(pr.getUuid());
+    @PKG@.PageGuard.JOINS.remove(pr.getUuid());
+  } catch (Throwable t) { }
+}""")
+
+# ================= plugin =================
+F(pl, "public java.util.concurrent.ScheduledFuture ticker;")
+F(pl, "public java.util.concurrent.ScheduledFuture watch;")
+C(pl, "public SkyyMenuPlugin(%s init) { super(init); }" % JPI)
+M(pl, r"""
+public void setup() {
+  @PKG@.PageGuard.STOP = false;
+  @PKG@.PageGuard.EXEC = @HSV@.SCHEDULED_EXECUTOR;
+  @PKG@.MenuUtil.LOG = getLogger();
+  @PKG@.Given.DIR = getDataDirectory().resolveSibling("Skyy_SkyyMenu").resolve("given-profile");
+  @PKG@.Given.LEGACY = getDataDirectory().resolveSibling("Skyy_SkyyMenu").resolve("given");
+  @PKG@.Tips.DIR = getDataDirectory().resolveSibling("Skyy_SkyyMenu").resolve("notips");
+  @PKG@.SetStore.DIR = getDataDirectory().resolveSibling("Skyy_SkyyMenu").resolve("settings");
+  @PKG@.SetReg.ADMIN_FILE = getDataDirectory().resolveSibling("Skyy_SkyyMenu").resolve("settings-defaults.properties");
+  @PKG@.SetReg.loadAdmin(true);
+  @PKG@.MenuCfg.FILE = getDataDirectory().resolveSibling("Skyy_SkyyMenu").resolve("config.properties");
+  @PKG@.MenuCfg.init();
+  @PKG@.AdmSaveTask.BASE = getDataDirectory().resolveSibling("Skyy_SkyyMenu");
+  @PKG@.AdmSaveTask.ensureDirs();
+  java.util.Map br = @PKG@.MenuUtil.bridge();
+  br.put("settings:fn:register", new @PKG@.SetRegFn());
+  br.put("settings:fn:get", new @PKG@.SetGetFn());
+  br.put("settings:fn:set", new @PKG@.SetSetFn());
+  @PKG@.SetReg.registerOwn();
+  @PKG@.SetReg.drain();
+  @PKG@.CfgPub.start(getDataDirectory().getParent(), getLogger());
+  try {
+    java.nio.file.Path kh = @PKG@.CfgRows.HOME == null ? null : @PKG@.CfgRows.HOME.toAbsolutePath().normalize();
+    java.nio.file.Path kb = @PKG@.AdmSaveTask.BASE == null ? null : @PKG@.AdmSaveTask.BASE.toAbsolutePath().normalize();
+    java.nio.file.Path km = @PKG@.CfgRows.MODS == null ? null : @PKG@.CfgRows.MODS.getFileName();
+    if (kh != null && kh.equals(kb) && km != null && "mods".equalsIgnoreCase(km.toString())) @PKG@.MenuUtil.info("config kit folder: " + kh + " (config-history, config-changes.log)");
+    else @PKG@.MenuUtil.warn("config kit folder is " + kh + " but SkyyMenu uses " + kb + " - the kit's mods folder is wrong, tell the developer");
+  } catch (Throwable t) { @PKG@.MenuUtil.warn("could not check the config kit folder: " + t); }
+  @OCU@.registerSimple(this, @PKG@.SkyyMenuPlugin.class, @PKG@.MenuData.PAGE_ID, new @PKG@.MenuPageFactory());
+  getCommandRegistry().registerCommand(new @PKG@.MenuCmd());
+  getCommandRegistry().registerCommand(new @PKG@.SettingsCmd());
+  getCommandRegistry().registerCommand(new @PKG@.AdminCmd());
+  // 0.3.10: /stats (/profilestats) - a clash with another mod's /stats is logged and the menu still loads
+  try { getCommandRegistry().registerCommand(new @PKG@.StatsCmd()); }
+  catch (Throwable t) { @PKG@.MenuUtil.warn("could not register /stats (another mod may own it) - the Your Profile tile still opens the Stats page: " + t); }
+  getEventRegistry().registerGlobal(@PRE@.class, new @PKG@.MenuReady());
+  getEventRegistry().registerGlobal(@PDE@.class, new @PKG@.MenuQuit());
+  getEventRegistry().registerGlobal(@ATW@.class, new @PKG@.PageGuard());
+  this.ticker = @HSV@.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new @PKG@.SeenTick(), 30L, 30L, java.util.concurrent.TimeUnit.SECONDS);
+  this.watch = @HSV@.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new @PKG@.GivenTick(), 5L, 2L, java.util.concurrent.TimeUnit.SECONDS);
+  getLogger().at(java.util.logging.Level.INFO).log("[SkyyMenu] """ + VERSION + r""" ready (config kit " + @PKG@.MenuData.CFG_KIT + ") - /skymenu""" + "".join(" /" + a for a in ALIASES) + r""", right-click the SkyWynn Menu item; the item is given once per profile; /settings (/skysettings): " + @PKG@.SetReg.DEFS.size() + " switch(es) registered so far; Server Setup: /modconfig (/serversetup) for admins; Stats page: the Your Profile tile, /stats (/profilestats), page look """ + SUI_KIT_ID + r"""; page guard on (a page left open across a world change is forgotten at the join, no packet; the menu heals stuck page clicks)");
+}""")
+M(pl, r"""
+protected void shutdown() {
+  @PKG@.PageGuard.STOP = true;
+  try { if (this.ticker != null) this.ticker.cancel(false); } catch (Throwable t) { }
+  try { if (this.watch != null) this.watch.cancel(false); } catch (Throwable t) { }
+  try { @PKG@.SetStore.flushAll(); } catch (Throwable t) { @PKG@.MenuUtil.warn("settings flush at shutdown failed: " + t); }
+  try { @PKG@.CfgPub.shutdown(); } catch (Throwable t) { @PKG@.MenuUtil.warn("config kit flush at shutdown failed: " + t); }
+  super.shutdown();
+}""")
+
+WRITE = (dat, utl, giv, mcfg, sreg, sst, ssv, tip, sld, sgf, srf, ssf, sdc, page, spg, apg, ast, ref_, clo_, guard, stale, mwat, fac, cmd, scmd, acmv, acmd, grt, rdy, seen, quit_, gtk,
+         scl, stp, sta, stc, pl)
+assert len(WRITE) == len(MADE) and all(any(c is w for w in WRITE) for c in MADE), "a pool.makeClass result is missing from the writeFile list"
+for c in WRITE:
+    c.writeFile(OUT)
+# 0.3: the config kit checks its hooks (SetDefCfg, MenuCfg.load) and writes its 7 classes
+KIT.write(OUT)
+for c in list(MADE) + list(KIT.classes):
+    _cf = os.path.join(OUT, *str(c.getName()).split(".")) + ".class"
+    assert os.path.isfile(_cf), "class file not written: " + _cf
+print("classes written:", len(WRITE), "+ config kit", len(KIT.classes))
+
+# ================= post-build check: every inline UI string in the compiled MenuData class is intact =================
+_md = open(os.path.join(OUT, "com", "skyy", "menu", "MenuData.class"), "rb").read()
+_consts = cp_utf8(_md)
+for s in list(UI.values()) + UI_INFO + SET_UI_ALL + ADM_UI_ALL:
+    assert s in _consts, "inline UI string missing from MenuData.class: " + s[:80]
+print("inline UI strings verified in MenuData.class:", len(UI) + len(UI_INFO) + len(SET_UI_ALL) + len(ADM_UI_ALL))
+# 0.3.10: the Stats page's fixed kit markup is intact in StatsPage.class
+_sp = cp_utf8(open(os.path.join(OUT, "com", "skyy", "menu", "StatsPage.class"), "rb").read())
+for _m in ST_STATIC:
+    assert _m in _sp, "stats page markup missing from StatsPage.class: " + _m[:80]
+print("stats page markup verified in StatsPage.class:", len(ST_STATIC), "fixed parts")
+print("server setup: node %s, /%s /%s, SkyyMenu config rows: %s" % (ADMIN_NODE, ADMIN_CMD, ADMIN_ALIAS, ", ".join(r[0] for r in MENU_CFG_ROWS)))
+print("settings: %d known keys (%d tabs), own: %s, template %d bytes" % (len(SET_ORDER), len(SET_TABS), ", ".join(k[0] for k in OWN_SETTINGS), len(SET_TEMPLATE)))
+
+# ================= assets: the menu item + its name / description =================
+look = look_of(MENU_ITEM_LOOK)
+item = {
+    "TranslationProperties": {"Name": "server.items.%s.name" % MENU_ITEM_ID, "Description": "server.items.%s.description" % MENU_ITEM_ID},
+    "Categories": ["Items.Tools"],
+    "Icon": look["Icon"],
+    "Quality": MENU_ITEM_QUALITY,
+    "Tags": {"Type": ["Utility"]},
+    "MaxStack": 1,
+    "Interactions": {"Secondary": {"Interactions": [{"Type": "OpenCustomUI", "Page": {"Id": PAGE_ID}}]}},
+}
+for k in VISUAL_KEYS:
+    if k in look:
+        item[k] = look[k]
+lang = [
+    "items.%s.name=%s" % (MENU_ITEM_ID, MENU_ITEM_NAME), "server.items.%s.name=%s" % (MENU_ITEM_ID, MENU_ITEM_NAME),
+    "items.%s.description=%s" % (MENU_ITEM_ID, MENU_ITEM_DESC), "server.items.%s.description=%s" % (MENU_ITEM_ID, MENU_ITEM_DESC),
+]
+files = {
+    "Server/Item/Items/Utility/%s.json" % MENU_ITEM_ID: json.dumps(item, indent=2),
+    "Server/Languages/en-US/server.lang": "\n".join(lang) + "\n",
+}
+print("menu item:", MENU_ITEM_ID, "looks like", MENU_ITEM_LOOK, "icon", look["Icon"])
+# 0.3.11: the icon-only items (hidden from the creative library) + their pictures + names
+ICON_KEYS = ("Model", "Texture", "Scale", "PlayerAnimationsId", "ItemSoundSetId")   # the held look only (the Icon is ours)
+for _iid in sorted(ICON_ITEMS):
+    _art, _rel, _man, _nm, _lk = ICON_ITEMS[_iid]
+    _lkd = look_of(_lk)
+    _node = {"TranslationProperties": {"Name": "server.items.%s.name" % _iid}, "Icon": _rel, "Variant": True, "MaxStack": 1}
+    for _k in ICON_KEYS:
+        if _k in _lkd:
+            _node[_k] = _lkd[_k]
+    assert "Model" in _node and "Texture" in _node and "Categories" not in _node and "Recipe" not in _node and "Interactions" not in _node
+    _p = "Server/Item/Items/Utility/%s.json" % _iid
+    assert _p not in files and "Common/" + _rel not in files
+    files[_p] = json.dumps(_node, indent=2)
+    files["Common/" + _rel] = icon_item_png(_iid)
+    lang.extend(["items.%s.name=%s" % (_iid, _nm), "server.items.%s.name=%s" % (_iid, _nm)])
+    print("icon item:", _iid, "icon", _rel, "(%d bytes, %s)" % (len(files["Common/" + _rel]), _art), "held look of", _lk, "- hidden from the creative library")
+files["Server/Languages/en-US/server.lang"] = "\n".join(lang) + "\n"
+assert [e[2] for e in ENTRIES if e[0] == "main" and e[1] == 12] == [ICON_BAG], "0.3.11: the Accessory Bag tile uses our icon item"
+print("entries:", len(ENTRIES), "player actions:", len(PLAYER_ACTIONS), "mods:", len(MODS),
+      "(%d with a Server Setup page, %d with admin-only lines)" % (len([m for m in MODS if "setup" in m]), len([m for m in MODS if m.get("admin")])))
+
+# 0.3.1: the kit source must still be the one this build emitted (an edit landing during the build fails it: build again)
+assert kit_blob(KIT_FILE) == KIT_BLOB, "tools/skyycfg.py changed during this build (blob %s -> %s) - build again" % (KIT_BLOB[:12], kit_blob(KIT_FILE)[:12])
+jar = os.path.join(HERE, "SkyyMenu-%s.jar" % VERSION)
+B.assemble(jar, B.manifest("SkyyMenu", VERSION, "SkyWynn menu (Hypixel SkyBlock style): right-click the SkyWynn Menu item or /skymenu for teleports and warps, island menu, Pocket Dimension, Vault, Accessory Bag, HUD editor, crafting, skills, collections, bazaar, auction house, bank, reforge, identify, players, party, guild, your Stats page (/stats), a list of every mod with its commands, /settings (every mod's chat messages on or off, per player) and Server Setup for admins (/modconfig: every Skyy mod's settings in game). Zero dependencies.", PKG + ".SkyyMenuPlugin"), OUT, files)
+if "--deploy" in sys.argv:
+    B.deploy(jar, "SkyyMenu.jar")
+    B.enable_in_world("HUD mod", "Skyy:%s SkyyMenu" % VERSION, disable_prefix="Skyy:")

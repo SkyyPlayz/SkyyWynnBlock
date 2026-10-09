@@ -17,9 +17,9 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.17"), ("SkyySacks", "0.7.16"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.8"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.6"), ("SkyyGear", "0.2.13"), ("SkyySkills", "0.4.26"),
-    ("SkyyAccessories", "0.5.9"), ("SkyyClasses", "0.1.14"), ("SkyyMenu", "0.3.12"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.7"),
-    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.4"),
+    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.6"), ("SkyyGear", "0.2.13"), ("SkyySkills", "0.4.27"),
+    ("SkyyAccessories", "0.5.9"), ("SkyyClasses", "0.1.15"), ("SkyyMenu", "0.3.13"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.8"),
+    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -246,6 +246,11 @@ def main():
     # wood wand signature (2026-10-08): SkyySkills 0.4.24 wands name SkyyArmory_Wand_Signature (SkyyArmory 0.1.14) - never roll Armory below 0.1.14 while Skills is 0.4.24+
     if _v(_p.get("SkyySkills", "0")) >= (0, 4, 24) and _v(_p.get("SkyyArmory", "0")) < (0, 1, 14):
         print("STOP: SkyySkills 0.4.24+ needs SkyyArmory 0.1.14+ (the root SkyyArmory_Wand_Signature it names) in the same deploy"); return 1
+    # Monk "Zen" round (2026-10-09): SkyyClasses 0.1.15 publishes class:skill "Zen"; SkyyMobs / SkyyGear ask skill:fn:level with it
+    if _v(_p.get("SkyyClasses", "0")) >= (0, 1, 15) and _v(_p.get("SkyySkills", "0")) < (0, 4, 27):
+        print("STOP: SkyyClasses 0.1.15+ needs SkyySkills 0.4.27+ (the Monk skill Zen) in the same deploy"); return 1
+    if _v(_p.get("SkyySkills", "0")) >= (0, 4, 27) and _v(_p.get("SkyyClasses", "0")) < (0, 1, 15):
+        print("STOP: SkyySkills 0.4.27+ deploys with SkyyClasses 0.1.15+ (else SkyyHud's class line shows '-')"); return 1
     missing = []
     plan = []
     for mod, ver in SET:
