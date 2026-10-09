@@ -55,6 +55,29 @@ RAMPS.update({
     SAGE: [(0.00, (26, 30, 32)), (0.20, (38, 44, 44)), (0.35, (52, 60, 56)), (0.50, (68, 78, 70)),
            (0.65, (86, 96, 86)), (0.80, (108, 118, 104)), (1.00, (142, 150, 132))],
 })
+# Beech (F1 Grove), v2: hues sampled from the in-game Beech trunk / planks / leaves (values only, own pixels): warm
+# orange-brown bark with long vertical grain streaks, dark red-brown grain + rims, tan heartwood, the game's fresh beech
+# green, a copper accent leaf, brown spiky nut husks, deep loden-green cloth.
+BEECH, BEECHDK, CLEAF, FLEAF, HUSK, BEWOOD, UMBER, LODEN = range(16, 24)
+MAT_NAMES += ["beech", "beechdark", "copperleaf", "freshleaf", "husk", "beechwood", "umber", "loden"]
+RAMPS.update({
+    BEECH: [(0.00, (40, 26, 20)), (0.20, (66, 43, 28)), (0.35, (90, 59, 35)), (0.50, (114, 77, 44)),
+            (0.65, (134, 93, 52)), (0.80, (156, 113, 64)), (1.00, (186, 144, 90))],
+    BEECHDK: [(0.00, (26, 16, 14)), (0.25, (42, 26, 20)), (0.50, (60, 36, 26)), (0.75, (80, 50, 32)),
+              (1.00, (104, 68, 42))],
+    CLEAF: [(0.00, (70, 30, 20)), (0.20, (102, 46, 24)), (0.35, (132, 64, 28)), (0.50, (160, 84, 34)),
+            (0.65, (184, 106, 44)), (0.80, (206, 134, 62)), (1.00, (230, 174, 100))],
+    FLEAF: [(0.00, (28, 52, 16)), (0.20, (44, 78, 20)), (0.35, (58, 100, 24)), (0.50, (74, 122, 28)),
+            (0.65, (92, 144, 32)), (0.80, (116, 166, 44)), (1.00, (164, 204, 82))],
+    HUSK: [(0.00, (60, 48, 26)), (0.25, (100, 84, 44)), (0.50, (140, 120, 66)), (0.75, (176, 156, 96)),
+           (1.00, (210, 192, 136))],
+    BEWOOD: [(0.00, (76, 46, 31)), (0.20, (110, 78, 50)), (0.35, (140, 104, 66)), (0.50, (164, 124, 78)),
+             (0.65, (178, 142, 90)), (0.80, (192, 162, 102)), (1.00, (216, 192, 136))],
+    UMBER: [(0.00, (30, 24, 24)), (0.20, (44, 36, 34)), (0.35, (60, 50, 44)), (0.50, (78, 66, 56)),
+            (0.65, (98, 84, 70)), (0.80, (120, 104, 86)), (1.00, (156, 138, 114))],
+    LODEN: [(0.00, (18, 26, 22)), (0.20, (26, 38, 30)), (0.35, (36, 50, 38)), (0.50, (48, 64, 46)),
+            (0.65, (62, 80, 56)), (0.80, (80, 98, 68)), (1.00, (112, 128, 92))],
+})
 WARM = np.array((104, 92, 64), float)       # sun-faded / worn bark tint
 QSTEP = 0.05                                # value quantisation -> flat painted clusters
 
@@ -271,7 +294,7 @@ def mottle(F, scale=7.0, amp=0.05, seed=3, levels=3):
 def wear(F, amount=0.5, scale=5.0, seed=11, thr=0.64):
     """warm scuffed patches on leather (blobs, not grain)."""
     n = vnoise(F.W + 31.7, scale, seed)
-    m = (n > thr) & np.isin(F.mat, [BARK, CLOTH, SAGE])
+    m = (n > thr) & np.isin(F.mat, [BARK, CLOTH, SAGE, UMBER, LODEN])
     F.warm[m] = np.maximum(F.warm[m], amount * np.clip((n[m] - thr) / 0.12, 0.4, 1.0))
     return m
 

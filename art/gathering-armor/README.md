@@ -91,10 +91,41 @@ Defaults kept: separate models per tree, catkins as the mark, rounded edges, vin
 - Checked the same way as Oak (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no validator
   issues, all 4 pieces attach to the vanilla player). Not checked in game.
 
+## BEECH (F1 Grove)
+
+Status: APPROVED by Skyy 2026-10-09 (v2): "Yes, the Beech armor looks good, commit it". Not yet seen in game.
+v1 feedback (Skyy): "beech looks too much like iron, i need to look a little more like beech wood in the game".
+Defaults kept: small copper accent leaf, warmer + lighter than Oak with vertical grain, loden-green cloth, husk badge on the crown.
+
+![sheet](sheet-beech.png)
+
+| What | Path |
+|---|---|
+| Models + textures | `Common/Items/Armors/SkyyForaging/F1_Grove/Beech/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png` |
+| Icons (64x64) | `Common/Icons/ItemsGenerated/Armor_Foraging_Beech_{Head,Chest,Hands,Legs}.png` |
+| Blockbench projects | `source/F1_Grove/Beech/{Head,Chest,Hands,Legs}.bbmodel` |
+| Review sheet | `sheet-beech.png` |
+
+- Same F1 family and the same fit as Oak (geometry derived from `tools/art/ga_oak.py` in `ga_beech.py`).
+- Colours follow the in-game Beech wood (hues only, sampled from the game's Beech trunk / log end / planks / leaves;
+  our own pixels): warm orange-brown bark with long vertical grain streaks and a few small knots, tan heartwood with a
+  dark red-brown rim on cut edges, the game's fresh beech green leaves with one copper accent leaf per side, deep
+  loden-green cloth.
+- Reads as WOOD, not metal: every plank its own tone, gentle bevels (no bright hard rims), slightly wavy hand-cut plate
+  edges with small notches and rounded corners.
+- Beech mark: the BEECHNUT HUSK (pale spiky four-part husk split open around a dark nut) as the belt clasp, hanging on
+  a twig with two beech leaves, plus a small husk badge at the base of the middle crown point.
+- Shape vs Oak (jagged) and Birch (rounded): broad overlapping wooden plates, leaf-shaped crown points, a second plate
+  on each shoulder, broad tassel panels, smooth beech belt, beech leaves on the right shoulder + vine on the left.
+- Size: 47 boxes + 13 quads. Textures Head 96x128, Chest 96x128, Hands 96x32, Legs 96x64.
+- Checked the same way as Oak and Birch (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no
+  validator issues, all 4 pieces attach to the vanilla player). Not checked in game.
+
 ## Rebuild
 ```
 GA_DESIGN=ga_oak   python3 tools/art/make_foraging_armor.py      # models + textures (design ga_<tree>.py, painter ga_paint.py)
 GA_DESIGN=ga_birch python3 tools/art/make_foraging_armor.py
+GA_DESIGN=ga_beech python3 tools/art/make_foraging_armor.py
 python3 tools/art/make_foraging_icons.py art/gathering-armor F1_Grove Birch
 python3 tools/art/make_foraging_sheet.py art/gathering-armor F1_Grove Birch
 GA_TREE=Birch python3 tools/art/validate_foraging.py

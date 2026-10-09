@@ -57,9 +57,10 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   alteration station later. Start with F1 Oak (key log), then the rest of F1, one tree per commit; show Skyy each sheet. Paths use the
   tree name: `SkyyForaging/<Tier>/<Tree>/<Piece>.blockymodel`, icons `Armor_Foraging_<Tree>_<Piece>.png`. Orchard trees: later.
   **Progress:** F1 Oak DONE (2026-10-08, Skyy: "Yes, the Oak armor looks good, commit it") + F1 Birch DONE (2026-10-09, Skyy: "Yes,
-  the Birch armor looks good, commit it"); see Done. **Next: F1 Beech** (v1 shown; Skyy: "beech looks too much like iron, i need to look a
-  little more like beech wood in the game" - v2 in progress), then Ash, Aspen - reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter, `make_foraging_*.py`), same piece
-  shapes / fit, own colours + own small mark. Sources go in `source/<Tier>/<Tree>/`. Defaults Skyy kept for Oak: tier folder `F1_Grove`,
+  the Birch armor looks good, commit it") + F1 Beech DONE (2026-10-09, v2, Skyy: "Yes, the Beech armor looks good, commit it"); see Done.
+  **Next: F1 Ash**, then Aspen - START FROM THE IN-GAME WOOD (sample the tree's log / planks / leaves colours in Assets.zip; Beech v1
+  in made-up colours read as "iron"). Reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter,
+  `make_foraging_*.py`), same piece shapes / fit, own colours + own small mark. Sources go in `source/<Tier>/<Tree>/`. Defaults Skyy kept for Oak: tier folder `F1_Grove`,
   open-face helmet with crown, faint sap, art only, 1 texel per unit.
 - Farming: Wheat, Carrot, Cauliflower, Pumpkin, Chilli, Cotton, Onion ("more like the wood ones ... food armor, like in skyblock").
 **Make, per tier:** 4 pieces - Head, Chest, Hands, Legs - exactly like a vanilla armor set (look at vanilla Iron in Assets.zip:
@@ -119,6 +120,21 @@ purple of the bag swirl].
   Skyy's answers, word for word: "fix pebble." / "Yes, the Pebble fix looks good, commit it"
 
 ## Done
+### 15. Foraging armor F1 Grove - Beech (2026-10-09)
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F1_Grove/Beech/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
+  (1 texel per unit), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Beech_<Piece>.png` (64), `source/F1_Grove/Beech/*.bbmodel`,
+  `sheet-beech.png`; shared `manifest.json` + `README.md` updated. Scripts: `tools/art/ga_beech.py` (new, geometry derived from `ga_oak.py`),
+  `ga_paint.py` (beech colours added), `make_foraging_sheet.py`, `make_foraging_manifest.py`. Oak + Birch rebuild byte-identical.
+- Look (v2): colours follow the in-game Beech wood (hues sampled from the game's Beech trunk / log end / planks / leaves; own pixels):
+  warm orange-brown bark with vertical grain streaks + small knots, tan heartwood with a dark rim on cut edges, game-green beech leaves
+  + one small copper accent leaf per side, loden-green cloth. Broad overlapping wooden plates (each plank its own tone, gentle bevels,
+  wavy hand-cut edges with small notches), leaf-shaped crown points, second shoulder plate. Mark: BEECHNUT HUSK (spiky four-part husk
+  open around the nut) as the belt clasp on a leafy twig + a husk badge on the crown.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0 (no validator issues; plugin Import Attachment puts all 4 pieces on the vanilla player).
+- Skyy's answers, word for word: "beech looks too much like iron, i need to look a little more like beech wood in the game" /
+  "Yes, the Beech armor looks good, commit it"
+- Defaults kept: small copper accent leaf, warmer + lighter than Oak with vertical grain, loden-green cloth, husk badge on the crown.
+- Not yet seen in game. No item / recipe JSON (art only).
 ### 14. Foraging armor F1 Grove - Birch (2026-10-09)
 - Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F1_Grove/Birch/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
   (1 texel per unit), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Birch_<Piece>.png` (64), `source/F1_Grove/Birch/*.bbmodel`,
