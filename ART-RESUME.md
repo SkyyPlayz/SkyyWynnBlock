@@ -62,6 +62,25 @@ Hands 64x64), original pixels only. Per tier a `sheet-<tier>.png` (front / side 
 **Ask Skyy (defaults):** keep the concept looks as approved [yes]; helmet in every tier [yes].
 
 ## Queue (check with Skyy before starting each)
+13. **Zone 1 town props** (was NEXT; moved behind the gathering armor 2026-10-08) - - the Waiting Room + Waiting Square set (Blockbench, full models)
+**Why:** Skyy approved the Zone 1 town plan (docs/answered/world.md 2026-10-08: "keep v2, its hub enough" + yes to every town question).
+The town is "the Department of Arrivals": a vanilla temple turned into a cosmic waiting room. Its story props are ours to make (the
+buildings are vanilla prefabs). Read `research/cloud/Zone-1-Town-Layout.md` (sections 4, 7, 9), `research/cloud/Story-Script-Draft.md`
+(section 2: the Waiting Room, the Board) and `research/cloud/Barks-Signs-Tips.md` (the tone: cheerful bureaucracy, numbers always a bit
+wrong). Vanilla temple stone + wood palette so they sit in the temple hall.
+**Make (each = model + texture + 64x64 icon, block-sized props like vanilla furniture; look at vanilla `Common/Blocks/...` furniture
+models in Assets.zip for scale and file layout), in `art/town-props/Common/...`:**
+1. **The Board** - the big glowing "NOW SERVING #3" board (wall-mounted, ~3 blocks wide). Paint the frame and a glowing panel; leave the
+   number area plain (the server shows the text as a floating name), plus an "off" / flicker texture variant for Void hiccups.
+2. **Ticket machine** - a "PLEASE TAKE A NUMBER" pedestal dispenser (~1 x 2 blocks), with a ticket sticking out.
+3. **Waiting bench row** - a long stone + wood bench for the hall (3 blocks long), matching the temple.
+4. **Warp Pad** - a flat stone ring set in the paving (5 x 5), with a faint glowing rune inlay (glow texture / emissive if the format allows).
+5. **Door Home** - a standing stone arch with a shimmering portal plane (the shard arch players use to go to their island), ~3 x 4 blocks.
+6. **Town map sign** - a wooden stand with a painted map of the town ("You Are Here. The Temple Was Here First."), ~2 x 2 blocks; paint
+   a simplified version of `research/cloud/Zone-1-Town-Map.png` (our own map, OK to use).
+One `sheet.png` with all six + names, manifest with sizes and node names. Original pixels only.
+**Ask Skyy (defaults in brackets):** Board colour [amber glow on dark stone], machine style [brass + stone], arch portal colour [the void
+purple of the bag swirl].
 7. **Pets** (Blockbench, full models): 15 launch pets in Hytale chunky voxel style (research/cloud/Pets-Spec.md + research/cloud/pet-art/
    README.md for the list and the approved v2 look). The pet system is not built yet - ASK Skyy before starting.
 9. **Armor** - DECIDED 2026-10-08 (docs/answered/gear.md): our own Light armor is DROPPED (combat armor = The Armory pack), MINING armor = vanilla metal sets (no art needed). Still OURS: FARMING (crop sets) + FORAGING (bark plates) armor - approved concept designs in research/cloud/gathering-armor-art/ + foraging-armor/; ask Skyy before starting them as full Blockbench items.
