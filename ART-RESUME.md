@@ -72,7 +72,7 @@ Hands 64x64), original pixels only. Per tier a `sheet-<tier>.png` (front / side 
    player identifies it (Wynncraft style: level + rarity shown, type hidden). Rarities + colours (placeholders from
    research/cloud/Loot-Box-Design.md, ask Skyy to confirm): Normal white, Unique yellow, Rare magenta, Legendary cyan, Fabled red, Mythic
    purple, Set green - richer bags for higher rarities (more trim, a gem, a glow / sparkle on Mythic). Keep them clearly different from
-   our Pocket Dimension bags (art/../models-local bags: black pouch + portal) - e.g. a tied cloth sack with a wax seal / tag in the rarity
+   our Pocket Dimension bags (black pouch + portal swirl) - e.g. a tied cloth sack with a wax seal / tag in the rarity
    colour. Make: model + texture + 64x64 icon per rarity, a dropped look, `art/mystery-bags/Common/Items/SkyyGear/MysteryBag/<Rarity>.blockymodel`,
    icons `Common/Icons/ItemsGenerated/SkyyGear_MysteryBag_<Rarity>.png`, one sheet. Ask Skyy which to do first: this or the gathering armor.
 13. **Zone 1 town props** (was NEXT; moved behind the gathering armor 2026-10-08) - - the Waiting Room + Waiting Square set (Blockbench, full models)
