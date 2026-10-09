@@ -1,4 +1,4 @@
-# SkyWynn - ARCHITECTURE (how the pack is built, 2026-10-08)
+# SkyWynn - ARCHITECTURE (how the pack is built, 2026-10-09)
 
 How the mods fit together, how they are built, and how they reach the game.
 Short on purpose. Each part links to the file that holds the detail.
@@ -20,20 +20,21 @@ One folder per mod. Live versions: [HANDOFF.md](HANDOFF.md) section 1 (= the SET
 
 | Folder | What it does |
 |---|---|
-| `SkyyProfiles` | profiles = full saves (up to 6), delete with undo |
+| `SkyyProfiles` | profiles = full saves (default cap 6), delete with undo, Health saved per profile |
 | `SkyyClasses` | pick a class, class kits, Priest healing |
-| `SkyySkills` | skills + XP, class weapon skills, Mana, dodge roll |
+| `SkyySkills` | skills + XP, class weapon skills, class Mana pools, dodge roll on a sprint press |
 | `SkyyTrees` | skill trees: gathering, Acrobatics, Exploration, Alchemy, Smithing, class trees |
 | `SkyyCooking` | cooked food gets a Grade from your Cooking level |
-| `SkyyExploration` | Exploration skill, spots, island checklist |
+| `SkyyExploration` | Exploration skill, spots, island checklist, Unclaimed Luggage |
+| `SkyyFishing` | our fishing, stage 1: bench, rods, reels, Zone 1 fish (HyFishing stays until stage 2) |
 | `SkyyCollections` | collections and tiers that unlock recipes and bags |
 
 ### Items and combat
 
 | Folder | What it does |
 |---|---|
-| `SkyyGear` | gear rarity, item levels, identify, reforge, tooltips |
-| `SkyyArmory` | our own weapons: wands, staffs, spellbooks, kunai, Monk weapons, traversal moves |
+| `SkyyGear` | gear rarity, item levels, identify, reforge, mystery bags, tooltips |
+| `SkyyArmory` | our own weapons: wands, staffs, spellbooks, kunai, Monk moves, wand signature |
 | `SkyyAccessories` | Accessory Bag, booster accessories, Lantern |
 | `SkyySacks` | Magic Bags (pocket dimension): auto-collect, refill, crafting from bags |
 | `SkyyMobs` | mob levels + difficulty |
@@ -44,7 +45,7 @@ One folder per mod. Live versions: [HANDOFF.md](HANDOFF.md) section 1 (= the SET
 |---|---|
 | `SkyyCoins` | coin purse, /pay, death penalty |
 | `SkyyBank` | bank + daily interest |
-| `SkyyBazaar` | Bazaar market, a tab per bag type |
+| `SkyyBazaar` | Bazaar market, a tab per bag type, search |
 | `SkyyAuctions` | auction house (buy it now) |
 | `SkyyVault` | extra storage pages |
 
@@ -66,7 +67,7 @@ Coins, Bank, Bazaar and Auctions will merge into one mod, SkyyEconomy (`docs/pla
 | Folder | What it does |
 |---|---|
 | `SkyyHud` | HUD widgets + editor (move / scale / hide), minimap |
-| `SkyyMenu` | SkyWynn Menu, player Settings, Server Setup for admins |
+| `SkyyMenu` | SkyWynn Menu, Stats page, player Settings, Server Setup for admins |
 
 ### Test probes and retired mods
 
@@ -74,8 +75,10 @@ Coins, Bank, Bazaar and Auctions will merge into one mod, SkyyEconomy (`docs/pla
 |---|---|
 | `SkyyUiProbe` | dev probes for UI tests (op only) |
 | `SkyyGatherProbe` | gathering probes, A + B jars (remove after Skyy's test) |
-| `SkyyReelProbe` | fishing rod + reel look probe (remove after Skyy's test) |
-| `SkyyMonkProbe` | Monk move probes (remove after Skyy's test) |
+| `SkyyTownProbe` | Zone 1 town probe (remove after Skyy's test) |
+| `SkyyKeyProbe` | which keys reach the server (remove after Skyy's test) |
+| `SkyyReelProbe` | RETIRED - replaced by SkyyFishing |
+| `SkyyMonkProbe` | RETIRED - Monk moves live in SkyyArmory |
 | `SkyyRolls` | RETIRED - replaced by SkyyGear; never comes back |
 
 Third-party mods in the pack: `PACK.md`.

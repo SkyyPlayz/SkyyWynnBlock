@@ -9,9 +9,24 @@ A short, release-level summary: a few lines per day of big changes.
 All mods ship together as one set. "Deployed" = in Skyy's test world, not public yet.
 Skyy's test results: [TEST-CHECKLIST.md](TEST-CHECKLIST.md).
 
+## 2026-10-09
+
+- **Luggage + search:** SkyyExploration 0.2.5 (claimed luggage vanishes at once) + SkyyBazaar 0.1.6 (search across every tab) + SkyyKeyProbe 0.2.
+- **Stats:** SkyyMenu 0.3.12 - the Defense row counts skill Defense.
+- **Pack:** Better Mob Expansion switched on for a test (`PACK.md`). The Armory pack mod switched back off.
+
 ## 2026-10-08
 
-- **Monk prep:** SkyyArmory 0.1.11 - the 7 metal Bo staffs lose the charged magic orb (Pole-Vault comes next). Wood and Bamboo Bo still come from SkyySkills 0.4.21 and keep the orb until the 0.4.22 handover.
+- **Class Mana:** SkyySkills 0.4.25 - each class has its own Mana pool, Mana on hit, mining gives more Stamina, foraging gives Defense.
+- **Loot:** SkyyGear 0.2.11 + SkyyMobs 0.1.5 + SkyyExploration 0.2.4 - mystery bags, mob bag drops, Unclaimed Luggage.
+- **Fishing:** SkyyFishing 0.1 - Fishing Bench, rods and reels, Zone 1 fish. SkyyReelProbe retired.
+- **Signatures:** SkyyGear 0.2.10 keeps a weapon's charge when you swap away and back. SkyyArmory 0.1.14 - a wand shot ricochets through up to 8 enemies (wood wands via SkyySkills 0.4.24).
+- **Roll:** SkyySkills 0.4.23 - the roll fires when sprint turns on. No back roll (the client sends no sprint backwards).
+- **Monk moves:** SkyyArmory 0.1.12 + SkyySkills 0.4.22 - Pole-Vault, Skipping Bounds, Rising Strike, Plunge Punch. Wood and Bamboo Bo handed over (no orb). SkyyMonkProbe retired.
+- **Profiles + Stats:** SkyyProfiles 0.1.7 (a second click confirms the switch; Health is saved per profile) + SkyyMenu 0.3.10 Stats page.
+- **Probes:** SkyyTownProbe 0.1 (Zone 1 town) + SkyyKeyProbe 0.1 (ability keys).
+- **Pack:** The Armory switched on (`PACK.md`).
+- **Monk prep:** SkyyArmory 0.1.11 - the 7 metal Bo staffs lose the charged magic orb. Wood and Bamboo Bo stayed on SkyySkills until 0.4.22 the same day.
 - **Bag art:** SkyySacks 0.7.14 + SkyyAccessories 0.5.8 - new bag models, type emblems, open swirl, sparkles.
 - **Hotfix:** SkyyArmory 0.1.10 - the world would not start (spellbook Levitate). Fixed and tested.
 - **Class path trees:** SkyyTrees 0.3.3 + SkyyArmory 0.1.9 - all 7 classes get paths.

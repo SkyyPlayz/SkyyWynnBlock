@@ -1,4 +1,4 @@
-# SkyWynn - DECISIONS (index of the big locked calls, 2026-10-08)
+# SkyWynn - DECISIONS (index of the big locked calls, 2026-10-09)
 
 The big decisions Skyy has locked, one line each.
 This is only an index. The exact words live in the source files.
@@ -17,6 +17,7 @@ Open questions: [OPEN-QUESTIONS.md](OPEN-QUESTIONS.md).
 
 | Date | Decision | Source |
 |---|---|---|
+| 2026-10-08 | A smoke-test server may start on a COPY of the world before a deploy. Never the real game. | [project.md](docs/answered/project.md) |
 | 2026-10-08 | Test by playing: moves go into the real weapons, plus one debug command that prints data in chat. | [project.md](docs/answered/project.md) |
 | 2026-10-08 | Delete (Recycle Bin) old game logs once they are read. | [project.md](docs/answered/project.md) |
 | 2026-10-06 | Pack mods: our code only uses their item ids. Never copy or override their files. | [project.md](docs/answered/project.md) |
@@ -36,6 +37,7 @@ Open questions: [OPEN-QUESTIONS.md](OPEN-QUESTIONS.md).
 
 | Date | Decision | Source |
 |---|---|---|
+| 2026-10-08 | No client mods. Ability hotkeys are Ability 2 and 3, plus crouch. SkyyKeyProbe checks which keys arrive. | [ui.md](docs/answered/ui.md) |
 | 2026-10-01 | Server Setup shows times in seconds. | [ui.md](docs/answered/ui.md) |
 | 2026-09-28 | Every UI must look and feel like native Hytale - part of the game, not a mod. | [HANDOFF.md](HANDOFF.md) section 2, `research/Vanilla-UI-Style-Guide.md` |
 | 2026-09-24 | Everything a server owner might change is editable in game. | [design-locks.md](docs/handoff/design-locks.md) |
@@ -45,6 +47,10 @@ Open questions: [OPEN-QUESTIONS.md](OPEN-QUESTIONS.md).
 
 | Date | Decision | Source |
 |---|---|---|
+| 2026-10-09 | Ability alts locked for Mage, Berserker, Monk and Priest. | [classes.md](docs/answered/classes.md) |
+| 2026-10-08 | New class: Spellblade, a melee mage for groups and boss debuffs. | [classes.md](docs/answered/classes.md) |
+| 2026-10-08 | Each class has 4 abilities. 2 are primary (walk, sprint, air). Crouch uses the other 2. | [classes.md](docs/answered/classes.md) |
+| 2026-10-08 | Physical classes get more Mana. Mining gives Stamina. Foraging gives Defense. | [skills.md](docs/answered/skills.md) |
 | 2026-10-07 | No void protection on any traversal move. | [classes.md](docs/answered/classes.md) |
 | 2026-10-07 | Make Monk and Assassin playable. | [classes.md](docs/answered/classes.md) |
 | 2026-10-04 | Two class abilities per class, built on runes after Hytale 0.7. | [classes.md](docs/answered/classes.md) |
@@ -58,6 +64,8 @@ Open questions: [OPEN-QUESTIONS.md](OPEN-QUESTIONS.md).
 
 | Date | Decision | Source |
 |---|---|---|
+| 2026-10-08 | Own armor sets are dropped. Pack armor is sorted into Cloth / Light / Heavy and dropped by mobs, after Hytale 0.7. | [gear.md](docs/answered/gear.md) |
+| 2026-10-08 | Weapon signatures stay. The charge is kept across a weapon swap. Wands ricochet through up to 8 enemies. | [gear.md](docs/answered/gear.md) |
 | 2026-10-06 | Weapon speed tiers roll at random - on weapons only, never tools. | [gear.md](docs/answered/gear.md) |
 | 2026-10-05 | Armor types: Heavy / Light / Cloth (soft rule). | [gear.md](docs/answered/gear.md) |
 | 2026-10-03 | Mob toughness follows a Wynncraft-style curve. | [gear.md](docs/answered/gear.md) |
@@ -71,6 +79,8 @@ Skyy's own gear design: `SkyyGear-Plan.md` + `SkyyGear-Stat-Catalog.md` (never e
 
 | Date | Decision | Source |
 |---|---|---|
+| 2026-10-09 | We build our own roaming merchants: every 20 min, a chat rumour, special weapons and mounts. | [economy.md](docs/answered/economy.md) |
+| 2026-10-08 | Mythic, untiered and set items are never bought or sold on the Bazaar or the auction house. | [economy.md](docs/answered/economy.md) |
 | 2026-10-06 | Gathering tiers: 5 tree tiers by zone, Enchanted = 100 base items, Mithril waits for 0.7. | [bags.md](docs/answered/bags.md) |
 | 2026-10-05 | Gathering is a SkyBlock-style progression ladder. | [bags.md](docs/answered/bags.md) |
 | 2026-10-04 | Bazaar prices double per tier step. | [economy.md](docs/answered/economy.md) |
@@ -85,6 +95,8 @@ Skyy's own gear design: `SkyyGear-Plan.md` + `SkyyGear-Stat-Catalog.md` (never e
 
 | Date | Decision | Source |
 |---|---|---|
+| 2026-10-09 | Each zone is a few islands, far apart (dragon or portal between zones). Caves stay deep, down to lava. | [world.md](docs/answered/world.md) |
+| 2026-10-08 | Profile cap matches the class count (8 with Spellblade). Ranks can raise it later. Not built yet. | [social.md](docs/answered/social.md) |
 | 2026-10-08 | Zone 1 town: the v2 organic layout around the vanilla spawn temple. | [world.md](docs/answered/world.md) |
 | 2026-10-03 | All zone islands sit in one world. | [world.md](docs/answered/world.md) |
 | 2026-10-01 | Zone levels: Z1 1-20, Z2 20-30, Z3 30-45, Z4 45-60. | [world.md](docs/answered/world.md) |
