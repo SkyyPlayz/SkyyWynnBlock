@@ -154,3 +154,4 @@ section 6 when it reviews the results.
 - 2026-10-09: SkyyQuests Zone 1 spec -> research/cloud/SkyyQuests-Zone1-Spec.md (9-quest town1 chain, Job Board, claim ledger, SkyyTowns owns NPC Use; Copper Set conflict flagged)
 - 2026-10-09: Foraging + farming armor stats spec -> research/cloud/Gathering-Armor-Stats.md (F1-F5 + P1-P7 on the shared T1-T7 rows; tier-code ids; Fortune curve + set bonus; Enchanted recipes; look swaps; build text)
 - 2026-10-09: Mining armor build spec -> research/cloud/Mining-Armor-Spec.md (7 Mining Sets on vanilla metal ids; Fortune curve to the 15 cap; gear bridge; helmet light round; SkyyGear 0.2.15 task text)
+- 2026-10-09: UT first batch (G2) build spec -> research/cloud/UT-First-Batch-Build.md (10 UT2 items, dev bows split UT / Mythic, orange bag drops + rates, ut01 task text, 4 code findings)

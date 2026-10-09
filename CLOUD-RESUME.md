@@ -71,9 +71,6 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 <!-- 2026-10-09 evening local session (Skyy: "use up all the tokes. Just be sure you aren't wasting any"). Local builds running: rarity G1
 (SkyyGear 0.2.14), ability engine R1 (SkyyClasses), WorldGen 0.3 archipelago node proof, SkyyProfiles cap 8, SkyyPets 0.1. Next local
 builds need these specs. Specs only; one commit + OUTBOX block each. -->
-- [ ] **UT first batch (G2) build spec** -> `research/cloud/UT-First-Batch-Build.md`: turn Untiered-Mythic-Spec 1.3 U1-U10 into exact item ids /
-      base items / fixed stats / trade-off lines / sources (orange mystery bag from mobs + chests + luggage; Skyy 2026-10-09: UTs drop in an
-      ORANGE MYSTERY BAG) + the 6 developer bows as specials/UT (docs/answered/gear.md 2026-10-08/09) - ready-to-paste task text for the local round.
 - [ ] **SkyyAbilityProbe PR** - once https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 is merged: open a [cloud] PR with the held draft
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
@@ -82,3 +79,4 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
 - [x] SkyyQuests Zone 1 spec - 2026-10-09 - `research/cloud/SkyyQuests-Zone1-Spec.md`
 - [x] Foraging + farming armor stats spec - 2026-10-09 - `research/cloud/Gathering-Armor-Stats.md`
 - [x] Mining armor build spec - 2026-10-09 - `research/cloud/Mining-Armor-Spec.md`
+- [x] UT first batch (G2) build spec - 2026-10-09 - `research/cloud/UT-First-Batch-Build.md`
