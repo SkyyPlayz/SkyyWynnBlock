@@ -72,6 +72,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 63. SkyyFishing 0.1 - bench, rods + reels, cast / bite / fight, Zone 1 fish, selling (/fishadmin kit)
 64. Loot round: Unclaimed Luggage chests, mystery bags from mobs, identify / re-identify
 65. SkyySkills 0.4.25: class Mana/Stamina pools, Mana on hit, mining Stamina, foraging Defense, class balance boost
+66. Better Mob Expansion test: new Zone 1-4 mobs, levels, Vermin behaviour, crowding
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
