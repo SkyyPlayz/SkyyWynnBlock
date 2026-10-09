@@ -10613,6 +10613,880 @@
      ]
     }
    }
+  },
+  "F4_Northern/Redwood": {
+   "tier": "F4_Northern",
+   "tree": "Redwood",
+   "item_id_prefix_suggestion": "Armor_Foraging_Redwood",
+   "sheet": "sheet-redwood.png",
+   "status": "v2 (deeper heartwood, matched to the in-game wood in Assets.zip) approved by Skyy 2026-10-09 (\"All look great, commit the 4 colour fixes and all 10 F5 sets\"); v1 approved (\"all look great! commit all\"); NOT verified in game",
+   "totals": {
+    "boxes": 65,
+    "quads": 9
+   },
+   "pieces": {
+    "Head": {
+     "model": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Head.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Head_Texture.png",
+     "texture_size": [
+      96,
+      128
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Redwood_Head.png",
+     "source": "source/F4_Northern/Redwood/Head.bbmodel",
+     "attaches_to_bones": [
+      "Head"
+     ],
+     "boxes": 13,
+     "quads": 3,
+     "nodes": [
+      {
+       "name": "Head",
+       "kind": "attach:Head",
+       "parent": null
+      },
+      {
+       "name": "HelmCap",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        32,
+        10,
+        31
+       ]
+      },
+      {
+       "name": "HelmUpper",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        28,
+        3,
+        27
+       ]
+      },
+      {
+       "name": "HelmDome",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        22,
+        2,
+        21
+       ]
+      },
+      {
+       "name": "HelmBrim",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        36,
+        2,
+        34
+       ]
+      },
+      {
+       "name": "HelmBack",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        32,
+        18,
+        2
+       ]
+      },
+      {
+       "name": "R-Cheek",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        14,
+        14
+       ]
+      },
+      {
+       "name": "L-Cheek",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        14,
+        14
+       ]
+      },
+      {
+       "name": "CrownMid",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        7,
+        15,
+        2
+       ]
+      },
+      {
+       "name": "R-CrownSide",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        7,
+        12,
+        2
+       ]
+      },
+      {
+       "name": "L-CrownSide",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        7,
+        12,
+        2
+       ]
+      },
+      {
+       "name": "R-HelmLeaf",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "L-HelmLeaf",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "HelmBadge",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        5,
+        5,
+        2
+       ]
+      },
+      {
+       "name": "L-HelmCone",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "R-HelmCrest",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        4,
+        16
+       ]
+      },
+      {
+       "name": "L-HelmCrest",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        4,
+        16
+       ]
+      }
+     ]
+    },
+    "Chest": {
+     "model": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Chest.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Chest_Texture.png",
+     "texture_size": [
+      64,
+      224
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Redwood_Chest.png",
+     "source": "source/F4_Northern/Redwood/Chest.bbmodel",
+     "attaches_to_bones": [
+      "Pelvis",
+      "Belly",
+      "Chest",
+      "R-Arm",
+      "L-Arm"
+     ],
+     "boxes": 31,
+     "quads": 4,
+     "nodes": [
+      {
+       "name": "Pelvis",
+       "kind": "attach:Pelvis",
+       "parent": null
+      },
+      {
+       "name": "R-Tassel",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        12,
+        13,
+        1
+       ]
+      },
+      {
+       "name": "L-Tassel",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        12,
+        13,
+        1
+       ]
+      },
+      {
+       "name": "TasselBack",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        24,
+        13,
+        1
+       ]
+      },
+      {
+       "name": "Belly",
+       "kind": "attach:Belly",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "Plackart",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        27,
+        16,
+        20
+       ]
+      },
+      {
+       "name": "VineBelt",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        28,
+        3,
+        21
+       ]
+      },
+      {
+       "name": "Clasp",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        6,
+        6,
+        2
+       ]
+      },
+      {
+       "name": "RedwoodBadge",
+       "kind": "quad",
+       "parent": "Belly"
+      },
+      {
+       "name": "Chest",
+       "kind": "attach:Chest",
+       "parent": "Belly"
+      },
+      {
+       "name": "Cuirass",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        29,
+        22,
+        21
+       ]
+      },
+      {
+       "name": "R-Breast",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        12,
+        17,
+        2
+       ]
+      },
+      {
+       "name": "L-Breast",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        12,
+        17,
+        2
+       ]
+      },
+      {
+       "name": "Collar",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        22,
+        4,
+        19
+       ]
+      },
+      {
+       "name": "GorgetPlate",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        16,
+        6,
+        2
+       ]
+      },
+      {
+       "name": "ChestKnot",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        7,
+        7,
+        2
+       ]
+      },
+      {
+       "name": "R-Arm",
+       "kind": "attach:R-Arm",
+       "parent": "Chest"
+      },
+      {
+       "name": "R-Pauldron",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        15,
+        4,
+        18
+       ]
+      },
+      {
+       "name": "R-PauldronCap",
+       "kind": "box",
+       "parent": "R-Pauldron",
+       "size": [
+        11,
+        3,
+        15
+       ]
+      },
+      {
+       "name": "R-PauldronFin",
+       "kind": "box",
+       "parent": "R-PauldronCap",
+       "size": [
+        2,
+        2,
+        12
+       ]
+      },
+      {
+       "name": "R-CapThornA",
+       "kind": "box",
+       "parent": "R-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-CapThornB",
+       "kind": "box",
+       "parent": "R-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-ShoulderLeaf",
+       "kind": "quad",
+       "parent": "R-Pauldron"
+      },
+      {
+       "name": "R-PauldronGuard",
+       "kind": "box",
+       "parent": "R-Pauldron",
+       "size": [
+        2,
+        10,
+        16
+       ]
+      },
+      {
+       "name": "R-PauldronLame",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        3,
+        8,
+        15
+       ]
+      },
+      {
+       "name": "R-Sleeve",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        9,
+        22,
+        13
+       ]
+      },
+      {
+       "name": "R-PauldronLame2",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        2,
+        6,
+        14
+       ]
+      },
+      {
+       "name": "L-Arm",
+       "kind": "attach:L-Arm",
+       "parent": "Chest"
+      },
+      {
+       "name": "L-Pauldron",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        15,
+        4,
+        18
+       ]
+      },
+      {
+       "name": "L-Vine",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        3,
+        2,
+        18
+       ]
+      },
+      {
+       "name": "L-VineLeafA",
+       "kind": "quad",
+       "parent": "L-Vine"
+      },
+      {
+       "name": "L-VineLeafB",
+       "kind": "quad",
+       "parent": "L-Vine"
+      },
+      {
+       "name": "L-PauldronCap",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        11,
+        3,
+        15
+       ]
+      },
+      {
+       "name": "L-PauldronFin",
+       "kind": "box",
+       "parent": "L-PauldronCap",
+       "size": [
+        2,
+        2,
+        12
+       ]
+      },
+      {
+       "name": "L-CapThornA",
+       "kind": "box",
+       "parent": "L-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-CapThornB",
+       "kind": "box",
+       "parent": "L-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-PauldronGuard",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        2,
+        10,
+        16
+       ]
+      },
+      {
+       "name": "L-PauldronLame",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        3,
+        8,
+        15
+       ]
+      },
+      {
+       "name": "L-Sleeve",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        9,
+        22,
+        13
+       ]
+      },
+      {
+       "name": "L-PauldronLame2",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        2,
+        6,
+        14
+       ]
+      }
+     ]
+    },
+    "Hands": {
+     "model": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Hands.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Hands_Texture.png",
+     "texture_size": [
+      64,
+      64
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Redwood_Hands.png",
+     "source": "source/F4_Northern/Redwood/Hands.bbmodel",
+     "attaches_to_bones": [
+      "R-Forearm",
+      "R-Hand",
+      "L-Forearm",
+      "L-Hand"
+     ],
+     "boxes": 12,
+     "quads": 2,
+     "nodes": [
+      {
+       "name": "R-Forearm",
+       "kind": "attach:R-Forearm",
+       "parent": null
+      },
+      {
+       "name": "R-Bracer",
+       "kind": "box",
+       "parent": "R-Forearm",
+       "size": [
+        9,
+        14,
+        13
+       ]
+      },
+      {
+       "name": "R-BracerPlate",
+       "kind": "box",
+       "parent": "R-Forearm",
+       "size": [
+        2,
+        12,
+        10
+       ]
+      },
+      {
+       "name": "R-BracerThornA",
+       "kind": "box",
+       "parent": "R-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-BracerThornB",
+       "kind": "box",
+       "parent": "R-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-Sprig",
+       "kind": "quad",
+       "parent": "R-Forearm"
+      },
+      {
+       "name": "R-Hand",
+       "kind": "attach:R-Hand",
+       "parent": "R-Forearm"
+      },
+      {
+       "name": "R-Glove",
+       "kind": "box",
+       "parent": "R-Hand",
+       "size": [
+        11,
+        12,
+        15
+       ]
+      },
+      {
+       "name": "R-GloveCuff",
+       "kind": "box",
+       "parent": "R-Hand",
+       "size": [
+        12,
+        2,
+        16
+       ]
+      },
+      {
+       "name": "L-Forearm",
+       "kind": "attach:L-Forearm",
+       "parent": null
+      },
+      {
+       "name": "L-Bracer",
+       "kind": "box",
+       "parent": "L-Forearm",
+       "size": [
+        9,
+        14,
+        13
+       ]
+      },
+      {
+       "name": "L-BracerPlate",
+       "kind": "box",
+       "parent": "L-Forearm",
+       "size": [
+        2,
+        12,
+        10
+       ]
+      },
+      {
+       "name": "L-BracerThornA",
+       "kind": "box",
+       "parent": "L-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-BracerThornB",
+       "kind": "box",
+       "parent": "L-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-Sprig",
+       "kind": "quad",
+       "parent": "L-Forearm"
+      },
+      {
+       "name": "L-Hand",
+       "kind": "attach:L-Hand",
+       "parent": "L-Forearm"
+      },
+      {
+       "name": "L-Glove",
+       "kind": "box",
+       "parent": "L-Hand",
+       "size": [
+        11,
+        12,
+        15
+       ]
+      },
+      {
+       "name": "L-GloveCuff",
+       "kind": "box",
+       "parent": "L-Hand",
+       "size": [
+        12,
+        2,
+        16
+       ]
+      }
+     ]
+    },
+    "Legs": {
+     "model": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Legs.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Legs_Texture.png",
+     "texture_size": [
+      96,
+      64
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Redwood_Legs.png",
+     "source": "source/F4_Northern/Redwood/Legs.bbmodel",
+     "attaches_to_bones": [
+      "Pelvis",
+      "R-Thigh",
+      "R-Calf",
+      "R-Foot",
+      "L-Thigh",
+      "L-Calf",
+      "L-Foot"
+     ],
+     "boxes": 9,
+     "quads": 0,
+     "nodes": [
+      {
+       "name": "Pelvis",
+       "kind": "attach:Pelvis",
+       "parent": null
+      },
+      {
+       "name": "Breeches",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        26,
+        12,
+        20
+       ]
+      },
+      {
+       "name": "R-Thigh",
+       "kind": "attach:R-Thigh",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "R-Trouser",
+       "kind": "box",
+       "parent": "R-Thigh",
+       "size": [
+        11,
+        21,
+        14
+       ]
+      },
+      {
+       "name": "R-Calf",
+       "kind": "attach:R-Calf",
+       "parent": "R-Thigh"
+      },
+      {
+       "name": "R-Knee",
+       "kind": "box",
+       "parent": "R-Calf",
+       "size": [
+        7,
+        7,
+        2
+       ]
+      },
+      {
+       "name": "R-Greave",
+       "kind": "box",
+       "parent": "R-Calf",
+       "size": [
+        11,
+        23,
+        13
+       ]
+      },
+      {
+       "name": "R-Foot",
+       "kind": "attach:R-Foot",
+       "parent": "R-Calf"
+      },
+      {
+       "name": "R-Boot",
+       "kind": "box",
+       "parent": "R-Foot",
+       "size": [
+        14,
+        8,
+        20
+       ]
+      },
+      {
+       "name": "L-Thigh",
+       "kind": "attach:L-Thigh",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "L-Trouser",
+       "kind": "box",
+       "parent": "L-Thigh",
+       "size": [
+        11,
+        21,
+        14
+       ]
+      },
+      {
+       "name": "L-Calf",
+       "kind": "attach:L-Calf",
+       "parent": "L-Thigh"
+      },
+      {
+       "name": "L-Knee",
+       "kind": "box",
+       "parent": "L-Calf",
+       "size": [
+        7,
+        7,
+        2
+       ]
+      },
+      {
+       "name": "L-Greave",
+       "kind": "box",
+       "parent": "L-Calf",
+       "size": [
+        11,
+        23,
+        13
+       ]
+      },
+      {
+       "name": "L-Foot",
+       "kind": "attach:L-Foot",
+       "parent": "L-Calf"
+      },
+      {
+       "name": "L-Boot",
+       "kind": "box",
+       "parent": "L-Foot",
+       "size": [
+        14,
+        8,
+        20
+       ]
+      }
+     ]
+    }
+   }
   }
  },
  "files": [
@@ -12331,6 +13205,62 @@
    "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Poisoned/Legs_Texture.png",
    "bytes": 5214,
    "sha256": "cb4eb8bc61884a1ebde41ba7d5b41fec5775c53320209c399c2d7a7f5e637ee9",
+   "image_size": [
+    96,
+    64
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Chest.blockymodel",
+   "bytes": 122830,
+   "sha256": "2c8c996f027e01dc095f8083516f4983d84694002d1c0c701bd1dd7eb88b23c3"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Chest_Texture.png",
+   "bytes": 17438,
+   "sha256": "eb605588dfb61e3fd83dfe4171717a1c6032b02637366123260d6f5b18c8fe35",
+   "image_size": [
+    64,
+    224
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Hands.blockymodel",
+   "bytes": 37152,
+   "sha256": "3a806b3f6a6f7672217efeefd66d5a503eba7cdcd4c44a0fc97efa1844ddb53e"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Hands_Texture.png",
+   "bytes": 4750,
+   "sha256": "cda969304d39871b5be3c48b65a5f5641a57fc4e4a0ea7f00ceb3cd06299e489",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Head.blockymodel",
+   "bytes": 33867,
+   "sha256": "f3bd2783964befe12cc0a5c78cb8f3c2f6259a07472d40e3c7ebea593d3fb41e"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Head_Texture.png",
+   "bytes": 8977,
+   "sha256": "19073d6a2a6820fcf9055692468afed493b43d08c4760c20874d24f5338c92b0",
+   "image_size": [
+    96,
+    128
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Legs.blockymodel",
+   "bytes": 33394,
+   "sha256": "9e24379a45eab739e60bd204cb4fd59532a62db33ff278ba7932ecb27384120f"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/Legs_Texture.png",
+   "bytes": 5311,
+   "sha256": "5b5c166bab42b1ee081bc438de191fd661851ad95993ce3a56c7870b0731df1d",
    "image_size": [
     96,
     64

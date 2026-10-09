@@ -300,6 +300,7 @@ Not seen in game.
 
 | Tree | Bark (in game) | Plate edge | Mark | Cloth |
 |---|---|---|---|---|
+| Redwood | red-brown, stringy fibres | narrow spike teeth | redwood cone + needles | navy |
 | Fir | very dark brown, rough flakes | fir tiers (wide V + point) | little fir tree | oatmeal wool |
 | Cedar | orange-brown fibre strips | pointed arches | cedar rose | burgundy |
 | Poisoned | near-black purple, glowing yellow-green cracks | barbed hooks | violet thorn leaf + toxic drop | dark moss |
