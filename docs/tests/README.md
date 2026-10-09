@@ -157,3 +157,5 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyProfiles 0.1.9: 8 profile slots (DEPLOYED 2026-10-09, backup deploy-20261009-1322) | [2026-10](2026-10.md) |
 | SkyyPets 0.1: slot pets phase 1 (DEPLOYED 2026-10-09, backup deploy-20261009-1348) | [2026-10](2026-10.md) |
 | SkyyWorldGen 0.3: archipelago proof world (DEPLOYED 2026-10-09, backup deploy-20261009-1348) | [2026-10](2026-10.md) |
+| Rarity G1: Untiered / Mythic / Sets + market wall (DEPLOYED 2026-10-09, backup deploy-20261009-1456) | [2026-10](2026-10.md) |
+| Ability engine R1: /cast, Meteor, Sacred Heal (DEPLOYED 2026-10-09, backup deploy-20261009-1456) | [2026-10](2026-10.md) |
