@@ -62,3 +62,8 @@ storage / stacks / backpacks, other maps / HUDs, farming overhauls, durability /
   mover that relocates it every N minutes per zone, UseEntityEvent opens our shop page: pet eggs + special weapons, never UT / Mythic,
   SkyyCoins prices) - research/Server-Setup-Research.md already recommends spawnNPC + UseEntityEvent. Kobold models / drake mount =
   optional later by role id (CC BY, credit).
+
+## Spawn Manager + [Assets] (ReignInBlood) - Skyy: "these two spawn manger mods might help later"
+- MIT (keep the notice). A world-wide on/off switch per mob (operator UI, restart needed) that patches copies of the vanilla spawn files;
+  no per-zone control, no boss spawners / timers, no NPC spawning, no API; 124 MB jar with bundled server classes; Assets overlaps
+  Forgotten Creatures' spawn files. VERDICT: skip - our own spawn files (SkyyWorldGen) + code-spawned NPCs cover these needs.
