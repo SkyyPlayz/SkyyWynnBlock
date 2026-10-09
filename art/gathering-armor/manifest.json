@@ -16098,6 +16098,940 @@
     }
    }
   },
+  "F5_Wastes/Jungle": {
+   "tier": "F5_Wastes",
+   "tree": "Jungle",
+   "item_id_prefix_suggestion": "Armor_Foraging_Jungle",
+   "sheet": "sheet-jungle.png",
+   "status": "approved by Skyy 2026-10-09 (\"All look great, commit the 4 colour fixes and all 10 F5 sets\"); NOT verified in game",
+   "totals": {
+    "boxes": 70,
+    "quads": 11
+   },
+   "pieces": {
+    "Head": {
+     "model": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Head.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Head_Texture.png",
+     "texture_size": [
+      64,
+      224
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Jungle_Head.png",
+     "source": "source/F5_Wastes/Jungle/Head.bbmodel",
+     "attaches_to_bones": [
+      "Head"
+     ],
+     "boxes": 14,
+     "quads": 5,
+     "nodes": [
+      {
+       "name": "Head",
+       "kind": "attach:Head",
+       "parent": null
+      },
+      {
+       "name": "HelmCap",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        32,
+        10,
+        31
+       ]
+      },
+      {
+       "name": "HelmUpper",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        28,
+        3,
+        27
+       ]
+      },
+      {
+       "name": "HelmDome",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        22,
+        2,
+        21
+       ]
+      },
+      {
+       "name": "HelmBrim",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        36,
+        2,
+        34
+       ]
+      },
+      {
+       "name": "HelmBack",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        32,
+        18,
+        2
+       ]
+      },
+      {
+       "name": "R-Cheek",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        14,
+        14
+       ]
+      },
+      {
+       "name": "L-Cheek",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        14,
+        14
+       ]
+      },
+      {
+       "name": "CrownMid",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        7,
+        19,
+        2
+       ]
+      },
+      {
+       "name": "R-CrownSide",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        7,
+        15,
+        2
+       ]
+      },
+      {
+       "name": "L-CrownSide",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        7,
+        15,
+        2
+       ]
+      },
+      {
+       "name": "R-HelmLeaf",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "L-HelmLeaf",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "HelmBadge",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        5,
+        5,
+        2
+       ]
+      },
+      {
+       "name": "L-HelmMark",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "R-HelmCrest",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        4,
+        16
+       ]
+      },
+      {
+       "name": "L-HelmCrest",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        4,
+        16
+       ]
+      },
+      {
+       "name": "BrowGem",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        5,
+        5,
+        1
+       ]
+      },
+      {
+       "name": "R-HelmWing",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "L-HelmWing",
+       "kind": "quad",
+       "parent": "Head"
+      }
+     ]
+    },
+    "Chest": {
+     "model": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Chest.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Chest_Texture.png",
+     "texture_size": [
+      64,
+      224
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Jungle_Chest.png",
+     "source": "source/F5_Wastes/Jungle/Chest.bbmodel",
+     "attaches_to_bones": [
+      "Pelvis",
+      "Belly",
+      "Chest",
+      "R-Arm",
+      "L-Arm"
+     ],
+     "boxes": 33,
+     "quads": 4,
+     "nodes": [
+      {
+       "name": "Pelvis",
+       "kind": "attach:Pelvis",
+       "parent": null
+      },
+      {
+       "name": "R-Tassel",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        12,
+        13,
+        1
+       ]
+      },
+      {
+       "name": "L-Tassel",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        12,
+        13,
+        1
+       ]
+      },
+      {
+       "name": "TasselBack",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        24,
+        13,
+        1
+       ]
+      },
+      {
+       "name": "Belly",
+       "kind": "attach:Belly",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "Plackart",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        27,
+        16,
+        20
+       ]
+      },
+      {
+       "name": "VineBelt",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        28,
+        3,
+        21
+       ]
+      },
+      {
+       "name": "Clasp",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        6,
+        6,
+        2
+       ]
+      },
+      {
+       "name": "JungleBadge",
+       "kind": "quad",
+       "parent": "Belly"
+      },
+      {
+       "name": "Chest",
+       "kind": "attach:Chest",
+       "parent": "Belly"
+      },
+      {
+       "name": "Cuirass",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        29,
+        22,
+        21
+       ]
+      },
+      {
+       "name": "R-Breast",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        12,
+        17,
+        2
+       ]
+      },
+      {
+       "name": "L-Breast",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        12,
+        17,
+        2
+       ]
+      },
+      {
+       "name": "Collar",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        22,
+        4,
+        19
+       ]
+      },
+      {
+       "name": "GorgetPlate",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        16,
+        6,
+        2
+       ]
+      },
+      {
+       "name": "ChestKnot",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        9,
+        9,
+        2
+       ]
+      },
+      {
+       "name": "R-Arm",
+       "kind": "attach:R-Arm",
+       "parent": "Chest"
+      },
+      {
+       "name": "R-Pauldron",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        15,
+        4,
+        18
+       ]
+      },
+      {
+       "name": "R-PauldronCap",
+       "kind": "box",
+       "parent": "R-Pauldron",
+       "size": [
+        11,
+        3,
+        15
+       ]
+      },
+      {
+       "name": "R-PauldronFin",
+       "kind": "box",
+       "parent": "R-PauldronCap",
+       "size": [
+        2,
+        2,
+        12
+       ]
+      },
+      {
+       "name": "R-CapThornA",
+       "kind": "box",
+       "parent": "R-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-CapThornB",
+       "kind": "box",
+       "parent": "R-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-ShoulderLeaf",
+       "kind": "quad",
+       "parent": "R-Pauldron"
+      },
+      {
+       "name": "R-PauldronGuard",
+       "kind": "box",
+       "parent": "R-Pauldron",
+       "size": [
+        2,
+        10,
+        16
+       ]
+      },
+      {
+       "name": "R-GuardGem",
+       "kind": "box",
+       "parent": "R-PauldronGuard",
+       "size": [
+        1,
+        5,
+        5
+       ]
+      },
+      {
+       "name": "R-PauldronLame",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        3,
+        8,
+        15
+       ]
+      },
+      {
+       "name": "R-Sleeve",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        9,
+        22,
+        13
+       ]
+      },
+      {
+       "name": "R-PauldronLame2",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        2,
+        6,
+        14
+       ]
+      },
+      {
+       "name": "L-Arm",
+       "kind": "attach:L-Arm",
+       "parent": "Chest"
+      },
+      {
+       "name": "L-Pauldron",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        15,
+        4,
+        18
+       ]
+      },
+      {
+       "name": "L-Vine",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        3,
+        2,
+        18
+       ]
+      },
+      {
+       "name": "L-VineLeafA",
+       "kind": "quad",
+       "parent": "L-Vine"
+      },
+      {
+       "name": "L-VineLeafB",
+       "kind": "quad",
+       "parent": "L-Vine"
+      },
+      {
+       "name": "L-PauldronCap",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        11,
+        3,
+        15
+       ]
+      },
+      {
+       "name": "L-PauldronFin",
+       "kind": "box",
+       "parent": "L-PauldronCap",
+       "size": [
+        2,
+        2,
+        12
+       ]
+      },
+      {
+       "name": "L-CapThornA",
+       "kind": "box",
+       "parent": "L-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-CapThornB",
+       "kind": "box",
+       "parent": "L-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-PauldronGuard",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        2,
+        10,
+        16
+       ]
+      },
+      {
+       "name": "L-GuardGem",
+       "kind": "box",
+       "parent": "L-PauldronGuard",
+       "size": [
+        1,
+        5,
+        5
+       ]
+      },
+      {
+       "name": "L-PauldronLame",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        3,
+        8,
+        15
+       ]
+      },
+      {
+       "name": "L-Sleeve",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        9,
+        22,
+        13
+       ]
+      },
+      {
+       "name": "L-PauldronLame2",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        2,
+        6,
+        14
+       ]
+      }
+     ]
+    },
+    "Hands": {
+     "model": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Hands.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Hands_Texture.png",
+     "texture_size": [
+      64,
+      64
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Jungle_Hands.png",
+     "source": "source/F5_Wastes/Jungle/Hands.bbmodel",
+     "attaches_to_bones": [
+      "R-Forearm",
+      "R-Hand",
+      "L-Forearm",
+      "L-Hand"
+     ],
+     "boxes": 12,
+     "quads": 2,
+     "nodes": [
+      {
+       "name": "R-Forearm",
+       "kind": "attach:R-Forearm",
+       "parent": null
+      },
+      {
+       "name": "R-Bracer",
+       "kind": "box",
+       "parent": "R-Forearm",
+       "size": [
+        9,
+        14,
+        13
+       ]
+      },
+      {
+       "name": "R-BracerPlate",
+       "kind": "box",
+       "parent": "R-Forearm",
+       "size": [
+        2,
+        12,
+        10
+       ]
+      },
+      {
+       "name": "R-BracerThornA",
+       "kind": "box",
+       "parent": "R-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-BracerThornB",
+       "kind": "box",
+       "parent": "R-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-Sprig",
+       "kind": "quad",
+       "parent": "R-Forearm"
+      },
+      {
+       "name": "R-Hand",
+       "kind": "attach:R-Hand",
+       "parent": "R-Forearm"
+      },
+      {
+       "name": "R-Glove",
+       "kind": "box",
+       "parent": "R-Hand",
+       "size": [
+        11,
+        12,
+        15
+       ]
+      },
+      {
+       "name": "R-GloveCuff",
+       "kind": "box",
+       "parent": "R-Hand",
+       "size": [
+        12,
+        2,
+        16
+       ]
+      },
+      {
+       "name": "L-Forearm",
+       "kind": "attach:L-Forearm",
+       "parent": null
+      },
+      {
+       "name": "L-Bracer",
+       "kind": "box",
+       "parent": "L-Forearm",
+       "size": [
+        9,
+        14,
+        13
+       ]
+      },
+      {
+       "name": "L-BracerPlate",
+       "kind": "box",
+       "parent": "L-Forearm",
+       "size": [
+        2,
+        12,
+        10
+       ]
+      },
+      {
+       "name": "L-BracerThornA",
+       "kind": "box",
+       "parent": "L-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-BracerThornB",
+       "kind": "box",
+       "parent": "L-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-Sprig",
+       "kind": "quad",
+       "parent": "L-Forearm"
+      },
+      {
+       "name": "L-Hand",
+       "kind": "attach:L-Hand",
+       "parent": "L-Forearm"
+      },
+      {
+       "name": "L-Glove",
+       "kind": "box",
+       "parent": "L-Hand",
+       "size": [
+        11,
+        12,
+        15
+       ]
+      },
+      {
+       "name": "L-GloveCuff",
+       "kind": "box",
+       "parent": "L-Hand",
+       "size": [
+        12,
+        2,
+        16
+       ]
+      }
+     ]
+    },
+    "Legs": {
+     "model": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Legs.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Legs_Texture.png",
+     "texture_size": [
+      64,
+      128
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Jungle_Legs.png",
+     "source": "source/F5_Wastes/Jungle/Legs.bbmodel",
+     "attaches_to_bones": [
+      "Pelvis",
+      "R-Thigh",
+      "R-Calf",
+      "R-Foot",
+      "L-Thigh",
+      "L-Calf",
+      "L-Foot"
+     ],
+     "boxes": 11,
+     "quads": 0,
+     "nodes": [
+      {
+       "name": "Pelvis",
+       "kind": "attach:Pelvis",
+       "parent": null
+      },
+      {
+       "name": "Breeches",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        26,
+        12,
+        20
+       ]
+      },
+      {
+       "name": "R-Thigh",
+       "kind": "attach:R-Thigh",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "R-Trouser",
+       "kind": "box",
+       "parent": "R-Thigh",
+       "size": [
+        11,
+        21,
+        14
+       ]
+      },
+      {
+       "name": "R-Calf",
+       "kind": "attach:R-Calf",
+       "parent": "R-Thigh"
+      },
+      {
+       "name": "R-Knee",
+       "kind": "box",
+       "parent": "R-Calf",
+       "size": [
+        7,
+        7,
+        2
+       ]
+      },
+      {
+       "name": "R-KneeGem",
+       "kind": "box",
+       "parent": "R-Knee",
+       "size": [
+        5,
+        5,
+        1
+       ]
+      },
+      {
+       "name": "R-Greave",
+       "kind": "box",
+       "parent": "R-Calf",
+       "size": [
+        11,
+        23,
+        13
+       ]
+      },
+      {
+       "name": "R-Foot",
+       "kind": "attach:R-Foot",
+       "parent": "R-Calf"
+      },
+      {
+       "name": "R-Boot",
+       "kind": "box",
+       "parent": "R-Foot",
+       "size": [
+        14,
+        8,
+        20
+       ]
+      },
+      {
+       "name": "L-Thigh",
+       "kind": "attach:L-Thigh",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "L-Trouser",
+       "kind": "box",
+       "parent": "L-Thigh",
+       "size": [
+        11,
+        21,
+        14
+       ]
+      },
+      {
+       "name": "L-Calf",
+       "kind": "attach:L-Calf",
+       "parent": "L-Thigh"
+      },
+      {
+       "name": "L-Knee",
+       "kind": "box",
+       "parent": "L-Calf",
+       "size": [
+        7,
+        7,
+        2
+       ]
+      },
+      {
+       "name": "L-KneeGem",
+       "kind": "box",
+       "parent": "L-Knee",
+       "size": [
+        5,
+        5,
+        1
+       ]
+      },
+      {
+       "name": "L-Greave",
+       "kind": "box",
+       "parent": "L-Calf",
+       "size": [
+        11,
+        23,
+        13
+       ]
+      },
+      {
+       "name": "L-Foot",
+       "kind": "attach:L-Foot",
+       "parent": "L-Calf"
+      },
+      {
+       "name": "L-Boot",
+       "kind": "box",
+       "parent": "L-Foot",
+       "size": [
+        14,
+        8,
+        20
+       ]
+      }
+     ]
+    }
+   }
+  },
   "F5_Wastes/Petrified": {
    "tier": "F5_Wastes",
    "tree": "Petrified",
@@ -20019,6 +20953,62 @@
    "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Camphor/Legs_Texture.png",
    "bytes": 5587,
    "sha256": "ae128b96f54c251586ebd9cf10556aa09364266e54b6a2d0a4f19833be9e2bce",
+   "image_size": [
+    64,
+    128
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Chest.blockymodel",
+   "bytes": 132343,
+   "sha256": "b2d9f619c1f9bcde242dd28db058c642e30000a93880f2fcd65840c22d0d49db"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Chest_Texture.png",
+   "bytes": 18370,
+   "sha256": "e6b4ee5b0f016ea8d360783d371a14b9d0f727e8035b199e66f2a3acfa90f597",
+   "image_size": [
+    64,
+    224
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Hands.blockymodel",
+   "bytes": 37152,
+   "sha256": "3a806b3f6a6f7672217efeefd66d5a503eba7cdcd4c44a0fc97efa1844ddb53e"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Hands_Texture.png",
+   "bytes": 4997,
+   "sha256": "0f809950baf9e3f57abdeaa2b5a47f1d7182c79b803b2d53eab875ce9648674c",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Head.blockymodel",
+   "bytes": 38571,
+   "sha256": "f2f72484c383f4dcb4f143d342694f017e7cc23680a90e78fa9b7bf9ffdd25c4"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Head_Texture.png",
+   "bytes": 10755,
+   "sha256": "7064a4efa2b91f53b7767310dcffe55ba678b69385ebc4c21626377d6aa0bdea",
+   "image_size": [
+    64,
+    224
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Legs.blockymodel",
+   "bytes": 40322,
+   "sha256": "32d1c1b65e103994c451e852397941dd2594fad568b6e344decde7bf2e28ce0b"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/Legs_Texture.png",
+   "bytes": 5856,
+   "sha256": "e10a9cd26b85a4070971c1794d541a2917d54b9078ec0246054c1423f9c06368",
    "image_size": [
     64,
     128
