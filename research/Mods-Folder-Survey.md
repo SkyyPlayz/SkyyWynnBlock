@@ -39,3 +39,15 @@ storage / stacks / backpacks, other maps / HUDs, farming overhauls, durability /
   them together. Mob Events (in the folder) needs Champions / PJ-Money / PJ-HySkills (missing) - skip.
 - FIT: great zone variety (Shadow Knights / Saurians = elites / mini-bosses); PET candidates with vanilla models: Mushee x4 (colour =
   rarity skins), Grooble, Mannequin, Slothian Kid, Rex Cave Blue chibi, Golden Reptil Trork.
+
+## Arcane Power 3.1.1 (Tayko_Dev) - Skyy: "this one looks reallyyy cool! it would help flesh out some of the classes missed by armory."
+- LICENCE: All Rights Reserved, no modpack text -> ask Tayko (draft in research/Author-Requests.md). ServerVersion <0.7.0 (needs a 0.7
+  update). JSON only; optional Hytalor / Patchly drop patches (skeleton mages, Goblin Duke, Zone 1-4 chests). Disabled in the HUD mod world.
+- Items (ArcanePower_*): 9 spellbooks (Ember, Gust, Spark, LifeVeil heal, Shock, Zephyr, Blossomwind, CosmicRuin, Infernal; Rare/Epic
+  L40-50), 3 upgrade-chain maces (Event Horizon L50 -> Pulsar Breaker L60 -> Quasar Reaver L80), 2 bows (Stellar Piercer, Nebula Flurry,
+  Epic L50), Void Maw mana launcher, 14 Cloth armor pieces (Manathread L30 / Arcaneweave L40 sets), 5 ingredients, Runecrafter's Table;
+  mobs Cosmic Eye + 3 Skeleton Wraiths (Fire / Cosmic never spawn - their bug).
+- CLASS FIT (proposal): spellbooks + Void Maw -> Mage (LifeVeil -> Priest special); bows -> Archer specials (Archer's first); maces ->
+  Spellblade (or Priest - Skyy's call); armor -> Mage / Priest Cloth ladder. SkyyGear must list the ArcanePower_ ids (not Armor_/Weapon_).
+- RISKS: flat Mana costs 15-75 and +50..+100 max Mana while held (would triple a Mage pool) -> runtime clamp in our code; Ability1 on
+  maces / bows / Infernal clashes with our Q signature; nothing uses Ability2.

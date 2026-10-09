@@ -84,3 +84,20 @@ Where: CurseForge page / YUNG's Discord
 
 > Hi! I'm Skyy from SkyWynn, a free Hytale server pack. Can SkyWynn list YUNG's HyDungeons as a pack mod? Players would install it from
 > your CurseForge page (no re-uploads), with credit + a link. Thanks!
+
+---
+
+## 7. Tayko_Dev - Arcane Power
+Where: CurseForge page comment (no mod Discord listed)
+
+> Hi Tayko! I'm Skyy from SkyWynn, a free Hytale server pack (SkyBlock x Wynncraft style). Arcane Power looks amazing and it fills gaps
+> in our Mage and Archer classes. Your page says All Rights Reserved, so I wanted to ask first:
+>
+> 1. Can SkyWynn list Arcane Power as a pack mod? Players install it from your CurseForge page (no re-uploads or bundling), with credit +
+>    a link on our pack page and in game.
+> 2. Is it OK if our loot system tags your spellbooks, maces and bows as rare drops at runtime (by item id, no file edits), and if we
+>    adjust their Mana values in our own code so they fit our class Mana pools?
+> 3. We would turn off or replace the Hytalor/Patchly drop patches on our servers so these items only come from our bosses. Is that OK?
+> 4. Do you plan a Hytale 0.7 update? (The manifest says below 0.7.0.)
+>
+> No money involved. Thanks either way!
