@@ -68,12 +68,6 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 
 <!-- 2026-10-09 local session (Skyy at work: "if you need, you can keep the cloud agent working at the same time. to speed things up."). 7 local
 builds run (merchants, sacks, tools, collections, fishing, auctions, trees). These 5 are specs only (no game files) - one commit + OUTBOX block each. -->
-- [ ] **Zone archipelago worldgen spec** -> `research/cloud/Zone-Archipelago-Spec.md`. Skyy's lock (docs/answered/world.md 2026-10-09 + the
-      "Island layout" section at the end of research/SkyyWorldGen-Plan.md): each zone = a few islands joined by land necks / arches / built
-      bridges, zones far apart (dragon / portal only), deep vanilla caves down to the lava caverns, vertically squashed. Technique notes:
-      research/Mods-Folder-Survey.md "Welkin" section (cell grid ~470, jitter 90, ~80 gradient warp, Simplex tops faded by distance, noise
-      underside). Write node-level HytaleGenerator JSON plans per zone (Zone 1-5), the gap width, cave band compression numbers, portal /
-      dragon travel points, and a staged build plan for SkyyWorldGen 0.2+. Never copy Welkin or vanilla files.
 - [ ] **SkyyAbilityProbe PR** - once https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 is merged: open a [cloud] PR with the held draft
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
@@ -82,3 +76,4 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 - [x] Pet core spec - 2026-10-09 - `research/cloud/Pet-Core-Spec.md`
 - [x] Element system spec - 2026-10-09 - `research/cloud/Element-System-Spec.md`
 - [x] Class ability engine plan (Mage + Priest first) - 2026-10-09 - `research/cloud/Ability-Engine-Plan.md`
+- [x] Zone archipelago worldgen spec - 2026-10-09 - `research/cloud/Zone-Archipelago-Spec.md`
