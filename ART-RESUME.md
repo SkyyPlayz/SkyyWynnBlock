@@ -67,8 +67,8 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   Same bark-plate family look (approved concept), each tree its own variation; trees of one tier share stats and players swap looks at an
   alteration station later. Start with F1 Oak (key log), then the rest of F1, one tree per commit; show Skyy each sheet. Paths use the
   tree name: `SkyyForaging/<Tier>/<Tree>/<Piece>.blockymodel`, icons `Armor_Foraging_<Tree>_<Piece>.png`. Orchard trees: later.
-  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen. F2 AUTUMN COMPLETE (2/2, 2026-10-09): Maple, Azure. F3 SAVANNA COMPLETE (4/4, 2026-10-09): Gumboab, Dry, Bottletree, Palo. F4 NORTHERN COMPLETE (5/5, 2026-10-09): Fir, Cedar, Poisoned, Redwood, Spiral. F5 Wastes: Sallow, Burnt, Petrified, Bamboo, Camphor. See Done.
-  **Next: Foraging - commit the approved Banyan, Jungle, Blue Fig, Fire, Crystalwood** (Skyy: "All look great, commit the 4 colour fixes and all 10 F5 sets"); START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game
+  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen. F2 AUTUMN COMPLETE (2/2, 2026-10-09): Maple, Azure. F3 SAVANNA COMPLETE (4/4, 2026-10-09): Gumboab, Dry, Bottletree, Palo. F4 NORTHERN COMPLETE (5/5, 2026-10-09): Fir, Cedar, Poisoned, Redwood, Spiral. F5 Wastes: Sallow, Burnt, Petrified, Bamboo, Camphor, Banyan. See Done.
+  **Next: Foraging - commit the approved Jungle, Blue Fig, Fire, Crystalwood** (Skyy: "All look great, commit the 4 colour fixes and all 10 F5 sets"); START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game
   wood variant." - sample the tree's log / planks / leaves colours in Assets.zip; Beech v1
   in made-up colours read as "iron"). Reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter,
   `make_foraging_*.py`), same piece shapes / fit, own colours + own small mark. Sources go in `source/<Tier>/<Tree>/`. Defaults Skyy kept for Oak: tier folder `F1_Grove`,
@@ -141,6 +141,12 @@ purple of the bag swirl].
   Skyy's answers, word for word: "fix pebble." / "Yes, the Pebble fix looks good, commit it"
 
 ## Done
+### 36. Foraging armor F5 Wastes - Banyan (2026-10-09)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F5_Wastes/Banyan/` (+ icons `Armor_Foraging_Banyan_<Piece>.png`, `source/F5_Wastes/Banyan/`, `sheet-banyan.png`); README + manifest updated. Scripts: `ga_banyan.py` (new).
+- Look: colours sampled from the in-game Banyan wood in Assets.zip (own pixels): warm brown bark with long root ridges, tan heartwood, root-drip plates, root-pillar crown points, terracotta cloth, yellow-green gems. Mark: a banyan tree with hanging roots.
+- Skyy's answer, word for word: "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Defaults kept: per-tree gem colour, shared wings, gold inlay as drawn.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game. No item / recipe JSON (art only).
 ### 35. Foraging armor F5 Wastes - Camphor (2026-10-09)
 - Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F5_Wastes/Camphor/` (+ icons `Armor_Foraging_Camphor_<Piece>.png`, `source/F5_Wastes/Camphor/`, `sheet-camphor.png`); README + manifest updated. Scripts: `ga_camphor.py` (new).
 - Look: colours sampled from the in-game Camphor wood in Assets.zip (own pixels): pale grey bark with soft patches and fine cracks, near-white heartwood, scallop plates, stacked-cloud crown points, deep teal cloth, mint gems. Mark: a teal leaf cluster.
