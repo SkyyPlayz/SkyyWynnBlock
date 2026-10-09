@@ -104,12 +104,14 @@ models in Assets.zip for scale and file layout), in `art/town-props/Common/...`:
 One `sheet.png` with all six + names, manifest with sizes and node names. Original pixels only.
 **Ask Skyy (defaults in brackets):** Board colour [amber glow on dark stone], machine style [brass + stone], arch portal colour [the void
 purple of the bag swirl].
-9. **Armor** - DECIDED 2026-10-08 (docs/answered/gear.md): our own Light armor is DROPPED (combat armor = The Armory pack), MINING armor = vanilla metal sets (no art needed). Still OURS: FARMING (crop sets) + FORAGING (bark plates) armor - approved concept designs in research/cloud/gathering-armor-art/ + foraging-armor/; ask Skyy before starting them as full Blockbench items.
+9. **Armor** - DECIDED 2026-10-08 (docs/answered/gear.md): our own Light armor (tier sets) is **DROPPED by Skyy (2026-10-08)**: "we are dropping the light armor project" - do not start it. The committed Dark Leather candidate (`art/dark-leather-armor/`, Done #3) stays in the repo. Our own Light armor is DROPPED (combat armor = The Armory pack), MINING armor = vanilla metal sets (no art needed). Still OURS: FARMING (crop sets) + FORAGING (bark plates) armor - approved concept designs in research/cloud/gathering-armor-art/ + foraging-armor/; ask Skyy before starting them as full Blockbench items.
 
-- **Known issue - Pebble mirrored UVs (fix pending Skyy's OK):** found while making the pets. Blockbench 5.2.1 + Hytale Models 0.10.0 read a
-  mirrored face's `offset.x` as the RIGHT edge of its texture region. The committed Pebble (`art/pebble/`) likely has the mirrored
-  right-side parts' offsets wrong (R-Foot, R-Arm, R-Brow, Sprout-Leaf-R use the same offset as their L twin), so those faces may sample
-  the wrong pixels / show seams. Not fixed - waiting for Skyy. The pets generator already writes mirrored offsets the right way.
+- **FIXED - Pebble mirrored UVs (2026-10-08, commit "art: fix Pebble mirrored-face UVs"):** found while making the pets. Blockbench 5.2.1 +
+  Hytale Models 0.10.0 read a mirrored face's `offset.x` as the RIGHT edge of its texture region; Pebble's R-Foot, R-Arm, R-Brow and
+  Sprout-Leaf-R pointed at the left edge, so they showed the wrong pixels (confirmed in Blockbench). Fixed in `make_pebble.py` (24 face
+  offsets in `Pebble.blockymodel` + `source/Pebble.bbmodel`); `render_blocky.py` + `validate_pebble.py` now read mirrored faces like
+  Blockbench. Shape, colours, texture, animations, icon, sheet, ids and paths unchanged. No other committed art affected.
+  Skyy's answers, word for word: "fix pebble." / "Yes, the Pebble fix looks good, commit it"
 
 ## Done
 ### 7. Pets - 15 launch pets (2026-10-08)
@@ -209,6 +211,7 @@ purple of the bag swirl].
   especially the shoulder pads and the helmet, try to make them slim" / "Looks great! If just try to make the shoulder pad wrap
   around the shoulder a little bit if you can" / "Yes commit it as a new possible light armor design"
 - This is a **new possible** light armor look, not a wire-in of the existing tier light armor. Main session decides how/whether to use it.
+- Skyy 2026-10-08: "we are dropping the light armor project" - the light armor project is DROPPED; this candidate art stays committed as is.
 
 ### 2. Accessory Bag menu icon (2026-10-08)
 - Folder: `art/accessory-bag-icon/` - icon `Common/Icons/ItemsGenerated/SkyyAccessories_Bag_Menu.png` (64x64), `sheet.png`,

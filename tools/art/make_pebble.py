@@ -410,7 +410,10 @@ def node_json(n):
         for f in faces_of(n):
             rk, mir = layout[(n["name"], f)]
             r = regions[rk]
-            tl[f] = {"offset": {"x": r["x"], "y": r["y"]}, "mirror": {"x": mir, "y": False}, "angle": 0}
+            # mirrored on X: Blockbench 5.2.1 + Hytale Models 0.10.0 read offset.x as the RIGHT edge of the region
+            # (U runs from the offset towards negative), so point it at the region's right edge
+            ox = r["x"] + face_uv_size(f, box_size3(n))[0] if mir else r["x"]
+            tl[f] = {"offset": {"x": ox, "y": r["y"]}, "mirror": {"x": mir, "y": False}, "angle": 0}
         shape["textureLayout"] = tl
     q = n["quat"]
     out = {"id": str(_id[0]), "name": n["name"], "position": vec(n["position"]),

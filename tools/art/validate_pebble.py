@@ -49,6 +49,9 @@ for n in nodes:
     for f, tl in sh["textureLayout"].items():
         w, h = face_size(f, sh["settings"]["size"], sh["type"])
         x, y = tl["offset"]["x"], tl["offset"]["y"]
+        # mirrored axis: Blockbench reads the offset as the far (right / bottom) edge of the region
+        if tl["mirror"]["x"]: x -= w
+        if tl["mirror"]["y"]: y -= h
         if not (isinstance(w, int) and isinstance(h, int)): check(False, f"{n['name']}.{f}: integer size {w}x{h}")
         ok = 0 <= x and 0 <= y and x + w <= TW and y + h <= TH
         if not ok: check(False, f"{n['name']}.{f}: UV rect {x},{y} {w}x{h} inside texture")

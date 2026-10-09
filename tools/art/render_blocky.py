@@ -115,8 +115,9 @@ def box_faces(M, off, size, st, shp, name):
         corners, (uw, vh) = defs[fname]
         cw = (M @ np.c_[np.array(corners) + off, np.ones(4)].T).T[:, :3]
         ox, oy = tl["offset"]["x"], tl["offset"]["y"]
-        u0, u1 = (ox + uw, ox) if tl["mirror"]["x"] else (ox, ox + uw)
-        v0, v1 = (oy + vh, oy) if tl["mirror"]["y"] else (oy, oy + vh)
+        # mirror: the axis runs from the offset towards negative (matches Blockbench 5.2.1 + Hytale Models 0.10.0)
+        u0, u1 = (ox, ox - uw) if tl["mirror"]["x"] else (ox, ox + uw)
+        v0, v1 = (oy, oy - vh) if tl["mirror"]["y"] else (oy, oy + vh)
         assert tl.get("angle", 0) == 0
         uvs = np.array([(u0, v0), (u1, v0), (u1, v1), (u0, v1)], dtype=float)
         out.append(dict(P=cw, UV=uvs, shade=FACE_SHADE[fname], double=bool(shp.get("doubleSided")),

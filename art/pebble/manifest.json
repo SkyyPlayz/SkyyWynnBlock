@@ -339,7 +339,7 @@
     },
     {
       "path": "README.md",
-      "size_bytes": 8704,
+      "size_bytes": 9328,
       "description": "What it is, sizes, how to edit, what is UNVERIFIED in game, open questions for Skyy"
     },
     {
@@ -358,7 +358,7 @@
     },
     {
       "path": "source/Pebble.bbmodel",
-      "size_bytes": 143595,
+      "size_bytes": 143594,
       "description": "Blockbench 5.2.1 project (Hytale Character format) with the texture and all 6 animations embedded"
     }
   ],

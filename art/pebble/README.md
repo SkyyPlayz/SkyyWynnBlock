@@ -85,6 +85,11 @@ The character faces +Z. `R-` means Pebble's own right side (the -X side), the sa
   and the colour patches are flat (no grain).
 - **Previews:** `sheet.png` comes from a small renderer that reads the real files.
   Side-by-side Blockbench screenshots of the same poses match it. Lighting is approximate.
+- **Fix (2026-10-08, mirrored UVs):** the 4 mirrored right-side parts (R-Foot, R-Arm, R-Brow, Sprout-Leaf-R) had the wrong
+  texture in Blockbench / in game. For a mirrored face Blockbench reads `offset.x` as the RIGHT edge of the texture region, but
+  the file pointed at the left edge, so those faces showed the wrong pixels (R-Foot's outer side even ran off the texture).
+  Now each mirrored face points at the right edge, and `render_blocky.py` + `validate_pebble.py` read mirrored faces the same way
+  Blockbench does. Shape, colours, texture, animations, ids and paths are unchanged; only those 24 face offsets moved.
 
 ## UNVERIFIED in game
 
