@@ -82,6 +82,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 73. SkyyAuctions 0.1.3: categories, sort, rarity, level range, reset
 74. SkyyCollections 0.2.8: CRAFT buttons, LOCKED RECIPES, Mining bags on Cobblestone I/III/V/VII
 75. Tools: Chopping / Mining Power, Fortune, level-gated bonus, Gear -> Tools tab
+76. SkyyTrees 0.3.4: no Skyy_Tree missing-interaction lines; chopping speed same
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6

@@ -22,7 +22,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyEssentials | 0.1.9 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.7 | profiles = full saves (default cap 6), delete + 6 h undo |
 | SkyyCooking | 0.1.6 | Cooking dishes + food Grade; XP by craft difficulty |
-| SkyyTrees | 0.3.3 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
+| SkyyTrees | 0.3.4 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
 | SkyyExploration | 0.2.5 | Exploration skill, spots, island checklist |
 | SkyyGuilds | 0.1.6 | guilds + guild bank |
 | SkyyVault | 0.1.5 | vault pages |
