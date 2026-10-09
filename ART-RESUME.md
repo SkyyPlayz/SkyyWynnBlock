@@ -49,8 +49,13 @@ make ourselves. The LOOKS are approved: read every gear.md line about FORAGING /
 sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gathering-armor-art/` (farming = crop sets), and the specs
 `research/cloud/Foraging-Armor-Design.md` (section 2 tier table) and `research/cloud/Crop-Armor-Spec.md` (section 1 the seven sets).
 **Order:** Foraging first, lowest tier first, one tier per commit, show Skyy each tier's sheet:
-- Foraging: Softwood, Lightwood, Hardwood, Drywood, Darkwood, Redwood, Goldenwood (Goldenwood helmet = like the vanilla Mithril helmet,
-  Skyy 2026-10-06). The "Wood" tier 0 is vanilla - skip it. Tier names may still change with the gathering ladder; the looks will not.
+- Foraging (Skyy 2026-10-08: "do a design per tree type in that set, so every hardwood gets its own design in that trees color"):
+  one 4-piece design PER TREE TYPE, in that tree's wood + leaf colours, grouped by the 5 tree tiers (research/Gathering-Progression-Spec.md 2.2):
+  F1 Grove: Oak, Birch, Beech, Ash, Aspen | F2 Autumn + Azure: Maple, Azure | F3 Savanna: Gumboab, Dry, Bottletree, Palo |
+  F4 Northern: Redwood, Fir, Cedar, Poisoned, Spiral | F5 Wastes: Sallow, Burnt, Petrified, Bamboo, Camphor, Banyan, Jungle, Blue Fig, Fire, Crystalwood.
+  Same bark-plate family look (approved concept), each tree its own variation; trees of one tier share stats and players swap looks at an
+  alteration station later. Start with F1 Oak (key log), then the rest of F1, one tree per commit; show Skyy each sheet. Paths use the
+  tree name: `SkyyForaging/<Tier>/<Tree>/<Piece>.blockymodel`, icons `Armor_Foraging_<Tree>_<Piece>.png`. Orchard trees: later.
 - Farming: Wheat, Carrot, Cauliflower, Pumpkin, Chilli, Cotton, Onion ("more like the wood ones ... food armor, like in skyblock").
 **Make, per tier:** 4 pieces - Head, Chest, Hands, Legs - exactly like a vanilla armor set (look at vanilla Iron in Assets.zip:
 `Common/Items/Armors/Iron/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png`, icons `Common/Icons/ItemsGenerated/Armor_Iron_<Piece>.png`;
