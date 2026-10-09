@@ -629,3 +629,13 @@ deleted afterwards):
 - Repo: docs/plans/SkyWynn-Decisions.md, docs/plans/SkyyIslands-Plan.md, docs/archive/DESIGN-STATUS.md (question 12), docs/plans/SkyyExploration-Plan.md, OPEN-QUESTIONS.md (2026-10-01),
   RESUME.md 3i, research/Mob-Levels-Plan.md, research/Mob-Levels-Research.md, research/Gear-Levels-Wynn-Spec.md,
   research/PreRelease-Compat-Report.md, research/Island-Settings-Spec.md, SkyyIslands/build_skyyislands_0.5.5.py
+
+## Island layout (Skyy 2026-10-09)
+"i dont mind if each zone is a few islands with ways they connect, (or ways we build to get between them) i want to keep the distinct
+zones, and have the zones far enough apart you need dragons or portals to get around.   and id like the islands caves to be pretty deep,
+we can squash them a little so the islands arnt crazy tall, but i want the deep lava caverns from vanilla"
+- Each zone = an archipelago of a few islands (cell-grid technique, research/Mods-Folder-Survey.md Welkin section) joined by natural land
+  necks / rock arches or our own built bridges; one zone's islands share its biomes.
+- Zones distinct and far apart: open void between zones wide enough that walking / gliding cannot cross - travel by dragon or portal.
+- Depth: keep vanilla's deep cave layers down to the lava caverns under each island; squash the island's vertical profile (shorter
+  surface hills, compressed cave bands) rather than cutting caves off.
