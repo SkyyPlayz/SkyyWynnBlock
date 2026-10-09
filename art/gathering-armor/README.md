@@ -194,6 +194,49 @@ Defaults kept: golden leaves, russet cloth, eye scars as drawn.
 - Checked the same way as the others (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no
   validator issues, all 4 pieces attach to the vanilla player). Not checked in game.
 
+## F2 AUTUMN + AZURE - what tier 2 adds (same for every F2 tree)
+
+A clear but modest step up from F1 (tier progression rule above). Built by `tools/art/ga_f2.py`, so every F2 tree (Maple, Azure) gets
+exactly the same upgrades; only the wood colours, plate shape and mark change.
+
+1. An extra shoulder layer: a raised cap plate on each pauldron, with a heartwood rim and a sap line along the top.
+2. Wooden PEGS (like rivets) on the cuirass, breast plates, plackart, belt, bracers and greaves.
+3. STRONGER SAP: a brighter, thicker chest vein with 4 forked branches and a soft halo, plus a second vein up the back.
+4. Belt upgrade: heartwood trim bands, pegs and a bigger round carved knot boss as the clasp.
+5. A helmet CREST (a carved ridge from brow to nape with a sap line) and a taller middle crown point.
+6. Heartwood brow band, collar and glove cuffs (F1: rope / vine), and round knot-boss knee caps.
+
+Tier ladder (APPROVED by Skyy 2026-10-09 with the F2 sets, defaults kept):
+- F1: simple (done).
+- F2: pegs, shoulder cap, brighter sap, belt boss, helmet crest.
+- F3: angular plates, bigger layered shoulders, a gorget, sap glow up the arms.
+- F4: thorn and spike accents, tall pauldrons, a glowing chest knot, double crest.
+- F5: ornate - gold inlay, glowing gem knots, a winged or tall crown, the brightest sap (the most impressive).
+
+## MAPLE (F2 Autumn)
+
+Status: APPROVED by Skyy 2026-10-09: "They look great! A little more blue on the azure, and we should be good". Not yet seen in game.
+Defaults kept: mustard cloth, maple leaf + seed pair mark, `F2_Autumn` folder, green sap.
+
+![sheet](sheet-maple.png)
+
+| What | Path |
+|---|---|
+| Models + textures | `Common/Items/Armors/SkyyForaging/F2_Autumn/Maple/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png` |
+| Icons (64x64) | `Common/Icons/ItemsGenerated/Armor_Foraging_Maple_{Head,Chest,Hands,Legs}.png` |
+| Blockbench projects | `source/F2_Autumn/Maple/{Head,Chest,Hands,Legs}.bbmodel` |
+| Review sheet | `sheet-maple.png` |
+
+- Colours follow the in-game (Crimson) Maple wood (hues only, sampled from the game's Maple trunk / log end / redwood
+  planks / leaves / seeds; our own pixels): mauve-brown bark with long vertical fibres and dark cracks, peach heartwood,
+  the game's crimson maple leaves, tan-and-red maple seeds, mustard cloth (autumn).
+- Shape: LOBED plates (every plate edge and hem cut into maple-leaf lobes), maple-leaf crown points.
+- Maple mark: a big crimson MAPLE LEAF on the knot-boss belt clasp with a SAMARA PAIR (the double-winged seed) under it,
+  and a samara pair at the left temple.
+- Size: 48 boxes + 10 quads. Textures Head 96x128, Chest 128x96, Hands 96x32, Legs 96x64.
+- Checked like F1 (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no validator issues, all 4
+  pieces attach to the vanilla player). Not checked in game.
+
 ## Rebuild
 ```
 GA_DESIGN=ga_oak   python3 tools/art/make_foraging_armor.py      # models + textures (design ga_<tree>.py, painter ga_paint.py)
@@ -201,6 +244,7 @@ GA_DESIGN=ga_birch python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_beech python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_ash   python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_aspen python3 tools/art/make_foraging_armor.py
+GA_DESIGN=ga_maple python3 tools/art/make_foraging_armor.py   # F2 trees: tier upgrades in ga_f2.py
 python3 tools/art/make_foraging_icons.py art/gathering-armor F1_Grove Birch
 python3 tools/art/make_foraging_sheet.py art/gathering-armor F1_Grove Birch
 GA_TREE=Birch python3 tools/art/validate_foraging.py

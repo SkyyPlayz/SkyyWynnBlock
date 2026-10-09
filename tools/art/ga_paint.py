@@ -116,6 +116,25 @@ RAMPS.update({
     RUSSET: [(0.00, (30, 20, 16)), (0.20, (48, 32, 24)), (0.35, (66, 44, 32)), (0.50, (88, 58, 40)),
              (0.65, (110, 74, 50)), (0.80, (132, 92, 62)), (1.00, (166, 124, 88))],
 })
+# ---- F2 Autumn + Azure (tier 2: a modest step up from F1 - same family, more layers, pegs, stronger sap) ----
+# Maple: hues sampled from the in-game Crimson Maple trunk / log end / redwood planks / leaves / seeds (own pixels): mauve-brown
+# bark, peach heartwood, the game's crimson maple leaves, tan-and-red maple seed pairs, mustard cloth (autumn).
+MAPLE, MAPLEDK, MLEAF, MWOOD, MSEED, MUSTARD = range(35, 41)
+MAT_NAMES += ["maple", "mapledark", "mapleleaf", "maplewood", "mapleseed", "mustard"]
+RAMPS.update({
+    MAPLE: [(0.00, (26, 17, 18)), (0.20, (44, 30, 30)), (0.35, (60, 42, 42)), (0.50, (80, 57, 56)),
+            (0.65, (98, 70, 68)), (0.80, (118, 86, 82)), (1.00, (150, 114, 106))],
+    MAPLEDK: [(0.00, (14, 9, 10)), (0.25, (24, 15, 16)), (0.50, (36, 24, 24)), (0.75, (52, 35, 35)),
+              (1.00, (72, 50, 49))],
+    MLEAF: [(0.00, (52, 14, 18)), (0.20, (78, 22, 26)), (0.35, (104, 32, 34)), (0.50, (132, 44, 42)),
+            (0.65, (156, 58, 46)), (0.80, (178, 78, 54)), (1.00, (210, 120, 80))],
+    MWOOD: [(0.00, (80, 52, 44)), (0.20, (120, 82, 64)), (0.35, (152, 106, 80)), (0.50, (180, 128, 98)),
+            (0.65, (194, 144, 110)), (0.80, (206, 160, 124)), (1.00, (226, 190, 152))],
+    MSEED: [(0.00, (70, 30, 28)), (0.25, (110, 60, 44)), (0.50, (150, 110, 82)), (0.75, (180, 146, 110)),
+            (1.00, (212, 186, 146))],
+    MUSTARD: [(0.00, (40, 26, 12)), (0.20, (64, 42, 16)), (0.35, (90, 60, 22)), (0.50, (118, 82, 30)),
+              (0.65, (142, 102, 38)), (0.80, (164, 124, 52)), (1.00, (198, 160, 88))],
+})
 WARM = np.array((104, 92, 64), float)       # sun-faded / worn bark tint
 QSTEP = 0.05                                # value quantisation -> flat painted clusters
 

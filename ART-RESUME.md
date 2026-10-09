@@ -67,9 +67,8 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   Same bark-plate family look (approved concept), each tree its own variation; trees of one tier share stats and players swap looks at an
   alteration station later. Start with F1 Oak (key log), then the rest of F1, one tree per commit; show Skyy each sheet. Paths use the
   tree name: `SkyyForaging/<Tier>/<Tree>/<Piece>.blockymodel`, icons `Armor_Foraging_<Tree>_<Piece>.png`. Orchard trees: later.
-  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen (Oak + Birch repainted v2 in their in-game
-  wood colours); see Done.
-  **Next: F2 Autumn + Azure (Maple, Azure)** - START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game
+  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen. F2 Autumn: Maple DONE (2026-10-09); see Done.
+  **Next: F2 Azure v2 (bluer)** - v2 draft ready for review (Skyy on v1: "A little more blue on the azure"); START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game
   wood variant." - sample the tree's log / planks / leaves colours in Assets.zip; Beech v1
   in made-up colours read as "iron"). Reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter,
   `make_foraging_*.py`), same piece shapes / fit, own colours + own small mark. Sources go in `source/<Tier>/<Tree>/`. Defaults Skyy kept for Oak: tier folder `F1_Grove`,
@@ -80,6 +79,10 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   tier is visibly a bit cooler than the last. F1 = simple (done). F2 = a clear but modest step up (more layered plates, an extra
   shoulder layer, stronger sap glow lines, a small belt / trim upgrade, a slightly fancier helmet crest). Leave room so F3, F4 and
   F5 keep escalating (F5 the most impressive).
+  **TIER LADDER - APPROVED by Skyy 2026-10-09 with the F2 sets ("They look great! ..."), defaults kept:** F1 simple (done) |
+  F2 pegs, raised shoulder caps, brighter forked sap + back vein, belt boss, helmet crest (`tools/art/ga_f2.py`, same for every F2 tree) |
+  F3 angular plates, bigger layered shoulders, a gorget, sap glow up the arms | F4 thorn / spike accents, tall pauldrons, a glowing chest
+  knot, double crest | F5 ornate - gold inlay, glowing gem knots, a winged or tall crown, the brightest sap (the most impressive).
 - Farming: Wheat, Carrot, Cauliflower, Pumpkin, Chilli, Cotton, Onion ("more like the wood ones ... food armor, like in skyblock").
 **Make, per tier:** 4 pieces - Head, Chest, Hands, Legs - exactly like a vanilla armor set (look at vanilla Iron in Assets.zip:
 `Common/Items/Armors/Iron/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png`, icons `Common/Icons/ItemsGenerated/Armor_Iron_<Piece>.png`;
@@ -138,6 +141,22 @@ purple of the bag swirl].
   Skyy's answers, word for word: "fix pebble." / "Yes, the Pebble fix looks good, commit it"
 
 ## Done
+### 20. Foraging armor F2 Autumn - Maple (2026-10-09) - first F2 set
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F2_Autumn/Maple/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
+  (1 texel per unit), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Maple_<Piece>.png` (64), `source/F2_Autumn/Maple/*.bbmodel`,
+  `sheet-maple.png`; shared `manifest.json` + `README.md` updated (F2 tier notes + the approved F1-F5 ladder). Scripts: `tools/art/ga_f2.py`
+  (new: the shared tier-2 builder), `ga_maple.py` (new), `ga_paint.py` (maple colours), `make_foraging_sheet.py`, `make_foraging_manifest.py`.
+  All 5 F1 sets rebuild byte-identical.
+- Look: colours from the in-game (Crimson) Maple wood (hues sampled from the game's Maple trunk / log end / redwood planks / leaves /
+  seeds; own pixels): mauve-brown bark with dark cracks, peach heartwood, crimson leaves, mustard cloth. LOBED maple-leaf plates and
+  crown points. Mark: a big crimson MAPLE LEAF on the belt knot boss with a SAMARA PAIR under it + a seed pair at the left temple.
+  Tier 2 upgrades: raised shoulder caps, wooden pegs, brighter forked sap + back vein, belt boss + trim, helmet crest, knee bosses.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0 (no validator issues; plugin Import Attachment puts all 4 pieces on the vanilla player).
+- Skyy's answers, word for word: "Beautiful I want the armor sets consistent across the set, but each set should be a little different
+  visually, so they start simple and get a little cooler each set you get to that's better" / "They look great! A little more blue on
+  the azure, and we should be good"
+- Defaults kept: `F2_Autumn` folder, mustard cloth, maple leaf + seed pair mark, green sap (sap is a tier feature), the F1-F5 ladder.
+- Not yet seen in game. No item / recipe JSON (art only).
 ### 19. Foraging armor F1 Grove - Aspen (2026-10-09) - F1 GROVE COMPLETE (5/5)
 - Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
   (1 texel per unit), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Aspen_<Piece>.png` (64), `source/F1_Grove/Aspen/*.bbmodel`,
