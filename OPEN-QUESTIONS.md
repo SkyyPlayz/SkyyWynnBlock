@@ -50,22 +50,13 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
   Dimension keeps the Workbench tab? [spec paused until you say]
 
 ### classes
-- CLASS TREES (SkyyTrees 0.3.3, live 2026-10-08): the 13 open choices of research/cloud/Class-Tree-Build-Map.md all use its recommended
-  default (page 2 replaced, paths from T1, first owned node locks, whole-tree respec, refund + 1 free respec, flat points, Monk Calm
-  Breath waits, capstones retired, same respec price for Monk/Assassin) - change any? [as built]
-- CLASS TREES builder choices to confirm: Open Aura hangs off Root (buyable now); Mage Long Blink +2/+3/+4/+5 (21 blocks max); Radiant
-  Trail heals you + party only (no Divinity XP); Blink Strike also after a targeted Shadow Step; Long Reach = kunai teleport range only. [as built]
-- MONK class skill name: Discipline, Zen, Kenpo, Harmony or Focus? (a small 3-mod rebuild to change) [Discipline]
 - the missing ability picks - every class's A2 alternative and its two improved A1 options (the Priest's A2 alternative too).
   The class-ability spec PROPOSES them after the reset, then you pick. [proposals pending; research/classes/<Class>.md]
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]
 
 
-- ABILITY KEYS follow-up (your 2026-10-08 decision: 2 primary on Ability 2 / 3, 2 alt on crouch + Ability 2 / 3): in MID-AIR a key casts the primary [yes - crouch in the air stays the double jump / Monk air jump / plunge]; hotbar ability items still wanted as a backup way to cast [no for now - keys only]; swap which 2 are primary out of combat only, in the class / tree page [yes]
 
-- CLASS ABILITY SHAPES (research/cloud/Class-Ability-Shapes.md section "Questions for Skyy", 10 questions): sprint shapes may step you ~2 blocks [yes]; costs / cooldowns per shape (most the same, bigger shapes +2-4 Mana / +2 s) [yes]; a mid-roll cast uses the sprinting shape [yes]; Priest Guardian Spirit stays passive first (press / crouch versions later) [yes]; HUD Abilities widget shows 2 rows that switch to the alts while you crouch [yes]; you can swap which key each primary sits on [yes]; with only 3 abilities owned = 2 primary + 1 alt [yes]; toggles (Blood Frenzy) only change how they turn on [yes]; build order Mage + Priest, Monk + Assassin, Warrior + Berserker, Archer last [yes]
 
-- SPELLBLADE (research/classes/Spellblade.md "Questions for Skyy", 15): class skill name [Battlemagic]; Momentum 0-20 stacks, rhythm window, decay [yes]; what stacks change + Rolling (7) / Unstoppable (14) [yes]; what breaks Momentum [yes]; Breach next to the Archer Mark: higher + 5% [yes]; kit A1 Arcane Breach / A2 Elemental Imbue / A2-alt Sunder / A1-alt Rift Cleave (first) or Shattering Arc [keep]; elements = the engine five (Fire, Water, Earth, Wind, Lightning), Poison a status, Gravity sword = Earth [yes]; Echo on Sunder + A1-alts [yes]; great shield guard + Bulwark Charge [yes]; traversal costs [yes]; signatures Meridian Cut / Iron Curtain [yes]; medium stats, Light armor [yes]; paths Tempest / Breaker / Vanguard [yes]; Warrior gives up longswords + Zweihander [yes]; build order after the ability engine [yes]
 
 ### pets
 - DRAGON as a pet with Aures' Dragon Nestkeeper: our secondary pet slot summons their dragon, or their mod owns the dragon and our slot links it, or our own dragons later? [(1) summon via our slot if Aures allows + it works, else (2) - docs/answered/pets.md 2026-10-06; decide after the survey + Aures' answer]
