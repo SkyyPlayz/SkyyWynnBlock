@@ -67,8 +67,8 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   Same bark-plate family look (approved concept), each tree its own variation; trees of one tier share stats and players swap looks at an
   alteration station later. Start with F1 Oak (key log), then the rest of F1, one tree per commit; show Skyy each sheet. Paths use the
   tree name: `SkyyForaging/<Tier>/<Tree>/<Piece>.blockymodel`, icons `Armor_Foraging_<Tree>_<Piece>.png`. Orchard trees: later.
-  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen. F2 AUTUMN COMPLETE (2/2, 2026-10-09): Maple, Azure. F3 Savanna: Gumboab, Dry DONE (Bottletree, Palo held for a colour fix). F4 Northern: Fir, Cedar, Poisoned DONE (Redwood, Spiral held for a colour fix); see Done.
-  **Next: colour-fixed v2 re-review - Bottletree, Palo (F3), Redwood, Spiral (F4)** (approved v1s were drawn from web icons; the Assets.zip check on 2026-10-09 found them too dark / off - review/<tree>-v2.png); then **F5 Wastes** (Sallow, Burnt, Petrified, Bamboo, Camphor, Banyan, Jungle, Blue Fig, Fire, Crystalwood; shared `ga_f5.py`); START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game
+  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen. F2 AUTUMN COMPLETE (2/2, 2026-10-09): Maple, Azure. F3 Savanna: Gumboab, Dry, Bottletree. F4 Northern: Fir, Cedar, Poisoned. See Done.
+  **Next: Foraging - commit the approved Palo, Redwood, Spiral, Sallow, Burnt, Petrified, Bamboo, Camphor, Banyan, Jungle, Blue Fig, Fire, Crystalwood** (Skyy: "All look great, commit the 4 colour fixes and all 10 F5 sets"); START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game
   wood variant." - sample the tree's log / planks / leaves colours in Assets.zip; Beech v1
   in made-up colours read as "iron"). Reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter,
   `make_foraging_*.py`), same piece shapes / fit, own colours + own small mark. Sources go in `source/<Tier>/<Tree>/`. Defaults Skyy kept for Oak: tier folder `F1_Grove`,
@@ -141,6 +141,11 @@ purple of the bag swirl].
   Skyy's answers, word for word: "fix pebble." / "Yes, the Pebble fix looks good, commit it"
 
 ## Done
+### 27. Foraging armor F3 Savanna - Bottletree v2, in-game colour fix (2026-10-09)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F3_Savanna/Bottletree/` (+ icons, `source/F3_Savanna/Bottletree/`, `sheet-bottletree.png`); README + manifest updated. `ga_paint.py` also carries the other fixes + the F5 palettes.
+- Why: the bark was too dark next to the game's real Bottletree log in Assets.zip (pale grey-cream), so the bark ramp is lifted to match it. Shapes / mark / cloth unchanged.
+- Skyy's answers, word for word: v1 "Bottletree looks good, commit it"; v2 "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game.
 ### 26. Foraging armor F4 Northern - Poisoned (2026-10-09)
 - Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F4_Northern/Poisoned/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`,
   icons `Common/Icons/ItemsGenerated/Armor_Foraging_Poisoned_<Piece>.png` (64), `source/F4_Northern/Poisoned/*.bbmodel`, `sheet-poisoned.png`;

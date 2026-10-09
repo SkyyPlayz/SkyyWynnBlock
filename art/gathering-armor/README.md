@@ -265,19 +265,21 @@ Take the V1 azure, and make the parts that are already blue a little brighter bl
 
 ## F3 SAVANNA - what tier 3 adds (same for every F3 tree)
 
-Built by `tools/art/ga_f3.py` on top of everything tier 2 has (`ga_f2.py`), identical for every F3 tree (Gumboab, Dry)
+Built by `tools/art/ga_f3.py` on top of everything tier 2 has (`ga_f2.py`), identical for Gumboab, Dry, Bottletree, Palo
 (approved ladder: "F3 angular plates, bigger layered shoulders, a gorget, sap glow up the arms"):
 - ANGULAR plates (each tree its own angular edge) + cut corners on breast plates, tassels, cheek guards, helmet back, bracer plates.
 - BIGGER, LAYERED shoulders: wider pauldron + cap, a carved ridge on the cap, a second lame under the first.
 - A GORGET: a taller neck-guard ring + a pointed front plate with a sap drop.
 - SAP GLOW UP THE ARMS: a glowing vein up each arm (bracer, sleeve, shoulder lames).
 Colours from each tree's in-game log / leaves / planks (own pixels). Status: APPROVED by Skyy 2026-10-09 ("<Tree> looks good, commit it"
-for each tree). Not seen in game.
+for each tree). Bottletree and Palo are v2: the bark was too dark next to the real Assets.zip textures, so it was lightened
+(approved 2026-10-09: "All look great, commit the 4 colour fixes and all 10 F5 sets"). Not seen in game.
 
 | Tree | Bark (in game) | Plate edge | Mark | Cloth |
 |---|---|---|---|---|
 | Gumboab | smooth grey-taupe, soft folds | terraced (flat steps, angled ends) | fan of 5 sage blades | ochre |
 | Dry | warm brown, dark vertical fibres | splinter saw-tooth | 3 yellow puff blossoms | rust |
+| Bottletree | pale grey-cream, soft smudges | crenellated (square teeth) | little bottle tree | deep teal |
 
 Files: `Common/Items/Armors/SkyyForaging/F3_Savanna/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`, `source/F3_Savanna/<Tree>/`,
 `sheet-<tree>.png`. Each 53 boxes + 9 quads. Checked like F1 / F2 (structure PASS, byte-identical rebuild, fit, Blockbench +
@@ -285,13 +287,15 @@ Hytale plugin: no validator issues).
 
 ## F4 NORTHERN - what tier 4 adds (same for every F4 tree)
 
-Built by `tools/art/ga_f4.py` on top of everything tier 3 has (`ga_f3.py`, `ga_f2.py`), identical for every F4 tree (approved ladder: "F4 thorn / spike accents, tall pauldrons, a glowing chest knot, double crest"):
+Built by `tools/art/ga_f4.py` on top of everything tier 3 has (`ga_f3.py`, `ga_f2.py`), identical for Redwood, Fir, Cedar,
+Poisoned, Spiral (approved ladder: "F4 thorn / spike accents, tall pauldrons, a glowing chest knot, double crest"):
 - THORNS: heartwood thorn spikes, two on each shoulder cap, two out of each bracer plate.
 - TALL PAULDRONS: an upright guard plate on the outer end of each pauldron.
 - A GLOWING CHEST KNOT between the breast plates (glowing sap rings).
 - A DOUBLE CREST: two thorny crest ridges over the helmet.
-Colours from each tree's in-game log / leaves / planks (own pixels; checked against Assets.zip 2026-10-09). Status: APPROVED by
-Skyy 2026-10-09 ("all look great! commit all"). Not seen in game.
+Status: APPROVED by Skyy 2026-10-09 ("all look great! commit all"). Fir, Cedar, Poisoned colours checked against Assets.zip.
+Redwood (heartwood a little deeper) and Spiral (bark lighter) are v2 colour fixes to match the in-game wood (approved 2026-10-09).
+Not seen in game.
 
 | Tree | Bark (in game) | Plate edge | Mark | Cloth |
 |---|---|---|---|---|
@@ -311,8 +315,8 @@ GA_DESIGN=ga_ash   python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_aspen python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_maple python3 tools/art/make_foraging_armor.py   # F2 trees: tier upgrades in ga_f2.py
 GA_DESIGN=ga_azure python3 tools/art/make_foraging_armor.py
-GA_DESIGN=ga_gumboab python3 tools/art/make_foraging_armor.py   # F3 trees: tier upgrades in ga_f3.py
-GA_DESIGN=ga_fir python3 tools/art/make_foraging_armor.py   # F4 trees: tier upgrades in ga_f4.py
+GA_DESIGN=ga_gumboab python3 tools/art/make_foraging_armor.py   # F3 trees (also ga_dry, ga_bottletree, ga_palo): tier upgrades in ga_f3.py
+GA_DESIGN=ga_redwood python3 tools/art/make_foraging_armor.py   # F4 trees (also ga_fir, ga_cedar, ga_poisoned, ga_spiral): ga_f4.py
 python3 tools/art/make_foraging_icons.py art/gathering-armor F1_Grove Birch
 python3 tools/art/make_foraging_sheet.py art/gathering-armor F1_Grove Birch
 GA_TREE=Birch python3 tools/art/validate_foraging.py
