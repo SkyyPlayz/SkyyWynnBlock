@@ -17,7 +17,7 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.17"), ("SkyySacks", "0.7.16"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.8"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.14"), ("SkyySkills", "0.4.29"),
+    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.15"), ("SkyySkills", "0.4.29"),
     ("SkyyAccessories", "0.5.9"), ("SkyyClasses", "0.1.16"), ("SkyyMenu", "0.3.13"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.9"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -55,6 +55,8 @@ SET = [
     # exists; otherwise roll back all four together and expect classless Monk profiles (no items / coins / XP lost; Combat.Shaman kept).
     # FLOOR (2026-10-08, perks25): before rolling SkyySkills below 0.4.25 switch "Class Stamina" and "Class balance boost" OFF in Server
     # Setup and let players log in once (0.4.24 never removes the saved modifiers skyyskill_classstamina / classboosthp / classboostmana / classbooststamina).
+    # FLOOR (2026-10-09, mining armor): SkyyGear 0.2.15 -> 0.2.14 is safe for items, but BEFORE rolling back delete the 7 set.mining_*
+    # lines from Skyy_SkyyGear/config.properties (0.2.14 would turn Adamantite / Mithril / Onyxium spd into an always-on full-set Speed bonus).
     # FLOOR (2026-10-08, loot round): never roll SkyyGear below 0.2.11 without first setting unid.bags=false and having players identify every
     # mystery bag (bags become unknown items in 0.2.10). Never roll SkyyExploration below 0.2.4 without first setting luggage.enabled=false,
     # visiting each world until /exploreadmin stats shows out 0 / claimed 0, then deleting Skyy_SkyyExploration/luggage/. SkyyMobs 0.1.5: no floor.
