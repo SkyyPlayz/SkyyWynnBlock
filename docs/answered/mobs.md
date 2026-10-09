@@ -35,3 +35,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - IDEA 2026-10-09 (Skyy, Better Mob Expansion + Humans addon by Frah): "this could help for more mob verity, especially as we start making our own zones." -> research agent.
 - LOCKED 2026-10-09 (Skyy, popup batch 8): Better Mob Expansion -> "Yes, main mod only (Recommended)" (switched on in the HUD mod world with the next deploy; PACK.md row + credit); gun bandits -> "No guns (Recommended)" (Humans add-on stays off; our own bandits later with bows / blades).
 - IDEA 2026-10-09 (Skyy, Forgotten Creatures by PedriJoe - enables hidden vanilla creatures): "this one looks cool too" -> folded into the mods-folder scan (vanilla models = pet candidates).
+- IDEA 2026-10-09 (Skyy, Spawn Manager + Spawn Manager [Assets] by ReignInBlood): "these two spawn manger mods might help later" -> research agent (zone spawn control, boss spawners, merchant spawning).
