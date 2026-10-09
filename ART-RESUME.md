@@ -42,6 +42,17 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
+### 17. SkyWynn Menu item - new emblem (small, do this FIRST, then continue item 14 with F1 Ash)
+**Why:** Skyy 2026-10-09: "lets make a new icon for the menu" -> the menu item in the last hotbar slot (id `Skyy_Menu`, SkyyMenu); today
+it borrows the vanilla Voidheart look (`MENU_ITEM_LOOK = "Ingredient_Voidheart"` in `SkyyMenu/build_skyymenu_0.3.12.py`). Skyy picked
+the **SkyWynn emblem**: a small floating sky island (grass top, rocky hanging underside, maybe a tiny waterfall / cloud wisps) with a
+gold compass star or crown above it - it should read as "the SkyWynn hub" at hotbar size.
+**Make:** a held item model + texture (sized like a vanilla held ingredient / small item, so it sits in the hand like the Voidheart does) and
+the icon. Paths: `art/menu-emblem/Common/Items/SkyyMenu/Skyy_Menu.blockymodel` + `Skyy_Menu_Texture.png`, icon
+`Common/Icons/ItemsGenerated/Skyy_Menu.png` (same size as vanilla item icons), plus the usual sheet / manifest / README / source.
+Readable at 64 px and in the 1-slot hotbar view; a faint glow is fine (the current one glows). Original pixels only.
+**Ask Skyy (defaults):** compass star over the island [yes]; colours sky blue + grass green + gold [yes]; keep a soft glow [yes].
+
 ### 14. Gathering armor - FORAGING (bark plates) + FARMING (crop sets), full game-ready models
 **Why:** Skyy 2026-10-08 (docs/answered/gear.md, ARMOR SPLIT): "lets still make the farming and gathering armor, but use vanilla for
 mining, and armory for combat gear." Mining = vanilla metal armor, combat = The Armory pack, so these two families are the only armor we
