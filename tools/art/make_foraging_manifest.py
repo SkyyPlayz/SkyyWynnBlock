@@ -17,8 +17,13 @@ STATUS = {
     "F2_Autumn/Azure": "approved by Skyy 2026-10-09 (v3: \"Yes, Azure v3 looks good, commit it\"); NOT verified in game",
     "F3_Savanna/Gumboab": "approved by Skyy 2026-10-09 (\"Gumboab looks good, commit it\"); NOT verified in game",
     "F3_Savanna/Dry": "approved by Skyy 2026-10-09 (\"Dry looks good, commit it\"); NOT verified in game",
-    "F3_Savanna/Bottletree": "approved by Skyy 2026-10-09 (\"Bottletree looks good, commit it\"); NOT verified in game",
-    "F3_Savanna/Palo": "approved by Skyy 2026-10-09 (\"Palo looks good, commit it\"); NOT verified in game",
+    "F3_Savanna/Bottletree": "v2 DRAFT (colours corrected to Assets.zip; v1 approved \"Bottletree looks good, commit it\"), for re-review; NOT verified in game",
+    "F3_Savanna/Palo": "v2 DRAFT (colours corrected to Assets.zip; v1 approved \"Palo looks good, commit it\"), for re-review; NOT verified in game",
+    "F4_Northern/Redwood": "v2 DRAFT (colours corrected to Assets.zip; v1 approved \"all look great! commit all\"), for re-review; NOT verified in game",
+    "F4_Northern/Fir": "approved by Skyy 2026-10-09 (\"all look great! commit all\"); colours checked against Assets.zip; NOT verified in game",
+    "F4_Northern/Cedar": "approved by Skyy 2026-10-09 (\"all look great! commit all\"); colours checked against Assets.zip; NOT verified in game",
+    "F4_Northern/Poisoned": "approved by Skyy 2026-10-09 (\"all look great! commit all\"); colours checked against Assets.zip; NOT verified in game",
+    "F4_Northern/Spiral": "v2 DRAFT (colours corrected to Assets.zip; v1 approved \"all look great! commit all\"), for re-review; NOT verified in game",
     "F1_Grove/Birch": "v2 (in-game Birch wood colours) approved by Skyy 2026-10-09 (\"they all look great!\"); v1 approved 2026-10-09 (\"Yes, the Birch armor looks good, commit it\"); NOT verified in game",
 }
 

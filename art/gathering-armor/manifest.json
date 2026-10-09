@@ -6483,6 +6483,880 @@
      ]
     }
    }
+  },
+  "F4_Northern/Fir": {
+   "tier": "F4_Northern",
+   "tree": "Fir",
+   "item_id_prefix_suggestion": "Armor_Foraging_Fir",
+   "sheet": "sheet-fir.png",
+   "status": "approved by Skyy 2026-10-09 (\"all look great! commit all\"); colours checked against Assets.zip; NOT verified in game",
+   "totals": {
+    "boxes": 65,
+    "quads": 9
+   },
+   "pieces": {
+    "Head": {
+     "model": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Head.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Head_Texture.png",
+     "texture_size": [
+      96,
+      128
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Fir_Head.png",
+     "source": "source/F4_Northern/Fir/Head.bbmodel",
+     "attaches_to_bones": [
+      "Head"
+     ],
+     "boxes": 13,
+     "quads": 3,
+     "nodes": [
+      {
+       "name": "Head",
+       "kind": "attach:Head",
+       "parent": null
+      },
+      {
+       "name": "HelmCap",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        32,
+        10,
+        31
+       ]
+      },
+      {
+       "name": "HelmUpper",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        28,
+        3,
+        27
+       ]
+      },
+      {
+       "name": "HelmDome",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        22,
+        2,
+        21
+       ]
+      },
+      {
+       "name": "HelmBrim",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        36,
+        2,
+        34
+       ]
+      },
+      {
+       "name": "HelmBack",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        32,
+        18,
+        2
+       ]
+      },
+      {
+       "name": "R-Cheek",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        14,
+        14
+       ]
+      },
+      {
+       "name": "L-Cheek",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        14,
+        14
+       ]
+      },
+      {
+       "name": "CrownMid",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        7,
+        15,
+        2
+       ]
+      },
+      {
+       "name": "R-CrownSide",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        7,
+        12,
+        2
+       ]
+      },
+      {
+       "name": "L-CrownSide",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        7,
+        12,
+        2
+       ]
+      },
+      {
+       "name": "R-HelmLeaf",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "L-HelmLeaf",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "HelmBadge",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        5,
+        5,
+        2
+       ]
+      },
+      {
+       "name": "L-HelmFir",
+       "kind": "quad",
+       "parent": "Head"
+      },
+      {
+       "name": "R-HelmCrest",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        4,
+        16
+       ]
+      },
+      {
+       "name": "L-HelmCrest",
+       "kind": "box",
+       "parent": "Head",
+       "size": [
+        2,
+        4,
+        16
+       ]
+      }
+     ]
+    },
+    "Chest": {
+     "model": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Chest.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Chest_Texture.png",
+     "texture_size": [
+      64,
+      224
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Fir_Chest.png",
+     "source": "source/F4_Northern/Fir/Chest.bbmodel",
+     "attaches_to_bones": [
+      "Pelvis",
+      "Belly",
+      "Chest",
+      "R-Arm",
+      "L-Arm"
+     ],
+     "boxes": 31,
+     "quads": 4,
+     "nodes": [
+      {
+       "name": "Pelvis",
+       "kind": "attach:Pelvis",
+       "parent": null
+      },
+      {
+       "name": "R-Tassel",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        12,
+        13,
+        1
+       ]
+      },
+      {
+       "name": "L-Tassel",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        12,
+        13,
+        1
+       ]
+      },
+      {
+       "name": "TasselBack",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        24,
+        13,
+        1
+       ]
+      },
+      {
+       "name": "Belly",
+       "kind": "attach:Belly",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "Plackart",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        27,
+        16,
+        20
+       ]
+      },
+      {
+       "name": "VineBelt",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        28,
+        3,
+        21
+       ]
+      },
+      {
+       "name": "Clasp",
+       "kind": "box",
+       "parent": "Belly",
+       "size": [
+        6,
+        6,
+        2
+       ]
+      },
+      {
+       "name": "FirBadge",
+       "kind": "quad",
+       "parent": "Belly"
+      },
+      {
+       "name": "Chest",
+       "kind": "attach:Chest",
+       "parent": "Belly"
+      },
+      {
+       "name": "Cuirass",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        29,
+        22,
+        21
+       ]
+      },
+      {
+       "name": "R-Breast",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        12,
+        17,
+        2
+       ]
+      },
+      {
+       "name": "L-Breast",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        12,
+        17,
+        2
+       ]
+      },
+      {
+       "name": "Collar",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        22,
+        4,
+        19
+       ]
+      },
+      {
+       "name": "GorgetPlate",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        16,
+        6,
+        2
+       ]
+      },
+      {
+       "name": "ChestKnot",
+       "kind": "box",
+       "parent": "Chest",
+       "size": [
+        7,
+        7,
+        2
+       ]
+      },
+      {
+       "name": "R-Arm",
+       "kind": "attach:R-Arm",
+       "parent": "Chest"
+      },
+      {
+       "name": "R-Pauldron",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        15,
+        4,
+        18
+       ]
+      },
+      {
+       "name": "R-PauldronCap",
+       "kind": "box",
+       "parent": "R-Pauldron",
+       "size": [
+        11,
+        3,
+        15
+       ]
+      },
+      {
+       "name": "R-PauldronFin",
+       "kind": "box",
+       "parent": "R-PauldronCap",
+       "size": [
+        2,
+        2,
+        12
+       ]
+      },
+      {
+       "name": "R-CapThornA",
+       "kind": "box",
+       "parent": "R-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-CapThornB",
+       "kind": "box",
+       "parent": "R-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-ShoulderLeaf",
+       "kind": "quad",
+       "parent": "R-Pauldron"
+      },
+      {
+       "name": "R-PauldronGuard",
+       "kind": "box",
+       "parent": "R-Pauldron",
+       "size": [
+        2,
+        10,
+        16
+       ]
+      },
+      {
+       "name": "R-PauldronLame",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        3,
+        8,
+        15
+       ]
+      },
+      {
+       "name": "R-Sleeve",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        9,
+        22,
+        13
+       ]
+      },
+      {
+       "name": "R-PauldronLame2",
+       "kind": "box",
+       "parent": "R-Arm",
+       "size": [
+        2,
+        6,
+        14
+       ]
+      },
+      {
+       "name": "L-Arm",
+       "kind": "attach:L-Arm",
+       "parent": "Chest"
+      },
+      {
+       "name": "L-Pauldron",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        15,
+        4,
+        18
+       ]
+      },
+      {
+       "name": "L-Vine",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        3,
+        2,
+        18
+       ]
+      },
+      {
+       "name": "L-VineLeafA",
+       "kind": "quad",
+       "parent": "L-Vine"
+      },
+      {
+       "name": "L-VineLeafB",
+       "kind": "quad",
+       "parent": "L-Vine"
+      },
+      {
+       "name": "L-PauldronCap",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        11,
+        3,
+        15
+       ]
+      },
+      {
+       "name": "L-PauldronFin",
+       "kind": "box",
+       "parent": "L-PauldronCap",
+       "size": [
+        2,
+        2,
+        12
+       ]
+      },
+      {
+       "name": "L-CapThornA",
+       "kind": "box",
+       "parent": "L-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-CapThornB",
+       "kind": "box",
+       "parent": "L-PauldronCap",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-PauldronGuard",
+       "kind": "box",
+       "parent": "L-Pauldron",
+       "size": [
+        2,
+        10,
+        16
+       ]
+      },
+      {
+       "name": "L-PauldronLame",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        3,
+        8,
+        15
+       ]
+      },
+      {
+       "name": "L-Sleeve",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        9,
+        22,
+        13
+       ]
+      },
+      {
+       "name": "L-PauldronLame2",
+       "kind": "box",
+       "parent": "L-Arm",
+       "size": [
+        2,
+        6,
+        14
+       ]
+      }
+     ]
+    },
+    "Hands": {
+     "model": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Hands.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Hands_Texture.png",
+     "texture_size": [
+      64,
+      64
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Fir_Hands.png",
+     "source": "source/F4_Northern/Fir/Hands.bbmodel",
+     "attaches_to_bones": [
+      "R-Forearm",
+      "R-Hand",
+      "L-Forearm",
+      "L-Hand"
+     ],
+     "boxes": 12,
+     "quads": 2,
+     "nodes": [
+      {
+       "name": "R-Forearm",
+       "kind": "attach:R-Forearm",
+       "parent": null
+      },
+      {
+       "name": "R-Bracer",
+       "kind": "box",
+       "parent": "R-Forearm",
+       "size": [
+        9,
+        14,
+        13
+       ]
+      },
+      {
+       "name": "R-BracerPlate",
+       "kind": "box",
+       "parent": "R-Forearm",
+       "size": [
+        2,
+        12,
+        10
+       ]
+      },
+      {
+       "name": "R-BracerThornA",
+       "kind": "box",
+       "parent": "R-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-BracerThornB",
+       "kind": "box",
+       "parent": "R-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "R-Sprig",
+       "kind": "quad",
+       "parent": "R-Forearm"
+      },
+      {
+       "name": "R-Hand",
+       "kind": "attach:R-Hand",
+       "parent": "R-Forearm"
+      },
+      {
+       "name": "R-Glove",
+       "kind": "box",
+       "parent": "R-Hand",
+       "size": [
+        11,
+        12,
+        15
+       ]
+      },
+      {
+       "name": "R-GloveCuff",
+       "kind": "box",
+       "parent": "R-Hand",
+       "size": [
+        12,
+        2,
+        16
+       ]
+      },
+      {
+       "name": "L-Forearm",
+       "kind": "attach:L-Forearm",
+       "parent": null
+      },
+      {
+       "name": "L-Bracer",
+       "kind": "box",
+       "parent": "L-Forearm",
+       "size": [
+        9,
+        14,
+        13
+       ]
+      },
+      {
+       "name": "L-BracerPlate",
+       "kind": "box",
+       "parent": "L-Forearm",
+       "size": [
+        2,
+        12,
+        10
+       ]
+      },
+      {
+       "name": "L-BracerThornA",
+       "kind": "box",
+       "parent": "L-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-BracerThornB",
+       "kind": "box",
+       "parent": "L-BracerPlate",
+       "size": [
+        3,
+        6,
+        3
+       ]
+      },
+      {
+       "name": "L-Sprig",
+       "kind": "quad",
+       "parent": "L-Forearm"
+      },
+      {
+       "name": "L-Hand",
+       "kind": "attach:L-Hand",
+       "parent": "L-Forearm"
+      },
+      {
+       "name": "L-Glove",
+       "kind": "box",
+       "parent": "L-Hand",
+       "size": [
+        11,
+        12,
+        15
+       ]
+      },
+      {
+       "name": "L-GloveCuff",
+       "kind": "box",
+       "parent": "L-Hand",
+       "size": [
+        12,
+        2,
+        16
+       ]
+      }
+     ]
+    },
+    "Legs": {
+     "model": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Legs.blockymodel",
+     "texture": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Legs_Texture.png",
+     "texture_size": [
+      96,
+      64
+     ],
+     "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Fir_Legs.png",
+     "source": "source/F4_Northern/Fir/Legs.bbmodel",
+     "attaches_to_bones": [
+      "Pelvis",
+      "R-Thigh",
+      "R-Calf",
+      "R-Foot",
+      "L-Thigh",
+      "L-Calf",
+      "L-Foot"
+     ],
+     "boxes": 9,
+     "quads": 0,
+     "nodes": [
+      {
+       "name": "Pelvis",
+       "kind": "attach:Pelvis",
+       "parent": null
+      },
+      {
+       "name": "Breeches",
+       "kind": "box",
+       "parent": "Pelvis",
+       "size": [
+        26,
+        12,
+        20
+       ]
+      },
+      {
+       "name": "R-Thigh",
+       "kind": "attach:R-Thigh",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "R-Trouser",
+       "kind": "box",
+       "parent": "R-Thigh",
+       "size": [
+        11,
+        21,
+        14
+       ]
+      },
+      {
+       "name": "R-Calf",
+       "kind": "attach:R-Calf",
+       "parent": "R-Thigh"
+      },
+      {
+       "name": "R-Knee",
+       "kind": "box",
+       "parent": "R-Calf",
+       "size": [
+        7,
+        7,
+        2
+       ]
+      },
+      {
+       "name": "R-Greave",
+       "kind": "box",
+       "parent": "R-Calf",
+       "size": [
+        11,
+        23,
+        13
+       ]
+      },
+      {
+       "name": "R-Foot",
+       "kind": "attach:R-Foot",
+       "parent": "R-Calf"
+      },
+      {
+       "name": "R-Boot",
+       "kind": "box",
+       "parent": "R-Foot",
+       "size": [
+        14,
+        8,
+        20
+       ]
+      },
+      {
+       "name": "L-Thigh",
+       "kind": "attach:L-Thigh",
+       "parent": "Pelvis"
+      },
+      {
+       "name": "L-Trouser",
+       "kind": "box",
+       "parent": "L-Thigh",
+       "size": [
+        11,
+        21,
+        14
+       ]
+      },
+      {
+       "name": "L-Calf",
+       "kind": "attach:L-Calf",
+       "parent": "L-Thigh"
+      },
+      {
+       "name": "L-Knee",
+       "kind": "box",
+       "parent": "L-Calf",
+       "size": [
+        7,
+        7,
+        2
+       ]
+      },
+      {
+       "name": "L-Greave",
+       "kind": "box",
+       "parent": "L-Calf",
+       "size": [
+        11,
+        23,
+        13
+       ]
+      },
+      {
+       "name": "L-Foot",
+       "kind": "attach:L-Foot",
+       "parent": "L-Calf"
+      },
+      {
+       "name": "L-Boot",
+       "kind": "box",
+       "parent": "L-Foot",
+       "size": [
+        14,
+        8,
+        20
+       ]
+      }
+     ]
+    }
+   }
   }
  },
  "files": [
@@ -6703,6 +7577,42 @@
    ]
   },
   {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Cedar_Chest.png",
+   "bytes": 5025,
+   "sha256": "42dc1abf41f1bb1c09e37bb3b9352c509a6401152a1da68dc1ac43e6ada9334a",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Cedar_Hands.png",
+   "bytes": 6303,
+   "sha256": "bd3b5ded499470beeabf73eb2117f12e32dd3bb268eb100691804f8e3f9e158e",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Cedar_Head.png",
+   "bytes": 4374,
+   "sha256": "ecb1fa594a74c948f63985921dea2025630a0a0c964a3dd1db032efe0e5bd680",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Cedar_Legs.png",
+   "bytes": 3123,
+   "sha256": "53193e0f376ffb6c37b7bf881217b484cc08a1f6b12f25dfbf5c38465b213fb7",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
    "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Dry_Chest.png",
    "bytes": 5161,
    "sha256": "55e7570cff56b6b397423e668115685a24aff2f057fded26dba2e24aff3a54a7",
@@ -6733,6 +7643,42 @@
    "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Dry_Legs.png",
    "bytes": 3283,
    "sha256": "a3c5d5929cd7787ab8dab7c02dd95b9981db182d1019a66e6536b23f425c1fa5",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Fir_Chest.png",
+   "bytes": 5240,
+   "sha256": "e263795e67d8a8e66252baa1785f82eababc59ad3cccc6f6db778da4bc653805",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Fir_Hands.png",
+   "bytes": 6538,
+   "sha256": "89fbbd905551273c4f2791f778508910173b38ce15c98023f0c4bb218207961c",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Fir_Head.png",
+   "bytes": 4547,
+   "sha256": "efed55bfb934ca25061cf29cc3ac1800faceaac09f749f656ad4f20bcd6372e5",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Fir_Legs.png",
+   "bytes": 3314,
+   "sha256": "f8fb10ac568c710b4d6ec2abd05374e264ea553d45a0f482de8c291b331b86ca",
    "image_size": [
     64,
     64
@@ -6877,6 +7823,114 @@
    "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Palo_Legs.png",
    "bytes": 3245,
    "sha256": "02c0bd9bbeb6e5f68ce6f288a28dece4811932c4b4ef92dd100c5f9afb8514b3",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Poisoned_Chest.png",
+   "bytes": 5043,
+   "sha256": "08e014feca0679bda7a67afcf725cd4f271ce1a4256ed8040e1c74185839791d",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Poisoned_Hands.png",
+   "bytes": 6324,
+   "sha256": "e9f4246aa077f3992eb1ed5720ece2f8e992dc37c925fb8233236cd9e143acb6",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Poisoned_Head.png",
+   "bytes": 4363,
+   "sha256": "090dba76cb87c241fb78c157c204abca275fcace7f08704b94c1e7463d8a78f1",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Poisoned_Legs.png",
+   "bytes": 3007,
+   "sha256": "57b6da578f9eea5a01dbcbd9405e96b81d02ba1434fb41444e319d499b0c975d",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Redwood_Chest.png",
+   "bytes": 5045,
+   "sha256": "dcd541c7b3a2a00bdc6542dbab9306e6474a2528a65f0c1c8818d806e229d745",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Redwood_Hands.png",
+   "bytes": 6418,
+   "sha256": "56c8fe7191ecd0d99a0370241663bdaf395dd2adf3e716eb723725afd199a3aa",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Redwood_Head.png",
+   "bytes": 4398,
+   "sha256": "ac0fad71cde2d7ea4b02744f23473cfe535cfa927ae23f43f48d679d25005723",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Redwood_Legs.png",
+   "bytes": 3116,
+   "sha256": "30737a8220901d54eed7f9e3d592624fbf48df451955af3d91a6badcb15639c7",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Spiral_Chest.png",
+   "bytes": 5345,
+   "sha256": "eb2f1e574b889e215d6e5decf01b3f7bb0596276a1d42bf3107188ed860c1bf5",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Spiral_Hands.png",
+   "bytes": 6530,
+   "sha256": "cc510ef7981de3125c8927f8cbad5a46d8d190e959556e21594ad34c488edf0e",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Spiral_Head.png",
+   "bytes": 4785,
+   "sha256": "f209d8d90d253d4832cfb15de47334c981a48210e37a44eaac4750dd0d466cf9",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Spiral_Legs.png",
+   "bytes": 3336,
+   "sha256": "ec1170b6068103033f72b74fbf6324ad4cce68849be5a06b97b393d19cbe0147",
    "image_size": [
     64,
     64
@@ -7387,9 +8441,65 @@
    ]
   },
   {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Chest.blockymodel",
+   "bytes": 122826,
+   "sha256": "779904afde58319768b1186034172a078c122e4eaee7c66e8de124962161e9a8"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Chest_Texture.png",
+   "bytes": 17919,
+   "sha256": "13f26088a8491d27f1f4849abffe94b8b8dcc97b8cf4213992c8e072ef4e9ffb",
+   "image_size": [
+    64,
+    224
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Hands.blockymodel",
+   "bytes": 37152,
+   "sha256": "3a806b3f6a6f7672217efeefd66d5a503eba7cdcd4c44a0fc97efa1844ddb53e"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Hands_Texture.png",
+   "bytes": 4866,
+   "sha256": "1e6bf86dc432faf413e0c98559db73229c1bf9c46bd5417acffb9d8147a36a9d",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Head.blockymodel",
+   "bytes": 33866,
+   "sha256": "6419dcbf8274cddc41662b7b986ff6119e88a0898208759c4b9ecc44d667702f"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Head_Texture.png",
+   "bytes": 9292,
+   "sha256": "59356617cdffa58d4b24cb6ab3b861fc29a5b472fd156b7dadcdd293032ee2cd",
+   "image_size": [
+    96,
+    128
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Legs.blockymodel",
+   "bytes": 33394,
+   "sha256": "9e24379a45eab739e60bd204cb4fd59532a62db33ff278ba7932ecb27384120f"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F4_Northern/Fir/Legs_Texture.png",
+   "bytes": 5174,
+   "sha256": "0adda6896092c6cf3a81bfea6b04e95a89f6f02aad585a76810ed54e7e5bfdfe",
+   "image_size": [
+    96,
+    64
+   ]
+  },
+  {
    "path": "README.md",
-   "bytes": 20169,
-   "sha256": "dd8a8f2aa524ca421fe37fced3d86d9088ffb12d1e141706bdf4bc9d736259c9"
+   "bytes": 21781,
+   "sha256": "6ced5ce623e9e984f211d8d078826f60d94a5032bc7494415f33587fab9a8826"
   },
   {
    "path": "sheet-ash.png",
@@ -7446,9 +8556,27 @@
    ]
   },
   {
+   "path": "sheet-cedar.png",
+   "bytes": 1216092,
+   "sha256": "531d3adb463b55f512fb36f5454e63e18231c75f5bde20de7a8d2f2515c3eefd",
+   "image_size": [
+    2370,
+    3076
+   ]
+  },
+  {
    "path": "sheet-dry.png",
    "bytes": 1281628,
    "sha256": "2288361900609dc1cf02086672efeb7e12efbeec5b7c0cd67784df1d41f5447d",
+   "image_size": [
+    2370,
+    3076
+   ]
+  },
+  {
+   "path": "sheet-fir.png",
+   "bytes": 1262678,
+   "sha256": "84d319fae8db1ffc0269bd1e7a5b6714a46159d048bf5a22e4927588d200d304",
    "image_size": [
     2370,
     3076
@@ -7485,6 +8613,33 @@
    "path": "sheet-palo.png",
    "bytes": 1164849,
    "sha256": "f213cac36fff78203e5ceb59c02107da393fa4e2637cb7ae6f4426c0a18d3c64",
+   "image_size": [
+    2370,
+    3076
+   ]
+  },
+  {
+   "path": "sheet-poisoned.png",
+   "bytes": 1180287,
+   "sha256": "990e943f624a8c4c72ac18d4f70322a2e6ed1d0430bda6e6e69bef3d2c6c8c5b",
+   "image_size": [
+    2370,
+    3076
+   ]
+  },
+  {
+   "path": "sheet-redwood.png",
+   "bytes": 1267238,
+   "sha256": "ebcba77af5349fad8db9aa51045322a149b73163daaee61ad285d310ecd74cd8",
+   "image_size": [
+    2370,
+    3076
+   ]
+  },
+  {
+   "path": "sheet-spiral.png",
+   "bytes": 1261973,
+   "sha256": "021707ec6e45b7507685ccfeddbcaa8a0517d881abbc56243c330bdc86f0f997",
    "image_size": [
     2370,
     3076
@@ -7709,6 +8864,106 @@
    "path": "source/F3_Savanna/Palo/Legs.bbmodel",
    "bytes": 21806,
    "sha256": "92562d319bececefc617028b7faaf3cfff60a761dfb4c1f914d765dcce7109d1"
+  },
+  {
+   "path": "source/F4_Northern/Cedar/Chest.bbmodel",
+   "bytes": 67266,
+   "sha256": "98eb22068b7eb06a56f60d96c51806ab952cc6f5ee789d49ae281849fa4dc73a"
+  },
+  {
+   "path": "source/F4_Northern/Cedar/Hands.bbmodel",
+   "bytes": 25735,
+   "sha256": "025e37767a37ac65e5b97892380da9801f0cbb3cca17a759b41cf5454a10bd41"
+  },
+  {
+   "path": "source/F4_Northern/Cedar/Head.bbmodel",
+   "bytes": 30927,
+   "sha256": "db73eda8cabb4ef1cf50580aed5f4945153f429e0be2e4a86de172d208fd85fd"
+  },
+  {
+   "path": "source/F4_Northern/Cedar/Legs.bbmodel",
+   "bytes": 22238,
+   "sha256": "ee7d3c5fcf247d934dd8ddb82f3a10a9da3563fdfd8eb774d2c9b0a3a93d6ce8"
+  },
+  {
+   "path": "source/F4_Northern/Fir/Chest.bbmodel",
+   "bytes": 68017,
+   "sha256": "994538b5fb9dcb3f50d41f5eecbc09ec17d159474e8ca3d1645831fee8e5ee5d"
+  },
+  {
+   "path": "source/F4_Northern/Fir/Hands.bbmodel",
+   "bytes": 25927,
+   "sha256": "fddf1dc5403d6602db4a9b4e63f76cf3ad3990faf6a9365b5d161bf54f695674"
+  },
+  {
+   "path": "source/F4_Northern/Fir/Head.bbmodel",
+   "bytes": 31761,
+   "sha256": "ee906343a8fa8ee3f8f90269dd1e37c533cd897856f5a557ddd671cb01bb1b5e"
+  },
+  {
+   "path": "source/F4_Northern/Fir/Legs.bbmodel",
+   "bytes": 22198,
+   "sha256": "a9b9c37f12593710f7165ab22d986154157cd8419301b00445bfcbeed2724179"
+  },
+  {
+   "path": "source/F4_Northern/Poisoned/Chest.bbmodel",
+   "bytes": 67439,
+   "sha256": "17c09a73318d8b587fcd090f60fadf2863d9620bf0f1158bf80f8e327df5b05e"
+  },
+  {
+   "path": "source/F4_Northern/Poisoned/Hands.bbmodel",
+   "bytes": 25723,
+   "sha256": "31b9bc3e82dcad2384f29db578697ce623470ff8327089cd1c6f07693b4fb171"
+  },
+  {
+   "path": "source/F4_Northern/Poisoned/Head.bbmodel",
+   "bytes": 31655,
+   "sha256": "2527a796313179b6a3f2f1c3dfbff70074bbdf9e8973ba9ac73e2f7f89fb756e"
+  },
+  {
+   "path": "source/F4_Northern/Poisoned/Legs.bbmodel",
+   "bytes": 22210,
+   "sha256": "96f4f1af6e0bc0b65f77290893719d95ccca27a5873ba4477769ae5dae172f8d"
+  },
+  {
+   "path": "source/F4_Northern/Redwood/Chest.bbmodel",
+   "bytes": 67061,
+   "sha256": "6a9f650e69fc36280274fee484f47292d61a856b4a56618a87e51b9a4e1dc5be"
+  },
+  {
+   "path": "source/F4_Northern/Redwood/Hands.bbmodel",
+   "bytes": 25607,
+   "sha256": "8e4c39d01c20b03d32406a29eb08143356d3c3258ac4de68c4b8ce5bd04b7b92"
+  },
+  {
+   "path": "source/F4_Northern/Redwood/Head.bbmodel",
+   "bytes": 31075,
+   "sha256": "3339a8bbcd78a124bd16f22853431467fdb6c82d2f4498740adf105062ce64b0"
+  },
+  {
+   "path": "source/F4_Northern/Redwood/Legs.bbmodel",
+   "bytes": 22194,
+   "sha256": "93e788d456e4073da28be0653c07832e24d1f287d477a2e09502e6b70929eb01"
+  },
+  {
+   "path": "source/F4_Northern/Spiral/Chest.bbmodel",
+   "bytes": 67096,
+   "sha256": "14da35ed2951116af1cdcffd55b073dc8fe3b33674ae5e534031a2e4d609ef24"
+  },
+  {
+   "path": "source/F4_Northern/Spiral/Hands.bbmodel",
+   "bytes": 25603,
+   "sha256": "16a93e96939d82d5943c85a8d4a625463c2edb946a76222e4d61a64c8be5f0f7"
+  },
+  {
+   "path": "source/F4_Northern/Spiral/Head.bbmodel",
+   "bytes": 30134,
+   "sha256": "3dfd87f28614a0095d990e69c32e40b955c500c925203d9f9a5b5ebc0b51a175"
+  },
+  {
+   "path": "source/F4_Northern/Spiral/Legs.bbmodel",
+   "bytes": 22294,
+   "sha256": "a21f129070b23a72e4de1674dcb27e44c7cc1c2257e8d045bb4f69964408a38f"
   }
  ],
  "generators": "tools/art/: ga_<tree>.py (design, e.g. ga_oak.py, ga_birch.py), ga_paint.py (painter), make_foraging_armor.py (GA_DESIGN=ga_<tree>), make_foraging_icons.py, make_foraging_sheet.py, make_foraging_manifest.py, validate_foraging.py (GA_TREE=<Tree>), check_fit_foraging.py, bb_validate_foraging.js, roundtrip_diff_foraging.py"

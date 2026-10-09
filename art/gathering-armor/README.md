@@ -283,6 +283,23 @@ Files: `Common/Items/Armors/SkyyForaging/F3_Savanna/<Tree>/`, icons `Armor_Forag
 `sheet-<tree>.png`. Each 53 boxes + 9 quads. Checked like F1 / F2 (structure PASS, byte-identical rebuild, fit, Blockbench +
 Hytale plugin: no validator issues).
 
+## F4 NORTHERN - what tier 4 adds (same for every F4 tree)
+
+Built by `tools/art/ga_f4.py` on top of everything tier 3 has (`ga_f3.py`, `ga_f2.py`), identical for every F4 tree (approved ladder: "F4 thorn / spike accents, tall pauldrons, a glowing chest knot, double crest"):
+- THORNS: heartwood thorn spikes, two on each shoulder cap, two out of each bracer plate.
+- TALL PAULDRONS: an upright guard plate on the outer end of each pauldron.
+- A GLOWING CHEST KNOT between the breast plates (glowing sap rings).
+- A DOUBLE CREST: two thorny crest ridges over the helmet.
+Colours from each tree's in-game log / leaves / planks (own pixels; checked against Assets.zip 2026-10-09). Status: APPROVED by
+Skyy 2026-10-09 ("all look great! commit all"). Not seen in game.
+
+| Tree | Bark (in game) | Plate edge | Mark | Cloth |
+|---|---|---|---|---|
+| Fir | very dark brown, rough flakes | fir tiers (wide V + point) | little fir tree | oatmeal wool |
+
+Files: `Common/Items/Armors/SkyyForaging/F4_Northern/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`,
+`source/F4_Northern/<Tree>/`, `sheet-<tree>.png`. Each 65 boxes + 9 quads.
+
 ## Rebuild
 ```
 GA_DESIGN=ga_oak   python3 tools/art/make_foraging_armor.py      # models + textures (design ga_<tree>.py, painter ga_paint.py)
@@ -293,6 +310,7 @@ GA_DESIGN=ga_aspen python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_maple python3 tools/art/make_foraging_armor.py   # F2 trees: tier upgrades in ga_f2.py
 GA_DESIGN=ga_azure python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_gumboab python3 tools/art/make_foraging_armor.py   # F3 trees: tier upgrades in ga_f3.py
+GA_DESIGN=ga_fir python3 tools/art/make_foraging_armor.py   # F4 trees: tier upgrades in ga_f4.py
 python3 tools/art/make_foraging_icons.py art/gathering-armor F1_Grove Birch
 python3 tools/art/make_foraging_sheet.py art/gathering-armor F1_Grove Birch
 GA_TREE=Birch python3 tools/art/validate_foraging.py
