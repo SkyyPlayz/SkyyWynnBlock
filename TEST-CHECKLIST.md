@@ -80,6 +80,7 @@ All steps are in `docs/tests/2026-10.md` - search the section name.
 71. SkyySacks 0.7.16: bag held higher and more in front
 72. SkyyFishing 0.1.1: Wooden rod from 6 Stick + 6 Fibre, bench takes from Magic Bags
 73. SkyyAuctions 0.1.3: categories, sort, rarity, level range, reset
+74. SkyyCollections 0.2.8: CRAFT buttons, LOCKED RECIPES, Mining bags on Cobblestone I/III/V/VII
 
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
