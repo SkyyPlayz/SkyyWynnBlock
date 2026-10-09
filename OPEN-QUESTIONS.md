@@ -66,5 +66,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### pets
 - DRAGON as a pet with Aures' Dragon Nestkeeper: our secondary pet slot summons their dragon, or their mod owns the dragon and our slot links it, or our own dragons later? [(1) summon via our slot if Aures allows + it works, else (2) - docs/answered/pets.md 2026-10-06; decide after the survey + Aures' answer]
 
+- PET ROSTER (research/Pets-Roster.md, 111 pet families, Kweebec + Trork already no): other humanoid races as pets (Goblin, Ogre, Feran, Outlander, Slothian, Saurian, Tuluk, Klops, Bramblekin, Elf, Void Necromancer) [no]; pets at launch [about 30, the rest in zone batches]; look variants (Frost / Sand Skeleton, bird kinds, fish kinds) = skins of one pet [skins]; families with a vanilla baby start as the baby [baby until pet Lv 30, then the shrunk adult]; hostile pets use their own vanilla attack [yes, damage as % of your weapon]; a mount pet in slot 1 shows at pet size [yes]; water pets follow only while you swim [yes, buff-only on land]; creatures drop their own egg [yes, 0.1% / elites 1%]; boss creatures as pets [no for now]; Grooble yes, Bee swarm no [yes]
+
 ### social
 - how a player raises the profile cap above 6 (likely ranks). [parked - no way above 6 yet]

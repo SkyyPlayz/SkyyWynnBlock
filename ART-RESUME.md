@@ -75,8 +75,8 @@ Hands 64x64), original pixels only. Per tier a `sheet-<tier>.png` (front / side 
    in `Common/NPC/Undead/Skeleton` in Assets.zip - match its look, paint your own pixels). Make: model + texture + 128x128 icon + animations
    Idle, Walk, Run, Sit (pets sit while you stand still), Happy (a little hop / spin when fed or petted), Hurt - same folder layout + names as a
    vanilla creature (`Animations/Default/`). Paths `art/pets/<Creature>/Common/NPC/SkyyPets/<Creature>/<Creature>.blockymodel`, icon
-   `Common/Icons/ModelsGenerated/SkyyPet_<Creature>.png`. One sheet, then show Skyy. The full favourites list (top 15) comes from
-   `research/Pets-Roster.md` (being written) - after the Skeleton, ask Skyy which is next.
+   `Common/Icons/ModelsGenerated/SkyyPet_<Creature>.png`. One sheet, then show Skyy. The favourites list (top 15, research/Pets-Roster.md): Skeleton, Fox, Wolf, Void Eye, Rat, void slugs (Larva + Crawler), Bear,
+   Cave Rex, Cave Raptor, Sabertooth / Snow Leopard, Crystal Golem, Spirit, Owl, Frog, Yeti - after the Skeleton, ask Skyy which is next.
 15. **Mystery bags - unidentified loot, ONE per rarity (7)** (Skyy 2026-10-08: "make the mystery bags unidentified items come in before you
    identify them. we just need 1 per rarity."). A dropped / looted unidentified weapon or armor piece shows as a closed loot bag until the
    player identifies it (Wynncraft style: level + rarity shown, type hidden). Rarities + colours (placeholders from
