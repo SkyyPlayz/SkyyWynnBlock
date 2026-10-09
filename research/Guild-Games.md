@@ -25,3 +25,8 @@ island. Then you battle and try to steal the enemy standard."
   takes the pot (escrow must be dupe-proof; Mythic / UT / Sets follow the market wall - decide if they can be wagered).
 - "I wana 1v1 guild battles, and group battles where guilds team up, for server wide events." -> MODES: 1v1 guild battles, and ALLIANCE
   battles (several guilds team up per side) for server-wide events (scheduled, announced, bigger arena islands, event rewards).
+- "I also want another game mode thats like the exam in red rising. 12 guilds, 12 castles on one battle map. Only one guild wins.    When
+  defeated captured enemies work for you." -> THE INSTITUTE (Red Rising "Passage / exam" style): 12 guilds, 12 castles on ONE big battle
+  map, last guild standing wins. A defeated guild's captured players become the captor's servants for the rest of the match (fight for /
+  gather for the guild that captured them - e.g. switched team, can't attack their new masters, maybe a "proctor" collar mark), so
+  captures snowball. Longer match (hours / days?), resources on the map, castles captured by taking the standard.
