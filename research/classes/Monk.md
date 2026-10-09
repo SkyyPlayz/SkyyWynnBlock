@@ -105,7 +105,7 @@ You own 4. You equip 2.
 
 - **Awed enemies** get **distracted for a moment** when they become Awed (they lose their target, ~1 s), then take **lowered defence and slightly lower move speed per TOTAL combo** you landed during the ability (default -1% defence, -0.5% move per total combo; caps -20% / -10%).
 
-- Drains **Mana AND Stamina** over time. Lasts 30 s (upgradable). Ends early when either runs out.
+- Costs 2 Mana + 1 Stamina to start, then drains **Mana AND Stamina** over time (0.65 Mana + 0.25 Stamina per second; 2026-10-08). Lasts 30 s (upgradable). Ends early when either runs out.
 
 - Enemies stay Awed 10 s after it ends or after they leave the aura.
 
@@ -159,7 +159,7 @@ You own 4. You equip 2.
 
 - **Does:** a quick single-target strike: **stun ~0.75 s + knockback**.
 
-- Low cost (~8 Mana), short cooldown - spammable at higher levels.
+- Low cost (3 Mana + 1 Stamina since 2026-10-08, was ~8 Mana), short cooldown - spammable at higher levels.
 
 **Modifiers**
 
@@ -256,6 +256,8 @@ Ideas - pick one.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-08 Skyy: melee Mana costs dropped, Stamina costs added (every class now has its own Mana / Stamina split; Monk split 35 / 65 (costs 38 / 62)): Flowing Form 2 Mana + 1 Stamina to start, then 0.65 Mana + 0.25 Stamina per second (was 6, then 0.5 + 0.3); Hundred Fists 3 + 1, then 0.7 + 0.3 per second (was 8, then 0.6 + 0.3); Still Water 7 Mana + 3 Stamina (was 18 Mana), Palm Strike 3 Mana + 1 Stamina (was 8 Mana), Cyclone Kick 4 Mana + 2 Stamina (was 10 Mana) - full table in research/cloud/Class-Ability-Spec-Draft.md section 2; pools and the why per class in research/Class-Power-Split.md.
 
 - 2026-10-05: refined for easy reading (same facts, new layout).
 

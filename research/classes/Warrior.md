@@ -227,6 +227,8 @@ Ideas, Wynncraft-style - pick one.
 
 ## 📜 Change log
 
+- 2026-10-08 Skyy: melee Mana costs dropped, Stamina costs added (every class now has its own Mana / Stamina split; Warrior split 35 / 65 (costs 38 / 62)): Rallying Guard 5 Mana + 2 Stamina (was 12 Mana), Shield Shockwave 4 Mana + 2 Stamina (was 10 Mana), Iron Chain 5 Mana + 2 Stamina (was 12 Mana), Bulwark Stance 5 Mana + 2 Stamina (was 14 Mana), Unbreakable 6 Mana + 2 Stamina (was 16 Mana); Challenge and Guardian's Oath about 5 + 2 (no cost set yet, estimates) - full table in research/cloud/Class-Ability-Spec-Draft.md section 2; pools and the why per class in research/Class-Power-Split.md.
+
 - 2026-10-05: weapon traversals stay VANILLA FOR NOW (Skyy: "they stay vanilla FOR NOW. they will change later.") - the proposals are ideas for later.
 
 - 2026-10-05: refined for easy reading (same facts, new layout).

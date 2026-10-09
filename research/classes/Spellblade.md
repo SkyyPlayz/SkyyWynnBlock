@@ -225,7 +225,7 @@ Momentum is the Spellblade's class resource. It is always on (no ability needed)
 
 ## ✨ Abilities
 
-You own 4. You equip 2 as primaries (Ability 2 / 3: walking, sprinting, mid-air shapes); the other 2 are your alts (crouch + key: the crouch shape). Costs are Mana; cooldown per shape; **H** = one full arc hit at your level. Boss rule: debuffs below are NOT crowd control, so bosses take them at full strength (stuns / slows inside them are halved as usual).
+You own 4. You equip 2 as primaries (Ability 2 / 3: walking, sprinting, mid-air shapes); the other 2 are your alts (crouch + key: the crouch shape). Costs are Mana + Stamina (2026-10-08: split 58 / 42 like every Spellblade cost, old Mana in brackets); cooldown per shape; **H** = one full arc hit at your level. Boss rule: debuffs below are NOT crowd control, so bosses take them at full strength (stuns / slows inside them are halved as usual).
 
 ### A1 · Arcane Breach
 
@@ -239,10 +239,10 @@ You own 4. You equip 2 as primaries (Ability 2 / 3: walking, sprinting, mid-air 
 
 | Shape | What changes | Cost / CD |
 |---|---|---|
-| Walking | the 180° arc, 5 blocks, Breach 15% 8 s | 14 / 16 |
-| Sprinting | **Breaching Charge**: a 2-block step in, then the arc; Breach 15% 7 s; the step keeps the rhythm (counts as inside the flow window) | 14 / 16 |
-| Mid-air | **Breach from Above**: a 4-block circle under your landing spot (360°), 1.0 H, Breach 15% 8 s, small knock-up | 14 / 18 |
-| Crouch (alt) | **Marked Ground**: 360°, 3.5 blocks, no damage, Breach **20%** 8 s - the precise "mark everyone around me" button; never moves you | 12 / 16 |
+| Walking | the 180° arc, 5 blocks, Breach 15% 8 s | 8 + 1 St (14) / 16 |
+| Sprinting | **Breaching Charge**: a 2-block step in, then the arc; Breach 15% 7 s; the step keeps the rhythm (counts as inside the flow window) | 8 + 1 St (14) / 16 |
+| Mid-air | **Breach from Above**: a 4-block circle under your landing spot (360°), 1.0 H, Breach 15% 8 s, small knock-up | 8 + 1 St (14) / 18 |
+| Crouch (alt) | **Marked Ground**: 360°, 3.5 blocks, no damage, Breach **20%** 8 s - the precise "mark everyone around me" button; never moves you | 7 + 1 St (12) / 16 |
 
 **Modifiers**
 
@@ -264,10 +264,10 @@ You own 4. You equip 2 as primaries (Ability 2 / 3: walking, sprinting, mid-air 
 
 | Shape | What changes | Cost / CD |
 |---|---|---|
-| Walking | arc + the 2 x 8 rift ahead, 3 s | 18 / 20 |
-| Sprinting | **Running Rift**: the rift forms BEHIND you as you run (2 x 10) - covers a retreat through a crowd | 18 / 20 |
-| Mid-air | **Rift Drop**: a 5-block circle rift under your landing spot, 3 s | 18 / 22 |
-| Crouch (alt) | **Rift Ring**: a 4-block ring around you, 4 s, Breach 18%; never moves you | 18 / 22 |
+| Walking | arc + the 2 x 8 rift ahead, 3 s | 10 + 2 St (18) / 20 |
+| Sprinting | **Running Rift**: the rift forms BEHIND you as you run (2 x 10) - covers a retreat through a crowd | 10 + 2 St (18) / 20 |
+| Mid-air | **Rift Drop**: a 5-block circle rift under your landing spot, 3 s | 10 + 2 St (18) / 22 |
+| Crouch (alt) | **Rift Ring**: a 4-block ring around you, 4 s, Breach 18%; never moves you | 10 + 2 St (18) / 22 |
 
 **Modifiers**
 
@@ -287,10 +287,10 @@ You own 4. You equip 2 as primaries (Ability 2 / 3: walking, sprinting, mid-air 
 
 | Shape | What changes | Cost / CD |
 |---|---|---|
-| Walking | the arc above | 16 / 20 |
-| Sprinting | **Shattering Rush**: a 3-block step in first; spends all stacks; reach 6 | 16 / 20 |
-| Mid-air | **Shattering Fall**: lands as a 5-block circle (360°), 1.0 H + 0.1 H per stack, knock-up 0.5 s | 16 / 22 |
-| Crouch (alt) | **Measured Strike**: spends only HALF your stacks (rounded up), same per-stack numbers, 160° arc; never moves you | 14 / 20 |
+| Walking | the arc above | 9 + 2 St (16) / 20 |
+| Sprinting | **Shattering Rush**: a 3-block step in first; spends all stacks; reach 6 | 9 + 2 St (16) / 20 |
+| Mid-air | **Shattering Fall**: lands as a 5-block circle (360°), 1.0 H + 0.1 H per stack, knock-up 0.5 s | 9 + 2 St (16) / 22 |
+| Crouch (alt) | **Measured Strike**: spends only HALF your stacks (rounded up), same per-stack numbers, 160° arc; never moves you | 8 + 1 St (14) / 20 |
 
 **Modifiers**
 
@@ -314,10 +314,10 @@ You own 4. You equip 2 as primaries (Ability 2 / 3: walking, sprinting, mid-air 
 
 | Shape | What changes | Cost / CD |
 |---|---|---|
-| Walking | self imbue 12 s | 12 / 18 |
-| Sprinting | **Charging Imbue**: imbue 12 s AND an immediate elemental crescent 8 blocks forward (0.8 H element) | 14 / 18 |
-| Mid-air | **Falling Imbue**: imbue 12 s AND a 4-block elemental burst where you land (0.8 H element, applies the status) | 14 / 20 |
-| Crouch (alt) | **Deep Imbue**: 15 s, statuses last +25%, you stand still 0.5 s to draw the rune; never moves you | 14 / 20 |
+| Walking | self imbue 12 s | 7 + 1 St (12) / 18 |
+| Sprinting | **Charging Imbue**: imbue 12 s AND an immediate elemental crescent 8 blocks forward (0.8 H element) | 8 + 1 St (14) / 18 |
+| Mid-air | **Falling Imbue**: imbue 12 s AND a 4-block elemental burst where you land (0.8 H element, applies the status) | 8 + 1 St (14) / 20 |
+| Crouch (alt) | **Deep Imbue**: 15 s, statuses last +25%, you stand still 0.5 s to draw the rune; never moves you | 8 + 1 St (14) / 20 |
 
 **Modifiers**
 
@@ -341,10 +341,10 @@ You own 4. You equip 2 as primaries (Ability 2 / 3: walking, sprinting, mid-air 
 
 | Shape | What changes | Cost / CD |
 |---|---|---|
-| Walking | single target, 4 blocks, 2.0 H, 12 s | 16 / 30 |
-| Sprinting | **Lunging Sunder**: a 3-block step in first (closes on a boss), 1.8 H, 12 s | 16 / 30 |
-| Mid-air | **Sunder from Above**: hits the target below your landing point, 2.4 H, +0.5 s stagger on non-bosses | 16 / 32 |
-| Crouch (alt) | **Armour Break**: 1 s wind-up, 2.0 H, Sunder **15 s** and -10% defence on top; never moves you | 18 / 34 |
+| Walking | single target, 4 blocks, 2.0 H, 12 s | 9 + 2 St (16) / 30 |
+| Sprinting | **Lunging Sunder**: a 3-block step in first (closes on a boss), 1.8 H, 12 s | 9 + 2 St (16) / 30 |
+| Mid-air | **Sunder from Above**: hits the target below your landing point, 2.4 H, +0.5 s stagger on non-bosses | 9 + 2 St (16) / 32 |
+| Crouch (alt) | **Armour Break**: 1 s wind-up, 2.0 H, Sunder **15 s** and -10% defence on top; never moves you | 10 + 2 St (18) / 34 |
 
 **Modifiers**
 
@@ -571,5 +571,7 @@ Ideas, Wynncraft-style - pick one at its first node, the other two lock (shape a
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-08 Skyy: melee Mana costs dropped, Stamina costs added (every class now has its own Mana / Stamina split; Spellblade split 55 / 45 (costs 58 / 42)): every shape cost split 58 / 42 (old Mana in brackets in the shape tables) - full table in research/cloud/Class-Ability-Spec-Draft.md section 2; pools and the why per class in research/Class-Power-Split.md.
 
 - 2026-10-08: file created (cloud draft) from Skyy's 2026-10-08 lines 165 + 167: roles, overlap table, Momentum system, two-handed swords + Crescent Rush, great shield + Bulwark Charge, elements proposal (dependency), Arcane Breach / Rift Cleave / Shattering Arc / Elemental Imbue / Sunder with 4 shapes each, signatures, class tree (trunk + Tempest / Breaker / Vanguard), Server Setup rows, engine risks, 15 questions.

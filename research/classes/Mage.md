@@ -242,6 +242,8 @@ Ideas - pick one. The Mage tree already has three lanes.
 
 ## 📜 Change log
 
+- 2026-10-08 Skyy: melee Mana costs dropped, Stamina costs added (every class now has its own Mana / Stamina split; Mage split 75 / 25 (costs 78 / 22)): Meteor 23 Mana + 2 Stamina (was 30 Mana), Mana Barrier 16 Mana + 1 Stamina (was 20 Mana), Frost Nova 19 Mana + 1 Stamina (was 24 Mana), Starfall 28 Mana + 2 Stamina (was 36 Mana), Arcane Beam 23 Mana + 2 Stamina (was 30 Mana) - full table in research/cloud/Class-Ability-Spec-Draft.md section 2; pools and the why per class in research/Class-Power-Split.md.
+
 - 2026-10-07: dome look = visible but easy to see through, not distracting (Skyy: "make sure the dome is visible, but still easily see through so it isnt distracting or disruptive.").
 
 - 2026-10-07: Mana Barrier = a placed dome on the ground; Follow modifier / tree upgrade makes it move with you (Skyy picked "Placed dome + Follow").

@@ -106,7 +106,7 @@ You own 4. You equip 2.
 
 - **Does:** a **toggle** - while it is on, the rage grows with **every hit you land**: per stack you get **+1.5% damage, +1% attack speed and +0.5% move speed**, allies **half of each** (Skyy 2026-10-07: a bit less damage than Enrage, plus attack speed and a small move speed buff - "fits the name"), up to **25 stacks** (you +37.5% damage / +25% attack speed / +12.5% move speed - Enrage peaks at +40% damage; vs the Monk's Flowing Form at full stacks: more damage (it has none), less attack speed (it has +30%) - Skyy 2026-10-07); allies get it through an **AoE aura**: players within 8 blocks and party members within 16 blocks of you (the Enrage ranges) are buffed **only while they are inside it** (unlike Enrage, which is picked once) - so it works as a late-game passive; **each stack decays 6 s after it was gained** (Skyy 2026-10-07).
 
-- **Cost:** **Mana + Stamina per ATTACK** (every swing, hit or miss) and only a **small drain over time**; Mana / Stamina still regenerate while it is on, so a high-level Berserker can leave it on as a passive buff. It switches off when either runs out (or when you toggle it off).
+- **Cost:** **Mana + Stamina per ATTACK** (every swing, hit or miss; default 0.7 Mana + 0.6 Stamina) and only a **small drain over time** (0.15 Mana + 0.1 Stamina per second; 2026-10-08); Mana / Stamina still regenerate while it is on, so a high-level Berserker can leave it on as a passive buff. It switches off when either runs out (or when you toggle it off).
 
 **Modifiers**
 
@@ -128,7 +128,7 @@ You own 4. You equip 2.
 
 - While in range: players **+8% damage, defence and attack speed**, party members **+12%** of each, you **+16%** of each (attack speed added by Skyy 2026-10-07; same numbers by default).
 
-- **Cost:** a **big Mana cost to plant it** (default 40 Mana, double the old 20), nothing while it stands - Mana regenerates normally while it is up.
+- **Cost:** a **big cost to plant it** (default **9 Mana + 8 Stamina** since 2026-10-08 - the 40 Mana split 23 / 77 for the Berserker; Skyy to confirm), nothing while it stands - Mana regenerates normally while it is up.
 
 - **The banner falls** when its time runs out **or as soon as you leave its range** (Skyy 2026-10-07).
 
@@ -247,6 +247,8 @@ Ideas - pick one.
 &nbsp;
 
 ## 📜 Change log
+
+- 2026-10-08 Skyy: melee Mana costs dropped, Stamina costs added (every class now has its own Mana / Stamina split; Berserker split 20 / 80 (costs 23 / 77)): Enrage 3 Mana + 3 Stamina (was 14 Mana), Whirlwind 3 Mana + 2 Stamina (was 12 Mana), Earthsplitter 3 Mana + 3 Stamina (was 14 Mana), Warlord's Banner 9 Mana + 8 Stamina (was 40 Mana); Blood Frenzy 0.7 Mana + 0.6 Stamina per swing and 0.15 + 0.1 per second (was 1 + 0.5 and 0.2 + 0.1) - full table in research/cloud/Class-Ability-Spec-Draft.md section 2; pools and the why per class in research/Class-Power-Split.md.
 
 - 2026-10-07: Whirlwind gains Echo (Skyy).
 

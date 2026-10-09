@@ -309,6 +309,8 @@ Ideas - pick one.
 
 ## 📜 Change log
 
+- 2026-10-08 Skyy: melee Mana costs dropped, Stamina costs added (every class now has its own Mana / Stamina split; Priest split 70 / 30 (costs 73 / 27)): Sacred Heal 18 Mana + 2 Stamina (was 25 Mana), Shield Bubble 20 Mana + 2 Stamina (was 28 Mana), Sanctuary 26 Mana + 2 Stamina (was 35 Mana), Martyr's Grace 22 Mana + 2 Stamina (was 30 Mana); Guardian Spirit 15 Mana + 1 Stamina per save (was 20 Mana) - full table in research/cloud/Class-Ability-Spec-Draft.md section 2; pools and the why per class in research/Class-Power-Split.md.
+
 - 2026-10-05: refined for easy reading (same facts, new layout).
 
 - 2026-10-07: Martyr's Grace + Shield Bubble gain Echo; Shield Bubble 6 blocks / 12 s; Guardian Spirit = a passive save (30 blocks, 30% Health, Mana-gated, doubling per-player cooldown) (Skyy).

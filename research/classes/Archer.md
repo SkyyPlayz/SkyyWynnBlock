@@ -223,6 +223,8 @@ Ideas - pick one.
 
 ## 📜 Change log
 
+- 2026-10-08 Skyy: melee Mana costs dropped, Stamina costs added (every class now has its own Mana / Stamina split; Archer split 40 / 60 (costs 43 / 57)): Pinning Shot 4 Mana + 1 Stamina (was 10 Mana), Rapid Fire 6 Mana + 2 Stamina (was 14 Mana), Explosive Arrow 5 Mana + 2 Stamina (was 12 Mana), Arrow Rain 7 Mana + 2 Stamina (was 16 Mana), Hunter's Net 6 Mana + 2 Stamina (was 14 Mana) - full table in research/cloud/Class-Ability-Spec-Draft.md section 2; pools and the why per class in research/Class-Power-Split.md.
+
 - 2026-10-05: weapon traversals stay VANILLA FOR NOW (Skyy: "they stay vanilla FOR NOW. they will change later.") - the proposals are ideas for later.
 
 - 2026-10-05: refined for easy reading (same facts, new layout).
