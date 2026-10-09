@@ -67,8 +67,8 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   Same bark-plate family look (approved concept), each tree its own variation; trees of one tier share stats and players swap looks at an
   alteration station later. Start with F1 Oak (key log), then the rest of F1, one tree per commit; show Skyy each sheet. Paths use the
   tree name: `SkyyForaging/<Tier>/<Tree>/<Piece>.blockymodel`, icons `Armor_Foraging_<Tree>_<Piece>.png`. Orchard trees: later.
-  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen. F2 AUTUMN COMPLETE (2/2, 2026-10-09): Maple, Azure; see Done.
-  **Next: F3 Savanna (Gumboab, Dry, Bottletree, Palo)** - shared tier-3 builder `tools/art/ga_f3.py` (angular plates, bigger layered shoulders, a gorget, sap glow up the arms); START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game
+  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen. F2 AUTUMN COMPLETE (2/2, 2026-10-09): Maple, Azure. F3 Savanna: Gumboab DONE; see Done.
+  **Next: F3 Savanna - Dry, Bottletree, Palo** (approved; Bottletree + Palo held: Assets.zip colour check found the bark too dark, corrected v2 out for re-review); START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game
   wood variant." - sample the tree's log / planks / leaves colours in Assets.zip; Beech v1
   in made-up colours read as "iron"). Reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter,
   `make_foraging_*.py`), same piece shapes / fit, own colours + own small mark. Sources go in `source/<Tier>/<Tree>/`. Defaults Skyy kept for Oak: tier folder `F1_Grove`,
@@ -141,6 +141,15 @@ purple of the bag swirl].
   Skyy's answers, word for word: "fix pebble." / "Yes, the Pebble fix looks good, commit it"
 
 ## Done
+### 22. Foraging armor F3 Savanna - Gumboab (2026-10-09) - first F3 set
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F3_Savanna/Gumboab/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`,
+  icons `Common/Icons/ItemsGenerated/Armor_Foraging_Gumboab_<Piece>.png` (64), `source/F3_Savanna/Gumboab/*.bbmodel`, `sheet-gumboab.png`;
+  `manifest.json` + `README.md` updated. Scripts: `ga_gumboab.py` (new), `ga_f3.py` (new: the shared tier-3 builder), `ga_paint.py` (the four Savanna palettes), `make_foraging_sheet.py`, `make_foraging_manifest.py`. All earlier sets rebuild byte-identical.
+- Look: colours from the in-game Gumboab wood (log / leaves / planks; own pixels): smooth grey-taupe bark with soft folds, cream-tan heartwood, sage blade leaves, ochre cloth; TERRACED plates, flat-topped crown points. Mark: a FAN of 5 sage blades. Tier 3 upgrades (same for every F3 tree): angular plates + cut corners, bigger layered shoulders, a gorget, sap glow up the arms.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0.
+- Skyy's answer, word for word: "Gumboab looks good, commit it"
+- Defaults kept: cloth colour, mark, plate edge as drafted.
+- Not yet seen in game. No item / recipe JSON (art only).
 ### 21. Foraging armor F2 Autumn - Azure (2026-10-09) - F2 AUTUMN COMPLETE (2/2)
 - Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F2_Autumn/Azure/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`,
   icons `Common/Icons/ItemsGenerated/Armor_Foraging_Azure_<Piece>.png` (64), `source/F2_Autumn/Azure/*.bbmodel`, `sheet-azure.png`;

@@ -263,6 +263,25 @@ Take the V1 azure, and make the parts that are already blue a little brighter bl
 - Checked like F1 (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no validator issues, all 4
   pieces attach to the vanilla player). Not checked in game.
 
+## F3 SAVANNA - what tier 3 adds (same for every F3 tree)
+
+Built by `tools/art/ga_f3.py` on top of everything tier 2 has (`ga_f2.py`), identical for every F3 tree (Gumboab)
+(approved ladder: "F3 angular plates, bigger layered shoulders, a gorget, sap glow up the arms"):
+- ANGULAR plates (each tree its own angular edge) + cut corners on breast plates, tassels, cheek guards, helmet back, bracer plates.
+- BIGGER, LAYERED shoulders: wider pauldron + cap, a carved ridge on the cap, a second lame under the first.
+- A GORGET: a taller neck-guard ring + a pointed front plate with a sap drop.
+- SAP GLOW UP THE ARMS: a glowing vein up each arm (bracer, sleeve, shoulder lames).
+Colours from each tree's in-game log / leaves / planks (own pixels). Status: APPROVED by Skyy 2026-10-09 ("<Tree> looks good, commit it"
+for each tree). Not seen in game.
+
+| Tree | Bark (in game) | Plate edge | Mark | Cloth |
+|---|---|---|---|---|
+| Gumboab | smooth grey-taupe, soft folds | terraced (flat steps, angled ends) | fan of 5 sage blades | ochre |
+
+Files: `Common/Items/Armors/SkyyForaging/F3_Savanna/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`, `source/F3_Savanna/<Tree>/`,
+`sheet-<tree>.png`. Each 53 boxes + 9 quads. Checked like F1 / F2 (structure PASS, byte-identical rebuild, fit, Blockbench +
+Hytale plugin: no validator issues).
+
 ## Rebuild
 ```
 GA_DESIGN=ga_oak   python3 tools/art/make_foraging_armor.py      # models + textures (design ga_<tree>.py, painter ga_paint.py)
@@ -272,6 +291,7 @@ GA_DESIGN=ga_ash   python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_aspen python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_maple python3 tools/art/make_foraging_armor.py   # F2 trees: tier upgrades in ga_f2.py
 GA_DESIGN=ga_azure python3 tools/art/make_foraging_armor.py
+GA_DESIGN=ga_gumboab python3 tools/art/make_foraging_armor.py   # F3 trees: tier upgrades in ga_f3.py
 python3 tools/art/make_foraging_icons.py art/gathering-armor F1_Grove Birch
 python3 tools/art/make_foraging_sheet.py art/gathering-armor F1_Grove Birch
 GA_TREE=Birch python3 tools/art/validate_foraging.py

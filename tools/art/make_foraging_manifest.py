@@ -15,6 +15,10 @@ STATUS = {
     "F1_Grove/Aspen": "approved by Skyy 2026-10-09 (\"Yes, the Aspen armor looks good, commit it\"); NOT verified in game",
     "F2_Autumn/Maple": "approved by Skyy 2026-10-09 (\"They look great! A little more blue on the azure, and we should be good\"); NOT verified in game",
     "F2_Autumn/Azure": "approved by Skyy 2026-10-09 (v3: \"Yes, Azure v3 looks good, commit it\"); NOT verified in game",
+    "F3_Savanna/Gumboab": "approved by Skyy 2026-10-09 (\"Gumboab looks good, commit it\"); NOT verified in game",
+    "F3_Savanna/Dry": "approved by Skyy 2026-10-09 (\"Dry looks good, commit it\"); NOT verified in game",
+    "F3_Savanna/Bottletree": "approved by Skyy 2026-10-09 (\"Bottletree looks good, commit it\"); NOT verified in game",
+    "F3_Savanna/Palo": "approved by Skyy 2026-10-09 (\"Palo looks good, commit it\"); NOT verified in game",
     "F1_Grove/Birch": "v2 (in-game Birch wood colours) approved by Skyy 2026-10-09 (\"they all look great!\"); v1 approved 2026-10-09 (\"Yes, the Birch armor looks good, commit it\"); NOT verified in game",
 }
 
