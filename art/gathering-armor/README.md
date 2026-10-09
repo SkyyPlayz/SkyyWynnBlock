@@ -280,6 +280,7 @@ for each tree). Bottletree and Palo are v2: the bark was too dark next to the re
 | Gumboab | smooth grey-taupe, soft folds | terraced (flat steps, angled ends) | fan of 5 sage blades | ochre |
 | Dry | warm brown, dark vertical fibres | splinter saw-tooth | 3 yellow puff blossoms | rust |
 | Bottletree | pale grey-cream, soft smudges | crenellated (square teeth) | little bottle tree | deep teal |
+| Palo | olive green, lenticel dashes | chevron (big V) | 2 orange palo blossoms | chocolate |
 
 Files: `Common/Items/Armors/SkyyForaging/F3_Savanna/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`, `source/F3_Savanna/<Tree>/`,
 `sheet-<tree>.png`. Each 53 boxes + 9 quads. Checked like F1 / F2 (structure PASS, byte-identical rebuild, fit, Blockbench +
