@@ -1,4 +1,4 @@
-# ⚔️ Arcblade - Melee mage
+# ⚔️ Spellblade - Melee mage
 
 | | |
 |---|---|
@@ -25,7 +25,7 @@ Numbers are placeholders. Labels: 🟢 Locked · 🔵 Proposed · 🟠 Open - se
 
 | Line | Skyy | Used here |
 |---|---|---|
-| 167 (2026-10-08) | "we should do a mele mage class. So it has a dule purpose. Momentum! medium speed, medium defense, deliberate and big: wide sweeping arcs, long reach, and timing matters. but attacks chain together growing in speed as you continue to attack. so if you can keep pressing forward, your momentum becomes unstoppable." + "yes, call it Arcblade and draft the class page. so its main roll is to handle large groups, AND to debuff bosses. (i want some AOE debuffs that arnt elemental, though he will primarily be elemental. (and i was thinking about a 2 handed great shield as a secondary weapon.)" | the whole page: roles, Momentum, elements, Breach, the great shield |
+| 167 (2026-10-08) | "we should do a mele mage class. So it has a dule purpose. Momentum! medium speed, medium defense, deliberate and big: wide sweeping arcs, long reach, and timing matters. but attacks chain together growing in speed as you continue to attack. so if you can keep pressing forward, your momentum becomes unstoppable." + "yes, call it Spellblade and draft the class page. so its main roll is to handle large groups, AND to debuff bosses. (i want some AOE debuffs that arnt elemental, though he will primarily be elemental. (and i was thinking about a 2 handed great shield as a secondary weapon.)" | the whole page: roles, Momentum, elements, Breach, the great shield |
 | 165 (2026-10-08) | second sword class: two-handed swords (longswords, Zweihander, The Armory's Elemental swords), no shield; Warrior = one-handed sword + shield | weapons |
 | 161, 162, 166 | Warrior keeps the vanilla sword dash, spears, Challenge / Guardian's Oath | the Warrior gives up longswords + Zweihander (section "For the local session") |
 | 36 | 2 weapon types per class, no sharing | two-handed swords + great shield |
@@ -37,7 +37,7 @@ Numbers are placeholders. Labels: 🟢 Locked · 🔵 Proposed · 🟠 Open - se
 | 116, 117 | NO void protection on any traversal | both traversals: none |
 | 120, 121 | combo stunlock allowed; bosses break out after 3 s x players (cap 4) | Momentum "unstoppable" uses the same breakout code |
 | 153-156 | 4 abilities = 2 PRIMARY (Ability 2 / 3: walking / sprinting / mid-air shapes) + 2 ALT (crouch + key: a crouch shape); cost / cooldown per shape; mid-roll cast allowed | every ability has 4 shape lines |
-| `docs/answered/gear.md` 112-114, 119 | The Armory: longswords 20, Zweihander, 4 Elemental swords (Flame / Gravity / Ice / Poison) SHELVED until our element system; Warrior "weapon-heavy ... TEMPORARY" | the Arcblade takes them; the Elementals wait for the element spec |
+| `docs/answered/gear.md` 112-114, 119 | The Armory: longswords 20, Zweihander, 4 Elemental swords (Flame / Gravity / Ice / Poison) SHELVED until our element system; Warrior "weapon-heavy ... TEMPORARY" | the Spellblade takes them; the Elementals wait for the element spec |
 
 &nbsp;
 
@@ -45,7 +45,7 @@ Numbers are placeholders. Labels: 🟢 Locked · 🔵 Proposed · 🟠 Open - se
 
 ```mermaid
 flowchart TD
-  CLS["ARCBLADE<br/>Large groups + boss debuffs"]
+  CLS["SPELLBLADE<br/>Large groups + boss debuffs"]
   CLS --> MOM["MOMENTUM<br/>0-20 stacks, 4 s decay each"]
   CLS --> WPN["WEAPONS"]
   CLS --> ABL["ABILITIES<br/>own 4, equip 2"]
@@ -84,7 +84,7 @@ flowchart TD
 
 - **Boss debuffer.** Puts debuffs ON the boss (takes more damage, deals less, crits land harder) so the party kills it faster. Never buffs allies directly.
 
-- **The element class.** The Arcblade is how our element system reaches enemies in melee: Imbue colours every arc, the Elemental swords are its weapons, the class tree deepens the elements.
+- **The element class.** The Spellblade is how our element system reaches enemies in melee: Imbue colours every arc, the Elemental swords are its weapons, the class tree deepens the elements.
 
 - **Medium everything:** move speed normal (no bonus), defence between the Warrior and the Mage, armor type **Light** (class bonus on-type), Mana **+5 per class level** (half a Mage).
 
@@ -92,13 +92,13 @@ flowchart TD
 
 ### Overlap check (one line per class)
 
-| Class | They do | The Arcblade does NOT | Shared edge |
+| Class | They do | The Spellblade does NOT | Shared edge |
 |---|---|---|---|
-| 🛡️ Warrior | tank, taunt, party damage cut, one-handed sword + shield + spears | taunt or protect the party; its great shield only protects itself and whoever stands right behind it | both hold the front; the Arcblade's guard is a weapon, not an ability |
+| 🛡️ Warrior | tank, taunt, party damage cut, one-handed sword + shield + spears | taunt or protect the party; its great shield only protects itself and whoever stands right behind it | both hold the front; the Spellblade's guard is a weapon, not an ability |
 | 🪓 Berserker | party damage BUFF, self heal by hitting, axes / maces | buff allies | Breach is a DEBUFF on enemies - stacks with Enrage, never replaces it |
 | 🥋 Monk | self move + attack speed stacks, single-target stuns, Awe | gain move speed from its stacks; hit single targets | Momentum gives attack speed and arc size only; the Monk stays faster on its feet |
 | 🗡️ Assassin | single-target crit burst, Toxin Weaken cloud | crit; hide | Sunder EXPOSES a boss (crits on it hit harder) - the God Killer's best friend |
-| 🔮 Mage | ranged elemental burst, Mana shield | shoot or blink | both elemental; the Mage from range, the Arcblade in melee (later: element reactions between them) |
+| 🔮 Mage | ranged elemental burst, Mana shield | shoot or blink | both elemental; the Mage from range, the Spellblade in melee (later: element reactions between them) |
 | 🏹 Archer | roots, Hunter's Mark (+damage taken on ONE target) | root | Mark and Breach are both "+damage taken" - rule: the higher one applies, +5% extra when both are on (Question 5) |
 | ✨ Priest | heals, shields, saves | heal | none |
 
@@ -108,7 +108,7 @@ flowchart TD
 
 🔵 **Proposed** (Skyy's words: "attacks chain together growing in speed as you continue to attack ... your momentum becomes unstoppable")
 
-Momentum is the Arcblade's class resource. It is always on (no ability needed), shown as a stack count on the SkyyHud Abilities widget ("Momentum 14").
+Momentum is the Spellblade's class resource. It is always on (no ability needed), shown as a stack count on the SkyyHud Abilities widget ("Momentum 14").
 
 ### Stacks - how they build
 
@@ -138,7 +138,7 @@ Momentum is the Arcblade's class resource. It is always on (no ability needed), 
 
 | Per stack | At 20 |
 |---|---|
-| **Attack speed +1.5%** | +30% (the Monk's Flowing Form peak; the Arcblade starts a whole speed tier slower, so it ends about where a normal sword is) |
+| **Attack speed +1.5%** | +30% (the Monk's Flowing Form peak; the Spellblade starts a whole speed tier slower, so it ends about where a normal sword is) |
 | **Arc size +1%** (wider arc, longer reach) | +20% reach and width |
 | **Element strength +1%** (Imbue damage and status strength) | +20% |
 
@@ -152,13 +152,13 @@ Momentum is the Arcblade's class resource. It is always on (no ability needed), 
 
 - Momentum push is the party benefit next to Breach. It is small on purpose: a little move speed, never attack speed or damage (the Monk and Berserker own those).
 
-- **Why 4 s decay and not 5:** the Arcblade has long reach and area hits, so it builds faster than the Monk; a shorter decay keeps "keep pressing forward" true.
+- **Why 4 s decay and not 5:** the Spellblade has long reach and area hits, so it builds faster than the Monk; a shorter decay keeps "keep pressing forward" true.
 
 &nbsp;
 
 ## ⚔️ Weapons
 
-### Two-handed swords (The Armory's 20 longswords + the Zweihander + the 4 Elemental swords; our own Arcblade swords later)
+### Two-handed swords (The Armory's 20 longswords + the Zweihander + the 4 Elemental swords; our own Spellblade swords later)
 
 🔵 **Proposed** (weapons named by Skyy 2026-10-08; the move set is ours to design)
 
@@ -174,15 +174,15 @@ Momentum is the Arcblade's class resource. It is always on (no ability needed), 
 
   - Differs from the Berserker's Whirlwind Dash (a spin along the ground hitting all around) and the Warrior's Thrust (a straight stab): one dash, one huge frontal arc, a wave.
 
-- **Longswords' own move set:** The Armory's longswords use The Armory's animations and chains. Giving them our arcs needs a runtime hook or a CC BY-NC override (the same open point as the Warrior's dash, line 161) - decide with the 0.7 Armory work. Our own Arcblade swords ship with the arc move set natively (SkyyArmory, Copper -> Onyxium like the wands; art via the art skill).
+- **Longswords' own move set:** The Armory's longswords use The Armory's animations and chains. Giving them our arcs needs a runtime hook or a CC BY-NC override (the same open point as the Warrior's dash, line 161) - decide with the 0.7 Armory work. Our own Spellblade swords ship with the arc move set natively (SkyyArmory, Copper -> Onyxium like the wands; art via the art skill).
 
 ### Great shield (NEW two-handed weapon type; Copper -> Onyxium, SkyyArmory)
 
 🔵 **Proposed** (Skyy: "i was thinking about a 2 handed great shield as a secondary weapon")
 
-- **Look:** a tower shield as tall as the player, held with both hands (one strap, one grip bar), heavy metal rim in the tier's metal, a wooden or metal face, and a **rune in the centre that glows in the Arcblade's current element** (dim when nothing is imbued). Copper is plain and riveted; Mithril has gold trim and an etched sigil; Onyxium is black glass with a violet rune. Concept sheet later (art skill rules).
+- **Look:** a tower shield as tall as the player, held with both hands (one strap, one grip bar), heavy metal rim in the tier's metal, a wooden or metal face, and a **rune in the centre that glows in the Spellblade's current element** (dim when nothing is imbued). Copper is plain and riveted; Mithril has gold trim and an etched sigil; Onyxium is black glass with a violet rune. Concept sheet later (art skill rules).
 
-- **Role:** the Arcblade's "hold the line" weapon. Less damage, more control: it shoves, it blocks, it keeps Momentum alive while you are surrounded. Swap to it when the crowd pushes back; swap to the sword to clear it.
+- **Role:** the Spellblade's "hold the line" weapon. Less damage, more control: it shoves, it blocks, it keeps Momentum alive while you are surrounded. Swap to it when the crowd pushes back; swap to the sword to clear it.
 
 - **Attack (left click):** a **shield bash** - slow, 2.5 blocks reach, 90° front, 0.7 H, **knockback 2 blocks**, +1 Momentum on hit. The 3rd bash in a chain is a **slam** (1.0 H, knockback 3, small stagger 0.3 s).
 
@@ -202,7 +202,7 @@ Momentum is the Arcblade's class resource. It is always on (no ability needed), 
 
 ## 🌈 Elements (dependency: the element system is not designed yet)
 
-🟠 **Open** - no element spec exists in the repo (grep 2026-10-08: `research/Hytale-Runes-Research.md` lists the engine's damage causes; `research/cloud/Class-Tree-Paths.md` uses the five for the Priest's Elemental Bubble; `docs/plans/SkyWynn-Decisions.md` holds the Wynncraft stat model). The Arcblade NEEDS it; until then every element line here is a proposal and Imbue can ship with Fire only.
+🟠 **Open** - no element spec exists in the repo (grep 2026-10-08: `research/Hytale-Runes-Research.md` lists the engine's damage causes; `research/cloud/Class-Tree-Paths.md` uses the five for the Priest's Elemental Bubble; `docs/plans/SkyWynn-Decisions.md` holds the Wynncraft stat model). The Spellblade NEEDS it; until then every element line here is a proposal and Imbue can ship with Fire only.
 
 | Element (engine / SkyyGear name) | Wynncraft stat name | Proposed status on hit | Armory Elemental sword |
 |---|---|---|---|
@@ -219,7 +219,7 @@ Momentum is the Arcblade's class resource. It is always on (no ability needed), 
 
 - **Attunement** (which element Imbue uses when the sword has none): picked on the class page out of combat, default **Fire**; the Tempest path unlocks a second. Elemental swords override it.
 
-- Proposed owner: a short element-system spec in `research/cloud/` (planned name Element-System-Spec; elements, statuses, stacking, boss rules, reactions later) before the Arcblade build.
+- Proposed owner: a short element-system spec in `research/cloud/` (planned name Element-System-Spec; elements, statuses, stacking, boss rules, reactions later) before the Spellblade build.
 
 &nbsp;
 
@@ -337,7 +337,7 @@ You own 4. You equip 2 as primaries (Ability 2 / 3: walking, sprinting, mid-air 
 
 - **Does:** a heavy overhead strike on **one target** (the enemy you look at within 4 blocks): **2.0 H**, and the target is **SUNDERED for 12 s: it deals 15% less damage (Weakened) and is EXPOSED - crits on it deal +20% crit damage, from everyone**. Full strength on bosses and mini-bosses (not crowd control). Grants +2 Momentum.
 
-- Breach and Sunder stack (take more + deal less + crit harder): the Arcblade's two boss keys. Next to the Assassin's God Killer this is the kill window.
+- Breach and Sunder stack (take more + deal less + crit harder): the Spellblade's two boss keys. Next to the Assassin's God Killer this is the kill window.
 
 | Shape | What changes | Cost / CD |
 |---|---|---|
@@ -440,7 +440,7 @@ Ideas, Wynncraft-style - pick one at its first node, the other two lock (shape a
 | T3 Far Crescent | 15 | 2 | Crescent Rush and Bulwark Charge go 15% farther and cost 10% less Stamina |
 | T4 Second Wind | 25 | 2 | once per 60 s, when Momentum would drop to 0 from a stun it keeps 5 instead |
 | T5 Keen Edge | 40 | 2 | +5% damage with two-handed swords and great shields |
-| T6 Tempo | 55 | 3 | all Arcblade ability cooldowns -5% |
+| T6 Tempo | 55 | 3 | all Spellblade ability cooldowns -5% |
 
 **Path A - Tempest** (the elements: more of them, deeper)
 
@@ -478,8 +478,8 @@ Ideas, Wynncraft-style - pick one at its first node, the other two lock (shape a
 
 | Key | Label | Default |
 |---|---|---|
-| class.arcblade.enabled | Arcblade class | false until built (the Shaman-slot pattern) |
-| class.arcblade.manaPerLevel | Arcblade max Mana per level | 5 |
+| class.spellblade.enabled | Spellblade class | false until built (the Shaman-slot pattern) |
+| class.spellblade.manaPerLevel | Spellblade max Mana per level | 5 |
 | mom.max / mom.decay | Momentum max / decay per stack | 20 / 4 |
 | mom.perHit / mom.maxPerSwing / mom.rhythm | Momentum per hit / most per swing / rhythm bonus | 1 / 2 / 1 |
 | mom.flowWindow | Flow window | 0.4 |
@@ -501,17 +501,17 @@ Ideas, Wynncraft-style - pick one at its first node, the other two lock (shape a
 
 | # | Risk | Fallback |
 |---|---|---|
-| 1 | **The Armory longswords' move set** is theirs (animations + chains); our arcs on them need a runtime hook or a CC BY-NC override (line 161's open point) | our own Arcblade swords first (SkyyArmory items with the arc chain); Armory longswords keep their chain + get Momentum / traversal only |
+| 1 | **The Armory longswords' move set** is theirs (animations + chains); our arcs on them need a runtime hook or a CC BY-NC override (line 161's open point) | our own Spellblade swords first (SkyyArmory items with the arc chain); Armory longswords keep their chain + get Momentum / traversal only |
 | 2 | **Arc reach and width change at runtime** (+20% at 20 stacks): vanilla melee hit detection is client-predicted in the item chain | server-side extra cone scan on each swing for the Momentum bonus hits (`TargetUtil.getAllEntitiesInSphere` + angle test - the SkyyArmory trail pattern) |
 | 3 | **Attack speed per stack**: SkyyGear picks swing timing by hidden-effect speed TIERS (4 discrete) and strips foreign speed effects every second (probe plan finding); Skyy 2026-10-08: speed buffs bump the weapon ONE tier, temporarily | Momentum tiers map to speed tiers (Rolling = +1 tier); the smooth per-stack % waits for the SkyyGear "ability haste" bridge |
 | 4 | **Flow window** needs the swing start / end times (Primary `InteractionChainStartEvent`, probe P2) | count hits only: a hit within 0.4 s + the swing time of the last hit = the rhythm bonus |
 | 5 | **Two-handed guard item**: a non-shield item that blocks on right-click | the Monk Bo right-click block (SkyyArmory, live 2026-10-07) is the pattern |
 | 6 | **Carrying / shoving mobs** during Bulwark Charge (the Monk probes 7-8 asked the same API: dragging mobs) | if mobs cannot be moved along the path, the charge only damages + staggers on the way and the end shove does the pushing |
-| 7 | **Unstoppable = no hit-stun** on the player: what interrupts a player's swing (knockback, stagger effect, damage) | the boss breakout mechanism (strip the KnockbackComponent; live in SkyyArmory 0.1.9) applied to the Arcblade for the tier |
+| 7 | **Unstoppable = no hit-stun** on the player: what interrupts a player's swing (knockback, stagger effect, damage) | the boss breakout mechanism (strip the KnockbackComponent; live in SkyyArmory 0.1.9) applied to the Spellblade for the tier |
 | 8 | **Breach / Weaken / Expose** = damage FILTER-group hooks (the DamageLock pattern, VERIFIED hook shape); order vs SkyyGear / SkyyMobs systems and vs the Archer's Mark | multiplication commutes; the Mark rule is a lookup in one place |
 | 9 | **Element damage through SkyyGear's stats** (does an ability hit with a Fire cause get the weapon's Fire % and the target's Fire defence?) | if not: a plain damage multiplier per element until the element spec lands |
 | 10 | **Statuses** (Burn, Chill, Freeze, Stagger, Gust, Shock) are our own effects (engine E7 CC round); Freeze = root + no attack | ship Imbue with Fire (Burn = damage over time only) first |
-| 11 | **Elemental sword ids** `Weapon_Elemental_*` (The Armory, shelved) reach the class table only when unshelved; `Longsword_` / Zweihander ids move from the Warrior gate to the Arcblade | one class-table entry per family (the flail rule) |
+| 11 | **Elemental sword ids** `Weapon_Elemental_*` (The Armory, shelved) reach the class table only when unshelved; `Longsword_` / Zweihander ids move from the Warrior gate to the Spellblade | one class-table entry per family (the flail rule) |
 | 12 | **An 8th class** in SkyyClasses: profiles, kit, class page, HUD, the trees (SkyyTrees page 2), the emblem (class-art), `tools/class_pages.py` CLASSES list | the Monk / Assassin round (SkyyClasses 0.1.14) is the template |
 
 &nbsp;
@@ -550,7 +550,7 @@ Ideas, Wynncraft-style - pick one at its first node, the other two lock (shape a
 | 12 | Medium stats: Mana +5 per class level (the Priest's rate), armor type Light, no move-speed change, defence between Warrior and Mage? | **[yes]** |
 | 13 | Paths: Tempest (elements) / Breaker (boss debuffs) / Vanguard (great shield + Momentum)? | **[yes]** |
 | 14 | The Warrior gives up longswords + the Zweihander now (class table + its page), keeping one-handed swords, shields and spears? | **[yes - it was 'weapon-heavy, temporary' anyway]** |
-| 15 | Build order: after the Monk / Assassin rounds and the ability engine E1-E4; the Arcblade swords + great shield as a SkyyArmory round first, Momentum second, abilities with the engine? | **[yes; element spec in the cloud before Imbue]** |
+| 15 | Build order: after the Monk / Assassin rounds and the ability engine E1-E4; the Spellblade swords + great shield as a SkyyArmory round first, Momentum second, abilities with the engine? | **[yes; element spec in the cloud before Imbue]** |
 
 &nbsp;
 
@@ -558,13 +558,13 @@ Ideas, Wynncraft-style - pick one at its first node, the other two lock (shape a
 
 - Engine risks 1-12 above; the Monk probe results for dragging mobs (probes 7-8) decide Bulwark Charge's carry.
 
-- **Files that still say the Warrior owns longswords / Zweihander** (not edited from the cloud): `research/classes/Warrior.md` (map + weapons), `research/classes/README.md` (class table: add the Arcblade row, weapons "Two-handed swords, Great shield"), `research/cloud/Class-Tree-Paths.md` (a Warrior T5 note is fine; an Arcblade section = this page's tree), `research/cloud/Own-Specials-Draft.md` + `research/cloud/Untiered-Mythic-Spec.md` (the Zweihander and the 4 Elementals move from Warrior pools to the Arcblade; the UT grid grows from 14 to 16 weapon types: two-handed sword, great shield), `research/Pack-Armor-Plan.md` (gate table `Longsword_` / Zweihander / `Weapon_Elemental_` -> Arcblade), `research/cloud/Weapon-Speed-Tiers.md` (Longsword Slow 1.4 is the Arcblade's base tier), `research/cloud/Class-Ability-Shapes.md` (add a section 8b from the tables here).
+- **Files that still say the Warrior owns longswords / Zweihander** (not edited from the cloud): `research/classes/Warrior.md` (map + weapons), `research/classes/README.md` (class table: add the Spellblade row, weapons "Two-handed swords, Great shield"), `research/cloud/Class-Tree-Paths.md` (a Warrior T5 note is fine; an Spellblade section = this page's tree), `research/cloud/Own-Specials-Draft.md` + `research/cloud/Untiered-Mythic-Spec.md` (the Zweihander and the 4 Elementals move from Warrior pools to the Spellblade; the UT grid grows from 14 to 16 weapon types: two-handed sword, great shield), `research/Pack-Armor-Plan.md` (gate table `Longsword_` / Zweihander / `Weapon_Elemental_` -> Spellblade), `research/cloud/Weapon-Speed-Tiers.md` (Longsword Slow 1.4 is the Spellblade's base tier), `research/cloud/Class-Ability-Shapes.md` (add a section 8b from the tables here).
 
-- `tools/class_pages.py` CLASSES list needs "Arcblade" (then `python tools/class_pages.py` rebuilds the HTML; the pool block above is a verbatim copy of README's).
+- `tools/class_pages.py` CLASSES list needs "Spellblade" (then `python tools/class_pages.py` rebuilds the HTML; the pool block above is a verbatim copy of README's).
 
 - `docs/answered/classes.md` line 167 names this page; no new answer to append until Skyy answers the questions.
 
-- Art: an Arcblade class emblem + the great shield concept sheet (read `.claude/skills/skywynn-art/SKILL.md` first); not part of this draft.
+- Art: an Spellblade class emblem + the great shield concept sheet (read `.claude/skills/skywynn-art/SKILL.md` first); not part of this draft.
 
 - Vanilla checks: the longsword / Zweihander item ids and chains in The Armory (Assets, CC BY-NC); whether a two-handed item can block (the Bo block build is the reference); vanilla element damage causes applied from a plugin hit (`Damage$EntitySource` + an element cause).
 
