@@ -2,6 +2,10 @@
 
 ## OAK (F1 Grove)
 
+**v2 (2026-10-09, APPROVED by Skyy: "they all look great!"):** repainted in the in-game Oak wood colours (Skyy: "make sure to
+match each armor set to its in game wood variant." / "Yes, redo Oak and Birch to match their in-game wood"): red-brown
+oak bark, orange-tan heartwood on cut rims, the game's oak-leaf green. Same models, shapes and acorn mark (textures only).
+
 Status: APPROVED by Skyy 2026-10-08: "Yes, the Oak armor looks good, commit it". Not yet seen in game.
 
 Skyy: "lets still make the farming and gathering armor, but use vanilla for mining, and armory for combat gear."

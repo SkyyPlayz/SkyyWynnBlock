@@ -1446,7 +1446,7 @@
    "tree": "Oak",
    "item_id_prefix_suggestion": "Armor_Foraging_Oak",
    "sheet": "sheet-oak.png",
-   "status": "approved by Skyy 2026-10-08 (\"Yes, the Oak armor looks good, commit it\"); NOT verified in game",
+   "status": "v2 (in-game Oak wood colours) approved by Skyy 2026-10-09 (\"they all look great!\"); v1 approved 2026-10-08 (\"Yes, the Oak armor looks good, commit it\"); NOT verified in game",
    "totals": {
     "boxes": 45,
     "quads": 4
@@ -2166,8 +2166,8 @@
   },
   {
    "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Oak_Chest.png",
-   "bytes": 5262,
-   "sha256": "c615584661c3a2ef8b5b6d5be47fa275771fc1f63f350202634f8decfbafad7d",
+   "bytes": 5127,
+   "sha256": "266a06ac1adf6f0eefaf16aff9d610170bcd5e50ba76597da62439ff98389cca",
    "image_size": [
     64,
     64
@@ -2175,8 +2175,8 @@
   },
   {
    "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Oak_Hands.png",
-   "bytes": 6186,
-   "sha256": "71481d6a8b5c7392e6e398695084906b3e4f447aea5219694f7a2fbda848a58f",
+   "bytes": 6238,
+   "sha256": "4a75b3a53a1412442698bb31d52d04a0c18f254dce332636d178f4bb1ebabc75",
    "image_size": [
     64,
     64
@@ -2184,8 +2184,8 @@
   },
   {
    "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Oak_Head.png",
-   "bytes": 4601,
-   "sha256": "8adff15b21911cce4e3911e14193fe78906923143a15075f13858a4548d12771",
+   "bytes": 4520,
+   "sha256": "8e442e04c76dccd2eb75c889c00611b9b92688201b786c5a8d57180906b0f82e",
    "image_size": [
     64,
     64
@@ -2193,8 +2193,8 @@
   },
   {
    "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Oak_Legs.png",
-   "bytes": 3188,
-   "sha256": "53a41c1ce528781af9edadbb5e817433d1b67b3a8f2d0de96ef3fb992e363e32",
+   "bytes": 3140,
+   "sha256": "d0212bd91fa7d31859bf60efb8e556d7f687bca6e218b92ae8b90e8cfd9874b7",
    "image_size": [
     64,
     64
@@ -2319,8 +2319,8 @@
   },
   {
    "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Chest_Texture.png",
-   "bytes": 14474,
-   "sha256": "124324783d9b19842a58398d140149fbc0d620daf554405edad638f1bdde0c0f",
+   "bytes": 14149,
+   "sha256": "234000dce27d717a91d7a037c10034875ab82fc9fa0aa046688b852059653c1b",
    "image_size": [
     96,
     128
@@ -2333,8 +2333,8 @@
   },
   {
    "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Hands_Texture.png",
-   "bytes": 3824,
-   "sha256": "9d27e91a5feee77fe9587b85b647318d0bb2625fa8bca04c5d00616fe3b0152b",
+   "bytes": 3775,
+   "sha256": "308d1d5c3a4954baf5adee83310d313f3a6ed336674151c7203cc87e61c04ee4",
    "image_size": [
     96,
     32
@@ -2347,8 +2347,8 @@
   },
   {
    "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Head_Texture.png",
-   "bytes": 9941,
-   "sha256": "3de48a52ad250f73cbe647cded9b3a74bb074c4a3578d67b12c9f24045d94650",
+   "bytes": 9962,
+   "sha256": "baac900f692d91ba9cd096ee0b01d2c8e9e181377c3b627dbbf87981a264288d",
    "image_size": [
     96,
     128
@@ -2361,8 +2361,8 @@
   },
   {
    "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Legs_Texture.png",
-   "bytes": 5235,
-   "sha256": "5a53a31aa0a869eecab4400a0ce68ec0fdb234d19119f940483c06d406d64825",
+   "bytes": 5175,
+   "sha256": "edae014c2d409bdf979f24435ffc229a606af4e24a2e5d59a6258cb40d800477",
    "image_size": [
     96,
     64
@@ -2370,8 +2370,8 @@
   },
   {
    "path": "README.md",
-   "bytes": 8509,
-   "sha256": "d45e2d0896d802ab7b056f0034976a3225ed722d5978c3fafdbc5e3093401d8d"
+   "bytes": 8878,
+   "sha256": "cf044b421f933dd2ba23da2c8a58928a167d4a36aab417bcbd4d58a42ae097f4"
   },
   {
    "path": "sheet-beech.png",
@@ -2393,8 +2393,8 @@
   },
   {
    "path": "sheet-oak.png",
-   "bytes": 1170888,
-   "sha256": "741ee75abe8c0edaffc7493d7d8e8e6274d6d759352eb036a89ac88f636afc33",
+   "bytes": 1135037,
+   "sha256": "301ff4a1837ade45878afc171675d6ab0025252d31c6b0d95d20c0e3aa274382",
    "image_size": [
     2370,
     3076
@@ -2442,23 +2442,23 @@
   },
   {
    "path": "source/F1_Grove/Oak/Chest.bbmodel",
-   "bytes": 44885,
-   "sha256": "2e856539229a8c1d38a55021017da29ed4ddd3e7c6f6f43a429335a8d3dc4669"
+   "bytes": 45109,
+   "sha256": "b52ad10de7e3c48406a910ac6f888c13378386f2dd897106f1b836450ef33e2c"
   },
   {
    "path": "source/F1_Grove/Oak/Hands.bbmodel",
-   "bytes": 17535,
-   "sha256": "de16450a21d89e2f9a4c3df7090ef58b894c4ad5891b97f46cf03f0a5763eec0"
+   "bytes": 17543,
+   "sha256": "72bc53f88fac2808ddf4de3dc06aa47795385fb053cc7bc98d15f954000591b9"
   },
   {
    "path": "source/F1_Grove/Oak/Head.bbmodel",
-   "bytes": 28286,
-   "sha256": "b7f24c7cf622c036996f917b8805ceafa7eb6783e474d8c4838d54dbb4be5562"
+   "bytes": 28894,
+   "sha256": "4fd15c4d5e4291f7e95d1d64b42912ba46ba64607cccbc517beae585dc3bc84c"
   },
   {
    "path": "source/F1_Grove/Oak/Legs.bbmodel",
-   "bytes": 22434,
-   "sha256": "e2d34e90744944a016ec4c9e4dba783f91779e6e9dcf827019e6b4bad3a3cbe2"
+   "bytes": 22490,
+   "sha256": "33b33cb749657bf654ae3d712500dd006b4177b619ba1b7907e24960f60d02f6"
   }
  ],
  "generators": "tools/art/: ga_<tree>.py (design, e.g. ga_oak.py, ga_birch.py), ga_paint.py (painter), make_foraging_armor.py (GA_DESIGN=ga_<tree>), make_foraging_icons.py, make_foraging_sheet.py, make_foraging_manifest.py, validate_foraging.py (GA_TREE=<Tree>), check_fit_foraging.py, bb_validate_foraging.js, roundtrip_diff_foraging.py"
