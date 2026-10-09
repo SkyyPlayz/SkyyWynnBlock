@@ -1,0 +1,790 @@
+{
+ "name": "SkyWynn Foraging armor - F1_Grove - Oak",
+ "item_id_prefix_suggestion": "Armor_Foraging_Oak",
+ "set": "SkyyForaging",
+ "tier": "F1_Grove",
+ "tree": "Oak",
+ "slots": [
+  "Head",
+  "Chest",
+  "Hands",
+  "Legs"
+ ],
+ "format": "Hytale .blockymodel (format: character), boxes + leaf quads, 64 units per block, 1 texel per unit",
+ "status": "approved by Skyy 2026-10-08 (\"Yes, the Oak armor looks good, commit it\"); NOT verified in game",
+ "skyy_quotes": [
+  "lets still make the farming and gathering armor, but use vanilla for mining, and armory for combat gear.",
+  "do a design per tree type in that set, so every hardwood gets its own design in that trees color"
+ ],
+ "totals": {
+  "boxes": 45,
+  "quads": 4
+ },
+ "pieces": {
+  "Head": {
+   "model": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Head.blockymodel",
+   "texture": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Head_Texture.png",
+   "texture_size": [
+    96,
+    128
+   ],
+   "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Oak_Head.png",
+   "attaches_to_bones": [
+    "Head"
+   ],
+   "boxes": 10,
+   "quads": 2,
+   "triangles": 120,
+   "nodes": [
+    {
+     "name": "Head",
+     "kind": "attach:Head",
+     "parent": null
+    },
+    {
+     "name": "HelmCap",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      32,
+      10,
+      31
+     ]
+    },
+    {
+     "name": "HelmUpper",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      28,
+      3,
+      27
+     ]
+    },
+    {
+     "name": "HelmDome",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      22,
+      2,
+      21
+     ]
+    },
+    {
+     "name": "HelmBrim",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      36,
+      2,
+      34
+     ]
+    },
+    {
+     "name": "HelmBack",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      32,
+      18,
+      2
+     ]
+    },
+    {
+     "name": "R-Cheek",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      2,
+      14,
+      14
+     ]
+    },
+    {
+     "name": "L-Cheek",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      2,
+      14,
+      14
+     ]
+    },
+    {
+     "name": "CrownMid",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      7,
+      13,
+      2
+     ]
+    },
+    {
+     "name": "R-CrownSide",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      6,
+      10,
+      2
+     ]
+    },
+    {
+     "name": "L-CrownSide",
+     "kind": "box",
+     "parent": "Head",
+     "size": [
+      6,
+      10,
+      2
+     ]
+    },
+    {
+     "name": "R-HelmLeaf",
+     "kind": "quad",
+     "parent": "Head"
+    },
+    {
+     "name": "L-HelmLeaf",
+     "kind": "quad",
+     "parent": "Head"
+    }
+   ]
+  },
+  "Chest": {
+   "model": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Chest.blockymodel",
+   "texture": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Chest_Texture.png",
+   "texture_size": [
+    96,
+    128
+   ],
+   "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Oak_Chest.png",
+   "attaches_to_bones": [
+    "Pelvis",
+    "Belly",
+    "Chest",
+    "R-Arm",
+    "L-Arm"
+   ],
+   "boxes": 18,
+   "quads": 2,
+   "triangles": 216,
+   "nodes": [
+    {
+     "name": "Pelvis",
+     "kind": "attach:Pelvis",
+     "parent": null
+    },
+    {
+     "name": "R-Tassel",
+     "kind": "box",
+     "parent": "Pelvis",
+     "size": [
+      11,
+      13,
+      1
+     ]
+    },
+    {
+     "name": "L-Tassel",
+     "kind": "box",
+     "parent": "Pelvis",
+     "size": [
+      11,
+      13,
+      1
+     ]
+    },
+    {
+     "name": "TasselBack",
+     "kind": "box",
+     "parent": "Pelvis",
+     "size": [
+      23,
+      12,
+      1
+     ]
+    },
+    {
+     "name": "Belly",
+     "kind": "attach:Belly",
+     "parent": "Pelvis"
+    },
+    {
+     "name": "Plackart",
+     "kind": "box",
+     "parent": "Belly",
+     "size": [
+      27,
+      16,
+      20
+     ]
+    },
+    {
+     "name": "VineBelt",
+     "kind": "box",
+     "parent": "Belly",
+     "size": [
+      28,
+      3,
+      21
+     ]
+    },
+    {
+     "name": "Acorn",
+     "kind": "box",
+     "parent": "Belly",
+     "size": [
+      4,
+      4,
+      2
+     ]
+    },
+    {
+     "name": "AcornCap",
+     "kind": "box",
+     "parent": "Belly",
+     "size": [
+      6,
+      2,
+      3
+     ]
+    },
+    {
+     "name": "Chest",
+     "kind": "attach:Chest",
+     "parent": "Belly"
+    },
+    {
+     "name": "Cuirass",
+     "kind": "box",
+     "parent": "Chest",
+     "size": [
+      29,
+      22,
+      21
+     ]
+    },
+    {
+     "name": "R-Breast",
+     "kind": "box",
+     "parent": "Chest",
+     "size": [
+      12,
+      17,
+      2
+     ]
+    },
+    {
+     "name": "L-Breast",
+     "kind": "box",
+     "parent": "Chest",
+     "size": [
+      12,
+      17,
+      2
+     ]
+    },
+    {
+     "name": "Collar",
+     "kind": "box",
+     "parent": "Chest",
+     "size": [
+      20,
+      3,
+      17
+     ]
+    },
+    {
+     "name": "R-Arm",
+     "kind": "attach:R-Arm",
+     "parent": "Chest"
+    },
+    {
+     "name": "R-Pauldron",
+     "kind": "box",
+     "parent": "R-Arm",
+     "size": [
+      13,
+      4,
+      16
+     ]
+    },
+    {
+     "name": "R-PauldronLame",
+     "kind": "box",
+     "parent": "R-Arm",
+     "size": [
+      3,
+      8,
+      15
+     ]
+    },
+    {
+     "name": "R-Sleeve",
+     "kind": "box",
+     "parent": "R-Arm",
+     "size": [
+      9,
+      22,
+      13
+     ]
+    },
+    {
+     "name": "L-Arm",
+     "kind": "attach:L-Arm",
+     "parent": "Chest"
+    },
+    {
+     "name": "L-Pauldron",
+     "kind": "box",
+     "parent": "L-Arm",
+     "size": [
+      13,
+      4,
+      16
+     ]
+    },
+    {
+     "name": "L-Vine",
+     "kind": "box",
+     "parent": "L-Pauldron",
+     "size": [
+      3,
+      2,
+      18
+     ]
+    },
+    {
+     "name": "L-VineLeafA",
+     "kind": "quad",
+     "parent": "L-Vine"
+    },
+    {
+     "name": "L-VineLeafB",
+     "kind": "quad",
+     "parent": "L-Vine"
+    },
+    {
+     "name": "L-PauldronLame",
+     "kind": "box",
+     "parent": "L-Arm",
+     "size": [
+      3,
+      8,
+      15
+     ]
+    },
+    {
+     "name": "L-Sleeve",
+     "kind": "box",
+     "parent": "L-Arm",
+     "size": [
+      9,
+      22,
+      13
+     ]
+    }
+   ]
+  },
+  "Hands": {
+   "model": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Hands.blockymodel",
+   "texture": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Hands_Texture.png",
+   "texture_size": [
+    96,
+    32
+   ],
+   "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Oak_Hands.png",
+   "attaches_to_bones": [
+    "R-Forearm",
+    "R-Hand",
+    "L-Forearm",
+    "L-Hand"
+   ],
+   "boxes": 8,
+   "quads": 0,
+   "triangles": 96,
+   "nodes": [
+    {
+     "name": "R-Forearm",
+     "kind": "attach:R-Forearm",
+     "parent": null
+    },
+    {
+     "name": "R-Bracer",
+     "kind": "box",
+     "parent": "R-Forearm",
+     "size": [
+      9,
+      14,
+      13
+     ]
+    },
+    {
+     "name": "R-BracerPlate",
+     "kind": "box",
+     "parent": "R-Forearm",
+     "size": [
+      2,
+      12,
+      10
+     ]
+    },
+    {
+     "name": "R-Hand",
+     "kind": "attach:R-Hand",
+     "parent": "R-Forearm"
+    },
+    {
+     "name": "R-Glove",
+     "kind": "box",
+     "parent": "R-Hand",
+     "size": [
+      11,
+      12,
+      15
+     ]
+    },
+    {
+     "name": "R-GloveCuff",
+     "kind": "box",
+     "parent": "R-Hand",
+     "size": [
+      12,
+      2,
+      16
+     ]
+    },
+    {
+     "name": "L-Forearm",
+     "kind": "attach:L-Forearm",
+     "parent": null
+    },
+    {
+     "name": "L-Bracer",
+     "kind": "box",
+     "parent": "L-Forearm",
+     "size": [
+      9,
+      14,
+      13
+     ]
+    },
+    {
+     "name": "L-BracerPlate",
+     "kind": "box",
+     "parent": "L-Forearm",
+     "size": [
+      2,
+      12,
+      10
+     ]
+    },
+    {
+     "name": "L-Hand",
+     "kind": "attach:L-Hand",
+     "parent": "L-Forearm"
+    },
+    {
+     "name": "L-Glove",
+     "kind": "box",
+     "parent": "L-Hand",
+     "size": [
+      11,
+      12,
+      15
+     ]
+    },
+    {
+     "name": "L-GloveCuff",
+     "kind": "box",
+     "parent": "L-Hand",
+     "size": [
+      12,
+      2,
+      16
+     ]
+    }
+   ]
+  },
+  "Legs": {
+   "model": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Legs.blockymodel",
+   "texture": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Legs_Texture.png",
+   "texture_size": [
+    96,
+    64
+   ],
+   "icon": "Common/Icons/ItemsGenerated/Armor_Foraging_Oak_Legs.png",
+   "attaches_to_bones": [
+    "Pelvis",
+    "R-Thigh",
+    "R-Calf",
+    "R-Foot",
+    "L-Thigh",
+    "L-Calf",
+    "L-Foot"
+   ],
+   "boxes": 9,
+   "quads": 0,
+   "triangles": 108,
+   "nodes": [
+    {
+     "name": "Pelvis",
+     "kind": "attach:Pelvis",
+     "parent": null
+    },
+    {
+     "name": "Breeches",
+     "kind": "box",
+     "parent": "Pelvis",
+     "size": [
+      26,
+      12,
+      20
+     ]
+    },
+    {
+     "name": "R-Thigh",
+     "kind": "attach:R-Thigh",
+     "parent": "Pelvis"
+    },
+    {
+     "name": "R-Trouser",
+     "kind": "box",
+     "parent": "R-Thigh",
+     "size": [
+      11,
+      21,
+      14
+     ]
+    },
+    {
+     "name": "R-Calf",
+     "kind": "attach:R-Calf",
+     "parent": "R-Thigh"
+    },
+    {
+     "name": "R-Knee",
+     "kind": "box",
+     "parent": "R-Calf",
+     "size": [
+      8,
+      6,
+      2
+     ]
+    },
+    {
+     "name": "R-Greave",
+     "kind": "box",
+     "parent": "R-Calf",
+     "size": [
+      11,
+      23,
+      13
+     ]
+    },
+    {
+     "name": "R-Foot",
+     "kind": "attach:R-Foot",
+     "parent": "R-Calf"
+    },
+    {
+     "name": "R-Boot",
+     "kind": "box",
+     "parent": "R-Foot",
+     "size": [
+      14,
+      8,
+      20
+     ]
+    },
+    {
+     "name": "L-Thigh",
+     "kind": "attach:L-Thigh",
+     "parent": "Pelvis"
+    },
+    {
+     "name": "L-Trouser",
+     "kind": "box",
+     "parent": "L-Thigh",
+     "size": [
+      11,
+      21,
+      14
+     ]
+    },
+    {
+     "name": "L-Calf",
+     "kind": "attach:L-Calf",
+     "parent": "L-Thigh"
+    },
+    {
+     "name": "L-Knee",
+     "kind": "box",
+     "parent": "L-Calf",
+     "size": [
+      8,
+      6,
+      2
+     ]
+    },
+    {
+     "name": "L-Greave",
+     "kind": "box",
+     "parent": "L-Calf",
+     "size": [
+      11,
+      23,
+      13
+     ]
+    },
+    {
+     "name": "L-Foot",
+     "kind": "attach:L-Foot",
+     "parent": "L-Calf"
+    },
+    {
+     "name": "L-Boot",
+     "kind": "box",
+     "parent": "L-Foot",
+     "size": [
+      14,
+      8,
+      20
+     ]
+    }
+   ]
+  }
+ },
+ "files": [
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Oak_Chest.png",
+   "bytes": 5262,
+   "sha256": "c615584661c3a2ef8b5b6d5be47fa275771fc1f63f350202634f8decfbafad7d",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Oak_Hands.png",
+   "bytes": 6186,
+   "sha256": "71481d6a8b5c7392e6e398695084906b3e4f447aea5219694f7a2fbda848a58f",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Oak_Head.png",
+   "bytes": 4601,
+   "sha256": "8adff15b21911cce4e3911e14193fe78906923143a15075f13858a4548d12771",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Armor_Foraging_Oak_Legs.png",
+   "bytes": 3188,
+   "sha256": "53a41c1ce528781af9edadbb5e817433d1b67b3a8f2d0de96ef3fb992e363e32",
+   "image_size": [
+    64,
+    64
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Chest.blockymodel",
+   "bytes": 64437,
+   "sha256": "0024476ed082e71680f84f901b38e4b427e404b84efaa5eb9870552c8cc67cad"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Chest_Texture.png",
+   "bytes": 14474,
+   "sha256": "124324783d9b19842a58398d140149fbc0d620daf554405edad638f1bdde0c0f",
+   "image_size": [
+    96,
+    128
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Hands.blockymodel",
+   "bytes": 24037,
+   "sha256": "cd663e100236ca4a0f18418a95ee1cce006165f442a3c84e1b1804c765ee6389"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Hands_Texture.png",
+   "bytes": 3824,
+   "sha256": "9d27e91a5feee77fe9587b85b647318d0bb2625fa8bca04c5d00616fe3b0152b",
+   "image_size": [
+    96,
+    32
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Head.blockymodel",
+   "bytes": 25301,
+   "sha256": "e8941da587f88f3ecb8e7cb607b343cc858ee9aed0ddb222d8b37aa02bf6c48e"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Head_Texture.png",
+   "bytes": 9941,
+   "sha256": "3de48a52ad250f73cbe647cded9b3a74bb074c4a3578d67b12c9f24045d94650",
+   "image_size": [
+    96,
+    128
+   ]
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Legs.blockymodel",
+   "bytes": 33394,
+   "sha256": "45544d163fb094c553cb0ea31829fbd2f34669b64eb327d4f6c4fe3c08008af4"
+  },
+  {
+   "path": "Common/Items/Armors/SkyyForaging/F1_Grove/Oak/Legs_Texture.png",
+   "bytes": 5235,
+   "sha256": "5a53a31aa0a869eecab4400a0ce68ec0fdb234d19119f940483c06d406d64825",
+   "image_size": [
+    96,
+    64
+   ]
+  },
+  {
+   "path": "README.md",
+   "bytes": 4137,
+   "sha256": "31c034ae86538cf8c4102ed39afcde38daf5bb51c228cac0803bb150a314c000"
+  },
+  {
+   "path": "sheet-oak.png",
+   "bytes": 1170888,
+   "sha256": "741ee75abe8c0edaffc7493d7d8e8e6274d6d759352eb036a89ac88f636afc33",
+   "image_size": [
+    2370,
+    3076
+   ]
+  },
+  {
+   "path": "source/F1_Grove/Oak/Chest.bbmodel",
+   "bytes": 44885,
+   "sha256": "2e856539229a8c1d38a55021017da29ed4ddd3e7c6f6f43a429335a8d3dc4669"
+  },
+  {
+   "path": "source/F1_Grove/Oak/Hands.bbmodel",
+   "bytes": 17535,
+   "sha256": "de16450a21d89e2f9a4c3df7090ef58b894c4ad5891b97f46cf03f0a5763eec0"
+  },
+  {
+   "path": "source/F1_Grove/Oak/Head.bbmodel",
+   "bytes": 28286,
+   "sha256": "b7f24c7cf622c036996f917b8805ceafa7eb6783e474d8c4838d54dbb4be5562"
+  },
+  {
+   "path": "source/F1_Grove/Oak/Legs.bbmodel",
+   "bytes": 22434,
+   "sha256": "e2d34e90744944a016ec4c9e4dba783f91779e6e9dcf827019e6b4bad3a3cbe2"
+  }
+ ],
+ "generators": "tools/art/: ga_oak.py (design), ga_paint.py (painter), make_foraging_armor.py (models+textures), make_foraging_icons.py, make_foraging_sheet.py, make_foraging_manifest.py, validate_foraging.py, check_fit_foraging.py, bb_validate_foraging.js, roundtrip_diff_foraging.py"
+}

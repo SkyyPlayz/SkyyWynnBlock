@@ -56,6 +56,10 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   Same bark-plate family look (approved concept), each tree its own variation; trees of one tier share stats and players swap looks at an
   alteration station later. Start with F1 Oak (key log), then the rest of F1, one tree per commit; show Skyy each sheet. Paths use the
   tree name: `SkyyForaging/<Tier>/<Tree>/<Piece>.blockymodel`, icons `Armor_Foraging_<Tree>_<Piece>.png`. Orchard trees: later.
+  **Progress:** F1 Oak DONE (2026-10-08, Skyy: "Yes, the Oak armor looks good, commit it"; see Done). **Next: F1 Birch**, then Beech,
+  Ash, Aspen - reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter, `make_foraging_*.py`), same piece
+  shapes / fit, own colours + own small mark. Sources go in `source/<Tier>/<Tree>/`. Defaults Skyy kept for Oak: tier folder `F1_Grove`,
+  open-face helmet with crown, faint sap, art only, 1 texel per unit.
 - Farming: Wheat, Carrot, Cauliflower, Pumpkin, Chilli, Cotton, Onion ("more like the wood ones ... food armor, like in skyblock").
 **Make, per tier:** 4 pieces - Head, Chest, Hands, Legs - exactly like a vanilla armor set (look at vanilla Iron in Assets.zip:
 `Common/Items/Armors/Iron/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png`, icons `Common/Icons/ItemsGenerated/Armor_Iron_<Piece>.png`;
@@ -114,6 +118,19 @@ purple of the bag swirl].
   Skyy's answers, word for word: "fix pebble." / "Yes, the Pebble fix looks good, commit it"
 
 ## Done
+### 13. Foraging armor F1 Grove - Oak (2026-10-08)
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F1_Grove/Oak/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
+  (1 texel per unit, like vanilla), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Oak_<Piece>.png` (64), `source/F1_Grove/Oak/*.bbmodel`,
+  `sheet-oak.png`, `manifest.json`, `README.md`. Scripts: `tools/art/ga_oak.py`, `ga_paint.py`, `ga_common.py`, `ga_rig.py`, `ga_render.py`,
+  `make_foraging_armor.py`, `make_foraging_icons.py`, `make_foraging_sheet.py`, `make_foraging_manifest.py`, `validate_foraging.py`,
+  `check_fit_foraging.py`, `bb_validate_foraging.js`, `roundtrip_diff_foraging.py`.
+- Look: tier-1 (Copper echo) bark plates with jagged edges, laced chest gap + faint sap vein, vine belt with acorn clasp, bark tassels,
+  ONE vine over the left shoulder, open-face bark helmet with a 3-point crown + acorn badge + 2 oak leaves, rope-wrapped bark gauntlets,
+  moss-grey trousers, bark greaves + boots. Darker grey-brown oak bark. Not bulky. Icon names use the tree name (ART-RESUME had two spellings).
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0 (no validator issues; plugin Import Attachment puts all 4 pieces on the vanilla player).
+- Skyy's answers, word for word: "lets still make the farming and gathering armor, but use vanilla for mining, and armory for combat gear." /
+  "do a design per tree type in that set, so every hardwood gets its own design in that trees color" / "Yes, the Oak armor looks good, commit it"
+- Not yet seen in game. No item / recipe JSON (art only).
 ### 7. Pets - 15 launch pets (2026-10-08)
 - Folder: `art/pets/` - per pet `Common/NPC/SkyyPets/<Pet>/Models/<Pet>.blockymodel` + `<Pet>_Texture.png` and
   `Animations/Default/{Idle,Walk,Run|Fly}.blockyanim`; icons `Common/Icons/ModelsGenerated/SkyyPets_<Pet>.png` (128) and
