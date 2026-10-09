@@ -160,3 +160,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Rarity G1: Untiered / Mythic / Sets + market wall (DEPLOYED 2026-10-09, backup deploy-20261009-1456) | [2026-10](2026-10.md) |
 | Ability engine R1: /cast, Meteor, Sacred Heal (DEPLOYED 2026-10-09, backup deploy-20261009-1456) | [2026-10](2026-10.md) |
 | SkyySkills 0.4.29: pets get real XP (DEPLOYED 2026-10-09, backup deploy-20261009-1514) | [2026-10](2026-10.md) |
+| SkyyWorldGen 0.4: caves + lava caverns (proof world) (DEPLOYED 2026-10-09, backup deploy-20261009-1542) | [2026-10](2026-10.md) |
