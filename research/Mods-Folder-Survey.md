@@ -47,7 +47,7 @@ storage / stacks / backpacks, other maps / HUDs, farming overhauls, durability /
   L40-50), 3 upgrade-chain maces (Event Horizon L50 -> Pulsar Breaker L60 -> Quasar Reaver L80), 2 bows (Stellar Piercer, Nebula Flurry,
   Epic L50), Void Maw mana launcher, 14 Cloth armor pieces (Manathread L30 / Arcaneweave L40 sets), 5 ingredients, Runecrafter's Table;
   mobs Cosmic Eye + 3 Skeleton Wraiths (Fire / Cosmic never spawn - their bug).
-- CLASS FIT (proposal): spellbooks + Void Maw -> Mage (LifeVeil -> Priest special); bows -> Archer specials (Archer's first); maces ->
-  Spellblade (or Priest - Skyy's call); armor -> Mage / Priest Cloth ladder. SkyyGear must list the ArcanePower_ ids (not Armor_/Weapon_).
+- CLASS FIT (Skyy 2026-10-09): maces -> BERSERKER special drops (he already owns maces); LifeVeil healing spellbook -> MAGE UNTIERED
+  (healing the Mage lacks); other spellbooks + Void Maw -> Mage; bows -> Archer specials; armor -> Mage / Priest Cloth ladder. SkyyGear must list the ArcanePower_ ids (not Armor_/Weapon_).
 - RISKS: flat Mana costs 15-75 and +50..+100 max Mana while held (would triple a Mage pool) -> runtime clamp in our code; Ability1 on
   maces / bows / Infernal clashes with our Q signature; nothing uses Ability2.
