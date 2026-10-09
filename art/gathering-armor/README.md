@@ -265,7 +265,7 @@ Take the V1 azure, and make the parts that are already blue a little brighter bl
 
 ## F3 SAVANNA - what tier 3 adds (same for every F3 tree)
 
-Built by `tools/art/ga_f3.py` on top of everything tier 2 has (`ga_f2.py`), identical for every F3 tree (Gumboab)
+Built by `tools/art/ga_f3.py` on top of everything tier 2 has (`ga_f2.py`), identical for every F3 tree (Gumboab, Dry)
 (approved ladder: "F3 angular plates, bigger layered shoulders, a gorget, sap glow up the arms"):
 - ANGULAR plates (each tree its own angular edge) + cut corners on breast plates, tassels, cheek guards, helmet back, bracer plates.
 - BIGGER, LAYERED shoulders: wider pauldron + cap, a carved ridge on the cap, a second lame under the first.
@@ -277,6 +277,7 @@ for each tree). Not seen in game.
 | Tree | Bark (in game) | Plate edge | Mark | Cloth |
 |---|---|---|---|---|
 | Gumboab | smooth grey-taupe, soft folds | terraced (flat steps, angled ends) | fan of 5 sage blades | ochre |
+| Dry | warm brown, dark vertical fibres | splinter saw-tooth | 3 yellow puff blossoms | rust |
 
 Files: `Common/Items/Armors/SkyyForaging/F3_Savanna/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`, `source/F3_Savanna/<Tree>/`,
 `sheet-<tree>.png`. Each 53 boxes + 9 quads. Checked like F1 / F2 (structure PASS, byte-identical rebuild, fit, Blockbench +
