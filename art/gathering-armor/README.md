@@ -309,6 +309,25 @@ Not seen in game.
 Files: `Common/Items/Armors/SkyyForaging/F4_Northern/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`,
 `source/F4_Northern/<Tree>/`, `sheet-<tree>.png`. Each 65 boxes + 9 quads.
 
+## F5 WASTES - what tier 5 adds (same for every F5 tree)
+
+Built by `tools/art/ga_f5.py` on top of everything tier 4 has (`ga_f4.py`, `ga_f3.py`, `ga_f2.py`), identical for every F5 tree
+(approved ladder: "F5 ornate - gold inlay, glowing gem knots, a winged or tall crown, the brightest sap"):
+- GOLD INLAY: a thin gold line inside the edge of the breast plates, gorget, pauldron guards, bracer plates, greaves, brim.
+- GLOWING GEM KNOTS: the chest knot becomes a big faceted gem in gold; small gems on the pauldron guards, knees and brow.
+- A WINGED, TALLER CROWN: taller crown points + two swept, gold-edged wings on the helmet sides.
+- THE BRIGHTEST SAP: every sap line glows a brighter, paler green.
+Colours sampled from each tree's own textures in Assets.zip (log side, log top, leaves; own pixels). Status: APPROVED by Skyy 2026-10-09
+("All look great, commit the 4 colour fixes and all 10 F5 sets"). Not seen in game.
+
+| Tree | Bark (in game) | Plate edge | Mark | Cloth | Gem |
+|---|---|---|---|---|---|
+| Sallow | olive-gold, stringy | willow strands | golden catkins | plum | amber |
+
+Files: `Common/Items/Armors/SkyyForaging/F5_Wastes/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`, `source/F5_Wastes/<Tree>/`,
+`sheet-<tree>.png`. Each 65 boxes + 9 quads from F4, plus 5 gem boxes and 2 wing quads. The `ga_<tree>.py`
+files are the source.
+
 ## Rebuild
 ```
 GA_DESIGN=ga_oak   python3 tools/art/make_foraging_armor.py      # models + textures (design ga_<tree>.py, painter ga_paint.py)
@@ -320,6 +339,8 @@ GA_DESIGN=ga_maple python3 tools/art/make_foraging_armor.py   # F2 trees: tier u
 GA_DESIGN=ga_azure python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_gumboab python3 tools/art/make_foraging_armor.py   # F3 trees (also ga_dry, ga_bottletree, ga_palo): tier upgrades in ga_f3.py
 GA_DESIGN=ga_redwood python3 tools/art/make_foraging_armor.py   # F4 trees (also ga_fir, ga_cedar, ga_poisoned, ga_spiral): ga_f4.py
+GA_DESIGN=ga_sallow python3 tools/art/make_foraging_armor.py   # F5 trees (also ga_burnt, ga_petrified, ga_bamboo, ga_camphor, ga_banyan,
+                                                                #   ga_jungle, ga_bluefig, ga_fire, ga_crystalwood): ga_f5.py
 python3 tools/art/make_foraging_icons.py art/gathering-armor F1_Grove Birch
 python3 tools/art/make_foraging_sheet.py art/gathering-armor F1_Grove Birch
 GA_TREE=Birch python3 tools/art/validate_foraging.py
