@@ -67,13 +67,19 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   Same bark-plate family look (approved concept), each tree its own variation; trees of one tier share stats and players swap looks at an
   alteration station later. Start with F1 Oak (key log), then the rest of F1, one tree per commit; show Skyy each sheet. Paths use the
   tree name: `SkyyForaging/<Tier>/<Tree>/<Piece>.blockymodel`, icons `Armor_Foraging_<Tree>_<Piece>.png`. Orchard trees: later.
-  **Progress:** F1 Oak DONE (2026-10-08) + F1 Birch DONE (2026-10-09) + F1 Beech DONE (2026-10-09, v2) + Oak v2 + Birch v2 repainted
-  in their in-game wood colours (2026-10-09) + F1 Ash DONE (2026-10-09, Skyy: "they all look great!"); see Done.
-  **Next: F1 Aspen** (last F1 tree) - START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game wood
-  variant." - sample the tree's log / planks / leaves colours in Assets.zip; Beech v1
+  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen (Oak + Birch repainted v2 in their in-game
+  wood colours); see Done.
+  **Next: F2 Autumn + Azure (Maple, Azure)** - START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game
+  wood variant." - sample the tree's log / planks / leaves colours in Assets.zip; Beech v1
   in made-up colours read as "iron"). Reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter,
   `make_foraging_*.py`), same piece shapes / fit, own colours + own small mark. Sources go in `source/<Tier>/<Tree>/`. Defaults Skyy kept for Oak: tier folder `F1_Grove`,
   open-face helmet with crown, faint sap, art only, 1 texel per unit.
+  **PROGRESSION RULE (Skyy 2026-10-09: "Beautiful I want the armor sets consistent across the set, but each set should be a little
+  different visually, so they start simple and get a little cooler each set you get to that's better"):** one consistent family
+  look across ALL tiers; trees in the same tier are EQUAL in coolness (only wood colours / plate shape / mark change); each higher
+  tier is visibly a bit cooler than the last. F1 = simple (done). F2 = a clear but modest step up (more layered plates, an extra
+  shoulder layer, stronger sap glow lines, a small belt / trim upgrade, a slightly fancier helmet crest). Leave room so F3, F4 and
+  F5 keep escalating (F5 the most impressive).
 - Farming: Wheat, Carrot, Cauliflower, Pumpkin, Chilli, Cotton, Onion ("more like the wood ones ... food armor, like in skyblock").
 **Make, per tier:** 4 pieces - Head, Chest, Hands, Legs - exactly like a vanilla armor set (look at vanilla Iron in Assets.zip:
 `Common/Items/Armors/Iron/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png`, icons `Common/Icons/ItemsGenerated/Armor_Iron_<Piece>.png`;
@@ -132,6 +138,19 @@ purple of the bag swirl].
   Skyy's answers, word for word: "fix pebble." / "Yes, the Pebble fix looks good, commit it"
 
 ## Done
+### 19. Foraging armor F1 Grove - Aspen (2026-10-09) - F1 GROVE COMPLETE (5/5)
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
+  (1 texel per unit), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Aspen_<Piece>.png` (64), `source/F1_Grove/Aspen/*.bbmodel`,
+  `sheet-aspen.png`; shared `manifest.json` + `README.md` updated. Scripts: `tools/art/ga_aspen.py` (new, geometry derived from `ga_oak.py`),
+  `ga_paint.py` (aspen colours added), `make_foraging_sheet.py`, `make_foraging_manifest.py`. Oak, Birch, Beech, Ash rebuild byte-identical.
+- Look: colours from the in-game Aspen wood (hues sampled from the game's Aspen trunk / log end / softwood planks / golden leaves; own
+  pixels): pale khaki-cream bark with soft horizontal bands + dark EYE-SHAPED scars, pale cream heartwood, the game's golden-orange
+  aspen leaves, russet cloth. SLENDER TALL VERTICAL SLATS (staggered rounded tips, airy gaps at the hems), slim round-topped spire
+  crown points. Mark: TREMBLING ROUND LEAVES (4 golden leaves on long stalks under a heartwood clasp on the belt + 3 at the left temple).
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0 (no validator issues; plugin Import Attachment puts all 4 pieces on the vanilla player).
+- Skyy's answers, word for word: "make sure to match each armor set to its in game wood variant." / "Yes, the Aspen armor looks good, commit it"
+- Defaults kept: golden leaves, russet cloth, eye scars as drawn.
+- Not yet seen in game. No item / recipe JSON (art only).
 ### 18. Foraging armor F1 Grove - Ash (2026-10-09)
 - Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F1_Grove/Ash/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
   (1 texel per unit), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Ash_<Piece>.png` (64), `source/F1_Grove/Ash/*.bbmodel`,

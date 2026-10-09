@@ -1,5 +1,15 @@
 # Gathering armor: Foraging (one set per tree)
 
+## Tier progression rule (all foraging tiers)
+
+Skyy 2026-10-09: "Beautiful I want the armor sets consistent across the set, but each set should be a little different
+visually, so they start simple and get a little cooler each set you get to that's better".
+
+- One consistent family look across ALL tiers (same bark-plate armor, same fit).
+- Trees in the same tier are EQUAL in coolness: only the wood colours, plate shape and mark change.
+- Each higher tier is visibly a bit cooler than the last. F1 Grove = simple. F2 = a clear but modest step up.
+  F3, F4 and F5 keep escalating (F5 the most impressive).
+
 ## OAK (F1 Grove)
 
 **v2 (2026-10-09, APPROVED by Skyy: "they all look great!"):** repainted in the in-game Oak wood colours (Skyy: "make sure to
@@ -156,12 +166,41 @@ Defaults kept: five seed keys on the belt, slate cloth, bark matched to the game
 - Checked the same way as the others (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no
   validator issues, all 4 pieces attach to the vanilla player). Not checked in game.
 
+## ASPEN (F1 Grove)
+
+Status: APPROVED by Skyy 2026-10-09: "Yes, the Aspen armor looks good, commit it". Not yet seen in game.
+Defaults kept: golden leaves, russet cloth, eye scars as drawn.
+
+![sheet](sheet-aspen.png)
+
+| What | Path |
+|---|---|
+| Models + textures | `Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png` |
+| Icons (64x64) | `Common/Icons/ItemsGenerated/Armor_Foraging_Aspen_{Head,Chest,Hands,Legs}.png` |
+| Blockbench projects | `source/F1_Grove/Aspen/{Head,Chest,Hands,Legs}.bbmodel` |
+| Review sheet | `sheet-aspen.png` |
+
+- Same F1 family and the same fit as Oak (geometry derived from `tools/art/ga_oak.py` in `ga_aspen.py`).
+- Colours follow the in-game Aspen wood (hues only, sampled from the game's Aspen trunk / log end / softwood planks /
+  golden aspen leaves; our own pixels): pale khaki-cream bark with soft horizontal bands, short dark dashes and dark
+  EYE-SHAPED scars (aspen bark), pale cream heartwood with rings, the game's golden-orange aspen leaves, russet cloth
+  (the colour of the aspen's softwood planks).
+- Aspen mark: TREMBLING ROUND LEAVES - 4 round golden leaves on long stalks hanging at different angles from a carved
+  heartwood clasp on the belt, plus a bunch of 3 at the left temple and single leaves on the shoulder, bracers and crown.
+- Shape vs Oak (jagged), Birch (rounded), Beech (broad smooth), Ash (chevrons): SLENDER TALL VERTICAL SLATS - narrow
+  upright plates with thin gap lines, ending at staggered lengths with rounded tips and open gaps at the hems (light,
+  airy); slim round-topped spire crown points; longer slat tassels.
+- Size: 45 boxes + 12 quads. Textures Head 96x128, Chest 96x128, Hands 96x32, Legs 96x64.
+- Checked the same way as the others (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no
+  validator issues, all 4 pieces attach to the vanilla player). Not checked in game.
+
 ## Rebuild
 ```
 GA_DESIGN=ga_oak   python3 tools/art/make_foraging_armor.py      # models + textures (design ga_<tree>.py, painter ga_paint.py)
 GA_DESIGN=ga_birch python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_beech python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_ash   python3 tools/art/make_foraging_armor.py
+GA_DESIGN=ga_aspen python3 tools/art/make_foraging_armor.py
 python3 tools/art/make_foraging_icons.py art/gathering-armor F1_Grove Birch
 python3 tools/art/make_foraging_sheet.py art/gathering-armor F1_Grove Birch
 GA_TREE=Birch python3 tools/art/validate_foraging.py

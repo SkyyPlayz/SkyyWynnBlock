@@ -99,6 +99,23 @@ RAMPS.update({
     SLATE: [(0.00, (20, 24, 30)), (0.20, (30, 36, 44)), (0.35, (42, 50, 58)), (0.50, (56, 64, 72)),
             (0.65, (72, 80, 88)), (0.80, (92, 100, 106)), (1.00, (126, 132, 136))],
 })
+# Aspen (F1 Grove): hues sampled from the in-game Aspen trunk / log end / softwood planks / golden aspen leaves (values
+# only, own pixels): pale khaki-cream bark with soft horizontal bands, dark eye-shaped scars, pale cream heartwood with
+# rings, the game's golden-orange aspen leaves, russet cloth (the colour of the aspen's softwood planks).
+ASPEN, ASPENDK, GOLDLEAF, ASPWOOD, RUSSET = range(30, 35)
+MAT_NAMES += ["aspen", "aspendark", "goldleaf", "aspenwood", "russet"]
+RAMPS.update({
+    ASPEN: [(0.00, (62, 56, 44)), (0.20, (96, 88, 68)), (0.35, (128, 116, 90)), (0.50, (154, 140, 110)),
+            (0.65, (172, 156, 124)), (0.80, (186, 172, 144)), (1.00, (208, 198, 174))],
+    ASPENDK: [(0.00, (24, 21, 19)), (0.25, (40, 35, 30)), (0.50, (60, 53, 44)), (0.75, (86, 77, 62)),
+              (1.00, (118, 105, 80))],
+    GOLDLEAF: [(0.00, (96, 44, 10)), (0.20, (140, 72, 14)), (0.35, (172, 98, 18)), (0.50, (196, 124, 20)),
+               (0.65, (214, 144, 24)), (0.80, (228, 162, 40)), (1.00, (244, 196, 90))],
+    ASPWOOD: [(0.00, (92, 76, 54)), (0.20, (128, 108, 80)), (0.35, (156, 136, 104)), (0.50, (180, 160, 126)),
+              (0.65, (196, 178, 142)), (0.80, (208, 192, 156)), (1.00, (226, 214, 180))],
+    RUSSET: [(0.00, (30, 20, 16)), (0.20, (48, 32, 24)), (0.35, (66, 44, 32)), (0.50, (88, 58, 40)),
+             (0.65, (110, 74, 50)), (0.80, (132, 92, 62)), (1.00, (166, 124, 88))],
+})
 WARM = np.array((104, 92, 64), float)       # sun-faded / worn bark tint
 QSTEP = 0.05                                # value quantisation -> flat painted clusters
 
