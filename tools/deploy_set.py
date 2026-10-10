@@ -41,7 +41,6 @@ SET = [
     ("SkyyRanks", "0.1.1"),
     # vanilla UI pass (2026-09-29): DEV/TEST mod - /skyprobe (admin only) opens the shared kit's probe pages so Skyy can confirm the
     # vanilla look works inline before any restyled page ships. Move it to RETIRED once the probe results are in.
-    ("SkyyUiProbe", "0.4"),
     # gathering probe pack P0 (2026-10-06, research/Gathering-Progression-Spec.md): op-only dev mods for ONE test session - remove BOTH after Skyy's
     # test. SkyyGatherProbeB-0.1.jar is built into SkyyGatherProbe/ and moved to SkyyGatherProbeB/ by hand.
     ("SkyyGatherProbe", "0.1"), ("SkyyGatherProbeB", "0.1"),
@@ -156,7 +155,7 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "B
 # SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 (2026-10-03): deploy and roll back TOGETHER. Before SkyySkills goes below 0.4.15:
 # switch Base Mana off and let players log in once. To roll SkyyArmory back: take it out of SET, add it to RETIRED and put SkyySkills back
 # to 0.4.14 in the same deploy (vanilla staff files would charge 50 Mana behind a 10-Mana check otherwise). SkyyClasses back to 0.1.10 is safe.
-RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe"]   # SkyyMonkProbe: tested 2026-10-08 (TEST 48), the real moves are SkyyArmory 0.1.12
+RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe", "SkyyUiProbe"]   # SkyyMonkProbe: tested 2026-10-08 (TEST 48), the real moves are SkyyArmory 0.1.12
 
 
 # Third-party pack mods switched OFF in the world on every deploy (kept installed).
@@ -170,7 +169,8 @@ def disable_third_party(world, key):
     cfg = os.path.join(B.USERDATA, "Saves", world, "config.json")
     d = json.load(open(cfg, encoding="utf-8"))
     mods = d.setdefault("Mods", {})
-    if mods.get(key, {}).get("Enabled"):
+    # a key missing from the world config still LOADS (the server enables mods it has no entry for) - write Enabled false then too
+    if mods.get(key, {}).get("Enabled", True):
         mods[key] = {"Enabled": False}
         json.dump(d, open(cfg, "w", encoding="utf-8"), indent=2)
         print("world", world, "switched off", key)

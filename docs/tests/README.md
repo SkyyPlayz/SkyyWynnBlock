@@ -171,3 +171,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyMerchants 0.1.1: one weapon per class (DEPLOYED 2026-10-10, backup deploy-20261010-0917) | [2026-10](2026-10.md) |
 | SkyyPets 0.2: visible pets (DEPLOYED 2026-10-10, backup deploy-20261010-1026) | [2026-10](2026-10.md) |
 | Pets tile in the menu + petting fix (DEPLOYED 2026-10-10, backup deploy-20261010-1415) | [2026-10](2026-10.md) |
+| Wand hop fix + sky-island menu item + HyFishing off (DEPLOYED 2026-10-10, backup deploy-20261010-1443) | [2026-10](2026-10.md) |
