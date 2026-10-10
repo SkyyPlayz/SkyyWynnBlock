@@ -75,7 +75,3 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
 ## Done (delete after logging - see the rules above)
-- [x] Player avatars spec - 2026-10-10 - `research/cloud/Avatars-Spec.md`
-- [x] Pet eggs v2 spec - 2026-10-10 - `research/cloud/Pet-Eggs-v2.md`
-- [x] Zone protection + regen gathering spec - 2026-10-10 - `research/cloud/Zone-Regen-Spec.md`
-- [x] Special tools spec - 2026-10-10 - `research/cloud/Special-Tools-Spec.md`
