@@ -226,3 +226,5 @@ ones. The reverse never happens: when you see a new epoch, the Function already 
   profile file on disk (leaderboards in Skills / Collections) still see it - skip keys whose `profile:fn:state` is pending or archived.
   Since SkyyIslands 0.5.5 a pending owner's island is closed to co-op members and visitors, and an archived owner's members are released.
 - `MAX_ID` is 256 (was 64): ids are never reused once archived.
+
+History (cap before SkyyProfiles 0.1.9): The default cap is **6 profiles** (raised from 4). There will be in-game ways for a player to go higher. **Open:** the method is TBD. This contract does not pick one.

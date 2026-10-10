@@ -5,102 +5,71 @@ listed in [docs/tests/README.md](docs/tests/README.md). Each deploy adds ONE sec
 (`docs/tests/2026-10.md`) and one line under "Test next" below; a line leaves this list once Skyy has tested it (log the result in
 `docs/log/<YYYY-MM>.md`).
 
-## Test next - deployed, no test result logged yet (as of 2026-10-05)
+## Test next - deployed, still needs your test (cleaned 2026-10-10)
 
-All steps are in `docs/tests/2026-10.md` - search the section name.
+Only things still waiting on you. Steps for each: search the name in `docs/tests/2026-10.md`. Removed today as replaced or gone: the
+reel / Monk / old town / old key probes (retired or replaced by newer probes), The Armory test (Armory is off until 0.7), the older
+fishing, luggage, sprint-tap and Stats-page versions (their newest version is below).
 
-1. SkyyProfiles 0.1.5 - delete a profile + 6-hour undo (ROLLBACK FLOOR once you delete one).
-2. SkyyClasses 0.1.10 - Warrior Wood Shield in the kit; Priest self-heal 100%.
-3. SkyyGuilds 0.1.5 + 0.1.6 - % disband refunds, Contribution column, 35% leave refund.
-4. SkyyMenu 0.3.4 - the menu item per profile; Server Setup times in seconds.
-5. SkyyGear 0.1.3 - every world-chest weapon / armor drops unidentified; the 59 non-metal level rows in Server Setup -> Gear -> Levels.
-6. SkyySkills 0.4.11 - Priest heal XP 1 / 1.25 per HP.
-7. SkyyAccessories 0.5.2 + SkyySacks 0.7.10 - Workbench "Accessories & Bags" tab; Charcoal goes in the Smithing bag.
-8. SkyyIslands 0.5.5 - a deleted owner's island closes to co-op members.
-9. Phase 1 of the 2026-10-02 answers - SkyyCollections 0.2.5 (coins never buy tiers / recipes / bags) + SkyyEssentials 0.1.7 (bags
-   blocked in /trade). (Auto-refill and the Skills widget from the same section are already seen working.)
-10. SkyyMenu 0.3.5 / 0.3.6 - the Mods list matches today's versions (0.3.6's stuck-page fix is already seen; the list itself is not).
-11. SkyyHud 0.3.13 - small widget boxes (Game Clock reaches the corner) + combat widget colours.
-12. SkyyTrees 0.3 - the Alchemy + Smithing trees (the class-tree probe page is already seen).
-13. SkyyMobs 0.1.3 - the mob health bar follows a live Strength change (the Gear 0.2.2 half of that section is seen).
-14. SkyyCooking 0.1.4 - food Grade strength (+32% per Grade); you saw the XP rate (still too fast - tuned live), not the Grade strength.
-15. SkyyBazaar 0.1.3 - the Smithing tab, every bag item listed, processed goods +20% (you only said "bizzar looks good").
-16. SkyySkills 0.4.15 - class Mana pools (Priest +5 / Mage +10 max Mana per class level); staffs work, the pools were not checked.
-19. SkyyExploration 0.2.3 - Overview never sticks on "Loading..." (also after world changes).
-20. SkyyMenu 0.3.7 - Mods list says Lantern, lists SkyyArmory, today's versions.
-21. SkyyCollections 0.2.6 - /collections top hides deleted (undo window) and archived profiles.
-22. SkyyGear 0.2.3 - crafting weapons + armor pays Smithing XP (10 Iron wands = ~2,500+); wand tooltip follows Armory damage edits.
-23. SkyyBazaar 0.1.4 - progression prices (ores / logs / crops / seeds / saplings / hides / cloth x2 per tier).
-24. SkyyParty 0.1.7 + SkyyEssentials 0.1.8 - TPA button per party member + Accept TPA (needs 2 players).
-25. SkyySkills 0.4.16 - Mining's own slower curve (your Mining levels go up once, with coins); no Mining XP boost.
-26. SkyyTrees 0.3.2 + SkyyMenu 0.3.8 - class trees are ON (/tree class); the Mods list shows today's versions.
-27. Pack mods HyFishing + Dynamic Seasons + NoCube's Orchard - no errors; fishing, seasons, orchard work next to our mods.
-28. SkyyCollections 0.2.7 + SkyyAccessories 0.5.6 - Lantern recipes unlock at Tree Sap tiers I / III / V / VIII; locks follow profile switches.
-29. SkyyBazaar 0.1.5 + SkyySacks 0.7.13 - sell straight from your bags (sap, ore ...); Buy/Sell buttons use Hytale stacks (ore 25).
-30. SkyyClasses 0.1.12 + SkyyArmory 0.1.1 + SkyyGear 0.2.4 - staff blink + light trail, wand hop / burst / heal orb, quick-shot ranges + pierce.
-31. SkyyGatherProbe 0.1 + B (op-only probe pack, ONE session, then removed) - /gprobe kit, P1-P6, trees; answers the gathering ladder unknowns.
-32. SkyyArmory 0.1.2 - crossbow Grapple Bolt (right click shoot / pull / let go; hooks mobs); blink + hop Stamina cap 5.
-33. MOB CURVE: SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 - higher-level mobs much tougher, level gap, gear curves, Reforge level-up, kill XP by level.
-34. SkyySkills 0.4.18 - dodge key = real roll in all 8 directions (standing still = back roll), i-frames, Acrobatics XP.
-35. SkyySkills 0.4.19 + SkyyHud 0.3.14 + SkyyGear 0.2.6 (deployed 18:23) - dodge move gate, no Acro XP cap; minimap (BetterMap); weapon speed tiers.
-37. SkyySkills 0.4.20 - tap the sprint key to roll (Sprint must be "hold"); standing still = back roll?
-38. SkyyHud 0.3.16 - minimap on the island, smaller arrow sized in blocks, no overlap with Zone / Online / Day.
-39. SkyyArmory 0.1.3 - bow full-draw leap + blast arrow, wand hang, no lingering particles, hop 30, Copper + Onyxium crossbows.
-40. SkyyArmory 0.1.4 + SkyyGear 0.2.7 - staff blink 16 / into the air, Copper + Onyxium crossbow Charged 3rd bolt
-41. Accessory icons (44) + new metal staff models - check the icons and how the staffs sit in the hand
-42. Reel probe: does a rod show a different reel when /reelprobe changes the number (first + third person, dropped rod, second player)
-43. Spellbooks (Page Burst tap, Levitate hold, Mage-only) + kunai (throw, hold-teleport, no durability)
-44. Monk weapons (bo staffs, wraps, gauntlets), right-click block on casters, traversals over the void
-45. Shadow Step on daggers (behind the target, backstab bonus, 18-block straight step, void allowed)
-46. Monk + Assassin playable (7 profile cards, Monk kit, Discipline / Assassination XP, weapon blocks)
-47. New class path trees: trunk + 3 locked paths per class, Priest Open Aura switch, free respec
-48. Monk moves probe: one ~15 min session of /mprobe tests, then send the server log
-49. SkyySacks 0.7.14 + SkyyAccessories 0.5.8 - new bag art (emblems, open swirl, sparkles, lift; toned-down Accessory Bag)
-50. SkyyArmory 0.1.11 - metal Bo staffs: hold attack casts nothing, swings + block stay
-51. SkyyMenu 0.3.10 - Your Profile -> Stats page (5 tabs), Change Profile button, /stats
-52. SkyyEssentials 0.1.9 chat mirror (chat -> server log) + SkyyTownProbe 0.1 (/townprobe on /zone 1; undo everything before removal)
-53. SkyyKeyProbe 0.1 - /keyprobe give, press every key, /keyprobe report (then remove)
-54. SkyyProfiles 0.1.7 - big SWITCH confirms; each profile keeps its own Health; new profiles start full
-55. SkyyHud 0.3.17 - new 256x256 mod icon, no 'wrong dimensions' client warning
-56. Monk moves - Pole-Vault on every Bo, Skipping Bounds, Rising Strike + Plunge Punch on fists (/armory debug monk on)
-57. Roll rework (sprint press, spammable, hold = sprint out) + Shadow Step on release
-58. SkyyGear 0.2.10 - signature meter stays per weapon when you swap away and back
-59. SkyyArmory 0.1.14 - metal wands: signature bolt ricochets through up to 8 enemies
-60. SkyySkills 0.4.24 - Wood / Rotten / Tribal wands: ricochet signature too
-61. Accessory Bag icon on the menu tile + Workbench tab; bag gems red / yellow / blue / green / cyan
-62. The Armory on - world starts, items present, Alteration Table vs SkyyGear rolls
-63. SkyyFishing 0.1 - bench, rods + reels, cast / bite / fight, Zone 1 fish, selling (/fishadmin kit)
-64. Loot round: Unclaimed Luggage chests, mystery bags from mobs, identify / re-identify
-65. SkyySkills 0.4.25: class Mana/Stamina pools, Mana on hit, mining Stamina, foraging Defense, class balance boost
-66. Better Mob Expansion test: new Zone 1-4 mobs, levels, Vermin behaviour, crowding
-67. SkyyMenu 0.3.12: Stats page Defense shows Skills part
-68. Luggage sacks vanish on claim, Bazaar search, /keyprobe sprint, Armory off = textures back
-69. SkyySacks 0.7.15: Omni hidden until 5 Legendary, Normal bags = 20 Plant Fiber + 4 Sticks
-70. SkyyMerchants 0.1: roaming merchant per zone, rumours, /merchants, shop buy
-71. SkyySacks 0.7.16: bag held higher and more in front
-72. SkyyFishing 0.1.1: Wooden rod from 6 Stick + 6 Fibre, bench takes from Magic Bags
-73. SkyyAuctions 0.1.3: categories, sort, rarity, level range, reset
-74. SkyyCollections 0.2.8: CRAFT buttons, LOCKED RECIPES, Mining bags on Cobblestone I/III/V/VII
-75. Tools: Chopping / Mining Power, Fortune, level-gated bonus, Gear -> Tools tab
-76. SkyyTrees 0.3.4: no Skyy_Tree missing-interaction lines; chopping speed same
-77. SkyyGear 0.2.13: Crude/Scrap weapons show Attack Speed; mace warnings gone
-78. SkyyFishing 0.1.2: string tip->bobber, no white cloud, idle bobber under tip, no false 'in the way' / 'too shallow'
-79. Monk skill shows Zen everywhere (XP kept); Stats Class Weapon Damage shows Class balance
-80. SkyyProfiles 0.1.9: 8 slots, Spellblade card 'coming later', /profileadmin bonus
-81. SkyyPets 0.1: /pets page, starter Rabbit, slot buffs, pet XP, /petadmin
-82. SkyyWorldGen 0.3: /zone proof - summit isle + 4 islands, necks, arch, bridge gap, no lava
-83. Rarity G1: Untiered table + orange bag, Mythic odds 0, level caps per rarity, Armor sets table, market wall
-84. Ability engine R1: /cast list / 1 / 2 / swap, Meteor, Sacred Heal, cooldowns, ability kill XP
-85. SkyySkills 0.4.29: pet XP immediately from skill XP, SkyyPets fallback off
-86. SkyyWorldGen 0.4: /zone proof caves (upper / deep / lava caverns y 50-57), solid island bottoms
-87. Mining armor: 28 metal pieces = 7 Mining Sets, Mining level gate, pickaxe/shovel-only stats, full-set Fortune
-88. Abilities widget (icons, cost, cooldown, crouch alts), Mana Barrier, Shield Bubble
-89. /townprobe all ... report: 17 quest probes incl. Pebble hat + alias swap
-90. /petprobe all ... clear: small pets, follow, fights, mount, lifecycle
-91. Mining helmet glows like a Lantern of its tier (stronger of lantern / helmet)
-92. Abilities R5-R7: /cast page, shapes via /classadmin shape, Frost Nova, Starfall / Arcane Beam, Guardian Spirit, Sanctuary / Martyr's Grace
-93. Untiered: /gear ut list + give, orange bags drop Lv 15-29, UT tricks, market wall (gathering sets sellable)
+### A. Probes first - they unlock the next builds (one session each, send the log)
+1. SkyyPetProbe 0.1 - `/petprobe all` ... `/petprobe clear` (small pets, follow, fights, mount, lifecycle). Unlocks pets phase 2.
+2. SkyyTownProbe 0.2 - `/townprobe all` ... `/townprobe report` (17 quest probes incl. Pebble hat + name swap). Unlocks quests.
+3. SkyyKeyProbe 0.2 - `/keyprobe sprint`, press W / A / D / S + sprint and sprint standing still, `/keyprobe sprint`. Side / back rolls.
+4. SkyyGatherProbe 0.1 + B - `/gprobe kit`, P1-P6, trees (one session, then removed). Unlocks the gathering ladder.
+5. SkyyWorldGen 0.3 + 0.4 - `/zone proof`: fly the islands (necks, arch, 40-block bridge gap), `/tp 1139 192 -331` down to the lava caverns
+   (y ~57). Tell me before we build the real Zone 1 islands.
 
+### B. New since 2026-10-09 (newest version only)
+6. Untiered first batch - `/gear ut`, `/gear ut give Paperweight 22`, orange bags (Lv 15-29), each item's trick + downside, market wall.
+7. Rarity: Mythic only from bosses, level-up caps per rarity, Armor sets table, `/gear set`.
+8. Mining armor - metal armor = Mining Sets, Mining-level gate, stats only with a pickaxe / shovel, full-set Fortune; helmet glows in caves.
+9. Tools - Chopping / Mining Power (Iron hatchet 3 hits per log at Lv 15+), Fortune, under-level tool = plain tool, Gear -> Tools tab.
+10. Crude / Scrap weapons show Attack Speed + Charged lines; no "Missing interaction ... Mace" in the log.
+11. Abilities (Mage + Priest) - `/cast list`, `/cast 1` / `2`, `/cast page`, shapes via `/classadmin shape`, HUD Abilities widget,
+    Meteor, Mana Barrier, Frost Nova, Starfall / Arcane Beam, Sacred Heal, Shield Bubble, Guardian Spirit, Sanctuary / Martyr's Grace.
+12. Class power split - class Mana / Stamina pools, Mana on hit, mining Stamina, foraging Defense, class balance boost.
+13. Monk skill named Zen everywhere (XP kept); Stats page Defense shows "Skills", Class Weapon Damage shows "Class balance".
+14. SkyyPets 0.1 + Skills 0.4.29 - `/pets`, starter Rabbit, slot buffs, pet XP right away, `/petadmin`.
+15. SkyyProfiles 0.1.9 - 8 profile slots, Spellblade card "coming later", `/profileadmin bonus`.
+16. SkyyMerchants 0.1 - rumour in chat, `/merchants`, find the Traveling Merchant, F = shop, buy a weapon.
+17. Luggage - sacks (4 looks), "Press F to claim", vanishes at once; mystery bags from mobs, identify / re-identify.
+18. Bags - Omni hidden until all 5 Legendary bags, Normal bags = 20 Plant Fiber + 4 Sticks, bag held higher / in front.
+19. Collections - CRAFT buttons, LOCKED RECIPES list, Mining bags now on Cobblestone I / III / V / VII.
+20. Fishing 0.1.2 - Wooden rod (sticks), bench takes from bags, string tip -> bobber, no white cloud, idle bobber under the tip,
+    no false "in the way" / "too shallow" (tune "Line start" in Server Setup if needed; does a 2nd player see the string?).
+21. Bazaar search bar; Auction House categories / sort / rarity / level range / Reset.
+22. Better Mob Expansion - new Zone 1-4 mobs get levels, rats / spiders / snakes behave normally, no crowding.
+23. The Armory OFF - copper ore, bars, talismans, swords have textures again.
+24. SkyyTrees 0.3.4 - no "Missing interaction ... Skyy_Tree" in the log; chopping feels the same.
+
+### C. Older, never confirmed
+25. Signature charge kept per weapon on swap; metal + Wood / Rotten / Tribal wands ricochet signature through 8 enemies.
+26. Roll on sprint press (forward), spammable, hold = sprint out; dodge key rolls in all 8 directions; Shadow Step on release.
+27. Monk moves - Pole-Vault on every Bo, Skipping Bounds, Rising Strike + Plunge Punch (`/armory debug monk on`); Monk weapons, block.
+28. Spellbooks (Page Burst, Levitate, Mage-only) + kunai (throw, hold-teleport); Shadow Step on daggers (backstab bonus).
+29. Metal Bo staffs - hold attack casts nothing; accessory icons (44) + metal staff models in the hand.
+30. Staff blink 16 / wand hop + burst + heal orb / Grapple Bolt / bow leap + blast arrow; Copper + Onyxium crossbows (3rd bolt).
+31. Class path trees (trunk + 3 paths, Priest Open Aura, free respec); Assassin playable.
+32. SkyyProfiles 0.1.7 - SWITCH confirm, each profile keeps its Health; profile delete + 6-hour undo.
+33. Stats page (5 tabs, Change Profile, /stats); Accessory Bag icon + gem colours; SkyyHud 256x256 icon (no client warning).
+34. Chat mirror (chat lines in the server log).
+35. Mob curve - higher-level mobs tougher, level gap, gear curves, Reforge level-up, kill XP by level; health bar follows Strength.
+36. Weapon speed tiers + minimap (BetterMap) on the island, no overlap with Zone / Online / Day.
+37. Bazaar - Smithing tab, progression prices, sell straight from bags; Buy/Sell with Hytale stacks.
+38. Lantern recipes at Tree Sap tiers I / III / V / VIII; locks follow profile switches.
+39. Mining's own slower curve + level-up coins; Priest heal XP 1 / 1.25 per HP; class Mana per level.
+40. SkyyGear 0.1.3 world-chest drops unidentified + non-metal level rows; crafting gear pays Smithing XP.
+41. Cooking food Grade strength (+32% per Grade).
+42. SkyyTrees Alchemy + Smithing trees; class trees ON (`/tree class`).
+43. SkyyMenu Mods list shows today's versions; menu item per profile; Server Setup times in seconds.
+44. SkyyHud small widget boxes (Game Clock in the corner) + combat widget colours.
+45. SkyyExploration Overview never sticks on "Loading..."; /collections top hides deleted / archived profiles.
+46. Guilds - % disband refunds, Contribution column, 35% leave refund; island closes to co-op when the owner is deleted.
+47. Party TPA button + Accept TPA (2 players); bags blocked in /trade; coins never buy tiers / recipes / bags.
+48. Warrior Wood Shield in the kit; Priest self-heal 100%.
+49. Pack mods HyFishing + Dynamic Seasons + NoCube's Orchard work next to ours (Dynamic Seasons crashed once - report drafted).
+
+Seen working 2026-10-08/09: bag art (0.7.14), fishing widgets, Copper axe Attack Speed line, sprint roll forward + forward diagonals.
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
 bench + inventory crafting, SkyySkills 0.4.12 - 0.4.14, SkyyHud 0.3.11 + 0.3.12, SkyyBank 0.1.6, SkyyWorldGen 0.1, SkyyMenu 0.3.6
 (stuck-page fix), SkyyArmory 0.1 staffs (+ the Iron wand in play), SkyyTrees 0.3.1 probe page, SkyyGear 0.2.2 tooltips, SkyyUiProbe 0.4
