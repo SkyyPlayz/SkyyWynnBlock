@@ -157,3 +157,4 @@ section 6 when it reviews the results.
 - 2026-10-09: UT first batch (G2) build spec -> research/cloud/UT-First-Batch-Build.md (10 UT2 items, dev bows split UT / Mythic, orange bag drops + rates, ut01 task text, 4 code findings)
 - 2026-10-10: Player avatars spec -> research/cloud/Avatars-Spec.md (61 icons in 5 groups, where they show, text chat badge now, SkyyAvatars mod, art list)
 - 2026-10-10: Pet eggs v2 spec -> research/cloud/Pet-Eggs-v2.md (zone type + species eggs, odds, drops, 4->1 fusing with ledger, trading; replaces 2 older pet notes)
+- 2026-10-10: Zone protection + regen gathering spec -> research/cloud/Zone-Regen-Spec.md (deny-by-default zones, marked resource blocks, placeholders + regrow timers, anti-abuse, phases + probes)

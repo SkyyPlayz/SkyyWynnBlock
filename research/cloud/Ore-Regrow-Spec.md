@@ -1,5 +1,7 @@
 # Ore regrow spec - veins that grow back in the shared zone world
 
+**Update 2026-10-10:** for the SERVER (hand-built protected zones) this draft is parked - see `research/cloud/Zone-Regen-Spec.md` (marked resource blocks + placeholder + per-type regrow timer). This file still applies to generated veins in the solo pack.
+
 Cloud draft, 2026-10-06. Paper design; nothing built. Inputs read: `research/cloud/WorldGen-Stage-2-Draft.md` (section 3 ores, Q1 / Q2, UNVERIFIED 9), `research/cloud/Zone-4-5-Materials.md` (Ember density, Q2 "no regrow in profile worlds"), `research/cloud/Gathering-Tiers-Draft.md`, `research/cloud/Collection-Unlocks-Draft.md` (0.1 curves), `research/cloud/Pocket-Shards-Spec.md`, `docs/answered/*.md` (no lock on regrow; Fortune on all tiers is LOCKED, bags.md 2026-10-06). All numbers are placeholders and Server Setup rows (times in seconds). Saved data (a registry) = a **full round** (PROJECT-RULES 4).
 
 ## 0. Why (python-checked)

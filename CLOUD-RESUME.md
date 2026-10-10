@@ -71,11 +71,6 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 <!-- 2026-10-09 evening local session (Skyy: "use up all the tokes. Just be sure you aren't wasting any"). Local builds running: rarity G1
 (SkyyGear 0.2.14), ability engine R1 (SkyyClasses), WorldGen 0.3 archipelago node proof, SkyyProfiles cap 8, SkyyPets 0.1. Next local
 builds need these specs. Specs only; one commit + OUTBOX block each. -->
-- [ ] **Zone protection + regen gathering spec** (Skyy 2026-10-10, docs/answered/world.md "SERVER WORLD PLAN" line): new
-      `research/cloud/Zone-Regen-Spec.md`: hand-built server zones fully protected; only marked resource blocks breakable (ores, logs,
-      crops, mine stone) -> drop + XP + collections, placeholder block, regrow timer per block type (Hypixel SkyBlock mines / Park /
-      farming islands research), how builders mark regions + block lists (in-game wand + Server Setup), per-zone level gates, anti-abuse
-      (one player camping, alt farming), what stays on player islands. Mark engine facts UNVERIFIED.
 - [ ] **Special tools spec** (Skyy 2026-10-10, docs/answered/gear.md special tools + vein mine + Multitools + Mythic tools lines):
       new `research/cloud/Special-Tools-Spec.md` from `research/Tool-Mods-Survey.md` section 5: final list of UT + Mythic tools (names,
       zone, ability + level, downside), Vein Mine 1-8 rules (stone vs connected same ore), Tree Feller levels, gathering-tree levels that
@@ -86,3 +81,4 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
 ## Done (delete after logging - see the rules above)
 - [x] Player avatars spec - 2026-10-10 - `research/cloud/Avatars-Spec.md`
 - [x] Pet eggs v2 spec - 2026-10-10 - `research/cloud/Pet-Eggs-v2.md`
+- [x] Zone protection + regen gathering spec - 2026-10-10 - `research/cloud/Zone-Regen-Spec.md`

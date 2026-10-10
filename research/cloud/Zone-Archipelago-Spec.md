@@ -1,5 +1,7 @@
 # Zone archipelagos - worldgen spec (SkyyWorldGen 0.3+)
 
+**Update 2026-10-10:** on the SERVER, zones are hand-built and fully protected (docs/answered/world.md line 63); the building rule in section 7.3 applies to the solo pack only. Server protection + regrow: `research/cloud/Zone-Regen-Spec.md`.
+
 Cloud draft, 2026-10-09. Paper design: nothing built, nothing run against game files. Turns Skyy's island-layout lock into node-level
 HytaleGenerator plans for Zones 1-5, the gap between zones, the squashed cave bands down to the lava caverns, the travel points and a
 staged build plan. Every number is a PLACEHOLDER that the build script writes from ONE Python table (as `SkyyWorldGen/build_skyyworldgen_0.1.py`
