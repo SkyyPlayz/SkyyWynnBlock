@@ -17,7 +17,7 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.18"), ("SkyySacks", "0.7.16"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.8"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.17"), ("SkyySkills", "0.4.29"),
+    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.18"), ("SkyySkills", "0.4.29"),
     ("SkyyAccessories", "0.5.11"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.17"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.9"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -113,7 +113,8 @@ SET = [
 PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "BlueOrbit:DynamicSeasons",
                     "NoCube:[NoCube's] Orchard",
                     "dev.ninesliced:BetterMap",
-                    "Frah:Better Mob Expansion"]  # 2026-10-09 Skyy: test BME main mod (GPLv3, credit in PACK.md + server credits); Humans add-on stays OFF ("No guns")  # 2026-10-08 Skyy: "switch the armory on" - CC BY-NC (credit, never sell; PACK.md); combat armor + Warrior / Berserker / Assassin weapons + boss specials (research/Pack-Armor-Plan.md)  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
+                    "Frah:Better Mob Expansion",
+                    "IBC:Multitools"]  # 2026-10-10 Skyy: Multitools in the pack (MIT, credit InkBlindCat); SkyyGear 0.2.18+ changes its recipe + stats at runtime  # 2026-10-09 Skyy: test BME main mod (GPLv3, credit in PACK.md + server credits); Humans add-on stays OFF ("No guns")  # 2026-10-08 Skyy: "switch the armory on" - CC BY-NC (credit, never sell; PACK.md); combat armor + Warrior / Berserker / Assassin weapons + boss specials (research/Pack-Armor-Plan.md)  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
 # Advanced Farming was NOT added (Skyy 2026-10-06: out of date, no longer updated -> build its tools into our own mod).
 # Skyy mods that were MERGED into another mod and must be switched OFF in the world config on every deploy (their jar may stay in Mods;
 # a disabled key is not loaded). Without this, deploy_set only disables older versions of the SAME mod name, and a retired mod would keep
@@ -285,6 +286,9 @@ def main():
     # Ability engine R1 (2026-10-09): SkyyClasses 0.1.16 tags ability damage; SkyySkills 0.4.28 credits ability kills (class XP after a weapon swap)
     if _v(_p.get("SkyyClasses", "0")) >= (0, 1, 16) and _v(_p.get("SkyySkills", "0")) < (0, 4, 28):
         print("STOP: SkyyClasses 0.1.16+ needs SkyySkills 0.4.28+ (ability kill XP) in the same deploy"); return 1
+    # Multitools (2026-10-10): with IBC:Multitools in the pack, SkyyGear must be 0.2.18+ (else multitools keep their own cheap recipe)
+    if "IBC:Multitools" in PACK_THIRD_PARTY and _v(_p.get("SkyyGear", "0")) < (0, 2, 18):
+        print("STOP: IBC:Multitools needs SkyyGear 0.2.18+ (the pickaxe + hatchet recipe and the multitool stats)"); return 1
     # Untiered batch (2026-10-09): SkyyGear 0.2.16 + SkyyArmory 0.1.15 deploy TOGETHER (the 3 Armory UT items + their numbers from SkyyGear)
     if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 16)) != (_v(_p.get("SkyyArmory", "0")) >= (0, 1, 15)):
         print("STOP: SkyyGear 0.2.16+ and SkyyArmory 0.1.15+ deploy together (the Untiered batch) - pin both or neither"); return 1
