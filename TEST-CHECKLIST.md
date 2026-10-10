@@ -31,8 +31,8 @@ fishing, luggage, sprint-tap and Stats-page versions (their newest version is be
 13. Monk skill named Zen everywhere (XP kept); Stats page Defense shows "Skills", Class Weapon Damage shows "Class balance".
 14. SkyyPets 0.1 + Skills 0.4.29 - `/pets`, starter Rabbit, slot buffs, pet XP right away, `/petadmin`.
 15. SkyyProfiles 0.1.9 - 8 profile slots, Spellblade card "coming later", `/profileadmin bonus`.
-16. SkyyMerchants 0.1 - rumour in chat, `/merchants`, find the Traveling Merchant, F = shop, buy a weapon.
-17. Luggage - sacks (4 looks), "Press F to claim", vanishes at once; mystery bags from mobs, identify / re-identify.
+16. SkyyMerchants - rumour in chat + `/merchants` (shop + buying seen working 2026-10-10; 0.1.1 adds one weapon per class).
+17. Mystery bags from mobs, identify / re-identify (luggage sacks seen working 2026-10-10).
 18. Bags - Omni hidden until all 5 Legendary bags, Normal bags = 20 Plant Fiber + 4 Sticks, bag held higher / in front.
 19. Collections - CRAFT buttons, LOCKED RECIPES list, Mining bags now on Cobblestone I / III / V / VII.
 20. Fishing 0.1.2 - Wooden rod (sticks), bench takes from bags, string tip -> bobber, no white cloud, idle bobber under the tip,
