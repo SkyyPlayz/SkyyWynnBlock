@@ -179,3 +179,7 @@ All 5 evening tasks are done and pushed (one block each above). Only the SkyyAbi
 
 ## 2026-10-10 23:08 2026-10-10 tasks started
 Got the 4 new tasks - all running in parallel (Pet eggs v2, Zone protection + regen, Player avatars, Special tools). One OUTBOX block each as they land.
+
+## 2026-10-10 23:16 Player avatars spec
+Done: research/cloud/Avatars-Spec.md - 61 icons: 1 default, 30 pet faces (own the pet), 12 mob heads (first kill), 8 class crests (make a profile of that class), 10 collection badges (tier V). Shows in the Players grid (SkyyMenu tiles already use icon items), Party / HUD, Guild, chat. Chat is Message.raw(...).color(...) in a PlayerChatEvent formatter (SkyyRanks 0.1.1 lines 133-137, 2938) - a text badge like [Fox] works today (between Exploration 30000 and Ranks 31000); a picture badge is UNVERIFIED. New SkyyAvatars mod, per account, 7 Server Setup rows, picker page, art list (15 reuse pet art, 46 new), 6 phases.
+Questions: new SkyyAvatars mod [yes]; per account [yes]; text tag [Fox] in chat if no pictures (with a hide switch) + which 12 mob heads [Zone 1-2 mobs].
