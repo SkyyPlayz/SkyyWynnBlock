@@ -76,6 +76,11 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
       random pet of that zone + type (rarer = better, odds tables), which sources drop which type; species eggs (0.1% / elites 1%); FUSING
       4 same pet + same rarity -> 1 of the next rarity (keeps highest level; caps, Mythic / dragon rules, dupe safety) next to the per-skill
       Upgrade Stones; eggs tradeable, hatched pets bound. Base: `research/cloud/Pet-Sources.md` + `research/cloud/Pet-Core-Spec.md`.
+- [ ] **Zone protection + regen gathering spec** (Skyy 2026-10-10, docs/answered/world.md "SERVER WORLD PLAN" line): new
+      `research/cloud/Zone-Regen-Spec.md`: hand-built server zones fully protected; only marked resource blocks breakable (ores, logs,
+      crops, mine stone) -> drop + XP + collections, placeholder block, regrow timer per block type (Hypixel SkyBlock mines / Park /
+      farming islands research), how builders mark regions + block lists (in-game wand + Server Setup), per-zone level gates, anti-abuse
+      (one player camping, alt farming), what stays on player islands. Mark engine facts UNVERIFIED.
 - [ ] **SkyyAbilityProbe PR** - once https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 is merged: open a [cloud] PR with the held draft
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
