@@ -12,7 +12,6 @@ reel / Monk / old town / old key probes (retired or replaced by newer probes), T
 fishing, luggage, sprint-tap and Stats-page versions (their newest version is below).
 
 ### A. Probes first - they unlock the next builds (one session each, send the log)
-1. CLEAN-UP before the probes are removed: `/petprobe clear` and `/townprobe undo` (repeat until "Nothing to undo"). Both probes are done. Results: research/Pet-Probe-Results.md.
 3. SkyyKeyProbe 0.2 - `/keyprobe sprint`, press W / A / D / S + sprint and sprint standing still, `/keyprobe sprint`. Side / back rolls.
 4. SkyyGatherProbe 0.1 + B - `/gprobe kit`, P1-P6, trees (one session, then removed). Unlocks the gathering ladder.
 5. SkyyWorldGen 0.3 + 0.4 - `/zone proof`: fly the islands (necks, arch, 40-block bridge gap), `/tp 1139 192 -331` down to the lava caverns
