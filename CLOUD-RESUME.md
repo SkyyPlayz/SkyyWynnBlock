@@ -81,6 +81,14 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
       crops, mine stone) -> drop + XP + collections, placeholder block, regrow timer per block type (Hypixel SkyBlock mines / Park /
       farming islands research), how builders mark regions + block lists (in-game wand + Server Setup), per-zone level gates, anti-abuse
       (one player camping, alt farming), what stays on player islands. Mark engine facts UNVERIFIED.
+- [ ] **Player avatars spec** (Skyy 2026-10-10, docs/answered/social.md "Chosen avatar" line): new `research/cloud/Avatars-Spec.md`:
+      avatar icon set (pet faces, mob heads, class crests; how each unlocks), where it shows (Players list, Party, Guild, chat badge
+      - chat: can a Hytale Message carry an icon/glyph? mark UNVERIFIED), picker page, per-account vs per-profile [default per account],
+      art list for the art agent (64 px icons, emblem style like art/menu-icons).
+- [ ] **Special tools spec** (Skyy 2026-10-10, docs/answered/gear.md special tools + vein mine + Multitools + Mythic tools lines):
+      new `research/cloud/Special-Tools-Spec.md` from `research/Tool-Mods-Survey.md` section 5: final list of UT + Mythic tools (names,
+      zone, ability + level, downside), Vein Mine 1-8 rules (stone vs connected same ore), Tree Feller levels, gathering-tree levels that
+      stack with the tool (cap 8), Auto Smelt late tree upgrade, hammers solo-only, which quest / boss / chest gives each.
 - [ ] **SkyyAbilityProbe PR** - once https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 is merged: open a [cloud] PR with the held draft
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
