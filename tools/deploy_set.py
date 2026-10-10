@@ -113,7 +113,7 @@ SET = [
 # 2026-10-06 (Skyy: "add hyfishing right now, along side dynamic season"): HyFishing (fishing until our own fishing mod replaces it) + Dynamic
 # Seasons (its fishing seasons must keep working with our fishing mod later). Both only need Hytale modules; Dynamic Seasons optionally
 # integrates Angler's Almanac / HyFishing.
-PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "TheRedlotus:HyFishing", "BlueOrbit:DynamicSeasons",
+PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "BlueOrbit:DynamicSeasons",
                     "NoCube:[NoCube's] Orchard",
                     "dev.ninesliced:BetterMap",
                     "Frah:Better Mob Expansion"]  # 2026-10-09 Skyy: test BME main mod (GPLv3, credit in PACK.md + server credits); Humans add-on stays OFF ("No guns")  # 2026-10-08 Skyy: "switch the armory on" - CC BY-NC (credit, never sell; PACK.md); combat armor + Warrior / Berserker / Assassin weapons + boss specials (research/Pack-Armor-Plan.md)  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
@@ -162,7 +162,7 @@ RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe"]   # SkyyMonkProbe: tes
 # Third-party pack mods switched OFF in the world on every deploy (kept installed).
 # 2026-10-09 Skyy: "Armory off until 0.7" - The Armory (708 textures) overflowed the client item/creature texture atlas
 # (8192x16384 needed, max 8192x8192: 395 of 2808 images dropped = broken copper ore, talismans, swords). Re-test on Hytale 0.7.
-PACK_DISABLED = ["LadyPaladra:TheArmory"]
+PACK_DISABLED = ["LadyPaladra:TheArmory", "TheRedlotus:HyFishing"]  # 2026-10-10 Skyy: HyFishing OFF ("Switch HyFishing off") - SkyyFishing replaces it
 
 
 def disable_third_party(world, key):
