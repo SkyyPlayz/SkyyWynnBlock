@@ -78,7 +78,9 @@ SET = [
     ("SkyyMerchants", "0.1.1"),
     # SkyyPets 0.1 (2026-10-09, slot pets phase 1: records + buffs, no creatures). FLOOR: before removing SkyyPets switch Server Setup >
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
-    ("SkyyPets", "0.1"),
+    # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
+    # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
+    ("SkyyPets", "0.2"),
     ("SkyyPetProbe", "0.1"),  # pet engine probes P1-P10 (op only) - move to RETIRED after Skyy's probe session
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
