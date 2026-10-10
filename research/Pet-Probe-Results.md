@@ -16,3 +16,4 @@
 | P5 saving | FAIL (important) - NonSerialized does NOT stop chunk saving; probe pets were loaded back -> SkyyPets must track every pet and remove strays on chunk load (ghost sweep) |
 | Lifecycle | PASS world change, PASS profile switch; logout not yet checked |
 | Debug labels | "Idle.Default" / "Idle.180" nameplates come from Test_Pet's debug role only |
+- P6 logout check (2026-10-10, Skyy): "petprobe P6 vanished on relog, but my pets are still here!" - PASS.
