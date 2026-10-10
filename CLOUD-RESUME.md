@@ -71,6 +71,11 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 <!-- 2026-10-09 evening local session (Skyy: "use up all the tokes. Just be sure you aren't wasting any"). Local builds running: rarity G1
 (SkyyGear 0.2.14), ability engine R1 (SkyyClasses), WorldGen 0.3 archipelago node proof, SkyyProfiles cap 8, SkyyPets 0.1. Next local
 builds need these specs. Specs only; one commit + OUTBOX block each. -->
+- [ ] **Pet eggs v2 spec** (Skyy 2026-10-10, docs/answered/pets.md last 2 LOCKED lines): update the egg design for SkyyPets 0.3 into a new
+      `research/cloud/Pet-Eggs-v2.md`: zone eggs split by TYPE (Zone N Mining / Combat / Farming / Foraging / Fishing / Mount ...), each a
+      random pet of that zone + type (rarer = better, odds tables), which sources drop which type; species eggs (0.1% / elites 1%); FUSING
+      4 same pet + same rarity -> 1 of the next rarity (keeps highest level; caps, Mythic / dragon rules, dupe safety) next to the per-skill
+      Upgrade Stones; eggs tradeable, hatched pets bound. Base: `research/cloud/Pet-Sources.md` + `research/cloud/Pet-Core-Spec.md`.
 - [ ] **SkyyAbilityProbe PR** - once https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 is merged: open a [cloud] PR with the held draft
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
