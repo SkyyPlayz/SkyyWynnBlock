@@ -71,10 +71,6 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 <!-- 2026-10-09 evening local session (Skyy: "use up all the tokes. Just be sure you aren't wasting any"). Local builds running: rarity G1
 (SkyyGear 0.2.14), ability engine R1 (SkyyClasses), WorldGen 0.3 archipelago node proof, SkyyProfiles cap 8, SkyyPets 0.1. Next local
 builds need these specs. Specs only; one commit + OUTBOX block each. -->
-- [ ] **Special tools spec** (Skyy 2026-10-10, docs/answered/gear.md special tools + vein mine + Multitools + Mythic tools lines):
-      new `research/cloud/Special-Tools-Spec.md` from `research/Tool-Mods-Survey.md` section 5: final list of UT + Mythic tools (names,
-      zone, ability + level, downside), Vein Mine 1-8 rules (stone vs connected same ore), Tree Feller levels, gathering-tree levels that
-      stack with the tool (cap 8), Auto Smelt late tree upgrade, hammers solo-only, which quest / boss / chest gives each.
 - [ ] **SkyyAbilityProbe PR** - once https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 is merged: open a [cloud] PR with the held draft
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
@@ -82,3 +78,4 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
 - [x] Player avatars spec - 2026-10-10 - `research/cloud/Avatars-Spec.md`
 - [x] Pet eggs v2 spec - 2026-10-10 - `research/cloud/Pet-Eggs-v2.md`
 - [x] Zone protection + regen gathering spec - 2026-10-10 - `research/cloud/Zone-Regen-Spec.md`
+- [x] Special tools spec - 2026-10-10 - `research/cloud/Special-Tools-Spec.md`

@@ -158,3 +158,4 @@ section 6 when it reviews the results.
 - 2026-10-10: Player avatars spec -> research/cloud/Avatars-Spec.md (61 icons in 5 groups, where they show, text chat badge now, SkyyAvatars mod, art list)
 - 2026-10-10: Pet eggs v2 spec -> research/cloud/Pet-Eggs-v2.md (zone type + species eggs, odds, drops, 4->1 fusing with ledger, trading; replaces 2 older pet notes)
 - 2026-10-10: Zone protection + regen gathering spec -> research/cloud/Zone-Regen-Spec.md (deny-by-default zones, marked resource blocks, placeholders + regrow timers, anti-abuse, phases + probes)
+- 2026-10-10: Special tools spec -> research/cloud/Special-Tools-Spec.md (10 UT + 3 Mythic tools, Vein Mine 1-8, TF 1-8, additive levels cap 8, Auto Smelt, sources; Vein Burst rework + SkyyGear id fixes)
