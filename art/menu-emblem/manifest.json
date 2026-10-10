@@ -1,0 +1,607 @@
+{
+  "what": "SkyWynn Menu item (Skyy_Menu) emblem: floating sky island + gold compass star. Original art.",
+  "generator": "tools/art/make_menu_emblem.py (+ tools/art/emblem_png.py); check: tools/art/validate_menu_emblem.py",
+  "files": [
+    {
+      "path": "Common/Items/SkyyMenu/Skyy_Menu.blockymodel",
+      "bytes": 48007,
+      "sha256": "59e3e083e61e6c35309fb123b18f672e2c7d444860e467acafe701d63f7effaa"
+    },
+    {
+      "path": "Common/Items/SkyyMenu/Skyy_Menu_Texture.png",
+      "bytes": 1956,
+      "sha256": "a042bce4536518d1082bb073d9824343e8e756e65952a62b9c3be90eebee3470",
+      "size": [
+        128,
+        64
+      ]
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_Menu.png",
+      "bytes": 3487,
+      "sha256": "4d758e059814592112cb13e0a3e18f2f57c8975ff7243979bec0ebab64ab5067",
+      "size": [
+        64,
+        64
+      ]
+    },
+    {
+      "path": "sheet.png",
+      "bytes": 79902,
+      "sha256": "62fbf183f1165f6364eb5f0098910eb839e538866864ae4d64edc8cc3e2e88e0"
+    }
+  ],
+  "model": {
+    "format": "Hytale blockymodel (same node / shape / textureLayout keys as vanilla Ingredient_Voidheart)",
+    "root": "R-Attachment (none) > Emblem (none, yaw 165 deg, position [0.0, -4.0, 0.0]) > 17 parts",
+    "parts": [
+      {
+        "name": "Grass",
+        "type": "box",
+        "centre": [
+          0.0,
+          18.5,
+          0.0
+        ],
+        "size": [
+          20,
+          3,
+          18
+        ],
+        "material": "grass"
+      },
+      {
+        "name": "Soil",
+        "type": "box",
+        "centre": [
+          0.0,
+          15.0,
+          0.0
+        ],
+        "size": [
+          18,
+          4,
+          16
+        ],
+        "material": "soil"
+      },
+      {
+        "name": "Rock-Upper",
+        "type": "box",
+        "centre": [
+          0.5,
+          11.0,
+          -0.5
+        ],
+        "size": [
+          15,
+          4,
+          13
+        ],
+        "material": "rock"
+      },
+      {
+        "name": "Rock-Mid",
+        "type": "box",
+        "centre": [
+          -0.5,
+          7.0,
+          0.5
+        ],
+        "size": [
+          11,
+          4,
+          9
+        ],
+        "material": "rock"
+      },
+      {
+        "name": "Rock-Low",
+        "type": "box",
+        "centre": [
+          0.5,
+          3.5,
+          0.0
+        ],
+        "size": [
+          7,
+          3,
+          6
+        ],
+        "material": "rock"
+      },
+      {
+        "name": "Rock-Tip",
+        "type": "box",
+        "centre": [
+          0.0,
+          0.5,
+          0.5
+        ],
+        "size": [
+          3,
+          3,
+          3
+        ],
+        "material": "rockd"
+      },
+      {
+        "name": "Rock-Chunk",
+        "type": "box",
+        "centre": [
+          -7.5,
+          11.5,
+          3.0
+        ],
+        "size": [
+          4,
+          4,
+          4
+        ],
+        "material": "rock"
+      },
+      {
+        "name": "Leaves",
+        "type": "box",
+        "centre": [
+          -7.0,
+          24.0,
+          -5.0
+        ],
+        "size": [
+          5,
+          4,
+          5
+        ],
+        "material": "leaves"
+      },
+      {
+        "name": "Trunk",
+        "type": "box",
+        "centre": [
+          -7.0,
+          21.0,
+          -5.0
+        ],
+        "size": [
+          2,
+          2,
+          2
+        ],
+        "material": "trunk"
+      },
+      {
+        "name": "Stream",
+        "type": "box",
+        "centre": [
+          4.5,
+          20.0,
+          6.0
+        ],
+        "size": [
+          3,
+          1,
+          6
+        ],
+        "material": "water"
+      },
+      {
+        "name": "Cloud-A",
+        "type": "box",
+        "centre": [
+          -7.0,
+          5.5,
+          2.5
+        ],
+        "size": [
+          7,
+          2,
+          4
+        ],
+        "material": "cloud"
+      },
+      {
+        "name": "Cloud-B",
+        "type": "box",
+        "centre": [
+          -8.5,
+          7.5,
+          3.0
+        ],
+        "size": [
+          4,
+          2,
+          3
+        ],
+        "material": "cloud"
+      },
+      {
+        "name": "Cloud-R",
+        "type": "box",
+        "centre": [
+          8.0,
+          9.0,
+          -3.0
+        ],
+        "size": [
+          5,
+          2,
+          3
+        ],
+        "material": "cloud"
+      },
+      {
+        "name": "Star-Core",
+        "type": "box",
+        "centre": [
+          0.5,
+          29.0,
+          0.5
+        ],
+        "size": [
+          3,
+          3,
+          3
+        ],
+        "material": "gold"
+      },
+      {
+        "name": "Star-Ray-A",
+        "type": "quad",
+        "centre": [
+          0.5,
+          29.0,
+          0.5
+        ],
+        "size": [
+          13,
+          13
+        ],
+        "material": "star"
+      },
+      {
+        "name": "Star-Ray-B",
+        "type": "quad",
+        "centre": [
+          0.5,
+          29.0,
+          0.5
+        ],
+        "size": [
+          13,
+          13
+        ],
+        "material": "star"
+      },
+      {
+        "name": "Waterfall",
+        "type": "quad",
+        "centre": [
+          4.5,
+          10.75,
+          9.2
+        ],
+        "size": [
+          3,
+          18
+        ],
+        "material": "fall"
+      }
+    ],
+    "bounds_units_unyawed": {
+      "min": [
+        -10.5,
+        -5.0,
+        -9.0
+      ],
+      "max": [
+        10.5,
+        31.5,
+        9.2
+      ],
+      "size": [
+        21.0,
+        36.5,
+        18.2
+      ]
+    },
+    "texel_density": "1 texel per unit (vanilla item density)",
+    "texture": [
+      128,
+      64
+    ]
+  },
+  "suggested_item_fields": {
+    "Model": "Items/SkyyMenu/Skyy_Menu.blockymodel",
+    "Texture": "Items/SkyyMenu/Skyy_Menu_Texture.png",
+    "Icon": "Icons/ItemsGenerated/Skyy_Menu.png",
+    "Scale": 1.2,
+    "PlayerAnimationsId": "Item",
+    "IconProperties": {
+      "Scale": 0.9,
+      "Rotation": [
+        0,
+        0,
+        0
+      ],
+      "Translation": [
+        0,
+        -13
+      ]
+    },
+    "Light": {
+      "Color": "#432",
+      "Radius": 1
+    }
+  },
+  "icon_view": {
+    "yaw": 24.0,
+    "pitch": 20.0,
+    "supersample": 8,
+    "alpha": "hard (0 or 255)",
+    "outline": "1 px #120e1c / #3e1f08"
+  },
+  "palettes": {
+    "grass": [
+      [
+        31,
+        74,
+        42
+      ],
+      [
+        43,
+        100,
+        49
+      ],
+      [
+        58,
+        126,
+        53
+      ],
+      [
+        79,
+        154,
+        58
+      ],
+      [
+        108,
+        181,
+        68
+      ],
+      [
+        143,
+        208,
+        90
+      ],
+      [
+        182,
+        229,
+        124
+      ]
+    ],
+    "dirt": [
+      [
+        42,
+        26,
+        30
+      ],
+      [
+        59,
+        38,
+        33
+      ],
+      [
+        82,
+        53,
+        37
+      ],
+      [
+        107,
+        71,
+        44
+      ],
+      [
+        133,
+        92,
+        55
+      ],
+      [
+        160,
+        116,
+        72
+      ]
+    ],
+    "rock": [
+      [
+        30,
+        29,
+        44
+      ],
+      [
+        43,
+        42,
+        61
+      ],
+      [
+        59,
+        59,
+        80
+      ],
+      [
+        79,
+        81,
+        102
+      ],
+      [
+        103,
+        107,
+        126
+      ],
+      [
+        134,
+        138,
+        152
+      ],
+      [
+        167,
+        169,
+        177
+      ]
+    ],
+    "cloud": [
+      [
+        140,
+        156,
+        200
+      ],
+      [
+        169,
+        185,
+        224
+      ],
+      [
+        198,
+        212,
+        240
+      ],
+      [
+        223,
+        232,
+        250
+      ],
+      [
+        242,
+        246,
+        253
+      ]
+    ],
+    "water": [
+      [
+        29,
+        79,
+        143
+      ],
+      [
+        42,
+        111,
+        184
+      ],
+      [
+        60,
+        146,
+        216
+      ],
+      [
+        93,
+        181,
+        238
+      ],
+      [
+        138,
+        211,
+        247
+      ],
+      [
+        196,
+        236,
+        252
+      ],
+      [
+        238,
+        250,
+        255
+      ]
+    ],
+    "gold": [
+      [
+        62,
+        31,
+        8
+      ],
+      [
+        106,
+        58,
+        14
+      ],
+      [
+        154,
+        95,
+        22
+      ],
+      [
+        201,
+        141,
+        34
+      ],
+      [
+        233,
+        184,
+        60
+      ],
+      [
+        248,
+        220,
+        114
+      ],
+      [
+        255,
+        242,
+        204
+      ]
+    ],
+    "bark": [
+      [
+        42,
+        23,
+        18
+      ],
+      [
+        67,
+        38,
+        26
+      ],
+      [
+        94,
+        58,
+        34
+      ],
+      [
+        122,
+        79,
+        44
+      ]
+    ],
+    "leaf": [
+      [
+        23,
+        61,
+        38
+      ],
+      [
+        34,
+        88,
+        46
+      ],
+      [
+        47,
+        117,
+        54
+      ],
+      [
+        69,
+        148,
+        66
+      ],
+      [
+        98,
+        177,
+        78
+      ],
+      [
+        134,
+        204,
+        99
+      ]
+    ]
+  }
+}

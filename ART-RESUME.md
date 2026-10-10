@@ -42,7 +42,7 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
-### 17. SkyWynn Menu item - new emblem (small, do this FIRST, then continue item 14 with F1 Ash)
+### 17. SkyWynn Menu item - new emblem - DONE 2026-10-10 (main session stand-in agent: art/menu-emblem/, sheet.png; wiring = next SkyyMenu round). Continue item 14 with F1 Ash
 **Why:** Skyy 2026-10-09: "lets make a new icon for the menu" -> the menu item in the last hotbar slot (id `Skyy_Menu`, SkyyMenu); today
 it borrows the vanilla Voidheart look (`MENU_ITEM_LOOK = "Ingredient_Voidheart"` in `SkyyMenu/build_skyymenu_0.3.12.py`). Skyy picked
 the **SkyWynn emblem**: a small floating sky island (grass top, rocky hanging underside, maybe a tiny waterfall / cloud wisps) with a
