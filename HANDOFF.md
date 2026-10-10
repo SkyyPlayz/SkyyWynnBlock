@@ -17,7 +17,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyGear | 0.2.15 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows |
 | SkyySkills | 0.4.29 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap |
 | SkyyAccessories | 0.5.10 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections) |
-| SkyyClasses | 0.1.17 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
+| SkyyClasses | 0.1.18 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
 | SkyyMenu | 0.3.13 | SkyWynn Menu, player Settings, Server Setup (admin) |
 | SkyyEssentials | 0.1.9 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.9 | profiles = full saves (default cap 6), delete + 6 h undo |
