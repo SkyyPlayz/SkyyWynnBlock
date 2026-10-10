@@ -70,6 +70,7 @@ fishing, luggage, sprint-tap and Stats-page versions (their newest version is be
 49. Pack mods HyFishing + Dynamic Seasons + NoCube's Orchard work next to ours (Dynamic Seasons crashed once - report drafted).
 50. Merchant: a weapon for every class each visit ('Berserker - ...' rows)
 51. Visible pets: Rabbit follows, Hawk flies around you, F to pet (hearts), babies until Lv 30, vanish + return on world / profile / death / logout, Show my pets in /settings
+52. SkyyMenu 0.3.14 Pets tile (top row, per profile) + SkyyPets 0.2.1 petting plays once (Hawk/Fox/Cat/Rabbit)
 
 Seen working 2026-10-08/09: bag art (0.7.14), fishing widgets, Copper axe Attack Speed line, sprint roll forward + forward diagonals.
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12

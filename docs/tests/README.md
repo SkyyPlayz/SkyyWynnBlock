@@ -170,3 +170,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Untiered first batch + developer bows (DEPLOYED 2026-10-09, backup deploy-20261009-1805) | [2026-10](2026-10.md) |
 | SkyyMerchants 0.1.1: one weapon per class (DEPLOYED 2026-10-10, backup deploy-20261010-0917) | [2026-10](2026-10.md) |
 | SkyyPets 0.2: visible pets (DEPLOYED 2026-10-10, backup deploy-20261010-1026) | [2026-10](2026-10.md) |
+| Pets tile in the menu + petting fix (DEPLOYED 2026-10-10, backup deploy-20261010-1415) | [2026-10](2026-10.md) |
