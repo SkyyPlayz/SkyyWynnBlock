@@ -167,3 +167,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyPetProbe 0.1: pet engine probes P1-P10 (DEPLOYED 2026-10-09, backup deploy-20261009-1631) | [2026-10](2026-10.md) |
 | SkyyAccessories 0.5.10: mining helmet light (DEPLOYED 2026-10-09, backup deploy-20261009-1649) | [2026-10](2026-10.md) |
 | Abilities R5-R7: shapes, Guardian Spirit, Frost Nova, alts, page (DEPLOYED 2026-10-09, backup deploy-20261009-1805) | [2026-10](2026-10.md) |
+| Untiered first batch + developer bows (DEPLOYED 2026-10-09, backup deploy-20261009-1805) | [2026-10](2026-10.md) |
