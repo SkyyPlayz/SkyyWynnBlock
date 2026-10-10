@@ -18,7 +18,7 @@ WORLD = "HUD mod"
 SET = [
     ("SkyyHud", "0.3.18"), ("SkyySacks", "0.7.16"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.8"), ("SkyyParty", "0.1.7"),
     ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.17"), ("SkyySkills", "0.4.29"),
-    ("SkyyAccessories", "0.5.10"), ("SkyyClasses", "0.1.18"), ("SkyyMenu", "0.3.17"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.9"),
+    ("SkyyAccessories", "0.5.10"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.17"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.9"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -78,6 +78,7 @@ SET = [
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
     ("SkyyPets", "0.2.2"),
+    ("SkyyWardrobe", "0.1"),  # 2026-10-10 Skyy: "build the wardrobe/ loadout system too" - loadouts (armor + hotbar + pets + abilities), per profile
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
