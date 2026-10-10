@@ -70,7 +70,6 @@ SET = [
     ("SkyyMobs", "0.1.5"), ("SkyyWorldGen", "0.4"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
-    ("SkyyKeyProbe", "0.2"),
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
     # until /merchantadmin list shows no merchant out, then remove the jar (else Temple_Klops NPCs named "Traveling Merchant" stay).
     ("SkyyMerchants", "0.1.1"),
@@ -153,7 +152,7 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "B
 # SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 (2026-10-03): deploy and roll back TOGETHER. Before SkyySkills goes below 0.4.15:
 # switch Base Mana off and let players log in once. To roll SkyyArmory back: take it out of SET, add it to RETIRED and put SkyySkills back
 # to 0.4.14 in the same deploy (vanilla staff files would charge 50 Mana behind a 10-Mana check otherwise). SkyyClasses back to 0.1.10 is safe.
-RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe", "SkyyUiProbe", "SkyyTownProbe", "SkyyPetProbe"]   # SkyyMonkProbe: tested 2026-10-08 (TEST 48), the real moves are SkyyArmory 0.1.12
+RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe", "SkyyUiProbe", "SkyyTownProbe", "SkyyPetProbe", "SkyyKeyProbe"]   # SkyyMonkProbe: tested 2026-10-08 (TEST 48), the real moves are SkyyArmory 0.1.12
 
 
 # Third-party pack mods switched OFF in the world on every deploy (kept installed).
