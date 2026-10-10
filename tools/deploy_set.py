@@ -75,7 +75,7 @@ SET = [
     ("SkyyKeyProbe", "0.2"),
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
     # until /merchantadmin list shows no merchant out, then remove the jar (else Temple_Klops NPCs named "Traveling Merchant" stay).
-    ("SkyyMerchants", "0.1"),
+    ("SkyyMerchants", "0.1.1"),
     # SkyyPets 0.1 (2026-10-09, slot pets phase 1: records + buffs, no creatures). FLOOR: before removing SkyyPets switch Server Setup >
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     ("SkyyPets", "0.1"),
