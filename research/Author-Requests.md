@@ -157,3 +157,12 @@ Where: Discord or CurseForge comment
 > Happy to test a fix build on our test world. Thanks for the mod!
 
 ---
+
+## 11. ninesliced - BetterMap (AGPL; feature request)
+Where: CurseForge page / GitHub issues
+
+> Hi! I'm Skyy from SkyWynn, a free Hytale server pack - BetterMap is great and it's in our pack. Feature request: could
+> `allowedWorlds` accept a prefix or wildcard (e.g. `"skyy-island-*"`, `"skywynn_*"`)? Our players each get their own island world
+> (one per profile), created while the server runs, so an exact-name list can't cover them until a restart. Thanks!
+
+---

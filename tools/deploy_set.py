@@ -173,6 +173,31 @@ def disable_third_party(world, key):
         print("world", world, "switched off", key)
 
 
+def sync_bettermap_worlds(world):
+    """BetterMap (pack mod, dev.ninesliced) only maps worlds named in its allowedWorlds list (exact names, no wildcard), so every
+    zone / island world shows "usage in this world is not tracked". Skyy 2026-10-10: "see if you can get better maps to work in every
+    zone properly" -> on each deploy (game closed) add every world folder of this save to the list. Server-owner config only (no
+    BetterMap file is shipped or called); worlds created after the deploy are added by the next deploy."""
+    import json
+    save = os.path.join(B.USERDATA, "Saves", world)
+    cfg = os.path.join(save, "mods", "BetterMap", "config.json")
+    wdir = os.path.join(save, "universe", "worlds")
+    if not (os.path.isfile(cfg) and os.path.isdir(wdir)):
+        return
+    raw = open(cfg, encoding="utf-8").read()
+    d = json.loads(raw)
+    have = d.get("allowedWorlds")
+    if not isinstance(have, list):
+        return
+    add = sorted(n for n in os.listdir(wdir) if os.path.isdir(os.path.join(wdir, n)) and n not in have)
+    if add:
+        d["allowedWorlds"] = have + add
+        tmp = cfg + ".tmp"
+        open(tmp, "w", encoding="utf-8").write(json.dumps(d, indent=2))
+        os.replace(tmp, cfg)
+        print("world", world, "BetterMap now maps", len(add), "more world(s):", ", ".join(add))
+
+
 def retire_in_world(world, mod):
     """Disable every world-config key 'Skyy:<ver> <mod>' (all versions). Returns how many were switched off."""
     import json
@@ -301,6 +326,7 @@ def main():
         B.enable_in_world(WORLD, key)
     for mod in RETIRED:
         retire_in_world(WORLD, mod)
+    sync_bettermap_worlds(WORLD)
     for key in PACK_DISABLED:
         disable_third_party(WORLD, key)
     print("deployed %d mods. Start the world and watch the server log for every '[Skyy...] ready' line." % len(plan))
