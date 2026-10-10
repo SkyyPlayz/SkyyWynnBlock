@@ -67,7 +67,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.5"), ("SkyyWorldGen", "0.4"),
+    ("SkyyMobs", "0.1.5"), ("SkyyWorldGen", "0.5"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -289,6 +289,8 @@ def main():
     # Multitools (2026-10-10): with IBC:Multitools in the pack, SkyyGear must be 0.2.18+ (else multitools keep their own cheap recipe)
     if "IBC:Multitools" in PACK_THIRD_PARTY and _v(_p.get("SkyyGear", "0")) < (0, 2, 18):
         print("STOP: IBC:Multitools needs SkyyGear 0.2.18+ (the pickaxe + hatchet recipe and the multitool stats)"); return 1
+    # FLOOR SkyyWorldGen 0.5 (2026-10-10): a jar below 0.5 cannot load the world skywynn_proof2 - before a rollback stop the server, delete
+    # universe/worlds/skywynn_proof2 and its lines in worlds.properties.
     # Untiered batch (2026-10-09): SkyyGear 0.2.16 + SkyyArmory 0.1.15 deploy TOGETHER (the 3 Armory UT items + their numbers from SkyyGear)
     if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 16)) != (_v(_p.get("SkyyArmory", "0")) >= (0, 1, 15)):
         print("STOP: SkyyGear 0.2.16+ and SkyyArmory 0.1.15+ deploy together (the Untiered batch) - pin both or neither"); return 1
