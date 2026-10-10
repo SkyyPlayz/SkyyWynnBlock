@@ -172,3 +172,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyPets 0.2: visible pets (DEPLOYED 2026-10-10, backup deploy-20261010-1026) | [2026-10](2026-10.md) |
 | Pets tile in the menu + petting fix (DEPLOYED 2026-10-10, backup deploy-20261010-1415) | [2026-10](2026-10.md) |
 | Wand hop fix + sky-island menu item + HyFishing off (DEPLOYED 2026-10-10, backup deploy-20261010-1443) | [2026-10](2026-10.md) |
+| Wand aura at landing + quick shot range; probes removed (DEPLOYED 2026-10-10, backup deploy-20261010-1518) | [2026-10](2026-10.md) |
