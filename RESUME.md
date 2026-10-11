@@ -37,7 +37,9 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
    Anvil, Stats+Skills, Trees+Abilities, Travel, Bank+Vault, Collections+Recipes, Market; Guild separate; party cards + social buttons).
 5. ARCHITECTURE (research/Architecture-Spec.md, approved): SkyyCore + merges into 10 jars, stable plugin names, refine pass in every phase;
    fold licence-permitting pack mods in (research/Licence-Audit.md; GPL = share-alike question for Skyy).
-6. Specs waiting: Requip (done), Upgrade ladders + Dragon sets, Special tools, Pet eggs v2, Zone regen, Avatars (cloud CLOUD-RESUME.md).
+6. MORNING QUESTIONS for Skyy (research/Licence-Audit.md): repo LICENSE (suggest MIT), GPL share-alike modules (keep GPL mods separate [default]),
+   send author asks (Dynamic Seasons + More Crossbow Tiers first - in the pack with no grant); wand fall rule is done; PACK.md fixes listed in the audit.
+7. Specs waiting: Requip (done), Upgrade ladders + Dragon sets, Special tools, Pet eggs v2, Zone regen, Avatars (cloud CLOUD-RESUME.md).
 
 ## Never forget
 - Commit ab75b6c: Skyy hand-edited 4 GENERATED scripts (`SkyySkills\build_skyyskills_0.4.5.py`, `SkyyTrees\build_skyytrees_0.2.3.py`,
