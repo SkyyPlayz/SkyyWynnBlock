@@ -1,0 +1,2533 @@
+{
+ "what": "SkyWynn UI kit - SKY WINDOW theme (Isles of the Void), research/Hubs-Spec.md 7.3 element list + per-hub page frame moods + hub icons. DRAFT v1, not wired in.",
+ "generator": "tools/art/make_ui_kit_sky.py",
+ "validator": "tools/art/validate_ui_kit_sky.py",
+ "deterministic": true,
+ "original_pixels": true,
+ "scale": "@2x = 2 texture px per UI unit; border values are UI units",
+ "jar_root": "Common/UI/Custom/SkyyKit/",
+ "markup_path": "SkyyKit/<Element>.png (no @2x; relative to Common/UI/Custom/)",
+ "hub_frames": {
+  "Character": "Frame_Character",
+  "Storage": "Frame_Storage",
+  "Market": "Frame_Market",
+  "Smithing": "Frame_Smithing",
+  "World": "Frame_World",
+  "Social": "Frame_Social"
+ },
+ "hub_moods": {
+  "Character": "SUNRISE",
+  "Storage": "NIGHT VAULT",
+  "Market": "GOLDEN NOON",
+  "Smithing": "EMBER FORGE",
+  "World": "CLEAR SKY",
+  "Social": "SUNSET"
+ },
+ "elements": [
+  {
+   "element": "Frame",
+   "file": "Common/UI/Custom/SkyyKit/Frame@2x.png",
+   "markup_path": "SkyyKit/Frame.png",
+   "kit_element": "page frame body, neutral clear sky (every non-hub page)",
+   "state": "default",
+   "w": 160,
+   "h": 160,
+   "ui_size": [
+    80,
+    80
+   ],
+   "border": {
+    "Border": 32
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "page_shell body: replaces ContainerPatch.png (Border 23) - Frame on every page, Frame_<Hub> on that hub's pages; padding 24",
+   "bytes": 29838,
+   "sha256": "cd602bfd958a22519864553f5dca7f28e955f593de05f5b5476f3acfc9416836"
+  },
+  {
+   "element": "Frame_Character",
+   "file": "Common/UI/Custom/SkyyKit/Frame_Character@2x.png",
+   "markup_path": "SkyyKit/Frame_Character.png",
+   "kit_element": "page frame body, Character hub mood: sunrise",
+   "state": "character",
+   "w": 160,
+   "h": 160,
+   "ui_size": [
+    80,
+    80
+   ],
+   "border": {
+    "Border": 32
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "page_shell body: replaces ContainerPatch.png (Border 23) - Frame on every page, Frame_<Hub> on that hub's pages; padding 24",
+   "bytes": 29502,
+   "sha256": "8cf46451387b50ded72a692f0d2bf00e5ddfa33e4d668994034d0d7a62a4ae10"
+  },
+  {
+   "element": "Frame_Storage",
+   "file": "Common/UI/Custom/SkyyKit/Frame_Storage@2x.png",
+   "markup_path": "SkyyKit/Frame_Storage.png",
+   "kit_element": "page frame body, Storage hub mood: night vault",
+   "state": "storage",
+   "w": 160,
+   "h": 160,
+   "ui_size": [
+    80,
+    80
+   ],
+   "border": {
+    "Border": 32
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "page_shell body: replaces ContainerPatch.png (Border 23) - Frame on every page, Frame_<Hub> on that hub's pages; padding 24",
+   "bytes": 34936,
+   "sha256": "df2e4ef923bb4bb4d95d4ab55d2875b658fff712f9279d2a1fcfd904a897ba3e"
+  },
+  {
+   "element": "Frame_Market",
+   "file": "Common/UI/Custom/SkyyKit/Frame_Market@2x.png",
+   "markup_path": "SkyyKit/Frame_Market.png",
+   "kit_element": "page frame body, Market hub mood: golden noon",
+   "state": "market",
+   "w": 160,
+   "h": 160,
+   "ui_size": [
+    80,
+    80
+   ],
+   "border": {
+    "Border": 32
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "page_shell body: replaces ContainerPatch.png (Border 23) - Frame on every page, Frame_<Hub> on that hub's pages; padding 24",
+   "bytes": 31750,
+   "sha256": "1a3ef2c2c76583ad3b7cff38becfc2e97f1ed0a0263fb13936f151ce902289f1"
+  },
+  {
+   "element": "Frame_Smithing",
+   "file": "Common/UI/Custom/SkyyKit/Frame_Smithing@2x.png",
+   "markup_path": "SkyyKit/Frame_Smithing.png",
+   "kit_element": "page frame body, Smithing hub mood: ember forge",
+   "state": "smithing",
+   "w": 160,
+   "h": 160,
+   "ui_size": [
+    80,
+    80
+   ],
+   "border": {
+    "Border": 32
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "page_shell body: replaces ContainerPatch.png (Border 23) - Frame on every page, Frame_<Hub> on that hub's pages; padding 24",
+   "bytes": 30920,
+   "sha256": "b6cbbdf35914039c0afe5cf682ea89129532cbb040366278042f0c38aa02f22e"
+  },
+  {
+   "element": "Frame_World",
+   "file": "Common/UI/Custom/SkyyKit/Frame_World@2x.png",
+   "markup_path": "SkyyKit/Frame_World.png",
+   "kit_element": "page frame body, World hub mood: clear sky",
+   "state": "world",
+   "w": 160,
+   "h": 160,
+   "ui_size": [
+    80,
+    80
+   ],
+   "border": {
+    "Border": 32
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "page_shell body: replaces ContainerPatch.png (Border 23) - Frame on every page, Frame_<Hub> on that hub's pages; padding 24",
+   "bytes": 29354,
+   "sha256": "95a8ed5c3830d14c9b22005b6fa9634c5acf83100d052ddc3abf43c25fd1db6f"
+  },
+  {
+   "element": "Frame_Social",
+   "file": "Common/UI/Custom/SkyyKit/Frame_Social@2x.png",
+   "markup_path": "SkyyKit/Frame_Social.png",
+   "kit_element": "page frame body, Social hub mood: sunset",
+   "state": "social",
+   "w": 160,
+   "h": 160,
+   "ui_size": [
+    80,
+    80
+   ],
+   "border": {
+    "Border": 32
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "page_shell body: replaces ContainerPatch.png (Border 23) - Frame on every page, Frame_<Hub> on that hub's pages; padding 24",
+   "bytes": 30318,
+   "sha256": "1c18eaf2d80c2971c4522758ec5aed4ad2cff2e81173b5f4a6624b47e570ca3a"
+  },
+  {
+   "element": "Header",
+   "file": "Common/UI/Custom/SkyyKit/Header@2x.png",
+   "markup_path": "SkyyKit/Header.png",
+   "kit_element": "page title bar (38 UI high)",
+   "state": "default",
+   "w": 600,
+   "h": 76,
+   "ui_size": [
+    300,
+    38
+   ],
+   "border": {
+    "HorizontalBorder": 60,
+    "VerticalBorder": 0
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "page_shell title bar: replaces ContainerHeader.png (HorizontalBorder 50, VerticalBorder 0)",
+   "bytes": 12616,
+   "sha256": "b940074433bb9c7cf9d961c8892eb468f14774652eee4eb1f00b28ecbdc89c8c"
+  },
+  {
+   "element": "HeaderOrnament",
+   "file": "Common/UI/Custom/SkyyKit/HeaderOrnament@2x.png",
+   "markup_path": "SkyyKit/HeaderOrnament.png",
+   "kit_element": "crest over the title bar (fixed 236 x 22 UI, like vanilla's Top -12 decoration)",
+   "state": "default",
+   "w": 472,
+   "h": 44,
+   "ui_size": [
+    236,
+    22
+   ],
+   "border": null,
+   "strip_uniform": "",
+   "skyyui_use": "page_shell decorated: replaces ContainerDecorationTop.png (Group Width 236, Height 22, Top -12); drop ContainerDecorationBottom",
+   "bytes": 12576,
+   "sha256": "c9b59eae2565c10412afa918537dac75f4fd2279e02ed2a00cd344397560a7a7"
+  },
+  {
+   "element": "CardFrame",
+   "file": "Common/UI/Custom/SkyyKit/CardFrame@2x.png",
+   "markup_path": "SkyyKit/CardFrame.png",
+   "kit_element": "card frame (Smithing set cards, Profiles cards, hub tiles)",
+   "state": "default",
+   "w": 160,
+   "h": 160,
+   "ui_size": [
+    80,
+    80
+   ],
+   "border": {
+    "Border": 32
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "card / tile background (list_card, hub tiles, Smithing set cards, Profiles cards)",
+   "bytes": 21544,
+   "sha256": "a10bbd1c5f0c3ab99a39cbc5f95487c24ed627a452f8a21ef63de56d5953dab4"
+  },
+  {
+   "element": "Tab",
+   "file": "Common/UI/Custom/SkyyKit/Tab@2x.png",
+   "markup_path": "SkyyKit/Tab.png",
+   "kit_element": "hub bar tab (44 UI high, good down to 110 UI wide)",
+   "state": "normal",
+   "w": 240,
+   "h": 88,
+   "ui_size": [
+    120,
+    44
+   ],
+   "border": {
+    "HorizontalBorder": 20,
+    "VerticalBorder": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "tab_row / hub_bar_markup: tab default",
+   "bytes": 1230,
+   "sha256": "e53897cb4286d4b627aa8f34df53c36bd1990d320081a1134854bbfe128d2de3"
+  },
+  {
+   "element": "Tab_Hovered",
+   "file": "Common/UI/Custom/SkyyKit/Tab_Hovered@2x.png",
+   "markup_path": "SkyyKit/Tab_Hovered.png",
+   "kit_element": "hub bar tab (44 UI high, good down to 110 UI wide)",
+   "state": "hovered",
+   "w": 240,
+   "h": 88,
+   "ui_size": [
+    120,
+    44
+   ],
+   "border": {
+    "HorizontalBorder": 20,
+    "VerticalBorder": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "tab_row / hub_bar_markup: tab hovered",
+   "bytes": 3781,
+   "sha256": "ca289a20718fdf1da881bacdea38f82d297a0ead43193233573ca649df16c20b"
+  },
+  {
+   "element": "Tab_Pressed",
+   "file": "Common/UI/Custom/SkyyKit/Tab_Pressed@2x.png",
+   "markup_path": "SkyyKit/Tab_Pressed.png",
+   "kit_element": "hub bar tab (44 UI high, good down to 110 UI wide)",
+   "state": "pressed",
+   "w": 240,
+   "h": 88,
+   "ui_size": [
+    120,
+    44
+   ],
+   "border": {
+    "HorizontalBorder": 20,
+    "VerticalBorder": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "tab_row / hub_bar_markup: tab pressed",
+   "bytes": 1290,
+   "sha256": "b6a4457ff184a342a1937b3b44b96f8ca288ee8f6b475b64fe1f0c6d94aec7b1"
+  },
+  {
+   "element": "Tab_Selected",
+   "file": "Common/UI/Custom/SkyyKit/Tab_Selected@2x.png",
+   "markup_path": "SkyyKit/Tab_Selected.png",
+   "kit_element": "hub bar tab (44 UI high, good down to 110 UI wide)",
+   "state": "selected",
+   "w": 240,
+   "h": 88,
+   "ui_size": [
+    120,
+    44
+   ],
+   "border": {
+    "HorizontalBorder": 20,
+    "VerticalBorder": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "tab_row / hub_bar_markup: tab selected",
+   "bytes": 2179,
+   "sha256": "77a792b80fe5ff93b4627b8f6917d3b40f868bf960bab64cd199a29974dd6adf"
+  },
+  {
+   "element": "Primary",
+   "file": "Common/UI/Custom/SkyyKit/Primary@2x.png",
+   "markup_path": "SkyyKit/Primary.png",
+   "kit_element": "primary button",
+   "state": "normal",
+   "w": 440,
+   "h": 88,
+   "ui_size": [
+    220,
+    44
+   ],
+   "border": {
+    "HorizontalBorder": 24,
+    "VerticalBorder": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=primary) Default",
+   "bytes": 2289,
+   "sha256": "0c04fb989b699ec40d4f60061ce6e1de4330a08bac8073be24dd5caf63e3e657"
+  },
+  {
+   "element": "Primary_Hovered",
+   "file": "Common/UI/Custom/SkyyKit/Primary_Hovered@2x.png",
+   "markup_path": "SkyyKit/Primary_Hovered.png",
+   "kit_element": "primary button",
+   "state": "hovered",
+   "w": 440,
+   "h": 88,
+   "ui_size": [
+    220,
+    44
+   ],
+   "border": {
+    "HorizontalBorder": 24,
+    "VerticalBorder": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=primary) Hovered",
+   "bytes": 4975,
+   "sha256": "f7df6ba1b714e9368a4a51eea30cebca2dea1c9a174b7bf82bb69caaa671739f"
+  },
+  {
+   "element": "Primary_Pressed",
+   "file": "Common/UI/Custom/SkyyKit/Primary_Pressed@2x.png",
+   "markup_path": "SkyyKit/Primary_Pressed.png",
+   "kit_element": "primary button",
+   "state": "pressed",
+   "w": 440,
+   "h": 88,
+   "ui_size": [
+    220,
+    44
+   ],
+   "border": {
+    "HorizontalBorder": 24,
+    "VerticalBorder": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=primary) Pressed",
+   "bytes": 1975,
+   "sha256": "dcc2237795f6a1ed43ae81fb0e9f37fb0aa6b23aaf95e7f96cdd81af085d6dfb"
+  },
+  {
+   "element": "Primary_Disabled",
+   "file": "Common/UI/Custom/SkyyKit/Primary_Disabled@2x.png",
+   "markup_path": "SkyyKit/Primary_Disabled.png",
+   "kit_element": "primary button",
+   "state": "disabled",
+   "w": 440,
+   "h": 88,
+   "ui_size": [
+    220,
+    44
+   ],
+   "border": {
+    "HorizontalBorder": 24,
+    "VerticalBorder": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=primary) Disabled",
+   "bytes": 1741,
+   "sha256": "684a590d28223431da1ca3cdf3b8d0eaa47a06113334bc20833c3bee050e5345"
+  },
+  {
+   "element": "Secondary",
+   "file": "Common/UI/Custom/SkyyKit/Secondary@2x.png",
+   "markup_path": "SkyyKit/Secondary.png",
+   "kit_element": "secondary button",
+   "state": "normal",
+   "w": 440,
+   "h": 88,
+   "ui_size": [
+    220,
+    44
+   ],
+   "border": {
+    "Border": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=secondary) Default",
+   "bytes": 2336,
+   "sha256": "11fc0587b711f110e37c5a23e87cb163a485d566eacc06e85372be147cf92639"
+  },
+  {
+   "element": "Secondary_Hovered",
+   "file": "Common/UI/Custom/SkyyKit/Secondary_Hovered@2x.png",
+   "markup_path": "SkyyKit/Secondary_Hovered.png",
+   "kit_element": "secondary button",
+   "state": "hovered",
+   "w": 440,
+   "h": 88,
+   "ui_size": [
+    220,
+    44
+   ],
+   "border": {
+    "Border": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=secondary) Hovered",
+   "bytes": 5136,
+   "sha256": "3c8382b66745b8c998c869d5003fcc7dcb3bbb3c3862cc9d2601e382c8de26bd"
+  },
+  {
+   "element": "Secondary_Pressed",
+   "file": "Common/UI/Custom/SkyyKit/Secondary_Pressed@2x.png",
+   "markup_path": "SkyyKit/Secondary_Pressed.png",
+   "kit_element": "secondary button",
+   "state": "pressed",
+   "w": 440,
+   "h": 88,
+   "ui_size": [
+    220,
+    44
+   ],
+   "border": {
+    "Border": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=secondary) Pressed",
+   "bytes": 2060,
+   "sha256": "02928107153a40851c00295b990c621efd1283126615ab8b23576a3e62d8ab5f"
+  },
+  {
+   "element": "Secondary_Disabled",
+   "file": "Common/UI/Custom/SkyyKit/Secondary_Disabled@2x.png",
+   "markup_path": "SkyyKit/Secondary_Disabled.png",
+   "kit_element": "secondary button",
+   "state": "disabled",
+   "w": 440,
+   "h": 88,
+   "ui_size": [
+    220,
+    44
+   ],
+   "border": {
+    "Border": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=secondary) Disabled",
+   "bytes": 1736,
+   "sha256": "b7d21a7994902433873ba9c27c62bf1a5f9c607c7bc65d5e9bc125ffd0ef3a2e"
+  },
+  {
+   "element": "Tertiary",
+   "file": "Common/UI/Custom/SkyyKit/Tertiary@2x.png",
+   "markup_path": "SkyyKit/Tertiary.png",
+   "kit_element": "tertiary button",
+   "state": "normal",
+   "w": 256,
+   "h": 64,
+   "ui_size": [
+    128,
+    32
+   ],
+   "border": {
+    "Border": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=tertiary) Default",
+   "bytes": 1305,
+   "sha256": "7ad11a2e06f8d75b08bec87fe8ca821bc4a5d7ad849d19e6a996baa7da8280f4"
+  },
+  {
+   "element": "Tertiary_Hovered",
+   "file": "Common/UI/Custom/SkyyKit/Tertiary_Hovered@2x.png",
+   "markup_path": "SkyyKit/Tertiary_Hovered.png",
+   "kit_element": "tertiary button",
+   "state": "hovered",
+   "w": 256,
+   "h": 64,
+   "ui_size": [
+    128,
+    32
+   ],
+   "border": {
+    "Border": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=tertiary) Hovered",
+   "bytes": 3090,
+   "sha256": "6eb8479d4fa1e55f6315ebdfcfd265831a6effba4db99860e9bc6919cabb67b2"
+  },
+  {
+   "element": "Tertiary_Pressed",
+   "file": "Common/UI/Custom/SkyyKit/Tertiary_Pressed@2x.png",
+   "markup_path": "SkyyKit/Tertiary_Pressed.png",
+   "kit_element": "tertiary button",
+   "state": "pressed",
+   "w": 256,
+   "h": 64,
+   "ui_size": [
+    128,
+    32
+   ],
+   "border": {
+    "Border": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=tertiary) Pressed",
+   "bytes": 1324,
+   "sha256": "b0bdfd52ba7ca92ee0f9f73e73553652096e6c49aa3d0e2d158f0537be34f0c0"
+  },
+  {
+   "element": "Tertiary_Active",
+   "file": "Common/UI/Custom/SkyyKit/Tertiary_Active@2x.png",
+   "markup_path": "SkyyKit/Tertiary_Active.png",
+   "kit_element": "tertiary button",
+   "state": "active",
+   "w": 256,
+   "h": 64,
+   "ui_size": [
+    128,
+    32
+   ],
+   "border": {
+    "Border": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=tertiary) Active",
+   "bytes": 3519,
+   "sha256": "75f19c1d40b21ad84c31ea793e644c537d904b0ab55444845ea8f39d3388400b"
+  },
+  {
+   "element": "Danger",
+   "file": "Common/UI/Custom/SkyyKit/Danger@2x.png",
+   "markup_path": "SkyyKit/Danger.png",
+   "kit_element": "danger button",
+   "state": "normal",
+   "w": 440,
+   "h": 88,
+   "ui_size": [
+    220,
+    44
+   ],
+   "border": {
+    "Border": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=destructive) Default",
+   "bytes": 2356,
+   "sha256": "6bd7c6de91878a12958a6a3dce672fe5737b53b57d9ba13346e336d2bbf05571"
+  },
+  {
+   "element": "Danger_Hovered",
+   "file": "Common/UI/Custom/SkyyKit/Danger_Hovered@2x.png",
+   "markup_path": "SkyyKit/Danger_Hovered.png",
+   "kit_element": "danger button",
+   "state": "hovered",
+   "w": 440,
+   "h": 88,
+   "ui_size": [
+    220,
+    44
+   ],
+   "border": {
+    "Border": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=destructive) Hovered",
+   "bytes": 5138,
+   "sha256": "5e442054db7ef84ba73acbea843ae761a03db1786cc70464d1118768ade77897"
+  },
+  {
+   "element": "Danger_Pressed",
+   "file": "Common/UI/Custom/SkyyKit/Danger_Pressed@2x.png",
+   "markup_path": "SkyyKit/Danger_Pressed.png",
+   "kit_element": "danger button",
+   "state": "pressed",
+   "w": 440,
+   "h": 88,
+   "ui_size": [
+    220,
+    44
+   ],
+   "border": {
+    "Border": 12
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "button_style(kind=destructive) Pressed",
+   "bytes": 2006,
+   "sha256": "d183f9cd568b0e077aae58ed4d05bc1403d2ce7d9f8b3183f574c10eaeac1f7e"
+  },
+  {
+   "element": "Close",
+   "file": "Common/UI/Custom/SkyyKit/Close@2x.png",
+   "markup_path": "SkyyKit/Close.png",
+   "kit_element": "close X (fixed 32 x 32 UI)",
+   "state": "normal",
+   "w": 64,
+   "h": 64,
+   "ui_size": [
+    32,
+    32
+   ],
+   "border": null,
+   "strip_uniform": "",
+   "skyyui_use": "close_button Default",
+   "bytes": 4958,
+   "sha256": "e6f87ab7083ad54e3287955b78775814d798cec55f4e4a3bb70a0655114b6f07"
+  },
+  {
+   "element": "Close_Hovered",
+   "file": "Common/UI/Custom/SkyyKit/Close_Hovered@2x.png",
+   "markup_path": "SkyyKit/Close_Hovered.png",
+   "kit_element": "close X (fixed 32 x 32 UI)",
+   "state": "hovered",
+   "w": 64,
+   "h": 64,
+   "ui_size": [
+    32,
+    32
+   ],
+   "border": null,
+   "strip_uniform": "",
+   "skyyui_use": "close_button Hovered + Pressed",
+   "bytes": 6899,
+   "sha256": "c8ae77d7b40c0d772af967e9f62861b4653123dfab21a259c01f1157c3e11370"
+  },
+  {
+   "element": "Panel",
+   "file": "Common/UI/Custom/SkyyKit/Panel@2x.png",
+   "markup_path": "SkyyKit/Panel.png",
+   "kit_element": "panel / inner well (lists, info boxes)",
+   "state": "default",
+   "w": 64,
+   "h": 64,
+   "ui_size": [
+    32,
+    32
+   ],
+   "border": {
+    "Border": 12
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "panel(kind simple / full): replaces ContainerPanelPatch.png (Border 4) / ContainerFullPatch.png (Border 20)",
+   "bytes": 1921,
+   "sha256": "b1c2c753c27f5f59107fa40e7b6cdcd041287c025c9333a5e2f51b2382f7765d"
+  },
+  {
+   "element": "PanelInset",
+   "file": "Common/UI/Custom/SkyyKit/PanelInset@2x.png",
+   "markup_path": "SkyyKit/PanelInset.png",
+   "kit_element": "sub-box inside a panel",
+   "state": "default",
+   "w": 48,
+   "h": 48,
+   "ui_size": [
+    24,
+    24
+   ],
+   "border": {
+    "Border": 8
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "panel(kind well / secondary): replaces #000000(0.15) / ContainerBackgroundSecondary.png",
+   "bytes": 321,
+   "sha256": "8c524fd5c185a01b74ae09eaa431d975b11976c701d31c25c4a203514c1d8c09"
+  },
+  {
+   "element": "Row",
+   "file": "Common/UI/Custom/SkyyKit/Row@2x.png",
+   "markup_path": "SkyyKit/Row.png",
+   "kit_element": "list row (replaces the colour rows)",
+   "state": "normal",
+   "w": 64,
+   "h": 48,
+   "ui_size": [
+    32,
+    24
+   ],
+   "border": {
+    "Border": 8
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "row_style / hover_row: default (replaces the colour rows)",
+   "bytes": 302,
+   "sha256": "6bcf757ba60ec18d683ec31e226f4edbd00263447da6ee7bf7255ae3ecd399b8"
+  },
+  {
+   "element": "Row_Hovered",
+   "file": "Common/UI/Custom/SkyyKit/Row_Hovered@2x.png",
+   "markup_path": "SkyyKit/Row_Hovered.png",
+   "kit_element": "list row (replaces the colour rows)",
+   "state": "hovered",
+   "w": 64,
+   "h": 48,
+   "ui_size": [
+    32,
+    24
+   ],
+   "border": {
+    "Border": 8
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "row_style / hover_row: hovered (replaces the colour rows)",
+   "bytes": 450,
+   "sha256": "ad077322671351140dd121ca2d6c7846b370b2aed944381c279430a5581d21d5"
+  },
+  {
+   "element": "Row_Selected",
+   "file": "Common/UI/Custom/SkyyKit/Row_Selected@2x.png",
+   "markup_path": "SkyyKit/Row_Selected.png",
+   "kit_element": "list row (replaces the colour rows)",
+   "state": "selected",
+   "w": 64,
+   "h": 48,
+   "ui_size": [
+    32,
+    24
+   ],
+   "border": {
+    "Border": 8
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "row_style / hover_row: selected (replaces the colour rows)",
+   "bytes": 1016,
+   "sha256": "421911a86e0d7388f87111b1af66f654a326d8bcc17060068dccae134fc5b31f"
+  },
+  {
+   "element": "InputBox",
+   "file": "Common/UI/Custom/SkyyKit/InputBox@2x.png",
+   "markup_path": "SkyyKit/InputBox.png",
+   "kit_element": "text / search field",
+   "state": "normal",
+   "w": 96,
+   "h": 64,
+   "ui_size": [
+    48,
+    32
+   ],
+   "border": {
+    "Border": 16
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "text_field / search_field / value_box: default (vanilla InputBox*.png, Border 16)",
+   "bytes": 624,
+   "sha256": "3b73d28a98ab9e7b55580dca3f523a43fb397c4a4afa67acffbc34cc28e0f5ab"
+  },
+  {
+   "element": "InputBox_Hovered",
+   "file": "Common/UI/Custom/SkyyKit/InputBox_Hovered@2x.png",
+   "markup_path": "SkyyKit/InputBox_Hovered.png",
+   "kit_element": "text / search field",
+   "state": "hovered",
+   "w": 96,
+   "h": 64,
+   "ui_size": [
+    48,
+    32
+   ],
+   "border": {
+    "Border": 16
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "text_field / search_field / value_box: hovered (vanilla InputBox*.png, Border 16)",
+   "bytes": 657,
+   "sha256": "64e37df91a3e578973c5f87625cb12620dd622e2d0d0190f2ac986ba204eb1bf"
+  },
+  {
+   "element": "InputBox_Selected",
+   "file": "Common/UI/Custom/SkyyKit/InputBox_Selected@2x.png",
+   "markup_path": "SkyyKit/InputBox_Selected.png",
+   "kit_element": "text / search field",
+   "state": "selected",
+   "w": 96,
+   "h": 64,
+   "ui_size": [
+    48,
+    32
+   ],
+   "border": {
+    "Border": 16
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "text_field / search_field / value_box: selected (vanilla InputBox*.png, Border 16)",
+   "bytes": 1643,
+   "sha256": "186dde0f202eb761d4d9f8c0826d35b5468f02131bc40a18b7db487cdc2cda40"
+  },
+  {
+   "element": "CheckBox",
+   "file": "Common/UI/Custom/SkyyKit/CheckBox@2x.png",
+   "markup_path": "SkyyKit/CheckBox.png",
+   "kit_element": "check box frame (22 x 22 UI)",
+   "state": "default",
+   "w": 44,
+   "h": 44,
+   "ui_size": [
+    22,
+    22
+   ],
+   "border": {
+    "Border": 7
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "checkbox_style Background: replaces CheckBoxFrame.png (Border 7)",
+   "bytes": 570,
+   "sha256": "16990c386edb30d04351e8b8773183eadb5424ea468ef5ef461b72b712378543"
+  },
+  {
+   "element": "CheckMark",
+   "file": "Common/UI/Custom/SkyyKit/CheckMark@2x.png",
+   "markup_path": "SkyyKit/CheckMark.png",
+   "kit_element": "check mark (16 x 16 UI)",
+   "state": "default",
+   "w": 32,
+   "h": 32,
+   "ui_size": [
+    16,
+    16
+   ],
+   "border": null,
+   "strip_uniform": "",
+   "skyyui_use": "checkbox_style checked: replaces Checkmark.png",
+   "bytes": 1301,
+   "sha256": "772f5299268214074da4cdf7a07fa0fd0e3aa39d6a4700a900903e9fffd682e3"
+  },
+  {
+   "element": "ScrollTrack",
+   "file": "Common/UI/Custom/SkyyKit/ScrollTrack@2x.png",
+   "markup_path": "SkyyKit/ScrollTrack.png",
+   "kit_element": "scrollbar track (ScrollbarStyle Background)",
+   "state": "default",
+   "w": 12,
+   "h": 24,
+   "ui_size": [
+    6,
+    12
+   ],
+   "border": {
+    "Border": 3
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "scrollbar_style Background: replaces Scrollbar.png (Border 3; Size 6, Spacing 6 unchanged)",
+   "bytes": 249,
+   "sha256": "9de095955f319597ffe6e1d390c67c96c625dcdf6426659740724038ac2829b5"
+  },
+  {
+   "element": "ScrollHandle",
+   "file": "Common/UI/Custom/SkyyKit/ScrollHandle@2x.png",
+   "markup_path": "SkyyKit/ScrollHandle.png",
+   "kit_element": "scrollbar handle",
+   "state": "normal",
+   "w": 12,
+   "h": 24,
+   "ui_size": [
+    6,
+    12
+   ],
+   "border": {
+    "Border": 3
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "scrollbar_style Handle",
+   "bytes": 578,
+   "sha256": "c9801924d9ed15f31fc0316e1ae43b0d712d25cb3a765b5d711d3719da7cd789"
+  },
+  {
+   "element": "ScrollHandle_Hovered",
+   "file": "Common/UI/Custom/SkyyKit/ScrollHandle_Hovered@2x.png",
+   "markup_path": "SkyyKit/ScrollHandle_Hovered.png",
+   "kit_element": "scrollbar handle",
+   "state": "hovered",
+   "w": 12,
+   "h": 24,
+   "ui_size": [
+    6,
+    12
+   ],
+   "border": {
+    "Border": 3
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "scrollbar_style HoveredHandle",
+   "bytes": 558,
+   "sha256": "c4ec3b5fa8cc1391964c5ff401472fae8e07d46e2f257cdb4672137d6ddb3f06"
+  },
+  {
+   "element": "ScrollHandle_Dragged",
+   "file": "Common/UI/Custom/SkyyKit/ScrollHandle_Dragged@2x.png",
+   "markup_path": "SkyyKit/ScrollHandle_Dragged.png",
+   "kit_element": "scrollbar handle",
+   "state": "dragged",
+   "w": 12,
+   "h": 24,
+   "ui_size": [
+    6,
+    12
+   ],
+   "border": {
+    "Border": 3
+   },
+   "strip_uniform": "xy",
+   "skyyui_use": "scrollbar_style DraggedHandle",
+   "bytes": 595,
+   "sha256": "d2c1e13a8918fe31eb129662e5c435a0534bb34d5c76a22227b411ea588d38db"
+  },
+  {
+   "element": "Separator",
+   "file": "Common/UI/Custom/SkyyKit/Separator@2x.png",
+   "markup_path": "SkyyKit/Separator.png",
+   "kit_element": "thin gold separator line (2 UI high)",
+   "state": "default",
+   "w": 64,
+   "h": 4,
+   "ui_size": [
+    32,
+    2
+   ],
+   "border": {
+    "HorizontalBorder": 8,
+    "VerticalBorder": 0
+   },
+   "strip_uniform": "x",
+   "skyyui_use": "separator(content / form / fancy): a Group Height 2 with this background (HorizontalBorder 8, VerticalBorder 0)",
+   "bytes": 393,
+   "sha256": "a2fb704d53364415d15ed12353ba2ab19799bf13d5bda97250e3bf9acda58363"
+  },
+  {
+   "element": "SlotEmpty",
+   "file": "Common/UI/Custom/SkyyKit/SlotEmpty@2x.png",
+   "markup_path": "SkyyKit/SlotEmpty.png",
+   "kit_element": "empty item well (74 x 74 UI, tooltip-sky Slot family)",
+   "state": "default",
+   "w": 148,
+   "h": 148,
+   "ui_size": [
+    74,
+    74
+   ],
+   "border": null,
+   "strip_uniform": "",
+   "skyyui_use": "item_frame / icon_cell empty well (if probe K1(c) lets ItemGrid slots take a texture)",
+   "bytes": 13800,
+   "sha256": "a636e035f834adb70a86869d067e51a4df9279c3b5fedf90ddcc37aa2fb334b2"
+  }
+ ],
+ "hub_icons": [
+  {
+   "file": "Common/UI/Custom/SkyyKit/HubIcon_Character@2x.png",
+   "hub": "Character",
+   "mood": "SUNRISE",
+   "w": 128,
+   "h": 128,
+   "border": null,
+   "markup_path": "SkyyKit/HubIcon_Character.png",
+   "use": "hub tile icon: 64 x 64 UI via the @2x file; the plain 64 px file = item-icon size, hard alpha",
+   "bytes": 26464,
+   "sha256": "2974649a0ce741361ba3ebd4a6a02758e2a7cc2828280f5e589d7f928f9b392d"
+  },
+  {
+   "file": "Common/UI/Custom/SkyyKit/HubIcon_Character.png",
+   "hub": "Character",
+   "mood": "SUNRISE",
+   "w": 64,
+   "h": 64,
+   "border": null,
+   "markup_path": "SkyyKit/HubIcon_Character.png",
+   "use": "hub tile icon: 64 x 64 UI via the @2x file; the plain 64 px file = item-icon size, hard alpha",
+   "bytes": 8337,
+   "sha256": "4ad2ad455a3bfd888eb17228dea65d15c7389284c3ab3825a156efa357272094"
+  },
+  {
+   "file": "Common/UI/Custom/SkyyKit/HubIcon_Storage@2x.png",
+   "hub": "Storage",
+   "mood": "NIGHT VAULT",
+   "w": 128,
+   "h": 128,
+   "border": null,
+   "markup_path": "SkyyKit/HubIcon_Storage.png",
+   "use": "hub tile icon: 64 x 64 UI via the @2x file; the plain 64 px file = item-icon size, hard alpha",
+   "bytes": 27536,
+   "sha256": "bceb4c89626109977c65360a475dec4714d8c764eba874e871fc4eb2925a11a2"
+  },
+  {
+   "file": "Common/UI/Custom/SkyyKit/HubIcon_Storage.png",
+   "hub": "Storage",
+   "mood": "NIGHT VAULT",
+   "w": 64,
+   "h": 64,
+   "border": null,
+   "markup_path": "SkyyKit/HubIcon_Storage.png",
+   "use": "hub tile icon: 64 x 64 UI via the @2x file; the plain 64 px file = item-icon size, hard alpha",
+   "bytes": 8516,
+   "sha256": "36121925fa96b2a5146871bed516f4e812edad581ac31382d9b337a18011a8b7"
+  },
+  {
+   "file": "Common/UI/Custom/SkyyKit/HubIcon_Market@2x.png",
+   "hub": "Market",
+   "mood": "GOLDEN NOON",
+   "w": 128,
+   "h": 128,
+   "border": null,
+   "markup_path": "SkyyKit/HubIcon_Market.png",
+   "use": "hub tile icon: 64 x 64 UI via the @2x file; the plain 64 px file = item-icon size, hard alpha",
+   "bytes": 31557,
+   "sha256": "7fc2b71b948150de9d39b0a8f53e3d20dd09b6703a9f390b149c9b20fe129ee7"
+  },
+  {
+   "file": "Common/UI/Custom/SkyyKit/HubIcon_Market.png",
+   "hub": "Market",
+   "mood": "GOLDEN NOON",
+   "w": 64,
+   "h": 64,
+   "border": null,
+   "markup_path": "SkyyKit/HubIcon_Market.png",
+   "use": "hub tile icon: 64 x 64 UI via the @2x file; the plain 64 px file = item-icon size, hard alpha",
+   "bytes": 9470,
+   "sha256": "135553f35905949fc0e23f908044253ef452e2d62ff40e1c2c4f998e9ba3ad7b"
+  },
+  {
+   "file": "Common/UI/Custom/SkyyKit/HubIcon_Smithing@2x.png",
+   "hub": "Smithing",
+   "mood": "EMBER FORGE",
+   "w": 128,
+   "h": 128,
+   "border": null,
+   "markup_path": "SkyyKit/HubIcon_Smithing.png",
+   "use": "hub tile icon: 64 x 64 UI via the @2x file; the plain 64 px file = item-icon size, hard alpha",
+   "bytes": 28394,
+   "sha256": "b86d2ba96e1ccc32c9207af5839b90b8bb4a85a4b68741ad1f7d19bc2ce8229e"
+  },
+  {
+   "file": "Common/UI/Custom/SkyyKit/HubIcon_Smithing.png",
+   "hub": "Smithing",
+   "mood": "EMBER FORGE",
+   "w": 64,
+   "h": 64,
+   "border": null,
+   "markup_path": "SkyyKit/HubIcon_Smithing.png",
+   "use": "hub tile icon: 64 x 64 UI via the @2x file; the plain 64 px file = item-icon size, hard alpha",
+   "bytes": 8710,
+   "sha256": "f4228f34b5e0e1935d3474697ace5495ddfcc4ce8e6bcee57d481c363e745a86"
+  },
+  {
+   "file": "Common/UI/Custom/SkyyKit/HubIcon_World@2x.png",
+   "hub": "World",
+   "mood": "CLEAR SKY",
+   "w": 128,
+   "h": 128,
+   "border": null,
+   "markup_path": "SkyyKit/HubIcon_World.png",
+   "use": "hub tile icon: 64 x 64 UI via the @2x file; the plain 64 px file = item-icon size, hard alpha",
+   "bytes": 24164,
+   "sha256": "d1cf711160b22432fc0316115806efd1521cd4f272c9005b4b8fbf86d08e1952"
+  },
+  {
+   "file": "Common/UI/Custom/SkyyKit/HubIcon_World.png",
+   "hub": "World",
+   "mood": "CLEAR SKY",
+   "w": 64,
+   "h": 64,
+   "border": null,
+   "markup_path": "SkyyKit/HubIcon_World.png",
+   "use": "hub tile icon: 64 x 64 UI via the @2x file; the plain 64 px file = item-icon size, hard alpha",
+   "bytes": 7830,
+   "sha256": "d3b2360634954ca5d1edba0266d227dc9f12dca89be1b2cf484bba83bb9f8a77"
+  },
+  {
+   "file": "Common/UI/Custom/SkyyKit/HubIcon_Social@2x.png",
+   "hub": "Social",
+   "mood": "SUNSET",
+   "w": 128,
+   "h": 128,
+   "border": null,
+   "markup_path": "SkyyKit/HubIcon_Social.png",
+   "use": "hub tile icon: 64 x 64 UI via the @2x file; the plain 64 px file = item-icon size, hard alpha",
+   "bytes": 27662,
+   "sha256": "a60861e5ec59e3a3d8948872f66407800f1dafbeb5a50d08895a6c513e6e1a99"
+  },
+  {
+   "file": "Common/UI/Custom/SkyyKit/HubIcon_Social.png",
+   "hub": "Social",
+   "mood": "SUNSET",
+   "w": 64,
+   "h": 64,
+   "border": null,
+   "markup_path": "SkyyKit/HubIcon_Social.png",
+   "use": "hub tile icon: 64 x 64 UI via the @2x file; the plain 64 px file = item-icon size, hard alpha",
+   "bytes": 8551,
+   "sha256": "af83666328ab9f0877cd4348e589936aed8a2457c8eae13cc12d59cb6ecfeb0b"
+  }
+ ],
+ "files": [
+  {
+   "path": "Common/UI/Custom/SkyyKit/CardFrame@2x.png",
+   "w": 160,
+   "h": 160,
+   "bytes": 21544,
+   "sha256": "a10bbd1c5f0c3ab99a39cbc5f95487c24ed627a452f8a21ef63de56d5953dab4"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/CheckBox@2x.png",
+   "w": 44,
+   "h": 44,
+   "bytes": 570,
+   "sha256": "16990c386edb30d04351e8b8773183eadb5424ea468ef5ef461b72b712378543"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/CheckMark@2x.png",
+   "w": 32,
+   "h": 32,
+   "bytes": 1301,
+   "sha256": "772f5299268214074da4cdf7a07fa0fd0e3aa39d6a4700a900903e9fffd682e3"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Close@2x.png",
+   "w": 64,
+   "h": 64,
+   "bytes": 4958,
+   "sha256": "e6f87ab7083ad54e3287955b78775814d798cec55f4e4a3bb70a0655114b6f07"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Close_Hovered@2x.png",
+   "w": 64,
+   "h": 64,
+   "bytes": 6899,
+   "sha256": "c8ae77d7b40c0d772af967e9f62861b4653123dfab21a259c01f1157c3e11370"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Danger@2x.png",
+   "w": 440,
+   "h": 88,
+   "bytes": 2356,
+   "sha256": "6bd7c6de91878a12958a6a3dce672fe5737b53b57d9ba13346e336d2bbf05571"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Danger_Hovered@2x.png",
+   "w": 440,
+   "h": 88,
+   "bytes": 5138,
+   "sha256": "5e442054db7ef84ba73acbea843ae761a03db1786cc70464d1118768ade77897"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Danger_Pressed@2x.png",
+   "w": 440,
+   "h": 88,
+   "bytes": 2006,
+   "sha256": "d183f9cd568b0e077aae58ed4d05bc1403d2ce7d9f8b3183f574c10eaeac1f7e"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Frame@2x.png",
+   "w": 160,
+   "h": 160,
+   "bytes": 29838,
+   "sha256": "cd602bfd958a22519864553f5dca7f28e955f593de05f5b5476f3acfc9416836"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Frame_Character@2x.png",
+   "w": 160,
+   "h": 160,
+   "bytes": 29502,
+   "sha256": "8cf46451387b50ded72a692f0d2bf00e5ddfa33e4d668994034d0d7a62a4ae10"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Frame_Market@2x.png",
+   "w": 160,
+   "h": 160,
+   "bytes": 31750,
+   "sha256": "1a3ef2c2c76583ad3b7cff38becfc2e97f1ed0a0263fb13936f151ce902289f1"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Frame_Smithing@2x.png",
+   "w": 160,
+   "h": 160,
+   "bytes": 30920,
+   "sha256": "b6cbbdf35914039c0afe5cf682ea89129532cbb040366278042f0c38aa02f22e"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Frame_Social@2x.png",
+   "w": 160,
+   "h": 160,
+   "bytes": 30318,
+   "sha256": "1c18eaf2d80c2971c4522758ec5aed4ad2cff2e81173b5f4a6624b47e570ca3a"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Frame_Storage@2x.png",
+   "w": 160,
+   "h": 160,
+   "bytes": 34936,
+   "sha256": "df2e4ef923bb4bb4d95d4ab55d2875b658fff712f9279d2a1fcfd904a897ba3e"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Frame_World@2x.png",
+   "w": 160,
+   "h": 160,
+   "bytes": 29354,
+   "sha256": "95a8ed5c3830d14c9b22005b6fa9634c5acf83100d052ddc3abf43c25fd1db6f"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Header@2x.png",
+   "w": 600,
+   "h": 76,
+   "bytes": 12616,
+   "sha256": "b940074433bb9c7cf9d961c8892eb468f14774652eee4eb1f00b28ecbdc89c8c"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HeaderOrnament@2x.png",
+   "w": 472,
+   "h": 44,
+   "bytes": 12576,
+   "sha256": "c9b59eae2565c10412afa918537dac75f4fd2279e02ed2a00cd344397560a7a7"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HubIcon_Character.png",
+   "w": 64,
+   "h": 64,
+   "bytes": 8337,
+   "sha256": "4ad2ad455a3bfd888eb17228dea65d15c7389284c3ab3825a156efa357272094"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HubIcon_Character@2x.png",
+   "w": 128,
+   "h": 128,
+   "bytes": 26464,
+   "sha256": "2974649a0ce741361ba3ebd4a6a02758e2a7cc2828280f5e589d7f928f9b392d"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HubIcon_Market.png",
+   "w": 64,
+   "h": 64,
+   "bytes": 9470,
+   "sha256": "135553f35905949fc0e23f908044253ef452e2d62ff40e1c2c4f998e9ba3ad7b"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HubIcon_Market@2x.png",
+   "w": 128,
+   "h": 128,
+   "bytes": 31557,
+   "sha256": "7fc2b71b948150de9d39b0a8f53e3d20dd09b6703a9f390b149c9b20fe129ee7"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HubIcon_Smithing.png",
+   "w": 64,
+   "h": 64,
+   "bytes": 8710,
+   "sha256": "f4228f34b5e0e1935d3474697ace5495ddfcc4ce8e6bcee57d481c363e745a86"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HubIcon_Smithing@2x.png",
+   "w": 128,
+   "h": 128,
+   "bytes": 28394,
+   "sha256": "b86d2ba96e1ccc32c9207af5839b90b8bb4a85a4b68741ad1f7d19bc2ce8229e"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HubIcon_Social.png",
+   "w": 64,
+   "h": 64,
+   "bytes": 8551,
+   "sha256": "af83666328ab9f0877cd4348e589936aed8a2457c8eae13cc12d59cb6ecfeb0b"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HubIcon_Social@2x.png",
+   "w": 128,
+   "h": 128,
+   "bytes": 27662,
+   "sha256": "a60861e5ec59e3a3d8948872f66407800f1dafbeb5a50d08895a6c513e6e1a99"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HubIcon_Storage.png",
+   "w": 64,
+   "h": 64,
+   "bytes": 8516,
+   "sha256": "36121925fa96b2a5146871bed516f4e812edad581ac31382d9b337a18011a8b7"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HubIcon_Storage@2x.png",
+   "w": 128,
+   "h": 128,
+   "bytes": 27536,
+   "sha256": "bceb4c89626109977c65360a475dec4714d8c764eba874e871fc4eb2925a11a2"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HubIcon_World.png",
+   "w": 64,
+   "h": 64,
+   "bytes": 7830,
+   "sha256": "d3b2360634954ca5d1edba0266d227dc9f12dca89be1b2cf484bba83bb9f8a77"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/HubIcon_World@2x.png",
+   "w": 128,
+   "h": 128,
+   "bytes": 24164,
+   "sha256": "d1cf711160b22432fc0316115806efd1521cd4f272c9005b4b8fbf86d08e1952"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/InputBox@2x.png",
+   "w": 96,
+   "h": 64,
+   "bytes": 624,
+   "sha256": "3b73d28a98ab9e7b55580dca3f523a43fb397c4a4afa67acffbc34cc28e0f5ab"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/InputBox_Hovered@2x.png",
+   "w": 96,
+   "h": 64,
+   "bytes": 657,
+   "sha256": "64e37df91a3e578973c5f87625cb12620dd622e2d0d0190f2ac986ba204eb1bf"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/InputBox_Selected@2x.png",
+   "w": 96,
+   "h": 64,
+   "bytes": 1643,
+   "sha256": "186dde0f202eb761d4d9f8c0826d35b5468f02131bc40a18b7db487cdc2cda40"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Panel@2x.png",
+   "w": 64,
+   "h": 64,
+   "bytes": 1921,
+   "sha256": "b1c2c753c27f5f59107fa40e7b6cdcd041287c025c9333a5e2f51b2382f7765d"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/PanelInset@2x.png",
+   "w": 48,
+   "h": 48,
+   "bytes": 321,
+   "sha256": "8c524fd5c185a01b74ae09eaa431d975b11976c701d31c25c4a203514c1d8c09"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Primary@2x.png",
+   "w": 440,
+   "h": 88,
+   "bytes": 2289,
+   "sha256": "0c04fb989b699ec40d4f60061ce6e1de4330a08bac8073be24dd5caf63e3e657"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Primary_Disabled@2x.png",
+   "w": 440,
+   "h": 88,
+   "bytes": 1741,
+   "sha256": "684a590d28223431da1ca3cdf3b8d0eaa47a06113334bc20833c3bee050e5345"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Primary_Hovered@2x.png",
+   "w": 440,
+   "h": 88,
+   "bytes": 4975,
+   "sha256": "f7df6ba1b714e9368a4a51eea30cebca2dea1c9a174b7bf82bb69caaa671739f"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Primary_Pressed@2x.png",
+   "w": 440,
+   "h": 88,
+   "bytes": 1975,
+   "sha256": "dcc2237795f6a1ed43ae81fb0e9f37fb0aa6b23aaf95e7f96cdd81af085d6dfb"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Row@2x.png",
+   "w": 64,
+   "h": 48,
+   "bytes": 302,
+   "sha256": "6bcf757ba60ec18d683ec31e226f4edbd00263447da6ee7bf7255ae3ecd399b8"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Row_Hovered@2x.png",
+   "w": 64,
+   "h": 48,
+   "bytes": 450,
+   "sha256": "ad077322671351140dd121ca2d6c7846b370b2aed944381c279430a5581d21d5"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Row_Selected@2x.png",
+   "w": 64,
+   "h": 48,
+   "bytes": 1016,
+   "sha256": "421911a86e0d7388f87111b1af66f654a326d8bcc17060068dccae134fc5b31f"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/ScrollHandle@2x.png",
+   "w": 12,
+   "h": 24,
+   "bytes": 578,
+   "sha256": "c9801924d9ed15f31fc0316e1ae43b0d712d25cb3a765b5d711d3719da7cd789"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/ScrollHandle_Dragged@2x.png",
+   "w": 12,
+   "h": 24,
+   "bytes": 595,
+   "sha256": "d2c1e13a8918fe31eb129662e5c435a0534bb34d5c76a22227b411ea588d38db"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/ScrollHandle_Hovered@2x.png",
+   "w": 12,
+   "h": 24,
+   "bytes": 558,
+   "sha256": "c4ec3b5fa8cc1391964c5ff401472fae8e07d46e2f257cdb4672137d6ddb3f06"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/ScrollTrack@2x.png",
+   "w": 12,
+   "h": 24,
+   "bytes": 249,
+   "sha256": "9de095955f319597ffe6e1d390c67c96c625dcdf6426659740724038ac2829b5"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Secondary@2x.png",
+   "w": 440,
+   "h": 88,
+   "bytes": 2336,
+   "sha256": "11fc0587b711f110e37c5a23e87cb163a485d566eacc06e85372be147cf92639"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Secondary_Disabled@2x.png",
+   "w": 440,
+   "h": 88,
+   "bytes": 1736,
+   "sha256": "b7d21a7994902433873ba9c27c62bf1a5f9c607c7bc65d5e9bc125ffd0ef3a2e"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Secondary_Hovered@2x.png",
+   "w": 440,
+   "h": 88,
+   "bytes": 5136,
+   "sha256": "3c8382b66745b8c998c869d5003fcc7dcb3bbb3c3862cc9d2601e382c8de26bd"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Secondary_Pressed@2x.png",
+   "w": 440,
+   "h": 88,
+   "bytes": 2060,
+   "sha256": "02928107153a40851c00295b990c621efd1283126615ab8b23576a3e62d8ab5f"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Separator@2x.png",
+   "w": 64,
+   "h": 4,
+   "bytes": 393,
+   "sha256": "a2fb704d53364415d15ed12353ba2ab19799bf13d5bda97250e3bf9acda58363"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/SlotEmpty@2x.png",
+   "w": 148,
+   "h": 148,
+   "bytes": 13800,
+   "sha256": "a636e035f834adb70a86869d067e51a4df9279c3b5fedf90ddcc37aa2fb334b2"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Tab@2x.png",
+   "w": 240,
+   "h": 88,
+   "bytes": 1230,
+   "sha256": "e53897cb4286d4b627aa8f34df53c36bd1990d320081a1134854bbfe128d2de3"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Tab_Hovered@2x.png",
+   "w": 240,
+   "h": 88,
+   "bytes": 3781,
+   "sha256": "ca289a20718fdf1da881bacdea38f82d297a0ead43193233573ca649df16c20b"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Tab_Pressed@2x.png",
+   "w": 240,
+   "h": 88,
+   "bytes": 1290,
+   "sha256": "b6a4457ff184a342a1937b3b44b96f8ca288ee8f6b475b64fe1f0c6d94aec7b1"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Tab_Selected@2x.png",
+   "w": 240,
+   "h": 88,
+   "bytes": 2179,
+   "sha256": "77a792b80fe5ff93b4627b8f6917d3b40f868bf960bab64cd199a29974dd6adf"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Tertiary@2x.png",
+   "w": 256,
+   "h": 64,
+   "bytes": 1305,
+   "sha256": "7ad11a2e06f8d75b08bec87fe8ca821bc4a5d7ad849d19e6a996baa7da8280f4"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Tertiary_Active@2x.png",
+   "w": 256,
+   "h": 64,
+   "bytes": 3519,
+   "sha256": "75f19c1d40b21ad84c31ea793e644c537d904b0ab55444845ea8f39d3388400b"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Tertiary_Hovered@2x.png",
+   "w": 256,
+   "h": 64,
+   "bytes": 3090,
+   "sha256": "6eb8479d4fa1e55f6315ebdfcfd265831a6effba4db99860e9bc6919cabb67b2"
+  },
+  {
+   "path": "Common/UI/Custom/SkyyKit/Tertiary_Pressed@2x.png",
+   "w": 256,
+   "h": 64,
+   "bytes": 1324,
+   "sha256": "b0bdfd52ba7ca92ee0f9f73e73553652096e6c49aa3d0e2d158f0537be34f0c0"
+  }
+ ],
+ "contrast": {
+  "Frame": {
+   "bg_centre": "#0d1527",
+   "column": 80,
+   "rows_checked": [
+    70,
+    90
+   ],
+   "ratios": {
+    "text": 7.55,
+    "white": 18.2,
+    "title": 10.44,
+    "rowName": 14.03,
+    "value": 11.17,
+    "summary": 7.22,
+    "caption": 5.53,
+    "section": 7.8,
+    "gold": 8.81,
+    "error": 6.56,
+    "success": 12.6,
+    "warning": 12.04,
+    "info": 7.35,
+    "Legendary": 14.85,
+    "Mythic": 5.5,
+    "Fabled": 5.79,
+    "Rare": 6.93,
+    "captionLight": 3.27,
+    "propKey": 5.14,
+    "disabled": 4.28
+   },
+   "must_reach_4_5": [
+    "text",
+    "white",
+    "title",
+    "rowName",
+    "value",
+    "summary",
+    "caption",
+    "section",
+    "gold",
+    "error",
+    "success",
+    "warning",
+    "info",
+    "Legendary",
+    "Mythic",
+    "Fabled",
+    "Rare"
+   ],
+   "report_only": [
+    "captionLight",
+    "propKey",
+    "disabled"
+   ],
+   "min_required": 5.5
+  },
+  "CardFrame": {
+   "bg_centre": "#0d1527",
+   "column": 80,
+   "rows_checked": [
+    70,
+    90
+   ],
+   "ratios": {
+    "text": 7.55,
+    "white": 18.2,
+    "title": 10.44,
+    "rowName": 14.03,
+    "value": 11.17,
+    "summary": 7.22,
+    "caption": 5.53,
+    "section": 7.8,
+    "gold": 8.81,
+    "error": 6.56,
+    "success": 12.6,
+    "warning": 12.04,
+    "info": 7.35,
+    "Legendary": 14.85,
+    "Mythic": 5.5,
+    "Fabled": 5.79,
+    "Rare": 6.93,
+    "captionLight": 3.27,
+    "propKey": 5.14,
+    "disabled": 4.28
+   },
+   "must_reach_4_5": [
+    "text",
+    "white",
+    "title",
+    "rowName",
+    "value",
+    "summary",
+    "caption",
+    "section",
+    "gold",
+    "error",
+    "success",
+    "warning",
+    "info",
+    "Legendary",
+    "Mythic",
+    "Fabled",
+    "Rare"
+   ],
+   "report_only": [
+    "captionLight",
+    "propKey",
+    "disabled"
+   ],
+   "min_required": 5.5
+  },
+  "Header": {
+   "bg_centre": "#1c2b4d",
+   "column": 300,
+   "rows_checked": [
+    30,
+    46
+   ],
+   "ratios": {
+    "title": 6.57
+   },
+   "must_reach_4_5": [
+    "title"
+   ],
+   "report_only": [],
+   "min_required": 6.57
+  },
+  "Panel": {
+   "bg_centre": "#090f1d",
+   "column": 32,
+   "rows_checked": [
+    28,
+    36
+   ],
+   "ratios": {
+    "text": 7.94,
+    "white": 19.13,
+    "panelTitle": 10.32,
+    "rowName": 14.75,
+    "value": 11.74,
+    "propKey": 5.4,
+    "summary": 7.59,
+    "caption": 5.81,
+    "gold": 9.26,
+    "success": 13.24,
+    "error": 6.89,
+    "info": 7.72,
+    "Legendary": 15.61,
+    "Mythic": 5.78,
+    "captionLight": 3.44,
+    "disabled": 4.5
+   },
+   "must_reach_4_5": [
+    "text",
+    "white",
+    "panelTitle",
+    "rowName",
+    "value",
+    "propKey",
+    "summary",
+    "caption",
+    "gold",
+    "success",
+    "error",
+    "info",
+    "Legendary",
+    "Mythic"
+   ],
+   "report_only": [
+    "captionLight",
+    "disabled"
+   ],
+   "min_required": 5.4
+  },
+  "PanelInset": {
+   "bg_centre": "#060a15",
+   "column": 24,
+   "rows_checked": [
+    20,
+    28
+   ],
+   "ratios": {
+    "text": 8.21,
+    "white": 19.77,
+    "value": 12.13,
+    "propKey": 5.58,
+    "summary": 7.85,
+    "caption": 6.01,
+    "gold": 9.58,
+    "captionLight": 3.56
+   },
+   "must_reach_4_5": [
+    "text",
+    "white",
+    "value",
+    "propKey",
+    "summary",
+    "caption",
+    "gold"
+   ],
+   "report_only": [
+    "captionLight"
+   ],
+   "min_required": 5.58
+  },
+  "Tab": {
+   "bg_centre": "#1d2a46",
+   "column": 120,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "button2Text": 8.14
+   },
+   "must_reach_4_5": [
+    "button2Text"
+   ],
+   "report_only": [],
+   "min_required": 8.14
+  },
+  "Tab_Hovered": {
+   "bg_centre": "#273a5d",
+   "column": 120,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "button2Text": 6.23
+   },
+   "must_reach_4_5": [
+    "button2Text"
+   ],
+   "report_only": [],
+   "min_required": 6.23
+  },
+  "Tab_Pressed": {
+   "bg_centre": "#18233a",
+   "column": 120,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "button2Text": 8.96
+   },
+   "must_reach_4_5": [
+    "button2Text"
+   ],
+   "report_only": [],
+   "min_required": 8.96
+  },
+  "Tab_Selected": {
+   "bg_centre": "#1a2a4b",
+   "column": 120,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "buttonText": 8.02,
+    "button2Text": 7.86
+   },
+   "must_reach_4_5": [
+    "buttonText",
+    "button2Text"
+   ],
+   "report_only": [],
+   "min_required": 7.86
+  },
+  "SlotEmpty": {
+   "bg_centre": "#283850",
+   "column": 74,
+   "rows_checked": [
+    60,
+    88
+   ],
+   "ratios": {
+    "white": 10.84
+   },
+   "must_reach_4_5": [],
+   "report_only": [
+    "white"
+   ],
+   "min_required": 99.0
+  },
+  "Frame_Character": {
+   "bg_centre": "#0d1527",
+   "column": 80,
+   "rows_checked": [
+    70,
+    90
+   ],
+   "ratios": {
+    "text": 7.55,
+    "white": 18.2,
+    "title": 10.44,
+    "rowName": 14.03,
+    "value": 11.17,
+    "summary": 7.22,
+    "caption": 5.53,
+    "section": 7.8,
+    "gold": 8.81,
+    "error": 6.56,
+    "success": 12.6,
+    "warning": 12.04,
+    "info": 7.35,
+    "Legendary": 14.85,
+    "Mythic": 5.5,
+    "Fabled": 5.79,
+    "Rare": 6.93,
+    "captionLight": 3.27,
+    "propKey": 5.14,
+    "disabled": 4.28
+   },
+   "must_reach_4_5": [
+    "text",
+    "white",
+    "title",
+    "rowName",
+    "value",
+    "summary",
+    "caption",
+    "section",
+    "gold",
+    "error",
+    "success",
+    "warning",
+    "info",
+    "Legendary",
+    "Mythic",
+    "Fabled",
+    "Rare"
+   ],
+   "report_only": [
+    "captionLight",
+    "propKey",
+    "disabled"
+   ],
+   "min_required": 5.5
+  },
+  "Frame_Storage": {
+   "bg_centre": "#0d1527",
+   "column": 80,
+   "rows_checked": [
+    70,
+    90
+   ],
+   "ratios": {
+    "text": 7.55,
+    "white": 18.2,
+    "title": 10.44,
+    "rowName": 14.03,
+    "value": 11.17,
+    "summary": 7.22,
+    "caption": 5.53,
+    "section": 7.8,
+    "gold": 8.81,
+    "error": 6.56,
+    "success": 12.6,
+    "warning": 12.04,
+    "info": 7.35,
+    "Legendary": 14.85,
+    "Mythic": 5.5,
+    "Fabled": 5.79,
+    "Rare": 6.93,
+    "captionLight": 3.27,
+    "propKey": 5.14,
+    "disabled": 4.28
+   },
+   "must_reach_4_5": [
+    "text",
+    "white",
+    "title",
+    "rowName",
+    "value",
+    "summary",
+    "caption",
+    "section",
+    "gold",
+    "error",
+    "success",
+    "warning",
+    "info",
+    "Legendary",
+    "Mythic",
+    "Fabled",
+    "Rare"
+   ],
+   "report_only": [
+    "captionLight",
+    "propKey",
+    "disabled"
+   ],
+   "min_required": 5.5
+  },
+  "Frame_Market": {
+   "bg_centre": "#0d1527",
+   "column": 80,
+   "rows_checked": [
+    70,
+    90
+   ],
+   "ratios": {
+    "text": 7.55,
+    "white": 18.2,
+    "title": 10.44,
+    "rowName": 14.03,
+    "value": 11.17,
+    "summary": 7.22,
+    "caption": 5.53,
+    "section": 7.8,
+    "gold": 8.81,
+    "error": 6.56,
+    "success": 12.6,
+    "warning": 12.04,
+    "info": 7.35,
+    "Legendary": 14.85,
+    "Mythic": 5.5,
+    "Fabled": 5.79,
+    "Rare": 6.93,
+    "captionLight": 3.27,
+    "propKey": 5.14,
+    "disabled": 4.28
+   },
+   "must_reach_4_5": [
+    "text",
+    "white",
+    "title",
+    "rowName",
+    "value",
+    "summary",
+    "caption",
+    "section",
+    "gold",
+    "error",
+    "success",
+    "warning",
+    "info",
+    "Legendary",
+    "Mythic",
+    "Fabled",
+    "Rare"
+   ],
+   "report_only": [
+    "captionLight",
+    "propKey",
+    "disabled"
+   ],
+   "min_required": 5.5
+  },
+  "Frame_Smithing": {
+   "bg_centre": "#0d1527",
+   "column": 80,
+   "rows_checked": [
+    70,
+    90
+   ],
+   "ratios": {
+    "text": 7.55,
+    "white": 18.2,
+    "title": 10.44,
+    "rowName": 14.03,
+    "value": 11.17,
+    "summary": 7.22,
+    "caption": 5.53,
+    "section": 7.8,
+    "gold": 8.81,
+    "error": 6.56,
+    "success": 12.6,
+    "warning": 12.04,
+    "info": 7.35,
+    "Legendary": 14.85,
+    "Mythic": 5.5,
+    "Fabled": 5.79,
+    "Rare": 6.93,
+    "captionLight": 3.27,
+    "propKey": 5.14,
+    "disabled": 4.28
+   },
+   "must_reach_4_5": [
+    "text",
+    "white",
+    "title",
+    "rowName",
+    "value",
+    "summary",
+    "caption",
+    "section",
+    "gold",
+    "error",
+    "success",
+    "warning",
+    "info",
+    "Legendary",
+    "Mythic",
+    "Fabled",
+    "Rare"
+   ],
+   "report_only": [
+    "captionLight",
+    "propKey",
+    "disabled"
+   ],
+   "min_required": 5.5
+  },
+  "Frame_World": {
+   "bg_centre": "#0d1527",
+   "column": 80,
+   "rows_checked": [
+    70,
+    90
+   ],
+   "ratios": {
+    "text": 7.55,
+    "white": 18.2,
+    "title": 10.44,
+    "rowName": 14.03,
+    "value": 11.17,
+    "summary": 7.22,
+    "caption": 5.53,
+    "section": 7.8,
+    "gold": 8.81,
+    "error": 6.56,
+    "success": 12.6,
+    "warning": 12.04,
+    "info": 7.35,
+    "Legendary": 14.85,
+    "Mythic": 5.5,
+    "Fabled": 5.79,
+    "Rare": 6.93,
+    "captionLight": 3.27,
+    "propKey": 5.14,
+    "disabled": 4.28
+   },
+   "must_reach_4_5": [
+    "text",
+    "white",
+    "title",
+    "rowName",
+    "value",
+    "summary",
+    "caption",
+    "section",
+    "gold",
+    "error",
+    "success",
+    "warning",
+    "info",
+    "Legendary",
+    "Mythic",
+    "Fabled",
+    "Rare"
+   ],
+   "report_only": [
+    "captionLight",
+    "propKey",
+    "disabled"
+   ],
+   "min_required": 5.5
+  },
+  "Frame_Social": {
+   "bg_centre": "#0d1527",
+   "column": 80,
+   "rows_checked": [
+    70,
+    90
+   ],
+   "ratios": {
+    "text": 7.55,
+    "white": 18.2,
+    "title": 10.44,
+    "rowName": 14.03,
+    "value": 11.17,
+    "summary": 7.22,
+    "caption": 5.53,
+    "section": 7.8,
+    "gold": 8.81,
+    "error": 6.56,
+    "success": 12.6,
+    "warning": 12.04,
+    "info": 7.35,
+    "Legendary": 14.85,
+    "Mythic": 5.5,
+    "Fabled": 5.79,
+    "Rare": 6.93,
+    "captionLight": 3.27,
+    "propKey": 5.14,
+    "disabled": 4.28
+   },
+   "must_reach_4_5": [
+    "text",
+    "white",
+    "title",
+    "rowName",
+    "value",
+    "summary",
+    "caption",
+    "section",
+    "gold",
+    "error",
+    "success",
+    "warning",
+    "info",
+    "Legendary",
+    "Mythic",
+    "Fabled",
+    "Rare"
+   ],
+   "report_only": [
+    "captionLight",
+    "propKey",
+    "disabled"
+   ],
+   "min_required": 5.5
+  },
+  "Row": {
+   "bg_centre": "#101a2e",
+   "column": 32,
+   "rows_checked": [
+    20,
+    28
+   ],
+   "ratios": {
+    "rowName": 13.39,
+    "rowSub": 5.48,
+    "rowBadge": 7.44,
+    "text": 7.21,
+    "white": 17.37,
+    "gold": 8.41
+   },
+   "must_reach_4_5": [
+    "rowName",
+    "rowSub",
+    "rowBadge",
+    "text",
+    "white",
+    "gold"
+   ],
+   "report_only": [],
+   "min_required": 5.48
+  },
+  "InputBox": {
+   "bg_centre": "#070b16",
+   "column": 48,
+   "rows_checked": [
+    26,
+    38
+   ],
+   "ratios": {
+    "white": 19.65,
+    "text": 8.16,
+    "placeholder": 4.78
+   },
+   "must_reach_4_5": [
+    "white",
+    "text"
+   ],
+   "report_only": [
+    "placeholder"
+   ],
+   "min_required": 8.16
+  },
+  "Row_Hovered": {
+   "bg_centre": "#182844",
+   "column": 32,
+   "rows_checked": [
+    20,
+    28
+   ],
+   "ratios": {
+    "rowName": 11.36,
+    "rowSub": 4.65,
+    "rowBadge": 6.31,
+    "text": 6.11,
+    "white": 14.73,
+    "gold": 7.13
+   },
+   "must_reach_4_5": [
+    "rowName",
+    "rowSub",
+    "rowBadge",
+    "text",
+    "white",
+    "gold"
+   ],
+   "report_only": [],
+   "min_required": 4.65
+  },
+  "InputBox_Hovered": {
+   "bg_centre": "#070b16",
+   "column": 48,
+   "rows_checked": [
+    26,
+    38
+   ],
+   "ratios": {
+    "white": 19.65,
+    "text": 8.16,
+    "placeholder": 4.78
+   },
+   "must_reach_4_5": [
+    "white",
+    "text"
+   ],
+   "report_only": [
+    "placeholder"
+   ],
+   "min_required": 8.16
+  },
+  "Row_Selected": {
+   "bg_centre": "#182a4a",
+   "column": 32,
+   "rows_checked": [
+    20,
+    28
+   ],
+   "ratios": {
+    "rowName": 11.02,
+    "rowSub": 4.51,
+    "rowBadge": 6.13,
+    "text": 5.93,
+    "white": 14.3,
+    "gold": 6.92
+   },
+   "must_reach_4_5": [
+    "rowName",
+    "rowSub",
+    "rowBadge",
+    "text",
+    "white",
+    "gold"
+   ],
+   "report_only": [],
+   "min_required": 4.51
+  },
+  "InputBox_Selected": {
+   "bg_centre": "#070b16",
+   "column": 48,
+   "rows_checked": [
+    26,
+    38
+   ],
+   "ratios": {
+    "white": 19.65,
+    "text": 8.16,
+    "placeholder": 4.78
+   },
+   "must_reach_4_5": [
+    "white",
+    "text"
+   ],
+   "report_only": [
+    "placeholder"
+   ],
+   "min_required": 8.16
+  },
+  "Primary": {
+   "bg_centre": "#614015",
+   "column": 220,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "buttonText": 5.26
+   },
+   "must_reach_4_5": [
+    "buttonText"
+   ],
+   "report_only": [],
+   "min_required": 5.26
+  },
+  "Primary_Hovered": {
+   "bg_centre": "#6b4818",
+   "column": 220,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "buttonText": 4.58
+   },
+   "must_reach_4_5": [
+    "buttonText"
+   ],
+   "report_only": [],
+   "min_required": 4.58
+  },
+  "Primary_Pressed": {
+   "bg_centre": "#513512",
+   "column": 220,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "buttonText": 6.45
+   },
+   "must_reach_4_5": [
+    "buttonText"
+   ],
+   "report_only": [],
+   "min_required": 6.45
+  },
+  "Secondary": {
+   "bg_centre": "#30405c",
+   "column": 220,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "button2Text": 5.72
+   },
+   "must_reach_4_5": [
+    "button2Text"
+   ],
+   "report_only": [],
+   "min_required": 5.72
+  },
+  "Secondary_Hovered": {
+   "bg_centre": "#394d6e",
+   "column": 220,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "button2Text": 4.61
+   },
+   "must_reach_4_5": [
+    "button2Text"
+   ],
+   "report_only": [],
+   "min_required": 4.61
+  },
+  "Secondary_Pressed": {
+   "bg_centre": "#27344c",
+   "column": 220,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "button2Text": 6.98
+   },
+   "must_reach_4_5": [
+    "button2Text"
+   ],
+   "report_only": [],
+   "min_required": 6.98
+  },
+  "Tertiary": {
+   "bg_centre": "#192339",
+   "column": 128,
+   "rows_checked": [
+    22,
+    42
+   ],
+   "ratios": {
+    "button2Text": 9.1
+   },
+   "must_reach_4_5": [
+    "button2Text"
+   ],
+   "report_only": [],
+   "min_required": 9.1
+  },
+  "Tertiary_Hovered": {
+   "bg_centre": "#22314d",
+   "column": 128,
+   "rows_checked": [
+    22,
+    42
+   ],
+   "ratios": {
+    "button2Text": 7.38
+   },
+   "must_reach_4_5": [
+    "button2Text"
+   ],
+   "report_only": [],
+   "min_required": 7.38
+  },
+  "Tertiary_Pressed": {
+   "bg_centre": "#151f31",
+   "column": 128,
+   "rows_checked": [
+    22,
+    42
+   ],
+   "ratios": {
+    "button2Text": 9.57
+   },
+   "must_reach_4_5": [
+    "button2Text"
+   ],
+   "report_only": [],
+   "min_required": 9.57
+  },
+  "Tertiary_Active": {
+   "bg_centre": "#1f3254",
+   "column": 128,
+   "rows_checked": [
+    22,
+    42
+   ],
+   "ratios": {
+    "button2Text": 7.16
+   },
+   "must_reach_4_5": [
+    "button2Text"
+   ],
+   "report_only": [],
+   "min_required": 7.16
+  },
+  "Danger": {
+   "bg_centre": "#771e26",
+   "column": 220,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "buttonText": 5.84
+   },
+   "must_reach_4_5": [
+    "buttonText"
+   ],
+   "report_only": [],
+   "min_required": 5.84
+  },
+  "Danger_Hovered": {
+   "bg_centre": "#86232b",
+   "column": 220,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "buttonText": 5.06
+   },
+   "must_reach_4_5": [
+    "buttonText"
+   ],
+   "report_only": [],
+   "min_required": 5.06
+  },
+  "Danger_Pressed": {
+   "bg_centre": "#62171f",
+   "column": 220,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "buttonText": 7.24
+   },
+   "must_reach_4_5": [
+    "buttonText"
+   ],
+   "report_only": [],
+   "min_required": 7.24
+  },
+  "Primary_Disabled": {
+   "bg_centre": "#333131",
+   "column": 220,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "disabled": 2.88
+   },
+   "must_reach_4_5": [],
+   "report_only": [
+    "disabled"
+   ],
+   "min_required": 99.0
+  },
+  "Secondary_Disabled": {
+   "bg_centre": "#30333a",
+   "column": 220,
+   "rows_checked": [
+    30,
+    58
+   ],
+   "ratios": {
+    "disabled": 2.84
+   },
+   "must_reach_4_5": [],
+   "report_only": [
+    "disabled"
+   ],
+   "min_required": 99.0
+  }
+ },
+ "sheet": {
+  "path": "sheet.png",
+  "bytes": 999888,
+  "sha256": "33f26adef2bdfc1a6ef85425d457ddc88e110ac3f1715fad45377bf99588f116"
+ }
+}
