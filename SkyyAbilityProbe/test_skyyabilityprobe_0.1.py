@@ -143,9 +143,11 @@ def main():
     jc = lambda n: Cls.forName(n)
     f = R.fill(CA([jc("java.lang.String"), JClass("java.lang.Float").TYPE, JClass("java.lang.Double").TYPE, JClass("java.lang.Integer").TYPE,
                    JClass("java.lang.Long").TYPE, JClass("java.lang.Boolean").TYPE, jc("[F")]), "id", 8.0)
-    check(f is not None and str(f[0]) == "id" and float(f[1]) == 8.0 and float(f[2]) == 8.0 and int(f[3]) == 0 and int(f[4]) == 0
+    check(f is not None and str(f[0]) == "id" and float(f[1]) == 8.0 and float(f[2]) == 8.0 and int(f[3]) == 8 and int(f[4]) == 8
           and bool(f[5]) is False and float(f[6][0]) == 8.0, "X. fill")
     check(R.fill(CA([jc("java.lang.Object")]), "id", 1.0) is None, "X. fill refuses an Object parameter")
+    g = R.fill(CA([JClass("java.lang.Integer").TYPE, JClass("java.lang.Long").TYPE]), "id", 2.9)
+    check(int(g[0]) == 2 and int(g[1]) == 2, "X. fill truncates secs for int / long (REVIEW FIX R3)")
     out = AL()
     check(R.dump(AL(), "ensurecapacity", out, "x ") == 1 and out.size() == 1, "X. dump")
     wh = JClass("java.lang.StringBuilder")()

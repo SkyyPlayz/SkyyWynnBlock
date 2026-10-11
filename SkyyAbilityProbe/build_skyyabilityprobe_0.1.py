@@ -64,6 +64,18 @@ ENGINE PATHS (from live Skyy scripts - research/cloud/Ability-Probe-Plan.md cite
                             (SkyyArmory Leap.take, SkyySkills Overall.typeMax)
   NEW (no Skyy script does it): InteractionChainStartEvent, the CooldownHandler, the AbilitySlots / RuneBag components (0.7, reflection),
   NPC targeting (P12 only dumps candidate method names), setting a block outside chunk (0,0).
+REVIEW FIXES (2026-10-11, Copilot on PR 13):
+  R1. P8 probe hits never kill (a kill = real kill rewards, and the probe would end early): hit() skips at Health <= 2 / unreadable and
+      caps at Health - 1 (SkyyMonkProbe R1's shape); our late filter clamps a MINE hit again to the target's Health - 1 after armour
+      (cancels it at <= 1 / unreadable); p8Tick ends the probe once the mob is at <= 2 Health. Residual: a filter of another mod ordered
+      AFTER ours could still raise the amount - P8 says so if the mob dies.
+  R3. AbRefl.fill gives int / long parameters the requested secs too (truncated; units unknown - the P3 line prints the signature).
+  R5. P7 pays both costs or neither: both balances are checked first; a step either balance cannot pay counts as short, nothing spent.
+  R6. P5 catches a cancel AFTER our late filter: every hit our late filter passed is counted (p5Late), every one that lands uncancelled
+      in Inspect too (p5Landed); the tick reports a missing one at once, the summary says FAIL. MINE / EARLY / LATE are identity maps
+      (SkyyArmory ArmoryTrav.MINE's shape): a filter changing the amount can never break the lookup.
+  Rejected: removeItemStackFromSlot(short) (one argument) exists - pinned SkyySacks 0.7.17 (lines 4766, 6951) and SkyyGear 0.2.23
+      (lines 22107, 23048) compile and run it on an ItemContainer.
 """
 import sys, os, json, zipfile, re
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools"))
@@ -217,7 +229,7 @@ for c, m in ((T["AC"], "requirePermission"), (T["AC"], "setPermissionGroups"), (
              (T["ESM"], "setStatValue"), (T["ESV"], "get"), (T["ESV"], "getMax"), (T["DST"], "getStamina"), (T["DST"], "getMana"),
              (T["DST"], "getHealth"), (T["ESTT"], "getAssetMap"), (T["ESTT"], "getMax"), (T["ETS"], "tick"), (T["ETS"], "isParallel"),
              (T["ACH"], "getReferenceTo"), (T["DMOD"], "get"), (T["DMOD"], "getFilterDamageGroup"), (T["DMOD"], "getInspectDamageGroup"),
-             (T["DMG"], "getCause"), (T["DMG"], "getAmount"), (T["DMG"], "isCancelled"), (T["DMG"], "setCancelled"), (T["DMG"], "getSource"),
+             (T["DMG"], "getCause"), (T["DMG"], "getAmount"), (T["DMG"], "isCancelled"), (T["DMG"], "setCancelled"), (T["DMG"], "setAmount"), (T["DMG"], "getSource"),
              (T["DCS"], "PROJECTILE"), (T["DCS"], "getId"), (T["DSYS"], "executeDamage"), (T["DENT"], "getRef"),
              (T["ORD"], "BEFORE"), (T["ORD"], "AFTER"), (T["REMR"], "REMOVE"), (T["TC"], "getComponentType"), (T["TC"], "getPosition"),
              (T["TU"], "getAllEntitiesInSphere"), (T["TU"], "getLook"), (T["XFM"], "getDirection"), (T["XFM"], "getPosition"),
@@ -556,7 +568,8 @@ public static Object findBy(Object o, String kw, StringBuilder where) {
   } catch (Throwable t) { }
   return null;
 }""")
-# parameters from what a command gives: String = id, float / double = secs (float[] = { secs }), int / long = 0, boolean = false; null = cannot
+# parameters from what a command gives: String = id, float / double / int / long = secs (int / long truncated; units unknown - P3 prints
+# the signature it called; float[] = { secs }), boolean = false; null = cannot
 M(rf, r"""
 public static Object[] fill(Class[] ps, String id, double secs) {
   Object[] a = new Object[ps.length];
@@ -565,8 +578,8 @@ public static Object[] fill(Class[] ps, String id, double secs) {
     if (n.equals("java.lang.String")) a[i] = id;
     else if (n.equals("float") || n.equals("java.lang.Float")) a[i] = Float.valueOf((float) secs);
     else if (n.equals("double") || n.equals("java.lang.Double")) a[i] = Double.valueOf(secs);
-    else if (n.equals("int")) a[i] = Integer.valueOf(0);
-    else if (n.equals("long")) a[i] = Long.valueOf(0L);
+    else if (n.equals("int")) a[i] = Integer.valueOf((int) secs);
+    else if (n.equals("long")) a[i] = Long.valueOf((long) secs);
     else if (n.equals("boolean")) a[i] = Boolean.FALSE;
     else if (n.equals("[F")) a[i] = new float[] { (float) secs };
     else return null;
@@ -632,6 +645,8 @@ STATE_FIELDS = [
     ("int", "invSlots"), ("int", "invBag"), ("int", "invOther"),
     # P5
     ("boolean", "save"), ("int", "saves"), ("int", "p5Seen"), ("int", "p5Changed"),
+    # hits our late filter passed / of those, landed uncancelled in Inspect / missing ones already told (REVIEW FIX R6)
+    ("int", "p5Late"), ("int", "p5Landed"), ("int", "p5Lost"),
     # P6
     ("String", "fxId"), ("int", "fxIdx"), ("int", "fxPuts"), ("int", "fxGone"), ("long", "fxNext"), ("boolean", "fxPut"),
     # P7
@@ -723,9 +738,9 @@ else:
 # ---- AbCmds: engine glue + every probe (world thread: AbstractPlayerCommand.execute, the tick, the damage / event systems)
 cmds = mk("AbCmds")
 for f in ("public static final java.util.concurrent.ConcurrentHashMap STATES = new java.util.concurrent.ConcurrentHashMap();",
-          "public static final java.util.concurrent.ConcurrentHashMap MINE = new java.util.concurrent.ConcurrentHashMap();",
-          "public static final java.util.concurrent.ConcurrentHashMap EARLY = new java.util.concurrent.ConcurrentHashMap();",
-          "public static final java.util.concurrent.ConcurrentHashMap LATE = new java.util.concurrent.ConcurrentHashMap();",
+          "public static final java.util.Map MINE = java.util.Collections.synchronizedMap(new java.util.IdentityHashMap());",
+          "public static final java.util.Map EARLY = java.util.Collections.synchronizedMap(new java.util.IdentityHashMap());",
+          "public static final java.util.Map LATE = java.util.Collections.synchronizedMap(new java.util.IdentityHashMap());",
           "public static volatile boolean CHAIN_ON = false;",
           "public static volatile String ORDER_EARLY = \"not registered\";",
           "public static volatile String ORDER_LATE = \"not registered\";",
@@ -805,20 +820,6 @@ public static @REF@ nearestEnemy(@CAC@ acc, @REF@ self, @V3D@ p, double rad) {
   }
   return best;
 }""")
-# one probe hit through the whole damage pipeline (SkyyArmory ArmoryTrav.hit's shape: an EntitySource, cause PROJECTILE), MINE-marked
-M(cmds, r"""
-public static boolean hit(@CB@ buf, @REF@ target, @REF@ src, double amount) {
-  try {
-    if (!(amount > 0.0) || target == null || !target.isValid() || src == null || !src.isValid()) return false;
-    @DCS@ cause = @DCS@.PROJECTILE;
-    if (cause == null) return false;
-    @DMG@ d = new @DMG@(new @DENT@(src), cause, (float) amount);
-    if (MINE.size() > 4096) MINE.clear();
-    MINE.put(d, Boolean.TRUE);
-    @DSYS@.executeDamage(target, buf, d);
-    return true;
-  } catch (Throwable t) { @PKG@.AbLog.warn("a probe hit failed: " + t); return false; }
-}""")
 # {value, max} of one stat (null = unreadable)
 M(cmds, r"""
 public static double[] stat(@CAC@ acc, @REF@ r, int idx) {
@@ -830,6 +831,24 @@ public static double[] stat(@CAC@ acc, @REF@ r, int idx) {
     if (v == null) return null;
     return new double[] { (double) v.get(), (double) v.getMax() };
   } catch (Throwable t) { return null; }
+}""")
+# one probe hit through the whole damage pipeline (SkyyArmory ArmoryTrav.hit's shape: an EntitySource, cause PROJECTILE), MINE-marked
+M(cmds, r"""
+public static boolean hit(@CB@ buf, @REF@ target, @REF@ src, double amount) {
+  try {
+    if (!(amount > 0.0) || target == null || !target.isValid() || src == null || !src.isValid()) return false;
+    // REVIEW FIX R1: a probe hit never kills - none at <= 2 / unreadable Health, else capped at Health - 1 (onLate clamps it again)
+    double[] hv = stat(buf, target, @DST@.getHealth());
+    if (hv == null || !(hv[0] > 2.0)) return false;
+    if (amount > hv[0] - 1.0) amount = hv[0] - 1.0;
+    @DCS@ cause = @DCS@.PROJECTILE;
+    if (cause == null) return false;
+    @DMG@ d = new @DMG@(new @DENT@(src), cause, (float) amount);
+    if (MINE.size() > 4096) MINE.clear();
+    MINE.put(d, Boolean.TRUE);
+    @DSYS@.executeDamage(target, buf, d);
+    return true;
+  } catch (Throwable t) { @PKG@.AbLog.warn("a probe hit failed: " + t); return false; }
 }""")
 M(cmds, r"""
 public static boolean spend(@CAC@ acc, @REF@ r, int idx, double cost) {
@@ -974,7 +993,7 @@ public static void summary(@PKG@.AbState s, @PR@ pr, String why) {
   if (m == 1) tell(pr, h + s.chains + " chains (" + s.chainAb + " Ability2/3, " + s.chainPrim + " Primary, " + s.chainOther + " other)" + (s.cancel ? ", " + s.cancelled + " cancelled, " + s.cancelFail + " cancel failures" : "") + ". PASS = your rune keys printed Ability2 / Ability3 lines" + (s.cancel ? " and a cancelled cast showed no animation, no cooldown fill, no Mana spent." : "."));
   else if (m == 2) tell(pr, h + @PKG@.AbLogic.swingVerdict(s.chainPrim, s.hits) + (CHAIN_ON ? "" : " - this server has no InteractionChainStartEvent (Hytale 0.6.8): needs 0.7."));
   else if (m == 4) tell(pr, h + s.invSlots + " InventoryChangeEvents on AbilitySlots, " + s.invBag + " on the RuneBag, " + s.invOther + " on other containers. PASS = your drag in the rune bench printed an AbilitySlots line.");
-  else if (m == 5) tell(pr, h + s.p5Seen + " hits followed; " + s.p5Changed + " changed AFTER our late filter (= another mod's filter runs after it)" + ", lethal saves " + s.saves + ". Filters: early " + ORDER_EARLY + ", late " + ORDER_LATE + ".");
+  else if (m == 5) tell(pr, h + s.p5Seen + " hits followed; " + s.p5Changed + " changed AFTER our late filter (= another mod's filter runs after it); " + (s.p5Late - s.p5Landed) + " of " + s.p5Late + " passed our late filter but never landed (" + (s.p5Late > s.p5Landed ? "FAIL: cancelled after it" : "PASS") + ")" + ", lethal saves " + s.saves + ". Filters: early " + ORDER_EARLY + ", late " + ORDER_LATE + ".");
   else if (m == 6) tell(pr, h + "swing gap " + f1(@PKG@.AbLogic.avg(s.swGapSum, s.swGapN)) + " ms (" + s.swGapN + " gaps, 0.7 only), hit gap " + f1(@PKG@.AbLogic.avg(s.hitGapSum, s.hitGapN)) + " ms (" + s.hitGapN + " gaps)" + (s.fxId.length() > 0 ? "; effect " + s.fxId + " put " + s.fxPuts + " times, taken off by another system " + s.fxGone + " times" : "; no effect (baseline)") + ".");
   else if (m == 7) tell(pr, h + s.p7Steps + " steps: spent " + f1(s.p7SpentM) + " Mana + " + f1(s.p7SpentS) + " Stamina, regen seen meanwhile +" + f1(s.p7RegenM) + " Mana / +" + f1(s.p7RegenS) + " Stamina, " + s.p7Fights + " inexact subtracts, " + s.p7Short + " steps too poor to pay. " + (s.p7Fights == 0 ? "PASS (exact)" : "FAIL (a write fight)") + (s.p7RegenM > 0.0 ? ", regen kept running." : ", NO Mana regen seen while spending."));
   else if (m == 8) tell(pr, h + (s.p8Stun ? "Stun " + f1(P8_STUN) + " s" : s.p8Sent + " probe hits (no knockback)") + " - the mob hit you " + s.mobHits + " times in " + (ms / 1000L) + " s. 0 = those hits keep it from attacking; > 0 = it attacks through them.");
@@ -1242,27 +1261,45 @@ public static void p7Tick(@PKG@.AbState s, @CB@ cb, @REF@ r, long now) {
   double[] sv = stat(cb, r, si);
   if (mv != null && s.p7LastM >= 0.0 && mv[0] > s.p7LastM) s.p7RegenM = s.p7RegenM + (mv[0] - s.p7LastM);
   if (sv != null && s.p7LastS >= 0.0 && sv[0] > s.p7LastS) s.p7RegenS = s.p7RegenS + (sv[0] - s.p7LastS);
-  if (mv != null && mv[0] >= P7_MANA && spend(cb, r, mi, P7_MANA)) {
+  // REVIEW FIX R5: both costs or neither (a step either balance cannot pay = short, nothing spent)
+  if (mv == null || sv == null || mv[0] < P7_MANA || sv[0] < P7_STAM) {
+    s.p7Short = s.p7Short + 1;
+    s.p7LastM = mv == null ? -1.0 : mv[0];
+    s.p7LastS = sv == null ? -1.0 : sv[0];
+    return;
+  }
+  if (spend(cb, r, mi, P7_MANA)) {
     double[] a = stat(cb, r, mi);
     s.p7SpentM = s.p7SpentM + P7_MANA;
     if (a == null || @PKG@.AbLogic.fight(mv[0], P7_MANA, a[0], 0.01)) s.p7Fights = s.p7Fights + 1;
     s.p7LastM = a == null ? -1.0 : a[0];
-  } else { s.p7Short = s.p7Short + 1; s.p7LastM = mv == null ? -1.0 : mv[0]; }
-  if (sv != null && sv[0] >= P7_STAM && spend(cb, r, si, P7_STAM)) {
+  } else s.p7LastM = mv[0];
+  if (spend(cb, r, si, P7_STAM)) {
     double[] b = stat(cb, r, si);
     s.p7SpentS = s.p7SpentS + P7_STAM;
     if (b == null || @PKG@.AbLogic.fight(sv[0], P7_STAM, b[0], 0.01)) s.p7Fights = s.p7Fights + 1;
     s.p7LastS = b == null ? -1.0 : b[0];
-  } else { s.p7LastS = sv == null ? -1.0 : sv[0]; }
+  } else s.p7LastS = sv[0];
+}""")
+# REVIEW FIX R6: hits our late filter passed that never landed (filter + Inspect run in one damage dispatch, so by the next tick a missing
+# one was cancelled after our filter) - told as they happen; the summary gives the FAIL
+M(cmds, r"""
+public static void p5Tick(@PKG@.AbState s, @PR@ pr) {
+  int lost = s.p5Late - s.p5Landed;
+  if (lost <= s.p5Lost) return;
+  tell(pr, "P5: " + (lost - s.p5Lost) + " hit(s) passed our late filter but never landed - CANCELLED after it (FAIL: a later filter cancels).");
+  s.p5Lost = lost;
 }""")
 M(cmds, r"""
 public static void p8Tick(@PKG@.AbState s, @PR@ pr, @CB@ cb, @REF@ r, long now) {
   @REF@ t = (@REF@) s.target;
   boolean gone = t == null || !t.isValid();
   try { if (!gone && cb.getComponent(t, @DTH@.getComponentType()) != null) gone = true; } catch (Throwable x) { gone = true; }
-  if (gone) { tell(pr, "P" + s.mode + ": the mob is gone or dead - ending now."); s.modeUntil = now; return; }
+  if (gone) { tell(pr, "P" + s.mode + ": the mob is gone or dead - ending now." + (s.mode == 8 && !s.p8Stun ? " If the probe hits killed it, another mod's damage filter runs after ours and raised them (REVIEW FIX R1)." : "")); s.modeUntil = now; return; }
   if (s.p8Stun || s.mode != 8 || now < s.p8Next) return;
   s.p8Next = now + s.p8Gap;
+  double[] hv = stat(cb, t, @DST@.getHealth());
+  if (hv == null || !(hv[0] > 2.0)) { tell(pr, "P8: the mob's Health is " + (hv == null ? "unreadable" : f1(hv[0])) + " - probe hits never kill, ending now."); s.modeUntil = now; return; }
   if (hit(cb, t, r, P8_AMT)) s.p8Sent = s.p8Sent + 1;
 }""")
 M(cmds, r"""
@@ -1348,7 +1385,8 @@ public static void tickPlayer(@REF@ r, @ST@ store, @CB@ cb, float dt) {
   if (now >= s.modeUntil) { finish(s, pr, null); return; }
   long t0 = System.nanoTime();
   int m = s.mode;
-  if (m == 6) p6Tick(s, cb, r, now);
+  if (m == 5) p5Tick(s, pr);
+  else if (m == 6) p6Tick(s, cb, r, now);
   else if (m == 7) p7Tick(s, cb, r, now);
   else if (m == 8 || m == 12) p8Tick(s, pr, cb, r, now);
   else if (m == 9) p9Tick(s, cb, now);
@@ -1406,39 +1444,58 @@ public static void onEarly(@DMG@ d, @REF@ target, @CB@ buf) {
   if (EARLY.size() > 4096) EARLY.clear();
   EARLY.put(d, Float.valueOf(d.getAmount()));
 }""")
-# FILTER group, AFTER ArmorDamageReduction: the amount after armour + the Guardian Spirit shape (p5 save)
+# REVIEW FIX R1: a probe (MINE) hit after armour is clamped again to the target's Health - 1; cancelled at <= 1 / unreadable Health
 M(cmds, r"""
-public static void onLate(@DMG@ d, @REF@ target, @CB@ buf) {
-  if (d.isCancelled() || MINE.containsKey(d)) return;
-  long now = System.currentTimeMillis();
-  if (!p5Watch(d, target, buf, now)) return;
-  if (LATE.size() > 4096) LATE.clear();
-  LATE.put(d, Float.valueOf(d.getAmount()));
-  @PR@ tpr = prOf(buf, target);
-  @PKG@.AbState s = active(tpr, 5, now);
-  if (s == null || !s.save) return;
+public static void clampMine(@DMG@ d, @REF@ target, @CB@ buf) {
+  double[] hv = stat(buf, target, @DST@.getHealth());
+  if (hv == null || !(hv[0] > 1.0)) { d.setCancelled(true); MINE.remove(d); return; }
+  if ((double) d.getAmount() > hv[0] - 1.0) d.setAmount((float) (hv[0] - 1.0));
+}""")
+# p5 save: a lethal hit on s's player is cancelled and their Health set to SAVE_PCT % (true = cancelled here)
+M(cmds, r"""
+public static boolean saveIfLethal(@DMG@ d, @REF@ target, @CB@ buf, @PR@ tpr, @PKG@.AbState s) {
+  if (s == null || !s.save) return false;
   int hi = @DST@.getHealth();
   double[] hv = stat(buf, target, hi);
-  if (hv == null || !@PKG@.AbLogic.lethal(hv[0], (double) d.getAmount())) return;
+  if (hv == null || !@PKG@.AbLogic.lethal(hv[0], (double) d.getAmount())) return false;
   try {
     @ESM@ m = (@ESM@) buf.getComponent(target, @ESM@.getComponentType());
-    if (m == null) return;
+    if (m == null) return false;
     float to = @PKG@.AbLogic.saveHealth(hv[1], SAVE_PCT);
     d.setCancelled(true);
     m.setStatValue(hi, to);
     s.save = false;
     s.saves = s.saves + 1;
     tell(tpr, "P5 SAVE: a lethal " + causeOf(d) + " hit of " + f1((double) d.getAmount()) + " (Health " + f1(hv[0]) + ") was cancelled in our late filter, Health set to " + f1((double) to) + ". Did you survive, with no death screen and no armour / durability oddity?");
-  } catch (Throwable t) { tell(tpr, "P5 save failed: " + t); }
+    return true;
+  } catch (Throwable t) { tell(tpr, "P5 save failed: " + t); return d.isCancelled(); }
+}""")
+# FILTER group, AFTER ArmorDamageReduction: the amount after armour + the Guardian Spirit shape (p5 save)
+M(cmds, r"""
+public static void onLate(@DMG@ d, @REF@ target, @CB@ buf) {
+  if (d.isCancelled()) return;
+  if (MINE.containsKey(d)) { clampMine(d, target, buf); return; }
+  long now = System.currentTimeMillis();
+  if (!p5Watch(d, target, buf, now)) return;
+  if (LATE.size() > 4096) LATE.clear();
+  LATE.put(d, Float.valueOf(d.getAmount()));
+  @PR@ tpr = prOf(buf, target);
+  @PKG@.AbState s = active(tpr, 5, now);
+  @PKG@.AbState sa = active(prOf(buf, attacker(d)), 5, now);
+  if (!saveIfLethal(d, target, buf, tpr, s)) {
+    if (s != null) s.p5Late = s.p5Late + 1;
+    if (sa != null) sa.p5Late = sa.p5Late + 1;
+  }
 }""")
 M(cmds, r"""
 public static void p5Line(@PKG@.AbState s, @PR@ pr, String who, @DMG@ d, Float e, Float l) {
   if (s == null) return;
   s.p5Seen = s.p5Seen + 1;
+  if (l != null && !d.isCancelled()) s.p5Landed = s.p5Landed + 1;
   float got = d.getAmount();
   boolean changed = l != null && Math.abs(l.floatValue() - got) > 0.01f;
   if (changed) s.p5Changed = s.p5Changed + 1;
-  String line = "P5 " + who + " " + causeOf(d) + ": before armour " + (e == null ? "-" : f1((double) e.floatValue())) + ", after armour " + (l == null ? "-" : f1((double) l.floatValue())) + ", landed " + f1((double) got) + (changed ? "  <- changed AFTER our late filter" : "");
+  String line = "P5 " + who + " " + causeOf(d) + ": before armour " + (e == null ? "-" : f1((double) e.floatValue())) + ", after armour " + (l == null ? "-" : f1((double) l.floatValue())) + (d.isCancelled() ? ", CANCELLED after our late filter" : ", landed " + f1((double) got)) + (changed ? "  <- changed AFTER our late filter" : "");
   if (s.lines < 30) { s.lines = s.lines + 1; tell(pr, line); } else @PKG@.AbLog.info(line);
 }""")
 # INSPECT group: landed amounts (P5), your landed hits (P2 / P6), the probe mob hitting you (P8 / P12)
