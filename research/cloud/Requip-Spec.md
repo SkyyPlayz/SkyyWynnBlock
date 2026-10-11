@@ -102,6 +102,20 @@
 
 No client drag in or out of the page (`AreItemsDraggable: false`): every move is a server-side button (the SkyyVault 0.1.5 lesson).
 
+### 4.1 Auto-pull toggle (Skyy 2026-10-11 - "like the mining bags, but for gear")
+
+Skyy: "what i picture is like the mining bags. but for gear. (you can toggle weather or not it auto pulls from your inventory.)"
+- One toggle per profile on the Requip page: **Auto-pull ON / OFF** [default OFF; Server Setup row `requip.autoPullDefault`].
+- ON: the same model as the Magic Bags - a sweep every 2 s (SkyySacks 0.7.16 `SweepTask`, the "sweep removes exactly `take` from the
+  slot" rule, file header lines 4-14) moves accepted gear (section 3.2: armor, weapons, tools, potions, food) from the STORAGE and
+  BACKPACK sections into the pool, each move through the same write-ahead journal as a Deposit (section 7).
+- Never pulled: anything worn, anything in the hotbar (Hytale's default pickup spot - the player keeps what they hold), stamped items
+  that a loadout currently has OUT, and the refused kinds. Kind entries (potions / food) are only pulled if Requip already holds that kind.
+- Order with the Magic Bags: blocks / materials go to the bags (SkyySacks), gear to Requip - the two accept lists never overlap
+  (section 3.2), so both sweeps can run without fighting over a stack.
+- UNVERIFIED (probe P11, local): two 2 s sweeps on the same inventory never race (stagger by 1 s, or one bridge call
+  `sacks:fn:sweepNow` order).
+
 ## 5. Loadouts = references
 
 ### 5.1 A pick per slot
@@ -381,6 +395,13 @@ show the pre-migration loadouts whose stacks were moved into the pool (items inv
 | 8 | 0.1 loadouts: move their gear into the pool automatically on update? | [Yes, once; what you wear now is only moved when you click Yes] |
 | 9 | Potions / food in loadouts: how many come out? | [One full stack per picked slot, editable per pick] |
 | 10 | Should items in the pool count anywhere (collections, net worth later)? | [No for now] |
+
+**Skyy's answers (2026-10-11, word for word, given to the cloud session):** "1. an /requip  or /rq      2. yes    3. could you rephrase that? (what i picture is like the mining bags. but for gear.  (you can toggle weather or not it auto pulls from your inventory.)  and anything in there, you can select when creating a loadout. when you equip a a saved loadout, it places whatever your wearing in the storage bag, and replaces it with the new load out."
+- Q1: commands are `/requip` and `/rq` (the in-game name is Requip; whether the old `/wardrobe` / `/wd` / `/loadout` stay as aliases is still open - default: keep them as hidden aliases for one version).
+- Q2: YES - an unpicked slot keeps what you wear (each slot also offers "Empty").
+- The picture Skyy describes matches sections 3-7 (one gear bag per profile, loadouts pick from it, Equip puts what you wear into the bag
+  and takes the loadout out). NEW from it: the auto-pull toggle - section 4.1.
+- Q8 (0.1 migration) was asked again in plainer words; still open, default unchanged.
 
 ## For the local session
 
