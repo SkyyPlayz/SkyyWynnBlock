@@ -20,7 +20,11 @@ Where: Discord on the CurseForge pages, or X @AdathanHytale
 >    boss weapons, and could we adjust the drop tables so they follow our loot rules (we'd send you exactly what we'd change)?
 > 4. Do you plan to update them for Hytale 0.7?
 >
-> No money involved. Thanks either way!
+> One more thing, so you know exactly how it would be used: SkyWynn may later run a public server with optional paid ranks
+> (cosmetic perks / extra features, sold under Hytale's server rules). Is it OK to include your mod on that server too? If you
+> would rather it only runs on free servers / in the free modpack, that is completely fine - just tell me and I'll keep it to that.
+>
+> Thanks either way!
 
 ---
 
@@ -34,6 +38,10 @@ Where: Discord on the CurseForge page
 > 2. Is it OK if our loot system tags the Aegos bow as one of our rare drops at runtime (by item id, no file edits), and we turn off
 >    Aegos' own drops on our servers with your config so it only comes from our bosses?
 > 3. Any plans for a Hytale 0.7 update? (The manifest says below 0.7.0.)
+>
+> One more thing, so you know exactly how it would be used: SkyWynn may later run a public server with optional paid ranks
+> (cosmetic perks / extra features, sold under Hytale's server rules). Is it OK to include your mod on that server too? If you
+> would rather it only runs on free servers / in the free modpack, that is completely fine - just tell me and I'll keep it to that.
 >
 > Thanks!
 
@@ -49,6 +57,10 @@ Where: Discord on the CurseForge page
 >    link.
 > 2. Is it OK if our mods give the Titan a level and add our own loot on top of yours at runtime (by its NPC id, no file edits)?
 > 3. Do you plan a Hytale 0.7 update?
+>
+> One more thing, so you know exactly how it would be used: SkyWynn may later run a public server with optional paid ranks
+> (cosmetic perks / extra features, sold under Hytale's server rules). Is it OK to include your mod on that server too? If you
+> would rather it only runs on free servers / in the free modpack, that is completely fine - just tell me and I'll keep it to that.
 >
 > Thanks!
 
@@ -66,6 +78,10 @@ Where: Discord / YouTube links on the CurseForge page
 >    (e.g. a Mushee pet) by referencing the vanilla models at runtime, with a credit to you for the idea?
 > 3. Any plans for a Hytale 0.7 update? (The manifest says exactly 0.6.0.)
 >
+> One more thing, so you know exactly how it would be used: SkyWynn may later run a public server with optional paid ranks
+> (cosmetic perks / extra features, sold under Hytale's server rules). Is it OK to include your mod on that server too? If you
+> would rather it only runs on free servers / in the free modpack, that is completely fine - just tell me and I'll keep it to that.
+>
 > Thanks!
 
 ---
@@ -76,6 +92,10 @@ Where: CurseForge page links
 > Hi BlackAures! I'm Skyy from SkyWynn, a free Hytale server pack. Your page says Dragon Nestkeeper is made for modpacks - awesome! Two
 > quick questions: how would you like to be credited, and is it OK if our pet menu can summon a player's dragon from your mod (by its
 > id at runtime, no file edits)? Rare Monsters would also be great as mini-bosses - same question for that one. Thanks!
+>
+> One more thing, so you know exactly how it would be used: SkyWynn may later run a public server with optional paid ranks
+> (cosmetic perks / extra features, sold under Hytale's server rules). Is it OK to include your mod on that server too? If you
+> would rather it only runs on free servers / in the free modpack, that is completely fine - just tell me and I'll keep it to that.
 
 ---
 
@@ -84,6 +104,10 @@ Where: CurseForge page / YUNG's Discord
 
 > Hi! I'm Skyy from SkyWynn, a free Hytale server pack. Can SkyWynn list YUNG's HyDungeons as a pack mod? Players would install it from
 > your CurseForge page (no re-uploads), with credit + a link. Thanks!
+>
+> One more thing, so you know exactly how it would be used: SkyWynn may later run a public server with optional paid ranks
+> (cosmetic perks / extra features, sold under Hytale's server rules). Is it OK to include your mod on that server too? If you
+> would rather it only runs on free servers / in the free modpack, that is completely fine - just tell me and I'll keep it to that.
 
 ---
 
@@ -100,7 +124,11 @@ Where: CurseForge page comment (no mod Discord listed)
 > 3. We would turn off or replace the Hytalor/Patchly drop patches on our servers so these items only come from our bosses. Is that OK?
 > 4. Do you plan a Hytale 0.7 update? (The manifest says below 0.7.0.)
 >
-> No money involved. Thanks either way!
+> One more thing, so you know exactly how it would be used: SkyWynn may later run a public server with optional paid ranks
+> (cosmetic perks / extra features, sold under Hytale's server rules). Is it OK to include your mod on that server too? If you
+> would rather it only runs on free servers / in the free modpack, that is completely fine - just tell me and I'll keep it to that.
+>
+> Thanks either way!
 
 ---
 
@@ -112,6 +140,10 @@ Where: CurseForge comment or Discord
 > CurseForge page, no re-uploads, credit and link on our pack page and in game).
 > 1. Is it OK if our mods spawn your merchant roles at runtime and open our own shop pages for them (by role id, no file edits)?
 > 2. Do you plan a Hytale 0.7 update (the manifest is pinned to build 2026.03.26)?
+> One more thing, so you know exactly how it would be used: SkyWynn may later run a public server with optional paid ranks
+> (cosmetic perks / extra features, sold under Hytale's server rules). Is it OK to include your mod on that server too? If you
+> would rather it only runs on free servers / in the free modpack, that is completely fine - just tell me and I'll keep it to that.
+>
 > Thanks!
 
 ---
@@ -126,6 +158,10 @@ Where: CurseForge page
 > 2. Is it OK if we use your cloud blocks and glider as credited assets, without the vanilla worldgen overrides (they replace current
 >    vanilla generator files with older copies)?
 > 3. Do you plan a Hytale 0.7 update? The manifest is pinned to 2026.05.07.
+> One more thing, so you know exactly how it would be used: SkyWynn may later run a public server with optional paid ranks
+> (cosmetic perks / extra features, sold under Hytale's server rules). Is it OK to include your mod on that server too? If you
+> would rather it only runs on free servers / in the free modpack, that is completely fine - just tell me and I'll keep it to that.
+>
 > Thanks either way!
 
 ---
@@ -164,5 +200,46 @@ Where: CurseForge page / GitHub issues
 > Hi! I'm Skyy from SkyWynn, a free Hytale server pack - BetterMap is great and it's in our pack. Feature request: could
 > `allowedWorlds` accept a prefix or wildcard (e.g. `"skyy-island-*"`, `"skywynn_*"`)? Our players each get their own island world
 > (one per profile), created while the server runs, so an exact-name list can't cover them until a restart. Thanks!
+
+---
+
+## 12. BlueOrbit - Dynamic Seasons (permission; in the pack today)
+Where: Discord or CurseForge comment
+
+> Hi BlueOrbit! I'm Skyy from SkyWynn, a free Hytale server pack - Dynamic Seasons is part of our pack and players love it. Your page
+> says All Rights Reserved, so I wanted to ask properly: is it OK that SkyWynn lists Dynamic Seasons as a pack mod (players install it
+> from your CurseForge page, we never re-upload it, credit + link on our pack page)? And may our own mods read your seasons at runtime
+> (e.g. fishing seasons) by id, without editing your files?
+>
+> One more thing, so you know exactly how it would be used: SkyWynn may later run a public server with optional paid ranks
+> (cosmetic perks / extra features, sold under Hytale's server rules). Is it OK to include your mod on that server too? If you
+> would rather it only runs on free servers / in the free modpack, that is completely fine - just tell me and I'll keep it to that.
+>
+> Thanks either way!
+
+---
+
+## 13. SergioGMN - More Crossbow Tiers (permission; in the pack today)
+Where: CurseForge comment
+
+> Hi! I'm Skyy from SkyWynn, a free Hytale server pack. More Crossbow Tiers is in our pack - players install it from your CurseForge
+> page (no re-uploads), with credit + a link. Your page doesn't state a licence, so I wanted to check that's OK with you, and whether
+> our loot / rarity system may tag your crossbows at runtime by item id (no file edits).
+>
+> One more thing, so you know exactly how it would be used: SkyWynn may later run a public server with optional paid ranks
+> (cosmetic perks / extra features, sold under Hytale's server rules). Is it OK to include your mod on that server too? If you
+> would rather it only runs on free servers / in the free modpack, that is completely fine - just tell me and I'll keep it to that.
+>
+> Thanks!
+
+---
+
+## 14. LadyPaladra - The Armory (CC BY-NC 3.0; paid-server question)
+Where: CurseForge comment / Discord
+
+> Hi LadyPaladra! I'm Skyy from SkyWynn, a free Hytale server pack - The Armory is amazing and it's planned as our combat gear (credited,
+> never sold, per your CC BY-NC licence). One question the licence leaves open for us: SkyWynn may later run a public server with
+> optional paid ranks (perks, not your items). Would you allow The Armory on that server, or should we keep it to free servers / the
+> free modpack? Either answer is fine - I just want to do it the way you're happy with. Thanks!
 
 ---
