@@ -15,8 +15,8 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 - LIVE (deployed 2026-10-10 19:13, backup deploy-20261010-1911): Pets 0.2.3, Menu 0.3.17 (layout D + icons + editor), Armory 0.1.20 (wand
   single launch, keeps damaging falls, Soul Cages), Skills 0.4.30, Classes 0.1.19, Gear 0.2.20 (tool rarity, multitools, new tooltips),
   Accessories 0.5.11, WorldGen 0.5 (vanilla gen masked into islands, /zone proof -> skywynn_proof2), NEW Wardrobe 0.1; Multitools ON.
-- PINNED, NOT DEPLOYED (deploy at Skyy's next close): SkyyGear 0.2.22 (Reforge page tabs Reforge | Upgrade | Multitool, /upgrade, /multitool
-  merge page 0.2.21, item names " [Lv N]"), SkyyCollections 0.2.9 (coll:fn:catTotal).
+- DEPLOYED 2026-10-10 22:38 (TEST 56): SkyyGear 0.2.22 (Reforge tabs, /upgrade, /multitool, [Lv N] names), SkyyCollections 0.2.9,
+  SkyyUiProbe 0.5 + B (Skyy runs /skyprobe kit once, then RETIRE both).
 - BUILT, NOT PINNED: SkyySacks 0.7.17 (deposit / hotbar refill / craft bridges / class filter) - CONTRACT MISMATCH with SkyyWardrobe 0.2:
   sacks:fn:deposit takes blocks itself, Wardrobe 0.2 giveBack takes the slot first -> fix in SkyyWardrobe (giveBack: no takeOff / put-back,
   call deposit {UUID, id, Long qty, Integer hotbarSlot}) then ship Sacks 0.7.17 + Wardrobe 0.2.x + Gear 0.2.23 TOGETHER (R4).
