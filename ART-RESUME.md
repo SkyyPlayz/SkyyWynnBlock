@@ -42,7 +42,7 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
-### 17. SkyWynn Menu item - new emblem (small, do this FIRST, then continue item 14 with F1 Ash)
+### 17. SkyWynn Menu item - new emblem - DONE 2026-10-10 (main session stand-in agent: art/menu-emblem/, sheet.png; wiring = next SkyyMenu round). Continue item 14 with F1 Ash
 **Why:** Skyy 2026-10-09: "lets make a new icon for the menu" -> the menu item in the last hotbar slot (id `Skyy_Menu`, SkyyMenu); today
 it borrows the vanilla Voidheart look (`MENU_ITEM_LOOK = "Ingredient_Voidheart"` in `SkyyMenu/build_skyymenu_0.3.12.py`). Skyy picked
 the **SkyWynn emblem**: a small floating sky island (grass top, rocky hanging underside, maybe a tiny waterfall / cloud wisps) with a
@@ -67,9 +67,8 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   Same bark-plate family look (approved concept), each tree its own variation; trees of one tier share stats and players swap looks at an
   alteration station later. Start with F1 Oak (key log), then the rest of F1, one tree per commit; show Skyy each sheet. Paths use the
   tree name: `SkyyForaging/<Tier>/<Tree>/<Piece>.blockymodel`, icons `Armor_Foraging_<Tree>_<Piece>.png`. Orchard trees: later.
-  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen (Oak + Birch repainted v2 in their in-game
-  wood colours); see Done.
-  **Next: F2 Autumn + Azure (Maple, Azure)** - START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game
+  **Progress:** F1 GROVE COMPLETE (5/5, 2026-10-09): Oak, Birch, Beech, Ash, Aspen. F2 AUTUMN COMPLETE (2/2, 2026-10-09): Maple, Azure. F3 SAVANNA COMPLETE (4/4, 2026-10-09): Gumboab, Dry, Bottletree, Palo. F4 NORTHERN COMPLETE (5/5, 2026-10-09): Fir, Cedar, Poisoned, Redwood, Spiral. F5 WASTES COMPLETE (10/10, 2026-10-09): Sallow, Burnt, Petrified, Bamboo, Camphor, Banyan, Jungle, Blue Fig, Fire, Crystalwood. **FORAGING ARMOR COMPLETE (26 trees, 2026-10-09).** See Done.
+  **Next: #14 Farming crop sets - WHEAT first** (then Carrot, Cauliflower, Pumpkin, Chilli, Cotton, Onion; one crop per commit, check with Skyy before starting; reuse the foraging pipeline + family look, `SkyyFarming/` paths). For foraging work: START FROM THE IN-GAME WOOD (Skyy: "make sure to match each armor set to its in game
   wood variant." - sample the tree's log / planks / leaves colours in Assets.zip; Beech v1
   in made-up colours read as "iron"). Reuse the Oak pipeline (`tools/art/ga_oak.py` = design, `ga_paint.py` = painter,
   `make_foraging_*.py`), same piece shapes / fit, own colours + own small mark. Sources go in `source/<Tier>/<Tree>/`. Defaults Skyy kept for Oak: tier folder `F1_Grove`,
@@ -80,6 +79,10 @@ sheets + READMEs in `research/cloud/foraging-armor/` and `research/cloud/gatheri
   tier is visibly a bit cooler than the last. F1 = simple (done). F2 = a clear but modest step up (more layered plates, an extra
   shoulder layer, stronger sap glow lines, a small belt / trim upgrade, a slightly fancier helmet crest). Leave room so F3, F4 and
   F5 keep escalating (F5 the most impressive).
+  **TIER LADDER - APPROVED by Skyy 2026-10-09 with the F2 sets ("They look great! ..."), defaults kept:** F1 simple (done) |
+  F2 pegs, raised shoulder caps, brighter forked sap + back vein, belt boss, helmet crest (`tools/art/ga_f2.py`, same for every F2 tree) |
+  F3 angular plates, bigger layered shoulders, a gorget, sap glow up the arms | F4 thorn / spike accents, tall pauldrons, a glowing chest
+  knot, double crest | F5 ornate - gold inlay, glowing gem knots, a winged or tall crown, the brightest sap (the most impressive).
 - Farming: Wheat, Carrot, Cauliflower, Pumpkin, Chilli, Cotton, Onion ("more like the wood ones ... food armor, like in skyblock").
 **Make, per tier:** 4 pieces - Head, Chest, Hands, Legs - exactly like a vanilla armor set (look at vanilla Iron in Assets.zip:
 `Common/Items/Armors/Iron/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png`, icons `Common/Icons/ItemsGenerated/Armor_Iron_<Piece>.png`;
@@ -138,6 +141,162 @@ purple of the bag swirl].
   Skyy's answers, word for word: "fix pebble." / "Yes, the Pebble fix looks good, commit it"
 
 ## Done
+### 40. Foraging armor F5 Wastes - Crystalwood (2026-10-09) - F5 WASTES COMPLETE (10/10), FORAGING ARMOR COMPLETE (26 trees)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F5_Wastes/Crystalwood/` (+ icons `Armor_Foraging_Crystalwood_<Piece>.png`, `source/F5_Wastes/Crystalwood/`, `sheet-crystalwood.png`); README + manifest updated. Scripts: `ga_crystalwood.py` (new).
+- Look: colours sampled from the in-game Crystalwood wood in Assets.zip (own pixels): near-black slate plate bark, pink crystal heartwood, lopsided shard plates, crystal-cluster crown points, indigo cloth, pink gems. Mark: a pink crystal cluster.
+- Skyy's answer, word for word: "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Defaults kept: per-tree gem colour, shared wings, gold inlay as drawn.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game. No item / recipe JSON (art only).
+### 39. Foraging armor F5 Wastes - Fire (2026-10-09)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F5_Wastes/Fire/` (+ icons `Armor_Foraging_Fire_<Piece>.png`, `source/F5_Wastes/Fire/`, `sheet-fire.png`); README + manifest updated. Scripts: `ga_fire.py` (new).
+- Look: colours sampled from the in-game Fire wood in Assets.zip (own pixels): red-black bark with glowing lava cracks, glowing red heartwood, flame-tongue plates, flame crown points, charcoal cloth, lava gems. Mark: a flame.
+- Skyy's answer, word for word: "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Defaults kept: per-tree gem colour, shared wings, gold inlay as drawn.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game. No item / recipe JSON (art only).
+### 38. Foraging armor F5 Wastes - Blue Fig (2026-10-09)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F5_Wastes/BlueFig/` (+ icons `Armor_Foraging_BlueFig_<Piece>.png`, `source/F5_Wastes/BlueFig/`, `sheet-bluefig.png`); README + manifest updated. Scripts: `ga_bluefig.py` (new).
+- Look: colours sampled from the in-game Blue Fig wood in Assets.zip (own pixels): dusty red block bark, deep maroon heartwood, fig-lobe plates, fig-on-a-stalk crown points, deep blue cloth, aqua gems. Mark: a blue fig.
+- Skyy's answer, word for word: "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Defaults kept: per-tree gem colour, shared wings, gold inlay as drawn, folder `BlueFig`.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game. No item / recipe JSON (art only).
+### 37. Foraging armor F5 Wastes - Jungle (2026-10-09)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F5_Wastes/Jungle/` (+ icons `Armor_Foraging_Jungle_<Piece>.png`, `source/F5_Wastes/Jungle/`, `sheet-jungle.png`); README + manifest updated. Scripts: `ga_jungle.py` (new).
+- Look: colours sampled from the in-game Jungle wood in Assets.zip (own pixels): olive knotty bark, pale yellow heartwood, leaf-hook plates, broad-leaf crown points, red-brown cloth, emerald gems. Mark: one big jungle leaf.
+- Skyy's answer, word for word: "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Defaults kept: per-tree gem colour, shared wings, gold inlay as drawn.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game. No item / recipe JSON (art only).
+### 36. Foraging armor F5 Wastes - Banyan (2026-10-09)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F5_Wastes/Banyan/` (+ icons `Armor_Foraging_Banyan_<Piece>.png`, `source/F5_Wastes/Banyan/`, `sheet-banyan.png`); README + manifest updated. Scripts: `ga_banyan.py` (new).
+- Look: colours sampled from the in-game Banyan wood in Assets.zip (own pixels): warm brown bark with long root ridges, tan heartwood, root-drip plates, root-pillar crown points, terracotta cloth, yellow-green gems. Mark: a banyan tree with hanging roots.
+- Skyy's answer, word for word: "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Defaults kept: per-tree gem colour, shared wings, gold inlay as drawn.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game. No item / recipe JSON (art only).
+### 35. Foraging armor F5 Wastes - Camphor (2026-10-09)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F5_Wastes/Camphor/` (+ icons `Armor_Foraging_Camphor_<Piece>.png`, `source/F5_Wastes/Camphor/`, `sheet-camphor.png`); README + manifest updated. Scripts: `ga_camphor.py` (new).
+- Look: colours sampled from the in-game Camphor wood in Assets.zip (own pixels): pale grey bark with soft patches and fine cracks, near-white heartwood, scallop plates, stacked-cloud crown points, deep teal cloth, mint gems. Mark: a teal leaf cluster.
+- Skyy's answer, word for word: "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Defaults kept: per-tree gem colour, shared wings, gold inlay as drawn.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game. No item / recipe JSON (art only).
+### 34. Foraging armor F5 Wastes - Bamboo (2026-10-09)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F5_Wastes/Bamboo/` (+ icons `Armor_Foraging_Bamboo_<Piece>.png`, `source/F5_Wastes/Bamboo/`, `sheet-bamboo.png`); README + manifest updated. Scripts: `ga_bamboo.py` (new).
+- Look: colours sampled from the in-game Bamboo wood in Assets.zip (own pixels): lime-green bark with pale node bands, straight plates with small V notches, segmented-cane crown points, deep jade cloth, lime gems. Mark: a bamboo shoot with two blades.
+- Skyy's answer, word for word: "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Defaults kept: per-tree gem colour, shared wings, gold inlay as drawn.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game. No item / recipe JSON (art only).
+### 33. Foraging armor F5 Wastes - Petrified (2026-10-09)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F5_Wastes/Petrified/` (+ icons `Armor_Foraging_Petrified_<Piece>.png`, `source/F5_Wastes/Petrified/`, `sheet-petrified.png`); README + manifest updated. Scripts: `ga_petrified.py` (new).
+- Look: colours sampled from the in-game Petrified wood in Assets.zip (own pixels): grey-brown stone-cracked bark, pale stone heartwood, stair-step plates, stepped obelisk crown points, dusty violet cloth, lilac gems. Mark: a stone-ring fossil.
+- Skyy's answer, word for word: "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Defaults kept: per-tree gem colour, shared wings, gold inlay as drawn.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game. No item / recipe JSON (art only).
+### 32. Foraging armor F5 Wastes - Burnt (2026-10-09)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F5_Wastes/Burnt/` (+ icons `Armor_Foraging_Burnt_<Piece>.png`, `source/F5_Wastes/Burnt/`, `sheet-burnt.png`); README + manifest updated. Scripts: `ga_burnt.py` (new).
+- Look: colours sampled from the in-game Burnt wood in Assets.zip (own pixels): charcoal cracked bark with a few faint embers, charred heartwood, jagged ember-tooth plates, split-stump crown points, ash-grey cloth, ember-orange gems. Mark: a glowing ember on a char log.
+- Skyy's answer, word for word: "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Defaults kept: per-tree gem colour, shared wings, gold inlay as drawn, ash-grey cloth.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game. No item / recipe JSON (art only).
+### 31. Foraging armor F5 Wastes - Sallow (2026-10-09) - first F5 set
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F5_Wastes/Sallow/` (+ icons `Armor_Foraging_Sallow_<Piece>.png`, `source/F5_Wastes/Sallow/`, `sheet-sallow.png`); README + manifest updated. Scripts: `ga_sallow.py` (new), `ga_f5.py` (new: the shared tier-5 builder - gold inlay, gem knots, winged taller crown, brightest sap), `make_foraging_sheet.py`.
+- Look: colours sampled from the in-game Sallow wood in Assets.zip (own pixels): olive-gold stringy bark, straw heartwood, willow-strand plates, weeping-willow crown points, plum cloth, amber gems. Mark: golden sallow catkins.
+- Skyy's answer, word for word: "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Defaults kept: per-tree gem colour, shared wings, gold inlay as drawn.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game. No item / recipe JSON (art only).
+### 30. Foraging armor F4 Northern - Spiral v2, in-game colour fix (2026-10-09) - F4 NORTHERN COMPLETE (5/5)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F4_Northern/Spiral/` (+ icons, `source/F4_Northern/Spiral/`, `sheet-spiral.png`); README + manifest updated.
+- Why: the bark was too dark next to the game's real Spiral log in Assets.zip (pale mint-grey), so the bark ramp is lifted to match it. Shapes / mark / cloth unchanged.
+- Skyy's answers, word for word: v1 "all look great! commit all"; v2 "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game.
+### 29. Foraging armor F4 Northern - Redwood v2, in-game colour fix (2026-10-09)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F4_Northern/Redwood/` (+ icons, `source/F4_Northern/Redwood/`, `sheet-redwood.png`); README + manifest updated.
+- Why: the heartwood was too bright next to the game's real Redwood log top in Assets.zip, so the heartwood ramp is deepened to match it. Shapes / mark / cloth unchanged.
+- Skyy's answers, word for word: v1 "all look great! commit all"; v2 "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game.
+### 28. Foraging armor F3 Savanna - Palo v2, in-game colour fix (2026-10-09) - F3 SAVANNA COMPLETE (4/4)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F3_Savanna/Palo/` (+ icons, `source/F3_Savanna/Palo/`, `sheet-palo.png`); README + manifest updated.
+- Why: the bark was too dark next to the game's real Palo log in Assets.zip (light olive), so the bark ramp is lifted to match it. Shapes / mark / cloth unchanged.
+- Skyy's answers, word for word: v1 "Palo looks good, commit it"; v2 "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game.
+### 27. Foraging armor F3 Savanna - Bottletree v2, in-game colour fix (2026-10-09)
+- Folder: `art/gathering-armor/Common/Items/Armors/SkyyForaging/F3_Savanna/Bottletree/` (+ icons, `source/F3_Savanna/Bottletree/`, `sheet-bottletree.png`); README + manifest updated. `ga_paint.py` also carries the other fixes + the F5 palettes.
+- Why: the bark was too dark next to the game's real Bottletree log in Assets.zip (pale grey-cream), so the bark ramp is lifted to match it. Shapes / mark / cloth unchanged.
+- Skyy's answers, word for word: v1 "Bottletree looks good, commit it"; v2 "All look great, commit the 4 colour fixes and all 10 F5 sets"
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0. Not yet seen in game.
+### 26. Foraging armor F4 Northern - Poisoned (2026-10-09)
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F4_Northern/Poisoned/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`,
+  icons `Common/Icons/ItemsGenerated/Armor_Foraging_Poisoned_<Piece>.png` (64), `source/F4_Northern/Poisoned/*.bbmodel`, `sheet-poisoned.png`;
+  `manifest.json` + `README.md` updated. Scripts: `ga_poisoned.py` (new). All earlier sets rebuild byte-identical.
+- Look: colours from the in-game Poisoned wood (checked against Assets.zip; own pixels): near-black purple bark with glowing yellow-green cracks, sickly olive heartwood, violet leaves, dark moss cloth; BARBED-HOOK plates, two-prong crown points. Mark: a violet THORN LEAF + TOXIC DROP.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0.
+- Skyy's answer, word for word: "all look great! commit all"
+- Defaults kept: cloth colour, mark, plate edge as drafted.
+- Not yet seen in game. No item / recipe JSON (art only).
+### 25. Foraging armor F4 Northern - Cedar (2026-10-09)
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F4_Northern/Cedar/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`,
+  icons `Common/Icons/ItemsGenerated/Armor_Foraging_Cedar_<Piece>.png` (64), `source/F4_Northern/Cedar/*.bbmodel`, `sheet-cedar.png`;
+  `manifest.json` + `README.md` updated. Scripts: `ga_cedar.py` (new). All earlier sets rebuild byte-identical.
+- Look: colours from the in-game Cedar wood (checked against Assets.zip; own pixels): orange-brown fibre-strip bark, warm tan heartwood, teal-green scale leaves, burgundy cloth; POINTED-ARCH plates, flame crown points. Mark: a CEDAR ROSE.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0.
+- Skyy's answer, word for word: "all look great! commit all"
+- Defaults kept: cloth colour, mark, plate edge as drafted.
+- Not yet seen in game. No item / recipe JSON (art only).
+### 24. Foraging armor F4 Northern - Fir (2026-10-09) - first F4 set
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F4_Northern/Fir/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`,
+  icons `Common/Icons/ItemsGenerated/Armor_Foraging_Fir_<Piece>.png` (64), `source/F4_Northern/Fir/*.bbmodel`, `sheet-fir.png`;
+  `manifest.json` + `README.md` updated. Scripts: `ga_fir.py` (new), `ga_f4.py` (new: the shared tier-4 builder), `ga_paint.py` (the five Northern palettes), `make_foraging_sheet.py`, `make_foraging_manifest.py`. All earlier sets rebuild byte-identical.
+- Look: colours from the in-game Fir wood (checked against Assets.zip; own pixels): very dark brown flaky bark, pale tan heartwood, deep green needles, oatmeal wool cloth; FIR-TIER plates (wide V + centre point), stacked fir-tree crown points. Mark: a little FIR TREE. Tier 4 upgrades (same for every F4 tree): thorns on shoulders + bracers, tall pauldron guards, a glowing chest knot, a double crest.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0.
+- Skyy's answer, word for word: "all look great! commit all"
+- Defaults kept: cloth colour, mark, plate edge as drafted.
+- Not yet seen in game. No item / recipe JSON (art only).
+### 23. Foraging armor F3 Savanna - Dry (2026-10-09)
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F3_Savanna/Dry/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`,
+  icons `Common/Icons/ItemsGenerated/Armor_Foraging_Dry_<Piece>.png` (64), `source/F3_Savanna/Dry/*.bbmodel`, `sheet-dry.png`;
+  `manifest.json` + `README.md` updated. Scripts: `ga_dry.py` (new). All earlier sets rebuild byte-identical.
+- Look: colours from the in-game Dry wood (log / leaves / planks; own pixels): warm brown bark with dark vertical fibres, cream-gold heartwood, bright yellow leaves, rust cloth; SPLINTER saw-tooth plates, splinter-spike crown points. Mark: 3 yellow PUFF BLOSSOMS.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0.
+- Skyy's answer, word for word: "Dry looks good, commit it"
+- Defaults kept: cloth colour, mark, plate edge as drafted.
+- Not yet seen in game. No item / recipe JSON (art only).
+### 22. Foraging armor F3 Savanna - Gumboab (2026-10-09) - first F3 set
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F3_Savanna/Gumboab/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`,
+  icons `Common/Icons/ItemsGenerated/Armor_Foraging_Gumboab_<Piece>.png` (64), `source/F3_Savanna/Gumboab/*.bbmodel`, `sheet-gumboab.png`;
+  `manifest.json` + `README.md` updated. Scripts: `ga_gumboab.py` (new), `ga_f3.py` (new: the shared tier-3 builder), `ga_paint.py` (the four Savanna palettes), `make_foraging_sheet.py`, `make_foraging_manifest.py`. All earlier sets rebuild byte-identical.
+- Look: colours from the in-game Gumboab wood (log / leaves / planks; own pixels): smooth grey-taupe bark with soft folds, cream-tan heartwood, sage blade leaves, ochre cloth; TERRACED plates, flat-topped crown points. Mark: a FAN of 5 sage blades. Tier 3 upgrades (same for every F3 tree): angular plates + cut corners, bigger layered shoulders, a gorget, sap glow up the arms.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0.
+- Skyy's answer, word for word: "Gumboab looks good, commit it"
+- Defaults kept: cloth colour, mark, plate edge as drafted.
+- Not yet seen in game. No item / recipe JSON (art only).
+### 21. Foraging armor F2 Autumn - Azure (2026-10-09) - F2 AUTUMN COMPLETE (2/2)
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F2_Autumn/Azure/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`,
+  icons `Common/Icons/ItemsGenerated/Armor_Foraging_Azure_<Piece>.png` (64), `source/F2_Autumn/Azure/*.bbmodel`, `sheet-azure.png`;
+  `manifest.json` + `README.md` updated. Scripts: `ga_azure.py` (new), `ga_paint.py` (azure colours), `ga_f2.py` (optional
+  EXTRA_HANDS / EXTRA_LEGS hooks). Maple + all 5 F1 sets rebuild byte-identical.
+- Look: colours from the in-game Azure wood (trunk / log end / leaves / glowing petals; own pixels): plum-purple bark with swirling
+  grain, indigo cloth; the blue parts a little brighter (blue leaves, blue-silver heartwood, glowing cyan petals). CRESCENT plates and
+  crown points. Mark: a spray of GLOWING AZURE PETALS on the belt knot boss + at the left temple. 12 small extra azure leaves (crown,
+  collar, shoulder caps, belt, bracers, knees). Same tier-2 upgrades as Maple.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0.
+- Skyy's answers, word for word: "They look great! A little more blue on the azure, and we should be good" (v1) / "Thats a little too
+  much. Take the V1 azure, and make the parts that are already blue a little brighter blue, and add some more leaves to the design."
+  (v2) / "Yes, Azure v3 looks good, commit it" (v3)
+- Defaults kept: v1 colours with brighter blues, all 12 extra leaves, petal-spray mark.
+- Not yet seen in game. No item / recipe JSON (art only).
+### 20. Foraging armor F2 Autumn - Maple (2026-10-09) - first F2 set
+- Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F2_Autumn/Maple/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
+  (1 texel per unit), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Maple_<Piece>.png` (64), `source/F2_Autumn/Maple/*.bbmodel`,
+  `sheet-maple.png`; shared `manifest.json` + `README.md` updated (F2 tier notes + the approved F1-F5 ladder). Scripts: `tools/art/ga_f2.py`
+  (new: the shared tier-2 builder), `ga_maple.py` (new), `ga_paint.py` (maple colours), `make_foraging_sheet.py`, `make_foraging_manifest.py`.
+  All 5 F1 sets rebuild byte-identical.
+- Look: colours from the in-game (Crimson) Maple wood (hues sampled from the game's Maple trunk / log end / redwood planks / leaves /
+  seeds; own pixels): mauve-brown bark with dark cracks, peach heartwood, crimson leaves, mustard cloth. LOBED maple-leaf plates and
+  crown points. Mark: a big crimson MAPLE LEAF on the belt knot boss with a SAMARA PAIR under it + a seed pair at the left temple.
+  Tier 2 upgrades: raised shoulder caps, wooden pegs, brighter forked sap + back vein, belt boss + trim, helmet crest, knee bosses.
+- Loads clean in Blockbench 5.2.1 + Hytale Models 0.10.0 (no validator issues; plugin Import Attachment puts all 4 pieces on the vanilla player).
+- Skyy's answers, word for word: "Beautiful I want the armor sets consistent across the set, but each set should be a little different
+  visually, so they start simple and get a little cooler each set you get to that's better" / "They look great! A little more blue on
+  the azure, and we should be good"
+- Defaults kept: `F2_Autumn` folder, mustard cloth, maple leaf + seed pair mark, green sap (sap is a tier feature), the F1-F5 ladder.
+- Not yet seen in game. No item / recipe JSON (art only).
 ### 19. Foraging armor F1 Grove - Aspen (2026-10-09) - F1 GROVE COMPLETE (5/5)
 - Folder: `art/gathering-armor/` - `Common/Items/Armors/SkyyForaging/F1_Grove/Aspen/{Head,Chest,Hands,Legs}.blockymodel` + `_Texture.png`
   (1 texel per unit), icons `Common/Icons/ItemsGenerated/Armor_Foraging_Aspen_<Piece>.png` (64), `source/F1_Grove/Aspen/*.bbmodel`,

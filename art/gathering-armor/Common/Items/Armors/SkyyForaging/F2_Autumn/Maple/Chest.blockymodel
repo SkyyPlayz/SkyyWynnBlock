@@ -1,0 +1,2330 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Pelvis",
+      "position": {
+        "x": 0,
+        "y": 51,
+        "z": 0
+      },
+      "orientation": {
+        "x": 0,
+        "y": 0,
+        "z": 0,
+        "w": 1
+      },
+      "shape": {
+        "type": "none",
+        "offset": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "stretch": {
+          "x": 1,
+          "y": 1,
+          "z": 1
+        },
+        "settings": {
+          "isPiece": true
+        },
+        "textureLayout": {},
+        "unwrapMode": "custom",
+        "visible": true,
+        "doubleSided": false,
+        "shadingMode": "flat"
+      },
+      "children": [
+        {
+          "id": "2",
+          "name": "R-Tassel",
+          "position": {
+            "x": -6.5,
+            "y": 0.5,
+            "z": 11.3
+          },
+          "orientation": {
+            "x": 0.052318,
+            "y": 0.00137,
+            "z": 0.026141,
+            "w": 0.998287
+          },
+          "shape": {
+            "type": "box",
+            "offset": {
+              "x": 0,
+              "y": -6.5,
+              "z": 0
+            },
+            "stretch": {
+              "x": 1,
+              "y": 1,
+              "z": 1.25
+            },
+            "settings": {
+              "size": {
+                "x": 12,
+                "y": 13,
+                "z": 1
+              }
+            },
+            "textureLayout": {
+              "front": {
+                "offset": {
+                  "x": 60,
+                  "y": 60
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              },
+              "back": {
+                "offset": {
+                  "x": 48,
+                  "y": 60
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              },
+              "left": {
+                "offset": {
+                  "x": 99,
+                  "y": 60
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              },
+              "right": {
+                "offset": {
+                  "x": 100,
+                  "y": 60
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              },
+              "bottom": {
+                "offset": {
+                  "x": 102,
+                  "y": 89
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              }
+            },
+            "unwrapMode": "custom",
+            "visible": true,
+            "doubleSided": true,
+            "shadingMode": "flat"
+          }
+        },
+        {
+          "id": "3",
+          "name": "L-Tassel",
+          "position": {
+            "x": 6.5,
+            "y": 0.5,
+            "z": 11.3
+          },
+          "orientation": {
+            "x": 0.052318,
+            "y": -0.00137,
+            "z": -0.026141,
+            "w": 0.998287
+          },
+          "shape": {
+            "type": "box",
+            "offset": {
+              "x": 0,
+              "y": -6.5,
+              "z": 0
+            },
+            "stretch": {
+              "x": -1,
+              "y": 1,
+              "z": 1.25
+            },
+            "settings": {
+              "size": {
+                "x": 12,
+                "y": 13,
+                "z": 1
+              }
+            },
+            "textureLayout": {
+              "front": {
+                "offset": {
+                  "x": 60,
+                  "y": 60
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              },
+              "back": {
+                "offset": {
+                  "x": 48,
+                  "y": 60
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              },
+              "left": {
+                "offset": {
+                  "x": 99,
+                  "y": 60
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              },
+              "right": {
+                "offset": {
+                  "x": 100,
+                  "y": 60
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              },
+              "bottom": {
+                "offset": {
+                  "x": 102,
+                  "y": 89
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              }
+            },
+            "unwrapMode": "custom",
+            "visible": true,
+            "doubleSided": true,
+            "shadingMode": "flat"
+          }
+        },
+        {
+          "id": "4",
+          "name": "TasselBack",
+          "position": {
+            "x": 0,
+            "y": 0.5,
+            "z": -11.2
+          },
+          "orientation": {
+            "x": -0.052336,
+            "y": 0,
+            "z": 0,
+            "w": 0.99863
+          },
+          "shape": {
+            "type": "box",
+            "offset": {
+              "x": 0,
+              "y": -6.5,
+              "z": 0
+            },
+            "stretch": {
+              "x": 1,
+              "y": 1,
+              "z": 1.25
+            },
+            "settings": {
+              "size": {
+                "x": 24,
+                "y": 13,
+                "z": 1
+              }
+            },
+            "textureLayout": {
+              "front": {
+                "offset": {
+                  "x": 24,
+                  "y": 60
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              },
+              "back": {
+                "offset": {
+                  "x": 0,
+                  "y": 60
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              },
+              "left": {
+                "offset": {
+                  "x": 101,
+                  "y": 60
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              },
+              "right": {
+                "offset": {
+                  "x": 102,
+                  "y": 60
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              },
+              "bottom": {
+                "offset": {
+                  "x": 78,
+                  "y": 89
+                },
+                "mirror": {
+                  "x": false,
+                  "y": false
+                },
+                "angle": 0
+              }
+            },
+            "unwrapMode": "custom",
+            "visible": true,
+            "doubleSided": true,
+            "shadingMode": "flat"
+          }
+        },
+        {
+          "id": "5",
+          "name": "Belly",
+          "position": {
+            "x": 0,
+            "y": 4,
+            "z": 0
+          },
+          "orientation": {
+            "x": 0,
+            "y": 0,
+            "z": 0,
+            "w": 1
+          },
+          "shape": {
+            "type": "none",
+            "offset": {
+              "x": 0,
+              "y": 8,
+              "z": 0
+            },
+            "stretch": {
+              "x": 1,
+              "y": 1,
+              "z": 1
+            },
+            "settings": {
+              "isPiece": true
+            },
+            "textureLayout": {},
+            "unwrapMode": "custom",
+            "visible": true,
+            "doubleSided": false,
+            "shadingMode": "flat"
+          },
+          "children": [
+            {
+              "id": "6",
+              "name": "Plackart",
+              "position": {
+                "x": 0,
+                "y": 0.5,
+                "z": 0.2
+              },
+              "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "shape": {
+                "type": "box",
+                "offset": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "stretch": {
+                  "x": 1,
+                  "y": 1,
+                  "z": 1
+                },
+                "settings": {
+                  "size": {
+                    "x": 27,
+                    "y": 16,
+                    "z": 20
+                  }
+                },
+                "textureLayout": {
+                  "front": {
+                    "offset": {
+                      "x": 27,
+                      "y": 44
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  },
+                  "back": {
+                    "offset": {
+                      "x": 0,
+                      "y": 44
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  },
+                  "left": {
+                    "offset": {
+                      "x": 54,
+                      "y": 44
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  },
+                  "right": {
+                    "offset": {
+                      "x": 74,
+                      "y": 44
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  }
+                },
+                "unwrapMode": "custom",
+                "visible": true,
+                "doubleSided": false,
+                "shadingMode": "flat"
+              }
+            },
+            {
+              "id": "7",
+              "name": "VineBelt",
+              "position": {
+                "x": 0,
+                "y": -5.8,
+                "z": 0.2
+              },
+              "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "shape": {
+                "type": "box",
+                "offset": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "stretch": {
+                  "x": 1,
+                  "y": 1,
+                  "z": 1
+                },
+                "settings": {
+                  "size": {
+                    "x": 28,
+                    "y": 3,
+                    "z": 21
+                  }
+                },
+                "textureLayout": {
+                  "front": {
+                    "offset": {
+                      "x": 41,
+                      "y": 82
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  },
+                  "back": {
+                    "offset": {
+                      "x": 13,
+                      "y": 82
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  },
+                  "left": {
+                    "offset": {
+                      "x": 69,
+                      "y": 82
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  },
+                  "right": {
+                    "offset": {
+                      "x": 90,
+                      "y": 82
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  },
+                  "top": {
+                    "offset": {
+                      "x": 47,
+                      "y": 22
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  }
+                },
+                "unwrapMode": "custom",
+                "visible": true,
+                "doubleSided": false,
+                "shadingMode": "flat"
+              }
+            },
+            {
+              "id": "8",
+              "name": "Clasp",
+              "position": {
+                "x": 0,
+                "y": -5.8,
+                "z": 11
+              },
+              "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "shape": {
+                "type": "box",
+                "offset": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "stretch": {
+                  "x": 1,
+                  "y": 1,
+                  "z": 1
+                },
+                "settings": {
+                  "size": {
+                    "x": 6,
+                    "y": 6,
+                    "z": 2
+                  }
+                },
+                "textureLayout": {
+                  "front": {
+                    "offset": {
+                      "x": 62,
+                      "y": 73
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  },
+                  "left": {
+                    "offset": {
+                      "x": 68,
+                      "y": 73
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  },
+                  "right": {
+                    "offset": {
+                      "x": 70,
+                      "y": 73
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  },
+                  "top": {
+                    "offset": {
+                      "x": 66,
+                      "y": 89
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  },
+                  "bottom": {
+                    "offset": {
+                      "x": 60,
+                      "y": 89
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  }
+                },
+                "unwrapMode": "custom",
+                "visible": true,
+                "doubleSided": false,
+                "shadingMode": "flat"
+              }
+            },
+            {
+              "id": "9",
+              "name": "MapleBadge",
+              "position": {
+                "x": 0,
+                "y": -5.8,
+                "z": 12.15
+              },
+              "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "shape": {
+                "type": "quad",
+                "offset": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "stretch": {
+                  "x": 1,
+                  "y": 1,
+                  "z": 1
+                },
+                "settings": {
+                  "size": {
+                    "x": 11,
+                    "y": 11
+                  },
+                  "normal": "+Z"
+                },
+                "textureLayout": {
+                  "front": {
+                    "offset": {
+                      "x": 103,
+                      "y": 60
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  }
+                },
+                "unwrapMode": "custom",
+                "visible": true,
+                "doubleSided": true,
+                "shadingMode": "flat"
+              }
+            },
+            {
+              "id": "10",
+              "name": "SamaraPair",
+              "position": {
+                "x": 0,
+                "y": -10.8,
+                "z": 12.4
+              },
+              "orientation": {
+                "x": 0.052336,
+                "y": 0,
+                "z": 0,
+                "w": 0.99863
+              },
+              "shape": {
+                "type": "quad",
+                "offset": {
+                  "x": 0,
+                  "y": -4,
+                  "z": 0
+                },
+                "stretch": {
+                  "x": 1,
+                  "y": 1,
+                  "z": 1
+                },
+                "settings": {
+                  "size": {
+                    "x": 10,
+                    "y": 8
+                  },
+                  "normal": "+Z"
+                },
+                "textureLayout": {
+                  "front": {
+                    "offset": {
+                      "x": 39,
+                      "y": 73
+                    },
+                    "mirror": {
+                      "x": false,
+                      "y": false
+                    },
+                    "angle": 0
+                  }
+                },
+                "unwrapMode": "custom",
+                "visible": true,
+                "doubleSided": true,
+                "shadingMode": "flat"
+              }
+            },
+            {
+              "id": "11",
+              "name": "Chest",
+              "position": {
+                "x": 0,
+                "y": 5,
+                "z": -3
+              },
+              "orientation": {
+                "x": 0,
+                "y": 0,
+                "z": 0,
+                "w": 1
+              },
+              "shape": {
+                "type": "none",
+                "offset": {
+                  "x": 0,
+                  "y": 11,
+                  "z": 3
+                },
+                "stretch": {
+                  "x": 1,
+                  "y": 1,
+                  "z": 1
+                },
+                "settings": {
+                  "isPiece": true
+                },
+                "textureLayout": {},
+                "unwrapMode": "custom",
+                "visible": true,
+                "doubleSided": false,
+                "shadingMode": "flat"
+              },
+              "children": [
+                {
+                  "id": "12",
+                  "name": "Cuirass",
+                  "position": {
+                    "x": 0,
+                    "y": 0.3,
+                    "z": 0.2
+                  },
+                  "orientation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "shape": {
+                    "type": "box",
+                    "offset": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "stretch": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    },
+                    "settings": {
+                      "size": {
+                        "x": 29,
+                        "y": 22,
+                        "z": 21
+                      }
+                    },
+                    "textureLayout": {
+                      "front": {
+                        "offset": {
+                          "x": 29,
+                          "y": 0
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "back": {
+                        "offset": {
+                          "x": 0,
+                          "y": 0
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "left": {
+                        "offset": {
+                          "x": 58,
+                          "y": 0
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "right": {
+                        "offset": {
+                          "x": 79,
+                          "y": 0
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "top": {
+                        "offset": {
+                          "x": 18,
+                          "y": 22
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      }
+                    },
+                    "unwrapMode": "custom",
+                    "visible": true,
+                    "doubleSided": false,
+                    "shadingMode": "flat"
+                  }
+                },
+                {
+                  "id": "13",
+                  "name": "R-Breast",
+                  "position": {
+                    "x": -8,
+                    "y": 0.5,
+                    "z": 11.25
+                  },
+                  "orientation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "shape": {
+                    "type": "box",
+                    "offset": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "stretch": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    },
+                    "settings": {
+                      "size": {
+                        "x": 12,
+                        "y": 17,
+                        "z": 2
+                      }
+                    },
+                    "textureLayout": {
+                      "front": {
+                        "offset": {
+                          "x": 101,
+                          "y": 22
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "left": {
+                        "offset": {
+                          "x": 113,
+                          "y": 22
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "right": {
+                        "offset": {
+                          "x": 115,
+                          "y": 22
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "top": {
+                        "offset": {
+                          "x": 48,
+                          "y": 89
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "bottom": {
+                        "offset": {
+                          "x": 36,
+                          "y": 89
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      }
+                    },
+                    "unwrapMode": "custom",
+                    "visible": true,
+                    "doubleSided": false,
+                    "shadingMode": "flat"
+                  }
+                },
+                {
+                  "id": "14",
+                  "name": "L-Breast",
+                  "position": {
+                    "x": 8,
+                    "y": 0.5,
+                    "z": 11.25
+                  },
+                  "orientation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "shape": {
+                    "type": "box",
+                    "offset": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "stretch": {
+                      "x": -1,
+                      "y": 1,
+                      "z": 1
+                    },
+                    "settings": {
+                      "size": {
+                        "x": 12,
+                        "y": 17,
+                        "z": 2
+                      }
+                    },
+                    "textureLayout": {
+                      "front": {
+                        "offset": {
+                          "x": 101,
+                          "y": 22
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "left": {
+                        "offset": {
+                          "x": 113,
+                          "y": 22
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "right": {
+                        "offset": {
+                          "x": 115,
+                          "y": 22
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "top": {
+                        "offset": {
+                          "x": 48,
+                          "y": 89
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "bottom": {
+                        "offset": {
+                          "x": 36,
+                          "y": 89
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      }
+                    },
+                    "unwrapMode": "custom",
+                    "visible": true,
+                    "doubleSided": false,
+                    "shadingMode": "flat"
+                  }
+                },
+                {
+                  "id": "15",
+                  "name": "Collar",
+                  "position": {
+                    "x": 0,
+                    "y": 12,
+                    "z": -0.3
+                  },
+                  "orientation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "shape": {
+                    "type": "box",
+                    "offset": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0
+                    },
+                    "stretch": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    },
+                    "settings": {
+                      "size": {
+                        "x": 20,
+                        "y": 3,
+                        "z": 17
+                      }
+                    },
+                    "textureLayout": {
+                      "front": {
+                        "offset": {
+                          "x": 20,
+                          "y": 86
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "back": {
+                        "offset": {
+                          "x": 0,
+                          "y": 86
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "left": {
+                        "offset": {
+                          "x": 40,
+                          "y": 86
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "right": {
+                        "offset": {
+                          "x": 57,
+                          "y": 86
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      },
+                      "top": {
+                        "offset": {
+                          "x": 81,
+                          "y": 22
+                        },
+                        "mirror": {
+                          "x": false,
+                          "y": false
+                        },
+                        "angle": 0
+                      }
+                    },
+                    "unwrapMode": "custom",
+                    "visible": true,
+                    "doubleSided": false,
+                    "shadingMode": "flat"
+                  }
+                },
+                {
+                  "id": "16",
+                  "name": "R-Arm",
+                  "position": {
+                    "x": -14.50173,
+                    "y": 7.59397,
+                    "z": -0.93882
+                  },
+                  "orientation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "shape": {
+                    "type": "none",
+                    "offset": {
+                      "x": -1,
+                      "y": -8,
+                      "z": 0
+                    },
+                    "stretch": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    },
+                    "settings": {
+                      "isPiece": true
+                    },
+                    "textureLayout": {},
+                    "unwrapMode": "custom",
+                    "visible": true,
+                    "doubleSided": false,
+                    "shadingMode": "flat"
+                  },
+                  "children": [
+                    {
+                      "id": "17",
+                      "name": "R-Pauldron",
+                      "position": {
+                        "x": -5,
+                        "y": 9.6,
+                        "z": -0.3
+                      },
+                      "orientation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0.233445,
+                        "w": 0.97237
+                      },
+                      "shape": {
+                        "type": "box",
+                        "offset": {
+                          "x": 0,
+                          "y": 0,
+                          "z": 0
+                        },
+                        "stretch": {
+                          "x": 1,
+                          "y": 1,
+                          "z": 1
+                        },
+                        "settings": {
+                          "size": {
+                            "x": 13,
+                            "y": 4,
+                            "z": 16
+                          }
+                        },
+                        "textureLayout": {
+                          "front": {
+                            "offset": {
+                              "x": 0,
+                              "y": 82
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "back": {
+                            "offset": {
+                              "x": 104,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "left": {
+                            "offset": {
+                              "x": 72,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "right": {
+                            "offset": {
+                              "x": 88,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "top": {
+                            "offset": {
+                              "x": 94,
+                              "y": 44
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          }
+                        },
+                        "unwrapMode": "custom",
+                        "visible": true,
+                        "doubleSided": false,
+                        "shadingMode": "flat"
+                      },
+                      "children": [
+                        {
+                          "id": "18",
+                          "name": "R-PauldronCap",
+                          "position": {
+                            "x": 0.8,
+                            "y": 2.5,
+                            "z": 0
+                          },
+                          "orientation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0,
+                            "w": 1
+                          },
+                          "shape": {
+                            "type": "box",
+                            "offset": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 0
+                            },
+                            "stretch": {
+                              "x": 1,
+                              "y": 1,
+                              "z": 1
+                            },
+                            "settings": {
+                              "size": {
+                                "x": 9,
+                                "y": 3,
+                                "z": 13
+                              }
+                            },
+                            "textureLayout": {
+                              "front": {
+                                "offset": {
+                                  "x": 109,
+                                  "y": 86
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "back": {
+                                "offset": {
+                                  "x": 100,
+                                  "y": 86
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "left": {
+                                "offset": {
+                                  "x": 74,
+                                  "y": 86
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "right": {
+                                "offset": {
+                                  "x": 87,
+                                  "y": 86
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "top": {
+                                "offset": {
+                                  "x": 81,
+                                  "y": 60
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "bottom": {
+                                "offset": {
+                                  "x": 72,
+                                  "y": 60
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              }
+                            },
+                            "unwrapMode": "custom",
+                            "visible": true,
+                            "doubleSided": false,
+                            "shadingMode": "flat"
+                          }
+                        },
+                        {
+                          "id": "19",
+                          "name": "R-ShoulderLeaf",
+                          "position": {
+                            "x": -2,
+                            "y": 2,
+                            "z": -3
+                          },
+                          "orientation": {
+                            "x": -0.154028,
+                            "y": -0.080182,
+                            "z": 0.454734,
+                            "w": 0.873535
+                          },
+                          "shape": {
+                            "type": "quad",
+                            "offset": {
+                              "x": 0,
+                              "y": 4.5,
+                              "z": 0
+                            },
+                            "stretch": {
+                              "x": 1,
+                              "y": 1,
+                              "z": 1
+                            },
+                            "settings": {
+                              "size": {
+                                "x": 9,
+                                "y": 9
+                              },
+                              "normal": "+Z"
+                            },
+                            "textureLayout": {
+                              "front": {
+                                "offset": {
+                                  "x": 0,
+                                  "y": 73
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              }
+                            },
+                            "unwrapMode": "custom",
+                            "visible": true,
+                            "doubleSided": true,
+                            "shadingMode": "flat"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "id": "20",
+                      "name": "R-PauldronLame",
+                      "position": {
+                        "x": -6.6,
+                        "y": 3.4,
+                        "z": -0.3
+                      },
+                      "orientation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": -0.069756,
+                        "w": 0.997564
+                      },
+                      "shape": {
+                        "type": "box",
+                        "offset": {
+                          "x": 0,
+                          "y": 0,
+                          "z": 0
+                        },
+                        "stretch": {
+                          "x": 1,
+                          "y": 1,
+                          "z": 1
+                        },
+                        "settings": {
+                          "size": {
+                            "x": 3,
+                            "y": 8,
+                            "z": 15
+                          }
+                        },
+                        "textureLayout": {
+                          "front": {
+                            "offset": {
+                              "x": 52,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "back": {
+                            "offset": {
+                              "x": 49,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "left": {
+                            "offset": {
+                              "x": 9,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "right": {
+                            "offset": {
+                              "x": 24,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "top": {
+                            "offset": {
+                              "x": 110,
+                              "y": 44
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "bottom": {
+                            "offset": {
+                              "x": 107,
+                              "y": 44
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          }
+                        },
+                        "unwrapMode": "custom",
+                        "visible": true,
+                        "doubleSided": false,
+                        "shadingMode": "flat"
+                      }
+                    },
+                    {
+                      "id": "21",
+                      "name": "R-Sleeve",
+                      "position": {
+                        "x": 0,
+                        "y": -0.9,
+                        "z": 0
+                      },
+                      "orientation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                      },
+                      "shape": {
+                        "type": "box",
+                        "offset": {
+                          "x": 0,
+                          "y": 0,
+                          "z": 0
+                        },
+                        "stretch": {
+                          "x": 1,
+                          "y": 1,
+                          "z": 1
+                        },
+                        "settings": {
+                          "size": {
+                            "x": 9,
+                            "y": 22,
+                            "z": 13
+                          }
+                        },
+                        "textureLayout": {
+                          "front": {
+                            "offset": {
+                              "x": 9,
+                              "y": 22
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "back": {
+                            "offset": {
+                              "x": 0,
+                              "y": 22
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "left": {
+                            "offset": {
+                              "x": 100,
+                              "y": 0
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "right": {
+                            "offset": {
+                              "x": 113,
+                              "y": 0
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "top": {
+                            "offset": {
+                              "x": 90,
+                              "y": 60
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          }
+                        },
+                        "unwrapMode": "custom",
+                        "visible": true,
+                        "doubleSided": false,
+                        "shadingMode": "flat"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "22",
+                  "name": "L-Arm",
+                  "position": {
+                    "x": 14.50173,
+                    "y": 7.59397,
+                    "z": -0.93882
+                  },
+                  "orientation": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0,
+                    "w": 1
+                  },
+                  "shape": {
+                    "type": "none",
+                    "offset": {
+                      "x": 1,
+                      "y": -8,
+                      "z": 0
+                    },
+                    "stretch": {
+                      "x": 1,
+                      "y": 1,
+                      "z": 1
+                    },
+                    "settings": {
+                      "isPiece": true
+                    },
+                    "textureLayout": {},
+                    "unwrapMode": "custom",
+                    "visible": true,
+                    "doubleSided": false,
+                    "shadingMode": "flat"
+                  },
+                  "children": [
+                    {
+                      "id": "23",
+                      "name": "L-Pauldron",
+                      "position": {
+                        "x": 5,
+                        "y": 9.6,
+                        "z": -0.3
+                      },
+                      "orientation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": -0.233445,
+                        "w": 0.97237
+                      },
+                      "shape": {
+                        "type": "box",
+                        "offset": {
+                          "x": 0,
+                          "y": 0,
+                          "z": 0
+                        },
+                        "stretch": {
+                          "x": -1,
+                          "y": 1,
+                          "z": 1
+                        },
+                        "settings": {
+                          "size": {
+                            "x": 13,
+                            "y": 4,
+                            "z": 16
+                          }
+                        },
+                        "textureLayout": {
+                          "front": {
+                            "offset": {
+                              "x": 0,
+                              "y": 82
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "back": {
+                            "offset": {
+                              "x": 104,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "left": {
+                            "offset": {
+                              "x": 72,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "right": {
+                            "offset": {
+                              "x": 88,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "top": {
+                            "offset": {
+                              "x": 94,
+                              "y": 44
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          }
+                        },
+                        "unwrapMode": "custom",
+                        "visible": true,
+                        "doubleSided": false,
+                        "shadingMode": "flat"
+                      },
+                      "children": [
+                        {
+                          "id": "24",
+                          "name": "L-Vine",
+                          "position": {
+                            "x": 0.5,
+                            "y": 2.5,
+                            "z": 0
+                          },
+                          "orientation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0,
+                            "w": 1
+                          },
+                          "shape": {
+                            "type": "box",
+                            "offset": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 0
+                            },
+                            "stretch": {
+                              "x": 1,
+                              "y": 1,
+                              "z": 1
+                            },
+                            "settings": {
+                              "size": {
+                                "x": 3,
+                                "y": 2,
+                                "z": 18
+                              }
+                            },
+                            "textureLayout": {
+                              "front": {
+                                "offset": {
+                                  "x": 75,
+                                  "y": 89
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "back": {
+                                "offset": {
+                                  "x": 72,
+                                  "y": 89
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "left": {
+                                "offset": {
+                                  "x": 0,
+                                  "y": 89
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "right": {
+                                "offset": {
+                                  "x": 18,
+                                  "y": 89
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "top": {
+                                "offset": {
+                                  "x": 78,
+                                  "y": 22
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "bottom": {
+                                "offset": {
+                                  "x": 75,
+                                  "y": 22
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              }
+                            },
+                            "unwrapMode": "custom",
+                            "visible": true,
+                            "doubleSided": false,
+                            "shadingMode": "flat"
+                          },
+                          "children": [
+                            {
+                              "id": "25",
+                              "name": "L-VineLeafA",
+                              "position": {
+                                "x": 1.5,
+                                "y": 0.5,
+                                "z": 6
+                              },
+                              "orientation": {
+                                "x": -0.55998,
+                                "y": 0.124145,
+                                "z": -0.177297,
+                                "w": 0.799735
+                              },
+                              "shape": {
+                                "type": "quad",
+                                "offset": {
+                                  "x": 0,
+                                  "y": 3.5,
+                                  "z": 0
+                                },
+                                "stretch": {
+                                  "x": 1,
+                                  "y": 1,
+                                  "z": 1
+                                },
+                                "settings": {
+                                  "size": {
+                                    "x": 9,
+                                    "y": 9
+                                  },
+                                  "normal": "+Z"
+                                },
+                                "textureLayout": {
+                                  "front": {
+                                    "offset": {
+                                      "x": 114,
+                                      "y": 60
+                                    },
+                                    "mirror": {
+                                      "x": false,
+                                      "y": false
+                                    },
+                                    "angle": 0
+                                  }
+                                },
+                                "unwrapMode": "custom",
+                                "visible": true,
+                                "doubleSided": true,
+                                "shadingMode": "flat"
+                              }
+                            },
+                            {
+                              "id": "26",
+                              "name": "L-VineLeafB",
+                              "position": {
+                                "x": 1.5,
+                                "y": 0.5,
+                                "z": -6.5
+                              },
+                              "orientation": {
+                                "x": 0.54703,
+                                "y": -0.172478,
+                                "z": -0.246324,
+                                "w": 0.781239
+                              },
+                              "shape": {
+                                "type": "quad",
+                                "offset": {
+                                  "x": 0,
+                                  "y": -3,
+                                  "z": 0
+                                },
+                                "stretch": {
+                                  "x": 1,
+                                  "y": 1,
+                                  "z": 1
+                                },
+                                "settings": {
+                                  "size": {
+                                    "x": 7,
+                                    "y": 7
+                                  },
+                                  "normal": "+Z"
+                                },
+                                "textureLayout": {
+                                  "front": {
+                                    "offset": {
+                                      "x": 55,
+                                      "y": 73
+                                    },
+                                    "mirror": {
+                                      "x": false,
+                                      "y": false
+                                    },
+                                    "angle": 0
+                                  }
+                                },
+                                "unwrapMode": "custom",
+                                "visible": true,
+                                "doubleSided": true,
+                                "shadingMode": "flat"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "id": "27",
+                          "name": "L-PauldronCap",
+                          "position": {
+                            "x": -0.8,
+                            "y": 2.5,
+                            "z": 0
+                          },
+                          "orientation": {
+                            "x": 0,
+                            "y": 0,
+                            "z": 0,
+                            "w": 1
+                          },
+                          "shape": {
+                            "type": "box",
+                            "offset": {
+                              "x": 0,
+                              "y": 0,
+                              "z": 0
+                            },
+                            "stretch": {
+                              "x": -1,
+                              "y": 1,
+                              "z": 1
+                            },
+                            "settings": {
+                              "size": {
+                                "x": 9,
+                                "y": 3,
+                                "z": 13
+                              }
+                            },
+                            "textureLayout": {
+                              "front": {
+                                "offset": {
+                                  "x": 109,
+                                  "y": 86
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "back": {
+                                "offset": {
+                                  "x": 100,
+                                  "y": 86
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "left": {
+                                "offset": {
+                                  "x": 74,
+                                  "y": 86
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "right": {
+                                "offset": {
+                                  "x": 87,
+                                  "y": 86
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "top": {
+                                "offset": {
+                                  "x": 81,
+                                  "y": 60
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              },
+                              "bottom": {
+                                "offset": {
+                                  "x": 72,
+                                  "y": 60
+                                },
+                                "mirror": {
+                                  "x": false,
+                                  "y": false
+                                },
+                                "angle": 0
+                              }
+                            },
+                            "unwrapMode": "custom",
+                            "visible": true,
+                            "doubleSided": false,
+                            "shadingMode": "flat"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "id": "28",
+                      "name": "L-PauldronLame",
+                      "position": {
+                        "x": 6.6,
+                        "y": 3.4,
+                        "z": -0.3
+                      },
+                      "orientation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0.069756,
+                        "w": 0.997564
+                      },
+                      "shape": {
+                        "type": "box",
+                        "offset": {
+                          "x": 0,
+                          "y": 0,
+                          "z": 0
+                        },
+                        "stretch": {
+                          "x": -1,
+                          "y": 1,
+                          "z": 1
+                        },
+                        "settings": {
+                          "size": {
+                            "x": 3,
+                            "y": 8,
+                            "z": 15
+                          }
+                        },
+                        "textureLayout": {
+                          "front": {
+                            "offset": {
+                              "x": 52,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "back": {
+                            "offset": {
+                              "x": 49,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "left": {
+                            "offset": {
+                              "x": 9,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "right": {
+                            "offset": {
+                              "x": 24,
+                              "y": 73
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "top": {
+                            "offset": {
+                              "x": 110,
+                              "y": 44
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "bottom": {
+                            "offset": {
+                              "x": 107,
+                              "y": 44
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          }
+                        },
+                        "unwrapMode": "custom",
+                        "visible": true,
+                        "doubleSided": false,
+                        "shadingMode": "flat"
+                      }
+                    },
+                    {
+                      "id": "29",
+                      "name": "L-Sleeve",
+                      "position": {
+                        "x": 0,
+                        "y": -0.9,
+                        "z": 0
+                      },
+                      "orientation": {
+                        "x": 0,
+                        "y": 0,
+                        "z": 0,
+                        "w": 1
+                      },
+                      "shape": {
+                        "type": "box",
+                        "offset": {
+                          "x": 0,
+                          "y": 0,
+                          "z": 0
+                        },
+                        "stretch": {
+                          "x": -1,
+                          "y": 1,
+                          "z": 1
+                        },
+                        "settings": {
+                          "size": {
+                            "x": 9,
+                            "y": 22,
+                            "z": 13
+                          }
+                        },
+                        "textureLayout": {
+                          "front": {
+                            "offset": {
+                              "x": 9,
+                              "y": 22
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "back": {
+                            "offset": {
+                              "x": 0,
+                              "y": 22
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "left": {
+                            "offset": {
+                              "x": 100,
+                              "y": 0
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "right": {
+                            "offset": {
+                              "x": 113,
+                              "y": 0
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          },
+                          "top": {
+                            "offset": {
+                              "x": 90,
+                              "y": 60
+                            },
+                            "mirror": {
+                              "x": false,
+                              "y": false
+                            },
+                            "angle": 0
+                          }
+                        },
+                        "unwrapMode": "custom",
+                        "visible": true,
+                        "doubleSided": false,
+                        "shadingMode": "flat"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "format": "character",
+  "lod": "auto"
+}

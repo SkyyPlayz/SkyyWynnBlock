@@ -12,6 +12,9 @@ if "HytaleServer" in out:
 
 stamp = time.strftime("%Y%m%d-%H%M")
 dst = os.path.join(PROJECT, "backups", "deploy-" + stamp)
+_n = 2
+while os.path.exists(dst):  # two deploys in one minute: never reuse (or fail on) an existing backup folder
+    dst = os.path.join(PROJECT, "backups", "deploy-%s-%d" % (stamp, _n)); _n += 1
 os.makedirs(os.path.join(dst, "Mods"))
 n = 0
 for f in os.listdir(os.path.join(USERDATA, "Mods")):

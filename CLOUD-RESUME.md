@@ -68,22 +68,21 @@ Step and the class path trees overnight (do NOT edit research/cloud/Class-Tree-P
 
 <!-- 2026-10-09 local session (Skyy at work: "if you need, you can keep the cloud agent working at the same time. to speed things up."). 7 local
 builds run (merchants, sacks, tools, collections, fishing, auctions, trees). These 5 are specs only (no game files) - one commit + OUTBOX block each. -->
-- [ ] **Zone archipelago worldgen spec** -> `research/cloud/Zone-Archipelago-Spec.md`. Skyy's lock (docs/answered/world.md 2026-10-09 + the
-      "Island layout" section at the end of research/SkyyWorldGen-Plan.md): each zone = a few islands joined by land necks / arches / built
-      bridges, zones far apart (dragon / portal only), deep vanilla caves down to the lava caverns, vertically squashed. Technique notes:
-      research/Mods-Folder-Survey.md "Welkin" section (cell grid ~470, jitter 90, ~80 gradient warp, Simplex tops faded by distance, noise
-      underside). Write node-level HytaleGenerator JSON plans per zone (Zone 1-5), the gap width, cave band compression numbers, portal /
-      dragon travel points, and a staged build plan for SkyyWorldGen 0.2+. Never copy Welkin or vanilla files.
-- [ ] **Element system spec** -> `research/cloud/Element-System-Spec.md`. Blocker for Spellblade Imbue + the shelved elemental weapons
-      (research/classes/Spellblade.md "Elements" + docs/answered/gear.md). Five elements + statuses, how they show on gear (SkyyGear already rolls
-      Raw Fire / Water / Earth / Thunder damage lines), resistances per mob, reactions (keep simple), which classes use which, UI colours.
-- [ ] **Class ability engine plan (Mage + Priest first)** -> `research/cloud/Ability-Engine-Plan.md`: turn research/cloud/Class-Ability-Spec-Draft.md
-      + research/Class-Power-Split.md (costs are Mana + Stamina by class split, affordable at unlock levels A1 1 / A2 10 / A2-alt 20 / A1-alt 30 -
-      docs/answered/classes.md 2026-10-09) + research/cloud/Ability-Input-Design.md into a build plan: which mod, the 4-ability / 2-primary +
-      crouch-alt input, cooldown + cost handling, per-ability engine hooks and the probes to run first, round split for the local session.
+<!-- 2026-10-09 evening local session (Skyy: "use up all the tokes. Just be sure you aren't wasting any"). Local builds running: rarity G1
+(SkyyGear 0.2.14), ability engine R1 (SkyyClasses), WorldGen 0.3 archipelago node proof, SkyyProfiles cap 8, SkyyPets 0.1. Next local
+builds need these specs. Specs only; one commit + OUTBOX block each. -->
+- [x] (superseded 2026-10-10: the LOCAL session writes research/Requip-Smithing-Spec.md - skip) **/smithing hub spec** (Skyy 2026-10-10, docs/answered/gear.md SMITHING HUB line - write it TOGETHER with the Requip spec, they share
+      storage): `research/cloud/Smithing-Hub-Spec.md`: one page /smithing with tabs Craft / Reforge / Upgrade / Merge, crafting pulls
+      from + delivers into the Requip spaces (and bags for materials), SET CARDS (size, figure layout of 4 piece icons, set stats + bonus
+      text, click -> piece page with craft buttons), class filter (SkyyClasses weapon rules + armor type per class), how vanilla benches
+      stay usable, page sizes at 1080p, mockup sketch (ASCII or PNG). Questions with defaults.
+- [ ] **Upgrade ladders + Dragon sets spec** (Skyy 2026-10-10, docs/answered/gear.md /upgrade lines): new `research/cloud/Upgrade-Ladders-Spec.md`:
+      every ladder the /upgrade page should know (Mining metal armor, Foraging tree sets, Farming crop sets, tools + multitools, metal
+      weapons, Soul Cages) with per-step costs (cheaper than crafting fresh? default: the next tier recipe minus the old item's share),
+      the Mythic DRAGON set (first dragon boss drop; one elemental dragon mini-boss per element in the next zone drops the upgrade item),
+      the CONVERT step (Cloth / Light / Heavy variants keep rolls; which Armory sets to recolour - mark The Armory facts UNVERIFIED), and
+      what an upgrade keeps (rarity, lines, reforge) vs re-rolls (level). Questions with defaults.
 - [ ] **SkyyAbilityProbe PR** - once https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 is merged: open a [cloud] PR with the held draft
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
 ## Done (delete after logging - see the rules above)
-- [x] Dynamic Seasons crash report draft - 2026-10-09 - `research/cloud/DynamicSeasons-Crash-Report.md`
-- [x] Pet core spec - 2026-10-09 - `research/cloud/Pet-Core-Spec.md`

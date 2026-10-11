@@ -1,0 +1,32 @@
+# Guild Games - castle raids (Skyy 2026-10-09, LATER: after the server is live)
+
+Skyy: "This is later game content I have planned for once we actually have the server up and running. But i want Guild Games!  The first
+one will be a castle raid. Here my idea, each guild gets a guild island, with a zone to build in that starts with a rundown broken cast.
+Pretty similar to the one, the skeleton spawn in, in vanilla hightail. Guild members can then use guild gold to upgrade this area by special
+weapons like huge mounted crossbows.   But basically you build your guild castle.    Then we have games. I'm picturing something like in
+Percy Jackson, the son of Neptune, the camp Jupiter war games. Your castle and the enemy castle spawn at random locations on a random
+island. Then you battle and try to steal the enemy standard."
+
+## Pieces (first sketch - every number / rule still Skyy's to decide)
+1. GUILD ISLAND: one per guild (SkyyGuilds + SkyyIslands instance pattern), a build zone that starts with a ruined castle like the
+   vanilla skeleton castle / fort prefab (find the prefab id in Assets.zip; spawn a copy, never ship vanilla files).
+2. CASTLE UPGRADES: bought with GUILD GOLD (SkyyGuilds treasury): siege defences (huge mounted crossbows / ballistae, walls, gates,
+   towers), cosmetic banners; members build freely inside the zone with guild permissions.
+3. WAR GAMES (Camp Jupiter style): two guilds; BOTH castles are copied (as saved prefabs / schematics of the build zone) onto a RANDOM
+   arena island at random spots; capture-the-flag: steal the enemy STANDARD and bring it home; temporary instance, nothing lost from the
+   real castles; respawn rules, time limit, team sizes, rewards (guild XP / gold / trophies), seasons + ladder later.
+## Engine questions to probe later
+- Copying a player-built area (prefab save / paste API) into an instance world; mounted crossbow as a usable block / entity; flag carrier
+  state + drop on death; instance per match; PvP toggles per instance.
+
+## More from Skyy (2026-10-09)
+- "I want guilds to be able to challenge each other and set rewards, so you can battle over loot and money" -> CHALLENGES with WAGERS:
+  a guild challenges another, both put up stakes (guild gold / coins / items) held in escrow by the server until the match ends; winner
+  takes the pot (escrow must be dupe-proof; Mythic / UT / Sets follow the market wall - decide if they can be wagered).
+- "I wana 1v1 guild battles, and group battles where guilds team up, for server wide events." -> MODES: 1v1 guild battles, and ALLIANCE
+  battles (several guilds team up per side) for server-wide events (scheduled, announced, bigger arena islands, event rewards).
+- "I also want another game mode thats like the exam in red rising. 12 guilds, 12 castles on one battle map. Only one guild wins.    When
+  defeated captured enemies work for you." -> THE INSTITUTE (Red Rising "Passage / exam" style): 12 guilds, 12 castles on ONE big battle
+  map, last guild standing wins. A defeated guild's captured players become the captor's servants for the rest of the match (fight for /
+  gather for the guild that captured them - e.g. switched team, can't attack their new masters, maybe a "proctor" collar mark), so
+  captures snowball. Longer match (hours / days?), resources on the map, castles captured by taking the standard.

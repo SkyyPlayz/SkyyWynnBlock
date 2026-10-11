@@ -16,10 +16,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
-    ("SkyyHud", "0.3.17"), ("SkyySacks", "0.7.15"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.7"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.6"), ("SkyyGear", "0.2.11"), ("SkyySkills", "0.4.25"),
-    ("SkyyAccessories", "0.5.9"), ("SkyyClasses", "0.1.14"), ("SkyyMenu", "0.3.12"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.7"),
-    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.3"),
+    ("SkyyHud", "0.3.18"), ("SkyySacks", "0.7.17"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.9"), ("SkyyParty", "0.1.7"),
+    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.23"), ("SkyySkills", "0.4.30"),
+    ("SkyyAccessories", "0.5.11"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.17"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.9"),
+    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -34,14 +34,13 @@ SET = [
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
     ("SkyyVault", "0.1.5"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
-    ("SkyyAuctions", "0.1.2"),
+    ("SkyyAuctions", "0.1.3"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
     ("SkyyRanks", "0.1.1"),
     # vanilla UI pass (2026-09-29): DEV/TEST mod - /skyprobe (admin only) opens the shared kit's probe pages so Skyy can confirm the
     # vanilla look works inline before any restyled page ships. Move it to RETIRED once the probe results are in.
-    ("SkyyUiProbe", "0.4"),
     # gathering probe pack P0 (2026-10-06, research/Gathering-Progression-Spec.md): op-only dev mods for ONE test session - remove BOTH after Skyy's
     # test. SkyyGatherProbeB-0.1.jar is built into SkyyGatherProbe/ and moved to SkyyGatherProbeB/ by hand.
     ("SkyyGatherProbe", "0.1"), ("SkyyGatherProbeB", "0.1"),
@@ -55,6 +54,8 @@ SET = [
     # exists; otherwise roll back all four together and expect classless Monk profiles (no items / coins / XP lost; Combat.Shaman kept).
     # FLOOR (2026-10-08, perks25): before rolling SkyySkills below 0.4.25 switch "Class Stamina" and "Class balance boost" OFF in Server
     # Setup and let players log in once (0.4.24 never removes the saved modifiers skyyskill_classstamina / classboosthp / classboostmana / classbooststamina).
+    # FLOOR (2026-10-09, mining armor): SkyyGear 0.2.15 -> 0.2.14 is safe for items, but BEFORE rolling back delete the 7 set.mining_*
+    # lines from Skyy_SkyyGear/config.properties (0.2.14 would turn Adamantite / Mithril / Onyxium spd into an always-on full-set Speed bonus).
     # FLOOR (2026-10-08, loot round): never roll SkyyGear below 0.2.11 without first setting unid.bags=false and having players identify every
     # mystery bag (bags become unknown items in 0.2.10). Never roll SkyyExploration below 0.2.4 without first setting luggage.enabled=false,
     # visiting each world until /exploreadmin stats shows out 0 / claimed 0, then deleting Skyy_SkyyExploration/luggage/. SkyyMobs 0.1.5: no floor.
@@ -62,20 +63,28 @@ SET = [
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
     # fishing items, removing SkyyFishing turns rods / reels / parts / fish into unknown items.
-    ("SkyyFishing", "0.1"),
+    ("SkyyFishing", "0.1.2"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.5"), ("SkyyWorldGen", "0.1"),
+    ("SkyyMobs", "0.1.5"), ("SkyyWorldGen", "0.5"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
-    ("SkyyTownProbe", "0.1"),
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
-    ("SkyyKeyProbe", "0.2"),
+    # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
+    # until /merchantadmin list shows no merchant out, then remove the jar (else Temple_Klops NPCs named "Traveling Merchant" stay).
+    ("SkyyMerchants", "0.1.1"),
+    # SkyyPets 0.1 (2026-10-09, slot pets phase 1: records + buffs, no creatures). FLOOR: before removing SkyyPets switch Server Setup >
+    # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
+    # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
+    # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
+    ("SkyyPets", "0.2.3"),
+    ("SkyyWardrobe", "0.2"),
+    ("SkyyUiProbe", "0.5"), ("SkyyUiProbeB", "0.5"),  # 2026-10-11 kit / tab / quality-tooltip probes (K1 H1 T1) - ONE Skyy test session, then RETIRED again  # 2026-10-10 Skyy: "build the wardrobe/ loadout system too" - loadouts (armor + hotbar + pets + abilities), per profile
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.14"),
+    ("SkyyArmory", "0.1.21"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
@@ -102,10 +111,11 @@ SET = [
 # 2026-10-06 (Skyy: "add hyfishing right now, along side dynamic season"): HyFishing (fishing until our own fishing mod replaces it) + Dynamic
 # Seasons (its fishing seasons must keep working with our fishing mod later). Both only need Hytale modules; Dynamic Seasons optionally
 # integrates Angler's Almanac / HyFishing.
-PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "TheRedlotus:HyFishing", "BlueOrbit:DynamicSeasons",
+PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "BlueOrbit:DynamicSeasons",
                     "NoCube:[NoCube's] Orchard",
                     "dev.ninesliced:BetterMap",
-                    "Frah:Better Mob Expansion"]  # 2026-10-09 Skyy: test BME main mod (GPLv3, credit in PACK.md + server credits); Humans add-on stays OFF ("No guns")  # 2026-10-08 Skyy: "switch the armory on" - CC BY-NC (credit, never sell; PACK.md); combat armor + Warrior / Berserker / Assassin weapons + boss specials (research/Pack-Armor-Plan.md)  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
+                    "Frah:Better Mob Expansion",
+                    "IBC:Multitools"]  # 2026-10-10 Skyy: Multitools in the pack (MIT, credit InkBlindCat); SkyyGear 0.2.18+ changes its recipe + stats at runtime  # 2026-10-09 Skyy: test BME main mod (GPLv3, credit in PACK.md + server credits); Humans add-on stays OFF ("No guns")  # 2026-10-08 Skyy: "switch the armory on" - CC BY-NC (credit, never sell; PACK.md); combat armor + Warrior / Berserker / Assassin weapons + boss specials (research/Pack-Armor-Plan.md)  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
 # Advanced Farming was NOT added (Skyy 2026-10-06: out of date, no longer updated -> build its tools into our own mod).
 # Skyy mods that were MERGED into another mod and must be switched OFF in the world config on every deploy (their jar may stay in Mods;
 # a disabled key is not loaded). Without this, deploy_set only disables older versions of the SAME mod name, and a retired mod would keep
@@ -145,13 +155,13 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "T
 # SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 (2026-10-03): deploy and roll back TOGETHER. Before SkyySkills goes below 0.4.15:
 # switch Base Mana off and let players log in once. To roll SkyyArmory back: take it out of SET, add it to RETIRED and put SkyySkills back
 # to 0.4.14 in the same deploy (vanilla staff files would charge 50 Mana behind a 10-Mana check otherwise). SkyyClasses back to 0.1.10 is safe.
-RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe"]   # SkyyMonkProbe: tested 2026-10-08 (TEST 48), the real moves are SkyyArmory 0.1.12
+RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe", "SkyyTownProbe", "SkyyPetProbe", "SkyyKeyProbe"]   # SkyyMonkProbe: tested 2026-10-08 (TEST 48), the real moves are SkyyArmory 0.1.12
 
 
 # Third-party pack mods switched OFF in the world on every deploy (kept installed).
 # 2026-10-09 Skyy: "Armory off until 0.7" - The Armory (708 textures) overflowed the client item/creature texture atlas
 # (8192x16384 needed, max 8192x8192: 395 of 2808 images dropped = broken copper ore, talismans, swords). Re-test on Hytale 0.7.
-PACK_DISABLED = ["LadyPaladra:TheArmory"]
+PACK_DISABLED = ["LadyPaladra:TheArmory", "TheRedlotus:HyFishing"]  # 2026-10-10 Skyy: HyFishing OFF ("Switch HyFishing off") - SkyyFishing replaces it
 
 
 def disable_third_party(world, key):
@@ -159,10 +169,36 @@ def disable_third_party(world, key):
     cfg = os.path.join(B.USERDATA, "Saves", world, "config.json")
     d = json.load(open(cfg, encoding="utf-8"))
     mods = d.setdefault("Mods", {})
-    if mods.get(key, {}).get("Enabled"):
+    # a key missing from the world config still LOADS (the server enables mods it has no entry for) - write Enabled false then too
+    if mods.get(key, {}).get("Enabled", True):
         mods[key] = {"Enabled": False}
         json.dump(d, open(cfg, "w", encoding="utf-8"), indent=2)
         print("world", world, "switched off", key)
+
+
+def sync_bettermap_worlds(world):
+    """BetterMap (pack mod, dev.ninesliced) only maps worlds named in its allowedWorlds list (exact names, no wildcard), so every
+    zone / island world shows "usage in this world is not tracked". Skyy 2026-10-10: "see if you can get better maps to work in every
+    zone properly" -> on each deploy (game closed) add every world folder of this save to the list. Server-owner config only (no
+    BetterMap file is shipped or called); worlds created after the deploy are added by the next deploy."""
+    import json
+    save = os.path.join(B.USERDATA, "Saves", world)
+    cfg = os.path.join(save, "mods", "BetterMap", "config.json")
+    wdir = os.path.join(save, "universe", "worlds")
+    if not (os.path.isfile(cfg) and os.path.isdir(wdir)):
+        return
+    raw = open(cfg, encoding="utf-8").read()
+    d = json.loads(raw)
+    have = d.get("allowedWorlds")
+    if not isinstance(have, list):
+        return
+    add = sorted(n for n in os.listdir(wdir) if os.path.isdir(os.path.join(wdir, n)) and n not in have)
+    if add:
+        d["allowedWorlds"] = have + add
+        tmp = cfg + ".tmp"
+        open(tmp, "w", encoding="utf-8").write(json.dumps(d, indent=2))
+        os.replace(tmp, cfg)
+        print("world", world, "BetterMap now maps", len(add), "more world(s):", ", ".join(add))
 
 
 def retire_in_world(world, mod):
@@ -243,6 +279,29 @@ def main():
     # wood wand signature (2026-10-08): SkyySkills 0.4.24 wands name SkyyArmory_Wand_Signature (SkyyArmory 0.1.14) - never roll Armory below 0.1.14 while Skills is 0.4.24+
     if _v(_p.get("SkyySkills", "0")) >= (0, 4, 24) and _v(_p.get("SkyyArmory", "0")) < (0, 1, 14):
         print("STOP: SkyySkills 0.4.24+ needs SkyyArmory 0.1.14+ (the root SkyyArmory_Wand_Signature it names) in the same deploy"); return 1
+    # Monk "Zen" round (2026-10-09): SkyyClasses 0.1.15 publishes class:skill "Zen"; SkyyMobs / SkyyGear ask skill:fn:level with it
+    if _v(_p.get("SkyyClasses", "0")) >= (0, 1, 15) and _v(_p.get("SkyySkills", "0")) < (0, 4, 27):
+        print("STOP: SkyyClasses 0.1.15+ needs SkyySkills 0.4.27+ (the Monk skill Zen) in the same deploy"); return 1
+    if _v(_p.get("SkyySkills", "0")) >= (0, 4, 27) and _v(_p.get("SkyyClasses", "0")) < (0, 1, 15):
+        print("STOP: SkyySkills 0.4.27+ deploys with SkyyClasses 0.1.15+ (else SkyyHud's class line shows '-')"); return 1
+    # Ability engine R1 (2026-10-09): SkyyClasses 0.1.16 tags ability damage; SkyySkills 0.4.28 credits ability kills (class XP after a weapon swap)
+    if _v(_p.get("SkyyClasses", "0")) >= (0, 1, 16) and _v(_p.get("SkyySkills", "0")) < (0, 4, 28):
+        print("STOP: SkyyClasses 0.1.16+ needs SkyySkills 0.4.28+ (ability kill XP) in the same deploy"); return 1
+    # Multitools (2026-10-10): with IBC:Multitools in the pack, SkyyGear must be 0.2.18+ (else multitools keep their own cheap recipe)
+    if "IBC:Multitools" in PACK_THIRD_PARTY and _v(_p.get("SkyyGear", "0")) < (0, 2, 18):
+        print("STOP: IBC:Multitools needs SkyyGear 0.2.18+ (the pickaxe + hatchet recipe and the multitool stats)"); return 1
+    # FLOOR SkyyWorldGen 0.5 (2026-10-10): a jar below 0.5 cannot load the world skywynn_proof2 - before a rollback stop the server, delete
+    # universe/worlds/skywynn_proof2 and its lines in worlds.properties.
+    # Requip batch (2026-10-11): SkyyWardrobe 0.2 + SkyySacks 0.7.17 + SkyyGear 0.2.23 deploy TOGETHER (4-arg sacks:fn:deposit, stamp copy).
+    # FLOORS: never roll SkyyWardrobe below 0.2 once 0.1 files migrated (0.1 cannot see the pool); SkyyGear >= 0.2.23 while Requip runs (stamp copy).
+    if _v(_p.get("SkyyWardrobe", "0")) >= (0, 2) and (_v(_p.get("SkyySacks", "0")) < (0, 7, 17) or _v(_p.get("SkyyGear", "0")) < (0, 2, 23)):
+        print("STOP: SkyyWardrobe 0.2 needs SkyySacks 0.7.17+ and SkyyGear 0.2.23+ (deploy the Requip batch together)"); return 1
+    # Untiered batch (2026-10-09): SkyyGear 0.2.16 + SkyyArmory 0.1.15 deploy TOGETHER (the 3 Armory UT items + their numbers from SkyyGear)
+    if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 16)) != (_v(_p.get("SkyyArmory", "0")) >= (0, 1, 15)):
+        print("STOP: SkyyGear 0.2.16+ and SkyyArmory 0.1.15+ deploy together (the Untiered batch) - pin both or neither"); return 1
+    # FLOOR: never roll SkyyGear below 0.2.16 or SkyyArmory below 0.1.15 once UT items exist (unknown items); set part.utLines=false before any rollback.
+    # SkyyGear 0.2.14 (rarity G1): do not roll back to 0.2.13 while any Skyy_Unid_Bag_Untiered exists (identify or clear them first); odds.mythic stays 0,0,0.
+    # SkyyBazaar 0.1.7: rollback to 0.1.6 safe; ship with SkyyGear 0.2.14 for the full market wall.
     missing = []
     plan = []
     for mod, ver in SET:
@@ -279,6 +338,7 @@ def main():
         B.enable_in_world(WORLD, key)
     for mod in RETIRED:
         retire_in_world(WORLD, mod)
+    sync_bettermap_worlds(WORLD)
     for key in PACK_DISABLED:
         disable_third_party(WORLD, key)
     print("deployed %d mods. Start the world and watch the server log for every '[Skyy...] ready' line." % len(plan))

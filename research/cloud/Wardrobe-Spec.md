@@ -351,3 +351,6 @@ note for the data folder.
   knows the real thing and can correct Q2 / Q3); the SkyWynn numbers in 6.1 are proposals.
 - The tile icon needs our own art (`art/` + the SkyyMenu own-icon pattern); the vanilla Armor Bench icon is the stand-in.
 - Recolor-Plan P1 (`gear:base`) must land before W2; W1 does not need it.
+
+## Scope change (Skyy 2026-10-10)
+"Oh yeah, and the wardrobe thing for quick swapping armor should be a full loadout swapper, so you make a loadout with the armor, and pets you want. (later maybe even hot bar)" -> each loadout = armor (+ looks) + pet slot + summon slot pets; one click swaps everything; hotbar loadouts later.

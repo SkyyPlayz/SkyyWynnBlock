@@ -194,6 +194,149 @@ Defaults kept: golden leaves, russet cloth, eye scars as drawn.
 - Checked the same way as the others (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no
   validator issues, all 4 pieces attach to the vanilla player). Not checked in game.
 
+## F2 AUTUMN + AZURE - what tier 2 adds (same for every F2 tree)
+
+A clear but modest step up from F1 (tier progression rule above). Built by `tools/art/ga_f2.py`, so every F2 tree (Maple, Azure) gets
+exactly the same upgrades; only the wood colours, plate shape and mark change.
+
+1. An extra shoulder layer: a raised cap plate on each pauldron, with a heartwood rim and a sap line along the top.
+2. Wooden PEGS (like rivets) on the cuirass, breast plates, plackart, belt, bracers and greaves.
+3. STRONGER SAP: a brighter, thicker chest vein with 4 forked branches and a soft halo, plus a second vein up the back.
+4. Belt upgrade: heartwood trim bands, pegs and a bigger round carved knot boss as the clasp.
+5. A helmet CREST (a carved ridge from brow to nape with a sap line) and a taller middle crown point.
+6. Heartwood brow band, collar and glove cuffs (F1: rope / vine), and round knot-boss knee caps.
+
+Tier ladder (APPROVED by Skyy 2026-10-09 with the F2 sets, defaults kept):
+- F1: simple (done).
+- F2: pegs, shoulder cap, brighter sap, belt boss, helmet crest.
+- F3: angular plates, bigger layered shoulders, a gorget, sap glow up the arms.
+- F4: thorn and spike accents, tall pauldrons, a glowing chest knot, double crest.
+- F5: ornate - gold inlay, glowing gem knots, a winged or tall crown, the brightest sap (the most impressive).
+
+## MAPLE (F2 Autumn)
+
+Status: APPROVED by Skyy 2026-10-09: "They look great! A little more blue on the azure, and we should be good". Not yet seen in game.
+Defaults kept: mustard cloth, maple leaf + seed pair mark, `F2_Autumn` folder, green sap.
+
+![sheet](sheet-maple.png)
+
+| What | Path |
+|---|---|
+| Models + textures | `Common/Items/Armors/SkyyForaging/F2_Autumn/Maple/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png` |
+| Icons (64x64) | `Common/Icons/ItemsGenerated/Armor_Foraging_Maple_{Head,Chest,Hands,Legs}.png` |
+| Blockbench projects | `source/F2_Autumn/Maple/{Head,Chest,Hands,Legs}.bbmodel` |
+| Review sheet | `sheet-maple.png` |
+
+- Colours follow the in-game (Crimson) Maple wood (hues only, sampled from the game's Maple trunk / log end / redwood
+  planks / leaves / seeds; our own pixels): mauve-brown bark with long vertical fibres and dark cracks, peach heartwood,
+  the game's crimson maple leaves, tan-and-red maple seeds, mustard cloth (autumn).
+- Shape: LOBED plates (every plate edge and hem cut into maple-leaf lobes), maple-leaf crown points.
+- Maple mark: a big crimson MAPLE LEAF on the knot-boss belt clasp with a SAMARA PAIR (the double-winged seed) under it,
+  and a samara pair at the left temple.
+- Size: 48 boxes + 10 quads. Textures Head 96x128, Chest 128x96, Hands 96x32, Legs 96x64.
+- Checked like F1 (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no validator issues, all 4
+  pieces attach to the vanilla player). Not checked in game.
+
+## AZURE (F2 Autumn)
+
+Status: APPROVED by Skyy 2026-10-09 (v3): "Yes, Azure v3 looks good, commit it". Not yet seen in game.
+Earlier feedback: v1 "They look great! A little more blue on the azure, and we should be good" / v2 "Thats a little too much.
+Take the V1 azure, and make the parts that are already blue a little brighter blue, and add some more leaves to the design."
+
+![sheet](sheet-azure.png)
+
+| What | Path |
+|---|---|
+| Models + textures | `Common/Items/Armors/SkyyForaging/F2_Autumn/Azure/{Head,Chest,Hands,Legs}.blockymodel` + `<Piece>_Texture.png` |
+| Icons (64x64) | `Common/Icons/ItemsGenerated/Armor_Foraging_Azure_{Head,Chest,Hands,Legs}.png` |
+| Blockbench projects | `source/F2_Autumn/Azure/{Head,Chest,Hands,Legs}.bbmodel` |
+| Review sheet | `sheet-azure.png` |
+
+- Colours start from the in-game Azure wood (hues sampled from the game's Azure trunk / log end / leaves / glowing
+  petals; our own pixels): plum-purple bark with swirling diagonal grain, indigo cloth; the blue parts (azure leaves,
+  blue-silver heartwood, glowing cyan petals) a little brighter in v3.
+- More leaves (v3): 12 small flat azure leaves - helmet crown, collar, shoulder caps, belt, bracers, knees.
+- Shape: CRESCENT plates (each lower edge curves up between sharp points), curved crescent crown points.
+- Azure mark: a spray of 3 GLOWING AZURE PETALS rising from the knot-boss belt clasp (2 blue leaves hang below it), and a
+  petal spray at the left temple.
+- Size: 48 boxes + 23 quads. Textures Head 96x128, Chest 128x96, Hands 96x32, Legs 64x128.
+- Checked like F1 (structure PASS, byte-identical rebuild, fit, Blockbench + Hytale plugin: no validator issues, all 4
+  pieces attach to the vanilla player). Not checked in game.
+
+## F3 SAVANNA - what tier 3 adds (same for every F3 tree)
+
+Built by `tools/art/ga_f3.py` on top of everything tier 2 has (`ga_f2.py`), identical for Gumboab, Dry, Bottletree, Palo
+(approved ladder: "F3 angular plates, bigger layered shoulders, a gorget, sap glow up the arms"):
+- ANGULAR plates (each tree its own angular edge) + cut corners on breast plates, tassels, cheek guards, helmet back, bracer plates.
+- BIGGER, LAYERED shoulders: wider pauldron + cap, a carved ridge on the cap, a second lame under the first.
+- A GORGET: a taller neck-guard ring + a pointed front plate with a sap drop.
+- SAP GLOW UP THE ARMS: a glowing vein up each arm (bracer, sleeve, shoulder lames).
+Colours from each tree's in-game log / leaves / planks (own pixels). Status: APPROVED by Skyy 2026-10-09 ("<Tree> looks good, commit it"
+for each tree). Bottletree and Palo are v2: the bark was too dark next to the real Assets.zip textures, so it was lightened
+(approved 2026-10-09: "All look great, commit the 4 colour fixes and all 10 F5 sets"). Not seen in game.
+
+| Tree | Bark (in game) | Plate edge | Mark | Cloth |
+|---|---|---|---|---|
+| Gumboab | smooth grey-taupe, soft folds | terraced (flat steps, angled ends) | fan of 5 sage blades | ochre |
+| Dry | warm brown, dark vertical fibres | splinter saw-tooth | 3 yellow puff blossoms | rust |
+| Bottletree | pale grey-cream, soft smudges | crenellated (square teeth) | little bottle tree | deep teal |
+| Palo | olive green, lenticel dashes | chevron (big V) | 2 orange palo blossoms | chocolate |
+
+Files: `Common/Items/Armors/SkyyForaging/F3_Savanna/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`, `source/F3_Savanna/<Tree>/`,
+`sheet-<tree>.png`. Each 53 boxes + 9 quads. Checked like F1 / F2 (structure PASS, byte-identical rebuild, fit, Blockbench +
+Hytale plugin: no validator issues).
+
+## F4 NORTHERN - what tier 4 adds (same for every F4 tree)
+
+Built by `tools/art/ga_f4.py` on top of everything tier 3 has (`ga_f3.py`, `ga_f2.py`), identical for Redwood, Fir, Cedar,
+Poisoned, Spiral (approved ladder: "F4 thorn / spike accents, tall pauldrons, a glowing chest knot, double crest"):
+- THORNS: heartwood thorn spikes, two on each shoulder cap, two out of each bracer plate.
+- TALL PAULDRONS: an upright guard plate on the outer end of each pauldron.
+- A GLOWING CHEST KNOT between the breast plates (glowing sap rings).
+- A DOUBLE CREST: two thorny crest ridges over the helmet.
+Status: APPROVED by Skyy 2026-10-09 ("all look great! commit all"). Fir, Cedar, Poisoned colours checked against Assets.zip.
+Redwood (heartwood a little deeper) and Spiral (bark lighter) are v2 colour fixes to match the in-game wood (approved 2026-10-09).
+Not seen in game.
+
+| Tree | Bark (in game) | Plate edge | Mark | Cloth |
+|---|---|---|---|---|
+| Redwood | red-brown, stringy fibres | narrow spike teeth | redwood cone + needles | navy |
+| Fir | very dark brown, rough flakes | fir tiers (wide V + point) | little fir tree | oatmeal wool |
+| Cedar | orange-brown fibre strips | pointed arches | cedar rose | burgundy |
+| Poisoned | near-black purple, glowing yellow-green cracks | barbed hooks | violet thorn leaf + toxic drop | dark moss |
+| Spiral | pale mint-grey, crackled | soft curls | aqua spiral | steel blue |
+
+Files: `Common/Items/Armors/SkyyForaging/F4_Northern/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`,
+`source/F4_Northern/<Tree>/`, `sheet-<tree>.png`. Each 65 boxes + 9 quads.
+
+## F5 WASTES - what tier 5 adds (same for every F5 tree)
+
+Built by `tools/art/ga_f5.py` on top of everything tier 4 has (`ga_f4.py`, `ga_f3.py`, `ga_f2.py`), identical for every F5 tree
+(approved ladder: "F5 ornate - gold inlay, glowing gem knots, a winged or tall crown, the brightest sap"):
+- GOLD INLAY: a thin gold line inside the edge of the breast plates, gorget, pauldron guards, bracer plates, greaves, brim.
+- GLOWING GEM KNOTS: the chest knot becomes a big faceted gem in gold; small gems on the pauldron guards, knees and brow.
+- A WINGED, TALLER CROWN: taller crown points + two swept, gold-edged wings on the helmet sides.
+- THE BRIGHTEST SAP: every sap line glows a brighter, paler green.
+Colours sampled from each tree's own textures in Assets.zip (log side, log top, leaves; own pixels). Status: APPROVED by Skyy 2026-10-09
+("All look great, commit the 4 colour fixes and all 10 F5 sets"). Not seen in game.
+
+| Tree | Bark (in game) | Plate edge | Mark | Cloth | Gem |
+|---|---|---|---|---|---|
+| Sallow | olive-gold, stringy | willow strands | golden catkins | plum | amber |
+| Burnt | charcoal, cracked | jagged ember teeth | ember on a char log | ash grey | ember orange |
+| Petrified | grey-brown stone cracks | stair steps | stone ring fossil | dusty violet | lilac |
+| Bamboo | lime green, node bands | straight + V notches | bamboo shoot | deep jade | lime |
+| Camphor | pale grey patches | scallops | teal leaf cluster | deep teal | mint |
+| Banyan | warm brown root ridges | root drips | banyan tree | terracotta | yellow-green |
+| Jungle | olive, knotty | leaf hooks | big jungle leaf | red-brown | emerald |
+| Blue Fig | dusty red blocks | fig lobes | blue fig | deep blue | aqua |
+| Fire | red-black, lava cracks | flame tongues | flame | charcoal | lava |
+| Crystalwood | near-black slate plates | lopsided shards | pink crystal cluster | indigo | pink |
+
+Files: `Common/Items/Armors/SkyyForaging/F5_Wastes/<Tree>/`, icons `Armor_Foraging_<Tree>_<Piece>.png`, `source/F5_Wastes/<Tree>/`,
+`sheet-<tree>.png`. Each 65 boxes + 9 quads from F4, plus 5 gem boxes and 2 wing quads. The `ga_<tree>.py`
+files are the source.
+
 ## Rebuild
 ```
 GA_DESIGN=ga_oak   python3 tools/art/make_foraging_armor.py      # models + textures (design ga_<tree>.py, painter ga_paint.py)
@@ -201,6 +344,12 @@ GA_DESIGN=ga_birch python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_beech python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_ash   python3 tools/art/make_foraging_armor.py
 GA_DESIGN=ga_aspen python3 tools/art/make_foraging_armor.py
+GA_DESIGN=ga_maple python3 tools/art/make_foraging_armor.py   # F2 trees: tier upgrades in ga_f2.py
+GA_DESIGN=ga_azure python3 tools/art/make_foraging_armor.py
+GA_DESIGN=ga_gumboab python3 tools/art/make_foraging_armor.py   # F3 trees (also ga_dry, ga_bottletree, ga_palo): tier upgrades in ga_f3.py
+GA_DESIGN=ga_redwood python3 tools/art/make_foraging_armor.py   # F4 trees (also ga_fir, ga_cedar, ga_poisoned, ga_spiral): ga_f4.py
+GA_DESIGN=ga_sallow python3 tools/art/make_foraging_armor.py   # F5 trees (also ga_burnt, ga_petrified, ga_bamboo, ga_camphor, ga_banyan,
+                                                                #   ga_jungle, ga_bluefig, ga_fire, ga_crystalwood): ga_f5.py
 python3 tools/art/make_foraging_icons.py art/gathering-armor F1_Grove Birch
 python3 tools/art/make_foraging_sheet.py art/gathering-armor F1_Grove Birch
 GA_TREE=Birch python3 tools/art/validate_foraging.py

@@ -144,3 +144,36 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyMenu 0.3.12: skill Defense on the Stats page (DEPLOYED 2026-10-09, backup deploy-20261009-0546) | [2026-10](2026-10.md) |
 | Luggage sacks + Bazaar search + sprint probe; The Armory off (DEPLOYED 2026-10-09, backup deploy-20261009-0707) | [2026-10](2026-10.md) |
 | SkyySacks 0.7.15: Omni hidden, fiber T1 bags (DEPLOYED 2026-10-09, backup deploy-20261009-0712) | [2026-10](2026-10.md) |
+| SkyyMerchants 0.1: roaming merchants (DEPLOYED 2026-10-09, backup deploy-20261009-0724) | [2026-10](2026-10.md) |
+| SkyySacks 0.7.16: bag hold pose (DEPLOYED 2026-10-09, backup deploy-20261009-0733) | [2026-10](2026-10.md) |
+| SkyyFishing 0.1.1: wooden T1 rod, bench uses bags (DEPLOYED 2026-10-09, backup deploy-20261009-0734) | [2026-10](2026-10.md) |
+| SkyyAuctions 0.1.3: sort + filters (DEPLOYED 2026-10-09, backup deploy-20261009-0736) | [2026-10](2026-10.md) |
+| SkyyCollections 0.2.8: craft buttons, locked recipes, Mining bags from Cobble (DEPLOYED 2026-10-09, backup deploy-20261009-0737) | [2026-10](2026-10.md) |
+| Tool power + fortune (SkyyGear 0.2.12 + SkyySkills 0.4.26) (DEPLOYED 2026-10-09, backup deploy-20261009-0745) | [2026-10](2026-10.md) |
+| SkyyTrees 0.3.4: chop chain warnings fixed (DEPLOYED 2026-10-09, backup deploy-20261009-0752) | [2026-10](2026-10.md) |
+| SkyyGear 0.2.13: Crude weapon speed tiers + mace warnings (DEPLOYED 2026-10-09, backup deploy-20261009-0805) | [2026-10](2026-10.md) |
+| SkyyFishing 0.1.2: real fishing line + idle bobber (DEPLOYED 2026-10-09, backup deploy-20261009-0836) | [2026-10](2026-10.md) |
+| Monk skill renamed to Zen + Stats class-balance damage (DEPLOYED 2026-10-09, backup deploy-20261009-0928) | [2026-10](2026-10.md) |
+| SkyyProfiles 0.1.9: 8 profile slots (DEPLOYED 2026-10-09, backup deploy-20261009-1322) | [2026-10](2026-10.md) |
+| SkyyPets 0.1: slot pets phase 1 (DEPLOYED 2026-10-09, backup deploy-20261009-1348) | [2026-10](2026-10.md) |
+| SkyyWorldGen 0.3: archipelago proof world (DEPLOYED 2026-10-09, backup deploy-20261009-1348) | [2026-10](2026-10.md) |
+| Rarity G1: Untiered / Mythic / Sets + market wall (DEPLOYED 2026-10-09, backup deploy-20261009-1456) | [2026-10](2026-10.md) |
+| Ability engine R1: /cast, Meteor, Sacred Heal (DEPLOYED 2026-10-09, backup deploy-20261009-1456) | [2026-10](2026-10.md) |
+| SkyySkills 0.4.29: pets get real XP (DEPLOYED 2026-10-09, backup deploy-20261009-1514) | [2026-10](2026-10.md) |
+| SkyyWorldGen 0.4: caves + lava caverns (proof world) (DEPLOYED 2026-10-09, backup deploy-20261009-1542) | [2026-10](2026-10.md) |
+| SkyyGear 0.2.15: mining armor sets (DEPLOYED 2026-10-09, backup deploy-20261009-1603) | [2026-10](2026-10.md) |
+| Ability R2+R3: HUD widget, Mana Barrier, Shield Bubble (DEPLOYED 2026-10-09, backup deploy-20261009-1631) | [2026-10](2026-10.md) |
+| SkyyTownProbe 0.2: quest engine probes (Q0) (DEPLOYED 2026-10-09, backup deploy-20261009-1631) | [2026-10](2026-10.md) |
+| SkyyPetProbe 0.1: pet engine probes P1-P10 (DEPLOYED 2026-10-09, backup deploy-20261009-1631) | [2026-10](2026-10.md) |
+| SkyyAccessories 0.5.10: mining helmet light (DEPLOYED 2026-10-09, backup deploy-20261009-1649) | [2026-10](2026-10.md) |
+| Abilities R5-R7: shapes, Guardian Spirit, Frost Nova, alts, page (DEPLOYED 2026-10-09, backup deploy-20261009-1805) | [2026-10](2026-10.md) |
+| Untiered first batch + developer bows (DEPLOYED 2026-10-09, backup deploy-20261009-1805) | [2026-10](2026-10.md) |
+| SkyyMerchants 0.1.1: one weapon per class (DEPLOYED 2026-10-10, backup deploy-20261010-0917) | [2026-10](2026-10.md) |
+| SkyyPets 0.2: visible pets (DEPLOYED 2026-10-10, backup deploy-20261010-1026) | [2026-10](2026-10.md) |
+| Pets tile in the menu + petting fix (DEPLOYED 2026-10-10, backup deploy-20261010-1415) | [2026-10](2026-10.md) |
+| Wand hop fix + sky-island menu item + HyFishing off (DEPLOYED 2026-10-10, backup deploy-20261010-1443) | [2026-10](2026-10.md) |
+| Wand aura at landing + quick shot range; probes removed (DEPLOYED 2026-10-10, backup deploy-20261010-1518) | [2026-10](2026-10.md) |
+| Big batch: pets roles + loadouts, menu D + editor, wardrobe, soul cage, tool rarity + multitools, tooltips, sky islands (DEPLOYED 2026-10-10, backup deploy-20261010-1911) | [2026-10](2026-10.md) |
+| Upgrade tab + [Lv N] names + /multitool merge, Collections totals, UI probe (DEPLOYED 2026-10-10, backup deploy-20261010-2236) | [2026-10](2026-10.md) |
+| Soul Orb: damage, vanilla essences, faster tether, clearer lines, Wings of Fate (DEPLOYED 2026-10-11, backup deploy-20261011-0022) | [2026-10](2026-10.md) |
+| Requip (wardrobe v2) + /smithing hub + Void hotbar refill (DEPLOYED 2026-10-11, backup deploy-20261011-0138) | [2026-10](2026-10.md) |

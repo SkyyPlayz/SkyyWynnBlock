@@ -1,0 +1,589 @@
+{
+ "what": "SkyWynn Menu tile icons - DRAFT v1 (one 64 x 64 item icon per main-view tile of the SkyWynn Menu)",
+ "generator": "tools/art/make_menu_icons.py",
+ "validator": "tools/art/validate_menu_icons.py",
+ "deterministic": true,
+ "original_pixels": true,
+ "icon_rules": {
+  "size": [
+   64,
+   64
+  ],
+  "alpha": "hard (0 or 255)",
+  "outline": "1 px #120e1c tinted toward the touching part",
+  "light": "top left",
+  "no_pure_black_or_white": true,
+  "supersample": 4
+ },
+ "categories": {
+  "travel": {
+   "label": "TRAVEL",
+   "tint": "#f5a332",
+   "palette": "gold / amber"
+  },
+  "stuff": {
+   "label": "YOUR STUFF",
+   "tint": "#2fae97",
+   "palette": "teal"
+  },
+  "money": {
+   "label": "MONEY",
+   "tint": "#43aa50",
+   "palette": "green / gold"
+  },
+  "social": {
+   "label": "SOCIAL",
+   "tint": "#8355b5",
+   "palette": "violet"
+  },
+  "admin": {
+   "label": "ADMIN",
+   "tint": "#a1aaba",
+   "palette": "gray / steel"
+  }
+ },
+ "tiles": [
+  {
+   "name": "YourProfile",
+   "item_id": "Skyy_Menu_Icon_YourProfile",
+   "tile": "Your Profile",
+   "category": "stuff",
+   "main_slot": 4,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_YourProfile.png",
+   "shows": "a blocky player bust in a gold-rimmed teal portrait medallion",
+   "source": "generated"
+  },
+  {
+   "name": "Pets",
+   "item_id": "Skyy_Menu_Icon_Pets",
+   "tile": "Pets",
+   "category": "stuff",
+   "main_slot": 5,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Pets.png",
+   "shows": "FALLBACK only: a teal collar with gold studs + buckle and a gold tag with a paw print",
+   "source": "generated"
+  },
+  {
+   "name": "HoverTooltips",
+   "item_id": "Skyy_Menu_Icon_HoverTooltips",
+   "tile": "Hover Tooltips",
+   "category": "admin",
+   "main_slot": 8,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_HoverTooltips.png",
+   "shows": "a pale steel speech bubble with a navy 'i' and a hover pointer",
+   "source": "generated"
+  },
+  {
+   "name": "Teleport",
+   "item_id": "Skyy_Menu_Icon_Teleport",
+   "tile": "Teleport",
+   "category": "travel",
+   "main_slot": 10,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Teleport.png",
+   "shows": "a gold portal ring (amber gem studs) round swirling amber energy on a stone plinth",
+   "source": "generated"
+  },
+  {
+   "name": "PocketDimension",
+   "item_id": "Skyy_Menu_Icon_PocketDimension",
+   "tile": "Pocket Dimension",
+   "category": "stuff",
+   "main_slot": 11,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_PocketDimension.png",
+   "shows": "a teal drawstring pouch with a violet-teal swirl rising out of its void opening",
+   "source": "generated"
+  },
+  {
+   "name": "AccessoryBag",
+   "item_id": "Skyy_Menu_Icon_AccessoryBag",
+   "tile": "Accessory Bag",
+   "category": "stuff",
+   "main_slot": 12,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_AccessoryBag.png",
+   "shows": "REUSED: the approved Accessory Bag icon (art/accessory-bag-icon), byte copy",
+   "source": "art/accessory-bag-icon/Common/Icons/ItemsGenerated/SkyyAccessories_Bag_Menu.png"
+  },
+  {
+   "name": "HudEditor",
+   "item_id": "Skyy_Menu_Icon_HudEditor",
+   "tile": "HUD Editor",
+   "category": "stuff",
+   "main_slot": 13,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_HudEditor.png",
+   "shows": "a teal screen frame with HUD widgets (health / mana bars, minimap, hotbar), a dashed gold edit box + pointer",
+   "source": "generated"
+  },
+  {
+   "name": "Crafting",
+   "item_id": "Skyy_Menu_Icon_Crafting",
+   "tile": "Crafting",
+   "category": "stuff",
+   "main_slot": 14,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Crafting.png",
+   "shows": "a wooden workbench with a teal 3 x 3 crafting mat on top and a little hammer",
+   "source": "generated"
+  },
+  {
+   "name": "Skills",
+   "item_id": "Skyy_Menu_Icon_Skills",
+   "tile": "Skills",
+   "category": "stuff",
+   "main_slot": 15,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Skills.png",
+   "shows": "a gold star on a teal medallion with a gold rim and two teal ribbon tails",
+   "source": "generated"
+  },
+  {
+   "name": "Collections",
+   "item_id": "Skyy_Menu_Icon_Collections",
+   "tile": "Collections",
+   "category": "stuff",
+   "main_slot": 16,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Collections.png",
+   "shows": "EXTRA (not in the 22 asked): an open teal album with 8 framed slots, a different find in each",
+   "source": "generated"
+  },
+  {
+   "name": "IslandMenu",
+   "item_id": "Skyy_Menu_Icon_IslandMenu",
+   "tile": "Island Menu",
+   "category": "travel",
+   "main_slot": 20,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_IslandMenu.png",
+   "shows": "a round floating island with a cottage (amber roof, lit window), a bush, a little amber flag and clouds",
+   "source": "generated"
+  },
+  {
+   "name": "Bank",
+   "item_id": "Skyy_Menu_Icon_Bank",
+   "tile": "Bank",
+   "category": "money",
+   "main_slot": 21,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Bank.png",
+   "shows": "a stone bank front (green roof, gold coin in the pediment, 4 columns) with a stack of gold coins",
+   "source": "generated"
+  },
+  {
+   "name": "Vault",
+   "item_id": "Skyy_Menu_Icon_Vault",
+   "tile": "Vault",
+   "category": "money",
+   "main_slot": 22,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Vault.png",
+   "shows": "a big green-steel safe with a gold wheel dial, hinges, bolts and a green lock lamp",
+   "source": "generated"
+  },
+  {
+   "name": "Bazaar",
+   "item_id": "Skyy_Menu_Icon_Bazaar",
+   "tile": "Bazaar",
+   "category": "money",
+   "main_slot": 23,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Bazaar.png",
+   "shows": "a market stall (green / cream striped awning, green cloth counter) with gold scales: coins vs an emerald",
+   "source": "generated"
+  },
+  {
+   "name": "AuctionHouse",
+   "item_id": "Skyy_Menu_Icon_AuctionHouse",
+   "tile": "Auction House",
+   "category": "money",
+   "main_slot": 24,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_AuctionHouse.png",
+   "shows": "a mahogany gavel with gold bands over a sound block with a green felt top",
+   "source": "generated"
+  },
+  {
+   "name": "Reforge",
+   "item_id": "Skyy_Menu_Icon_Reforge",
+   "tile": "Reforge",
+   "category": "money",
+   "main_slot": 25,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Reforge.png",
+   "shows": "a steel anvil with a glowing amber blade blank and a gold spark burst (2 green sparks)",
+   "source": "generated"
+  },
+  {
+   "name": "Identify",
+   "item_id": "Skyy_Menu_Icon_Identify",
+   "tile": "Identify",
+   "category": "money",
+   "main_slot": 26,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Identify.png",
+   "shows": "a gold magnifying glass over a cut emerald (the gem shows magnified in the lens)",
+   "source": "generated"
+  },
+  {
+   "name": "Players",
+   "item_id": "Skyy_Menu_Icon_Players",
+   "tile": "Players",
+   "category": "social",
+   "main_slot": 30,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Players.png",
+   "shows": "a violet player-list board: 3 rows of head + name, your row highlighted with a gold dot",
+   "source": "generated"
+  },
+  {
+   "name": "Party",
+   "item_id": "Skyy_Menu_Icon_Party",
+   "tile": "Party",
+   "category": "social",
+   "main_slot": 31,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Party.png",
+   "shows": "3 violet player busts, the front one bigger with a gold party star",
+   "source": "generated"
+  },
+  {
+   "name": "Guild",
+   "item_id": "Skyy_Menu_Icon_Guild",
+   "tile": "Guild",
+   "category": "social",
+   "main_slot": 32,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Guild.png",
+   "shows": "a violet swallowtail banner with gold trim and a gold shield crest on a gold crossbar",
+   "source": "generated"
+  },
+  {
+   "name": "Settings",
+   "item_id": "Skyy_Menu_Icon_Settings",
+   "tile": "Settings",
+   "category": "admin",
+   "main_slot": 39,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Settings.png",
+   "shows": "two steel cogs (big + small)",
+   "source": "generated"
+  },
+  {
+   "name": "Mods",
+   "item_id": "Skyy_Menu_Icon_Mods",
+   "tile": "Mods",
+   "category": "admin",
+   "main_slot": 40,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Mods.png",
+   "shows": "a thick steel puzzle piece with 4 rivets and a teal gem",
+   "source": "generated"
+  },
+  {
+   "name": "ServerSetup",
+   "item_id": "Skyy_Menu_Icon_ServerSetup",
+   "tile": "Server Setup",
+   "category": "admin",
+   "main_slot": 41,
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_ServerSetup.png",
+   "shows": "a steel cog wearing a gold crown (ruby + 2 amethysts)",
+   "source": "generated"
+  }
+ ],
+ "files": [
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_YourProfile.png",
+   "bytes": 861,
+   "sha256": "95b04eabb4545b4d263f1b122c564b7d71ca2f367301f60e7d83a9631b2b2ee3"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Pets.png",
+   "bytes": 960,
+   "sha256": "1c4bbd1be97fb9d3fa30936bfd94bfc7eec11e56f602e68fe8d349fb78369e24"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_HoverTooltips.png",
+   "bytes": 750,
+   "sha256": "7950a823e1e1e07bf2ad34b8903fdb372e2d6477621b9ec326b3ce59a1b3865c"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Teleport.png",
+   "bytes": 1201,
+   "sha256": "11fb5a280fde19779e13e1fc8aed456d47b4c0279b9bad3e36e3bfe33252833c"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_PocketDimension.png",
+   "bytes": 1043,
+   "sha256": "e80322e718026c7585ea7ad481b1da6094b0b1d380698a851855fef420619629"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_AccessoryBag.png",
+   "bytes": 5791,
+   "sha256": "3804f75b8f1ba34bca7283ebc2bc1649d916bd93891241baf52be67ba28ae423"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_HudEditor.png",
+   "bytes": 1003,
+   "sha256": "4aadbd88d4d9d0e2ef36409844e5d9bcc38e015898e87e25c551ee4c55dcbb24"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Crafting.png",
+   "bytes": 737,
+   "sha256": "63874930713f98bd879ed4b84c07b30d6870dafa8e7258f99cc7a5bd23d2cf00"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Skills.png",
+   "bytes": 972,
+   "sha256": "a01005e548d69af2803fbe8b3ff38e86882708858e038d2a66c115ddce3d7301"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Collections.png",
+   "bytes": 1144,
+   "sha256": "cfdcc0edf1336e3926428a9a5359156f19ccef91ba4f66a78ec5ad42dc8d6b19"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_IslandMenu.png",
+   "bytes": 1170,
+   "sha256": "32a96523622b941657f9f4b7a241caefaeb93d498b9b7c00dbf15c47d97344c2"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Bank.png",
+   "bytes": 874,
+   "sha256": "e72a790bd4068037e24f7dcf998ccfc735f91ec80c436242a99f81a26851ae3e"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Vault.png",
+   "bytes": 941,
+   "sha256": "6e4744f69deda9f379b4611dd970c77029fb38def186236564d0da55f4cd8de0"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Bazaar.png",
+   "bytes": 1096,
+   "sha256": "a98e7d88937424a95f3514456fc15eba04bee262127ba1884198568f816de8f8"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_AuctionHouse.png",
+   "bytes": 949,
+   "sha256": "980e18a58b6d7e1575a0e83daf160c56fb457f77fddccfd59a0d08c7838e695c"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Reforge.png",
+   "bytes": 746,
+   "sha256": "28f25e7357ec42f309c788d62743093cd704433ae311be40de1ab5dd4339069a"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Identify.png",
+   "bytes": 934,
+   "sha256": "d62e7dc41194f2c1ede1830f99df4cc2619caa01afe6e315b27e40cedc8769bf"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Players.png",
+   "bytes": 717,
+   "sha256": "da110555019e1bcc26c61d1c90806e8dcd2690705b6fdcbf19c34953954b1cb2"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Party.png",
+   "bytes": 927,
+   "sha256": "57d7f05fd5f985c0d5feb45c356259cbbd51f7069098004654ba34fc58f9bc84"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Guild.png",
+   "bytes": 718,
+   "sha256": "ee067e35619b12ba0fa01508f8473155bc5f45962339dd6c78fc7289deef62f5"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Settings.png",
+   "bytes": 931,
+   "sha256": "9cafb65534603d7cd4a106e521ced6f0885eeea9b5e770478f2acab4ed9a230f"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Mods.png",
+   "bytes": 755,
+   "sha256": "54d6eabb1ced58979f7380fd845713f691ff3ae934b12a512417c02d5fd71a6e"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_ServerSetup.png",
+   "bytes": 931,
+   "sha256": "b870511aa554f161a9e751422cd4152d93dcc129e14f3017e815fb8a830b6848"
+  },
+  {
+   "path": "sheet.png",
+   "bytes": 204747,
+   "sha256": "9b81784b7e1ae6bcbabd6c499385cd145ee098958766be9c899d00e4df096729"
+  }
+ ],
+ "palettes": {
+  "gold": [
+   "#3e1f08",
+   "#6e3f0c",
+   "#a2650f",
+   "#d39a22",
+   "#f0c548",
+   "#ffe58a",
+   "#fff4cf"
+  ],
+  "amber": [
+   "#3a1606",
+   "#6a2c0a",
+   "#a24a10",
+   "#d8761c",
+   "#f5a332",
+   "#ffcf6a",
+   "#fff0bf"
+  ],
+  "teal": [
+   "#0b2227",
+   "#113c3d",
+   "#175d58",
+   "#1e8577",
+   "#2fae97",
+   "#66d4b9",
+   "#bff2e1"
+  ],
+  "green": [
+   "#0c2213",
+   "#143d21",
+   "#1d5e30",
+   "#2a853f",
+   "#43aa50",
+   "#80d06c",
+   "#cdf0ad"
+  ],
+  "violet": [
+   "#1a0f2e",
+   "#2c1a4b",
+   "#45296c",
+   "#623b92",
+   "#8355b5",
+   "#aa80d4",
+   "#dbc3ef"
+  ],
+  "steel": [
+   "#14161e",
+   "#242833",
+   "#373d4b",
+   "#525a6b",
+   "#768092",
+   "#a1aaba",
+   "#d0d6e0"
+  ],
+  "wood": [
+   "#28130a",
+   "#43220f",
+   "#633617",
+   "#874f24",
+   "#aa6c35",
+   "#c98d4f",
+   "#e3b47a"
+  ],
+  "mahog": [
+   "#2a0f0c",
+   "#481a14",
+   "#6a2a1c",
+   "#8c3e26",
+   "#ad5734",
+   "#cc7a4a",
+   "#e6a372"
+  ],
+  "stone": [
+   "#25232e",
+   "#3a3744",
+   "#54505e",
+   "#716c7a",
+   "#918b97",
+   "#b4aeb6",
+   "#d6d1d4"
+  ],
+  "grass": [
+   "#173a17",
+   "#21541f",
+   "#2f7428",
+   "#43952f",
+   "#62b53a",
+   "#90d257",
+   "#c4ec8c"
+  ],
+  "soil": [
+   "#2a160e",
+   "#43251a",
+   "#5f3824",
+   "#7d4f30",
+   "#9a6a42"
+  ],
+  "cloud": [
+   "#5f6d96",
+   "#8a9cc8",
+   "#a8b8de",
+   "#c6d4ee",
+   "#e2ecf8"
+  ],
+  "red": [
+   "#3a0b12",
+   "#661620",
+   "#982430",
+   "#c93a3c",
+   "#e86a5c",
+   "#f7a493"
+  ],
+  "blue": [
+   "#0b1838",
+   "#132c66",
+   "#1f4a9c",
+   "#3170cc",
+   "#58a0ea",
+   "#9ccbf7"
+  ],
+  "cream": [
+   "#4a3a2c",
+   "#6e5a44",
+   "#957d5e",
+   "#b9a17c",
+   "#d8c49c",
+   "#efe2c0",
+   "#faf3dd"
+  ],
+  "navy": [
+   "#0a1220",
+   "#101c32",
+   "#16284a",
+   "#1f3a66",
+   "#2c5088"
+  ],
+  "glass": [
+   "#1d3a48",
+   "#2f5d6e",
+   "#4a8a98",
+   "#77b7c0",
+   "#a9dde0",
+   "#d8f4f2"
+  ],
+  "void": [
+   "#0e0820",
+   "#1c1040",
+   "#2e1a66",
+   "#47288f",
+   "#6a3fb8",
+   "#9a6ee0",
+   "#cfb2f6"
+  ],
+  "magic": [
+   "#1b1040",
+   "#2e2370",
+   "#3a4596",
+   "#3f72b4",
+   "#3fa8c2",
+   "#7fdcd8",
+   "#cdf8f0"
+  ],
+  "emerald": [
+   "#06281a",
+   "#0c4a2c",
+   "#137040",
+   "#1f9a55",
+   "#3cc472",
+   "#88eaa6",
+   "#d2fbe0"
+  ],
+  "vault": [
+   "#0f1a17",
+   "#1b2b26",
+   "#2a4038",
+   "#3c5a4e",
+   "#557a6a",
+   "#7ea08f",
+   "#b8d0c2"
+  ],
+  "leather": [
+   "#24110c",
+   "#3b1d12",
+   "#58301b",
+   "#784626",
+   "#975e34",
+   "#b77d4c"
+  ]
+ }
+}

@@ -127,3 +127,42 @@ Where: CurseForge page
 >    vanilla generator files with older copies)?
 > 3. Do you plan a Hytale 0.7 update? The manifest is pinned to 2026.05.07.
 > Thanks either way!
+
+---
+
+## 10. BlueOrbit - Dynamic Seasons (bug report, 6.1.3)
+Where: Discord or CurseForge comment
+
+> Hi BlueOrbit! I'm Skyy from SkyWynn, a free Hytale server pack. We love Dynamic Seasons, and it's in our pack. We hit a crash I
+> wanted to pass on in case it helps:
+>
+> **What happened:** on 2026-10-09 (<time>) the world crashed while a player was fighting near a field of crops. Chunks around them were
+> unloading and loading back in as they moved.
+>
+> **Error** (server <0.6.x build>, DynamicSeasons 6.1.3, a modded server with <N> mods):
+> ```
+> java.lang.IllegalArgumentException: Entity already contains component type ...
+>   typeClass=class DynamicSeasons.component.CropQualityComponent
+>   at ...Store.addEntities
+>   at ...CommandBuffer.consume
+>   at ...Store.removeComponentIfExists
+>   at ...ChunkTracker.lambda$tick$1   (World tick)
+> ```
+> (full log attached)
+>
+> **Our guess:** when a chunk reloads, a crop entity comes back with its CropQualityComponent already on it, and the component is then
+> added a second time. Using a put / "add if missing" (or checking for it first) when the crop is re-added might fix it. You know your
+> code much better than we do, of course!
+>
+> Happy to test a fix build on our test world. Thanks for the mod!
+
+---
+
+## 11. ninesliced - BetterMap (AGPL; feature request)
+Where: CurseForge page / GitHub issues
+
+> Hi! I'm Skyy from SkyWynn, a free Hytale server pack - BetterMap is great and it's in our pack. Feature request: could
+> `allowedWorlds` accept a prefix or wildcard (e.g. `"skyy-island-*"`, `"skywynn_*"`)? Our players each get their own island world
+> (one per profile), created while the server runs, so an exact-name list can't cover them until a restart. Thanks!
+
+---

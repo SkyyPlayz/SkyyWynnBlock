@@ -1,60 +1,40 @@
-# SkyWynn - RESUME HERE (updated 2026-10-07 10:45)
+# SkyWynn - RESUME HERE (updated 2026-10-11 ~04:30 UTC, end of the 2026-10-10 marathon)
 
-Read this first, then only what the task needs. Map of every file + search tips: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions:
-`HANDOFF.md`. Open questions: `OPEN-QUESTIONS.md`. Skyy's tests: `TEST-CHECKLIST.md`. Running log (all history): `docs/log/2026-10.md`.
+Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
+`TEST-CHECKLIST.md` (item 55 = the big 2026-10-10 batch). Full history: `docs/log/2026-10.md` (2026-10-10 lines). Decisions word for word:
+`docs/answered/<topic>.md`.
 
 ## START HERE (new session)
-1. `git pull --rebase --autostash`; check usage (ccd get_usage; weekly resets TUESDAYS 15:00 UTC; 2026-10-06 ended near 20% weekly).
-2. **ART DONE 2026-10-07** (workflow wf_bb62eb52-952): `models-local/art/<family>/` (accessories, staffs + bo, spellbooks, kunai,
-   soulcage, fists, fishing; each sheet.png + manifest.json + README.md), generators `tools/art/make_*.py`. Skyy reviews the sheets ->
-   answers OPEN-QUESTIONS gear "ART" lines -> then a build round wires them in (SkyyAccessories icons, SkyyArmory staffs; new item
-   families need specs + items). Existing-mods check: `research/Existing-Mods-Gear-Survey.md` (nothing covers our gear).
-   LIGHT ARMOR (paused, Skyy: "we can work on the armor more later"): `python tools/make_light_bases.py` (+ make_light_legs.py) ->
-   `models-local/light-armor/sets/<tier>/` (Copper/Iron = Ornate Bronze + our legs, Thorium/Cobalt = Cobalt + sleeves, Adamantite/Mithril =
-   black Mithril, Onyxium = Prisma; option `onyxium-dark`). Blockbench tabs saved in `models-local/blockbench-saves/`. Blockbench MCP =
-   stdio bridge `tools/bb_mcp_stdio.py` (Avast breaks localhost HTTP). Skyy's choices: docs/answered/gear.md 2026-10-07; log 06:50-09:55.
-3. Then Skyy's test results (TEST-CHECKLIST.md "Test next": everything deployed 2026-10-05 / 06, items 17-40); fixes first.
-4. Rounds: launch with the saved workflow `skywynn-round` (`.claude/workflows/skywynn-round.js`; put Skyy's OWN words in args.quotes);
-   record each deploy with `python tools/record_deploy.py` (PROJECT-RULES 3 + 4).
+1. `git pull --rebase --autostash`; check usage (weekly resets TUE 2026-10-13 15:00 UTC). Skyy 2026-10-10: "when usage hits 98% get all
+   tasks to a good pausing point, update the resume, and wait till the morning" - and earlier "go ahead and build, im not worried about usage".
+2. Read the newest lines of docs/log/2026-10.md (what finished overnight), then check the background rounds listed under "Running".
+3. Rounds: saved workflow `skywynn-round` (Skyy's OWN words in args.quotes); deploy only with the game closed: backup -> smoke -> deploy_set
+   --yes -> record_deploy -> commit -> tidy_local; scan + recycle logs after every play session.
 
-## Now
-- LIVE: 28 jars (SET in `tools/deploy_set.py` = HANDOFF section 1). Deployed 2026-10-06 (all untested by Skyy unless TEST-CHECKLIST says):
-  Collections 0.2.7 + Accessories 0.5.6 (Lanterns behind Tree Sap), Bazaar 0.1.5 + Sacks 0.7.13 (sell from bags), Classes 0.1.12, Armory
-  0.1.3 (staff blink + trail, wand hop + hang + burst + heal circle, Grapple Bolt, bow leap + blast, particles fade, hop 30, Copper /
-  Onyxium crossbows; 0.1.4 night: blink 16 + floorCheck 0 defaults), Gear 0.2.7 (night: Charged trust for the _Wynn crossbows), Mobs 0.1.4 + Gear 0.2.6 + Skills 0.4.20 (mob curve, weapon speed tiers, 8-way roll on a sprint tap), Hud 0.3.16
-  (minimap with BetterMap, Dynamic Seasons widget mover), Bank 0.1.7 (daily interest), SkyyGatherProbe 0.1 + B (probe pack - REMOVE both
-  from SET after Skyy's probe session, TEST-CHECKLIST 31). Newest backup `backups\deploy-20261006-2315`.
-- Skyy tested 2026-10-06 (log): Grapple works; wand heal circle works; minimap works in the hub; live settings Skyy chose: hop.force 30,
-  blink.distance 16, blink.floorCheck 0 (defaults since SkyyArmory 0.1.4, deployed 2026-10-06 23:15).
-- 2026-10-08 05:45 HOTFIX DEPLOYED SkyyArmory 0.1.10 (the world would not start: one-entry Parallel in the 7 spellbook Levitate interactions, since 0.1.6; TEST 49). Bag art answers recorded (docs/answered/bags.md), art redo agent ran on tools/art/make_bags.py.
-- 2026-10-08 DEPLOYED 06:42 Sacks 0.7.14 + Accessories 0.5.8 bag art (TEST 49), 06:43 Armory 0.1.11 Bo no orb (TEST 50). RUNNING (deploy each when READY, game closed): 06:52 DEPLOYED Menu 0.3.10 Stats page (TEST 51). 07:12 DEPLOYED Essentials 0.1.9 chat mirror + SkyyTownProbe 0.1 (TEST 52). 09:28 DEPLOYED SkyyGear 0.2.10 signature charge kept on swap (TEST 58). 09:55 DEPLOYED Armory 0.1.14 wand ricochet signature (TEST 59); 10:27 Skills 0.4.24 Wood / Rotten / Tribal wand signature (TEST 60). 09:11 DEPLOYED Skills 0.4.23 + Armory 0.1.13 (TEST 57: roll on sprint press, no cooldown; back rolls impossible - no client signal; roll warnings + staff handover label + Shadow Step charge fixed). Asked Skyy: signature ideas for Bo / fists / kunai / spellbooks. 07:29 DEPLOYED Profiles 0.1.7 (TEST 54) (big SWITCH confirms + Health per profile). ASKED Skyy: roll key (sprint tap -> rebind Sprint to Mouse 5 in Controls [recommended] vs roll on Ability 3). 07:51 DEPLOYED SkyyHud 0.3.17 icon (TEST 55). 08:00 DEPLOYED Monk moves Armory 0.1.12 + Skills 0.4.22 (TEST 56), SkyyMonkProbe retired. Page warning suspect for the next SkyySacks round: profileNotice updates a page across the profile-switch world move. 07:28 DEPLOYED SkyyKeyProbe 0.1 (TEST 53; remove after Skyy's test). ABILITY KEYS LOCKED (classes.md 2026-10-08): 4 abilities, 2 primary on Ability 2 / 3, 2 alt on crouch + Ability 2 / 3; follow-ups in OPEN-QUESTIONS. ART agent (remote): DONE art/pebble + art/accessory-bag-icon; NEXT class ability icons. Bag icon wired + gems Option B: DEPLOYED Menu 0.3.11 + Accessories 0.5.9 (TEST 61). After EVERY play session: scan server + client logs, then recycle old logs. Zone 1 town: plan research/Zone-1-Town-Build-Plan.md (answers in docs/answered/world.md); after the probe test -> P0 ultracode (SkyyTowns 0.1 + SkyyWorldGen 0.2).
-- 2026-10-08 evening ARMOR DIRECTION (docs/answered/gear.md): combat armor = The Armory (+ chosen armor mods) as drops / special sets (research/Pack-Armor-Plan.md, Qs in OPEN-QUESTIONS gear); mining armor = vanilla metal sets with mining stats; farming (crops) + foraging (one design per TREE type, F1-F5) = ours, art agent Quirk building them (ART-RESUME). Longswords + zweihander = Warrior, flails / whips = Berserker (movable), dual swords = Assassin, Armory specials = boss drops. Our own light armor DROPPED. Swappable looks for ALL armor incl. vanilla: research/Recolor-Plan.md (agent running). 18:37 The Armory switched ON (TEST 62).
-- 2026-10-08 night: DEPLOYED 20:18 SkyyFishing 0.1 (TEST 63; SkyyReelProbe retired). 22:11 DEPLOYED loot round SkyyGear 0.2.11 + SkyyMobs 0.1.5 + SkyyExploration 0.2.4 (TEST 64: mystery bags, Unclaimed Luggage; floors in deploy_set). Popup batches 4+5 answered (bags, mana, market wall = Mythic+UT+Sets, profile cap = class count 8). 23:36 DEPLOYED SkyySkills 0.4.25 (TEST 65: class power split research/Class-Power-Split.md, Mana on hit, mining Stamina, foraging Defense, class balance boost). 2026-10-09 05:38 Better Mob Expansion ON for testing (TEST 66); 05:46 DEPLOYED SkyyMenu 0.3.12 skill Defense on Stats (TEST 67). Mod reviews: research/{Aegos-Seeking-Bow,Tamework-Review,Boss-Mods-Review,Mods-Folder-Survey}.md, author drafts research/Author-Requests.md (Skyy sends). 07:07 DEPLOYED Exploration 0.2.5 + Bazaar 0.1.6 + KeyProbe 0.2, Armory OFF (TEST 68). CRASH 13:06 = DynamicSeasons CropQualityComponent duplicate (report to BlueOrbit). QUEUED (start when builds finish): SkyyFishing 0.1.1 running; SkyyGear 0.2.13 (weapons with no speed tier get one on first touch + every identify path rolls one; mace StaminaCondition missing interactions), SkyySacks 0.7.16 bag hold pose higher + more in front (after 0.7.15), SkyyAuctions sort + filters (price, ending soon, newest; category / rarity / level), Armory jump-system absorb in the Skyy movement protocol (SkyySkills/Gear/Accessories), SkyyGear mace StaminaCondition missing interactions, SkyyTrees Skyy_Tree_Chop_Wood missing, SkyyAccessories talisman crystal textures. NEXT: SkyySkills round = Monk "Zen" rename + publish skill:dmg:<uuid> -> SkyyMenu 0.3.13 Class Weapon Damage; Arcane Power review running; SkyyProfiles: cap 8. Dev bows = all 6 special / UT (UT/Mythic round). NEXT: Wardrobe (W0 probes -> ultracode), pet core (after Skyy's pet answers + size test). WATCH: Dynamic Seasons 6.1.3 manifest says ServerVersion <0.7.0 - may not load on Hytale 0.7 (2026-10-12). CLASS REVIEW DONE (all 8; new class SPELLBLADE research/classes/Spellblade.md, 15 Qs open). Class Balance Chart artifact https://claude.ai/artifact/NgcvPphvjdrHdyrJrgCKfG (source tools/dev/scratch/classchart/, local) - agent adding party builder, editable ratings (db), Mana budget, ability table, overlaps, gear, solo vs group, level sliders. NEXT with Skyy: run through all OPEN-QUESTIONS.
-- DEPLOYED 19:21: SkyyReelProbe 0.1 (TEST-CHECKLIST 42; REMOVE from SET after Skyy's test, before SkyyFishing).
-- DEPLOYED 2026-10-07: 18:54 Accessories 0.5.7 icons + Armory 0.1.5 staffs (TEST 41); 19:21 SkyyReelProbe 0.1 (TEST 42; remove
-  after Skyy's test, before SkyyFishing); 20:20 Armory 0.1.6 spellbooks + kunai, Classes 0.1.13, Gear 0.2.8 (TEST 43); 21:41 Armory
-  0.1.7 Monk bo / wraps / gauntlets + right-click block + NO void protection, Gear 0.2.9 (TEST 44).
-- OVERNIGHT 2026-10-07 (Skyy asleep: "work through everything you can do on the mudpack. and ill answer all the questions on everything
-  else tomorrow. try to get the new updated class skill trees out tonight if you can."): DONE 22:49 Shadow Step (Armory 0.1.8,
-  TEST 45); class tree spec refreshed + research/cloud/Class-Tree-Build-Map.md; bag art (models-local/art/bags, Qs in OPEN-QUESTIONS bags);
-  cloud session started (OUTBOX test pending). DONE 22:51 Monk + Assassin playable (Classes 0.1.14, Skills 0.4.21, Profiles
-  0.1.6, Menu 0.3.9; TEST 46). DONE 00:34 class PATH TREES (Trees 0.3.3 + Armory 0.1.9 reader; TEST 47). DONE 01:09 SkyyMonkProbe 0.1 (TEST 48; PR #11 still OPEN - close it with a note: the local build 69d7c80 replaces it; gh CLI not installed here). NOTHING
-  RUNNING locally. Probes to REMOVE after Skyy tests: SkyyReelProbe (TEST 42), SkyyMonkProbe (TEST 48), SkyyGatherProbe + B. Cloud: all 10 tasks done (OUTBOX), refilled with 3; told it the tree
-  files are free. OPEN-QUESTIONS has tonight's questions (bags, class trees, Monk skill name).
-  deploy each READY round (auto-deploy), queue every question for Skyy in OPEN-QUESTIONS. cloud-link mod: ~/.claude/dev-mods/.../cloud-link.
-LATER round: dagger Shadow Step (research/Shadow-Step-Spec.md; no void protection). Cloud session: `CLOUD-RESUME.md` (art redos: helmets v3, mining v3 half plate, Enchanted icons v2, Monk emblem,
-  Stamina icon; fishing junk; reference pictures are local in `research/refs/`, described in docs/answered/gear.md).
+## Now (2026-10-11 ~01:45, PAUSED at 97% weekly - Skyy: wait for the morning)
+- LIVE: everything through 2026-10-11 01:40 (TEST 55-58): big batch 2026-10-10 + SkyyGear 0.2.22/0.2.23 (/smithing, Reforge tabs, /upgrade,
+  /multitool, [Lv N]), Collections 0.2.9, Armory 0.1.21 (Soul Orb damage, vanilla essences, Wings of Fate), REQUIP = SkyyWardrobe 0.2
+  (+ SkyySacks 0.7.17 hotbar refill / craft bridges), SkyyUiProbe 0.5 + B (Skyy runs /skyprobe kit once, then RETIRE both).
+- Nothing running. Known low issue (no item loss/dupe): a crash in the middle of Requip "Use what I wear" saving can leave a stamped item
+  unknown to the pool until the next deposit / Equip (log 2026-10-11) - journal op 12 in a later Wardrobe round.
+- Skyy tests: TEST-CHECKLIST 55-58 + UI probe + gathering probe.
 
 ## Next, in order
-1. OPEN-QUESTIONS gear: Onyxium crossbow recipe, leap on the 6 developer bows. (Done 2026-10-06 night: SkyyArmory 0.1.4 + SkyyGear 0.2.7.)
-   Small: test_skyygear_0.2.7.py AH0 opens SkyyArmory-0.1.3.jar with no fallback - give it the build's fallback in the next SkyyGear.
-2. GATHERING LADDER phase A after the probe results: `research/Gathering-Progression-Spec.md` + Skyy's updates at the top of its section 4
-   (ratio 100, Enchanted INGOTS / Cobblestone + Rubble / one per log, premium, Fortune on all tiers, hard ore gates need SkyyGear pickaxe
-   overrides, Mithril hidden until 0.7). Then B1 tool levels, B2 tool locks, C foraging armor, D mining (half plate) + farming armor, E, F.
-3. ARMOR TYPES (Heavy / Light / Cloth, docs/answered/gear.md 2026-10-05) with the Blockbench models; Light armor helmets after v3 art.
-4. Stats page (`research/cloud/Stats-Page-Spec.md`), SkyyFishing (spec draft + Skyy's answers: all parts kept, vanilla junk), food
-   expansion, loot round revision, class-ability spec, Monk, starter shards, worldgen stage 2, Accessory Table (ask), SkyyEconomy merge
-   after Skyy tests, Hytale 0.7 fix list, LAST: Pocket Dimension release kit.
+1. Finish R1-R4: Wardrobe deposit fix -> integrate Wardrobe 0.2 + Sacks 0.7.17 + Gear 0.2.23 (+ SkyyMenu tiles: Requip rename, Crafting)
+   -> smoke -> deploy. Then SkyyGear 0.2.24: ONE Anvil tab = Reforge + Upgrade + Identify (appraisal-tool rule) + pickaxe -> Multitool path;
+   Crafting hub naming (Smithing = a tab of Crafting, class filter on every crafting tab).
+2. Bags v2 = SkyyVoid (research/Bags-v2-Spec.md): SkyySacks 0.8.0 + Bazaar 0.1.8 ultracode (after 0.7.17 pins); display name SkyyVoid.
+3. Skyy runs the UI probe (uiprobe05) -> then the Sky Window kit (art/ui-kit-sky/) into tools/skyyui.py + tooltip frames (art/tooltip-sky/)
+   into SkyyGear qualities.
+4. HYTALE 0.7 (2026-10-12): FIRST check how 0.7 changes menus + the inventory screen (Skyy: hub buttons INTO the inventory, menu item
+   removed) + probe inventory injection; fix 0.7 breakages; then the hubs (research/Hubs-Spec.md + docs/answered/ui.md 2026-10-10 merges:
+   Anvil, Stats+Skills, Trees+Abilities, Travel, Bank+Vault, Collections+Recipes, Market; Guild separate; party cards + social buttons).
+5. ARCHITECTURE (research/Architecture-Spec.md, approved): SkyyCore + merges into 10 jars, stable plugin names, refine pass in every phase;
+   fold licence-permitting pack mods in (research/Licence-Audit.md; GPL = share-alike question for Skyy).
+6. MORNING QUESTIONS for Skyy (research/Licence-Audit.md): repo LICENSE (suggest MIT), GPL share-alike modules (keep GPL mods separate [default]),
+   send author asks (Dynamic Seasons + More Crossbow Tiers first - in the pack with no grant); wand fall rule is done; PACK.md fixes listed in the audit.
+7. DONE 2026-10-11: SkyyArmory 0.1.21 deployed (Soul Orb damage, vanilla essences, faster tether, lines, Wings of Fate; research/classes/Priest.md).
+8. Specs waiting: Requip (done), Upgrade ladders + Dragon sets, Special tools, Pet eggs v2, Zone regen, Avatars (cloud CLOUD-RESUME.md).
 
 ## Never forget
 - Commit ab75b6c: Skyy hand-edited 4 GENERATED scripts (`SkyySkills\build_skyyskills_0.4.5.py`, `SkyyTrees\build_skyytrees_0.2.3.py`,

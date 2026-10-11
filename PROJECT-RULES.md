@@ -37,6 +37,8 @@ Standing rules for anyone working on this project, person or AI. Where this file
 3. `python tools/backup_deploy.py` (live Skyy jars + world `config.json` + every `Skyy_*` data folder -> `backups/deploy-<stamp>/`).
 3b. Smoke test (allowed since 2026-10-08): run the new set on an offline server against a scratch COPY of the world; every '[Skyy...] ready'
     line present, no asset-validation failure, no SEVERE from our mods - else fix first.
+    Tool: `python tools/smoke_test.py` (game closed; exit 0 = PASS; `--jar <Mod>/<Mod>-<ver>.jar` for an unpinned candidate; ~45 s,
+    leaves only `tools/dev/scratch/smoke/<stamp>.log`; pack with `python tools/tidy_local.py --yes --scratch smoke`).
 4. `python tools/deploy_set.py --yes` - the ONLY deploy path. Build scripts never get `--deploy`.
 5. `python tools/record_deploy.py --title ... --mod MOD:OLD:NEW --steps <file> --checklist ... --log ...` (test section, index, HANDOFF,
    TEST-CHECKLIST, log in one go), then RESUME; commit and push.
