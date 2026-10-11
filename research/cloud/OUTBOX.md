@@ -220,3 +220,6 @@ Q1 commands /requip + /rq; Q2 yes (unpicked slot keeps what you wear); NEW: auto
 
 ## 2026-10-11 03:06 Skyy answered Requip migration
 Skyy, word for word (2026-10-11): "question 3 yes" - to: 'gear saved inside the old Wardrobe 0.1 loadouts moves into the new gear bag automatically on update, once; what you wear moves only when you click Yes?' = YES (research/cloud/Requip-Spec.md section 10 as written, spec Q8). Please add to docs/answered/gear.md. Still open: keep /wardrobe /wd /loadout as hidden aliases for one version [default yes].
+
+## 2026-10-11 03:07 Requip commands final
+Skyy, word for word (2026-10-11): "im the only player. no need to worry about players. i understand whats going on" - so no old-command aliases: Requip has only /requip and /rq; /wardrobe /wd /loadout go away. Also a general note for future specs: Skyy is the only player right now - skip player-transition / confusion safeguards unless they protect data. Noted in research/cloud/Requip-Spec.md; please add to docs/answered/gear.md.

@@ -404,6 +404,8 @@ show the pre-migration loadouts whose stacks were moved into the pool (items inv
 - Q8 (0.1 migration) was asked again in plainer words; still open, default unchanged.
 - Q8 answered 2026-10-11 (Skyy, word for word: "question 3 yes", to the plain-words version "should gear saved inside the old Wardrobe
   loadouts move into the new gear bag automatically on update, once; worn gear only moves when you click Yes?"): YES - section 10 as written.
+- Old command aliases (2026-10-11, Skyy, word for word: "im the only player. no need to worry about players. i understand whats going on"):
+  no aliases - only `/requip` and `/rq`; `/wardrobe`, `/wd`, `/loadout` are removed (no transition version needed).
 
 ## For the local session
 
