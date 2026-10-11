@@ -59,10 +59,10 @@ its sparkly water.
 ## Files (paths relative to the asset pack root)
 | File | Size | Notes |
 |---|---|---|
-| `Common/UI/SkyyGear/Tooltips/Tooltip_<R>@2x.png` | 107 x 107 | 9-slice, border 48 px (= `Border: 24` UI), stretch strip 48..58 |
-| `Common/UI/SkyyGear/Tooltips/Tooltip_<R>.png` | 54 x 54 | optional 1x twin, border 24 px, strip 24..29 (vanilla ships no 1x tooltip) |
-| `Common/UI/SkyyGear/Tooltips/Tooltip_<R>Arrow@2x.png` (+ 1x 33 x 24) | 66 x 48 | never stretched |
-| `Common/UI/SkyyGear/Slots/Slot_<R>@2x.png` (+ 1x 74 x 74) | 148 x 148 | scaled whole |
+| `Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_<R>@2x.png` | 107 x 107 | 9-slice, border 48 px (= `Border: 24` UI), stretch strip 48..58 |
+| `Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_<R>.png` | 54 x 54 | optional 1x twin, border 24 px, strip 24..29 (vanilla ships no 1x tooltip) |
+| `Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_<R>Arrow@2x.png` (+ 1x 33 x 24) | 66 x 48 | never stretched |
+| `Common/UI/ItemQualities/SkyyGear/Slots/Slot_<R>@2x.png` (+ 1x 74 x 74) | 148 x 148 | scaled whole |
 
 `<R>` is one of Normal, Unique, Rare, Legendary, Fabled, Mythic, Set, Untiered. `manifest.json` has:
 - the bytes and sha256 of every file;
@@ -70,9 +70,9 @@ its sparkly water.
 - for each rarity, the exact quality-asset field values:
 
 ```
-"ItemTooltipTexture":      "UI/SkyyGear/Tooltips/Tooltip_<R>.png"
-"ItemTooltipArrowTexture": "UI/SkyyGear/Tooltips/Tooltip_<R>Arrow.png"
-"SlotTexture" = "BlockSlotTexture" = "SpecialSlotTexture" = "UI/SkyyGear/Slots/Slot_<R>.png"
+"ItemTooltipTexture":      "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_<R>.png"
+"ItemTooltipArrowTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_<R>Arrow.png"
+"SlotTexture" = "BlockSlotTexture" = "SpecialSlotTexture" = "UI/ItemQualities/SkyyGear/Slots/Slot_<R>.png"
 ```
 These are plain names with no `@2x`; the client finds the `@2x` file itself, the same way vanilla's quality JSON does.
 
@@ -96,7 +96,7 @@ The table gives the lowest contrast of white, grey 170, green, red, gold, aqua a
 ## For the builder (nothing was edited)
 In SkyyGear's quality-asset block (`spec 2.1: the 7 quality assets`, build_skyygear_0.2.20.py ~line 2413):
 1. Set the five texture fields to the manifest values above.
-2. Ship the PNGs in the jar under `Common/UI/SkyyGear/...`, copied from `art/tooltip-sky/` (do not regenerate them at build time).
+2. Ship the PNGs in the jar under `Common/UI/ItemQualities/SkyyGear/...`, copied from `art/tooltip-sky/` (do not regenerate them at build time).
 3. Change the `az_texture(...)` asserts so they check the jar's own `EXTRA` files instead of `Assets.zip`.
 
 ## Open points / unsure (default in brackets)

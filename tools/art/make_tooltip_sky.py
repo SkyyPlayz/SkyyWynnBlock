@@ -14,10 +14,10 @@ star point aimed out of every corner, small gold studs on the frame; a dark mood
 colour). Arrow = the gold frame folding down into a V with a glowing gem; slots = the gold frame around a soft mid-tone mood sky.
 
 Writes art/tooltip-sky/:
-  Common/UI/SkyyGear/Tooltips/Tooltip_<R>@2x.png        107 x 107   9-slice, border 48 px (= Border: 24 UI units), strip 48..58
-  Common/UI/SkyyGear/Tooltips/Tooltip_<R>.png           54 x 54     1x twin, border 24 px, strip 24..29
-  Common/UI/SkyyGear/Tooltips/Tooltip_<R>Arrow@2x.png   66 x 48     (+ 1x 33 x 24) never stretched
-  Common/UI/SkyyGear/Slots/Slot_<R>@2x.png              148 x 148   (+ 1x 74 x 74) scaled whole
+  Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_<R>@2x.png        107 x 107   9-slice, border 48 px (= Border: 24 UI units), strip 48..58
+  Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_<R>.png           54 x 54     1x twin, border 24 px, strip 24..29
+  Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_<R>Arrow@2x.png   66 x 48     (+ 1x 33 x 24) never stretched
+  Common/UI/ItemQualities/SkyyGear/Slots/Slot_<R>@2x.png              148 x 148   (+ 1x 74 x 74) scaled whole
   sheet.png, manifest.json
 Run:   python tools/art/make_tooltip_sky.py        (deterministic, pure Python 3, no Pillow, uses every CPU core, ~1 min)
 Check: python tools/art/validate_tooltip_sky.py
@@ -36,8 +36,8 @@ import emblem_png as P
 
 ROOT = os.path.normpath(os.path.join(HERE, "..", ".."))
 OUT = os.path.join(ROOT, "art", "tooltip-sky")
-TIP_DIR = "Common/UI/SkyyGear/Tooltips"
-SLOT_DIR = "Common/UI/SkyyGear/Slots"
+TIP_DIR = "Common/UI/ItemQualities/SkyyGear/Tooltips"
+SLOT_DIR = "Common/UI/ItemQualities/SkyyGear/Slots"
 CAN = 108                     # tooltip design canvas (@2x px)
 S0, S1 = 48, 60               # stretch strip on the canvas (48..59), column / row 54 dropped
 BIG = 1.0e4
@@ -709,11 +709,11 @@ def rel_paths(name):
 
 def quality_fields(name):
     """the exact SkyyGear quality-asset field values for this rarity (paths without @2x; the client finds the @2x file)"""
-    return {"ItemTooltipTexture": "UI/SkyyGear/Tooltips/Tooltip_%s.png" % name,
-            "ItemTooltipArrowTexture": "UI/SkyyGear/Tooltips/Tooltip_%sArrow.png" % name,
-            "SlotTexture": "UI/SkyyGear/Slots/Slot_%s.png" % name,
-            "BlockSlotTexture": "UI/SkyyGear/Slots/Slot_%s.png" % name,
-            "SpecialSlotTexture": "UI/SkyyGear/Slots/Slot_%s.png" % name}
+    return {"ItemTooltipTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_%s.png" % name,
+            "ItemTooltipArrowTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_%sArrow.png" % name,
+            "SlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_%s.png" % name,
+            "BlockSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_%s.png" % name,
+            "SpecialSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_%s.png" % name}
 
 
 def encode_png(w, h, raw):

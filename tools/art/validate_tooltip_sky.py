@@ -43,9 +43,9 @@ def main():
     for rid, name, hexs, _mood in M.RARITIES:
         rp = M.rel_paths(name)
         q = mr.get(name, {}).get("quality_asset_fields", {})
-        check(q == M.quality_fields(name) and q.get("ItemTooltipTexture") == "UI/SkyyGear/Tooltips/Tooltip_%s.png" % name
-              and q.get("ItemTooltipArrowTexture") == "UI/SkyyGear/Tooltips/Tooltip_%sArrow.png" % name
-              and q.get("SlotTexture") == q.get("BlockSlotTexture") == q.get("SpecialSlotTexture") == "UI/SkyyGear/Slots/Slot_%s.png" % name,
+        check(q == M.quality_fields(name) and q.get("ItemTooltipTexture") == "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_%s.png" % name
+              and q.get("ItemTooltipArrowTexture") == "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_%sArrow.png" % name
+              and q.get("SlotTexture") == q.get("BlockSlotTexture") == q.get("SpecialSlotTexture") == "UI/ItemQualities/SkyyGear/Slots/Slot_%s.png" % name,
               "%s manifest quality-asset fields exact" % name)
         for k, rel in rp.items():
             p = os.path.join(M.OUT, rel)

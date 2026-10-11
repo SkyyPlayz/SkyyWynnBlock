@@ -48,19 +48,19 @@
    "hex": "#FFFFFF",
    "mood": "CLEAR DAY",
    "quality_asset_fields": {
-    "ItemTooltipTexture": "UI/SkyyGear/Tooltips/Tooltip_Normal.png",
-    "ItemTooltipArrowTexture": "UI/SkyyGear/Tooltips/Tooltip_NormalArrow.png",
-    "SlotTexture": "UI/SkyyGear/Slots/Slot_Normal.png",
-    "BlockSlotTexture": "UI/SkyyGear/Slots/Slot_Normal.png",
-    "SpecialSlotTexture": "UI/SkyyGear/Slots/Slot_Normal.png"
+    "ItemTooltipTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Normal.png",
+    "ItemTooltipArrowTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_NormalArrow.png",
+    "SlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Normal.png",
+    "BlockSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Normal.png",
+    "SpecialSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Normal.png"
    },
    "paths": {
-    "tip2": "Common/UI/SkyyGear/Tooltips/Tooltip_Normal@2x.png",
-    "tip1": "Common/UI/SkyyGear/Tooltips/Tooltip_Normal.png",
-    "arr2": "Common/UI/SkyyGear/Tooltips/Tooltip_NormalArrow@2x.png",
-    "arr1": "Common/UI/SkyyGear/Tooltips/Tooltip_NormalArrow.png",
-    "slot2": "Common/UI/SkyyGear/Slots/Slot_Normal@2x.png",
-    "slot1": "Common/UI/SkyyGear/Slots/Slot_Normal.png"
+    "tip2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Normal@2x.png",
+    "tip1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Normal.png",
+    "arr2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_NormalArrow@2x.png",
+    "arr1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_NormalArrow.png",
+    "slot2": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Normal@2x.png",
+    "slot1": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Normal.png"
    },
    "contrast": {
     "centre": "#121c36",
@@ -84,19 +84,19 @@
    "hex": "#FFFF55",
    "mood": "GOLDEN SUN",
    "quality_asset_fields": {
-    "ItemTooltipTexture": "UI/SkyyGear/Tooltips/Tooltip_Unique.png",
-    "ItemTooltipArrowTexture": "UI/SkyyGear/Tooltips/Tooltip_UniqueArrow.png",
-    "SlotTexture": "UI/SkyyGear/Slots/Slot_Unique.png",
-    "BlockSlotTexture": "UI/SkyyGear/Slots/Slot_Unique.png",
-    "SpecialSlotTexture": "UI/SkyyGear/Slots/Slot_Unique.png"
+    "ItemTooltipTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Unique.png",
+    "ItemTooltipArrowTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_UniqueArrow.png",
+    "SlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Unique.png",
+    "BlockSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Unique.png",
+    "SpecialSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Unique.png"
    },
    "paths": {
-    "tip2": "Common/UI/SkyyGear/Tooltips/Tooltip_Unique@2x.png",
-    "tip1": "Common/UI/SkyyGear/Tooltips/Tooltip_Unique.png",
-    "arr2": "Common/UI/SkyyGear/Tooltips/Tooltip_UniqueArrow@2x.png",
-    "arr1": "Common/UI/SkyyGear/Tooltips/Tooltip_UniqueArrow.png",
-    "slot2": "Common/UI/SkyyGear/Slots/Slot_Unique@2x.png",
-    "slot1": "Common/UI/SkyyGear/Slots/Slot_Unique.png"
+    "tip2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Unique@2x.png",
+    "tip1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Unique.png",
+    "arr2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_UniqueArrow@2x.png",
+    "arr1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_UniqueArrow.png",
+    "slot2": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Unique@2x.png",
+    "slot1": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Unique.png"
    },
    "contrast": {
     "centre": "#1c1a30",
@@ -120,19 +120,19 @@
    "hex": "#FF55FF",
    "mood": "PINK CLOUD DRIFT",
    "quality_asset_fields": {
-    "ItemTooltipTexture": "UI/SkyyGear/Tooltips/Tooltip_Rare.png",
-    "ItemTooltipArrowTexture": "UI/SkyyGear/Tooltips/Tooltip_RareArrow.png",
-    "SlotTexture": "UI/SkyyGear/Slots/Slot_Rare.png",
-    "BlockSlotTexture": "UI/SkyyGear/Slots/Slot_Rare.png",
-    "SpecialSlotTexture": "UI/SkyyGear/Slots/Slot_Rare.png"
+    "ItemTooltipTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Rare.png",
+    "ItemTooltipArrowTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_RareArrow.png",
+    "SlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Rare.png",
+    "BlockSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Rare.png",
+    "SpecialSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Rare.png"
    },
    "paths": {
-    "tip2": "Common/UI/SkyyGear/Tooltips/Tooltip_Rare@2x.png",
-    "tip1": "Common/UI/SkyyGear/Tooltips/Tooltip_Rare.png",
-    "arr2": "Common/UI/SkyyGear/Tooltips/Tooltip_RareArrow@2x.png",
-    "arr1": "Common/UI/SkyyGear/Tooltips/Tooltip_RareArrow.png",
-    "slot2": "Common/UI/SkyyGear/Slots/Slot_Rare@2x.png",
-    "slot1": "Common/UI/SkyyGear/Slots/Slot_Rare.png"
+    "tip2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Rare@2x.png",
+    "tip1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Rare.png",
+    "arr2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_RareArrow@2x.png",
+    "arr1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_RareArrow.png",
+    "slot2": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Rare@2x.png",
+    "slot1": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Rare.png"
    },
    "contrast": {
     "centre": "#221436",
@@ -156,19 +156,19 @@
    "hex": "#55FFFF",
    "mood": "SLATE STORM",
    "quality_asset_fields": {
-    "ItemTooltipTexture": "UI/SkyyGear/Tooltips/Tooltip_Legendary.png",
-    "ItemTooltipArrowTexture": "UI/SkyyGear/Tooltips/Tooltip_LegendaryArrow.png",
-    "SlotTexture": "UI/SkyyGear/Slots/Slot_Legendary.png",
-    "BlockSlotTexture": "UI/SkyyGear/Slots/Slot_Legendary.png",
-    "SpecialSlotTexture": "UI/SkyyGear/Slots/Slot_Legendary.png"
+    "ItemTooltipTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Legendary.png",
+    "ItemTooltipArrowTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_LegendaryArrow.png",
+    "SlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Legendary.png",
+    "BlockSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Legendary.png",
+    "SpecialSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Legendary.png"
    },
    "paths": {
-    "tip2": "Common/UI/SkyyGear/Tooltips/Tooltip_Legendary@2x.png",
-    "tip1": "Common/UI/SkyyGear/Tooltips/Tooltip_Legendary.png",
-    "arr2": "Common/UI/SkyyGear/Tooltips/Tooltip_LegendaryArrow@2x.png",
-    "arr1": "Common/UI/SkyyGear/Tooltips/Tooltip_LegendaryArrow.png",
-    "slot2": "Common/UI/SkyyGear/Slots/Slot_Legendary@2x.png",
-    "slot1": "Common/UI/SkyyGear/Slots/Slot_Legendary.png"
+    "tip2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Legendary@2x.png",
+    "tip1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Legendary.png",
+    "arr2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_LegendaryArrow@2x.png",
+    "arr1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_LegendaryArrow.png",
+    "slot2": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Legendary@2x.png",
+    "slot1": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Legendary.png"
    },
    "contrast": {
     "centre": "#0c1c34",
@@ -192,19 +192,19 @@
    "hex": "#FF5555",
    "mood": "CRIMSON TEMPEST",
    "quality_asset_fields": {
-    "ItemTooltipTexture": "UI/SkyyGear/Tooltips/Tooltip_Fabled.png",
-    "ItemTooltipArrowTexture": "UI/SkyyGear/Tooltips/Tooltip_FabledArrow.png",
-    "SlotTexture": "UI/SkyyGear/Slots/Slot_Fabled.png",
-    "BlockSlotTexture": "UI/SkyyGear/Slots/Slot_Fabled.png",
-    "SpecialSlotTexture": "UI/SkyyGear/Slots/Slot_Fabled.png"
+    "ItemTooltipTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Fabled.png",
+    "ItemTooltipArrowTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_FabledArrow.png",
+    "SlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Fabled.png",
+    "BlockSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Fabled.png",
+    "SpecialSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Fabled.png"
    },
    "paths": {
-    "tip2": "Common/UI/SkyyGear/Tooltips/Tooltip_Fabled@2x.png",
-    "tip1": "Common/UI/SkyyGear/Tooltips/Tooltip_Fabled.png",
-    "arr2": "Common/UI/SkyyGear/Tooltips/Tooltip_FabledArrow@2x.png",
-    "arr1": "Common/UI/SkyyGear/Tooltips/Tooltip_FabledArrow.png",
-    "slot2": "Common/UI/SkyyGear/Slots/Slot_Fabled@2x.png",
-    "slot1": "Common/UI/SkyyGear/Slots/Slot_Fabled.png"
+    "tip2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Fabled@2x.png",
+    "tip1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Fabled.png",
+    "arr2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_FabledArrow@2x.png",
+    "arr1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_FabledArrow.png",
+    "slot2": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Fabled@2x.png",
+    "slot1": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Fabled.png"
    },
    "contrast": {
     "centre": "#280e1a",
@@ -228,19 +228,19 @@
    "hex": "#CC66CC",
    "mood": "STAR NIGHT",
    "quality_asset_fields": {
-    "ItemTooltipTexture": "UI/SkyyGear/Tooltips/Tooltip_Mythic.png",
-    "ItemTooltipArrowTexture": "UI/SkyyGear/Tooltips/Tooltip_MythicArrow.png",
-    "SlotTexture": "UI/SkyyGear/Slots/Slot_Mythic.png",
-    "BlockSlotTexture": "UI/SkyyGear/Slots/Slot_Mythic.png",
-    "SpecialSlotTexture": "UI/SkyyGear/Slots/Slot_Mythic.png"
+    "ItemTooltipTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Mythic.png",
+    "ItemTooltipArrowTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_MythicArrow.png",
+    "SlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Mythic.png",
+    "BlockSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Mythic.png",
+    "SpecialSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Mythic.png"
    },
    "paths": {
-    "tip2": "Common/UI/SkyyGear/Tooltips/Tooltip_Mythic@2x.png",
-    "tip1": "Common/UI/SkyyGear/Tooltips/Tooltip_Mythic.png",
-    "arr2": "Common/UI/SkyyGear/Tooltips/Tooltip_MythicArrow@2x.png",
-    "arr1": "Common/UI/SkyyGear/Tooltips/Tooltip_MythicArrow.png",
-    "slot2": "Common/UI/SkyyGear/Slots/Slot_Mythic@2x.png",
-    "slot1": "Common/UI/SkyyGear/Slots/Slot_Mythic.png"
+    "tip2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Mythic@2x.png",
+    "tip1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Mythic.png",
+    "arr2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_MythicArrow@2x.png",
+    "arr1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_MythicArrow.png",
+    "slot2": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Mythic@2x.png",
+    "slot1": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Mythic.png"
    },
    "contrast": {
     "centre": "#100924",
@@ -264,19 +264,19 @@
    "hex": "#55FF55",
    "mood": "GREEN DAWN",
    "quality_asset_fields": {
-    "ItemTooltipTexture": "UI/SkyyGear/Tooltips/Tooltip_Set.png",
-    "ItemTooltipArrowTexture": "UI/SkyyGear/Tooltips/Tooltip_SetArrow.png",
-    "SlotTexture": "UI/SkyyGear/Slots/Slot_Set.png",
-    "BlockSlotTexture": "UI/SkyyGear/Slots/Slot_Set.png",
-    "SpecialSlotTexture": "UI/SkyyGear/Slots/Slot_Set.png"
+    "ItemTooltipTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Set.png",
+    "ItemTooltipArrowTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_SetArrow.png",
+    "SlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Set.png",
+    "BlockSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Set.png",
+    "SpecialSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Set.png"
    },
    "paths": {
-    "tip2": "Common/UI/SkyyGear/Tooltips/Tooltip_Set@2x.png",
-    "tip1": "Common/UI/SkyyGear/Tooltips/Tooltip_Set.png",
-    "arr2": "Common/UI/SkyyGear/Tooltips/Tooltip_SetArrow@2x.png",
-    "arr1": "Common/UI/SkyyGear/Tooltips/Tooltip_SetArrow.png",
-    "slot2": "Common/UI/SkyyGear/Slots/Slot_Set@2x.png",
-    "slot1": "Common/UI/SkyyGear/Slots/Slot_Set.png"
+    "tip2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Set@2x.png",
+    "tip1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Set.png",
+    "arr2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_SetArrow@2x.png",
+    "arr1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_SetArrow.png",
+    "slot2": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Set@2x.png",
+    "slot1": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Set.png"
    },
    "contrast": {
     "centre": "#0c2426",
@@ -300,19 +300,19 @@
    "hex": "#FFAA00",
    "mood": "EMBER SUNSET",
    "quality_asset_fields": {
-    "ItemTooltipTexture": "UI/SkyyGear/Tooltips/Tooltip_Untiered.png",
-    "ItemTooltipArrowTexture": "UI/SkyyGear/Tooltips/Tooltip_UntieredArrow.png",
-    "SlotTexture": "UI/SkyyGear/Slots/Slot_Untiered.png",
-    "BlockSlotTexture": "UI/SkyyGear/Slots/Slot_Untiered.png",
-    "SpecialSlotTexture": "UI/SkyyGear/Slots/Slot_Untiered.png"
+    "ItemTooltipTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Untiered.png",
+    "ItemTooltipArrowTexture": "UI/ItemQualities/SkyyGear/Tooltips/Tooltip_UntieredArrow.png",
+    "SlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Untiered.png",
+    "BlockSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Untiered.png",
+    "SpecialSlotTexture": "UI/ItemQualities/SkyyGear/Slots/Slot_Untiered.png"
    },
    "paths": {
-    "tip2": "Common/UI/SkyyGear/Tooltips/Tooltip_Untiered@2x.png",
-    "tip1": "Common/UI/SkyyGear/Tooltips/Tooltip_Untiered.png",
-    "arr2": "Common/UI/SkyyGear/Tooltips/Tooltip_UntieredArrow@2x.png",
-    "arr1": "Common/UI/SkyyGear/Tooltips/Tooltip_UntieredArrow.png",
-    "slot2": "Common/UI/SkyyGear/Slots/Slot_Untiered@2x.png",
-    "slot1": "Common/UI/SkyyGear/Slots/Slot_Untiered.png"
+    "tip2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Untiered@2x.png",
+    "tip1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Untiered.png",
+    "arr2": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_UntieredArrow@2x.png",
+    "arr1": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_UntieredArrow.png",
+    "slot2": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Untiered@2x.png",
+    "slot1": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Untiered.png"
    },
    "contrast": {
     "centre": "#2a1418",
@@ -333,336 +333,336 @@
  ],
  "files": [
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Fabled.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Fabled.png",
    "w": 74,
    "h": 74,
    "bytes": 4505,
    "sha256": "aa4747d36ca51734a5dbd0e294f7942a15f74dcc079cf8bc77f280b581560f5e"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Fabled@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Fabled@2x.png",
    "w": 148,
    "h": 148,
    "bytes": 13106,
    "sha256": "b03dde0bd1c03783700525a84d635bc58d270a6866697850f139645eae99e321"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Legendary.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Legendary.png",
    "w": 74,
    "h": 74,
    "bytes": 5434,
    "sha256": "7eb697c80cf7f7208b06c9b4ab57131a0c5183cdd8267edd47e0268da81af72d"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Legendary@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Legendary@2x.png",
    "w": 148,
    "h": 148,
    "bytes": 15998,
    "sha256": "e6766d60d1a5a5aae915c8f1a4540204ace12e27f8e8c078f5359592b717109d"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Mythic.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Mythic.png",
    "w": 74,
    "h": 74,
    "bytes": 7158,
    "sha256": "b96dc6be946f35673c9a0255c8954847141c12d8a09272d5288b2497fcc18af9"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Mythic@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Mythic@2x.png",
    "w": 148,
    "h": 148,
    "bytes": 21406,
    "sha256": "17dccae0e858ba6ce92edb4bdb25df0b8b01140d71e425b7333d4a3481a1b992"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Normal.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Normal.png",
    "w": 74,
    "h": 74,
    "bytes": 7887,
    "sha256": "d6b08f968a63e368281935042a9a040b1f24c76369625feeaaa1e847b1a718e6"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Normal@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Normal@2x.png",
    "w": 148,
    "h": 148,
    "bytes": 21361,
    "sha256": "789f0b476bb7bdeb4ced197b0212d61833692b93bea0bb747fa81efa61bd9537"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Rare.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Rare.png",
    "w": 74,
    "h": 74,
    "bytes": 7350,
    "sha256": "a16583a4b09973962d0a91de91372b1c77c754a2f880c8fba23a1d833c0f4cac"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Rare@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Rare@2x.png",
    "w": 148,
    "h": 148,
    "bytes": 20070,
    "sha256": "474ca74f769a6329bace640488e7d68eeefc8329465e24e63f44edfe0315a9a2"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Set.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Set.png",
    "w": 74,
    "h": 74,
    "bytes": 7533,
    "sha256": "085072a7df9bb315c2b0a598eca95a27b84cd790624135de386fe4dc603f4dc3"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Set@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Set@2x.png",
    "w": 148,
    "h": 148,
    "bytes": 21527,
    "sha256": "6c8c22e3834972b2b738da24c71e10297c12acbb9179961c2beb58e80ab57a46"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Unique.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Unique.png",
    "w": 74,
    "h": 74,
    "bytes": 8836,
    "sha256": "94baffb9944fa7ce48de86d04059eff3490256c1ee920a8bd5711128ff996f28"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Unique@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Unique@2x.png",
    "w": 148,
    "h": 148,
    "bytes": 25695,
    "sha256": "8d9a870ad057c57f9e192c85de2093d4f38f7f9431a35a6ee786e889daf78fee"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Untiered.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Untiered.png",
    "w": 74,
    "h": 74,
    "bytes": 6445,
    "sha256": "47c41833ce5261369564dc0cc91c9a80d4f42303fe512e75958e79553eeaf15f"
   },
   {
-   "path": "Common/UI/SkyyGear/Slots/Slot_Untiered@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Slots/Slot_Untiered@2x.png",
    "w": 148,
    "h": 148,
    "bytes": 18511,
    "sha256": "ae1dbc2a6a12a9e49894de6bce8e27351bd6da229dc5e8e3d43f5b28b9ad56d7"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Fabled.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Fabled.png",
    "w": 54,
    "h": 54,
    "bytes": 4660,
    "sha256": "122e6446f6785d6ebc54c081fea8e75e80bedde3fd3d0fec2b7c0bdddfac3ba3"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Fabled@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Fabled@2x.png",
    "w": 107,
    "h": 107,
    "bytes": 16050,
    "sha256": "e4b38fbf2ccb0ffcc1a387f0323084050d2a4f3f1fddebcb788a8b2f45debccd"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_FabledArrow.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_FabledArrow.png",
    "w": 33,
    "h": 24,
    "bytes": 1069,
    "sha256": "6a69dc9bd56a646733f14977ec6f9f9781ade43f68f03229f146ff8485d4c863"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_FabledArrow@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_FabledArrow@2x.png",
    "w": 66,
    "h": 48,
    "bytes": 2859,
    "sha256": "0b1c579b7204aebf4a1d93272159ab70844a5b3d49ea0e1a25ce8335ffdc025f"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Legendary.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Legendary.png",
    "w": 54,
    "h": 54,
    "bytes": 4780,
    "sha256": "143e5aad76412c5dea50a70105a8420f96b7bd0596bd41eee71f95e1f5cc74f9"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Legendary@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Legendary@2x.png",
    "w": 107,
    "h": 107,
    "bytes": 16654,
    "sha256": "206c13e5543ca0ca6705c9dc865fb0bd3efe79ecefeee0b94a6c3f0ca758f809"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_LegendaryArrow.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_LegendaryArrow.png",
    "w": 33,
    "h": 24,
    "bytes": 1130,
    "sha256": "56383a0514e11982faafac12eb7d877c91c9bfa44b42ddf67fb2db4d737c4e33"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_LegendaryArrow@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_LegendaryArrow@2x.png",
    "w": 66,
    "h": 48,
    "bytes": 3232,
    "sha256": "cfd66c51e17afb572cc4c149563310c82c7aae9c9cd5a9d4dfe71dd9488ebee1"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Mythic.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Mythic.png",
    "w": 54,
    "h": 54,
    "bytes": 5152,
    "sha256": "4aaa86681e4aee45cd3f1c9aec471d15e684e4fec663e540d51a40557dd81815"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Mythic@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Mythic@2x.png",
    "w": 107,
    "h": 107,
    "bytes": 18033,
    "sha256": "a505d9ee0d2f2be2d00c94107df5f82ac1199d3e2f135b9da25f80ce72526fe4"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_MythicArrow.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_MythicArrow.png",
    "w": 33,
    "h": 24,
    "bytes": 1084,
    "sha256": "031f66b8e5d2285d95df86053b7b2759667b9dc028b328fb0d54f4579da638c4"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_MythicArrow@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_MythicArrow@2x.png",
    "w": 66,
    "h": 48,
    "bytes": 2905,
    "sha256": "f73bbbc88c778817b3ca804dcc372d6f5370395e7cd7f7817a92e434c843c7a3"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Normal.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Normal.png",
    "w": 54,
    "h": 54,
    "bytes": 4504,
    "sha256": "cdcc4f0fa30aba873ed441bda02f387bfe574c5bbf749716d19aa9560d3de100"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Normal@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Normal@2x.png",
    "w": 107,
    "h": 107,
    "bytes": 15208,
    "sha256": "a314787ec3f386b9176840b747e416b2fdbacde93daa026c2a4e0612a86d7826"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_NormalArrow.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_NormalArrow.png",
    "w": 33,
    "h": 24,
    "bytes": 1075,
    "sha256": "5f410ca34484b0a6b1eab9bdce4e45dc37c143f27733ae50f948ba354a2f9a1f"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_NormalArrow@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_NormalArrow@2x.png",
    "w": 66,
    "h": 48,
    "bytes": 2896,
    "sha256": "9deb28bc521af427f0b7ddcd2935c3fb6de238ead69cf42b9f4d0d8185332a4e"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Rare.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Rare.png",
    "w": 54,
    "h": 54,
    "bytes": 4509,
    "sha256": "4300c123e50d5d5202c35bfd31a18fda7e0240ef8fb020ef9039730c817a875c"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Rare@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Rare@2x.png",
    "w": 107,
    "h": 107,
    "bytes": 15183,
    "sha256": "1cd9d08d8e5d006fa862e04b1033374143e604c28b55b367fc567c5323d2aa58"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_RareArrow.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_RareArrow.png",
    "w": 33,
    "h": 24,
    "bytes": 1072,
    "sha256": "1b3fb2b94d13f298d9758e2aa351cc88e78a25083c503221df751d50354740d4"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_RareArrow@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_RareArrow@2x.png",
    "w": 66,
    "h": 48,
    "bytes": 2904,
    "sha256": "713e08ad61ee7f045391977041a1e7769f149a1f3c3b9a7b580df595c489d840"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Set.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Set.png",
    "w": 54,
    "h": 54,
    "bytes": 4904,
    "sha256": "c4289ad84a1407a5236769fb598313428d1f5e35b8ac13875dec59055044ebd9"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Set@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Set@2x.png",
    "w": 107,
    "h": 107,
    "bytes": 16894,
    "sha256": "f8defef79dd6623c8709bc658dcc844904b2c6910ae7a6b6d2c5d0c2b8a292ad"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_SetArrow.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_SetArrow.png",
    "w": 33,
    "h": 24,
    "bytes": 1136,
    "sha256": "7fd146cf3f0793ce8c1d89ad00ed559cbf99a22dd0142d20b2e28c85bfb61ebb"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_SetArrow@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_SetArrow@2x.png",
    "w": 66,
    "h": 48,
    "bytes": 3202,
    "sha256": "6be857d9332bc6ecc9c3466d03b2c1ce0d65a58578fc6244e4dcee4bc5885ae1"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Unique.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Unique.png",
    "w": 54,
    "h": 54,
    "bytes": 4780,
    "sha256": "56f9448a5a357fd65e72dcfdebf0c1556d19afe9e37689a7ba95c74311a3bc69"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Unique@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Unique@2x.png",
    "w": 107,
    "h": 107,
    "bytes": 16310,
    "sha256": "716742ec62a06a115efdaf36f919d334d2fe57ea87aa4a3ce4b14205b5557db1"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_UniqueArrow.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_UniqueArrow.png",
    "w": 33,
    "h": 24,
    "bytes": 1068,
    "sha256": "85ad7396dbc183804f4ee7dd191077316fb134e3f71360bf6e9d932127b6a315"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_UniqueArrow@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_UniqueArrow@2x.png",
    "w": 66,
    "h": 48,
    "bytes": 2889,
    "sha256": "3175f3375c15fddd1ed539a77d7aeb979f9ab93a7c4936646cacebec5e7943ef"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Untiered.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Untiered.png",
    "w": 54,
    "h": 54,
    "bytes": 4780,
    "sha256": "9483df627c8cd3a5733ab045f44f35c24d784e5b63323071149d1b0d3e67d26f"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_Untiered@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_Untiered@2x.png",
    "w": 107,
    "h": 107,
    "bytes": 16649,
    "sha256": "e82621e1d871a5adb43c481a06ca0ae402e38ccc7cb7fa9d1f74c607850b96cc"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_UntieredArrow.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_UntieredArrow.png",
    "w": 33,
    "h": 24,
    "bytes": 1075,
    "sha256": "c8252508875312b8990b356f531dfb627bf41e6c78cd98c995ff4308905b8700"
   },
   {
-   "path": "Common/UI/SkyyGear/Tooltips/Tooltip_UntieredArrow@2x.png",
+   "path": "Common/UI/ItemQualities/SkyyGear/Tooltips/Tooltip_UntieredArrow@2x.png",
    "w": 66,
    "h": 48,
    "bytes": 2884,
