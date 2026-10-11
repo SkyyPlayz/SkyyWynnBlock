@@ -402,6 +402,8 @@ show the pre-migration loadouts whose stacks were moved into the pool (items inv
 - The picture Skyy describes matches sections 3-7 (one gear bag per profile, loadouts pick from it, Equip puts what you wear into the bag
   and takes the loadout out). NEW from it: the auto-pull toggle - section 4.1.
 - Q8 (0.1 migration) was asked again in plainer words; still open, default unchanged.
+- Q8 answered 2026-10-11 (Skyy, word for word: "question 3 yes", to the plain-words version "should gear saved inside the old Wardrobe
+  loadouts move into the new gear bag automatically on update, once; worn gear only moves when you click Yes?"): YES - section 10 as written.
 
 ## For the local session
 
