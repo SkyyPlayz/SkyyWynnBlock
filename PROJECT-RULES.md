@@ -66,6 +66,8 @@ Respect the rollback floors in `tools/deploy_set.py`.
     args `quotes` - without them builders refuse when Skyy keeps chatting about other things).
   - **Ultracode** (BIG jobs: new systems, several mods, economy, saved data, dupes, permissions) - a multi-agent workflow: parallel
     research / spec, adversarial multi-lens critics, build, review, fix, cross-check.
+  - **Simplify passes** (`args.simplify: 2`) on refine / merge rounds: a simplicity critic + a behaviour-identical simplifier, repeated
+    (each pass catches different simplifications); stops early on NONE FOUND. Costs ~10-20% more per round, so not on small fixes.
   - **Lean round** - one builder with its own harness + one review. Small behaviour change in one mod, no saved-data change.
   - **No agents** - docs, plans, notes; a setting Skyy can change in Server Setup (tell them how instead).
 
