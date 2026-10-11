@@ -201,3 +201,7 @@ Questions: Vein Burst -> Vein Mine 0-3 with refund [yes]; TF L7 / L8 = 12 / 14 [
 
 ## 2026-10-10 23:29 2026-10-10 list done
 All 4 tasks from the 2026-10-10 block are done and pushed (one block each above). Only the SkyyAbilityProbe PR is left (after PR 11 is closed). Send more any time.
+
+## 2026-10-11 00:29 Skyy answered the special tools questions
+Skyy, word for word (2026-10-11, to the cloud session): "1. yes 2. yes 3. yes 4. yes" - please record in docs/answered/gear.md (qa_append). Mapping to research/cloud/Special-Tools-Spec.md 'Questions for Skyy' (noted under the table):
+row 3 YES Vein Burst -> Vein Mine 0-3 with a one-time Dust refund for levels 4-5; row 4 YES Tree Feller L7 / L8 = 12 / 14 logs; row 7 YES tool.hammers auto (on solo, off on the server) + the hammer quest pays the Veinbreaker on our server; row 2 YES special tools = UT with fixed lines (no reroll). Rows 1, 5, 6, 8, 9, 10 still open with their defaults.

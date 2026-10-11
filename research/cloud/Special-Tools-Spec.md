@@ -278,6 +278,13 @@ Note: on Hytale 0.7 block health moves into `BlockHealthSection` (`research/Tool
 | 9 | Auto Smelt node gate: Mining 75 inside tier VI, 9.6 M Dust? | [yes] |
 | 10 | Vein Mine on stone: only rock blocks in the 3x3 (ore in the window stays for you to mine)? | [yes] |
 
+**Skyy's answers (2026-10-11, word for word, given to the cloud session):** "1. yes 2. yes 3. yes 4. yes" - to the cloud's four questions,
+which map to this table as follows (the rest stay open with their defaults):
+- cloud Q1 = row 3: YES - Vein Burst becomes Vein Mine 0-3, Dust of levels 4-5 refunded once.
+- cloud Q2 = row 4: YES - Tree Feller levels 7 / 8 = 12 / 14 extra logs.
+- cloud Q3 = row 7: YES - `tool.hammers` auto (on in single-player, off on a dedicated server); on our server the hammer quest pays the Veinbreaker.
+- cloud Q4 = row 2: YES - special tools are UT with fixed lines (no modifier reroll / reforge).
+
 ## For the local session
 
 | # | Item |
