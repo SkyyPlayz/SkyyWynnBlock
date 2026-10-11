@@ -39,7 +39,7 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
    fold licence-permitting pack mods in (research/Licence-Audit.md; GPL = share-alike question for Skyy).
 6. MORNING QUESTIONS for Skyy (research/Licence-Audit.md): repo LICENSE (suggest MIT), GPL share-alike modules (keep GPL mods separate [default]),
    send author asks (Dynamic Seasons + More Crossbow Tiers first - in the pack with no grant); wand fall rule is done; PACK.md fixes listed in the audit.
-7. SkyyArmory 0.1.22: Soul Orb charged move WINGS OF FATE (Priest.md; not built yet) after 0.1.21 (vanilla essence ladder + T1 x2.5) pins.
+7. DONE 2026-10-11: SkyyArmory 0.1.21 deployed (Soul Orb damage, vanilla essences, faster tether, lines, Wings of Fate; research/classes/Priest.md).
 8. Specs waiting: Requip (done), Upgrade ladders + Dragon sets, Special tools, Pet eggs v2, Zone regen, Avatars (cloud CLOUD-RESUME.md).
 
 ## Never forget
