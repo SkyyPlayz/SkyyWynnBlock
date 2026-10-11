@@ -53,7 +53,7 @@ every file.
 
   The quality JSON names them without `@2x` (for example `"UI/ItemQualities/Tooltips/ItemTooltipRare.png"`), so the client looks up
   the `@2x` file itself.
-- **The tooltip is a 9-slice.** The client file `Client/Data/Game/Interface/InGame/Tooltips/ItemTooltip.ui` sets:
+- **The tooltip is a 9-slice.** The client file `the client file ItemTooltip.ui (game install, Client Data, Interface / InGame / Tooltips)` sets:
   - `@TextureBorder = 24`;
   - `Background: (TexturePath: "ItemTooltipDefault.png", Border: @TextureBorder)`;
   - MinWidth 320, MaxWidth 480 UI units;
