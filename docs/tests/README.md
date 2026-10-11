@@ -174,3 +174,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Wand hop fix + sky-island menu item + HyFishing off (DEPLOYED 2026-10-10, backup deploy-20261010-1443) | [2026-10](2026-10.md) |
 | Wand aura at landing + quick shot range; probes removed (DEPLOYED 2026-10-10, backup deploy-20261010-1518) | [2026-10](2026-10.md) |
 | Big batch: pets roles + loadouts, menu D + editor, wardrobe, soul cage, tool rarity + multitools, tooltips, sky islands (DEPLOYED 2026-10-10, backup deploy-20261010-1911) | [2026-10](2026-10.md) |
+| Upgrade tab + [Lv N] names + /multitool merge, Collections totals, UI probe (DEPLOYED 2026-10-10, backup deploy-20261010-2236) | [2026-10](2026-10.md) |

@@ -9,12 +9,12 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyHud | 0.3.18 | HUD widgets + Lunar-style editor (move / scale / toggle), skills + combat widgets; minimap widget (needs BetterMap); moves the Dynamic Seasons widget; minimap island / arrow / spot fixes |
 | SkyySacks | 0.7.16 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting; take bridge for other mods |
 | SkyyCoins | 0.1.5 | coin purse, /pay, death penalty (merges into SkyyEconomy later) |
-| SkyyCollections | 0.2.8 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8 |
+| SkyyCollections | 0.2.9 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8 |
 | SkyyParty | 0.1.7 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
 | SkyyBank | 0.1.7 | bank + interest; interest once a day, account brackets 2/1/0.5% |
 | SkyyIslands | 0.5.5 | private islands, co-op, visitors, island settings, /hub |
 | SkyyBazaar | 0.1.7 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons |
-| SkyyGear | 0.2.20 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows |
+| SkyyGear | 0.2.22 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows |
 | SkyySkills | 0.4.30 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap |
 | SkyyAccessories | 0.5.11 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections) |
 | SkyyClasses | 0.1.19 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
@@ -28,7 +28,8 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyVault | 0.1.5 | vault pages |
 | SkyyAuctions | 0.1.3 | auction house (buy-it-now) |
 | SkyyRanks | 0.1.1 | ranks + permissions made in game |
-| SkyyUiProbe | 0.4 | dev / test probes, op only (retire later) |
+| SkyyUiProbe | 0.5 | dev / test probes, op only (retire later) |
+| SkyyUiProbeB | 0.5 | second probe jar for the UI probe (cross-jar textures / tabs), op only (retire with SkyyUiProbe) |
 | SkyyFishing | 0.1.2 | our fishing, stage 1: Fishing Bench (Parts / Rig / Fillet and Sell), rods + reels T0-T2, parts I-II, cast / bite / fight HUD, Zone 1 fish (HyFishing stays until stage 2) |
 | SkyyMerchants | 0.1.1 | roaming merchants (one per zone, move 20 min, rumours, special-weapon shop); floor: switch part.merchants off before removing |
 | SkyyPets | 0.2.3 | slot pets phase 1: per-profile pet records + ledger, pet slot (full buffs) + summon slot (50%), pet XP + levels, /pets page, /petadmin, starter Rabbit, 30 launch kinds |
