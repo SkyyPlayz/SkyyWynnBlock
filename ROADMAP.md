@@ -24,11 +24,11 @@ Sources: `docs/handoff/design-locks.md` ("Pack goal", "Own content"),
 The phase names come from `docs/plans/SkyWynn-Master-Plan.md` part 2E.
 Each phase is a playable step.
 
-> **Status = estimate, Skyy to confirm.**
-> Worked out from RESUME, HANDOFF and the log on 2026-10-09.
+> **Statuses confirmed by Skyy on 2026-10-09.**
+> Worked out from RESUME, HANDOFF and the log on 2026-10-09, then confirmed.
 > Exact versions: [HANDOFF.md](HANDOFF.md) section 1.
 
-| Phase | What it covers | Status (estimate) |
+| Phase | What it covers | Status |
 |---|---|---|
 | P0 Foundation | private islands, coins, one NPC shop, item stats that survive saves | Part done: islands, coins and saved stats are live; the NPC shop is still a spec |
 | P1 Core loop | skills, collections, Magic Bags, profiles, party, guilds, accessories | Live - Skyy testing + tuning |
