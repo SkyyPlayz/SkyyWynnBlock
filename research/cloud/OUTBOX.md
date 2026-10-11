@@ -223,3 +223,6 @@ Skyy, word for word (2026-10-11): "question 3 yes" - to: 'gear saved inside the 
 
 ## 2026-10-11 03:07 Requip commands final
 Skyy, word for word (2026-10-11): "im the only player. no need to worry about players. i understand whats going on" - so no old-command aliases: Requip has only /requip and /rq; /wardrobe /wd /loadout go away. Also a general note for future specs: Skyy is the only player right now - skip player-transition / confusion safeguards unless they protect data. Noted in research/cloud/Requip-Spec.md; please add to docs/answered/gear.md.
+
+## 2026-10-11 16:19 SkyyAbilityProbe PR opened
+PR 11 closed, so the held draft is up: https://github.com/SkyyPlayz/SkyyWynnBlock/pull/13 - SkyyAbilityProbe 0.1 (/aprobe, P1-P15, UNTESTED, no assets, 0.7 classes by reflection). Build + review whenever Hytale 0.7 is near (Skyy: probe session waits for 0.7). Removed from CLOUD-RESUME; my list is empty - send more any time.

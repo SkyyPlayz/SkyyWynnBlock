@@ -82,7 +82,5 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
       the Mythic DRAGON set (first dragon boss drop; one elemental dragon mini-boss per element in the next zone drops the upgrade item),
       the CONVERT step (Cloth / Light / Heavy variants keep rolls; which Armory sets to recolour - mark The Armory facts UNVERIFIED), and
       what an upgrade keeps (rarity, lines, reforge) vs re-rolls (level). Questions with defaults.
-- [ ] **SkyyAbilityProbe PR** - once https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 is merged: open a [cloud] PR with the held draft
-      `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
 ## Done (delete after logging - see the rules above)
