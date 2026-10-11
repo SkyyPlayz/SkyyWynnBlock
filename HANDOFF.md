@@ -14,11 +14,11 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyBank | 0.1.7 | bank + interest; interest once a day, account brackets 2/1/0.5% |
 | SkyyIslands | 0.5.5 | private islands, co-op, visitors, island settings, /hub |
 | SkyyBazaar | 0.1.7 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons |
-| SkyyGear | 0.2.16 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows |
-| SkyySkills | 0.4.29 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap |
-| SkyyAccessories | 0.5.10 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections) |
-| SkyyClasses | 0.1.18 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
-| SkyyMenu | 0.3.15 | SkyWynn Menu, player Settings, Server Setup (admin) |
+| SkyyGear | 0.2.20 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows |
+| SkyySkills | 0.4.30 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap |
+| SkyyAccessories | 0.5.11 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections) |
+| SkyyClasses | 0.1.19 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
+| SkyyMenu | 0.3.17 | SkyWynn Menu, player Settings, Server Setup (admin) |
 | SkyyEssentials | 0.1.9 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.9 | profiles = full saves (default cap 6), delete + 6 h undo |
 | SkyyCooking | 0.1.6 | Cooking dishes + food Grade; XP by craft difficulty |
@@ -31,14 +31,14 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyUiProbe | 0.4 | dev / test probes, op only (retire later) |
 | SkyyFishing | 0.1.2 | our fishing, stage 1: Fishing Bench (Parts / Rig / Fillet and Sell), rods + reels T0-T2, parts I-II, cast / bite / fight HUD, Zone 1 fish (HyFishing stays until stage 2) |
 | SkyyMerchants | 0.1.1 | roaming merchants (one per zone, move 20 min, rumours, special-weapon shop); floor: switch part.merchants off before removing |
-| SkyyPets | 0.2.1 | slot pets phase 1: per-profile pet records + ledger, pet slot (full buffs) + summon slot (50%), pet XP + levels, /pets page, /petadmin, starter Rabbit, 30 launch kinds |
-| SkyyWardrobe | - | loadouts: armor + hotbar + pet / summon + abilities per profile, one-click write-ahead swap, /wardrobe |
+| SkyyPets | 0.2.3 | slot pets phase 1: per-profile pet records + ledger, pet slot (full buffs) + summon slot (50%), pet XP + levels, /pets page, /petadmin, starter Rabbit, 30 launch kinds |
+| SkyyWardrobe | 0.1 | loadouts: armor + hotbar + pet / summon + abilities per profile, one-click write-ahead swap, /wardrobe |
 | SkyyPetProbe | 0.1 | pet engine probes P1-P10, op only: /petprobe (results = [SkyyPetProbe] RESULT lines + mods/Skyy_SkyyPetProbe/probe.log); /petprobe clear at the end, then remove |
 | SkyyTownProbe | 0.2 | Zone 1 town probe, op only, test island (run /townprobe undo until 'Nothing to undo', then remove) |
 | SkyyKeyProbe | 0.2 | key probe, op only: /keyprobe give, press keys, /keyprobe report (remove after Skyy's test) |
 | SkyyMobs | 0.1.5 | mob levels + difficulty; level curves + level gap (mob:fn:info) |
-| SkyyWorldGen | 0.4 | Zone 1 test island (/zone 1, admin) |
-| SkyyArmory | 0.1.17 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults |
+| SkyyWorldGen | 0.5 | Zone 1 test island (/zone 1, admin) |
+| SkyyArmory | 0.1.20 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults |
 | third-party (`PACK.md`) | - | More Crossbow Tiers (Serj), Saplings From Trees (Helios); SkyyRolls is RETIRED |
 
 Every version's notes: `docs/handoff/versions-history.md`. Every build / deploy / test: `docs/log/<YYYY-MM>.md`.

@@ -70,6 +70,7 @@ fishing, luggage, sprint-tap and Stats-page versions (their newest version is be
 52. SkyyMenu 0.3.14 Pets tile (top row, per profile) + SkyyPets 0.2.1 petting plays once (Hawk/Fox/Cat/Rabbit)
 53. SkyyArmory 0.1.16 wand hops once + shorter; SkyyMenu 0.3.15 sky-island menu item; HyFishing gone
 54. SkyyArmory 0.1.17: wand hop 18, heal aura where you land (5 s), quick shot 32 blocks (50% past 16)
+55. BIG BATCH 2026-10-10: Pets 0.2.3 (roles, summon look, loadout bridge, skeletons), Menu 0.3.17 (layout D, icons, editor), Wardrobe 0.1, Soul Cage (Armory 0.1.19-0.1.20), wand single launch + keeps damaging falls, tool rarity + reforge + multitools (Gear 0.2.17-0.2.20), new tooltips, Lantern textures, WorldGen 0.5 islands (/zone proof -> skywynn_proof2), Multitools on, KeyProbe off, BetterMap all worlds
 
 Seen working 2026-10-08/09: bag art (0.7.14), fishing widgets, Copper axe Attack Speed line, sprint roll forward + forward diagonals.
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12
