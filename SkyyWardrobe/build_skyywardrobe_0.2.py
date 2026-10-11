@@ -74,7 +74,12 @@ DUPE / LOSS SAFETY (spec 7; the 0.1 files / journal rules extended):
     first: a gear entry whose stamp is anywhere in the inventory is OUT, else IN (rebuilt from the journal's stack doc) - the stamp makes
     an item traceable anywhere, not only in its old slot; a new unstamped deposit / a Take out / a kind entry by the live count of its
     kind against kb; a craft deposit (wardrobe:fn:deposit) by the caller's material evidence. Every touched shard is rewritten from that
-    decision (a half-written save is never trusted). Result: every item exists exactly once. Known limit (as 0.1): an item moved OUT of
+    decision (a half-written save is never trusted). LINEAGES (requip021 fix, fuzz seed 4242): an entry taken out (plain) and a later
+    NEW deposit of that kind are one physical item; the repair counts each lineage once (IN for one entry per lineage, the fill-up keeps
+    the conservation count), so take out -> deposit -> take out -> crash no longer leaves a phantom NOT WITH YOU entry.
+    requip021fix (colliding-kind fuzz seed 8030): "Use what I wear" stamps worn gear in place; when its save failed it dropped the new
+    entries but left the new stamps on the items (a stamp the pool did not know) - it now puts each item back exactly as it was.
+    Result: every item exists exactly once. Known limit (as 0.1): an item moved OUT of
     your inventory (a chest) inside the 30 s keep window followed by a server crash counts as "never left the pool".
   - MIGRATION from 0.1 (run once per profile key, spec 10 + F5): the first time 0.2 loads a key with a 0.1 file
     (Skyy_SkyyWardrobe/loadouts/<pkey>.json): (1) HISTORY SNAPSHOT - the 0.1 file (+ its journal) is copied byte for byte into
@@ -3109,6 +3114,12 @@ public static String repair(@PKG@.WdData d, @IC@[] cs, boolean force, java.util.
   java.util.LinkedHashMap info = new java.util.LinkedHashMap();
   java.util.HashMap kbuFirst = new java.util.HashMap();
   java.util.HashMap proto = new java.util.HashMap();
+  // 0.2 fix (requip021, fuzz seed 4242): LINEAGES. A Take out turns an entry's item into a plain item; a later NEW deposit of that kind
+  // may be that very item again (taken out, deposited, taken out ...). lin = eid -> the eid of the first entry of its lineage (one
+  // physical item), tdel = entries that were taken out as a plain item, tok = per kind the taken-out entries no new deposit has claimed
+  java.util.HashMap lin = new java.util.HashMap();
+  java.util.HashSet tdel = new java.util.HashSet();
+  java.util.HashMap tok = new java.util.HashMap();
   for (int i = 0; i < steps.size(); i++) {
     org.bson.BsonValue sv = (org.bson.BsonValue) steps.get(i);
     if (sv == null || !sv.isDocument()) continue;
@@ -3135,8 +3146,22 @@ public static String repair(@PKG@.WdData d, @IC@[] cs, boolean force, java.util.
         info.put(eid, f);
       }
       if (sd != null) f[1] = sd;
+      if (t == 4 && @PKG@.WdCodec.boolOf(m, "del", false)) {
+        tdel.add(eid);
+        java.util.ArrayList tl = (java.util.ArrayList) tok.get(kk);
+        if (tl == null) { tl = new java.util.ArrayList(); tok.put(kk, tl); }
+        tl.add(eid);
+      } else if (t == 2 && @PKG@.WdCodec.boolOf(m, "fresh", false) && !lin.containsKey(eid)) {
+        java.util.ArrayList tl = (java.util.ArrayList) tok.get(kk);
+        if (tl != null && tl.size() > 0) {
+          String pe = (String) tl.remove(tl.size() - 1);
+          Object rt = lin.get(pe);
+          lin.put(eid, rt == null ? pe : (String) rt);
+        }
+      }
     }
   }
+  java.util.HashSet linLive = new java.util.HashSet();
   // a craft deposit whose materials are back never happened (its item never existed): gone; else it counts as IN at the start
   java.util.HashMap byKind = new java.util.HashMap();
   java.util.Iterator ii = info.keySet().iterator();
@@ -3153,7 +3178,7 @@ public static String repair(@PKG@.WdData d, @IC@[] cs, boolean force, java.util.
       }
       f[0] = Integer.valueOf(0);
     }
-    if (live.containsKey(eid)) { dec.put(eid, new Object[] { "out", null, null, sp, spot, live.get(eid) }); continue; }
+    if (live.containsKey(eid)) { Object lr = lin.get(eid); linLive.add(lr == null ? eid : (String) lr); dec.put(eid, new Object[] { "out", null, null, sp, spot, live.get(eid) }); continue; }
     java.util.ArrayList l = (java.util.ArrayList) byKind.get(f[4]);
     if (l == null) { l = new java.util.ArrayList(); byKind.put(f[4], l); }
     l.add(eid);
@@ -3188,13 +3213,48 @@ public static String repair(@PKG@.WdData d, @IC@[] cs, boolean force, java.util.
     int plain = nowK;
     java.util.Iterator si = live.keySet().iterator();
     while (si.hasNext()) { @IS@ x = (@IS@) live.get(si.next()); if (x != null && pr != null && @PKG@.WdCodec.kind(@PKG@.WdCodec.unstamp(x), pr)) plain = plain - x.getQuantity(); }
-    for (int q = need; q < order.size(); q++) if (((Integer) ((Object[]) info.get(order.get(q)))[0]).intValue() != 1) plain = plain - 1;
+    // 0.2 fix (requip021): IN goes to ONE entry per lineage (one physical item), never to a lineage whose item is stamped in the
+    // inventory; if that leaves fewer than need, any other entry fills up (conservation first: the count IN is always need)
+    java.util.HashSet isIn = new java.util.HashSet();
+    java.util.HashSet linIn = new java.util.HashSet();
+    for (int q = 0; q < order.size() && isIn.size() < need; q++) {
+      String eid = (String) order.get(q);
+      Object lr = lin.get(eid);
+      String rt = lr == null ? eid : (String) lr;
+      if (linIn.contains(rt) || linLive.contains(rt)) continue;
+      linIn.add(rt);
+      isIn.add(eid);
+    }
+    for (int q = 0; q < order.size() && isIn.size() < need; q++) {
+      String eid = (String) order.get(q);
+      if (isIn.contains(eid)) continue;
+      Object lr = lin.get(eid);
+      linIn.add(lr == null ? eid : (String) lr);
+      isIn.add(eid);
+    }
+    // the plain copies the other entries explain: ONE per lineage that holds a new deposit, a taken-out entry or an entry that was IN
+    // (a Take out removed the stamp: that item is a plain item, never a NOT WITH YOU entry); a lineage already IN or stamped in the
+    // inventory explains none (before: each such ENTRY took one, so taken out + deposited again + taken out counted the one item twice
+    // and left the first entry as a phantom NOT WITH YOU - fuzz seed 4242)
+    java.util.HashSet linPlain = new java.util.HashSet();
+    for (int q = 0; q < order.size(); q++) {
+      String eid = (String) order.get(q);
+      if (isIn.contains(eid)) continue;
+      Object lr = lin.get(eid);
+      String rt = lr == null ? eid : (String) lr;
+      if (linIn.contains(rt) || linLive.contains(rt)) continue;
+      if (((Integer) ((Object[]) info.get(eid))[0]).intValue() != 1 || tdel.contains(eid)) linPlain.add(rt);
+    }
+    plain = plain - linPlain.size();
     for (int q = 0; q < order.size(); q++) {
       String eid = (String) order.get(q);
       Object[] f = (Object[]) info.get(eid);
       Integer sp = (Integer) f[2];
       Integer spot = (Integer) f[3];
-      if (q < need) dec.put(eid, new Object[] { "in", f[1], null, sp, spot, null });
+      Object lr = lin.get(eid);
+      String rt = lr == null ? eid : (String) lr;
+      if (isIn.contains(eid)) dec.put(eid, new Object[] { "in", f[1], null, sp, spot, null });
+      else if (linIn.contains(rt) || linLive.contains(rt) || linPlain.contains(rt)) dec.put(eid, new Object[] { "del", null, null, sp, spot, null });
       else if (((Integer) f[0]).intValue() == 1 && plain <= 0) dec.put(eid, new Object[] { "out", null, null, sp, spot, @PKG@.WdCodec.stackOf((org.bson.BsonDocument) f[1]) });
       else { if (((Integer) f[0]).intValue() == 1) plain = plain - 1; dec.put(eid, new Object[] { "del", null, null, sp, spot, null }); }
     }
@@ -3828,6 +3888,11 @@ public static String regWorn(@PKG@.WdData d, int n, @IC@[] cs, java.util.ArrayLi
   int reuse = 0;
   int kinds = 0;
   long now = System.currentTimeMillis();
+  // requip021fix: every item stamped in place here, as it was before (a failed save puts it back - no stamp the pool does not know)
+  int[] uSec = new int[13];
+  int[] uSlot = new int[13];
+  @IS@[] uX = new @IS@[13];
+  int un = 0;
   for (int k = 0; k < 13; k++) {
     int sec = k < 4 ? 0 : 1;
     int slot = k < 4 ? k : k - 4;
@@ -3853,6 +3918,7 @@ public static String regWorn(@PKG@.WdData d, int n, @IC@[] cs, java.util.ArrayLi
       if (d.count(sp) + add[sp] >= @PKG@.WdCfg.cap(sp)) { notes.add(sn + ": " + (sp == 0 ? "Armor" : "Items") + " space full"); continue; }
       String ne = d.newEid();
       if (!@PKG@.WdInv.put(cs[sec], (short) slot, @PKG@.WdCodec.stamp(x, ne))) { @PKG@.WdInv.put(cs[sec], (short) slot, x); notes.add(sn + ": " + id + " could not be marked"); continue; }
+      uSec[un] = sec; uSlot[un] = slot; uX[un] = x; un++;
       e = new @PKG@.WdEntry(ne);
       e.space = sp; e.spot = spot; e.in = false; e.addedAt = now; e.setShow(x);
       d.add(e);
@@ -3883,6 +3949,9 @@ public static String regWorn(@PKG@.WdData d, int n, @IC@[] cs, java.util.ArrayLi
   d.rev = d.rev + 1L;
   if (!@PKG@.WdStore.save(d)) {
     for (int i = 0; i < newE.size(); i++) d.remove((String) newE.get(i));
+    for (int i = 0; i < un; i++) {
+      if (!@PKG@.WdInv.put(cs[uSec[i]], (short) uSlot[i], uX[i])) @PKG@.WdStore.log("REGISTER-UNDO failed " + d.uuid + " " + uX[i].getItemId() + " section " + uSec[i] + " slot " + uSlot[i]);
+    }
     for (int k = 0; k < 13; k++) L.picks[k] = old[k];
     d.ask01 = ask;
     d.rev = d.rev - 1L;

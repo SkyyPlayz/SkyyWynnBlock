@@ -65,6 +65,11 @@ OLD = os.path.abspath(arg("--old", os.path.join(HERE, "SkyyWardrobe-0.1.jar")))
 GEAR = arg("--gear", newest_gear_jar())
 SCRATCH = os.path.abspath(arg("--dir", os.path.join(TOOLS, "dev", "scratch", "requip02", "test")))
 SEED = int(arg("--seed", "20261010"))
+# X13 fuzz seeds run after the --seed one (requip021: 4242 = the phantom NOT WITH YOU case + 20 more; --fuzz-seeds a,b,c overrides)
+FUZZ_SEEDS = [int(x) for x in arg("--fuzz-seeds", "4242,1,2,3,7,11,14,42,99,123,256,777,1001,2026,3141,5150,8080,9001,12345,31337,65535").split(",") if x.strip()]
+# requip021fix: COLLIDING-KIND fuzz seeds (the pool = 3 kinds with the SAME metadata: Iron legs / Iron head / Iron sword; 8030 = the stamp lost
+# by a failed-save put-back) - each runs --collide-ops random ops; --collide-seeds a,b,c overrides ("-" = none)
+COLLIDE_SEEDS = [int(x) for x in arg("--collide-seeds", "8030,7000,7001,7002,7003,8000,8001,8002").split(",") if x.strip() and x.strip() != "-"]
 FAKE_DIR = os.path.join(SCRATCH, "fake")
 FAKE_PKG = "skyyrqtest"
 MAPSTORE = "com.hypixel.hytale.component.SkyyRqTestStore"
@@ -1471,170 +1476,278 @@ def run_x(out):
         del state["key"][str(Pp.u)]
 
         # ============================================================ X13 random-operation FUZZ (invariant after every op and every crash)
-        rnd = random.Random(SEED)
-        Z = fresh("fuzz")
-        kZ = str(Z.u)
-        pool_ids = ["Armor_Iron_Head", "Armor_Iron_Chest", "Armor_Iron_Hands", "Armor_Iron_Legs", "Armor_Copper_Head", "Armor_Copper_Chest", "Armor_Copper_Legs",
-                    "Weapon_Sword_Iron", "Weapon_Sword_Mithril", "Weapon_Bow_Wood", "Tool_Pickaxe_Iron", "Tool_Hatchet_Iron"]
-        for i in range(14):
-            setc(Z.sto, i, stack(pool_ids[i % len(pool_ids)], 1, gdoc(rnd.choice(["rare", "unique", "normal"]), rnd.randint(1, 50))))
-        setc(Z.sto, 14, stack("Potion_Health", 12))
-        setc(Z.sto, 15, stack("Food_Bread", 9))
-        setc(Z.sto, 16, stack("Rock_Stone", 30))
-        expect, _ = census(Z)
-        engine = W.snap(Z)
-        Cfg.SETTLE_S = 0
-        state["bagRoom"] = 0
-        log_ = []
-        hist_ = []
-        fz_fail = []
-        crashes = 0
-        engine_step = -1
-        fallback = []
-        for step in range(int(arg("--fuzz", "260"))):
-            d = Store.get(kZ, Z.u)
-            ops_ = ["dep", "depall", "take", "fetch", "pick", "pick", "pick", "equip", "equip", "wear", "craft", "save", "ret", "shuffle", "auto"]
-            o = rnd.choice(ops_)
-            # fixer 2 (data critic): failing saves (1-3 in a row: the put-back + kept-journal paths) on any op
-            if rnd.random() < 0.1:
-                Store.FAIL_NEXT = rnd.randint(1, 3)
-            crash = rnd.random() < 0.12
-            if crash:
-                how = rnd.choice(["at", "at", "save", "files"])
-                if how == "at":
-                    Tx.CRASH_AT = rnd.randint(0, 6)
-                elif how == "save":
-                    Tx.CRASH_AFTER_SAVE = True
-                else:
-                    Store.CRASH_FILES = rnd.randint(0, 3)
-            died = False
-            res = ""
-            try:
-                if o == "dep":
-                    slots = [(s_, i) for s_ in (1, 2, 3) for i in range(int(Z.secs[s_].getCapacity())) if getc(Z.secs[s_], i) is not None]
-                    if slots:
-                        s_, i = rnd.choice(slots)
-                        res = run(Z, 6, 0, "%d:%d" % (s_, i))
-                elif o == "depall":
-                    res = run(Z, 7)
-                elif o in ("take", "fetch"):
-                    ins = [e for e in d.entries.values() if ein(e) and (not e.kind or o == "take") and (e.kind is False or e.count > 0)]
-                    if ins:
-                        res = run(Z, 8 if o == "take" else 14, 0, str(rnd.choice(ins).eid))
-                elif o == "pick":
-                    n = rnd.randint(0, 3)
-                    k_ = rnd.randint(0, 12)
-                    cand = [e for e in d.entries.values() if (k_ < 4 and not e.kind and e.space == 0 and e.spot == k_) or (k_ >= 4 and e.space == 1)]
-                    choice = rnd.random()
-                    if choice < 0.15:
-                        res = run(Z, 10, n, "%d|keep" % k_)
-                    elif choice < 0.3:
-                        res = run(Z, 10, n, "%d|empty" % k_)
-                    elif cand:
-                        e = rnd.choice(cand)
-                        res = run(Z, 10, n, "%d|%s:%s" % (k_, "k" if e.kind else "e", e.eid))
-                elif o == "equip":
-                    gap()
-                    res = run(Z, 1, rnd.randint(0, 3))
-                elif o == "wear":
-                    res = run(Z, 12, rnd.randint(0, 3))
-                elif o == "craft":
-                    res = str(Ops.craft(Z.pr, Z.ref, Z.st, stack("Weapon_Bow_Wood", 1, gdoc("rare", 60 + step)), "fuzz", ""))
-                    if res.startswith("eid:"):
+        # requip021: the --seed run + seed 4242 (the phantom NOT WITH YOU after take out -> deposit -> take out -> crash) + 20 more seeds
+        fz_seeds = [(s_, False) for s_ in [SEED] + [s_ for s_ in FUZZ_SEEDS if s_ != SEED]] + [(s_, True) for s_ in COLLIDE_SEEDS]
+        for fz_seed, collide in fz_seeds:
+            rnd = random.Random(fz_seed)
+            Z = fresh("fuzz")
+            kZ = str(Z.u)
+            pool_ids = ["Armor_Iron_Head", "Armor_Iron_Chest", "Armor_Iron_Hands", "Armor_Iron_Legs", "Armor_Copper_Head", "Armor_Copper_Chest", "Armor_Copper_Legs",
+                        "Weapon_Sword_Iron", "Weapon_Sword_Mithril", "Weapon_Bow_Wood", "Tool_Pickaxe_Iron", "Tool_Hatchet_Iron"]
+            # requip021fix: COLLIDING-KIND = many identical items (same id + same metadata) - lineages, merges and put-backs of twins
+            # (its own list: pool_ids is used again by X15)
+            fz_ids = ["Armor_Iron_Legs", "Armor_Iron_Head", "Weapon_Sword_Iron"] if collide else pool_ids
+            for i in range(14):
+                setc(Z.sto, i, stack(fz_ids[i % len(fz_ids)], 1, gdoc("rare", 7) if collide else gdoc(rnd.choice(["rare", "unique", "normal"]), rnd.randint(1, 50))))
+            setc(Z.sto, 14, stack("Potion_Health", 12))
+            setc(Z.sto, 15, stack("Food_Bread", 9))
+            setc(Z.sto, 16, stack("Rock_Stone", 30))
+            expect, _ = census(Z)
+            engine = W.snap(Z)
+            Cfg.SETTLE_S = 0
+            state["bagRoom"] = 0
+            log_ = []
+            hist_ = []
+            fz_fail = []
+            crashes = 0
+            engine_step = -1
+            fallback = []
+            for step in range(int(arg("--collide-ops", "400")) if collide else int(arg("--fuzz", "260"))):
+                d = Store.get(kZ, Z.u)
+                ops_ = ["dep", "depall", "take", "fetch", "pick", "pick", "pick", "equip", "equip", "wear", "craft", "save", "ret", "shuffle", "auto"]
+                o = rnd.choice(ops_)
+                # fixer 2 (data critic): failing saves (1-3 in a row: the put-back + kept-journal paths) on any op
+                if rnd.random() < 0.1:
+                    Store.FAIL_NEXT = rnd.randint(1, 3)
+                crash = rnd.random() < 0.12
+                if crash:
+                    how = rnd.choice(["at", "at", "save", "files"])
+                    if how == "at":
+                        Tx.CRASH_AT = rnd.randint(0, 6)
+                    elif how == "save":
+                        Tx.CRASH_AFTER_SAVE = True
+                    else:
+                        Store.CRASH_FILES = rnd.randint(0, 3)
+                died = False
+                res = ""
+                try:
+                    if o == "dep":
+                        slots = [(s_, i) for s_ in (1, 2, 3) for i in range(int(Z.secs[s_].getCapacity())) if getc(Z.secs[s_], i) is not None]
+                        if slots:
+                            s_, i = rnd.choice(slots)
+                            res = run(Z, 6, 0, "%d:%d" % (s_, i))
+                    elif o == "depall":
+                        res = run(Z, 7)
+                    elif o in ("take", "fetch"):
+                        ins = [e for e in d.entries.values() if ein(e) and (not e.kind or o == "take") and (e.kind is False or e.count > 0)]
+                        if ins:
+                            res = run(Z, 8 if o == "take" else 14, 0, str(rnd.choice(ins).eid))
+                    elif o == "pick":
+                        n = rnd.randint(0, 3)
+                        k_ = rnd.randint(0, 12)
+                        cand = [e for e in d.entries.values() if (k_ < 4 and not e.kind and e.space == 0 and e.spot == k_) or (k_ >= 4 and e.space == 1)]
+                        choice = rnd.random()
+                        if choice < 0.15:
+                            res = run(Z, 10, n, "%d|keep" % k_)
+                        elif choice < 0.3:
+                            res = run(Z, 10, n, "%d|empty" % k_)
+                        elif cand:
+                            e = rnd.choice(cand)
+                            res = run(Z, 10, n, "%d|%s:%s" % (k_, "k" if e.kind else "e", e.eid))
+                    elif o == "equip":
+                        gap()
+                        res = run(Z, 1, rnd.randint(0, 3))
+                    elif o == "wear":
+                        res = run(Z, 12, rnd.randint(0, 3))
+                    elif o == "craft":
+                        res = str(Ops.craft(Z.pr, Z.ref, Z.st, stack("Weapon_Bow_Wood", 1, gdoc("rare", 60 + step)), "fuzz", ""))
+                        if res.startswith("eid:"):
+                            expect[("Weapon_Bow_Wood", str(JClass("org.bson.BsonDocument").parse(gdoc("rare", 60 + step)).toJson()))] = 1
+                    elif o == "save":
+                        # time passes: the engine saves the player, the journal keep window ends
+                        engine = W.snap(Z)
+                        engine_step = step
+                        old_k = Cfg.JKEEP_S
+                        Cfg.JKEEP_S = 0
+                        Jr.sweep(int(time.time() * 1000) + 1000)
+                        Cfg.JKEEP_S = old_k
+                    elif o == "ret":
+                        res = run(Z, 13)
+                    elif o == "shuffle":
+                        # the player moves stacks around inside the inventory (no Requip involved)
+                        sl_ = [(s_, i) for s_ in (1, 2, 3) for i in range(int(Z.secs[s_].getCapacity()))]
+                        (s1, i1), (s2, i2) = rnd.sample(sl_, 2)
+                        x1, x2 = getc(Z.secs[s1], i1), getc(Z.secs[s2], i2)
+                        if x1 is not None:
+                            Z.secs[s1].removeItemStackFromSlot(JShort(i1), False)
+                        if x2 is not None:
+                            Z.secs[s2].removeItemStackFromSlot(JShort(i2), False)
+                        if x1 is not None:
+                            setc(Z.secs[s2], i2, x1)
+                        if x2 is not None:
+                            setc(Z.secs[s1], i1, x2)
+                        res = "shuffled"
+                    elif o == "auto":
+                        Auto.ON.put(kZ, True)
+                        Auto.LASTRUN.clear()
+                        try:
+                            P("WdAutoTask")(Z.u).run()
+                        finally:
+                            Auto.ON.remove(kZ)
+                        res = "auto"
+                except Exception as ex_:
+                    died = "harness crash" in str(ex_)
+                    if not died:
+                        fz_fail.append("step %d %s raised %s" % (step, o, ex_))
+                Tx.CRASH_AT, Tx.CRASH_AFTER_SAVE, Store.CRASH_FILES = -1, False, -1
+                Store.FAIL_NEXT = 0
+                if o == "craft" and not died and str(res).startswith("refused:"):
+                    # the caller (SkyyGear) keeps a refused crafted item: it falls back to the inventory
+                    fr = [i for i in range(int(Z.sto.getCapacity())) if getc(Z.sto, i) is None]
+                    if fr:
+                        setc(Z.sto, fr[0], stack("Weapon_Bow_Wood", 1, gdoc("rare", 60 + step)))
                         expect[("Weapon_Bow_Wood", str(JClass("org.bson.BsonDocument").parse(gdoc("rare", 60 + step)).toJson()))] = 1
-                elif o == "save":
-                    # time passes: the engine saves the player, the journal keep window ends
+                        fallback.append((("Weapon_Bow_Wood", str(JClass("org.bson.BsonDocument").parse(gdoc("rare", 60 + step)).toJson())), step))
+                if o == "craft" and died:
+                    # a craft that died before its journal step could not have taken materials (none here): it may or may not have landed
+                    pass
+                rolled = False
+                rolled_from = engine_step
+                if died:
+                    crashes += 1
+                    if rnd.random() < 0.5:
+                        W.restore(Z, engine)
+                        rolled = True
+                    restart()
+                    jz = os.path.join(Wd, "requip", kZ, "journal.json")
+                    if os.path.isfile(jz):
+                        shutil.copy(jz, os.path.join(SCRATCH, "fz-%d-%d.json" % (fz_seed, step)))
+                    live_dump = W.dump(Z, Codec)
+                    res = "CRASH -> " + run(Z, 5)
                     engine = W.snap(Z)
                     engine_step = step
-                    old_k = Cfg.JKEEP_S
-                    Cfg.JKEEP_S = 0
-                    Jr.sweep(int(time.time() * 1000) + 1000)
-                    Cfg.JKEEP_S = old_k
-                elif o == "ret":
-                    res = run(Z, 13)
-                elif o == "shuffle":
-                    # the player moves stacks around inside the inventory (no Requip involved)
-                    sl_ = [(s_, i) for s_ in (1, 2, 3) for i in range(int(Z.secs[s_].getCapacity()))]
-                    (s1, i1), (s2, i2) = rnd.sample(sl_, 2)
-                    x1, x2 = getc(Z.secs[s1], i1), getc(Z.secs[s2], i2)
-                    if x1 is not None:
-                        Z.secs[s1].removeItemStackFromSlot(JShort(i1), False)
-                    if x2 is not None:
-                        Z.secs[s2].removeItemStackFromSlot(JShort(i2), False)
-                    if x1 is not None:
-                        setc(Z.secs[s2], i2, x1)
-                    if x2 is not None:
-                        setc(Z.secs[s1], i1, x2)
-                    res = "shuffled"
-                elif o == "auto":
-                    Auto.ON.put(kZ, True)
-                    Auto.LASTRUN.clear()
-                    try:
-                        P("WdAutoTask")(Z.u).run()
-                    finally:
-                        Auto.ON.remove(kZ)
-                    res = "auto"
-            except Exception as ex_:
-                died = "harness crash" in str(ex_)
-                if not died:
-                    fz_fail.append("step %d %s raised %s" % (step, o, ex_))
-            Tx.CRASH_AT, Tx.CRASH_AFTER_SAVE, Store.CRASH_FILES = -1, False, -1
-            Store.FAIL_NEXT = 0
-            if o == "craft" and not died and str(res).startswith("refused:"):
-                # the caller (SkyyGear) keeps a refused crafted item: it falls back to the inventory
-                fr = [i for i in range(int(Z.sto.getCapacity())) if getc(Z.sto, i) is None]
-                if fr:
-                    setc(Z.sto, fr[0], stack("Weapon_Bow_Wood", 1, gdoc("rare", 60 + step)))
-                    expect[("Weapon_Bow_Wood", str(JClass("org.bson.BsonDocument").parse(gdoc("rare", 60 + step)).toJson()))] = 1
-                    fallback.append((("Weapon_Bow_Wood", str(JClass("org.bson.BsonDocument").parse(gdoc("rare", 60 + step)).toJson())), step))
-            if o == "craft" and died:
-                # a craft that died before its journal step could not have taken materials (none here): it may or may not have landed
-                pass
-            rolled = False
-            rolled_from = engine_step
-            if died:
-                crashes += 1
-                if rnd.random() < 0.5:
-                    W.restore(Z, engine)
-                    rolled = True
-                restart()
-                jz = os.path.join(Wd, "requip", kZ, "journal.json")
-                if os.path.isfile(jz):
-                    shutil.copy(jz, os.path.join(SCRATCH, "fz-%d.json" % step))
-                live_dump = W.dump(Z, Codec)
-                res = "CRASH -> " + run(Z, 5)
-                engine = W.snap(Z)
-                engine_step = step
-            c, dz = census(Z)
-            bad = once(Z, dz)
-            # a refused craft the caller gave to the inventory AFTER the engine last saved the player: a rollback undoes that give too (and,
-            # in game, the materials it cost) - not Requip's item
-            if rolled:
-                for kk_, st_ in fallback:
-                    if st_ > rolled_from and c.get(kk_, 0) == 0 and expect.get(kk_) == 1:
-                        del expect[kk_]
-            # a craft that crashed: the repair keeps the crafted entry (no material evidence) or the craft never journaled
-            if o == "craft" and died and c != expect:
-                kk = ("Weapon_Bow_Wood", str(JClass("org.bson.BsonDocument").parse(gdoc("rare", 60 + step)).toJson()))
-                if c.get(kk, 0) == 0 and expect.get(kk) == 1:
-                    del expect[kk]
-                elif c.get(kk, 0) == 1 and expect.get(kk) is None:
-                    expect[kk] = 1
-            if (c != expect or bad) and died:
-                json.dump(live_dump, open(os.path.join(SCRATCH, "fz-%d-live.json" % step), "w"))
-            if c != expect or bad:
-                fz_fail.append("step %d %s%s: %s; before %s; diff %s; once %s" % (step, o, " (crash)" if died else "", res, hist_[-3:],
-                                {k_: (expect.get(k_), c.get(k_)) for k_ in set(expect) | set(c) if expect.get(k_) != c.get(k_)}, bad))
-                expect = c
-            if not died and o != "save" and rnd.random() < 0.3:
-                engine = W.snap(Z)      # the engine saved the player in the MIDDLE of a journal window (a later crash rolls back to here)
-                engine_step = step
-            log_.append("%s%s" % (o, "!" if died else ""))
-            hist_.append("%d %s %s" % (step, o, str(res)[:70]))
-        Cfg.SETTLE_S = 30
-        state.pop("bagRoom", None)
-        K.check(not fz_fail, "X13 FUZZ: %d random ops (%d crashes, half with the live inventory rolled back), every item exactly once after each: %s" % (len(log_), crashes, fz_fail[:3]))
-        K.notes.append("X13 fuzz ops: " + " ".join(log_[:80]) + " ...")
+                c, dz = census(Z)
+                bad = once(Z, dz)
+                # a refused craft the caller gave to the inventory AFTER the engine last saved the player: a rollback undoes that give too (and,
+                # in game, the materials it cost) - not Requip's item
+                if rolled:
+                    for kk_, st_ in fallback:
+                        if st_ > rolled_from and c.get(kk_, 0) == 0 and expect.get(kk_) == 1:
+                            del expect[kk_]
+                # a craft that crashed: the repair keeps the crafted entry (no material evidence) or the craft never journaled
+                if o == "craft" and died and c != expect:
+                    kk = ("Weapon_Bow_Wood", str(JClass("org.bson.BsonDocument").parse(gdoc("rare", 60 + step)).toJson()))
+                    if c.get(kk, 0) == 0 and expect.get(kk) == 1:
+                        del expect[kk]
+                    elif c.get(kk, 0) == 1 and expect.get(kk) is None:
+                        expect[kk] = 1
+                if (c != expect or bad) and died:
+                    json.dump(live_dump, open(os.path.join(SCRATCH, "fz-%d-%d-live.json" % (fz_seed, step)), "w"))
+                if c != expect or bad:
+                    fz_fail.append("step %d %s%s: %s; before %s; diff %s; once %s" % (step, o, " (crash)" if died else "", res, hist_[-3:],
+                                    {k_: (expect.get(k_), c.get(k_)) for k_ in set(expect) | set(c) if expect.get(k_) != c.get(k_)}, bad))
+                    expect = c
+                if not died and o != "save" and rnd.random() < 0.3:
+                    engine = W.snap(Z)      # the engine saved the player in the MIDDLE of a journal window (a later crash rolls back to here)
+                    engine_step = step
+                log_.append("%s%s" % (o, "!" if died else ""))
+                hist_.append("%d %s %s" % (step, o, str(res)[:70]))
+            Cfg.SETTLE_S = 30
+            state.pop("bagRoom", None)
+            K.check(not fz_fail, "X13 FUZZ%s seed %d: %d random ops (%d crashes, half with the live inventory rolled back), every item exactly once after each: %s" % (" COLLIDING-KIND" if collide else "", fz_seed, len(log_), crashes, fz_fail[:3]))
+            K.notes.append(("X13 fuzz%s seed %d ops: " % (" collide" if collide else "", fz_seed)) + " ".join(log_[:80]) + " ...")
+
+        # ============================================================ X13b requip021: LINEAGES in the crash repair (fuzz seed 4242, made exact)
+        # an item that was OUT (stamped) when the journal began is deposited, taken out (plain), deposited again (a NEW entry), taken out
+        # again; then the server dies. Before the fix the repair counted that one plain item twice and kept the first entry as a phantom
+        # NOT WITH YOU. B: the same, but the second entry is fetched (its stamp is in the inventory). C: a journal whose lineage link is
+        # wrong (two items in the pool, one lineage): the IN count still follows conservation (the fill-up pass) - nothing is lost.
+        def legs_slot(p):
+            for s_ in (1, 2, 3):
+                for i in range(int(p.secs[s_].getCapacity())):
+                    x = getc(p.secs[s_], i)
+                    if x is not None and str(x.getItemId()) == "Armor_Iron_Legs":
+                        return "%d:%d" % (s_, i)
+            return None
+
+        def lin_start(name):
+            p = fresh(name)
+            setc(p.sto, 0, stack("Armor_Iron_Legs", 1, gdoc("unique", 18)))
+            setc(p.sto, 1, stack("Weapon_Sword_Iron", 1, gdoc("rare", 3)))
+            run(p, 6, 0, "2:0")
+            d = Store.get(str(p.u), p.u)
+            e0 = str(ent_by_id(d, "Armor_Iron_Legs")[0].eid)
+            r = run(p, 14, 0, e0)                       # fetch: the legs are OUT, stamped, in the inventory
+            old_k = Cfg.JKEEP_S
+            Cfg.JKEEP_S = 0
+            Jr.sweep(int(time.time() * 1000) + 1000)    # the keep window ends: the next change starts a NEW journal
+            Cfg.JKEEP_S = old_k
+            base, _d = census(p)
+            return p, e0, base, r
+
+        for case in ("A", "B"):
+            p, e0, base, r0 = lin_start("lineage" + case)
+            k_ = str(p.u)
+            r1 = run(p, 6, 0, legs_slot(p))             # deposit the stamped legs (the entry that was OUT)
+            r2 = run(p, 8, 0, e0)                       # Take out: a plain item again, the entry is gone
+            r3 = run(p, 6, 0, legs_slot(p))             # deposit again: a NEW entry
+            d = Store.get(k_, p.u)
+            e1 = [str(e.eid) for e in ent_by_id(d, "Armor_Iron_Legs")]
+            r4 = run(p, 8 if case == "A" else 14, 0, e1[0] if e1 else "")   # A: Take out again (plain) / B: fetch (stamped, OUT)
+            jx = os.path.isfile(os.path.join(Wd, "requip", k_, "journal.json"))
+            restart()                                   # the server dies inside the keep window
+            rr = run(p, 5)
+            c, d = census(p)
+            bad = once(p, d)
+            legs = ent_by_id(d, "Armor_Iron_Legs")
+            want = [] if case == "A" else [(e1[0] if e1 else "?", False)]
+            got = [(str(e.eid), ein(e)) for e in legs]
+            K.check(jx and rr.startswith("=An interrupted Requip change") and c == base and not bad and got == want,
+                    "X13b lineage %s: OUT legs deposited, taken out, deposited again, %s, crash -> no phantom NOT WITH YOU, every item once "
+                    "(%s | %s | %s | %s | %s | entries %s want %s, once %s)" % (case, "taken out again" if case == "A" else "fetched", r1, r2, r3, r4, rr, got, want, bad))
+
+        # C: a lineage link that is wrong (hand-made journal): two plain legs deposited as two new entries, a fake Take out of the first
+        # between them links the second to it - both must stay IN (conservation), never one deleted
+        p = fresh("lineageC")
+        k_ = str(p.u)
+        setc(p.sto, 0, stack("Armor_Iron_Legs", 1, gdoc("unique", 18)))
+        setc(p.sto, 1, stack("Armor_Iron_Legs", 1, gdoc("unique", 18)))
+        base, _d = census(p)
+        rc1 = run(p, 6, 0, "2:0")
+        rc2 = run(p, 6, 0, "2:1")
+        jp = os.path.join(Wd, "requip", k_, "journal.json")
+        okC = os.path.isfile(jp)
+        if okC:
+            jj = json.load(open(jp))
+            okC = len(jj["steps"]) == 2 and len(jj["steps"][0]["moves"]) == 1
+            if okC:
+                fake = json.loads(json.dumps(jj["steps"][0]))
+                fake["op"] = "take"
+                m_ = fake["moves"][0]
+                m_["t"] = {"$numberInt": "4"}
+                m_["del"] = True
+                m_["fresh"] = False
+                jj["steps"].insert(1, fake)
+                json.dump(jj, open(jp, "w"))
+        restart()
+        rc = run(p, 5)
+        c, d = census(p)
+        legs = ent_by_id(d, "Armor_Iron_Legs")
+        K.check(okC and rc.startswith("=An interrupted Requip change") and c == base and not once(p, d) and len(legs) == 2 and all(ein(e) for e in legs),
+                "X13b lineage C: a wrong lineage link never deletes an item the pool must hold - both legs stay IN (%s | %s | %s | %s)" % (rc1, rc2, rc, [(str(e.eid), ein(e)) for e in legs]))
+
+        # ============================================================ X13c requip021fix: "Use what I wear" with a FAILED save (colliding fuzz seed 8030)
+        # the worn gear is stamped in place; before the fix a failed save dropped the new entries but left the stamps on the items (a stamp
+        # the pool did not know). Now every item is put back exactly as it was; a retry that saves stamps them as usual.
+        p = fresh("wearfail")
+        k_ = str(p.u)
+        setc(p.arm, 3, stack("Armor_Iron_Legs", 1, gdoc("rare", 7)))
+        setc(p.hot, 0, stack("Weapon_Sword_Iron", 1, gdoc("rare", 7)))
+        setc(p.hot, 1, stack("Weapon_Bow_Wood", 1, gdoc("rare", 9)))
+        setc(p.sto, 0, stack("Weapon_Sword_Iron", 1, gdoc("rare", 7)))
+        before_w = [str(x.toString()) if x is not None else None for x in (getc(p.arm, 3), getc(p.hot, 0), getc(p.hot, 1))]
+        base, _d = census(p)
+        Store.FAIL_NEXT = 1
+        rw = run(p, 12, 0)
+        Store.FAIL_NEXT = 0
+        c, d = census(p)
+        after_w = [str(x.toString()) if x is not None else None for x in (getc(p.arm, 3), getc(p.hot, 0), getc(p.hot, 1))]
+        K.check(rw.startswith("-Could not save") and not stamps_of(p) and not once(p, d) and c == base and after_w == before_w and not [e for e in d.entries.values() if not e.kind],
+                "X13c Use what I wear, the save fails: every worn item put back unstamped, exactly as it was, no entry (%s | stamps %s | once %s)" % (rw, stamps_of(p), once(p, d)))
+        rw2 = run(p, 12, 0)
+        c, d = census(p)
+        K.check(rw2.startswith("+") and len(stamps_of(p)) == 3 and not once(p, d) and c == base,
+                "X13c ... a retry that saves stamps the worn gear as usual (%s | stamps %s | once %s)" % (rw2, stamps_of(p), once(p, d)))
 
         # ============================================================ X14 MIGRATION of 0.1 files (fixtures made by the REAL 0.1 jar in M01)
         fx = os.path.join(SCRATCH, "fx01")
@@ -2880,7 +2993,10 @@ def run_compare(out):
 # ====================================================================================================== parent driver
 def child(env, *args):
     return subprocess.run([sys.executable, os.path.abspath(__file__)] + list(args) + ["--dir", SCRATCH, "--jar", JAR, "--old", OLD, "--live", LIVE,
-                                                                                   "--gear", GEAR or "-", "--seed", str(SEED), "--fuzz", arg("--fuzz", "260")], env=env)
+                                                                                   "--gear", GEAR or "-", "--seed", str(SEED), "--fuzz", arg("--fuzz", "260"),
+                                                                                   "--fuzz-seeds", ",".join(str(s_) for s_ in FUZZ_SEEDS),
+                                                                                   "--collide-seeds", ",".join(str(s_) for s_ in COLLIDE_SEEDS) or "-",
+                                                                                   "--collide-ops", arg("--collide-ops", "400")], env=env)
 
 
 def take(path, label):
