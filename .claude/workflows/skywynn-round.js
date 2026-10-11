@@ -2,7 +2,7 @@ export const meta = {
   name: 'skywynn-round',
   description: 'SkyWynn full round: build -> adversarial critics (parallel) -> fix -> optional re-critic -> cross-check. args: {tag, task, quotes, mods, others, lenses?, recheck?}',
   whenToUse: 'Any SkyWynn build that needs the full round (PROJECT-RULES 4). Pass Skyy\'s own words in args.quotes so builders never refuse when Skyy keeps chatting.',
-  phases: [ { title: 'Build' }, { title: 'Critics' }, { title: 'Fix' }, { title: 'Recheck' }, { title: 'Check' } ],
+  phases: [ { title: 'Build' }, { title: 'Critics' }, { title: 'Fix' }, { title: 'Recheck' }, { title: 'Simplify' }, { title: 'Check' } ],
 }
 // args = {
 //   tag:     'bank017'                     scratch / label tag (letters + digits)
@@ -12,6 +12,9 @@ export const meta = {
 //   others:  'SkyyHud (minimap), SkyyArmory' mods other builders are editing right now (never touch)
 //   lenses:  [['key','lens text'], ...]    optional; default = item/coin safety, cross-mod + engine, spec fidelity + UX
 //   recheck: true                          optional; run a second critic pass on the fixer's result (ultracode / risky rounds)
+//   simplify: 2                            optional; SIMPLIFY passes after the fixes (true = 1). Each pass = a simplicity critic + a
+//                                          behaviour-preserving simplifier; stops early on NONE FOUND. Use on refine / merge rounds
+//                                          (Skyy 2026-10-11, the 'ponytail' idea: repeat passes catch different simplifications).
 // }
 const A = args || {}
 const ROOT = 'C:\\Users\\SkyLo\\Desktop\\Hytale mods WORK\\SkyWynn PROJECT'
@@ -68,11 +71,41 @@ ones, rebuild, re-run harnesses; reject wrong ones with a reason. Scratch ${ROOT
   }
 }
 
+const SIMPLE_LENS = 'SIMPLICITY (behaviour must stay identical): duplicated logic that one helper / the shared kit (tools/skyycfg.py, tools/skyyui.py, the profile + bridge helpers) already does, dead code + unreachable branches + leftover probe / debug paths, old one-time migrations below the rollback floors, over-long methods that should be split, needlessly complex control flow, copy-pasted blocks that differ in one value, config rows nobody can meaningfully change. Each finding: file + line + the simpler version + why it is behaviour-identical. Never propose changing saved-data formats, bridge key shapes, commands, item ids, numbers or anything a player sees.'
+let simplified = 'no simplify pass'
+const SIMP_N = A.simplify === true ? 1 : (A.simplify | 0)
+for (let i = 1; i <= SIMP_N; i++) {
+  phase('Simplify')
+  const sc = await agent(`${RULES}
+
+${TASK}
+
+LATEST FIX REPORT:
+${fixed2 !== 'no second pass' ? fixed2 : fixed}
+
+${simplified}
+
+TASK (SIMPLICITY CRITIC pass ${i}, read-only, Sonnet;
+scratch ${ROOT}\\tools\\dev\\scratch\\${TAG}-simp${i}\\): review the CHANGED and newly written code of this round through this lens only: ${SIMPLE_LENS} Return numbered findings
+(most code removed first), or NONE FOUND.`, { label: `simplify-crit${i}:${TAG}`, phase: 'Simplify', model: 'sonnet' })
+  if (!sc || /NONE FOUND/i.test(sc)) break
+  simplified = await agent(`${RULES}
+
+${TASK}
+
+SIMPLICITY FINDINGS (pass ${i}):
+${sc}
+
+TASK (SIMPLIFIER): apply ONLY the findings that are truly behaviour-identical;
+reject the rest with a one-line reason. Rebuild; the FULL harness must still pass; class compare must show no behaviour change beyond the simplification; lint 0 fails.
+Scratch ${ROOT}\\tools\\dev\\scratch\\${TAG}simp${i}\. Return applied / rejected, lines removed, build line.`, { label: `simplify${i}:${TAG}`, phase: 'Simplify' })
+}
+
 phase('Check')
-const xc = await agent(`${RULES}\n\n${TASK}\n\nFIXER REPORTS:\n${fixed}\n\n${fixed2}\n\nTASK (CROSS-CHECKER, read-only, Sonnet; scratch ${ROOT}\\tools\\dev\\scratch\\xc-${TAG}\\):
+const xc = await agent(`${RULES}\n\n${TASK}\n\nFIXER REPORTS:\n${fixed}\n\n${fixed2}\n\nTASK (CROSS-CHECKER, read-only, Sonnet; also read the SIMPLIFY report: ${simplified}; scratch ${ROOT}\\tools\\dev\\scratch\\xc-${TAG}\\):
 confirm the fixes; every new jar byte-identical per entry to a fresh scratch build; python tools\\ci\\crosscheck.py --jar <each new jar> --baseline;
 lint 0 fails; deploy_set.py --check; start twice on a scratch COPY of live data; git status shows no vanilla-derived art or stray folders. Fix nothing.
 Return findings, VERDICT: READY / NOT READY, jar paths + sha1, and any STOP-check / rollback note the main session should add to tools/deploy_set.py.`,
   { label: `check:${TAG}`, phase: 'Check', model: 'sonnet' })
 
-return { built, crits, fixed, fixed2, xc }
+return { built, crits, fixed, fixed2, simplified, xc }
