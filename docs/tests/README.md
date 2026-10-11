@@ -176,3 +176,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Big batch: pets roles + loadouts, menu D + editor, wardrobe, soul cage, tool rarity + multitools, tooltips, sky islands (DEPLOYED 2026-10-10, backup deploy-20261010-1911) | [2026-10](2026-10.md) |
 | Upgrade tab + [Lv N] names + /multitool merge, Collections totals, UI probe (DEPLOYED 2026-10-10, backup deploy-20261010-2236) | [2026-10](2026-10.md) |
 | Soul Orb: damage, vanilla essences, faster tether, clearer lines, Wings of Fate (DEPLOYED 2026-10-11, backup deploy-20261011-0022) | [2026-10](2026-10.md) |
+| Requip (wardrobe v2) + /smithing hub + Void hotbar refill (DEPLOYED 2026-10-11, backup deploy-20261011-0138) | [2026-10](2026-10.md) |

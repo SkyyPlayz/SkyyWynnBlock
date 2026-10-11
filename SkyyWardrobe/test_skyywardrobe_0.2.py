@@ -68,8 +68,23 @@ SEED = int(arg("--seed", "20261010"))
 # X13 fuzz seeds run after the --seed one (requip021: 4242 = the phantom NOT WITH YOU case + 20 more; --fuzz-seeds a,b,c overrides)
 FUZZ_SEEDS = [int(x) for x in arg("--fuzz-seeds", "4242,1,2,3,7,11,14,42,99,123,256,777,1001,2026,3141,5150,8080,9001,12345,31337,65535").split(",") if x.strip()]
 # requip021fix: COLLIDING-KIND fuzz seeds (the pool = 3 kinds with the SAME metadata: Iron legs / Iron head / Iron sword; 8030 = the stamp lost
-# by a failed-save put-back) - each runs --collide-ops random ops; --collide-seeds a,b,c overrides ("-" = none)
-COLLIDE_SEEDS = [int(x) for x in arg("--collide-seeds", "8030,7000,7001,7002,7003,8000,8001,8002").split(",") if x.strip() and x.strip() != "-"]
+# by a failed-save "Use what I wear" put-back). requip022: the critic's full set by default - 7000-7029 @ 260 ops + 8000-8069 @ 400 ops
+# (8030 first). --collide-seeds a,b@n,c overrides ("seed@ops"; a bare seed runs --collide-ops, default 400; "-" = none)
+COLLIDE_DEFAULT = ",".join(["8030@400"] + ["%d@260" % s_ for s_ in range(7000, 7030)] + ["%d@400" % s_ for s_ in range(8000, 8070) if s_ != 8030])
+
+
+def _collide(spec):
+    out_ = []
+    for x in spec.split(","):
+        x = x.strip()
+        if not x or x == "-":
+            continue
+        s_, _a, n_ = x.partition("@")
+        out_.append((int(s_), int(n_) if n_ else int(arg("--collide-ops", "400"))))
+    return out_
+
+
+COLLIDE_SEEDS = _collide(arg("--collide-seeds", COLLIDE_DEFAULT))
 FAKE_DIR = os.path.join(SCRATCH, "fake")
 FAKE_PKG = "skyyrqtest"
 MAPSTORE = "com.hypixel.hytale.component.SkyyRqTestStore"
@@ -1477,8 +1492,8 @@ def run_x(out):
 
         # ============================================================ X13 random-operation FUZZ (invariant after every op and every crash)
         # requip021: the --seed run + seed 4242 (the phantom NOT WITH YOU after take out -> deposit -> take out -> crash) + 20 more seeds
-        fz_seeds = [(s_, False) for s_ in [SEED] + [s_ for s_ in FUZZ_SEEDS if s_ != SEED]] + [(s_, True) for s_ in COLLIDE_SEEDS]
-        for fz_seed, collide in fz_seeds:
+        fz_seeds = [(s_, False, int(arg("--fuzz", "260"))) for s_ in [SEED] + [s_ for s_ in FUZZ_SEEDS if s_ != SEED]] + [(s_, True, n_) for s_, n_ in COLLIDE_SEEDS]
+        for fz_seed, collide, fz_ops in fz_seeds:
             rnd = random.Random(fz_seed)
             Z = fresh("fuzz")
             kZ = str(Z.u)
@@ -1502,7 +1517,7 @@ def run_x(out):
             crashes = 0
             engine_step = -1
             fallback = []
-            for step in range(int(arg("--collide-ops", "400")) if collide else int(arg("--fuzz", "260"))):
+            for step in range(fz_ops):
                 d = Store.get(kZ, Z.u)
                 ops_ = ["dep", "depall", "take", "fetch", "pick", "pick", "pick", "equip", "equip", "wear", "craft", "save", "ret", "shuffle", "auto"]
                 o = rnd.choice(ops_)
@@ -1748,6 +1763,127 @@ def run_x(out):
         c, d = census(p)
         K.check(rw2.startswith("+") and len(stamps_of(p)) == 3 and not once(p, d) and c == base,
                 "X13c ... a retry that saves stamps the worn gear as usual (%s | stamps %s | once %s)" % (rw2, stamps_of(p), once(p, d)))
+
+        # ============================================================ X13d requip022: "Use what I wear" whose save fails HALF WAY (a real I/O error
+        # after the armor shard was written, the items shard refuses): the undo puts the worn gear back unstamped AND rewrites the files from the
+        # restored memory - after a restart (memory gone) the files hold no OUT record for the legs (before requip022: a phantom NOT WITH YOU).
+        # Then the resave itself failing (FAIL_NEXT 2): still put back, the memory is right, the next change saves it.
+        p = fresh("wearhalf")
+        k_ = str(Store.pkey(p.u))
+        setc(p.sto, 0, stack("Armor_Copper_Head", 1, gdoc("rare", 7)))
+        setc(p.sto, 1, stack("Weapon_Bow_Wood", 1, gdoc("rare", 9)))
+        rd1, rd2 = run(p, 6, 0, "2:0"), run(p, 6, 0, "2:1")     # both shards exist on disk (armor-000, items-000)
+        old_k = Cfg.JKEEP_S
+        Cfg.JKEEP_S = 0
+        Jr.sweep(int(time.time() * 1000) + 1000)
+        Cfg.JKEEP_S = old_k
+        setc(p.arm, 3, stack("Armor_Iron_Legs", 1, gdoc("rare", 7)))
+        setc(p.hot, 0, stack("Weapon_Sword_Iron", 1, gdoc("rare", 7)))
+        base, _d = census(p)
+        before_w = [str(x.toString()) if x is not None else None for x in (getc(p.arm, 3), getc(p.hot, 0))]
+        rqd = os.path.join(Wd, "requip", k_)
+        itf = os.path.join(rqd, "items-000.json")
+        okD = os.path.isfile(itf) and os.path.isfile(os.path.join(rqd, "armor-000.json"))
+        rw = ""
+        if okD:
+            shutil.move(itf, itf + ".bak")
+            os.makedirs(os.path.join(itf, "x"))            # a non-empty folder where the shard goes: its atomic move fails (a real IOException)
+            try:
+                rw = run(p, 12, 0)
+            finally:
+                shutil.rmtree(itf, ignore_errors=True)
+                shutil.move(itf + ".bak", itf)
+                for t_ in (itf + ".tmp",):
+                    if os.path.isfile(t_):
+                        os.remove(t_)
+        after_w = [str(x.toString()) if x is not None else None for x in (getc(p.arm, 3), getc(p.hot, 0))]
+        armdisk = json.load(open(os.path.join(rqd, "armor-000.json"))) if okD else {}
+        legs_disk = [e_ for e_ in armdisk.get("entries", []) if "Armor_Iron_Legs" in json.dumps(e_)]
+        restart()
+        c, d = census(p)
+        bad = once(p, d)
+        K.check(okD and rw.startswith("-Could not save") and after_w == before_w and not stamps_of(p) and not legs_disk and not bad and c == base
+                and not ent_by_id(d, "Armor_Iron_Legs") and not ent_by_id(d, "Weapon_Sword_Iron"),
+                "X13d Use what I wear, the save fails HALF WAY (armor shard written, items shard refused): worn gear put back unstamped and the "
+                "armor shard rewritten - after a restart no phantom record (%s / %s | %s | legs on disk %s | once %s)" % (rd1, rd2, rw, legs_disk, bad))
+        Store.FAIL_NEXT = 2
+        rw3 = run(p, 12, 0)
+        fl = int(Store.FAIL_NEXT)
+        Store.FAIL_NEXT = 0
+        c, d = census(p)
+        K.check(rw3.startswith("-Could not save") and fl == 0 and not stamps_of(p) and not once(p, d) and c == base,
+                "X13d ... the save AND the resave fail: still put back unstamped, nothing known only to memory (%s | FAIL_NEXT left %d | once %s)" % (rw3, fl, once(p, d)))
+        rw4 = run(p, 12, 0)
+        restart()
+        c, d = census(p)
+        K.check(rw4.startswith("+") and len(stamps_of(p)) == 2 and not once(p, d) and c == base,
+                "X13d ... the next try saves and stamps the worn gear, the files agree after a restart (%s | stamps %s | once %s)" % (rw4, stamps_of(p), once(p, d)))
+
+        # ============================================================ X13e requip022fix (critic 1): "Use what I wear" CRASHES part way through its
+        # save (the JVM dies; the live inventory kept WITH the new stamps). register.txt names every eid before a stamp goes on; the next Requip
+        # action unstamps a listed eid the pool never got. Another player's stamp (not listed) is never touched. Crash after 1, 2, 3, 4 files.
+        FOREIGN = "f0e1f0e1f0e1f0e1"
+        died_n, heal_ok, rows = 0, True, []
+        for cf in range(0, 4):
+            p = fresh("wearcrash%d" % cf)
+            k_ = str(Store.pkey(p.u))
+            setc(p.sto, 0, stack("Armor_Copper_Head", 1, gdoc("rare", 7)))
+            setc(p.sto, 1, stack("Weapon_Bow_Wood", 1, gdoc("rare", 9)))
+            run(p, 6, 0, "2:0"), run(p, 6, 0, "2:1")          # both shards on disk
+            old_k = Cfg.JKEEP_S
+            Cfg.JKEEP_S = 0
+            Jr.sweep(int(time.time() * 1000) + 1000)
+            Cfg.JKEEP_S = old_k
+            setc(p.arm, 3, stack("Armor_Iron_Legs", 1, gdoc("rare", 7)))
+            setc(p.hot, 0, stack("Weapon_Sword_Iron", 1, gdoc("rare", 7)))
+            setc(p.sto, 5, Codec.stamp(stack("Weapon_Sword_Iron", 1, gdoc("rare", 8)), FOREIGN))   # picked up from another player
+            base, _d = census(p)
+            mkf = os.path.join(Wd, "requip", k_, "register.txt")
+            Store.CRASH_FILES = cf
+            died = False
+            try:
+                run(p, 12, 0)
+            except Exception as ex_:
+                died = "harness crash" in str(ex_)
+            Store.CRASH_FILES = -1
+            mk_at_crash = os.path.isfile(mkf)
+            restart()
+            rr = run(p, 5)
+            c, d = census(p)
+            bad = [b_ for b_ in once(p, d) if FOREIGN not in b_]
+            st_ = stamps_of(p)
+            ok_ = (not died or mk_at_crash) and not bad and c == base and FOREIGN in st_ and not os.path.isfile(mkf)
+            heal_ok = heal_ok and ok_
+            died_n += 1 if died else 0
+            rows.append("crash after %d file(s): died=%s marker=%s stamps=%s bad=%s %s" % (cf + 1, died, mk_at_crash, st_, bad, rr))
+        K.check(died_n >= 2 and heal_ok,
+                "X13e Use what I wear CRASHES part way through its save: the next Requip action unstamps every listed eid the pool never got, "
+                "another player's stamp untouched, nothing lost or copied (%s)" % " / ".join(rows))
+        rwf = run(p, 12, 0)
+        c, d = census(p)
+        bad = [b_ for b_ in once(p, d) if FOREIGN not in b_]
+        K.check(rwf.startswith("+") and not bad and c == base and not os.path.isfile(mkf),
+                "X13e ... the next Use what I wear saves and stamps as usual, register.txt removed (%s | once %s)" % (rwf, bad))
+        # register.txt cannot be written (a folder in its place): nothing stamped, nothing saved, the loadout unchanged
+        p = fresh("wearmark")
+        k_ = str(Store.pkey(p.u))
+        setc(p.arm, 3, stack("Armor_Iron_Legs", 1, gdoc("rare", 7)))
+        setc(p.hot, 0, stack("Weapon_Sword_Iron", 1, gdoc("rare", 7)))
+        base, _d = census(p)
+        mkf = os.path.join(Wd, "requip", k_, "register.txt")
+        os.makedirs(os.path.join(mkf, "x"))
+        try:
+            rwm = run(p, 12, 0)
+        finally:
+            shutil.rmtree(mkf, ignore_errors=True)
+            if os.path.isfile(mkf + ".tmp"):
+                os.remove(mkf + ".tmp")
+        c, d = census(p)
+        restart()
+        c2, d2 = census(p)
+        K.check(rwm.startswith("-Could not save") and not stamps_of(p) and not once(p, d) and c == base and c2 == base
+                and not [e for e in d2.entries.values() if not e.kind],
+                "X13e ... register.txt cannot be written: nothing stamped, no entry, the loadout unchanged (%s | stamps %s)" % (rwm, stamps_of(p)))
 
         # ============================================================ X14 MIGRATION of 0.1 files (fixtures made by the REAL 0.1 jar in M01)
         fx = os.path.join(SCRATCH, "fx01")
@@ -2995,7 +3131,7 @@ def child(env, *args):
     return subprocess.run([sys.executable, os.path.abspath(__file__)] + list(args) + ["--dir", SCRATCH, "--jar", JAR, "--old", OLD, "--live", LIVE,
                                                                                    "--gear", GEAR or "-", "--seed", str(SEED), "--fuzz", arg("--fuzz", "260"),
                                                                                    "--fuzz-seeds", ",".join(str(s_) for s_ in FUZZ_SEEDS),
-                                                                                   "--collide-seeds", ",".join(str(s_) for s_ in COLLIDE_SEEDS) or "-",
+                                                                                   "--collide-seeds", ",".join("%d@%d" % (s_, n_) for s_, n_ in COLLIDE_SEEDS) or "-",
                                                                                    "--collide-ops", arg("--collide-ops", "400")], env=env)
 
 

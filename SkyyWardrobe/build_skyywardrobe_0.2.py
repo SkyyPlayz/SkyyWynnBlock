@@ -3866,6 +3866,35 @@ public static String ensure(@PKG@.WdData d, @IC@[] cs, java.util.UUID u, java.ut
       r = r == null ? rep : r + " " + @PKG@.WdLog.body(rep);
     }
   }
+  // requip022fix: a "Use what I wear" cut off part way through its save (crash) can leave a stamp the pool never got. Only when the live
+  // inventory holds an UNKNOWN stamp is register.txt read (no file I/O otherwise); a listed eid that is live and unknown is unstamped (a
+  // plain item again - nothing moves, nothing is lost); a stamp NOT listed there (another player's gear) is never touched
+  if (!d.bad && d.mig != 1 && !@PKG@.WdGate.busy(u) && @PKG@.WdStore.RQ != null && cs != null && cs.length >= 4 && cs[0] != null && cs[1] != null && cs[2] != null) {
+    java.util.HashMap live = @PKG@.WdInv.stamps(cs);
+    java.util.HashSet unk = new java.util.HashSet();
+    java.util.Iterator it = live.keySet().iterator();
+    while (it.hasNext()) { String e = (String) it.next(); if (d.entry(e) == null) unk.add(e); }
+    java.nio.file.Path mk = @PKG@.WdStore.dirOf(d.key).resolve("register.txt");
+    if (unk.size() > 0 && !@PKG@.WdJournal.PENDING.containsKey(d.key) && java.nio.file.Files.exists(mk, new java.nio.file.LinkOption[0])
+        && !java.nio.file.Files.exists(@PKG@.WdJournal.fileOf(d.key), new java.nio.file.LinkOption[0])) {
+      try {
+        String[] ls = new String(java.nio.file.Files.readAllBytes(mk), "UTF-8").split("\n");
+        int fixed = 0;
+        boolean left = false;
+        for (int i = 0; i < ls.length; i++) {
+          String e = ls[i].trim();
+          if (e.length() == 0 || !unk.contains(e)) continue;
+          int[] at = @PKG@.WdInv.findStamp(cs, e);
+          if (at == null) continue;
+          @IS@ x = @PKG@.WdInv.at(cs, at[0], at[1]);
+          if (x != null && @PKG@.WdInv.put(cs[at[0]], (short) at[1], @PKG@.WdCodec.unstamp(x))) { fixed++; @PKG@.WdStore.log("REGISTER-HEAL " + d.uuid + " " + d.key + " " + e + " " + x.getItemId() + " unstamped (an interrupted Use what I wear)"); }
+          else left = true;
+        }
+        if (!left) java.nio.file.Files.deleteIfExists(mk);
+        if (fixed > 0) @PKG@.WdLog.warn("Requip " + d.key + ": " + fixed + " item(s) marked by an interrupted Use what I wear are plain items again (see requip.log)");
+      } catch (Throwable t) { @PKG@.WdLog.warnOnce("regheal:" + d.key, "Requip " + d.key + ": register.txt could not be read: " + t); }
+    }
+  }
   return r;
 }""")
 M(ops, r"""
@@ -3892,6 +3921,8 @@ public static String regWorn(@PKG@.WdData d, int n, @IC@[] cs, java.util.ArrayLi
   int[] uSec = new int[13];
   int[] uSlot = new int[13];
   @IS@[] uX = new @IS@[13];
+  String[] uE = new String[13];
+  int[] uK = new int[13];
   int un = 0;
   for (int k = 0; k < 13; k++) {
     int sec = k < 4 ? 0 : 1;
@@ -3917,8 +3948,9 @@ public static String regWorn(@PKG@.WdData d, int n, @IC@[] cs, java.util.ArrayLi
       if (e != null && !e.kind && !e.in && e.space == sp && !seen.contains(eid)) { e.setShow(x); d.touch(e); picks[k] = "e:" + eid; seen.add(eid); reuse++; continue; }
       if (d.count(sp) + add[sp] >= @PKG@.WdCfg.cap(sp)) { notes.add(sn + ": " + (sp == 0 ? "Armor" : "Items") + " space full"); continue; }
       String ne = d.newEid();
-      if (!@PKG@.WdInv.put(cs[sec], (short) slot, @PKG@.WdCodec.stamp(x, ne))) { @PKG@.WdInv.put(cs[sec], (short) slot, x); notes.add(sn + ": " + id + " could not be marked"); continue; }
-      uSec[un] = sec; uSlot[un] = slot; uX[un] = x; un++;
+      // requip022fix: the stamp goes on AFTER the loop, once register.txt names every new eid (a crash mid-save = the next ensure unstamps
+      // a listed eid the pool never got - no stamp the pool does not know)
+      uSec[un] = sec; uSlot[un] = slot; uX[un] = x; uE[un] = ne; uK[un] = k; un++;
       e = new @PKG@.WdEntry(ne);
       e.space = sp; e.spot = spot; e.in = false; e.addedAt = now; e.setShow(x);
       d.add(e);
@@ -3941,6 +3973,35 @@ public static String regWorn(@PKG@.WdData d, int n, @IC@[] cs, java.util.ArrayLi
       kinds++;
     }
   }
+  // requip022fix (critic: a crash part way through the save left a stamp the pool never got): register.txt in the profile folder lists the
+  // eids about to be stamped BEFORE any stamp goes on (+ any eids an older crash left there); ensure() unstamps a listed eid that is live
+  // but unknown to the pool. Not a .json name: the aside() of an unfinished first write must not move it. Cannot be written = nothing
+  // stamped, nothing saved
+  java.nio.file.Path mk = null;
+  if (un > 0) {
+    try {
+      if (@PKG@.WdStore.RQ == null) throw new java.io.IOException("no Requip folder");
+      mk = @PKG@.WdStore.dirOf(d.key).resolve("register.txt");
+      StringBuilder sb = new StringBuilder();
+      if (java.nio.file.Files.exists(mk, new java.nio.file.LinkOption[0])) sb.append(new String(java.nio.file.Files.readAllBytes(mk), "UTF-8").trim()).append('\n');
+      for (int i = 0; i < un; i++) sb.append(uE[i]).append('\n');
+      @PKG@.WdStore.atomicWrite(mk, sb.toString().getBytes("UTF-8"));
+    } catch (Throwable t) {
+      for (int i = 0; i < newE.size(); i++) d.remove((String) newE.get(i));
+      @PKG@.WdStore.log("REGISTER-MARK failed " + d.uuid + " " + d.key + " " + t);
+      return "-Could not save Requip - the loadout did not change (see the server log).";
+    }
+    for (int i = 0; i < un; i++) {
+      if (@PKG@.WdInv.put(cs[uSec[i]], (short) uSlot[i], @PKG@.WdCodec.stamp(uX[i], uE[i]))) continue;
+      @PKG@.WdInv.put(cs[uSec[i]], (short) uSlot[i], uX[i]);
+      notes.add(@PKG@.WdClass.slotName(uK[i]) + ": " + uX[i].getItemId() + " could not be marked");
+      d.remove(uE[i]);
+      newE.remove(uE[i]);
+      picks[uK[i]] = null;
+      reg--;
+      uX[i] = null;
+    }
+  }
   String[] old = new String[13];
   for (int k = 0; k < 13; k++) { old[k] = L.picks[k]; L.picks[k] = picks[k]; }
   int ask = d.ask01;
@@ -3949,14 +4010,23 @@ public static String regWorn(@PKG@.WdData d, int n, @IC@[] cs, java.util.ArrayLi
   d.rev = d.rev + 1L;
   if (!@PKG@.WdStore.save(d)) {
     for (int i = 0; i < newE.size(); i++) d.remove((String) newE.get(i));
+    boolean undone = true;
     for (int i = 0; i < un; i++) {
-      if (!@PKG@.WdInv.put(cs[uSec[i]], (short) uSlot[i], uX[i])) @PKG@.WdStore.log("REGISTER-UNDO failed " + d.uuid + " " + uX[i].getItemId() + " section " + uSec[i] + " slot " + uSlot[i]);
+      if (uX[i] == null) continue;
+      if (!@PKG@.WdInv.put(cs[uSec[i]], (short) uSlot[i], uX[i])) { undone = false; @PKG@.WdStore.log("REGISTER-UNDO failed " + d.uuid + " " + uX[i].getItemId() + " section " + uSec[i] + " slot " + uSlot[i] + " - register.txt stays, the next Requip action unstamps it"); }
     }
+    if (mk != null && undone) { try { java.nio.file.Files.deleteIfExists(mk); } catch (Throwable t) { } }
     for (int k = 0; k < 13; k++) L.picks[k] = old[k];
     d.ask01 = ask;
     d.rev = d.rev - 1L;
+    // requip022: the failed save may have written SOME files (an armor shard with the new OUT entries while their items are back on you
+    // unstamped = phantom NOT WITH YOU records after a restart). Rewrite every file of this attempt from the restored memory now (the
+    // shards stay dirty, loDirty is still set); if that fails too, the memory is right and the next save writes it (same as WdTx.run)
+    d.loDirty = true;
+    if (!@PKG@.WdStore.save(d)) @PKG@.WdStore.log("REGISTER-RESAVE failed " + d.uuid + " " + d.key + " - the next save rewrites the files from memory");
     return "-Could not save Requip - the loadout did not change (see the server log).";
   }
+  if (mk != null) { try { java.nio.file.Files.deleteIfExists(mk); } catch (Throwable t) { @PKG@.WdStore.log("REGISTER-MARK not removed " + d.key + " " + t + " (harmless: every eid in it is known now)"); } }
   @PKG@.WdStore.log("REGISTER " + d.uuid + " " + d.key + " loadout=" + (n + 1) + " new=" + reg + " known=" + reuse + " kinds=" + kinds + " rev=" + d.rev);
   return "+" + L.title() + " now uses what you wear (" + (reg + reuse) + " gear, " + kinds + " potion / food stacks). It stays on you - Equip another loadout and it goes into Requip.";
 }""")

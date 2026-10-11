@@ -73,6 +73,7 @@ fishing, luggage, sprint-tap and Stats-page versions (their newest version is be
 55. BIG BATCH 2026-10-10: Pets 0.2.3 (roles, summon look, loadout bridge, skeletons), Menu 0.3.17 (layout D, icons, editor), Wardrobe 0.1, Soul Cage (Armory 0.1.19-0.1.20), wand single launch + keeps damaging falls, tool rarity + reforge + multitools (Gear 0.2.17-0.2.20), new tooltips, Lantern textures, WorldGen 0.5 islands (/zone proof -> skywynn_proof2), Multitools on, KeyProbe off, BetterMap all worlds
 56. SkyyGear 0.2.22 (Reforge tabs Reforge/Upgrade/Multitool, /upgrade Soul Cages, /multitool merge, [Lv N] names), Collections 0.2.9, UI PROBE /skyprobe kit (screenshots k1a-k1h, t1, h1)
 57. SkyyArmory 0.1.21 Soul Orb: Life Essence recipe, Thorium ~7.5 per tick, wispy vs solid lines, Wings of Fate (hold LEFT click)
+58. REQUIP /requip (pool, Use what I wear, Deposit all gear, loadouts pick from the pool), /smithing (set cards, class filter, craft into Requip, Reforge/Upgrade/Multitool tabs), hotbar Pocket block refill
 
 Seen working 2026-10-08/09: bag art (0.7.14), fishing widgets, Copper axe Attack Speed line, sprint roll forward + forward diagonals.
 Already seen working since 2026-10-01 (details in `docs/log/2026-10.md`): SkyyMobs 0.1 / 0.1.1 / 0.1.2, SkyySacks 0.7.11 refill + 0.7.12

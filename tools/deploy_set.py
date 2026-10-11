@@ -16,8 +16,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
-    ("SkyyHud", "0.3.18"), ("SkyySacks", "0.7.16"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.9"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.22"), ("SkyySkills", "0.4.30"),
+    ("SkyyHud", "0.3.18"), ("SkyySacks", "0.7.17"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.9"), ("SkyyParty", "0.1.7"),
+    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.23"), ("SkyySkills", "0.4.30"),
     ("SkyyAccessories", "0.5.11"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.17"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.9"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -78,7 +78,7 @@ SET = [
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
     ("SkyyPets", "0.2.3"),
-    ("SkyyWardrobe", "0.1"),
+    ("SkyyWardrobe", "0.2"),
     ("SkyyUiProbe", "0.5"), ("SkyyUiProbeB", "0.5"),  # 2026-10-11 kit / tab / quality-tooltip probes (K1 H1 T1) - ONE Skyy test session, then RETIRED again  # 2026-10-10 Skyy: "build the wardrobe/ loadout system too" - loadouts (armor + hotbar + pets + abilities), per profile
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
@@ -292,6 +292,10 @@ def main():
         print("STOP: IBC:Multitools needs SkyyGear 0.2.18+ (the pickaxe + hatchet recipe and the multitool stats)"); return 1
     # FLOOR SkyyWorldGen 0.5 (2026-10-10): a jar below 0.5 cannot load the world skywynn_proof2 - before a rollback stop the server, delete
     # universe/worlds/skywynn_proof2 and its lines in worlds.properties.
+    # Requip batch (2026-10-11): SkyyWardrobe 0.2 + SkyySacks 0.7.17 + SkyyGear 0.2.23 deploy TOGETHER (4-arg sacks:fn:deposit, stamp copy).
+    # FLOORS: never roll SkyyWardrobe below 0.2 once 0.1 files migrated (0.1 cannot see the pool); SkyyGear >= 0.2.23 while Requip runs (stamp copy).
+    if _v(_p.get("SkyyWardrobe", "0")) >= (0, 2) and (_v(_p.get("SkyySacks", "0")) < (0, 7, 17) or _v(_p.get("SkyyGear", "0")) < (0, 2, 23)):
+        print("STOP: SkyyWardrobe 0.2 needs SkyySacks 0.7.17+ and SkyyGear 0.2.23+ (deploy the Requip batch together)"); return 1
     # Untiered batch (2026-10-09): SkyyGear 0.2.16 + SkyyArmory 0.1.15 deploy TOGETHER (the 3 Armory UT items + their numbers from SkyyGear)
     if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 16)) != (_v(_p.get("SkyyArmory", "0")) >= (0, 1, 15)):
         print("STOP: SkyyGear 0.2.16+ and SkyyArmory 0.1.15+ deploy together (the Untiered batch) - pin both or neither"); return 1

@@ -11,19 +11,13 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 3. Rounds: saved workflow `skywynn-round` (Skyy's OWN words in args.quotes); deploy only with the game closed: backup -> smoke -> deploy_set
    --yes -> record_deploy -> commit -> tidy_local; scan + recycle logs after every play session.
 
-## Now (2026-10-11 early)
-- LIVE (deployed 2026-10-10 19:13, backup deploy-20261010-1911): Pets 0.2.3, Menu 0.3.17 (layout D + icons + editor), Armory 0.1.20 (wand
-  single launch, keeps damaging falls, Soul Cages), Skills 0.4.30, Classes 0.1.19, Gear 0.2.20 (tool rarity, multitools, new tooltips),
-  Accessories 0.5.11, WorldGen 0.5 (vanilla gen masked into islands, /zone proof -> skywynn_proof2), NEW Wardrobe 0.1; Multitools ON.
-- DEPLOYED 2026-10-10 22:38 (TEST 56): SkyyGear 0.2.22 (Reforge tabs, /upgrade, /multitool, [Lv N] names), SkyyCollections 0.2.9,
-  SkyyUiProbe 0.5 + B (Skyy runs /skyprobe kit once, then RETIRE both).
-- BUILT, NOT PINNED: SkyySacks 0.7.17 (deposit / hotbar refill / craft bridges / class filter) - CONTRACT MISMATCH with SkyyWardrobe 0.2:
-  sacks:fn:deposit takes blocks itself, Wardrobe 0.2 giveBack takes the slot first -> fix in SkyyWardrobe (giveBack: no takeOff / put-back,
-  call deposit {UUID, id, Long qty, Integer hotbarSlot}) then ship Sacks 0.7.17 + Wardrobe 0.2.x + Gear 0.2.23 TOGETHER (R4).
-- Running at hand-off (check their results): requip02 (SkyyWardrobe 0.2 Requip, ultracode + recheck), smithing (SkyyGear 0.2.23 /smithing
-  hub), uiprobe05 (SkyyUiProbe 0.5: kit textures K1, cross-jar tabs H1, custom quality tooltip T1 - needs Skyy's test session), licence
-  audit agent (research/Licence-Audit.md).
-- Skyy's open tests: TEST-CHECKLIST 55 (big batch) + older; gathering probe (/gprobe kit, P1-P6) still untested.
+## Now (2026-10-11 ~01:45, PAUSED at 97% weekly - Skyy: wait for the morning)
+- LIVE: everything through 2026-10-11 01:40 (TEST 55-58): big batch 2026-10-10 + SkyyGear 0.2.22/0.2.23 (/smithing, Reforge tabs, /upgrade,
+  /multitool, [Lv N]), Collections 0.2.9, Armory 0.1.21 (Soul Orb damage, vanilla essences, Wings of Fate), REQUIP = SkyyWardrobe 0.2
+  (+ SkyySacks 0.7.17 hotbar refill / craft bridges), SkyyUiProbe 0.5 + B (Skyy runs /skyprobe kit once, then RETIRE both).
+- Nothing running. Known low issue (no item loss/dupe): a crash in the middle of Requip "Use what I wear" saving can leave a stamped item
+  unknown to the pool until the next deposit / Equip (log 2026-10-11) - journal op 12 in a later Wardrobe round.
+- Skyy tests: TEST-CHECKLIST 55-58 + UI probe + gathering probe.
 
 ## Next, in order
 1. Finish R1-R4: Wardrobe deposit fix -> integrate Wardrobe 0.2 + Sacks 0.7.17 + Gear 0.2.23 (+ SkyyMenu tiles: Requip rename, Crafting)
