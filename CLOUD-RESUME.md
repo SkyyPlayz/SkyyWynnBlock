@@ -71,7 +71,7 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 <!-- 2026-10-09 evening local session (Skyy: "use up all the tokes. Just be sure you aren't wasting any"). Local builds running: rarity G1
 (SkyyGear 0.2.14), ability engine R1 (SkyyClasses), WorldGen 0.3 archipelago node proof, SkyyProfiles cap 8, SkyyPets 0.1. Next local
 builds need these specs. Specs only; one commit + OUTBOX block each. -->
-- [ ] **/smithing hub spec** (Skyy 2026-10-10, docs/answered/gear.md SMITHING HUB line - write it TOGETHER with the Requip spec, they share
+- [x] (superseded 2026-10-10: the LOCAL session writes research/Requip-Smithing-Spec.md - skip) **/smithing hub spec** (Skyy 2026-10-10, docs/answered/gear.md SMITHING HUB line - write it TOGETHER with the Requip spec, they share
       storage): `research/cloud/Smithing-Hub-Spec.md`: one page /smithing with tabs Craft / Reforge / Upgrade / Merge, crafting pulls
       from + delivers into the Requip spaces (and bags for materials), SET CARDS (size, figure layout of 4 piece icons, set stats + bonus
       text, click -> piece page with craft buttons), class filter (SkyyClasses weapon rules + armor type per class), how vanilla benches
