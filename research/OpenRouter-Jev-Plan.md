@@ -43,7 +43,7 @@ savings come from moving the **reading, sorting, drafting and second opinions** 
 
 ### 1. Log digest (free, every play session) - biggest easy win
 
-Today I read the server and client logs myself after every session, often 50-150k tokens. Instead, `tools/log_digest.py` would:
+Today I read the server and client logs myself after every session, often 50-150k tokens. Instead, a new log-digest tool (log_digest.py, planned) would:
 
 1. Send each log through `llm.py` (free, 1M context, cleaned of personal data).
 2. Use **Jev Noul** for each error / warning group: "is this from a Skyy mod?" and "actionable?".
@@ -128,7 +128,7 @@ When Claude has usage again, it reviews those drafts.
    - add `--json <schema>` (structured output);
    - add a `jev(question, kind, options)` helper. One test call to confirm how OpenRouter passes Jev's question types; that is not
      documented on the model page.
-2. `tools/log_digest.py`, plus a change to the check-logs routine so it reads the digest first.
+2. a new log-digest tool (log_digest.py, planned), plus a change to the check-logs routine so it reads the digest first.
 3. Pack map summaries (with the pack map tool already next in RESUME).
 4. A `free_lens` option in `skywynn-round` (default on for reviews; off with `free_lens: 0`).
 
