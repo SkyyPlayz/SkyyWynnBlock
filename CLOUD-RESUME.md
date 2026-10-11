@@ -71,6 +71,13 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 <!-- 2026-10-09 evening local session (Skyy: "use up all the tokes. Just be sure you aren't wasting any"). Local builds running: rarity G1
 (SkyyGear 0.2.14), ability engine R1 (SkyyClasses), WorldGen 0.3 archipelago node proof, SkyyProfiles cap 8, SkyyPets 0.1. Next local
 builds need these specs. Specs only; one commit + OUTBOX block each. -->
+- [ ] **Requip (Wardrobe v2) spec** (Skyy 2026-10-10, docs/answered/gear.md "REQUIP" line, word for word there - TOP PRIORITY): new
+      `research/cloud/Requip-Spec.md` replacing the 0.1 swap model (research/cloud/Wardrobe-Spec.md + SkyyWardrobe 0.1 code for the
+      journal / lossless format): per-profile infinite ARMOR space + ITEMS space (weapons, tools, potions, food; what is refused), how
+      items get in/out (page, deposit-all, shift-click), loadouts as references into the spaces (picker UI on a 1120 px page, what happens
+      when a referenced item is gone / reforged / stacked), Equip = worn back into the spaces + picked out (one write-ahead transaction,
+      dupe-proof), Pocket Dimension auto-refill for hotbar BLOCK slots (SkyySacks / pocket bridge, refill rules), migration of 0.1
+      loadouts into the spaces, profile switch / death / Vault interplay, limits (infinite = paging + per-file caps), questions with defaults.
 - [ ] **SkyyAbilityProbe PR** - once https://github.com/SkyyPlayz/SkyyWynnBlock/pull/11 is merged: open a [cloud] PR with the held draft
       `SkyyAbilityProbe/build_skyyabilityprobe_0.1.py` + test (plan: `research/cloud/Ability-Probe-Plan.md`; the cloud session that wrote it keeps the files). UNTESTED. Skyy 2026-10-08: the probe session waits until Hytale 0.7 - no rush.
 
