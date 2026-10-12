@@ -14,6 +14,9 @@ belongs to SkyyQuests (the quest widget) - check existing quest / tutorial mods 
 - Per profile; each task pays a small reward once (coins / skill XP / a starter item). "I know how to play" hides the widget (tasks keep
   ticking quietly, rewards still paid).
 
+**Quest widget = essential** (Skyy: "we need a place to quickly and easily tell players what to do next without digging in menus"): an
+always-on HUD widget with the next 1-3 tasks, progress ("Chop logs 6/10") and where to go - the tutorial lives in it, later quests too.
+
 ## Task list (suggested order)
 
 **Island 1 - home**
