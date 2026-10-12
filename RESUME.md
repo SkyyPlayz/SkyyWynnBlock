@@ -40,6 +40,7 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 11. GATHERING PROGRESSION SPEC (docs/answered/gear.md 2026-10-11): tier gate (own + next slow), tool level = skill capped by tier, tool XP -> Upgrade Points (speed / fortune / vein mine / perks), crop + wood tier table, hoe / can / fertilizer area by tier; revises research/Tool-Levels-Spec.md. Spec round (Fable synth) after the reset, then SkyyGear + SkyySkills + SkyyTrees builds.
 12. SHARD ISLANDS + FARMING TOTEMS + Farming / Ranching / Orchard split (research/Shard-Islands-Ideas.md): spec with item 11 (gathering progression) - revises research/cloud/Pocket-Shards-Spec.md; engine check: per-player instanced islands.
 13. PACK OVERLAP AUDIT (PROJECT-RULES 2 "No duplicates"): list what every pack mod + candidate adds (mounts, weapons, totems, biomes, structures, commands, keys), pick the best of each, switch off the rest; cheap (free OpenRouter models + a script over the jars).
+14. PACK VISION (docs/answered/project.md 2026-10-11 "its own game"): mod database = tools/mod_db.py + research/Mod-Database*.md (299 installed); next: CurseForge survey per area (licences, best-of-each, install list for Skyy), then fold / copy / build plan to cut mod count; UI redesign pass (settings + Server Setup first, pro layout, magical flowing look, UI animation check). OpenRouter: Jev + free models only ($20/month cap).
 8. Specs waiting: Requip (done), Upgrade ladders + Dragon sets, Special tools, Pet eggs v2, Zone regen, Avatars (cloud CLOUD-RESUME.md).
 
 ## Never forget

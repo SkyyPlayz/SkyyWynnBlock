@@ -134,3 +134,5 @@ When Claude has usage again, it reviews those drafts.
 
 Rough savings: 50-150k Claude tokens per play session (logs), fewer file reads in every round (map), and extra review coverage at no
 Claude cost.
+
+**Budget (Skyy 2026-10-11):** "open router has a 20$ a month cap, for now id like to use Jev, and most free models aside from that." -> only Jev (router / decision model) and free models; no other paid models (Fusion etc. need Skyy first).
