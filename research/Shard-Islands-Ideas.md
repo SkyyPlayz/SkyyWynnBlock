@@ -15,6 +15,19 @@ minion block" idea in `research/cloud/Pocket-Shards-Spec.md` (that spec must be 
 - The overworld still has farming, mining and tree gathering, but **developing your shards is the ONLY way to get automation** - minions
   become their own minigame.
 
+## Shards 2 (same day)
+
+- **Mining and Foraging get their own shards too** (plus Farming, Ranching, Orchard).
+- **Collections + skill XP are gained when you COLLECT** from the shard, so each shard has its **own menu**:
+  - **Collect** what it produced;
+  - **shard upgrades**: auto-compactor (like SkyBlock), time compressor (time runs faster in the shard = more per minute);
+  - **Islands**: add islands and upgrade them.
+- **Protected:** no building or breaking blocks in a shard - you can only farm / gather and place / remove totems.
+- **Layout = fixed slots around a hub:** a small hub island (portal + menu) with fixed slots around it; any island in any slot; one
+  pre-made bridge per slot that appears when the slot is filled; each island grows in place (3 sizes per slot). No order lock.
+- **The same shard menu opens from the portal on your main island** (right-click, like a vanilla portal's menu) - our own custom
+  design, and it needs a really cool one (Sky Window kit).
+
 ## Three farming skills, one tree
 
 - **Farming, Ranching and Orchard** each get their **own shard and their own skill**.
