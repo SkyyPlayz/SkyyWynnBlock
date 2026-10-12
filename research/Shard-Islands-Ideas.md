@@ -28,6 +28,16 @@ minion block" idea in `research/cloud/Pocket-Shards-Spec.md` (that spec must be 
 - **The same shard menu opens from the portal on your main island** (right-click, like a vanilla portal's menu) - our own custom
   design, and it needs a really cool one (Sky Window kit).
 
+## Shards 3 (same day): 6 shards + minion-style totems
+
+- **Six shards:** Mining, Foraging, Farming, Ranching, Orchard and **Combat** (mobs, like SkyBlock mob minions).
+- **One shared totem system in every shard**, each calling a themed worker: Farming = Sprites, Orchard = Dryads, Ranching = Herd
+  Spirits, Foraging = Treants, Mining = Golems (vanilla golems), Combat = Soul Cages (caged souls spawn mobs; ties to the Soul Orb /
+  Soul Cage weapons).
+- **Totems work like SkyBlock minions:** right-click = info page; upgrade it; give it modifiers; **pick it up to move it**.
+- **Shards can be picked up and moved** too.
+- **Each shard has a max storage** that is upgraded inside the shard.
+
 ## Three farming skills, one tree
 
 - **Farming, Ranching and Orchard** each get their **own shard and their own skill**.
