@@ -26,6 +26,11 @@ Standing rules for anyone working on this project, person or AI. Where this file
 - Never commit game files, vanilla-derived assets (generate them into the jars at build time), other authors' files (unless their licence
   allows it), or personal data. `tools/dev/scratch/`, `backups/`, `.claude/worktrees/` and built jars are git-ignored - keep it so.
 - Vanilla Hytale first, then borrow ideas (or licence-allowed code) from others - "never build new when you can steal what already works".
+- **Check for an existing mod BEFORE building one** (Skyy 2026-10-11: "before making a mod, check if one already exists that does what we
+  want. if it does, include it. if its still better to make our own, learn from how the other was made to make building ours easier and
+  faster."): every new system / spec starts with a short survey (CurseForge + Skyy's Mods folder; cheap - free OpenRouter models first).
+  A good fit -> pack it (licence permitting; MIT / PD / CC BY may be folded). Still better to build ours -> study how theirs works
+  (manifest, assets, configs, class names - read only) and name what we reuse or learn in the spec.
 - **Pack mods (permissions in `PACK.md`):** our own code may react to their items by id at runtime (Grades, buffs, Bazaar / collection /
   XP listings). Never ship a file overriding their item ids, never copy their recipes / numbers / models / textures, never bundle or
   re-upload their files. If a change needs their data edited, ask the author first.
