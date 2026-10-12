@@ -36,3 +36,9 @@ research/refs/
 .trash/
 # Blockbench work models (built from vanilla models - local only, never public; generator: tools/make_light_chest.py)
 models-local/
+
+# playtest videos + Grok notes stay local (big files, may show chat / names) - only the READMEs are public
+playtest/videos/*
+playtest/notes/*
+!playtest/videos/README.md
+!playtest/notes/README.md
