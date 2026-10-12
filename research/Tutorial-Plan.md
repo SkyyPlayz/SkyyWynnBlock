@@ -51,5 +51,8 @@ always-on HUD widget with the next 1-3 tasks, progress ("Chop logs 6/10") and wh
 23. Party / guild intro (open the party menu; invite a friend - optional).
 24. Your first **shard** (Mining / Foraging / Farming ...) - the automation minigame starts (research/Shard-Islands-Ideas.md).
 
-Open for Skyy: trim / reorder; rewards per task; what the mini boss is; whether the starter islands are a fixed prefab per player
-(protected?) or generated; tutorial for joining an existing island (co-op).
+**Starter islands (Skyy 2026-10-12):** one fixed hand-built design for everyone, but NOTHING protected - it guides, never restricts. Each
+island ~4-5x today's starter island: bushes, rubble, blocks to mine, old broken structures; enough to make crude tools and bridge on.
+The "make crude tools" step = crafting your one lifelong starter tool set (spec to settle vs "spawn with a pickaxe and an axe").
+
+Open for Skyy: trim / reorder; rewards per task; what the mini boss is; tutorial for joining an existing island (co-op).
