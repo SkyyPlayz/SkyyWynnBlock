@@ -11,8 +11,8 @@ belongs to SkyyQuests (the quest widget) - check existing quest / tutorial mods 
 - **NOT linear:** every task completes the moment its condition is met, in any order, even before the widget asks. If you did task 6
   before task 4, task 6 is already ticked when you get there. The widget always shows the next 1-3 UNDONE tasks in the suggested order.
   Only real physical needs are hard requirements (the portal needs the Hub Shard).
-- Per profile; each task pays a small reward once (coins / skill XP / a starter item). "I know how to play" hides the widget (tasks keep
-  ticking quietly, rewards still paid).
+- Per profile; each task pays a small reward once (coins / skill XP / a starter item). "I know how to play" hides the TUTORIAL tasks
+  from the widget (they keep ticking quietly, rewards still paid); the widget itself stays for quests.
 
 **Quest widget = essential** (Skyy: "we need a place to quickly and easily tell players what to do next without digging in menus"): an
 always-on HUD widget with the next 1-3 tasks, progress ("Chop logs 6/10") and where to go - the tutorial lives in it, later quests too.
