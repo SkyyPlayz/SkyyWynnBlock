@@ -14,6 +14,8 @@ Skyy's words are in `docs/answered/skills.md` (2026-10-12 REBIRTH / NEW GAME+ an
 - **ONE rebirth menu with ONE upgrade tree** that **radiates out from a black hole in the centre - the Nexus of the Void** (lore: by
   touching it, the void imprints your soul, altering you in strange ways). Reference look: a radiating star-shaped tree of glowing
   lines and nodes (Skyy's screenshot, kept locally as `research/refs/rebirth-radiating-tree.webp`; Shell Diver's upgrade tree).
+- **The Nexus is the rebirth button:** `/rebirth` opens the tree; **hover** the black hole to see the requirements (met / not met) and
+  what this rebirth will give; **click** it, then **confirm**, to rebirth.
 - **Points are separate per skill:** class rebirth points, Mining rebirth points, Farming points, and so on; each branch of the tree
   spends its own skill's points.
 - **XP keeps counting past max level:** extra Mining / Farming XP earned while you finish your class turns into more points at rebirth.
