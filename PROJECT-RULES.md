@@ -32,7 +32,7 @@ Standing rules for anyone working on this project, person or AI. Where this file
   A good fit -> pack it (licence permitting; MIT / PD / CC BY may be folded). Still better to build ours -> study how theirs works
   (manifest, assets, configs, class names - read only) and name what we reuse or learn in the spec.
 - **No duplicates between mods** (Skyy 2026-10-11: "make sure when using lots of mods that do the same thing, we dont get clashes or
-  duplicates of anything. if 3 mods add a horse mount, take the best one. not all 3"): before a mod goes into the pack (or is folded),
+  duplicates of anything. if 3 mods add a horse mount, take the best one. not all 3" + "that goes for all mods." = ours too): before a mod goes into the pack (or is folded),
   list what it adds and compare with our mods + every pack mod; keep the BEST version of each thing (mount, weapon, totem, biome,
   structure, command, key bind) and switch off / leave out the rest (a pack mod can only be switched off whole - if it brings a
   duplicate we cannot hide, pick one mod). Record the choice in PACK.md.
