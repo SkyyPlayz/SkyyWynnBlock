@@ -36,6 +36,7 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
    send author asks (Dynamic Seasons + More Crossbow Tiers first - in the pack with no grant); wand fall rule is done; PACK.md fixes listed in the audit.
 7. DONE 2026-10-11: SkyyArmory 0.1.21 deployed (Soul Orb damage, vanilla essences, faster tether, lines, Wings of Fate; research/classes/Priest.md).
 9. OPENROUTER (research/OpenRouter-Jev-Plan.md): lean rounds - llm.py --json + jev helper, log-digest tool, pack-map summaries (with item 0), free_lens in skywynn-round. llm.py is already free-first; gh works via a Terminal-panel tab.
+10. NEW 2026-10-11 (docs/answered skills / gear / world): Perfect Dodges idea INTO our roll (perfect-dodge window + counter, Acrobatics perk); fold Reforged Weapons (MIT) into SkyyArmory with credit; structure-mod survey (free models) + island test world. Perfect Parries is in the pack (tune_perfect_parries).
 8. Specs waiting: Requip (done), Upgrade ladders + Dragon sets, Special tools, Pet eggs v2, Zone regen, Avatars (cloud CLOUD-RESUME.md).
 
 ## Never forget
