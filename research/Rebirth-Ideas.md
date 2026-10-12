@@ -22,6 +22,16 @@ Skyy's words are in `docs/answered/skills.md` (2026-10-12 REBIRTH / NEW GAME+ an
 - **Costs** start cheap and scale quickly (like the dust upgrades of the current skill tree).
 - **No unlock points:** a row opens when you have about **8 total levels in the row before it**.
 
+## Locked same day
+
+- **All together:** one rebirth at the Nexus resets every skill + the class (no single-skill rebirths). If one big tree can't be drawn,
+  fall back to one tree per skill around the Nexus.
+- **Lifelong tools:** you spawn with a COMMON pickaxe + axe; tools are never crafted, only upgraded in /smithing (tier with enchanted
+  materials, rarity with special tool-upgrade items). Rarity = stat multiplier + better reroll pool (reroll after each rarity upgrade);
+  level = your skill level. On rebirth the tool keeps rarity + stats, goes back to Crude at level 0, and gains a **rebirth modifier**
+  upgraded in that skill's branch. The **multitool unlocks after the first rebirth** (merge pickaxe + axe, no stat loss, no downside).
+  Open: hoes / shovels / sickles / rods; the Multitools pack mod before rebirth 1.
+
 ## Research to do (spec)
 
 - Shell Diver's upgrade tree, and how other clicker / incremental games do rebirth (prestige layers, point formulas, cost curves,
