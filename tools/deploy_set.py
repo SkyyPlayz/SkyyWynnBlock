@@ -115,7 +115,8 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "Helios:Saplings From Trees", "B
                     "NoCube:[NoCube's] Orchard",
                     "dev.ninesliced:BetterMap",
                     "Frah:Better Mob Expansion",
-                    "IBC:Multitools"]  # 2026-10-10 Skyy: Multitools in the pack (MIT, credit InkBlindCat); SkyyGear 0.2.18+ changes its recipe + stats at runtime  # 2026-10-09 Skyy: test BME main mod (GPLv3, credit in PACK.md + server credits); Humans add-on stays OFF ("No guns")  # 2026-10-08 Skyy: "switch the armory on" - CC BY-NC (credit, never sell; PACK.md); combat armor + Warrior / Berserker / Assassin weapons + boss specials (research/Pack-Armor-Plan.md)  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
+                    "IBC:Multitools",
+                    "narwhals:Perfect Parries"]  # 2026-10-11 Skyy: "lets add perfect parries" - All Rights Reserved: install from CurseForge, never bundled; per-class tuning goes into ITS world config (tune_perfect_parries)  # 2026-10-10 Skyy: Multitools in the pack (MIT, credit InkBlindCat); SkyyGear 0.2.18+ changes its recipe + stats at runtime  # 2026-10-09 Skyy: test BME main mod (GPLv3, credit in PACK.md + server credits); Humans add-on stays OFF ("No guns")  # 2026-10-08 Skyy: "switch the armory on" - CC BY-NC (credit, never sell; PACK.md); combat armor + Warrior / Berserker / Assassin weapons + boss specials (research/Pack-Armor-Plan.md)  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
 # Advanced Farming was NOT added (Skyy 2026-10-06: out of date, no longer updated -> build its tools into our own mod).
 # Skyy mods that were MERGED into another mod and must be switched OFF in the world config on every deploy (their jar may stay in Mods;
 # a disabled key is not loaded). Without this, deploy_set only disables older versions of the SAME mod name, and a retired mod would keep
@@ -174,6 +175,51 @@ def disable_third_party(world, key):
         mods[key] = {"Enabled": False}
         json.dump(d, open(cfg, "w", encoding="utf-8"), indent=2)
         print("world", world, "switched off", key)
+
+
+# Perfect Parries (narwhals, pack mod by runtime id) - Skyy 2026-10-11: every class may parry, tuned per class (docs/answered/classes.md):
+# melee gets the full parry (stun, counter-hit), Archer / Mage / Priest only a short deflect (no counter bonus) if their weapon can block.
+# Its weapon_parry_settings.json takes exact item ids first, then wildcard patterns; the two vanilla Bo staffs are exact ids so they are
+# not caught by the Mage's Weapon_Staff_*. Fields: the mod's own (parryWindowMs, counterattack*, knockback*, reflectDamagePercent ...).
+_PP_MELEE = {"Warrior": dict(parryWindowMs=260, counterattackWindowMs=500, counterattackDamageMultiplier=1.25, stunnedDamageMultiplier=2.5,
+                             knockbackX=6, knockbackY=5, reflectDamagePercent=0.2),
+             "Berserker": dict(parryWindowMs=200, counterattackWindowMs=450, counterattackDamageMultiplier=2.0, stunnedDamageMultiplier=3.0,
+                               knockbackX=6, knockbackY=5, reflectDamagePercent=0.15),
+             "Assassin": dict(parryWindowMs=140, counterattackWindowMs=300, counterattackDamageMultiplier=2.5, stunnedDamageMultiplier=3.0,
+                              knockbackX=2.5, knockbackY=2.5, reflectDamagePercent=0.05),
+             "Monk": dict(parryWindowMs=180, counterattackWindowMs=600, counterattackDamageMultiplier=1.5, stunnedDamageMultiplier=2.5,
+                          knockbackX=4, knockbackY=4, reflectDamagePercent=0.1)}
+_PP_DEFLECT = dict(parryWindowMs=120, counterattackWindowMs=0, counterattackDamageMultiplier=1.0, stunnedDamageMultiplier=1.0,
+                   knockbackX=3, knockbackY=2, reflectDamagePercent=0.0)
+PP_WEAPONS = {"Weapon_Sword_*": "Warrior", "Weapon_Longsword_*": "Warrior", "Weapon_Spear_*": "Warrior", "Weapon_Shield_*": "Warrior",
+              "Weapon_Axe_*": "Berserker", "Weapon_Battleaxe_*": "Berserker", "Weapon_Mace_*": "Berserker", "Weapon_Club_*": "Berserker",
+              "Weapon_Daggers_*": "Assassin", "Weapon_Kunai*": "Assassin",
+              "Weapon_Staff_Bo_Wood": "Monk", "Weapon_Staff_Bo_Bamboo": "Monk", "Weapon_Bo_*": "Monk", "Weapon_Fist_*": "Monk",
+              "Weapon_Shortbow_*": "deflect", "Weapon_Crossbow_*": "deflect", "Weapon_Staff_*": "deflect", "Weapon_Spellbook_*": "deflect",
+              "Weapon_Wand_*": "deflect"}
+
+
+def tune_perfect_parries(world):
+    """Add our per-class entries to the world's Perfect Parries weapon config. Only MISSING fields are written, so anything Skyy (or a
+    server owner) later edits in that file is kept; the mod itself adds its own default entries on load."""
+    import json
+    d_ = os.path.join(B.USERDATA, "Saves", world, "mods", "Perfect_Parries")
+    cfg = os.path.join(d_, "weapon_parry_settings.json")
+    d = json.load(open(cfg, encoding="utf-8")) if os.path.isfile(cfg) else {}
+    added = 0
+    for pat, who in PP_WEAPONS.items():
+        want = _PP_DEFLECT if who == "deflect" else _PP_MELEE[who]
+        cur = d.setdefault(pat, {})
+        for k, v in want.items():
+            if k not in cur:
+                cur[k] = v
+                added += 1
+    if added:
+        os.makedirs(d_, exist_ok=True)
+        tmp = cfg + ".tmp"
+        open(tmp, "w", encoding="utf-8").write(json.dumps(d, indent=2))
+        os.replace(tmp, cfg)
+        print("Perfect Parries: %d per-class fields written for world %s" % (added, world))
 
 
 def sync_bettermap_worlds(world):
@@ -339,6 +385,7 @@ def main():
     for mod in RETIRED:
         retire_in_world(WORLD, mod)
     sync_bettermap_worlds(WORLD)
+    tune_perfect_parries(WORLD)
     for key in PACK_DISABLED:
         disable_third_party(WORLD, key)
     print("deployed %d mods. Start the world and watch the server log for every '[Skyy...] ready' line." % len(plan))

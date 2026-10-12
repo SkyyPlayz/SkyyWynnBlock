@@ -243,3 +243,18 @@ Where: CurseForge comment / Discord
 > free modpack? Either answer is fine - I just want to do it the way you're happy with. Thanks!
 
 ---
+
+## 15. narwhals - Perfect Parries (permission; in the pack today)
+Where: CurseForge comment or the Perfect Parries Discord
+
+> Hi! I'm Skyy from SkyWynn, a free Hytale server pack. Perfect Parries is in our pack - players install it from your CurseForge
+> page (no re-uploads), with credit + a link. It's All Rights Reserved, so I wanted to check that's OK with you. We only change
+> its own config file (weapon_parry_settings.json) to tune the parry window / counter per class weapon - no file edits.
+>
+> One more thing, so you know exactly how it would be used: SkyWynn may later run a public server with optional paid ranks
+> (cosmetic perks / extra features, sold under Hytale's server rules). Is it OK to include your mod on that server too? If you
+> would rather it only runs on free servers / in the free modpack, that is completely fine - just tell me and I'll keep it to that.
+>
+> Thanks!
+
+---
