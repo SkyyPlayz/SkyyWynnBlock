@@ -20,7 +20,7 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 - Skyy tests: TEST-CHECKLIST 55-58 + UI probe + gathering probe.
 
 ## Next, in order
-00. FIRST after the reset - chat-digest leads from the 2026-10-11 session (docs/log 2026-10-12 chat_digest line): verify tree-felling double Foraging XP, collection rank-up double Farming XP, Acrobatics XP after level-up, batch toasts per event (tree felling spam). After every play test: python tools/chat_digest.py (Jev) + log scan.
+00. FIRST after the reset - chat-digest leads from the 2026-10-11 session (docs/log 2026-10-12 chat_digest line): verify tree-felling double Foraging XP, collection rank-up double Farming XP, Acrobatics XP after level-up, batch toasts per event (tree felling spam). After every play test: python tools/chat_digest.py (Jev) + log scan. CHAT OVERFLOW plan (docs/answered/ui.md 2026-10-12): XP to the HUD skill list, a notification feed widget, chat only for what matters, per-player Chat / Feed / Off settings.
 0. After the reset (TUE 2026-10-13 15:00 UTC): first a cheap PACK MAP tool (per mod: commands, bridge keys, data folders, items, Server Setup tabs) - feeds the architecture merge; refine / merge rounds use skywynn-round simplify: 2.
 1. Finish R1-R4: Wardrobe deposit fix -> integrate Wardrobe 0.2 + Sacks 0.7.17 + Gear 0.2.23 (+ SkyyMenu tiles: Requip rename, Crafting)
    -> smoke -> deploy. Then SkyyGear 0.2.24: ONE Anvil tab = Reforge + Upgrade + Identify (appraisal-tool rule) + pickaxe -> Multitool path;
