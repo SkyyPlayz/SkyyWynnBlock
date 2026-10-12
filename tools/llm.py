@@ -9,8 +9,9 @@ KEY: never in this repo (it is public). Read from Windows Credential Manager fir
 else from the user environment variable OPENROUTER_API_KEY. The key is never printed or logged.
 
 Usage:
-    python tools/llm.py "question" [--file F ...] [--model free|<openrouter id>] [--max-chars 400000] [--out answer.md] [--no-redact] [--free-only]
+    python tools/llm.py "question" [--file F ...] [--model free|<openrouter id>] [--max-chars 400000] [--out answer.md] [--no-redact] [--free-only] [--video clip.mp4]
     python tools/llm.py --check                       (key found? one tiny request, prints the model that answered)
+Video: --video clip.mp4 sends the clip (picture + sound) to the Jev router (VIDEO_MODEL); ask for a timestamped description.
 From Python: import llm; text = llm.ask("question", files=[...])
 
 MODELS: the free pool first (FREE_MODELS in order, then openrouter/free); if it is busy or fails, the paid Jev router
@@ -31,6 +32,8 @@ DEFAULT_MODEL = "free"                     # Skyy 2026-10-11: "open router has f
 FALLBACK_MODEL = "typesafe/jev-router"      # paid (cheapest capable) when the free pool is busy / fails; --free-only stops this
 # strong free models first (1M context); openrouter/free last - its router once picked a safety classifier for a plain question
 FREE_MODELS = ["nvidia/nemotron-3-ultra-550b-a55b:free", "thinkingmachines/inkling:free", "google/gemma-4-31b-it:free", "openrouter/free"]
+VIDEO_MODEL = "typesafe/jev-router"         # accepts video + audio; Skyy's fallback if it fails: their own Grok bot
+VIDEO_MAX = 40 << 20                         # MB; short clips only (the whole file goes in one request)
 NAMES = ["SkyLordPlayz", "SkyLo", "Skyy_"]          # account / folder names that appear in logs (Skyy_ = our mod prefix, kept below)
 UUID = re.compile(r"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b", re.I)
 MAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+")
@@ -64,7 +67,7 @@ def redact(text):
     return text
 
 
-def ask(question, files=(), model=DEFAULT_MODEL, max_chars=400000, do_redact=True, system=None, free_only=False):
+def ask(question, files=(), model=DEFAULT_MODEL, max_chars=400000, do_redact=True, system=None, free_only=False, video=None):
     parts = []
     for f in files:
         low = f.replace("/", "\\").lower()
@@ -79,7 +82,19 @@ def ask(question, files=(), model=DEFAULT_MODEL, max_chars=400000, do_redact=Tru
     msgs = []
     if system:
         msgs.append({"role": "system", "content": system})
-    msgs.append({"role": "user", "content": (question + ("\n\n" + body if body else ""))})
+    text = question + ("\n\n" + body if body else "")
+    if video:  # Skyy 2026-10-12: "if JEV will do a good job then lets just use Jev" - video (with its audio) goes to the Jev router
+        import base64
+        if os.path.getsize(video) > VIDEO_MAX:
+            raise SystemExit("video too big (%d MB > %d MB): trim it to the moment that matters" % (os.path.getsize(video) >> 20, VIDEO_MAX >> 20))
+        ext = os.path.splitext(video)[1].lower().lstrip(".") or "mp4"
+        b64 = base64.b64encode(open(video, "rb").read()).decode("ascii")
+        msgs.append({"role": "user", "content": [{"type": "text", "text": text},
+                                                 {"type": "video_url", "video_url": {"url": "data:video/%s;base64,%s" % (ext, b64)}}]})
+        if model == DEFAULT_MODEL:
+            model = VIDEO_MODEL
+    else:
+        msgs.append({"role": "user", "content": text})
     tries = (FREE_MODELS + ([] if free_only else [FALLBACK_MODEL])) if model == DEFAULT_MODEL else [model]
     d, err = None, ""
     for m in tries:
@@ -112,7 +127,7 @@ def main(argv):
         ans, used, u = ask("Reply with the single word OK.")
         print("key found; model %s answered: %s (tokens %s)" % (used, ans.strip()[:40], u.get("total_tokens")))
         return 0
-    files, model, out, maxc, red, q, fo = [], DEFAULT_MODEL, None, 400000, True, [], False
+    files, model, out, maxc, red, q, fo, vid = [], DEFAULT_MODEL, None, 400000, True, [], False, None
     i = 0
     while i < len(argv):
         a = argv[i]
@@ -126,12 +141,14 @@ def main(argv):
             maxc = int(argv[i + 1]); i += 2; continue
         if a == "--no-redact":
             red = False; i += 1; continue
+        if a == "--video":
+            vid = argv[i + 1]; i += 2; continue
         if a == "--free-only":
             fo = True; i += 1; continue
         q.append(a); i += 1
     if not q:
         print(__doc__); return 1
-    ans, used, u = ask(" ".join(q), files, model, maxc, red, free_only=fo)
+    ans, used, u = ask(" ".join(q), files, model, maxc, red, free_only=fo, video=vid)
     if out:
         with open(out, "w", encoding="utf-8") as h:
             h.write(ans)
