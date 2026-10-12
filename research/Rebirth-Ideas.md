@@ -32,6 +32,9 @@ Skyy's words are in `docs/answered/skills.md` (2026-10-12 REBIRTH / NEW GAME+ an
   upgraded in that skill's branch. The **multitool unlocks after the first rebirth** (merge pickaxe + axe, no stat loss, no downside).
   Open: hoes / shovels / sickles / rods; the Multitools pack mod before rebirth 1.
 
+- **Bank at rebirth:** the bank keeps all your money (coins + bank reset); in exchange you get a permanently better interest rate,
+  scaled by the balance at reset.
+
 ## Research to do (spec)
 
 - Shell Diver's upgrade tree, and how other clicker / incremental games do rebirth (prestige layers, point formulas, cost curves,
