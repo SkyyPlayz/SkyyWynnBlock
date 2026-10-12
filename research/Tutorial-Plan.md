@@ -49,6 +49,7 @@ always-on HUD widget with the next 1-3 tasks, progress ("Chop logs 6/10") and wh
 **Hub (first visit)**
 22. Visit the Bazaar (buy or sell one thing), the Auction House, the Bank NPC, the quest board.
 23. Party / guild intro (open the party menu; invite a friend - optional).
+23b. The **fishing quest** at the hub gives your lifelong fishing pole (you start with hatchet, pickaxe, hoe and sickle).
 24. Your first **shard** (Mining / Foraging / Farming ...) - the automation minigame starts (research/Shard-Islands-Ideas.md).
 
 **Starter islands (Skyy 2026-10-12):** one fixed hand-built design for everyone, but NOTHING protected - it guides, never restricts. Each
