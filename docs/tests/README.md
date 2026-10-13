@@ -180,3 +180,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Hytale 0.7 port batch 1 (Islands, Exploration, Merchants, Mobs, Armory) (DEPLOYED 2026-10-13, backup deploy-20261013-0957) | [2026-10](2026-10.md) |
 | Hytale 0.7 port batch 2 (Menu, Bank, Profiles, WorldGen, Gear) (DEPLOYED 2026-10-13, backup deploy-20261013-1005) | [2026-10](2026-10.md) |
 | SkyySkills 0.4.31 (Hytale 0.7 Mana + spell costs, Acrobatics XP line) (DEPLOYED 2026-10-13, backup deploy-20261013-1026) | [2026-10](2026-10.md) |
+| Lag fixes batch (Coins, Bazaar, Guilds, Auctions, Accessories, Sacks, Collections, Wardrobe) (DEPLOYED 2026-10-13, backup deploy-20261013-1234) | [2026-10](2026-10.md) |
