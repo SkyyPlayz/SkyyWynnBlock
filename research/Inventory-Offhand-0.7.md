@@ -4,7 +4,7 @@ Read-only research on the 0.7.0 release (server jar, Assets.zip, client install)
 
 ## A. Buttons in the inventory
 - **Real buttons inside the vanilla inventory: NO.** The inventory screen is drawn from client-only files
-  (`Client/Data/Game/Interface/InGame/Pages/Inventory/InventoryPage.ui`, `GamePageNavigation.ui`); a server asset pack cannot reach them.
+  (the client install's InventoryPage.ui and GamePageNavigation.ui under its Interface/InGame folder); a server asset pack cannot reach them.
   The server can only pick a page (`SetPage`), not add to one. `HudComponent` only shows / hides vanilla HUD parts.
 - **Detecting Tab:** no "inventory opened" packet among 144 client->server packets. `ClientOpenWindow` (PocketCrafting) might fire on Tab
   - UNVERIFIED; probe = log PocketCraftWindow open / close while pressing Tab.
