@@ -3,8 +3,7 @@
 Skyy 2026-10-13: "During/ before we consolidate the mods together, lets audit the code structure, and make sure they are working
 together in the smoothest easiest lag free way possible" (docs/answered/project.md). Read-only audit; feeds research/Architecture-Spec.md.
 
-**Status:** part 1 + part 2 (5 of 6 groups) done 2026-10-13; the sixth group (Sacks, Collections, Accessories, Vault, Wardrobe, Pets) - six read-only
-sub-audits, appended here when they report.
+**Status:** complete 2026-10-13 (part 1 pack-wide + part 2 all six groups).
 
 ## Part 1 - pack-wide findings
 
@@ -46,7 +45,7 @@ timers. smoke_test / harnesses should flag "Task took" WARNs for com.skyy.* as a
 2. Move join-time asset checks (GearStampTask, WdRepairTask, Armory pack / Mana checks, Merchants cleanup) out of the join tick.
 3. On PlayerReadyEvent, skip full re-init unless the world actually changed.
 
-## Part 2 - per-mod findings (5 of 6 sub-audits, 2026-10-13; Sacks / Collections / Accessories / Vault / Wardrobe / Pets still to do)
+## Part 2 - per-mod findings (all six groups, 2026-10-13)
 
 Severity 1-5 (5 = worst). "World thread" = blocks the game for every player in that world.
 
@@ -72,6 +71,11 @@ Severity 1-5 (5 = worst). "World thread" = blocks the game for every player in t
 | 17 | Menu | bridge keySet scans | Settings / Server Setup pages scan the WHOLE bridge (thousands of keys) per page | mods publish to a small index | M | 2 |
 | 18 | Exploration | ExpTick + LgCore.second | ~6 bridge calls + 8 string concats per player per second; one global ExpStore monitor; site loops repeated per player | event-driven publishing; per-world site sweep | M | 2 |
 | 19 | Armory | TravTick | grapple / soul per-tick work for idle players | gate on "Armory item in hand" | M | 2 |
+| 3b | Accessories | AccLanternHide.tick | per viewer, EVERY tick, walks the whole visible-entity set (150k-450k archetype lookups/s at 50 players) | keep a per-world set of lantern helper refs and remove only those | M | 4 |
+| 9b | Sacks | SweepTask (2 s) + CraftTick (300 ms) + ProcTick (1 s) | world hops for EVERY player even idle (~240 hops/s), ~6 full inventory scans per sweep | event / dirty-flag driven; hop only players with an open window or queue | M-L | 3 |
+| 9c | Sacks | SackPool.saveSoon / saveNow | a full pool file fsync per call (up to ~16/s while crafting) on the shared scheduler | debounce 1 s, own writer thread, save only dirty keys | S | 3 |
+| 9d | Wardrobe | WdRepairTask + WdTx + WdJournal | cold disk load (the logged 36 ms) and 3 fsyncs per Equip on the world thread; one global journal lock across worlds | pre-warm off-thread; journal sync then async data write; lock per profile | S-M | 3 |
+| 9e | Sacks + Accessories | KnowSync / AccKnow | re-split the recipes CSV into a new set every 1-2 s per player | cache by coll:epoch | S | 3 |
 | 20 | SkyyUiProbe | packet tap | adapter on EVERY outbound packet of every player | keep probes out of the production pack | S | 2 |
 
 ### Pack-wide patterns (confirmed by all sub-audits)
@@ -81,7 +85,11 @@ Severity 1-5 (5 = worst). "World thread" = blocks the game for every player in t
 - **Polling that should be events:** Coins death detection (1 s per player), Menu GivenTick, Guilds XP poll, Classes / Exploration profile checks.
 - Data safety is mostly good (tmp + move, re-queued failed saves); crash-loss windows 0.5-10 s. Trees: a save can be lost if the player quits mid-save (evict only after the save succeeds).
 
+### Data-safety fixes found (do with the quick wins)
+- **Collections writes counts and the reward-paid markers WITHOUT fsync** - after a power loss a stale "paid" marker could pay a reward twice. Add fsync + atomic move like the other mods. (sev 3)
+- **Sacks pool vs inventory crash window** - a crash between a refill / sweep and the next 10 s pool save can dupe or lose items; saveSoon after each refill / sweep batch (debounced 1 s). (sev 3)
+
 ### Plan
-1. **Quick-wins round (before the merge, after the 0.7 port):** lock-free bridge in the `tools/skyycfg.py` snippet and every hand-written copy; Coins write-behind; SkillTop index; no sleep-retries on world threads (one SkyyIO writer); Hud world-time + own executor; Gear stats snapshot; Bazaar / Guilds / Bank lock fixes; UiProbe out of the pack once Skyy's kit test is done.
+1. **Quick-wins round (before the merge, after the 0.7 port):** lock-free bridge in the `tools/skyycfg.py` snippet and every hand-written copy; Coins write-behind; SkillTop index; no sleep-retries on world threads (one SkyyIO writer); Hud world-time + own executor; Gear stats snapshot; Accessories lantern-hide; Sacks / Wardrobe hops + saves; Collections fsync + Sacks crash window; Bazaar / Guilds / Bank lock fixes; UiProbe out of the pack once Skyy's kit test is done.
 2. **Merge phase 1 = SkyyCore:** typed Bridge, one Ticker + per-world join dispatcher, SkyyIO writer + save service, config kit, UI page base, coin / profile helpers - every merged mod drops its own copies.
 3. **Regression gate:** smoke_test flags "Task took" WARNs from com.skyy.* classes.

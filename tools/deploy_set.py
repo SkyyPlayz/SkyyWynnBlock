@@ -17,7 +17,7 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.18"), ("SkyySacks", "0.7.17"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.9"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.5"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.23"), ("SkyySkills", "0.4.30"),
+    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.6"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.23"), ("SkyySkills", "0.4.30"),
     ("SkyyAccessories", "0.5.11"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.17"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.9"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
