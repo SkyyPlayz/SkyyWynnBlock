@@ -50,7 +50,7 @@ WAVE 4 - big builds
 12. Island test world: structure mods, BetterBiomes, ReChunk, Starblight (overrides 27 vanilla armor ids); perfect dodge into our roll;
     Lost Loot reveal (luggage + airdrops) + identify animation; economy audit; sound pass; one-look UI sweep; raw-id scan; admin page;
     load test; ranks; release packaging. Specs waiting: Upgrade ladders + Dragon sets, Special tools, Pet eggs v2, Zone regen, Avatars.
-SKYY: UI probe (/skyprobe kit), author asks #12-15 (research/Author-Requests.md), install FL's Exotic Weaponry (study only), video tests
+SKYY: review research/Gathering-Shards-Spec.md section 14 (14 questions, defaults given) before phase 1 (Enchanted materials); SKYY: UI probe (/skyprobe kit), author asks #12-15 (research/Author-Requests.md), install FL's Exotic Weaponry (study only), video tests
 via Grok from WED (playtest/), test 59 (parries) + 60 (0.7 boot).
 
 ## Never forget
