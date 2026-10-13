@@ -87,14 +87,9 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
       from + delivers into the Requip spaces (and bags for materials), SET CARDS (size, figure layout of 4 piece icons, set stats + bonus
       text, click -> piece page with craft buttons), class filter (SkyyClasses weapon rules + armor type per class), how vanilla benches
       stay usable, page sizes at 1080p, mockup sketch (ASCII or PNG). Questions with defaults.
-- [ ] **Upgrade ladders + Dragon sets spec** (Skyy 2026-10-10, docs/answered/gear.md /upgrade lines): new `research/cloud/Upgrade-Ladders-Spec.md`:
-      every ladder the /upgrade page should know (Mining metal armor, Foraging tree sets, Farming crop sets, tools + multitools, metal
-      weapons, Soul Cages) with per-step costs (cheaper than crafting fresh? default: the next tier recipe minus the old item's share),
-      the Mythic DRAGON set (first dragon boss drop; one elemental dragon mini-boss per element in the next zone drops the upgrade item),
-      the CONVERT step (Cloth / Light / Heavy variants keep rolls; which Armory sets to recolour - mark The Armory facts UNVERIFIED), and
-      what an upgrade keeps (rarity, lines, reforge) vs re-rolls (level). Questions with defaults.
 
 ## Done (delete after logging - see the rules above)
 - [x] CurseForge mod survey (0.7) - 2026-10-13 - `research/cloud/Mod-Survey-0.7.md`
 - [x] Rebirth research - 2026-10-13 - `research/cloud/Rebirth-Research.md`
 - [x] Icons: Sigils, Hub Shard + portals, Nexus - 2026-10-13 - `research/cloud/icons-1013`
+- [x] Upgrade ladders + Dragon sets spec - 2026-10-13 - `research/cloud/Upgrade-Ladders-Spec.md`
