@@ -2,6 +2,11 @@
 
 Contract for other mods and for SkyyMenu 0.3: tools/CONFIG-CONTRACT.md. Test harness: python tools/skyycfg_test.py (bare JVM, spec 8.2).
 
+LOCK-FREE BRIDGE (2026-10-13, research/Code-Structure-Audit.md pack-wide pattern 1; contract, files and formats unchanged): CfgRows.bridge()
+caches the skyy.bridge map in the static volatile CfgRows.BRIDGE after its first call, so it no longer takes synchronized(System.class)
+on every call (the first call creates the map exactly as before, under that monitor, so old-snippet mods stay safe). Every mod picks it
+up at its next build (CfgRows gains the BRIDGE field and bridge0()).
+
 KIT 1.1 (2026-09-25, the round-4 builders' gaps; bridge contract "1", file, log, history and export formats unchanged, so the 18 jars
 built with 1.0 keep working next to jars built with 1.1; each adopter picks 1.1 up at its own next version):
   1. CfgFile.handApply: a hand-edited TABLE line is checked like an in-game change (entry key, column count / types / bounds, the row's
@@ -332,15 +337,29 @@ def _items_from_assets():
 
 
 # ================================================================================================================ Java: CfgRows
-ROWS_JAVA = [
+# Lock-free bridge (2026-10-13, research/Code-Structure-Audit.md finding / pack-wide pattern 1): the shared map is cached in the static
+# volatile CfgRows.BRIDGE after the first call, so a bridge() call never takes synchronized(System.class) again. The first call (and
+# only while BRIDGE is still null) creates the map exactly like the old snippet - get, create if absent, put - under the same
+# System.class monitor, so a mod still on the old snippet can never create a second map at the same moment. Same map identity, same
+# creation; the field is declared in emit() (BRIDGE_FIELD). bridge0 comes first (javassist: methods before callers; one call per
+# synchronized block).
+BRIDGE_FIELD = "public static volatile java.util.Map BRIDGE;"
+BRIDGE_JAVA = [
+r"""
+public static java.util.Map bridge0() {
+  Object o = System.getProperties().get("skyy.bridge");
+  if (o == null) { o = new java.util.concurrent.ConcurrentHashMap(); System.getProperties().put("skyy.bridge", o); }
+  return (java.util.Map) o;
+}""",
 r"""
 public static java.util.Map bridge() {
-  synchronized (java.lang.System.class) {
-    Object o = System.getProperties().get("skyy.bridge");
-    if (o == null) { o = new java.util.concurrent.ConcurrentHashMap(); System.getProperties().put("skyy.bridge", o); }
-    return (java.util.Map) o;
-  }
-}""",
+  java.util.Map m = BRIDGE;
+  if (m != null) return m;
+  synchronized (java.lang.System.class) { m = bridge0(); }
+  BRIDGE = m;
+  return m;
+}"""]
+ROWS_JAVA = BRIDGE_JAVA + [
 r"""
 public static void say(boolean warn, String msg) {
   String m = "[" + MOD + "] " + msg;
@@ -3358,6 +3377,7 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
     F("CfgRows", "public static java.nio.file.Path MODS;")
     F("CfgRows", "public static java.nio.file.Path HOME;")
     F("CfgRows", "public static volatile long WARNS;")
+    F("CfgRows", BRIDGE_FIELD)
     F("CfgRows", "public static final java.lang.reflect.Field[] FLD = new java.lang.reflect.Field[%d];" % n)
     F("CfgRows", "public static final java.util.Map MCACHE = new java.util.concurrent.ConcurrentHashMap();")
     F("CfgRows", "public static final Class[] SIG0 = new Class[0];")

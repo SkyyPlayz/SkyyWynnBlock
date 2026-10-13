@@ -16,9 +16,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
-    ("SkyyHud", "0.3.18"), ("SkyySacks", "0.7.17"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.9"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.8"), ("SkyyIslands", "0.5.6"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.24"), ("SkyySkills", "0.4.31"),
-    ("SkyyAccessories", "0.5.11"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.18"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.10"),
+    ("SkyyHud", "0.3.18"), ("SkyySacks", "0.7.18"), ("SkyyCoins", "0.1.6"), ("SkyyCollections", "0.2.10"), ("SkyyParty", "0.1.7"),
+    ("SkyyBank", "0.1.8"), ("SkyyIslands", "0.5.6"), ("SkyyBazaar", "0.1.8"), ("SkyyGear", "0.2.24"), ("SkyySkills", "0.4.31"),
+    ("SkyyAccessories", "0.5.12"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.18"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.10"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -26,7 +26,7 @@ SET = [
     ("SkyyExploration", "0.2.6"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
-    ("SkyyGuilds", "0.1.6"),
+    ("SkyyGuilds", "0.1.7"),
     # beta backlog round (Skyy 2026-09-24 20:10 list, cross-checked together): SkyySkills 0.4.2 + SkyyTrees 0.2.1 + SkyyCollections
     # 0.2.1 deploy TOGETHER (felled-log crediting: Skills -> coll:fn:add "skills:felled" + skill:on:felled; Double Jump: Trees posts
     # skill:bonus "doublejump.acrobatics", Skills publishes skill:dj:key); SkyyTrees 0.2.1 rewrites Acrobatics.RDodge as RDouble on
@@ -34,7 +34,7 @@ SET = [
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
     ("SkyyVault", "0.1.5"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
-    ("SkyyAuctions", "0.1.3"),
+    ("SkyyAuctions", "0.1.4"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
@@ -77,7 +77,7 @@ SET = [
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
     ("SkyyPets", "0.2.3"),
-    ("SkyyWardrobe", "0.2"),
+    ("SkyyWardrobe", "0.2.1"),
     ("SkyyUiProbe", "0.5"), ("SkyyUiProbeB", "0.5"),  # 2026-10-11 kit / tab / quality-tooltip probes (K1 H1 T1) - ONE Skyy test session, then RETIRED again  # 2026-10-10 Skyy: "build the wardrobe/ loadout system too" - loadouts (armor + hotbar + pets + abilities), per profile
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
