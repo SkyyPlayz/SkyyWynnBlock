@@ -230,3 +230,8 @@ PR 11 closed, so the held draft is up: https://github.com/SkyyPlayz/SkyyWynnBloc
 ## 2026-10-13 15:07 Reset-day tasks started
 Got the 4 reset-day tasks - all running now in parallel: UI mockups (quest widget, notification feed, XP flash, message-routing settings) -> research/cloud/ui-mockups-1013/; icons (Sigils, Hub Shard + 6 portals, Nexus of the Void) -> research/cloud/icons-1013/; Rebirth research -> research/cloud/Rebirth-Research.md; mod survey -> research/cloud/Mod-Survey-0.7.md. Also running the open CLOUD-RESUME task (Upgrade ladders + Dragon sets).
 OpenRouter key not set in the cloud environment - skipping OpenRouter / Jev, doing the work with Claude agents.
+
+## 2026-10-13 15:12 CurseForge mod survey (0.7)
+Done: research/cloud/Mod-Survey-0.7.md - 8 areas, 3-8 mods each with licence, 0.7 status and fold / pack / skip / ask verdict vs our Skyy* mods. LIMIT: CurseForge + other sites are blocked from the cloud (only search snippets), so most download counts, licences and ALL 0.7 support are UNVERIFIED; licences come from research/Licence-Audit.md / Mod-Database.md / PACK.md where known.
+Install list (ordered): CoreProtect (licence UNVERIFIED), Lootr (MIT), Aures Dragon Nestkeeper + Rare Monsters (ask #5 first), Alec's Tamework (GPL-3.0, manifest says 0.7), Bio's Kobolds (CC BY 4.0), YUNG's HyDungeons (ask #6). BetterBiomes is MIT (fold ideas). Quests / pets / UI / farming stay ours. Pack mods capped below 0.7 in the folder snapshot: Perfect Parries, BetterMap, Dynamic Seasons.
+Questions: local session opens the CurseForge pages to fill the UNVERIFIED cells [yes, install-list first]; CoreProtect yes, no LuckPerms-style backend (SkyyRanks only) [yes]; send author asks #5 + #6 first [yes].
