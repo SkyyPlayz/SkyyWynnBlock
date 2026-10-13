@@ -19,33 +19,35 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   unknown to the pool until the next deposit / Equip (log 2026-10-11) - journal op 12 in a later Wardrobe round.
 - Skyy tests: TEST-CHECKLIST 55-58 + UI probe + gathering probe.
 
-## Next, in order
-000. HYTALE 0.7.0 IS OUT (2026-10-12): research/Hytale-0.7-Port.md - crosscheck NOT READY, 39 missing engine methods in 11 mods (Exploration 11, Islands 9, Merchants 5, Menu 4, GatherProbe 3, Bank 2, Armory / Gear / Mobs / Profiles / WorldGen 1). Port round FIRST (probe the ChunkGrid block API, then one round per mod group); smoke test once the game is closed; 0.7 check of BetterMap / Perfect Parries / Dynamic Seasons.
-00. FIRST after the reset - chat-digest leads from the 2026-10-11 session (docs/log 2026-10-12 chat_digest line): verify tree-felling double Foraging XP, collection rank-up double Farming XP, Acrobatics XP after level-up, batch toasts per event (tree felling spam). After every play test: python tools/chat_digest.py (Jev) + log scan. CHAT OVERFLOW plan (docs/answered/ui.md 2026-10-12): XP to the HUD skill list, a notification feed widget, chat only for what matters, per-player Chat / Feed / Off settings. Collection rank-up line lists unlocked recipes; clickable = probe (engine chat links are URL-only), fallback /recipe <name> + NEW marks.
-0. After the reset (TUE 2026-10-13 15:00 UTC): first a cheap PACK MAP tool (per mod: commands, bridge keys, data folders, items, Server Setup tabs) - feeds the architecture merge; refine / merge rounds use skywynn-round simplify: 2.
-1. Finish R1-R4: Wardrobe deposit fix -> integrate Wardrobe 0.2 + Sacks 0.7.17 + Gear 0.2.23 (+ SkyyMenu tiles: Requip rename, Crafting)
-   -> smoke -> deploy. Then SkyyGear 0.2.24: ONE Anvil tab = Reforge + Upgrade + Identify (appraisal-tool rule) + pickaxe -> Multitool path;
-   Crafting hub naming (Smithing = a tab of Crafting, class filter on every crafting tab).
-2. Bags v2 = SkyyVoid (research/Bags-v2-Spec.md): SkyySacks 0.8.0 + Bazaar 0.1.8 ultracode (after 0.7.17 pins); display name SkyyVoid.
-3. Skyy runs the UI probe (uiprobe05) -> then the Sky Window kit (art/ui-kit-sky/) into tools/skyyui.py + tooltip frames (art/tooltip-sky/)
-   into SkyyGear qualities.
-4. HYTALE 0.7 (2026-10-12): FIRST check how 0.7 changes menus + the inventory screen (Skyy: hub buttons INTO the inventory, menu item
-   removed) + probe inventory injection; fix 0.7 breakages; then the hubs (research/Hubs-Spec.md + docs/answered/ui.md 2026-10-10 merges:
-   Anvil, Stats+Skills, Trees+Abilities, Travel, Bank+Vault, Collections+Recipes, Market; Guild separate; party cards + social buttons).
-5. ARCHITECTURE (research/Architecture-Spec.md, approved): SkyyCore + merges into 10 jars, stable plugin names, refine pass in every phase;
-   fold licence-permitting pack mods in (research/Licence-Audit.md; GPL = share-alike question for Skyy).
-6. MORNING QUESTIONS for Skyy (research/Licence-Audit.md): repo LICENSE (suggest MIT), GPL share-alike modules (keep GPL mods separate [default]),
-   send author asks (Dynamic Seasons + More Crossbow Tiers first - in the pack with no grant); wand fall rule is done; PACK.md fixes listed in the audit.
-7. DONE 2026-10-11: SkyyArmory 0.1.21 deployed (Soul Orb damage, vanilla essences, faster tether, lines, Wings of Fate; research/classes/Priest.md).
-9. OPENROUTER (research/OpenRouter-Jev-Plan.md): lean rounds - llm.py --json + jev helper, log-digest tool, pack-map summaries (with item 0), free_lens in skywynn-round. llm.py is already free-first; gh works via a Terminal-panel tab.
-10. NEW 2026-10-11 (docs/answered skills / gear / world): Perfect Dodges idea INTO our roll (perfect-dodge window + counter, Acrobatics perk); fold Reforged Weapons (MIT) into SkyyArmory with credit; structure-mod survey (free models) + island test world. Perfect Parries is in the pack (tune_perfect_parries). LOST LOOT: SkyyExploration Unclaimed Luggage + airdrops get a crate-style reveal + new name; Identify gets a reveal animation (docs/answered/economy.md).
-11. GATHERING PROGRESSION SPEC (docs/answered/gear.md 2026-10-11): tier gate (own + next slow), tool level = skill capped by tier, tool XP -> Upgrade Points (speed / fortune / vein mine / perks), crop + wood tier table, hoe / can / fertilizer area by tier; revises research/Tool-Levels-Spec.md. Spec round (Fable synth) after the reset, then SkyyGear + SkyySkills + SkyyTrees builds.
-12. SHARD ISLANDS + FARMING TOTEMS + Farming / Ranching / Orchard split (research/Shard-Islands-Ideas.md): spec with item 11 (gathering progression) - revises research/cloud/Pocket-Shards-Spec.md; engine check: per-player instanced islands.
-13. PACK OVERLAP AUDIT (PROJECT-RULES 2 "No duplicates"): list what every pack mod + candidate adds (mounts, weapons, totems, biomes, structures, commands, keys), pick the best of each, switch off the rest; cheap (free OpenRouter models + a script over the jars).
-14. PACK VISION (docs/answered/project.md 2026-10-11 "its own game"): mod database = tools/mod_db.py + research/Mod-Database*.md (299 installed); next: CurseForge survey per area (licences, best-of-each, install list for Skyy), then fold / copy / build plan to cut mod count; UI redesign pass (settings + Server Setup first, pro layout, magical flowing look, UI animation check). OpenRouter: Jev + free models only ($20/month cap).
-15. TUTORIAL (research/Tutorial-Plan.md) in the SkyyQuests spec; HOLES list from 2026-10-12 chat: 0.7 check of BetterMap / Perfect Parries / Dynamic Seasons (capped <0.7) FIRST, a pre-deploy version-range check, reward-path double audit, economy audit (bank interest payout check) + SkyyBank 0.1.8 lean: catchUpPeriods default 24 -> 1 (Skyy 2026-10-12, migration only rewrites an untouched 24), endgame loop, sound pass, one-look UI sweep, raw-id scan, unused-mod cleanup, admin page, load test, ranks, release packaging.
-16. REBIRTH (docs/answered/skills.md 2026-10-12): spec - resets skill / class levels + coins / bank, keeps island / shards / gear / collection knowledge, raises caps per rebirth, stat boost + points shop + cosmetics + new content; research/Rebirth-Ideas.md (rebirth at max CLASS level, per-skill points, XP past max counts, radiating Nexus tree, rows open at ~8 levels); research Shell Diver + clicker prestige systems first. Endgame loop answer.
-8. Specs waiting: Requip (done), Upgrade ladders + Dragon sets, Special tools, Pet eggs v2, Zone regen, Avatars (cloud CLOUD-RESUME.md).
+## Next, in order (re-planned 2026-10-12 with Skyy; weekly resets TUE 15:00 UTC; ~4-5 workflows at once)
+WAVE 1 - make 0.7 work (day 1)
+1. 0.7 PORT (research/Hytale-0.7-Port.md): probe the ChunkGrid block API, then port Islands + Exploration first, then Merchants, Menu,
+   Bank, Armory, Gear (crit CombatTextUpdate), Mobs, Profiles, WorldGen; retire SkyyGatherProbe (+B) and other spent probes instead of
+   porting. crosscheck 0 fails + smoke PASS + deploy. Also: tools/skyyui.py SUI.verify 0.7 fix; how 0.7 changed menus / inventory
+   (Skyy: hub buttons INTO the inventory, menu item removed) + inventory-injection probe.
+2. Same day, small lean rounds: chat-digest leads (tree-felling double Foraging XP, rank-up double Farming XP, Acrobatics XP after level-up,
+   batch toasts); SkyyBank 0.1.8 catchUpPeriods default 1; a pre-deploy game-version-range check in smoke / deploy (no agent).
+WAVE 2 - cheap tooling + surveys (free OpenRouter / Jev where possible)
+3. Pack map tool; llm.py --json + jev helper; log-digest; free_lens in skywynn-round (research/OpenRouter-Jev-Plan.md).
+4. Pack overlap audit + CurseForge survey per area -> best-of-each + install list for Skyy (research/Mod-Database*.md, PROJECT-RULES 2).
+5. SkyyGear 0.2.24: ONE Anvil tab (Reforge + Upgrade + Identify, appraisal rule) + Crafting hub naming + class filter on crafting tabs.
+6. UI: Skyy runs the UI probe -> Sky Window kit into skyyui.py + tooltip frames; hubs (research/Hubs-Spec.md); chat overflow (XP to the HUD
+   skill list, notification feed, Chat / Feed / Off settings); QUEST WIDGET (essential); collection rank-up recipe line (+ click probe).
+WAVE 3 - specs (spec rounds, Fable synth; check existing mods first)
+7. GATHERING spec: tier gate, LIFELONG tools (spawn with hatchet / pickaxe / hoe / sickle; pole via hub quest; shovel = plain craft), rarity
+   upgrades, tool XP -> Upgrade Points, enchanted upgrade costs, Fishing skill + tree, + SHARDS (6 shards, minion-style totems, shard menu,
+   fixed-slot layout) + Farming / Ranching / Orchard split + farming totems (research/Shard-Islands-Ideas.md, docs/answered gear / skills).
+8. REBIRTH spec (research/Rebirth-Ideas.md; research Shell Diver + clicker prestige first).
+9. SKYYQUESTS + TUTORIAL spec (research/Tutorial-Plan.md; starter islands; study QuestLines, read only).
+WAVE 4 - big builds
+10. Bags v2 = SkyyVoid (research/Bags-v2-Spec.md): SkyySacks 0.8.0 + Bazaar 0.1.8.
+11. ARCHITECTURE merge into ~10 jars (research/Architecture-Spec.md) with simplify: 2; fold MIT mods (Multitools - lock to rebirth 1,
+    Reforged Weapons, MoreTotems Water Totem, BetterBiomes, More Mounts) with credit.
+12. Island test world: structure mods, BetterBiomes, ReChunk, Starblight (overrides 27 vanilla armor ids); perfect dodge into our roll;
+    Lost Loot reveal (luggage + airdrops) + identify animation; economy audit; sound pass; one-look UI sweep; raw-id scan; admin page;
+    load test; ranks; release packaging. Specs waiting: Upgrade ladders + Dragon sets, Special tools, Pet eggs v2, Zone regen, Avatars.
+SKYY: UI probe (/skyprobe kit), author asks #12-15 (research/Author-Requests.md), install FL's Exotic Weaponry (study only), video tests
+via Grok from WED (playtest/), test 59 (parries) + 60 (0.7 boot).
 
 ## Never forget
 - Commit ab75b6c: Skyy hand-edited 4 GENERATED scripts (`SkyySkills\build_skyyskills_0.4.5.py`, `SkyyTrees\build_skyytrees_0.2.3.py`,
