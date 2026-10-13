@@ -93,3 +93,4 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
 - [x] Rebirth research - 2026-10-13 - `research/cloud/Rebirth-Research.md`
 - [x] Icons: Sigils, Hub Shard + portals, Nexus - 2026-10-13 - `research/cloud/icons-1013`
 - [x] Upgrade ladders + Dragon sets spec - 2026-10-13 - `research/cloud/Upgrade-Ladders-Spec.md`
+- [x] UI mockups (Sky kit) - 2026-10-13 - `research/cloud/ui-mockups-1013`
