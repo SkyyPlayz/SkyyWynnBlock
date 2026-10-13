@@ -129,6 +129,8 @@ Never leave finished work only in chat or memory.
 - **OpenRouter side jobs** (local + cloud): `tools/llm.py` for bulk reading / sorting / drafts; only Jev (`typesafe/jev-router`) and
   free models ($20 / month cap - ask Skyy before any other paid model); redaction on; the key never in the repo / chat / logs; output
   is a lead Claude checks (research/OpenRouter-Jev-Plan.md, CLOUD-RESUME.md).
+  Skyy 2026-10-13: "use JEV wherever you can to reduce your own token cost." -> default to Jev / free models for reading logs, long files,
+  agent reports and surveys (ask llm.py a question about the file instead of reading it whole); Claude reads only the short answer.
 - **Sessions:** Skyy starts a fresh main session once a day - never clear or restart the session yourself; just keep RESUME.md + the
   log hand-off ready. Agents start fresh: name the files, don't paste history.
 - **Usage pacing:** about 4-5 heavy workflows at once on the big Max plan; check usage (ccd get_usage) before each round; near the weekly
