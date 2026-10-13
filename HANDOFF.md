@@ -28,7 +28,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyVault | 0.1.5 | vault pages |
 | SkyyAuctions | 0.1.4 | auction house (buy-it-now); owed-count index |
 | SkyyRanks | 0.1.1 | ranks + permissions made in game |
-| SkyyAbilityProbe | - | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
+| SkyyAbilityProbe | 0.1 | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
 | SkyyUiProbe | 0.5 | dev / test probes, op only (retire later) |
 | SkyyUiProbeB | 0.5 | second probe jar for the UI probe (cross-jar textures / tabs), op only (retire with SkyyUiProbe) |
 | SkyyFishing | 0.1.2 | our fishing, stage 1: Fishing Bench (Parts / Rig / Fillet and Sell), rods + reels T0-T2, parts I-II, cast / bite / fight HUD, Zone 1 fish (HyFishing stays until stage 2) |
