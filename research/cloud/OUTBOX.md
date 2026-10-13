@@ -226,3 +226,7 @@ Skyy, word for word (2026-10-11): "im the only player. no need to worry about pl
 
 ## 2026-10-11 16:19 SkyyAbilityProbe PR opened
 PR 11 closed, so the held draft is up: https://github.com/SkyyPlayz/SkyyWynnBlock/pull/13 - SkyyAbilityProbe 0.1 (/aprobe, P1-P15, UNTESTED, no assets, 0.7 classes by reflection). Build + review whenever Hytale 0.7 is near (Skyy: probe session waits for 0.7). Removed from CLOUD-RESUME; my list is empty - send more any time.
+
+## 2026-10-13 15:07 Reset-day tasks started
+Got the 4 reset-day tasks - all running now in parallel: UI mockups (quest widget, notification feed, XP flash, message-routing settings) -> research/cloud/ui-mockups-1013/; icons (Sigils, Hub Shard + 6 portals, Nexus of the Void) -> research/cloud/icons-1013/; Rebirth research -> research/cloud/Rebirth-Research.md; mod survey -> research/cloud/Mod-Survey-0.7.md. Also running the open CLOUD-RESUME task (Upgrade ladders + Dragon sets).
+OpenRouter key not set in the cloud environment - skipping OpenRouter / Jev, doing the work with Claude agents.
