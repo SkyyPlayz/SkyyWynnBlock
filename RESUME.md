@@ -18,6 +18,7 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   Anvil tab (Gear 0.2.26), notification feed + XP flash (Hud 0.3.20), probes /aprobe + /skyprobe hubpanel. TEST-CHECKLIST 60-69.
 - Running: void080 (SkyySacks 0.8.0 SkyyVoid + Bazaar 0.1.9), quests01 (SkyyQuests 0.1 + Hud 0.3.21 quest widget).
 - Specs waiting on Skyy: Gathering-Shards (sec 14), Ability-Framework-Mage (sec 11), SkyyQuests-Tutorial (sec 12); cloud drawing /rebirth + shard menu.
+- QUEUED (after prof012 frees SkyySacks): AUTO-PICKUP (docs/answered/bags.md 2026-10-13): blocks + mob drops straight to Void then inventory, ground only if full; killer + top damager both get loot (top damager more); feed cards instead of vanilla pickup popups.
 - Next builds: senders switch to the feed (msgroute), Enchanted materials (gathering phase 1, after void080), Mage real keys (after Skyy's /aprobe),
   Sky Window kit into skyyui.py (after Skyy's /skyprobe kit), architecture merge (SkyyCore) with simplify 2.
 
