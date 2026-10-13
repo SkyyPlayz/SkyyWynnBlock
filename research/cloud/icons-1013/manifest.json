@@ -1,0 +1,149 @@
+{
+ "files": {
+  "icons/Skyy_Hub_Shard.png": {
+   "bytes": 1717,
+   "sha256": "f36f12e6530e7d16052696b04b29f6c9f72ed160e06d54658ec998df15016b8c",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Nexus_Of_The_Void.png": {
+   "bytes": 5099,
+   "sha256": "fc37fae79533609729b04dc09e238512bfd7945c8e4000800713091be5c17159",
+   "size": [
+    128,
+    128
+   ]
+  },
+  "icons/Skyy_Nexus_Of_The_Void_64.png": {
+   "bytes": 1951,
+   "sha256": "575d798893421f27ee989610d4cceac489d51cb363ac9f61bb575b2855bda098",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Shard_Portal_Combat.png": {
+   "bytes": 2326,
+   "sha256": "09195da4fdc6f4faabc04668c63710d3b13816360853d35cbbd54779b71e9551",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Shard_Portal_Farming.png": {
+   "bytes": 2064,
+   "sha256": "bbb936fb64f01b16f606c86ad5c536d0105df118396e45fd1420ef5c5aa3e6c0",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Shard_Portal_Foraging.png": {
+   "bytes": 2060,
+   "sha256": "bbe64ad41913436fb9515edcd19e0647e645d27cfffd231e8bc2a3b2bf423bf9",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Shard_Portal_Mining.png": {
+   "bytes": 2115,
+   "sha256": "a76652a852767f0a887f520c17677e75d34a2b4fa79711ad3a2d1146517c2e4c",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Shard_Portal_Orchard.png": {
+   "bytes": 2038,
+   "sha256": "7f0d7af3f8293b3395f26edc4a6e77cbd9657fd3fbbfe0363c354aa89badbc5f",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Shard_Portal_Ranching.png": {
+   "bytes": 2196,
+   "sha256": "373d3d83e76dc268c614473ad13e69193b6e8294c28dd7b37e38f00d03a7c0ea",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Sigil_Fabled.png": {
+   "bytes": 1936,
+   "sha256": "f8cd6351abcd39753ea67b8e7b35c1f1c37c0c85674278a6abd493ce7cf0ae4d",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Sigil_Legendary.png": {
+   "bytes": 1444,
+   "sha256": "52be83e6f1596721e81e3aef3c31fd1e18c69eaece7c3e302b5b2bfb68806497",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Sigil_Mythic.png": {
+   "bytes": 2199,
+   "sha256": "d0c8523208835fe0ce77ef301117d70652a5f106e16aa6f2dac6aa659a208c19",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Sigil_Normal.png": {
+   "bytes": 1172,
+   "sha256": "be8e35f4ee098ed980d231f94e5dbd1528e49a9ac4e939ba96de3571e6475648",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Sigil_Rare.png": {
+   "bytes": 1330,
+   "sha256": "8514a9c7135825539bac200a4e58b30ca040d00497137bed359536d6e7b42472",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "icons/Skyy_Sigil_Unique.png": {
+   "bytes": 1162,
+   "sha256": "5badecdb215ad5427c07b00eba27ad0cae6276d829d45417be7e743d848899a7",
+   "size": [
+    64,
+    64
+   ]
+  },
+  "sheet-nexus.png": {
+   "bytes": 82285,
+   "sha256": "b3284255e104d06f29a3f0b8ebc8e8aecbe39ad513d6109436c801cdba1fc3ba",
+   "size": [
+    1500,
+    900
+   ]
+  },
+  "sheet-shards.png": {
+   "bytes": 137827,
+   "sha256": "88b31a55b19f01f5e96a2208768e8e48e45bfa3f9487bd5b5f1c68d770e9dc13",
+   "size": [
+    1560,
+    1000
+   ]
+  },
+  "sheet-sigils.png": {
+   "bytes": 116855,
+   "sha256": "b998af68bd6d81a30e133c7c3012a55976e4b9cb0cdb3de596a65980c94782a3",
+   "size": [
+    1180,
+    1080
+   ]
+  }
+ },
+ "note": "drafts for Skyy's review; ids PROPOSED, UNVERIFIED against Assets.zip / pack mods"
+}

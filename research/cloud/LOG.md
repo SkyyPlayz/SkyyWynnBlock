@@ -162,3 +162,4 @@ section 6 when it reviews the results.
 - 2026-10-11: Requip (Wardrobe v2) spec -> research/cloud/Requip-Spec.md (one pool per profile, loadouts = pointers, stamp + 8-step write-ahead equip, Pocket refill via SkyySacks 0.7.17, migration, caps)
 - 2026-10-13: CurseForge mod survey (0.7) -> research/cloud/Mod-Survey-0.7.md (8 areas, verdicts vs our mods, install list; web blocked so licences / 0.7 mostly UNVERIFIED)
 - 2026-10-13: Rebirth research -> research/cloud/Rebirth-Research.md (6 games compared, recommended Nexus rebirth design (resets, sqrt points, 8-arm tree, button UX); wikis blocked so some rows from memory)
+- 2026-10-13: Icons: Sigils, Hub Shard + portals, Nexus -> research/cloud/icons-1013 (15 icons + 3 sheets + generator; sigils on the real rarity ladder; ids UNVERIFIED)
