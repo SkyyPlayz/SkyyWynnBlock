@@ -84,9 +84,8 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 builds need these specs. Specs only; one commit + OUTBOX block each. -->
 
 <!-- 2026-10-13 local session review: today's art + mockups APPROVED; these follow-ups. One commit + OUTBOX block each. -->
-- [ ] **Shard menu mockup**: `research/cloud/shard-menu-1013/` - tabs Collect / Upgrades / Islands / Totems
-      (research/Shard-Islands-Ideas.md).
 
 ## Done (delete after logging - see the rules above)
 - [x] Nexus soul flame + 5 sigils (icons v2) - 2026-10-13 - `research/cloud/icons-1013`
 - [x] /rebirth page mockup - 2026-10-13 - `research/cloud/rebirth-page-1013`
+- [x] Shard menu mockup - 2026-10-13 - `research/cloud/shard-menu-1013`

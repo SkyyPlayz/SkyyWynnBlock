@@ -167,3 +167,4 @@ section 6 when it reviews the results.
 - 2026-10-13: UI mockups (Sky kit) -> research/cloud/ui-mockups-1013 (quest widget, notification feed, XP flash, message settings page, full HUD layout + spec; vanilla HUD spots estimated)
 - 2026-10-13: Nexus soul flame + 5 sigils (icons v2) -> research/cloud/icons-1013 (Nexus soul reshaped to a soul flame; Normal sigil dropped (5 ship))
 - 2026-10-13: /rebirth page mockup -> research/cloud/rebirth-page-1013 (/rebirth page: star tree + Nexus hover/confirm + tabbed fallback)
+- 2026-10-13: Shard menu mockup -> research/cloud/shard-menu-1013 (Shard menu: Collect / Upgrades / Islands / Totems + 1366 check)
