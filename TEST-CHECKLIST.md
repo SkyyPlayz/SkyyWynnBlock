@@ -91,3 +91,4 @@ tests always come first.
 63. SkyySkills 0.4.31: class Mana pools (Mage 45, Priest 42), 10 / 5 Mana casts, regen 5/s + 6 s combat slow, Acrobatics XP line
 64. LAG FIXES: /pay + restart balance, Bazaar / guild bank / auctions, bags sweep + refill + craft, lantern, Requip equip, collection tier once
 65. Armory 0.1.23 feel check + ABILITY PROBE /aprobe (about 10 min, results read from the log)
+66. LAG FIXES 2: gear stats + join, HUD clock / zone / layout, tree felling XP, /skills top, fishing rod, merchant move, luggage claim, island trust after restart
