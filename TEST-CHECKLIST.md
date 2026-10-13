@@ -96,4 +96,3 @@ tests always come first.
 68. ANVIL tab: /reforge on a Soul Cage - Reforge + Upgrade cards, Identify / Re-identify / Identify all, 1080p fit
 69. FEED: /skyyhud testfeed - cards, merge x9, fade, XP flash, HUD editor + Server Setup Feed / Messages
 70. SKYYVOID: migration lines + Pocket Dimension, /pd six tabs + amount box, auto-sweep limit, Upgrade pays once, /bazaar Fishing tab
-71. ENCHANTED: tier III unlock, Compressing tab 100 -> 1, Void Mining tab, Bazaar price, ench.on switch
