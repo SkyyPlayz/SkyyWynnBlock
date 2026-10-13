@@ -12,7 +12,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyCollections | 0.2.9 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8 |
 | SkyyParty | 0.1.7 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
 | SkyyBank | 0.1.7 | bank + interest; interest once a day, account brackets 2/1/0.5% |
-| SkyyIslands | 0.5.5 | private islands, co-op, visitors, island settings, /hub |
+| SkyyIslands | 0.5.6 | private islands, co-op, visitors, island settings, /hub; 0.7 port |
 | SkyyBazaar | 0.1.7 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons |
 | SkyyGear | 0.2.23 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows |
 | SkyySkills | 0.4.30 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap |
@@ -23,7 +23,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyProfiles | 0.1.9 | profiles = full saves (default cap 6), delete + 6 h undo |
 | SkyyCooking | 0.1.6 | Cooking dishes + food Grade; XP by craft difficulty |
 | SkyyTrees | 0.3.5 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
-| SkyyExploration | 0.2.5 | Exploration skill, spots, island checklist |
+| SkyyExploration | 0.2.6 | Exploration skill, spots, island checklist; 0.7 port |
 | SkyyGuilds | 0.1.6 | guilds + guild bank |
 | SkyyVault | 0.1.5 | vault pages |
 | SkyyAuctions | 0.1.3 | auction house (buy-it-now) |
@@ -31,15 +31,15 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyUiProbe | 0.5 | dev / test probes, op only (retire later) |
 | SkyyUiProbeB | 0.5 | second probe jar for the UI probe (cross-jar textures / tabs), op only (retire with SkyyUiProbe) |
 | SkyyFishing | 0.1.2 | our fishing, stage 1: Fishing Bench (Parts / Rig / Fillet and Sell), rods + reels T0-T2, parts I-II, cast / bite / fight HUD, Zone 1 fish (HyFishing stays until stage 2) |
-| SkyyMerchants | 0.1.1 | roaming merchants (one per zone, move 20 min, rumours, special-weapon shop); floor: switch part.merchants off before removing |
+| SkyyMerchants | 0.1.2 | roaming merchants (one per zone, move 20 min, rumours, special-weapon shop); floor: switch part.merchants off before removing; 0.7 port |
 | SkyyPets | 0.2.3 | slot pets phase 1: per-profile pet records + ledger, pet slot (full buffs) + summon slot (50%), pet XP + levels, /pets page, /petadmin, starter Rabbit, 30 launch kinds |
 | SkyyWardrobe | 0.2 | loadouts: armor + hotbar + pet / summon + abilities per profile, one-click write-ahead swap, /wardrobe |
 | SkyyPetProbe | 0.1 | pet engine probes P1-P10, op only: /petprobe (results = [SkyyPetProbe] RESULT lines + mods/Skyy_SkyyPetProbe/probe.log); /petprobe clear at the end, then remove |
 | SkyyTownProbe | 0.2 | Zone 1 town probe, op only, test island (run /townprobe undo until 'Nothing to undo', then remove) |
 | SkyyKeyProbe | 0.2 | key probe, op only: /keyprobe give, press keys, /keyprobe report (remove after Skyy's test) |
-| SkyyMobs | 0.1.5 | mob levels + difficulty; level curves + level gap (mob:fn:info) |
+| SkyyMobs | 0.1.6 | mob levels + difficulty; level curves + level gap (mob:fn:info); 0.7 port, 280 roles |
 | SkyyWorldGen | 0.5 | Zone 1 test island (/zone 1, admin) |
-| SkyyArmory | 0.1.21 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults |
+| SkyyArmory | 0.1.22 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults; 0.7 SoulDrop port (jar recompile) |
 | third-party (`PACK.md`) | - | More Crossbow Tiers (Serj), Saplings From Trees (Helios); SkyyRolls is RETIRED |
 
 Every version's notes: `docs/handoff/versions-history.md`. Every build / deploy / test: `docs/log/<YYYY-MM>.md`.

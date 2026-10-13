@@ -382,7 +382,7 @@ def main():
         # 2026-10-12 (Hytale 0.7.0): name every mod whose ServerVersion range excludes the running game - it still loads, but may break
         # (Skyy: "if mods we use take too long to update to 0.7.0 lets make our own, unless they are hard to build.")
         ver_rx = re.compile(r"Plugin '([^']+)' targets server version range '([^']+)' which does not match the running server version '([^']+)'")
-        off = [m.groups() for m in (ver_rx.search(l) for l in lines) if m]
+        off = list(dict.fromkeys(m.groups() for m in (ver_rx.search(l) for l in lines) if m))
         if off:
             print("  VERSION %d mod(s) not made for game %s (load anyway; watch them):" % (len(off), off[0][2]))
             for key, rng, _v in off:

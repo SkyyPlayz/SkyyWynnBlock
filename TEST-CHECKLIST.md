@@ -86,3 +86,4 @@ Send the newest `...\Saves\HUD mod\logs\<time>_server.log` (and the client log f
 tests always come first.
 59. PERFECT PARRIES (pack mod): block right as a hit lands - Warrior sword/shield easiest (wide window, long stun), Berserker big counter-hit, Assassin daggers tight window + huge counter, Monk Bo/wraps long counter window, Archer/Mage/Priest only a short deflect (no counter bonus). Too easy / too hard? Tell me which class.
 60. HYTALE 0.7: the world boots again (Saplings From Trees + Better Mob Expansion switched off until their authors update). AVOID new islands / new profiles until the 0.7 port (island fill + spawn calls broke); expect errors on Exploration / Merchants / Menu Spawn / crit popups.
+61. HYTALE 0.7 batch 1: new island (blocks, chest, kit), /hub, /explore tabs + luggage, merchant spawn, mob levels, Armory weapons + essence drops
