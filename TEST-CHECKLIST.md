@@ -90,3 +90,4 @@ tests always come first.
 62. HYTALE 0.7 batch 2: Menu Spawn + island teleports, /bank + back-pay 1, CRIT! popup, weapon feel, profile switch, /zone
 63. SkyySkills 0.4.31: class Mana pools (Mage 45, Priest 42), 10 / 5 Mana casts, regen 5/s + 6 s combat slow, Acrobatics XP line
 64. LAG FIXES: /pay + restart balance, Bazaar / guild bank / auctions, bags sweep + refill + craft, lantern, Requip equip, collection tier once
+65. Armory 0.1.23 feel check + ABILITY PROBE /aprobe (about 10 min, results read from the log)
