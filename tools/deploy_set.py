@@ -112,7 +112,7 @@ SET = [
 # 2026-10-06 (Skyy: "add hyfishing right now, along side dynamic season"): HyFishing (fishing until our own fishing mod replaces it) + Dynamic
 # Seasons (its fishing seasons must keep working with our fishing mod later). Both only need Hytale modules; Dynamic Seasons optionally
 # integrates Angler's Almanac / HyFishing.
-PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "BlueOrbit:DynamicSeasons",
+PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers",
                     "NoCube:[NoCube's] Orchard",
                     "dev.ninesliced:BetterMap",
                     "IBC:Multitools",
@@ -162,7 +162,7 @@ RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe", "SkyyTownProbe", "Skyy
 # Third-party pack mods switched OFF in the world on every deploy (kept installed).
 # 2026-10-09 Skyy: "Armory off until 0.7" - The Armory (708 textures) overflowed the client item/creature texture atlas
 # (8192x16384 needed, max 8192x8192: 395 of 2808 images dropped = broken copper ore, talismans, swords). Re-test on Hytale 0.7.
-PACK_DISABLED = ["LadyPaladra:TheArmory", "TheRedlotus:HyFishing", "Helios:Saplings From Trees", "Frah:Better Mob Expansion"]  # 2026-10-12 Hytale 0.7.0: Saplings From Trees fails to load (Plant_Leaves_Fig_Blue) and BME fails NPC validation (Template_BME_Goblin_Kamikaze -> missing BME_Bomb_Damage) = the 0.7 server refuses to boot; back ON when their authors update  # 2026-10-10 Skyy: HyFishing OFF ("Switch HyFishing off") - SkyyFishing replaces it
+PACK_DISABLED = ["LadyPaladra:TheArmory", "TheRedlotus:HyFishing", "Helios:Saplings From Trees", "Frah:Better Mob Expansion", "BlueOrbit:DynamicSeasons"]  # 2026-10-13 DynamicSeasons crashes the world on 0.7 (SeasonWeatherSystem -> removed WorldChunk.getBlockChunk) when a player joins  # 2026-10-12 Hytale 0.7.0: Saplings From Trees fails to load (Plant_Leaves_Fig_Blue) and BME fails NPC validation (Template_BME_Goblin_Kamikaze -> missing BME_Bomb_Damage) = the 0.7 server refuses to boot; back ON when their authors update  # 2026-10-10 Skyy: HyFishing OFF ("Switch HyFishing off") - SkyyFishing replaces it
 
 
 def disable_third_party(world, key):
