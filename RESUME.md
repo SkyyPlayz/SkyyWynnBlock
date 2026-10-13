@@ -20,6 +20,7 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 - Skyy tests: TEST-CHECKLIST 55-58 + UI probe + gathering probe.
 
 ## Next, in order (re-planned 2026-10-12 with Skyy; weekly resets TUE 15:00 UTC; ~4-5 workflows at once)
+VISUALS (Skyy 2026-10-13, docs/answered/ui.md): no approval wait - cloud draws icons / menu designs, I review layout + look myself, then implement; Skyy fixes later.
 WAVE 1 - make 0.7 work (day 1)
 1. 0.7 PORT (research/Hytale-0.7-Port.md): probe the ChunkGrid block API, then port Islands + Exploration first, then Merchants, Menu,
    Bank, Armory, Gear (crit CombatTextUpdate), Mobs, Profiles, WorldGen; retire SkyyGatherProbe (+B) and other spent probes instead of
