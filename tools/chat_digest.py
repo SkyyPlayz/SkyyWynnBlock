@@ -46,6 +46,10 @@ def lines_of(path):
 
 
 def main(argv):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
     world, log, model = "HUD mod", None, llm.FALLBACK_MODEL  # Jev router
     i = 0
     while i < len(argv):
