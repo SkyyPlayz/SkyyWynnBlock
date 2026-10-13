@@ -96,3 +96,4 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
 
 ## Done (delete after logging - see the rules above)
 - [x] CurseForge mod survey (0.7) - 2026-10-13 - `research/cloud/Mod-Survey-0.7.md`
+- [x] Rebirth research - 2026-10-13 - `research/cloud/Rebirth-Research.md`
