@@ -17,13 +17,13 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.19"), ("SkyySacks", "0.7.18"), ("SkyyCoins", "0.1.6"), ("SkyyCollections", "0.2.10"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.8"), ("SkyyIslands", "0.5.6"), ("SkyyBazaar", "0.1.8"), ("SkyyGear", "0.2.25"), ("SkyySkills", "0.4.31"),
+    ("SkyyBank", "0.1.8"), ("SkyyIslands", "0.5.7"), ("SkyyBazaar", "0.1.8"), ("SkyyGear", "0.2.25"), ("SkyySkills", "0.4.32"),
     ("SkyyAccessories", "0.5.12"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.18"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.10"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
-    ("SkyyExploration", "0.2.6"),
+    ("SkyyExploration", "0.2.7"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
     ("SkyyGuilds", "0.1.7"),
@@ -62,7 +62,7 @@ SET = [
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
     # fishing items, removing SkyyFishing turns rods / reels / parts / fish into unknown items.
-    ("SkyyFishing", "0.1.2"),
+    ("SkyyFishing", "0.1.3"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
@@ -71,7 +71,7 @@ SET = [
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
     # until /merchantadmin list shows no merchant out, then remove the jar (else Temple_Klops NPCs named "Traveling Merchant" stay).
-    ("SkyyMerchants", "0.1.2"),
+    ("SkyyMerchants", "0.1.3"),
     # SkyyPets 0.1 (2026-10-09, slot pets phase 1: records + buffs, no creatures). FLOOR: before removing SkyyPets switch Server Setup >
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
