@@ -269,7 +269,6 @@ class Icon:
 
 
 # ------------------------------------------------------------------ materials
-IRON = ramp_hex("#24222e", "#3e3f4c", "#5a5e6c", "#7c818e", "#a0a5b0", "#c2c6cc", "#dcdcd8")
 GOLD = ramp_hex("#3a2210", "#6e4212", "#a8691c", "#d4982e", "#eebd4c", "#f8da80", "#fcefb8")
 ROSE = ramp_hex("#3a1a26", "#6e3438", "#a05650", "#c87c6e", "#e2a08c", "#f2c4ae", "#fbe2d2")
 PLAT = ramp_hex("#262c3c", "#48546a", "#6e7e94", "#98a8bc", "#bccada", "#dae4ec", "#eef2f2")
@@ -282,7 +281,7 @@ CREAM = ramp_hex("#3a2c34", "#7a6458", "#b09a80", "#dccaa4", "#f2e6c4", "#fbf3dc
 SKYGEM = ramp("#58b8ec")
 
 RAR = [  # name, Skyy-locked rarity colour (tools/skyyui.py RARITY), frame metal, ornaments
-    ("Normal", "#FFFFFF", IRON, 0),
+    # no Normal sigil: sigils only upgrade, so nothing is ever upgraded TO Normal (local review 2026-10-13: ship 5)
     ("Unique", "#FFFF55", GOLD, 1),
     ("Rare", "#FF55FF", ROSE, 2),
     ("Legendary", "#55FFFF", PLAT, 3),
@@ -294,8 +293,6 @@ RAR = [  # name, Skyy-locked rarity colour (tools/skyyui.py RARITY), frame metal
 def glow_ramp(c):
     """rarity glyph ramp: the rarity colour at idx 4, deep shades below, a warm-white core above."""
     b = hx(c)
-    if b == (255, 255, 255):
-        b = (226, 228, 236)          # Normal = white -> a pale silver glow (no pure white)
     r = [mix(b, SHADOW, 0.78), mix(b, SHADOW, 0.58), mix(b, SHADOW, 0.36), mix(b, SHADOW, 0.16), b,
          mix(b, (255, 250, 236), 0.45), mix(b, (255, 250, 236), 0.78)]
     return tuple(x if x != (255, 255, 255) else (252, 250, 242) for x in r)
@@ -303,8 +300,6 @@ def glow_ramp(c):
 
 def field_ramp(c):
     b = hx(c)
-    if b == (255, 255, 255):
-        b = (150, 156, 176)
     base = mix(b, (18, 12, 32), 0.80)
     return ramp(base, dt=(0.70, 0.45, 0.22), lt=(0.10, 0.22, 0.38), light=b)
 
@@ -594,6 +589,102 @@ SOUL = ramp_hex("#0c2a34", "#16505e", "#22808e", "#3cb4bc", "#6ee0dc", "#aef4ea"
 LINE = ramp_hex("#1a1230", "#2c1e50", "#43307a", "#6448a8", "#8c6cd4", "#b49aec", "#ddd0f8")
 
 
+def soul_flame(ic, c, k, big):
+    """The soul as a wisp / soul flame being pulled in. Drawn in a bent frame: u = distance from the head centre
+    toward the hole (along the radius), v = sideways offset (arc length) from a centre line that sweeps along the swirl,
+    so the whole flame stretches and curves the way the pull goes (spaghettified). The flame = 3 teardrop tongues on one
+    round base (a long middle one that thins into the streamer, two shorter side licks), a bright inner flame and a
+    white-hot core."""
+    rh = 37.0 * k if big else 19.5                       # head centre: below the hole, in the gap between S and SW branches
+    hr = 8.0 * k if big else 4.8                         # head radius (the round base of the flame)
+    ah = math.radians(112.5)
+    r_end = 11.5 * k                                     # the streamer ends under the photon ring
+    sweep = math.radians(40)                             # falls in along the swirl arms (angle shrinks inward)
+    L = rh - r_end
+
+    def a_c(r):                                          # centre-line angle at radius r
+        t = max(0.0, (rh - r) / L)
+        return ah - sweep * t ** 1.5
+
+    def uv(x, y):
+        dx, dy = x - c, y - c
+        r = math.hypot(dx, dy)
+        a = math.atan2(dy, dx) % (2 * math.pi)
+        da = (a - a_c(r) + math.pi) % (2 * math.pi) - math.pi
+        return rh - r, da * r
+
+    def drop(u, v, bu, bv, r0, tu, tv, ex):
+        """teardrop: round base (radius r0) at (bu, bv), concave flanks (exponent ex) up to a point at (tu, tv)."""
+        ax, ay = tu - bu, tv - bv
+        ln = math.hypot(ax, ay)
+        ax, ay = ax / ln, ay / ln
+        s = (u - bu) * ax + (v - bv) * ay
+        w = abs(-(u - bu) * ay + (v - bv) * ax)
+        if s < 0:
+            return s * s + w * w <= r0 * r0
+        return s <= ln and w <= r0 * (1 - s / ln) ** ex
+
+    MAIN = 2.9 * hr
+    LK = (2.10, 1.20, 1.75, 1.10) if big else (2.35, 1.55, 2.0, 1.45)   # side-lick tips (u, v) in head radii
+
+    def stream_w(u):                                     # the stretched streamer beyond the main tongue
+        t = (u - MAIN * 0.8) / max(1.0, L - MAIN * 0.8)
+        return (1.1 if big else 0.6) * (1 - 0.5 * t)
+
+    def flame(u, v, f=1.0, back=0.0):
+        """the flame silhouette, scaled by f (f < 1 = the inner flame, pulled back toward the base)."""
+        u = (u + back) / f
+        v = v / f
+        if drop(u, v, 0, 0, hr, MAIN, 0.25 * hr, 1.6):
+            return True
+        if drop(u, v, 0.30 * hr, 0.30 * hr, 0.64 * hr, LK[0] * hr, LK[1] * hr, 1.6):
+            return True
+        return drop(u, v, 0.40 * hr, -0.30 * hr, 0.60 * hr, LK[2] * hr, -LK[3] * hr, 1.6)
+
+    def inside(x, y):
+        u, v = uv(x, y)
+        if u < -hr - 1 or u > L:
+            return False
+        if flame(u, v):
+            return True
+        return u > MAIN * 0.8 and abs(v - 0.25 * hr * min(1.0, (L - u) / (L - MAIN * 0.8))) <= stream_w(u)
+
+    wm = ic.mask(inside)
+    ic.ring_around(wm, VOIDR, idx=0)
+
+    def flame_fn(x, y, i):
+        u, v = uv(x + 0.5, y + 0.5)
+        if flame(u, v, 0.32, 0.25 * hr):
+            return 6                                     # the white-hot core
+        if flame(u, v, 0.62, 0.30 * hr):
+            return max(i, 5)                             # the bright inner flame
+        if not drop(u, v, 0, 0, hr, MAIN, 0.25 * hr, 1.6) and u < MAIN * 0.8:
+            return min(i, 3)                             # the side licks one step darker: the tongues read apart
+        if u > MAIN * 0.8:                               # the streamer cools as it is swallowed
+            t = (u - MAIN * 0.8) / max(1.0, L - MAIN * 0.8)
+            return 4 if t < 0.3 else (3 if t < 0.7 else 2)
+        return min(i, 4)
+    ic.add(None, SOUL, base=3, m=wm, grad=0.6, fn=flame_fn)
+    # two eye dots in the base of the flame (128 only): it is a soul, not a comet
+    if big:
+        perp = ah + math.pi / 2
+        hx_, hy_ = c + (rh + 0.5) * math.cos(ah), c + (rh + 0.5) * math.sin(ah)
+        for s in (-1, 1):
+            ex, ey = hx_ + s * 2.4 * math.cos(perp), hy_ + s * 2.4 * math.sin(perp)
+            for q in ((int(ex), int(ey)), (int(ex), int(ey) - 1)):
+                ic.p[q] = (SOUL, 0)
+    # sparks torn off the flame, falling in ahead of it along the swirl
+    sp = ((0.62, 2.6), (0.80, -2.2), (0.50, -3.4)) if big else ((0.66, 1.8), (0.52, -2.2))
+    for (t, off) in sp:
+        r = rh - t * L
+        a = a_c(r) + off * (2.0 * k if big else 1.0) / r
+        x, y = int(c + r * math.cos(a)), int(c + r * math.sin(a))
+        ic.p[(x, y)] = (SOUL, 6)
+        if big:
+            for q in ((x + 1, y), (x, y + 1)):
+                ic.p[q] = (SOUL, 5)
+
+
 def nexus(S):
     """S = 128 (the /rebirth centre emblem) or 64 (item / button icon). One drawing, two detail levels."""
     k = S / 128.0
@@ -653,23 +744,10 @@ def nexus(S):
     hot = {p for p in dm if math.hypot(p[0] + 0.5 - c, p[1] + 0.5 - c) < 17.5 * k}
     ic.add(None, VOIDR, bevel=False, m=dm - hot, fn=disk_fn)
     ic.add(None, EMBER, bevel=False, m=hot, fn=lambda x, y, i: disk_fn(x, y, i) + 1)
-    # the soul being pulled in (the void imprints your soul): a cyan wisp, round head toward the hole, tail curling out
-    hr = 3.6 * k if big else 2.4
-    ang = math.radians(212)
-    hcx, hcy = c + 21.5 * k * math.cos(ang), c + 21.5 * k * math.sin(ang)
-    wm = ic.mask(circ(hcx, hcy, hr))
-    for j in range(1, 9):
-        t = j / 8.0
-        aa = ang - 0.75 * t
-        rr = (21.5 + 10.5 * t) * k
-        w = hr * (1 - 0.8 * t)
-        wm |= ic.mask(circ(c + rr * math.cos(aa), c + rr * math.sin(aa), max(0.7, w)))
-    ic.ring_around(wm, VOIDR, idx=0)
-    ic.add(None, SOUL, base=3, m=wm, grad=0.8)
-    if big:   # two eye dots: it is a soul, not a comet
-        for ex in (-1.2, 1.2):
-            ex_, ey_ = hcx + ex * math.cos(ang + math.pi / 2), hcy + ex * math.sin(ang + math.pi / 2)
-            ic.p[(int(ex_), int(ey_))] = (SOUL, 0)
+    # the soul being pulled in (the void imprints your soul): a cyan soul FLAME - a round teardrop head out in the gap
+    # between two branches, flickering tongues licking toward the hole, the middle tongue spaghettified into a thin
+    # streamer that curves along the swirl and vanishes under the photon ring; 2-3 sparks torn off ahead of it
+    soul_flame(ic, c, k, big)
     # photon ring + the hole (no pure black: the deepest void violet)
     ic.add(D(circ(c, c, 13.2 * k), circ(c, c, 10.2 * k)), VOIDR, base=6, glow=False, bevel=False,
            fn=lambda x, y, i: 6 if (x + y + 1 < 2 * c) else 5)
@@ -744,21 +822,21 @@ def sheet_sigils(ims):
     W, H = 1180, 1080
     sh = Image.new("RGBA", (W, H), PAGE + (255,))
     d = ImageDraw.Draw(sh)
-    y = header(d, W, "RARITY SIGILS - DRAFT v1 (64 x 64 item icons)", [
+    y = header(d, W, "RARITY SIGILS - DRAFT v2 (64 x 64 item icons, 5 sigils)", [
         "Skyy 2026-10-12: rarity-upgrade items are SIGILS, one per rarity, on any gear with a rarity, skip tiers, upward only (docs/answered/gear.md).",
         "One family: a hex plate with a recessed field and a glowing UP ARROW in the rarity colour (tools/skyyui.py RARITY). The frame grows with rank:",
-        "iron -> gold -> rose gold + rivets + bar -> platinum + top gem -> blackened steel + gold blades -> obsidian + gold crown + 2 gems.",
-        "Frame metals Normal..Legendary = the approved accessory-icon metals (iron, gold, rose gold, platinum). Normal is drawn for completeness only.",
+        "gold -> rose gold + rivets + bar -> platinum + top gem -> blackened steel + gold blades -> obsidian + gold crown + 2 gems.",
+        "Frame metals Unique..Legendary = the approved accessory-icon metals (gold, rose gold, platinum). No Normal sigil: nothing upgrades TO Normal.",
     ], (238, 189, 76))
     for i, (name, col, _, _) in enumerate(RAR):
         x = 24 + (i % 3) * 384
         yy = y + (i // 3) * 330
         sub = "Skyy_Sigil_%s   rarity %s%s" % (name, col, "" )
-        tile(sh, d, ims[i], x, yy, "%s Sigil%s" % (name, " (optional)" if name == "Normal" else ""), sub, glow_ramp(col)[4] if name != "Normal" else TXT)
+        tile(sh, d, ims[i], x, yy, "%s Sigil" % name, sub, glow_ramp(col)[4])
     slot_row(sh, d, ims, 24, y + 670, "In inventory slots (1x, menu navy):")
     d.text((24, y + 790), "Smithing mock:  [Normal Pickaxe]  +  [Legendary Sigil]  ->  Legendary Pickaxe   (skips Unique + Rare)",
            font=font(15), fill=TXT)
-    sh.alpha_composite(ims[3], (24, y + 816))
+    sh.alpha_composite(ims[2], (24, y + 816))   # the Legendary Sigil
     d.text((96, y + 838), "= the sigil you use decides the NEW rarity, whatever the old one was (upward only).", font=font(14), fill=DIM)
     return sh.convert("RGB")
 
@@ -789,10 +867,11 @@ def sheet_nexus(n128, n64):
     W, H = 1500, 900
     sh = Image.new("RGBA", (W, H), PAGE + (255,))
     d = ImageDraw.Draw(sh)
-    y = header(d, W, "NEXUS OF THE VOID - DRAFT v1 (128 x 128 emblem + 64 x 64 icon)", [
+    y = header(d, W, "NEXUS OF THE VOID - DRAFT v2 (128 x 128 emblem + 64 x 64 icon)", [
         "research/Rebirth-Ideas.md: the rebirth tree RADIATES from a black hole in the centre; touching it, the void imprints your soul.",
         "Drawn: the hole (deepest void violet, never pure black) + a bright photon ring, a spiral accretion swirl (ember near the hole, violet out),",
-        "8 radiating branches with nodes (inner lit = spent, outer dim = to come), and a cyan SOUL being pulled into the hole along one arm.",
+        "8 radiating branches with nodes (inner lit = spent, outer dim = to come), and a cyan SOUL FLAME (a wisp) being pulled into the hole:",
+        "round base with two eyes, flickering tongues licking toward the hole, the middle one stretched into a streamer along the swirl + sparks.",
         "The 128 is the hover / click button at the centre of /rebirth; the 64 is for a menu tile or an item icon.",
     ], (160, 126, 224))
     checker(d, 24, y, 512, 512)

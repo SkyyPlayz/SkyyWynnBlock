@@ -165,3 +165,4 @@ section 6 when it reviews the results.
 - 2026-10-13: Icons: Sigils, Hub Shard + portals, Nexus -> research/cloud/icons-1013 (15 icons + 3 sheets + generator; sigils on the real rarity ladder; ids UNVERIFIED)
 - 2026-10-13: Upgrade ladders + Dragon sets spec -> research/cloud/Upgrade-Ladders-Spec.md (every ladder costed, full-recipe rule per Skyy line 165, Dragon set via drakes, engine changes vs SkyyGear 0.2.23)
 - 2026-10-13: UI mockups (Sky kit) -> research/cloud/ui-mockups-1013 (quest widget, notification feed, XP flash, message settings page, full HUD layout + spec; vanilla HUD spots estimated)
+- 2026-10-13: Nexus soul flame + 5 sigils (icons v2) -> research/cloud/icons-1013 (Nexus soul reshaped to a soul flame; Normal sigil dropped (5 ship))

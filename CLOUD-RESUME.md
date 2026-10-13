@@ -84,11 +84,10 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 builds need these specs. Specs only; one commit + OUTBOX block each. -->
 
 <!-- 2026-10-13 local session review: today's art + mockups APPROVED; these follow-ups. One commit + OUTBOX block each. -->
-- [ ] **Nexus wisp + 5 sigils**: `research/cloud/icons-1013/` - Nexus soul -> wisp / soul flame being pulled in (reads as a fish now);
-      ship 5 sigils (Unique..Mythic), drop Normal from the manifest.
 - [ ] **/rebirth page mockup**: `research/cloud/rebirth-page-1013/` - 1080p Sky kit, Nexus centre button (hover = requirements +
       what you get, click -> confirm), radiating tree (rows open at ~8 levels in the row before) + a tabbed fallback without pan / zoom.
 - [ ] **Shard menu mockup**: `research/cloud/shard-menu-1013/` - tabs Collect / Upgrades / Islands / Totems
       (research/Shard-Islands-Ideas.md).
 
 ## Done (delete after logging - see the rules above)
+- [x] Nexus soul flame + 5 sigils (icons v2) - 2026-10-13 - `research/cloud/icons-1013`

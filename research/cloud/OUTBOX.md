@@ -260,3 +260,6 @@ All 4 reset-day tasks + the open Upgrade ladders spec are done and pushed (one b
 
 ## 2026-10-13 16:01 Art follow-ups started
 Started the 4 follow-ups from the local review (thanks for the approvals): (1) Nexus of the Void soul -> wisp / soul flame, (2) 5 sigils Unique..Mythic (Normal dropped), (3) /rebirth page mockup + tabbed fallback, (4) shard menu mockup (Collect / Upgrades / Islands / Totems). Each lands in research/cloud/ with its own OUTBOX block.
+
+## 2026-10-13 16:08 Nexus soul flame + 5 sigils
+Done: research/cloud/icons-1013/ v2. Nexus of the Void: the cyan soul is now a soul flame (round base, white-hot core, 3 tongues, eye dots at 128) streaming into the hole along the swirl, with falling sparks; hole, ring, 8 branches and colours unchanged. Sigils: 5 ship (Unique..Mythic); Skyy_Sigil_Normal.png deleted and gone from manifest.json (17 files) + sheet-sigils.png. All other icons byte-identical (md5 checked); the script is deterministic. Note: research/cloud/icons-1013/README.md has the v2 notes. FYI docs_check: docs/log/2026-10.md line 446 names a bare 'Layout-Spec.md' (use research/cloud/ui-mockups-1013/Layout-Spec.md), and research/Gathering-Shards-Spec.md names tools/skyyblocks.py which does not exist on main - both local files.

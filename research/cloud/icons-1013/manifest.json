@@ -9,16 +9,16 @@
    ]
   },
   "icons/Skyy_Nexus_Of_The_Void.png": {
-   "bytes": 5099,
-   "sha256": "fc37fae79533609729b04dc09e238512bfd7945c8e4000800713091be5c17159",
+   "bytes": 5378,
+   "sha256": "d17d47a43c80f92f01344580ea8a334db95afa3a520fb3caaa0c5998d5a4fcd8",
    "size": [
     128,
     128
    ]
   },
   "icons/Skyy_Nexus_Of_The_Void_64.png": {
-   "bytes": 1951,
-   "sha256": "575d798893421f27ee989610d4cceac489d51cb363ac9f61bb575b2855bda098",
+   "bytes": 2138,
+   "sha256": "5e8b0944bbf491916560d1ad8addc809f96e68c18722d52509f854b56f52b801",
    "size": [
     64,
     64
@@ -96,14 +96,6 @@
     64
    ]
   },
-  "icons/Skyy_Sigil_Normal.png": {
-   "bytes": 1172,
-   "sha256": "be8e35f4ee098ed980d231f94e5dbd1528e49a9ac4e939ba96de3571e6475648",
-   "size": [
-    64,
-    64
-   ]
-  },
   "icons/Skyy_Sigil_Rare.png": {
    "bytes": 1330,
    "sha256": "8514a9c7135825539bac200a4e58b30ca040d00497137bed359536d6e7b42472",
@@ -121,8 +113,8 @@
    ]
   },
   "sheet-nexus.png": {
-   "bytes": 82285,
-   "sha256": "b3284255e104d06f29a3f0b8ebc8e8aecbe39ad513d6109436c801cdba1fc3ba",
+   "bytes": 87914,
+   "sha256": "ff8f6a6060d19f18bca495b5a56d8d1e486437d32e733ce5fc4c6a4dff1cbfee",
    "size": [
     1500,
     900
@@ -137,8 +129,8 @@
    ]
   },
   "sheet-sigils.png": {
-   "bytes": 116855,
-   "sha256": "b998af68bd6d81a30e133c7c3012a55976e4b9cb0cdb3de596a65980c94782a3",
+   "bytes": 108747,
+   "sha256": "4740122b8616b4c98ebe350731839472718944fb8cf92f16429ede53da68785b",
    "size": [
     1180,
     1080

@@ -1,7 +1,11 @@
-# Icons 2026-10-13 - Rarity Sigils, Hub Shard + Shard Portals, Nexus of the Void (DRAFT v1, cloud)
+# Icons 2026-10-13 - Rarity Sigils, Hub Shard + Shard Portals, Nexus of the Void (DRAFT v2, cloud)
 
 **Status: drafts for Skyy's review. Not wired in, no build script touched.** Made by the cloud session under Skyy's visuals go-ahead
 (docs/answered/ui.md line 93).
+
+**v2 (after the local session's review, 2026-10-13):** (1) the Nexus soul was reshaped from a round-headed blob (it read as a fish) into a
+**soul flame / wisp** being pulled in; (2) the Normal sigil is dropped - 5 sigils ship (Unique .. Mythic). Every other icon is byte-identical to v1
+(md5 checked); v1 was not kept as a separate file (it is in git history).
 
 ## Decisions this follows
 | Source | Line | What it fixes here |
@@ -9,7 +13,7 @@
 | docs/answered/gear.md | 176 | 2026-10-12 RARITY SIGILS, Skyy word for word: "and to upgrade the rarity of an item. gems? stones? or runes? (we will make it work on any and all gear that has a rarity. and skip tiers. so if you have a common pickaxe, and a legendary upgrade rune, you can just upgrade it to legendary in the /smithing menu" -> popup "Sigils (Recommended)": one sigil per rarity ("Legendary Sigil"), any gear with a rarity, skip tiers, upward only. Names kept apart: Gems = sockets, Stones = pet Upgrade Stones, Runes = Hytale 0.7's runes. |
 | docs/answered/gear.md | 123 | the live rarity ladder: Normal, Unique, Rare, Legendary, Fabled, Mythic (+ Set) |
 | tools/skyyui.py | 237 | the locked rarity colours: Normal `#FFFFFF`, Unique `#FFFF55`, Rare `#FF55FF`, Legendary `#55FFFF`, Fabled `#FF5555`, Mythic `#CC66CC` (page-readable Mythic; Wynn `#AA00AA` kept in `RARITY_WYNN`) |
-| docs/answered/gear.md | 78 | approved accessory icons: "rarity = growing gem + metal" -> sigil frame metals Normal..Legendary = the same iron / gold / rose gold / platinum |
+| docs/answered/gear.md | 78 | approved accessory icons: "rarity = growing gem + metal" -> sigil frame metals Unique..Legendary = the same gold / rose gold / platinum |
 | docs/answered/skills.md | 108, 110-113 | SHARD ISLANDS / SHARDS 2 / SHARDS 3: a shard placed on your island is a PORTAL to a mini island; right-click opens the shard menu (like a vanilla portal); 6 shards Mining, Foraging, Farming, Ranching, Orchard, Combat |
 | docs/answered/social.md | 55 + research/Tutorial-Plan.md | the island-3 mini boss drops the **Hub Shard** that activates the portal to the hub |
 | docs/answered/skills.md | 117-118 + research/Rebirth-Ideas.md | REBIRTH TREE / CONTROL: the tree radiates from the black hole in the centre, the **Nexus of the Void**; "by touching it, the void imprints your soul"; hover = requirements, click + confirm = rebirth |
@@ -19,19 +23,18 @@
 | File | Size | What |
 |---|---|---|
 | `make_icons.py` | - | the generator: Pillow only, deterministic (two runs = same bytes, checked) |
-| `sheet-sigils.png` | 1180 x 1080 | 6 sigils: 4x on checker, 1x on menu navy, 1x on light, 32 px; slot row; a smithing mock |
+| `sheet-sigils.png` | 1180 x 1080 | 5 sigils: 4x on checker, 1x on menu navy, 1x on light, 32 px; slot row; a smithing mock |
 | `sheet-shards.png` | 1560 x 1000 | Hub Shard + 6 Shard Portals, same views + a hotbar row |
 | `sheet-nexus.png` | 1500 x 900 | the Nexus 128 + 64, on dark / light, and a mock of the centre of /rebirth |
-| `icons/<id>.png` | 64 x 64 (Nexus also 128 x 128) | one PNG per icon, ready to copy to `Common/Icons/ItemsGenerated/` |
+| `icons/<id>.png` | 64 x 64 (Nexus also 128 x 128) | 14 PNGs (5 sigils, Hub Shard, 6 portals, 2 Nexus), ready to copy to `Common/Icons/ItemsGenerated/` |
 | `manifest.json` | - | size, bytes and sha256 of every PNG |
 
 ## 1. Rarity Sigils (proposed owner: SkyyGear, /smithing)
 One family: a **hex plate** with a recessed field and a glowing **up arrow** (= upgrade) in the rarity colour. The frame grows with rank,
-so the rank reads even without colour:
+so the rank reads even without colour. **5 sigils, Unique .. Mythic** - no Normal sigil (upward only, so nothing is ever upgraded TO Normal):
 
 | Proposed id | Frame | Extras |
 |---|---|---|
-| `Skyy_Sigil_Normal` | iron | arrow only - **optional** (upward only, so nothing can be upgraded TO Normal) |
 | `Skyy_Sigil_Unique` | gold | arrow |
 | `Skyy_Sigil_Rare` | rose gold | + inner trim line, 6 rivets, a bar under the arrow |
 | `Skyy_Sigil_Legendary` | platinum | + a cyan gem at the top corner, a sparkle |
@@ -59,19 +62,18 @@ The floating-island base says "a shard is a mini island"; the Hub Shard has no i
 ## 3. Nexus of the Void (proposed: the centre button of /rebirth; 64 px for a menu tile)
 | Proposed id | Size | Shows |
 |---|---|---|
-| `Skyy_Nexus_Of_The_Void` | 128 x 128 | the hole (deepest void violet, never pure black) inside a bright photon ring; a 4-arm spiral accretion swirl, ember-hot near the hole, violet further out; **8 radiating branches** with nodes (inner lit = spent, outer dim = still to buy) = the rebirth tree growing out of it; a **cyan soul** with two eye dots being pulled into the hole = "the void imprints your soul" |
-| `Skyy_Nexus_Of_The_Void_64` | 64 x 64 | the same, 8 straight branches, no sub-branches |
+| `Skyy_Nexus_Of_The_Void` | 128 x 128 | the hole (deepest void violet, never pure black) inside a bright photon ring; a 4-arm spiral accretion swirl, ember-hot near the hole, violet further out; **8 radiating branches** with nodes (inner lit = spent, outer dim = still to buy) = the rebirth tree growing out of it; a **cyan soul flame (wisp)** being pulled into the hole = "the void imprints your soul": a round flame base with two eye dots out in the gap below-left of the hole, three flickering tongues licking toward the hole (two short side licks one shade darker, so they read apart), the middle tongue spaghettified into a thin streamer that curves along the swirl and vanishes under the photon ring, 3 small sparks falling in ahead of it; a bright inner flame + white-hot core |
+| `Skyy_Nexus_Of_The_Void_64` | 64 x 64 | the same, 8 straight branches, no sub-branches; the soul flame without eyes, wider side licks, 2 sparks |
 
 ## Questions for Skyy
 | # | Question | Default |
 |---|---|---|
-| 1 | Sigils: drop the Normal sigil (nothing upgrades TO Normal)? | [yes - ship 5: Unique .. Mythic; keep the Normal art unused] |
-| 2 | Sigil look: hex plate + up arrow, frame grows with rank. OK, or a different object (seal / scroll / glyph stone)? | [hex plate] |
-| 3 | Shard colours: Mining blue, Foraging green, Farming gold, Ranching orange, Orchard pink, Combat red, Hub violet. OK? | [yes] |
-| 4 | Ranching symbol: cow head, or a sheep / an egg / a horseshoe? | [cow head] |
-| 5 | Portal icon = the shard planted in a mini floating island. Keep the island, or the shard alone (smaller, like the Hub Shard)? | [keep the island] |
-| 6 | Nexus: the cyan soul being pulled in - keep it (lore), or a clean black hole only? | [keep it] |
-| 7 | Nexus tree look: should the real /rebirth tree use these same violet lines + ember "spent" nodes? | [yes, as the starting style] |
+| 1 | Sigil look: hex plate + up arrow, frame grows with rank. OK, or a different object (seal / scroll / glyph stone)? | [hex plate] |
+| 2 | Shard colours: Mining blue, Foraging green, Farming gold, Ranching orange, Orchard pink, Combat red, Hub violet. OK? | [yes] |
+| 3 | Ranching symbol: cow head, or a sheep / an egg / a horseshoe? | [cow head] |
+| 4 | Portal icon = the shard planted in a mini floating island. Keep the island, or the shard alone (smaller, like the Hub Shard)? | [keep the island] |
+| 5 | Nexus: the cyan soul flame being pulled in - keep it (lore), or a clean black hole only? | [keep it] |
+| 6 | Nexus tree look: should the real /rebirth tree use these same violet lines + ember "spent" nodes? | [yes, as the starting style] |
 
 ## For the local session
 - **UNVERIFIED ids:** check every proposed id (`Skyy_Sigil_*`, `Skyy_Hub_Shard`, `Skyy_Shard_Portal_*`, `Skyy_Nexus_Of_The_Void*`) against
