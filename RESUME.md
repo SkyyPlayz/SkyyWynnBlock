@@ -11,13 +11,15 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 3. Rounds: saved workflow `skywynn-round` (Skyy's OWN words in args.quotes); deploy only with the game closed: backup -> smoke -> deploy_set
    --yes -> record_deploy -> commit -> tidy_local; scan + recycle logs after every play session.
 
-## Now (2026-10-11 ~01:45, PAUSED at 97% weekly - Skyy: wait for the morning)
-- LIVE: everything through 2026-10-11 01:40 (TEST 55-58): big batch 2026-10-10 + SkyyGear 0.2.22/0.2.23 (/smithing, Reforge tabs, /upgrade,
-  /multitool, [Lv N]), Collections 0.2.9, Armory 0.1.21 (Soul Orb damage, vanilla essences, Wings of Fate), REQUIP = SkyyWardrobe 0.2
-  (+ SkyySacks 0.7.17 hotbar refill / craft bridges), SkyyUiProbe 0.5 + B (Skyy runs /skyprobe kit once, then RETIRE both).
-- Nothing running. Known low issue (no item loss/dupe): a crash in the middle of Requip "Use what I wear" saving can leave a stamped item
-  unknown to the pool until the next deposit / Equip (log 2026-10-11) - journal op 12 in a later Wardrobe round.
-- Skyy tests: TEST-CHECKLIST 55-58 + UI probe + gathering probe.
+## Now (2026-10-13 ~15:30 MDT, reset day - weekly 22%)
+- LIVE on Hytale 0.7.0, crosscheck READY (was 39 fails): 0.7 port of every mod (batches 1-2, Skills 0.4.31 Mana / spell costs), lag fixes
+  (Coins write-behind, Bazaar / Guilds / Auctions, Accessories, Sacks, Collections, Wardrobe, Gear snapshot, Hud own thread, Skills /
+  Fishing / Merchants / Exploration / Islands writers, Menu / Bank / Profiles), Armory 0.1.23 from source, hub hotkey (double-tap crouch),
+  Anvil tab (Gear 0.2.26), notification feed + XP flash (Hud 0.3.20), probes /aprobe + /skyprobe hubpanel. TEST-CHECKLIST 60-69.
+- Running: void080 (SkyySacks 0.8.0 SkyyVoid + Bazaar 0.1.9), quests01 (SkyyQuests 0.1 + Hud 0.3.21 quest widget).
+- Specs waiting on Skyy: Gathering-Shards (sec 14), Ability-Framework-Mage (sec 11), SkyyQuests-Tutorial (sec 12); cloud drawing /rebirth + shard menu.
+- Next builds: senders switch to the feed (msgroute), Enchanted materials (gathering phase 1, after void080), Mage real keys (after Skyy's /aprobe),
+  Sky Window kit into skyyui.py (after Skyy's /skyprobe kit), architecture merge (SkyyCore) with simplify 2.
 
 ## Next, in order (re-planned 2026-10-12 with Skyy; weekly resets TUE 15:00 UTC; ~4-5 workflows at once)
 VISUALS (Skyy 2026-10-13, docs/answered/ui.md): no approval wait - cloud draws icons / menu designs, I review layout + look myself, then implement; Skyy fixes later.
