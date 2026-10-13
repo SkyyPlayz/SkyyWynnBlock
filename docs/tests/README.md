@@ -183,3 +183,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Lag fixes batch (Coins, Bazaar, Guilds, Auctions, Accessories, Sacks, Collections, Wardrobe) (DEPLOYED 2026-10-13, backup deploy-20261013-1234) | [2026-10](2026-10.md) |
 | SkyyArmory 0.1.23 + SkyyAbilityProbe 0.1 (DEPLOYED 2026-10-13, backup deploy-20261013-1342) | [2026-10](2026-10.md) |
 | Lag fixes batch 2 (Gear, Hud, Skills, Fishing, Merchants, Exploration, Islands) (DEPLOYED 2026-10-13, backup deploy-20261013-1412) | [2026-10](2026-10.md) |
+| Menu 0.3.19 hub hotkey + Bank 0.1.9 + Profiles 0.1.11 + UiProbe 0.6 hub panel (DEPLOYED 2026-10-13, backup deploy-20261013-1417) | [2026-10](2026-10.md) |
