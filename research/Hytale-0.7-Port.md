@@ -34,6 +34,24 @@ methods); the final release changed much more (WorldChunk block access, PageMana
 | ChunkLightingManager.invalidateLightInChunk (1) | invalidateLightInChunkSection(s)(ChunkGrid, ...) / invalidateLightAtBlock |
 | CombatTextUpdate.<init> (1, SkyyGear crit popup) | CombatTextUpdate(float, String, Color) |
 
+## Probe 2026-10-13 (reflection on the 0.7 release jar): where block access went
+
+Block reads / writes are no longer methods on WorldChunk; they go through the ChunkStore ECS. Leads for the port builders (read the
+bytecode of these with javassist, read only, before writing code):
+- **Write a block:** `universe.world.chunk.BlockOperations.setBlock(ChunkStore, Ref<ChunkStore>, x, y, z, blockId, BlockType, ...)`
+  (static; a second overload takes the ChunkSection + BlockSection directly). Replaces WorldChunk.setBlock / breakBlock.
+- **Read a block id:** `builtin.adventure.worldevents.condition.spawner.Spawner.getBlockId(x, y, z, ChunkStore)` (static) is a ready
+  reference implementation of "block at world x,y,z"; `universe.world.accessor.BlockReader.getBlock(x,y,z)` /
+  `SectionReader.getBlock + getEnvironment(x,y,z)` are the reader interfaces; `server.spawning.util.SpawnPositionChunkCache.getBlockId`
+  another user.
+- **Height:** `BlockChunk.setHeightmapColumn(HeightmapColumn)` -> `HeightmapColumn.getHeight(x,z)` (IHeightmap: Legacy / Tree).
+- **Fluid:** `chunk.section.FluidSection.getFluidId(x,y,z)` / `getFluid` / `setFluid`.
+- **Environment:** `SectionReader.getEnvironment(x,y,z)` or `BlockChunk.readEnvironmentRuns(...)`.
+- **Chunk lookup:** `World.getChunkStore()` (a ChunkGrid) + `WorldChunk.getComponentType()`; find the "chunk ref at block / index"
+  method on ChunkGrid (pre-release audit: `getChunkSectionReferenceAtBlock`, `getStore` moved to ChunkGrid).
+- **Lighting:** `ChunkLightingManager.invalidateLightInChunkSection(s)(ChunkGrid, ...)` via `World.getChunkLighting()`.
+Raw lists: tools/dev/scratch/api07/ (local only).
+
 ## Full fail list
 
 ```
