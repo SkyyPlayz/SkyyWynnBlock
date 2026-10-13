@@ -17,8 +17,8 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.19"), ("SkyySacks", "0.7.18"), ("SkyyCoins", "0.1.6"), ("SkyyCollections", "0.2.10"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.8"), ("SkyyIslands", "0.5.7"), ("SkyyBazaar", "0.1.8"), ("SkyyGear", "0.2.25"), ("SkyySkills", "0.4.32"),
-    ("SkyyAccessories", "0.5.12"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.18"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.10"),
+    ("SkyyBank", "0.1.9"), ("SkyyIslands", "0.5.7"), ("SkyyBazaar", "0.1.8"), ("SkyyGear", "0.2.25"), ("SkyySkills", "0.4.32"),
+    ("SkyyAccessories", "0.5.12"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.19"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.11"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -79,7 +79,7 @@ SET = [
     ("SkyyPets", "0.2.3"),
     ("SkyyWardrobe", "0.2.1"),
     ("SkyyAbilityProbe", "0.1"),  # 2026-10-13 ability keys on 0.7 (research/Ability-Framework-Mage-Spec.md B1) - ONE Skyy test session, then RETIRED
-    ("SkyyUiProbe", "0.5"), ("SkyyUiProbeB", "0.5"),  # 2026-10-11 kit / tab / quality-tooltip probes (K1 H1 T1) - ONE Skyy test session, then RETIRED again  # 2026-10-10 Skyy: "build the wardrobe/ loadout system too" - loadouts (armor + hotbar + pets + abilities), per profile
+    ("SkyyUiProbe", "0.6"), ("SkyyUiProbeB", "0.5"),  # 2026-10-11 kit / tab / quality-tooltip probes (K1 H1 T1) - ONE Skyy test session, then RETIRED again  # 2026-10-10 Skyy: "build the wardrobe/ loadout system too" - loadouts (armor + hotbar + pets + abilities), per profile
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
