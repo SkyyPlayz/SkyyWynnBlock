@@ -37,6 +37,7 @@ WAVE 2 - cheap tooling + surveys (free OpenRouter / Jev where possible)
 5. SkyyGear 0.2.24: ONE Anvil tab (Reforge + Upgrade + Identify, appraisal rule) + Crafting hub naming + class filter on crafting tabs.
 6. UI: Skyy runs the UI probe -> Sky Window kit into skyyui.py + tooltip frames; hubs (research/Hubs-Spec.md); chat overflow (XP to the HUD
    skill list, notification feed, Chat / Feed / Off settings); QUEST WIDGET (essential); collection rank-up recipe line (+ click probe).
+ABILITIES (Skyy 2026-10-13, docs/answered/classes.md): framework + MAGE first end to end (after skills07), Skyy tests + refine, then 2-3 classes per batch.
 WAVE 3 - specs (spec rounds, Fable synth; check existing mods first)
 7. GATHERING spec: tier gate, LIFELONG tools (spawn with hatchet / pickaxe / hoe / sickle; pole via hub quest; shovel = plain craft), rarity
    upgrades, tool XP -> Upgrade Points, enchanted upgrade costs, Fishing skill + tree, + SHARDS (6 shards, minion-style totems, shard menu,
