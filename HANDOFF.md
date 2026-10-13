@@ -15,7 +15,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyIslands | 0.5.6 | private islands, co-op, visitors, island settings, /hub; 0.7 port |
 | SkyyBazaar | 0.1.7 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons |
 | SkyyGear | 0.2.24 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers |
-| SkyySkills | 0.4.30 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap |
+| SkyySkills | 0.4.31 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap; 0.7 assets: Mana.json, spell costs; Acro XP line |
 | SkyyAccessories | 0.5.11 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections) |
 | SkyyClasses | 0.1.19 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
 | SkyyMenu | 0.3.18 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port |

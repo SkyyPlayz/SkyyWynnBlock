@@ -88,3 +88,4 @@ tests always come first.
 60. HYTALE 0.7: the world boots again (Saplings From Trees + Better Mob Expansion switched off until their authors update). AVOID new islands / new profiles until the 0.7 port (island fill + spawn calls broke); expect errors on Exploration / Merchants / Menu Spawn / crit popups.
 61. HYTALE 0.7 batch 1: new island (blocks, chest, kit), /hub, /explore tabs + luggage, merchant spawn, mob levels, Armory weapons + essence drops
 62. HYTALE 0.7 batch 2: Menu Spawn + island teleports, /bank + back-pay 1, CRIT! popup, weapon feel, profile switch, /zone
+63. SkyySkills 0.4.31: class Mana pools (Mage 45, Priest 42), 10 / 5 Mana casts, regen 5/s + 6 s combat slow, Acrobatics XP line
