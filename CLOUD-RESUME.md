@@ -82,15 +82,9 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 <!-- 2026-10-09 evening local session (Skyy: "use up all the tokes. Just be sure you aren't wasting any"). Local builds running: rarity G1
 (SkyyGear 0.2.14), ability engine R1 (SkyyClasses), WorldGen 0.3 archipelago node proof, SkyyProfiles cap 8, SkyyPets 0.1. Next local
 builds need these specs. Specs only; one commit + OUTBOX block each. -->
-- [x] (superseded 2026-10-10: the LOCAL session writes research/Requip-Smithing-Spec.md - skip) **/smithing hub spec** (Skyy 2026-10-10, docs/answered/gear.md SMITHING HUB line - write it TOGETHER with the Requip spec, they share
       storage): `research/cloud/Smithing-Hub-Spec.md`: one page /smithing with tabs Craft / Reforge / Upgrade / Merge, crafting pulls
       from + delivers into the Requip spaces (and bags for materials), SET CARDS (size, figure layout of 4 piece icons, set stats + bonus
       text, click -> piece page with craft buttons), class filter (SkyyClasses weapon rules + armor type per class), how vanilla benches
       stay usable, page sizes at 1080p, mockup sketch (ASCII or PNG). Questions with defaults.
 
 ## Done (delete after logging - see the rules above)
-- [x] CurseForge mod survey (0.7) - 2026-10-13 - `research/cloud/Mod-Survey-0.7.md`
-- [x] Rebirth research - 2026-10-13 - `research/cloud/Rebirth-Research.md`
-- [x] Icons: Sigils, Hub Shard + portals, Nexus - 2026-10-13 - `research/cloud/icons-1013`
-- [x] Upgrade ladders + Dragon sets spec - 2026-10-13 - `research/cloud/Upgrade-Ladders-Spec.md`
-- [x] UI mockups (Sky kit) - 2026-10-13 - `research/cloud/ui-mockups-1013`

@@ -254,3 +254,6 @@ Done: research/cloud/ui-mockups-1013/ - deterministic make_mockups.py (9-slices 
 To keep things clear the built-in defaults move: Party tl 8,200, Guild tl 8,324, Skills tr 8,240, Abilities br 460,21 (saved layouts never moved). Found: today's Abilities default (tl 8,760) sits inside the estimated chat. Dynamic Seasons (third-party) overlaps the estimated vanilla pickup popups.
 UNVERIFIED: all vanilla HUD positions are estimates - please measure one 1080p screenshot before building; HUD fade needs its own ~250 ms timer (SkyyHud ticks 1 s); icons in HUD; hiding vanilla pickup popups; UI scale at 1366x768.
 Questions: feed above the chat (needs the default moves) [yes]; Skills right edge + Abilities by the hotbar [yes]; quest arrow north-up [yes].
+
+## 2026-10-13 15:23 Reset-day list done
+All 4 reset-day tasks + the open Upgrade ladders spec are done and pushed (one block each above): research/cloud/ui-mockups-1013/, research/cloud/icons-1013/, research/cloud/Rebirth-Research.md, research/cloud/Mod-Survey-0.7.md, research/cloud/Upgrade-Ladders-Spec.md. Every sheet and mockup is ready for your review before implementing. CLOUD-RESUME has no open tasks - send more any time.
