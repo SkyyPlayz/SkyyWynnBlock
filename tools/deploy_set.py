@@ -16,7 +16,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
-    ("SkyyHud", "0.3.20"), ("SkyySacks", "0.8.1"), ("SkyyCoins", "0.1.6"), ("SkyyCollections", "0.2.11"), ("SkyyParty", "0.1.7"),
+    ("SkyyHud", "0.3.21"), ("SkyySacks", "0.8.1"), ("SkyyCoins", "0.1.6"), ("SkyyCollections", "0.2.11"), ("SkyyParty", "0.1.7"),
     ("SkyyBank", "0.1.9"), ("SkyyIslands", "0.5.7"), ("SkyyBazaar", "0.1.10"), ("SkyyGear", "0.2.26"), ("SkyySkills", "0.4.32"),
     ("SkyyAccessories", "0.5.12"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.19"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.11"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
@@ -78,6 +78,7 @@ SET = [
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
     ("SkyyPets", "0.2.3"),
     ("SkyyWardrobe", "0.2.1"),
+    ("SkyyQuests", "0.1"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyAbilityProbe", "0.1"),  # 2026-10-13 ability keys on 0.7 (research/Ability-Framework-Mage-Spec.md B1) - ONE Skyy test session, then RETIRED
     ("SkyyUiProbe", "0.6"), ("SkyyUiProbeB", "0.5"),  # 2026-10-11 kit / tab / quality-tooltip probes (K1 H1 T1) - ONE Skyy test session, then RETIRED again  # 2026-10-10 Skyy: "build the wardrobe/ loadout system too" - loadouts (armor + hotbar + pets + abilities), per profile
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from

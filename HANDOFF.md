@@ -28,6 +28,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyVault | 0.1.5 | vault pages |
 | SkyyAuctions | 0.1.4 | auction house (buy-it-now); owed-count index |
 | SkyyRanks | 0.1.1 | ranks + permissions made in game |
+| SkyyQuests | - | quest engine, tutorial line, quest widget data (/quests, /questadmin) |
 | SkyyAbilityProbe | 0.1 | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
 | SkyyUiProbe | 0.6 | dev / test probes, op only (retire later); hub panel probe |
 | SkyyUiProbeB | 0.5 | second probe jar for the UI probe (cross-jar textures / tabs), op only (retire with SkyyUiProbe) |
