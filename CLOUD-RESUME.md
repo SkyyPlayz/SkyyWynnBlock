@@ -23,6 +23,17 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
   right agent + effort for the job, as good as possible without wasting tokens: Haiku for tiny lookups, Sonnet for research / reviews /
   straightforward drafts, Opus for code and hard specs, Fable only where it is clearly necessary (hardest spec synthesis / engine design).
   Name the model per agent. Code you write cannot be compiled or tested here (no HytaleServer.jar) - mark it UNTESTED in the PR.
+- **OpenRouter / Jev for cheap side jobs (Skyy 2026-10-13: "make sure the cloud agent knows they can use JEV too, and the rules on using
+  jev"):** `python tools/llm.py "question" --file F ...` (research/OpenRouter-Jev-Plan.md). Rules:
+  - Use it for BULK reading / sorting / first drafts (mod lists, long docs, surveys, summaries) to save Claude tokens; Claude still
+    checks the answer - a model's output is a lead or a draft, never a fact or a commit.
+  - Models: Jev (`typesafe/jev-router`, cheapest capable, paid) and the FREE models only (llm.py tries free first; `--free-only` to stay
+    at $0). Skyy's budget is $20 / month (7 requests so far cost $0.01). Never pick another paid model without asking Skyy.
+  - The key is NEVER in the repo, chat, a log or output, and never printed. llm.py reads Windows Credential Manager locally, else the
+    environment variable OPENROUTER_API_KEY. If the cloud environment has no OPENROUTER_API_KEY, skip OpenRouter (do the job yourself)
+    and note "OpenRouter key not set in the cloud environment" in OUTBOX for Skyy.
+  - Keep redaction ON (no `--no-redact`): no personal data, chat, player names or emails go out; free models may keep what they get.
+    Never send game files or other authors' files (llm.py refuses Assets.zip / HytaleServer.jar).
 - **Art:** before drawing ANY concept sheet or icon, read `.claude/skills/skywynn-art/SKILL.md` (Skyy's art rules, 2026-10-06).
 - Follow `PROJECT-RULES.md`. Skyy uses they/them. Plain English, tables, short.
 
