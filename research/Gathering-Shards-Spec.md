@@ -488,7 +488,7 @@ crosscheck lists none of them as missing (only chunk / block accessors moved - t
 ### 10.5 Pasting island prefabs and regrowing blocks (UNVERIFIED on 0.7)
 Island / bridge prefabs need block writes: 0.7 moved them to `BlockOperations.setBlock(ChunkStore, Ref, x, y, z, ...)` (Hytale-0.7-Port
 probe). The Islands port lands this first; SkyyShards reuses the same helper (`skyy.bridge` `islands:fn:setBlock`, or a shared
-`tools/skyyblocks.py`). Prefab format: the SkyyIslands starter-island fill (block list) - VERIFIED technique on 0.6, 0.7 after the port.
+a new shared block-access helper (planned skyyblocks.py)). Prefab format: the SkyyIslands starter-island fill (block list) - VERIFIED technique on 0.6, 0.7 after the port.
 Alternative: vanilla prefab files (`.prefab`) through `PrefabEditSession` - not probed.
 
 ### 10.6 Worker NPCs (UNVERIFIED, cosmetic only)
