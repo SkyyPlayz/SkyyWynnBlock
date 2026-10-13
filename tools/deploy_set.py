@@ -43,7 +43,6 @@ SET = [
     # vanilla look works inline before any restyled page ships. Move it to RETIRED once the probe results are in.
     # gathering probe pack P0 (2026-10-06, research/Gathering-Progression-Spec.md): op-only dev mods for ONE test session - remove BOTH after Skyy's
     # test. SkyyGatherProbeB-0.1.jar is built into SkyyGatherProbe/ and moved to SkyyGatherProbeB/ by hand.
-    ("SkyyGatherProbe", "0.1"), ("SkyyGatherProbeB", "0.1"),
     # FLOOR (2026-10-07): never roll SkyyArmory below 0.1.6 once spellbooks / kunai exist in player hands (15 new item ids -> unknown
     # items). SkyyGear below 0.2.8 with Armory 0.1.6 shows the new kunai as Lv 20-27 and changes the vanilla Weapon_Kunai damage base
     # (no data loss). Armory 0.1.6 + Classes 0.1.13 + Gear 0.2.8 deploy TOGETHER.
@@ -155,7 +154,7 @@ PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers", "BlueOrbit:DynamicSeasons",
 # SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 (2026-10-03): deploy and roll back TOGETHER. Before SkyySkills goes below 0.4.15:
 # switch Base Mana off and let players log in once. To roll SkyyArmory back: take it out of SET, add it to RETIRED and put SkyySkills back
 # to 0.4.14 in the same deploy (vanilla staff files would charge 50 Mana behind a 10-Mana check otherwise). SkyyClasses back to 0.1.10 is safe.
-RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe", "SkyyTownProbe", "SkyyPetProbe", "SkyyKeyProbe"]   # SkyyMonkProbe: tested 2026-10-08 (TEST 48), the real moves are SkyyArmory 0.1.12
+RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe", "SkyyTownProbe", "SkyyPetProbe", "SkyyKeyProbe", "SkyyGatherProbe", "SkyyGatherProbeB"]  # GatherProbe(+B) 2026-10-13: broken on Hytale 0.7 (3 removed engine calls), never tested; the gathering spec re-probes on 0.7   # SkyyMonkProbe: tested 2026-10-08 (TEST 48), the real moves are SkyyArmory 0.1.12
 
 
 # Third-party pack mods switched OFF in the world on every deploy (kept installed).
