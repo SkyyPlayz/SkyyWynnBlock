@@ -17,8 +17,8 @@ WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyHud", "0.3.18"), ("SkyySacks", "0.7.17"), ("SkyyCoins", "0.1.5"), ("SkyyCollections", "0.2.9"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.7"), ("SkyyIslands", "0.5.6"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.23"), ("SkyySkills", "0.4.30"),
-    ("SkyyAccessories", "0.5.11"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.17"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.9"),
+    ("SkyyBank", "0.1.8"), ("SkyyIslands", "0.5.6"), ("SkyyBazaar", "0.1.7"), ("SkyyGear", "0.2.24"), ("SkyySkills", "0.4.30"),
+    ("SkyyAccessories", "0.5.11"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.18"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.10"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -66,7 +66,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.6"), ("SkyyWorldGen", "0.5"),
+    ("SkyyMobs", "0.1.6"), ("SkyyWorldGen", "0.5.1"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited

@@ -84,6 +84,12 @@ DOCS = {
     "HT": "Hud/TimeLeft",
 }
 # client in-game UI documents (NOT in Assets.zip; Client/Data/Game/Interface). Checked only when that folder exists.
+# RETIRED documents (Hytale 0.7.0, 2026-10-13): Hypixel removed these .ui pages from Assets.zip (the portal pages moved to the
+# client's new XAML UI: Client/Data/Shared/UI/Portals/*.xaml). The kit values they proved are UNCHANGED (last proven on the 0.6
+# release + 0.7.0-pre.4, research/PreRelease-Compat-Report.md section 4); the textures they name are still checked by verify().
+# verify() accepts a check of a retired document ONLY while that document is absent from Assets.zip (counted in "retired" too and
+# named in the printed line); if the document ever comes back, its checks run again.
+RETIRED_DOCS = {"PD": "0.7.0", "PS": "0.7.0"}
 CLIENT_DOCS = {"CT": "InGame/Tooltips/ItemTooltip", "CS": "Common/Settings/LabeledCheckBoxSetting",
                "CH": "Common/Settings/SectionHeader", "CG": "InGame/Common", "CC": "InGame/Pages/Inventory/BasicCraftingPanel"}
 
@@ -2610,6 +2616,18 @@ _need("C", '@TitleStyle = LabelStyle(\n  FontSize: 15,\n  VerticalAlignment: Cen
       '  FontName: "Secondary",\n  RenderBold: true,\n  LetterSpacing: 0\n);', "title style")
 _need("C", "  Style: (\n    ...@TitleStyle,\n    HorizontalAlignment: @Alignment\n  );\n  Padding: (Horizontal: 19);", "title label")
 _need("C", "    Visible: @CloseButton;\n  }\n};\n\n@PageOverlay", "the container close X ships hidden")
+# Hytale 0.7.0 inserted new @Runic* blocks between @DecoratedContainer and @PageOverlay, so the needle above (anchored on the text AFTER
+# the block) no longer matches although the close button did not change. ALT_NEEDLES: a check whose needle is missing still passes
+# when EVERY one of its alternative needles is there - anchored on the block's OWN text: @CloseButton = false at the top of
+# @DecoratedContainer, the button block after the bottom ornament, and its end (Visible: @CloseButton, then the container's "};").
+# (The table entry itself stays as it was: the kit 1.3 / 1.4 check table is frozen, skyyui_test.py SNAP13.)
+ALT_NEEDLES = {
+    ("C", "    Visible: @CloseButton;\n  }\n};\n\n@PageOverlay"): (
+        "@DecoratedContainer = Group {\n  @ContentPadding = Padding(Full: 9 + 8);\n  @CloseButton = false;",
+        '    Background: "Common/ContainerDecorationBottom.png";\n  }\n\n  Button #CloseButton {\n'
+        '    Anchor: (Width: 32, Height: 32, Top: -8, Right: -8);\n',
+        "      Sounds: @ButtonsCancel\n    );\n    Visible: @CloseButton;\n  }\n};"),
+}
 
 
 def confirm_dialog(prefix, w=CONFIRM_W, msg_h=48, note=True, yes_text="Confirm", no_text="Cancel", yes_kind="primary",
@@ -4401,7 +4419,7 @@ def verify(assets_zip=None, client_dir=None, quiet=False):
     if not os.path.isfile(path):
         raise VanillaCheckError("skyyui.verify: Assets.zip not found at %s - the vanilla look cannot be checked, so the build stops "
                                 "(install / update the game, or pass the path: skyyui.verify(r'...\\Assets.zip'))" % path)
-    bad, values, files = [], 0, 0
+    bad, values, files, retired = [], 0, 0, 0
     with zipfile.ZipFile(path, "r") as z:
         names = set(z.namelist())
         cache = {}
@@ -4409,11 +4427,19 @@ def verify(assets_zip=None, client_dir=None, quiet=False):
             if doc in CLIENT_DOCS:
                 continue
             f = CUSTOM + DOCS[doc] + ".ui"
+            if f not in names and doc in RETIRED_DOCS:
+                values += 1         # removed from the game in RETIRED_DOCS[doc]: the kit value stays as last proven
+                retired += 1
+                continue
             if f not in names:
                 bad.append("%s is missing (needed for %s)" % (f, what))
                 continue
             if f not in cache:
                 cache[f] = z.read(f).decode("utf-8", "replace").replace("\r\n", "\n")
+            alts = ALT_NEEDLES.get((doc, needle))
+            if needle not in cache[f] and alts and all(a in cache[f] for a in alts):
+                values += 1         # proven by its alternative anchors (ALT_NEEDLES)
+                continue
             if needle not in cache[f]:
                 bad.append("%s no longer contains %r (%s)" % (f, needle, what))
             else:
@@ -4470,11 +4496,14 @@ def verify(assets_zip=None, client_dir=None, quiet=False):
             extra = "+ %d client reference values" % client
         else:
             extra = "client folder not found: %d client reference values skipped" % sum(1 for d, _n, _w in _CHECKS if d in CLIENT_DOCS)
+        if retired:
+            extra += "; %d of the style values are from documents the game removed (%s), kept as last proven" % (
+                retired, ", ".join(sorted(set(DOCS[d] for d in RETIRED_DOCS))))
         print("vanilla look checked: %d style values, %d textures / sounds (Assets.zip; %s; %s)" % (values, files, extra, kit_id()))
         if "base" not in PROBED:
             print("  note: the kit's base look is not yet seen in game - open the base probe pages (probe_page(\"base1\"), \"base2\", "
                   "\"base3\" = pages 1, 2, 18) before shipping a restyle")
-    return {"values": values, "files": files, "client": client, "client_dir": have_client}
+    return {"values": values, "files": files, "client": client, "client_dir": have_client, "retired": retired}
 
 
 # ================================================================= misc: kit revision, colour lists for lint
