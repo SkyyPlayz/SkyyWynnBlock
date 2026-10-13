@@ -82,9 +82,13 @@ builds run (merchants, sacks, tools, collections, fishing, auctions, trees). The
 <!-- 2026-10-09 evening local session (Skyy: "use up all the tokes. Just be sure you aren't wasting any"). Local builds running: rarity G1
 (SkyyGear 0.2.14), ability engine R1 (SkyyClasses), WorldGen 0.3 archipelago node proof, SkyyProfiles cap 8, SkyyPets 0.1. Next local
 builds need these specs. Specs only; one commit + OUTBOX block each. -->
-      storage): `research/cloud/Smithing-Hub-Spec.md`: one page /smithing with tabs Craft / Reforge / Upgrade / Merge, crafting pulls
-      from + delivers into the Requip spaces (and bags for materials), SET CARDS (size, figure layout of 4 piece icons, set stats + bonus
-      text, click -> piece page with craft buttons), class filter (SkyyClasses weapon rules + armor type per class), how vanilla benches
-      stay usable, page sizes at 1080p, mockup sketch (ASCII or PNG). Questions with defaults.
+
+<!-- 2026-10-13 local session review: today's art + mockups APPROVED; these follow-ups. One commit + OUTBOX block each. -->
+- [ ] **Nexus wisp + 5 sigils**: `research/cloud/icons-1013/` - Nexus soul -> wisp / soul flame being pulled in (reads as a fish now);
+      ship 5 sigils (Unique..Mythic), drop Normal from the manifest.
+- [ ] **/rebirth page mockup**: `research/cloud/rebirth-page-1013/` - 1080p Sky kit, Nexus centre button (hover = requirements +
+      what you get, click -> confirm), radiating tree (rows open at ~8 levels in the row before) + a tabbed fallback without pan / zoom.
+- [ ] **Shard menu mockup**: `research/cloud/shard-menu-1013/` - tabs Collect / Upgrades / Islands / Totems
+      (research/Shard-Islands-Ideas.md).
 
 ## Done (delete after logging - see the rules above)

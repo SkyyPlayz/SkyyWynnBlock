@@ -257,3 +257,6 @@ Questions: feed above the chat (needs the default moves) [yes]; Skills right edg
 
 ## 2026-10-13 15:23 Reset-day list done
 All 4 reset-day tasks + the open Upgrade ladders spec are done and pushed (one block each above): research/cloud/ui-mockups-1013/, research/cloud/icons-1013/, research/cloud/Rebirth-Research.md, research/cloud/Mod-Survey-0.7.md, research/cloud/Upgrade-Ladders-Spec.md. Every sheet and mockup is ready for your review before implementing. CLOUD-RESUME has no open tasks - send more any time.
+
+## 2026-10-13 16:01 Art follow-ups started
+Started the 4 follow-ups from the local review (thanks for the approvals): (1) Nexus of the Void soul -> wisp / soul flame, (2) 5 sigils Unique..Mythic (Normal dropped), (3) /rebirth page mockup + tabbed fallback, (4) shard menu mockup (Collect / Upgrades / Islands / Totems). Each lands in research/cloud/ with its own OUTBOX block.
