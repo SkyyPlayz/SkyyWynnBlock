@@ -184,3 +184,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyArmory 0.1.23 + SkyyAbilityProbe 0.1 (DEPLOYED 2026-10-13, backup deploy-20261013-1342) | [2026-10](2026-10.md) |
 | Lag fixes batch 2 (Gear, Hud, Skills, Fishing, Merchants, Exploration, Islands) (DEPLOYED 2026-10-13, backup deploy-20261013-1412) | [2026-10](2026-10.md) |
 | Menu 0.3.19 hub hotkey + Bank 0.1.9 + Profiles 0.1.11 + UiProbe 0.6 hub panel (DEPLOYED 2026-10-13, backup deploy-20261013-1417) | [2026-10](2026-10.md) |
+| SkyyGear 0.2.26 (one Anvil tab) (DEPLOYED 2026-10-13, backup deploy-20261013-1512) | [2026-10](2026-10.md) |

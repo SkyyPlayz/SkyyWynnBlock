@@ -93,3 +93,4 @@ tests always come first.
 65. Armory 0.1.23 feel check + ABILITY PROBE /aprobe (about 10 min, results read from the log)
 66. LAG FIXES 2: gear stats + join, HUD clock / zone / layout, tree felling XP, /skills top, fishing rod, merchant move, luggage claim, island trust after restart
 67. HUB HOTKEY (double-tap crouch) + /skyprobe hubpanel probe + bank / settings after restart
+68. ANVIL tab: /reforge on a Soul Cage - Reforge + Upgrade cards, Identify / Re-identify / Identify all, 1080p fit
