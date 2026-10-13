@@ -26,6 +26,7 @@ WAVE 1 - make 0.7 work (day 1)
    Bank, Armory, Gear (crit CombatTextUpdate), Mobs, Profiles, WorldGen; retire SkyyGatherProbe (+B) and other spent probes instead of
    porting. crosscheck 0 fails + smoke PASS + deploy. Also: tools/skyyui.py SUI.verify 0.7 fix; how 0.7 changed menus / inventory
    (Skyy: hub buttons INTO the inventory, menu item removed) + inventory-injection probe.
+1b. SkyyArmory FULL build script to 0.7 assets (0.1.22 is a jar re-compile: vanilla staffs lost a charge setting, an orb particle renamed, wand tap 0.346 -> 0.329 s) - after wave 1.
 2. Same day, small lean rounds: chat-digest leads (tree-felling double Foraging XP, rank-up double Farming XP, Acrobatics XP after level-up,
    batch toasts); SkyyBank 0.1.8 catchUpPeriods default 1; 2026-10-19: pack mods still broken on 0.7 -> our own if easy (Saplings From
    Trees) / GPL fork fix (BME, separate module) (docs/answered/project.md); a pre-deploy game-version-range check in smoke / deploy (no agent).
