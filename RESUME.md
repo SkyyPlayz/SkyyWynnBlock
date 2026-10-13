@@ -26,7 +26,8 @@ WAVE 1 - make 0.7 work (day 1)
    porting. crosscheck 0 fails + smoke PASS + deploy. Also: tools/skyyui.py SUI.verify 0.7 fix; how 0.7 changed menus / inventory
    (Skyy: hub buttons INTO the inventory, menu item removed) + inventory-injection probe.
 2. Same day, small lean rounds: chat-digest leads (tree-felling double Foraging XP, rank-up double Farming XP, Acrobatics XP after level-up,
-   batch toasts); SkyyBank 0.1.8 catchUpPeriods default 1; a pre-deploy game-version-range check in smoke / deploy (no agent).
+   batch toasts); SkyyBank 0.1.8 catchUpPeriods default 1; 2026-10-19: pack mods still broken on 0.7 -> our own if easy (Saplings From
+   Trees) / GPL fork fix (BME, separate module) (docs/answered/project.md); a pre-deploy game-version-range check in smoke / deploy (no agent).
 WAVE 2 - cheap tooling + surveys (free OpenRouter / Jev where possible)
 3. Pack map tool; llm.py --json + jev helper; log-digest; free_lens in skywynn-round (research/OpenRouter-Jev-Plan.md).
 4. Pack overlap audit + CurseForge survey per area -> best-of-each + install list for Skyy (research/Mod-Database*.md, PROJECT-RULES 2).
