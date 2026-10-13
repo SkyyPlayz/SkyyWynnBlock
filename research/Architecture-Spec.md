@@ -260,3 +260,13 @@ deploy, `record_deploy`, `tidy_local`.
 | 3 | Saved data: rename each old folder into `Skyy_<Module>/<part>/` at the module's first start (one atomic rename, undo tool), or leave the 31 old folders where they are forever? | **Rename** (tidy, one backup + verify; "leave" is zero-risk but keeps the clutter) |
 | 4 | Public CurseForge mods (Pocket Dimension, Skyy Accessories, Skyy Menu): one jar with SkyyCore inlined, or two downloads (the mod + SkyyCore)? | **Inlined** (zero dependencies, as the design lock says) |
 | 5 | Timing: probes now, SkyyCore right after the 0.7 release-day fixes are tested, merges in the order of section 5 (Economy first, Character last)? | **Yes** |
+
+## Requirement added 2026-10-13: parallel work inside merged jars
+
+Skyy: "when condensing and refining mods later, can we keep the marketecture organized enough that you can work on several parts of the same mods at once?"
+
+- Each merged jar = several MODULES. A module has its own source / patch file, its own Java package, its own data folder, its own Server Setup section and its own harness.
+- One assemble step builds the jar from its modules; a builder owns a MODULE, so several builders can work on the same jar at the same time without touching each other's files.
+- Modules talk only through SkyyCore (typed bridge handles, events, shared services) - never by calling another module's classes directly.
+- Versions: each module has its own version; the jar version is bumped by the assemble step. Integration (crosscheck + smoke) runs once per deploy on the assembled jars.
+- tools/deploy_set.py pins jars; a module manifest (which modules + versions are inside each jar) is written next to each build.
