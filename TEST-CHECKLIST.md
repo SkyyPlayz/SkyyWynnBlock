@@ -98,3 +98,4 @@ tests always come first.
 70. SKYYVOID: migration lines + Pocket Dimension, /pd six tabs + amount box, auto-sweep limit, Upgrade pays once, /bazaar Fishing tab
 71. ENCHANTED (tier III, Compressing tab, Void, Bazaar) + QUESTS 0.1 (welcome, Quest Tracker, out-of-order tasks, /quests, place arrow)
 72. MANA 3.3/s out of combat, 2.5/s in combat + Workbench Accessories tab order (Accessory I first, tier then cost)
+73. PETS: shots, swings, spells pass through your pet; F-to-pet + nameplate still work
