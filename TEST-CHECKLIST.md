@@ -129,3 +129,4 @@ tests always come first.
 101. PERFECT DODGE + Fishing / Ranching / Orchard XP (/skills stats fishing)
 102. GEAR 0.3.5: /pickaxe from closed Vault, bare hands = Crude on crops, identify reveal cards, /pole lifelong rod, multitool after rebirth 1
 103. MONK + ASSASSIN: Enable in /tree class, Ability 2/3 + crouch casts, God Killer on a boss, per-ability modifiers
+104. HUD: Fishing / Ranching / Orchard lines, Farming (F / R / O), ability names show (Lv N)
