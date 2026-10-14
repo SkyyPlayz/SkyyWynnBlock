@@ -31,6 +31,7 @@ REWRITTEN = {
     "research/Booster-Accessories-Spec.md": "cloud 2026-10-06 (1cc3116): wave 2 Fortune numbers checked against the reconciled cap",
     "research/Cooking-Skill-Spec.md": "cloud be00ecb + a387a58: strength formula -> x(1 + 0.32 x Grade) (locked 2026-10-02) and stale-example fixes",
     "tools/CONFIG-CONTRACT.md": "emit() example: KEEP 20 -> 10 (config History keeps 10 versions, 2026-10-05)",
+    "tools/PROFILES-CONTRACT.md": "profile:name row: now Class + name, profile:pname added (SkyyProfiles 0.1.12, 2026-10-13)",
 }
 REWRITTEN_DIRS = ("research/classes/", "research/cloud/")  # + the cloud's own drafts, which it revises (2026-10-06)  # Skyy 2026-10-05: class files refined for easy reading (facts kept - see the PR review)
 NO_EDIT = {"SkyyGear-Plan.md", "SkyyGear-Stat-Catalog.md"}  # Skyy's own docs: never edited, so their old names resolve through MOVES
