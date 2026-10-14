@@ -199,7 +199,7 @@ Every participant stores `rb.lastTx` in the SAME atomic write as its reset - tha
 |---|---|---|---|
 | `rebirth:n:<uuid>` | Integer, active profile; republished on `profile:epoch` | SkyyRebirth | HUD, Gear (Multitool n >= 1), Shards (n >= 2), Collections, Classes (slots, ability cap) |
 | `rebirth:fn:count` | Function(String pkey) -> Integer | SkyyRebirth | offline readers, leaderboards |
-| `rebirth:fn:cap` | Function(Object[]{pkey, skill}) -> Integer | SkyyRebirth | SkyySkills (level caps), SkyyCollections (rank cap) |
+| `rebirth:fn:cap` | Function(Object[]{pkey, kind, Integer todayCap}) -> Integer (built 0.1: the raised cap; counts n up to rebirth.max) | SkyyRebirth | SkyySkills (level caps), SkyyCollections (rank cap) |
 | `rebirth:fn:node` | Function(Object[]{UUID, nodeId}) -> Integer | SkyyRebirth | Gear (tool modifier), any tree effect |
 | `rebirth:fn:dustmult` | Function(Object[]{pkey, tree}) -> Double | SkyyRebirth | SkyyTrees (3.4) |
 | `rebirth:busy:<uuid>` / `rebirth:fn:busy` | Boolean / Function(pkey) -> Boolean | SkyyRebirth | Economy, Profiles, Skills, offline payouts |

@@ -112,3 +112,4 @@ tests always come first.
 84. AUTO-PICKUP 2: F-harvest to the Void, Q-drop not eaten, Void full -> inventory -> feet (pet kills wait for SkyyPets)
 85. LOST TOOL: /pickaxe etc. summon your exact tool from chest / Vault / Requip, else an exact copy; one working tool only
 86. TOOL PERKS: Vein Mine +1 ore / level, Tree Feller on the lifelong tool only, cap 8
+87. REBIRTH R1+R2: skills unchanged, half Farming XP above tool tier, /rebirth Nexus page + tooltip (admin view, feature OFF)

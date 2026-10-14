@@ -19,7 +19,7 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.22"), ("SkyySacks", "0.8.4"), ("SkyyCoins", "0.1.6"), ("SkyyCollections", "0.2.12"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.10"), ("SkyyIslands", "0.5.7"), ("SkyyBazaar", "0.1.10"), ("SkyyGear", "0.3.2"), ("SkyySkills", "0.4.34"),
+    ("SkyyBank", "0.1.10"), ("SkyyIslands", "0.5.7"), ("SkyyBazaar", "0.1.10"), ("SkyyGear", "0.3.2"), ("SkyySkills", "0.4.35"),
     ("SkyyAccessories", "0.5.13"), ("SkyyClasses", "0.1.21"), ("SkyyMenu", "0.3.21"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.12"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.6"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -84,6 +84,8 @@ SET = [
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
     ("SkyyQuests", "0.2"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
+    ("SkyyRebirth", "0.1"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
+    # SkyySkills 0.4.35 (2026-10-14, rebirth R1): caps from rebirth:fn:cap, skill:fn:run, half Farming XP above tool tier (farming.tierUpXpFactor); no data migration - rolling back to 0.4.34 is safe
     ("SkyyAbilityProbe", "0.1"),  # 2026-10-13 ability keys on 0.7 (research/Ability-Framework-Mage-Spec.md B1) - ONE Skyy test session, then RETIRED
     ("SkyyUiProbe", "0.6"), ("SkyyUiProbeB", "0.5"),  # 2026-10-11 kit / tab / quality-tooltip probes (K1 H1 T1) - ONE Skyy test session, then RETIRED again  # 2026-10-10 Skyy: "build the wardrobe/ loadout system too" - loadouts (armor + hotbar + pets + abilities), per profile
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from

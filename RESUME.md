@@ -1,12 +1,11 @@
-# SkyWynn - RESUME HERE (updated 2026-10-14 ~06:05 MDT, 3 relaunched rounds deployed; rebirth12 running)
+# SkyWynn - RESUME HERE (updated 2026-10-14 ~06:30 MDT, all 4 relaunched rounds deployed)
 
 Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
 `TEST-CHECKLIST.md`. Full history: `docs/log/2026-10.md` (2026-10-13 lines). Decisions word for word: `docs/answered/<topic>.md`.
 
 ## START HERE (new session)
 1. `git pull --rebase --autostash`; check usage (ccd get_usage; weekly resets TUE 2026-10-20 15:00 UTC; was 33% on 10-14).
-2. **rebirth12** (SkyySkills 0.4.35 + NEW SkyyRebirth 0.1) was relaunched 06:00 with skywynn-round (recheck); if no report came back, relaunch
-   it from `docs/rounds/2026-10-14-relaunch.md`. pickup2 / losttool / perks are DEPLOYED (below).
+2. The 4 rounds cut off overnight are all DEPLOYED (TEST-CHECKLIST 84-87). Next: Rebirth R3 (below).
 3. Rounds: saved workflow `skywynn-round` (Skyy's OWN words in args.quotes); deploy only with the game closed: backup -> smoke
    (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy_local. Scan logs + `tools/chat_digest.py` after play.
 4. When Skyy says the game is UPDATING: stop every builder / smoke at once (memory skywynn-game-update-lock).
@@ -22,7 +21,9 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   speed (Crude = T1, one tier up 2.5x hits, two up 10x, 3+ refused).
 - **Deployed 2026-10-14 06:00 (TEST-CHECKLIST 84-86, untested):** Sacks 0.8.4 + Mobs 0.1.8 harvest to Void (pet kills idle until SkyyPets
   publishes pets:fn:ownerOf); Gear 0.3.2 /pickaxe etc. summon the EXACT tool (else exact copy); Trees 0.3.6 Vein Mine / Tree Feller perks.
-  6 new questions in OPEN-QUESTIONS (gear + bags), defaults live.
+  06:26 Skills 0.4.35 + NEW SkyyRebirth 0.1 (rebirth R1+R2, feature OFF; /rebirth Nexus page for admins; half Farming XP above tool
+  tier). Keep Rebirth OFF until Skyy has seen the Nexus tooltip (then add "tooltip" to skyyui.PROBED). 9 new questions in
+  OPEN-QUESTIONS (gear, bags, rebirth), defaults live.
 - **Rebirth spec FINAL:** `research/cloud/Rebirth-Spec.md` (all 16 answers + ability levels kept with a soft cap, dust x2 per rebirth ...),
   build order R1-R10 (section 6). R1 + R2 = the interrupted rebirth12 round.
 - Skyy to do: run `/aprobe` (Mage keys) and `/skyprobe kit` (Sky Window kit) in game; set the 4 quest hub
@@ -31,7 +32,7 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   2026-10-19 build our own / fork where the licence allows (docs/log 2026-10-13 pack check).
 
 ## Next, in order (after the 4 relaunched rounds; ~4-5 workflows at once)
-1. Rebirth R3-R10 (research/cloud/Rebirth-Spec.md section 6), one round at a time; refresh the Class Balance chart when numbers change.
+1. Rebirth R3-R10 (research/cloud/Rebirth-Spec.md section 6; R1+R2 live), one round at a time; refresh the Class Balance chart when numbers change.
 2. Gathering follow-ups (research/Gathering-Shards-Spec.md): hoe till area by tier, fishing pole via the hub quest, gathering armor that
    levels, Multitool unlock at rebirth 1, Sigils, the 6 shard islands + totems (phases 4-8).
 3. Mage real keys + ability-level / modifier rework (after Skyy's /aprobe; research/Ability-Framework-Mage-Spec.md), then 2-3 classes per batch.
