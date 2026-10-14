@@ -97,3 +97,4 @@ tests always come first.
 69. FEED: /skyyhud testfeed - cards, merge x9, fade, XP flash, HUD editor + Server Setup Feed / Messages
 70. SKYYVOID: migration lines + Pocket Dimension, /pd six tabs + amount box, auto-sweep limit, Upgrade pays once, /bazaar Fishing tab
 71. ENCHANTED (tier III, Compressing tab, Void, Bazaar) + QUESTS 0.1 (welcome, Quest Tracker, out-of-order tasks, /quests, place arrow)
+72. MANA 3.3/s out of combat, 2.5/s in combat + Workbench Accessories tab order (Accessory I first, tier then cost)

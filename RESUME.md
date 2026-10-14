@@ -16,7 +16,8 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   (Coins write-behind, Bazaar / Guilds / Auctions, Accessories, Sacks, Collections, Wardrobe, Gear snapshot, Hud own thread, Skills /
   Fishing / Merchants / Exploration / Islands writers, Menu / Bank / Profiles), Armory 0.1.23 from source, hub hotkey (double-tap crouch),
   Anvil tab (Gear 0.2.26), notification feed + XP flash (Hud 0.3.20), probes /aprobe + /skyprobe hubpanel. TEST-CHECKLIST 60-69.
-- Running: void080 (SkyySacks 0.8.0 SkyyVoid + Bazaar 0.1.9), quests01 (SkyyQuests 0.1 + Hud 0.3.21 quest widget).
+- Also LIVE: SkyyVoid (Sacks 0.8.0/0.8.1, Bazaar 0.1.9/0.1.10), Enchanted materials, SkyyQuests 0.1 + Hud 0.3.21, Skills 0.4.33 (Mana 3.3/s) + Accessories 0.5.13 (TEST-CHECKLIST 70-72).
+- Running: prof012 (Profiles 0.1.12 + Sacks 0.8.2), petpass (Pets 0.2.4 pass-through), quests02 (Quests 0.2), tools03 (Gear 0.3.0 lifelong tools).
 - Specs waiting on Skyy: Gathering-Shards (sec 14), Ability-Framework-Mage (sec 11), SkyyQuests-Tutorial (sec 12); cloud drawing /rebirth + shard menu.
 - QUEUED (after prof012 frees SkyySacks): AUTO-PICKUP (docs/answered/bags.md 2026-10-13): blocks + mob drops straight to Void then inventory, ground only if full; killer + top damager both get loot (top damager more); feed cards instead of vanilla pickup popups.
 - QUEUED: SkyyPets - your attacks / shots / abilities pass through your own pets (docs/answered/pets.md 2026-10-13).

@@ -188,3 +188,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SkyyHud 0.3.20 (notification feed + XP flash) (DEPLOYED 2026-10-13, backup deploy-20261013-1523) | [2026-10](2026-10.md) |
 | SkyyVoid: SkyySacks 0.8.0 + SkyyBazaar 0.1.9 (Bags v2) (DEPLOYED 2026-10-13, backup deploy-20261013-1547) | [2026-10](2026-10.md) |
 | Enchanted materials + SkyyQuests 0.1 + SkyyHud 0.3.21 quest widget (DEPLOYED 2026-10-13, backup deploy-20261013-1719) | [2026-10](2026-10.md) |
+| Mana 3.3/s + Accessories tab order: SkyySkills 0.4.33 + SkyyAccessories 0.5.13 (DEPLOYED 2026-10-13, backup deploy-20261013-1815) | [2026-10](2026-10.md) |
