@@ -23,7 +23,8 @@ Class values on `profile:class:<uuid>` are `Archer`, `Warrior`, `Mage`, `Berserk
 | `profile:<uuid>` | String active profile id: `"1"`, `"2"`, ... | SkyyProfiles |
 | `profile:class:<uuid>` | String class of the active profile (`Archer`, `Warrior`, `Mage`, `Berserker`, `Priest`, later `Assassin`, `Shaman`). Absent = none | SkyyProfiles |
 | `profile:epoch:<uuid>` | Long, +1 on every profile switch or creation | SkyyProfiles |
-| `profile:name:<uuid>` | String display name of the active profile | SkyyProfiles |
+| `profile:name:<uuid>` | String display text of the active profile: `<Class> <name>` (e.g. `Priest Banana`), just the name with no class (since SkyyProfiles 0.1.12; before: the bare name). Show as-is; do NOT append the class again | SkyyProfiles |
+| `profile:pname:<uuid>` | String bare profile name of the active profile (no class; since 0.1.12). Players can rename it (`/profiles rename`); the key / folder never change | SkyyProfiles |
 | `profile:fn:state` | `java.util.function.Function` apply(String storage key) -> `"active"`, `"inactive"`, `"pending"` (deleted, inside the undo window), `"archived"`, or null (unknown key, or a UUID was passed). String keys only. Since 0.1.5 | SkyyProfiles |
 
 ## Storage key
