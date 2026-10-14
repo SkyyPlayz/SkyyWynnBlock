@@ -18,7 +18,7 @@ WORLD = "HUD mod"
 SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.21"), ("SkyySacks", "0.8.2"), ("SkyyCoins", "0.1.6"), ("SkyyCollections", "0.2.11"), ("SkyyParty", "0.1.7"),
+    ("SkyyHud", "0.3.21"), ("SkyySacks", "0.8.3"), ("SkyyCoins", "0.1.6"), ("SkyyCollections", "0.2.11"), ("SkyyParty", "0.1.7"),
     ("SkyyBank", "0.1.10"), ("SkyyIslands", "0.5.7"), ("SkyyBazaar", "0.1.10"), ("SkyyGear", "0.3.0"), ("SkyySkills", "0.4.33"),
     ("SkyyAccessories", "0.5.13"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.20"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.12"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
@@ -68,7 +68,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.6"), ("SkyyWorldGen", "0.5.1"),
+    ("SkyyMobs", "0.1.7"), ("SkyyWorldGen", "0.5.1"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -349,6 +349,9 @@ def main():
     # FLOOR: never roll SkyySacks below 0.8.0 once it has run - run /pdadmin legacybags <player> for every player BEFORE any rollback (converted bags are gone).
     if (_v(_p.get("SkyyBazaar", "0")) >= (0, 1, 9)) and _v(_p.get("SkyySacks", "0")) < (0, 8, 0):
         print("STOP: SkyyBazaar 0.1.9 needs SkyySacks 0.8.0 (deploy the SkyyVoid batch together)"); return 1
+    # Auto-pickup (2026-10-13): SkyySacks 0.8.3 + SkyyMobs 0.1.7 deploy and roll back TOGETHER (kill credit via mob:fn:credit); no data floor
+    if (_v(_p.get("SkyySacks", "0")) >= (0, 8, 3)) != (_v(_p.get("SkyyMobs", "0")) >= (0, 1, 7)):
+        print("STOP: SkyySacks 0.8.3 (auto-pickup) and SkyyMobs 0.1.7 (kill credit) go together"); return 1
     # Untiered batch (2026-10-09): SkyyGear 0.2.16 + SkyyArmory 0.1.15 deploy TOGETHER (the 3 Armory UT items + their numbers from SkyyGear)
     if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 16)) != (_v(_p.get("SkyyArmory", "0")) >= (0, 1, 15)):
         print("STOP: SkyyGear 0.2.16+ and SkyyArmory 0.1.15+ deploy together (the Untiered batch) - pin both or neither"); return 1
