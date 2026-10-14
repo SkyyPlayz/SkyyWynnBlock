@@ -18,10 +18,10 @@ WORLD = "HUD mod"
 SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.22"), ("SkyySacks", "0.8.3"), ("SkyyCoins", "0.1.6"), ("SkyyCollections", "0.2.12"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.10"), ("SkyyIslands", "0.5.7"), ("SkyyBazaar", "0.1.10"), ("SkyyGear", "0.3.1"), ("SkyySkills", "0.4.34"),
+    ("SkyyHud", "0.3.22"), ("SkyySacks", "0.8.4"), ("SkyyCoins", "0.1.6"), ("SkyyCollections", "0.2.12"), ("SkyyParty", "0.1.7"),
+    ("SkyyBank", "0.1.10"), ("SkyyIslands", "0.5.7"), ("SkyyBazaar", "0.1.10"), ("SkyyGear", "0.3.2"), ("SkyySkills", "0.4.34"),
     ("SkyyAccessories", "0.5.13"), ("SkyyClasses", "0.1.21"), ("SkyyMenu", "0.3.21"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.12"),
-    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
+    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.6"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -68,7 +68,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.7"), ("SkyyWorldGen", "0.5.1"),
+    ("SkyyMobs", "0.1.8"), ("SkyyWorldGen", "0.5.1"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -322,6 +322,9 @@ def main():
         print("STOP: SkyyMobs 0.1.4+ needs SkyySkills 0.4.17+ (kill XP by mob level through mob:fn:info) in the same deploy"); return 1
     if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 5) or _v(_p.get("SkyySkills", "0")) >= (0, 4, 17)) and not _mob:
         print("STOP: SkyyGear 0.2.5+ / SkyySkills 0.4.17+ deploy with SkyyMobs 0.1.4+ (the mob curve round) - pin all three or none"); return 1
+    # pickup2 (2026-10-14): SkyySacks 0.8.4 + SkyyMobs 0.1.8 deploy and roll back TOGETHER (pet kills / harvest to the Void; mixing works but Skyy asked for both)
+    if (_v(_p.get("SkyySacks", "0")) >= (0, 8, 4)) != (_v(_p.get("SkyyMobs", "0")) >= (0, 1, 8)):
+        print("STOP: SkyySacks 0.8.4+ and SkyyMobs 0.1.8+ deploy together (pickup2) - pin both or neither"); return 1
     # monk moves round (2026-10-08): SkyySkills 0.4.22 stops shipping the vanilla Wood / Bamboo Bo -> SkyyArmory 0.1.11+ must own them
     if _v(_p.get("SkyySkills", "0")) >= (0, 4, 22) and _v(_p.get("SkyyArmory", "0")) < (0, 1, 11):
         print("STOP: SkyySkills 0.4.22+ needs SkyyArmory 0.1.11+ (the Wood / Bamboo Bo handover) in the same deploy"); return 1

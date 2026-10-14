@@ -21,6 +21,10 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - NOTE 2026-10-02 (same review): with the flatter class curve, class level-up coins arrive much faster (xp.properties coinsPerLevel). Your live profiles gained nothing (little class XP yet); check the coin rate before a public launch.
 
 ### gear
+- LOST TOOL (SkyyGear 0.3.2): after you get an exact copy and reforge / tier it up, the original stays Retired for good if it turns up (no swap back, sell or salvage) - else a bad reforge could be undone for free. OK? [yes]
+- LOST TOOL: tool in a CLOSED Vault -> /pickaxe gives an exact copy (SkyyVault has no fetch hook yet). OK for now? [yes; add a Vault hook later]
+- TOOL PERKS (SkyyTrees 0.3.6): the Tree Feller log table stops at level 6 (1,2,4,5,6,10), so the hatchet perk adds nothing once your tree is level 5+. Give it 8 numbers (e.g. 1,2,4,5,6,10,12,14) as the new default, or will you edit it in Server Setup -> Trees? [8 numbers]
+- TOOL PERKS: Vein Mine = +1 ore per tool level on top of the tree's Vein Burst number, total capped at 8. Intended? [yes]
 
 
 
@@ -31,6 +35,8 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### economy
 
 ### bags
+- AUTO-PICKUP 2 (SkyySacks 0.8.4): seeds / saplings from a harvest go to the Void (not the inventory), so replanting means pulling them out. Keep? [Void]
+- AUTO-PICKUP 2: the vanilla 'picked up' popup still flashes next to our feed card. Keep it? [keep]
 
 ### classes
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]

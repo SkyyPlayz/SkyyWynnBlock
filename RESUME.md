@@ -1,13 +1,12 @@
-# SkyWynn - RESUME HERE (updated 2026-10-14 ~05:30 MDT, after the 2026-10-13 marathon + an interrupted night)
+# SkyWynn - RESUME HERE (updated 2026-10-14 ~06:05 MDT, 3 relaunched rounds deployed; rebirth12 running)
 
 Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
 `TEST-CHECKLIST.md`. Full history: `docs/log/2026-10.md` (2026-10-13 lines). Decisions word for word: `docs/answered/<topic>.md`.
 
 ## START HERE (new session)
 1. `git pull --rebase --autostash`; check usage (ccd get_usage; weekly resets TUE 2026-10-20 15:00 UTC; was 33% on 10-14).
-2. **Relaunch the 4 rounds a Windows update cut off overnight:** `docs/rounds/2026-10-14-relaunch.md` (briefs, how far each got, the
-   partial UNREVIEWED files on disk, and the saved critic findings in `tools/dev/scratch/interrupted/<tag>.md`). Order: pickup2 (only the
-   check left) -> losttool + perks (fix from saved findings) -> rebirth12 (full round).
+2. **rebirth12** (SkyySkills 0.4.35 + NEW SkyyRebirth 0.1) was relaunched 06:00 with skywynn-round (recheck); if no report came back, relaunch
+   it from `docs/rounds/2026-10-14-relaunch.md`. pickup2 / losttool / perks are DEPLOYED (below).
 3. Rounds: saved workflow `skywynn-round` (Skyy's OWN words in args.quotes); deploy only with the game closed: backup -> smoke
    (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy_local. Scan logs + `tools/chat_digest.py` after play.
 4. When Skyy says the game is UPDATING: stop every builder / smoke at once (memory skywynn-game-update-lock).
@@ -21,9 +20,12 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   chat -> feed (Skills 0.4.34, Classes 0.1.20, Collections 0.2.12; 116 -> 20 lines / 12 min); Hud 0.3.22 per-player routes; Menu 0.3.21
   Messages tab + Classes 0.1.21 ability route; BetterMap 1.3.9 / DynamicSeasons 7.0.2 / Perfect Parries 0.9.7 back ON; Gear 0.3.1 tool
   speed (Crude = T1, one tier up 2.5x hits, two up 10x, 3+ refused).
+- **Deployed 2026-10-14 06:00 (TEST-CHECKLIST 84-86, untested):** Sacks 0.8.4 + Mobs 0.1.8 harvest to Void (pet kills idle until SkyyPets
+  publishes pets:fn:ownerOf); Gear 0.3.2 /pickaxe etc. summon the EXACT tool (else exact copy); Trees 0.3.6 Vein Mine / Tree Feller perks.
+  6 new questions in OPEN-QUESTIONS (gear + bags), defaults live.
 - **Rebirth spec FINAL:** `research/cloud/Rebirth-Spec.md` (all 16 answers + ability levels kept with a soft cap, dust x2 per rebirth ...),
   build order R1-R10 (section 6). R1 + R2 = the interrupted rebirth12 round.
-- **Open questions: none.** Skyy to do: run `/aprobe` (Mage keys) and `/skyprobe kit` (Sky Window kit) in game; set the 4 quest hub
+- Skyy to do: run `/aprobe` (Mage keys) and `/skyprobe kit` (Sky Window kit) in game; set the 4 quest hub
   spots (`/questadmin place set hub.mining | hub.foraging | hub.farming | hub.fishing`); test 72-83; Grok video notes from WED.
 - Still broken on 0.7 (switched off): Saplings From Trees, TheArmory, HyFishing, Better Mob Expansion - recheck CurseForge; after
   2026-10-19 build our own / fork where the licence allows (docs/log 2026-10-13 pack check).

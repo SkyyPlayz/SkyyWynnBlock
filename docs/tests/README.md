@@ -200,3 +200,6 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Settings Messages tab + ability route: SkyyMenu 0.3.21 + SkyyClasses 0.1.21 (DEPLOYED 2026-10-13, backup deploy-20261013-2111) | [2026-10](2026-10.md) |
 | Hytale 0.7.1 + BetterMap / DynamicSeasons / Perfect Parries back on (DEPLOYED 2026-10-13, backup deploy-20261013-2201) | [2026-10](2026-10.md) |
 | Tool speed: Crude = T1, x2.5 / x10: SkyyGear 0.3.1 (DEPLOYED 2026-10-13, backup deploy-20261013-2223) | [2026-10](2026-10.md) |
+| AUTO-PICKUP 2: SkyySacks 0.8.4 + SkyyMobs 0.1.8 (harvest to Void, pet-kill path) (DEPLOYED 2026-10-14, backup deploy-20261014-0558) | [2026-10](2026-10.md) |
+| LOST TOOL: SkyyGear 0.3.2 (exact tool back / summon) (DEPLOYED 2026-10-14, backup deploy-20261014-0558) | [2026-10](2026-10.md) |
+| TOOL PERKS: SkyyTrees 0.3.6 (Vein Mine + Tree Feller from the lifelong tool) (DEPLOYED 2026-10-14, backup deploy-20261014-0558) | [2026-10](2026-10.md) |
