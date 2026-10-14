@@ -191,3 +191,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Mana 3.3/s + Accessories tab order: SkyySkills 0.4.33 + SkyyAccessories 0.5.13 (DEPLOYED 2026-10-13, backup deploy-20261013-1815) | [2026-10](2026-10.md) |
 | Attacks pass through pets: SkyyPets 0.2.4 (DEPLOYED 2026-10-13, backup deploy-20261013-1824) | [2026-10](2026-10.md) |
 | Profile rename + Class Name, admin no cap, /pdadmin rarity: SkyyProfiles 0.1.12 + SkyySacks 0.8.2 (DEPLOYED 2026-10-13, backup deploy-20261013-1828) | [2026-10](2026-10.md) |
+| Profile name shown once / not cut: SkyyBank 0.1.10 + SkyyMenu 0.3.20 (DEPLOYED 2026-10-13, backup deploy-20261013-1838) | [2026-10](2026-10.md) |

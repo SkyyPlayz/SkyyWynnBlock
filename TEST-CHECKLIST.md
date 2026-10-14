@@ -100,3 +100,4 @@ tests always come first.
 72. MANA 3.3/s out of combat, 2.5/s in combat + Workbench Accessories tab order (Accessory I first, tier then cost)
 73. PETS: shots, swings, spells pass through your pet; F-to-pet + nameplate still work
 74. PROFILES rename + '<Class> <Name>' + admin no cap; /pdadmin rarity reset (no item loss)
+75. BANK title class once + MENU Pets tile full '<Class> <name>'
