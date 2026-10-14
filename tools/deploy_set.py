@@ -16,8 +16,10 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
+    # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
+    # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.21"), ("SkyySacks", "0.8.2"), ("SkyyCoins", "0.1.6"), ("SkyyCollections", "0.2.11"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.10"), ("SkyyIslands", "0.5.7"), ("SkyyBazaar", "0.1.10"), ("SkyyGear", "0.2.26"), ("SkyySkills", "0.4.33"),
+    ("SkyyBank", "0.1.10"), ("SkyyIslands", "0.5.7"), ("SkyyBazaar", "0.1.10"), ("SkyyGear", "0.3.0"), ("SkyySkills", "0.4.33"),
     ("SkyyAccessories", "0.5.13"), ("SkyyClasses", "0.1.19"), ("SkyyMenu", "0.3.20"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.12"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.5"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
