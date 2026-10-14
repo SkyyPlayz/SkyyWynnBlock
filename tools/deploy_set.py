@@ -78,7 +78,10 @@ SET = [
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
     ("SkyyPets", "0.2.4"),
     ("SkyyWardrobe", "0.2.1"),
-    ("SkyyQuests", "0.1"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
+    # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
+    # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
+    # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
+    ("SkyyQuests", "0.2"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyAbilityProbe", "0.1"),  # 2026-10-13 ability keys on 0.7 (research/Ability-Framework-Mage-Spec.md B1) - ONE Skyy test session, then RETIRED
     ("SkyyUiProbe", "0.6"), ("SkyyUiProbeB", "0.5"),  # 2026-10-11 kit / tab / quality-tooltip probes (K1 H1 T1) - ONE Skyy test session, then RETIRED again  # 2026-10-10 Skyy: "build the wardrobe/ loadout system too" - loadouts (armor + hotbar + pets + abilities), per profile
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
