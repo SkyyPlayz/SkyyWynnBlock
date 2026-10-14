@@ -205,3 +205,12 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | TOOL PERKS: SkyyTrees 0.3.6 (Vein Mine + Tree Feller from the lifelong tool) (DEPLOYED 2026-10-14, backup deploy-20261014-0558) | [2026-10](2026-10.md) |
 | REBIRTH R1+R2: SkyySkills 0.4.35 + NEW SkyyRebirth 0.1 (feature OFF) (DEPLOYED 2026-10-14, backup deploy-20261014-0626) | [2026-10](2026-10.md) |
 | HARVEST GATE: SkyyGear 0.3.3 (no harvesting 2+ tiers above your hoe) (DEPLOYED 2026-10-14, backup deploy-20261014-0835) | [2026-10](2026-10.md) |
+| PET OWNER: SkyyPets 0.2.5 (pets:fn:ownerOf) (DEPLOYED 2026-10-14, backup deploy-20261014-1104) | [2026-10](2026-10.md) |
+| MARKET CLOSEALL: SkyyBazaar 0.1.11 + SkyyAuctions 0.1.5 (rebirth R4 market side) (DEPLOYED 2026-10-14, backup deploy-20261014-1104) | [2026-10](2026-10.md) |
+| VAULT FETCH: SkyyVault 0.1.6 (lifelong tool fetch hook) (DEPLOYED 2026-10-14, backup deploy-20261014-1104) | [2026-10](2026-10.md) |
+| LOST LOOT: SkyyExploration 0.2.8 (new looks, reveal page, supply drops) (DEPLOYED 2026-10-14, backup deploy-20261014-1104) | [2026-10](2026-10.md) |
+| REBIRTH R3: SkyyRebirth 0.2 + Skills 0.4.36 + Coins 0.1.7 + Bank 0.1.11 + Profiles 0.1.13 (rebirth OFF) (DEPLOYED 2026-10-14, backup deploy-20261014-1104) | [2026-10](2026-10.md) |
+| SHARDS: NEW SkyyShards 0.1 + Islands 0.5.8 + Menu 0.3.22 (Farming shard) (DEPLOYED 2026-10-14, backup deploy-20261014-1104) | [2026-10](2026-10.md) |
+| ABILITIES IN THE TREE: SkyyClasses 0.1.22 + SkyyTrees 0.3.7 (rune keys, ability panel, levels + modifiers; Mage + Priest) (DEPLOYED 2026-10-14, backup deploy-20261014-1104) | [2026-10](2026-10.md) |
+| QUESTS Q3: SkyyQuests 0.3 + Hud 0.3.23 + Fishing 0.1.4 (markers, board + daily jobs, Marlow pole) (DEPLOYED 2026-10-14, backup deploy-20261014-1104) | [2026-10](2026-10.md) |
+| SIGILS + ARMOR LEVELS + HOE AREA: SkyyGear 0.3.4 + Armory 0.1.24 + Collections 0.2.13 (DEPLOYED 2026-10-14, backup deploy-20261014-1104) | [2026-10](2026-10.md) |

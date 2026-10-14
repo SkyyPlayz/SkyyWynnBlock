@@ -18,14 +18,14 @@ WORLD = "HUD mod"
 SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.22"), ("SkyySacks", "0.8.4"), ("SkyyCoins", "0.1.6"), ("SkyyCollections", "0.2.12"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.10"), ("SkyyIslands", "0.5.7"), ("SkyyBazaar", "0.1.10"), ("SkyyGear", "0.3.3"), ("SkyySkills", "0.4.35"),
-    ("SkyyAccessories", "0.5.13"), ("SkyyClasses", "0.1.21"), ("SkyyMenu", "0.3.21"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.12"),
-    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.6"),
+    ("SkyyHud", "0.3.23"), ("SkyySacks", "0.8.4"), ("SkyyCoins", "0.1.7"), ("SkyyCollections", "0.2.13"), ("SkyyParty", "0.1.7"),
+    ("SkyyBank", "0.1.11"), ("SkyyIslands", "0.5.8"), ("SkyyBazaar", "0.1.11"), ("SkyyGear", "0.3.4"), ("SkyySkills", "0.4.36"),
+    ("SkyyAccessories", "0.5.13"), ("SkyyClasses", "0.1.22"), ("SkyyMenu", "0.3.22"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
+    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.7"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
-    ("SkyyExploration", "0.2.7"),
+    ("SkyyExploration", "0.2.8"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
     ("SkyyGuilds", "0.1.7"),
@@ -34,9 +34,9 @@ SET = [
     # skill:bonus "doublejump.acrobatics", Skills publishes skill:dj:key); SkyyTrees 0.2.1 rewrites Acrobatics.RDodge as RDouble on
     # the next save, so do not go back to SkyyTrees 0.2 after it ran. SkyyIslands 0.5 migrates island files at start (0.4.x copies
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
-    ("SkyyVault", "0.1.5"),
+    ("SkyyVault", "0.1.6"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
-    ("SkyyAuctions", "0.1.4"),
+    ("SkyyAuctions", "0.1.5"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
@@ -64,7 +64,7 @@ SET = [
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
     # fishing items, removing SkyyFishing turns rods / reels / parts / fish into unknown items.
-    ("SkyyFishing", "0.1.3"),
+    ("SkyyFishing", "0.1.4"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
@@ -78,13 +78,17 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.2.4"),
+    ("SkyyPets", "0.2.5"),
     ("SkyyWardrobe", "0.2.1"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
-    ("SkyyQuests", "0.2"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
-    ("SkyyRebirth", "0.1"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
+    ("SkyyQuests", "0.3"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
+    ("SkyyRebirth", "0.2"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
+    ("SkyyShards", "0.1"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
+    # 2026-10-14 FLOORS: Skills 0.4.36 / Bank 0.1.11 / Coins 0.1.7 once any profile rebirthed; Rebirth never below 0.2 while a journal is open; Profiles not below 0.1.13 once rebirth is ON.
+    # 2026-10-14: before rolling Classes below 0.1.22 set abil.runeHud=false and let every Mage + Priest log in once. Exploration below 0.2.8: airdrop.enabled=false + no drops out first.
+    # 2026-10-14: Gear 0.3.4 + Armory 0.1.24 + Collections 0.2.13 together (Sigils); Quests 0.3 + Fishing 0.1.4 + Hud 0.3.23 together (remove the 2 quest NPCs before a Quests rollback); Vault rollback only 30 s+ after the last /pickaxe fetch.
     # SkyySkills 0.4.35 (2026-10-14, rebirth R1): caps from rebirth:fn:cap, skill:fn:run, half Farming XP above tool tier (farming.tierUpXpFactor); no data migration - rolling back to 0.4.34 is safe
     ("SkyyAbilityProbe", "0.1"),  # 2026-10-13 ability keys on 0.7 (research/Ability-Framework-Mage-Spec.md B1) - ONE Skyy test session, then RETIRED
     ("SkyyUiProbe", "0.6"), ("SkyyUiProbeB", "0.5"),  # 2026-10-11 kit / tab / quality-tooltip probes (K1 H1 T1) - ONE Skyy test session, then RETIRED again  # 2026-10-10 Skyy: "build the wardrobe/ loadout system too" - loadouts (armor + hotbar + pets + abilities), per profile
@@ -92,7 +96,7 @@ SET = [
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.23"),
+    ("SkyyArmory", "0.1.24"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll

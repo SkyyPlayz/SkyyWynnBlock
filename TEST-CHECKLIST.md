@@ -114,3 +114,12 @@ tests always come first.
 86. TOOL PERKS: Vein Mine +1 ore / level, Tree Feller on the lifelong tool only, cap 8
 87. REBIRTH R1+R2: skills unchanged, half Farming XP above tool tier, /rebirth Nexus page + tooltip (admin view, feature OFF)
 88. HARVEST GATE: crops 2+ tiers above your hoe refused (click + F), 1 up = half XP
+89. PET OWNER key: ready line names pets:fn:ownerOf (pet-kill loot waits for fighting pets, SkyyPets 0.4)
+90. AH CLOSEALL: /ahadmin closeall (+ confirm) cancels your listings to claims, once
+91. VAULT FETCH hook: /vault info normal + ready line (the /pickaxe part comes with SkyyGear 0.3.5)
+92. LOST LOOT: new pile looks, reveal cards, /exploreadmin airdrop supply drop claim once
+93. REBIRTH R3: /rebirthadmin dryrun / rebirth / crashtest on a test profile, coins pay again x0.9
+94. SHARDS: /shardadmin give, place on island, Enter, Collect, Grow, menu tile
+95. ABILITIES: Ability 2/3 + crouch cast Mage / Priest runes; /tree class ability panel; levels + modifiers; send logs (U1-U10)
+96. QUESTS: /questadmin npc add board / marlow, markers, daily jobs, pole once
+97. SIGILS: apply on the Anvil, AH yes / Bazaar no; Mining armor follows Mining level; hoe tills an area
