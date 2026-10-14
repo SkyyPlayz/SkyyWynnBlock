@@ -192,3 +192,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Attacks pass through pets: SkyyPets 0.2.4 (DEPLOYED 2026-10-13, backup deploy-20261013-1824) | [2026-10](2026-10.md) |
 | Profile rename + Class Name, admin no cap, /pdadmin rarity: SkyyProfiles 0.1.12 + SkyySacks 0.8.2 (DEPLOYED 2026-10-13, backup deploy-20261013-1828) | [2026-10](2026-10.md) |
 | Profile name shown once / not cut: SkyyBank 0.1.10 + SkyyMenu 0.3.20 (DEPLOYED 2026-10-13, backup deploy-20261013-1838) | [2026-10](2026-10.md) |
+| Quests 0.2: class gear rewards, Skip, areas, co-op, feed only (DEPLOYED 2026-10-13, backup deploy-20261013-1906) | [2026-10](2026-10.md) |

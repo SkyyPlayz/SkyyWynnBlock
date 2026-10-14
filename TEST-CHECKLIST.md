@@ -101,3 +101,4 @@ tests always come first.
 73. PETS: shots, swings, spells pass through your pet; F-to-pet + nameplate still work
 74. PROFILES rename + '<Class> <Name>' + admin no cap; /pdadmin rarity reset (no item loss)
 75. BANK title class once + MENU Pets tile full '<Class> <name>'
+76. QUESTS 0.2: Skip + optional tasks, I know how to play, rank-up fix, combat gear bags, feed-only, hub areas (/questadmin place set hub.mining ...), co-op
