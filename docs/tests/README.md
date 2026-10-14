@@ -214,3 +214,7 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | ABILITIES IN THE TREE: SkyyClasses 0.1.22 + SkyyTrees 0.3.7 (rune keys, ability panel, levels + modifiers; Mage + Priest) (DEPLOYED 2026-10-14, backup deploy-20261014-1104) | [2026-10](2026-10.md) |
 | QUESTS Q3: SkyyQuests 0.3 + Hud 0.3.23 + Fishing 0.1.4 (markers, board + daily jobs, Marlow pole) (DEPLOYED 2026-10-14, backup deploy-20261014-1104) | [2026-10](2026-10.md) |
 | SIGILS + ARMOR LEVELS + HOE AREA: SkyyGear 0.3.4 + Armory 0.1.24 + Collections 0.2.13 (DEPLOYED 2026-10-14, backup deploy-20261014-1104) | [2026-10](2026-10.md) |
+| ADMIN PAGE: SkyyMenu 0.3.23 (/modconfig admin) (DEPLOYED 2026-10-14, backup deploy-20261014-1242) | [2026-10](2026-10.md) |
+| REBIRTH TREE + CONTINUE: SkyyRebirth 0.3 (R4 + R8, feature OFF) (DEPLOYED 2026-10-14, backup deploy-20261014-1242) | [2026-10](2026-10.md) |
+| TOTEMS: SkyyShards 0.2 + Collections 0.2.14 + Armory 0.1.25 (totems, R9, shard credit) (DEPLOYED 2026-10-14, backup deploy-20261014-1242) | [2026-10](2026-10.md) |
+| PERFECT DODGE + NEW SKILLS: SkyySkills 0.4.37 (Fishing / Ranching / Orchard) (DEPLOYED 2026-10-14, backup deploy-20261014-1242) | [2026-10](2026-10.md) |

@@ -123,3 +123,7 @@ tests always come first.
 95. ABILITIES: Ability 2/3 + crouch cast Mage / Priest runes; /tree class ability panel; levels + modifiers; send logs (U1-U10)
 96. QUESTS: /questadmin npc add board / marlow, markers, daily jobs, pole once
 97. SIGILS: apply on the Anvil, AH yes / Bazaar no; Mining armor follows Mining level; hoe tills an area
+98. ADMIN PAGE: /modconfig admin, 4 tabs, confirm buttons, permission hiding
+99. REBIRTH TREE: /rebirthadmin points all 50, buy / rows / refund; Continue closes AH listings
+100. TOTEMS: Totems tab, place / pick up exact tier, craft, booster; shard credit counts
+101. PERFECT DODGE + Fishing / Ranching / Orchard XP (/skills stats fishing)

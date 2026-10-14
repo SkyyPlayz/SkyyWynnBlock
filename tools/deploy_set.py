@@ -18,9 +18,9 @@ WORLD = "HUD mod"
 SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.23"), ("SkyySacks", "0.8.4"), ("SkyyCoins", "0.1.7"), ("SkyyCollections", "0.2.13"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.11"), ("SkyyIslands", "0.5.8"), ("SkyyBazaar", "0.1.11"), ("SkyyGear", "0.3.4"), ("SkyySkills", "0.4.36"),
-    ("SkyyAccessories", "0.5.13"), ("SkyyClasses", "0.1.22"), ("SkyyMenu", "0.3.22"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
+    ("SkyyHud", "0.3.23"), ("SkyySacks", "0.8.4"), ("SkyyCoins", "0.1.7"), ("SkyyCollections", "0.2.14"), ("SkyyParty", "0.1.7"),
+    ("SkyyBank", "0.1.11"), ("SkyyIslands", "0.5.8"), ("SkyyBazaar", "0.1.11"), ("SkyyGear", "0.3.4"), ("SkyySkills", "0.4.37"),
+    ("SkyyAccessories", "0.5.13"), ("SkyyClasses", "0.1.22"), ("SkyyMenu", "0.3.23"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.7"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -84,8 +84,9 @@ SET = [
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
     ("SkyyQuests", "0.3"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
-    ("SkyyRebirth", "0.2"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
-    ("SkyyShards", "0.1"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
+    ("SkyyRebirth", "0.3"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
+    ("SkyyShards", "0.2"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
+    # 2026-10-14 12:45: Shards 0.2 FLOOR once any totem / modifier item exists or a totem is placed (pick totems up before a rollback); Rebirth 0.3 needs Bazaar 0.1.11+ + Auctions 0.1.5+ (STOP below); Skills 0.4.37 rollback drops Fishing / Ranching / Orchard XP.
     # 2026-10-14 FLOORS: Skills 0.4.36 / Bank 0.1.11 / Coins 0.1.7 once any profile rebirthed; Rebirth never below 0.2 while a journal is open; Profiles not below 0.1.13 once rebirth is ON.
     # 2026-10-14: before rolling Classes below 0.1.22 set abil.runeHud=false and let every Mage + Priest log in once. Exploration below 0.2.8: airdrop.enabled=false + no drops out first.
     # 2026-10-14: Gear 0.3.4 + Armory 0.1.24 + Collections 0.2.13 together (Sigils); Quests 0.3 + Fishing 0.1.4 + Hud 0.3.23 together (remove the 2 quest NPCs before a Quests rollback); Vault rollback only 30 s+ after the last /pickaxe fetch.
@@ -96,7 +97,7 @@ SET = [
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.24"),
+    ("SkyyArmory", "0.1.25"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
@@ -328,6 +329,9 @@ def main():
         print("STOP: SkyyMobs 0.1.4+ needs SkyySkills 0.4.17+ (kill XP by mob level through mob:fn:info) in the same deploy"); return 1
     if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 5) or _v(_p.get("SkyySkills", "0")) >= (0, 4, 17)) and not _mob:
         print("STOP: SkyyGear 0.2.5+ / SkyySkills 0.4.17+ deploy with SkyyMobs 0.1.4+ (the mob curve round) - pin all three or none"); return 1
+    # rebirth4 (2026-10-14): SkyyRebirth 0.3 Continue calls bazaar:fn:closeall / ah:fn:closeall
+    if _v(_p.get("SkyyRebirth", "0")) >= (0, 3) and (_v(_p.get("SkyyBazaar", "0")) < (0, 1, 11) or _v(_p.get("SkyyAuctions", "0")) < (0, 1, 5)):
+        print("STOP: SkyyRebirth 0.3+ needs SkyyBazaar 0.1.11+ and SkyyAuctions 0.1.5+ (rebirth Continue)"); return 1
     # pickup2 (2026-10-14): SkyySacks 0.8.4 + SkyyMobs 0.1.8 deploy and roll back TOGETHER (pet kills / harvest to the Void; mixing works but Skyy asked for both)
     if (_v(_p.get("SkyySacks", "0")) >= (0, 8, 4)) != (_v(_p.get("SkyyMobs", "0")) >= (0, 1, 8)):
         print("STOP: SkyySacks 0.8.4+ and SkyyMobs 0.1.8+ deploy together (pickup2) - pin both or neither"); return 1
