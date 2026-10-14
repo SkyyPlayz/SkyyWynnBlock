@@ -196,3 +196,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Lifelong tools + tier gate: SkyyGear 0.3.0 (DEPLOYED 2026-10-13, backup deploy-20261013-1954) | [2026-10](2026-10.md) |
 | Auto-pickup + kill credit: SkyySacks 0.8.3 + SkyyMobs 0.1.7 (DEPLOYED 2026-10-13, backup deploy-20261013-2017) | [2026-10](2026-10.md) |
 | Chat spam -> feed: SkyySkills 0.4.34 + SkyyClasses 0.1.20 + SkyyCollections 0.2.12 (DEPLOYED 2026-10-13, backup deploy-20261013-2042) | [2026-10](2026-10.md) |
+| Every player sets own message routes: SkyyHud 0.3.22 (DEPLOYED 2026-10-13, backup deploy-20261013-2053) | [2026-10](2026-10.md) |

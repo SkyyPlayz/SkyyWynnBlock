@@ -105,3 +105,4 @@ tests always come first.
 77. LIFELONG TOOLS: migration, /toolpoints, no drop / craft / AH, /pickaxe + /lifelong, tier gate (crudeFactor), Anvil Copper tier-up
 78. AUTO-PICKUP: blocks + mob drops to Void / inventory / feet, feed cards, killer + top damager loot, island denial
 79. CHAT -> FEED: XP flash, double drop / tree / heal / progress cards, one-line rank-up + /craft, NEW recipe marks
+80. MESSAGE ROUTES per player (/settings General) + Ability casts default row
