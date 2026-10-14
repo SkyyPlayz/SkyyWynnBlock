@@ -6,13 +6,13 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 
 ## START HERE (new session)
 1. `git pull --rebase --autostash`; check usage (ccd get_usage; weekly resets TUE 2026-10-20 15:00 UTC; was 33% on 10-14).
-2. RUNNING at 12:55 (skywynn-round): gear5 (Gear 0.3.5 + Fishing 0.1.5 + Merchants 0.1.4), classes2 (Classes 0.1.23 + Trees 0.3.8:
-   Monk + Assassin + R5/R6), econ38 (Skills 0.4.38 + Coins 0.1.8 + Auctions 0.1.6 + Rebirth 0.3.1: coin factor 0.8, alt transfers
-   blocked, new skills on /skills, crashtest arg fix, farming arm), shards03 (Shards 0.3 + Collections 0.2.15: 5 other shards),
-   hud24 (Hud 0.3.24 new skill lines + ability levels), sound1 (Quests / Exploration / Bank / Islands / Pets / Menu sounds + /soundtest);
-   docs agent writing STATUS.md + today's open questions. Queued: class batch Warrior + Berserker + Archer, sound rounds 2-4, load test tool.
-   Deployed today 12:42 too (TEST-CHECKLIST 98-101): Menu 0.3.23 admin page, Rebirth 0.3, Shards 0.2 totems, Collections 0.2.14,
-   Armory 0.1.25, Skills 0.4.37 perfect dodge + Fishing / Ranching / Orchard.
+2. NOTHING RUNNING (13:40). Deployed today after 12:42: Gear 0.3.5 + Fishing 0.1.5 + Merchants 0.1.4 (102), Classes 0.1.23 + Trees
+   0.3.8 Monk + Assassin (103), Hud 0.3.24 (104), Skills 0.4.38 + Coins 0.1.8 + Auctions 0.1.6 + Rebirth 0.3.1 (105). WAITING for a
+   fresh Skyy message to launch (builders refuse when Skyy's newest chat line is another topic): shards03 (phase 7, 5 other shards +
+   /shardadmin arg fix + Collections fish/animal/fruit XP routing), sound1 (Sound-Pass-Plan round 1 + /soundtest), class batch
+   Warrior + Berserker + Archer, a SkyyRebirth round adding gear (and later classes / trees, after the 5th-rebirth modifier slot) to
+   PARTS, Guild bank + Bazaar same-account checks (coins:fn:sameacct), Admin page Shards / Rebirth buttons, load test tool.
+   Big picture for other agents: STATUS.md; core loop diagram: https://claude.ai/artifact/GgipsncNYu15wgTLcn2gUX
 3. Rounds: saved workflow `skywynn-round` (Skyy's OWN words in args.quotes); deploy only with the game closed: backup -> smoke
    (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy_local. Scan logs + `tools/chat_digest.py` after play.
 4. When Skyy says the game is UPDATING: stop every builder / smoke at once (memory skywynn-game-update-lock).
