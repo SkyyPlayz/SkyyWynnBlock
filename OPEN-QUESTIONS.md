@@ -21,6 +21,8 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - NOTE 2026-10-02 (same review): with the flatter class curve, class level-up coins arrive much faster (xp.properties coinsPerLevel). Your live profiles gained nothing (little class XP yet); check the coin rate before a public launch.
 
 ### gear
+- FIRST-HOUR SPEED: Oak logs + copper ore are one tier above the Crude starter tools, so at 0.1 speed a new player needs ~67 hits per Oak log and ~80 per copper ore (the tutorial asks for 10 logs). Keep 0.1, set Server Setup > Gear > Lifelong tools > gate.crudeFactor to 0.25 (~4x hits, Crude tools only), or make Oak + copper tier 0? [0.1 as answered (G4) - change crudeFactor in game if it feels bad; SkyyGear 0.3.0]
+- /pickaxe after losing a tool gives the tier you HAD; lifelong.reclaimTier on = the tier your skill allows (lets players skip Anvil tier-ups). [off]
 
 
 
