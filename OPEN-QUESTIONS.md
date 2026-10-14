@@ -54,6 +54,3 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### profiles
 
 ### rebirth
-- Skill levels above 100 (after rebirths): count them for Overall Level, Overall Mana, the class-weapon bonus and leaderboards? [no - all stop at 100 today]
-- Coins for levels above 100 pay once per profile ever. Pay again after each rebirth? [once ever]
-- Crops TWO tiers above your hoe / sickle also give half Farming XP (not less). Keep? [yes]

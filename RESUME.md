@@ -32,7 +32,9 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   2026-10-19 build our own / fork where the licence allows (docs/log 2026-10-13 pack check).
 
 ## Next, in order (after the 4 relaunched rounds; ~4-5 workflows at once)
-1. Rebirth R3-R10 (research/cloud/Rebirth-Spec.md section 6; R1+R2 live), one round at a time; refresh the Class Balance chart when numbers change.
+0. LEAN: crops 2+ tiers above the held hoe / sickle cannot be harvested (Skyy 10-14 "No. Cant break 2 tiers above"; SkyyGear tier
+   gate and/or SkyySkills; docs/answered/gear.md). Levels past 100 stay out of Overall / Mana / leaderboards (answered, no work).
+1. Rebirth R3-R10 (research/cloud/Rebirth-Spec.md section 6; R1+R2 live) + level-up coins pay again each rebirth, a little less each time (docs/answered/economy.md 10-14), one round at a time; refresh the Class Balance chart when numbers change.
 2. Gathering follow-ups (research/Gathering-Shards-Spec.md): hoe till area by tier, fishing pole via the hub quest, gathering armor that
    levels, Multitool unlock at rebirth 1, Sigils, the 6 shard islands + totems (phases 4-8).
 3. Mage real keys + ability-level / modifier rework (after Skyy's /aprobe; research/Ability-Framework-Mage-Spec.md), then 2-3 classes per batch.
