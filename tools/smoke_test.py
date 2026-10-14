@@ -7,6 +7,8 @@ Usage (game closed - it refuses while any HytaleServer java process runs):
     options: --timeout N (seconds to wait for "Hytale Server Booted!", default 240), --linger N (seconds to keep it up after the boot
              so late start-up errors land in the log, default 15), --light (copy the world WITHOUT chunk data - faster, worlds
              regenerate their spawn chunks), --keep (keep the scratch server folder), --xmx 4G (max heap, default 4G)
+             --pack-audit-only (just the third-party pack-jar API audit, no server, game may stay open), --skip-pack-audit,
+             --allow-pack-api (pack jars with removed Hytale calls do not fail the run)
 
 What it does:
   1. refuses if a HytaleServer java process is running (deploy_set.server_running()).
@@ -21,12 +23,16 @@ What it does:
   4. waits for "Hytale Server Booted!" (or --timeout), lingers, sends "stop" on stdin; kills ONLY its own process if it does not exit.
   5. parses the console log: every SET mod's "[<Mod>] <version> ready" line, "Asset validation failed", "Failed to validate asset"
      records naming Skyy, any SEVERE / ERROR record or Exception mentioning Skyy / com.skyy, plus a short summary of other SEVERE lines.
+  6. PACK API AUDIT (2026-10-13, Hytale 0.7.0 removed methods that pack mods still call and only crashed once a player joined): every
+     ENABLED third-party pack jar (PACK_THIRD_PARTY, minus PACK_DISABLED) is run through tools/ci/crosscheck.py --jar (method / field
+     references vs HytaleServer.jar). A jar with unresolved references fails the run unless --allow-pack-api. Results are cached by jar
+     sha1 in tools/dev/scratch/smoke/pack_audit_cache.json.
 Exit 0 = PASS, 1 = FAIL, 2 = not run (server running, missing jar, setup error).
 The full log goes to tools/dev/scratch/smoke/<stamp>.log; the scratch server folder is deleted (unless --keep). Pack the logs with
 python tools/tidy_local.py --yes --scratch smoke.
 Never touches the real world, UserData (read only) or the game install (read only).
 """
-import argparse, json, os, re, shutil, socket, subprocess, sys, threading, time, zipfile
+import argparse, hashlib, json, os, re, shutil, socket, subprocess, sys, threading, time, zipfile
 
 TOOLS = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(TOOLS)
@@ -232,6 +238,81 @@ def parse(lines, mods):
     return fails, info
 
 
+# ---------------------------------------------------------------- pack jar API audit
+AUDIT_CACHE = os.path.join(SMOKE, "pack_audit_cache.json")
+ACCESS_RX = re.compile(r"^FAIL ACCESS (\S+) (\S+) -> (.*?): (no such method|no such field|class not found)")   # removed API only; own-jar access noise is ignored
+
+
+def pack_audit(allow=False):
+    """Audit each enabled third-party pack jar with crosscheck --jar. Returns (clean_names, {name: [missing members]}, errors)."""
+    pack = find_pack_mods(D.PACK_THIRD_PARTY)
+    os.makedirs(SMOKE, exist_ok=True)
+    try:
+        cache = json.load(open(AUDIT_CACHE, encoding="utf-8"))
+    except Exception:
+        cache = {}
+    clean, bad, errs = [], {}, []
+    work = os.path.join(SMOKE, "pack-audit-%d" % os.getpid())
+    try:
+        for i, (key, ps) in enumerate(sorted(pack.items())):
+            if key in D.PACK_DISABLED:
+                continue
+            p = ps[0]
+            if os.path.isdir(p):
+                errs.append("%s: a folder, not audited" % key)
+                continue
+            try:
+                sha = hashlib.sha1(open(p, "rb").read()).hexdigest()
+            except OSError as e:
+                errs.append("%s: cannot read %s (%s)" % (key, os.path.basename(p), e))
+                continue
+            name = os.path.basename(p)
+            res = cache.get(sha)
+            if res is None:
+                with zipfile.ZipFile(p) as z:
+                    has_classes = any(n.endswith(".class") for n in z.namelist())
+                if not has_classes:
+                    res = {"missing": [], "note": "no classes"}
+                else:
+                    os.makedirs(work, exist_ok=True)
+                    tag = "PackJar%d" % i                       # crosscheck --jar cannot take file names with spaces
+                    dst = os.path.join(work, tag + "-1.jar")
+                    shutil.copyfile(p, dst)
+                    r = subprocess.run([sys.executable, os.path.join(TOOLS, "ci", "crosscheck.py"), "--jar", dst],
+                                       capture_output=True, text=True, errors="replace", cwd=ROOT,
+                                       creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+                    out = r.stdout.splitlines()
+                    if not any(l.startswith(("READY", "NOT READY")) for l in out):
+                        errs.append("%s: crosscheck gave no verdict (%s)" % (name, (r.stderr or r.stdout)[-200:].strip()))
+                        continue
+                    miss = []
+                    for l in out:
+                        m = ACCESS_RX.match(l.strip())
+                        if m and m.group(1) == tag:
+                            miss.append("%s: %s" % (m.group(4), m.group(3)))
+                    res = {"missing": sorted(set(miss))}
+                cache[sha] = res
+            if res["missing"]:
+                bad[name] = res["missing"]
+            else:
+                clean.append(name)
+    finally:
+        shutil.rmtree(work, ignore_errors=True)
+        try:
+            json.dump(cache, open(AUDIT_CACHE, "w", encoding="utf-8"), indent=1)
+        except OSError:
+            pass
+    return clean, bad, errs
+
+
+def print_pack_audit(clean, bad, errs):
+    print("PACK API AUDIT (0.7): %d jar(s) clean, %d with removed calls%s" % (len(clean), len(bad), ":" if bad else ""))
+    for name, miss in sorted(bad.items()):
+        print("  %s: %d missing  e.g. %s" % (name, len(miss), " | ".join(miss[:3])))
+    for e in errs:
+        print("  NOTE " + e)
+
+
 # ---------------------------------------------------------------- run
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -241,8 +322,16 @@ def main():
     ap.add_argument("--light", action="store_true")
     ap.add_argument("--keep", action="store_true")
     ap.add_argument("--xmx", default="4G")
+    ap.add_argument("--pack-audit-only", action="store_true")
+    ap.add_argument("--skip-pack-audit", action="store_true")
+    ap.add_argument("--allow-pack-api", action="store_true")
     a = ap.parse_args()
     t0 = time.time()
+
+    if a.pack_audit_only:
+        clean, bad, errs = pack_audit()
+        print_pack_audit(clean, bad, errs)
+        return 1 if bad and not a.allow_pack_api else 0
 
     if D.server_running():
         print("NOT RUN: a HytaleServer java process is running (game / world open). Close it first.")
@@ -396,6 +485,12 @@ def main():
                 print("    %3dx %s" % (c, k))
         print("  log: " + log_path)
         code = 0 if not fails else 1
+        if not a.skip_pack_audit:
+            clean, bad, errs = pack_audit()
+            print_pack_audit(clean, bad, errs)
+            if bad and not a.allow_pack_api:
+                print("  FAIL pack jar(s) call Hytale API that no longer exists (--allow-pack-api to accept)")
+                code = 1
     except KeyboardInterrupt:
         print("smoke: interrupted")
         code = 2
