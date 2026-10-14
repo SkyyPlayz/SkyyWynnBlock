@@ -106,3 +106,4 @@ tests always come first.
 78. AUTO-PICKUP: blocks + mob drops to Void / inventory / feet, feed cards, killer + top damager loot, island denial
 79. CHAT -> FEED: XP flash, double drop / tree / heal / progress cards, one-line rank-up + /craft, NEW recipe marks
 80. MESSAGE ROUTES per player (/settings General) + Ability casts default row
+81. SETTINGS Messages tab + ability casts in feed (refusals stay in chat)
