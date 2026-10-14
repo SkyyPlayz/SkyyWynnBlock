@@ -132,3 +132,4 @@ tests always come first.
 104. HUD: Fishing / Ranching / Orchard lines, Farming (F / R / O), ability names show (Lv N)
 105. ECON: /skills shows 12 rows, coin factor 0.8 row + Undo, AH buy from own other profile refused, /rebirthadmin crashtest parses
 106. REBIRTH 0.3.2 + GUILDS 0.1.8: admin rebirth resets lifelong tools, Void-Forged Pick node, guild bank coins stay with the depositing profile
+107. SOUNDS: /soundtest list / next / more, quest + reward + NPC + portal + pet + claim + interest sounds, Server Setup sound rows; Admin page rebirth buttons

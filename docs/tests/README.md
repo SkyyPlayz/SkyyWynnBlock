@@ -223,3 +223,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | HUD SKILLS + ABILITY LEVELS: SkyyHud 0.3.24 (DEPLOYED 2026-10-14, backup deploy-20261014-1319) | [2026-10](2026-10.md) |
 | COIN FACTOR 0.8 + NO OWN-PROFILE TRANSFERS: Skills 0.4.38 + Coins 0.1.8 + Auctions 0.1.6 + Rebirth 0.3.1 (DEPLOYED 2026-10-14, backup deploy-20261014-1338) | [2026-10](2026-10.md) |
 | REBIRTH RESETS TOOLS + GUILD BANK OWN-PROFILE BLOCK: SkyyRebirth 0.3.2 + SkyyGuilds 0.1.8 (DEPLOYED 2026-10-14, backup deploy-20261014-1727) | [2026-10](2026-10.md) |
+| SOUND PASS 1 + /soundtest: Quests 0.3.1, Exploration 0.2.9, Bank 0.1.12, Islands 0.5.9, Pets 0.2.6, Menu 0.3.24 (DEPLOYED 2026-10-14, backup deploy-20261014-1741) | [2026-10](2026-10.md) |
