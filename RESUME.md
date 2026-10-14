@@ -1,5 +1,6 @@
 # SkyWynn - RESUME HERE (updated 2026-10-14 ~11:40 MDT, marathon day: Skyy wants the whole Next list done by 17:00)
 
+Big picture for other agents: `STATUS.md`.
 Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
 `TEST-CHECKLIST.md`. Full history: `docs/log/2026-10.md` (2026-10-13 lines). Decisions word for word: `docs/answered/<topic>.md`.
 

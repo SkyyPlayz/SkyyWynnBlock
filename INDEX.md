@@ -6,6 +6,7 @@ grep hit is the whole thing: `grep -n "Lantern" docs/answered/*.md docs/log/*.md
 ## Read in this order
 | File | What | Size |
 |---|---|---|
+| `STATUS.md` | BIG PICTURE for other agents: what the pack is, every system's state, the roadmap, what is decided, what still needs refining, how to help | ~170 lines |
 | `RESUME.md` | where we are + the next steps (start here) | ~60 lines |
 | `PROJECT-RULES.md` | standing rules for people + AI sessions (PC safety, public repo, deploy, how we build) | ~120 lines |
 | `HANDOFF.md` | current versions (= the deploy SET), rollback floors, the UI rules + COMMAND RULES every build must follow | ~85 lines |
