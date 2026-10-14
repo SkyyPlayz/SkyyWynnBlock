@@ -221,3 +221,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | VAULT SUMMON + HANDS + LIFELONG POLE: SkyyGear 0.3.5 + Fishing 0.1.5 + Merchants 0.1.4 (identify reveal, rebirth R7 part, Sigils never in shops) (DEPLOYED 2026-10-14, backup deploy-20261014-1255) | [2026-10](2026-10.md) |
 | MONK + ASSASSIN ABILITIES: SkyyClasses 0.1.23 + SkyyTrees 0.3.8 (rune keys, panel, rebirth R5/R6 parts) (DEPLOYED 2026-10-14, backup deploy-20261014-1303) | [2026-10](2026-10.md) |
 | HUD SKILLS + ABILITY LEVELS: SkyyHud 0.3.24 (DEPLOYED 2026-10-14, backup deploy-20261014-1319) | [2026-10](2026-10.md) |
+| COIN FACTOR 0.8 + NO OWN-PROFILE TRANSFERS: Skills 0.4.38 + Coins 0.1.8 + Auctions 0.1.6 + Rebirth 0.3.1 (DEPLOYED 2026-10-14, backup deploy-20261014-1338) | [2026-10](2026-10.md) |
