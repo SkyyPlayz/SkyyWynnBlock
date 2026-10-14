@@ -336,7 +336,13 @@ def main():
     if D.server_running():
         print("NOT RUN: a HytaleServer java process is running (game / world open). Close it first.")
         return 2
-    for p in (JAVA, SERVER_JAR, ASSETS, WORLD_SRC):
+    import serverjar                                   # cached copies: never run the server on the INSTALLED jar / Assets.zip
+    try:
+        srv_jar, assets = serverjar.server_jar(), serverjar.assets_zip()
+    except SystemExit as e:
+        print("NOT RUN: %s" % e)
+        return 2
+    for p in (JAVA, srv_jar, assets, WORLD_SRC):
         if not os.path.exists(p):
             print("NOT RUN: missing " + p)
             return 2
@@ -397,7 +403,7 @@ def main():
         cmd = [JAVA, "-Xms768M", "-Xmx" + a.xmx, "-XX:-UsePerfData", "-Djava.io.tmpdir=" + tmp,
                "-XX:+IgnoreUnrecognizedVMOptions", "-XX:+UseCompactObjectHeaders", "-XX:+UseShenandoahGC",
                "-XX:ShenandoahGCMode=generational", "-XX:+UnlockExperimentalVMOptions",
-               "-jar", SERVER_JAR, "--auth-mode", "offline", "--bind", "127.0.0.1:%d" % port, "--assets", ASSETS,
+               "-jar", srv_jar, "--auth-mode", "offline", "--bind", "127.0.0.1:%d" % port, "--assets", assets,
                "--mods", modsdir, "--prefab-cache", pc, "--disable-sentry", "--transport", "QUICHE"]
         env = dict(os.environ)
         for k in ("TEMP", "TMP", "TMPDIR"):

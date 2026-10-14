@@ -6,7 +6,7 @@ Usage (game may stay open - nothing is written outside a self-deleting scratch f
                                                                      # candidate jars replace their mod's SET entry (a new mod is added)
     python tools/ci/crosscheck.py --jar ... --baseline               # + command / permission tree diff vs the plain SET jar of each override
     options: --tree (print every command node), --no-init (skip static initialisers), --keep (keep the scratch folder),
-             --server <HytaleServer.jar> (default: the installed release jar, see tools/skyybuild.py)
+             --server <HytaleServer.jar> (default: a cached copy of the installed jar, tools/serverjar.py)
 
 Checks (exit 0 = READY, 1 = problems listed under FAIL; WARN lines never fail):
   1. VERIFY   the JVM runs with -Xverify:all. Every class of every jar is loaded (one class loader per jar, parent = the server jar's
@@ -68,8 +68,9 @@ def main():
     ap.add_argument("--tree", action="store_true")
     ap.add_argument("--no-init", action="store_true")
     ap.add_argument("--keep", action="store_true")
-    ap.add_argument("--server", default=B.SERVER_JAR)
+    ap.add_argument("--server", default=None)      # default: a cached copy of the installed jar (tools/serverjar.py, never the original)
     a = ap.parse_args()
+    a.server = a.server or B.SERVER_JAR
     t0 = time.time()
 
     base = set_jars()

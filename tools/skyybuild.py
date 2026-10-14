@@ -16,7 +16,15 @@ import os, sys, json, shutil, zipfile, glob
 
 PROJECT   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HYTALE    = os.path.join(os.environ.get("APPDATA", r"C:\Users\SkyLo\AppData\Roaming"), "Hytale")
-SERVER_JAR= os.path.join(HYTALE, "install", "release", "package", "game", "latest", "Server", "HytaleServer.jar")
+INSTALLED_SERVER_JAR = os.path.join(HYTALE, "install", "release", "package", "game", "latest", "Server", "HytaleServer.jar")
+# SERVER_JAR (B.SERVER_JAR / from skyybuild import SERVER_JAR) = a CACHED COPY (tools/serverjar.py), resolved on first use, so our JVMs
+# never hold the installed jar open (2026-10-13: that broke the launcher's update). Never open INSTALLED_SERVER_JAR from a JVM.
+def __getattr__(name):
+    if name == "SERVER_JAR":
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import serverjar
+        return serverjar.server_jar()
+    raise AttributeError(name)
 USERDATA  = os.path.join(HYTALE, "UserData")
 MODS_DIR  = os.path.join(USERDATA, "Mods")
 JAVASSIST = os.path.join(PROJECT, "tools", "javassist.jar")
@@ -36,7 +44,7 @@ def start(server_jar=None):
     import jpype
     if not os.path.exists(JAVASSIST):
         raise SystemExit("missing " + JAVASSIST + " (javassist-3.30.2-GA.jar from Maven Central)")
-    server_jar = server_jar or (sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].endswith(".jar") else SERVER_JAR)
+    server_jar = server_jar or (sys.argv[1] if len(sys.argv) > 1 and sys.argv[1].endswith(".jar") else __getattr__("SERVER_JAR"))
     jpype.startJVM(_jvm(), "--add-opens=java.base/java.lang=ALL-UNNAMED", "--enable-native-access=ALL-UNNAMED",
                    classpath=[JAVASSIST], convertStrings=True)
     J = jpype.JClass
