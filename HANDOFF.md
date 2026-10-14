@@ -24,12 +24,12 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyCooking | 0.1.6 | Cooking dishes + food Grade; XP by craft difficulty |
 | SkyyTrees | 0.3.8 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
 | SkyyExploration | 0.2.8 | Exploration skill, spots, island checklist; 0.7 port; private writer, change-driven publish |
-| SkyyGuilds | 0.1.7 | guilds + guild bank; writes off the lock |
+| SkyyGuilds | 0.1.8 | guilds + guild bank; writes off the lock |
 | SkyyVault | 0.1.6 | vault pages |
 | SkyyAuctions | 0.1.6 | auction house (buy-it-now); owed-count index |
 | SkyyRanks | 0.1.1 | ranks + permissions made in game |
 | SkyyQuests | 0.3 | quest engine, tutorial line, quest widget data (/quests, /questadmin); new |
-| SkyyRebirth | 0.3.1 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature OFF by default; new |
+| SkyyRebirth | 0.3.2 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature OFF by default; new |
 | SkyyShards | 0.2 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new |
 | SkyyAbilityProbe | 0.1 | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
 | SkyyUiProbe | 0.6 | dev / test probes, op only (retire later); hub panel probe |

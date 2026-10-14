@@ -28,7 +28,7 @@ SET = [
     ("SkyyExploration", "0.2.8"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
-    ("SkyyGuilds", "0.1.7"),
+    ("SkyyGuilds", "0.1.8"),
     # beta backlog round (Skyy 2026-09-24 20:10 list, cross-checked together): SkyySkills 0.4.2 + SkyyTrees 0.2.1 + SkyyCollections
     # 0.2.1 deploy TOGETHER (felled-log crediting: Skills -> coll:fn:add "skills:felled" + skill:on:felled; Double Jump: Trees posts
     # skill:bonus "doublejump.acrobatics", Skills publishes skill:dj:key); SkyyTrees 0.2.1 rewrites Acrobatics.RDodge as RDouble on
@@ -84,7 +84,7 @@ SET = [
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
     ("SkyyQuests", "0.3"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
-    ("SkyyRebirth", "0.3.1"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
+    ("SkyyRebirth", "0.3.2"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyShards", "0.2"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
     # 2026-10-14 13:10: Classes 0.1.23 + Trees 0.3.8 together (Monk + Assassin, rebirth R5/R6 parts). FLOOR once any rebirth ran: never below these. Do not add classes / trees to SkyyRebirth PARTS until the 3rd modifier slot (every 5th rebirth) is built.
     # 2026-10-14 12:45: Shards 0.2 FLOOR once any totem / modifier item exists or a totem is placed (pick totems up before a rollback); Rebirth 0.3 needs Bazaar 0.1.11+ + Auctions 0.1.5+ (STOP below); Skills 0.4.37 rollback drops Fishing / Ranching / Orchard XP.
@@ -330,6 +330,11 @@ def main():
         print("STOP: SkyyMobs 0.1.4+ needs SkyySkills 0.4.17+ (kill XP by mob level through mob:fn:info) in the same deploy"); return 1
     if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 5) or _v(_p.get("SkyySkills", "0")) >= (0, 4, 17)) and not _mob:
         print("STOP: SkyyGear 0.2.5+ / SkyySkills 0.4.17+ deploy with SkyyMobs 0.1.4+ (the mob curve round) - pin all three or none"); return 1
+    # econ39 (2026-10-14): Rebirth 0.3.2 lists gear as a part; Guilds 0.1.8 asks coins:fn:sameacct. Never roll Rebirth below 0.3.2 while a journal is open.
+    if _v(_p.get("SkyyRebirth", "0")) >= (0, 3, 2) and _v(_p.get("SkyyGear", "0")) < (0, 3, 5):
+        print("STOP: SkyyRebirth 0.3.2+ needs SkyyGear 0.3.5+ (the gear rebirth part)"); return 1
+    if _v(_p.get("SkyyGuilds", "0")) >= (0, 1, 8) and _v(_p.get("SkyyCoins", "0")) < (0, 1, 8):
+        print("STOP: SkyyGuilds 0.1.8+ needs SkyyCoins 0.1.8+ (coins:fn:sameacct)"); return 1
     # rebirth4 (2026-10-14): SkyyRebirth 0.3 Continue calls bazaar:fn:closeall / ah:fn:closeall
     if _v(_p.get("SkyyRebirth", "0")) >= (0, 3) and (_v(_p.get("SkyyBazaar", "0")) < (0, 1, 11) or _v(_p.get("SkyyAuctions", "0")) < (0, 1, 5)):
         print("STOP: SkyyRebirth 0.3+ needs SkyyBazaar 0.1.11+ and SkyyAuctions 0.1.5+ (rebirth Continue)"); return 1
