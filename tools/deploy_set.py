@@ -20,8 +20,8 @@ SET = [
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.23"), ("SkyySacks", "0.8.4"), ("SkyyCoins", "0.1.7"), ("SkyyCollections", "0.2.14"), ("SkyyParty", "0.1.7"),
     ("SkyyBank", "0.1.11"), ("SkyyIslands", "0.5.8"), ("SkyyBazaar", "0.1.11"), ("SkyyGear", "0.3.5"), ("SkyySkills", "0.4.37"),
-    ("SkyyAccessories", "0.5.13"), ("SkyyClasses", "0.1.22"), ("SkyyMenu", "0.3.23"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
-    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.7"),
+    ("SkyyAccessories", "0.5.13"), ("SkyyClasses", "0.1.23"), ("SkyyMenu", "0.3.23"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
+    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.8"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -86,6 +86,7 @@ SET = [
     ("SkyyQuests", "0.3"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyRebirth", "0.3"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyShards", "0.2"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
+    # 2026-10-14 13:10: Classes 0.1.23 + Trees 0.3.8 together (Monk + Assassin, rebirth R5/R6 parts). FLOOR once any rebirth ran: never below these. Do not add classes / trees to SkyyRebirth PARTS until the 3rd modifier slot (every 5th rebirth) is built.
     # 2026-10-14 12:45: Shards 0.2 FLOOR once any totem / modifier item exists or a totem is placed (pick totems up before a rollback); Rebirth 0.3 needs Bazaar 0.1.11+ + Auctions 0.1.5+ (STOP below); Skills 0.4.37 rollback drops Fishing / Ranching / Orchard XP.
     # 2026-10-14 FLOORS: Skills 0.4.36 / Bank 0.1.11 / Coins 0.1.7 once any profile rebirthed; Rebirth never below 0.2 while a journal is open; Profiles not below 0.1.13 once rebirth is ON.
     # 2026-10-14: before rolling Classes below 0.1.22 set abil.runeHud=false and let every Mage + Priest log in once. Exploration below 0.2.8: airdrop.enabled=false + no drops out first.
