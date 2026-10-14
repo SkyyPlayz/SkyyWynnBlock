@@ -21,7 +21,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - NOTE 2026-10-02 (same review): with the flatter class curve, class level-up coins arrive much faster (xp.properties coinsPerLevel). Your live profiles gained nothing (little class XP yet); check the coin rate before a public launch.
 
 ### gear
-- /pickaxe after losing a tool gives the tier you HAD; lifelong.reclaimTier on = the tier your skill allows (lets players skip Anvil tier-ups). [off]
 
 
 
@@ -32,7 +31,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### economy
 
 ### bags
-- /pdadmin rarity changes only the profile you are playing - add an all-profiles option? [no; run it once per profile - SkyySacks 0.8.2, 2026-10-13]
 
 ### classes
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]
