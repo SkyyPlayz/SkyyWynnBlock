@@ -204,3 +204,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | LOST TOOL: SkyyGear 0.3.2 (exact tool back / summon) (DEPLOYED 2026-10-14, backup deploy-20261014-0558) | [2026-10](2026-10.md) |
 | TOOL PERKS: SkyyTrees 0.3.6 (Vein Mine + Tree Feller from the lifelong tool) (DEPLOYED 2026-10-14, backup deploy-20261014-0558) | [2026-10](2026-10.md) |
 | REBIRTH R1+R2: SkyySkills 0.4.35 + NEW SkyyRebirth 0.1 (feature OFF) (DEPLOYED 2026-10-14, backup deploy-20261014-0626) | [2026-10](2026-10.md) |
+| HARVEST GATE: SkyyGear 0.3.3 (no harvesting 2+ tiers above your hoe) (DEPLOYED 2026-10-14, backup deploy-20261014-0835) | [2026-10](2026-10.md) |

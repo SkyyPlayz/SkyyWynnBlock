@@ -113,3 +113,4 @@ tests always come first.
 85. LOST TOOL: /pickaxe etc. summon your exact tool from chest / Vault / Requip, else an exact copy; one working tool only
 86. TOOL PERKS: Vein Mine +1 ore / level, Tree Feller on the lifelong tool only, cap 8
 87. REBIRTH R1+R2: skills unchanged, half Farming XP above tool tier, /rebirth Nexus page + tooltip (admin view, feature OFF)
+88. HARVEST GATE: crops 2+ tiers above your hoe refused (click + F), 1 up = half XP
