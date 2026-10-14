@@ -103,3 +103,4 @@ tests always come first.
 75. BANK title class once + MENU Pets tile full '<Class> <name>'
 76. QUESTS 0.2: Skip + optional tasks, I know how to play, rank-up fix, combat gear bags, feed-only, hub areas (/questadmin place set hub.mining ...), co-op
 77. LIFELONG TOOLS: migration, /toolpoints, no drop / craft / AH, /pickaxe + /lifelong, tier gate (crudeFactor), Anvil Copper tier-up
+78. AUTO-PICKUP: blocks + mob drops to Void / inventory / feet, feed cards, killer + top damager loot, island denial
