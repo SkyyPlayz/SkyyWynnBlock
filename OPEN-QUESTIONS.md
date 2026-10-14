@@ -50,4 +50,4 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### profiles
 
 ### rebirth
-- REBIRTH SPEC: questions 7-16 in research/cloud/Rebirth-Spec.md section 7 (Q1-6, pets, ability levels answered; one at a time) (requirements, Nexus tree, rewards per rebirth, bank rate formula ...). [each has a default there; nothing is built until Skyy answers]
+- REBIRTH SPEC: questions 9-16 in research/cloud/Rebirth-Spec.md section 7 (Q1-8, pets, ability levels answered; one at a time) (requirements, Nexus tree, rewards per rebirth, bank rate formula ...). [each has a default there; nothing is built until Skyy answers]
