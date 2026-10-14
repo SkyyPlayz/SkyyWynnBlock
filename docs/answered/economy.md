@@ -112,3 +112,5 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - 2026-10-13 REBIRTH SPEC Q8: popup "0 coins (Recommended)" -> purse starts at 0 coins after a rebirth.
 - 2026-10-13 REBIRTH SPEC Q9 (Skyy word for word): "all three. can auto close all if you click continue." -> rebirth requires no open Bazaar orders / AH listings, not in combat, and being on your island or at hub; the rebirth page lists what is blocking and a Continue button auto-closes all open orders / listings (refund items + coins) before going on.
 - 2026-10-13 REBIRTH SPEC Q10: popup "+3% per rebirth, cap +30% (Recommended)" -> permanent +3 % all stats per rebirth, cap +30 %.
+- 2026-10-13 REBIRTH SPEC Q11 (Skyy word for word): "recommended curve. (tracks xp gained past max lvl, for bonus points.)" -> points per skill = floor(B x sqrt(run XP / XP to that skill's cap)), B = 12 class / 8 skills, under 25 % pays 0; XP gained PAST max level keeps counting and gives bonus points.
+- 2026-10-13 REBIRTH SPEC Q12: popup "+10 levels, +1 rank (Recommended)" -> each rebirth raises class + skill level caps by 10 and the collection rank cap by 1.
