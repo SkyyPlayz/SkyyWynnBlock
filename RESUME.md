@@ -16,8 +16,8 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   (Coins write-behind, Bazaar / Guilds / Auctions, Accessories, Sacks, Collections, Wardrobe, Gear snapshot, Hud own thread, Skills /
   Fishing / Merchants / Exploration / Islands writers, Menu / Bank / Profiles), Armory 0.1.23 from source, hub hotkey (double-tap crouch),
   Anvil tab (Gear 0.2.26), notification feed + XP flash (Hud 0.3.20), probes /aprobe + /skyprobe hubpanel. TEST-CHECKLIST 60-69.
-- Also LIVE: SkyyVoid (Sacks 0.8.x, Bazaar 0.1.10), Enchanted materials, Skills 0.4.33 (Mana 3.3/s), Accessories 0.5.13, Pets 0.2.4 (attacks pass through), Profiles 0.1.12 (rename, Class Name, admin no cap) + Sacks 0.8.2 (/pdadmin rarity), Bank 0.1.10 + Menu 0.3.20, Quests 0.2 (TEST-CHECKLIST 70-76).
-- Running: tools03 (Gear 0.3.0 lifelong tools), pickup (auto-pickup: Sacks 0.8.3 + Mobs 0.1.7). Open questions added: rename on other cards, /pdadmin all-profiles.
+- Also LIVE: SkyyVoid (Sacks 0.8.x, Bazaar 0.1.10), Enchanted materials, Skills 0.4.33 (Mana 3.3/s), Accessories 0.5.13, Pets 0.2.4 (attacks pass through), Profiles 0.1.12 (rename, Class Name, admin no cap) + Sacks 0.8.2 (/pdadmin rarity), Bank 0.1.10 + Menu 0.3.20, Quests 0.2, Gear 0.3.0 lifelong tools (TEST-CHECKLIST 70-77). Rebirth spec drafted: research/cloud/Rebirth-Spec.md (16 questions).
+- Running: pickup (auto-pickup: Sacks 0.8.3 + Mobs 0.1.7), msgroute (chat spam -> feed: Skills / Classes / Collections, /recipe + rank-up recipe lines). Open questions: first-hour tool speed (gate.crudeFactor), reclaimTier, rename on other cards, /pdadmin all-profiles, rebirth x16.
 - Specs waiting on Skyy: Gathering-Shards (sec 14), Ability-Framework-Mage (sec 11), SkyyQuests-Tutorial (sec 12); cloud drawing /rebirth + shard menu.
 - Next builds: senders switch to the feed (msgroute), Enchanted materials (gathering phase 1, after void080), Mage real keys (after Skyy's /aprobe),
   Sky Window kit into skyyui.py (after Skyy's /skyprobe kit), architecture merge (SkyyCore) with simplify 2.
