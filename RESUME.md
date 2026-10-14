@@ -5,7 +5,9 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 
 ## START HERE (new session)
 1. `git pull --rebase --autostash`; check usage (ccd get_usage; weekly resets TUE 2026-10-20 15:00 UTC; was 33% on 10-14).
-2. The 4 rounds cut off overnight are all DEPLOYED (TEST-CHECKLIST 84-87). Next: Rebirth R3 (below).
+2. RUNNING since ~07:10 (skywynn-round): abiltree (Classes 0.1.22 + Trees 0.3.7: abilities on Ability 2/3 via 0.7 runes, ability
+   panel right of the class tree, levels + modifiers; Mage + Priest), rebirth3 (R3 + coins per rebirth), harvest2 (Gear 0.3.3, no harvest
+   2+ tiers up). If a session ends before they report, relaunch from the args in docs/answered (classes / economy / gear 2026-10-14).
 3. Rounds: saved workflow `skywynn-round` (Skyy's OWN words in args.quotes); deploy only with the game closed: backup -> smoke
    (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy_local. Scan logs + `tools/chat_digest.py` after play.
 4. When Skyy says the game is UPDATING: stop every builder / smoke at once (memory skywynn-game-update-lock).
