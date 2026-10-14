@@ -48,3 +48,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 
 ### profiles
 - Rename button on the OTHER profile cards too (needs a card redesign; the Switch + Delete column is full)? [no; /profiles rename <number> <name> or switch first - SkyyProfiles 0.1.12, 2026-10-13]
+
+### rebirth
+- REBIRTH SPEC: 16 questions in research/cloud/Rebirth-Spec.md section 7 (requirements, Nexus tree, rewards per rebirth, bank rate formula ...). [each has a default there; nothing is built until Skyy answers]

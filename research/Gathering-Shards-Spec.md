@@ -29,7 +29,7 @@ Untiered (orange, specials).
 - **Shards** are portal blocks on your island. Each opens a private mini world: a hub island with fixed slots around it, islands that
   grow in place, eternal plants, totems that call themed workers. You collect from the shard menu (that is when XP and collections are
   paid). Nothing can be built or broken there - only gathered, and totems placed / picked up.
-- **Rebirth** (own spec) sends tools back to Crude level 0 but keeps rarity, lines and points, adds a rebirth modifier, and unlocks the
+- **Rebirth** (own spec, research/cloud/Rebirth-Spec.md) sends tools back to Crude level 1, keeps rarity + lines, removes all points (G6), adds a rebirth modifier, and unlocks the
   Multitool merge.
 
 ---
@@ -128,7 +128,7 @@ AutoFarmer / HyRise (tiered auto-harvest 3x3 .. 7x7) = fold the IDEA of area-by-
 - Visit shards to collect (XP + collections), buy islands, grow them, craft / upgrade totems, add shard upgrades.
 
 ### 3.3 Rebirth (data only here)
-Tools + gathering armor go back to Crude / T1 at level 0, keep rarity, modifiers and points, gain the rebirth modifier line; the
+Tools + gathering armor go back to Crude / T1 at level 1, keep rarity and rolled lines, ALL Upgrade Points removed, gain the REBIRTH modifier (G6, docs/answered/gear.md 2026-10-13); the
 Multitool merge appears on the Anvil after rebirth 1. Shards, islands, totems, storage upgrades stay as they are.
 
 ---
