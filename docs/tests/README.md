@@ -218,3 +218,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | REBIRTH TREE + CONTINUE: SkyyRebirth 0.3 (R4 + R8, feature OFF) (DEPLOYED 2026-10-14, backup deploy-20261014-1242) | [2026-10](2026-10.md) |
 | TOTEMS: SkyyShards 0.2 + Collections 0.2.14 + Armory 0.1.25 (totems, R9, shard credit) (DEPLOYED 2026-10-14, backup deploy-20261014-1242) | [2026-10](2026-10.md) |
 | PERFECT DODGE + NEW SKILLS: SkyySkills 0.4.37 (Fishing / Ranching / Orchard) (DEPLOYED 2026-10-14, backup deploy-20261014-1242) | [2026-10](2026-10.md) |
+| VAULT SUMMON + HANDS + LIFELONG POLE: SkyyGear 0.3.5 + Fishing 0.1.5 + Merchants 0.1.4 (identify reveal, rebirth R7 part, Sigils never in shops) (DEPLOYED 2026-10-14, backup deploy-20261014-1255) | [2026-10](2026-10.md) |

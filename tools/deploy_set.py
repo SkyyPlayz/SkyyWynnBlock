@@ -19,7 +19,7 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.23"), ("SkyySacks", "0.8.4"), ("SkyyCoins", "0.1.7"), ("SkyyCollections", "0.2.14"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.11"), ("SkyyIslands", "0.5.8"), ("SkyyBazaar", "0.1.11"), ("SkyyGear", "0.3.4"), ("SkyySkills", "0.4.37"),
+    ("SkyyBank", "0.1.11"), ("SkyyIslands", "0.5.8"), ("SkyyBazaar", "0.1.11"), ("SkyyGear", "0.3.5"), ("SkyySkills", "0.4.37"),
     ("SkyyAccessories", "0.5.13"), ("SkyyClasses", "0.1.22"), ("SkyyMenu", "0.3.23"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.7"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -64,7 +64,7 @@ SET = [
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
     # fishing items, removing SkyyFishing turns rods / reels / parts / fish into unknown items.
-    ("SkyyFishing", "0.1.4"),
+    ("SkyyFishing", "0.1.5"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
@@ -73,7 +73,7 @@ SET = [
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
     # until /merchantadmin list shows no merchant out, then remove the jar (else Temple_Klops NPCs named "Traveling Merchant" stay).
-    ("SkyyMerchants", "0.1.3"),
+    ("SkyyMerchants", "0.1.4"),
     # SkyyPets 0.1 (2026-10-09, slot pets phase 1: records + buffs, no creatures). FLOOR: before removing SkyyPets switch Server Setup >
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).

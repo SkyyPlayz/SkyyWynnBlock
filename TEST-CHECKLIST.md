@@ -127,3 +127,4 @@ tests always come first.
 99. REBIRTH TREE: /rebirthadmin points all 50, buy / rows / refund; Continue closes AH listings
 100. TOTEMS: Totems tab, place / pick up exact tier, craft, booster; shard credit counts
 101. PERFECT DODGE + Fishing / Ranching / Orchard XP (/skills stats fishing)
+102. GEAR 0.3.5: /pickaxe from closed Vault, bare hands = Crude on crops, identify reveal cards, /pole lifelong rod, multitool after rebirth 1
