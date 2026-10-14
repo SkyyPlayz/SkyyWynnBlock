@@ -1,13 +1,16 @@
-# SkyWynn - RESUME HERE (updated 2026-10-14 ~06:30 MDT, all 4 relaunched rounds deployed)
+# SkyWynn - RESUME HERE (updated 2026-10-14 ~11:40 MDT, marathon day: Skyy wants the whole Next list done by 17:00)
 
 Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
 `TEST-CHECKLIST.md`. Full history: `docs/log/2026-10.md` (2026-10-13 lines). Decisions word for word: `docs/answered/<topic>.md`.
 
 ## START HERE (new session)
 1. `git pull --rebase --autostash`; check usage (ccd get_usage; weekly resets TUE 2026-10-20 15:00 UTC; was 33% on 10-14).
-2. RUNNING since ~07:10 (skywynn-round): abiltree (Classes 0.1.22 + Trees 0.3.7: abilities on Ability 2/3 via 0.7 runes, ability
-   panel right of the class tree, levels + modifiers; Mage + Priest), rebirth3 (R3 + coins per rebirth), harvest2 (Gear 0.3.3, no harvest
-   2+ tiers up). If a session ends before they report, relaunch from the args in docs/answered (classes / economy / gear 2026-10-14).
+2. RUNNING since ~11:10 (skywynn-round, 6 at once): gear5 (Gear 0.3.5 + Fishing 0.1.5 + Merchants 0.1.4: Vault summon, hands = Crude,
+   identify reveal call, lifelong pole, rebirth R7, Sigils never in shops), rebirth4 (Rebirth 0.3: R4 Continue + R8 tree), shards02
+   (Shards 0.2 totems + R9 + Collections 0.2.14 shard credit + Armory 0.1.25), classes2 (Classes 0.1.23 + Trees 0.3.8: Monk + Assassin
+   + R5/R6), skills37 (Skills 0.4.37 perfect dodge + skills split), admin23 (Menu 0.3.23 Admin page). Queued after them: class batch
+   Warrior + Berserker + Archer (classes lane), shards phase 7 (5 other shards), sound pass, R10 switch-on test, load test tool.
+   If a session ends first, relaunch from the briefs in docs/log 2026-10-14 + this list.
 3. Rounds: saved workflow `skywynn-round` (Skyy's OWN words in args.quotes); deploy only with the game closed: backup -> smoke
    (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy_local. Scan logs + `tools/chat_digest.py` after play.
 4. When Skyy says the game is UPDATING: stop every builder / smoke at once (memory skywynn-game-update-lock).
@@ -26,6 +29,14 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   06:26 Skills 0.4.35 + NEW SkyyRebirth 0.1 (rebirth R1+R2, feature OFF; /rebirth Nexus page for admins; half Farming XP above tool
   tier). Keep Rebirth OFF until Skyy has seen the Nexus tooltip (then add "tooltip" to skyyui.PROBED). 9 new questions in
   OPEN-QUESTIONS (gear, bags, rebirth), defaults live.
+- **Deployed 2026-10-14 08:35 + 11:04 (TEST-CHECKLIST 88-97, untested; combined smoke 35/35):** Gear 0.3.3 harvest gate (88);
+  Pets 0.2.5 owner key; Bazaar 0.1.11 + Auctions 0.1.5 closeall; Vault 0.1.6 fetch hook; Exploration 0.2.8 Lost Loot looks + reveal
+  + supply drops; REBIRTH R3 (Rebirth 0.2, Skills 0.4.36, Coins 0.1.7, Bank 0.1.11, Profiles 0.1.13; feature OFF); NEW SkyyShards 0.1
+  + Islands 0.5.8 + Menu 0.3.22; ABILITIES IN THE TREE (Classes 0.1.22 + Trees 0.3.7, Mage + Priest on rune keys, panel, levels +
+  modifiers; U1-U10 unproven - scan logs after Skyy plays); Quests 0.3 + Hud 0.3.23 + Fishing 0.1.4; Sigils + armor levels + hoe area
+  (Gear 0.3.4, Armory 0.1.24, Collections 0.2.13). Research today: Economy-Audit-1014, Sound-Pass-Plan, Load-Test-Plan,
+  Structure-Mods-Survey, Release-Packaging-Plan (+ tools/release_pack.py), Admin-Page-Plan. Release blocker: 4 jars hold edited vanilla
+  JSONs (Skills / Armory / Gear / Trees) - Skyy decides redistribution.
 - **Rebirth spec FINAL:** `research/cloud/Rebirth-Spec.md` (all 16 answers + ability levels kept with a soft cap, dust x2 per rebirth ...),
   build order R1-R10 (section 6). R1 + R2 = the interrupted rebirth12 round.
 - Skyy to do: run `/aprobe` (Mage keys) and `/skyprobe kit` (Sky Window kit) in game; set the 4 quest hub
@@ -33,19 +44,13 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 - Still broken on 0.7 (switched off): Saplings From Trees, TheArmory, HyFishing, Better Mob Expansion - recheck CurseForge; after
   2026-10-19 build our own / fork where the licence allows (docs/log 2026-10-13 pack check).
 
-## Next, in order (after the 4 relaunched rounds; ~4-5 workflows at once)
-0. LEAN: crops 2+ tiers above the held hoe / sickle cannot be harvested (Skyy 10-14 "No. Cant break 2 tiers above"; SkyyGear tier
-   gate and/or SkyySkills; docs/answered/gear.md). Levels past 100 stay out of Overall / Mana / leaderboards (answered, no work).
-1. Rebirth R3-R10 (research/cloud/Rebirth-Spec.md section 6; R1+R2 live) + level-up coins pay again each rebirth, a little less each time (docs/answered/economy.md 10-14), one round at a time; refresh the Class Balance chart when numbers change.
-2. Gathering follow-ups (research/Gathering-Shards-Spec.md): hoe till area by tier, fishing pole via the hub quest, gathering armor that
-   levels, Multitool unlock at rebirth 1, Sigils, the 6 shard islands + totems (phases 4-8).
-3. Mage real keys + ability-level / modifier rework (after Skyy's /aprobe; research/Ability-Framework-Mage-Spec.md), then 2-3 classes per batch.
-4. Sky Window kit into tools/skyyui.py (after Skyy's /skyprobe kit) -> one-look UI sweep.
-5. Quests later rounds (markers, board, guide fairy - research/SkyyQuests-Tutorial-Spec.md).
-6. ARCHITECTURE merge into ~10 jars (research/Architecture-Spec.md, modules so builders work in parallel) with simplify 2; fold MIT mods
-   (Multitools, Reforged Weapons, MoreTotems Water Totem, BetterBiomes, More Mounts) with credit.
-7. World + release polish: structure mods, Lost Loot piles + airdrops + identify animation, perfect dodge into our roll, economy audit,
-   sound pass, admin page, load test, release packaging. Parked specs: gems, inventory buttons / offhand, upgrade ladders, pet eggs v2.
+## Next, in order (Skyy 2026-10-14: "Run everything you can in parallel ... done by 5 pm")
+1. Land the 6 running rounds (deploy each READY one with the game closed), then the queued ones above.
+2. Sky Window kit into tools/skyyui.py - BLOCKED on Skyy's /skyprobe kit; ability keys U1-U10 proven by Skyy's first Mage play + logs.
+3. ARCHITECTURE merge into ~10 jars (research/Architecture-Spec.md) LAST - it touches every mod, so only when no other round runs;
+   fold MIT mods (Multitools, Reforged Weapons, MoreTotems Water Totem, BetterBiomes, More Mounts) with credit.
+4. Release: Skyy's call on the edited-vanilla JSONs + third-party permissions (research/Release-Packaging-Plan.md), then release_pack.
+5. Parked specs: gems, inventory buttons / offhand, upgrade ladders, pet eggs v2; guide fairy (SkyyPets 0.4 with fighting pets).
 
 ## Never forget
 - Commit ab75b6c: Skyy hand-edited 4 GENERATED scripts (`SkyySkills\build_skyyskills_0.4.5.py`, `SkyyTrees\build_skyytrees_0.2.3.py`,
