@@ -240,7 +240,7 @@ def parse(lines, mods):
 
 # ---------------------------------------------------------------- pack jar API audit
 AUDIT_CACHE = os.path.join(SMOKE, "pack_audit_cache.json")
-ACCESS_RX = re.compile(r"^FAIL ACCESS (\S+) (\S+) -> (.*?): (no such method|no such field|class not found)")   # removed API only; own-jar access noise is ignored
+ACCESS_RX = re.compile(r"^FAIL ACCESS (\S+) (\S+) -> (com\.hypixel\.\S*?): (no such method|no such field|class not found)")   # removed ENGINE API only (com.hypixel.*); MethodHandle.invoke + optional other-mod integrations are ignored
 
 
 def pack_audit(allow=False):
