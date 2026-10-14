@@ -31,6 +31,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### economy
 
 ### bags
+- /pdadmin rarity changes only the profile you are playing - add an all-profiles option? [no; run it once per profile - SkyySacks 0.8.2, 2026-10-13]
 
 ### classes
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]
@@ -44,3 +45,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 
 
 ### social
+
+### profiles
+- Rename button on the OTHER profile cards too (needs a card redesign; the Switch + Delete column is full)? [no; /profiles rename <number> <name> or switch first - SkyyProfiles 0.1.12, 2026-10-13]
