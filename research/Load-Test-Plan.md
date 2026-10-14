@@ -2,7 +2,7 @@
 
 How to find out whether the SkyWynn pack stays smooth with many players, without 50 real clients. Read-only research: `tools/smoke_test.py`,
 `research/Code-Structure-Audit.md` (the 2026-10-13 lag audit), and a class listing of the cached `HytaleServer.jar` (0.7.1). Nothing was started.
-`tools/load_test.py` is NOT written (reason in section 6).
+`load_test.py (planned tool)` is NOT written (reason in section 6).
 
 ## 0. Short version
 
@@ -74,12 +74,12 @@ Needs a shared helper in `tools/` (`loadharness.py`) that builds the JVM exactly
 | Phase | What | Effort | Needs Skyy |
 |---|---|---|---|
 | 1 | Layer A: stats commands during smoke (a flag `--observe 180`) + parse "Task took" | small | no (game closed) |
-| 2 | Layer B: `tools/load_test.py --profiles 50` (generator + start + observe + report + cleanup) | small to medium | no |
+| 2 | Layer B: `load_test.py (planned tool) --profiles 50` (generator + start + observe + report + cleanup) | small to medium | no |
 | 3 | Bot client spike: can the 0.7.1 server jar's own protocol classes (`com.hypixel.hytale.protocol`, the Netty QUIC codec shipped inside the jar) drive an offline-mode join (`--auth-mode offline`)? Feasibility note only; if yes, a Java headless client that joins N times and idles | large, uncertain | no |
 | 4 | Layer C harnesses, group by group, as the Core merge replaces timers (measure BEFORE and AFTER the SkyyCore ticker) | medium | no |
 | 5 | A real 4-6 person test with `/world tps` + `/server stats` read every 5 minutes (Skyy's friends) | - | yes |
 
-## 6. Tool design: `tools/load_test.py` (not written)
+## 6. Tool design: `load_test.py (planned tool)` (not written)
 
 Why not written: it must reuse the smoke test's scratch-world builder, config rewrite and process handling, and `smoke_test.py` keeps those inside one long `main()`.
 Copying 200 lines would fork the safety rules (game-running check, scratch paths, kill only own process). The safe first step is to split `smoke_test.py` into functions
@@ -87,7 +87,7 @@ Copying 200 lines would fork the safety rules (game-running check, scratch paths
 real check of their spelling.
 
 ```
-usage: python tools/load_test.py [--profiles 50] [--observe 180] [--xmx 4G] [--light] [--json out.json]
+usage: python load_test.py (planned tool) [--profiles 50] [--observe 180] [--xmx 4G] [--light] [--json out.json]
   1. refuse if any HytaleServer java process runs (deploy_set.server_running()); exit 2
   2. run = tools/dev/scratch/loadtest/run-<stamp>/   (the ONLY place it writes)
        - build_scratch(...) from smoke_test: world copy, Mods = SET jars + pack mods, config.json like deploy_set --yes
