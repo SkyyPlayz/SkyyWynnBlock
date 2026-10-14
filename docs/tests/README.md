@@ -199,3 +199,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Every player sets own message routes: SkyyHud 0.3.22 (DEPLOYED 2026-10-13, backup deploy-20261013-2053) | [2026-10](2026-10.md) |
 | Settings Messages tab + ability route: SkyyMenu 0.3.21 + SkyyClasses 0.1.21 (DEPLOYED 2026-10-13, backup deploy-20261013-2111) | [2026-10](2026-10.md) |
 | Hytale 0.7.1 + BetterMap / DynamicSeasons / Perfect Parries back on (DEPLOYED 2026-10-13, backup deploy-20261013-2201) | [2026-10](2026-10.md) |
+| Tool speed: Crude = T1, x2.5 / x10: SkyyGear 0.3.1 (DEPLOYED 2026-10-13, backup deploy-20261013-2223) | [2026-10](2026-10.md) |

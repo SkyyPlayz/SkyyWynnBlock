@@ -108,3 +108,4 @@ tests always come first.
 80. MESSAGE ROUTES per player (/settings General) + Ability casts default row
 81. SETTINGS Messages tab + ability casts in feed (refusals stay in chat)
 82. 0.7.1: BetterMap map + minimap, DynamicSeasons 7.0.2 seasons, Perfect Parries 0.9.7 parry
+83. TOOL SPEED: Crude normal on Oak / copper, 2.5x one tier up, 10x two up, refused 3+
