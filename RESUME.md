@@ -23,6 +23,12 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
    (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy_local. Scan logs + `tools/chat_digest.py` after play.
 4. When Skyy says the game is UPDATING: stop every builder / smoke at once (memory skywynn-game-update-lock).
 
+- **15:45:** DEPLOYED today (TEST-CHECKLIST 117-134): Gear 0.3.7-0.3.9, Accessories 0.5.15, Hud 0.3.25-0.3.26, Sacks 0.8.6, Shards 0.3.2 + 0.4, Quests 0.3.3,
+  Islands 0.5.11-0.5.14, Trees 0.3.11-0.3.15, Mobs 0.1.9, Armory 0.1.26-0.1.27, Menu 0.3.26-0.3.28, Skills 0.4.40-0.4.41, Cooking 0.1.7, Classes 0.1.26-0.1.27,
+  Essentials 0.1.10, Pets 0.2.7, Collections 0.2.17, Profiles 0.1.14, Bazaar 0.1.13, Auctions 0.1.8, Merchants 0.1.5, Party 0.1.8, Guilds 0.1.9,
+  Exploration 0.2.10, Vault 0.1.7, Bank 0.1.13 + The Armory 1.23.0 back on, Extended Backpacks / Tainted Roots off. ALL 7 HUBS have tabs (H1-H3).
+  RUNNING: core10 (SkyyCore 1.0 + Bank / Party pilots + module assemble tooling; merge phase 1). OPEN-QUESTIONS has 5 new (tabs merged?, scrolling,
+  gather anvil-only, The Armory jump conflict, Sap Tapper credit). NEXT: H8 reduced menu, H4-H7 (Sacks / Wardrobe / Gear / Accessories v2), merge phases 2/3/8.
 ## Now (2026-10-15)
 - **Skyy play-tested a fresh Mage profile 10-15** (notes in docs/answered/*.md 2026-10-15). DEPLOYED 06:35 (TEST-CHECKLIST 117):
   Gear 0.3.7 (hotbar summons, iron tier speed), Accessories 0.5.15 (ItemLevel sort), Hud 0.3.25 (contrast, cards, editor rows).
