@@ -134,3 +134,4 @@ tests always come first.
 106. REBIRTH 0.3.2 + GUILDS 0.1.8: admin rebirth resets lifelong tools, Void-Forged Pick node, guild bank coins stay with the depositing profile
 107. SOUNDS: /soundtest list / next / more, quest + reward + NPC + portal + pet + claim + interest sounds, Server Setup sound rows; Admin page rebirth buttons
 108. SHARDS 0.3: /shardadmin give <you> <kind> for the 5 new shards, enter, collect, compactor / time compressor, Soul Cage; fish / animal / fruit collection XP to the new skills
+109. WARRIOR / BERSERKER / ARCHER: ability keys + crouch alts, shields Warrior-only, Blood Frenzy toggle, Banner, nets, Explosive Arrow; send logs
