@@ -5,6 +5,8 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 `TEST-CHECKLIST.md`. Full history: `docs/log/2026-10.md` (2026-10-13 lines). Decisions word for word: `docs/answered/<topic>.md`.
 
 ## START HERE (new session)
+0. Sessions start IN this folder (`SkyWynn PROJECT`) since 2026-10-15 (Skyy: new environment) - memory was copied to the matching
+   `.claude/projects/...-SkyWynn-PROJECT/memory/`. Review PR for Skyy: SkyyPlayz/SkyyWynnBlock#14 (test list 84-116 + questions).
 1. `git pull --rebase --autostash`; check usage (ccd get_usage; weekly resets TUE 2026-10-20 15:00 UTC; was 33% on 10-14).
 2. NOTHING RUNNING (21:50). Evening deploys (TEST-CHECKLIST 110-116): Skills 0.4.39 + Rebirth 0.3.3 (rebirth stats, skill sounds),
    Menu 0.3.25 (settings search, Mod sounds switch, Shards admin buttons), sound pass 2 (Sacks 0.8.5, Collections 0.2.16, Coins 0.1.9,
