@@ -143,3 +143,4 @@ tests always come first.
 115. 3 STARTER ISLANDS: fresh profile -> island 1 / 2 / 3, gather, crude tools, bridge, tasks 11 + 19 tick; old islands unchanged
 116. ZONES: /zone 1-5 floating islands (new world skywynn_zones), /zone info, Zone 5 Onyxium; /zone old = old island
 117. HOTBAR SUMMONS + IRON 10 HITS + WORKBENCH ORDER (Accessory I first) + HUD +N contrast, labelled progress cards, editor rows
+118. CHOPPED TRUNK to Void + /craft copper pickaxe refused + totem textures (no client WARNs)

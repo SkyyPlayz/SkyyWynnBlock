@@ -85,7 +85,7 @@ SET = [
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
     ("SkyyQuests", "0.3.2"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyRebirth", "0.3.3"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
-    ("SkyyShards", "0.3.1"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
+    ("SkyyShards", "0.3.2"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
     # 2026-10-14 WorldGen 0.6 (zones as floating islands, new world skywynn_zones; /zone 1-5 go there, /zone old = old test island). ROLLBACK below 0.6: server stopped, delete universe/worlds/skywynn_zones + its skywynn_zones.* lines in mods/Skyy_SkyyWorldGen/worlds.properties + zone_layout_20261014.bin first.
     # 2026-10-14 evening: Gear 0.3.6 + Fishing 0.1.6 together; FLOOR Gear 0.3.6 once any of the 68 gathering armor pieces exists (0.3.5 = unknown items). Classes 0.1.25 + Trees 0.3.10 together (Spellblade, rebirth slots 3-4). Islands 0.5.10 + Quests 0.3.2 together (3 starter islands; Server Setup can switch back to Classic).
     # 2026-10-14 rebirth6: Skills 0.4.39 FLOOR while rebirth stat bonuses exist (0.4.38 never removes skyyskill_rebirth* modifiers) - switch "Rebirth stat boosts" off with players online first.

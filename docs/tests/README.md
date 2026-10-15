@@ -234,3 +234,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | 3 STARTER ISLANDS: SkyyIslands 0.5.10 + SkyyQuests 0.3.2 (DEPLOYED 2026-10-14, backup deploy-20261014-2133) | [2026-10](2026-10.md) |
 | ZONES AS FLOATING ISLANDS: SkyyWorldGen 0.6 (vanilla 0.7 generation, Zone 5 Onyxium + Mithril) (DEPLOYED 2026-10-14, backup deploy-20261014-2145) | [2026-10](2026-10.md) |
 | SUMMONS TO HOTBAR + IRON SPEED + WORKBENCH ORDER + HUD CONTRAST / CARDS / EDITOR ROWS: SkyyGear 0.3.7 + SkyyAccessories 0.5.15 + SkyyHud 0.3.25 (DEPLOYED 2026-10-15, backup deploy-20261015-0635) | [2026-10](2026-10.md) |
+| FELLED-LOG PICKUP + /craft TOOL VETO + TOTEM TEXTURES: SkyySacks 0.8.6 + SkyyShards 0.3.2 (DEPLOYED 2026-10-15, backup deploy-20261015-0642) | [2026-10](2026-10.md) |
