@@ -17,7 +17,8 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
    Trees / Quests / Exploration / Bank / Islands / Pets / Armory honour settings:sounds), classes / trees into Rebirth PARTS, Spellblade
    follow-ups (SkyySkills Battlemagic row, Menu / Profiles class card, Gear weapons + imbue, Hud Momentum), Server Setup 16-category cap
    (Menu), Onyxium collection (Collections) + Zone 5 mob levels (Mobs), island 3 mini boss + portal, load test 50 / 200, shards 7b, quest
-   shard giver, Whirlwind Dash + armory nodes, rebirth switch-on test, architecture merge LAST, release. Big picture: STATUS.md.
+   shard giver, Whirlwind Dash + armory nodes, SkyyZones server protection (2 modes FULL / SKYBLOCK, docs/answered/world.md
+   2026-10-15: update research/cloud/Zone-Regen-Spec.md first, then ultracode), WeaponCustomHUD try-out (ui.md 10-15), rebirth switch-on test, architecture merge LAST, release. Big picture: STATUS.md.
 3. Rounds: saved workflow `skywynn-round` (Skyy's OWN words in args.quotes); deploy only with the game closed: backup -> smoke
    (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy_local. Scan logs + `tools/chat_digest.py` after play.
 4. When Skyy says the game is UPDATING: stop every builder / smoke at once (memory skywynn-game-update-lock).
