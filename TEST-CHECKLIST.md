@@ -147,3 +147,4 @@ tests always come first.
 119. PACK: The Armory 1.23.0 back on - copper ore, bars, talismans, swords have textures, no purple/missing squares; Extended Backpacks + Tainted Roots gone
 120. STARTER: cave mouth, merged Gather logs/stone/copper task + early progress, counted quest cards, saplings replant on felled trees
 121. OWN ICONS in menu / teleport / players + TREE buttons Fishing / Alchemy / Smithing + cooked food heals on 0.7 + cooking sounds
+122. TREES branch downward (all skill trees + class pages), gold links, window fits
