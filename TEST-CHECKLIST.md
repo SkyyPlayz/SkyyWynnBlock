@@ -144,3 +144,4 @@ tests always come first.
 116. ZONES: /zone 1-5 floating islands (new world skywynn_zones), /zone info, Zone 5 Onyxium; /zone old = old island
 117. HOTBAR SUMMONS + IRON 10 HITS + WORKBENCH ORDER (Accessory I first) + HUD +N contrast, labelled progress cards, editor rows
 118. CHOPPED TRUNK to Void + /craft copper pickaxe refused + totem textures (no client WARNs)
+119. PACK: The Armory 1.23.0 back on - copper ore, bars, talismans, swords have textures, no purple/missing squares; Extended Backpacks + Tainted Roots gone

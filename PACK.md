@@ -29,3 +29,11 @@ Not included: "Endgame&QoL expansion - Crossbow Tiers" (adds Onyxium + Prisma cr
 Also not included (yet): SaplingOnLog (Helios; only tweaks two sapling items); Seed Drops (Familiar) - not needed, Hytale has its own seed system (Skyy, 2026-09-24).
 
 Saplings: vanilla already crafts 31 of the 33 saplings at the Farming Bench from Life Essence (5-35; Apple = concentrated essence + 4 apples); only Crystal and Poisoned have no recipe. Saplings From Trees adds leaf drops plus Oak sapling -> Ash / Azure / Beech / Birch / Cedar / Dry at the Farming Bench.
+
+## 2026-10-15 pack update (Skyy updated their mods; only the mods in our pack checked)
+- **The Armory 1.23.0 back ON for a test** (Skyy picked "Yes, test it"): 0.7.2 engine audit clean, loads in the smoke test; it was off since 2026-10-09 for a client texture-atlas overflow - Skyy checks textures in game. Licence and rules unchanged (row above).
+- **Packed after mod checks 2026-10-15** (docs/answered/project.md, ui.md, world.md): WeaponCustomHUD 1.2.0 (EnsoX, ARR), Zip Line Plugin 0.1.7 (Marck_A_A, ARR, players craft them), Zone View Control 1.1.0 (AstryxWorld, ARR). Install from their authors, never bundled; ask before the release pack.
+- **OFF** (Skyy picked): Extended Backpacks 4.3.0 (ARR - replaces the vanilla Bench_WorkBench and Upgrade_Backpack_1-3 items: clashes with 0.7.2's Backpack Upgrade II recipe and our Workbench Accessories tab); Tainted Roots 1.0.1 (MIT biome realm, built for an older server build - a later zone / realm idea).
+- Still OFF, not updated for 0.7: Saplings From Trees 1.0.4, Better Mob Expansion 3.5, HyFishing 0.6.8 (off by choice anyway). More Crossbow Tiers still says ~0.6.8 but loads.
+- Fold sources, not pack: MoreTotems 1.0.072 (MIT, engine-clean on 0.7.2 - fold the Water Totem only), BetterBiomes 1.4.0 (now MIT; needs UtilityBiome; one removed engine call) for the architecture merge.
+- Not reviewed yet, loads (no world entry): Whichaway 0.1.0 (Kiarrasw, ARR, shared map exploration; one removed engine call).
