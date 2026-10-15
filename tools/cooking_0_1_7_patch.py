@@ -16,6 +16,28 @@ Check: python SkyyCooking/test_skyycooking_0.1.7.py [--dir <folder inside tools/
     CookSnd.check). File: Skyy_SkyyCooking/sounds.properties (written with the defaults when missing; cooking.properties untouched).
  4. Config kit KEEP 20 -> 10 (AGENT-BRIEF: the kit default since 2026-10-05, Skyy): Server Setup keeps the 10 newest History versions.
  5. No saved-data change, no new command, no bridge key written. ROLLBACK to 0.1.6: safe (0.1.6 never reads sounds.properties).
+
+0.1.7 also = FOOD REMAP TO HYTALE 0.7 (round cook017; docs/answered/skills.md 2026-10-14 popup COOKING, Skyy: "Map to 0.7 foods
+ (Recommended)" -> point each graded dish at the closest new 0.7 food effect (Food_Health_Restore_* etc.), keep our grade scaling on top).
+ The 0.7 build stopped at "vanilla effect missing": Hytale 0.7 removed Food_Instant_Heal_T2 / T3 / Bread (it now heals EVERY plain dish
+ with Food_Instant_Heal_T1 = 5 %), stretched the T1 / T2 buffs to 360 s and put four dishes under Parent Food_Pie_Apple.
+ 6. HEAL: each graded dish keeps the heal tier it had in 0.1.6 (DISH_HEAL_06, read from the live 0.1.6 jar), pointed at the closest 0.7
+    effect (player Max Health = 100, Server/Entity/Stats/Health.json, so +10 HP = the old 10 %):
+      Food_Instant_Heal_T1    5 % of max health  -> Food_Instant_Heal_T1        (still in 0.7, kept)      Wildmeat / Fish / Vegetable
+      Food_Instant_Heal_T2   10 % of max health  -> Food_Health_Restore_Small   (+10 health, instant)     kebabs x4, Berry / Mushroom salad
+      Food_Instant_Heal_T3   15 % of max health  -> Food_Health_Restore_Medium  (+15 health, instant)     pies x3, Popcorn, Caesar salad
+      Food_Instant_Heal_Bread 15 % of max health -> Food_Health_Restore_Medium  (+15 health, instant)     Bread
+    The Grade scaling is unchanged on top: heal x S(g) = 1 + 0.32 x Grade (Restore Medium at Grade 12 = 72.6 health; cap 100, never
+    binds). The effect assets are now Skyy_Cook_Food_Health_Restore_<Small|Medium>_G<g> (12 bases x 12 = 144, was 13 x 12 = 156).
+ 7. BUFFS: HealthRegen / Meat / FruitVeggie _Buff_T1-T3 still exist; the build follows 0.7's numbers (T1 / T2 now last 360 s like T3;
+    strengths unchanged), Duration x D(g) = 2^(Grade/5) on top as before. 0.7's new HealthRegen_Buff_Raw (raw food, 1 % / 2 s, 60 s) joins
+    the HealthRegen family as its weakest member: every graded regen clears it (vanilla T1-T3 do the same).
+ 8. PARENT: Food_Salad_Berry / _Mushroom / _Caesar and Food_Pie_Meat now have Parent Food_Pie_Apple. A graded copy never sits under a
+    vanilla dish (its Recipe could be inherited - Cooking spec 5): the parent dish's own keys (minus Recipe / names) are merged in field
+    by field (the engine's Parent merge) and the copy keeps Parent Template_Food (so it still gets Consumable, Scale, Gathering ...).
+ 9. Assets.zip is read from the CACHED copy (tools/serverjar.py), never the installed game file (also the sound fragment's id check).
+ Item ids, recipes, XP, Grades, saved data and every Java class except the sound pass ones are unchanged; a self-check proves no
+ generated file names Food_Instant_Heal_T2 / T3 / Bread and every referenced effect / interaction / item exists in 0.7.
 """
 import os, sys
 
@@ -86,6 +108,187 @@ protected void shutdown() {''', '''  @PKG@.CookSnd.load(getDataDirectory().resol
 }""")
 Mk(pl, """
 protected void shutdown() {''')
+
+# =====================================================================================================================
+# FOOD REMAP TO HYTALE 0.7 (items 6-9 of the docstring)
+# =====================================================================================================================
+REMOVED_07 = ["Food_Instant_Heal_T2", "Food_Instant_Heal_T3", "Food_Instant_Heal_Bread"]
+# the heal each graded dish used in 0.1.6 (read from SkyyCooking-0.1.6.jar, Skyy_Cook_<dish>_G1 eat chains) - the patch re-reads the jar
+DISH_HEAL_06 = {"Food_Wildmeat_Cooked": "Food_Instant_Heal_T1", "Food_Fish_Grilled": "Food_Instant_Heal_T1", "Food_Vegetable_Cooked": "Food_Instant_Heal_T1",
+                "Food_Bread": "Food_Instant_Heal_Bread", "Food_Kebab_Fruit": "Food_Instant_Heal_T2", "Food_Kebab_Meat": "Food_Instant_Heal_T2",
+                "Food_Kebab_Mushroom": "Food_Instant_Heal_T2", "Food_Kebab_Vegetable": "Food_Instant_Heal_T2", "Food_Salad_Berry": "Food_Instant_Heal_T2",
+                "Food_Salad_Mushroom": "Food_Instant_Heal_T2", "Food_Popcorn": "Food_Instant_Heal_T3", "Food_Pie_Apple": "Food_Instant_Heal_T3",
+                "Food_Pie_Meat": "Food_Instant_Heal_T3", "Food_Pie_Pumpkin": "Food_Instant_Heal_T3", "Food_Salad_Caesar": "Food_Instant_Heal_T3"}
+import zipfile as _zf, json as _json
+_J06 = _zf.ZipFile(os.path.join(ROOT, "SkyyCooking", "SkyyCooking-0.1.6.jar"))
+for _d, _h in DISH_HEAL_06.items():
+    _c = _json.loads(_J06.read("Server/Item/Items/SkyyCook/Skyy_Cook_%s_G1.json" % _d))["InteractionVars"]["Effect"]["Interactions"]
+    assert _c[0] == {"Type": "ApplyEffect", "EffectId": "Skyy_Cook_%s_G1" % _h}, "DISH_HEAL_06[%s] is not what the 0.1.6 jar uses: %s" % (_d, _c[0])
+_J06.close()
+
+# ---------- the cached Assets.zip (tools/serverjar.py), the build's and the sound fragment's
+P.rep('''AZ = zipfile.ZipFile(os.path.join(B.HYTALE, "install", "release", "package", "game", "latest", "Assets.zip"))''',
+      '''import serverjar as _SJ                     # 0.1.7: the CACHED Assets.zip (tools/serverjar.py) - never the installed game file
+AZ = zipfile.ZipFile(_SJ.assets_zip())''')
+P.rep('''_SNDZ = os.path.join(os.path.dirname(os.path.dirname(B.INSTALLED_SERVER_JAR)), "Assets.zip")   # read-only''',
+      '''_SNDZ = _SJ.assets_zip()   # read-only (0.1.7: the cached copy)''')
+
+# ---------- bases, the 0.7 numbers, the heal map
+P.rep('''INSTANT = ["Food_Instant_Heal_T1", "Food_Instant_Heal_T2", "Food_Instant_Heal_T3", "Food_Instant_Heal_Bread"]
+FAMILIES = ["HealthRegen", "Meat", "FruitVeggie"]
+BASES = INSTANT + ["%s_Buff_T%d" % (f, t) for f in FAMILIES for t in (1, 2, 3)]
+# the vanilla numbers this build was written for (Cooking spec 4.1, re-read from Assets.zip 2026-09-24) - self-check 4
+EXPECT = {
+    "Food_Instant_Heal_T1": ("heal", 5.0, None), "Food_Instant_Heal_T2": ("heal", 10.0, None),
+    "Food_Instant_Heal_T3": ("heal", 15.0, None), "Food_Instant_Heal_Bread": ("heal", 15.0, None),
+    "HealthRegen_Buff_T1": ("regen", 1.0, 45.0), "HealthRegen_Buff_T2": ("regen", 1.5, 150.0), "HealthRegen_Buff_T3": ("regen", 2.0, 360.0),
+    "Meat_Buff_T1": ("maxHealth", 1.05, 45.0), "Meat_Buff_T2": ("maxHealth", 1.10, 150.0), "Meat_Buff_T3": ("maxHealth", 1.15, 360.0),
+    "FruitVeggie_Buff_T1": ("maxStamina", 1.10, 45.0), "FruitVeggie_Buff_T2": ("maxStamina", 1.20, 150.0),
+    "FruitVeggie_Buff_T3": ("maxStamina", 1.30, 360.0),
+}
+CAP_HEAL, CAP_REGEN, CAP_MULT, CAP_RES, CAP_DUR = 100.0, 12.0, 2.5, 0.5, 2400.0
+''', '''# 0.1.7 FOOD REMAP (Skyy 2026-10-14 popup COOKING: "Map to 0.7 foods (Recommended)" - point each graded dish at the closest new 0.7 food
+# effect, keep our grade scaling on top). Hytale 0.7 removed Food_Instant_Heal_T2 / T3 / Bread and heals every plain dish with
+# Food_Instant_Heal_T1 (5 %); a graded dish keeps the heal tier it had in 0.1.6 (DISH_HEAL_06), on the closest 0.7 effect (HEAL_07).
+# Player Max Health = 100 (Server/Entity/Stats/Health.json), so the flat +10 / +15 health of Food_Health_Restore_Small / _Medium = the old 10 / 15 %.
+HEAL_07 = {"Food_Instant_Heal_T1": "Food_Instant_Heal_T1",            # 5 % of max health - still in 0.7, kept
+           "Food_Instant_Heal_T2": "Food_Health_Restore_Small",       # 10 % -> +10 health (instant)
+           "Food_Instant_Heal_T3": "Food_Health_Restore_Medium",      # 15 % -> +15 health (instant)
+           "Food_Instant_Heal_Bread": "Food_Health_Restore_Medium"}   # 15 % -> +15 health (instant)
+DISH_HEAL_06 = @DH06@
+assert sorted(DISH_HEAL_06) == sorted(DISHES)
+INSTANT = ["Food_Instant_Heal_T1", "Food_Health_Restore_Small", "Food_Health_Restore_Medium"]
+assert sorted(set(HEAL_07.values())) == sorted(INSTANT)
+FAMILIES = ["HealthRegen", "Meat", "FruitVeggie"]
+BASES = INSTANT + ["%s_Buff_T%d" % (f, t) for f in FAMILIES for t in (1, 2, 3)]
+# the vanilla numbers this build was written for (Cooking spec 4.1, re-read from Assets.zip 2026-09-24; 0.1.7: the Hytale 0.7.2 numbers -
+# the T1 / T2 buffs now last 360 s like T3, strengths unchanged; the two Restore heals are flat health) - self-check 4
+EXPECT = {
+    "Food_Instant_Heal_T1": ("heal", 5.0, None),
+    "Food_Health_Restore_Small": ("restore", 10.0, None), "Food_Health_Restore_Medium": ("restore", 15.0, None),
+    "HealthRegen_Buff_T1": ("regen", 1.0, 360.0), "HealthRegen_Buff_T2": ("regen", 1.5, 360.0), "HealthRegen_Buff_T3": ("regen", 2.0, 360.0),
+    "Meat_Buff_T1": ("maxHealth", 1.05, 360.0), "Meat_Buff_T2": ("maxHealth", 1.10, 360.0), "Meat_Buff_T3": ("maxHealth", 1.15, 360.0),
+    "FruitVeggie_Buff_T1": ("maxStamina", 1.10, 360.0), "FruitVeggie_Buff_T2": ("maxStamina", 1.20, 360.0),
+    "FruitVeggie_Buff_T3": ("maxStamina", 1.30, 360.0),
+}
+CAP_HEAL, CAP_REGEN, CAP_MULT, CAP_RES, CAP_DUR = 100.0, 12.0, 2.5, 0.5, 2400.0
+CAP_RESTORE = 100.0   # 0.1.7: flat instant health (Restore Medium x4.84 at Grade 12 = 72.6 - never binds, the 0.1.4 self-check proves it)
+'''.replace("@DH06@", repr(DISH_HEAL_06)))
+
+# ---------- self-check 4 knows the flat Restore heal
+P.rep('''    if kind == "heal":
+        ok = d.get("ValueType") == "Percent" and abs(d["StatModifiers"]["Health"] - amount) < 1e-9 and d.get("Duration", 0) <= 0.5
+''', '''    if kind == "heal":
+        ok = d.get("ValueType") == "Percent" and abs(d["StatModifiers"]["Health"] - amount) < 1e-9 and d.get("Duration", 0) <= 0.5
+    elif kind == "restore":   # 0.1.7: flat health (no ValueType = Absolute), instant
+        ok = (d.get("ValueType", "Absolute") == "Absolute" and list(d["StatModifiers"]) == ["Health"]
+              and abs(d["StatModifiers"]["Health"] - amount) < 1e-9 and d.get("Duration", 0) <= 0.5)
+''')
+P.rep('''    VBASE[b] = d
+
+''', '''    VBASE[b] = d
+# 0.1.7: Hytale 0.7's HealthRegen_Buff_Raw (raw food) = the weakest HealthRegen member; vanilla T1-T3 clear it, so every graded regen does too
+RAW_REGEN = rd(V_EFFECTS["HealthRegen_Buff_Raw"]) if "HealthRegen_Buff_Raw" in V_EFFECTS else None
+if RAW_REGEN is None or not (RAW_REGEN.get("ValueType") == "Percent" and RAW_REGEN["StatModifiers"]["Health"] <= VBASE["HealthRegen_Buff_T1"]["StatModifiers"]["Health"]
+                             and RAW_REGEN["Duration"] < VBASE["HealthRegen_Buff_T1"]["Duration"]):
+    raise SystemExit("self-check 4 (0.1.7): HealthRegen_Buff_Raw is missing or no longer weaker than HealthRegen_Buff_T1: %s" % json.dumps(RAW_REGEN))
+
+''')
+P.rep('''        if pct: nv = min(nv, CAP_HEAL if instant else CAP_REGEN)
+''', '''        if pct: nv = min(nv, CAP_HEAL if instant else CAP_REGEN)
+        elif instant: nv = min(nv, CAP_RESTORE)   # 0.1.7: flat instant health (Food_Health_Restore_*)
+''')
+
+# ---------- the family checks: Raw below every member
+P.rep('''    members = []
+    for t in (1, 2, 3):
+''', '''    members = []
+    if fam == "HealthRegen":   # 0.1.7: HealthRegen_Buff_Raw sorts below every member (never checked itself: g = 0), so every graded regen clears it
+        members.append(((round(strength(fam, RAW_REGEN), 6), round(RAW_REGEN["Duration"], 4), 0, 0), "HealthRegen_Buff_Raw", 0, 0))
+    for t in (1, 2, 3):
+''')
+P.rep('''    members.sort()
+    keys = [m[0] for m in members]
+''', '''    members.sort()
+    assert fam != "HealthRegen" or members[0][1] == "HealthRegen_Buff_Raw", "0.1.7: Raw must be the weakest HealthRegen member"
+    keys = [m[0] for m in members]
+''')
+
+# ---------- graded dishes: flatten a vanilla-dish Parent; the 0.1.6 heal tier on the 0.7 effect
+P.rep('''for dish in DISHES:
+    if dish not in V_ITEMS: raise SystemExit("vanilla dish missing: " + dish)
+    v = rd(V_ITEMS[dish])
+''', '''def deep_under(base, top):
+    """0.1.7: top's keys over base's, merged field by field like the engine's Parent merge (research/Collections-Spec.md); lists replace"""
+    o = copy.deepcopy(base)
+    for k, x in top.items():
+        o[k] = deep_under(o[k], x) if (isinstance(x, dict) and isinstance(o.get(k), dict)) else copy.deepcopy(x)
+    return o
+def flat_dish(dish):
+    """0.1.7: Hytale 0.7 put Food_Salad_Berry / _Mushroom / _Caesar and Food_Pie_Meat under Parent Food_Pie_Apple. A graded copy never sits
+    under a vanilla dish (its Recipe could be inherited - Cooking spec 5): the parent dish's own keys (minus Recipe and names) are merged in
+    and the copy keeps Parent Template_Food (so it still gets Consumable, Scale, BlockType Gathering ... exactly like the vanilla dish)."""
+    v = rd(V_ITEMS[dish])
+    p = v.get("Parent")
+    if p != "Template_Food" and p in V_ITEMS:
+        pv = rd(V_ITEMS[p])
+        if p not in DISHES or pv.get("Parent") != "Template_Food":
+            raise SystemExit("self-check 4 (0.1.7): %s's Parent %s is not a graded Template_Food dish" % (dish, p))
+        v = deep_under(dict((k, x) for k, x in pv.items() if k not in ("Recipe", "TranslationProperties", "Parent")), v)
+        v["Parent"] = "Template_Food"
+    return v
+FLATTENED = [d for d in DISHES if rd(V_ITEMS[d]).get("Parent") != "Template_Food"] if all(d in V_ITEMS for d in DISHES) else []
+for dish in DISHES:
+    if dish not in V_ITEMS: raise SystemExit("vanilla dish missing: " + dish)
+    v = flat_dish(dish)
+''')
+P.rep('''        if isinstance(e, dict) and e.get("Type") == "ApplyEffect" and e.get("EffectId") in INSTANT and len(e) == 2:
+            fx.append(("I", e["EffectId"]))
+            continue
+''', '''        if isinstance(e, dict) and e.get("Type") == "ApplyEffect" and e.get("EffectId") == "Food_Instant_Heal_T1" and len(e) == 2:
+            fx.append(("I", HEAL_07[DISH_HEAL_06[dish]]))   # 0.1.7: the dish's 0.1.6 heal tier on the closest 0.7 effect (vanilla 0.7: 5 % for all)
+            continue
+''')
+P.rep('''                heal = scale_effect(f[1], g)["StatModifiers"]["Health"]
+''', '''                heal = scale_effect(f[1], g)["StatModifiers"]["Health"]
+                heal_u = "%" if VBASE[f[1]].get("ValueType") == "Percent" else ""   # 0.1.7: Restore heals are flat health
+''')
+P.rep('''        body = "Instantly restores " + W % (pct_s(heal) + "%") + " health"
+''', '''        body = "Instantly restores " + W % (pct_s(heal) + heal_u) + " health"
+''')
+
+# ---------- counts + the 0.1.7 self-check (no removed id anywhere, every dish on its mapped heal, flattened parents)
+P.rep('''assert (N_EFF, N_INT, N_DISH, N_VAR) == (13 * GEN_MAX, 9 * GEN_MAX, 15 * GEN_MAX, 3), (N_EFF, N_INT, N_DISH, N_VAR)
+''', '''assert len(BASES) == 12 and (N_EFF, N_INT, N_DISH, N_VAR) == (12 * GEN_MAX, 9 * GEN_MAX, 15 * GEN_MAX, 3), (N_EFF, N_INT, N_DISH, N_VAR)
+# 0.1.7 self-check: no generated file names an effect Hytale 0.7 removed; every graded dish heals with HEAL_07[its 0.1.6 heal] x S(g);
+# a flattened dish has Parent Template_Food, no Recipe, and every key its vanilla parent dish would have given it
+_REMOVED_07 = ["Food_Instant_Heal_T2", "Food_Instant_Heal_T3", "Food_Instant_Heal_Bread"]
+for _n, _t in files.items():
+    for _r in _REMOVED_07:
+        if _r in _t: raise SystemExit("self-check 0.1.7: %s still names the removed 0.7 effect %s" % (_n, _r))
+for _r in _REMOVED_07:
+    if _r in V_EFFECTS: raise SystemExit("self-check 0.1.7: %s is back in Assets.zip - re-check the remap" % _r)
+for dish in DISHES:
+    for g in range(1, GEN_MAX + 1):
+        _o = G_ITEMS[dish_id(dish, g)]
+        if _o["InteractionVars"]["Effect"]["Interactions"][0] != {"Type": "ApplyEffect", "EffectId": eff_id(HEAL_07[DISH_HEAL_06[dish]], g)}:
+            raise SystemExit("self-check 0.1.7: %s G%d does not heal with %s" % (dish, g, HEAL_07[DISH_HEAL_06[dish]]))
+        if _o.get("Parent") != "Template_Food" or "Recipe" in _o:
+            raise SystemExit("self-check 0.1.7: %s G%d Parent %s / Recipe" % (dish, g, _o.get("Parent")))
+for dish in FLATTENED:
+    _pv = rd(V_ITEMS[rd(V_ITEMS[dish])["Parent"]])
+    _miss = [k for k in _pv if k not in ("Recipe", "TranslationProperties", "Parent") and k not in G_ITEMS[dish_id(dish, 1)]]
+    if _miss: raise SystemExit("self-check 0.1.7: flattened %s G1 lacks its parent dish's keys %s" % (dish, _miss))
+print("0.1.7 food remap: heals %s; %d dishes flattened from a vanilla-dish Parent (%s); no generated file names %s"
+      % (", ".join("%s -> %s" % (k, v) for k, v in sorted(HEAL_07.items())), len(FLATTENED), ", ".join(FLATTENED), " / ".join(_REMOVED_07)))
+''')
+P.rep('''GENERATED ASSETS (asset pack in this jar, all copied from the game's own shapes in Assets.zip, 447 JSON files):
+ - Server/Entity/Effects/SkyyCook/Skyy_Cook_<Base>_G<g>.json      13 vanilla food effects x Grades 1-12 = 156
+   (Food_Instant_Heal_T1/T2/T3/Bread, HealthRegen_Buff_T1-3, Meat_Buff_T1-3, FruitVeggie_Buff_T1-3; vanilla JSON with ONLY the''',
+      '''GENERATED ASSETS (asset pack in this jar, all copied from the game's own shapes in Assets.zip, 435 JSON files since 0.1.7):
+ - Server/Entity/Effects/SkyyCook/Skyy_Cook_<Base>_G<g>.json      12 vanilla food effects x Grades 1-12 = 144 (0.1.7; was 13 = 156)
+   (0.1.7: Food_Instant_Heal_T1 + Food_Health_Restore_Small / _Medium (Hytale 0.7 removed Food_Instant_Heal_T2/T3/Bread - see the
+   0.1.7 FOOD REMAP note), HealthRegen_Buff_T1-3, Meat_Buff_T1-3, FruitVeggie_Buff_T1-3; vanilla JSON with ONLY the''')
 
 assert P.s.count("registerSystem(") == SYS0 and P.s.count("registerCommand(") == CMD0, "no system / command added"
 _i = P.s.index
