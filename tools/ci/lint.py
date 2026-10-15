@@ -6,6 +6,7 @@ check and expensive to get wrong:
   FAIL  a forbidden file is tracked: game files (HytaleServer.jar, Assets.zip), any .jar except tools/javassist.jar, any file > 5 MB
   FAIL  newest build script of a mod ships a .ui file (inline pages only - see HANDOFF section 2)
   FAIL  newest build script of a mod uses an underscore in a UI element id (#Some_Id) - the client cannot resolve those
+  FAIL  newest build script of a mod sets Vertical/HorizontalAlignment to Top / Bottom / Left / Right (client: Start / Center / End only)
   WARN  a command constructor in the newest build script has neither setPermissionGroups(...) nor requirePermission(...) - ordinary
         players cannot run it (HANDOFF "COMMAND RULES"); admin-only-by-design commands are listed in ADMIN_ONLY_OK
   FAIL  newest build script of a mod has a command whose requirePermission node the engine would put into a permission group (e.g.
@@ -430,6 +431,8 @@ def grid_slot_warnings(rel, text):
                        "a grid slot disconnects the client (HANDOFF section 2; use skyyui.java_grid_methods / java_grid_fill)" % (rel, i))
     return out
 
+ALIGN_BAD_RE = re.compile(r"\b(VerticalAlignment|HorizontalAlignment)\s*:\s*(Top|Bottom|Left|Right)\b")
+
 for mod, f in sorted(newest.items()):
     text = open(os.path.join(ROOT, f), encoding="utf8", errors="replace").read()
     lines = text.splitlines()
@@ -441,6 +444,10 @@ for mod, f in sorted(newest.items()):
                 ident = m.group(1)
                 if "_" in ident and not ident.isupper():
                     fails.append("%s:%d UI element id with an underscore: #%s" % (f, i, ident))
+        m2 = ALIGN_BAD_RE.search(line)
+        if m2:
+            fails.append("%s:%d UI %s: %s - the client only accepts Start / Center / End (a Top / Bottom / Left / Right value "
+                         "disconnects the player, 2026-10-15 #SkyyGPFig)" % (f, i, m2.group(1), m2.group(2)))
     for m in CMD_RE.finditer(text):
         name = m.group(1)
         window = text[m.end(): m.end() + 900]
