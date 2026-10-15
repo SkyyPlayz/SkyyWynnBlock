@@ -9,6 +9,11 @@ survives), `research/cloud/Gathering-Tiers-Draft.md`, `research/Rebirth-Ideas.md
 `research/Hytale-0.7-Port.md`. Engine facts come from the Hytale **0.7.0 release** jar + Assets.zip (reflection + constant pools, read
 only, scratch deleted) and the live build scripts (SkyyGear 0.2.23, SkyyIslands 0.5.5, SkyySkills 0.4.30, SkyyFishing 0.1.2).
 
+**Updated 2026-10-15** (spec agent, docs only) to Skyy's SHARD MENUS, TOTEM BENCH PER SHARD and TOTEM FORMS decisions
+(`docs/answered/skills.md`, 2026-10-15): one menu per shard opened only by right-clicking it on your island (9.5, replaced), a fixed
+Totem Bench per shard (9.7, new), totems start as a hand-held totem OR a placed pole by type (9.3.1, new). What changes from the BUILT
+SkyyShards 0.3.2 / SkyyMenu 0.3.26 + the migration: 9.8. Build rounds: section 11 phase 9-10. New questions: section 14, rows 15-26.
+
 Legend: **VERIFIED** = seen in the 0.7 jar / Assets.zip / a live script. **UNVERIFIED** = needs a probe (named). **PLACEHOLDER** =
 a number Skyy has not picked; every runtime placeholder is a Server Setup row (section 11). Rarity names below are SkyyGear's live
 ladder: Normal (shown with the vanilla "Common" frame = Skyy's "common"), Unique, Rare, Legendary, Fabled, Mythic (boss-only), Set,
@@ -29,6 +34,11 @@ Untiered (orange, specials).
 - **Shards** are portal blocks on your island. Each opens a private mini world: a hub island with fixed slots around it, islands that
   grow in place, eternal plants, totems that call themed workers. You collect from the shard menu (that is when XP and collections are
   paid). Nothing can be built or broken there - only gathered, and totems placed / picked up.
+- (2026-10-15) **Each shard has its own menu**, and you open it ONLY by right-clicking that shard where it stands on your island - no
+  shard menu anywhere else (no SkyWynn Menu tile). Each shard's hub island has its own **Totem Bench** (fixed, cannot be broken or
+  moved) that makes only that shard's totems; you upgrade the bench to unlock the better totems. Later one hard-to-make **Totem
+  crafting accessory** lets you make every shard's totems anywhere. **Collector / worker totems** (Harvest Spirit and friends) start as
+  a placed **Totem Pole**; **utility totems** (Rain ...) start **hand-held** (use them anywhere) and turn into a pole when tiered up.
 - **Rebirth** (own spec, research/cloud/Rebirth-Spec.md) sends tools back to Crude level 1, keeps rarity + lines, removes all points (G6), adds a rebirth modifier, and unlocks the
   Multitool merge.
 
@@ -54,6 +64,9 @@ Untiered (orange, specials).
 | social.md 2026-10-12 STARTER ISLANDS + Tutorial-Plan | starter islands fixed, nothing protected; tutorial "make crude tools" = the one starter set | 3.1 |
 | world.md 2026-10-11 MGG BIOME SELECTOR | study read-only for runtime world creation (ARR, no code copied) | 10 |
 | ui.md 2026-10-13 VISUALS | cloud draws the shard menu / totem pages, local review, no wait for Skyy | 9.6 |
+| skills.md 2026-10-15 SHARD MENUS | "i would rather each shard has its own menu. and i was picturing you open them by right clicking the shard on your island, not in the menu. (make it so the shard menu can only be opened on your island. and its hidden everywhere else" | 9.5 (replaced), 9.8 |
+| skills.md 2026-10-15 TOTEM BENCH PER SHARD | "should we have a totem bench per shard? with that shards totems? (then id do 1 accessory to craft all of them later, but its hard to make.) the totem bench comes on the island, and cant be moved. we can have a few upgrade tiers to unlock the better totems that way." | 9.7 (new) |
+| skills.md 2026-10-15 TOTEM FORMS | "only some totems start as a hand held totem. things like the collectors start as a totem pole. the one that calls rain starts as a hand held totem you can use anywhere. then upgrades to a totem pole you have to place." | 9.3.1 (new), 9.3 tier rule fixed |
 | PROJECT-RULES 2 | check existing mods first; no duplicates; MIT may be folded with credit | 2 |
 
 Older locks kept: Tree Feller 1/2/4/5/6/10 (SkyyTrees `feller.logs`), Vein Mine + Tree Feller also in the trees and stacking with the
@@ -346,7 +359,7 @@ Ranching has no tool tier: its gate is the animal's collection + Ranching level 
 | SkyySkills | `players/<pkey>.properties` | + `xp.Fishing`, `xp.Ranching`, `xp.Orchard`; bridge `skill:<uuid>` gains Fishing / Ranching / Orchard / FarmingAvg |
 | SkyyTrees | `players/<pkey>.properties` | + Fishing tree nodes; Farming tree unchanged (level = the average) |
 | SkyyFishing | rig per pole uid (today: per rod item) | reel / hook / line / sinker ids + wear on the POLE document (`rig.*`) |
-| **SkyyShards** (new) | `shards/<pkey>.properties` | `world=skyy-shard-<pkey>`, per shard `s.<kind>.placed=<island world>:<x,y,z>` or `inventory`, `s.<kind>.storageTier`, `s.<kind>.upgrades=compactor:2,compressor:1`, per island `i.<kind>.<slot>.type=<crop/ore/log/animal/mob>`, `.size=1-3`, `.lastRun=<epoch s>`, `.stored=<item:count,...>`, per totem `t.<kind>.<slot>.<n>=<type>:<tier>:<mod1>,<mod2>:<booster>:<x,y,z>`; `v=1` |
+| **SkyyShards** (new) | `shards/<pkey>.properties` | `world=skyy-shard-<pkey>`, per shard `s.<kind>.placed=<island world>:<x,y,z>` or `inventory`, `s.<kind>.storageTier`, `s.<kind>.upgrades=compactor:2,compressor:1`, per island `i.<kind>.<slot>.type=<crop/ore/log/animal/mob>`, `.size=1-3`, `.lastRun=<epoch s>`, `.stored=<item:count,...>`, per totem `t.<kind>.<slot>.<n>=<type>:<tier>:<mod1>,<mod2>:<booster>:<x,y,z>`; `v=1` (BUILT 0.3.2 keys differ: `<kind>.placed / storage / i<n>.totems ...`, build script docstring). 2026-10-15 adds per shard `<kind>.bench=1-4`, `<kind>.benchUpTo=<tier>`, `<kind>.benchUpAt=<epoch s>` (upgrade in progress), `forms=1` (run-once marker of the 9.8 totem-form migration); totem document key `SkyyTotem` gains `gf` 1 (grandfathered pole, 9.8) |
 | SkyyIslands | island registry | + `shard.world=<name>` (protected like `world.old`), guards read `shard:fn:allowed(world, action, blockId)` from the bridge |
 | Rebirth (later) | own mod | reads / writes `rb`, resets `tier`, `lvl` via `gear:fn:rebirth(uuid)` |
 
@@ -367,13 +380,15 @@ Deleting a profile archives the shard world folder with the island (SkyyProfiles
 - ONE private **shard world** per profile (`skyy-shard-<pkey>`, Void worldgen, `setSpawningNPC false`, `setBlockTicking true` for
   crops, `setSavingPlayers true`, `setDeleteOnRemove false`), created on the first shard placement like island worlds. Each shard kind
   owns a **region** 1,024 blocks apart (Mining at 0,0; Foraging 1024,0; ... on a ring) so one world holds all six (question 7:
-  one world vs six). Each region = **hub island** (arrival pad, exit pad, menu totem) + **6 fixed slots** on a hexagon 48 blocks out,
+  one world vs six). Each region = **hub island** (arrival pad, exit pad, exit stand - "Back to Island" only since 2026-10-15, and the
+  shard's fixed **Totem Bench**, 9.7) + **6 fixed slots** on a hexagon 48 blocks out,
   each with a pre-made **bridge prefab** that appears when the slot is bought and an **island prefab in 3 sizes** (Small 13x13, Medium
   21x21, Large 29x29 - the bigger one contains the smaller one, grown in place by pasting the next prefab centred on the same point).
   Any island type in any slot; no order lock (Skyy's popup). Start: slot 1 filled (Farming: Wheat Small + T1 Harvest Spirit Totem).
 - Everything there is **protected**: SkyyIslands' guards (Damage / Break / Place / Pickup / Use / Drop / UseEntity / Hurt, VERIFIED on
   island worlds) run with the shard rule: allowed = harvesting a resource block of the island's type with a tool (crop / ore / log /
-  animal), placing and picking up `Skyy_Totem_*` blocks on the island's totem pads, using the pads and menus; everything else
+  animal), placing and picking up `Skyy_Totem_*` blocks on the island's totem pads, using the pads, the exit stand, the Totem Bench
+  and a totem's own page; everything else
   cancelled. The owner and co-op members (island co-op list) may enter; visitors may not (question 8).
 - **Eternal plants / nodes:** crops are the vanilla ETERNAL variants (regrow, VERIFIED); ore nodes and trees regrow by our timer
   (`shard.regrowSec` 90, the Ore-Regrow cloud draft's approach: a regrow task re-sets the block); Ranching animals respawn
@@ -403,16 +418,56 @@ Deleting a profile archives the shard world folder with the island (SkyyProfiles
 | Mining | **Golems** (vanilla golem recolours; Kami OreGolems looks if licensed) | Quarry Spirit (= Harvest Spirit for ore), Auto-Smelt Pole (ingots), Geode Pole (rare gem chance) |
 | Combat | **Soul Cages** (SkyyArmory soul tie-in) | Soul Cage Totem (needs a Soul Orb of the mob kind: spawns that mob on the arena island; the worker "harvests" kills -> drops only), Lure Pole (+spawn rate), Trophy Pole (+rare drop) |
 
-Rules (locked + proposal): no fuel; **tier up on the Anvil Upgrade action** (Totem I -> Totem Pole II -> Grand Pole III -> Ancient Pole
-IV -> Mythic Pole V; costs Enchanted of the shard's material + Essence: 1 / 2 / 3 / 5 / 8 Enchanted + 10 / 25 / 50 / 100 / 200 Life or
-Soul Essence, PLACEHOLDER); range 3 / 5 / 7 / 9 / 11 blocks radius (a Small island is 13 wide - the starter T1 cannot cover it, Skyy:
+Rules (locked + proposal): no fuel; **tier up on the Anvil Upgrade action** (2026-10-15: the shard's Totem Bench does it too - 9.7,
+question 19) along the ladder of the totem's FORM (9.3.1): **hand-held kinds** Totem I (hand-held) -> Totem Pole II -> Grand Pole III
+-> Ancient Pole IV -> Mythic Pole V; **pole kinds** Totem Pole I -> Totem Pole II -> Grand Pole III -> Ancient Pole IV -> Mythic Pole V
+(costs Enchanted of the shard's material + Essence: 1 / 2 / 3 / 5 / 8 Enchanted + 10 / 25 / 50 / 100 / 200 Life or
+Soul Essence, PLACEHOLDER; the BUILT `totem.upCost` rows are I->II 1 + 10, II->III 2 + 25, III->IV 3 + 50, IV->V 5 + 100); range 3 / 5 / 7 / 9 / 11 blocks radius (a Small island is 13 wide - the starter T1 cannot cover it, Skyy:
 "farm is bigger than the spirits range so you can go in there and manually farm too"); worker rate 1 / 1.6 / 2.4 / 3.5 / 5 items / min
 (base, PLACEHOLDER, Server Setup); **2 upgrade slots** (modifiers: Wider Area +2, Faster +20 %, Auto-Replant, Compost, Storage +3 stacks,
 Rare Finder; crafted items `Skyy_TotemMod_*`) + **1 optional booster slot** (Life / Water / Soul Essence: +area +growth for 1 h real
-time). **Right-click a placed totem** = its page: info (tier, workers, rate, range circle shown as particles for 10 s), Upgrade
-(opens the Anvil with it), Modifiers (2 slots), Pick up. Harvest Moon rule: at night only, +25 % crops, and an **extremely low**
+time). **Right-click a placed totem** = its OWN page (2026-10-15: no longer the shard menu - 9.8): info (tier, workers, rate, range
+circle shown as particles for 10 s), Upgrade (says "Tier up at the <Shard> Totem Bench on the hub island" - 9.7), Modifiers (2 slots),
+Booster, Pick up. Harvest Moon rule: at night only, +25 % crops, and an **extremely low**
 chance (`moon.enchChance` 0.05 %) of an Enchanted crop; the sickle's **Moon Blade** modifier (new roll, scythe / sickle pool) multiplies
 that chance x2-x5. Totem items: `Skyy_Totem_<Type>` with a tier document (SkyyGear document, no rarity - question 10).
+
+### 9.3.1 Totem forms (Skyy 2026-10-15 TOTEM FORMS) - which form each totem STARTS in
+Two forms, ONE item id per totem (`Skyy_Totem_<Type>`, unchanged) - the form comes from the type + the tier in its document:
+- **Pole kinds** (collectors / workers and the area supports): tier I is already a **Totem Pole** - it works only placed on a totem pad
+  in a shard where it works (the built behaviour: placed from the shard menu's Totems tab). Ladder: Pole I -> II -> Grand III ->
+  Ancient IV -> Mythic V.
+- **Hand-held kinds** (utility): tier I is a **hand-held totem** - right-click with it in hand ANYWHERE (overworld, island, shard) for a
+  short local effect, cooldown `totem.hand.cooldownSec` 120 (PLACEHOLDER; the Mana cost of Skyy's 2026-10-11 popup "click = 30 s of
+  rain, costs Mana" is added when a Mana-spend bridge exists - question 16). It CANNOT be placed on a pad ("Tier it up to Totem Pole II
+  at the Totem Bench first"). Tier-up I -> II turns it into **Totem Pole II** (same item, same uid, doc tier 2) which then works like a
+  pole kind (placed only; right-click in hand just says where to place it).
+
+| Totem | Works in (shards) | Role | Starts as | Hand-held tier I effect (PLACEHOLDER rows `totem.hand.<type>.*`, seconds) | Bench tier to craft (9.7) |
+|---|---|---|---|---|---|
+| Harvest Spirit | Farming, Ranching, Orchard | collector (worker) | **Pole** | - | I |
+| Lumber Spirit | Foraging | collector | **Pole** | - | I |
+| Quarry Spirit | Mining | collector | **Pole** | - | I |
+| Soul Cage | Combat | collector (spawner) | **Pole** | - | I |
+| Rain | Farming, Orchard | utility | **Hand-held** | rain particles + wets farmland + crop growth x2 within 5 blocks for 30 s (local, not world weather - question 17) | I |
+| Fertilizer | Farming, Orchard, Foraging | utility | **Hand-held** (question 15) | one growth burst (crops / saplings, like bone meal) within 3 blocks | II |
+| Blessing of the Sun | Farming | utility | **Hand-held** (question 15) | crop growth x1.5 within 5 blocks for 60 s, daytime only | III |
+| Scarecrow | Farming, Ranching | area support | **Pole** | - | I |
+| Herd Pole | Ranching | area support | **Pole** | - | I |
+| Compost | Farming | area support | **Pole** | - | II |
+| Pollinator | Farming, Orchard | area support | **Pole** | - | II |
+| Season Ward | Farming, Orchard | area support | **Pole** | - | II |
+| Fairy Grove | Farming | area support | **Pole** | - | III |
+| Mushroom / Shade | Farming | night support | **Pole** | - | III |
+| Harvest Moon | Farming | night support + Enchanted chance | **Pole** | - | IV |
+| Sap Tap | Foraging | rare finds (Tree Sap) | **Pole** | - | II |
+| Auto-Smelt Pole | Mining | converter (ingots) | **Pole** | - | II |
+| Geode Pole | Mining | rare finds (Emerald) | **Pole** | - | III |
+| Lure Pole | Combat | area support (+spawn) | **Pole** | - | II |
+| Trophy Pole | Combat | rare finds | **Pole** | - | III |
+
+A totem that works in several shards (Harvest Spirit, Rain, Fertilizer, Scarecrow, Pollinator, Season Ward) is on the bench of EACH of
+those shards, at the tier this table gives.
 
 ### 9.4 Islands: buy, grow, cost (per shard; 3 sizes at launch = Skyy's "3 lvs max to start")
 | Step | Cost (PLACEHOLDER rows `island.<kind>.cost.*`) | Needs |
@@ -421,12 +476,28 @@ that chance x2-x5. Totem items: `Skyy_Totem_<Type>` with a tier document (SkyyGe
 | Small -> Medium | 8 Eternal Seeds of the crop (Farming / Orchard sapling / Ranching feed) or 2 Enchanted of the material + coins 5,000 | the collection IV |
 | Medium -> Large | 24 Eternal Seeds or 5 Enchanted + coins 20,000 | the collection VI |
 Eternal Seeds stay the vanilla Memories-gated recipe (world-wide gate, older spec 2.3) - so Medium needs some exploration first.
+(The totem ladder "Totem I -> Totem Pole II" that skills.md 2026-10-15 calls "the 9.4 rule" lives in 9.3; it now applies to the
+hand-held kinds only - pole kinds start as Totem Pole I, 9.3.1.)
 
-### 9.5 Shard menu (one custom page, the SAME page from the portal on the main island and from the hub totem inside)
-Tabs: **Overview** (all six shards: placed / not, storage fill, "Enter" button per placed shard), **Islands** (slots as a hexagon map
-with size + type, Buy / Grow), **Totems** (list per island, tier, slots), **Collect** (per island counts, Collect all), **Upgrades**
-(storage tier, compactor, time compressor, booster slot), **Pick up shard**. Vanilla look through `tools/skyyui.py`; the cloud draws the
-mockup first (ui.md 2026-10-13), local review, then build.
+### 9.5 Shard menus - ONE MENU PER SHARD, opened only on your island (REPLACED 2026-10-15, Skyy's SHARD MENUS)
+The old 9.5 (one page for all six, opened from the portal, the hub totem inside and - as built - the SkyWynn Menu tile) is gone.
+- **One menu per shard.** Right-clicking a placed **Mining / Foraging / Farming / Ranching / Orchard / Combat Shard** opens THAT
+  shard's menu: title "<Kind> Shard", its own colours / icon, its own data only - no overview of the six, no switching to another
+  shard from inside it (the built 6th tab SHARDS and its "Open" buttons go away).
+- **Opened only by right-clicking the shard on your island**: the shard portal stands on the island you own or are a co-op member of
+  (placement is already limited to your own island, built). Owner: every button. Co-op members: the same page without Pick up Shard /
+  totem place / pick up (built owner-only rules kept; Collect only with `shard.coopCollect`). Anyone else right-clicking it gets the
+  chat line "This is <owner>'s <Kind> Shard." and no page.
+- **Hidden everywhere else**: no SkyWynn Menu tile (removed - question 22), no player command, the stand inside the shard's hub is an
+  exit only ("Back to Island", no tabs), right-clicking a placed totem opens that totem's own page (9.3), not the shard menu. A shard
+  item in your inventory / a chest shows no menu (its tooltip says "Place me on your island, then right-click me"). `/shardadmin` stays
+  (admin tool, not the player menu).
+- **Tabs** (per shard): **Collect** (per island counts, Collect all), **Islands** (the hexagon of 6 slots, Buy / Grow), **Totems**
+  (per island: placed totems, tier, modifiers; Place a POLE from your inventory onto the selected island's pads, Pick up - a hand-held
+  tier I is refused with "Tier it up to Totem Pole II at the Totem Bench first"), **Upgrades** (storage tier, compactor, time
+  compressor, booster slot); buttons **Enter Shard**, **Pick up Shard** (owner). The built **Craft** tab moves to the Totem Bench (9.7).
+- Vanilla look through `tools/skyyui.py`; the cloud redraws the mockup (one shard's page + the bench page + the totem page) first
+  (ui.md 2026-10-13), local review, then build.
 
 ### 9.6 Entering and leaving (engine: 10.4)
 "Enter" button -> `Universe.addWorld` if unloaded -> `transferPlayerAsync` to the region's arrival pad (the SkyyIslands `/island`
@@ -434,6 +505,92 @@ pattern, VERIFIED). Stepping on the pad (CollisionEnter -> marker effect -> our 
 the island at the portal. On disconnect inside a shard the next login routes home (the SkyyIslands login router). Empty shard world
 -> unload after `shard.unloadSec` 120 (our own idle check -> `Universe.removeWorld(name)` keeps the folder; VERIFIED pattern = island
 "(unloaded)" state).
+
+### 9.7 Totem Bench - one per shard, fixed (NEW 2026-10-15, Skyy's TOTEM BENCH PER SHARD)
+- **Where:** each shard region's **hub island** comes with its own bench block `Skyy_TotemBench_<Kind>` (part of the hub prefab, so it
+  "comes on the island"; question 21 - the alternative is next to the portal on your main island). **Cannot be broken or moved**:
+  `GatherType: Unbreakable`, no item form, the shard guard allows only Use on it, and the hub repair (Enter / Grow, built) re-pastes it if
+  it is ever missing - existing shard worlds get their benches this way on the next Enter. Model: a vanilla bench model recoloured per
+  shard at BUILD time (never committed), our icon. Right-click = the bench page (`OpenCustomUI` `SkyyTotemBench`, the same pattern as the
+  portal, probe S4 VERIFIED). Owner only (co-op: view only).
+- **It crafts only THAT shard's totems** (the 9.3.1 rows whose "Works in" names this shard) **+ the 6 modifiers** (shared by all shards,
+  so every bench makes them) at the bench's tier. Crafting = the built Craft-tab code moved here: Server Setup rows `craft.<ItemId>`
+  unchanged ("Item:qty,...;coins"), items counted before / after, coins last, everything back on a failure. A new totem comes out at
+  tier I in its 9.3.1 form.
+- **Tiers I-IV, upgraded at the bench** (like the vanilla Workbench tiers: a cost, then a timer in seconds that runs in real time, also
+  while you are offline / the shard world is unloaded - stored as `<kind>.benchUpAt`; the bench keeps working at the old tier meanwhile;
+  no pay-to-skip). Every shard starts at **Bench I** (free with the shard). The bench tier unlocks the better totem TYPES (9.3.1
+  "Bench tier to craft") and the better modifiers, and caps how far that shard's totems can be tiered up (question 20).
+- **Tier up totems here** (question 19): the bench page has a "Tier up" row for a totem in your inventory that works in this shard; it
+  calls the built `shard:fn:totem` "cost" / "up" logic (same costs `totem.upCost`, same document, same uid; the hand-held -> pole switch
+  at I -> II happens here). SkyyGear's Anvil may call the same function later (not built yet in Gear 0.3.7).
+
+Bench tiers (ALL PLACEHOLDER - Server Setup group **Shards -> Totem Bench**, one row per cell; times in seconds):
+
+| Bench tier | Upgrade cost (`bench.up<N>.coins` + `bench.up<N>.items.<kind>`) | Upgrade time (`bench.up<N>.sec`) | Needs (`bench.up<N>.needs`) | Unlocks | Totems of this shard tier up to (`bench.cap<N>`) |
+|---|---|---|---|---|---|
+| I | free (comes with the shard) | - | the shard | tier-I-craft totems of 9.3.1 + modifiers Wider Area, Faster | Totem Pole II |
+| II | 25,000 coins + 2 Enchanted shard material | 300 s | the shard's collection III | tier-II totems + Auto-Replant, Storage +3 | Grand Pole III |
+| III | 100,000 coins + 8 Enchanted shard material | 1,800 s | collection V | tier-III totems + Compost, Rare Finder | Ancient Pole IV |
+| IV | 400,000 coins + 24 Enchanted shard material + 10 Void Essence | 7,200 s | collection VII | tier-IV totems (Harvest Moon) | Mythic Pole V |
+
+"Shard material" = Farming Enchanted Wheat, Mining Enchanted Copper Ingot, Foraging Enchanted Oak Log (the built storage-upgrade
+items); Ranching / Orchard / Combat have no Enchanted form yet (built note) -> 100 of the island's base item (Ranching the animal drop,
+Orchard Apple, Combat Bone) per Enchanted asked, until one exists (row `bench.mat.<kind>`). Unlock lists per shard follow 9.3.1:
+
+| Shard | Bench I | Bench II | Bench III | Bench IV |
+|---|---|---|---|---|
+| Farming | Harvest Spirit, Rain, Scarecrow | Fertilizer, Compost, Pollinator, Season Ward | Blessing of the Sun, Fairy Grove, Mushroom / Shade | Harvest Moon |
+| Orchard | Harvest Spirit, Rain | Fertilizer, Pollinator, Season Ward | - | - |
+| Ranching | Harvest Spirit, Herd Pole, Scarecrow | - | - | - |
+| Foraging | Lumber Spirit | Fertilizer, Sap Tap | - | - |
+| Mining | Quarry Spirit | Auto-Smelt Pole | Geode Pole | - |
+| Combat | Soul Cage (needs the mob's Soul Orb, built) | Lure Pole | Trophy Pole | - |
+
+Shards with nothing new at III / IV still upgrade for the modifiers and the tier-up cap. Rows `bench.unlock.<kind>.<Type>` (a number
+1-4) let a server owner move any totem to another bench tier.
+
+- **Extra shards** (the built R9 craft: a shard you do not have, from rebirth 2) move to **any** Totem Bench you own, in a "Shards" row
+  at the bottom of the page (you cannot open a missing shard's bench; question 23). Rules unchanged (one per kind per profile, ever).
+- **Later: the Totem crafting accessory** (Skyy: "1 accessory to craft all of them later, but its hard to make") - item
+  `Skyy_Accessory_TotemBench` in the Accessory Bag (SkyyAccessories defines it like the bench accessories; SkyyShards checks it through
+  the existing `acc:fn:has` bridge, signature read at build time). With it equipped, `/totems` (player command, no permission) opens the
+  bench page ANYWHERE with a tab per shard you own; each tab crafts / tiers up that shard's totems **only up to that shard's own bench
+  tier** (the accessory never skips bench upgrades). Hard to make (PLACEHOLDER row `totemacc.recipe`): 3 of your benches at tier IV
+  (`totemacc.needBenchIV` 3) + 1 Enchanted (or 100 base) of each owned shard's material + 20 Void Essence + 500,000 coins, crafted at any
+  Totem Bench IV (question 24). Own round (phase 10).
+
+### 9.8 What changes from the BUILT version (SkyyShards 0.3.2 + SkyyMenu 0.3.26) + migration
+| Area | Built today (read from `SkyyShards/build_skyyshards_0.3.2.py` docstring, `tools/shards_0_3_2_patch.py`, `tools/menu_0_3_22_patch.py`, `tools/menu_0_3_25_patch.py`) | After phase 9 |
+|---|---|---|
+| Shard menu | ONE page for all six (tabs Collect / Upgrades / Islands / Totems / Craft + SHARDS overview with "Open"), three routes: portal view (Enter, Pick up), hub view (the stand inside: Back to Island), menu view (SkyWynn Menu "Shards" tile, bridge `shard:fn:open`, everything but Pick up) | one page PER SHARD, only from right-clicking that portal on your island (9.5); no SHARDS tab, no Craft tab; hub stand = Back to Island only; `shard:fn:open` no longer published |
+| SkyWynn Menu | "Shards" tile at slot 11 (Menu 0.3.22, own icon `Skyy_Menu_Icon_Shards` since 0.3.26), drawn only while `shard:fn:open` exists (TILE_RULES "need") | tile removed (it already hides by itself the moment Shards 0.4 stops publishing `shard:fn:open`; the Menu round removes the entry); the Admin page's 4 Shards buttons (Menu 0.3.25) stay |
+| Totem right-click | opens the shard menu on the Totems tab, that totem selected | the totem's own page (info, modifiers, booster, range, Pick up; Upgrade points to the bench) |
+| Crafting | Craft tab: every totem of a shard that exists, 6 modifiers, extra shard (R9, rebirth 2) | the shard's Totem Bench (9.7), gated by bench tier; extra shards at any bench |
+| Tier-up | `shard:fn:totem` "cost" / "up" for SkyyGear's Anvil - the Anvil side is NOT built (Gear 0.3.7); only `/shardadmin totem` gives higher tiers | "Tier up" at the bench (same function, same costs), capped by bench tier |
+| Totem forms | every totem item MaxStack 1, never hand-placed, placed from the menu; Rain = placed pole only; the hand-held Rain was NOT built (left for the Mana round) | 9.3.1: Rain / Fertilizer / Sun tier I hand-held (Use anywhere, cooldown), cannot be placed until Pole II; all others pole from tier I (no change in how they work) |
+| Benches | none | `Skyy_TotemBench_<Kind>` on every hub (pasted by the hub repair) |
+
+**Migration (never take anything away; run once per profile file, marker `forms=1`, a `totem.log` line per change):**
+- **Placed shards, islands, storage, stored items, compactor, time compressor, booster, lastCollect, Soul Orb links**: same keys, read
+  as today; production keeps running; nothing moves. Portals stay where they are (right-click now opens that shard's own menu).
+- **Benches**: every existing shard starts at Bench I; the bench block appears on the next Enter (hub repair). Totems players already
+  crafted stay theirs whatever their bench tier - the bench only gates NEW crafting / tier-ups. (Crafting a Bench-II+ totem that the old
+  Craft tab allowed now waits for the bench upgrade - a design change Skyy asked for, said once in a chat line.)
+- **Pole kinds already owned** (Harvest Spirit I etc., placed or in any inventory / chest): no change - the document stays tier 1, the
+  name now reads "Totem Pole I".
+- **Hand-held kinds already owned at tier I** (Rain / Fertilizer / Blessing of the Sun I made by 0.2-0.3, placed or carried) - SAFE
+  DEFAULT, question 18: **kept as poles (grandfathered)**. Documents written by 0.4 carry `f` (form); a tier-1 hand-held-kind document
+  WITHOUT `f` is pre-0.4 and gets `gf=1` the first time 0.4 sees it (placed record at the migration, or the item when placed / used /
+  tiered up - no chest scanning needed). A `gf=1` totem keeps working on its pad, can be picked up and placed again as a pole, and can
+  ALSO be used hand-held; tiering it up clears `gf` (it is a Pole II then anyway). Nothing is lost and nothing is given for free.
+  (Alternatives for Skyy: turn them into hand-held only - placed ones would pop back to the owner -, or a free upgrade to Pole II.)
+- **Config**: `craft.<ItemId>`, `totem.upCost`, storage / compactor / compressor rows unchanged (the bench reads the craft rows); NEW rows
+  `bench.*`, `totem.hand.*`, `totemacc.*` read their defaults when missing (no rewrite, no one-time setting migration needed).
+- **Menu**: no saved data (the tile simply goes).
+- **Rollback / FLOOR**: Shards 0.4 is a FLOOR once a hub has a bench block (0.3.2 does not know `Skyy_TotemBench_*` - an unknown block
+  in a saved chunk) or a document carries `f` / `gf`; Menu 0.3.27 -> 0.3.26 is safe (the old tile stays hidden while `shard:fn:open` is
+  missing).
 
 ---
 
@@ -511,6 +668,9 @@ with particles only (Fairy Grove dots) and adds workers in the totem round.
 | **6. SkyyShards 0.2 - totems** | ultracode (art + NPC) | SkyyShards 0.2, SkyyGear (totem tier-up on the Anvil), SkyyArmory (Soul Cage link) | all totem types, tiers, slots, booster, right-click page, workers (or particles), Harvest Moon + Moon Blade roll, MoreTotems Water fold | rate math vs range; slot items; pick-up returns the exact tier document |
 | **7. SkyyShards 0.3 - the other five shards + upgrades** | full x2 | SkyyShards 0.3, SkyyWorldGen (Mithril veins if not yet) | Mining / Foraging / Orchard / Ranching / Combat regions, compactor, time compressor, Combat Soul Cages | same harness per kind; Combat drops only |
 | **8. Rebirth** | own spec | rebirth mod + SkyyGear (`gear:fn:rebirth`), Multitools fold (models, credit) | rebirth modifier, Multitool merge unlock, armor T1 reset | - |
+| **9. Per-shard menus + Totem Benches + forms** (2026-10-15; tag `shards04`) | **full round** (saved data + migration, crafting = items that could be lost / duplicated, several mods): Opus builder, 3 Sonnet critics (dupe / conservation, migration + rollback, protection + UI rules) + recheck; no simplify pass. Size: LARGE (the biggest Shards change since 0.3) | SkyyShards **0.4** (from the 0.3.2 pin, new patch `tools/shards_0_4_patch.py` - 0.3.x builds are hand-written, so the patch derives from `build_skyyshards_0.3.2.py`), SkyyMenu **0.3.27** (lean part: remove the Shards tile entry + its TILE_RULES / MAIN_D / asserts; tooltip of Island Menu gains "Shards: right-click one on your island") | 9.5 per-shard menu (portal only, owner / co-op / others), hub stand exit-only, `shard:fn:open` dropped; totem own page; 9.7 bench block on every hub (hub repair), bench page (craft moved from the Craft tab, Tier up via `shard:fn:totem`, bench upgrade with timer, unlock / cap rows), extra-shard row; 9.3.1 forms (hand-held tier I Use with cooldown, refused on pads, I -> II = pole); 9.8 migration (`forms=1`, `gf`), new Server Setup group Shards -> Totem Bench | before: cloud mockups (shard page, bench page, totem page); probe B1 (a recoloured vanilla bench model as an Unbreakable custom block with OpenCustomUI draws + opens - S4 reuse). Harness: menu opens ONLY from a portal on your island (Menu tile hidden, hub stand exit-only, totem -> own page, visitor line); one page per kind; craft / tier-up conservation (items before / after, coins last, refund on failure, uid unchanged, no double tier-up on double click); bench timer offline math; unlock + cap gates; hand-held refused on pads, Use cooldown; migration: old Rain I placed keeps working + `gf`, new Rain I has `f`, pole kinds untouched, storage / islands byte-equal; rollback note; smoke PASS |
+| **10. Totem crafting accessory** (tag `totemacc`) | full round (new item + new command `/totems`), size SMALL | SkyyAccessories **0.5.16** (item def, bench-accessory style, recipe row), SkyyShards **0.4.1** (`/totems` page = the bench page with shard tabs, `acc:fn:has` check) | 9.7 "Later" bullet | accessory gate, never above each shard's bench tier, works off-island, conservation as phase 9 |
+| later | - | Mana round: hand-held totems cost Mana (question 16); SkyyGear: Anvil totem tier-up calls `shard:fn:totem` (optional, question 19) | | |
 | later | - | Zone 5 tiers (T7 / M7), Mythic sigil question, gems (research/Gems-Ideas.md) | | |
 
 Phase 3 needs 1 (Enchanted exists) and benefits from 2 (pole levels with Fishing; without 2 the pole follows Foraging as a stopgap -
@@ -539,7 +699,8 @@ player who disagrees with the pick can run `/smithing` -> "Make lifelong" ONCE w
   setting migration rule, Undo line); `tool.gate` turns on with the gate rows at their defaults.
 - Starter chest row `starter.kit`: the four Crude tools are added only if the row still holds the default (same rule).
 - Enchanted items: as the older spec 7 (floor SkyyCollections 0.2.10 once deployed).
-- No shard data exists yet; the shard world is created on first placement.
+- No shard data exists yet; the shard world is created on first placement. (2026-10-15: shard data DOES exist now - the phase 9
+  migration is in 9.8.)
 
 ---
 
@@ -578,6 +739,19 @@ player who disagrees with the pick can run `/smithing` -> "Make lifelong" ONCE w
 | 12 | Multitool merge after rebirth 1 = sum of points, best rarity, merged lines, no penalty (the 0.2.18 85 % / 70 % rows go to 100)? | **yes** |
 | 13 | Orchard uses NoCube's Orchard fruit by id (pack mod stays) and vanilla Apple; Ranching uses vanilla animals (no animal mod)? | **yes** |
 | 14 | Harvest Moon Enchanted chance 0.05 % per crop at night, Moon Blade x2-x5? | **yes** |
+| | **Added 2026-10-15 (per-shard menus, Totem Benches, totem forms - 9.3.1, 9.5, 9.7, 9.8). Defaults in [brackets].** | |
+| 15 | Which totems start HAND-HELD? Rain + Fertilizer + Blessing of the Sun (utility), every collector / support starts as a pole? Or Rain only? | **[Rain + Fertilizer + Sun]** |
+| 16 | Hand-held use before Mana-spend exists: a cooldown only (120 s), the Mana cost added in the Mana round? | **[cooldown now, Mana later]** |
+| 17 | The hand-held Rain = a LOCAL effect (rain particles, wet farmland, faster crops within 5 blocks for 30 s), never the world's weather? | **[local]** |
+| 18 | Old tier-I Rain / Fertilizer / Sun totems made before the update: keep working as poles (grandfathered), turn into hand-held only, or a free upgrade to Pole II? | **[grandfather - nothing lost, nothing free]** |
+| 19 | Totem tier-up at the shard's Totem Bench (the Anvil side was never built; the Anvil can call the same code later)? | **[at the bench]** |
+| 20 | The bench tier also caps totem tiers (Bench I -> up to Pole II ... Bench IV -> up to Mythic V)? | **[yes]** |
+| 21 | Bench on the shard's hub island inside the shard (fixed with the hub) rather than next to the portal on your main island? | **[hub island]** |
+| 22 | SkyWynn Menu "Shards" tile: remove it, or turn it into "Go to your island"? (Island Menu already takes you home) | **[remove]** |
+| 23 | Extra-shard crafting (rebirth 2+) at ANY Totem Bench you own (a missing shard has no bench to open)? | **[any bench]** |
+| 24 | Totem crafting accessory: 3 benches at IV + 1 Enchanted per shard + 20 Void Essence + 500,000 coins, crafted at a Bench IV; `/totems` opens it anywhere; never crafts above each shard's own bench tier? | **[yes, numbers PLACEHOLDER]** |
+| 25 | Co-op members right-clicking the owner's shard on the shared island see its menu (Collect only with `shard.coopCollect`, no place / pick up), and the bench view-only? | **[yes, as built]** |
+| 26 | Bench upgrade costs / times / needs in 9.7 (25k / 100k / 400k coins, 300 / 1,800 / 7,200 s, collection III / V / VII) - OK as starting PLACEHOLDERS (all Server Setup rows)? | **[yes]** |
 
 ---
 
@@ -593,5 +767,6 @@ player who disagrees with the pick can run `/smithing` -> "Make lifelong" ONCE w
 | S4 | a placed custom BLOCK model with our texture + `OpenCustomUI` draws and opens | 5 |
 | P1 | VoidProtect's 0.7 event list vs our guards (desk, read only) | 5 |
 | N1 | spawn a tethered cosmetic NPC in a shard world on 0.7 | 6 |
+| B1 | a recoloured vanilla bench model as an Unbreakable custom block (no item form) with `OpenCustomUI` draws, opens, and survives the hub repair (S4 reuse) | 9 |
 
 Scratch used for the engine reads: `tools/dev/scratch/gatherspec/` (deleted).
