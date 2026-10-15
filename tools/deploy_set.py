@@ -19,9 +19,9 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.24"), ("SkyySacks", "0.8.5"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.16"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.12"), ("SkyyIslands", "0.5.9"), ("SkyyBazaar", "0.1.12"), ("SkyyGear", "0.3.5"), ("SkyySkills", "0.4.39"),
-    ("SkyyAccessories", "0.5.14"), ("SkyyClasses", "0.1.24"), ("SkyyMenu", "0.3.25"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
-    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.9"),
+    ("SkyyBank", "0.1.12"), ("SkyyIslands", "0.5.10"), ("SkyyBazaar", "0.1.12"), ("SkyyGear", "0.3.6"), ("SkyySkills", "0.4.39"),
+    ("SkyyAccessories", "0.5.14"), ("SkyyClasses", "0.1.25"), ("SkyyMenu", "0.3.25"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
+    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.10"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -64,7 +64,7 @@ SET = [
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
     # fishing items, removing SkyyFishing turns rods / reels / parts / fish into unknown items.
-    ("SkyyFishing", "0.1.5"),
+    ("SkyyFishing", "0.1.6"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
@@ -83,9 +83,10 @@ SET = [
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
-    ("SkyyQuests", "0.3.1"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
+    ("SkyyQuests", "0.3.2"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyRebirth", "0.3.3"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyShards", "0.3.1"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
+    # 2026-10-14 evening: Gear 0.3.6 + Fishing 0.1.6 together; FLOOR Gear 0.3.6 once any of the 68 gathering armor pieces exists (0.3.5 = unknown items). Classes 0.1.25 + Trees 0.3.10 together (Spellblade, rebirth slots 3-4). Islands 0.5.10 + Quests 0.3.2 together (3 starter islands; Server Setup can switch back to Classic).
     # 2026-10-14 rebirth6: Skills 0.4.39 FLOOR while rebirth stat bonuses exist (0.4.38 never removes skyyskill_rebirth* modifiers) - switch "Rebirth stat boosts" off with players online first.
     # 2026-10-14 18:17: Classes 0.1.24 + Trees 0.3.9 together (Warrior / Berserker / Archer). Classes Server Setup rows at 63.5 of 64 KB: split rows into a 2nd holder BEFORE any new rows.
     # 2026-10-14 13:10: Classes 0.1.23 + Trees 0.3.8 together (Monk + Assassin, rebirth R5/R6 parts). FLOOR once any rebirth ran: never below these. Do not add classes / trees to SkyyRebirth PARTS until the 3rd modifier slot (every 5th rebirth) is built.

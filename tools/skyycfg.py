@@ -2,6 +2,12 @@
 
 Contract for other mods and for SkyyMenu 0.3: tools/CONFIG-CONTRACT.md. Test harness: python tools/skyycfg_test.py (bare JVM, spec 8.2).
 
+ROW HOLDERS (2026-10-14, opt-in, SkyyClasses 0.1.25 first): emit(..., HOLDERS=n) with n = 2..4 moves the per-row arrays (KEYS, LABELS,
+DEFS ... VTYPES) and the default-file lines (DL<f>) into n holder classes CfgRows1..CfgRows<n> (contiguous row chunks); CfgRows keeps the
+same public static final fields, joined from the holders in its static initialiser. The JVM caps one method at 64 KB and a mod with
+300+ rows had CfgRows.<clinit> at 63.5 KB. Same arrays, same contents, same order: keys, defaults, files, the bridge contract and every
+CfgRows.X reader are unchanged. HOLDERS=1 (the default) generates exactly the classes it did before (no holder class).
+
 LOCK-FREE BRIDGE (2026-10-13, research/Code-Structure-Audit.md pack-wide pattern 1; contract, files and formats unchanged): CfgRows.bridge()
 caches the skyy.bridge map in the static volatile CfgRows.BRIDGE after its first call, so it no longer takes synchronized(System.class)
 on every call (the first call creates the map exactly as before, under that monitor, so old-snippet mods stay safe). Every mod picks it
@@ -2962,7 +2968,7 @@ class Kit(object):
 
 
 def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", RELOAD=None, KEEP=10, ALIASES=(),
-         DEFAULTS=None, ITEMS=None, PERM_FN=None, ITEM_FN=None):
+         DEFAULTS=None, ITEMS=None, PERM_FN=None, ITEM_FN=None, HOLDERS=1):
     """Checks the schema (spec 2.12 per-mod checks) and compiles CfgRows, CfgLog, CfgHist, CfgSaveTask, CfgFile, CfgFn, CfgPub into
     PKG. Returns a Kit; call kit.write(OUT) after the rest of the mod is compiled. PERM_FN / ITEM_FN are for the bare-JVM test
     harness only: "<Class>.<method>" static boolean (java.util.UUID, String) / (String) used instead of PermissionsModule / Item."""
@@ -2983,6 +2989,9 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
         _fail("NOTE is longer than 100 characters")
     if not isinstance(KEEP, int) or not 1 <= KEEP <= 200:
         _fail("KEEP must be 1-200")
+    # 2026-10-14 ROW HOLDERS (opt-in): 1 = every per-row array in CfgRows (as before); 2-4 = in CfgRows1..CfgRows<n> (the 64 KB method cap)
+    if not isinstance(HOLDERS, int) or isinstance(HOLDERS, bool) or not 1 <= HOLDERS <= 4:
+        _fail("HOLDERS must be 1-4")
     for a in ALIASES:
         if not MOD_RE.match(a):
             _fail("alias %r must match Skyy[A-Z][A-Za-z]{1,30}" % a)
@@ -3306,7 +3315,8 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
         return out
 
     cls = {}
-    for name in CLASS_NAMES:
+    hold_names = [] if HOLDERS == 1 else ["CfgRows%d" % (h_ + 1) for h_ in range(HOLDERS)]
+    for name in CLASS_NAMES + tuple(hold_names):
         try:
             pool.get(PKG + "." + name)
             _fail("%s.%s already exists in the pool (emit once per package)" % (PKG, name))
@@ -3335,6 +3345,30 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
         t = defaults.get(f)
         dlines.append(t.replace("\r\n", "\n").rstrip("\n").split("\n") if t else [])
     col = lambda name: [r[name] for r in rows]
+    # ROW HOLDERS: contiguous chunks of row indexes, one per holder (HOLDERS == 1: none, the arrays stay in CfgRows)
+    chunks = []
+    if hold_names:
+        step_ = -(-n // HOLDERS)
+        chunks = [list(range(a_, min(n, a_ + step_))) for a_ in range(0, n, step_)]
+        while len(chunks) < HOLDERS:
+            chunks.append([])
+        assert sum(len(c_) for c_ in chunks) == n and [i_ for c_ in chunks for i_ in c_] == list(range(n))
+        for jn_, jt_ in (("jS", "String"), ("jI", "int"), ("jL", "long")):
+            M("CfgRows", "public static %s[] %s(%s[] a, %s[] b) { %s[] r = new %s[a.length + b.length]; System.arraycopy(a, 0, r, 0, a.length); "
+                         "System.arraycopy(b, 0, r, a.length, b.length); return r; }" % (jt_, jn_, jt_, jt_, jt_, jt_))
+
+    def row_arr(jtype, arr, vals, render):
+        """one per-row array: in CfgRows (HOLDERS 1) or chunked over the holders and joined in CfgRows' static initialiser"""
+        if not hold_names:
+            F("CfgRows", "public static final %s[] %s = %s;" % (jtype, arr, render(vals)))
+            return
+        for h_, ch_ in enumerate(chunks):
+            F(hold_names[h_], "public static final %s[] %s = %s;" % (jtype, arr, render([vals[i_] for i_ in ch_])))
+        jn_ = {"String": "jS", "int": "jI", "long": "jL"}[jtype]
+        ex_ = "%s.%s.%s" % (PKG, hold_names[0], arr)
+        for h_ in range(1, len(hold_names)):
+            ex_ = "%s.CfgRows.%s(%s, %s.%s.%s)" % (PKG, jn_, ex_, PKG, hold_names[h_], arr)
+        F("CfgRows", "public static final %s[] %s = %s;" % (jtype, arr, ex_))
     # CfgRows fields
     F("CfgRows", "public static final String CONTRACT = %s;" % _jstr(CONTRACT))
     F("CfgRows", "public static final String KIT = %s;" % _jstr(KIT_VERSION))
@@ -3350,27 +3384,31 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
     F("CfgRows", "public static final String[] CAT_LABELS = %s;" % _jarr([c for _, c in cats]))
     for arr, name in (("KEYS", "key"), ("LABELS", "label"), ("CATS", "cat"), ("TYPES", "type"), ("DEFS", "default"), ("MINS", "min"),
                       ("MAXS", "max"), ("OPTS", "opts"), ("UNITS", "unit"), ("FLAGS", "flags"), ("HELPS", "help")):
-        F("CfgRows", "public static final String[] %s = %s;" % (arr, _jarr(col(name))))
-    F("CfgRows", "public static final int[] BK = %s;" % _jints([d["kind"] for d, _ in binds]))
-    F("CfgRows", "public static final int[] BF = %s;" % _jints([d["file"] for d, _ in binds]))
-    F("CfgRows", "public static final int[] BFT = %s;" % _jints([d["ftype"] for d, _ in binds]))
-    F("CfgRows", "public static final int[] BCONF = %s;" % _jints([CONF[o["confirm"]] for _, o in binds]))
-    F("CfgRows", "public static final int[] BENT = %s;" % _jints([ENTRY[o["entry"]] for _, o in binds]))
-    F("CfgRows", "public static final long[] BSC = %s;" % _jlongs([d["scale"] for d, _ in binds]))
-    F("CfgRows", "public static final String[] BCLS = %s;" % _jarr([d["cls"] for d, _ in binds]))
-    F("CfgRows", "public static final String[] BNAME = %s;" % _jarr([d["name"] for d, _ in binds]))
-    F("CfgRows", "public static final String[] BFK = %s;" % _jarr([d["fkey"] for d, _ in binds]))
-    F("CfgRows", "public static final String[] BCK = %s;" % _jarr([d["ckeys"] for d, _ in binds]))
-    F("CfgRows", "public static final String[] BAFTER = %s;" % _jarr([o["after"] for _, o in binds]))
-    F("CfgRows", "public static final String[] BCHECK = %s;" % _jarr([o["check"] for _, o in binds]))
-    F("CfgRows", "public static final String[] BSEP = %s;" % _jarr([o["sep"] for _, o in binds]))
-    F("CfgRows", "public static final String[] VTYPES = %s;" % _jarr([o["value"] for _, o in binds]))
+        row_arr("String", arr, col(name), _jarr)
+    row_arr("int", "BK", [d["kind"] for d, _ in binds], _jints)
+    row_arr("int", "BF", [d["file"] for d, _ in binds], _jints)
+    row_arr("int", "BFT", [d["ftype"] for d, _ in binds], _jints)
+    row_arr("int", "BCONF", [CONF[o["confirm"]] for _, o in binds], _jints)
+    row_arr("int", "BENT", [ENTRY[o["entry"]] for _, o in binds], _jints)
+    row_arr("long", "BSC", [d["scale"] for d, _ in binds], _jlongs)
+    row_arr("String", "BCLS", [d["cls"] for d, _ in binds], _jarr)
+    row_arr("String", "BNAME", [d["name"] for d, _ in binds], _jarr)
+    row_arr("String", "BFK", [d["fkey"] for d, _ in binds], _jarr)
+    row_arr("String", "BCK", [d["ckeys"] for d, _ in binds], _jarr)
+    row_arr("String", "BAFTER", [o["after"] for _, o in binds], _jarr)
+    row_arr("String", "BCHECK", [o["check"] for _, o in binds], _jarr)
+    row_arr("String", "BSEP", [o["sep"] for _, o in binds], _jarr)
+    row_arr("String", "VTYPES", [o["value"] for _, o in binds], _jarr)
     F("CfgRows", "public static final String[] FILES = %s;" % _jarr(files))
     F("CfgRows", "public static final String[] FILE_IDS = %s;" % _jarr([f.replace("/", "~") for f in files]))
     F("CfgRows", "public static final String[] ALIASES = %s;" % _jarr(list(ALIASES)))
     # javassist cannot compile a String[][] initializer: one array per file + an accessor
     for fi, dl in enumerate(dlines):
-        F("CfgRows", "public static final String[] DL%d = %s;" % (fi, _jarr(dl)))
+        if hold_names:   # ROW HOLDERS: the default-file lines live in the last holder (CfgRows.DL<f> is the same array)
+            F(hold_names[-1], "public static final String[] DL%d = %s;" % (fi, _jarr(dl)))
+            F("CfgRows", "public static final String[] DL%d = %s.%s.DL%d;" % (fi, PKG, hold_names[-1], fi))
+        else:
+            F("CfgRows", "public static final String[] DL%d = %s;" % (fi, _jarr(dl)))
     M("CfgRows", "public static String[] defLines(int f) { " + " ".join("if (f == %d) return DL%d;" % (fi, fi) for fi in range(len(dlines)))
       + " return new String[0]; }")
     F("CfgRows", "public static %s LOG;" % LOGC)
@@ -3435,6 +3473,7 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
     F("CfgPub", "public static volatile boolean STARTED;")
     for src in PUB_JAVA:
         M("CfgPub", src)
-    classes = [cls[c] for c in CLASS_NAMES]
-    info = {"rows": n, "files": files, "classes": [PKG + "." + c for c in CLASS_NAMES], "kit": KIT_VERSION}
+    classes = [cls[c] for c in CLASS_NAMES + tuple(hold_names)]
+    info = {"rows": n, "files": files, "classes": [PKG + "." + c for c in CLASS_NAMES + tuple(hold_names)], "kit": KIT_VERSION,
+            "holders": len(hold_names)}
     return Kit(pool, classes, dfr, info)

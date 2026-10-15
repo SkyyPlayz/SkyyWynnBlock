@@ -138,3 +138,6 @@ tests always come first.
 110. REBIRTH STATS + SKILL SOUNDS: level-up / overall / perfect-dodge sounds, Vitality / Focus nodes raise max Health / Mana (admin test)
 111. SEARCH: /settings + /modconfig search find settings across mods, Go to jumps; Mod sounds switch; Admin Shards buttons
 112. SOUNDS 2: Void full / upgrade, collection tier, big /pay, accessory equip / upgrade, Bazaar buy / sell, AH buy / sell / claim, shard collect / grow / totem; Mod sounds switch mutes them
+113. GATHERING ARMOR: bark / crop / angler sets level + tier up, pole perks on /toolpoints, gear sounds
+114. SPELLBLADE: Momentum, Breach + Sunder, Imbue element; rebirth slots 3-4; Fishing tree Sea Legs; Farming tree uses the average
+115. 3 STARTER ISLANDS: fresh profile -> island 1 / 2 / 3, gather, crude tools, bridge, tasks 11 + 19 tick; old islands unchanged
