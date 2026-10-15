@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-14 ~18:20 MDT, end of the marathon day: 23 deploys, all queued rounds landed)
+# SkyWynn - RESUME HERE (updated 2026-10-14 ~21:50 MDT, all evening rounds deployed; waiting for Skyy's play test)
 
 Big picture for other agents: `STATUS.md`.
 Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
@@ -6,15 +6,16 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 
 ## START HERE (new session)
 1. `git pull --rebase --autostash`; check usage (ccd get_usage; weekly resets TUE 2026-10-20 15:00 UTC; was 33% on 10-14).
-2. RUNNING since ~18:40 while Skyy play-tests 84-109 (deploy only with the game closed): classes4 (Classes 0.1.25 + Trees 0.3.10:
-   settings split, Spellblade, 5th-rebirth modifier slot, Fishing tree, Farming-average tree), menu25 (Menu 0.3.25: search bars on Server
-   Setup + Settings, per-player sounds switch settings:sounds:<uuid>, Shards admin buttons), sound2 (Sacks / Collections / Coins /
-   Accessories / Bazaar / Auctions / Cooking / Shards sounds), rebirth6 (Rebirth 0.3.3 + Skills 0.4.39: stat nodes applied + Skills
-   sounds), gear6 (Gear 0.3.6 + Fishing 0.1.6: Foraging / Farming / Fishing armor, pole perks, rebirth damage / defence, Gear sounds),
-   islands3 (Islands 0.5.10 + Quests 0.3.2: the 3-island starter system), zones06 (WorldGen 0.6: vanilla-like zones as floating islands,
-   0.7 content, richer looks, Zone 5 + tiers). AFTER them: sound4 (Classes / Trees + round-1 mods honour the sounds switch), classes /
-   trees into Rebirth PARTS, rebirth switch-on test, load test 50 / 200 profiles. HELD until after Skyy's test: shards 7b, quest shard
-   giver, Whirlwind Dash, armory-move nodes, architecture merge, release. Big picture: STATUS.md.
+2. NOTHING RUNNING (21:50). Evening deploys (TEST-CHECKLIST 110-116): Skills 0.4.39 + Rebirth 0.3.3 (rebirth stats, skill sounds),
+   Menu 0.3.25 (settings search, Mod sounds switch, Shards admin buttons), sound pass 2 (Sacks 0.8.5, Collections 0.2.16, Coins 0.1.9,
+   Accessories 0.5.14, Bazaar 0.1.12, Auctions 0.1.7, Shards 0.3.1), Gear 0.3.6 + Fishing 0.1.6 (gathering armor, pole perks), Classes
+   0.1.25 + Trees 0.3.10 (Spellblade, rebirth modifier slots 3-4, Fishing tree), Islands 0.5.10 + Quests 0.3.2 (3 starter islands),
+   WorldGen 0.6 (zones as floating islands in skywynn_zones, Zone 5 Onyxium). SKYY TESTS FIRST: checklist 84-116 + both logs.
+   AFTER the test (Skyy's order: "hold off on the others till after testing"): Cooking remap to 0.7 foods (answered), sound4 (Classes /
+   Trees / Quests / Exploration / Bank / Islands / Pets / Armory honour settings:sounds), classes / trees into Rebirth PARTS, Spellblade
+   follow-ups (SkyySkills Battlemagic row, Menu / Profiles class card, Gear weapons + imbue, Hud Momentum), Server Setup 16-category cap
+   (Menu), Onyxium collection (Collections) + Zone 5 mob levels (Mobs), island 3 mini boss + portal, load test 50 / 200, shards 7b, quest
+   shard giver, Whirlwind Dash + armory nodes, rebirth switch-on test, architecture merge LAST, release. Big picture: STATUS.md.
 3. Rounds: saved workflow `skywynn-round` (Skyy's OWN words in args.quotes); deploy only with the game closed: backup -> smoke
    (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy_local. Scan logs + `tools/chat_digest.py` after play.
 4. When Skyy says the game is UPDATING: stop every builder / smoke at once (memory skywynn-game-update-lock).
