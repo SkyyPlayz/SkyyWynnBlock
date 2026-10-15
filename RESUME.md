@@ -23,6 +23,15 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
    (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy_local. Scan logs + `tools/chat_digest.py` after play.
 4. When Skyy says the game is UPDATING: stop every builder / smoke at once (memory skywynn-game-update-lock).
 
+## Now (2026-10-15)
+- **Skyy play-tested a fresh Mage profile 10-15** (notes in docs/answered/*.md 2026-10-15). DEPLOYED 06:35 (TEST-CHECKLIST 117):
+  Gear 0.3.7 (hotbar summons, iron tier speed), Accessories 0.5.15 (ItemLevel sort), Hud 0.3.25 (contrast, cards, editor rows).
+  BUILDING: Sacks 0.8.6 (felled-log pickup + pocket-craft veto), workflow start033 (Quests 0.3.3 early progress + merged gather task,
+  Islands 0.5.11 cave mouth, Trees 0.3.11 replant), Shards 0.3.2 (totem texture WARNs). QUEUED: isle2 (camp skeletons, Shardkeeper boss,
+  portal, respawn on island; Islands after start033), sapling drop chance (both, island-only once SkyyZones works), caster speed tiers
+  (Gear + Armory), TREE buttons for Fishing / Alchemy / Smithing, ability tree redesign spec (research/Ability-Tree-Redesign-Spec.md,
+  in progress), menu icons (session own-skywynn-icons, Menu 0.3.26), totem forms (skills.md 10-15).
+
 ## Now (2026-10-14)
 - **Game: Hytale 0.7.2** (hotfix 10-15: goblin beacon crash, Backpack Upgrade II recipe; crosscheck READY 35 jars; smoke when the
   game is closed). 0.7.1: Skyy reinstalled 10-13; UserData kept; full backup at `C:/Users/SkyLo/Desktop/Hytale-Backup-2026-10-13`).
