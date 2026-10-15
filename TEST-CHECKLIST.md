@@ -135,3 +135,5 @@ tests always come first.
 107. SOUNDS: /soundtest list / next / more, quest + reward + NPC + portal + pet + claim + interest sounds, Server Setup sound rows; Admin page rebirth buttons
 108. SHARDS 0.3: /shardadmin give <you> <kind> for the 5 new shards, enter, collect, compactor / time compressor, Soul Cage; fish / animal / fruit collection XP to the new skills
 109. WARRIOR / BERSERKER / ARCHER: ability keys + crouch alts, shields Warrior-only, Blood Frenzy toggle, Banner, nets, Explosive Arrow; send logs
+110. REBIRTH STATS + SKILL SOUNDS: level-up / overall / perfect-dodge sounds, Vitality / Focus nodes raise max Health / Mana (admin test)
+111. SEARCH: /settings + /modconfig search find settings across mods, Go to jumps; Mod sounds switch; Admin Shards buttons

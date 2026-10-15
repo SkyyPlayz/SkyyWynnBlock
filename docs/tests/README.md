@@ -226,3 +226,5 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | SOUND PASS 1 + /soundtest: Quests 0.3.1, Exploration 0.2.9, Bank 0.1.12, Islands 0.5.9, Pets 0.2.6, Menu 0.3.24 (DEPLOYED 2026-10-14, backup deploy-20261014-1741) | [2026-10](2026-10.md) |
 | FIVE MORE SHARDS: SkyyShards 0.3 + SkyyCollections 0.2.15 (Mining / Foraging / Orchard / Ranching / Combat, compactor, time compressor, Soul Cages) (DEPLOYED 2026-10-14, backup deploy-20261014-1801) | [2026-10](2026-10.md) |
 | WARRIOR + BERSERKER + ARCHER ABILITIES: SkyyClasses 0.1.24 + SkyyTrees 0.3.9 (DEPLOYED 2026-10-14, backup deploy-20261014-1817) | [2026-10](2026-10.md) |
+| REBIRTH STATS + SKILLS SOUNDS: SkyySkills 0.4.39 + SkyyRebirth 0.3.3 (DEPLOYED 2026-10-14, backup deploy-20261014-1930) | [2026-10](2026-10.md) |
+| SETTINGS SEARCH + MOD SOUNDS SWITCH + SHARDS ADMIN BUTTONS: SkyyMenu 0.3.25 (DEPLOYED 2026-10-14, backup deploy-20261014-1930) | [2026-10](2026-10.md) |
