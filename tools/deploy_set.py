@@ -178,6 +178,8 @@ RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe", "SkyyTownProbe", "Skyy
 # Third-party pack mods switched OFF in the world on every deploy (kept installed).
 # 2026-10-09 Skyy: "Armory off until 0.7" - The Armory (708 textures) overflowed the client item/creature texture atlas
 # (8192x16384 needed, max 8192x8192: 395 of 2808 images dropped = broken copper ore, talismans, swords). Re-test on Hytale 0.7.
+# 2026-10-15 merge PHASE 0 (research/Architecture-Spec.md 2.3): stable-name probe jars for ONE Skyy test (/coreprobe); remove after.
+STABLE_PROBES = [("SkyyCoreProbe", "0.1.0"), ("SkyyDepProbe", "0.1.0")]
 PACK_DISABLED = ["TheRedlotus:HyFishing", "Helios:Saplings From Trees", "Frah:Better Mob Expansion", "com.example:ExtendedBackpacks", "Allomere:Tainted Roots"]  # 2026-10-15 Skyy: Extended Backpacks OFF (replaces the vanilla Workbench + Backpack Upgrade items), Tainted Roots OFF for now; Saplings From Trees / BME / HyFishing not updated for 0.7  # 2026-10-13 0.7.1: BetterMap 1.3.9, DynamicSeasons 7.0.2, Perfect Parries 0.9.7 updated by their authors -> back ON (engine-API audit clean)  # 2026-10-13 BetterMap (18 removed engine calls: map packets, waypoints, cave mode) + Perfect Parries (CombatTextUpdate ctor) would crash on 0.7 in play - off until their authors update; 2026-10-13 DynamicSeasons crashes the world on 0.7 (SeasonWeatherSystem -> removed WorldChunk.getBlockChunk) when a player joins  # 2026-10-12 Hytale 0.7.0: Saplings From Trees fails to load (Plant_Leaves_Fig_Blue) and BME fails NPC validation (Template_BME_Goblin_Kamikaze -> missing BME_Bomb_Damage) = the 0.7 server refuses to boot; back ON when their authors update  # 2026-10-10 Skyy: HyFishing OFF ("Switch HyFishing off") - SkyyFishing replaces it
 
 
@@ -419,6 +421,9 @@ def main():
         B.enable_in_world(WORLD, "Skyy:%s %s" % (ver, mod), disable_prefix="Skyy:")
     for key in PACK_THIRD_PARTY:
         B.enable_in_world(WORLD, key)
+    for mod, ver in STABLE_PROBES:            # stable-name test jars (world key "Skyy:<Mod>", no version)
+        B.deploy(os.path.join(ROOT, mod, "%s-%s.jar" % (mod, ver)), mod + ".jar")
+        B.enable_in_world(WORLD, "Skyy:" + mod)
     for mod in RETIRED:
         retire_in_world(WORLD, mod)
     sync_bettermap_worlds(WORLD)

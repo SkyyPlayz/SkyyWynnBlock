@@ -149,3 +149,4 @@ tests always come first.
 121. OWN ICONS in menu / teleport / players + TREE buttons Fishing / Alchemy / Smithing + cooked food heals on 0.7 + cooking sounds
 122. TREES branch downward (all skill trees + class pages), gold links, window fits
 123. CAMP SKELETONS + SHARDKEEPER / HUB SHARD + PORTAL TO HUB + RESPAWN ON ISLAND + STAFF / WAND SPEED TIERS (same DPS / Mana per second)
+124. MERGE PROBE + UI KIT PROBE (one session): /coreprobe -> C1 + C2 PASS in chat, the 'Core probe' page shows a gold frame 'CORE' / green 'OK' (C3); then quit, switch OFF only SkyyCoreProbe in the world Mods list, start: world loads, /coreprobe unknown; switch it back on. Also /skyprobe kit screenshots (k1a-k1h) for the hubs. Send both logs.
