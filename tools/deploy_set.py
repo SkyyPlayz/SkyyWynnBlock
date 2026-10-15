@@ -19,7 +19,7 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.25"), ("SkyySacks", "0.8.6"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.16"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.12"), ("SkyyIslands", "0.5.11"), ("SkyyBazaar", "0.1.12"), ("SkyyGear", "0.3.7"), ("SkyySkills", "0.4.39"),
+    ("SkyyBank", "0.1.12"), ("SkyyIslands", "0.5.11"), ("SkyyBazaar", "0.1.12"), ("SkyyGear", "0.3.7"), ("SkyySkills", "0.4.40"),
     ("SkyyAccessories", "0.5.15"), ("SkyyClasses", "0.1.25"), ("SkyyMenu", "0.3.26"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.11"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
