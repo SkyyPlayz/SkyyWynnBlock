@@ -30,7 +30,7 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   Islands 0.5.11 cave mouth, Trees 0.3.11 replant), Shards 0.3.2 (totem texture WARNs). QUEUED: isle2 (camp skeletons, Shardkeeper boss,
   portal, respawn on island; Islands after start033), sapling drop chance (both, island-only once SkyyZones works), caster speed tiers
   (Gear + Armory), TREE buttons for Fishing / Alchemy / Smithing, ability tree redesign spec (research/Ability-Tree-Redesign-Spec.md,
-  in progress), menu icons (session own-skywynn-icons, Menu 0.3.26), totem forms (skills.md 10-15), PER-SHARD MENUS (skills.md 10-15: right-click the placed shard on your island, one menu per shard, hidden off-island - Shards + Menu round). DEPLOYED 06:44 (TEST-CHECKLIST 118): Sacks 0.8.6 + Shards 0.3.2.
+  in progress), menu icons (session own-skywynn-icons, Menu 0.3.26), totem forms (skills.md 10-15), MERGE phase 0 probes (coreprobe building; then Skyy runs /coreprobe + /skyprobe kit in ONE session -> SkyyCore 1.0 with module assemble tooling + hub rounds; Skyy 10-15: usage not a gate, keep modules separate for parallel work), ABILITY TREE R2+R3 (workflow abiltree2 running), PER-SHARD MENUS (skills.md 10-15: right-click the placed shard on your island, one menu per shard, hidden off-island - Shards + Menu round). DEPLOYED 06:44 (TEST-CHECKLIST 118): Sacks 0.8.6 + Shards 0.3.2.
 
 ## Now (2026-10-14)
 - **Game: Hytale 0.7.2** (hotfix 10-15: goblin beacon crash, Backpack Upgrade II recipe; crosscheck READY 35 jars; smoke when the
