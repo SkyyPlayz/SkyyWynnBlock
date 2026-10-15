@@ -18,25 +18,25 @@ WORLD = "HUD mod"
 SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.25"), ("SkyySacks", "0.8.6"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.17"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.12"), ("SkyyIslands", "0.5.13"), ("SkyyBazaar", "0.1.12"), ("SkyyGear", "0.3.9"), ("SkyySkills", "0.4.41"),
+    ("SkyyHud", "0.3.26"), ("SkyySacks", "0.8.6"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.17"), ("SkyyParty", "0.1.8"),
+    ("SkyyBank", "0.1.13"), ("SkyyIslands", "0.5.14"), ("SkyyBazaar", "0.1.13"), ("SkyyGear", "0.3.9"), ("SkyySkills", "0.4.41"),
     ("SkyyAccessories", "0.5.15"), ("SkyyClasses", "0.1.27"), ("SkyyMenu", "0.3.28"), ("SkyyEssentials", "0.1.10"), ("SkyyProfiles", "0.1.14"),
     ("SkyyCooking", "0.1.7"), ("SkyyTrees", "0.3.15"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
-    ("SkyyExploration", "0.2.9"),
+    ("SkyyExploration", "0.2.10"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
-    ("SkyyGuilds", "0.1.8"),
+    ("SkyyGuilds", "0.1.9"),
     # beta backlog round (Skyy 2026-09-24 20:10 list, cross-checked together): SkyySkills 0.4.2 + SkyyTrees 0.2.1 + SkyyCollections
     # 0.2.1 deploy TOGETHER (felled-log crediting: Skills -> coll:fn:add "skills:felled" + skill:on:felled; Double Jump: Trees posts
     # skill:bonus "doublejump.acrobatics", Skills publishes skill:dj:key); SkyyTrees 0.2.1 rewrites Acrobatics.RDodge as RDouble on
     # the next save, so do not go back to SkyyTrees 0.2 after it ran. SkyyIslands 0.5 migrates island files at start (0.4.x copies
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
-    ("SkyyVault", "0.1.6"),
+    ("SkyyVault", "0.1.7"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
-    ("SkyyAuctions", "0.1.7"),
+    ("SkyyAuctions", "0.1.8"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
@@ -73,7 +73,7 @@ SET = [
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
     # until /merchantadmin list shows no merchant out, then remove the jar (else Temple_Klops NPCs named "Traveling Merchant" stay).
-    ("SkyyMerchants", "0.1.4"),
+    ("SkyyMerchants", "0.1.5"),
     # SkyyPets 0.1 (2026-10-09, slot pets phase 1: records + buffs, no creatures). FLOOR: before removing SkyyPets switch Server Setup >
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).

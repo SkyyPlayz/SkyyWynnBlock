@@ -159,3 +159,4 @@ tests always come first.
 131. HUBS: /character /travel /social /settings open framed hub windows with tabs; /storage /market say coming soon
 132. SMITHING: no kick on set cards, Identify tab (tick + Identify picked, Re-identify list), Craft = 4 gathering armor tabs, higher tiers via Anvil
 133. CHARACTER HUB: /character tabs Stats / Skills / Trees / Class / Pets / Collections / Profiles in the sky frame
+134. HUBS: /market /storage /social /travel /settings HUD tabs in the sky frame; nothing kicks
