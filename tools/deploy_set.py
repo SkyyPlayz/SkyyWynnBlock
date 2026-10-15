@@ -18,9 +18,9 @@ WORLD = "HUD mod"
 SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.24"), ("SkyySacks", "0.8.5"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.16"), ("SkyyParty", "0.1.7"),
+    ("SkyyHud", "0.3.25"), ("SkyySacks", "0.8.5"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.16"), ("SkyyParty", "0.1.7"),
     ("SkyyBank", "0.1.12"), ("SkyyIslands", "0.5.10"), ("SkyyBazaar", "0.1.12"), ("SkyyGear", "0.3.6"), ("SkyySkills", "0.4.39"),
-    ("SkyyAccessories", "0.5.14"), ("SkyyClasses", "0.1.25"), ("SkyyMenu", "0.3.25"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
+    ("SkyyAccessories", "0.5.15"), ("SkyyClasses", "0.1.25"), ("SkyyMenu", "0.3.25"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
     ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.10"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
