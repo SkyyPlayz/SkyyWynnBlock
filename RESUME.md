@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-14 ~11:40 MDT, marathon day: Skyy wants the whole Next list done by 17:00)
+# SkyWynn - RESUME HERE (updated 2026-10-14 ~18:20 MDT, end of the marathon day: 23 deploys, all queued rounds landed)
 
 Big picture for other agents: `STATUS.md`.
 Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
@@ -6,13 +6,15 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 
 ## START HERE (new session)
 1. `git pull --rebase --autostash`; check usage (ccd get_usage; weekly resets TUE 2026-10-20 15:00 UTC; was 33% on 10-14).
-2. NOTHING RUNNING (13:40). Deployed today after 12:42: Gear 0.3.5 + Fishing 0.1.5 + Merchants 0.1.4 (102), Classes 0.1.23 + Trees
-   0.3.8 Monk + Assassin (103), Hud 0.3.24 (104), Skills 0.4.38 + Coins 0.1.8 + Auctions 0.1.6 + Rebirth 0.3.1 (105). WAITING for a
-   fresh Skyy message to launch (builders refuse when Skyy's newest chat line is another topic): shards03 (phase 7, 5 other shards +
-   /shardadmin arg fix + Collections fish/animal/fruit XP routing), sound1 (Sound-Pass-Plan round 1 + /soundtest), class batch
-   Warrior + Berserker + Archer, a SkyyRebirth round adding gear (and later classes / trees, after the 5th-rebirth modifier slot) to
-   PARTS, Guild bank + Bazaar same-account checks (coins:fn:sameacct), Admin page Shards / Rebirth buttons, load test tool.
-   Big picture for other agents: STATUS.md; core loop diagram: https://claude.ai/artifact/GgipsncNYu15wgTLcn2gUX
+2. NOTHING RUNNING (18:20). After 13:40 deployed: Rebirth 0.3.2 + Guilds 0.1.8 (106), sound pass 1 + /soundtest: Quests 0.3.1,
+   Exploration 0.2.9, Bank 0.1.12, Islands 0.5.9, Pets 0.2.6, Menu 0.3.24 (107), Shards 0.3 + Collections 0.2.15 five more shards (108),
+   Classes 0.1.24 + Trees 0.3.9 Warrior / Berserker / Archer (109). tools/load_test.py added. SKYY TESTS FIRST: checklist 84-109 +
+   send server AND client logs (ability rune keys U1-U10 unproven); /aprobe only on a class without rune abilities (now: none - use
+   abil.runeKeys off). NEXT (needs Skyy's go): Classes settings split into a 2nd row holder (63.5 / 64 KB) before any new class rows;
+   Spellblade; Whirlwind Dash for axes (SkyyArmory); Admin page Shards buttons (/shardadmin now parses); a Quests round calling
+   shard:fn:give; shards phase 7b (slot 2-6 island types, Ranching / Combat spawns, Orchard fruit); sound pass rounds 2-4; rebirth
+   R10 switch-on test + classes / trees in Rebirth PARTS after the 5th-rebirth modifier slot; architecture merge LAST.
+   Big picture: STATUS.md; core loop diagram: https://claude.ai/artifact/GgipsncNYu15wgTLcn2gUX
 3. Rounds: saved workflow `skywynn-round` (Skyy's OWN words in args.quotes); deploy only with the game closed: backup -> smoke
    (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy_local. Scan logs + `tools/chat_digest.py` after play.
 4. When Skyy says the game is UPDATING: stop every builder / smoke at once (memory skywynn-game-update-lock).
