@@ -68,7 +68,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.8"), ("SkyyWorldGen", "0.5.1"),
+    ("SkyyMobs", "0.1.8"), ("SkyyWorldGen", "0.6"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -86,6 +86,7 @@ SET = [
     ("SkyyQuests", "0.3.2"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyRebirth", "0.3.3"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyShards", "0.3.1"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
+    # 2026-10-14 WorldGen 0.6 (zones as floating islands, new world skywynn_zones; /zone 1-5 go there, /zone old = old test island). ROLLBACK below 0.6: server stopped, delete universe/worlds/skywynn_zones + its skywynn_zones.* lines in mods/Skyy_SkyyWorldGen/worlds.properties + zone_layout_20261014.bin first.
     # 2026-10-14 evening: Gear 0.3.6 + Fishing 0.1.6 together; FLOOR Gear 0.3.6 once any of the 68 gathering armor pieces exists (0.3.5 = unknown items). Classes 0.1.25 + Trees 0.3.10 together (Spellblade, rebirth slots 3-4). Islands 0.5.10 + Quests 0.3.2 together (3 starter islands; Server Setup can switch back to Classic).
     # 2026-10-14 rebirth6: Skills 0.4.39 FLOOR while rebirth stat bonuses exist (0.4.38 never removes skyyskill_rebirth* modifiers) - switch "Rebirth stat boosts" off with players online first.
     # 2026-10-14 18:17: Classes 0.1.24 + Trees 0.3.9 together (Warrior / Berserker / Archer). Classes Server Setup rows at 63.5 of 64 KB: split rows into a 2nd holder BEFORE any new rows.
