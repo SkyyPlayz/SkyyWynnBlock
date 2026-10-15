@@ -23,7 +23,8 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 4. When Skyy says the game is UPDATING: stop every builder / smoke at once (memory skywynn-game-update-lock).
 
 ## Now (2026-10-14)
-- **Game: Hytale 0.7.1** (Skyy reinstalled 10-13; UserData kept; full backup at `C:/Users/SkyLo/Desktop/Hytale-Backup-2026-10-13`).
+- **Game: Hytale 0.7.2** (hotfix 10-15: goblin beacon crash, Backpack Upgrade II recipe; crosscheck READY 35 jars; smoke when the
+  game is closed). 0.7.1: Skyy reinstalled 10-13; UserData kept; full backup at `C:/Users/SkyLo/Desktop/Hytale-Backup-2026-10-13`).
   crosscheck READY, all 33 jars. Our tools read cached copies of the server jar + Assets.zip (`tools/serverjar.py`, ~4 GB / version).
 - **Deployed 2026-10-13 (TEST-CHECKLIST 72-83, all untested):** Skills 0.4.33 Mana 3.3/s; Accessories 0.5.13 tab order; Pets 0.2.4 attacks
   pass through; Profiles 0.1.12 rename + Class Name + admin no cap; Sacks 0.8.2 /pdadmin rarity; Bank 0.1.10 + Menu 0.3.20 names; Quests 0.2
