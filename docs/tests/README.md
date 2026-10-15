@@ -243,3 +243,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | ABILITY TREE REDESIGN: SkyyTrees 0.3.13 + SkyyClasses 0.1.26 (abilities + modifiers as tree nodes, free Root, owned-only Abilities, Lattice-style 4-row loadout) (DEPLOYED 2026-10-15, backup deploy-20261015-1049) | [2026-10](2026-10.md) |
 | STAFF BLINK PAST ENEMIES: SkyyArmory 0.1.27 (DEPLOYED 2026-10-15, backup deploy-20261015-1253) | [2026-10](2026-10.md) |
 | KEEP ITEMS ON DEATH: SkyyEssentials 0.1.10 (DEPLOYED 2026-10-15, backup deploy-20261015-1259) | [2026-10](2026-10.md) |
+| SAP BOOST: SkyyTrees 0.3.14 (10% Tree Sap per chopped natural log) (DEPLOYED 2026-10-15, backup deploy-20261015-1311) | [2026-10](2026-10.md) |

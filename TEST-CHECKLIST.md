@@ -154,3 +154,4 @@ tests always come first.
 126. ABILITY TREE: modifier nodes 1 AP, free Root, pick-one A4, owned-only Abilities + focus, Loadout click-to-place, migration keeps everything
 127. STAFF BLINK goes past mobs along the crosshair
 128. KEEP INVENTORY on death in every world (mob drops unchanged)
+129. SAP: +1 Tree Sap on ~10% of chopped natural logs, counts in /collections; placed logs nothing
