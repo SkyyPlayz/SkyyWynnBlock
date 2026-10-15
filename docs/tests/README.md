@@ -244,3 +244,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | STAFF BLINK PAST ENEMIES: SkyyArmory 0.1.27 (DEPLOYED 2026-10-15, backup deploy-20261015-1253) | [2026-10](2026-10.md) |
 | KEEP ITEMS ON DEATH: SkyyEssentials 0.1.10 (DEPLOYED 2026-10-15, backup deploy-20261015-1259) | [2026-10](2026-10.md) |
 | SAP BOOST: SkyyTrees 0.3.14 (10% Tree Sap per chopped natural log) (DEPLOYED 2026-10-15, backup deploy-20261015-1311) | [2026-10](2026-10.md) |
+| ISLAND TIME + PORTAL LOOK + CAMP STOP + LOGIN ON ISLAND: SkyyIslands 0.5.13 (DEPLOYED 2026-10-15, backup deploy-20261015-1319) | [2026-10](2026-10.md) |

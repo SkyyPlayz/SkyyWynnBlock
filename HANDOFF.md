@@ -12,7 +12,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyCollections | 0.2.16 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8; fsync saves, private writer; 19 Enchanted items, Compressing tab |
 | SkyyParty | 0.1.7 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
 | SkyyBank | 0.1.12 | bank + interest; interest once a day, account brackets 2/1/0.5%; 0.7 port + back-pay 1 day; per-file payout lock, purse flush |
-| SkyyIslands | 0.5.12 | private islands, co-op, visitors, island settings, /hub; 0.7 port; private writer |
+| SkyyIslands | 0.5.13 | private islands, co-op, visitors, island settings, /hub; 0.7 port; private writer |
 | SkyyBazaar | 0.1.12 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons; publish only changes; Fishing tab, crystal products; Enchanted products |
 | SkyyGear | 0.3.8 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
 | SkyySkills | 0.4.40 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap; 0.7 assets: Mana.json, spell costs; Acro XP line; leaderboard index, private writer |
