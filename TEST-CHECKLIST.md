@@ -137,3 +137,4 @@ tests always come first.
 109. WARRIOR / BERSERKER / ARCHER: ability keys + crouch alts, shields Warrior-only, Blood Frenzy toggle, Banner, nets, Explosive Arrow; send logs
 110. REBIRTH STATS + SKILL SOUNDS: level-up / overall / perfect-dodge sounds, Vitality / Focus nodes raise max Health / Mana (admin test)
 111. SEARCH: /settings + /modconfig search find settings across mods, Go to jumps; Mod sounds switch; Admin Shards buttons
+112. SOUNDS 2: Void full / upgrade, collection tier, big /pay, accessory equip / upgrade, Bazaar buy / sell, AH buy / sell / claim, shard collect / grow / totem; Mod sounds switch mutes them

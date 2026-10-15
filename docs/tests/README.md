@@ -228,3 +228,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | WARRIOR + BERSERKER + ARCHER ABILITIES: SkyyClasses 0.1.24 + SkyyTrees 0.3.9 (DEPLOYED 2026-10-14, backup deploy-20261014-1817) | [2026-10](2026-10.md) |
 | REBIRTH STATS + SKILLS SOUNDS: SkyySkills 0.4.39 + SkyyRebirth 0.3.3 (DEPLOYED 2026-10-14, backup deploy-20261014-1930) | [2026-10](2026-10.md) |
 | SETTINGS SEARCH + MOD SOUNDS SWITCH + SHARDS ADMIN BUTTONS: SkyyMenu 0.3.25 (DEPLOYED 2026-10-14, backup deploy-20261014-1930) | [2026-10](2026-10.md) |
+| SOUND PASS 2: Sacks 0.8.5, Collections 0.2.16, Coins 0.1.9, Accessories 0.5.14, Bazaar 0.1.12, Auctions 0.1.7, Shards 0.3.1 (DEPLOYED 2026-10-14, backup deploy-20261014-1943) | [2026-10](2026-10.md) |
