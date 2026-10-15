@@ -228,15 +228,3 @@ modifiers kept, run twice = no change.
    [keep coins, plus free re-slotting of the loadout at any time out of combat]
 5. Migration overflow (modifiers that were free before): grandfather them free until the next respec? [yes]
 6. A modifier node unlocks the modifier at once - should its LEVEL (from uses) still start at Lv 1 and grow as today? [yes]
-</content>
-</invoke>
-<invoke name="Bash">
-<parameter name="command">cd "/c/Users/SkyLo/Desktop/Hytale mods WORK/SkyWynn PROJECT"; python - <<'EOF'
-p='INDEX.md'; b=open(p,'rb').read(); s=b.decode('utf-8')
-old="`research/Menu-Icons-Plan.md` = our own icons in every menu: survey + waves)"
-new="`research/Menu-Icons-Plan.md` = our own icons in every menu: survey + waves; `research/Ability-Tree-Redesign-Spec.md` = Wynncraft-style class tree, modifier nodes, Lattice loadout, downward trees (R1-R4))"
-assert old in s; s=s.replace(old,new,1); open(p,'wb').write(s.encode('utf-8'))
-EOF
-printf -- "- 2026-10-15 SPEC research/Ability-Tree-Redesign-Spec.md (main session; Skyy's 3 redesign answers): abilities + modifiers as tree nodes (1 AP each, free ROOT, pick-one A4 alts), ability level scales power only, every tree branches down + own icons, owned-only Abilities column with a focus view, Lattice-style 4-row loadout (click ability -> slot, modifier -> slot), migration with grandfathered overflow; rounds R1 layout / R2 model+migration (ultracode) / R3 page / R4 icons; 6 questions with defaults.\n" >> docs/log/2026-10.md; python tools/docs_check.py 2>&1 | tail -2; git add research/Ability-Tree-Redesign-Spec.md INDEX.md docs/log/2026-10.md; git commit -q -m "spec: ability tree redesign (Wynncraft-style nodes, Lattice loadout, downward trees)
-
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>" && git pull --rebase --autostash -q && git push -q; git log --oneline -1
