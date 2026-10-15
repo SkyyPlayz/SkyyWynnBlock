@@ -9,7 +9,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyHud | 0.3.24 | HUD widgets + Lunar-style editor (move / scale / toggle), skills + combat widgets; minimap widget (needs BetterMap); moves the Dynamic Seasons widget; minimap island / arrow / spot fixes; own tick thread; notification feed, XP flash, message routing API; quest widget |
 | SkyySacks | 0.8.4 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting; take bridge for other mods; no idle hops, private writer; Bags v2 (SkyyVoid), migration; Enchanted in the Void |
 | SkyyCoins | 0.1.8 | coin purse, /pay, death penalty (merges into SkyyEconomy later); write-behind + journal |
-| SkyyCollections | 0.2.14 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8; fsync saves, private writer; 19 Enchanted items, Compressing tab |
+| SkyyCollections | 0.2.15 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8; fsync saves, private writer; 19 Enchanted items, Compressing tab |
 | SkyyParty | 0.1.7 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
 | SkyyBank | 0.1.12 | bank + interest; interest once a day, account brackets 2/1/0.5%; 0.7 port + back-pay 1 day; per-file payout lock, purse flush |
 | SkyyIslands | 0.5.9 | private islands, co-op, visitors, island settings, /hub; 0.7 port; private writer |
@@ -30,7 +30,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyRanks | 0.1.1 | ranks + permissions made in game |
 | SkyyQuests | 0.3.1 | quest engine, tutorial line, quest widget data (/quests, /questadmin); new |
 | SkyyRebirth | 0.3.2 | rebirth counter + caps (rebirth:fn:cap), /rebirth Nexus page; feature OFF by default; new |
-| SkyyShards | 0.2 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new |
+| SkyyShards | 0.3 | shard worlds: Farming shard, hub + 6 slots, Wheat island, Harvest Spirit, Collect, shard menu; new |
 | SkyyAbilityProbe | 0.1 | ability-key probe on 0.7 (/aprobe), op only, one test session then retired |
 | SkyyUiProbe | 0.6 | dev / test probes, op only (retire later); hub panel probe |
 | SkyyUiProbeB | 0.5 | second probe jar for the UI probe (cross-jar textures / tabs), op only (retire with SkyyUiProbe) |
