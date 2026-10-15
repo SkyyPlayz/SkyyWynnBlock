@@ -19,9 +19,9 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.25"), ("SkyySacks", "0.8.6"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.16"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.12"), ("SkyyIslands", "0.5.10"), ("SkyyBazaar", "0.1.12"), ("SkyyGear", "0.3.7"), ("SkyySkills", "0.4.39"),
+    ("SkyyBank", "0.1.12"), ("SkyyIslands", "0.5.11"), ("SkyyBazaar", "0.1.12"), ("SkyyGear", "0.3.7"), ("SkyySkills", "0.4.39"),
     ("SkyyAccessories", "0.5.15"), ("SkyyClasses", "0.1.25"), ("SkyyMenu", "0.3.25"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
-    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.10"),
+    ("SkyyCooking", "0.1.6"), ("SkyyTrees", "0.3.11"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -83,7 +83,7 @@ SET = [
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
-    ("SkyyQuests", "0.3.2"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
+    ("SkyyQuests", "0.3.3"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyRebirth", "0.3.3"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyShards", "0.3.2"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
     # 2026-10-14 WorldGen 0.6 (zones as floating islands, new world skywynn_zones; /zone 1-5 go there, /zone old = old test island). ROLLBACK below 0.6: server stopped, delete universe/worlds/skywynn_zones + its skywynn_zones.* lines in mods/Skyy_SkyyWorldGen/worlds.properties + zone_layout_20261014.bin first.
