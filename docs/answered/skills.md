@@ -120,3 +120,4 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - 2026-10-12 FISHING SKILL (Skyy word for word): "fishing gets its own skill, and skill tree" -> Fishing = its own skill (XP, levels, the pole levels with it) with its own skill tree, like Mining / Foraging; and its own rebirth points branch.
 - 2026-10-13 SHARD SOURCES (Skyy word for word): "all T1 shards come from quests. (more can be crafter after rebirth 2." -> every T1 shard (all six) is a quest reward; crafting extra shards unlocks after rebirth 2.
 - 2026-10-14 REBIRTH levels above 100 count for Overall Level / Mana / class-weapon bonus / leaderboards?: "No" -> keep them capped at 100 for all of those.
+- 2026-10-14 popup COOKING (Hytale 0.7 removed Food_Instant_Heal_T2 / T3 / Bread): "Map to 0.7 foods (Recommended)" -> point each graded dish at the closest new 0.7 food effect (Food_Health_Restore_* etc.), keep our grade scaling on top; build after Skyy's test.
