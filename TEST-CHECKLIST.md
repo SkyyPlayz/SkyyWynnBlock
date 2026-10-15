@@ -157,3 +157,4 @@ tests always come first.
 129. SAP: +1 Tree Sap on ~10% of chopped natural logs, counts in /collections; placed logs nothing
 130. ISLANDS: island / shard time = hub time, portal faces the doorway without the frame, camp stops after the quest, log in on your island
 131. HUBS: /character /travel /social /settings open framed hub windows with tabs; /storage /market say coming soon
+132. SMITHING: no kick on set cards, Identify tab (tick + Identify picked, Re-identify list), Craft = 4 gathering armor tabs, higher tiers via Anvil
