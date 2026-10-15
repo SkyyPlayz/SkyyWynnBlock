@@ -150,3 +150,4 @@ tests always come first.
 122. TREES branch downward (all skill trees + class pages), gold links, window fits
 123. CAMP SKELETONS + SHARDKEEPER / HUB SHARD + PORTAL TO HUB + RESPAWN ON ISLAND + STAFF / WAND SPEED TIERS (same DPS / Mana per second)
 124. MERGE PROBE + UI KIT PROBE (one session): /coreprobe -> C1 + C2 PASS in chat, the 'Core probe' page shows a gold frame 'CORE' / green 'OK' (C3); then quit, switch OFF only SkyyCoreProbe in the world Mods list, start: world loads, /coreprobe unknown; switch it back on. Also /skyprobe kit screenshots (k1a-k1h) for the hubs. Send both logs.
+125. SHARDS: right-click a shard on your island for its own menu, Totem Bench per shard (unbreakable, tiers), hand-held Rain / Fertilizer / Sun, no Shards tile

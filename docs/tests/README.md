@@ -239,3 +239,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | OWN MENU ICONS + TREE BUTTONS + COOKING 0.7 FOODS: SkyyMenu 0.3.26 + SkyySkills 0.4.40 + SkyyCooking 0.1.7 (DEPLOYED 2026-10-15, backup deploy-20261015-0753) | [2026-10](2026-10.md) |
 | TREES BRANCH DOWN: SkyyTrees 0.3.12 (all skill trees + class pages, positions only) (DEPLOYED 2026-10-15, backup deploy-20261015-0823) | [2026-10](2026-10.md) |
 | ISLANDS PART 2 + CASTER SPEED: SkyyIslands 0.5.12 + SkyyMobs 0.1.9 (camp skeletons, Shardkeeper + Hub Shard, portal, respawn home) + SkyyGear 0.3.8 + SkyyArmory 0.1.26 (staff / wand speed tiers) (DEPLOYED 2026-10-15, backup deploy-20261015-0840) | [2026-10](2026-10.md) |
+| PER-SHARD MENUS + TOTEM BENCHES + TOTEM FORMS: SkyyShards 0.4 + SkyyMenu 0.3.27 (DEPLOYED 2026-10-15, backup deploy-20261015-1018) | [2026-10](2026-10.md) |
