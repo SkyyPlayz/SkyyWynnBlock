@@ -152,3 +152,4 @@ tests always come first.
 124. MERGE PROBE + UI KIT PROBE (one session): /coreprobe -> C1 + C2 PASS in chat, the 'Core probe' page shows a gold frame 'CORE' / green 'OK' (C3); then quit, switch OFF only SkyyCoreProbe in the world Mods list, start: world loads, /coreprobe unknown; switch it back on. Also /skyprobe kit screenshots (k1a-k1h) for the hubs. Send both logs.
 125. SHARDS: right-click a shard on your island for its own menu, Totem Bench per shard (unbreakable, tiers), hand-held Rain / Fertilizer / Sun, no Shards tile
 126. ABILITY TREE: modifier nodes 1 AP, free Root, pick-one A4, owned-only Abilities + focus, Loadout click-to-place, migration keeps everything
+127. STAFF BLINK goes past mobs along the crosshair
