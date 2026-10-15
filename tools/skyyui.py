@@ -39,10 +39,15 @@ Kit 1.4 is ADDITIVE: every kit 1.3 builder output is frozen (the test's SNAP13 s
 result_line, stat_bar, column_spec, stat_well, list_card, state_word, ...: the "kit 1.4 blocks" section) are made from proven
 properties only, assert_proven() checks a page against ONE table of proven properties minus PROBED, text_width() measures with the
 client's own font tables (button() / label() warn when a static text does not fit), and probe pages 19-22 come after page 18.
+Kit 1.5 is ADDITIVE as well: the HUB contract and the SKY WINDOW theme (research/Hubs-Spec.md 2 + 7; how a mod adds a hub tab:
+tools/HUBS-CONTRACT.md; test: python tools/test_skyyui_hubs.py) - the HubBar Java every hub mod installs in its own package
+(install_hub_bar), hub_shell / hub_bar_markup / assert_hub_page, the skyy.bridge registry keys, THEME (vanilla / sky) with the
+theme_* helpers, and the Sky Window art (art/ui-kit-sky) pinned by sha256: sky_verify / kit_texture_files ship it into every jar at
+Common/UI/Custom/SkyyKit/ byte-identical (never outside Common/UI/Custom: that disconnects the client).
 """
 import os, re, json, zipfile, hashlib, posixpath
 
-KIT_VERSION = "1.4"   # 1.2 (2026-09-29, SkyyBank 0.1.4 pilot): + group(), status_line(wrap=, max_lines=, anchor=)
+KIT_VERSION = "1.5"   # 1.2 (2026-09-29, SkyyBank 0.1.4 pilot): + group(), status_line(wrap=, max_lines=, anchor=)
 # 1.3 (2026-09-29, the SkyyBank pilot review): titles without LetterSpacing 0 (= the deployed SkyyRanks / SkyyVault titles),
 #     WrapMaxLines only with Wrap: true (max_lines=False / 0 = none), display = 32 px Default font (Hud/TimeLeft), STATUS "=" =
 #     info blue #7caacc (gold: java_status_methods(info="gold")); + pager, item_grid + java_grid_methods / java_grid_fill,
@@ -58,6 +63,15 @@ KIT_VERSION = "1.4"   # 1.2 (2026-09-29, SkyyBank 0.1.4 pilot): + group(), statu
 #     outer_size / used_height / used_width, text_width / text_lines / line_height (the client's font tables) + fit warnings in
 #     button() / label() / Appends.text, assert_proven (one table of proven properties minus PROBED), Probe.summary +
 #     Probe.with_footer, probe pages 19-22 (base4, button-text, flex-rows, layout-right)
+# 1.5 (2026-10-15, hubs H1: research/Hubs-Spec.md 2 + 7, tools/HUBS-CONTRACT.md) - ADDITIVE ONLY: every kit 1.4 output is
+#     byte-identical (SNAP13 still holds) and check_markup / check_page are untouched. New, all in the "kit 1.5" section at the end:
+#     the hub contract (HUBS, HUB_DEFS, HUB_TABS = the tab orders, hub_tab_key / hub_def_key / HUB_LAST_PREFIX, HUB_TAB_FIELDS),
+#     the shared tab bar (hub_shell, hub_bar_markup, hub_menu_button, hub_close, hub_bar_preview, assert_hub_page,
+#     assert_hub_fits, java_hub_build) + its runtime Java (HUB_BAR_JAVA / hub_bar_java / install_hub_bar = class HubBar in each
+#     mod's package: put / def / removeAll / build / handle / open), the theme table (THEME vanilla / sky, theme_bg,
+#     theme_button_style, theme_tab_style, theme_scrollbar_style, theme_row_style, theme_separator, KIT_THEME / HUB_THEME) and the
+#     Sky Window art pinned by sha256 (SKY_ELEMENTS / SKY_FILES, sky_verify, kit_texture_files, check_jar_kit, check_sky_paths).
+#     Test: python tools/test_skyyui_hubs.py
 
 # ================================================================= where the game files are (READ-ONLY; never written)
 _HYTALE = os.path.join(os.environ.get("APPDATA", r"C:\Users\SkyLo\AppData\Roaming"), "Hytale")
@@ -4545,3 +4559,1011 @@ def allowed_colors():
 def checks():
     """(document key, needle, what) of every vanilla check (read-only copy)."""
     return list(_CHECKS)
+
+
+# ================================================================= kit 1.5: HUBS + the SKY WINDOW theme (ADDITIVE ONLY)
+# research/Hubs-Spec.md sections 2 + 7; the contract a mod follows to add a hub tab: tools/HUBS-CONTRACT.md; the self-test page,
+# the javassist compile against HytaleServer.jar and the executed registry / tab bar: python tools/test_skyyui_hubs.py.
+# Nothing above this section changed in 1.5: every kit 1.4 builder output stays byte-identical (tools/skyyui_test.py SNAP13) and
+# check_markup / check_page behave exactly as before - the sky-path rules live in the NEW check_sky_paths() / check_jar_kit().
+# Engine facts this section rests on (H0 probes, docs/log/2026-10.md 2026-10-15 'all sky kit probes done'): textures under
+# Common/UI/Custom/SkyyKit/ render (markup "SkyyKit/<Element>.png", the client loads the @2x file); a texture path OUTSIDE
+# Common/UI/Custom ("../SkyyKit/...") DISCONNECTS the client; one path shipped by two jars -> the later-loaded jar wins (so every
+# jar ships the kit art byte-identical: the sha256 pins below); 9-slice frames / buttons / 8 tabs of 110 / scrollbar / SlotBackground
+# / Close all render; a tab in jar A opening jar B's page through a bridge Function works with no flicker, and so does the command
+# fallback.
+
+KIT_DIR = os.path.dirname(os.path.abspath(__file__))
+SKY_ART_DIR = os.path.join(os.path.dirname(KIT_DIR), "art", "ui-kit-sky")     # the art (generator tools/art/make_ui_kit_sky.py)
+SKY_DIR = "SkyyKit/"                       # the inline TexturePath prefix (relative to CUSTOM, written without @2x)
+SKY_JAR_DIR = CUSTOM + SKY_DIR             # where every jar ships the kit art: Common/UI/Custom/SkyyKit/<Element>@2x.png
+SKY_ELEMENTS = (    # (element, UI width, UI height, 9-slice border in UI units or "") - art/ui-kit-sky/manifest.json
+    ('Frame', 80, 80, 'Border: 32'),
+    ('Frame_Character', 80, 80, 'Border: 32'),
+    ('Frame_Storage', 80, 80, 'Border: 32'),
+    ('Frame_Market', 80, 80, 'Border: 32'),
+    ('Frame_Smithing', 80, 80, 'Border: 32'),
+    ('Frame_World', 80, 80, 'Border: 32'),
+    ('Frame_Social', 80, 80, 'Border: 32'),
+    ('Header', 300, 38, 'HorizontalBorder: 60, VerticalBorder: 0'),
+    ('HeaderOrnament', 236, 22, ''),
+    ('CardFrame', 80, 80, 'Border: 32'),
+    ('Tab', 120, 44, 'HorizontalBorder: 20, VerticalBorder: 12'),
+    ('Tab_Hovered', 120, 44, 'HorizontalBorder: 20, VerticalBorder: 12'),
+    ('Tab_Pressed', 120, 44, 'HorizontalBorder: 20, VerticalBorder: 12'),
+    ('Tab_Selected', 120, 44, 'HorizontalBorder: 20, VerticalBorder: 12'),
+    ('Primary', 220, 44, 'HorizontalBorder: 24, VerticalBorder: 12'),
+    ('Primary_Hovered', 220, 44, 'HorizontalBorder: 24, VerticalBorder: 12'),
+    ('Primary_Pressed', 220, 44, 'HorizontalBorder: 24, VerticalBorder: 12'),
+    ('Primary_Disabled', 220, 44, 'HorizontalBorder: 24, VerticalBorder: 12'),
+    ('Secondary', 220, 44, 'Border: 12'),
+    ('Secondary_Hovered', 220, 44, 'Border: 12'),
+    ('Secondary_Pressed', 220, 44, 'Border: 12'),
+    ('Secondary_Disabled', 220, 44, 'Border: 12'),
+    ('Tertiary', 128, 32, 'Border: 12'),
+    ('Tertiary_Hovered', 128, 32, 'Border: 12'),
+    ('Tertiary_Pressed', 128, 32, 'Border: 12'),
+    ('Tertiary_Active', 128, 32, 'Border: 12'),
+    ('Danger', 220, 44, 'Border: 12'),
+    ('Danger_Hovered', 220, 44, 'Border: 12'),
+    ('Danger_Pressed', 220, 44, 'Border: 12'),
+    ('Close', 32, 32, ''),
+    ('Close_Hovered', 32, 32, ''),
+    ('Panel', 32, 32, 'Border: 12'),
+    ('PanelInset', 24, 24, 'Border: 8'),
+    ('Row', 32, 24, 'Border: 8'),
+    ('Row_Hovered', 32, 24, 'Border: 8'),
+    ('Row_Selected', 32, 24, 'Border: 8'),
+    ('InputBox', 48, 32, 'Border: 16'),
+    ('InputBox_Hovered', 48, 32, 'Border: 16'),
+    ('InputBox_Selected', 48, 32, 'Border: 16'),
+    ('CheckBox', 22, 22, 'Border: 7'),
+    ('CheckMark', 16, 16, ''),
+    ('ScrollTrack', 6, 12, 'Border: 3'),
+    ('ScrollHandle', 6, 12, 'Border: 3'),
+    ('ScrollHandle_Hovered', 6, 12, 'Border: 3'),
+    ('ScrollHandle_Dragged', 6, 12, 'Border: 3'),
+    ('Separator', 32, 2, 'HorizontalBorder: 8, VerticalBorder: 0'),
+    ('SlotEmpty', 74, 74, ''),
+)
+SKY_FILES = (    # (file under Common/UI/Custom/SkyyKit/, @2x px w, h, bytes, sha256) - pinned: a changed byte fails the build
+    ('CardFrame@2x.png', 160, 160, 21544, 'a10bbd1c5f0c3ab99a39cbc5f95487c24ed627a452f8a21ef63de56d5953dab4'),
+    ('CheckBox@2x.png', 44, 44, 570, '16990c386edb30d04351e8b8773183eadb5424ea468ef5ef461b72b712378543'),
+    ('CheckMark@2x.png', 32, 32, 1301, '772f5299268214074da4cdf7a07fa0fd0e3aa39d6a4700a900903e9fffd682e3'),
+    ('Close@2x.png', 64, 64, 4958, 'e6f87ab7083ad54e3287955b78775814d798cec55f4e4a3bb70a0655114b6f07'),
+    ('Close_Hovered@2x.png', 64, 64, 6899, 'c8ae77d7b40c0d772af967e9f62861b4653123dfab21a259c01f1157c3e11370'),
+    ('Danger@2x.png', 440, 88, 2356, '6bd7c6de91878a12958a6a3dce672fe5737b53b57d9ba13346e336d2bbf05571'),
+    ('Danger_Hovered@2x.png', 440, 88, 5138, '5e442054db7ef84ba73acbea843ae761a03db1786cc70464d1118768ade77897'),
+    ('Danger_Pressed@2x.png', 440, 88, 2006, 'd183f9cd568b0e077aae58ed4d05bc1403d2ce7d9f8b3183f574c10eaeac1f7e'),
+    ('Frame@2x.png', 160, 160, 29838, 'cd602bfd958a22519864553f5dca7f28e955f593de05f5b5476f3acfc9416836'),
+    ('Frame_Character@2x.png', 160, 160, 29502, '8cf46451387b50ded72a692f0d2bf00e5ddfa33e4d668994034d0d7a62a4ae10'),
+    ('Frame_Market@2x.png', 160, 160, 31750, '1a3ef2c2c76583ad3b7cff38becfc2e97f1ed0a0263fb13936f151ce902289f1'),
+    ('Frame_Smithing@2x.png', 160, 160, 30920, 'b6cbbdf35914039c0afe5cf682ea89129532cbb040366278042f0c38aa02f22e'),
+    ('Frame_Social@2x.png', 160, 160, 30318, '1c18eaf2d80c2971c4522758ec5aed4ad2cff2e81173b5f4a6624b47e570ca3a'),
+    ('Frame_Storage@2x.png', 160, 160, 34936, 'df2e4ef923bb4bb4d95d4ab55d2875b658fff712f9279d2a1fcfd904a897ba3e'),
+    ('Frame_World@2x.png', 160, 160, 29354, '95a8ed5c3830d14c9b22005b6fa9634c5acf83100d052ddc3abf43c25fd1db6f'),
+    ('Header@2x.png', 600, 76, 12616, 'b940074433bb9c7cf9d961c8892eb468f14774652eee4eb1f00b28ecbdc89c8c'),
+    ('HeaderOrnament@2x.png', 472, 44, 12576, 'c9b59eae2565c10412afa918537dac75f4fd2279e02ed2a00cd344397560a7a7'),
+    ('HubIcon_Character.png', 64, 64, 8337, '4ad2ad455a3bfd888eb17228dea65d15c7389284c3ab3825a156efa357272094'),
+    ('HubIcon_Character@2x.png', 128, 128, 26464, '2974649a0ce741361ba3ebd4a6a02758e2a7cc2828280f5e589d7f928f9b392d'),
+    ('HubIcon_Market.png', 64, 64, 9470, '135553f35905949fc0e23f908044253ef452e2d62ff40e1c2c4f998e9ba3ad7b'),
+    ('HubIcon_Market@2x.png', 128, 128, 31557, '7fc2b71b948150de9d39b0a8f53e3d20dd09b6703a9f390b149c9b20fe129ee7'),
+    ('HubIcon_Smithing.png', 64, 64, 8710, 'f4228f34b5e0e1935d3474697ace5495ddfcc4ce8e6bcee57d481c363e745a86'),
+    ('HubIcon_Smithing@2x.png', 128, 128, 28394, 'b86d2ba96e1ccc32c9207af5839b90b8bb4a85a4b68741ad1f7d19bc2ce8229e'),
+    ('HubIcon_Social.png', 64, 64, 8551, 'af83666328ab9f0877cd4348e589936aed8a2457c8eae13cc12d59cb6ecfeb0b'),
+    ('HubIcon_Social@2x.png', 128, 128, 27662, 'a60861e5ec59e3a3d8948872f66407800f1dafbeb5a50d08895a6c513e6e1a99'),
+    ('HubIcon_Storage.png', 64, 64, 8516, '36121925fa96b2a5146871bed516f4e812edad581ac31382d9b337a18011a8b7'),
+    ('HubIcon_Storage@2x.png', 128, 128, 27536, 'bceb4c89626109977c65360a475dec4714d8c764eba874e871fc4eb2925a11a2'),
+    ('HubIcon_World.png', 64, 64, 7830, 'd3b2360634954ca5d1edba0266d227dc9f12dca89be1b2cf484bba83bb9f8a77'),
+    ('HubIcon_World@2x.png', 128, 128, 24164, 'd1cf711160b22432fc0316115806efd1521cd4f272c9005b4b8fbf86d08e1952'),
+    ('InputBox@2x.png', 96, 64, 624, '3b73d28a98ab9e7b55580dca3f523a43fb397c4a4afa67acffbc34cc28e0f5ab'),
+    ('InputBox_Hovered@2x.png', 96, 64, 657, '64e37df91a3e578973c5f87625cb12620dd622e2d0d0190f2ac986ba204eb1bf'),
+    ('InputBox_Selected@2x.png', 96, 64, 1643, '186dde0f202eb761d4d9f8c0826d35b5468f02131bc40a18b7db487cdc2cda40'),
+    ('Panel@2x.png', 64, 64, 1921, 'b1c2c753c27f5f59107fa40e7b6cdcd041287c025c9333a5e2f51b2382f7765d'),
+    ('PanelInset@2x.png', 48, 48, 321, '8c524fd5c185a01b74ae09eaa431d975b11976c701d31c25c4a203514c1d8c09'),
+    ('Primary@2x.png', 440, 88, 2289, '0c04fb989b699ec40d4f60061ce6e1de4330a08bac8073be24dd5caf63e3e657'),
+    ('Primary_Disabled@2x.png', 440, 88, 1741, '684a590d28223431da1ca3cdf3b8d0eaa47a06113334bc20833c3bee050e5345'),
+    ('Primary_Hovered@2x.png', 440, 88, 4975, 'f7df6ba1b714e9368a4a51eea30cebca2dea1c9a174b7bf82bb69caaa671739f'),
+    ('Primary_Pressed@2x.png', 440, 88, 1975, 'dcc2237795f6a1ed43ae81fb0e9f37fb0aa6b23aaf95e7f96cdd81af085d6dfb'),
+    ('Row@2x.png', 64, 48, 302, '6bcf757ba60ec18d683ec31e226f4edbd00263447da6ee7bf7255ae3ecd399b8'),
+    ('Row_Hovered@2x.png', 64, 48, 450, 'ad077322671351140dd121ca2d6c7846b370b2aed944381c279430a5581d21d5'),
+    ('Row_Selected@2x.png', 64, 48, 1016, '421911a86e0d7388f87111b1af66f654a326d8bcc17060068dccae134fc5b31f'),
+    ('ScrollHandle@2x.png', 12, 24, 578, 'c9801924d9ed15f31fc0316e1ae43b0d712d25cb3a765b5d711d3719da7cd789'),
+    ('ScrollHandle_Dragged@2x.png', 12, 24, 595, 'd2c1e13a8918fe31eb129662e5c435a0534bb34d5c76a22227b411ea588d38db'),
+    ('ScrollHandle_Hovered@2x.png', 12, 24, 558, 'c4ec3b5fa8cc1391964c5ff401472fae8e07d46e2f257cdb4672137d6ddb3f06'),
+    ('ScrollTrack@2x.png', 12, 24, 249, '9de095955f319597ffe6e1d390c67c96c625dcdf6426659740724038ac2829b5'),
+    ('Secondary@2x.png', 440, 88, 2336, '11fc0587b711f110e37c5a23e87cb163a485d566eacc06e85372be147cf92639'),
+    ('Secondary_Disabled@2x.png', 440, 88, 1736, 'b7d21a7994902433873ba9c27c62bf1a5f9c607c7bc65d5e9bc125ffd0ef3a2e'),
+    ('Secondary_Hovered@2x.png', 440, 88, 5136, '3c8382b66745b8c998c869d5003fcc7dcb3bbb3c3862cc9d2601e382c8de26bd'),
+    ('Secondary_Pressed@2x.png', 440, 88, 2060, '02928107153a40851c00295b990c621efd1283126615ab8b23576a3e62d8ab5f'),
+    ('Separator@2x.png', 64, 4, 393, 'a2fb704d53364415d15ed12353ba2ab19799bf13d5bda97250e3bf9acda58363'),
+    ('SlotEmpty@2x.png', 148, 148, 13800, 'a636e035f834adb70a86869d067e51a4df9279c3b5fedf90ddcc37aa2fb334b2'),
+    ('Tab@2x.png', 240, 88, 1230, 'e53897cb4286d4b627aa8f34df53c36bd1990d320081a1134854bbfe128d2de3'),
+    ('Tab_Hovered@2x.png', 240, 88, 3781, 'ca289a20718fdf1da881bacdea38f82d297a0ead43193233573ca649df16c20b'),
+    ('Tab_Pressed@2x.png', 240, 88, 1290, 'b6a4457ff184a342a1937b3b44b96f8ca288ee8f6b475b64fe1f0c6d94aec7b1'),
+    ('Tab_Selected@2x.png', 240, 88, 2179, '77a792b80fe5ff93b4627b8f6917d3b40f868bf960bab64cd199a29974dd6adf'),
+    ('Tertiary@2x.png', 256, 64, 1305, '7ad11a2e06f8d75b08bec87fe8ca821bc4a5d7ad849d19e6a996baa7da8280f4'),
+    ('Tertiary_Active@2x.png', 256, 64, 3519, '75f19c1d40b21ad84c31ea793e644c537d904b0ab55444845ea8f39d3388400b'),
+    ('Tertiary_Hovered@2x.png', 256, 64, 3090, '6eb8479d4fa1e55f6315ebdfcfd265831a6effba4db99860e9bc6919cabb67b2'),
+    ('Tertiary_Pressed@2x.png', 256, 64, 1324, 'b0bdfd52ba7ca92ee0f9f73e73553652096e6c49aa3d0e2d158f0537be34f0c0'),
+)
+
+SKY_HUB_NAMES = ("Character", "Storage", "Market", "Smithing", "World", "Social")
+SKY_EL = dict((e[0], (e[1], e[2], e[3])) for e in SKY_ELEMENTS)
+for _h in SKY_HUB_NAMES:
+    SKY_EL["HubIcon_" + _h] = (64, 64, "")          # the round hub badges: a 64 UI texture (@2x 128 px; the 64 px file rides along)
+SKY_FILE = dict((f[0], f[1:]) for f in SKY_FILES)
+_SKY_STATE = {"files": None}
+
+
+class SkyArtError(SystemExit):
+    """The Sky Window art on disk is missing or differs from the bytes this kit version pins (the build must stop: two jars with
+    different bytes at one path = the later jar wins in game, k1c)."""
+
+
+def sky_path(element):
+    """The inline TexturePath of a kit element: "SkyyKit/<Element>.png" (relative to Common/UI/Custom/; no @2x)."""
+    if element not in SKY_EL:
+        raise ValueError("%r is not a Sky Window kit element (skyyui.SKY_ELEMENTS)" % (element,))
+    return SKY_DIR + element + ".png"
+
+
+def sky_patch(element):
+    """The Background value of a kit element: (TexturePath: "SkyyKit/<Element>.png"[, its 9-slice border from the art manifest])."""
+    path = sky_path(element)
+    b = SKY_EL[element][2]
+    return '(TexturePath: "%s"%s)' % (path, (", " + b) if b else "")
+
+
+def sky_min(element):
+    """The smallest (w, h) in UI units a stretched kit element may take (twice its border; a fixed element: its own size)."""
+    uw, uh, b = SKY_EL[element]
+    if not b:
+        return uw, uh
+    d = dict((k.strip(), int(v)) for k, v in (p.split(":") for p in b.split(",")))
+    return 2 * d.get("HorizontalBorder", d.get("Border", 0)), 2 * d.get("VerticalBorder", d.get("Border", 0))
+
+
+def _png_size(data):
+    if data[:8] != b"\x89PNG\r\n\x1a\n" or data[12:16] != b"IHDR":
+        return None
+    return int.from_bytes(data[16:20], "big"), int.from_bytes(data[20:24], "big")
+
+
+def sky_verify(art_dir=None, quiet=True):
+    """Read every kit PNG from art/ui-kit-sky/Common/UI/Custom/SkyyKit/ and prove it is the file this kit version pins (bytes,
+    sha256, @2x pixel size = 2 x the UI size of its element) and that the art manifest lists exactly these files with the same
+    sha256 / borders. Raises SkyArtError on any difference. Returns {jar path: bytes} (cached)."""
+    if _SKY_STATE["files"] is not None and art_dir is None:
+        return _SKY_STATE["files"]
+    base = art_dir or SKY_ART_DIR
+    bad, out = [], {}
+    for name, (pw, ph, size, sha) in sorted(SKY_FILE.items()):
+        p = os.path.join(base, *(SKY_JAR_DIR + name).split("/"))
+        try:
+            data = open(p, "rb").read()
+        except OSError:
+            bad.append("%s is missing" % p)
+            continue
+        if len(data) != size or hashlib.sha256(data).hexdigest() != sha:
+            bad.append("%s changed (%d bytes, sha256 %s; kit %s pins %d bytes, %s)" % (name, len(data),
+                       hashlib.sha256(data).hexdigest()[:12], KIT_VERSION, size, sha[:12]))
+            continue
+        if _png_size(data) != (pw, ph):
+            bad.append("%s is %s px, the kit pins %d x %d" % (name, _png_size(data), pw, ph))
+            continue
+        out[SKY_JAR_DIR + name] = data
+    for el, (uw, uh, _b) in sorted(SKY_EL.items()):
+        f = SKY_FILE.get(el + "@2x.png")
+        if f is None:
+            bad.append("element %s has no %s@2x.png in SKY_FILES" % (el, el))
+        elif (f[0], f[1]) != (2 * uw, 2 * uh):
+            bad.append("element %s is %d x %d UI but its @2x file is %d x %d px" % (el, uw, uh, f[0], f[1]))
+    man = os.path.join(base, "manifest.json")
+    if os.path.isfile(man):
+        m = json.load(open(man, encoding="utf-8"))
+        files = dict((f["path"], f["sha256"]) for f in m.get("files", ()))
+        want = dict((SKY_JAR_DIR + n, v[3]) for n, v in SKY_FILE.items())
+        if files != want:
+            bad.append("art/ui-kit-sky/manifest.json lists other files / sha256 than kit %s pins: %s" % (
+                KIT_VERSION, sorted(set(files.items()) ^ set(want.items()))[:4]))
+        for e in m.get("elements", ()):
+            b = e.get("border") or {}
+            bs = ("Border: %d" % b["Border"]) if "Border" in b else (
+                "HorizontalBorder: %d, VerticalBorder: %d" % (b["HorizontalBorder"], b["VerticalBorder"]) if b else "")
+            if SKY_EL.get(e["element"], (None, None, None))[2] != bs or e.get("markup_path") != SKY_DIR + e["element"] + ".png":
+                bad.append("manifest element %s (border %r, path %s) differs from the kit" % (e["element"], bs, e.get("markup_path")))
+        if m.get("jar_root") != SKY_JAR_DIR:
+            bad.append("manifest jar_root %r is not %s" % (m.get("jar_root"), SKY_JAR_DIR))
+    if bad:
+        raise SkyArtError("Sky Window kit art check failed (%d) - art/ui-kit-sky must hold exactly the files skyyui %s pins "
+                          "(change the art = bump the kit and re-pin SKY_FILES):\n  - %s" % (len(bad), KIT_VERSION, "\n  - ".join(bad)))
+    if art_dir is None:
+        _SKY_STATE["files"] = out
+    if not quiet:
+        print("sky kit art checked: %d files, %d elements (%s)" % (len(out), len(SKY_EL), kit_id()))
+    return out
+
+
+_SKY_PATH_RE = re.compile(r'"((?:\.\./)*)((?:[A-Za-z0-9_]+/)*)([A-Za-z0-9_@]+)\.(png|ogg)"')
+
+
+def check_sky_paths(markups, outside_ok=False):
+    """The sky-path rules on markups (str / Choice / Appends / Shell / lists): every quoted .png / .ogg path stays INSIDE the
+    custom root (no "../": a SkyyKit path outside Common/UI/Custom disconnects the client - probe k1b; outside_ok=True allows
+    the vanilla "../ItemQualities" frames only), every "SkyyKit/..." path is exactly SkyyKit/<Element>.png of a kit element, and
+    every other path is one verify() proves (TEX / SND). Returns the sorted kit elements used."""
+    known = set(TEX.values()) | set(SND.values())
+    used = set()
+    for mk in _flat_markups(markups):
+        for m in _SKY_PATH_RE.finditer(render(mk)):
+            up, folder, name, ext = m.groups()
+            path = up + folder + name + "." + ext
+            if "SkyyKit/" in folder:
+                if up or folder != SKY_DIR:
+                    raise ValueError("kit texture %s must be written SkyyKit/<Element>.png, inside Common/UI/Custom (a path outside "
+                                     "the custom root disconnects the client)" % path)
+                if "@2x" in name or name not in SKY_EL:
+                    raise ValueError("SkyyKit/%s.%s is not a Sky Window kit element (write it without @2x; skyyui.SKY_ELEMENTS)"
+                                     % (name, ext))
+                used.add(name)
+                continue
+            if up and not (outside_ok and path in known and "ItemQualities/" in folder):
+                raise ValueError("texture %s leaves the custom root (Common/UI/Custom) - not allowed on a hub / sky page" % path)
+            if path not in known:
+                raise ValueError("texture / sound path %s is neither a kit vanilla path nor a SkyyKit element" % path)
+    return sorted(used)
+
+
+def kit_texture_files(markups=None):
+    """{jar path: bytes} of the Sky Window art to put in the jar (B.assemble(..., extra_files=dict(files, **kit_texture_files()))).
+    Default: every kit file (59: the identical full set in every jar, so whichever jar the client loads last, the bytes are the
+    same). markups=...: only the files those markups name (check_sky_paths first; a HubIcon brings both of its files)."""
+    files = sky_verify()
+    if markups is None:
+        return dict(files)
+    out = {}
+    for el in check_sky_paths(markups):
+        for n in (el + "@2x.png", el + ".png"):
+            if SKY_JAR_DIR + n in files:
+                out[SKY_JAR_DIR + n] = files[SKY_JAR_DIR + n]
+    return out
+
+
+def check_jar_kit(jar_path, need=()):
+    """Read a built jar: every entry under Common/UI/Custom/SkyyKit/ must be a file this kit pins, byte for byte (sha256); no
+    SkyyKit entry may sit outside the custom root; need = elements that must be in it. Returns the number of kit files."""
+    n, bad = 0, []
+    with zipfile.ZipFile(jar_path) as z:
+        names = z.namelist()
+        for e in names:
+            if "/SkyyKit/" in e and not e.startswith(SKY_JAR_DIR):
+                bad.append("%s is outside Common/UI/Custom (the client disconnects on a path outside the custom root)" % e)
+            if not e.startswith(SKY_JAR_DIR) or e.endswith("/"):
+                continue
+            name = e[len(SKY_JAR_DIR):]
+            f = SKY_FILE.get(name)
+            if f is None:
+                bad.append("%s is not a kit file" % e)
+            elif hashlib.sha256(z.read(e)).hexdigest() != f[3]:
+                bad.append("%s differs from the kit %s bytes (two jars must ship identical kit art)" % (e, KIT_VERSION))
+            else:
+                n += 1
+        for el in need:
+            if SKY_JAR_DIR + el + "@2x.png" not in names:
+                bad.append("%s@2x.png is not in the jar" % el)
+    if bad:
+        raise ValueError("%s: %s" % (os.path.basename(jar_path), "; ".join(bad)))
+    return n
+
+
+# ---- the theme table (Hubs-Spec 7.2): one role -> its Background value, per theme
+THEMES = ("vanilla", "sky")
+KIT_THEME = "vanilla"       # the default of the theme_* helpers. The kit 1.4 builders above never read it (their output is frozen);
+#                             a page switches to the sky look by calling the theme_* / hub_* helpers (H9 rides each mod's round)
+HUB_THEME = "sky"           # hub pages and the hub bar (Skyy 2026-10-10 "can we design it all with the new theme"; the 110 px
+#                             tabs need the sky Tab art - the vanilla Primary texture squashes below about 160 px)
+_SKY_ROLES = {
+    "frame": "Frame", "header": "Header", "ornament": "HeaderOrnament", "card": "CardFrame", "panel": "Panel", "inset": "PanelInset",
+    "row": "Row", "rowHovered": "Row_Hovered", "rowSelected": "Row_Selected", "separator": "Separator",
+    "input": "InputBox", "inputHovered": "InputBox_Hovered", "inputSelected": "InputBox_Selected",
+    "checkBox": "CheckBox", "checkMark": "CheckMark",
+    "scrollTrack": "ScrollTrack", "scrollHandle": "ScrollHandle", "scrollHandleHovered": "ScrollHandle_Hovered",
+    "scrollHandleDragged": "ScrollHandle_Dragged", "slot": "SlotEmpty",
+    "close": "Close", "closeHovered": "Close_Hovered", "closePressed": "Close_Hovered",
+    "tab": "Tab", "tabHovered": "Tab_Hovered", "tabPressed": "Tab_Pressed", "tabSelected": "Tab_Selected",
+    "primary": "Primary", "primaryHovered": "Primary_Hovered", "primaryPressed": "Primary_Pressed", "primaryDisabled": "Primary_Disabled",
+    "secondary": "Secondary", "secondaryHovered": "Secondary_Hovered", "secondaryPressed": "Secondary_Pressed",
+    "secondaryDisabled": "Secondary_Disabled",
+    "tertiary": "Tertiary", "tertiaryHovered": "Tertiary_Hovered", "tertiaryPressed": "Tertiary_Pressed", "tertiaryActive": "Tertiary_Active",
+    "tertiaryDisabled": "Secondary_Disabled",
+    "destructive": "Danger", "destructiveHovered": "Danger_Hovered", "destructivePressed": "Danger_Pressed",
+    "destructiveDisabled": "Secondary_Disabled",
+}
+_PB = "VerticalBorder: 12, HorizontalBorder: 80"            # the vanilla Primary button patch (BUTTONS["primary"])
+
+
+def _vbtn(fam, st, border):
+    return '(TexturePath: "%s", %s)' % (TEX["btn" + fam + st], border)
+
+
+_VANILLA_ROLES = {
+    "frame": patch("patch", 23), "header": patch("header", h_border=50, v_border=0), "ornament": '"%s"' % TEX["decoTop"],
+    "card": patch("fullPatch", 20), "panel": patch("panelPatch", 4), "inset": COLOR["well"],
+    "row": COLOR["row"], "rowHovered": COLOR["rowHover"], "rowSelected": COLOR["selected"], "separator": COLOR["separator"],
+    "input": patch("input", INPUT_BORDER), "inputHovered": patch("input", INPUT_BORDER), "inputSelected": patch("inputSelected", INPUT_BORDER),
+    "checkBox": patch("checkFrame", 7), "checkMark": '(TexturePath: "%s")' % TEX["checkmark"],
+    "scrollTrack": patch("scroll", 3), "scrollHandle": patch("scrollHandle", 3), "scrollHandleHovered": patch("scrollHandleHovered", 3),
+    "scrollHandleDragged": patch("scrollHandleDragged", 3), "slot": '"%s"' % TEX["slot"],
+    "close": '"%s"' % TEX["close"], "closeHovered": '"%s"' % TEX["closeHovered"], "closePressed": '"%s"' % TEX["closePressed"],
+    "tab": _vbtn("Secondary", "", "Border: 12"), "tabHovered": _vbtn("Secondary", "Hovered", "Border: 12"),
+    "tabPressed": _vbtn("Secondary", "Pressed", "Border: 12"), "tabSelected": _vbtn("Primary", "", _PB),
+    "primary": _vbtn("Primary", "", _PB), "primaryHovered": _vbtn("Primary", "Hovered", _PB), "primaryPressed": _vbtn("Primary", "Pressed", _PB),
+    "primaryDisabled": '(TexturePath: "%s", %s)' % (TEX["btnDisabled"], _PB),
+    "secondary": _vbtn("Secondary", "", "Border: 12"), "secondaryHovered": _vbtn("Secondary", "Hovered", "Border: 12"),
+    "secondaryPressed": _vbtn("Secondary", "Pressed", "Border: 12"),
+    "secondaryDisabled": '(TexturePath: "%s", Border: 12)' % TEX["btnDisabled"],
+    "tertiary": _vbtn("Tertiary", "", "Border: 12"), "tertiaryHovered": _vbtn("Tertiary", "Hovered", "Border: 12"),
+    "tertiaryPressed": _vbtn("Tertiary", "Pressed", "Border: 12"), "tertiaryActive": patch("btnTertiaryActive", 12),
+    "tertiaryDisabled": '(TexturePath: "%s", Border: 12)' % TEX["btnDisabled"],
+    "destructive": _vbtn("Destructive", "", "Border: 12"), "destructiveHovered": _vbtn("Destructive", "Hovered", "Border: 12"),
+    "destructivePressed": _vbtn("Destructive", "Pressed", "Border: 12"),
+    "destructiveDisabled": '(TexturePath: "%s", Border: 12)' % TEX["btnDisabled"],
+}
+# bare-path roles (SlotBackground / a plain Background string): the sky ones are written the same way
+_BARE_ROLES = ("slot",)
+THEME = {"vanilla": dict(_VANILLA_ROLES),
+         "sky": dict((r, ('"%s"' % sky_path(el)) if r in _BARE_ROLES else sky_patch(el)) for r, el in _SKY_ROLES.items())}
+THEME_ELEMENT = dict(_SKY_ROLES)                   # role -> the Sky Window element behind it
+THEME_ROLES = tuple(sorted(_SKY_ROLES))
+assert sorted(THEME["vanilla"]) == sorted(THEME["sky"]) == list(THEME_ROLES), "skyyui: the two themes must have the same roles"
+THEME_PAD = {"vanilla": CONTENT_PAD, "sky": 24}     # content padding (sky: 24, so the corner windows never sit under text)
+THEME_TAB_MIN = {"vanilla": 160, "sky": 110}        # the narrowest hub tab (vanilla Primary squashes below ~160; sky Tab H-border 20)
+THEME_ORNAMENT = {"vanilla": (DECO_W, DECO_H, DECO_TOP), "sky": (236, 22, -12)}   # the crest over the title bar: w, h, Top
+THEME_SEPARATOR_H = {"vanilla": 1, "sky": 2}
+THEME_HEADER = {"vanilla": "header", "sky": "header"}
+
+
+def _theme(theme):
+    t = KIT_THEME if theme is None else theme
+    if t not in THEMES:
+        raise ValueError("theme %r (one of %s)" % (theme, ", ".join(THEMES)))
+    if t == "sky":
+        sky_verify()            # the art the markup names is the art every jar ships (sha256 pins)
+    return t
+
+
+def theme_bg(role, theme=None):
+    """The Background value of a theme role (THEME_ROLES): a patch, a colour or a bare path ("slot" for SlotBackground)."""
+    t = _theme(theme)
+    if role not in THEME[t]:
+        raise ValueError("theme role %r (one of %s)" % (role, ", ".join(THEME_ROLES)))
+    return THEME[t][role]
+
+
+def theme_button_style(kind="secondary", size="normal", selected=False, disabled=False, sound=None, theme=None):
+    """button_style() in a theme: vanilla = button_style(...) itself (byte-identical); sky = the Sky Window button textures (their
+    manifest borders) with the SAME kit labels / sounds (the art was contrast-checked against the kit label colours). A sky
+    destructive / tertiary has no disabled art: Secondary_Disabled (the art README's default)."""
+    t = _theme(theme)
+    if t == "vanilla":
+        return button_style(kind, size, selected, disabled, sound)
+    if kind not in BUTTONS:
+        raise ValueError("button kind %r (primary / secondary / tertiary / destructive)" % kind)
+    if size not in BUTTON_SIZES:
+        raise ValueError("button size %r (normal / small / big)" % size)
+    if selected and kind != "tertiary":
+        raise ValueError("selected= is the tertiary toggle look (Tertiary_Active); a selected tab is theme_tab_style(True)")
+    T = THEME["sky"]
+    lsz = BUTTON_SIZES[size][0]
+    lab, dlab = _btn_label(lsz, BUTTONS[kind][2]), _btn_label(lsz, "disabled")
+    dis = "(Background: %s, LabelStyle: %s)" % (T[kind + "Disabled"], dlab)
+    if disabled:
+        return "Style: TextButtonStyle(Default: %s, Hovered: %s, Pressed: %s, Disabled: %s);" % (dis, dis, dis, dis)
+    d = T["tertiaryActive"] if selected else T[kind]
+    hv = T["tertiaryActive"] if selected else T[kind + "Hovered"]
+    st = lambda bg: "(Background: %s, LabelStyle: %s)" % (bg, lab)
+    return "Style: TextButtonStyle(Default: %s, Hovered: %s, Pressed: %s, Disabled: %s, Sounds: %s);" % (
+        st(d), st(hv), st(T[kind + "Pressed"]), dis, sounds(sound or BUTTONS[kind][3]))
+
+
+def theme_scrollbar_style(spacing=SCROLL_SPACING, theme=None):
+    """scrollbar_style() in a theme (sky: ScrollTrack / ScrollHandle (+ Hovered / Dragged), 6 UI wide - probe k1g / art2)."""
+    t = _theme(theme)
+    if t == "vanilla":
+        return scrollbar_style(spacing)
+    T = THEME["sky"]
+    return "(Spacing: %d, Size: %d, Background: %s, Handle: %s, HoveredHandle: %s, DraggedHandle: %s)" % (
+        spacing, SCROLL_SIZE, T["scrollTrack"], T["scrollHandle"], T["scrollHandleHovered"], T["scrollHandleDragged"])
+
+
+def theme_row_style(state="normal", theme=None):
+    """row_style() in a theme (sky: Row / Row_Hovered, pressed + selected = Row_Selected; static = Row, no sounds)."""
+    t = _theme(theme)
+    if t == "vanilla":
+        return row_style(state)
+    T = THEME["sky"]
+    if state == "normal":
+        a, b, c, snd = T["row"], T["rowHovered"], T["rowSelected"], True
+    elif state == "selected":
+        a = b = c = T["rowSelected"]
+        snd = True
+    elif state == "static":
+        a = b = c = T["row"]
+        snd = False
+    else:
+        raise ValueError("row state normal / selected / static")
+    return "Style: ButtonStyle(Default: (Background: %s), Hovered: (Background: %s), Pressed: (Background: %s)%s);" % (
+        a, b, c, (", Sounds: %s" % sounds("light")) if snd else "")
+
+
+def theme_separator(ident=None, w=None, theme=None, anchor=None):
+    """A thin separator line in a theme (vanilla: the 1 px content separator colour; sky: the 2 UI gold Separator art)."""
+    t = _theme(theme)
+    head = ("Group #%s { " % check_id(ident)) if ident else "Group { "
+    return head + _anchor(w, THEME_SEPARATOR_H[t], _merge(None, anchor)) + "Background: %s; }" % THEME[t]["separator"]
+
+
+# ---- the hub contract (Hubs-Spec 2.1 - 2.4): hubs, the registry keys on skyy.bridge, the tab orders, the shared tab bar
+HUBS = ("character", "storage", "market", "smithing", "world", "social", "settings")
+HUB_DEFS = {"character": ("Character", "character"), "storage": ("Storage", "storage"), "market": ("Market", "market"),
+            "smithing": ("Smithing", "smithing"), "world": ("World", "travel"), "social": ("Social", "social"),
+            "settings": ("Settings", "settings")}       # hub -> (title, its command without "/"); SkyyMenu puts hub:def:<hub>
+HUB_FRAME = {"character": "Frame_Character", "storage": "Frame_Storage", "market": "Frame_Market", "smithing": "Frame_Smithing",
+             "world": "Frame_World", "social": "Frame_Social", "settings": "Frame"}    # the sky page frame mood of each hub
+HUB_ICON = dict((h, "HubIcon_" + HUB_DEFS[h][0]) for h in HUBS if h != "settings")
+# THE TAB ORDERS ARE THE CONTRACT (Hubs-Spec 1.2): (hub, tab id, order, owner mod, label, suggested fallback command or None).
+# A later tab picks an order number between two of these. None = a SkyyMenu view: SkyyMenu's own open Function opens it.
+HUB_TABS = (
+    ("character", "stats", 10, "SkyyMenu", "Stats", "stats"),
+    ("character", "skills", 20, "SkyySkills", "Skills", "skills"),
+    ("character", "trees", 30, "SkyyTrees", "Trees", "tree"),
+    ("character", "class", 40, "SkyyClasses", "Class", "class"),
+    ("character", "pets", 50, "SkyyPets", "Pets", "pets"),
+    ("character", "accessories", 60, "SkyyAccessories", "Accessories", "accessories"),
+    ("character", "collections", 70, "SkyyCollections", "Collections", "collections"),
+    ("character", "profiles", 80, "SkyyProfiles", "Profiles", "profiles"),
+    ("storage", "pocket", 10, "SkyySacks", "Pocket", "sacks"),
+    ("storage", "requip", 20, "SkyyWardrobe", "Requip", "requip"),
+    ("storage", "vault", 30, "SkyyVault", "Vault", "vault"),
+    ("storage", "bank", 40, "SkyyBank", "Bank", "bank"),
+    ("market", "bazaar", 10, "SkyyBazaar", "Bazaar", "bazaar"),
+    ("market", "auctions", 20, "SkyyAuctions", "Auctions", "ah"),
+    ("market", "merchants", 30, "SkyyMerchants", "Merchants", "merchants"),
+    ("smithing", "gear", 10, "SkyyGear", "Gear", "smithing"),
+    ("smithing", "recipes", 20, "SkyySacks", "Recipes", "craft"),
+    ("smithing", "reforge", 30, "SkyyGear", "Reforge", "reforge"),
+    ("smithing", "upgrade", 40, "SkyyGear", "Upgrade", "upgrade"),
+    ("smithing", "multitool", 50, "SkyyGear", "Multitool", "multitool"),
+    ("smithing", "identify", 60, "SkyyGear", "Identify", "identify"),
+    ("world", "teleport", 10, "SkyyMenu", "Teleport", None),
+    ("world", "island", 20, "SkyyIslands", "Island", "island menu"),
+    ("world", "explore", 30, "SkyyExploration", "Explore", "explore"),
+    ("world", "quests", 40, "SkyyQuests", "Quests", "quests"),
+    ("social", "players", 10, "SkyyMenu", "Players", None),
+    ("social", "party", 20, "SkyyParty", "Party", "party"),
+    ("social", "guild", 30, "SkyyGuilds", "Guild", "guild"),
+    ("settings", "settings", 10, "SkyyMenu", "Settings", "settings"),
+    ("settings", "hud", 20, "SkyyHud", "HUD", "skyyhud"),
+    ("settings", "layout", 30, "SkyyMenu", "Menu layout", None),
+    ("settings", "mods", 40, "SkyyMenu", "Mods", None),
+    ("settings", "setup", 50, "SkyyMenu", "Server Setup", "modconfig"),
+)
+HUB_TAB_FIELDS = ("mod", "label", "order", "command", "open", "visible")   # hub:tab:<hub>:<tab> = Object[] in this order
+HUB_DEF_FIELDS = ("title", "command", "iconItemId")                       # hub:def:<hub> = Object[] in this order (SkyyMenu)
+HUB_RESERVED_IDS = ("back", "close")       # event words of the bar ("hub:back" = < Menu, "hub:close" = the X): never a tab id
+HUB_ID_RE = re.compile(r"\A[a-z][a-z0-9]{0,15}\Z")
+HUB_LABEL_MAX = 24                          # a tab label is cut to 24 proven characters [A-Za-z0-9 <>/-] at runtime (HubBar.clean)
+HUB_BAR_H = 52                              # the tab strip: tabs 44 + 8 under them (Hubs-Spec 2.2)
+HUB_TAB_H = 44
+HUB_TAB_GAP = TAB_GAP                       # 5 px between tabs (the vanilla EntitySpawnPage tab row)
+HUB_TAB_PAD = 6                             # the tab label's horizontal padding (the 110 px tab: a 98 px label area)
+HUB_TAB_LABEL = 16                          # tab label size (ShrinkTextToFit down to 12, the vanilla button label rule)
+HUB_OLD_TITLE_H = 38                        # the in-page title row a tab page drops (Hubs-Spec 2.4: +52 - 38 = +14 px)
+HUB_MENU_W, HUB_MENU_H = 110, 30            # the "< Menu" button in the title bar (left)
+HUB_MENU_TEXT = "< Menu"
+HUB_PART_MENU, HUB_PART_CLOSE = 1, 2        # HubBar.build(..., parts): which bar buttons the page has (bind only what exists)
+assert len(set((h, t) for h, t, *_r in HUB_TABS)) == len(HUB_TABS)
+assert len(set((h, o) for h, _t, o, *_r in HUB_TABS)) == len(HUB_TABS), "skyyui: two contract tabs of one hub share an order"
+
+
+def hub_check_id(word, what="hub tab id"):
+    """A hub name / tab id: 1-16 lowercase letters + digits starting with a letter, never 'back' / 'close'."""
+    if not isinstance(word, str) or not HUB_ID_RE.fullmatch(word) or word in HUB_RESERVED_IDS:
+        raise ValueError("%s %r: 1-16 lowercase letters / digits starting with a letter, not %s" % (what, word,
+                                                                                                   " / ".join(HUB_RESERVED_IDS)))
+    return word
+
+
+def hub_tab_key(hub, tab):
+    """The bridge key of one tab: hub:tab:<hub>:<tab> (put by the mod that owns the page, removed in its shutdown())."""
+    if hub not in HUBS:
+        raise ValueError("hub %r (one of %s)" % (hub, ", ".join(HUBS)))
+    return "hub:tab:%s:%s" % (hub, hub_check_id(tab))
+
+
+def hub_def_key(hub):
+    if hub not in HUBS:
+        raise ValueError("hub %r (one of %s)" % (hub, ", ".join(HUBS)))
+    return "hub:def:" + hub
+
+
+HUB_LAST_PREFIX = "hub:last:"     # + the player's UUID.toString(): Map<String hub, String tab> in memory only (SkyyMenu creates it)
+
+
+def hub_tabs(hub):
+    """The contract tabs of one hub, in order: [(tab id, order, owner mod, label, suggested command)]."""
+    if hub not in HUBS:
+        raise ValueError("hub %r (one of %s)" % (hub, ", ".join(HUBS)))
+    return sorted([(t, o, m, l, c) for h, t, o, m, l, c in HUB_TABS if h == hub], key=lambda r: (r[1], r[0]))
+
+
+def hub_clean(label):
+    """The tab label as HubBar.clean makes it at runtime: only [A-Za-z0-9 <>/-], at most 24 characters."""
+    return "".join(c for c in (label or "") if TEXT_OK.fullmatch(c))[:HUB_LABEL_MAX]
+
+
+def hub_tab_width(w, n):
+    """The width of each of n tabs in a strip w px wide: (w - 5 x (n - 1)) / n (integer, as HubBar.build)."""
+    return (w - HUB_TAB_GAP * (n - 1)) // n
+
+
+def hub_max_tabs(w, theme=None):
+    """How many tabs fit a strip w px wide at the theme's minimum tab width (HubBar.maxTabs: more tabs -> the first ones that fit,
+    with the active tab always kept)."""
+    t = HUB_THEME if theme is None else theme
+    return max(1, (w + HUB_TAB_GAP) // (THEME_TAB_MIN[t] + HUB_TAB_GAP))
+
+
+def assert_hub_fits(hub, strip_w, theme=None, n=None):
+    """Assert every contract tab of a hub (or n tabs) fits a strip strip_w px wide at the theme's minimum tab width; returns the
+    tab width. The Character hub (8 tabs at 110) needs a strip of 915: a 960 page with the vanilla padding 17, or 963 with the sky
+    padding 24 (the hub page target is 1200 x 900, Hubs-Spec 2.5)."""
+    t = HUB_THEME if theme is None else theme
+    n = n if n is not None else len(hub_tabs(hub))
+    tw = hub_tab_width(strip_w, n)
+    if tw < THEME_TAB_MIN[t]:
+        need = THEME_TAB_MIN[t] * n + HUB_TAB_GAP * (n - 1)
+        raise ValueError("hub %s: %d tabs in a %d px strip are %d px each; the %s tab needs %d (a strip of %d px)" % (
+            hub, n, strip_w, tw, t, THEME_TAB_MIN[t], need))
+    return tw
+
+
+def assert_hub_page(w, h, old_title_h=HUB_OLD_TITLE_H, hub=None, pad=CONTENT_PAD, theme=None):
+    """A tab page with the hub bar: its own title row (old_title_h) goes, the 52 px bar comes - assert_page_size(w, h + 52 -
+    old_title_h) (never past MAX_PAGE_H 980) and, with hub=, that the hub's contract tabs fit the strip (w - 2 x pad). Returns
+    (w, the new height)."""
+    ws, hs = _sample_int(w, "page width"), _sample_int(h, "page height")
+    nh = hs + HUB_BAR_H - old_title_h
+    assert_page_size(ws, nh)
+    if hub is not None:
+        assert_hub_fits(hub, ws - 2 * pad, theme)
+    return ws, nh
+
+
+def theme_tab_style(selected=False, theme=None):
+    """The TextButtonStyle of one hub tab: sky = Tab / Tab_Hovered / Tab_Pressed (selected: Tab_Selected in every state) with a
+    16 px bold label that shrinks to 12 (probe k1f / art2: 8 tabs of 110 fit); vanilla = Secondary, selected Primary (tab_row)."""
+    t = _theme(HUB_THEME if theme is None else theme)
+    if t == "vanilla":
+        return button_style("primary" if selected else "secondary", "normal")
+    T = THEME["sky"]
+    lab = ("(FontSize: %d, TextColor: %s, RenderBold: true, HorizontalAlignment: Center, ShrinkTextToFit: true, "
+           "MinShrinkTextToFitFontSize: 12, VerticalAlignment: Center)" % (HUB_TAB_LABEL, color("buttonText")))
+    st = lambda bg: "(Background: %s, LabelStyle: %s)" % (bg, lab)
+    if selected:
+        s = st(T["tabSelected"])
+        return "Style: TextButtonStyle(Default: %s, Hovered: %s, Pressed: %s, Sounds: %s);" % (s, s, s, sounds("light"))
+    return "Style: TextButtonStyle(Default: %s, Hovered: %s, Pressed: %s, Sounds: %s);" % (
+        st(T["tab"]), st(T["tabHovered"]), st(T["tabPressed"]), sounds("light"))
+
+
+def hub_bar_markup(parent, prefix, w=None):
+    """The static part of the hub bar: Appends [(parent, the tab strip #<prefix>HubTabs)] - a 44 high LayoutMode Left row with 8
+    under it (HUB_BAR_H 52), the FIRST child of the page body. HubBar.build fills it at runtime (the tabs come from the
+    registry). w=None: the strip fills the body width (pass that width to HubBar.build)."""
+    check_id(prefix)
+    return Appends([(parent, "Group #%sHubTabs { %sLayoutMode: Left; }" % (prefix, _anchor(w, HUB_TAB_H, {"bottom": HUB_BAR_H - HUB_TAB_H})))])
+
+
+def hub_menu_button(prefix, theme=None):
+    """The "< Menu" button (#<prefix>HubMenu) that goes INTO the page's title bar group (left, vertically centred in the 38 px
+    bar): it sends a = "hub:back" and HubBar.handle runs /skymenu (the existing Back pattern; closes the page without SkyyMenu)."""
+    check_id(prefix)
+    return ('TextButton #%sHubMenu { Anchor: (Left: 10, Top: %d, Width: %d, Height: %d); Padding: (Horizontal: 8); Text: "%s"; %s }'
+            % (prefix, (TITLE_H - HUB_MENU_H) // 2 - TITLE_PAD_TOP, HUB_MENU_W, HUB_MENU_H, HUB_MENU_TEXT,
+               theme_button_style("tertiary", "small", theme=HUB_THEME if theme is None else theme)))
+
+
+def hub_close(prefix, theme=None):
+    """The close X (#<prefix>HubClose) - appended LAST into the page root (top right, 32 x 32 at -8 / -8, ButtonsCancel sounds).
+    It sends a = "hub:close" and HubBar.handle answers "close" (the page calls close())."""
+    t = _theme(HUB_THEME if theme is None else theme)
+    T = THEME[t]
+    return ('TextButton #%sHubClose { Anchor: (Width: %d, Height: %d, Top: -8, Right: -8); Text: ""; Style: TextButtonStyle(Default: '
+            '(Background: %s), Hovered: (Background: %s), Pressed: (Background: %s), Sounds: %s); }'
+            % (check_id(prefix), CLOSE_SIZE, CLOSE_SIZE, T["close"], T["closeHovered"], T["closePressed"], sounds("cancel")))
+
+
+def hub_shell(prefix, w, h, hub, theme=None, body_id=None, menu=True, close=True, layout="Top", title=None):
+    """A hub page window: page_shell's shape in the hub's theme (sky: Header title bar + HeaderOrnament crest, the hub's Frame
+    mood, padding 24; vanilla: the decorated container) + the hub title in the bar + "< Menu" (menu=True) + the close X
+    (close=True) + the tab strip as the first child of the body. Asserts the hub's contract tabs fit. The returned Shell has
+    .hub, .theme, .tabs (the strip id), .tabs_w (the width to pass to HubBar.build), .parts (HUB_PART_* bits) and .inner_h = the
+    height left UNDER the bar. Build the page body into .body after the shell's appends; the Java line: java_hub_build(shell, tab)."""
+    if hub not in HUBS:
+        raise ValueError("hub %r (one of %s)" % (hub, ", ".join(HUBS)))
+    t = _theme(HUB_THEME if theme is None else theme)
+    check_id(prefix)
+    ws, hs = assert_page_size(w, h)
+    pad = THEME_PAD[t]
+    root, barid, tid = prefix, prefix + "Bar", prefix + "Title"
+    body = check_id(body_id or prefix + "Body")
+    text = title if title is not None else HUB_DEFS[hub][0]
+    T = THEME[t]
+    ow, oh, otop = THEME_ORNAMENT[t]
+    frame = sky_patch(HUB_FRAME[hub]) if t == "sky" else T["frame"]
+    ap = Appends()
+    ap.append((None, "Group #%s { Anchor: (Width: %d, Height: %d); }" % (root, ws, hs)))
+    ap.append((root, "Group #%s { Anchor: (Height: %d, Top: 0); Padding: (Top: %d); Background: %s; Group { Anchor: (Width: %d, "
+                     "Height: %d, Top: %d); Background: %s; } %s }" % (barid, TITLE_H, TITLE_PAD_TOP, T["header"], ow, oh, otop,
+                                                                       T["ornament"], title_label(tid, text))))
+    if menu:
+        ap.append((barid, hub_menu_button(prefix, t)))
+    ap.append((root, "Group #%s { Anchor: (Top: %d); %s%sBackground: %s; }" % (body, TITLE_H, _layout(layout), _padding(pad), frame)))
+    if t == "vanilla":
+        ap.append((root, 'Group { Anchor: (Width: %d, Height: %d, Bottom: %d); Background: "%s"; }' % (
+            DECO_W, DECO_H, DECO_BOTTOM, TEX["decoBottom"])))
+    ap.extend(hub_bar_markup(body, prefix))
+    if close:
+        ap.append((root, hub_close(prefix, t)))
+    inner_w = ws - 2 * pad
+    assert_hub_fits(hub, inner_w, t)
+    inner_h = hs - TITLE_H - 2 * pad - HUB_BAR_H
+    if inner_h < 20:
+        raise ValueError("hub page %d high leaves no body under the bar" % hs)
+    return Shell(prefix=prefix, w=ws, h=hs, pad=pad, kind="hub", root=root, bar=barid, title=tid, body=body,
+                 close=(prefix + "HubClose") if close else None, appends=ap, inner_w=inner_w, body_h=hs - TITLE_H,
+                 inner_h=inner_h, hub=hub, theme=t, tabs=prefix + "HubTabs", tabs_w=inner_w,
+                 parts=(HUB_PART_MENU if menu else 0) | (HUB_PART_CLOSE if close else 0))
+
+
+def hub_bar_preview(prefix, tabs, my_tab, w, theme=None):
+    """The Python twin of HubBar.build: Appends of what it appends into #<prefix>HubTabs for tabs = [(tab id, label, order)] (the
+    visible registry entries), the active tab my_tab and a strip w px wide - the same sort (order, then id), the same overflow
+    rule (hub_max_tabs; the active tab is kept), the same markup strings. tools/test_skyyui_hubs.py compares the two."""
+    t = HUB_THEME if theme is None else theme
+    rows = sorted([(o, i, l) for i, l, o in tabs if HUB_ID_RE.fullmatch(i) and i not in HUB_RESERVED_IDS])
+    cap = hub_max_tabs(w, t)
+    if len(rows) > cap:
+        mine = [k for k, r in enumerate(rows) if r[1] == my_tab]
+        keep = rows[:cap]
+        if mine and mine[-1] >= cap:
+            keep[cap - 1] = rows[mine[-1]]
+        rows = keep
+    strip = prefix + "HubTabs"
+    ap = Appends()
+    if not rows:
+        return ap
+    tw = hub_tab_width(w, len(rows))
+    for k, (_o, i, l) in enumerate(rows):
+        if k:
+            ap.append((strip, "Group { Anchor: (Width: %d); }" % HUB_TAB_GAP))
+        ap.append((strip, 'TextButton #%sHubT%d { Anchor: (Width: %d, Height: %d); Padding: (Horizontal: %d); Text: "%s"; %s }' % (
+            prefix, k, tw, HUB_TAB_H, HUB_TAB_PAD, hub_clean(l), theme_tab_style(i == my_tab, t))))
+    return ap
+
+
+# ---- HubBar: ONE Java class every hub mod installs into its OWN package (cross-jar classes are not allowed). Static members, in
+# dependency order (javassist: methods before callers; no generics / autoboxing / enhanced-for / lambdas / String switch).
+# Placeholders: @UCB@ @UEB@ @BT@ @EVD@ @PR@ @CMGR@ (engine classes, HUB_TYPES) and @GAP@ @TABH@ @TABMIN@ @TABPAD@ @LABELMAX@
+# @TABSTYLE@ @TABSEL@ (the theme's tab style literals) - hub_bar_java() fills them; install_hub_bar() adds them to a class.
+HUB_TYPES = {
+    "UCB": "com.hypixel.hytale.server.core.ui.builder.UICommandBuilder",
+    "UEB": "com.hypixel.hytale.server.core.ui.builder.UIEventBuilder",
+    "BT": "com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType",
+    "EVD": "com.hypixel.hytale.server.core.ui.builder.EventData",
+    "PR": "com.hypixel.hytale.server.core.universe.PlayerRef",
+    "CMGR": "com.hypixel.hytale.server.core.command.system.CommandManager",
+}
+HUB_BAR_JAVA = (
+    ("field", "public static volatile java.util.Map MINE;"),
+    ("method", r"""
+public static java.util.Map map() {
+  Object o = System.getProperties().get("skyy.bridge");
+  if (o == null) {
+    System.getProperties().putIfAbsent("skyy.bridge", new java.util.concurrent.ConcurrentHashMap());
+    o = System.getProperties().get("skyy.bridge");
+  }
+  return (o instanceof java.util.Map) ? (java.util.Map) o : null;
+}"""),
+    ("method", r"""
+public static Object get(String k) {
+  java.util.Map m = map();
+  return (m == null || k == null) ? null : m.get(k);
+}"""),
+    ("method", r"""
+public static java.util.Map mine() {
+  java.util.Map m = MINE;
+  if (m == null) { m = new java.util.concurrent.ConcurrentHashMap(); MINE = m; }
+  return m;
+}"""),
+    ("method", r"""
+public static boolean okId(String s) {
+  if (s == null || s.length() < 1 || s.length() > 16) return false;
+  if (s.equals("back") || s.equals("close")) return false;
+  for (int i = 0; i < s.length(); i++) {
+    char c = s.charAt(i);
+    boolean ok = (c >= 'a' && c <= 'z') || (i > 0 && c >= '0' && c <= '9');
+    if (!ok) return false;
+  }
+  return true;
+}"""),
+    ("method", r"""
+public static String clean(String s) {
+  if (s == null) return "";
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < s.length() && sb.length() < @LABELMAX@; i++) {
+    char c = s.charAt(i);
+    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == ' ' || c == '<' || c == '>' || c == '/' || c == '-') sb.append(c);
+  }
+  return sb.toString();
+}"""),
+    # one string value out of the page event JSON (SkyyBank 0.1.3 BankPage.jsonStr, verbatim)
+    ("method", r"""
+public static String jsonStr(String data, String key) {
+  if (data == null || key == null) return "";
+  String qt = String.valueOf((char) 34);
+  int i = data.indexOf(qt + key + qt);
+  if (i < 0) return "";
+  i = data.indexOf(':', i + key.length() + 2);
+  if (i < 0) return "";
+  i++;
+  while (i < data.length() && Character.isWhitespace(data.charAt(i))) i++;
+  if (i >= data.length() || data.charAt(i) != 34) return "";
+  i++;
+  StringBuilder sb = new StringBuilder();
+  while (i < data.length() && sb.length() < 200) {
+    char c = data.charAt(i);
+    if (c == 34) break;
+    if (c == 92 && i + 1 < data.length()) {
+      char n = data.charAt(i + 1);
+      if (n == 'u' && i + 5 < data.length()) {
+        try { sb.append((char) Integer.parseInt(data.substring(i + 2, i + 6), 16)); } catch (Throwable t) { }
+        i += 6;
+        continue;
+      }
+      if (n == 'n' || n == 'r' || n == 't' || n == 'b' || n == 'f') sb.append(' '); else sb.append(n);
+      i += 2;
+      continue;
+    }
+    sb.append(c);
+    i++;
+  }
+  return sb.toString();
+}"""),
+    # register one tab of THIS mod (start() / setup()): hub:tab:<hub>:<tab> = Object[]{ mod, label, Integer order, command,
+    # Function open, Function visible } - java.lang / java.util types only; open / visible may be null. Returns the array, or null.
+    ("method", r"""
+public static Object[] put(String hub, String tab, String mod, String label, int order, String command, Object open, Object visible) {
+  java.util.Map m = map();
+  if (m == null || !okId(hub) || !okId(tab)) return null;
+  if (open != null && !(open instanceof java.util.function.Function)) return null;
+  if (visible != null && !(visible instanceof java.util.function.Function)) return null;
+  Object[] t = new Object[] { mod, clean(label), Integer.valueOf(order), command, open, visible };
+  String k = "hub:tab:" + hub + ":" + tab;
+  m.put(k, t);
+  mine().put(k, t);
+  return t;
+}"""),
+    # SkyyMenu only: hub:def:<hub> = Object[]{ String title, String command, String iconItemId }
+    ("method", r"""
+public static Object[] def(String hub, String title, String command, String icon) {
+  java.util.Map m = map();
+  if (m == null || !okId(hub)) return null;
+  Object[] d = new Object[] { title, command, icon };
+  String k = "hub:def:" + hub;
+  m.put(k, d);
+  mine().put(k, d);
+  return d;
+}"""),
+    # shutdown(): remove every key this jar put - only while it still holds OUR array (another jar may have replaced it)
+    ("method", r"""
+public static int removeAll() {
+  java.util.Map m = map();
+  java.util.Map mm = mine();
+  java.util.ArrayList ks = new java.util.ArrayList(mm.keySet());
+  int n = 0;
+  for (int i = 0; i < ks.size(); i++) {
+    Object k = ks.get(i);
+    Object v = mm.remove(k);
+    if (m != null && v != null && m.remove(k, v)) n++;
+  }
+  return n;
+}"""),
+    ("method", r"""
+public static boolean visible(Object[] e, java.util.UUID u) {
+  if (e[5] == null) return true;
+  if (!(e[5] instanceof java.util.function.Function)) return false;
+  Object v = null;
+  try { v = ((java.util.function.Function) e[5]).apply(u); } catch (Throwable t) { return false; }
+  return Boolean.TRUE.equals(v);
+}"""),
+    # the visible tabs of a hub: Object[]{ String tab, String label, Integer order, Object[] entry }, sorted by order, then tab id
+    ("method", r"""
+public static java.util.ArrayList tabs(String hub, java.util.UUID u) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  java.util.Map m = map();
+  if (m == null || hub == null) return out;
+  String pre = "hub:tab:" + hub + ":";
+  java.util.ArrayList keys = null;
+  try { keys = new java.util.ArrayList(m.keySet()); } catch (Throwable t) { return out; }
+  for (int i = 0; i < keys.size(); i++) {
+    Object k = keys.get(i);
+    if ((k instanceof String) && ((String) k).startsWith(pre)) {
+      String id = ((String) k).substring(pre.length());
+      Object o = m.get(k);
+      if (okId(id) && (o instanceof Object[])) {
+        Object[] e = (Object[]) o;
+        if (e.length >= 6 && (e[1] instanceof String) && (e[2] instanceof Integer) && visible(e, u)) {
+          int ord = ((Integer) e[2]).intValue();
+          int at = out.size();
+          while (at > 0) {
+            Object[] p = (Object[]) out.get(at - 1);
+            int po = ((Integer) p[2]).intValue();
+            if (po < ord || (po == ord && ((String) p[0]).compareTo(id) <= 0)) break;
+            at--;
+          }
+          out.add(at, new Object[] { id, e[1], e[2], e });
+        }
+      }
+    }
+  }
+  return out;
+}"""),
+    ("method", "public static int tabWidth(int w, int n) { return n < 1 ? w : (w - @GAP@ * (n - 1)) / n; }"),
+    ("method", "public static int maxTabs(int w) { int n = (w + @GAP@) / (@TABMIN@ + @GAP@); return n < 1 ? 1 : n; }"),
+    # more tabs than fit: the first ones that fit, with the active tab always kept (in the last place)
+    ("method", r"""
+public static java.util.ArrayList shown(java.util.ArrayList all, String myTab, int cap) {
+  if (cap < 1) cap = 1;
+  if (all.size() <= cap) return all;
+  int at = -1;
+  for (int i = 0; i < all.size(); i++) { if (((String) ((Object[]) all.get(i))[0]).equals(myTab)) at = i; }
+  java.util.ArrayList out = new java.util.ArrayList();
+  for (int i = 0; i < cap; i++) out.add(all.get(i));
+  if (at >= cap) out.set(cap - 1, all.get(at));
+  return out;
+}"""),
+    # hub:last:<uuid> = the Map SkyyMenu keeps in memory (hub -> last tab); written only when SkyyMenu made it
+    ("method", r"""
+public static void remember(java.util.UUID u, String hub, String tab) {
+  if (u == null || hub == null || tab == null) return;
+  Object o = get("hub:last:" + u.toString());
+  if (o instanceof java.util.Map) { try { ((java.util.Map) o).put(hub, tab); } catch (Throwable t) { } }
+}"""),
+    ("method", "public static String style(boolean sel) { return sel ? @TABSEL@ : @TABSTYLE@; }"),
+    # the page's build(): fills #<prefix>HubTabs (made by the kit's hub_bar_markup) and binds the bar buttons that exist (parts:
+    # 1 = "< Menu", 2 = the close X). Returns how many tabs it drew. Event data a = "hub:<tab>" / "hub:back" / "hub:close".
+    ("method", r"""
+public static int build(@UCB@ b, @UEB@ ev, String prefix, String hub, String myTab, int w, java.util.UUID u, int parts) {
+  if ((parts & 1) != 0) ev.addEventBinding(@BT@.Activating, "#" + prefix + "HubMenu", @EVD@.of("a", "hub:back"));
+  if ((parts & 2) != 0) ev.addEventBinding(@BT@.Activating, "#" + prefix + "HubClose", @EVD@.of("a", "hub:close"));
+  remember(u, hub, myTab);
+  java.util.ArrayList t = shown(tabs(hub, u), myTab, maxTabs(w));
+  int n = t.size();
+  if (n == 0) return 0;
+  int tw = tabWidth(w, n);
+  String strip = "#" + prefix + "HubTabs";
+  for (int i = 0; i < n; i++) {
+    Object[] e = (Object[]) t.get(i);
+    String id = (String) e[0];
+    if (i > 0) b.appendInline(strip, "Group { Anchor: (Width: @GAP@); }");
+    String bid = prefix + "HubT" + i;
+    b.appendInline(strip, "TextButton #" + bid + " { Anchor: (Width: " + tw + ", Height: @TABH@); Padding: (Horizontal: @TABPAD@); Text: \"" + clean((String) e[1]) + "\"; " + style(id.equals(myTab)) + " }");
+    ev.addEventBinding(@BT@.Activating, "#" + bid, @EVD@.of("a", "hub:" + id));
+  }
+  return n;
+}"""),
+    # run a command as the player (permission checks as if typed): 0 ran, 1 no command manager / player, 2 it threw
+    ("method", r"""
+public static int run(@PR@ pr, String cmd) {
+  if (pr == null || cmd == null || cmd.length() == 0) return 1;
+  @CMGR@ cm = null;
+  try { cm = @CMGR@.get(); } catch (Throwable t) { cm = null; }
+  if (cm == null) return 1;
+  try { cm.handleCommand(pr, cmd); } catch (Throwable t) { return 2; }
+  return 0;
+}"""),
+    # open one tab (world thread, from a page event): its visible Function (null = always), its open Function (TRUE = opened),
+    # else its command (the probe-proven fallback). "bridge", "command", "missing" (no entry: the mod is not loaded), "hidden",
+    # "nocmd" (the fallback could not run: no command manager / player), "failed".
+    ("method", r"""
+public static String open(@PR@ pr, java.util.UUID u, String hub, String tab) {
+  Object o = get("hub:tab:" + hub + ":" + tab);
+  if (!(o instanceof Object[]) || ((Object[]) o).length < 6) return "missing";
+  Object[] e = (Object[]) o;
+  if (!visible(e, u)) return "hidden";
+  if (e[4] instanceof java.util.function.Function) {
+    Object r = null;
+    try { r = ((java.util.function.Function) e[4]).apply(u); } catch (Throwable t) { r = null; }
+    if (Boolean.TRUE.equals(r)) return "bridge";
+  }
+  String cmd = (e[3] instanceof String) ? (String) e[3] : null;
+  if (cmd == null || cmd.length() == 0) return "failed";
+  int k = run(pr, cmd);
+  return k == 0 ? "command" : (k == 1 ? "nocmd" : "failed");
+}"""),
+    # the page's handleDataEvent calls this FIRST: null = not a hub click (the page goes on); "close" = the page must close();
+    # anything else = handled ("self" = the active tab, "back" = /skymenu ran, or open()'s answer)
+    ("method", r"""
+public static String handle(@PR@ pr, String data, String hub, String myTab) {
+  String a = jsonStr(data, "a");
+  if (!a.startsWith("hub:")) return null;
+  String id = a.substring(4);
+  if (id.equals("close")) return "close";
+  if (id.equals("back")) {
+    if (get("config:def:SkyyMenu") == null) return "close";
+    return run(pr, "skymenu") == 0 ? "back" : "close";
+  }
+  if (myTab != null && id.equals(myTab)) return "self";
+  if (!okId(id)) return "failed";
+  java.util.UUID u = null;
+  try { u = pr == null ? null : pr.getUuid(); } catch (Throwable t) { u = null; }
+  return open(pr, u, hub, id);
+}"""),
+)
+
+
+def hub_bar_java(theme=None, types=None):
+    """HUB_BAR_JAVA with its placeholders filled: [(kind "field" / "method", Java source)] in dependency order. theme = the tab
+    look (default HUB_THEME); types = engine class overrides (HUB_TYPES keys). Needs a passing verify() (+ the sky art check)."""
+    require_verified()
+    t = _theme(HUB_THEME if theme is None else theme)
+    ty = dict(HUB_TYPES, **(types or {}))
+    rep = {"@GAP@": str(HUB_TAB_GAP), "@TABH@": str(HUB_TAB_H), "@TABMIN@": str(THEME_TAB_MIN[t]), "@TABPAD@": str(HUB_TAB_PAD),
+           "@LABELMAX@": str(HUB_LABEL_MAX), "@TABSTYLE@": java_lit(theme_tab_style(False, t)),
+           "@TABSEL@": java_lit(theme_tab_style(True, t))}
+    for k, v in ty.items():
+        rep["@%s@" % k] = v
+    out = []
+    for kind, src in HUB_BAR_JAVA:
+        s = src.strip()
+        for k in sorted(rep, key=len, reverse=True):
+            s = s.replace(k, rep[k])
+        if re.search(r"@[A-Z]+@", s):
+            raise ValueError("hub_bar_java: unfilled placeholder in %s" % s[:80])
+        out.append((kind, s))
+    return out
+
+
+def install_hub_bar(pool, cls_name, CtField, CtNewMethod, theme=None, types=None):
+    """Make the class cls_name (e.g. PKG + ".HubBar") in a javassist pool from hub_bar_java() and return the CtClass (write it
+    with the mod's other classes: ct.writeFile(OUT))."""
+    ct = pool.makeClass(cls_name)
+    for kind, src in hub_bar_java(theme, types):
+        if kind == "field":
+            ct.addField(CtField.make(src, ct))
+        else:
+            ct.addMethod(CtNewMethod.make(src, ct))
+    return ct
+
+
+def java_hub_build(prefix, my_tab, hub=None, w=None, parts=None, uuid="this.playerRef.getUuid()", b="b", ev="ev", cls="HubBar"):
+    """The Java statement a page's build() runs right after its shell: cls.build(b, ev, "<prefix>", "<hub>", "<tab>", w, uuid,
+    parts). prefix = a hub_shell Shell (its prefix / hub / tabs_w / parts are used) or the page prefix (then give hub, w = the
+    strip width and parts = HUB_PART_MENU | HUB_PART_CLOSE of the bar buttons the page has). cls = the mod's own HubBar class
+    (e.g. "@PKG@.HubBar")."""
+    if isinstance(prefix, Shell):
+        sh = prefix
+        prefix, hub = sh.prefix, sh.hub if hub is None else hub
+        w = sh.tabs_w if w is None else w
+        parts = sh.parts if parts is None else parts
+    check_id(prefix)
+    if hub not in HUBS:
+        raise ValueError("hub %r (one of %s)" % (hub, ", ".join(HUBS)))
+    hub_check_id(my_tab)
+    if w is None or parts is None:
+        raise ValueError("java_hub_build needs w (the strip width) and parts (HUB_PART_MENU | HUB_PART_CLOSE)")
+    return "%s.build(%s, %s, %s, %s, %s, %s, %s, %d);" % (cls, b, ev, java_lit(prefix), java_lit(hub), java_lit(my_tab),
+                                                         java_value(w) if not isinstance(w, int) else str(w), uuid, parts)
