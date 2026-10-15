@@ -242,3 +242,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | PER-SHARD MENUS + TOTEM BENCHES + TOTEM FORMS: SkyyShards 0.4 + SkyyMenu 0.3.27 (DEPLOYED 2026-10-15, backup deploy-20261015-1018) | [2026-10](2026-10.md) |
 | ABILITY TREE REDESIGN: SkyyTrees 0.3.13 + SkyyClasses 0.1.26 (abilities + modifiers as tree nodes, free Root, owned-only Abilities, Lattice-style 4-row loadout) (DEPLOYED 2026-10-15, backup deploy-20261015-1049) | [2026-10](2026-10.md) |
 | STAFF BLINK PAST ENEMIES: SkyyArmory 0.1.27 (DEPLOYED 2026-10-15, backup deploy-20261015-1253) | [2026-10](2026-10.md) |
+| KEEP ITEMS ON DEATH: SkyyEssentials 0.1.10 (DEPLOYED 2026-10-15, backup deploy-20261015-1259) | [2026-10](2026-10.md) |

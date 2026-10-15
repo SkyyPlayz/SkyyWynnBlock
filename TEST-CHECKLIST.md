@@ -153,3 +153,4 @@ tests always come first.
 125. SHARDS: right-click a shard on your island for its own menu, Totem Bench per shard (unbreakable, tiers), hand-held Rain / Fertilizer / Sun, no Shards tile
 126. ABILITY TREE: modifier nodes 1 AP, free Root, pick-one A4, owned-only Abilities + focus, Loadout click-to-place, migration keeps everything
 127. STAFF BLINK goes past mobs along the crosshair
+128. KEEP INVENTORY on death in every world (mob drops unchanged)
