@@ -18,10 +18,10 @@ WORLD = "HUD mod"
 SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.25"), ("SkyySacks", "0.8.6"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.16"), ("SkyyParty", "0.1.7"),
-    ("SkyyBank", "0.1.12"), ("SkyyIslands", "0.5.13"), ("SkyyBazaar", "0.1.12"), ("SkyyGear", "0.3.9"), ("SkyySkills", "0.4.40"),
-    ("SkyyAccessories", "0.5.15"), ("SkyyClasses", "0.1.26"), ("SkyyMenu", "0.3.28"), ("SkyyEssentials", "0.1.10"), ("SkyyProfiles", "0.1.13"),
-    ("SkyyCooking", "0.1.7"), ("SkyyTrees", "0.3.14"),
+    ("SkyyHud", "0.3.25"), ("SkyySacks", "0.8.6"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.17"), ("SkyyParty", "0.1.7"),
+    ("SkyyBank", "0.1.12"), ("SkyyIslands", "0.5.13"), ("SkyyBazaar", "0.1.12"), ("SkyyGear", "0.3.9"), ("SkyySkills", "0.4.41"),
+    ("SkyyAccessories", "0.5.15"), ("SkyyClasses", "0.1.27"), ("SkyyMenu", "0.3.28"), ("SkyyEssentials", "0.1.10"), ("SkyyProfiles", "0.1.14"),
+    ("SkyyCooking", "0.1.7"), ("SkyyTrees", "0.3.15"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -78,7 +78,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.2.6"),
+    ("SkyyPets", "0.2.7"),
     ("SkyyWardrobe", "0.2.1"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes

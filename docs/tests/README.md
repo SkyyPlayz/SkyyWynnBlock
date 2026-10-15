@@ -247,3 +247,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | ISLAND TIME + PORTAL LOOK + CAMP STOP + LOGIN ON ISLAND: SkyyIslands 0.5.13 (DEPLOYED 2026-10-15, backup deploy-20261015-1319) | [2026-10](2026-10.md) |
 | HUBS H2: SkyyMenu 0.3.28 (Sky Window hub shell, /character /storage /market /travel /social, Menu tabs) (DEPLOYED 2026-10-15, backup deploy-20261015-1404) | [2026-10](2026-10.md) |
 | SMITHING FIXES: SkyyGear 0.3.9 (no #SkyyGPFig kick, Identify tab + multi-select, Craft = gathering armor only, tier-up only above tier 1) (DEPLOYED 2026-10-15, backup deploy-20261015-1521) | [2026-10](2026-10.md) |
+| HUBS H3a: Character hub tabs - SkyySkills 0.4.41, SkyyTrees 0.3.15, SkyyClasses 0.1.27, SkyyPets 0.2.7, SkyyCollections 0.2.17, SkyyProfiles 0.1.14 (DEPLOYED 2026-10-15, backup deploy-20261015-1528) | [2026-10](2026-10.md) |
