@@ -20,8 +20,8 @@ SET = [
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.25"), ("SkyySacks", "0.8.6"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.16"), ("SkyyParty", "0.1.7"),
     ("SkyyBank", "0.1.12"), ("SkyyIslands", "0.5.12"), ("SkyyBazaar", "0.1.12"), ("SkyyGear", "0.3.8"), ("SkyySkills", "0.4.40"),
-    ("SkyyAccessories", "0.5.15"), ("SkyyClasses", "0.1.25"), ("SkyyMenu", "0.3.27"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
-    ("SkyyCooking", "0.1.7"), ("SkyyTrees", "0.3.12"),
+    ("SkyyAccessories", "0.5.15"), ("SkyyClasses", "0.1.26"), ("SkyyMenu", "0.3.27"), ("SkyyEssentials", "0.1.9"), ("SkyyProfiles", "0.1.13"),
+    ("SkyyCooking", "0.1.7"), ("SkyyTrees", "0.3.13"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -179,6 +179,8 @@ RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe", "SkyyTownProbe", "Skyy
 # 2026-10-09 Skyy: "Armory off until 0.7" - The Armory (708 textures) overflowed the client item/creature texture atlas
 # (8192x16384 needed, max 8192x8192: 395 of 2808 images dropped = broken copper ore, talismans, swords). Re-test on Hytale 0.7.
 # 2026-10-15 merge PHASE 0 (research/Architecture-Spec.md 2.3): stable-name probe jars for ONE Skyy test (/coreprobe); remove after.
+# 2026-10-15 ABILITY TREE REDESIGN (abiltree2): SkyyTrees 0.3.13 + SkyyClasses 0.1.26 deploy TOGETHER. FLOORS: never roll Trees below
+# 0.3.13 or Classes below 0.1.26 once a profile migrated (abil.tree2=done) - older jars drop the new A1.<Mod> / A4a / A4b node ids.
 STABLE_PROBES = [("SkyyCoreProbe", "0.1.0"), ("SkyyDepProbe", "0.1.0")]
 PACK_DISABLED = ["TheRedlotus:HyFishing", "Helios:Saplings From Trees", "Frah:Better Mob Expansion", "com.example:ExtendedBackpacks", "Allomere:Tainted Roots"]  # 2026-10-15 Skyy: Extended Backpacks OFF (replaces the vanilla Workbench + Backpack Upgrade items), Tainted Roots OFF for now; Saplings From Trees / BME / HyFishing not updated for 0.7  # 2026-10-13 0.7.1: BetterMap 1.3.9, DynamicSeasons 7.0.2, Perfect Parries 0.9.7 updated by their authors -> back ON (engine-API audit clean)  # 2026-10-13 BetterMap (18 removed engine calls: map packets, waypoints, cave mode) + Perfect Parries (CombatTextUpdate ctor) would crash on 0.7 in play - off until their authors update; 2026-10-13 DynamicSeasons crashes the world on 0.7 (SeasonWeatherSystem -> removed WorldChunk.getBlockChunk) when a player joins  # 2026-10-12 Hytale 0.7.0: Saplings From Trees fails to load (Plant_Leaves_Fig_Blue) and BME fails NPC validation (Template_BME_Goblin_Kamikaze -> missing BME_Bomb_Damage) = the 0.7 server refuses to boot; back ON when their authors update  # 2026-10-10 Skyy: HyFishing OFF ("Switch HyFishing off") - SkyyFishing replaces it
 
