@@ -1,0 +1,532 @@
+{
+ "what": "SkyWynn Menu icons sheet 2 - Teleport page, shared buttons, Players page Accept / Deny, main Shards tile (DRAFT v1)",
+ "generator": "tools/art/make_menu_icons_2.py",
+ "validator": "tools/art/validate_menu_icons_2.py",
+ "reuses": "tools/art/make_menu_icons.py (shape helpers, painter, palettes)",
+ "deterministic": true,
+ "original_pixels": true,
+ "icon_rules": {
+  "size": [
+   64,
+   64
+  ],
+  "alpha": "hard (0 or 255)",
+  "outline": "1 px #120e1c tinted toward the touching part",
+  "light": "top left",
+  "no_pure_black_or_white": true,
+  "supersample": 4
+ },
+ "icons": [
+  {
+   "name": "MyIsland",
+   "id": "Skyy_Menu_Icon_MyIsland",
+   "label": "My Island",
+   "group": "tp",
+   "category": "travel",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_MyIsland.png",
+   "bytes": 1068,
+   "sha256": "487767f4c2f81e26ce0817c0101a351ba2379e0c1a4250b7a622d44aa0546f5a",
+   "replaces_vanilla_id": "Soil_Grass",
+   "skyymenu": "ENTRIES (\"tp\", 11) + PLAYER_ACTIONS 31",
+   "shows": "a small floating island (grass, soil, rock, two bushes) with a big gold map-pin home marker planted in it; the pin shows a little house"
+  },
+  {
+   "name": "Hub",
+   "id": "Skyy_Menu_Icon_Hub",
+   "label": "Hub",
+   "group": "tp",
+   "category": "travel",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Hub.png",
+   "bytes": 1271,
+   "sha256": "5c621824c98fba35a72ccfcd5bd7d15cbb4203796601528aa6cfd5346778eeec",
+   "replaces_vanilla_id": "Hub_Portal_Default",
+   "skyymenu": "ENTRIES (\"tp\", 13) + PLAYER_ACTIONS 29",
+   "shows": "a stone town gate (arch, gold keystone, two amber banners) glowing warm inside, over a tiled plaza with a gold inlay ring"
+  },
+  {
+   "name": "Spawn",
+   "id": "Skyy_Menu_Icon_Spawn",
+   "label": "Spawn",
+   "group": "tp",
+   "category": "travel",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Spawn.png",
+   "bytes": 876,
+   "sha256": "e83b4ebb9ac219db078a7d6d094b82e481168d2d494207c03e226bac0190c200",
+   "replaces_vanilla_id": "Spawn_Portal",
+   "skyymenu": "ENTRIES (\"tp\", 15) + PLAYER_ACTIONS 30",
+   "shows": "a round stone spawn pad with a gold inlay ring and a beam of warm light rising to a gold star"
+  },
+  {
+   "name": "Warp",
+   "id": "Skyy_Menu_Icon_Warp",
+   "label": "Warp",
+   "group": "tp",
+   "category": "travel",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Warp.png",
+   "bytes": 915,
+   "sha256": "c6e8d69a52a57e2edc7f4325c191332e6756a90259a5caa072928d08db36a97e",
+   "replaces_vanilla_id": "Tool_Map",
+   "skyymenu": "ICON_WARP (every unlocked warp)",
+   "shows": "a wooden signpost (gold cap, stone foot): a big board pointing right with a painted gold arrow, a small board pointing left"
+  },
+  {
+   "name": "WarpLocked",
+   "id": "Skyy_Menu_Icon_WarpLocked",
+   "label": "Warp (locked)",
+   "group": "tp",
+   "category": "travel",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpLocked.png",
+   "bytes": 1034,
+   "sha256": "a1220fd702dde715d5593262db20883e4279760ef234cf75da2721b208d9baf8",
+   "replaces_vanilla_id": "Tool_Map",
+   "skyymenu": "new ICON_WARP_LOCKED (warps not unlocked)",
+   "shows": "the same signpost in dim grey-brown, with a gold padlock in front"
+  },
+  {
+   "name": "NoWarps",
+   "id": "Skyy_Menu_Icon_NoWarps",
+   "label": "No warps yet",
+   "group": "tp",
+   "category": "travel",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_NoWarps.png",
+   "bytes": 791,
+   "sha256": "d0e9a8d1f1d695f0049d08638da71d246614fdfadbd7b7ff40286b417e1feda8",
+   "replaces_vanilla_id": "Tool_Map",
+   "skyymenu": "new ICON_NO_WARPS (NO_WARPS_SLOT 31)",
+   "shows": "a bare grey signpost with a dashed outline where the board would be"
+  },
+  {
+   "name": "Shards",
+   "id": "Skyy_Menu_Icon_Shards",
+   "label": "Shards",
+   "group": "main",
+   "category": "travel",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Shards.png",
+   "bytes": 1088,
+   "sha256": "058a4e122a3a34d7dd1df525e86e229912a58408820900776f36861eb7d395de",
+   "replaces_vanilla_id": "Portal_Device",
+   "skyymenu": "ENTRIES (\"main\", 11)",
+   "shows": "an amber hex shard crystal with a violet portal window and gold star, floating over a tiny island with two small crystals"
+  },
+  {
+   "name": "Back",
+   "id": "Skyy_Menu_Icon_Back",
+   "label": "Go Back",
+   "group": "nav",
+   "category": "admin",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Back.png",
+   "bytes": 619,
+   "sha256": "0b79e336df223f014fa02eaaabb443e1af8c5a10915cf39b6bef307a2ec5e739",
+   "replaces_vanilla_id": "Weapon_Arrow_Iron",
+   "skyymenu": "ICON_BACK (slot 45)",
+   "shows": "a thick steel return arrow: points left, its tail curls round on the right (gold tip)"
+  },
+  {
+   "name": "Prev",
+   "id": "Skyy_Menu_Icon_Prev",
+   "label": "Previous Page",
+   "group": "nav",
+   "category": "admin",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Prev.png",
+   "bytes": 432,
+   "sha256": "49f58b5d42a179bf1364aaaa6317ea7ec6f6e649e2baf3b4c81d663793dd6b82",
+   "replaces_vanilla_id": "Weapon_Arrow_Crude",
+   "skyymenu": "ICON_PREV (slot 48)",
+   "shows": "a steel double chevron pointing left (front one bright, back one dark); the mirror of Next"
+  },
+  {
+   "name": "Next",
+   "id": "Skyy_Menu_Icon_Next",
+   "label": "Next Page",
+   "group": "nav",
+   "category": "admin",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Next.png",
+   "bytes": 454,
+   "sha256": "064dd660f36514f2bc7caf835e513603092cc8692ebe9aa426b41f5503341a69",
+   "replaces_vanilla_id": "Weapon_Arrow_Iron",
+   "skyymenu": "ICON_NEXT (slot 50)",
+   "shows": "a steel double chevron pointing right; the mirror of Previous"
+  },
+  {
+   "name": "Close",
+   "id": "Skyy_Menu_Icon_Close",
+   "label": "Close",
+   "group": "nav",
+   "category": "admin",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Close.png",
+   "bytes": 745,
+   "sha256": "3b38440a26baa708bccbf3a9c874b89d99dfa810c0148e713eed4464725d39f2",
+   "replaces_vanilla_id": "Furniture_Flag_Small_Red",
+   "skyymenu": "ICON_CLOSE (slot 49)",
+   "shows": "a square steel plate with 4 rivets and a recessed field holding a big red X"
+  },
+  {
+   "name": "Player",
+   "id": "Skyy_Menu_Icon_Player",
+   "label": "Player",
+   "group": "players",
+   "category": "social",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Player.png",
+   "bytes": 717,
+   "sha256": "5a3b1a1dedf281db250eca7d83549fa62be9e30972e8918d661fc1648054a709",
+   "replaces_vanilla_id": "Armor_Leather_Light_Head",
+   "skyymenu": "ICON_PLAYER (fallback when no head is shown)",
+   "shows": "a generic blocky player head in 3/4 view (brown hair, two eyes) on violet shoulders"
+  },
+  {
+   "name": "Accept",
+   "id": "Skyy_Menu_Icon_Accept",
+   "label": "Accept Request",
+   "group": "players",
+   "category": "admin",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Accept.png",
+   "bytes": 979,
+   "sha256": "55ab2ab7e20a3c118a2e3210bc025ddba5bee2f0ae3f5cd3b699a48182c267f9",
+   "replaces_vanilla_id": "Ingredient_Crystal_Green",
+   "skyymenu": "ENTRIES (\"players\", 47)",
+   "shows": "a round emerald button in a steel ring with a cream check mark"
+  },
+  {
+   "name": "Deny",
+   "id": "Skyy_Menu_Icon_Deny",
+   "label": "Deny Request",
+   "group": "players",
+   "category": "admin",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Deny.png",
+   "bytes": 1022,
+   "sha256": "86108c1292a23f2ebeda0b242a1f265ac1109f1d3cc8a127c30a18fbd657781d",
+   "replaces_vanilla_id": "Ingredient_Crystal_Red",
+   "skyymenu": "ENTRIES (\"players\", 51)",
+   "shows": "a round ruby button in a steel ring with a cream X (the round shape keeps it apart from the square Close plate)"
+  }
+ ],
+ "files": [
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_MyIsland.png",
+   "bytes": 1068,
+   "sha256": "487767f4c2f81e26ce0817c0101a351ba2379e0c1a4250b7a622d44aa0546f5a"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Hub.png",
+   "bytes": 1271,
+   "sha256": "5c621824c98fba35a72ccfcd5bd7d15cbb4203796601528aa6cfd5346778eeec"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Spawn.png",
+   "bytes": 876,
+   "sha256": "e83b4ebb9ac219db078a7d6d094b82e481168d2d494207c03e226bac0190c200"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Warp.png",
+   "bytes": 915,
+   "sha256": "c6e8d69a52a57e2edc7f4325c191332e6756a90259a5caa072928d08db36a97e"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpLocked.png",
+   "bytes": 1034,
+   "sha256": "a1220fd702dde715d5593262db20883e4279760ef234cf75da2721b208d9baf8"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_NoWarps.png",
+   "bytes": 791,
+   "sha256": "d0e9a8d1f1d695f0049d08638da71d246614fdfadbd7b7ff40286b417e1feda8"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Shards.png",
+   "bytes": 1088,
+   "sha256": "058a4e122a3a34d7dd1df525e86e229912a58408820900776f36861eb7d395de"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Back.png",
+   "bytes": 619,
+   "sha256": "0b79e336df223f014fa02eaaabb443e1af8c5a10915cf39b6bef307a2ec5e739"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Prev.png",
+   "bytes": 432,
+   "sha256": "49f58b5d42a179bf1364aaaa6317ea7ec6f6e649e2baf3b4c81d663793dd6b82"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Next.png",
+   "bytes": 454,
+   "sha256": "064dd660f36514f2bc7caf835e513603092cc8692ebe9aa426b41f5503341a69"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Close.png",
+   "bytes": 745,
+   "sha256": "3b38440a26baa708bccbf3a9c874b89d99dfa810c0148e713eed4464725d39f2"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Player.png",
+   "bytes": 717,
+   "sha256": "5a3b1a1dedf281db250eca7d83549fa62be9e30972e8918d661fc1648054a709"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Accept.png",
+   "bytes": 979,
+   "sha256": "55ab2ab7e20a3c118a2e3210bc025ddba5bee2f0ae3f5cd3b699a48182c267f9"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_Deny.png",
+   "bytes": 1022,
+   "sha256": "86108c1292a23f2ebeda0b242a1f265ac1109f1d3cc8a127c30a18fbd657781d"
+  },
+  {
+   "path": "sheet.png",
+   "bytes": 138377,
+   "sha256": "53b6fb086d055c3ae8efb580676ade9a867c2574e60136d4ec24ee781aa8cf3e"
+  }
+ ],
+ "palettes": {
+  "gold": [
+   "#3e1f08",
+   "#6e3f0c",
+   "#a2650f",
+   "#d39a22",
+   "#f0c548",
+   "#ffe58a",
+   "#fff4cf"
+  ],
+  "amber": [
+   "#3a1606",
+   "#6a2c0a",
+   "#a24a10",
+   "#d8761c",
+   "#f5a332",
+   "#ffcf6a",
+   "#fff0bf"
+  ],
+  "teal": [
+   "#0b2227",
+   "#113c3d",
+   "#175d58",
+   "#1e8577",
+   "#2fae97",
+   "#66d4b9",
+   "#bff2e1"
+  ],
+  "green": [
+   "#0c2213",
+   "#143d21",
+   "#1d5e30",
+   "#2a853f",
+   "#43aa50",
+   "#80d06c",
+   "#cdf0ad"
+  ],
+  "violet": [
+   "#1a0f2e",
+   "#2c1a4b",
+   "#45296c",
+   "#623b92",
+   "#8355b5",
+   "#aa80d4",
+   "#dbc3ef"
+  ],
+  "steel": [
+   "#14161e",
+   "#242833",
+   "#373d4b",
+   "#525a6b",
+   "#768092",
+   "#a1aaba",
+   "#d0d6e0"
+  ],
+  "wood": [
+   "#28130a",
+   "#43220f",
+   "#633617",
+   "#874f24",
+   "#aa6c35",
+   "#c98d4f",
+   "#e3b47a"
+  ],
+  "mahog": [
+   "#2a0f0c",
+   "#481a14",
+   "#6a2a1c",
+   "#8c3e26",
+   "#ad5734",
+   "#cc7a4a",
+   "#e6a372"
+  ],
+  "stone": [
+   "#25232e",
+   "#3a3744",
+   "#54505e",
+   "#716c7a",
+   "#918b97",
+   "#b4aeb6",
+   "#d6d1d4"
+  ],
+  "grass": [
+   "#173a17",
+   "#21541f",
+   "#2f7428",
+   "#43952f",
+   "#62b53a",
+   "#90d257",
+   "#c4ec8c"
+  ],
+  "soil": [
+   "#2a160e",
+   "#43251a",
+   "#5f3824",
+   "#7d4f30",
+   "#9a6a42"
+  ],
+  "cloud": [
+   "#5f6d96",
+   "#8a9cc8",
+   "#a8b8de",
+   "#c6d4ee",
+   "#e2ecf8"
+  ],
+  "red": [
+   "#3a0b12",
+   "#661620",
+   "#982430",
+   "#c93a3c",
+   "#e86a5c",
+   "#f7a493"
+  ],
+  "blue": [
+   "#0b1838",
+   "#132c66",
+   "#1f4a9c",
+   "#3170cc",
+   "#58a0ea",
+   "#9ccbf7"
+  ],
+  "cream": [
+   "#4a3a2c",
+   "#6e5a44",
+   "#957d5e",
+   "#b9a17c",
+   "#d8c49c",
+   "#efe2c0",
+   "#faf3dd"
+  ],
+  "navy": [
+   "#0a1220",
+   "#101c32",
+   "#16284a",
+   "#1f3a66",
+   "#2c5088"
+  ],
+  "glass": [
+   "#1d3a48",
+   "#2f5d6e",
+   "#4a8a98",
+   "#77b7c0",
+   "#a9dde0",
+   "#d8f4f2"
+  ],
+  "void": [
+   "#0e0820",
+   "#1c1040",
+   "#2e1a66",
+   "#47288f",
+   "#6a3fb8",
+   "#9a6ee0",
+   "#cfb2f6"
+  ],
+  "magic": [
+   "#1b1040",
+   "#2e2370",
+   "#3a4596",
+   "#3f72b4",
+   "#3fa8c2",
+   "#7fdcd8",
+   "#cdf8f0"
+  ],
+  "emerald": [
+   "#06281a",
+   "#0c4a2c",
+   "#137040",
+   "#1f9a55",
+   "#3cc472",
+   "#88eaa6",
+   "#d2fbe0"
+  ],
+  "vault": [
+   "#0f1a17",
+   "#1b2b26",
+   "#2a4038",
+   "#3c5a4e",
+   "#557a6a",
+   "#7ea08f",
+   "#b8d0c2"
+  ],
+  "leather": [
+   "#24110c",
+   "#3b1d12",
+   "#58301b",
+   "#784626",
+   "#975e34",
+   "#b77d4c"
+  ],
+  "ruby": [
+   "#2e0910",
+   "#561420",
+   "#86202e",
+   "#b8303a",
+   "#de5248",
+   "#f48a72",
+   "#fcc6ad"
+  ],
+  "skin": [
+   "#3b2018",
+   "#5e3424",
+   "#8a5236",
+   "#b4744c",
+   "#d39a6c",
+   "#ecc293",
+   "#f8e2c4"
+  ],
+  "hair": [
+   "#1e100c",
+   "#331b12",
+   "#4c2a18",
+   "#683c20",
+   "#86522c",
+   "#a46d3e"
+  ],
+  "wooddim": [
+   "#1f1714",
+   "#2f2420",
+   "#41342e",
+   "#55463d",
+   "#6a594d",
+   "#806d5f",
+   "#9a887a"
+  ],
+  "golddim": [
+   "#2a2318",
+   "#433826",
+   "#5f4f33",
+   "#7d6942",
+   "#9a8452",
+   "#b5a06a",
+   "#d2c08e"
+  ],
+  "stonedim": [
+   "#1c1b24",
+   "#2a2933",
+   "#3a3945",
+   "#4d4b58",
+   "#625f6c",
+   "#7a7783",
+   "#94919c"
+  ],
+  "beam": [
+   "#6a2c0a",
+   "#a24a10",
+   "#d8761c",
+   "#f5a332",
+   "#ffcf6a",
+   "#ffe9a8",
+   "#fff4cf"
+  ]
+ }
+}

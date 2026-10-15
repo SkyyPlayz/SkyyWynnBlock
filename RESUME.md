@@ -55,6 +55,9 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 
 ## Next, in order (Skyy 2026-10-14: "Run everything you can in parallel ... done by 5 pm")
 1. Land the 6 running rounds (deploy each READY one with the game closed), then the queued ones above.
+1b. OWN ICONS IN EVERY MENU (Skyy 10-15, ui.md; plan research/Menu-Icons-Plan.md): wave 1 sheet art/menu-icons-2/ DRAWN + reviewed (14 icons: Teleport My Island / Hub / Spawn / Warp / locked / none, Back / Prev / Next / Close, Player, Accept / Deny, Shards tile).
+   QUEUED: lean round menu0326 = SkyyMenu 0.3.26 wires them (art/menu-icons-2/README.md: ICON_ITEMS, ICON_* constants + new ICON_WARP_LOCKED / ICON_NO_WARPS, ENTRIES tp 11/13/15, players 47/51, main 11; the asserts at ~1177 / 1212 / 2111 / 11186).
+   Then waves 2-5 (Mods list + player actions, shared skill / class sets, Exploration / Quests / Hud, Trees nodes) - each drawn, reviewed, then a round once that mod is free.
 2. Sky Window kit into tools/skyyui.py - BLOCKED on Skyy's /skyprobe kit; ability keys U1-U10 proven by Skyy's first Mage play + logs.
 3. ARCHITECTURE merge into ~10 jars (research/Architecture-Spec.md) LAST - it touches every mod, so only when no other round runs;
    fold MIT mods (Multitools, Reforged Weapons, MoreTotems Water Totem, BetterBiomes, More Mounts) with credit.
