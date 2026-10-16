@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + menu0330 Menu 0.3.30 + cls0130 Classes 0.1.30 + fish018 Fishing fixes + bz0115 Bazaar 0.1.15)
+# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + menu0330 Menu 0.3.30 + cls0130 Classes 0.1.30 + fish018 Fishing fixes + bz0115 Bazaar 0.1.15 + cook018 Cooking 0.1.8)
 
 Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
 `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md` (2026-10-15 / 16 lines). Decisions word for word: `docs/answered/<topic>.md`.
@@ -31,11 +31,15 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    profile, can't be lost, extras cleaned, a recall command each; island reset / kit never re-gives owned once-only items. FULL round (Accessories +
    Sacks + Menu + Islands) after menu0330 deploys.
 1c2. RUNNING lean bz0115 (SkyyBazaar 0.1.15): Farming tab = crop, Enchanted, seeds, Eternal seeds per crop by tier; saplings -> Foraging (economy.md 10-16).
+1c3. RUNNING cook018 (SkyyCooking 0.1.8): food families (Veggie HP / Fruit Mana / Meat Stamina / Mushroom Strength + Grain, Dairy-Egg-Fish own
+   families), faster eating that hits never cancel, no Sated, new dishes (skills.md 10-16). Bridge readers in Gear / Skills = follow-up.
 1d. RUNNING fish018 (SkyyFishing 0.1.8 + SkyySacks 0.8.10 + SkyyShards 0.4.1): fishing line over water, fish into the Fishing bag, 29 missing item
    models (bags.md / ui.md 10-16). Still ask Skyy what the purple cube on the spawn-Temple pedestal is.
 1e. **CLASS EMBLEMS** (ui.md 10-16): one icon per class (8, art first via skywynn-art) on Profiles / class pick / Class tab; wire the 35 approved ability icons in.
 1f. **CRAFTING HUB** (ui.md 10-16 + LOCKED 10-10): hub tab Smithing -> CRAFTING with pages Crafting (/craft, SkyySacks; looks upgraded) + Smithing
    (SkyyGear /smithing). Round after menu0330 + fish018 (Menu + Sacks + Gear).
+1g. **THE ARMORY GEAR INTO OUR SYSTEMS** (gear.md 10-16; plan research/Pack-Armor-Plan.md): runtime by id - Cloth/Light/Heavy + class weapons, our
+   rarity / modifiers / levels / reforge, drops from every source. ULTRACODE after the running rounds (Gear + Mobs + loot).
 2. **PET EGGS + HATCHING** (research/Pet-Eggs-Spec.md; pets.md 10-15): 30 eggs (Mining / Farming / Foraging / Combat / Exploration x
    Common..Mythic), roll 1 pet (best -> worst weights by egg rarity), roll 2 rarity, atomic hatch then ~3 s two-reel animation, sources
    (skill drops, collections, crafting, shops). 5 questions open in OPEN-QUESTIONS.md with defaults - use the defaults unless Skyy answers.
