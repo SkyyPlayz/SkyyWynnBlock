@@ -8,7 +8,8 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 2. DEPLOY TARGET IS THE WORLD **NewBetaTest** (`tools/deploy_set.py` WORLD; backup_deploy / smoke_test follow it). Skyy plays there with a
    friend (WesleyPlayz, Assassin). The old world `HUD mod` is no longer deployed to.
 3. RUNNING (10-16 ~11:00): lean builder wd024 (SkyyWardrobe 0.2.4, NEXT 0) + workflow gear0312 (SkyyGear 0.3.12, NEXT 1) [BEFORE PIN: also rename the /smithing CRAFT tab to SMITHING, gear.md 10-16 + Upgrade tab 8 rows per page (smaller icons/rows) - lean follow-up on the 0.3.12 patch]
-   + lean builder cls0130 (SkyyClasses 0.1.30: Lattice says what every ability / modifier does, classes.md 10-16)
+   + workflow cls0130 (SkyyClasses 0.1.30 + SkyyTrees 0.3.18: top-down class tree, abilities at their unlock depth, modifiers out of
+     the tree (auto-unlock, AP refunded, slots open with the ability), every ability / modifier says what it does; classes.md 10-16)
    + workflow menu0330 (SkyyMenu 0.3.30: no duplicate icons / entries, menu scaled up, Home 'Right now' panel + the queued Menu items; ui.md 10-16) [BEFORE PIN: HUD shortcut opens the HUD editor directly, ui.md 10-16]; if this
    session died, check their scratch / files, review, pin, deploy. PINNED, NOT DEPLOYED: SkyyHud 0.3.28 (deploy with the next batch when the game is closed). Last deploys: 10-15 23:14 (TEST-CHECKLIST 137) and 10-16 05:31 (138).
 4. Kit `tools/skyyui.py` is now kit 1.6 (KIT_HUB_VERSION 1.6, KIT_VERSION still "1.5"): builds no longer need the old HEAD-kit preload.
