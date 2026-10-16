@@ -40,7 +40,7 @@ path (nothing copied).
 | Right-click | `"Interactions": {"Secondary": {"Interactions": [{"Type": "OpenCustomUI", "Page": {"Id": "SkyyPetsHatch"}}]}}` + `OpenCustomUIInteraction.registerSimple` (the SkyySacks / SkyyMenu pattern, HANDOFF 2) |
 | World / held model | vanilla `Items/Consumables/Food/Egg.blockymodel` by path + our own texture per rarity (6 PNGs) |
 | Recipe | Common + Uncommon only (section 6.3), in the item JSON - BUILD-TIME |
-| One table | `tools/skyyeggs.py` (NEW, like `tools/skyyench.py`): ids, names, rarity, category, recipe, Bazaar base / AUTO, merchant rows. Imported by SkyyPets (items), SkyyBazaar (products + recipe edges for its loop check), SkyyMerchants (rows), SkyyCollections (reward defaults) |
+| One table | `skyyeggs.py (new, under tools/)` (NEW, like `tools/skyyench.py`): ids, names, rarity, category, recipe, Bazaar base / AUTO, merchant rows. Imported by SkyyPets (items), SkyyBazaar (products + recipe edges for its loop check), SkyyMerchants (rows), SkyyCollections (reward defaults) |
 
 **Tier tag (standing rule):** eggs are tiered by rarity, so the tag is the rarity + noun, first phrase of the flavor: `Rare Egg - ...`.
 No T-number (T1-T8 is the metal ladder; a "T3 Egg" would read as Iron). `research/Tier-Tags-Plan.md` line 74 leaves rarity-only items
@@ -51,7 +51,7 @@ untagged; eggs are the exception asked for here. `tools/tier_tags.py` gets `RARI
 
 | Art | Count | How |
 |---|---|---|
-| Egg icons | 30 (+6 Fishing later) | `tools/art/make_pet_eggs.py` (NEW, original, deterministic, like `make_menu_icons.py`): one egg silhouette; shell colour by category (Mining slate blue, Farming wheat gold, Foraging bark green, Combat red, Exploration teal); speckles + rim glow by rarity (quality colours, Mythic = shimmer). 64x64 PNG -> `art/pet-eggs/` + sheet for Skyy |
+| Egg icons | 30 (+6 Fishing later) | `make_pet_eggs.py (new, under tools/art/)` (NEW, original, deterministic, like `make_menu_icons.py`): one egg silhouette; shell colour by category (Mining slate blue, Farming wheat gold, Foraging bark green, Combat red, Exploration teal); speckles + rim glow by rarity (quality colours, Mythic = shimmer). 64x64 PNG -> `art/pet-eggs/` + sheet for Skyy |
 | Egg world textures | 6 | same tool, one per rarity, mapped on the vanilla egg model's UVs (UNVERIFIED: the model's texture size - read its UV box at build time) |
 | Reel 1 portraits | 31 (one per kind) | icon items `Skyy_PetIcon_<Kind>` (MaxStack 1, no Categories / Recipe / Interactions, never obtainable - the SkyyMenu icon-item pattern). Rendered from the vanilla model at BUILD time into the jar with `tools/art/render_blocky.py` (vanilla-derived = generated, never committed). Fallback while missing: the kind's skill tool icon + its name |
 | Reel 2 rarity tokens | 6 | icon items `Skyy_PetRarity_<Rarity>` with that Quality: the ItemSlot's `ShowQualityBackground` gives the rarity colour (kit `SUI` itemslot, `#Id.ItemId` set - the proven setter) |
@@ -306,7 +306,7 @@ value so the tiers stay apart.
 Loop checks (SkyyBazaar: instant buy = base x factor x 1.1, instant sell = base x factor x 0.9, factor 0.25-4.0, step =
 1.1 ^ (base / 10,000)):
 - **Craft -> sell:** AUTO price makes sell = 0.9 x 1.2 x inputs = 1.08 x inputs < buy-inputs 1.1 x inputs (the existing 22 % premium
-  rule). SkyyBazaar's build loop check must also read the egg recipes from `tools/skyyeggs.py` (today it only reads Assets.zip + the
+  rule). SkyyBazaar's build loop check must also read the egg recipes from `skyyeggs.py (new, under tools/)` (today it only reads Assets.zip + the
   Enchanted table) - it fails the build if one pays.
 - **Merchant -> Bazaar:** the merchant sells only Legendary, which the Bazaar never buys -> no loop. Any later merchant row for a
   Bazaar-listed egg must be >= 4 x its Bazaar base (the Bazaar pays at most 4.0 x 0.9 = 3.6 x base) - checked at build + in the row check.
@@ -333,8 +333,8 @@ Loop checks (SkyyBazaar: instant buy = base x factor x 1.1, instant sell = base 
 
 | # | Round | Mods / files | Size | Notes |
 |---|---|---|---|---|
-| A0 | Egg art | `tools/art/make_pet_eggs.py`, `art/pet-eggs/` | cloud draws, I review (memory: visuals autonomy) | 30 icons + 6 textures + sheet for Skyy; portraits are build-time renders (R1) |
-| R1 | **SkyyPets 0.4.0** eggs + hatching | `tools/pets_0_4_0_patch.py` from 0.3.1, `tools/skyyeggs.py`, `tools/tier_tags.py` (+ test) | **Ultracode** (new system, items that could be lost / duplicated, saved data) + `simplify: 2` | 30 egg items + `Skyy_Pet_Mythic` quality + 31 portrait + 6 token icon items, lang, tier tags, recipes; hatch page + reels + 5.2 journal + startup recovery + eggdebt reconcile + forced save; `pets:fn:eggroll` + `pets:egg:defs` (ids / names / weights for other mods); Exploration drop in `pets:fn:onxp`; `/petadmin egg <player> <category> <rarity> [n]` and `/petadmin hatchodds <category> <rarity> [n]` (prints a 100,000-roll table, no items) - admin rules (`requirePermission` + empty groups); Server Setup > Pets > Eggs rows (section 9); data rows for the 2.3 adds if Skyy says yes |
+| A0 | Egg art | `make_pet_eggs.py (new, under tools/art/)`, `art/pet-eggs/` | cloud draws, I review (memory: visuals autonomy) | 30 icons + 6 textures + sheet for Skyy; portraits are build-time renders (R1) |
+| R1 | **SkyyPets 0.4.0** eggs + hatching | `tools/pets_0_4_0_patch.py` from 0.3.1, `skyyeggs.py (new, under tools/)`, `tools/tier_tags.py` (+ test) | **Ultracode** (new system, items that could be lost / duplicated, saved data) + `simplify: 2` | 30 egg items + `Skyy_Pet_Mythic` quality + 31 portrait + 6 token icon items, lang, tier tags, recipes; hatch page + reels + 5.2 journal + startup recovery + eggdebt reconcile + forced save; `pets:fn:eggroll` + `pets:egg:defs` (ids / names / weights for other mods); Exploration drop in `pets:fn:onxp`; `/petadmin egg <player> <category> <rarity> [n]` and `/petadmin hatchodds <category> <rarity> [n]` (prints a 100,000-roll table, no items) - admin rules (`requirePermission` + empty groups); Server Setup > Pets > Eggs rows (section 9); data rows for the 2.3 adds if Skyy says yes |
 | R2 | SkyySkills 0.4.44 egg drops | `tools/skills_0_4_44_patch.py` | Lean round + cross-check | one call to `pets:fn:eggroll` at the 5 natural spots (6.1); null-safe, one WARN; no saved data |
 | R3 | SkyyBazaar 0.1.14 + SkyyMerchants 0.1.6 | patches for both | Full round (economy) | Bazaar: Pets tab, Common / Uncommon AUTO from `skyyeggs` recipes, Rare / Epic fixed, loop check over the egg recipes; Merchants: Legendary `pet.` rows + `merchant.pets.perVisit` / `.chance`, the >= 4x row check |
 | R4 | SkyyCollections 0.2.20 | `tools/collections_0_2_20_patch.py` | Full round (saved data + migration) | default tokens (6.2) + CollEggMig |
