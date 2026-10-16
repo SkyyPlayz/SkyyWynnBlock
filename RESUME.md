@@ -16,32 +16,21 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    deploy_set --yes -> record_deploy -> commit -> tidy. Never SendMessage an agent inside a workflow; plain Agent builders can be messaged.
 
 ## RUNNING NOW
-- MENU MERGES (Skyy 10-16 'menu merge first. mod compress later.'), 4 skywynn-round workflows: hubchar Menu 0.3.33 + Skills 0.4.45
-  + Trees 0.3.19 + Classes 0.1.33 (Stats+Skills, Trees+Abilities); hubstore Bank 0.1.15 + Vault 0.1.8 (one Vault tab, coins on top); hubmkt
-  Bazaar 0.1.17 + Auctions 0.1.9 (one Market tab, one search); hubcoll Collections 0.2.22 (+ Sacks 0.8.13) (recipes inside collections).
-  + accraft Accessories 0.5.21 (craft + upgrade only in the Accessory Bag: next step per line, sub tabs Benches / Combat / Gathering; gear.md 10-16).
-  + spec research/Accessory-Power-Spec.md being written (AP by rarity, pick 1 of 5 combat + 4 gathering Powers; bag grid like pets) -> build
-  SkyyAccessories 0.5.22 after accraft (gear.md 10-16).
-  + petmenu Pets 0.4.1 (Pets / Eggs / Hatchery tabs, timed hatch slots, fuse pets + eggs, right-click hatch off; pets.md 10-16).
-  FIRST AFTER hubcoll: SkyySacks 0.8.14 = Void homes for the 103 Enchanted rows (Skyy bug: deposit skips them) + crafting page rows/scroll (k).
-  Accessory-Power-Spec.md written + answered (bags.md / gear.md 10-16) -> AP1 after accraft; AP1 also renames the Accessory Bag to VOID CHARMS
-  and retires the bag item (menu only).
-  hubstore DONE + pinned (Bank 0.1.15 + Vault 0.1.8). SkyyMenu follow-up (next Menu round): shortcut tab:storage:bank -> tab:storage:vault.
-  hubchar DONE + pinned (Menu 0.3.33 + Skills 0.4.45 + Trees 0.3.19 + Classes 0.1.33). RUNNING: smithhub Gear 0.3.15 (+ Menu 0.3.34) smithing
-  pages get the Crafting hub bars (ui.md 10-16) + tab:storage:bank shortcut fix; cook0110 Cooking 0.1.10 (one food family = one bar). T1 -> Gear 0.3.16.
-  NEXT AFTER smithhub: HUBROW SWEEP - full top hub row on every hub page (ui.md 10-16), every hub mod rebuilt with smithhub's kit helper.
-  PINNED (deploy at next close): hubchar, hubstore, hubmkt, hubcoll. RUNNING: sacks0814 (Void homes for 103 Enchanted + Life Essence -> vanilla
-  Greater Essence in skyyench + /craft bigger rows + scroll), menu audit -> research/Menu-Pattern.md (Skyy 10-16 'reduce and compress the menus';
-  then popups, then ONE sweep = pattern + top hub row on every page). Collections 0.2.23 + Bazaar 0.1.18 (Life Essence 1:1 convert, Eternal
-  seeds tier 4, Enchanted listing with gift sizing) wait for sacks0814.
-  MENU SWEEP spec research/Menu-Pattern.md ANSWERED -> after smithhub: kit round K (skyyui 1.7 + Menu 0.3.35), then S1-S4 + Quests q04 (section 4).
-  RUNNING: sacks0814 fix pass (icon markup HIGH, recipe-id craft events), petmenu fix pass (crash windows), smithhub, wd025 (scroll + Sell +
-  take-out stays out), logfix Skills 0.4.46 + Hud 0.3.30 (pack check retries, minimap shutdown). Flask/Pouch spec answered -> FP0 probe.
-  Collections next round: switch to skyyench TABLE_0221 or 102 rows + RETIRED_TO (Life Essence 1:1).
-  So T1 becomes Skills 0.4.47 + Gear 0.3.16, Enchanted listing Bazaar 0.1.18. Mod compression AFTER (sections stay separate - docs/answered/project.md 10-16).
-- Last deploy: Nothing else running. Deployed 10-16 14:44 (TEST-CHECKLIST 154): Skills 0.4.44 (dodge), Rebirth 0.3.4 (ON), Exploration 0.2.12, WorldGen 0.7.2 (/spawn),
-  Cooking 0.1.9, Guilds 0.1.10, Collections 0.2.21 (redesign C1), Gear 0.3.14 (one Harvester, Crude full on wheat, Sigils) + Armory 0.1.30
-  (one boss Sigil roll). NEXT: T1 Gear 0.3.15 + Skills 0.4.45 (spec research/Collections-Tools-Redesign-Spec.md, last section).
+- DEPLOYED 10-16 afternoon (TEST-CHECKLIST 155-158): menu merges (Stats in Skills, Class in Trees, Bank+Vault, Bazaar+AH, recipes in
+  Collections), Cooking 0.1.10 (one food family = one bar), Accessories 0.5.21 (craft + upgrade in the bag), Sacks 0.8.14 (Enchanted Void homes,
+  scroll craft list, no Void level gate), Gear 0.3.15 + Menu 0.3.34 (Crafting hub Crafting / Smithing / Anvil / Upgrade, big top row on Gear
+  pages), Pets 0.4.1 (Eggs + Hatchery), Skills 0.4.46 + Hud 0.3.30 (log fixes).
+- RUNNING: wd025 SkyyWardrobe 0.2.5 (Requip pool scroll + rows fill, search above tabs, SELL button = COIN round -> critics, Take out stays
+  out of auto-store; bags.md 10-16). Plain Agent builder; when it reports: spawn a Sonnet critic (coins / items), fix, pin, deploy.
+- NEXT IN ORDER (specs answered, word for word in docs/answered/):
+  1. MENU SWEEP (research/Menu-Pattern.md, answers at the end): kit round K (skyyui 1.7 + Menu 0.3.35; the BIG HUB ROW helper from Gear 0.3.15
+     exists), then S1-S4 + Quests q04 (section 4). Every page 1600 x 980, big row 2, short lists fill, scroll not pages.
+  2. Collections 0.2.23 + Bazaar 0.1.18: Life Essence 1:1 -> vanilla Greater Essence (skyyench RETIRED_TO; 0.2.22 script needs
+     skyyench.legacy_0221() to rebuild), Eternal Seeds at crop collection tier 4, list the Enchanted items after sizing collection gifts.
+  3. AP1 Accessories 0.5.22 (research/Accessory-Power-Spec.md + answers; Void Charms rename, no bag item, /charm /charms /ch, bag grid).
+  4. T1 tool upgrades = Gear 0.3.16 + Skills 0.4.47 (research/Collections-Tools-Redesign-Spec.md last section).
+  5. Flask / Pouch (research/Flask-Pouch-Spec.md + answers): probe FP0, then FP1 (SkyyCooking).
+  6. Mod compression after the menus (sections stay separate - Architecture-Spec.md last section).
 
 ## NEXT (after the running rounds; each answer word for word in docs/answered/)
 
