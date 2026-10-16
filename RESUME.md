@@ -69,7 +69,7 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   2026-10-19 build our own / fork where the licence allows (docs/log 2026-10-13 pack check).
 
 - **15:xx queued:** menuu1 = Unified menu round (kit 1.6 + Menu 0.3.29: Home overview + shortcut grid + hub row; research/Unified-Menu-Plan.md) BUILDING; tab-icon art BUILDING;
-  gear0311 (Skyy test fix, FIRST after Gear 0.3.10): the sickle breaks bushes / grass / leaves and is the main fiber + stick tool (gear.md 10-15).
+  gear0311 (Skyy test fix, FIRST after Gear 0.3.10): the sickle breaks bushes / grass / leaves and is the main fiber + stick tool (gear.md 10-15); + the lifelong fishing pole in the starting kit, fishing works with no hook / line / sinker, quests teach tackle (gear.md 10-15; SkyyFishing 0.1.6 + SkyyQuests too).
   WATERING CAN + HARVESTER (research/Watering-Can-Harvester-Spec.md) = full SkyyGear round AFTER Gear 0.3.10 lands; Class tab -> tree (class0128) BUILDING; Wardrobe 0.2.2 in review.
 
 ## Next, in order (Skyy 2026-10-14: "Run everything you can in parallel ... done by 5 pm")
