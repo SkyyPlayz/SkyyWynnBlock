@@ -31,7 +31,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    profile, can't be lost, extras cleaned, a recall command each; island reset / kit never re-gives owned once-only items. FULL round (Accessories +
    Sacks + Menu + Islands) after menu0330 deploys.
 1c2. RUNNING lean bz0115 (SkyyBazaar 0.1.15): Farming tab = crop, Enchanted, seeds, Eternal seeds per crop by tier; saplings -> Foraging (economy.md 10-16).
-1c3. RUNNING cook018 (SkyyCooking 0.1.8): food families (Veggie HP / Fruit Mana / Meat Stamina / Mushroom Strength + Grain, Dairy-Egg-Fish own
+1c3. RUNNING cook018 as a PLAIN Agent builder (workflow builders refused twice) (SkyyCooking 0.1.8): food families (Veggie HP / Fruit Mana / Meat Stamina / Mushroom Strength + Grain, Dairy-Egg-Fish own
    families), faster eating that hits never cancel, no Sated, new dishes (skills.md 10-16). Bridge readers in Gear / Skills = follow-up.
 1c4. RUNNING lean compost01 (SkyyEssentials 0.1.11): ships the missing 'Compost_Soft' ResourceType so Dynamic Seasons 7.0.4 stops deleting 14 crops
    + apples (economy.md 10-16). bz0115 is now a FULL round (order + prices x~4.4 except the 10-15 Eternal seeds).
@@ -39,7 +39,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    models (bags.md / ui.md 10-16). Still ask Skyy what the purple cube on the spawn-Temple pedestal is.
 1e. **CLASS EMBLEMS** (ui.md 10-16): one icon per class (8, art first via skywynn-art) on Profiles / class pick / Class tab; wire the 35 approved ability icons in.
 1f. **CRAFTING HUB** (ui.md 10-16 + LOCKED 10-10): hub tab Smithing -> CRAFTING with pages Crafting (/craft, SkyySacks; looks upgraded) + Smithing
-   (SkyyGear /smithing). Round after menu0330 + fish018 (Menu + Sacks + Gear).
+   (SkyyGear /smithing) + Furnace ADD FUEL picker (keep the quick bar). Round after menu0330 + fish018 (Menu + Sacks + Gear).
 1g. **THE ARMORY GEAR INTO OUR SYSTEMS** (gear.md 10-16; plan research/Pack-Armor-Plan.md): runtime by id - Cloth/Light/Heavy + class weapons, our
    rarity / modifiers / levels / reforge, drops from every source. ULTRACODE after the running rounds (Gear + Mobs + loot).
 2. **PET EGGS + HATCHING** (research/Pet-Eggs-Spec.md; pets.md 10-15): 30 eggs (Mining / Farming / Foraging / Combat / Exploration x
