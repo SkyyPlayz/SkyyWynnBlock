@@ -19,7 +19,7 @@ SET = [
     ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.29"), ("SkyySacks", "0.8.12"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.21"), ("SkyyParty", "0.1.9"),
+    ("SkyyHud", "0.3.29"), ("SkyySacks", "0.8.13"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.22"), ("SkyyParty", "0.1.9"),
     ("SkyyBank", "0.1.15"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.17"), ("SkyyGear", "0.3.14"), ("SkyySkills", "0.4.45"),
     ("SkyyAccessories", "0.5.20"), ("SkyyClasses", "0.1.33"), ("SkyyMenu", "0.3.33"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
     ("SkyyCooking", "0.1.9"), ("SkyyTrees", "0.3.19"),
@@ -449,6 +449,10 @@ def main():
     _hc = [_v(_p.get(m, "0")) >= v for m, v in (("SkyyMenu", (0, 3, 33)), ("SkyySkills", (0, 4, 45)), ("SkyyTrees", (0, 3, 19)), ("SkyyClasses", (0, 1, 33)))]
     if any(_hc) and not all(_hc):
         print("STOP: SkyyMenu 0.3.33, SkyySkills 0.4.45, SkyyTrees 0.3.19, SkyyClasses 0.1.33 go together (hub merges)"); return 1
+    # hubcoll (2026-10-16): /recipes moved from SkyySacks' /craft alias to SkyyCollections (recipes inside each collection) - Collections 0.2.22
+    # and Sacks 0.8.13 deploy + roll back TOGETHER (mixed = /recipes registered twice or missing).
+    if (_v(_p.get("SkyyCollections", "0")) >= (0, 2, 22)) != (_v(_p.get("SkyySacks", "0")) >= (0, 8, 13)):
+        print("STOP: SkyyCollections 0.2.22 and SkyySacks 0.8.13 go together (/recipes)"); return 1
     # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
     # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep
