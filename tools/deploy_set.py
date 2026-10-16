@@ -20,8 +20,8 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.27"), ("SkyySacks", "0.8.9"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.19"), ("SkyyParty", "0.1.9"),
-    ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.16"), ("SkyyBazaar", "0.1.13"), ("SkyyGear", "0.3.10"), ("SkyySkills", "0.4.43"),
-    ("SkyyAccessories", "0.5.17"), ("SkyyClasses", "0.1.29"), ("SkyyMenu", "0.3.29"), ("SkyyEssentials", "0.1.10"), ("SkyyProfiles", "0.1.15"),
+    ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.16"), ("SkyyBazaar", "0.1.13"), ("SkyyGear", "0.3.11"), ("SkyySkills", "0.4.43"),
+    ("SkyyAccessories", "0.5.18"), ("SkyyClasses", "0.1.29"), ("SkyyMenu", "0.3.29"), ("SkyyEssentials", "0.1.10"), ("SkyyProfiles", "0.1.15"),
     ("SkyyCooking", "0.1.7"), ("SkyyTrees", "0.3.17"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -65,11 +65,11 @@ SET = [
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
     # fishing items, removing SkyyFishing turns rods / reels / parts / fish into unknown items.
-    ("SkyyFishing", "0.1.6"),
+    ("SkyyFishing", "0.1.7"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.9"), ("SkyyWorldGen", "0.6"),
+    ("SkyyMobs", "0.1.9"), ("SkyyWorldGen", "0.7"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -80,14 +80,18 @@ SET = [
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
     ("SkyyPets", "0.3.1"),
-    ("SkyyWardrobe", "0.2.2"),
+    ("SkyyWardrobe", "0.2.3"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
-    ("SkyyQuests", "0.3.3"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
+    ("SkyyQuests", "0.3.4"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyRebirth", "0.3.3"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyShards", "0.4"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
     # FLOOR (2026-10-15, SkyySkills 0.4.43): Battlemagic = class-skill slot 19 (saved key Combat.Spellblade). 0.4.42 reads such files but its save DROPS the key - never roll Skills below 0.4.43 once Spellblades played on it.
+    # SkyyWorldGen 0.7 (2026-10-15): a jar without the SkyWynnZones2 type cannot decode skywynn_zones2's config.json (one SEVERE
+    # "Failed to load world" at boot, every other world fine). Before rolling back to 0.6: players /zone leave, stop the server, delete
+    # universe/worlds/skywynn_zones2, mods/Skyy_SkyyWorldGen/zone2_layout_20261014.bin and the skywynn_zones2.* lines of
+    # mods/Skyy_SkyyWorldGen/worlds.properties. skywynn_zones (0.6) is untouched by 0.7 and keeps working on 0.6.
     # 2026-10-14 WorldGen 0.6 (zones as floating islands, new world skywynn_zones; /zone 1-5 go there, /zone old = old test island). ROLLBACK below 0.6: server stopped, delete universe/worlds/skywynn_zones + its skywynn_zones.* lines in mods/Skyy_SkyyWorldGen/worlds.properties + zone_layout_20261014.bin first.
     # 2026-10-14 evening: Gear 0.3.6 + Fishing 0.1.6 together; FLOOR Gear 0.3.6 once any of the 68 gathering armor pieces exists (0.3.5 = unknown items). Classes 0.1.25 + Trees 0.3.10 together (Spellblade, rebirth slots 3-4). Islands 0.5.10 + Quests 0.3.2 together (3 starter islands; Server Setup can switch back to Classic).
     # 2026-10-14 rebirth6: Skills 0.4.39 FLOOR while rebirth stat bonuses exist (0.4.38 never removes skyyskill_rebirth* modifiers) - switch "Rebirth stat boosts" off with players online first.
