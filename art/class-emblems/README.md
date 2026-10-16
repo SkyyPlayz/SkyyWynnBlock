@@ -1,6 +1,6 @@
 # Class emblems - 8 classes (64 x 64 + 128 x 128 + locked 64)
 
-**Status: DRAFT for Skyy's review** (2026-10-16). 7 crests are the APPROVED ones; only the Spellblade crest is new.
+**Status: APPROVED (Spellblade crest approved 2026-10-16) for Skyy's review** (2026-10-16). 7 crests are the APPROVED ones; only the Spellblade crest is new.
 Nothing here is wired in or seen in game yet. **Start here:** `sheet.png`.
 
 Why: Skyy 2026-10-16 (Character > Profiles screenshot, `docs/answered/ui.md` CLASS ICONS ON PROFILES): "didn't we make class icons?
