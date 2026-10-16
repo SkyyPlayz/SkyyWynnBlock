@@ -15,8 +15,13 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    critics yourself; else the saved workflow `skywynn-round`. Deploy only with the game closed: backup -> smoke (`--allow-pack-api`) ->
    deploy_set --yes -> record_deploy -> commit -> tidy. Never SendMessage an agent inside a workflow; plain Agent builders can be messaged.
 
-## RUNNING NOW
-Nothing. All 10-16 rounds are deployed (TEST-CHECKLIST 139-153).
+## RUNNING NOW (plain Agent builders; critics after; if this session died: check their files, review, pin, deploy)
+- farm01 SkyyGear 0.3.14: retire hoe + sickle -> Crude Harvester + can for everyone (one-time merge), sweep tier rule, Sigils on Mining
+  Sets + drop sources by rarity + Mythic usable, till area everywhere (NEXT 0b).
+- spec: research/Collections-Tools-Redesign-Spec.md (NEXT 0c) - paper only, then ask Skyy its questions.
+- small01: Exploration names (Loot Bag / Magic Box), WorldGen 0.7.2 /spawn for players, Cooking 0.1.9 Strength scales (10 min cap),
+  Guilds names with symbols.
+- PINNED, NOT DEPLOYED (deploy when the game closes): SkyySkills 0.4.44 (dodge), SkyyRebirth 0.3.4 (rebirth ON).
 
 ## NEXT (after the running rounds; each answer word for word in docs/answered/)
 
