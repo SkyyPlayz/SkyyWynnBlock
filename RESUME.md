@@ -68,6 +68,9 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 - Still broken on 0.7 (switched off): Saplings From Trees, TheArmory, HyFishing, Better Mob Expansion - recheck CurseForge; after
   2026-10-19 build our own / fork where the licence allows (docs/log 2026-10-13 pack check).
 
+- **15:xx queued:** menuu1 = Unified menu round (kit 1.6 + Menu 0.3.29: Home overview + shortcut grid + hub row; research/Unified-Menu-Plan.md) BUILDING; tab-icon art BUILDING;
+  WATERING CAN + HARVESTER (research/Watering-Can-Harvester-Spec.md) = full SkyyGear round AFTER Gear 0.3.10 lands; Class tab -> tree (class0128) BUILDING; Wardrobe 0.2.2 in review.
+
 ## Next, in order (Skyy 2026-10-14: "Run everything you can in parallel ... done by 5 pm")
 1. Land the 6 running rounds (deploy each READY one with the game closed), then the queued ones above.
 1b. OWN ICONS IN EVERY MENU (Skyy 10-15, ui.md; plan research/Menu-Icons-Plan.md): wave 1 sheet art/menu-icons-2/ DRAWN + reviewed (14 icons: Teleport My Island / Hub / Spawn / Warp / locked / none, Back / Prev / Next / Close, Player, Accept / Deny, Shards tile).
