@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + menu0330 Menu 0.3.30 + cls0130 Classes 0.1.30 + fish018 Fishing fixes + bz0115 Bazaar 0.1.15 + cook018 Cooking 0.1.8)
+# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + menu0330 Menu 0.3.30 + cls0130 Classes 0.1.30 + fish018 Fishing fixes + bz0115 Bazaar 0.1.15 + cook018 Cooking 0.1.8 + compost01 Essentials 0.1.11)
 
 Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
 `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md` (2026-10-15 / 16 lines). Decisions word for word: `docs/answered/<topic>.md`.
@@ -7,7 +7,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 1. `git pull --rebase --autostash`; check usage (ccd get_usage). The weekly limit was hit once on 10-15 ~22:30 and Skyy reset it.
 2. DEPLOY TARGET IS THE WORLD **NewBetaTest** (`tools/deploy_set.py` WORLD; backup_deploy / smoke_test follow it). Skyy plays there with a
    friend (WesleyPlayz, Assassin). The old world `HUD mod` is no longer deployed to.
-3. RUNNING (10-16 ~11:00): lean builder wd024 (SkyyWardrobe 0.2.4, NEXT 0) + workflow gear0312 (SkyyGear 0.3.12, NEXT 1) [BEFORE PIN: also rename the /smithing CRAFT tab to SMITHING, gear.md 10-16 + Upgrade tab 8 rows per page (smaller icons/rows) - lean follow-up on the 0.3.12 patch]
+3. RUNNING (10-16 ~11:00): lean builder wd024 (SkyyWardrobe 0.2.4, NEXT 0) + workflow gear0312 (SkyyGear 0.3.12, NEXT 1) [BEFORE PIN: also rename the /smithing CRAFT tab to SMITHING, gear.md 10-16 + Upgrade tab 8 rows per page (smaller icons/rows) + watering can hold-and-sweep like the hoe, no charge-up - lean follow-up on the 0.3.12 patch]
    + workflow cls0130 (SkyyClasses 0.1.30 + SkyyTrees 0.3.18: top-down class tree, abilities at their unlock depth, modifiers out of
      the tree (auto-unlock, AP refunded, slots open with the ability), every ability / modifier says what it does; classes.md 10-16)
    + workflow menu0330 (SkyyMenu 0.3.30: no duplicate icons / entries, menu scaled up, Home 'Right now' panel + the queued Menu items; ui.md 10-16) [BEFORE PIN: HUD shortcut opens the HUD editor directly, ui.md 10-16]; if this
@@ -33,6 +33,8 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 1c2. RUNNING lean bz0115 (SkyyBazaar 0.1.15): Farming tab = crop, Enchanted, seeds, Eternal seeds per crop by tier; saplings -> Foraging (economy.md 10-16).
 1c3. RUNNING cook018 (SkyyCooking 0.1.8): food families (Veggie HP / Fruit Mana / Meat Stamina / Mushroom Strength + Grain, Dairy-Egg-Fish own
    families), faster eating that hits never cancel, no Sated, new dishes (skills.md 10-16). Bridge readers in Gear / Skills = follow-up.
+1c4. RUNNING lean compost01 (SkyyEssentials 0.1.11): ships the missing 'Compost_Soft' ResourceType so Dynamic Seasons 7.0.4 stops deleting 14 crops
+   + apples (economy.md 10-16). bz0115 is now a FULL round (order + prices x~4.4 except the 10-15 Eternal seeds).
 1d. RUNNING fish018 (SkyyFishing 0.1.8 + SkyySacks 0.8.10 + SkyyShards 0.4.1): fishing line over water, fish into the Fishing bag, 29 missing item
    models (bags.md / ui.md 10-16). Still ask Skyy what the purple cube on the spawn-Temple pedestal is.
 1e. **CLASS EMBLEMS** (ui.md 10-16): one icon per class (8, art first via skywynn-art) on Profiles / class pick / Class tab; wire the 35 approved ability icons in.
