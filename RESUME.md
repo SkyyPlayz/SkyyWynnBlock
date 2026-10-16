@@ -1,70 +1,47 @@
-# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + cook018 Cooking 0.1.8 )
+# SkyWynn - RESUME HERE (updated 2026-10-16 ~09:05 MDT: Skyy at work; Claude works the queue, stops new work at 95% weekly usage)
 
-Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
-`TEST-CHECKLIST.md`. History: `docs/log/2026-10.md` (2026-10-15 / 16 lines). Decisions word for word: `docs/answered/<topic>.md`.
+Big picture for other agents: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`.
+Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
 
 ## START HERE (new session)
-1. `git pull --rebase --autostash`; check usage (ccd get_usage). The weekly limit was hit once on 10-15 ~22:30 and Skyy reset it.
-2. DEPLOY TARGET IS THE WORLD **NewBetaTest** (`tools/deploy_set.py` WORLD; backup_deploy / smoke_test follow it). Skyy plays there with a
-   friend (WesleyPlayz, Assassin). The old world `HUD mod` is no longer deployed to.
-3. RUNNING (10-16 ~11:00): lean builder wd024 (SkyyWardrobe 0.2.4, NEXT 0)  [BEFORE PIN: also rename the /smithing CRAFT tab to SMITHING, gear.md 10-16 + Upgrade tab 8 rows per page (smaller icons/rows) + watering can hold-and-sweep like the hoe, no charge-up - lean follow-up on the 0.3.12 patch]
-   + workflow menu0330 (SkyyMenu 0.3.30: no duplicate icons / entries, menu scaled up, Home 'Right now' panel + the queued Menu items; ui.md 10-16) [BEFORE PIN: HUD shortcut opens the HUD editor directly, ui.md 10-16]; if this
-   session died, check their scratch / files, review, pin, deploy. SkyyEssentials 0.1.11 (crop fix) DEPLOYED 10-16 07:38 (TEST 140). SkyyHud 0.3.28 DEPLOYED 10-16 07:29 (TEST 139). Last deploys: 10-15 23:14 (TEST-CHECKLIST 137) and 10-16 05:31 (138).
-4. Kit `tools/skyyui.py` is now kit 1.6 (KIT_HUB_VERSION 1.6, KIT_VERSION still "1.5"): builds no longer need the old HEAD-kit preload.
-5. Rounds: saved workflow `skywynn-round` (Skyy's OWN words + the popup question in args.quotes; resuming a workflow needs the args
-   again). Deploy only with the game closed: backup -> smoke (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy.
-   Never SendMessage an agent inside a workflow (stop + relaunch); plain Agent builders can be messaged. Skyy answers popups.
+1. `git pull --rebase --autostash`; check usage (ccd get_usage).
+2. DEPLOY TARGET = world **NewBetaTest** (`tools/deploy_set.py` WORLD). Skyy plays with a friend (WesleyPlayz, Assassin).
+3. Deployed 10-16 (TEST-CHECKLIST 139-146): Hud 0.3.28, Essentials 0.1.11 (crops back - DynamicSeasons Compost_Soft), Menu 0.3.30, Cooking 0.1.8
+   (food families), Fishing 0.1.8 + Sacks 0.8.10 + Shards 0.4.1, Classes 0.1.30 + Trees 0.3.18 (top-down tree), Bazaar 0.1.15 (x4.5 prices,
+   sell per tab), Gear 0.3.12 (watering can + Harvester). deploy_set rules added: Sacks 0.8.10 needs Fishing 0.1.8; Trees 0.3.18 <-> Classes 0.1.30.
+4. Rounds: while Skyy is chatting about other topics, run builders as PLAIN Agents (workflow builders refuse - memory note) and spawn the
+   critics yourself; else the saved workflow `skywynn-round`. Deploy only with the game closed: backup -> smoke (`--allow-pack-api`) ->
+   deploy_set --yes -> record_deploy -> commit -> tidy. Never SendMessage an agent inside a workflow; plain Agent builders can be messaged.
 
-## NEXT (Skyy 2026-10-16: "watering can first then pet eggs")
-0. **Quick fix (RUNNING wd024):** SkyyWardrobe 0.2.4 - Requip ability area = the full class loadout: 4 rows (Ability 2 / 3 + crouch alts), each 1 ability + 2 modifier slots, clickable, saved per loadout, applied on Equip (bags.md 10-16, Skyy: "that was my bad").
-1. DONE 10-16: watering can + Harvester (SkyyGear 0.3.12, TEST 146).
-1a2. **ENCHANTED STICKS** (gear.md 10-16): new Enchanted Stick; later tool tier-ups (default T4+) need them. Ride the normal-tools round (SkyyGear).
-1b. **NORMAL TOOLS OFF EVERYWHERE** (gear.md 10-16, popups answered): no recipe / no crafting listing / no chest, Lost Loot, air-drop or mob
-   drop for normal pickaxes, hatchets, hoes, sickles, fishing rods, watering cans (shovels stay); pack mods' ones hidden at runtime by id; owned normal
-   tools removed once per profile; lifelong (stamped) tools untouched. FULL round (ultracode: item removal + several mods) right after gear0312 deploys.
-1c. **LIFELONG ACCESSORY BAG / POCKET DIMENSION / MENU ITEM + no 2nd bag on /island reset** (gear.md 10-16): like the forever tools - one per
-   profile, can't be lost, extras cleaned, a recall command each; island reset / kit never re-gives owned once-only items. FULL round (Accessories +
-   Sacks + Menu + Islands) after menu0330 deploys.
-1c3. RUNNING cook018 as a PLAIN Agent builder (workflow builders refused twice) (SkyyCooking 0.1.8): food families (Veggie HP / Fruit Mana / Meat Stamina / Mushroom Strength + Grain, Dairy-Egg-Fish own
-   families), faster eating that hits never cancel, no Sated, new dishes (skills.md 10-16). Bridge readers in Gear / Skills = follow-up.
-1c4. RUNNING lean compost01 (SkyyEssentials 0.1.11): ships the missing 'Compost_Soft' ResourceType so Dynamic Seasons 7.0.4 stops deleting 14 crops
-   + apples (economy.md 10-16). bz0115 is now a FULL round (order + prices x~4.4 except the 10-15 Eternal seeds).
-1e. **CLASS EMBLEMS** (ui.md 10-16): one icon per class (8, art first via skywynn-art) on Profiles / class pick / Class tab; wire the 35 approved ability icons in.
-1f0. RUNNING craft01 (plain Agent builder; critics after): Crafting hub + crafter look + /craft tier sort + furnace ADD FUEL + benches use the
-   Accessory Bag + Void DEPOSIT ALL (SkyySacks 0.8.11, SkyyAccessories 0.5.19, SkyyMenu 0.3.31). Covers 1f + 1f4 below.
-1f. **CRAFTING HUB** (ui.md 10-16 + LOCKED 10-10): hub tab Smithing -> CRAFTING with pages Crafting (/craft, SkyySacks; looks upgraded) + Smithing
-   (SkyyGear /smithing) + Furnace ADD FUEL picker sorted by amount owned (keep the quick bar) + every /craft tab sorted by tier (farming: crop, Enchanted, seeds, Eternal). Round after menu0330 + fish018 (Menu + Sacks + Gear).
-1f2. **SMELTING ACCESSORY** (gear.md 10-16): faster smelting, more fuel per tier; max tier -> infinite-fuel variant via the Charcoal collection.
-   Short spec, then a round after the Crafting hub (Accessories + Sacks furnace + Collections).
-1f4. **SACKS FOLLOW-UP** (bags.md 10-16, after fish018): benches count + take accessories from the Accessory Bag; Void page DEPOSIT ALL at the top = every bag, old button -> DEPOSIT <BAG>.
-1f3. **MOVEMENT vs THE ARMORY** (log scan 10-16): Armory's JumpHeightModifierSystem writes MovementSettings -> our speed/jump bonuses pause.
-   Make our movement protocol compose with it (SkyyCore / Skills / Accessories / Trees applier, no Armory file changes) + find the 230 client
-   'Equipment packet on the local player' WARNs. Lean/full round after cls0130 + gear0312.
-1g. **THE ARMORY GEAR INTO OUR SYSTEMS** (gear.md 10-16; plan research/Pack-Armor-Plan.md): runtime by id - Cloth/Light/Heavy + class weapons, our
-   rarity / modifiers / levels / reforge, drops from every source. ULTRACODE after the running rounds (Gear + Mobs + loot).
-2. RUNNING pets040 (plain Agent builder, ultracode-size; critics after) = R1 SkyyPets 0.4.0 eggs + hatching + pets page redesign. Art A0 DRAFT
-   committed (art/pet-eggs, class-emblems, Spellblade icons; sheets sent to Skyy).
-2. **PET EGGS + HATCHING** (research/Pet-Eggs-Spec.md; pets.md 10-15): 30 eggs (Mining / Farming / Foraging / Combat / Exploration x
-   Common..Mythic), roll 1 pet (best -> worst weights by egg rarity), roll 2 rarity, atomic hatch then ~3 s two-reel animation, sources
-   (skill drops, collections, crafting, shops). 5 questions open in OPEN-QUESTIONS.md with defaults - use the defaults unless Skyy answers.
-   Rounds A0 art, R1 SkyyPets 0.4.0 (ultracode; ALSO the Pets page redesign: per-pet icons, grid, full-stats flavor text, no OPEN page, role + area filters, pets.md 10-16), R2 Skills, R3 Bazaar + Merchants, R4 Collections.
-2b. RUNNING armory0129 (SkyyArmory 0.1.29: Great Shield, Crescent Rush lunge, Mage teleport look, Warrior Thrust) + wg071 (SkyyWorldGen
-   0.7.1: zones weather fix, Zone 1 = server spawn + /zone setlanding) - plain Agent builders, critics after.
-3. Then (queued): ONE SkyyArmory round = Great Shield (Spellblade: bash chain, full guard 70% melee / 100% projectiles, Bulwark Charge; research/classes/Spellblade.md) + Spellblade Crescent Rush = pushing lunge, not teleport (+ that teleport look onto the Mage teleport; classes.md 10-16) + Warrior sword Thrust dash range boost (classes.md LOCKED 2026-10-08; Skyy 10-16 'add the changes to the warrior traversal to the que, along with the great shield'); WorldGen 0.7.1 (zones-world weather list - vanilla
-   SensorWeather NPE; 'Zone 1 = server spawn' switch + /zone setlanding in the zones world, world.md 10-15); Menu 0.3.30 (Storage + World hub tiles get their OWN icons - they reuse Pocket Dimension / Teleport, Skyy 10-16 ui.md; Invite to Guild
-   button, Stats 'Health Regen' row from skill:fn:hpregen, 'Battlemagic' in CLASS_SKILLS, hub tab icons from art/hub-tab-icons/ as
-   <name>@2x.png); Accessories Regeneration onto skill:fn:hpregen; Trees health-regen nodes; small companions: SkyyPets POLL_SKILLS +
-   pets:fn:owned bridge, SkyyGuilds SKILL_NAMES (Spellblade), SkyyCollections maskOf (fabric not Smithing), Bazaar price guard reads our
-   standalone recipes, deploy_set tune_perfect_parries Spellblade / Longsword_* entry, tier tags T2-T4 (research/Tier-Tags-Plan.md).
-4. Later: Hubs H4-H7 (Sacks / Wardrobe / Gear / Accessories tabs into the hub bar), merge phases 2/3/8, SkyyZones server protection,
-   menu icon waves 2-5, Subcaverna as a later zone (licence check), load tests, release.
+## RUNNING NOW (plain Agent builders unless noted; if this session died: check their files, review, pin, deploy)
+- wd024 SkyyWardrobe 0.2.4 (Requip = full 4-row class loadout + modifiers, hoe into Requip, tier-up ghost tidy) - fixing the review's
+  run-once finding (persisted marker, History + Undo, no LL_CUT date).
+- craft01 SkyySacks 0.8.11 + SkyyAccessories 0.5.19 + SkyyMenu 0.3.31: Crafting hub (Smithing tab -> CRAFTING: Crafting + Smithing pages),
+  crafter look, /craft tier sort, furnace ADD FUEL picker (sorted by amount), benches use the Accessory Bag, Void DEPOSIT ALL at the top.
+- pets040 SkyyPets 0.4.0 = Pet Eggs R1 (eggs + hatching + Pets page grid / flavor text / filters). Art drafts in art/pet-eggs (sent to Skyy).
+- armory0129 SkyyArmory 0.1.29: Great Shield, Crescent Rush = pushing lunge, Mage teleport look, Warrior Thrust range.
+- wg071 SkyyWorldGen 0.7.1: zones-world weather fix + Zone 1 = server spawn switch + /zone setlanding.
+- tools01 SkyyGear 0.3.13 (+ Mobs / Exploration / Collections / Bazaar as needed): normal tools off everywhere (owned ones removed once)
+  + Enchanted Sticks for T4+ tool tier-ups.
 
-## What Skyy should test (TEST-CHECKLIST 137 + 138, world NewBetaTest)
-Battlemagic levelling, health regen, fortune card, Tools tab tier up, Home menu + Teleport centre, Smithing UPGRADE tab, sickle sweep +
-fewer sticks, pole in kit + no-tackle fishing, Crescent Rush + sword guard, Accessory Bag Craft tab + auto-equip + lanterns, Requip pet /
-ability slots, bag costs + space, Bazaar CONFIRM + prices, starter Accessory Bag, Assassin kunai, Tree
-Feller row III, /zone 1 (new zones world skywynn_zones2 with islets + waterfalls; /zone old6 = the old one). Scan both logs after play
-(Jev via tools/llm.py) and recycle old logs.
+## NEXT (after the running rounds; each answer word for word in docs/answered/)
+1. **Lifelong Accessory Bag / Pocket Dimension / Menu item + no 2nd bag on /island reset** (gear.md 10-16) - Accessories + Sacks + Menu +
+   Islands, after craft01.
+2. **Movement vs The Armory** (log 10-16): Armory's JumpHeightModifierSystem writes MovementSettings -> our speed / jump bonuses pause. Make our
+   movement protocol compose with it (SkyyCore / Skills / Accessories / Trees) + find the ~230 client 'Equipment packet on the local player' WARNs.
+3. **The Armory gear into our systems** (gear.md 10-16; research/Pack-Armor-Plan.md) - ultracode after tools01 (Gear + Mobs + loot).
+4. **Pet eggs R2-R4** (Skills drops, Bazaar + Merchants, Collections) after pets040.
+5. **Smelting accessory** (gear.md 10-16) - short spec, then Accessories + Sacks furnace + Collections, after craft01.
+6. **Food follow-up**: cook:fn:bonus bridge readers (SkyyGear Strength, SkyySkills food Mana Regen %) - spec in the 0.1.8 patch notes.
+7. **Class emblems in the UI** (art/class-emblems; the 7 were approved 10-06, Spellblade crest + 5 Spellblade ability icons are DRAFT) - wire into
+   Profiles / class pick / Class tab after Skyy looks at the sheets; wire the ability icons into the tree / loadout / HUD.
+8. Small companions (old item 3): Accessories Regeneration onto skill:fn:hpregen; Trees health-regen nodes; SkyyPets POLL_SKILLS + pets:fn:owned;
+   SkyyGuilds SKILL_NAMES (Spellblade); SkyyCollections maskOf (fabric not Smithing); deploy_set tune_perfect_parries Spellblade / Longsword_*;
+   tier tags T3 (Fishing / Accessories / Exploration / Shards own ladders); Bazaar follow-ups (Collections coin unlocks ~4.5x dearer).
+9. Later: Hubs H4-H7, merge phases 2/3/8, SkyyZones server protection, menu icon waves 2-5, Subcaverna zone (licence check), load tests, release.
+
+## What Skyy should test (TEST-CHECKLIST 137-146, world NewBetaTest)
+See TEST-CHECKLIST.md (one line per deploy). Scan both logs after play (Jev via tools/llm.py), fix ours, recycle old logs.
 
 ## Never forget
 - Commit ab75b6c: Skyy hand-edited 4 GENERATED scripts (`SkyySkills\build_skyyskills_0.4.5.py`, `SkyyTrees\build_skyytrees_0.2.3.py`,
