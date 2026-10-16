@@ -20,7 +20,7 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.29"), ("SkyySacks", "0.8.12"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.21"), ("SkyyParty", "0.1.9"),
-    ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.16"), ("SkyyGear", "0.3.13"), ("SkyySkills", "0.4.44"),
+    ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.16"), ("SkyyGear", "0.3.14"), ("SkyySkills", "0.4.44"),
     ("SkyyAccessories", "0.5.20"), ("SkyyClasses", "0.1.32"), ("SkyyMenu", "0.3.32"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
     ("SkyyCooking", "0.1.9"), ("SkyyTrees", "0.3.18"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -109,7 +109,7 @@ SET = [
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.29"),
+    ("SkyyArmory", "0.1.30"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
@@ -439,6 +439,11 @@ def main():
     # SkyyClasses 0.1.31 assigns them to the Spellblade + the armory:fn:mine / class:fn:momAdd Momentum bridge - deploy TOGETHER.
     if _v(_p.get("SkyyArmory", "0")) >= (0, 1, 29) and _v(_p.get("SkyyClasses", "0")) < (0, 1, 31):
         print("STOP: SkyyArmory 0.1.29 needs SkyyClasses 0.1.31+"); return 1
+    # farm01 (2026-10-16): SkyyGear 0.3.14 rolls boss Sigils + publishes gear:sigil:drops; SkyyArmory 0.1.30 skips its own boss roll while it is TRUE.
+    # Deploy TOGETHER (Armory 0.1.29 with Gear 0.3.14 = bosses roll Sigils twice). Rolling Armory back alone is safe (double roll again).
+    # Gear 0.3.14 merges hoe + sickle into the Harvester (History copy; /gear harvmerge undo <player> [force]).
+    if _v(_p.get("SkyyGear", "0")) >= (0, 3, 14) and "SkyyArmory" in _p and _v(_p.get("SkyyArmory", "0")) < (0, 1, 30):
+        print("STOP: SkyyGear 0.3.14 needs SkyyArmory 0.1.30+ (one boss Sigil roll)"); return 1
     # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
     # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep
