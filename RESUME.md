@@ -37,6 +37,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    d. Void Particles rebirth currency (spec update research/cloud/Rebirth-Spec.md, then a rebirth round).
    e. Totem workers scale + totem Fortune + totem page with upgrades + AUGMENT slots (Compactor, Chrono Stasis), totem-workbench crafting;
       totem tier-up costs by totem kind; REMOVE the MoreTotems fold (spec first).
+   g. BEASTMASTERY skill (skills.md 10-16): spec then Skills + Trees + Pets rounds.
+   h. Gathering stat lines on gear rolls / accessories / pets (gear.md GATHERING STAT SOURCES); four-power-sources rule.
    f. Small rounds: Exploration names (Loot Bag / Lost Treasure / Magic Box); /spawn for players (WorldGen 0.7.2); guild names with symbols;
       AH rebirth auto-claim; seeds / saplings Void toggles; hide vanilla pickup popup + restyle our feed; hub merges (Stats+Skills, Trees+
       Abilities, Collections+Recipes, Bank+Vault, Bazaar+AH); Sap Tapper extra sap counts; Tree Feller 8-number table; food Strength scales
