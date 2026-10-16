@@ -20,8 +20,8 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.29"), ("SkyySacks", "0.8.14"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.22"), ("SkyyParty", "0.1.9"),
-    ("SkyyBank", "0.1.15"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.17"), ("SkyyGear", "0.3.14"), ("SkyySkills", "0.4.45"),
-    ("SkyyAccessories", "0.5.21"), ("SkyyClasses", "0.1.33"), ("SkyyMenu", "0.3.33"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
+    ("SkyyBank", "0.1.15"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.17"), ("SkyyGear", "0.3.15"), ("SkyySkills", "0.4.45"),
+    ("SkyyAccessories", "0.5.21"), ("SkyyClasses", "0.1.33"), ("SkyyMenu", "0.3.34"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
     ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.19"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -453,6 +453,10 @@ def main():
     # and Sacks 0.8.13 deploy + roll back TOGETHER (mixed = /recipes registered twice or missing).
     if (_v(_p.get("SkyyCollections", "0")) >= (0, 2, 22)) != (_v(_p.get("SkyySacks", "0")) >= (0, 8, 13)):
         print("STOP: SkyyCollections 0.2.22 and SkyySacks 0.8.13 go together (/recipes)"); return 1
+    # smithhub (2026-10-16): SkyyGear 0.3.15 owns the Crafting-hub tabs (Smithing / Anvil with Identify merged / Upgrade = tools); SkyyMenu 0.3.34 drops
+    # its Identify + Auctions stand-ins and maps old shortcuts - deploy + roll back TOGETHER (mixed = missing or doubled Identify tab). No data change.
+    if (_v(_p.get("SkyyGear", "0")) >= (0, 3, 15)) != (_v(_p.get("SkyyMenu", "0")) >= (0, 3, 34)):
+        print("STOP: SkyyGear 0.3.15 and SkyyMenu 0.3.34 go together (Crafting hub tabs)"); return 1
     # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
     # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep

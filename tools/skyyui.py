@@ -6251,3 +6251,240 @@ public Object apply(Object o) {
   return Boolean.TRUE.equals(r) ? Boolean.FALSE : Boolean.TRUE;
 }""", ct))
     return ct
+
+
+# ================================================================= 2026-10-16 THE BIG HUB ROW (additive; KIT_VERSION / KIT_HUB_VERSION unchanged)
+# Skyy 2026-10-16 (SkyWynn Menu Home screenshot, its big row Home / Character / Storage / Market / Crafting / World / Social / Settings):
+# "its a little small in the crafting one though. keep this top bar at this size consistent at the top across every menu." -> ONE
+# reusable way to draw row 1 at EXACTLY the Home page's size and style (SkyyMenu 0.3.30+ MenuPage.bigRow: 48 px buttons 6 apart, 8 under
+# the row, padding 10 / 6, a 32 px item icon + 6 px gap, an 18 px bold label shrinking to 12; the kit's row button art, Primary for the
+# page's own hub, Tertiary for the rest). It sits in the page BODY (first child), above the hub's tab strip - the title bar keeps the
+# crest + the page title. Clicks send a = "hub:h:<id>" exactly like the kit 1.6 row, so HubBar.route(...) handles them unchanged.
+# Button width = (row width - 6 x (n - 1)) / n: the same as Home on a page as wide as Home (1552 px inside); a narrower page gets
+# narrower buttons of the same height, icon and font (assert_big_row_fits keeps every icon + title).
+# HOW A PAGE SWITCHES IT ON (one call each; nothing changes for a page that does not):
+#   1. SUI.install_hub_bar(pool, PKG + ".HubBar", CtField, CtNewMethod, row=True, big=True)   (big=True adds bigRow / bigRowFill)
+#   2a. a kit shell page:  sh = SUI.hub_big_shell(prefix, w, h, "<hub>")  (hub_shell + the big row in the body, above the strip;
+#       sh.inner_h is the room under both) and in build(): SUI.java_hub_build_big(sh, "<tab>", cls="@PKG@.HubBar")
+#   2b. a page with its own frame: in build(), where the old in-body tab row was: SUI.java_hub_big_row("<body id>", "<prefix>", "<hub>",
+#       w, cls="@PKG@.HubBar") then the kit strip (hub_bar_markup + HubBar.build2(..., parts without HUB_PART_ROW, rowW 0))
+#   3. handleDataEvent: HubBar.route(...) first (as kit 1.6).  Size check: SUI.assert_big_hub_page(w, h, old_title_h, hub, pad).
+# First user: SkyyGear 0.3.15 (its Smithing / Reforge / Upgrade / Identify pages, way 2b).
+BIG_ROW_H, BIG_ROW_GAP, BIG_ROW_BELOW, BIG_ROW_PAD, BIG_ROW_PADV = 48, 6, 8, 10, 6
+BIG_ROW_ICON, BIG_ROW_ICON_GAP, BIG_ROW_LABEL, BIG_ROW_LABEL_MIN, BIG_ROW_ICON_MIN = 32, 6, 18, 12, 120
+HUB_BIG_ROW_H = BIG_ROW_H + BIG_ROW_BELOW           # 56: what the row costs in a page body
+BIG_ROW_TITLES = tuple(HUB_ROW_TITLES) + ("Crafting",)   # every row title the row must fit (SkyyMenu titles the smithing hub Crafting)
+
+
+def big_row_label(selected):
+    """The big row's label style tuple (= SkyyMenu BR_LABSEL / BR_LABN)."""
+    return ("(FontSize: %d, TextColor: %s, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center, ShrinkTextToFit: true, "
+            "MinShrinkTextToFitFontSize: %d)" % (BIG_ROW_LABEL, color("buttonText" if selected else "button2Text"), BIG_ROW_LABEL_MIN))
+
+
+def big_row_group(prefix):
+    """The big row's static group #<prefix>BigRow (48 high, 8 under it, LayoutMode Left) - HubBar.bigRowFill fills it."""
+    check_id(prefix)
+    return "Group #%sBigRow { Anchor: (Height: %d, Bottom: %d); LayoutMode: Left; }" % (prefix, BIG_ROW_H, BIG_ROW_BELOW)
+
+
+def big_row_button_width(w, n):
+    return w if n < 1 else (w - BIG_ROW_GAP * (n - 1)) // n
+
+
+def assert_big_row_fits(w, n=None, titles=None):
+    """Assert the big row (n buttons, default Home + 7 hubs) shows every icon (button >= BIG_ROW_ICON_MIN) and every title fits beside its
+    icon at the 12 px floor in a row w px wide. Returns the button width."""
+    titles = list(titles if titles is not None else BIG_ROW_TITLES)
+    n = len(HUB_ROW_IDS) if n is None else n
+    bw = big_row_button_width(_sample_int(w, "big row width"), n)
+    if bw < BIG_ROW_ICON_MIN:
+        raise ValueError("big hub row: %d buttons in %d px are %d px each (icons need %d)" % (n, w, bw, BIG_ROW_ICON_MIN))
+    room = bw - 2 * BIG_ROW_PAD - BIG_ROW_ICON - BIG_ROW_ICON_GAP
+    for t_ in titles:
+        if text_width(hub_clean(t_), BIG_ROW_LABEL_MIN, bold=True) > room:
+            raise ValueError("big hub row: %r does not fit a %d px label at %d px (button %d px)" % (t_, room, BIG_ROW_LABEL_MIN, bw))
+    return bw
+
+
+def assert_big_hub_page(w, h, old_title_h=0, hub=None, pad=CONTENT_PAD, theme=None):
+    """A page that gets the big row (56) AND the tab strip (52) in its body, losing an old in-body row of old_title_h: asserts the new size
+    fits 1080p (assert_page_size), the hub's contract tabs fit the strip (w - 2 x pad) and the big row fits (w - 2 x pad). Returns (w, new h)."""
+    ws, nh = assert_hub_page(w, _sample_int(h, "page height") + HUB_BIG_ROW_H, old_title_h=old_title_h, hub=hub, pad=pad, theme=theme)
+    assert_big_row_fits(ws - 2 * pad)
+    return ws, nh
+
+
+def hub_big_row_preview(prefix, hubs, my_hub, w, parent=None, theme=None):
+    """The Python twin of HubBar.bigRow (parent given: the group too) / bigRowFill (parent None): Appends for hubs = [(id, title, icon item
+    id)] (the hub:def entries in HUB_ROW_IDS order), the active my_hub, a row w px wide."""
+    t = HUB_THEME if theme is None else theme
+    row = prefix + "BigRow"
+    ap = Appends()
+    if parent is not None:
+        ap.append((parent, big_row_group(prefix)))
+    rows = [(i, hub_clean(tt), ic) for i, tt, ic in hubs if hub_clean(tt)]
+    if not rows:
+        ttl = dict(zip(HUB_ROW_IDS, HUB_ROW_TITLES)).get(my_hub, "")
+        ap.append((row, 'Label #%sBigRowT { Anchor: (Width: %d, Height: %d); Text: "%s"; Style: %s; }' % (
+            prefix, w, BIG_ROW_H, hub_clean(ttl), big_row_label(True))))
+        return ap
+    bw = big_row_button_width(w, len(rows))
+    icons = bw >= BIG_ROW_ICON_MIN
+    for k, (i, tt, ic) in enumerate(rows):
+        sel = i == my_hub
+        if k:
+            ap.append((row, "Group { Anchor: (Width: %d); }" % BIG_ROW_GAP))
+        bid = "%sBigR%d" % (prefix, k)
+        ap.append((row, "Button #%s { Anchor: (Width: %d, Height: %d); LayoutMode: Left; Padding: (Horizontal: %d, Vertical: %d); %s }" % (
+            bid, bw, BIG_ROW_H, BIG_ROW_PAD, BIG_ROW_PADV, _row_style(sel, t))))
+        lw = bw - 2 * BIG_ROW_PAD
+        if icons and re.fullmatch(r"[A-Za-z0-9_]{1,64}", ic or ""):
+            ap.append((bid, 'ItemIcon { Anchor: (Width: %d, Height: %d); ItemId: "%s"; }' % (BIG_ROW_ICON, BIG_ROW_ICON, ic)))
+            ap.append((bid, "Group { Anchor: (Width: %d); }" % BIG_ROW_ICON_GAP))
+            lw = lw - BIG_ROW_ICON - BIG_ROW_ICON_GAP
+        ap.append((bid, 'Label { Anchor: (Width: %d); Text: "%s"; Style: %s; }' % (lw, tt, big_row_label(sel))))
+    return ap
+
+
+def _hub_big_rep():
+    return {"@BRH@": str(BIG_ROW_H), "@BRGAP@": str(BIG_ROW_GAP), "@BRBELOW@": str(BIG_ROW_BELOW), "@BRPAD@": str(BIG_ROW_PAD),
+            "@BRPADV@": str(BIG_ROW_PADV), "@BRICON@": str(BIG_ROW_ICON), "@BRICONGAP@": str(BIG_ROW_ICON_GAP),
+            "@BRICONMIN@": str(BIG_ROW_ICON_MIN), "@BRLAB@": java_lit(big_row_label(False)), "@BRLABSEL@": java_lit(big_row_label(True))}
+
+
+# HubBar members of the big row (install_hub_bar(..., row=True, big=True)): appended after the kit 1.6 members (they call hubs / clean /
+# titleOf / rowStyle / okItem). bigRowFill fills #<prefix>BigRow; bigRow appends that group into parent first. Both return the buttons drawn.
+HUB_BAR_JAVA_BIG = (
+    ("method", "public static String bigLab(boolean sel) { return sel ? @BRLABSEL@ : @BRLAB@; }"),
+    ("method", r"""
+public static int bigRowFill(@UCB@ b, @UEB@ ev, String prefix, String myHub, int w) {
+  java.util.ArrayList h = hubs();
+  int n = h.size();
+  String row = "#" + prefix + "BigRow";
+  if (n == 0) {
+    b.appendInline(row, "Label #" + prefix + "BigRowT { Anchor: (Width: " + w + ", Height: @BRH@); Text: \"" + clean(titleOf(myHub)) + "\"; Style: " + bigLab(true) + "; }");
+    return 0;
+  }
+  int bw = (w - @BRGAP@ * (n - 1)) / n;
+  boolean icons = bw >= @BRICONMIN@;
+  for (int i = 0; i < n; i++) {
+    Object[] e = (Object[]) h.get(i);
+    String id = (String) e[0];
+    boolean sel = id.equals(myHub);
+    if (i > 0) b.appendInline(row, "Group { Anchor: (Width: @BRGAP@); }");
+    String bid = prefix + "BigR" + i;
+    b.appendInline(row, "Button #" + bid + " { Anchor: (Width: " + bw + ", Height: @BRH@); LayoutMode: Left; Padding: (Horizontal: @BRPAD@, Vertical: @BRPADV@); " + rowStyle(sel) + " }");
+    String ic = (String) e[2];
+    int lw = bw - 2 * @BRPAD@;
+    if (icons && okItem(ic)) {
+      b.appendInline("#" + bid, "ItemIcon { Anchor: (Width: @BRICON@, Height: @BRICON@); ItemId: \"" + ic + "\"; }");
+      b.appendInline("#" + bid, "Group { Anchor: (Width: @BRICONGAP@); }");
+      lw = lw - @BRICON@ - @BRICONGAP@;
+    }
+    b.appendInline("#" + bid, "Label { Anchor: (Width: " + lw + "); Text: \"" + (String) e[1] + "\"; Style: " + bigLab(sel) + "; }");
+    ev.addEventBinding(@BT@.Activating, "#" + bid, @EVD@.of("a", "hub:h:" + id));
+  }
+  return n;
+}"""),
+    ("method", r"""
+public static int bigRow(@UCB@ b, @UEB@ ev, String parent, String prefix, String myHub, int w) {
+  b.appendInline(parent, "Group #" + prefix + "BigRow { Anchor: (Height: @BRH@, Bottom: @BRBELOW@); LayoutMode: Left; }");
+  return bigRowFill(b, ev, prefix, myHub, w);
+}"""),
+)
+
+_hub_bar_java_plain = hub_bar_java
+_install_hub_bar_plain = install_hub_bar
+
+
+def hub_bar_java(theme=None, types=None, row=False, sub=False, big=False):
+    """hub_bar_java (see above) + big=True: HUB_BAR_JAVA_BIG after everything (needs row=True). big=False = the source exactly as before."""
+    out = _hub_bar_java_plain(theme, types, row=row, sub=sub)
+    if not big:
+        return out
+    if not row:
+        raise ValueError("hub_bar_java(big=True) needs row=True (the big row uses the kit 1.6 hubs / rowStyle / okItem)")
+    rep = dict(_hub_big_rep())
+    for k, v in dict(HUB_TYPES, **(types or {})).items():
+        rep["@%s@" % k] = v
+    for kind, src in HUB_BAR_JAVA_BIG:
+        s = src.strip()
+        for k in sorted(rep, key=len, reverse=True):
+            s = s.replace(k, rep[k])
+        if re.search(r"@[A-Z]+@", s):
+            raise ValueError("hub_bar_java: unfilled placeholder in %s" % s[:80])
+        out.append((kind, s))
+    return out
+
+
+def install_hub_bar(pool, cls_name, CtField, CtNewMethod, theme=None, types=None, row=False, sub=False, big=False):
+    """install_hub_bar (see above) + big=True: the big row methods (HubBar.bigRow / bigRowFill) too. big=False = exactly as before."""
+    ct = pool.makeClass(cls_name)
+    for kind, src in hub_bar_java(theme, types, row=row, sub=sub, big=big):
+        if kind == "field":
+            ct.addField(CtField.make(src, ct))
+        else:
+            ct.addMethod(CtNewMethod.make(src, ct))
+    return ct
+
+
+def java_hub_big_row(parent, prefix, hub, w, b="b", ev="ev", cls="HubBar"):
+    """The Java statement that appends the big row into parent (a body id, '#' optional) and fills it: cls.bigRow(b, ev, "#<parent>",
+    "<prefix>", "<hub>", w). Its clicks (a = "hub:h:<id>") go through HubBar.route."""
+    check_id(prefix)
+    p = parent if parent.startswith("#") else "#" + parent
+    check_id(p[1:])
+    if hub not in HUBS and hub != HUB_HOME:
+        raise ValueError("hub %r" % (hub,))
+    assert_big_row_fits(w)
+    return "%s.bigRow(%s, %s, %s, %s, %s, %d);" % (cls, b, ev, java_lit(p), java_lit(prefix), java_lit(hub), w)
+
+
+def hub_big_shell(prefix, w, h, hub, theme=None, body_id=None, close=True, layout="Top", title=None):
+    """hub_shell (no "< Menu", the crest + the hub title in the 38 px bar) + the big row as the body's FIRST child (above the tab strip).
+    .big_w = the row width (inner_w), .inner_h = the room under the row AND the strip, .parts = the close X only. Java: java_hub_build_big."""
+    sh = hub_shell(prefix, w, h, hub, theme=theme, body_id=body_id, menu=False, close=close, layout=layout, title=title)
+    strip = "Group #%sHubTabs {" % prefix
+    k = [i for i, (_p, mk) in enumerate(sh.appends) if _p == sh.body and mk.startswith(strip)]
+    if len(k) != 1:
+        raise ValueError("hub_big_shell: the strip of %s is not in the body" % prefix)
+    assert_big_row_fits(sh.inner_w)
+    ap = Appends(list(sh.appends[:k[0]]) + [(sh.body, big_row_group(prefix))] + list(sh.appends[k[0]:]))
+    kw = dict(sh.__dict__)
+    kw.pop("sets", None)
+    kw.update(appends=ap, inner_h=sh.inner_h - HUB_BIG_ROW_H, kind="hubbig", big=True, big_w=sh.inner_w, row=False, row_w=0,
+              parts=HUB_PART_CLOSE if close else 0)
+    if kw["inner_h"] < 20:
+        raise ValueError("hub page %d high leaves no body under the big row" % h)
+    return Shell(**kw)
+
+
+def java_hub_build_big(sh, my_tab, uuid="this.playerRef.getUuid()", b="b", ev="ev", cls="HubBar"):
+    """build() of a hub_big_shell page: the big row (bigRowFill), the X binding and the tab strip (build2 without its small row)."""
+    if not getattr(sh, "big", False):
+        raise ValueError("java_hub_build_big needs a hub_big_shell Shell")
+    return "%s.bigRowFill(%s, %s, %s, %s, %d); %s.build2(%s, %s, %s, %s, %s, %d, %s, %d, 0);" % (
+        cls, b, ev, java_lit(sh.prefix), java_lit(sh.hub), sh.big_w, cls, b, ev, java_lit(sh.prefix), java_lit(sh.hub),
+        java_lit(hub_check_id(my_tab)), sh.tabs_w, uuid, sh.parts)
+
+
+# ================================================================= 2026-10-16 MARKET MERGE data (additive; the HUB_TABS rows are unchanged)
+# Bazaar 0.1.17 + Auctions 0.1.9: one MARKET tab (id bazaar) with a Bazaar | Auction House switch; the Auctions tab is part of it.
+# HUB_TABS keeps its "Bazaar" row text (SkyyBazaar 0.1.17's build asserts it); the label players see NOW is hub_tab_label().
+HUB_TAB_LABEL_NOW = {("market", "bazaar"): "Market",
+                     ("smithing", "recipes"): "Crafting", ("smithing", "gear"): "Smithing",   # SkyyMenu 0.3.31 / SkyySacks 0.8.11
+                     ("smithing", "reforge"): "Anvil"}      # Skyy 2026-10-16 "Crafting / Smithing / Anvil (Reforge + Identify inside) / Upgrade (your tools)"
+HUB_MERGED = HUB_MERGED + (("market", "auctions", "bazaar"),       # the Auction House = part of the Market tab
+                           ("smithing", "identify", "reforge"))    # Identify = a view inside the Anvil tab (SkyyGear 0.3.15)
+for _h, _t, _x in HUB_MERGED:
+    assert _x not in [_r[1] for _r in HUB_MERGED if _r[0] == _h], "a merged tab's host is never itself merged"
+    assert (_h, _t) in [(r[0], r[1]) for r in HUB_TABS] and (_h, _x) in [(r[0], r[1]) for r in HUB_TABS] and _t != _x
+
+
+def hub_tab_label(hub, tab):
+    """the label a contract tab shows today (HUB_TAB_LABEL_NOW, else its HUB_TABS label); None = no such contract tab"""
+    for r in HUB_TABS:
+        if (r[0], r[1]) == (hub, tab):
+            return HUB_TAB_LABEL_NOW.get((hub, tab), r[4])
+    return None
