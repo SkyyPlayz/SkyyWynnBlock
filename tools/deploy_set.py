@@ -22,14 +22,14 @@ SET = [
     ("SkyyHud", "0.3.29"), ("SkyySacks", "0.8.12"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.20"), ("SkyyParty", "0.1.9"),
     ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.16"), ("SkyyGear", "0.3.13"), ("SkyySkills", "0.4.44"),
     ("SkyyAccessories", "0.5.20"), ("SkyyClasses", "0.1.32"), ("SkyyMenu", "0.3.32"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
-    ("SkyyCooking", "0.1.8"), ("SkyyTrees", "0.3.18"),
+    ("SkyyCooking", "0.1.9"), ("SkyyTrees", "0.3.18"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
-    ("SkyyExploration", "0.2.11"),
+    ("SkyyExploration", "0.2.12"),
     # party + guild round (Skyy 2026-09-24, 2-player test): SkyyHud's Party + Guild widgets read only the bridge keys SkyyParty 0.1.3
     # (party:fn:members / party:leader / party:name / party:stats) and SkyyGuilds (guild:<uuid> / guild:info / guild:fn:online) publish
-    ("SkyyGuilds", "0.1.9"),
+    ("SkyyGuilds", "0.1.10"),
     # beta backlog round (Skyy 2026-09-24 20:10 list, cross-checked together): SkyySkills 0.4.2 + SkyyTrees 0.2.1 + SkyyCollections
     # 0.2.1 deploy TOGETHER (felled-log crediting: Skills -> coll:fn:add "skills:felled" + skill:on:felled; Double Jump: Trees posts
     # skill:bonus "doublejump.acrobatics", Skills publishes skill:dj:key); SkyyTrees 0.2.1 rewrites Acrobatics.RDodge as RDouble on
@@ -69,7 +69,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.9"), ("SkyyWorldGen", "0.7.1"),
+    ("SkyyMobs", "0.1.9"), ("SkyyWorldGen", "0.7.2"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
