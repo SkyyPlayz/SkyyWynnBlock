@@ -4788,17 +4788,22 @@ def sky_verify(art_dir=None, quiet=True):
 _SKY_PATH_RE = re.compile(r'"((?:\.\./)*)((?:[A-Za-z0-9_]+/)*)([A-Za-z0-9_@]+)\.(png|ogg)"')
 
 
-def check_sky_paths(markups, outside_ok=False):
+def check_sky_paths(markups, outside_ok=False, tab_icons=False):
     """The sky-path rules on markups (str / Choice / Appends / Shell / lists): every quoted .png / .ogg path stays INSIDE the
     custom root (no "../": a SkyyKit path outside Common/UI/Custom disconnects the client - probe k1b; outside_ok=True allows
     the vanilla "../ItemQualities" frames only), every "SkyyKit/..." path is exactly SkyyKit/<Element>.png of a kit element, and
-    every other path is one verify() proves (TEX / SND). Returns the sorted kit elements used."""
+    every other path is one verify() proves (TEX / SND). Kit 1.6: tab_icons=True also accepts the hub tab icon hook paths
+    "SkyyHubTabs/<hub>_<tab>.png" / "..._on.png" (hub_tab_icon_ok; the art ships with the mod that names it). Returns the sorted
+    kit elements used."""
     known = set(TEX.values()) | set(SND.values())
     used = set()
     for mk in _flat_markups(markups):
         for m in _SKY_PATH_RE.finditer(render(mk)):
             up, folder, name, ext = m.groups()
             path = up + folder + name + "." + ext
+            if tab_icons and not up and folder == HUB_TAB_ICON_DIR and ext == "png" and hub_tab_icon_ok(
+                    name[:-3] if name.endswith("_on") else name):
+                continue
             if "SkyyKit/" in folder:
                 if up or folder != SKY_DIR:
                     raise ValueError("kit texture %s must be written SkyyKit/<Element>.png, inside Common/UI/Custom (a path outside "
@@ -5148,14 +5153,18 @@ def theme_tab_style(selected=False, theme=None):
     if t == "vanilla":
         return button_style("primary" if selected else "secondary", "normal")
     T = THEME["sky"]
-    lab = ("(FontSize: %d, TextColor: %s, RenderBold: true, HorizontalAlignment: Center, ShrinkTextToFit: true, "
-           "MinShrinkTextToFitFontSize: 12, VerticalAlignment: Center)" % (HUB_TAB_LABEL, color("buttonText")))
+    lab = _tab_label()
     st = lambda bg: "(Background: %s, LabelStyle: %s)" % (bg, lab)
     if selected:
         s = st(T["tabSelected"])
         return "Style: TextButtonStyle(Default: %s, Hovered: %s, Pressed: %s, Sounds: %s);" % (s, s, s, sounds("light"))
     return "Style: TextButtonStyle(Default: %s, Hovered: %s, Pressed: %s, Sounds: %s);" % (
         st(T["tab"]), st(T["tabHovered"]), st(T["tabPressed"]), sounds("light"))
+
+
+def _tab_label():
+    return ("(FontSize: %d, TextColor: %s, RenderBold: true, HorizontalAlignment: Center, ShrinkTextToFit: true, "
+            "MinShrinkTextToFitFontSize: 12, VerticalAlignment: Center)" % (HUB_TAB_LABEL, color("buttonText")))
 
 
 def hub_bar_markup(parent, prefix, w=None):
@@ -5185,54 +5194,70 @@ def hub_close(prefix, theme=None):
             % (check_id(prefix), CLOSE_SIZE, CLOSE_SIZE, T["close"], T["closeHovered"], T["closePressed"], sounds("cancel")))
 
 
-def hub_shell(prefix, w, h, hub, theme=None, body_id=None, menu=True, close=True, layout="Top", title=None):
+def hub_shell(prefix, w, h, hub, theme=None, body_id=None, menu=True, close=True, layout="Top", title=None, row=False):
     """A hub page window: page_shell's shape in the hub's theme (sky: Header title bar + HeaderOrnament crest, the hub's Frame
     mood, padding 24; vanilla: the decorated container) + the hub title in the bar + "< Menu" (menu=True) + the close X
     (close=True) + the tab strip as the first child of the body. Asserts the hub's contract tabs fit. The returned Shell has
     .hub, .theme, .tabs (the strip id), .tabs_w (the width to pass to HubBar.build), .parts (HUB_PART_* bits) and .inner_h = the
-    height left UNDER the bar. Build the page body into .body after the shell's appends; the Java line: java_hub_build(shell, tab)."""
-    if hub not in HUBS:
-        raise ValueError("hub %r (one of %s)" % (hub, ", ".join(HUBS)))
+    height left UNDER the bar. Build the page body into .body after the shell's appends; the Java line: java_hub_build(shell, tab).
+    Kit 1.6: row=True = the 38 px title bar holds ROW 1 (#<prefix>HubRow: Home + the hubs) instead of "< Menu" + the title + the
+    crest (menu / title ignored) - same height, so assert_hub_page sizes are unchanged. hub = a hub (the tab strip follows as the
+    body's first child, as in kit 1.5) or "home" (SkyyMenu's Home: no tab strip, the plain sky Frame). The row Shell has .row (True),
+    .row_w (pass to build2), .row_id, .parts (HUB_PART_ROW | close), .tabs / .tabs_w (None / 0 for home), .inner_h under the strip."""
+    if hub not in HUBS and not (row and hub == HUB_HOME):
+        raise ValueError("hub %r (one of %s%s)" % (hub, ", ".join(HUBS), (", or " + HUB_HOME) if row else ""))
     t = _theme(HUB_THEME if theme is None else theme)
     check_id(prefix)
     ws, hs = assert_page_size(w, h)
     pad = THEME_PAD[t]
     root, barid, tid = prefix, prefix + "Bar", prefix + "Title"
     body = check_id(body_id or prefix + "Body")
-    text = title if title is not None else HUB_DEFS[hub][0]
     T = THEME[t]
-    ow, oh, otop = THEME_ORNAMENT[t]
-    frame = sky_patch(HUB_FRAME[hub]) if t == "sky" else T["frame"]
+    frame = sky_patch(HUB_FRAME.get(hub, "Frame")) if t == "sky" else T["frame"]
+    if row:
+        rw = hub_row_width(ws)
+        assert_hub_row_fits(rw, theme=t)
     ap = Appends()
     ap.append((None, "Group #%s { Anchor: (Width: %d, Height: %d); }" % (root, ws, hs)))
-    ap.append((root, "Group #%s { Anchor: (Height: %d, Top: 0); Padding: (Top: %d); Background: %s; Group { Anchor: (Width: %d, "
-                     "Height: %d, Top: %d); Background: %s; } %s }" % (barid, TITLE_H, TITLE_PAD_TOP, T["header"], ow, oh, otop,
-                                                                       T["ornament"], title_label(tid, text))))
-    if menu:
-        ap.append((barid, hub_menu_button(prefix, t)))
+    if row:
+        ap.append((root, "Group #%s { Anchor: (Height: %d, Top: 0); Padding: (Top: %d); Background: %s; }" % (barid, TITLE_H, TITLE_PAD_TOP,
+                                                                                                              T["header"])))
+        ap.extend(hub_row_markup(barid, prefix, rw))
+    else:
+        ow, oh, otop = THEME_ORNAMENT[t]
+        text = title if title is not None else HUB_DEFS[hub][0]
+        ap.append((root, "Group #%s { Anchor: (Height: %d, Top: 0); Padding: (Top: %d); Background: %s; Group { Anchor: (Width: %d, "
+                         "Height: %d, Top: %d); Background: %s; } %s }" % (barid, TITLE_H, TITLE_PAD_TOP, T["header"], ow, oh, otop,
+                                                                           T["ornament"], title_label(tid, text))))
+        if menu:
+            ap.append((barid, hub_menu_button(prefix, t)))
     ap.append((root, "Group #%s { Anchor: (Top: %d); %s%sBackground: %s; }" % (body, TITLE_H, _layout(layout), _padding(pad), frame)))
     if t == "vanilla":
         ap.append((root, 'Group { Anchor: (Width: %d, Height: %d, Bottom: %d); Background: "%s"; }' % (
             DECO_W, DECO_H, DECO_BOTTOM, TEX["decoBottom"])))
-    ap.extend(hub_bar_markup(body, prefix))
+    tabs = hub != HUB_HOME
+    if tabs:
+        ap.extend(hub_bar_markup(body, prefix))
     if close:
         ap.append((root, hub_close(prefix, t)))
     inner_w = ws - 2 * pad
-    assert_hub_fits(hub, inner_w, t)
-    inner_h = hs - TITLE_H - 2 * pad - HUB_BAR_H
+    if tabs:
+        assert_hub_fits(hub, inner_w, t)
+    inner_h = hs - TITLE_H - 2 * pad - (HUB_BAR_H if tabs else 0)
     if inner_h < 20:
         raise ValueError("hub page %d high leaves no body under the bar" % hs)
-    return Shell(prefix=prefix, w=ws, h=hs, pad=pad, kind="hub", root=root, bar=barid, title=tid, body=body,
-                 close=(prefix + "HubClose") if close else None, appends=ap, inner_w=inner_w, body_h=hs - TITLE_H,
-                 inner_h=inner_h, hub=hub, theme=t, tabs=prefix + "HubTabs", tabs_w=inner_w,
-                 parts=(HUB_PART_MENU if menu else 0) | (HUB_PART_CLOSE if close else 0))
+    kw = dict(prefix=prefix, w=ws, h=hs, pad=pad, kind="hub", root=root, bar=barid, title=tid, body=body,
+              close=(prefix + "HubClose") if close else None, appends=ap, inner_w=inner_w, body_h=hs - TITLE_H,
+              inner_h=inner_h, hub=hub, theme=t, tabs=prefix + "HubTabs", tabs_w=inner_w,
+              parts=(HUB_PART_MENU if menu else 0) | (HUB_PART_CLOSE if close else 0))
+    if row:
+        kw.update(kind="hubrow", title=None, tabs=(prefix + "HubTabs") if tabs else None, tabs_w=inner_w if tabs else 0,
+                  parts=HUB_PART_ROW | (HUB_PART_CLOSE if close else 0), row=True, row_w=rw, row_id=prefix + "HubRow")
+    return Shell(**kw)
 
 
-def hub_bar_preview(prefix, tabs, my_tab, w, theme=None):
-    """The Python twin of HubBar.build: Appends of what it appends into #<prefix>HubTabs for tabs = [(tab id, label, order)] (the
-    visible registry entries), the active tab my_tab and a strip w px wide - the same sort (order, then id), the same overflow
-    rule (hub_max_tabs; the active tab is kept), the same markup strings. tools/test_skyyui_hubs.py compares the two."""
-    t = HUB_THEME if theme is None else theme
+def _tab_rows(tabs, my_tab, w, t):
+    """The tabs a strip w px wide draws: [(order, id, label)] sorted (order, then id), capped at hub_max_tabs (the active tab kept)."""
     rows = sorted([(o, i, l) for i, l, o in tabs if HUB_ID_RE.fullmatch(i) and i not in HUB_RESERVED_IDS])
     cap = hub_max_tabs(w, t)
     if len(rows) > cap:
@@ -5241,6 +5266,15 @@ def hub_bar_preview(prefix, tabs, my_tab, w, theme=None):
         if mine and mine[-1] >= cap:
             keep[cap - 1] = rows[mine[-1]]
         rows = keep
+    return rows
+
+
+def hub_bar_preview(prefix, tabs, my_tab, w, theme=None):
+    """The Python twin of HubBar.build: Appends of what it appends into #<prefix>HubTabs for tabs = [(tab id, label, order)] (the
+    visible registry entries), the active tab my_tab and a strip w px wide - the same sort (order, then id), the same overflow
+    rule (hub_max_tabs; the active tab is kept), the same markup strings. tools/test_skyyui_hubs.py compares the two."""
+    t = HUB_THEME if theme is None else theme
+    rows = _tab_rows(tabs, my_tab, w, t)
     strip = prefix + "HubTabs"
     ap = Appends()
     if not rows:
@@ -5515,19 +5549,23 @@ public static String handle(@PR@ pr, String data, String hub, String myTab) {
 )
 
 
-def hub_bar_java(theme=None, types=None):
+def hub_bar_java(theme=None, types=None, row=False):
     """HUB_BAR_JAVA with its placeholders filled: [(kind "field" / "method", Java source)] in dependency order. theme = the tab
-    look (default HUB_THEME); types = engine class overrides (HUB_TYPES keys). Needs a passing verify() (+ the sky art check)."""
+    look (default HUB_THEME); types = engine class overrides (HUB_TYPES keys). Needs a passing verify() (+ the sky art check).
+    Kit 1.6: row=True appends HUB_BAR_JAVA_16 (the hub row, tab icons, default tab, build2 / route / goHub) - row=False is the
+    kit 1.5 source unchanged."""
     require_verified()
     t = _theme(HUB_THEME if theme is None else theme)
     ty = dict(HUB_TYPES, **(types or {}))
     rep = {"@GAP@": str(HUB_TAB_GAP), "@TABH@": str(HUB_TAB_H), "@TABMIN@": str(THEME_TAB_MIN[t]), "@TABPAD@": str(HUB_TAB_PAD),
            "@LABELMAX@": str(HUB_LABEL_MAX), "@TABSTYLE@": java_lit(theme_tab_style(False, t)),
            "@TABSEL@": java_lit(theme_tab_style(True, t))}
+    if row:
+        rep.update(_hub_row_rep(t))
     for k, v in ty.items():
         rep["@%s@" % k] = v
     out = []
-    for kind, src in HUB_BAR_JAVA:
+    for kind, src in (HUB_BAR_JAVA + HUB_BAR_JAVA_16) if row else HUB_BAR_JAVA:
         s = src.strip()
         for k in sorted(rep, key=len, reverse=True):
             s = s.replace(k, rep[k])
@@ -5537,11 +5575,11 @@ def hub_bar_java(theme=None, types=None):
     return out
 
 
-def install_hub_bar(pool, cls_name, CtField, CtNewMethod, theme=None, types=None):
+def install_hub_bar(pool, cls_name, CtField, CtNewMethod, theme=None, types=None, row=False):
     """Make the class cls_name (e.g. PKG + ".HubBar") in a javassist pool from hub_bar_java() and return the CtClass (write it
-    with the mod's other classes: ct.writeFile(OUT))."""
+    with the mod's other classes: ct.writeFile(OUT)). Kit 1.6: row=True = the class with the hub row methods too."""
     ct = pool.makeClass(cls_name)
-    for kind, src in hub_bar_java(theme, types):
+    for kind, src in hub_bar_java(theme, types, row=row):
         if kind == "field":
             ct.addField(CtField.make(src, ct))
         else:
@@ -5556,6 +5594,8 @@ def java_hub_build(prefix, my_tab, hub=None, w=None, parts=None, uuid="this.play
     (e.g. "@PKG@.HubBar")."""
     if isinstance(prefix, Shell):
         sh = prefix
+        if getattr(sh, "row", False):
+            return java_hub_build2(sh, my_tab, uuid=uuid, b=b, ev=ev, cls=cls)
         prefix, hub = sh.prefix, sh.hub if hub is None else hub
         w = sh.tabs_w if w is None else w
         parts = sh.parts if parts is None else parts
@@ -5641,3 +5681,412 @@ def core_ui_java():
     """SkyyCore's com.skyy.core.ui.UiKit: java_status_methods("colorOf", "textOf") + java_grid_methods("grid") (the same source the
     kit emits into a page), as one shared class."""
     return list(java_status_methods("colorOf", "textOf")) + list(java_grid_methods("grid"))
+
+
+# ================================================================= kit 1.6 (2026-10-15, research/Unified-Menu-Plan.md U1) - ADDITIVE ONLY
+# Skyy 2026-10-15 (docs/answered/ui.md UNIFIED MENU LAYOUT): "combined D and A ... with the bub row up top" + tabs "Icon first, themed later".
+# Everything below is opt-in: hub_shell(..., row=True), install_hub_bar(..., row=True), java_hub_build on a row Shell,
+# check_sky_paths(..., tab_icons=True). With the defaults every kit 1.5 builder above builds byte-identical (KIT_VERSION stays "1.5":
+# 41 builders assert == "1.5"; KIT_HUB_VERSION names this level). tools/HUBS-CONTRACT.md "Kit 1.6"; test: python tools/test_skyyui_hubs.py.
+#  - ROW 1 = the hubs: Home + every hub:def:<hub> SkyyMenu publishes (HUB_ROW_IDS order), icon (the def's item id) + label, the active
+#    one Primary, in the 38 px title bar where "< Menu" + the title were (the page does NOT grow). Clicks send a = "hub:h:<id>";
+#    HubBar.route() handles them (Home = /skymenu, a hub = its last tab, else its default tab, else its first visible tab).
+#  - hub:def:<hub> may carry a 4th element: the default tab id (HubBar.def4; Character -> "skills"). Kit 1.5 readers ignore it.
+#  - TAB ICONS (the hook only - no art in this round): a tab registered with HubBar.putIcon(..., "<hub>_<tab>") draws
+#    "SkyyHubTabs/<hub>_<tab>.png" (active: "..._on.png", brighter) behind its word; a tab without one draws the plain kit 1.5 tab.
+#    The art ships later under Common/UI/Custom/SkyyHubTabs/<hub>_<tab>@2x.png by the mod that names it (never a path outside
+#    Common/UI/Custom: that disconnects the client).
+KIT_HUB_VERSION = "1.6"
+HUB_HOME = "home"                            # row 1's first button: SkyyMenu's Home (the overview page) - hub:def:home
+HUB_ROW_IDS = (HUB_HOME,) + HUBS             # row 1 order (only the ids with a hub:def are drawn)
+HUB_ROW_TITLES = ("Home",) + tuple(HUB_DEFS[_h][0] for _h in HUBS)   # the bar's fallback title when no hub:def exists (no SkyyMenu)
+HUB_PART_ROW = 4                             # HubBar.build2(..., parts): draw row 1 into #<prefix>HubRow
+HUB_ROW_H = 30                               # row buttons: 30 high inside the 38 px bar (the bar's top padding 7: Top -3)
+HUB_ROW_TOP = (TITLE_H - HUB_ROW_H) // 2 - TITLE_PAD_TOP
+HUB_ROW_GAP = 4
+HUB_ROW_LEFT = 10
+HUB_ROW_RIGHT = 40                           # the close X (32 at Right -8) keeps its corner
+HUB_ROW_PAD, HUB_ROW_PADV = 6, 4             # button padding: horizontal, vertical (30 - 2 x 4 = the 22 px icon)
+HUB_ROW_ICON, HUB_ROW_ICON_GAP = 22, 4       # the hub's item icon left of the label
+HUB_ROW_ICON_MIN = 88                        # a button narrower than this shows its label only (every title still fits at 10 px)
+HUB_ROW_LABEL, HUB_ROW_LABEL_MIN = 14, 10    # label size, ShrinkTextToFit down to 10
+HUB_ROW_MIN_BTN = 60                         # the narrowest row button the kit allows (assert_hub_row_fits)
+HUB_TAB_ICON_DIR = "SkyyHubTabs/"            # inline path prefix (relative to Common/UI/Custom/, written without @2x)
+HUB_TAB_ICON_JAR = CUSTOM + HUB_TAB_ICON_DIR
+HUB_TAB_ICON = 36                            # the icon behind the word: 36 x 36, centred in the 44 px tab
+HUB_TAB_ICON_TOP = (HUB_TAB_H - HUB_TAB_ICON) // 2
+HUB_TAB_ICON_RE = re.compile(r"\A[a-z][a-z0-9]{0,15}_[a-z][a-z0-9]{0,15}\Z")
+assert HUB_ROW_TOP == -3 and HUB_TAB_ICON_TOP == 4
+
+
+def hub_tab_icon_ok(stem):
+    """A tab icon name: "<hub id>_<tab id>" (both 1-16 lowercase letters / digits starting with a letter, never back / close)."""
+    if not isinstance(stem, str) or not HUB_TAB_ICON_RE.fullmatch(stem):
+        return False
+    a, b = stem.split("_")
+    return a not in HUB_RESERVED_IDS and b not in HUB_RESERVED_IDS
+
+
+def hub_tab_icon_paths(hub, tab):
+    """(markup path, active markup path, jar path, active jar path) of a tab icon: SkyyHubTabs/<hub>_<tab>.png / _on.png and
+    Common/UI/Custom/SkyyHubTabs/<hub>_<tab>@2x.png / _on@2x.png (what the art round ships)."""
+    stem = "%s_%s" % (hub_check_id(hub, "hub id"), hub_check_id(tab))
+    return (HUB_TAB_ICON_DIR + stem + ".png", HUB_TAB_ICON_DIR + stem + "_on.png",
+            HUB_TAB_ICON_JAR + stem + "@2x.png", HUB_TAB_ICON_JAR + stem + "_on@2x.png")
+
+
+def hub_row_width(page_w):
+    """The width of row 1 in a page page_w wide: from 10 px in to 40 px before the right edge (the close X keeps its corner)."""
+    return _sample_int(page_w, "page width") - HUB_ROW_LEFT - HUB_ROW_RIGHT
+
+
+def hub_row_button_width(rw, n):
+    """Each of n row buttons in a row rw px wide: (rw - 4 x (n - 1)) / n (integer, as HubBar.rowWidth)."""
+    return rw if n < 1 else (rw - HUB_ROW_GAP * (n - 1)) // n
+
+
+def _row_room(bw, icon):
+    return bw - 2 * HUB_ROW_PAD - ((HUB_ROW_ICON + HUB_ROW_ICON_GAP) if icon else 0)
+
+
+def assert_hub_row_fits(rw, n=None, titles=None, theme=None):
+    """Assert row 1 (n buttons, default Home + 7 hubs) fits rw px: each button >= HUB_ROW_MIN_BTN and every title fits its label room
+    at the 10 px floor (with the icon when the button is >= HUB_ROW_ICON_MIN). Returns (button width, icons shown)."""
+    titles = list(titles if titles is not None else HUB_ROW_TITLES)
+    n = len(titles) if n is None else n
+    bw = hub_row_button_width(rw, n)
+    if bw < HUB_ROW_MIN_BTN:
+        raise ValueError("hub row: %d buttons in %d px are %d px each (the least is %d)" % (n, rw, bw, HUB_ROW_MIN_BTN))
+    icon = bw >= HUB_ROW_ICON_MIN
+    room = _row_room(bw, icon)
+    for t_ in titles:
+        if text_width(hub_clean(t_), HUB_ROW_LABEL_MIN, bold=True) > room:
+            raise ValueError("hub row: %r does not fit a %d px label at %d px (button %d px)" % (t_, room, HUB_ROW_LABEL_MIN, bw))
+    return bw, icon
+
+
+def _row_style(selected, t):
+    T = THEME[t]
+    d, h, p = ("primary", "primary", "primary") if selected else ("tertiary", "tertiaryHovered", "tertiaryPressed")
+    return "Style: ButtonStyle(Default: (Background: %s), Hovered: (Background: %s), Pressed: (Background: %s), Sounds: %s);" % (
+        T[d], T[h], T[p], sounds("light"))
+
+
+def _row_label(selected):
+    return ("(FontSize: %d, TextColor: %s, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center, "
+            "ShrinkTextToFit: true, MinShrinkTextToFitFontSize: %d)" % (HUB_ROW_LABEL, color("buttonText" if selected else "button2Text"),
+                                                                        HUB_ROW_LABEL_MIN))
+
+
+def _tab_btn_style(selected, t):
+    T = THEME[t]
+    if selected:
+        s = "(Background: %s)" % T["tabSelected"]
+        return "Style: ButtonStyle(Default: %s, Hovered: %s, Pressed: %s, Sounds: %s);" % (s, s, s, sounds("light"))
+    return "Style: ButtonStyle(Default: (Background: %s), Hovered: (Background: %s), Pressed: (Background: %s), Sounds: %s);" % (
+        T["tab"], T["tabHovered"], T["tabPressed"], sounds("light"))
+
+
+def hub_row_markup(parent, prefix, rw):
+    """The static part of row 1: Appends [(parent = the title bar, Group #<prefix>HubRow)] - a 30 high LayoutMode Left row, 10 px in,
+    rw wide (hub_row_width). HubBar.buildRow fills it at runtime from the registry."""
+    check_id(prefix)
+    return Appends([(parent, "Group #%sHubRow { Anchor: (Left: %d, Top: %d, Width: %d, Height: %d); LayoutMode: Left; }" % (
+        prefix, HUB_ROW_LEFT, HUB_ROW_TOP, rw, HUB_ROW_H))])
+
+
+def java_hub_build2(sh, my_tab, uuid="this.playerRef.getUuid()", b="b", ev="ev", cls="HubBar"):
+    """The Java statement a kit 1.6 page's build() runs right after a row shell: cls.build2(b, ev, "<prefix>", "<hub>", "<tab>" |
+    null, tabs_w, uuid, parts, row_w) - row 1, the close X binding and (not on home) the tab strip with its icons."""
+    if not getattr(sh, "row", False):
+        raise ValueError("java_hub_build2 needs a row Shell (hub_shell(..., row=True))")
+    if sh.hub == HUB_HOME:
+        if my_tab is not None:
+            raise ValueError("Home has no tabs (my_tab=None)")
+        tab = "null"
+    else:
+        tab = java_lit(hub_check_id(my_tab))
+    return "%s.build2(%s, %s, %s, %s, %s, %d, %s, %d, %d);" % (cls, b, ev, java_lit(sh.prefix), java_lit(sh.hub), tab, sh.tabs_w, uuid,
+                                                              sh.parts, sh.row_w)
+
+
+def hub_row_preview(prefix, hubs, my_hub, rw, theme=None):
+    """The Python twin of HubBar.buildRow: Appends of what it appends for hubs = [(id, title, icon item id)] (the hub:def entries in
+    HUB_ROW_IDS order), the active my_hub and a row rw px wide. tools/test_skyyui_hubs.py compares the two byte for byte."""
+    t = HUB_THEME if theme is None else theme
+    row = prefix + "HubRow"
+    ap = Appends()
+    rows = [(i, hub_clean(tt), ic) for i, tt, ic in hubs if hub_clean(tt)]
+    if not rows:
+        ttl = dict(zip(HUB_ROW_IDS, HUB_ROW_TITLES)).get(my_hub, "")
+        ap.append((row, 'Label #%sHubRowT { Anchor: (Width: %d, Height: %d); Text: "%s"; Style: %s; }' % (
+            prefix, rw, HUB_ROW_H, hub_clean(ttl), _row_label(True))))
+        return ap
+    bw = hub_row_button_width(rw, len(rows))
+    icons = bw >= HUB_ROW_ICON_MIN
+    for k, (i, tt, ic) in enumerate(rows):
+        sel = i == my_hub
+        if k:
+            ap.append((row, "Group { Anchor: (Width: %d); }" % HUB_ROW_GAP))
+        bid = "%sHubR%d" % (prefix, k)
+        ap.append((row, "Button #%s { Anchor: (Width: %d, Height: %d); LayoutMode: Left; Padding: (Horizontal: %d, Vertical: %d); %s }" % (
+            bid, bw, HUB_ROW_H, HUB_ROW_PAD, HUB_ROW_PADV, _row_style(sel, _theme(t)))))
+        lw = bw - 2 * HUB_ROW_PAD
+        if icons and ic and re.fullmatch(r"[A-Za-z0-9_]{1,64}", ic):
+            ap.append((bid, 'ItemIcon { Anchor: (Width: %d, Height: %d); ItemId: "%s"; }' % (HUB_ROW_ICON, HUB_ROW_ICON, ic)))
+            ap.append((bid, "Group { Anchor: (Width: %d); }" % HUB_ROW_ICON_GAP))
+            lw -= HUB_ROW_ICON + HUB_ROW_ICON_GAP
+        ap.append((bid, 'Label { Anchor: (Width: %d); Text: "%s"; Style: %s; }' % (lw, tt, _row_label(sel))))
+    return ap
+
+
+def hub_bar_preview2(prefix, tabs, my_tab, w, theme=None, icons=None):
+    """The Python twin of HubBar.build2's tab strip: hub_bar_preview + the tab icons (icons = {tab id: "<hub>_<tab>"}): a tab with an
+    icon is a Button holding the icon Group (SkyyHubTabs/<stem>.png, the active tab's "_on") and its label; a tab without one is the
+    kit 1.5 TextButton, byte-identical."""
+    t = HUB_THEME if theme is None else theme
+    icons = dict(icons or {})
+    base = hub_bar_preview(prefix, tabs, my_tab, w, t)
+    rows = _tab_rows(tabs, my_tab, w, t)
+    if not rows:
+        return base
+    strip = prefix + "HubTabs"
+    btns = [mk for _p, mk in base if mk.startswith("TextButton")]
+    tw = hub_tab_width(w, len(rows))
+    ap = Appends()
+    for k, (_o, i, l) in enumerate(rows):
+        if k:
+            ap.append((strip, "Group { Anchor: (Width: %d); }" % HUB_TAB_GAP))
+        bid = "%sHubT%d" % (prefix, k)
+        sel = i == my_tab
+        stem = icons.get(i)
+        if not hub_tab_icon_ok(stem):
+            ap.append((strip, btns[k]))
+            continue
+        ap.append((strip, "Button #%s { Anchor: (Width: %d, Height: %d); %s }" % (bid, tw, HUB_TAB_H, _tab_btn_style(sel, _theme(t)))))
+        ap.append((bid, 'Group { Anchor: (Left: %d, Top: %d, Width: %d, Height: %d); Background: "%s%s%s.png"; }' % (
+            (tw - HUB_TAB_ICON) // 2, HUB_TAB_ICON_TOP, HUB_TAB_ICON, HUB_TAB_ICON, HUB_TAB_ICON_DIR, stem, "_on" if sel else "")))
+        ap.append((bid, 'Label { Anchor: (Left: 0, Top: 0, Width: %d, Height: %d); Padding: (Horizontal: %d); Text: "%s"; Style: %s; }' % (
+            tw, HUB_TAB_H, HUB_TAB_PAD, hub_clean(l), _tab_label())))
+    return ap
+
+
+def _hub_row_rep(t):
+    """hub_bar_java's kit 1.6 placeholders for theme t."""
+    return {"@ROWH@": str(HUB_ROW_H), "@ROWGAP@": str(HUB_ROW_GAP), "@ROWPAD@": str(HUB_ROW_PAD), "@ROWPADV@": str(HUB_ROW_PADV),
+            "@ROWICON@": str(HUB_ROW_ICON), "@ROWICONGAP@": str(HUB_ROW_ICON_GAP), "@ROWICONMIN@": str(HUB_ROW_ICON_MIN),
+            "@ROWSTYLE@": java_lit(_row_style(False, t)), "@ROWSEL@": java_lit(_row_style(True, t)),
+            "@ROWLAB@": java_lit(_row_label(False)), "@ROWLABSEL@": java_lit(_row_label(True)),
+            "@TABBSTYLE@": java_lit(_tab_btn_style(False, t)), "@TABBSEL@": java_lit(_tab_btn_style(True, t)),
+            "@TABLAB@": java_lit(_tab_label()), "@TABICON@": str(HUB_TAB_ICON), "@TABICONTOP@": str(HUB_TAB_ICON_TOP),
+            "@TABICONDIR@": HUB_TAB_ICON_DIR, "@ROWIDS@": ", ".join(java_lit(x) for x in HUB_ROW_IDS),
+            "@ROWTITLES@": ", ".join(java_lit(x) for x in HUB_ROW_TITLES)}
+
+
+# HubBar kit 1.6 members (install_hub_bar(..., row=True)): appended AFTER the kit 1.5 source (they call put / okId / clean / tabs /
+# shown / remember / style / open / run / handle / jsonStr / get / map / mine, all defined above them). Same javassist rules.
+HUB_BAR_JAVA_16 = (
+    ("field", "public static final String[] ROW_IDS = new String[] { @ROWIDS@ };"),
+    ("field", "public static final String[] ROW_TITLES = new String[] { @ROWTITLES@ };"),
+    ("method", r"""
+public static Object[] defOf(String hub) {
+  Object o = get("hub:def:" + hub);
+  if (!(o instanceof Object[]) || ((Object[]) o).length < 3) return null;
+  return (Object[]) o;
+}"""),
+    # SkyyMenu: hub:def:<hub> = Object[]{ title, command, icon, default tab id or null } (kit 1.5 readers use elements 0 - 2 only)
+    ("method", r"""
+public static Object[] def4(String hub, String title, String command, String icon, String defTab) {
+  java.util.Map m = map();
+  if (m == null || !okId(hub)) return null;
+  String dt = (defTab != null && okId(defTab)) ? defTab : null;
+  Object[] d = new Object[] { title, command, icon, dt };
+  String k = "hub:def:" + hub;
+  m.put(k, d);
+  mine().put(k, d);
+  return d;
+}"""),
+    ("method", r"""
+public static String defTab(String hub) {
+  Object[] d = defOf(hub);
+  if (d == null || d.length < 4 || !(d[3] instanceof String)) return null;
+  String t = (String) d[3];
+  return okId(t) ? t : null;
+}"""),
+    ("method", r"""
+public static boolean okIcon(String s) {
+  if (s == null) return false;
+  int k = s.indexOf('_');
+  if (k < 1 || s.indexOf('_', k + 1) >= 0) return false;
+  return okId(s.substring(0, k)) && okId(s.substring(k + 1));
+}"""),
+    # a tab WITH an icon: the kit 1.5 entry + element 6 = "<hub>_<tab>" (a bad name = the plain tab, element 6 left out)
+    ("method", r"""
+public static Object[] putIcon(String hub, String tab, String mod, String label, int order, String command, Object open, Object visible, String icon) {
+  Object[] t = put(hub, tab, mod, label, order, command, open, visible);
+  if (t == null || !okIcon(icon)) return t;
+  Object[] t2 = new Object[] { t[0], t[1], t[2], t[3], t[4], t[5], icon };
+  String k = "hub:tab:" + hub + ":" + tab;
+  map().put(k, t2);
+  mine().put(k, t2);
+  return t2;
+}"""),
+    ("method", r"""
+public static String iconOf(Object[] e) {
+  if (e == null || e.length < 7 || !(e[6] instanceof String)) return null;
+  String s = (String) e[6];
+  return okIcon(s) ? s : null;
+}"""),
+    ("method", r"""
+public static boolean okItem(String s) {
+  if (s == null || s.length() < 1 || s.length() > 64) return false;
+  for (int i = 0; i < s.length(); i++) {
+    char c = s.charAt(i);
+    if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_')) return false;
+  }
+  return true;
+}"""),
+    ("method", r"""
+public static String titleOf(String hub) {
+  for (int i = 0; i < ROW_IDS.length; i++) { if (ROW_IDS[i].equals(hub)) return ROW_TITLES[i]; }
+  return "";
+}"""),
+    # the tab a hub opens on: its default tab (hub:def element 3) while shown - Skyy 2026-10-15 "id do skills as the default one for
+    # this" (the Character hub always opens on Skills, docs/answered/ui.md) - else its last tab (hub:last) while still shown, else its
+    # first shown tab; null = no tab yet
+    ("method", r"""
+public static String pickTab(String hub, java.util.UUID u) {
+  java.util.ArrayList t = tabs(hub, u);
+  if (t.isEmpty()) return null;
+  String want = null;
+  Object m = u == null ? null : get("hub:last:" + u.toString());
+  if (m instanceof java.util.Map) {
+    Object l = null;
+    try { l = ((java.util.Map) m).get(hub); } catch (Throwable x) { l = null; }
+    if (l instanceof String) want = (String) l;
+  }
+  String d = defTab(hub);
+  boolean hw = false;
+  boolean hd = false;
+  for (int i = 0; i < t.size(); i++) {
+    String id = (String) ((Object[]) t.get(i))[0];
+    if (id.equals(want)) hw = true;
+    if (id.equals(d)) hd = true;
+  }
+  if (hd) return d;
+  if (hw) return want;
+  return (String) ((Object[]) t.get(0))[0];
+}"""),
+    # row 1: Object[]{ id, clean title, icon item id } for every ROW_IDS entry with a hub:def (Home first)
+    ("method", r"""
+public static java.util.ArrayList hubs() {
+  java.util.ArrayList out = new java.util.ArrayList();
+  for (int i = 0; i < ROW_IDS.length; i++) {
+    Object[] d = defOf(ROW_IDS[i]);
+    if (d == null) continue;
+    String title = (d[0] instanceof String) ? clean((String) d[0]) : "";
+    if (title.length() == 0) continue;
+    String icon = (d[2] instanceof String) ? (String) d[2] : "";
+    out.add(new Object[] { ROW_IDS[i], title, icon });
+  }
+  return out;
+}"""),
+    ("method", "public static int rowWidth(int w, int n) { return n < 1 ? w : (w - @ROWGAP@ * (n - 1)) / n; }"),
+    ("method", "public static String rowStyle(boolean sel) { return sel ? @ROWSEL@ : @ROWSTYLE@; }"),
+    ("method", "public static String rowLab(boolean sel) { return sel ? @ROWLABSEL@ : @ROWLAB@; }"),
+    # fills #<prefix>HubRow (hub_row_markup) - binds a = "hub:h:<id>"; returns the buttons drawn (0 = no hub:def at all: the title)
+    ("method", r"""
+public static int buildRow(@UCB@ b, @UEB@ ev, String prefix, String myHub, int w, java.util.UUID u) {
+  java.util.ArrayList h = hubs();
+  int n = h.size();
+  String row = "#" + prefix + "HubRow";
+  if (n == 0) {
+    b.appendInline(row, "Label #" + prefix + "HubRowT { Anchor: (Width: " + w + ", Height: @ROWH@); Text: \"" + clean(titleOf(myHub)) + "\"; Style: " + rowLab(true) + "; }");
+    return 0;
+  }
+  int bw = rowWidth(w, n);
+  boolean icons = bw >= @ROWICONMIN@;
+  for (int i = 0; i < n; i++) {
+    Object[] e = (Object[]) h.get(i);
+    String id = (String) e[0];
+    boolean sel = id.equals(myHub);
+    if (i > 0) b.appendInline(row, "Group { Anchor: (Width: @ROWGAP@); }");
+    String bid = prefix + "HubR" + i;
+    b.appendInline(row, "Button #" + bid + " { Anchor: (Width: " + bw + ", Height: @ROWH@); LayoutMode: Left; Padding: (Horizontal: @ROWPAD@, Vertical: @ROWPADV@); " + rowStyle(sel) + " }");
+    String ic = (String) e[2];
+    int lw = bw - 2 * @ROWPAD@;
+    if (icons && okItem(ic)) {
+      b.appendInline("#" + bid, "ItemIcon { Anchor: (Width: @ROWICON@, Height: @ROWICON@); ItemId: \"" + ic + "\"; }");
+      b.appendInline("#" + bid, "Group { Anchor: (Width: @ROWICONGAP@); }");
+      lw = lw - @ROWICON@ - @ROWICONGAP@;
+    }
+    b.appendInline("#" + bid, "Label { Anchor: (Width: " + lw + "); Text: \"" + (String) e[1] + "\"; Style: " + rowLab(sel) + "; }");
+    ev.addEventBinding(@BT@.Activating, "#" + bid, @EVD@.of("a", "hub:h:" + id));
+  }
+  return n;
+}"""),
+    ("method", "public static String tabBStyle(boolean sel) { return sel ? @TABBSEL@ : @TABBSTYLE@; }"),
+    ("method", "public static String tabLab() { return @TABLAB@; }"),
+    # the kit 1.6 page build: parts 1 = "< Menu" (a page that still has one), 2 = the close X, 4 = row 1 (rowW wide); then the tab
+    # strip (not on home / without a tab) - a tab with an icon (putIcon) draws the icon behind its word, the others the 1.5 tab
+    ("method", r"""
+public static int build2(@UCB@ b, @UEB@ ev, String prefix, String hub, String myTab, int w, java.util.UUID u, int parts, int rowW) {
+  if ((parts & 1) != 0) ev.addEventBinding(@BT@.Activating, "#" + prefix + "HubMenu", @EVD@.of("a", "hub:back"));
+  if ((parts & 2) != 0) ev.addEventBinding(@BT@.Activating, "#" + prefix + "HubClose", @EVD@.of("a", "hub:close"));
+  if ((parts & 4) != 0) buildRow(b, ev, prefix, hub, rowW, u);
+  if (hub == null || myTab == null || hub.equals("home") || !okId(hub)) return 0;
+  remember(u, hub, myTab);
+  java.util.ArrayList t = shown(tabs(hub, u), myTab, maxTabs(w));
+  int n = t.size();
+  if (n == 0) return 0;
+  int tw = tabWidth(w, n);
+  String strip = "#" + prefix + "HubTabs";
+  for (int i = 0; i < n; i++) {
+    Object[] e = (Object[]) t.get(i);
+    String id = (String) e[0];
+    boolean sel = id.equals(myTab);
+    if (i > 0) b.appendInline(strip, "Group { Anchor: (Width: @GAP@); }");
+    String bid = prefix + "HubT" + i;
+    String ic = iconOf((Object[]) e[3]);
+    if (ic == null) {
+      b.appendInline(strip, "TextButton #" + bid + " { Anchor: (Width: " + tw + ", Height: @TABH@); Padding: (Horizontal: @TABPAD@); Text: \"" + clean((String) e[1]) + "\"; " + style(sel) + " }");
+    } else {
+      b.appendInline(strip, "Button #" + bid + " { Anchor: (Width: " + tw + ", Height: @TABH@); " + tabBStyle(sel) + " }");
+      b.appendInline("#" + bid, "Group { Anchor: (Left: " + ((tw - @TABICON@) / 2) + ", Top: @TABICONTOP@, Width: @TABICON@, Height: @TABICON@); Background: \"@TABICONDIR@" + ic + (sel ? "_on" : "") + ".png\"; }");
+      b.appendInline("#" + bid, "Label { Anchor: (Left: 0, Top: 0, Width: " + tw + ", Height: @TABH@); Padding: (Horizontal: @TABPAD@); Text: \"" + clean((String) e[1]) + "\"; Style: " + tabLab() + "; }");
+    }
+    ev.addEventBinding(@BT@.Activating, "#" + bid, @EVD@.of("a", "hub:" + id));
+  }
+  return n;
+}"""),
+    # a row-1 click (world thread): "home" = /skymenu ("back"; "close" without SkyyMenu or a player); a hub = pickTab -> open() (its
+    # Function, else its command); a hub with no tab = its hub:def command ("command" / "nocmd" / "failed"); "missing" = no def either
+    ("method", r"""
+public static String goHub(@PR@ pr, String hub) {
+  if (hub == null) return "failed";
+  if (hub.equals("home")) {
+    if (get("config:def:SkyyMenu") == null && defOf("home") == null) return "close";
+    return run(pr, "skymenu") == 0 ? "back" : "close";
+  }
+  if (!okId(hub)) return "failed";
+  java.util.UUID u = null;
+  try { u = pr == null ? null : pr.getUuid(); } catch (Throwable t) { u = null; }
+  String tab = pickTab(hub, u);
+  if (tab != null) return open(pr, u, hub, tab);
+  Object[] d = defOf(hub);
+  String cmd = (d != null && (d[1] instanceof String)) ? (String) d[1] : null;
+  if (cmd == null || cmd.length() == 0) return "missing";
+  int k = run(pr, cmd);
+  return k == 0 ? "command" : (k == 1 ? "nocmd" : "failed");
+}"""),
+    # a kit 1.6 page's handleDataEvent calls this FIRST (instead of handle): row 1 ("hub:h:<id>"; the page's own hub = "self"), else
+    # handle() (the X, < Menu, the tabs)
+    ("method", r"""
+public static String route(@PR@ pr, String data, String hub, String myTab) {
+  String a = jsonStr(data, "a");
+  if (!a.startsWith("hub:h:")) return handle(pr, data, hub, myTab);
+  String id = a.substring(6);
+  if (hub != null && id.equals(hub)) return "self";
+  return goHub(pr, id);
+}"""),
+)

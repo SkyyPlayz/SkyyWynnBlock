@@ -21,7 +21,7 @@ SET = [
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.27"), ("SkyySacks", "0.8.9"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.19"), ("SkyyParty", "0.1.9"),
     ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.16"), ("SkyyBazaar", "0.1.13"), ("SkyyGear", "0.3.10"), ("SkyySkills", "0.4.43"),
-    ("SkyyAccessories", "0.5.17"), ("SkyyClasses", "0.1.29"), ("SkyyMenu", "0.3.28"), ("SkyyEssentials", "0.1.10"), ("SkyyProfiles", "0.1.15"),
+    ("SkyyAccessories", "0.5.17"), ("SkyyClasses", "0.1.29"), ("SkyyMenu", "0.3.29"), ("SkyyEssentials", "0.1.10"), ("SkyyProfiles", "0.1.15"),
     ("SkyyCooking", "0.1.7"), ("SkyyTrees", "0.3.17"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration

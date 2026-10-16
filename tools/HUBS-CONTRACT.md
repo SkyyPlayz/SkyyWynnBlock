@@ -1,4 +1,4 @@
-# SkyWynn hub contract (kit skyyui 1.5, 2026-10-15)
+# SkyWynn hub contract (kit skyyui 1.5, 2026-10-15; + kit 1.6 at the end)
 
 Skyy (2026-10-10, `docs/answered/ui.md`) picked all the hubs and the Sky Window look: "I like 2 the best", then "beautiful! can we
 design it all with the new theme". So the SkyWynn Menu becomes a few **hubs** with **tabs**. Each mod adds its own tab through the
@@ -112,3 +112,47 @@ checks apply as if the player had typed it.
   `handle` / `open` (the bridge Function, the command fallback, hidden / missing), the overflow rule and `removeAll`.
 
 `python tools/skyyui_test.py` still proves that the kit 1.4 output is byte-identical.
+
+## Kit 1.6 (2026-10-15, research/Unified-Menu-Plan.md U1) - additive
+
+Skyy (2026-10-15, `docs/answered/ui.md` UNIFIED MENU LAYOUT): "combined D and A ... with the bub row up top", tabs "Icon first, themed
+later". Kit 1.6 adds ROW 1 (the hubs) on every hub page, an optional icon behind each tab's word and a default tab per hub.
+
+- **Nothing changes for a kit 1.5 builder.** `KIT_VERSION` stays `"1.5"` (41 builders assert it); `KIT_HUB_VERSION = "1.6"` names the new
+  level. With the default arguments every 1.5 function returns byte-identical output (the self-test compares against the committed kit).
+  A mod that stays on 1.5 keeps "< Menu", which runs `/skymenu` - since SkyyMenu 0.3.29 that opens **Home**.
+- **Opting in (each hub mod's next round, U2):**
+  1. `SUI.install_hub_bar(pool, PKG + ".HubBar", CtField, CtNewMethod, row=True)` - the same class plus the kit 1.6 members.
+  2. `sh = SUI.hub_shell(prefix, w, h, "<hub>", row=True)` - the 38 px title bar holds `#<prefix>HubRow` instead of "< Menu", the title
+     and the crest. **Same page size**: `assert_hub_page` as before. `sh.row_w` = `w - 50`; `sh.parts` = row + close (no `HubMenu`).
+  3. `SUI.java_hub_build(sh, "<tab>", cls="@PKG@.HubBar")` now emits `HubBar.build2(b, ev, prefix, hub, tab, tabs_w, uuid, parts, row_w)`:
+     row 1, the X binding and the tab strip.
+  4. In `handleDataEvent` call `HubBar.route(...)` where you called `handle(...)` (same answers, plus row 1). Row clicks send
+     `a = "hub:h:<id>"`: `"home"` runs `/skymenu` (answer `"back"`; SkyyMenu's own pages open Home in place), the page's own hub answers
+     `"self"`, another hub opens its tab (`goHub`: the default tab, else the last tab, else the first visible one; a hub with no tab runs
+     its `hub:def` command).
+- **Row 1** = Home + every hub with a `hub:def` (order `SUI.HUB_ROW_IDS`), icon (the def's item id) + label, the active one Primary, the
+  others Tertiary; 30 px buttons, 4 px apart, from 10 px in to 40 px before the right edge (the X keeps its corner). Buttons narrower than
+  88 px drop the icon; every title fits at the 10 px shrink floor (`assert_hub_row_fits`). Without any `hub:def` (no SkyyMenu) the row
+  shows the page's hub title.
+- **Registry additions** (java.lang types only):
+
+| Key | Value | Who |
+|---|---|---|
+| `hub:def:<hub>` | `Object[]{ title, command, iconItemId, String defaultTab or null }` (4th element new; 1.5 readers use 0-2) | SkyyMenu (`HubBar.def4`) |
+| `hub:def:home` | `Object[]{ "Home", "skymenu", "Skyy_Menu", null }` | SkyyMenu |
+| `hub:tab:<hub>:<tab>` | the 1.5 entry, optionally + element 6 = `"<hub>_<tab>"` (the tab icon) | the owning mod (`HubBar.putIcon`) |
+| `home:alert:<mod>` | `java.util.function.Function`: `apply(UUID)` -> `null` or up to 3 lines `"text\|target"` (target `<hub>:<tab>`, `<hub>` or `edit`), called on the world thread while Home draws | any mod (U3); SkyyMenu publishes `home:alert:SkyyMenu` |
+
+  Default tabs: Character -> `skills` (Skyy: "id do skills as the default one for this").
+  A hub's default tab beats its remembered last tab (`HubBar.pickTab`): the Character hub always opens on Skills; a hub without a
+  default tab reopens its last tab (`hub:last`).
+- **Tab icons (the hook only - no art yet):** a tab put with `HubBar.putIcon(..., "<hub>_<tab>")` draws `SkyyHubTabs/<hub>_<tab>.png`
+  (36 x 36, centred, behind the word; the active tab `..._on.png`, brighter) inside a `Button` with the tab art and a label on top. Ship
+  the art at `Common/UI/Custom/SkyyHubTabs/<hub>_<tab>@2x.png` (+ `_on`) in the SAME round that names it (`SUI.hub_tab_icon_paths`); a tab
+  without an icon is the 1.5 TextButton, byte for byte. `check_sky_paths(..., tab_icons=True)` accepts the hook path; never a path outside
+  `Common/UI/Custom`. Themed tabs (Skyy: "or the tab is stylized to whatever it is") come later, hub by hub.
+- **Python twins:** `hub_row_preview` (= `buildRow`), `hub_bar_preview2` (= `build2`'s strip). `python tools/test_skyyui_hubs.py` phase 4
+  compiles the row class (sky + vanilla) and compares both byte for byte, plus `def4` / `defTab` / `putIcon` / `pickTab` / `goHub` / `route`.
+- **Not proven in game yet:** an `ItemIcon` inside a row `Button` in the title bar; a `Button` holding a background Group + a Label as a tab
+  (the icon hook); the 30 px Tertiary / Primary art at 88-150 px wide.

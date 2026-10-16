@@ -18,9 +18,16 @@ Phase 3  (a JVM; skipped with --no-java) installs class HubBar (sky + vanilla) w
          hub:last, handle() routing, open() through the bridge Function and through the command fallback (reached: "nocmd" - no
          CommandManager in a test JVM; the in-game fallback is proven by probe h1), hidden / missing / failed, the overflow rule,
          removeAll() removing only this jar's own arrays.
+Phase 4  KIT 1.6 (the hub row, tab icons, default tab; research/Unified-Menu-Plan.md U1): backward compatibility against the COMMITTED
+         kit (git HEAD:tools/skyyui.py loaded as a second module: hub_bar_java(), every 1.5 hub_shell, hub_bar_preview, java_hub_build
+         byte-identical, KIT_VERSION still "1.5"); row shells (Home + a hub) keep the 1.5 page sizes (the row sits in the 38 px title
+         bar: assert_hub_page unchanged), pass check_page / assert_proven / check_sky_paths, row 1 fits every page width the menu uses;
+         the tab icon hook path is refused unless tab_icons=True; then (JVM) HubBar(row=True) compiled (sky + vanilla) and EXECUTED:
+         def4 / defTab, putIcon / iconOf, hubs() order, buildRow == hub_row_preview and build2 == hub_bar_preview2 byte for byte (with
+         and without icons, no-def fallback title), the row / tab / X bindings, pickTab (default -> last -> first), goHub / route outcomes.
 Scratch: tools/dev/scratch/skyyui-hubs-test (deleted unless --keep). Prints "N ok, 0 fail"; exit 1 on a failure.
 """
-import os, sys, shutil, zipfile, hashlib, json
+import os, sys, shutil, zipfile, hashlib, json, subprocess, importlib.util
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -381,6 +388,229 @@ def phase_java(sh):
           "removeAll left the foreign array and nothing of ours")
     check(m.get("hub:last:" + str(u)) is not None, "removeAll never touches hub:last (SkyyMenu's)")
 
+    # ---------------------------------------------------------------- kit 1.6: HubBar(row=True) executed
+    for cn, th in (("skyyhubtest.HubRow", "sky"), ("skyyhubtest.HubRowV", "vanilla")):
+        try:
+            UI.install_hub_bar(pool, cn, CtField, CtNewMethod, theme=th, row=True).writeFile(out)
+            check(True, "HubBar row=True (%s) compiles with javassist against HytaleServer.jar" % th)
+        except Exception as e:      # noqa
+            FAILS.append("HubBar row=True (%s) does not compile: %s" % (th, e))
+            return
+    loader2 = Jc("java.net.URLClassLoader")(jpype.JArray(Jc("java.net.URL"))([Jc("java.io.File")(out).toURI().toURL()]),
+                                           Jc("java.lang.ClassLoader").getSystemClassLoader())
+    R = Jc("skyyhubtest.HubRow", loader=loader2)
+    RV = Jc("skyyhubtest.HubRowV", loader=loader2)
+    UCB = lambda: Jc("com.hypixel.hytale.server.core.ui.builder.UICommandBuilder")()
+    UEB = lambda: Jc("com.hypixel.hytale.server.core.ui.builder.UIEventBuilder")()
+    cmds = lambda b_: [(str(c.selector), str(c.text if c.text is not None else c.data)) for c in b_.getCommands()]
+    evsel = lambda e_: [(str(x.selector), str(x.data)) for x in e_.getEvents()]
+    m2 = R.map()
+    for k in list(m2.keySet()):
+        if str(k).startswith("hub:"):
+            m2.remove(k)
+    rw = 1218
+    # no hub:def at all (no SkyyMenu): the bar shows the hub title
+    b0 = UCB()
+    check(int(R.buildRow(b0, UEB(), P, "world", rw, None)) == 0
+          and cmds(b0) == [("#" + p_, UI.render(mk)) for p_, mk in UI.hub_row_preview(P, [], "world", rw)],
+          "buildRow without any hub:def = the hub's title label")
+    # SkyyMenu's defs (Home + 7, Character with its default tab)
+    for i, t in zip(UI.HUB_ROW_IDS, UI.HUB_ROW_TITLES):
+        d = R.def4(i, t, "skymenu" if i == "home" else UI.HUB_DEFS[i][1], "Skyy_Menu_Icon_%s" % t, "skills" if i == "character" else None)
+        check(d is not None and len(d) == 4, "def4(%s) = {title, command, icon, default tab}" % i)
+    check(str(R.defTab("character")) == "skills" and R.defTab("world") is None and R.defTab("nothere") is None, "defTab reads element 3")
+    check(R.def4("character", "C", "c", "x", "Bad Tab")[3] is None, "def4 drops a bad default tab id")
+    R.def4("character", "Character", "character", "Skyy_Menu_Icon_Character", "skills")
+    check([str(x[0]) for x in R.hubs()] == list(UI.HUB_ROW_IDS), "hubs(): Home first, then the hubs in contract order")
+    for hub, w_ in (("home", 1218), ("world", 754), ("character", 1064)):
+        b1, e1 = UCB(), UEB()
+        n1 = int(R.buildRow(b1, e1, P, hub, w_, None))
+        want = UI.hub_row_preview(P, ROW_DEFS, hub, w_)
+        got = cmds(b1)
+        check(n1 == 8 and got == [("#" + p_, UI.render(mk)) for p_, mk in want],
+              "buildRow(%s, %d) == hub_row_preview byte for byte (%d)" % (hub, w_, len(got)))
+        for _s, mk in got:
+            UI.check_markup(mk, prefix=P)
+        ev1 = evsel(e1)
+        check([s_ for s_, _d in ev1] == ["#%sHubR%d" % (P, k) for k in range(8)]
+              and all(("hub:h:" + i) in d_ for (s_, d_), i in zip(ev1, UI.HUB_ROW_IDS)), "row bindings a = hub:h:<id> (%s)" % hub)
+    bv = UCB()
+    RV.buildRow(bv, UEB(), P, "home", 1218, None)
+    check(cmds(bv) == [("#" + p_, UI.render(mk)) for p_, mk in UI.hub_row_preview(P, ROW_DEFS, "home", 1218, "vanilla")]
+          and not any("SkyyKit" in mk for _s, mk in cmds(bv)), "the vanilla row = its preview, vanilla textures")
+    # build2: row + X + the tab strip with icons
+    u2 = UUID.randomUUID()
+    last2 = CHM()
+    m2.put("hub:last:" + str(u2), last2)
+    for t, o, mod, lab, cmd in CHAR_TABS:
+        if t in ("pets", "skills"):
+            R.putIcon("character", t, mod, lab, o, cmd, opener(t), None, "character_" + t)
+        elif t == "trees":
+            check(len(R.putIcon("character", t, mod, lab, o, cmd, opener(t), None, "bad name")) == 6,
+                  "putIcon with a bad icon name = the plain 6-element tab")
+        else:
+            R.put("character", t, mod, lab, o, cmd, opener(t), None)
+    e_ = m2.get("hub:tab:character:pets")
+    check(len(e_) == 7 and str(e_[6]) == "character_pets" and str(R.iconOf(e_)) == "character_pets"
+          and R.iconOf(m2.get("hub:tab:character:stats")) is None, "putIcon stores element 6, iconOf reads it")
+    b2, e2 = UCB(), UEB()
+    n2 = int(R.build2(b2, e2, P, "character", "pets", 1066, u2, 6, 1064))
+    tabs8 = [(t, l, o) for t, o, _m, l, _c in CHAR_TABS]
+    want2 = list(UI.hub_row_preview(P, ROW_DEFS, "character", 1064)) + list(UI.hub_bar_preview2(
+        P, tabs8, "pets", 1066, icons={"pets": "character_pets", "skills": "character_skills"}))
+    got2 = cmds(b2)
+    check(n2 == 8 and got2 == [("#" + p_, UI.render(mk)) for p_, mk in want2],
+          "build2 == row + hub_bar_preview2 byte for byte (%d commands)" % len(got2))
+    try:
+        UI.check_sky_paths([mk for _s, mk in got2], tab_icons=True)
+        check(True, "build2 output: every path a kit element or the tab icon hook")
+    except Exception as ex:     # noqa
+        FAILS.append("build2 paths: %s" % ex)
+    ev2 = evsel(e2)
+    check(ev2[0][0] == "#%sHubClose" % P and not any("HubMenu" in s_ for s_, _d in ev2) and len(ev2) == 1 + 8 + 8,
+          "build2 parts 6: the X + 8 row + 8 tab bindings, no < Menu (%d)" % len(ev2))
+    check(str(last2.get("character")) == "pets", "build2 remembers hub:last")
+    b3 = UCB()
+    check(int(R.build2(b3, UEB(), P, "home", None, 0, u2, 6, 1218)) == 0
+          and all(s_ == "#%sHubRow" % P or s_.startswith("#%sHubR" % P) for s_, _m in cmds(b3)), "build2 on home: row 1 only, no tab strip")
+    # pickTab: default -> last -> first (Skyy 2026-10-15 "id do skills as the default one": the default tab beats the remembered one)
+    check(str(R.pickTab("character", u2)) == "skills", "pickTab: the default tab (Skills) beats the last tab (Pets)")
+    R.def4("character", "Character", "character", "x", None)
+    check(str(R.pickTab("character", u2)) == "pets", "pickTab: no default -> the last tab while shown")
+    last2.put("character", "gone")
+    check(str(R.pickTab("character", u2)) == "stats", "pickTab: no default + a stale last tab -> the first shown tab")
+    R.def4("character", "Character", "character", "x", "skills")
+    check(str(R.pickTab("character", u2)) == "skills", "pickTab: the default tab while the last one is gone")
+    check(R.pickTab("market", u2) is None, "pickTab: a hub with no tab -> null")
+    # goHub / route
+    js = lambda a: '{"a":"%s"}' % a
+    del seen[:]
+    check(str(R.goHub(None, "character")) == "bridge" and seen == [("skills", None)],
+          "goHub(character) opens its default tab through the Function (%s)" % seen)
+    check(str(R.goHub(None, "market")) == "nocmd", "goHub(a hub with no tab) runs its hub:def command (no CommandManager here: nocmd)")
+    m2.remove("hub:def:storage")
+    check(str(R.goHub(None, "storage")) == "missing", "goHub: no tab and no def -> missing")
+    check(str(R.goHub(None, "home")) == "close", "goHub(home) with no player to run /skymenu -> close")
+    check(str(R.goHub(None, "Bad")) == "failed", "goHub: a bad hub id -> failed")
+    check(str(R.route(None, js("hub:h:character"), "character", "pets")) == "self", "route: the page's own hub -> self")
+    del seen[:]
+    check(str(R.route(None, js("hub:h:character"), "world", "teleport")) == "bridge" and seen == [("skills", None)],
+          "route: another hub -> goHub")
+    check(str(R.route(None, js("hub:close"), "character", "pets")) == "close" and str(R.route(None, js("hub:pets"), "character", "pets")) == "self"
+          and R.route(None, js("refresh"), "character", "pets") is None, "route falls through to handle() for the X / tabs / page clicks")
+    n_rm = int(R.removeAll())
+    check(n_rm >= 15 and not any(str(k).startswith("hub:tab:character:") or str(k).startswith("hub:def:") for k in m2.keySet()),
+          "removeAll removes the row class's defs + tabs (%d keys)" % n_rm)
+
+
+# ================================================================= phase 4: kit 1.6 (the hub row) - python side
+def committed_kit():
+    """the committed tools/skyyui.py (git HEAD) as a second module, or None when git / the file is not available"""
+    try:
+        src = subprocess.run(["git", "show", "HEAD:tools/skyyui.py"], cwd=os.path.dirname(HERE), capture_output=True, check=True).stdout
+    except Exception as e:      # noqa
+        print("phase 4: git not available - the committed-kit compare is skipped (%s)" % e)
+        return None
+    f = os.path.join(SCRATCH, "skyyui_head.py")
+    open(f, "wb").write(src)
+    spec = importlib.util.spec_from_file_location("skyyui_head", f)
+    m = importlib.util.module_from_spec(spec)
+    sys.path.insert(0, HERE)
+    spec.loader.exec_module(m)
+    m.SKY_ART_DIR, m.KIT_DIR = UI.SKY_ART_DIR, UI.KIT_DIR     # the art folder of the repo, not of the scratch copy
+    m.verify(quiet=True)
+    return m
+
+
+ROW_DEFS = [(i, t, "Skyy_Menu_Icon_%s" % t) for i, t in zip(UI.HUB_ROW_IDS, UI.HUB_ROW_TITLES)]
+
+
+def phase_row():
+    check(UI.KIT_VERSION == "1.5" and UI.KIT_HUB_VERSION == "1.6", "kit 1.6 is additive: KIT_VERSION stays 1.5 (41 builders assert it)")
+    old = committed_kit()
+    if old is not None and not hasattr(old, "KIT_HUB_VERSION"):
+        check(old.hub_bar_java() == UI.hub_bar_java() and old.hub_bar_java("vanilla") == UI.hub_bar_java("vanilla"),
+              "COMPAT: hub_bar_java() (sky + vanilla) == the committed kit 1.5 source")
+        check(UI.hub_bar_java(row=True)[:len(UI.hub_bar_java())] == UI.hub_bar_java(), "COMPAT: row=True only APPENDS members")
+        check(old.hub_bar_java_core() == UI.hub_bar_java_core(), "COMPAT: SkyyCore's shared HubBar source unchanged")
+        for hub in UI.HUBS:
+            for th in ("sky", "vanilla"):
+                for menu in (True, False):
+                    a = old.hub_shell(P, 1400, 900, hub, theme=th, menu=menu)
+                    b = UI.hub_shell(P, 1400, 900, hub, theme=th, menu=menu)
+                    check(list(a.appends) == list(b.appends) and (a.inner_h, a.tabs_w, a.parts) == (b.inner_h, b.tabs_w, b.parts),
+                          "COMPAT: hub_shell(%s, %s, menu=%s) byte-identical" % (hub, th, menu))
+            tabs = [(t, l, o) for t, o, _m, l, _c in UI.hub_tabs(hub)]
+            check(list(old.hub_bar_preview(P, tabs, tabs[0][0], 1152)) == list(UI.hub_bar_preview(P, tabs, tabs[0][0], 1152)),
+                  "COMPAT: hub_bar_preview(%s) byte-identical" % hub)
+            check(list(UI.hub_bar_preview2(P, tabs, tabs[0][0], 1152)) == list(UI.hub_bar_preview(P, tabs, tabs[0][0], 1152)),
+                  "hub_bar_preview2 without icons == the kit 1.5 strip (%s)" % hub)
+        sh5 = old.hub_shell(P, 1200, 900, "character")
+        check(old.java_hub_build(sh5, "skills") == UI.java_hub_build(UI.hub_shell(P, 1200, 900, "character"), "skills"),
+              "COMPAT: java_hub_build on a 1.5 shell unchanged")
+        check(old.check_sky_paths(sh5.appends) == UI.check_sky_paths(sh5.appends), "COMPAT: check_sky_paths unchanged by default")
+    elif old is not None:
+        print("phase 4: the committed kit is already 1.6 - the 1.5 byte compare is skipped")
+    # the row shells: Home (no tabs) and a hub (tabs) at the menu's page sizes
+    for hub, w, h in (("home", 1268, 616), ("world", 804, 704), ("social", 804, 980), ("settings", 1128, 980), ("character", 1114, 966)):
+        sh = UI.hub_shell(P + "R", w, h, hub, row=True)
+        UI.check_page(sh.appends, P + "R")
+        UI.assert_proven(sh.appends, what="row shell " + hub)
+        els = UI.check_sky_paths(sh.appends)
+        check(sh.row and sh.row_w == w - 50 and sh.parts == UI.HUB_PART_ROW | UI.HUB_PART_CLOSE and sh.title is None,
+              "row shell %s %d x %d: row %d px, parts row + close, no title label" % (hub, w, h, sh.row_w))
+        bar = [mk for p_, mk in sh.appends if p_ == sh.bar]
+        check(len(bar) == 1 and bar[0].startswith("Group #%sRHubRow { Anchor: (Left: 10, Top: -3, Width: %d, Height: 30); LayoutMode: Left; }" % (P, w - 50)),
+              "row shell %s: #HubRow sits IN the 38 px title bar (%s)" % (hub, bar[:1]))
+        check("HeaderOrnament" not in els and "Header" in els and "Close" in els and "HubMenu" not in str(list(sh.appends)),
+              "row shell %s: Header bar + the close X, no < Menu, no crest (the row takes the bar)" % hub)
+        if hub == "home":
+            check(sh.tabs is None and sh.tabs_w == 0 and sh.inner_h == h - UI.TITLE_H - 48 and "Frame" in els,
+                  "row shell home: no tab strip, the plain sky Frame")
+            check(UI.java_hub_build(sh, None, cls="X") == 'X.build2(b, ev, "SkyyHtR", "home", null, 0, this.playerRef.getUuid(), 6, %d);' % (w - 50),
+                  "java_hub_build on the Home shell = build2 with no tab")
+            raises(lambda: UI.java_hub_build2(sh, "stats"), ValueError, "Home has no tabs")
+        else:
+            five = UI.hub_shell(P + "R", w, h, hub)
+            check((sh.w, sh.h, sh.inner_w, sh.inner_h, sh.tabs_w) == (five.w, five.h, five.inner_w, five.inner_h, five.tabs_w),
+                  "row shell %s: the same page / body / strip size as the kit 1.5 shell (the page does not grow)" % hub)
+            check(UI.assert_hub_page(w, h - UI.HUB_BAR_H, old_title_h=0, hub=hub, pad=24) == (w, h), "assert_hub_page(%s) unchanged" % hub)
+            check(UI.java_hub_build(sh, "x" if hub != "world" else "teleport", cls="X").startswith('X.build2(b, ev, "SkyyHtR", "%s", ' % hub),
+                  "java_hub_build on a row shell = build2")
+        bw, icon = UI.assert_hub_row_fits(sh.row_w)
+        check(bw >= 88 and icon, "row 1 at %d px: 8 buttons of %d px with icons" % (w, bw))
+        pv = UI.hub_row_preview(P + "R", ROW_DEFS, hub, sh.row_w)
+        page = UI.Appends(list(sh.appends) + list(pv))
+        UI.check_page(page, P + "R")
+        UI.assert_proven(page, what="row preview")
+        check({"Primary", "Tertiary"} <= set(UI.check_sky_paths(pv)), "row %s: Tertiary buttons + the active one Primary" % hub)
+        btn = [mk for _p, mk in pv if mk.startswith("Button")]
+        check(len(btn) == 8 and sum(1 for mk in btn if "SkyyKit/Primary.png" in mk) == 1, "row %s: 8 buttons, one Primary" % hub)
+    raises(lambda: UI.hub_shell(P, 1200, 900, "home"), ValueError, "home without row=True is refused (no kit 1.5 home)")
+    raises(lambda: UI.assert_hub_row_fits(500), ValueError, "row 1 refuses a page too narrow for 8 buttons")
+    check(UI.assert_hub_row_fits(704)[1] is False, "a narrow row drops the icons (labels only)")
+    # tab icon hook paths
+    check(UI.hub_tab_icon_paths("character", "pets") == ("SkyyHubTabs/character_pets.png", "SkyyHubTabs/character_pets_on.png",
+          "Common/UI/Custom/SkyyHubTabs/character_pets@2x.png", "Common/UI/Custom/SkyyHubTabs/character_pets_on@2x.png"), "tab icon paths")
+    check(UI.hub_tab_icon_ok("world_teleport") and not UI.hub_tab_icon_ok("world_close") and not UI.hub_tab_icon_ok("World_x")
+          and not UI.hub_tab_icon_ok("a_b_c"), "tab icon names: <hub>_<tab> only")
+    tabs = [(t, l, o) for t, o, _m, l, _c in UI.hub_tabs("character")]
+    iv = UI.hub_bar_preview2(P + "I", tabs, "pets", 1066, icons={"pets": "character_pets", "skills": "character_skills", "trees": "bad name"})
+    raises(lambda: UI.check_sky_paths(iv), ValueError, "an icon path is refused by default (no art ships in kit 1.6)")
+    check(set(UI.check_sky_paths(iv, tab_icons=True)) >= {"Tab", "Tab_Selected"}, "tab_icons=True accepts the hook paths")
+    raises(lambda: UI.check_sky_paths(['Group { Background: "SkyyHubTabs/Nope.png"; }'], tab_icons=True), ValueError,
+           "a malformed hook path is refused even with tab_icons=True")
+    raises(lambda: UI.check_sky_paths(['Group { Background: "../SkyyHubTabs/world_x.png"; }'], tab_icons=True), ValueError,
+           "a hook path outside Common/UI/Custom is refused")
+    sh = UI.hub_shell(P + "I", 1114, 966, "character", row=True)
+    UI.check_page(UI.Appends(list(sh.appends) + list(iv)), P + "I")
+    UI.assert_proven(iv, what="icon tabs")
+    ib = [mk for p_, mk in iv if mk.startswith("Button")]
+    check(len(ib) == 2 and "Tab_Selected" in [mk for mk in ib if "HubT4" in mk][0], "icon tabs: Skills + Pets are Buttons, Pets selected")
+    check(any('"SkyyHubTabs/character_pets_on.png"' in mk for _p, mk in iv) and any('"SkyyHubTabs/character_skills.png"' in mk for _p, mk in iv),
+          "the active tab uses the _on icon, the others the plain one")
+    check(sum(1 for _p, mk in iv if mk.startswith("TextButton")) == 6, "the other 6 tabs (a bad icon name too) stay kit 1.5 TextButtons")
+
 
 def main():
     base = os.path.join(HERE, "dev", "scratch") + os.sep
@@ -391,6 +621,7 @@ def main():
     try:
         phase_art()
         sh = phase_page()
+        phase_row()
         if NOJAVA:
             print("java phase skipped (--no-java)")
         else:
