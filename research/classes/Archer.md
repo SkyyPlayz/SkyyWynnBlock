@@ -22,10 +22,10 @@ flowchart TD
   CLS --> ABL["ABILITIES<br/>own 4, equip 2"]
   WPN --> BOW["Shortbows"]
   BOW --> BOWa["Attack: draw + shoot<br/>draw strength 0-4"]
-  BOW --> BOWc["Charged: full draw<br/>vanilla for now"]
+  BOW --> BOWc["Charged: full-draw LEAP<br/>built (Armory 0.1.3)"]
   WPN --> XB["Crossbows"]
   XB --> XBa["Attack: load + shoot<br/>3rd bolt bonus"]
-  XB --> XBc["Charged: none in vanilla<br/>vanilla for now"]
+  XB --> XBc["Charged: GRAPPLE BOLT<br/>built (Armory 0.1.2)"]
   ABL --> A1["A1 Pinning Shot"]
   A1 --> A1A["A1-alt A Arrow Rain"]
   A1 --> A1B["A1-alt B Hunter's Net"]
@@ -55,7 +55,7 @@ flowchart TD
 
 - **Attack:** vanilla draw-and-shoot (draw strength 0-4). Vanilla Signature Volley.
 
-- **Charged:** a full draw = the strongest shot. **No movement** in vanilla.
+- **Charged = FULL-DRAW LEAP** (built, SkyyArmory 0.1.3, 2026-10-06): a full draw pushes you opposite the way you look with a short hang, and the arrow is a blast arrow (4-block, 60% splash); 3 Stamina + 1 Mana.
 
 - 💡 **Idea for later - Grapple Arrow:** a full-draw shot into a block pulls you to it.
 
@@ -65,7 +65,7 @@ flowchart TD
 
 - **Attack:** vanilla load + shoot. The 3rd bolt in a row on one target hits harder. Bolts stay loaded (SkyySkills).
 
-- **Charged:** vanilla has no hold-to-charge.
+- **Charged = GRAPPLE BOLT** (built, SkyyArmory 0.1.2, 2026-10-06; research/Grapple-Bolt-Spec.md): shoot, pull yourself to where it sticks, release with momentum; half pull when it does not stick.
 
 - 💡 **Idea for later - Dodge Roll:** roll the way you move and reload instantly.
 
@@ -217,7 +217,7 @@ Ideas - pick one.
 
 ## 🟠 Open
 
-- Nothing open right now (bow + crossbow traversals stay vanilla for now - Skyy 2026-10-05).
+- Nothing open right now. Both traversals are built: bow full-draw leap (Armory 0.1.3), crossbow Grapple Bolt (Armory 0.1.2).
 
 &nbsp;
 
