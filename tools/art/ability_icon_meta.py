@@ -1,5 +1,5 @@
 """ability_icon_meta - what each SkyWynn class ability icon means (from research/cloud/Class-Ability-Shapes.md sections 4 Mage,
-5 Priest, 7 Monk, 8 Assassin, 2 Warrior, 6 Berserker, 3 Archer; docs/answered/classes.md lines 142-146 for the Priest numbers) and what the icon shows. Used by the sheet +
+5 Priest, 7 Monk, 8 Assassin, 2 Warrior, 6 Berserker, 3 Archer; research/classes/Spellblade.md for the Spellblade; docs/answered/classes.md lines 142-146 for the Priest numbers) and what the icon shows. Used by the sheet +
 manifest. CLASS_INFO "review": "approved" = Skyy OK'd + committed (its sheet-<class>.png is kept as reviewed, no longer rebuilt);
 "review" = waiting for Skyy (gets its own sheet-<class>.png); "answer" = Skyy's OK word for word (None = not relayed)."""
 
@@ -23,6 +23,9 @@ CLASS_INFO = {
     "Archer": {"hex": "#8fd67a", "role": "crowd control + focus marker (Archery)",
                "theme": "the hunt / roots / volleys - leaf-green rim, dark forest field",
                "review": "approved", "answer": "Yes, the Archer icons look good, commit them"},
+    "Spellblade": {"hex": "#6fd0d8", "role": "frontline sweeper + boss debuffer (Battlemagic)",
+                   "theme": "momentum / elements / the arc - teal rim, teal field",
+                   "review": "review", "answer": None},
 }
 
 META = {
@@ -238,6 +241,37 @@ META = {
         "does": "Throw a net that bursts into a 4-block root zone for 3 s, 0.5 H, Marked 8 s. Shapes: Snare Line (sprint), Drop Net (mid-air), Set Trap (crouch).",
         "shows": "a rope net thrown open on its point (diamond), cords bowed under tension, knots at the crossings, four iron weights on the corners, a faint green glow behind",
         "palette": ["ROPE", "IRON", "LEAF"],
+    },
+    # ---- Spellblade (research/classes/Spellblade.md section Abilities; all PROPOSED, numbers placeholders)
+    "ArcaneBreach": {
+        "slot": "A1", "status": "PROPOSED", "cost_cd": "8 Mana + 1 Stamina / 16 s",
+        "does": "180-degree arc, 5 blocks, 1.2 H; enemies hit are BREACHED 8 s: +15% damage taken from everyone (+1% per Momentum stack, cap 25%); +3 Momentum. Shapes: Breaching Charge (sprint), Breach from Above (mid-air), Marked Ground (crouch).",
+        "shows": "a violet rune ward cracked in two (its right half knocked out of place, light pouring through the crack) above a wide teal crescent arc sweeping under it",
+        "palette": ["BREACH", "ARC"],
+    },
+    "ElementalImbue": {
+        "slot": "A2", "status": "PROPOSED", "cost_cd": "7 Mana + 1 Stamina / 18 s",
+        "does": "12 s: every arc, bash and crescent deals +30% as element damage and applies that element's status; Momentum raises both. Shapes: Charging Imbue (sprint), Falling Imbue (mid-air), Deep Imbue (crouch).",
+        "shows": "the Spellblade greatsword standing point-up (dark teal wrapped grip, steel guard with a teal gem, glowing rune fuller), a fire ribbon and a frost ribbon spiralling up the blade and a lightning bolt crackling along its edge",
+        "palette": ["STEEL", "TEALGRIP", "ARC", "FIRE", "ICE", "VOLT"],
+    },
+    "Sunder": {
+        "slot": "A2-alt", "status": "PROPOSED", "cost_cd": "9 Mana + 2 Stamina / 30 s",
+        "does": "Heavy overhead strike on one target within 4 blocks, 2.0 H; SUNDERED 12 s: deals 15% less damage and crits on it deal +20% crit damage, from everyone; full strength on bosses; +2 Momentum. Shapes: Lunging Sunder (sprint), Sunder from Above (mid-air), Armour Break (crouch).",
+        "shows": "the greatsword driven point-down into a heavy steel cuirass (gold neck trim, rivets, two abdominal lames) that splits open along a glowing jagged crack, sparks flying",
+        "palette": ["STEEL", "TEALGRIP", "ARC", "GOLD", "AMBER"],
+    },
+    "RiftCleave": {
+        "slot": "A1-alt A", "status": "PROPOSED", "cost_cd": "10 Mana + 2 Stamina / 20 s",
+        "does": "160-degree arc, 5 blocks, 1.2 H, tearing a 2 x 8 block RIFT along the ground for 3 s: enemies inside are Breached 15% and Slowed 20%; imbued = an element patch. Shapes: Running Rift (sprint), Rift Drop (mid-air), Rift Ring (crouch).",
+        "shows": "a glowing violet-teal rift torn into a dark stone floor, receding into the distance, broken rock lips along it and light rising out of it, under the teal arc that cut it",
+        "palette": ["STONE", "BREACH", "ARC"],
+    },
+    "ShatteringArc": {
+        "slot": "A1-alt B", "status": "PROPOSED", "cost_cd": "9 Mana + 2 Stamina / 20 s",
+        "does": "Spends your Momentum: one 200-degree arc, 6 blocks, 1.2 H + 0.1 H per stack, Breach 15% + 1% per stack for 8 s + 0.25 s per stack; you keep 5 stacks. Shapes: Shattering Rush (sprint), Shattering Fall (mid-air), Measured Strike (crouch).",
+        "shows": "one enormous teal crescent whose tail breaks into crystal shards, five momentum chevrons being drawn into it (the front two bright, the spent ones dim), a burst at the arc's head",
+        "palette": ["ARC"],
     },
 }
 

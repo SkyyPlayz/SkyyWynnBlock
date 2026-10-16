@@ -25,9 +25,9 @@ import make_ability_icons as M  # noqa: E402
 from ability_icon_meta import CLASS_INFO, META  # noqa: E402
 
 FONTS = {True: ["/usr/share/fonts/truetype/sand-box/google/Atkinson Hyperlegible/AtkinsonHyperlegible-Bold.ttf",
-                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"],
+                "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", "C:/Windows/Fonts/segoeuib.ttf"],
          False: ["/usr/share/fonts/truetype/sand-box/google/Atkinson Hyperlegible/AtkinsonHyperlegible-Regular.ttf",
-                 "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"]}
+                 "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", "C:/Windows/Fonts/segoeui.ttf"]}
 PAGE = (246, 244, 239)
 INK = (28, 28, 34)
 SUB = (84, 86, 96)
@@ -161,7 +161,8 @@ def build_manifest(out):
                  "HOLY", "SOUL", "ROSE", "FEATHER", "STEEL", "SAFFRON", "LINEN", "SKIN", "SHOE", "SOLE", "WIND", "WATER", "ASSN_RIM", "SHADE",
                  "LILAC", "POISON", "GLASS", "SMOKE", "IRON", "WOOD", "WAR_RIM", "AMBER", "CRIMSON", "OAK",
                  "BERS_RIM", "BLOOD", "BONE", "STONE", "CHAR",
-                 "ARCH_RIM", "LEAF", "ROPE", "EARTH"):
+                 "ARCH_RIM", "LEAF", "ROPE", "EARTH",
+                 "SB_RIM", "ARC", "BREACH", "VOLT", "TEALGRIP"):
         ramps[name] = [M.K.hexs(c) for c in getattr(M, name)]
     return {
         "item": "Class ability icons - " + ", ".join(classes_done()),
@@ -176,7 +177,7 @@ def build_manifest(out):
         "defaults_used": {"frame": "round dark slate frame band with a class-colour rim (bevelled, top lit)",
                           "background": "dark field tinted toward the class colour, radial: " + ", ".join(
                               "%s %s -> %s" % (st.name, M.K.hexs(st.field_c), M.K.hexs(st.field_e))
-                              for st in [M.MAGE, M.PRIEST, M.MONK, M.ASSASSIN, M.WARRIOR, M.BERSERKER, M.ARCHER] if st.name in classes_done())},
+                              for st in [M.MAGE, M.PRIEST, M.MONK, M.ASSASSIN, M.WARRIOR, M.BERSERKER, M.ARCHER, M.SPELLBLADE] if st.name in classes_done())},
         "class_colours": {k: v["hex"] for k, v in CLASS_INFO.items()},
         "frame_geometry_px": {"outer_radius": M.K.R_OUT, "dark_band_inner": M.K.R_FRAME_IN, "rim_inner": M.K.R_RIM_IN,
                               "field_radius": M.K.R_FIELD, "centre": [32, 32]},
@@ -204,7 +205,7 @@ def main():
         sh.save(sp, optimize=True)
         print("wrote", sp, sh.size)
     mp = os.path.join(a.out, "manifest.json")
-    with open(mp, "w") as f:
+    with open(mp, "w", encoding="utf-8", newline="\n") as f:
         json.dump(build_manifest(a.out), f, indent=2)
         f.write("\n")
     print("wrote", mp)

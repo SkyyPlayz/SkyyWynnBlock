@@ -1,0 +1,893 @@
+{
+  "item": "Pet eggs - 5 categories x 6 rarities (30 icons) + 6 world textures",
+  "status": "DRAFT - waiting for Skyy's review, NOT committed, NOT wired in",
+  "spec": "research/Pet-Eggs-Spec.md sections 1.1, 1.2, 8 (round A0)",
+  "generator": [
+    "tools/art/make_pet_eggs.py",
+    "tools/art/ability_icon_core.py"
+  ],
+  "deterministic": true,
+  "categories": {
+    "Mining": {
+      "shell": [
+        "#1a2232",
+        "#28344c",
+        "#3a4c68",
+        "#526a88",
+        "#7090ac",
+        "#9cb8cc",
+        "#d0e2ea"
+      ]
+    },
+    "Farming": {
+      "shell": [
+        "#4a2c10",
+        "#7a4e18",
+        "#a87824",
+        "#d0a23a",
+        "#e8c460",
+        "#f6e094",
+        "#fdf4cc"
+      ]
+    },
+    "Foraging": {
+      "shell": [
+        "#1a2412",
+        "#2c3a1a",
+        "#425424",
+        "#5a7030",
+        "#7a8e44",
+        "#a2b264",
+        "#d0dca0"
+      ]
+    },
+    "Combat": {
+      "shell": [
+        "#2e0c16",
+        "#521420",
+        "#82202a",
+        "#b03434",
+        "#d45a48",
+        "#ee8c6e",
+        "#fcc8a8"
+      ]
+    },
+    "Exploration": {
+      "shell": [
+        "#0c2a30",
+        "#144a50",
+        "#1e6e72",
+        "#2c9894",
+        "#52bcb0",
+        "#8edcc8",
+        "#d0f6ea"
+      ]
+    }
+  },
+  "rarities": {
+    "Common": {
+      "quality_colour": "#c9d2dd",
+      "cup_metal": [
+        "#16171c",
+        "#26272e",
+        "#3a3c44",
+        "#52545e",
+        "#6c6e78",
+        "#8c8e96"
+      ],
+      "gem": [
+        "#3a3e48",
+        "#6a7280",
+        "#9aa4b2",
+        "#c9d2dd",
+        "#eef2f6"
+      ]
+    },
+    "Uncommon": {
+      "quality_colour": "#3e9049",
+      "cup_metal": [
+        "#2a1408",
+        "#4e2a12",
+        "#7a4a20",
+        "#a46a32",
+        "#c88e52",
+        "#e8b884"
+      ],
+      "gem": [
+        "#0e2a12",
+        "#1c5424",
+        "#2e7a38",
+        "#3e9049",
+        "#7cc884",
+        "#c8f0cc"
+      ]
+    },
+    "Rare": {
+      "quality_colour": "#2770b7",
+      "cup_metal": [
+        "#262c3c",
+        "#444c62",
+        "#6a748c",
+        "#96a0b6",
+        "#c4cede",
+        "#eaf0f8"
+      ],
+      "gem": [
+        "#0a1c40",
+        "#143a74",
+        "#1e58a0",
+        "#2770b7",
+        "#6aa4e2",
+        "#c4e0fc"
+      ]
+    },
+    "Epic": {
+      "quality_colour": "#8b339e",
+      "cup_metal": [
+        "#3e2208",
+        "#6c4210",
+        "#a06a1c",
+        "#cf9a30",
+        "#ecc458",
+        "#fae6a0"
+      ],
+      "gem": [
+        "#260a30",
+        "#4a1658",
+        "#6c2480",
+        "#8b339e",
+        "#b872cc",
+        "#ecc4f4"
+      ]
+    },
+    "Legendary": {
+      "quality_colour": "#bb8a2c",
+      "cup_metal": [
+        "#4a2806",
+        "#7e4c0e",
+        "#b8801e",
+        "#e6b03a",
+        "#f8d670",
+        "#fff4c8"
+      ],
+      "gem": [
+        "#3a2206",
+        "#6c440c",
+        "#9a6a1a",
+        "#bb8a2c",
+        "#e8c060",
+        "#fff0b8"
+      ]
+    },
+    "Mythic": {
+      "quality_colour": "#cc66cc",
+      "cup_metal": [
+        "#2e2440",
+        "#4c4466",
+        "#787496",
+        "#a8a8c6",
+        "#d4d8ec",
+        "#f4f4fc"
+      ],
+      "gem": [
+        "#3a0e3a",
+        "#6a1e68",
+        "#9a3c98",
+        "#cc66cc",
+        "#ec9cec",
+        "#fcdcfc"
+      ]
+    }
+  },
+  "vanilla_model": {
+    "path": "Items/Consumables/Food/Egg.blockymodel",
+    "box": [
+      14,
+      16,
+      14
+    ],
+    "texture_size": [
+      32,
+      32
+    ],
+    "uv": {
+      "front": [
+        0,
+        0
+      ],
+      "top": [
+        14,
+        0
+      ],
+      "back/left/right": [
+        14,
+        14
+      ],
+      "bottom": [
+        0,
+        16
+      ]
+    },
+    "read_from": "Assets.zip 2026-10-16 (numbers only, no pixels used)"
+  },
+  "files": [
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Mining_Common.png",
+      "bytes": 3196,
+      "sha256": "fd87b415e567b9380794f792b64eb749c457dcc18ec1178875f103bd07ccae44",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Mining_Common",
+      "name": "Common Mining Egg",
+      "category": "Mining",
+      "rarity": "Common",
+      "quality_colour": "#c9d2dd",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Mining_Uncommon.png",
+      "bytes": 3343,
+      "sha256": "1f9b3abfed75d88f54201e2ee99d119a4ce2959a47f39eda1bdbfeb977b0c50a",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Mining_Uncommon",
+      "name": "Uncommon Mining Egg",
+      "category": "Mining",
+      "rarity": "Uncommon",
+      "quality_colour": "#3e9049",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Mining_Rare.png",
+      "bytes": 3920,
+      "sha256": "0480b47c444dfe1613d85d91b19c5bc7d6e1813df36eca7095095b23efb3b1f0",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Mining_Rare",
+      "name": "Rare Mining Egg",
+      "category": "Mining",
+      "rarity": "Rare",
+      "quality_colour": "#2770b7",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Mining_Epic.png",
+      "bytes": 4059,
+      "sha256": "485d0e0c99db7081261f3de7ef632c5bbb711f3a75be877034b660b57cdd9aa8",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Mining_Epic",
+      "name": "Epic Mining Egg",
+      "category": "Mining",
+      "rarity": "Epic",
+      "quality_colour": "#8b339e",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Mining_Legendary.png",
+      "bytes": 4452,
+      "sha256": "be82cfe94a1b660ef912100570ec2d6b2192aa85743f5e609787c244b87d213d",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Mining_Legendary",
+      "name": "Legendary Mining Egg",
+      "category": "Mining",
+      "rarity": "Legendary",
+      "quality_colour": "#bb8a2c",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Mining_Mythic.png",
+      "bytes": 5449,
+      "sha256": "41b1cddcaf846d3225c4b6149fb39a49fcb3e30305d89e312bc08020079a2fff",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Mining_Mythic",
+      "name": "Mythic Mining Egg",
+      "category": "Mining",
+      "rarity": "Mythic",
+      "quality_colour": "#cc66cc",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Farming_Common.png",
+      "bytes": 3091,
+      "sha256": "7c4f6758f90cf4a68e0863f33202a169403e3ec63bd7e8b3a497b0665e1a2d38",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Farming_Common",
+      "name": "Common Farming Egg",
+      "category": "Farming",
+      "rarity": "Common",
+      "quality_colour": "#c9d2dd",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Farming_Uncommon.png",
+      "bytes": 3205,
+      "sha256": "c49b41cc34907c929698b1908ce9c9815936ced240e24dfda817eb62f1af753e",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Farming_Uncommon",
+      "name": "Uncommon Farming Egg",
+      "category": "Farming",
+      "rarity": "Uncommon",
+      "quality_colour": "#3e9049",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Farming_Rare.png",
+      "bytes": 3884,
+      "sha256": "7782758675dd5f8d2be6ac3428d7978f810c7fa39a1e49d8df83ffa0b4fd500e",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Farming_Rare",
+      "name": "Rare Farming Egg",
+      "category": "Farming",
+      "rarity": "Rare",
+      "quality_colour": "#2770b7",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Farming_Epic.png",
+      "bytes": 4007,
+      "sha256": "24637972d31ba8f27705f03b7a313d37b4f9b96e6487deebf8ee5a4155f1a372",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Farming_Epic",
+      "name": "Epic Farming Egg",
+      "category": "Farming",
+      "rarity": "Epic",
+      "quality_colour": "#8b339e",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Farming_Legendary.png",
+      "bytes": 4320,
+      "sha256": "d2492263792719a6b24f3d60c3425664282a5eadfb151c85fc721bc85581054d",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Farming_Legendary",
+      "name": "Legendary Farming Egg",
+      "category": "Farming",
+      "rarity": "Legendary",
+      "quality_colour": "#bb8a2c",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Farming_Mythic.png",
+      "bytes": 5389,
+      "sha256": "528038f46de6bd65289137b75fc2a60cb847baece77b9009ca01261a727c9872",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Farming_Mythic",
+      "name": "Mythic Farming Egg",
+      "category": "Farming",
+      "rarity": "Mythic",
+      "quality_colour": "#cc66cc",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Foraging_Common.png",
+      "bytes": 3389,
+      "sha256": "90e96b6f626026a4a5ad721b1e63bcaf8788fe6de0ffc1b506f2177910127660",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Foraging_Common",
+      "name": "Common Foraging Egg",
+      "category": "Foraging",
+      "rarity": "Common",
+      "quality_colour": "#c9d2dd",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Foraging_Uncommon.png",
+      "bytes": 3528,
+      "sha256": "30721ad2b8747ed962f6454457e9aa3d68383e4260adeb76568a826aaff19acd",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Foraging_Uncommon",
+      "name": "Uncommon Foraging Egg",
+      "category": "Foraging",
+      "rarity": "Uncommon",
+      "quality_colour": "#3e9049",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Foraging_Rare.png",
+      "bytes": 4067,
+      "sha256": "73f8aeb53b56af98c5cdda2c07ca391ed34893baf852cccb85b89317d9742a4b",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Foraging_Rare",
+      "name": "Rare Foraging Egg",
+      "category": "Foraging",
+      "rarity": "Rare",
+      "quality_colour": "#2770b7",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Foraging_Epic.png",
+      "bytes": 4276,
+      "sha256": "54ee264e09269808b016cdb74d11f764e6426b6bf48bc89d5ce4adda4bf331d6",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Foraging_Epic",
+      "name": "Epic Foraging Egg",
+      "category": "Foraging",
+      "rarity": "Epic",
+      "quality_colour": "#8b339e",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Foraging_Legendary.png",
+      "bytes": 4557,
+      "sha256": "b2191bc71cb6f33c90e8ec9ea011de4013cae2281f9ac76ce8e5637bc5b2be98",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Foraging_Legendary",
+      "name": "Legendary Foraging Egg",
+      "category": "Foraging",
+      "rarity": "Legendary",
+      "quality_colour": "#bb8a2c",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Foraging_Mythic.png",
+      "bytes": 5573,
+      "sha256": "5780fe89d40fb8334e0882cc51e3ed880644d8aaa5bb944f38895ccefc68b59c",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Foraging_Mythic",
+      "name": "Mythic Foraging Egg",
+      "category": "Foraging",
+      "rarity": "Mythic",
+      "quality_colour": "#cc66cc",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Combat_Common.png",
+      "bytes": 3274,
+      "sha256": "e2ea7d4003967559ce75d30026b80b68a41ecccd320eec444024ff48e7c4f579",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Combat_Common",
+      "name": "Common Combat Egg",
+      "category": "Combat",
+      "rarity": "Common",
+      "quality_colour": "#c9d2dd",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Combat_Uncommon.png",
+      "bytes": 3380,
+      "sha256": "163bea697740d2910ce6ab5e7934cbfea445db349141dd8fb947de037008b572",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Combat_Uncommon",
+      "name": "Uncommon Combat Egg",
+      "category": "Combat",
+      "rarity": "Uncommon",
+      "quality_colour": "#3e9049",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Combat_Rare.png",
+      "bytes": 4018,
+      "sha256": "3e978710445e4e474c8035002d2448930ab2991c3c7a9ca422a46a60d2903011",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Combat_Rare",
+      "name": "Rare Combat Egg",
+      "category": "Combat",
+      "rarity": "Rare",
+      "quality_colour": "#2770b7",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Combat_Epic.png",
+      "bytes": 4184,
+      "sha256": "c53d08a34f07d3327a436fef933643eba6578e4814be8991f9fa9410964cd091",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Combat_Epic",
+      "name": "Epic Combat Egg",
+      "category": "Combat",
+      "rarity": "Epic",
+      "quality_colour": "#8b339e",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Combat_Legendary.png",
+      "bytes": 4531,
+      "sha256": "68df01e44b3c09f7ac449c95b7a40eed9fa95b7de4b9aa1169bae5a04ecbd7ec",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Combat_Legendary",
+      "name": "Legendary Combat Egg",
+      "category": "Combat",
+      "rarity": "Legendary",
+      "quality_colour": "#bb8a2c",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Combat_Mythic.png",
+      "bytes": 5500,
+      "sha256": "60287151bc2376a0b281b2b24cec164274d1f4f828fe7b3aded25552c9ee560e",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Combat_Mythic",
+      "name": "Mythic Combat Egg",
+      "category": "Combat",
+      "rarity": "Mythic",
+      "quality_colour": "#cc66cc",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Exploration_Common.png",
+      "bytes": 3133,
+      "sha256": "c0535b0090764a71536881f0a3753165f62c9adc3523fd8d35b92fcab2ea07b6",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Exploration_Common",
+      "name": "Common Exploration Egg",
+      "category": "Exploration",
+      "rarity": "Common",
+      "quality_colour": "#c9d2dd",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Exploration_Uncommon.png",
+      "bytes": 3267,
+      "sha256": "e92eb1bcdaed8f82f068c0bc616354535762679afa87ae89939809b846ac87d9",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Exploration_Uncommon",
+      "name": "Uncommon Exploration Egg",
+      "category": "Exploration",
+      "rarity": "Uncommon",
+      "quality_colour": "#3e9049",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Exploration_Rare.png",
+      "bytes": 3870,
+      "sha256": "81c036d7af8b9b48763161c03bf8e60f5706549afcfa517feeb1dbed4e11ab59",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Exploration_Rare",
+      "name": "Rare Exploration Egg",
+      "category": "Exploration",
+      "rarity": "Rare",
+      "quality_colour": "#2770b7",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Exploration_Epic.png",
+      "bytes": 4060,
+      "sha256": "041a32ccde73072d973b40473c8f49b3506ad9f2cd39f4f57423aa3dc69df15d",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Exploration_Epic",
+      "name": "Epic Exploration Egg",
+      "category": "Exploration",
+      "rarity": "Epic",
+      "quality_colour": "#8b339e",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Exploration_Legendary.png",
+      "bytes": 4432,
+      "sha256": "51e2686e99973bbad17afc84af0d75fe9dfa8f4cc7d5ade527410506140a0284",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Exploration_Legendary",
+      "name": "Legendary Exploration Egg",
+      "category": "Exploration",
+      "rarity": "Legendary",
+      "quality_colour": "#bb8a2c",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Icons/ItemsGenerated/Skyy_PetEgg_Exploration_Mythic.png",
+      "bytes": 5474,
+      "sha256": "86e114dcc95dd6e2516b4e62890c61a7a0cc853235e629f8bd329c4c6304f143",
+      "image_size": [
+        64,
+        64
+      ],
+      "item_id": "Skyy_PetEgg_Exploration_Mythic",
+      "name": "Mythic Exploration Egg",
+      "category": "Exploration",
+      "rarity": "Mythic",
+      "quality_colour": "#cc66cc",
+      "what": "64x64 RGBA item icon (egg in a rarity egg cup)"
+    },
+    {
+      "path": "Common/Items/Pets/Skyy_PetEgg_Common_Texture.png",
+      "bytes": 1166,
+      "sha256": "2b56bce29bd6a9804abc542322af2936f72f754e61f426ea391bb53d86284371",
+      "image_size": [
+        32,
+        32
+      ],
+      "rarity": "Common",
+      "what": "32x32 RGBA texture for vanilla Items/Consumables/Food/Egg.blockymodel (by path), one per rarity",
+      "uv_layout": {
+        "front": [
+          0,
+          0,
+          14,
+          16
+        ],
+        "top": [
+          14,
+          0,
+          14,
+          14
+        ],
+        "side": [
+          14,
+          14,
+          14,
+          16
+        ],
+        "bottom": [
+          0,
+          16,
+          14,
+          14
+        ]
+      }
+    },
+    {
+      "path": "Common/Items/Pets/Skyy_PetEgg_Uncommon_Texture.png",
+      "bytes": 1230,
+      "sha256": "73ce4c06594282844450f2784b54ad7a4f4e889eac04975698b15287339466e2",
+      "image_size": [
+        32,
+        32
+      ],
+      "rarity": "Uncommon",
+      "what": "32x32 RGBA texture for vanilla Items/Consumables/Food/Egg.blockymodel (by path), one per rarity",
+      "uv_layout": {
+        "front": [
+          0,
+          0,
+          14,
+          16
+        ],
+        "top": [
+          14,
+          0,
+          14,
+          14
+        ],
+        "side": [
+          14,
+          14,
+          14,
+          16
+        ],
+        "bottom": [
+          0,
+          16,
+          14,
+          14
+        ]
+      }
+    },
+    {
+      "path": "Common/Items/Pets/Skyy_PetEgg_Rare_Texture.png",
+      "bytes": 1240,
+      "sha256": "93852dba1288bc87e563b5ddba4a29fd2ab672c7e88f1664e9c18f66fbbd9a76",
+      "image_size": [
+        32,
+        32
+      ],
+      "rarity": "Rare",
+      "what": "32x32 RGBA texture for vanilla Items/Consumables/Food/Egg.blockymodel (by path), one per rarity",
+      "uv_layout": {
+        "front": [
+          0,
+          0,
+          14,
+          16
+        ],
+        "top": [
+          14,
+          0,
+          14,
+          14
+        ],
+        "side": [
+          14,
+          14,
+          14,
+          16
+        ],
+        "bottom": [
+          0,
+          16,
+          14,
+          14
+        ]
+      }
+    },
+    {
+      "path": "Common/Items/Pets/Skyy_PetEgg_Epic_Texture.png",
+      "bytes": 1298,
+      "sha256": "f95ba665a57081e4d484f31705417196b48817e8b4c027210b68dc5261c1fa08",
+      "image_size": [
+        32,
+        32
+      ],
+      "rarity": "Epic",
+      "what": "32x32 RGBA texture for vanilla Items/Consumables/Food/Egg.blockymodel (by path), one per rarity",
+      "uv_layout": {
+        "front": [
+          0,
+          0,
+          14,
+          16
+        ],
+        "top": [
+          14,
+          0,
+          14,
+          14
+        ],
+        "side": [
+          14,
+          14,
+          14,
+          16
+        ],
+        "bottom": [
+          0,
+          16,
+          14,
+          14
+        ]
+      }
+    },
+    {
+      "path": "Common/Items/Pets/Skyy_PetEgg_Legendary_Texture.png",
+      "bytes": 1382,
+      "sha256": "3a1682486ef79b2ed018ac90201517bdd3f9f6ec0b4902e1940c9f63decb4bed",
+      "image_size": [
+        32,
+        32
+      ],
+      "rarity": "Legendary",
+      "what": "32x32 RGBA texture for vanilla Items/Consumables/Food/Egg.blockymodel (by path), one per rarity",
+      "uv_layout": {
+        "front": [
+          0,
+          0,
+          14,
+          16
+        ],
+        "top": [
+          14,
+          0,
+          14,
+          14
+        ],
+        "side": [
+          14,
+          14,
+          14,
+          16
+        ],
+        "bottom": [
+          0,
+          16,
+          14,
+          14
+        ]
+      }
+    },
+    {
+      "path": "Common/Items/Pets/Skyy_PetEgg_Mythic_Texture.png",
+      "bytes": 1417,
+      "sha256": "45e4f64197ed9580dc54b7f63a8ace1d6c3826e9348058365ee7242b9f333b1d",
+      "image_size": [
+        32,
+        32
+      ],
+      "rarity": "Mythic",
+      "what": "32x32 RGBA texture for vanilla Items/Consumables/Food/Egg.blockymodel (by path), one per rarity",
+      "uv_layout": {
+        "front": [
+          0,
+          0,
+          14,
+          16
+        ],
+        "top": [
+          14,
+          0,
+          14,
+          14
+        ],
+        "side": [
+          14,
+          14,
+          14,
+          16
+        ],
+        "bottom": [
+          0,
+          16,
+          14,
+          14
+        ]
+      }
+    },
+    {
+      "path": "sheet.png",
+      "bytes": 297808,
+      "sha256": "388298e9d92d2f18c95873017faed28ff369a4756e4bfacebca232ed4a7aabe7",
+      "what": "review sheet"
+    }
+  ]
+}

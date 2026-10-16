@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""make_ability_icons - SkyWynn class ability icons, Mage + Priest + Monk + Assassin + Warrior + Berserker (5 per class, 64x64 RGBA), our own art drawn from code.
+"""make_ability_icons - SkyWynn class ability icons, Mage + Priest + Monk + Assassin + Warrior + Berserker + Archer + Spellblade (5 per class, 64x64 RGBA), our own art drawn from code.
 
 Each icon = a round dark frame with a CLASS-COLOUR RIM (Mage #7fb0e0, Priest #f2e6a0 - the class emblem colours,
 research/cloud/class-art/README.md) around a dark field tinted toward the class colour, with one bold bevelled symbol that
@@ -1671,6 +1671,274 @@ def hunters_net():
     glints = [(25, 20, "#eadaac")]
     return back, g, front, glints
 
+# ================================================================================================================= SPELLBLADE
+# (research/classes/Spellblade.md section Abilities; class colour #6fd0d8 = SkyyProfiles / SkyyClasses ClassDefs "Spellblade")
+SB_RIM = ramp("#0e3a44", "#1a626c", "#36959e", "#6fd0d8", "#a8eaee", "#e0f8f8")          # from Spellblade #6fd0d8
+ARC = ramp("#0c2a44", "#134e74", "#1f80a2", "#38b6c8", "#76dee2", "#c0f6f2", "#eefffa")   # the momentum arc: arcane teal light
+BREACH = ramp("#2a1050", "#46208a", "#6c3cc0", "#9a6ae6", "#c4a2f8", "#ece0ff")          # breach rune light (violet, non-elemental)
+VOLT = ramp("#4a3008", "#8a6010", "#c89a1c", "#f0cc3c", "#fae67c", "#fff8cc")            # lightning element
+TEALGRIP = ramp("#0c1a20", "#16303a", "#204452", "#2e5c6c", "#427a8a")                    # dark teal leather grip wrap
+
+SPELLBLADE = K.Style("Spellblade", "#6fd0d8", SB_RIM, field_c="#163e48", field_e="#061317",
+                     outline="#03090c", frame=FRAME, glow_c="#6fd0d8")
+
+
+def greatsword(g, x0, y0, x1, y1, w=2.6, grip=8.5, guard=6.2, rune=True):
+    """the Spellblade's two-handed sword: pommel (x0, y0) -> tip (x1, y1). Long dark-teal wrapped grip, steel crossguard with a
+    teal gem, a long bevelled blade (lit half + shaded half) with a glowing teal rune fuller. Returns the mask."""
+    dx, dy = x1 - x0, y1 - y0
+    L = math.hypot(dx, dy)
+    ux, uy = dx / L, dy / L
+    nx, ny = -uy, ux
+    if nx * -0.55 + ny * -0.83 < 0:                          # n = the side facing the light (up-left)
+        nx, ny = -nx, -ny
+    gx, gy = x0 + ux * (grip + 2.2), y0 + uy * (grip + 2.2)              # guard centre
+    tipw = w * 0.55
+    blade = poly([(gx + nx * w, gy + ny * w), (x1 - ux * w * 2.6 + nx * tipw, y1 - uy * w * 2.6 + ny * tipw), (x1, y1),
+                  (x1 - ux * w * 2.6 - nx * tipw, y1 - uy * w * 2.6 - ny * tipw), (gx - nx * w, gy - ny * w)])
+    g.bevel(blade, STEEL, face=0.76, bevel=0.9, grad=0.2, gain=0.9)
+    half = blade & (((X - gx) * nx + (Y - gy) * ny) < 0)
+    g.bevel(half, STEEL, face=0.50, bevel=0.0001, grad=0.15, gain=0.0)
+    if rune:                                                  # glowing rune fuller down the middle (dashes = runes)
+        fl = L - grip - 2.2 - w * 3.4
+        for k in range(5):
+            a0 = 2.2 + k * fl / 5.0
+            a1 = a0 + fl / 5.0 * 0.62
+            seg = capsule(gx + ux * a0, gy + uy * a0, gx + ux * a1, gy + uy * a1, 0.62)
+            g.put(seg & blade, rs(ARC, 0.80 + 0.05 * (k % 2)))
+    gp = capsule(x0 + ux * 1.6, y0 + uy * 1.6, gx, gy, w * 0.6)
+    g.bevel(gp, TEALGRIP, face=0.55, bevel=0.6, grad=0.2, gain=0.8)
+    wrap_bands(g, gp, x0, y0, gx, gy, 2.0, 0.6, TEALGRIP, t_dark=0.05)
+    gd = capsule(gx + nx * guard, gy + ny * guard, gx - nx * guard, gy - ny * guard, 1.45)
+    g.bevel(gd, STEEL, face=0.62, bevel=0.6, grad=0.3, gain=0.85)
+    for s in (-1, 1):                                         # flared guard ends
+        g.bevel(circle(gx + nx * guard * s, gy + ny * guard * s, 1.75), STEEL, face=0.66, bevel=0.5, grad=0.3, gain=0.8)
+    g.bevel(circle(gx, gy, 1.55), ARC, face=0.7, bevel=0.5, grad=0.4, gain=0.85)            # teal gem
+    pm = circle(x0, y0, w * 0.85)
+    g.bevel(pm, STEEL, face=0.6, bevel=0.6, grad=0.4, gain=0.8)
+    return blade | gp | gd | pm
+
+
+def crescent(cx, cy, r_out, thick, a_mid, span, sharp=1.0):
+    """a crescent slash (moon-shaped): outer circle radius r_out round (cx, cy), the inner cut-out shifted toward the inside
+    so the band is `thick` wide at a_mid and tapers to points at both ends. Returns (mask, t) with t = 0..1 along the arc."""
+    a = math.radians(a_mid)
+    ox, oy = cx - math.cos(a) * thick, cy - math.sin(a) * thick
+    m = circle(cx, cy, r_out) & ~circle(ox, oy, r_out * sharp)
+    ang = (np.degrees(np.arctan2(Y - cy, X - cx)) - (a_mid - span / 2.0)) % 360.0
+    m &= ang <= span
+    return m, np.clip(ang / span, 0, 1)
+
+
+def arcane_breach():
+    """Arcane Breach: a wide 180-degree teal sweep (the arc, 5 blocks) under a violet rune ward cracked open - BREACHED,
+    enemies take more damage from everyone"""
+    back, g, front = L3()
+    # the rune ward: a violet rune ring with a seal inside, split by a jagged crack
+    wx, wy = 32.0, 25.0
+    glow(back, circle(wx, wy, 11.0), "#9a6ae6", 4.0, 0.75)
+    ward = ring(wx, wy, 11.0, 8.2) | circle(wx, wy, 5.2)
+    ticks = np.zeros(X.shape, bool)
+    for k in range(8):
+        a = math.radians(k * 45 + 22.5)
+        ticks |= capsule(wx + math.cos(a) * 6.6, wy + math.sin(a) * 6.6, wx + math.cos(a) * 7.6, wy + math.sin(a) * 7.6, 0.6)
+    crack_pts = [(wx - 1.5, wy - 13.0), (wx + 1.2, wy - 6.0), (wx - 1.8, wy - 1.0), (wx + 1.6, wy + 4.0), (wx - 0.8, wy + 13.0)]
+    crack = line(crack_pts, 2.0)
+    shard = poly([(wx + 0.6, wy - 13.0), (wx + 14.0, wy - 13.0), (wx + 14.0, wy + 13.0), (wx + 0.6, wy + 13.0)]) & ~crack
+    # the right half is knocked a little out and down (the ward broken open)
+    left = (ward | ticks) & ~crack & ~shard
+    right = np.roll(np.roll((ward | ticks) & shard, 7, axis=0), 6, axis=1)
+    g.bevel(left & ~ticks, BREACH, face=0.62, bevel=0.8, grad=0.35, gain=0.85)
+    g.bevel(right & ~np.roll(np.roll(ticks, 7, axis=0), 6, axis=1), BREACH, face=0.5, bevel=0.8, grad=0.35, gain=0.85)
+    g.put(ticks & left, rs(BREACH, 0.95))
+    # bright light pouring out of the crack
+    front.put(line(crack_pts[1:4], 0.9), rs(BREACH, 1.0), alpha=0.85)
+    # the arc: a wide crescent sweeping under the ward, left to right
+    cm, t = crescent(32.0, 25.0, 23.0, 6.5, 90.0, 190.0, 0.97)
+    glow(back, cm, "#38b6c8", 3.0, 0.9)
+    heat = 1.0 - np.abs(t - 0.55) * 1.3
+    g.put(cm, rs(ARC, 0.42 + heat * 0.55))
+    core, t2 = crescent(32.0, 25.0, 21.6, 2.8, 92.0, 150.0, 0.985)
+    g.put(core & cm, rs(ARC, 0.97))
+    for sx, sy, r in ((12.0, 14.0, 1.8), (51.0, 16.0, 2.0)):
+        sparkle(front, sx, sy, r, "#c0f6f2", None, 0.5)
+    glints = [(28, 18, "#ece0ff")]
+    return back, g, front, glints
+
+
+def elemental_imbue():
+    """Elemental Imbue: the greatsword standing point-up, wrapped by element ribbons - a fire ribbon and a frost ribbon spiral
+    up the blade, a lightning bolt crackles along it - every arc carries the element"""
+    back, g, front = L3()
+    x0, y0, x1, y1 = 27.0, 56.0, 37.0, 7.5
+    glow(back, capsule(x0, y0, x1, y1, 5.0), "#38b6c8", 5.0, 0.7)
+    dx, dy = x1 - x0, y1 - y0
+    L = math.hypot(dx, dy)
+    ux, uy = dx / L, dy / L
+    nx, ny = -uy, ux
+    ribbons = [(FIRE, 0.0, "#ec7424", 0.50), (ICE, math.pi, "#62b6e0", 0.62)]
+    a_start, a_end = 15.0, L - 5.0
+
+    def ribbon_pts(ph):
+        pts = []
+        for k in range(41):
+            a = a_start + (a_end - a_start) * k / 40.0
+            amp = 6.6 - 2.6 * k / 40.0
+            th = ph + a * 0.30
+            pts.append((x0 + ux * a + nx * amp * math.sin(th), y0 + uy * a + ny * amp * math.sin(th), math.cos(th)))
+        return pts
+    for rmp, ph, gc, tc in ribbons:                           # back halves (behind the blade)
+        pts = ribbon_pts(ph)
+        for (ax, ay, ca), (bx, by, cb) in zip(pts[:-1], pts[1:]):
+            if ca < 0:
+                back.put(capsule(ax, ay, bx, by, 0.95), rs(rmp, tc - 0.18), alpha=0.95)
+    greatsword(g, x0, y0, x1, y1, w=3.3, grip=9.0, guard=7.0)
+    for rmp, ph, gc, tc in ribbons:                           # front halves (over the blade)
+        pts = ribbon_pts(ph)
+        m = np.zeros(X.shape, bool)
+        for (ax, ay, ca), (bx, by, cb) in zip(pts[:-1], pts[1:]):
+            if ca >= 0:
+                m |= capsule(ax, ay, bx, by, 1.1)
+        glow(back, m, gc, 1.6, 0.6)
+        front.put(m, rs(rmp, tc))
+        front.put(m & (((X - x0) * nx + (Y - y0) * ny) > 0), rs(rmp, tc + 0.2))
+    # lightning: a zigzag bolt crackling up along the blade's edge
+    bolt = []
+    for k in range(8):
+        a = 17.0 + k * (L - 25.0) / 7.0
+        o = (2.4 if k % 2 else -1.0) + 4.2
+        bolt.append((x0 + ux * a + nx * o, y0 + uy * a + ny * o))
+    bm = line(bolt, 1.2)
+    glow(back, bm, "#f0cc3c", 1.8, 0.8)
+    front.put(bm, rs(VOLT, 0.8))
+    front.put(line(bolt, 0.5), rs(VOLT, 1.0))
+    sparkle(front, 48.0, 15.0, 2.2, "#fae67c", None, 0.5)
+    sparkle(front, 16.0, 26.0, 1.8, "#cdeefa", None, 0.5)
+    glints = [(36, 12, "#f0f2f4")]
+    return back, g, front, glints
+
+
+def sunder():
+    """Sunder: the greatsword driven point-down into a heavy steel cuirass that splits open (Weakened + Exposed:
+    the boss deals less and takes harder crits)"""
+    back, g, front = L3()
+    glow(back, circle(32.0, 36.0, 12.0), "#e0b060", 5.0, 0.55)
+    # the cuirass: broad shoulders, neck opening, narrowing to the waist; two abdominal lames under it
+    cx, cy = 32.0, 40.5
+    chest = poly([(cx - 15.0, cy - 9.0), (cx - 7.0, cy - 11.0), (cx - 4.0, cy - 7.5), (cx + 4.0, cy - 7.5), (cx + 7.0, cy - 11.0),
+                  (cx + 15.0, cy - 9.0), (cx + 13.5, cy - 3.0), (cx + 11.0, cy + 5.0), (cx - 11.0, cy + 5.0), (cx - 13.5, cy - 3.0)])
+    lame1 = poly([(cx - 11.0, cy + 6.0), (cx + 11.0, cy + 6.0), (cx + 10.0, cy + 9.6), (cx - 10.0, cy + 9.6)])
+    lame2 = poly([(cx - 10.0, cy + 10.6), (cx + 10.0, cy + 10.6), (cx + 8.8, cy + 14.0), (cx - 8.8, cy + 14.0)])
+    plate = chest | lame1 | lame2
+    crack_pts = [(cx + 0.5, cy - 8.0), (cx - 2.4, cy - 2.5), (cx + 2.0, cy + 2.5), (cx - 1.2, cy + 8.0), (cx + 0.8, cy + 14.5)]
+    crack = line(crack_pts, 2.0)
+    split = (X - cx) < 0.9 * np.sin((Y - cy) * 0.55)
+    curve = 0.16 * np.cos((X - cx) / 15.0 * math.pi * 0.5)
+    for side, sh, face in ((True, -2, 0.62), (False, 2, 0.44)):
+        for part_ in (chest, lame1, lame2):
+            m = part_ & ~crack & (split if side else ~split)
+            m = np.roll(m, sh, axis=1)
+            g.bevel(m, STEEL, face=face, bevel=1.0, grad=0.35, gain=0.9, tone=curve)
+    # gold neck trim + rivets on the shoulders
+    neck = ring(cx, cy - 11.5, 5.6, 3.6) & (Y > cy - 9.0)
+    g.put(np.roll(neck & (X < cx), -2, axis=1) | np.roll(neck & (X >= cx), 2, axis=1), rs(GOLD, 0.62))
+    for rx, ry in ((cx - 12.5, cy - 7.5), (cx + 12.5, cy - 7.5), (cx - 10.5, cy + 2.5), (cx + 10.5, cy + 2.5)):
+        g.bevel(circle(rx, ry, 1.0), GOLD, face=0.7, bevel=0.3, grad=0.3, gain=0.7)
+    front.put(line(crack_pts[1:], 0.9), rs(AMBER, 0.95), alpha=0.9)
+    # the sword coming down from above, its tip in the crack
+    greatsword(g, 40.0, 7.0, 32.0, 36.0, w=3.7, grip=7.0, guard=7.0, rune=True)
+    for sx, sy, r in ((20.0, 24.0, 2.2), (45.0, 27.0, 1.9), (24.0, 16.0, 1.4)):
+        sparkle(front, sx, sy, r, "#fff0cc", None, 0.5)
+    glints = [(25, 31, "#f0f2f4")]
+    return back, g, front, glints
+
+
+def rift_cleave():
+    """Rift Cleave: the arc tears a glowing RIFT along the ground ahead (2 x 8 blocks, 3 s): enemies inside are Breached
+    and Slowed"""
+    back, g, front = L3()
+    gy = 44.0
+    # dark stone ground disc in perspective
+    ground = ellipse(32.0, gy, 22.0, 9.0, 0)
+    back.put(ground, rs(STONE, 0.42), alpha=0.95)
+    back.put(ering(32.0, gy, 22.0, 9.0, 1.2), rs(STONE, 0.62), alpha=0.95)
+    # the rift: a jagged tear receding from the front (wide) to the back (thin)
+    pts_l, pts_r = [], []
+    for k in range(9):
+        t = k / 8.0
+        y = gy + 8.0 - t * 15.5
+        w = 5.0 * (1 - t) + 0.6
+        jig = (0.9 if k % 2 else -0.9) * (1 - t * 0.6)
+        xc = 32.0 + 1.2 * math.sin(t * 5.0) + jig * 0.4
+        pts_l.append((xc - w + jig, y))
+        pts_r.append((xc + w + jig * 0.6, y))
+    rift = poly(pts_l + pts_r[::-1])
+    glow(back, rift, "#9a6ae6", 3.5, 1.0)
+    tdepth = np.clip((gy + 8.0 - Y) / 16.0, 0, 1)
+    g.put(rift, rs(BREACH, 0.72 - tdepth * 0.4))
+    inner = poly([(x + 1.2 * (1 - k / 8.0), y) for k, (x, y) in enumerate(pts_l)] +
+                 [(x - 1.2 * (1 - k / 8.0), y) for k, (x, y) in reversed(list(enumerate(pts_r)))])
+    g.put(inner & rift, rs(ARC, 0.80 - tdepth * 0.25))
+    # broken rock lips along the tear
+    for k in (1, 3, 5):
+        x, y = pts_l[k]
+        g.bevel(poly([(x - 2.6, y + 0.8), (x - 0.4, y - 1.2), (x + 0.2, y + 1.4)]), STONE, face=0.6, bevel=0.5, grad=0.3, gain=0.8)
+        x, y = pts_r[k]
+        g.bevel(poly([(x + 2.6, y + 0.8), (x + 0.4, y - 1.2), (x - 0.2, y + 1.4)]), STONE, face=0.5, bevel=0.5, grad=0.3, gain=0.8)
+    # light rising out of the rift (the zone)
+    rays = np.zeros(X.shape, bool)
+    for xr, h in ((28.0, 14.0), (33.0, 18.0), (37.0, 12.0)):
+        rays |= poly([(xr - 1.0, gy + 2.0), (xr + 1.0, gy + 2.0), (xr + 0.4, gy + 2.0 - h), (xr - 0.4, gy + 2.0 - h)])
+    back.put(rays, rs(ARC, 0.85), alpha=0.55)
+    # the arc that cut it: a teal crescent sweeping across above
+    cm, t = crescent(32.0, 36.0, 21.0, 4.5, -90.0, 150.0, 0.975)
+    glow(back, cm, "#38b6c8", 2.5, 0.8)
+    g.put(cm, rs(ARC, 0.5 + (1.0 - np.abs(t - 0.5) * 1.6) * 0.45))
+    for sx, sy, r in ((14.0, 34.0, 1.6), (50.0, 36.0, 1.8)):
+        sparkle(front, sx, sy, r, "#ece0ff", None, 0.5)
+    glints = [(32, 14, "#eefffa")]
+    return back, g, front, glints
+
+
+def shattering_arc():
+    """Shattering Arc: one enormous 200-degree arc that SPENDS your Momentum - the crescent breaks into shards at its tail,
+    the momentum pips burn out into it"""
+    back, g, front = L3()
+    cx, cy = 33.0, 33.0
+    cm, t = crescent(cx, cy, 21.0, 8.0, 20.0, 230.0, 0.96)
+    # t = 0 at the tail (upper left, -95 deg) .. 1 at the head (lower right); shards only near the tail
+    tail = cm & (t < 0.34)
+    body = cm & ~tail
+    glow(back, body, "#38b6c8", 4.0, 1.0)
+    g.put(body, rs(ARC, 0.40 + t * 0.58))
+    core, _ = crescent(cx, cy, 19.6, 3.2, 40.0, 150.0, 0.985)
+    g.put(core & body, rs(ARC, 0.98))
+    # the tail breaks into shards (crystal triangles drifting off)
+    ang0 = math.radians(20.0 - 115.0)
+    for k, (dt, off, s, rot) in enumerate(((0.05, 3.0, 2.6, 20), (0.12, 1.0, 3.2, -30), (0.20, 4.0, 2.2, 60), (0.27, 1.6, 3.4, 10),
+                                           (0.10, 7.0, 1.8, -50), (0.24, 7.5, 1.6, 40))):
+        a = ang0 + math.radians(230.0 * dt)
+        r = 17.5 + off
+        px, py = cx + math.cos(a) * r, cy + math.sin(a) * r
+        tri = poly(rotpts([(px, py - s), (px + s * 0.8, py + s * 0.6), (px - s * 0.8, py + s * 0.6)], px, py, rot))
+        g.bevel(tri, ARC, face=0.62 + 0.04 * k, bevel=0.5, grad=0.3, gain=0.9)
+    # five momentum pips (chevrons) being drawn into the arc: bright at the front, spent (dim) at the back
+    for k in range(5):
+        px, py = 22.0 + k * 3.6, 33.0
+        chev = poly([(px - 1.6, py - 2.6), (px + 0.4, py - 2.6), (px + 2.6, py), (px + 0.4, py + 2.6), (px - 1.6, py + 2.6),
+                     (px + 0.6, py)])
+        if k >= 3:
+            g.bevel(chev, ARC, face=0.78, bevel=0.4, grad=0.3, gain=0.8)
+        else:
+            back.put(chev, rs(ARC, 0.35 + k * 0.1), alpha=0.8)
+    # a burst at the head of the arc
+    hx0, hy0 = cx + math.cos(math.radians(20 + 115)) * 18.5, cy + math.sin(math.radians(20 + 115)) * 18.5
+    sparkle(front, hx0, hy0, 2.6, "#eefffa", "#c0f6f2", 0.55)
+    sparkle(front, 44.0, 52.0, 1.7, "#c0f6f2", None, 0.5)
+    glints = [(47, 22, "#eefffa")]
+    return back, g, front, glints
+
+
 ICONS = [
     # (class style, file name, display name, painter)
     (MAGE, "Meteor", "Meteor", meteor),
@@ -1708,6 +1976,11 @@ ICONS = [
     (ARCHER, "ExplosiveArrow", "Explosive Arrow", explosive_arrow),
     (ARCHER, "ArrowRain", "Arrow Rain", arrow_rain),
     (ARCHER, "HuntersNet", "Hunter's Net", hunters_net),
+    (SPELLBLADE, "ArcaneBreach", "Arcane Breach", arcane_breach),
+    (SPELLBLADE, "ElementalImbue", "Elemental Imbue", elemental_imbue),
+    (SPELLBLADE, "Sunder", "Sunder", sunder),
+    (SPELLBLADE, "RiftCleave", "Rift Cleave", rift_cleave),
+    (SPELLBLADE, "ShatteringArc", "Shattering Arc", shattering_arc),
 ]
 
 

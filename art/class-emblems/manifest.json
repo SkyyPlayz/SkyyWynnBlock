@@ -1,0 +1,345 @@
+{
+  "item": "Class emblems (shield crests) - Warrior, Berserker, Archer, Assassin, Mage, Priest, Monk, Spellblade",
+  "in_game": "NOT wired in, NOT seen in game",
+  "generator": [
+    "tools/art/make_class_emblems.py",
+    "research/cloud/class-art/make_emblems.py (approved painter, imported)"
+  ],
+  "deterministic": true,
+  "approved_source": "research/cloud/class-art/ (Skyy 2026-10-06 'they look great!'; v2 Monk + Priest 10-07; v2 others 10-08)",
+  "sizes": {
+    "64": "64 x 64 RGBA (lists, HUD, Profiles rows)",
+    "128": "128 x 128 RGBA (class cards)",
+    "locked": "64 x 64 grey 'coming later / empty slot' version"
+  },
+  "class_colours": {
+    "Warrior": "#e0b060",
+    "Berserker": "#d9443f",
+    "Archer": "#8fd67a",
+    "Assassin": "#b58cff",
+    "Mage": "#7fb0e0",
+    "Priest": "#f2e6a0",
+    "Monk": "#f08a30",
+    "Spellblade": "#6fd0d8"
+  },
+  "files": [
+    {
+      "path": "Common/Icons/ClassEmblems/Warrior.png",
+      "bytes": 2652,
+      "sha256": "4926fcb6904c5c643a2ce927dd5f05db83e3dc8440032bd7b574e3f29d847ffa",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Warrior",
+      "class_colour": "#e0b060",
+      "kind": "64",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Warrior_128.png",
+      "bytes": 5678,
+      "sha256": "e2fa946f04b98787e547d556efb79f42744dcfa7ed6024f4e16b50e65b85cdee",
+      "image_size": [
+        128,
+        128
+      ],
+      "class": "Warrior",
+      "class_colour": "#e0b060",
+      "kind": "128",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Warrior_Locked.png",
+      "bytes": 2640,
+      "sha256": "64396197e0ffc0df668751376354ca24613e4bef9c9103210823ad4b14d64a7e",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Warrior",
+      "class_colour": "#e0b060",
+      "kind": "locked",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Berserker.png",
+      "bytes": 2905,
+      "sha256": "cbd62b3767995950307bfe436fba882815bc08dd4388bd5e43e1ed8400007e7d",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Berserker",
+      "class_colour": "#d9443f",
+      "kind": "64",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Berserker_128.png",
+      "bytes": 7019,
+      "sha256": "7dbea37f1947062b1811a38c36a82f95ca648656acfc1b1f9d03a5e16862f7b9",
+      "image_size": [
+        128,
+        128
+      ],
+      "class": "Berserker",
+      "class_colour": "#d9443f",
+      "kind": "128",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Berserker_Locked.png",
+      "bytes": 2833,
+      "sha256": "12cf76532b47481ec66f8b6561732f8885aa626cc1719a256cd2d77622ba7b7a",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Berserker",
+      "class_colour": "#d9443f",
+      "kind": "locked",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Archer.png",
+      "bytes": 2376,
+      "sha256": "70939f00e30db1dfdc9187241700513f90fbcebb3bddbcb5a1fc1b07dd8be4ef",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Archer",
+      "class_colour": "#8fd67a",
+      "kind": "64",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Archer_128.png",
+      "bytes": 5206,
+      "sha256": "49c273a643d58d37303cc4ff70474ed08b1ff5e50d7f9cb52677cd432dc599ba",
+      "image_size": [
+        128,
+        128
+      ],
+      "class": "Archer",
+      "class_colour": "#8fd67a",
+      "kind": "128",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Archer_Locked.png",
+      "bytes": 2306,
+      "sha256": "f8dd42a02d4888711999bfef47aabc95c1a041aa207093f8841bc0da045f2255",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Archer",
+      "class_colour": "#8fd67a",
+      "kind": "locked",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Assassin.png",
+      "bytes": 2304,
+      "sha256": "65e353d7447c835bfa4edb5fa855dd57071cf6eb84839c5a94ca0d5d8a2ce76d",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Assassin",
+      "class_colour": "#b58cff",
+      "kind": "64",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Assassin_128.png",
+      "bytes": 5297,
+      "sha256": "e1716c947045654ad45679028ce9d9ef93c9ffb5c0147d23753c8ea9e11e9459",
+      "image_size": [
+        128,
+        128
+      ],
+      "class": "Assassin",
+      "class_colour": "#b58cff",
+      "kind": "128",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Assassin_Locked.png",
+      "bytes": 2263,
+      "sha256": "2a3d97d28f2c7f0733d28cd5ee2025ddfeca5f550dafdad0cfdb68c0a3fd4dcf",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Assassin",
+      "class_colour": "#b58cff",
+      "kind": "locked",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Mage.png",
+      "bytes": 2448,
+      "sha256": "c2fa2868b6847c83ac731c9a3188a74914256809b40041dba997f7d37bbdd4ab",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Mage",
+      "class_colour": "#7fb0e0",
+      "kind": "64",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Mage_128.png",
+      "bytes": 5420,
+      "sha256": "e4a59d477fae2ad5b7af5f71df6e973fe94c97bc9badbe092e47c353111a86cf",
+      "image_size": [
+        128,
+        128
+      ],
+      "class": "Mage",
+      "class_colour": "#7fb0e0",
+      "kind": "128",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Mage_Locked.png",
+      "bytes": 2349,
+      "sha256": "00ca186b77e8f914fc951f126561754f09c9e85919cfa74d57b2eb84ab939897",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Mage",
+      "class_colour": "#7fb0e0",
+      "kind": "locked",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Priest.png",
+      "bytes": 2831,
+      "sha256": "d976f8fb7ae70324bbf2e30b1d78f00a37c7be3a2a692cdc168944f7e310216c",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Priest",
+      "class_colour": "#f2e6a0",
+      "kind": "64",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Priest_128.png",
+      "bytes": 5717,
+      "sha256": "106a76f277aa858e118ee06b8249c8781d78be280e4d75485815dd4d258c08d4",
+      "image_size": [
+        128,
+        128
+      ],
+      "class": "Priest",
+      "class_colour": "#f2e6a0",
+      "kind": "128",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Priest_Locked.png",
+      "bytes": 2716,
+      "sha256": "cc15ee8a0e32e13d952b2cf85503aba12997f4f22891c2f6def7d957eb7f8699",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Priest",
+      "class_colour": "#f2e6a0",
+      "kind": "locked",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Monk.png",
+      "bytes": 2558,
+      "sha256": "49a73b96433224411a8798056236a04eb4bb08fd23dcf1ca0d9d76cc0cebe8e8",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Monk",
+      "class_colour": "#f08a30",
+      "kind": "64",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Monk_128.png",
+      "bytes": 5999,
+      "sha256": "970dd5ae73308bc503df68f793768433ca9cdb2ff9547dac600031ed3d1fc4d3",
+      "image_size": [
+        128,
+        128
+      ],
+      "class": "Monk",
+      "class_colour": "#f08a30",
+      "kind": "128",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Monk_Locked.png",
+      "bytes": 2433,
+      "sha256": "deae17790818d0aec94966e75fb4e5710e6a3844f611c3c81f18b3fe40e5ca30",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Monk",
+      "class_colour": "#f08a30",
+      "kind": "locked",
+      "status": "APPROVED by Skyy 2026-10-06 (docs/answered/gear.md line 86), same pixels as research/cloud/class-art/icons/"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Spellblade.png",
+      "bytes": 2486,
+      "sha256": "2570f81f96c65d389bc07e4a3a1d2002b60fbb993933d123279f4b7b92bd9daa",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Spellblade",
+      "class_colour": "#6fd0d8",
+      "kind": "64",
+      "status": "DRAFT - waiting for Skyy's review, NOT committed"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Spellblade_128.png",
+      "bytes": 5255,
+      "sha256": "93490a9730c7cd77b41ee865bc9e58f667cdb3380d83c99a708e7ee671b78578",
+      "image_size": [
+        128,
+        128
+      ],
+      "class": "Spellblade",
+      "class_colour": "#6fd0d8",
+      "kind": "128",
+      "status": "DRAFT - waiting for Skyy's review, NOT committed"
+    },
+    {
+      "path": "Common/Icons/ClassEmblems/Spellblade_Locked.png",
+      "bytes": 2459,
+      "sha256": "828f88583da9e6990cdd05025086342e22f6ea532b528bf2e740cada7d665713",
+      "image_size": [
+        64,
+        64
+      ],
+      "class": "Spellblade",
+      "class_colour": "#6fd0d8",
+      "kind": "locked",
+      "status": "DRAFT - waiting for Skyy's review, NOT committed"
+    },
+    {
+      "path": "sheet.png",
+      "bytes": 247722,
+      "sha256": "6631f6006573cd348b409ccae165ee66d581ded301b112f0f7803fc0a848d73e",
+      "what": "review sheet, all 8 classes"
+    }
+  ]
+}

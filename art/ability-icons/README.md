@@ -1,4 +1,4 @@
-# Class ability icons - Mage, Priest, Monk, Assassin, Warrior, Berserker, Archer (35 icons, 64 x 64)
+# Class ability icons - Mage, Priest, Monk, Assassin, Warrior, Berserker, Archer, Spellblade (40 icons, 64 x 64)
 
 ART-RESUME items 4 (Mage + Priest) and 6 (the other classes, one class per commit).
 
@@ -10,6 +10,7 @@ ART-RESUME items 4 (Mage + Priest) and 6 (the other classes, one class per commi
 | Warrior | **APPROVED + committed** (1cf4d85). Review sheet as approved: `sheet-warrior.png`. Skyy, word for word (2026-10-08): "Yes, the Warrior icons look good, commit them" (draft v1 approved as drawn, all defaults kept) |
 | Berserker | **APPROVED + committed** (b617dd7). Review sheet as approved: `sheet-berserker.png`. Skyy, word for word (2026-10-08): "Yes, the Berserker icons look good, commit them" (draft v1 approved as drawn, all defaults kept) |
 | Archer | **APPROVED + committed** (the Archer commit after b617dd7). Review sheet as approved: `sheet-archer.png` (the last class). Skyy on v1, word for word (2026-10-08): "If you can, give the arrows a bit more detail." -> v2: arrow detail pass on Pinning Shot, Rapid Fire, Explosive Arrow and Arrow Rain; Hunter's Net unchanged; then Skyy, word for word: "Yes, the Archer icons look good, commit them" (v2 approved as drawn, all defaults kept) |
+| Spellblade - DRAFT | **DRAFT v1, waiting for Skyy's review, NOT committed** (2026-10-16, Skyy away: "work through as much of your list as you can while im gone."). Review sheet: `sheet-spellblade.png`. Abilities from `research/classes/Spellblade.md` (all PROPOSED; class colour `#6fd0d8` = SkyyClasses / SkyyProfiles `Spellblade`) |
 
 None of them is wired in or seen in game yet. Original pixels drawn from code (Python + numpy + Pillow). No vanilla Hytale file,
 other mod or reference picture was read, copied, traced or recoloured. The approved Mage + Priest PNGs are byte-identical to the
@@ -34,6 +35,8 @@ committed ones (checked after adding Monk + Assassin).
 | `sheet-warrior.png` | the same layout for the Warrior icons only (kept as Skyy reviewed + approved it) |
 | `sheet-berserker.png` | the same layout for the Berserker icons only (kept as Skyy reviewed + approved it) |
 | `sheet-archer.png` | the same layout for the Archer icons only (kept as Skyy reviewed + approved it) |
+| `Common/Icons/Abilities/Spellblade/ArcaneBreach.png`, `ElementalImbue.png`, `Sunder.png`, `RiftCleave.png`, `ShatteringArc.png` | 5 Spellblade icons (DRAFT v1, for review) |
+| `sheet-spellblade.png` | the same layout for the Spellblade icons only (DRAFT, for review) |
 | `manifest.json` | every file: path, bytes, sha256, size, class, slot, ability text, what the icon shows, colour ramps |
 | `README.md` | this file |
 
@@ -142,6 +145,26 @@ two dark fields do not mix up beside each other (checked side by side in `review
 emblem's arrow (v2 detail, see section 5): oak shaft, steel broadhead, barred red fletching with a cream cock feather (the emblem's red + cream). Green is
 used for the Archer's "control" effects (roots, root ring, rain zone, net glow) - the Assassin's Toxin is a yellower poison green
 inside a lilac rim, so the two stay apart. Fire only on Explosive Arrow (the Mage FIRE ramp, so it reads as "boom" at a glance).
+
+### Spellblade (class colour `#6fd0d8`; frontline sweeper + boss debuffer - momentum / elements / the arc) - DRAFT v1
+
+| Icon | Slot | What the ability does | What the icon shows |
+|---|---|---|---|
+| **Arcane Breach** (`ArcaneBreach.png`) | A1, PROPOSED, 8 + 1 St / 16 s | 180-degree arc, 5 blocks, 1.2 H; BREACHED 8 s = +15% damage taken from everyone | a violet rune ward cracked in two (right half knocked out of place, light through the crack) over a wide teal crescent arc |
+| **Elemental Imbue** (`ElementalImbue.png`) | A2, PROPOSED, 7 + 1 St / 18 s | 12 s: every arc +30% element damage + the element's status | the Spellblade greatsword point-up (dark teal grip, steel guard, teal gem, glowing rune fuller) with a fire ribbon + a frost ribbon spiralling up it and a lightning bolt along its edge |
+| **Sunder** (`Sunder.png`) | A2-alt, PROPOSED, 9 + 2 St / 30 s | one target, 2.0 H; SUNDERED 12 s = deals 15% less, crits on it +20% | the greatsword driven point-down into a heavy steel cuirass (gold neck trim, rivets, two lames) splitting open along a glowing crack, sparks |
+| **Rift Cleave** (`RiftCleave.png`) | A1-alt A, PROPOSED, 10 + 2 St / 20 s | arc + a 2 x 8 block rift on the ground 3 s: Breached 15% + Slowed 20% | a glowing violet-teal rift torn into a dark stone floor, receding, rock lips + light rising out of it, under the teal arc that cut it |
+| **Shattering Arc** (`ShatteringArc.png`) | A1-alt B, PROPOSED, 9 + 2 St / 20 s | spends Momentum: 200-degree arc, 6 blocks, 1.2 H + 0.1 H per stack, stronger Breach; keeps 5 stacks | one huge teal crescent whose tail breaks into crystal shards, five momentum chevrons drawn into it (2 bright, 3 spent) |
+
+Spellblade look: teal rim from the class colour `#6fd0d8`, deep teal field (`#163e48` -> `#061317`). The ARC ramp (arcane teal) is the
+Spellblade's own light - every sweep is the same crescent shape, so the class reads as "the arc" at 32 px. Breach is violet
+(BREACH ramp) because it is NOT elemental (the spec: "the party debuff, NON-elemental"); Imbue shows the elements (Mage FIRE + ICE
+ramps, a new VOLT yellow for lightning). Steel + teal-gem greatsword = a two-handed sword (the Spellblade's weapon), distinct from the
+Warrior's one-handed sword + shield and the Assassin's daggers. The field is bluer and darker than the Warrior's gunmetal `#2a3a44`
+and the Archer's forest green. Validator: PASS (hard alpha, no #000 / #fff, all 40 icons distinct at 32 px).
+
+Open (default in brackets): the Great Shield is not on any icon [keep it off - it is a weapon, not an ability]; Sunder shows a
+cuirass, not a boss [a boss portrait would clash with the Assassin's God Killer crown].
 
 Mage vs Priest at a glance: blue rim + navy field + cool arcane colours vs gold rim + warm umber field + gold / ivory / soul-cyan.
 The Priest's cyan is the soul-cage v2 cyan from the Priest class emblem, so the two families match.
