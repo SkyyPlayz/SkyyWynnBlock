@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + menu0330 Menu 0.3.30 + cls0130 Classes 0.1.30 + fish018 Fishing fixes)
+# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + menu0330 Menu 0.3.30 + cls0130 Classes 0.1.30 + fish018 Fishing fixes + bz0115 Bazaar 0.1.15)
 
 Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
 `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md` (2026-10-15 / 16 lines). Decisions word for word: `docs/answered/<topic>.md`.
@@ -30,6 +30,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 1c. **LIFELONG ACCESSORY BAG / POCKET DIMENSION / MENU ITEM + no 2nd bag on /island reset** (gear.md 10-16): like the forever tools - one per
    profile, can't be lost, extras cleaned, a recall command each; island reset / kit never re-gives owned once-only items. FULL round (Accessories +
    Sacks + Menu + Islands) after menu0330 deploys.
+1c2. RUNNING lean bz0115 (SkyyBazaar 0.1.15): Farming tab = crop, Enchanted, seeds, Eternal seeds per crop by tier; saplings -> Foraging (economy.md 10-16).
 1d. RUNNING fish018 (SkyyFishing 0.1.8 + SkyySacks 0.8.10 + SkyyShards 0.4.1): fishing line over water, fish into the Fishing bag, 29 missing item
    models (bags.md / ui.md 10-16). Still ask Skyy what the purple cube on the spawn-Temple pedestal is.
 1e. **CLASS EMBLEMS** (ui.md 10-16): one icon per class (8, art first via skywynn-art) on Profiles / class pick / Class tab; wire the 35 approved ability icons in.
