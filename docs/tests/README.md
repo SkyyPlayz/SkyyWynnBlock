@@ -256,3 +256,5 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | HUD backgrounds off by default (DEPLOYED 2026-10-16, backup deploy-20261016-0729) | [2026-10](2026-10.md) |
 | Crops back (Dynamic Seasons fix) (DEPLOYED 2026-10-16, backup deploy-20261016-0738) | [2026-10](2026-10.md) |
 | Bigger SkyWynn Menu, unique icons, Right now (DEPLOYED 2026-10-16, backup deploy-20261016-0757) | [2026-10](2026-10.md) |
+| Food families (DEPLOYED 2026-10-16, backup deploy-20261016-0809) | [2026-10](2026-10.md) |
+| Fishing fixes: line over water, fish into the bag, models (DEPLOYED 2026-10-16, backup deploy-20261016-0811) | [2026-10](2026-10.md) |
