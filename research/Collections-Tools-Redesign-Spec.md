@@ -333,3 +333,5 @@ T1 and C1 can run in parallel (different mods; C1's bridge is optional for T1). 
 11. Gathering armor recipes become collection unlocks (taught at once to everyone already past the tier)? [yes]
 12. Rank rewards: 5 x rank Enchanted items (cap 64)? [yes]
 13. Multitool merge: refund the lower tool's Breaking Power / Speed points? [yes, refund]
+
+## Skyy's answers 2026-10-16 (word for word in docs/answered/economy.md 'COLLECTIONS SPEC Q1-4 / Q5-8 / Q9-12') - THESE OVERRIDE the defaults above: coins half; tool points as proposed; EVERY collection gets its OWN Enchanted item now; block names OK; Foraging points CAPPED and later tiers give more so skills meet in the middle; tool lines as proposed; auto un-compress opens Blocks too + Essence <-> Greater Essence same rules; Compactor 25,000 coins + 16 Enchanted of ANY kind from that category (mixable), keep 0; collections unlock EVERY tool tier and armor set (Copper / Iron too), order per collection = Enchanted item -> tool tier -> armor; armor recipes unlock + catch-up yes; ranks 5 x rank cap 64; multitool merge NO refund of the lower tool's power / speed points.
