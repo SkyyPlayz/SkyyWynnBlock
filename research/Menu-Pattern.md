@@ -317,3 +317,5 @@ Quests page (2b): no open choice - claim keeps both (per task + Claim all); defa
 they open, drop the rest (HANDOFF section 3 rule 3). 4. Your Stats = one scroll list with headings: YES. 5. Settings drops Edit Shortcuts, HUD tab =
 widget list + Open HUD editor: YES. 6. Crafting hub = Crafting / Smithing / Anvil (Reforge + Identify inside) / Upgrade (tools page; Skyy: "tools can be
 rolled into upgrade"): YES. Optional cuts M11 / M14-M17: off. Build per section 4 (sweep plan).
+7. Short lists fill the space (Skyy: "i dont mind scrolling, but if there are only a few items try to scale them to all fit."): a scroll list
+   with few entries uses bigger rows (up to ~2x) to fill its area; it scrolls only when entries no longer fit at normal row size.
