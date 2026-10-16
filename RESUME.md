@@ -40,6 +40,8 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 1e. **CLASS EMBLEMS** (ui.md 10-16): one icon per class (8, art first via skywynn-art) on Profiles / class pick / Class tab; wire the 35 approved ability icons in.
 1f. **CRAFTING HUB** (ui.md 10-16 + LOCKED 10-10): hub tab Smithing -> CRAFTING with pages Crafting (/craft, SkyySacks; looks upgraded) + Smithing
    (SkyyGear /smithing) + Furnace ADD FUEL picker sorted by amount owned (keep the quick bar). Round after menu0330 + fish018 (Menu + Sacks + Gear).
+1f2. **SMELTING ACCESSORY** (gear.md 10-16): faster smelting, more fuel per tier; max tier -> infinite-fuel variant via the Charcoal collection.
+   Short spec, then a round after the Crafting hub (Accessories + Sacks furnace + Collections).
 1g. **THE ARMORY GEAR INTO OUR SYSTEMS** (gear.md 10-16; plan research/Pack-Armor-Plan.md): runtime by id - Cloth/Light/Heavy + class weapons, our
    rarity / modifiers / levels / reforge, drops from every source. ULTRACODE after the running rounds (Gear + Mobs + loot).
 2. **PET EGGS + HATCHING** (research/Pet-Eggs-Spec.md; pets.md 10-15): 30 eggs (Mining / Farming / Foraging / Combat / Exploration x
