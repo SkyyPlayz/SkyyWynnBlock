@@ -9,6 +9,11 @@ Sources read: research/Gathering-Progression-Spec.md (2, 3.4), research/Gatherin
 research/SkyyArmory-Spec.md (1.1), research/Cooking-Skill-Spec.md (2.3), research/cloud/SkyyFishing-Spec-Draft.md (4), docs/answered/economy.md + bags.md + gear.md,
 PACK.md, the generated SkyyGear 0.3.10 script (GearLevel tables), and the 33 SET jars (language files counted, nothing written).
 
+> **Decided 2026-10-15 (Skyy popups, docs/answered/gear.md TIER TAGS):** materials match their tool (T1 = Crude), format `T3 Iron - text`, own ladders tagged,
+> mob drops / gems / stone untagged. Built T0 + T1: **hides / leathers are NOT tagged** (their order was a placeholder; a wrong tag is worse than none).
+> **Seeds:** DynamicSeasons 7.0.2 (pack mod) overrides all 28 seed items with its own description key, so their tags come later via SkyyGear's tooltip (path c).
+> Standing rule: PROJECT-RULES 4 'Tier tags'.
+
 ## 0. Short version
 
 - ONE ladder, ONE table: **T1 Crude, T2 Copper, T3 Iron, T4 Thorium, T5 Cobalt, T6 Adamantite, T7 Mithril, T8 Onyxium.** Materials take the tier of the
