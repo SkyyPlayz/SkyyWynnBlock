@@ -37,7 +37,10 @@ import os, json, zipfile, struct
 WB_VERSION = "1"                                      # bump when the runtime protocol below changes (both mods print it)
 TAB_ID = "Workbench_SkyyAccessories"                  # the category id (a recipe's BenchRequirement Categories entry)
 NAME_KEY = "server.benchCategories.workbench.skyyaccessories"   # the vanilla pattern server.benchCategories.workbench.<x>
-TAB_TEXT = "Accessories & Bags"                       # in-game: the items are "... Accessory", "Accessory Bag" and "... Bag"
+# round sacks0814 (2026-10-16): "Accessories & Bags" -> "Bags" - accessories are crafted only in the Accessory Bag now (SkyyAccessories 0.5.21:
+# bench id SkyyAccessoryBag), so this Workbench tab holds no accessory. Only SkyyAccessories (the owner) writes LANG_LINES - SkyySacks 0.8.14+
+# no longer ships them (one writer per lang key); the tab reads "Bags" once SkyyAccessories is rebuilt from this table.
+TAB_TEXT = "Bags"
 LANG_LINES = ["benchCategories.workbench.skyyaccessories=" + TAB_TEXT,   # vanilla server.lang style (file prefix server.)
               NAME_KEY + "=" + TAB_TEXT]                                 # + the prefixed twin (the SkyySacks / SkyyVault pattern)
 BENCH_ID = "Workbench"

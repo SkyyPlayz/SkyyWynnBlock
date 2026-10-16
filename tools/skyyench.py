@@ -16,6 +16,10 @@ Skyy's words this follows (docs/answered/bags.md + gear.md, word for word there)
   - 2026-10-06 spec Q10 tweak "Enchanted premium" -> sold a bit ABOVE 100x base, capped below any loop (the processed-goods 22% rule)
   - 2026-10-11 UPGRADE COST "it costs a enchanted iron ingot to upgrade copper to iron" (phase 3 spends them; this phase makes them)
 
+  - 2026-10-16 (docs/answered/gear.md) "there was no need to add the enchanted essence of life. greater essence already exists and is
+    literally the exact same thing. remove the enchanted, and just use the vanilla version." -> the LifeEssence row is retired (RETIRED_C1 /
+    RETIRED_TO); the Life Essence collection's Enchanted item = vanilla Ingredient_Life_Essence_Concentrated (VANILLA_ENCH, Void: Farming)
+
   - 2026-10-16 COLLECTIONS SPEC Q3 "Own items now" (docs/answered/economy.md): EVERY collection gets its own Enchanted item - round C1
     (SkyyCollections 0.2.21) appends one row per visible collection that had none (rows 21-103, the C1 block below; research/
     Collections-Tools-Redesign-Spec.md). SkyySacks homes them and SkyyBazaar lists them at THEIR next build (they read this table then).
@@ -94,7 +98,9 @@ TABLE_C1 = [
     ("Mushroom",    "I", "Plant_Crop_Mushroom_Cap_Brown", "Mushroom", 3, "Farming", "Enchanted Mushroom",   ("crop", "Plant_Crop_Mushroom_Cap_Brown")),
     ("Cactus",      "I", "Plant_Cactus_1",            "Cactus",      3, "Farming", "Enchanted Cactus",      ("crop", "Plant_Cactus_1")),
     ("Seeds",       "I", "Plant_Seeds_Wheat",         "Seeds",       3, "Farming", "Enchanted Seeds",       ("ingot", "Plant_Seeds_Wheat")),
-    ("LifeEssence", "I", "Ingredient_Life_Essence",   "LifeEssence", 3, "Farming", "Enchanted Essence of Life", ("ingot", "Ingredient_Life_Essence")),
+    # round sacks0814 (Skyy 2026-10-16 "there was no need to add the enchanted essence of life. greater essence already exists and is literally the
+    # exact same thing. remove the enchanted, and just use the vanilla version."): the LifeEssence row is RETIRED (RETIRED_C1 below) - the
+    # Life Essence collection's Enchanted item is the vanilla Ingredient_Life_Essence_Concentrated (VANILLA_ENCH)
     ("Petals",      "I", "Plant_Petals_Blood",        "Petals",      3, "Farming", "Enchanted Petals",      ("crop", "Plant_Petals_Blood")),
     ("RawChicken",  "I", "Food_Chicken_Raw",          "RawChicken",  3, "Farming", "Enchanted Raw Chicken", ("crop", "Food_Chicken_Raw")),
     ("RawBeef",     "I", "Food_Beef_Raw",             "RawBeef",     3, "Farming", "Enchanted Raw Beef",    ("crop", "Food_Beef_Raw")),
@@ -150,16 +156,42 @@ TABLE_C1 = [
     ("BoomPowder",  "I", "Ingredient_Powder_Boom",    "BoomPowder",  3, "Combat", "Enchanted Boom Powder",  ("ingot", "Ingredient_Powder_Boom")),
 ]
 TABLE_20 = list(TABLE)          # the first 20 rows (0.2.11 - 0.2.20) - frozen tables of older rounds read only these
+# round sacks0814 (Skyy 2026-10-16, docs/answered/gear.md "NO ENCHANTED ESSENCE OF LIFE"): rows taken OUT of the table. A Skyy_Ench_<Key> of a
+# retired row is no Enchanted material any more (no Void home, no Bazaar product, no recipe at the next SkyyCollections build); SkyyCollections
+# converts held ones 1:1 into RETIRED_TO[<id>] in its next round. (index in TABLE_C1 as SkyyCollections 0.2.21 / 0.2.22 built it, the row)
+RETIRED_C1 = ((13, ("LifeEssence", "I", "Ingredient_Life_Essence", "LifeEssence", 3, "Farming", "Enchanted Essence of Life",
+                    ("ingot", "Ingredient_Life_Essence"))),)
+RETIRED_TO = {"Skyy_Ench_LifeEssence": "Ingredient_Life_Essence_Concentrated"}     # retired Enchanted id -> the item that replaces it, 1:1
+# collections whose Enchanted item is a VANILLA compressed item (Skyy 2026-10-16 standing rule: "use the vanilla compressed version if one
+# exists" - checked 10-16: only Life Essence has one): collection id -> (the vanilla item id, its Void category). Vanilla Greater Essence of
+# Life = 100 Essence of Life at the Farmer's Workbench (vanilla recipe); SkyySacks' homeOf already puts every Ingredient_Life_Essence* in Farming.
+VANILLA_ENCH = {"LifeEssence": ("Ingredient_Life_Essence_Concentrated", "Farming")}
+TABLE_C1_0221 = list(TABLE_C1)  # TABLE_C1 exactly as SkyyCollections 0.2.21 / 0.2.22 were built (83 rows) - for a rebuild of those pins only
+for _i, _r in RETIRED_C1:
+    TABLE_C1_0221.insert(_i, _r)
+TABLE_0221 = TABLE + TABLE_C1_0221   # the 103-row table of SkyyCollections 0.2.21 / 0.2.22 (frozen; never for a new build)
 TABLE = TABLE + TABLE_C1
 KEYS = [t[0] for t in TABLE]
 IDS = [PREFIX + k for k in KEYS]
 RIDS = [i + RECIPE_SUFFIX for i in IDS]
 CATS = ("Mining", "Foraging", "Farming", "Combat", "Smithing")          # C1: + Combat / Smithing (the mob-drop collections)
-assert len(TABLE_20) == 20 and len(TABLE) == 103 and len(set(KEYS)) == 103 and all(t[5] in CATS for t in TABLE)   # C1: 20 + 83
-assert len(set(t[3] for t in TABLE)) == 103, "one Enchanted item per collection"
+# sacks0814: 20 + 82 (the C1 Life Essence row retired -> its collection uses the vanilla Greater Essence of Life, VANILLA_ENCH)
+assert len(TABLE_20) == 20 and len(TABLE) == 102 and len(set(KEYS)) == 102 and all(t[5] in CATS for t in TABLE)
+assert len(TABLE_0221) == 103 and TABLE_0221[:20] == TABLE_20 and [t for t in TABLE_0221 if t[0] not in KEYS] == [r for _i, r in RETIRED_C1]
+assert len(set(t[3] for t in TABLE)) == 102 and not set(VANILLA_ENCH) & set(t[3] for t in TABLE), "one Enchanted item per collection"
+assert all(PREFIX + r[0] in RETIRED_TO and r[3] in VANILLA_ENCH for _i, r in RETIRED_C1) and all(c in CATS for _v, c in VANILLA_ENCH.values())
 assert all(t[1] in ("I", "R") and 1 <= t[4] <= 3 for t in TABLE)
 for _t in TABLE:
     assert all(c.isalnum() for c in _t[0]) and '"' not in _t[6] and "\\" not in _t[6] and "|" not in _t[6], _t
+
+
+def coll_ench(coll_id):
+    """the Enchanted item of a collection: Skyy_Ench_<Key> of its TABLE row, else its VANILLA_ENCH item, else None"""
+    for t in TABLE:
+        if t[3] == coll_id:
+            return PREFIX + t[0]
+    v = VANILLA_ENCH.get(coll_id)
+    return v[0] if v else None
 
 
 def row(key):
@@ -195,6 +227,11 @@ def sacks_home_java():
             "  for (int i = 0; i < ids.length; i++) if (ids[i].equals(itemId)) return cats[i];\n"
             "  return null;\n"
             "}") % (PREFIX, _jarr(IDS), _jarr([t[5] for t in TABLE]))
+
+
+def _home_java(ids, table):
+    """sacks_home_java for another (frozen) table - legacy_0221"""
+    return sacks_home_java().replace(_jarr(IDS), _jarr(ids), 1).replace(_jarr([t[5] for t in TABLE]), _jarr([t[5] for t in table]), 1)
 
 
 # ================================================================================================================ art (build time)
@@ -400,7 +437,7 @@ BASE_LABEL = {"Cobblestone": "Cobblestone", "Rubble": "stone Rubble (any kind bu
 # C1 (0.2.21): the base of every new row, as the description says it ("100 <label> pressed into one")
 BASE_LABEL.update({"Corn": "Corn", "Lettuce": "Lettuce", "Onion": "Onions", "Turnip": "Turnips", "Aubergine": "Aubergines",
                    "Chilli": "Chillies", "Rice": "Rice", "Berries": "Wild Berries", "Apple": "Apples", "WildFruit": "Coconuts",
-                   "Mushroom": "Brown Cap Mushrooms", "Cactus": "Cactus Bottoms", "Seeds": "Wheat Seed Bags", "LifeEssence": "Essence of Life",
+                   "Mushroom": "Brown Cap Mushrooms", "Cactus": "Cactus Bottoms", "Seeds": "Wheat Seed Bags",
                    "Petals": "Blood Petals", "RawChicken": "Raw Chicken", "RawBeef": "Raw Beef", "RawPork": "Raw Pork",
                    "Wildmeat": "Raw Wildmeat", "Fiber": "Plant Fiber", "TreeSap": "Tree Sap",
                    "Sandstone": "Sandstone Cobble", "Shale": "Shale Cobble", "Slate": "Slate Cobble", "Basalt": "Basalt Cobble",
@@ -419,6 +456,25 @@ assert sorted(BASE_LABEL) == sorted(KEYS)
 # ench01fix: the Rubble recipe takes ResourceTypeId "Rubble" = Rubble_Stone and every Rubble_* whose Parent is Rubble_Stone, EXCEPT
 # Rubble_Ice(_Medium) (type Ice) and Rubble_Dawnstone(_Medium) (no parent, no type); the Rubble COLLECTION still counts all of them.
 # One recipe can take only one resource type and vanilla items are never overridden, so the label says so (a known gap).
+
+
+def legacy_0221():
+    """the table exactly as SkyyCollections 0.2.21 / 0.2.22 were built (103 rows, Skyy_Ench_LifeEssence included), as a namespace a frozen
+    rebuild of those pins can use in place of this module (TABLE / KEYS / IDS / RIDS / BASE_LABEL / cat_of / row / sacks_home_java; the
+    functions of this module see the live 102 rows, so build_assets / check_assets / emit_tab must be given the namespace's lists - the
+    SkyyBazaar 0.1.17 TABLE_20 freeze pattern). tools/tier_tags.py no longer lists Skyy_Ench_LifeEssence in ENCH_UNTAGGED."""
+    import types
+    ns = types.SimpleNamespace(**dict((k, v) for k, v in globals().items() if not k.startswith("__")))
+    ns.TABLE = list(TABLE_0221)
+    ns.KEYS = [t[0] for t in ns.TABLE]
+    ns.IDS = [PREFIX + k for k in ns.KEYS]
+    ns.RIDS = [i + RECIPE_SUFFIX for i in ns.IDS]
+    ns.BASE_LABEL = dict(BASE_LABEL, LifeEssence="Essence of Life")
+    ns.row = lambda key: ([t for t in ns.TABLE if t[0] == key] or [None])[0]
+    ns.cat_of = lambda i: (ns.row(i[len(PREFIX):]) or [None] * 6)[5] if isinstance(i, str) and i.startswith(PREFIX) else None
+    ns.base_label = lambda key: ns.BASE_LABEL[key]
+    ns.sacks_home_java = lambda: _home_java(ns.IDS, ns.TABLE)
+    return ns
 
 
 def base_label(key):
