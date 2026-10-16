@@ -254,3 +254,4 @@ Ideas - pick one. The Mage tree already has three lanes.
 - 2026-10-04: modifier pool table added under the abilities (Skyy).
 
 - 2026-10-04: file created; staff Teleport + trail, spellbook Levitate, quick-shot range, Meteor + Mana Barrier LOCKED (Skyy).
+- 2026-10-16 (Skyy): the Mage TELEPORT reuses the effect / animation the longsword Crescent Rush showed while it teleported ("looks really cool"). docs/answered/classes.md 10-16.
