@@ -310,3 +310,10 @@ Auctions always build in the same group (shared merged tabs).
 
 Optional cuts (M11, M14, M15, M16, M17) ride their group with the default "no" unless Skyy says yes.
 Quests page (2b): no open choice - claim keeps both (per task + Claim all); defaults as written unless Skyy says otherwise.
+
+## Skyy's answers (2026-10-16, word for word in docs/answered/ui.md)
+
+1. All hub pages Home size (1600 x 980): YES. 2. Row 2 big like Teleport (56 px): YES. 3. Old commands: keep the ones that still describe what
+they open, drop the rest (HANDOFF section 3 rule 3). 4. Your Stats = one scroll list with headings: YES. 5. Settings drops Edit Shortcuts, HUD tab =
+widget list + Open HUD editor: YES. 6. Crafting hub = Crafting / Smithing / Anvil (Reforge + Identify inside) / Upgrade (tools page; Skyy: "tools can be
+rolled into upgrade"): YES. Optional cuts M11 / M14-M17: off. Build per section 4 (sweep plan).
