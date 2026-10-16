@@ -270,3 +270,11 @@ Skyy: "when condensing and refining mods later, can we keep the marketecture org
 - Modules talk only through SkyyCore (typed bridge handles, events, shared services) - never by calling another module's classes directly.
 - Versions: each module has its own version; the jar version is bumped by the assemble step. Integration (crosscheck + smoke) runs once per deploy on the assembled jars.
 - tools/deploy_set.py pins jars; a module manifest (which modules + versions are inside each jar) is written next to each build.
+
+## Rule for every merge phase (Skyy 2026-10-16)
+
+Skyy: "Make sure that when you compress the mods, you compress them in such a way that each section is still individual, so you can work in
+multiple sections of a mod at the same time without conflict, so it doesn't slow down our building." -> a merged jar is assembled from
+separate SECTIONS: each former mod (or feature) keeps its own source / patch script, its own harness and its own Java package; the merged
+build only stitches the sections together. Two builders on two sections of one merged jar never edit the same file. Sections talk through
+skyy.bridge (or one small shared interface file owned by the merge), never by editing each other. Order: menu merges first, compression later.
