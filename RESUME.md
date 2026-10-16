@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + menu0330 Menu 0.3.30 + hud0328 Hud 0.3.28 + cls0130 Classes 0.1.30)
+# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + menu0330 Menu 0.3.30 + cls0130 Classes 0.1.30)
 
 Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
 `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md` (2026-10-15 / 16 lines). Decisions word for word: `docs/answered/<topic>.md`.
@@ -9,9 +9,8 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    friend (WesleyPlayz, Assassin). The old world `HUD mod` is no longer deployed to.
 3. RUNNING (10-16 ~11:00): lean builder wd024 (SkyyWardrobe 0.2.4, NEXT 0) + workflow gear0312 (SkyyGear 0.3.12, NEXT 1) [BEFORE PIN: also rename the /smithing CRAFT tab to SMITHING, gear.md 10-16 + Upgrade tab 8 rows per page (smaller icons/rows) - lean follow-up on the 0.3.12 patch]
    + lean builder cls0130 (SkyyClasses 0.1.30: Lattice says what every ability / modifier does, classes.md 10-16)
-   + lean builder hud0328 (SkyyHud 0.3.28: widget Background OFF by default except Quest Tracker, ui.md 10-16)
    + workflow menu0330 (SkyyMenu 0.3.30: no duplicate icons / entries, menu scaled up, Home 'Right now' panel + the queued Menu items; ui.md 10-16) [BEFORE PIN: HUD shortcut opens the HUD editor directly, ui.md 10-16]; if this
-   session died, check their scratch / files, review, pin, deploy. Nothing pinned-but-not-deployed. Last deploys: 10-15 23:14 (TEST-CHECKLIST 137) and 10-16 05:31 (138).
+   session died, check their scratch / files, review, pin, deploy. PINNED, NOT DEPLOYED: SkyyHud 0.3.28 (deploy with the next batch when the game is closed). Last deploys: 10-15 23:14 (TEST-CHECKLIST 137) and 10-16 05:31 (138).
 4. Kit `tools/skyyui.py` is now kit 1.6 (KIT_HUB_VERSION 1.6, KIT_VERSION still "1.5"): builds no longer need the old HEAD-kit preload.
 5. Rounds: saved workflow `skywynn-round` (Skyy's OWN words + the popup question in args.quotes; resuming a workflow needs the args
    again). Deploy only with the game closed: backup -> smoke (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy.
