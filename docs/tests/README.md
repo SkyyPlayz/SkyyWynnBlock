@@ -252,3 +252,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | MERGE PHASE 1: NEW SkyyCore 1.0.0 + SkyyBank 0.1.14 + SkyyParty 0.1.9 on Core (stable names) (DEPLOYED 2026-10-15, backup deploy-20261015-1808) | [2026-10](2026-10.md) |
 | Class tab = ability tree + island / loot / bag / lantern fixes (new world NewBetaTest) (DEPLOYED 2026-10-15, backup deploy-20261015-2056) | [2026-10](2026-10.md) |
 | Big batch: Battlemagic, health regen, fortune, tools tab, pets, tier tags, starter bag, cave, kunai, trees (DEPLOYED 2026-10-15, backup deploy-20261015-2314) | [2026-10](2026-10.md) |
+| Batch 2: unified menu, upgrade tab, sickle, fishing pole, spellblade rush + guard, bag crafting, requip slots, bag rebalance, bazaar confirm + prices, zone 1 islets (DEPLOYED 2026-10-16, backup deploy-20261016-0531) | [2026-10](2026-10.md) |

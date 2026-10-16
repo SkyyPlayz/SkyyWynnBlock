@@ -163,3 +163,4 @@ tests always come first.
 135. SKYYCORE: Bank + Party run on SkyyCore (same pages, Server Setup History intact)
 136. Class tab opens the class tree (/class too); Island 2 boss stays down + island respawn; Lost Loot gear cap; Lantern recipe; Void Artifacts tab - in the NEW world NewBetaTest
 137. Big batch in NewBetaTest: Battlemagic XP, health regen, fortune card, Tools tab tier up, furnace fuel, pets fuse/rebirth, tier tags, starter Accessory Bag, Requip rows, natural cave, Assassin kunai, Tree Feller row III, clean first-profile page
+138. Batch 2 in NewBetaTest: Home menu + Teleport centre, Smithing UPGRADE tab, sickle sweep + fewer sticks, pole in kit + no-tackle fishing, Crescent Rush + sword guard, bag Craft tab + auto-equip + lanterns, Requip pet/ability slots, bag costs + rebalance, Bazaar CONFIRM + prices, new Zone 1 (/zone 1)
