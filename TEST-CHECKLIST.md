@@ -173,3 +173,4 @@ tests always come first.
 145. Bazaar 0.1.15: x4.5 prices (Eternal seeds kept), crop groups by tier, saplings in Foraging, SELL <TAB> + SELL ALL TABS
 146. Lifelong watering can (hold to water), Harvester, SMITHING tab, Upgrade 8 rows
 147. Requip 4 ability rows + modifiers, hoe into Requip, Crude Hatchet ghost gone
+148. Crafting hub (Crafting + Smithing), crafter look + tier sort, ADD FUEL, benches use the Accessory Bag, Void DEPOSIT ALL

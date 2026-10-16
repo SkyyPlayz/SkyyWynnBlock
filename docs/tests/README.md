@@ -262,3 +262,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Bazaar x4.5 prices, crop order, sell per tab (DEPLOYED 2026-10-16, backup deploy-20261016-0849) | [2026-10](2026-10.md) |
 | Watering can + Harvester (DEPLOYED 2026-10-16, backup deploy-20261016-0904) | [2026-10](2026-10.md) |
 | Requip: full class loadout + modifiers, hoe, tier-up ghost (DEPLOYED 2026-10-16, backup deploy-20261016-0914) | [2026-10](2026-10.md) |
+| Crafting hub, crafter look, ADD FUEL, bag accessories at benches, DEPOSIT ALL (DEPLOYED 2026-10-16, backup deploy-20261016-0930) | [2026-10](2026-10.md) |

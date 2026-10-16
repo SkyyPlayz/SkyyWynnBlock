@@ -19,9 +19,9 @@ SET = [
     ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.28"), ("SkyySacks", "0.8.10"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.19"), ("SkyyParty", "0.1.9"),
+    ("SkyyHud", "0.3.28"), ("SkyySacks", "0.8.11"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.19"), ("SkyyParty", "0.1.9"),
     ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.16"), ("SkyyBazaar", "0.1.15"), ("SkyyGear", "0.3.12"), ("SkyySkills", "0.4.43"),
-    ("SkyyAccessories", "0.5.18"), ("SkyyClasses", "0.1.30"), ("SkyyMenu", "0.3.30"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
+    ("SkyyAccessories", "0.5.19"), ("SkyyClasses", "0.1.30"), ("SkyyMenu", "0.3.31"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
     ("SkyyCooking", "0.1.8"), ("SkyyTrees", "0.3.18"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration

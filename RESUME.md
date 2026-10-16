@@ -8,14 +8,12 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 2. DEPLOY TARGET = world **NewBetaTest** (`tools/deploy_set.py` WORLD). Skyy plays with a friend (WesleyPlayz, Assassin).
 3. Deployed 10-16 (TEST-CHECKLIST 139-146): Hud 0.3.28, Essentials 0.1.11 (crops back - DynamicSeasons Compost_Soft), Menu 0.3.30, Cooking 0.1.8
    (food families), Fishing 0.1.8 + Sacks 0.8.10 + Shards 0.4.1, Classes 0.1.30 + Trees 0.3.18 (top-down tree), Bazaar 0.1.15 (x4.5 prices,
-   sell per tab), Gear 0.3.12 (watering can + Harvester), Wardrobe 0.2.4 (Requip loadout rows, TEST 147). deploy_set rules added: Sacks 0.8.10 needs Fishing 0.1.8; Trees 0.3.18 <-> Classes 0.1.30.
+   sell per tab), Gear 0.3.12 (watering can + Harvester), Wardrobe 0.2.4 (Requip loadout rows, TEST 147), Sacks 0.8.11 + Accessories 0.5.19 + Menu 0.3.31 (Crafting hub, TEST 148). deploy_set rules added: Sacks 0.8.10 needs Fishing 0.1.8; Trees 0.3.18 <-> Classes 0.1.30.
 4. Rounds: while Skyy is chatting about other topics, run builders as PLAIN Agents (workflow builders refuse - memory note) and spawn the
    critics yourself; else the saved workflow `skywynn-round`. Deploy only with the game closed: backup -> smoke (`--allow-pack-api`) ->
    deploy_set --yes -> record_deploy -> commit -> tidy. Never SendMessage an agent inside a workflow; plain Agent builders can be messaged.
 
 ## RUNNING NOW (plain Agent builders unless noted; if this session died: check their files, review, pin, deploy)
-- craft01 SkyySacks 0.8.11 + SkyyAccessories 0.5.19 + SkyyMenu 0.3.31: Crafting hub (Smithing tab -> CRAFTING: Crafting + Smithing pages),
-  crafter look, /craft tier sort, furnace ADD FUEL picker (sorted by amount), benches use the Accessory Bag, Void DEPOSIT ALL at the top.
 - pets040 SkyyPets 0.4.0 = Pet Eggs R1 (eggs + hatching + Pets page grid / flavor text / filters). Art drafts in art/pet-eggs (sent to Skyy).
 - armory0129 SkyyArmory 0.1.29: Great Shield, Crescent Rush = pushing lunge, Mage teleport look, Warrior Thrust range.
 - wg071 SkyyWorldGen 0.7.1: zones-world weather fix + Zone 1 = server spawn switch + /zone setlanding.
@@ -24,12 +22,12 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 
 ## NEXT (after the running rounds; each answer word for word in docs/answered/)
 1. **Lifelong Accessory Bag / Pocket Dimension / Menu item + no 2nd bag on /island reset** (gear.md 10-16) - Accessories + Sacks + Menu +
-   Islands, after craft01.
+   Islands - NEXT to launch.
 2. **Movement vs The Armory** (log 10-16): Armory's JumpHeightModifierSystem writes MovementSettings -> our speed / jump bonuses pause. Make our
    movement protocol compose with it (SkyyCore / Skills / Accessories / Trees) + find the ~230 client 'Equipment packet on the local player' WARNs.
 3. **The Armory gear into our systems** (gear.md 10-16; research/Pack-Armor-Plan.md) - ultracode after tools01 (Gear + Mobs + loot).
 4. **Pet eggs R2-R4** (Skills drops, Bazaar + Merchants, Collections) after pets040.
-5. **Smelting accessory** (gear.md 10-16) - short spec, then Accessories + Sacks furnace + Collections, after craft01.
+5. **Smelting accessory** (gear.md 10-16) - short spec, then Accessories + Sacks furnace + Collections - can launch now.
 6. **Food follow-up**: cook:fn:bonus bridge readers (SkyyGear Strength, SkyySkills food Mana Regen %) - spec in the 0.1.8 patch notes.
 7. **Class emblems in the UI** (art/class-emblems; the 7 were approved 10-06, Spellblade crest + 5 Spellblade ability icons are DRAFT) - wire into
    Profiles / class pick / Class tab after Skyy looks at the sheets; wire the ability icons into the tree / loadout / HUD.
