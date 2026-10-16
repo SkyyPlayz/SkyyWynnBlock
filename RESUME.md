@@ -18,7 +18,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    Never SendMessage an agent inside a workflow (stop + relaunch); plain Agent builders can be messaged. Skyy answers popups.
 
 ## NEXT (Skyy 2026-10-16: "watering can first then pet eggs")
-0. **Quick fix first (Skyy test feedback):** SkyyWardrobe 0.2.4 - the Requip ability area = the 2 equipped abilities + 2 modifier slots under EACH ability (SkyyClasses' Lattice loadout data via class:fn:abilPanel / AbilLoadout), not 0.2.3's 4 keys (2 + 2 crouch alts); clickable + saved per loadout, applied on Equip (bags.md 10-16). Lean round.
+0. **Quick fix (RUNNING wd024):** SkyyWardrobe 0.2.4 - Requip ability area = the full class loadout: 4 rows (Ability 2 / 3 + crouch alts), each 1 ability + 2 modifier slots, clickable, saved per loadout, applied on Equip (bags.md 10-16, Skyy: "that was my bad").
 1. **WATERING CAN + HARVESTER** (research/Watering-Can-Harvester-Spec.md; docs/answered/gear.md 10-15): lifelong can in the starting
    kit, T1 Crude (wood) -> T2 Copper -> T3 Iron ...; tier = watering area 1x1 / 3x3 / 5x5 / 7x7; point upgrades Capacity / refill,
    Growth boost, Lasting water, Bloom; Harvester = hoe + sickle merged at the Anvil after rebirth 1; tier tags (standing rule). Full round
