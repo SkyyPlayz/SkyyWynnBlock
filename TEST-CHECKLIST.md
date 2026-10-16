@@ -175,3 +175,4 @@ tests always come first.
 147. Requip 4 ability rows + modifiers, hoe into Requip, Crude Hatchet ghost gone
 148. Crafting hub (Crafting + Smithing), crafter look + tier sort, ADD FUEL, benches use the Accessory Bag, Void DEPOSIT ALL
 149. Zone 1 = server spawn (/zone setlanding, /spawn for admins, no-island logins), zones weather NPE gone
+150. Pet eggs (30), two-reel hatching, round egg model, Pets page grid / hover stats / filters

@@ -264,3 +264,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Requip: full class loadout + modifiers, hoe, tier-up ghost (DEPLOYED 2026-10-16, backup deploy-20261016-0914) | [2026-10](2026-10.md) |
 | Crafting hub, crafter look, ADD FUEL, bag accessories at benches, DEPOSIT ALL (DEPLOYED 2026-10-16, backup deploy-20261016-0930) | [2026-10](2026-10.md) |
 | Zone 1 = server spawn, zones weather fix (DEPLOYED 2026-10-16, backup deploy-20261016-0952) | [2026-10](2026-10.md) |
+| Pet eggs + hatching + new Pets page (DEPLOYED 2026-10-16, backup deploy-20261016-1031) | [2026-10](2026-10.md) |

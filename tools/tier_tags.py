@@ -138,6 +138,11 @@ ENCH_BASE = (("Copper", "Ingredient_Bar_Copper"), ("Iron", "Ingredient_Bar_Iron"
 ENCH_UNTAGGED = ("Skyy_Ench_Cobblestone", "Skyy_Ench_Rubble")
 for _k, _b in ENCH_BASE:
     _add("Skyy_Ench_" + _k, ROWS[_b][0], "enchanted", "SkyyCollections")
+# round tools01 (Skyy 2026-10-16 "make enchanted sticks too"): the Enchanted Stick. Its base (Ingredient_Stick) has no row (sticks are a wood
+# starter material: no vanilla Description key to tag), so its tier is set here: T1 Crude (sticks = the Crude sickle's / bare hands' material)
+ENCH_OWN = {"Skyy_Ench_Stick": 1}
+for _e, _t in sorted(ENCH_OWN.items()):
+    _add(_e, _t, "enchanted", "SkyyCollections")
 
 # vanilla tools (plan 1.2: 32 + 2 hammers) -> SkyyGear (round T2); tier = the metal word after the family (Gear TOOL_TIERS + 1)
 TOOLS = ("Tool_Hammer_Crude", "Tool_Hammer_Iron",
@@ -171,6 +176,43 @@ for _w in HARVESTER_TIERS:
 OWN_IDS = frozenset(["Tool_WaterCan_" + _w for _w in CAN_TIERS] + ["Tool_Sickle_Harvester_" + _w for _w in HARVESTER_TIERS])
 
 
+# ------------------------------------------------------------------------------------------------ rarity-tagged items (no T-number)
+# Pet eggs (research/Pet-Eggs-Spec.md 1.1, round pets040 = SkyyPets 0.4.0): eggs are tiered by RARITY, so their tag is the rarity + noun as
+# the first phrase - "Rare Egg - Right-click to hatch ..." (a "T3 Egg" would read as Iron). Kept apart from ROWS (the metal ladder): tag_for()
+# answers both, families() / ids_in() / ids_for() stay the metal ladder's; rarity_ids_for(owner) lists these. Ids from tools/skyyeggs.py.
+RARITY_LADDER = ("Common", "Uncommon", "Rare", "Epic", "Legendary", "Mythic")
+RARITY_NOUNS = ("Egg",)
+RARITY_ROWS = {}     # id -> (rarity, noun, family, owner)
+
+
+def rarity_tag(rarity, noun_word):
+    """'Rare Egg' (rarity = a RARITY_LADDER word, noun_word = a RARITY_NOUNS word)"""
+    assert rarity in RARITY_LADDER and noun_word in RARITY_NOUNS, (rarity, noun_word)
+    return "%s %s" % (rarity, noun_word)
+
+
+def _add_rarity(item_id, rarity, noun_word, fam, owner_mod):
+    assert item_id not in ROWS and item_id not in RARITY_ROWS, "tier_tags: %s is in two tables" % item_id
+    rarity_tag(rarity, noun_word)
+    RARITY_ROWS[item_id] = (rarity, noun_word, fam, owner_mod)
+
+
+import skyyeggs as _EGG        # pure Python table, no game files
+assert _EGG.RARITIES == RARITY_LADDER
+for _c in _EGG.CATEGORIES:
+    for _r in _EGG.RARITIES:
+        _add_rarity(_EGG.egg_id(_c, _r), _r, "Egg", "egg", "SkyyPets")
+
+
+def rarity_tag_for(item_id):
+    r = RARITY_ROWS.get(item_id)
+    return None if r is None else rarity_tag(r[0], r[1])
+
+
+def rarity_ids_for(owner_mod):
+    return sorted(i for i, r in RARITY_ROWS.items() if r[3] == owner_mod)
+
+
 # ------------------------------------------------------------------------------------------------ lookups
 def tier(item_id):
     r = ROWS.get(item_id)
@@ -194,7 +236,7 @@ def owner(item_id):
 
 def tag_for(item_id):
     t = tier(item_id)
-    return None if t is None else tag_text(t)
+    return rarity_tag_for(item_id) if t is None else tag_text(t)
 
 
 def described(item_id, text=None):

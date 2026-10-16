@@ -79,7 +79,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.3.1"),
+    ("SkyyPets", "0.4.0"),
     ("SkyyWardrobe", "0.2.4"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
@@ -435,6 +435,12 @@ def main():
     # in both, History copies in each mod's history/abiltree3/; rolling back only one leaves modifiers locked).
     if (_v(_p.get("SkyyTrees", "0")) >= (0, 3, 18)) != (_v(_p.get("SkyyClasses", "0")) >= (0, 1, 30)):
         print("STOP: SkyyTrees 0.3.18 and SkyyClasses 0.1.30 go together"); return 1
+    # armory0129 (2026-10-16): Great Shields (Weapon_GreatShield_*) - FLOOR: never roll SkyyArmory below 0.1.29 once players hold one (unknown items).
+    # SkyyClasses 0.1.31 assigns them to the Spellblade + the armory:fn:mine / class:fn:momAdd Momentum bridge - deploy TOGETHER.
+    if _v(_p.get("SkyyArmory", "0")) >= (0, 1, 29) and _v(_p.get("SkyyClasses", "0")) < (0, 1, 31):
+        print("STOP: SkyyArmory 0.1.29 needs SkyyClasses 0.1.31+"); return 1
+    # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep
+    # the Skyy_Ench_* items the egg recipes use (Cobblestone, Iron, Oak, Maple, Wheat, Carrot, Copper).
     # SkyyVoid batch (2026-10-13): SkyySacks 0.8.0 (Bags v2, shown as SkyyVoid) + SkyyBazaar 0.1.9 deploy TOGETHER (Fishing tab, crystal products).
     # FLOOR: never roll SkyySacks below 0.8.0 once it has run - run /pdadmin legacybags <player> for every player BEFORE any rollback (converted bags are gone).
     if (_v(_p.get("SkyyBazaar", "0")) >= (0, 1, 9)) and _v(_p.get("SkyySacks", "0")) < (0, 8, 0):

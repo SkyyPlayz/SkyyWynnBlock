@@ -63,12 +63,12 @@ ok(TT.described("Plant_Crop_Wheat_Item", "") == "T2 Copper" and TT.described("Pl
 ok(TT.described("Wood_Oak_Trunk", "  x  ") == "T2 Copper - x", "described trims")
 
 # ---- counts (plan 1.2)
-COUNTS = {"ore": 7, "bar": 8, "log": 34, "crop": 14, "seed": 28, "enchanted": 17, "tool": 34, "armory": 11,
-          "can": 6, "harvester": 4}          # SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
+COUNTS = {"ore": 7, "bar": 8, "log": 34, "crop": 14, "seed": 28, "enchanted": 18, "tool": 34, "armory": 11,
+          "can": 6, "harvester": 4}          # tools01: enchanted 17 -> 18 (+ the Enchanted Stick); SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
 for f, n in COUNTS.items():
     ok(len(TT.ids_in(f)) == n, "family %s has %d ids, want %d" % (f, len(TT.ids_in(f)), n))
 ok(set(TT.families()) == set(COUNTS), "families: %s" % TT.families())
-ok(len(TT.ids_for("SkyyCollections")) == 7 + 8 + 34 + 14 + 28 + 17, "SkyyCollections owns %d" % len(TT.ids_for("SkyyCollections")))
+ok(len(TT.ids_for("SkyyCollections")) == 7 + 8 + 34 + 14 + 28 + 18, "SkyyCollections owns %d" % len(TT.ids_for("SkyyCollections")))
 ok(TT.ids_for("SkyyGear") == sorted(TT.ids_in("tool") + TT.ids_in("can") + TT.ids_in("harvester")) and TT.ids_for("SkyyArmory") == TT.ids_in("armory"), "owners")
 ok(sorted(TT.OWN_IDS) == sorted(TT.ids_in("can") + TT.ids_in("harvester")) and TT.tag_for("Tool_WaterCan_Crude") == "T1 Crude"
    and TT.tag_for("Tool_WaterCan_Iron") == "T3 Iron" and TT.tag_for("Tool_WaterCan_Adamantite") == "T6 Adamantite"
@@ -88,7 +88,28 @@ for t in EN.TABLE:
     if eid in TT.ENCH_UNTAGGED:
         continue
     base = t[7][1]
+    if eid in TT.ENCH_OWN:          # tools01: the Enchanted Stick's base has no row - its own tier (T1)
+        ok(TT.tier(eid) == TT.ENCH_OWN[eid] and TT.tier(base) is None, "%s own tier %s (base %s untagged)" % (eid, TT.tier(eid), base))
+        continue
     ok(TT.tier(eid) == TT.tier(base) and TT.tier(base) is not None, "%s tier %s vs base %s %s" % (eid, TT.tier(eid), base, TT.tier(base)))
+
+# ---- rarity-tagged items: the 30 pet eggs (SkyyPets 0.4.0, tools/skyyeggs.py) - "Rare Egg - ..." first, no T-number
+import skyyeggs as EGG
+ok(TT.RARITY_NOUNS == ("Egg",) and TT.rarity_tag("Rare", "Egg") == "Rare Egg" and TT.rarity_tag("Mythic", "Egg") == "Mythic Egg", "rarity_tag")
+ok(TT.rarity_ids_for("SkyyPets") == sorted(EGG.IDS) and len(TT.RARITY_ROWS) == 30, "the 30 egg rows, owner SkyyPets")
+ok(all(r[2] == "egg" and r[3] == "SkyyPets" for r in TT.RARITY_ROWS.values()), "family egg")
+for _c in EGG.CATEGORIES:
+    for _r in EGG.RARITIES:
+        _i = EGG.egg_id(_c, _r)
+        ok(TT.tag_for(_i) == _r + " Egg" and TT.tier(_i) is None and TT.owner(_i) is None, "%s: tag %s, no metal tier" % (_i, TT.tag_for(_i)))
+        ok(EGG.flavor(_c, _r).startswith(TT.tag_for(_i) + TT.SEP), "%s: the egg flavor starts with the table's tag" % _i)
+        ok(TT.described(_i, EGG.flavor(_c, _r)[len(TT.tag_for(_i) + TT.SEP):]) == EGG.flavor(_c, _r), "%s: described() = the flavor" % _i)
+for bad in (lambda: TT.rarity_tag("Shiny", "Egg"), lambda: TT.rarity_tag("Rare", "Gem")):
+    try:
+        bad()
+        FAILS.append("a bad rarity tag did not raise")
+    except AssertionError:
+        pass
 
 # ---- band rule
 for lv, want in ((0, 1), (5, 1), (9, 1), (10, 2), (14, 2), (15, 3), (20, 4), (25, 5), (30, 5), (34, 5), (35, 6), (40, 7), (60, 7)):
