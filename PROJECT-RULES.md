@@ -62,6 +62,9 @@ Respect the rollback floors in `tools/deploy_set.py`.
 - **Patch scripts:** a new version is derived from the CURRENT version (the SET pin) by `tools/<mod>_<ver>_patch.py`; edit the patch,
   never the generated script - except the four generated scripts Skyy hand-edited (commit ab75b6c, listed in RESUME.md).
 - Build and test all mods together as one set (`tools/deploy_set.py` SET).
+- **One menu pattern** (Skyy 2026-10-16: "lets try to reduce and compress the menus together to reduce clutter. then make sure its consistent
+  across the board, then follow the pattern when making new or adding to existing menus."): fewer, merged menus; every page follows
+  `research/Menu-Pattern.md` (layout, sizes, tab rows, scroll lists) - new menus and changes to old ones alike.
 - **UI looks and feels vanilla:** shared kit `tools/skyyui.py` + `research/Vanilla-UI-Style-Guide.md`; inline pages only; HANDOFF section 2.
 - **Tier tags** (Skyy 2026-10-15: "keep this as a general rule"): every item with a tier - now or added later - shows it first in its flavor
   text (`T3 Iron - text`; materials = their tool's tier; own ladders `T2 Totem`), from the one table `tools/tier_tags.py`
