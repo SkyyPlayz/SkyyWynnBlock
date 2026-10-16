@@ -84,6 +84,7 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 - **Queued (Skyy 10-15):** HEALTH REGEN - SkyySkills 0.4.43 (after 0.4.42): base 0.2 HP/s in combat / 1 HP/s after 5 s out, + per Overall Level, Stats row, bridge for gear / tree adds; then Gear / Accessories 'Health Regen' stat + Trees nodes (skills.md BASE HEALTH REGEN).
 - **Queued (Skyy 10-15 'Both'):** SPELLBLADE GREAT SHIELD (research/classes/Spellblade.md: bash chain, full guard 70% melee / 100% projectiles, Bulwark Charge) = the SkyyArmory round right after armory0128 (sword guard + Crescent Rush + early damage).
 - **Queued for SkyyMenu after menuu1 (0.3.30):** player action page 'Invite to Guild' button (slot 33 next to Invite to Party 32; cmd 'guild invite %P'; shown only while the viewer is in a guild and may invite) (social.md 10-15).
+- **Later (review note):** SkyyBazaar's price guard (Catalog.EDGES) should also read our standalone Server/Item/Recipes/Skyy*/ recipes (e.g. the 0.2.19 rubble <-> cobble ones) so an admin price edit cannot open a loop.
 ## Next, in order (Skyy 2026-10-14: "Run everything you can in parallel ... done by 5 pm")
 1. Land the 6 running rounds (deploy each READY one with the game closed), then the queued ones above.
 1b. OWN ICONS IN EVERY MENU (Skyy 10-15, ui.md; plan research/Menu-Icons-Plan.md): wave 1 sheet art/menu-icons-2/ DRAWN + reviewed (14 icons: Teleport My Island / Hub / Spawn / Warp / locked / none, Back / Prev / Next / Close, Player, Accept / Deny, Shards tile).
