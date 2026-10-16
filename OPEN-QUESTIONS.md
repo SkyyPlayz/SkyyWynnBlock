@@ -59,6 +59,8 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - TOOL PERKS (SkyyTrees 0.3.6): the Tree Feller log table stops at level 6 (1,2,4,5,6,10), so the hatchet perk adds nothing once your tree is level 5+. Give it 8 numbers (e.g. 1,2,4,5,6,10,12,14) as the new default, or will you edit it in Server Setup -> Trees? [8 numbers]
 - TOOL PERKS: Vein Mine = +1 ore per tool level on top of the tree's Vein Burst number, total capped at 8. Intended? [yes]
 
+- COLLECTION REWARDS (SkyyGear 0.3.13 / Collections 0.2.20): 6 tier rewards were normal-tool recipes (Wheat I/III/IV/VII, Oak Log I, Cobblestone I). Instead give a few of that collection's Enchanted item, coins, or lifelong-tool upgrade points? [Enchanted material]
+- MITHRIL / ONYXIUM TOOLS: with normal tools off, vanilla Mithril + Onyxium pickaxes / hatchets can't be had until the lifelong ladders go past Adamantite. Extend the ladders now or later? [later, with their Enchanted items]
 ### economy  (answers -> docs/answered/economy.md, topic `economy`)
 - AUCTION HOUSE + REBIRTH (SkyyAuctions 0.1.5): unclaimed AH sale coins block a rebirth until the player claims them (then they are lost with the purse). Or should Continue claim them into the purse automatically? [block, ask the player to claim first]
 - BAZAAR + REBIRTH (SkyyBazaar 0.1.11): should the Bazaar also refuse trades while a rebirth is busy (today it relies on SkyyCoins 0.1.7 refusing spends; Bazaar sales are income and still land)? [no, rely on SkyyCoins]
