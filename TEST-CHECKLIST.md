@@ -171,3 +171,4 @@ tests always come first.
 143. Fishing line over water (beads), fish into the Fishing bag, tackle + totem modifier models
 144. Class tree top-down, modifiers out of the tree (AP refunded), every ability says what it does
 145. Bazaar 0.1.15: x4.5 prices (Eternal seeds kept), crop groups by tier, saplings in Foraging, SELL <TAB> + SELL ALL TABS
+146. Lifelong watering can (hold to water), Harvester, SMITHING tab, Upgrade 8 rows

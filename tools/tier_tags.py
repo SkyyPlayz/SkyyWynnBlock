@@ -158,6 +158,18 @@ for _id in ARMORY_VANILLA:
     _w = _id.split("_")[2]
     _add(_id, metal_tier(_w) or {"Tribal": 3}[_w], "armory", "SkyyArmory")   # Tribal = SkyyGear's Lv 15 row -> T3 (plan 1.2 band)
 
+# SkyyGear's OWN tiered items (round gear0312 = SkyyGear 0.3.12; Skyy 2026-10-15 "lets add a T1 crude watering can, (made of wood.) upgrades
+# to a T2 copper T3 iron and so no" + the Harvester = hoe + sickle): the lifelong watering can ladder (Crude .. Adamantite like the pickaxe -
+# Mithril / Onyxium wait for their Enchanted items) and the Harvester ladder (Crude .. Thorium like the hoe). These ids are made by SkyyGear's
+# build (not in Assets.zip): OWN_IDS. Tier = the metal word (Gear TOOL_TIERS + 1).
+CAN_TIERS = ("Crude", "Copper", "Iron", "Thorium", "Cobalt", "Adamantite")
+HARVESTER_TIERS = ("Crude", "Copper", "Iron", "Thorium")
+for _w in CAN_TIERS:
+    _add("Tool_WaterCan_" + _w, metal_tier(_w), "can", "SkyyGear")
+for _w in HARVESTER_TIERS:
+    _add("Tool_Sickle_Harvester_" + _w, metal_tier(_w), "harvester", "SkyyGear")
+OWN_IDS = frozenset(["Tool_WaterCan_" + _w for _w in CAN_TIERS] + ["Tool_Sickle_Harvester_" + _w for _w in HARVESTER_TIERS])
+
 
 # ------------------------------------------------------------------------------------------------ lookups
 def tier(item_id):

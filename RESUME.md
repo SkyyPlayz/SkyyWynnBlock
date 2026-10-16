@@ -7,7 +7,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 1. `git pull --rebase --autostash`; check usage (ccd get_usage). The weekly limit was hit once on 10-15 ~22:30 and Skyy reset it.
 2. DEPLOY TARGET IS THE WORLD **NewBetaTest** (`tools/deploy_set.py` WORLD; backup_deploy / smoke_test follow it). Skyy plays there with a
    friend (WesleyPlayz, Assassin). The old world `HUD mod` is no longer deployed to.
-3. RUNNING (10-16 ~11:00): lean builder wd024 (SkyyWardrobe 0.2.4, NEXT 0) + workflow gear0312 (SkyyGear 0.3.12, NEXT 1) [BEFORE PIN: also rename the /smithing CRAFT tab to SMITHING, gear.md 10-16 + Upgrade tab 8 rows per page (smaller icons/rows) + watering can hold-and-sweep like the hoe, no charge-up - lean follow-up on the 0.3.12 patch]
+3. RUNNING (10-16 ~11:00): lean builder wd024 (SkyyWardrobe 0.2.4, NEXT 0)  [BEFORE PIN: also rename the /smithing CRAFT tab to SMITHING, gear.md 10-16 + Upgrade tab 8 rows per page (smaller icons/rows) + watering can hold-and-sweep like the hoe, no charge-up - lean follow-up on the 0.3.12 patch]
    + workflow menu0330 (SkyyMenu 0.3.30: no duplicate icons / entries, menu scaled up, Home 'Right now' panel + the queued Menu items; ui.md 10-16) [BEFORE PIN: HUD shortcut opens the HUD editor directly, ui.md 10-16]; if this
    session died, check their scratch / files, review, pin, deploy. SkyyEssentials 0.1.11 (crop fix) DEPLOYED 10-16 07:38 (TEST 140). SkyyHud 0.3.28 DEPLOYED 10-16 07:29 (TEST 139). Last deploys: 10-15 23:14 (TEST-CHECKLIST 137) and 10-16 05:31 (138).
 4. Kit `tools/skyyui.py` is now kit 1.6 (KIT_HUB_VERSION 1.6, KIT_VERSION still "1.5"): builds no longer need the old HEAD-kit preload.
@@ -17,11 +17,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 
 ## NEXT (Skyy 2026-10-16: "watering can first then pet eggs")
 0. **Quick fix (RUNNING wd024):** SkyyWardrobe 0.2.4 - Requip ability area = the full class loadout: 4 rows (Ability 2 / 3 + crouch alts), each 1 ability + 2 modifier slots, clickable, saved per loadout, applied on Equip (bags.md 10-16, Skyy: "that was my bad").
-1. **WATERING CAN + HARVESTER** (research/Watering-Can-Harvester-Spec.md; docs/answered/gear.md 10-15): lifelong can in the starting
-   kit, T1 Crude (wood) -> T2 Copper -> T3 Iron ...; tier = watering area 1x1 / 3x3 / 5x5 / 7x7; point upgrades Capacity / refill,
-   Growth boost, Lasting water, Bloom; Harvester = hoe + sickle merged at the Anvil after rebirth 1; tier tags (standing rule). Full round
-   on SkyyGear 0.3.12 (+ SkyySkills / Fishing only if needed). Also fold in: SkyyGear's longsword tooltip still says 'Charged Attack
-   20-28' (now Crescent Rush); the ("Spellblade","Battlemagic") class-skill pair; move Gear's own hpr / hprp regen onto skill:fn:hpregen.
+1. DONE 10-16: watering can + Harvester (SkyyGear 0.3.12, TEST 146).
 1a2. **ENCHANTED STICKS** (gear.md 10-16): new Enchanted Stick; later tool tier-ups (default T4+) need them. Ride the normal-tools round (SkyyGear).
 1b. **NORMAL TOOLS OFF EVERYWHERE** (gear.md 10-16, popups answered): no recipe / no crafting listing / no chest, Lost Loot, air-drop or mob
    drop for normal pickaxes, hatchets, hoes, sickles, fishing rods, watering cans (shovels stay); pack mods' ones hidden at runtime by id; owned normal
