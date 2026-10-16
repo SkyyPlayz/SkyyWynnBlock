@@ -33,6 +33,8 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - STRUCTURES: boss dungeons from Adathan (Tower of Shiva, Void Asylum) as end-game: one ask message for all four? [no, our own capstone dungeon] (research/Structure-Mods-Survey.md)
 - STRUCTURES: if no author agrees, build a small prefab placer into SkyyWorldGen? [only if loot piles need it] (research/Structure-Mods-Survey.md)
 
+- ZONE 1 SPAWN (SkyyWorldGen 0.7.1): should non-admin players get /spawn too (it goes to the Zone 1 landing)? [no - players use /hub]
+- ZONE 1 SPAWN: players with NO island who die - respawn at the Zone 1 landing instead of the hub? [no change - hub]
 ### skills  (answers -> docs/answered/skills.md, topic `skills`)
 - PERFECT DODGE (SkyySkills 0.4.37): 50 ms window, x1.25 counter-hit for 0.75 s, +5 Acrobatics XP (max 50 XP / min, monsters' hits only)? [yes; widen to 100 ms if 50 feels too tight]
 - PERFECT DODGE: base roll behaviour for everyone, not an Acrobatics perk? [base behaviour] (SkyySkills 0.4.37)
