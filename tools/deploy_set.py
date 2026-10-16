@@ -20,7 +20,7 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.29"), ("SkyySacks", "0.8.12"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.20"), ("SkyyParty", "0.1.9"),
-    ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.16"), ("SkyyGear", "0.3.13"), ("SkyySkills", "0.4.43"),
+    ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.16"), ("SkyyGear", "0.3.13"), ("SkyySkills", "0.4.44"),
     ("SkyyAccessories", "0.5.20"), ("SkyyClasses", "0.1.32"), ("SkyyMenu", "0.3.32"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
     ("SkyyCooking", "0.1.8"), ("SkyyTrees", "0.3.18"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -439,6 +439,8 @@ def main():
     # SkyyClasses 0.1.31 assigns them to the Spellblade + the armory:fn:mine / class:fn:momAdd Momentum bridge - deploy TOGETHER.
     if _v(_p.get("SkyyArmory", "0")) >= (0, 1, 29) and _v(_p.get("SkyyClasses", "0")) < (0, 1, 31):
         print("STOP: SkyyArmory 0.1.29 needs SkyyClasses 0.1.31+"); return 1
+    # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
+    # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep
     # the Skyy_Ench_* items the egg recipes use (Cobblestone, Iron, Oak, Maple, Wheat, Carrot, Copper).
     # SkyyVoid batch (2026-10-13): SkyySacks 0.8.0 (Bags v2, shown as SkyyVoid) + SkyyBazaar 0.1.9 deploy TOGETHER (Fishing tab, crystal products).

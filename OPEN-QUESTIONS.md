@@ -12,71 +12,19 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ## Still open (newest at the bottom of each topic; each heading names the answers file)
 
 ### project  (answers -> docs/answered/project.md, topic `project`)
-- RELEASE: start with a GitHub 'server pack' zip, CurseForge modpack later? [yes] (research/Release-Packaging-Plan.md)
-- RELEASE: OK to redistribute our jars although 4 of them (Skills / Armory / Gear / Trees) hold edited vanilla JSONs / assets generated from game files at build time - check Hytale's modding terms first? [check the terms first, then release] (research/Release-Packaging-Plan.md)
-- RELEASE: Dynamic Seasons + More Crossbow Tiers have no stated pack permission - ask the authors now, list them optional until they reply? [yes, ask now, optional until a reply] (research/Release-Packaging-Plan.md)
-- RELEASE: pack version number and name? [0.9.0 'SkyWynn'] (research/Release-Packaging-Plan.md)
-- RELEASE: which tuning scripts ship with the pack (Perfect Parries per class)? [a small apply script, off by default] (research/Release-Packaging-Plan.md)
-- LOAD TEST: OK to refactor tools/smoke_test.py into reusable functions (no behaviour change) so the load tool shares its safety checks? [yes, small lean round] (research/Load-Test-Plan.md)
-- LOAD TEST: spend a day on the bot-client spike (phase 3), or rely on layers A-C plus a real friends test? [layers A-C first, spike only if they miss something] (research/Load-Test-Plan.md)
-- LOAD TEST: how many players should the public server handle at release (sets N)? [50 online, 200 profiles on disk] (research/Load-Test-Plan.md)
-- LOAD TEST: make 'no com.skyy task took over 25 ms' a release gate in the smoke test? [yes, warn only until the Core ticker lands] (research/Load-Test-Plan.md)
 
 ### world  (answers -> docs/answered/world.md, topic `world`)
-- EXPLORATION: names Lost Loot / Lost Treasure / Supply Drop OK? [yes] (SkyyExploration 0.2.8)
-- EXPLORATION: tier IV Lost Loot is a gold treasure pile? [yes] (SkyyExploration 0.2.8)
-- EXPLORATION: one supply drop per world every 30 min, one at a time, first claim takes all? [yes] (SkyyExploration 0.2.8)
-- EXPLORATION: the supply drop is a firework flash falling, then the crate appears (no falling crate model) - OK? [yes] (SkyyExploration 0.2.8)
-- EXPLORATION: drops land 32-64 blocks from the chosen player (was 32-96) so the flash can be seen? [yes] (SkyyExploration 0.2.8)
-- STRUCTURES: OK to message joszza (OpenStructure + Dungeons and more Structures: modpack use, merchant camp off switch)? [yes; you send it or Claude drafts the text] (research/Structure-Mods-Survey.md)
-- STRUCTURES: more world structures at all before release, or keep zones vanilla + our loot piles? [keep vanilla, loot piles first] (research/Structure-Mods-Survey.md)
-- STRUCTURES: boss dungeons from Adathan (Tower of Shiva, Void Asylum) as end-game: one ask message for all four? [no, our own capstone dungeon] (research/Structure-Mods-Survey.md)
-- STRUCTURES: if no author agrees, build a small prefab placer into SkyyWorldGen? [only if loot piles need it] (research/Structure-Mods-Survey.md)
 
-- ZONE 1 SPAWN (SkyyWorldGen 0.7.1): should non-admin players get /spawn too (it goes to the Zone 1 landing)? [no - players use /hub]
-- ZONE 1 SPAWN: players with NO island who die - respawn at the Zone 1 landing instead of the hub? [no change - hub]
 ### skills  (answers -> docs/answered/skills.md, topic `skills`)
-- PERFECT DODGE (SkyySkills 0.4.37): 50 ms window, x1.25 counter-hit for 0.75 s, +5 Acrobatics XP (max 50 XP / min, monsters' hits only)? [yes; widen to 100 ms if 50 feels too tight]
-- PERFECT DODGE: base roll behaviour for everyone, not an Acrobatics perk? [base behaviour] (SkyySkills 0.4.37)
-- PERFECT DODGE: show it as a HUD flash or sound instead of a chat line? [chat line now, HUD later] (SkyySkills 0.4.37 / SkyyHud)
-- PERFECT DODGE: when a hit is both a Perfect Parries counter-hit and a dodge counter-hit, only the parry multiplier applies? [yes, no stacking] (SkyySkills 0.4.37)
-- OVERALL LEVEL: count Farming as the average of Farming / Ranching / Orchard now? [off until Ranching and Orchard have real XP sources] (SkyySkills 0.4.37)
-- RANCHING: cap of 200 XP a minute (after boosts) plus 'items a player dropped pay nothing' enough protection against farming? [yes] (SkyySkills 0.4.37)
 
 - FOOD STRENGTH (SkyyCooking 0.1.8): mushroom dishes' Strength buff lasts a flat 6 min at every Grade (not the Grade duration doubling: a G10 kebab would give +17% damage for 24 min) and is capped at +20%? [flat 360 s, cap 20%]
 ### gear  (answers -> docs/answered/gear.md, topic `gear`)
-- HARVEST GATE (SkyyGear 0.3.3): a Crude / Copper SICKLE sweeps Potatoes at half XP while a Crude hoe is refused (vanilla sickles stop at Iron, the sweep has no skip hook). Keep, or measure sickles against the crop's real tier (needs a client-side probe first)? [keep]
-- VAULT FETCH (SkyyVault 0.1.6): on a normal server stop the 30 s 'tool on the way' notes are not cleared, so a lifelong tool in flight can show twice (Vault + inventory) after a crash; clearing them risks losing the tool if the player was not saved first. Accept the duplicate-note trade-off? [yes, keep]
-- SIGILS: Unique Sigil comes from the Wheat, Oak Log, Cobblestone and Bone collections at tier VI? [yes] (SkyyGear 0.3.4 / Collections 0.2.13)
-- SIGILS: players already past tier VI get their Unique Sigil at their next join? [yes] (SkyyGear 0.3.4)
-- SIGILS: Mining Set armor refuses Sigils (fixed set bonus; it levels and tiers up instead)? [yes, refuse] (SkyyGear 0.3.4)
-- SIGILS: which bosses drop Sigils? [Boss, Guardian, Duke, Dragon, Chieftain, Hedera (incl. Golem_Guardian_Void); not Elite, Ogre, other Golems, Yeti, Rex] (SkyyGear 0.3.4)
-- SIGILS: you kept the Mythic Sigil as a rare Zone 4 boss drop (2026-10-14), but today it drops and cannot be used - should it work on the Anvil (sigil.mythicUse)? [off - Mythic gear is boss-only, 2026-10-08 lock] (SkyyGear 0.3.4)
-- ARMOR HANDS: Cobalt and Adamantite armor hands cost 1 Enchanted ingot (spec said 0)? [1] (SkyyGear 0.3.4 / Armory 0.1.24)
-- HOE AREA: the bigger hoe area also works outside islands? [off] (SkyyGear 0.3.4)
-- HOE AREA: the extra tilled blocks cost hoe durability? [no] (SkyyGear 0.3.4)
-- LOST TOOL (SkyyGear 0.3.2): after you get an exact copy and reforge / tier it up, the original stays Retired for good if it turns up (no swap back, sell or salvage) - else a bad reforge could be undone for free. OK? [yes]
-- TOOL PERKS (SkyyTrees 0.3.6): the Tree Feller log table stops at level 6 (1,2,4,5,6,10), so the hatchet perk adds nothing once your tree is level 5+. Give it 8 numbers (e.g. 1,2,4,5,6,10,12,14) as the new default, or will you edit it in Server Setup -> Trees? [8 numbers]
-- TOOL PERKS: Vein Mine = +1 ore per tool level on top of the tree's Vein Burst number, total capped at 8. Intended? [yes]
 
-- COLLECTION REWARDS (SkyyGear 0.3.13 / Collections 0.2.20): 6 tier rewards were normal-tool recipes (Wheat I/III/IV/VII, Oak Log I, Cobblestone I). Instead give a few of that collection's Enchanted item, coins, or lifelong-tool upgrade points? [Enchanted material]
-- MITHRIL / ONYXIUM TOOLS: with normal tools off, vanilla Mithril + Onyxium pickaxes / hatchets can't be had until the lifelong ladders go past Adamantite. Extend the ladders now or later? [later, with their Enchanted items]
 ### economy  (answers -> docs/answered/economy.md, topic `economy`)
-- AUCTION HOUSE + REBIRTH (SkyyAuctions 0.1.5): unclaimed AH sale coins block a rebirth until the player claims them (then they are lost with the purse). Or should Continue claim them into the purse automatically? [block, ask the player to claim first]
-- BAZAAR + REBIRTH (SkyyBazaar 0.1.11): should the Bazaar also refuse trades while a rebirth is busy (today it relies on SkyyCoins 0.1.7 refusing spends; Bazaar sales are income and still land)? [no, rely on SkyyCoins]
-- ECONOMY AUDIT: add a real coin sink (the Tab or slayer costs from the old plan) before more faucets? [yes, after rebirth R3; numbers from a measured session] (research/Economy-Audit-1014.md)
-- ECONOMY AUDIT: count goods bought with coins before a rebirth in the bank-bonus balance (they are kept either way)? [yes, at 90% of base value] (research/Economy-Audit-1014.md)
-- ECONOMY AUDIT: scale merchant prices up 25% per rebirth once rebirth is on? [yes, off until rebirth is on] (research/Economy-Audit-1014.md)
 
 ### bags  (answers -> docs/answered/bags.md, topic `bags`)
-- AUTO-PICKUP 2 (SkyySacks 0.8.4): seeds / saplings from a harvest go to the Void (not the inventory), so replanting means pulling them out. Keep? [Void]
-- AUTO-PICKUP 2: the vanilla 'picked up' popup still flashes next to our feed card. Keep it? [keep]
 
 ### classes  (answers -> docs/answered/classes.md, topic `classes`)
-- ABILITIES: which modifiers may go in both slots (double effect from modifier Lv 2)? [Power+, Radius+, Duration+, Efficiency, Pierce, Chain, Slow, Knockback+, Ricochet, Pull, Leech; never Split, Lingering, Follow, Ward, Echo, Haste, Floor, Seeker] (SkyyClasses 0.1.22, list grew with the new classes)
-- ABILITIES: Priest Spirit Shield gives the saved player a 4 s personal shield worth 15% of max Health (stands in for 'a small bubble that blocks projectiles')? [15% personal shield] (SkyyClasses 0.1.22)
-- ABILITIES: Layered Ward splits the bubble in two equal halves, the inner half regrows 3% of the bubble's HP a second? [yes] (SkyyClasses 0.1.22)
-- ABILITIES: lingering burn time 2 s + 0.5 s per level (2.5 s at Lv 1; the Mage class file says 3 s)? [2 s + 0.5 s / level] (SkyyClasses 0.1.22)
 - ABILITIES: build the 4 waiting nodes next round (Priest Elemental Bubble PB2, Mage PA4 + PC2, Priest PA2; Guiding Light stays out)? [yes, next round] (SkyyTrees 0.3.7)
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]
 
