@@ -21,8 +21,8 @@ SET = [
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.28"), ("SkyySacks", "0.8.10"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.19"), ("SkyyParty", "0.1.9"),
     ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.16"), ("SkyyBazaar", "0.1.14"), ("SkyyGear", "0.3.11"), ("SkyySkills", "0.4.43"),
-    ("SkyyAccessories", "0.5.18"), ("SkyyClasses", "0.1.29"), ("SkyyMenu", "0.3.30"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
-    ("SkyyCooking", "0.1.8"), ("SkyyTrees", "0.3.17"),
+    ("SkyyAccessories", "0.5.18"), ("SkyyClasses", "0.1.30"), ("SkyyMenu", "0.3.30"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
+    ("SkyyCooking", "0.1.8"), ("SkyyTrees", "0.3.18"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -431,6 +431,10 @@ def main():
     # Before rolling SkyySacks back below 0.8.10: players take their fish out of the Void first (0.8.9 cannot show them; nothing is deleted).
     if _v(_p.get("SkyySacks", "0")) >= (0, 8, 10) and _v(_p.get("SkyyFishing", "0")) < (0, 1, 8):
         print("STOP: SkyySacks 0.8.10 needs SkyyFishing 0.1.8+ (fish in the Void)"); return 1
+    # cls0130 (2026-10-16): modifiers left the class tree - Trees 0.3.18 + Classes 0.1.30 deploy + roll back TOGETHER (one-time abil.tree3 updates
+    # in both, History copies in each mod's history/abiltree3/; rolling back only one leaves modifiers locked).
+    if (_v(_p.get("SkyyTrees", "0")) >= (0, 3, 18)) != (_v(_p.get("SkyyClasses", "0")) >= (0, 1, 30)):
+        print("STOP: SkyyTrees 0.3.18 and SkyyClasses 0.1.30 go together"); return 1
     # SkyyVoid batch (2026-10-13): SkyySacks 0.8.0 (Bags v2, shown as SkyyVoid) + SkyyBazaar 0.1.9 deploy TOGETHER (Fishing tab, crystal products).
     # FLOOR: never roll SkyySacks below 0.8.0 once it has run - run /pdadmin legacybags <player> for every player BEFORE any rollback (converted bags are gone).
     if (_v(_p.get("SkyyBazaar", "0")) >= (0, 1, 9)) and _v(_p.get("SkyySacks", "0")) < (0, 8, 0):

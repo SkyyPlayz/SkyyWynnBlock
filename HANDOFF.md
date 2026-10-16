@@ -18,12 +18,12 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyGear | 0.3.11 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
 | SkyySkills | 0.4.43 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap; 0.7 assets: Mana.json, spell costs; Acro XP line; leaderboard index, private writer |
 | SkyyAccessories | 0.5.18 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections); lantern hide per helper |
-| SkyyClasses | 0.1.29 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
+| SkyyClasses | 0.1.30 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
 | SkyyMenu | 0.3.30 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port; hub hotkey double-tap crouch, private writer |
 | SkyyEssentials | 0.1.11 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.15 | profiles = full saves (default cap 6), delete + 6 h undo; 0.7 port; striped locks |
 | SkyyCooking | 0.1.8 | Cooking dishes + food Grade; XP by craft difficulty |
-| SkyyTrees | 0.3.17 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
+| SkyyTrees | 0.3.18 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
 | SkyyExploration | 0.2.11 | Exploration skill, spots, island checklist; 0.7 port; private writer, change-driven publish |
 | SkyyGuilds | 0.1.9 | guilds + guild bank; writes off the lock |
 | SkyyVault | 0.1.7 | vault pages |

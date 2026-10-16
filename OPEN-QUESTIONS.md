@@ -76,6 +76,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - ABILITIES: build the 4 waiting nodes next round (Priest Elemental Bubble PB2, Mage PA4 + PC2, Priest PA2; Guiding Light stays out)? [yes, next round] (SkyyTrees 0.3.7)
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]
 
+- CLASS TREE AP (SkyyClasses 0.1.30 / Trees 0.3.18): with modifiers out of the tree a full class tree costs 32 AP, but players reach 50 AP at max level (18 spare). Add nodes / raise costs, or leave the spare AP? [leave it until you've played the new tree]
 ### pets  (answers -> docs/answered/pets.md, topic `pets`)
 - PET KILLS (SkyyPets 0.2.5 / SkyyMobs 0.1.8 / SkyySacks 0.8.4): pet-kill loot + 'pet damage makes you top damager' are built but cannot be tested until pets fight (SkyyPets 0.4). Keep them idle until then? [yes]
 - DRAGON as a pet with Aures' Dragon Nestkeeper: our secondary pet slot summons their dragon, or their mod owns the dragon and our slot links it, or our own dragons later? [(1) summon via our slot if Aures allows + it works, else (2) - docs/answered/pets.md 2026-10-06; decide after the survey + Aures' answer]

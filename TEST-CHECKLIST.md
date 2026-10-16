@@ -169,3 +169,4 @@ tests always come first.
 141. Menu 0.3.30: bigger menu, 5x5 grid, unique icons, Right now panel, Smithing opens, HUD tile opens editor
 142. Food families: Veggie HP / Fruit Mana / Meat Stamina / Mushroom Strength, faster eating, 11 new dishes
 143. Fishing line over water (beads), fish into the Fishing bag, tackle + totem modifier models
+144. Class tree top-down, modifiers out of the tree (AP refunded), every ability says what it does
