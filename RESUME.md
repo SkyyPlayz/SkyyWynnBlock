@@ -20,6 +20,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   + Trees 0.3.19 + Classes 0.1.33 (Stats+Skills, Trees+Abilities); hubstore Bank 0.1.15 + Vault 0.1.8 (one Vault tab, coins on top); hubmkt
   Bazaar 0.1.17 + Auctions 0.1.9 (one Market tab, one search); hubcoll Collections 0.2.22 (+ Sacks 0.8.13) (recipes inside collections).
   + accraft Accessories 0.5.21 (craft + upgrade only in the Accessory Bag: next step per line, sub tabs Benches / Combat / Gathering; gear.md 10-16).
+  + spec research/Accessory-Power-Spec.md being written (AP by rarity, pick 1 of 5 combat + 4 gathering Powers; bag grid like pets) -> build
+  SkyyAccessories 0.5.22 after accraft (gear.md 10-16).
   So T1 becomes Skills 0.4.46, Enchanted listing Bazaar 0.1.18. Mod compression AFTER (sections stay separate - docs/answered/project.md 10-16).
 - Last deploy: Nothing else running. Deployed 10-16 14:44 (TEST-CHECKLIST 154): Skills 0.4.44 (dodge), Rebirth 0.3.4 (ON), Exploration 0.2.12, WorldGen 0.7.2 (/spawn),
   Cooking 0.1.9, Guilds 0.1.10, Collections 0.2.21 (redesign C1), Gear 0.3.14 (one Harvester, Crude full on wheat, Sigils) + Armory 0.1.30
