@@ -99,6 +99,8 @@ Other proven facts: HUD attach = `new HudMain(pr).show()` on `PlayerReadyEvent` 
    usage variant (description-only ctor + withRequiredArg, parent addUsageVariant) or a subcommand with withRequiredArg.
 3. No leftover commands (Skyy 2026-10-16: "we dont need to keep commands around that longer fit."): when a page / item / system is
    renamed or retired, its old commands are REMOVED, not kept as aliases. Commands that still describe what they open stay.
+   Skyy: "replace, dont add extra. so we dont end up with a massive command list." -> a new name REPLACES the old command; no extra aliases
+   beyond the ones Skyy names; a round that adds a command lists what it replaced.
 
 ## Where the rest of the old HANDOFF went (2026-10-05, word for word)
 | Old part | Now |
