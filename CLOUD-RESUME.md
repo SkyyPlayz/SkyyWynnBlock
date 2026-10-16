@@ -89,3 +89,6 @@ builds need these specs. Specs only; one commit + OUTBOX block each. -->
 - [x] Nexus soul flame + 5 sigils (icons v2) - 2026-10-13 - `research/cloud/icons-1013`
 - [x] /rebirth page mockup - 2026-10-13 - `research/cloud/rebirth-page-1013`
 - [x] Shard menu mockup - 2026-10-13 - `research/cloud/shard-menu-1013`
+
+## For the local builder (2026-10-16)
+- Skyy answered many OPEN-QUESTIONS.md items on 2026-10-15 (see research/cloud/OpenQuestions-Answers-2026-10-15.md). Builder: fold these into OPEN-QUESTIONS.md / docs/answered. Items still open for builder + Skyy: L86/L87, L94, L106, L108, L31.
