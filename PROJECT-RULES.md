@@ -63,6 +63,9 @@ Respect the rollback floors in `tools/deploy_set.py`.
   never the generated script - except the four generated scripts Skyy hand-edited (commit ab75b6c, listed in RESUME.md).
 - Build and test all mods together as one set (`tools/deploy_set.py` SET).
 - **UI looks and feels vanilla:** shared kit `tools/skyyui.py` + `research/Vanilla-UI-Style-Guide.md`; inline pages only; HANDOFF section 2.
+- **Tier tags** (Skyy 2026-10-15: "keep this as a general rule"): every item with a tier - now or added later - shows it first in its flavor
+  text (`T3 Iron - text`; materials = their tool's tier; own ladders `T2 Totem`), from the one table `tools/tier_tags.py`
+  (research/Tier-Tags-Plan.md). A round that adds a tiered item adds it to that table; `tools/ci/langdup.py` keeps one writer per lang key.
 - **Everything a server owner might change is editable in game** (SkyWynn Menu -> Server Setup) through `tools/skyycfg.py`
   (`tools/CONFIG-CONTRACT.md`). Times shown in seconds.
 - **One-time setting migrations:** only rewrite lines still holding the old default (keep + log hand-edited values), verified History

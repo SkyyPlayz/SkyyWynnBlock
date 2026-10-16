@@ -47,6 +47,8 @@ Server Setup), research/Settings-Spec.md 1.2-1.3 (player switches), tools/PROFIL
 - Do not git commit. Edit ONLY the files your task names. Never edit RESUME.md, INDEX.md, HANDOFF.md, TEST-CHECKLIST.md, OPEN-QUESTIONS.md,
   anything under docs/ (answered, log, tests, handoff, plans, archive), tools/deploy_set.py, SkyyGear-Plan.md or SkyyGear-Stat-Catalog.md
   (Skyy's design docs are read-only).
+- Tier tags (standing rule): any item you add or change that has a tier gets its tag first in its flavor text ('T3 Iron - text') via tools/tier_tags.py
+  (add new ids to that table; research/Tier-Tags-Plan.md); never write a lang key another SET jar already writes.
 - Other builders work in parallel on other mods; do not touch their files.
 
 ## Return

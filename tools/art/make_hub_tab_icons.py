@@ -10,6 +10,9 @@ outline, palettes, PNG writer, sheet Canvas). Each motif is first painted as a n
 place behind a word: colours pulled toward a cool slate grey, a low overall alpha, and a per-pixel alpha cap so the tab label keeps
 a WCAG contrast of >= 4.5 : 1 (>= 5 on the plain tab) over every pixel of the icon (checked on the real Sky Tab textures).
 
+Multitool is NOT a tab any more (Skyy 2026-10-15: "i thought we scrapped the multitool menu. merging it into upgrades.").
+Pocket, Identify and Teleport reuse the SkyWynn Menu tile designs (Skyy 2026-10-15: "i prefer this one").
+
 Size: 72 x 72 px, an @2x texture = 36 x 36 UI units, centred in the 44 UI high Sky tab (4 UI clear above / below; the tab's
 V border is 12 UI). Works on tabs from 110 UI wide (Character, 8 tabs = 115 UI) to 190 UI.
 
@@ -51,6 +54,7 @@ for _k, _v in PAL3.items():
         M.PALC[_k] = [hx(c) for c in _v]
 
 # ====================================================================== fade rules (behind a word on the dark Sky tab)
+# (order in fade(): slate desaturation, a whole-icon gain for bright motifs, a soft knee, then a hard per-pixel cap)
 LABEL = {"button2Text": hx("#bdcbd3"), "buttonText": hx("#bfcdd5")}      # tools/art/make_ui_kit_sky.py (kit label colours)
 FADE = {
     # desat: pull toward slate grey; alpha: overall; min contrast of the label over (icon on that tab state), per state
@@ -109,11 +113,22 @@ def fade(img, mode):
     st0 = list(f["states"])[0]; lbg = rel_lum(tab_worst_bg(st0))
     cap = min((rel_lum(LABEL[lb]) + 0.05) / f["states"][st0] - 0.05 for lb in f["labels"]) * 0.97
     knee = lbg + (cap - lbg) * 0.55
+    # bright motifs (amber portal, cream bunny / scroll): one gain for the whole icon first, so the 85th-percentile pixel lands at
+    # the cap - the shading survives as a whole instead of every bright pixel being squashed to the same flat tone by the knee
+    def slate_of(p):
+        g = 0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2]
+        return mix(p[:3], (g * 0.86, g * 0.94, min(255.0, g * 1.08 + 6)), f["desat"])
+    lums = sorted(rel_lum(slate_of(p)) for row in img for p in row if p[3])
+    p85 = lums[int(0.85 * (len(lums) - 1))]
+    want = (cap - (1 - f["alpha"]) * lbg) / f["alpha"]
+    gain = min(1.0, want / p85) if p85 > 0 else 1.0
     out = P.new(S, S)
     for y in range(S):
         for x in range(S):
             p = img[y][x]
             if not p[3]: continue
+            if gain < 1.0:
+                p = [lin_srgb(srgb_lin(v) * gain) for v in p[:3]] + [p[3]]
             g = 0.299 * p[0] + 0.587 * p[1] + 0.114 * p[2]
             slate = (g * 0.86, g * 0.94, min(255.0, g * 1.08 + 6))
             col0 = mix(p[:3], slate, f["desat"])
@@ -170,6 +185,44 @@ def swirl_f(cx, cy, rx, ry, k=3):
         dx, dy = (x - cx) / rx, (y - cy) / ry; r = math.hypot(dx, dy); a = math.atan2(dy, dx)
         return 0.25 + 0.55 * (1 - r) + 0.2 * math.sin(k * a + r * 8.0)
     return f
+
+
+# ====================================================================== motifs reused from the SkyWynn Menu tiles (Skyy 2026-10-15)
+# Skyy, looking at the contact sheet next to the menu icon grid: "pocket icon could use a little work. i prefer this one. for the
+# identify, and the teleport portal." -> these three tabs reuse the approved sheet-1 tile designs (tools/art/make_menu_icons.py,
+# imported, not edited): painted with that builder on its own 64 px grid, the loose sparkles outside the motif dropped (noise at
+# tab size), then placed in the middle of the 72 px square and faded like every other tab icon.
+class Sheet1Motif:
+    def __init__(self, builder):
+        self.builder = builder
+
+    def render(self):
+        ic = self.builder()
+        bbs = [ly.shape.bb for ly in ic.layers]
+        ic.pix = [(x, y, c) for (x, y, c) in ic.pix if any(b[0] <= x <= b[2] and b[1] <= y <= b[3] for b in bbs)]
+        old = M.N
+        M.N = 64
+        try:
+            img = ic.render()
+        finally:
+            M.N = old
+        out = P.new(S, S); o = (S - 64) // 2
+        for y in range(64):
+            for x in range(64):
+                if img[y][x][3]: out[y + o][x + o] = list(img[y][x])
+        return out
+
+
+def t_pocket():
+    return Sheet1Motif(M.icon_pocket)
+
+
+def t_identify():
+    return Sheet1Motif(M.icon_identify)
+
+
+def t_teleport():
+    return Sheet1Motif(M.icon_teleport)
 
 
 # ====================================================================== CHARACTER hub (teal + gold, "your stuff")
@@ -295,20 +348,6 @@ def t_profiles():
 
 
 # ====================================================================== STORAGE hub (teal / leather / steel)
-def t_pocket():
-    ic = Icon("pocket")
-    body = union(ellipse(36, 47, 21, 17), poly([(25, 32), (47, 32), (55, 45), (17, 45)]))
-    ic.add(body, "leather", base=0.55, grad=0.6, bevel=1.1, bev=0.2)
-    ic.add(poly([(29, 21), (43, 21), (47, 33), (25, 33)]), "leather", base=0.45, grad=0.5, pattern=folds(1.1, 0.07, 29))
-    ic.add(union(circle(29.5, 17, 5.2), circle(36, 14.5, 5.8), circle(42.5, 17, 5.2)), "leather", base=0.62, grad=0.5, line=True)
-    ic.add(capsule(25, 27, 47, 27, 2.2), "gold", mode="cyl", axis=(1, 0), base=0.6)
-    ic.add(capsule(45, 28, 49.5, 37, 1.3), "gold", base=0.55, bevel=0)
-    ic.add(circle(50, 38.5, 2.4), "gold", mode="sphere", base=0.6)
-    ic.add(circle(36, 48, 9), "void", tfunc=swirl_f(36, 48, 9, 9), bevel=0, line=True)
-    ic.add(poly(star_pts(36, 48, 3.6, 1.3, 4)), "teal", base=0.95, bevel=0, cast=False)
-    return ic
-
-
 def t_requip():
     ic = Icon("requip")
     ic.add(diff(ering(36, 10.5, 5, 5, 2.8, 2.8), rect(31, 10.5, 36, 16)), "gold", base=0.6, bevel=0)  # hanger hook
@@ -457,44 +496,7 @@ def t_upgrade():
     return ic
 
 
-def t_multitool():
-    ic = Icon("multitool")
-    cx, cy, ang = 38, 38, 32
-    ic.add(poly(rp(box(-2.8, -16, 2.8, 28), ang, cx, cy)), "wood", base=0.55, grad=0.5, bevel=0.8, pattern=hstripes(4, 0.05))
-    pick = [(-5, -24), (-22, -21), (-32, -12), (-21, -15), (-5, -15)]
-    ic.add(poly(rp(pick, ang, cx, cy)), "steel", base=0.52, grad=0.6, bevel=1.1, line=True)
-    axe = [(5, -26), (14, -28), (22, -33), (25, -19), (22, -5), (14, -10), (5, -13)]
-    ic.add(poly(rp(axe, ang, cx, cy)), "steel", base=0.68, grad=0.6, bevel=1.2, bev=0.2, line=True)
-    ic.add(poly(rp(box(-5.5, -27, 5.5, -12), ang, cx, cy)), "gold", base=0.6, grad=0.6, bevel=0.8, line=True)
-    ic.add(poly(rp(box(-3.5, 21, 3.5, 27), ang, cx, cy)), "leather", base=0.5, bevel=0.5)
-    return ic
-
-
-def t_identify():
-    ic = Icon("identify")
-    lx, ly, lr = 31.0, 30.0, 20.0
-    ic.add(capsule(46, 45, 61, 61, 4.2), "wood", mode="cyl", axis=(0.7, 0.7), base=0.55)
-    ic.add(capsule(44, 43, 48.5, 47.5, 5.0), "gold", base=0.6, bevel=0.6)
-    lens = circle(lx, ly, lr - 4)
-    ic.add(lens, "glass", base=0.45, grad=0.6, bevel=0, rim=False)
-    for pts, b in M.gem_facets(lx, ly + 1, 1.15):
-        ic.add(inter(poly(pts), lens), "emerald", base=b + 0.1, grad=0.3, bevel=0, rim=False, cast=False)
-    ic.add(inter(Shape(lambda x, y: -4 < (x - lx) + (y - ly) + 9 < 0.5, lens.bb), lens), "glass", base=0.95, bevel=0, rim=False, cast=False)
-    ic.add(ering(lx, ly, lr, lr, lr - 4, lr - 4), "gold", mode="torus", torus=(lx, ly, lr, lr, lr - 4, lr - 4), bevel=0, line=True)
-    return ic
-
-
 # ====================================================================== WORLD hub (amber / gold, travel)
-def t_teleport():
-    ic = Icon("teleport")
-    ic.add(ellipse(36, 36, 21, 26), "void", tfunc=swirl_f(36, 36, 21, 26), bevel=0)
-    ic.add(ering(36, 36, 27, 32, 21, 26), "gold", mode="torus", torus=(36, 36, 27, 32, 21, 26), base=0.6, bevel=0, line=True)
-    for (x, y) in ((36, 4.8), (36, 67.2), (9.8, 36), (62.2, 36)):
-        ic.add(circle(x, y, 3.2), "amber", mode="sphere", base=0.65)
-    ic.add(poly(star_pts(36, 36, 6, 2, 4)), "gold", base=0.92, bevel=0, cast=False)
-    return ic
-
-
 def t_island():
     ic = Icon("island")
     top, rw, depth = 44, 27, 20
@@ -750,7 +752,7 @@ TABS = [
     ("character", "accessories", "Accessories", t_accessories, "a gold chain amulet with a teal diamond gem in a round gold setting"),
     ("character", "collections", "Collections", t_collections, "an open teal book with text lines and a gold bookmark ribbon"),
     ("character", "profiles", "Profiles", t_profiles, "a gold picture frame holding a teal player portrait (head and shoulders)"),
-    ("storage", "pocket", "Pocket", t_pocket, "a leather drawstring sack with a gold cord and a violet pocket-dimension swirl on the front"),
+    ("storage", "pocket", "Pocket", t_pocket, "the SkyWynn Menu's Pocket Dimension tile: a teal drawstring pouch with a violet-teal swirl rising out of its void opening"),
     ("storage", "requip", "Requip", t_requip, "a steel chestplate with teal pauldrons hanging on a gold clothes hanger"),
     ("storage", "vault", "Vault", t_vault, "a round steel vault door (bolt ring, side hinge) with a gold spoked wheel"),
     ("storage", "bank", "Bank", t_bank, "a stone bank with four columns, a green roof, a gold coin in the pediment and steps"),
@@ -761,9 +763,8 @@ TABS = [
     ("smithing", "recipes", "Recipes", t_recipes, "a recipe scroll with a 3 x 3 crafting grid (gold ingot, two sticks, an emerald)"),
     ("smithing", "reforge", "Reforge", t_reforge, "a steel anvil with a glowing amber blade blank and three amber sparks"),
     ("smithing", "upgrade", "Upgrade", t_upgrade, "a big gold up-arrow with an amber star in its shaft"),
-    ("smithing", "multitool", "Multitool", t_multitool, "a pick-axe multitool: steel pick spike on one side, axe blade on the other, gold collar"),
-    ("smithing", "identify", "Identify", t_identify, "a gold magnifying glass showing an emerald gem through its lens"),
-    ("world", "teleport", "Teleport", t_teleport, "an upright gold portal ring with a violet swirl and four amber studs"),
+    ("smithing", "identify", "Identify", t_identify, "the SkyWynn Menu's Identify tile: a gold magnifying glass over a cut emerald (the gem shows magnified in the lens)"),
+    ("world", "teleport", "Teleport", t_teleport, "the SkyWynn Menu's Teleport tile: a gold portal ring (amber gem studs) round swirling amber energy on a stone plinth"),
     ("world", "island", "Island", t_island, "a floating island with one round tree and a little waterfall"),
     ("world", "explore", "Explore", t_explore, "a gold compass with a cream face, red north / steel south needle"),
     ("world", "quests", "Quests", t_quests, "a wooden job board (mahogany roof) with a pinned paper showing an amber '!'"),
@@ -963,7 +964,8 @@ def check_all(argv):
     man = json.load(open(os.path.join(OUT, "manifest.json"), encoding="utf-8"))
     files = dict((f["path"], f) for f in man["files"])
     want = set(fname(t[0], t[1], m) for t in ALL for m in ("normal", "on"))
-    check(len(TABS) == 33 and len(ROW) == 8, "33 hub tabs (Hubs-Spec 1.2) + 8 hub-row icons in the generator")
+    check(len(TABS) == 32 and len(ROW) == 8 and not any(t[1] == "multitool" for t in TABS),
+          "32 hub tabs (Hubs-Spec 1.2 minus Multitool, merged into Upgrade) + 8 hub-row icons in the generator")
     check(set(files) == want, "manifest file list = the %d expected files" % len(want))
     present = set(f for f in os.listdir(OUT) if f.endswith(".png"))
     extra = present - want - {"contact-sheet.png"}
