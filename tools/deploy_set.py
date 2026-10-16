@@ -22,7 +22,7 @@ SET = [
     ("SkyyHud", "0.3.29"), ("SkyySacks", "0.8.13"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.22"), ("SkyyParty", "0.1.9"),
     ("SkyyBank", "0.1.15"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.17"), ("SkyyGear", "0.3.14"), ("SkyySkills", "0.4.45"),
     ("SkyyAccessories", "0.5.20"), ("SkyyClasses", "0.1.33"), ("SkyyMenu", "0.3.33"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
-    ("SkyyCooking", "0.1.9"), ("SkyyTrees", "0.3.19"),
+    ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.19"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
