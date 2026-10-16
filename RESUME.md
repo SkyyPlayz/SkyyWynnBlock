@@ -52,6 +52,8 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    Common..Mythic), roll 1 pet (best -> worst weights by egg rarity), roll 2 rarity, atomic hatch then ~3 s two-reel animation, sources
    (skill drops, collections, crafting, shops). 5 questions open in OPEN-QUESTIONS.md with defaults - use the defaults unless Skyy answers.
    Rounds A0 art, R1 SkyyPets 0.4.0 (ultracode; ALSO the Pets page redesign: per-pet icons, grid, full-stats flavor text, no OPEN page, role + area filters, pets.md 10-16), R2 Skills, R3 Bazaar + Merchants, R4 Collections.
+2b. RUNNING armory0129 (SkyyArmory 0.1.29: Great Shield, Crescent Rush lunge, Mage teleport look, Warrior Thrust) + wg071 (SkyyWorldGen
+   0.7.1: zones weather fix, Zone 1 = server spawn + /zone setlanding) - plain Agent builders, critics after.
 3. Then (queued): ONE SkyyArmory round = Great Shield (Spellblade: bash chain, full guard 70% melee / 100% projectiles, Bulwark Charge; research/classes/Spellblade.md) + Spellblade Crescent Rush = pushing lunge, not teleport (+ that teleport look onto the Mage teleport; classes.md 10-16) + Warrior sword Thrust dash range boost (classes.md LOCKED 2026-10-08; Skyy 10-16 'add the changes to the warrior traversal to the que, along with the great shield'); WorldGen 0.7.1 (zones-world weather list - vanilla
    SensorWeather NPE; 'Zone 1 = server spawn' switch + /zone setlanding in the zones world, world.md 10-15); Menu 0.3.30 (Storage + World hub tiles get their OWN icons - they reuse Pocket Dimension / Teleport, Skyy 10-16 ui.md; Invite to Guild
    button, Stats 'Health Regen' row from skill:fn:hpregen, 'Battlemagic' in CLASS_SKILLS, hub tab icons from art/hub-tab-icons/ as
