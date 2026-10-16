@@ -34,6 +34,8 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 1d. RUNNING fish018 (SkyyFishing 0.1.8 + SkyySacks 0.8.10 + SkyyShards 0.4.1): fishing line over water, fish into the Fishing bag, 29 missing item
    models (bags.md / ui.md 10-16). Still ask Skyy what the purple cube on the spawn-Temple pedestal is.
 1e. **CLASS EMBLEMS** (ui.md 10-16): one icon per class (8, art first via skywynn-art) on Profiles / class pick / Class tab; wire the 35 approved ability icons in.
+1f. **CRAFTING HUB** (ui.md 10-16 + LOCKED 10-10): hub tab Smithing -> CRAFTING with pages Crafting (/craft, SkyySacks; looks upgraded) + Smithing
+   (SkyyGear /smithing). Round after menu0330 + fish018 (Menu + Sacks + Gear).
 2. **PET EGGS + HATCHING** (research/Pet-Eggs-Spec.md; pets.md 10-15): 30 eggs (Mining / Farming / Foraging / Combat / Exploration x
    Common..Mythic), roll 1 pet (best -> worst weights by egg rarity), roll 2 rarity, atomic hatch then ~3 s two-reel animation, sources
    (skill drops, collections, crafting, shops). 5 questions open in OPEN-QUESTIONS.md with defaults - use the defaults unless Skyy answers.
