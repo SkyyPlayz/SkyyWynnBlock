@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + bz0115 Bazaar 0.1.15 + cook018 Cooking 0.1.8 )
+# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + cook018 Cooking 0.1.8 )
 
 Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
 `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md` (2026-10-15 / 16 lines). Decisions word for word: `docs/answered/<topic>.md`.
@@ -29,8 +29,6 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 1c. **LIFELONG ACCESSORY BAG / POCKET DIMENSION / MENU ITEM + no 2nd bag on /island reset** (gear.md 10-16): like the forever tools - one per
    profile, can't be lost, extras cleaned, a recall command each; island reset / kit never re-gives owned once-only items. FULL round (Accessories +
    Sacks + Menu + Islands) after menu0330 deploys.
-1c2. RUNNING FULL bz0115 (SkyyBazaar 0.1.15): Farming order + saplings -> Foraging + prices x~4.4 except 10-15 Eternal seeds [BEFORE PIN: SELL <TAB>
-   per category + SELL ALL above it, economy.md 10-16].
 1c3. RUNNING cook018 as a PLAIN Agent builder (workflow builders refused twice) (SkyyCooking 0.1.8): food families (Veggie HP / Fruit Mana / Meat Stamina / Mushroom Strength + Grain, Dairy-Egg-Fish own
    families), faster eating that hits never cancel, no Sated, new dishes (skills.md 10-16). Bridge readers in Gear / Skills = follow-up.
 1c4. RUNNING lean compost01 (SkyyEssentials 0.1.11): ships the missing 'Compost_Soft' ResourceType so Dynamic Seasons 7.0.4 stops deleting 14 crops

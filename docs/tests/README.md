@@ -259,3 +259,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Food families (DEPLOYED 2026-10-16, backup deploy-20261016-0809) | [2026-10](2026-10.md) |
 | Fishing fixes: line over water, fish into the bag, models (DEPLOYED 2026-10-16, backup deploy-20261016-0811) | [2026-10](2026-10.md) |
 | Top-down class tree, modifiers by ability level, what abilities do (DEPLOYED 2026-10-16, backup deploy-20261016-0825) | [2026-10](2026-10.md) |
+| Bazaar x4.5 prices, crop order, sell per tab (DEPLOYED 2026-10-16, backup deploy-20261016-0849) | [2026-10](2026-10.md) |
