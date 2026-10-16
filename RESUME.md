@@ -20,8 +20,9 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   Collections), Cooking 0.1.10 (one food family = one bar), Accessories 0.5.21 (craft + upgrade in the bag), Sacks 0.8.14 (Enchanted Void homes,
   scroll craft list, no Void level gate), Gear 0.3.15 + Menu 0.3.34 (Crafting hub Crafting / Smithing / Anvil / Upgrade, big top row on Gear
   pages), Pets 0.4.1 (Eggs + Hatchery), Skills 0.4.46 + Hud 0.3.30 (log fixes).
-- RUNNING: wd025 SkyyWardrobe 0.2.5 (Requip pool scroll + rows fill, search above tabs, SELL button = COIN round -> critics, Take out stays
-  out of auto-store; bags.md 10-16). Plain Agent builder; when it reports: spawn a Sonnet critic (coins / items), fix, pin, deploy.
+- DEPLOYED 17:05 Wardrobe 0.2.5 (TEST 159). RUNNING: menu sweep round K (skyyui 1.7 hub_page shell + SkyyMenu 0.3.35; plain Agent).
+  Then S1-S4 + Quests q04 per research/Menu-Pattern.md section 4 + rules 7-8 (no back buttons, top rows on every page - Skyy 10-16).
+  Queued: SALVAGE (SkyyGear gear:fn:salvage + Wardrobe 0.2.6; bags.md 10-16).
 - NEXT IN ORDER (specs answered, word for word in docs/answered/):
   1. MENU SWEEP (research/Menu-Pattern.md, answers at the end): kit round K (skyyui 1.7 + Menu 0.3.35; the BIG HUB ROW helper from Gear 0.3.15
      exists), then S1-S4 + Quests q04 (section 4). Every page 1600 x 980, big row 2, short lists fill, scroll not pages.
