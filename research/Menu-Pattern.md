@@ -319,3 +319,8 @@ widget list + Open HUD editor: YES. 6. Crafting hub = Crafting / Smithing / Anvi
 rolled into upgrade"): YES. Optional cuts M11 / M14-M17: off. Build per section 4 (sweep plan).
 7. Short lists fill the space (Skyy: "i dont mind scrolling, but if there are only a few items try to scale them to all fit."): a scroll list
    with few entries uses bigger rows (up to ~2x) to fill its area; it scrolls only when entries no longer fit at normal row size.
+8. No back buttons, top rows always (Skyy: "I never want to have to use a back button. The menus at the top should always be there for easy
+   navigation."): EVERY page and window - hubs, the Void, Requip, Rebirth, the hatch reels, detail / sub pages (a set page, one collection, a
+   skill's stats) - shows row 1 (hubs) + row 2 (that hub's tabs). No BACK, '< MENU' or close-to-return buttons: a sub view is a sub-tab or an
+   in-page selection that the top rows can always leave. The sweep audits every page id against this (a lint check: no element labelled Back /
+   < Menu on a hub page).
