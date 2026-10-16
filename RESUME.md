@@ -38,6 +38,8 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 1c4. RUNNING lean compost01 (SkyyEssentials 0.1.11): ships the missing 'Compost_Soft' ResourceType so Dynamic Seasons 7.0.4 stops deleting 14 crops
    + apples (economy.md 10-16). bz0115 is now a FULL round (order + prices x~4.4 except the 10-15 Eternal seeds).
 1e. **CLASS EMBLEMS** (ui.md 10-16): one icon per class (8, art first via skywynn-art) on Profiles / class pick / Class tab; wire the 35 approved ability icons in.
+1f0. RUNNING craft01 (plain Agent builder; critics after): Crafting hub + crafter look + /craft tier sort + furnace ADD FUEL + benches use the
+   Accessory Bag + Void DEPOSIT ALL (SkyySacks 0.8.11, SkyyAccessories 0.5.19, SkyyMenu 0.3.31). Covers 1f + 1f4 below.
 1f. **CRAFTING HUB** (ui.md 10-16 + LOCKED 10-10): hub tab Smithing -> CRAFTING with pages Crafting (/craft, SkyySacks; looks upgraded) + Smithing
    (SkyyGear /smithing) + Furnace ADD FUEL picker sorted by amount owned (keep the quick bar) + every /craft tab sorted by tier (farming: crop, Enchanted, seeds, Eternal). Round after menu0330 + fish018 (Menu + Sacks + Gear).
 1f2. **SMELTING ACCESSORY** (gear.md 10-16): faster smelting, more fuel per tier; max tier -> infinite-fuel variant via the Charcoal collection.
