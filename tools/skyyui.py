@@ -5549,11 +5549,12 @@ public static String handle(@PR@ pr, String data, String hub, String myTab) {
 )
 
 
-def hub_bar_java(theme=None, types=None, row=False):
+def hub_bar_java(theme=None, types=None, row=False, sub=False):
     """HUB_BAR_JAVA with its placeholders filled: [(kind "field" / "method", Java source)] in dependency order. theme = the tab
     look (default HUB_THEME); types = engine class overrides (HUB_TYPES keys). Needs a passing verify() (+ the sky art check).
     Kit 1.6: row=True appends HUB_BAR_JAVA_16 (the hub row, tab icons, default tab, build2 / route / goHub) - row=False is the
-    kit 1.5 source unchanged."""
+    kit 1.5 source unchanged. 2026-10-16 MERGED TABS: sub=True appends HUB_BAR_JAVA_SUB (hostOf / putSub / openSub / subTabs) - sub=False
+    = the source exactly as before."""
     require_verified()
     t = _theme(HUB_THEME if theme is None else theme)
     ty = dict(HUB_TYPES, **(types or {}))
@@ -5565,7 +5566,7 @@ def hub_bar_java(theme=None, types=None, row=False):
     for k, v in ty.items():
         rep["@%s@" % k] = v
     out = []
-    for kind, src in (HUB_BAR_JAVA + HUB_BAR_JAVA_16) if row else HUB_BAR_JAVA:
+    for kind, src in ((HUB_BAR_JAVA + HUB_BAR_JAVA_16) if row else HUB_BAR_JAVA) + (HUB_BAR_JAVA_SUB if sub else ()):
         s = src.strip()
         for k in sorted(rep, key=len, reverse=True):
             s = s.replace(k, rep[k])
@@ -5575,11 +5576,12 @@ def hub_bar_java(theme=None, types=None, row=False):
     return out
 
 
-def install_hub_bar(pool, cls_name, CtField, CtNewMethod, theme=None, types=None, row=False):
+def install_hub_bar(pool, cls_name, CtField, CtNewMethod, theme=None, types=None, row=False, sub=False):
     """Make the class cls_name (e.g. PKG + ".HubBar") in a javassist pool from hub_bar_java() and return the CtClass (write it
-    with the mod's other classes: ct.writeFile(OUT)). Kit 1.6: row=True = the class with the hub row methods too."""
+    with the mod's other classes: ct.writeFile(OUT)). Kit 1.6: row=True = the class with the hub row methods too. sub=True (2026-10-16
+    MERGED TABS) = + HUB_BAR_JAVA_SUB."""
     ct = pool.makeClass(cls_name)
-    for kind, src in hub_bar_java(theme, types, row=row):
+    for kind, src in hub_bar_java(theme, types, row=row, sub=sub):
         if kind == "field":
             ct.addField(CtField.make(src, ct))
         else:
@@ -6090,3 +6092,162 @@ public static String route(@PR@ pr, String data, String hub, String myTab) {
   return goHub(pr, id);
 }"""),
 )
+
+
+# ================================================================= 2026-10-16 MERGED TABS (additive; KIT_VERSION unchanged)
+# Skyy 2026-10-16 popup "HUBS: Character hub tabs stay separate, or merge like your 10-10 pick (Stats+Skills, Trees+Abilities, ...)?" ->
+# "Merge now" (docs/answered/ui.md). A MERGED tab is a contract page that became PART of another tab of the same hub (its HOST): one
+# tab in the strip, the page still has its key so every shortcut, /command and saved pin keeps opening it. The entry:
+#   hub:tab:<hub>:<tab> = Object[]{ mod, label, Integer order, command, Function open, Function hide, String icon | null, String host }
+#   element 5 = install_hub_hide's Function: FALSE while the host tab is published - every OLDER HubBar copy (kit 1.5 / 1.6 in other
+#               jars) then skips the tab in its strip, exactly like a locked tab; TRUE without the host (the page stays a tab of its own)
+#   element 7 = the host tab id - new readers (HUB_BAR_JAVA_SUB) know the page is not locked: openSub opens it without asking element 5
+# The host's page shows the merged page as a SUB-VIEW (its own in-page toggle); the merged page's strip shows the HOST selected.
+HUB_MERGED = (("character", "stats", "skills"),     # Stats + Skills (the Stats overview = Skills' "Your Stats" sub-view)
+              ("character", "class", "trees"))      # Trees + Abilities (the class page = the tree page's class tree view)
+HUB_SUB_HOST = 7                                    # the host tab id's place in the entry
+for _h, _t, _x in HUB_MERGED:
+    assert _x not in [_r[1] for _r in HUB_MERGED if _r[0] == _h], "a merged tab's host is never itself merged (HubHide asks the host's Function)"
+    assert (_h, _t) in [(r[0], r[1]) for r in HUB_TABS] and (_h, _x) in [(r[0], r[1]) for r in HUB_TABS] and _t != _x
+
+
+def hub_merged_host(hub, tab):
+    """the host tab id of a merged contract tab, else None"""
+    for h, t, x in HUB_MERGED:
+        if (h, t) == (hub, tab):
+            return x
+    return None
+
+
+def hub_shown_tabs(hub):
+    """hub_tabs(hub) without its merged tabs = the strip a player sees with every contract tab loaded"""
+    return [r for r in hub_tabs(hub) if hub_merged_host(hub, r[0]) is None]
+
+
+HUB_BAR_JAVA_SUB = (
+    ("method", r"""
+public static String hostOf(Object[] e) {
+  if (e == null || e.length < 8 || !(e[7] instanceof String)) return null;
+  String h = (String) e[7];
+  return okId(h) ? h : null;
+}"""),
+    ("method", r"""
+public static String hostTab(String hub, String tab) {
+  Object o = get("hub:tab:" + hub + ":" + tab);
+  return (o instanceof Object[]) ? hostOf((Object[]) o) : null;
+}"""),
+    # a tab icon "<hub>_<tab>" (the kit 1.6 okIcon rule, here too for kit 1.5 jars)
+    ("method", r"""
+public static boolean subIcon(String s) {
+  if (s == null) return false;
+  int k = s.indexOf('_');
+  if (k < 1 || s.indexOf('_', k + 1) >= 0) return false;
+  return okId(s.substring(0, k)) && okId(s.substring(k + 1));
+}"""),
+    # put a MERGED tab of this mod: hide = install_hub_hide's Function (never null), host = the tab it is part of (never itself). A merged
+    # tab has NO visible rule of its own (element 5 is the hide Function; openSub never asks it): a page that needs a permission gate keeps
+    # it in its open Function / command (openSub runs the command as the player, so the command's own permission still applies)
+    ("method", r"""
+public static Object[] putSub(String hub, String tab, String mod, String label, int order, String command, Object open, Object hide, String icon, String host) {
+  if (hide == null || !okId(host) || host.equals(tab)) return null;
+  Object[] t = put(hub, tab, mod, label, order, command, open, hide);
+  if (t == null) return null;
+  Object[] t2 = new Object[] { t[0], t[1], t[2], t[3], t[4], t[5], subIcon(icon) ? icon : null, host };
+  String k = "hub:tab:" + hub + ":" + tab;
+  map().put(k, t2);
+  mine().put(k, t2);
+  return t2;
+}"""),
+    # open a tab from a page event / shortcut (world thread): a merged tab opens without asking its hide Function (its open Function, else
+    # its command, as open() does); every other tab = open() exactly (its visible Function counts)
+    ("method", r"""
+public static String openSub(@PR@ pr, java.util.UUID u, String hub, String tab) {
+  Object o = get("hub:tab:" + hub + ":" + tab);
+  if (!(o instanceof Object[]) || ((Object[]) o).length < 6) return "missing";
+  Object[] e = (Object[]) o;
+  if (hostOf(e) == null) return open(pr, u, hub, tab);
+  if (e[4] instanceof java.util.function.Function) {
+    Object r = null;
+    try { r = ((java.util.function.Function) e[4]).apply(u); } catch (Throwable t) { r = null; }
+    if (Boolean.TRUE.equals(r)) return "bridge";
+  }
+  String cmd = (e[3] instanceof String) ? (String) e[3] : null;
+  if (cmd == null || cmd.length() == 0) return "failed";
+  int k = run(pr, cmd);
+  return k == 0 ? "command" : (k == 1 ? "nocmd" : "failed");
+}"""),
+    # the host a merged tab hides behind = the host tab is published and visible (install_hub_hide's test exactly)
+    ("method", r"""
+public static boolean hostShown(String hub, String host, java.util.UUID u) {
+  Object o = get("hub:tab:" + hub + ":" + host);
+  if (!(o instanceof Object[]) || ((Object[]) o).length < 6) return false;
+  return visible((Object[]) o, u);
+}"""),
+    # the tab a page's strip shows selected: a merged tab whose host is published + visible -> the host, else the tab itself (no player at
+    # hand: u = null - every host tab's visible Function today (none, or SkyyMenu's stand-in MenuVtVis) ignores the player)
+    ("method", r"""
+public static String selOf(String hub, String tab) {
+  String h = hostTab(hub, tab);
+  if (h == null) return tab;
+  return hostShown(hub, h, null) ? h : tab;
+}"""),
+    # the merged tabs of a hub whose host this player sees: Object[]{ String tab, String label, String host, Object[] entry }, sorted by
+    # the host's place in the strip, then the tab id
+    ("method", r"""
+public static java.util.ArrayList subTabs(String hub, java.util.UUID u) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  java.util.Map m = map();
+  if (m == null || hub == null) return out;
+  java.util.ArrayList shown = tabs(hub, u);
+  String pre = "hub:tab:" + hub + ":";
+  java.util.ArrayList keys = null;
+  try { keys = new java.util.ArrayList(m.keySet()); } catch (Throwable t) { return out; }
+  java.util.ArrayList ids = new java.util.ArrayList();
+  for (int i = 0; i < keys.size(); i++) {
+    Object k = keys.get(i);
+    if ((k instanceof String) && ((String) k).startsWith(pre)) ids.add(((String) k).substring(pre.length()));
+  }
+  java.util.Collections.sort(ids);
+  for (int s = 0; s < shown.size(); s++) {
+    String host = (String) ((Object[]) shown.get(s))[0];
+    for (int i = 0; i < ids.size(); i++) {
+      String id = (String) ids.get(i);
+      Object o = m.get(pre + id);
+      if (!okId(id) || !(o instanceof Object[])) continue;
+      Object[] e = (Object[]) o;
+      if (e.length < 8 || !(e[1] instanceof String) || !host.equals(hostOf(e))) continue;
+      out.add(new Object[] { id, clean((String) e[1]), host, e });
+    }
+  }
+  return out;
+}"""),
+)
+
+
+def install_hub_hide(pool, cls_name, CtField, CtNewMethod, CtNewConstructor):
+    """the merged tab's element 5: class cls_name (e.g. PKG + ".HubHide") implementing java.util.function.Function, made with
+    new HubHide(String hub, String host): apply answers Boolean.FALSE while the host tab hub:tab:<hub>:<host> is published AND visible to
+    that player (its element 5 null or TRUE - every HubBar leaves the merged tab out of its strip) and Boolean.TRUE otherwise (the host's
+    mod is not loaded, or only an invisible stand-in holds its key, e.g. SkyyMenu's for a missing /skills: the page stays a tab of its own).
+    Returns the CtClass (write it with the mod's other classes)."""
+    ct = pool.makeClass(cls_name)
+    ct.addInterface(pool.get("java.util.function.Function"))
+    ct.addField(CtField.make("public String hub;", ct))
+    ct.addField(CtField.make("public String host;", ct))
+    ct.addConstructor(CtNewConstructor.make("public %s(String hub, String host) { super(); this.hub = hub; this.host = host; }"
+                                            % cls_name.rsplit(".", 1)[-1], ct))
+    ct.addMethod(CtNewMethod.make(r"""
+public Object apply(Object o) {
+  Object b = System.getProperties().get("skyy.bridge");
+  if (!(b instanceof java.util.Map) || this.hub == null || this.host == null) return Boolean.TRUE;
+  Object e = null;
+  try { e = ((java.util.Map) b).get("hub:tab:" + this.hub + ":" + this.host); } catch (Throwable t) { e = null; }
+  if (!(e instanceof Object[]) || ((Object[]) e).length < 6) return Boolean.TRUE;
+  Object v = ((Object[]) e)[5];
+  if (v == null) return Boolean.FALSE;
+  if (!(v instanceof java.util.function.Function)) return Boolean.TRUE;
+  Object r = null;
+  try { r = ((java.util.function.Function) v).apply(o); } catch (Throwable t) { r = null; }
+  return Boolean.TRUE.equals(r) ? Boolean.FALSE : Boolean.TRUE;
+}""", ct))
+    return ct

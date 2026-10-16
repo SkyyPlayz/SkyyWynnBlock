@@ -20,9 +20,9 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.29"), ("SkyySacks", "0.8.12"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.21"), ("SkyyParty", "0.1.9"),
-    ("SkyyBank", "0.1.15"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.16"), ("SkyyGear", "0.3.14"), ("SkyySkills", "0.4.44"),
-    ("SkyyAccessories", "0.5.20"), ("SkyyClasses", "0.1.32"), ("SkyyMenu", "0.3.32"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
-    ("SkyyCooking", "0.1.9"), ("SkyyTrees", "0.3.18"),
+    ("SkyyBank", "0.1.15"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.16"), ("SkyyGear", "0.3.14"), ("SkyySkills", "0.4.45"),
+    ("SkyyAccessories", "0.5.20"), ("SkyyClasses", "0.1.33"), ("SkyyMenu", "0.3.33"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
+    ("SkyyCooking", "0.1.9"), ("SkyyTrees", "0.3.19"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -444,6 +444,11 @@ def main():
     # Gear 0.3.14 merges hoe + sickle into the Harvester (History copy; /gear harvmerge undo <player> [force]).
     if _v(_p.get("SkyyGear", "0")) >= (0, 3, 14) and "SkyyArmory" in _p and _v(_p.get("SkyyArmory", "0")) < (0, 1, 30):
         print("STOP: SkyyGear 0.3.14 needs SkyyArmory 0.1.30+ (one boss Sigil roll)"); return 1
+    # hubchar (2026-10-16): Stats merged into the Skills tab, Class into the Trees tab (skyyui HUB_MERGED) - SkyyMenu 0.3.33 + SkyySkills 0.4.45 +
+    # SkyyTrees 0.3.19 + SkyyClasses 0.1.33 deploy + roll back TOGETHER (mixed = Stats unreachable / Class shortcut locked). No data change.
+    _hc = [_v(_p.get(m, "0")) >= v for m, v in (("SkyyMenu", (0, 3, 33)), ("SkyySkills", (0, 4, 45)), ("SkyyTrees", (0, 3, 19)), ("SkyyClasses", (0, 1, 33)))]
+    if any(_hc) and not all(_hc):
+        print("STOP: SkyyMenu 0.3.33, SkyySkills 0.4.45, SkyyTrees 0.3.19, SkyyClasses 0.1.33 go together (hub merges)"); return 1
     # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
     # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep
