@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + menu0330 Menu 0.3.30 + cls0130 Classes 0.1.30 + fish018 Fishing fixes + bz0115 Bazaar 0.1.15 + cook018 Cooking 0.1.8 )
+# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + cls0130 Classes 0.1.30 + fish018 Fishing fixes + bz0115 Bazaar 0.1.15 + cook018 Cooking 0.1.8 )
 
 Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
 `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md` (2026-10-15 / 16 lines). Decisions word for word: `docs/answered/<topic>.md`.

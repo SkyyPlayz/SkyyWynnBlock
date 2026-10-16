@@ -255,3 +255,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Batch 2: unified menu, upgrade tab, sickle, fishing pole, spellblade rush + guard, bag crafting, requip slots, bag rebalance, bazaar confirm + prices, zone 1 islets (DEPLOYED 2026-10-16, backup deploy-20261016-0531) | [2026-10](2026-10.md) |
 | HUD backgrounds off by default (DEPLOYED 2026-10-16, backup deploy-20261016-0729) | [2026-10](2026-10.md) |
 | Crops back (Dynamic Seasons fix) (DEPLOYED 2026-10-16, backup deploy-20261016-0738) | [2026-10](2026-10.md) |
+| Bigger SkyWynn Menu, unique icons, Right now (DEPLOYED 2026-10-16, backup deploy-20261016-0757) | [2026-10](2026-10.md) |

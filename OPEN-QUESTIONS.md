@@ -41,6 +41,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - OVERALL LEVEL: count Farming as the average of Farming / Ranching / Orchard now? [off until Ranching and Orchard have real XP sources] (SkyySkills 0.4.37)
 - RANCHING: cap of 200 XP a minute (after boosts) plus 'items a player dropped pay nothing' enough protection against farming? [yes] (SkyySkills 0.4.37)
 
+- FOOD STRENGTH (SkyyCooking 0.1.8): mushroom dishes' Strength buff lasts a flat 6 min at every Grade (not the Grade duration doubling: a G10 kebab would give +17% damage for 24 min) and is capped at +20%? [flat 360 s, cap 20%]
 ### gear  (answers -> docs/answered/gear.md, topic `gear`)
 - HARVEST GATE (SkyyGear 0.3.3): a Crude / Copper SICKLE sweeps Potatoes at half XP while a Crude hoe is refused (vanilla sickles stop at Iron, the sweep has no skip hook). Keep, or measure sickles against the crop's real tier (needs a client-side probe first)? [keep]
 - VAULT FETCH (SkyyVault 0.1.6): on a normal server stop the 30 s 'tool on the way' notes are not cleared, so a lifelong tool in flight can show twice (Vault + inventory) after a crash; clearing them risks losing the tool if the player was not saved first. Accept the duplicate-note trade-off? [yes, keep]
