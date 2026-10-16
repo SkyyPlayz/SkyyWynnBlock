@@ -99,3 +99,7 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - 2026-10-16 /SPAWN FOR PLAYERS: popup Q "ZONE 1 SPAWN: should regular (non-admin) players get /spawn (goes to the Zone 1 landing)?" -> "yes for now. right now ive been setting the spawn and hub to the same place." -> plain /spawn for the Adventurer group (to the Zone 1 landing; for non-admins never fall through to the current world's spawn when no landing is set - say 'no spawn set' instead). Lean round wg072 (SkyyWorldGen 0.7.2).
 - 2026-10-16 STRUCTURE PLACER: popup Q "STRUCTURES: if no structure mod author agrees, build a small structure-placer into our WorldGen?" -> "Only if loot piles need it (Recommended)".
 - 2026-10-16 NO-ISLAND RESPAWN: popup Q "ZONE 1 SPAWN: players with NO island who die - respawn at the Zone 1 landing instead of the hub?" -> "Hub, no change (Recommended)".
+- 2026-10-16 DAILY JOBS GEAR: popup -> "Gear on every kill job (Recommended)".
+- 2026-10-16 QUEST BOARD LOOK: popup -> "Kweebec for now (Recommended)".
+- 2026-10-16 QUEST MARKERS: popup -> "Both, with a switch (Recommended)".
+- 2026-10-16 MINE 64 STONE: popup -> "Allow for now (Recommended)" (every block counts).

@@ -19,6 +19,22 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 Nothing. All 10-16 rounds are deployed (TEST-CHECKLIST 139-153).
 
 ## NEXT (after the running rounds; each answer word for word in docs/answered/)
+
+0. FROM THE 10-16 OPEN-QUESTIONS PASS (word for word in docs/answered/*.md, dated 2026-10-16) - queued builds:
+   a. DEPLOY when the game closes: SkyySkills 0.4.44 (dodge every direction + class styles + perfect dodge) and SkyyRebirth 0.3.4 (rebirth ON) - both pinned.
+   b. farm01 / gear0314 (SkyyGear): retire hoe + sickle -> start with Crude Harvester + can (merge existing), sweep tier rule, Sigils on Mining
+      Sets, Sigil drop sources by rarity, Mythic Sigil usable, till area everywhere.
+   c. Collections + tool upgrades redesign (needs a spec): every tier unlocks recipes / Enchanted Block 2nd compression / lower coins + tool
+      points; uncapped Breaking Power + Swing Speed lines; Fortune past 100% = triple drops; multitool keeps highest power / speed + all mods;
+      collection ranks give Enchanted items; Enchanted -> 100 base un-compress (auto if possible); Void auto compactor (Rare+, bought per bag).
+   d. Void Particles rebirth currency (spec update research/cloud/Rebirth-Spec.md, then a rebirth round).
+   e. Totem workers scale + totem Fortune + totem page with upgrades + AUGMENT slots (Compactor, Chrono Stasis), totem-workbench crafting;
+      totem tier-up costs by totem kind; REMOVE the MoreTotems fold (spec first).
+   f. Small rounds: Exploration names (Loot Bag / Lost Treasure / Magic Box); /spawn for players (WorldGen 0.7.2); guild names with symbols;
+      AH rebirth auto-claim; seeds / saplings Void toggles; hide vanilla pickup popup + restyle our feed; hub merges (Stats+Skills, Trees+
+      Abilities, Collections+Recipes, Bank+Vault, Bazaar+AH); Sap Tapper extra sap counts; Tree Feller 8-number table; food Strength scales
+      with Grade capped 10 min; shard co-op Collect; structure mods we can use without asking (+ draft the joszza message); 4 waiting tree
+      nodes; Aures dragon pet (allowed); pet roster adds + collection egg catch-up; release = CurseForge first, 'Isles of the Void' 1.0.0.
 2. **Movement vs The Armory** (log 10-16): Armory's JumpHeightModifierSystem writes MovementSettings -> our speed / jump bonuses pause. Make our
    movement protocol compose with it (SkyyCore / Skills / Accessories / Trees) + find the ~230 client 'Equipment packet on the local player' WARNs.
 3. **The Armory gear into our systems** (gear.md 10-16; research/Pack-Armor-Plan.md) - ultracode after tools01 (Gear + Mobs + loot).
