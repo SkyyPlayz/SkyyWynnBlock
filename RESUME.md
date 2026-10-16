@@ -72,7 +72,7 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   gear0311 (Skyy test fix, FIRST after Gear 0.3.10): the sickle breaks bushes / grass / leaves and is the main fiber + stick tool (gear.md 10-15); + the lifelong fishing pole in the starting kit, fishing works with no hook / line / sinker, quests teach tackle (gear.md 10-15; SkyyFishing 0.1.6 + SkyyQuests too).
   WATERING CAN + HARVESTER (research/Watering-Can-Harvester-Spec.md) = full SkyyGear round AFTER Gear 0.3.10 lands; Class tab -> tree (class0128) BUILDING; Wardrobe 0.2.2 in review.
 
-- **Queued after wg07 (WorldGen 0.7.1):** zones world weather list (vanilla SensorWeather NPE) + 'Zone 1 = server spawn' switch (first join, /spawn, no-island -> Zone 1 landing; world.md 10-15). After Gear 0.3.10: gear0311 (sickle fiber, pole in kit), then watering can + Harvester + tier tags T2. Profiles: open / redraw the first-profile page ~2 s after join.
+- **Queued after wg07 (WorldGen 0.7.1):** zones world weather list (vanilla SensorWeather NPE) + 'Zone 1 = server spawn' switch (first join, /spawn, no-island -> Zone 1 landing; world.md 10-15); /zone setlanding must work in the zones world too (0.6 refuses: 'no landing point to set'), so Skyy can pick the Zone 1 spawn spot. After Gear 0.3.10: gear0311 (sickle fiber, pole in kit), then watering can + Harvester + tier tags T2. Profiles: open / redraw the first-profile page ~2 s after join.
 
 ## Next, in order (Skyy 2026-10-14: "Run everything you can in parallel ... done by 5 pm")
 1. Land the 6 running rounds (deploy each READY one with the game closed), then the queued ones above.
