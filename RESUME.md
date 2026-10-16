@@ -29,6 +29,13 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
   Exploration 0.2.10, Vault 0.1.7, Bank 0.1.13 + The Armory 1.23.0 back on, Extended Backpacks / Tainted Roots off. ALL 7 HUBS have tabs (H1-H3).
   RUNNING: core10 (SkyyCore 1.0 + Bank / Party pilots + module assemble tooling; merge phase 1). OPEN-QUESTIONS has 5 new (tabs merged?, scrolling,
   gather anvil-only, The Armory jump conflict, Sap Tapper credit). NEXT: H8 reduced menu, H4-H7 (Sacks / Wardrobe / Gear / Accessories v2), merge phases 2/3/8.
+## STOPPED 2026-10-15 ~22:30: WEEKLY LIMIT HIT (resets Oct 20, 9am MDT) - agents fail with 429
+- **Deploy target is now the world NewBetaTest** (tools/deploy_set.py WORLD). Deployed 20:56: Sacks 0.8.7, Islands 0.5.15, Exploration 0.2.11, Accessories 0.5.16, Classes 0.1.28, Trees 0.3.16.
+- **PINNED, NOT DEPLOYED (deploy with the game closed: backup -> smoke -> deploy_set --yes -> record_deploy):** Sacks 0.8.8, Skills 0.4.42, Pets 0.3.0, Collections 0.2.18 (+ tools/tier_tags.py, tools/ci/langdup.py), Wardrobe 0.2.2, Accessories 0.5.17, Hud 0.3.27 + Profiles 0.1.15.
+- **BUILT, needs its review then pin:** Gear 0.3.10 (review was running), Islands 0.5.16 (natural cave + respawn delay; review died at the limit), Classes 0.1.29 (Assassin Crude Kunai; review running).
+- **INTERRUPTED by the limit (files may be partial - check, then relaunch / SendMessage the agent):** menuu1 (Unified menu: kit skyyui 1.6 + Menu 0.3.29; tools/skyyui.py has UNCOMMITTED edits from it), wg07 (WorldGen 0.7 shape / islets / waterfalls / natural edges), armory0128 (Spellblade Crescent Rush + sword guard + early damage; never started building), skills0443 (health regen + Spellblade Battlemagic class-skill slot - IMPORTANT bug), pets031 (boost every rarity ~3x), coll0219 (rubble <-> cobble recipes).
+- **Queued after those:** gear0311 (sickle fiber/sticks + pole in kit, no-tackle fishing), watering can + Harvester + tier tags T2 (Gear), Great Shield (Armory), wg071 (zones weather fix + Zone 1 = server spawn + /zone setlanding in zones world), Menu 0.3.30 (Invite to Guild), health regen Gear/Trees halves.
+
 ## Now (2026-10-15)
 - **Skyy play-tested a fresh Mage profile 10-15** (notes in docs/answered/*.md 2026-10-15). DEPLOYED 06:35 (TEST-CHECKLIST 117):
   Gear 0.3.7 (hotbar summons, iron tier speed), Accessories 0.5.15 (ItemLevel sort), Hud 0.3.25 (contrast, cards, editor rows).
