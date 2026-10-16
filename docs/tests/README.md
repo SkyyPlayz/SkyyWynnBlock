@@ -272,3 +272,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Menu merges (Stats in Skills, Class in Trees, Bank+Vault, Bazaar+AH, recipes in Collections), one food type = one bar, accessory crafting in the bag (DEPLOYED 2026-10-16, backup deploy-20261016-1623) | [2026-10](2026-10.md) |
 | Void takes every Enchanted item, scrolling craft list, no Void upgrade level gate (DEPLOYED 2026-10-16, backup deploy-20261016-1643) | [2026-10](2026-10.md) |
 | Crafting hub tabs (Smithing / Anvil / Upgrade) with the big top row, set-page Upgrade buttons, pet menu Eggs + Hatchery (DEPLOYED 2026-10-16, backup deploy-20261016-1646) | [2026-10](2026-10.md) |
+| Log fixes: no false Mana / spell-cost warnings, quiet minimap shutdown (DEPLOYED 2026-10-16, backup deploy-20261016-1651) | [2026-10](2026-10.md) |

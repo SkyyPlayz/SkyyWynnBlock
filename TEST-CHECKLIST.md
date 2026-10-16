@@ -183,3 +183,4 @@ tests always come first.
 155. Menu merges (Character / Vault / Market / Collections recipes), one food = one bar, accessory crafting in the bag
 156. Deposit All takes all Enchanted, /craft scroll list + big rows, no accessories in /craft, Void upgrade without level
 157. Crafting hub tabs + big top row on Smithing, Upgrade buttons, pets Eggs + Hatchery
+158. No false Mana / spell-cost WARNs, quiet minimap shutdown (log only)
