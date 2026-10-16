@@ -250,3 +250,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | HUBS H3a: Character hub tabs - SkyySkills 0.4.41, SkyyTrees 0.3.15, SkyyClasses 0.1.27, SkyyPets 0.2.7, SkyyCollections 0.2.17, SkyyProfiles 0.1.14 (DEPLOYED 2026-10-15, backup deploy-20261015-1528) | [2026-10](2026-10.md) |
 | HUBS H3b-d: Market / Social / World / Settings HUD / Storage tabs - Bazaar 0.1.13, Auctions 0.1.8, Merchants 0.1.5, Party 0.1.8, Guilds 0.1.9, Islands 0.5.14, Exploration 0.2.10, Hud 0.3.26, Vault 0.1.7, Bank 0.1.13 (DEPLOYED 2026-10-15, backup deploy-20261015-1540) | [2026-10](2026-10.md) |
 | MERGE PHASE 1: NEW SkyyCore 1.0.0 + SkyyBank 0.1.14 + SkyyParty 0.1.9 on Core (stable names) (DEPLOYED 2026-10-15, backup deploy-20261015-1808) | [2026-10](2026-10.md) |
+| Class tab = ability tree + island / loot / bag / lantern fixes (new world NewBetaTest) (DEPLOYED 2026-10-15, backup deploy-20261015-2056) | [2026-10](2026-10.md) |

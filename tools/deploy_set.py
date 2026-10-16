@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import skyybuild as B
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-WORLD = "HUD mod"
+WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from scratch" (was "HUD mod" until 2026-10-15)
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
     ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it

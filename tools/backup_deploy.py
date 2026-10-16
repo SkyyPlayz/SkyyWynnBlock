@@ -2,7 +2,9 @@
 import os, shutil, sys, time, subprocess
 PROJECT = r"C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT"
 USERDATA = r"C:\Users\SkyLo\AppData\Roaming\Hytale\UserData"
-WORLD = os.path.join(USERDATA, "Saves", "HUD mod")
+sys.path.insert(0, os.path.join(PROJECT, "tools"))
+import deploy_set as _D   # the deploy world (2026-10-15: one place - tools/deploy_set.py WORLD)
+WORLD = os.path.join(USERDATA, "Saves", _D.WORLD)
 
 out = subprocess.run(["powershell", "-NoProfile", "-Command",
                       "Get-CimInstance Win32_Process -Filter \"Name like 'java%'\" | Select-Object -ExpandProperty CommandLine"],
