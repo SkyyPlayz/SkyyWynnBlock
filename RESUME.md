@@ -26,7 +26,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    (skill drops, collections, crafting, shops). 5 questions open in OPEN-QUESTIONS.md with defaults - use the defaults unless Skyy answers.
    Rounds A0 art, R1 SkyyPets 0.4.0 (ultracode), R2 Skills, R3 Bazaar + Merchants, R4 Collections.
 3. Then (queued): ONE SkyyArmory round = Great Shield (Spellblade: bash chain, full guard 70% melee / 100% projectiles, Bulwark Charge; research/classes/Spellblade.md) + Warrior sword Thrust dash range boost (classes.md LOCKED 2026-10-08; Skyy 10-16 'add the changes to the warrior traversal to the que, along with the great shield'); WorldGen 0.7.1 (zones-world weather list - vanilla
-   SensorWeather NPE; 'Zone 1 = server spawn' switch + /zone setlanding in the zones world, world.md 10-15); Menu 0.3.30 (Invite to Guild
+   SensorWeather NPE; 'Zone 1 = server spawn' switch + /zone setlanding in the zones world, world.md 10-15); Menu 0.3.30 (Storage + World hub tiles get their OWN icons - they reuse Pocket Dimension / Teleport, Skyy 10-16 ui.md; Invite to Guild
    button, Stats 'Health Regen' row from skill:fn:hpregen, 'Battlemagic' in CLASS_SKILLS, hub tab icons from art/hub-tab-icons/ as
    <name>@2x.png); Accessories Regeneration onto skill:fn:hpregen; Trees health-regen nodes; small companions: SkyyPets POLL_SKILLS +
    pets:fn:owned bridge, SkyyGuilds SKILL_NAMES (Spellblade), SkyyCollections maskOf (fabric not Smithing), Bazaar price guard reads our
