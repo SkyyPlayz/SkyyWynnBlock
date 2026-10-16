@@ -39,7 +39,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    models (bags.md / ui.md 10-16). Still ask Skyy what the purple cube on the spawn-Temple pedestal is.
 1e. **CLASS EMBLEMS** (ui.md 10-16): one icon per class (8, art first via skywynn-art) on Profiles / class pick / Class tab; wire the 35 approved ability icons in.
 1f. **CRAFTING HUB** (ui.md 10-16 + LOCKED 10-10): hub tab Smithing -> CRAFTING with pages Crafting (/craft, SkyySacks; looks upgraded) + Smithing
-   (SkyyGear /smithing) + Furnace ADD FUEL picker sorted by amount owned (keep the quick bar). Round after menu0330 + fish018 (Menu + Sacks + Gear).
+   (SkyyGear /smithing) + Furnace ADD FUEL picker sorted by amount owned (keep the quick bar) + every /craft tab sorted by tier (farming: crop, Enchanted, seeds, Eternal). Round after menu0330 + fish018 (Menu + Sacks + Gear).
 1f2. **SMELTING ACCESSORY** (gear.md 10-16): faster smelting, more fuel per tier; max tier -> infinite-fuel variant via the Charcoal collection.
    Short spec, then a round after the Crafting hub (Accessories + Sacks furnace + Collections).
 1g. **THE ARMORY GEAR INTO OUR SYSTEMS** (gear.md 10-16; plan research/Pack-Armor-Plan.md): runtime by id - Cloth/Light/Heavy + class weapons, our
