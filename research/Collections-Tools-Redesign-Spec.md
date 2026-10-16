@@ -341,3 +341,4 @@ T1 and C1 can run in parallel (different mods; C1's bridge is optional for T1). 
 - Skyy 2026-10-16: PERK lines (Vein Mine, Tree Feller ...) cap by the tool LEVEL (= skill level), not the tier; tool part max (Vein Mine ~6) + the skill tree's same ability on top (~+4) = total (~10). The 10 x tier cap applies to Breaking Power / Speed / Fortune only (gear.md PERK CAPS).
 - Skyy 2026-10-16: Vein Mine / Tree Feller tool levels cost 1, 2, 4, 8, 16, 32 ... (double each level) (gear.md PERK COST CURVE).
 - Skyy 2026-10-16: Power / Speed / Fortune levels cost a FLAT 1 point each (no rising cost); the 10 x tier cap stays (gear.md FLAT LINE COSTS).
+- Skyy 2026-10-16: the three stats also come from gathering GEAR (maxed set ~ +150% power / +100% speed / +60% fortune, roll-dependent, rolls favour one stat), ACCESSORIES (one per stat) and PETS - add rounds G1 (gear rolls), A1 (accessories), P1 (pets) after T1 (gear.md GATHERING STAT SOURCES).
