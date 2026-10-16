@@ -36,7 +36,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    d. Void Particles rebirth currency (spec update research/cloud/Rebirth-Spec.md, then a rebirth round).
    e. Totem workers scale + totem Fortune + totem page with upgrades + AUGMENT slots (Compactor, Chrono Stasis), totem-workbench crafting;
       totem tier-up costs by totem kind; REMOVE the MoreTotems fold (spec first).
-   i. NEXT ROUNDS for C1: Bazaar 0.1.17 lists the 83 new Enchanted items - FIRST size the collection gifts to item value (critic: up to ~40 Enchanted
+   j. ETERNAL SEEDS locked to each crop's collection tier 4 (recipe + Bazaar buy; Server Setup row) - economy.md 10-16; rides Collections 0.2.23 + Bazaar 0.1.18.
+   i. NEXT ROUNDS for C1: Bazaar 0.1.18 lists the 83 new Enchanted items - FIRST size the collection gifts to item value (critic: up to ~40 Enchanted
       Mithril free) or keep gift items off market; freeze NEW0116 to TABLE_20; ResourceTypeId recipe pricing; Sacks rebuild (homes for 103 rows,
       Combat / Smithing cats); Gear T1 reads coll:fn:toolPts + coll:tierups (Anvil gate). (Armory boss Sigil double roll fixed in 0.1.30.)
    g. BEASTMASTERY skill (skills.md 10-16): spec then Skills + Trees + Pets rounds.
