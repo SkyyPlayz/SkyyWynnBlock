@@ -1,0 +1,876 @@
+{
+ "what": "SkyWynn hub tab icons - a faded picture behind each hub tab's word + one per hub for the hub row (DRAFT v1)",
+ "generator": "tools/art/make_hub_tab_icons.py",
+ "validator": "tools/art/make_hub_tab_icons.py --check",
+ "reuses": "tools/art/make_menu_icons.py (shape helpers, painter, palettes); reads art/ui-kit-sky Tab textures for the checks",
+ "deterministic": true,
+ "original_pixels": true,
+ "size": {
+  "px": [
+   72,
+   72
+  ],
+  "density": "@2x",
+  "ui_units": [
+   36,
+   36
+  ],
+  "tab_ui": "44 high, 110-190 wide",
+  "placement": "centred in the tab, under the label"
+ },
+ "fade": {
+  "normal": {
+   "desat_to_slate": 0.3,
+   "alpha_max": 0.62,
+   "min_contrast_per_state": {
+    "Tab": 5.0,
+    "Tab_Hovered": 4.5,
+    "Tab_Pressed": 5.0
+   },
+   "labels": {
+    "button2Text": "#bdcbd3"
+   }
+  },
+  "on": {
+   "desat_to_slate": 0.1,
+   "alpha_max": 0.86,
+   "min_contrast_per_state": {
+    "Tab_Selected": 4.5
+   },
+   "labels": {
+    "buttonText": "#bfcdd5",
+    "button2Text": "#bdcbd3"
+   }
+  }
+ },
+ "tab_worst_bg": {
+  "Tab": "#22304e",
+  "Tab_Hovered": "#2e4368",
+  "Tab_Pressed": "#1c2842",
+  "Tab_Selected": "#20345a"
+ },
+ "icons": [
+  {
+   "hub": "character",
+   "tab": "stats",
+   "label": "Stats",
+   "shows": "a red heart with three rising gold bars inside it",
+   "file": "character_stats.png",
+   "min_contrast_x_target": 1.07,
+   "file_on": "character_stats_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "character",
+   "tab": "skills",
+   "label": "Skills",
+   "shows": "a gold star medal (teal centre, gold star) on two teal ribbons",
+   "file": "character_skills.png",
+   "min_contrast_x_target": 1.068,
+   "file_on": "character_skills_on.png",
+   "min_contrast_x_target_on": 1.035
+  },
+  {
+   "hub": "character",
+   "tab": "trees",
+   "label": "Trees",
+   "shows": "a branching tree: a trunk that splits into three round green crowns, each with a gold node (a skill tree)",
+   "file": "character_trees.png",
+   "min_contrast_x_target": 1.07,
+   "file_on": "character_trees_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "character",
+   "tab": "class",
+   "label": "Class",
+   "shows": "a crossed wooden staff (violet orb in a gold claw) and steel sword (gold guard)",
+   "file": "character_class.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "character_class_on.png",
+   "min_contrast_x_target_on": 1.037
+  },
+  {
+   "hub": "character",
+   "tab": "pets",
+   "label": "Pets",
+   "shows": "a sitting cream bunny facing left (long ears with pink insides, round tail)",
+   "file": "character_pets.png",
+   "min_contrast_x_target": 1.069,
+   "file_on": "character_pets_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "character",
+   "tab": "accessories",
+   "label": "Accessories",
+   "shows": "a gold chain amulet with a teal diamond gem in a round gold setting",
+   "file": "character_accessories.png",
+   "min_contrast_x_target": 1.068,
+   "file_on": "character_accessories_on.png",
+   "min_contrast_x_target_on": 1.035
+  },
+  {
+   "hub": "character",
+   "tab": "collections",
+   "label": "Collections",
+   "shows": "an open teal book with text lines and a gold bookmark ribbon",
+   "file": "character_collections.png",
+   "min_contrast_x_target": 1.068,
+   "file_on": "character_collections_on.png",
+   "min_contrast_x_target_on": 1.035
+  },
+  {
+   "hub": "character",
+   "tab": "profiles",
+   "label": "Profiles",
+   "shows": "a gold picture frame holding a teal player portrait (head and shoulders)",
+   "file": "character_profiles.png",
+   "min_contrast_x_target": 1.068,
+   "file_on": "character_profiles_on.png",
+   "min_contrast_x_target_on": 1.035
+  },
+  {
+   "hub": "storage",
+   "tab": "pocket",
+   "label": "Pocket",
+   "shows": "a leather drawstring sack with a gold cord and a violet pocket-dimension swirl on the front",
+   "file": "storage_pocket.png",
+   "min_contrast_x_target": 1.068,
+   "file_on": "storage_pocket_on.png",
+   "min_contrast_x_target_on": 1.035
+  },
+  {
+   "hub": "storage",
+   "tab": "requip",
+   "label": "Requip",
+   "shows": "a steel chestplate with teal pauldrons hanging on a gold clothes hanger",
+   "file": "storage_requip.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "storage_requip_on.png",
+   "min_contrast_x_target_on": 1.035
+  },
+  {
+   "hub": "storage",
+   "tab": "vault",
+   "label": "Vault",
+   "shows": "a round steel vault door (bolt ring, side hinge) with a gold spoked wheel",
+   "file": "storage_vault.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "storage_vault_on.png",
+   "min_contrast_x_target_on": 1.037
+  },
+  {
+   "hub": "storage",
+   "tab": "bank",
+   "label": "Bank",
+   "shows": "a stone bank with four columns, a green roof, a gold coin in the pediment and steps",
+   "file": "storage_bank.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "storage_bank_on.png",
+   "min_contrast_x_target_on": 1.036
+  },
+  {
+   "hub": "market",
+   "tab": "bazaar",
+   "label": "Bazaar",
+   "shows": "a market stall: green / cream striped scalloped awning, wooden counter, fruit and a crate",
+   "file": "market_bazaar.png",
+   "min_contrast_x_target": 1.069,
+   "file_on": "market_bazaar_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "market",
+   "tab": "auctions",
+   "label": "Auctions",
+   "shows": "an auction gavel (mahogany head, gold bands) over its round sound block",
+   "file": "market_auctions.png",
+   "min_contrast_x_target": 1.07,
+   "file_on": "market_auctions_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "market",
+   "tab": "merchants",
+   "label": "Merchants",
+   "shows": "gold balance scales with a coin on one pan and an emerald on the other",
+   "file": "market_merchants.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "market_merchants_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "smithing",
+   "tab": "gear",
+   "label": "Gear",
+   "shows": "a steel knight helmet with a T visor, rivets and an amber plume",
+   "file": "smithing_gear.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "smithing_gear_on.png",
+   "min_contrast_x_target_on": 1.037
+  },
+  {
+   "hub": "smithing",
+   "tab": "recipes",
+   "label": "Recipes",
+   "shows": "a recipe scroll with a 3 x 3 crafting grid (gold ingot, two sticks, an emerald)",
+   "file": "smithing_recipes.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "smithing_recipes_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "smithing",
+   "tab": "reforge",
+   "label": "Reforge",
+   "shows": "a steel anvil with a glowing amber blade blank and three amber sparks",
+   "file": "smithing_reforge.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "smithing_reforge_on.png",
+   "min_contrast_x_target_on": 1.037
+  },
+  {
+   "hub": "smithing",
+   "tab": "upgrade",
+   "label": "Upgrade",
+   "shows": "a big gold up-arrow with an amber star in its shaft",
+   "file": "smithing_upgrade.png",
+   "min_contrast_x_target": 1.07,
+   "file_on": "smithing_upgrade_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "smithing",
+   "tab": "multitool",
+   "label": "Multitool",
+   "shows": "a pick-axe multitool: steel pick spike on one side, axe blade on the other, gold collar",
+   "file": "smithing_multitool.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "smithing_multitool_on.png",
+   "min_contrast_x_target_on": 1.037
+  },
+  {
+   "hub": "smithing",
+   "tab": "identify",
+   "label": "Identify",
+   "shows": "a gold magnifying glass showing an emerald gem through its lens",
+   "file": "smithing_identify.png",
+   "min_contrast_x_target": 1.065,
+   "file_on": "smithing_identify_on.png",
+   "min_contrast_x_target_on": 1.036
+  },
+  {
+   "hub": "world",
+   "tab": "teleport",
+   "label": "Teleport",
+   "shows": "an upright gold portal ring with a violet swirl and four amber studs",
+   "file": "world_teleport.png",
+   "min_contrast_x_target": 1.07,
+   "file_on": "world_teleport_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "world",
+   "tab": "island",
+   "label": "Island",
+   "shows": "a floating island with one round tree and a little waterfall",
+   "file": "world_island.png",
+   "min_contrast_x_target": 1.065,
+   "file_on": "world_island_on.png",
+   "min_contrast_x_target_on": 1.036
+  },
+  {
+   "hub": "world",
+   "tab": "explore",
+   "label": "Explore",
+   "shows": "a gold compass with a cream face, red north / steel south needle",
+   "file": "world_explore.png",
+   "min_contrast_x_target": 1.067,
+   "file_on": "world_explore_on.png",
+   "min_contrast_x_target_on": 1.037
+  },
+  {
+   "hub": "world",
+   "tab": "quests",
+   "label": "Quests",
+   "shows": "a wooden job board (mahogany roof) with a pinned paper showing an amber '!'",
+   "file": "world_quests.png",
+   "min_contrast_x_target": 1.069,
+   "file_on": "world_quests_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "social",
+   "tab": "players",
+   "label": "Players",
+   "shows": "a blocky player head in 3/4 view (brown hair, two eyes) on violet shoulders",
+   "file": "social_players.png",
+   "min_contrast_x_target": 1.067,
+   "file_on": "social_players_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "social",
+   "tab": "party",
+   "label": "Party",
+   "shows": "three violet player busts (the front one bigger) over a gold star",
+   "file": "social_party.png",
+   "min_contrast_x_target": 1.067,
+   "file_on": "social_party_on.png",
+   "min_contrast_x_target_on": 1.039
+  },
+  {
+   "hub": "social",
+   "tab": "guild",
+   "label": "Guild",
+   "shows": "a violet guild banner with a gold edge and a gold shield + star, on a gold rod",
+   "file": "social_guild.png",
+   "min_contrast_x_target": 1.067,
+   "file_on": "social_guild_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "settings",
+   "tab": "settings",
+   "label": "Settings",
+   "shows": "three slider tracks with teal fill and steel knobs at different spots",
+   "file": "settings_settings.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "settings_settings_on.png",
+   "min_contrast_x_target_on": 1.035
+  },
+  {
+   "hub": "settings",
+   "tab": "hud",
+   "label": "HUD",
+   "shows": "a steel screen frame showing HUD parts: three hearts, a mana bar, a crosshair and a hotbar",
+   "file": "settings_hud.png",
+   "min_contrast_x_target": 1.062,
+   "file_on": "settings_hud_on.png",
+   "min_contrast_x_target_on": 1.036
+  },
+  {
+   "hub": "settings",
+   "tab": "layout",
+   "label": "Layout",
+   "shows": "a 2 x 2 grid of steel tiles; the fourth tile is gold and lifted out of its spot (being moved)",
+   "file": "settings_layout.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "settings_layout_on.png",
+   "min_contrast_x_target_on": 1.037
+  },
+  {
+   "hub": "settings",
+   "tab": "mods",
+   "label": "Mods",
+   "shows": "a steel puzzle piece with a teal face",
+   "file": "settings_mods.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "settings_mods_on.png",
+   "min_contrast_x_target_on": 1.037
+  },
+  {
+   "hub": "settings",
+   "tab": "setup",
+   "label": "Server Setup",
+   "shows": "a steel wrench in front of a steel cog",
+   "file": "settings_setup.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "settings_setup_on.png",
+   "min_contrast_x_target_on": 1.037
+  },
+  {
+   "hub": "hubrow",
+   "tab": "home",
+   "label": "Home",
+   "shows": "a little house: mahogany roof, cream walls, two lit windows, a chimney",
+   "file": "hubrow_home.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "hubrow_home_on.png",
+   "min_contrast_x_target_on": 1.036
+  },
+  {
+   "hub": "hubrow",
+   "tab": "character",
+   "label": "Character",
+   "shows": "a front-view blocky player head (brown hair) on teal shoulders with a gold-and-emerald collar gem",
+   "file": "hubrow_character.png",
+   "min_contrast_x_target": 1.068,
+   "file_on": "hubrow_character_on.png",
+   "min_contrast_x_target_on": 1.035
+  },
+  {
+   "hub": "hubrow",
+   "tab": "storage",
+   "label": "Storage",
+   "shows": "a wooden chest with gold bands and a gold lock",
+   "file": "hubrow_storage.png",
+   "min_contrast_x_target": 1.07,
+   "file_on": "hubrow_storage_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "hubrow",
+   "tab": "market",
+   "label": "Market",
+   "shows": "a stack of gold coins next to a big gold coin with an emerald",
+   "file": "hubrow_market.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "hubrow_market_on.png",
+   "min_contrast_x_target_on": 1.038
+  },
+  {
+   "hub": "hubrow",
+   "tab": "smithing",
+   "label": "Smithing",
+   "shows": "two crossed smithing hammers (steel heads, amber cores)",
+   "file": "hubrow_smithing.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "hubrow_smithing_on.png",
+   "min_contrast_x_target_on": 1.037
+  },
+  {
+   "hub": "hubrow",
+   "tab": "world",
+   "label": "World",
+   "shows": "a blue globe with green islands, faint lines and a gold ring round it",
+   "file": "hubrow_world.png",
+   "min_contrast_x_target": 1.062,
+   "file_on": "hubrow_world_on.png",
+   "min_contrast_x_target_on": 1.034
+  },
+  {
+   "hub": "hubrow",
+   "tab": "social",
+   "label": "Social",
+   "shows": "two violet player busts, one behind the other",
+   "file": "hubrow_social.png",
+   "min_contrast_x_target": 1.067,
+   "file_on": "hubrow_social_on.png",
+   "min_contrast_x_target_on": 1.039
+  },
+  {
+   "hub": "hubrow",
+   "tab": "settings",
+   "label": "Settings",
+   "shows": "a steel cog with a gold centre ring",
+   "file": "hubrow_settings.png",
+   "min_contrast_x_target": 1.066,
+   "file_on": "hubrow_settings_on.png",
+   "min_contrast_x_target_on": 1.037
+  }
+ ],
+ "files": [
+  {
+   "path": "character_stats.png",
+   "bytes": 659,
+   "sha256": "95e1cd66ccacbd5d00746acb975192c1917de800d92f9e36fa682c7a56d4db48"
+  },
+  {
+   "path": "character_stats_on.png",
+   "bytes": 661,
+   "sha256": "90b4d700dda39edfe536f2081008435c6626cb61bdaa2a31d5f0378ea5daf7de"
+  },
+  {
+   "path": "character_skills.png",
+   "bytes": 933,
+   "sha256": "ac02dda1ea5f4ff8cdf28f2ad9a063a12f2c61ae3a922fb92b96a5d688e1d375"
+  },
+  {
+   "path": "character_skills_on.png",
+   "bytes": 934,
+   "sha256": "6d08d8a1ba749de3745c35d4c7e8771554ad1a104e3148690997a75e3feb6b1e"
+  },
+  {
+   "path": "character_trees.png",
+   "bytes": 1057,
+   "sha256": "0659b28137fe0b07f696be7ef0a1308b77fa818812328d4ad0d7d579071bff4b"
+  },
+  {
+   "path": "character_trees_on.png",
+   "bytes": 1056,
+   "sha256": "1a1c4be682dc487963a33ec7d259d95999b04e52f107d9d52b16401ce89bb134"
+  },
+  {
+   "path": "character_class.png",
+   "bytes": 946,
+   "sha256": "b1447670c37c5f1a3e61d3b15569afa6877f187fbe45d432a3291798947699fc"
+  },
+  {
+   "path": "character_class_on.png",
+   "bytes": 949,
+   "sha256": "641304bc2983882e58e32622c364eb316b83c93d2a0c81a7810afd4d8f7b5963"
+  },
+  {
+   "path": "character_pets.png",
+   "bytes": 896,
+   "sha256": "a214ea10d4a2d073480a6caf4c7b919936e897141064f6ed9cf435f1c2b37db4"
+  },
+  {
+   "path": "character_pets_on.png",
+   "bytes": 896,
+   "sha256": "280bb9241ab6e299153f6432334ad193484df7d711164b684eface23705a68fd"
+  },
+  {
+   "path": "character_accessories.png",
+   "bytes": 766,
+   "sha256": "3d7457549866b96ed23ce422e082369a9955204503984e2e6d0c91a941d67b70"
+  },
+  {
+   "path": "character_accessories_on.png",
+   "bytes": 763,
+   "sha256": "9843a1df37c83348be11350fb7d227a3807e243737ca58c47474d6c865e1ede7"
+  },
+  {
+   "path": "character_collections.png",
+   "bytes": 888,
+   "sha256": "a1aedc5a59644869aec1e30dd1bbffea512b70a73047bb2115b664d4dc68e13f"
+  },
+  {
+   "path": "character_collections_on.png",
+   "bytes": 887,
+   "sha256": "2df16038e44d18f4664f25d8712b1c60e3c5f41ea10ec36e54c65477a2c742ee"
+  },
+  {
+   "path": "character_profiles.png",
+   "bytes": 663,
+   "sha256": "870bb1a06e2518fde436718087a570c009d5c429eaf20364fad96d1ecd56662b"
+  },
+  {
+   "path": "character_profiles_on.png",
+   "bytes": 661,
+   "sha256": "fd75475b934fe86cadd952230ea96184848932dee695d3b0d81edb747968110f"
+  },
+  {
+   "path": "storage_pocket.png",
+   "bytes": 889,
+   "sha256": "f9c0a0cbf8cbbb2a6ff865dad23abcd728aa3cf4c7b69425acb409f06ac58e47"
+  },
+  {
+   "path": "storage_pocket_on.png",
+   "bytes": 888,
+   "sha256": "4b51622dd8e59e585c6bc3441110b6aaa36d89991ea8de126b744d6ec20f1a96"
+  },
+  {
+   "path": "storage_requip.png",
+   "bytes": 897,
+   "sha256": "276e567813318f7bb408b4feccbb6ec28aa4cdfe80a13b0a31c4260679db6209"
+  },
+  {
+   "path": "storage_requip_on.png",
+   "bytes": 898,
+   "sha256": "553668167ede6dd345b490bda1de0dc01e4cbb07690921e6344bc54524e8607e"
+  },
+  {
+   "path": "storage_vault.png",
+   "bytes": 1379,
+   "sha256": "d8bb84d492139318ee35cce8de3be2f492a5997580081ab152bdf0bf7bb74bfd"
+  },
+  {
+   "path": "storage_vault_on.png",
+   "bytes": 1379,
+   "sha256": "c0c43bce0566afb67a1ce0e6790ad49596ff58d19469606ee4bd2217172bf0c5"
+  },
+  {
+   "path": "storage_bank.png",
+   "bytes": 715,
+   "sha256": "397b14f9d9ad6ebe9d344b7a4da08ad3ca5f7957a03edf10abe884f8fbb98d94"
+  },
+  {
+   "path": "storage_bank_on.png",
+   "bytes": 727,
+   "sha256": "108cd99307c072f935b9b3ed6dec847ca8a2644594c5653895493073920c3302"
+  },
+  {
+   "path": "market_bazaar.png",
+   "bytes": 1249,
+   "sha256": "d7262abe803e81bd7f9e98946bfcdee4867976da33b33a9c6c329ac83253bbe0"
+  },
+  {
+   "path": "market_bazaar_on.png",
+   "bytes": 1254,
+   "sha256": "45c33d21b66fc6022e76f62f799befacd642ab78738e294e4a189cef54ba7d99"
+  },
+  {
+   "path": "market_auctions.png",
+   "bytes": 739,
+   "sha256": "0150448efb560c5ed66acc25c3a1f2c165ed38e51ad0d0c40a9338a30a99da72"
+  },
+  {
+   "path": "market_auctions_on.png",
+   "bytes": 750,
+   "sha256": "60d86e2bb174eff6f98f3d2800446272e8168cb5ed89d344be0609345c6faea1"
+  },
+  {
+   "path": "market_merchants.png",
+   "bytes": 872,
+   "sha256": "c1e7d00d1233c1fd1ae45cd5fc5e6192f9bc1f361c5bbf60c1ff0624f869024f"
+  },
+  {
+   "path": "market_merchants_on.png",
+   "bytes": 873,
+   "sha256": "1b95aeb7cc3149330131fe7b7435f2117cd50e4cec645721cb48279c983a0a83"
+  },
+  {
+   "path": "smithing_gear.png",
+   "bytes": 691,
+   "sha256": "ec2a66b72afe5bbea382de52a577ac69b5cf5ae846e25ceac21543cb479d265e"
+  },
+  {
+   "path": "smithing_gear_on.png",
+   "bytes": 696,
+   "sha256": "f9dee8edfd4b673d26f65d567a74e6bbfad85089d84a755bf3e3d7e5f3cf10e5"
+  },
+  {
+   "path": "smithing_recipes.png",
+   "bytes": 779,
+   "sha256": "57fd18b5e1d889a9a74bc831201943dc089ba9f092b8db9795e51c5c2135ca02"
+  },
+  {
+   "path": "smithing_recipes_on.png",
+   "bytes": 779,
+   "sha256": "a042fb00afcf70f8e3422ec6469f4111e4fff39a2d80daa4d409801942b0d022"
+  },
+  {
+   "path": "smithing_reforge.png",
+   "bytes": 641,
+   "sha256": "8ffaa84a03c7d9692108e9259510789db415c4741676a3d40b9c383dcbb60fe7"
+  },
+  {
+   "path": "smithing_reforge_on.png",
+   "bytes": 645,
+   "sha256": "5a00d62e423889a927973457483a942483217fbe458bca96de03d93c94b094aa"
+  },
+  {
+   "path": "smithing_upgrade.png",
+   "bytes": 543,
+   "sha256": "5eed546d3f57f816869be6a26290eaba8c53c4d2e7f7c4067b0b55372fda86a6"
+  },
+  {
+   "path": "smithing_upgrade_on.png",
+   "bytes": 546,
+   "sha256": "981c018bf878f0ab75eef9a626336f9128eef8b362993c36b1c13e5f0c10f8fb"
+  },
+  {
+   "path": "smithing_multitool.png",
+   "bytes": 778,
+   "sha256": "2d03913cd31f3409f2b5ca40d53789305acadb88abf2a7da083ee823acbaa064"
+  },
+  {
+   "path": "smithing_multitool_on.png",
+   "bytes": 781,
+   "sha256": "b059a036662fbc2b7c7b8942c220132e8bad6e17aaa73b978437b71a0597e471"
+  },
+  {
+   "path": "smithing_identify.png",
+   "bytes": 921,
+   "sha256": "1bb9085e93973d6fff3bf37740085404cf8cf826b772c8f2428a10f7ceb187d8"
+  },
+  {
+   "path": "smithing_identify_on.png",
+   "bytes": 923,
+   "sha256": "8f67585db4bb853339b340fc4152a220afcc6505caaf6359d2f200a425314f86"
+  },
+  {
+   "path": "world_teleport.png",
+   "bytes": 1324,
+   "sha256": "4e77faff0b36787ceacc15c64a33097db89b82b00ae20a331e725e7eb7769379"
+  },
+  {
+   "path": "world_teleport_on.png",
+   "bytes": 1324,
+   "sha256": "0676cf688e687f97e80f790f3f6ddbc50b8a55a97d980e40817173289a023d77"
+  },
+  {
+   "path": "world_island.png",
+   "bytes": 989,
+   "sha256": "95d30366b78563f8709c7c3e951be513d798359d8083a21108699557d878d341"
+  },
+  {
+   "path": "world_island_on.png",
+   "bytes": 987,
+   "sha256": "aa9e47a58f6e7be512b6968b0bd93f1eb2bbdc492cfbe75cc75b517578476223"
+  },
+  {
+   "path": "world_explore.png",
+   "bytes": 972,
+   "sha256": "74b93bc99ecff4e0a34a08fac2e35f093bdff9ae0f24f5b6b3e0f8beac9b413c"
+  },
+  {
+   "path": "world_explore_on.png",
+   "bytes": 973,
+   "sha256": "eda86f5cbf60ec584acb17976112926efcb18101e8d330518ba454eec27cf11a"
+  },
+  {
+   "path": "world_quests.png",
+   "bytes": 815,
+   "sha256": "20386b94dea3287fd5386b514085a6a6e488620498421b674dd1cc157e549a51"
+  },
+  {
+   "path": "world_quests_on.png",
+   "bytes": 823,
+   "sha256": "4735e8f01355626626c4d5afdfe44f69bcd94b0bb587cf2b778a62aaa36e5adf"
+  },
+  {
+   "path": "social_players.png",
+   "bytes": 693,
+   "sha256": "0c19340517f594ccf66463167682871b71bbe09bdf6f0cee6c42bb167026b72f"
+  },
+  {
+   "path": "social_players_on.png",
+   "bytes": 694,
+   "sha256": "f70398b28d1ad16a9368d9a081eedb88b592a8f78003193170510aa0d3bfd5fe"
+  },
+  {
+   "path": "social_party.png",
+   "bytes": 997,
+   "sha256": "bd986622843a66ef1c41b9ccfeba091b87bd0df0e70b15149cad5f94ea953920"
+  },
+  {
+   "path": "social_party_on.png",
+   "bytes": 997,
+   "sha256": "56130ae53a81a984cd094b78a1370fe8f868a3bef9344092b5dc8d82020aa40b"
+  },
+  {
+   "path": "social_guild.png",
+   "bytes": 745,
+   "sha256": "7a41c7e7f4a6959ac8c46aef141cdca0f674a7e9b088399015fbfac2714b7db3"
+  },
+  {
+   "path": "social_guild_on.png",
+   "bytes": 751,
+   "sha256": "65d0585510802bf197885f7767da5ecfe53e4612fd29e0b7faad75391cd44094"
+  },
+  {
+   "path": "settings_settings.png",
+   "bytes": 530,
+   "sha256": "45d671693e16013a0f6312c2bb442f10dc7656078de93b48042fd4b1ff9935e2"
+  },
+  {
+   "path": "settings_settings_on.png",
+   "bytes": 532,
+   "sha256": "3e90e02fab56da64c25ffbab5b618c7ba85b84b535fc7500e718e925cdba0563"
+  },
+  {
+   "path": "settings_hud.png",
+   "bytes": 651,
+   "sha256": "c9aa17acad16c5c6a5078ea4c2b822a44104661298b326dcc72d641f3fca7668"
+  },
+  {
+   "path": "settings_hud_on.png",
+   "bytes": 652,
+   "sha256": "949eadd6a10066cad74056fcc2879f0489e003ebf42dd5a05d1fdf6929f64da9"
+  },
+  {
+   "path": "settings_layout.png",
+   "bytes": 874,
+   "sha256": "f4a61be946eca828706d94a32772acd32319aabd8fdab725aef189f28f89ffb0"
+  },
+  {
+   "path": "settings_layout_on.png",
+   "bytes": 877,
+   "sha256": "1e4adbb08c97b2a2df5ce67e7fc0df39bd913270ed0303d32c2e26596eb67a0a"
+  },
+  {
+   "path": "settings_mods.png",
+   "bytes": 646,
+   "sha256": "5a4f056c423337b89f46c0f31b9606e56f731980da03e3059c590e99b3697ce8"
+  },
+  {
+   "path": "settings_mods_on.png",
+   "bytes": 645,
+   "sha256": "5c623cf6bcb21388ab618f7c591b55c05f68bf30bd0a0ebe4b74d0c78f9ee03c"
+  },
+  {
+   "path": "settings_setup.png",
+   "bytes": 883,
+   "sha256": "a24501d7f8fffcb718e7038ef7f22f1b199483b4ba7e15cc202c3d9fd0519e43"
+  },
+  {
+   "path": "settings_setup_on.png",
+   "bytes": 885,
+   "sha256": "1ddc2c6722bf613d8075d9dd86743c999973b08e4c57495f1b656c2fc7379ca9"
+  },
+  {
+   "path": "hubrow_home.png",
+   "bytes": 897,
+   "sha256": "e0729d8df2a7b8ee219914ceaaf24579d5d2bba57aafaa856dbc40804d242912"
+  },
+  {
+   "path": "hubrow_home_on.png",
+   "bytes": 900,
+   "sha256": "5eb60176b8ca30603a1c412e311a8a3b51fc30fe35d33bfe5c480af25fa04a6c"
+  },
+  {
+   "path": "hubrow_character.png",
+   "bytes": 787,
+   "sha256": "2a04e918dc54263352b0971264fecb9fbf55366609525f157f0a91c9255ced9b"
+  },
+  {
+   "path": "hubrow_character_on.png",
+   "bytes": 784,
+   "sha256": "614b8209aca9946d346a5a2f1b0554b784fee412f60f9cc3bc311894c59e122d"
+  },
+  {
+   "path": "hubrow_storage.png",
+   "bytes": 746,
+   "sha256": "befd3c35eaf8fe91b880d5af2408d1e047eb71f4c9ebc23b76b438edb764ba8e"
+  },
+  {
+   "path": "hubrow_storage_on.png",
+   "bytes": 750,
+   "sha256": "4cf665c223864a9c3b8d94b043ce856535e087e379296e793a5cf448aa053af9"
+  },
+  {
+   "path": "hubrow_market.png",
+   "bytes": 849,
+   "sha256": "4c8b0e410bc7eb4620e28300c7d9ab5b6723fd4f24935f6dd5872c87581f9544"
+  },
+  {
+   "path": "hubrow_market_on.png",
+   "bytes": 841,
+   "sha256": "c2836ce1ccb1a1794af9d361fdfc4cc52a03e18e2832c9e54061ca763731a0c0"
+  },
+  {
+   "path": "hubrow_smithing.png",
+   "bytes": 921,
+   "sha256": "7d330748c213feb64e28e469f986dfc012998445a926bf66bf0e7ccf6271ec47"
+  },
+  {
+   "path": "hubrow_smithing_on.png",
+   "bytes": 924,
+   "sha256": "852204d4d3763bfc561a23c11a7057fc445f2dc34104b3ee0b13dc99ef701784"
+  },
+  {
+   "path": "hubrow_world.png",
+   "bytes": 1237,
+   "sha256": "e2e780f1e7458aa2be8ada4996046345fd3f06f68258c0bfa9d6031dc7523a9c"
+  },
+  {
+   "path": "hubrow_world_on.png",
+   "bytes": 1249,
+   "sha256": "3a7186d62d7e45a0dd945fa4a5280f0fbea9d890fb0d47f8137559774d2f5112"
+  },
+  {
+   "path": "hubrow_social.png",
+   "bytes": 817,
+   "sha256": "a82ae94f3afd214ffcb7c6261cfb43f21b0d0108a71c301469d2138396828f99"
+  },
+  {
+   "path": "hubrow_social_on.png",
+   "bytes": 817,
+   "sha256": "9c5915fc0f4eb1eec49b7f4db0f6a13b557a5d253c361a13998cc378649d39b3"
+  },
+  {
+   "path": "hubrow_settings.png",
+   "bytes": 1059,
+   "sha256": "89c880bae48764b0a5915c689a409cbc7d6dc59782d232efd821be55a74e9c89"
+  },
+  {
+   "path": "hubrow_settings_on.png",
+   "bytes": 1061,
+   "sha256": "aa5a3d6bad987e5cc5769ab0ae2c0ff1e8e27c5a75049ae58f5eef322507ae51"
+  }
+ ]
+}
