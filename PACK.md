@@ -37,3 +37,7 @@ Saplings: vanilla already crafts 31 of the 33 saplings at the Farming Bench from
 - Still OFF, not updated for 0.7: Saplings From Trees 1.0.4, Better Mob Expansion 3.5, HyFishing 0.6.8 (off by choice anyway). More Crossbow Tiers still says ~0.6.8 but loads.
 - Fold sources, not pack: MoreTotems 1.0.072 (MIT, engine-clean on 0.7.2 - fold the Water Totem only), BetterBiomes 1.4.0 (now MIT; needs UtilityBiome; one removed engine call) for the architecture merge.
 - Not reviewed yet, loads (no world entry): Whichaway 0.1.0 (Kiarrasw, ARR, shared map exploration; one removed engine call).
+
+## 2026-10-16 pack update (Skyy updated their mods again)
+- Nothing comes back ON: HyFishing 0.7.2 now supports 0.7 but stays OFF by choice (SkyyFishing); Tainted Roots, Saplings From Trees, Better Mob Expansion not updated; Extended Backpacks OFF by choice. DynamicSeasons 7.0.4 fine (>=0.7.0 <0.8).
+- Not packed: DarkMatter Mounts 1.2.7 (ARR, server =0.6.8, needs Ecotale) - ideas only (docs/answered/pets.md).
