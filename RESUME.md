@@ -35,7 +35,10 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   then popups, then ONE sweep = pattern + top hub row on every page). Collections 0.2.23 + Bazaar 0.1.18 (Life Essence 1:1 convert, Eternal
   seeds tier 4, Enchanted listing with gift sizing) wait for sacks0814.
   MENU SWEEP spec research/Menu-Pattern.md ANSWERED -> after smithhub: kit round K (skyyui 1.7 + Menu 0.3.35), then S1-S4 + Quests q04 (section 4).
-  So T1 becomes Skills 0.4.46, Enchanted listing Bazaar 0.1.18. Mod compression AFTER (sections stay separate - docs/answered/project.md 10-16).
+  RUNNING: sacks0814 fix pass (icon markup HIGH, recipe-id craft events), petmenu fix pass (crash windows), smithhub, wd025 (scroll + Sell +
+  take-out stays out), logfix Skills 0.4.46 + Hud 0.3.30 (pack check retries, minimap shutdown). Flask/Pouch spec answered -> FP0 probe.
+  Collections next round: switch to skyyench TABLE_0221 or 102 rows + RETIRED_TO (Life Essence 1:1).
+  So T1 becomes Skills 0.4.47 + Gear 0.3.16, Enchanted listing Bazaar 0.1.18. Mod compression AFTER (sections stay separate - docs/answered/project.md 10-16).
 - Last deploy: Nothing else running. Deployed 10-16 14:44 (TEST-CHECKLIST 154): Skills 0.4.44 (dodge), Rebirth 0.3.4 (ON), Exploration 0.2.12, WorldGen 0.7.2 (/spawn),
   Cooking 0.1.9, Guilds 0.1.10, Collections 0.2.21 (redesign C1), Gear 0.3.14 (one Harvester, Crude full on wheat, Sigils) + Armory 0.1.30
   (one boss Sigil roll). NEXT: T1 Gear 0.3.15 + Skills 0.4.45 (spec research/Collections-Tools-Redesign-Spec.md, last section).
