@@ -14,6 +14,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    deploy_set --yes -> record_deploy -> commit -> tidy. Never SendMessage an agent inside a workflow; plain Agent builders can be messaged.
 
 ## RUNNING NOW (plain Agent builders unless noted; if this session died: check their files, review, pin, deploy)
+- life01 Accessories / Sacks / Menu / Islands: lifelong Accessory Bag + Pocket Dimension + Menu item (recall commands), no 2nd copy on reset.
 - pets040 SkyyPets 0.4.0 = Pet Eggs R1 (eggs + hatching + Pets page grid / flavor text / filters). Art drafts in art/pet-eggs (sent to Skyy).
 - armory0129 SkyyArmory 0.1.29: Great Shield, Crescent Rush = pushing lunge, Mage teleport look, Warrior Thrust range.
 - wg071 SkyyWorldGen 0.7.1: zones-world weather fix + Zone 1 = server spawn switch + /zone setlanding.
