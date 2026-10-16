@@ -339,3 +339,4 @@ T1 and C1 can run in parallel (different mods; C1's bridge is optional for T1). 
 - Skyy 2026-10-16 (replaces the line above): the multitool keeps TWO stat sets (pickaxe + hatchet), each upgraded by its own skill's points; logs use the hatchet set, stone / ore the pickaxe set; one slot, one tier-up; two columns in the Tools tab (gear.md MULTITOOL = TWO STAT SETS).
 - Skyy 2026-10-16: each upgrade line caps at 10 x the tool's tier (Crude 10, Copper 20 ...; top tier uncapped); extra points stay banked (gear.md TOOL LINE CAP PER TIER).
 - Skyy 2026-10-16: PERK lines (Vein Mine, Tree Feller ...) cap by the tool LEVEL (= skill level), not the tier; tool part max (Vein Mine ~6) + the skill tree's same ability on top (~+4) = total (~10). The 10 x tier cap applies to Breaking Power / Speed / Fortune only (gear.md PERK CAPS).
+- Skyy 2026-10-16: Vein Mine / Tree Feller tool levels cost 1, 2, 4, 8, 16, 32 ... (double each level) (gear.md PERK COST CURVE).
