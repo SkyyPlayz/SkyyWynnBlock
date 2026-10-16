@@ -79,7 +79,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.0"),
+    ("SkyyPets", "0.4.1"),
     ("SkyyWardrobe", "0.2.4"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
@@ -457,6 +457,8 @@ def main():
     # its Identify + Auctions stand-ins and maps old shortcuts - deploy + roll back TOGETHER (mixed = missing or doubled Identify tab). No data change.
     if (_v(_p.get("SkyyGear", "0")) >= (0, 3, 15)) != (_v(_p.get("SkyyMenu", "0")) >= (0, 3, 34)):
         print("STOP: SkyyGear 0.3.15 and SkyyMenu 0.3.34 go together (Crafting hub tabs)"); return 1
+    # petmenu (2026-10-16): FLOOR - never roll SkyyPets below 0.4.1 once eggs sit in the Hatchery (0.4.0 ignores hatchery.* lines: those eggs
+    # would be invisible, kept not lost; bench egg recipes + right-click hatching would come back).
     # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
     # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep
