@@ -20,7 +20,7 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.27"), ("SkyySacks", "0.8.8"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.19"), ("SkyyParty", "0.1.9"),
-    ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.16"), ("SkyyBazaar", "0.1.13"), ("SkyyGear", "0.3.10"), ("SkyySkills", "0.4.42"),
+    ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.16"), ("SkyyBazaar", "0.1.13"), ("SkyyGear", "0.3.10"), ("SkyySkills", "0.4.43"),
     ("SkyyAccessories", "0.5.17"), ("SkyyClasses", "0.1.29"), ("SkyyMenu", "0.3.28"), ("SkyyEssentials", "0.1.10"), ("SkyyProfiles", "0.1.15"),
     ("SkyyCooking", "0.1.7"), ("SkyyTrees", "0.3.16"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -87,6 +87,7 @@ SET = [
     ("SkyyQuests", "0.3.3"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyRebirth", "0.3.3"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyShards", "0.4"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
+    # FLOOR (2026-10-15, SkyySkills 0.4.43): Battlemagic = class-skill slot 19 (saved key Combat.Spellblade). 0.4.42 reads such files but its save DROPS the key - never roll Skills below 0.4.43 once Spellblades played on it.
     # 2026-10-14 WorldGen 0.6 (zones as floating islands, new world skywynn_zones; /zone 1-5 go there, /zone old = old test island). ROLLBACK below 0.6: server stopped, delete universe/worlds/skywynn_zones + its skywynn_zones.* lines in mods/Skyy_SkyyWorldGen/worlds.properties + zone_layout_20261014.bin first.
     # 2026-10-14 evening: Gear 0.3.6 + Fishing 0.1.6 together; FLOOR Gear 0.3.6 once any of the 68 gathering armor pieces exists (0.3.5 = unknown items). Classes 0.1.25 + Trees 0.3.10 together (Spellblade, rebirth slots 3-4). Islands 0.5.10 + Quests 0.3.2 together (3 starter islands; Server Setup can switch back to Classic).
     # 2026-10-14 rebirth6: Skills 0.4.39 FLOOR while rebirth stat bonuses exist (0.4.38 never removes skyyskill_rebirth* modifiers) - switch "Rebirth stat boosts" off with players online first.
