@@ -18,7 +18,9 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 ## RUNNING NOW (plain Agent builders; critics after; if this session died: check their files, review, pin, deploy)
 - farm01 SkyyGear 0.3.14: retire hoe + sickle -> Crude Harvester + can for everyone (one-time merge), sweep tier rule, Sigils on Mining
   Sets + drop sources by rarity + Mythic usable, till area everywhere (NEXT 0b).
-- spec: research/Collections-Tools-Redesign-Spec.md (NEXT 0c) - paper only, then ask Skyy its questions.
+- C1 SkyyCollections 0.2.21: collections redesign round C1 (own Enchanted per collection, tier unlocks Enchanted -> tool -> armor, coins half,
+  tool points, ranks). Spec answered (research/Collections-Tools-Redesign-Spec.md last section). NEXT after farm01: T1 Gear 0.3.15 + Skills
+  0.4.45 (uncapped Breaking Power / Speed / Fortune, coll:fn:toolPts), then V1 compactor, E1 Blocks + un-compress, E2 auto un-compress.
 - small01: Exploration names (Loot Bag / Magic Box), WorldGen 0.7.2 /spawn for players, Cooking 0.1.9 Strength scales (10 min cap),
   Guilds names with symbols.
 - PINNED, NOT DEPLOYED (deploy when the game closes): SkyySkills 0.4.44 (dodge), SkyyRebirth 0.3.4 (rebirth ON).
