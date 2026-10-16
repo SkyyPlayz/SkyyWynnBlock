@@ -22,6 +22,9 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    Growth boost, Lasting water, Bloom; Harvester = hoe + sickle merged at the Anvil after rebirth 1; tier tags (standing rule). Full round
    on SkyyGear 0.3.12 (+ SkyySkills / Fishing only if needed). Also fold in: SkyyGear's longsword tooltip still says 'Charged Attack
    20-28' (now Crescent Rush); the ("Spellblade","Battlemagic") class-skill pair; move Gear's own hpr / hprp regen onto skill:fn:hpregen.
+1b. **NORMAL TOOLS OFF EVERYWHERE** (gear.md 10-16, popups answered): no recipe / no crafting listing / no chest, Lost Loot, air-drop or mob
+   drop for normal pickaxes, hatchets, hoes, sickles, fishing rods, watering cans (shovels stay); pack mods' ones hidden at runtime by id; owned normal
+   tools removed once per profile; lifelong (stamped) tools untouched. FULL round (ultracode: item removal + several mods) right after gear0312 deploys.
 2. **PET EGGS + HATCHING** (research/Pet-Eggs-Spec.md; pets.md 10-15): 30 eggs (Mining / Farming / Foraging / Combat / Exploration x
    Common..Mythic), roll 1 pet (best -> worst weights by egg rarity), roll 2 rarity, atomic hatch then ~3 s two-reel animation, sources
    (skill drops, collections, crafting, shops). 5 questions open in OPEN-QUESTIONS.md with defaults - use the defaults unless Skyy answers.
