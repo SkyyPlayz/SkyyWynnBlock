@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + menu0330 Menu 0.3.30 + cls0130 Classes 0.1.30)
+# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + menu0330 Menu 0.3.30 + cls0130 Classes 0.1.30 + fish018 Fishing fixes)
 
 Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
 `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md` (2026-10-15 / 16 lines). Decisions word for word: `docs/answered/<topic>.md`.
@@ -30,10 +30,13 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 1c. **LIFELONG ACCESSORY BAG / POCKET DIMENSION / MENU ITEM + no 2nd bag on /island reset** (gear.md 10-16): like the forever tools - one per
    profile, can't be lost, extras cleaned, a recall command each; island reset / kit never re-gives owned once-only items. FULL round (Accessories +
    Sacks + Menu + Islands) after menu0330 deploys.
+1d. RUNNING fish018 (SkyyFishing 0.1.8 + SkyySacks 0.8.10 + SkyyShards 0.4.1): fishing line over water, fish into the Fishing bag, 29 missing item
+   models (bags.md / ui.md 10-16). Still ask Skyy what the purple cube on the spawn-Temple pedestal is.
+1e. **CLASS EMBLEMS** (ui.md 10-16): one icon per class (8, art first via skywynn-art) on Profiles / class pick / Class tab; wire the 35 approved ability icons in.
 2. **PET EGGS + HATCHING** (research/Pet-Eggs-Spec.md; pets.md 10-15): 30 eggs (Mining / Farming / Foraging / Combat / Exploration x
    Common..Mythic), roll 1 pet (best -> worst weights by egg rarity), roll 2 rarity, atomic hatch then ~3 s two-reel animation, sources
    (skill drops, collections, crafting, shops). 5 questions open in OPEN-QUESTIONS.md with defaults - use the defaults unless Skyy answers.
-   Rounds A0 art, R1 SkyyPets 0.4.0 (ultracode), R2 Skills, R3 Bazaar + Merchants, R4 Collections.
+   Rounds A0 art, R1 SkyyPets 0.4.0 (ultracode; ALSO the Pets page redesign: per-pet icons, grid, full-stats flavor text, no OPEN page, role + area filters, pets.md 10-16), R2 Skills, R3 Bazaar + Merchants, R4 Collections.
 3. Then (queued): ONE SkyyArmory round = Great Shield (Spellblade: bash chain, full guard 70% melee / 100% projectiles, Bulwark Charge; research/classes/Spellblade.md) + Spellblade Crescent Rush = pushing lunge, not teleport (+ that teleport look onto the Mage teleport; classes.md 10-16) + Warrior sword Thrust dash range boost (classes.md LOCKED 2026-10-08; Skyy 10-16 'add the changes to the warrior traversal to the que, along with the great shield'); WorldGen 0.7.1 (zones-world weather list - vanilla
    SensorWeather NPE; 'Zone 1 = server spawn' switch + /zone setlanding in the zones world, world.md 10-15); Menu 0.3.30 (Storage + World hub tiles get their OWN icons - they reuse Pocket Dimension / Teleport, Skyy 10-16 ui.md; Invite to Guild
    button, Stats 'Health Regen' row from skill:fn:hpregen, 'Battlemagic' in CLASS_SKILLS, hub tab icons from art/hub-tab-icons/ as

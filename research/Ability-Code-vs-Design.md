@@ -13,8 +13,13 @@ design file. Level scaling everywhere is a multiplicative % with a soft cap (lvl
 - **Berserker Blood Frenzy / Warlord's Banner:** the attack-speed part is shown only (no attack-speed hook).
 - **Assassin First Strike (Cloak, Vanishing Act):** +CL_STRIKE% (50) plain damage stands in for the design's +100% crit chance (no crit hook in SkyyGear yet).
 - **Warrior Rallying Guard:** taunt 6 s (design 4 s), cut cap 40% (design ~30%); players 6 blocks / party 10.
-- **Warrior Challenge, Guardian's Oath:** no section in Warrior.md - the code comments are the only design (Challenge 12 blocks, 8 s, 30% cut, 20% reflect; Oath 15 blocks, 8 s, 40% share, 15% cut, 30-block leash).
+- **Warrior Challenge, Guardian's Oath:** no section in research/classes/Warrior.md - the code comments are the only design (Challenge 12 blocks, 8 s, 30% cut, 20% reflect; Oath 15 blocks, 8 s, 40% share, 15% cut, 30-block leash).
 
+- **Mage Starfall:** each star is 0.3 x hit (10% of a Meteor); design says ~40% of a Meteor (~1.2 x hit).
+- **Mage Arcane Beam:** Power+ raises damage only; design says Power+ gives a faster ramp.
+- **Priest Guardian Spirit:** each save also costs 1 Stamina (design: Mana only).
+- **Priest Sanctuary:** the 60% per-zone heal cap equals 12 s x 5%, so any level above 1 just hits the cap sooner.
+- **Priest Shield Bubble:** no explicit projectile block found (design: blocks projectiles).
 ## Code adds things the design never mentions (doc should catch up)
 - Warrior Shield Shockwave: +stun per level (cap +0.6 s); the cone is 90 degrees in total (SS_ANGLE is a half-angle).
 - Warrior Iron Chain: also deals IC_POWER x hit; bosses are not dragged unless the Pull modifier is on.
