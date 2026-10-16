@@ -266,3 +266,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Zone 1 = server spawn, zones weather fix (DEPLOYED 2026-10-16, backup deploy-20261016-0952) | [2026-10](2026-10.md) |
 | Pet eggs + hatching + new Pets page (DEPLOYED 2026-10-16, backup deploy-20261016-1031) | [2026-10](2026-10.md) |
 | Normal tools off + Enchanted Sticks + Great Shield + Crescent Rush lunge (DEPLOYED 2026-10-16, backup deploy-20261016-1033) | [2026-10](2026-10.md) |
+| Lifelong Accessory Bag / Pocket / Menu item (DEPLOYED 2026-10-16, backup deploy-20261016-1058) | [2026-10](2026-10.md) |
