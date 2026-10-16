@@ -75,6 +75,7 @@ Read this first, then only what the task needs. Map: `INDEX.md`. Rules: `PROJECT
 - **Queued after wg07 (WorldGen 0.7.1):** zones world weather list (vanilla SensorWeather NPE) + 'Zone 1 = server spawn' switch (first join, /spawn, no-island -> Zone 1 landing; world.md 10-15); /zone setlanding must work in the zones world too (0.6 refuses: 'no landing point to set'), so Skyy can pick the Zone 1 spawn spot. After Gear 0.3.10: gear0311 (sickle fiber, pole in kit), then watering can + Harvester + tier tags T2. Profiles: open / redraw the first-profile page ~2 s after join.
 
 - **Queued (Skyy 10-15):** HEALTH REGEN - SkyySkills 0.4.43 (after 0.4.42): base 0.2 HP/s in combat / 1 HP/s after 5 s out, + per Overall Level, Stats row, bridge for gear / tree adds; then Gear / Accessories 'Health Regen' stat + Trees nodes (skills.md BASE HEALTH REGEN).
+- **Queued (Skyy 10-15 'Both'):** SPELLBLADE GREAT SHIELD (research/classes/Spellblade.md: bash chain, full guard 70% melee / 100% projectiles, Bulwark Charge) = the SkyyArmory round right after armory0128 (sword guard + Crescent Rush + early damage).
 ## Next, in order (Skyy 2026-10-14: "Run everything you can in parallel ... done by 5 pm")
 1. Land the 6 running rounds (deploy each READY one with the game closed), then the queued ones above.
 1b. OWN ICONS IN EVERY MENU (Skyy 10-15, ui.md; plan research/Menu-Icons-Plan.md): wave 1 sheet art/menu-icons-2/ DRAWN + reviewed (14 icons: Teleport My Island / Hub / Spawn / Warp / locked / none, Back / Prev / Next / Close, Player, Accept / Deny, Shards tile).
