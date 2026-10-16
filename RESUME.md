@@ -25,6 +25,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   + petmenu Pets 0.4.1 (Pets / Eggs / Hatchery tabs, timed hatch slots, fuse pets + eggs, right-click hatch off; pets.md 10-16).
   FIRST AFTER hubcoll: SkyySacks 0.8.14 = Void homes for the 103 Enchanted rows (Skyy bug: deposit skips them) + crafting page rows/scroll (k).
   Accessory-Power-Spec.md written (6 questions for Skyy) -> AP1 after accraft.
+  hubstore DONE + pinned (Bank 0.1.15 + Vault 0.1.8). SkyyMenu follow-up (next Menu round): shortcut tab:storage:bank -> tab:storage:vault.
   So T1 becomes Skills 0.4.46, Enchanted listing Bazaar 0.1.18. Mod compression AFTER (sections stay separate - docs/answered/project.md 10-16).
 - Last deploy: Nothing else running. Deployed 10-16 14:44 (TEST-CHECKLIST 154): Skills 0.4.44 (dodge), Rebirth 0.3.4 (ON), Exploration 0.2.12, WorldGen 0.7.2 (/spawn),
   Cooking 0.1.9, Guilds 0.1.10, Collections 0.2.21 (redesign C1), Gear 0.3.14 (one Harvester, Crude full on wheat, Sigils) + Armory 0.1.30
