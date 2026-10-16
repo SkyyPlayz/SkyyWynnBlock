@@ -180,3 +180,4 @@ tests always come first.
 152. Lifelong Accessory Bag / Pocket Dimension / Menu item (/accbag /pocket /menuitem), no 2nd bag on reset, Enchanted Stick in Foraging bag
 153. Arcane Breach flying arc (6.5 blocks, 1.4x, 5 s), Stacks HUD widget
 154. Dodge every way (backwards too), Rebirth on, Loot Bag / Magic Box, /spawn, food Strength, guild symbols, collections redesign, one Harvester (Crude full on wheat), one boss Sigil roll
+155. Menu merges (Character / Vault / Market / Collections recipes), one food = one bar, accessory crafting in the bag

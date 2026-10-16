@@ -269,3 +269,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Lifelong Accessory Bag / Pocket / Menu item (DEPLOYED 2026-10-16, backup deploy-20261016-1058) | [2026-10](2026-10.md) |
 | Arcane Breach arc of light + Stacks widget (DEPLOYED 2026-10-16, backup deploy-20261016-1059) | [2026-10](2026-10.md) |
 | Dodge every direction, Rebirth ON, loot names, /spawn, food Strength, guild symbols, collections redesign C1, one Harvester + crop tiers + Sigils (DEPLOYED 2026-10-16, backup deploy-20261016-1444) | [2026-10](2026-10.md) |
+| Menu merges (Stats in Skills, Class in Trees, Bank+Vault, Bazaar+AH, recipes in Collections), one food type = one bar, accessory crafting in the bag (DEPLOYED 2026-10-16, backup deploy-20261016-1623) | [2026-10](2026-10.md) |
