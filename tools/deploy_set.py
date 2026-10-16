@@ -85,7 +85,7 @@ SET = [
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
     ("SkyyQuests", "0.3.4"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
-    ("SkyyRebirth", "0.3.3"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
+    ("SkyyRebirth", "0.3.4"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyShards", "0.4.1"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
     # FLOOR (2026-10-15, SkyySkills 0.4.43): Battlemagic = class-skill slot 19 (saved key Combat.Spellblade). 0.4.42 reads such files but its save DROPS the key - never roll Skills below 0.4.43 once Spellblades played on it.
     # SkyyWorldGen 0.7 (2026-10-15): a jar without the SkyWynnZones2 type cannot decode skywynn_zones2's config.json (one SEVERE

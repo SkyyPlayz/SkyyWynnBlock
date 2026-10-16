@@ -25,34 +25,15 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### bags  (answers -> docs/answered/bags.md, topic `bags`)
 
 ### classes  (answers -> docs/answered/classes.md, topic `classes`)
-- ABILITIES: build the 4 waiting nodes next round (Priest Elemental Bubble PB2, Mage PA4 + PC2, Priest PA2; Guiding Light stays out)? [yes, next round] (SkyyTrees 0.3.7)
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]
 
-- CLASS TREE AP (SkyyClasses 0.1.30 / Trees 0.3.18): with modifiers out of the tree a full class tree costs 32 AP, but players reach 50 AP at max level (18 spare). Add nodes / raise costs, or leave the spare AP? [leave it until you've played the new tree]
 ### pets  (answers -> docs/answered/pets.md, topic `pets`)
-- PET KILLS (SkyyPets 0.2.5 / SkyyMobs 0.1.8 / SkyySacks 0.8.4): pet-kill loot + 'pet damage makes you top damager' are built but cannot be tested until pets fight (SkyyPets 0.4). Keep them idle until then? [yes]
-- DRAGON as a pet with Aures' Dragon Nestkeeper: our secondary pet slot summons their dragon, or their mod owns the dragon and our slot links it, or our own dragons later? [(1) summon via our slot if Aures allows + it works, else (2) - docs/answered/pets.md 2026-10-06; decide after the survey + Aures' answer]
 
 ### social  (answers -> docs/answered/social.md, topic `social`)
-- GUILD info takes names with spaces? Needs a fix in SkyyGuilds (and the same left-out-button fix in SkyyShards / SkyyRebirth), not the menu. [yes, small Guilds fix] (SkyyMenu 0.3.23 Admin page)
 
 ### rebirth  (answers -> docs/answered/economy.md, topic `economy`)
-- BANK BONUS (SkyyRebirth 0.2 / SkyyBank 0.1.11): bonus is worked out on the profile's share of min(account total, 10M), the same cap as the brackets? [yes]
-- BANK BONUS: it is flat on the whole capped balance - at the +3 total cap that is about +300k a day on a full 10M bank, ~3.5x the 85k base interest. Keep the Q7 numbers or lower / weight by bracket? [keep the Q7 numbers; refresh the Balance Workbench]
-- REBIRTH stays OFF for real players until Skyy has tested R1-R4 (Bazaar / AH open-order check is in 0.3)? [keep OFF until Skyy has seen the Nexus tooltip]
-- NEXUS: Rebirth / Continue work from both the Nexus click and the left-panel button? [both] (SkyyRebirth 0.3)
-- ADMIN TEST REBIRTH works while the feature is OFF and skips the class / place / combat checks? [yes] (SkyyRebirth 0.2)
-- TREE: players cannot respec the tree themselves (admin refund only)? [yes] (SkyyRebirth 0.3)
-- TREE: node list right (Wisdom / Dust / Echo / Fortune / tool / stat / keystone titles)? [yes, as built] (SkyyRebirth 0.3)
-- TREE: a keystone title replaces 'Void-Touched N' until the next rebirth (newest earned title shows)? [yes] (SkyyRebirth 0.3)
-- TREE: +4% points per Echo level (up to +40%), editable? [yes] (SkyyRebirth 0.3)
-- TREE: opening row 2 costs 15 points and one maxed skill pays about 8, so the first rebirth cannot open row 2. Keep the spec curve or make early levels cheaper (Tree price growth 1 = every level costs 1)? [keep 1.08] (SkyyRebirth 0.3)
 
 ### shards  (answers -> docs/answered/skills.md, topic `skills`)
-- CO-OP (SkyyShards 0.1 / 0.2): co-op may enter your shard but only the owner can Collect, buy storage and Grow? [yes; row shard.coopCollect is off]
-- A picked-up shard (or one left by an island reset) makes nothing until placed again? [yes]
-- Island sizes 13 / 21 / 29 and 6 slots from the spec, not the mockup? [spec]
-- Growing costs coins + Eternal Seeds + a collection tier? [yes]
 - Allow 20 shard worlds loaded at once? [20]
 - Collect goes to the inventory only until SkyySacks has a give bridge, then Magic Bags first? [yes]
 - One worker is capped at 12 items / minute before modifiers (the spec's limit; Server Setup -> Shards -> Totems -> Worker cap)? [yes, 12] (SkyyShards 0.2)

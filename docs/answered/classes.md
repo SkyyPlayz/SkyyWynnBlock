@@ -206,3 +206,5 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - 2026-10-16 SPIRIT SHIELD: popup Q "PRIEST: Spirit Shield gives the saved player a 4 s personal shield worth 15% of max Health ...?" -> "15% shield (Recommended)".
 - 2026-10-16 LAYERED WARD: popup Q "PRIEST: Layered Ward splits the bubble in two equal halves; the inner half regrows 3% of the bubble's HP a second?" -> "Yes (Recommended)".
 - 2026-10-16 LINGERING BURN: popup Q "MAGE: Lingering burn lasts 2 s + 0.5 s per level (2.5 s at Lv 1; the class file says 3 s)?" -> "2 s + 0.5 s/level (Recommended)".
+- 2026-10-16 WAITING TREE NODES: popup Q "CLASS TREES: build the 4 waiting tree nodes next (Priest Elemental Bubble, two Mage nodes, Priest PA2; Guiding Light stays out)?" -> "Yes, next class round (Recommended)".
+- 2026-10-16 CLASS TREE AP: popup Q "CLASS TREE AP: a full class tree now costs 32 AP, but players reach 50 AP at max level (18 spare). What should we do?" -> "Leave it until played (Recommended)".

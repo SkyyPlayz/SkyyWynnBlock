@@ -146,3 +146,7 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - 2026-10-16 DODGE + PARRY STACK: popup Q "PERFECT DODGE: when a hit is both a Perfect Parries counter and a dodge counter, only the parry multiplier applies (no stacking)?" -> "Stack them". Round roll01.
 - 2026-10-16 OVERALL LEVEL FARMING: popup Q "OVERALL LEVEL: count Farming as the average of Farming / Ranching / Orchard now?" -> "Off for now (Recommended)".
 - 2026-10-16 XP CAPS FOR TESTING: popup Q "RANCHING: is a cap of 200 XP a minute (after boosts) plus 'items a player dropped pay nothing' enough protection against XP farming?" -> "raise cap. set caps absurdly high so we can find exploits. id like to remove the cap entirely later." -> XP caps (Ranching, perfect dodge, similar rate caps) default absurdly high during testing to expose exploits; plan to remove caps later. Round roll01 (Skills).
+- 2026-10-16 SHARD CO-OP: popup Q "SHARDS: co-op members may enter your shard, but only the owner can Collect, buy storage and Grow?" -> "Co-op can Collect" -> co-op members may Collect too (row shard.coopCollect ON); storage + Grow stay owner-only.
+- 2026-10-16 SHARD RULES: popup Q "SHARDS: a picked-up shard (or one left by an island reset) makes nothing until placed again; island sizes 13 / 21 / 29 with 6 slots; growing costs coins + Eternal Seeds + a collection tier?" -> "Yes to all (Recommended)" (closes the picked-up, island-size and growing-cost questions).
+- 2026-10-16: answered with SHARD RULES -> spec sizes.
+- 2026-10-16: answered with SHARD RULES -> yes.
