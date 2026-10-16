@@ -162,3 +162,4 @@ tests always come first.
 134. HUBS: /market /storage /social /travel /settings HUD tabs in the sky frame; nothing kicks
 135. SKYYCORE: Bank + Party run on SkyyCore (same pages, Server Setup History intact)
 136. Class tab opens the class tree (/class too); Island 2 boss stays down + island respawn; Lost Loot gear cap; Lantern recipe; Void Artifacts tab - in the NEW world NewBetaTest
+137. Big batch in NewBetaTest: Battlemagic XP, health regen, fortune card, Tools tab tier up, furnace fuel, pets fuse/rebirth, tier tags, starter Accessory Bag, Requip rows, natural cave, Assassin kunai, Tree Feller row III, clean first-profile page
