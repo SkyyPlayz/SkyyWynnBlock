@@ -66,6 +66,9 @@ Respect the rollback floors in `tools/deploy_set.py`.
 - **Tier tags** (Skyy 2026-10-15: "keep this as a general rule"): every item with a tier - now or added later - shows it first in its flavor
   text (`T3 Iron - text`; materials = their tool's tier; own ladders `T2 Totem`), from the one table `tools/tier_tags.py`
   (research/Tier-Tags-Plan.md). A round that adds a tiered item adds it to that table; `tools/ci/langdup.py` keeps one writer per lang key.
+- **Four power sources** (Skyy 2026-10-16: "this applies acroos the board. to all skills. and your class. your weapon is only part of it. your
+  gear is important, but accessory's and pets are essential too!"): every skill and class stat is balanced as tool / weapon + gear +
+  accessories + pets stacking; accessories and pets are essential, not extras.
 - **Sort by tier everywhere** (Skyy 2026-10-16: "sort everything by tier in all shops and crafting."): every shop and crafting list sorts by
   tier (`tools/tier_tags.py`), then name; farming lists group each crop as crop, Enchanted crop, seeds, Eternal seeds.
 - **Everything a server owner might change is editable in game** (SkyWynn Menu -> Server Setup) through `tools/skyycfg.py`
