@@ -16,9 +16,14 @@ Skyy's words this follows (docs/answered/bags.md + gear.md, word for word there)
   - 2026-10-06 spec Q10 tweak "Enchanted premium" -> sold a bit ABOVE 100x base, capped below any loop (the processed-goods 22% rule)
   - 2026-10-11 UPGRADE COST "it costs a enchanted iron ingot to upgrade copper to iron" (phase 3 spends them; this phase makes them)
 
+  - 2026-10-16 COLLECTIONS SPEC Q3 "Own items now" (docs/answered/economy.md): EVERY collection gets its own Enchanted item - round C1
+    (SkyyCollections 0.2.21) appends one row per visible collection that had none (rows 21-103, the C1 block below; research/
+    Collections-Tools-Redesign-Spec.md). SkyySacks homes them and SkyyBazaar lists them at THEIR next build (they read this table then).
+
 Rules kept here (the build scripts assert them):
   - RATIO 100 is a BUILD-TIME constant (a runtime ratio could not change the baked recipe and would mis-credit items players hold).
-  - No reverse recipe, ever (no un-compress, no salvage output).
+  - No reverse recipe in this jar yet: Skyy 2026-10-16 asked for un-compress (Enchanted -> 100 base, research/Collections-Tools-
+    Redesign-Spec.md 4.2) - it ships in round E1 together with SkyyBazaar's loop check; until then check_assets still refuses one.
   - Crafting is never a collection credit (the base items counted when gathered); only a GIVER that creates an Enchanted item credits it,
     through SkyyCollections' coll:fn:add alias (base x RATIO, once, at creation).
   - Icons / textures are a "shiny copy of the vanilla resource", GENERATED at build time from Assets.zip (nothing vanilla is committed).
@@ -70,11 +75,88 @@ TABLE = [
     # "ingot" look path (its own model + a shiny copy of its texture). Its Void category is Foraging (SkyySacks reads this table at build).
     ("Stick",       "I", "Ingredient_Stick",       "Stick",       3, "Foraging", "Enchanted Stick",            ("ingot", "Ingredient_Stick")),
 ]
+# ---- round C1 (SkyyCollections 0.2.21; Skyy 2026-10-16 "Own items now"): one Enchanted item for EVERY visible collection that had none.
+# Same ratio / bench / tab / quality as the 20 above; input = the collection's FIRST item (metals: the ingot like Copper ... Adamantite;
+# Sand and Crystal take their vanilla resource type, which holds exactly that collection's items); unlock tier = the spec 3.3 grammar
+# (Elite curve II, every other curve III); Void category = the collection's (hides: Smithing, like SkyySacks homes the hides). Looks: the
+# same four art paths (logs / stone = "cube", crops / fruit / meat / petals / gems = the vanilla block model "crop", items = "ingot").
+TABLE_C1 = [
+    ("Corn",        "I", "Plant_Crop_Corn_Item",      "Corn",        3, "Farming", "Enchanted Corn",        ("crop", "Plant_Crop_Corn_Item")),
+    ("Lettuce",     "I", "Plant_Crop_Lettuce_Item",   "Lettuce",     3, "Farming", "Enchanted Lettuce",     ("crop", "Plant_Crop_Lettuce_Item")),
+    ("Onion",       "I", "Plant_Crop_Onion_Item",     "Onion",       3, "Farming", "Enchanted Onion",       ("crop", "Plant_Crop_Onion_Item")),
+    ("Turnip",      "I", "Plant_Crop_Turnip_Item",    "Turnip",      3, "Farming", "Enchanted Turnip",      ("crop", "Plant_Crop_Turnip_Item")),
+    ("Aubergine",   "I", "Plant_Crop_Aubergine_Item", "Aubergine",   3, "Farming", "Enchanted Aubergine",   ("crop", "Plant_Crop_Aubergine_Item")),
+    ("Chilli",      "I", "Plant_Crop_Chilli_Item",    "Chilli",      3, "Farming", "Enchanted Chilli",      ("crop", "Plant_Crop_Chilli_Item")),
+    ("Rice",        "I", "Plant_Crop_Rice_Item",      "Rice",        3, "Farming", "Enchanted Rice",        ("crop", "Plant_Crop_Rice_Item")),
+    ("Berries",     "I", "Plant_Fruit_Berries_Red",   "Berries",     3, "Farming", "Enchanted Wild Berries", ("crop", "Plant_Fruit_Berries_Red")),
+    ("Apple",       "I", "Plant_Fruit_Apple",         "Apple",       3, "Farming", "Enchanted Apple",       ("crop", "Plant_Fruit_Apple")),
+    ("WildFruit",   "I", "Plant_Fruit_Coconut",       "WildFruit",   3, "Farming", "Enchanted Coconut",     ("crop", "Plant_Fruit_Coconut")),
+    ("Mushroom",    "I", "Plant_Crop_Mushroom_Cap_Brown", "Mushroom", 3, "Farming", "Enchanted Mushroom",   ("crop", "Plant_Crop_Mushroom_Cap_Brown")),
+    ("Cactus",      "I", "Plant_Cactus_1",            "Cactus",      3, "Farming", "Enchanted Cactus",      ("crop", "Plant_Cactus_1")),
+    ("Seeds",       "I", "Plant_Seeds_Wheat",         "Seeds",       3, "Farming", "Enchanted Seeds",       ("ingot", "Plant_Seeds_Wheat")),
+    ("LifeEssence", "I", "Ingredient_Life_Essence",   "LifeEssence", 3, "Farming", "Enchanted Essence of Life", ("ingot", "Ingredient_Life_Essence")),
+    ("Petals",      "I", "Plant_Petals_Blood",        "Petals",      3, "Farming", "Enchanted Petals",      ("crop", "Plant_Petals_Blood")),
+    ("RawChicken",  "I", "Food_Chicken_Raw",          "RawChicken",  3, "Farming", "Enchanted Raw Chicken", ("crop", "Food_Chicken_Raw")),
+    ("RawBeef",     "I", "Food_Beef_Raw",             "RawBeef",     3, "Farming", "Enchanted Raw Beef",    ("crop", "Food_Beef_Raw")),
+    ("RawPork",     "I", "Food_Pork_Raw",             "RawPork",     3, "Farming", "Enchanted Raw Pork",    ("crop", "Food_Pork_Raw")),
+    ("Wildmeat",    "I", "Food_Wildmeat_Raw",         "Wildmeat",    3, "Farming", "Enchanted Raw Wildmeat", ("crop", "Food_Wildmeat_Raw")),
+    ("Fiber",       "I", "Ingredient_Fibre",          "Fiber",       3, "Foraging", "Enchanted Plant Fiber", ("ingot", "Ingredient_Fibre")),
+    ("TreeSap",     "I", "Ingredient_Tree_Sap",       "TreeSap",     3, "Foraging", "Enchanted Tree Sap",    ("ingot", "Ingredient_Tree_Sap")),
+] + [(_k, "I", "Wood_%s_Trunk" % _w, _c, 3, "Foraging", "Enchanted %s" % _n, ("cube", "Wood_%s_Trunk" % _w)) for _k, _w, _c, _n in (
+    ("AppleLog", "Apple", "AppleLog", "Apple Log"), ("Ash", "Ash", "AshLog", "Ash Log"), ("Aspen", "Aspen", "AspenLog", "Aspen Log"),
+    ("Bamboo", "Bamboo", "BambooLog", "Bamboo Log"), ("Banyan", "Banyan", "BanyanLog", "Banyan Log"), ("Beech", "Beech", "BeechLog", "Beech Log"),
+    ("Birch", "Birch", "BirchLog", "Birch Log"), ("Bottletree", "Bottletree", "BottletreeLog", "Bottletree Log"),
+    ("Burnt", "Burnt", "BurntLog", "Burnt Log"), ("Camphor", "Camphor", "CamphorLog", "Camphor Log"), ("Cedar", "Cedar", "CedarLog", "Cedar Log"),
+    ("Dry", "Dry", "DryLog", "Dry Log"), ("FigBlue", "Fig_Blue", "FigBlueLog", "Blue Fig Log"), ("Fir", "Fir", "FirLog", "Fir Log"),
+    ("Jungle", "Jungle", "JungleLog", "Jungle Log"), ("Palm", "Palm", "PalmLog", "Palm Log"), ("Palo", "Palo", "PaloLog", "Palo Log"),
+    ("Windwillow", "Windwillow", "WindwillowLog", "Windwillow Log"), ("WisteriaWild", "Wisteria_Wild", "WisteriaWildLog", "Wild Wisteria Log"),
+    ("Amber", "Amber", "AmberLog", "Amber Log"), ("Azure", "Azure", "AzureLog", "Azure Log"), ("CrystalLog", "Crystal", "CrystalLog", "Crystalwood Log"),
+    ("Fire", "Fire", "FireLog", "Fire Log"), ("IceLog", "Ice", "IceLog", "Frostwood Log"), ("Petrified", "Petrified", "PetrifiedLog", "Petrified Log"),
+    ("Poisoned", "Poisoned", "PoisonedLog", "Poisoned Log"), ("Spiral", "Spiral", "SpiralLog", "Spiral Log"),
+    ("Stormbark", "Stormbark", "StormbarkLog", "Stormbark Log"))] + [
+    ("Sandstone",   "I", "Rock_Sandstone_Cobble",     "Sandstone",   3, "Mining", "Enchanted Sandstone",    ("cube", "Rock_Sandstone_Cobble")),
+    ("Shale",       "I", "Rock_Shale_Cobble",         "Shale",       3, "Mining", "Enchanted Shale",        ("cube", "Rock_Shale_Cobble")),
+    ("Slate",       "I", "Rock_Slate_Cobble",         "Slate",       3, "Mining", "Enchanted Slate",        ("cube", "Rock_Slate_Cobble")),
+    ("Basalt",      "I", "Rock_Basalt_Cobble",        "Basalt",      3, "Mining", "Enchanted Basalt",       ("cube", "Rock_Basalt_Cobble")),
+    ("Volcanic",    "I", "Rock_Volcanic_Cobble",      "Volcanic",    3, "Mining", "Enchanted Volcanic Rock", ("cube", "Rock_Volcanic_Cobble")),
+    ("Marble",      "I", "Rock_Marble_Cobble",        "Marble",      3, "Mining", "Enchanted Marble",       ("cube", "Rock_Marble_Cobble")),
+    ("Quartzite",   "I", "Rock_Quartzite_Cobble",     "Quartzite",   3, "Mining", "Enchanted Quartzite",    ("cube", "Rock_Quartzite_Cobble")),
+    ("Limestone",   "I", "Rock_Lime_Cobble",          "Limestone",   3, "Mining", "Enchanted Limestone",    ("cube", "Rock_Lime_Cobble")),
+    ("Ice",         "I", "Rock_Ice",                  "Ice",         3, "Mining", "Enchanted Ice",          ("cube", "Rock_Ice")),
+    ("Salt",        "I", "Rock_Salt",                 "Salt",        3, "Mining", "Enchanted Salt",         ("cube", "Rock_Salt")),
+    ("Sand",        "R", "Sands",                     "Sand",        3, "Mining", "Enchanted Sand",         ("cube", "Soil_Sand")),
+    ("Clay",        "I", "Soil_Clay",                 "Clay",        3, "Mining", "Enchanted Clay",         ("cube", "Soil_Clay")),
+    ("Silver",      "I", "Ingredient_Bar_Silver",     "Silver",      3, "Mining", "Enchanted Silver Ingot", ("ingot", "Ingredient_Bar_Silver")),
+    ("Gold",        "I", "Ingredient_Bar_Gold",       "Gold",        3, "Mining", "Enchanted Gold Ingot",   ("ingot", "Ingredient_Bar_Gold")),
+    ("Mithril",     "I", "Ingredient_Bar_Mithril",    "Mithril",     2, "Mining", "Enchanted Mithril Ingot", ("ingot", "Ingredient_Bar_Mithril")),
+    ("Crystal",     "R", "Crystal_Shards",            "Crystal",     3, "Mining", "Enchanted Crystal Shards", ("ingot", "Ingredient_Crystal_Blue")),
+    ("Gemstone",    "I", "Rock_Gem_Diamond",          "Gemstone",    2, "Mining", "Enchanted Diamond",      ("crop", "Rock_Gem_Diamond")),
+    ("Bone",        "I", "Ingredient_Bone_Fragment",  "Bone",        3, "Combat", "Enchanted Bone",         ("ingot", "Ingredient_Bone_Fragment")),
+    ("Linen",       "I", "Ingredient_Fabric_Scrap_Linen", "Linen",   3, "Combat", "Enchanted Linen",        ("ingot", "Ingredient_Fabric_Scrap_Linen")),
+    ("HideLight",   "I", "Ingredient_Hide_Light",     "HideLight",   3, "Smithing", "Enchanted Light Hide", ("ingot", "Ingredient_Hide_Light")),
+    ("HideMedium",  "I", "Ingredient_Hide_Medium",    "HideMedium",  3, "Smithing", "Enchanted Medium Hide", ("ingot", "Ingredient_Hide_Medium")),
+    ("HideHeavy",   "I", "Ingredient_Hide_Heavy",     "HideHeavy",   3, "Smithing", "Enchanted Heavy Hide", ("ingot", "Ingredient_Hide_Heavy")),
+    ("Wool",        "I", "Ingredient_Fabric_Scrap_Wool", "Wool",     3, "Combat", "Enchanted Wool",         ("ingot", "Ingredient_Fabric_Scrap_Wool")),
+    ("Feathers",    "I", "Ingredient_Feathers_Light", "Feathers",    3, "Combat", "Enchanted Feather",      ("ingot", "Ingredient_Feathers_Light")),
+    ("Chitin",      "I", "Ingredient_Chitin_Sturdy",  "Chitin",      3, "Combat", "Enchanted Chitin",       ("ingot", "Ingredient_Chitin_Sturdy")),
+    ("Venom",       "I", "Ingredient_Sac_Venom",      "Venom",       3, "Combat", "Enchanted Venom Sac",    ("ingot", "Ingredient_Sac_Venom")),
+    ("Shadoweave",  "I", "Ingredient_Fabric_Scrap_Shadoweave", "Shadoweave", 3, "Combat", "Enchanted Shadoweave", ("ingot", "Ingredient_Fabric_Scrap_Shadoweave")),
+    ("Cindercloth", "I", "Ingredient_Fabric_Scrap_Cindercloth", "Cindercloth", 3, "Combat", "Enchanted Cindercloth", ("ingot", "Ingredient_Fabric_Scrap_Cindercloth")),
+    ("FireEssence", "I", "Ingredient_Fire_Essence",   "FireEssence", 3, "Combat", "Enchanted Essence of Fire", ("ingot", "Ingredient_Fire_Essence")),
+    ("IceEssence",  "I", "Ingredient_Ice_Essence",    "IceEssence",  3, "Combat", "Enchanted Essence of Ice", ("ingot", "Ingredient_Ice_Essence")),
+    ("VoidEssence", "I", "Ingredient_Void_Essence",   "VoidEssence", 3, "Combat", "Enchanted Essence of the Void", ("ingot", "Ingredient_Void_Essence")),
+    ("LightningEssence", "I", "Ingredient_Lightning_Essence", "LightningEssence", 2, "Combat", "Enchanted Essence of Lightning", ("ingot", "Ingredient_Lightning_Essence")),
+    ("Voidheart",   "I", "Ingredient_Voidheart",      "Voidheart",   2, "Combat", "Enchanted Voidheart",    ("ingot", "Ingredient_Voidheart")),
+    ("BoomPowder",  "I", "Ingredient_Powder_Boom",    "BoomPowder",  3, "Combat", "Enchanted Boom Powder",  ("ingot", "Ingredient_Powder_Boom")),
+]
+TABLE_20 = list(TABLE)          # the first 20 rows (0.2.11 - 0.2.20) - frozen tables of older rounds read only these
+TABLE = TABLE + TABLE_C1
 KEYS = [t[0] for t in TABLE]
 IDS = [PREFIX + k for k in KEYS]
 RIDS = [i + RECIPE_SUFFIX for i in IDS]
-CATS = ("Mining", "Foraging", "Farming")
-assert len(TABLE) == 20 and len(set(KEYS)) == 20 and all(t[5] in CATS for t in TABLE)          # tools01: + the Enchanted Stick (was 19)
+CATS = ("Mining", "Foraging", "Farming", "Combat", "Smithing")          # C1: + Combat / Smithing (the mob-drop collections)
+assert len(TABLE_20) == 20 and len(TABLE) == 103 and len(set(KEYS)) == 103 and all(t[5] in CATS for t in TABLE)   # C1: 20 + 83
+assert len(set(t[3] for t in TABLE)) == 103, "one Enchanted item per collection"
 assert all(t[1] in ("I", "R") and 1 <= t[4] <= 3 for t in TABLE)
 for _t in TABLE:
     assert all(c.isalnum() for c in _t[0]) and '"' not in _t[6] and "\\" not in _t[6] and "|" not in _t[6], _t
@@ -182,6 +264,20 @@ def _inh(items, i, k):
     return None
 
 
+def _btk(items, i, k):
+    """C1: the first BlockType along the Parent chain that has key k (the 20 rows of 0.2.20 find it on the item itself - same bytes)"""
+    seen = set()
+    x = items.get(i)
+    while x is not None and i not in seen:
+        seen.add(i)
+        bt = x.get("BlockType")
+        if isinstance(bt, dict) and k in bt:
+            return bt[k]
+        i = x.get("Parent")
+        x = items.get(i) if i else None
+    return None
+
+
 def _cube_model(z, SA):
     """the Enchanted cube model: Assets.zip Blocks/Structures/Base_Shapes/Cube_Overlay.blockymodel (ONE 32-unit box) re-laid out at build
     time: the four sides read the texture's left 32x32, top + bottom its right 32x32, the box drawn at half a block (stretch 0.5)"""
@@ -226,7 +322,8 @@ def build_assets(z, SA):
         elif lk == "cube":
             bt = _inh(items, base, "BlockType")
             t0 = bt["Textures"][0]
-            side, top = SA.png_decode(SA._read(z, t0["Sides"])), SA.png_decode(SA._read(z, t0["UpDown"]))
+            sp, tp = (t0["Sides"], t0["UpDown"]) if "Sides" in t0 else (t0["All"], t0["All"])          # C1: one texture on every face
+            side, top = SA.png_decode(SA._read(z, sp)), SA.png_decode(SA._read(z, tp))
             assert (side.w, side.h, top.w, top.h) == (32, 32, 32, 32), (key, side.w, side.h, top.w, top.h)
             atlas = SA.Img(64, 32)
             for y in range(32):
@@ -238,9 +335,8 @@ def build_assets(z, SA):
             props = {"Scale": 1, "Translation": [0, -3], "Rotation": [22.5, 45, 22.5]}
             sound = _inh(items, base, "ItemSoundSetId")
         else:   # rubble / crop: the vanilla block's own CustomModel + a shiny copy of its first texture
-            bt = _inh(items, base, "BlockType")
-            model = bt["CustomModel"]
-            tex = SA.png_encode(_shine(SA.png_decode(SA._read(z, bt["CustomModelTexture"][0]["Texture"])), False))
+            model = _btk(items, base, "CustomModel")
+            tex = SA.png_encode(_shine(SA.png_decode(SA._read(z, _btk(items, base, "CustomModelTexture")[0]["Texture"])), False))
             props = _inh(items, base, "IconProperties") or {"Scale": 1, "Translation": [0, -3], "Rotation": [22.5, 45, 22.5]}
             sound = _inh(items, base, "ItemSoundSetId")
         files["Common/" + tex_rel] = tex
@@ -301,6 +397,24 @@ BASE_LABEL = {"Cobblestone": "Cobblestone", "Rubble": "stone Rubble (any kind bu
               "Maple": "Maple Logs", "Gumboab": "Gumboab Logs", "Redwood": "Redwood Logs", "Sallow": "Sallow Logs", "Wheat": "Wheat",
               "Carrot": "Carrots", "Cauliflower": "Cauliflowers", "Pumpkin": "Pumpkins", "Tomato": "Tomatoes", "Cotton": "Cotton",
               "Potato": "Potatoes", "Stick": "Sticks"}
+# C1 (0.2.21): the base of every new row, as the description says it ("100 <label> pressed into one")
+BASE_LABEL.update({"Corn": "Corn", "Lettuce": "Lettuce", "Onion": "Onions", "Turnip": "Turnips", "Aubergine": "Aubergines",
+                   "Chilli": "Chillies", "Rice": "Rice", "Berries": "Wild Berries", "Apple": "Apples", "WildFruit": "Coconuts",
+                   "Mushroom": "Brown Cap Mushrooms", "Cactus": "Cactus Bottoms", "Seeds": "Wheat Seed Bags", "LifeEssence": "Essence of Life",
+                   "Petals": "Blood Petals", "RawChicken": "Raw Chicken", "RawBeef": "Raw Beef", "RawPork": "Raw Pork",
+                   "Wildmeat": "Raw Wildmeat", "Fiber": "Plant Fiber", "TreeSap": "Tree Sap",
+                   "Sandstone": "Sandstone Cobble", "Shale": "Shale Cobble", "Slate": "Slate Cobble", "Basalt": "Basalt Cobble",
+                   "Volcanic": "Volcanic Cobble", "Marble": "Marble Cobble", "Quartzite": "Quartzite Cobble", "Limestone": "Limestone Cobble",
+                   "Ice": "Ice blocks", "Salt": "Salt Blocks", "Sand": "Sand (any colour)", "Clay": "Clay", "Silver": "Silver Ingots",
+                   "Gold": "Gold Ingots", "Mithril": "Mithril Ingots", "Crystal": "Crystal Shards (any colour)", "Gemstone": "Diamonds",
+                   "Bone": "Bone Fragments", "Linen": "Linen Scraps", "HideLight": "Light Hides", "HideMedium": "Medium Hides",
+                   "HideHeavy": "Heavy Hides", "Wool": "Wool Scraps", "Feathers": "White Feathers", "Chitin": "Sturdy Chitin",
+                   "Venom": "Venom Sacs", "Shadoweave": "Shadoweave Scraps", "Cindercloth": "Cindercloth Scraps",
+                   "FireEssence": "Essence of Fire", "IceEssence": "Essence of Ice", "VoidEssence": "Essence of the Void",
+                   "LightningEssence": "Essence of Lightning", "Voidheart": "Voidhearts", "BoomPowder": "Boom Powder"})
+for _t in TABLE_C1:
+    if _t[7][1].startswith("Wood_"):
+        BASE_LABEL.setdefault(_t[0], _t[6][len("Enchanted "):] + "s")
 assert sorted(BASE_LABEL) == sorted(KEYS)
 # ench01fix: the Rubble recipe takes ResourceTypeId "Rubble" = Rubble_Stone and every Rubble_* whose Parent is Rubble_Stone, EXCEPT
 # Rubble_Ice(_Medium) (type Ice) and Rubble_Dawnstone(_Medium) (no parent, no type); the Rubble COLLECTION still counts all of them.
@@ -316,7 +430,7 @@ def tab_icon_path():
 
 
 def check_assets(files, z):
-    """build checks: every TABLE item (20 since tools01), one quality, every Model / Texture / Icon / sound / particle / quality texture exists in Assets.zip or the
+    """build checks: every TABLE item (20 since tools01, 103 since C1), one quality, every Model / Texture / Icon / sound / particle / quality texture exists in Assets.zip or the
     jar, no vanilla path replaced, the recipe = RATIO x the base, KnowledgeRequired, the Compressing tab, no reverse recipe in the jar"""
     names = set(z.namelist())
 

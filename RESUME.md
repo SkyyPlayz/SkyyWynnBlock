@@ -37,6 +37,9 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    d. Void Particles rebirth currency (spec update research/cloud/Rebirth-Spec.md, then a rebirth round).
    e. Totem workers scale + totem Fortune + totem page with upgrades + AUGMENT slots (Compactor, Chrono Stasis), totem-workbench crafting;
       totem tier-up costs by totem kind; REMOVE the MoreTotems fold (spec first).
+   i. NEXT ROUNDS for C1: Bazaar 0.1.17 lists the 83 new Enchanted items - FIRST size the collection gifts to item value (critic: up to ~40 Enchanted
+      Mithril free) or keep gift items off market; freeze NEW0116 to TABLE_20; ResourceTypeId recipe pricing; Sacks rebuild (homes for 103 rows,
+      Combat / Smithing cats); Gear T1 reads coll:fn:toolPts + coll:tierups (Anvil gate); switch SkyyArmory's own boss Sigil roll off.
    g. BEASTMASTERY skill (skills.md 10-16): spec then Skills + Trees + Pets rounds.
    h. Gathering stat lines on gear rolls / accessories / pets (gear.md GATHERING STAT SOURCES); four-power-sources rule.
    f. Small rounds: Exploration names (Loot Bag / Lost Treasure / Magic Box); /spawn for players (WorldGen 0.7.2); guild names with symbols;

@@ -63,12 +63,12 @@ ok(TT.described("Plant_Crop_Wheat_Item", "") == "T2 Copper" and TT.described("Pl
 ok(TT.described("Wood_Oak_Trunk", "  x  ") == "T2 Copper - x", "described trims")
 
 # ---- counts (plan 1.2)
-COUNTS = {"ore": 7, "bar": 8, "log": 34, "crop": 14, "seed": 28, "enchanted": 18, "tool": 34, "armory": 11,
-          "can": 6, "harvester": 4}          # tools01: enchanted 17 -> 18 (+ the Enchanted Stick); SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
+COUNTS = {"ore": 7, "bar": 8, "log": 34, "crop": 14, "seed": 28, "enchanted": 55, "tool": 34, "armory": 11,
+          "can": 6, "harvester": 4}          # tools01: enchanted 17 -> 18 (+ the Enchanted Stick); C1 (SkyyCollections 0.2.21): 18 -> 55 (37 own items on a tiered base); SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
 for f, n in COUNTS.items():
     ok(len(TT.ids_in(f)) == n, "family %s has %d ids, want %d" % (f, len(TT.ids_in(f)), n))
 ok(set(TT.families()) == set(COUNTS), "families: %s" % TT.families())
-ok(len(TT.ids_for("SkyyCollections")) == 7 + 8 + 34 + 14 + 28 + 18, "SkyyCollections owns %d" % len(TT.ids_for("SkyyCollections")))
+ok(len(TT.ids_for("SkyyCollections")) == 7 + 8 + 34 + 14 + 28 + 55, "SkyyCollections owns %d" % len(TT.ids_for("SkyyCollections")))
 ok(TT.ids_for("SkyyGear") == sorted(TT.ids_in("tool") + TT.ids_in("can") + TT.ids_in("harvester")) and TT.ids_for("SkyyArmory") == TT.ids_in("armory"), "owners")
 ok(sorted(TT.OWN_IDS) == sorted(TT.ids_in("can") + TT.ids_in("harvester")) and TT.tag_for("Tool_WaterCan_Crude") == "T1 Crude"
    and TT.tag_for("Tool_WaterCan_Iron") == "T3 Iron" and TT.tag_for("Tool_WaterCan_Adamantite") == "T6 Adamantite"

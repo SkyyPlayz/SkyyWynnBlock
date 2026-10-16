@@ -138,6 +138,14 @@ ENCH_BASE = (("Copper", "Ingredient_Bar_Copper"), ("Iron", "Ingredient_Bar_Iron"
 ENCH_UNTAGGED = ("Skyy_Ench_Cobblestone", "Skyy_Ench_Rubble")
 for _k, _b in ENCH_BASE:
     _add("Skyy_Ench_" + _k, ROWS[_b][0], "enchanted", "SkyyCollections")
+# round C1 (SkyyCollections 0.2.21, Skyy 2026-10-16 "Own items now"): every collection's own Enchanted item (tools/skyyench.py TABLE_C1) takes
+# the tier of its base when the base has one here (logs, crops, the Mithril ingot, wheat seeds); stone / sand / fruit / meat / mob drops /
+# Silver / Gold stay untagged (Skyy "Leave untagged" for things the design gives no tier)
+import skyyench as _EN        # pure Python table, no game files at import
+ENCH_C1 = tuple((_t[0], _t[2]) for _t in _EN.TABLE_C1 if _t[1] == "I" and _t[2] in ROWS)
+for _k, _b in ENCH_C1:
+    _add("Skyy_Ench_" + _k, ROWS[_b][0], "enchanted", "SkyyCollections")
+ENCH_UNTAGGED = ENCH_UNTAGGED + tuple("Skyy_Ench_" + _t[0] for _t in _EN.TABLE_C1 if (_t[0], _t[2]) not in ENCH_C1)
 # round tools01 (Skyy 2026-10-16 "make enchanted sticks too"): the Enchanted Stick. Its base (Ingredient_Stick) has no row (sticks are a wood
 # starter material: no vanilla Description key to tag), so its tier is set here: T1 Crude (sticks = the Crude sickle's / bare hands' material)
 ENCH_OWN = {"Skyy_Ench_Stick": 1}
