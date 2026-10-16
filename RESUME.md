@@ -11,7 +11,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    + workflow cls0130 (SkyyClasses 0.1.30 + SkyyTrees 0.3.18: top-down class tree, abilities at their unlock depth, modifiers out of
      the tree (auto-unlock, AP refunded, slots open with the ability), every ability / modifier says what it does; classes.md 10-16)
    + workflow menu0330 (SkyyMenu 0.3.30: no duplicate icons / entries, menu scaled up, Home 'Right now' panel + the queued Menu items; ui.md 10-16) [BEFORE PIN: HUD shortcut opens the HUD editor directly, ui.md 10-16]; if this
-   session died, check their scratch / files, review, pin, deploy. PINNED, NOT DEPLOYED: SkyyEssentials 0.1.11 (crop fix; smoke + deploy when the game closes). SkyyHud 0.3.28 DEPLOYED 10-16 07:29 (TEST 139). Last deploys: 10-15 23:14 (TEST-CHECKLIST 137) and 10-16 05:31 (138).
+   session died, check their scratch / files, review, pin, deploy. SkyyEssentials 0.1.11 (crop fix) DEPLOYED 10-16 07:38 (TEST 140). SkyyHud 0.3.28 DEPLOYED 10-16 07:29 (TEST 139). Last deploys: 10-15 23:14 (TEST-CHECKLIST 137) and 10-16 05:31 (138).
 4. Kit `tools/skyyui.py` is now kit 1.6 (KIT_HUB_VERSION 1.6, KIT_VERSION still "1.5"): builds no longer need the old HEAD-kit preload.
 5. Rounds: saved workflow `skywynn-round` (Skyy's OWN words + the popup question in args.quotes; resuming a workflow needs the args
    again). Deploy only with the game closed: backup -> smoke (`--allow-pack-api`) -> deploy_set --yes -> record_deploy -> commit -> tidy.
@@ -42,6 +42,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    (SkyyGear /smithing) + Furnace ADD FUEL picker sorted by amount owned (keep the quick bar) + every /craft tab sorted by tier (farming: crop, Enchanted, seeds, Eternal). Round after menu0330 + fish018 (Menu + Sacks + Gear).
 1f2. **SMELTING ACCESSORY** (gear.md 10-16): faster smelting, more fuel per tier; max tier -> infinite-fuel variant via the Charcoal collection.
    Short spec, then a round after the Crafting hub (Accessories + Sacks furnace + Collections).
+1f4. **BENCHES USE THE ACCESSORY BAG** (bags.md 10-16): next-tier accessory crafting counts + takes accessories from the Accessory Bag. After fish018.
 1f3. **MOVEMENT vs THE ARMORY** (log scan 10-16): Armory's JumpHeightModifierSystem writes MovementSettings -> our speed/jump bonuses pause.
    Make our movement protocol compose with it (SkyyCore / Skills / Accessories / Trees applier, no Armory file changes) + find the 230 client
    'Equipment packet on the local player' WARNs. Lean/full round after cls0130 + gear0312.

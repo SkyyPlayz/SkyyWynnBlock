@@ -254,3 +254,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Big batch: Battlemagic, health regen, fortune, tools tab, pets, tier tags, starter bag, cave, kunai, trees (DEPLOYED 2026-10-15, backup deploy-20261015-2314) | [2026-10](2026-10.md) |
 | Batch 2: unified menu, upgrade tab, sickle, fishing pole, spellblade rush + guard, bag crafting, requip slots, bag rebalance, bazaar confirm + prices, zone 1 islets (DEPLOYED 2026-10-16, backup deploy-20261016-0531) | [2026-10](2026-10.md) |
 | HUD backgrounds off by default (DEPLOYED 2026-10-16, backup deploy-20261016-0729) | [2026-10](2026-10.md) |
+| Crops back (Dynamic Seasons fix) (DEPLOYED 2026-10-16, backup deploy-20261016-0738) | [2026-10](2026-10.md) |
