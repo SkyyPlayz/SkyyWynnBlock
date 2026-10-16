@@ -22,6 +22,9 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   + accraft Accessories 0.5.21 (craft + upgrade only in the Accessory Bag: next step per line, sub tabs Benches / Combat / Gathering; gear.md 10-16).
   + spec research/Accessory-Power-Spec.md being written (AP by rarity, pick 1 of 5 combat + 4 gathering Powers; bag grid like pets) -> build
   SkyyAccessories 0.5.22 after accraft (gear.md 10-16).
+  + petmenu Pets 0.4.1 (Pets / Eggs / Hatchery tabs, timed hatch slots, fuse pets + eggs, right-click hatch off; pets.md 10-16).
+  FIRST AFTER hubcoll: SkyySacks 0.8.14 = Void homes for the 103 Enchanted rows (Skyy bug: deposit skips them) + crafting page rows/scroll (k).
+  Accessory-Power-Spec.md written (6 questions for Skyy) -> AP1 after accraft.
   So T1 becomes Skills 0.4.46, Enchanted listing Bazaar 0.1.18. Mod compression AFTER (sections stay separate - docs/answered/project.md 10-16).
 - Last deploy: Nothing else running. Deployed 10-16 14:44 (TEST-CHECKLIST 154): Skills 0.4.44 (dodge), Rebirth 0.3.4 (ON), Exploration 0.2.12, WorldGen 0.7.2 (/spawn),
   Cooking 0.1.9, Guilds 0.1.10, Collections 0.2.21 (redesign C1), Gear 0.3.14 (one Harvester, Crude full on wheat, Sigils) + Armory 0.1.30
