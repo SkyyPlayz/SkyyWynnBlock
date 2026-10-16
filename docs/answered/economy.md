@@ -119,3 +119,6 @@ New answers go in the 'New answers' block at the end and leave OPEN-QUESTIONS.md
 - 2026-10-14 popup REBIRTH coin factor (built x0.9; economy audit said x0.8): "0.8 per rebirth (Recommended)" -> rebirth.coinFactor default 0.8 (80%, 64% ... ~11% after 10).
 - 2026-10-14 popup ALT TRANSFERS: "Block them (Recommended)" -> /pay and AH buys between profiles of the SAME account are refused; trading with other players unchanged.
 - 2026-10-15 SAP BOOST: Skyy (after "where is the lantern accessory?" -> Tree Sap collection I = 50 sap) "lets slightly boost sap drops to make T1 easier and faster to unlock" -> a small base chance of Tree Sap per chopped natural log on top of vanilla sap and the Sap Tapper perk (Server Setup row), tuned so Tree Sap I (50) comes in roughly 20-30 trees; lean round trees0314.
+- 2026-10-15 MOVED from OPEN-QUESTIONS.md (no longer a question; covered by research/Economy-Audit-1014.md): 
+- NOTE 2026-10-02 (same review): with the flatter class curve, class level-up coins arrive much faster (xp.properties coinsPerLevel). Your live profiles gained nothing (little class XP yet); check the coin rate before a public launch.
+
