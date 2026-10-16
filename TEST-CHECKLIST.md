@@ -178,3 +178,4 @@ tests always come first.
 150. Pet eggs (30), two-reel hatching, round egg model, Pets page grid / hover stats / filters
 151. Normal tools off everywhere, Enchanted Sticks, collection rewards swapped, Great Shield, Crescent Rush lunge, Mage blink trail, Warrior dash
 152. Lifelong Accessory Bag / Pocket Dimension / Menu item (/accbag /pocket /menuitem), no 2nd bag on reset, Enchanted Stick in Foraging bag
+153. Arcane Breach flying arc (6.5 blocks, 1.4x, 5 s), Stacks HUD widget
