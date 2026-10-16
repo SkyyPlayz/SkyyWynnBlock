@@ -65,12 +65,16 @@ TABLE = [
     ("Tomato",      "I", "Plant_Crop_Tomato_Item", "Tomato",      3, "Farming",  "Enchanted Tomato",           ("crop", "Plant_Crop_Tomato_Item")),
     ("Cotton",      "I", "Plant_Crop_Cotton_Item", "Cotton",      3, "Farming",  "Enchanted Cotton",           ("crop", "Plant_Crop_Cotton_Item")),
     ("Potato",      "I", "Plant_Crop_Potato_Item", "Potato",      3, "Farming",  "Enchanted Potato",           ("crop", "Plant_Crop_Potato_Item")),
+    # round tools01 (Skyy 2026-10-16 "make enchanted sticks too, and require them in the later tool upgrades."): same ratio + place as the
+    # others (100 Sticks -> 1, Workbench Compressing tab, unlocked at Stick collection tier III); the stick is an item (no block) -> the
+    # "ingot" look path (its own model + a shiny copy of its texture). Its Void category is Foraging (SkyySacks reads this table at build).
+    ("Stick",       "I", "Ingredient_Stick",       "Stick",       3, "Foraging", "Enchanted Stick",            ("ingot", "Ingredient_Stick")),
 ]
 KEYS = [t[0] for t in TABLE]
 IDS = [PREFIX + k for k in KEYS]
 RIDS = [i + RECIPE_SUFFIX for i in IDS]
 CATS = ("Mining", "Foraging", "Farming")
-assert len(TABLE) == 19 and len(set(KEYS)) == 19 and all(t[5] in CATS for t in TABLE)
+assert len(TABLE) == 20 and len(set(KEYS)) == 20 and all(t[5] in CATS for t in TABLE)          # tools01: + the Enchanted Stick (was 19)
 assert all(t[1] in ("I", "R") and 1 <= t[4] <= 3 for t in TABLE)
 for _t in TABLE:
     assert all(c.isalnum() for c in _t[0]) and '"' not in _t[6] and "\\" not in _t[6] and "|" not in _t[6], _t
@@ -296,7 +300,7 @@ BASE_LABEL = {"Cobblestone": "Cobblestone", "Rubble": "stone Rubble (any kind bu
               "Thorium": "Thorium Ingots", "Cobalt": "Cobalt Ingots", "Adamantite": "Adamantite Ingots", "Oak": "Oak Logs",
               "Maple": "Maple Logs", "Gumboab": "Gumboab Logs", "Redwood": "Redwood Logs", "Sallow": "Sallow Logs", "Wheat": "Wheat",
               "Carrot": "Carrots", "Cauliflower": "Cauliflowers", "Pumpkin": "Pumpkins", "Tomato": "Tomatoes", "Cotton": "Cotton",
-              "Potato": "Potatoes"}
+              "Potato": "Potatoes", "Stick": "Sticks"}
 assert sorted(BASE_LABEL) == sorted(KEYS)
 # ench01fix: the Rubble recipe takes ResourceTypeId "Rubble" = Rubble_Stone and every Rubble_* whose Parent is Rubble_Stone, EXCEPT
 # Rubble_Ice(_Medium) (type Ice) and Rubble_Dawnstone(_Medium) (no parent, no type); the Rubble COLLECTION still counts all of them.
@@ -312,7 +316,7 @@ def tab_icon_path():
 
 
 def check_assets(files, z):
-    """build checks: 19 items, one quality, every Model / Texture / Icon / sound / particle / quality texture exists in Assets.zip or the
+    """build checks: every TABLE item (20 since tools01), one quality, every Model / Texture / Icon / sound / particle / quality texture exists in Assets.zip or the
     jar, no vanilla path replaced, the recipe = RATIO x the base, KnowledgeRequired, the Compressing tab, no reverse recipe in the jar"""
     names = set(z.namelist())
 
