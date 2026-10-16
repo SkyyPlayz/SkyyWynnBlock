@@ -182,3 +182,4 @@ tests always come first.
 154. Dodge every way (backwards too), Rebirth on, Loot Bag / Magic Box, /spawn, food Strength, guild symbols, collections redesign, one Harvester (Crude full on wheat), one boss Sigil roll
 155. Menu merges (Character / Vault / Market / Collections recipes), one food = one bar, accessory crafting in the bag
 156. Deposit All takes all Enchanted, /craft scroll list + big rows, no accessories in /craft, Void upgrade without level
+157. Crafting hub tabs + big top row on Smithing, Upgrade buttons, pets Eggs + Hatchery
