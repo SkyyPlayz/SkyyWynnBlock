@@ -8,21 +8,20 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 2. DEPLOY TARGET = world **NewBetaTest** (`tools/deploy_set.py` WORLD). Skyy plays with a friend (WesleyPlayz, Assassin).
 3. Deployed 10-16 (TEST-CHECKLIST 139-146): Hud 0.3.28, Essentials 0.1.11 (crops back - DynamicSeasons Compost_Soft), Menu 0.3.30, Cooking 0.1.8
    (food families), Fishing 0.1.8 + Sacks 0.8.10 + Shards 0.4.1, Classes 0.1.30 + Trees 0.3.18 (top-down tree), Bazaar 0.1.15 (x4.5 prices,
-   sell per tab), Gear 0.3.12 (watering can + Harvester), Wardrobe 0.2.4 (Requip loadout rows, TEST 147), Sacks 0.8.11 + Accessories 0.5.19 + Menu 0.3.31 (Crafting hub, TEST 148), WorldGen 0.7.1 (Zone 1 spawn, TEST 149). deploy_set rules added: Sacks 0.8.10 needs Fishing 0.1.8; Trees 0.3.18 <-> Classes 0.1.30.
+   sell per tab), Gear 0.3.12 (watering can + Harvester), Wardrobe 0.2.4 (Requip loadout rows, TEST 147), Sacks 0.8.11 + Accessories 0.5.19 + Menu 0.3.31 (Crafting hub, TEST 148), WorldGen 0.7.1 (Zone 1 spawn, TEST 149), Pets 0.4.0 (eggs, TEST 150), Gear 0.3.13 + Collections 0.2.20 + Bazaar 0.1.16 +
+   Armory 0.1.29 + Classes 0.1.31 (normal tools off, Enchanted Sticks, Great Shield, Crescent Rush lunge, TEST 151). deploy_set rules added: Sacks 0.8.10 needs Fishing 0.1.8; Trees 0.3.18 <-> Classes 0.1.30.
 4. Rounds: while Skyy is chatting about other topics, run builders as PLAIN Agents (workflow builders refuse - memory note) and spawn the
    critics yourself; else the saved workflow `skywynn-round`. Deploy only with the game closed: backup -> smoke (`--allow-pack-api`) ->
    deploy_set --yes -> record_deploy -> commit -> tidy. Never SendMessage an agent inside a workflow; plain Agent builders can be messaged.
 
-## RUNNING NOW (plain Agent builders unless noted; if this session died: check their files, review, pin, deploy)
-- life01 Accessories / Sacks / Menu / Islands: lifelong Accessory Bag + Pocket Dimension + Menu item (recall commands), no 2nd copy on reset.
-- pets040 SkyyPets 0.4.0 = Pet Eggs R1 (eggs + hatching + Pets page grid / flavor text / filters). Art drafts in art/pet-eggs (sent to Skyy).
-- armory0129 SkyyArmory 0.1.29: Great Shield, Crescent Rush = pushing lunge, Mage teleport look, Warrior Thrust range.
-- tools01 SkyyGear 0.3.13 (+ Mobs / Exploration / Collections / Bazaar as needed): normal tools off everywhere (owned ones removed once)
-  + Enchanted Sticks for T4+ tool tier-ups.
+## RUNNING NOW (plain Agent builders; if this session died: check their files, review, pin, deploy)
+- life01 SkyyAccessories 0.5.20 + SkyySacks 0.8.12 + SkyyMenu 0.3.32 + SkyyIslands 0.5.17: lifelong Accessory Bag / Pocket / Menu item
+  (/accbag /pocket /menuitem), no 2nd copy on reset - built, critic running. REBUILD Sacks 0.8.12 against the now-committed tools/skyyench.py
+  (Enchanted Stick -> Foraging bag) before pinning.
+- sb01 SkyyClasses 0.1.32: Arcane Breach = horizontal slash + flying arc of light (6.5 blocks, 1.4x scaling, knockback, 5 s cooldown),
+  per-ability cooldown rows, class:fn:stacks bridge. SkyyHud 0.3.29 (Stacks widget) is BUILT and waits for it (deploy together).
 
 ## NEXT (after the running rounds; each answer word for word in docs/answered/)
-1. **Lifelong Accessory Bag / Pocket Dimension / Menu item + no 2nd bag on /island reset** (gear.md 10-16) - Accessories + Sacks + Menu +
-   Islands - NEXT to launch.
 2. **Movement vs The Armory** (log 10-16): Armory's JumpHeightModifierSystem writes MovementSettings -> our speed / jump bonuses pause. Make our
    movement protocol compose with it (SkyyCore / Skills / Accessories / Trees) + find the ~230 client 'Equipment packet on the local player' WARNs.
 3. **The Armory gear into our systems** (gear.md 10-16; research/Pack-Armor-Plan.md) - ultracode after tools01 (Gear + Mobs + loot).
