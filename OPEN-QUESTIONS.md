@@ -130,3 +130,10 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - GEAR: benches refuse vanilla Iron / Thorium / Cobalt / Adamantite armor and gathering tiers 2+ (Anvil tier-up only; row gear.gatherAnvilOnly)? [yes, ON]
 - THE ARMORY: its jump-height system writes jump force directly, so our speed / jump bonuses pause while it is on - keep The Armory on? [on until you decide]
 - SAP TAPPER: should the perk's extra Tree Sap count toward the Tree Sap collection (today only the base sap does)? [yes]
+
+## Pet eggs (research/Pet-Eggs-Spec.md, asked 2026-10-15)
+- Where can coins buy eggs? [Bazaar Common-Epic; Legendary only from merchants + Auction House; Mythic only player trade / drops]
+- Can pets be fused to Mythic? [no - Mythic only from eggs]
+- Add roster pets (e.g. Mosshorn, Bison to Farming) so each egg has a real best-to-worst spread? [yes]
+- Give collection eggs for tiers already reached when collection eggs ship? [yes, once]
+- Drop the old 10-10 zone / species egg idea? [yes]
