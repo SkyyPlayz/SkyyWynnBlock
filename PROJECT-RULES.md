@@ -102,6 +102,13 @@ Never leave finished work only in chat or memory.
   (remove the line once Skyy has tested it).
 - Class designs: one file per class in `research/classes/`; then `python tools/class_pages.py`.
 - `python tools/docs_check.py` must say OK before committing a docs move / split.
+- **Signposts for every agent** (Skyy 2026-10-16: "make sure just about everything in the repo includes the relevant instructions on where
+  to find things and where they go" + "I use grok bot for answering questions, curating designs, and bug test videos ... Everything goes same
+  as you do so nobody's lost or confused."): Claude, cloud sessions, Skyy's Grok bot and the design partner all navigate the repo the same way -
+  `INDEX.md` first, then the folder's `README.md` (what is here + where new things go; mod / top folders made by `python tools/make_readmes.py`
+  - re-run it after adding a mod), and every list / question file names where its answers go. A new folder or file type gets its signpost the
+  same day. Skyy: "So the files need to be structured for multiple agents that can't communicate" -> never rely on chat or memory to
+  hand work over: every state, decision and next step lives in a file another agent can find from `INDEX.md`.
 - **Keep it tidy:** new files go where `INDEX.md` says (add new places to INDEX.md); pack finished scratch the same day
   (`python tools/tidy_local.py --yes --scratch <name>`); `python tools/tidy_local.py --yes` after every deploy.
 - Skyy's ideas go into `research/*.md` even when "just ideas".
