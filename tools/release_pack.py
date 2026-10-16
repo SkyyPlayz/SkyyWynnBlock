@@ -75,8 +75,16 @@ def plan_mods():
         if mod in dict(D.SET) and mod in D.RETIRED:
             problems.append("retired mod in SET: %s" % mod); continue
         sha1, sha256 = hashes(jar)
+        man = D.B.jar_manifest(jar) or {}
         shipped.append(dict(name=mod, version=ver, file="Mods/%s-%s.jar" % (mod, ver), src=jar, sha1=sha1, sha256=sha256,
-                            size=os.path.getsize(jar)))
+                            size=os.path.getsize(jar), key=D.world_key_of(mod, ver),        # 2026-10-15: stable or versioned key
+                            deps=sorted((man.get("Dependencies") or {}).items())))
+    # SkyyCore era: a jar that depends on SkyyCore needs SkyyCore shipped too (deploy_set STOPs the same way)
+    keys = set(m["key"] for m in shipped)
+    for m in shipped:
+        for dk, rng in m["deps"]:
+            if dk not in keys:
+                problems.append("%s needs %s %s, which is not shipped" % (m["name"], dk, rng))
     return shipped, skipped, problems
 
 def scan_jars(shipped, asset_check):
@@ -114,6 +122,11 @@ def build_text(version, shipped, skipped, copied):
     a("INSTALL (server owner)"); a("1. Install the required third-party mods from CurseForge (links in MODS-LIST.txt). We do not ship their files.")
     a("   Recommended / optional ones (Dynamic Seasons, More Crossbow Tiers) only if you want them - their authors have not granted pack use yet.")
     a("2. Copy every jar in the Mods/ folder of this zip into your world's Mods folder (or the server Mods folder).")
+    core = [m for m in shipped if m["name"] == "SkyyCore"]
+    needs = [m["name"] for m in shipped if m.get("deps")]
+    if core or needs:
+        a("   SkyyCore %s is REQUIRED: it is the shared library %s depend on - without it those mods do not load."
+          % (core[0]["version"] if core else "(missing!)", ", ".join(needs) or "our mods"))
     a("3. Merge world-config-snippet.json into your world's config.json (the Mods section); it switches our mods on and the retired ones off.")
     a("4. Start the world once. Our mods write their own default config folders (Skyy_*) at first start - nothing is shipped in them.")
     a("5. Open the SkyWynn Menu (in game) > Server Setup to change every number. SkyyRebirth is OFF by default; turn it on there when ready.")
@@ -123,7 +136,8 @@ def build_text(version, shipped, skipped, copied):
     a(""); a("Source and licences: https://github.com/SkyyPlayz (our code is MIT, see LICENSES/).")
     readme = "\n".join(L) + "\n"
     M = ["SkyWynn %s - mods list" % version, "", "OUR JARS (in Mods/)  name  version  sha1"]
-    M += ["  %-18s %-8s %s" % (m["name"], m["version"], m["sha1"]) for m in shipped]
+    M += ["  %-18s %-8s %s%s" % (m["name"], m["version"], m["sha1"], ("  needs " + ", ".join("%s %s" % d for d in m["deps"]))
+                                  if m.get("deps") else "") for m in shipped]
     M += ["", "NOT SHIPPED (dev / test only): " + ", ".join("%s %s" % x for x in skipped), "",
           "THIRD-PARTY - install from CurseForge yourself (links only, files never bundled)"]
     for k, v in req + opt:
@@ -143,7 +157,7 @@ def build_text(version, shipped, skipped, copied):
 def world_snippet(shipped):
     mods = {}
     for m in shipped:
-        mods["Skyy:%s %s" % (m["version"], m["name"])] = {"Enabled": True}
+        mods[m.get("key") or "Skyy:%s %s" % (m["version"], m["name"])] = {"Enabled": True}   # the jar manifest's key
     for k in D.PACK_THIRD_PARTY:
         mods[k] = {"Enabled": True}
     for m in D.RETIRED:

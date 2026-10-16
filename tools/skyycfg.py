@@ -2968,10 +2968,14 @@ class Kit(object):
 
 
 def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", RELOAD=None, KEEP=10, ALIASES=(),
-         DEFAULTS=None, ITEMS=None, PERM_FN=None, ITEM_FN=None, HOLDERS=1):
+         DEFAULTS=None, ITEMS=None, PERM_FN=None, ITEM_FN=None, HOLDERS=1, CORE=False, HOME=None):
     """Checks the schema (spec 2.12 per-mod checks) and compiles CfgRows, CfgLog, CfgHist, CfgSaveTask, CfgFile, CfgFn, CfgPub into
     PKG. Returns a Kit; call kit.write(OUT) after the rest of the mod is compiled. PERM_FN / ITEM_FN are for the bare-JVM test
-    harness only: "<Class>.<method>" static boolean (java.util.UUID, String) / (String) used instead of PermissionsModule / Item."""
+    harness only: "<Class>.<method>" static boolean (java.util.UUID, String) / (String) used instead of PermissionsModule / Item.
+    CORE=True (2026-10-15, SkyyCore 1.0, tools/CORE-CONTRACT.md): the SAME checks, but instead of the seven kit classes the mod gets
+    ONE data class PKG.CfgData (+ CfgData1..n with HOLDERS) - its rows, files, defaults - and the kit code runs from SkyyCore's jar
+    (a private copy of the kit's state per mod, see core_template()). The pool must see SkyyCore (skyybuild.link_core(pool)).
+    HOME (CORE only) = the kit's folder under mods/ (config-history, config-changes.log); default "Skyy_" + MOD, as without CORE."""
     import jpype
     JClass = jpype.JClass
     CtField, CtNewMethod, CtNewConstructor, Mod = (JClass("javassist.CtField"), JClass("javassist.CtNewMethod"),
@@ -3292,6 +3296,11 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
     if reload_default:
         deferred.append((reload_default.rsplit(".", 1)[0], reload_default.rsplit(".", 1)[1], "()", "prefix", "RELOAD"))
     dfr = list(dict.fromkeys(deferred))
+    if HOME is not None and not CORE:
+        _fail("HOME is for CORE=True only (without SkyyCore the kit's folder is always Skyy_<MOD>)")
+    if CORE:
+        return _emit_core_data(pool, PKG, MOD, TITLE, VERSION, NODE, NOTE, KEEP, ALIASES, cats, rows, binds, files, defaults,
+                               reload_default, HOLDERS, PERM_FN, ITEM_FN, HOME, dfr)
     # ---------------------------------------------------------------- generate + compile
     n = len(rows)
     nf = len(files)
@@ -3477,3 +3486,346 @@ def emit(pool, PKG, MOD, TITLE, VERSION, NODE, CATS, ROWS, FILES=None, NOTE="", 
     info = {"rows": n, "files": files, "classes": [PKG + "." + c for c in CLASS_NAMES + tuple(hold_names)], "kit": KIT_VERSION,
             "holders": len(hold_names)}
     return Kit(pool, classes, dfr, info)
+
+
+# ================================================================================================================ SkyyCore mode
+# 2026-10-15, SkyyCore 1.0 (research/Architecture-Spec.md phase 1, tools/CORE-CONTRACT.md). The kit's seven classes are compiled ONCE,
+# into SkyyCore's jar (package com.skyy.core.cfg = the TEMPLATE). A mod built with emit(..., CORE=True) ships only its DATA (class
+# PKG.CfgData: rows, files, default lines). At run time SkyyCore's KitLoader defines a private copy of the seven template classes FOR
+# THAT MOD (a child class loader of the mod's own loader; the bytes come from SkyyCore's jar), so every mod keeps its own kit state
+# exactly as before - same files, same bridge contract (config:def / config:fn / config:epoch:<MOD>), same history and change log -
+# while a kit fix ships once, in SkyyCore. The template differs from a per-mod kit only where the per-mod kit had compile-time data:
+#   * CfgRows reads MOD / TITLE / ... / every row array / FILES / DL<f> from the mod's CfgData (reflection, once, in its static
+#     initialiser; the defining KitLoader names the data class) - so nothing is a compile-time constant any more;
+#   * CfgFile.NF / PENDV / RUNV take their sizes from those arrays;
+#   * the permission / item checks call an optional hook named in CfgData (PERMFN / ITEMFN, the bare-JVM harness only; empty = the
+#     engine's PermissionsModule / Item, exactly as emit() without PERM_FN / ITEM_FN);
+#   * CfgPub.start uses CfgRows.HOMEDIR (CfgData.HOMEDIR, default "Skyy_" + MOD = the old folder) and refuses to start a template copy
+#     that has no mod data (SkyyCore's own class loader: nothing is published).
+# Every Java line of the kit (ROWS_JAVA, LOG_JAVA, HIST_JAVA, TASK_JAVA, FILE_JAVA_*, FN_*, PUB_JAVA) is the SAME source as above.
+CORE_CFG_PKG = "com.skyy.core.cfg"
+CORE_LOADER = "com.skyy.core.KitLoader"
+CORE_CFG_HANDLE = "com.skyy.core.cfg.Cfg"
+CORE_TEXT = "com.skyy.core.cfg.CfgText"
+CORE_TEMPLATE = tuple(CORE_CFG_PKG + "." + c for c in CLASS_NAMES)
+CORE_DATA_STRINGS = ("MOD", "TITLE", "VERSION", "NODE", "FILES_CSV", "NOTE", "RELOAD")
+CORE_DATA_ROWS_S = ("KEYS", "LABELS", "CATS", "TYPES", "DEFS", "MINS", "MAXS", "OPTS", "UNITS", "FLAGS", "HELPS")
+CORE_DATA_ROWS_I = ("BK", "BF", "BFT", "BCONF", "BENT")
+CORE_DATA_ROWS_B = ("BCLS", "BNAME", "BFK", "BCK", "BAFTER", "BCHECK", "BSEP", "VTYPES")
+
+
+def _emit_core_data(pool, PKG, MOD, TITLE, VERSION, NODE, NOTE, KEEP, ALIASES, cats, rows, binds, files, defaults, reload_default,
+                    HOLDERS, PERM_FN, ITEM_FN, HOME, dfr):
+    """emit(..., CORE=True): the mod's PKG.CfgData (+ CfgData1..n holders) - every value the per-mod CfgRows held as a constant, under
+    the same field names - plus CfgData.kit(), the mod's handle on its private kit copy inside SkyyCore (never null, never throws)."""
+    import jpype
+    JClass = jpype.JClass
+    CtField, CtNewMethod = JClass("javassist.CtField"), JClass("javassist.CtNewMethod")
+    try:
+        pool.get(CORE_CFG_HANDLE)
+    except Exception:
+        _fail("CORE=True: the class pool does not see SkyyCore (%s) - call skyybuild.link_core(pool) before emit" % CORE_CFG_HANDLE)
+    home = ("Skyy_" + MOD) if HOME is None else str(HOME)
+    if not re.match(r"^[A-Za-z0-9_.\-]+(/[A-Za-z0-9_.\-]+)*$", home) or ".." in home.split("/"):
+        _fail("HOME %r must be a plain relative folder under mods/ (like Skyy_SkyyEconomy/bank)" % home)
+    hold = [] if HOLDERS == 1 else ["CfgData%d" % (h_ + 1) for h_ in range(HOLDERS)]
+    for name in ("CfgData",) + tuple(hold) + CLASS_NAMES:
+        try:
+            pool.get(PKG + "." + name)
+            _fail("%s.%s already exists in the pool (emit once per package; a CORE mod has no kit classes of its own)" % (PKG, name))
+        except CfgError:
+            raise
+        except Exception:
+            pass
+    cls = dict((nm, pool.makeClass(PKG + "." + nm)) for nm in ("CfgData",) + tuple(hold))
+
+    def F(c, src):
+        try:
+            cls[c].addField(CtField.make(src, cls[c]))
+        except Exception as e:
+            _fail("internal compile error in %s field: %s\n%s" % (c, e, src[:300]))
+
+    def M(c, src):
+        try:
+            cls[c].addMethod(CtNewMethod.make(src, cls[c]))
+        except Exception as e:
+            _fail("internal compile error in %s: %s\n%s" % (c, e, src[:600]))
+    n = len(rows)
+    col = lambda name: [r[name] for r in rows]
+    chunks = []
+    if hold:
+        step_ = -(-n // HOLDERS)
+        chunks = [list(range(a_, min(n, a_ + step_))) for a_ in range(0, n, step_)]
+        while len(chunks) < HOLDERS:
+            chunks.append([])
+        for jn_, jt_ in (("jS", "String"), ("jI", "int"), ("jL", "long")):
+            M("CfgData", "public static %s[] %s(%s[] a, %s[] b) { %s[] r = new %s[a.length + b.length]; System.arraycopy(a, 0, r, 0, a.length); "
+                         "System.arraycopy(b, 0, r, a.length, b.length); return r; }" % (jt_, jn_, jt_, jt_, jt_, jt_))
+
+    def row_arr(jtype, arr, vals, render):
+        if not hold:
+            F("CfgData", "public static final %s[] %s = %s;" % (jtype, arr, render(vals)))
+            return
+        for h_, ch_ in enumerate(chunks):
+            F(hold[h_], "public static final %s[] %s = %s;" % (jtype, arr, render([vals[i_] for i_ in ch_])))
+        jn_ = {"String": "jS", "int": "jI", "long": "jL"}[jtype]
+        ex_ = "%s.%s.%s" % (PKG, hold[0], arr)
+        for h_ in range(1, len(hold)):
+            ex_ = "%s.CfgData.%s(%s, %s.%s.%s)" % (PKG, jn_, ex_, PKG, hold[h_], arr)
+        F("CfgData", "public static final %s[] %s = %s;" % (jtype, arr, ex_))
+
+    def spec(s):
+        c, _, m = s.rpartition(".")
+        if not c or not m:
+            _fail("%r must be <Class>.<method>" % s)
+        return _qual(PKG, c) + "." + m
+    F("CfgData", "public static final String CONTRACT = %s;" % _jstr(CONTRACT))
+    F("CfgData", "public static final String KIT = %s;" % _jstr(KIT_VERSION))
+    F("CfgData", "public static final String MOD = %s;" % _jstr(MOD))
+    F("CfgData", "public static final String TITLE = %s;" % _jstr(TITLE))
+    F("CfgData", "public static final String VERSION = %s;" % _jstr(VERSION))
+    F("CfgData", "public static final String NODE = %s;" % _jstr(NODE))
+    F("CfgData", "public static final String FILES_CSV = %s;" % _jstr(",".join(files)))
+    F("CfgData", "public static final String NOTE = %s;" % _jstr(NOTE))
+    F("CfgData", "public static final String RELOAD = %s;" % _jstr(reload_default))
+    F("CfgData", "public static final int KEEP = %d;" % KEEP)
+    F("CfgData", "public static final String HOMEDIR = %s;" % _jstr(home))
+    F("CfgData", "public static final String[] CAT_IDS = %s;" % _jarr([c for c, _ in cats]))
+    F("CfgData", "public static final String[] CAT_LABELS = %s;" % _jarr([c for _, c in cats]))
+    for arr, name in zip(CORE_DATA_ROWS_S, ("key", "label", "cat", "type", "default", "min", "max", "opts", "unit", "flags", "help")):
+        row_arr("String", arr, col(name), _jarr)
+    row_arr("int", "BK", [d["kind"] for d, _ in binds], _jints)
+    row_arr("int", "BF", [d["file"] for d, _ in binds], _jints)
+    row_arr("int", "BFT", [d["ftype"] for d, _ in binds], _jints)
+    row_arr("int", "BCONF", [CONF[o["confirm"]] for _, o in binds], _jints)
+    row_arr("int", "BENT", [ENTRY[o["entry"]] for _, o in binds], _jints)
+    row_arr("long", "BSC", [d["scale"] for d, _ in binds], _jlongs)
+    row_arr("String", "BCLS", [d["cls"] for d, _ in binds], _jarr)
+    row_arr("String", "BNAME", [d["name"] for d, _ in binds], _jarr)
+    row_arr("String", "BFK", [d["fkey"] for d, _ in binds], _jarr)
+    row_arr("String", "BCK", [d["ckeys"] for d, _ in binds], _jarr)
+    row_arr("String", "BAFTER", [o["after"] for _, o in binds], _jarr)
+    row_arr("String", "BCHECK", [o["check"] for _, o in binds], _jarr)
+    row_arr("String", "BSEP", [o["sep"] for _, o in binds], _jarr)
+    row_arr("String", "VTYPES", [o["value"] for _, o in binds], _jarr)
+    F("CfgData", "public static final String[] FILES = %s;" % _jarr(files))
+    F("CfgData", "public static final String[] FILE_IDS = %s;" % _jarr([f.replace("/", "~") for f in files]))
+    F("CfgData", "public static final String[] ALIASES = %s;" % _jarr(list(ALIASES)))
+    for fi, f in enumerate(files):
+        t = defaults.get(f)
+        dl = t.replace("\r\n", "\n").rstrip("\n").split("\n") if t else []
+        if hold:
+            F(hold[-1], "public static final String[] DL%d = %s;" % (fi, _jarr(dl)))
+            F("CfgData", "public static final String[] DL%d = %s.%s.DL%d;" % (fi, PKG, hold[-1], fi))
+        else:
+            F("CfgData", "public static final String[] DL%d = %s;" % (fi, _jarr(dl)))
+    F("CfgData", "public static final String PERMFN = %s;" % _jstr(spec(PERM_FN) if PERM_FN else ""))
+    F("CfgData", "public static final String ITEMFN = %s;" % _jstr(spec(ITEM_FN) if ITEM_FN else ""))
+    # the handle: made once per CfgData class (= once per mod class loader); SkyyCore's Cfg.open never returns null and never throws
+    H = CORE_CFG_HANDLE
+    F("CfgData", "public static volatile %s K;" % H)
+    M("CfgData", "public static synchronized %s kit0() { %s k = K; if (k == null) { k = %s.open(%s.CfgData.class); K = k; } return k; }"
+      % (H, H, H, PKG))
+    M("CfgData", "public static %s kit() { %s k = K; if (k != null) return k; return kit0(); }" % (H, H))
+    classes = [cls[nm] for nm in ("CfgData",) + tuple(hold)]
+    info = {"rows": n, "files": files, "classes": [PKG + "." + nm for nm in ("CfgData",) + tuple(hold)], "kit": KIT_VERSION,
+            "holders": len(hold), "core": True, "home": home}
+    return Kit(pool, classes, dfr, info)
+
+
+CORE_DATA_JAVA = [
+r"""
+public static Object D0(String n) {
+  if (DC == null) return null;
+  try { return DC.getField(n).get(null); } catch (Throwable t) { return null; }
+}""",
+r"""public static String DS(String n) { Object o = D0(n); return (o instanceof String) ? (String) o : ""; }""",
+r"""public static String[] DA(String n) { Object o = D0(n); return (o instanceof String[]) ? (String[]) o : new String[0]; }""",
+r"""public static int[] DI(String n) { Object o = D0(n); return (o instanceof int[]) ? (int[]) o : new int[0]; }""",
+r"""public static long[] DJ(String n) { Object o = D0(n); return (o instanceof long[]) ? (long[]) o : new long[0]; }""",
+r"""public static int DN(String n, int d) { Object o = D0(n); return (o instanceof Integer) ? ((Integer) o).intValue() : d; }""",
+]
+CORE_HOOK_JAVA = r"""
+public static boolean hookOk(String spec, Class[] sig, Object[] args) throws Throwable {
+  int d = spec.lastIndexOf('.');
+  java.lang.reflect.Method m = Class.forName(spec.substring(0, d), true, @PKG@.CfgRows.class.getClassLoader()).getMethod(spec.substring(d + 1), sig);
+  Object r = null;
+  try { r = m.invoke(null, args); }
+  catch (java.lang.reflect.InvocationTargetException e) { Throwable c = e.getCause(); if (c != null) throw c; throw e; }
+  return Boolean.TRUE.equals(r);
+}"""
+
+
+def _core_pub_java(pkg):
+    """PUB_JAVA for the template: HOME from CfgRows.HOMEDIR; a copy without mod data (SkyyCore's own loader) never starts."""
+    out = []
+    for src in PUB_JAVA:
+        if "public static void start(" in src:
+            a = 'modsDir.resolve("Skyy_" + @PKG@.CfgRows.MOD)'
+            assert src.count(a) == 1, "skyycfg: the CfgPub.start anchor moved"
+            src = src.replace(a, "modsDir.resolve(@PKG@.CfgRows.HOMEDIR)")
+            b = "public static void start(java.nio.file.Path modsDir, @LOG@ log) {\n"
+            assert src.count(b) == 1, "skyycfg: the CfgPub.start head moved"
+            src = src.replace(b, b + '  if (@PKG@.CfgRows.DC == null) { @PKG@.CfgRows.LOG = log; @PKG@.CfgRows.warn("this config kit copy has no mod data '
+                                    '(a SkyyCore template class used directly) - nothing started or published"); return; }\n')
+        out.append(src)
+    return out
+
+
+def core_template(pool, pkg=CORE_CFG_PKG, loader=CORE_LOADER):
+    """SkyyCore's build: compile the seven kit classes ONCE into `pkg` as the template every CORE mod's private kit copy is defined
+    from (see the section comment). `loader` = the class with `static Class dataOf(Class)` (must be in the pool). Returns the
+    CtClasses (write them with SkyyCore's other classes)."""
+    import jpype
+    JClass = jpype.JClass
+    CtField, CtNewMethod, CtNewConstructor = JClass("javassist.CtField"), JClass("javassist.CtNewMethod"), JClass("javassist.CtNewConstructor")
+    try:
+        pool.get(loader)
+    except Exception:
+        _fail("core_template: %s must be compiled first (static Class dataOf(Class))" % loader)
+    T = {"PKG": pkg, "HSV": HSV, "LOG": LOGC,
+         "PERMCHECK": "(PERMFN.length() > 0 ? hookOk(PERMFN, SIG_US, new Object[] { who, NODE }) : %s)" % PERM_DEFAULT,
+         "ITEMCHECK": "(ITEMFN.length() > 0 ? hookOk(ITEMFN, SIG_S, new Object[] { id }) : %s)" % ITEM_DEFAULT}
+
+    def jv(src):
+        out = src
+        for kk, vv in T.items():
+            out = out.replace("@" + kk + "@", vv)
+        left = re.findall(r"@[A-Z]+@", out)
+        if left:
+            _fail("internal: unreplaced tokens %s" % left)
+        return out
+    cls = {}
+    for name in CLASS_NAMES:
+        try:
+            pool.get(pkg + "." + name)
+            _fail("%s.%s already exists in the pool" % (pkg, name))
+        except CfgError:
+            raise
+        except Exception:
+            pass
+        cls[name] = pool.makeClass(pkg + "." + name)
+    cls["CfgFn"].addInterface(pool.get("java.util.function.Function"))
+    cls["CfgSaveTask"].addInterface(pool.get("java.lang.Runnable"))
+
+    def F(c, src):
+        try:
+            cls[c].addField(CtField.make(jv(src), cls[c]))
+        except Exception as e:
+            _fail("internal compile error in template %s field: %s\n%s" % (c, e, jv(src)[:300]))
+
+    def M(c, src):
+        try:
+            cls[c].addMethod(CtNewMethod.make(jv(src), cls[c]))
+        except Exception as e:
+            _fail("internal compile error in template %s: %s\n%s" % (c, e, jv(src)[:600]))
+
+    def C(c, src):
+        cls[c].addConstructor(CtNewConstructor.make(jv(src), cls[c]))
+    # CfgRows: the mod's data, read once (declaration order = initialisation order: DC first)
+    F("CfgRows", "public static final Class DC = %s.dataOf(@PKG@.CfgRows.class);" % loader)
+    for src in CORE_DATA_JAVA:
+        M("CfgRows", src)
+    F("CfgRows", "public static final String CONTRACT = %s;" % _jstr(CONTRACT))
+    F("CfgRows", "public static final String KIT = %s;" % _jstr(KIT_VERSION))
+    for nm in CORE_DATA_STRINGS:
+        F("CfgRows", 'public static final String %s = DS("%s");' % (nm, nm))
+    F("CfgRows", 'public static final int KEEP = DN("KEEP", 10);')
+    for nm in ("CAT_IDS", "CAT_LABELS") + CORE_DATA_ROWS_S:
+        F("CfgRows", 'public static final String[] %s = DA("%s");' % (nm, nm))
+    for nm in CORE_DATA_ROWS_I:
+        F("CfgRows", 'public static final int[] %s = DI("%s");' % (nm, nm))
+    F("CfgRows", 'public static final long[] BSC = DJ("BSC");')
+    for nm in CORE_DATA_ROWS_B + ("FILES", "FILE_IDS", "ALIASES"):
+        F("CfgRows", 'public static final String[] %s = DA("%s");' % (nm, nm))
+    F("CfgRows", 'public static final String PERMFN = DS("PERMFN");')
+    F("CfgRows", 'public static final String ITEMFN = DS("ITEMFN");')
+    M("CfgRows", r"""public static String homeDir() { String h = DS("HOMEDIR"); return h.length() > 0 ? h : "Skyy_" + MOD; }""")
+    F("CfgRows", "public static final String HOMEDIR = homeDir();")
+    M("CfgRows", r"""public static Object[] dls() { Object[] o = new Object[FILES.length]; for (int f = 0; f < o.length; f++) o[f] = DA("DL" + f); return o; }""")
+    F("CfgRows", "public static final Object[] DLS = dls();")
+    M("CfgRows", "public static String[] defLines(int f) { if (f >= 0 && f < DLS.length) return (String[]) DLS[f]; return new String[0]; }")
+    F("CfgRows", "public static %s LOG;" % LOGC)
+    F("CfgRows", "public static java.nio.file.Path MODS;")
+    F("CfgRows", "public static java.nio.file.Path HOME;")
+    F("CfgRows", "public static volatile long WARNS;")
+    F("CfgRows", BRIDGE_FIELD)
+    F("CfgRows", "public static final java.lang.reflect.Field[] FLD = new java.lang.reflect.Field[KEYS.length];")
+    F("CfgRows", "public static final java.util.Map MCACHE = new java.util.concurrent.ConcurrentHashMap();")
+    F("CfgRows", "public static final Class[] SIG0 = new Class[0];")
+    F("CfgRows", "public static final Class[] SIG_S = new Class[] { String.class };")
+    F("CfgRows", "public static final Class[] SIG_SS = new Class[] { String.class, String.class };")
+    F("CfgRows", "public static final Class[] SIG_US = new Class[] { java.util.UUID.class, String.class };")
+    F("CfgRows", "public static final Class[] SIG_USS = new Class[] { java.util.UUID.class, String.class, String.class };")
+    F("CfgRows", "public static final Class[] SIG_SM = new Class[] { String.class, java.util.Map.class };")
+    M("CfgRows", CORE_HOOK_JAVA)
+    for src in ROWS_JAVA:
+        M("CfgRows", src)
+    for src in LOG_FIELDS:
+        F("CfgLog", src)
+    for src in LOG_JAVA:
+        M("CfgLog", src)
+    for src in HIST_FIELDS:
+        F("CfgHist", src)
+    for src in HIST_JAVA:
+        M("CfgHist", src)
+    for src in TASK_FIELDS:
+        F("CfgSaveTask", src)
+    C("CfgSaveTask", TASK_CTOR)
+    F("CfgFile", "public static final int NF = @PKG@.CfgRows.FILES.length;")
+    F("CfgFile", "public static final String HEADER = %s;" % _jstr(HEADER_LINE))
+    for decl in ("java.nio.file.Path[] PATH = new java.nio.file.Path[NF]", "java.util.ArrayList[] LINES = new java.util.ArrayList[NF]",
+                 "String[] NL = new String[NF]", "boolean[] ENDNL = new boolean[NF]", "long[] MT = new long[NF]", "long[] SZ = new long[NF]",
+                 "java.util.HashMap[] BASE = new java.util.HashMap[NF]", "java.util.HashMap[] VALS = new java.util.HashMap[NF]",
+                 "java.util.LinkedHashMap[] PEND = new java.util.LinkedHashMap[NF]", "java.util.HashSet[] RLD = new java.util.HashSet[NF]",
+                 "boolean[] DIRTY = new boolean[NF]", "boolean[] BROKEN = new boolean[NF]", "boolean[] FAILED = new boolean[NF]",
+                 "boolean[] SCHED = new boolean[NF]", "boolean[] WARNED = new boolean[NF]", "boolean[] MISSING = new boolean[NF]",
+                 "boolean[] LOADED = new boolean[NF]", "boolean[] FORCE = new boolean[NF]", "String[] WHY = new String[NF]",
+                 "String[] PSTAMP = new String[NF]", "String[] PWHO = new String[NF]",
+                 "String[] PVIA = new String[NF]", "java.util.HashSet[] PWHAT = new java.util.HashSet[NF]",
+                 "java.util.HashMap[] HOLD = new java.util.HashMap[NF]", "java.util.HashMap[] HCHK = new java.util.HashMap[NF]",
+                 "java.util.HashMap[] WROTE = new java.util.HashMap[NF]",
+                 "String[] PENDV = new String[@PKG@.CfgRows.KEYS.length]", "String[] RUNV = new String[@PKG@.CfgRows.KEYS.length]",
+                 "java.util.HashSet CLAMPED = new java.util.HashSet()"):
+        F("CfgFile", "public static final %s;" % decl)
+    F("CfgFile", "public static boolean LOGSCHED;")
+    F("CfgFile", "public static long SGEN;")
+    for src in FILE_JAVA_HELPERS:
+        M("CfgFile", src)
+    for src in FN_EARLY:
+        M("CfgFn", src)
+    for src in FILE_JAVA_STATE:
+        M("CfgFile", src)
+    M("CfgFile", r"""public static synchronized boolean clampSeen(int i, String raw) { return !CLAMPED.add(i + "=" + raw); }""")
+    for src in FN_MID:
+        M("CfgFn", src)
+    for src in TASK_JAVA:
+        M("CfgSaveTask", src)
+    C("CfgFn", "public CfgFn() { }")
+    for src in FN_JAVA:
+        M("CfgFn", src)
+    F("CfgPub", "public static volatile boolean STARTED;")
+    for src in _core_pub_java(pkg):
+        M("CfgPub", src)
+    return [cls[c] for c in CLASS_NAMES]
+
+
+def _named(srcs, head):
+    hits = [s for s in srcs if head in s]
+    assert len(hits) == 1, "skyycfg: %r found %d times" % (head, len(hits))
+    return hits[0]
+
+
+def core_text_java():
+    """[(kind, Java source)] of SkyyCore's com.skyy.core.cfg.CfgText: the kit's STATELESS helpers, the same source as the kit's own
+    (the properties-line parser CfgFile.split ... applyEdit, CfgRows.clip / oneLine / atomicWrite, CfgLog.now) - for a mod's own code
+    (one-time migrations, its own config files) that used to call its private kit copy."""
+    out = [("field", LOG_FIELDS[3]), ("field", "public static final String HEADER = %s;" % _jstr(HEADER_LINE))]
+    assert "FMT" in LOG_FIELDS[3]
+    out += [("method", s) for s in FILE_JAVA_HELPERS]
+    for head in ("public static String clip(", "public static String oneLine(", "public static void atomicWrite("):
+        out.append(("method", _named(ROWS_JAVA, head)))
+    out.append(("method", _named(LOG_JAVA, "public static String now()")))
+    for k, s in out:
+        assert "@" not in s, "CfgText must not reference a kit class: %s" % s[:80]
+    return out

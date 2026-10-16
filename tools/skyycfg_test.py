@@ -8,6 +8,9 @@ that must FAIL (unit rule, 01 rule, bad defaults, missing hooks, part without da
 without a file) and two that must BUILD (plural MS names, camelCase ms fields). Phase 2 (a child process: a fresh JVM with -Xverify:all and
 HytaleServer.jar on the classpath) loads every class and drives every op against real files in the scratch folder.
 Default scratch folder: tools/dev/scratch/skyycfg-test (git-ignored), deleted at the end unless --keep. Exit code 1 on any failure.
+SKYYCORE MODE (2026-10-15): python tools/skyycfg_test.py --core SkyyCore/SkyyCore-<ver>.jar [--dir ...] runs EVERY check below on the
+kit as SkyyCore ships it: the three sample mods are emitted with CORE=True (each ships only its CfgData), and phase 2 drives the
+kit copies that SkyyCore's KitLoader defines per mod from the jar's template (Cfg.open(CfgData) -> kitClass), with -Xverify:all.
 In a bare JVM HytaleServer cannot initialise, so the kit's saves run on its fallback daemon threads; CfgPub.flush() is used to make
 the tests deterministic. The in-game scheduler path (HytaleServer.SCHEDULED_EXECUTOR) is the same code with a different executor.
 
@@ -38,6 +41,8 @@ def arg(name, default=None):
 
 SCRATCH = os.path.abspath(arg("--dir", os.path.join(HERE, "dev", "scratch", "skyycfg-test")))
 KEEP = "--keep" in sys.argv
+CORE_JAR = os.path.abspath(arg("--core")) if arg("--core") else None     # SkyyCore mode (see the docstring)
+CK = {"CORE": True} if CORE_JAR else {}
 
 CONFIG_TEXT = """# SkyyCfgTest config - edit, then /cfgtest reload (or change it in game: SkyWynn Menu -> Server Setup)
 # interestPercent = percent paid each payout (0-100)
@@ -168,6 +173,9 @@ def build():
     import skyycfg as CFG
     J = B.start()
     pool, CtField, CtNewMethod, CtNewConstructor = J["pool"], J["CtField"], J["CtNewMethod"], J["CtNewConstructor"]
+    if CORE_JAR:
+        pool.appendClassPath(CORE_JAR)
+        print("SkyyCore mode: the kit runs from", CORE_JAR)
     out = os.path.join(SCRATCH, "classes")
     shutil.rmtree(out, ignore_errors=True)
     os.makedirs(out)
@@ -209,7 +217,7 @@ def build():
         want = [v for k, v in EXPECT.items() if what.startswith(k)][0]
         try:
             kit = CFG.emit(pool, pkg, MOD="SkyyNeg", TITLE="Neg", VERSION="0.1", NODE="skyyneg.admin", CATS=[("main", "Main")], ROWS=rows,
-                           FILES=list(files), DEFAULTS=defaults, RELOAD=reload, ITEMS=set(ITEMS))
+                           FILES=list(files), DEFAULTS=defaults, RELOAD=reload, ITEMS=set(ITEMS), **CK)
             if hooks_after:
                 kit.check()
         except CFG.CfgError as e:
@@ -305,7 +313,7 @@ def build():
         mk(pkg + ".PosCfg", fields=fields, methods=methods)
         try:
             kit = CFG.emit(pool, pkg, MOD="SkyyPos", TITLE="Pos", VERSION="0.1", NODE="skyypos.admin", CATS=[("main", "Main")], ROWS=rows,
-                           FILES=list(files), ITEMS=set(ITEMS))
+                           FILES=list(files), ITEMS=set(ITEMS), **CK)
             kit.check()
         except CFG.CfgError as e:
             P1_FAILS.append("positive check refused: %s -> %s" % (what, str(e)[:300]))
@@ -425,7 +433,7 @@ def build():
     kit = CFG.emit(pool, P, MOD="SkyyCfgTest", TITLE="Config test", VERSION="0.1", NODE="skyycfgtest.admin", CATS=CATS, ROWS=ROWS,
                    FILES=FILES, NOTE="Harness sample for tools/skyycfg.py.", RELOAD="TestCfg.reload", KEEP=20, ALIASES=["SkyyOldTest"],
                    DEFAULTS={"config.properties": CONFIG_TEXT, "xp.properties": XP_TEXT}, ITEMS=set(ITEMS),
-                   PERM_FN="TestPerm.has", ITEM_FN="TestPerm.item")
+                   PERM_FN="TestPerm.has", ITEM_FN="TestPerm.item", **CK)
     # compiled AFTER emit: proves hooks are resolved by reflection and checked at kit.write()
     mk(P + ".TestCust2", fields=["public static volatile int AFTER = 0;", "public static volatile String LASTKEY = null;"], methods=[
         "public static void afterSet(String key) { AFTER = AFTER + 1; LASTKEY = key; }"])
@@ -463,9 +471,9 @@ def build():
     P2 = "com.skyy.cfgplain"
     mk(P2 + ".PlainCfg", fields=["public static volatile int LIMIT = 5;", "public static volatile String KIT = \"\";"])
     kit2 = CFG.emit(pool, P2, MOD="SkyyCfgPlain", TITLE="Plain", VERSION="0.1", NODE="skyycfgplain.admin", CATS=[("main", "Main")],
-                    FILES=["Skyy_SkyyCfgPlain/config.properties"], ITEMS=set(ITEMS), ROWS=[
+                    FILES=["Skyy_SkyyCfgPlain/config.properties"], ITEMS=set(ITEMS), **dict(CK, ROWS=[
                         ("limit", "Limit", "main", "int", "5", "1", "50", "", "", "live", "", "field:PlainCfg.LIMIT"),
-                        ("kit", "Kit", "main", "items", "", "0", "9", "", "", "live", "", "field:PlainCfg.KIT")])
+                        ("kit", "Kit", "main", "items", "", "0", "9", "", "", "live", "", "field:PlainCfg.KIT")]))
     kit2.write(out)
     pool.get(P2 + ".PlainCfg").writeFile(out)
     # ---------------- sample mod 3: SkyyCfgFix (kit 1.1 cases, phase 2 section Q)
@@ -537,7 +545,7 @@ def build():
         return CFG.emit(pool, P3, MOD="SkyyCfgFix", TITLE="Fix test", VERSION="0.1", NODE="skyycfgfix.admin", CATS=[("main", "Main")],
                         FILES=FIX_FILES, ROWS=rows, RELOAD="FixCfg.reload", DEFAULTS={"fix.properties": FIX_TEXT, "b.properties": FIX_B_TEXT},
                         ITEMS=set(ITEMS),
-                        PERM_FN="com.skyy.cfgtest.TestPerm.has", ITEM_FN="com.skyy.cfgtest.TestPerm.item")
+                        PERM_FN="com.skyy.cfgtest.TestPerm.has", ITEM_FN="com.skyy.cfgtest.TestPerm.item", **CK)
     try:
         kit3 = emit3(FIX_ROWS + FIX_ACT)
         kit3.check()
@@ -551,6 +559,7 @@ def build():
     # ops, 5 = fix.mode / fix.level sets + CfgPub.flush, 6-7 = readers that count every fix.rate value in memory that would not pass
     # (bounds 0-100, FixHooks.check: no value ending in 3), 9 = one reload op (the held-hook case). ok/bad answers are fine, anything
     # else (null, error, denied, an exception) is an error
+    _flush = "com.skyy.cfgfix.CfgData.kit().flush()" if CORE_JAR else "com.skyy.cfgfix.CfgPub.flush()"
     mk(P3 + ".FixStress", iface="java.lang.Runnable",
        fields=["public static final java.util.UUID WHO = java.util.UUID.fromString(\"00000000-0000-0000-0000-00000000000a\");",
                "public int role;", "public int seed;", "public long ms;", "public volatile int errors;", "public volatile int done;",
@@ -631,7 +640,7 @@ def build():
     if (r.nextInt(2) == 0) m = "b";
     tally(f.apply(new Object[] { "set", "fix.mode", m, WHO, "L", "yes", "menu" }), "set mode");
     tally(f.apply(new Object[] { "set", "fix.level", String.valueOf(1 + r.nextInt(100)), WHO, "L", "yes", "menu" }), "set level");
-    if (k % 10 == 0) com.skyy.cfgfix.CfgPub.flush();
+    if (k % 10 == 0) """ + _flush + r""";
     this.done = this.done + 1;
     try { Thread.sleep(1L); } catch (InterruptedException ie) { }
   }
@@ -700,7 +709,8 @@ def run(jar):
     jvm = os.path.join(B.HYTALE, "install", "release", "package", "jre", "latest", "bin", "server", "jvm.dll")   # the game's own JRE
     if not os.path.exists(jvm):
         jvm = B._jvm()
-    jpype.startJVM(jvm, "-Xverify:all", "--enable-native-access=ALL-UNNAMED", classpath=[B.SERVER_JAR, jar], convertStrings=True)
+    jpype.startJVM(jvm, "-Xverify:all", "--enable-native-access=ALL-UNNAMED", classpath=[B.SERVER_JAR, jar] + ([CORE_JAR] if CORE_JAR else []),
+                   convertStrings=True)
     from jpype import JClass, JArray, JObject
     import zipfile
     Cls = JClass("java.lang.Class")
@@ -716,8 +726,28 @@ def run(jar):
     print("A. loaded + verified %d classes (-Xverify:all)" % len(names))
     if FAILS:
         return
+    KL = {}
+    if CORE_JAR:
+        # SkyyCore mode: each sample mod's kit = the copy SkyyCore's KitLoader defines from the jar's template (-Xverify:all)
+        for pk in ("com.skyy.cfgtest.", "com.skyy.cfgplain.", "com.skyy.cfgfix."):
+            h = JClass(pk + "CfgData").kit()
+            check(bool(h.ok()), "core: %sCfgData.kit() loaded the kit copy (%s)" % (pk, h.status()))
+            check(str(h.loader().getClass().getName()) == "com.skyy.core.KitLoader" and int(h.loader().defined) == 7,
+                  "core: %s - the KitLoader defined the 7 template classes" % pk)
+            _ih = JClass("java.lang.System").identityHashCode
+            check(int(_ih(h)) == int(_ih(JClass(pk + "CfgData").kit())) and int(_ih(h)) == int(_ih(JClass("com.skyy.core.cfg.Cfg").open(JClass(pk + "CfgData").class_))),
+                  "core: %sCfgData.kit() and Cfg.open(CfgData) give one handle" % pk)
+            KL[pk] = h.loader()
+        a, b_ = KL["com.skyy.cfgtest."], KL["com.skyy.cfgfix."]
+        ra, rb = JClass("com.skyy.core.cfg.CfgRows", loader=a), JClass("com.skyy.core.cfg.CfgRows", loader=b_)
+        check(str(ra.MOD) == "SkyyCfgTest" and str(rb.MOD) == "SkyyCfgFix" and ra.class_ != rb.class_,
+              "core: two mods, two private kit copies (MOD %s / %s)" % (ra.MOD, rb.MOD))
+        print("A2. SkyyCore mode: 3 private kit copies (7 template classes each) loaded + verified")
+
+    def KC(pk, name):
+        return JClass("com.skyy.core.cfg." + name, loader=KL[pk]) if CORE_JAR else JClass(pk + name)
     P = "com.skyy.cfgtest."
-    Rows, Pub, CFile, Log = JClass(P + "CfgRows"), JClass(P + "CfgPub"), JClass(P + "CfgFile"), JClass(P + "CfgLog")
+    Rows, Pub, CFile, Log = KC(P, "CfgRows"), KC(P, "CfgPub"), KC(P, "CfgFile"), KC(P, "CfgLog")
     TestCfg, TestPerm, TestCust, TestCust2, Stress = (JClass(P + "TestCfg"), JClass(P + "TestPerm"), JClass(P + "TestCust"),
                                                       JClass(P + "TestCust2"), JClass(P + "TestStress"))
     UUID, Paths, Integer, System = JClass("java.util.UUID"), JClass("java.nio.file.Paths"), JClass("java.lang.Integer"), JClass("java.lang.System")
@@ -867,7 +897,7 @@ def run(jar):
     r = setv("bank.interestPercent", "4", who=None, via="console", name=None)
     check(r[0] == "ok" and TestCfg.PERCENT == 4, "console (null who, via console) %s" % (r,))
     check(any(l.endswith("\tconsole\t-\tconsole\tbank.interestPercent\t3\t4\tok") for l in logs()), "console change logged by console, via=console")
-    Fn = JClass(P + "CfgFn")
+    Fn = KC(P, "CfgFn")
     check(str(Fn.cmdSet("bank.interestPercent", "5", None, "Ghost")) == "Could not tell who sent this command - nothing was changed."
           and TestCfg.PERCENT == 4, "cmdSet refuses a null UUID instead of treating it as the console")
     check(str(Fn.cmdSetConsole("bank.interestPercent", "4")) == "Interest per payout is already 4%.", "cmdSetConsole passes the permission gate")
@@ -1210,7 +1240,7 @@ def run(jar):
     ph = os.path.join(mods, "Skyy_SkyyCfgPlain")
     os.makedirs(ph)
     open(os.path.join(ph, "config.properties"), "w").write("# plain\nlimit=5\n")
-    JClass(P2 + "CfgPub").start(Paths.get(mods), None)
+    KC(P2, "CfgPub").start(Paths.get(mods), None)
     fn2 = bridge.get("config:fn:SkyyCfgPlain")
 
     def op2(*args):
@@ -1223,13 +1253,13 @@ def run(jar):
     check(str(op2("set", "limit", "7", None, None, "", "command")[0]) == "denied", "null who via command denied (real PermissionsModule path)")
     check(str(op2("set", "limit", "7", None, None, "", "console")[0]) == "ok" and JClass(P2 + "PlainCfg").LIMIT == 7, "console via console works")
     check(str(op2("set", "kit", "Food_Bread", None, None, "", "console")[2]) == "Unknown item: Food_Bread.", "item check fails closed without the asset map")
-    JClass(P2 + "CfgPub").flush()
+    KC(P2, "CfgPub").flush()
     pp = os.path.join(ph, "config.properties")
     open(pp, "w").write("# plain\nlimit=99\n")
     os.utime(pp, (time.time(), time.time() + 20))
     check(str(op2("reload", None, None, "command")[0]) == "denied", "reload with null who via command denied")
     r = R(op2("reload", None, None, "console"))
-    JClass(P2 + "CfgPub").flush()
+    KC(P2, "CfgPub").flush()
     check(r[0] == "ok" and JClass(P2 + "PlainCfg").LIMIT == 50, "no reload routine: the kit clamps a hand edit (99 -> 50) %s" % (r,))
     l2 = [str(x) for x in op2("log", Integer.valueOf(5))]
     check(any(l.endswith("\tfile\tlimit\t7\t99\tok") for l in l2) and any(l.endswith("\tfile\tlimit\t99\t50\tclamped") for l in l2),
@@ -1291,8 +1321,8 @@ def run(jar):
 
     # ---------------- Q. kit 1.1: the five round-4 gaps (sample mod 3 SkyyCfgFix: one file, reload routine FixCfg.reload)
     P3 = "com.skyy.cfgfix."
-    FixCfg, FixHooks, FixPub, FixFile, FixRows = (JClass(P3 + "FixCfg"), JClass(P3 + "FixHooks"), JClass(P3 + "CfgPub"),
-                                                  JClass(P3 + "CfgFile"), JClass(P3 + "CfgRows"))
+    FixCfg, FixHooks, FixPub, FixFile, FixRows = (JClass(P3 + "FixCfg"), JClass(P3 + "FixHooks"), KC(P3, "CfgPub"),
+                                                  KC(P3, "CfgFile"), KC(P3, "CfgRows"))
     fixh = os.path.join(mods, "Skyy_SkyyCfgFix")
     os.makedirs(fixh)
     fixp = os.path.join(fixh, "fix.properties")
@@ -1671,7 +1701,8 @@ def main():
     os.makedirs(SCRATCH, exist_ok=True)
     jar = build()
     env = dict(os.environ)
-    p = subprocess.run([sys.executable, os.path.abspath(__file__), "--run", jar, "--dir", SCRATCH], env=env)
+    p = subprocess.run([sys.executable, os.path.abspath(__file__), "--run", jar, "--dir", SCRATCH] + (["--core", CORE_JAR] if CORE_JAR else []),
+                       env=env)
     if not KEEP:
         shutil.rmtree(SCRATCH, ignore_errors=True)
     for f in P1_FAILS:

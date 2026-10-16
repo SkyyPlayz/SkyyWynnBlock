@@ -17,7 +17,16 @@ Checks (exit 0 = READY, 1 = problems listed under FAIL; WARN lines never fail):
               class, superinterfaces, superclasses; methods: class + superclasses, then interfaces; exact descriptor) against the engine
               and the jar itself, and checked for access (public / protected from a subclass / package-private in the same runtime
               package / private in the same class). A reference that does not resolve or is not accessible is "refused" = FAIL. A
-              reference into ANOTHER Skyy jar is refused too (cross-mod calls go only through the skyy.bridge map).
+              reference into ANOTHER Skyy jar is refused too (cross-mod calls go only through the skyy.bridge map) - with ONE exception
+              (2026-10-15, research/Architecture-Spec.md 2.4): a jar whose manifest lists Dependencies {"Skyy:SkyyCore": <range>} sees
+              the SkyyCore jar (its loader's parent = Core's, like the engine's dependency bridge), so its references into Core's API
+              resolve and are access-checked like engine references. Still refused: Core's config kit template
+              (com.skyy.core.cfg.Cfg{Rows,...}), a Core dependency without a Core jar in the set / outside its range, and a
+              Dependencies entry naming any other plugin. DATA (fix round): two Skyy jars owning one data folder (an assembled jar's
+              module folders from its <Jar>-<ver>.modules.json, any other Skyy jar Skyy_<Mod>; equal or nested, case-insensitive),
+              or a module that REPLACES a mod still in the set = FAIL. CONFIG (fix round 2): two config kits (in one jar or two) with
+              one Server Setup section name (MOD, case-insensitive) = FAIL. The DEPENDENCY rules apply to Skyy jars only (manifest
+              Group "Skyy"); a third-party jar's Dependencies are listed as "not checked".
   3. COMMANDS every command a jar registers (registerCommand(new X(...)) found in the bytecode) is constructed in the JVM (null / 0 /
               false constructor arguments) and its tree (addSubCommand + addUsageVariant) is read from the engine's AbstractCommand
               fields. Adventurer permission audit (HANDOFF section 3 COMMAND RULES + lint perm_group_leaks, engine putRecursive-
@@ -38,7 +47,7 @@ its tree is skipped); commands added outside a constructor (e.g. parent.addSubCo
 local variable are not seen; invokedynamic is not audited (javassist never emits it); protected instance access is checked by
 subclassing only (not the receiver-type rule). Runtime: about 5 s for the 26-jar SET (1,161 classes).
 """
-import os, sys, re, time, shutil, zipfile, argparse
+import os, sys, re, time, shutil, zipfile, argparse, json
 
 TOOLS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ROOT = os.path.dirname(TOOLS)
@@ -52,6 +61,50 @@ ACMD = "com.hypixel.hytale.server.core.command.system.AbstractCommand"
 def set_jars():
     import deploy_set
     return [(m, v, os.path.join(ROOT, m, "%s-%s.jar" % (m, v))) for m, v in deploy_set.SET]
+
+
+def data_fails(jars):
+    """DATA check (fix round 2026-10-15, SkyyCore 1.0 module assemble): two Skyy jars of the set must never own one data folder (or
+    one nested in the other, case-insensitive). An assembled jar's folders come from its <Jar>-<ver>.modules.json next to the jar,
+    any other Skyy jar owns Skyy_<Mod>. A module that REPLACES a standalone mod (a merge) is refused while that mod is still in the
+    set. Returns FAIL lines."""
+    out, own = [], []
+    names = set(m for m, _v, _p in jars)
+    for mod, _ver, path in jars:
+        if not mod.startswith("Skyy"):
+            continue
+        folders, repl = B.jar_data_folders(mod, path)
+        for r in repl:
+            if r in names:
+                out.append("DATA %s replaces %s, which is still in the set (take %s out of SET when its data moves)" % (mod, r, r))
+        for f, mid in folders:
+            own.append((mod, mid, f))
+    for i in range(len(own)):
+        for k in range(i + 1, len(own)):
+            a, b = own[i], own[k]
+            if a[0] != b[0] and B.data_clash(a[2], b[2]):
+                out.append("DATA %s%s and %s%s share one data folder (%s / %s) - two writers on one folder (duplicate coins / items)"
+                           % (a[0], " module " + a[1] if a[1] else "", b[0], " module " + b[1] if b[1] else "", a[2], b[2]))
+    return out
+
+
+def config_fails(jars):
+    """CONFIG check (fix round 2): the config kit publishes config:def / config:fn / config:epoch:<MOD> with a plain put, so two kits
+    with one MOD (Server Setup section) overwrite each other's keys - SkyyMenu's edits for one would land in the other's rows. Every
+    kit's MOD (CfgRows / CfgData 'MOD' constant, B.jar_config_sections) must be unique across the Skyy jars of the set and inside
+    one jar (an assembled jar: one per module). Case-insensitive. Returns FAIL lines."""
+    out, seen = [], {}
+    for mod, _ver, path in jars:
+        if not mod.startswith("Skyy"):
+            continue
+        for pkg, sec in B.jar_config_sections(path):
+            k = sec.lower()
+            if k in seen and seen[k] != (mod, pkg):
+                out.append("CONFIG Server Setup section %s is published twice: %s (%s) and %s (%s) - their config:def / config:fn / "
+                           "config:epoch keys overwrite each other (one MOD per section)" % (sec, seen[k][0], seen[k][1], mod, pkg))
+            else:
+                seen[k] = (mod, pkg)
+    return out
 
 
 def mod_of(path):
@@ -143,16 +196,72 @@ def run(a, jars, base, over_mods, scratch, t0):
         return s
 
     # ---------------- load all jars ----------------
+    # 2026-10-15 (SkyyCore 1.0, research/Architecture-Spec.md 2.4): the jar whose manifest key is Skyy:SkyyCore gets its own loader
+    # first; a jar that lists Skyy:SkyyCore under "Dependencies" gets a loader whose PARENT is Core's (Core's classes visible, like the
+    # engine's dependency bridge) - its references into Core are then resolved + access-checked like engine references. Every other
+    # cross-jar reference is still refused ("class not found ... it is in X"). Also refused: a dependency on Core with no Core jar in
+    # the set or outside its range, a Dependencies entry naming any other plugin (only Core is a hard dependency), and a reference to
+    # Core's config kit TEMPLATE (com.skyy.core.cfg.Cfg{Rows,...} - not API; a module reaches its kit through CfgData.kit()).
     ent = []        # (mod, ver, path, loader, [class names], {name: bytes})
     owner_jar = {}  # class name -> mod (for cross-jar refs)
+    mans = {}
     for mod, ver, path in jars:
+        try:
+            with zipfile.ZipFile(path) as z:
+                mans[mod] = json.loads(z.read("manifest.json").decode("utf-8-sig")) if "manifest.json" in z.namelist() else {}
+        except Exception:
+            mans[mod] = {}
+    core_mod = [m for m, _v, _p in jars if "%s:%s" % (mans[m].get("Group"), mans[m].get("Name")) == B.CORE_ID]
+    core_ld = None
+    order = sorted(jars, key=lambda j: 0 if j[0] in core_mod else 1)
+    deps_core = {}
+    nodeps = set()
+    for mod, ver, path in order:
         with zipfile.ZipFile(path) as z:
             data = {n[:-6].replace("/", "."): z.read(n) for n in z.namelist() if n.endswith(".class")}
         for n in data:
             if n in owner_jar:
                 fails.append("duplicate class %s in %s and %s" % (n, owner_jar[n], mod))
             owner_jar[n] = mod
-        ent.append((mod, ver, path, loader([path], srv), sorted(data), data))
+        deps = mans[mod].get("Dependencies") or {}
+        parent = srv
+        if mod in core_mod:
+            core_ld = loader([path], srv)
+            ld = core_ld
+        else:
+            for dk, rng in deps.items():
+                if mans[mod].get("Group") != "Skyy":
+                    # fix round 2 (critic: every third-party pack jar with a Dependencies entry - about 60 of them, e.g.
+                    # Hytale:EntityModule - failed `crosscheck.py --jar <pack jar>`): the dependency rules are OUR rules, for
+                    # Skyy jars only. Another author's dependencies are not checked (their loader stays the server's).
+                    nodeps.add(mod)
+                    continue
+                if dk != B.CORE_ID:
+                    fails.append("DEPENDENCY %s depends on %s - only Skyy:SkyyCore may be a hard dependency (other mods: skyy.bridge)" % (mod, dk))
+                    continue
+                deps_core[mod] = rng
+                if core_ld is None:
+                    fails.append("DEPENDENCY %s needs %s %s but no SkyyCore jar is in the set" % (mod, B.CORE_ID, rng))
+                    continue
+                cv = str(mans[core_mod[0]].get("Version"))
+                try:
+                    okr = B.range_ok(rng, cv)
+                except ValueError as e:
+                    okr = False
+                    fails.append("DEPENDENCY %s: range %r - %s" % (mod, rng, e))
+                if not okr:
+                    fails.append("DEPENDENCY %s needs %s %s, the set has SkyyCore %s" % (mod, B.CORE_ID, rng, cv))
+                parent = core_ld
+            ld = loader([path], parent)
+        ent.append((mod, ver, path, ld, sorted(data), data))
+    if core_mod:
+        print("core: %s %s; %d jar(s) link against it%s" % (core_mod[0], mans[core_mod[0]].get("Version"), len(deps_core),
+                                                         (" (" + ", ".join(sorted(deps_core)) + ")") if deps_core else ""))
+    if nodeps:
+        print("dependencies not checked (not Skyy jars): %s" % ", ".join(sorted(nodeps)))
+    fails += data_fails(jars)
+    fails += config_fails(jars)
+    CORE_TEMPLATE = set("com.skyy.core.cfg." + c for c in ("CfgRows", "CfgLog", "CfgHist", "CfgSaveTask", "CfgFile", "CfgFn", "CfgPub"))
 
     # 1. VERIFY + INIT
     nclasses = 0
@@ -306,9 +415,13 @@ def run(a, jars, base, over_mods, scratch, t0):
                 if c == "prim":
                     continue
                 what = owner + ("" if key is None else "." + key[0] + key[1])
+                oname = owner.replace("/", ".").lstrip("[L").rstrip(";")
                 if c is None:
-                    other = owner_jar.get(owner.replace("/", ".").lstrip("[L").rstrip(";"))
-                    why = "class not found" + (" (it is in %s - cross-mod calls only through skyy.bridge)" % other if other else "")
+                    other = owner_jar.get(oname)
+                    why = "class not found" + (" (it is in %s - cross-mod calls only through skyy.bridge%s)" % (
+                        other, "; SkyyCore's API needs Dependencies Skyy:SkyyCore in the manifest" if other in core_mod else "") if other else "")
+                elif oname in CORE_TEMPLATE and mod not in core_mod:
+                    why = "SkyyCore's config kit TEMPLATE is not API (a module reaches its kit through its CfgData.kit())"
                 elif not (Mod.isPublic(c.getModifiers()) or same_pkg(r, c)):
                     why = "class not accessible"
                 elif t == TAG_F:

@@ -29,6 +29,10 @@ A per-mod harness builds a Spec and calls run(spec). Phases (each in its own chi
   D    live     two opens of the page on a scratch COPY of the live data folder (the mod's statics pointed at the copy): built, clicked,
                 nothing written by either
   AA   engine-access audit
+2026-10-15 (SkyyCore pilots): a Spec may say hub_class="com.skyy.core.ui.HubBar" + hub_owner="<Mod>" (the module uses SkyyCore's ONE
+HubBar: removeAll(owner)), kit_in_jar=False (the jar ships no kit art - SkyyCore does; KITBYTES then checks the manifest's stable name
++ Skyy:SkyyCore dependency and that the jar has no kit file), removed=[...] (classes the compare expects gone) and extra_phases
+[(label, fn(out, jar, scratch, home))]. The defaults keep every older harness exactly as it was.
 """
 import os, sys, re, json, shutil, zipfile, importlib.util
 
@@ -67,6 +71,11 @@ class Spec(object):
         self.self_redraw = False
         self.ack_mark = None          # None = "#<prefix>Title.Text" (hubAck); else the selector the page's own answer sets
         self.replace_prep = None      # (J, on): makes the page's own open Function REPLACE the page for the "replaced" click check
+        self.hub_class = None         # 2026-10-15: None = <pkg>HubBar (the jar's own); "com.skyy.core.ui.HubBar" = SkyyCore's
+        self.hub_owner = None         # SkyyCore's HubBar: removeAll(<owner>)
+        self.kit_in_jar = True        # False = SkyyCore ships the kit art (KITBYTES checks the jar has none + the Core dependency)
+        self.removed = []
+        self.extra_phases = []
         self.__dict__.update(kw)
         row = [r for r in SUI.HUB_TABS if r[0] == self.hub and r[1] == self.tab]
         assert len(row) == 1, (self.hub, self.tab)
@@ -220,6 +229,17 @@ def page_check(K, E, S, P, page, hb, what):
     return cmds, evs
 
 
+def hub_of(S, J):
+    """the HubBar class the page uses: the jar's own (<pkg>HubBar) or SkyyCore's (S.hub_class)"""
+    from jpype import JClass
+    return JClass(S.hub_class) if S.hub_class else J("HubBar")
+
+
+def drop_all(S, HB):
+    """HubBar.removeAll() of the jar's own class / removeAll(owner) of SkyyCore's shared one"""
+    return HB.removeAll(S.hub_owner) if S.hub_class else HB.removeAll()
+
+
 def calls_of(jar, cname, mname):
     """the method calls (Class.method) in one method's bytecode (javassist InstructionPrinter)"""
     from jpype import JClass
@@ -284,7 +304,7 @@ def run_hub(S, out, jar, scratch):
     J = lambda n: JClass(S.pkg + n)
     home = os.path.join(scratch, "home_hub")
     os.makedirs(home, exist_ok=True)
-    HB = J("HubBar")
+    HB = hub_of(S, J)
     E.br = HB.map()
     _sb = JClass("java.lang.System").getProperties().get("skyy.bridge")
     K.check(E.br is not None and int(JClass("java.lang.System").identityHashCode(E.br)) == int(JClass("java.lang.System").identityHashCode(_sb)),
@@ -436,12 +456,12 @@ def run_hub(S, out, jar, scratch):
     for t, *_x in others:
         E.br.remove("hub:tab:%s:%s" % (S.hub, t))
     E.br.put("hub:tab:%s:zzother" % S.hub, jpype.JArray(JClass("java.lang.Object"))(["SkyyOther", "Other", JClass("java.lang.Integer")(97), "x", None, None]))
-    K.eq(int(HB.removeAll()), 1, "DROP: removeAll removed our one key")
+    K.eq(int(drop_all(S, HB)), 1, "DROP: removeAll removed our one key")
     K.check(E.br.get(key) is None and E.br.get("hub:tab:%s:zzother" % S.hub) is not None, "DROP: our tab gone, another mod's tab kept")
     S.register(J)
     mine = E.br.get(key)
     E.br.put(key, jpype.JArray(JClass("java.lang.Object"))(["SkyyNewer", "X", JClass("java.lang.Integer")(1), "x", None, None]))
-    K.eq(int(HB.removeAll()), 0, "DROP: a key another jar replaced is left alone")
+    K.eq(int(drop_all(S, HB)), 0, "DROP: a key another jar replaced is left alone")
     K.check(str(E.br.get(key)[0]) == "SkyyNewer", "DROP: the replacing jar's tab stays")
     E.br.remove(key)
     E.br.remove("hub:tab:%s:zzother" % S.hub)
@@ -461,7 +481,7 @@ def run_live(S, out, jar, scratch, home):
     E = W.E
     from jpype import JClass
     J = lambda n: JClass(S.pkg + n)
-    HB = J("HubBar")
+    HB = hub_of(S, J)
     E.br = HB.map()
     S.prep(E, J, home)
     if getattr(S, "live_prep", None):
@@ -489,7 +509,7 @@ def run_live(S, out, jar, scratch, home):
             E.pump(W.P)
             W.P.pm.handleLegacyCustomPageEvent(W.P.ref, W.P.st, E.CPE(E.CPT.Data, '{"a":"hub:close"}'))
             E.pump(W.P)
-        K.check(int(HB.removeAll()) == 1, "D%d: removeAll" % start)
+        K.check(int(drop_all(S, HB)) == 1, "D%d: removeAll" % start)
         if getattr(S, "live_flush", None):
             S.live_flush(E, J)
         K.eq(HK.tree_hash(home), h0, "D%d: no file written in the live copy" % start)
@@ -507,6 +527,22 @@ def run(S):
                                   % (" + " + ", ".join(S.extra_entries) if S.extra_entries else "", len(got), sorted(set(got) - set(want2))[:5]))
             return _eq0(self, got, want, what)
         HK.Child.eq = _eq
+    if HK.arg("--phase") == "kitbytes" and not S.kit_in_jar:
+        K = HK.Child(HK.arg("--out"))
+        files = SUI.kit_texture_files()
+        with zipfile.ZipFile(S.jar) as z:
+            names = z.namelist()
+            mf = json.loads(z.read("manifest.json"))
+        K.eq([n for n in names if "SkyyKit" in n or (not n.endswith(".class") and n != "manifest.json")], [],
+             "C: no kit art and no other asset in the jar (SkyyCore ships the 59 Sky Window files)")
+        K.check(mf.get("Version") == S.version and mf.get("Name") == S.name and mf.get("IncludesAssetPack") is False
+                and (mf.get("Dependencies") or {}).get("Skyy:SkyyCore") == ">=1.0.0 <2.0.0",
+                "C: manifest %s %s: stable name, no asset pack, Dependencies Skyy:SkyyCore >=1.0.0 <2.0.0 (%s)" % (mf.get("Name"), mf.get("Version"), mf.get("Dependencies")))
+        import skyybuild as _B
+        with zipfile.ZipFile(_B.core_jar()) as z:
+            K.check(all(z.read(p) == d for p, d in files.items()), "C: SkyyCore's jar carries the 59 kit files the page names (the kit's pinned bytes)")
+        K.save()
+        return
     if HK.arg("--phase") == "kitbytes":
         K = HK.Child(HK.arg("--out"))
         files = SUI.kit_texture_files()
@@ -525,5 +561,5 @@ def run(S):
     HK.run(name=S.name, version=S.version, jar=S.jar, old_jar=S.old_jar, pkg=S.pkg, scratch=S.scratch, expect=S.expect, added=S.added,
            phases=[("kitbytes", lambda out, jar, scratch, home: None),
                    ("hub", lambda out, jar, scratch, home: run_hub(S, out, jar, scratch)),
-                   ("live", lambda out, jar, scratch, home: run_live(S, out, jar, scratch, home))],
-           script=S.script, live=live)
+                   ("live", lambda out, jar, scratch, home: run_live(S, out, jar, scratch, home))] + list(S.extra_phases),
+           script=S.script, live=live, removed=S.removed)

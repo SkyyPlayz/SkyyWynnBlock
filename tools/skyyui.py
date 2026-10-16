@@ -5567,3 +5567,77 @@ def java_hub_build(prefix, my_tab, hub=None, w=None, parts=None, uuid="this.play
         raise ValueError("java_hub_build needs w (the strip width) and parts (HUB_PART_MENU | HUB_PART_CLOSE)")
     return "%s.build(%s, %s, %s, %s, %s, %s, %s, %d);" % (cls, b, ev, java_lit(prefix), java_lit(hub), java_lit(my_tab),
                                                          java_value(w) if not isinstance(w, int) else str(w), uuid, parts)
+
+
+
+# ================================================================= SkyyCore 1.0 (2026-10-15, tools/CORE-CONTRACT.md) - ADDITIVE ONLY
+# The kit stays a BUILD-time Python module for markup (every builder above is unchanged; KIT_VERSION stays 1.5 - no output changes).
+# What moves is the kit's RUNTIME Java: SkyyCore's jar carries ONE com.skyy.core.ui.HubBar (the HUB_BAR_JAVA source with the
+# registry bookkeeping per OWNER, because every module shares the class) and com.skyy.core.ui.UiKit (java_status_methods +
+# java_grid_methods), and ships the 59 Sky Window files once (kit_texture_files). A module in "link against SkyyCore" mode calls
+# them instead of installing its own copies:
+#     SUI.java_hub_build(sh, "<tab>", cls=SUI.CORE_HUB_BAR)          (the page's build() line)
+#     com.skyy.core.ui.HubBar.put(hub, tab, "<Mod>", label, order, command, open, visible)   (setup; filed under "<Mod>")
+#     com.skyy.core.ui.HubBar.removeAll("<Mod>")                     (shutdown: only THIS mod's keys that still hold its arrays)
+#     com.skyy.core.ui.UiKit.colorOf(res) / textOf(res) / gridSlot(id, qty) / gridSlotOf(stack) / gridSlots(...) / gridSlotsOf(...)
+# and ships no kit art of its own (IncludesAssetPack only for its own assets). Test: python SkyyCore/test_skyycore_<ver>.py.
+CORE_HUB_BAR = "com.skyy.core.ui.HubBar"
+CORE_UI = "com.skyy.core.ui.UiKit"
+
+
+def _swap(src, old, new, what):
+    if src.count(old) != 1:
+        raise ValueError("hub_bar_java_core: the %s anchor moved (%d hits)" % (what, src.count(old)))
+    return src.replace(old, new)
+
+
+def hub_bar_java_core(theme=None, types=None):
+    """hub_bar_java() for SkyyCore's ONE shared HubBar. Same source, except the registry bookkeeping (several mods share the class):
+    MINE = owner -> {key -> the array that owner put}; put() files a tab under its mod (element 0 of the entry); def(owner, hub,
+    title, command, icon) for SkyyMenu; removeAll(owner) removes only THAT owner's keys while they still hold its arrays (another
+    jar may have replaced one)."""
+    out = []
+    for kind, s in hub_bar_java(theme, types):
+        if kind == "field" and "MINE" in s:
+            s = _swap(s, "public static volatile java.util.Map MINE;",
+                      "public static final java.util.Map MINE = new java.util.concurrent.ConcurrentHashMap();", "MINE")
+        elif "public static java.util.Map mine()" in s:
+            s = ("public static java.util.Map mine(String owner) {\n"
+                 "  String o = owner == null ? \"\" : owner;\n"
+                 "  Object m = MINE.get(o);\n"
+                 "  if (m == null) {\n"
+                 "    java.util.concurrent.ConcurrentHashMap n = new java.util.concurrent.ConcurrentHashMap();\n"
+                 "    m = MINE.putIfAbsent(o, n);\n"
+                 "    if (m == null) m = n;\n"
+                 "  }\n"
+                 "  return (java.util.Map) m;\n"
+                 "}")
+        elif "public static Object[] put(" in s:
+            s = _swap(s, "mine().put(k, t);", "mine(mod).put(k, t);", "put")
+        elif "public static Object[] def(" in s:
+            s = _swap(s, "public static Object[] def(String hub,", "public static Object[] def(String owner, String hub,", "def head")
+            s = _swap(s, "mine().put(k, d);", "mine(owner).put(k, d);", "def")
+        elif "public static int removeAll()" in s:
+            s = _swap(s, "public static int removeAll()", "public static int removeAll(String owner)", "removeAll head")
+            s = _swap(s, "java.util.Map mm = mine();", "java.util.Map mm = mine(owner);", "removeAll")
+        if "mine()" in s:
+            raise ValueError("hub_bar_java_core: an owner-less mine() call is left: %s" % s[:80])
+        out.append((kind, s))
+    return out
+
+
+def install_hub_bar_core(pool, CtField, CtNewMethod, theme=None, types=None, cls_name=CORE_HUB_BAR):
+    """SkyyCore's build: the shared HubBar class (hub_bar_java_core) in a javassist pool; returns the CtClass."""
+    ct = pool.makeClass(cls_name)
+    for kind, src in hub_bar_java_core(theme, types):
+        if kind == "field":
+            ct.addField(CtField.make(src, ct))
+        else:
+            ct.addMethod(CtNewMethod.make(src, ct))
+    return ct
+
+
+def core_ui_java():
+    """SkyyCore's com.skyy.core.ui.UiKit: java_status_methods("colorOf", "textOf") + java_grid_methods("grid") (the same source the
+    kit emits into a page), as one shared class."""
+    return list(java_status_methods("colorOf", "textOf")) + list(java_grid_methods("grid"))

@@ -39,6 +39,11 @@ checks apply as if the player had typed it.
 
 ## 2. How a mod adds its tab (H3 rounds: about 6 lines per mod)
 
+> **Core mode (SkyyCore 1.0, 2026-10-15): read `tools/CORE-CONTRACT.md` section 2 step 3 instead of steps 1, 3 and 7 below.** A mod
+> built with `B.link_core` installs NO HubBar of its own: it calls the shared `com.skyy.core.ui.HubBar` (`put(...)` the same,
+> `removeAll("<Mod>")` with its mod name, `SUI.java_hub_build(sh, "<tab>", cls=SUI.CORE_HUB_BAR)`) and ships NO kit art (SkyyCore
+> ships the 59 files once). Steps 2, 4, 5 and 6 are unchanged. Old-way builds keep following this section as written.
+
 1. **Install the class.** `SUI.install_hub_bar(pool, PKG + ".HubBar", CtField, CtNewMethod)` adds class `HubBar` to the mod's own
    package, and you `writeFile` it with your other classes. Every jar gets its own copy, because cross-jar classes are not allowed.
 2. **Register.** In start/setup, call

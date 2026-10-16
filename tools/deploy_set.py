@@ -16,10 +16,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "HUD mod"
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
+    ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.26"), ("SkyySacks", "0.8.6"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.17"), ("SkyyParty", "0.1.8"),
-    ("SkyyBank", "0.1.13"), ("SkyyIslands", "0.5.14"), ("SkyyBazaar", "0.1.13"), ("SkyyGear", "0.3.9"), ("SkyySkills", "0.4.41"),
+    ("SkyyHud", "0.3.26"), ("SkyySacks", "0.8.6"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.17"), ("SkyyParty", "0.1.9"),
+    ("SkyyBank", "0.1.14"), ("SkyyIslands", "0.5.14"), ("SkyyBazaar", "0.1.13"), ("SkyyGear", "0.3.9"), ("SkyySkills", "0.4.41"),
     ("SkyyAccessories", "0.5.15"), ("SkyyClasses", "0.1.27"), ("SkyyMenu", "0.3.28"), ("SkyyEssentials", "0.1.10"), ("SkyyProfiles", "0.1.14"),
     ("SkyyCooking", "0.1.7"), ("SkyyTrees", "0.3.15"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -182,6 +183,17 @@ RETIRED = ["SkyyRolls", "SkyyMonkProbe", "SkyyReelProbe", "SkyyTownProbe", "Skyy
 # 2026-10-15 ABILITY TREE REDESIGN (abiltree2): SkyyTrees 0.3.13 + SkyyClasses 0.1.26 deploy TOGETHER. FLOORS: never roll Trees below
 # 0.3.13 or Classes below 0.1.26 once a profile migrated (abil.tree2=done) - older jars drop the new A1.<Mod> / A4a / A4b node ids.
 STABLE_PROBES = [("SkyyCoreProbe", "0.1.0"), ("SkyyDepProbe", "0.1.0")]
+# 2026-10-15 SkyyCore 1.0 (merge PHASE 1, research/Architecture-Spec.md, tools/CORE-CONTRACT.md). HOW TO PIN IT: ("SkyyCore", "1.0.0") as
+# the FIRST SET entry (main() STOPs otherwise), then the pilots SkyyBank 0.1.14 / SkyyParty 0.1.9. Stable-name jars (manifest Name =
+# the bare mod name, e.g. SkyyCore / SkyyBank) are enabled under their stable world key "Skyy:<Mod>" (read from the jar's manifest),
+# and every "Skyy:<ver> <Mod>" key of the same mod is switched off - and the other way round on a rollback to a versioned jar
+# (skyybuild.enable_in_world / same_mod_keys). A jar whose manifest has "Dependencies" needs each one in the SET at a version inside
+# its range, and only Skyy:SkyyCore may be one (main() STOPs otherwise). Once SkyyCore is pinned the phase 0 probe pair above is no
+# longer deployed and its keys are switched off (CORE_RETIRES) - the probes were the throwaway proof, SkyyCore is the real thing.
+# FLOORS: none for the pilots' DATA (SkyyBank 0.1.14 / SkyyParty 0.1.9 keep every file byte-compatible): rolling back to SkyyBank
+# 0.1.13 / SkyyParty 0.1.8 is safe (the versioned key comes back, Skyy:SkyyBank / Skyy:SkyyParty go off). The one rule: SkyyCore stays
+# in the SET while any pinned jar depends on it (rolling SkyyCore back = first roll its dependents back to their pre-Core versions).
+CORE_RETIRES = ["SkyyCoreProbe", "SkyyDepProbe"]
 PACK_DISABLED = ["TheRedlotus:HyFishing", "Helios:Saplings From Trees", "Frah:Better Mob Expansion", "com.example:ExtendedBackpacks", "Allomere:Tainted Roots"]  # 2026-10-15 Skyy: Extended Backpacks OFF (replaces the vanilla Workbench + Backpack Upgrade items), Tainted Roots OFF for now; Saplings From Trees / BME / HyFishing not updated for 0.7  # 2026-10-13 0.7.1: BetterMap 1.3.9, DynamicSeasons 7.0.2, Perfect Parries 0.9.7 updated by their authors -> back ON (engine-API audit clean)  # 2026-10-13 BetterMap (18 removed engine calls: map packets, waypoints, cave mode) + Perfect Parries (CombatTextUpdate ctor) would crash on 0.7 in play - off until their authors update; 2026-10-13 DynamicSeasons crashes the world on 0.7 (SeasonWeatherSystem -> removed WorldChunk.getBlockChunk) when a player joins  # 2026-10-12 Hytale 0.7.0: Saplings From Trees fails to load (Plant_Leaves_Fig_Blue) and BME fails NPC validation (Template_BME_Goblin_Kamikaze -> missing BME_Bomb_Damage) = the 0.7 server refuses to boot; back ON when their authors update  # 2026-10-10 Skyy: HyFishing OFF ("Switch HyFishing off") - SkyyFishing replaces it
 
 
@@ -268,14 +280,15 @@ def sync_bettermap_worlds(world):
 
 
 def retire_in_world(world, mod):
-    """Disable every world-config key 'Skyy:<ver> <mod>' (all versions). Returns how many were switched off."""
+    """Disable every world-config key 'Skyy:<ver> <mod>' (all versions) and the stable key 'Skyy:<mod>'. Returns how many were switched
+    off."""
     import json
     cfg = os.path.join(B.USERDATA, "Saves", world, "config.json")
     d = json.load(open(cfg, encoding="utf-8"))
     mods = d.setdefault("Mods", {})
     n = 0
     for k in list(mods):
-        if k.startswith("Skyy:") and k.endswith(" " + mod) and mods[k].get("Enabled"):
+        if (k == "Skyy:" + mod or (k.startswith("Skyy:") and k.endswith(" " + mod))) and mods[k].get("Enabled"):
             mods[k] = {"Enabled": False}
             n += 1
     json.dump(d, open(cfg, "w", encoding="utf-8"), indent=2)
@@ -310,6 +323,38 @@ def newer_builds(mod, ver):
         if m and v(m.group(1)) > v(ver):
             out.append(m.group(1))
     return sorted(out, key=v)
+
+
+def world_key_of(mod, ver):
+    """the world-config key a SET jar is enabled under: its manifest's Group:Name (stable "Skyy:SkyyCore" or versioned
+    "Skyy:0.1.13 SkyyBank"); a jar without a readable manifest = the versioned form as before."""
+    man = B.jar_manifest(os.path.join(ROOT, mod, "%s-%s.jar" % (mod, ver)))
+    return B.world_key(man) if man and man.get("Name") else "Skyy:%s %s" % (ver, mod)
+
+
+def dependency_stops(pins):
+    """[(mod, why)] for SET jars whose manifest Dependencies are not met by the SET (SkyyCore era rules, see SET comments)."""
+    out = []
+    keys = {}
+    for mod, ver in pins:
+        man = B.jar_manifest(os.path.join(ROOT, mod, "%s-%s.jar" % (mod, ver)))
+        if man:
+            keys[B.world_key(man)] = (mod, str(man.get("Version", ver)))
+    for mod, ver in pins:
+        man = B.jar_manifest(os.path.join(ROOT, mod, "%s-%s.jar" % (mod, ver))) or {}
+        for dk, rng in (man.get("Dependencies") or {}).items():
+            if dk != B.CORE_ID:
+                out.append((mod, "depends on %s - only %s may be a hard dependency" % (dk, B.CORE_ID)))
+            elif dk not in keys:
+                out.append((mod, "needs %s %s, which is not in SET (pin SkyyCore first)" % (dk, rng)))
+            else:
+                try:
+                    ok = B.range_ok(rng, keys[dk][1])
+                except ValueError as e:
+                    ok = False
+                if not ok:
+                    out.append((mod, "needs %s %s, SET has %s" % (dk, rng, keys[dk][1])))
+    return out
 
 
 def main():
@@ -389,6 +434,14 @@ def main():
     # FLOOR: never roll SkyyGear below 0.2.16 or SkyyArmory below 0.1.15 once UT items exist (unknown items); set part.utLines=false before any rollback.
     # SkyyGear 0.2.14 (rarity G1): do not roll back to 0.2.13 while any Skyy_Unid_Bag_Untiered exists (identify or clear them first); odds.mythic stays 0,0,0.
     # SkyyBazaar 0.1.7: rollback to 0.1.6 safe; ship with SkyyGear 0.2.14 for the full market wall.
+    # SkyyCore era (2026-10-15): Core is the FIRST pin; every manifest dependency is met by the SET
+    if "SkyyCore" in _p and SET[0][0] != "SkyyCore":
+        print("STOP: SkyyCore must be the FIRST SET entry (it is the library every Core-mode module depends on)"); return 1
+    _dep = [(m, w) for m, w in dependency_stops(SET) if os.path.isfile(os.path.join(ROOT, m, "%s-%s.jar" % (m, _p[m])))]
+    if _dep:
+        for m, w in _dep:
+            print("STOP: %s %s" % (m, w))
+        return 1
     missing = []
     plan = []
     for mod, ver in SET:
@@ -420,13 +473,14 @@ def main():
             return 1
     for mod, ver, jar in plan:
         B.deploy(jar, mod + ".jar")
-        B.enable_in_world(WORLD, "Skyy:%s %s" % (ver, mod), disable_prefix="Skyy:")
+        B.enable_in_world(WORLD, world_key_of(mod, ver), disable_prefix="Skyy:")   # 2026-10-15: the manifest's key (stable or versioned)
     for key in PACK_THIRD_PARTY:
         B.enable_in_world(WORLD, key)
-    for mod, ver in STABLE_PROBES:            # stable-name test jars (world key "Skyy:<Mod>", no version)
+    core_pinned = "SkyyCore" in _p
+    for mod, ver in ([] if core_pinned else STABLE_PROBES):     # stable-name test jars (world key "Skyy:<Mod>", no version)
         B.deploy(os.path.join(ROOT, mod, "%s-%s.jar" % (mod, ver)), mod + ".jar")
         B.enable_in_world(WORLD, "Skyy:" + mod)
-    for mod in RETIRED:
+    for mod in RETIRED + (CORE_RETIRES if core_pinned else []):
         retire_in_world(WORLD, mod)
     sync_bettermap_worlds(WORLD)
     tune_perfect_parries(WORLD)

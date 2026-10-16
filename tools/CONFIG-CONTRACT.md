@@ -10,6 +10,12 @@ build script imports, so each jar carries its own copy). Proof: `python tools/sk
 and section Q for kit 1.1: 273 checks, 29 schemas that must fail, 3 that must build).
 The player Settings registry (`settings:*`, research/Settings-Spec.md) is a separate twin with the same key, page and never-throws rules.
 
+**Core mode (SkyyCore 1.0, 2026-10-15): see `tools/CORE-CONTRACT.md` sections 2-3.** A mod built with `B.link_core` emits with
+`CORE=True`: its jar carries only `<PKG>.CfgData` (rows, files, defaults) and reaches the kit through `CfgData.kit()`; the seven kit
+classes are compiled once into SkyyCore and each mod gets a PRIVATE runtime copy (same files, bridge keys, History and change log as
+the per-jar kit below). Everything else in this contract (rows, flags, bindings, files, bridge ops, SkyyMenu pages) is unchanged.
+Old-way builds keep their per-jar copy as described here.
+
 ## Kit versions
 
 The contract version (header element 0) stays `"1"`. The kit version is `KIT_VERSION` in `tools/skyycfg.py` (also `CfgRows.KIT` in a

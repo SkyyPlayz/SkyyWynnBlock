@@ -49,7 +49,10 @@ def jvm(cp, verify=True):
     if not os.path.exists(j):
         j = B._jvm()
     opts = (["-Xverify:all"] if verify else []) + ["-XX:-UsePerfData", "--enable-native-access=ALL-UNNAMED", "-Djava.io.tmpdir=" + tmp]
-    jpype.startJVM(j, *opts, classpath=list(cp), convertStrings=True)
+    # 2026-10-15 (SkyyCore): a module built in "link against SkyyCore" mode needs the Core jar on every child JVM's class path - the
+    # harness sets SKYY_HARNESS_CP (os.pathsep-separated jars; inherited by the child processes). Unset = exactly the old class path.
+    extra = [p for p in os.environ.get("SKYY_HARNESS_CP", "").split(os.pathsep) if p]
+    jpype.startJVM(j, *opts, classpath=list(cp) + [p for p in extra if p not in cp], convertStrings=True)
 
 
 class Child(object):
@@ -125,7 +128,7 @@ def run_verify(out, jar):
 
 
 # ---------------------------------------------------------------------------------------------------------------- C: class compare
-def run_compare(out, jar, old_jar, pkg, expect, added):
+def run_compare(out, jar, old_jar, pkg, expect, added, removed=()):
     from jpype import JClass
     K = Child(out)
     jvm([B.JAVASSIST], verify=False)
@@ -169,7 +172,7 @@ def run_compare(out, jar, old_jar, pkg, expect, added):
         return d_
     na, nb = jar_classes(old_jar), jar_classes(jar)
     K.eq(sorted(set(nb) - set(na)), sorted(pkg + a for a in added), "C: classes added")
-    K.eq(sorted(set(na) - set(nb)), [], "C: classes removed")
+    K.eq(sorted(set(na) - set(nb)), sorted(pkg + r for r in removed), "C: classes removed")
     diffs, same = {}, 0
     for cn in sorted(set(na) & set(nb)):
         ma, mb = members(pa, cn), members(pb, cn)
@@ -309,11 +312,13 @@ def take(path, label):
     return d
 
 
-def run(name, version, jar, old_jar, pkg, scratch, expect, added, phases, script, live=None):
-    """phases: [(label, fn(out, jar, scratch, live_home_or_None))] - each runs in its own child process (flag --phase <label>)."""
+def run(name, version, jar, old_jar, pkg, scratch, expect, added, phases, script, live=None, removed=()):
+    """phases: [(label, fn(out, jar, scratch, live_home_or_None))] - each runs in its own child process (flag --phase <label>).
+    2026-10-15 (SkyyCore): removed = classes the new jar no longer has (the compare checks exactly these); every label that starts
+    with "live" gets its own scratch COPY of the live folder (live, live2, ...)."""
     builtin = {"mkfake": lambda: run_mkfake(os.path.join(scratch, "fake"), jar),
                "verify": lambda: run_verify(arg("--out"), jar),
-               "compare": lambda: run_compare(arg("--out"), jar, old_jar, pkg, expect, added),
+               "compare": lambda: run_compare(arg("--out"), jar, old_jar, pkg, expect, added, removed),
                "audit": lambda: run_audit(arg("--out"), jar, os.path.join(scratch, "fake"))}
     if "--phase" in sys.argv:
         ph = arg("--phase")
@@ -351,11 +356,11 @@ def run(name, version, jar, old_jar, pkg, scratch, expect, added, phases, script
         for label in ("verify", "compare"):
             take(child(label), label)
         for label, _fn in phases:
-            if label == "live":
+            if label.startswith("live"):
                 if live is None or not os.path.isdir(live[0]):
                     check(False, "D: no live folder %s" % (live and live[0]))
                     continue
-                home = os.path.join(scratch, "live", live[1])
+                home = os.path.join(scratch, label, live[1])
                 shutil.copytree(live[0], home)
                 print("D. live %s copied (read-only source %s)" % (live[1], live[0]))
                 take(child(label, "--home", home), label)
