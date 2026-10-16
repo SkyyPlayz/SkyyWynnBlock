@@ -184,3 +184,4 @@ tests always come first.
 156. Deposit All takes all Enchanted, /craft scroll list + big rows, no accessories in /craft, Void upgrade without level
 157. Crafting hub tabs + big top row on Smithing, Upgrade buttons, pets Eggs + Hatchery
 158. No false Mana / spell-cost WARNs, quiet minimap shutdown (log only)
+159. Requip scroll + search on top + take-out stays out
