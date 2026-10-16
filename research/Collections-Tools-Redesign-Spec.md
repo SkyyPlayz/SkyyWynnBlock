@@ -340,3 +340,4 @@ T1 and C1 can run in parallel (different mods; C1's bridge is optional for T1). 
 - Skyy 2026-10-16: each upgrade line caps at 10 x the tool's tier (Crude 10, Copper 20 ...; top tier uncapped); extra points stay banked (gear.md TOOL LINE CAP PER TIER).
 - Skyy 2026-10-16: PERK lines (Vein Mine, Tree Feller ...) cap by the tool LEVEL (= skill level), not the tier; tool part max (Vein Mine ~6) + the skill tree's same ability on top (~+4) = total (~10). The 10 x tier cap applies to Breaking Power / Speed / Fortune only (gear.md PERK CAPS).
 - Skyy 2026-10-16: Vein Mine / Tree Feller tool levels cost 1, 2, 4, 8, 16, 32 ... (double each level) (gear.md PERK COST CURVE).
+- Skyy 2026-10-16: Power / Speed / Fortune levels cost a FLAT 1 point each (no rising cost); the 10 x tier cap stays (gear.md FLAT LINE COSTS).
