@@ -41,7 +41,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 ## What Skyy should test (TEST-CHECKLIST 137 + 138, world NewBetaTest)
 Battlemagic levelling, health regen, fortune card, Tools tab tier up, Home menu + Teleport centre, Smithing UPGRADE tab, sickle sweep +
 fewer sticks, pole in kit + no-tackle fishing, Crescent Rush + sword guard, Accessory Bag Craft tab + auto-equip + lanterns, Requip pet /
-ability slots, bag costs + space, Bazaar CONFIRM + prices, starter Accessory Bag, natural cave (/island reset), Assassin kunai, Tree
+ability slots, bag costs + space, Bazaar CONFIRM + prices, starter Accessory Bag, Assassin kunai, Tree
 Feller row III, /zone 1 (new zones world skywynn_zones2 with islets + waterfalls; /zone old6 = the old one). Scan both logs after play
 (Jev via tools/llm.py) and recycle old logs.
 
