@@ -8,14 +8,12 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 2. DEPLOY TARGET = world **NewBetaTest** (`tools/deploy_set.py` WORLD). Skyy plays with a friend (WesleyPlayz, Assassin).
 3. Deployed 10-16 (TEST-CHECKLIST 139-146): Hud 0.3.28, Essentials 0.1.11 (crops back - DynamicSeasons Compost_Soft), Menu 0.3.30, Cooking 0.1.8
    (food families), Fishing 0.1.8 + Sacks 0.8.10 + Shards 0.4.1, Classes 0.1.30 + Trees 0.3.18 (top-down tree), Bazaar 0.1.15 (x4.5 prices,
-   sell per tab), Gear 0.3.12 (watering can + Harvester). deploy_set rules added: Sacks 0.8.10 needs Fishing 0.1.8; Trees 0.3.18 <-> Classes 0.1.30.
+   sell per tab), Gear 0.3.12 (watering can + Harvester), Wardrobe 0.2.4 (Requip loadout rows, TEST 147). deploy_set rules added: Sacks 0.8.10 needs Fishing 0.1.8; Trees 0.3.18 <-> Classes 0.1.30.
 4. Rounds: while Skyy is chatting about other topics, run builders as PLAIN Agents (workflow builders refuse - memory note) and spawn the
    critics yourself; else the saved workflow `skywynn-round`. Deploy only with the game closed: backup -> smoke (`--allow-pack-api`) ->
    deploy_set --yes -> record_deploy -> commit -> tidy. Never SendMessage an agent inside a workflow; plain Agent builders can be messaged.
 
 ## RUNNING NOW (plain Agent builders unless noted; if this session died: check their files, review, pin, deploy)
-- wd024 SkyyWardrobe 0.2.4 (Requip = full 4-row class loadout + modifiers, hoe into Requip, tier-up ghost tidy) - fixing the review's
-  run-once finding (persisted marker, History + Undo, no LL_CUT date).
 - craft01 SkyySacks 0.8.11 + SkyyAccessories 0.5.19 + SkyyMenu 0.3.31: Crafting hub (Smithing tab -> CRAFTING: Crafting + Smithing pages),
   crafter look, /craft tier sort, furnace ADD FUEL picker (sorted by amount), benches use the Accessory Bag, Void DEPOSIT ALL at the top.
 - pets040 SkyyPets 0.4.0 = Pet Eggs R1 (eggs + hatching + Pets page grid / flavor text / filters). Art drafts in art/pet-eggs (sent to Skyy).

@@ -172,3 +172,4 @@ tests always come first.
 144. Class tree top-down, modifiers out of the tree (AP refunded), every ability says what it does
 145. Bazaar 0.1.15: x4.5 prices (Eternal seeds kept), crop groups by tier, saplings in Foraging, SELL <TAB> + SELL ALL TABS
 146. Lifelong watering can (hold to water), Harvester, SMITHING tab, Upgrade 8 rows
+147. Requip 4 ability rows + modifiers, hoe into Requip, Crude Hatchet ghost gone
