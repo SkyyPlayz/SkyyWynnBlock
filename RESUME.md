@@ -48,6 +48,8 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    'Equipment packet on the local player' WARNs. Lean/full round after cls0130 + gear0312.
 1g. **THE ARMORY GEAR INTO OUR SYSTEMS** (gear.md 10-16; plan research/Pack-Armor-Plan.md): runtime by id - Cloth/Light/Heavy + class weapons, our
    rarity / modifiers / levels / reforge, drops from every source. ULTRACODE after the running rounds (Gear + Mobs + loot).
+2. RUNNING pets040 (plain Agent builder, ultracode-size; critics after) = R1 SkyyPets 0.4.0 eggs + hatching + pets page redesign. Art A0 DRAFT
+   committed (art/pet-eggs, class-emblems, Spellblade icons; sheets sent to Skyy).
 2. **PET EGGS + HATCHING** (research/Pet-Eggs-Spec.md; pets.md 10-15): 30 eggs (Mining / Farming / Foraging / Combat / Exploration x
    Common..Mythic), roll 1 pet (best -> worst weights by egg rarity), roll 2 rarity, atomic hatch then ~3 s two-reel animation, sources
    (skill drops, collections, crafting, shops). 5 questions open in OPEN-QUESTIONS.md with defaults - use the defaults unless Skyy answers.
