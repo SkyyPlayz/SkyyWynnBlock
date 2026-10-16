@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12)
+# SkyWynn - RESUME HERE (updated 2026-10-16 ~05:45 MDT: RUNNING: wd024 Wardrobe 0.2.4 + gear0312 Gear 0.3.12 + menu0330 Menu 0.3.30)
 
 Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`. Skyy's tests:
 `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md` (2026-10-15 / 16 lines). Decisions word for word: `docs/answered/<topic>.md`.
@@ -7,7 +7,8 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
 1. `git pull --rebase --autostash`; check usage (ccd get_usage). The weekly limit was hit once on 10-15 ~22:30 and Skyy reset it.
 2. DEPLOY TARGET IS THE WORLD **NewBetaTest** (`tools/deploy_set.py` WORLD; backup_deploy / smoke_test follow it). Skyy plays there with a
    friend (WesleyPlayz, Assassin). The old world `HUD mod` is no longer deployed to.
-3. RUNNING (10-16 ~11:00): lean builder wd024 (SkyyWardrobe 0.2.4, NEXT 0) + workflow gear0312 (SkyyGear 0.3.12, NEXT 1); if this
+3. RUNNING (10-16 ~11:00): lean builder wd024 (SkyyWardrobe 0.2.4, NEXT 0) + workflow gear0312 (SkyyGear 0.3.12, NEXT 1)
+   + workflow menu0330 (SkyyMenu 0.3.30: no duplicate icons / entries, menu scaled up, Home 'Right now' panel + the queued Menu items; ui.md 10-16); if this
    session died, check their scratch / files, review, pin, deploy. Nothing pinned-but-not-deployed. Last deploys: 10-15 23:14 (TEST-CHECKLIST 137) and 10-16 05:31 (138).
 4. Kit `tools/skyyui.py` is now kit 1.6 (KIT_HUB_VERSION 1.6, KIT_VERSION still "1.5"): builds no longer need the old HEAD-kit preload.
 5. Rounds: saved workflow `skywynn-round` (Skyy's OWN words + the popup question in args.quotes; resuming a workflow needs the args
