@@ -42,7 +42,7 @@ Big picture for other agents: `STATUS.md`. Map: `INDEX.md`. Rules: `PROJECT-RULE
    (SkyyGear /smithing) + Furnace ADD FUEL picker sorted by amount owned (keep the quick bar) + every /craft tab sorted by tier (farming: crop, Enchanted, seeds, Eternal). Round after menu0330 + fish018 (Menu + Sacks + Gear).
 1f2. **SMELTING ACCESSORY** (gear.md 10-16): faster smelting, more fuel per tier; max tier -> infinite-fuel variant via the Charcoal collection.
    Short spec, then a round after the Crafting hub (Accessories + Sacks furnace + Collections).
-1f4. **BENCHES USE THE ACCESSORY BAG** (bags.md 10-16): next-tier accessory crafting counts + takes accessories from the Accessory Bag. After fish018.
+1f4. **SACKS FOLLOW-UP** (bags.md 10-16, after fish018): benches count + take accessories from the Accessory Bag; Void page DEPOSIT ALL at the top = every bag, old button -> DEPOSIT <BAG>.
 1f3. **MOVEMENT vs THE ARMORY** (log scan 10-16): Armory's JumpHeightModifierSystem writes MovementSettings -> our speed/jump bonuses pause.
    Make our movement protocol compose with it (SkyyCore / Skills / Accessories / Trees applier, no Armory file changes) + find the 230 client
    'Equipment packet on the local player' WARNs. Lean/full round after cls0130 + gear0312.

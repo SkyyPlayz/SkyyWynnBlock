@@ -9,9 +9,9 @@ under each heading. Older design questions (gear, classes, collections cutoff, W
 `python tools/qa_append.py <topic> <file with the answer lines> --close "<words from the question>"`. Every answer ever given (word for word,
 by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` line per question under its topic, today's default in [brackets].
 
-## Still open (newest at the bottom of each topic)
+## Still open (newest at the bottom of each topic; each heading names the answers file)
 
-### project
+### project  (answers -> docs/answered/project.md, topic `project`)
 - RELEASE: start with a GitHub 'server pack' zip, CurseForge modpack later? [yes] (research/Release-Packaging-Plan.md)
 - RELEASE: OK to redistribute our jars although 4 of them (Skills / Armory / Gear / Trees) hold edited vanilla JSONs / assets generated from game files at build time - check Hytale's modding terms first? [check the terms first, then release] (research/Release-Packaging-Plan.md)
 - RELEASE: Dynamic Seasons + More Crossbow Tiers have no stated pack permission - ask the authors now, list them optional until they reply? [yes, ask now, optional until a reply] (research/Release-Packaging-Plan.md)
@@ -22,7 +22,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - LOAD TEST: how many players should the public server handle at release (sets N)? [50 online, 200 profiles on disk] (research/Load-Test-Plan.md)
 - LOAD TEST: make 'no com.skyy task took over 25 ms' a release gate in the smoke test? [yes, warn only until the Core ticker lands] (research/Load-Test-Plan.md)
 
-### world
+### world  (answers -> docs/answered/world.md, topic `world`)
 - EXPLORATION: names Lost Loot / Lost Treasure / Supply Drop OK? [yes] (SkyyExploration 0.2.8)
 - EXPLORATION: tier IV Lost Loot is a gold treasure pile? [yes] (SkyyExploration 0.2.8)
 - EXPLORATION: one supply drop per world every 30 min, one at a time, first claim takes all? [yes] (SkyyExploration 0.2.8)
@@ -33,7 +33,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - STRUCTURES: boss dungeons from Adathan (Tower of Shiva, Void Asylum) as end-game: one ask message for all four? [no, our own capstone dungeon] (research/Structure-Mods-Survey.md)
 - STRUCTURES: if no author agrees, build a small prefab placer into SkyyWorldGen? [only if loot piles need it] (research/Structure-Mods-Survey.md)
 
-### skills
+### skills  (answers -> docs/answered/skills.md, topic `skills`)
 - PERFECT DODGE (SkyySkills 0.4.37): 50 ms window, x1.25 counter-hit for 0.75 s, +5 Acrobatics XP (max 50 XP / min, monsters' hits only)? [yes; widen to 100 ms if 50 feels too tight]
 - PERFECT DODGE: base roll behaviour for everyone, not an Acrobatics perk? [base behaviour] (SkyySkills 0.4.37)
 - PERFECT DODGE: show it as a HUD flash or sound instead of a chat line? [chat line now, HUD later] (SkyySkills 0.4.37 / SkyyHud)
@@ -41,7 +41,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - OVERALL LEVEL: count Farming as the average of Farming / Ranching / Orchard now? [off until Ranching and Orchard have real XP sources] (SkyySkills 0.4.37)
 - RANCHING: cap of 200 XP a minute (after boosts) plus 'items a player dropped pay nothing' enough protection against farming? [yes] (SkyySkills 0.4.37)
 
-### gear
+### gear  (answers -> docs/answered/gear.md, topic `gear`)
 - HARVEST GATE (SkyyGear 0.3.3): a Crude / Copper SICKLE sweeps Potatoes at half XP while a Crude hoe is refused (vanilla sickles stop at Iron, the sweep has no skip hook). Keep, or measure sickles against the crop's real tier (needs a client-side probe first)? [keep]
 - VAULT FETCH (SkyyVault 0.1.6): on a normal server stop the 30 s 'tool on the way' notes are not cleared, so a lifelong tool in flight can show twice (Vault + inventory) after a crash; clearing them risks losing the tool if the player was not saved first. Accept the duplicate-note trade-off? [yes, keep]
 - SIGILS: Unique Sigil comes from the Wheat, Oak Log, Cobblestone and Bone collections at tier VI? [yes] (SkyyGear 0.3.4 / Collections 0.2.13)
@@ -56,18 +56,18 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - TOOL PERKS (SkyyTrees 0.3.6): the Tree Feller log table stops at level 6 (1,2,4,5,6,10), so the hatchet perk adds nothing once your tree is level 5+. Give it 8 numbers (e.g. 1,2,4,5,6,10,12,14) as the new default, or will you edit it in Server Setup -> Trees? [8 numbers]
 - TOOL PERKS: Vein Mine = +1 ore per tool level on top of the tree's Vein Burst number, total capped at 8. Intended? [yes]
 
-### economy
+### economy  (answers -> docs/answered/economy.md, topic `economy`)
 - AUCTION HOUSE + REBIRTH (SkyyAuctions 0.1.5): unclaimed AH sale coins block a rebirth until the player claims them (then they are lost with the purse). Or should Continue claim them into the purse automatically? [block, ask the player to claim first]
 - BAZAAR + REBIRTH (SkyyBazaar 0.1.11): should the Bazaar also refuse trades while a rebirth is busy (today it relies on SkyyCoins 0.1.7 refusing spends; Bazaar sales are income and still land)? [no, rely on SkyyCoins]
 - ECONOMY AUDIT: add a real coin sink (the Tab or slayer costs from the old plan) before more faucets? [yes, after rebirth R3; numbers from a measured session] (research/Economy-Audit-1014.md)
 - ECONOMY AUDIT: count goods bought with coins before a rebirth in the bank-bonus balance (they are kept either way)? [yes, at 90% of base value] (research/Economy-Audit-1014.md)
 - ECONOMY AUDIT: scale merchant prices up 25% per rebirth once rebirth is on? [yes, off until rebirth is on] (research/Economy-Audit-1014.md)
 
-### bags
+### bags  (answers -> docs/answered/bags.md, topic `bags`)
 - AUTO-PICKUP 2 (SkyySacks 0.8.4): seeds / saplings from a harvest go to the Void (not the inventory), so replanting means pulling them out. Keep? [Void]
 - AUTO-PICKUP 2: the vanilla 'picked up' popup still flashes next to our feed card. Keep it? [keep]
 
-### classes
+### classes  (answers -> docs/answered/classes.md, topic `classes`)
 - ABILITIES: which modifiers may go in both slots (double effect from modifier Lv 2)? [Power+, Radius+, Duration+, Efficiency, Pierce, Chain, Slow, Knockback+, Ricochet, Pull, Leech; never Split, Lingering, Follow, Ward, Echo, Haste, Floor, Seeker] (SkyyClasses 0.1.22, list grew with the new classes)
 - ABILITIES: Priest Spirit Shield gives the saved player a 4 s personal shield worth 15% of max Health (stands in for 'a small bubble that blocks projectiles')? [15% personal shield] (SkyyClasses 0.1.22)
 - ABILITIES: Layered Ward splits the bubble in two equal halves, the inner half regrows 3% of the bubble's HP a second? [yes] (SkyyClasses 0.1.22)
@@ -75,14 +75,14 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - ABILITIES: build the 4 waiting nodes next round (Priest Elemental Bubble PB2, Mage PA4 + PC2, Priest PA2; Guiding Light stays out)? [yes, next round] (SkyyTrees 0.3.7)
 - each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]
 
-### pets
+### pets  (answers -> docs/answered/pets.md, topic `pets`)
 - PET KILLS (SkyyPets 0.2.5 / SkyyMobs 0.1.8 / SkyySacks 0.8.4): pet-kill loot + 'pet damage makes you top damager' are built but cannot be tested until pets fight (SkyyPets 0.4). Keep them idle until then? [yes]
 - DRAGON as a pet with Aures' Dragon Nestkeeper: our secondary pet slot summons their dragon, or their mod owns the dragon and our slot links it, or our own dragons later? [(1) summon via our slot if Aures allows + it works, else (2) - docs/answered/pets.md 2026-10-06; decide after the survey + Aures' answer]
 
-### social
+### social  (answers -> docs/answered/social.md, topic `social`)
 - GUILD info takes names with spaces? Needs a fix in SkyyGuilds (and the same left-out-button fix in SkyyShards / SkyyRebirth), not the menu. [yes, small Guilds fix] (SkyyMenu 0.3.23 Admin page)
 
-### rebirth
+### rebirth  (answers -> docs/answered/economy.md, topic `economy`)
 - BANK BONUS (SkyyRebirth 0.2 / SkyyBank 0.1.11): bonus is worked out on the profile's share of min(account total, 10M), the same cap as the brackets? [yes]
 - BANK BONUS: it is flat on the whole capped balance - at the +3 total cap that is about +300k a day on a full 10M bank, ~3.5x the 85k base interest. Keep the Q7 numbers or lower / weight by bracket? [keep the Q7 numbers; refresh the Balance Workbench]
 - REBIRTH stays OFF for real players until Skyy has tested R1-R4 (Bazaar / AH open-order check is in 0.3)? [keep OFF until Skyy has seen the Nexus tooltip]
@@ -94,7 +94,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - TREE: +4% points per Echo level (up to +40%), editable? [yes] (SkyyRebirth 0.3)
 - TREE: opening row 2 costs 15 points and one maxed skill pays about 8, so the first rebirth cannot open row 2. Keep the spec curve or make early levels cheaper (Tree price growth 1 = every level costs 1)? [keep 1.08] (SkyyRebirth 0.3)
 
-### shards
+### shards  (answers -> docs/answered/skills.md, topic `skills`)
 - CO-OP (SkyyShards 0.1 / 0.2): co-op may enter your shard but only the owner can Collect, buy storage and Grow? [yes; row shard.coopCollect is off]
 - A picked-up shard (or one left by an island reset) makes nothing until placed again? [yes]
 - Island sizes 13 / 21 / 29 and 6 slots from the spec, not the mockup? [spec]
@@ -110,13 +110,13 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - Collects made in creative mode count toward collections only at a later Collect in Adventure? [yes]
 - One Farming Shard per profile, ever; a lost one comes back only via /shardadmin give; crafting at rebirth 2 only for a profile that never had one? [yes] (SkyyShards 0.2)
 
-### quests
+### quests  (answers -> docs/answered/world.md, topic `world`)
 - DAILY JOBS (SkyyQuests 0.3): daily kill jobs pay an unidentified weapon and armor piece every time (up to 3 of each a day). Keep, or gear on only one job a day (else coins + item)? [gear on every kill job]
 - Quest Board look: Kweebec clerk or a board prop? [Kweebec until the prop is proven]
 - Markers: floating '!' plus your own signs, or only your own signs? [both; Server Setup switch]
 - Daily 'Mine 64 stone' counts only natural blocks (stops place + re-break)? [allow for now]
 
-### ui
+### ui  (answers -> docs/answered/ui.md, topic `ui`)
 - ADMIN PAGE (SkyyMenu 0.3.23, research/Admin-Page-Plan.md): one Admin page in the SkyWynn Menu (right bar, admin only), tabs Server / Economy / Players / Diagnostics? [yes, as built]
 - ADMIN PAGE: buttons run the existing commands as you (chat shows output), 5 status buttons also show a one-line result on the page? [yes, option C]
 - ADMIN PAGE: dangerous buttons (reset, remove, repay) confirm for 5 s before they run? [yes]
@@ -128,12 +128,10 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 - HUBS: Character hub tabs separate (Stats, Skills, Trees, Class, Pets, Collections, Profiles - as built) or merged like your 2026-10-10 pick (Stats+Skills, Trees+Abilities, Collections+Recipes; also Bank+Vault, Bazaar+Auction House)? [separate now, merge later if you pick merged]
 - HUBS: scrolling lists OK on Skills (11 of 12 rows show), Class (7 of 8 cards), Profiles (7 cards)? [yes]
 - GEAR: benches refuse vanilla Iron / Thorium / Cobalt / Adamantite armor and gathering tiers 2+ (Anvil tier-up only; row gear.gatherAnvilOnly)? [yes, ON]
-- THE ARMORY: its jump-height system writes jump force directly, so our speed / jump bonuses pause while it is on - keep The Armory on? [on until you decide]
 - SAP TAPPER: should the perk's extra Tree Sap count toward the Tree Sap collection (today only the base sap does)? [yes]
 
-## Pet eggs (research/Pet-Eggs-Spec.md, asked 2026-10-15)
+## Pet eggs (research/Pet-Eggs-Spec.md, asked 2026-10-15)  (answers -> docs/answered/pets.md, topic `pets`)
 - Where can coins buy eggs? [Bazaar Common-Epic; Legendary only from merchants + Auction House; Mythic only player trade / drops]
 - Can pets be fused to Mythic? [no - Mythic only from eggs]
 - Add roster pets (e.g. Mosshorn, Bison to Farming) so each egg has a real best-to-worst spread? [yes]
 - Give collection eggs for tiers already reached when collection eggs ship? [yes, once]
-- Drop the old 10-10 zone / species egg idea? [yes]
