@@ -30,6 +30,10 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   hubchar DONE + pinned (Menu 0.3.33 + Skills 0.4.45 + Trees 0.3.19 + Classes 0.1.33). RUNNING: smithhub Gear 0.3.15 (+ Menu 0.3.34) smithing
   pages get the Crafting hub bars (ui.md 10-16) + tab:storage:bank shortcut fix; cook0110 Cooking 0.1.10 (one food family = one bar). T1 -> Gear 0.3.16.
   NEXT AFTER smithhub: HUBROW SWEEP - full top hub row on every hub page (ui.md 10-16), every hub mod rebuilt with smithhub's kit helper.
+  PINNED (deploy at next close): hubchar, hubstore, hubmkt, hubcoll. RUNNING: sacks0814 (Void homes for 103 Enchanted + Life Essence -> vanilla
+  Greater Essence in skyyench + /craft bigger rows + scroll), menu audit -> research/Menu-Pattern.md (Skyy 10-16 'reduce and compress the menus';
+  then popups, then ONE sweep = pattern + top hub row on every page). Collections 0.2.23 + Bazaar 0.1.18 (Life Essence 1:1 convert, Eternal
+  seeds tier 4, Enchanted listing with gift sizing) wait for sacks0814.
   So T1 becomes Skills 0.4.46, Enchanted listing Bazaar 0.1.18. Mod compression AFTER (sections stay separate - docs/answered/project.md 10-16).
 - Last deploy: Nothing else running. Deployed 10-16 14:44 (TEST-CHECKLIST 154): Skills 0.4.44 (dodge), Rebirth 0.3.4 (ON), Exploration 0.2.12, WorldGen 0.7.2 (/spawn),
   Cooking 0.1.9, Guilds 0.1.10, Collections 0.2.21 (redesign C1), Gear 0.3.14 (one Harvester, Crude full on wheat, Sigils) + Armory 0.1.30
