@@ -97,6 +97,8 @@ Other proven facts: HUD attach = `new HudMain(pr).show()` on `PlayerReadyEvent` 
    constructor of the command AND of every subcommand/usage variant (SkyyEssentials pattern). Never on admin commands (requirePermission).
 2. Optional args are not positional: token count must equal the required-arg count (acceptCall0). Every documented positional form needs a
    usage variant (description-only ctor + withRequiredArg, parent addUsageVariant) or a subcommand with withRequiredArg.
+3. No leftover commands (Skyy 2026-10-16: "we dont need to keep commands around that longer fit."): when a page / item / system is
+   renamed or retired, its old commands are REMOVED, not kept as aliases. Commands that still describe what they open stay.
 
 ## Where the rest of the old HANDOFF went (2026-10-05, word for word)
 | Old part | Now |
