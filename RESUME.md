@@ -15,20 +15,15 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    critics yourself; else the saved workflow `skywynn-round`. Deploy only with the game closed: backup -> smoke (`--allow-pack-api`) ->
    deploy_set --yes -> record_deploy -> commit -> tidy. Never SendMessage an agent inside a workflow; plain Agent builders can be messaged.
 
-## RUNNING NOW (plain Agent builders; critics after; if this session died: check their files, review, pin, deploy)
-- farm01 SkyyGear 0.3.14: retire hoe + sickle -> Crude Harvester + can for everyone (one-time merge), sweep tier rule, Sigils on Mining
-  Sets + drop sources by rarity + Mythic usable, till area everywhere (NEXT 0b).
-- C1 SkyyCollections 0.2.21: collections redesign round C1 (own Enchanted per collection, tier unlocks Enchanted -> tool -> armor, coins half,
-  tool points, ranks). Spec answered (research/Collections-Tools-Redesign-Spec.md last section). NEXT after farm01: T1 Gear 0.3.15 + Skills
-  0.4.45 (uncapped Breaking Power / Speed / Fortune, coll:fn:toolPts), then V1 compactor, E1 Blocks + un-compress, E2 auto un-compress.
-- small01: Exploration names (Loot Bag / Magic Box), WorldGen 0.7.2 /spawn for players, Cooking 0.1.9 Strength scales (10 min cap),
-  Guilds names with symbols.
-- PINNED, NOT DEPLOYED (deploy when the game closes): SkyySkills 0.4.44 (dodge), SkyyRebirth 0.3.4 (rebirth ON).
+## RUNNING NOW
+- Nothing. Deployed 10-16 14:44 (TEST-CHECKLIST 154): Skills 0.4.44 (dodge), Rebirth 0.3.4 (ON), Exploration 0.2.12, WorldGen 0.7.2 (/spawn),
+  Cooking 0.1.9, Guilds 0.1.10, Collections 0.2.21 (redesign C1), Gear 0.3.14 (one Harvester, Crude full on wheat, Sigils) + Armory 0.1.30
+  (one boss Sigil roll). NEXT: T1 Gear 0.3.15 + Skills 0.4.45 (spec research/Collections-Tools-Redesign-Spec.md, last section).
 
 ## NEXT (after the running rounds; each answer word for word in docs/answered/)
 
 0. FROM THE 10-16 OPEN-QUESTIONS PASS (word for word in docs/answered/*.md, dated 2026-10-16) - queued builds:
-   a. DEPLOY when the game closes: SkyySkills 0.4.44 (dodge every direction + class styles + perfect dodge) and SkyyRebirth 0.3.4 (rebirth ON) - both pinned.
+   a. (done 10-16: Skills 0.4.44 + Rebirth 0.3.4 deployed)
    b. farm01 / gear0314 (SkyyGear): retire hoe + sickle -> start with Crude Harvester + can (merge existing), sweep tier rule, Sigils on Mining
       Sets, Sigil drop sources by rarity, Mythic Sigil usable, till area everywhere.
    c. Collections + tool upgrades redesign (needs a spec): every tier unlocks recipes / Enchanted Block 2nd compression / lower coins + tool
@@ -39,7 +34,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
       totem tier-up costs by totem kind; REMOVE the MoreTotems fold (spec first).
    i. NEXT ROUNDS for C1: Bazaar 0.1.17 lists the 83 new Enchanted items - FIRST size the collection gifts to item value (critic: up to ~40 Enchanted
       Mithril free) or keep gift items off market; freeze NEW0116 to TABLE_20; ResourceTypeId recipe pricing; Sacks rebuild (homes for 103 rows,
-      Combat / Smithing cats); Gear T1 reads coll:fn:toolPts + coll:tierups (Anvil gate); switch SkyyArmory's own boss Sigil roll off.
+      Combat / Smithing cats); Gear T1 reads coll:fn:toolPts + coll:tierups (Anvil gate). (Armory boss Sigil double roll fixed in 0.1.30.)
    g. BEASTMASTERY skill (skills.md 10-16): spec then Skills + Trees + Pets rounds.
    h. Gathering stat lines on gear rolls / accessories / pets (gear.md GATHERING STAT SOURCES); four-power-sources rule.
    f. Small rounds: Exploration names (Loot Bag / Lost Treasure / Magic Box); /spawn for players (WorldGen 0.7.2); guild names with symbols;
