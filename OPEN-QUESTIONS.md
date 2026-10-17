@@ -14,10 +14,16 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### project  (answers -> docs/answered/project.md, topic `project`)
 
 ### world  (answers -> docs/answered/world.md, topic `world`)
+- STRUCTURES (research/Structure-Mods-Survey.md 2026-10-17 block): send the drafted ask to joszza now? [yes]
+- STRUCTURES: switch joszza's StructureV2 on in a test-world copy for a look (its merchant package would duplicate SkyyMerchants)? [yes, copy only]
 
 ### skills  (answers -> docs/answered/skills.md, topic `skills`)
 
 ### gear  (answers -> docs/answered/gear.md, topic `gear`)
+- SMELTING CHARM (gear.md 2026-10-16; needs Accessories + Sacks furnace + Collections): name? [Furnace Charm; infinite variant "Eternal Flame"]
+- SMELTING CHARM tiers + numbers? [T1-T5: -10/-20/-30/-40/-50% smelt time, +15/+30/+45/+60/+75% fuel burned; Server Setup rows]
+- SMELTING CHARM infinite-fuel variant: an upgrade of the max tier, keeps -50% speed, no fuel; unlocked at which Charcoal collection tier? [upgrade; Charcoal tier 7]
+- SMELTING CHARM: only the /craft Furnace, or the placed vanilla furnace too? [only /craft Furnace - the placed one has no per-player hook]
 
 ### economy  (answers -> docs/answered/economy.md, topic `economy`)
 
@@ -26,6 +32,10 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### classes  (answers -> docs/answered/classes.md, topic `classes`)
 
 ### pets  (answers -> docs/answered/pets.md, topic `pets`)
+- NESTKEEPER (research/Nestkeeper-Pack-Check.md): ask Aures to allow recoloured element dragons (only Plain + Tundra exist)? [yes, ask]
+- NESTKEEPER: keep its own taming next to our dragon pet? [yes, both]
+- NESTKEEPER: are wild Zone-1 adult dragons too strong? [test in game first]
+- NESTKEEPER: pack the same author's Rare Monsters + Horse Skins too? [no, Nestkeeper only for now]
 
 ### social  (answers -> docs/answered/social.md, topic `social`)
 

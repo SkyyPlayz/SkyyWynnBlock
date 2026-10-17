@@ -87,7 +87,7 @@ public static String pkey(java.util.UUID u) {
 - **SkyyCoins:** starter coins per profile (a new profile starts fresh). `coins:fn:*` resolve the active profile.
 - **SkyySkills:** XP, per-class combat XP and perks per profile.
 - **SkyySacks:** pool, processing queues and crafts.log lines per profile (key in the log line).
-- **SkyyAccessories:** bag per profile.
+- **SkyyAccessories:** bag (`bags/<pkey>`), Accessory Power pick (`power/<pkey>.properties` power= / switched=, none = Balance) and the retired-bag marker (`retired/<pkey>.properties`) per profile.
 - **SkyyCollections:** counts per profile.
 - **SkyyBank:** account per profile (interest keeps paying every account file, including profile files).
 

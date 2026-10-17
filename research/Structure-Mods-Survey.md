@@ -77,3 +77,25 @@ shipped or listed in PACK.md until the author says yes. The search listing only 
 | 2 | Do you want more world structures at all before release, or keep zones vanilla + our loot piles? | [keep vanilla, add loot piles first] |
 | 3 | Boss dungeons from Adathan (Tower of Shiva, Void Asylum) as end-game: one ask message for all four? | [no, our own capstone dungeon] |
 | 4 | If no author agrees: build a small prefab placer into SkyyWorldGen? | [only if loot piles need it] |
+
+## Update 2026-10-17 - joszza draft + Skyy's answers
+
+Skyy answers: 2026-10-16 "vanilla+ loot piles AND structures we can use without asking" (pack any structure mod whose licence already allows modpack use, no ask needed); "Yes, draft it" for the joszza message (docs/answered/world.md 96-100); boss dungeons = our own capstone; placer only if loot piles need it.
+
+**Result of the "without asking" filter:** no mod in the table above states modpack use (all All Rights Reserved, none says modpack OK in the fetched text), so nothing qualifies today. The survey is 3 days old and the CurseForge pages were NOT re-fetched on 10-17 (UNVERIFIED: check the licence page of each for a modpack line before the ask).
+
+**Found in Skyy's Mods folder:** `StructureV2-0.1.6.jar` = joszza "StructureV2" (Group joszza, Java plugin, `ServerVersion *`, optional Lootr, bosses in joszza:DungeonBosses, includes asset pack, CurseForge project id 1445396, plugin packages: boss, cmd, map, merchant, place, weapon, ui). This is the "Dungeons and more Structures" content on the engine side. Not in PACK.md, not in the world, no LICENSE in the jar. Same dupes as the table: its merchant package vs SkyyMerchants, its boss package vs SkyyMobs levels, its map package vs BetterMap pins, its weapon package vs SkyyGear (items we would have to level). It also has `/` admin tools that would need a permission check against our command rules.
+
+**What "the joszza draft" is:** the message Skyy sends to joszza asking for modpack use (draft below; Skyy sends it, Claude never contacts anyone).
+
+> Hi joszza! I'm Skyy, I run a Hytale server pack called SkyWynn (a Hypixel SkyBlock x Wynncraft style server pack, friends and community, free, no paid pack). I like OpenStructure and Dungeons and more Structures a lot and would love to include both in the pack. May I include them in a CurseForge modpack / server pack, with a link to your mod pages and your name as credit? We would never reupload your files, copy your structures, or edit your item ids; our own mods would only react to your items by id. Two small questions: (1) are both fine with Hytale 0.7.2 (I see the structures pack tagged 0.6)? (2) can the traveling merchant camp be switched off by a config, since our pack has its own roaming merchants? Thanks for your time, and no worries at all if the answer is no - just tell me and I'll leave it out.
+
+Post it in the CurseForge comments or via the Authors Discord link in PACK.md; paste any answer word for word into docs/answered/world.md (`tools/qa_append.py`).
+
+**Verdict update:** unchanged (ask, then pack OpenStructure + Dungeons and more Structures if yes; others learn or skip). Nothing for the pack until joszza answers.
+
+### Questions for Skyy (update)
+| # | Question | Default |
+|---|---|---|
+| 5 | Send the draft above to joszza now (comment or Discord)? | [yes] |
+| 6 | Should StructureV2 0.1.6 be put on in the test world copy meanwhile for a look test (read-only for the pack; nothing shipped)? | [yes, test copy only, smoke test first] |

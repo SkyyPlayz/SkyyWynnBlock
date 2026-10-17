@@ -27,7 +27,6 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 | SkyySacks, SkyyEssentials, SkyyAuctions, SkyyMenu | Local | Void Charms rename (no Gear) + Essentials icon ids + Menu Arrange fixes + Supplies tab icon | local, no PR | 2026-10-17 | Building |
 | SkyyClasses, SkyySkills | Local | Breach + Hunter's Mark stack fully; Monk "Zen" rename | local, no PR | 2026-10-17 | Building |
 | SkyyWardrobe, SkyyCooking | Local | Requip deposit strands claimed food (LOW fix) | local, no PR | 2026-10-17 | Building |
-| SkyyAccessories, SkyyProfiles | Local | Smelting charm; Profiles carry Accessory Power / retired files | local, no PR | 2026-10-17 | Building |
 
 Free for the local session: everything not in the table (e.g. the Void Charms rename round in RESUME, skipping Gear until the row
 above is released).
