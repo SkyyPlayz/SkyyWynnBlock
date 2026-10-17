@@ -20,10 +20,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### skills  (answers -> docs/answered/skills.md, topic `skills`)
 
 ### gear  (answers -> docs/answered/gear.md, topic `gear`)
-- (ON HOLD until the alloy furnace progression - gear.md 2026-10-17) SMELTING CHARM (gear.md 2026-10-16; needs Accessories + Sacks furnace + Collections): name? [Furnace Charm; infinite variant "Eternal Flame"]
-- (ON HOLD until the alloy furnace progression - gear.md 2026-10-17) SMELTING CHARM tiers + numbers? [T1-T5: -10/-20/-30/-40/-50% smelt time, +15/+30/+45/+60/+75% fuel burned; Server Setup rows]
-- (ON HOLD until the alloy furnace progression - gear.md 2026-10-17) SMELTING CHARM infinite-fuel variant: an upgrade of the max tier, keeps -50% speed, no fuel; unlocked at which Charcoal collection tier? [upgrade; Charcoal tier 7]
-- (ON HOLD until the alloy furnace progression - gear.md 2026-10-17) SMELTING CHARM: only the /craft Furnace, or the placed vanilla furnace too? [only /craft Furnace - the placed one has no per-player hook]
+- FURNACE CHARM (gear.md 2026-10-17): only the /craft Furnace, or the placed vanilla furnace too? [only /craft Furnace - the placed one has no per-player hook]
 
 ### economy  (answers -> docs/answered/economy.md, topic `economy`)
 

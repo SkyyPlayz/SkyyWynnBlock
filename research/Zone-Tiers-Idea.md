@@ -47,3 +47,9 @@ jewelry, coin-type items). Each zone = the vanilla metals already in it + ONE ne
 
 "Onyx and Nightveil are parked until there's a Zone 6. Silver and Gold stay for charms." "Quirk will send you art drafts for each family."
 (Iron is vanilla; "our ore" column = the zone's second ore.) Metals + alloys = mining sets + tool upgrades only.
+
+## Furnace Charm + collections (Skyy 2026-10-17, docs/answered/gear.md)
+- Furnace Charm (Void Charm) T1-T5 = the alloy unlock ladder: each tier-up costs that zone's two metals and unlocks smelting its alloy
+  (T1 Copper + Iron -> Bronze, T2 Thorium + Lead -> Dusk, T3 Cobalt + Chromium -> Azurvane, T4 Adamantite + Slag -> Cinder, T5 Mithril +
+  Titanium -> Lumen). Smelt time -10/-20/-30/-40/-50%, fuel +15/+30/+45/+60/+75%; max tier -> Eternal Flame (no fuel) at Charcoal tier 7.
+- Collections for the BASE metals only; alloys get no collection.
