@@ -54,6 +54,12 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
   `tools/ci/lint.py` asset ids) cannot run here - mark them UNVERIFIED in the PR.
 - **Hand-off:** everything through ONE pull request (scripts, patch, harness, spec; no jars). The local session reviews, merges,
   rebuilds against the real install (that build is the one trusted), cross-checks, smoke tests, pins and deploys.
+- **The job (Skyy 2026-10-17):** RESUME.md NEXT 3 - armor / weapons from The Armory + Arcane Robes + others as MOB DROPS with our
+  modifiers (SkyyGear + SkyyMobs + loot). Read first: docs/answered/gear.md 2026-10-17 lines, research/Armor-Set-Count.md,
+  research/Pack-Armor-Plan.md, PACK.md (each pack mod's licence + our rules). Our code may only react to their item ids at runtime;
+  never copy / ship their models, textures, recipes or numbers. Recolours of another author's set need that author's OK first (ask list
+  in RESUME NEXT 3 still waits on Skyy) - until then build only with sets already allowed (The Armory CC BY-NC: credit, never sold; Void
+  Armor CC BY-NC) and mark the rest TODO. The local session stays off SkyyGear + SkyyMobs until this PR lands.
 - **Before the trial (undo):** the old rule here read word for word: "You cannot build, test or deploy. Only add tasks that need none of
   that." - and every build ran locally (plain Agent builders or the saved workflow `skywynn-round`, PROJECT-RULES section 4). To undo:
   put that sentence back and delete this section + the RESUME.md "CLOUD BUILD TRIAL" line (added in commit dd6731a + the Grok fix after

@@ -20,7 +20,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 
 ## RUNNING / JUST BUILT
 - CLOUD BUILD TRIAL (Skyy 10-17, ONE round): Skyy's big build runs in Skyy's GROK BOT (not Claude cloud; Maven server jar, PR hand-off); local = deploys,
-  smoke, small fixes, rebuild the cloud PR here before pin. Rules + how to undo: CLOUD-RESUME.md "Cloud build trial". Job: not named yet.
+  smoke, small fixes, rebuild the cloud PR here before pin. Rules + how to undo: CLOUD-RESUME.md "Cloud build trial". Job: NEXT 3 (armor as mob drops) -
+  local stays off SkyyGear + SkyyMobs until Grok's PR lands (the rename round below skips Gear until then).
 - Nothing running. Accessories 0.5.24 (Void Charms name in Server Setup + texts) deployed 10-17 08:30 (TEST 175).
 - QUEUE the same rename (one lean round): Sacks 0.8.18 lines 7887/10454/10600/10669/10698/10726/11983, Gear 0.3.18 29321/31517-31534,
   Essentials 0.1.14 3751-3891/4561, Auctions 0.1.11 893/955/976/5638/5704, Menu MENU_ICONS label (line 459) + MODS "setup" title
