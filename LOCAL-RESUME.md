@@ -59,6 +59,8 @@ Metals source of truth: `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec
    then every other metal item in the inventory. Excluded: charms, bench accessories, dropped vanilla tools (scythe, hoe),
    Foraging / Farming armor, fishing (waits for a full fishing build). The zone palette cards are enough (no per-metal cards).
 3. METALS BUILD (unassigned until Skyy says): ores, spawn, smelting, alloys, Fortune, tools/weapons per the spec.
+4. BETA BUGS 2026-10-17 (added by Cobb): fix the 19 bugs in `docs/tests/2026-10-17-beta-bugs.md`, bugs 1-6 first (fixes from
+   Skyy's tests come first, PROJECT-RULES 7). Tick each box + log it. Its "Design notes" section needs Skyy's OK / a spec first.
 
 ## Rules
 1. Before any job, pull and read this table. If your mod is locked by the other side, pick other work or ask Skyy.
