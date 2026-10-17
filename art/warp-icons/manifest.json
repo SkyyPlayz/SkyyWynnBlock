@@ -1,0 +1,457 @@
+{
+ "what": "SkyWynn warp icons - one per warp theme for World > Teleport (DRAFT v1 until Skyy sees sheet.png)",
+ "status": "DRAFT",
+ "generator": "tools/art/make_warp_icons.py",
+ "reuses": "tools/art/make_menu_icons.py (shape helpers, painter, palettes)",
+ "deterministic": true,
+ "original_pixels": true,
+ "icon_rules": {
+  "size": [
+   64,
+   64
+  ],
+  "alpha": "hard (0 or 255)",
+  "outline": "1 px #120e1c tinted toward the touching part",
+  "light": "top left",
+  "no_pure_black_or_white": true,
+  "supersample": 4
+ },
+ "icons": [
+  {
+   "name": "WarpMining",
+   "id": "Skyy_Menu_Icon_WarpMining",
+   "label": "Mining",
+   "theme": "mining",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpMining.png",
+   "bytes": 924,
+   "sha256": "83369df135ab223b223e9780737a2740a6feba8510d8c2e9c892eaf5dba0ec55",
+   "shows": "an iron pickaxe over a stone lump with blue + gold ore"
+  },
+  {
+   "name": "WarpForaging",
+   "id": "Skyy_Menu_Icon_WarpForaging",
+   "label": "Foraging",
+   "theme": "foraging",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpForaging.png",
+   "bytes": 1013,
+   "sha256": "be0065f081ec3352c938b6ab9313f85d53faa769d48da77dd86d42094b169ae7",
+   "shows": "an axe in a tree stump with its rings, leaves behind"
+  },
+  {
+   "name": "WarpFarming",
+   "id": "Skyy_Menu_Icon_WarpFarming",
+   "label": "Farming",
+   "theme": "farming",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpFarming.png",
+   "bytes": 1078,
+   "sha256": "27765c54ff7e5514fee26bc0a1541b72b0383fd26b38a5e05eb239f34bd91936",
+   "shows": "a tied bundle of golden wheat on a soil mound"
+  },
+  {
+   "name": "WarpFishing",
+   "id": "Skyy_Menu_Icon_WarpFishing",
+   "label": "Fishing",
+   "theme": "fishing",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpFishing.png",
+   "bytes": 925,
+   "sha256": "79988fe233991770ce52a7cf80f2dd96c0635c82c88d658015bf8c86151b0df8",
+   "shows": "a rod with line + hook over a blue fish and ripples"
+  },
+  {
+   "name": "WarpCombat",
+   "id": "Skyy_Menu_Icon_WarpCombat",
+   "label": "Combat",
+   "theme": "combat",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpCombat.png",
+   "bytes": 979,
+   "sha256": "4dbebf1942a72960dc6b23e677efedf20d52a193819e67832ab66be85f9fe72c",
+   "shows": "two crossed swords over a red shield"
+  },
+  {
+   "name": "WarpDungeon",
+   "id": "Skyy_Menu_Icon_WarpDungeon",
+   "label": "Dungeon",
+   "theme": "dungeon",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpDungeon.png",
+   "bytes": 931,
+   "sha256": "073cf653e51b83f32124a0ed03280bc482f3ae9cb499b35dbe7733ec4f9033fb",
+   "shows": "a stone gate with a dark portcullis and two torches"
+  },
+  {
+   "name": "WarpBoss",
+   "id": "Skyy_Menu_Icon_WarpBoss",
+   "label": "Boss",
+   "theme": "boss",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpBoss.png",
+   "bytes": 745,
+   "sha256": "e47453ffd5b07968621c608f07d75b681333238c820cea75e57d1a6b0d975fd3",
+   "shows": "a horned bone skull with glowing red eyes"
+  },
+  {
+   "name": "WarpShop",
+   "id": "Skyy_Menu_Icon_WarpShop",
+   "label": "Shop",
+   "theme": "shop",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpShop.png",
+   "bytes": 998,
+   "sha256": "645d08b2aedb243d60f726906cbebf578511ced6a5f6672f499b263d59febb64",
+   "shows": "a market stall with a striped red awning and a gold coin"
+  },
+  {
+   "name": "WarpPortal",
+   "id": "Skyy_Menu_Icon_WarpPortal",
+   "label": "Portal",
+   "theme": "portal",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpPortal.png",
+   "bytes": 1138,
+   "sha256": "3f8d0c9892bf5be720ece3479044c8169dc18a88205a0eb32bd0b7979cb12e62",
+   "shows": "a violet ring portal with a swirling void"
+  },
+  {
+   "name": "WarpCave",
+   "id": "Skyy_Menu_Icon_WarpCave",
+   "label": "Cave",
+   "theme": "cave",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpCave.png",
+   "bytes": 790,
+   "sha256": "2ec299ff103f57448a36df2be91395a6f9a97ffb747b23a92f4063174e83e68c",
+   "shows": "a grassy stone hill with a dark cave mouth and glowing crystals"
+  },
+  {
+   "name": "WarpHome",
+   "id": "Skyy_Menu_Icon_WarpHome",
+   "label": "Home",
+   "theme": "home",
+   "file": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpHome.png",
+   "bytes": 932,
+   "sha256": "cdc0c23c7e5ece7b4ecb5df262da3655c7374ba89dfdb31944fdb9daa883d571",
+   "shows": "a little wooden house with a chimney and a heart (also every /sethome home)"
+  }
+ ],
+ "reused": [
+  {
+   "theme": "warp",
+   "label": "Signpost",
+   "id": "Skyy_Menu_Icon_Warp",
+   "shows": "the signpost (the default: a warp with no icon picked)"
+  },
+  {
+   "theme": "hub",
+   "label": "Hub",
+   "id": "Skyy_Menu_Icon_Hub",
+   "shows": "the hub gate"
+  },
+  {
+   "theme": "spawn",
+   "label": "Spawn",
+   "id": "Skyy_Menu_Icon_Spawn",
+   "shows": "the spawn portal"
+  }
+ ],
+ "files": [
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpMining.png",
+   "bytes": 924,
+   "sha256": "83369df135ab223b223e9780737a2740a6feba8510d8c2e9c892eaf5dba0ec55"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpForaging.png",
+   "bytes": 1013,
+   "sha256": "be0065f081ec3352c938b6ab9313f85d53faa769d48da77dd86d42094b169ae7"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpFarming.png",
+   "bytes": 1078,
+   "sha256": "27765c54ff7e5514fee26bc0a1541b72b0383fd26b38a5e05eb239f34bd91936"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpFishing.png",
+   "bytes": 925,
+   "sha256": "79988fe233991770ce52a7cf80f2dd96c0635c82c88d658015bf8c86151b0df8"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpCombat.png",
+   "bytes": 979,
+   "sha256": "4dbebf1942a72960dc6b23e677efedf20d52a193819e67832ab66be85f9fe72c"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpDungeon.png",
+   "bytes": 931,
+   "sha256": "073cf653e51b83f32124a0ed03280bc482f3ae9cb499b35dbe7733ec4f9033fb"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpBoss.png",
+   "bytes": 745,
+   "sha256": "e47453ffd5b07968621c608f07d75b681333238c820cea75e57d1a6b0d975fd3"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpShop.png",
+   "bytes": 998,
+   "sha256": "645d08b2aedb243d60f726906cbebf578511ced6a5f6672f499b263d59febb64"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpPortal.png",
+   "bytes": 1138,
+   "sha256": "3f8d0c9892bf5be720ece3479044c8169dc18a88205a0eb32bd0b7979cb12e62"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpCave.png",
+   "bytes": 790,
+   "sha256": "2ec299ff103f57448a36df2be91395a6f9a97ffb747b23a92f4063174e83e68c"
+  },
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_WarpHome.png",
+   "bytes": 932,
+   "sha256": "cdc0c23c7e5ece7b4ecb5df262da3655c7374ba89dfdb31944fdb9daa883d571"
+  },
+  {
+   "path": "sheet.png",
+   "bytes": 96951,
+   "sha256": "76dcc44cbe9490991bae0fd1dad92e7abc598f599085093c067b2341b055cd7a"
+  }
+ ],
+ "palettes": {
+  "amber": [
+   "#3a1606",
+   "#6a2c0a",
+   "#a24a10",
+   "#d8761c",
+   "#f5a332",
+   "#ffcf6a",
+   "#fff0bf"
+  ],
+  "blue": [
+   "#0b1838",
+   "#132c66",
+   "#1f4a9c",
+   "#3170cc",
+   "#58a0ea",
+   "#9ccbf7"
+  ],
+  "bone": [
+   "#3a3226",
+   "#5c5240",
+   "#83775e",
+   "#ab9f82",
+   "#cdc4a8",
+   "#e6dfc8",
+   "#f6f2e4"
+  ],
+  "cloud": [
+   "#5f6d96",
+   "#8a9cc8",
+   "#a8b8de",
+   "#c6d4ee",
+   "#e2ecf8"
+  ],
+  "cream": [
+   "#4a3a2c",
+   "#6e5a44",
+   "#957d5e",
+   "#b9a17c",
+   "#d8c49c",
+   "#efe2c0",
+   "#faf3dd"
+  ],
+  "ember": [
+   "#3c0a08",
+   "#701410",
+   "#a8201a",
+   "#dc3a24",
+   "#f86a3c",
+   "#ffa070",
+   "#ffd2b4"
+  ],
+  "emerald": [
+   "#06281a",
+   "#0c4a2c",
+   "#137040",
+   "#1f9a55",
+   "#3cc472",
+   "#88eaa6",
+   "#d2fbe0"
+  ],
+  "flame": [
+   "#5a1a06",
+   "#922e08",
+   "#cc5410",
+   "#f08a1e",
+   "#ffbe46",
+   "#ffe58a",
+   "#fff4cf"
+  ],
+  "glass": [
+   "#1d3a48",
+   "#2f5d6e",
+   "#4a8a98",
+   "#77b7c0",
+   "#a9dde0",
+   "#d8f4f2"
+  ],
+  "gold": [
+   "#3e1f08",
+   "#6e3f0c",
+   "#a2650f",
+   "#d39a22",
+   "#f0c548",
+   "#ffe58a",
+   "#fff4cf"
+  ],
+  "grass": [
+   "#173a17",
+   "#21541f",
+   "#2f7428",
+   "#43952f",
+   "#62b53a",
+   "#90d257",
+   "#c4ec8c"
+  ],
+  "green": [
+   "#0c2213",
+   "#143d21",
+   "#1d5e30",
+   "#2a853f",
+   "#43aa50",
+   "#80d06c",
+   "#cdf0ad"
+  ],
+  "leather": [
+   "#24110c",
+   "#3b1d12",
+   "#58301b",
+   "#784626",
+   "#975e34",
+   "#b77d4c"
+  ],
+  "magic": [
+   "#1b1040",
+   "#2e2370",
+   "#3a4596",
+   "#3f72b4",
+   "#3fa8c2",
+   "#7fdcd8",
+   "#cdf8f0"
+  ],
+  "mahog": [
+   "#2a0f0c",
+   "#481a14",
+   "#6a2a1c",
+   "#8c3e26",
+   "#ad5734",
+   "#cc7a4a",
+   "#e6a372"
+  ],
+  "navy": [
+   "#0a1220",
+   "#101c32",
+   "#16284a",
+   "#1f3a66",
+   "#2c5088"
+  ],
+  "ore": [
+   "#0d2638",
+   "#14405e",
+   "#1d6290",
+   "#2a8ac0",
+   "#4cb4e4",
+   "#94dcf6",
+   "#d2f2fc"
+  ],
+  "red": [
+   "#3a0b12",
+   "#661620",
+   "#982430",
+   "#c93a3c",
+   "#e86a5c",
+   "#f7a493"
+  ],
+  "soil": [
+   "#2a160e",
+   "#43251a",
+   "#5f3824",
+   "#7d4f30",
+   "#9a6a42"
+  ],
+  "steel": [
+   "#14161e",
+   "#242833",
+   "#373d4b",
+   "#525a6b",
+   "#768092",
+   "#a1aaba",
+   "#d0d6e0"
+  ],
+  "stone": [
+   "#25232e",
+   "#3a3744",
+   "#54505e",
+   "#716c7a",
+   "#918b97",
+   "#b4aeb6",
+   "#d6d1d4"
+  ],
+  "teal": [
+   "#0b2227",
+   "#113c3d",
+   "#175d58",
+   "#1e8577",
+   "#2fae97",
+   "#66d4b9",
+   "#bff2e1"
+  ],
+  "vault": [
+   "#0f1a17",
+   "#1b2b26",
+   "#2a4038",
+   "#3c5a4e",
+   "#557a6a",
+   "#7ea08f",
+   "#b8d0c2"
+  ],
+  "violet": [
+   "#1a0f2e",
+   "#2c1a4b",
+   "#45296c",
+   "#623b92",
+   "#8355b5",
+   "#aa80d4",
+   "#dbc3ef"
+  ],
+  "void": [
+   "#0e0820",
+   "#1c1040",
+   "#2e1a66",
+   "#47288f",
+   "#6a3fb8",
+   "#9a6ee0",
+   "#cfb2f6"
+  ],
+  "water": [
+   "#0a2034",
+   "#10345a",
+   "#18508a",
+   "#2470b8",
+   "#3c94dc",
+   "#78bef0",
+   "#bce2fa"
+  ],
+  "wheat": [
+   "#3e2a08",
+   "#664610",
+   "#946a18",
+   "#c2942a",
+   "#e2bc46",
+   "#f4dc82",
+   "#fdf2c2"
+  ],
+  "wood": [
+   "#28130a",
+   "#43220f",
+   "#633617",
+   "#874f24",
+   "#aa6c35",
+   "#c98d4f",
+   "#e3b47a"
+  ]
+ }
+}

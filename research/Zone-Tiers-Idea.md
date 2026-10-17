@@ -29,3 +29,9 @@ ore, for the farming/ tool tiers. then we could make the farming and gathering m
   nicrosil; cadmium + bismuth -> bendalloy. Today's ladder (Copper, Iron, Thorium, Cobalt, Adamantite, Mithril, Onyxium, ...) maps in.
 - Touches: SkyyGear tiers + `tools/tier_tags.py`, SkyyWorldGen ores per zone, Mob-Levels-Plan bands, tool / farming tiers, collections,
   Bazaar, rebirth. A full ultracode spec round when Skyy says go.
+
+## Alloys (Skyy 2026-10-17)
+"none of the alloys you mentioned really fit, i think well have to make our own.  should we use silver and gold in them? or save those for
+other things and make our own new ores?" -> popup "Keep Silver/Gold for charms (Recommended)": Silver + Gold stay precious (Void Charms,
+jewelry, coin-type items). Each zone = the vanilla metals already in it + ONE new ore of ours themed to the zone, smelted into our OWN alloy
+(own names, not the real-world list above).
