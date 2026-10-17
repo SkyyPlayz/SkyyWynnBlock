@@ -21,8 +21,8 @@ SET = [
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.16"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.24"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.18"), ("SkyyBazaar", "0.1.19"), ("SkyyGear", "0.3.17"), ("SkyySkills", "0.4.48"),
-    ("SkyyAccessories", "0.5.22"), ("SkyyClasses", "0.1.34"), ("SkyyMenu", "0.3.36"), ("SkyyEssentials", "0.1.12"), ("SkyyProfiles", "0.1.16"),
-    ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.20"),
+    ("SkyyAccessories", "0.5.22"), ("SkyyClasses", "0.1.35"), ("SkyyMenu", "0.3.36"), ("SkyyEssentials", "0.1.12"), ("SkyyProfiles", "0.1.16"),
+    ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.21"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -480,6 +480,9 @@ def main():
     if (_v(_p.get("SkyyCollections", "0")) >= (0, 2, 24)) != (_v(_p.get("SkyyBazaar", "0")) >= (0, 1, 19)):
         print("STOP: SkyyCollections 0.2.24 and SkyyBazaar 0.1.19 go together (coll24)"); return 1
     # pets043 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.3 once a new-kind pet exists (Mosshorn, Bison, CrystalGolem, Molerat, Moose, Owl, Antelope, Deer).
+    # trees21 (2026-10-16): SkyyClasses 0.1.35 (Radiant Pulse, Elemental Bubble, Siphon) needs SkyyTrees 0.3.21+ (Feller table, swing readers, Siphon -5% Health).
+    if _v(_p.get("SkyyClasses", "0")) >= (0, 1, 35) and _v(_p.get("SkyyTrees", "0")) < (0, 3, 21):
+        print("STOP: SkyyClasses 0.1.35 needs SkyyTrees 0.3.21+"); return 1
     # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
     # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep
