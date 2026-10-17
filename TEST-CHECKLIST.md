@@ -198,3 +198,4 @@ tests always come first.
 170. Explore admin editor in the frame (admin)
 171. Fishing Bench uses Void fish; Fishing Power pickable
 172. Void Charms Market no crash; Upgrade rows + colour lists; /is sethome <name>
+173. Potion Flask + Food Pouch, Storage > Supplies, /flask /pouch; then /flaskprobe clear
