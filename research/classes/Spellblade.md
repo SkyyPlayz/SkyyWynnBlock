@@ -99,7 +99,7 @@ flowchart TD
 | 🥋 Monk | self move + attack speed stacks, single-target stuns, Awe | gain move speed from its stacks; hit single targets | Momentum gives attack speed and arc size only; the Monk stays faster on its feet |
 | 🗡️ Assassin | single-target crit burst, Toxin Weaken cloud | crit; hide | Sunder EXPOSES a boss (crits on it hit harder) - the God Killer's best friend |
 | 🔮 Mage | ranged elemental burst, Mana shield | shoot or blink | both elemental; the Mage from range, the Spellblade in melee (later: element reactions between them) |
-| 🏹 Archer | roots, Hunter's Mark (+damage taken on ONE target) | root | Mark and Breach are both "+damage taken" - rule: the higher one applies, +5% extra when both are on (Question 5) |
+| 🏹 Archer | roots, Hunter's Mark (+damage taken on ONE target) | root | Mark and Breach are both "+damage taken" - both stack fully, multiplied (Skyy popup 2026-10-17; SkyyClasses 0.1.37) |
 | ✨ Priest | heals, shields, saves | heal | none |
 
 &nbsp;

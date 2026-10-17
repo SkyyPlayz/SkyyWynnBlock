@@ -43,7 +43,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    (Fantastic Knight + Outlanders), Elemental Knights, stonedturtle, SlverSkull (Arcane Robes). Add Patchly + The Armory 1.23.0 to PACK.md.
    ULTRACODE round (Gear + Mobs + loot) once Skyy OKs the ask list.
 4. Nestkeeper into the pack (dup check, PACK.md) then the Aures dragon pet; Wynn elements spec (Earth/Thunder/Water/Fire/Air, Imbue all 5);
-   Breach + Mark stack fully; Monk "Zen" rename; zone gathering spots + seeds locked behind collections + crop islands for Eternal seeds
+   zone gathering spots + seeds locked behind collections + crop islands for Eternal seeds
    (100 / +200 / +500) - world.md 10-17.
 5. Small list: smelting accessory, lifelong multitool merge, Hud ability icons (6 classes), Mage PA4 (Armory blink bridge), structure mods +
    joszza draft, flip lint MENU_PATTERN_FAIL, skyyeggs ORDER, Profiles carry Accessory Power / retired files.
