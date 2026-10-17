@@ -188,3 +188,4 @@ tests always come first.
 160. Menu cleanup step 1 (SkyWynn Menu pages on the one frame, no back buttons)
 161. Menu cleanup step 2: Character hub pages (no back buttons, scroll lists)
 162. Menu cleanup step 3: Storage + Market pages
+163. Menu cleanup step 4: smithing, Quests redesign, Islands, Explore, Guilds
