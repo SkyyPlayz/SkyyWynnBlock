@@ -19,8 +19,8 @@ SET = [
     ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.15"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.23"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.18"), ("SkyyBazaar", "0.1.18"), ("SkyyGear", "0.3.17"), ("SkyySkills", "0.4.48"),
+    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.15"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.24"), ("SkyyParty", "0.1.10"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.18"), ("SkyyBazaar", "0.1.19"), ("SkyyGear", "0.3.17"), ("SkyySkills", "0.4.48"),
     ("SkyyAccessories", "0.5.22"), ("SkyyClasses", "0.1.34"), ("SkyyMenu", "0.3.35"), ("SkyyEssentials", "0.1.12"), ("SkyyProfiles", "0.1.16"),
     ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.20"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -474,6 +474,11 @@ def main():
     # before rolling Skills below 0.4.48 set perk.fortuneMax back to 2.0 (Undo). Items are safe either way.
     if (_v(_p.get("SkyyGear", "0")) >= (0, 3, 17)) != (_v(_p.get("SkyySkills", "0")) >= (0, 4, 48)):
         print("STOP: SkyyGear 0.3.17 and SkyySkills 0.4.48 go together (T1)"); return 1
+    # coll24 (2026-10-16): Collections 0.2.24 (Life Essence -> Greater Essence 1:1, Eternal Seeds at tier 4, gift sizing) needs Bazaar 0.1.19 (Eternal buy lock,
+    # Enchanted listing; needs Sacks 0.8.14+). Rollback Bazaar: put the migrate119 .bak back + delete migrated.0.1.19 from pricing.properties.
+    # FUTURE FLOOR: before any round deletes Skyy_Ench_LifeEssence, convert it in chests / Vault / Bank / Wardrobe / AH escrow / profile snapshots first.
+    if (_v(_p.get("SkyyCollections", "0")) >= (0, 2, 24)) != (_v(_p.get("SkyyBazaar", "0")) >= (0, 1, 19)):
+        print("STOP: SkyyCollections 0.2.24 and SkyyBazaar 0.1.19 go together (coll24)"); return 1
     # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
     # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep

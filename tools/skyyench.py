@@ -185,6 +185,32 @@ for _t in TABLE:
     assert all(c.isalnum() for c in _t[0]) and '"' not in _t[6] and "\\" not in _t[6] and "|" not in _t[6], _t
 
 
+# round coll24 (SkyyCollections 0.2.24 + SkyyBazaar 0.1.19; the C1 critic: "gifts up to ~40 Enchanted Mithril free could become a coin
+# source"): every Enchanted GIFT (collection tier gifts in rewards.properties, rebirth rank gifts) is sized to the items that tier asks for:
+# at most GIFT_SHARE percent of the tier's STEP (its amount minus the tier before) in base items, i.e. n Enchanted <= GIFT_SHARE x step /
+# (100 x RATIO), never above the old size. So a gift is worth at most GIFT_SHARE % (x the Bazaar's Enchanted premium) of what the player
+# gathered for that tier - a small bonus on gathering, never a coin source of its own. 0 = that tier gives no item (coins / XP stay).
+GIFT_SHARE = 10
+
+
+def gift_size(step, cap=64):
+    """the Enchanted gift for a tier (or rebirth rank) whose step is `step` base items: GIFT_SHARE % of it in Enchanted items, <= cap"""
+    return max(0, min(int(cap), (GIFT_SHARE * int(step)) // (100 * RATIO)))
+
+
+assert gift_size(1000) == 1 and gift_size(999) == 0 and gift_size(25000, 20) == 20 and gift_size(10 ** 9) == 64
+
+
+# Skyy 2026-10-16 (coll24 popup "404 low tiers would give no Enchanted item... OK?" -> "Give base items there (Recommended)"): a tier whose
+# Enchanted gift rounds to 0 gives the collection's BASE item (its first item - what the player gathers) instead: GIFT_SHARE % of the step
+# in base items, at least 1, at most 64 (one reward token's limit) - the same value cap, so every tier gives something.
+def base_gift_size(step, cap=64):
+    return max(1, min(int(cap), (GIFT_SHARE * int(step)) // 100))
+
+
+assert base_gift_size(10) == 1 and base_gift_size(50) == 5 and base_gift_size(999) == 64 and base_gift_size(150) == 15
+
+
 def coll_ench(coll_id):
     """the Enchanted item of a collection: Skyy_Ench_<Key> of its TABLE row, else its VANILLA_ENCH item, else None"""
     for t in TABLE:
