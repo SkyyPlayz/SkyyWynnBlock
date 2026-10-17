@@ -394,9 +394,10 @@ def main():
     # ores (2026-10-17, research/Zone-Ores-Alloys-Spec.md): WorldGen 0.7.3 (new ores / ingots / alloys) + Collections 0.2.25 (their collections +
     # Enchanted ingot recipes) + Sacks 0.8.20 + Accessories 0.5.25 (acc:smelt with the profile-key field) deploy and roll back TOGETHER.
     _ores = [_v(_p.get("SkyyCollections", "0")) >= (0, 2, 25), _v(_p.get("SkyyWorldGen", "0")) >= (0, 7, 3),
-             _v(_p.get("SkyySacks", "0")) >= (0, 8, 20), _v(_p.get("SkyyAccessories", "0")) >= (0, 5, 25)]
+             _v(_p.get("SkyySacks", "0")) >= (0, 8, 20), _v(_p.get("SkyyAccessories", "0")) >= (0, 5, 25),
+             _v(_p.get("SkyyBazaar", "0")) >= (0, 1, 20)]
     if any(_ores) and not all(_ores):
-        print("STOP: the ores round deploys together - SkyyWorldGen 0.7.3+, SkyyCollections 0.2.25+, SkyySacks 0.8.20+, SkyyAccessories 0.5.25+ (pin all four or none)"); return 1
+        print("STOP: the ores round deploys together - SkyyWorldGen 0.7.3+, SkyyCollections 0.2.25+, SkyySacks 0.8.20+, SkyyAccessories 0.5.25+, SkyyBazaar 0.1.20+ (pin all five or none)"); return 1
     # shards03 (2026-10-14): Collections 0.2.15 routes fish / animal / fruit XP to Fishing / Ranching / Orchard (SkyySkills 0.4.38+). Shards 0.3 FLOOR as 0.2.
     if _v(_p.get("SkyyCollections", "0")) >= (0, 2, 15) and _v(_p.get("SkyySkills", "0")) < (0, 4, 38):
         print("STOP: SkyyCollections 0.2.15+ needs SkyySkills 0.4.38+ (new skill XP routes)"); return 1
