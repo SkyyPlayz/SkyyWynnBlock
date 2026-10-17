@@ -5025,7 +5025,7 @@ HUB_TABS = (
     ("character", "trees", 30, "SkyyTrees", "Trees", "tree"),
     ("character", "class", 40, "SkyyClasses", "Class", "class"),
     ("character", "pets", 50, "SkyyPets", "Pets", "pets"),
-    ("character", "accessories", 60, "SkyyAccessories", "Accessories", "accessories"),
+    ("character", "accessories", 60, "SkyyAccessories", "Void Charms", "charms"),   # 2026-10-16: SkyyAccessories 0.5.22 /charms (/charm, /ch)
     ("character", "collections", 70, "SkyyCollections", "Collections", "collections"),
     ("character", "profiles", 80, "SkyyProfiles", "Profiles", "profiles"),
     ("storage", "pocket", 10, "SkyySacks", "Pocket", "sacks"),
@@ -6474,7 +6474,8 @@ def java_hub_build_big(sh, my_tab, uuid="this.playerRef.getUuid()", b="b", ev="e
 # HUB_TABS keeps its "Bazaar" row text (SkyyBazaar 0.1.17's build asserts it); the label players see NOW is hub_tab_label().
 HUB_TAB_LABEL_NOW = {("market", "bazaar"): "Market",
                      ("smithing", "recipes"): "Crafting", ("smithing", "gear"): "Smithing",   # SkyyMenu 0.3.31 / SkyySacks 0.8.11
-                     ("smithing", "reforge"): "Anvil"}      # Skyy 2026-10-16 "Crafting / Smithing / Anvil (Reforge + Identify inside) / Upgrade (your tools)"
+                     ("smithing", "reforge"): "Anvil",
+                     ("character", "accessories"): "Void Charms"}   # SkyyAccessories 0.5.22 (AP1): the tab is Void Charms      # Skyy 2026-10-16 "Crafting / Smithing / Anvil (Reforge + Identify inside) / Upgrade (your tools)"
 HUB_MERGED = HUB_MERGED + (("market", "auctions", "bazaar"),       # the Auction House = part of the Market tab
                            ("smithing", "identify", "reforge"))    # Identify = a view inside the Anvil tab (SkyyGear 0.3.15)
 for _h, _t, _x in HUB_MERGED:

@@ -33,6 +33,9 @@ A per-mod harness builds a Spec and calls run(spec). Phases (each in its own chi
 HubBar: removeAll(owner)), kit_in_jar=False (the jar ships no kit art - SkyyCore does; KITBYTES then checks the manifest's stable name
 + Skyy:SkyyCore dependency and that the jar has no kit file), removed=[...] (classes the compare expects gone) and extra_phases
 [(label, fn(out, jar, scratch, home))]. The defaults keep every older harness exactly as it was.
+2026-10-16 (SkyyMenu 0.3.36): KIT 1.7 helpers at the end of this file - page_check17 (the kit 1.7 PAGE check; use_kit17() makes run_hub use
+it), built / kit17_rules / menu17 / build_page / row2 / subtabs / hub_defs / unq / apps_of / sets_of / set_of / names_ok / binding_sizes (wire bytes per binding) - import them instead
+of copying them (SkyyBank 0.1.16, SkyyVault 0.1.9, SkyyGuilds 0.1.11, SkyyParty 0.1.10, SkyyMerchants 0.1.6, SkyyBazaar 0.1.18 carry copies).
 """
 import os, sys, re, json, shutil, zipfile, importlib.util
 
@@ -563,3 +566,229 @@ def run(S):
                    ("hub", lambda out, jar, scratch, home: run_hub(S, out, jar, scratch)),
                    ("live", lambda out, jar, scratch, home: run_live(S, out, jar, scratch, home))] + list(S.extra_phases),
            script=S.script, live=live, removed=S.removed)
+
+
+# ===================================================================================================================== kit 1.7 helpers
+# 2026-10-16 (SkyyMenu 0.3.36, round menu36): the kit 1.7 hub-page checks the S2 / S3 builders copied into their harnesses (SkyyBank 0.1.16,
+# SkyyVault 0.1.9, SkyyGuilds 0.1.11, SkyyParty 0.1.10, SkyyMerchants 0.1.6: page_check17; SkyyBazaar 0.1.18: built / row2 / subtabs /
+# hub_defs), shared here so later harnesses import them (`import hub_tab_harness as H; H.use_kit17()` or `H.page_check17(...)`). The kit 1.5
+# functions above (page_check, run_hub, run_live, run) are unchanged: page_check still checks the kit 1.5 bar; use_kit17() points
+# run_hub / the E2E phases at page_check17 instead (what each copy did with H.page_check = page_check17).
+def unq(d):
+    """a b.set value as the page meant it: the JSON text unwrapped ({"x": "v"} / "v" -> v); anything else as is"""
+    if d is None:
+        return ""
+    d = str(d)
+    try:
+        v = json.loads(d)
+    except Exception:
+        return d
+    if isinstance(v, dict) and len(v) == 1:
+        v = list(v.values())[0]
+    return v if isinstance(v, str) else d
+
+
+def apps_of(cmds):
+    """the appends of a command list (cmds_of) as SUI.Appends [(parent id or None, markup)]"""
+    return SUI.Appends([(None if s is None else s.lstrip("#"), t) for ty, s, t, d in cmds if t is not None and ty and "Append" in ty])
+
+
+def sets_of(cmds):
+    """every b.set as (selector, value unwrapped)"""
+    return [(s, unq(d)) for ty, s, t, d in cmds if ty == "Set"]
+
+
+def set_of(cmds, sel):
+    """the newest b.set value of a selector (None = never set)"""
+    v = [d for ty, s, t, d in cmds if ty == "Set" and s == sel]
+    return unq(v[-1]) if v else None
+
+
+def build_page(E, P, pg=None):
+    """build P's open page (or pg) into REAL builders: (page, cmds, events)"""
+    from jpype import JClass
+    pg = pg if pg is not None else P.pm.getCustomPage()
+    b = JClass("com.hypixel.hytale.server.core.ui.builder.UICommandBuilder")()
+    ev = JClass("com.hypixel.hytale.server.core.ui.builder.UIEventBuilder")()
+    pg.build(P.ref, b, ev, P.st)
+    return pg, cmds_of(b), events_of(ev)
+
+
+def ids_of(apps):
+    """every element id the appends declare"""
+    ids = set()
+    for _p, mk in apps:
+        for v in SUI._variants(mk):
+            ids |= set(x.group(2) for x in DECL_RE.finditer(SUI.render(v)))
+    return ids
+
+
+def names_ok(K, apps, cmds, evs, what):
+    """every b.set and every binding names an element the page declares"""
+    ids = ids_of(apps)
+    sets = [(s, d) for ty, s, t, d in cmds if ty == "Set"]
+    bs = [s for s, _t in evs]
+    bad = [s for s, _d in sets if s.lstrip("#").split(".")[0] not in ids] + [s for s in bs if s.lstrip("#") not in ids]
+    K.check(not bad, "%s: every b.set and binding names an element that exists (%d sets, %d bindings): %s" % (what, len(sets), len(bs), bad[:4]))
+    return not bad
+
+
+def kit17_rules(K, cmds, evs, what, prefix_ok="Skyy", legacy=()):
+    """the page rules of a built kit 1.7 page: SUI.check_page (markup rules, parents, no duplicate id; legacy texts blanked first), the sky
+    paths (the hub tab art hook allowed, nothing leaves Common/UI/Custom), every b.set / binding has its element. Returns the appends."""
+    apps = apps_of(cmds)
+    capps = SUI.Appends([(p, _blank(SUI.render(mk), list(legacy))) for p, mk in apps]) if legacy else apps
+    try:
+        SUI.check_page(capps, prefix_ok)
+        K.check(True, "%s: check_page (markup rules, parents, no duplicate id)" % what)
+    except Exception as ex:
+        K.check(False, "%s: check_page: %s" % (what, ex))
+    try:
+        SUI.check_sky_paths(apps, tab_icons=True)
+        allp = [m.group(0) for mk in apps.markups() for m in SUI._SKY_PATH_RE.finditer(SUI.render(mk))]
+        K.check(not [p for p in allp if p.startswith('"../')], "%s: no texture path leaves Common/UI/Custom (%d paths)" % (what, len(allp)))
+    except Exception as ex:
+        K.check(False, "%s: sky paths: %s" % (what, ex))
+    names_ok(K, apps, cmds, evs, what)
+    return apps
+
+
+def menu17(K, apps, cmds, hub, what, subs=1, pager_ok=False):
+    """SUI.assert_menu_page on a built page (1600 x 980, row 1 + row 2, at most ONE sub-tab row, no back button / < Menu inline or b.set,
+    no pager unless pager_ok); subs = the sub-row count it must have (None = any). Returns the info dict (or None)."""
+    try:
+        info = SUI.assert_menu_page(apps, hub=hub, what=what, sets=sets_of(cmds), pager_ok=pager_ok)
+        K.check(subs is None or info["subs"] == subs, "%s: assert_menu_page (1600 x 980, rows %d, sub rows %d%s, no back button%s)" % (
+            what, info["rows"], info["subs"], "" if subs is None else " of %d" % subs, ", slot pages allowed" if pager_ok else ", no pager"))
+        return info
+    except Exception as ex:
+        K.check(False, "%s: assert_menu_page: %s" % (what, ex))
+        return None
+
+
+def built(K, E, P, what, hub="market", pg=None, pager_ok=False, prefix_ok="Skyy", legacy=(), subs=1):
+    """(SkyyBazaar 0.1.18's built) build the open page into REAL builders and check it as a kit 1.7 hub page: kit17_rules + menu17.
+    Returns (page, cmds, events, appends)."""
+    pg, cm, ev = build_page(E, P, pg)
+    apps = kit17_rules(K, cm, ev, what, prefix_ok=prefix_ok, legacy=legacy)
+    menu17(K, apps, cm, hub, what, subs=subs, pager_ok=pager_ok)
+    return pg, cm, ev, apps
+
+
+def row2(cmds, prefix):
+    """row 2 as drawn: [(label, selected)] in order (#<prefix>BigT<i>)"""
+    apps = apps_of(cmds)
+    out = []
+    i = 0
+    while True:
+        bid = "%sBigT%d" % (prefix, i)
+        btn = [mk for p, mk in apps if re.search(r"Button #%s \{" % bid, SUI.render(mk))]
+        if not btn:
+            break
+        lab = [re.search(r'Text: "([^"]*)"', SUI.render(mk)).group(1) for p, mk in apps if p == bid and SUI.render(mk).startswith("Label")]
+        out.append((lab[0] if lab else None, "Tab_Selected" in SUI.render(btn[0])))
+        i += 1
+    return out
+
+
+def subtabs(cmds, prefix, row=None):
+    """the sub-tab row as drawn: [(label - its b.set text when set, else the inline one -, Primary?)] in order. row = the row's id
+    (default <prefix>Sub)."""
+    out = []
+    rid = "#%s" % (row or prefix + "Sub")
+    for ty, s, t, d in cmds:
+        if t and s == rid and t.startswith("TextButton"):
+            m = re.match(r'TextButton #(\w+) \{', t)
+            lab = re.search(r'Text: "([^"]*)"', t).group(1)
+            bset = set_of(cmds, "#%s.Text" % m.group(1))
+            out.append((bset if bset is not None else lab, "Primary" in t))
+    return out
+
+
+def hub_defs(E):
+    """what SkyyMenu publishes for row 1 (when SkyyMenu is not in the JVM): hub:def:<hub> = Object[]{ title, command, icon item, default
+    tab } for Home + every hub"""
+    import jpype
+    from jpype import JClass
+    for h in SUI.HUB_ROW_IDS:
+        t = "Home" if h == "home" else SUI.hub_title_now(h)
+        cmd = "skymenu" if h == "home" else SUI.HUB_DEFS[h][1]
+        E.br.put("hub:def:" + h, jpype.JArray(JClass("java.lang.Object"))([t, cmd, "Skyy_Menu", None]))
+
+
+def page_check17(K, E, S, P, page, hb, what, prefix=None, idp=None, tab=None, pager_ok=False, subs=0, frame=False, gone=(), keep=None):
+    """the KIT 1.7 page check (replaces page_check, which checks the kit 1.5 bar): build the page into REAL builders, then check_page, the
+    kit textures (frame=True: + Header, the crest, the hub's frame, the X), the root #<prefix> 1600 x 980, SUI.assert_menu_page (rows 1 + 2,
+    `subs` sub-tab rows - an int, a function (K, E, S, P) -> int, or None = any -, no back / < Menu, no pager unless pager_ok), no kit 1.5
+    bar piece, none of the `gone` ids (an old pager / back / footer the round removed), the X = hub:close, row 2 = one tab per visible
+    tab of the hub bound to hub:<tab>, every b.set / binding names an element, hub:last remembers hub -> tab. keep = a dict that gets
+    apps / sets / evs. Returns (cmds, events)."""
+    from jpype import JClass
+    prefix = prefix or S.prefix
+    idp = idp or S.idp
+    tab = tab or S.tab
+    b = JClass("com.hypixel.hytale.server.core.ui.builder.UICommandBuilder")()
+    ev = JClass("com.hypixel.hytale.server.core.ui.builder.UIEventBuilder")()
+    page.build(P.ref, b, ev, P.st)
+    cmds = cmds_of(b)
+    evs = events_of(ev)
+    apps = apps_of(cmds)
+    sets = [(s, d) for ty, s, t, d in cmds if ty == "Set"]
+    K.check(len(apps) > 5 and len(apps) + len(sets) == len(cmds), "%s: %d appends + %d sets" % (what, len(apps), len(sets)))
+    try:
+        SUI.check_page(apps, idp)
+        K.check(True, "%s: check_page (markup rules, parents, no duplicate id)" % what)
+    except Exception as e:
+        K.check(False, "%s: check_page: %s" % (what, e))
+    try:
+        els = SUI.check_sky_paths(apps, tab_icons=True)
+        allp = [m.group(0) for mk in apps.markups() for m in SUI._SKY_PATH_RE.finditer(SUI.render(mk))]
+        need = {"Header", "HeaderOrnament", SUI.HUB_FRAME[S.hub], "Close"} if frame else set()
+        K.check(not [p for p in allp if p.startswith('"../')] and need <= set(els),
+                "%s: %sno texture path leaves Common/UI/Custom (%d paths)" % (what, "the Sky Window paths, " if frame else "", len(allp)))
+    except Exception as e:
+        K.check(False, "%s: sky paths: %s" % (what, e))
+    root = apps[0][1]
+    K.check(apps[0][0] is None and root.startswith("Group #%s { Anchor: (Width: 1600, Height: 980); }" % prefix), "%s: the root #%s is 1600 x 980" % (what, prefix))
+    want_subs = subs(K, E, S, P) if callable(subs) else subs
+    try:
+        info = SUI.assert_menu_page(apps, hub=S.hub, what=what, sets=[(s, unq(d)) for s, d in sets], pager_ok=pager_ok)
+        K.check(info["rows"] == 2 and (want_subs is None or info["subs"] == want_subs),
+                "%s: assert_menu_page (1600 x 980, rows 1 + 2, %s sub row(s), no back / < Menu%s)" % (
+                    what, info["subs"] if want_subs is None else want_subs, ", slot-page Prev / Next allowed" if pager_ok else ", no pager"))
+    except Exception as ex:
+        K.check(False, "%s: assert_menu_page: %s" % (what, ex))
+    K.check(not [mk for p, mk in apps if "HubMenu" in mk or "HubTabs" in mk or '"< Menu"' in mk], "%s: no kit 1.5 bar (no < Menu, no small tab strip)" % what)
+    if gone:
+        left = [i for i in gone if [mk for p, mk in apps if ("#%s " % i) in mk]]
+        K.check(not left, "%s: no old pager / back / footer pieces (%s)" % (what, left))
+    K.check(any("hub:close" in t for s, t in evs if s == "#%sHubClose" % prefix), "%s: the X = hub:close" % what)
+    vis = [str(r[0]) for r in hb.tabs(S.hub, P.pr.getUuid())]
+    tabs = [mk for p, mk in apps if p == prefix + "BigTabs" and mk.startswith("Button")]
+    K.eq(len(tabs), len(vis), "%s: row 2 = one tab per visible %s tab %s" % (what, S.hub, vis))
+    for k, t in enumerate(vis):
+        K.check(any(("hub:" + t) in tx for s, tx in evs if s == "#%sBigT%d" % (prefix, k)), "%s: row 2 tab %d bound to hub:%s" % (what, k, t))
+    names_ok(K, apps, cmds, evs, what)
+    last = E.br.get("hub:last:" + str(P.pr.getUuid()))
+    K.check(last is not None and str(last.get(S.hub)) == tab, "%s: hub:last remembers %s -> %s" % (what, S.hub, tab))
+    if keep is not None:
+        keep["apps"], keep["sets"], keep["evs"] = apps, dict((s, unq(d)) for s, d in sets), evs
+    return cmds, evs
+
+
+def use_kit17(check=None):
+    """point run_hub / the E2E phases at the kit 1.7 check (page_check17, or check = a wrapper with the same signature); returns it"""
+    global page_check
+    page_check = check or page_check17
+    return page_check
+
+
+def binding_sizes(E, P, pg=None):
+    """the WIRE size of every event binding the page builds (CustomUIEventBinding.computeSize: type + selector + the EventData JSON) -
+    for payload checks (a page whose every binding carries every text box grows rows x boxes)"""
+    from jpype import JClass
+    pg = pg if pg is not None else P.pm.getCustomPage()
+    b = JClass("com.hypixel.hytale.server.core.ui.builder.UICommandBuilder")()
+    ev = JClass("com.hypixel.hytale.server.core.ui.builder.UIEventBuilder")()
+    pg.build(P.ref, b, ev, P.st)
+    return [int(x.computeSize()) for x in ev.getEvents()]
