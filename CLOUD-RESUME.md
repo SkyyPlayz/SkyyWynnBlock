@@ -8,7 +8,7 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
   items, first add one line per item to `research/cloud/LOG.md`, then DELETE those items here and top the list back up to about 8
   open tasks (ideas: RESUME.md 'Next', OPEN-QUESTIONS.md (open only), the plans in `research/` + `docs/plans/`). Keep this file under ~110 lines.
 - **Cloud limits:** no access to Skyy's PC, the Hytale game files (`HytaleServer.jar`, `Assets.zip`), installed mods or the test world.
-  You cannot build, test or deploy. Only add tasks that need none of that. Any fact you cannot check without the game files: mark it
+  You cannot test or deploy; you build ONLY during the "Cloud build trial" below. Otherwise only add tasks that need none of that. Any fact you cannot check without the game files: mark it
   **UNVERIFIED** and list it under "For the local session" in your output.
 - **Where results go:** new files in `research/cloud/` (one file per task). You may push straight to `main` ONLY changes to this file and
   to `research/cloud/` (always `git pull --rebase --autostash` first). Any change to another file goes through a pull request.
@@ -39,6 +39,22 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 - **Answering the local session (2026-10-07):** messages from the local session arrive by SendMessage; reply by appending a
   "## <date time> <title>" block to `research/cloud/OUTBOX.md` and pushing to main (the local cloud-link mod picks it up in ~3 min).
+
+## Cloud build trial (Skyy 2026-10-17, ONE round - words in docs/answered/project.md 2026-10-17 lines)
+
+- **Split:** the cloud session runs the ONE big build Skyy hands it (spec -> build / patch scripts -> critics -> fix). The local session
+  keeps deploys, smoke tests, small bug fixes and small fixes, and stays off the trial's mods until its PR lands.
+- **Server jar:** download `HytaleServer.jar` fresh from Hytale's official Maven repo (Server Manual:
+  https://support.hytale.com/hc/en-us/articles/45326769420827-Hytale-Server-Manual), the version matching Skyy's installed `latest`.
+  Put it only in git-ignored `tools/dev/scratch/<task>/`, delete it after. NEVER commit, attach, upload or re-share it (Hytale EULA,
+  public repo). Same for any other game file.
+- **Assets.zip is not on Maven:** steps that read it (vanilla-derived art, `tools/skyyui.py` / `tools/tier_tags.py` asset checks,
+  `tools/ci/lint.py` asset ids) cannot run here - mark them UNVERIFIED in the PR.
+- **Hand-off:** everything through ONE pull request (scripts, patch, harness, spec; no jars). The local session reviews, merges,
+  rebuilds against the real install (that build is the one trusted), cross-checks, smoke tests, pins and deploys.
+- **Before the trial (undo):** the old rule here read word for word: "You cannot build, test or deploy. Only add tasks that need none of
+  that." - and every build ran locally (plain Agent builders or the saved workflow `skywynn-round`, PROJECT-RULES section 4). To undo:
+  `git revert` the commit that added this section (log line 2026-10-17 "cloud build trial"), or put that sentence back and delete this section.
 
 ## Open tasks (top = next)
 
