@@ -19,9 +19,9 @@ SET = [
     ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.30"), ("SkyySacks", "0.8.15"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.23"), ("SkyyParty", "0.1.10"),
+    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.15"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.23"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.18"), ("SkyyBazaar", "0.1.18"), ("SkyyGear", "0.3.16"), ("SkyySkills", "0.4.47"),
-    ("SkyyAccessories", "0.5.21"), ("SkyyClasses", "0.1.34"), ("SkyyMenu", "0.3.35"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.16"),
+    ("SkyyAccessories", "0.5.21"), ("SkyyClasses", "0.1.34"), ("SkyyMenu", "0.3.35"), ("SkyyEssentials", "0.1.12"), ("SkyyProfiles", "0.1.16"),
     ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.20"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -41,7 +41,7 @@ SET = [
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
-    ("SkyyRanks", "0.1.1"),
+    ("SkyyRanks", "0.1.2"),
     # vanilla UI pass (2026-09-29): DEV/TEST mod - /skyprobe (admin only) opens the shared kit's probe pages so Skyy can confirm the
     # vanilla look works inline before any restyled page ships. Move it to RETIRED once the probe results are in.
     # gathering probe pack P0 (2026-10-06, research/Gathering-Progression-Spec.md): op-only dev mods for ONE test session - remove BOTH after Skyy's
@@ -65,7 +65,7 @@ SET = [
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
     # fishing items, removing SkyyFishing turns rods / reels / parts / fish into unknown items.
-    ("SkyyFishing", "0.1.8"),
+    ("SkyyFishing", "0.1.9"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
@@ -85,8 +85,8 @@ SET = [
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
     ("SkyyQuests", "0.4.0"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
-    ("SkyyRebirth", "0.3.4"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
-    ("SkyyShards", "0.4.1"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
+    ("SkyyRebirth", "0.3.5"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
+    ("SkyyShards", "0.4.2"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
     # FLOOR (2026-10-15, SkyySkills 0.4.43): Battlemagic = class-skill slot 19 (saved key Combat.Spellblade). 0.4.42 reads such files but its save DROPS the key - never roll Skills below 0.4.43 once Spellblades played on it.
     # SkyyWorldGen 0.7 (2026-10-15): a jar without the SkyWynnZones2 type cannot decode skywynn_zones2's config.json (one SEVERE
     # "Failed to load world" at boot, every other world fine). Before rolling back to 0.6: players /zone leave, stop the server, delete
