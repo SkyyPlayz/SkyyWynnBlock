@@ -20,9 +20,11 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   Collections), Cooking 0.1.10 (one food family = one bar), Accessories 0.5.21 (craft + upgrade in the bag), Sacks 0.8.14 (Enchanted Void homes,
   scroll craft list, no Void level gate), Gear 0.3.15 + Menu 0.3.34 (Crafting hub Crafting / Smithing / Anvil / Upgrade, big top row on Gear
   pages), Pets 0.4.1 (Eggs + Hatchery), Skills 0.4.46 + Hud 0.3.30 (log fixes).
-- DEPLOYED 17:05 Wardrobe 0.2.5 (TEST 159). RUNNING: menu sweep round K (skyyui 1.7 hub_page shell + SkyyMenu 0.3.35; plain Agent).
-  Then S1-S4 + Quests q04 per research/Menu-Pattern.md section 4 + rules 7-8 (no back buttons, top rows on every page - Skyy 10-16).
-  Queued: SALVAGE (SkyyGear gear:fn:salvage + Wardrobe 0.2.6; bags.md 10-16).
+- DEPLOYED 18:08 SkyyMenu 0.3.35 = menu sweep K (kit 1.7 hub_page, TEST 160). RUNNING (plain Agents): menu sweep S1 (Skills, Trees +
+  Classes, Pets, Collections (legacy_0221 freeze), Profiles) + S2 (Sacks, Wardrobe, Vault + Bank, Bazaar + Auctions, Merchants). Each report ->
+  Sonnet critic -> fix -> pin -> deploy. Then S3 (Gear, Islands, Exploration, Quests q04, Party, Guilds) + S4 (Hud, Accessories after AP1, Ranks,
+  Essentials, Fishing, Shards, Rebirth), then lint menu_pattern -> FAIL. Leftovers: Menu Ops window, Server Setup row pages -> scroll, SkyyCore 1.0.1 HubBar.
+  Queued: SALVAGE (SkyyGear gear:fn:salvage + Wardrobe; bags.md 10-16).
 - NEXT IN ORDER (specs answered, word for word in docs/answered/):
   1. MENU SWEEP (research/Menu-Pattern.md, answers at the end): kit round K (skyyui 1.7 + Menu 0.3.35; the BIG HUB ROW helper from Gear 0.3.15
      exists), then S1-S4 + Quests q04 (section 4). Every page 1600 x 980, big row 2, short lists fill, scroll not pages.
