@@ -5,6 +5,9 @@ there isnt a conflict. so local can keep working while you handle big builds.").
 
 ## Who does what
 
+**STATUS (Skyy 2026-10-17): Cobb is currently NOT building. Everything in RESUME.md and LOCAL-RESUME.md is on the local
+session's table for now. Cobb only does orchestration, design, specs and test-video reviews until Skyy says otherwise.**
+
 | Local session (Skyy's PC) | Cobb (Grok bot, cloud) - NO BUILDING for now (Skyy 2026-10-17) |
 |---|---|
 | ALL builds now, incl. big ones + the queue below | Orchestration, design, specs, briefs |
