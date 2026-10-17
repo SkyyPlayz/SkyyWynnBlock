@@ -285,3 +285,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Requip Salvage button (DEPLOYED 2026-10-16, backup deploy-20261016-2329) | [2026-10](2026-10.md) |
 | Class crests + ability icons in the menus; Flask / Pouch engine probe (one test) (DEPLOYED 2026-10-16, backup deploy-20261016-2340) | [2026-10](2026-10.md) |
 | Explore admin editor in the frame (DEPLOYED 2026-10-16, backup deploy-20261016-2343) | [2026-10](2026-10.md) |
+| Fishing Bench sells / fillets Void fish; Fishing Accessory Power (DEPLOYED 2026-10-16, backup deploy-20261016-2351) | [2026-10](2026-10.md) |

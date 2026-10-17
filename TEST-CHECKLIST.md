@@ -196,3 +196,4 @@ tests always come first.
 168. Requip Salvage (two clicks, materials not coins)
 169. Class crests + ability icons; /flaskprobe test (then /flaskprobe clear)
 170. Explore admin editor in the frame (admin)
+171. Fishing Bench uses Void fish; Fishing Power pickable
