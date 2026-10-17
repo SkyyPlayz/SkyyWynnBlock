@@ -274,3 +274,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Crafting hub tabs (Smithing / Anvil / Upgrade) with the big top row, set-page Upgrade buttons, pet menu Eggs + Hatchery (DEPLOYED 2026-10-16, backup deploy-20261016-1646) | [2026-10](2026-10.md) |
 | Log fixes: no false Mana / spell-cost warnings, quiet minimap shutdown (DEPLOYED 2026-10-16, backup deploy-20261016-1651) | [2026-10](2026-10.md) |
 | Requip scroll list, search on top, Take out stays out (DEPLOYED 2026-10-16, backup deploy-20261016-1705) | [2026-10](2026-10.md) |
+| Menu cleanup step 1: one page frame, no back buttons (Home, Teleport, Players, Mods, Your Stats, Settings, Server Setup) (DEPLOYED 2026-10-16, backup deploy-20261016-1808) | [2026-10](2026-10.md) |

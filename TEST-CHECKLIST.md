@@ -185,3 +185,4 @@ tests always come first.
 157. Crafting hub tabs + big top row on Smithing, Upgrade buttons, pets Eggs + Hatchery
 158. No false Mana / spell-cost WARNs, quiet minimap shutdown (log only)
 159. Requip scroll + search on top + take-out stays out
+160. Menu cleanup step 1 (SkyWynn Menu pages on the one frame, no back buttons)
