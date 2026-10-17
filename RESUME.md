@@ -32,7 +32,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   Essentials 0.1.14 3751-3891/4561, Auctions 0.1.11 893/955/976/5638/5704, Menu MENU_ICONS label (line 459) + MODS "setup" title
   "Accessories" -> "Void Charms" (Menu's menu_check compares it with Accessories' TITLE). Keep "Accessory Power" + "Old Accessory Bag".
 - FURNACE CHARM decided (gear.md 10-17): T1-T5 tier-ups cost the zone's 2 metals + unlock its alloy; Eternal Flame at Charcoal 7;
-  base-metal collections only. Needs the zone ores + alloy items first (not built) -> one ULTRACODE round when Skyy says go.
+  base-metal collections only. Needs the zone ores + alloy items first (not built). Skyy 10-17: "Yes - start the zone ores +
+  alloys + Furnace Charm round right after the current set deploys." -> ULTRACODE round NEXT after the Classes/Wardrobe deploy.
 - Zone metals (Skyy's table, research/Zone-Tiers-Idea.md): Bronze / Dusk / Azurvane / Cinder / Lumen; Quirk sends art drafts per family.
 
 ## NEXT (small first; Skyy: "work through the small things and the next up list. save the bigger ones for later")
