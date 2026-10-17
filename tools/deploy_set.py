@@ -19,7 +19,7 @@ SET = [
     ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.15"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.24"), ("SkyyParty", "0.1.10"),
+    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.16"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.24"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.18"), ("SkyyBazaar", "0.1.19"), ("SkyyGear", "0.3.17"), ("SkyySkills", "0.4.48"),
     ("SkyyAccessories", "0.5.22"), ("SkyyClasses", "0.1.34"), ("SkyyMenu", "0.3.36"), ("SkyyEssentials", "0.1.12"), ("SkyyProfiles", "0.1.16"),
     ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.20"),
@@ -37,7 +37,7 @@ SET = [
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
     ("SkyyVault", "0.1.9"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
-    ("SkyyAuctions", "0.1.10"),
+    ("SkyyAuctions", "0.1.11"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
