@@ -25,7 +25,7 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 
 | Mod(s) | Owner | Job | Branch / PR | Since | Status |
 |---|---|---|---|---|---|
-| SkyyGear, SkyyMobs (+ loot) | Local (handed over) | RESUME NEXT 3: armor + weapons as mob drops (Gear 0.3.19, Mobs 0.1.10) | `cloud/trial-armor-drops`, [PR #17](https://github.com/SkyyPlayz/SkyyWynnBlock/pull/17) | 2026-10-17 | Built + reviewed; local: review, rebuild, smoke, pin, merge. Renumber if 0.3.19 / 0.1.10 are taken |
+| SkyyGear, SkyyMobs (+ loot) | Local (handed over) | RESUME NEXT 3: armor + weapons as mob drops (Gear 0.3.19, Mobs 0.1.10) | `cloud/trial-armor-drops`, [PR #17](https://github.com/SkyyPlayz/SkyyWynnBlock/pull/17) | 2026-10-17 | 2026-10-17 local: PR files copied in, trusted rebuild + Armory 1.23.0 re-scan + 2 critics running; Void Charms Gear texts folded into 0.3.19 |
 
 Cobb holds no locks now. Carry RESUME's unfinished Void Charms Gear edits into the next Gear patch after #17.
 
@@ -59,6 +59,9 @@ Metals source of truth: `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec
    then every other metal item in the inventory. Excluded: charms, bench accessories, dropped vanilla tools (scythe, hoe),
    Foraging / Farming armor, fishing (waits for a full fishing build). The zone palette cards are enough (no per-metal cards).
 3. METALS BUILD (unassigned until Skyy says): ores, spawn, smelting, alloys, Fortune, tools/weapons per the spec.
+   STATUS 2026-10-17 (local): ores + spawn rules + smelting + alloys + Electrum + Furnace Charm are LIVE (TEST-CHECKLIST 177; research/
+   Zone-Ores-Alloys-Spec.md). Still open: Fortune upgrades (spec 5), metal tools / weapons / mining sets per metal (need SkyyGear after
+   PR #17 + SkyyArmory), the 15-step tool tier ladder question (spec 2), real art instead of the build-time recolour placeholders (item 2).
 
 ## Rules
 1. Before any job, pull and read this table. If your mod is locked by the other side, pick other work or ask Skyy.
