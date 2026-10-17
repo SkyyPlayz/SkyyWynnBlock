@@ -19,8 +19,8 @@ SET = [
     ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.30"), ("SkyySacks", "0.8.14"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.23"), ("SkyyParty", "0.1.9"),
-    ("SkyyBank", "0.1.15"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.17"), ("SkyyGear", "0.3.15"), ("SkyySkills", "0.4.47"),
+    ("SkyyHud", "0.3.30"), ("SkyySacks", "0.8.15"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.23"), ("SkyyParty", "0.1.9"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.18"), ("SkyyGear", "0.3.15"), ("SkyySkills", "0.4.47"),
     ("SkyyAccessories", "0.5.21"), ("SkyyClasses", "0.1.34"), ("SkyyMenu", "0.3.35"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.16"),
     ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.20"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -35,9 +35,9 @@ SET = [
     # skill:bonus "doublejump.acrobatics", Skills publishes skill:dj:key); SkyyTrees 0.2.1 rewrites Acrobatics.RDodge as RDouble on
     # the next save, so do not go back to SkyyTrees 0.2 after it ran. SkyyIslands 0.5 migrates island files at start (0.4.x copies
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
-    ("SkyyVault", "0.1.8"),
+    ("SkyyVault", "0.1.9"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
-    ("SkyyAuctions", "0.1.9"),
+    ("SkyyAuctions", "0.1.10"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
@@ -74,13 +74,13 @@ SET = [
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
     # until /merchantadmin list shows no merchant out, then remove the jar (else Temple_Klops NPCs named "Traveling Merchant" stay).
-    ("SkyyMerchants", "0.1.5"),
+    ("SkyyMerchants", "0.1.6"),
     # SkyyPets 0.1 (2026-10-09, slot pets phase 1: records + buffs, no creatures). FLOOR: before removing SkyyPets switch Server Setup >
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
     ("SkyyPets", "0.4.2"),
-    ("SkyyWardrobe", "0.2.5"),
+    ("SkyyWardrobe", "0.2.6"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
@@ -462,6 +462,9 @@ def main():
     # menu sweep S1 (2026-10-16): Trees 0.3.20 + Classes 0.1.34 deploy + roll back together (one sub row on the merged Trees tab; no data).
     if (_v(_p.get("SkyyTrees", "0")) >= (0, 3, 20)) != (_v(_p.get("SkyyClasses", "0")) >= (0, 1, 34)):
         print("STOP: SkyyTrees 0.3.20 and SkyyClasses 0.1.34 go together (menu sweep S1)"); return 1
+    # menu sweep S2 (2026-10-16): Bazaar 0.1.18 + Auctions 0.1.10 share one Market sub row (ah:fn:view) - deploy + roll back together; Vault 0.1.9 + Bank 0.1.16 pinned together. No data.
+    if (_v(_p.get("SkyyBazaar", "0")) >= (0, 1, 18)) != (_v(_p.get("SkyyAuctions", "0")) >= (0, 1, 10)):
+        print("STOP: SkyyBazaar 0.1.18 and SkyyAuctions 0.1.10 go together (menu sweep S2)"); return 1
     # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
     # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep
