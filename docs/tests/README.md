@@ -279,3 +279,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Menu cleanup step 3: Storage + Market (Void and Requip as Storage tabs, crafting, Vault, Bazaar / Auction House, Merchants) (DEPLOYED 2026-10-16, backup deploy-20261016-1912) | [2026-10](2026-10.md) |
 | Menu cleanup step 4: Crafting / World / Social (smithing, Quests redesign, Islands, Explore, Guilds) (DEPLOYED 2026-10-16, backup deploy-20261016-1933) | [2026-10](2026-10.md) |
 | Party page in the frame + Disband confirm (DEPLOYED 2026-10-16, backup deploy-20261016-1942) | [2026-10](2026-10.md) |
+| Last menu group + leftovers, Void Charms + Accessory Power, Collections + Bazaar (Greater Essence, Eternal Seeds lock, Enchanted listing), tool upgrades, pets roster (DEPLOYED 2026-10-16, backup deploy-20261016-2240) | [2026-10](2026-10.md) |
