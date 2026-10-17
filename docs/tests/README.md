@@ -290,3 +290,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Potion Flask + Food Pouch (FP1) (DEPLOYED 2026-10-17, backup deploy-20261017-0803) | [2026-10](2026-10.md) |
 | Teleport page (warps + icons, island homes, homes, Arrange) + /back + /sethome homes (DEPLOYED 2026-10-17, backup deploy-20261017-0812) | [2026-10](2026-10.md) |
 | Void Charms name in Server Setup + texts (DEPLOYED 2026-10-17, backup deploy-20261017-0824) | [2026-10](2026-10.md) |
+| Void Charms rename + Breach x Mark + Requip food + Nestkeeper (DEPLOYED 2026-10-17, backup deploy-20261017-0953) | [2026-10](2026-10.md) |

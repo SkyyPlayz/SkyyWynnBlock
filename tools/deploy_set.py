@@ -19,9 +19,9 @@ SET = [
     ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.18"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.24"), ("SkyyParty", "0.1.10"),
+    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.19"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.24"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.19"), ("SkyyBazaar", "0.1.19"), ("SkyyGear", "0.3.18"), ("SkyySkills", "0.4.48"),
-    ("SkyyAccessories", "0.5.24"), ("SkyyClasses", "0.1.36"), ("SkyyMenu", "0.3.37"), ("SkyyEssentials", "0.1.14"), ("SkyyProfiles", "0.1.17"),
+    ("SkyyAccessories", "0.5.24"), ("SkyyClasses", "0.1.37"), ("SkyyMenu", "0.3.38"), ("SkyyEssentials", "0.1.15"), ("SkyyProfiles", "0.1.17"),
     ("SkyyCooking", "0.1.11"), ("SkyyTrees", "0.3.22"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -37,7 +37,7 @@ SET = [
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
     ("SkyyVault", "0.1.9"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
-    ("SkyyAuctions", "0.1.11"),
+    ("SkyyAuctions", "0.1.12"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
@@ -80,7 +80,7 @@ SET = [
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
     ("SkyyPets", "0.4.3"),
-    ("SkyyWardrobe", "0.2.8"),
+    ("SkyyWardrobe", "0.2.9"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
@@ -139,7 +139,8 @@ SET = [
 PACK_THIRD_PARTY = ["Serj:More Crossbow Tiers",
                     "NoCube:[NoCube's] Orchard",
                     "IBC:Multitools", "BlueOrbit:DynamicSeasons", "dev.ninesliced:BetterMap", "narwhals:Perfect Parries",
-                    "LadyPaladra:TheArmory", "EnsoX:WeaponCustomHUD", "MarckAA:ZipLinePlugin", "com.astryxworld:ZoneViewControl"]  # 2026-10-15 Skyy: The Armory 1.23.0 back ON for a test (0.7.2 engine audit clean); WeaponCustomHUD / Zip Line / Zone View Control packed (mod checks 10-15)  # 2026-10-13 0.7.1: DynamicSeasons 7.0.2, BetterMap 1.3.9, Perfect Parries 0.9.7 back ON (authors updated) -  # 2026-10-11 Skyy: "lets add perfect parries" - All Rights Reserved: install from CurseForge, never bundled; per-class tuning goes into ITS world config (tune_perfect_parries)  # 2026-10-10 Skyy: Multitools in the pack (MIT, credit InkBlindCat); SkyyGear 0.2.18+ changes its recipe + stats at runtime  # 2026-10-09 Skyy: test BME main mod (GPLv3, credit in PACK.md + server credits); Humans add-on stays OFF ("No guns")  # 2026-10-08 Skyy: "switch the armory on" - CC BY-NC (credit, never sell; PACK.md); combat armor + Warrior / Berserker / Assassin weapons + boss specials (research/Pack-Armor-Plan.md)  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
+                    "LadyPaladra:TheArmory", "EnsoX:WeaponCustomHUD", "MarckAA:ZipLinePlugin", "com.astryxworld:ZoneViewControl",
+                    "BlackAures:Aures - Dragon Nestkeeper"]  # 2026-10-17 Skyy: Dragon Nestkeeper "Add it" (popup 1/7; ARR, modpacks allowed; research/Nestkeeper-Pack-Check.md)  # 2026-10-15 Skyy: The Armory 1.23.0 back ON for a test (0.7.2 engine audit clean); WeaponCustomHUD / Zip Line / Zone View Control packed (mod checks 10-15)  # 2026-10-13 0.7.1: DynamicSeasons 7.0.2, BetterMap 1.3.9, Perfect Parries 0.9.7 back ON (authors updated) -  # 2026-10-11 Skyy: "lets add perfect parries" - All Rights Reserved: install from CurseForge, never bundled; per-class tuning goes into ITS world config (tune_perfect_parries)  # 2026-10-10 Skyy: Multitools in the pack (MIT, credit InkBlindCat); SkyyGear 0.2.18+ changes its recipe + stats at runtime  # 2026-10-09 Skyy: test BME main mod (GPLv3, credit in PACK.md + server credits); Humans add-on stays OFF ("No guns")  # 2026-10-08 Skyy: "switch the armory on" - CC BY-NC (credit, never sell; PACK.md); combat armor + Warrior / Berserker / Assassin weapons + boss specials (research/Pack-Armor-Plan.md)  # 2026-10-06: the SkyyHud 0.3.14 minimap reads the map it streams (AGPL - never bundled, never called)  # 2026-10-06 Skyy: fruit trees, Fruit Press + juices (modpacks allowed by its page)
 # Advanced Farming was NOT added (Skyy 2026-10-06: out of date, no longer updated -> build its tools into our own mod).
 # Skyy mods that were MERGED into another mod and must be switched OFF in the world config on every deploy (their jar may stay in Mods;
 # a disabled key is not loaded). Without this, deploy_set only disables older versions of the SAME mod name, and a retired mod would keep

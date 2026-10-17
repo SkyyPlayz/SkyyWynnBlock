@@ -26,6 +26,7 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 | Mod(s) | Owner | Job | Branch / PR | Since | Status |
 |---|---|---|---|---|---|
 | SkyyGear, SkyyMobs (+ loot) | Local (handed over) | RESUME NEXT 3: armor + weapons as mob drops (Gear 0.3.19, Mobs 0.1.10) | `cloud/trial-armor-drops`, [PR #17](https://github.com/SkyyPlayz/SkyyWynnBlock/pull/17) | 2026-10-17 | Built + reviewed; local: review, rebuild, smoke, pin, merge. Renumber if 0.3.19 / 0.1.10 are taken |
+| SkyyWorldGen, SkyyAccessories, SkyySacks, SkyyCollections, SkyyBazaar, SkyySkills (+ tools/tier_tags.py, tools/skyyench.py) | Local | Zone ores + alloys + Furnace Charm (research/Zone-Ores-Alloys-Spec.md; Skyy popup "Yes, build with defaults") | local, no PR | 2026-10-17 | Built B1-B4, critics running |
 
 Cobb holds no locks now. Carry RESUME's unfinished Void Charms Gear edits into the next Gear patch after #17.
 

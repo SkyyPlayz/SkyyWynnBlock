@@ -244,7 +244,7 @@ Ideas - pick one.
 
 ## 🟠 Open
 
-- (class skill 'Zen' locked; the rename is a queued SkyySkills task, not a question)
+- (class skill 'Zen' locked; renamed in SkyySkills 0.4.27 + SkyyClasses 0.1.15, live since 2026-10-09)
 
 
 
