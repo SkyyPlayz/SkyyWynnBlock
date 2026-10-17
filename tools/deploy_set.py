@@ -80,7 +80,7 @@ SET = [
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
     ("SkyyPets", "0.4.3"),
-    ("SkyyWardrobe", "0.2.6"),
+    ("SkyyWardrobe", "0.2.7"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
@@ -483,6 +483,9 @@ def main():
     # trees21 (2026-10-16): SkyyClasses 0.1.35 (Radiant Pulse, Elemental Bubble, Siphon) needs SkyyTrees 0.3.21+ (Feller table, swing readers, Siphon -5% Health).
     if _v(_p.get("SkyyClasses", "0")) >= (0, 1, 35) and _v(_p.get("SkyyTrees", "0")) < (0, 3, 21):
         print("STOP: SkyyClasses 0.1.35 needs SkyyTrees 0.3.21+"); return 1
+    # wd027 (2026-10-16): Requip SALVAGE uses SkyyGear 0.3.17's gear:fn:salvage (write-ahead salvage-<eid>.txt journals; never coins).
+    if _v(_p.get("SkyyWardrobe", "0")) >= (0, 2, 7) and _v(_p.get("SkyyGear", "0")) < (0, 3, 17):
+        print("STOP: SkyyWardrobe 0.2.7 (Requip SALVAGE) needs SkyyGear 0.3.17+"); return 1
     # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
     # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep
