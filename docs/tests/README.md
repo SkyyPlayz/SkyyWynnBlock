@@ -275,3 +275,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Log fixes: no false Mana / spell-cost warnings, quiet minimap shutdown (DEPLOYED 2026-10-16, backup deploy-20261016-1651) | [2026-10](2026-10.md) |
 | Requip scroll list, search on top, Take out stays out (DEPLOYED 2026-10-16, backup deploy-20261016-1705) | [2026-10](2026-10.md) |
 | Menu cleanup step 1: one page frame, no back buttons (Home, Teleport, Players, Mods, Your Stats, Settings, Server Setup) (DEPLOYED 2026-10-16, backup deploy-20261016-1808) | [2026-10](2026-10.md) |
+| Menu cleanup step 2: Character hub (Skills, Trees, Class, Pets, Collections, Profiles) on the one frame, no back buttons (DEPLOYED 2026-10-16, backup deploy-20261016-1845) | [2026-10](2026-10.md) |
