@@ -1,6 +1,6 @@
 # Zone tiers idea - 2 or 3 metal tiers per zone (IDEA, not built)
 
-Where answers go: Skyy's words -> `docs/answered/gear.md`; when this becomes a spec, rename to `research/Zone-Tiers-Spec.md` and add it to `INDEX.md`.
+Where answers go: Skyy's words -> `docs/answered/gear.md`; when this becomes a spec, rename it to a Zone-Tiers Spec file and add it to `INDEX.md`.
 
 ## Skyy 2026-10-17 (word for word)
 "5 zones at start. and with zone 1 going through iron, that's 20 levels. if we do 2 tiers per zone, players will be hitting max lvl and
@@ -35,3 +35,15 @@ ore, for the farming/ tool tiers. then we could make the farming and gathering m
 other things and make our own new ores?" -> popup "Keep Silver/Gold for charms (Recommended)": Silver + Gold stay precious (Void Charms,
 jewelry, coin-type items). Each zone = the vanilla metals already in it + ONE new ore of ours themed to the zone, smelted into our OWN alloy
 (own names, not the real-world list above).
+
+## Metal list (Skyy 2026-10-17, their table) - Zone 1 alloy = Bronze ("copper and iron make bronze")
+| Zone | Base | Our ore | Alloy |
+|---|---|---|---|
+| 1 | Copper | Iron | Bronze |
+| 2 | Thorium | Lead | Dusk |
+| 3 | Cobalt | Chromium | Azurvane |
+| 4 | Adamantite | Slag | Cinder |
+| 5 | Mithril | Titanium | Lumen |
+
+"Onyx and Nightveil are parked until there's a Zone 6. Silver and Gold stay for charms." "Quirk will send you art drafts for each family."
+(Iron is vanilla; "our ore" column = the zone's second ore.) Metals + alloys = mining sets + tool upgrades only.

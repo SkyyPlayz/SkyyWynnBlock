@@ -1,101 +1,55 @@
-# SkyWynn - RESUME HERE (updated 2026-10-16 ~09:05 MDT: Skyy at work; Claude works the queue, stops new work at 95% weekly usage)
+# SkyWynn - RESUME HERE (updated 2026-10-17 ~08:20 MDT; Skyy resets the session after this)
 
-Big picture for other agents: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`.
+Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
 
 ## START HERE (new session)
-1. `git pull --rebase --autostash`; check usage (ccd get_usage).
-2. DEPLOY TARGET = world **NewBetaTest** (`tools/deploy_set.py` WORLD). Skyy plays with a friend (WesleyPlayz, Assassin).
-3. Deployed 10-16 (TEST-CHECKLIST 139-146): Hud 0.3.28, Essentials 0.1.11 (crops back - DynamicSeasons Compost_Soft), Menu 0.3.30, Cooking 0.1.8
-   (food families), Fishing 0.1.8 + Sacks 0.8.10 + Shards 0.4.1, Classes 0.1.30 + Trees 0.3.18 (top-down tree), Bazaar 0.1.15 (x4.5 prices,
-   sell per tab), Gear 0.3.12 (watering can + Harvester), Wardrobe 0.2.4 (Requip loadout rows, TEST 147), Sacks 0.8.11 + Accessories 0.5.19 + Menu 0.3.31 (Crafting hub, TEST 148), WorldGen 0.7.1 (Zone 1 spawn, TEST 149), Pets 0.4.0 (eggs, TEST 150), Gear 0.3.13 + Collections 0.2.20 + Bazaar 0.1.16 +
-   Armory 0.1.29 + Classes 0.1.31 (normal tools off, Enchanted Sticks, Great Shield, Crescent Rush lunge, TEST 151), lifelong bag / pocket /
-   menu item (Accessories 0.5.20, Sacks 0.8.12, Menu 0.3.32, Islands 0.5.17, TEST 152), Classes 0.1.32 + Hud 0.3.29 (Arcane Breach arc, Stacks widget, TEST 153). deploy_set rules added: Sacks 0.8.10 needs Fishing 0.1.8; Trees 0.3.18 <-> Classes 0.1.30.
-4. Rounds: while Skyy is chatting about other topics, run builders as PLAIN Agents (workflow builders refuse - memory note) and spawn the
-   critics yourself; else the saved workflow `skywynn-round`. Deploy only with the game closed: backup -> smoke (`--allow-pack-api`) ->
-   deploy_set --yes -> record_deploy -> commit -> tidy. Never SendMessage an agent inside a workflow; plain Agent builders can be messaged.
+1. `git pull --rebase --autostash`; check usage (ccd get_usage). Deploy target world **NewBetaTest** (`tools/deploy_set.py` WORLD).
+2. Rounds: while Skyy chats on other topics run builders as PLAIN Agents and spawn critics yourself (workflow builders refuse); else the
+   saved workflow `skywynn-round`. Deploy (game closed): skill `skywynn-deploy` = backup -> `smoke_test.py --allow-pack-api` (Perfect
+   Parries pack-API fail is third-party) -> `deploy_set.py --yes` (check the LAST line says "deployed N mods") -> `record_deploy.py` -> commit -> tidy.
+3. After Skyy plays: skill `skywynn-logs` (`python tools/log_scan.py --ours`, then `--recycle`).
 
-## RUNNING NOW
-- DEPLOYED 10-16 afternoon (TEST-CHECKLIST 155-158): menu merges (Stats in Skills, Class in Trees, Bank+Vault, Bazaar+AH, recipes in
-  Collections), Cooking 0.1.10 (one food family = one bar), Accessories 0.5.21 (craft + upgrade in the bag), Sacks 0.8.14 (Enchanted Void homes,
-  scroll craft list, no Void level gate), Gear 0.3.15 + Menu 0.3.34 (Crafting hub Crafting / Smithing / Anvil / Upgrade, big top row on Gear
-  pages), Pets 0.4.1 (Eggs + Hatchery), Skills 0.4.46 + Hud 0.3.30 (log fixes).
-- DEPLOYED 10-16: menu sweep K (TEST 160), S1 Character (161), S2 Storage + Market (162). S3 (Gear 0.3.16, Quests 0.4.0, Islands 0.5.18,
-  Exploration 0.2.13, Party 0.1.10, Guilds 0.1.11) BUILT, critic running -> pin + deploy.
-- DEPLOYED 10-16 night (TEST 165-171): S4 menus + leftovers, Void Charms + AP, coll24, T1, pets 0.4.3, Sacks 0.8.16 + Auctions 0.1.11,
-  Trees 0.3.21 + Classes 0.1.35, Wardrobe 0.2.7 Salvage, emblems (Classes 0.1.36 / Profiles 0.1.17 / Trees 0.3.22) + SkyyFlaskProbe 0.1.0,
-  Exploration 0.2.14, Fishing 0.1.10 + Sacks 0.8.17. Nothing running. Menu sweep DONE (no menu_pattern lines left) -> flip lint MENU_PATTERN_FAIL.
-- WAITING ON SKYY'S TEST: /flaskprobe steps (TEST 169) -> then FP1 (real Flask + Pouch, SkyyCooking) + retire the probe (/flaskprobe clear, RETIRED).
-- STILL TO DO (small list): smelting accessory (Accessories + Sacks furnace), Gear bp reader for Accessory Power, lifelong multitool MERGE (own full
-  round), Profiles carry Skyy_SkyyAccessories power / retired files, Islands kit drop bag item, 'Accessory Bag' text sweep (~20 mods), Rebirth
-  shows AH kind-3 lines, Hud feed card restyle, structure mods + joszza draft, Mage PA4 (needs Armory blink-landing bridge), skyyeggs ORDER update.
-- WAITING ON SKYY: add Dragon Nestkeeper (Aures) to the pack? (pets.md); Combat 15 Power numbers + drop-only upgrade costs are builder proposals.
-- LATER (Skyy): Beastmastery, Void Particles, totems, Armory gear + movement, mod compression, SkyyCore 1.0.1 HubBar.
-- NEXT IN ORDER (specs answered, word for word in docs/answered/):
-  1. MENU SWEEP (research/Menu-Pattern.md, answers at the end): kit round K (skyyui 1.7 + Menu 0.3.35; the BIG HUB ROW helper from Gear 0.3.15
-     exists), then S1-S4 + Quests q04 (section 4). Every page 1600 x 980, big row 2, short lists fill, scroll not pages.
-  2. Collections 0.2.23 + Bazaar 0.1.18: Life Essence 1:1 -> vanilla Greater Essence (skyyench RETIRED_TO; 0.2.22 script needs
-     skyyench.legacy_0221() to rebuild), Eternal Seeds at crop collection tier 4, list the Enchanted items after sizing collection gifts.
-  3. AP1 Accessories 0.5.22 (research/Accessory-Power-Spec.md + answers; Void Charms rename, no bag item, /charm /charms /ch, bag grid).
-  4. T1 tool upgrades = Gear 0.3.17 + Skills 0.4.48 (research/Collections-Tools-Redesign-Spec.md last section).
-  5. Flask / Pouch (research/Flask-Pouch-Spec.md + answers): probe FP0, then FP1 (SkyyCooking).
-  6. Mod compression after the menus (sections stay separate - research/Architecture-Spec.md last section).
+## LIVE NOW (deployed 2026-10-17, TEST-CHECKLIST 172-174)
+- 172: Accessories 0.5.23 (Void Charms -> top-bar Market disconnect fixed), Gear 0.3.18 (Breaking Speed row first, accessory Breaking
+  Power, red/green requirement lists), Islands 0.5.19 (6 named island homes, `/is sethome <name>`, `/is <name>`).
+- 173: FP1 Potion Flask + Food Pouch = Cooking 0.1.11 + Sacks 0.8.18 + Wardrobe 0.2.8 (Storage > Supplies, /flask /pouch). FLOOR Cooking 0.1.11.
+- 174: Menu 0.3.37 (Teleport page: warps with APPROVED icons art/warp-icons, island homes, homes, Arrange; Void Charms amulet icon) +
+  Essentials 0.1.14 (/back, /sethome + /home 2 homes, /warpadmin icons; islands fail closed, instances refused).
+- SkyyFlaskProbe 0.1.0 still in the SET: retire it (RETIRED list) once Skyy has run `/flaskprobe clear`.
 
-## NEXT (after the running rounds; each answer word for word in docs/answered/)
+## RUNNING / JUST BUILT
+- Accessories 0.5.24 (plain Agent): "Accessory Bag"/"Accessories" -> "Void Charms" in Server Setup + all visible texts (Skyy 10-17: "i
+  noticed they are still called accessory's in the settings"). If built: quick review -> pin -> deploy; queue the other mods' texts it lists.
 
-0. FROM THE 10-16 OPEN-QUESTIONS PASS (word for word in docs/answered/*.md, dated 2026-10-16) - queued builds:
-   a. (done 10-16: Skills 0.4.44 + Rebirth 0.3.4 deployed)
-   b. farm01 / gear0314 (SkyyGear): retire hoe + sickle -> start with Crude Harvester + can (merge existing), sweep tier rule, Sigils on Mining
-      Sets, Sigil drop sources by rarity, Mythic Sigil usable, till area everywhere.
-   c. Collections + tool upgrades redesign (needs a spec): every tier unlocks recipes / Enchanted Block 2nd compression / lower coins + tool
-      points; uncapped Breaking Power + Swing Speed lines; Fortune past 100% = triple drops; multitool keeps highest power / speed + all mods;
-      collection ranks give Enchanted items; Enchanted -> 100 base un-compress (auto if possible); Void auto compactor (Rare+, bought per bag).
-   d. Void Particles rebirth currency (spec update research/cloud/Rebirth-Spec.md, then a rebirth round).
-   e. Totem workers scale + totem Fortune + totem page with upgrades + AUGMENT slots (Compactor, Chrono Stasis), totem-workbench crafting;
-      totem tier-up costs by totem kind; REMOVE the MoreTotems fold (spec first).
-   k. CRAFTING PAGE (SkyySacks /craft): bigger rows (name + cost), ~6 rows visible, scroll instead of pages - ui.md 10-16; launch as soon as hubcoll is done.
-   l. REMOVE Enchanted Essence of Life -> vanilla Greater Essence (Ingredient_Life_Essence_Concentrated), 1:1 convert held ones (gear.md 10-16);
-      rides Collections 0.2.23 (+ Sacks / Bazaar rows) after hubcoll / hubmkt.
-   j. ETERNAL SEEDS locked to each crop's collection tier 4 (recipe + Bazaar buy; Server Setup row) - economy.md 10-16; rides Collections 0.2.23 + Bazaar 0.1.18.
-   i. NEXT ROUNDS for C1: Bazaar 0.1.18 lists the 83 new Enchanted items - FIRST size the collection gifts to item value (critic: up to ~40 Enchanted
-      Mithril free) or keep gift items off market; freeze NEW0116 to TABLE_20; ResourceTypeId recipe pricing; Sacks rebuild (homes for 103 rows,
-      Combat / Smithing cats); Gear T1 reads coll:fn:toolPts + coll:tierups (Anvil gate). (Armory boss Sigil double roll fixed in 0.1.30.)
-   g. BEASTMASTERY skill (skills.md 10-16): spec then Skills + Trees + Pets rounds.
-   h. Gathering stat lines on gear rolls / accessories / pets (gear.md GATHERING STAT SOURCES); four-power-sources rule.
-   f. Small rounds: Exploration names (Loot Bag / Lost Treasure / Magic Box); /spawn for players (WorldGen 0.7.2); guild names with symbols;
-      AH rebirth auto-claim; seeds / saplings Void toggles; hide vanilla pickup popup + restyle our feed; hub merges (Stats+Skills, Trees+
-      Abilities, Collections+Recipes, Bank+Vault, Bazaar+AH); Sap Tapper extra sap counts; Tree Feller 8-number table; food Strength scales
-      with Grade capped 10 min; shard co-op Collect; structure mods we can use without asking (+ draft the joszza message); 4 waiting tree
-      nodes; Aures dragon pet (allowed); pet roster adds + collection egg catch-up; release = CurseForge first, 'Isles of the Void' 1.0.0.
-2. **Movement vs The Armory** (log 10-16): Armory's JumpHeightModifierSystem writes MovementSettings -> our speed / jump bonuses pause. Make our
-   movement protocol compose with it (SkyyCore / Skills / Accessories / Trees) + find the ~230 client 'Equipment packet on the local player' WARNs.
-3. **The Armory gear into our systems** (gear.md 10-16; research/Pack-Armor-Plan.md) - ultracode after tools01 (Gear + Mobs + loot).
-4. **Pet eggs R2-R4** (Skills drops, Bazaar + Merchants, Collections) after pets040.
-5. **Smelting accessory** (gear.md 10-16) - short spec, then Accessories + Sacks furnace + Collections - can launch now.
-6. **Food follow-up**: cook:fn:bonus bridge readers (SkyyGear Strength, SkyySkills food Mana Regen %) - spec in the 0.1.8 patch notes.
-7. **Class emblems in the UI** (art/class-emblems; the 7 were approved 10-06, Spellblade crest + 5 Spellblade ability icons are DRAFT) - wire into
-   Profiles / class pick / Class tab after Skyy looks at the sheets; wire the ability icons into the tree / loadout / HUD.
-8. Small companions (old item 3): Accessories Regeneration onto skill:fn:hpregen; Trees health-regen nodes; SkyyPets POLL_SKILLS + pets:fn:owned;
-   SkyyGuilds SKILL_NAMES (Spellblade); SkyyCollections maskOf (fabric not Smithing); deploy_set tune_perfect_parries Spellblade / Longsword_*;
-   tier tags T3 (Fishing / Accessories / Exploration / Shards own ladders); Bazaar follow-ups (Collections coin unlocks ~4.5x dearer).
-9. Later: Hubs H4-H7, merge phases 2/3/8, SkyyZones server protection, menu icon waves 2-5, Subcaverna zone (licence check), load tests, release.
-
-## What Skyy should test (TEST-CHECKLIST 137-146, world NewBetaTest)
-See TEST-CHECKLIST.md (one line per deploy). Scan both logs after play (Jev via tools/llm.py), fix ours, recycle old logs.
+## NEXT (small first; Skyy: "work through the small things and the next up list. save the bigger ones for later")
+1. Small LOWs left from reviews (optional): Gear accBp per-hit cache + GearReq missing red row (gear 0.3.18 review); Menu warp names with
+   '.' can't be arranged, Arrange has no prev/next; Essentials icon ids > 32 chars dropped on restart; Requip deposit strands claimed food.
+2. Menu rebuilds now need a `TAB_ICON` for `storage:supplies` (tools/skyyui.py has the Supplies tab) - add one (art) in the next Menu round.
+3. Armor/weapons from The Armory + Arcane Robes + others as mob drops with our modifiers (gear.md 10-17; research/Armor-Set-Count.md):
+   per zone (5 zones) x weight: fewer normal sets low, 2 UT + 1 Mythic at the zone's top combat band; UT/basic = recolours (of the cooler
+   modded sets), coolest looks saved for Mythic, own designs last. Packable now: Void Armor (CC BY-NC). Ask authors (Skyy sends): Fyrrage
+   (Fantastic Knight + Outlanders), Elemental Knights, stonedturtle, SlverSkull (Arcane Robes). Add Patchly + The Armory 1.23.0 to PACK.md.
+   ULTRACODE round (Gear + Mobs + loot) once Skyy OKs the ask list.
+4. Nestkeeper into the pack (dup check, PACK.md) then the Aures dragon pet; Wynn elements spec (Earth/Thunder/Water/Fire/Air, Imbue all 5);
+   Breach + Mark stack fully; Monk "Zen" rename; zone gathering spots + seeds locked behind collections + crop islands for Eternal seeds
+   (100 / +200 / +500) - world.md 10-17.
+5. Small list: smelting accessory, lifelong multitool merge, Hud ability icons (6 classes), Mage PA4 (Armory blink bridge), structure mods +
+   joszza draft, flip lint MENU_PATTERN_FAIL, skyyeggs ORDER, Profiles carry Accessory Power / retired files.
+6. IDEA (Skyy "dont change now"): research/Zone-Tiers-Idea.md - 3 gathering tiers per zone (2 ores + own alloy; metals = mining sets + tools
+   only, combat gear drops only), end of Zone 4 at Lv 50, Zone 5 after rebirth; Silver/Gold kept for charms.
+7. LATER (Skyy): Beastmastery, Void Particles, totems, Armory gear + movement, mod compression (sections stay separate), SkyyCore 1.0.1 HubBar.
 
 ## Never forget
 - Commit ab75b6c: Skyy hand-edited 4 GENERATED scripts (`SkyySkills\build_skyyskills_0.4.5.py`, `SkyyTrees\build_skyytrees_0.2.3.py`,
   `SkyyClasses\build_skyyclasses_0.1.6.py`, `SkyyVault\build_skyyvault_0.1.2.py`); never regenerate them from their old patches.
-- Rollback floors: HANDOFF section 1 + the comments in `tools/deploy_set.py` (new: Skills 0.4.43 Battlemagic key, Bazaar 0.1.14 prices,
-  WorldGen 0.7 zones2). Never edit `SkyyGear-Plan.md` / `SkyyGear-Stat-Catalog.md`.
-- Standing rules added 10-15: tier tags on every tiered item (PROJECT-RULES 4); check for an existing mod before building one.
-- If a test smoke server from a builder is still running, deploy_set refuses - wait for it (we may not kill it).
-- Local files stay tidy: `python tools/tidy_local.py --yes` after every deploy.
+- Rollback floors + go-together rules: comments in `tools/deploy_set.py` (newest: FP1 Cooking 0.1.11 needs Sacks 0.8.18 + Wardrobe 0.2.8).
+- Never edit `SkyyGear-Plan.md` / `SkyyGear-Stat-Catalog.md`. Menus follow research/Menu-Pattern.md (no back buttons, top rows always,
+  requirements as a red/green list). Replace commands, never add extra. Ask Skyy in popups, one at a time.
+- If a builder's smoke server is still running, deploy_set refuses - wait (never kill it). `python tools/tidy_local.py --yes` after deploys.
 
 ## On Skyy's PC (read-only except the deploy)
-Project = this repo: `C:\Users\SkyLo\Desktop\Hytale mods WORK\SkyWynn PROJECT\`. Game: `C:\Users\SkyLo\AppData\Roaming\Hytale\install\
-release\package\game\latest\` (`Server\HytaleServer.jar`, `Assets.zip`). Mods: `...\Hytale\UserData\Mods\`. Test world: `...\UserData\
-Saves\NewBetaTest\` (`config.json`, mod data `mods\Skyy_Skyy<Mod>\`, server logs `logs\`); client logs `...\UserData\Logs\`. Backups:
-`backups\` (git-ignored). Claude's memory: `C:\Users\SkyLo\.claude\projects\C--Users-SkyLo-Desktop-Hytale-mods-WORK-SkyWynn-PROJECT\memory\`.
-Toolchain: Python 3.12 + jpype1 + jdk4py (no javac). LOCAL ONLY, never in git: game files, UserData, backups, built jars (except
-`tools\javassist.jar`), `build_classes\`, `tools\dev\scratch\`, preview PNGs.
+Project = this repo. Game: `C:\Users\SkyLo\AppData\Roaming\Hytale\install\release\package\game\latest\` (`Server\HytaleServer.jar`,
+`Assets.zip`). Mods: `...\Hytale\UserData\Mods\`. Test world: `...\UserData\Saves\NewBetaTest\` (mod data `mods\Skyy_Skyy<Mod>\`, server
+logs `logs\`); client logs `...\UserData\Logs\`. Backups: `backups\` (git-ignored). Toolchain: Python 3.12 + jpype1 + jdk4py (no javac).
+LOCAL ONLY, never in git: game files, UserData, backups, built jars (except `tools\javassist.jar`), `build_classes\`, `tools\dev\scratch\`.
