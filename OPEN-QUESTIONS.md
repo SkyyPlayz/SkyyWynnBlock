@@ -20,7 +20,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### skills  (answers -> docs/answered/skills.md, topic `skills`)
 
 ### gear  (answers -> docs/answered/gear.md, topic `gear`)
-- FURNACE CHARM (gear.md 2026-10-17): only the /craft Furnace, or the placed vanilla furnace too? [only /craft Furnace - the placed one has no per-player hook]
 
 ### economy  (answers -> docs/answered/economy.md, topic `economy`)
 
