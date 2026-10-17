@@ -22,7 +22,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### skills  (answers -> docs/answered/skills.md, topic `skills`)
 
 ### gear  (answers -> docs/answered/gear.md, topic `gear`)
-- ARMORY SALVAGE (PR #17 critic): The Armory's own Salvagebench gives back 100% of the materials from its pieces (e.g. a Demon piece -> 6 Adamantite ore + 30 Fire essence), so mob-dropped pieces become a material source outside our Requip salvage rules (drops 10%). Block salvaging rolled pieces at their bench? [yes - rolled (dropped / identified) pieces can only be salvaged through Requip]
 
 ### economy  (answers -> docs/answered/economy.md, topic `economy`)
 
