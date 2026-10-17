@@ -21,7 +21,7 @@ SET = [
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.15"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.23"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.18"), ("SkyyBazaar", "0.1.18"), ("SkyyGear", "0.3.16"), ("SkyySkills", "0.4.47"),
-    ("SkyyAccessories", "0.5.21"), ("SkyyClasses", "0.1.34"), ("SkyyMenu", "0.3.35"), ("SkyyEssentials", "0.1.12"), ("SkyyProfiles", "0.1.16"),
+    ("SkyyAccessories", "0.5.22"), ("SkyyClasses", "0.1.34"), ("SkyyMenu", "0.3.35"), ("SkyyEssentials", "0.1.12"), ("SkyyProfiles", "0.1.16"),
     ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.20"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
@@ -465,6 +465,10 @@ def main():
     # menu sweep S2 (2026-10-16): Bazaar 0.1.18 + Auctions 0.1.10 share one Market sub row (ah:fn:view) - deploy + roll back together; Vault 0.1.9 + Bank 0.1.16 pinned together. No data.
     if (_v(_p.get("SkyyBazaar", "0")) >= (0, 1, 18)) != (_v(_p.get("SkyyAuctions", "0")) >= (0, 1, 10)):
         print("STOP: SkyyBazaar 0.1.18 and SkyyAuctions 0.1.10 go together (menu sweep S2)"); return 1
+    # AP1 (2026-10-16): SkyyAccessories 0.5.22 = Void Charms (/charms /charm /ch replace /accessories /acc /accbag), Accessory Power, bag item retired.
+    # Needs SkyyMenu 0.3.36+ (its help / Mods texts name /charms). Rollback to 0.5.21 is safe (the removed bag item is not given back; /accbag recalls).
+    if _v(_p.get("SkyyAccessories", "0")) >= (0, 5, 22) and _v(_p.get("SkyyMenu", "0")) < (0, 3, 36):
+        print("STOP: SkyyAccessories 0.5.22 needs SkyyMenu 0.3.36+ (Void Charms texts)"); return 1
     # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
     # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep
