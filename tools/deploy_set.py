@@ -19,10 +19,10 @@ SET = [
     ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.17"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.24"), ("SkyyParty", "0.1.10"),
+    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.18"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.24"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.19"), ("SkyyBazaar", "0.1.19"), ("SkyyGear", "0.3.18"), ("SkyySkills", "0.4.48"),
     ("SkyyAccessories", "0.5.23"), ("SkyyClasses", "0.1.36"), ("SkyyMenu", "0.3.36"), ("SkyyEssentials", "0.1.12"), ("SkyyProfiles", "0.1.17"),
-    ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.22"),
+    ("SkyyCooking", "0.1.11"), ("SkyyTrees", "0.3.22"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -80,7 +80,7 @@ SET = [
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
     ("SkyyPets", "0.4.3"),
-    ("SkyyWardrobe", "0.2.7"),
+    ("SkyyWardrobe", "0.2.8"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
@@ -466,6 +466,11 @@ def main():
     # menu sweep S2 (2026-10-16): Bazaar 0.1.18 + Auctions 0.1.10 share one Market sub row (ah:fn:view) - deploy + roll back together; Vault 0.1.9 + Bank 0.1.16 pinned together. No data.
     if (_v(_p.get("SkyyBazaar", "0")) >= (0, 1, 18)) != (_v(_p.get("SkyyAuctions", "0")) >= (0, 1, 10)):
         print("STOP: SkyyBazaar 0.1.18 and SkyyAuctions 0.1.10 go together (menu sweep S2)"); return 1
+    # FP1 (2026-10-17): Potion Flask + Food Pouch. SkyyCooking 0.1.11 needs SkyySacks 0.8.18 (asks supply:fn:claims, never sweeps Skyy_Flask_* /
+    # Skyy_Food_Pouch_*) + SkyyWardrobe 0.2.8 (Requip keeps them). FLOOR: never roll SkyyCooking below 0.1.11 once stores exist (supplies/*.properties
+    # hold players' potions + food; the items become unknown below) - Take all out first.
+    if _v(_p.get("SkyyCooking", "0")) >= (0, 1, 11) and (_v(_p.get("SkyySacks", "0")) < (0, 8, 18) or _v(_p.get("SkyyWardrobe", "0")) < (0, 2, 8)):
+        print("STOP: SkyyCooking 0.1.11 needs SkyySacks 0.8.18 + SkyyWardrobe 0.2.8 (FP1)"); return 1
     # AP1 (2026-10-16): SkyyAccessories 0.5.22 = Void Charms (/charms /charm /ch replace /accessories /acc /accbag), Accessory Power, bag item retired.
     # Needs SkyyMenu 0.3.36+ (its help / Mods texts name /charms). Rollback to 0.5.21 is safe (the removed bag item is not given back; /accbag recalls).
     if _v(_p.get("SkyyAccessories", "0")) >= (0, 5, 22) and _v(_p.get("SkyyMenu", "0")) < (0, 3, 36):

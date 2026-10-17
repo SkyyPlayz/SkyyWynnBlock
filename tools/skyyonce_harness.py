@@ -26,7 +26,8 @@ import harness_kit as HK
 JUNK = "Rock_Stone"
 
 
-def life_phase(K, jar, pkg, pfx, item, flag, data_dir, mod, once_flag=None):
+def life_phase(K, jar, pkg, pfx, item, flag, data_dir, mod, once_flag=None, item_prefix=None):
+    """item_prefix (skyyonce PREFIX MODE, round FP1): every id with that prefix is the item; item = the id a give hands out. Adds L15."""
     from jpype import JClass, JShort, JInt, JString, JArray, JObject
     HK.jvm([B.SERVER_JAR, jar, B.JAVASSIST], verify=True)
     Mod = JClass("java.lang.reflect.Modifier")
@@ -126,6 +127,7 @@ def life_phase(K, jar, pkg, pfx, item, flag, data_dir, mod, once_flag=None):
         setattr(Cfg, flag[1], bool(v))
     set_on(True)
     K.check(bool(Core.on()), "L1 setup: %s.%s on -> %s.on()" % (flag[0], flag[1], pfx))
+    VETO = mod + ":lifelong" + ((":" + pfx) if item_prefix else "")
 
     def new_inv(fill=None, put=()):
         cs = dict(s=SIC(JShort(36)), h=SIC(JShort(9)), b=SIC(JShort(9)), u=SIC(JShort(4)), t=SIC(JShort(4)))
@@ -473,9 +475,9 @@ def life_phase(K, jar, pkg, pfx, item, flag, data_dir, mod, once_flag=None):
             "L11: market:veto refuses the item (Auction House + Bazaar read it): %s" % v)
     Core.publish()
     mv = bridge.get("market:veto")
-    K.check(bridge.get("once:item:" + item) is not None and mv is not None and mv.get(mod + ":lifelong") is not None, "L11: publish puts once:item:%s + market:veto[%s:lifelong]" % (item, mod))
+    K.check(bridge.get("once:item:" + item) is not None and mv is not None and mv.get(VETO) is not None and (item_prefix is None or bridge.get("once:item:" + item_prefix + "*") is not None), "L11: publish puts once:item:%s (+ the prefix key) + market:veto[%s]" % (item, VETO))
     Core.unpublish()
-    K.check(bridge.get("once:item:" + item) is None and bridge.get("market:veto").get(mod + ":lifelong") is None, "L11: unpublish removes both")
+    K.check(bridge.get("once:item:" + item) is None and bridge.get("market:veto").get(VETO) is None and (item_prefix is None or bridge.get("once:item:" + item_prefix + "*") is None), "L11: unpublish removes both")
 
     # ================================================================================= L12 needs()
     inv19 = new_inv(put=[("s", 0, item), ("s", 1, item)])
@@ -557,6 +559,24 @@ def life_phase(K, jar, pkg, pfx, item, flag, data_dir, mod, once_flag=None):
     K.eq(str(Core.sweepCore(pr21, secs(inv21), W(CWN(ch5)), None, str(U21))), "off", "L14: switch OFF -> the sweep does nothing")
     K.check(len(where(inv21)) == 2 and n_in(ch5) == 1 and not bool(Core.needs(U21, secs(inv21), W(CWN(ch5)))), "L14: ... copies stay, needs() false")
     set_on(True)
+    # ================================================================================= L15 prefix mode (FP1)
+    if item_prefix:
+        var = item_prefix + "V_SkyyOnceTestVariant"
+        mk_item(var, 1)
+        K.check(bool(Core.is_(IS(var, JInt(1)))),
+                "L15: a loaded variant %s counts as the item" % var)
+        K.check(not bool(Core.is_(IS(JUNK, JInt(1)))), "L15: an id without the prefix does not count")
+        inv22 = new_inv(put=[("h", 2, var), ("s", 4, item)])
+        p22, pr22, U22 = player(inv22)
+        Core.DONE.put(str(U22), Boolean.TRUE)
+        r22 = str(Core.sweepCore(pr22, secs(inv22), W(), None, str(U22)))
+        K.check("extra=1" in r22 and where(inv22, var) == [("h", 2, 1)] and where(inv22) == [],
+                "L15: a variant in the hotbar + the base id in storage = two copies -> the hotbar variant is kept: %s" % r22)
+        v15 = Fn(JInt(1)).apply(IS(var, JInt(1)))
+        K.check(v15 is not None and "can't be sold" in str(v15), "L15: market:veto refuses a variant too")
+        inv23 = new_inv(put=[("s", 0, var)])
+        p23, pr23, U23 = player(inv23)
+        K.eq(str(Core.recall(pr23, secs(inv23))), "=have", "L15: recall with a variant held -> '=have' (no second copy)")
     K.notes.append("LIFE: counters %s" % [int(Core.N.get(i)) for i in range(10)])
     return K
 

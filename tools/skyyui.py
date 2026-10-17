@@ -5029,6 +5029,7 @@ HUB_TABS = (
     ("character", "collections", 70, "SkyyCollections", "Collections", "collections"),
     ("character", "profiles", 80, "SkyyProfiles", "Profiles", "profiles"),
     ("storage", "pocket", 10, "SkyySacks", "Pocket", "sacks"),
+    ("storage", "supplies", 15, "SkyyCooking", "Supplies", "flask"),   # 2026-10-17 FP1: Potion Flask + Food Pouch (research/Flask-Pouch-Spec.md 2.4)
     ("storage", "requip", 20, "SkyyWardrobe", "Requip", "requip"),
     ("storage", "vault", 30, "SkyyVault", "Vault", "vault"),
     ("storage", "bank", 40, "SkyyBank", "Bank", "bank"),

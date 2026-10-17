@@ -32,6 +32,12 @@ Server Setup switch ON = all of them; OFF = the item behaves as before):
      the switch AND its starter-bag switch): "this mod hands the item to every profile
      itself" - SkyyIslands 0.5.17 leaves such ids out of the starter chest (the 2nd Accessory Bag after /island reset).
   7. RECALL: recall(pr, sections) gives one when the inventory holds none (storage, hotbar, backpack - never dropped), whatever the switch.
+  PREFIX MODE (round FP1, 2026-10-17, SkyyCooking's Potion Flask + Food Pouch): emit(..., item_prefix="Skyy_Flask_") - every id that
+     starts with the prefix counts as THE item (its loaded variants Skyy_Flask_V_<id> + the Empty id); item= is the id a give / recall
+     hands out (the Empty id - the owner mod's sync fixes the variant). A kept copy of any variant is fine. Several prefix items in one
+     mod: each gets its own folder Skyy_<Mod>/lifelong/<pfx>/ (history + run-once markers) and its own market:veto entry
+     "<Mod>:lifelong:<pfx>"; once:item:<item> AND once:item:<prefix>* are published. Without item_prefix nothing changes (the jars
+     built before keep working unchanged).
 Profile safety (tools/PROFILES-CONTRACT.md): nothing runs while profile:busy:<uuid> is set (the task retries every 2 s, 30 times); every
 rule works on the LIVE inventory only (the active profile's); files are keyed by the storage key (pkey).
 When it runs: InventoryChangeEvent on a player (only when there is work: a copy in an open window, two or more copies, a rescue due, or the
@@ -101,11 +107,13 @@ def _sub(src, d):
     return src
 
 
-def emit(pool, pkg, pfx, item, name, tag, recall, mod, on_expr, info_col, warn_col, once_expr=None):
+def emit(pool, pkg, pfx, item, name, tag, recall, mod, on_expr, info_col, warn_col, once_expr=None, item_prefix=None):
     from jpype import JClass
     CtField, CtNewMethod, CtNewConstructor = JClass("javassist.CtField"), JClass("javassist.CtNewMethod"), JClass("javassist.CtNewConstructor")
     assert pfx.isalnum() and pfx[0].isupper(), pfx
-    for s_ in (item, name, tag, recall, mod, info_col, warn_col):
+    if item_prefix is not None:
+        assert item_prefix and item.startswith(item_prefix) and all(c_.isalnum() or c_ == "_" for c_ in item_prefix), (item, item_prefix)
+    for s_ in (item, name, tag, recall, mod, info_col, warn_col) + ((item_prefix,) if item_prefix else ()):
         assert all(32 <= ord(c_) < 127 for c_ in s_) and '"' not in s_ and "\\" not in s_, s_
     for c_, m_ in PROBES:
         cc = pool.get(c_)
@@ -125,7 +133,12 @@ def emit(pool, pkg, pfx, item, name, tag, recall, mod, on_expr, info_col, warn_c
     T = dict(TOK)
     T.update({"PKG": pkg, "P": pkg + "." + pfx, "S": pfx, "ID": item, "NAME": name, "TAG": tag, "RECALL": recall, "MOD": mod, "ON": on_expr,
               "ICOL": info_col, "WCOL": warn_col,
-              "ONCE": once_expr or (pkg + "." + pfx + ".on()")})
+              "ONCE": once_expr or (pkg + "." + pfx + ".on()"),
+              "VETO": mod + ":lifelong" + ((":" + pfx) if item_prefix else ""),
+              "LDIR": "resolve(\"lifelong\")" + ((".resolve(\"%s\")" % pfx) if item_prefix else ""),
+              "IPRE": item_prefix or "",
+              "PKEYPUT": ('\n  b.put("once:item:%s*", new %s.%sFn(0));' % (item_prefix, pkg, pfx)) if item_prefix else "",
+              "PKEYRM": ('\n    b.remove("once:item:%s*");' % item_prefix) if item_prefix else ""})
     core = pool.makeClass(pkg + "." + pfx)
     task = pool.makeClass(pkg + "." + pfx + "Task")
     drop = pool.makeClass(pkg + "." + pfx + "DropSys", pool.get(EES))
@@ -246,7 +259,11 @@ public static boolean say(@PR@ pr, String kind, String text, String col) {
     return true;
   } catch (Throwable t) { return false; }
 }""")
-    M(core, "public static boolean is(@IS@ s) { return s != null && !s.isEmpty() && ID.equals(s.getItemId()); }")
+    if item_prefix:
+        F(core, 'public static final String PREFIX = "@IPRE@";')
+        M(core, "public static boolean is(@IS@ s) { if (s == null || s.isEmpty()) return false; String i = s.getItemId(); return i != null && i.startsWith(PREFIX); }")
+    else:
+        M(core, "public static boolean is(@IS@ s) { return s != null && !s.isEmpty() && ID.equals(s.getItemId()); }")
     M(core, r"""
 public static int countIn(@IC@ c) {
   if (c == null) return 0;
@@ -654,21 +671,21 @@ public static String statusText() {
     M(core, r"""
 public static void publish() {
   java.util.Map b = bridge();
-  b.put("once:item:@ID@", new @P@Fn(0));
+  b.put("once:item:@ID@", new @P@Fn(0));@PKEYPUT@
   Object mv = b.get("market:veto");
   if (!(mv instanceof java.util.Map)) {
     b.putIfAbsent("market:veto", new java.util.concurrent.ConcurrentHashMap());
     mv = b.get("market:veto");
   }
-  if (mv instanceof java.util.Map) ((java.util.Map) mv).put("@MOD@:lifelong", new @P@Fn(1));
+  if (mv instanceof java.util.Map) ((java.util.Map) mv).put("@VETO@", new @P@Fn(1));
 }""")
     M(core, r"""
 public static void unpublish() {
   try {
     java.util.Map b = bridge();
-    b.remove("once:item:@ID@");
+    b.remove("once:item:@ID@");@PKEYRM@
     Object mv = b.get("market:veto");
-    if (mv instanceof java.util.Map) ((java.util.Map) mv).remove("@MOD@:lifelong");
+    if (mv instanceof java.util.Map) ((java.util.Map) mv).remove("@VETO@");
   } catch (Throwable t) { }
   PEND.clear();
   RESCUE.clear();
@@ -769,7 +786,7 @@ public Object apply(Object o) {
     setup = _sub(r"""
   // life01: the lifelong @NAME@ (tools/skyyonce.py)
   @P@.LOG = getLogger();
-  @P@.DIR = getDataDirectory().resolveSibling("Skyy_@MOD@").resolve("lifelong");
+  @P@.DIR = getDataDirectory().resolveSibling("Skyy_@MOD@").@LDIR@;
   getEntityStoreRegistry().registerSystem(new @P@DropSys());
   getEntityStoreRegistry().registerSystem(new @P@ThrowSys());
   getEntityStoreRegistry().registerSystem(new @P@InvSys());
