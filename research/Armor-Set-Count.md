@@ -206,3 +206,85 @@ Weapon total shortfall about 138 if every class must reach 64; about 100 if Myth
   T1-T6 and leave T7-T8 to vanilla Mithril / Onyxium + bosses until our own sets exist.
 - Ask before building: SlverSkull / Tayko / Vortex permission, Starblight status (unknown plugin), and whether UT tiers are the 6 zone
   bands or all 8 ladder tiers.
+
+## More mods survey (2026-10-17)
+
+Skyy 2026-10-17: "we could also check for more armor mods before we build our own." Survey of CurseForge (Hytale) by search + page reads
+(`tools/mod_check.py` for licences; Mods folder listed read-only). Not counted above: everything below. Page text rarely says whether a mod
+overrides vanilla ids or what the sets look like - those cells are "unknown, check the jar" and must be scanned (`mod_check.py - <word>`) before any pack decision.
+Hytale-version info on most pages is only "Early Access" (stale "Updated 8 months ago" labels are unreliable); 0.7.2 fit is UNVERIFIED for all.
+
+### A. Armor candidates
+
+| Mod (author) | Licence | Full sets / look / tier guess | Overrides vanilla? | In Mods folder? | Verdict |
+|---|---|---|---|---|---|
+| Fantastic Knight Armor Pack (Fyrrage), upd 2026-09-03 | ARR | 7 sets: Frostbite Warden (Cobalt), Dune Walker (Thorium, fabric + metal = Light/Cloth?), Scorched Heart (Adamantite, Heavy), Neptune's Elite (Thorium, Heavy?), Crystalwood (Thorium, Light?), Soul Cage (above Adamantite, Heavy), Fen Stalker (Thorium, Light). Loot-only (not craftable) = fits our drop idea | unknown | no | BEST armor find. Ask Fyrrage; runtime ids only |
+| Outlanders Armor Pack (Fyrrage), v1.3, upd 2026-08-31 | ARR | 6 sets: T2 Berserker (Heavy), Hunter (Light), Priest (Cloth); T3 Marauder (Heavy), Stalker (Light), Sorcerer (Cloth); "alternative to Cobalt" = about T5. Exactly 2 per weight | unknown | no | Ask Fyrrage together with the pack above; fills Light + Cloth at T5 |
+| Elemental Knights Pack, v2.0.1 upd 2026-10-09 | ARR | 4 Heavy sets (Frost / Poison / Fire / Electric Knight, Adamantite ~T6) + 4 shields + battleaxe, mace, sword, Knight Bow, daggers | unknown (has an id Migrator plugin = ids changed once) | no | Ask; Heavy T6 + weapons for Archer / Assassin |
+| Void Armor & Weapons (Aipoc76), 2.5.6 upd 2026-10-13 | CC BY-NC 3.0 | 5 Heavy-ish sets (Copper, Iron, Thorium, Adamantite, Mithril = T2, T3, T4, T6, T7), 4 shields, Mithril sword / longsword / shortbow / daggers / hammer. Void-corruption look | not stated | no | Same licence class as the Armory = credit, never sold, runtime ids only. Only candidate allowed without asking. Heavy T7 + dagger / bow |
+| Yorch's Armory (armor-weapon-variations), game 0.6, upd 2026-09-03 | ARR | 6 variants (Silver, Golden, Druid, Wolf, Runic Gunslinger, Void) + Silver Sword + iron / copper / cobalt weapon variations | unknown | no | Look at the gallery; Druid / Wolf could be Light or Cloth. Ask |
+| Wolf Armor Sets (DarkWolf_XP) | ARR | 2 sets (black / white), Copper-made = T2 Light | no | no | T2 only; low value |
+| Blood Armor (stonedturtle) | ARR | 1 set, Adamantite, late-game look (T6 Heavy) | unknown | no | Maybe |
+| Magical Armor Set (stonedturtle) | ARR | 1 set, Prisma-look (Cloth/magic?) | unknown | no | Maybe (Cloth high tier) |
+| Darth Vader Armor Set, Georgian Armor Sets | ARR | 1 set / unknown | - | no | skip (theme clash / tiny) |
+| Leather Armor (Parcyval) | ARR | 3 sets light / medium / heavy leather (T1-T3) | probably touches vanilla | no | Duplicate of vanilla leathers: skip |
+| Improved Crafting (andzejsw) | ARR | "18 new armor sets, 91 weapons" = recipes for items already in the game but creative-only | vanilla ids | no | Never usable (no id overrides); see vanilla pool |
+| Fred's Uncraftable Armor's + (FredMCGamer) | ARR | about 20 existing vanilla armor sets made obtainable (names not on the page) | vanilla ids | no | Not packable; its list is a free vanilla pool |
+| Forge Plus Armory | MIT | "all vanilla items not yet craftable" (forge + recipes) | vanilla ids | no | MIT: we may read it to learn which vanilla ids are unused |
+| Cosmetic Pack: Modular Armor / ZC Armor Variants | CC 4.0 | cosmetics only (Cobalt-Onyxium retextures needing Lalyan Cosmetic Core / 4 iron helmet + 2 chestplate variants) | - | no | Not item sets; skip |
+| Cerion's Tiered Weapons and Armor, Vanilla+ Armors, HyARPG | ARR / ARR / custom | outdated / unread / unread | - | no | skip for now |
+
+**Vanilla pool (no mod needed):** Assets.zip already has armor sets with no recipe or a creative-only recipe (Fred's lists about 20; Improved
+Crafting 18). Our drop table can hand out those vanilla ids directly, with no licence at all. Next job: list every `Armor_*` id in Assets.zip
+that is in no recipe and not in the section 1 counts, and sort them into the weight / tier grid. This may cover much of the shortfall below.
+
+### B. Weapon candidates (Archer, Assassin, Priest, Monk first)
+
+| Mod | Licence | What | For | Verdict |
+|---|---|---|---|---|
+| Lost Weapons | slug not found (404), unverified | 5 weapons: Templar Knight longsword, Azure Sorcerer staff, Night Ranger bow / daggers, Undead Viscomancer mace, Arcane Striker fist | Archer, Assassin, Monk, Mage | find the real slug, check licence |
+| Better Daggers New | ARR | colour-themed high-speed dual daggers with pounce + angle attacks; colours in a tier share stats | Assassin | ask; recolours by design |
+| UniqueBows | ARR (unchecked) | 4 hidden vanilla bows made craftable (bomb arrow, pull, rapid fire) | Archer | vanilla ids = a free pool (UT / Mythic bows) |
+| More & Better Crossbows | ARR (unchecked) | copper to Onyxium crossbows | Archer | duplicate of Crossbow Tiers (already installed): keep ONE |
+| Shinku's Powerful Weapons, FL's Exotic Weaponry (Wakizashi, Rifted Crimson, Radiant Fists, Radiant Greatblade, Crimson Reaper), Triggerblades | not read | single weapons per type | Assassin, Archer, Monk | small; Radiant Fists = a Monk Mythic candidate |
+| Elemental Knights, Void Armor | see A | bow, daggers, sword, battleaxe, mace, hammer | Archer, Assassin | with A |
+| Already in Skyy's Mods folder but missing from section 5: Zet's Mystic Weapons 1.2.2 (12 items: Vampiric Daggers, Whirlwinds, Impressio, Dreadreap, Dominus Maul, Aetherflux Blade, Noctivagus, Absolution; manifest server <0.6.0), Reforged Weapons 4.4 (2 daggers, mace, staff, Oath), Void Asylum (Repulsion Bow, Gravity Staff, Abyssal Helix Spear), Steamwrought Tomb (Piston Lance), ShamanTotem (3 totems), Necromancer Spire (Necrotic Blade) | check each | Assassin +3, Archer +1, Mage +3, Warrior +3 | add to the weapons pool; verify the old-server ones on 0.7.2 |
+
+Priest (wand / soul orb) and Monk (bo / fist): no mod found adds wands, soul orbs or bo staves. Those stay ours.
+
+### C. Duplicate / clash notes (PROJECT-RULES 2: keep the BEST, not all)
+
+- Fantastic Knight "Soul Cage" armor vs our SkyyArmory Soul Cage wand: same name, different item - pick one name in the lang.
+- Void Armor shields vs Armory shield colourways vs vanilla shields: keep the Armory (already counted); leave Void shields out.
+- More & Better Crossbows vs Crossbow Tiers (installed): one only.
+- Set bonuses in Void Armor / Elemental Knights overlap our own set-bonus system: use pieces, not their bonuses (check code count in the jar).
+- Improved Crafting / Forge Plus / Fred's all unlock the same vanilla items: use none, read the list.
+
+### D. Updated shortfall (Skyy's rules)
+
+Rules applied: 5 zones x 3 weights; per cell "several" normal drop sets (assume 4 distinct looks) + 1 Mythic that is a distinct, coolest look; UT may be recolours
+of normal sets, so UT needs no new look. Distinct looks needed = 5 x 3 x (4 + 1) = **75** (25 per weight), versus 192 under the old 8-per-tier ask.
+Section 1 has 43 sure looks (Cloth 15, Light 9, Heavy 19), but they sit at tiers not zones, and Light T6-T8 / Cloth T7-T8 are empty:
+
+| Weight | Needed | Have (sec 1) | Short today | Licence-free now (Void Armor) | If Fyrrage + Elemental + stonedturtle + Yorch all agree | Left to design ourselves |
+|---|---|---|---|---|---|---|
+| Cloth | 25 | 15 | 10 | 0 | +2 Outlanders, +2 Fantastic (guess), +1 Magical, +1 Yorch = about 6 | about 4 |
+| Light | 25 | 9 | 16 | 0 | +2 Outlanders, +2 Fantastic, +2 Wolf (T2), +1 Yorch = about 7 | about 9 |
+| Heavy | 25 | 19 | 6 | +2-3 (Void, those not duplicating a vanilla look) | +2 Outlanders, +3 Fantastic, +4 Elemental, +1 Blood = about 10 | about 0 |
+| **Total** | 75 | 43 | **32** | about 3 | about 23 | **about 13** |
+
+Shortfall: 149 (old ask) / 32 (new rules) -> **about 29 with licence-free sources only, about 13 if the authors agree**. The 13 are almost all
+zone 4-5 Light and Cloth (Mythic slots; nothing exists above Adamantite there). Tier calls are from names only: re-count after reading the jars.
+The vanilla pool (section A) is not counted here and may shrink the 13 further.
+Per-zone caution: Fantastic Knight, Outlanders and Elemental Knights cluster at Cobalt / Adamantite (zones 3-4); zone 5 Light and Cloth Mythic needs our own designs
+(Pack-Armor-Plan section 5). Void Armor Mithril (Heavy) is the only candidate at the top.
+Weapons after this survey (rough): Assassin short about 28 -> about 13; Archer about 31 -> about 20; Monk about 37 -> about 33; Priest unchanged about 42. Under the new
+rule (Mythic per zone, UT recolours) the target per class is about 5 zones x 2 types x (4 + 1) = 50, so these gaps shrink further.
+
+### E. Asks to send (via Skyy)
+
+1. **Fyrrage** (Fantastic Knight + Outlanders): runtime-id use, 13 sets, drop tables only, credit in PACK.md.
+2. **Elemental Knights author**: 4 Heavy sets + weapons.
+3. **stonedturtle** (Ninja, Blood, Magical): one message for all three (the Ninja licence is still unverified in section 3).
+4. Yorch / Better Daggers / Lost Weapons: after Skyy sees the galleries.
+Licence-free now: Void Armor (credit, never sold) and the vanilla pool. No downloads were needed, so scratch `tools/dev/scratch/armorsurvey/` was never created.
