@@ -518,15 +518,15 @@ Ideas, Wynncraft-style - pick one at its first node, the other two lock (shape a
 
 ## 🟠 Open
 
-- Class skill name (Battlemagic / Bladesong / Tempo).
+- (answered 2026-10-17: class skill = Battlemagic)
 
 - A1-alt pair (Rift Cleave / Shattering Arc) and whether they get Echo.
 
-- The element system spec (needed before Imbue is more than Fire).
+- The element system spec: Wynncraft's 5 elements Earth / Thunder / Water / Fire / Air (answered 10-17: Imbue uses all 5; spec + build pending).
 
-- Which element the Armory's Gravity sword maps to.
+- (answered 2026-10-17: Gravity sword = Earth)
 
-- The Breach + Hunter's Mark rule.
+- (answered 2026-10-17: Breach + Hunter's Mark stack fully)
 
 - Engine checks 1-12 above.
 

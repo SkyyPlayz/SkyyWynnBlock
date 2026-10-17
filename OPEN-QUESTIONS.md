@@ -24,7 +24,6 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### bags  (answers -> docs/answered/bags.md, topic `bags`)
 
 ### classes  (answers -> docs/answered/classes.md, topic `classes`)
-- each class file's "Open" list (e.g. Soul Cage essences + colours for Thorium and up). [see research/classes/]
 
 ### pets  (answers -> docs/answered/pets.md, topic `pets`)
 

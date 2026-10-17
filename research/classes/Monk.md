@@ -244,7 +244,7 @@ Ideas - pick one.
 
 ## 🟠 Open
 
-- The Monk's class skill name: LOCKED "Zen" (rename pending in the next SkyySkills round).
+- (class skill 'Zen' locked; the rename is a queued SkyySkills task, not a question)
 
 
 

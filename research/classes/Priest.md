@@ -300,7 +300,7 @@ Ideas - pick one.
 
 
 
-- Soul Cage essences + colours for Thorium and up.
+- Nothing open (Soul Cage element ladder locked 2026-10-10).
 
 &nbsp;
 

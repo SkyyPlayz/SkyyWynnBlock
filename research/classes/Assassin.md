@@ -226,7 +226,7 @@ Ideas - pick one.
 
 ## 🟠 Open
 
-- A1-alt pair (Shadow Clone / Vanishing Act proposed).
+- Nothing open (Vanishing Act locked as the alt 2026-10-08).
 
 &nbsp;
 
