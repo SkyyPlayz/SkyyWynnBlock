@@ -22,9 +22,10 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   pages), Pets 0.4.1 (Eggs + Hatchery), Skills 0.4.46 + Hud 0.3.30 (log fixes).
 - DEPLOYED 10-16: menu sweep K (TEST 160), S1 Character (161), S2 Storage + Market (162). S3 (Gear 0.3.16, Quests 0.4.0, Islands 0.5.18,
   Exploration 0.2.13, Party 0.1.10, Guilds 0.1.11) BUILT, critic running -> pin + deploy.
-- DEPLOYED 10-16 night: TEST 165 (S4 menus + leftovers, Void Charms + AP, coll24, T1, pets 0.4.3), 166 (Sacks 0.8.16 + Auctions 0.1.11), 167 (Trees 0.3.21
-  + Classes 0.1.35). REVIEWING: fishvoid (Fishing 0.1.10 + Sacks 0.8.17, ship together), wd027 Requip Salvage (needs Gear 0.3.17).
-  BUILDING (wave C): emblems (class + ability icons in UI), FP0 Flask probe (SkyyFlaskProbe), explore14 (admin editor in the frame).
+- DEPLOYED 10-16 night (TEST 165-171): S4 menus + leftovers, Void Charms + AP, coll24, T1, pets 0.4.3, Sacks 0.8.16 + Auctions 0.1.11,
+  Trees 0.3.21 + Classes 0.1.35, Wardrobe 0.2.7 Salvage, emblems (Classes 0.1.36 / Profiles 0.1.17 / Trees 0.3.22) + SkyyFlaskProbe 0.1.0,
+  Exploration 0.2.14, Fishing 0.1.10 + Sacks 0.8.17. Nothing running. Menu sweep DONE (no menu_pattern lines left) -> flip lint MENU_PATTERN_FAIL.
+- WAITING ON SKYY'S TEST: /flaskprobe steps (TEST 169) -> then FP1 (real Flask + Pouch, SkyyCooking) + retire the probe (/flaskprobe clear, RETIRED).
 - STILL TO DO (small list): smelting accessory (Accessories + Sacks furnace), Gear bp reader for Accessory Power, lifelong multitool MERGE (own full
   round), Profiles carry Skyy_SkyyAccessories power / retired files, Islands kit drop bag item, 'Accessory Bag' text sweep (~20 mods), Rebirth
   shows AH kind-3 lines, Hud feed card restyle, structure mods + joszza draft, Mage PA4 (needs Armory blink-landing bridge), skyyeggs ORDER update.
