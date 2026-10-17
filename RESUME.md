@@ -22,12 +22,13 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   pages), Pets 0.4.1 (Eggs + Hatchery), Skills 0.4.46 + Hud 0.3.30 (log fixes).
 - DEPLOYED 10-16: menu sweep K (TEST 160), S1 Character (161), S2 Storage + Market (162). S3 (Gear 0.3.16, Quests 0.4.0, Islands 0.5.18,
   Exploration 0.2.13, Party 0.1.10, Guilds 0.1.11) BUILT, critic running -> pin + deploy.
-- WAVE A RUNNING (Skyy 10-16 'work through the small things and the next up list. save the bigger ones for later'; plain Agents):
-  A1 S4 menus (Hud widget list + tutorial toggle, Ranks, Essentials, Fishing, Shards + co-op Collect, Rebirth); A2 Collections 0.2.24 + Bazaar
-  0.1.19 (Life Essence -> Greater Essence, Eternal Seeds tier 4, Enchanted listing + gift sizing); A3 Menu 0.3.36 (Ops window, Server Setup scroll,
-  shared kit 1.7 harness); A4 Accessories 0.5.22 (Void Charms, no bag item, /charm /charms /ch, Accessory Power, grid).
-- WAVE B (after S3 pins): T1 Gear 0.3.17 + Skills 0.4.48 (+ Tree Feller table, salvage bridge), Wardrobe Salvage, Trees (4 nodes, Sap Tapper,
-  AP / gathering readers), Pets (Aures dragon, eggs R2), Sacks (seeds / saplings toggles, hide vanilla pickup popup), Auctions rebirth auto-claim.
+- PINNED, deploy at next close: menu sweep S4 (Hud 0.3.31, Ranks 0.1.2, Essentials 0.1.12, Fishing 0.1.9, Shards 0.4.2, Rebirth 0.3.5).
+- FIX PASSES RUNNING: Menu 0.3.36 (payload cap, crumb floor, Void Charms texts + skyyui label), Accessories 0.5.22 AP1 (stuck-journal, busy publish),
+  Gear 0.3.17 + Skills 0.4.48 T1 (salvage: drops give less (Skyy), stable key, no ability lowering). coll24 Collections 0.2.24 + Bazaar 0.1.19
+  BUILT (base-item gifts per Skyy) - critic running; smoke with BOTH jars needed (game closed). Rule: Collections 0.2.24 needs Bazaar 0.1.19.
+- WAVE B RUNNING: trees21 (4 nodes, Sap Tapper, Feller table 1,2,4,5,6,10,12,14, swing reader, LLCAP 10), small16 (Sacks seeds / sapling toggles +
+  pickup popup, Auctions rebirth auto-claim). Then: Pets (Aures dragon, eggs R2), Wardrobe Salvage button, Gear bp reader, Fishing AP readers,
+  Islands kit drop bag item, Profiles carry power/retired files, 'Accessory Bag' text sweep in ~20 mods.
 - WAVE C: Classes emblems in UI, Flask FP0 probe (Cooking), Exploration admin editor, smelting accessory, structure mods + joszza draft.
 - LATER (Skyy): Beastmastery, Void Particles, totems, Armory gear + movement, mod compression, SkyyCore 1.0.1 HubBar.
 - NEXT IN ORDER (specs answered, word for word in docs/answered/):
