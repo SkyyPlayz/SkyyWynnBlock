@@ -29,7 +29,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - Smelting charm -> FURNACE CHARM (below). Wynn elements spec research/Wynn-Elements-Spec.md + structure ask (joszza) wait on Skyy.
 - FURNACE CHARM decided (gear.md 10-17): T1-T5 tier-ups cost the zone's 2 metals + unlock its alloy; Eternal Flame at Charcoal 7;
   base-metal collections only. Needs the zone ores + alloy items first (not built). Skyy 10-17: "Yes - start the zone ores +
-  alloys + Furnace Charm round right after the current set deploys." -> ULTRACODE round NEXT after the Classes/Wardrobe deploy.
+  alloys + Furnace Charm round right after the current set deploys." -> RUNNING 10-17 (5 builders B1-B5 per research/Zone-Ores-Alloys-Spec.md
+  section 7; next: critics -> fix -> crosscheck -> smoke -> deploy together).
 - Zone metals (Skyy's table, research/Zone-Tiers-Idea.md): Bronze / Dusk / Azurvane / Cinder / Lumen; Quirk sends art drafts per family.
 
 ## NEXT (small first; Skyy: "work through the small things and the next up list. save the bigger ones for later")
