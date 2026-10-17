@@ -39,7 +39,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   3. AP1 Accessories 0.5.22 (research/Accessory-Power-Spec.md + answers; Void Charms rename, no bag item, /charm /charms /ch, bag grid).
   4. T1 tool upgrades = Gear 0.3.17 + Skills 0.4.48 (research/Collections-Tools-Redesign-Spec.md last section).
   5. Flask / Pouch (research/Flask-Pouch-Spec.md + answers): probe FP0, then FP1 (SkyyCooking).
-  6. Mod compression after the menus (sections stay separate - Architecture-Spec.md last section).
+  6. Mod compression after the menus (sections stay separate - research/Architecture-Spec.md last section).
 
 ## NEXT (after the running rounds; each answer word for word in docs/answered/)
 
