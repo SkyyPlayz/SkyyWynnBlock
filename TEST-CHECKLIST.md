@@ -193,3 +193,4 @@ tests always come first.
 165. HUD widget list, Void Charms + Power, Greater Essence + Eternal lock + Enchanted Bazaar, tool upgrades, pets need-N + roster, menus done
 166. Seeds / saplings toggles, pickup popup hidden, AH auto-claim on rebirth
 167. Tree nodes, Sap Tapper counts, Tree Feller table, Breaking Speed buyable
+168. Requip Salvage (two clicks, materials not coins)

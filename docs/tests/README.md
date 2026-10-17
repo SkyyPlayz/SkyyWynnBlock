@@ -282,3 +282,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Last menu group + leftovers, Void Charms + Accessory Power, Collections + Bazaar (Greater Essence, Eternal Seeds lock, Enchanted listing), tool upgrades, pets roster (DEPLOYED 2026-10-16, backup deploy-20261016-2240) | [2026-10](2026-10.md) |
 | Seeds / saplings Void toggles, no vanilla pickup popup, AH auto-claim on rebirth (DEPLOYED 2026-10-16, backup deploy-20261016-2251) | [2026-10](2026-10.md) |
 | Tree nodes (Radiant Pulse, Elemental Bubble, Siphon), Sap Tapper counts, Tree Feller table, Breaking Speed (DEPLOYED 2026-10-16, backup deploy-20261016-2255) | [2026-10](2026-10.md) |
+| Requip Salvage button (DEPLOYED 2026-10-16, backup deploy-20261016-2329) | [2026-10](2026-10.md) |
