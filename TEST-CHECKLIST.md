@@ -187,3 +187,4 @@ tests always come first.
 159. Requip scroll + search on top + take-out stays out
 160. Menu cleanup step 1 (SkyWynn Menu pages on the one frame, no back buttons)
 161. Menu cleanup step 2: Character hub pages (no back buttons, scroll lists)
+162. Menu cleanup step 3: Storage + Market pages
