@@ -189,3 +189,4 @@ tests always come first.
 161. Menu cleanup step 2: Character hub pages (no back buttons, scroll lists)
 162. Menu cleanup step 3: Storage + Market pages
 163. Menu cleanup step 4: smithing, Quests redesign, Islands, Explore, Guilds
+164. Party page + Disband needs two clicks

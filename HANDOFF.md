@@ -10,7 +10,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyySacks | 0.8.15 | Magic Bags (pocket dimension): auto-collect + refill, /sacks, /craft, bags count in bench + inventory crafting; take bridge for other mods; no idle hops, private writer; Bags v2 (SkyyVoid), migration; Enchanted in the Void |
 | SkyyCoins | 0.1.9 | coin purse, /pay, death penalty (merges into SkyyEconomy later); write-behind + journal |
 | SkyyCollections | 0.2.23 | collections, tiers, recipe unlocks (coins never buy tiers); Lantern recipes at Tree Sap 1/3/5/8; fsync saves, private writer; 19 Enchanted items, Compressing tab |
-| SkyyParty | 0.1.9 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
+| SkyyParty | 0.1.10 | parties (feeds the HUD party widget); TPA / Accept TPA buttons |
 | SkyyCore | 1.0.0 | shared library (merge phase 1): Server Setup kit runtime per mod, UiKit, MoveSync, HubBar, CfgText, Sky Window art once; MUST be first in SET while any jar depends on it; tools/CORE-CONTRACT.md |
 | SkyyBank | 0.1.16 | bank + interest; interest once a day, account brackets 2/1/0.5%; 0.7 port + back-pay 1 day; per-file payout lock, purse flush |
 | SkyyIslands | 0.5.18 | private islands, co-op, visitors, island settings, /hub; 0.7 port; private writer |
