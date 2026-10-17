@@ -28,6 +28,7 @@ ok([TT.display(i) for i in range(8)] == list(range(1, 9)), "display = internal +
 ok([TT.to_internal(d) for d in range(1, 9)] == list(range(8)), "to_internal")
 ok(TT.tag_text(3) == "T3 Iron" and TT.tag_text(1) == "T1 Crude" and TT.tag_text(8) == "T8 Onyxium", "tag_text")
 ok(TT.ladder_tag(2, "Totem") == "T2 Totem" and TT.ladder_tag(3, "Loot") == "T3 Loot" and TT.ladder_tag(2, "Bench") == "T2 Bench", "ladder_tag")
+ok(TT.ladder_tag(3, "Charm") == "T3 Charm" and TT.ladder_tag(5, "Charm") == "T5 Charm", "ores01: the Furnace Charm ladder word")
 for bad in (lambda: TT.display(8), lambda: TT.to_internal(0), lambda: TT.ladder_tag(2, "Gem")):
     try:
         bad()
@@ -63,17 +64,40 @@ ok(TT.described("Plant_Crop_Wheat_Item", "") == "T2 Copper" and TT.described("Pl
 ok(TT.described("Wood_Oak_Trunk", "  x  ") == "T2 Copper - x", "described trims")
 
 # ---- counts (plan 1.2)
-COUNTS = {"ore": 7, "bar": 8, "log": 34, "crop": 14, "seed": 28, "enchanted": 55, "tool": 34, "armory": 11,
-          "can": 6, "harvester": 4}          # tools01: enchanted 17 -> 18 (+ the Enchanted Stick); C1 (SkyyCollections 0.2.21): 18 -> 55 (37 own items on a tiered base); SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
+# ores01 (SkyyWorldGen 0.7.3): + 4 zone ore blocks / raw ores / ingots + 4 alloys (owner SkyyWorldGen); the Enchanted ingots of the new
+# metals (tools/skyyench.py TABLE_ORES, SkyyCollections 0.2.25) take their base's tier -> enchanted 55 + those rows
+ENCH_ORES = [t for t in getattr(EN, "TABLE_ORES", []) if t[2] in TT.ROWS]
+COUNTS = {"ore": 7, "bar": 8, "log": 34, "crop": 14, "seed": 28, "enchanted": 55 + len(ENCH_ORES), "tool": 34, "armory": 11,
+          "can": 6, "harvester": 4, "zone_ore_block": 4, "zone_ore": 4, "zone_bar": 4, "alloy": 5}          # tools01: enchanted 17 -> 18 (+ the Enchanted Stick); C1 (SkyyCollections 0.2.21): 18 -> 55 (37 own items on a tiered base); SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
 for f, n in COUNTS.items():
     ok(len(TT.ids_in(f)) == n, "family %s has %d ids, want %d" % (f, len(TT.ids_in(f)), n))
 ok(set(TT.families()) == set(COUNTS), "families: %s" % TT.families())
-ok(len(TT.ids_for("SkyyCollections")) == 7 + 8 + 34 + 14 + 28 + 55, "SkyyCollections owns %d" % len(TT.ids_for("SkyyCollections")))
+ok(len(TT.ids_for("SkyyCollections")) == 7 + 8 + 34 + 14 + 28 + 55 + len(ENCH_ORES), "SkyyCollections owns %d" % len(TT.ids_for("SkyyCollections")))
 ok(TT.ids_for("SkyyGear") == sorted(TT.ids_in("tool") + TT.ids_in("can") + TT.ids_in("harvester")) and TT.ids_for("SkyyArmory") == TT.ids_in("armory"), "owners")
 ok(sorted(TT.OWN_IDS) == sorted(TT.ids_in("can") + TT.ids_in("harvester")) and TT.tag_for("Tool_WaterCan_Crude") == "T1 Crude"
    and TT.tag_for("Tool_WaterCan_Iron") == "T3 Iron" and TT.tag_for("Tool_WaterCan_Adamantite") == "T6 Adamantite"
    and TT.tag_for("Tool_Sickle_Harvester_Thorium") == "T4 Thorium", "SkyyGear 0.3.12 own ids: the can T1 Crude .. T6 Adamantite, the Harvester .. T4 Thorium")
 ok(all(r[2] in TT.OWNERS and 1 <= r[0] <= 8 for r in TT.ROWS.values()), "rows in range")
+
+# ---- ores01: the zone metals (research/Zone-Ores-Alloys-Spec.md 2.3 / 2.5 / 3; Skyy's Q6 default "T4 Lead", "T5 Chromium", "T6 Slag", "T7 Titanium")
+ZM = {"Lead": (4, "Sandstone", "Thorium"), "Chromium": (5, "Shale", "Cobalt"), "Slag": (6, "Volcanic", "Adamantite"), "Titanium": (7, "Basalt", "Mithril")}
+AL = {"Dusk": (4, "Thorium", "Lead"), "Azurvane": (5, "Cobalt", "Chromium"), "Cinder": (6, "Adamantite", "Slag"), "Lumen": (7, "Mithril", "Titanium"), "Electrum": (3, "Bronze", "Silver")}   # Electrum = the Bronze tier (Gold / Silver untagged)
+want_wg = []
+for m, (t, h, partner) in ZM.items():
+    for i in ("Ore_%s_%s_SkyWynn" % (m, h), "Ore_%s_SkyWynn" % m, "Ingredient_Bar_%s_SkyWynn" % m):
+        want_wg.append(i)
+        ok(TT.tag_for(i) == "T%d %s" % (t, m) and TT.word(i) == m and TT.tier(i) == TT.tier("Ore_" + partner), "%s: %s (partner %s T%s)" % (i, TT.tag_for(i), partner, TT.tier("Ore_" + partner)))
+        ok(TT.described(i, "x") == "T%d %s - x" % (t, m), "%s described()" % i)
+for a, (t, x, y) in AL.items():
+    i = "Ingredient_Bar_%s_SkyWynn" % a
+    want_wg.append(i)
+    ok(TT.tag_for(i) == "T%d %s" % (t, a) and TT.family(i) == "alloy" and TT.tier(i) == TT.tier("Ingredient_Bar_" + x), "%s: %s" % (i, TT.tag_for(i)))
+ok(sorted(want_wg) == TT.ids_for("SkyyWorldGen") == sorted(TT.WG_IDS) and len(TT.WG_IDS) == 17, "SkyyWorldGen owns exactly the 17 zone-metal ids (+ Electrum)")
+ok(all(i.endswith("_SkyWynn") for i in TT.WG_IDS), "every SkyyWorldGen id ends _SkyWynn")
+ok(TT.tag_for("Ingredient_Bar_Bronze") == "T3 Iron" and TT.owner("Ingredient_Bar_Bronze") == "SkyyCollections", "vanilla Bronze unchanged (T3, Collections' key)")
+ok(TT.word("Ore_Iron") == "Iron" and TT.word("Rock_Stone") is None, "word() falls back to the ladder noun")
+for k, b, _x in [(t[0], t[2], 0) for t in ENCH_ORES]:
+    ok(TT.tag_for(TT_E := "Skyy_Ench_" + k) == TT.tag_for(b), "%s tag %s = its base %s" % (TT_E, TT.tag_for(TT_E), TT.tag_for(b)))
 
 # ---- shadowed (DynamicSeasons seeds)
 ok(all(TT.shadowed(i) for i in TT.ids_in("seed")) and not any(TT.shadowed(i) for i in TT.ROWS if TT.family(i) != "seed"), "shadowed = the seeds only")
@@ -87,7 +111,7 @@ for t in EN.TABLE:
     eid = EN.PREFIX + t[0]
     if eid in TT.ENCH_UNTAGGED:
         continue
-    base = t[7][1]
+    base = t[2] if t in ENCH_ORES else t[7][1]      # ores01: an external (SkyyWorldGen) base has a vanilla LOOK base in t[7]
     if eid in TT.ENCH_OWN:          # tools01: the Enchanted Stick's base has no row - its own tier (T1)
         ok(TT.tier(eid) == TT.ENCH_OWN[eid] and TT.tier(base) is None, "%s own tier %s (base %s untagged)" % (eid, TT.tier(eid), base))
         continue
@@ -137,9 +161,10 @@ except Exception as e:     # no cached copy / no game: the table checks above st
 if az:
     with zipfile.ZipFile(az) as z:
         ids = set(os.path.basename(n)[:-5] for n in z.namelist() if n.startswith("Server/Item/Items/") and n.endswith(".json"))
-    vanilla = [i for i in TT.ROWS if not i.startswith("Skyy_") and i not in TT.OWN_IDS]          # OWN_IDS: made by SkyyGear's build
+    vanilla = [i for i in TT.ROWS if not i.startswith("Skyy_") and i not in TT.OWN_IDS and i not in TT.WG_IDS]   # OWN_IDS: SkyyGear's build; WG_IDS: SkyyWorldGen's
     missing = sorted(i for i in vanilla if i not in ids)
     ok(not missing, "not in Assets.zip: %s" % missing)
+    ok(not [i for i in TT.WG_IDS if i in ids], "ores01: no SkyyWorldGen id exists in Assets.zip")
     # the plan's family lists are complete: every vanilla trunk, bar (minus Silver / Gold / Prisma) and crop item is in the table
     for pat, skip in ((r"^Wood_[A-Za-z_]+_Trunk$", ()), (r"^Ingredient_Bar_", ("Silver", "Gold", "Prisma")),
                       (r"^Plant_Crop_[A-Za-z]+_Item$", ())):

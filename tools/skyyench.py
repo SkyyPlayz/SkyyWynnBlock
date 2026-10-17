@@ -20,6 +20,11 @@ Skyy's words this follows (docs/answered/bags.md + gear.md, word for word there)
     literally the exact same thing. remove the enchanted, and just use the vanilla version." -> the LifeEssence row is retired (RETIRED_C1 /
     RETIRED_TO); the Life Essence collection's Enchanted item = vanilla Ingredient_Life_Essence_Concentrated (VANILLA_ENCH, Void: Farming)
 
+  - 2026-10-17 (docs/answered/gear.md FURNACE CHARM DESIGN, research/Zone-Ores-Alloys-Spec.md 5): "Collections for base metals only, no alloy
+    collections." + "Keep your speed/fuel numbers and Eternal Flame at Charcoal tier 7." -> round ores01 (SkyyCollections 0.2.25) adds five
+    rows (TABLE_ORES, appended to TABLE_C1 so tools/tier_tags.py tags them like the C1 rows): Enchanted Lead / Chromium / Slag / Titanium
+    Ingot from the SkyyWorldGen 0.7.3 ingots (EXTERNAL_INPUTS - not in Assets.zip) + Enchanted Charcoal (vanilla Ingredient_Charcoal)
+
   - 2026-10-16 COLLECTIONS SPEC Q3 "Own items now" (docs/answered/economy.md): EVERY collection gets its own Enchanted item - round C1
     (SkyyCollections 0.2.21) appends one row per visible collection that had none (rows 21-103, the C1 block below; research/
     Collections-Tools-Redesign-Spec.md). SkyySacks homes them and SkyyBazaar lists them at THEIR next build (they read this table then).
@@ -170,15 +175,42 @@ TABLE_C1_0221 = list(TABLE_C1)  # TABLE_C1 exactly as SkyyCollections 0.2.21 / 0
 for _i, _r in RETIRED_C1:
     TABLE_C1_0221.insert(_i, _r)
 TABLE_0221 = TABLE + TABLE_C1_0221   # the 103-row table of SkyyCollections 0.2.21 / 0.2.22 (frozen; never for a new build)
+# ---- round ores01 (SkyyCollections 0.2.25; Skyy 2026-10-17 "Collections for base metals only, no alloy collections."): the four new zone
+# metals (their collections count the RAW ore, like Thorium; the Enchanted item is made from the INGOT, like every metal row) + Charcoal (the
+# /craft Furnace's fuel byproduct; its collection is credited by SkyySacks through coll:fn:add source sacks:furnace). Unlock tiers = the
+# grammar (Rare curve III: Lead / Chromium; Elite curve II: Slag / Titanium - the partner metals' rows; Charcoal Standard III). The ingots
+# are SkyyWorldGen 0.7.3 items (EXTERNAL_INPUTS), so their art is a tinted copy of the vanilla Iron ingot (ART_TINT) until drawn icons land.
+# Enchanted Charcoal homes in the Smithing Void like Ingredient_Charcoal (SkyySacks SMITH_EXACT); its collection sits in Mining (the
+# collections page has no Smithing category).
+TABLE_ORES = [
+    ("Lead",     "I", "Ingredient_Bar_Lead_SkyWynn",     "Lead",     3, "Mining",   "Enchanted Lead Ingot",     ("ingot", "Ingredient_Bar_Iron")),
+    ("Chromium", "I", "Ingredient_Bar_Chromium_SkyWynn", "Chromium", 3, "Mining",   "Enchanted Chromium Ingot", ("ingot", "Ingredient_Bar_Iron")),
+    ("Slag",     "I", "Ingredient_Bar_Slag_SkyWynn",     "Slag",     2, "Mining",   "Enchanted Slag Ingot",     ("ingot", "Ingredient_Bar_Iron")),
+    ("Titanium", "I", "Ingredient_Bar_Titanium_SkyWynn", "Titanium", 2, "Mining",   "Enchanted Titanium Ingot", ("ingot", "Ingredient_Bar_Iron")),
+    ("Charcoal", "I", "Ingredient_Charcoal",             "Charcoal", 3, "Smithing", "Enchanted Charcoal",       ("rubble", "Ingredient_Charcoal")),
+]
+# inputs that are not in Assets.zip: the item id -> the mod that defines it (SkyyCollections' build checks them against that jar when it exists)
+EXTERNAL_INPUTS = {"Ingredient_Bar_Lead_SkyWynn": "SkyyWorldGen", "Ingredient_Bar_Chromium_SkyWynn": "SkyyWorldGen",
+                   "Ingredient_Bar_Slag_SkyWynn": "SkyyWorldGen", "Ingredient_Bar_Titanium_SkyWynn": "SkyyWorldGen"}
+# the placeholder palette of research/Zone-Ores-Alloys-Spec.md 2.6 (Lead dull blue-grey, Chromium mirror silver-cyan, Slag rust-black, Titanium
+# pale white-gold): key -> (target RGB, strength 0-1); the look's vanilla art is recoloured toward it (brightness kept) before the shine
+ART_TINT = {"Lead": ((112, 124, 150), 0.70), "Chromium": ((190, 232, 240), 0.65), "Slag": ((120, 62, 40), 0.80),
+            "Titanium": ((244, 230, 190), 0.70)}
+TABLE_C1_0224 = list(TABLE_C1)  # TABLE_C1 exactly as SkyyCollections 0.2.24 / SkyySacks 0.8.19 / SkyyBazaar 0.1.19 were built (82 rows)
+TABLE_C1 = TABLE_C1 + TABLE_ORES
+TABLE_0224 = TABLE + TABLE_C1_0224   # the 102-row table of those pins (frozen; legacy_0224)
 TABLE = TABLE + TABLE_C1
 KEYS = [t[0] for t in TABLE]
 IDS = [PREFIX + k for k in KEYS]
 RIDS = [i + RECIPE_SUFFIX for i in IDS]
 CATS = ("Mining", "Foraging", "Farming", "Combat", "Smithing")          # C1: + Combat / Smithing (the mob-drop collections)
-# sacks0814: 20 + 82 (the C1 Life Essence row retired -> its collection uses the vanilla Greater Essence of Life, VANILLA_ENCH)
-assert len(TABLE_20) == 20 and len(TABLE) == 102 and len(set(KEYS)) == 102 and all(t[5] in CATS for t in TABLE)
+# sacks0814: 20 + 82 (the C1 Life Essence row retired -> its collection uses the vanilla Greater Essence of Life, VANILLA_ENCH); ores01: + 5
+assert len(TABLE_20) == 20 and len(TABLE) == 107 and len(set(KEYS)) == 107 and all(t[5] in CATS for t in TABLE)
+assert len(TABLE_0224) == 102 and TABLE == TABLE_0224 + TABLE_ORES and len(TABLE_ORES) == 5
 assert len(TABLE_0221) == 103 and TABLE_0221[:20] == TABLE_20 and [t for t in TABLE_0221 if t[0] not in KEYS] == [r for _i, r in RETIRED_C1]
-assert len(set(t[3] for t in TABLE)) == 102 and not set(VANILLA_ENCH) & set(t[3] for t in TABLE), "one Enchanted item per collection"
+assert len(set(t[3] for t in TABLE)) == 107 and not set(VANILLA_ENCH) & set(t[3] for t in TABLE), "one Enchanted item per collection"
+assert sorted(EXTERNAL_INPUTS) == sorted(t[2] for t in TABLE_ORES if t[2].endswith("_SkyWynn")) and set(ART_TINT) <= set(t[0] for t in TABLE_ORES)
+assert not [t for t in TABLE if t[2] in EXTERNAL_INPUTS and t[7][1] in EXTERNAL_INPUTS], "an external input needs a vanilla look base"
 assert all(PREFIX + r[0] in RETIRED_TO and r[3] in VANILLA_ENCH for _i, r in RETIRED_C1) and all(c in CATS for _v, c in VANILLA_ENCH.values())
 assert all(t[1] in ("I", "R") and 1 <= t[4] <= 3 for t in TABLE)
 for _t in TABLE:
@@ -304,6 +336,25 @@ def _c8(v):
     return 0 if v < 0 else (255 if v > 255 else v)
 
 
+def _tint(img, key):
+    """ores01: recolour a vanilla look toward ART_TINT[key] (the shading kept: a pixel of mean brightness becomes the target colour; alpha kept)"""
+    if key not in ART_TINT:
+        return img
+    (tr, tg, tb), k = ART_TINT[key]
+    ms = [sum(img.get(x, y)[:3]) / 3.0 for y in range(img.h) for x in range(img.w) if img.get(x, y)[3] > 0]
+    tm = (sum(ms) / len(ms)) if ms else 1.0          # the art's mean brightness shows the target colour itself
+    out = img.copy()
+    for y in range(img.h):
+        for x in range(img.w):
+            r, g, b, a = img.get(x, y)
+            if a == 0:
+                continue
+            m = (r + g + b) / 3.0
+            f = m / tm
+            out.put(x, y, (_c8(r * (1 - k) + tr * f * k), _c8(g * (1 - k) + tg * f * k), _c8(b * (1 - k) + tb * f * k), a))
+    return out
+
+
 def _items(z):
     out = {}
     for n in z.namelist():
@@ -371,7 +422,7 @@ def build_assets(z, SA):
         lk, base = look
         assert base in items, "Enchanted %s: base %s is not in Assets.zip" % (key, base)
         icon_src = _inh(items, base, "Icon")
-        icon = SA.png_encode(_shine(SA.png_decode(SA._read(z, icon_src)), True))
+        icon = SA.png_encode(_shine(_tint(SA.png_decode(SA._read(z, icon_src)), key), True))
         assert SA.png_size(icon) == (64, 64), (key, SA.png_size(icon))
         icon_rel = "Icons/ItemsGenerated/SkyyCollections_Ench_%s.png" % key
         files["Common/" + icon_rel] = icon
@@ -379,7 +430,7 @@ def build_assets(z, SA):
         props = None
         if lk == "ingot":
             model = _inh(items, base, "Model")
-            tex = SA.png_encode(_shine(SA.png_decode(SA._read(z, _inh(items, base, "Texture"))), False))
+            tex = SA.png_encode(_shine(_tint(SA.png_decode(SA._read(z, _inh(items, base, "Texture"))), key), False))
             props = _inh(items, base, "IconProperties")
             sound = _inh(items, base, "ItemSoundSetId")
         elif lk == "cube":
@@ -475,6 +526,9 @@ BASE_LABEL.update({"Corn": "Corn", "Lettuce": "Lettuce", "Onion": "Onions", "Tur
                    "Venom": "Venom Sacs", "Shadoweave": "Shadoweave Scraps", "Cindercloth": "Cindercloth Scraps",
                    "FireEssence": "Essence of Fire", "IceEssence": "Essence of Ice", "VoidEssence": "Essence of the Void",
                    "LightningEssence": "Essence of Lightning", "Voidheart": "Voidhearts", "BoomPowder": "Boom Powder"})
+# ores01 (0.2.25)
+BASE_LABEL.update({"Lead": "Lead Ingots", "Chromium": "Chromium Ingots", "Slag": "Slag Ingots", "Titanium": "Titanium Ingots",
+                   "Charcoal": "Charcoal"})
 for _t in TABLE_C1:
     if _t[7][1].startswith("Wood_"):
         BASE_LABEL.setdefault(_t[0], _t[6][len("Enchanted "):] + "s")
@@ -503,6 +557,24 @@ def legacy_0221():
     return ns
 
 
+def legacy_0224():
+    """ores01: the table exactly as SkyyCollections 0.2.24 / SkyySacks 0.8.19 / SkyyBazaar 0.1.19 were built (102 rows, before TABLE_ORES), as
+    a namespace for a frozen rebuild of those pins (the legacy_0221 pattern: give build_assets / check_assets / emit_tab its lists)"""
+    import types
+    ns = types.SimpleNamespace(**dict((k, v) for k, v in globals().items() if not k.startswith("__")))
+    ns.TABLE = list(TABLE_0224)
+    ns.TABLE_C1 = list(TABLE_C1_0224)
+    ns.KEYS = [t[0] for t in ns.TABLE]
+    ns.IDS = [PREFIX + k for k in ns.KEYS]
+    ns.RIDS = [i + RECIPE_SUFFIX for i in ns.IDS]
+    ns.BASE_LABEL = dict((k, v) for k, v in BASE_LABEL.items() if k in ns.KEYS)
+    ns.row = lambda key: ([t for t in ns.TABLE if t[0] == key] or [None])[0]
+    ns.cat_of = lambda i: (ns.row(i[len(PREFIX):]) or [None] * 6)[5] if isinstance(i, str) and i.startswith(PREFIX) else None
+    ns.base_label = lambda key: ns.BASE_LABEL[key]
+    ns.sacks_home_java = lambda: _home_java(ns.IDS, ns.TABLE)
+    return ns
+
+
 def base_label(key):
     return BASE_LABEL[key]
 
@@ -512,7 +584,7 @@ def tab_icon_path():
 
 
 def check_assets(files, z):
-    """build checks: every TABLE item (20 since tools01, 103 since C1), one quality, every Model / Texture / Icon / sound / particle / quality texture exists in Assets.zip or the
+    """build checks: every TABLE item (20 since tools01, 103 since C1, 107 since ores01), one quality, every Model / Texture / Icon / sound / particle / quality texture exists in Assets.zip or the
     jar, no vanilla path replaced, the recipe = RATIO x the base, KnowledgeRequired, the Compressing tab, no reverse recipe in the jar"""
     names = set(z.namelist())
 
@@ -534,7 +606,8 @@ def check_assets(files, z):
         assert r["KnowledgeRequired"] is True and r["OutputQuantity"] == 1 and len(r["Input"]) == 1, key
         i0 = r["Input"][0]
         assert i0["Quantity"] == RATIO and (i0.get("ItemId") == inp if kind == "I" else i0.get("ResourceTypeId") == inp), key
-        assert kind == "R" or inp in vitems, (key, inp)
+        assert kind == "R" or inp in vitems or inp in EXTERNAL_INPUTS, (key, inp)          # ores01: the SkyyWorldGen ingots
+        assert inp not in vitems or inp not in EXTERNAL_INPUTS, (key, inp, "an external input became a vanilla id")
         assert r["BenchRequirement"] == [{"Type": "Crafting", "Id": BENCH_ID, "Categories": [TAB_ID]}], key
     q = json.loads(files["Server/Item/Qualities/%s.json" % QUALITY])
     for k in ("ItemTooltipTexture", "ItemTooltipArrowTexture", "SlotTexture", "BlockSlotTexture", "SpecialSlotTexture"):
