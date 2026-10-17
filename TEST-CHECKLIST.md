@@ -194,3 +194,4 @@ tests always come first.
 166. Seeds / saplings toggles, pickup popup hidden, AH auto-claim on rebirth
 167. Tree nodes, Sap Tapper counts, Tree Feller table, Breaking Speed buyable
 168. Requip Salvage (two clicks, materials not coins)
+169. Class crests + ability icons; /flaskprobe test (then /flaskprobe clear)
