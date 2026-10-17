@@ -20,11 +20,16 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   Collections), Cooking 0.1.10 (one food family = one bar), Accessories 0.5.21 (craft + upgrade in the bag), Sacks 0.8.14 (Enchanted Void homes,
   scroll craft list, no Void level gate), Gear 0.3.15 + Menu 0.3.34 (Crafting hub Crafting / Smithing / Anvil / Upgrade, big top row on Gear
   pages), Pets 0.4.1 (Eggs + Hatchery), Skills 0.4.46 + Hud 0.3.30 (log fixes).
-- DEPLOYED menu sweep K (18:08, TEST 160) + S1 Character hub (18:45, TEST 161). RUNNING (plain Agents): S2 (Sacks, Wardrobe, Vault + Bank,
-  Bazaar + Auctions, Merchants) and S3 (6 sub-builders: Gear 0.3.16 layout, Quests 0.4.0 = q04 redesign, Islands 0.5.18, Exploration 0.2.13,
-  Party 0.1.10, Guilds 0.1.11; scratch tools/dev/scratch/menuS3/). When all report: combined crosscheck + lint, Sonnet critic, pin, deploy.
-  Then S4 (Hud, Accessories after AP1, Ranks, Essentials, Fishing, Shards, Rebirth) -> lint menu_pattern FAIL. Quests NPC dialog / Welcome stay popups.
-  Versions moved: T1 tool upgrades = Gear 0.3.17 + Skills 0.4.48. Queued: SALVAGE (gear:fn:salvage + Wardrobe).
+- DEPLOYED 10-16: menu sweep K (TEST 160), S1 Character (161), S2 Storage + Market (162). S3 (Gear 0.3.16, Quests 0.4.0, Islands 0.5.18,
+  Exploration 0.2.13, Party 0.1.10, Guilds 0.1.11) BUILT, critic running -> pin + deploy.
+- WAVE A RUNNING (Skyy 10-16 'work through the small things and the next up list. save the bigger ones for later'; plain Agents):
+  A1 S4 menus (Hud widget list + tutorial toggle, Ranks, Essentials, Fishing, Shards + co-op Collect, Rebirth); A2 Collections 0.2.24 + Bazaar
+  0.1.19 (Life Essence -> Greater Essence, Eternal Seeds tier 4, Enchanted listing + gift sizing); A3 Menu 0.3.36 (Ops window, Server Setup scroll,
+  shared kit 1.7 harness); A4 Accessories 0.5.22 (Void Charms, no bag item, /charm /charms /ch, Accessory Power, grid).
+- WAVE B (after S3 pins): T1 Gear 0.3.17 + Skills 0.4.48 (+ Tree Feller table, salvage bridge), Wardrobe Salvage, Trees (4 nodes, Sap Tapper,
+  AP / gathering readers), Pets (Aures dragon, eggs R2), Sacks (seeds / saplings toggles, hide vanilla pickup popup), Auctions rebirth auto-claim.
+- WAVE C: Classes emblems in UI, Flask FP0 probe (Cooking), Exploration admin editor, smelting accessory, structure mods + joszza draft.
+- LATER (Skyy): Beastmastery, Void Particles, totems, Armory gear + movement, mod compression, SkyyCore 1.0.1 HubBar.
 - NEXT IN ORDER (specs answered, word for word in docs/answered/):
   1. MENU SWEEP (research/Menu-Pattern.md, answers at the end): kit round K (skyyui 1.7 + Menu 0.3.35; the BIG HUB ROW helper from Gear 0.3.15
      exists), then S1-S4 + Quests q04 (section 4). Every page 1600 x 980, big row 2, short lists fill, scroll not pages.
