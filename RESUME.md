@@ -22,7 +22,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 
 ## RUNNING / JUST BUILT
 - CLOUD BUILD TRIAL (Skyy 10-17, ONE round): Skyy's big build runs in Skyy's GROK BOT (not Claude cloud; Maven server jar, PR hand-off); local = deploys,
-  smoke, small fixes, rebuild the cloud PR here before pin. Rules + how to undo: CLOUD-RESUME.md "Cloud build trial". Job: NEXT 3 (armor as mob drops) -
+  smoke, small fixes, rebuild the cloud PR here before pin. Rules + how to undo: CLOUD-RESUME.md "Cloud build trial". Work split + WHO IS ON WHICH MOD: LOCAL-RESUME.md (check its locks before any job). Job: NEXT 3 (armor as mob drops) -
   local stays off SkyyGear + SkyyMobs until Grok's PR lands (the rename round below skips Gear until then).
 - WORK SPLIT + LOCKS: `LOCAL-RESUME.md` (made by Cobb = Skyy's Grok bot) - check its lock table before any job.
 - Gear spots of the Void Charms rename still left (Gear locked to Cobb): build_skyygear_0.3.18.py 29321, 31517-31534.
