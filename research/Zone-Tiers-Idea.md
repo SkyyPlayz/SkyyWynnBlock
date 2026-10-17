@@ -1,0 +1,27 @@
+# Zone tiers idea - 2 or 3 metal tiers per zone (IDEA, not built)
+
+Where answers go: Skyy's words -> `docs/answered/gear.md`; when this becomes a spec, rename to `research/Zone-Tiers-Spec.md` and add it to `INDEX.md`.
+
+## Skyy 2026-10-17 (word for word)
+"5 zones at start. and with zone 1 going through iron, that's 20 levels. if we do 2 tiers per zone, players will be hitting max lvl and
+needing to rebirth to get all the way through zone 3. it will take a lot of rebirths to get through zone 5. (dont change now.) when we add
+more tiers should we adjust the levels of each tier, so you get to the end of zone 4 by lvl 50. then have to rebirth and work back up to get
+to zone 5.     (i had an idea. we could even do 3 tiers per zone.  copper, then iron, then you smelt the 2 together to make bronze.   zone 2
+has thorium. so we could do silver then an alloy, or add a different metal to zone 2, and an alloy. so each zone could have 2 metals you
+find, then you smelt together for a third alloy tier.    (if we need more metals we can look into Brandon Sandersons mistborn for a really
+good list of real metals and alloys.)"
+
+Earlier the same day: UT + Mythic are per ZONE at the zone's highest tier; "eventually i want to do 2 tiers per zone ... including more
+ore, for the farming/ tool tiers. then we could make the farming and gathering match".
+
+## Claude's take (draft, for when we build it)
+- Yes, re-band levels: the first run reaches the end of Zone 4 at Lv 50 (today's max class level; rebirth raises it +10 each, Rebirth-Spec
+  Q12). Zone 5 (dinosaur caves, dragon) is the first post-rebirth zone.
+- 3 tiers per zone (metal A, metal B, their alloy) = 12 tiers over Lv 1-50, about 4 levels each; Zone 5 adds 3 more after rebirth.
+  Draft bands: Zone 1 Lv 1-12, Zone 2 13-25, Zone 3 26-38, Zone 4 39-50, Zone 5 50+ (rebirth).
+- The alloy tier = smelt metal A + B (a real smithing step), and is the zone's top tier -> that is where the zone's UT + Mythic sit.
+- Real-metal pool (Mistborn uses real metals + alloys, so names are free to use): copper + tin -> bronze; iron + carbon -> steel;
+  tin + lead -> pewter; copper + zinc -> brass; gold + silver -> electrum; aluminium + copper -> duralumin; nickel + chromium (+ silicon) ->
+  nicrosil; cadmium + bismuth -> bendalloy. Today's ladder (Copper, Iron, Thorium, Cobalt, Adamantite, Mithril, Onyxium, ...) maps in.
+- Touches: SkyyGear tiers + `tools/tier_tags.py`, SkyyWorldGen ores per zone, Mob-Levels-Plan bands, tool / farming tiers, collections,
+  Bazaar, rebirth. A full ultracode spec round when Skyy says go.
