@@ -19,7 +19,11 @@ ore, for the farming/ tool tiers. then we could make the farming and gathering m
   Q12). Zone 5 (dinosaur caves, dragon) is the first post-rebirth zone.
 - 3 tiers per zone (metal A, metal B, their alloy) = 12 tiers over Lv 1-50, about 4 levels each; Zone 5 adds 3 more after rebirth.
   Draft bands: Zone 1 Lv 1-12, Zone 2 13-25, Zone 3 26-38, Zone 4 39-50, Zone 5 50+ (rebirth).
-- The alloy tier = smelt metal A + B (a real smithing step), and is the zone's top tier -> that is where the zone's UT + Mythic sit.
+- The alloy tier = smelt metal A + B (a real smithing step) = the zone's top GATHERING tier. Metals and alloys are for MINING SETS and TOOL
+  upgrades only (the forever gear you level up), not combat gear. Skyy 2026-10-17 correction: "not quite ... like the current ore sets in
+  the game. the metals you mine and their alloys will be used for mining sets, and upgrading tools. not combat gear. all combat gear is still
+  drops only. and all Ut and mythic are combat gear. not your forever gear you level up."
+- Combat gear (normal drops, UT, Mythic) stays DROPS ONLY; UT + Mythic sit at each zone's highest combat level band, not on a metal.
 - Real-metal pool (Mistborn uses real metals + alloys, so names are free to use): copper + tin -> bronze; iron + carbon -> steel;
   tin + lead -> pewter; copper + zinc -> brass; gold + silver -> electrum; aluminium + copper -> duralumin; nickel + chromium (+ silicon) ->
   nicrosil; cadmium + bismuth -> bendalloy. Today's ladder (Copper, Iron, Thorium, Cobalt, Adamantite, Mithril, Onyxium, ...) maps in.
