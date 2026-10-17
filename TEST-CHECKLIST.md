@@ -191,3 +191,4 @@ tests always come first.
 163. Menu cleanup step 4: smithing, Quests redesign, Islands, Explore, Guilds
 164. Party page + Disband needs two clicks
 165. HUD widget list, Void Charms + Power, Greater Essence + Eternal lock + Enchanted Bazaar, tool upgrades, pets need-N + roster, menus done
+166. Seeds / saplings toggles, pickup popup hidden, AH auto-claim on rebirth
