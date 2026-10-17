@@ -28,6 +28,20 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 Free for the local session: everything not in the table (e.g. the Void Charms rename round in RESUME, skipping Gear until the row
 above is released).
 
+## Handed to the local session (from Cobb)
+
+- 2026-10-17 METAL ITEM ART (Skyy: "my Claude can easily do simple designs ... only have Quirk do armor"): the local session makes the
+  simple metal item art; Quirk does ARMOR ONLY (in Blockbench). Scope, for every zone metal (Bronze, Thorium, Lead, Dusk, Cobalt,
+  Chromium, Azurvane, Adamantite, Slag, Cinder, Mithril, Titanium, Lumen - table in research/Zone-Tiers-Idea.md):
+  - Tools: hatchet, pickaxe, multitool, harvester, watering can (fertilizing = a watering can upgrade).
+  - Metal weapons, matching the vanilla metal weapon set.
+  - Crossbows for every metal.
+  - Any other item made from metal. NOT charms (they use their own metals; fix later).
+  Method: start from the vanilla model + texture in Assets.zip (Common/Items/Tools, Common/Items/Weapons) and recolour / lightly edit it,
+  so each metal looks like its armor family. Make only what's missing (check vanilla, art/, Quirk's tool gap table first).
+  Crossbows: More Crossbow Tiers (Serj) is "All Rights Reserved" on CurseForge and still only marked for 0.6.8, so we can't copy its
+  textures without Serj's OK. Default: make our own from the vanilla Iron crossbow for all our metals. Optional: Skyy asks Serj.
+
 ## Rules
 1. Before any job, pull and read this table. If your mod is locked by the other side, pick other work or ask Skyy.
 2. Cobb never works on a mod the local session has listed or has uncommitted changes to that Skyy mentioned.
