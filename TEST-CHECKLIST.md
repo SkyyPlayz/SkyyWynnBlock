@@ -200,3 +200,4 @@ tests always come first.
 172. Void Charms Market no crash; Upgrade rows + colour lists; /is sethome <name>
 173. Potion Flask + Food Pouch, Storage > Supplies, /flask /pouch; then /flaskprobe clear
 174. C:/Program Files/Git/back, /sethome + /home, Teleport page tiles + Arrange, /warpadmin icons
+175. Server Setup says Void Charms, not Accessories

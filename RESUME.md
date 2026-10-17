@@ -19,8 +19,11 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - SkyyFlaskProbe 0.1.0 still in the SET: retire it (RETIRED list) once Skyy has run `/flaskprobe clear`.
 
 ## RUNNING / JUST BUILT
-- Accessories 0.5.24 (plain Agent): "Accessory Bag"/"Accessories" -> "Void Charms" in Server Setup + all visible texts (Skyy 10-17: "i
-  noticed they are still called accessory's in the settings"). If built: quick review -> pin -> deploy; queue the other mods' texts it lists.
+- Nothing running. Accessories 0.5.24 (Void Charms name in Server Setup + texts) deployed 10-17 (TEST 175).
+- QUEUE the same rename (one lean round): Sacks 0.8.18 lines 7887/10454/10600/10669/10698/10726/11983, Gear 0.3.18 29321/31517-31534,
+  Essentials 0.1.14 3751-3891/4561, Auctions 0.1.11 893/955/976/5638/5704, Menu MENU_ICONS label (line 459) + MODS "setup" title
+  "Accessories" -> "Void Charms" (Menu's menu_check compares it with Accessories' TITLE). Keep "Accessory Power" + "Old Accessory Bag".
+- Zone metals (Skyy's table, research/Zone-Tiers-Idea.md): Bronze / Dusk / Azurvane / Cinder / Lumen; Quirk sends art drafts per family.
 
 ## NEXT (small first; Skyy: "work through the small things and the next up list. save the bigger ones for later")
 1. Small LOWs left from reviews (optional): Gear accBp per-hit cache + GearReq missing red row (gear 0.3.18 review); Menu warp names with
