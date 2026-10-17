@@ -103,6 +103,7 @@ SET = [
     # 2026-10-14: before rolling Classes below 0.1.22 set abil.runeHud=false and let every Mage + Priest log in once. Exploration below 0.2.8: airdrop.enabled=false + no drops out first.
     # 2026-10-14: Gear 0.3.4 + Armory 0.1.24 + Collections 0.2.13 together (Sigils); Quests 0.3 + Fishing 0.1.4 + Hud 0.3.23 together (remove the 2 quest NPCs before a Quests rollback); Vault rollback only 30 s+ after the last /pickaxe fetch.
     # SkyySkills 0.4.35 (2026-10-14, rebirth R1): caps from rebirth:fn:cap, skill:fn:run, half Farming XP above tool tier (farming.tierUpXpFactor); no data migration - rolling back to 0.4.34 is safe
+    ("SkyyFlaskProbe", "0.1.0"),  # 2026-10-16 FP0 Potion Flask / Food Pouch engine probe (research/Flask-Pouch-Spec.md 5) - built against SkyyCooking 0.1.10; ONE Skyy test session, then /flaskprobe clear + RETIRED
     ("SkyyAbilityProbe", "0.1"),  # 2026-10-13 ability keys on 0.7 (research/Ability-Framework-Mage-Spec.md B1) - ONE Skyy test session, then RETIRED
     ("SkyyUiProbe", "0.6"), ("SkyyUiProbeB", "0.5"),  # 2026-10-11 kit / tab / quality-tooltip probes (K1 H1 T1) - ONE Skyy test session, then RETIRED again  # 2026-10-10 Skyy: "build the wardrobe/ loadout system too" - loadouts (armor + hotbar + pets + abilities), per profile
     # SkyyArmory round (2026-10-03): SkyyArmory 0.1 + SkyySkills 0.4.15 + SkyyClasses 0.1.11 deploy TOGETHER (the 8 ladder staffs move from
