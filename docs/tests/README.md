@@ -284,3 +284,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Tree nodes (Radiant Pulse, Elemental Bubble, Siphon), Sap Tapper counts, Tree Feller table, Breaking Speed (DEPLOYED 2026-10-16, backup deploy-20261016-2255) | [2026-10](2026-10.md) |
 | Requip Salvage button (DEPLOYED 2026-10-16, backup deploy-20261016-2329) | [2026-10](2026-10.md) |
 | Class crests + ability icons in the menus; Flask / Pouch engine probe (one test) (DEPLOYED 2026-10-16, backup deploy-20261016-2340) | [2026-10](2026-10.md) |
+| Explore admin editor in the frame (DEPLOYED 2026-10-16, backup deploy-20261016-2343) | [2026-10](2026-10.md) |

@@ -24,7 +24,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyProfiles | 0.1.17 | profiles = full saves (default cap 6), delete + 6 h undo; 0.7 port; striped locks |
 | SkyyCooking | 0.1.10 | Cooking dishes + food Grade; XP by craft difficulty |
 | SkyyTrees | 0.3.22 | skill trees (gathering, Acrobatics, Exploration, Alchemy, Smithing; class trees ON) |
-| SkyyExploration | 0.2.13 | Exploration skill, spots, island checklist; 0.7 port; private writer, change-driven publish |
+| SkyyExploration | 0.2.14 | Exploration skill, spots, island checklist; 0.7 port; private writer, change-driven publish |
 | SkyyGuilds | 0.1.11 | guilds + guild bank; writes off the lock |
 | SkyyVault | 0.1.9 | vault pages |
 | SkyyAuctions | 0.1.11 | auction house (buy-it-now); owed-count index |
