@@ -324,3 +324,7 @@ rolled into upgrade"): YES. Optional cuts M11 / M14-M17: off. Build per section 
    skill's stats) - shows row 1 (hubs) + row 2 (that hub's tabs). No BACK, '< MENU' or close-to-return buttons: a sub view is a sub-tab or an
    in-page selection that the top rows can always leave. The sweep audits every page id against this (a lint check: no element labelled Back /
    < Menu on a hub page).
+9. Requirements = a colour list (Skyy 2026-10-17: "do a color coded list (level 10 (IN RED) :6 my lvl  Copper 25 (in green) (use this pattern
+   everywhere"): one requirement per line - 'Farming Lv 10 : 6' red when not met, 'Copper Ingot 25' green when met ('(need N)' may follow a red
+   item); no explanation sentences. Every upgrade / tier-up / craft cost / egg / Void upgrade / collection / rebirth requirement uses it.
+   Kit helper wanted: SUI.req_list(rows) (name, need, have, met) so every page draws it the same.
