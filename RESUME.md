@@ -22,14 +22,13 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   pages), Pets 0.4.1 (Eggs + Hatchery), Skills 0.4.46 + Hud 0.3.30 (log fixes).
 - DEPLOYED 10-16: menu sweep K (TEST 160), S1 Character (161), S2 Storage + Market (162). S3 (Gear 0.3.16, Quests 0.4.0, Islands 0.5.18,
   Exploration 0.2.13, Party 0.1.10, Guilds 0.1.11) BUILT, critic running -> pin + deploy.
-- PINNED, deploy at next close: menu sweep S4 (Hud 0.3.31, Ranks 0.1.2, Essentials 0.1.12, Fishing 0.1.9, Shards 0.4.2, Rebirth 0.3.5).
-- FIX PASSES RUNNING: Menu 0.3.36 (payload cap, crumb floor, Void Charms texts + skyyui label), Accessories 0.5.22 AP1 (stuck-journal, busy publish),
-  Gear 0.3.17 + Skills 0.4.48 T1 (salvage: drops give less (Skyy), stable key, no ability lowering). coll24 Collections 0.2.24 + Bazaar 0.1.19
-  BUILT (base-item gifts per Skyy) - critic running; smoke with BOTH jars needed (game closed). Rule: Collections 0.2.24 needs Bazaar 0.1.19.
-- WAVE B RUNNING: trees21 (4 nodes, Sap Tapper, Feller table 1,2,4,5,6,10,12,14, swing reader, LLCAP 10), small16 (Sacks seeds / sapling toggles +
-  pickup popup, Auctions rebirth auto-claim). Then: Pets (Aures dragon, eggs R2), Wardrobe Salvage button, Gear bp reader, Fishing AP readers,
-  Islands kit drop bag item, Profiles carry power/retired files, 'Accessory Bag' text sweep in ~20 mods.
-- WAVE C: Classes emblems in UI, Flask FP0 probe (Cooking), Exploration admin editor, smelting accessory, structure mods + joszza draft.
+- DEPLOYED 10-16 night: TEST 165 (S4 menus + leftovers, Void Charms + AP, coll24, T1, pets 0.4.3), 166 (Sacks 0.8.16 + Auctions 0.1.11), 167 (Trees 0.3.21
+  + Classes 0.1.35). REVIEWING: fishvoid (Fishing 0.1.10 + Sacks 0.8.17, ship together), wd027 Requip Salvage (needs Gear 0.3.17).
+  BUILDING (wave C): emblems (class + ability icons in UI), FP0 Flask probe (SkyyFlaskProbe), explore14 (admin editor in the frame).
+- STILL TO DO (small list): smelting accessory (Accessories + Sacks furnace), Gear bp reader for Accessory Power, lifelong multitool MERGE (own full
+  round), Profiles carry Skyy_SkyyAccessories power / retired files, Islands kit drop bag item, 'Accessory Bag' text sweep (~20 mods), Rebirth
+  shows AH kind-3 lines, Hud feed card restyle, structure mods + joszza draft, Mage PA4 (needs Armory blink-landing bridge), skyyeggs ORDER update.
+- WAITING ON SKYY: add Dragon Nestkeeper (Aures) to the pack? (pets.md); Combat 15 Power numbers + drop-only upgrade costs are builder proposals.
 - LATER (Skyy): Beastmastery, Void Particles, totems, Armory gear + movement, mod compression, SkyyCore 1.0.1 HubBar.
 - NEXT IN ORDER (specs answered, word for word in docs/answered/):
   1. MENU SWEEP (research/Menu-Pattern.md, answers at the end): kit round K (skyyui 1.7 + Menu 0.3.35; the BIG HUB ROW helper from Gear 0.3.15
