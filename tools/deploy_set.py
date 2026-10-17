@@ -19,10 +19,10 @@ SET = [
     ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.30"), ("SkyySacks", "0.8.14"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.22"), ("SkyyParty", "0.1.9"),
-    ("SkyyBank", "0.1.15"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.17"), ("SkyyGear", "0.3.15"), ("SkyySkills", "0.4.46"),
-    ("SkyyAccessories", "0.5.21"), ("SkyyClasses", "0.1.33"), ("SkyyMenu", "0.3.35"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.15"),
-    ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.19"),
+    ("SkyyHud", "0.3.30"), ("SkyySacks", "0.8.14"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.23"), ("SkyyParty", "0.1.9"),
+    ("SkyyBank", "0.1.15"), ("SkyyIslands", "0.5.17"), ("SkyyBazaar", "0.1.17"), ("SkyyGear", "0.3.15"), ("SkyySkills", "0.4.47"),
+    ("SkyyAccessories", "0.5.21"), ("SkyyClasses", "0.1.34"), ("SkyyMenu", "0.3.35"), ("SkyyEssentials", "0.1.11"), ("SkyyProfiles", "0.1.16"),
+    ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.20"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -79,7 +79,7 @@ SET = [
     # Pets > Pets OFF and let players log in once (the skyypet_* max-stat modifiers are saved with the player).
     # SkyyPets 0.2 (2026-10-10, visible pets): REMOVAL / ROLLBACK FLOOR - pet creatures get saved in chunks (P5: NonSerialized does not stop it).
     # Before rolling back to 0.1 or removing SkyyPets: Server Setup > Pets > "Show pets in the world" OFF (or every player logged out), then restart.
-    ("SkyyPets", "0.4.1"),
+    ("SkyyPets", "0.4.2"),
     ("SkyyWardrobe", "0.2.5"),
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
@@ -459,6 +459,9 @@ def main():
         print("STOP: SkyyGear 0.3.15 and SkyyMenu 0.3.34 go together (Crafting hub tabs)"); return 1
     # petmenu (2026-10-16): FLOOR - never roll SkyyPets below 0.4.1 once eggs sit in the Hatchery (0.4.0 ignores hatchery.* lines: those eggs
     # would be invisible, kept not lost; bench egg recipes + right-click hatching would come back).
+    # menu sweep S1 (2026-10-16): Trees 0.3.20 + Classes 0.1.34 deploy + roll back together (one sub row on the merged Trees tab; no data).
+    if (_v(_p.get("SkyyTrees", "0")) >= (0, 3, 20)) != (_v(_p.get("SkyyClasses", "0")) >= (0, 1, 34)):
+        print("STOP: SkyyTrees 0.3.20 and SkyyClasses 0.1.34 go together (menu sweep S1)"); return 1
     # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
     # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep
