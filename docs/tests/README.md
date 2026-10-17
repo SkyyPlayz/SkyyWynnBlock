@@ -288,3 +288,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Fishing Bench sells / fillets Void fish; Fishing Accessory Power (DEPLOYED 2026-10-16, backup deploy-20261016-2351) | [2026-10](2026-10.md) |
 | Void Charms crash fix + Breaking Speed first + colour requirement lists + named island homes (DEPLOYED 2026-10-17, backup deploy-20261017-0751) | [2026-10](2026-10.md) |
 | Potion Flask + Food Pouch (FP1) (DEPLOYED 2026-10-17, backup deploy-20261017-0803) | [2026-10](2026-10.md) |
+| Teleport page (warps + icons, island homes, homes, Arrange) + /back + /sethome homes (DEPLOYED 2026-10-17, backup deploy-20261017-0812) | [2026-10](2026-10.md) |
