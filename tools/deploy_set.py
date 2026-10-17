@@ -19,7 +19,7 @@ SET = [
     ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.16"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.24"), ("SkyyParty", "0.1.10"),
+    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.17"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.24"), ("SkyyParty", "0.1.10"),
     ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.18"), ("SkyyBazaar", "0.1.19"), ("SkyyGear", "0.3.17"), ("SkyySkills", "0.4.48"),
     ("SkyyAccessories", "0.5.22"), ("SkyyClasses", "0.1.36"), ("SkyyMenu", "0.3.36"), ("SkyyEssentials", "0.1.12"), ("SkyyProfiles", "0.1.17"),
     ("SkyyCooking", "0.1.10"), ("SkyyTrees", "0.3.22"),
@@ -65,7 +65,7 @@ SET = [
     # migrated files). SkyyArmory 0.1.9 is safe with Trees 0.3.2 (reads 0 for every node).
     # SkyyFishing 0.1 (2026-10-08, stage 1): takes over the reel probe's rod ids + SkyyFishing_Reel stat. Rollback floor: once players hold
     # fishing items, removing SkyyFishing turns rods / reels / parts / fish into unknown items.
-    ("SkyyFishing", "0.1.9"),
+    ("SkyyFishing", "0.1.10"),
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
@@ -487,6 +487,10 @@ def main():
     # wd027 (2026-10-16): Requip SALVAGE uses SkyyGear 0.3.17's gear:fn:salvage (write-ahead salvage-<eid>.txt journals; never coins).
     if _v(_p.get("SkyyWardrobe", "0")) >= (0, 2, 7) and _v(_p.get("SkyyGear", "0")) < (0, 3, 17):
         print("STOP: SkyyWardrobe 0.2.7 (Requip SALVAGE) needs SkyyGear 0.3.17+"); return 1
+    # fishvoid (2026-10-16): SkyyFishing 0.1.10 + SkyySacks 0.8.17 deploy TOGETHER (the Fishing Bench sells / fillets Void fish via sacks:fn:fishList /
+    # fishTake / fishPut / fishTaken with take tokens). Either rolls back alone safely (bench lists the inventory only).
+    if _v(_p.get("SkyyFishing", "0")) >= (0, 1, 10) and _v(_p.get("SkyySacks", "0")) < (0, 8, 17):
+        print("STOP: SkyyFishing 0.1.10 goes with SkyySacks 0.8.17+ (Void fish at the bench)"); return 1
     # roll01 (2026-10-16): SkyySkills 0.4.44 writes our dodge root into each player's saved Interactions Dodge slot. FLOOR: before rolling below
     # 0.4.44 (or removing SkyySkills), switch Server Setup -> Acrobatics -> 'Roll every direction' OFF and let every player log in once.
     # pets040 (2026-10-16): FLOOR - never roll SkyyPets below 0.4.0 once Skyy_PetEgg_* items exist (unknown items below); SkyyCollections must keep
