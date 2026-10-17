@@ -16,7 +16,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - 173: FP1 Potion Flask + Food Pouch = Cooking 0.1.11 + Sacks 0.8.18 + Wardrobe 0.2.8 (Storage > Supplies, /flask /pouch). FLOOR Cooking 0.1.11.
 - 174: Menu 0.3.37 (Teleport page: warps with APPROVED icons art/warp-icons, island homes, homes, Arrange; Void Charms amulet icon) +
   Essentials 0.1.14 (/back, /sethome + /home 2 homes, /warpadmin icons; islands fail closed, instances refused).
-- SkyyFlaskProbe 0.1.0 still in the SET: retire it (RETIRED list) once Skyy has run `/flaskprobe clear`.
+- SkyyFlaskProbe retired 10-17 (RETIRED list).
 
 ## RUNNING / JUST BUILT
 - Nothing running. Accessories 0.5.24 (Void Charms name in Server Setup + texts) deployed 10-17 08:30 (TEST 175).
