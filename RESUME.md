@@ -10,27 +10,23 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    Parries pack-API fail is third-party) -> `deploy_set.py --yes` (check the LAST line says "deployed N mods") -> `record_deploy.py` -> commit -> tidy.
 3. After Skyy plays: skill `skywynn-logs` (`python tools/log_scan.py --ours`, then `--recycle`).
 
-## LIVE NOW (deployed 2026-10-17, TEST-CHECKLIST 172-174)
+## LIVE NOW (deployed 2026-10-17, TEST-CHECKLIST 172-176)
 - 172: Accessories 0.5.23 (Void Charms -> top-bar Market disconnect fixed), Gear 0.3.18 (Breaking Speed row first, accessory Breaking
   Power, red/green requirement lists), Islands 0.5.19 (6 named island homes, `/is sethome <name>`, `/is <name>`).
 - 173: FP1 Potion Flask + Food Pouch = Cooking 0.1.11 + Sacks 0.8.18 + Wardrobe 0.2.8 (Storage > Supplies, /flask /pouch). FLOOR Cooking 0.1.11.
 - 174: Menu 0.3.37 (Teleport page: warps with APPROVED icons art/warp-icons, island homes, homes, Arrange; Void Charms amulet icon) +
   Essentials 0.1.14 (/back, /sethome + /home 2 homes, /warpadmin icons; islands fail closed, instances refused).
 - SkyyFlaskProbe retired 10-17 (RETIRED list).
+- 175: Accessories 0.5.24 (Void Charms name). 176: Sacks 0.8.19 / Essentials 0.1.15 / Auctions 0.1.12 / Menu 0.3.38 (Void Charms
+  rename, icon ids > 32, Arrange Prev/Next + dots), Classes 0.1.37 (Breach x Mark), Wardrobe 0.2.9 (Requip leaves Pouch food), Nestkeeper ON.
 
 ## RUNNING / JUST BUILT
 - CLOUD BUILD TRIAL (Skyy 10-17, ONE round): Skyy's big build runs in Skyy's GROK BOT (not Claude cloud; Maven server jar, PR hand-off); local = deploys,
   smoke, small fixes, rebuild the cloud PR here before pin. Rules + how to undo: CLOUD-RESUME.md "Cloud build trial". Job: NEXT 3 (armor as mob drops) -
   local stays off SkyyGear + SkyyMobs until Grok's PR lands (the rename round below skips Gear until then).
 - WORK SPLIT + LOCKS: `LOCAL-RESUME.md` (made by Cobb = Skyy's Grok bot) - check its lock table before any job.
-- RUNNING (local plain agents, Skyy 10-17 "feel free to do your whole list with sub agents in parallel. just avoid conflict."): rename
-  round Sacks 0.8.19 / Essentials 0.1.15 / Auctions 0.1.12 / Menu 0.3.38 (+ icon ids, Arrange, Supplies tab icon); Classes + Skills
-  (Breach + Mark stack, Zen); Wardrobe (+Cooking) Requip food fix; Accessories smelting charm + Profiles; Sonnet research (Nestkeeper,
-  Wynn elements, structure mods). Each: review -> pin -> deploy.
-- Accessories 0.5.24 (Void Charms name in Server Setup + texts) deployed 10-17 08:30 (TEST 175).
-- QUEUE the same rename (one lean round): Sacks 0.8.18 lines 7887/10454/10600/10669/10698/10726/11983, Gear 0.3.18 29321/31517-31534,
-  Essentials 0.1.14 3751-3891/4561, Auctions 0.1.11 893/955/976/5638/5704, Menu MENU_ICONS label (line 459) + MODS "setup" title
-  "Accessories" -> "Void Charms" (Menu's menu_check compares it with Accessories' TITLE). Keep "Accessory Power" + "Old Accessory Bag".
+- Gear spots of the Void Charms rename still left (Gear locked to Cobb): build_skyygear_0.3.18.py 29321, 31517-31534.
+- Smelting charm -> FURNACE CHARM (below). Wynn elements spec research/Wynn-Elements-Spec.md + structure ask (joszza) wait on Skyy.
 - FURNACE CHARM decided (gear.md 10-17): T1-T5 tier-ups cost the zone's 2 metals + unlock its alloy; Eternal Flame at Charcoal 7;
   base-metal collections only. Needs the zone ores + alloy items first (not built). Skyy 10-17: "Yes - start the zone ores +
   alloys + Furnace Charm round right after the current set deploys." -> ULTRACODE round NEXT after the Classes/Wardrobe deploy.

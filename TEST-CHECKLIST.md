@@ -201,3 +201,4 @@ tests always come first.
 173. Potion Flask + Food Pouch, Storage > Supplies, /flask /pouch; then /flaskprobe clear
 174. C:/Program Files/Git/back, /sethome + /home, Teleport page tiles + Arrange, /warpadmin icons
 175. Server Setup says Void Charms, not Accessories
+176. Void Charms texts, Arrange Prev/Next, Breach x Mark, Requip leaves Pouch food, Nestkeeper dragons
