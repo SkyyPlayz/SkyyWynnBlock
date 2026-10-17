@@ -1,4 +1,4 @@
-# SkyWynn hub contract (kit skyyui 1.5, 2026-10-15; + kit 1.6 at the end)
+# SkyWynn hub contract (kit skyyui 1.5, 2026-10-15; + kit 1.6 and kit 1.7 - THE PAGE SHELL - at the end)
 
 Skyy (2026-10-10, `docs/answered/ui.md`) picked all the hubs and the Sky Window look: "I like 2 the best", then "beautiful! can we
 design it all with the new theme". So the SkyWynn Menu becomes a few **hubs** with **tabs**. Each mod adds its own tab through the
@@ -156,3 +156,61 @@ later". Kit 1.6 adds ROW 1 (the hubs) on every hub page, an optional icon behind
   compiles the row class (sky + vanilla) and compares both byte for byte, plus `def4` / `defTab` / `putIcon` / `pickTab` / `goHub` / `route`.
 - **Not proven in game yet:** an `ItemIcon` inside a row `Button` in the title bar; a `Button` holding a background Group + a Label as a tab
   (the icon hook); the 30 px Tertiary / Primary art at 88-150 px wide.
+
+## Kit 1.7 (2026-10-16, research/Menu-Pattern.md) - THE PAGE SHELL: every hub page is `hub_page()`
+
+Skyy (2026-10-16, `docs/answered/ui.md`): "lets try to reduce and compress the menus together to reduce clutter. then make sure its
+consistent across the board, then follow the pattern when making new or adding to existing menus." + "keep this top bar at this size
+consistent at the top across every menu." + "I never want to have to use a back button. The menus at the top should always be there for
+easy navigation." Popups: every hub page Home's size (1600 x 980); row 2 big like Teleport (56 px).
+
+- **Additive.** `KIT_VERSION` stays `"1.5"`, `KIT_HUB_VERSION` stays `"1.6"` (pinned SET scripts assert them); `KIT_PAGE_VERSION = "1.7"`.
+  Nothing changes for a page that does not call `hub_page`; `install_hub_bar(..., page=False)` is byte-identical to before.
+- **The page (1600 x 980, sky theme, padding 24 -> 1552 inside), top to bottom:** title bar 38 (crest + hub title + X) | row 1 =
+  Home + 7 hubs at Home's exact size (48 + 8; `BIG_ROW_*`) | row 2 = the hub's tabs at Teleport's size (56 + 8; `HUB_BIG_TAB_*`, the
+  48 px tab art behind the word, labels 20 px shrinking to 14, tabs >= 150 wide; not on Home) | optional ONE sub-tab row (32 + 8;
+  `SUB_TAB_*`, 150 px small buttons, the active one Primary) | the content (what is left) | optional footer (10 + 48: info line left,
+  buttons right, the Primary right-most). Rows 1 + 2 never shrink - the content does. Content heights: no sub / no footer 774, footer
+  716, sub + footer 676 (`sh.content_h`); Home (no row 2): 838.
+- **No back buttons (rule 8).** A sub view is a sub-tab or an in-page selection; rows 1 + 2 always lead away. Never draw "< Menu",
+  "< Back", "Go Back", "< <page>" - `hub_menu_button` / `HUB_MENU_TEXT` are DEPRECATED (kit 1.5 pages not yet swept only).
+- **Lists (rule 7 + 3.3):** `SUI.scroll_list(id, h=..., well=True)`, never `pager()` (exception: a grid of real slots - Vault pages, the
+  Menu's shortcut grids; mark the line `# menu-pattern-ok`). Few rows grow: `hs = SUI.grow_row_sizes(list_h, row_h)` (3 heights, up to
+  2x, a big tier never more than half the list) and in Java `int k = HubBar.growSize(n, list_h, HS, gap)` (Python twin `grow_pick`).
+  Empty list: `SUI.empty_state(id)`; locked content greyed with how to unlock it: `SUI.locked_line(id)`. Detail panel `SUI.DETAIL_W` (456).
+- **Footer pieces:** `SUI.foot_info(id, w)` (the info / status line), `SUI.foot_button(id, text, w, kind, sound)` (48 high), `FOOT_GAP` 10.
+
+### How to move a page (sweep rounds S1-S4: the recipe)
+
+1. HubBar: `SUI.install_hub_bar(pool, PKG + ".HubBar", CtField, CtNewMethod, row=True, page=True)` (page implies big + sub; keep
+   `sub=True` users as they are).
+2. Shell: `sh = SUI.hub_page("<Prefix>", "<hub>", sub=<has sub-tabs>, footer=<has buttons>, body_id="<Prefix>B",
+   content_id="<the OLD body / root id>", content_w=<old inner width if the content is not widened>, content_layout="Top" | "Left")`.
+   Passing the old body id as `content_id` keeps every old `appendInline("#<old body>", ...)` working. Delete the page's own title row,
+   "< Menu", back button, tab strip, inner tab rows and pagers.
+3. Height: the old body must fit `sh.content_h` (see the numbers above) - shrink rows / turn pages into one `scroll_list`, never shrink
+   rows 1 / 2. Width: 1552 (or `content_w`, centred).
+4. build(): `sh.java("b")`, then `SUI.java_hub_page(sh, "<tab>", cls="@PKG@.HubBar")` (a merged page: `tab_expr=
+   '@PKG@.HubBar.selOf("<hub>", "<tab>")'`) = `HubBar.page17(b, ev, prefix, hub, tab, 1552, uuid, parts)` (row 1, row 2, the X).
+   Sub-tabs: `HubBar.subTab(b, ev, "<Prefix>", i, label, selected, "<action>" | null, 150)` into `#<Prefix>Sub`; footer pieces into
+   `#<Prefix>Foot`; content into `sh.content`.
+5. handleDataEvent: unchanged - `HubBar.route(...)` first (row 1 sends `hub:h:<id>`, row 2 `hub:<tab>`, the X `hub:close`).
+6. Build-time check: `pv = SUI.hub_page_preview(sh, tabs=[(id, label) ...], my_tab="<tab>")` + the page's content markup, then
+   `SUI.check_page(pv, prefix)`, `SUI.assert_proven(pv)`, `SUI.check_sky_paths(pv, tab_icons=True)`, `SUI.assert_menu_page(pv, sh)`
+   (1600 x 980, row 1 + row 2, at most one sub row, no back / < Menu text inline or in b.set, no pager unless `pager_ok=True`, content
+   fits). The harness: build the real page and run `assert_menu_page` on its commands (SkyyMenu/test_skyymenu_0.3.35.py `built()`).
+7. Lint: `python tools/ci/lint.py` rule `menu_pattern` (WARN now; `MENU_PATTERN_FAIL = True` after S4 makes it FAIL) - a moved mod
+   shows no `old-shell` / `menu-button` / `back-text` line any more.
+
+- **Row 2's art:** a tab draws its `putIcon` icon, else the contract art SkyyMenu ships when its stem is in the bridge key `hub:art`
+  (`String[]` of `"<hub>_<tab>"`, put by SkyyMenu 0.3.35+; `HubBar.hasArt`). Without SkyyMenu: words only.
+- **Retired contract tabs:** `SUI.HUB_RETIRED` (`settings:layout` - Home's Edit shortcuts button replaces it); `SUI.hub_page_tabs(hub)`
+  = what row 2 shows with every mod loaded.
+- **Python twins / proofs:** `hub_big_row_preview` (= `bigRowFill`), `hub_big_tabs_preview` (= `bigTabsFill`), `sub_tabs_preview` (=
+  `subTab`), `grow_pick` (= `growSize`). `python tools/test_skyyui_hubs.py` phase 5: every hub x sub / footer, the refusals of
+  `assert_menu_page`, the BYTE COMPARE of rows 1 + 2 against SkyyMenu 0.3.34's own Home / Teleport row code, and (JVM) `page17` /
+  `subTab` / `growSize` / `hasArt` executed against the previews.
+- **SkyyCore's shared HubBar** (`hub_bar_java_core`) is still kit 1.5: SkyyCore 1.0.1 needs `row / sub / big / page` there, with the
+  owner swaps for the new `mine()` users (`def4`, `putIcon`, `putSub`) - until then a SkyyCore-linked page uses its own jar's HubBar.
+- **Not proven in game yet:** the 1600 x 980 hub pages other than Home; row 2 on pages other than Teleport (same markup); the sub-tab row
+  (small Primary / Secondary at 150 x 32); a sky footer under a scroll list.

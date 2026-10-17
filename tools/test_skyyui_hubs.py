@@ -25,9 +25,16 @@ Phase 4  KIT 1.6 (the hub row, tab icons, default tab; research/Unified-Menu-Pla
          the tab icon hook path is refused unless tab_icons=True; then (JVM) HubBar(row=True) compiled (sky + vanilla) and EXECUTED:
          def4 / defTab, putIcon / iconOf, hubs() order, buildRow == hub_row_preview and build2 == hub_bar_preview2 byte for byte (with
          and without icons, no-def fallback title), the row / tab / X bindings, pickTab (default -> last -> first), goHub / route outcomes.
+Phase 5  KIT 1.7 (hub_page - THE menu pattern page, research/Menu-Pattern.md 3): every hub (+ Home) x sub / footer: 1600 x 980, the body
+         order (row 1, row 2, sub row, content, footer), check_page / assert_proven / check_sky_paths / assert_menu_page; assert_menu_page
+         REFUSES a kit 1.5 size, Back / < Menu / < Mods buttons (inline or b.set), a pager (unless pager_ok), a second sub row, the old
+         strip, a missing row 2, content taller than the room; grow_row_sizes / grow_pick; the BYTE COMPARE: the kit's row 1 + row 2 ==
+         SkyyMenu 0.3.34's own Home / Teleport row code (cut out of its build script) for every hub; then (JVM) HubBar(page=True)
+         compiled and EXECUTED: page17 == the previews byte for byte (icons from putIcon + the hub:art list), the bindings, hub:last,
+         Home = row 1 only, subTab == sub_tabs_preview, growSize == grow_pick.
 Scratch: tools/dev/scratch/skyyui-hubs-test (deleted unless --keep). Prints "N ok, 0 fail"; exit 1 on a failure.
 """
-import os, sys, shutil, zipfile, hashlib, json, subprocess, importlib.util
+import os, re, sys, shutil, zipfile, hashlib, json, subprocess, importlib.util
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -612,6 +619,248 @@ def phase_row():
     check(sum(1 for _p, mk in iv if mk.startswith("TextButton")) == 6, "the other 6 tabs (a bad icon name too) stay kit 1.5 TextButtons")
 
 
+# ================================================================= phase 5: kit 1.7 (hub_page - THE menu pattern page; research/Menu-Pattern.md 3)
+MENU_SRC = os.path.join(os.path.dirname(HERE), "SkyyMenu", "build_skyymenu_0.3.34.py")
+
+
+def menu_rows_twin():
+    """SkyyMenu 0.3.34's own Home / Teleport row code (BR_* / BT_*, UI29 BROW / BTABS, big_row_preview, big_tabs_preview) cut out of
+    its build script and run alone - the byte reference for the kit's rows (None when the script is not there)."""
+    if not os.path.isfile(MENU_SRC):
+        return None
+    src = open(MENU_SRC, encoding="utf8").read()
+    keep = []
+    lines = src.split("\n")
+    for head in ("BR_H, BR_GAP, ", "BT_H, BT_BELOW, ", "BT_ICON_TOP = ", "BR_LABN = ", "BR_LABSEL = ", "BT_LAB = "):
+        k = [i for i, ln in enumerate(lines) if ln.startswith(head)]
+        if len(k) != 1:
+            return None
+        stmt = lines[k[0]]
+        j = k[0]
+        while stmt.count("(") != stmt.count(")"):
+            j += 1
+            stmt += "\n" + lines[j]
+        keep.append(stmt)
+    ui = {}
+    for k in ("BROW", "BTABS"):
+        m = re.search(r'^    "' + k + r'": (".*?" % \(.*?\)),$', src, re.M)
+        if not m:
+            return None
+        ui[k] = m.group(1)
+    fns = []
+    for name in ("big_row_preview", "big_tabs_preview"):
+        m = re.search(r"^def %s\(.*?(?=^\S)" % name, src, re.M | re.S)
+        if not m:
+            return None
+        fns.append(m.group(0))
+    ns = {"SUI": UI, "TAB_ART": set()}
+    exec("\n".join(keep), ns)
+    ns["UI29"] = dict((k, eval(v, ns)) for k, v in ui.items())
+    exec("\n".join(fns), ns)
+    return ns
+
+
+def phase_page17():
+    check(UI.KIT_PAGE_VERSION == "1.7" and UI.KIT_HUB_VERSION == "1.6" and UI.KIT_VERSION == "1.5",
+          "kit 1.7 is additive: KIT_PAGE_VERSION 1.7, KIT_HUB_VERSION 1.6 + KIT_VERSION 1.5 unchanged (pinned SET scripts assert them)")
+    check(UI.hub_bar_java(row=True, big=True) == UI._hub_bar_java_big(row=True, big=True) and UI.hub_bar_java(row=True) == UI._hub_bar_java_big(row=True),
+          "COMPAT: hub_bar_java without page= = the source before kit 1.7")
+    p17 = UI.hub_bar_java(row=True, page=True)
+    check(p17[:len(UI.hub_bar_java(row=True, sub=True, big=True))] == UI.hub_bar_java(row=True, sub=True, big=True), "page=True only APPENDS members")
+    for hub in (UI.HUB_HOME,) + UI.HUBS:
+        for sub, foot in ((False, False), (True, True), (True, False)):
+            sh = UI.hub_page(P + "P", hub, sub=sub, footer=foot)
+            ap = UI.hub_page_preview(sh)
+            if sub:
+                ap.extend(UI.sub_tabs_preview(P + "P", ["One", "Two", "Three"], 1))
+            UI.check_page(ap, P + "P")
+            UI.assert_proven(ap, what="hub_page %s" % hub)
+            els = UI.check_sky_paths(ap, tab_icons=True)
+            info = UI.assert_menu_page(ap, sh)
+            want_h = 980 - 38 - 48 - 56 - (0 if hub == "home" else 64) - (40 if sub else 0) - (58 if foot else 0)
+            check((sh.w, sh.h, sh.inner_w, sh.content_h, sh.row_w) == (1600, 980, 1552, want_h, 1552),
+                  "hub_page(%s, sub=%s, footer=%s): 1600 x 980, 1552 inside, content %d high (%d)" % (hub, sub, foot, want_h, sh.content_h))
+            check(info["rows"] == (1 if hub == "home" else 2) and info["subs"] == (1 if sub else 0), "assert_menu_page(%s): rows %s" % (hub, info))
+            check({"Header", "HeaderOrnament", "Close", "Primary", "Tertiary"} <= set(els) and UI.HUB_FRAME.get(hub, "Frame") in els,
+                  "hub_page(%s): the sky Header + crest, the hub's frame, the X, row 1 art" % hub)
+            bar = [mk for p_, mk in sh.appends if p_ == sh.bar]
+            check(len(bar) == 2 and 'Text: "%s"' % UI.hub_title_now(hub) in bar[1],
+                  "hub_page(%s): the title bar = the crest + the title %s" % (hub, UI.hub_title_now(hub)))
+            body = [mk for p_, mk in sh.appends if p_ == sh.body]
+            order = ["BigRow"] + ([] if hub == "home" else ["BigTabs"]) + (["Sub"] if sub else []) + ["C"] + (["Foot"] if foot else [])
+            check([re.match(r"Group #%sP(\w+) \{" % P, mk).group(1) for mk in body] == order, "hub_page(%s): body order %s" % (hub, order))
+        if hub != "home":
+            check(UI.java_hub_page(sh, "x" if hub != "world" else "teleport", cls="X")
+                  == 'X.page17(b, ev, "SkyyHtP", "%s", "%s", 1552, this.playerRef.getUuid(), 2);' % (hub, "x" if hub != "world" else "teleport"),
+                  "java_hub_page(%s) = HubBar.page17" % hub)
+    sh = UI.hub_page(P + "H", "home")
+    check(UI.java_hub_page(sh, cls="X") == 'X.page17(b, ev, "SkyyHtH", "home", null, 1552, this.playerRef.getUuid(), 2);', "java_hub_page(home): no tab")
+    raises(lambda: UI.java_hub_page(sh, "stats"), ValueError, "Home has no tabs")
+    raises(lambda: UI.java_hub_page(UI.hub_shell(P, 1200, 900, "character"), "skills"), ValueError, "java_hub_page refuses a kit 1.5 shell")
+    st = UI.hub_page(P + "S", "character", sub=True)
+    check(UI.java_hub_page(st, tab_expr='H.selOf("character", "stats")', cls="H").count('H.selOf("character", "stats")') == 1, "tab_expr for a merged page")
+    raises(lambda: UI.hub_page(P, "character", theme="vanilla"), ValueError, "hub_page is sky only")
+    raises(lambda: UI.hub_page(P, "nothere"), ValueError, "hub_page refuses an unknown hub")
+    raises(lambda: UI.hub_page(P, "character", content_w=1600), ValueError, "content wider than 1552 is refused")
+    raises(lambda: UI.hub_page(P, "character", body_id=P + "C"), ValueError, "hub_page ids must differ")
+    cs = UI.hub_page(P + "N", "settings", content_id="SkyyOldBody", content_w=1080, footer=True)
+    cmk = [mk for p_, mk in cs.appends if "#SkyyOldBody {" in mk]
+    check(len(cmk) == 1 and "Padding: (Horizontal: 236)" in cmk[0] and cs.content == "SkyyOldBody" and cs.content_w == 1080,
+          "content_id + content_w: the OLD body id, centred 1080 px (padding 236)")
+    # assert_menu_page refuses what the pattern forbids
+    good = UI.hub_page_preview(UI.hub_page(P + "G", "character", sub=True))
+    bad = lambda extra: UI.Appends(list(good) + extra)
+    raises(lambda: UI.assert_menu_page(UI.hub_shell(P + "O", 1200, 900, "character").appends), ValueError,
+           "assert_menu_page: a 1200 x 900 kit 1.5 page is refused")
+    for txt in ("< Back", "Back", "Go Back", "< Menu", "< SkyWynn Menu", "< Mods"):
+        raises(lambda: UI.assert_menu_page(bad([(P + "GC", UI.foot_button(P + "GX", txt))])), ValueError, "assert_menu_page refuses a %r button" % txt)
+    raises(lambda: UI.assert_menu_page(good, sets=[("#SkyyHtGX.Text", "< Back")]), ValueError, "... and a b.set back text")
+    raises(lambda: UI.assert_menu_page(bad([(P + "GC", UI.foot_button(P + "GX", "< Prev"))])), ValueError, "assert_menu_page refuses a pager")
+    check(UI.assert_menu_page(bad([(P + "GC", UI.foot_button(P + "GX", "< Prev"))]), pager_ok=True)["rows"] == 2, "pager_ok=True lets a grid pager pass")
+    raises(lambda: UI.assert_menu_page(bad([(P + "GC", "Group #SkyyHtGTwoSub { Anchor: (Height: 32); LayoutMode: Left; }")])), ValueError,
+           "assert_menu_page refuses a second sub-tab row")
+    raises(lambda: UI.assert_menu_page(bad(list(UI.hub_bar_markup(P + "GC", P + "GZ")))), ValueError, "assert_menu_page refuses the old 44 px strip")
+    raises(lambda: UI.assert_menu_page(UI.Appends([(p_, mk) for p_, mk in good if "BigTabs" not in mk and "BigT" not in (p_ or "")])), ValueError,
+           "assert_menu_page refuses a hub page without row 2")
+    sh2 = UI.hub_page(P + "G", "character", sub=True)
+    raises(lambda: UI.assert_menu_page(bad([(P + "GC", UI.group(P + "GTall", "Top", h=sh2.content_h + 1))]), sh2), ValueError,
+           "assert_menu_page refuses content taller than the room")
+    check(UI.assert_menu_page(bad([(P + "GC", UI.group(P + "GFits", "Top", h=sh2.content_h))]), sh2)["subs"] == 1, "content that fits passes")
+    # sub-tabs, footer pieces, states
+    check(UI.assert_sub_tabs_fit(["Your Stats", "Skills"]) == 305 and UI.sub_tab_markup(P, 0, "Your Stats", True).startswith(
+        'TextButton #SkyyHtSub0 { Anchor: (Width: 150, Height: 32); Padding: (Horizontal: 8); Text: "Your Stats"; Style: TextButtonStyle(Default: (Background: (TexturePath: "SkyyKit/Primary'),
+          "sub_tab_markup: 150 x 32, small Primary when selected")
+    raises(lambda: UI.assert_sub_tabs_fit(["x"] * 11), ValueError, "11 sub-tabs of 150 do not fit 1552")
+    for mk in (UI.empty_state(P + "E"), UI.locked_line(P + "L"), UI.foot_info(P + "I", 600), UI.foot_button(P + "B", "Refresh", kind="primary")):
+        UI.check_markup(mk, prefix=P)
+        UI.assert_proven([mk], what="kit 1.7 piece")
+    check('TextColor: %s' % UI.COLOR["disabled"] in UI.locked_line(P + "L") and "Height: 48" in UI.foot_button(P + "B", "Refresh"),
+          "locked rows greyed, footer buttons 48 high")
+    hs = UI.grow_row_sizes(600, 56)
+    check(hs == [56, 81, 112] and [UI.grow_pick(n, 600, hs) for n in (1, 5, 6, 7, 10, 40)] == [2, 2, 1, 1, 0, 0],
+          "grow_row_sizes / grow_pick: few rows grow (2x / 1.45x), many rows scroll (%s)" % hs)
+    check(UI.grow_row_sizes(150, 56)[2] == 72, "a bigger tier never takes more than half the list")
+    check([r[0] for r in UI.hub_page_tabs("settings")] == ["settings", "hud", "mods", "setup"], "row 2 of Settings drops the retired Edit shortcuts tab")
+    for hub in UI.HUBS:
+        check(UI.assert_big_tabs_fit(hub) >= 150, "row 2 of %s fits 1552 px (every label at 14 px)" % hub)
+    # THE BYTE COMPARE: the kit's rows == SkyyMenu 0.3.34's Home / Teleport rows (ids aside: SkyyMBRow / SkyyMBR<i> / SkyyMBTabs / SkyyMBT<i>)
+    tw = menu_rows_twin()
+    if tw is None:
+        print("phase 5: SkyyMenu 0.3.34's build script is not there - the row byte compare is skipped")
+        return
+    ren = lambda ap, pre: [(p_.replace("SkyyMBRow", pre + "BigRow").replace("SkyyMBTabs", pre + "BigTabs").replace("SkyyMBR", pre + "BigR").replace("SkyyMBT", pre + "BigT"),
+                            UI.render(mk).replace("#SkyyMBRow", "#" + pre + "BigRow").replace("#SkyyMBTabs", "#" + pre + "BigTabs")
+                            .replace("#SkyyMBR", "#" + pre + "BigR").replace("#SkyyMBT", "#" + pre + "BigT")) for p_, mk in ap]
+    check((tw["BR_H"], tw["BR_GAP"], tw["BR_BELOW"], tw["BR_PAD"], tw["BR_PADV"], tw["BR_ICON"], tw["BR_ICON_GAP"], tw["BR_LAB"], tw["BR_LAB_MIN"],
+           tw["BR_ICON_MIN"]) == (UI.BIG_ROW_H, UI.BIG_ROW_GAP, UI.BIG_ROW_BELOW, UI.BIG_ROW_PAD, UI.BIG_ROW_PADV, UI.BIG_ROW_ICON, UI.BIG_ROW_ICON_GAP,
+                                  UI.BIG_ROW_LABEL, UI.BIG_ROW_LABEL_MIN, UI.BIG_ROW_ICON_MIN), "row 1 constants = SkyyMenu's BR_*")
+    check((tw["BT_H"], tw["BT_BELOW"], tw["BT_GAP"], tw["BT_ICON"], tw["BT_LAB_MIN"], tw["BT_MIN"], tw["BT_PAD"], tw["BT_ICON_TOP"])
+          == (UI.HUB_BIG_TAB_H, UI.HUB_BIG_TAB_BELOW, UI.HUB_BIG_TAB_GAP, UI.HUB_BIG_TAB_ICON, UI.HUB_BIG_TAB_LABEL_MIN, UI.HUB_BIG_TAB_MIN,
+                UI.HUB_BIG_TAB_PAD, UI.HUB_BIG_TAB_ICON_TOP) and tw["BT_LAB"] == UI.big_tab_label(), "row 2 constants + label = SkyyMenu's BT_*")
+    hubs = [(i, UI.hub_title_now(i) if i != "home" else "Home", "Skyy_Menu_Icon_%s" % i.title()) for i in UI.HUB_ROW_IDS]
+    for hub in (UI.HUB_HOME,) + UI.HUBS:
+        pre = P + "B"
+        sh = UI.hub_page(pre, hub)
+        kit = [(p_, UI.render(mk)) for p_, mk in UI.hub_big_row_preview(pre, hubs, hub, sh.row_w)]
+        menu = ren(list(tw["big_row_preview"](sh.body, hubs, hub, 1552))[1:], pre)
+        check(kit == menu, "BYTE COMPARE row 1 (%s, 1552 px): the kit == SkyyMenu 0.3.34 Home's big row (%d commands)" % (hub, len(kit)))
+        if hub == "home":
+            continue
+        tabs = [(r[0], UI.hub_tab_label(hub, r[0])) for r in UI.hub_page_tabs(hub)]
+        art = set("%s_%s" % (hub, t_) for t_, _l in tabs[::2])
+        tw["TAB_ART"] = art
+        kit2 = [(p_, UI.render(mk)) for p_, mk in UI.hub_big_tabs_preview(pre, hub, tabs, tabs[-1][0], 1552, art=art)]
+        menu2 = ren(list(tw["big_tabs_preview"](sh.body, hub, tabs, tabs[-1][0], 1552))[1:], pre)
+        check(kit2 == menu2, "BYTE COMPARE row 2 (%s, %d tabs, art on half): the kit == SkyyMenu 0.3.34 Teleport's big tabs" % (hub, len(tabs)))
+        mk_t = [mk for p_, mk in sh.appends if "BigTabs {" in mk][0]
+        check(UI.render(mk_t) == UI.render(tw["UI29"]["BTABS"]).replace("#SkyyMBTabs", "#" + pre + "BigTabs"), "row 2 group = SkyyMenu's BTABS (%s)" % hub)
+    mk_r = [mk for p_, mk in UI.hub_page(P + "B", "home").appends if "BigRow {" in mk][0]
+    check(UI.render(mk_r) == UI.render(tw["UI29"]["BROW"]).replace("#SkyyMBRow", "#%sBBigRow" % P), "row 1 group = SkyyMenu's BROW")
+
+
+def phase_java17():
+    try:
+        import jpype
+    except ImportError:
+        return
+    if not jpype.isJVMStarted():
+        print("phase 5 java skipped (no JVM)")
+        return
+    Jc = jpype.JClass
+    import serverjar
+    sj = serverjar.server_jar()
+    out = os.path.join(SCRATCH, "classes17")
+    os.makedirs(out, exist_ok=True)
+    pool = Jc("javassist.ClassPool")(False)
+    pool.appendSystemPath()
+    pool.appendClassPath(sj)
+    try:
+        UI.install_hub_bar(pool, "skyyhubtest.HubPage", Jc("javassist.CtField"), Jc("javassist.CtNewMethod"), row=True, page=True).writeFile(out)
+        check(True, "HubBar row=True page=True (kit 1.7) compiles with javassist against HytaleServer.jar")
+    except Exception as e:      # noqa
+        FAILS.append("HubBar page=True does not compile: %s" % e)
+        return
+    loader = Jc("java.net.URLClassLoader")(jpype.JArray(Jc("java.net.URL"))([Jc("java.io.File")(out).toURI().toURL()]),
+                                          Jc("java.lang.ClassLoader").getSystemClassLoader())
+    H = Jc("skyyhubtest.HubPage", loader=loader)
+    UCB = lambda: Jc("com.hypixel.hytale.server.core.ui.builder.UICommandBuilder")()
+    UEB = lambda: Jc("com.hypixel.hytale.server.core.ui.builder.UIEventBuilder")()
+    cmds = lambda b_: [(str(c.selector), str(c.text if c.text is not None else c.data)) for c in b_.getCommands()]
+    evsel = lambda e_: [(str(x.selector), str(x.data)) for x in e_.getEvents()]
+    UUID, CHM = Jc("java.util.UUID"), Jc("java.util.concurrent.ConcurrentHashMap")
+    m = H.map()
+    for k in list(m.keySet()):
+        if str(k).startswith("hub:"):
+            m.remove(k)
+    hubs = [(i, UI.hub_title_now(i) if i != "home" else "Home", "Skyy_Menu_Icon_%s" % i.title()) for i in UI.HUB_ROW_IDS]
+    for i, t, ic in hubs:
+        H.def4(i, t, "skymenu" if i == "home" else UI.HUB_DEFS[i][1], ic, None)
+    tabs = [(r[0], r[3], r[1], r[2]) for r in UI.hub_page_tabs("character")]    # id, label, order, mod
+    for tid, lab, o, mod in tabs:
+        if tid == "pets":
+            H.putIcon("character", tid, mod, lab, o, None, None, None, "character_pets")
+        else:
+            H.put("character", tid, mod, lab, o, None, None, None)
+    art = jpype.JArray(Jc("java.lang.String"))(["character_skills", "character_trees", "world_teleport"])
+    m.put(UI.HUB_ART_KEY, art)
+    check(bool(H.hasArt("character_skills")) and not bool(H.hasArt("character_pets")) and not bool(H.hasArt(None)), "hasArt reads the hub:art list")
+    u = UUID.randomUUID()
+    last = CHM()
+    m.put("hub:last:" + str(u), last)
+    sh = UI.hub_page(P + "J", "character", sub=True)
+    b, ev = UCB(), UEB()
+    n = int(H.page17(b, ev, P + "J", "character", "pets", 1552, u, 2))
+    want = UI.Appends(list(UI.hub_big_row_preview(P + "J", hubs, "character", 1552)) +
+                      list(UI.hub_big_tabs_preview(P + "J", "character", [(t, l) for t, l, _o, _m in tabs], "pets", 1552,
+                                                   art=["character_skills", "character_trees"], icons={"pets": "character_pets"})))
+    got = cmds(b)
+    check(n == len(tabs) and got == [("#" + p_, UI.render(mk)) for p_, mk in want],
+          "page17 == row 1 + row 2 previews byte for byte (%d commands, %d tabs)" % (len(got), n))
+    page = UI.Appends(list(sh.appends) + [(s_.lstrip("#"), mk) for s_, mk in got])
+    UI.check_page(page, P + "J")
+    UI.check_sky_paths(page, tab_icons=True)
+    check(UI.assert_menu_page(page, sh)["rows"] == 2, "the executed page17 output on its shell passes assert_menu_page")
+    ee = evsel(ev)
+    check(ee[0][0] == "#%sJHubClose" % P and "hub:close" in ee[0][1] and len(ee) == 1 + 8 + len(tabs)
+          and all(("hub:%s" % t) in d for (s_, d), (t, _l, _o, _m) in zip(ee[9:], tabs)), "page17 binds the X, 8 row-1 buttons and every tab")
+    check(str(last.get("character")) == "pets", "page17 remembers hub:last")
+    b2, e2 = UCB(), UEB()
+    check(int(H.page17(b2, e2, P + "K", "home", None, 1552, u, 2)) == 0 and all("BigT" not in s_ for s_, _m in cmds(b2))
+          and len(cmds(b2)) == len(UI.hub_big_row_preview(P + "K", hubs, "home", 1552)), "page17 on Home: row 1 only")
+    b3, e3 = UCB(), UEB()
+    for i, (lab, sel, act) in enumerate((("Your Stats", True, None), ("Skills", False, "hub:skills"))):
+        H.subTab(b3, e3, P, i, lab, sel, act, 150)
+    check([(s_, mk) for s_, mk in cmds(b3)] == [("#" + p_, UI.render(mk)) for p_, mk in UI.sub_tabs_preview(P, ["Your Stats", "Skills"], 0)]
+          and evsel(e3) == [("#%sSub1" % P, evsel(e3)[0][1])] and "hub:skills" in evsel(e3)[0][1], "subTab == sub_tabs_preview; a null action is not bound")
+    hs = UI.grow_row_sizes(600, 56)
+    jhs = jpype.JArray(jpype.JInt)(hs)
+    check([int(H.growSize(nn, 600, jhs, UI.ROW_GAP)) for nn in (0, 1, 5, 6, 7, 10, 40)] == [UI.grow_pick(nn, 600, hs) for nn in (0, 1, 5, 6, 7, 10, 40)],
+          "growSize == grow_pick")
+    for k in list(m.keySet()):
+        if str(k).startswith("hub:"):
+            m.remove(k)
+
+
 def main():
     base = os.path.join(HERE, "dev", "scratch") + os.sep
     if not (SCRATCH + os.sep).lower().startswith(base.lower()) or SCRATCH.rstrip(os.sep).lower() == base.rstrip(os.sep).lower():
@@ -622,10 +871,12 @@ def main():
         phase_art()
         sh = phase_page()
         phase_row()
+        phase_page17()
         if NOJAVA:
             print("java phase skipped (--no-java)")
         else:
             phase_java(sh)
+            phase_java17()
     finally:
         if not KEEP:
             shutil.rmtree(SCRATCH, ignore_errors=True)

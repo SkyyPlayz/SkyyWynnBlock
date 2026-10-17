@@ -6488,3 +6488,472 @@ def hub_tab_label(hub, tab):
         if (r[0], r[1]) == (hub, tab):
             return HUB_TAB_LABEL_NOW.get((hub, tab), r[4])
     return None
+
+
+
+# ================================================================= 2026-10-16 KIT 1.7: THE MENU PATTERN PAGE (additive)
+# research/Menu-Pattern.md section 3 (THE PATTERN) + Skyy's answers (docs/answered/ui.md 2026-10-16): "lets try to reduce and compress the
+# menus together to reduce clutter. then make sure its consistent across the board, then follow the pattern when making new or adding to
+# existing menus." + "keep this top bar at this size consistent at the top across every menu." + "I never want to have to use a back
+# button. The menus at the top should always be there for easy navigation." + popups: every hub page Home size 1600 x 980, row 2 big like
+# Teleport (56 px).
+# ONE page shell for every hub page: hub_page(). Top to bottom inside 1600 x 980 (the sky theme, padding 24 -> 1552 px inside):
+#   title bar 38 (the crest + the hub title + the X) | row 1 = the BIG HUB ROW (Home + 7 hubs, Home's exact numbers: BIG_ROW_*, 48 + 8) |
+#   row 2 = this hub's tabs at Teleport's size (HUB_BIG_TAB_*, 56 + 8; not on Home) | optional ONE sub-tab row (32 + 8) | content |
+#   optional footer (48 buttons, 10 above). Pages never shrink row 1 or row 2 - the content shrinks.
+# No back buttons (rule 8): a sub view is a sub-tab or an in-page selection; rows 1 + 2 always lead away. The kit has no back helper for
+# hub pages: hub_menu_button / HUB_MENU_TEXT ("< Menu") stay only for kit 1.5 pages not yet swept (DEPRECATED - lint menu_pattern warns).
+# KIT_HUB_VERSION stays "1.6" and KIT_VERSION "1.5" (pinned SET scripts assert them: SkyySacks 0.8.14, SkyyMenu 0.3.34); this level is
+# KIT_PAGE_VERSION. Java: install_hub_bar(..., row=True, page=True) (page implies big + sub) adds HubBar.page17 / bigTabsFill / subTab /
+# growSize / hasArt. How to move a page: tools/HUBS-CONTRACT.md "Kit 1.7".
+KIT_PAGE_VERSION = "1.7"
+HUB_PAGE_W, HUB_PAGE_H = MAX_PAGE_W, MAX_PAGE_H               # 1600 x 980: every hub page (Home's width - row 1 never moves)
+HUB_PAGE_PAD = THEME_PAD["sky"]                               # 24
+HUB_PAGE_IW = HUB_PAGE_W - 2 * HUB_PAGE_PAD                   # 1552: row 1, row 2, the sub row, the content and the footer width
+HUB_BIG_ROW_BTN_H, HUB_BIG_ROW_GAP, HUB_BIG_ROW_BELOW = BIG_ROW_H, BIG_ROW_GAP, BIG_ROW_BELOW    # = SkyyMenu BR_* (Home)
+HUB_BIG_ROW_ICON, HUB_BIG_ROW_LABEL, HUB_BIG_ROW_LABEL_MIN = BIG_ROW_ICON, BIG_ROW_LABEL, BIG_ROW_LABEL_MIN
+# row 2 = SkyyMenu 0.3.30 Teleport's BT_*: 56 high, 6 apart, 8 below, the 48 px tab icon behind the word, a 20 px bold label (shrinks to 14),
+# tabs at least 150 wide (equal widths across the row)
+HUB_BIG_TAB_H, HUB_BIG_TAB_GAP, HUB_BIG_TAB_BELOW, HUB_BIG_TAB_ICON = 56, 6, 8, 48
+HUB_BIG_TAB_LABEL, HUB_BIG_TAB_LABEL_MIN, HUB_BIG_TAB_MIN, HUB_BIG_TAB_PAD = 20, 14, 150, 8
+HUB_BIG_TAB_ICON_TOP = (HUB_BIG_TAB_H - HUB_BIG_TAB_ICON) // 2
+HUB_BIG_TABS_H = HUB_BIG_TAB_H + HUB_BIG_TAB_BELOW           # 64: what row 2 costs
+SUB_TAB_H, SUB_TAB_W, SUB_TAB_GAP, SUB_TAB_BELOW, SUB_TAB_PAD = BTN_SMALL_H, PRIMARY_SMALL_W, TAB_GAP, 8, 8   # 32 high, 150 wide, 5 apart
+SUB_ROW_H = SUB_TAB_H + SUB_TAB_BELOW                         # 40
+FOOT_BTN_H, FOOT_ABOVE = BTN_BIG_H, 10                        # 48 px footer buttons, 10 above
+FOOT_H = FOOT_BTN_H + FOOT_ABOVE                              # 58
+FOOT_GAP = 10                                                 # between footer buttons
+DETAIL_W = 456                                                # the detail panel of a list + detail page (Home's side panels)
+HUB_ART_KEY = "hub:art"       # bridge: String[] of "<hub>_<tab>" stems whose SkyyHubTabs/<stem>.png art is loaded (SkyyMenu ships + puts it)
+HUB_TITLE_NOW = {"home": "SkyWynn Menu", "smithing": "Crafting"}   # the title bar text of a hub page (SkyyMenu 0.3.31 titles smithing Crafting)
+HUB_RETIRED = {("settings", "layout"): "Home's Edit shortcuts button"}   # Skyy 2026-10-16: Settings drops Edit Shortcuts (SkyyMenu 0.3.35 stops
+                                                                         # putting the tab; the key keeps working for saved shortcuts)
+GROW_TIERS = (1.0, 1.45, 2.0)                                 # Skyy rule 7: a short list uses bigger rows (up to ~2x) to fill its area
+MENU_BACK_RE = re.compile(r"\A\s*(<\s*(?!prev)[A-Za-z][A-Za-z ]*|back|go back|back to [A-Za-z ]+|return)\s*\Z", re.I)   # "< anything" but < Prev
+MENU_PAGER_RE = re.compile(r"\A\s*(<\s*prev(ious)?( page)?|prev(ious)? page|next( page)?\s*>|next page)\s*\Z", re.I)
+assert HUB_PAGE_IW == 1552 and HUB_BIG_TAB_ICON_TOP == 4 and (HUB_PAGE_IW - 7 * BIG_ROW_GAP) // 8 == 188
+
+
+def hub_title_now(hub):
+    """the title bar text of a hub page today ("SkyWynn Menu" on Home, "Crafting" for the smithing hub, else the HUB_DEFS title)"""
+    if hub in HUB_TITLE_NOW:
+        return HUB_TITLE_NOW[hub]
+    return HUB_DEFS[hub][0]
+
+
+def hub_page_tabs(hub):
+    """the contract tabs a hub's row 2 shows with every mod loaded: hub_shown_tabs minus HUB_RETIRED (rows of HUB_TABS)"""
+    return [r for r in hub_shown_tabs(hub) if (hub, r[0]) not in HUB_RETIRED]
+
+
+def big_tab_label():
+    """row 2's label style (= SkyyMenu 0.3.30 BT_LAB, the Teleport page)"""
+    return ("(FontSize: %d, TextColor: %s, RenderBold: true, HorizontalAlignment: Center, ShrinkTextToFit: true, MinShrinkTextToFitFontSize: %d, "
+            "VerticalAlignment: Center)" % (HUB_BIG_TAB_LABEL, color("buttonText"), HUB_BIG_TAB_LABEL_MIN))
+
+
+def assert_big_tabs_fit(hub, w=HUB_PAGE_IW, labels=None):
+    """every shown contract tab of the hub fits row 2 (n x 150 + gaps <= w) and its label fits a 150 px tab at 14 px; returns the tab width.
+    labels = [(id, label)] to check another list (a page's own tab names)."""
+    rows = [(r[0], hub_tab_label(hub, r[0])) for r in hub_page_tabs(hub)] if labels is None else list(labels)
+    n = len(rows)
+    if n == 0:
+        return w
+    if n * HUB_BIG_TAB_MIN + HUB_BIG_TAB_GAP * (n - 1) > w:
+        raise ValueError("row 2 of %s: %d tabs need %d px, the row is %d" % (hub, n, n * HUB_BIG_TAB_MIN + HUB_BIG_TAB_GAP * (n - 1), w))
+    for _i, lab in rows:
+        if text_width(hub_clean(lab or ""), HUB_BIG_TAB_LABEL_MIN, bold=True) > HUB_BIG_TAB_MIN - 2 * HUB_BIG_TAB_PAD:
+            raise ValueError("row 2 of %s: %r does not fit a %d px tab" % (hub, lab, HUB_BIG_TAB_MIN))
+    return (w - HUB_BIG_TAB_GAP * (n - 1)) // n
+
+
+def hub_page(prefix, hub, title=None, sub=False, footer=False, body_id=None, content_id=None, content_w=None, content_layout="Top",
+             close=True, theme=None):
+    """THE hub page shell (kit 1.7, research/Menu-Pattern.md 3.1): 1600 x 980 in the sky theme - root #<prefix>, title bar #<prefix>Bar
+    (the crest + title #<prefix>Title: the hub's title, or title=), body (#<body_id>, default <prefix>Body: LayoutMode Top, padding 24,
+    the hub's frame mood) holding, in order: #<prefix>BigRow (row 1, 48 + 8), #<prefix>BigTabs (row 2, 56 + 8; not on hub "home"),
+    #<prefix>Sub (sub=True: the ONE sub-tab row, 32 + 8, LayoutMode Left), the content group (#<content_id>, default <prefix>C:
+    .content_h high, LayoutMode content_layout; content_w < 1552 = centred by a horizontal padding) and #<prefix>Foot (footer=True:
+    58 = 10 above + 48 buttons, LayoutMode Left); the close X #<prefix>HubClose. Pass the OLD body / root id as content_id and every old
+    appendInline into it keeps working. Java: java_hub_page(sh, tab) right after sh.java("b") (HubBar.page17 fills rows 1 + 2 and binds
+    the X). Check: assert_menu_page(page appends, sh). No back button: a sub view is a sub-tab or an in-page selection."""
+    t = _theme(HUB_THEME if theme is None else theme)
+    if t != "sky":
+        raise ValueError("hub_page is the sky theme (HUB_THEME) only")
+    if hub not in HUBS and hub != HUB_HOME:
+        raise ValueError("hub %r (one of %s, or %s)" % (hub, ", ".join(HUBS), HUB_HOME))
+    check_id(prefix)
+    W, H, pad, IW = HUB_PAGE_W, HUB_PAGE_H, HUB_PAGE_PAD, HUB_PAGE_IW
+    root, bar, tid = prefix, prefix + "Bar", prefix + "Title"
+    body = check_id(body_id or prefix + "Body")
+    content = check_id(content_id or prefix + "C")
+    tabs = hub != HUB_HOME
+    ids = [root, bar, tid, body, content, prefix + "BigRow", prefix + "HubClose"] + ([prefix + "BigTabs"] if tabs else []) + \
+          ([prefix + "Sub"] if sub else []) + ([prefix + "Foot"] if footer else [])
+    if len(set(ids)) != len(ids):
+        raise ValueError("hub_page ids must differ: %s" % ids)
+    if content_layout not in ("Top", "Left", "TopScrolling"):
+        raise ValueError("hub_page content_layout Top / Left / TopScrolling")
+    cw = IW if content_w is None else _sample_int(content_w, "content width")
+    if not 200 <= cw <= IW:
+        raise ValueError("hub_page content width %d (200 - %d)" % (cw, IW))
+    lead = (IW - cw) // 2
+    T = THEME[t]
+    ow, oh, otop = THEME_ORNAMENT[t]
+    text = title if title is not None else hub_title_now(hub)
+    static = isinstance(text, str) and not has_j(text) and TEXT_OK.fullmatch(text) is not None
+    content_h = H - TITLE_H - 2 * pad - HUB_BIG_ROW_H - (HUB_BIG_TABS_H if tabs else 0) - (SUB_ROW_H if sub else 0) - (FOOT_H if footer else 0)
+    assert_big_row_fits(IW)
+    if tabs:
+        assert_big_tabs_fit(hub, IW)
+    ap = Appends()
+    ap.append((None, "Group #%s { Anchor: (Width: %d, Height: %d); }" % (root, W, H)))
+    ap.append((root, "Group #%s { Anchor: (Height: %d, Top: 0); Padding: (Top: %d); Background: %s; }" % (bar, TITLE_H, TITLE_PAD_TOP, T["header"])))
+    ap.append((bar, "Group { Anchor: (Width: %d, Height: %d, Top: %d); Background: %s; }" % (ow, oh, otop, T["ornament"])))
+    ap.append((bar, title_label(tid, text if static else "")))
+    ap.append((root, "Group #%s { Anchor: (Top: %d); %s%sBackground: %s; }" % (body, TITLE_H, _layout("Top"), _padding(pad),
+                                                                                sky_patch(HUB_FRAME.get(hub, "Frame")))))
+    ap.append((body, big_row_group(prefix)))
+    if tabs:
+        ap.append((body, "Group #%sBigTabs { Anchor: (Height: %d, Bottom: %d); LayoutMode: Left; }" % (prefix, HUB_BIG_TAB_H, HUB_BIG_TAB_BELOW)))
+    if sub:
+        ap.append((body, "Group #%sSub { Anchor: (Height: %d, Bottom: %d); LayoutMode: Left; }" % (prefix, SUB_TAB_H, SUB_TAB_BELOW)))
+    ap.append((body, "Group #%s { Anchor: (Height: %d); %s%s}" % (content, content_h, ("Padding: (Horizontal: %d); " % lead) if lead else "",
+                                                                  _layout(content_layout))))
+    if footer:
+        ap.append((body, "Group #%sFoot { Anchor: (Height: %d); LayoutMode: Left; Padding: (Top: %d); }" % (prefix, FOOT_H, FOOT_ABOVE)))
+    if close:
+        ap.append((root, hub_close(prefix, t)))
+    sh = Shell(prefix=prefix, w=W, h=H, pad=pad, kind="hubpage", root=root, bar=bar, title=tid, body=body, close=(prefix + "HubClose") if close else None,
+               appends=ap, inner_w=IW, body_h=H - TITLE_H, inner_h=content_h, hub=hub, theme=t, page=True, row1=prefix + "BigRow",
+               row2=(prefix + "BigTabs") if tabs else None, sub=(prefix + "Sub") if sub else None, content=content, content_w=cw,
+               content_h=content_h, content_layout=content_layout, foot=(prefix + "Foot") if footer else None, foot_w=IW, row_w=IW, tabs_w=IW if tabs else 0,
+               parts=HUB_PART_CLOSE if close else 0, big=True, big_w=IW, row=False)
+    if text and not static:
+        sh.sets.append((tid, "Text", text))
+    return sh
+
+
+def java_hub_page(sh, my_tab=None, uuid="this.playerRef.getUuid()", b="b", ev="ev", cls="HubBar", tab_expr=None):
+    """The Java statement a hub_page's build() runs after sh.java(): cls.page17(b, ev, "<prefix>", "<hub>", "<tab>" | null | tab_expr, 1552,
+    uuid, parts) - row 1 (bigRowFill), row 2 (bigTabsFill: this hub's tabs, my_tab selected, hub:last remembered) and the X binding.
+    tab_expr = a Java expression instead of the tab id (a merged page: '@PKG@.HubBar.selOf("character", "stats")')."""
+    if not getattr(sh, "page", False):
+        raise ValueError("java_hub_page needs a hub_page Shell")
+    if sh.hub == HUB_HOME:
+        if my_tab is not None or tab_expr is not None:
+            raise ValueError("Home has no tabs (my_tab=None)")
+        tab = "null"
+    else:
+        tab = tab_expr if tab_expr is not None else java_lit(hub_check_id(my_tab))
+    return "%s.page17(%s, %s, %s, %s, %s, %d, %s, %d);" % (cls, b, ev, java_lit(sh.prefix), java_lit(sh.hub), tab, sh.row_w, uuid, sh.parts)
+
+
+def hub_big_tabs_preview(prefix, hub, tabs, my_tab, w=HUB_PAGE_IW, art=(), icons=None, theme=None):
+    """The Python twin of HubBar.bigTabsFill: Appends into #<prefix>BigTabs for tabs = [(id, label)] in the order the strip shows them,
+    my_tab active; a tab's icon = icons[id] (its putIcon icon) else "<hub>_<id>" when that stem is in art (the hub:art list)."""
+    t = HUB_THEME if theme is None else theme
+    strip = prefix + "BigTabs"
+    icons = dict(icons or {})
+    art = set(art or ())
+    ap = Appends()
+    n = len(tabs)
+    if n == 0:
+        return ap
+    tw = (w - HUB_BIG_TAB_GAP * (n - 1)) // n
+    for i, (tid, lab) in enumerate(tabs):
+        sel = tid == my_tab
+        if i > 0:
+            ap.append((strip, "Group { Anchor: (Width: %d); }" % HUB_BIG_TAB_GAP))
+        bid = "%sBigT%d" % (prefix, i)
+        ap.append((strip, "Button #%s { Anchor: (Width: %d, Height: %d); %s }" % (bid, tw, HUB_BIG_TAB_H, _tab_btn_style(sel, _theme(t)))))
+        stem = icons.get(tid) if hub_tab_icon_ok(icons.get(tid)) else None
+        if stem is None and ("%s_%s" % (hub, tid)) in art:
+            stem = "%s_%s" % (hub, tid)
+        if stem is not None:
+            ap.append((bid, 'Group { Anchor: (Left: %d, Top: %d, Width: %d, Height: %d); Background: "%s%s%s.png"; }' % (
+                (tw - HUB_BIG_TAB_ICON) // 2, HUB_BIG_TAB_ICON_TOP, HUB_BIG_TAB_ICON, HUB_BIG_TAB_ICON, HUB_TAB_ICON_DIR, stem, "_on" if sel else "")))
+        ap.append((bid, 'Label { Anchor: (Left: 0, Top: 0, Width: %d, Height: %d); Padding: (Horizontal: %d); Text: "%s"; Style: %s; }' % (
+            tw, HUB_BIG_TAB_H, HUB_BIG_TAB_PAD, hub_clean(lab), big_tab_label())))
+    return ap
+
+
+def sub_tab_markup(prefix, i, label, selected=False, w=SUB_TAB_W, theme=None):
+    """One sub-tab button (= HubBar.subTab): TextButton #<prefix>Sub<i>, 32 high, w wide, small Primary when selected, else small Secondary."""
+    t = HUB_THEME if theme is None else theme
+    return 'TextButton #%sSub%d { Anchor: (Width: %d, Height: %d); Padding: (Horizontal: %d); Text: "%s"; %s }' % (
+        check_id(prefix), i, w, SUB_TAB_H, SUB_TAB_PAD, hub_clean(label),
+        theme_button_style("primary" if selected else "secondary", "small", theme=t))
+
+
+def sub_tabs_preview(prefix, labels, selected, w=SUB_TAB_W, theme=None):
+    """The Python twin of n HubBar.subTab calls: labels in order, selected = the index of the active one (or None)."""
+    ap = Appends()
+    for i, lab in enumerate(labels):
+        if i > 0:
+            ap.append((prefix + "Sub", "Group { Anchor: (Width: %d); }" % SUB_TAB_GAP))
+        ap.append((prefix + "Sub", sub_tab_markup(prefix, i, lab, i == selected, w, theme)))
+    return ap
+
+
+def assert_sub_tabs_fit(labels, w=SUB_TAB_W, room=HUB_PAGE_IW):
+    """n sub-tabs of w px (+ 5 px gaps) fit the row and every label fits its button at the small label size (14 px bold capitals);
+    returns the width the tabs take"""
+    n = len(labels)
+    if n * w + SUB_TAB_GAP * max(0, n - 1) > room:
+        raise ValueError("%d sub-tabs of %d px do not fit %d px" % (n, w, room))
+    lsz = BUTTON_SIZES["small"][0]
+    for lab in labels:
+        if text_width(hub_clean(lab), lsz, bold=True, upper=True) > w - 2 * SUB_TAB_PAD:
+            raise ValueError("sub-tab %r does not fit %d px" % (lab, w))
+    return n * w + SUB_TAB_GAP * max(0, n - 1)
+
+
+def hub_page_preview(sh, hubs=None, tabs=None, my_tab=None, art=(), icons=None):
+    """The shell + what HubBar.page17 draws into it (Python twins): row 1 for hubs = [(id, title, icon item)] (default: every hub, icon
+    Skyy_Menu) and row 2 for tabs = [(id, label)] (default: hub_page_tabs(hub) with today's labels; my_tab default = the first)."""
+    if not getattr(sh, "page", False):
+        raise ValueError("hub_page_preview needs a hub_page Shell")
+    if hubs is None:
+        hubs = [(i, hub_title_now(i) if i != HUB_HOME else "Home", "Skyy_Menu") for i in HUB_ROW_IDS]
+    ap = Appends(list(sh.appends))
+    ap.extend(hub_big_row_preview(sh.prefix, hubs, sh.hub, sh.row_w))
+    if sh.hub != HUB_HOME:
+        if tabs is None:
+            tabs = [(r[0], hub_tab_label(sh.hub, r[0])) for r in hub_page_tabs(sh.hub)]
+        if my_tab is None and tabs:
+            my_tab = tabs[0][0]
+        ap.extend(hub_big_tabs_preview(sh.prefix, sh.hub, tabs, my_tab, sh.row_w, art=art, icons=icons))
+    return ap
+
+
+def grow_row_sizes(avail_h, row_h, gap=ROW_GAP, tiers=GROW_TIERS):
+    """Skyy rule 7 ("i dont mind scrolling, but if there are only a few items try to scale them to all fit"): the row heights of a scroll
+    list avail_h high, normal row_h - [h0 = row_h, h1, h2 (<= 2x)], a bigger tier never taller than half the list (so >= 2 rows show).
+    Java: HubBar.growSize(n, avail, hs, gap) picks the biggest tier whose n rows all fit (else 0 = normal rows, the list scrolls).
+    Python twin: grow_pick. SkyySacks 0.8.14 (92 / 128 / 168) and SkyyWardrobe 0.2.5 did this per mod; this is the shared rule."""
+    if row_h < 10 or avail_h < row_h:
+        raise ValueError("grow_row_sizes: a %d px row in %d px" % (row_h, avail_h))
+    out = []
+    for f in tiers:
+        h = int(row_h * f)
+        if f > 1:
+            h = min(h, avail_h // 2 - gap)
+        out.append(max(row_h, h))
+    return out
+
+
+def grow_pick(n, avail_h, hs, gap=ROW_GAP):
+    """The tier HubBar.growSize picks: the biggest k with n x (hs[k] + gap) <= avail_h, else 0."""
+    n = max(1, n)
+    for k in range(len(hs) - 1, 0, -1):
+        if n * (hs[k] + gap) <= avail_h:
+            return k
+    return 0
+
+
+def empty_state(ident, h=80, w=None):
+    """The empty-state line of a list (Menu-Pattern 3.4): a centred captionLight label inside the well - b.set what is missing + how to
+    get it ("No pets yet - hatch an egg in the Hatchery")."""
+    return label(ident, "", "captionLight", h=h, w=w, size=16, align="Center", wrap=True)
+
+
+def locked_line(ident, h=ROW_H_READABLE, w=None):
+    """A locked row's text (Menu-Pattern 3.4): greyed (the disabled colour) - b.set how to unlock it ("Unlocks at Farming Collection
+    III"); locked content is shown greyed, never hidden."""
+    return label(ident, "", "disabled", h=h, w=w, size=16)
+
+
+def foot_info(ident, w, h=FOOT_BTN_H):
+    """The footer's info / status line (left, 16 px, two lines at most) - b.set it; the buttons follow it, the primary right-most."""
+    return label(ident, "", "default", h=h, w=w, size=16, col="rowName", wrap=True, padding={"horizontal": 8})
+
+
+def foot_button(ident, text, w=BTN_MIN_W, kind="secondary", sound=None, theme=None):
+    """A footer button: 48 high (BTN_BIG_H), w wide, the sky button art (one Primary per view). Static proven text only (b.set others)."""
+    return 'TextButton #%s { Anchor: (Width: %d, Height: %d); Padding: (Horizontal: 10); Text: "%s"; %s }' % (
+        check_id(ident), w, FOOT_BTN_H, check_text(text), theme_button_style(kind, "normal", theme=HUB_THEME if theme is None else theme, sound=sound))
+
+
+_TEXT_ELEM_RE = re.compile(r'(?:^|(?<=[;{}]))\s*([A-Z][A-Za-z]*)(?:\s+#([A-Za-z0-9_]+))?\s*\{[^{}]*?Text:\s*"((?:[^"\\]|\\.)*)"')
+
+
+def assert_menu_page(appends, sh=None, hub=None, what="hub page", sets=(), pager_ok=False):
+    """Kit 1.7 check of a whole hub page (the shell + its content, as built): the root is 1600 x 980; row 1 (#...BigRow, 48 high) is
+    there and row 2 (#...BigTabs, 56 high) too unless the hub is home; at most ONE sub-tab row (#...Sub) and no kit 1.5 / 1.6 bars
+    (#...HubTabs strip, #...HubRow small row, #...HubMenu "< Menu"); no element - inline Text or a b.set Text in sets (selector, value) -
+    reads as a back button (MENU_BACK_RE: Back, < Back, Go Back, < Menu, < SkyWynn Menu, ...) and, unless pager_ok, none is a pager
+    (< Prev / Next >); with sh: the content group's children fit .content_h. Returns {"rows": 1 or 2, "subs": n, "texts": n}."""
+    ap = list(appends)
+    roots = [mk for p, mk in ap if p is None]
+    if len(roots) != 1:
+        raise ValueError("%s: %d page roots" % (what, len(roots)))
+    m = re.match(r"\s*Group #(\w+) \{ Anchor: \(Width: (\d+), Height: (\d+)\); \}\s*\Z", render(roots[0]))
+    if not m or (int(m.group(2)), int(m.group(3))) != (HUB_PAGE_W, HUB_PAGE_H):
+        raise ValueError("%s: the page root is not %d x %d: %s" % (what, HUB_PAGE_W, HUB_PAGE_H, roots[0][:90]))
+    decl = []
+    for _p, mk in ap:
+        for v in _variants(mk):
+            for x in _ELEM_OPEN.finditer(_strip_quoted(render(v))):
+                if x.group(2):
+                    decl.append((x.group(1), x.group(2)))
+    hb = hub if hub is not None else getattr(sh, "hub", None)
+    r1 = [i for t_, i in decl if i.endswith("BigRow")]
+    r2 = [i for t_, i in decl if i.endswith("BigTabs")]
+    if len(r1) != 1:
+        raise ValueError("%s: row 1 (#...BigRow) %d times" % (what, len(r1)))
+    if hb != HUB_HOME and len(r2) != 1:
+        raise ValueError("%s: row 2 (#...BigTabs) %d times" % (what, len(r2)))
+    for _p, mk in ap:
+        s = render(mk)
+        if re.search(r"#\w+BigRow \{", s) and "Height: %d" % BIG_ROW_H not in s:
+            raise ValueError("%s: row 1 is not %d px high" % (what, BIG_ROW_H))
+        if re.search(r"#\w+BigTabs \{", s) and "Height: %d" % HUB_BIG_TAB_H not in s:
+            raise ValueError("%s: row 2 is not %d px high" % (what, HUB_BIG_TAB_H))
+    subs = [i for t_, i in decl if t_ == "Group" and i.endswith("Sub")]
+    if len(subs) > 1:
+        raise ValueError("%s: %d sub-tab rows (%s) - one at most" % (what, len(subs), subs))
+    old = [i for t_, i in decl if i.endswith("HubTabs") or i.endswith("HubRow") or i.endswith("HubMenu")]
+    if old:
+        raise ValueError("%s: kit 1.5 / 1.6 bar pieces on a 1.7 page: %s" % (what, old))
+    texts = []
+    for _p, mk in ap:
+        for v in _variants(mk):
+            texts.extend(x.group(3) for x in _TEXT_ELEM_RE.finditer(render(v)))
+    texts.extend(str(v) for s_, v in sets if str(s_).endswith(".Text"))
+    for tx in texts:
+        if MENU_BACK_RE.match(tx):
+            raise ValueError("%s: a back button %r (rule 8: rows 1 + 2 always lead away - no Back / < Menu)" % (what, tx))
+        if not pager_ok and MENU_PAGER_RE.match(tx):
+            raise ValueError("%s: a pager button %r (scroll lists, not pages - Menu-Pattern 3.3)" % (what, tx))
+    if sh is not None:
+        kids = Appends([(p, mk) for p, mk in ap if p == sh.content])
+        if getattr(sh, "content_layout", "Top") == "Left":
+            used = max([outer_size(mk)[1] or 0 for _p, mk in kids] or [0])
+            wide = used_width(kids, sh.content)
+            if wide > sh.content_w:
+                raise ValueError("%s: the content row is %d px wide, the page has %d" % (what, wide, sh.content_w))
+        elif getattr(sh, "content_layout", "Top") == "Top":
+            used = used_height(kids, sh.content)
+        else:
+            used = 0                       # a scrolling content group scrolls
+        if used > sh.content_h:
+            raise ValueError("%s: the content is %d px, the page has %d" % (what, used, sh.content_h))
+    return {"rows": 1 if hb == HUB_HOME else 2, "subs": len(subs), "texts": len(texts)}
+
+
+def _hub_page_rep(t):
+    return {"@BTH@": str(HUB_BIG_TAB_H), "@BTGAP@": str(HUB_BIG_TAB_GAP), "@BTICON@": str(HUB_BIG_TAB_ICON), "@BTICONTOP@": str(HUB_BIG_TAB_ICON_TOP),
+            "@BTMIN@": str(HUB_BIG_TAB_MIN), "@BTPAD@": str(HUB_BIG_TAB_PAD), "@BTLAB@": java_lit(big_tab_label()),
+            "@SUBH@": str(SUB_TAB_H), "@SUBGAP@": str(SUB_TAB_GAP), "@SUBPAD@": str(SUB_TAB_PAD),
+            "@SUBSEL@": java_lit(theme_button_style("primary", "small", theme=t)), "@SUBN@": java_lit(theme_button_style("secondary", "small", theme=t)),
+            "@ARTKEY@": java_lit(HUB_ART_KEY), "@TABICONDIR@": HUB_TAB_ICON_DIR}
+
+
+# HubBar kit 1.7 members (install_hub_bar(..., row=True, page=True)): appended after the big-row members (they call get / okId / clean /
+# tabs / shown / remember / iconOf / tabBStyle / bigRowFill, all defined above them). Same javassist rules.
+HUB_BAR_JAVA_17 = (
+    ("method", r"""
+public static boolean hasArt(String stem) {
+  if (stem == null) return false;
+  Object o = get(@ARTKEY@);
+  if (!(o instanceof String[])) return false;
+  String[] a = (String[]) o;
+  for (int i = 0; i < a.length; i++) { if (stem.equals(a[i])) return true; }
+  return false;
+}"""),
+    ("method", "public static String bigTabLab() { return @BTLAB@; }"),
+    # row 2 (= SkyyMenu 0.3.30 MenuPage.bigTabs): this hub's tabs into #<prefix>BigTabs, 56 high, equal widths, each tab's icon behind its
+    # word (its putIcon icon, else the contract art in hub:art), the active one selected; clicks a = "hub:<tab>"; hub:last remembered
+    ("method", r"""
+public static int bigTabsFill(@UCB@ b, @UEB@ ev, String prefix, String hub, String myTab, int w, java.util.UUID u) {
+  if (hub == null || myTab == null || hub.equals("home") || !okId(hub)) return 0;
+  remember(u, hub, myTab);
+  int cap = (w + @BTGAP@) / (@BTMIN@ + @BTGAP@);
+  java.util.ArrayList t = shown(tabs(hub, u), myTab, cap < 1 ? 1 : cap);
+  int n = t.size();
+  if (n == 0) return 0;
+  int tw = (w - @BTGAP@ * (n - 1)) / n;
+  String strip = "#" + prefix + "BigTabs";
+  for (int i = 0; i < n; i++) {
+    Object[] e = (Object[]) t.get(i);
+    String id = (String) e[0];
+    boolean sel = id.equals(myTab);
+    if (i > 0) b.appendInline(strip, "Group { Anchor: (Width: @BTGAP@); }");
+    String bid = prefix + "BigT" + i;
+    b.appendInline(strip, "Button #" + bid + " { Anchor: (Width: " + tw + ", Height: @BTH@); " + tabBStyle(sel) + " }");
+    String stem = iconOf((Object[]) e[3]);
+    if (stem == null && hasArt(hub + "_" + id)) stem = hub + "_" + id;
+    if (stem != null) b.appendInline("#" + bid, "Group { Anchor: (Left: " + ((tw - @BTICON@) / 2) + ", Top: @BTICONTOP@, Width: @BTICON@, Height: @BTICON@); Background: \"@TABICONDIR@" + stem + (sel ? "_on" : "") + ".png\"; }");
+    b.appendInline("#" + bid, "Label { Anchor: (Left: 0, Top: 0, Width: " + tw + ", Height: @BTH@); Padding: (Horizontal: @BTPAD@); Text: \"" + clean((String) e[1]) + "\"; Style: " + bigTabLab() + "; }");
+    ev.addEventBinding(@BT@.Activating, "#" + bid, @EVD@.of("a", "hub:" + id));
+  }
+  return n;
+}"""),
+    # the ONE sub-tab row: button i into #<prefix>Sub (a 5 px gap before every button but the first), small Primary when sel, else small
+    # Secondary; action null = drawn, not bound
+    ("method", r"""
+public static void subTab(@UCB@ b, @UEB@ ev, String prefix, int i, String label, boolean sel, String action, int w) {
+  String row = "#" + prefix + "Sub";
+  if (i > 0) b.appendInline(row, "Group { Anchor: (Width: @SUBGAP@); }");
+  String bid = prefix + "Sub" + i;
+  b.appendInline(row, "TextButton #" + bid + " { Anchor: (Width: " + w + ", Height: @SUBH@); Padding: (Horizontal: @SUBPAD@); Text: \"" + clean(label) + "\"; " + (sel ? @SUBSEL@ : @SUBN@) + " }");
+  if (action != null) ev.addEventBinding(@BT@.Activating, "#" + bid, @EVD@.of("a", action));
+}"""),
+    # Skyy rule 7: the row size tier for n rows in avail px (hs = the tier heights, hs[0] = normal): the biggest tier whose rows all fit
+    ("method", r"""
+public static int growSize(int n, int avail, int[] hs, int gap) {
+  if (hs == null || hs.length < 2) return 0;
+  int m = n < 1 ? 1 : n;
+  int k = hs.length - 1;
+  while (k > 0) {
+    if (m * (hs[k] + gap) <= avail) return k;
+    k = k - 1;
+  }
+  return 0;
+}"""),
+    # a hub_page's build: the X binding (parts 2), row 1 (bigRowFill: Home + the hubs, myHub active) and, off Home, row 2 (bigTabsFill)
+    ("method", r"""
+public static int page17(@UCB@ b, @UEB@ ev, String prefix, String hub, String myTab, int w, java.util.UUID u, int parts) {
+  if ((parts & 2) != 0) ev.addEventBinding(@BT@.Activating, "#" + prefix + "HubClose", @EVD@.of("a", "hub:close"));
+  bigRowFill(b, ev, prefix, hub, w);
+  if (hub == null || hub.equals("home")) return 0;
+  return bigTabsFill(b, ev, prefix, hub, myTab, w, u);
+}"""),
+)
+
+_hub_bar_java_big = hub_bar_java
+_install_hub_bar_big = install_hub_bar
+
+
+def hub_bar_java(theme=None, types=None, row=False, sub=False, big=False, page=False):
+    """hub_bar_java (see above) + page=True (kit 1.7): the big row (big=True) + the merged-tab members (sub=True) + HUB_BAR_JAVA_17
+    (page17 / bigTabsFill / subTab / growSize / hasArt). Needs row=True. page=False = the source exactly as before."""
+    if not page:
+        return _hub_bar_java_big(theme, types, row=row, sub=sub, big=big)
+    if not row:
+        raise ValueError("hub_bar_java(page=True) needs row=True")
+    t = _theme(HUB_THEME if theme is None else theme)
+    out = _hub_bar_java_big(theme, types, row=True, sub=True, big=True)
+    rep = dict(_hub_page_rep(t))
+    for k, v in dict(HUB_TYPES, **(types or {})).items():
+        rep["@%s@" % k] = v
+    for kind, src in HUB_BAR_JAVA_17:
+        s = src.strip()
+        for k in sorted(rep, key=len, reverse=True):
+            s = s.replace(k, rep[k])
+        if re.search(r"@[A-Z]+@", s):
+            raise ValueError("hub_bar_java: unfilled placeholder in %s" % s[:80])
+        out.append((kind, s))
+    return out
+
+
+def install_hub_bar(pool, cls_name, CtField, CtNewMethod, theme=None, types=None, row=False, sub=False, big=False, page=False):
+    """install_hub_bar (see above) + page=True: the kit 1.7 members too (implies big + sub). page=False = exactly as before."""
+    ct = pool.makeClass(cls_name)
+    for kind, src in hub_bar_java(theme, types, row=row, sub=sub, big=big, page=page):
+        if kind == "field":
+            ct.addField(CtField.make(src, ct))
+        else:
+            ct.addMethod(CtNewMethod.make(src, ct))
+    return ct

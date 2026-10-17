@@ -23,6 +23,10 @@ check and expensive to get wrong:
   WARN  newest build script of ANY mod fills an ItemGridSlot with something other than a new ItemStack(...) built right there
         (`new ItemGridSlot(stack)`): a stack that carries metadata in a grid slot disconnects the client (HANDOFF section 2; the
         SkyyAuctions 0.1 bug). Build the slot as new ItemGridSlot(new ItemStack(id, qty)), as skyyui.java_grid_methods() does
+  WARN  (2026-10-16, FAIL once MENU_PATTERN_FAIL = True after sweep S4) the MENU PATTERN in the newest build scripts that import the
+        kit (research/Menu-Pattern.md 3, kit 1.7 hub_page): the "< Menu" button, a hub page still on hub_shell / hub_big_shell, a back
+        text ("< Back", "Go Back", "< <word>"), a pager or tab_row on a hub page; a line marked menu-pattern-ok is skipped (grid /
+        storage pages that keep real slot pages)
 Exit code 1 on any FAIL.
 Files checked = tracked + untracked-but-not-ignored (what `git add -A` would commit), so a new, not yet committed build script counts.
 Extra: python tools/ci/lint.py --perm <build script> ...   runs only the permission-group check on the given files (old / pinned ones).
@@ -612,6 +616,55 @@ if _kit_users:
             _src = open(os.path.join(ROOT, f), encoding="utf8", errors="replace").read()
             warns.extend(kit_color_warnings(f, _src, _kit))
             warns.extend(kit_style_warnings(f, _src, _kit))
+
+# ---- WARN (FAIL after the sweep): the MENU PATTERN (research/Menu-Pattern.md 3 + rules 7-8; kit 1.7 tools/skyyui.py hub_page). Skyy
+# 2026-10-16: "make sure its consistent across the board, then follow the pattern when making new or adding to existing menus." + "I never
+# want to have to use a back button. The menus at the top should always be there for easy navigation." In the newest build script of
+# every mod that imports the kit, on code lines (comments and lines marked menu-pattern-ok skipped):
+#   menu-button  "< Menu" (HUB_MENU_TEXT / hub_menu_button / the literal) - the kit 1.5 back button
+#   old-shell    hub_shell( / hub_big_shell( - a hub page not yet on hub_page() (kit 1.7)
+#   back-text    a "< Back" / "Back" / "Go Back" / "< SkyWynn Menu" / "< <word>" text (not "< Prev") - rows 1 + 2 replace them
+#   pager        pager( / "< Prev" in a script with hub pages (scroll lists; grid / storage pages mark their line menu-pattern-ok)
+#   tab-row      tab_row( in a script with hub pages (a hub page has at most ONE sub-tab row: hub_page(sub=True) + HubBar.subTab)
+# One line per (file, rule) with the count and the first lines. MENU_PATTERN_FAIL = True after sweep S4 turns them into FAILs.
+MENU_PATTERN_FAIL = False
+MP_RULES = (
+    ("menu-button", re.compile(r'HUB_MENU_TEXT|hub_menu_button\(|"<\s?Menu"'), False),
+    ("old-shell", re.compile(r"\bhub_(?:big_)?shell\("), False),
+    ("back-text", re.compile(r'"(?:<\s?(?!Prev\b|Previous\b|PREV\b)[A-Za-z][A-Za-z ]*|Back|Go Back|Back to [A-Za-z ]+)"'), False),
+    ("pager", re.compile(r'\bpager\(|"<\s?Prev'), True),
+    ("tab-row", re.compile(r"\btab_row\("), True),
+)
+MP_HUB_RE = re.compile(r"\bhub_(?:page|shell|big_shell)\(")
+
+
+def menu_pattern_warnings(rel, text):
+    """WARN (or FAIL) lines of the menu pattern rules for one build script (see MP_RULES above)."""
+    hubby = MP_HUB_RE.search(text) is not None
+    hits = {}
+    for i, line in enumerate(text.splitlines(), 1):
+        s = line.strip()
+        if not s or s.startswith("#") or "menu-pattern-ok" in line:
+            continue
+        code = line.split("  # ")[0] if "  # " in line else line
+        for name, rx, hub_only in MP_RULES:
+            if hub_only and not hubby:
+                continue
+            if rx.search(code):
+                hits.setdefault(name, []).append(i)
+    out = []
+    for name, _rx, _h in MP_RULES:
+        if name in hits:
+            ln = hits[name]
+            out.append("%s:%d menu pattern %s: %d line(s) (%s) - research/Menu-Pattern.md 3, tools/HUBS-CONTRACT.md 'Kit 1.7'" % (
+                rel, ln[0], name, len(ln), ", ".join(str(x) for x in ln[:6]) + (" ..." if len(ln) > 6 else "")))
+    return out
+
+
+for mod, f in sorted(newest.items()):
+    _src = open(os.path.join(ROOT, f), encoding="utf8", errors="replace").read()
+    if KIT_IMPORT_RE.search(_src):
+        (fails if MENU_PATTERN_FAIL else warns).extend(menu_pattern_warnings(f, _src))
 
 print("SkyWynn lint: %d files, newest build scripts: %s" % (len(files), ", ".join("%s %s" % (m, vkey(p)) for m, p in sorted(newest.items()))))
 if missing:
