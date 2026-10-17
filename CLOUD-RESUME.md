@@ -8,7 +8,7 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
   items, first add one line per item to `research/cloud/LOG.md`, then DELETE those items here and top the list back up to about 8
   open tasks (ideas: RESUME.md 'Next', OPEN-QUESTIONS.md (open only), the plans in `research/` + `docs/plans/`). Keep this file under ~110 lines.
 - **Cloud limits:** no access to Skyy's PC, the Hytale game files (`HytaleServer.jar`, `Assets.zip`), installed mods or the test world.
-  You cannot test or deploy; you build ONLY during the "Cloud build trial" below. Otherwise only add tasks that need none of that. Any fact you cannot check without the game files: mark it
+  You cannot build, test or deploy (the "Cloud build trial" below is Skyy's Grok bot, not you). Otherwise only add tasks that need none of that. Any fact you cannot check without the game files: mark it
   **UNVERIFIED** and list it under "For the local session" in your output.
 - **Where results go:** new files in `research/cloud/` (one file per task). You may push straight to `main` ONLY changes to this file and
   to `research/cloud/` (always `git pull --rebase --autostash` first). Any change to another file goes through a pull request.
@@ -42,7 +42,9 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 
 ## Cloud build trial (Skyy 2026-10-17, ONE round - words in docs/answered/project.md 2026-10-17 lines)
 
-- **Split:** the cloud session runs the ONE big build Skyy hands it (spec -> build / patch scripts -> critics -> fix). The local session
+- **Builder = Skyy's Grok bot** (Skyy 2026-10-17: "im using a grok bot for my cloud build. not our claude cloud"); it reads RESUME.md +
+  this file. Claude cloud sessions do NOT build during the trial (their old limits stand).
+- **Split:** the Grok builder runs the ONE big build Skyy hands it (spec -> build / patch scripts -> critics -> fix). The local session
   keeps deploys, smoke tests, small bug fixes and small fixes, and stays off the trial's mods until its PR lands.
 - **Server jar:** download `HytaleServer.jar` fresh from Hytale's official Maven repo (Server Manual:
   https://support.hytale.com/hc/en-us/articles/45326769420827-Hytale-Server-Manual), the version matching Skyy's installed `latest`.
@@ -54,7 +56,8 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
   rebuilds against the real install (that build is the one trusted), cross-checks, smoke tests, pins and deploys.
 - **Before the trial (undo):** the old rule here read word for word: "You cannot build, test or deploy. Only add tasks that need none of
   that." - and every build ran locally (plain Agent builders or the saved workflow `skywynn-round`, PROJECT-RULES section 4). To undo:
-  `git revert` the commit that added this section (log line 2026-10-17 "cloud build trial"), or put that sentence back and delete this section.
+  put that sentence back and delete this section + the RESUME.md "CLOUD BUILD TRIAL" line (added in commit dd6731a + the Grok fix after
+  it; log lines 2026-10-17 "cloud build trial"). Keep the docs/answered lines (history).
 
 ## Open tasks (top = next)
 
