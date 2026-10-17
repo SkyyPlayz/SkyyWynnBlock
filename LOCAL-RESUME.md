@@ -5,13 +5,12 @@ there isnt a conflict. so local can keep working while you handle big builds.").
 
 ## Who does what
 
-| Local session (Skyy's PC) | Cobb (Grok bot, cloud) |
+| Local session (Skyy's PC) | Cobb (Grok bot, cloud) - NO BUILDING for now (Skyy 2026-10-17) |
 |---|---|
-| Deploys (`tools/deploy_set.py`, skill `skywynn-deploy`) | Big builds (spec -> build / patch scripts -> critics -> fix) |
-| Smoke tests, game logs (`tools/log_scan.py`) | One fresh Claude Code / OpenRouter session per job |
-| Small bug fixes and small fixes | Design, docs specs, beta-test video reviews |
-| Trusted rebuild of every Cobb PR against the real install, then cross-check, pin, deploy | Hands off through ONE pull request per job, no jars |
-| Assets.zip steps Cobb marks UNVERIFIED | Never deploys, never touches the game install or Skyy's PC |
+| ALL builds now, incl. big ones + the queue below | Orchestration, design, specs, briefs |
+| Deploys (`tools/deploy_set.py`, skill `skywynn-deploy`), smoke tests, game logs | Beta-test video reviews, PR reviews |
+| Trusted rebuild of Cobb's open PR #17, then cross-check, pin, deploy | Doc-only PRs (like this one), never deploys |
+| Assets.zip steps marked UNVERIFIED | Never touches the game install |
 
 Server jar and game-file rules for cloud builds: CLOUD-RESUME.md "Cloud build trial".
 
@@ -23,10 +22,9 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 
 | Mod(s) | Owner | Job | Branch / PR | Since | Status |
 |---|---|---|---|---|---|
-| SkyyGear, SkyyMobs (+ loot) | Cobb | RESUME NEXT 3: Armory / Void Armor sets + weapons as mob drops with our modifiers (other sets TODO until author OKs) | `cloud/trial-armor-drops` (PR link added when opened) | 2026-10-17 | Building |
+| SkyyGear, SkyyMobs (+ loot) | Local (handed over) | RESUME NEXT 3: armor + weapons as mob drops (Gear 0.3.19, Mobs 0.1.10) | `cloud/trial-armor-drops`, [PR #17](https://github.com/SkyyPlayz/SkyyWynnBlock/pull/17) | 2026-10-17 | Built + reviewed; local: review, rebuild, smoke, pin, merge. Renumber if 0.3.19 / 0.1.10 are taken |
 
-Free for the local session: everything not in the table (e.g. the Void Charms rename round in RESUME, skipping Gear until the row
-above is released).
+Cobb holds no locks now. Carry RESUME's unfinished Void Charms Gear edits into the next Gear patch after #17.
 
 ## Handed to the local session (from Cobb)
 
@@ -41,6 +39,23 @@ above is released).
   so each metal looks like its armor family. Make only what's missing (check vanilla, art/, Quirk's tool gap table first).
   Crossbows: More Crossbow Tiers (Serj) is "All Rights Reserved" on CurseForge and still only marked for 0.6.8, so we can't copy its
   textures without Serj's OK. Default: make our own from the vanilla Iron crossbow for all our metals. Optional: Skyy asks Serj.
+
+## Local build queue (from Cobb, Skyy 2026-10-17; start each on Skyy's go, one mod / branch per job)
+
+Private art inputs live OUTSIDE the repo on Skyy's PC: `Hytale mods WORK\SkyWynn-PRIVATE-art\`. They contain vanilla-derived
+geometry: never commit, upload or share them. Only our textures go in mods, pointing at vanilla models.
+Metals source of truth: `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec.md` (locked rules, sections 1-8).
+
+1. MINING ARMOR Z2-Z5 into SkyyForaging. Quirk's approved sets (Skyy 2026-10-17): Z2 Lead/Dusk, Z3 Chromium/Azurvane,
+   Z4 Slag/Cinder, Z5 Titanium/Lumen. Inputs: `SkyWynn-PRIVATE-art\mining-armor\Z2_Thorium..Z5_Mithril` (each set retextures
+   that zone's vanilla base armor). Ship our textures + item defs that point at the vanilla models.
+2. METAL VOLUME ART (art only, no game code). Inputs: `SkyWynn-PRIVATE-art\metal-art\` (TASK-metal-art.md, Quirk's zone palette
+   cards, her approved Titanium + Lumen tools as the sample, skywynn-custom-weapons-list.md, skywynn-metal-items-inventory.md).
+   Make: ore + bar for Lead, Chromium, Slag, Titanium; bars only for Dusk, Azurvane, Cinder, Lumen (+ Electrum = Gold + Silver);
+   all 9 weapon families (Wand, Crossbow, Spellbook, Kunai, Bo, Gauntlets, Soul Cage, Great Shield, Mage staff) in all 8 new metals;
+   then every other metal item in the inventory. Excluded: charms, bench accessories, dropped vanilla tools (scythe, hoe),
+   Foraging / Farming armor, fishing (waits for a full fishing build). The zone palette cards are enough (no per-metal cards).
+3. METALS BUILD (unassigned until Skyy says): ores, spawn, smelting, alloys, Fortune, tools/weapons per the spec.
 
 ## Rules
 1. Before any job, pull and read this table. If your mod is locked by the other side, pick other work or ask Skyy.
