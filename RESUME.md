@@ -21,9 +21,9 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   rename, icon ids > 32, Arrange Prev/Next + dots), Classes 0.1.37 (Breach x Mark), Wardrobe 0.2.9 (Requip leaves Pouch food), Nestkeeper ON.
 
 ## RUNNING / JUST BUILT
-- CLOUD BUILD TRIAL (Skyy 10-17, ONE round): Skyy's big build runs in Skyy's GROK BOT (not Claude cloud; Maven server jar, PR hand-off); local = deploys,
-  smoke, small fixes, rebuild the cloud PR here before pin. Rules + how to undo: CLOUD-RESUME.md "Cloud build trial". Work split + WHO IS ON WHICH MOD: LOCAL-RESUME.md (check its locks before any job). Job: NEXT 3 (armor as mob drops) -
-  local stays off SkyyGear + SkyyMobs until Grok's PR lands (the rename round below skips Gear until then).
+- COBB (Skyy's Grok bot) STOPPED BUILDING 10-17 (LOCAL-RESUME.md, PR #16 merged): all builds are local again; Cobb = design / specs /
+  reviews. Cobb's armor-drops PR #17 (Gear 0.3.19 + Mobs 0.1.10) is HANDED TO LOCAL: review, trusted rebuild, smoke, pin, merge.
+  Trial rules + undo: CLOUD-RESUME.md "Cloud build trial". Metals source of truth (Cobb): SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec.md (outside the repo).
 - WORK SPLIT + LOCKS: `LOCAL-RESUME.md` (made by Cobb = Skyy's Grok bot) - check its lock table before any job.
 - Gear spots of the Void Charms rename still left (Gear locked to Cobb): build_skyygear_0.3.18.py 29321, 31517-31534.
 - Smelting charm -> FURNACE CHARM (below). Wynn elements spec research/Wynn-Elements-Spec.md + structure ask (joszza) wait on Skyy.
