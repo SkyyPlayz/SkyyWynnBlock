@@ -13,6 +13,7 @@ grep hit is the whole thing: `grep -n "Lantern" docs/answered/*.md docs/log/*.md
 | `OPEN-QUESTIONS.md` | ONLY the questions still waiting on Skyy, with today's default | short |
 | `TEST-CHECKLIST.md` | what Skyy tests next (deployed, not tested yet) | short |
 | `CLOUD-RESUME.md` | cloud sessions' rolling to-do (they write only it + `research/cloud/`) | ~110 lines |
+| `LOCAL-RESUME.md` | work split local session <-> Cobb (Skyy's Grok bot) + the mod LOCK table - check before any job | short |
 | `ART-RESUME.md` | the ART agent's start file + queue (a remote artist with own Blockbench; writes only it, `art/<item>/` (original art, committed) and `tools/art/`) | ~90 lines |
 | `ROADMAP.md` | the goal, the phases with status (confirmed by Skyy 2026-10-09), later, not doing - the to-do stays in RESUME | ~80 lines |
 | `ARCHITECTURE.md` | every `Skyy<Mod>` folder in one line, how builds / deploys / rollbacks / CI checks work, local vs cloud sessions, the native-UI rule | ~155 lines |
