@@ -42,6 +42,8 @@ for word, (3) commit + push, (4) tell Skyy "ready for the main session to wire i
 
 ## NEXT ITEM
 
+### Void Charms menu icon - DRAFT 2026-10-17, waiting on Skyy's look at the sheet: `art/void-charms-icon/` (sheet.png; generator `tools/art/make_void_charms_icon.py`). Skyy: "lets change the icon for void charms to be more fitting" + picked "a glowing void amulet on a chain" -> candidate A chosen (B / C = variations). Replaces the satchel at `Skyy_Menu_Icon_AccessoryBag`; also a faded hub tab version for character_accessories.
+
 ### 17. SkyWynn Menu item - new emblem - DONE 2026-10-10 (main session stand-in agent: art/menu-emblem/, sheet.png; wiring = next SkyyMenu round). Continue item 14 with F1 Ash
 **Why:** Skyy 2026-10-09: "lets make a new icon for the menu" -> the menu item in the last hotbar slot (id `Skyy_Menu`, SkyyMenu); today
 it borrows the vanilla Voidheart look (`MENU_ITEM_LOOK = "Ingredient_Voidheart"` in `SkyyMenu/build_skyymenu_0.3.12.py`). Skyy picked

@@ -1,0 +1,114 @@
+{
+ "what": "SkyWynn Menu - Void Charms tile icon (replaces the Accessory Bag satchel). DRAFT until Skyy sees the sheet.",
+ "status": "APPROVED 2026-10-17",
+ "chosen": "A",
+ "chosen_why": "Skyy 2026-10-17 picked 'a glowing void amulet on a chain' before the sheet",
+ "generator": "tools/art/make_void_charms_icon.py",
+ "deterministic": true,
+ "original_pixels": true,
+ "item_id_today": "Skyy_Menu_Icon_AccessoryBag",
+ "icon_rules": {
+  "size": [
+   64,
+   64
+  ],
+  "alpha": "hard (0 or 255)",
+  "outline": "1 px #120e1c tinted toward the touching part",
+  "light": "top left",
+  "no_pure_black_or_white": true,
+  "family": "art/menu-icons (tools/art/make_menu_icons.py)"
+ },
+ "candidates": [
+  {
+   "key": "A",
+   "look": "ArcChainGlow",
+   "chosen": true,
+   "options": {
+    "chain": "arc",
+    "glow": 1,
+    "setting": "round",
+    "metal": "gold"
+   },
+   "shows": "CHOSEN: gold link chain in a soft arc, round gold setting with four prongs, a swirling dark-violet void orb, a soft violet glow ring and lilac sparkles",
+   "file": "candidates/VoidCharms_A_ArcChainGlow.png"
+  },
+  {
+   "key": "B",
+   "look": "VChainBright",
+   "chosen": false,
+   "options": {
+    "chain": "v",
+    "glow": 2,
+    "setting": "round",
+    "metal": "gold"
+   },
+   "shows": "variation: straight V chain, stronger glow (bigger violet ring + three light rays, brighter orb)",
+   "file": "candidates/VoidCharms_B_VChainBright.png"
+  },
+  {
+   "key": "C",
+   "look": "SteelDrop",
+   "chosen": false,
+   "options": {
+    "chain": "arc",
+    "glow": 0,
+    "setting": "drop",
+    "metal": "steel"
+   },
+   "shows": "variation: dark steel chain + teardrop setting, no glow ring (the light stays inside the orb)",
+   "file": "candidates/VoidCharms_C_SteelDrop.png"
+  }
+ ],
+ "hub_tab": {
+  "size": [
+   72,
+   72
+  ],
+  "note": "@2x = 36 x 36 UI; same fade as art/hub-tab-icons; drop-in for character_accessories(_on).png",
+  "files": [
+   "hub-tab/character_accessories.png",
+   "hub-tab/character_accessories_on.png"
+  ],
+  "min_contrast": {
+   "normal": 1.069,
+   "on": 1.036
+  }
+ },
+ "files": [
+  {
+   "path": "Common/Icons/ItemsGenerated/Skyy_Menu_Icon_VoidCharms.png",
+   "bytes": 1027,
+   "sha256": "5324887070a33a27e26b8dce841ecb6b3cf4bca99442f8258862e6735e5e0bbb"
+  },
+  {
+   "path": "candidates/VoidCharms_A_ArcChainGlow.png",
+   "bytes": 1027,
+   "sha256": "5324887070a33a27e26b8dce841ecb6b3cf4bca99442f8258862e6735e5e0bbb"
+  },
+  {
+   "path": "candidates/VoidCharms_B_VChainBright.png",
+   "bytes": 1117,
+   "sha256": "c31802526837d108b31709b311dc68820729f9157550b2ed8848913a6613fc01"
+  },
+  {
+   "path": "candidates/VoidCharms_C_SteelDrop.png",
+   "bytes": 874,
+   "sha256": "6d5627e535d739e1317e0a9eb0bde15b983e669482fbf1e48d5ddf8d19b45695"
+  },
+  {
+   "path": "hub-tab/character_accessories.png",
+   "bytes": 992,
+   "sha256": "d52f162a7776b2a164e7f9950d07318728c3473a11772c4b31b896ef4f379b16"
+  },
+  {
+   "path": "hub-tab/character_accessories_on.png",
+   "bytes": 993,
+   "sha256": "6f78477d7918494c633a92d702f269e12e33770385cacff3421ddf8325feccf5"
+  },
+  {
+   "path": "sheet.png",
+   "bytes": 81612,
+   "sha256": "461cc22e7ea7f3d64e2c311e069e2278195e0300030e1da107f4d3aa03af9ccf"
+  }
+ ]
+}
