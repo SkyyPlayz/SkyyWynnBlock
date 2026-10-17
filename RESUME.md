@@ -20,18 +20,18 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   Collections), Cooking 0.1.10 (one food family = one bar), Accessories 0.5.21 (craft + upgrade in the bag), Sacks 0.8.14 (Enchanted Void homes,
   scroll craft list, no Void level gate), Gear 0.3.15 + Menu 0.3.34 (Crafting hub Crafting / Smithing / Anvil / Upgrade, big top row on Gear
   pages), Pets 0.4.1 (Eggs + Hatchery), Skills 0.4.46 + Hud 0.3.30 (log fixes).
-- DEPLOYED 18:08 SkyyMenu 0.3.35 = menu sweep K (kit 1.7 hub_page, TEST 160). RUNNING (plain Agents): menu sweep S1 (Skills, Trees +
-  Classes, Pets, Collections (legacy_0221 freeze), Profiles) + S2 (Sacks, Wardrobe, Vault + Bank, Bazaar + Auctions, Merchants). Each report ->
-  Sonnet critic -> fix -> pin -> deploy. Then S3 (Gear, Islands, Exploration, Quests q04, Party, Guilds) + S4 (Hud, Accessories after AP1, Ranks,
-  Essentials, Fishing, Shards, Rebirth), then lint menu_pattern -> FAIL. Leftovers: Menu Ops window, Server Setup row pages -> scroll, SkyyCore 1.0.1 HubBar.
-  Queued: SALVAGE (SkyyGear gear:fn:salvage + Wardrobe; bags.md 10-16).
+- DEPLOYED menu sweep K (18:08, TEST 160) + S1 Character hub (18:45, TEST 161). RUNNING (plain Agents): S2 (Sacks, Wardrobe, Vault + Bank,
+  Bazaar + Auctions, Merchants) and S3 (6 sub-builders: Gear 0.3.16 layout, Quests 0.4.0 = q04 redesign, Islands 0.5.18, Exploration 0.2.13,
+  Party 0.1.10, Guilds 0.1.11; scratch tools/dev/scratch/menuS3/). When all report: combined crosscheck + lint, Sonnet critic, pin, deploy.
+  Then S4 (Hud, Accessories after AP1, Ranks, Essentials, Fishing, Shards, Rebirth) -> lint menu_pattern FAIL. Quests NPC dialog / Welcome stay popups.
+  Versions moved: T1 tool upgrades = Gear 0.3.17 + Skills 0.4.48. Queued: SALVAGE (gear:fn:salvage + Wardrobe).
 - NEXT IN ORDER (specs answered, word for word in docs/answered/):
   1. MENU SWEEP (research/Menu-Pattern.md, answers at the end): kit round K (skyyui 1.7 + Menu 0.3.35; the BIG HUB ROW helper from Gear 0.3.15
      exists), then S1-S4 + Quests q04 (section 4). Every page 1600 x 980, big row 2, short lists fill, scroll not pages.
   2. Collections 0.2.23 + Bazaar 0.1.18: Life Essence 1:1 -> vanilla Greater Essence (skyyench RETIRED_TO; 0.2.22 script needs
      skyyench.legacy_0221() to rebuild), Eternal Seeds at crop collection tier 4, list the Enchanted items after sizing collection gifts.
   3. AP1 Accessories 0.5.22 (research/Accessory-Power-Spec.md + answers; Void Charms rename, no bag item, /charm /charms /ch, bag grid).
-  4. T1 tool upgrades = Gear 0.3.16 + Skills 0.4.47 (research/Collections-Tools-Redesign-Spec.md last section).
+  4. T1 tool upgrades = Gear 0.3.17 + Skills 0.4.48 (research/Collections-Tools-Redesign-Spec.md last section).
   5. Flask / Pouch (research/Flask-Pouch-Spec.md + answers): probe FP0, then FP1 (SkyyCooking).
   6. Mod compression after the menus (sections stay separate - Architecture-Spec.md last section).
 
