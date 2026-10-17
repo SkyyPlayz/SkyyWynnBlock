@@ -1,7 +1,7 @@
 # Class emblems - 8 classes (64 x 64 + 128 x 128 + locked 64)
 
-**Status: APPROVED (Spellblade crest approved 2026-10-16) for Skyy's review** (2026-10-16). 7 crests are the APPROVED ones; only the Spellblade crest is new.
-Nothing here is wired in or seen in game yet. **Start here:** `sheet.png`.
+**Status: APPROVED** (all 8; Spellblade crest approved 2026-10-16). 7 crests are the APPROVED ones; only the Spellblade crest is new.
+Wired into SkyyClasses 0.1.36 / SkyyProfiles 0.1.17 / SkyyTrees 0.3.22 (hidden icon items drawn by ItemIcon). **Start here:** `sheet.png`.
 
 Why: Skyy 2026-10-16 (Character > Profiles screenshot, `docs/answered/ui.md` CLASS ICONS ON PROFILES): "didn't we make class icons?
 why arnt they shown here?" - yes: the cloud class emblems in `research/cloud/class-art/` were APPROVED (`docs/answered/gear.md`
