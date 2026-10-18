@@ -37,6 +37,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    Gear 0.3.28 (Fortune 3/level, no cap) BUILT -> Bronze cap 33 levels fix -> review. Knock-on: Skills 0.4.53 must lift perk.doubleDropMax
    (still caps level/accessory/pet/armor Fortune at 100%). Fishing cap 20% waits for the fishing overhaul. Mobs 0.1.11 + Quests 0.4.2 BUILT, in review.
 
+PINNED, NOT DEPLOYED (game open 10-18 ~09:10): Islands 0.5.20 (bugs 1 2 9 19 + pond) - deploy when the game closes. LIVE: TEST 191-192.
+
 ## NEXT (after Skyy's answers)
 0. QUEUE 10-18 (Skyy answers in docs/answered): Level-Bands-20 build (research/Level-Bands-20-Spec.md; cap 50 +10/rebirth, Mushroom 15th crop)
    after Gear 0.3.28 pins -> Gear 0.3.29 -> Mobs 0.1.12 -> Armory -> Collections -> Bazaar -> Auctions together; Skills 0.4.53 (doubleDropMax
