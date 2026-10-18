@@ -45,7 +45,7 @@ LEVEL-BANDS BATCH DEPLOYED 10-18 (TEST 196): Gear 0.3.29, Collections 0.2.28, Wo
 
 SKILL TREES 3 (Skyy 10-18: "the biggest thing right now"): Borderlands-style rows, free row abilities, no free upgrades, drop dust, rebirth Void Particles
    (spend vs keep = XP buff). Spec research/Skill-Trees-3-Spec.md being written now (Jev-heavy); BUILD after the weekly reset 10-20.
-BALANCE PASS (Skyy 10-18, skills.md last line): research + spec research/Balance-Pass-Spec.md - all skills + class level ~same steady rate, ~10 h/zone Z1-3,
+BALANCE PASS (plan P0-P9 in research/Balance-Pass-Spec.md s8; P0 inventory DONE research/balance/; next P1 pacing model) - all skills + class level ~same steady rate, ~10 h/zone Z1-3,
    first rebirth 40-50 h, later rebirths shorter; class stats tuned to role; ALL PETS re-scaled to the goals (pets.md 10-18: 15% of power). START AFTER THE WEEKLY RESET (10-20 09:00) - weekly 91% on 10-18.
    Also queued: XP caps in Cooking (maxXpPerMinute 1.5M) / Guilds (xpMaxPerCheck) / Exploration (chunks.maxPaidPerWorld) -> 0; Enchanted alloy Smithing XP rows.
 
