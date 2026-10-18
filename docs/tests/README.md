@@ -299,3 +299,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Fortune round + big-tree log pickup fix (DEPLOYED 2026-10-17, backup deploy-20261017-2243) | [2026-10](2026-10.md) |
 | HUD ability icons (all classes) (DEPLOYED 2026-10-17, backup deploy-20261017-2250) | [2026-10](2026-10.md) |
 | 15-step tier renumber + ore gates + Mage PA4 Meteor from the Rift (DEPLOYED 2026-10-17, backup deploy-20261017-2348) | [2026-10](2026-10.md) |
+| Metal tools (15-step ladder) + metal weapons (9 families x 8 metals) (DEPLOYED 2026-10-18, backup deploy-20261018-0058) | [2026-10](2026-10.md) |

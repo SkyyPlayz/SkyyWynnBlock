@@ -210,3 +210,4 @@ tests always come first.
 182. Big Fens trees: all logs picked up; Mining Fortune uncapped; Smelting Fortune on mined ore
 183. HUD ability icons for every class, dimmed on cooldown
 184. New T1-T15 metal tags, ore hit speeds (never slower), pickaxe Fortune +10, Mage PA4 rift Meteor
+185. New metal tools + tier-ups, 76 new metal weapons, soul cage branch, Bazaar unchanged
