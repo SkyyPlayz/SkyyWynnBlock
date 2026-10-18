@@ -61,6 +61,8 @@ Metals source of truth: `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec
    STATUS 2026-10-17 (local): ores + spawn rules + smelting + alloys + Electrum + Furnace Charm are LIVE (TEST-CHECKLIST 177;
    research/Zone-Ores-Alloys-Spec.md). Still open: Fortune upgrades (spec 5), metal tools / weapons / mining sets per metal (need SkyyGear after
    PR #17 + SkyyArmory), the 15-step tool tier ladder question (spec 2), real art instead of the build-time recolour placeholders (item 2).
+4. BETA BUGS 2026-10-17 (added by Cobb): fix the 19 bugs in `docs/tests/2026-10-17-beta-bugs.md`, bugs 1-6 first (fixes from
+   Skyy's tests come first, PROJECT-RULES 7). Tick each box + log it. Its "Design notes" section needs Skyy's OK / a spec first.
 
 ## Rules
 1. Before any job, pull and read this table. If your mod is locked by the other side, pick other work or ask Skyy.
