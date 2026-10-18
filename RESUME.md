@@ -10,7 +10,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    Parries pack-API fail is third-party) -> `deploy_set.py --yes` (check the LAST line says "deployed N mods") -> `record_deploy.py` -> commit -> tidy.
 3. After Skyy plays: skill `skywynn-logs` (`python tools/log_scan.py --ours`, then `--recycle`).
 
-## LIVE NOW (deployed 2026-10-17, TEST-CHECKLIST 172-178)
+## LIVE NOW (deployed 2026-10-17, TEST-CHECKLIST 172-179)
 - 172: Accessories 0.5.23 (Void Charms -> top-bar Market disconnect fixed), Gear 0.3.18 (Breaking Speed row first, accessory Breaking
   Power, red/green requirement lists), Islands 0.5.19 (6 named island homes, `/is sethome <name>`, `/is <name>`).
 - 173: FP1 Potion Flask + Food Pouch = Cooking 0.1.11 + Sacks 0.8.18 + Wardrobe 0.2.8 (Storage > Supplies, /flask /pouch). FLOOR Cooking 0.1.11.
@@ -31,8 +31,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
   Trial rules + undo: CLOUD-RESUME.md "Cloud build trial". Metals source of truth (Cobb): SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec.md (outside the repo).
 - WORK SPLIT + LOCKS: `LOCAL-RESUME.md` (made by Cobb = Skyy's Grok bot) - check its lock table before any job.
 - Smelting charm -> FURNACE CHARM (below). Wynn elements spec research/Wynn-Elements-Spec.md + structure ask (joszza) wait on Skyy.
-- NEXT: Salvagebench hook (The Armory's placed Salvagebench fires no craft event - ChunkStore tick system before ProcessingBenchTick, research/Pack-Drops-Spec.md Q15),
-  then LOCAL-RESUME queue (mining armor Z2-Z5, metal art) on Skyy's go; UT lines for 5 UT sets (spec Q1, Zone 4 Cloth UT empty after Academy).
+- NEXT (Skyy picks): LOCAL-RESUME queue (mining armor Z2-Z5, metal art, Fortune + metal tools / weapons), UT lines for 5 UT sets (spec Q1),
+  crossbows (TASK-crossbows-from-vanilla.md), OPEN-QUESTIONS answers. Salvagebench guard live (Gear 0.3.20, TEST 179).
 - Zone metals (Skyy's table, research/Zone-Tiers-Idea.md): Bronze / Dusk / Azurvane / Cinder / Lumen; Quirk sends art drafts per family.
 
 ## NEXT (small first; Skyy: "work through the small things and the next up list. save the bigger ones for later")

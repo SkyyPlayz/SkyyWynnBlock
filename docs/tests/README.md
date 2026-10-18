@@ -293,3 +293,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Void Charms rename + Breach x Mark + Requip food + Nestkeeper (DEPLOYED 2026-10-17, backup deploy-20261017-0953) | [2026-10](2026-10.md) |
 | Zone ores + alloys + Furnace Charm + Electrum (DEPLOYED 2026-10-17, backup deploy-20261017-1608) | [2026-10](2026-10.md) |
 | Pack armor + weapons as mob drops (PR #17) (DEPLOYED 2026-10-17, backup deploy-20261017-1831) | [2026-10](2026-10.md) |
+| Salvagebench guard (rolled pieces: Requip salvage only) (DEPLOYED 2026-10-17, backup deploy-20261017-1924) | [2026-10](2026-10.md) |
