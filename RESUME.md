@@ -39,6 +39,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 
 LIVE: TEST 191-193 (Islands 0.5.20 deployed 10-18 09:06).
 
+USAGE 10-18 ~12:20: weekly 83% (resets 2026-10-20 09:00 MDT) -> only finish + deploy what is built; big rounds (Level-Bands-20, chests, bucket) WAIT for the reset unless Skyy says go. PINNED, NOT DEPLOYED: Cooking 0.1.12 (game open).
+
 ## NEXT (after Skyy's answers)
 0. QUEUE 10-18 (Skyy answers in docs/answered): Level-Bands-20 build (research/Level-Bands-20-Spec.md; cap 50 +10/rebirth, Mushroom 15th crop)
    after Gear 0.3.28 pins -> Gear 0.3.29 -> Mobs 0.1.12 -> Armory -> Collections -> Bazaar -> Auctions together; Skills 0.4.53 (doubleDropMax
