@@ -22,6 +22,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### skills  (answers -> docs/answered/skills.md, topic `skills`)
 
 ### gear  (answers -> docs/answered/gear.md, topic `gear`)
+- UT LINES for the 5 Armory UT sets + a Zone 4 Cloth UT ("The Auditor's", our own Cindercloth copy) - draft rows in research/UT-Lines-Draft.md. Ship them? [default taken overnight: OFF - the sets keep not dropping until Skyy approves]
 
 ### economy  (answers -> docs/answered/economy.md, topic `economy`)
 
