@@ -10,7 +10,7 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    Parries pack-API fail is third-party) -> `deploy_set.py --yes` (check the LAST line says "deployed N mods") -> `record_deploy.py` -> commit -> tidy.
 3. After Skyy plays: skill `skywynn-logs` (`python tools/log_scan.py --ours`, then `--recycle`).
 
-## LIVE NOW (deployed 2026-10-17, TEST-CHECKLIST 172-177)
+## LIVE NOW (deployed 2026-10-17, TEST-CHECKLIST 172-178)
 - 172: Accessories 0.5.23 (Void Charms -> top-bar Market disconnect fixed), Gear 0.3.18 (Breaking Speed row first, accessory Breaking
   Power, red/green requirement lists), Islands 0.5.19 (6 named island homes, `/is sethome <name>`, `/is <name>`).
 - 173: FP1 Potion Flask + Food Pouch = Cooking 0.1.11 + Sacks 0.8.18 + Wardrobe 0.2.8 (Storage > Supplies, /flask /pouch). FLOOR Cooking 0.1.11.
@@ -22,15 +22,17 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - 177: ORES ROUND = WorldGen 0.7.3 (Lead / Chromium / Slag / Titanium ores, Dusk / Azurvane / Cinder / Lumen + Electrum alloys, vanilla-vein
   copies, Gold Z4-5) + Accessories 0.5.25 (Furnace Charm I-V + Eternal Flame) + Sacks 0.8.20 + Collections 0.2.25 + Bazaar 0.1.20 + Skills 0.4.49;
   the five ores mods roll back TOGETHER (deploy_set STOP guard).
+- 178: PR #17 merged = Gear 0.3.19 + Mobs 0.1.10: The Armory sets drop from mobs (49 sets / 1,067 ids), Mythic boss bags (once per fight),
+  Mythic / UT crafting refused, Alteration keeps rolls, rolled-piece salvage via /craft refused (Requip only); Void Charms Gear texts done.
 
 ## RUNNING / JUST BUILT
 - COBB (Skyy's Grok bot) STOPPED BUILDING 10-17 (LOCAL-RESUME.md, PR #16 merged): all builds are local again; Cobb = design / specs /
   reviews. Cobb's armor-drops PR #17 (Gear 0.3.19 + Mobs 0.1.10) is HANDED TO LOCAL: review, trusted rebuild, smoke, pin, merge.
   Trial rules + undo: CLOUD-RESUME.md "Cloud build trial". Metals source of truth (Cobb): SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec.md (outside the repo).
 - WORK SPLIT + LOCKS: `LOCAL-RESUME.md` (made by Cobb = Skyy's Grok bot) - check its lock table before any job.
-- Gear spots of the Void Charms rename still left (Gear locked to Cobb): build_skyygear_0.3.18.py 29321, 31517-31534.
 - Smelting charm -> FURNACE CHARM (below). Wynn elements spec research/Wynn-Elements-Spec.md + structure ask (joszza) wait on Skyy.
-- NEXT: Cobb's PR #17 (armor drops, Gear 0.3.19 + Mobs 0.1.10): review, trusted rebuild, smoke, pin, merge. Then the Void Charms Gear texts.
+- NEXT: Salvagebench hook (The Armory's placed Salvagebench fires no craft event - ChunkStore tick system before ProcessingBenchTick, research/Pack-Drops-Spec.md Q15),
+  then LOCAL-RESUME queue (mining armor Z2-Z5, metal art) on Skyy's go; UT lines for 5 UT sets (spec Q1, Zone 4 Cloth UT empty after Academy).
 - Zone metals (Skyy's table, research/Zone-Tiers-Idea.md): Bronze / Dusk / Azurvane / Cinder / Lumen; Quirk sends art drafts per family.
 
 ## NEXT (small first; Skyy: "work through the small things and the next up list. save the bigger ones for later")

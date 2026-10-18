@@ -25,9 +25,8 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 
 | Mod(s) | Owner | Job | Branch / PR | Since | Status |
 |---|---|---|---|---|---|
-| SkyyGear, SkyyMobs (+ loot) | Local (handed over) | RESUME NEXT 3: armor + weapons as mob drops (Gear 0.3.19, Mobs 0.1.10) | `cloud/trial-armor-drops`, [PR #17](https://github.com/SkyyPlayz/SkyyWynnBlock/pull/17) | 2026-10-17 | 2026-10-17 local: PR files copied in, trusted rebuild + Armory 1.23.0 re-scan + 2 critics running; Void Charms Gear texts folded into 0.3.19 |
 
-Cobb holds no locks now. Carry RESUME's unfinished Void Charms Gear edits into the next Gear patch after #17.
+Cobb holds no locks now. PR #17 merged + deployed 2026-10-17 (TEST-CHECKLIST 178); the Void Charms Gear texts went into Gear 0.3.19.
 
 ## Handed to the local session (from Cobb)
 

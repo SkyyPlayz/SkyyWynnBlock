@@ -203,3 +203,4 @@ tests always come first.
 175. Server Setup says Void Charms, not Accessories
 176. Void Charms texts, Arrange Prev/Next, Breach x Mark, Requip leaves Pouch food, Nestkeeper dragons
 177. Zone ores (Lead/Chromium/Slag/Titanium), alloys + Electrum, Furnace Charm I-V + Eternal Flame, ore + Charcoal collections, Bazaar listings
+178. Armory armor / weapons drop from mobs, Mythic boss bags, Mythic/UT craft block, Alteration keeps rolls, salvage via Requip
