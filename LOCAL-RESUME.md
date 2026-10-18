@@ -25,6 +25,8 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 
 | Mod(s) | Owner | Job | Branch / PR | Since | Status |
 |---|---|---|---|---|---|
+| SkyyGear (+ tools/tier_tags.py) | Local | Queue 1: mining armor Z2-Z5 = 8 new Mining sets (Lead, Dusk, Chromium, Azurvane, Slag, Cinder, Titanium, Lumen) in Gear 0.3.21 (no SkyyForaging mod exists; Mining sets live in Gear) | local, no PR | 2026-10-17 | Building |
+| tools/art/make_metal_items.py, models-local/art/metals/ (art only) | Local | Queue 2: metal volume art (ores, bars, 9 weapon families x 8 metals, other metal items) | local, no PR | 2026-10-17 | Building |
 
 Cobb holds no locks now. PR #17 merged + deployed 2026-10-17 (TEST-CHECKLIST 178); the Void Charms Gear texts went into Gear 0.3.19.
 
@@ -48,7 +50,7 @@ Private art inputs live OUTSIDE the repo on Skyy's PC: `Hytale mods WORK\SkyWynn
 geometry: never commit, upload or share them. Only our textures go in mods, pointing at vanilla models.
 Metals source of truth: `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec.md` (locked rules, sections 1-8).
 
-1. MINING ARMOR Z2-Z5 into SkyyForaging. Quirk's approved sets (Skyy 2026-10-17): Z2 Lead/Dusk, Z3 Chromium/Azurvane,
+1. MINING ARMOR Z2-Z5 into SkyyGear (Mining sets live in Gear GearMine; there is no SkyyForaging mod - local 2026-10-17). Quirk's approved sets (Skyy 2026-10-17): Z2 Lead/Dusk, Z3 Chromium/Azurvane,
    Z4 Slag/Cinder, Z5 Titanium/Lumen. Inputs: `SkyWynn-PRIVATE-art\mining-armor\Z2_Thorium..Z5_Mithril` (each set retextures
    that zone's vanilla base armor). Ship our textures + item defs that point at the vanilla models.
 2. METAL VOLUME ART (art only, no game code). Inputs: `SkyWynn-PRIVATE-art\metal-art\` (TASK-metal-art.md, Quirk's zone palette
