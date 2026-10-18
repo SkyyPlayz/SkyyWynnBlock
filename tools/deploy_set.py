@@ -277,7 +277,11 @@ def sync_bettermap_worlds(world):
     have = d.get("allowedWorlds")
     if not isinstance(have, list):
         return
-    add = sorted(n for n in os.listdir(wdir) if os.path.isdir(os.path.join(wdir, n)) and n not in have)
+    # 2026-10-18 Skyy "we need to make sure we get better maps working in the zones": zone worlds are made on the first trip, AFTER a
+    # deploy, so the known zone names are added up front too (skywynn_zones = Zone 1 + hub, skywynn_zones2..5 = Zones 2-5).
+    known = ["skywynn_zones"] + ["skywynn_zones%d" % i for i in range(2, 6)]
+    names = set(n for n in os.listdir(wdir) if os.path.isdir(os.path.join(wdir, n))) | set(known)
+    add = sorted(n for n in names if n not in have)
     if add:
         d["allowedWorlds"] = have + add
         tmp = cfg + ".tmp"
