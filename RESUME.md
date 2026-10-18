@@ -45,6 +45,10 @@ LEVEL-BANDS BATCH (10-18 eve, deploy TOGETHER after one final review): Gear 0.3.
    Accessories 0.5.27, Mobs 0.1.12, Auctions 0.1.14, Armory 0.1.39 (+ tier_tags v3 / skyyench / test_tier_tags commit). Also built, lean: Wardrobe 0.2.10 (pet icons; needs review).
    Skills 0.4.53 (no XP caps, Fortune uncap, level cap 50+10, alloy XP, Farming XP) building. Armory 0.1.38 PINNED (TT v2). Follow-up: SkyyShards totem recipe orb item-id bug.
 
+BALANCE PASS (Skyy 10-18, skills.md last line): research + spec research/Balance-Pass-Spec.md - all skills + class level ~same steady rate, ~10 h/zone Z1-3,
+   first rebirth 40-50 h, later rebirths shorter; class stats tuned to role. START AFTER THE WEEKLY RESET (10-20 09:00) - weekly 91% on 10-18.
+   Also queued: XP caps in Cooking (maxXpPerMinute 1.5M) / Guilds (xpMaxPerCheck) / Exploration (chunks.maxPaidPerWorld) -> 0; Enchanted alloy Smithing XP rows.
+
 ## NEXT (after Skyy's answers)
 0. QUEUE 10-18 (Skyy answers in docs/answered): Level-Bands-20 build (research/Level-Bands-20-Spec.md; cap 50 +10/rebirth, Mushroom 15th crop)
    after Gear 0.3.28 pins -> Gear 0.3.29 -> Mobs 0.1.12 -> Armory -> Collections -> Bazaar -> Auctions together; Skills 0.4.53 (doubleDropMax
