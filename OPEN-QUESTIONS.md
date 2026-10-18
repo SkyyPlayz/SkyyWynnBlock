@@ -22,6 +22,7 @@ by topic): [docs/answered/README.md](docs/answered/README.md). Format: one `- ` 
 ### skills  (answers -> docs/answered/skills.md, topic `skills`)
 
 ### gear  (answers -> docs/answered/gear.md, topic `gear`)
+- METALS TOOLS + FORTUNE (research/Metals-Tools-Fortune-Spec.md, 11 questions in its last section, each with a default - the main session asks them one popup at a time before builders F1-F3 / G1 / A1 start).
 
 ### economy  (answers -> docs/answered/economy.md, topic `economy`)
 
