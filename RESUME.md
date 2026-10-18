@@ -1,4 +1,4 @@
-# SkyWynn - RESUME HERE (updated 2026-10-17 ~08:20 MDT; Skyy resets the session after this)
+# SkyWynn - RESUME HERE (updated 2026-10-18 ~02:10 MDT after the overnight run; Skyy resets the session after this)
 
 Big picture: `STATUS.md`. Map: `INDEX.md` (every folder has a README). Rules: `PROJECT-RULES.md`. Versions: `HANDOFF.md`.
 Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions word for word: `docs/answered/<topic>.md`. Open: `OPEN-QUESTIONS.md`.
@@ -10,46 +10,38 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
    Parries pack-API fail is third-party) -> `deploy_set.py --yes` (check the LAST line says "deployed N mods") -> `record_deploy.py` -> commit -> tidy.
 3. After Skyy plays: skill `skywynn-logs` (`python tools/log_scan.py --ours`, then `--recycle`).
 
-## LIVE NOW (deployed 2026-10-17, TEST-CHECKLIST 172-177)
-- 172: Accessories 0.5.23 (Void Charms -> top-bar Market disconnect fixed), Gear 0.3.18 (Breaking Speed row first, accessory Breaking
-  Power, red/green requirement lists), Islands 0.5.19 (6 named island homes, `/is sethome <name>`, `/is <name>`).
-- 173: FP1 Potion Flask + Food Pouch = Cooking 0.1.11 + Sacks 0.8.18 + Wardrobe 0.2.8 (Storage > Supplies, /flask /pouch). FLOOR Cooking 0.1.11.
-- 174: Menu 0.3.37 (Teleport page: warps with APPROVED icons art/warp-icons, island homes, homes, Arrange; Void Charms amulet icon) +
-  Essentials 0.1.14 (/back, /sethome + /home 2 homes, /warpadmin icons; islands fail closed, instances refused).
-- SkyyFlaskProbe retired 10-17 (RETIRED list).
-- 175: Accessories 0.5.24 (Void Charms name). 176: Sacks 0.8.19 / Essentials 0.1.15 / Auctions 0.1.12 / Menu 0.3.38 (Void Charms
-  rename, icon ids > 32, Arrange Prev/Next + dots), Classes 0.1.37 (Breach x Mark), Wardrobe 0.2.9 (Requip leaves Pouch food), Nestkeeper ON.
-- 177: ORES ROUND = WorldGen 0.7.3 (Lead / Chromium / Slag / Titanium ores, Dusk / Azurvane / Cinder / Lumen + Electrum alloys, vanilla-vein
-  copies, Gold Z4-5) + Accessories 0.5.25 (Furnace Charm I-V + Eternal Flame) + Sacks 0.8.20 + Collections 0.2.25 + Bazaar 0.1.20 + Skills 0.4.49;
-  the five ores mods roll back TOGETHER (deploy_set STOP guard).
+## LIVE NOW (deployed 2026-10-17/18, TEST-CHECKLIST 172-190; details per number in docs/tests/2026-10.md)
+- 172-176: Void Charms rename everywhere, Potion Flask + Food Pouch, Teleport page + /back + homes, Breach x Mark, Requip food fix, Nestkeeper ON.
+- 177 ores round (WorldGen / Accessories Furnace Charm / Sacks / Collections / Bazaar / Skills; the five roll back TOGETHER).
+- 178 PR #17 Armory sets as mob drops; 179 Salvagebench guard; 180 starter wand leap; 181 zone Mining sets + armor weight text + starter
+  quest class gear; 182 Fortune + big-tree log pickup fix; 183 HUD ability icons; 184 15-step tier renumber + Mage PA4 Meteor from the Rift;
+  185 metal tools + 76 metal weapons + Bazaar 0.1.21; 186 Movement 2 (speed + jump vs The Armory); 187 80 vanilla-style metal weapons.
+- Pins now: Gear 0.3.24, Armory 0.1.34, Skills 0.4.51, Accessories 0.5.26, Core 1.0.1, Sacks 0.8.22, Collections 0.2.26, WorldGen 0.7.4,
+  Bazaar 0.1.21, Auctions 0.1.13, Classes 0.1.38, Trees 0.3.23, Quests 0.4.1, Hud 0.3.32, Menu 0.3.39 (Gear now 0.3.25, Collections 0.2.27) (all: tools/deploy_set.py SET + HANDOFF).
 
 ## RUNNING / JUST BUILT
-- COBB (Skyy's Grok bot) STOPPED BUILDING 10-17 (LOCAL-RESUME.md, PR #16 merged): all builds are local again; Cobb = design / specs /
-  reviews. Cobb's armor-drops PR #17 (Gear 0.3.19 + Mobs 0.1.10) is HANDED TO LOCAL: review, trusted rebuild, smoke, pin, merge.
-  Trial rules + undo: CLOUD-RESUME.md "Cloud build trial". Metals source of truth (Cobb): SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec.md (outside the repo).
-- WORK SPLIT + LOCKS: `LOCAL-RESUME.md` (made by Cobb = Skyy's Grok bot) - check its lock table before any job.
-- Gear spots of the Void Charms rename still left (Gear locked to Cobb): build_skyygear_0.3.18.py 29321, 31517-31534.
-- Smelting charm -> FURNACE CHARM (below). Wynn elements spec research/Wynn-Elements-Spec.md + structure ask (joszza) wait on Skyy.
-- NEXT: Cobb's PR #17 (armor drops, Gear 0.3.19 + Mobs 0.1.10): review, trusted rebuild, smoke, pin, merge. Then the Void Charms Gear texts.
-- Zone metals (Skyy's table, research/Zone-Tiers-Idea.md): Bronze / Dusk / Azurvane / Cinder / Lumen; Quirk sends art drafts per family.
+- Overnight (Skyy: "work through your whole todo list ... pich what fits the existing build"): DONE - every round deployed (TEST 176-189);
+  nothing running. Locks: LOCAL-RESUME.md (empty).
+- Cobb (Skyy's Grok bot) does design / specs / reviews only; all builds local (LOCAL-RESUME.md, CLOUD-RESUME.md "Cloud build trial").
 
-## NEXT (small first; Skyy: "work through the small things and the next up list. save the bigger ones for later")
-1. Small LOWs left from reviews (optional): Gear accBp per-hit cache + GearReq missing red row (gear 0.3.18 review); Menu warp names with
-   '.' can't be arranged, Arrange has no prev/next; Essentials icon ids > 32 chars dropped on restart; Requip deposit strands claimed food.
-2. Menu rebuilds now need a `TAB_ICON` for `storage:supplies` (tools/skyyui.py has the Supplies tab) - add one (art) in the next Menu round.
-3. Armor/weapons from The Armory + Arcane Robes + others as mob drops with our modifiers (gear.md 10-17; research/Armor-Set-Count.md):
-   per zone (5 zones) x weight: fewer normal sets low, 2 UT + 1 Mythic at the zone's top combat band; UT/basic = recolours (of the cooler
-   modded sets), coolest looks saved for Mythic, own designs last. Packable now: Void Armor (CC BY-NC). Ask authors (Skyy sends): Fyrrage
-   (Fantastic Knight + Outlanders), Elemental Knights, stonedturtle, SlverSkull (Arcane Robes). Add Patchly + The Armory 1.23.0 to PACK.md.
-   ULTRACODE round (Gear + Mobs + loot) once Skyy OKs the ask list.
-4. Nestkeeper into the pack (dup check, PACK.md) then the Aures dragon pet; Wynn elements spec (Earth/Thunder/Water/Fire/Air, Imbue all 5);
-   zone gathering spots + seeds locked behind collections + crop islands for Eternal seeds
-   (100 / +200 / +500) - world.md 10-17.
-5. Small list: smelting accessory, lifelong multitool merge, Hud ability icons (6 classes), Mage PA4 (Armory blink bridge), structure mods +
-   joszza draft, flip lint MENU_PATTERN_FAIL, skyyeggs ORDER, Profiles carry Accessory Power / retired files.
-6. IDEA (Skyy "dont change now"): research/Zone-Tiers-Idea.md - 3 gathering tiers per zone (2 ores + own alloy; metals = mining sets + tools
-   only, combat gear drops only), end of Zone 4 at Lv 50, Zone 5 after rebirth; Silver/Gold kept for charms.
-7. LATER (Skyy): Beastmastery, Void Particles, totems, Armory gear + movement, mod compression (sections stay separate), SkyyCore 1.0.1 HubBar.
+## FOR SKYY THIS MORNING
+- Test: TEST-CHECKLIST 176-187 (newest first matter most: 189, 188, 187, 186, 185, 184).
+- Overnight defaults to OK or change: OPEN-QUESTIONS.md lines marked "[default taken overnight ...]" (ore gate speeds, Quirk models not
+  shipped, PA4 auto-fire, Onyxium vs Lumen, UT lines OFF, spawn factors, Nestkeeper, joszza, structures).
+- Art to look at: models-local/art/metals/_sheets/weapons-c.png (sent in chat).
+
+## NEXT (after Skyy's answers)
+1. UTs: the 5 Armory UTs ship in Gear 0.3.26 (Skyy approved 10-18). Target (gear.md 10-18): per zone 3 UT armor sets (Cloth / Light /
+   Heavy) + 1 UT weapon per class -> still to design: 12 armor sets (48 pieces, Zones 2-5) + 32 weapons (Spellblade Z1 + 8 x Z2-5, minus Hepta Axe).
+2. Aures dragon pet (research/Nestkeeper-Pack-Check.md section 5: needs an in-game look + ride probe first).
+3. WYNN ELEMENTS NOW (Skyy 10-18: before the big UT batch; all 10 answers in gear.md): build spec research/Wynn-Elements-Build-Spec.md
+   DONE (10 questions for Skyy + 6 probes) -> wave 1 Mobs / Gear 0.3.28 / Classes, wave 2 Pets / Accessories / Menu. Gear 0.3.26 (5 Armory UTs) DEPLOYED (TEST 190). Running: Skills 0.4.52 mana round.
+   QUIRK FIX LIST (her 4 tool models): root node R-Attachment not Pelvis (held-item, not character format); handle at the origin (moved ~206 / 271
+   units); head along Z (turn 90 deg); a bit bigger (0.74x / 0.77x vanilla); Lumen gem faces have 4 see-through corner texels.
+4. Zone gathering spots + seeds behind collections + crop islands: spec research/Zone-Gathering-Spec.md (10 questions) - build after answers.
+5. Authors to ask (Skyy sends): Fyrrage, Elemental Knights, stonedturtle, SlverSkull, joszza (draft in research/Structure-Mods-Survey.md),
+   Serj (optional). (Quirk + Cobb are Skyy's own Grok agents - their art is ours to use, Skyy 10-18.)
+6. LATER (Skyy): Beastmastery, Void Particles, totems, mod compression (sections stay separate), SkyyCore 1.0.2 HubBar.
 
 ## Never forget
 - Commit ab75b6c: Skyy hand-edited 4 GENERATED scripts (`SkyySkills\build_skyyskills_0.4.5.py`, `SkyyTrees\build_skyytrees_0.2.3.py`,

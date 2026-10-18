@@ -292,3 +292,16 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | Void Charms name in Server Setup + texts (DEPLOYED 2026-10-17, backup deploy-20261017-0824) | [2026-10](2026-10.md) |
 | Void Charms rename + Breach x Mark + Requip food + Nestkeeper (DEPLOYED 2026-10-17, backup deploy-20261017-0953) | [2026-10](2026-10.md) |
 | Zone ores + alloys + Furnace Charm + Electrum (DEPLOYED 2026-10-17, backup deploy-20261017-1608) | [2026-10](2026-10.md) |
+| Pack armor + weapons as mob drops (PR #17) (DEPLOYED 2026-10-17, backup deploy-20261017-1831) | [2026-10](2026-10.md) |
+| Salvagebench guard (rolled pieces: Requip salvage only) (DEPLOYED 2026-10-17, backup deploy-20261017-1924) | [2026-10](2026-10.md) |
+| Starter wands get the hold leap (DEPLOYED 2026-10-17, backup deploy-20261017-2204) | [2026-10](2026-10.md) |
+| Zone Mining sets + armor weight text + starter quest class gear (DEPLOYED 2026-10-17, backup deploy-20261017-2220) | [2026-10](2026-10.md) |
+| Fortune round + big-tree log pickup fix (DEPLOYED 2026-10-17, backup deploy-20261017-2243) | [2026-10](2026-10.md) |
+| HUD ability icons (all classes) (DEPLOYED 2026-10-17, backup deploy-20261017-2250) | [2026-10](2026-10.md) |
+| 15-step tier renumber + ore gates + Mage PA4 Meteor from the Rift (DEPLOYED 2026-10-17, backup deploy-20261017-2348) | [2026-10](2026-10.md) |
+| Metal tools (15-step ladder) + metal weapons (9 families x 8 metals) (DEPLOYED 2026-10-18, backup deploy-20261018-0058) | [2026-10](2026-10.md) |
+| Movement 2: speed + jump bonuses work with The Armory (DEPLOYED 2026-10-18, backup deploy-20261018-0144) | [2026-10](2026-10.md) |
+| Vanilla-style metal weapons in the 8 new metals (DEPLOYED 2026-10-18, backup deploy-20261018-0153) | [2026-10](2026-10.md) |
+| Collection gates for new metal tool tier-ups + Supplies tab picture (DEPLOYED 2026-10-18, backup deploy-20261018-0214) | [2026-10](2026-10.md) |
+| Lifelong multitool merge + small Gear fixes (DEPLOYED 2026-10-18, backup deploy-20261018-0249) | [2026-10](2026-10.md) |
+| 5 Armory UT sets (Ghost Rook, Ghost Calvary, Battlegrounds, Ghost Sword, Hepta Axe) (DEPLOYED 2026-10-18, backup deploy-20261018-0735) | [2026-10](2026-10.md) |

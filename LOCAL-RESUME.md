@@ -25,9 +25,8 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 
 | Mod(s) | Owner | Job | Branch / PR | Since | Status |
 |---|---|---|---|---|---|
-| SkyyGear, SkyyMobs (+ loot) | Local (handed over) | RESUME NEXT 3: armor + weapons as mob drops (Gear 0.3.19, Mobs 0.1.10) | `cloud/trial-armor-drops`, [PR #17](https://github.com/SkyyPlayz/SkyyWynnBlock/pull/17) | 2026-10-17 | Built + reviewed; local: review, rebuild, smoke, pin, merge. Renumber if 0.3.19 / 0.1.10 are taken |
 
-Cobb holds no locks now. Carry RESUME's unfinished Void Charms Gear edits into the next Gear patch after #17.
+Cobb holds no locks now. PR #17 merged + deployed 2026-10-17 (TEST-CHECKLIST 178); the Void Charms Gear texts went into Gear 0.3.19.
 
 ## Handed to the local session (from Cobb)
 
@@ -49,16 +48,19 @@ Private art inputs live OUTSIDE the repo on Skyy's PC: `Hytale mods WORK\SkyWynn
 geometry: never commit, upload or share them. Only our textures go in mods, pointing at vanilla models.
 Metals source of truth: `SkyWynn-PRIVATE-art\metal-art\skywynn-metals-build-spec.md` (locked rules, sections 1-8).
 
-1. MINING ARMOR Z2-Z5 into SkyyForaging. Quirk's approved sets (Skyy 2026-10-17): Z2 Lead/Dusk, Z3 Chromium/Azurvane,
+1. DONE 2026-10-17 (Gear 0.3.21, TEST 181). MINING ARMOR Z2-Z5 into SkyyGear (Mining sets live in Gear GearMine; there is no SkyyForaging mod - local 2026-10-17). Quirk's approved sets (Skyy 2026-10-17): Z2 Lead/Dusk, Z3 Chromium/Azurvane,
    Z4 Slag/Cinder, Z5 Titanium/Lumen. Inputs: `SkyWynn-PRIVATE-art\mining-armor\Z2_Thorium..Z5_Mithril` (each set retextures
    that zone's vanilla base armor). Ship our textures + item defs that point at the vanilla models.
-2. METAL VOLUME ART (art only, no game code). Inputs: `SkyWynn-PRIVATE-art\metal-art\` (TASK-metal-art.md, Quirk's zone palette
+2. DONE 2026-10-17/18 (tools/art/make_metal_items.py, approved; wired in Gear 0.3.23 + Armory 0.1.33 / 0.1.34). METAL VOLUME ART (art only, no game code). Inputs: `SkyWynn-PRIVATE-art\metal-art\` (TASK-metal-art.md, Quirk's zone palette
    cards, her approved Titanium + Lumen tools as the sample, skywynn-custom-weapons-list.md, skywynn-metal-items-inventory.md).
    Make: ore + bar for Lead, Chromium, Slag, Titanium; bars only for Dusk, Azurvane, Cinder, Lumen (+ Electrum = Gold + Silver);
    all 9 weapon families (Wand, Crossbow, Spellbook, Kunai, Bo, Gauntlets, Soul Cage, Great Shield, Mage staff) in all 8 new metals;
    then every other metal item in the inventory. Excluded: charms, bench accessories, dropped vanilla tools (scythe, hoe),
    Foraging / Farming armor, fishing (waits for a full fishing build). The zone palette cards are enough (no per-metal cards).
-3. METALS BUILD (unassigned until Skyy says): ores, spawn, smelting, alloys, Fortune, tools/weapons per the spec.
+3. DONE 2026-10-18 (TEST 177-189: ores, alloys, Furnace Charm, Fortune, 15-step ladder, tools, 156 weapons, multitool merge). METALS BUILD: ores, spawn, smelting, alloys, Fortune, tools/weapons per the spec.
+   STATUS 2026-10-17 (local): ores + spawn rules + smelting + alloys + Electrum + Furnace Charm are LIVE (TEST-CHECKLIST 177;
+   research/Zone-Ores-Alloys-Spec.md). Still open: Fortune upgrades (spec 5), metal tools / weapons / mining sets per metal (need SkyyGear after
+   PR #17 + SkyyArmory), the 15-step tool tier ladder question (spec 2), real art instead of the build-time recolour placeholders (item 2).
 4. BETA BUGS 2026-10-17 (added by Cobb): fix the 19 bugs in `docs/tests/2026-10-17-beta-bugs.md`, bugs 1-6 first (fixes from
    Skyy's tests come first, PROJECT-RULES 7). Tick each box + log it. Its "Design notes" section needs Skyy's OK / a spec first.
 

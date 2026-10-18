@@ -40,7 +40,7 @@ Work a cloud session can do while the local session waits (usage limits, Skyy aw
 - **Answering the local session (2026-10-07):** messages from the local session arrive by SendMessage; reply by appending a
   "## <date time> <title>" block to `research/cloud/OUTBOX.md` and pushing to main (the local cloud-link mod picks it up in ~3 min).
 
-## Cloud build trial (Skyy 2026-10-17, ONE round - words in docs/answered/project.md 2026-10-17 lines)
+## Cloud build trial - ENDED 2026-10-17 (Cobb stopped building; PR #17 merged + rebuilt locally; kept for reference) (Skyy 2026-10-17, ONE round - words in docs/answered/project.md 2026-10-17 lines)
 
 - **Builder = Skyy's Grok bot** (Skyy 2026-10-17: "im using a grok bot for my cloud build. not our claude cloud"); it reads RESUME.md +
   this file. Claude cloud sessions do NOT build during the trial (their old limits stand).

@@ -203,3 +203,16 @@ tests always come first.
 175. Server Setup says Void Charms, not Accessories
 176. Void Charms texts, Arrange Prev/Next, Breach x Mark, Requip leaves Pouch food, Nestkeeper dragons
 177. Zone ores (Lead/Chromium/Slag/Titanium), alloys + Electrum, Furnace Charm I-V + Eternal Flame, ore + Charcoal collections, Bazaar listings
+178. Armory armor / weapons drop from mobs, Mythic boss bags, Mythic/UT craft block, Alteration keeps rolls, salvage via Requip
+179. Salvagebench refuses rolled Armory pieces (moves them out), crafted pieces still salvage
+180. Wood / Rotten / Tribal wand hold leap
+181. Camp quest: full class armor set + secondary weapon (free identify); 8 zone Mining sets; armor weight in flavor text
+182. Big Fens trees: all logs picked up; Mining Fortune uncapped; Smelting Fortune on mined ore
+183. HUD ability icons for every class, dimmed on cooldown
+184. New T1-T15 metal tags, ore hit speeds (never slower), pickaxe Fortune +10, Mage PA4 rift Meteor
+185. New metal tools + tier-ups, 76 new metal weapons, soul cage branch, Bazaar unchanged
+186. Speed + jump bonuses no longer paused by The Armory
+187. 80 new metal swords / axes / bows / spears / shields etc.
+188. Metal tool tier-ups gated by collections; Supplies tab picture
+189. Merge lifelong pickaxe + hatchet into one multitool (two stat sets)
+190. 5 Armory UTs drop as orange Untiered items

@@ -1,0 +1,14653 @@
+"""SkyySacks 0.7.17 - build script (javassist via jpype).
+Run:   python build_skyysacks_0.7.17.py           -> SkyySacks/SkyySacks-0.7.17.jar   (deploys go through tools/deploy_set.py --yes)
+       python build_skyysacks_0.7.17.py --deploy  -> also copies to Mods/SkyySacks.jar and enables it in the HUD mod world (never used)
+Fixes vs 0.1 (code review 2026-09-22): no item loss/dupe - sweep removes exactly `take` from the slot via
+removeItemStackFromSlot(slot, qty) and only credits the pool when the transaction succeeded; withdraw only
+debits what was really added (remainder respected); pool load is race-free; atomic file writes; disk I/O moved
+off the world thread (dirty set + 10s saver); /sacks page is built inline (no .ui files, no underscores in IDs) with TextButtons + paging;
+ticker cancelled on shutdown; failures logged. 0.1.4: self-test join grant removed (sweep + page verified in-game 2026-09-22).
+0.7.0: craft tabs Crafting | Alchemy | Furnace | Tannery | Collections; Furnace/Tannery are timed processing queues with fuel,
+offline progress and an output slot (Skyy_SkyySacks/processing/<uuid>.properties); BagMirror.sync idempotent (no double bag deduction).
+0.7.2: per-profile storage (tools/PROFILES-CONTRACT.md): pools/<pkey>.properties, processing/<pkey>.properties, crafts.log lines
+carry the pkey; pool/exemption/processing/BagMirror caches keyed by the pkey String; sweep, pages, bench link and processing resolve
+the pkey once per run (a bench mirror keeps its key and is retired into its own pool on a switch); 6s settle window after a switch
+(no sweep, page item moves refused); ProcTask checks profile:epoch:<uuid> every second (flush saves, log, notice on an open page).
+Review fixes: the bench link uses settledKey and parks the mirror (bag materials off the open bench) while a switch settles; the craft
+page never builds a mirror for an unsettled key; world-thread pool saves go through SackPool.saveSoon (SackSaver thread); PROFILE log
+lines are queued (CraftLog.later) and written by the SackSaver.
+Integration fixes (SkyyProfiles 0.1 semantics): settledKey also pauses item moves while profile:busy:<uuid> is set (crash recovery
+at join), while SkyyProfiles is installed but published no epoch for the player (unreadable players file) and while the pool file
+cannot be read (a failed read is no longer cached as an empty pool that the next save wrote over the file); absent epoch = baseline;
+settle window 6s (covers the acc:has / coll:recipes republish); failed pool saves stay dirty; shutdown syncs open bench mirrors.
+Derived by tools/sacks_0_7_2_patch.py. Without SkyyProfiles pkey = uuid = profile 1: same files, same behaviour.
+0.7.3 (derived from 0.7.2 by tools/sacks_0_7_3_patch.py - edit the patch, not this file): craft tabs Crafting | Smithing | Farming |
+Furnace | Tannery | Collections (no Alchemy tab); search box (TextField, Enter or Search, Clear; config craftSearch in
+Skyy_SkyySacks/config.properties, re-read without a restart; /craft <words>); retired Alchemy/Cooking/Campfire bench accessories
+unlock nothing and timed/table-only recipes never craft instantly (also on the Collections tab; Salvage stays instant - Skyy's
+crafting layout lock); bench-aware bag mirror (the open
+bench's ingredients fill the 36 slots first; the craft page does the same); Furnace units pay Smithing XP through skill:fn:craftxp
+(ledger Furnace.xpDone, paid once the profile is settled); graded Skyy_Cook_* dishes pool into the Farming bag; the Furnace /
+Tannery tab has a Refresh button instead of the ~2 s self-refresh (periodic page updates make PageManager drop clicks).
+0.7.4 (derived from 0.7.3 by tools/sacks_0_7_4_patch.py - edit the patch, not this file): Campfire accessory tab (Skyy 2026-09-24:
+the Campfire accessory is back as an emergency cook) - shown while acc:has lists Skyy_Accessory_Campfire_T<n>, after Farming; lists
+exactly the Campfire-bench recipes whose output is in SkyyCooking's cook:campfire:ids (without SkyyCooking: every Campfire-bench
+recipe, plain output, no XP); instant from inventory + bags like Crafting; each click calls cook:fn:campfire once after the materials
+are removed and gives the id it returns instead of the primary output (null / missing / unknown item = plain output); SkyyCooking pays
+the Cooking XP (x campfire.xpFactor: 0.5 then, 0.25 since SkyyCooking 0.1.3) and grades the dish (x0.75 of the Cooking bonus); the tab
+does not report skill:fn:craftxp. The Campfire stays a
+retired bench everywhere else (Crafting / Smithing / Farming / search / Collections keep no cooked food).
+0.7.4 review fixes: tab text numbers from SkyyCooking's live cook:fn:campfactors (fallback: build-checked defaults); a
+recipe that gives no item is refused before materials move (every tab); Campfire-exclusive recipes only; the graded id replaces exactly
+one output entry.
+0.7.5 (derived from 0.7.4 by tools/sacks_0_7_5_patch.py - edit the patch, not this file): SMITHING BAG (Skyy's beta backlog item 1) -
+a 5th category with Small / Medium / Large Smithing Bag items and Workbench recipes; it pools every bar / ingot, leather, hide, cloth
+bolt, fabric scrap, leather strap and iron stud (hides and fabric scraps leave Combat; already pooled stacks show in the Smithing tab,
+the pool is keyed by item id). Tree sap pools into Foraging. The bags page always shows all five tabs: a bag you do not carry has a
+grey tab that shows how to craft it (big recipe icons, your counts, upgrades, items already waiting in it). One bag table in this
+script feeds the tabs, the how-to-craft view, the item recipes and the lang text (ids / names checked against Assets.zip).
+Review fixes: the pool file save (SackPool.saveNow) is tmp + fsync + atomic rename like ProcStore; the never-shipped self-test grant
+(GrantTask / SackReady) is gone from the source; the two longest wrapped texts of the how-to-craft view have room for three lines.
+0.7.6 (derived from 0.7.5 by tools/sacks_0_7_6_patch.py - edit the patch, not this file): IN-GAME SERVER SETUP + PLAYER SETTINGS -
+the admin config kit (tools/skyycfg.py): SkyyMenu 0.3 Server Setup -> "Bags and Crafting" edits Skyy_SkyySacks/config.properties
+(node skyysacks.admin): craftSearch (live, reload:SackCfg.reload) plus the Small / Medium / Large bag caps (advanced, confirm) and
+the Furnace / Tannery queue, fuel and output caps (advanced), all live; SackCfg.reload() loads every key and clamps like the rows.
+A bag change that would break Small <= Medium <= Large asks first (SackCfg.checkTierOrder; never refuses, ignored on import).
+Player Settings: sacks.benchDone / sacks.benchFuel gate only the two ProcTask chat lines (log line and fuel latch unchanged).
+Defaults = 0.7.5, so nothing changes until an admin or a player changes something.
+0.7.7 (derived from 0.7.6 by tools/sacks_0_7_7_patch.py - edit the patch, not this file; research/Bag-Restructure-Spec.md): MAGIC BAGS
+BY RARITY - Small / Medium / Large keep their ids as the Normal / Unique / Legendary bag (640 / 2,240 / 20,160), a new Rare bag
+(6,720) sits between, own Wynn-coloured qualities; the MYTHIC OMNI BAG (all five Legendary bags in one, 100,000 of each item for
+EVERY bag type, a tab per type, the only bag needed); the 20 tiered bag recipes need recipe knowledge that KnowSync teaches from
+SkyyCollections coll:recipes (free when bags.freeRecipes is on or SkyyCollections is missing); /craft hides locked bags and unknown
+vanilla knowledge recipes; carried bags get their new rarity look; Server Setup rows for all five caps + free recipes; one-time notice;
+vanilla-look bag page; crafted gear goes through SkyyGear gear:fn:roll when it exists.
+0.7.8 (derived from 0.7.7 by tools/sacks_0_7_8_patch.py - edit the patch, not this file; Skyy 2026-09-30 "my cooked food went into my
+farming sack. id keep cooked food out."): COOKED FOOD STAYS OUT OF THE FARMING BAG - the Farming bag keeps raw produce (Plant_*, Fish_*,
+Food_*_Raw incl. the rare fish, Food_Egg, life essence, poop); cooked / prepared Food_*, Skyy_Cook_* dishes and cook:prefix items stay in
+the inventory. One helper SackDefs.cooked(id); catOf (new items: auto-pickup + Deposit all, every bag and the Omni) leaves cooked food
+out while Server Setup "Cooked food in the Farming bag" (bags.cookedFood, default OFF) is off; homeOf (= the 0.7.7 catOf) keeps cooked
+food already stored visible, retrievable and usable - never deleted. Rebuild fix: Mythic tooltip #cc66cc (SkyyGear 0.1 / kit RARITY).
+Review fixes: stored cooked food is listed first on the Farming tab (switch off) so the 36-cell grid never hides it; the note is
+singular / plural; Deposit all on the Farming tab says cooked food stays in the inventory (SweepTask.cookedHeld).
+0.7.9 (derived from 0.7.8 by tools/sacks_0_7_9_patch.py - edit the patch, not this file; Skyy 2026-10-01 "id half the amount of cooking
+xp you get from the campfire" -> SkyyCooking 0.1.3 campfire.xpFactor default 0.5 -> 0.25): the /craft Campfire tab line shows the LIVE
+share from cook:fn:campfactors (both factors 0..1), else NEW config:fn:SkyyCooking get campfire.xpFactor / campfire.buffFactor / enabled,
+else the fallback 25% / 75% (was 50% / 75%); no SkyyCooking = plain food, no XP (as before). The build check no longer fails on a
+differing SkyyCooking default (NOTE only); it fails when SkyyCooking stops publishing what the live line reads. Nothing else changed.
+0.7.10 (derived from 0.7.9 by tools/sacks_0_7_10_patch.py - edit the patch, not this file; both Skyy 2026-10-01): (A) "charcoal should go
+in the smithing bag." -> Ingredient_Charcoal joins SMITH_EXACT: auto-pickup / Deposit all put it in a Smithing bag or the Mythic Omni
+Bag, withdraw takes it out, nothing else re-routes; the Smithing bag text names charcoal. (B) "make a new tab for accessories, and
+sacks ..." -> the 21 bag recipes move to the Workbench tab "Accessories & Bags" (Workbench_SkyyAccessories, tools/skyywbtab.py; added at
+runtime by start() + an asset reload listener; SkyyAccessories 0.5.2 owns the tab and its order, this mod is the fallback copy so the
+bags never vanish without it). Ingredients, outputs and KnowledgeRequired unchanged.
+0.7.11 (derived from 0.7.10 by tools/sacks_0_7_11_patch.py - edit the patch, not this file; Skyy 2026-10-02, OPEN-QUESTIONS Q&A rounds
+2-4): (A) KEPT counts replace the 10-minute exemption - every withdraw / Pick up all / refill adds to SackPool.KEPT[pkey][item] (a
+withdraw first counts that item's hotbar + backpack stacks as kept: the sweep never takes those), the
+2 s sweep (main inventory) leaves up to that many of what the player carries and collects only what is above it, kept drops to what
+the player carries, Deposit all clears that tab's kept counts, a relog (KeptQuit) or profile switch (settledKey) resets them
+(memory only). (B) STACK AUTO-REFILL, a per-player 3-way setting on the bag page (Hotbar only = default / Full inventory / Off,
+Skyy_SkyySacks/refill.properties): every 2 s the stacks of items the player used since the last tick (hotbar; Full: + main inventory +
+backpack) top up from the pool when that bag is carried; never an empty slot or a stack with metadata; counted; adds to kept; skipped
+while that bag is full and spare items sit in the main inventory, and while a bench window is open. (C) BAGS ADD UP - caps()
+sums every carried bag of a type, the Mythic Omni Bag adds CAP_OMNI to every type; the page shows the total and the bags behind it.
+Review fixes (2026-10-02): no text claims that vanilla benches use the bags (0.7.12 makes them); only a key change resets kept (a
+same-key epoch keeps it); Server Setup rows bags.refill (master switch) + bags.refillDefault; the refill pauses only while a bench
+window is really open (a left-over mirror is synced and dropped); a quitting player's pool is saved at once; shutdown latch
+SackPool.CLOSED (settledKey); an empty metadata document counts as none. Known edges: tools/sacks_0_7_11_patch.py docstring.
+0.7.12 (derived from 0.7.11 by tools/sacks_0_7_12_patch.py - edit the patch, not this file; research/Bag-Craft-Link-Fix.md): BENCHES AND
+INVENTORY CRAFTING USE THE BAGS. (A) an outbound packet filter (CraftPacketFilter) merges the bag mirror into every bench OpenWindow /
+UpdateWindow extra-materials list and attaches the mirror to the section the vanilla code just fed (world thread, always returns false);
+(B) the mirror is attached only through an output-only guard (MirrorGuard: crafts remove, inserts refused), one mirror per key, park
+invalidates; (C) the 300 ms CraftLinkTask (BenchLink.link) books bench use and asks for a vanilla refresh only when a window is stale
+(pool counter SackPool.CHG + a changed mirror, carried bags, key, foreign mirror) at most once a second - it never marks a section valid
+or sends updates itself; close hooks book at once; (D) PocketCraftWindow (pocket crafting with its own section, swapped into
+Window.CLIENT_REQUESTABLE_WINDOW_TYPES, restored at shutdown); (E) an inbound filter queues a PreCraftTask before a bench craft click
+so a second click in the same tick sees the bags. Live-mirror rule: withdraws and the stack refill book mirror use first and trim the
+mirror to the pool after (the 0.7.11 refill pause is gone). Texts say benches and inventory crafting use the bags you carry. Server
+Setup row bags.benchChests (bench chest count fallback, off). Engine facts re-checked at build time (_engine_facts). One mirror per
+key shared by bench / pocket / /craft (rebuilt for the union of the open windows' inputs); a declined window empties it; every attach
+retires another key's mirror first; start() undoes an earlier start. Decisions + known edges: tools/sacks_0_7_12_patch.py docstring.
+Review fixes: Server Setup bags.pocketCraft (default on, live) = the off switch of the pocket crafting swap, read from config.properties
+before start(); a declined bench window gets its close hook too; rebuild never offers an id the Item asset map no longer knows.
+0.7.13 (derived from 0.7.12 by tools/sacks_0_7_13_patch.py - edit the patch, not this file; Skyy 2026-10-05 "you should be able to sell
+from your bags"): THE BAG TAKE BRIDGE for SkyyBazaar 0.1.5 - new SackBridge + SackFn, published in setup() on skyy.bridge (never removed):
+sacks:fn:count {UUID, itemId} -> Long (takeable now; -1 = paused), sacks:fn:all UUID -> HashMap itemId -> Long (null = paused),
+sacks:fn:take {UUID, itemId, qty} -> Long removed (0..qty), sacks:fn:put {UUID, itemId, qty} -> Long returned (only what a take removed
+for that profile + item in the last 60 s and no commit cleared - the refund path, never a source of items; it returns into the pool the
+take debited), sacks:fn:commit {UUID, itemId, qty} -> Long cleared (the caller paid: those can never be put back). Same gates as a /pd withdraw: world thread only
+(Store.isInThread), the settled profile key (SackPool.settledKey), a bag of the item's home type (or the Omni) carried, the live-mirror
+rule (BagMirror.beforeTake / afterTake), the read + debit atomic under SackPool.class, saved through SackPool.saveSoon, one crafts.log
+line per take / put. Magic Bags themselves are never in a bag (homeOf = null): a bag id answers 0. Everything else is 0.7.12's.
+0.7.14 (derived from 0.7.13 by tools/sacks_0_7_14_patch.py - edit the patch, not this file; Skyy 2026-10-08 "as drawn, violet. start the
+bag round"): THE NEW BAG LOOK - art wiring only. tools/art/make_bags.py runs IN MEMORY at build time (vanilla-derived files: never
+committed, only in the jar); the 20 typed bags + the Omni get the rarity model, the type x rarity texture + icon, IconProperties, the
+always-open held animation, the SkyySack player set (Block + SackLift), the violet SkyySack_PortalSparkle particles on node Portal and
+a SwapTo lift (Simple 0.5 s, ItemAnimationId SackLift). Classes, ids, recipes, texts and saved data are 0.7.13's.
+0.7.15 (derived from 0.7.14 by tools/sacks_0_7_15_patch.py - edit the patch, not this file; Skyy 2026-10-09 "yes, hide the omni bag
+until unlocked (unlocked by unlocking all legendary bags"): the Omni recipe needs knowledge; KnowSync teaches Skyy_Sack_Omni exactly
+while all five Legendary bag recipes are known (free mode: always), so the Workbench, /craft and the bag page hide it until then; the
+bag page / /craft / tooltip say how it unlocks. Normal bags = 20 Plant Fiber + 4 Sticks (Skyy: "lets use fiber for T1 bags, not wool"). Page guard: ProcTask's profile notice only reaches a page built for the player's
+current entity Ref (a page the client lost in a world move gets no update). Saved data unchanged.
+0.7.16 (derived from 0.7.15 by tools/sacks_0_7_16_patch.py - edit the patch, not this file; Skyy 2026-10-09 "can we make the player
+hold it up a little higher, more infront of him?"): the SkyySack set gets its own hold poses for 18 keys (idle / walk / run / sprint /
+crouch / jump / fall / fluid), generated at build time from the vanilla Block animations: first person R-Arm + (12 toward the centre,
+10 up, 0), third person both upper arms 12 degrees higher; SackLift ends on the new idle. Classes, ids, recipes, texts and saved data
+are 0.7.15's.
+0.7.17 (derived from 0.7.16 by tools/sacks_0_7_17_patch.py - edit the patch, not this file; research/Requip-Smithing-Spec.md round R2;
+Skyy "then also let it pull from the pocket dimension for blocks in the hot bar. (so they auto refill.)" + "we should give this, and the
+crafting thing a filter by class"): Requip's reserved hotbar block slots (requip:pocket:<uuid>) refill from the bags every 2 s, EMPTY
+slots too (SweepTask.pocketFill; sacks:fn:pocketFill on demand); sacks:fn:deposit (inventory -> bags, caps respected); the smithing
+hub's craft bridges sacks:fn:craftList / craftHave / craftPay / craftRefund / craftCommit (the /craft allow rule + payment in one
+place: inventory first, then bags, all or nothing, receipts refundable once within 60 s); the /craft Smithing tab hides gear SkyyGear's
+gear:fn:classShow says is not for your class. Assets, ids, recipes and saved data are 0.7.16's. Details: the patch docstring.
+0.7.18 (derived from 0.7.17 by tools/sacks_0_7_18_patch.py - edit the patch, not this file; research/Code-Structure-Audit.md 9b / 9c / 9e +
+the crash window): idle players cost no world hops (the 2 s sweep runs on an inventory change / a changed trigger only - SackInvSys on the
+engine's InventoryChangeEvent; the 300 ms bench link only with a crafting window; the 1 s Furnace / Tannery only with a queue, unpaid XP or
+an open page; a 20 s heartbeat); one caps / carried scan per sweep; pool saves on a private writer thread (SkyySacks-writer), at once
+after a quiet second, else at most one per key per second, only dirty keys; a refill / Requip top-up saves the pool at once (a sweep keeps
+the 10 s save - the never-dupe direction); the parsed coll:recipes set is cached by coll:epoch. No behaviour
+change; saved data, bridge keys and assets are 0.7.17's. Details: the patch docstring.
+0.8.0 (derived from 0.7.18 by tools/sacks_0_8_0_patch.py - edit the patch, not this file; research/Bags-v2-Spec.md): BAGS V2, shown to
+players as SkyyVoid - ONE Pocket Dimension, six categories (Fishing new, crystals in Mining), no carried bag needed, a storage LEVEL per
+category from the items collected (SkyyCollections coll:fn:catTotal), a RARITY per category raised by the Upgrade button (level gate +
+item cost), capacity = level x 100 x the rarity multiplier as one item limit per category, Omni once all six are Legendary; the
+Void page with the amount box above Withdraw; old Magic Bags convert once per profile (best bag wins, extra bags refunded) with a
+History copy first, a journal and a 30 s credit delay (crash safe); /pdadmin legacybags | omni; new bridge keys sacks:v2, sacks:fn:pd,
+sacks:fn:catOf. 0.7.18's private writer, idle-hop gating and inventory-change sweeps are kept. Details: the patch docstring.
+0.8.1 (derived from 0.8.0 by tools/sacks_0_8_1_patch.py - edit the patch, not this file; research/Gathering-Shards-Spec.md phase 1): THE
+ENCHANTED MATERIALS GO IN THE VOID - SackDefs.enchCat (tools/skyyench.py: the 19 SkyyCollections 0.2.11 Skyy_Ench_* ids -> Mining /
+Foraging / Farming) is asked first by homeOf, so auto-pickup, Deposit all, withdraw, /craft + benches and the Bazaar bridges handle them
+like any gathered item. No saved data or setting changes. Details: the patch docstring.
+0.8.2 (derived from 0.8.1 by tools/sacks_0_8_2_patch.py - edit the patch, not this file; Skyy 2026-10-13 "reset all my bags from omni to
+common if you can. so i can test it"): /pdadmin rarity <player> <category|all> <Normal|Unique|Rare|Legendary|Omni> sets a profile's
+Void rarity (testing / support); lowering never deletes a stored item - only new deposits stop while a category is over its space.
+Details: the patch docstring.
+0.8.3 (derived from 0.8.2 by tools/sacks_0_8_3_patch.py - edit the patch, not this file; Skyy 2026-10-13 "in hypixle skyblock, items go
+straight in your inventory, they never fall on the ground. can we do that too?" + "both. more loot to top damager."): AUTO-PICKUP - block
+drops and mob drops go straight to the player (the Void category first, then the inventory, the feet only when both are full), caught
+inside the engine's own entity add (never swept from the ground); mob drops to the top damager (SkyyMobs 0.1.7 mob:fn:credit), a different
+killer gets pickup.killerShare % of a second roll; island pickup rules respected; SkyyHud feed cards instead of the vanilla pickup popup.
+Server Setup > SkyyVoid and Crafting > Auto-pickup. Details: the patch docstring.
+0.8.4 (derived from 0.8.3 by tools/sacks_0_8_4_patch.py - edit the patch, not this file; auto-pickup follow-ups): a mob killed by a
+player's pet / summon gives its loot to the pet's OWNER (SkyyPets bridge pets:fn:ownerOf; owner offline / in another world = vanilla);
+F-harvested crops and F-picked loose blocks go to the Void first (the inventory part is moved right after the engine's own giveItem, the
+overflow of a full inventory is caught before it is thrown) - the pickup event other mods count is never changed. Details: the patch.
+0.8.5 = SOUND PASS ROUND 2, the SkyySacks part (2026-10-14; research/Sound-Pass-Plan.md; Skyy 2026-10-14 ~18:30 "do 1. 3. 6. 7. 8. and 9." -
+item 6 = sound pass rounds 2-4 + a per-player sound switch). The round 1 recipe (SkyyQuests 0.3.1), generated by tools/soundpass_gen.py:
+1. TWO SOUNDS, 2D to that player only (category UI):
+     Void full     SFX_Generic_Crafting_Failed               auto-pickup found the Void AND the inventory full (the drop lands at the
+                                                             feet): at most once per 30 s per player (like the chat warning), whether
+                                                             the pickup card or the chat line reported it
+     Void upgrade  SFX_Workbench_Upgrade_Complete_Default    the Void page's Upgrade (Pay) went through. This REPLACES the vanilla
+                                                             craft click 0.8.4 played there (set the id row to
+                                                             SFX_Player_Craft_Item_Inventory to get the old click back)
+   The pickup click (SFX_Player_Pickup_Item), the /craft page and bench clicks stay as they were.
+2. SackSnd (the one helper; never throws; a missing id = one WARN; 0.5 s per player per sound) + the PER-PLAYER SWITCH: the bridge key
+   settings:sounds:<uuid> (Boolean, SkyyMenu 0.3.25 /settings) FALSE = that player hears no SkyWynn sound; absent / TRUE = play.
+3. SERVER SETUP -> SkyyVoid and Crafting -> new category "Sounds" (5 rows, all live, KEEP=10): Sounds (master) + per sound on / off +
+   its id (check= SackSnd.check). File: Skyy_SkyySacks/sounds.properties (written with the defaults when missing).
+4. No saved-data change, no new command, no bridge key written. ROLLBACK to 0.8.4: safe (0.8.4 never reads sounds.properties).
+0.8.6 = FELLED LOG MISSED BY AUTO-PICKUP (lean round sacks086, 2026-10-15; Skyy tested chopping an Oak with the Crude Hatchet, auto-pickup
+on: "the block i broke with my axe went on the ground. the rest went in the inventory.").
+Why: the hit block's own drop IS claimed (PickBreakSys). Breaking it wakes the block physics; in the SAME World.tick the chunk store's
+BlockPhysicsSystems$Ticking drops the unsupported log right above at (x+0.5, y+1, z+0.5). SkyySkills (0.4.39) snapshots the tree in the
+break handler but only COMMITS its felled claims in BreakTask, queued with World.execute - and World.tick runs consumeTaskQueue AFTER the
+chunk store tick (bytecode: consumeTaskQueue, entity store tick, chunk store tick, consumeTaskQueue). So for that first physics log
+skill:fn:felledBy still answers null, PickBook.match finds nothing and the log stays on the ground. Later logs fall after the commit.
+Fix (PickLate, one retry, nothing else changed):
+1. PickItemSys.onEntityAdded: match() found NO claim at the item's spot (PickBook.find null), block pickup on, the spot is a block drop
+   spot (x / z at .5, y whole) and SkyySkills' skill:fn:felledBy key exists (so felledBy just answered null) -> PickBook.late queues ONE
+   PickLate with World.execute: the world's task queue is a FIFO Deque, so it runs right AFTER the already-queued BreakTask.
+2. PickLate.run (world thread): the item ref still valid, pickup still on, PickBook.felled() asked AGAIN at the same spot; names a player
+   -> counted as a felled-log claim (stats counter 10) and delivered by the existing PickGive.deliver (Void -> inventory -> feet, island
+   rules, paused profiles, rollback - all unchanged). Still nobody / ref gone -> nothing happens, the item stays on the ground as before.
+   No retry loop, no tick scan; items matched normally (and items when SkyySkills is absent) cost nothing extra.
+3. /CRAFT FIRES CraftRecipeEvent$Pre (same round, Skyy: "was still able to craft a copper pickaxe"): the /craft page paid and handed out
+   recipes itself, never through CraftingManager.craftItem, so SkyyGear's lifelong no-craft rule (lifelong.noCraft) and craft.belowBand
+   never saw it. CraftPage.preCraft fires new CraftRecipeEvent$Pre(recipe, quantity) on the player's ref exactly like craftItem, after
+   the material check and BEFORE anything is removed: cancelled (or the check throwing) = nothing used, nothing given, info line
+   "this craft was refused - nothing was used" + a crafts.log CRAFT-REFUSED line. Pocket crafting (PocketCraftWindow / vanilla
+   FieldCraftingWindow) and the bench link already craft through craftItem (Pre fired - unchanged). Not changed: the Furnace / Tannery
+   timed queue (procQueue; no tool recipes) and sacks:fn:craftPay (SkyyGear's Smithing Craft tab, which filters tools itself).
+4. No saved-data change, no new command / system / setting / bridge key. ROLLBACK to 0.8.5: safe (that first log stays on the ground and
+   /craft stops firing the event).
+0.8.7 = /craft ARTIFACTS TAB (lean round sacks087, 2026-10-15; Skyy, on a /craft screenshot whose Crafting list mixed benches, crates,
+torches and 'Skyy Talisman Regeneration Common': "and id add an artifacts tab").
+1. The /craft tab row reads < Back to the Void | Crafting | Artifacts | Smithing | Farming | ... | Collections (same tab buttons, same
+   wrap: 6 tabs on the first row, the rest on a second row - the row stays inside the 1000-wide page).
+2. ARTIFACTS (tab id A:art) lists every accessory recipe of the merged /craft set (Fieldcraft + every equipped non-timed bench, the set
+   Crafting / Smithing / Farming / search already use): an output id starting Skyy_Talisman_ (every booster line + the Lantern line) or
+   Skyy_Acc (Skyy_Accessory_Bag, the Skyy_Accessory_<Bench>_T<n> bench accessories, the Omni), or any id SkyyAccessories publishes in
+   acc:defs (its own list: every rarity of every line + the Lantern; read through the bridge, cached per published value). Those recipes
+   leave Crafting (and Farming / Smithing - a Farmingbench talisman is an artifact too); nothing else moves.
+3. Everything else is the shared A: tab code, unchanged: the search row (search still covers the whole merged set, its texts now say
+   "N found in Crafting, Artifacts, Smithing and Farming"), Craftable only, Craft / x10 / All, the unlock rules (KnowSync.allowed: the
+   Lantern recipes are KnowledgeRequired - SkyyAccessories' Tree Sap gate; bags; vanilla knowledge) at view AND click time, and the 0.8.6
+   CraftRecipeEvent$Pre veto before anything is paid. The Collections tab and the sacks:fn:craftList bridge are unchanged.
+4. No saved-data change, no new command / system / setting / bridge key. ROLLBACK to 0.8.6: safe (the accessory recipes show in Crafting
+   again).
+0.8.8 = FURNACE FUEL + TIER LOGS + /craft TIER ORDER AND NAMES (lean round sacks088, 2026-10-15).
+A. FURNACE FUEL (Skyy, on a /craft Furnace screenshot "Furnace I - needs no fuel", no Load fuel row: "where did the add fule section go?").
+   ROOT CAUSE: ProcBench.config(bench) took the FIRST BlockType whose ProcessingBench id equals the bench name. Dynamic Seasons 7.0.2
+   (BlueOrbit:DynamicSeasons, enabled in the pack) adds Bench_Lightning_Rod, a Processing bench whose Id is also "Furnace" but with NO
+   Fuel list (and 0.0 tier speed, no charcoal ExtraOutput). When the asset map hands that one out first, benchNeedsFuel("Furnace") is
+   false -> the page draws no Load fuel row / Unload fuel button, the header says "needs no fuel" and the pocket Furnace smelts for free.
+   (Proven offline: the real BlockType store, vanilla pack loaded, holds Bench_Furnace + its states with Fuel = 1 slot; Tannery and
+   Salvagebench have none, Campfire has one.)
+   FIX: config() ranks every BlockType whose ProcessingBench id matches: + 4 the block id is Bench_<bench> (the vanilla block, or a mod's
+   override of it), + 2 it comes from the base pack Hytale:Hytale, + 1 it is not a state variant; the highest wins, ties by block id
+   (no more map-order luck). When more than one block shares the bench id, one INFO line names the one used and the ones skipped. The
+   Furnace gets its Fuel slot, its tier speed (Furnace II = 30 percent faster) and its charcoal byproduct back; the Tannery (no Fuel in
+   vanilla) and the Salvagebench stay "needs no fuel".
+   A queue that was smelting fuel-free when 0.8.8 lands: ProcBench.advance re-reads needsFuel (true now), no fuel is loaded -> it PAUSES
+   ("OUT OF FUEL - load fuel to continue"; progress and queued inputs kept, nothing lost) until fuel is loaded. needsFuel was never saved.
+B. TIER LOGS (Skyy, on the SkyyVoid Foraging 'Upgrade to Unique (x1.5)' box needing 138 / 500 Oak logs: "id make the bag upgrade count all
+   wood types of the right tier, not just oak.").
+   A log id in a Void upgrade cost now stands for EVERY log of its wood tier - research/Gathering-Progression-Spec.md 2.2 (the 5 zone
+   tiers; the key logs Oak / Maple / Gumboab / Redwood / Sallow are the ids the Foraging costs name). The LOCKED economy price tiers
+   (docs/answered/economy.md 3 / 8 / 20 / 48 / 128) group the logs differently (e.g. Fir / Cedar / Dry / Jungle at 3 with Oak, Sallow with
+   Maple at 8); the cost lines follow the Gathering-Progression tiers. The Orchard side group (Apple, Amber, Frostwood, Stormbark,
+   Windwillow, Wild Wisteria, Palm) and logs in neither table (Ice, Sadwillow) belong to no tier: they count only as themselves.
+     T1 Oak Birch Beech Ash Aspen | T2 Maple Azure | T3 Gumboab Dry Bottletree Palo | T4 Redwood Fir Cedar Poisoned Spiral |
+     T5 Sallow Burnt Petrified Bamboo Camphor Banyan Jungle Blue Fig Fire Crystal   (Wood_<name>_Trunk; the _Full / _Half / _Stairs blocks
+     are crafted building blocks, not logs, and no stripped trunk exists - so one id per wood)
+   The upgrade box shows such a line as "Oak-tier logs" over "138 / 500" (named by the group's first wood, never a tier number - the
+   pack's tier numbering is changing, research/Tier-Tags-Plan.md; the icon stays the cost's own log), counting the Void + plain
+   inventory stacks of every log of the tier. The upgrade checks the tier total (two lines of one tier add up), then takes each line from
+   the log ids the player has most of first (each: the Void first, then plain inventory stacks), never more than the cost; any failure
+   part-way rolls the whole payment back (slots restored, Void re-credited - the 0.8.0 all-or-nothing take).
+   Other categories unchanged. The cost settings keep their text (no migration); their help line says a log id counts its whole tier.
+C. /craft TIER ORDER + REAL NAMES (Skyy, on the Artifacts tab listing 'Skyy Accessory Arcanebench T1', 'Skyy Accessory Armor Bench T1/T2/T3',
+   'Skyy Accessory Bag' ... alphabetically with ingredients 'Bench Arcane 0/1', 'Ingredient Bar Copper 5/4', 'Wood_Trunk 6/4': "make sure this
+   is sorted by tier too").
+   ORDER (every /craft recipe list - Crafting, Artifacts, Smithing, Farming, search, the bench / Campfire tabs - one comparator): craftable
+   first (as before), then the TIER, then the item's ItemLevel (SkyyAccessories 0.5.15 numbers its accessories 1..51 in its Workbench tab
+   order: tier, then cheapest first; vanilla items carry their own), then the display name, then the id. The tier of an item id: a _T<n>
+   suffix = n; a rarity suffix _Common / _Uncommon / _Rare / _Epic / _Legendary / _Mythic = 1..6 (the talisman lines; SkyyAccessories' Epic
+   = its 4th tier, beside the T4 bench accessories); the Omni accessory (Skyy_Acc*_Omni) = after every tier; anything else = the material
+   ladder the list already used (Crude / none 0, Copper 1, Bronze 2, Iron 3 ... Onyxium 8) - so items without a tier (the Accessory Bag)
+   come first. Before, the tier was the material ladder only and the tie-break the raw id (hence the alphabetical Artifacts tab).
+   NAMES: a row title, the ingredient line, the fuel buttons and messages and the Furnace / Tannery queue text show the item's translated
+   name (its TranslationProperties key through the server's I18nModule, en-US - the lookup PickGive.name has used for pickup cards since
+   0.8.3: 'Copper Ingot', 'Arcanist's Workbench', 'Arcane Bench Accessory'); a resource-type ingredient shows its resourceType.<id>.name
+   ('Wood_Trunk' -> 'Any Tree Log', 'Fuel' -> 'Any Fuel'). No translation -> the old prettified id. Hits are cached (8192 max).
+D. No saved-data change, no new command / system / bridge key. ROLLBACK to 0.8.7: safe (the Furnace may show "needs no fuel" again;
+   costs count only the named log again; /craft lists go back to material order + id names).
+0.8.9 = VOID COSTS + FABRIC TO COMBAT + STORAGE REBALANCE (round sacks089, 2026-10-15).
+A. SMITHING COSTS (Skyy, on the SkyyVoid Smithing 'Upgrade to Unique (x1.5)' box needing Light Hide 200, Linen Scraps 100, Wool Scraps 100:
+   "make this cost leather not hide, scrap fabric is good, but make it cost copper ingots, not whatever that thing is"; then "actually
+   fabric is combat not smithing. move it to combat bag, and replace the feathers with the linen scraps"). Smithing takes NO fabric now:
+   every hide -> the leather of the same weight (the Tannery product), fabric -> metal bars of the matching tier (Linen -> Copper,
+   Shadoweave -> Iron, Cindercloth -> Thorium; same amounts):
+     Unique    Light Leather 200, Copper Ingot 100                       (two lines, like Combat Unique - no filler material)
+     Rare      Light Leather 750, Medium Leather 500, Copper Ingot 250, Iron Ingot 100
+     Legendary Light Leather 2000, Medium Leather 1000, Heavy Leather 250, Iron Ingot 250, Thorium Ingot 100
+B. FABRIC -> COMBAT. Ingredient_Fabric_Scrap_* (mob drops) leave the Smithing category for Combat (SackDefs.homeOf; cloth bolts, leather,
+   hides, bars, straps, studs and charcoal stay Smithing). The pool is keyed by item id - nothing is moved or rewritten: a player's stored
+   fabric simply shows (and counts) in the Combat tab from the first sweep on, exactly as hides / fabric moved Combat -> Smithing in 0.7.5.
+   Combat full: storage is only ever checked at INTAKE - an over-full Combat keeps every item (take out works), new Combat pickups go to the
+   inventory (then the ground at the feet, as for any full category) until there is room again; Smithing gets the room back.
+   Combat costs: White Feathers -> Linen Scraps at the same amounts; Rare also takes Shadoweave 100 (the old Smithing Rare had it);
+   Legendary already has the 6 lines the upgrade box shows, so it takes no Cindercloth:
+     Unique    Bone Fragment 250, Linen Scraps 100
+     Rare      Bone Fragment 1000, Linen Scraps 500, Venom Sac 100, Sturdy Chitin 100, Shadoweave Scraps 100
+     Legendary Bone Fragment 2500, Linen Scraps 1000, Venom Sac 250, Sturdy Chitin 250, Void Essence 100, Voidheart 10
+C. STORAGE REBALANCE (Skyy, on Foraging Lv 14 Unique 'Stored 1,079 / 2,100', '3,425 / 3,920 collected to Lv 15', Rare needing 3,750 items
+   and Lv 25: "make the level ups give a little more storage, and scale down how much each level cost goes up. the cost to upgrade rarity
+   iss about 2x what i can hold. and what i can hold doesn't scale fast enough to really keep up with the amount i need to collect to level
+   it."). (a) pd.perLevel 100 -> 150 space per level (x the rarity; multipliers 1 / 1.5 / 2 / 3 / 5 and gates Lv 10 / 25 / 50 unchanged -
+   Omni stays x5). (b) NEW row pd.curve (default 1.75; 2 = the old curve): items to REACH level L = pd.step.<Cat> x (L-1)^pd.curve (was
+   ^2), so each level costs less more than the one before (Foraging step 20: Lv 5 320 -> 227, Lv 10 1,620 -> 936, Lv 15 3,920 -> 2,027,
+   Lv 25 11,520 -> 5,205, Lv 50 48,020 -> 18,150). levelOf / totalFor stay exact inverses (checked +-1 against totalFor). (c) at each
+   gate the bag ALONE holds >= 1.25 x that upgrade's cost (asserted at build time for every category; worst Mining Rare 1.32x, was 0.88x).
+   Levels only go up: the saved best level stays, a player whose total now reads a higher level gets it (and its space) at the next sweep.
+D. NAMES IN THE UPGRADE BOX. Every cost cell shows the item's real name (SackDefs.lineName = the tier-log label, else the 0.8.8 dname
+   resolver) over its count - the two-line cell the tier logs already use; no translation -> the plain count cell as before. The refusal
+   lines ("Not enough Light Leather (50 / 200)") use the same name. Icons are the item ids' own (vanilla icons, checked in Assets.zip).
+E. ONE-TIME CONFIG UPDATE (PROJECT-RULES 4; SackMig089, setup() before SackCfg.reload): in an existing Skyy_SkyySacks/config.properties
+   the six cost lines pd.cost.Smithing.* / pd.cost.Combat.* and pd.perLevel are rewritten ONLY while they still hold the 0.8.8 default
+   (text compared without spaces, numbers by value); a hand-edited, doubled or continued line is KEPT and named in an INFO line; a missing
+   line = the new built-in default. The commented template lines (#pd.cost...=<0.8.8 default>, #pd.perLevel=100) get the new default too,
+   so un-commenting one never brings an old cost back. Only the value part of a line changes - every other byte and each line's own ending
+   stay; one marker comment line (skyysacks-0.8.9-void, the run-once marker; a new default file carries it) is appended. Before the
+   write: a Properties check (only those keys change, to exactly the new values), CfgHist.snapshot + a read-back of the copy; after it one
+   config-changes.log line per changed value (Server Setup -> SkyyVoid and Crafting -> Changes -> Undo). Any failure: file untouched,
+   WARN, next start tries again.
+F. No saved-data change, no new command / system / bridge key; one new Server Setup row (pd.curve). ROLLBACK to 0.8.8: safe - fabric shows
+   in Smithing again (same pool), the 0.8.8 curve / 100 per level / old costs come back unless the file holds the 0.8.9 values (Changes ->
+   Undo or History puts them back; the marker stops a second run); saved best levels reached under 0.8.9 stay (levels never go down).
+0.8.10 = FISH INTO THE FISHING BAG (round fish018, 2026-10-16). Skyy (screenshots: SkyyVoid Fishing bag 0 / 150, "Nothing to deposit (or this
+category is full)", the inventory holds 2 caught fish): "fish not going in fishing bag." (docs/answered/bags.md 2026-10-16).
+WHY: SackDefs.homeOf (the one category table) knew vanilla fish (Fish_*) and raw fish (Food_Fish_Raw*) but not OUR fish: SkyyFishing's
+whole fish are SkyyFishing_Fish_<Species> - no rule matched ("SkyyFishing_" is not "Skyy_"), so homeOf answered null = no category: the
+sweep, Deposit / Deposit all and auto-pickup skipped them. And a whole fish carries metadata (weight, length, catcher - its sale price and
+fillets come from the weight): the pool only counts ids, so taking such a stack in as a plain count would have destroyed that value.
+A. THE RULE: SkyyFishing_Fish_* (SackDefs.CATCH, SkyyFishing's own id pattern - every species it adds now or later) -> "Fishing", next to
+   the vanilla Fish_* / Food_Fish_Raw* rule. Junk and Lost Property catches are vanilla items and already go to their own categories.
+B. THE WEIGHT TRAVELS WITH THE FISH (no loss, no dupe): each whole fish in the Void keeps "grams,mm,catcher" in its profile's pool file
+   (one meta line "~fish:<id>" = the entries, newest last; the count line stays the count). In: the fish's metadata must be exactly
+   SkyyFishing's (SkyyFishing 0.1.8 fishing:fn:fishOf answers its entry; "" = a fish with no metadata) - anything else, or no SkyyFishing
+   0.1.8, = the stack stays in the inventory (as before). Out (the page's take / Pick up all): the newest entry comes back as the same fish
+   (fishing:fn:fishDoc rebuilds the document + tooltip: same weight, length, catcher), one fish per slot; a full storage or no SkyyFishing =
+   the fish and its entry stay in the Void. More entries than fish (another mod took fish by id through sacks:fn:take - none does today) =
+   the oldest entries are dropped at the next move; fewer = the rest come out as plain fish. Count + entries change in ONE SackPool lock.
+C. AUTO-PICKUP: a caught fish lands in the HOTBAR (the game's pickup order) and the 2 s sweep only took the main inventory - the automatic
+   sweep now also takes whole fish (SackDefs.CATCH only) from the hotbar and backpack, looking there first (a fish you took out lands in
+   the main inventory and stays, the new catch goes in); every other item keeps the main-inventory-only rule. The kept rule is unchanged
+   (take 3 fish out and 3 stay with you). Deposit all keeps its order (main inventory first).
+D. LEVEL: with SkyyCollections the Fishing category's collected total = its total + the fish you LANDED (SkyyFishing 0.1.8
+   fishing:fn:pond = the Pond Fish count of the active profile; absent = + 0) - landing fish levels the Fishing bag; taking out and
+   depositing again never counts twice (it is the landed count, not deposits).
+E. SAVED DATA: one new meta line kind in the pool file (~fish:<id>), only for profiles that store whole fish. ROLLBACK to 0.8.9: the meta
+   lines are kept untouched (0.8.9 keeps every "~" line) but 0.8.9 cannot see whole fish as Fishing (they stay in the Void, invisible,
+   until 0.8.10 is back) - TAKE FISH OUT before a rollback. Needs SkyyFishing 0.1.8 for B (without it fish stay in the inventory).
+F. REVIEW FIXES (round fish018fix): (1) take-out: a throw while the fish is added to the storage = the fish goes back to the Void unless the
+   storage count really grew (never lost, never doubled); (2) kept: a fish taken out keeps exactly the fish taken (the hotbar / backpack
+   count is NOT made kept for fish - the sweep takes catches from there now, so fresh catches in the hotbar are still swept); (3) the
+   hotbar / backpack fish sweep has an owner switch: Server Setup -> The Void -> "Catches go into the Void" (bags.fishSweep, default on;
+   off = 0.8.9's main-inventory-only rule for fish too - e.g. to sell whole fish at the Fishing Bench without taking them out first).
+   Known, not changed: a fish another mod takes by id (Bazaar bag sale, bag crafting) leaves its weight entry behind until the next move
+   drops the oldest one; a fish refunded by id comes back plain (value can only go down, never a dupe).
+0.8.11 = THE CRAFTING HUB + CRAFTER LOOK + ADD FUEL + SORT BY TIER + BENCHES USE THE ACCESSORY BAG + VOID DEPOSIT ALL (round craft01,
+2026-10-16, with SkyyAccessories 0.5.19 + SkyyMenu 0.3.31). Skyy's words (docs/answered/ui.md + bags.md 2026-10-16): "we need a crafting tab
+at the top. unless we want to roll crafting and smithing into 1 page called crafting with separate crafting and smithing pages. (and upgrade
+the look of the crafter while were at it.)"; "id add an add fuel button which pops up a selector. you pick which fuel from the list of what
+you have. then type in a number. but keep the quick load bar we currently have." + "but sort it by how much you have. so if you have 1000
+sticks they will show up first in the list."; "sort this by tier. crops, enchanted crops, seeds then enhances seeds in that order. (sort
+everything by tier in all shops and crafting.)"; "accessory's go straight to the accessory bag now. but the bench cant pull from the bag to
+craft the next tier yet."; "move deposit all to the top, and make it deposit everything from your in inventory into the right bag. instead
+of just smithing items into the smithing bag. (change what is currently deposit all to deposit smithing.)"
+A. CRAFTING HUB TAB (tools/HUBS-CONTRACT.md, kit 1.6): /craft is the REAL tab hub:tab:smithing:recipes = {"SkyySacks", "Crafting", order 5,
+   "craft", CraftHubOpen, null, icon "smithing_recipes"} (put in setup, removed in shutdown - only while it still holds our array; SkyyMenu
+   0.3.30's stand-in steps aside). The hub id stays "smithing" (saved shortcuts tab:smithing:recipes / hub:smithing keep working); SkyyMenu
+   0.3.31 titles that hub "Crafting" and its Gear tab "Smithing". The craft page is a kit 1.6 ROW SHELL page (sky theme, 1200 x 960): row 1
+   (Home + the hubs, Crafting active), the X, the hub's tab strip (Crafting active, Smithing = SkyyGear's /smithing) - HubBar.route first
+   in handleDataEvent ("self" redraws, a tab that opened elsewhere is acknowledged, a failed one says so on the result line). The kit's 59
+   Sky Window files + the smithing_recipes tab icon (art/hub-tab-icons, sha256 = its manifest) ship in this jar (byte-identical to the
+   other jars that ship them).
+B. CRAFTER LOOK: the sky kit everywhere (Primary / Secondary / Tertiary sky buttons, Row / PanelInset row backgrounds, SlotEmpty frames, the
+   vanilla label colours); the crafter's tabs = Primary (active) / Secondary; every recipe row = the output in a slot frame + its name (+ the
+   tier tag "T3 Iron" in gold) over one chip per input: its item icon + "have/need" (green / red; up to 4 inputs also show the name),
+   then Craft (Primary) / x10 / All N - greyed out (Disabled look, not bound) when nothing can be made. Fits 1080 (kit assert).
+C. SORT BY TIER (PROJECT-RULES 4): every /craft list (tabs, search, Collections, Campfire, Furnace / Tannery) = tier, then name -
+   no more craftable-first. The tier = tools/tier_tags.py (THE table, read at build time: ores, bars, logs, crops, seeds, Eternal seeds,
+   Enchanted, tools ...), else an id's _T<n> / rarity word, else its tool metal word (tier_tags.TOOL_METALS); untiered first (0). Crop
+   families group per crop inside their tier: crop, Enchanted crop, seeds, Eternal seeds (then the other items of that tier by ItemLevel).
+D. FURNACE ADD FUEL: next to the quick-load bar (kept as it is) an ADD FUEL button opens a picker of every fuel you own (inventory + the
+   Void), most first; pick one, type an amount (empty = all that fits; max = what you have / the room left), LOAD loads it (several
+   rebuilds of the mirror when it is more than the mirror offers at once; counted before and after, booked to the Void once).
+E. BENCHES USE THE ACCESSORY BAG (SkyyAccessories 0.5.19 acc:fn:bag; without it nothing changes):
+   - a bench shows the bag's accessories that its recipes use (added to the window's extra-materials LIST only - never to a container);
+   - a bench craft click (CraftRecipeAction, the inbound filter's PreCraftTask, before the vanilla handler) MOVES each accessory the recipe
+     needs and the inventory lacks from the bag into the inventory (bag take -> inventory add, counted; no room = back into the bag + one
+     chat line); the vanilla craft then uses it like any inventory item; AccSettle (queued behind the vanilla handler) puts back into the
+     bag whatever the craft did not use (inventory count above the count before the move; refused by the bag = stays in the inventory).
+     Every accessory is in exactly one place at every moment: no dupe, no loss. Logged in crafts.log (ACCBAG lines).
+   - /craft (the Artifacts tab): the bag's accessories count in the have / need chips and the limits (a copy container next to the
+     inventory and the Void); a craft takes them from that copy and EXACTLY what the copy lost leaves the bag right after (bag take, one per
+     item, same world-thread click - nothing can change the bag in between).
+F. VOID DEPOSIT ALL = EVERY BAG: a DEPOSIT ALL button at the top of the Void page (next to Craft) puts every Void item you carry (storage,
+   hotbar, backpack) into its own category, all six, each up to its space (SweepTask.sweep with no category: the per-category limits,
+   whole fish with their weight, cooked food stays as before); the side button is now DEPOSIT <CATEGORY> (the old Deposit all).
+REVIEW FIXES (round craft01fix, the critics): A1 the bench put-back runs in TWO hops (the scheduler 250 ms after the click, then the world
+   thread) so it can never run before the vanilla craft handler of that click; B1 an open bench refreshes when the Accessory Bag list changes
+   (its signature is part of the bench link's staleness test, and the benches are re-sent after a put-back); B2 /craft takes the needed
+   accessories from the bag BEFORE anything is removed (a refused take = nothing used; unused ones go back); A4 no sweep (automatic,
+   Deposit <bag>, DEPOSIT ALL) takes a stack with extra data except a whole fish; A5 the bench list / moves use exact item-id inputs, the need
+   summed per id; B4 tier, then name (ItemLevel no longer part of the order); B6 the materials line names the Accessory Bag only while
+   SkyyAccessories 0.5.19 is running; B5 the crafter's own tool / weapon / armor tab is called GEAR (the hub's SMITHING tab is /smithing);
+   A2 / B3 every bench move bag -> inventory is written to crafts.log with its ids and bag slots (a crash between the bag save and the next
+   inventory save can be reconciled from it).
+SAVED DATA: none new (crafts.log gets ACCBAG lines; the Accessory Bag files change only through SkyyAccessories' own take / put).
+ROLLBACK to 0.8.10: safe (no file format change); the Crafting tab then comes back as SkyyMenu's stand-in.
+0.8.12 = THE LIFELONG POCKET DIMENSION ITEM (round life01, 2026-10-16, with SkyyAccessories 0.5.20, SkyyMenu 0.3.32, SkyyIslands 0.5.17).
+Skyy 2026-10-16 (docs/answered/gear.md, after /island reset gave a 2nd Accessory Bag): "when island reset, it came with a 2nd accessory
+bag.   (yk how you cant loose the tools, and can bring them back with a command. lets do the same to the accessory bag, the pocket
+dimension, and the menu item.)"
+  1. THE POCKET DIMENSION ITEM (Skyy_Sack_Pocket, only the opener - the Void lives in the profile's pool) IS LIFELONG (tools/skyyonce.py,
+     classes PdOnce*): never dropped (Drop key / drag out refused), never on the ground (a death drop / full-inventory overflow is stopped
+     and it comes back into the inventory), never stored (put into a chest / container / trade offer / the Vault it goes straight back;
+     a second one there is removed), never sold (market:veto; Magic Bag ids were already walled), never in a starter kit
+     (once:item:Skyy_Sack_Pocket = TRUE for SkyyIslands 0.5.17).
+  2. ONE PER PROFILE: extra copies in the inventory are removed (history line first: Skyy_SkyySacks/lifelong/history.log, fsynced, with
+     its UNDO); the first pass of each profile = the one-time cleanup (marker lifelong/once/<pkey>.done).
+  3. RECALL: /pocket (NEW alias of /sacks, like /pd and /bags) and /pd give a new Pocket Dimension when the inventory holds none (storage,
+     hotbar, backpack - never dropped; full = one chat line), then open the Void as before.
+  4. SERVER SETUP -> SkyyVoid -> "Pocket Dimension stays with you" (bags.pocketKeep, default on; a missing key = on, an existing file
+     keeps its bytes). Off = 0.8.11 behaviour. While /pdadmin legacybags all is on (HOLDALL) the rules are off too (that mode strips the
+     item on purpose for a rollback).
+  FIX ROUND (critic life01): a WORLD chest's copies are touched only when the viewer just put theirs in (their inventory dropped below
+  what the last sweep left) - a copy already in someone's chest is never moved or removed; personal windows (Vault, trade offer) as
+  before; pkey cached per profile epoch. A refused Drop key on an own-inventory section is re-sent by the engine itself
+  (InventoryPacketHandler marks the InventoryComponent dirty - VERIFIED bytecode); a container window is marked changed here.
+  Built against the committed tools/skyyench.py + tools/tier_tags.py (52298ac): the Enchanted Stick (Skyy_Ench_Stick) homes in Foraging
+  (SackDefs.enchCat) and RecipeCmp's tier table has the egg rows - those two classes differ from 0.8.11 for that reason only.
+  Item tooltip: it stays with you, /pocket. No saved-data format change.
+  ROLLBACK to 0.8.11: safe (the lifelong/ folder is ignored; /pocket is gone, /pd still gives the item).
+0.8.13 = /recipes LEAVES /craft (round hubcoll, 2026-10-16, with SkyyCollections 0.2.22). Skyy's words: LOCKED 2026-10-10 (docs/answered/ui.md)
+"Collections + Recipes (recipes shown inside each collection)"; popup 2026-10-16 -> "Merge now". research/Hubs-Spec.md 1.2 footnote: /recipes
+was an alias in BOTH SkyySacks and SkyyCollections (the last one registered wins); Collections keeps it, SkyySacks drops it. So CraftCmd no
+longer adds the alias "recipes" (/craft, /craft <words> unchanged); /recipes is SkyyCollections 0.2.22's command (the merged Collections tab).
+Nothing else changes: the tier sort table and the Enchanted Void homes are FROZEN to the tables 0.8.12 was built with (tools/tier_tags.py
++ tools/skyyench.py at 52298ac, read from git by this patch) - the 83 C1 Enchanted rows join in the queued Sacks round. No saved data.
+ROLLBACK to 0.8.12: safe (roll SkyyCollections back to 0.2.21 with it: two /recipes owners otherwise).
+0.8.14 = EVERY ENCHANTED ITEM HAS ITS VOID HOME + A BIGGER, SCROLLING /craft LIST (round sacks0814, 2026-10-16). Skyy's words (docs/answered/bags.md,
+gear.md, ui.md, 2026-10-16):
+  1. BUG "deposit didnt put all the enchanted stuff in my pocket." -> 0.8.13 was frozen to the 20 Enchanted rows of 52298ac. The tables are
+     LIVE again: SackDefs.enchCat = tools/skyyench.py (102 rows: the 20 + the C1 rows; every row's Void category - Mining / Foraging /
+     Farming / Combat / Smithing, all five already Void categories) and RecipeCmp's tier table = tools/tier_tags.py now (the C1 Enchanted
+     rows sort at their base's tier, Enchanted crops grouped with their crop). Deposit All / Deposit <category> / the pickup sweep take
+     them (all go through SackDefs.homeOf -> enchCat).
+  2. "there was no need to add the enchanted essence of life. greater essence already exists and is literally the exact same thing. remove the
+     enchanted, and just use the vanilla version." -> tools/skyyench.py retires the Skyy_Ench_LifeEssence row (RETIRED_C1 / RETIRED_TO /
+     VANILLA_ENCH); the Life Essence collection's Enchanted item = vanilla Ingredient_Life_Essence_Concentrated, whose Void home is Farming
+     (homeOf: every Ingredient_Life_Essence* -> Farming, unchanged). A held Skyy_Ench_LifeEssence has no Void home any more (it stays in the
+     inventory; none can be in the Void - 0.8.13 never homed it); SkyyCollections converts held ones 1:1 in its next round.
+  3. /craft (Skyy, screenshot: 9 small rows a page, Page 1/4, empty space below) "there is a lot of empty space at the bottom. scale up the
+     actual items you craft, especially the names and the cost. then reduce the items show on page to 6 and allow scroll instead of pages."
+     -> ONE scrolling list (skyyui.scroll_list: TopScrolling + the vanilla scrollbar on the list well, as SkyyCollections / SkyyClasses /
+     SkyyAccessories 0.5.21) that fills the page below the tabs / search / note, rows 92 high (+6): an 80 px slot (72 px icon), the name
+     22 px bold, the tier tag 17 px, the cost chips a 36 px icon + 17 px bold have / need; about 6 rows show at once (6.6 with one tab row
+     and the search row). No Prev / Next on the recipe views (the ADD FUEL picker keeps its pages); Search, the tabs, Craftable only,
+     Craft / x10 / All unchanged (same events: craft:<i>:<n> / pq:<i>:<n>, i = the row's place in the whole list). The Furnace / Tannery
+     queue tabs scroll the same way. At most 150 rows are drawn (a closing line says how many more - search or Craftable only narrows it).
+     Skyy (same day) "i dont mind scrolling, but if there are only a few items try to scale them to all fit." -> three row sizes picked
+     per build by the row count (CraftPage.rowSize): 92 high (normal, the list scrolls), 128, or 168 (~1.8x: bigger icon, name, cost) when
+     every row fits the list at that size - e.g. 1-3 rows = 168, 4 = 128 with one tab row + the search row.
+  4. Accessories are crafted only in the Accessory Bag (SkyyAccessories 0.5.21) -> /craft never lists an accessory recipe: the Artifacts tab
+     is gone and every /craft list (Crafting, Gear, Farming, Collections, the bench tabs, search) skips artifact() recipes (Skyy_Talisman_*,
+     Skyy_Acc*, acc:defs ids). sacks:fn:craftPay and the bench link are unchanged (other mods' calls).
+  5. Skyy (screenshot: Farming 'Needs Farming Lv 10 (you: 3)' with every material met) "remove the level cap on upgrading the pocket
+     dimensions. if i have the stuff, my lvl shouldn't stop me on this" -> VoidStore.upgrade no longer checks the level gate; the Upgrade
+     box shows "Pay the items below to upgrade" instead of the 'Needs <cat> Lv' line and is ready when the items are there. Costs, space
+     and the pd.gate.* config lines unchanged (their Server Setup rows say "not used").
+  6. tools/skyywbtab.py TAB_TEXT "Accessories & Bags" -> "Bags"; SkyySacks no longer writes the tab's two lang lines (SkyyAccessories, the
+     owner, does - "Bags" from its next build; until then the tab still reads "Accessories & Bags").
+  7. (critic fix) a row's Craft / x10 / All / Queue events carry the recipe id (craft:<i>:<n>:<recipeId>); the click is resolved by id against
+     the list shown now (CraftPage.rowOf) - a stale click whose recipe is gone says "That row changed - nothing was crafted".
+No saved-data change, no new setting / command / system / bridge key.
+ROLLBACK to 0.8.13: safe (the C1 Enchanted stacks already in the Void stay stored and listed by id; 0.8.13 just stops taking new ones).
+0.8.15 = MENU PATTERN sweep S2 (research/Menu-Pattern.md 3 + rules 7-8; kit skyyui 1.7 hub_page; tools/HUBS-CONTRACT.md 'Kit 1.7'). Skyy's words
+(docs/answered/ui.md 2026-10-16): "Double check every menu and make sure it's fully and completely built out / designed properly in the cohesive
+menu system we made. I never want to have to use a back button. The menus at the top should always be there for easy navigation." + "keep this
+top bar at this size consistent at the top across every menu." + "i dont mind scrolling, but if there are only a few items try to scale them to
+all fit." + popups: every hub page 1600 x 980, row 2 big like Teleport.
+  1. THE VOID = Storage > Pocket on the 1600 x 980 kit page (was a 1300 x 690 'SkyyVoid' window with no hub rows, opened over the vanilla
+     inventory): row 1 (Home + the 7 hubs) and row 2 (the Storage tabs, Pocket selected) always on top (HubBar.page17), the X closes. The six
+     bag categories stay the left column (an in-page selection: each shows its level, space bar and rarity colour - no sub-tab row needed); the
+     middle grid is ONE scroll list of 12 columns (was 9 x 4 cells with Prev / Next pages) - every kind of item, empty cells fill the rows that
+     show; a count line under it. Deposit all / Craft (top row), Withdraw / Deposit / Pick up all / Deposit <category>, the amount box, the
+     Upgrade box (Upgrade -> Pay / Cancel in place) and the stack refill row are unchanged (same events; a cell click 'cell:<n>' now names its
+     place in the whole list). SkyySacks now puts its own contract tab hub:tab:storage:pocket ("Pocket", order 10, /sacks, icon
+     storage_pocket, VoidHubOpen) so row 2 opens the page directly (SkyyMenu's stand-in steps aside: the owner's tab wins).
+     FOR THE PLAYER: /sacks (/pd /bags /pocket) no longer shows the vanilla inventory panel under the Void (the 1600 x 980 page fills the
+     screen; HANDOFF 2: no UI on the vanilla inventory screen). Nothing used it: the 9-slot window was an EMPTY container no code read - every
+     deposit / withdraw path is a page button (Deposit all, Deposit <category>, Deposit + amount, Withdraw + amount, Pick up all), and the
+     side panel shows "on you N" for the picked item. The auto-pickup sweep, the Pocket craft window and bench crafting are untouched.
+  2. /craft (Crafting hub, tab recipes "Crafting") on the 1600 x 980 kit page (was 1200 x 960 with the small kit 1.6 row): rows 1 + 2 on top;
+     the crafter's category tabs (Crafting / Gear / Farming / Campfire / Furnace / Tannery / Collections) = the page's ONE sub-tab row (kit
+     HubBar.subTab, 150 px small buttons, the open one Primary); the old back-to-the-Void button is gone (row 1 Storage leads there); the
+     result line + Craftable only + Refresh = the kit footer (48 px buttons). The recipe rows use the wider page (the name column +400 px).
+     ADD FUEL (Furnace tab): no pages and no back / cancel buttons any more - ONE in-page view: the picked fuel's amount box + Load on top,
+     the fuel list below as a scroll list (few fuels = bigger rows, Skyy rule 7); Pick on another row switches, Add fuel (shown selected while
+     open) or the Furnace sub-tab closes it. Same events (pfpick / pfload / paddf); Load is the view's one Primary.
+  3. Rule 7 (short lists fill the space) through the SHARED rule: CraftPage.rowSize = HubBar.growSize(n, list, ROWHS, 6) (= skyyui.grow_pick);
+     the row heights stay 0.8.14's tuned 92 / 128 / 168 (drawRow's fonts and icons are tuned per size; each is within skyyui.grow_row_sizes'
+     caps for the smallest list, asserted); the ADD FUEL rows grow 48 / 69 / 96 (grow_row_sizes). The Void grid keeps its 74 px slots (an
+     item grid - Menu-Pattern 3.3 item_grid 74 px slots).
+  4. The small Pocket craft window on the vanilla inventory side stays a window (Menu-Pattern 1.2) - unchanged.
+Content, coin and item logic unchanged; no command / saved-data / setting change; the only new bridge entry is the contract tab of item 1.
+ROLLBACK to 0.8.14: safe (the old pages come back; SkyyMenu's stand-in Pocket tab returns when our tab is gone).
+0.8.16 = round small16 (2026-10-16; Skyy "work through the small things and the next up list"), two answers of docs/answered/bags.md:
+  A. SEEDS / SAPLINGS TOGGLES - popup Q "BAGS: seeds / saplings from a harvest go to the Void, so replanting means pulling them out. Keep?"
+     -> "add a toggle for each. (seeds in farming. saplings in foraging where they belong. )"
+     1. Saplings (Plant_Sapling_*, the 34 vanilla saplings - the same rule as SkyyBazaar 0.1.15's Foraging tab) belong to the FORAGING
+        category now (homeOf; were Farming as Plant_*). The pool is keyed by item id, so saplings already stored simply show (and count)
+        in Foraging from now on - nothing moves, nothing is deleted. Seeds (Plant_Seeds_*: crop seeds, Eternal seeds, seed bags) stay Farming.
+     2. Two PLAYER switches in /settings (the SkyyMenu Settings registry, tab "sacks", default ON = the 0.8.15 behaviour):
+        "Seeds go into the Void" (sacks.seedsVoid, Farming) and "Saplings go into the Void" (sacks.saplingsVoid, Foraging). OFF = auto-pickup
+        (block drops, harvests, mob drops) puts them in the INVENTORY (never the Void; the ground only when the inventory is full, as for
+        any item) and the 2 s sweep + Deposit all leave them in the inventory. The Deposit button with an amount (one picked item) still
+        stores them on purpose. Read through SackPool.keepFlags (settings:fn:get, every 2 s tick per online player = part of the sweep
+        signature, so switching back ON sweeps them in at once); SackDefs.intake(uuid, id) = catOf + the switches.
+        The Settings registry is per PLAYER (the same on every profile), like every other /settings switch.
+  B. PICKUP POPUP + FEED LOOK - popup Q "BAGS: the vanilla 'picked up' popup still flashes next to our feed card. Keep it?" -> "hide it.
+     but try to make our feed look more like the vanilla or better. right now its meh at best."
+     1. HIDING IT IS POSSIBLE SERVER-SIDE (proof, HytaleServer.jar bytecode): the popup is Player.notifyPickupItem(...) ->
+        NotificationUtil.sendNotification(packetHandler, Message "server.general.pickedUpItem", null, item) and is sent ONLY when
+        world.getGameplayConfig().getShowItemPickupNotifications() is true (GameplayConfig field `protected boolean
+        showItemPickupNotifications`; World.getGameplayConfig = GameplayConfig.getAssetMap().getAsset(worldConfig.getGameplayConfig()), else
+        GameplayConfig.DEFAULT). The pickup SOUND is played after that check, so it stays. PopupHide sets that field to false on every
+        loaded GameplayConfig asset + DEFAULT (reflection; re-applied every 10 s, so a re-loaded asset is caught) and back to true when the
+        switch goes off. Server-wide (the setting is per world gameplay config, not per player). Callers it silences: walking over an item
+        (PlayerItemEntityPickupSystem), F-harvest / interactive pickups (ItemUtils), the builder pickup tool, barter shop purchases
+        (BarterPage), objective item rewards (GiveItemsCompletion checks the same flag).
+        Server Setup -> SkyyVoid and Crafting -> Auto-pickup -> "Hide the vanilla pickup popup" (pickup.hidePopup, default ON, live).
+     2. OUR FEED CARD TEXT, vanilla-like: the vanilla popup shows just the item (icon + name); our card now shows the item name alone when
+        it went where it should (the Void, or the inventory for a non-Void item), and a short note only when something needs you:
+        "<name> - Void full, rest in inventory" / "<name> - inventory full, on the ground" (was "<name> > Void", "> Void + inventory",
+        " - full, at your feet"). The card's frame, colours, icon and count ("  x12") are drawn by SkyyHud (feed:fn:push) - a deeper
+        restyle of the card itself is a SkyyHud round (not this round's file).
+  No saved-data change, no command change, no new bridge key written; one new class (PopupHide). The kit 1.7 Void and /craft pages are
+  unchanged (the 0.8.15 harness NEW phase runs again on this jar).
+ROLLBACK to 0.8.15: safe (saplings show in Farming again - same stored stacks; the switches vanish = everything into the Void; the vanilla
+popup shows again after the next server start - the GameplayConfig field is only changed in memory).
+0.8.17 = round sacks0817 (2026-10-16). Skyy (Fishing Bench screenshot: FILLET AND SELL says 'You carry no whole fish' while the fish are
+in the Void): "it cant pull from the void" (docs/answered/skills.md). SkyyFishing 0.1.10 lists / sells / fillets the Void's weighed fish
+through four new bridge keys; the contract is header PART A of tools/fishing_0_1_10_patch.py (+ the fishvoid critic's token round,
+coordinator 2026-10-16) and is implemented here exactly:
+  A. THE FISH KEYS (SackFn modes 14 / 15 / 16 / 17; world thread only - the same gates as sacks:fn:take: SackBridge.keyFor = the settled
+     profile key (profile switch / busy / unreadable pool = paused), the player on this world thread, the Fishing category reachable):
+     sacks:fn:fishList  {UUID u, String id} -> String[] the ACTIVE profile's Void fish of that id, oldest first, one per stored fish: the
+                        weight entries ("grams,mm,catcher", oldest first) then "" for each plain fish (no weight). String[0] ONLY when the
+                        Void is readable and truly holds none of that id; null whenever it cannot be read for that player now (paused,
+                        no player on this thread, no Fishing category reachable, bad arguments, an id that is not a SkyyFishing whole fish).
+     sacks:fn:fishTake  {UUID u, String id, String entry, String token} -> Long 1 = ONE fish with exactly that entry left the Void: count - 1,
+                        that entry AND the token (the caller's op id) in ONE SackPool lock (SackPool.fishPickTok), owed on the refund
+                        ledger like sacks:fn:take (OWED + LASTKEY, 60 s), and the pool file WRITTEN - the token in the same atomic write
+                        (pool meta line "~fishtok" = "token@takeTime ...", kept 24 h, then pruned; "~fishcut" = t<newest pruned take time>)
+                        - BEFORE it answers 1 (SackPool.saveOk = SackPool.save on this thread under SAVELOCK, true only when the file
+                        really landed). A token already stored = 0 (idempotent: a replayed take never takes a second fish). The write
+                        failed = undone in memory (fish + entry back at their place, token gone, nothing owed), answer 0. "" entry = a
+                        plain fish. 0 = no such fish / paused / a bad entry (";") / a bad token. Token = 1..120 chars, no white space,
+                        no '@' or ';'. The 3-argument form (no token) still works (no token stored).
+     sacks:fn:fishTaken {UUID u, String token [, Long opTime]} -> Boolean TRUE = that take is on disk in the active profile's pool; FALSE =
+                        definitely not (no such token, and opTime is newer than every pruned token - or no token was ever pruned when
+                        opTime is not given); null = cannot tell now (paused / profile switching / no player on this thread / pool
+                        unreadable / bad token / opTime at or before the prune cut). Ask only about the ACTIVE profile's ops (the
+                        caller's op file names its profile key).
+     sacks:fn:fishPut   {UUID u, String id, String entry, String token} -> Long 1 = that fish is back (count + 1 and the entry, at the
+                        oldest end) AND its token cleared (so fishTaken reads FALSE afterwards) in the same write, only while a take of
+                        that id still owes exactly that entry (FOWE, 60 s, like sacks:fn:put) and - with a token - that very take carried
+                        it (FTOK); a put can never create a fish or change its weight. Written before it answers 1, back into the exact
+                        pool the take left (refundKey / LASTKEY). Without the token argument the token of that entry's newest owed take is
+                        cleared. The write failed = taken out again (token stored again) and still owed, answer 0 (the caller gives the
+                        fish another way - SkyyFishing rebuilds it into the inventory + commits: no dupe).
+     sacks:fn:commit    (unchanged key) {UUID, id, 1L} finalises: the entry leaves the ledger with the count (oldest owed first); the
+                        token stays on disk (the take stands) until the 24 h prune.
+  B. THE 0.8.10 GAP CLOSED: a plain sacks:fn:take of a SkyyFishing fish (SackBridge.take -> SackPool.fishDebit) now takes the weight
+     entries WITH the count in the same lock - one entry per fish taken, oldest first, then plain fish once the entries run out - and
+     books them on the ledger (FOWE); sacks:fn:put gives exactly those entries back (newest-taken first, each at the oldest end = the list
+     is as before the take); sacks:fn:commit drops them. So the count and the entries never drift (was: the entries stayed behind until
+     the next move trimmed the oldest - SackBridge.debit is no longer used for fish). Other items: take / put / commit unchanged.
+  C. CRASH WINDOWS (memory ledger, like 0.7.13): the pool file (fish, entry, token) is written before fishTake / fishPut answer 1, so after
+     any crash fishTaken(token) tells the caller's replay exactly whether its take reached the disk (TRUE = pay, FALSE = nothing left the
+     Void), and a replayed fishTake with that token answers 0. A plain take keeps 0.7.13's rule (saveSoon; the Bazaar's own pattern).
+  Saved data: two new pool meta lines ("~fishtok", "~fishcut"; 0.8.10+ keeps every "~" line) next to the 0.8.10 "~fish:<id>" line; no
+  command / system / class added; four bridge keys added (never removed, like every sacks:fn key). ROLLBACK to 0.8.16: safe (the keys vanish = SkyyFishing 0.1.10's bench lists the inventory only again and its
+  hint counts the Void fish; same pool files).
+0.8.18 = round FP1 (2026-10-17, Potion Flask + Food Pouch; research/Flask-Pouch-Spec.md 2.3 + 4.3). Skyy (docs/answered/skills.md
+2026-10-16): healing potions and food go into the Flask / Pouch "automatically like our pockets" - "auto like the void, with a toggle";
+"Cooked only" (raw food stays in the Void). SkyyCooking 0.1.11 owns both items and publishes the bridge key supply:fn:claims
+(Function, Object[] {UUID player, String itemId} -> Boolean.TRUE when the Flask / Pouch takes that id NOW: auto-fill on for that
+player's profile, not full, a fillable id; else FALSE / null; cheap + thread-safe). Absent (Cooking older / missing) = 0.8.17 behaviour.
+  A. EATING BEATS STORING (SackPool.claimed = one ask; a Throwable = not claimed, warned once): before an id goes into the Void,
+     - SweepTask.sweep (the 2 s sweep AND Deposit all): a claimed id stays in the inventory (asked once per distinct id per sweep pass,
+       a memo map inside the pass; only for ids the Void would take); while a pass left claimed items behind (SweepTask.SUPSEEN) sigOf
+       changes every 10 s, so the sweep looks again (a Pouch that got full / switched off lets the Void have them as before);
+     - PickGive.split (every auto-pickup straight to the Void: block / mob drops, pet kills + felled logs (pickup2 with SkyyMobs), late
+       felled-log drops): a claimed id goes into the player's STORAGE first (counted before / after), then the Void takes what did not
+       fit (as before), then the vanilla pickup container (hotbar), then the feet - every move counted, the 0.8.3 undo covers all of it;
+       PickGive.deliver passes the storage container (new 5-argument split; the 4-argument one = no storage, behaves as before);
+     - PickHarv.move (F-harvest / sickle pickups the engine already put in the inventory): a claimed id is left there;
+     - SackBridge.deposit (sacks:fn:deposit, Requip putting a hotbar stack away): a claimed id is refused (0 = it stays in the slot, the
+       caller's documented "did not fit" path).
+     Unchanged on purpose: the page's per-item Deposit button (an explicit choice of that item), PickHarv.onDrop (a FULL inventory
+     threw the rest - the Void takes it as before, nothing else has room), raw food (claims answers FALSE unless SkyyCooking's
+     supplies.pouchRaw is on).
+  B. THE TWO LIFELONG ITEMS NEVER ENTER THE VOID: SackDefs.supplyItem(id) = the prefixes Skyy_Flask_ / Skyy_Food_Pouch_; homeOf -> null
+     for them (so catOf / intake / voidRoom / sweep / Deposit / sacks:fn:deposit / the pages / the bench lists never route, store, list or
+     sell them, whatever rule might match later).
+  Saved data: none changed; no command / system / class / bridge key added. ROLLBACK to 0.8.17: safe (claimed ids go into the Void again;
+  the Flask / Pouch already never matched a Void rule).
+0.8.19 (2026-10-17) = TEXT ONLY: the charm bag is called Void Charms everywhere a player or admin reads it (the SkyyAccessories 0.5.24 rename,
+carried to this mod). Skyy 2026-10-17: "i noticed they are still called accessory's in the settings".
+  1. CHAT / PAGE LINES (/craft + benches): "Equip a <bench> accessory in your Void Charms to queue more.", "Materials come from your
+     inventory, the Void and your Void Charms - sorted by tier.", "equip the Campfire accessory in your Void Charms to cook here", "your
+     Void Charms changed - nothing was used", " (<n> from your Void Charms)", "needs its bench accessory in your Void Charms", the bench
+     line "[SkyyVoid] Make room in your inventory - the bench could not take the accessory out of your Void Charms."
+  2. SERVER LOG: the two bench WARN lines ("could not go back into the Void Charms of <key>", "putting unused accessories back into Void
+     Charms failed") and the ready line ("benches + /craft use Void Charms").
+  Unchanged on purpose: ids, config keys, file names, bridge keys (acc:fn:bag, acc:has), permission nodes, saved data; the crafts.log ACCBAG
+  lines (a data log: "moved from the bag to the inventory"); single items stay "accessory" ("the Campfire accessory", "accessory not
+  equipped", "equip a <bench> accessory to queue"); the Void's own Magic Bags / bag words (they are this mod's bags, not the charm bag);
+  the Workbench tab "Bags" (tools/skyywbtab.py, SkyyAccessories owns it); code comments.
+  ROLLBACK to 0.8.18: safe (same files, same keys).
+0.8.20 (2026-10-17) = ZONE ALLOYS + FURNACE CHARM in the /craft Furnace (round ores01, research/Zone-Ores-Alloys-Spec.md 3 / 4 / 5 / 7 B3).
+Skyy 2026-10-17: "Yes - start the zone ores + alloys + Furnace Charm round right after the current set deploys." + "Yes, build with defaults
+(Recommended)" (the spec's questions: the charm works in the /craft Furnace only, 1 + 1 -> 1 alloys, the charm must be equipped).
+gear.md 2026-10-17: "T1-T5 upgrades cost each zone's two metals and unlock that zone's alloy ... Keep your speed/fuel numbers and Eternal
+Flame at Charcoal tier 7. Collections for base metals only, no alloy collections."
+  1. ALLOY ROWS: the Furnace tab also lists every CraftingRecipe whose bench requirement id is "SkyyAlloy" (B1's standalone recipe files
+     Server/Item/Recipes/SkyWynn/Alloy_<Name>.json in SkyyWorldGen - a bench id no block has, so a placed vanilla furnace never makes them;
+     CraftingPlugin.onRecipeLoad files an unknown bench id under its own BenchRecipeRegistry (computeIfAbsent), no validation, and the
+     recipe is in CraftingRecipe's asset map like the vanilla Salvage files). They queue in the player's own Furnace ProcBench (its fuel,
+     tier speed, output slot), sorted with the other rows by tier then name (RecipeCmp, tools/tier_tags.py at build time).
+     LOCK: the alloy's tier (ProcBench.ALLOY_IDS: Bronze T1, Dusk T2, Azurvane T3, Cinder T4, Lumen T5, Electrum T1 - Skyy: "Electrum
+     (Gold + Silver, unlocked at the Bronze furnace tier)"; by id, else by the metal word of the recipe's output id Ingredient_Bar_<Word>;
+     an unknown SkyyAlloy output = its RequiredTierLevel, else T5) must be <= the equipped Furnace Charm tier (Eternal Flame = T5). A locked row is drawn greyed, no buttons,
+     "<name> - Furnace Charm T<n> unlocks this"; procQueue checks it again on the click (nothing is taken when locked) and refuses an alloy
+     on any bench but the Furnace. Charm removed later: queued alloy units finish (paid already); new ones refuse.
+     Instant crafting never makes them: tableOnly() is true for a Processing bench other than Salvagebench (instant tabs, search,
+     Collections tab, sacks:fn craft all refuse), as before.
+  2. FURNACE CHARM (bridge acc:smelt:<uuid> = "<tier 0-5>|<timePct>|<fuelPct>|<eternal 0/1>|<pkey>", SkyyAccessories 0.5.25). Read by
+     ProcBench.smelt(key) on every advance (outside the bench lock) - only for the Furnace and only while <key> is that player's ACTIVE
+     profile key (field 5 + SackPool.pkey); absent / malformed / tier 0 = no bonus = 0.8.19 exactly. Clamps: tier 0-5, time 0-90, fuel 0-1000.
+     - time: unit time = vanilla time x (1 - bench tier reduction) x (1 - timePct). ProcJob.unitMs keeps the BASE time (bench tier only,
+       fixed at queue time as before); the charm's cut is applied LIVE in advanceC (critic fix: removing the charm slows the running job,
+       exactly like the fuel rate - no lending one charm for a big batch); describe / queueMs show the live time; the row's "each" too.
+     - acc:smelt has a 5th field = the profile key it describes (critic fix, SkyyAccessories 0.5.25): smelt(k) needs field 5 == k (the
+       bench's key) - 4 fields or another key = no bonus, so a profile switch never carries the old profile's charm (alloy lock).
+       procQueue and buildProc read smelt(k) themselves for the lock.
+     - join / restart (critic fix): while the player is online and acc:smelt:<uuid> is absent, the Furnace does not replay (clock kept)
+       until it appears or 10 s pass (ProcBench.waitFrom / holdFor) - an Eternal Flame owner's offline span never burns fuel before the
+       value is published.
+     - fuel: advanceC drains step x (1 + fuelPct/100) fuel ms per processed ms (ceil); when the loaded fuel ms cannot pay a whole step the
+       step shrinks to what it pays (at least 1 ms, the bench never stalls) and fuelMs ends at 0. Read live on every advance, so equipping
+       / removing the charm mid-job only changes the fuel rate from then on (the replayed span since the last advance uses the state at
+       that advance). No item is created or removed by it: fuel items are only burned by burnOne as before.
+     - Eternal Flame (eternal 1): the Furnace burns nothing (no burnOne, fuelMs untouched, loaded fuel stays and can be unloaded), so no
+       Charcoal byproduct; never "OUT OF FUEL", no fuel warning; the status line says "Eternal Flame ... needs no fuel".
+     The Tannery is untouched. The status line names the charm ("Furnace Charm T3 30 percent faster", fuel time at the charm's rate).
+  3. CHARCOAL COLLECTION (spec 5, SkyyCollections 0.2.25 B4): every Ingredient_Charcoal the Furnace's ExtraOutput puts into the output
+     slot (burnOne) is also counted in the new ledger <bench>.collDone (saved in the processing file next to xpDone, cap 1,000,000).
+     ProcTask.drainColl pays it once the profile is settled: coll:fn:add {UUID, "Ingredient_Charcoal", Long qty <= 256, "sacks:furnace",
+     pkey}; TRUE drains exactly that count (crafts.log COLLECTION line); FALSE / null / no function / an error keeps the ledger and waits
+     30 s per key (no Charcoal collection yet, source not accepted, player offline). Never for the no-output fallback, cancel or unload.
+  Saved data: + <bench>.collDone in Skyy_SkyySacks/processing/<pkey>.properties (written only when not empty); nothing else changes.
+  No command / system / config key / permission added. ROLLBACK to 0.8.19: safe - alloy jobs already queued still finish (finishUnit reads
+  the recipe asset by id; with SkyyWorldGen rolled back too their inputs go to the output slot, the 0.7.0 fallback), the charm simply stops
+  applying, an unpaid collDone ledger is dropped at the next save (only uncredited Charcoal collection counts are lost, never items).
+0.8.21 (2026-10-17) = SMELTING FORTUNE in the /craft Furnace (round fortune F3, research/Metals-Tools-Fortune-Spec.md 2.2 / 2.3 / 2.4 / 5 F3).
+Skyy 2026-10-17 (docs/answered/gear.md METALS BUILD DEFAULTS): "Yes, all defaults (Recommended)" incl. "Smelting Fortune on alloys too but
+only on ore you mined yourself (blocks the Bazaar loop)"; Cobb's metals spec 5: Smelting Fortune = only the smelting skill tree, only the
+smelt step, +10% a level, drops = 1 + floor(F) + one more with chance (F mod 1).
+  1. VALUE: F = tree:fn:bonus.apply(Object[] { UUID, "Smithing.SSmelt" }) (SkyyTrees; Double, 1.0 = 100 percent; F1 makes it 0.10 a level),
+     read ONCE when the units are QUEUED (procQueue) and stored on the job (ProcJob.sf) - a respec after queuing changes nothing. Only while
+     the bench's key is the player's ACTIVE profile key (SackPool.pkey); no SkyyTrees / not a Number / NaN / <= 0 = no Fortune (= 0.8.20).
+     SkyySacks now lists the node: tree:reads:SkyySacks = "Smithing.SSmelt" (the SkyyTrees reader contract - without it the node stays
+     "coming"), published while smelt.fortune.enabled is on, removed when it is switched off and at shutdown. Critic L4: ONE writer -
+     SackCfg.readsValue() builds the whole comma list of the nodes SkyySacks applies (a later node is added there, never a second put).
+  2. WHICH SMELTS (ProcBench.sfKind, decided at queue time): the Furnace bench only, primary output an Ingredient_Bar_*, every input a plain
+     item id (no resource type), none Skyy_Ench_*; (1) an ORE ROW = exactly one input and it is an Ore_* item; (2) an ALLOY ROW = a SkyyAlloy
+     recipe (0.8.20 alloyNeed > 0) whose inputs are all Ingredient_Bar_* (smelt.fortune.alloys). Never the Tannery, Salvagebench, Enchanted
+     un-compress, charcoal, cooking, totems or the Auto-Smelt Pole (none of them is a Furnace ProcBench unit).
+  3. MINED-ORE BUDGET (smelt.fortune.minedOnly, default on - blocks buy ore -> smelt -> sell): per queued batch the units that get Fortune
+     = what SkyySkills grants through skill:fn:oreBudget.apply(Object[] { UUID, String oreId, Integer n }) -> Integer granted (0..n; F2's
+     contract, research/Metals-Tools-Fortune-Spec.md 2.3). Ore row: the input ore id, n = units x its quantity. Alloy row (builder reading of
+     "only on ore you mined yourself"): each input bar's ore (the Furnace recipe that makes that bar from one Ore_* input, smallest ore id,
+     cached; critic L5: x that recipe's ore per bar, rounded up) is asked in turn for what the previous one granted; critic M1: what an
+     earlier ore granted above the final count is given straight back (skill:fn:oreBudget with n < 0 = give back, SkyySkills 0.4.50), so
+     e.g. Bronze with Copper budget but no Tin budget burns no Copper budget; a bar without such an ore recipe = no Fortune for that alloy
+     (nothing is asked). Budget is only asked when F > 0. NO bridge / not a Number / an exception = 0 granted = NO Fortune (units smelt 1:1). minedOnly
+     off = every eligible unit gets Fortune. The rest of a batch smelts 1:1 in the same job (ProcJob.fu = Fortune units still to finish).
+  4. THE ROLL (ProcBench.finishUnit, once per finished unit, only when that unit's output was paid): while job.fu > 0 the unit uses one of
+     them (fu - 1) and rolls extras = floor(F) + (random < F - floor(F)), F clamped to smelt.fortune.guard (default 100 = most extra bars per
+     unit); the extras x the primary output quantity go into the output slot as more of the SAME bar. smelt.fortune.enabled off = no roll
+     (live: an emergency switch also stops units already queued). Logged per bench through the in-memory ledger sfDone -> ProcTask.drainSf ->
+     crafts.log "SMELT-FORTUNE <recipe> +N extra bars"; the queue writes "SMELT-FORTUNE queued <recipe> fortune units=a/b F=..% budget=..".
+  ITEM SAFETY: extras are created ONLY in finishUnit, only for a paid unit, only while fu > 0, and fu is lowered in the same synchronized
+  call (fu <= count kept) - a unit is finished once (0.8.20 loop unchanged), so a unit can never roll twice; cancel returns the inputs of the
+  unfinished units exactly as in 0.8.20 (their fu is dropped, no bar; critic M1: the dropped fu's mined-ore budget is given back through
+  skill:fn:oreBudget n = -(fu x ore per unit) per ore, inside the synchronized cancel so once - only for fu that came from the budget,
+  ProcJob.fb, saved as q.<i>.fb); unloadFuel / burnOne / Eternal Flame / the Furnace Charm / Charcoal
+  ledger / Smithing XP are untouched (charm = time + fuel only). Server stop: fu / sf are saved with the job (q.<i>.sf / q.<i>.fu, only
+  when fu > 0), a restart continues them; a hand-edited fu is clamped to the job's count. The no-output fallback (recipe gone) gives no
+  budget back (its ore cost cannot be read any more) - never an item.
+  Server Setup (Furnace and Tannery): smelt.fortune.enabled / .alloys / .minedOnly (true / true / true), smelt.fortune.guard 100 (0-1000);
+  all live. Saved data: + q.<i>.sf / q.<i>.fu in Skyy_SkyySacks/processing/<pkey>.properties. No command / system / permission added.
+  ROLLBACK to 0.8.20: safe - older Sacks ignores q.<i>.sf / fu (the queued units smelt 1:1, only the extras are lost), the reads flag goes.
+"""
+import sys, os
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tools"))
+import skyybuild as B
+import skyycfg as CFG   # 0.7.6: the admin config kit (research/Server-Setup-Spec.md 4.12, tools/CONFIG-CONTRACT.md)
+import skyywbtab as WB  # 0.7.10: the Workbench tab "Accessories & Bags" (one source with SkyyAccessories 0.5.2, the owner)
+import skyyui as SUI     # 0.7.11: the shared vanilla UI kit (research/Vanilla-UI-Style-Guide.md) for the new stack refill row
+import skyyench as EN    # 0.8.1: the Enchanted materials table (one source with SkyyCollections 0.2.11 + SkyyBazaar 0.1.10)
+import tier_tags as TT   # 0.8.11: THE tier table (sort by tier, PROJECT-RULES 4) - read only
+import skyyonce as ONCE  # 0.8.12: the lifelong Pocket Dimension item (one shared generator with SkyyAccessories 0.5.20 / SkyyMenu 0.3.32)
+import json
+
+VERSION = "0.8.21"
+HERE = os.path.dirname(os.path.abspath(__file__))
+J = B.start()
+pool, CtField, CtNewMethod, CtNewConstructor = J["pool"], J["CtField"], J["CtNewMethod"], J["CtNewConstructor"]
+OUT = B.class_out(HERE)
+
+JP  = "com.hypixel.hytale.server.core.plugin.JavaPlugin"
+JPI = "com.hypixel.hytale.server.core.plugin.JavaPluginInit"
+PAGE= "com.hypixel.hytale.server.core.entity.entities.player.pages.CustomUIPage"
+LIFE= "com.hypixel.hytale.protocol.packets.interface_.CustomPageLifetime"
+UCB = "com.hypixel.hytale.server.core.ui.builder.UICommandBuilder"
+UEB = "com.hypixel.hytale.server.core.ui.builder.UIEventBuilder"
+EVD = "com.hypixel.hytale.server.core.ui.builder.EventData"
+BT  = "com.hypixel.hytale.protocol.packets.interface_.CustomUIEventBindingType"
+PRE = "com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent"
+PDE = "com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent"   # 0.7.11: KeptQuit (relog resets the kept counts)
+# 0.7.12 (research/Bag-Craft-Link-Fix.md): the bench / pocket crafting link (VERIFIED against the live HytaleServer.jar; _engine_facts)
+SCW = "com.hypixel.hytale.builtin.crafting.window.SimpleCraftingWindow"
+PBW = "com.hypixel.hytale.builtin.crafting.window.ProcessingBenchWindow"
+FCW = "com.hypixel.hytale.builtin.crafting.window.FieldCraftingWindow"
+DIC = "com.hypixel.hytale.server.core.inventory.container.DelegateItemContainer"
+FT  = "com.hypixel.hytale.server.core.inventory.container.filter.FilterType"
+EIC = "com.hypixel.hytale.server.core.inventory.container.EmptyItemContainer"
+PPF = "com.hypixel.hytale.server.core.io.adapter.PlayerPacketFilter"
+PFI = "com.hypixel.hytale.server.core.io.adapter.PacketFilter"
+PAD = "com.hypixel.hytale.server.core.io.adapter.PacketAdapters"
+PKT = "com.hypixel.hytale.protocol.Packet"
+UW  = "com.hypixel.hytale.protocol.packets.window.UpdateWindow"
+OW  = "com.hypixel.hytale.protocol.packets.window.OpenWindow"
+ER  = "com.hypixel.hytale.protocol.ExtraResources"
+SWA = "com.hypixel.hytale.protocol.packets.window.SendWindowAction"
+CRA = "com.hypixel.hytale.protocol.packets.window.CraftRecipeAction"
+TUA = "com.hypixel.hytale.protocol.packets.window.TierUpgradeAction"
+WA  = "com.hypixel.hytale.protocol.packets.window.WindowAction"
+WT  = "com.hypixel.hytale.protocol.packets.window.WindowType"
+INVC = "com.hypixel.hytale.server.core.inventory.InventoryComponent"
+CAC = "com.hypixel.hytale.component.ComponentAccessor"
+SNDU = "com.hypixel.hytale.server.core.universe.world.SoundUtil"
+TAI = "com.hypixel.hytale.server.core.util.TempAssetIdUtil"
+SCAT = "com.hypixel.hytale.protocol.SoundCategory"
+EVR = "com.hypixel.hytale.event.EventRegistration"
+JSO = "com.google.gson.JsonObject"
+JPR = "com.google.gson.JsonParser"
+PR  = "com.hypixel.hytale.server.core.universe.PlayerRef"
+# 0.7.18: SackInvSys (the inventory-change dirty flag of the 2 s sweep) - the SkyyGear GearInvSys / SkyySkills SmeltSys pattern
+EES = "com.hypixel.hytale.component.system.EntityEventSystem"
+ICE = "com.hypixel.hytale.server.core.event.events.ecs.InventoryChangeEvent"
+ACH = "com.hypixel.hytale.component.ArchetypeChunk"
+CBF = "com.hypixel.hytale.component.CommandBuffer"
+EVE = "com.hypixel.hytale.component.system.EcsEvent"
+QRY = "com.hypixel.hytale.component.query.Query"
+REF = "com.hypixel.hytale.component.Ref"
+ST  = "com.hypixel.hytale.component.Store"
+UNI = "com.hypixel.hytale.server.core.universe.Universe"
+WLD = "com.hypixel.hytale.server.core.universe.world.World"
+APC = "com.hypixel.hytale.server.core.command.system.basecommands.AbstractPlayerCommand"
+CTX = "com.hypixel.hytale.server.core.command.system.CommandContext"
+PLA = "com.hypixel.hytale.server.core.entity.entities.Player"
+MSG = "com.hypixel.hytale.server.core.Message"
+HSV = "com.hypixel.hytale.server.core.HytaleServer"
+INV = "com.hypixel.hytale.server.core.inventory.Inventory"
+IC  = "com.hypixel.hytale.server.core.inventory.container.ItemContainer"
+IS  = "com.hypixel.hytale.server.core.inventory.ItemStack"
+IST = "com.hypixel.hytale.server.core.inventory.transaction.ItemStackTransaction"
+ISS = "com.hypixel.hytale.server.core.inventory.transaction.ItemStackSlotTransaction"
+LOG = "com.hypixel.hytale.logger.HytaleLogger"
+MCW = "com.hypixel.hytale.server.core.entity.entities.player.windows.MaterialContainerWindow"
+MERS= "com.hypixel.hytale.server.core.entity.entities.player.windows.MaterialExtraResourcesSection"
+WIN = "com.hypixel.hytale.server.core.entity.entities.player.windows.Window"
+WM  = "com.hypixel.hytale.server.core.entity.entities.player.windows.WindowManager"
+SIC = "com.hypixel.hytale.server.core.inventory.container.SimpleItemContainer"
+CIC = "com.hypixel.hytale.server.core.inventory.container.CombinedItemContainer"
+IQ  = "com.hypixel.hytale.protocol.ItemQuantity"
+CRP = "com.hypixel.hytale.builtin.crafting.CraftingPlugin"
+CRM = "com.hypixel.hytale.builtin.crafting.component.CraftingManager"
+CRR = "com.hypixel.hytale.server.core.asset.type.item.config.CraftingRecipe"
+FCC = "com.hypixel.hytale.server.core.asset.type.item.config.FieldcraftCategory"
+MQ  = "com.hypixel.hytale.server.core.inventory.MaterialQuantity"
+BRQ = "com.hypixel.hytale.protocol.BenchRequirement"
+OPT = "com.hypixel.hytale.server.core.command.system.arguments.system.OptionalArg"
+OCU = "com.hypixel.hytale.server.core.modules.interaction.interaction.config.server.OpenCustomUIInteraction"
+PB  = "com.hypixel.hytale.server.core.asset.type.blocktype.config.bench.ProcessingBench"
+PEO = "com.hypixel.hytale.server.core.asset.type.blocktype.config.bench.ProcessingBench$ExtraOutput"
+BEN = "com.hypixel.hytale.server.core.asset.type.blocktype.config.bench.Bench"
+BTL = "com.hypixel.hytale.server.core.asset.type.blocktype.config.bench.BenchTierLevel"
+BLT = "com.hypixel.hytale.server.core.asset.type.blocktype.config.BlockType"
+ITM = "com.hypixel.hytale.server.core.asset.type.item.config.Item"
+IRT = "com.hypixel.hytale.protocol.ItemResourceType"
+PGM = "com.hypixel.hytale.server.core.entity.entities.player.pages.PageManager"
+# 0.7.3
+AC  = "com.hypixel.hytale.server.core.command.system.AbstractCommand"
+BWN = "com.hypixel.hytale.server.core.entity.entities.player.windows.BlockWindow"
+BUR = "com.hypixel.hytale.server.core.asset.type.blocktype.config.bench.BenchUpgradeRequirement"
+BTP = "com.hypixel.hytale.protocol.BenchType"
+# 0.7.4: the creative flag passed to cook:fn:campfire (SkyyCooking 0.1.1 reads the same enum)
+GM  = "com.hypixel.hytale.protocol.GameMode"
+# 0.7.4: the Campfire tab text numbers = SkyyCooking's campfire.xpFactor / campfire.buffFactor (cook:fn:campfire applies the real,
+# configurable factors). 0.7.9 (Skyy 2026-10-01 -> SkyyCooking 0.1.3 campfire.xpFactor default 0.5 -> 0.25): CraftPage.campNote() shows
+# SkyyCooking's LIVE factors - cook:fn:campfactors (the running values), else config:fn:SkyyCooking get (its config kit) - so an edited
+# value (Server Setup, cooking.properties + /cookadmin reload) shows at once; CAMP_*_PCT = SkyyCooking 0.1.3's defaults are only the text
+# for a SkyyCooking that answers neither key.
+CAMP_XP_PCT, CAMP_BUFF_PCT = 25, 75
+# 0.7.9: 0.7.4's check FAILED the build whenever the newest SkyyCooking script's defaults differed from CAMP_*_PCT, which stopped every
+# Sacks rebuild once SkyyCooking 0.1.3 halved the XP share. Now it fails only when that script stops publishing what the live line reads
+# (cook:fn:campfactors and its shape; the campfire.xpFactor / campfire.buffFactor / enabled rows of the SkyyCooking config kit) or has no
+# parsable defaults line; a differing default is a NOTE (the fallback numbers then trail SkyyCooking until the next Sacks version).
+def _camp_defaults_check():
+    import re, glob
+    def _v(p):
+        m = re.search(r"_(\d+(?:\.\d+)*)\.py$", p)
+        return tuple(int(x) for x in m.group(1).split(".")) if m else (0,)
+    found = sorted(glob.glob(os.path.join(HERE, "..", "SkyyCooking", "build_skyycooking_*.py")), key=_v)
+    if not found:
+        print("note: no SkyyCooking build script next to this mod - Campfire tab sources not cross-checked")
+        return
+    name = os.path.basename(found[-1])
+    txt = open(found[-1], encoding="utf8", errors="replace").read()
+    m = re.search(r"^CAMP_BUFF_DEF, CAMP_XP_DEF = ([0-9.]+), ([0-9.]+)", txt, re.M)
+    if not m:
+        raise SystemExit("0.7.9: %s has no CAMP_BUFF_DEF / CAMP_XP_DEF line - re-check the Campfire tab numbers (CAMP_*_PCT)" % name)
+    if 'b.put("cook:fn:campfactors"' not in txt or "Double buffFactor, Double xpFactor, Boolean enabled" not in txt:
+        raise SystemExit("0.7.9: %s no longer publishes cook:fn:campfactors -> Object[]{Double buffFactor, Double xpFactor, Boolean enabled} "
+                         "- update CraftPage.campFactors (tools/sacks_0_7_9_patch.py)" % name)
+    if 'MOD="SkyyCooking"' not in txt:
+        raise SystemExit("0.7.9: %s no longer publishes config:fn:SkyyCooking (CFG.emit MOD=\"SkyyCooking\") - update CraftPage.campCfg" % name)
+    for key, typ in (("campfire.xpFactor", "dec"), ("campfire.buffFactor", "dec"), ("enabled", "bool")):
+        if not re.search(r'\("%s", "[^"]*", "[a-z]+", "%s"' % (re.escape(key), typ), txt):
+            raise SystemExit("0.7.9: %s has no %s config row %s - update CraftPage.campCfg" % (name, typ, key))
+    buff, xp = int(round(float(m.group(1)) * 100)), int(round(float(m.group(2)) * 100))
+    if (buff, xp) != (CAMP_BUFF_PCT, CAMP_XP_PCT):
+        print("NOTE: %s defaults are XP %d%% / bonus %d%%, the Campfire tab's fallback text says %d%% / %d%% - the tab shows SkyyCooking's "
+              "live share; update CAMP_*_PCT in the next SkyySacks version" % (name, xp, buff, CAMP_XP_PCT, CAMP_BUFF_PCT))
+    else:
+        print("campfire tab: live share from cook:fn:campfactors / config:fn:SkyyCooking (%s publishes both); fallback text matches its "
+              "defaults (XP %d%%, bonus %d%%)" % (name, xp, buff))
+_camp_defaults_check()
+
+# 0.7.5: THE BAG TABLE - one source for the SackDefs arrays (tab order + the "how to craft" view of a bag you do not carry), the Workbench
+# recipes in the item JSON and the lang text, so the page can never describe a recipe the bag item does not have. The first four rows are
+# exactly the 0.7.4 recipes; Smithing is new (Skyy's beta backlog 2026-09-24 item 1). ITEM_NAME = Assets.zip server.lang items.<id>.name.
+# 0.7.7 (research/Bag-Restructure-Spec.md 3.1): BAG_BOLTS = the material of each rarity step - the next rarity needs the previous one, like
+# accessories. Normal = BAG_BOLT_QTY Bolt of Wool + BAG_MAT_QTY BAG_MAT (the 0.7.4 recipe; Wool Scraps drop from sheep -> Furniture Bench).
+# 0.7.15 (Skyy 2026-10-09 "lets use fiber for T1 bags, not wool. make they easy to get."): Normal = 20 Plant Fiber + 4 Sticks for every
+# type (BAG_BOLTS[0] = Ingredient_Fibre, BAG_MAT = Ingredient_Stick everywhere) - both drop from plants in the world, no mob, no bench.
+# Unique / Rare / Legendary = the previous bag + BAG_UP_QTY MOB-DROPPED fabric scraps of the vanilla armor tiers (already Smithing-bag items):
+# Linen (goblins, trorks), Shadoweave (outlanders), Cindercloth (burnt skeletons, fire dragon, wraith). Review fix: the Bolt of Linen / Silk /
+# Cindercloth of the first 0.7.7 draft (and of the live 0.7.6 Medium / Large) come only from the Loombench, whose recipe needs Cotton Scraps
+# that nothing drops (salvage needs armor made of those bolts), so no survival player could craft Unique and up. Silk scraps are not used:
+# nothing drops them. _bag_ids_check stops the build when a step material is no longer dropped by an NPC (or one recipe step from one).
+BAG_CATS = ("Mining", "Foraging", "Farming", "Combat", "Smithing")
+T1_FIBRE, T1_STICK = "Ingredient_Fibre", "Ingredient_Stick"   # 0.7.15: Assets.zip ids (server.lang "Plant Fiber" / "Stick")
+BAG_MAT = dict((c, T1_STICK) for c in ("Mining", "Foraging", "Farming", "Combat", "Smithing"))
+BAG_BOLTS = (T1_FIBRE, "Ingredient_Fabric_Scrap_Linen", "Ingredient_Fabric_Scrap_Shadoweave", "Ingredient_Fabric_Scrap_Cindercloth")
+BAG_BOLT_QTY, BAG_MAT_QTY = 20, 4    # 0.7.15: the Normal recipe = 20 Plant Fiber + 4 Sticks; SackDefs.BOLTQ / MATQ for the "how to get one" view
+BAG_UP_QTY = 6                       # PLACEHOLDER (Skyy): fabric scraps per rarity step (Unique / Rare / Legendary)
+assert BAG_BOLT_QTY >= 1 and BAG_MAT_QTY >= 1 and BAG_UP_QTY >= 1
+BAG_HOLDS = {"Mining": "ore, rubble, rock and soil",
+             "Foraging": "logs, planks, sticks, fibre, bark and tree sap",
+             "Farming": "plants, raw food, fish and life essence",
+             "Combat": "bones, feathers, essences, venom sacs, chitin, voidhearts and boom powder",
+             "Smithing": "bars and ingots, leather, hides, cloth bolts, fabric scraps, leather straps, iron studs and charcoal"}
+ITEM_NAME = {"Ingredient_Fibre": "Plant Fiber", "Ingredient_Stick": "Stick", "Ingredient_Fabric_Scrap_Linen": "Linen Scraps",
+             "Ingredient_Fabric_Scrap_Shadoweave": "Shadoweave Scraps", "Ingredient_Fabric_Scrap_Cindercloth": "Cindercloth Scraps"}
+# 0.7.7 THE RARITY LADDER (spec 3.1): (id suffix, rarity, quality id, cap key, step material). The old Small / Medium / Large ids keep
+# working as Normal / Unique / Legendary (same caps: the bag.small / bag.medium / bag.large keys); Rare is new. Rank = position + 1.
+BAG_TIERS = [("Small",  "Normal",    "Skyy_Bag_Normal",    "bag.small",  BAG_BOLTS[0]),
+             ("Medium", "Unique",    "Skyy_Bag_Unique",    "bag.medium", BAG_BOLTS[1]),
+             ("Rare",   "Rare",      "Skyy_Bag_Rare",      "bag.rare",   BAG_BOLTS[2]),
+             ("Large",  "Legendary", "Skyy_Bag_Legendary", "bag.large",  BAG_BOLTS[3])]
+assert tuple(t[0] for t in BAG_TIERS) == ("Small", "Medium", "Rare", "Large"), "SackDefs.tierCap / legendCount know these suffixes"
+TOP_SUFFIX = BAG_TIERS[-1][0]                       # the Legendary bag id suffix (the Omni recipe takes one of each type)
+BAG_OMNI = "Skyy_Sack_Omni"                         # the Mythic Omni Bag (spec 4): cap key bag.omni, quality Skyy_Bag_Mythic
+RECIPE_SUFFIX = "_Recipe_Generated_0"               # an item-embedded recipe's id (VERIFIED in Skyy's log: all bag recipe ids resolve)
+# 0.7.7 rarity look (spec 3.2 = research/SkyyGear-Stage1-Spec.md 2.1): (quality id, label, tooltip TextColor, bag page text colour,
+# QualityValue (< 8: SkyyAuctions treats >= 8 as technical), vanilla texture set reused by hue, drop particle). Mythic is #cc66cc on
+# the page AND in the tooltip (0.7.8 rebuild fix: Skyy's lock, SkyyGear 0.1 RARITIES + tools/skyyui.py RARITY adopted #CC66CC - Wynn's
+# #aa00aa reads ~2.8:1 on the dark panels; 0.7.7 kept it on the tooltip and stopped rebuilding). Review fix: the drop particles are SkyyGear's
+# (build_skyygear RARITIES, by hue like the frame art; SkyyGear owns the look), so a Unique bag and Unique gear glow the same on the ground.
+BAG_RARITY = [("Skyy_Bag_Normal",    "Normal",    "#ffffff", "#ffffff", 1, "Common",    "Drop_Common"),
+              ("Skyy_Bag_Unique",    "Unique",    "#ffff55", "#ffff55", 2, "Legendary", "Drop_Legendary"),
+              ("Skyy_Bag_Rare",      "Rare",      "#ff55ff", "#ff55ff", 3, "Epic",      "Drop_Epic"),
+              ("Skyy_Bag_Legendary", "Legendary", "#55ffff", "#55ffff", 4, "Rare",      "Drop_Rare"),
+              ("Skyy_Bag_Mythic",    "Mythic",    "#cc66cc", "#cc66cc", 6, "Epic",      "Drop_Epic")]
+assert [r[1] for r in BAG_RARITY[:4]] == [t[1] for t in BAG_TIERS] and [r[0] for r in BAG_RARITY[:4]] == [t[2] for t in BAG_TIERS]
+assert all(r[4] < 8 for r in BAG_RARITY), "bag qualities must stay below SkyyAuctions' technical threshold (8)"
+# the 20 recipe-knowledge entries SkyySacks owns in every player's known set (KnowSync never touches any other entry)
+MANAGED_IDS = ["Skyy_Sack_%s_%s" % (c, t[0]) for c in BAG_CATS for t in BAG_TIERS]
+assert len(MANAGED_IDS) == 20 and len(set(MANAGED_IDS)) == 20
+# 0.7.5 Smithing bag contents (SackDefs.catOf, checked before Combat). Research = the inline "Recipe" -> "Input" block of all 188 item
+# JSONs with a recipe under Assets.zip Server/Item/Items/Weapon, Armor and Tool: bars 142 inputs, leather 119, fabric scraps 65, cloth
+# bolts 45 (cloth armor; bolts are also the bag recipes); no gear recipe takes hides - they become leather at the Tannery. Strap and
+# stud are smithing parts no recipe uses yet. The other inputs of those recipes are gathering drops that stay in their field's bag;
+# chitin stays Combat (no weapon, armor or tool recipe uses it). Hides and fabric scraps were Combat until 0.7.4.
+SMITH_PREFIX = ("Ingredient_Bar_", "Ingredient_Leather_", "Ingredient_Hide_", "Ingredient_Bolt_")
+# 0.8.9 (Skyy "actually fabric is combat not smithing. move it to combat bag"): the fabric scraps (mob drops) are Combat again - homeOf's
+# Combat rule; cloth bolts stay Smithing. The pool is keyed by item id: stored fabric simply shows in the Combat tab (nothing moves).
+COMBAT_PREFIX_089 = "Ingredient_Fabric_Scrap_"
+# 0.7.10 (Skyy 2026-10-01: "charcoal should go in the smithing bag."): Ingredient_Charcoal (the vanilla Furnace's fuel product, ResourceTypes
+# [Fuel]) - it matched no rule before (not a Rubble_ id) and stayed in the inventory. _bag_ids_check verifies the id exists in Assets.zip.
+SMITH_EXACT = ("Ingredient_Strap_Leather", "Ingredient_Stud_Iron", "Ingredient_Charcoal")
+TREE_SAP = "Ingredient_Tree_Sap"   # every Tree_Sap_Glob_* drop list gives this item -> Foraging bag
+assert BAG_CATS[:4] == ("Mining", "Foraging", "Farming", "Combat") and set(BAG_MAT) == set(BAG_CATS) == set(BAG_HOLDS)
+for _t in list(BAG_HOLDS.values()) + list(ITEM_NAME.values()) + list(BAG_MAT.values()) + list(BAG_BOLTS):
+    assert '"' not in _t and "\\" not in _t and "\n" not in _t, _t
+for _i in list(BAG_MAT.values()) + list(BAG_BOLTS):
+    assert _i in ITEM_NAME, "no display name for " + _i
+# 0.7.8 COOKED FOOD (Skyy 2026-09-30, verbatim: "my cooked food went into my farming sack. id keep cooked food out."): the Farming bag
+# keeps RAW farm produce only. SackDefs.cooked(id) is THE classification (Java); cooked_py below is its build-time mirror, checked against
+# every Food_ id of Assets.zip (_food_check) and by SkyySacks/test_skyysacks_0.7.8.py against the compiled class:
+#   cooked = a Skyy_Cook_* graded dish (not the Skyy_Cook_Recipe_* recipe items, which never pool), an id with SkyyCooking's cook:prefix
+#            (bridge, starts with Skyy_Cook), or a Food_* id that is not raw;
+#   raw    = Food_*_Raw / Food_*_Raw_* (beef, chicken, pork, wildmeat, the fish fillets incl. Uncommon / Rare / Epic / Legendary) and
+#            Food_Egg / Food_Egg_*; Plant_*, Fish_*, life essence and poop are never cooked.
+# A new Food_ id is cooked unless it carries "_Raw" (Skyy: keep cooked food out) - _food_check prints it so the table can be updated.
+# FARM_HOLDS_COOKED = the 0.7.7 Farming text, shown by the how-to-craft view while bags.cookedFood is on.
+FOOD_COOKED = ("Food_Bread", "Food_Candy_Cane", "Food_Cheese", "Food_Fish_Grilled", "Food_Kebab_Fruit", "Food_Kebab_Meat",
+               "Food_Kebab_Mushroom", "Food_Kebab_Vegetable", "Food_Pie_Apple", "Food_Pie_Meat", "Food_Pie_Pumpkin", "Food_Popcorn",
+               "Food_Salad_Berry", "Food_Salad_Caesar", "Food_Salad_Mushroom", "Food_Vegetable_Cooked", "Food_Wildmeat_Cooked")
+FOOD_RAW = ("Food_Beef_Raw", "Food_Chicken_Raw", "Food_Egg", "Food_Fish_Raw", "Food_Fish_Raw_Epic", "Food_Fish_Raw_Legendary",
+            "Food_Fish_Raw_Rare", "Food_Fish_Raw_Uncommon", "Food_Pork_Raw", "Food_Wildmeat_Raw")
+FARM_HOLDS_COOKED = "plants, raw and cooked food and life essence"   # 0.8.0: fish moved to the Fishing category
+assert '"' not in FARM_HOLDS_COOKED and "\\" not in FARM_HOLDS_COOKED
+def cooked_py(i, prefix=None):
+    if i is None:
+        return False
+    if i.startswith("Skyy_"):
+        if i.startswith("Skyy_Cook_Recipe_"):
+            return False
+        if i.startswith("Skyy_Cook_"):
+            return True
+        return bool(prefix) and prefix.startswith("Skyy_Cook") and i.startswith(prefix)
+    if not i.startswith("Food_"):
+        return False
+    if i == "Food_Egg" or i.startswith("Food_Egg_"):
+        return False
+    return not (i.endswith("_Raw") or "_Raw_" in i)
+assert all(cooked_py(i) for i in FOOD_COOKED) and not any(cooked_py(i) for i in FOOD_RAW) and not set(FOOD_COOKED) & set(FOOD_RAW)
+assert not any(cooked_py(i) for i in list(BAG_MAT.values()) + list(BAG_BOLTS)), "0.7.15: no bag recipe material is food"
+def _food_check():
+    import zipfile
+    za = os.path.join(B.HYTALE, "install", "release", "package", "game", "latest", "Assets.zip")
+    if not os.path.isfile(za):
+        print("note: Assets.zip not found - the cooked / raw food table was not cross-checked")
+        return
+    with zipfile.ZipFile(za) as z:
+        ids = set(os.path.basename(n)[:-5] for n in z.namelist() if n.startswith("Server/Item/Items/") and n.endswith(".json"))
+    food = sorted(i for i in ids if i.startswith("Food_"))
+    for i in list(FOOD_COOKED) + list(FOOD_RAW):
+        if i not in ids:
+            print("WARNING: %s (cooked / raw table) is no longer in Assets.zip" % i)
+    new = [i for i in food if i not in FOOD_COOKED and i not in FOOD_RAW]
+    for i in new:
+        print("WARNING: new vanilla food %s - classified %s by the rule; add it to FOOD_COOKED / FOOD_RAW" % (i, "COOKED" if cooked_py(i) else "RAW"))
+    bad = [i for i in ("Plant_", "Fish_") for j in ids if j.startswith(i) and cooked_py(j)]
+    if bad:
+        raise SystemExit("0.7.8: a Plant_ / Fish_ id classified as cooked food")
+    print("food rule: %d vanilla Food_ ids - cooked (stay out of the Farming bag): %s | raw (Farming bag): %s"
+          % (len(food), ", ".join(i[5:] for i in food if cooked_py(i)), ", ".join(i[5:] for i in food if not cooked_py(i))))
+def _bag_ids_check():
+    import zipfile, re
+    za = os.path.join(B.HYTALE, "install", "release", "package", "game", "latest", "Assets.zip")
+    if not os.path.isfile(za):
+        print("note: Assets.zip not found - bag recipe / Smithing bag ids not cross-checked")
+        return
+    with zipfile.ZipFile(za) as z:
+        ids = set(os.path.basename(n)[:-5] for n in z.namelist() if n.startswith("Server/Item/Items/") and n.endswith(".json"))
+        lang = {}
+        for line in z.read("Server/Languages/en-US/server.lang").decode("utf-8-sig").splitlines():
+            m = re.match(r"items\.([A-Za-z0-9_]+)\.name\s*=\s*(.*)", line)
+            if m:
+                lang[m.group(1)] = m.group(2).strip()
+        # 0.7.7 review fix: every rarity-step material must be obtainable in survival - dropped by an NPC (Server/Drops/NPCs), or made by
+        # its own item recipe from NPC drops only (Bolt of Wool <- Wool Scraps from sheep). The Loombench bolts failed exactly this.
+        npc_txt = [z.read(n).decode("utf-8-sig", "replace") for n in z.namelist() if n.startswith("Server/Drops/NPCs/") and n.endswith(".json")]
+        def _dropped(i):
+            return any('"%s"' % i in t for t in npc_txt)
+        def _obtainable(i):
+            if _dropped(i):
+                return True
+            ipath = [n for n in z.namelist() if n.startswith("Server/Item/Items/") and n.endswith("/%s.json" % i)]
+            if not ipath:
+                return False
+            rec = (json.loads(z.read(ipath[0]).decode("utf-8-sig")).get("Recipe") or {}).get("Input") or []
+            return bool(rec) and all(x.get("ItemId") and _dropped(x["ItemId"]) for x in rec)
+        unob = [i for i in BAG_BOLTS[1:] if i in ids and not _obtainable(i)]
+        # 0.7.15: the Normal materials (fiber + sticks) drop from plants: each must be in some Server/Drops/ list (not only NPCs)
+        _drops = [z.read(n).decode("utf-8-sig", "replace") for n in z.namelist() if n.startswith("Server/Drops/") and n.endswith(".json")]
+        t1bad = [i for i in (T1_FIBRE, T1_STICK) if not any('"%s"' % i in t for t in _drops)]
+        if t1bad:
+            raise SystemExit("0.7.15: Normal bag material(s) no drop list gives: " + ", ".join(t1bad))
+        print("Normal bag materials from world drops: %s in %d drop lists, %s in %d" % (ITEM_NAME[T1_FIBRE], sum('"%s"' % T1_FIBRE in t for t in _drops),
+              ITEM_NAME[T1_STICK], sum('"%s"' % T1_STICK in t for t in _drops)))
+    bad = [i for i in list(BAG_MAT.values()) + list(BAG_BOLTS) + list(SMITH_EXACT) + [TREE_SAP] if i not in ids]
+    if bad:
+        raise SystemExit("0.7.5: unknown item id(s) in the bag table: " + ", ".join(bad))
+    if unob:
+        raise SystemExit("0.7.7: bag rarity-step material(s) no NPC drops (nor one recipe from NPC drops): " + ", ".join(unob)
+                         + " - survival players could not craft those bags; pick a dropped material in BAG_BOLTS")
+    print("bag step materials obtainable from NPC drops: " + ", ".join(ITEM_NAME[i] for i in BAG_BOLTS[1:]))
+    for i, nm in sorted(ITEM_NAME.items()):
+        if lang.get(i) and lang[i] != nm:
+            print("WARNING: %s is called %r in server.lang but the bags page says %r - update ITEM_NAME" % (i, lang[i], nm))
+    fam = []
+    for p in SMITH_PREFIX:
+        got = sorted(i for i in ids if i.startswith(p))
+        if not got:
+            raise SystemExit("0.7.5: no item id starts with " + p + " any more - re-check the Smithing bag")
+        fam.append("%s* %d" % (p, len(got)))
+    print("smithing bag holds: " + ", ".join(fam) + ", " + ", ".join(SMITH_EXACT) + " | tree sap -> Foraging (" + TREE_SAP + ")")
+_bag_ids_check()
+_food_check()
+# 0.7.7 (spec 3.2): SkyyGear owns the rarity look. The newest SkyyGear build script's RARITIES tuple list is read as text (never imported -
+# the _camp_defaults_check pattern): ("unique", "Unique", "#FFFF55", "#FFFF55", "Legendary", "Legendary", "Drop_Legendary") = (id, name,
+# tooltip hex, page hex, tooltip frame, slot frame, drop particle). The bags must use the same tooltip hex, frame art and drop particle, so a
+# Unique bag and Unique gear look and glow the same; a mismatch stops the build. A SkyyGear script that is missing, unreadable or mid-edit
+# (no complete table) falls back to the ladder table of research/SkyyGear-Stage1-Spec.md 2.1 (hexes only - it has no particle column) with
+# a printed note; an unreadable source never stops the build.
+def _gear_colour_check():
+    import re, glob
+    mine = dict((r[1].lower(), (r[2].lower(), r[5], r[6])) for r in BAG_RARITY)
+    def _v(p):
+        m = re.search(r"_(\d+(?:\.\d+)*)\.py$", p)
+        return tuple(int(x) for x in m.group(1).split(".")) if m else (0,)
+    found = sorted(glob.glob(os.path.join(HERE, "..", "SkyyGear", "build_skyygear_*.py")), key=_v)
+    got, where = {}, None
+    if found:
+        where = os.path.basename(found[-1])
+        try:
+            txt = open(found[-1], encoding="utf8", errors="replace").read()
+        except Exception as e:
+            txt = ""
+            print("note: could not read %s (%s)" % (where, e))
+        for rid in mine:
+            m = re.search(r'\(\s*"%s"\s*,\s*"[A-Za-z ]+"\s*,\s*"(#[0-9A-Fa-f]{6})"\s*,\s*"#[0-9A-Fa-f]{6}"\s*,\s*"(\w+)"\s*,\s*"(\w+)"\s*,'
+                          r'\s*"(\w+)"\s*\)' % rid, txt)
+            if m:
+                got[rid] = (m.group(1).lower(), m.group(2), m.group(3), m.group(4))
+        if len(got) < len(mine):
+            print("note: %s has no complete RARITIES table this build can read (SkyyGear mid-edit?) - falling back to the SkyyGear spec"
+                  % where)
+            got = {}
+    if got:
+        bad = []
+        for k in sorted(mine):
+            hx, tex, part = mine[k]
+            ghx, gtt, gslot, gpart = got[k]
+            if hx != ghx:
+                bad.append("%s colour %s (bags) vs %s" % (k, hx, ghx))
+            if tex != gtt or tex != gslot:
+                bad.append("%s frame %s (bags) vs tooltip %s / slot %s" % (k, tex, gtt, gslot))
+            if part != gpart:
+                bad.append("%s drop particle %s (bags) vs %s" % (k, part, gpart))
+        if bad:
+            raise SystemExit("0.7.7: the bag rarity look differs from %s: %s - SkyyGear owns the look, update BAG_RARITY" % (where, "; ".join(bad)))
+        print("bag rarity look matches %s (colour, frame, drop particle: %s)" % (where, ", ".join(
+            "%s %s %s %s" % (k, mine[k][0], mine[k][1], mine[k][2]) for k in ("normal", "unique", "rare", "legendary", "mythic"))))
+        return
+    spec = os.path.join(HERE, "..", "research", "SkyyGear-Stage1-Spec.md")
+    try:
+        txt = open(spec, encoding="utf8", errors="replace").read() if os.path.isfile(spec) else None
+    except Exception as e:
+        txt = None
+        print("note: could not read %s (%s)" % (spec, e))
+    if txt is None:
+        print("note: no readable SkyyGear build script and no research/SkyyGear-Stage1-Spec.md - bag rarity look not cross-checked")
+        return
+    for rid in mine:
+        m = re.search(r"\|\s*\d+\s*\|\s*`%s`\s*\|[^|\n]*\|[^|\n]*\|\s*`(#[0-9A-Fa-f]{6})`" % rid, txt)
+        if m:
+            got[rid] = m.group(1).lower()
+    where = "research/SkyyGear-Stage1-Spec.md 2.1"
+    if len(got) < len(mine):
+        print("note: %s ladder table not readable - bag rarity look not cross-checked" % where)
+        return
+    # 0.7.8: the spec table still lists Wynn's Mythic #AA00AA; the kit lock (tools/skyyui.py RARITY, SkyyGear 0.1) moved it to #CC66CC
+    bad = ["%s %s (bags) vs %s" % (k, mine[k][0], got[k]) for k in sorted(mine) if got.get(k) != mine[k][0]
+           and not (k == "mythic" and mine[k][0] == "#cc66cc" and got.get(k) == "#aa00aa")]
+    if bad:
+        raise SystemExit("0.7.7: the bag rarity colours differ from %s: %s - SkyyGear owns the look, update BAG_RARITY" % (where, "; ".join(bad)))
+    print("bag rarity colours match %s (%s); drop particles not cross-checked (the spec has no particle column)" % (
+        where, ", ".join("%s %s" % (k, mine[k][0]) for k in ("normal", "unique", "rare", "legendary", "mythic"))))
+_gear_colour_check()
+# 0.7.8: the bag page rarity colours = the kit RARITY palette (tools/skyyui.py, LOCKED 2026-09-25; Mythic #CC66CC on pages). Read as text
+# (the _camp_defaults_check pattern) - the bag page is not built with the kit, so the kit is not imported here. A missing or unreadable kit
+# file is a note, never a stop.
+def _kit_palette_check():
+    import re
+    p = os.path.join(HERE, "..", "tools", "skyyui.py")
+    try:
+        txt = open(p, encoding="utf8", errors="replace").read()
+    except Exception as e:
+        print("note: could not read tools/skyyui.py (%s) - bag page colours not checked against the kit RARITY palette" % e)
+        return
+    m = re.search(r"^RARITY\s*=\s*\{(.*?)\}", txt, re.M | re.S)
+    kit = dict((k.lower(), v.lower()) for k, v in re.findall(r'"([A-Za-z]+)"\s*:\s*"(#[0-9A-Fa-f]{6})"', m.group(1))) if m else {}
+    if not kit:
+        print("note: tools/skyyui.py has no RARITY table this build can read - bag page colours not checked against the kit")
+        return
+    bad = ["%s page %s vs kit %s" % (r[1], r[3], kit.get(r[1].lower())) for r in BAG_RARITY if kit.get(r[1].lower()) != r[3].lower()]
+    if bad:
+        raise SystemExit("0.7.8: the bag page rarity colours differ from the kit RARITY palette (tools/skyyui.py): " + "; ".join(bad))
+    print("bag page rarity colours match the kit RARITY palette (%s)" % ", ".join("%s %s" % (r[1], r[3]) for r in BAG_RARITY))
+_kit_palette_check()
+# ================= 0.8.0 BAGS V2 (research/Bags-v2-Spec.md) - the six categories, levels, rarities, costs, refunds =================
+# PD_CATS = the Void categories (tab order, spec 3.1); the five legacy bag types (BAG_CATS) stay for the old bag ids, their item JSONs and
+# the migration. PD_HOLDS = what each category takes (spec 1.1). All numbers are PLACEHOLDER Server Setup rows (spec 2.4).
+PD_CATS = ("Mining", "Foraging", "Farming", "Fishing", "Combat", "Smithing")
+assert set(BAG_CATS) < set(PD_CATS) and len(PD_CATS) == 6
+PD_HOLDS = {"Mining": "ore, rubble, rock, soil and crystals",
+            "Foraging": "logs, planks, sticks, fibre, bark, tree sap and saplings",   # 0.8.16: + saplings (Skyy "saplings in foraging")
+            "Farming": "plants, raw food and life essence",
+            "Fishing": "fish and raw fish",
+            "Combat": "bones, feathers, fabric scraps, essences, venom sacs, chitin, voidhearts and boom powder",
+            "Smithing": "bars and ingots, leather, hides, cloth bolts, leather straps, iron studs and charcoal"}   # 0.8.9: fabric -> Combat
+assert set(PD_HOLDS) == set(PD_CATS)
+PD_RAR = ("Normal", "Unique", "Rare", "Legendary", "Omni")
+PD_RCOL = ("#ffffff", "#ffff55", "#ff55ff", "#55ffff", "#cc66cc")      # = BAG_RARITY page colours (Omni = the Mythic #cc66cc)
+assert list(PD_RCOL[:4]) == [r[3] for r in BAG_RARITY[:4]] and PD_RCOL[4] == BAG_RARITY[-1][3]
+PD_STEP = {"Mining": 25, "Foraging": 20, "Farming": 25, "Fishing": 2, "Combat": 8, "Smithing": 10}
+PD_MULT = (1.0, 1.5, 2.0, 3.0, 5.0)
+PD_GATE = (10, 25, 50)            # the level gate of the step TO Unique / Rare / Legendary
+PD_PER_LEVEL, PD_MAX_LEVEL = 150, 250   # 0.8.9 (Skyy "make the level ups give a little more storage"): 100 -> 150
+# 0.8.9 (Skyy "scale down how much each level cost goes up"): items to reach level L = pd.step x (L-1)^PD_CURVE (0.8.0-0.8.8: ^2)
+PD_CURVE = 1.75
+PD_CURVE_LO, PD_CURVE_HI = 1.0, 3.0
+assert all(PD_MULT[i] < PD_MULT[i + 1] for i in range(4)) and PD_GATE[0] < PD_GATE[1] < PD_GATE[2] <= PD_MAX_LEVEL
+# the upgrade costs (spec 2.3; Fishing: DECISION - the trap fish, see the patch docstring); key (category, target rarity 1..3)
+PD_COST = {
+    ("Mining", 1): [("Rock_Stone_Cobble", 500), ("Ore_Copper", 250), ("Ore_Iron", 100)],
+    ("Mining", 2): [("Rock_Stone_Cobble", 2000), ("Ore_Copper", 1000), ("Ore_Iron", 1000), ("Ore_Thorium", 250)],
+    ("Mining", 3): [("Rock_Stone_Cobble", 5000), ("Ore_Iron", 2500), ("Ore_Thorium", 1000), ("Ore_Cobalt", 500), ("Ore_Adamantite", 100)],
+    ("Foraging", 1): [("Wood_Oak_Trunk", 500), ("Ingredient_Fibre", 500), ("Ingredient_Tree_Sap", 100)],
+    ("Foraging", 2): [("Wood_Oak_Trunk", 2000), ("Wood_Maple_Trunk", 1000), ("Wood_Gumboab_Trunk", 500), ("Ingredient_Tree_Sap", 250)],
+    ("Foraging", 3): [("Wood_Oak_Trunk", 5000), ("Wood_Maple_Trunk", 2000), ("Wood_Gumboab_Trunk", 1000), ("Wood_Redwood_Trunk", 1000),
+                      ("Wood_Sallow_Trunk", 500), ("Ingredient_Tree_Sap", 500)],
+    ("Farming", 1): [("Plant_Crop_Wheat_Item", 500), ("Plant_Crop_Lettuce_Item", 250), ("Ingredient_Life_Essence", 100)],
+    ("Farming", 2): [("Plant_Crop_Wheat_Item", 2000), ("Plant_Crop_Carrot_Item", 1000), ("Plant_Crop_Cauliflower_Item", 500),
+                     ("Ingredient_Life_Essence", 250)],
+    ("Farming", 3): [("Plant_Crop_Wheat_Item", 5000), ("Plant_Crop_Carrot_Item", 2000), ("Plant_Crop_Pumpkin_Item", 1000),
+                     ("Plant_Crop_Tomato_Item", 1000), ("Plant_Crop_Cotton_Item", 500), ("Ingredient_Life_Essence", 500)],
+    ("Fishing", 1): [("Food_Fish_Raw", 100)],
+    ("Fishing", 2): [("Food_Fish_Raw", 500), ("Fish_Bluegill_Item", 50)],
+    ("Fishing", 3): [("Food_Fish_Raw", 1500), ("Fish_Catfish_Item", 150), ("Fish_Minnow_Item", 150)],
+    ("Combat", 1): [("Ingredient_Bone_Fragment", 250), ("Ingredient_Fabric_Scrap_Linen", 100)],
+    ("Combat", 2): [("Ingredient_Bone_Fragment", 1000), ("Ingredient_Fabric_Scrap_Linen", 500), ("Ingredient_Sac_Venom", 100),
+                    ("Ingredient_Chitin_Sturdy", 100), ("Ingredient_Fabric_Scrap_Shadoweave", 100)],
+    ("Combat", 3): [("Ingredient_Bone_Fragment", 2500), ("Ingredient_Fabric_Scrap_Linen", 1000), ("Ingredient_Sac_Venom", 250),
+                    ("Ingredient_Chitin_Sturdy", 250), ("Ingredient_Void_Essence", 100), ("Ingredient_Voidheart", 10)],
+    ("Smithing", 1): [("Ingredient_Leather_Light", 200), ("Ingredient_Bar_Copper", 100)],
+    ("Smithing", 2): [("Ingredient_Leather_Light", 750), ("Ingredient_Leather_Medium", 500), ("Ingredient_Bar_Copper", 250),
+                      ("Ingredient_Bar_Iron", 100)],
+    ("Smithing", 3): [("Ingredient_Leather_Light", 2000), ("Ingredient_Leather_Medium", 1000), ("Ingredient_Leather_Heavy", 250),
+                      ("Ingredient_Bar_Iron", 250), ("Ingredient_Bar_Thorium", 100)],
+}
+assert sorted(PD_COST) == sorted((c, r) for c in PD_CATS for r in (1, 2, 3)) and all(1 <= len(v) <= 6 for v in PD_COST.values())
+# 0.8.9 (Skyy "the cost to upgrade rarity iss about 2x what i can hold"): at every gate the bag ALONE holds >= 1.25 x that upgrade's cost
+# (space at the gate level with the rarity before the step: level x pd.perLevel x the multiplier)
+def _gate_room_check():
+    rows = []
+    for c in PD_CATS:
+        cells = []
+        for r in (1, 2, 3):
+            g = PD_GATE[r - 1]
+            room = g * PD_PER_LEVEL * PD_MULT[r - 1]
+            need = sum(q for _i, q in PD_COST[(c, r)])
+            assert room >= 1.25 * need, "0.8.9: %s %s at Lv %d holds %d < 1.25 x its cost %d" % (c, PD_RAR[r], g, room, need)
+            cells.append("Lv%d %s %d/%d %.2fx" % (g, PD_RAR[r - 1], room, need, room / need))
+        rows.append(c + " " + ", ".join(cells))
+    print("gate room (space at the gate / upgrade cost, >= 1.25x): " + " | ".join(rows))
+_gate_room_check()
+# 0.8.9: the one-time config update (SackMig089): (key, the 0.8.8 default, the 0.8.9 default, n = number / t = cost text)
+MIG089 = [('pd.perLevel', '100', '150', 'n'), ('pd.cost.Combat.Unique', 'Ingredient_Bone_Fragment:250,Ingredient_Feathers_Light:100', 'Ingredient_Bone_Fragment:250,Ingredient_Fabric_Scrap_Linen:100', 't'), ('pd.cost.Combat.Rare', 'Ingredient_Bone_Fragment:1000,Ingredient_Feathers_Light:500,Ingredient_Sac_Venom:100,Ingredient_Chitin_Sturdy:100', 'Ingredient_Bone_Fragment:1000,Ingredient_Fabric_Scrap_Linen:500,Ingredient_Sac_Venom:100,Ingredient_Chitin_Sturdy:100,Ingredient_Fabric_Scrap_Shadoweave:100', 't'), ('pd.cost.Combat.Legendary', 'Ingredient_Bone_Fragment:2500,Ingredient_Feathers_Light:1000,Ingredient_Sac_Venom:250,Ingredient_Chitin_Sturdy:250,Ingredient_Void_Essence:100,Ingredient_Voidheart:10', 'Ingredient_Bone_Fragment:2500,Ingredient_Fabric_Scrap_Linen:1000,Ingredient_Sac_Venom:250,Ingredient_Chitin_Sturdy:250,Ingredient_Void_Essence:100,Ingredient_Voidheart:10', 't'), ('pd.cost.Smithing.Unique', 'Ingredient_Hide_Light:200,Ingredient_Fabric_Scrap_Linen:100,Ingredient_Fabric_Scrap_Wool:100', 'Ingredient_Leather_Light:200,Ingredient_Bar_Copper:100', 't'), ('pd.cost.Smithing.Rare', 'Ingredient_Hide_Light:750,Ingredient_Hide_Medium:500,Ingredient_Fabric_Scrap_Linen:250,Ingredient_Fabric_Scrap_Shadoweave:100', 'Ingredient_Leather_Light:750,Ingredient_Leather_Medium:500,Ingredient_Bar_Copper:250,Ingredient_Bar_Iron:100', 't'), ('pd.cost.Smithing.Legendary', 'Ingredient_Hide_Light:2000,Ingredient_Hide_Medium:1000,Ingredient_Hide_Heavy:250,Ingredient_Fabric_Scrap_Shadoweave:250,Ingredient_Fabric_Scrap_Cindercloth:100', 'Ingredient_Leather_Light:2000,Ingredient_Leather_Medium:1000,Ingredient_Leather_Heavy:250,Ingredient_Bar_Iron:250,Ingredient_Bar_Thorium:100', 't')]
+MIG089_MK = 'skyysacks-0.8.9-void'
+_pdt = dict(("pd.cost.%s.%s" % (c, PD_RAR[r]), ",".join("%s:%d" % x for x in v)) for (c, r), v in PD_COST.items())
+assert all(_pdt[k_] == n_ for k_, o_, n_, t_ in MIG089 if t_ == "t") and MIG089[0] == ("pd.perLevel", "100", str(PD_PER_LEVEL), "n")
+# 0.8.8 TIER LOGS (Skyy "id make the bag upgrade count all wood types of the right tier, not just oak."): a log id in an upgrade cost counts
+# every log of its wood tier (research/Gathering-Progression-Spec.md 2.2, key log first). One id per wood (no stripped trunk exists; the
+# _Full / _Half / _Stairs blocks are crafted building blocks, not logs).
+LOG_TIERS = (('Oak', 'Birch', 'Beech', 'Ash', 'Aspen'), ('Maple', 'Azure'), ('Gumboab', 'Dry', 'Bottletree', 'Palo'), ('Redwood', 'Fir', 'Cedar', 'Poisoned', 'Spiral'), ('Sallow', 'Burnt', 'Petrified', 'Bamboo', 'Camphor', 'Banyan', 'Jungle', 'Fig_Blue', 'Fire', 'Crystal'))
+LOG_IDS = [["Wood_%s_Trunk" % w for w in t] for t in LOG_TIERS]
+_flat = [i for t in LOG_IDS for i in t]
+assert len(_flat) == len(set(_flat)) == 26 and [t[0] for t in LOG_IDS] == ["Wood_Oak_Trunk", "Wood_Maple_Trunk", "Wood_Gumboab_Trunk",
+                                                                          "Wood_Redwood_Trunk", "Wood_Sallow_Trunk"]
+# every log the Foraging costs name is the key log of a tier (so each cost line = one tier)
+assert all(i in [t[0] for t in LOG_IDS] for r in (1, 2, 3) for i, _q in PD_COST[("Foraging", r)] if i.startswith("Wood_"))
+def _log_ids_check():
+    import zipfile
+    za = os.path.join(B.HYTALE, "install", "release", "package", "game", "latest", "Assets.zip")
+    if not os.path.isfile(za):
+        print("note: Assets.zip not found - tier log ids not cross-checked")
+        return
+    with zipfile.ZipFile(za) as z:
+        ids = set(os.path.basename(n)[:-5] for n in z.namelist() if n.startswith("Server/Item/Items/") and n.endswith(".json"))
+    bad = [i for i in _flat if i not in ids]
+    if bad:
+        raise SystemExit("0.8.8: tier log id(s) not in Assets.zip: " + ", ".join(bad))
+    print("tier logs: %d ids in %d tiers - all in Assets.zip" % (len(_flat), len(LOG_IDS)))
+_log_ids_check()
+def pd_cost_text(cat, r):
+    return ",".join("%s:%d" % (i, q) for i, q in PD_COST[(cat, r)])
+POCKET = "Skyy_Sack_Pocket"           # the one bag item (the opener); Skyy_Sack_ keeps it out of /trade, the AH, Merchants and SkyyGear
+POCKET_Q = "Skyy_Bag_Void"            # its own quality: label "Void", the Mythic look (QualityValue 5 < 8, SkyyAuctions' threshold)
+# the refund of an extra legacy bag (spec 4.2): its whole crafting chain (Normal 20 Fibre + 4 Sticks, + BAG_UP_QTY scraps per step)
+def refund_chain(rank):
+    out = {T1_FIBRE: BAG_BOLT_QTY, T1_STICK: BAG_MAT_QTY}
+    for i in range(1, rank):
+        out[BAG_BOLTS[i]] = out.get(BAG_BOLTS[i], 0) + BAG_UP_QTY
+    return out
+def refund_text(rank, times=1):
+    ch = refund_chain(rank)
+    return ",".join("%s:%d" % (i, q * times) for i, q in sorted(ch.items()))
+REFUND_BY_RANK = [refund_text(r) for r in (1, 2, 3, 4)] + [refund_text(4, len(BAG_CATS))]   # index rank-1; [4] = an extra Omni
+assert REFUND_BY_RANK[0] == "Ingredient_Fibre:20,Ingredient_Stick:4" and "Ingredient_Fabric_Scrap_Cindercloth:6" in REFUND_BY_RANK[3]
+def _pd_ids_check():
+    """every cost / refund item exists in Assets.zip and a survival player can get it (a drop list - a fish trap state too - or a recipe)"""
+    import zipfile, re
+    za = os.path.join(B.HYTALE, "install", "release", "package", "game", "latest", "Assets.zip")
+    if not os.path.isfile(za):
+        print("note: Assets.zip not found - Void cost ids not cross-checked")
+        return
+    with zipfile.ZipFile(za) as z:
+        nm = z.namelist()
+        ids = set(os.path.basename(n)[:-5] for n in nm if n.startswith("Server/Item/Items/") and n.endswith(".json"))
+        drops = "\n".join(z.read(n).decode("utf-8-sig", "replace") for n in nm if n.startswith("Server/Drops/") and n.endswith(".json"))
+        crafted = set()
+        for n in nm:
+            if n.startswith("Server/Item/Items/") and n.endswith(".json"):
+                t = z.read(n).decode("utf-8-sig", "replace")
+                if '"Recipe"' in t or '"BlockType"' in t:   # crafted, or a block the world has (logs, cobble: breaking it gives it)
+                    crafted.add(os.path.basename(n)[:-5])
+            elif n.startswith("Server/Item/Recipes/") and n.endswith(".json"):
+                for m in re.findall(r'"ItemId"\s*:\s*"([A-Za-z0-9_]+)"', z.read(n).decode("utf-8-sig", "replace")):
+                    crafted.add(m)
+    want = sorted(set(i for v in PD_COST.values() for i, _q in v) | set(i for t in REFUND_BY_RANK for i in re.findall(r"([A-Za-z0-9_]+):", t)))
+    bad = [i for i in want if i not in ids]
+    if bad:
+        raise SystemExit("0.8.0: Void cost / refund item(s) not in Assets.zip: " + ", ".join(bad))
+    nosrc = [i for i in want if ('"%s"' % i) not in drops and ('"*%s_State' % i) not in drops and i not in crafted]
+    if nosrc:
+        raise SystemExit("0.8.0: Void cost item(s) no drop list or recipe gives (survival players could never upgrade): " + ", ".join(nosrc))
+    print("Void costs: %d upgrade rows, %d distinct items - all in Assets.zip and obtainable; refunds %s" % (len(PD_COST), len(want), REFUND_BY_RANK[:2]))
+_pd_ids_check()
+SMITH_JAVA = " || ".join(['itemId.startsWith("%s")' % p for p in SMITH_PREFIX] + ['itemId.equals("%s")' % i for i in SMITH_EXACT])
+def _jarr(vals):
+    return "new String[] { " + ", ".join('"%s"' % v for v in vals) + " }"
+
+for c, m in ((PLA, "getInventory"), (INV, "getStorage"), (IC, "getItemStack"), (IC, "removeItemStackFromSlot"), (IC, "addItemStack"),
+             (IS, "getItemId"), (IS, "getQuantity"), (WLD, "execute"), (IST, "getRemainder"), (ISS, "succeeded"), (EVD, "of"),
+             ("com.hypixel.hytale.server.core.plugin.PluginBase", "shutdown"), (OCU, "registerSimple"), (CRP, "getAvailableRecipesForCategory"),
+             (CRM, "getInputMaterials"), (CRR, "getInput"), (FCC, "getAssetMap"), (IC, "countRemovableMaterial"), (IC, "removeMaterials"), (INV, "getCombinedBackpackStorageHotbar"), (SIC, "addOrDropItemStack")):
+    B.probe(pool, c, m)
+# 0.8.8: the bench ranking (block id, base pack, state variant)
+for c, m in ((BLT, "isState"), (BLT, "getId"), ("com.hypixel.hytale.assetstore.AssetMap", "getAssetPack"), (BLT, "getAssetMap")):
+    B.probe(pool, c, m)
+# 0.8.8 /craft order + names: ItemLevel, the translation key, the I18n lookup
+for c, m in ((ITM, "getItemLevel"), (ITM, "getTranslationKey"), ("com.hypixel.hytale.server.core.modules.i18n.I18nModule", "getMessage"),
+             ("com.hypixel.hytale.server.core.modules.i18n.I18nModule", "get")):
+    B.probe(pool, c, m)
+for c, m in ((CRR, "getTimeSeconds"), (PB, "getExtraOutput"), (PB, "getFuel"), (BEN, "getTierLevel"), (BTL, "getCraftingTimeReductionModifier"),
+             (BLT, "getBench"), (ITM, "getFuelQuality"), (ITM, "getResourceTypes"), (PEO, "isIgnoredFuelSource"), (PEO, "getPerFuelItemsConsumed"),
+             (PAGE, "sendUpdate"), (PGM, "getCustomPage"), (UCB, "set"), (IC, "getCapacity"), (IC, "getMatchingResourceType"),
+             (MQ, "isItemExcluded"), (MQ, "getResourceTypeId")):
+    B.probe(pool, c, m)
+# 0.7.3: bench-aware mirror, Processing check, search box (Validating + "@SearchQuery" event data), /craft <words>
+for c, m in ((CRP, "getBenchRecipes"), (BWN, "getBlockType"), (BEN, "getUpgradeRequirement"), (BUR, "getInput"), (BRQ, "type"),
+             (BTP, "Processing"), (BT, "Validating"), (EVD, "append"), (UEB, "addEventBinding"), (AC, "setAllowsExtraArguments"),
+             (CTX, "getInputString"), (UCB, "set"), (MQ, "getItemId")):
+    B.probe(pool, c, m)
+# 0.7.4: Campfire tab (creative flag for cook:fn:campfire, primary output swap)
+for c, m in ((PLA, "getGameMode"), (GM, "Creative"), (CRR, "getOutputs"), (CRR, "getPrimaryOutput"), (CRR, "getBenchRequirement")):
+    B.probe(pool, c, m)
+# 0.7.7 (research/Bag-Restructure-Spec.md 5.2 / 5.6, VERIFIED bytecode): per-player recipe knowledge, the quality restamp, coloured chat
+PCD = "com.hypixel.hytale.server.core.entity.entities.player.data.PlayerConfigData"
+for c, m in ((CRR, "isKnowledgeRequired"), (PLA, "getPlayerConfigData"), (PCD, "getKnownRecipes"), (PCD, "setKnownRecipes"),
+             (CRP, "sendKnownRecipes"), (IS, "withQuality"), (IS, "getQualityIndex"), (IS, "getItem"), (ITM, "getQualityIndex"),
+             (IC, "setItemStackForSlot"), (MSG, "color")):
+    B.probe(pool, c, m)
+# 0.7.11 (VERIFIED bytecode 2026-10-02): the stack refill merges into an existing slot with ItemContainer.addItemStackToSlot(short,
+# ItemStack) (InternalContainerUtilItemStack: an empty slot takes the stack, a stackable one gains min(maxStack - qty, qty), a
+# non-stackable one - other metadata / durability / quality - refuses), skips a stack whose metadata document has entries (review fix 13:
+# ItemStack(id, qty, doc) keeps the document as given and isStackableWith compares it with BsonDocument.equals, so an EMPTY document is
+# merged with a copy of itself - VERIFIED bytecode) and Item.getMaxStack() <= 1; the relog reset listens to PlayerDisconnectEvent.getPlayerRef()
+# through PluginBase.getEventRegistry().registerGlobal (SkyyClasses' ClassQuit); review fix 9 reads Player.getWindowManager().getWindows()
+# (a list copy of the open windows) for an open MaterialContainerWindow (the bench windows CraftLinkTask feeds)
+for c, m in ((IC, "addItemStackToSlot"), (IS, "getMetadata"), (IS, "isStackableWith"), (ITM, "getMaxStack"), (PDE, "getPlayerRef"),
+             ("com.hypixel.hytale.server.core.plugin.PluginBase", "getEventRegistry"), ("com.hypixel.hytale.event.EventRegistry", "registerGlobal"),
+             (INV, "getHotbar"), (INV, "getBackpack"), (PLA, "getWindowManager"), (WM, "getWindows"), ("org.bson.BsonDocument", "isEmpty")):
+    B.probe(pool, c, m)
+# 0.8.10: a whole fish's metadata goes through the fish bridge as JSON (BsonDocument.toJson / parse) - the stack is rebuilt with it
+for c, m in (("org.bson.BsonDocument", "toJson"), ("org.bson.BsonDocument", "parse")):
+    B.probe(pool, c, m)
+# 0.7.12 (research/Bag-Craft-Link-Fix.md, VERIFIED bytecode 2026-10-02): the public members the bench / pocket link calls
+for c, m in ((PAD, "registerOutbound"), (PAD, "deregisterOutbound"), (PAD, "registerInbound"), (PAD, "deregisterInbound"), (PPF, "test"),
+             (UW, "extraResources"), (UW, "windowData"), (UW, "id"), (OW, "extraResources"), (OW, "windowData"), (OW, "id"), (ER, "resources"),
+             (IQ, "itemId"), (IQ, "quantity"), (SWA, "action"), (SWA, "id"), (CRA, "recipeId"), (CRA, "quantity"), (MERS, "toPacket"),
+             (MERS, "setValid"), (MERS, "isValid"), (MERS, "setItemContainer"), (MERS, "setExtraMaterials"), (MCW, "invalidateExtraResources"),
+             (MCW, "getExtraResourcesSection"), (MCW, "isValid"), (WIN, "CLIENT_REQUESTABLE_WINDOW_TYPES"), (WIN, "registerCloseEvent"),
+             (WIN, "getData"), (WIN, "getPlayerRef"), (WM, "getWindow"), (FCW, "handleAction"), (FCW, "onClose0"), (FCW, "onOpen0"),
+             (DIC, "setGlobalFilter"), (FT, "ALLOW_OUTPUT_ONLY"), (EIC, "INSTANCE"), (IC, "containsContainer"), (CIC, "getContainersSize"),
+             (CIC, "getContainer"), (CRM, "craftItem"), (CRM, "getComponentType"), (INVC, "getCombined"), (INVC, "BACKPACK_STORAGE_HOTBAR"),
+             ("com.hypixel.hytale.component.Store", "isInThread"), (SNDU, "playSoundEvent2d"), (TAI, "getSoundEventIndex"),
+             (WT, "PocketCrafting"), (JPR, "parseString"), (JSO, "addProperty"), (WLD, "execute"), (CRR, "getAssetMap")):
+    B.probe(pool, c, m)
+
+
+# 0.7.12: the ENGINE FACTS of research/Bag-Craft-Link-Fix.md, read from the server jar's bytecode at build time (in order); a server update
+# that changes one of them stops the build instead of shipping a link that silently does nothing (or worse).
+def _engine_facts():
+    from jpype import JClass
+    IP = JClass("javassist.bytecode.InstructionPrinter")
+
+    def code(cls, meth, sig=None):
+        for mm in pool.get(cls).getDeclaredMethods():
+            if str(mm.getName()) == meth and (sig is None or sig in str(mm.getSignature())):
+                mi = mm.getMethodInfo()
+                ca = mi.getCodeAttribute()
+                cp = mi.getConstPool()
+                it = ca.iterator()
+                out = []
+                while it.hasNext():
+                    pos = it.next()
+                    out.append(str(IP.instructionString(it, pos, cp)))
+                return "\n".join(out)
+        raise SystemExit("0.7.12 engine check: %s.%s not found in the server jar" % (cls, meth))
+
+    def in_order(txt, needles):
+        i = 0
+        for nd in needles:
+            j = txt.find(nd, i)
+            if j < 0:
+                return nd
+            i = j + len(nd)
+        return None
+    W = "com.hypixel.hytale.server.core.entity.entities.player.windows."
+    facts = [
+        ("PacketHandler.writePacket runs the outbound filters first (before caching / serializing)",
+         "com.hypixel.hytale.server.core.io.PacketHandler", "writePacket", None, ["PacketAdapters.__handleOutbound", "ireturn", "getChannel"]),
+        ("WindowManager.updateWindow sends the extra-materials list ONLY for an invalid section",
+         WM, "updateWindow", None, ["MaterialContainerWindow.isValid", "ifne", "getExtraResourcesSection", "toPacket", "UpdateWindow.<init>", "writeNoCache"]),
+        ("WindowManager.openWindow always sends the list", WM, "openWindow", None, ["getExtraResourcesSection", "toPacket", "OpenWindow.<init>"]),
+        ("WindowManager.clientOpenWindow (window 0) sends the list of a MaterialContainerWindow",
+         WM, "clientOpenWindow", None, ["CLIENT_REQUESTABLE_WINDOW_TYPES", "onOpen", "consumeIsDirty", "MaterialContainerWindow.getExtraResourcesSection", "toPacket"]),
+        ("BenchWindow.getExtraResourcesSection re-feeds the vanilla chests only when the section is invalid",
+         "com.hypixel.hytale.builtin.crafting.window.BenchWindow", "getExtraResourcesSection", None,
+         ["MaterialExtraResourcesSection.isValid", "ifne", "feedExtraResourcesSection"]),
+        ("CraftingManager.feedExtraResourcesSection replaces the container + list and marks the section valid",
+         CRM, "feedExtraResourcesSection", None, ["setItemContainer", "setExtraMaterials", "setValid"]),
+        ("SimpleCraftingWindow.handleAction crafts from Combined{inventory BACKPACK_STORAGE_HOTBAR, the section container}, then invalidates",
+         SCW, "handleAction", None, ["CraftRecipeAction", "BACKPACK_STORAGE_HOTBAR", "getExtraResourcesSection", "getItemContainer",
+                                     "CombinedItemContainer.<init>", "invalidateExtraResources"]),
+        ("CraftingWindow.craftSimpleItem (the vanilla pocket path) crafts from the inventory only",
+         "com.hypixel.hytale.builtin.crafting.window.CraftingWindow", "craftSimpleItem", None, ["BACKPACK_STORAGE_HOTBAR", "craftItem"]),
+        ("FieldCraftingWindow.handleAction = craftSimpleItem + SFX_Player_Craft_Item_Inventory (PocketCraftWindow mirrors it)",
+         FCW, "handleAction", None, ["CraftRecipeAction", "craftSimpleItem", "SFX_Player_Craft_Item_Inventory", "playSoundEvent2d"]),
+        ("CraftingPlugin.setup registers the pocket crafting window supplier",
+         CRP, "setup", None, ["CLIENT_REQUESTABLE_WINDOW_TYPES", "WindowType.PocketCrafting", "Map.put"]),
+        ("a timed unit's inputs come out of the job's container and the window is invalidated after",
+         CRM, "removeInputFromInventory", "CraftingManager$CraftingJob;I", ["inputItemContainer", "removeMaterials", "invalidateExtraResources"]),
+        ("closing a bench cancels its queue and refunds the started unit into the inventory",
+         CRM, "cancelAllCrafting", None, ["queuedCraftingJobs", "refundInputToInventory"]),
+        ("the refund goes into the player's inventory (not the extra-materials container)",
+         CRM, "refundInputToInventory", None, ["HOTBAR_FIRST", "getCombined", "addOrDropItemStacks"]),
+        ("DelegateItemContainer refuses inserts when its filter does not allow input",
+         DIC, "cantAddToSlot", None, ["FilterType.allowInput", "ifne", "iconst_1"]),
+        ("DelegateItemContainer allows removals when its filter allows output",
+         DIC, "cantRemoveFromSlot", None, ["FilterType.allowOutput"]),
+        ("inbound filters run on the network thread BEFORE the packet handler queues its world task",
+         "com.hypixel.hytale.server.core.io.netty.PlayerChannelHandler", "channelRead", None, ["PacketAdapters.__handleInbound", "PacketHandler.handle"]),
+        ("world packet handlers run as World.execute tasks", "com.hypixel.hytale.server.core.io.handlers.IWorldPacketHandler",
+         "lambda$registerHandler$0", None, ["World.execute"]),
+        ("World.execute appends to a FIFO deque (a task queued earlier runs earlier)", WLD, "execute", None, ["Deque.offer"]),
+        ("a player filter is called with the GamePacketHandler's PlayerRef",
+         PAD, "lambda$registerOutbound$1", None, ["GamePacketHandler", "getPlayerRef", "PlayerPacketFilter.test"]),
+        ("window close events fire after onClose0 (the close hook books after the vanilla refund)",
+         WIN, "onClose", None, ["onClose0", "closeEventRegistry", "dispatch"]),
+    ]
+    bad = []
+    for (what, cls, meth, sig, needles) in facts:
+        miss = in_order(code(cls, meth, sig), needles)
+        if miss is not None:
+            bad.append("%s (%s.%s: no %r in order)" % (what, cls.rsplit(".", 1)[1], meth, miss))
+    if bad:
+        raise SystemExit("0.7.12 engine check FAILED - the bench / pocket link would not work as built:\n  " + "\n  ".join(bad))
+    print("engine facts: %d verified (research/Bag-Craft-Link-Fix.md): %s" % (len(facts), "; ".join(f[0].split(" (")[0][:40] for f in facts[:4])) + " ...")
+
+
+_engine_facts()
+
+# 0.7.6: THE CAPS TABLE - one source for the public static volatile fields (initial values), the admin config rows (defaults, bounds)
+# and SackCfg.reload's clamps, so the file, the page and the running values cannot disagree. (file key = row key, Java field, default,
+# min, max). 0.7.7 (research/Bag-Restructure-Spec.md 8.1): the bag keys keep their names (bag.small = the Normal bag, bag.medium = Unique,
+# bag.large = Legendary - owners keep every number they have); NEW bag.rare (6,720 = the geometric middle of 2,240 and 20,160) and
+# bag.omni (the Mythic Omni Bag, 100,000 of each item for EVERY bag type, up to 10,000,000).
+SACK_CAPS = [
+    ("bag.small",        "SackDefs.CAP_SMALL",    640, 1, 1000000),
+    ("bag.medium",       "SackDefs.CAP_MEDIUM",  2240, 1, 1000000),
+    ("bag.rare",         "SackDefs.CAP_RARE",    6720, 1, 1000000),
+    ("bag.large",        "SackDefs.CAP_LARGE",  20160, 1, 1000000),
+    ("bag.omni",         "SackDefs.CAP_OMNI",  100000, 1, 10000000),
+    ("bench.queueCap",   "ProcBench.QUEUE_CAP",   256, 1, 10000),
+    ("bench.fuelCap",    "ProcBench.FUEL_CAP",   1000, 1, 100000),
+    ("bench.outputCap",  "ProcBench.OUT_CAP",   20000, 1, 1000000),
+]
+CAPD = dict((k, d) for (k, _f, d, _lo, _hi) in SACK_CAPS)
+assert (CAPD["bag.small"], CAPD["bag.medium"], CAPD["bag.rare"], CAPD["bag.large"], CAPD["bag.omni"]) == (640, 2240, 6720, 20160, 100000), \
+    "the bag caps are locked design numbers (spec 3.1)"
+assert [t[3] for t in BAG_TIERS] == ["bag.small", "bag.medium", "bag.rare", "bag.large"]
+assert all(CAPD[BAG_TIERS[i][3]] < CAPD[BAG_TIERS[i + 1][3]] for i in range(3)) and CAPD["bag.large"] < CAPD["bag.omni"], "default caps must rise"
+_BAG_KEYS = [c for c in SACK_CAPS if c[0].startswith("bag.")]
+_BENCH_KEYS = [c for c in SACK_CAPS if c[0].startswith("bench.")]
+# Skyy_SkyySacks/config.properties as SackCfg.reload writes it when it is missing (= the kit's DEFAULTS text). The first four lines are the
+# 0.7.5 file; every other key is a commented template line the kit uncomments in place when an admin changes one (a 0.7.6 file without the
+# new lines gets the changed line appended under the kit's "changed in game" header). Doc comments carry no "=" so nothing mistakes them
+# for a key.
+SACK_CFG_LINES = [
+    "# SkyySacks settings - re-read about every 10 seconds when this file changes (no restart and no rebuild needed).",
+    "# craftSearch=false removes the search box from the /craft page (use it if the craft page stops opening on your client).",
+    "# /craft followed by words still searches when the box is off.",
+    "craftSearch=true",
+    "# Admins can also change these in game: SkyWynn Menu -> Server Setup -> SkyyVoid and Crafting (permission skyysacks.admin).",
+    "# Cooked food in Farming (true or false): false keeps cooked and prepared food (bread, pies, kebabs, salads, graded dishes)",
+    "# out of the Void's Farming category - it stays in your inventory; raw produce still goes in. Cooked food already stored stays until taken out.",
+    "#bags.cookedFood=false",
+    "# Stack refill (true or false): true lets every player pick Hotbar only, Full inventory or Off on the Void page; false turns it off.",
+    "#bags.refill=true",
+    "# The stack refill of players who never picked one: hotbar (Hotbar only), full (Full inventory) or off.",
+    "#bags.refillDefault=hotbar",
+    "# Bench chest count fallback (true or false): true makes an open bench report at least 1 nearby chest while it uses the Void.",
+    "# Turn it on only if benches ignore Void items (the game client may want a chest count first).",
+    "#bags.benchChests=false",
+    "# Void in inventory crafting (true or false): true lets inventory (pocket) crafting use the Void, like benches do.",
+    "# Set it to false if inventory crafting misbehaves on clients - benches keep using the Void either way.",
+    "#bags.pocketCraft=true",
+    "# Pocket Dimension stays with you (true or false): the Pocket Dimension item can't be dropped, stored in a container or sold,",
+    "# one per profile (extra copies are removed - the Void lives with the profile) and /pocket gives it back. false: the old rules.",
+    "#bags.pocketKeep=true",
+    "# Auto-pickup (true or false): block drops and mob drops go straight to the player - the Void first, then the inventory,",
+    "# the ground at their feet only when both are full. pickup.blocks / pickup.mobs switch the two kinds on their own.",
+    "#pickup.on=true",
+    "#pickup.blocks=true",
+    "#pickup.mobs=true",
+    "# Kill credit: the player who did the most damage gets a mob's whole drop. If another player dealt the killing blow, they get",
+    "# this percent (0-100) of a second roll of the mob's drop list. 0 = nothing extra for the killer.",
+    "#pickup.killerShare=50",
+    "# Hide the vanilla pickup popup (true or false): the game's own 'picked up' popups are switched off for everyone (the Void feed",
+    "# cards from SkyyHud show what you picked up; the pickup sound stays). false: the vanilla popups show as before.",
+    "#pickup.hidePopup=true",
+    "# The Void (SkyyVoid): space of a category = storage level x pd.perLevel x the rarity multiplier; level L needs pd.step.<Category>",
+    "# x (L-1)^pd.curve items collected in that category. Remove the # in front of a line to change it. Lowering never deletes items.",
+    "# SkyySacks 0.8.9 defaults (marker %s): 150 space per level, curve 1.75, Smithing costs leather + bars, Combat costs fabric." % MIG089_MK,
+] + (["#pd.perLevel=%d" % PD_PER_LEVEL, "#pd.maxLevel=%d" % PD_MAX_LEVEL, "#pd.curve=%g" % PD_CURVE, "#pd.omniAuto=true"]
+  + ["#pd.step.%s=%d" % (c, PD_STEP[c]) for c in PD_CATS] + ["#pd.mult.%s=%g" % (r, m) for r, m in zip(PD_RAR, PD_MULT)]
+  + ["#pd.gate.%s=%d" % (PD_RAR[i + 1], g) for i, g in enumerate(PD_GATE)]
+  + ["#pd.cost.%s.%s=%s" % (c, PD_RAR[r], pd_cost_text(c, r)) for c in PD_CATS for r in (1, 2, 3)]) + [
+    "# Furnace and Tannery (each player has their own): queue size in units, fuel slot size in items, output held before it pauses.",
+] + ["#%s=%d" % (k, d) for (k, _f, d, _lo, _hi) in _BENCH_KEYS] + [
+    "# Smelting Fortune (the Smithing tree's Smelting Fortune node): extra bars when a player smelts ore (and alloys) in the /craft Furnace.",
+    "# minedOnly=true: only for ore that player mined themselves (SkyySkills keeps the count). guard = most extra bars a unit.",
+    "#smelt.fortune.enabled=true", "#smelt.fortune.alloys=true", "#smelt.fortune.minedOnly=true", "#smelt.fortune.guard=100"]
+SACK_CFG_TEXT = "".join(l + chr(10) for l in SACK_CFG_LINES)
+def _jcfg_txt():
+    """The template as a Java expression: "line" + nl + "line" + nl ... (nl = System.lineSeparator(), as in 0.7.3-0.7.5)."""
+    out = []
+    for l in SACK_CFG_LINES:
+        assert '"' not in l and "\\" not in l, l
+        out.append('"%s" + nl' % l)
+    return (chr(10) + "        + ").join(out)
+def _jfield(k):
+    for (fk, f, d, lo, hi) in SACK_CAPS:
+        if fk == k:
+            return f, d, lo, hi
+    raise KeyError(k)
+
+PKG = "com.skyy.sacks"
+# 0.7.7: the new Java blocks are raw triple-quoted strings (single braces) with @TOKEN@ placeholders; jt() fills them, refuses a leftover.
+_JT = {"PKG": PKG, "UCB": UCB, "UEB": UEB, "EVD": EVD, "BT": BT, "PLA": PLA, "INV": INV, "IC": IC, "IS": IS, "REF": REF, "ST": ST,
+       "PR": PR, "MSG": MSG, "CRR": CRR, "MQ": MQ, "CRP": CRP, "PCD": PCD, "ITM": ITM, "SIC": SIC, "HSV": HSV,
+       "PDE": PDE, "WM": WM, "MCW": MCW,   # 0.7.11 (+ WM / MCW: SweepTask.benchFed, review fix 9)
+       # 0.7.12: the bench / pocket crafting link (BenchLink, the packet filters, PocketCraftWindow, MirrorGuard)
+       "SCW": SCW, "PBW": PBW, "FCW": FCW, "DIC": DIC, "FT": FT, "EIC": EIC, "PPF": PPF, "PFI": PFI, "PAD": PAD, "PKT": PKT, "UW": UW,
+       "OW": OW, "ER": ER, "SWA": SWA, "CRA": CRA, "TUA": TUA, "WA": WA, "WT": WT, "INVC": INVC, "CAC": CAC, "SNDU": SNDU, "TAI": TAI,
+       "SCAT": SCAT, "EVR": EVR, "JSO": JSO, "JPR": JPR, "IQ": IQ, "MERS": MERS, "WIN": WIN, "CIC": CIC, "CRM": CRM, "BTP": BTP,
+       "UNI": UNI, "WLD": WLD,
+       "EES": EES, "ICE": ICE, "ACH": ACH, "CBF": CBF, "EVE": EVE, "QRY": QRY}   # 0.7.18: SackInvSys
+# 0.8.3 auto-pickup (tools/sacks_0_8_3_patch.py): the engine classes of the drop hook (VERIFIED against the 0.7.0 HytaleServer.jar)
+_JT.update({"ITC": "com.hypixel.hytale.server.core.modules.entity.item.ItemComponent",
+            "PIC": "com.hypixel.hytale.server.core.modules.entity.item.PickupItemComponent",
+            "TC": "com.hypixel.hytale.server.core.modules.entity.component.TransformComponent",
+            "RSYS": "com.hypixel.hytale.component.system.RefSystem",
+            "ETS": "com.hypixel.hytale.component.system.tick.EntityTickingSystem",
+            "ADDR": "com.hypixel.hytale.component.AddReason",
+            "REMR": "com.hypixel.hytale.component.RemoveReason",
+            "SDEP": "com.hypixel.hytale.component.dependency.SystemDependency",
+            "ORD": "com.hypixel.hytale.component.dependency.Order",
+            "HLDR": "com.hypixel.hytale.component.Holder",
+            "NPCE": "com.hypixel.hytale.server.npc.entities.NPCEntity",
+            "ROLE": "com.hypixel.hytale.server.npc.role.Role",
+            "DTHC": "com.hypixel.hytale.server.core.modules.entity.damage.DeathComponent",
+            "DCR": "com.hypixel.hytale.server.core.modules.entity.damage.DeferredCorpseRemoval",
+            "ILM": "com.hypixel.hytale.server.core.asset.type.gameplay.DeathConfig$ItemsLossMode",
+            "DMG": "com.hypixel.hytale.server.core.modules.entity.damage.Damage",
+            "DENT": "com.hypixel.hytale.server.core.modules.entity.damage.Damage$EntitySource",
+            "UUIDC": "com.hypixel.hytale.server.core.entity.UUIDComponent",
+            "BBE": "com.hypixel.hytale.server.core.event.events.ecs.BreakBlockEvent",
+            "V3I": "org.joml.Vector3i",
+            "VEC": "org.joml.Vector3d",
+            "RTF": "com.hypixel.hytale.math.vector.Rotation3f",
+            "IMOD": "com.hypixel.hytale.server.core.modules.item.ItemModule",
+            "INVU": "com.hypixel.hytale.server.core.inventory.InventoryUtils",
+            "PSET": "com.hypixel.hytale.server.core.modules.entity.player.PlayerSettings",
+            "EST": "com.hypixel.hytale.server.core.universe.world.storage.EntityStore",
+            "I18N": "com.hypixel.hytale.server.core.modules.i18n.I18nModule",
+            # 0.8.4: the interactive pickup (F-harvest / F-pickup) and the throw of its overflow (VERIFIED 0.7 bytecode)
+            "IPE": "com.hypixel.hytale.server.core.event.events.ecs.InteractivelyPickupItemEvent",
+            "DIE": "com.hypixel.hytale.server.core.event.events.ecs.DropItemEvent$Drop",
+            "IST": IST})
+def jt(src):
+    import re as _re
+    for _k, _v in _JT.items():
+        src = src.replace("@" + _k + "@", _v)
+    left = _re.findall(r"@[A-Z]+@", src)
+    assert not left, "unfilled token(s) " + ", ".join(sorted(set(left)))
+    return src
+def jlit(txt):
+    """A Python string as a Java string literal (for CtField.make)."""
+    return '"' + txt.replace("\\", "\\\\").replace('"', '\\"') + '"'
+# 0.8.0: the Void config rows as Java (SackCfg fields, the int switch helpers, the file loader, the logged signature)
+_PD_CFG_FIELDS = (["public static volatile int PD_PER_LEVEL = %d;" % PD_PER_LEVEL, "public static volatile int PD_MAX_LEVEL = %d;" % PD_MAX_LEVEL]
+                  + ["public static volatile double PD_CURVE = %r;" % PD_CURVE]   # 0.8.9
+                  + ["public static volatile int PD_STEP_%s = %d;" % (c.upper(), PD_STEP[c]) for c in PD_CATS]
+                  + ["public static volatile double PD_MULT_%s = %r;" % (r.upper(), m) for r, m in zip(PD_RAR, PD_MULT)]
+                  + ["public static volatile int PD_GATE_%s = %d;" % (PD_RAR[i + 1].upper(), g) for i, g in enumerate(PD_GATE)]
+                  + ["public static volatile String PD_COST_%s_%s = %s;" % (c.upper(), PD_RAR[r].upper(), jlit(pd_cost_text(c, r)))
+                     for c in PD_CATS for r in (1, 2, 3)]
+                  + ["public static volatile boolean PD_OMNI_AUTO = true;"])
+def _sw(arg, cases, dflt):
+    """a Java if-chain on an int argument (javassist: no switch on Strings; this keeps the int one explicit)"""
+    return "".join("  if (%s == %d) return %s;\n" % (arg, i, v) for i, v in cases) + "  return %s;\n" % dflt
+_PD_LOAD = ['  PD_PER_LEVEL = intKey(p, "pd.perLevel", %d, 1, 100000);' % PD_PER_LEVEL,
+            '  PD_MAX_LEVEL = intKey(p, "pd.maxLevel", %d, 1, 10000);' % PD_MAX_LEVEL]
+_PD_LOAD += ['  PD_STEP_%s = intKey(p, "pd.step.%s", %d, 1, 1000000);' % (c.upper(), c, PD_STEP[c]) for c in PD_CATS]
+_PD_LOAD += ['  PD_MULT_%s = decKey(p, "pd.mult.%s", %r, 0.1, 100.0);' % (r.upper(), r, m) for r, m in zip(PD_RAR, PD_MULT)]
+_PD_LOAD += ['  PD_GATE_%s = intKey(p, "pd.gate.%s", %d, 1, 10000);' % (PD_RAR[i + 1].upper(), PD_RAR[i + 1], g) for i, g in enumerate(PD_GATE)]
+for _c in PD_CATS:
+    for _r in (1, 2, 3):
+        _f = "PD_COST_%s_%s" % (_c.upper(), PD_RAR[_r].upper())
+        _k = "pd.cost.%s.%s" % (_c, PD_RAR[_r])
+        _PD_LOAD.append('  { String cv = p.getProperty("%s"); if (cv != null && cv.trim().length() > 0) { if (parseCost(cv) != null) %s = cv.trim(); '
+                        'else @PKG@.SackPool.warn("config.properties: %s is not itemId:amount pairs - keeping " + %s); } else %s = %s; }'
+                        % (_k, _f, _k, _f, _f, jlit(pd_cost_text(_c, _r))))
+_PD_LOAD.append('  PD_OMNI_AUTO = boolKey(p, "pd.omniAuto", true);')
+_PD_LOAD.append('  PD_CURVE = decKey(p, "pd.curve", %r, %r, %r);' % (PD_CURVE, PD_CURVE_LO, PD_CURVE_HI))   # 0.8.9
+_PD_SIG = ' + "," + '.join(["PD_PER_LEVEL", "PD_MAX_LEVEL", "PD_CURVE"] + ["PD_STEP_" + c.upper() for c in PD_CATS] + ["PD_MULT_" + r.upper() for r in PD_RAR]
+                           + ["PD_GATE_" + PD_RAR[i].upper() for i in (1, 2, 3)] + ["PD_OMNI_AUTO"])
+defs = pool.makeClass(PKG + ".SackDefs")
+sp   = pool.makeClass(PKG + ".SackPool")
+swp  = pool.makeClass(PKG + ".SweepTask")
+tick = pool.makeClass(PKG + ".SackTick")
+sav  = pool.makeClass(PKG + ".SackSaver")
+cmp  = pool.makeClass(PKG + ".CountCmp")
+page = pool.makeClass(PKG + ".SacksPage", pool.get(PAGE))
+cmd  = pool.makeClass(PKG + ".SacksCmd", pool.get(APC))
+fac  = pool.makeClass(PKG + ".SacksPageFactory")
+mir  = pool.makeClass(PKG + ".BagMirror")
+clt  = pool.makeClass(PKG + ".CraftLinkTask")
+ctk  = pool.makeClass(PKG + ".CraftTick")
+clog = pool.makeClass(PKG + ".CraftLog")
+rcmp = pool.makeClass(PKG + ".RecipeCmp")
+cpg  = pool.makeClass(PKG + ".CraftPage", pool.get(PAGE))
+ccmd = pool.makeClass(PKG + ".CraftCmd", pool.get(APC))
+pjob = pool.makeClass(PKG + ".ProcJob")
+pben = pool.makeClass(PKG + ".ProcBench")
+pst  = pool.makeClass(PKG + ".ProcStore")
+ptk  = pool.makeClass(PKG + ".ProcTask")
+ptick= pool.makeClass(PKG + ".ProcTick")
+cfac = pool.makeClass(PKG + ".CraftPageFactory")
+scfg = pool.makeClass(PKG + ".SackCfg")
+# 0.7.7: KnowSync = the bag recipe knowledge (Bag-Restructure-Spec 5.2); SackNotice = the one-time rarity notice (5.8)
+ksync = pool.makeClass(PKG + ".KnowSync")
+snot = pool.makeClass(PKG + ".SackNotice")
+# 0.7.11: RefillPref = the per-player stack refill mode (refill.properties); KeptQuit = the PlayerDisconnectEvent listener (relog resets kept)
+rfp = pool.makeClass(PKG + ".RefillPref")
+kq = pool.makeClass(PKG + ".KeptQuit")
+# 0.7.12 (research/Bag-Craft-Link-Fix.md): MirrorGuard = the mirror's output-only face; LinkRec = one crafting window's link state;
+# BenchLink = the bench / pocket link logic (static); MirrorClose = a bench window's close hook; CraftPacketFilter (outbound) /
+# CraftInFilter (inbound) = the packet filters; PreCraftTask = the pre-craft world task; PocketCraftWindow + PocketSupplier = pocket crafting
+mgd = pool.makeClass(PKG + ".MirrorGuard", pool.get(DIC))
+lrec = pool.makeClass(PKG + ".LinkRec")
+blink = pool.makeClass(PKG + ".BenchLink")
+mcl = pool.makeClass(PKG + ".MirrorClose")
+cpf = pool.makeClass(PKG + ".CraftPacketFilter")
+cif = pool.makeClass(PKG + ".CraftInFilter")
+pct = pool.makeClass(PKG + ".PreCraftTask")
+pcw = pool.makeClass(PKG + ".PocketCraftWindow", pool.get(FCW))
+psu = pool.makeClass(PKG + ".PocketSupplier")
+# 0.7.13: SackBridge = the bag take bridge for SkyyBazaar (static logic); SackFn = its java.util.function.Function objects (mode 0-3)
+sbr = pool.makeClass(PKG + ".SackBridge")
+sfn = pool.makeClass(PKG + ".SackFn")
+pl   = pool.makeClass(PKG + ".SkyySacksPlugin", pool.get(JP))
+# 0.7.18: SackThreads = the private pool writer's thread factory (daemon "SkyySacks-writer"); PoolSaveJob = one debounced pool save;
+# SackInvSys = the InventoryChangeEvent listener that marks a player for the next sweep
+sthr = pool.makeClass(PKG + ".SackThreads")
+psj = pool.makeClass(PKG + ".PoolSaveJob")
+sinv = pool.makeClass(PKG + ".SackInvSys", pool.get(EES))
+# 0.8.0 (Bags v2): VoidState = one profile key's Void data (pd/<key>.properties + its journal); VoidStore = the levels, rarities, capacity,
+# the migration journal + settle, the upgrade (static); VoidJob = a writer-thread job (History snapshot, pd save); VoidAdminTask = the
+# /pdadmin world task; PdAdminCmd = /pdadmin legacybags | omni <player> (admin, extra arguments read like /craft <words>)
+vss = pool.makeClass(PKG + ".VoidState")
+vst = pool.makeClass(PKG + ".VoidStore")
+vjob = pool.makeClass(PKG + ".VoidJob")
+vat = pool.makeClass(PKG + ".VoidAdminTask")
+vac = pool.makeClass(PKG + ".PdAdminCmd", pool.get(APC))
+# 0.8.3 auto-pickup (tools/sacks_0_8_3_patch.py docstring)
+pcl = pool.makeClass(PKG + ".PickClaim")
+prg = pool.makeClass(PKG + ".PickRing")
+pbk = pool.makeClass(PKG + ".PickBook")
+pgv = pool.makeClass(PKG + ".PickGive")
+pdl = pool.makeClass(PKG + ".PickDeliver")
+pis = pool.makeClass(PKG + ".PickItemSys", pool.get(_JT["RSYS"]))
+pbs = pool.makeClass(PKG + ".PickBreakSys", pool.get(EES))
+pdm = pool.makeClass(PKG + ".PickDeathMark", pool.get(_JT["ETS"]))
+pss = pool.makeClass(PKG + ".PickShareSys", pool.get(_JT["ETS"]))
+# 0.8.4: pet kills -> owner (PickBook.petOwner), F-harvest -> the Void first (tools/sacks_0_8_4_patch.py docstring)
+phv = pool.makeClass(PKG + ".PickHarv")
+pht = pool.makeClass(PKG + ".PickHarvTask")
+phs = pool.makeClass(PKG + ".PickHarvSys", pool.get(EES))
+pds = pool.makeClass(PKG + ".PickDropSys", pool.get(EES))
+plt = pool.makeClass(PKG + ".PickLate")   # 0.8.6: the one late retry of an unclaimed block-spot drop (tools/sacks_0_8_6_patch.py)
+# 0.8.11 (tools/sacks_0_8_11_patch.py): the Accessory Bag link (benches + /craft) and the Crafting hub tab's open Function
+acl = pool.makeClass(PKG + ".AccLink")
+aset = pool.makeClass(PKG + ".AccSettle")
+chop = pool.makeClass(PKG + ".CraftHubOpen")
+vho = pool.makeClass(PKG + ".VoidHubOpen")   # 0.8.15: hub:tab:storage:pocket (the Void page, kit 1.7)
+_JT.update({"PGM": PGM, "BRQ": BRQ})
+# ================= 0.8.5 SOUND PASS ROUND 2: SackSnd (pasted by tools/sacks_0_8_5_patch.py from tools/soundpass_gen.py - research/Sound-Pass-Plan.md) =================
+# Vanilla sound event ids played BY ID, 2D to that player only (category UI); never throws; 0.5 s per player per sound; the per-player
+# switch settings:sounds:<uuid> (Boolean FALSE on the bridge = silent; SkyyMenu 0.3.25 /settings); Skyy_SkyySacks/sounds.properties.
+import zipfile as _sndzf, jpype as _sndjp
+_SNDZ = os.path.join(os.path.dirname(os.path.dirname(B.INSTALLED_SERVER_JAR)), "Assets.zip")   # read-only
+SOUND_IDS = set(os.path.basename(_n)[:-5] for _n in _sndzf.ZipFile(_SNDZ).namelist() if _n.startswith("Server/Audio/SoundEvents/") and _n.endswith(".json"))
+SND_SOUNDS = [["full", "FULL", "Void full", "SFX_Generic_Crafting_Failed"], ["upgrade", "UPGRADE", "Void upgrade", "SFX_Workbench_Upgrade_Complete_Default"]]
+for _s in SND_SOUNDS:
+    assert _s[3] in SOUND_IDS, "0.8.5: sound event %s is not in Assets.zip" % _s[3]
+_SND_PKG = (PKG).rstrip(".")
+_SND_FIELDS = [
+    "public static volatile boolean ON = true;",
+    "public static final java.util.concurrent.ConcurrentHashMap LAST = new java.util.concurrent.ConcurrentHashMap();",
+    "public static final java.util.concurrent.ConcurrentHashMap WARNED = new java.util.concurrent.ConcurrentHashMap();",
+    "public static final java.util.concurrent.atomic.AtomicLong PLAYED = new java.util.concurrent.atomic.AtomicLong();",
+    "public static final java.util.concurrent.atomic.AtomicLong MUTED = new java.util.concurrent.atomic.AtomicLong();",
+    "public static final java.util.concurrent.atomic.AtomicLong WARNS = new java.util.concurrent.atomic.AtomicLong();",
+    "public static final long GAP_MS = 500L;",
+    "public static final String MUTE_KEY = \"settings:sounds:\";",
+    "public static java.nio.file.Path FILE;",
+    "public static volatile boolean S_FULL = true;",
+    "public static volatile String S_FULL_ID = \"SFX_Generic_Crafting_Failed\";",
+    "public static volatile boolean S_UPGRADE = true;",
+    "public static volatile String S_UPGRADE_ID = \"SFX_Workbench_Upgrade_Complete_Default\";",
+    "public static final java.util.concurrent.ConcurrentHashMap FULLAT = new java.util.concurrent.ConcurrentHashMap();",
+    "public static final long FULL_MS = 30000L;",
+    "public static final String DEFAULT_TEXT = \"# SkyySacks sounds (SkyWynn sound pass). Change them in game: SkyWynn Menu -> Server Setup -> Sacks -> Sounds,\\n# or edit here and press Reload there. Each id is a vanilla sound event id (try one in game with /soundtest <id>);\\n# an empty id = that sound off. Every player can also switch all SkyWynn sounds off for themselves in /settings.\\nsounds.enabled=true\\n# Void full: Auto-pickup: Void and inventory full, drops land at your feet. Once per 30 s.\\nsound.full=true\\nsound.full.id=SFX_Generic_Crafting_Failed\\n# Void upgrade: The Void page's Upgrade went through (replaces the old craft click there).\\nsound.upgrade=true\\nsound.upgrade.id=SFX_Workbench_Upgrade_Complete_Default\\n\";",
+]
+_SND_METHODS = [
+    r'''
+public static void warn(String msg) {
+  WARNS.incrementAndGet();
+  try { com.hypixel.hytale.logger.HytaleLogger.get("SkyySacks").at(java.util.logging.Level.WARNING).log("[SkyySacks] " + msg); } catch (Throwable t) { }
+}''',
+    r'''
+public static int idx(String id) {
+  if (id == null) return Integer.MIN_VALUE;
+  String v = id.trim();
+  if (v.length() == 0) return Integer.MIN_VALUE;
+  try {
+    com.hypixel.hytale.assetstore.map.IndexedLookupTableAssetMap m = com.hypixel.hytale.server.core.asset.type.soundevent.config.SoundEvent.getAssetMap();
+    return m == null ? Integer.MIN_VALUE : m.getIndex(v);
+  } catch (Throwable t) { return Integer.MIN_VALUE; }
+}''',
+    r'''
+public static String err(String value) {
+  if (value == null) return null;
+  String v = value.trim();
+  if (v.length() == 0) return null;
+  if (v.length() > 120) return "A sound id is at most 120 characters.";
+  for (int i = 0; i < v.length(); i++) {
+    char c = v.charAt(i);
+    if (!((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_')) return "A sound id is letters, digits and _ only (like SFX_Coins_Land).";
+  }
+  try {
+    com.hypixel.hytale.assetstore.map.IndexedLookupTableAssetMap m = com.hypixel.hytale.server.core.asset.type.soundevent.config.SoundEvent.getAssetMap();
+    if (m != null && m.getIndex(v) == Integer.MIN_VALUE) return "The game has no sound event '" + v + "' - find ids with /soundtest list, or leave it empty for no sound.";
+  } catch (Throwable t) { }
+  return null;
+}''',
+    r'''
+public static String check(String key, String value) {
+  return err(value);
+}''',
+    r'''
+public static boolean word(String v, boolean d) {
+  if (v == null) return d;
+  String t = v.trim().toLowerCase();
+  if (t.equals("true") || t.equals("on") || t.equals("yes") || t.equals("1")) return true;
+  if (t.equals("false") || t.equals("off") || t.equals("no") || t.equals("0")) return false;
+  return d;
+}''',
+    r'''
+public static String id(int w) {
+  if (!ON) return null;
+  boolean on = false;
+  String v = null;
+  if (w == 0) { on = S_FULL; v = S_FULL_ID; }
+  if (w == 1) { on = S_UPGRADE; v = S_UPGRADE_ID; }
+  if (!on || v == null) return null;
+  v = v.trim();
+  return v.length() == 0 ? null : v;
+}''',
+    r'''
+public static java.util.Map bridge() {
+  try {
+    Object o = System.getProperties().get("skyy.bridge");
+    return o instanceof java.util.Map ? (java.util.Map) o : null;
+  } catch (Throwable t) { return null; }
+}''',
+    r'''
+public static boolean muted(java.util.UUID u) {
+  if (u == null) return false;
+  try {
+    java.util.Map b = bridge();
+    if (b == null) return false;
+    Object o = b.get(MUTE_KEY + u.toString());
+    return (o instanceof Boolean) && !((Boolean) o).booleanValue();
+  } catch (Throwable t) { return false; }
+}''',
+    r'''
+public static boolean gate(String key, long now) {
+  Object o = LAST.get(key);
+  if (o instanceof Long) { long d = now - ((Long) o).longValue(); if (d >= 0L && d < GAP_MS) return false; }
+  if (LAST.size() > 4096) LAST.clear();
+  LAST.put(key, Long.valueOf(now));
+  return true;
+}''',
+    r'''
+public static com.hypixel.hytale.server.core.universe.PlayerRef ref(java.util.UUID u) {
+  if (u == null) return null;
+  try {
+    com.hypixel.hytale.server.core.universe.Universe uni = com.hypixel.hytale.server.core.universe.Universe.get();
+    return uni == null ? null : uni.getPlayer(u);
+  } catch (Throwable t) { return null; }
+}''',
+    r'''
+public static boolean playTo(com.hypixel.hytale.server.core.universe.PlayerRef pr, int w) {
+  if (pr == null) return false;
+  String id = id(w);
+  if (id == null) return false;
+  try {
+    if (!pr.isValid()) return false;
+    java.util.UUID u = pr.getUuid();
+    if (muted(u)) { MUTED.incrementAndGet(); return false; }
+    int i = idx(id);
+    if (i == Integer.MIN_VALUE || i == 0) {
+      if (WARNED.putIfAbsent(id, Boolean.TRUE) == null) warn("sound event '" + id + "' is not in the game assets - it is not played (Server Setup -> Sounds)");
+      return false;
+    }
+    if (!gate(String.valueOf(u) + "|" + w, System.currentTimeMillis())) return false;
+    com.hypixel.hytale.server.core.universe.world.SoundUtil.playSoundEvent2dToPlayer(pr, i, com.hypixel.hytale.protocol.SoundCategory.UI);
+    PLAYED.incrementAndGet();
+    return true;
+  } catch (Throwable t) {
+    if (WARNED.putIfAbsent("!play", Boolean.TRUE) == null) warn("could not play a sound (logged once): " + t);
+    return false;
+  }
+}''',
+    r'''
+public static boolean play(java.util.UUID u, int w) {
+  if (u == null || id(w) == null) return false;
+  return playTo(ref(u), w);
+}''',
+    r'''
+public static boolean ok(java.util.UUID u, String res, int w) {
+  if (res == null || !res.startsWith("+")) return false;
+  return play(u, w);
+}''',
+    r'''
+public static boolean full(com.hypixel.hytale.server.core.universe.PlayerRef pr, long now) {
+  if (pr == null || id(0) == null) return false;
+  try {
+    java.util.UUID u = pr.getUuid();
+    Object o = FULLAT.get(u);
+    if (o instanceof Long) { long d = now - ((Long) o).longValue(); if (d >= 0L && d < FULL_MS) return false; }
+    if (FULLAT.size() > 4096) FULLAT.clear();
+    FULLAT.put(u, Long.valueOf(now));
+  } catch (Throwable t) { return false; }
+  return playTo(pr, 0);
+}''',
+    r'''
+public static String text() {
+  int n = 0;
+  if (S_FULL && S_FULL_ID != null && S_FULL_ID.trim().length() > 0) n++;
+  if (S_UPGRADE && S_UPGRADE_ID != null && S_UPGRADE_ID.trim().length() > 0) n++;
+  return "sounds " + (ON ? "on" : "off") + " (" + n + " of 2)";
+}''',
+    r'''
+public static String load(java.nio.file.Path dir) {
+  if (dir == null) return text();
+  FILE = dir.resolve("sounds.properties");
+  try {
+    if (!java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0])) {
+      java.nio.file.Files.createDirectories(dir, new java.nio.file.attribute.FileAttribute[0]);
+      java.nio.file.Path tmp = dir.resolve("sounds.properties.tmp");
+      java.nio.file.Files.write(tmp, DEFAULT_TEXT.getBytes("ISO-8859-1"), new java.nio.file.OpenOption[0]);
+      java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE });
+    }
+    java.util.Properties p = new java.util.Properties();
+    java.io.InputStream in = java.nio.file.Files.newInputStream(FILE, new java.nio.file.OpenOption[0]);
+    try { p.load(in); } finally { in.close(); }
+    ON = word(p.getProperty("sounds.enabled"), true);
+    S_FULL = word(p.getProperty("sound.full"), true);
+    S_FULL_ID = p.getProperty("sound.full.id", "SFX_Generic_Crafting_Failed").trim();
+    S_UPGRADE = word(p.getProperty("sound.upgrade"), true);
+    S_UPGRADE_ID = p.getProperty("sound.upgrade.id", "SFX_Workbench_Upgrade_Complete_Default").trim();
+  } catch (Throwable t) { warn("could not read sounds.properties (the sounds keep their defaults): " + t); }
+  return text();
+}''',
+]
+_snd_cls = pool.makeClass(_SND_PKG + ".SackSnd")
+for _src in _SND_FIELDS:
+    _snd_cls.addField(_sndjp.JClass("javassist.CtField").make(_src.replace("@SPKG@", _SND_PKG), _snd_cls))
+for _src in _SND_METHODS:
+    _snd_cls.addMethod(_sndjp.JClass("javassist.CtNewMethod").make(_src.replace("@SPKG@", _SND_PKG), _snd_cls))
+_snd_cls.writeFile(OUT)
+print("SackSnd: 2 sound(s), every default id is in Assets.zip")
+# 0.7.18 fields used by methods compiled long before their classes' own sections (pages, filters, KnowSync)
+swp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap INVDIRTY = new java.util.concurrent.ConcurrentHashMap();", swp))
+swp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap SIG = new java.util.concurrent.ConcurrentHashMap();", swp))
+swp.addField(CtField.make("public static volatile boolean EVENTS_OK = false;", swp))
+# fixer: the heartbeat - LASTSWEEP = u -> System.nanoTime() of the last finished sweep; a player not swept for HEARTBEAT_MS is due anyway
+swp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap LASTSWEEP = new java.util.concurrent.ConcurrentHashMap();", swp))
+swp.addField(CtField.make("public static volatile long HEARTBEAT_MS = 20000L;", swp))
+swp.addField(CtField.make("public static final java.util.concurrent.atomic.AtomicLong BEATS = new java.util.concurrent.atomic.AtomicLong();", swp))
+for _f in ("HOPS", "SKIPS", "EVENTS", "EXACT", "RESCANS"):
+    swp.addField(CtField.make("public static final java.util.concurrent.atomic.AtomicLong %s = new java.util.concurrent.atomic.AtomicLong();" % _f, swp))
+ptk.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap LASTK = new java.util.concurrent.ConcurrentHashMap();", ptk))
+ptk.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap PAGEOPEN = new java.util.concurrent.ConcurrentHashMap();", ptk))
+for _f in ("PHOPS", "PSKIPS"):
+    ptk.addField(CtField.make("public static final java.util.concurrent.atomic.AtomicLong %s = new java.util.concurrent.atomic.AtomicLong();" % _f, ptk))
+ksync.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap COLLC = new java.util.concurrent.ConcurrentHashMap();", ksync))
+ksync.addField(CtField.make("public static final java.util.concurrent.atomic.AtomicLong PARSES = new java.util.concurrent.atomic.AtomicLong();", ksync))
+psj.addInterface(pool.get("java.lang.Runnable"))
+psj.addField(CtField.make("public String k;", psj))
+psj.addConstructor(CtNewConstructor.make("public PoolSaveJob(String k) { this.k = k; }", psj))
+sthr.addInterface(pool.get("java.util.concurrent.ThreadFactory"))
+sthr.addConstructor(CtNewConstructor.make("public SackThreads() { }", sthr))
+sthr.addMethod(CtNewMethod.make("""
+public Thread newThread(Runnable r) {
+  Thread t = new Thread(r, "SkyySacks-writer");
+  t.setDaemon(true);
+  return t;
+}""", sthr))
+# 0.7.6: the Furnace / Tannery caps are admin settings (bench.queueCap / bench.fuelCap / bench.outputCap, SACK_CAPS): public static
+# volatile (the config kit writes them with Field.setInt), declared here, before SackCfg.reload() - their loader - is compiled.
+for (_k, _f, _d, _lo, _hi) in SACK_CAPS:
+    if _f.startswith("ProcBench."):
+        pben.addField(CtField.make("public static volatile int %s = %d;" % (_f.split(".")[1], _d), pben))
+
+# ================= SackDefs =================
+# 0.7.5: category order = BAG_CATS (tabs, right-click page ids, item JSON); MAT / MATN / HOLDS / BOLT / BOLTN / MATQ / BOLTQ = the bag table
+# (the "how to craft" view of a bag you do not carry reads them - same numbers as the item JSON recipes below).
+# 0.8.0: CATS = the six Void categories (PD_CATS; tabs, capacity, levels); LCATS = the five legacy bag types (old bag ids only)
+defs.addField(CtField.make("public static final String[] CATS = " + _jarr(PD_CATS) + ";", defs))
+# 0.8.8 TIER LOGS: LOGT_IDS[i] is a log of wood tier LOGT_TIER[i] (1..5), each tier key log first
+defs.addField(CtField.make("public static final String[] LOGT_IDS = " + _jarr(_flat) + ";", defs))
+defs.addField(CtField.make("public static final int[] LOGT_TIER = new int[] { " + ", ".join(str(n + 1) for n, t in enumerate(LOG_IDS) for _i in t) + " };", defs))
+# the label of each group = its first (key) wood: "Oak-tier logs" (coordinator 2026-10-15: no tier number - the T1..T5 names are changing)
+defs.addField(CtField.make("public static final String[] LOGT_KEY = " + _jarr([t[0].replace("_", " ") for t in LOG_TIERS]) + ";", defs))
+defs.addMethod(CtNewMethod.make("""
+public static int logTier(String id) {
+  if (id == null) return 0;
+  for (int i = 0; i < LOGT_IDS.length; i++) if (LOGT_IDS[i].equals(id)) return LOGT_TIER[i];
+  return 0;
+}""", defs))
+# the ids a cost line counts: every log of the tier (table order), or just the id itself
+defs.addMethod(CtNewMethod.make("""
+public static String[] members(String id) {
+  int t = logTier(id);
+  if (t <= 0) return new String[] { id };
+  int n = 0;
+  for (int i = 0; i < LOGT_TIER.length; i++) if (LOGT_TIER[i] == t) n++;
+  String[] out = new String[n];
+  int j = 0;
+  for (int i = 0; i < LOGT_TIER.length; i++) if (LOGT_TIER[i] == t) { out[j] = LOGT_IDS[i]; j++; }
+  return out;
+}""", defs))
+# "<key wood>-tier logs" (e.g. "Oak-tier logs") for a tier log, else null (the page then shows the plain count)
+defs.addMethod(CtNewMethod.make("""
+public static String unitName(String id) {
+  int t = logTier(id);
+  return (t <= 0 || t > LOGT_KEY.length) ? null : LOGT_KEY[t - 1] + "-tier logs";
+}""", defs))
+# what two cost lines share: the tier for a log ("logs:T1"), else the id
+defs.addMethod(CtNewMethod.make("""
+public static String unitKey(String id) {
+  int t = logTier(id);
+  return t <= 0 ? id : "logs:T" + t;
+}""", defs))
+# 0.8.8 /craft names (Skyy "make sure this is sorted by tier too" round): the translated text of a key (en-US, the PickGive.name lookup:
+# the key, then without "server."); null when there is none (or the module returns the key itself)
+defs.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap DNAMES = new java.util.concurrent.ConcurrentHashMap();", defs))
+defs.addMethod(CtNewMethod.make("""
+public static String tr(String key) {
+  if (key == null) return null;
+  try {
+    com.hypixel.hytale.server.core.modules.i18n.I18nModule m = com.hypixel.hytale.server.core.modules.i18n.I18nModule.get();
+    if (m == null) return null;
+    String n = m.getMessage("en-US", key);
+    if ((n == null || n.length() == 0) && key.startsWith("server.")) n = m.getMessage("en-US", key.substring(7));
+    if (n == null) return null;
+    n = n.trim();
+    if (n.length() == 0 || (n.indexOf('.') > 0 && n.indexOf(' ') < 0)) return null;
+    return n;
+  } catch (Throwable t) { return null; }
+}""", defs))
+# the item's display name as the player sees it, or null (no item / no translation); hits cached
+defs.addMethod(CtNewMethod.make("""
+public static String dname(String id) {
+  if (id == null) return null;
+  Object c = DNAMES.get(id);
+  if (c instanceof String) return (String) c;
+  String n = null;
+  try {
+    Object o = com.hypixel.hytale.server.core.asset.type.item.config.Item.getAssetMap().getAsset(id);
+    if (o instanceof com.hypixel.hytale.server.core.asset.type.item.config.Item) n = tr(((com.hypixel.hytale.server.core.asset.type.item.config.Item) o).getTranslationKey());
+  } catch (Throwable t) { n = null; }
+  if (n != null && DNAMES.size() < 8192) DNAMES.put(id, n);
+  return n;
+}""", defs))
+# a resource-type ingredient: resourceType.<id>.name ("Wood_Trunk" -> "Any Tree Log"), else the id with spaces
+defs.addMethod(CtNewMethod.make("""
+public static String rtName(String rt) {
+  if (rt == null) return "?";
+  Object c = DNAMES.get("res:" + rt);
+  if (c instanceof String) return (String) c;
+  String n = tr("server.resourceType." + rt + ".name");
+  if (n == null) return rt.replace('_', ' ');
+  if (DNAMES.size() < 8192) DNAMES.put("res:" + rt, n);
+  return n;
+}""", defs))
+# 0.8.9 (Skyy could not tell what a cost icon was: "not whatever that thing is"): the name a Void cost line shows - the tier-log label
+# ("Oak-tier logs"), else the item's real name (dname), else null (the plain count cell / the id in a message)
+defs.addMethod(CtNewMethod.make("""
+public static String lineName(String id) {
+  String n = unitName(id);
+  return n != null ? n : dname(id);
+}""", defs))
+defs.addField(CtField.make("public static final String[] LCATS = " + _jarr(BAG_CATS) + ";", defs))
+defs.addField(CtField.make("public static final String[] MAT = " + _jarr([BAG_MAT.get(c, T1_STICK) for c in PD_CATS]) + ";", defs))
+ITEM_PLURAL = {"Ingredient_Stick": "Sticks"}   # 0.7.15
+defs.addField(CtField.make("public static final String[] MATN = " + _jarr([ITEM_PLURAL.get(BAG_MAT.get(c, T1_STICK), ITEM_NAME[BAG_MAT.get(c, T1_STICK)]) for c in PD_CATS]) + ";", defs))
+defs.addField(CtField.make("public static final String[] HOLDS = " + _jarr([PD_HOLDS[c] for c in PD_CATS]) + ";", defs))
+# 0.8.0: the Void rarity ladder (index 0..4 = Normal, Unique, Rare, Legendary, Omni), page colours, the refund of an extra legacy bag
+defs.addField(CtField.make("public static final String[] RNAME = " + _jarr(PD_RAR) + ";", defs))
+defs.addField(CtField.make("public static final String[] RCOL = " + _jarr(PD_RCOL) + ";", defs))
+defs.addField(CtField.make("public static final String[] REFUND = " + _jarr(REFUND_BY_RANK) + ";", defs))
+defs.addField(CtField.make("public static final String POCKET = " + jlit(POCKET) + ";", defs))
+# 0.7.8: Server Setup "Cooked food in the Farming bag" (bags.cookedFood, default OFF = Skyy's lock), bound by the config kit and loaded by
+# SackCfg.reload; read by catOf on every sweep, so a change applies at once. holds(ci) = the how-to-craft text of a bag type with the switch.
+defs.addField(CtField.make("public static volatile boolean COOKED_FARM = false;", defs))
+defs.addField(CtField.make("public static final String HOLDS_FARM_COOKED = " + jlit(FARM_HOLDS_COOKED) + ";", defs))
+defs.addMethod(CtNewMethod.make("""
+public static String holds(int ci) {
+  if (ci < 0 || ci >= HOLDS.length) return "";
+  if (COOKED_FARM && "Farming".equals(CATS[ci])) return HOLDS_FARM_COOKED;
+  return HOLDS[ci];
+}""", defs))
+defs.addField(CtField.make("public static final String[] BOLT = " + _jarr(BAG_BOLTS) + ";", defs))
+defs.addField(CtField.make("public static final String[] BOLTN = " + _jarr([ITEM_NAME[b] for b in BAG_BOLTS]) + ";", defs))
+defs.addField(CtField.make("public static final int MATQ = %d;" % BAG_MAT_QTY, defs))
+defs.addField(CtField.make("public static final int BOLTQ = %d;" % BAG_BOLT_QTY, defs))
+defs.addMethod(CtNewMethod.make("""
+public static int catIndex(String cat) {
+  if (cat == null) return -1;
+  for (int i = 0; i < CATS.length; i++) if (CATS[i].equals(cat)) return i;
+  return -1;
+}""", defs))
+defs.addMethod(CtNewMethod.make("""
+public static int lcatIndex(String cat) {
+  if (cat == null) return -1;
+  for (int i = 0; i < LCATS.length; i++) if (LCATS[i].equals(cat)) return i;
+  return -1;
+}""", defs))
+# 0.7.8 THE COOKED / RAW RULE (Skyy 2026-09-30, "id keep cooked food out"): ONE helper, cooked(id) (the table + cooked_py at the top).
+#  - homeOf(id) = the bag an item BELONGS to = the 0.7.7 catOf, unchanged (0.7.3: graded Skyy_Cook_* dishes and cook:prefix items are
+#    Farming, the Skyy_Cook_Recipe_* recipe items never pool). Every path that READS a pool uses it: the bag page grid + counts, pickCat,
+#    withdraw (clicks, Pick up all), the bench link and /craft materials (BagMirror.rebuild), haveOf - so cooked food already stored in a
+#    Farming pool stays visible, can be taken out or used, and is never deleted.
+#  - catOf(id) = where a NEW item may go: homeOf, but cooked food -> null while COOKED_FARM is off. Its only caller is SweepTask.sweep = the
+#    auto-pickup routing and Deposit all, for every bag type and the Mythic Omni Bag.
+defs.addMethod(CtNewMethod.make("""
+public static boolean cooked(String itemId) {
+  if (itemId == null) return false;
+  if (itemId.startsWith("Skyy_")) {
+    if (itemId.startsWith("Skyy_Cook_Recipe_")) return false;
+    if (itemId.startsWith("Skyy_Cook_")) return true;
+    try {
+      Object b = System.getProperties().get("skyy.bridge");
+      Object p = (b instanceof java.util.Map) ? ((java.util.Map) b).get("cook:prefix") : null;
+      if (p instanceof String && ((String) p).startsWith("Skyy_Cook") && itemId.startsWith((String) p)) return true;
+    } catch (Throwable t) { }
+    return false;
+  }
+  if (!itemId.startsWith("Food_")) return false;
+  if (itemId.equals("Food_Egg") || itemId.startsWith("Food_Egg_")) return false;
+  if (itemId.endsWith("_Raw") || itemId.indexOf("_Raw_") >= 0) return false;
+  return true;
+}""", defs))
+# 0.8.1 (Gathering-Shards-Spec phase 1, spec F13): the Enchanted materials' Void category - tools/skyyench.py's table, built in
+# 0.8.14 (Skyy "deposit didnt put all the enchanted stuff in my pocket."): LIVE again - every tools/skyyench.py row (102: the 20 + the C1
+# rows; the retired Skyy_Ench_LifeEssence has none - its collection uses the vanilla Greater Essence of Life, homeOf -> Farming)
+ORES_ENCH = ("Skyy_Ench_Lead", "Skyy_Ench_Chromium", "Skyy_Ench_Slag", "Skyy_Ench_Titanium", "Skyy_Ench_Charcoal")   # 0.8.20: round ores01 rows
+assert len(EN.IDS) == 102 + len([_i for _i in ORES_ENCH if _i in EN.IDS]) and "Skyy_Ench_LifeEssence" not in EN.IDS and set(t[5] for t in EN.TABLE) <= set(PD_CATS), "0.8.14: skyyench rows"
+assert EN.VANILLA_ENCH["LifeEssence"] == ("Ingredient_Life_Essence_Concentrated", "Farming")
+defs.addMethod(CtNewMethod.make(EN.sacks_home_java(), defs))
+# 0.8.18 (tools/sacks_0_8_18_patch.py B): SkyyCooking's Potion Flask + Food Pouch (lifelong, may carry metadata) never enter the Void
+defs.addMethod(CtNewMethod.make("""
+public static boolean supplyItem(String itemId) {
+  return itemId != null && (itemId.startsWith("Skyy_Flask_") || itemId.startsWith("Skyy_Food_Pouch_"));
+}""", defs))
+defs.addMethod(CtNewMethod.make("""
+public static String homeOf(String itemId) {
+  if (itemId == null) return null;
+  if (itemId.startsWith("Skyy_Sack_")) return null;
+  if (supplyItem(itemId)) return null;   // 0.8.18: the Flask / Pouch - never routed, stored, listed or sold
+  // 0.8.10 (Skyy "fish not going in fishing bag."): SkyyFishing's whole fish (SkyyFishing_Fish_<Species>) are Fishing like vanilla fish
+  if (itemId.startsWith("SkyyFishing_Fish_")) return "Fishing";   // = SackDefs.CATCH (declared after homeOf)
+  // 0.8.1: the 19 Enchanted materials (SkyyCollections 0.2.11) -> their collection's category; an unknown Skyy_Ench_ id -> null
+  if (itemId.startsWith("Skyy_Ench_")) return enchCat(itemId);
+  // 0.7.3 (research/Cooking-Skill-Spec.md 3.4): graded dishes (the Grade is in the id, no metadata) belong to the Farming bag; the
+  // Skyy_Cook_Recipe_* recipe-variant items never do; a cook:prefix bridge value (SkyyCooking) counts when it starts with Skyy_Cook.
+  // 0.7.8: the same answer through cooked() - catOf keeps them out of NEW intake while the switch is off.
+  if (itemId.startsWith("Skyy_")) return cooked(itemId) ? "Farming" : null;
+  if (itemId.startsWith("Ore_") || itemId.startsWith("Rubble_") || itemId.startsWith("Rock_") || itemId.startsWith("Soil_")) return "Mining";
+  // 0.8.0 (Bags v2 spec 1.1): the crystal shards (the Crystal collection) go to Mining
+  if (itemId.startsWith("Ingredient_Crystal_")) return "Mining";
+  // 0.7.5: tree sap joins the Foraging bag
+  if (itemId.startsWith("Wood_") || itemId.equals("Ingredient_Stick") || itemId.equals("Ingredient_Fibre") || itemId.equals("Ingredient_Tree_Bark") || itemId.equals("@SAP@")) return "Foraging";
+  // 0.8.16 (Skyy "saplings in foraging where they belong"): the saplings leave Farming (stored stacks just show in Foraging now)
+  if (itemId.startsWith("Plant_Sapling_")) return "Foraging";
+  // 0.8.0 (spec 1.1): fish + raw fish fillets (Uncommon / Rare / Epic / Legendary too) are the new Fishing category; grilled fish is cooked food
+  if (itemId.startsWith("Fish_") || itemId.startsWith("Food_Fish_Raw")) return "Fishing";
+  if (itemId.startsWith("Plant_") || itemId.startsWith("Food_")) return "Farming";
+  if (itemId.startsWith("Ingredient_Life_Essence") || itemId.equals("Ingredient_Poop")) return "Farming";
+  // 0.7.5 Smithing bag: bars / ingots, leather, hides, cloth bolts, strap, stud - checked BEFORE Combat, which held hides and
+  // fabric scraps until 0.7.4 (the pool is keyed by item id, so those stacks simply show in the Smithing tab now)
+  // 0.8.9 (Skyy "fabric is combat not smithing"): fabric scraps are Combat again (stored stacks show in the Combat tab; nothing moves)
+  if (@SMITH@) return "Smithing";
+  if (itemId.startsWith("@FABRIC@")) return "Combat";
+  if (itemId.startsWith("Ingredient_Bone") || itemId.startsWith("Ingredient_Chitin")
+      || itemId.startsWith("Ingredient_Sac_") || itemId.startsWith("Ingredient_Feathers")
+      || itemId.equals("Ingredient_Voidheart") || itemId.equals("Ingredient_Powder_Boom")
+      || (itemId.startsWith("Ingredient_") && itemId.endsWith("_Essence"))) return "Combat";
+  return null;
+}""".replace("@SMITH@", SMITH_JAVA).replace("@SAP@", TREE_SAP).replace("@FABRIC@", COMBAT_PREFIX_089), defs))
+# 0.8.10: SkyyFishing's whole-fish id pattern (its FishDefs.FISH = SkyyFishing_Fish_<Species>) - a catch whose weight the Void keeps
+defs.addField(CtField.make('public static final String CATCH = "SkyyFishing_Fish_";', defs))
+defs.addMethod(CtNewMethod.make("public static boolean isCatch(String id) { return id != null && id.startsWith(CATCH); }", defs))
+defs.addMethod(CtNewMethod.make("""
+public static String catOf(String itemId) {
+  String c = homeOf(itemId);
+  if (c != null && !COOKED_FARM && cooked(itemId)) return null;
+  return c;
+}""", defs))
+# 0.8.16 (Skyy "add a toggle for each"): KEEPOUT = player uuid -> Integer (1 seeds stay out, 2 saplings stay out), written by
+# SackPool.keepFlags on every 2 s tick (the /settings switches sacks.seedsVoid / sacks.saplingsVoid); absent = both go into the Void.
+# intake(u, id) = where a NEW pickup / sweep item may go: catOf + the player's switches (null = it stays in the inventory)
+defs.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap KEEPOUT = new java.util.concurrent.ConcurrentHashMap();", defs))
+defs.addMethod(CtNewMethod.make("""
+public static int keepKind(String itemId) {
+  if (itemId == null) return 0;
+  if (itemId.startsWith("Plant_Seeds_")) return 1;
+  if (itemId.startsWith("Plant_Sapling_")) return 2;
+  return 0;
+}""", defs))
+defs.addMethod(CtNewMethod.make("""
+public static String intake(java.util.UUID u, String itemId) {
+  String c = catOf(itemId);
+  if (c == null || u == null) return c;
+  int kd = keepKind(itemId);
+  if (kd == 0) return c;
+  Object f = KEEPOUT.get(u.toString());
+  if (f instanceof Integer && (((Integer) f).intValue() & kd) != 0) return null;
+  return c;
+}""", defs))
+# 0.7.6: the bag caps are admin settings (SACK_CAPS): public static volatile, read on every sweep, so a change applies at once. Lowering
+# one never deletes pooled items (SweepTask only stops intake at the cap; withdraw ignores it). 0.7.7: + CAP_RARE (bag.rare) and CAP_OMNI
+# (bag.omni, the Mythic Omni Bag, for every bag type).
+for (_k, _f, _d, _lo, _hi) in SACK_CAPS:
+    if _f.startswith("SackDefs."):
+        defs.addField(CtField.make("public static volatile int %s = %d;" % (_f.split(".")[1], _d), defs))
+# 0.7.7 rarity ladder (research/Bag-Restructure-Spec.md 3): TIERS = the item id suffixes in rarity order; RAR_NAME / RAR_COLOR (tooltip) /
+# RAR_PAGE (bag page text) = Normal, Unique, Rare, Legendary, Mythic in the Wynn colours. Rank 1-4 = the tiers, 6 = the Mythic Omni Bag.
+defs.addField(CtField.make("public static final String[] TIERS = " + _jarr([t[0] for t in BAG_TIERS]) + ";", defs))
+defs.addField(CtField.make("public static final String[] RAR_NAME = " + _jarr([r[1] for r in BAG_RARITY]) + ";", defs))
+defs.addField(CtField.make("public static final String[] RAR_COLOR = " + _jarr([r[2] for r in BAG_RARITY]) + ";", defs))
+defs.addField(CtField.make("public static final String[] RAR_PAGE = " + _jarr([r[3] for r in BAG_RARITY]) + ";", defs))
+defs.addField(CtField.make("public static final String OMNI = " + jlit(BAG_OMNI) + ";", defs))
+defs.addField(CtField.make("public static final String RECIPE_SUFFIX = " + jlit(RECIPE_SUFFIX) + ";", defs))
+defs.addMethod(CtNewMethod.make(jt(r'''
+public static int tierCap(String tier) {
+  if (tier == null) return 0;
+  if (tier.equals("Small")) return CAP_SMALL;
+  if (tier.equals("Medium")) return CAP_MEDIUM;
+  if (tier.equals("Rare")) return CAP_RARE;
+  if (tier.equals("Large")) return CAP_LARGE;
+  return 0;
+}'''), defs))
+defs.addMethod(CtNewMethod.make(jt(r'''
+public static int tierRank(String tier) {
+  if (tier == null) return 0;
+  for (int i = 0; i < TIERS.length; i++) if (TIERS[i].equals(tier)) return i + 1;
+  return 0;
+}'''), defs))
+defs.addMethod(CtNewMethod.make(jt(r'''
+public static int rankCap(int rank) {
+  if (rank >= 1 && rank <= TIERS.length) return tierCap(TIERS[rank - 1]);
+  if (rank > TIERS.length) return CAP_OMNI;
+  return 0;
+}'''), defs))
+defs.addMethod(CtNewMethod.make(jt(r'''
+public static int rarIdx(int rank) {
+  if (rank >= 1 && rank <= TIERS.length) return rank - 1;
+  if (rank > TIERS.length) return RAR_NAME.length - 1;
+  return 0;
+}'''), defs))
+defs.addMethod(CtNewMethod.make(jt(r'''
+public static String bagId(String cat, int rank) {
+  if (cat == null || rank < 1 || rank > TIERS.length) return OMNI;
+  return "Skyy_Sack_" + cat + "_" + TIERS[rank - 1];
+}'''), defs))
+defs.addMethod(CtNewMethod.make(jt(r'''
+public static String recipeOf(String itemId) {
+  return itemId + RECIPE_SUFFIX;
+}'''), defs))
+# the display name of a bag id ("Rare Mining Bag", "Mythic Omni Bag"); null = not one of our bags (an unknown tier word or type)
+defs.addMethod(CtNewMethod.make(jt(r'''
+public static String bagName(String id) {
+  if (id == null) return null;
+  if (id.equals(OMNI)) return RAR_NAME[RAR_NAME.length - 1] + " Omni Bag";
+  if (!id.startsWith("Skyy_Sack_")) return null;
+  String[] p = id.split("_");
+  if (p.length != 4 || lcatIndex(p[2]) < 0) return null;   // 0.8.0: the five legacy bag types
+  int r = tierRank(p[3]);
+  if (r <= 0) return null;
+  return RAR_NAME[r - 1] + " " + p[2] + " Bag";
+}'''), defs))
+defs.addMethod(CtNewMethod.make(jt(r'''
+public static boolean isBag(String id) {
+  return bagName(id) != null;
+}'''), defs))
+# 0.8.0: an OLD bag id -> its rank (1..4 = Normal..Legendary bag of a type, 5 = the Mythic Omni Bag, 0 = not an old bag) and type
+defs.addMethod(CtNewMethod.make(jt(r'''
+public static int legacyRank(String id) {
+  if (id == null || !id.startsWith("Skyy_Sack_")) return 0;
+  if (id.equals(OMNI)) return 5;
+  String[] p = id.split("_");
+  if (p.length != 4 || lcatIndex(p[2]) < 0) return 0;
+  return tierRank(p[3]);
+}'''), defs))
+defs.addMethod(CtNewMethod.make(jt(r'''
+public static String legacyCat(String id) {
+  if (legacyRank(id) <= 0 || id.equals(OMNI)) return null;
+  return id.split("_")[2];
+}'''), defs))
+
+# ================= SackPool =================
+sp.addField(CtField.make("public static java.nio.file.Path DIR;", sp))
+sp.addField(CtField.make(f"public static {LOG} LOG;", sp))
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap POOLS = new java.util.concurrent.ConcurrentHashMap();", sp))
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap DIRTY = new java.util.concurrent.ConcurrentHashMap();", sp))
+# 0.7.11 (Skyy R3 2026-10-02 - replaces the 10-minute exemption timer): KEPT = profile key -> (item id -> Long) = how many of an item the
+# player took out (withdraw, Pick up all, stack refill) and may keep in the inventory: the 2 s sweep leaves up to that many alone.
+# KEPTKEY = player uuid -> the key whose kept counts that player used last (the quit listener forgets them). The stack refill's "stacks you
+# are using" memory: SEENQ = uuid -> (item id -> Long carried at the end of the last sweep tick). 0.7.12: no PENDQ any more - the refill
+# no longer waits while a bench is open (the live-mirror rule: BagMirror.beforeTake / afterTake). All memory only: reset on relog
+# (KeptQuit), on a profile switch (settledKey) and by a restart - like the exemption they replace.
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap KEPT = new java.util.concurrent.ConcurrentHashMap();", sp))
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap KEPTKEY = new java.util.concurrent.ConcurrentHashMap();", sp))
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap SEENQ = new java.util.concurrent.ConcurrentHashMap();", sp))
+# 0.7.11 review fix 10 (shutdown latch): true from the first line of SkyySacksPlugin.shutdown() (false again in setup()). settledKey - the one
+# gate of every item move between an inventory and a pool - answers null then: no sweep, no refill, no click and no bench feed can move
+# items after the final pool save (a world-thread task already queued would otherwise run after it and its move would never be saved).
+sp.addField(CtField.make("public static volatile boolean CLOSED = false;", sp))
+# 0.7.12 (research/Bag-Craft-Link-Fix.md C): CHG = profile key -> Long change counter, bumped by EVERY pool change (add() is the one pool
+# writer: sweep, withdraw, refill, mirror bookings). BenchLink compares it with what an open crafting window was last given.
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap CHG = new java.util.concurrent.ConcurrentHashMap();", sp))
+sp.addField(CtField.make("public static final Object SAVELOCK = new Object();", sp))
+# 0.7.18 (audit 9c): the PRIVATE pool writer (one daemon thread, SkyyVault's VStore.SAVER pattern) + the debounce: PENDING = keys with a
+# PoolSaveJob scheduled; DEBOUNCE_MS = how long one save gathers changes; SAVES = pool files written, JOBS = PoolSaveJob / writer runs
+sp.addField(CtField.make("public static volatile java.util.concurrent.ScheduledExecutorService WRITER;", sp))
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap PENDING = new java.util.concurrent.ConcurrentHashMap();", sp))
+sp.addField(CtField.make("public static volatile long DEBOUNCE_MS = 1000L;", sp))
+sp.addField(CtField.make("public static final java.util.concurrent.atomic.AtomicLong SAVES = new java.util.concurrent.atomic.AtomicLong();", sp))
+sp.addField(CtField.make("public static final java.util.concurrent.atomic.AtomicLong JOBS = new java.util.concurrent.atomic.AtomicLong();", sp))
+# fixer: LASTSAVE = key -> System.nanoTime() at which its last PoolSaveJob runs (the leading edge: a key quiet for DEBOUNCE_MS saves at once)
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap LASTSAVE = new java.util.concurrent.ConcurrentHashMap();", sp))
+# fixer 2: SWEPTQ = key -> TRUE while the in-memory pool holds sweep additions the pool file does not have yet (cleared by saveNow)
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap SWEPTQ = new java.util.concurrent.ConcurrentHashMap();", sp))
+# 0.8.0: PMETA = key -> (meta key -> String) of the pool file's "~" lines (never items). "~v2paid" = the seqs of the migration refunds
+# credited into this pool, written in the SAME atomic file write as the refunded items (a crash can never pay one twice). The value is never
+# a number, so SkyySacks 0.7.18 (a rollback) skips the line and drops it at its next save - harmless.
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap PMETA = new java.util.concurrent.ConcurrentHashMap();", sp))
+# integration fix: 6 s, not 3 - the switch is one world-thread task, but acc:has / coll:recipes follow the new profile only on
+# the next SkyyAccessories / SkyyCollections republish (up to their 5 s ticks); craft clicks wait until those are current.
+sp.addField(CtField.make("public static final long SETTLE_MS = 6000L;", sp))
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap SEENEPOCH = new java.util.concurrent.ConcurrentHashMap();", sp))
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap SEENKEY = new java.util.concurrent.ConcurrentHashMap();", sp))
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap CHANGEDAT = new java.util.concurrent.ConcurrentHashMap();", sp))
+# integration fix: pool keys whose file could not be read (key -> time of the last failed read; never cached as an empty pool) and
+# players whose profile state is unknown (SkyyProfiles installed, no profile:epoch published) - both only for warn-once + retry pacing.
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap BADPOOL = new java.util.concurrent.ConcurrentHashMap();", sp))
+sp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap UNKNOWN = new java.util.concurrent.ConcurrentHashMap();", sp))
+# 0.7.2 profile contract (tools/PROFILES-CONTRACT.md): bridge + pkey helper exactly as the contract gives it. Without SkyyProfiles
+# pkey(u) = u.toString() = profile 1 (the pre-0.7.2 file names). Per-player bridge values we READ (acc:has, coll:recipes) stay keyed by UUID.
+sp.addMethod(CtNewMethod.make("""
+public static java.util.Map bridge() {
+  Object b = System.getProperties().get("skyy.bridge");
+  if (b instanceof java.util.Map) return (java.util.Map) b;
+  return java.util.Collections.EMPTY_MAP;
+}""", sp))
+# 0.7.6 player Settings (SkyyMenu 0.2+, research/Settings-Spec.md 1.3 / 3.4). bridge() above stays read-only (EMPTY_MAP when absent), so
+# regSetting uses a CREATING bridgeW() (the SkillStore.bridge / CfgRows.bridge pattern). No SkyyMenu = no answer = ON (0.7.5 behaviour).
+sp.addMethod(CtNewMethod.make("""
+public static java.util.Map bridgeW() {
+  synchronized (java.lang.System.class) {
+    Object o = System.getProperties().get("skyy.bridge");
+    if (o == null) { o = new java.util.concurrent.ConcurrentHashMap(); System.getProperties().put("skyy.bridge", o); }
+    return (java.util.Map) o;
+  }
+}""", sp))
+sp.addMethod(CtNewMethod.make("""
+public static boolean notifyOn(java.util.UUID u, String key) {
+  if (u == null || key == null) return true;
+  try {
+    Object f = bridge().get("settings:fn:get");
+    if (f instanceof java.util.function.Function) {
+      Object r = ((java.util.function.Function) f).apply(new Object[] { u, key });
+      if (r instanceof Boolean) return ((Boolean) r).booleanValue();
+    }
+  } catch (Throwable t) { }
+  return true;
+}""", sp))
+sp.addMethod(CtNewMethod.make("""
+public static void regSetting(String key, String label, String cat, boolean def, String help) {
+  try {
+    Object[] a = new Object[] { "SkyySacks", key, label, cat, Boolean.valueOf(def), help };
+    java.util.Map br = bridgeW();
+    br.put("settings:def:" + key, a);
+    Object f = br.get("settings:fn:register");
+    if (f instanceof java.util.function.Function) ((java.util.function.Function) f).apply(a);
+  } catch (Throwable t) { }
+}""", sp))
+sp.addMethod(CtNewMethod.make("""
+public static String pkey(java.util.UUID u) {
+  try {
+    Object f = bridge().get("profile:fn:key");
+    if (f instanceof java.util.function.Function) {
+      Object r = ((java.util.function.Function) f).apply(u);
+      if (r instanceof String && ((String) r).length() > 0) return (String) r;
+    }
+  } catch (Throwable t) { }
+  return u.toString();
+}""", sp))
+# 0.8.16: the seeds / saplings switches of one player (settings:fn:get; no SkyyMenu = ON) -> SackDefs.KEEPOUT; returns the flags
+sp.addMethod(CtNewMethod.make("""
+public static int keepFlags(java.util.UUID u) {
+  if (u == null) return 0;
+  int f = (notifyOn(u, "sacks.seedsVoid") ? 0 : 1) | (notifyOn(u, "sacks.saplingsVoid") ? 0 : 2);
+  if (f == 0) @PKG@.SackDefs.KEEPOUT.remove(u.toString());
+  else @PKG@.SackDefs.KEEPOUT.put(u.toString(), Integer.valueOf(f));
+  return f;
+}""".replace("@PKG@", PKG), sp))
+# profile:epoch:<uuid> as a long; -1 = absent (SkyyProfiles missing, or it has not published this player: contract 3 "Epoch").
+# An absent epoch carries no information - going from or to -1 is never treated as a profile change (contract 4.2).
+sp.addMethod(CtNewMethod.make("""
+public static long epoch(java.util.UUID u) {
+  try {
+    Object e = bridge().get("profile:epoch:" + u.toString());
+    if (e instanceof Number) return ((Number) e).longValue();
+    if (e != null) return Long.parseLong(String.valueOf(e).trim());
+  } catch (Throwable t) { }
+  return -1L;
+}""", sp))
+# settledKey(u) is added below pool() (it needs ready(k)); see "integration fixes" further down.
+# 0.7.11 the KEPT counts (field comment above). keptMap(k, create) = that key's map (null when absent and create is false).
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.concurrent.ConcurrentHashMap keptMap(String k, boolean create) {
+  if (k == null) return null;
+  java.util.concurrent.ConcurrentHashMap m = (java.util.concurrent.ConcurrentHashMap) KEPT.get(k);
+  if (m == null && create) {
+    m = new java.util.concurrent.ConcurrentHashMap();
+    java.util.concurrent.ConcurrentHashMap prev = (java.util.concurrent.ConcurrentHashMap) KEPT.putIfAbsent(k, m);
+    if (prev != null) m = prev;
+  }
+  return m;
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static long kept(String k, String item) {
+  if (item == null) return 0L;
+  java.util.concurrent.ConcurrentHashMap m = keptMap(k, false);
+  if (m == null) return 0L;
+  Long v = (Long) m.get(item);
+  return v == null ? 0L : v.longValue();
+}'''), sp))
+# what really left the pool into the inventory (withdraw, Pick up all, stack refill): kept[item] += n
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static void keep(String k, String item, long n) {
+  if (k == null || item == null || n <= 0L) return;
+  java.util.concurrent.ConcurrentHashMap m = keptMap(k, true);
+  Long v = (Long) m.get(item);
+  m.put(item, Long.valueOf((v == null ? 0L : v.longValue()) + n));
+}'''), sp))
+# withdraw: the item's hotbar + backpack stacks count as kept before the taken amount is added (kept[item] = max(kept, n))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static void raiseKept(String k, String item, long n) {
+  if (k == null || item == null || n <= 0L) return;
+  java.util.concurrent.ConcurrentHashMap m = keptMap(k, true);
+  Long v = (Long) m.get(item);
+  if (v == null || v.longValue() < n) m.put(item, Long.valueOf(n));
+}'''), sp))
+# Deposit all: forget the kept counts of that tab's items (homeOf == cat); returns how many entries went
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static int clearKeptCat(String k, String cat) {
+  java.util.concurrent.ConcurrentHashMap m = keptMap(k, false);
+  if (m == null || cat == null) return 0;
+  int n = 0;
+  java.util.ArrayList ids = new java.util.ArrayList(m.keySet());
+  for (int i = 0; i < ids.size(); i++) {
+    String id = (String) ids.get(i);
+    if (cat.equals(@PKG@.SackDefs.homeOf(id))) { m.remove(id); n++; }
+  }
+  return n;
+}'''), sp))
+# the stack refill's memory of a player (what they carried at the last tick + items used while a bench held the bags)
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static void forgetSeen(java.util.UUID u) {
+  if (u == null) return;
+  SEENQ.remove(u);
+}'''), sp))
+# relog: the player left (KeptQuit) - their kept counts and refill memory go (the last key used and the current one)
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static void forgetKept(java.util.UUID u) {
+  if (u == null) return;
+  Object lk = KEPTKEY.remove(u);
+  if (lk instanceof String) KEPT.remove(lk);
+  try { KEPT.remove(pkey(u)); } catch (Throwable t) { }
+  forgetSeen(u);
+}'''), sp))
+# a profile switch (settledKey saw a new KEY - review fix 4: a new epoch with the same key keeps them): both keys' kept counts and the
+# player's refill memory go
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static void dropKept(java.util.UUID u, String oldKey, String newKey) {
+  if (oldKey != null) KEPT.remove(oldKey);
+  if (newKey != null) KEPT.remove(newKey);
+  forgetSeen(u);
+}'''), sp))
+sp.addMethod(CtNewMethod.make("""
+public static void warn(String msg) {
+  try { if (LOG != null) LOG.at(java.util.logging.Level.WARNING).log("[SkyySacks] " + msg); } catch (Throwable t) { }
+}""", sp))
+# 0.8.18 (tools/sacks_0_8_18_patch.py A): supply:fn:claims (SkyyCooking 0.1.11) - TRUE = the player's Flask / Pouch takes this id now, so
+# it stays in (or goes to) the inventory instead of the Void. Absent / FALSE / null / a Throwable (warned once) = not claimed. memo = the
+# caller's per-pass cache (id -> Boolean; null = no cache).
+sp.addField(CtField.make("public static volatile boolean CLAIMWARN = false;", sp))
+sp.addMethod(CtNewMethod.make("""
+public static boolean claimed(java.util.UUID u, String id, java.util.HashMap memo) {
+  if (u == null || id == null) return false;
+  if (memo != null) {
+    Object c = memo.get(id);
+    if (c instanceof Boolean) return ((Boolean) c).booleanValue();
+  }
+  boolean r = false;
+  try {
+    Object f = bridge().get("supply:fn:claims");
+    if (f instanceof java.util.function.Function) r = Boolean.TRUE.equals(((java.util.function.Function) f).apply(new Object[] { u, id }));
+  } catch (Throwable t) {
+    r = false;
+    if (!CLAIMWARN) { CLAIMWARN = true; warn("supply:fn:claims failed (logged once; those items route into the Void as before): " + t); }
+  }
+  if (memo != null) memo.put(id, r ? Boolean.TRUE : Boolean.FALSE);
+  return r;
+}""", sp))
+sp.addMethod(CtNewMethod.make("""
+public static java.util.Map pool(String k) {
+  java.util.Map m = (java.util.Map) POOLS.get(k);
+  if (m != null) return m;
+  m = new java.util.concurrent.ConcurrentHashMap();
+  try {
+    java.nio.file.Path f = DIR.resolve(k + ".properties");
+    if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
+      java.util.Properties p = new java.util.Properties();
+      java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+      try { p.load(in); } finally { in.close(); }
+      java.util.Enumeration en = p.propertyNames();
+      java.util.concurrent.ConcurrentHashMap mm = null;
+      while (en.hasMoreElements()) {
+        String k2 = (String) en.nextElement();
+        // 0.8.0: a "~" line is pool META (the migration refund seqs), never an item
+        if (k2.startsWith("~")) { if (mm == null) mm = new java.util.concurrent.ConcurrentHashMap(); mm.put(k2, p.getProperty(k2)); continue; }
+        try { long v = Long.parseLong(p.getProperty(k2).trim()); if (v > 0L) m.put(k2, Long.valueOf(v)); } catch (Throwable t) { }
+      }
+      if (mm != null) PMETA.put(k, mm);
+    }
+  } catch (Throwable t) {
+    java.util.Map again = (java.util.Map) POOLS.get(k);
+    if (again != null) return again;
+    if (BADPOOL.put(k, Long.valueOf(System.currentTimeMillis())) == null) warn("could not load pool for " + k + " - file left untouched, item moves for this profile paused until it reads (retry every 2s): " + t);
+    return m;
+  }
+  if (BADPOOL.remove(k) != null) warn("pool for " + k + " reads again - item moves resumed");
+  java.util.Map prev = (java.util.Map) POOLS.putIfAbsent(k, m);
+  return prev != null ? prev : m;
+}""", sp))
+sp.addMethod(CtNewMethod.make("""
+public static void saveNow(String k) {
+  Object sq = null;   // fixer 2
+  try {
+    java.util.Map m = (java.util.Map) POOLS.get(k);
+    if (m == null) return;
+    sq = SWEPTQ.remove(k);   // fixer 2: BEFORE the snapshot - a sweep from here on marks the key again
+    java.util.Properties p = new java.util.Properties();
+    java.util.Iterator it = m.entrySet().iterator();
+    while (it.hasNext()) {
+      java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+      p.setProperty((String) e.getKey(), String.valueOf(((Long) e.getValue()).longValue()));
+    }
+    java.util.Map mt = (java.util.Map) PMETA.get(k);   // 0.8.0: the meta lines go into the same atomic write
+    if (mt != null) {
+      java.util.Iterator mi = mt.entrySet().iterator();
+      while (mi.hasNext()) { java.util.Map.Entry me = (java.util.Map.Entry) mi.next(); p.setProperty((String) me.getKey(), String.valueOf(me.getValue())); }
+    }
+    java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Path tmp = DIR.resolve(k + ".properties.tmp");
+    java.nio.file.Path dst = DIR.resolve(k + ".properties");
+    java.io.FileOutputStream out = new java.io.FileOutputStream(tmp.toFile());
+    try { p.store(out, "SkyySacks pool"); out.flush(); out.getFD().sync(); } finally { out.close(); }
+    try { java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE }); }
+    catch (Throwable am) { java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING }); }
+    SAVES.incrementAndGet();   // 0.7.18: pool files written (the harness counts the debounce)
+  } catch (Throwable t) { if (sq != null) SWEPTQ.put(k, sq); DIRTY.put(k, Boolean.TRUE); warn("could not save pool for " + k + " (kept dirty - retried by the next save): " + t); }
+}""", sp))
+sp.addMethod(CtNewMethod.make("""
+public static void save(String k) {
+  synchronized (SAVELOCK) { saveNow(k); }
+}""", sp))
+sp.addMethod(CtNewMethod.make("""
+public static void flushDirty() {
+  java.util.ArrayList ks = new java.util.ArrayList(DIRTY.keySet());
+  for (int i = 0; i < ks.size(); i++) {
+    String k = (String) ks.get(i);
+    DIRTY.remove(k);
+    save(k);
+  }
+}""", sp))
+sp.addMethod(CtNewMethod.make("""
+public static long get(String k, String item) {
+  Long v = (Long) pool(k).get(item);
+  return v == null ? 0L : v.longValue();
+}""", sp))
+sp.addMethod(CtNewMethod.make("""
+public static synchronized void add(String k, String item, long n) {
+  java.util.Map m = pool(k);
+  Long v = (Long) m.get(item);
+  long nv = (v == null ? 0L : v.longValue()) + n;
+  // 0.7.12: a booking below zero was silently clamped - it would mean items were used twice; say so (the clamp itself stays)
+  if (nv < 0L) warn("pool for " + k + " would go below zero for " + item + " (by " + (-nv) + ") - clamped at 0; report this (accounting error)");
+  if (nv <= 0L) m.remove(item); else m.put(item, Long.valueOf(nv));
+  DIRTY.put(k, Boolean.TRUE);
+  // 0.7.12: the per-key change counter (open crafting windows refresh their bag counts from it)
+  if (n != 0L) {
+    Long c = (Long) CHG.get(k);
+    CHG.put(k, Long.valueOf(c == null ? 1L : c.longValue() + 1L));
+  }
+}""", sp))
+# 0.7.12: the per-key change counter (0 = no change yet)
+sp.addMethod(CtNewMethod.make("""
+public static long chg(String k) {
+  if (k == null) return 0L;
+  Long c = (Long) CHG.get(k);
+  return c == null ? 0L : c.longValue();
+}""", sp))
+sp.addMethod(CtNewMethod.make(f"""
+public static long catTotal(String k, String cat) {{
+  long t = 0L;
+  java.util.Iterator it = pool(k).entrySet().iterator();
+  while (it.hasNext()) {{
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    if (cat.equals({PKG}.SackDefs.homeOf((String) e.getKey()))) t += ((Long) e.getValue()).longValue();
+  }}
+  return t;
+}}""", sp))
+
+# 0.7.8: how many COOKED items the pool of key k still holds (they belong to the Farming bag; the Farming tab notes them while
+# bags.cookedFood is off - they stay until taken out or used)
+sp.addMethod(CtNewMethod.make(f"""
+public static long cookedTotal(String k) {{
+  long t = 0L;
+  java.util.Iterator it = pool(k).entrySet().iterator();
+  while (it.hasNext()) {{
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    if ({PKG}.SackDefs.cooked((String) e.getKey())) t += ((Long) e.getValue()).longValue();
+  }}
+  return t;
+}}""", sp))
+
+# 0.8.10 THE WEIGHT TRAVELS WITH THE FISH: "~fish:<id>" = the entries ("grams,mm,catcher") of the whole fish of that id, newest last. The
+# count line stays THE count; entries beyond it (fish another mod took by id) are dropped oldest first (fishFit), missing ones = plain fish.
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized java.util.ArrayList fishList(String k, String id) {
+  java.util.ArrayList l = new java.util.ArrayList();
+  pool(k);   // the pool file (count + meta lines) is loaded first - never an empty list read before the file
+  java.util.Map mt = (java.util.Map) PMETA.get(k);
+  Object v = mt == null ? null : mt.get("~fish:" + id);
+  if (v == null) return l;
+  String[] a = String.valueOf(v).split(";");
+  for (int i = 0; i < a.length; i++) if (a[i].length() > 0) l.add(a[i]);
+  return l;
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void fishSet(String k, String id, java.util.ArrayList l) {
+  java.util.concurrent.ConcurrentHashMap mt = (java.util.concurrent.ConcurrentHashMap) PMETA.get(k);
+  if (mt == null) {
+    if (l.isEmpty()) return;
+    mt = new java.util.concurrent.ConcurrentHashMap();
+    PMETA.put(k, mt);
+  }
+  if (l.isEmpty()) mt.remove("~fish:" + id);
+  else {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < l.size(); i++) { if (i > 0) sb.append(';'); sb.append((String) l.get(i)); }
+    mt.put("~fish:" + id, sb.toString());
+  }
+  if (mt.isEmpty()) PMETA.remove(k);
+  DIRTY.put(k, Boolean.TRUE);
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized java.util.ArrayList fishFit(String k, String id) {
+  java.util.ArrayList l = fishList(k, id);
+  long have = get(k, id);
+  boolean ch = false;
+  while (!l.isEmpty() && (long) l.size() > have) { l.remove(0); ch = true; }
+  if (ch) fishSet(k, id, l);
+  return l;
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void fishIn(String k, String id, String e, long n) {
+  if (n <= 0L) return;
+  java.util.ArrayList l = fishFit(k, id);
+  add(k, id, n);
+  if (e == null || e.length() == 0) return;
+  for (long i = 0L; i < n; i++) l.add(e);
+  fishSet(k, id, l);
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized String fishOut(String k, String id) {
+  if (get(k, id) <= 0L) return null;
+  java.util.ArrayList l = fishFit(k, id);
+  String e = "";
+  if (!l.isEmpty()) { e = (String) l.remove(l.size() - 1); fishSet(k, id, l); }
+  add(k, id, -1L);
+  return e;
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void fishBack(String k, String id, String e) {
+  java.util.ArrayList l = fishFit(k, id);
+  add(k, id, 1L);
+  if (e == null || e.length() == 0) return;
+  l.add(e);
+  fishSet(k, id, l);
+}'''), sp))
+# 0.8.17 (tools/sacks_0_8_17_patch.py A / B): a fish back at entry position `at` (a failed write's undo: exactly where it was);
+# fishFront = position 0, the OLDEST end - where the bridge takes found it (a refund)
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void fishAt(String k, String id, String e, int at) {
+  java.util.ArrayList l = fishFit(k, id);
+  add(k, id, 1L);
+  if (e == null || e.length() == 0) return;
+  int i = at < 0 ? 0 : (at > l.size() ? l.size() : at);
+  l.add(i, e);
+  fishSet(k, id, l);
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static void fishFront(String k, String id, String e) { fishAt(k, id, e, 0); }'''), sp))
+# sacks:fn:fishList's view: the entries oldest first, then "" for each plain fish (count beyond the entries)
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized String[] fishView(String k, String id) {
+  java.util.ArrayList l = fishFit(k, id);
+  long c = get(k, id);
+  if (c < (long) l.size()) c = (long) l.size();
+  if (c > 100000L) c = 100000L;
+  String[] o = new String[(int) c];
+  for (int i = 0; i < o.length; i++) o[i] = i < l.size() ? (String) l.get(i) : "";
+  return o;
+}'''), sp))
+# sacks:fn:fishTake's move: exactly that fish (count - 1 and that entry, one lock); "" = a plain fish; false = none such
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized boolean fishPick(String k, String id, String e) {
+  if (e == null || get(k, id) <= 0L) return false;
+  java.util.ArrayList l = fishFit(k, id);
+  if (e.length() == 0) {
+    if (get(k, id) <= (long) l.size()) return false;
+    add(k, id, -1L);
+    return true;
+  }
+  int i = l.indexOf(e);
+  if (i < 0) return false;
+  l.remove(i);
+  fishSet(k, id, l);
+  add(k, id, -1L);
+  return true;
+}'''), sp))
+# a plain sacks:fn:take of whole fish: up to n leave WITH their entries (oldest first, "" once the entries run out) -> out; one lock
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized long fishDebit(String k, String id, long n, java.util.ArrayList out) {
+  long have = get(k, id);
+  long t = n < have ? n : have;
+  if (t <= 0L) return 0L;
+  java.util.ArrayList l = fishFit(k, id);
+  int m = 0;
+  for (long i = 0L; i < t; i++) {
+    if (!l.isEmpty()) { out.add(l.remove(0)); m++; }
+    else out.add("");
+  }
+  if (m > 0) fishSet(k, id, l);
+  add(k, id, -t);
+  return t;
+}'''), sp))
+# the pool file of k written NOW on this thread; true only when it really was (saveNow counts SAVES only after the atomic move)
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static boolean saveOk0(String k) {
+  long b = SAVES.get();
+  saveNow(k);
+  return SAVES.get() > b;
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static boolean saveOk(String k) {
+  synchronized (SAVELOCK) { return saveOk0(k); }
+}'''), sp))
+# 0.8.17 token round (coordinator 2026-10-16): "~fishtok" = "token@takeTime ..." (the fishTake op ids of this pool, kept TOK_MS, written in
+# the SAME atomic pool write as the take), "~fishcut" = "t<newest pruned take time>" (fishTaken can say FALSE only for ops after it)
+sp.addField(CtField.make("public static final long TOK_MS = 86400000L;", sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static boolean tokOk(String t) {
+  if (t == null || t.length() == 0 || t.length() > 120) return false;
+  for (int i = 0; i < t.length(); i++) {
+    char c = t.charAt(i);
+    if (c <= ' ' || c == '@' || c == ';' || c == (char) 127) return false;
+  }
+  return true;
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized String tokRaw(String k) {
+  pool(k);
+  java.util.Map mt = (java.util.Map) PMETA.get(k);
+  Object v = mt == null ? null : mt.get("~fishtok");
+  return v == null ? "" : String.valueOf(v).trim();
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized boolean tokHas(String k, String t) {
+  if (t == null || t.length() == 0) return false;
+  String[] a = tokRaw(k).split(" ");
+  for (int i = 0; i < a.length; i++) {
+    int at = a[i].lastIndexOf('@');
+    String n = at < 0 ? a[i] : a[i].substring(0, at);
+    if (n.length() > 0 && n.equals(t)) return true;
+  }
+  return false;
+}'''), sp))
+# unreadable cut = Long.MAX_VALUE (an unknown token is then never "definitely not taken")
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized long tokCut(String k) {
+  pool(k);
+  java.util.Map mt = (java.util.Map) PMETA.get(k);
+  Object v = mt == null ? null : mt.get("~fishcut");
+  if (v == null) return 0L;
+  String c = String.valueOf(v).trim();
+  if (c.startsWith("t")) c = c.substring(1);
+  try { return Long.parseLong(c); } catch (Throwable x) { return Long.MAX_VALUE; }
+}'''), sp))
+# rewrite the token list: drop one `del` (null = none), add `add` at `now` (null = none), prune those older than TOK_MS (the cut grows;
+# an unreadable time = pruned with cut MAX - never a wrong FALSE)
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void tokSet(String k, String del, String add, long now) {
+  String[] a = tokRaw(k).split(" ");
+  StringBuilder sb = new StringBuilder();
+  long cut = tokCut(k);
+  boolean cutCh = false;
+  boolean dropped = false;
+  for (int i = 0; i < a.length; i++) {
+    if (a[i].length() == 0) continue;
+    int at = a[i].lastIndexOf('@');
+    String n = at < 0 ? a[i] : a[i].substring(0, at);
+    long tm = -1L;
+    try { if (at >= 0) tm = Long.parseLong(a[i].substring(at + 1)); } catch (Throwable x) { tm = -1L; }
+    if (del != null && !dropped && n.equals(del)) { dropped = true; continue; }
+    if (tm < 0L) { cut = Long.MAX_VALUE; cutCh = true; continue; }
+    if (now - tm > TOK_MS) {
+      if (tm > cut) { cut = tm; cutCh = true; }
+      continue;
+    }
+    if (sb.length() > 0) sb.append(' ');
+    sb.append(n).append('@').append(tm);
+  }
+  if (add != null) {
+    if (sb.length() > 0) sb.append(' ');
+    sb.append(add).append('@').append(now);
+  }
+  java.util.concurrent.ConcurrentHashMap mt = (java.util.concurrent.ConcurrentHashMap) PMETA.get(k);
+  if (mt == null) { mt = new java.util.concurrent.ConcurrentHashMap(); PMETA.put(k, mt); }
+  if (sb.length() == 0) mt.remove("~fishtok"); else mt.put("~fishtok", sb.toString());
+  if (cutCh) mt.put("~fishcut", "t" + cut);
+  if (mt.isEmpty()) PMETA.remove(k);
+  DIRTY.put(k, Boolean.TRUE);
+}'''), sp))
+# fishTake's move with its token, one lock: a token already stored = false (idempotent); tok null = no token
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized boolean fishPickTok(String k, String id, String e, String tok, long now) {
+  if (tok != null && tokHas(k, tok)) return false;
+  if (!fishPick(k, id, e)) return false;
+  if (tok != null) tokSet(k, (String) null, tok, now);
+  return true;
+}'''), sp))
+# a fish back at `at` and its token cleared, one lock (fishPut, a failed take's undo, a plain put of a tokened take)
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void fishAtTok(String k, String id, String e, int at, String tok, long now) {
+  fishAt(k, id, e, at);
+  if (tok != null) tokSet(k, tok, (String) null, now);
+}'''), sp))
+# integration fix: true when the pool of key k is loaded (or its file does not exist yet). A pool whose file could not be read is
+# retried at most every 2 s; until it reads, settledKey pauses every item move for that key (nothing can be written over the file).
+sp.addMethod(CtNewMethod.make("""
+public static boolean ready(String k) {
+  if (k == null) return false;
+  if (POOLS.containsKey(k)) return true;
+  Long bad = (Long) BADPOOL.get(k);
+  if (bad != null && System.currentTimeMillis() - bad.longValue() < 2000L) return false;
+  pool(k);
+  return POOLS.containsKey(k);
+}""", sp))
+# 0.8.0: the migration refund (VoidStore.settle): the items + the seq in ONE pool change (synchronized like add); false = already paid (the
+# seq is in "~v2paid") or the pool is not readable (retried by the next settle). paidHas / unpaid = the same ledger (unpaid after D|seq).
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized boolean paidHas(String k, String seq) {
+  java.util.Map mt = (java.util.Map) PMETA.get(k);
+  Object v = mt == null ? null : mt.get("~v2paid");
+  if (v == null) return false;
+  return (" " + String.valueOf(v) + " ").indexOf(" s" + seq + " ") >= 0;
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized boolean credit(String k, String seq, java.util.Map items) {
+  if (k == null || seq == null || items == null || !ready(k)) return false;
+  if (paidHas(k, seq)) return false;
+  java.util.Iterator it = items.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    long q = ((Number) e.getValue()).longValue();
+    if (q > 0L) add(k, (String) e.getKey(), q);
+  }
+  java.util.concurrent.ConcurrentHashMap mt = (java.util.concurrent.ConcurrentHashMap) PMETA.get(k);
+  if (mt == null) { mt = new java.util.concurrent.ConcurrentHashMap(); PMETA.put(k, mt); }
+  Object v = mt.get("~v2paid");
+  String paid = v == null ? "" : String.valueOf(v).trim();
+  mt.put("~v2paid", (paid.length() == 0 ? "" : paid + " ") + "s" + seq);
+  DIRTY.put(k, Boolean.TRUE);
+  return true;
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void unpaid(String k, String seq) {
+  java.util.concurrent.ConcurrentHashMap mt = (java.util.concurrent.ConcurrentHashMap) PMETA.get(k);
+  if (mt == null || seq == null) return;
+  Object v = mt.get("~v2paid");
+  if (v == null) return;
+  String[] parts = String.valueOf(v).trim().split(" ");
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < parts.length; i++) {
+    if (parts[i].length() == 0 || parts[i].equals("s" + seq)) continue;
+    if (sb.length() > 0) sb.append(' ');
+    sb.append(parts[i]);
+  }
+  if (sb.length() == 0) mt.remove("~v2paid"); else mt.put("~v2paid", sb.toString());
+  if (mt.isEmpty()) PMETA.remove(k);
+  DIRTY.put(k, Boolean.TRUE);
+}'''), sp))
+sp.addMethod(CtNewMethod.make(jt(r'''
+public static boolean paidOnDisk(String k, String seq) {
+  try {
+    java.nio.file.Path f = DIR.resolve(k + ".properties");
+    if (!java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) return false;
+    java.util.Properties p = new java.util.Properties();
+    java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+    try { p.load(in); } finally { in.close(); }
+    Object v = p.getProperty("~v2paid");
+    return v != null && (" " + String.valueOf(v) + " ").indexOf(" s" + seq + " ") >= 0;
+  } catch (Throwable t) { return false; }
+}'''), sp))
+# The ONE gate of every item move between the live inventory and a pool (sweep, Sacks page clicks, craft/processing clicks, bench
+# link): the active key, or null = paused (sweep skips, clicks are refused, the bench mirror is parked). Paused while:
+#  - SkyyProfiles is installed (profile:fn:key) but published no profile:epoch:<uuid> for this player: unreadable players file with no
+#    good copy, where the Function falls back to profile 1 while the live inventory may be profile N (contract 4.4 / 5);
+#  - SETTLE_MS after the epoch or the key changed (baseline = first value seen; absent epochs are no change, contract 4.2) - the other
+#    mods republish acc:has / coll:recipes for the new profile in that time;
+#  - profile:busy:<uuid> is present (contract 4.5): a crash recovery is pending at join and will reload the inventory from a snapshot,
+#    so a sweep before it would duplicate items (a switch sets it too, but inside one world-thread task we never run in);
+#  - the pool file of the key cannot be read (ready);
+#  - 0.7.11 review fix 10: the plugin is shutting down (SackPool.CLOSED, set first in shutdown()).
+# Without SkyyProfiles: no epoch, no busy flag, key = uuid - only the pool-file check applies.
+sp.addMethod(CtNewMethod.make("""
+public static String settledKey(java.util.UUID u) {
+  if (u == null) return null;
+  if (CLOSED) return null;
+  java.util.Map b = bridge();
+  long e = epoch(u);
+  String k = pkey(u);
+  if (e < 0L && (b.get("profile:fn:key") instanceof java.util.function.Function)) {
+    if (UNKNOWN.putIfAbsent(u, Boolean.TRUE) == null) warn("SkyyProfiles is installed but published no profile:epoch for " + u + " (unreadable players file, or SkyyProfiles failed to start) - bag item moves paused for this player until it does");
+    return null;
+  }
+  if (UNKNOWN.remove(u) != null) warn("profile state of " + u + " is known again - bag item moves resumed");
+  Long le = (Long) SEENEPOCH.put(u, Long.valueOf(e));
+  String lk = (String) SEENKEY.put(u, k);
+  long now = System.currentTimeMillis();
+  boolean moved = le != null && le.longValue() >= 0L && e >= 0L && le.longValue() != e;
+  if (moved || (lk != null && !lk.equals(k))) CHANGEDAT.put(u, Long.valueOf(now));
+  // 0.7.11: a profile SWITCH (the key changed) also resets the kept counts of both keys and the refill memory (memory only, like the
+  // 10-minute exemption they replace) - the inventory now belongs to another profile. Review fix 4: a new epoch with the SAME key (a
+  // profile created, /profileadmin setclass of the active one, PROFILES-CONTRACT 3) keeps them - same profile, same inventory; the
+  // settle window above still applies to it.
+  if (lk != null && !lk.equals(k)) dropKept(u, lk, k);
+  Long t = (Long) CHANGEDAT.get(u);
+  if (t != null) {
+    if (now - t.longValue() < SETTLE_MS) return null;
+    CHANGEDAT.remove(u);
+  }
+  if (b.get("profile:busy:" + u.toString()) != null) return null;
+  if (!ready(k)) return null;
+  return k;
+}""", sp))
+
+# ================= SackCfg (0.7.3): Skyy_SkyySacks/config.properties - read at setup, re-read by the SackSaver when the file changes =================
+# craftSearch=false removes the inline TextField from the craft page without a rebuild (in case it does not parse on a client).
+# 0.7.6: SackCfg.reload() is also the admin config kit's RELOAD (hand edits) and the reload routine of the craftSearch row; it loads every
+# key (craftSearch + the six SACK_CAPS) and clamps a file value to the row bounds (typed values are refused by the kit, never clamped).
+# It writes the file only when it is missing (the template above); the kit owns every other write (line-preserving, logged, versioned).
+scfg.addField(CtField.make("public static java.nio.file.Path FILE;", scfg))
+scfg.addField(CtField.make("public static long MTIME = -1L;", scfg))
+scfg.addField(CtField.make("public static boolean WARNED = false;", scfg))
+scfg.addField(CtField.make("public static final java.util.concurrent.atomic.AtomicBoolean SEARCH = new java.util.concurrent.atomic.AtomicBoolean(true);", scfg))
+# 0.7.7: bags.freeRecipes (Server Setup "Free bag recipes", default off; research/Bag-Restructure-Spec.md 8.1), bound field: by the kit
+scfg.addField(CtField.make("public static volatile boolean FREE_RECIPES = false;", scfg))
+# 0.7.11 review fix 8: bags.refill (the stack refill master switch) + bags.refillDefault (hotbar | full | off), bound fields: by the kit
+scfg.addField(CtField.make("public static volatile boolean REFILL_ON = true;", scfg))
+# 0.8.3 auto-pickup (Server Setup rows pickup.on / pickup.blocks / pickup.mobs / pickup.killerShare; read by the four Pick systems live)
+scfg.addField(CtField.make("public static volatile boolean PICK_ON = true;", scfg))
+scfg.addField(CtField.make("public static volatile boolean PICK_BLOCKS = true;", scfg))
+scfg.addField(CtField.make("public static volatile boolean PICK_MOBS = true;", scfg))
+scfg.addField(CtField.make("public static volatile int PICK_SHARE = 50;", scfg))
+# 0.8.21 Smelting Fortune (tools/sacks_0_8_21_patch.py): smelt.fortune.enabled / .alloys / .minedOnly / .guard (live, bound by the kit)
+scfg.addField(CtField.make("public static volatile boolean SF_ON = true;", scfg))
+scfg.addField(CtField.make("public static volatile boolean SF_ALLOYS = true;", scfg))
+scfg.addField(CtField.make("public static volatile boolean SF_MINED = true;", scfg))
+scfg.addField(CtField.make("public static volatile int SF_GUARD = 100;", scfg))
+scfg.addField(CtField.make('public static final String SF_READS = "tree:reads:SkyySacks";', scfg))
+scfg.addField(CtField.make("public static volatile String READS_PUT;", scfg))
+scfg.addField(CtField.make('public static final String SF_NODE = "Smithing.SSmelt";', scfg))
+# 0.8.16 (Skyy "hide it."): pickup.hidePopup - PopupHide switches the GameplayConfig showItemPickupNotifications flag off (live)
+scfg.addField(CtField.make("public static volatile boolean HIDE_POPUP = true;", scfg))
+scfg.addField(CtField.make('public static volatile String REFILL_DEF = "hotbar";', scfg))
+# 0.7.12: bags.benchChests (Server Setup "Bench chest count fallback", default off; research/Bag-Craft-Link-Fix.md risk 2), bound field
+scfg.addField(CtField.make("public static volatile boolean CHEST_FIX = false;", scfg))
+# 0.8.10 review fix: bags.fishSweep (Server Setup "Catches go into the Void", default ON) - the sweep takes whole fish from the hotbar / backpack
+scfg.addField(CtField.make("public static volatile boolean FISH_SWEEP = true;", scfg))
+# 0.7.12 review fix 1: bags.pocketCraft (Server Setup "Bags in inventory crafting", default ON) - the pocket crafting swap's off switch
+scfg.addField(CtField.make("public static volatile boolean POCKET_CRAFT = true;", scfg))
+# 0.8.12: bags.pocketKeep (Server Setup "Pocket Dimension stays with you", default ON) - the lifelong Pocket Dimension item (PdOnce)
+scfg.addField(CtField.make("public static volatile boolean POCKET_KEEP = true;", scfg))
+scfg.addField(CtField.make("public static boolean ORDERWARNED = false;", scfg))
+# 0.8.0 (Bags v2 spec 2.4): the Void rows - public static volatile, bound by the config kit (Server Setup), loaded by reload() (pdKeys)
+for _f in _PD_CFG_FIELDS:
+    scfg.addField(CtField.make(_f, scfg))
+scfg.addField(CtField.make('public static volatile String PDSIG = "";', scfg))   # the last logged Void settings (reload logs a change once)
+scfg.addMethod(CtNewMethod.make("public static int step(int ci) {\n" + _sw("ci", [(i, "PD_STEP_" + c.upper()) for i, c in enumerate(PD_CATS)], "1") + "}", scfg))
+scfg.addMethod(CtNewMethod.make("public static double mult(int r) {\n" + _sw("r", [(i, "PD_MULT_" + n.upper()) for i, n in enumerate(PD_RAR)], "1.0") + "}", scfg))
+scfg.addMethod(CtNewMethod.make("public static int gate0(int r) {\n" + _sw("r", [(i + 1, "PD_GATE_" + PD_RAR[i + 1].upper()) for i in range(3)], "1") + "}", scfg))
+# 0.8.9: the level curve in use (pd.curve, 1 .. 3)
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static double curve() {
+  double e = PD_CURVE;
+  if (e != e || e < 1.0) return 1.0;
+  return e > 3.0 ? 3.0 : e;
+}'''), scfg))
+# the highest storage level in use (pd.maxLevel, at least 1)
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static int maxLevel() {
+  int m = PD_MAX_LEVEL;
+  return m < 1 ? 1 : m;
+}'''), scfg))
+# fix round: the gate in use never goes above pd.maxLevel (a gate no level can reach would block that upgrade for ever)
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static int gate(int r) {
+  int g = gate0(r);
+  int m = maxLevel();
+  return g > m ? m : g;
+}'''), scfg))
+scfg.addMethod(CtNewMethod.make("public static String cost(int ci, int r) {\n" + "".join(
+    "  if (ci == %d && r == %d) return PD_COST_%s_%s;\n" % (i, r, c.upper(), PD_RAR[r].upper()) for i, c in enumerate(PD_CATS) for r in (1, 2, 3))
+    + '  return "";\n}', scfg))
+# a decimal from the file (the kit's dec words); missing = the default; bad = the default + a warning; out of range = clamped + a warning
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static double decKey(java.util.Properties p, String k, double def, double lo, double hi) {
+  String v0 = p.getProperty(k);
+  if (v0 == null || v0.trim().length() == 0) return def;
+  double n = def;
+  try { n = Double.parseDouble(v0.trim()); } catch (Throwable t) { @PKG@.SackPool.warn("config.properties: " + k + "=" + v0.trim() + " is not a number - using " + def); return def; }
+  if (n != n || n < lo) { @PKG@.SackPool.warn("config.properties: " + k + "=" + v0.trim() + " is below " + lo + " - using " + lo); return lo; }
+  if (n > hi) { @PKG@.SackPool.warn("config.properties: " + k + "=" + v0.trim() + " is above " + hi + " - using " + hi); return hi; }
+  return n;
+}'''), scfg))
+# an upgrade cost "itemId:qty,itemId:qty" -> LinkedHashMap id -> Long; null = bad text (empty, a bad pair, qty < 1 or > 1,000,000, > 6 items
+# (fix round: = the 6 cost cells of the page's Upgrade box - a 7th item would be charged without being shown),
+# an id twice). checkCost (the kit's check= hook) also refuses an id the Item asset map does not know.
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.LinkedHashMap parseCost(String t) {
+  if (t == null) return null;
+  String s = t.trim();
+  if (s.length() == 0) return null;
+  String[] parts = s.split(",");
+  if (parts.length > 6) return null;   // fix round: the page shows 6 cost cells
+  java.util.LinkedHashMap out = new java.util.LinkedHashMap();
+  for (int i = 0; i < parts.length; i++) {
+    String x = parts[i].trim();
+    int c = x.lastIndexOf(':');
+    if (c <= 0 || c >= x.length() - 1) return null;
+    String id = x.substring(0, c).trim();
+    long q = 0L;
+    try { q = Long.parseLong(x.substring(c + 1).trim()); } catch (Throwable e) { return null; }
+    if (q < 1L || q > 1000000L || id.length() == 0 || out.containsKey(id)) return null;
+    for (int j = 0; j < id.length(); j++) {
+      char ch = id.charAt(j);
+      if (!(Character.isLetterOrDigit(ch) || ch == '_')) return null;
+    }
+    out.put(id, Long.valueOf(q));
+  }
+  return out;
+}'''), scfg))
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static String checkCost(String key, String value) {
+  java.util.LinkedHashMap m = parseCost(value);
+  if (m == null) return "Write it as itemId:amount pairs joined by commas (1 to 6 items, amounts 1 to 1000000), e.g. Ore_Iron:100,Ore_Copper:250";
+  java.util.Iterator it = m.keySet().iterator();
+  while (it.hasNext()) {
+    String id = (String) it.next();
+    boolean ok = false;
+    try { ok = com.hypixel.hytale.server.core.asset.type.item.config.Item.getAssetMap().getAsset(id) != null; } catch (Throwable t) { ok = true; }
+    if (!ok) return "Unknown item id " + id + " - nothing was changed";
+  }
+  return null;
+}'''), scfg))
+# the multiplier ladder must not go down (Normal <= Unique <= Rare <= Legendary <= Omni): asks first (never refuses; ignored on import)
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static String checkMult(String key, String value) {
+  if (key == null || value == null) return null;
+  double n = 0.0;
+  try { n = Double.parseDouble(value.trim()); } catch (Throwable t) { return null; }
+  String[] keys = new String[] { "pd.mult.Normal", "pd.mult.Unique", "pd.mult.Rare", "pd.mult.Legendary", "pd.mult.Omni" };
+  double[] v = new double[] { PD_MULT_NORMAL, PD_MULT_UNIQUE, PD_MULT_RARE, PD_MULT_LEGENDARY, PD_MULT_OMNI };
+  int at = -1;
+  for (int i = 0; i < keys.length; i++) if (keys[i].equals(key)) at = i;
+  if (at < 0) return null;
+  v[at] = n;
+  for (int i = 1; i < v.length; i++) {
+    if (v[i - 1] > v[i]) return "?The multipliers would go DOWN the ladder (" + keys[i - 1].substring(8) + " " + v[i - 1] + " > " + keys[i].substring(8) + " " + v[i] + ") - an upgrade would shrink the space. Change it anyway?";
+  }
+  return null;
+}'''), scfg))
+# fix round: a level gate above pd.maxLevel (it then acts as the max level) or out of order (Unique <= Rare <= Legendary): asks first
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static String checkGate(String key, String value) {
+  if (key == null || value == null) return null;
+  int n = 0;
+  try { n = Integer.parseInt(value.trim()); } catch (Throwable t) { return null; }
+  if (n > PD_MAX_LEVEL) return "?" + n + " is above the highest storage level (" + PD_MAX_LEVEL + ") - the gate will act as Lv " + PD_MAX_LEVEL + ". Change it anyway?";
+  String[] keys = new String[] { "pd.gate.Unique", "pd.gate.Rare", "pd.gate.Legendary" };
+  int[] v = new int[] { PD_GATE_UNIQUE, PD_GATE_RARE, PD_GATE_LEGENDARY };
+  int at = -1;
+  for (int i = 0; i < keys.length; i++) if (keys[i].equals(key)) at = i;
+  if (at < 0) return null;
+  v[at] = n;
+  for (int i = 1; i < v.length; i++) {
+    if (v[i - 1] > v[i]) return "?The level gates would go DOWN the ladder (" + keys[i - 1].substring(8) + " " + v[i - 1] + " > " + keys[i].substring(8) + " " + v[i] + "). Change it anyway?";
+  }
+  return null;
+}'''), scfg))
+# after= hook of every pd.* row (the kit set the field already; the next 2 s tick sees the new value through SweepTask.cfgSig): one log line
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void pdChanged(String key) {
+  try { if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: Void setting " + key + " changed - applies from each player's next sweep (nothing stored is ever deleted)"); } catch (Throwable t) { }
+}'''), scfg))
+# a whole number from the file ("1,000" and "1_000" read as 1000); missing = the default; not a number = the default + one warning per
+# file change; out of range = clamped to the bound + one warning (the kit also logs it status=clamped)
+scfg.addMethod(CtNewMethod.make("""
+public static int intKey(java.util.Properties p, String k, int def, int lo, int hi) {
+  String v0 = p.getProperty(k);
+  if (v0 == null) return def;
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < v0.length(); i++) {
+    char c = v0.charAt(i);
+    if (c == ',' || c == '_' || c == ' ' || c == '\\t') continue;
+    sb.append(c);
+  }
+  String v = sb.toString();
+  if (v.length() == 0) return def;
+  long n = 0L;
+  try { n = Long.parseLong(v); }
+  catch (Throwable t) { com.skyy.sacks.SackPool.warn("config.properties: " + k + "=" + v0.trim() + " is not a whole number - using " + def); return def; }
+  if (n < (long) lo) { com.skyy.sacks.SackPool.warn("config.properties: " + k + "=" + v + " is below " + lo + " - using " + lo); return lo; }
+  if (n > (long) hi) { com.skyy.sacks.SackPool.warn("config.properties: " + k + "=" + v + " is above " + hi + " - using " + hi); return hi; }
+  return (int) n;
+}""", scfg))
+# 0.7.7: an on/off value from the file (the kit's words: true/false, on/off, yes/no, 1/0); anything else = the default + one warning
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static boolean boolKey(java.util.Properties p, String k, boolean def) {
+  String v0 = p.getProperty(k);
+  if (v0 == null) return def;
+  String v = v0.trim().toLowerCase();
+  if (v.length() == 0) return def;
+  if (v.equals("true") || v.equals("on") || v.equals("yes") || v.equals("1")) return true;
+  if (v.equals("false") || v.equals("off") || v.equals("no") || v.equals("0")) return false;
+  @PKG@.SackPool.warn("config.properties: " + k + "=" + v0.trim() + " is not true or false - using " + def);
+  return def;
+}'''), scfg))
+scfg.addMethod(CtNewMethod.make("""
+public static String fmtN(long n) {
+  return java.text.NumberFormat.getIntegerInstance(java.util.Locale.US).format(n);
+}""", scfg))
+# 0.7.7 (spec 5.2 / 10): the EFFECTIVE free mode - the admin switch, or SkyyCollections not installed (its coll:fn:tier Function is the
+# "installed" signal; every plugin's setup() runs before the first 2 s tick). SkyySacks stays standalone: without SkyyCollections every bag
+# recipe is known. pubFree() mirrors it to sacks:freebags (Boolean) for SkyyCollections' reward texts; the SackSaver republishes it every
+# 10 s, so the plugin load order never matters.
+# review fix: SkyyCollections seen once in this JVM (KnowSync.SEENCOLL) and then gone = it is shutting down or being reloaded, not "not
+# installed" - effFree() stays false then (the KnowSync.wanted() guard), so /craft, the bag page and the Workbench never unlock every bag
+# in that window. A server that removes SkyyCollections for good starts without it: SEENCOLL stays false and the bags are free (spec 10).
+# SEENCOLL is declared here, before its first user (javassist: fields before use).
+ksync.addField(CtField.make("public static volatile boolean SEENCOLL = false;", ksync))
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static boolean effFree() {
+  if (FREE_RECIPES) return true;
+  boolean inst = false;
+  try { inst = @PKG@.SackPool.bridge().get("coll:fn:tier") instanceof java.util.function.Function; } catch (Throwable t) { inst = false; }
+  if (inst) { @PKG@.KnowSync.SEENCOLL = true; return false; }
+  return !@PKG@.KnowSync.SEENCOLL;
+}'''), scfg))
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void pubFree() {
+  // 0.8.0 (Bags v2 spec 5): sacks:freebags is no longer written - there are no bag recipes (an old value stays as it is; nobody reads it)
+}'''), scfg))
+# 0.7.6: SackCfg.reload() is also the admin config kit's RELOAD (hand edits) and the reload routine of the craftSearch row; it loads every
+# key and clamps a file value to the row bounds (typed values are refused by the kit, never clamped). It writes the file only when it is
+# missing (the template above); the kit owns every other write. 0.7.7: + bag.rare, bag.omni, bags.freeRecipes; one start-up warning when
+# the file's caps are out of rarity order (a 0.7.6 file with bag.large below the new Rare default of 6,720).
+# 0.7.11 review fix 8: the stack refill owner keys of config.properties (bags.refill / bags.refillDefault) for reload() below; first = the
+# first load (one log line then and on every change)
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void refillKeys(java.util.Properties p, boolean first) {
+  boolean ro = boolKey(p, "bags.refill", true);
+  String rd = String.valueOf(p.getProperty("bags.refillDefault", "hotbar")).trim().toLowerCase();
+  if (rd.length() == 0) rd = "hotbar";
+  if (!rd.equals("hotbar") && !rd.equals("full") && !rd.equals("off")) {
+    @PKG@.SackPool.warn("config.properties: bags.refillDefault=" + rd + " is not hotbar, full or off - using hotbar");
+    rd = "hotbar";
+  }
+  boolean changed = first || ro != REFILL_ON || !rd.equals(REFILL_DEF);
+  REFILL_ON = ro;
+  REFILL_DEF = rd;
+  if (!changed) return;
+  try { if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: stack refill " + (ro ? ("ON (each player picks Hotbar only / Full inventory / Off on the Void page; players who never picked one: " + rd + ")") : "OFF for every player (bags.refill)")); } catch (Throwable t) { }
+}'''), scfg))
+# 0.7.12 review fix 1: BenchLink.pocketApply (the bags.pocketCraft switch applied live) is called by linkKeys / pocketChanged below; javassist
+# compiles a call only against an existing method, so it is declared here and its real body is set after BenchLink.pocketStart / pocketStop
+_POCKET_APPLY = CtNewMethod.make("public static synchronized void pocketApply() { }", blink)
+blink.addMethod(_POCKET_APPLY)
+# 0.7.12: bags.benchChests + review fix 1 bags.pocketCraft for reload() below (one log line when the value is not the default at the first
+# load and on every change). A later load (a hand edit) applies bags.pocketCraft at once (BenchLink.pocketApply: no-op before start())
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void linkKeys(java.util.Properties p, boolean first) {
+  FISH_SWEEP = boolKey(p, "bags.fishSweep", true);   // 0.8.10 review fix
+  POCKET_KEEP = boolKey(p, "bags.pocketKeep", true);   // 0.8.12: the lifelong Pocket Dimension item
+  boolean v = boolKey(p, "bags.benchChests", false);
+  boolean changed = (first && v) || (!first && v != CHEST_FIX);
+  CHEST_FIX = v;
+  boolean pc = boolKey(p, "bags.pocketCraft", true);
+  boolean pcChanged = (first && !pc) || (!first && pc != POCKET_CRAFT);
+  POCKET_CRAFT = pc;
+  if (changed) {
+    try { if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: bench chest count fallback " + (v ? "ON (a bench with bags linked reports at least 1 nearby chest)" : "OFF")); } catch (Throwable t) { }
+  }
+  if (pcChanged) {
+    try { if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: bags in inventory crafting " + (pc ? "ON (pocket crafting uses the bags you carry)" : "OFF (bags.pocketCraft - inventory crafting uses the inventory only; benches still use the bags)")); } catch (Throwable t) { }
+  }
+  if (!first) {
+    try { @PKG@.BenchLink.pocketApply(); } catch (Throwable t) { @PKG@.SackPool.warn("config: bags.pocketCraft could not be applied: " + t); }
+  }
+}'''), scfg))
+# 0.8.0: the Void rows from the file (hand edits + the first load); one log line when they differ from the last logged ones
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void pdKeys(java.util.Properties p, boolean first) {
+@PDLOAD@
+  String sig = "" + @PDSIG@;
+  if (!sig.equals(PDSIG)) {
+    PDSIG = sig;
+    try { if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: Void - " + PD_PER_LEVEL + " items per storage level (max level " + PD_MAX_LEVEL + ", level curve " + PD_CURVE + "), multipliers Normal " + PD_MULT_NORMAL + " / Unique " + PD_MULT_UNIQUE + " / Rare " + PD_MULT_RARE + " / Legendary " + PD_MULT_LEGENDARY + " / Omni " + PD_MULT_OMNI + ", gates Lv " + PD_GATE_UNIQUE + " / " + PD_GATE_RARE + " / " + PD_GATE_LEGENDARY + ", Omni " + (PD_OMNI_AUTO ? "automatic with all six Legendary" : "by /pdadmin only")); } catch (Throwable t) { }
+  }
+}'''.replace("@PDLOAD@", "\n".join(_PD_LOAD)).replace("@PDSIG@", _PD_SIG)), scfg))
+# 0.8.3: the auto-pickup rows from the file (hand edits + the first load); one log line when they change
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void pickKeys(java.util.Properties p, boolean first) {
+  boolean on = boolKey(p, "pickup.on", true);
+  boolean bl = boolKey(p, "pickup.blocks", true);
+  boolean mo = boolKey(p, "pickup.mobs", true);
+  int sh = intKey(p, "pickup.killerShare", 50, 0, 100);
+  HIDE_POPUP = boolKey(p, "pickup.hidePopup", true);   // 0.8.16: PopupHide applies it on the next tick (hand edit + reload)
+  boolean ch = first || on != PICK_ON || bl != PICK_BLOCKS || mo != PICK_MOBS || sh != PICK_SHARE;
+  PICK_ON = on;
+  PICK_BLOCKS = bl;
+  PICK_MOBS = mo;
+  PICK_SHARE = sh;
+  if (!ch) return;
+  try { if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: auto-pickup " + (on ? "ON (block drops " + (bl ? "on" : "off") + ", mob drops " + (mo ? "on" : "off") + "; top damager gets the drop, a different killer " + sh + " % of a second roll)" : "OFF (pickup.on - drops fall on the ground as in vanilla)")); } catch (Throwable t) { }
+}'''), scfg))
+# 0.8.21: tree:reads:SkyySacks lists Smithing.SSmelt while Smelting Fortune is on (the SkyyTrees reader contract), removed when off.
+# critic L4: ONE writer - readsValue() builds the whole comma list of every node SkyySacks applies right now (a later node adds its key
+# HERE, never a second put that would overwrite this one); READS_PUT = the value we put (removed only while it is still ours)
+scfg.addMethod(CtNewMethod.make("""
+public static String readsValue() {
+  StringBuilder sb = new StringBuilder();
+  if (SF_ON) sb.append(SF_NODE);
+  return sb.toString();
+}""", scfg))
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void sfPub() {
+  try {
+    java.util.Map b = @PKG@.SackPool.bridgeW();
+    String v = readsValue();
+    if (v.length() > 0) { b.put(SF_READS, v); READS_PUT = v; }
+    else if (READS_PUT != null) { b.remove(SF_READS, READS_PUT); READS_PUT = null; }
+  } catch (Throwable t) { }
+}'''), scfg))
+scfg.addMethod(CtNewMethod.make("""
+public static void sfUnpub() {
+  try { String v = READS_PUT; if (v != null) com.skyy.sacks.SackPool.bridgeW().remove(SF_READS, v); READS_PUT = null; } catch (Throwable t) { }
+}""", scfg))
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void sfKeys(java.util.Properties p, boolean first) {
+  boolean on = boolKey(p, "smelt.fortune.enabled", true);
+  boolean al = boolKey(p, "smelt.fortune.alloys", true);
+  boolean mo = boolKey(p, "smelt.fortune.minedOnly", true);
+  int g = intKey(p, "smelt.fortune.guard", 100, 0, 1000);
+  boolean ch = first || on != SF_ON || al != SF_ALLOYS || mo != SF_MINED || g != SF_GUARD;
+  SF_ON = on;
+  SF_ALLOYS = al;
+  SF_MINED = mo;
+  SF_GUARD = g;
+  sfPub();
+  if (!ch) return;
+  try { if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: Smelting Fortune " + (on ? ("ON in the /craft Furnace (alloys " + (al ? "on" : "off") + ", " + (mo ? "only ore you mined yourself (skill:fn:oreBudget)" : "any ore") + ", at most " + g + " extra bars a unit)") : "OFF (smelt.fortune.enabled - every unit smelts 1:1)")); } catch (Throwable t) { }
+}'''), scfg))
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void sfChanged(String key) {
+  sfPub();
+  try { if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: " + key + " changed - Smelting Fortune " + (SF_ON ? "ON" : "OFF") + ", alloys " + SF_ALLOYS + ", mined ore only " + SF_MINED + ", guard " + SF_GUARD); } catch (Throwable t) { }
+}'''), scfg))
+# 0.8.0: the live Void settings as one string (SweepTask.cfgSig: a changed row re-sweeps every player once)
+scfg.addMethod(CtNewMethod.make('public static String pdSig() {\n  return "" + ' + _PD_SIG + ';\n}', scfg))
+# 0.7.12 review fix 1: after= hook of the bags.pocketCraft row (the kit set POCKET_CRAFT already): one log line + the swap applied at once
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void pocketChanged(String key) {
+  try {
+    if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: bags in inventory crafting " + (POCKET_CRAFT ? "ON - pocket crafting uses the bags you carry (from the next time a player opens the inventory)" : "OFF - inventory crafting uses the inventory only (benches still use the bags)"));
+  } catch (Throwable t) { }
+  try { @PKG@.BenchLink.pocketApply(); } catch (Throwable t) { @PKG@.SackPool.warn("config: bags.pocketCraft could not be applied: " + t); }
+}'''), scfg))
+scfg.addMethod(CtNewMethod.make("""
+public static synchronized void reload() {
+  try {
+    if (FILE == null) return;
+    if (!java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0])) {
+      java.nio.file.Files.createDirectories(FILE.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+      String nl = System.lineSeparator();
+      String txt = @TXT@;
+      // review fix: tmp + fsync + atomic rename (ProcStore.save pattern), so a crash mid-write never leaves a truncated config.properties
+      java.nio.file.Path tmp = FILE.resolveSibling(FILE.getFileName().toString() + ".tmp");
+      java.io.FileOutputStream out = new java.io.FileOutputStream(tmp.toFile());
+      try { out.write(txt.getBytes("UTF-8")); out.flush(); out.getFD().sync(); } finally { out.close(); }
+      try { java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE }); }
+      catch (Throwable am) { java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING }); }
+    }
+    long mt = java.nio.file.Files.getLastModifiedTime(FILE, new java.nio.file.LinkOption[0]).toMillis();
+    if (mt == MTIME) return;
+    java.util.Properties p = new java.util.Properties();
+    java.io.InputStream in = java.nio.file.Files.newInputStream(FILE, new java.nio.file.OpenOption[0]);
+    try { p.load(in); } finally { in.close(); }
+    boolean on = !"false".equalsIgnoreCase(p.getProperty("craftSearch", "true").trim());
+    int cs = intKey(p, "bag.small", @D:bag.small@);
+    int cm = intKey(p, "bag.medium", @D:bag.medium@);
+    int cr = intKey(p, "bag.rare", @D:bag.rare@);
+    int cl = intKey(p, "bag.large", @D:bag.large@);
+    int co = intKey(p, "bag.omni", @D:bag.omni@);
+    int qc = intKey(p, "bench.queueCap", @D:bench.queueCap@);
+    int fc = intKey(p, "bench.fuelCap", @D:bench.fuelCap@);
+    int oc = intKey(p, "bench.outputCap", @D:bench.outputCap@);
+    boolean fr = boolKey(p, "bags.freeRecipes", false);
+    boolean ck = boolKey(p, "bags.cookedFood", false);
+    boolean first = MTIME < 0L;
+    MTIME = mt;
+    WARNED = false;
+    if (first || on != SEARCH.get()) {
+      try { if (com.skyy.sacks.SackPool.LOG != null) com.skyy.sacks.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: craft page search box " + (on ? "ON" : "OFF") + " (" + FILE + ")"); } catch (Throwable t2) { }
+    }
+    boolean capsChanged = cs != com.skyy.sacks.SackDefs.CAP_SMALL || cm != com.skyy.sacks.SackDefs.CAP_MEDIUM || cr != com.skyy.sacks.SackDefs.CAP_RARE
+      || cl != com.skyy.sacks.SackDefs.CAP_LARGE || co != com.skyy.sacks.SackDefs.CAP_OMNI
+      || qc != com.skyy.sacks.ProcBench.QUEUE_CAP || fc != com.skyy.sacks.ProcBench.FUEL_CAP || oc != com.skyy.sacks.ProcBench.OUT_CAP;
+    boolean freeChanged = first || fr != FREE_RECIPES;
+    boolean cookChanged = first || ck != com.skyy.sacks.SackDefs.COOKED_FARM;
+    SEARCH.set(on);
+    com.skyy.sacks.SackDefs.CAP_SMALL = cs;
+    com.skyy.sacks.SackDefs.CAP_MEDIUM = cm;
+    com.skyy.sacks.SackDefs.CAP_RARE = cr;
+    com.skyy.sacks.SackDefs.CAP_LARGE = cl;
+    com.skyy.sacks.SackDefs.CAP_OMNI = co;
+    com.skyy.sacks.ProcBench.QUEUE_CAP = qc;
+    com.skyy.sacks.ProcBench.FUEL_CAP = fc;
+    com.skyy.sacks.ProcBench.OUT_CAP = oc;
+    FREE_RECIPES = fr;
+    com.skyy.sacks.SackDefs.COOKED_FARM = ck;
+    if (capsChanged) {
+      try { if (com.skyy.sacks.SackPool.LOG != null) com.skyy.sacks.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: bag caps (of each item) Normal " + cs + ", Unique " + cm + ", Rare " + cr + ", Legendary " + cl + ", Mythic Omni " + co + "; Furnace / Tannery queue " + qc + " units, fuel " + fc + ", output " + oc); } catch (Throwable t3) { }
+    }
+    if (freeChanged) {
+      try { if (com.skyy.sacks.SackPool.LOG != null) com.skyy.sacks.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: free bag recipes " + (fr ? "ON (every player knows every bag recipe)" : "OFF (bag recipes unlock through collections; free anyway while SkyyCollections is not installed)")); } catch (Throwable t4) { }
+    }
+    if (cookChanged) {
+      try { if (com.skyy.sacks.SackPool.LOG != null) com.skyy.sacks.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: cooked food in the Farming bag " + (ck ? "ON (cooked food and dishes pool into the Farming bag)" : "OFF (the Farming bag takes raw produce only; cooked food already stored stays until taken out)")); } catch (Throwable t5) { }
+    }
+    if (first && !ORDERWARNED && (cs > cm || cm > cr || cr > cl || cl > co)) {
+      ORDERWARNED = true;
+      if (cr > cl) com.skyy.sacks.SackPool.warn("Rare bags (" + fmtN((long) cr) + ") would hold more than Legendary bags (" + fmtN((long) cl) + ") - fix it in Server Setup > Bags and Crafting");
+      else com.skyy.sacks.SackPool.warn("bag caps are out of rarity order (Normal " + fmtN((long) cs) + ", Unique " + fmtN((long) cm) + ", Rare " + fmtN((long) cr) + ", Legendary " + fmtN((long) cl) + ", Mythic Omni " + fmtN((long) co) + ") - an upgrade would lower the cap; fix it in Server Setup > Bags and Crafting");
+    }
+    refillKeys(p, first);   // 0.7.11 review fix 8: the stack refill owner switches (Server Setup rows bags.refill / bags.refillDefault)
+    linkKeys(p, first);     // 0.7.12: bags.benchChests (bench chest count fallback)
+    pdKeys(p, first);       // 0.8.0: the Void rows (levels, multipliers, gates, costs, Omni)
+    pickKeys(p, first);     // 0.8.3: auto-pickup
+    sfKeys(p, first);       // 0.8.21: Smelting Fortune
+    pubFree();
+  } catch (Throwable t) {
+    if (!WARNED) { WARNED = true; com.skyy.sacks.SackPool.warn("could not read " + FILE + " - keeping craftSearch=" + SEARCH.get() + ", free bag recipes " + FREE_RECIPES + " and the current caps: " + t); }
+  }
+}""".replace("@TXT@", _jcfg_txt())
+   .replace("@D:bag.small@", "%d, %d, %d" % _jfield("bag.small")[1:])
+   .replace("@D:bag.medium@", "%d, %d, %d" % _jfield("bag.medium")[1:])
+   .replace("@D:bag.rare@", "%d, %d, %d" % _jfield("bag.rare")[1:])
+   .replace("@D:bag.large@", "%d, %d, %d" % _jfield("bag.large")[1:])
+   .replace("@D:bag.omni@", "%d, %d, %d" % _jfield("bag.omni")[1:])
+   .replace("@D:bench.queueCap@", "%d, %d, %d" % _jfield("bench.queueCap")[1:])
+   .replace("@D:bench.fuelCap@", "%d, %d, %d" % _jfield("bench.fuelCap")[1:])
+   .replace("@D:bench.outputCap@", "%d, %d, %d" % _jfield("bench.outputCap")[1:]), scfg))
+# review fix (0.7.6), 0.7.7: the check= hook of the five bag rows. A change that would break Normal <= Unique <= Rare <= Legendary <= Omni is
+# never refused, it only swaps the row's usual danger question for this one (an upgrade would lower the cap; nothing breaks - since 0.7.11
+# the carried bags of a type add up, so keeping the old bag too keeps its space). The kit ignores a "?" answer on import / restore. value =
+# the kit's canonical whole number. The question stays under the kit's 200-character limit even with 7-digit caps.
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static String checkTierOrder(String key, String value) {
+  if (key == null || value == null) return null;
+  int n = 0;
+  try { n = Integer.parseInt(value.trim()); } catch (Throwable t) { return null; }
+  String[] keys = new String[] { "bag.small", "bag.medium", "bag.rare", "bag.large", "bag.omni" };
+  String[] names = new String[] { "Normal", "Unique", "Rare", "Legendary", "Omni" };
+  int[] v = new int[] { @PKG@.SackDefs.CAP_SMALL, @PKG@.SackDefs.CAP_MEDIUM, @PKG@.SackDefs.CAP_RARE, @PKG@.SackDefs.CAP_LARGE, @PKG@.SackDefs.CAP_OMNI };
+  int at = -1;
+  for (int i = 0; i < keys.length; i++) if (keys[i].equals(key)) at = i;
+  if (at < 0) return null;
+  int old = v[at];
+  v[at] = n;
+  boolean ok = true;
+  for (int i = 1; i < v.length; i++) if (v[i - 1] > v[i]) ok = false;
+  if (ok) return null;
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < v.length; i++) {
+    if (i > 0) sb.append(", ");
+    sb.append(names[i]).append(' ').append(fmtN((long) v[i]));
+  }
+  return "?Bags out of order (" + sb.toString() + ") - an upgrade would lower the cap. Change the " + names[at] + " bag from " + fmtN((long) old) + " to " + fmtN((long) n) + " anyway?";
+}'''), scfg))
+# 0.7.7: after= hook of the bags.freeRecipes row (the kit set FREE_RECIPES already): republish sacks:freebags; KnowSync applies the new
+# mode on each player's next 2 s sweep (every bag recipe known when on, back to the collection unlocks when off; owned bags stay).
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void freeChanged(String key) {
+  pubFree();
+  try {
+    if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: free bag recipes " + (FREE_RECIPES ? "ON - every player knows every bag recipe" : ("OFF - bag recipes unlock through collections" + (effFree() ? " (SkyyCollections is not installed, so they stay free)" : ""))));
+  } catch (Throwable t) { }
+}'''), scfg))
+
+# 0.7.8: after= hook of the bags.cookedFood row (the kit set SackDefs.COOKED_FARM already; the next sweep uses it): one log line
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void cookedChanged(String key) {
+  try {
+    if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: cooked food in the Farming bag " + (@PKG@.SackDefs.COOKED_FARM ? "ON - cooked food and dishes pool into the Farming bag" : "OFF - the Farming bag takes raw produce only; cooked food already stored stays until taken out"));
+  } catch (Throwable t) { }
+}'''), scfg))
+
+# 0.7.11 review fix 8: after= hook of the bags.refill / bags.refillDefault rows (the kit set the field already; the next 2 s tick uses it)
+scfg.addMethod(CtNewMethod.make(jt(r'''
+public static void refillChanged(String key) {
+  try {
+    if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config: stack refill " + (REFILL_ON ? ("ON - players who never picked a mode on the Void page get " + REFILL_DEF) : "OFF for every player (their choices are kept for when it is back on)"));
+  } catch (Throwable t) { }
+}'''), scfg))
+
+# ================= KnowSync (0.7.7, research/Bag-Restructure-Spec.md 5.2 / 5.3): the bag recipe knowledge =================
+# SkyySacks owns exactly the 20 tiered bag item ids (MANAGED; 0.7.15: + Skyy_Sack_Omni = SYNCED) in every player's known-recipe set (PlayerConfigData.getKnownRecipes, saved per
+# PLAYER) and never touches another entry. wanted(u) = every MANAGED id in free mode, else the MANAGED outputs of the Skyy_Sack_ recipe ids
+# in coll:recipes:<uuid> (absent = SkyyCollections has not published this player yet = change nothing). sync() runs in the 2 s sweep on the
+# world thread with a settled key only (a profile switch re-syncs after the settle window, which covers the coll:recipes republish) and
+# sends ONE UpdateKnownRecipes only when something changed. The engine refuses a KnowledgeRequired craft at a real bench unless the player
+# knows the primary output (CraftingManager.isValidBenchForRecipe, VERIFIED); an admin's vanilla /recipe learn of a bag is undone within 2 s.
+ksync.addField(CtField.make("public static final String[] MANAGED = " + _jarr(MANAGED_IDS) + ";", ksync))
+# 0.7.15 (Skyy 2026-10-09 "hide the omni bag until unlocked (unlocked by unlocking all legendary bags"): the Omni recipe needs knowledge.
+# LEGEND = the five Legendary bag ids (the Omni's unlock); SYNCED = MANAGED + the Omni = every known-set entry sync() owns. The Omni entry is
+# recomputed every sweep like the bags: known exactly while the wanted set holds all of LEGEND (free mode: always).
+LEGEND_IDS = ["Skyy_Sack_%s_%s" % (c, TOP_SUFFIX) for c in BAG_CATS]
+assert all(i in MANAGED_IDS for i in LEGEND_IDS) and len(LEGEND_IDS) == len(BAG_CATS)
+ksync.addField(CtField.make("public static final String[] LEGEND = " + _jarr(LEGEND_IDS) + ";", ksync))
+ksync.addField(CtField.make("public static final String[] SYNCED = " + _jarr(MANAGED_IDS + [BAG_OMNI]) + ";", ksync))
+# how many LEGEND ids a set holds (the wanted set of item ids)
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static int legendIn(java.util.Set s) {
+  if (s == null) return 0;
+  int n = 0;
+  for (int i = 0; i < LEGEND.length; i++) if (s.contains(LEGEND[i])) n++;
+  return n;
+}'''), ksync))
+# how many Legendary bag recipes the player has unlocked (coll:recipes holds recipe ids); free mode = all
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static int legendKnown(java.util.Set coll) {
+  if (@PKG@.SackCfg.effFree()) return LEGEND.length;
+  if (coll == null) return 0;
+  int n = 0;
+  for (int i = 0; i < LEGEND.length; i++) if (coll.contains(@PKG@.SackDefs.recipeOf(LEGEND[i]))) n++;
+  return n;
+}'''), ksync))
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static boolean omniUnlocked(java.util.Set coll) {
+  return legendKnown(coll) >= LEGEND.length;
+}'''), ksync))
+# the Omni's unlock state for the bag page (Next line + Mythic ladder row); carried = Legendary bag types carried (SweepTask.legendCount)
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static String omniStatus(java.util.Set coll, int carried) {
+  int all = LEGEND.length;
+  if (@PKG@.SackCfg.effFree()) return "free on this server - one Legendary bag of each type (you carry " + carried + " of " + all + ")";
+  int k = legendKnown(coll);
+  if (k >= all) return "UNLOCKED - one Legendary bag of each type (you carry " + carried + " of " + all + ")";
+  return "unlocks with all " + all + " Legendary bags unlocked (" + k + " of " + all + ")";
+}'''), ksync))
+# the Mythic ladder row on the bag page (one 26 px bold 15 label, no wrap): a short form of omniStatus so the row stays within the
+# 0.7.14 row length (about 105 characters) at 1000 px (0.7.15 fixer: the full omniStatus made the row up to 128 characters)
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static String omniRow(java.util.Set coll, int carried) {
+  int all = LEGEND.length;
+  if (@PKG@.SackCfg.effFree()) return "free here - you carry " + carried + " of " + all + " Legendary bag types";
+  int k = legendKnown(coll);
+  if (k >= all) return "UNLOCKED - you carry " + carried + " of " + all + " Legendary bag types";
+  return "needs all " + all + " Legendary bags unlocked (" + k + " of " + all + ")";
+}'''), ksync))
+# the /craft answer to an Omni click that is not allowed (locked, or not every Legendary bag carried)
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static String omniLockText(java.util.Set coll, int carried) {
+  int all = LEGEND.length;
+  if (!omniUnlocked(coll)) return "The Mythic Omni Bag unlocks when you have unlocked all " + all + " Legendary bags (" + legendKnown(coll) + " of " + all + ")";
+  return "The Mythic Omni Bag needs one Legendary bag of each type (you carry " + carried + " of " + all + ")";
+}'''), ksync))
+# the new known set for sync(): null = every SYNCED entry already matches want (nothing to send); else known with each SYNCED entry set
+# to want (no other entry touched)
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashSet next(java.util.Set known, java.util.Set want) {
+  boolean diff = false;
+  for (int i = 0; i < SYNCED.length && !diff; i++) {
+    boolean has = known != null && known.contains(SYNCED[i]);
+    if (has != want.contains(SYNCED[i])) diff = true;
+  }
+  if (!diff) return null;
+  java.util.HashSet ns = known == null ? new java.util.HashSet() : new java.util.HashSet(known);
+  for (int i = 0; i < SYNCED.length; i++) {
+    if (want.contains(SYNCED[i])) ns.add(SYNCED[i]);
+    else ns.remove(SYNCED[i]);
+  }
+  return ns;
+}'''), ksync))
+ksync.addField(CtField.make("public static long WARNAT;", ksync))
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static void warnOnce(String m) {
+  long now = System.currentTimeMillis();
+  if (now - WARNAT > 60000L) { WARNAT = now; @PKG@.SackPool.warn(m); }
+}'''), ksync))
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static boolean isManaged(String id) {
+  if (id == null) return false;
+  for (int i = 0; i < MANAGED.length; i++) if (MANAGED[i].equals(id)) return true;
+  return false;
+}'''), ksync))
+# coll:recipes:<uuid> as a set of recipe ids; null = not published (SkyyCollections missing, or not yet for this player)
+# 0.7.18 (audit 9e): the parsed set is cached per player, keyed by coll:epoch:<uuid> AND the published string (the same object = no work,
+# an equal string = one compare, anything else = one parse); collShared is read-only for its callers, collSet hands out a copy
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashSet collShared(java.util.UUID u) {
+  if (u == null) return null;
+  try {
+    java.util.Map b = @PKG@.SackPool.bridge();
+    Object v = b.get("coll:recipes:" + u.toString());
+    if (v == null) { COLLC.remove(u); return null; }
+    Object ep = b.get("coll:epoch:" + u.toString());
+    String raw = String.valueOf(v);
+    Object[] c = (Object[]) COLLC.get(u);
+    if (c != null) {
+      boolean se = c[0] == null ? ep == null : c[0].equals(ep);
+      if (se && (c[1] == raw || ((String) c[1]).equals(raw))) return (java.util.HashSet) c[2];
+    }
+    java.util.HashSet out = new java.util.HashSet();
+    String[] parts = raw.split(",");
+    for (int i = 0; i < parts.length; i++) { String x = parts[i].trim(); if (x.length() > 0) out.add(x); }
+    PARSES.incrementAndGet();
+    COLLC.put(u, new Object[] { ep, raw, out });
+    return out;
+  } catch (Throwable t) { return null; }
+}'''), ksync))
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashSet collSet(java.util.UUID u) {
+  java.util.HashSet c = collShared(u);
+  return c == null ? null : new java.util.HashSet(c);
+}'''), ksync))
+# a recipe id -> its primary output item id (the asset map; a <Item>_Recipe_Generated_0 id falls back to its item part)
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static String itemOfRecipe(String rid) {
+  if (rid == null) return null;
+  try {
+    Object o = @CRR@.getAssetMap().getAsset(rid);
+    if (o instanceof @CRR@) {
+      @MQ@ q = ((@CRR@) o).getPrimaryOutput();
+      if (q != null && q.getItemId() != null) return q.getItemId();
+    }
+  } catch (Throwable t) { }
+  if (rid.endsWith(@PKG@.SackDefs.RECIPE_SUFFIX)) return rid.substring(0, rid.length() - @PKG@.SackDefs.RECIPE_SUFFIX.length());
+  return null;
+}'''), ksync))
+# review fix: SkyyCollections seen once in this JVM (SEENCOLL, declared before SackCfg.effFree) and then gone = it is shutting down or
+# being reloaded, not "not installed" - change nothing (a sweep in that window would otherwise teach every bag recipe and the engine would
+# save it with the player). A server that removes SkyyCollections for good starts without it, so SEENCOLL stays false there and the bags
+# are free as the spec says - with ONE warning on the first sync (review fix: a SkyyCollections whose setup failed never publishes, and
+# every player would silently learn all 20 bag recipes).
+ksync.addField(CtField.make("public static volatile boolean NOCOLLWARNED = false;", ksync))
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static boolean collInstalled() {
+  try { return @PKG@.SackPool.bridge().get("coll:fn:tier") instanceof java.util.function.Function; } catch (Throwable t) { return false; }
+}'''), ksync))
+# 0.8.0 (Bags v2 spec 4.3): there are NO bag recipes any more - SkyySacks forgets its own 21 managed entries (SYNCED: the 20 tiered bags
+# + the Omni) from every player's known set (next() touches exactly those; one UpdateKnownRecipes per player, then nothing); no other entry
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashSet wanted(java.util.UUID u) {
+  return new java.util.HashSet();
+}'''), ksync))
+# is the recipe of this bag item unlocked for the player (page texts, /craft)? free mode, or its recipe id in coll:recipes
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static boolean unlocked(java.util.UUID u, String bagItemId, java.util.Set coll) {
+  if (@PKG@.SackCfg.effFree()) return true;
+  if (coll == null || bagItemId == null) return false;
+  if (bagItemId.equals(@PKG@.SackDefs.OMNI)) return omniUnlocked(coll);   // 0.7.15
+  return coll.contains(@PKG@.SackDefs.recipeOf(bagItemId));
+}'''), ksync))
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.Set known(@PLA@ p) {
+  if (p == null) return null;
+  try {
+    @PCD@ d = p.getPlayerConfigData();
+    return d == null ? null : d.getKnownRecipes();
+  } catch (Throwable t) { return null; }
+}'''), ksync))
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static boolean sync(@REF@ r, @ST@ st, @PLA@ p, java.util.UUID u) {
+  if (r == null || st == null || p == null || u == null) return false;
+  java.util.HashSet want = wanted(u);
+  if (want == null) return false;
+  @PCD@ d = p.getPlayerConfigData();
+  if (d == null) return false;
+  java.util.HashSet ns = next(d.getKnownRecipes(), want);   // 0.7.15: the 20 bags + the Omni (SYNCED)
+  if (ns == null) return false;
+  d.setKnownRecipes(ns);
+  @CRP@.sendKnownRecipes(r, st);
+  return true;
+}'''), ksync))
+# /craft filter (spec 5.3): a recipe without KnowledgeRequired is allowed; one of our 20 bags only when unlocked (free, or its recipe id in
+# coll:recipes - the same answer wanted() gives, so the page never waits for the 2 s sync); any other knowledge recipe (the 19 vanilla
+# ones: Bronze armor, pies, ...) only when the player's known set holds its output (fixes spec 12.1). 0.7.15: the Omni (knowledge now)
+# only while all five Legendary bag recipes are unlocked (omniUnlocked - the same answer sync() teaches the bench). allowedOut = the test
+# on plain values (the harness runs it); allowed = it on a recipe.
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static boolean allowedOut(boolean kr, String oid, String rid, java.util.Set known, java.util.Set coll) {
+  if (!kr) return true;
+  if (oid == null) return false;
+  if (oid.equals(@PKG@.SackDefs.OMNI)) return omniUnlocked(coll);
+  if (isManaged(oid)) return @PKG@.SackCfg.effFree() || (coll != null && coll.contains(rid));
+  return known != null && known.contains(oid);
+}'''), ksync))
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static boolean allowed(@CRR@ r, java.util.UUID u, java.util.Set known, java.util.Set coll) {
+  if (r == null) return false;
+  if (!r.isKnowledgeRequired()) return true;
+  @MQ@ po = r.getPrimaryOutput();
+  String oid = po == null ? null : po.getItemId();
+  return allowedOut(true, oid, String.valueOf(r.getId()), known, coll);
+}'''), ksync))
+# SkyyCollections 0.2.3 coll:fn:where (spec 6.3): apply(Object[]{UUID, recipeId}) -> "<CollId>|<name>|<tier>|<threshold>|<count>" for
+# the lowest tier that unlocks the recipe; null = no collection lists it / older SkyyCollections / any error. Never throws here.
+ksync.addMethod(CtNewMethod.make(jt(r'''
+public static String[] where(java.util.UUID u, String rid) {
+  try {
+    Object f = @PKG@.SackPool.bridge().get("coll:fn:where");
+    if (!(f instanceof java.util.function.Function)) return null;
+    Object r = ((java.util.function.Function) f).apply(new Object[] { u, rid });
+    if (!(r instanceof String)) return null;
+    String[] p = ((String) r).split("\\|");
+    if (p.length < 5) return null;
+    return p;
+  } catch (Throwable t) { return null; }
+}'''), ksync))
+
+# ================= SackNotice (0.7.7, spec 5.8): the one-time "[Bags] ... rarities" chat line =================
+# Shown once per PLAYER (not per profile) on their first settled sweep when they have a pool or carry a bag; every player seen is recorded
+# (uuid=bags-rarity) in Skyy_SkyySacks/notices.properties, written by the SackSaver thread (never on the world thread). An unreadable
+# file is left untouched and the notice is then remembered for this session only. Always shown (Settings-Spec 2.3: one-time notices).
+snot.addField(CtField.make("public static java.nio.file.Path FILE;", snot))
+snot.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap SEEN = new java.util.concurrent.ConcurrentHashMap();", snot))
+snot.addField(CtField.make("public static volatile boolean DIRTY = false;", snot))
+snot.addField(CtField.make("public static boolean BROKEN = false;", snot))
+snot.addField(CtField.make("public static boolean SAVEWARNED = false;", snot))
+snot.addMethod(CtNewMethod.make(jt(r'''
+public static void load() {
+  try {
+    if (FILE == null || !java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0])) return;
+    java.util.Properties p = new java.util.Properties();
+    java.io.InputStream in = java.nio.file.Files.newInputStream(FILE, new java.nio.file.OpenOption[0]);
+    try { p.load(in); } finally { in.close(); }
+    java.util.Enumeration en = p.propertyNames();
+    while (en.hasMoreElements()) { String k = (String) en.nextElement(); SEEN.put(k, p.getProperty(k)); }
+  } catch (Throwable t) {
+    BROKEN = true;
+    @PKG@.SackPool.warn("could not read " + FILE + " - one-time notices are remembered for this session only (the file is left untouched): " + t);
+  }
+}'''), snot))
+snot.addMethod(CtNewMethod.make(jt(r'''
+public static boolean seen(java.util.UUID u) {
+  return u == null || SEEN.containsKey(u.toString());
+}'''), snot))
+snot.addMethod(CtNewMethod.make(jt(r'''
+public static void check(@PR@ pr, java.util.UUID u, String k, boolean carries) {
+  if (u == null || pr == null || SEEN.containsKey(u.toString())) return;
+  SEEN.put(u.toString(), "bags-rarity");
+  if (!BROKEN) DIRTY = true;
+  boolean had = carries;
+  if (!had && k != null) {
+    try { had = !@PKG@.SackPool.pool(k).isEmpty(); } catch (Throwable t) { had = false; }
+  }
+  if (!had) return;
+  String tail = @PKG@.SackCfg.effFree() ? "Bag recipes stay free on this server - see /pd." : "Bag recipes now unlock through collections - see /pd.";
+  pr.sendMessage(@MSG@.raw("[Bags] Magic Bags now use rarities: Small is Normal, Medium is Unique, Large is Legendary - your bags and everything in them are unchanged. New: Rare bags and the Mythic Omni Bag. " + tail).color("#e0b060"));
+}'''), snot))
+snot.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void save() {
+  if (!DIRTY || BROKEN || FILE == null) return;
+  DIRTY = false;
+  try {
+    java.util.Properties p = new java.util.Properties();
+    java.util.Iterator it = SEEN.entrySet().iterator();
+    while (it.hasNext()) { java.util.Map.Entry e = (java.util.Map.Entry) it.next(); p.setProperty((String) e.getKey(), String.valueOf(e.getValue())); }
+    java.nio.file.Files.createDirectories(FILE.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Path tmp = FILE.resolveSibling(FILE.getFileName().toString() + ".tmp");
+    java.io.FileOutputStream out = new java.io.FileOutputStream(tmp.toFile());
+    try { p.store(out, "SkyySacks one-time notices per player (uuid=notice id)"); out.flush(); out.getFD().sync(); } finally { out.close(); }
+    try { java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE }); }
+    catch (Throwable am) { java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING }); }
+  } catch (Throwable t) {
+    DIRTY = true;
+    if (!SAVEWARNED) { SAVEWARNED = true; @PKG@.SackPool.warn("could not save " + FILE + " (retried by the next save): " + t); }
+  }
+}'''), snot))
+
+# ================= RefillPref (0.7.11, Skyy R4 2026-10-02): the per-player STACK REFILL mode =================
+# 0 = hotbar only (the default: no line for the player), 1 = full inventory (hotbar + main inventory + backpack), 2 = off. Per PLAYER (not
+# per profile), chosen on the bag page, saved in Skyy_SkyySacks/refill.properties (uuid=hotbar|full|off) by the SackSaver thread - never on
+# the world thread, and only after a player changed it (no file until then). An unknown word in the file reads as the default and is
+# written back unchanged; an unreadable file is left untouched and the choices are remembered for this session only (SackNotice pattern).
+# Review fix 8: "the default" = Server Setup bags.refillDefault (SackCfg.REFILL_DEF, hotbar unless the owner changed it); with bags.refill
+# off (SackCfg.REFILL_ON false) mode() is off for everyone while choice() - what the page shows - keeps each player's pick.
+RF_WORDS = ("hotbar", "full", "off")
+RF_LABELS = ("Hotbar only", "Full inventory", "Off")
+# the one-line explanation under the row. 0.7.12: benches and inventory crafting DO use the bags now (research/Bag-Craft-Link-Fix.md) - every
+# line says so (0.7.11 had removed that claim on purpose); the refill no longer pauses while a bench is open (the live-mirror rule)
+RF_HELP = ("A hotbar stack you use tops back up from the Void every 2 seconds. Benches and inventory crafting use the Void too.",
+           "Any stack you use - hotbar, inventory or backpack - tops back up every 2 seconds. Benches and inventory crafting use the Void too.",
+           "Stacks never top up by themselves - take items out on this page. Benches and inventory crafting still use the Void.")
+RF_OFFSRV = "Stack refill is turned off on this server - your choice is kept. Benches and inventory crafting still use the Void."   # 0.8.0 wording
+# 0.7.12 review fix 1: the same lines while Server Setup bags.pocketCraft is off (inventory crafting does not use the bags then)
+RF_HELP_B = ("A hotbar stack you use tops back up from the Void every 2 seconds. Benches use the Void too.",
+             "Any stack you use - hotbar, inventory or backpack - tops back up every 2 seconds. Benches use the Void too.",
+             "Stacks never top up by themselves - take items out on this page. Benches still use the Void.")
+RF_OFFSRV_B = "Stack refill is turned off on this server - your choice is kept. Benches still use the Void."
+assert len(RF_WORDS) == len(RF_LABELS) == len(RF_HELP) == len(RF_HELP_B) == 3
+assert all("Benches and inventory crafting" in h for h in RF_HELP + (RF_OFFSRV,)) and not any("paused" in h for h in RF_HELP), "0.7.12 wording"
+assert not any("inventory crafting" in h or "paused" in h for h in RF_HELP_B + (RF_OFFSRV_B,)) and all("Benches" in h for h in RF_HELP_B + (RF_OFFSRV_B,))
+rfp.addField(CtField.make("public static java.nio.file.Path FILE;", rfp))
+rfp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap MODES = new java.util.concurrent.ConcurrentHashMap();", rfp))
+rfp.addField(CtField.make("public static volatile boolean DIRTY = false;", rfp))
+rfp.addField(CtField.make("public static boolean BROKEN = false;", rfp))
+rfp.addField(CtField.make("public static boolean SAVEWARNED = false;", rfp))
+rfp.addField(CtField.make("public static final String[] WORDS = " + _jarr(RF_WORDS) + ";", rfp))
+rfp.addField(CtField.make("public static final String[] LABELS = " + _jarr(RF_LABELS) + ";", rfp))
+rfp.addField(CtField.make("public static final String[] HELP = new String[] { " + ", ".join(jlit(h) for h in RF_HELP) + " };", rfp))
+rfp.addField(CtField.make("public static final String OFFSRV = " + jlit(RF_OFFSRV) + ";", rfp))   # review fix 8: bags.refill off
+# 0.7.12 review fix 1: the lines shown while Server Setup bags.pocketCraft is off (no inventory crafting claim)
+rfp.addField(CtField.make("public static final String[] HELPB = new String[] { " + ", ".join(jlit(h) for h in RF_HELP_B) + " };", rfp))
+rfp.addField(CtField.make("public static final String OFFSRVB = " + jlit(RF_OFFSRV_B) + ";", rfp))
+rfp.addMethod(CtNewMethod.make(jt(r'''
+public static int parse(String v) {
+  if (v == null) return -1;
+  String w = v.trim().toLowerCase();
+  for (int i = 0; i < WORDS.length; i++) if (WORDS[i].equals(w)) return i;
+  return -1;
+}'''), rfp))
+rfp.addMethod(CtNewMethod.make(jt(r'''
+public static void load() {
+  try {
+    if (FILE == null || !java.nio.file.Files.exists(FILE, new java.nio.file.LinkOption[0])) return;
+    java.util.Properties p = new java.util.Properties();
+    java.io.InputStream in = java.nio.file.Files.newInputStream(FILE, new java.nio.file.OpenOption[0]);
+    try { p.load(in); } finally { in.close(); }
+    java.util.Enumeration en = p.propertyNames();
+    int bad = 0;
+    while (en.hasMoreElements()) {
+      String k = (String) en.nextElement();
+      String v = p.getProperty(k);
+      MODES.put(k, v);
+      if (parse(v) < 0) bad++;
+    }
+    if (bad > 0) @PKG@.SackPool.warn(FILE + ": " + bad + " line(s) are not hotbar, full or off - those players get the default (Server Setup bags.refillDefault); the lines are kept");
+  } catch (Throwable t) {
+    BROKEN = true;
+    @PKG@.SackPool.warn("could not read " + FILE + " - stack refill choices are remembered for this session only (the file is left untouched): " + t);
+  }
+}'''), rfp))
+# review fix 8: defMode() = the owner's default (bags.refillDefault; an unknown word = hotbar), choice(u) = the player's own pick or that
+# default (what the page row shows), mode(u) = what the 2 s tick uses: off for everyone while bags.refill is off, else choice(u)
+rfp.addMethod(CtNewMethod.make(jt(r'''
+public static int defMode() {
+  int d = parse(@PKG@.SackCfg.REFILL_DEF);
+  return d < 0 ? 0 : d;
+}'''), rfp))
+rfp.addMethod(CtNewMethod.make(jt(r'''
+public static int choice(java.util.UUID u) {
+  if (u == null) return defMode();
+  Object v = MODES.get(u.toString());
+  int m = (v instanceof String) ? parse((String) v) : -1;
+  return m < 0 ? defMode() : m;
+}'''), rfp))
+rfp.addMethod(CtNewMethod.make(jt(r'''
+public static int mode(java.util.UUID u) {
+  if (!@PKG@.SackCfg.REFILL_ON) return 2;
+  return choice(u);
+}'''), rfp))
+rfp.addMethod(CtNewMethod.make(jt(r'''
+public static boolean set(java.util.UUID u, int m) {
+  if (u == null || m < 0 || m >= WORDS.length) return false;
+  Object prev = MODES.put(u.toString(), WORDS[m]);
+  if (!BROKEN && !WORDS[m].equals(prev)) DIRTY = true;
+  return true;
+}'''), rfp))
+rfp.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void save() {
+  if (!DIRTY || BROKEN || FILE == null) return;
+  DIRTY = false;
+  try {
+    java.util.Properties p = new java.util.Properties();
+    java.util.Iterator it = MODES.entrySet().iterator();
+    while (it.hasNext()) { java.util.Map.Entry e = (java.util.Map.Entry) it.next(); p.setProperty((String) e.getKey(), String.valueOf(e.getValue())); }
+    java.nio.file.Files.createDirectories(FILE.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Path tmp = FILE.resolveSibling(FILE.getFileName().toString() + ".tmp");
+    java.io.FileOutputStream out = new java.io.FileOutputStream(tmp.toFile());
+    try { p.store(out, "SkyySacks stack refill per player (uuid=hotbar|full|off; no line = the Server Setup default bags.refillDefault)"); out.flush(); out.getFD().sync(); } finally { out.close(); }
+    try { java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE }); }
+    catch (Throwable am) { java.nio.file.Files.move(tmp, FILE, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING }); }
+  } catch (Throwable t) {
+    DIRTY = true;
+    if (!SAVEWARNED) { SAVEWARNED = true; @PKG@.SackPool.warn("could not save " + FILE + " (retried by the next save): " + t); }
+  }
+}'''), rfp))
+
+# ================= Processing (0.7.0): timed Furnace / Tannery queues - our own per-player state, no block entity =================
+# ProcJob = one queue entry: <count> units of <recipe>, each taking <unitMs>, each unit paid with <inputs> ("ItemId*qty;ItemId*qty").
+pjob.addField(CtField.make("public String recipe;", pjob))
+pjob.addField(CtField.make("public int count;", pjob))
+pjob.addField(CtField.make("public long unitMs;", pjob))
+pjob.addField(CtField.make("public String inputs;", pjob))
+pjob.addField(CtField.make("public double sf;", pjob))   # 0.8.21: Smelting Fortune read at queue time (tree:fn:bonus Smithing.SSmelt)
+pjob.addField(CtField.make("public int fu;", pjob))      # 0.8.21: units of this job that still roll it (the mined-ore budget granted)
+pjob.addField(CtField.make("public boolean fb;", pjob))  # critic M1: fu was taken from skill:fn:oreBudget (cancel gives it back)
+pjob.addConstructor(CtNewConstructor.make("""
+public ProcJob(String recipe, int count, long unitMs, String inputs) {
+  this.recipe = recipe; this.count = count; this.unitMs = unitMs; this.inputs = inputs == null ? "" : inputs;
+}""", pjob))
+
+# ProcBench = one player's Furnace or Tannery. Wall-clock simulation: advance(now) replays the time since `clock`.
+# 0.7.6: QUEUE_CAP / FUEL_CAP / OUT_CAP are declared right after the classes are made (public static volatile, admin settings)
+pben.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap CFG = new java.util.concurrent.ConcurrentHashMap();", pben))
+pben.addField(CtField.make("public static java.util.ArrayList FUELS;", pben))
+pben.addField(CtField.make("public String bench;", pben))
+pben.addField(CtField.make("public long clock;", pben))
+pben.addField(CtField.make("public long progress;", pben))
+pben.addField(CtField.make("public long fuelMs;", pben))
+pben.addField(CtField.make("public int extra;", pben))
+pben.addField(CtField.make("public long finished;", pben))
+pben.addField(CtField.make("public boolean needsFuel;", pben))
+pben.addField(CtField.make("public boolean warnedFuel;", pben))
+pben.addField(CtField.make("public java.util.ArrayList queue;", pben))
+pben.addField(CtField.make("public java.util.LinkedHashMap fuel;", pben))
+pben.addField(CtField.make("public java.util.LinkedHashMap out;", pben))
+# 0.7.3 Smithing: paid Furnace units per recipe not yet reported through skill:fn:craftxp (persisted as <bench>.xpDone)
+pben.addField(CtField.make("public java.util.LinkedHashMap xpDone;", pben))
+pben.addField(CtField.make("public static final int XP_CAP = 10000;", pben))
+# 0.8.20 (tools/sacks_0_8_20_patch.py docstring): key = the profile key this bench belongs to (set by ProcStore; memory only); cTier / cTime /
+# cFuel / cEternal = the Furnace Charm (acc:smelt) as the last advance read it; collDone = Charcoal not yet credited through coll:fn:add
+pben.addField(CtField.make("public String key;", pben))
+pben.addField(CtField.make("public int cTier;", pben))
+pben.addField(CtField.make("public int cTime;", pben))
+pben.addField(CtField.make("public int cFuel;", pben))
+pben.addField(CtField.make("public boolean cEternal;", pben))
+pben.addField(CtField.make("public long waitFrom;", pben))   # critic fix: when this bench first found acc:smelt absent (0 = not waiting)
+pben.addField(CtField.make("public java.util.LinkedHashMap collDone;", pben))
+pben.addField(CtField.make("public static final int COLL_CAP = 1000000;", pben))
+# 0.8.21: extra bars made by Smelting Fortune per recipe since the last ProcTask pass (memory only - a crafts.log line, never an item)
+pben.addField(CtField.make("public java.util.LinkedHashMap sfDone;", pben))
+pben.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap ORE_OF = new java.util.concurrent.ConcurrentHashMap();", pben))
+pben.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap ORE_N = new java.util.concurrent.ConcurrentHashMap();", pben))
+pben.addField(CtField.make('public static final String ALLOY_BENCH = "SkyyAlloy";', pben))
+pben.addField(CtField.make('public static final String[] ALLOY_IDS = new String[] { "Ingredient_Bar_Bronze", "Ingredient_Bar_Dusk_SkyWynn", "Ingredient_Bar_Azurvane_SkyWynn", "Ingredient_Bar_Cinder_SkyWynn", "Ingredient_Bar_Lumen_SkyWynn", "Ingredient_Bar_Electrum_SkyWynn" };', pben))
+pben.addField(CtField.make("public static final int[] ALLOY_TIER = new int[] { 1, 2, 3, 4, 5, 1 };", pben))
+pben.addField(CtField.make('public static final String[] ALLOY_WORD = new String[] { "Bronze", "Dusk", "Azurvane", "Cinder", "Lumen", "Electrum" };', pben))
+pben.addMethod(CtNewMethod.make("""
+public static String nm(String id) {
+  if (id == null) return "?";
+  String s = id.replace('_', ' ');
+  int q = s.indexOf(':');
+  if (q >= 0 && q + 1 < s.length()) s = s.substring(q + 1);
+  return s;
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public static String roman(int t) {
+  String[] r = new String[] { "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X" };
+  if (t >= 0 && t < r.length) return r[t];
+  return "T" + t;
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public static String dur(long ms) {
+  if (ms < 0L) ms = 0L;
+  long s = (ms + 999L) / 1000L;
+  if (s < 60L) return s + "s";
+  long m = s / 60L; s = s % 60L;
+  if (m < 60L) return m + "m " + s + "s";
+  long h = m / 60L; m = m % 60L;
+  return h + "h " + m + "m";
+}""", pben))
+# the vanilla ProcessingBench config (Bench_Furnace.json / Bench_Tannery.json BlockType.Bench), found by Bench.Id.
+# Only a hit is cached for good; a miss or a failed scan is remembered for 30s only (review fix), so a lookup made before the
+# BlockType assets finished loading heals by itself instead of disabling fuel and tier speed until the next restart.
+# 0.8.8 (Skyy "where did the add fule section go?"): another mod's block may reuse the bench id (Dynamic Seasons' Bench_Lightning_Rod is a
+# Processing bench "Furnace" with no Fuel) - rank the candidates: + 4 block id Bench_<bench>, + 2 the base pack Hytale:Hytale, + 1 not a
+# state variant; the highest wins, ties by block id (never the asset map's order).
+pben.addMethod(CtNewMethod.make(f"""
+public static int benchScore(String bench, {BLT} bt) {{
+  if (bt == null) return -1;
+  String id = String.valueOf(bt.getId());
+  int s = 0;
+  if (!bt.isState() && !id.startsWith("*")) s += 1;
+  String pack = null;
+  try {{ pack = {BLT}.getAssetMap().getAssetPack(bt.getId()); }} catch (Throwable t) {{ pack = null; }}
+  if ("Hytale:Hytale".equals(pack)) s += 2;
+  if (bench != null && id.equalsIgnoreCase("Bench_" + bench)) s += 4;
+  return s;
+}}""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public static {PB} config(String bench) {{
+  if (bench == null) return null;
+  String key = bench.toLowerCase();
+  Object c = CFG.get(key);
+  if (c instanceof {PB}) return ({PB}) c;
+  if (c instanceof Long && System.currentTimeMillis() - ((Long) c).longValue() < 30000L) return null;
+  {PB} found = null;
+  int best = -1;
+  String bestId = null;
+  StringBuilder others = new StringBuilder();
+  try {{
+    java.util.Iterator it = {BLT}.getAssetMap().getAssetMap().values().iterator();
+    while (it.hasNext()) {{
+      Object o = it.next();
+      if (!(o instanceof {BLT})) continue;
+      {BLT} bt = ({BLT}) o;
+      {BEN} b = bt.getBench();
+      if (b == null || !(b instanceof {PB})) continue;
+      String bid = b.getId();
+      if (bid == null || !bid.equalsIgnoreCase(bench)) continue;
+      String tid = String.valueOf(bt.getId());
+      int sc = benchScore(bench, bt);
+      if (found == null || sc > best || (sc == best && tid.compareTo(bestId) < 0)) {{
+        if (bestId != null && !bestId.startsWith("*")) others.append(others.length() > 0 ? ", " : "").append(bestId);
+        found = ({PB}) b; best = sc; bestId = tid;
+      }} else if (!tid.startsWith("*")) others.append(others.length() > 0 ? ", " : "").append(tid);
+    }}
+    if (found != null && others.length() > 0) {{
+      try {{ if ({PKG}.SackPool.LOG != null) {PKG}.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] processing: " + bench + " settings from " + bestId + " (other blocks with the same bench id, skipped: " + others + ")"); }} catch (Throwable t2) {{ }}
+    }}
+  }} catch (Throwable t) {{
+    CFG.put(key, Long.valueOf(System.currentTimeMillis()));
+    {PKG}.SackPool.warn("processing: bench lookup failed for " + bench + " (retry in 30s): " + t);
+    return null;
+  }}
+  if (found == null) CFG.put(key, Long.valueOf(System.currentTimeMillis())); else CFG.put(key, found);
+  return found;
+}}""", pben))
+# vanilla ProcessingBenchBlock.getRecipeTimeSeconds: time - time * tierLevel.CraftingTimeReductionModifier
+pben.addMethod(CtNewMethod.make(f"""
+public static float reduction(String bench, int tier) {{
+  if (tier <= 0) return 0.0f;
+  {PB} c = config(bench);
+  if (c == null) return 0.0f;
+  {BTL} tl = null;
+  for (int t = tier; t >= 1 && tl == null; t--) tl = c.getTierLevel(t);
+  if (tl == null) return 0.0f;
+  float r = tl.getCraftingTimeReductionModifier();
+  if (r < 0.0f) r = 0.0f;
+  if (r > 0.95f) r = 0.95f;
+  return r;
+}}""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public static long unitMs({CRR} r, String bench, int tier) {{
+  double t = (double) r.getTimeSeconds();
+  if (t < 0.0) t = 0.0;
+  double red = (double) reduction(bench, tier);
+  long v = Math.round((t - t * red) * 1000.0);
+  return v < 0L ? 0L : v;
+}}""", pben))
+# 0.8.20: the Furnace Charm of the player whose ACTIVE profile key is k: {tier 0-5, time %, fuel %, eternal 0/1}; all 0 = none (= 0.8.19)
+pben.addMethod(CtNewMethod.make(f"""
+public static int[] smelt(String k) {{
+  int[] z = new int[4];
+  if (k == null || k.length() < 36) return z;
+  try {{
+    java.util.UUID u = java.util.UUID.fromString(k.substring(0, 36));
+    Object v = {PKG}.SackPool.bridge().get("acc:smelt:" + u.toString());
+    if (v == null) return z;
+    String[] p = String.valueOf(v).trim().split("[|]");
+    if (p.length < 5 || !k.equals(p[4].trim())) return z;   // critic fix: field 5 = the profile key it describes
+    int t = Integer.parseInt(p[0].trim());
+    int tm = Integer.parseInt(p[1].trim());
+    int fu = Integer.parseInt(p[2].trim());
+    int et = Integer.parseInt(p[3].trim());
+    if (t <= 0 && et != 1) return z;
+    if (!k.equals({PKG}.SackPool.pkey(u))) return z;
+    if (t < 0) t = 0;
+    if (t > 5) t = 5;
+    if (tm < 0) tm = 0;
+    if (tm > 90) tm = 90;
+    if (fu < 0) fu = 0;
+    if (fu > 1000) fu = 1000;
+    z[0] = t; z[1] = tm; z[2] = fu; z[3] = et == 1 ? 1 : 0;
+    if (z[3] == 1) {{ z[2] = 0; if (z[0] < 5) z[0] = 5; }}
+    return z;
+  }} catch (Throwable x) {{ return new int[4]; }}
+}}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public static long charmMs(long ms, int pct) {
+  if (ms <= 0L || pct <= 0) return ms;
+  if (pct > 90) pct = 90;
+  long v = Math.round((double) ms * (double) (100 - pct) / 100.0);
+  return v < 0L ? 0L : v;
+}""", pben))
+# critic fix: true = hold the replay (the player is online, acc:smelt not published yet, < 10 s since this bench first saw that)
+pben.addMethod(CtNewMethod.make("""
+public synchronized boolean holdFor(boolean absent, boolean online, long now) {
+  if (!absent || !online) { this.waitFrom = 0L; return false; }
+  if (this.waitFrom <= 0L || this.waitFrom > now) this.waitFrom = now;
+  return now - this.waitFrom < 10000L;
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public static int alloyTierOf(String id) {
+  if (id == null) return 0;
+  for (int i = 0; i < ALLOY_IDS.length; i++) if (ALLOY_IDS[i].equals(id)) return ALLOY_TIER[i];
+  // the metal word read from the recipe's output id (Ingredient_Bar_<Word>...): the final id of a new alloy may differ in its suffix
+  if (!id.startsWith("Ingredient_Bar_")) return 0;
+  String[] w = id.split("_");
+  if (w.length < 3) return 0;
+  for (int i = 0; i < ALLOY_WORD.length; i++) if (ALLOY_WORD[i].equals(w[2])) return ALLOY_TIER[i];
+  return 0;
+}""", pben))
+# 0.8.20: 0 = not an alloy (no SkyyAlloy bench requirement); else the Furnace Charm tier it needs (the ladder, else RequiredTierLevel, else 5)
+pben.addMethod(CtNewMethod.make(f"""
+public static int alloyNeed({CRR} r) {{
+  if (r == null) return 0;
+  {BRQ}[] br = r.getBenchRequirement();
+  boolean al = false;
+  int req = 0;
+  for (int i = 0; br != null && i < br.length; i++) {{
+    if (br[i] == null || br[i].id == null || !br[i].id.equalsIgnoreCase(ALLOY_BENCH)) continue;
+    al = true;
+    if (br[i].requiredTierLevel > req) req = br[i].requiredTierLevel;
+  }}
+  if (!al) return 0;
+  {MQ} po = r.getPrimaryOutput();
+  int t = alloyTierOf(po == null ? null : po.getItemId());
+  if (t > 0) return t;
+  if (req <= 0 || req > 5) return 5;
+  return req;
+}}""", pben))
+# 0.8.21 SMELTING FORTUNE (tools/sacks_0_8_21_patch.py docstring 2): 0 = none, 1 = an ore row (one Ore_* input), 2 = an alloy row (bars)
+pben.addMethod(CtNewMethod.make(f"""
+public static int sfKind({CRR} r, String bench) {{
+  if (r == null || !{PKG}.SackCfg.SF_ON || !"Furnace".equalsIgnoreCase(bench)) return 0;
+  {MQ} po = r.getPrimaryOutput();
+  String oid = po == null ? null : po.getItemId();
+  if (oid == null || !oid.startsWith("Ingredient_Bar_")) return 0;
+  {MQ}[] in = r.getInput();
+  if (in == null || in.length == 0) return 0;
+  int ore = 0;
+  int bar = 0;
+  for (int i = 0; i < in.length; i++) {{
+    if (in[i] == null || in[i].getItemId() == null) return 0;   // a resource-type input: never
+    String id = in[i].getItemId();
+    if (id.startsWith("Skyy_Ench_")) return 0;
+    if (id.startsWith("Ore_")) ore++;
+    else if (id.startsWith("Ingredient_Bar_")) bar++;
+    else return 0;
+  }}
+  if (alloyNeed(r) > 0) return {PKG}.SackCfg.SF_ALLOYS && ore == 0 && bar == in.length ? 2 : 0;
+  return in.length == 1 && ore == 1 ? 1 : 0;
+}}""", pben))
+# the ore a bar is smelted from (the Furnace recipe making it from exactly one Ore_* input; smallest ore id); null = none
+pben.addMethod(CtNewMethod.make(f"""
+public static String oreOfBar(String bar) {{
+  if (bar == null) return null;
+  Object c = ORE_OF.get(bar);
+  if (c instanceof String) return ((String) c).length() == 0 ? null : (String) c;
+  String best = null;
+  int bestN = 1;
+  try {{
+    java.util.Iterator it = {CRR}.getAssetMap().getAssetMap().values().iterator();
+    while (it.hasNext()) {{
+      Object o = it.next();
+      if (!(o instanceof {CRR})) continue;
+      {CRR} r = ({CRR}) o;
+      {MQ} po = r.getPrimaryOutput();
+      if (po == null || !bar.equals(po.getItemId())) continue;
+      {MQ}[] in = r.getInput();
+      if (in == null || in.length != 1 || in[0] == null || in[0].getItemId() == null || !in[0].getItemId().startsWith("Ore_")) continue;
+      {BRQ}[] br = r.getBenchRequirement();
+      boolean fur = false;
+      for (int i = 0; br != null && i < br.length; i++) if (br[i] != null && br[i].id != null && br[i].id.equalsIgnoreCase("Furnace")) fur = true;
+      if (!fur) continue;
+      String id = in[0].getItemId();
+      if (best == null || id.compareTo(best) < 0) {{
+        best = id;
+        int q = in[0].getQuantity(); if (q <= 0) q = 1;
+        int oq = po.getQuantity(); if (oq <= 0) oq = 1;
+        bestN = (q + oq - 1) / oq;   // critic L5: ore per bar (rounded up - never fewer ore than the bar cost)
+      }}
+    }}
+  }} catch (Throwable t) {{ return null; }}
+  if (best != null) ORE_N.put(bar, Integer.valueOf(bestN));
+  ORE_OF.put(bar, best == null ? "" : best);
+  return best;
+}}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public static int oreQtyOfBar(String bar) {
+  if (oreOfBar(bar) == null) return 0;
+  Object n = ORE_N.get(bar);
+  return n instanceof Integer && ((Integer) n).intValue() > 0 ? ((Integer) n).intValue() : 1;
+}""", pben))
+# F = tree:fn:bonus("Smithing.SSmelt") of u, only for its ACTIVE profile key k; 0 = none (no SkyyTrees, not a Number, NaN, <= 0)
+pben.addMethod(CtNewMethod.make(f"""
+public static double sfValue(java.util.UUID u, String k) {{
+  if (u == null || k == null) return 0.0;
+  try {{
+    if (!k.equals({PKG}.SackPool.pkey(u))) return 0.0;
+    Object f = {PKG}.SackPool.bridge().get("tree:fn:bonus");
+    if (!(f instanceof java.util.function.Function)) return 0.0;
+    Object r = ((java.util.function.Function) f).apply(new Object[] {{ u, {PKG}.SackCfg.SF_NODE }});
+    if (!(r instanceof Number)) return 0.0;
+    double v = ((Number) r).doubleValue();
+    if (Double.isNaN(v) || v <= 0.0) return 0.0;
+    if (v > 1000.0) v = 1000.0;
+    return v;
+  }} catch (Throwable t) {{ return 0.0; }}
+}}""", pben))
+# skill:fn:oreBudget (SkyySkills F2): { UUID, oreId, Integer n } -> granted 0..n; anything else = 0 (no bridge = NO Fortune)
+pben.addMethod(CtNewMethod.make(f"""
+public static int sfBudget(java.util.UUID u, String ore, int n) {{
+  if (u == null || ore == null || n <= 0) return 0;
+  try {{
+    Object f = {PKG}.SackPool.bridge().get("skill:fn:oreBudget");
+    if (!(f instanceof java.util.function.Function)) return 0;
+    Object r = ((java.util.function.Function) f).apply(new Object[] {{ u, ore, Integer.valueOf(n) }});
+    if (!(r instanceof Number)) return 0;
+    long g = ((Number) r).longValue();
+    if (g <= 0L) return 0;
+    return g > (long) n ? n : (int) g;
+  }} catch (Throwable t) {{ return 0; }}
+}}""", pben))
+# critic M1: give `n` ore of budget back (skill:fn:oreBudget with -n; SkyySkills 0.4.50 adds it back); no bridge = nothing to give
+pben.addMethod(CtNewMethod.make(f"""
+public static void sfGive(java.util.UUID u, String ore, int n) {{
+  if (u == null || ore == null || n <= 0) return;
+  try {{
+    Object f = {PKG}.SackPool.bridge().get("skill:fn:oreBudget");
+    if (f instanceof java.util.function.Function) ((java.util.function.Function) f).apply(new Object[] {{ u, ore, Integer.valueOf(-n) }});
+  }} catch (Throwable t) {{ }}
+}}""", pben))
+# the ores one unit of r costs: {String[] ore ids, int[] ore per unit}; alloys = each bar's ore x its ore-per-bar (critic L5); null = none
+pben.addMethod(CtNewMethod.make(f"""
+public static Object[] sfOres({CRR} r, boolean alloy) {{
+  if (r == null) return null;
+  {MQ}[] in = r.getInput();
+  if (in == null || in.length == 0) return null;
+  String[] ores = new String[in.length];
+  int[] per = new int[in.length];
+  for (int i = 0; i < in.length; i++) {{
+    if (in[i] == null || in[i].getItemId() == null) return null;
+    int q = in[i].getQuantity(); if (q <= 0) q = 1;
+    if (!alloy) {{ ores[i] = in[i].getItemId(); per[i] = q; }}
+    else {{
+      ores[i] = oreOfBar(in[i].getItemId());
+      if (ores[i] == null) return null;   // a bar with no ore recipe
+      per[i] = q * oreQtyOfBar(in[i].getItemId());
+    }}
+  }}
+  return new Object[] {{ ores, per }};
+}}""", pben))
+# the units of a batch of `done` that get Fortune: all of them (mined off) or what the mined-ore budget grants (docstring 3).
+# critic M1: whatever an earlier ore granted above the final count (a later ore was short) is given straight back
+pben.addMethod(CtNewMethod.make(f"""
+public static int sfGrant({CRR} r, int kind, java.util.UUID u, int done, boolean mined) {{
+  if (r == null || kind <= 0 || done <= 0) return 0;
+  if (!mined) return done;
+  Object[] o = sfOres(r, kind == 2);
+  if (o == null) return 0;   // nothing asked
+  String[] ores = (String[]) o[0];
+  int[] per = (int[]) o[1];
+  int[] took = new int[ores.length];
+  int g = done;
+  for (int i = 0; i < ores.length && g > 0; i++) {{
+    took[i] = sfBudget(u, ores[i], g * per[i]);
+    g = took[i] / per[i];
+  }}
+  if (g < 0) g = 0;
+  for (int i = 0; i < ores.length; i++) {{
+    int back = took[i] - g * per[i];
+    if (back > 0) sfGive(u, ores[i], back);
+  }}
+  return g;
+}}""", pben))
+# critic M1: give back the budget of `fu` units of recipe id rid (cancel); returns the ore given back
+pben.addMethod(CtNewMethod.make(f"""
+public static int sfRefund(java.util.UUID u, String rid, int fu) {{
+  if (u == null || rid == null || fu <= 0) return 0;
+  try {{
+    Object ro = {CRR}.getAssetMap().getAsset(rid);
+    if (!(ro instanceof {CRR})) return 0;
+    {CRR} r = ({CRR}) ro;
+    Object[] o = sfOres(r, alloyNeed(r) > 0);
+    if (o == null) return 0;
+    String[] ores = (String[]) o[0];
+    int[] per = (int[]) o[1];
+    int n = 0;
+    for (int i = 0; i < ores.length; i++) {{ sfGive(u, ores[i], fu * per[i]); n += fu * per[i]; }}
+    return n;
+  }} catch (Throwable t) {{ return 0; }}
+}}""", pben))
+# extras of one unit: floor(F) + (roll < F mod 1), F and the result clamped to smelt.fortune.guard
+pben.addMethod(CtNewMethod.make(f"""
+public static int sfExtras(double f, double roll) {{
+  int g = {PKG}.SackCfg.SF_GUARD;
+  if (g <= 0 || !(f > 0.0)) return 0;
+  if (f > (double) g) f = (double) g;
+  double w = Math.floor(f);
+  int x = (int) w;
+  if (roll < f - w) x++;
+  return x > g ? g : x;
+}}""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public static boolean benchNeedsFuel(String bench) {{
+  {PB} c = config(bench);
+  if (c == null) return false;
+  Object[] f = c.getFuel();
+  return f != null && f.length > 0;
+}}""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public static {ITM} item(String id) {{
+  if (id == null) return null;
+  try {{ Object o = {ITM}.getAssetMap().getAsset(id); if (o instanceof {ITM}) return ({ITM}) o; }} catch (Throwable t) {{ }}
+  return null;
+}}""", pben))
+# vanilla fuel slot = ResourceTypeId "Fuel"; ProcessingBenchBlock.consumeOneFuel adds consumed * Item.getFuelQuality() seconds
+pben.addMethod(CtNewMethod.make(f"""
+public static double fuelQualityOf({ITM} it) {{
+  if (it == null) return 0.0;
+  {IRT}[] rts = it.getResourceTypes();
+  boolean fuel = false;
+  for (int i = 0; rts != null && i < rts.length; i++) if (rts[i] != null && "Fuel".equals(rts[i].id)) fuel = true;
+  if (!fuel) return 0.0;
+  double q = it.getFuelQuality();
+  return q > 0.0 ? q : 0.0;
+}}""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public static double fuelQuality(String id) {{
+  return fuelQualityOf(item(id));
+}}""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public static synchronized java.util.ArrayList fuels() {{
+  if (FUELS != null) return FUELS;
+  java.util.ArrayList out = new java.util.ArrayList();
+  try {{
+    java.util.Iterator it = {ITM}.getAssetMap().getAssetMap().values().iterator();
+    while (it.hasNext()) {{
+      Object o = it.next();
+      if (!(o instanceof {ITM})) continue;
+      if (fuelQualityOf(({ITM}) o) > 0.0) out.add(String.valueOf((({ITM}) o).getId()));
+    }}
+  }} catch (Throwable t) {{ {PKG}.SackPool.warn("processing: fuel scan failed: " + t); return out; }}
+  java.util.Collections.sort(out);
+  FUELS = out;
+  return out;
+}}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public static void addTo(java.util.LinkedHashMap m, String id, int n) {
+  if (id == null || n <= 0) return;
+  Integer cur = (Integer) m.get(id);
+  long v = (long) (cur == null ? 0 : cur.intValue()) + (long) n;
+  if (v > 2000000000L) v = 2000000000L;
+  m.put(id, Integer.valueOf((int) v));
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public static int total(java.util.LinkedHashMap m) {
+  long t = 0L;
+  java.util.Iterator it = m.values().iterator();
+  while (it.hasNext()) t += (long) ((Integer) it.next()).intValue();
+  return t > 2000000000L ? 2000000000 : (int) t;
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public static String ser(java.util.Map m) {
+  StringBuilder sb = new StringBuilder();
+  java.util.Iterator it = m.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    if (sb.length() > 0) sb.append(';');
+    sb.append((String) e.getKey()).append('*').append(((Integer) e.getValue()).intValue());
+  }
+  return sb.toString();
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public static void parseInto(java.util.LinkedHashMap m, String s, int mult) {
+  if (s == null || mult <= 0) return;
+  String[] parts = s.split(";");
+  for (int i = 0; i < parts.length; i++) {
+    String p = parts[i].trim();
+    int star = p.lastIndexOf('*');
+    if (star <= 0) continue;
+    try {
+      long v = (long) Integer.parseInt(p.substring(star + 1).trim()) * (long) mult;
+      if (v > 2000000000L) v = 2000000000L;
+      addTo(m, p.substring(0, star), (int) v);
+    } catch (Throwable t) { }
+  }
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public static long pl(java.util.Properties p, String k) {
+  try { String v = p.getProperty(k); return v == null ? 0L : Long.parseLong(v.trim()); } catch (Throwable t) { return 0L; }
+}""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public static String outName(String recipeId) {{
+  try {{
+    Object o = {CRR}.getAssetMap().getAsset(recipeId);
+    if (o instanceof {CRR}) {{
+      {MQ} q = (({CRR}) o).getPrimaryOutput();
+      if (q != null && q.getItemId() != null) {{ String dn = {PKG}.SackDefs.dname(q.getItemId()); return dn != null ? dn : nm(q.getItemId()); }}   // 0.8.8: the real name
+    }}
+  }} catch (Throwable t) {{ }}
+  return nm(recipeId);
+}}""", pben))
+pben.addConstructor(CtNewConstructor.make("""
+public ProcBench(String bench) {
+  this.bench = bench;
+  this.clock = 0L; this.progress = 0L; this.fuelMs = 0L; this.extra = 0; this.finished = 0L;
+  this.queue = new java.util.ArrayList();
+  this.fuel = new java.util.LinkedHashMap();
+  this.out = new java.util.LinkedHashMap();
+  this.xpDone = new java.util.LinkedHashMap();
+  this.collDone = new java.util.LinkedHashMap();
+  this.sfDone = new java.util.LinkedHashMap();
+  this.needsFuel = benchNeedsFuel(bench);
+  this.warnedFuel = false;
+}""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public synchronized int queued() {{
+  int n = 0;
+  for (int i = 0; i < this.queue.size(); i++) n += (({PKG}.ProcJob) this.queue.get(i)).count;
+  return n;
+}}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized int outTotal() { return total(this.out); }""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized int fuelCount() { return total(this.fuel); }""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized boolean pending() { return !this.queue.isEmpty() || !this.out.isEmpty() || !this.fuel.isEmpty(); }""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized boolean fuelWarnOnce() {
+  if (!this.needsFuel || this.cEternal || this.queue.isEmpty() || this.fuelMs > 0L || !this.fuel.isEmpty() || this.warnedFuel) return false;
+  this.warnedFuel = true;
+  return true;
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized void addOut(String id, int n) { addTo(this.out, id, n); }""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized void addFuel(String id, int n) { addTo(this.fuel, id, n); this.warnedFuel = false; }""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public synchronized void addJobF(String recipe, int count, long unitMs, String inputs, long now, double sf, int fu, boolean fb) {{
+  if (recipe == null || count <= 0) return;
+  String in = inputs == null ? "" : inputs;
+  if (fu < 0 || !(sf > 0.0)) fu = 0;
+  if (fu > count) fu = count;
+  if (fu == 0) {{ sf = 0.0; fb = false; }}
+  if (this.queue.isEmpty()) {{ this.progress = 0L; this.clock = now; }}
+  {PKG}.ProcJob last = null;
+  if (!this.queue.isEmpty()) last = ({PKG}.ProcJob) this.queue.get(this.queue.size() - 1);
+  // 0.8.21: a merge keeps one snapshot per job (both without Fortune units, or the same F)
+  if (last != null && last.recipe.equals(recipe) && last.unitMs == unitMs && last.inputs.equals(in)
+      && (fu == 0 || last.fu <= 0 || (last.sf == sf && last.fb == fb))) {{
+    last.count = last.count + count;
+    if (fu > 0) {{ last.sf = sf; last.fb = fb; last.fu = last.fu + fu; }}
+  }} else {{
+    {PKG}.ProcJob nj = new {PKG}.ProcJob(recipe, count, unitMs, in);
+    nj.sf = sf; nj.fu = fu; nj.fb = fb;
+    this.queue.add(nj);
+  }}
+}}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public void addJob(String recipe, int count, long unitMs, String inputs, long now) { addJobF(recipe, count, unitMs, inputs, now, 0.0, 0, false); }""", pben))
+# light the next fuel item (vanilla consumeOneFuel incl. the ExtraOutput byproduct); false = no fuel left
+pben.addMethod(CtNewMethod.make(f"""
+public synchronized boolean burnOne() {{
+  int guard = 0;
+  while (!this.fuel.isEmpty() && guard < 100000) {{
+    guard++;
+    java.util.Map.Entry e = (java.util.Map.Entry) this.fuel.entrySet().iterator().next();
+    String id = (String) e.getKey();
+    int q = ((Integer) e.getValue()).intValue();
+    if (q <= 1) this.fuel.remove(id); else this.fuel.put(id, Integer.valueOf(q - 1));
+    if (q <= 0) continue;
+    double fq = fuelQuality(id);
+    if (fq <= 0.0) {{ addTo(this.out, id, 1); continue; }}
+    this.fuelMs = this.fuelMs + Math.round(fq * 1000.0);
+    try {{
+      {PB} c = config(this.bench);
+      {PEO} eo = null;
+      if (c != null) eo = c.getExtraOutput();
+      {ITM} itm = item(id);
+      if (eo != null && itm != null && !eo.isIgnoredFuelSource(itm)) {{
+        this.extra = this.extra + 1;
+        int per = eo.getPerFuelItemsConsumed(); if (per <= 0) per = 1;
+        if (this.extra >= per) {{
+          this.extra = 0;
+          {MQ}[] outs = eo.getOutputs();
+          for (int i = 0; outs != null && i < outs.length; i++) {{
+            if (outs[i] == null || outs[i].getItemId() == null) continue;
+            int n = outs[i].getQuantity(); if (n <= 0) n = 1;
+            addTo(this.out, outs[i].getItemId(), n);
+            if ("Furnace".equalsIgnoreCase(this.bench) && "Ingredient_Charcoal".equals(outs[i].getItemId())) {{
+              Integer cc = (Integer) this.collDone.get(outs[i].getItemId());
+              if (cc == null || cc.intValue() < COLL_CAP) addTo(this.collDone, outs[i].getItemId(), n);
+            }}
+          }}
+        }}
+      }}
+    }} catch (Throwable t) {{ }}
+    return true;
+  }}
+  return false;
+}}""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public synchronized void finishUnit({PKG}.ProcJob j) {{
+  boolean paid = false;
+  try {{
+    Object ro = {CRR}.getAssetMap().getAsset(j.recipe);
+    if (ro instanceof {CRR}) {{
+      {CRR} r = ({CRR}) ro;
+      {MQ}[] outs = r.getOutputs();
+      {MQ} prim = r.getPrimaryOutput();
+      if ((outs == null || outs.length == 0) && prim != null) outs = new {MQ}[] {{ prim }};
+      for (int k = 0; outs != null && k < outs.length; k++) {{
+        if (outs[k] == null || outs[k].getItemId() == null) continue;
+        int n = outs[k].getQuantity(); if (n <= 0) n = 1;
+        addTo(this.out, outs[k].getItemId(), n);
+        paid = true;
+      }}
+      // 0.8.21 SMELTING FORTUNE: one Fortune unit used per paid unit; extras = more of the same bar (docstring 4)
+      if (paid && j.fu > 0 && "Furnace".equalsIgnoreCase(this.bench)) {{
+        j.fu = j.fu - 1;
+        String pid = prim == null ? null : prim.getItemId();
+        if ({PKG}.SackCfg.SF_ON && pid != null && pid.startsWith("Ingredient_Bar_")) {{
+          int x = sfExtras(j.sf, java.util.concurrent.ThreadLocalRandom.current().nextDouble());
+          if (x > 0) {{
+            int pq = prim.getQuantity(); if (pq <= 0) pq = 1;
+            addTo(this.out, pid, x * pq);
+            Integer sd = (Integer) this.sfDone.get(j.recipe);
+            if (sd == null || sd.intValue() < 1000000) addTo(this.sfDone, j.recipe, x * pq);
+          }}
+        }}
+      }}
+    }}
+  }} catch (Throwable t) {{ }}
+  if (!paid) {{
+    parseInto(this.out, j.inputs, 1);
+    {PKG}.SackPool.warn("processing: recipe " + j.recipe + " has no item output any more - its inputs went to the output slot");
+  }}
+  // 0.7.3 Smithing (research/Smithing-Smelting-Spec.md 4.1): only a PAID Furnace unit counts - never the no-output fallback,
+  // burnOne (charcoal), cancel() or unloadFuel(); ProcTask.drainXp reports it once the profile is settled
+  else if ("Furnace".equalsIgnoreCase(this.bench)) {{
+    Integer cx = (Integer) this.xpDone.get(j.recipe);
+    if (cx == null || cx.intValue() < XP_CAP) addTo(this.xpDone, j.recipe, 1);
+  }}
+  j.count = j.count - 1;
+  if (j.fu > j.count) j.fu = j.count < 0 ? 0 : j.count;   // 0.8.21: fu <= count (the no-output fallback uses none)
+  if (j.count <= 0) this.queue.remove(0);
+  this.progress = 0L;
+  this.finished = this.finished + 1L;
+}}""", pben))
+# replay wall-clock time since `clock`; fuel burns only while a unit is processing; returns units finished
+pben.addMethod(CtNewMethod.make(f"""
+public synchronized int advanceC(long now, int[] c) {{
+  if (!this.needsFuel) this.needsFuel = benchNeedsFuel(this.bench);
+  this.cTier = c[0]; this.cTime = c[1]; this.cFuel = c[2]; this.cEternal = c[3] == 1;
+  boolean burns = this.needsFuel && !this.cEternal;
+  long fp = (long) this.cFuel;
+  if (this.clock <= 0L) this.clock = now;
+  long dt = now - this.clock;
+  if (dt < 0L) dt = 0L;
+  this.clock = now;
+  int done = 0;
+  int guard = 0;
+  while (!this.queue.isEmpty() && guard < 500000) {{
+    guard++;
+    {PKG}.ProcJob j = ({PKG}.ProcJob) this.queue.get(0);
+    if (j.count <= 0) {{ this.queue.remove(0); this.progress = 0L; continue; }}
+    if (total(this.out) >= OUT_CAP) break;
+    long eff = charmMs(j.unitMs, this.cTime);   // critic fix: the charm's time cut is live (ProcJob.unitMs = the base time)
+    long need = eff - this.progress;
+    // review fix: a unit whose time already ran in full (its last fuel ran out on that same step) finishes without lighting more fuel
+    if (need <= 0L && eff > 0L) {{ finishUnit(j); done++; continue; }}
+    if (burns && this.fuelMs <= 0L && !burnOne()) break;
+    if (need <= 0L) {{ finishUnit(j); done++; continue; }}
+    if (dt <= 0L) break;
+    long step = dt < need ? dt : need;
+    if (burns && fp <= 0L) {{
+      if (step > this.fuelMs) step = this.fuelMs;
+      this.fuelMs = this.fuelMs - step;
+    }} else if (burns) {{
+      // 0.8.20 Furnace Charm: step x (1 + fuel %) fuel ms (ceil); what is loaded pays a shorter step (at least 1 ms - never stalls)
+      long cost = step + (step * fp + 99L) / 100L;
+      if (cost > this.fuelMs) {{
+        step = (this.fuelMs * 100L) / (100L + fp);
+        if (step <= 0L) step = 1L;
+        this.fuelMs = 0L;
+      }} else this.fuelMs = this.fuelMs - cost;
+    }}
+    this.progress = this.progress + step;
+    dt = dt - step;
+  }}
+  if (this.queue.isEmpty()) this.progress = 0L;
+  return done;
+}}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public int advance(long now) {
+  if (!"Furnace".equalsIgnoreCase(this.bench)) return advanceC(now, new int[4]);
+  boolean absent = false;
+  boolean online = false;
+  if (this.key != null && this.key.length() >= 36) {
+    try {
+      java.util.UUID u = java.util.UUID.fromString(this.key.substring(0, 36));
+      absent = com.skyy.sacks.SackPool.bridge().get("acc:smelt:" + u.toString()) == null;
+      if (absent) {
+        com.hypixel.hytale.server.core.universe.Universe uni = com.hypixel.hytale.server.core.universe.Universe.get();
+        online = uni != null && uni.getPlayer(u) != null;
+      }
+    } catch (Throwable t) { absent = false; }
+  }
+  if (holdFor(absent, online, now)) return 0;   // critic fix: the replay waits for acc:smelt (at most 10 s) - clock kept
+  return advanceC(now, smelt(this.key));
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized java.util.ArrayList collList() {
+  java.util.ArrayList l = new java.util.ArrayList();
+  java.util.Iterator it = this.collDone.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    l.add(new Object[] { e.getKey(), e.getValue() });
+  }
+  return l;
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized java.util.ArrayList sfTake() {
+  java.util.ArrayList l = new java.util.ArrayList();
+  java.util.Iterator it = this.sfDone.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    l.add(new Object[] { e.getKey(), e.getValue() });
+  }
+  this.sfDone.clear();
+  return l;
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized void takeColl(String id, int n) {
+  if (id == null || n <= 0) return;
+  Integer cur = (Integer) this.collDone.get(id);
+  if (cur == null) return;
+  int v = cur.intValue() - n;
+  if (v <= 0) this.collDone.remove(id); else this.collDone.put(id, Integer.valueOf(v));
+}""", pben))
+# cancel: every unfinished unit's inputs (the running one included) go to the output slot; returns units cancelled
+pben.addMethod(CtNewMethod.make(f"""
+public synchronized int cancel() {{
+  int n = 0;
+  for (int i = 0; i < this.queue.size(); i++) {{
+    {PKG}.ProcJob j = ({PKG}.ProcJob) this.queue.get(i);
+    if (j.count <= 0) continue;
+    parseInto(this.out, j.inputs, j.count);
+    n += j.count;
+    if (j.fu > 0 && j.fb && this.key != null && this.key.length() >= 36) {{
+      try {{ sfRefund(java.util.UUID.fromString(this.key.substring(0, 36)), j.recipe, j.fu); }} catch (Throwable t) {{ }}
+    }}
+    j.fu = 0;
+  }}
+  this.queue.clear();
+  this.progress = 0L;
+  return n;
+}}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized int unloadFuel() {
+  int n = total(this.fuel);
+  java.util.Iterator it = this.fuel.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    addTo(this.out, (String) e.getKey(), ((Integer) e.getValue()).intValue());
+  }
+  this.fuel.clear();
+  return n;
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized java.util.ArrayList outList() {
+  java.util.ArrayList l = new java.util.ArrayList();
+  java.util.Iterator it = this.out.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    l.add(new Object[] { e.getKey(), e.getValue() });
+  }
+  return l;
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized void takeOut(String id, int n) {
+  if (id == null || n <= 0) return;
+  Integer cur = (Integer) this.out.get(id);
+  if (cur == null) return;
+  int v = cur.intValue() - n;
+  if (v <= 0) this.out.remove(id); else this.out.put(id, Integer.valueOf(v));
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized java.util.ArrayList xpList() {
+  java.util.ArrayList l = new java.util.ArrayList();
+  java.util.Iterator it = this.xpDone.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    l.add(new Object[] { e.getKey(), e.getValue() });
+  }
+  return l;
+}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized void takeXp(String id, int n) {
+  if (id == null || n <= 0) return;
+  Integer cur = (Integer) this.xpDone.get(id);
+  if (cur == null) return;
+  int v = cur.intValue() - n;
+  if (v <= 0) this.xpDone.remove(id); else this.xpDone.put(id, Integer.valueOf(v));
+}""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public synchronized long queueMs() {{
+  long t = 0L;
+  for (int i = 0; i < this.queue.size(); i++) {{
+    {PKG}.ProcJob j = ({PKG}.ProcJob) this.queue.get(i);
+    t += charmMs(j.unitMs, this.cTime) * (long) j.count;
+  }}
+  t -= this.progress;
+  return t < 0L ? 0L : t;
+}}""", pben))
+pben.addMethod(CtNewMethod.make("""
+public synchronized long fuelTotalMs() {
+  long t = this.fuelMs;
+  java.util.Iterator it = this.fuel.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    t += Math.round(fuelQuality((String) e.getKey()) * 1000.0) * (long) ((Integer) e.getValue()).intValue();
+  }
+  return t;
+}""", pben))
+# UI text (no , : ; { } " so inline and set() show the same): [0] bench/tier/fuel, [1] running unit, [2] queue, [3] output slot, [4] percent
+pben.addMethod(CtNewMethod.make(f"""
+public synchronized String[] describe(int tier, boolean equipped) {{
+  String[] d = new String[5];
+  StringBuilder s0 = new StringBuilder();
+  s0.append(this.bench);
+  if (tier > 0) s0.append(" ").append(roman(tier));
+  float red = reduction(this.bench, tier);
+  if (red > 0.0f) s0.append(" - ").append(Math.round(red * 100.0f)).append(" percent faster");
+  if (this.cEternal) s0.append(" - Eternal Flame");
+  else if (this.cTier > 0) s0.append(" - Furnace Charm T").append(this.cTier);
+  if ((this.cEternal || this.cTier > 0) && this.cTime > 0) s0.append(" ").append(this.cTime).append(" percent faster");
+  if (!equipped) s0.append(" - accessory not equipped (queued items still finish)");
+  if (this.needsFuel && !this.cEternal) {{
+    long fms = fuelTotalMs();
+    if (this.cFuel > 0) fms = (fms * 100L) / (100L + (long) this.cFuel);
+    s0.append(" - fuel ").append(dur(fms)).append(" (").append(total(this.fuel)).append(" items loaded");
+    if (this.cFuel > 0) s0.append(" - burns ").append(this.cFuel).append(" percent faster");
+    s0.append(")");
+  }}
+  else s0.append(" - needs no fuel");
+  d[0] = s0.toString();
+  int pct = 0;
+  if (this.queue.isEmpty()) d[1] = "Idle - queue something below";
+  else {{
+    {PKG}.ProcJob h = ({PKG}.ProcJob) this.queue.get(0);
+    long hu = charmMs(h.unitMs, this.cTime);   // critic fix: the live unit time
+    long left = hu - this.progress; if (left < 0L) left = 0L;
+    if (hu > 0L) pct = (int) ((this.progress * 100L) / hu);
+    if (pct > 100) pct = 100;
+    if (pct < 0) pct = 0;
+    String verb = "Processing ";
+    if ("Furnace".equalsIgnoreCase(this.bench)) verb = "Smelting ";
+    if ("Tannery".equalsIgnoreCase(this.bench)) verb = "Tanning ";
+    String state = dur(left) + " left";
+    if (total(this.out) >= OUT_CAP) state = "OUTPUT FULL - collect to continue";
+    else if (this.needsFuel && !this.cEternal && this.fuelMs <= 0L && this.fuel.isEmpty()) state = "OUT OF FUEL - load fuel to continue";
+    d[1] = verb + outName(h.recipe) + " - " + state + " - whole queue " + dur(queueMs());
+    if (h.fu > 0) d[1] = d[1] + " - Smelting Fortune " + Math.round(h.sf * 100.0) + " percent on " + h.fu + " of them";   // 0.8.21
+  }}
+  StringBuilder s2 = new StringBuilder("Queue - ");
+  if (this.queue.isEmpty()) s2.append("empty");
+  for (int i = 0; i < this.queue.size() && i < 4; i++) {{
+    {PKG}.ProcJob j = ({PKG}.ProcJob) this.queue.get(i);
+    if (i > 0) s2.append(" + ");
+    s2.append(outName(j.recipe)).append(" x").append(j.count);
+  }}
+  if (this.queue.size() > 4) s2.append(" + ").append(this.queue.size() - 4).append(" more");
+  s2.append("   (").append(queued()).append(" / ").append(QUEUE_CAP).append(" units)");
+  d[2] = s2.toString();
+  StringBuilder s3 = new StringBuilder("Ready - ");
+  if (this.out.isEmpty()) s3.append("nothing yet");
+  int k = 0;
+  java.util.Iterator it = this.out.entrySet().iterator();
+  while (it.hasNext()) {{
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    if (k == 5) {{ s3.append(" + more"); break; }}
+    if (k > 0) s3.append(" + ");
+    s3.append(((Integer) e.getValue()).intValue()).append(" ").append(nm((String) e.getKey()));
+    k++;
+  }}
+  d[3] = s3.toString();
+  d[4] = String.valueOf(pct);
+  return d;
+}}""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public synchronized void toProps(java.util.Properties p) {{
+  String b = this.bench + ".";
+  p.setProperty(b + "clock", String.valueOf(this.clock));
+  p.setProperty(b + "progress", String.valueOf(this.progress));
+  p.setProperty(b + "fuelMs", String.valueOf(this.fuelMs));
+  p.setProperty(b + "extra", String.valueOf(this.extra));
+  p.setProperty(b + "finished", String.valueOf(this.finished));
+  p.setProperty(b + "fuel", ser(this.fuel));
+  p.setProperty(b + "out", ser(this.out));
+  p.setProperty(b + "xpDone", ser(this.xpDone));
+  if (!this.collDone.isEmpty()) p.setProperty(b + "collDone", ser(this.collDone));
+  p.setProperty(b + "q.n", String.valueOf(this.queue.size()));
+  for (int i = 0; i < this.queue.size(); i++) {{
+    {PKG}.ProcJob j = ({PKG}.ProcJob) this.queue.get(i);
+    p.setProperty(b + "q." + i + ".recipe", j.recipe);
+    p.setProperty(b + "q." + i + ".count", String.valueOf(j.count));
+    p.setProperty(b + "q." + i + ".unitMs", String.valueOf(j.unitMs));
+    p.setProperty(b + "q." + i + ".inputs", j.inputs);
+    if (j.fu > 0) {{ p.setProperty(b + "q." + i + ".sf", String.valueOf(j.sf)); p.setProperty(b + "q." + i + ".fu", String.valueOf(j.fu)); if (j.fb) p.setProperty(b + "q." + i + ".fb", "1"); }}
+  }}
+}}""", pben))
+pben.addMethod(CtNewMethod.make(f"""
+public synchronized void fromProps(java.util.Properties p) {{
+  String b = this.bench + ".";
+  this.clock = pl(p, b + "clock");
+  this.progress = pl(p, b + "progress"); if (this.progress < 0L) this.progress = 0L;
+  this.fuelMs = pl(p, b + "fuelMs"); if (this.fuelMs < 0L) this.fuelMs = 0L;
+  this.extra = (int) pl(p, b + "extra");
+  this.finished = pl(p, b + "finished");
+  this.fuel.clear(); parseInto(this.fuel, p.getProperty(b + "fuel"), 1);
+  this.out.clear(); parseInto(this.out, p.getProperty(b + "out"), 1);
+  this.xpDone.clear(); parseInto(this.xpDone, p.getProperty(b + "xpDone"), 1);
+  this.collDone.clear(); parseInto(this.collDone, p.getProperty(b + "collDone"), 1);
+  java.util.Iterator xi = new java.util.ArrayList(this.xpDone.keySet()).iterator();
+  while (xi.hasNext()) {{ Object xk = xi.next(); if (((Integer) this.xpDone.get(xk)).intValue() > XP_CAP) this.xpDone.put(xk, Integer.valueOf(XP_CAP)); }}
+  this.queue.clear();
+  int n = (int) pl(p, b + "q.n");
+  for (int i = 0; i < n && i < 100000; i++) {{
+    String r = p.getProperty(b + "q." + i + ".recipe");
+    int c = (int) pl(p, b + "q." + i + ".count");
+    long um = pl(p, b + "q." + i + ".unitMs"); if (um < 0L) um = 0L;
+    String in = p.getProperty(b + "q." + i + ".inputs");
+    if (r != null && c > 0) {{
+      {PKG}.ProcJob lj = new {PKG}.ProcJob(r, c, um, in);
+      int lfu = (int) pl(p, b + "q." + i + ".fu");   // 0.8.21: Fortune units left (clamped 0..count)
+      double lsf = 0.0;
+      try {{ String sv = p.getProperty(b + "q." + i + ".sf"); if (sv != null) lsf = Double.parseDouble(sv.trim()); }} catch (Throwable t) {{ lsf = 0.0; }}
+      if (Double.isNaN(lsf) || lsf <= 0.0 || lfu <= 0) {{ lsf = 0.0; lfu = 0; }}
+      if (lsf > 1000.0) lsf = 1000.0;
+      if (lfu > c) lfu = c;
+      lj.sf = lsf; lj.fu = lfu;
+      lj.fb = lfu > 0 && "1".equals(p.getProperty(b + "q." + i + ".fb"));   // critic M1: only budget-taken units are given back
+      this.queue.add(lj);
+    }}
+  }}
+}}""", pben))
+
+# ProcStore = per-profile benches (0.7.2: keyed by pkey), persisted in Skyy_SkyySacks/processing/<pkey>.properties (tmp + fsync + atomic move)
+pst.addField(CtField.make("public static java.nio.file.Path DIR;", pst))
+pst.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap STATES = new java.util.concurrent.ConcurrentHashMap();", pst))
+pst.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap DIRTY = new java.util.concurrent.ConcurrentHashMap();", pst))
+pst.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap BROKEN = new java.util.concurrent.ConcurrentHashMap();", pst))
+pst.addField(CtField.make('public static final String[] BENCHES = new String[] { "Furnace", "Tannery" };', pst))
+pst.addMethod(CtNewMethod.make(f"""
+public static synchronized java.util.Map load(String k) {{
+  java.util.Map m = (java.util.Map) STATES.get(k);
+  if (m != null) return m;
+  m = new java.util.concurrent.ConcurrentHashMap();
+  java.nio.file.Path f = DIR == null ? null : DIR.resolve(k + ".properties");
+  try {{
+    if (f != null && java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {{
+      java.util.Properties p = new java.util.Properties();
+      java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+      try {{ p.load(in); }} finally {{ in.close(); }}
+      for (int i = 0; i < BENCHES.length; i++) {{
+        if (p.getProperty(BENCHES[i] + ".clock") == null) continue;
+        {PKG}.ProcBench pb = new {PKG}.ProcBench(BENCHES[i]);
+        pb.fromProps(p);
+        pb.key = k;
+        m.put(BENCHES[i], pb);
+      }}
+    }}
+  }} catch (Throwable t) {{
+    BROKEN.put(k, Boolean.TRUE);
+    {PKG}.SackPool.warn("processing: could not read " + f + " - left untouched, furnace/tannery disabled for " + k + " until restart: " + t);
+  }}
+  STATES.put(k, m);
+  return m;
+}}""", pst))
+pst.addMethod(CtNewMethod.make(f"""
+public static java.util.Map all(String k) {{
+  java.util.Map m = (java.util.Map) STATES.get(k);
+  return m != null ? m : load(k);
+}}""", pst))
+pst.addMethod(CtNewMethod.make(f"""
+public static {PKG}.ProcBench get(String k, String bench) {{
+  if (k == null || bench == null) return null;
+  return ({PKG}.ProcBench) all(k).get(bench);
+}}""", pst))
+pst.addMethod(CtNewMethod.make(f"""
+public static {PKG}.ProcBench of(String k, String bench) {{
+  java.util.concurrent.ConcurrentHashMap m = (java.util.concurrent.ConcurrentHashMap) all(k);
+  {PKG}.ProcBench pb = ({PKG}.ProcBench) m.get(bench);
+  if (pb != null) return pb;
+  pb = new {PKG}.ProcBench(bench);
+  pb.clock = System.currentTimeMillis();
+  pb.key = k;
+  Object prev = m.putIfAbsent(bench, pb);
+  return prev != null ? ({PKG}.ProcBench) prev : pb;
+}}""", pst))
+pst.addMethod(CtNewMethod.make(f"""
+public static boolean pending(String k, String bench) {{
+  {PKG}.ProcBench pb = get(k, bench);
+  return pb != null && pb.pending();
+}}""", pst))
+pst.addMethod(CtNewMethod.make("""
+public static void markDirty(String k) { DIRTY.put(k, Boolean.TRUE); }""", pst))
+pst.addMethod(CtNewMethod.make(f"""
+public static synchronized boolean save(String k) {{
+  if (k == null || DIR == null || BROKEN.containsKey(k)) return false;
+  java.util.Map m = (java.util.Map) STATES.get(k);
+  if (m == null) return false;
+  DIRTY.remove(k);
+  try {{
+    java.util.Properties p = new java.util.Properties();
+    p.setProperty("version", "1");
+    java.util.Iterator it = m.values().iterator();
+    while (it.hasNext()) {{ {PKG}.ProcBench pb = ({PKG}.ProcBench) it.next(); pb.toProps(p); }}
+    java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Path tmp = DIR.resolve(k + ".properties.tmp");
+    java.nio.file.Path dst = DIR.resolve(k + ".properties");
+    java.io.FileOutputStream out = new java.io.FileOutputStream(tmp.toFile());
+    try {{ p.store(out, "SkyySacks processing - Furnace/Tannery queues, fuel and output slots"); out.flush(); out.getFD().sync(); }} finally {{ out.close(); }}
+    try {{ java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[] {{ java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE }}); }}
+    catch (Throwable am) {{ java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[] {{ java.nio.file.StandardCopyOption.REPLACE_EXISTING }}); }}
+    return true;
+  }} catch (Throwable t) {{
+    DIRTY.put(k, Boolean.TRUE);
+    {PKG}.SackPool.warn("processing: could not save " + k + ": " + t);
+    return false;
+  }}
+}}""", pst))
+pst.addMethod(CtNewMethod.make("""
+public static void flushDirty() {
+  java.util.ArrayList ks = new java.util.ArrayList(DIRTY.keySet());
+  for (int i = 0; i < ks.size(); i++) save((String) ks.get(i));
+}""", pst))
+
+# ================= 0.8.0 VoidState + VoidStore core (research/Bags-v2-Spec.md 2 + 4; tools/sacks_0_8_0_patch.py docstring) =================
+# VoidState = one PROFILE KEY's Void (pd/<key>.properties): rar.<Cat> 0..3 (Normal..Legendary), omni, best.<Cat> (the best storage level
+# ever reached - the shown level never goes down), own.<Cat> (items the Void took in, the level total while coll:fn:catTotal is missing),
+# v2.first (the run-once marker: set after the History copy), v2.history, v2.welcome / v2.pocket (one-time per profile), ret.<bagId>
+# (/pdadmin legacybags tokens), any other line kept as it is. The journal (pd/<key>.journal) is read with it: left = unsettled C lines
+# of an earlier run (recovered at the next settled sweep of that key), done = settled ones (/pdadmin legacybags), given = their G lines.
+vss.addField(CtField.make("public String key;", vss))
+vss.addField(CtField.make("public int[] rar;", vss))
+vss.addField(CtField.make("public long[] best;", vss))
+vss.addField(CtField.make("public long[] own;", vss))
+vss.addField(CtField.make("public boolean omni;", vss))
+vss.addField(CtField.make("public long first;", vss))
+vss.addField(CtField.make("public String hist;", vss))
+vss.addField(CtField.make("public boolean welcome;", vss))
+vss.addField(CtField.make("public boolean pocket;", vss))
+# fix round: ret / left / done / given are touched by the world thread (decide, recover, usedRank, giveBack) AND the writer thread (saveNow,
+# settle) - concurrent collections (no ConcurrentModificationException, no lost update; iteration = a consistent snapshot)
+vss.addField(CtField.make("public java.util.Map ret;", vss))
+vss.addField(CtField.make("public java.util.Properties extra;", vss))
+vss.addField(CtField.make("public java.util.List left;", vss))
+vss.addField(CtField.make("public java.util.List done;", vss))
+vss.addField(CtField.make("public java.util.Set given;", vss))
+# fix round: hold = no old bag converts on this profile (set by /pdadmin legacybags <player>, cleared by /pdadmin resume; saved v2.hold);
+# outN = items taken OUT to the inventory on the page since the start (memory only): put back in, they do not count as collected again
+vss.addField(CtField.make("public volatile boolean hold;", vss))
+# fix round 2: holdAt = when the hold was set (v2.holdAt); a hold set before the last /pdadmin resume all (pd/_resume-all.stamp) is over
+vss.addField(CtField.make("public long holdAt;", vss))
+vss.addField(CtField.make("public long[] outN;", vss))
+vss.addConstructor(CtNewConstructor.make(jt(r'''
+public VoidState(String k, int n) {
+  this.key = k;
+  this.rar = new int[n];
+  this.best = new long[n];
+  this.own = new long[n];
+  this.outN = new long[n];
+  this.hist = "";
+  this.ret = new java.util.concurrent.ConcurrentHashMap();
+  this.extra = new java.util.Properties();
+  this.left = new java.util.concurrent.CopyOnWriteArrayList();
+  this.done = new java.util.concurrent.CopyOnWriteArrayList();
+  this.given = java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap());
+}'''), vss))
+# VoidStore fields. PEND = key -> ArrayList of journal entries of THIS run waiting for their 30 s (Object[] {seq, bagId, Integer qty,
+# Integer n0, "R" | "F", Long time, refund text, key}); PEND is lock-free (fix round: ConcurrentHashMap of CopyOnWriteArrayList - see pendAdd).
+for _decl in ("public static java.nio.file.Path DIR;", "public static java.nio.file.Path HDIR;", "public static java.nio.file.Path MIGLOG;",
+              "public static final java.util.concurrent.ConcurrentHashMap STATES = new java.util.concurrent.ConcurrentHashMap();",
+              "public static final java.util.concurrent.ConcurrentHashMap BAD = new java.util.concurrent.ConcurrentHashMap();",
+              "public static final java.util.concurrent.ConcurrentHashMap DIRTY = new java.util.concurrent.ConcurrentHashMap();",
+              "public static final java.util.concurrent.ConcurrentHashMap PEND = new java.util.concurrent.ConcurrentHashMap();",
+              "public static volatile boolean HOLDALL = false;",   # fix round: /pdadmin legacybags all (pd/_legacybags-all.flag)
+              "public static volatile long RESUMEALL = 0L;",       # fix round 2: the time of the last /pdadmin resume all (pd/_resume-all.stamp)
+              "public static final java.util.concurrent.ConcurrentHashMap TOLD = new java.util.concurrent.ConcurrentHashMap();",
+              "public static final java.util.concurrent.ConcurrentHashMap SNAPQ = new java.util.concurrent.ConcurrentHashMap();",
+              "public static final java.util.concurrent.ConcurrentHashMap SNAPFAIL = new java.util.concurrent.ConcurrentHashMap();",
+              "public static final java.util.concurrent.atomic.AtomicLong SEQ = new java.util.concurrent.atomic.AtomicLong();",
+              "public static volatile long SETTLE_MS = 30000L;",
+              "public static final java.util.concurrent.atomic.AtomicLong SETTLED = new java.util.concurrent.atomic.AtomicLong();",
+              "public static final java.util.concurrent.atomic.AtomicLong CONVERTED = new java.util.concurrent.atomic.AtomicLong();"):
+    vst.addField(CtField.make(_decl, vst))
+# CRASHAT = the harness's crash point (null in the game: nothing happens); crash(at) throws exactly there (crash-at-every-step proof)
+vst.addField(CtField.make("public static volatile String CRASHAT = null;", vst))
+vst.addField(CtField.make('public static final String NOREAD = "the Void data of this profile cannot be read right now";', vst))
+vst.addField(CtField.make("public static volatile int CRASHN = 1;", vst))      # the harness: crash at the CRASHN-th time that step runs
+vst.addField(CtField.make("public static volatile int CRASHHITS = 0;", vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static void crash(String at) {
+  String c = CRASHAT;
+  if (c == null || !c.equals(at)) return;
+  CRASHHITS = CRASHHITS + 1;
+  if (CRASHHITS >= CRASHN) { CRASHAT = null; throw new IllegalStateException("test crash at " + at); }
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static void markDirty(String k) {
+  if (k != null) DIRTY.put(k, Boolean.TRUE);
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static long num(String v, long def) {
+  if (v == null) return def;
+  try { return Long.parseLong(v.trim()); } catch (Throwable t) { return def; }
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static boolean bool(java.util.Properties p, String key) {
+  return "true".equalsIgnoreCase(String.valueOf(p.getProperty(key, "false")).trim());
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static void load(@PKG@.VoidState s, java.util.Properties p) {
+  String[] cats = @PKG@.SackDefs.CATS;
+  java.util.HashSet mine = new java.util.HashSet();
+  for (int i = 0; i < cats.length; i++) {
+    long r = num(p.getProperty("rar." + cats[i]), 0L);
+    s.rar[i] = r < 0L ? 0 : (r > 3L ? 3 : (int) r);
+    s.best[i] = Math.max(0L, num(p.getProperty("best." + cats[i]), 0L));
+    s.own[i] = Math.max(0L, num(p.getProperty("own." + cats[i]), 0L));
+    mine.add("rar." + cats[i]); mine.add("best." + cats[i]); mine.add("own." + cats[i]);
+  }
+  s.omni = bool(p, "omni");
+  s.first = num(p.getProperty("v2.first"), 0L);
+  s.hist = String.valueOf(p.getProperty("v2.history", "")).trim();
+  s.welcome = bool(p, "v2.welcome");
+  s.pocket = bool(p, "v2.pocket");
+  s.hold = bool(p, "v2.hold");   // fix round: /pdadmin legacybags hold
+  s.holdAt = num(p.getProperty("v2.holdAt"), 0L);
+  // fix round 2: /pdadmin resume all also ends the holds of profiles that were not loaded then (their file still says v2.hold=true)
+  if (s.hold && RESUMEALL > 0L && s.holdAt <= RESUMEALL) { s.hold = false; markDirty(s.key); }
+  mine.add("omni"); mine.add("v2.first"); mine.add("v2.history"); mine.add("v2.welcome"); mine.add("v2.pocket"); mine.add("v2.hold"); mine.add("v2.holdAt");
+  java.util.Enumeration en = p.propertyNames();
+  while (en.hasMoreElements()) {
+    String key = (String) en.nextElement();
+    if (key.startsWith("ret.")) continue;   // fix round 2: give-back tokens live in the journal only (G lines minus "tok" C lines)
+    if (!mine.contains(key)) s.extra.setProperty(key, p.getProperty(key));
+  }
+}'''), vst))
+# journal lines: C|seq|bagId|qty|n0|R-or-F|time|refund, D|seq (settled), X|seq (the bag came back), G|seq (given back by /pdadmin)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static void readJournal(@PKG@.VoidState s) throws java.io.IOException {
+  java.nio.file.Path f = DIR.resolve(s.key + ".journal");
+  if (!java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) return;
+  java.util.List lines = java.nio.file.Files.readAllLines(f, java.nio.charset.StandardCharsets.UTF_8);
+  java.util.LinkedHashMap open = new java.util.LinkedHashMap();
+  java.util.LinkedHashMap closed = new java.util.LinkedHashMap();
+  for (int i = 0; i < lines.size(); i++) {
+    String ln = ((String) lines.get(i)).trim();
+    if (ln.length() == 0 || ln.startsWith("#")) continue;
+    String[] a = ln.split("\\|", -1);
+    if (a[0].equals("C") && a.length >= 8) {
+      Object[] e = new Object[] { a[1], a[2], Integer.valueOf((int) num(a[3], 1L)), Integer.valueOf((int) num(a[4], 0L)), a[5], Long.valueOf(num(a[6], 0L)), a[7], s.key };
+      open.put(a[1], e);
+    } else if (a.length >= 2 && a[0].equals("D")) {
+      Object e = open.remove(a[1]);
+      if (e != null) closed.put(a[1], e);
+    } else if (a.length >= 2 && a[0].equals("X")) {
+      open.remove(a[1]);
+    } else if (a.length >= 2 && a[0].equals("G")) {
+      s.given.add(a[1]);
+      if (a.length >= 4) { Integer t = (Integer) s.ret.get(a[2]); s.ret.put(a[2], Integer.valueOf((t == null ? 0 : t.intValue()) + (int) num(a[3], 1L))); }
+    }
+  }
+  s.left.addAll(open.values());
+  s.done.addAll(closed.values());
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static @PKG@.VoidState st(String k) {
+  if (k == null) return null;
+  @PKG@.VoidState s = (@PKG@.VoidState) STATES.get(k);
+  if (s != null) return s;
+  Long bad = (Long) BAD.get(k);
+  if (bad != null && System.currentTimeMillis() - bad.longValue() < 2000L) return null;
+  s = new @PKG@.VoidState(k, @PKG@.SackDefs.CATS.length);
+  try {
+    if (DIR != null) {
+      java.nio.file.Path f = DIR.resolve(k + ".properties");
+      if (java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) {
+        java.util.Properties p = new java.util.Properties();
+        java.io.InputStream in = java.nio.file.Files.newInputStream(f, new java.nio.file.OpenOption[0]);
+        try { p.load(in); } finally { in.close(); }
+        load(s, p);
+      }
+      readJournal(s);
+    }
+  } catch (Throwable t) {
+    if (BAD.put(k, Long.valueOf(System.currentTimeMillis())) == null) @PKG@.SackPool.warn("could not read the Void data of " + k + " (pd/" + k + ".properties / .journal) - files left untouched; that profile's rarity, migration and upgrades wait until it reads: " + t);
+    return null;
+  }
+  if (BAD.remove(k) != null) @PKG@.SackPool.warn("the Void data of " + k + " reads again");
+  @PKG@.VoidState prev = (@PKG@.VoidState) STATES.putIfAbsent(k, s);
+  return prev != null ? prev : s;
+}'''), vst))
+# pd/<key>.properties: tmp + fsync + atomic rename (the pool file's pattern). true = written.
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized boolean saveNow(String k) {
+  @PKG@.VoidState s = (@PKG@.VoidState) STATES.get(k);
+  if (s == null || DIR == null) return false;
+  try {
+    java.util.Properties p = new java.util.Properties();
+    p.putAll(s.extra);
+    String[] cats = @PKG@.SackDefs.CATS;
+    for (int i = 0; i < cats.length; i++) {
+      p.setProperty("rar." + cats[i], String.valueOf(s.rar[i]));
+      p.setProperty("best." + cats[i], String.valueOf(s.best[i]));
+      if (s.own[i] > 0L) p.setProperty("own." + cats[i], String.valueOf(s.own[i]));
+    }
+    p.setProperty("omni", String.valueOf(s.omni));
+    if (s.first > 0L) p.setProperty("v2.first", String.valueOf(s.first));
+    if (s.hist != null && s.hist.length() > 0) p.setProperty("v2.history", s.hist);
+    if (s.welcome) p.setProperty("v2.welcome", "true");
+    if (s.pocket) p.setProperty("v2.pocket", "true");
+    if (s.hold) { p.setProperty("v2.hold", "true"); p.setProperty("v2.holdAt", String.valueOf(s.holdAt)); }
+    java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Path tmp = DIR.resolve(k + ".properties.tmp");
+    java.nio.file.Path dst = DIR.resolve(k + ".properties");
+    java.io.FileOutputStream out = new java.io.FileOutputStream(tmp.toFile());
+    try { p.store(out, "SkyyVoid (SkyySacks 0.8.0) - this profile's Void: rarity per category (0 Normal .. 3 Legendary), best storage level, Omni, the one-time v2 marker"); out.flush(); out.getFD().sync(); } finally { out.close(); }
+    try { java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE }); }
+    catch (Throwable am) { java.nio.file.Files.move(tmp, dst, new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING }); }
+    DIRTY.remove(k);
+    return true;
+  } catch (Throwable t) {
+    DIRTY.put(k, Boolean.TRUE);
+    @PKG@.KnowSync.warnOnce("could not save the Void data of " + k + " (kept, retried by the next save): " + t);
+    return false;
+  }
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static void flushDirty() {
+  java.util.ArrayList ks = new java.util.ArrayList(DIRTY.keySet());
+  for (int i = 0; i < ks.size(); i++) saveNow((String) ks.get(i));
+}'''), vst))
+# one journal line, appended and fsync'd (the crash proof of a conversion); false = not written (the caller stops)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized boolean appendJournal(String k, String line) {
+  if (k == null || DIR == null) return false;
+  try {
+    java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
+    java.io.FileOutputStream out = new java.io.FileOutputStream(DIR.resolve(k + ".journal").toFile(), true);
+    try { out.write((line + System.lineSeparator()).getBytes("UTF-8")); out.flush(); out.getFD().sync(); } finally { out.close(); }
+    return true;
+  } catch (Throwable t) {
+    @PKG@.KnowSync.warnOnce("could not write the Void journal of " + k + " (nothing converted this time, retried): " + t);
+    return false;
+  }
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static String nextSeq() {
+  return "t" + Long.toString(System.currentTimeMillis(), 36) + "n" + SEQ.incrementAndGet();
+}'''), vst))
+# ---- storage level (spec 2.1): total = coll:fn:catTotal {UUID, category} (SkyyCollections 0.2.9+, the ACTIVE profile), else own.<Cat>
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static boolean collInstalled() {
+  try { return @PKG@.SackPool.bridge().get("coll:fn:catTotal") instanceof java.util.function.Function; } catch (Throwable t) { return false; }
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static long collTotal(java.util.UUID u, String cat) {
+  if (u == null || cat == null) return -1L;
+  try {
+    Object f = @PKG@.SackPool.bridge().get("coll:fn:catTotal");
+    if (!(f instanceof java.util.function.Function)) return -1L;
+    Object r = ((java.util.function.Function) f).apply(new Object[] { u, cat });
+    if (r instanceof Number) return ((Number) r).longValue();
+  } catch (Throwable t) { }
+  return -1L;
+}'''), vst))
+# 0.8.9 (Skyy "scale down how much each level cost goes up"): the items a level needs = step x (level - 1)^pd.curve, rounded up
+# (pd.curve 2 = the 0.8.0-0.8.8 curve exactly)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static long totalFor(int level, int ci) {
+  long n = (long) (level < 1 ? 0 : level - 1);
+  if (n <= 0L) return 0L;
+  long step = (long) @PKG@.SackCfg.step(ci);
+  if (step < 1L) step = 1L;
+  double v = (double) step * Math.pow((double) n, @PKG@.SackCfg.curve());
+  if (v > 1.0E17) return 100000000000000000L;
+  return (long) Math.ceil(v - 1.0E-6);
+}'''), vst))
+# the level of a total = the highest L with totalFor(L) <= total (the estimate checked against totalFor, so both always agree)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int levelOf(long total, int ci) {
+  int step = @PKG@.SackCfg.step(ci);
+  if (step < 1) step = 1;
+  int max = @PKG@.SackCfg.maxLevel();
+  if (total <= 0L) return 1;
+  double q = Math.floor(Math.pow((double) total / (double) step, 1.0 / @PKG@.SackCfg.curve()) + 1.0E-9);
+  long lv = 1L + (long) q;
+  if (lv > (long) max) lv = (long) max;
+  if (lv < 1L) lv = 1L;
+  while (lv > 1L && totalFor((int) lv, ci) > total) lv--;
+  while (lv < (long) max && totalFor((int) lv + 1, ci) <= total) lv++;
+  return (int) lv;
+}'''), vst))
+# 0.8.10: the fish LANDED on the active profile (SkyyFishing 0.1.8 fishing:fn:pond) for the Fishing category, 0 for the others / absent
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static long landed(java.util.UUID u, int ci) {
+  if (u == null || ci < 0 || ci >= @PKG@.SackDefs.CATS.length || !"Fishing".equals(@PKG@.SackDefs.CATS[ci])) return 0L;
+  try {
+    Object b = System.getProperties().get("skyy.bridge");
+    Object f = (b instanceof java.util.Map) ? ((java.util.Map) b).get("fishing:fn:pond") : null;
+    if (!(f instanceof java.util.function.Function)) return 0L;
+    Object r = ((java.util.function.Function) f).apply(u);
+    return (r instanceof Number) ? Math.max(0L, ((Number) r).longValue()) : 0L;
+  } catch (Throwable t) { return 0L; }
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static long total(java.util.UUID u, String k, int ci) {
+  long t = collTotal(u, @PKG@.SackDefs.CATS[ci]);
+  if (t >= 0L) return t + landed(u, ci);   // 0.8.10: + the fish you landed
+  @PKG@.VoidState s = st(k);
+  return s == null ? 0L : s.own[ci];
+}'''), vst))
+# the shown level = max(the saved best, the level from the total), capped at pd.maxLevel; a new best is saved (dirty)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int level(java.util.UUID u, String k, int ci) {
+  if (ci < 0 || ci >= @PKG@.SackDefs.CATS.length) return 1;
+  int lv = levelOf(total(u, k, ci), ci);
+  @PKG@.VoidState s = st(k);
+  int max = @PKG@.SackCfg.maxLevel();
+  if (s != null) {
+    if ((long) lv > s.best[ci]) { s.best[ci] = (long) lv; markDirty(k); }
+    if (s.best[ci] > (long) lv) lv = (int) Math.min(s.best[ci], (long) max);
+  }
+  return lv > max ? max : lv;
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int levelBest(String k, int ci) {
+  @PKG@.VoidState s = st(k);
+  int max = @PKG@.SackCfg.maxLevel();
+  long b = s == null ? 1L : Math.max(1L, s.best[ci]);
+  return (int) Math.min(b, (long) max);
+}'''), vst))
+# ---- pending conversions of THIS run (R = a bag that raises a rarity once settled; it counts at once for capacity and the page)
+# fix round: LOCK-FREE (was synchronized on VoidStore.class, the monitor saveNow / appendJournal hold across an fsync - the world thread's
+# capsK / page asked ~48 times per sweep and could wait for the disk). PEND = ConcurrentHashMap of CopyOnWriteArrayList; a key's list is
+# never removed once made (a handful of profile keys per run) so an add can never land in a list that was just dropped.
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static void pendAdd(String k, Object[] e) {
+  java.util.List l = (java.util.List) PEND.get(k);
+  if (l == null) {
+    java.util.List nl = new java.util.concurrent.CopyOnWriteArrayList();
+    l = (java.util.List) PEND.putIfAbsent(k, nl);
+    if (l == null) l = nl;
+  }
+  l.add(e);
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static boolean pendRemove(String k, Object[] e) {
+  java.util.List l = (java.util.List) PEND.get(k);
+  if (l == null) return false;
+  return l.remove(e);
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.ArrayList pendCopy(String k) {
+  java.util.List l = (java.util.List) PEND.get(k);
+  return l == null ? new java.util.ArrayList() : new java.util.ArrayList(l);
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.ArrayList pendKeys() {
+  return new java.util.ArrayList(PEND.keySet());
+}'''), vst))
+# the rarity index (0..3) an R entry gives category ci, -1 none (a Farming bag also sets Fishing)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int rOf(String bag, int ci) {
+  int r = @PKG@.SackDefs.legacyRank(bag);
+  if (r < 1 || r > 4) return -1;
+  String c = @PKG@.SackDefs.legacyCat(bag);
+  String me = @PKG@.SackDefs.CATS[ci];
+  if (me.equals(c) || ("Fishing".equals(me) && "Farming".equals(c))) return r - 1;
+  return -1;
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int pendRank(String k, int ci) {
+  java.util.ArrayList l = pendCopy(k);
+  int best = -1;
+  for (int i = 0; i < l.size(); i++) {
+    Object[] e = (Object[]) l.get(i);
+    if (!"R".equals(e[4])) continue;
+    int r = rOf((String) e[1], ci);
+    if (r > best) best = r;
+  }
+  return best;
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static boolean pendOmni(String k) {
+  java.util.ArrayList l = pendCopy(k);
+  for (int i = 0; i < l.size(); i++) {
+    Object[] e = (Object[]) l.get(i);
+    if ("R".equals(e[4]) && @PKG@.SackDefs.legacyRank((String) e[1]) == 5) return true;
+  }
+  return false;
+}'''), vst))
+# ---- rarity + capacity (spec 2.2 / 2.3)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int rarOf(String k, int ci) {
+  @PKG@.VoidState s = st(k);
+  int r = s == null ? 0 : s.rar[ci];
+  int p = pendRank(k, ci);
+  return p > r ? p : r;
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int legendCount(String k) {
+  int n = 0;
+  for (int i = 0; i < @PKG@.SackDefs.CATS.length; i++) if (rarOf(k, i) >= 3) n++;
+  return n;
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static boolean omni(String k) {
+  @PKG@.VoidState s = st(k);
+  if (s == null) return false;
+  if (s.omni || pendOmni(k)) return true;
+  return @PKG@.SackCfg.PD_OMNI_AUTO && legendCount(k) >= @PKG@.SackDefs.CATS.length;
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int rank(String k, int ci) {
+  return omni(k) ? 4 : rarOf(k, ci);
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static long capOf(int level, int rank) {
+  double c = Math.floor((double) level * (double) @PKG@.SackCfg.PD_PER_LEVEL * @PKG@.SackCfg.mult(rank) + 1.0E-6);
+  if (c != c || c < 0.0) return 0L;
+  if (c > 2147483647.0) return 2147483647L;
+  return (long) c;
+}'''), vst))
+# category -> Integer capacity: capsK with the live totals (the sweep, the page, the bridges: the ACTIVE profile), capsBest from the saved
+# best levels only (no UUID needed)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashMap capsK(java.util.UUID u, String k) {
+  java.util.HashMap out = new java.util.HashMap();
+  String[] cats = @PKG@.SackDefs.CATS;
+  for (int i = 0; i < cats.length; i++) out.put(cats[i], Integer.valueOf((int) capOf(level(u, k, i), rank(k, i))));
+  return out;
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashMap capsBest(String k) {
+  java.util.HashMap out = new java.util.HashMap();
+  String[] cats = @PKG@.SackDefs.CATS;
+  for (int i = 0; i < cats.length; i++) out.put(cats[i], Integer.valueOf((int) capOf(levelBest(k, i), rank(k, i))));
+  return out;
+}'''), vst))
+# the items stored per category (homeOf: cooked food stored in Farming counts there)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static long[] usedAll(String k) {
+  long[] out = new long[@PKG@.SackDefs.CATS.length];
+  java.util.Iterator it = @PKG@.SackPool.pool(k).entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    int ci = @PKG@.SackDefs.catIndex(@PKG@.SackDefs.homeOf((String) e.getKey()));
+    if (ci >= 0) out[ci] += ((Long) e.getValue()).longValue();
+  }
+  return out;
+}'''), vst))
+# the Void's own intake count (the level total without SkyyCollections; counted only while coll:fn:catTotal is missing - no file writes otherwise)
+# fix round: items the page took OUT to the inventory (noteOut) and later put back in are not counted again (a Withdraw + Deposit loop
+# raised the level for free); only items beyond what went out count as collected. outN is memory only (a restart forgets it - harmless).
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static void noteOut(String k, int ci, long n) {
+  if (n <= 0L || ci < 0 || collInstalled()) return;
+  @PKG@.VoidState s = st(k);
+  if (s == null || ci >= s.outN.length) return;
+  s.outN[ci] = s.outN[ci] + n;
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static void noteIntake(String k, int ci, long n) {
+  if (n <= 0L || ci < 0 || collInstalled()) return;
+  @PKG@.VoidState s = st(k);
+  if (s == null || ci >= s.own.length) return;
+  long back = s.outN[ci] < n ? s.outN[ci] : n;
+  s.outN[ci] = s.outN[ci] - back;
+  long add = n - back;
+  if (add <= 0L) return;
+  s.own[ci] = s.own[ci] + add;
+  markDirty(k);
+}'''), vst))
+# ---- the CREDIT of a conversion (writer thread; spec 4.3): R = the rarity (max, idempotent) saved first; F = the refund into the pool with
+# its seq in the same atomic pool write (SackPool.credit: a repeat pays nothing). Then D|seq. false = retry later (nothing half-done counts).
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static boolean applyR(@PKG@.VoidState s, String bag) {
+  int r = @PKG@.SackDefs.legacyRank(bag);
+  boolean ch = false;
+  if (r == 5) { if (!s.omni) { s.omni = true; ch = true; } return ch; }
+  for (int ci = 0; ci < s.rar.length; ci++) {
+    int g = rOf(bag, ci);
+    if (g > s.rar[ci]) { s.rar[ci] = g; ch = true; }
+  }
+  return ch;
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static boolean settle(String k, Object[] e) {
+  @PKG@.VoidState s = st(k);
+  if (s == null) return false;
+  String seq = (String) e[0];
+  String bag = (String) e[1];
+  if ("R".equals(e[4])) {
+    applyR(s, bag);
+    if (!saveNow(k)) return false;
+    crash("SR");
+  } else {
+    java.util.LinkedHashMap items = @PKG@.SackCfg.parseCost((String) e[6]);
+    if (items != null) {
+      // fix round 2: the retry after a failed pool write (paidHas true in memory only) saves + reads back too before D is written
+      if (!@PKG@.SackPool.paidHas(k, seq)) {
+        if (!@PKG@.SackPool.credit(k, seq, items)) return false;
+        @PKG@.SackPool.save(k);
+      } else if (@PKG@.SackPool.DIRTY.containsKey(k)) @PKG@.SackPool.save(k);
+      if (@PKG@.SackPool.DIRTY.containsKey(k) && !@PKG@.SackPool.paidOnDisk(k, seq)) return false;
+    }
+    crash("SF");
+  }
+  if (!appendJournal(k, "D|" + seq)) return false;
+  if (!"R".equals(e[4])) @PKG@.SackPool.unpaid(k, seq);
+  s.left.remove(e);
+  if (!s.done.contains(e)) s.done.add(e);
+  SETTLED.incrementAndGet();   // (the D|seq journal line is the record; crafts.log has the VOID-CONVERT line)
+  return true;
+}'''), vst))
+# every pending entry whose removal is durable (SETTLE_MS since it was made) - the SackSaver (writer thread, every 10 s) and at once for
+# recovered entries (time 0)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int settleDue(long now) {
+  int n = 0;
+  java.util.ArrayList ks = pendKeys();
+  for (int i = 0; i < ks.size(); i++) {
+    String k = (String) ks.get(i);
+    java.util.ArrayList l = pendCopy(k);
+    for (int j = 0; j < l.size(); j++) {
+      Object[] e = (Object[]) l.get(j);
+      if (((Long) e[5]).longValue() + SETTLE_MS > now) continue;
+      try { if (settle(k, e)) { pendRemove(k, e); n++; } } catch (Throwable t) { @PKG@.KnowSync.warnOnce("Void settle failed (retried): " + t); }
+    }
+  }
+  return n;
+}'''), vst))
+
+# ================= SweepTask (runs ON world thread; no disk I/O) =================
+swp.addInterface(pool.get("java.lang.Runnable"))
+swp.addField(CtField.make(f"public {PR} pr;", swp))
+swp.addField(CtField.make("public java.util.UUID expectedWorld;", swp))
+swp.addConstructor(CtNewConstructor.make(f"public SweepTask({PR} pr, java.util.UUID w) {{ this.pr = pr; this.expectedWorld = w; }}", swp))
+# 0.7.11 BAGS ADD UP (Skyy R3 / R4 2026-10-02: "carrying 2-3 bags of the same type ADDS their space together"; 0.7.7-0.7.10 kept only
+# the best one): every carried bag of a type adds its cap - a stack of n bags counts n times (bags are MaxStack 1 in game) - in long
+# math, capped at Integer.MAX_VALUE. Skyy_Sack_Omni adds CAP_OMNI to EVERY category in SackDefs.CATS on top of the other bags (a later
+# sixth bag type needs no change). ranks keeps the highest rarity rank per type (1-4 = Normal..Legendary, 6 = the Mythic Omni Bag) for
+# the page colour; counts (optional) = type -> int[TIERS.length + 1] bags per rarity, the Omni last, for the page's "From 3 bags" line.
+# A stack whose type or tier word is unknown is skipped (spec 12.2). bagOf is the whole rule for one stack (a pure function the bare-JVM
+# test calls); scanN only walks storage, hotbar and backpack. Every caller keeps using caps(): sweep, withdraw, Deposit all, the bench
+# link, the craft page, the tabs - lowering the space never deletes pooled items (the sweep only stops intake at the cap).
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static void addBag(java.util.HashMap caps, java.util.HashMap ranks, java.util.HashMap counts, String cat, int cap, int rank, int n) {
+  if (cat == null || n <= 0) return;
+  Integer cur = (Integer) caps.get(cat);
+  long sum = (cur == null ? 0L : (long) cur.intValue()) + (long) cap * (long) n;
+  if (sum > 2147483647L) sum = 2147483647L;
+  if (sum < 0L) sum = 0L;
+  caps.put(cat, Integer.valueOf((int) sum));
+  Integer cr = (Integer) ranks.get(cat);
+  if (cr == null || cr.intValue() < rank) ranks.put(cat, Integer.valueOf(rank));
+  if (counts == null) return;
+  int top = @PKG@.SackDefs.TIERS.length;
+  int[] c = (int[]) counts.get(cat);
+  if (c == null) { c = new int[top + 1]; counts.put(cat, c); }
+  int at = rank > top ? top : rank - 1;
+  if (at < 0) at = 0;
+  long nv = (long) c[at] + (long) n;
+  c[at] = nv > 2147483647L ? 2147483647 : (int) nv;
+}'''), swp))
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static void bagOf(String id, int n, java.util.HashMap caps, java.util.HashMap ranks, java.util.HashMap counts) {
+  if (id == null || n <= 0 || !id.startsWith("Skyy_Sack_")) return;
+  String[] cats = @PKG@.SackDefs.CATS;
+  if (id.equals(@PKG@.SackDefs.OMNI)) {
+    for (int k = 0; k < cats.length; k++) addBag(caps, ranks, counts, cats[k], @PKG@.SackDefs.CAP_OMNI, 6, n);
+    return;
+  }
+  String[] parts = id.split("_");
+  if (parts.length != 4 || @PKG@.SackDefs.catIndex(parts[2]) < 0) return;
+  int rank = @PKG@.SackDefs.tierRank(parts[3]);
+  if (rank <= 0) return;
+  addBag(caps, ranks, counts, parts[2], @PKG@.SackDefs.tierCap(parts[3]), rank, n);
+}'''), swp))
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static void scanN(@INV@ inv, java.util.HashMap caps, java.util.HashMap ranks, java.util.HashMap counts) {
+  if (inv == null) return;
+  @IC@[] conts = new @IC@[] { inv.getStorage(), inv.getHotbar(), inv.getBackpack() };
+  for (int c = 0; c < conts.length; c++) {
+    @IC@ cont = conts[c];
+    if (cont == null) continue;
+    short cap = cont.getCapacity();
+    for (short s = 0; s < cap; s++) {
+      @IS@ it = cont.getItemStack(s);
+      if (it == null || it.isEmpty()) continue;
+      bagOf(it.getItemId(), it.getQuantity(), caps, ranks, counts);
+    }
+  }
+}'''), swp))
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static void scan(@INV@ inv, java.util.HashMap caps, java.util.HashMap ranks) {
+  scanN(inv, caps, ranks, (java.util.HashMap) null);
+}'''), swp))
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashMap caps(@INV@ inv) {
+  // 0.8.0 (Bags v2 spec 1.2): no bag needs to be carried - every category is reachable (callers ask containsKey); the CAPACITY of a
+  // category is VoidStore.capsK / capsBest (one item limit per category)
+  java.util.HashMap caps = new java.util.HashMap();
+  String[] cats = @PKG@.SackDefs.CATS;
+  for (int i = 0; i < cats.length; i++) caps.put(cats[i], Integer.valueOf(2147483647));
+  return caps;
+}'''), swp))
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashMap best(@INV@ inv) {
+  java.util.HashMap ranks = new java.util.HashMap();
+  scan(inv, new java.util.HashMap(), ranks);
+  return ranks;
+}'''), swp))
+# how many different bag types the player carries a Legendary bag of (the Omni recipe needs one of each; the Omni itself does not count)
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int legendCount(@INV@ inv) {
+  if (inv == null) return 0;
+  String[] cats = @PKG@.SackDefs.CATS;
+  boolean[] got = new boolean[cats.length];
+  @IC@[] conts = new @IC@[] { inv.getStorage(), inv.getHotbar(), inv.getBackpack() };
+  for (int c = 0; c < conts.length; c++) {
+    @IC@ cont = conts[c];
+    if (cont == null) continue;
+    short cap = cont.getCapacity();
+    for (short s = 0; s < cap; s++) {
+      @IS@ it = cont.getItemStack(s);
+      if (it == null || it.isEmpty()) continue;
+      String id = it.getItemId();
+      if (id == null || !id.startsWith("Skyy_Sack_") || !id.endsWith("_@TOP@")) continue;
+      String[] parts = id.split("_");
+      if (parts.length != 4) continue;
+      int ci = @PKG@.SackDefs.catIndex(parts[2]);
+      if (ci >= 0) got[ci] = true;
+    }
+  }
+  int n = 0;
+  for (int i = 0; i < got.length; i++) if (got[i]) n++;
+  return n;
+}'''.replace("@TOP@", TOP_SUFFIX)), swp))
+# 0.7.7 restamp (spec 5.6): a saved stack keeps the quality INDEX it was saved with ("Quality": 5 = the old Rare on every Large bag), so a
+# carried bag whose index differs from its item's quality gets withQuality(item index) - id, quantity, durability and metadata stay
+# (VERIFIED), only the look changes. Self-healing if another quality pack shifts the indexes later. Most sweeps find nothing to do.
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int restamp(@INV@ inv) {
+  if (inv == null) return 0;
+  int n = 0;
+  @IC@[] conts = new @IC@[] { inv.getStorage(), inv.getHotbar(), inv.getBackpack() };
+  for (int c = 0; c < conts.length; c++) {
+    @IC@ cont = conts[c];
+    if (cont == null) continue;
+    short cap = cont.getCapacity();
+    for (short s = 0; s < cap; s++) {
+      @IS@ it = cont.getItemStack(s);
+      if (it == null || it.isEmpty()) continue;
+      String id = it.getItemId();
+      if (id == null || !id.startsWith("Skyy_Sack_") || !@PKG@.SackDefs.isBag(id)) continue;
+      @ITM@ item = it.getItem();
+      if (item == null) continue;
+      int want = item.getQualityIndex();
+      if (it.getQualityIndex() == want) continue;
+      cont.setItemStackForSlot(s, it.withQuality(want));
+      n++;
+    }
+  }
+  return n;
+}'''), swp))
+# 0.7.11: how many of each item the player carries (storage + hotbar + backpack, the containers caps() scans): item id -> Long
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashMap carried(@INV@ inv) {
+  java.util.HashMap out = new java.util.HashMap();
+  if (inv == null) return out;
+  @IC@[] conts = new @IC@[] { inv.getStorage(), inv.getHotbar(), inv.getBackpack() };
+  for (int c = 0; c < conts.length; c++) {
+    @IC@ cont = conts[c];
+    if (cont == null) continue;
+    short cap = cont.getCapacity();
+    for (short s = 0; s < cap; s++) {
+      @IS@ it = cont.getItemStack(s);
+      if (it == null || it.isEmpty()) continue;
+      String id = it.getItemId();
+      if (id == null) continue;
+      Long v = (Long) out.get(id);
+      out.put(id, Long.valueOf((v == null ? 0L : v.longValue()) + (long) it.getQuantity()));
+    }
+  }
+  return out;
+}'''), swp))
+# 0.7.11: kept drops to what the player carries (have = carried(inv)): blocks placed, items used, dropped or stored away lower it; an item
+# no longer carried loses its entry. Returns how many entries changed. Never raises a count.
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int keptDrop(java.util.HashMap have, String k) {
+  java.util.concurrent.ConcurrentHashMap m = @PKG@.SackPool.keptMap(k, false);
+  if (m == null || m.isEmpty()) return 0;
+  int n = 0;
+  java.util.ArrayList ids = new java.util.ArrayList(m.keySet());
+  for (int i = 0; i < ids.size(); i++) {
+    String id = (String) ids.get(i);
+    Long kv = (Long) m.get(id);
+    if (kv == null) continue;
+    Long hv = have == null ? null : (Long) have.get(id);
+    long h = hv == null ? 0L : hv.longValue();
+    if (h < kv.longValue()) {
+      if (h <= 0L) m.remove(id); else m.put(id, Long.valueOf(h));
+      n++;
+    }
+  }
+  return n;
+}'''), swp))
+# 0.8.10: a whole fish's entry through SkyyFishing 0.1.8's fishing:fn:fishOf ({id, metadata JSON}): "grams,mm,catcher", "" = no metadata
+# (a plain fish), null = leave this stack alone (other metadata, or no SkyyFishing 0.1.8 to read it)
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static String fishEntry(@IS@ it) {
+  if (it == null || it.isEmpty() || !@PKG@.SackDefs.isCatch(it.getItemId())) return null;
+  org.bson.BsonDocument md = it.getMetadata();
+  if (md == null || md.isEmpty()) return "";
+  Object b = System.getProperties().get("skyy.bridge");
+  Object f = (b instanceof java.util.Map) ? ((java.util.Map) b).get("fishing:fn:fishOf") : null;
+  if (!(f instanceof java.util.function.Function)) return null;
+  try {
+    Object r = ((java.util.function.Function) f).apply(new Object[] { it.getItemId(), md.toJson() });
+    return (r instanceof String) ? (String) r : null;
+  } catch (Throwable t) { return null; }
+}'''), swp))
+# the fish of an entry: "" = a plain fish; else fishing:fn:fishDoc rebuilds its metadata (null = no SkyyFishing 0.1.8 - it stays in the Void)
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static @IS@ fishStack(String id, String e) {
+  if (id == null || e == null) return null;
+  if (e.length() == 0) return new @IS@(id, 1);
+  Object b = System.getProperties().get("skyy.bridge");
+  Object f = (b instanceof java.util.Map) ? ((java.util.Map) b).get("fishing:fn:fishDoc") : null;
+  if (!(f instanceof java.util.function.Function)) return null;
+  try {
+    Object r = ((java.util.function.Function) f).apply(new Object[] { id, e });
+    if (!(r instanceof String)) return null;
+    return new @IS@(id, 1, org.bson.BsonDocument.parse((String) r));
+  } catch (Throwable t) { return null; }
+}'''), swp))
+# how many fish of id the Void may take from storage + hotbar + backpack (stacks whose entry reads)
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static long fishHave(@INV@ inv, String id) {
+  if (inv == null || id == null) return 0L;
+  @IC@[] cs = new @IC@[] { inv.getStorage(), inv.getHotbar(), inv.getBackpack() };
+  long n = 0L;
+  for (int c = 0; c < cs.length; c++) {
+    if (cs[c] == null) continue;
+    short cap = cs[c].getCapacity();
+    for (short sl = 0; sl < cap; sl++) {
+      @IS@ it = cs[c].getItemStack(sl);
+      if (it == null || it.isEmpty() || !id.equals(it.getItemId()) || fishEntry(it) == null) continue;
+      n += (long) it.getQuantity();
+    }
+  }
+  return n;
+}'''), swp))
+# take up to n fish of id out of the slots (read back per slot) and book each with its entry; returns how many went in
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static long fishTake(@IC@[] cs, String k, String id, long n) {
+  long got = 0L;
+  for (int c = 0; c < cs.length && got < n; c++) {
+    if (cs[c] == null) continue;
+    short cap = cs[c].getCapacity();
+    for (short sl = 0; sl < cap && got < n; sl++) {
+      @IS@ it = cs[c].getItemStack(sl);
+      if (it == null || it.isEmpty() || !id.equals(it.getItemId())) continue;
+      String e = fishEntry(it);
+      if (e == null) continue;
+      int q = it.getQuantity();
+      int want = (long) q < n - got ? q : (int) (n - got);
+      @ISS@ tx = cs[c].removeItemStackFromSlot(sl, want);
+      if (tx == null || !tx.succeeded()) continue;
+      @IS@ rem = tx.getRemainder();
+      int r = want - (rem == null ? 0 : rem.getQuantity());
+      if (r > 0) { @PKG@.SackPool.fishIn(k, id, e, (long) r); got += (long) r; }
+    }
+  }
+  return got;
+}'''.replace("@ISS@", ISS)), swp))
+# 0.8.18: SUPSEEN = player uuid -> TRUE while their last sweep pass left claimed (supply:fn:claims) items in the inventory
+swp.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap SUPSEEN = new java.util.concurrent.ConcurrentHashMap();", swp))
+# sweep matching items into the pool. onlyCat == null -> every category; allContainers -> hotbar + backpack too. Returns items moved.
+# 0.7.11 KEPT: the automatic sweep (main inventory only, allContainers false) leaves up to SackPool.kept(k, id) of what the player carries
+# (storage + hotbar + backpack) alone and collects only what is above it - take out 512 stone, up to 512 stay; mine 10 more and the 10 go
+# in. Deposit all (allContainers; the button cleared that tab's kept counts first) takes everything, as before. swept (optional) gets
+# item id -> Long moved.
+# 0.7.18: capsIn / heldIn = the sweep's own caps() and carried() (null = scan here, the 0.7.17 path of every other caller)
+swp.addMethod(CtNewMethod.make(f"""
+public static int sweep({PLA} p, String k, String onlyCat, boolean allContainers, java.util.HashMap swept, java.util.HashMap capsIn, java.util.HashMap heldIn) {{
+  {INV} inv = p.getInventory();
+  if (inv == null) return 0;
+  java.util.UUID su = null;   // 0.8.16: the player's seeds / saplings switches (SackDefs.intake)
+  try {{ su = p.getPlayerRef().getUuid(); }} catch (Throwable tu) {{ su = null; }}
+  // 0.8.0: capsIn = the category CAPACITY (VoidStore.capsK); none given = the saved best levels (VoidStore.capsBest)
+  java.util.HashMap caps = capsIn != null ? capsIn : {PKG}.VoidStore.capsBest(k);
+  long[] used = null;   // 0.8.0: the items stored per category (one limit per category, spec 2.2)
+  java.util.HashMap left = null;
+  if (!allContainers) {{
+    java.util.concurrent.ConcurrentHashMap km = {PKG}.SackPool.keptMap(k, false);
+    if (km != null && !km.isEmpty()) {{
+      java.util.HashMap held = heldIn != null ? heldIn : carried(inv);
+      left = new java.util.HashMap();
+      java.util.Iterator ki = km.entrySet().iterator();
+      while (ki.hasNext()) {{
+        java.util.Map.Entry ke = (java.util.Map.Entry) ki.next();
+        Long hv = (Long) held.get(ke.getKey());
+        long ex = (hv == null ? 0L : hv.longValue()) - ((Long) ke.getValue()).longValue();
+        left.put(ke.getKey(), Long.valueOf(ex < 0L ? 0L : ex));
+      }}
+    }}
+  }}
+  int moved = 0;
+  java.util.HashMap supm = new java.util.HashMap();   // 0.8.18: supply:fn:claims answers, asked once per id in this pass
+  // 0.8.10: the automatic sweep also takes whole fish from the hotbar + backpack (a catch lands in the hotbar; looked at FIRST, so a fish you
+  // took out into the storage stays with you and the new catch goes in); everything else: storage only. Deposit all: storage first as before
+  {IC}[] conts = allContainers ? new {IC}[] {{ inv.getStorage(), inv.getHotbar(), inv.getBackpack() }} : new {IC}[] {{ inv.getHotbar(), inv.getBackpack(), inv.getStorage() }};
+  for (int c = 0; c < conts.length; c++) {{
+    {IC} stor = conts[c];
+    if (stor == null) continue;
+    short cap2 = stor.getCapacity();
+    for (short s = 0; s < cap2; s++) {{
+      {IS} it = stor.getItemStack(s);
+      if (it == null || it.isEmpty()) continue;
+      String id = it.getItemId();
+      String cat = {PKG}.SackDefs.intake(su, id);   // 0.8.16: catOf + the seeds / saplings switches
+      if (cat == null) continue;
+      if (!allContainers && c < 2 && (!{PKG}.SackDefs.isCatch(id) || !{PKG}.SackCfg.FISH_SWEEP)) continue;   // 0.8.10: hotbar / backpack = fish only (switch: bags.fishSweep)
+      if (onlyCat != null && !onlyCat.equals(cat)) continue;
+      if (stor != inv.getHotbar() && (it.getMetadata() == null || it.getMetadata().isEmpty()) && {PKG}.SackPool.claimed(su, id, supm)) continue;   // 0.8.18: the Flask / Pouch take it (eating beats storing) - it stays; only a plain storage / backpack stack is asked (review: a hotbar / metadata stack is never stranded)
+      Integer catCap = (Integer) caps.get(cat);
+      int ci = {PKG}.SackDefs.catIndex(cat);
+      if (catCap == null || ci < 0) continue;
+      if (used == null) used = {PKG}.VoidStore.usedAll(k);
+      long room = (long) catCap.intValue() - used[ci];   // 0.8.0: the room of the CATEGORY (was: of this item)
+      if (room <= 0L) continue;
+      Long ex = left == null ? null : (Long) left.get(id);
+      if (ex != null && ex.longValue() < room) room = ex.longValue();
+      if (room <= 0L) continue;
+      int qty = it.getQuantity();
+      int take = (long) qty < room ? qty : (int) room;
+      if (take <= 0) continue;
+      if (!{PKG}.SackDefs.isCatch(id) && it.getMetadata() != null && !it.getMetadata().isEmpty()) continue;   // 0.8.11 review fix A4: plain stacks only
+      String fe = null;   // 0.8.10: a whole fish goes in with its entry (weight, length, catcher) or not at all
+      if ({PKG}.SackDefs.isCatch(id)) {{ fe = fishEntry(it); if (fe == null) continue; }}
+      {ISS} tx = stor.removeItemStackFromSlot(s, take);
+      if (tx == null || !tx.succeeded()) continue;
+      {IS} rem = tx.getRemainder();
+      int removed = take - (rem == null ? 0 : rem.getQuantity());
+      if (removed > 0) {{
+        if (fe != null) {PKG}.SackPool.fishIn(k, id, fe, (long) removed);   // 0.8.10: count + entries in one lock
+        else {PKG}.SackPool.add(k, id, (long) removed);
+        used[ci] = used[ci] + (long) removed;
+        {PKG}.VoidStore.noteIntake(k, ci, (long) removed);
+        moved += removed;
+        if (ex != null) left.put(id, Long.valueOf(ex.longValue() - (long) removed));
+        if (swept != null) {{ Long sv = (Long) swept.get(id); swept.put(id, Long.valueOf((sv == null ? 0L : sv.longValue()) + (long) removed)); }}
+      }}
+    }}
+  }}
+  if (su != null) {{ if (supm.containsValue(Boolean.TRUE)) SUPSEEN.put(su.toString(), Boolean.TRUE); else SUPSEEN.remove(su.toString()); }}   // 0.8.18
+  return moved;
+}}""", swp))
+swp.addMethod(CtNewMethod.make(f"""
+public static int sweep({PLA} p, String k, String onlyCat, boolean allContainers, java.util.HashMap swept) {{
+  return sweep(p, k, onlyCat, allContainers, swept, (java.util.HashMap) null, (java.util.HashMap) null);
+}}""", swp))
+swp.addMethod(CtNewMethod.make(f"""
+public static int sweep({PLA} p, String k, String onlyCat, boolean allContainers) {{
+  return sweep(p, k, onlyCat, allContainers, (java.util.HashMap) null);
+}}""", swp))
+# 0.7.11: the item ids the automatic sweep still wants from the main inventory but cannot take - their bag is full: the main inventory
+# holds some and the player carries more than kept. Read AFTER the sweep. The stack refill skips them: refilling would only free room
+# that the next sweep fills again from the main inventory (pool -> stack -> pool ping-pong).
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashSet sweepLeft(@INV@ inv, String k, java.util.HashMap caps, java.util.HashMap heldIn) {
+  java.util.HashSet out = new java.util.HashSet();
+  if (inv == null || caps == null) return out;
+  @IC@ stor = inv.getStorage();
+  if (stor == null) return out;
+  java.util.HashMap held = heldIn;   // 0.7.18: the sweep's after-sweep counts (null = scan when needed)
+  short cap = stor.getCapacity();
+  for (short s = 0; s < cap; s++) {
+    @IS@ it = stor.getItemStack(s);
+    if (it == null || it.isEmpty()) continue;
+    String id = it.getItemId();
+    if (id == null || out.contains(id)) continue;
+    String cat = @PKG@.SackDefs.catOf(id);
+    if (cat == null || !caps.containsKey(cat)) continue;
+    if (held == null) held = carried(inv);
+    Long hv = (Long) held.get(id);
+    if ((hv == null ? 0L : hv.longValue()) - @PKG@.SackPool.kept(k, id) > 0L) out.add(id);
+  }
+  return out;
+}'''), swp))
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashSet sweepLeft(@INV@ inv, String k, java.util.HashMap caps) {
+  return sweepLeft(inv, k, caps, (java.util.HashMap) null);
+}'''), swp))
+# 0.7.8 review fix: how many cooked items the inventory holds (storage, hotbar, backpack = what Deposit all sweeps); world thread. Deposit
+# all on the Farming tab says they stay in the inventory while bags.cookedFood is off.
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int cookedHeld(@INV@ inv) {
+  if (inv == null) return 0;
+  int n = 0;
+  @IC@[] conts = new @IC@[] { inv.getStorage(), inv.getHotbar(), inv.getBackpack() };
+  for (int c = 0; c < conts.length; c++) {
+    @IC@ cont = conts[c];
+    if (cont == null) continue;
+    short cap = cont.getCapacity();
+    for (short s = 0; s < cap; s++) {
+      @IS@ it = cont.getItemStack(s);
+      if (it == null || it.isEmpty()) continue;
+      if (@PKG@.SackDefs.cooked(it.getItemId())) n += it.getQuantity();
+    }
+  }
+  return n;
+}'''), swp))
+# 0.7.11: how many of an item one container holds
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int countIn(@IC@ cont, String id) {
+  if (cont == null || id == null) return 0;
+  int n = 0;
+  short cap = cont.getCapacity();
+  for (short s = 0; s < cap; s++) {
+    @IS@ it = cont.getItemStack(s);
+    if (it == null || it.isEmpty()) continue;
+    if (id.equals(it.getItemId())) n += it.getQuantity();
+  }
+  return n;
+}'''), swp))
+# 0.7.12 THE LIVE-MIRROR RULE (research/Bag-Craft-Link-Fix.md invariant 7 - the mirror never offers more than the pool holds): every move
+# that takes items OUT of a pool first books what a bench / pocket craft already took from that key's mirror (beforeTake = BagMirror.sync,
+# else the pool would read too high and the same items could be taken out AND used by the bench) and right after the move trims the
+# mirror to the pool (afterTake = BagMirror.fit, never booked). Declared here because SweepTask.withdraw (below) calls them; javassist
+# compiles a call only against an existing method, so the real bodies are set with setBody after the BagMirror section ($1 = k, $2 = id).
+_BEFORE_TAKE = CtNewMethod.make("public static int beforeTake(String k) { return 0; }", mir)
+mir.addMethod(_BEFORE_TAKE)
+_AFTER_TAKE = CtNewMethod.make("public static int afterTake(String k, String id) { return 0; }", mir)
+mir.addMethod(_AFTER_TAKE)
+# 0.8.10: whole fish out of the Void, one per slot, each rebuilt from its entry; a full storage / no SkyyFishing 0.1.8 = it stays in the Void
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int fishWithdraw(@PLA@ p, String k, String id, int n) {
+  @IC@ stor = p.getInventory().getStorage();
+  int added = 0;
+  for (int i = 0; i < n; i++) {
+    String e = @PKG@.SackPool.fishOut(k, id);
+    if (e == null) break;
+    @IS@ st = fishStack(id, e);
+    if (st == null) { @PKG@.SackPool.fishBack(k, id, e); break; }
+    int before = countIn(stor, id);
+    boolean ok = false;
+    try {
+      @IST@ tx = stor == null ? null : stor.addItemStack(st);
+      @IS@ rem = tx == null ? null : tx.getRemainder();
+      ok = tx != null && tx.succeeded() && (rem == null || rem.isEmpty());   // one fish: all or nothing
+    } catch (Throwable t) {
+      // review fix: the add threw - the fish is in the storage only if the storage count really grew; else it goes back (never lost / doubled)
+      try { ok = countIn(stor, id) > before; } catch (Throwable t2) { ok = false; }
+    }
+    if (!ok) { @PKG@.SackPool.fishBack(k, id, e); break; }
+    added++;
+  }
+  if (added > 0) {
+    @PKG@.BagMirror.afterTake(k, id);
+    // review fix: kept = exactly the fish taken (no hotbar / backpack raise: the sweep takes fresh catches from there for fish)
+    @PKG@.SackPool.keep(k, id, (long) added);
+  }
+  return added;
+}'''.replace("@IST@", IST)), swp))
+# withdraw up to n of an item into STORAGE; returns how many actually left the pool
+swp.addMethod(CtNewMethod.make(f"""
+public static int withdraw({PLA} p, String k, String id, int n) {{
+  // 0.7.12 live-mirror rule: book what a crafting window took from the bag mirror BEFORE the pool is read
+  {PKG}.BagMirror.beforeTake(k);
+  long have = {PKG}.SackPool.get(k, id);
+  if (have <= 0L || n <= 0) return 0;
+  // 0.7.8: homeOf - stored cooked food (Farming) can always be taken out with a Farming bag / the Omni on you
+  String cat = {PKG}.SackDefs.homeOf(id);
+  if (cat == null || !caps(p.getInventory()).containsKey(cat)) return 0;
+  if ({PKG}.SackDefs.isCatch(id)) return fishWithdraw(p, k, id, n);   // 0.8.10: each fish with its own weight
+  int take = (long) n < have ? n : (int) have;
+  {IST} tx = p.getInventory().getStorage().addItemStack(new {IS}(id, take));
+  {IS} rem = tx == null ? null : tx.getRemainder();
+  int added = (tx == null || !tx.succeeded()) ? 0 : take - (rem == null ? 0 : rem.getQuantity());
+  // 0.7.11: what really left the pool is KEPT (the sweep leaves up to that many alone; no timer). The item's hotbar + backpack stacks -
+  // which the sweep never takes - count as kept first: taking a stack while you hold some in the hotbar (Hytale's default pickup spot)
+  // must not make the sweep pull the new stack back in their place
+  if (added > 0) {{
+    {PKG}.SackPool.add(k, id, -(long) added);
+    {PKG}.BagMirror.afterTake(k, id);   // 0.7.12 live-mirror rule: the mirror never offers more than the pool now holds
+    {PKG}.SackPool.raiseKept(k, id, (long) countIn(p.getInventory().getHotbar(), id) + (long) countIn(p.getInventory().getBackpack(), id));
+    {PKG}.SackPool.keep(k, id, (long) added);
+  }}
+  return added;
+}}""", swp))
+# 0.7.11: SweepTask.refill / items / run follow the BagMirror section (items() reads BagMirror.MIRRORS)
+
+# ================= 0.7.18 (audit 9b) WHO THE 2 s SWEEP VISITS =================
+# cfgSig = the owner's settings a sweep depends on (free bag recipes, the refill switches, cooked food, the five bag caps).
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static String cfgSig() {
+  return String.valueOf(@PKG@.SackCfg.effFree()) + "," + @PKG@.SackCfg.REFILL_ON + "," + @PKG@.SackCfg.REFILL_DEF + "," + @PKG@.SackDefs.COOKED_FARM + ","
+    + @PKG@.SackDefs.CAP_SMALL + "," + @PKG@.SackDefs.CAP_MEDIUM + "," + @PKG@.SackDefs.CAP_RARE + "," + @PKG@.SackDefs.CAP_LARGE + "," + @PKG@.SackDefs.CAP_OMNI
+    + "," + @PKG@.SackCfg.pdSig()   // 0.8.0: the Void rows (levels, multipliers, gates, Omni)
+    + "," + @PKG@.SackCfg.FISH_SWEEP;   // 0.8.10 review fix: the fish sweep switch
+}'''), swp))
+# sigOf(u) = everything besides an inventory change that can give a sweep something to do (plain bridge / map reads, any thread):
+# the profile (epoch, busy), the bag recipe knowledge (coll:epoch + coll:recipes), Requip's reserved slots (requip:pocket / pocketN), the
+# player's refill mode, the pool change counter of their key (another mod, a page or a bench took or put), the owner's settings
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static String sigOf(java.util.UUID u) {
+  if (u == null) return "";
+  java.util.Map b = @PKG@.SackPool.bridge();
+  String us = u.toString();
+  StringBuilder sb = new StringBuilder(128);
+  sb.append(@PKG@.SackPool.epoch(u)).append('|');
+  sb.append(b.get("profile:busy:" + us) != null).append('|');
+  Object ce = b.get("coll:epoch:" + us);
+  sb.append(ce == null ? "-" : String.valueOf(ce)).append('|');
+  Object cr = b.get("coll:recipes:" + us);
+  sb.append(cr == null ? 0 : cr.hashCode()).append('|');
+  try { Object pm = b.get("requip:pocket:" + us); sb.append(pm == null ? 0 : pm.hashCode()); } catch (Throwable t) { sb.append('x'); }
+  sb.append('|');
+  try { Object pn = b.get("requip:pocketN:" + us); sb.append(pn == null ? 0 : pn.hashCode()); } catch (Throwable t2) { sb.append('x'); }
+  sb.append('|').append(@PKG@.RefillPref.mode(u)).append('|');
+  Object lk = @PKG@.SackPool.KEPTKEY.get(u);
+  sb.append(lk instanceof String ? @PKG@.SackPool.chg((String) lk) : -1L).append('|');
+  sb.append(SUPSEEN.containsKey(us) ? System.currentTimeMillis() / 10000L : 0L).append('|');   // 0.8.18: claimed items held = re-sweep every 10 s
+  sb.append(@PKG@.SackPool.keepFlags(u)).append('|');   // 0.8.16: the seeds / saplings switches (a change re-sweeps)
+  sb.append(cfgSig());
+  return sb.toString();
+}'''), swp))
+# needs(u, sig): sweep this player now? The event system missing = everyone (0.7.17); an inventory change since the last sweep; a changed
+# signature (first sight has none); fixer: the 20 s heartbeat
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static boolean needs(java.util.UUID u, String sig) {
+  if (u == null) return false;
+  if (!EVENTS_OK) return true;
+  if (INVDIRTY.containsKey(u)) return true;
+  Object last = SIG.get(u);
+  if (last == null || !last.equals(sig)) return true;
+  // fixer (review): the HEARTBEAT - not swept for HEARTBEAT_MS = due anyway (a change the event missed is only delayed, never lost)
+  Long ls = (Long) LASTSWEEP.get(u);
+  if (ls == null || System.nanoTime() - ls.longValue() >= HEARTBEAT_MS * 1000000L) { BEATS.incrementAndGet(); return true; }
+  return false;
+}'''), swp))
+
+# ================= 0.8.16 PopupHide: the vanilla item pickup popup off (GameplayConfig.showItemPickupNotifications, see the docstring B1)
+phd = pool.makeClass(PKG + ".PopupHide")
+for _f in ("public static java.lang.reflect.Field F;", "public static final java.util.ArrayList FLIPPED = new java.util.ArrayList();",
+           "public static volatile int LAST = -1;", "public static volatile int N = 0;", "public static volatile int COUNT = 0;",
+           "public static volatile boolean WARNED = false;", "public static volatile String STATE = \"not applied yet\";"):
+    phd.addField(CtField.make(_f, phd))
+phd.addMethod(CtNewMethod.make(r'''
+public static java.lang.reflect.Field field() throws Exception {
+  if (F == null) {
+    java.lang.reflect.Field f = @GC@.class.getDeclaredField("showItemPickupNotifications");
+    f.setAccessible(true);
+    F = f;
+  }
+  return F;
+}'''.replace("@GC@", "com.hypixel.hytale.server.core.asset.type.gameplay.GameplayConfig"), phd))
+# every loaded GameplayConfig asset + DEFAULT; hide -> false (remembered), show -> the remembered ones back to true. Returns how many changed (-1 = failed)
+phd.addMethod(CtNewMethod.make(r'''
+public static synchronized int apply() {
+  boolean hide = @PKG@.SackCfg.HIDE_POPUP;
+  LAST = hide ? 1 : 0;
+  try {
+    java.lang.reflect.Field f = field();
+    java.util.ArrayList all = new java.util.ArrayList();
+    try {
+      java.util.Map m = @GC@.getAssetMap().getAssetMap();
+      if (m != null) all.addAll(m.values());
+    } catch (Throwable t0) { }
+    if (@GC@.DEFAULT != null) all.add(@GC@.DEFAULT);
+    int n = 0;
+    if (hide) {
+      for (int i = 0; i < all.size(); i++) {
+        Object g = all.get(i);
+        if (g == null || !f.getBoolean(g)) continue;
+        f.setBoolean(g, false);
+        boolean seen = false;
+        for (int j = 0; j < FLIPPED.size(); j++) if (FLIPPED.get(j) == g) seen = true;
+        if (!seen) FLIPPED.add(g);
+        n++;
+      }
+    } else {
+      for (int j = 0; j < FLIPPED.size(); j++) {
+        Object g = FLIPPED.get(j);
+        if (g != null && !f.getBoolean(g)) { f.setBoolean(g, true); n++; }
+      }
+      FLIPPED.clear();
+    }
+    COUNT = all.size();
+    STATE = (hide ? "hidden" : "shown") + " (" + all.size() + " gameplay configs)";
+    if (n > 0 && @PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] vanilla item pickup popup " + (hide ? "HIDDEN" : "shown again") + " - " + n + " gameplay config(s) changed (Server Setup -> Auto-pickup -> Hide the vanilla pickup popup)");
+    return n;
+  } catch (Throwable t) {
+    STATE = "FAILED (" + t + ")";
+    if (!WARNED) { WARNED = true; @PKG@.SackPool.warn("could not switch the vanilla pickup popup (GameplayConfig.showItemPickupNotifications) - it keeps showing: " + t); }
+    return -1;
+  }
+}'''.replace("@GC@", "com.hypixel.hytale.server.core.asset.type.gameplay.GameplayConfig").replace("@PKG@", PKG), phd))
+# the 2 s SackTick: at once when the switch changed, else every 10 s (an asset reload makes new GameplayConfig objects)
+phd.addMethod(CtNewMethod.make(r'''
+public static void tick() {
+  int want = @PKG@.SackCfg.HIDE_POPUP ? 1 : 0;
+  N = N + 1;
+  if (want != LAST || N % 5 == 0) apply();
+}'''.replace("@PKG@", PKG), phd))
+# after= hook of the pickup.hidePopup row (the kit set SackCfg.HIDE_POPUP already)
+scfg.addMethod(CtNewMethod.make(r'''
+public static void popupChanged(String key) {
+  @PKG@.PopupHide.apply();
+}'''.replace("@PKG@", PKG), scfg))
+
+# ================= SackTick (scheduler thread -> dispatch to world threads) =================
+tick.addInterface(pool.get("java.lang.Runnable"))
+tick.addConstructor(CtNewConstructor.make("public SackTick() { }", tick))
+tick.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{ {PKG}.PopupHide.tick(); }} catch (Throwable tp) {{ }}   // 0.8.16: the vanilla pickup popup switch (B1)
+  try {{
+    java.util.Iterator it = {UNI}.get().getPlayers().iterator();
+    while (it.hasNext()) {{
+      {PR} pr = ({PR}) it.next();
+      if (pr == null || !pr.isValid()) continue;
+      // 0.7.18 (audit 9b): only a player with something to do costs a world hop
+      java.util.UUID u0 = pr.getUuid();
+      if (!{PKG}.SweepTask.needs(u0, {PKG}.SweepTask.sigOf(u0))) {{ {PKG}.SweepTask.SKIPS.incrementAndGet(); continue; }}
+      java.util.UUID wu = pr.getWorldUuid();
+      if (wu == null) continue;
+      {WLD} w = {UNI}.get().getWorld(wu);
+      if (w == null) continue;
+      {PKG}.SweepTask.HOPS.incrementAndGet();
+      w.execute(new {PKG}.SweepTask(pr, wu));
+    }}
+  }} catch (Throwable t) {{ }}
+}}""", tick))
+
+sav.addInterface(pool.get("java.lang.Runnable"))
+sav.addConstructor(CtNewConstructor.make("public SackSaver() { }", sav))
+
+cmp.addInterface(pool.get("java.util.Comparator"))
+cmp.addConstructor(CtNewConstructor.make("public CountCmp() { }", cmp))
+cmp.addMethod(CtNewMethod.make("""
+public int compare(Object a, Object b) {
+  long x = ((Long) ((java.util.Map.Entry) a).getValue()).longValue();
+  long y = ((Long) ((java.util.Map.Entry) b).getValue()).longValue();
+  if (x != y) return x > y ? -1 : 1;
+  return ((String) ((java.util.Map.Entry) a).getKey()).compareTo((String) ((java.util.Map.Entry) b).getKey());
+}""", cmp))
+
+# ================= RecipeCmp: 0.8.11 tier, then name (PROJECT-RULES 4 "Sort by tier everywhere") =================
+# 0.8.11: the build-time copy of tools/tier_tags.py (THE table): every tiered id -> its DISPLAY tier (T1 Crude .. T8 Onyxium), and for the
+# crop families the crop + its place (0 crop, 1 Enchanted crop, 2 seeds, 3 Eternal seeds; 9 = not a crop family). The tool metal words
+# (tier_tags.TOOL_METALS) tier everything else made of a ladder metal.
+def _tt_grp(i):
+    f = TT.family(i)
+    if f == "crop":
+        return i[len("Plant_Crop_"):-len("_Item")], 0
+    if f == "seed":
+        if i.endswith("_Eternal"):
+            return i[len("Plant_Seeds_"):-len("_Eternal")], 3
+        return i[len("Plant_Seeds_"):], 2
+    if f == "enchanted":   # 0.8.14: + the C1 rows (tier_tags.ENCH_C1: Enchanted Corn / Lettuce / ... group with their crop)
+        _b = dict(tuple(TT.ENCH_BASE) + tuple(TT.ENCH_C1)).get(i[len("Skyy_Ench_"):])
+        if _b and TT.family(_b) == "crop":
+            return _b[len("Plant_Crop_"):-len("_Item")], 1
+    return "", 9
+# 0.8.14: LIVE again (0.8.13 froze it to 52298ac): tools/tier_tags.py now - the C1 Enchanted rows sort at their base's tier
+TT_IDS = sorted(TT.ROWS)
+TT_TIERS = [TT.tier(_i) for _i in TT_IDS]
+TT_GRPS = [_tt_grp(_i) for _i in TT_IDS]
+assert _tt_grp("Skyy_Ench_Corn") == ("Corn", 1) and "Skyy_Ench_LifeEssence" not in TT_IDS, "0.8.14: the C1 rows are in the tier table"
+assert all(1 <= _t <= len(TT.LADDER) for _t in TT_TIERS) and all('"' not in _i and "," not in _i for _i in TT_IDS)
+assert _tt_grp("Plant_Crop_Wheat_Item") == ("Wheat", 0) and _tt_grp("Skyy_Ench_Wheat") == ("Wheat", 1) and \
+    _tt_grp("Plant_Seeds_Wheat") == ("Wheat", 2) and _tt_grp("Plant_Seeds_Wheat_Eternal") == ("Wheat", 3) and _tt_grp("Ore_Iron") == ("", 9)
+print("tier sort: %d ids from tools/tier_tags.py (%d crop-family ids), %d tool metal words" % (
+    len(TT_IDS), sum(1 for _g in TT_GRPS if _g[1] < 9), len(TT.TOOL_METALS)))
+_jsa = lambda xs: "new String[] { " + ", ".join(jlit(str(x)) for x in xs) + " }"
+_jia = lambda xs: "new int[] { " + ", ".join(str(int(x)) for x in xs) + " }"
+rcmp.addField(CtField.make("public static final String[] TT_IDS = %s;" % _jsa(TT_IDS), rcmp))
+rcmp.addField(CtField.make("public static final int[] TT_TIER = %s;" % _jia(TT_TIERS), rcmp))
+rcmp.addField(CtField.make("public static final String[] TT_GRP = %s;" % _jsa([_g[0] for _g in TT_GRPS]), rcmp))
+rcmp.addField(CtField.make("public static final int[] TT_RANK = %s;" % _jia([_g[1] for _g in TT_GRPS]), rcmp))
+rcmp.addField(CtField.make("public static final String[] LADDER = %s;" % _jsa(TT.LADDER), rcmp))
+rcmp.addField(CtField.make("public static final String[] METAL_W = %s;" % _jsa([_w for _w, _t in TT.TOOL_METALS]), rcmp))
+rcmp.addField(CtField.make("public static final int[] METAL_T = %s;" % _jia([_t for _w, _t in TT.TOOL_METALS]), rcmp))
+rcmp.addField(CtField.make("public static java.util.HashMap TTMAP;", rcmp))
+rcmp.addInterface(pool.get("java.util.Comparator"))
+rcmp.addConstructor(CtNewConstructor.make("public RecipeCmp() { }", rcmp))
+rcmp.addMethod(CtNewMethod.make("""
+public static int tierOf(String id) {
+  if (id == null) return 0;
+  String[] m = new String[] { "Crude", "Copper", "Bronze", "Iron", "Thorium", "Cobalt", "Adamantite", "Mithril", "Onyxium" };
+  for (int i = m.length - 1; i >= 0; i--) if (id.indexOf(m[i]) >= 0) return i;
+  return 0;
+}""", rcmp))
+# 0.8.11: the tier_tags index of an id (-1 = not in the table)
+rcmp.addMethod(CtNewMethod.make("""
+public static synchronized java.util.HashMap ttMap() {
+  if (TTMAP == null) {
+    java.util.HashMap m = new java.util.HashMap();
+    for (int i = 0; i < TT_IDS.length; i++) m.put(TT_IDS[i], Integer.valueOf(i));
+    TTMAP = m;
+  }
+  return TTMAP;
+}""", rcmp))
+rcmp.addMethod(CtNewMethod.make("""
+public static int ttIndex(String id) {
+  if (id == null) return -1;
+  Object o = ttMap().get(id);
+  return o == null ? -1 : ((Integer) o).intValue();
+}""", rcmp))
+# 0.8.11: the display tier of a tool metal word in the id (a whole _-separated word: Tool_Pickaxe_Iron, Weapon_Sword_Cobalt), 0 = none
+rcmp.addMethod(CtNewMethod.make("""
+public static int metalTier(String id) {
+  if (id == null) return 0;
+  String[] w = id.split("_");
+  for (int i = 0; i < w.length; i++) for (int j = 0; j < METAL_W.length; j++) if (w[i].equals(METAL_W[j])) return METAL_T[j];
+  return 0;
+}""", rcmp))
+# 0.8.11: an own-ladder tier suffix _T<n> (accessories, bags), 0 = none
+rcmp.addMethod(CtNewMethod.make("""
+public static int suffixTier(String id) {
+  if (id == null) return 0;
+  int u = id.lastIndexOf("_T");
+  if (u >= 0 && u + 2 < id.length() && id.length() - u <= 5) {
+    for (int i = u + 2; i < id.length(); i++) if (!Character.isDigit(id.charAt(i))) return 0;
+    return Integer.parseInt(id.substring(u + 2));
+  }
+  return 0;
+}""", rcmp))
+# 0.8.8 (Skyy "make sure this is sorted by tier too") / 0.8.11 (Skyy "sort everything by tier in all shops and crafting."): the tier of an
+# item id - the Omni accessory after every tier; _T<n> = n; _Common .. _Mythic = 1..6; tools/tier_tags.py's display tier; else the tool
+# metal word (T1 Crude / Wood .. T8 Onyxium); untiered = 0
+rcmp.addMethod(CtNewMethod.make("""
+public static int tierKey(String id) {
+  if (id == null) return 0;
+  if (id.startsWith("Skyy_Acc") && id.endsWith("_Omni")) return 99;
+  int st = suffixTier(id);
+  if (st > 0) return st;
+  String[] w = new String[] { "_Common", "_Uncommon", "_Rare", "_Epic", "_Legendary", "_Mythic" };
+  for (int i = 0; i < w.length; i++) if (id.endsWith(w[i])) return i + 1;
+  int x = ttIndex(id);
+  if (x >= 0) return TT_TIER[x];
+  return metalTier(id);
+}""", rcmp))
+# 0.8.11: the tier tag a recipe row shows next to its name: "T3 Iron" (the table / a metal word), "T2" (an own ladder _T<n>), "" = none
+rcmp.addMethod(CtNewMethod.make("""
+public static String tierText(String id) {
+  if (id == null) return "";
+  int st = suffixTier(id);
+  if (st > 0) return "T" + st;
+  int x = ttIndex(id);
+  int t = x >= 0 ? TT_TIER[x] : metalTier(id);
+  if (t < 1 || t > LADDER.length) return "";
+  return "T" + t + " " + LADDER[t - 1];
+}""", rcmp))
+rcmp.addMethod(CtNewMethod.make("""
+public static int level(String id) {
+  if (id == null) return 0;
+  try {
+    Object o = com.hypixel.hytale.server.core.asset.type.item.config.Item.getAssetMap().getAsset(id);
+    if (o instanceof com.hypixel.hytale.server.core.asset.type.item.config.Item) {
+      int l = ((com.hypixel.hytale.server.core.asset.type.item.config.Item) o).getItemLevel();
+      return l < 0 ? 0 : (l > 999999 ? 999999 : l);
+    }
+  } catch (Throwable t) { }
+  return 0;
+}""", rcmp))
+# 0.8.11: tier first; inside a tier the crop families come first, grouped per crop (sortName: "<crop> <0..3> ..."), then everything else by
+# name (review fix B4: the written rule is tier, then name - 0.8.8's ItemLevel term is gone; the tier is at most 99)
+rcmp.addMethod(CtNewMethod.make("""
+public static int sortKey(String id) {
+  int t = tierKey(id);
+  int x = ttIndex(id);
+  if (x >= 0 && TT_RANK[x] < 9) return t * 10000000;
+  return t * 10000000 + 1000000;
+}""", rcmp))
+rcmp.addMethod(CtNewMethod.make("""
+public static String sortName(String id) {
+  if (id == null) return "";
+  String n = com.skyy.sacks.SackDefs.dname(id);
+  if (n == null) n = id.replace('_', ' ');
+  int x = ttIndex(id);
+  String pre = (x >= 0 && TT_RANK[x] < 9) ? (TT_GRP[x].toLowerCase() + " " + TT_RANK[x] + " ") : "";
+  return pre + n.toLowerCase() + " " + id;
+}""", rcmp))
+# 0.8.11 (PROJECT-RULES 4): tier, then name - no craftable-first any more (rows that cannot be made are greyed out; "Craftable only" hides them)
+rcmp.addMethod(CtNewMethod.make("""
+public int compare(Object a, Object b) {
+  Object[] x = (Object[]) a; Object[] y = (Object[]) b;
+  int tx = ((Integer) x[2]).intValue(); int ty = ((Integer) y[2]).intValue();
+  if (tx != ty) return tx < ty ? -1 : 1;
+  return ((String) x[3]).compareTo((String) y[3]);
+}""", rcmp))
+
+# ================= CraftLog (append-only audit of every craft-page craft) =================
+clog.addField(CtField.make("public static java.nio.file.Path FILE;", clog))
+clog.addMethod(CtNewMethod.make("""
+public static synchronized void write(String k, String recipe, int requested, int done, boolean flag, int given, String audit) {
+  try {
+    if (FILE == null) return;
+    java.nio.file.Files.createDirectories(FILE.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    String line = new java.util.Date().toString() + " " + k + " " + recipe + " requested=" + requested + " done=" + done + " flag=" + flag + " given=" + given + audit + System.lineSeparator();
+    java.nio.file.Files.write(FILE, line.getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND });
+  } catch (Throwable t) { }
+}""", clog))
+clog.addMethod(CtNewMethod.make("""
+public static synchronized void line(String k, String text) {
+  try {
+    if (FILE == null) return;
+    java.nio.file.Files.createDirectories(FILE.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    String l = new java.util.Date().toString() + " " + k + " " + text + System.lineSeparator();
+    java.nio.file.Files.write(FILE, l.getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND });
+  } catch (Throwable t) { }
+}""", clog))
+
+# 0.7.2 review fix: log lines from world-thread hot paths (a profile switch, a retired or parked bench mirror) are queued here
+# (timestamped when queued) and written by the SackSaver on the scheduler thread - no file append inside a world-thread task.
+clog.addField(CtField.make("public static final java.util.concurrent.ConcurrentLinkedQueue PENDING = new java.util.concurrent.ConcurrentLinkedQueue();", clog))
+clog.addMethod(CtNewMethod.make("""
+public static void later(String k, String text) {
+  PENDING.offer(new java.util.Date().toString() + " " + k + " " + text + System.lineSeparator());
+}""", clog))
+clog.addMethod(CtNewMethod.make("""
+public static synchronized void drain() {
+  try {
+    Object o = PENDING.poll();
+    if (o == null) return;
+    StringBuilder sb = new StringBuilder();
+    while (o != null) { sb.append((String) o); o = PENDING.poll(); }
+    if (FILE == null) return;
+    java.nio.file.Files.createDirectories(FILE.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    java.nio.file.Files.write(FILE, sb.toString().getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND });
+  } catch (Throwable t) { }
+}""", clog))
+# SackSaver.run() (constructor added above): processing files, pool files, then the queued log lines - all on the scheduler thread.
+sav.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{ {PKG}.ProcStore.flushDirty(); }} catch (Throwable t) {{ }}
+  // 0.8.0: the migration credits whose 30 s are up (rarity / refund + D|seq), then the Void files (levels, rarity) - before the pools
+  try {{ {PKG}.VoidStore.settleDue(System.currentTimeMillis()); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.VoidStore.flushDirty(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.SackPool.flushDirty(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.CraftLog.drain(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.SackCfg.reload(); }} catch (Throwable t) {{ }}
+  // 0.8.0: sacks:freebags is no longer published (no bag recipes); the old one-time notice file is still written when it changes
+  try {{ {PKG}.SackNotice.save(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.RefillPref.save(); }} catch (Throwable t) {{ }}   // 0.7.11: the stack refill choices (only after a player changed one)
+}}""", sav))
+# 0.7.18 (audit 9c) THE PRIVATE POOL WRITER. runOnWriter = run r on SackPool.WRITER (no writer yet / any more = the engine's scheduler,
+# refused = inline - the 0.7.17 fallbacks). saveJob = one PoolSaveJob: k == null = a full SackSaver run; else that key only, only while
+# dirty (DIRTY.remove before the write: a change during the write re-arms a new job; a failed write puts DIRTY back for the next one).
+sp.addMethod(CtNewMethod.make(f"""
+public static void runOnWriter(Runnable r) {{
+  java.util.concurrent.ScheduledExecutorService ex = WRITER;
+  if (ex != null) {{
+    try {{ ex.execute(r); return; }} catch (Throwable t) {{ }}
+  }}
+  try {{ {HSV}.SCHEDULED_EXECUTOR.execute(r); }}
+  catch (Throwable t2) {{ r.run(); }}
+}}""", sp))
+sp.addMethod(CtNewMethod.make(f"""
+public static void saveJob(String k) {{
+  JOBS.incrementAndGet();
+  if (k == null) {{ new {PKG}.SackSaver().run(); return; }}
+  PENDING.remove(k);
+  if (DIRTY.remove(k) != null) save(k);
+}}""", sp))
+psj.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{ {PKG}.SackPool.saveJob(this.k); }} catch (Throwable t) {{ {PKG}.SackPool.warn("pool save failed (kept dirty): " + t); }}
+}}""", psj))
+# 0.7.2 review fix: pool saves from world-thread code (Sacks page clicks, bench link, instant craft, mirror retire/park) mark the key dirty and
+# never write on the world thread. 0.7.18: ONE PoolSaveJob per key DEBOUNCE_MS later on the private writer (every call in that second rides
+# on it, PENDING.putIfAbsent); saveSoon(null) (a refill choice) = a SackSaver run on the writer at once. No writer (before setup / after
+# shutdown) = 0.7.17: the SackSaver on the engine's scheduler, inline when refused.
+sp.addMethod(CtNewMethod.make(f"""
+public static void saveSoon(String k) {{
+  if (k != null) DIRTY.put(k, Boolean.TRUE);
+  java.util.concurrent.ScheduledExecutorService ex = WRITER;
+  if (ex == null) {{
+    try {{ {HSV}.SCHEDULED_EXECUTOR.execute(new {PKG}.SackSaver()); }}
+    catch (Throwable t) {{ new {PKG}.SackSaver().run(); }}
+    return;
+  }}
+  if (k == null) {{ runOnWriter(new {PKG}.PoolSaveJob((String) null)); return; }}
+  if (PENDING.putIfAbsent(k, Boolean.TRUE) != null) return;
+  // fixer (review): LEADING EDGE - quiet for DEBOUNCE_MS = save at once; else the rest of that second (one write per key per second)
+  long now = System.nanoTime();
+  Long last = (Long) LASTSAVE.get(k);
+  long gap = DEBOUNCE_MS * 1000000L;
+  long delay = 0L;
+  if (last != null && now - last.longValue() < gap) delay = (gap - (now - last.longValue())) / 1000000L + 1L;
+  LASTSAVE.put(k, Long.valueOf(now + delay * 1000000L));
+  try {{ ex.schedule(new {PKG}.PoolSaveJob(k), delay, java.util.concurrent.TimeUnit.MILLISECONDS); }}
+  catch (Throwable t) {{ PENDING.remove(k); new {PKG}.SackSaver().run(); }}
+}}""", sp))
+# fixer 2: a key whose save would run AT ONCE (the leading edge): a writer, no job pending, none run within DEBOUNCE_MS
+sp.addMethod(CtNewMethod.make("""
+public static boolean quiet(String k) {
+  if (k == null || WRITER == null || PENDING.containsKey(k)) return false;
+  Long last = (Long) LASTSAVE.get(k);
+  return last == null || System.nanoTime() - last.longValue() >= DEBOUNCE_MS * 1000000L;
+}""", sp))
+# 0.7.18: a key saved at once on the writer (a player leaving - the engine saves their inventory now too)
+sp.addMethod(CtNewMethod.make(f"""
+public static void saveAsap(String k) {{
+  if (k == null) return;
+  DIRTY.put(k, Boolean.TRUE);
+  runOnWriter(new {PKG}.PoolSaveJob(k));
+}}""", sp))
+
+# ================= KeptQuit (0.7.11): a player who leaves gets fresh kept counts next time (relog = reset, Skyy R3) =================
+# PlayerDisconnectEvent (registerGlobal in setup, the SkyyClasses ClassQuit pattern; PlayerReadyEvent is no login signal - it fires on
+# every world switch, and a world switch keeps the kept counts). Only ConcurrentHashMap removals: safe on any thread.
+# Review fix 10: the engine saves the player's inventory at disconnect, while the pool waits for the 10 s SackSaver - so the pool of the
+# key the player's last 2 s tick used (KEPTKEY, read before forgetKept drops it) is written at once when it has unsaved moves (stack
+# refills, sweeps): SackPool.saveSoon runs the SackSaver on the scheduler thread (never file work on this network thread unless the
+# scheduler refuses the task at shutdown). A crash right after a quit can then no longer bring refilled items back into the bag.
+kq.addInterface(pool.get("java.util.function.Consumer"))
+kq.addConstructor(CtNewConstructor.make("public KeptQuit() { }", kq))
+kq.addMethod(CtNewMethod.make(jt(r'''
+public void accept(Object ev) {
+  try {
+    @PR@ pr = ((@PDE@) ev).getPlayerRef();
+    if (pr == null) return;
+    java.util.UUID u = pr.getUuid();
+    Object lk = u == null ? null : @PKG@.SackPool.KEPTKEY.get(u);
+    @PKG@.SackPool.forgetKept(u);
+    if (lk instanceof String && @PKG@.SackPool.DIRTY.containsKey(lk)) @PKG@.SackPool.saveAsap((String) lk);   // 0.7.18: at once, on the writer
+    if (u != null) {
+      // 0.7.18: a relog is a first sight again (sweep, Furnace / Tannery catch-up); the cached coll:recipes set goes
+      @PKG@.SweepTask.INVDIRTY.remove(u);
+      @PKG@.SweepTask.SIG.remove(u);
+      @PKG@.SweepTask.LASTSWEEP.remove(u);   // fixer: the heartbeat clock
+      @PKG@.ProcTask.LASTK.remove(u);
+      @PKG@.ProcTask.PAGEOPEN.remove(u);
+      @PKG@.KnowSync.COLLC.remove(u);
+    }
+  } catch (Throwable t) { }
+}'''), kq))
+
+# ================= 0.8.0 VoidStore (late: after SackPool.runOnWriter) - the migration, the upgrade, /pdadmin, sacks:fn:pd =================
+# VoidJob (fields + constructor first: the methods below construct it; its run() comes after them)
+vjob.addInterface(pool.get("java.lang.Runnable"))
+vjob.addField(CtField.make("public int mode;", vjob))
+vjob.addField(CtField.make("public String k;", vjob))
+vjob.addField(CtField.make("public java.util.UUID u;", vjob))
+vjob.addConstructor(CtNewConstructor.make("public VoidJob(int mode, String k, java.util.UUID u) { this.mode = mode; this.k = k; this.u = u; }", vjob))
+# migration.log (Skyy_SkyySacks/migration.log): one line per profile step with its Undo (PROJECT-RULES 4). Rare: written where it happens.
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void migLog(String k, String text) {
+  try {
+    if (MIGLOG == null) return;
+    java.nio.file.Files.createDirectories(MIGLOG.getParent(), new java.nio.file.attribute.FileAttribute[0]);
+    String l = new java.util.Date().toString() + " " + k + " " + text + System.lineSeparator();
+    java.nio.file.Files.write(MIGLOG, l.getBytes("UTF-8"), new java.nio.file.OpenOption[] { java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND });
+  } catch (Throwable t) { }
+}'''), vst))
+# HISTORY FIRST (writer thread): pools/<k>.properties + processing/<k>.properties -> history/<k>-<stamp>/ (fsync), read back byte for byte;
+# only then the run-once marker v2.first (pd file, fsync). Any failure: nothing marked, WARN once, retried after 60 s.
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static boolean snapshot(String k) {
+  @PKG@.VoidState s = st(k);
+  if (s == null || HDIR == null) return false;
+  if (s.first > 0L) return true;
+  try {
+    String stamp = new java.text.SimpleDateFormat("yyyyMMdd-HHmmss").format(new java.util.Date());
+    java.nio.file.Path hd = HDIR.resolve(k + "-" + stamp);
+    int g = 0;
+    while (java.nio.file.Files.exists(hd, new java.nio.file.LinkOption[0]) && g < 1000) { g++; hd = HDIR.resolve(k + "-" + stamp + "-" + g); }
+    java.nio.file.Files.createDirectories(hd, new java.nio.file.attribute.FileAttribute[0]);
+    // fix round: the copy is of the LIVE pool - a pool change not yet written is flushed first (a failed write keeps it dirty: no copy now)
+    if (@PKG@.SackPool.DIRTY.remove(k) != null) {
+      @PKG@.SackPool.save(k);
+      if (@PKG@.SackPool.DIRTY.containsKey(k)) throw new java.io.IOException("pools/" + k + ".properties could not be written before the History copy");
+    }
+    if (@PKG@.ProcStore.DIRTY.containsKey(k)) @PKG@.ProcStore.flushDirty();
+    java.nio.file.Path[] src =new java.nio.file.Path[] { @PKG@.SackPool.DIR == null ? null : @PKG@.SackPool.DIR.resolve(k + ".properties"),
+                                                         @PKG@.ProcStore.DIR == null ? null : @PKG@.ProcStore.DIR.resolve(k + ".properties") };
+    String[] sub = new String[] { "pools", "processing" };
+    int copied = 0;
+    for (int i = 0; i < src.length; i++) {
+      if (src[i] == null || !java.nio.file.Files.exists(src[i], new java.nio.file.LinkOption[0])) continue;
+      byte[] raw = java.nio.file.Files.readAllBytes(src[i]);
+      java.nio.file.Path d = hd.resolve(sub[i] + "-" + k + ".properties");
+      java.io.FileOutputStream out = new java.io.FileOutputStream(d.toFile());
+      try { out.write(raw); out.flush(); out.getFD().sync(); } finally { out.close(); }
+      byte[] back = java.nio.file.Files.readAllBytes(d);
+      if (!java.util.Arrays.equals(raw, back)) throw new java.io.IOException("the History copy " + d + " does not match " + src[i]);
+      copied++;
+    }
+    crash("H");
+    s.hist = HDIR.getFileName().toString() + "/" + hd.getFileName().toString();
+    s.first = System.currentTimeMillis();
+    if (!saveNow(k)) { s.first = 0L; s.hist = ""; throw new java.io.IOException("pd/" + k + ".properties could not be written"); }
+    // fix round: the Undo never restores the History copy over a pool that was used since (that would duplicate the items taken out and
+    // lose the refunds and everything gathered since) - the copy is the record of the pool before the migration
+    migLog(k, "v2 START - History copy " + s.hist + " (" + copied + " file(s), read back and identical; the pool BEFORE the migration, kept as a record). UNDO (in this order, while SkyySacks 0.8.0 still runs): 1) /pdadmin legacybags all (or /pdadmin legacybags <player>) - each player gets the bags that became rarity back at their next sweep on this profile (refunded bags stay refunded in the pool) and no old bag converts again until /pdadmin resume; 2) wait until this profile's line '/pdadmin legacybags: N old bag(s) given back' is in this log; 3) stop the server and roll back the jar. Keep pools/" + k + ".properties as it is - do NOT copy the History copy over it once the player has played since (it would bring back items taken out and lose the refunds and items gathered since). pd/" + k + ".properties and pd/" + k + ".journal can stay (0.7.18 ignores them; rolling forward again keeps the rarity and gives no second credit).");
+    SNAPFAIL.remove(k);
+    return true;
+  } catch (Throwable t) {
+    if (SNAPFAIL.put(k, Long.valueOf(System.currentTimeMillis())) == null) @PKG@.SackPool.warn("the Void migration of " + k + " waits: its History copy could not be made or checked (nothing changed; retried every 60 s): " + t);
+    return false;
+  }
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static void scheduleSnap(String k, java.util.UUID u) {
+  Long f = (Long) SNAPFAIL.get(k);
+  if (f != null && System.currentTimeMillis() - f.longValue() < 60000L) return;
+  if (SNAPQ.putIfAbsent(k, Boolean.TRUE) != null) return;
+  @PKG@.SackPool.runOnWriter(new @PKG@.VoidJob(1, k, u));
+}'''), vst))
+# the plain containers the Void works with (storage, hotbar, backpack - what the old caps() scanned)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static @IC@[] conts(@INV@ inv) {
+  return new @IC@[] { inv.getStorage(), inv.getHotbar(), inv.getBackpack() };
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int countIn(@INV@ inv, String id, boolean plainOnly) {
+  if (inv == null || id == null) return 0;
+  @IC@[] cs = conts(inv);
+  int n = 0;
+  for (int c = 0; c < cs.length; c++) {
+    if (cs[c] == null) continue;
+    short cap = cs[c].getCapacity();
+    for (short sl = 0; sl < cap; sl++) {
+      @IS@ it = cs[c].getItemStack(sl);
+      if (it == null || it.isEmpty() || !id.equals(it.getItemId())) continue;
+      if (plainOnly) { org.bson.BsonDocument md = it.getMetadata(); if (md != null && !md.isEmpty()) continue; }
+      n += it.getQuantity();
+    }
+  }
+  return n;
+}'''), vst))
+# RECOVERY of an earlier run's unsettled C lines (world thread, settled key, BEFORE any conversion): the bag still there (count >= n0) =
+# the inventory came back without the removal -> X|seq (it converts again below); fewer = the removal was saved -> settle now (writer)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int recover(@INV@ inv, String k, @PKG@.VoidState s) {
+  if (s.left.isEmpty()) return 0;
+  java.util.ArrayList l = new java.util.ArrayList(s.left);
+  java.util.HashMap cnt = new java.util.HashMap();
+  int due = 0;
+  for (int i = 0; i < l.size(); i++) {
+    Object[] e = (Object[]) l.get(i);
+    String bag = (String) e[1];
+    Integer c = (Integer) cnt.get(bag);
+    if (c == null) { c = Integer.valueOf(countIn(inv, bag, false)); cnt.put(bag, c); }
+    if (c.intValue() < ((Integer) e[3]).intValue()) {
+      e[5] = Long.valueOf(0L);
+      s.left.remove(e);
+      pendAdd(k, e);
+      due++;
+      try { @PKG@.CraftLog.later(k, "VOID-RECOVER " + e[0] + " " + bag + " removal was saved - credit now"); } catch (Throwable t) { }
+    } else if (appendJournal(k, "X|" + e[0])) {
+      s.left.remove(e);
+      try { @PKG@.CraftLog.later(k, "VOID-RECOVER " + e[0] + " " + bag + " came back with the inventory - converts again"); } catch (Throwable t) { }
+    }
+  }
+  if (due > 0) @PKG@.SackPool.runOnWriter(new @PKG@.VoidJob(3, k, (java.util.UUID) null));
+  return due;
+}'''), vst))
+# DECIDE: is this old bag USED for a rarity (R) or an extra (F, refunded)? (spec 4.2 "best bag wins"; extra = a second bag of a type or one
+# below the rarity you already have). The bags are decided best first (convert sorts them), so the best of a type is the R one:
+#  - a /pdadmin legacybags token of that id = R (it was a rarity bag; no second credit);
+#  - the Omni bag: the FIRST one ever (no Omni R in the journal / pending, and the Void not Omni already) = Omni rarity; every other Omni
+#    bag is refunded;
+#  - a typed bag while the Void is Omni (or will be): below Omni = refunded;
+#  - a typed bag when a bag of its type at least this good was used already (journal / pending) = extra = refunded;
+#  - else R when its rarity is >= the category's current one (the Farming bag: Farming or Fishing), else (below) refunded.
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int usedRank(String k, @PKG@.VoidState s, String type) {
+  java.util.ArrayList l = pendCopy(k);
+  l.addAll(s.done);
+  int best = 0;
+  for (int i = 0; i < l.size(); i++) {
+    Object[] e = (Object[]) l.get(i);
+    if (!"R".equals(e[4])) continue;
+    String b = (String) e[1];
+    int r = @PKG@.SackDefs.legacyRank(b);
+    String t = r == 5 ? "Omni" : @PKG@.SackDefs.legacyCat(b);
+    if (type.equals(t) && r > best) best = r;
+  }
+  return best;
+}'''), vst))
+# fix round 2: the give-back tokens are derived from the journal alone (crash-proof: no separate token file write that could run ahead of or
+# behind the journal): tokens of a bag id = the bags G lines gave back (s.ret, rebuilt from the journal at load) minus the C lines of this
+# id marked "tok" that are not cancelled (pending, unsettled or settled; an X line drops one). Counted per seq (an entry in two lists
+# for a moment counts once).
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int tokAvail(String k, @PKG@.VoidState s, String id) {
+  Integer g = (Integer) s.ret.get(id);
+  int n = g == null ? 0 : g.intValue();
+  if (n <= 0) return 0;
+  java.util.ArrayList l = pendCopy(k);
+  l.addAll(s.left);
+  l.addAll(s.done);
+  java.util.HashSet seen = new java.util.HashSet();
+  for (int i = 0; i < l.size(); i++) {
+    Object[] e = (Object[]) l.get(i);
+    if (id.equals(e[1]) && "tok".equals(e[6]) && seen.add(e[0])) n--;
+  }
+  return n;
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int decide(String k, @PKG@.VoidState s, String id) {
+  if (tokAvail(k, s, id) > 0) return 2;
+  int r = @PKG@.SackDefs.legacyRank(id);
+  // fix round 2: a Void that is Omni already (granted, upgraded, or all six Legendary with Omni auto) refunds every Omni bag
+  if (r == 5) return (usedRank(k, s, "Omni") == 0 && !omni(k)) ? 1 : 0;
+  if (r < 1 || omni(k)) return 0;
+  String type = @PKG@.SackDefs.legacyCat(id);
+  if (usedRank(k, s, type) >= r) return 0;
+  for (int ci = 0; ci < @PKG@.SackDefs.CATS.length; ci++) {
+    int g = rOf(id, ci);
+    if (g >= 0 && g >= rarOf(k, ci)) return 1;
+  }
+  return 0;
+}'''), vst))
+# CONVERT every old bag in storage / hotbar / backpack (world thread, settled key, after recover). The bags are taken BEST FIRST (the Omni,
+# then Legendary .. Normal), so "best bag wins" does not depend on the slot order. Per stack: journal FIRST (C lines, fsync: one R line for
+# a used bag, one F line for the extras of the stack), then the exact slot removal (read back; a short removal puts the stack back and
+# cancels with X lines). Returns bags converted; raised gets "Mining Rare, ..." of the R bags, extra[0] = refunded bags.
+# the journal lines of a stack's conversion entries: C lines (claim) or X lines (cancel), one per entry
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static String jLines(java.util.ArrayList mine, boolean cancel) {
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < mine.size(); i++) {
+    Object[] e = (Object[]) mine.get(i);
+    if (i > 0) sb.append(System.lineSeparator());
+    if (cancel) sb.append("X|" + e[0]);
+    else sb.append("C|" + e[0] + "|" + e[1] + "|" + e[2] + "|" + e[3] + "|" + e[4] + "|" + e[5] + "|" + e[6]);
+  }
+  return sb.toString();
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int convert(@INV@ inv, String k, @PKG@.VoidState s, StringBuilder raised, int[] extra) {
+  @IC@[] cs = conts(inv);
+  java.util.ArrayList found = new java.util.ArrayList();
+  for (int c = 0; c < cs.length; c++) {
+    if (cs[c] == null) continue;
+    short cap = cs[c].getCapacity();
+    for (short sl = 0; sl < cap; sl++) {
+      @IS@ it = cs[c].getItemStack(sl);
+      if (it == null || it.isEmpty()) continue;
+      int r = @PKG@.SackDefs.legacyRank(it.getItemId());
+      if (r <= 0 || it.getQuantity() <= 0) continue;
+      int at = found.size();
+      while (at > 0 && ((Integer) ((Object[]) found.get(at - 1))[2]).intValue() < r) at--;
+      found.add(at, new Object[] { Integer.valueOf(c), Integer.valueOf(sl), Integer.valueOf(r) });
+    }
+  }
+  int n = 0;
+  for (int f = 0; f < found.size(); f++) {
+    Object[] fs = (Object[]) found.get(f);
+    @IC@ cont = cs[((Integer) fs[0]).intValue()];
+    short sl = (short) ((Integer) fs[1]).intValue();
+    int r = ((Integer) fs[2]).intValue();
+    @IS@ it = cont.getItemStack(sl);
+    if (it == null || it.isEmpty()) continue;
+    String id = it.getItemId();
+    int q = it.getQuantity();
+    int n0 = countIn(inv, id, false);
+    int dc = decide(k, s, id);
+    boolean up = dc > 0;
+    long now = System.currentTimeMillis();
+    java.util.ArrayList mine = new java.util.ArrayList();
+    // fix round 2: a bag used by a give-back token is marked "tok" in its C line - the token is spent exactly when (and as long as) that
+    // line stands (cancelled by X = the token is back), so a failed journal write / short removal / crash never loses or doubles a token
+    if (up) mine.add(new Object[] { nextSeq(), id, Integer.valueOf(1), Integer.valueOf(n0), "R", Long.valueOf(now), dc == 2 ? "tok" : "-", k });
+    int fq = up ? q - 1 : q;
+    if (fq > 0) {
+      java.util.LinkedHashMap one = @PKG@.SackCfg.parseCost(@PKG@.SackDefs.REFUND[r - 1]);
+      StringBuilder rs = new StringBuilder();
+      java.util.Iterator ri = one.entrySet().iterator();
+      while (ri.hasNext()) {
+        java.util.Map.Entry re = (java.util.Map.Entry) ri.next();
+        if (rs.length() > 0) rs.append(',');
+        rs.append((String) re.getKey()).append(':').append(((Long) re.getValue()).longValue() * (long) fq);
+      }
+      mine.add(new Object[] { nextSeq(), id, Integer.valueOf(fq), Integer.valueOf(n0), "F", Long.valueOf(now), rs.toString(), k });
+    }
+    // fix round: the stack's C lines go in ONE append + ONE fsync (was one per line) - a torn last line is skipped by readJournal (< 8 fields)
+    // and the slot is only emptied after this returns, so a crash here leaves the bag where it was (recover: X, it converts again)
+    if (!appendJournal(k, jLines(mine, false))) {
+      appendJournal(k, jLines(mine, true));
+      return n;
+    }
+    crash("C");
+    @ISS@ tx = cont.removeItemStackFromSlot(sl, q);
+    @IS@ rem = (tx == null || !tx.succeeded()) ? null : tx.getRemainder();
+    int removed = (tx == null || !tx.succeeded()) ? 0 : q - (rem == null ? 0 : rem.getQuantity());
+    if (removed != q) {
+      if (removed > 0) cont.setItemStackForSlot(sl, it);
+      appendJournal(k, jLines(mine, true));
+      @PKG@.SackPool.warn("Void: an old bag (" + id + " x" + q + ") could not be taken out of its slot - left as it is, tried again later");
+      continue;
+    }
+    crash("REM");
+    for (int i = 0; i < mine.size(); i++) pendAdd(k, (Object[]) mine.get(i));
+    n += q;
+    CONVERTED.addAndGet((long) q);
+    if (up) {
+      if (raised.length() > 0) raised.append(", ");
+      if (r == 5) raised.append("Omni (every category)");
+      else {
+        String cat = @PKG@.SackDefs.legacyCat(id);
+        raised.append(cat).append(' ').append(@PKG@.SackDefs.RNAME[r - 1]);
+        if ("Farming".equals(cat)) raised.append(" + Fishing ").append(@PKG@.SackDefs.RNAME[r - 1]);
+      }
+    }
+    extra[0] = extra[0] + fq;
+    try { @PKG@.CraftLog.later(k, "VOID-CONVERT " + id + " x" + q + (up ? " rarity" : "") + (fq > 0 ? " refund x" + fq : "") + " (credit in " + (SETTLE_MS / 1000L) + " s)"); } catch (Throwable t) { }
+  }
+  return n;
+}'''.replace("@ISS@", ISS)), vst))
+# ---- /pdadmin legacybags (world thread of the TARGET player, its settled key): the journal's settled R bags back (G line first - never
+# twice; a token per bag so a re-conversion gives no second credit). Returns {given, waiting for free slots, status 0 ok / 1 unreadable /
+# 2 no inventory / 3 journal not written}. (fix round: moved before migrate, which calls it under /pdadmin legacybags all)
+# save pd/<k> on the writer thread
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static void saveAsync(String k) {
+  @PKG@.SackPool.runOnWriter(new @PKG@.VoidJob(2, k, (java.util.UUID) null));
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int[] giveBackN(@PLA@ p, String k) {
+  int[] out = new int[3];
+  @PKG@.VoidState s = st(k);
+  if (s == null) { out[2] = 1; return out; }
+  @INV@ inv = p.getInventory();
+  if (inv == null) { out[2] = 2; return out; }
+  @IC@ stor = inv.getStorage();
+  int free = 0;
+  short cap = stor.getCapacity();
+  for (short sl = 0; sl < cap; sl++) { @IS@ it = stor.getItemStack(sl); if (it == null || it.isEmpty()) free++; }
+  java.util.ArrayList l = new java.util.ArrayList(s.done);
+  for (int i = 0; i < l.size(); i++) {
+    Object[] e = (Object[]) l.get(i);
+    if (!"R".equals(e[4]) || s.given.contains(e[0])) continue;
+    int q = ((Integer) e[2]).intValue();
+    if (q > free) { out[1] += q; continue; }
+    if (!appendJournal(k, "G|" + e[0] + "|" + e[1] + "|" + q)) { out[2] = 3; break; }
+    s.given.add(e[0]);
+    Integer t = (Integer) s.ret.get(e[1]);
+    s.ret.put(e[1], Integer.valueOf((t == null ? 0 : t.intValue()) + q));
+    markDirty(k);
+    @IST@ tx = stor.addItemStack(new @IS@((String) e[1], q));
+    @IS@ rem = tx == null ? null : tx.getRemainder();
+    if (tx == null || !tx.succeeded() || (rem != null && !rem.isEmpty())) @PKG@.SackPool.warn("/pdadmin legacybags: " + e[1] + " x" + q + " for " + k + " did not fully fit (journal " + e[0] + ")");
+    free -= q;
+    out[0] += q;
+    try { @PKG@.CraftLog.later(k, "VOID-GIVEBACK " + e[0] + " " + e[1] + " x" + q + " (/pdadmin legacybags)"); } catch (Throwable t2) { }
+  }
+  if (out[0] > 0) saveAsync(k);
+  return out;
+}'''.replace("@IST@", IST)), vst))
+# under /pdadmin legacybags all: this profile's rarity bags back at its sweep; one chat line when bags came back, one per "make room" count
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int autoGive(@PR@ pr, @PLA@ p, String k, @PKG@.VoidState s) {
+  boolean any = false;
+  java.util.ArrayList l = new java.util.ArrayList(s.done);
+  for (int i = 0; i < l.size() && !any; i++) { Object[] e = (Object[]) l.get(i); if ("R".equals(e[4]) && !s.given.contains(e[0])) any = true; }
+  if (!any) return 0;
+  int[] r = giveBackN(p, k);
+  if (r[0] > 0 || r[1] > 0) migLog(k, "/pdadmin legacybags all: " + r[0] + " old bag(s) given back" + (r[1] > 0 ? ", " + r[1] + " waiting for free storage slots" : ""));
+  if (r[0] > 0) { try { pr.sendMessage(@MSG@.raw("[SkyyVoid] The server is getting ready to switch back to Magic Bags: " + r[0] + " old bag" + (r[0] == 1 ? " that became Void rarity is" : "s that became Void rarity are") + " back in your inventory. Everything stored stays safe.").color("#cc66cc")); } catch (Throwable t) { } }
+  if (r[1] > 0 && TOLD.putIfAbsent(k + ":" + r[1], Boolean.TRUE) == null) { try { pr.sendMessage(@MSG@.raw("[SkyyVoid] Make room for " + r[1] + " old Magic Bag" + (r[1] == 1 ? "" : "s") + " in your storage - they come back as soon as there is space.").color("#cc66cc")); } catch (Throwable t) { } }
+  return r[0];
+}'''), vst))
+# fix round 2: does the inventory (storage / hotbar / backpack) hold an old bag? (only then does the sweep wait for the History copy)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static boolean hasLegacy(@INV@ inv) {
+  if (inv == null) return false;
+  @IC@[] cs = conts(inv);
+  for (int c = 0; c < cs.length; c++) {
+    if (cs[c] == null) continue;
+    short cap = cs[c].getCapacity();
+    for (short sl = 0; sl < cap; sl++) {
+      @IS@ it = cs[c].getItemStack(sl);
+      if (it != null && !it.isEmpty() && @PKG@.SackDefs.legacyRank(it.getItemId()) > 0) return true;
+    }
+  }
+  return false;
+}'''), vst))
+# fix round 2 (rollback safety): under /pdadmin legacybags all the Pocket Dimension leaves storage / hotbar / backpack (SkyySacks 0.7.18
+# does not know Skyy_Sack_Pocket - it is only the opener, nothing is stored in it); the one-time gift comes back after /pdadmin resume all.
+# Returns the items removed (counted before / after).
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static int stripPocket(@INV@ inv, String k, @PKG@.VoidState s) {
+  String id = @PKG@.SackDefs.POCKET;
+  int before = countIn(inv, id, false);
+  if (before <= 0) return 0;
+  @IC@[] cs = conts(inv);
+  for (int c = 0; c < cs.length; c++) {
+    if (cs[c] == null) continue;
+    short cap = cs[c].getCapacity();
+    for (short sl = 0; sl < cap; sl++) {
+      @IS@ it = cs[c].getItemStack(sl);
+      if (it == null || it.isEmpty() || !id.equals(it.getItemId())) continue;
+      cs[c].removeItemStackFromSlot(sl, it.getQuantity());
+    }
+  }
+  int gone = before - countIn(inv, id, false);
+  if (gone > 0) {
+    s.pocket = false;
+    markDirty(k);
+    migLog(k, "/pdadmin legacybags all: " + gone + " Pocket Dimension item(s) removed from the inventory (SkyySacks 0.7.18 does not know that item; nothing is stored in it - /pdadmin resume all gives it back)");
+  }
+  return gone;
+}'''), vst))
+# one Pocket Dimension item into storage; true = it fully fit (migrate's gift, /pd)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static boolean givePocket(@INV@ inv) {
+  try {
+    @IST@ tx = inv.getStorage().addItemStack(new @IS@(@PKG@.SackDefs.POCKET, 1));
+    @IS@ rem = tx == null ? null : tx.getRemainder();
+    return tx != null && tx.succeeded() && (rem == null || rem.isEmpty());
+  } catch (Throwable t) { return false; }
+}'''.replace("@IST@", IST)), vst))
+# THE MIGRATION STEP of the 2 s sweep (world thread, settled key): History first (false = wait: this sweep moves nothing), then recover,
+# convert, the one-time welcome + Pocket item per profile, one chat + log line per conversion. true = the sweep may go on.
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static boolean migrate(@PR@ pr, @PLA@ p, java.util.UUID u, String k) {
+  @PKG@.VoidState s = st(k);
+  if (s == null) return true;
+  @INV@ inv = p.getInventory();
+  // fix round 2: the History copy blocks the sweep only while an old bag is there to convert - a profile without one keeps its normal
+  // sweep, stack refill and Requip top-up while the copy is made (or retried after a disk fault)
+  if (s.first <= 0L) { scheduleSnap(k, u); return !hasLegacy(inv); }
+  if (inv == null) return true;
+  recover(inv, k, s);
+  StringBuilder raised = new StringBuilder();
+  int[] extra = new int[1];
+  // fix round (rollback safety): while /pdadmin legacybags all (HOLDALL) or <player> (s.hold) is on, no old bag converts; under "all" each
+  // profile gets its rarity bags back at its sweep (offline players at their next join), the chat says so once
+  int n = 0;
+  boolean held = HOLDALL;
+  if (held || s.hold) {
+    if (held) { autoGive(pr, p, k, s); stripPocket(inv, k, s); }
+  } else n = convert(inv, k, s, raised, extra);
+  // fix round 2 (less chat, Skyy 2026-10-12): the welcome and the Pocket item are ONE chat line
+  String hello = "";
+  if (!s.welcome) {
+    s.welcome = true;
+    markDirty(k);
+    hello = "[SkyyVoid] Your storage is now the Void - one Pocket Dimension for everything you gather; each category levels up as you collect.";
+  }
+  if (!s.pocket && !held) {
+    s.pocket = true;
+    markDirty(k);
+    if (countIn(inv, @PKG@.SackDefs.POCKET, false) <= 0) {
+      boolean ok = givePocket(inv);
+      String pl = ok ? "Here is your Pocket Dimension - right-click it or type /pd to open it (losing it loses nothing)." : "Your inventory is full - make room, then type /pd to get your Pocket Dimension.";
+      hello = hello.length() > 0 ? hello + " " + pl : "[SkyyVoid] " + pl;
+    }
+  }
+  if (hello.length() > 0) { try { pr.sendMessage(@MSG@.raw(hello.indexOf("/pd") < 0 ? hello + " Open it with /pd." : hello).color("#cc66cc")); } catch (Throwable t) { } }
+  if (n > 0) {
+    String line = "[SkyyVoid] Your Magic Bags became Void rarity" + (raised.length() > 0 ? ": " + raised : "") + (extra[0] > 0 ? ". " + extra[0] + " extra bag" + (extra[0] == 1 ? " is" : "s are") + " refunded into the Void (their crafting materials) in " + (SETTLE_MS / 1000L) + " seconds" : "") + ". Nothing was lost.";
+    try { pr.sendMessage(@MSG@.raw(line).color("#cc66cc")); } catch (Throwable t) { }
+    try { if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] Void migration " + k + ": " + n + " old bag(s) converted" + (raised.length() > 0 ? " (" + raised + ")" : "") + (extra[0] > 0 ? ", " + extra[0] + " refunded" : "") + " - credit after " + (SETTLE_MS / 1000L) + " s (journal pd/" + k + ".journal)"); } catch (Throwable t) { }
+    migLog(k, "converted " + n + " old bag(s)" + (raised.length() > 0 ? ": " + raised : "") + (extra[0] > 0 ? "; " + extra[0] + " extra bag(s) refunded" : "") + " - journal pd/" + k + ".journal. UNDO: /pdadmin legacybags <player> (on this profile) gives the rarity bags back.");
+  }
+  return true;
+}'''.replace("@IST@", IST)), vst))
+# ---- THE UPGRADE (spec 2.3; world thread, the page): from = the rarity the click was made at (a second click of the same step = "already
+# upgraded"); level gate; the cost from the Void first, then plain inventory stacks; all or nothing (pool re-credited, slots restored).
+# Returns a page result line: "+" done, "-" refused, "=" info.
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.ArrayList slotSnap(@IC@[] cs) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  for (int c = 0; c < cs.length; c++) {
+    if (cs[c] == null) { out.add(null); continue; }
+    short cap = cs[c].getCapacity();
+    @IS@[] a = new @IS@[cap];
+    for (short sl = 0; sl < cap; sl++) a[sl] = cs[c].getItemStack(sl);
+    out.add(a);
+  }
+  return out;
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static void slotRestore(@IC@[] cs, java.util.ArrayList snap) {
+  for (int c = 0; c < cs.length; c++) {
+    @IS@[] a = (@IS@[]) snap.get(c);
+    if (a == null || cs[c] == null) continue;
+    for (short sl = 0; sl < a.length; sl++) {
+      @IS@ was = a[sl];
+      @IS@ now = cs[c].getItemStack(sl);
+      if (was == now) continue;
+      if (was == null || was.isEmpty()) { if (now != null && !now.isEmpty()) cs[c].removeItemStackFromSlot(sl); }
+      else cs[c].setItemStackForSlot(sl, was);
+    }
+  }
+}'''), vst))
+# take n plain items of id out of the slots (read back per slot); returns how many really left
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static long takePlain(@IC@[] cs, String id, long n) {
+  long got = 0L;
+  for (int c = 0; c < cs.length && got < n; c++) {
+    if (cs[c] == null) continue;
+    short cap = cs[c].getCapacity();
+    for (short sl = 0; sl < cap && got < n; sl++) {
+      @IS@ it = cs[c].getItemStack(sl);
+      if (it == null || it.isEmpty() || !id.equals(it.getItemId())) continue;
+      org.bson.BsonDocument md = it.getMetadata();
+      if (md != null && !md.isEmpty()) continue;
+      int q = it.getQuantity();
+      int want = (long) q < n - got ? q : (int) (n - got);
+      @ISS@ tx = cs[c].removeItemStackFromSlot(sl, want);
+      if (tx == null || !tx.succeeded()) continue;
+      @IS@ rem = tx.getRemainder();
+      int r = want - (rem == null ? 0 : rem.getQuantity());
+      if (r > 0) got += (long) r;
+    }
+  }
+  return got;
+}'''.replace("@ISS@", ISS)), vst))
+# 0.8.8 TIER LOGS: what a cost line has = the Void + plain inventory stacks of every id it counts (SackDefs.members)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static long haveOf(String k, @INV@ inv, String id) {
+  String[] m = @PKG@.SackDefs.members(id);
+  long h = 0L;
+  for (int i = 0; i < m.length; i++) h += @PKG@.SackPool.get(k, m[i]) + (long) countIn(inv, m[i], true);
+  return h;
+}'''), vst))
+# the ids of a cost line, the one the player has most of first (ties: the tier table order, key log first)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static String[] takeOrder(String k, @INV@ inv, String id) {
+  String[] m = @PKG@.SackDefs.members(id);
+  long[] h = new long[m.length];
+  for (int i = 0; i < m.length; i++) h[i] = @PKG@.SackPool.get(k, m[i]) + (long) countIn(inv, m[i], true);
+  for (int i = 1; i < m.length; i++) {
+    String x = m[i]; long hx = h[i];
+    int j = i - 1;
+    while (j >= 0 && h[j] < hx) { m[j + 1] = m[j]; h[j + 1] = h[j]; j--; }
+    m[j + 1] = x; h[j + 1] = hx;
+  }
+  return m;
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static String upgrade(@PLA@ p, java.util.UUID u, String k, int ci, int from) {
+  if (ci < 0 || ci >= @PKG@.SackDefs.CATS.length) return "-Unknown category";
+  String cat = @PKG@.SackDefs.CATS[ci];
+  @PKG@.VoidState s = st(k);
+  if (s == null) return "-The Void data of this profile cannot be read right now - nothing was taken";
+  if (s.first <= 0L) return "-The Void is still getting ready - try again in a moment";
+  if (omni(k)) return "=Omni already - every category is at the top";
+  int cur = rarOf(k, ci);
+  if (cur != from) return "=Already upgraded - " + cat + " is " + @PKG@.SackDefs.RNAME[cur];
+  if (cur >= 3) return "=Legendary is the top - Omni comes with all six categories at Legendary";
+  int to = cur + 1;
+  // 0.8.14 (Skyy "if i have the stuff, my lvl shouldn't stop me on this"): no level gate - the materials alone decide
+  java.util.LinkedHashMap cost = @PKG@.SackCfg.parseCost(@PKG@.SackCfg.cost(ci, to));
+  if (cost == null) return "-This upgrade's cost is not set correctly (Server Setup) - nothing was taken";
+  @INV@ inv = p.getInventory();
+  if (inv == null) return "-No inventory";
+  @PKG@.BagMirror.beforeTake(k);
+  // 0.8.8: a tier log line counts every log of its tier; two lines of one tier add up
+  java.util.HashMap needU = new java.util.HashMap();
+  java.util.Iterator it = cost.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    String id = (String) e.getKey();
+    String uk = @PKG@.SackDefs.unitKey(id);
+    Long pn = (Long) needU.get(uk);
+    long need = ((Long) e.getValue()).longValue() + (pn == null ? 0L : pn.longValue());
+    needU.put(uk, Long.valueOf(need));
+    long have = haveOf(k, inv, id);
+    String un = @PKG@.SackDefs.lineName(id);   // 0.8.9: the real name
+    if (have < need) return "-Not enough " + (un == null ? id : un) + " (" + have + " / " + need + ")";
+  }
+  @IC@[] cs = conts(inv);
+  java.util.ArrayList snap = slotSnap(cs);
+  java.util.LinkedHashMap fromPool = new java.util.LinkedHashMap();
+  java.util.LinkedHashMap fromInv = new java.util.LinkedHashMap();
+  String bad = null;
+  try {
+    it = cost.entrySet().iterator();
+    while (it.hasNext() && bad == null) {
+      java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+      String id = (String) e.getKey();
+      long rest = ((Long) e.getValue()).longValue();
+      // 0.8.8: the ids of the line, most held first; each: the Void first, then plain inventory stacks; never more than the line
+      String[] ord = takeOrder(k, inv, id);
+      for (int m = 0; m < ord.length && rest > 0L; m++) {
+        String mid = ord[m];
+        long pp = @PKG@.SackPool.get(k, mid);
+        long tp = pp < rest ? pp : rest;
+        if (tp > 0L) {
+          @PKG@.SackPool.add(k, mid, -tp);
+          Long pv = (Long) fromPool.get(mid);
+          fromPool.put(mid, Long.valueOf(tp + (pv == null ? 0L : pv.longValue())));
+          rest -= tp;
+        }
+        if (rest > 0L) {
+          long ic = (long) countIn(inv, mid, true);
+          long ti = ic < rest ? ic : rest;
+          if (ti > 0L) {
+            long got = takePlain(cs, mid, ti);
+            if (got > 0L) {
+              Long iv = (Long) fromInv.get(mid);
+              fromInv.put(mid, Long.valueOf(got + (iv == null ? 0L : iv.longValue())));
+              rest -= got;
+            }
+          }
+        }
+      }
+      String un = @PKG@.SackDefs.lineName(id);   // 0.8.9: the real name
+      if (rest > 0L) bad = "-Not enough " + (un == null ? id : un) + " any more - nothing was taken";
+    }
+  } catch (Throwable t) { bad = "-Internal error - nothing was taken"; @PKG@.SackPool.warn("Void upgrade failed and was rolled back: " + t); }
+  if (bad != null) {
+    slotRestore(cs, snap);
+    java.util.Iterator bi = fromPool.entrySet().iterator();
+    while (bi.hasNext()) { java.util.Map.Entry e = (java.util.Map.Entry) bi.next(); @PKG@.SackPool.add(k, (String) e.getKey(), ((Long) e.getValue()).longValue()); }
+    return bad;
+  }
+  s.rar[ci] = to;
+  boolean nowOmni = false;
+  if (@PKG@.SackCfg.PD_OMNI_AUTO && !s.omni && legendCount(k) >= @PKG@.SackDefs.CATS.length) { s.omni = true; nowOmni = true; }
+  markDirty(k);
+  // fix round: ONE writer job saves the rarity and then the pool at once (was: the pool on the debounced saveSoon - a crash in between kept
+  // the rarity and gave the paid Void items back); the inventory part still follows the engine's player save (the never-pay-without direction)
+  @PKG@.SackPool.runOnWriter(new @PKG@.VoidJob(4, k, (java.util.UUID) null));
+  java.util.Iterator ai = fromPool.keySet().iterator();
+  while (ai.hasNext()) { try { @PKG@.BagMirror.afterTake(k, (String) ai.next()); } catch (Throwable t) { } }
+  try { @PKG@.CraftLog.later(k, "VOID-UPGRADE " + cat + " " + @PKG@.SackDefs.RNAME[cur] + " -> " + @PKG@.SackDefs.RNAME[to] + " paid Void " + fromPool + " inventory " + fromInv + (nowOmni ? " -> OMNI" : "")); } catch (Throwable t) { }
+  return "+" + cat + " is now " + @PKG@.SackDefs.RNAME[to] + (nowOmni ? " - all six are Legendary: your Void is OMNI" : "");
+}'''), vst))
+# the page's Deposit button (spec 3.1 / the amount box): up to n (n < 0 = all you carry) plain stacks of id from storage, hotbar and
+# backpack into the Void, never past the category room. Returns what moved; -1 = this item never goes into the Void (catOf: cooked food
+# while it stays out), -2 = the category is full, 0 = none carried
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static long depositInv(@PLA@ p, java.util.UUID u, String k, String id, long n) {
+  String cat = @PKG@.SackDefs.catOf(id);
+  if (cat == null) return -1L;
+  int ci = @PKG@.SackDefs.catIndex(cat);
+  @INV@ inv = p == null ? null : p.getInventory();
+  if (inv == null || ci < 0) return 0L;
+  boolean fish = @PKG@.SackDefs.isCatch(id);   // 0.8.10: whole fish go in with their entries
+  long have = fish ? @PKG@.SweepTask.fishHave(inv, id) : (long) countIn(inv, id, true);
+  if (have <= 0L) return 0L;
+  Integer cc = (Integer) capsK(u, k).get(cat);
+  long room = (cc == null ? 0L : cc.longValue()) - usedAll(k)[ci];
+  if (room <= 0L) return -2L;
+  long want = n < 0L ? have : (n < have ? n : have);
+  if (want > room) want = room;
+  long got = fish ? @PKG@.SweepTask.fishTake(conts(inv), k, id, want) : takePlain(conts(inv), id, want);
+  if (got > 0L) {
+    if (!fish) @PKG@.SackPool.add(k, id, got);   // 0.8.10: fishTake booked the fish (count + entries) itself
+    noteIntake(k, ci, got);
+    try { @PKG@.CraftLog.later(k, "VOID-DEPOSIT " + id + " " + got + " (page Deposit)"); } catch (Throwable t) { }
+  }
+  return got;
+}'''), vst))
+# sacks:fn:pd (spec 5): UUID -> Object[] of Object[]{String cat, Integer level, String rarity, Long cap, Long stored} for the ACTIVE profile
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static Object[] pdInfo(Object o) {
+  if (!(o instanceof java.util.UUID)) return null;
+  java.util.UUID u = (java.util.UUID) o;
+  String k = @PKG@.SackPool.pkey(u);
+  if (!@PKG@.SackPool.ready(k)) return null;
+  String[] cats = @PKG@.SackDefs.CATS;
+  long[] used = usedAll(k);
+  Object[] out = new Object[cats.length];
+  for (int i = 0; i < cats.length; i++) {
+    int lv = level(u, k, i);
+    int r = rank(k, i);
+    out[i] = new Object[] { cats[i], Integer.valueOf(lv), @PKG@.SackDefs.RNAME[r], Long.valueOf(capOf(lv, r)), Long.valueOf(used[i]) };
+  }
+  return out;
+}'''), vst))
+# ---- /pdadmin legacybags <player>: the bags back (giveBackN) + this profile HELD (fix round: before, the next sweep converted the
+# given-back bags again at once); /pdadmin resume <player> lets them convert again (no second credit: the tokens)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static String giveBack(@PLA@ p, String k) {
+  @PKG@.VoidState s = st(k);
+  if (s == null) return NOREAD;
+  if (!s.hold) { s.hold = true; s.holdAt = Math.max(System.currentTimeMillis(), RESUMEALL + 1L); markDirty(k); }
+  int[] r = giveBackN(p, k);
+  if (r[2] == 1) return NOREAD;
+  if (r[2] == 2) return "no inventory";
+  saveAsync(k);   // the hold + tokens saved
+  migLog(k, "/pdadmin legacybags: " + r[0] + " old bag(s) given back" + (r[1] > 0 ? ", " + r[1] + " waiting for free storage slots" : "") + (r[2] == 3 ? " (the journal could not be written - stopped)" : "") + "; old bags on this profile no longer convert until /pdadmin resume");
+  if (r[2] == 3) return r[0] + " old bag(s) given back, then the journal could not be written - stopped (run it again)";
+  return r[0] + " old bag(s) given back" + (r[1] > 0 ? " (" + r[1] + " more need free storage slots - run it again)" : "") + "; refunded bags stay refunded; old bags on this profile stay bags until /pdadmin resume";
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static String resume(String k) {
+  @PKG@.VoidState s = st(k);
+  if (s == null) return NOREAD;
+  if (!s.hold) return "this profile was not held";
+  s.hold = false;
+  markDirty(k);
+  saveAsync(k);
+  migLog(k, "/pdadmin resume: old bags on this profile convert again (no second credit)");
+  return "resumed - old bags on this profile turn into Void rarity again (no second credit)";
+}'''), vst))
+# /pdadmin legacybags all | resume all: the server-wide hold, kept in pd/_legacybags-all.flag (written + fsync'd; a restart keeps it)
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static boolean setHoldAll(boolean on) {
+  if (DIR == null) return false;
+  try {
+    java.nio.file.Path f = DIR.resolve("_legacybags-all.flag");
+    if (on) {
+      java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
+      java.io.FileOutputStream out = new java.io.FileOutputStream(f.toFile());
+      try { out.write(("/pdadmin legacybags all since " + new java.util.Date() + " - every profile gets its rarity bags back at its next sweep; no old bag converts. /pdadmin resume all removes this file." + System.lineSeparator()).getBytes("UTF-8")); out.flush(); out.getFD().sync(); } finally { out.close(); }
+    } else {
+      // fix round 2: the resume time, fsync'd BEFORE the flag goes - a profile loaded later whose saved hold is older is not held any more
+      long now = Math.max(System.currentTimeMillis(), RESUMEALL + 1L);
+      java.nio.file.Files.createDirectories(DIR, new java.nio.file.attribute.FileAttribute[0]);
+      java.nio.file.Path stp = DIR.resolve("_resume-all.stamp.tmp");
+      java.io.FileOutputStream so = new java.io.FileOutputStream(stp.toFile());
+      try { so.write((String.valueOf(now) + System.lineSeparator()).getBytes("UTF-8")); so.flush(); so.getFD().sync(); } finally { so.close(); }
+      java.nio.file.Files.move(stp, DIR.resolve("_resume-all.stamp"), new java.nio.file.CopyOption[] { java.nio.file.StandardCopyOption.REPLACE_EXISTING });
+      RESUMEALL = now;
+      java.nio.file.Files.deleteIfExists(f);
+      java.util.Iterator it = STATES.values().iterator();
+      while (it.hasNext()) { @PKG@.VoidState s = (@PKG@.VoidState) it.next(); if (s.hold) { s.hold = false; markDirty(s.key); } }
+    }
+    HOLDALL = on;
+    TOLD.clear();
+    migLog("ALL", on ? "/pdadmin legacybags all: every profile gets its rarity bags back at its next sweep (offline players at their next join); no old bag converts until /pdadmin resume all" : "/pdadmin resume all: old bags convert again (no second credit)");
+    return true;
+  } catch (Throwable t) {
+    @PKG@.SackPool.warn("/pdadmin: could not " + (on ? "write" : "remove") + " pd/_legacybags-all.flag: " + t);
+    return false;
+  }
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static void loadHold() {
+  try {
+    java.nio.file.Path stp = DIR == null ? null : DIR.resolve("_resume-all.stamp");
+    RESUMEALL = (stp != null && java.nio.file.Files.exists(stp, new java.nio.file.LinkOption[0])) ? num(new String(java.nio.file.Files.readAllBytes(stp), "UTF-8"), 0L) : 0L;
+  } catch (Throwable t) { @PKG@.SackPool.warn("/pdadmin: could not read pd/_resume-all.stamp (holds saved before the last resume all may stay on): " + t); }
+  try { HOLDALL = DIR != null && java.nio.file.Files.exists(DIR.resolve("_legacybags-all.flag"), new java.nio.file.LinkOption[0]); } catch (Throwable t) { HOLDALL = false; }
+  if (HOLDALL) @PKG@.SackPool.warn("/pdadmin legacybags all is ON (pd/_legacybags-all.flag): old bags do not convert and every profile gets its rarity bags back - /pdadmin resume all ends it");
+}'''), vst))
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static String grantOmni(String k) {
+  @PKG@.VoidState s = st(k);
+  if (s == null) return NOREAD;
+  if (s.omni) return "this profile's Void is Omni already";
+  s.omni = true;
+  markDirty(k);
+  saveAsync(k);
+  migLog(k, "/pdadmin omni: Omni granted");
+  return "Omni granted - every category now has the Omni multiplier";
+}'''), vst))
+# 0.8.2: /pdadmin rarity <player> <category|all> <rarity> - the two words -> int[] { category index (-1 = all six), rarity 0..4 } or the
+# String why not. Common = Normal (Skyy's word), Mythic = Omni.
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static Object rarityArgs(String cat, String rar) {
+  String c = cat == null ? "" : cat.trim();
+  String r = rar == null ? "" : rar.trim().toLowerCase();
+  int ci = -2;
+  if (c.equalsIgnoreCase("all")) ci = -1;
+  else {
+    for (int i = 0; i < @PKG@.SackDefs.CATS.length; i++) if (@PKG@.SackDefs.CATS[i].equalsIgnoreCase(c)) ci = i;
+  }
+  if (ci == -2) return "unknown category '" + c + "' - use Mining, Foraging, Farming, Fishing, Combat, Smithing or all";
+  int ri = -1;
+  if (r.equals("common")) ri = 0;
+  else if (r.equals("mythic")) ri = 4;
+  else {
+    for (int i = 0; i < @PKG@.SackDefs.RNAME.length; i++) if (@PKG@.SackDefs.RNAME[i].equalsIgnoreCase(r)) ri = i;
+  }
+  if (ri < 0) return "unknown rarity '" + rar + "' - use Normal (Common), Unique, Rare, Legendary or Omni";
+  return new int[] { ci, ri };
+}'''), vst))
+# 0.8.2: set the rarity of profile k (ci -1 = all six; r 0..3 = Normal..Legendary, 4 = Omni = the omni flag). Only the VoidState rarity /
+# omni flag change (saved by the writer job, like /pdadmin omni) - the pool is never touched, so lowering deletes nothing: a category over
+# its new space keeps every item and only takes no more. u = the target (its levels for the reply's space numbers). World thread.
+vst.addMethod(CtNewMethod.make(jt(r'''
+public static String setRarity(java.util.UUID u, String k, int ci, int r, String who) {
+  @PKG@.VoidState s = st(k);
+  if (s == null) return NOREAD;
+  String[] cats = @PKG@.SackDefs.CATS;
+  if (r < 0 || r > 4 || ci < -1 || ci >= cats.length) return "unknown category or rarity";
+  long[] used0 = usedAll(k);
+  long items0 = 0L;
+  for (int i = 0; i < used0.length; i++) items0 += used0[i];
+  StringBuilder was = new StringBuilder();
+  for (int i = 0; i < cats.length; i++) { if (i > 0) was.append(", "); was.append(cats[i]).append(' ').append(@PKG@.SackDefs.RNAME[rank(k, i)]); }
+  String extra = "";
+  if (r == 4) {
+    s.omni = true;
+    if (ci >= 0) extra = " (Omni is the whole Void - all six categories)";
+  } else if (ci < 0) {
+    for (int i = 0; i < cats.length; i++) s.rar[i] = r;
+    s.omni = false;
+  } else {
+    if (s.omni) {
+      for (int i = 0; i < cats.length; i++) if (i != ci && s.rar[i] < 3) s.rar[i] = 3;
+      s.omni = false;
+      extra = " (it was Omni: the other categories are Legendary now)";
+    }
+    s.rar[ci] = r;
+  }
+  markDirty(k);
+  saveAsync(k);
+  java.util.HashMap caps = capsK(u, k);
+  long[] used = usedAll(k);
+  long items = 0L;
+  StringBuilder now = new StringBuilder();
+  StringBuilder over = new StringBuilder();
+  StringBuilder back = new StringBuilder();
+  for (int i = 0; i < cats.length; i++) {
+    items += used[i];
+    if (i > 0) now.append(", ");
+    now.append(cats[i]).append(' ').append(@PKG@.SackDefs.RNAME[rank(k, i)]);
+    Integer cc = (Integer) caps.get(cats[i]);
+    if (cc != null && used[i] > (long) cc.intValue()) { if (over.length() > 0) over.append(", "); over.append(cats[i]).append(' ').append(used[i]).append(" / ").append(cc.intValue()); }
+    if (r < 4 && (ci < 0 || ci == i) && pendRank(k, i) > r) { if (back.length() > 0) back.append(", "); back.append(cats[i]); }
+  }
+  String note = "";
+  if (r < 4 && omni(k)) note = note + " It is STILL Omni: " + (pendOmni(k) ? "an Omni bag conversion is still settling." : "all six are Legendary and Server Setup gives Omni automatically (pd.omniAuto).");
+  if (back.length() > 0) note = note + " A bag conversion still settling raises " + back + " again within 30 s.";
+  migLog(k, "/pdadmin rarity: " + was + " -> " + now + " by " + who + " (items stored " + items0 + ", unchanged: " + items + ")");
+  try { @PKG@.CraftLog.later(k, "VOID-RARITY " + (ci < 0 ? "all" : cats[ci]) + " " + @PKG@.SackDefs.RNAME[r] + " by " + who); } catch (Throwable t) { }
+  return "Void rarity set" + extra + ": " + now + ". Before: " + was + "."
+    + (over.length() > 0 ? " Over the space now: " + over + " - nothing was removed; new items of those categories stop going in until there is room." : " Every stored item still fits.")
+    + note;
+}'''), vst))
+
+# ---- VoidJob: a writer-thread job. mode 1 = History snapshot of k (then the player is swept again), 2 = save pd/<k>, 3 = settle now,
+# 4 = save pd/<k> then pools/<k> (the upgrade)
+vjob.addMethod(CtNewMethod.make(jt(r'''
+public void run() {
+  try {
+    if (this.mode == 1) {
+      boolean ok = @PKG@.VoidStore.snapshot(this.k);
+      @PKG@.VoidStore.SNAPQ.remove(this.k);
+      if (ok && this.u != null) @PKG@.SweepTask.INVDIRTY.put(this.u, Boolean.TRUE);
+    } else if (this.mode == 2) {
+      @PKG@.VoidStore.saveNow(this.k);
+    } else if (this.mode == 3) {
+      @PKG@.VoidStore.settleDue(System.currentTimeMillis());
+    } else if (this.mode == 4) {   // fix round: the upgrade - the rarity, then the pool, both now
+      @PKG@.VoidStore.saveNow(this.k);
+      if (@PKG@.SackPool.DIRTY.remove(this.k) != null) @PKG@.SackPool.save(this.k);
+    }
+  } catch (Throwable t) { @PKG@.SackPool.warn("Void job " + this.mode + " failed (retried later): " + t); }
+}'''), vjob))
+
+# ---- /pdadmin: VoidAdminTask runs on the TARGET's world thread (its Player component, its settled profile key)
+vat.addInterface(pool.get("java.lang.Runnable"))
+vat.addField(CtField.make("public int mode;", vat))
+vat.addField(CtField.make(f"public {PR} admin;", vat))
+vat.addField(CtField.make(f"public {PR} target;", vat))
+vat.addConstructor(CtNewConstructor.make(f"public VoidAdminTask(int mode, {PR} admin, {PR} target) {{ this.mode = mode; this.admin = admin; this.target = target; }}", vat))
+# 0.8.2: mode 4 = /pdadmin rarity (ci = category index or -1 = all, rar = 0..4); answer = the reply for the target's settled key (the
+# branches of 0.8.1's run, moved so a harness executes every mode)
+vat.addField(CtField.make("public int ci;", vat))
+vat.addField(CtField.make("public int rar;", vat))
+vat.addMethod(CtNewMethod.make(jt(r'''
+public static String answer(int mode, @PLA@ p, String k, java.util.UUID u, int ci, int rar, String who) {
+  if (p == null) return "that player is not in a world right now";
+  if (k == null) return "that player's profile is loading or switching - try again in a few seconds";
+  if (mode == 1) return @PKG@.VoidStore.giveBack(p, k);
+  if (mode == 3) return @PKG@.VoidStore.resume(k);
+  if (mode == 4) return @PKG@.VoidStore.setRarity(u, k, ci, rar, who);
+  return @PKG@.VoidStore.grantOmni(k);
+}'''), vat))
+vat.addMethod(CtNewMethod.make(jt(r'''
+public void run() {
+  String msg;
+  try {
+    @REF@ r = this.target.getReference();
+    @ST@ st = r == null ? null : r.getStore();
+    @PLA@ p = st == null ? null : (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+    String k = @PKG@.SackPool.settledKey(this.target.getUuid());
+    msg = answer(this.mode, p, k, this.target.getUuid(), this.ci, this.rar, this.admin == null ? "?" : this.admin.getUsername());
+  } catch (Throwable t) { msg = "failed: " + t; }
+  try { this.admin.sendMessage(@MSG@.raw("[SkyyVoid admin] " + this.target.getUsername() + ": " + msg)); } catch (Throwable t2) { }
+}'''), vat))
+vac.addConstructor(CtNewConstructor.make(("""
+public PdAdminCmd() {
+  super("pdadmin", "(admin) /pdadmin legacybags <player>|all | resume <player>|all | omni <player> | rarity <player> <category|all> <rarity> - Void admin tools (SkyyVoid)");
+  requirePermission("skyysacks.admin");
+  setAllowsExtraArguments(true);
+}"""), vac))
+vac.addMethod(CtNewMethod.make(jt(r'''
+protected void execute(@CTX@ ctx, @ST@ store, @REF@ ref, @PR@ pr, @WLD@ world) {
+  try {
+    String line = "";
+    try { line = ctx.getInputString(); } catch (Throwable t) { line = ""; }
+    String q = line == null ? "" : line.trim();
+    if (q.startsWith("/")) q = q.substring(1).trim();
+    String[] a = q.split("\\s+");
+    int at = a.length > 0 && a[0].equalsIgnoreCase("pdadmin") ? 1 : 0;
+    String act = a.length > at ? a[at].toLowerCase() : "";
+    String who = a.length > at + 1 ? a[at + 1] : "";
+    int mode = act.equals("legacybags") ? 1 : (act.equals("omni") ? 2 : (act.equals("resume") ? 3 : (act.equals("rarity") ? 4 : 0)));
+    if (mode == 0 || who.length() == 0) { pr.sendMessage(@MSG@.raw("[SkyyVoid admin] Usage: /pdadmin legacybags <player>|all (gives the old bags that became rarity back and stops old bags converting - before a rollback) | /pdadmin resume <player>|all | /pdadmin omni <player> | /pdadmin rarity <player> <category|all> <Normal|Unique|Rare|Legendary|Omni> (lowering keeps every stored item)")); return; }
+    // 0.8.2: /pdadmin rarity <player> <category|all> <rarity> - both words checked here, before the hop to the player's world
+    int[] rp = null;
+    if (mode == 4) {
+      Object pl = @PKG@.VoidStore.rarityArgs(a.length > at + 2 ? a[at + 2] : "", a.length > at + 3 ? a[at + 3] : "");
+      if (!(pl instanceof int[])) { pr.sendMessage(@MSG@.raw("[SkyyVoid admin] " + pl + ". Usage: /pdadmin rarity <player> <category|all> <Normal|Unique|Rare|Legendary|Omni>")); return; }
+      rp = (int[]) pl;
+    }
+    // fix round: "all" = the server-wide hold (pd/_legacybags-all.flag): every profile, offline players at their next join
+    if (who.equalsIgnoreCase("all") && mode != 2 && mode != 4) {
+      boolean ok = @PKG@.VoidStore.setHoldAll(mode == 1);
+      if (ok && mode == 1) {
+        java.util.Iterator pi = @UNI@.get().getPlayers().iterator();
+        while (pi.hasNext()) { @PR@ x = (@PR@) pi.next(); if (x != null && x.isValid() && x.getUuid() != null) @PKG@.SweepTask.INVDIRTY.put(x.getUuid(), Boolean.TRUE); }
+      }
+      pr.sendMessage(@MSG@.raw("[SkyyVoid admin] " + (!ok ? "failed - see the server log" : (mode == 1 ? "legacybags all is ON: old bags no longer convert; every player gets the bags that became rarity back at their next sweep (offline players when they join). Check Skyy_SkyySacks/migration.log, then roll back. /pdadmin resume all ends it." : "resume all: old bags turn into Void rarity again (no second credit)"))));
+      return;
+    }
+    @PR@ target = null;
+    java.util.Iterator it = @UNI@.get().getPlayers().iterator();
+    while (it.hasNext()) {
+      @PR@ x = (@PR@) it.next();
+      if (x != null && x.isValid() && who.equalsIgnoreCase(x.getUsername())) target = x;
+    }
+    if (target == null) { pr.sendMessage(@MSG@.raw("[SkyyVoid admin] No online player named " + who)); return; }
+    @WLD@ w = @UNI@.get().getWorld(target.getWorldUuid());
+    if (w == null) { pr.sendMessage(@MSG@.raw("[SkyyVoid admin] " + who + " is not in a world right now")); return; }
+    @PKG@.VoidAdminTask task = new @PKG@.VoidAdminTask(mode, pr, target);
+    if (rp != null) { task.ci = rp[0]; task.rar = rp[1]; }
+    w.execute(task);
+  } catch (Throwable t) {
+    @PKG@.SackPool.warn("/pdadmin failed: " + t);
+    pr.sendMessage(@MSG@.raw("[SkyyVoid admin] failed - see the server log"));
+  }
+}'''.replace("@CTX@", CTX)), vac))
+
+# CraftPage fields + constructor first (SacksPage references it)
+cpg.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap ONLY = new java.util.concurrent.ConcurrentHashMap();", cpg))
+cpg.addField(CtField.make("public String tab;", cpg))
+cpg.addField(CtField.make("public int pageNo;", cpg))
+cpg.addField(CtField.make("public String info;", cpg))
+cpg.addField(CtField.make("public java.util.ArrayList rows;", cpg))
+cpg.addField(CtField.make("public java.util.ArrayList tabs;", cpg))
+cpg.addField(CtField.make("public String[] fuelIds;", cpg))
+cpg.addField(CtField.make("public String key;", cpg))
+cpg.addField(CtField.make("public String noticeKey;", cpg))
+cpg.addField(CtField.make("public boolean settling;", cpg))
+# 0.7.3: the active search ("" = none); lives only on this page instance
+cpg.addField(CtField.make("public String query;", cpg))
+cpg.addField(CtField.make("public static java.util.HashSet BENCHIDS;", cpg))
+cpg.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap ACCWARN = new java.util.concurrent.ConcurrentHashMap();", cpg))
+# 0.7.7 (research/Bag-Restructure-Spec.md 5.3): per build - the player's known recipes, coll:recipes, and whether all five Legendary bags
+# are carried (the Omni recipe joins the Collections tab); GEARWARN throttles the gear:fn:roll warning
+cpg.addField(CtField.make("public java.util.Set known;", cpg))
+cpg.addField(CtField.make("public java.util.HashSet coll;", cpg))
+cpg.addField(CtField.make("public boolean omniOk;", cpg))
+# 0.7.15 page guard: the entity Ref this page was last built for (ProcTask.notice updates the page only while it is the player's current one)
+cpg.addField(CtField.make("public " + REF + " builtRef;", cpg))
+cpg.addField(CtField.make("public static long GEARWARN;", cpg))
+cpg.addConstructor(CtNewConstructor.make(f"""
+public CraftPage({PR} pr, String tab) {{
+  super(pr, {LIFE}.CanDismiss);
+  this.tab = tab; this.pageNo = 0; this.info = ""; this.query = "";
+}}""", cpg))
+
+# ================= SacksPage = THE VOID PAGE (0.8.0, research/Bags-v2-Spec.md 3.1; docs/answered/ui.md 2026-10-10 amount box) =================
+# The kit (tools/skyyui.py): page shell, groups, labels, buttons, icon cells, bars, the text field, the status line; the category tabs keep
+# the deployed 0.7.7 tab style (rarity-coloured Tertiary). Left: six tabs (rarity colour, "Lv N - stored / space", a fill bar) + the Omni
+# line. Middle: the header lines (stored / space bar, collected / next level bar, an amber over-limit line), the 36-cell grid with paging
+# (click = select). Right: the selected item, the ONE amount box above Withdraw (every action uses it: Withdraw takes that many - empty =
+# one stack; Deposit puts that many of the selected item from your inventory in - empty = all you carry), Pick up all, Deposit all,
+# the Upgrade box (level gate, cost cells have / need, Upgrade -> Pay / Cancel). Bottom: the result line + the stack refill row.
+page.addField(CtField.make("public String cat;", page))
+page.addField(CtField.make("public String sel;", page))
+page.addField(CtField.make("public int pageNo;", page))
+page.addField(CtField.make("public String[] cells;", page))
+page.addField(CtField.make("public String info;", page))
+page.addField(CtField.make("public String amount;", page))
+page.addField(CtField.make("public boolean confirm;", page))
+page.addField(CtField.make("public String key;", page))
+page.addField(CtField.make("public String noticeKey;", page))
+page.addField(CtField.make("public boolean carried;", page))   # kept (always true since 0.8.0: no bag needs to be carried)
+page.addField(CtField.make("public " + REF + " builtRef;", page))
+page.addConstructor(CtNewConstructor.make(f"""
+public SacksPage({PR} pr, String cat) {{
+  super(pr, {LIFE}.CanDismiss);
+  this.cat = cat;
+  this.info = "";
+  this.amount = "";
+  this.carried = true;
+}}""", page))
+page.addMethod(CtNewMethod.make("""
+public static String safe(String t) {
+  if (t == null) return "";
+  return t.replace(':', ' ').replace(';', ' ').replace(',', ' ').replace('{', '(').replace('}', ')').replace('"', ' ');
+}""", page))
+page.addMethod(CtNewMethod.make("""
+public static String num(long v) {
+  String d = String.valueOf(v < 0L ? -v : v);
+  StringBuilder sb = new StringBuilder();
+  int n = d.length();
+  for (int i = 0; i < n; i++) {
+    if (i > 0 && (n - i) % 3 == 0) sb.append(',');
+    sb.append(d.charAt(i));
+  }
+  return (v < 0L ? "-" : "") + sb.toString();
+}""", page))
+# a cell's count in at most 6 characters (12,345 -> 12.3k)
+page.addMethod(CtNewMethod.make(jt(r'''
+public static String shortNum(long v) {
+  if (v < 10000L) return num(v);
+  if (v < 100000L) return (v / 1000L) + "." + ((v % 1000L) / 100L) + "k";
+  if (v < 10000000L) return (v / 1000L) + "k";
+  return (v / 1000000L) + "M";
+}'''), page))
+page.addMethod(CtNewMethod.make(jt(r'''
+public static String multTxt(int r) {
+  double m = @PKG@.SackCfg.mult(r);
+  if (m == Math.floor(m)) return ((long) m) + ".0";
+  return String.valueOf(m);
+}'''), page))
+page.addMethod(CtNewMethod.make(jt(r'''
+public static int fill(long a, long b, int w) {
+  if (b <= 0L || a <= 0L) return 0;
+  if (a >= b) return w;
+  long f = a * (long) w / b;
+  return (int) (f < 0L ? 0L : f);
+}'''), page))
+page.addMethod(CtNewMethod.make(jt(r'''
+public static String pretty(String id) {
+  if (id == null) return "";
+  String s = id;
+  if (s.startsWith("Ingredient_")) s = s.substring(11);
+  if (s.endsWith("_Item")) s = s.substring(0, s.length() - 5);
+  return s.replace('_', ' ');
+}'''), page))
+# the first category with something stored, else Mining
+page.addMethod(CtNewMethod.make(jt(r'''
+public static int pickCat(String k) {
+  long[] u = @PKG@.VoidStore.usedAll(k);
+  for (int i = 0; i < u.length; i++) if (u[i] > 0L) return i;
+  return 0;
+}'''), page))
+# a page event that carries the amount box (every Void page action reads it)
+page.addMethod(CtNewMethod.make(jt(r'''
+public static @EVD@ amtEvt(String a) {
+  return @EVD@.of("a", a).append("@Amt", "#SkyyVAmt.Value");
+}'''), page))
+# one string value out of the page event JSON ("@Amt": "...") - CraftPage.jsonStr's rules (that class is compiled after this one)
+page.addMethod(CtNewMethod.make(jt(r'''
+public static String field(String data, String key) {
+  if (data == null || key == null) return "";
+  String qt = String.valueOf((char) 34);
+  int i = data.indexOf(qt + key + qt);
+  if (i < 0) return "";
+  i = data.indexOf(':', i + key.length() + 2);
+  if (i < 0) return "";
+  i++;
+  while (i < data.length() && Character.isWhitespace(data.charAt(i))) i++;
+  if (i >= data.length() || data.charAt(i) != 34) return "";
+  i++;
+  StringBuilder sb = new StringBuilder();
+  while (i < data.length() && sb.length() < 40) {
+    char c = data.charAt(i);
+    if (c == 34) break;
+    if (c == 92 && i + 1 < data.length()) { sb.append(data.charAt(i + 1)); i += 2; continue; }
+    sb.append(c);
+    i++;
+  }
+  return sb.toString();
+}'''), page))
+# the amount box: "" = dflt, "all" = everything, digits (commas / spaces / dots ignored) >= 1, anything else = -2 (refused)
+page.addMethod(CtNewMethod.make(jt(r'''
+public static long parseAmt(String a, long dflt) {
+  if (a == null) return dflt;
+  String t = a.trim().toLowerCase();
+  if (t.length() == 0) return dflt;
+  if (t.equals("all") || t.equals("max")) return 9223372036854775807L;
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < t.length(); i++) {
+    char c = t.charAt(i);
+    if (c == ',' || c == ' ' || c == '.' || c == '_') continue;
+    if (c < '0' || c > '9') return -2L;
+    sb.append(c);
+  }
+  if (sb.length() == 0 || sb.length() > 12) return -2L;
+  long n = Long.parseLong(sb.toString());
+  return n < 1L ? -2L : n;
+}'''), page))
+page.addMethod(CtNewMethod.make(jt(r'''
+public static int stackOf(String id) {
+  try { @ITM@ it = @PKG@.ProcBench.item(id); if (it != null && it.getMaxStack() > 0) return it.getMaxStack(); } catch (Throwable t) { }
+  return 64;
+}'''), page))
+# withdraw up to n (one stack at a time, SweepTask.withdraw: storage, the live-mirror rule, kept counts); stops when the storage is full
+page.addMethod(CtNewMethod.make(jt(r'''
+public static long withdrawN(@PLA@ p, String k, String id, long n) {
+  long got = 0L;
+  int st = stackOf(id);
+  for (int guard = 0; guard < 2000 && got < n; guard++) {
+    long want = n - got < (long) st ? n - got : (long) st;
+    int added = @PKG@.SweepTask.withdraw(p, k, id, (int) want);
+    got += (long) added;
+    if ((long) added < want) break;
+  }
+  if (got > 0L) @PKG@.VoidStore.noteOut(k, @PKG@.SackDefs.catIndex(@PKG@.SackDefs.homeOf(id)), got);   // fix round: no level from re-depositing
+  return got;
+}'''), page))
+# the deployed 0.7.7 tab look (a Tertiary button whose label has the category's rarity colour)
+page.addField(CtField.make("public static final String SND = " + jlit('(Activate: (SoundPath: "Sounds/ButtonsLightActivate.ogg", MinPitch: -0.4, MaxPitch: 0.4, Volume: 4), MouseHover: (SoundPath: "Sounds/ButtonsLightHover.ogg", Volume: 6))') + ";", page))
+page.addMethod(CtNewMethod.make(jt(r'''
+public static String tabStyle(boolean sel, String col) {
+  String ls = "LabelStyle: (FontSize: 14, TextColor: " + col + ", RenderBold: true, RenderUppercase: true, HorizontalAlignment: Center, VerticalAlignment: Center)";
+  String d = sel ? "Tertiary_Active" : "Tertiary";
+  String h = sel ? "Tertiary_Active" : "Tertiary_Hovered";
+  return "Style: TextButtonStyle(Default: (Background: (TexturePath: \"Common/Buttons/" + d + ".png\", Border: 12), " + ls + "), Hovered: (Background: (TexturePath: \"Common/Buttons/" + h + ".png\", Border: 12), " + ls + "), Pressed: (Background: (TexturePath: \"Common/Buttons/Tertiary_Pressed.png\", Border: 12), " + ls + "), Sounds: " + SND + ");";
+}'''), page))
+for _src in SUI.java_status_methods():   # colorOf / textOf of the result line (+ done, - refused, = info)
+    page.addMethod(CtNewMethod.make(_src, page))
+# 0.7.11 the STACK REFILL row (a per-player setting): the kit's settings row with three small tertiary buttons and a one-line explanation
+SUI.verify()
+KIT_ID = SUI.kit_id()
+RF_SUF = ("Hotbar", "Full", "Off")                      # button id suffixes, in RefillPref.WORDS order
+RF_ROW_LABEL = "Stack refill from the Void"
+RF_BTN_W, RF_GAP, RF_LABEL_W, RF_HELP_H = 176, 6, 380, 24
+RF_ROW = SUI.setting_row("SkyySRefill", "SkyySRefillLbl", label_w=RF_LABEL_W, gap=0)
+RF_BTNS = [tuple(SUI.button("SkyySRefill" + RF_SUF[i], RF_LABELS[i], "tertiary", "small", w=RF_BTN_W, selected=sel,
+                            anchor={"top": (SUI.SETTING_ROW_H - SUI.BTN_SMALL_H) // 2, "left": RF_GAP if i else 0})
+                 for sel in (True, False)) for i in range(3)]
+RF_HELP_LBL = SUI.label("SkyySRefillHelp", "", "caption", h=RF_HELP_H, align="Center")
+SUI.assert_proven([RF_ROW, RF_HELP_LBL] + [mk for pair in RF_BTNS for mk in pair], what="SkyyVoid stack refill row")
+RF_ROW_H = SUI.outer_size(RF_ROW)[1]
+RF_JAVA = "\n".join(["  " + SUI.java_append("SkyySBody", RF_ROW), "  " + SUI.java_set("SkyySRefillLbl", "Text", RF_ROW_LABEL)]
+                    + ["  " + SUI.java_append("SkyySRefill", SUI.choose("rmode == %d" % i, RF_BTNS[i][0], RF_BTNS[i][1])) for i in range(3)]
+                    + ['  ev.addEventBinding(@BT@.Activating, "#SkyySRefill%s", @EVD@.of("a", "refill:%s"));' % (RF_SUF[i], RF_WORDS[i])
+                       for i in range(3)]
+                    + ["  " + SUI.java_append("SkyySBody", RF_HELP_LBL)])
+page.addMethod(CtNewMethod.make(jt(r'''
+public void refillRow(@UCB@ b, @UEB@ ev, int rmode) {
+@RFJAVA@
+  int m = rmode < 0 || rmode >= @PKG@.RefillPref.HELP.length ? 0 : rmode;
+  boolean pc = @PKG@.SackCfg.POCKET_CRAFT;
+  b.set("#SkyySRefillHelp.Text", @PKG@.SackCfg.REFILL_ON ? (pc ? @PKG@.RefillPref.HELP[m] : @PKG@.RefillPref.HELPB[m]) : (pc ? @PKG@.RefillPref.OFFSRV : @PKG@.RefillPref.OFFSRVB));
+}'''.replace("@RFJAVA@", RF_JAVA)), page))
+
+# ---- the page markup (kit), sizes checked here
+# 0.8.15 (kit 1.7, research/Menu-Pattern.md 3): Storage > Pocket = the 1600 x 980 hub page - row 1 + row 2 (HubBar.page17), the X; the old
+# body id SkyySBody is the content group (every old appendInline keeps working). Content 1552 x 774 (no sub-tab row, no footer).
+assert ("storage", "pocket", 10, "SkyySacks", "Pocket", "sacks") in SUI.HUB_TABS
+hubb = SUI.install_hub_bar(pool, PKG + ".HubBar", CtField, CtNewMethod, row=True, page=True)   # kit 1.7 (moved up: the Void page uses it)
+VSH = SUI.hub_page("SkyyVH", "storage", body_id="SkyyVHB", content_id="SkyySBody")
+V_HUB17 = SUI.java_hub_page(VSH, "pocket", cls="@PKG@.HubBar", uuid="u")
+VIN_W, VIN_H = VSH.inner_w, VSH.inner_h
+assert (VIN_W, VIN_H) == (1552, 774), (VIN_W, VIN_H)
+V_TAB_W, V_MID_W, V_SIDE_W, V_GAP = 220, 968, 340, 12
+V_TOP_H, V_INFO_H, V_UP_H = 34, 26, 226
+V_MAIN_H = VIN_H - V_TOP_H - V_INFO_H - RF_ROW_H - RF_HELP_H
+# the middle grid: ONE scroll list (no pages) of V_COLS columns of 74 px cells (78 px rows); empty cells fill the rows that show
+V_COLS, V_ROW_H, V_COUNT_H, V_MAXCELLS = 12, 78, 26, 600
+V_HEAD_H = 22 + 8 + 4 + 22 + 8 + 4 + 22
+V_GRID_H = V_MAIN_H - V_HEAD_H - V_COUNT_H
+V_GRID_ROWS = (V_GRID_H - 8) // V_ROW_H
+V_DEPALL_W = 186   # 0.8.11: the DEPOSIT ALL button in the top row (every category)
+assert V_TAB_W + V_GAP + V_MID_W + V_GAP + V_SIDE_W == VIN_W, (VIN_W,)
+assert V_COLS * 74 + (V_COLS - 1) * 2 + 8 + 12 <= V_MID_W, "the grid + the well padding + the scrollbar"
+assert V_TOP_H + V_MAIN_H + V_INFO_H + RF_ROW_H + RF_HELP_H <= VIN_H, "the Void page is taller than its body"
+assert 6 * (34 + 18 + 5 + 6) + 44 <= V_MAIN_H, "tabs column"
+assert V_HEAD_H + V_GRID_H + V_COUNT_H <= V_MAIN_H and V_GRID_ROWS >= 4, "middle column (at least the old 4 rows show)"
+assert 70 + 22 + 38 + 6 + 44 + 4 + 44 + 10 + V_UP_H <= V_MAIN_H, "side column"
+assert 16 + 24 + 20 + 20 + 3 * 34 + 44 <= V_UP_H, "upgrade box"
+assert 16 + RF_LABEL_W + 3 * RF_BTN_W + 2 * RF_GAP <= VIN_W
+J_ = SUI.J
+VM = {
+    "top": SUI.group("SkyyVTop", "Left", h=V_TOP_H),
+    "head": SUI.label("SkyyVHead", "", "strong", w=VIN_W - 160 - V_DEPALL_W - 10, h=V_TOP_H, size=20, col=J_("hcol", "#ffffff")),
+    # 0.8.11 (Skyy "move deposit all to the top, and make it deposit everything from your in inventory into the right bag"): every category
+    "depevery": SUI.button("SkyyVDepEvery", "Deposit all", "primary", "small", w=V_DEPALL_W, anchor={"left": 10}),
+    "craft": SUI.button("SkyyVCraft", "Craft", "secondary", "small", w=150, anchor={"left": 10}),
+    "main": SUI.group("SkyyVMain", "Left", h=V_MAIN_H),
+    "tabs": SUI.group("SkyyVTabs", "Top", w=V_TAB_W, h=V_MAIN_H),
+    "tablv": SUI.label("SkyyVTabLv" + J_("i"), "", "caption", w=V_TAB_W, h=18, align="Center"),
+    "tabbar": SUI.bar("SkyyVTabBar" + J_("i"), V_TAB_W, 5, J_("tf", "110"), col=J_("tcol", "#ffffff")),
+    "tabgap": SUI.spacer(h=6),
+    "omni": SUI.label("SkyyVOmni", "", "default", w=V_TAB_W, h=44, size=14, wrap=True, align="Center", col=J_("ocol", "#cc66cc")),
+    "gap": SUI.spacer(w=V_GAP),
+    "mid": SUI.group("SkyyVMid", "Top", w=V_MID_W, h=V_MAIN_H),
+    "store": SUI.label("SkyyVStore", "", "bold", w=V_MID_W, h=22, size=16),
+    "storebar": SUI.bar("SkyyVStoreBar", V_MID_W, 8, J_("sf", "300"), col=J_("scol", "#aa7c4a")),
+    "sp4": SUI.spacer(h=4),
+    "level": SUI.label("SkyyVLevel", "", "default", w=V_MID_W, h=22, size=15),
+    "levelbar": SUI.bar("SkyyVLevelBar", V_MID_W, 8, J_("lf", "300"), col="progressBlue"),
+    "sp4b": SUI.spacer(h=4),
+    "warn": SUI.label("SkyyVWarn", "", "default", w=V_MID_W, h=22, size=14, col=J_("wcol", "#E8A93B")),
+    "row": SUI.group("SkyyVRow" + J_("r"), "Left", h=78, pad={"top": 2, "bottom": 2}),
+    "cell": SUI.choose("sel != null && sel.equals(cid)",
+                       SUI.icon_cell("SkyyVCell" + J_("idx"), item=J_("safe(cid)", "Ore_Copper"), size=74, state="selected", qty=True),
+                       SUI.icon_cell("SkyyVCell" + J_("idx"), item=J_("safe(cid)", "Ore_Copper"), size=74, state="normal", qty=True)),
+    "cellempty": SUI.icon_cell("SkyyVCell" + J_("idx"), size=74, state="empty"),
+    "cellgap": SUI.spacer(w=2),
+    # 0.8.15: the grid scrolls (kit scroll_list on the list well) - no pages; the count line under it
+    "grid": SUI.scroll_list("SkyyVGrid", h=V_GRID_H, well=True),
+    "count": SUI.label("SkyyVCount", "", "caption", w=V_MID_W, h=V_COUNT_H, align="Center"),
+    "side": SUI.group("SkyyVSide", "Top", w=V_SIDE_W, h=V_MAIN_H),
+    "selrow": SUI.group("SkyyVSelRow", "Left", h=70),
+    "selic": SUI.choose("sel != null", SUI.icon_cell("SkyyVSelIc", item=J_("safe(sel)", "Ore_Copper"), size=66, state="static", look="plain"),
+                        SUI.icon_cell("SkyyVSelIc", size=66, state="static", look="plain")),
+    "selcol": SUI.group("SkyyVSelCol", "Top", w=V_SIDE_W - 76, anchor={"left": 10}),
+    "selname": SUI.label("SkyyVSelName", "", "strong", w=V_SIDE_W - 76, h=30, size=17),
+    "selcount": SUI.label("SkyyVSelCount", "", "caption", w=V_SIDE_W - 76, h=36, wrap=True),
+    "amtlbl": SUI.label("SkyyVAmtLbl", "Amount", "section", w=V_SIDE_W, h=22),
+    "amt": SUI.text_field("SkyyVAmtBox", "SkyyVAmt", w=V_SIDE_W, h=38, placeholder="empty is one stack or all on Deposit", max_length=12),
+    "btns1": SUI.group("SkyyVBtnsA", "Left", h=44, anchor={"top": 6}),
+    "wd": SUI.button("SkyyVWd", "Withdraw", "primary", w=167),
+    "dep": SUI.button("SkyyVDep", "Deposit", "secondary", w=167, anchor={"left": 6}),
+    "btns2": SUI.group("SkyyVBtnsB", "Left", h=44, anchor={"top": 4}),
+    "pick": SUI.button("SkyyVPick", "Pick up all", "secondary", w=156),
+    "up": SUI.group("SkyyVUp", "Top", w=V_SIDE_W, h=V_UP_H, anchor={"top": 10}, pad=8, bg="well"),
+    "uptitle": SUI.label("SkyyVUpTitle", "", "strong", w=V_SIDE_W - 16, h=24, size=16, col=J_("ucol", "#ffff55")),
+    "upsub": SUI.label("SkyyVUpSub", "", "default", w=V_SIDE_W - 16, h=20, size=14),
+    "upgate": SUI.label("SkyyVUpGate", "", "default", w=V_SIDE_W - 16, h=20, size=14, col=J_("gcol", "#3d913f")),
+    "costrow": SUI.group("SkyyVCostR" + J_("cr"), "Left", h=34),
+    "costic": SUI.icon_cell("SkyyVCost" + J_("cx"), item=J_("safe(cid2)", "Ore_Iron"), size=32, state="static", look="plain"),
+    "costt": SUI.label("SkyyVCostT" + J_("cx"), "", "default", w=130, h=32, size=13, col=J_("ccol", "#3d913f"), anchor={"left": 4}),
+    # 0.8.8 TIER LOGS: a tier log line = "Oak-tier logs" (12) over the count (13), the same 130 x 32 cell
+    # 0.8.9: so is every line whose item has a real name ("Light Leather" over "50 / 200")
+    "costg": SUI.group("SkyyVCostG" + J_("cx"), "Top", w=130, h=32, anchor={"left": 4}),
+    "costgn": SUI.label("SkyyVCostN" + J_("cx"), "", "default", w=130, h=14, size=12, col=J_("ccol", "#3d913f")),
+    "costgt": SUI.label("SkyyVCostT" + J_("cx"), "", "default", w=130, h=18, size=13, col=J_("ccol", "#3d913f")),
+    "upbtnrow": SUI.group("SkyyVUpBtns", "Left", h=40, anchor={"top": 4}),
+    "upbtn": SUI.choose("ready", SUI.button("SkyyVUpBtn", "Upgrade", "primary", "small", w=160),
+                        SUI.button("SkyyVUpBtn", "Upgrade", "primary", "small", w=160, disabled=True)),
+    "upyes": SUI.button("SkyyVUpYes", "Pay", "primary", "small", w=150),
+    "upno": SUI.button("SkyyVUpNo", "Cancel", "secondary", "small", w=150, anchor={"left": 8}, sound="cancel"),
+    "info": SUI.status_line("SkyySInfo", color_expr="colorOf(this.info)", h=V_INFO_H),
+}
+# 0.8.11 (Skyy "change what is currently deposit all to deposit smithing."): the side button names the open category - one markup per
+# category, picked at runtime (static Text: the proven inline way; never a b.set on a button)
+V_DEPCAT = [SUI.button("SkyyVDepAll", "Deposit " + _c, "secondary", w=178, anchor={"left": 6}, fit=False) for _c in PD_CATS]
+page.addField(CtField.make("public static final String[] DEPCAT = new String[] { %s };" % ", ".join(jlit(_m) for _m in V_DEPCAT), page))
+assert len(V_DEPCAT) == 6 and 156 + 6 + 178 == V_SIDE_W
+_vflat = list(V_DEPCAT)
+for _mk in VM.values():
+    _vflat.extend(_mk.variants() if isinstance(_mk, SUI.Choice) else [_mk])
+SUI.assert_proven(_vflat + [m for _p, m in VSH.appends], what="SkyyVoid page")
+# 0.8.15: the shell + rows 1 + 2 as one page (kit 1.7 checks; the harness runs assert_menu_page on the REAL built page)
+_vpv = SUI.hub_page_preview(VSH, my_tab="pocket")
+_vpv.check("Skyy")
+SUI.assert_proven(_vpv, what="SkyyVoid hub page")
+SUI.check_sky_paths(_vpv, tab_icons=True)
+SUI.assert_menu_page(_vpv, VSH)
+for _mk in _vflat:
+    SUI.check_markup(_mk)
+VCOL = {"gold": SUI.COLOR["gold"], "text": SUI.COLOR["text"], "have": SUI.COLOR["have"], "out": SUI.COLOR["outOfStock"],
+        "caption": SUI.COLOR["caption"], "fill": SUI.COLOR["progressFill"]}
+def vexpr(mk):
+    if isinstance(mk, SUI.Choice):
+        return "((%s) ? (%s) : (%s))" % (mk.cond, SUI.java_value(mk.a), SUI.java_value(mk.b))
+    return SUI.java_value(mk)
+def vpage(src):
+    import re as _re
+    for _n, _mk in VM.items():
+        src = src.replace("@@%s@@" % _n, vexpr(_mk))
+    for _n, _c in VCOL.items():
+        src = src.replace("@C:%s@" % _n, _c)
+    src = src.replace("@SHELL@", VSH.java("b") + "\n  " + V_HUB17).replace("@TABW@", str(V_TAB_W)).replace("@MIDW@", str(V_MID_W))
+    src = src.replace("@COLS@", str(V_COLS)).replace("@GRIDROWS@", str(V_GRID_ROWS)).replace("@MAXCELLS@", str(V_MAXCELLS))   # 0.8.15
+    left = _re.findall(r"@@[a-z0-9]+@@|@C:[a-z]+@", src)
+    assert not left, left
+    return jt(src)
+page.addMethod(CtNewMethod.make(vpage(r'''
+public void upgradeBox(@UCB@ b, @UEB@ ev, @INV@ inv, String k, java.util.UUID u, int ci, int lv, int rk, long cap, boolean omni) {
+  String[] cats = @PKG@.SackDefs.CATS;
+  int cur = @PKG@.VoidStore.rarOf(k, ci);
+  int to = cur + 1;
+  String ucol;
+  String t1;
+  String t2 = "";
+  String t3 = "";
+  String gcol = "@C:text@";
+  boolean ready = false;
+  boolean canUp = false;
+  java.util.LinkedHashMap cost = null;
+  if (omni) {
+    ucol = @PKG@.SackDefs.RCOL[4];
+    t1 = "Omni - the top of every category";
+    t2 = "Space x" + multTxt(4) + " in all six categories";
+  } else if (cur >= 3) {
+    ucol = @PKG@.SackDefs.RCOL[3];
+    t1 = "Legendary - the top rarity";
+    t2 = "Omni comes when all six categories are Legendary";
+    t3 = @PKG@.VoidStore.legendCount(k) + " of " + cats.length + " are Legendary";
+  } else {
+    canUp = true;
+    ucol = @PKG@.SackDefs.RCOL[to];
+    t1 = "Upgrade to " + @PKG@.SackDefs.RNAME[to] + " (x" + multTxt(to) + ")";
+    t2 = "Space " + num(cap) + " -> " + num(@PKG@.VoidStore.capOf(lv, to));
+    // 0.8.14 (Skyy "remove the level cap on upgrading the pocket dimensions"): no 'Needs <cat> Lv' line - the cost cells below decide
+    t3 = "Pay the items below to upgrade";
+    cost = @PKG@.SackCfg.parseCost(@PKG@.SackCfg.cost(ci, to));
+    ready = cost != null;
+    if (cost == null) t3 = "This step's cost is not set right (Server Setup)";
+  }
+  b.appendInline("#SkyyVSide", @@up@@);
+  b.appendInline("#SkyyVUp", @@uptitle@@);
+  b.set("#SkyyVUpTitle.Text", (this.confirm && canUp) ? ("Pay these items for " + @PKG@.SackDefs.RNAME[to] + "?") : t1);
+  b.appendInline("#SkyyVUp", @@upsub@@);
+  b.set("#SkyyVUpSub.Text", t2);
+  b.appendInline("#SkyyVUp", @@upgate@@);
+  b.set("#SkyyVUpGate.Text", t3);
+  java.util.ArrayList ce = cost == null ? new java.util.ArrayList() : new java.util.ArrayList(cost.entrySet());
+  java.util.HashMap needU = new java.util.HashMap();   // 0.8.8 review fix: group key -> the need so far (VoidStore.upgrade's rule)
+  for (int cr = 0; cr < 3; cr++) {
+    b.appendInline("#SkyyVUp", @@costrow@@);
+    for (int j = 0; j < 2; j++) {
+      int cx = cr * 2 + j;
+      if (cx >= ce.size()) continue;
+      java.util.Map.Entry e = (java.util.Map.Entry) ce.get(cx);
+      String cid2 = (String) e.getKey();
+      long need = ((Long) e.getValue()).longValue();
+      long have = @PKG@.VoidStore.haveOf(k, inv, cid2);   // 0.8.8: a tier log line counts every log of the tier
+      // 0.8.8 review fix: lines of one group need their running SUM (as VoidStore.upgrade checks) - the cell shows that sum
+      String uk = @PKG@.SackDefs.unitKey(cid2);
+      Long pn = (Long) needU.get(uk);
+      if (pn != null) need = need + pn.longValue();
+      needU.put(uk, Long.valueOf(need));
+      boolean ok = have >= need;
+      if (!ok) ready = false;
+      String ccol = ok ? "@C:have@" : "@C:out@";
+      String un = @PKG@.SackDefs.lineName(cid2);   // 0.8.9: every line with a real name shows it over the count
+      b.appendInline("#SkyyVCostR" + cr, @@costic@@);
+      if (un == null) b.appendInline("#SkyyVCostR" + cr, @@costt@@);
+      else {
+        b.appendInline("#SkyyVCostR" + cr, @@costg@@);
+        b.appendInline("#SkyyVCostG" + cx, @@costgn@@);
+        b.appendInline("#SkyyVCostG" + cx, @@costgt@@);
+        b.set("#SkyyVCostN" + cx + ".Text", un);
+      }
+      b.set("#SkyyVCostT" + cx + ".Text", shortNum(have) + " / " + shortNum(need));
+    }
+  }
+  b.appendInline("#SkyyVUp", @@upbtnrow@@);
+  if (canUp && this.confirm && ready) {
+    b.appendInline("#SkyyVUpBtns", @@upyes@@);
+    b.appendInline("#SkyyVUpBtns", @@upno@@);
+    ev.addEventBinding(@BT@.Activating, "#SkyyVUpYes", amtEvt("upgok:" + ci + ":" + cur));
+    ev.addEventBinding(@BT@.Activating, "#SkyyVUpNo", amtEvt("upgno"));
+  } else if (canUp) {
+    this.confirm = false;
+    b.appendInline("#SkyyVUpBtns", @@upbtn@@);
+    if (ready) ev.addEventBinding(@BT@.Activating, "#SkyyVUpBtn", amtEvt("upg"));
+  } else {
+    this.confirm = false;
+  }
+}'''), page))
+page.addMethod(CtNewMethod.make(vpage(r'''
+public void render(@UCB@ b, @UEB@ ev, @PLA@ player, String k, java.util.UUID u) {
+  this.key = k;
+  this.carried = true;
+  String[] cats = @PKG@.SackDefs.CATS;
+  int nc = cats.length;
+  int ci = @PKG@.SackDefs.catIndex(this.cat);
+  if (ci < 0) { ci = pickCat(k); this.cat = cats[ci]; }
+  @INV@ inv = player == null ? null : player.getInventory();
+  int[] lv = new int[nc];
+  int[] rk = new int[nc];
+  long[] cap = new long[nc];
+  long[] used = @PKG@.VoidStore.usedAll(k);
+  for (int i = 0; i < nc; i++) {
+    lv[i] = @PKG@.VoidStore.level(u, k, i);
+    rk[i] = @PKG@.VoidStore.rank(k, i);
+    cap[i] = @PKG@.VoidStore.capOf(lv[i], rk[i]);
+  }
+  boolean omni = @PKG@.VoidStore.omni(k);
+@SHELL@
+  String hcol = @PKG@.SackDefs.RCOL[rk[ci]];
+  b.appendInline("#SkyySBody", @@top@@);
+  b.appendInline("#SkyyVTop", @@head@@);
+  b.set("#SkyyVHead.Text", cats[ci] + " - Lv " + lv[ci] + " - " + @PKG@.SackDefs.RNAME[rk[ci]] + " (x" + multTxt(rk[ci]) + ")");
+  b.appendInline("#SkyyVTop", @@depevery@@);   // 0.8.11: every bag
+  ev.addEventBinding(@BT@.Activating, "#SkyyVDepEvery", amtEvt("depevery"));
+  b.appendInline("#SkyyVTop", @@craft@@);
+  ev.addEventBinding(@BT@.Activating, "#SkyyVCraft", @EVD@.of("a", "craft"));
+  b.appendInline("#SkyySBody", @@main@@);
+  b.appendInline("#SkyyVMain", @@tabs@@);
+  for (int i = 0; i < nc; i++) {
+    String tcol = @PKG@.SackDefs.RCOL[rk[i]];
+    b.appendInline("#SkyyVTabs", "TextButton #SkyyVTab" + i + " { Anchor: (Width: @TABW@, Height: 34); Text: \"" + cats[i] + "\"; " + tabStyle(i == ci, tcol) + " }");
+    ev.addEventBinding(@BT@.Activating, "#SkyyVTab" + i, amtEvt("tab:" + cats[i]));
+    b.appendInline("#SkyyVTabs", @@tablv@@);
+    b.set("#SkyyVTabLv" + i + ".Text", "Lv " + lv[i] + " - " + shortNum(used[i]) + " / " + shortNum(cap[i]));
+    int tf = fill(used[i], cap[i], @TABW@);
+    b.appendInline("#SkyyVTabs", @@tabbar@@);
+    b.appendInline("#SkyyVTabs", @@tabgap@@);
+  }
+  String ocol = omni ? @PKG@.SackDefs.RCOL[4] : "@C:caption@";
+  b.appendInline("#SkyyVTabs", @@omni@@);
+  b.set("#SkyyVOmni.Text", omni ? ("OMNI - every category x" + multTxt(4)) : ("Omni: get all six categories to Legendary (" + @PKG@.VoidStore.legendCount(k) + " / " + nc + ")"));
+  b.appendInline("#SkyyVMain", @@gap@@);
+  b.appendInline("#SkyyVMain", @@mid@@);
+  long st0 = used[ci];
+  String scol = st0 > cap[ci] ? "@C:gold@" : "@C:fill@";
+  b.appendInline("#SkyyVMid", @@store@@);
+  b.set("#SkyyVStore.Text", "Stored " + num(st0) + " / " + num(cap[ci]) + " items");
+  int sf = fill(st0, cap[ci], @MIDW@);
+  b.appendInline("#SkyyVMid", @@storebar@@);
+  b.appendInline("#SkyyVMid", @@sp4@@);
+  int max = @PKG@.SackCfg.PD_MAX_LEVEL;
+  long tot = @PKG@.VoidStore.total(u, k, ci);
+  b.appendInline("#SkyyVMid", @@level@@);
+  int lf = @MIDW@;
+  if (lv[ci] >= max) b.set("#SkyyVLevel.Text", "Max storage level " + lv[ci] + " - upgrade the rarity for more space");
+  else {
+    long nxt = @PKG@.VoidStore.totalFor(lv[ci] + 1, ci);
+    long cur0 = @PKG@.VoidStore.totalFor(lv[ci], ci);
+    long more = @PKG@.VoidStore.capOf(lv[ci] + 1, rk[ci]) - cap[ci];
+    b.set("#SkyyVLevel.Text", num(tot) + " / " + num(nxt) + " collected to Lv " + (lv[ci] + 1) + " (+" + num(more) + " space)");
+    lf = fill(tot - cur0, nxt - cur0, @MIDW@);
+  }
+  b.appendInline("#SkyyVMid", @@levelbar@@);
+  b.appendInline("#SkyyVMid", @@sp4b@@);
+  String wtxt = "";
+  String wcol = "@C:gold@";
+  if (st0 > cap[ci]) wtxt = "Over the limit (" + num(st0) + " / " + num(cap[ci]) + ") - nothing new goes in until you take some out";
+  else if ("Farming".equals(cats[ci]) && !@PKG@.SackDefs.COOKED_FARM) {
+    long ck = @PKG@.SackPool.cookedTotal(k);
+    if (ck > 0L) { wtxt = "Cooked food no longer goes in - " + num(ck) + (ck == 1L ? " cooked item is" : " cooked items are") + " still here to take out"; wcol = "@C:text@"; }
+  }
+  b.appendInline("#SkyyVMid", @@warn@@);
+  b.set("#SkyyVWarn.Text", wtxt);
+  java.util.ArrayList entries = new java.util.ArrayList();
+  java.util.Iterator it = @PKG@.SackPool.pool(k).entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    if (cats[ci].equals(@PKG@.SackDefs.homeOf((String) e.getKey()))) entries.add(e);
+  }
+  java.util.Collections.sort(entries, new @PKG@.CountCmp());
+  if ("Farming".equals(cats[ci]) && !@PKG@.SackDefs.COOKED_FARM) {
+    java.util.ArrayList ckFirst = new java.util.ArrayList();
+    java.util.ArrayList rawRest = new java.util.ArrayList();
+    for (int q = 0; q < entries.size(); q++) {
+      java.util.Map.Entry ce = (java.util.Map.Entry) entries.get(q);
+      if (@PKG@.SackDefs.cooked((String) ce.getKey())) ckFirst.add(ce); else rawRest.add(ce);
+    }
+    ckFirst.addAll(rawRest);
+    entries = ckFirst;
+  }
+  // 0.8.15 (kit 1.7, Skyy "scroll lists instead of pages"): ONE scrolling grid of @COLS@ columns - every kind (up to @MAXCELLS@), no pages;
+  // empty cells fill the rows that show (as the old 4 x 9 grid did). A cell's event names its place in the whole list (cell:<n>).
+  int shownN = entries.size() < @MAXCELLS@ ? entries.size() : @MAXCELLS@;
+  this.cells = new String[shownN];
+  String sel = this.sel;
+  b.appendInline("#SkyyVMid", @@grid@@);
+  int rowsN = (shownN + @COLS@ - 1) / @COLS@;
+  if (rowsN < @GRIDROWS@) rowsN = @GRIDROWS@;
+  for (int r = 0; r < rowsN; r++) {
+    b.appendInline("#SkyyVGrid", @@row@@);
+    for (int c = 0; c < @COLS@; c++) {
+      int idx = r * @COLS@ + c;
+      if (idx < shownN) {
+        java.util.Map.Entry e = (java.util.Map.Entry) entries.get(idx);
+        String cid = (String) e.getKey();
+        long cnt = ((Long) e.getValue()).longValue();
+        this.cells[idx] = cid;
+        b.appendInline("#SkyyVRow" + r, @@cell@@);
+        b.set("#SkyyVCell" + idx + "Qty.Text", shortNum(cnt));
+        ev.addEventBinding(@BT@.Activating, "#SkyyVCell" + idx, amtEvt("cell:" + idx));
+      } else {
+        b.appendInline("#SkyyVRow" + r, @@cellempty@@);
+      }
+      if (c < @COLS@ - 1) b.appendInline("#SkyyVRow" + r, @@cellgap@@);
+    }
+  }
+  b.appendInline("#SkyyVMid", @@count@@);
+  b.set("#SkyyVCount.Text", entries.size() + (entries.size() == 1 ? " kind of item" : " kinds of items") + (shownN < entries.size() ? (" - the first " + shownN + " show") : ""));
+  b.appendInline("#SkyyVMain", @@gap@@);
+  b.appendInline("#SkyyVMain", @@side@@);
+  b.appendInline("#SkyyVSide", @@selrow@@);
+  b.appendInline("#SkyyVSelRow", @@selic@@);
+  b.appendInline("#SkyyVSelRow", @@selcol@@);
+  b.appendInline("#SkyyVSelCol", @@selname@@);
+  b.appendInline("#SkyyVSelCol", @@selcount@@);
+  if (sel != null) {
+    b.set("#SkyyVSelName.Text", pretty(sel));
+    b.set("#SkyyVSelCount.Text", "In the Void " + num(@PKG@.SackPool.get(k, sel)) + " - on you " + num((long) @PKG@.VoidStore.countIn(inv, sel, false)));
+  } else {
+    b.set("#SkyyVSelName.Text", "Pick an item");
+    b.set("#SkyyVSelCount.Text", "Click an item in the grid, type an amount, then Withdraw or Deposit.");
+  }
+  b.appendInline("#SkyyVSide", @@amtlbl@@);
+  b.appendInline("#SkyyVSide", @@amt@@);
+  if (this.amount != null && this.amount.length() > 0) b.set("#SkyyVAmt.Value", this.amount);
+  b.appendInline("#SkyyVSide", @@btns1@@);
+  b.appendInline("#SkyyVBtnsA", @@wd@@);
+  b.appendInline("#SkyyVBtnsA", @@dep@@);
+  ev.addEventBinding(@BT@.Activating, "#SkyyVWd", amtEvt("wd"));
+  ev.addEventBinding(@BT@.Activating, "#SkyyVDep", amtEvt("dep"));
+  b.appendInline("#SkyyVSide", @@btns2@@);
+  b.appendInline("#SkyyVBtnsB", @@pick@@);
+  b.appendInline("#SkyyVBtnsB", DEPCAT[ci]);   // 0.8.11: "Deposit <category>" (the old Deposit all)
+  ev.addEventBinding(@BT@.Activating, "#SkyyVPick", amtEvt("pickall"));
+  ev.addEventBinding(@BT@.Activating, "#SkyyVDepAll", amtEvt("depall"));
+  upgradeBox(b, ev, inv, k, u, ci, lv[ci], rk[ci], cap[ci], omni);
+  b.appendInline("#SkyySBody", @@info@@);
+  b.set("#SkyySInfo.Text", textOf(this.info));
+  refillRow(b, ev, @PKG@.RefillPref.choice(u));
+}'''), page))
+page.addMethod(CtNewMethod.make(jt(r'''
+public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
+  this.builtRef = ref;   // 0.7.15 page guard
+  java.util.UUID u = this.playerRef.getUuid();
+  if (u != null) @PKG@.ProcTask.PAGEOPEN.put(u, Boolean.TRUE);   // 0.7.18: the 1 s task keeps visiting (the profile notice)
+  String k = @PKG@.SackPool.pkey(u);
+  @PLA@ player = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+  render(b, ev, player, k, u);
+}'''), page))
+# 0.8.15 (kit 1.7): a hub click that left this page open on screen is answered with a no-op update (the client's "Loading..." ends)
+page.addMethod(CtNewMethod.make(jt(r'''
+public void hubAck(@REF@ ref, @ST@ st) {
+  try {
+    if (ref == null || st == null) return;
+    @PLA@ hp = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+    if (hp == null || hp.getPageManager() == null || hp.getPageManager().getCustomPage() != this) return;
+    @UCB@ c = new @UCB@();
+    c.set("#SkyySInfo.Text", textOf(this.info));
+    sendUpdate(c, false);
+  } catch (Throwable t) { }
+}'''), page))
+page.addMethod(CtNewMethod.make(jt(r'''
+public void onEvent(@REF@ ref, @ST@ st, @PLA@ player0, String data) {
+  try {
+    if (data == null) return;
+    // 0.8.15 STORAGE HUB (kit 1.7): row 1 (Home + the hubs), row 2 (the Storage tabs) and the X FIRST
+    String hr = null;
+    try { hr = @PKG@.HubBar.route(this.playerRef, data, "storage", "pocket"); } catch (Throwable th) { hr = null; }
+    if ("close".equals(hr)) { close(); return; }
+    if (hr != null) {
+      if (hr.equals("self")) { rebuild(); return; }
+      if (hr.equals("back") || hr.equals("bridge") || hr.equals("command")) { hubAck(ref, st); return; }
+      this.info = "-That tab could not open right now - try again.";
+      rebuild();
+      return;
+    }
+    java.util.UUID u = this.playerRef.getUuid();
+    String[] cats = @PKG@.SackDefs.CATS;
+    // fix round: the action is the "a" field compared EQUAL (was: a search of the whole event text - typing "upgok:2:0" or "craft" in the
+    // amount box fired that action); every event of this page carries the amount box, so a click never empties it
+    String a = field(data, "a");
+    String qa = String.valueOf((char) 34) + "@Amt" + String.valueOf((char) 34);
+    if (data.indexOf(qa) >= 0) this.amount = field(data, "@Amt");
+    for (int c = 0; c < cats.length; c++) {
+      if (a.equals("tab:" + cats[c])) { this.cat = cats[c]; this.pageNo = 0; this.sel = null; this.confirm = false; this.info = ""; rebuild(); return; }
+    }
+    if (a.equals("craft")) {
+      if (player0 != null) player0.getPageManager().openCustomPage(ref, st, new @PKG@.CraftPage(this.playerRef, (String) null));
+      return;
+    }
+    for (int m = 0; m < @PKG@.RefillPref.WORDS.length; m++) {
+      if (a.equals("refill:" + @PKG@.RefillPref.WORDS[m])) {
+        @PKG@.RefillPref.set(u, m);
+        this.info = "=Stack refill: " + @PKG@.RefillPref.LABELS[m] + (@PKG@.SackCfg.REFILL_ON ? "" : " (turned off on this server for now)");
+        @PKG@.SackPool.saveSoon((String) null);
+        rebuild();
+        return;
+      }
+    }
+    if (a.startsWith("cell:")) {   // 0.8.15: cell:<place in the whole scrolling grid>
+      int ci0 = -1;
+      try { ci0 = Integer.parseInt(a.substring(5).trim()); } catch (Throwable tc) { ci0 = -1; }
+      if (this.cells != null && ci0 >= 0 && ci0 < this.cells.length && this.cells[ci0] != null) this.sel = this.cells[ci0];
+      this.info = "";
+      rebuild();
+      return;
+    }
+    if (a.equals("upgno")) { this.confirm = false; this.info = ""; rebuild(); return; }
+    if (a.equals("upg")) { this.confirm = true; this.info = "=Check the cost, then Pay - or Cancel"; rebuild(); return; }
+    @PLA@ player = player0;
+    if (player == null) return;
+    String k = @PKG@.SackPool.settledKey(u);
+    if (k == null) { this.info = "-The Void is paused (profile loading or switching) - try again in a moment"; rebuild(); return; }
+    if (this.key != null && !this.key.equals(k)) { this.info = "=Your profile changed - this page now shows it"; this.sel = null; rebuild(); return; }
+    if (a.startsWith("upgok:")) {
+      String[] f = a.substring(6).split(":");
+      this.confirm = false;
+      int uci = -1;
+      int from = -1;
+      try { uci = Integer.parseInt(f[0].trim()); from = Integer.parseInt(f[1].trim()); } catch (Throwable t2) { uci = -1; }
+      this.info = uci < 0 ? "-Bad upgrade click" : @PKG@.VoidStore.upgrade(player, u, k, uci, from);
+      @PKG@.SackSnd.ok(u, this.info, 1);   // 0.8.5 sound pass: Void upgrade (replaces the vanilla craft click; "+" = paid)
+      rebuild();
+      return;
+    }
+    boolean wd = a.equals("wd");
+    boolean dep = a.equals("dep");
+    if (wd || dep) {
+      String amt = field(data, "@Amt");
+      this.amount = amt;
+      String id = this.sel;
+      if (id == null) { this.info = "-Pick an item in the grid first"; rebuild(); return; }
+      if (wd) {
+        long n = parseAmt(amt, (long) stackOf(id));
+        if (n == -2L) { this.info = "-Type a number (or leave it empty for one stack)"; rebuild(); return; }
+        long got = withdrawN(player, k, id, n);
+        this.info = got > 0L ? ("+Took " + num(got) + " " + pretty(id)) : (@PKG@.SackPool.get(k, id) <= 0L ? "-None of it left in the Void" : "-Your storage is full");
+      } else {
+        long n = parseAmt(amt, -1L);
+        if (n == -2L) { this.info = "-Type a number (or leave it empty for all you carry)"; rebuild(); return; }
+        long got = @PKG@.VoidStore.depositInv(player, u, k, id, n);
+        this.info = got > 0L ? ("+Put " + num(got) + " " + pretty(id) + " into the Void") : (got == -1L ? "-That item does not go into the Void" : (got == -2L ? "-This category is full - level it up or upgrade its rarity" : "-You carry none of it (plain stacks only)"));
+      }
+      @PKG@.SackPool.saveSoon(k);
+      rebuild();
+      return;
+    }
+    if (a.equals("pickall")) {
+      long total = 0L;
+      java.util.ArrayList ids = new java.util.ArrayList();
+      java.util.Iterator it = @PKG@.SackPool.pool(k).entrySet().iterator();
+      while (it.hasNext()) { java.util.Map.Entry e2 = (java.util.Map.Entry) it.next(); if (this.cat != null && this.cat.equals(@PKG@.SackDefs.homeOf((String) e2.getKey()))) ids.add(e2.getKey()); }
+      for (int i = 0; i < ids.size(); i++) {
+        long got = withdrawN(player, k, (String) ids.get(i), 9223372036854775807L);
+        total += got;
+        if (got <= 0L && @PKG@.SackPool.get(k, (String) ids.get(i)) > 0L) break;
+      }
+      this.info = total > 0L ? ("+Picked up " + num(total) + " items") : "-Nothing taken (your storage is full, or this category is empty)";
+      @PKG@.SackPool.saveSoon(k);
+      rebuild();
+      return;
+    }
+    // 0.8.11 DEPOSIT ALL = EVERY BAG: every category's kept counts cleared, then one sweep with no category (each up to its own space)
+    if (a.equals("depevery")) {
+      for (int c = 0; c < cats.length; c++) @PKG@.SackPool.clearKeptCat(k, cats[c]);
+      @PKG@.SackPool.forgetSeen(u);
+      java.util.HashMap swept = new java.util.HashMap();
+      int moved = @PKG@.SweepTask.sweep(player, k, (String) null, true, swept, @PKG@.VoidStore.capsK(u, k), (java.util.HashMap) null);
+      java.util.HashSet into = new java.util.HashSet();
+      java.util.Iterator si = swept.keySet().iterator();
+      while (si.hasNext()) { String c0 = @PKG@.SackDefs.homeOf((String) si.next()); if (c0 != null) into.add(c0); }
+      this.info = moved > 0 ? ("+Deposited " + num((long) moved) + " items into " + into.size() + (into.size() == 1 ? " bag" : " bags")) : "-Nothing to deposit (or those bags are full)";
+      if (!@PKG@.SackDefs.COOKED_FARM && @PKG@.SweepTask.cookedHeld(player.getInventory()) > 0) this.info = this.info + " - cooked food stays in your inventory";
+      @PKG@.SackPool.saveSoon(k);
+      rebuild();
+      return;
+    }
+    if (a.equals("depall")) {
+      @PKG@.SackPool.clearKeptCat(k, this.cat);
+      @PKG@.SackPool.forgetSeen(u);
+      int moved = @PKG@.SweepTask.sweep(player, k, this.cat, true, (java.util.HashMap) null, @PKG@.VoidStore.capsK(u, k), (java.util.HashMap) null);
+      this.info = moved > 0 ? ("+Deposited " + num((long) moved) + " items") : "-Nothing to deposit (or this category is full)";
+      if ("Farming".equals(this.cat) && !@PKG@.SackDefs.COOKED_FARM && @PKG@.SweepTask.cookedHeld(player.getInventory()) > 0) this.info = this.info + " - cooked food stays in your inventory";
+      @PKG@.SackPool.saveSoon(k);
+      rebuild();
+      return;
+    }
+  } catch (Throwable t) { @PKG@.SackPool.warn("Void page event failed: " + t); }
+}'''), page))
+# the engine's entry: the Player component of this page's player (world thread), then onEvent (the harness calls onEvent directly)
+page.addMethod(CtNewMethod.make(jt(r'''
+public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
+  @PLA@ p = null;
+  try { p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType()); } catch (Throwable t) { p = null; }
+  onEvent(ref, st, p, data);
+}'''), page))
+# 0.7.2: the active profile changed while this page is open (ProcTask, world thread): set() only on the result line the last build made
+page.addMethod(CtNewMethod.make(f"""
+public void profileNotice(String k) {{
+  if (this.key == null || k == null || k.equals(this.noticeKey)) return;
+  this.noticeKey = k;
+  {UCB} c = new {UCB}();
+  c.set("#SkyySInfo.Text", "Your profile changed - click a tab to refresh this page");
+  sendUpdate(c, false);
+}}""", page))
+
+# ================= 0.8.12 THE LIFELONG POCKET DIMENSION ITEM (tools/skyyonce.py): PdOnce (rules), PdOnceTask, PdOnceDropSys, PdOnceThrowSys,
+# PdOnceInvSys, PdOnceReady, PdOnceFn (once:item:Skyy_Sack_Pocket + the market:veto entry). ON = bags.pocketKeep and not /pdadmin legacybags all.
+LIFE = ONCE.emit(pool, PKG, "PdOnce", item=POCKET, name="Pocket Dimension", tag="[SkyyVoid]", recall="/pocket", mod="SkyySacks",
+                 on_expr=PKG + ".SackCfg.POCKET_KEEP && !" + PKG + ".VoidStore.HOLDALL", info_col="#cc66cc", warn_col=SUI.STATUS_INFO["gold"])
+
+# ================= SacksCmd =================
+
+cmd.addConstructor(CtNewConstructor.make("""
+public SacksCmd() {
+  super("sacks", "Open the Void - your SkyyVoid Pocket Dimension (also /pd, /bags; /pocket gives a new one if yours is missing)");
+  addAliases(new String[] { "pd", "bags", "pocket" });
+  setPermissionGroups(new String[] { "hytale:Adventurer" });
+}""", cmd))
+cmd.addMethod(CtNewMethod.make(f"""
+protected void execute({CTX} ctx, {ST} store, {REF} ref, {PR} pr, {WLD} world) {{
+  try {{
+    {PLA} player = ({PLA}) store.getComponent(ref, {PLA}.getComponentType());
+    if (player == null) {{ pr.sendMessage({MSG}.raw("[SkyyVoid] player not found")); return; }}
+    // 0.8.0: the Pocket Dimension item is only the opener - /pd gives one when you have none (dropping it never loses anything)
+    // 0.8.12: /pocket (and /pd, /bags, /sacks) = the lifelong recall: one into storage, hotbar or backpack (never dropped), counted
+    try {{
+      if (!{PKG}.VoidStore.HOLDALL) {{   // fix round 2: not under legacybags all
+        String rr = {PKG}.PdOnce.recall(pr, {PKG}.PdOnce.secs(player.getInventory()));
+        if ("+given".equals(rr)) pr.sendMessage({MSG}.raw("[SkyyVoid] Here is your Pocket Dimension - right-click it to open the Void. It stays with you: it can't be dropped, stored or sold.").color("#cc66cc"));
+        else {{ String rt = {PKG}.PdOnce.recallText(rr); if (rt != null) pr.sendMessage({MSG}.raw(rt).color("#E8A93B")); }}
+      }}
+    }} catch (Throwable tp) {{ }}
+    // 0.8.15 (kit 1.7 hub page, 1600 x 980): the Void opens as Storage > Pocket like every hub page - no container window under it any more
+    // (that 9-slot window was empty and nothing read it: every deposit / withdraw is a button on the page); it replaces any open page
+    player.getPageManager().openCustomPage(ref, store, new {PKG}.SacksPage(pr, (String) null));
+  }} catch (Throwable t) {{
+    {PKG}.SackPool.warn("/pd failed: " + t);
+    pr.sendMessage({MSG}.raw("[SkyyVoid] could not open the Void"));
+  }}
+}}""", cmd))
+
+# ================= SacksPageFactory (right-click on a sack item -> OpenCustomUI "SkyySacks<Cat>") =================
+fac.addInterface(pool.get("java.util.function.Function"))
+fac.addField(CtField.make("public String cat;", fac))
+fac.addConstructor(CtNewConstructor.make("public SacksPageFactory(String cat) { this.cat = cat; }", fac))
+fac.addMethod(CtNewMethod.make(f"""
+public Object apply(Object o) {{
+  return new {PKG}.SacksPage(({PR}) o, this.cat);
+}}""", fac))
+
+# ================= MirrorGuard (0.7.12, research/Bag-Craft-Link-Fix.md B): the bag mirror's OUTPUT-ONLY face =================
+# A DelegateItemContainer over the mirror's container with FilterType.ALLOW_OUTPUT_ONLY (VERIFIED bytecode: cantAddToSlot refuses when
+# the filter does not allow input, cantRemoveFromSlot allows output). Only the guard is ever put on a crafting section: crafts, timed units
+# and tier upgrades remove through it; an insert (a stack shift-clicked or a refund aimed at the section) is refused - a raw container
+# would accept it and the next rebuild would wipe it (item loss). Its own class marks it, so BenchLink.peel can always find the vanilla part.
+mgd.addConstructor(CtNewConstructor.make(jt(r'''
+public MirrorGuard(@IC@ c) {
+  super(c);
+  setGlobalFilter(@FT@.ALLOW_OUTPUT_ONLY);
+}'''), mgd))
+
+# ================= BagMirror (per player: SimpleItemContainer mirroring the pool for bench crafting) =================
+mir.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap MIRRORS = new java.util.concurrent.ConcurrentHashMap();", mir))
+mir.addField(CtField.make(f"public {SIC} cont;", mir))
+mir.addField(CtField.make("public String[] slotIds;", mir))
+mir.addField(CtField.make("public int[] slotQty;", mir))
+# 0.7.12: guard = the output-only face that crafting sections get (never the raw container); ver = content version (bumped when a rebuild,
+# fit or empty changes what the mirror offers - an open crafting window given an older version refreshes). The 0.7.10 combined / vanilla
+# fields moved per window into LinkRec (a bench and the pocket window can share one mirror).
+mir.addField(CtField.make(f"public {PKG}.MirrorGuard guard;", mir))
+mir.addField(CtField.make("public int ver;", mir))
+mir.addField(CtField.make("public String sig;", mir))
+mir.addField(CtField.make("public String key;", mir))
+mir.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap LASTKEY = new java.util.concurrent.ConcurrentHashMap();", mir))
+# 0.7.3: bench id -> Set of wanted ingredient ids / resource type ids; item id -> String[] of its resource type ids
+mir.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap WANTED = new java.util.concurrent.ConcurrentHashMap();", mir))
+mir.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap RTS = new java.util.concurrent.ConcurrentHashMap();", mir))
+mir.addConstructor(CtNewConstructor.make(f"""
+public BagMirror(String key) {{
+  this.key = key;
+  this.cont = new {SIC}((short) 36);
+  this.guard = new {PKG}.MirrorGuard(this.cont);
+  this.slotIds = new String[36];
+  this.slotQty = new int[36];
+  this.sig = "";
+  this.ver = 0;
+}}""", mir))
+mir.addMethod(CtNewMethod.make(f"""
+public static {PKG}.BagMirror of(String k) {{
+  {PKG}.BagMirror m = ({PKG}.BagMirror) MIRRORS.get(k);
+  if (m == null) {{ m = new {PKG}.BagMirror(k); {PKG}.BagMirror prev = ({PKG}.BagMirror) MIRRORS.putIfAbsent(k, m); if (prev != null) m = prev; }}
+  return m;
+}}""", mir))
+# apply consumption: anything missing from the mirror vs. what we put there left the pool (the bench took it)
+mir.addMethod(CtNewMethod.make(f"""
+public int sync() {{
+  int consumed = 0;
+  for (int i = 0; i < 36; i++) {{
+    if (this.slotIds[i] == null) continue;
+    {IS} it = this.cont.getItemStack((short) i);
+    int actual = (it == null || it.isEmpty()) ? 0 : it.getQuantity();
+    if (actual < this.slotQty[i]) {{ int d = this.slotQty[i] - actual; {PKG}.SackPool.add(this.key, this.slotIds[i], -(long) d); consumed += d; this.slotQty[i] = actual; }}
+  }}
+  return consumed;
+}}""", mir))
+# 0.7.3 bench-aware mirror (research/Smithing-Smelting-Spec.md 7.3): the ingredient item ids and resource type ids a bench can use -
+# every input of CraftingPlugin.getBenchRecipes(bench) plus the bench's tier-upgrade materials - cached per bench id (non-empty only).
+mir.addMethod(CtNewMethod.make(f"""
+public static void addInputs(java.util.Set s, {MQ}[] in) {{
+  for (int i = 0; in != null && i < in.length; i++) {{
+    if (in[i] == null) continue;
+    if (in[i].getItemId() != null) s.add(in[i].getItemId());
+    else if (in[i].getResourceTypeId() != null) s.add(in[i].getResourceTypeId());
+  }}
+}}""", mir))
+# 0.8.1 (ench01fix2): one recipe's inputs into a bench's wanted set - an Enchanted compress recipe (primary output Skyy_Ench_*) is
+# skipped, so its inputs (crops no vanilla Workbench recipe uses) never outrank real Workbench ingredients in the 36 mirror slots
+mir.addMethod(CtNewMethod.make(f"""
+public static boolean addRecipe(java.util.Set s, Object o) {{
+  if (!(o instanceof {CRR})) return false;
+  {MQ} po = (({CRR}) o).getPrimaryOutput();
+  if (po != null && po.getItemId() != null && po.getItemId().startsWith("Skyy_Ench_")) return false;
+  addInputs(s, (({CRR}) o).getInput());
+  return true;
+}}""", mir))
+mir.addMethod(CtNewMethod.make(f"""
+public static java.util.Set wantedFor(Object w) {{
+  try {{
+    if (!(w instanceof {BWN})) return null;
+    {BLT} bt = (({BWN}) w).getBlockType();
+    if (bt == null) return null;
+    {BEN} b = bt.getBench();
+    if (b == null || b.getId() == null) return null;
+    String key = b.getId().toLowerCase();
+    Object c = WANTED.get(key);
+    if (c != null) return (java.util.Set) c;
+    java.util.HashSet s = new java.util.HashSet();
+    java.util.List l = {CRP}.getBenchRecipes(b);
+    for (int i = 0; l != null && i < l.size(); i++) {{
+      Object o = l.get(i);
+      addRecipe(s, o);   // 0.8.1 (ench01fix2): Enchanted compress recipes do not widen the wanted set
+    }}
+    for (int t = 1; t <= 10; t++) {{
+      {BUR} ur = null;
+      try {{ ur = b.getUpgradeRequirement(t); }} catch (Throwable e) {{ ur = null; }}
+      if (ur != null) addInputs(s, ur.getInput());
+    }}
+    if (!s.isEmpty()) WANTED.put(key, s);
+    return s;
+  }} catch (Throwable t) {{ return null; }}
+}}""", mir))
+mir.addMethod(CtNewMethod.make(f"""
+public static String[] rtsOf(String id) {{
+  Object c = RTS.get(id);
+  if (c != null) return (String[]) c;
+  String[] out = new String[0];
+  try {{
+    {ITM} it = {PKG}.ProcBench.item(id);
+    if (it == null) return out;
+    {IRT}[] r = it.getResourceTypes();
+    java.util.ArrayList l = new java.util.ArrayList();
+    for (int i = 0; r != null && i < r.length; i++) if (r[i] != null && r[i].id != null) l.add(r[i].id);
+    out = (String[]) l.toArray(new String[0]);
+    RTS.put(id, out);
+  }} catch (Throwable t) {{ }}
+  return out;
+}}""", mir))
+mir.addMethod(CtNewMethod.make("""
+public static boolean wants(java.util.Set s, String id) {
+  if (s == null || id == null) return false;
+  if (s.contains(id)) return true;
+  String[] r = rtsOf(id);
+  for (int i = 0; i < r.length; i++) if (s.contains(r[i])) return true;
+  return false;
+}""", mir))
+# rebuild the mirror from the pool: only categories the player carries a bag for; up to 4 stacks per item, 36 slots.
+# 0.7.3: `wanted` (item ids / resource type ids the open bench or the craft page can use; null = none) goes first - one stack of every
+# wanted item, then wanted items up to 4 stacks, then everything else by count (the old order) - so big piles of stone or logs can no
+# longer crowd a bench's ingredients out of the 36 slots. sync() before every rebuild keeps the pool accounting exact.
+mir.addMethod(CtNewMethod.make(f"""
+public String rebuild(java.util.HashMap caps, java.util.Set wanted) {{
+  try {{ this.cont.clear(); }} catch (Throwable t) {{ }}
+  for (int i = 0; i < 36; i++) {{ this.slotIds[i] = null; this.slotQty[i] = 0; }}
+  StringBuilder sb = new StringBuilder();
+  java.util.ArrayList entries = new java.util.ArrayList({PKG}.SackPool.pool(this.key).entrySet());
+  java.util.Collections.sort(entries, new {PKG}.CountCmp());
+  int n = entries.size();
+  String[] ids = new String[n];
+  long[] left = new long[n];
+  int[] max = new int[n];
+  int[] stacks = new int[n];
+  boolean[] want = new boolean[n];
+  for (int e = 0; e < n; e++) {{
+    java.util.Map.Entry en = (java.util.Map.Entry) entries.get(e);
+    String id = (String) en.getKey();
+    long cnt = ((Long) en.getValue()).longValue();
+    String cat = {PKG}.SackDefs.homeOf(id);
+    if (cat == null || !caps.containsKey(cat) || cnt <= 0L) continue;
+    if ({PKG}.ProcBench.item(id) == null) continue;   // 0.7.12 review fix 4: not a loaded item (a removed pack mod) - never offered
+    ids[e] = id;
+    left[e] = cnt;
+    int mx = 64;
+    try {{ {IS} probe = new {IS}(id, 1); if (probe.getItem() != null && probe.getItem().getMaxStack() > 0) mx = probe.getItem().getMaxStack(); }} catch (Throwable t) {{ }}
+    max[e] = mx;
+    want[e] = wanted != null && wants(wanted, id);
+  }}
+  int slot = 0;
+  for (int pass = 0; pass < 3 && slot < 36; pass++) {{
+    int lim = pass == 0 ? 1 : 4;
+    for (int e = 0; e < n && slot < 36; e++) {{
+      if (ids[e] == null) continue;
+      if (pass < 2 && !want[e]) continue;
+      if (pass == 2 && want[e]) continue;
+      while (left[e] > 0L && stacks[e] < lim && slot < 36) {{
+        int q = left[e] < (long) max[e] ? (int) left[e] : max[e];
+        this.cont.setItemStackForSlot((short) slot, new {IS}(ids[e], q));
+        this.slotIds[slot] = ids[e]; this.slotQty[slot] = q;
+        sb.append(ids[e]).append('=').append(q).append(';');
+        left[e] = left[e] - (long) q;
+        slot++;
+        stacks[e] = stacks[e] + 1;
+      }}
+    }}
+  }}
+  // 0.7.12: the content version moves only when the offer really changed (same pool + same wanted set = same layout: no refresh loop)
+  String nsig = sb.toString();
+  if (!nsig.equals(this.sig)) {{ this.sig = nsig; this.ver++; }}
+  return nsig;
+}}""", mir))
+mir.addMethod(CtNewMethod.make("""
+public String rebuild(java.util.HashMap caps) {
+  return rebuild(caps, (java.util.Set) null);
+}""", mir))
+# 0.7.12: the 0.7.2 retireOther moved to BenchLink.retire (sync + EMPTY + drop the old key's mirror, detach + invalidate its windows).
+# 0.7.2 review fix: drop everything the mirror offers (call sync() first - it accounts what the bench already took).
+mir.addMethod(CtNewMethod.make(f"""
+public void empty() {{
+  try {{ this.cont.clear(); }} catch (Throwable t) {{ }}
+  for (int i = 0; i < 36; i++) {{ this.slotIds[i] = null; this.slotQty[i] = 0; }}
+  if (this.sig != null && this.sig.length() > 0) this.ver++;   // 0.7.12: what it offered changed
+  this.sig = "";
+}}""", mir))
+mir.addMethod(CtNewMethod.make("""
+public boolean holds() {
+  for (int i = 0; i < 36; i++) if (this.slotIds[i] != null) return true;
+  return false;
+}""", mir))
+# 0.7.12: the 0.7.2 park moved to BenchLink.park (research/Bag-Craft-Link-Fix.md B: sync, empty, invalidateExtraResources on each open
+# window using the mirror - the vanilla code re-feeds and sends; 0.7.10 marked the section valid and updated it, which sent no list).
+mir.addMethod(CtNewMethod.make(f"""
+public {IQ}[] quantities() {{
+  java.util.LinkedHashMap sum = new java.util.LinkedHashMap();
+  for (int i = 0; i < 36; i++) {{
+    if (this.slotIds[i] == null) continue;
+    Integer cur = (Integer) sum.get(this.slotIds[i]);
+    sum.put(this.slotIds[i], Integer.valueOf((cur == null ? 0 : cur.intValue()) + this.slotQty[i]));
+  }}
+  {IQ}[] out = new {IQ}[sum.size()];
+  java.util.Iterator it = sum.entrySet().iterator(); int k = 0;
+  while (it.hasNext()) {{ java.util.Map.Entry e = (java.util.Map.Entry) it.next(); out[k++] = new {IQ}((String) e.getKey(), ((Integer) e.getValue()).intValue()); }}
+  return out;
+}}""", mir))
+mir.addMethod(CtNewMethod.make(f"""
+public static int syncAll() {{
+  int n = 0;
+  java.util.Iterator it = MIRRORS.values().iterator();
+  while (it.hasNext()) {{
+    try {{ n += (({PKG}.BagMirror) it.next()).sync(); }} catch (Throwable t) {{ }}
+  }}
+  return n;
+}}""", mir))
+
+
+# 0.7.12 (research/Bag-Craft-Link-Fix.md B) - owns: c is (or contains) this mirror's guard / container (CombinedItemContainer.containsContainer
+# is recursive, VERIFIED); merge: the vanilla list + the mirror list summed by item id (vanilla order first, zeros / nulls skipped, NEW
+# ItemQuantity objects - the arrays given are never edited); fit: trim what the mirror offers of one item to what the pool holds (after a
+# sync, from the last slots; never booked - those items are still in the pool)
+mir.addMethod(CtNewMethod.make(jt(r'''
+public boolean owns(@IC@ c) {
+  if (c == null) return false;
+  return c.containsContainer(this.guard) || c.containsContainer(this.cont);
+}'''), mir))
+mir.addMethod(CtNewMethod.make(jt(r'''
+public static void sumInto(java.util.LinkedHashMap sum, @IQ@[] l) {
+  for (int i = 0; l != null && i < l.length; i++) {
+    if (l[i] == null || l[i].itemId == null || l[i].quantity <= 0) continue;
+    Long cur = (Long) sum.get(l[i].itemId);
+    sum.put(l[i].itemId, Long.valueOf((cur == null ? 0L : cur.longValue()) + (long) l[i].quantity));
+  }
+}'''), mir))
+mir.addMethod(CtNewMethod.make(jt(r'''
+public static @IQ@[] merge(@IQ@[] a, @IQ@[] b) {
+  java.util.LinkedHashMap sum = new java.util.LinkedHashMap();
+  sumInto(sum, a);
+  sumInto(sum, b);
+  @IQ@[] out = new @IQ@[sum.size()];
+  java.util.Iterator it = sum.entrySet().iterator();
+  int k = 0;
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    long v = ((Long) e.getValue()).longValue();
+    out[k++] = new @IQ@((String) e.getKey(), v > 2147483647L ? 2147483647 : (int) v);
+  }
+  return out;
+}'''), mir))
+mir.addMethod(CtNewMethod.make(jt(r'''
+public int fit(String id) {
+  if (id == null) return 0;
+  sync();
+  long inPool = @PKG@.SackPool.get(this.key, id);
+  long held = 0L;
+  for (int i = 0; i < 36; i++) if (id.equals(this.slotIds[i])) held += (long) this.slotQty[i];
+  if (held <= inPool) return 0;
+  long excess = held - inPool;
+  int removed = 0;
+  for (int j = 35; j >= 0 && excess > 0L; j--) {
+    if (!id.equals(this.slotIds[j])) continue;
+    @IS@ was = this.cont.getItemStack((short) j);
+    int before = (was == null || was.isEmpty()) ? 0 : was.getQuantity();
+    int take = (long) before < excess ? before : (int) excess;
+    if (take > 0) this.cont.removeItemStackFromSlot((short) j, take);
+    @IS@ after = this.cont.getItemStack((short) j);
+    int left = (after == null || after.isEmpty()) ? 0 : after.getQuantity();
+    int gone = before - left;
+    if (gone < 0) gone = 0;
+    this.slotQty[j] = left;
+    if (left <= 0) this.slotIds[j] = null;
+    excess -= (long) gone;
+    removed += gone;
+  }
+  if (removed > 0) { this.ver++; this.sig = "fit:" + this.ver; }   // content changed: a new version, and the next rebuild differs from it
+  return removed;
+}'''), mir))
+# the real bodies of the live-mirror rule (declared before SweepTask.withdraw): $1 = profile key, $2 = item id
+_BEFORE_TAKE.setBody(jt(r'''{
+  @PKG@.BagMirror m = (@PKG@.BagMirror) MIRRORS.get($1);
+  if (m == null) return 0;
+  return m.sync();
+}'''))
+_AFTER_TAKE.setBody(jt(r'''{
+  @PKG@.BagMirror m = (@PKG@.BagMirror) MIRRORS.get($1);
+  if (m == null) return 0;
+  return m.fit($2);
+}'''))
+
+# ================= 0.8.11 AccLink: THE ACCESSORY BAG LINK (tools/sacks_0_8_11_patch.py docstring E; SkyyAccessories 0.5.19 acc:fn:bag) =================
+# acc:fn:bag apply(Object[]{"list"|"take"|"put", UUID, key, id, slot}) - SkyyAccessories owns the bag; null = refused / absent (nothing moves)
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static Object call(Object[] a) {
+  try {
+    Object f = @PKG@.SackPool.bridge().get("acc:fn:bag");
+    if (!(f instanceof java.util.function.Function)) return null;
+    return ((java.util.function.Function) f).apply(a);
+  } catch (Throwable t) { return null; }
+}'''), acl))
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static String[] list(java.util.UUID u, String k) {
+  if (u == null || k == null) return new String[0];
+  Object r = call(new Object[] { "list", u, k });
+  if (!(r instanceof String) || ((String) r).length() == 0) return new String[0];
+  return ((String) r).split(",");
+}'''), acl))
+# review fix B1: the bag's list as one string (a cheap signature - an open bench refreshes when it changes)
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static String sig(java.util.UUID u, String k) {
+  if (u == null || k == null) return "";
+  Object r = call(new Object[] { "list", u, k });
+  return (r instanceof String) ? (String) r : "";
+}'''), acl))
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static int take(java.util.UUID u, String k, String id) {
+  Object r = call(new Object[] { "take", u, k, id });
+  return (r instanceof Integer) ? ((Integer) r).intValue() : -1;
+}'''), acl))
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static boolean put(java.util.UUID u, String k, String id, int slot) {
+  return Boolean.TRUE.equals(call(new Object[] { "put", u, k, id, Integer.valueOf(slot) }));
+}'''), acl))
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static int countIn(@IC@ c, String id) {
+  int n = 0;
+  if (c == null || id == null) return 0;
+  short cap = c.getCapacity();
+  for (short s = 0; s < cap; s++) {
+    @IS@ it = c.getItemStack(s);
+    if (it != null && !it.isEmpty() && id.equals(it.getItemId())) n += it.getQuantity();
+  }
+  return n;
+}'''), acl))
+# a bench's display list: one ItemQuantity per bag accessory its recipes use (BagMirror.wants: item ids + resource types)
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static @IQ@[] extras(java.util.UUID u, String k, java.util.Set wanted) {
+  String[] ids = list(u, k);
+  java.util.LinkedHashMap sum = new java.util.LinkedHashMap();
+  for (int i = 0; i < ids.length; i++) {
+    if (wanted == null || !wanted.contains(ids[i])) continue;   // review fix A5: an accessory is an ITEM input (never a resource type)
+    Integer c = (Integer) sum.get(ids[i]);
+    sum.put(ids[i], Integer.valueOf(c == null ? 1 : c.intValue() + 1));
+  }
+  @IQ@[] out = new @IQ@[sum.size()];
+  java.util.Iterator it = sum.entrySet().iterator();
+  int n = 0;
+  while (it.hasNext()) { java.util.Map.Entry e = (java.util.Map.Entry) it.next(); out[n++] = new @IQ@((String) e.getKey(), ((Integer) e.getValue()).intValue()); }
+  return out;
+}'''), acl))
+# /craft: a COPY of the bag accessories the shown / clicked recipes use (one 1-stack per bag slot), next to the inventory and the Void; null =
+# none. What a craft takes from it leaves the bag through book() - never put on a bench window
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static @SIC@ cont(String[] ids, java.util.Set wanted) {
+  int n = 0;
+  for (int i = 0; ids != null && i < ids.length; i++) if (wanted != null && wanted.contains(ids[i]) && @PKG@.ProcBench.item(ids[i]) != null) n++;
+  if (n == 0) return null;
+  @SIC@ c = new @SIC@((short) n);
+  int s = 0;
+  for (int i = 0; i < ids.length && s < n; i++) {
+    if (wanted == null || !wanted.contains(ids[i]) || @PKG@.ProcBench.item(ids[i]) == null) continue;
+    c.setItemStackForSlot((short) s, new @IS@(ids[i], 1));
+    s++;
+  }
+  return c;
+}'''), acl))
+# review fix B2 (/craft): BEFORE the removal - the accessories the craft needs beyond what the inventory + the Void hold (exact item ids, the
+# need summed per id) leave the bag first; one take refused = every one taken goes back and null is returned (nothing is used). Returns
+# Object[]{ id, Integer bag slot } per item taken (may be empty)
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.ArrayList takeFor(java.util.UUID u, String k, java.util.List inputs, @IC@ base) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  java.util.LinkedHashMap need = new java.util.LinkedHashMap();
+  for (int i = 0; inputs != null && i < inputs.size(); i++) {
+    @MQ@ mq = (@MQ@) inputs.get(i);
+    if (mq == null || mq.getItemId() == null) continue;
+    Integer c = (Integer) need.get(mq.getItemId());
+    need.put(mq.getItemId(), Integer.valueOf((c == null ? 0 : c.intValue()) + mq.getQuantity()));
+  }
+  String[] ids = null;
+  java.util.Iterator it = need.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    String id = (String) e.getKey();
+    if (ids == null) ids = list(u, k);
+    int inBag = 0;
+    for (int j = 0; j < ids.length; j++) if (ids[j].equals(id)) inBag++;
+    if (inBag == 0) continue;
+    int shortN = ((Integer) e.getValue()).intValue() - countIn(base, id);
+    for (int q = 0; q < shortN && q < inBag; q++) {
+      int slot = take(u, k, id);
+      if (slot < 0) {
+        for (int b = out.size() - 1; b >= 0; b--) { Object[] t0 = (Object[]) out.get(b); put(u, k, (String) t0[0], ((Integer) t0[1]).intValue()); }
+        return null;
+      }
+      out.add(new Object[] { id, Integer.valueOf(slot) });
+    }
+  }
+  return out;
+}'''), acl))
+# the copy container of exactly the taken accessories (the craft removes from it after the inventory and the Void)
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static @SIC@ contOf(java.util.ArrayList taken) {
+  if (taken == null || taken.isEmpty()) return null;
+  @SIC@ c = new @SIC@((short) taken.size());
+  for (int i = 0; i < taken.size(); i++) c.setItemStackForSlot((short) i, new @IS@((String) ((Object[]) taken.get(i))[0], 1));
+  return c;
+}'''), acl))
+# after the removal: every taken accessory the craft did not use goes back into its bag slot (refused = into the inventory, never lost)
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static int unused(@ST@ st, @REF@ ref, @PLA@ p, java.util.UUID u, String k, @SIC@ c, java.util.ArrayList taken) {
+  if (c == null || taken == null) return 0;
+  int back = 0;
+  for (short s = 0; s < c.getCapacity(); s++) {
+    @IS@ it = c.getItemStack(s);
+    if (it == null || it.isEmpty()) continue;
+    Object[] t0 = (Object[]) taken.get(s);
+    String id = (String) t0[0];
+    c.removeItemStackFromSlot(s, it.getQuantity());
+    if (put(u, k, id, ((Integer) t0[1]).intValue())) { back++; continue; }
+    @SIC@.addOrDropItemStack(st, ref, p.getInventory().getCombinedStorageHotbarBackpack(), new @IS@(id, 1));
+  }
+  return back;
+}'''), acl))
+# review fix B1: the player's open bench windows re-send their lists (the bag changed): the vanilla code re-feeds, the filter re-attaches
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static int touch(@PLA@ p) {
+  int n = 0;
+  try {
+    @WM@ wm = p.getWindowManager();
+    if (wm == null) return 0;
+    java.util.List ws = wm.getWindows();
+    for (int i = 0; ws != null && i < ws.size(); i++) {
+      Object w = ws.get(i);
+      if ((w instanceof @SCW@ || w instanceof @PBW@) && w instanceof @MCW@) { ((@MCW@) w).invalidateExtraResources(); n++; }
+    }
+  } catch (Throwable t) { }
+  return n;
+}'''), acl))
+# one plain unit of id out of the inventory (counted); false = none there
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static boolean removeOne(@IC@ c, String id) {
+  short cap = c.getCapacity();
+  for (short s = 0; s < cap; s++) {
+    @IS@ it = c.getItemStack(s);
+    if (it == null || it.isEmpty() || !id.equals(it.getItemId())) continue;
+    if (it.getMetadata() != null && !it.getMetadata().isEmpty()) continue;
+    int b0 = countIn(c, id);
+    c.removeItemStackFromSlot(s, 1);
+    if (countIn(c, id) == b0 - 1) return true;
+  }
+  return false;
+}'''), acl))
+# BENCH: one accessory id from the bag into the inventory (bag take, then a counted add); no room = back into the bag (refused there = it
+# drops at the player's feet - never lost). Returns the bag slot (>= 0 moved), -1 not in the bag / refused, -2 no room (why gets a mark)
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static int pull(@PLA@ p, @ST@ st, @REF@ ref, java.util.UUID u, String k, String id, StringBuilder why) {
+  @IC@ dst = p.getInventory().getCombinedStorageHotbarBackpack();
+  int b0 = countIn(dst, id);
+  int slot = take(u, k, id);
+  if (slot < 0) return -1;
+  boolean ok = false;
+  try { dst.addItemStack(new @IS@(id, 1)); } catch (Throwable t) { }
+  ok = countIn(dst, id) > b0;
+  if (ok) return slot;
+  if (!put(u, k, id, slot)) {
+    @SIC@.addOrDropItemStack(st, ref, dst, new @IS@(id, 1));
+    @PKG@.SackPool.warn("bench: " + id + " could not go back into the Void Charms of " + k + " - dropped at the player instead");
+  }
+  if (why != null) why.append('x');
+  return -2;
+}'''), acl))
+# BENCH: before the vanilla handler - every accessory input of the recipe the inventory lacks for `crafts` crafts and the bag holds is moved
+# into the inventory. Returns the moves: Object[]{ id, Integer bag slot, Integer inventory count before the moves of that id }
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.ArrayList pullFor(@PLA@ p, @ST@ st, @REF@ ref, java.util.UUID u, String k, @CRR@ r, int crafts, StringBuilder why) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  if (p == null || r == null || k == null) return out;
+  @MQ@[] in = r.getInput();
+  if (in == null) return out;
+  String[] ids = null;
+  @IC@ inv = p.getInventory().getCombinedStorageHotbarBackpack();
+  java.util.LinkedHashMap per = new java.util.LinkedHashMap();   // review fix A5: the need summed per item id
+  for (int i = 0; i < in.length; i++) {
+    if (in[i] == null || in[i].getItemId() == null) continue;
+    Integer c0 = (Integer) per.get(in[i].getItemId());
+    per.put(in[i].getItemId(), Integer.valueOf((c0 == null ? 0 : c0.intValue()) + in[i].getQuantity()));
+  }
+  java.util.Iterator pi = per.entrySet().iterator();
+  while (pi.hasNext()) {
+    java.util.Map.Entry pe = (java.util.Map.Entry) pi.next();
+    String id = (String) pe.getKey();
+    if (ids == null) ids = list(u, k);
+    int inBag = 0;
+    for (int j = 0; j < ids.length; j++) if (ids[j].equals(id)) inBag++;
+    if (inBag == 0) continue;
+    long need = (long) ((Integer) pe.getValue()).intValue() * (long) crafts;
+    int base = countIn(inv, id);
+    long have = (long) base;
+    while (have < need && inBag > 0) {
+      int slot = pull(p, st, ref, u, k, id, why);
+      if (slot < 0) break;
+      out.add(new Object[] { id, Integer.valueOf(slot), Integer.valueOf(base) });
+      have++;
+      inBag--;
+    }
+  }
+  return out;
+}'''), acl))
+# BENCH, after the vanilla handler (AccSettle): what the craft did not use goes back into the bag (newest first; the inventory count above
+# the count before the moves); the bag refuses = it stays in the inventory. Returns how many went back
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static int settle(@PLA@ p, @ST@ st, @REF@ ref, java.util.UUID u, String k, java.util.ArrayList pulled) {
+  if (pulled == null || pulled.isEmpty() || p == null) return 0;
+  @IC@ dst = p.getInventory().getCombinedStorageHotbarBackpack();
+  int back = 0;
+  for (int i = pulled.size() - 1; i >= 0; i--) {
+    Object[] e = (Object[]) pulled.get(i);
+    String id = (String) e[0];
+    int base = ((Integer) e[2]).intValue();
+    if (countIn(dst, id) <= base) continue;
+    if (!removeOne(dst, id)) continue;
+    if (put(u, k, id, ((Integer) e[1]).intValue())) { back++; continue; }
+    @SIC@.addOrDropItemStack(st, ref, dst, new @IS@(id, 1));
+  }
+  return back;
+}'''), acl))
+# AccSettle: the world task queued behind the vanilla craft handler (FIFO) - settle() on the same player in the same world (another world =
+# the moved accessory simply stays in the inventory: never lost)
+aset.addInterface(pool.get("java.lang.Runnable"))
+aset.addField(CtField.make(jt("public @PR@ pr;"), aset))
+aset.addField(CtField.make("public java.util.UUID world;", aset))
+aset.addField(CtField.make("public String key;", aset))
+aset.addField(CtField.make("public java.util.ArrayList pulled;", aset))
+aset.addField(CtField.make("public boolean onWorld;", aset))   # review fix A1: false = still on the scheduler (hop 1)
+aset.addConstructor(CtNewConstructor.make(jt("public AccSettle(@PR@ pr, java.util.UUID w, String k, java.util.ArrayList pulled) { this.pr = pr; this.world = w; this.key = k; this.pulled = pulled; }"), aset))
+aset.addMethod(CtNewMethod.make(jt(r'''
+public void run() {
+  try {
+    if (this.pr == null || !this.pr.isValid()) return;
+    java.util.UUID w = this.pr.getWorldUuid();
+    if (w == null || !w.equals(this.world)) return;
+    // review fix A1: hop 1 (the scheduler, 250 ms after the click) -> hop 2 on the world thread: the vanilla craft handler of that click
+    // has been queued and run by then, so the put-back never comes before it
+    if (!this.onWorld) {
+      this.onWorld = true;
+      @WLD@ wld = @UNI@.get().getWorld(w);
+      if (wld != null) wld.execute(this);
+      return;
+    }
+    @REF@ r = this.pr.getReference();
+    if (r == null) return;
+    @ST@ st = r.getStore();
+    if (st == null) return;
+    @PLA@ p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+    if (p == null) return;
+    int n = @PKG@.AccLink.settle(p, st, r, this.pr.getUuid(), this.key, this.pulled);
+    @PKG@.CraftLog.line(this.key, "ACCBAG bench settle moved=" + this.pulled.size() + " back=" + n + " used=" + (this.pulled.size() - n));
+    @PKG@.AccLink.touch(p);   // review fix B1: the open benches show the bag as it is now
+  } catch (Throwable t) { @PKG@.SackPool.warn("bench: putting unused accessories back into Void Charms failed: " + t); }
+}'''), aset))
+# BENCH (PreCraftTask, world thread, before the vanilla handler of a CraftRecipeAction): an instant bench (SimpleCraftingWindow) only
+acl.addMethod(CtNewMethod.make(jt(r'''
+public static int benchPre(@PLA@ p, @PR@ pr, @ST@ st, @REF@ ref, int winId, String recipeId, int qty) {
+  if (p == null || pr == null || recipeId == null || winId <= 0) return 0;
+  @WM@ wm = p.getWindowManager();
+  if (wm == null) return 0;
+  Object w = wm.getWindow(winId);
+  if (!(w instanceof @SCW@)) return 0;
+  java.util.UUID u = pr.getUuid();
+  String k = @PKG@.SackPool.settledKey(u);
+  if (k == null) return 0;
+  Object o = @CRR@.getAssetMap().getAsset(recipeId);
+  if (!(o instanceof @CRR@)) return 0;
+  StringBuilder why = new StringBuilder();
+  java.util.ArrayList pulled = pullFor(p, st, ref, u, k, (@CRR@) o, qty < 1 ? 1 : qty, why);
+  if (why.length() > 0) pr.sendMessage(@MSG@.raw("[SkyyVoid] Make room in your inventory - the bench could not take the accessory out of your Void Charms."));
+  if (pulled.isEmpty()) return 0;
+  StringBuilder ids = new StringBuilder();
+  for (int i = 0; i < pulled.size(); i++) { Object[] e = (Object[]) pulled.get(i); ids.append(' ').append(e[0]).append("@slot").append(e[1]); }
+  // review fix A2 / B3: the move is in crafts.log (bag saved -> inventory; a crash in between can be reconciled from this line)
+  @PKG@.CraftLog.line(k, "ACCBAG bench " + recipeId + " x" + qty + " moved from the bag to the inventory:" + ids);
+  java.util.UUID wu = pr.getWorldUuid();
+  @PKG@.AccSettle as = new @PKG@.AccSettle(pr, wu, k, pulled);
+  try { @HSV@.SCHEDULED_EXECUTOR.schedule(as, 250L, java.util.concurrent.TimeUnit.MILLISECONDS); }
+  catch (Throwable t) {
+    as.onWorld = true;
+    @WLD@ wld = wu == null ? null : @UNI@.get().getWorld(wu);
+    if (wld == null) settle(p, st, ref, u, k, pulled); else wld.execute(as);
+  }
+  return pulled.size();
+}'''), acl))
+
+# ================= LinkRec (0.7.12): one open crafting window's link state (identity: the window object) =================
+# key = the mirror key it is attached to (null = not attached), vanilla / vanillaList = the vanilla part of its section at the attach
+# (nearby chests; none for the pocket window), combined = what was set on the section, chg / caps / ver = the pool counter, carried-bags
+# signature and mirror version it was given, wanted = what that window can use (bench recipes / Fieldcraft), lastInval = the last refresh
+# asked (rate limit), reg = the close hook, why = why it is not attached, logged = its "attached" log line was written
+for _d in ("public Object win;", "public String key;", "public boolean attached;", "public @IC@ vanilla;", "public @IQ@[] vanillaList;",
+           "public @IC@ combined;", "public long chg;", "public String caps;", "public int ver;", "public java.util.Set wanted;",
+           "public long lastInval;", "public long seen;", "public @EVR@ reg;", "public String why;", "public boolean logged;"):
+    lrec.addField(CtField.make(jt(_d), lrec))
+lrec.addField(CtField.make("public String accSig;", lrec))   # 0.8.11 review fix B1: the Accessory Bag list the window was given
+lrec.addConstructor(CtNewConstructor.make("public LinkRec(Object w) { this.win = w; this.chg = -1L; this.ver = -1; }", lrec))
+
+# ================= BenchLink (0.7.12, research/Bag-Craft-Link-Fix.md A / C / E): the bench + pocket crafting link =================
+# Everything here runs on the player's world thread (the outbound filter checks Store.isInThread; the 300 ms task, the close hook, the
+# pre-craft task and the pocket window's refill are world tasks). RECS = player uuid -> ArrayList of LinkRec (that player's world thread only).
+# PLAYERS = the bare-JVM harness's PlayerRef -> Player lookup (always null in the game: the filter then reads the player's own store).
+blink.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap RECS = new java.util.concurrent.ConcurrentHashMap();", blink))
+blink.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap WARNED = new java.util.concurrent.ConcurrentHashMap();", blink))
+blink.addField(CtField.make("public static volatile java.util.function.Function PLAYERS;", blink))
+blink.addField(CtField.make(jt("public static volatile @PFI@ OUT;"), blink))
+blink.addField(CtField.make(jt("public static volatile @PFI@ IN;"), blink))
+blink.addField(CtField.make("public static volatile Object POCKET_SUP;", blink))
+blink.addField(CtField.make("public static volatile Object POCKET_PREV;", blink))
+blink.addField(CtField.make("public static volatile boolean POCKET_ON = false;", blink))
+blink.addField(CtField.make("public static volatile boolean POCKET_WARNED = false;", blink))
+# review fix 1: STARTED = between start() and stop() (the bags.pocketCraft switch swaps the pocket window only then)
+blink.addField(CtField.make("public static volatile boolean STARTED = false;", blink))
+blink.addField(CtField.make("public static volatile java.util.Set FIELD;", blink))
+blink.addField(CtField.make("public static final long REFRESH_MS = 1000L;", blink))
+# 0.7.18 (audit 9b): ACTIVE = players who may have a crafting window (u -> Long stamp): set for every OpenWindow / UpdateWindow the
+# outbound filter sees, a craft click (inbound filter) and a new window record; cleared by the link pass that finds nothing left
+blink.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap ACTIVE = new java.util.concurrent.ConcurrentHashMap();", blink))
+for _f in ("LHOPS", "LSKIPS"):
+    blink.addField(CtField.make("public static final java.util.concurrent.atomic.AtomicLong %s = new java.util.concurrent.atomic.AtomicLong();" % _f, blink))
+blink.addMethod(CtNewMethod.make("""
+public static void mark(java.util.UUID u) {
+  if (u != null) ACTIVE.put(u, Long.valueOf(System.nanoTime()));
+}""", blink))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static void warnOnce(String key, String msg) {
+  if (key == null || WARNED.putIfAbsent(key, Boolean.TRUE) != null) return;
+  @PKG@.SackPool.warn(msg);
+}'''), blink))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static void info(String msg) {
+  try { if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] " + msg); } catch (Throwable t) { }
+}'''), blink))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.ArrayList recs(java.util.UUID u, boolean create) {
+  if (u == null) return null;
+  java.util.ArrayList l = (java.util.ArrayList) RECS.get(u);
+  if (l == null && create) {
+    l = new java.util.ArrayList();
+    java.util.ArrayList prev = (java.util.ArrayList) RECS.putIfAbsent(u, l);
+    if (prev != null) l = prev;
+  }
+  return l;
+}'''), blink))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static @PKG@.LinkRec recOf(java.util.UUID u, Object w, boolean create) {
+  if (u == null || w == null) return null;
+  java.util.ArrayList l = recs(u, create);
+  if (l == null) return null;
+  for (int i = 0; i < l.size(); i++) {
+    @PKG@.LinkRec r0 = (@PKG@.LinkRec) l.get(i);
+    if (r0.win == w) return r0;
+  }
+  if (!create) return null;
+  @PKG@.LinkRec r = new @PKG@.LinkRec(w);
+  l.add(r);
+  mark(u);   // 0.7.18: a window record = the 300 ms link visits this player
+  return r;
+}'''), blink))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static @PKG@.LinkRec dropRec(java.util.UUID u, Object w) {
+  java.util.ArrayList l = recs(u, false);
+  if (l == null) return null;
+  for (int i = 0; i < l.size(); i++) {
+    @PKG@.LinkRec r = (@PKG@.LinkRec) l.get(i);
+    if (r.win == w) {
+      l.remove(i);
+      if (l.isEmpty()) RECS.remove(u, l);
+      return r;
+    }
+  }
+  return null;
+}'''), blink))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static boolean anyAttached(java.util.UUID u, String k) {
+  java.util.ArrayList l = recs(u, false);
+  if (l == null || k == null) return false;
+  for (int i = 0; i < l.size(); i++) {
+    @PKG@.LinkRec r = (@PKG@.LinkRec) l.get(i);
+    if (r.attached && k.equals(r.key)) return true;
+  }
+  return false;
+}'''), blink))
+# the bench windows the link feeds: a SimpleCraftingWindow (Workbench, Cooking, Alchemy ...) or a ProcessingBenchWindow (its tier upgrade
+# reads the section); Diagram / Structural crafting windows use their own input slots (research doc A)
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static boolean isBench(Object w) {
+  return w instanceof @SCW@ || w instanceof @PBW@;
+}'''), blink))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static boolean isPocket(Object w) {
+  return w instanceof @PKG@.PocketCraftWindow;
+}'''), blink))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static String capsSig(java.util.HashMap caps) {
+  if (caps == null || caps.isEmpty()) return "";
+  return new java.util.TreeMap(caps).toString();
+}'''), blink))
+# the Fieldcraft (pocket crafting) recipes' inputs, cached once the recipe assets answer
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.Set fieldWanted() {
+  java.util.Set c = FIELD;
+  if (c != null) return c;
+  java.util.HashSet s = new java.util.HashSet();
+  try {
+    java.util.List l = @CRP@.getBenchRecipes(@BTP@.Crafting, "Fieldcraft");
+    for (int i = 0; l != null && i < l.size(); i++) {
+      Object o = l.get(i);
+      if (o instanceof @CRR@) @PKG@.BagMirror.addInputs(s, ((@CRR@) o).getInput());
+    }
+  } catch (Throwable t) { }
+  if (!s.isEmpty()) FIELD = s;
+  return s;
+}'''), blink))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.Set wantedOf(Object w) {
+  if (isPocket(w)) return fieldWanted();
+  java.util.Set s = @PKG@.BagMirror.wantedFor(w);
+  return s == null ? new java.util.HashSet() : s;
+}'''), blink))
+# one mirror per key, shared by every crafting window of that player: it is rebuilt with the UNION of what those windows can use, so two
+# windows never rebuild it against each other (a refresh ping-pong)
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashSet union(java.util.UUID u, String k) {
+  java.util.HashSet out = new java.util.HashSet();
+  java.util.ArrayList l = recs(u, false);
+  for (int i = 0; l != null && i < l.size(); i++) {
+    @PKG@.LinkRec r = (@PKG@.LinkRec) l.get(i);
+    if (r.attached && k != null && k.equals(r.key) && r.wanted != null) out.addAll(r.wanted);
+  }
+  return out;
+}'''), blink))
+# the vanilla part of a section container: a bare guard (pocket window) has none, Combined{x, guard} (what attach builds) has x
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static @IC@ peel(@IC@ c) {
+  if (c instanceof @PKG@.MirrorGuard) return null;
+  if (c instanceof @CIC@) {
+    @CIC@ cc = (@CIC@) c;
+    if (cc.getContainersSize() == 2 && cc.getContainer(1) instanceof @PKG@.MirrorGuard) return cc.getContainer(0);
+  }
+  return c;
+}'''), blink))
+# RETIRE (invariant 6): the active key changed - the old key's mirror is synced, EMPTIED and dropped, its windows detached + refreshed.
+# Called by the 300 ms link AND first thing in every attach (with no window list): a mirror the filter attached before the link ran
+# is still retired on a quick profile switch (its windows are then refreshed by the link: their key differs)
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static void retire(java.util.UUID u, String k, java.util.List wins) {
+  if (u == null || k == null) return;
+  String old = (String) @PKG@.BagMirror.LASTKEY.put(u, k);
+  if (old == null || old.equals(k)) return;
+  @PKG@.BagMirror m = (@PKG@.BagMirror) @PKG@.BagMirror.MIRRORS.remove(old);
+  int c = 0;
+  if (m != null) {
+    c = m.sync();
+    m.empty();
+    @PKG@.SackPool.saveSoon(old);
+  }
+  int n = 0;
+  long now = System.currentTimeMillis();
+  for (int i = 0; wins != null && i < wins.size(); i++) {
+    Object w = wins.get(i);
+    if (!isBench(w) && !isPocket(w)) continue;
+    @PKG@.LinkRec rec = recOf(u, w, false);
+    if (rec == null || !old.equals(rec.key)) continue;
+    rec.attached = false;
+    rec.key = null;
+    rec.why = "profile switched";
+    rec.lastInval = now;
+    ((@MCW@) w).invalidateExtraResources();
+    n++;
+  }
+  if (m != null || n > 0) @PKG@.CraftLog.later(old, "PROFILE bench mirror retired - active key now " + k + " consumed=" + c + " windows=" + n);
+}'''), blink))
+# ATTACH (research doc B): sync (book what was taken) -> rebuild with the union of the key's windows -> section container = the guard
+# (Combined{vanilla chests, guard} when there are chests) -> extra materials = vanilla list + mirror list -> valid. Returns the merged list.
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static @IQ@[] attach(java.util.UUID u, @PKG@.LinkRec rec, @PKG@.BagMirror m, @MERS@ sec, @IC@ vanillaCont, @IQ@[] vanillaList, java.util.Set wanted, java.util.HashMap caps) {
+  retire(u, m.key, (java.util.List) null);   // one live mirror per key: another key's mirror is synced, emptied and dropped first
+  rec.wanted = wanted;
+  rec.key = m.key;
+  rec.attached = true;
+  int c = m.sync();
+  if (c > 0) @PKG@.SackPool.saveSoon(m.key);
+  m.rebuild(caps, union(u, m.key));
+  @IC@ comb = m.guard;
+  if (vanillaCont != null && vanillaCont != @EIC@.INSTANCE) comb = new @CIC@(new @IC@[] { vanillaCont, m.guard });
+  sec.setItemContainer(comb);
+  @IQ@[] base = vanillaList == null ? new @IQ@[0] : vanillaList;
+  @IQ@[] merged = @PKG@.BagMirror.merge(base, m.quantities());
+  merged = @PKG@.BagMirror.merge(merged, @PKG@.AccLink.extras(u, m.key, wanted));   // 0.8.11: the Accessory Bag (shown; moved at the click)
+  rec.accSig = @PKG@.AccLink.sig(u, m.key);
+  sec.setExtraMaterials(merged);
+  sec.setValid(true);
+  rec.vanilla = vanillaCont;
+  rec.vanillaList = base;
+  rec.combined = comb;
+  rec.chg = @PKG@.SackPool.chg(m.key);
+  rec.caps = capsSig(caps);
+  rec.ver = m.ver;
+  rec.why = null;
+  rec.seen = System.currentTimeMillis();
+  return merged;
+}'''), blink))
+# DECLINE: no settled key or no bag carried - vanilla only. A mirror the window used is synced (book what it took) and emptied (an old
+# combined container a queued timed job still holds then finds nothing: bags are only usable while carried, never an unbooked removal).
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static void decline(java.util.UUID u, @PKG@.LinkRec rec, String k, java.util.HashMap caps, String why) {
+  if (rec == null) return;
+  if (rec.attached && rec.key != null) {
+    @PKG@.BagMirror om = (@PKG@.BagMirror) @PKG@.BagMirror.MIRRORS.get(rec.key);
+    if (om != null) {
+      int c = om.sync();
+      if (c > 0) @PKG@.SackPool.saveSoon(rec.key);
+      om.empty();
+    }
+  }
+  rec.attached = false;
+  rec.key = k;
+  rec.combined = null;
+  rec.chg = k == null ? -1L : @PKG@.SackPool.chg(k);
+  rec.caps = capsSig(caps);
+  rec.ver = -1;
+  rec.why = why;
+  rec.seen = System.currentTimeMillis();
+}'''), blink))
+# a crafting window closed (world thread; bench: after the vanilla refund of a started timed unit): book what it took at once; the last
+# window of a key drops the mirror (synced + emptied first - nothing can reach its container afterwards)
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static void closed(java.util.UUID u, Object w) {
+  @PKG@.LinkRec rec = dropRec(u, w);
+  if (rec == null || rec.key == null) return;
+  String k = rec.key;
+  @PKG@.BagMirror m = (@PKG@.BagMirror) @PKG@.BagMirror.MIRRORS.get(k);
+  if (m == null) return;
+  int c = m.sync();
+  if (c > 0) @PKG@.SackPool.saveSoon(k);
+  if (!anyAttached(u, k)) {
+    m.empty();
+    @PKG@.BagMirror.MIRRORS.remove(k, m);
+  }
+}'''), blink))
+# ================= MirrorClose (0.7.12): a bench window's close hook -> BenchLink.closed =================
+mcl.addInterface(pool.get("java.util.function.Consumer"))
+mcl.addField(CtField.make("public java.util.UUID u;", mcl))
+mcl.addField(CtField.make("public Object w;", mcl))
+mcl.addConstructor(CtNewConstructor.make("public MirrorClose(java.util.UUID u, Object w) { this.u = u; this.w = w; }", mcl))
+mcl.addMethod(CtNewMethod.make(jt(r'''
+public void accept(Object ev) {
+  try { @PKG@.BenchLink.closed(this.u, this.w); } catch (Throwable t) { }
+}'''), mcl))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static void hook(@PKG@.LinkRec rec, Object w, java.util.UUID u) {
+  if (rec == null || rec.reg != null || !(w instanceof @WIN@) || isPocket(w)) return;
+  try { rec.reg = ((@WIN@) w).registerCloseEvent(new @PKG@.MirrorClose(u, w)); }
+  catch (Throwable t) { warnOnce("hook", "craft link: no window close hook (" + t + ") - bench use is booked by the 300 ms task instead"); }
+}'''), blink))
+# the player of a filtered packet: only on that player's own world thread (else skipped, logged once - research doc risk 6)
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static @PLA@ playerOf(@PR@ pr) {
+  if (pr == null) return null;
+  java.util.function.Function f = PLAYERS;
+  if (f != null) return (@PLA@) f.apply(pr);
+  @REF@ r = pr.getReference();
+  if (r == null) return null;
+  @ST@ st = r.getStore();
+  if (st == null) return null;
+  if (!st.isInThread()) {
+    warnOnce("thread", "craft link: a bench window packet was sent off its world thread - bag counts skipped for it (logged once)");
+    return null;
+  }
+  return (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+}'''), blink))
+# Server Setup bags.benchChests (research doc risk 2, default off): a bench with bags linked reports at least 1 nearby chest - in the
+# window's data (later updates) and in this packet's window data (the open packet was built before the filter ran)
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static void chestFix(Object w, @PKT@ pkt) {
+  if (!@PKG@.SackCfg.CHEST_FIX || !(w instanceof @WIN@)) return;
+  try {
+    @JSO@ d = ((@WIN@) w).getData();
+    if (d != null && d.has("nearbyChestCount") && d.get("nearbyChestCount").getAsInt() < 1) d.addProperty("nearbyChestCount", Integer.valueOf(1));
+    String wd = null;
+    if (pkt instanceof @OW@) wd = ((@OW@) pkt).windowData;
+    else if (pkt instanceof @UW@) wd = ((@UW@) pkt).windowData;
+    if (wd == null || wd.indexOf("nearbyChestCount") < 0) return;
+    @JSO@ o = @JPR@.parseString(wd).getAsJsonObject();
+    if (!o.has("nearbyChestCount") || o.get("nearbyChestCount").getAsInt() >= 1) return;
+    o.addProperty("nearbyChestCount", Integer.valueOf(1));
+    if (pkt instanceof @OW@) ((@OW@) pkt).windowData = o.toString();
+    else ((@UW@) pkt).windowData = o.toString();
+  } catch (Throwable t) { warnOnce("chests", "craft link: bench chest count fallback failed (logged once): " + t); }
+}'''), blink))
+# ON EXTRAS (research doc A) - a bench OpenWindow / UpdateWindow carries a list: the section was just fed by the vanilla code (valid - no
+# re-feed); attach the player's mirror to it and return the window (null = left vanilla). A section that still held a mirror (never the
+# case for a packet with a list - defensive) gives its vanilla part back through peel + the window's own vanilla list.
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static Object onExtras(@PLA@ p, java.util.UUID u, int id, @ER@ er) {
+  if (p == null || u == null || er == null || id <= 0) return null;
+  @WM@ wm = p.getWindowManager();
+  if (wm == null) return null;
+  @WIN@ w = wm.getWindow(id);
+  if (w == null || !isBench(w)) return null;
+  @MERS@ sec = ((@MCW@) w).getExtraResourcesSection();
+  if (sec == null) return null;
+  @PKG@.LinkRec rec = recOf(u, w, true);
+  String k = @PKG@.SackPool.settledKey(u);
+  java.util.HashMap caps = @PKG@.SweepTask.caps(p.getInventory());
+  if (k == null) {
+    decline(u, rec, k, caps, "profile not settled");
+    hook(rec, w, u);   // review fix 2: a declined bench gets its close hook too (else its record + window outlive a disconnect)
+    return null;
+  }
+  @PKG@.BagMirror m = @PKG@.BagMirror.of(k);
+  @IC@ cur = sec.getItemContainer();
+  @IC@ vc = peel(cur);
+  @IQ@[] vl = er.resources;
+  if (vc != cur) vl = rec.vanillaList;
+  @IQ@[] merged = attach(u, rec, m, sec, vc, vl, wantedOf(w), caps);
+  er.resources = merged;
+  hook(rec, w, u);
+  if (!rec.logged) {
+    rec.logged = true;
+    info("craft link: attached " + m.quantities().length + " bag item types to " + w.getClass().getSimpleName() + " (key " + k + ", " + merged.length + " types shown)");
+  }
+  return w;
+}'''), blink))
+# the outbound filter's work: window packets with a list only (id 0 = the pocket window, which refills itself)
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static void outbound(@PR@ pr, @PKT@ pkt) {
+  int id = -1;
+  @ER@ er = null;
+  if (pkt instanceof @UW@) { id = ((@UW@) pkt).id; er = ((@UW@) pkt).extraResources; }
+  else if (pkt instanceof @OW@) { id = ((@OW@) pkt).id; er = ((@OW@) pkt).extraResources; }
+  if (er == null || id <= 0 || pr == null) return;
+  @PLA@ p = playerOf(pr);
+  if (p == null) return;
+  Object w = onExtras(p, pr.getUuid(), id, er);
+  if (w != null) chestFix(w, pkt);
+}'''), blink))
+# PRE-CRAFT (research doc E): runs before the vanilla handler of a bench craft / tier upgrade click. Not ours (re-fed by an earlier click
+# in the same tick, or never attached) -> attach, so this click sees the bags; ours -> book what was taken and top the mirror up.
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static boolean preCraft(@PLA@ p, java.util.UUID u, int id) {
+  if (p == null || u == null || id <= 0) return false;
+  @WM@ wm = p.getWindowManager();
+  if (wm == null) return false;
+  @WIN@ w = wm.getWindow(id);
+  if (w == null || !isBench(w)) return false;
+  String k = @PKG@.SackPool.settledKey(u);
+  if (k == null) return false;
+  java.util.HashMap caps = @PKG@.SweepTask.caps(p.getInventory());
+  @MERS@ sec = ((@MCW@) w).getExtraResourcesSection();
+  if (sec == null) return false;
+  @PKG@.BagMirror m = @PKG@.BagMirror.of(k);
+  @IC@ cur = sec.getItemContainer();
+  if (m.owns(cur)) {
+    int c = m.sync();
+    if (c > 0) @PKG@.SackPool.saveSoon(k);
+    m.rebuild(caps, union(u, k));
+    return false;
+  }
+  @PKG@.LinkRec rec = recOf(u, w, true);
+  @IC@ vc = peel(cur);
+  @IQ@[] vl = null;
+  if (vc != cur) vl = rec.vanillaList;
+  else {
+    @ER@ pk = sec.toPacket();
+    if (pk != null) vl = pk.resources;
+  }
+  attach(u, rec, m, sec, vc, vl, wantedOf(w), caps);
+  hook(rec, w, u);
+  return true;
+}'''), blink))
+# PARK (research doc B, profile switch settling): the player's last key's mirror is synced and emptied, every open crafting window using it
+# is detached and asked to refresh (the vanilla code re-feeds the chests only; nothing is attached until the switch settles)
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static int park(java.util.UUID u, java.util.List wins) {
+  String lk = u == null ? null : (String) @PKG@.BagMirror.LASTKEY.get(u);
+  if (lk == null) return 0;
+  @PKG@.BagMirror m = (@PKG@.BagMirror) @PKG@.BagMirror.MIRRORS.get(lk);
+  int consumed = 0;
+  if (m != null) {
+    consumed = m.sync();
+    if (consumed > 0) @PKG@.SackPool.saveSoon(lk);
+    if (m.holds()) m.empty();
+  }
+  int parked = 0;
+  long now = System.currentTimeMillis();
+  for (int i = 0; wins != null && i < wins.size(); i++) {
+    Object w = wins.get(i);
+    if (!isBench(w) && !isPocket(w)) continue;
+    @PKG@.LinkRec rec = recOf(u, w, false);
+    if (rec == null || !rec.attached || !lk.equals(rec.key)) continue;
+    rec.attached = false;
+    rec.key = null;
+    rec.why = "profile switch settling";
+    rec.lastInval = now;
+    ((@MCW@) w).invalidateExtraResources();
+    parked++;
+  }
+  if (parked > 0) {
+    @PKG@.SackPool.warn("craft link: profile switch settling - bag materials taken off " + parked + " open crafting window(s) (key " + lk + ", consumed=" + consumed + ")");
+    @PKG@.CraftLog.later(lk, "PROFILE switch settling - bag materials taken off " + parked + " open crafting window(s) consumed=" + consumed);
+  }
+  return consumed;
+}'''), blink))
+# REFRESH (research doc C) - one open crafting window, settled key k: ask the vanilla code to re-send (invalidateExtraResources; the filter
+# or the pocket refill re-attaches) only when stale, at most once a second. An INVALID window is skipped (a refresh is already on its way;
+# getExtraResourcesSection() on an invalid bench section would re-feed without a packet). Pool changed -> rebuild first, refresh only when
+# the offer really changed (stone above the mirror's 4 stacks changes nothing on the screen).
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static boolean refresh(java.util.UUID u, Object w, String k, @PKG@.BagMirror m, java.util.HashMap caps, String cs, long now) {
+  @MCW@ mw = (@MCW@) w;
+  if (!mw.isValid()) return false;
+  @PKG@.LinkRec rec = recOf(u, w, false);
+  @MERS@ sec = mw.getExtraResourcesSection();
+  @IC@ c = sec == null ? null : sec.getItemContainer();
+  boolean guarded = c != null && peel(c) != c;
+  boolean ours = m != null && m.owns(c);
+  boolean stale = false;
+  if (rec == null) {
+    rec = recOf(u, w, true);
+    rec.key = k;
+    rec.caps = cs;
+    rec.why = "waiting for the next window refresh";
+    hook(rec, w, u);   // review fix 2: the record this task made goes at the window's close too (not only by prune)
+    stale = true;
+  } else if (guarded && !ours) {
+    stale = true;
+  } else if (rec.attached) {
+    if (!ours || !k.equals(rec.key) || !cs.equals(rec.caps)) stale = true;
+    else {
+      long chg = @PKG@.SackPool.chg(k);
+      if (rec.chg != chg) {
+        int cc = m.sync();
+        if (cc > 0) @PKG@.SackPool.saveSoon(k);
+        m.rebuild(caps, union(u, k));
+        rec.chg = @PKG@.SackPool.chg(k);
+      }
+      stale = rec.ver != m.ver;
+      if (!stale && !@PKG@.AccLink.sig(u, k).equals(rec.accSig == null ? "" : rec.accSig)) stale = true;   // 0.8.11 review fix B1: the bag changed
+    }
+  } else {
+    stale = !k.equals(rec.key) || !cs.equals(rec.caps);
+  }
+  // review fix 1: inventory crafting switched off (bags.pocketCraft) while a pocket window still shows the bags -> refresh (it declines)
+  if (!stale && rec.attached && isPocket(w) && !@PKG@.SackCfg.POCKET_CRAFT) stale = true;
+  if (!stale) return false;
+  if (now - rec.lastInval < REFRESH_MS) return false;
+  rec.lastInval = now;
+  mw.invalidateExtraResources();
+  return true;
+}'''), blink))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static void prune(java.util.UUID u, java.util.List wins) {
+  java.util.ArrayList l = recs(u, false);
+  if (l == null) return;
+  for (int i = l.size() - 1; i >= 0; i--) {
+    @PKG@.LinkRec r = (@PKG@.LinkRec) l.get(i);
+    boolean open = false;
+    for (int j = 0; wins != null && j < wins.size(); j++) {
+      if (wins.get(j) == r.win) { open = true; break; }
+    }
+    if (!open) l.remove(i);
+  }
+  if (l.isEmpty()) RECS.remove(u, l);
+}'''), blink))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static void pocketCheck() {
+  // review fix 1: the backstop of the bags.pocketCraft switch (the row's after= hook and SackCfg.reload apply it at once)
+  if (STARTED && POCKET_ON != @PKG@.SackCfg.POCKET_CRAFT) pocketApply();
+  if (!POCKET_ON || POCKET_WARNED) return;
+  Object cur = @WIN@.CLIENT_REQUESTABLE_WINDOW_TYPES.get(@WT@.PocketCrafting);
+  if (cur != POCKET_SUP) {
+    POCKET_WARNED = true;
+    @PKG@.SackPool.warn("craft link: another mod replaced the pocket crafting window after ours - inventory crafting does not use the bags (benches still do)");
+  }
+}'''), blink))
+# LINK - the 300 ms CraftLinkTask (world thread): a settling switch parks; else retire an old key, book what benches took, refresh every
+# open crafting window that is stale, forget closed windows; no crafting window open = the mirror is synced, emptied and dropped
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static void link(@PLA@ p, java.util.UUID u, java.util.List wins, long now) {
+  if (p == null || u == null) return;
+  String k = @PKG@.SackPool.settledKey(u);
+  if (k == null) { park(u, wins); return; }
+  retire(u, k, wins);
+  @PKG@.BagMirror m = (@PKG@.BagMirror) @PKG@.BagMirror.MIRRORS.get(k);
+  if (m != null) {
+    int c = m.sync();
+    if (c > 0) @PKG@.SackPool.saveSoon(k);
+  }
+  boolean any = false;
+  java.util.HashMap caps = null;
+  String cs = null;
+  for (int i = 0; wins != null && i < wins.size(); i++) {
+    Object w = wins.get(i);
+    if (!isBench(w) && !isPocket(w)) continue;
+    any = true;
+    if (caps == null) { caps = @PKG@.SweepTask.caps(p.getInventory()); cs = capsSig(caps); }
+    try { refresh(u, w, k, m, caps, cs, now); }
+    catch (Throwable t) { warnOnce("refresh", "craft link: window refresh failed (logged once): " + t); }
+  }
+  prune(u, wins);
+  if (m != null && !any) {
+    int c2 = m.sync();
+    if (c2 > 0) @PKG@.SackPool.saveSoon(k);
+    m.empty();
+    @PKG@.BagMirror.MIRRORS.remove(k, m);
+  }
+  pocketCheck();
+}'''), blink))
+
+# 0.7.18: should the 300 ms link visit u? No outbound filter = everyone (0.7.17); a flag (a window packet / click / record), a window record
+# or a live mirror of the player's last key
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static boolean needsLink(java.util.UUID u) {
+  if (u == null) return false;
+  if (OUT == null) return true;
+  if (ACTIVE.containsKey(u) || RECS.containsKey(u)) return true;
+  Object lk = @PKG@.BagMirror.LASTKEY.get(u);
+  return lk != null && @PKG@.BagMirror.MIRRORS.containsKey(lk);
+}'''), blink))
+# 0.7.18: after a link pass - no bench / pocket window, no record, no mirror left -> the flag goes (only the stamp read before the pass:
+# a packet that set a newer flag meanwhile keeps it)
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static boolean idle(java.util.UUID u, java.util.List wins, Object stamp) {
+  if (u == null || stamp == null) return false;
+  for (int i = 0; wins != null && i < wins.size(); i++) {
+    Object w = wins.get(i);
+    if (isBench(w) || isPocket(w)) return false;
+  }
+  if (RECS.containsKey(u)) return false;
+  Object lk = @PKG@.BagMirror.LASTKEY.get(u);
+  if (lk != null && @PKG@.BagMirror.MIRRORS.containsKey(lk)) return false;
+  return ACTIVE.remove(u, stamp);
+}'''), blink))
+# ================= CraftPacketFilter (0.7.12, research doc A): the outbound filter (ALWAYS returns false - true drops the packet) =================
+cpf.addInterface(pool.get(PPF))
+cpf.addConstructor(CtNewConstructor.make("public CraftPacketFilter() { }", cpf))
+cpf.addMethod(CtNewMethod.make(jt(r'''
+public boolean test(@PR@ pr, @PKT@ pkt) {
+  try {
+    if (pkt instanceof @UW@ || pkt instanceof @OW@) {
+      if (pr != null) @PKG@.BenchLink.mark(pr.getUuid());   // 0.7.18: a window on screen -> the 300 ms link visits this player
+      @PKG@.BenchLink.outbound(pr, pkt);
+    }
+  } catch (Throwable t) { @PKG@.BenchLink.warnOnce("filter", "craft link failed (outbound filter, logged once): " + t); }
+  return false;
+}'''), cpf))
+
+# ================= PreCraftTask (0.7.12, research doc E): the world task the inbound filter queues before the vanilla handler =================
+pct.addInterface(pool.get("java.lang.Runnable"))
+pct.addField(CtField.make(jt("public @PR@ pr;"), pct))
+pct.addField(CtField.make("public java.util.UUID expectedWorld;", pct))
+pct.addField(CtField.make("public int id;", pct))
+pct.addField(CtField.make("public String rid;", pct))   # 0.8.11: the CraftRecipeAction's recipe (null = a tier upgrade)
+pct.addField(CtField.make("public int qty;", pct))
+pct.addConstructor(CtNewConstructor.make(jt("public PreCraftTask(@PR@ pr, java.util.UUID w, int id) { this.pr = pr; this.expectedWorld = w; this.id = id; }"), pct))
+pct.addMethod(CtNewMethod.make(jt(r'''
+public void run() {
+  try {
+    if (pr == null || !pr.isValid()) return;
+    java.util.UUID nowWorld = pr.getWorldUuid();
+    if (nowWorld == null || !nowWorld.equals(this.expectedWorld)) return;
+    @REF@ r = pr.getReference();
+    if (r == null) return;
+    @ST@ st = r.getStore();
+    if (st == null) return;
+    @PLA@ p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+    if (p == null) return;
+    @PKG@.BenchLink.preCraft(p, pr.getUuid(), this.id);
+    if (this.rid != null) @PKG@.AccLink.benchPre(p, pr, st, r, this.id, this.rid, this.qty);   // 0.8.11: the Accessory Bag
+  } catch (Throwable t) { @PKG@.BenchLink.warnOnce("precraft", "craft link: pre-craft check failed (logged once): " + t); }
+}'''), pct))
+
+# ================= CraftInFilter (0.7.12, research doc E): the inbound filter (network thread; only queues; ALWAYS returns false) =================
+cif.addInterface(pool.get(PPF))
+cif.addConstructor(CtNewConstructor.make("public CraftInFilter() { }", cif))
+cif.addMethod(CtNewMethod.make(jt(r'''
+public boolean test(@PR@ pr, @PKT@ pkt) {
+  try {
+    if (!(pkt instanceof @SWA@)) return false;
+    @SWA@ a = (@SWA@) pkt;
+    if (a.id <= 0 || a.action == null) return false;
+    if (!(a.action instanceof @CRA@) && !(a.action instanceof @TUA@)) return false;
+    if (pr == null) return false;
+    java.util.UUID wu = pr.getWorldUuid();
+    if (wu == null) return false;
+    @WLD@ w = @UNI@.get().getWorld(wu);
+    if (w == null) return false;
+    @PKG@.BenchLink.mark(pr.getUuid());   // 0.7.18
+    @PKG@.PreCraftTask pt = new @PKG@.PreCraftTask(pr, wu, a.id);
+    if (a.action instanceof @CRA@) { pt.rid = ((@CRA@) a.action).recipeId; pt.qty = ((@CRA@) a.action).quantity; }   // 0.8.11
+    w.execute(pt);
+  } catch (Throwable t) { }
+  return false;
+}'''), cif))
+
+# ================= PocketCraftWindow (0.7.12, research doc D): pocket crafting that also crafts from the bags you carry =================
+# FieldCraftingWindow (the vanilla pocket crafting window: Fieldcraft categories in its data) + MaterialContainerWindow with its own section
+# (starts invalid). The section refills when invalid: settled key + carried bags -> the player's shared mirror attached (Fieldcraft inputs
+# first); else an EMPTY section (inventory only). The engine reads the section for window 0 in clientOpenWindow / updateWindow (VERIFIED).
+pcw.addInterface(pool.get(MCW))
+pcw.addField(CtField.make(jt("public @MERS@ sec;"), pcw))
+pcw.addConstructor(CtNewConstructor.make(jt("public PocketCraftWindow() { super(); this.sec = new @MERS@(); }"), pcw))
+# refillFor = the refill with an explicit player (the bare-JVM test seam; refill() below finds the player on its world thread)
+pcw.addMethod(CtNewMethod.make(jt(r'''
+public void refillFor(@PLA@ p, java.util.UUID u) {
+  @PKG@.LinkRec rec = @PKG@.BenchLink.recOf(u, this, true);
+  String k = u == null ? null : @PKG@.SackPool.settledKey(u);
+  java.util.HashMap caps = p == null ? new java.util.HashMap() : @PKG@.SweepTask.caps(p.getInventory());
+  // review fix 1: Server Setup bags.pocketCraft off = an open pocket window declines too (inventory only) until the inventory is reopened
+  boolean on = @PKG@.SackCfg.POCKET_CRAFT;
+  if (p == null || rec == null || k == null || !on) {
+    this.sec.setItemContainer(@EIC@.INSTANCE);
+    this.sec.setExtraMaterials(new @IQ@[0]);
+    this.sec.setValid(true);
+    @PKG@.BenchLink.decline(u, rec, k, caps, !on ? "inventory crafting link off (bags.pocketCraft)" : (k == null ? "profile not settled" : "no bag carried"));
+    return;
+  }
+  @PKG@.BagMirror m = @PKG@.BagMirror.of(k);
+  @PKG@.BenchLink.attach(u, rec, m, this.sec, (@IC@) null, new @IQ@[0], @PKG@.BenchLink.fieldWanted(), caps);
+  // the pocket window is made anew each time the inventory opens: one log line per player and server start
+  if (!rec.logged && @PKG@.BenchLink.WARNED.putIfAbsent("pocketlog:" + u, Boolean.TRUE) == null) {
+    @PKG@.BenchLink.info("craft link: pocket crafting shows " + m.quantities().length + " bag item types (key " + k + ")");
+  }
+  rec.logged = true;
+}'''), pcw))
+pcw.addMethod(CtNewMethod.make(jt(r'''
+public void refill() {
+  try {
+    @PR@ pr = getPlayerRef();
+    if (pr == null) return;
+    @REF@ r = pr.getReference();
+    if (r == null) return;
+    @ST@ st = r.getStore();
+    if (st == null || !st.isInThread()) return;
+    refillFor((@PLA@) st.getComponent(r, @PLA@.getComponentType()), pr.getUuid());
+  } catch (Throwable t) { @PKG@.BenchLink.warnOnce("pocket", "craft link: pocket crafting bag materials skipped (logged once): " + t); }
+}'''), pcw))
+pcw.addMethod(CtNewMethod.make(jt(r'''
+public @MERS@ getExtraResourcesSection() {
+  if (!this.sec.isValid()) refill();
+  if (this.sec.getItemContainer() == null) {
+    this.sec.setItemContainer(@EIC@.INSTANCE);
+    this.sec.setExtraMaterials(new @IQ@[0]);
+  }
+  return this.sec;
+}'''), pcw))
+# what a pocket craft takes its materials from (handleAction below; the bare-JVM test seam): the inventory first, then the section
+pcw.addMethod(CtNewMethod.make(jt(r'''
+public @IC@ craftContainer(@IC@ inv) {
+  return new @CIC@(new @IC@[] { inv, getExtraResourcesSection().getItemContainer() });
+}'''), pcw))
+pcw.addMethod(CtNewMethod.make(jt(r'''
+public void invalidateExtraResources() {
+  this.sec.setValid(false);
+  invalidate();
+}'''), pcw))
+pcw.addMethod(CtNewMethod.make(jt(r'''
+public boolean isValid() {
+  return this.sec.isValid();
+}'''), pcw))
+# a known recipe crafts through CraftingManager.craftItem from Combined{the vanilla inventory, the section} (CraftingWindow.craftSimpleItem
+# + the section), the vanilla sound, then a refresh (the next updateWindow refills: the craft is booked by its sync). Anything else is vanilla.
+pcw.addMethod(CtNewMethod.make(jt(r'''
+public void handleAction(@REF@ ref, @ST@ store, @WA@ action) {
+  if (!(action instanceof @CRA@)) { super.handleAction(ref, store, action); return; }
+  @CRA@ a = (@CRA@) action;
+  @CRR@ recipe = a.recipeId == null ? null : (@CRR@) @CRR@.getAssetMap().getAsset(a.recipeId);
+  if (recipe == null) { super.handleAction(ref, store, action); return; }
+  @CRM@ cm = (@CRM@) store.getComponent(ref, @CRM@.getComponentType());
+  if (cm == null) return;
+  @IC@ inv = @INVC@.getCombined(store, ref, @INVC@.BACKPACK_STORAGE_HOTBAR);
+  cm.craftItem(ref, store, recipe, a.quantity, craftContainer(inv));
+  try { @SNDU@.playSoundEvent2d(ref, @TAI@.getSoundEventIndex("SFX_Player_Craft_Item_Inventory"), @SCAT@.UI, store); } catch (Throwable t) { }
+  invalidateExtraResources();
+}'''), pcw))
+pcw.addMethod(CtNewMethod.make(jt(r'''
+public void onClose0(@REF@ ref, @CAC@ acc) {
+  super.onClose0(ref, acc);
+  try {
+    @PR@ pr = getPlayerRef();
+    @PKG@.BenchLink.closed(pr == null ? null : pr.getUuid(), this);
+  } catch (Throwable t) { }
+}'''), pcw))
+psu.addInterface(pool.get("java.util.function.Supplier"))
+psu.addConstructor(CtNewConstructor.make("public PocketSupplier() { }", psu))
+psu.addMethod(CtNewMethod.make(jt(r'''
+public Object get() {
+  return new @PKG@.PocketCraftWindow();
+}'''), psu))
+
+# ================= BenchLink start / stop (plugin start() / shutdown()) =================
+# review fix 1: synchronized (the switch may arrive from the SackSaver, the kit's after= hook and the 300 ms link at once - two
+# overlapping swaps would record OUR supplier as the one to restore); pocketStart checks Server Setup bags.pocketCraft (read from
+# config.properties by SackCfg.reload in setup(), before start()) and never swaps twice
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void pocketStart() {
+  if (POCKET_ON) return;
+  if (!@PKG@.SackCfg.POCKET_CRAFT) {
+    info("craft link: inventory crafting does not use the bags - Server Setup bags.pocketCraft is off (the vanilla pocket crafting window stays)");
+    return;
+  }
+  java.util.Map map = @WIN@.CLIENT_REQUESTABLE_WINDOW_TYPES;
+  @PKG@.PocketSupplier sup = new @PKG@.PocketSupplier();
+  Object prev = map.put(@WT@.PocketCrafting, sup);
+  POCKET_SUP = sup;
+  POCKET_PREV = prev;
+  POCKET_WARNED = false;
+  POCKET_ON = true;
+  if (prev == null) @PKG@.SackPool.warn("craft link: no pocket crafting window was registered before ours (crafting plugin missing?) - ours is used, nothing to restore at shutdown");
+  else info("craft link: pocket crafting uses the bags you carry (" + prev.getClass().getName() + " -> PocketCraftWindow; restored at shutdown or by bags.pocketCraft off)");
+}'''), blink))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void pocketStop() {
+  if (!POCKET_ON) return;
+  POCKET_ON = false;
+  java.util.Map map = @WIN@.CLIENT_REQUESTABLE_WINDOW_TYPES;
+  Object cur = map.get(@WT@.PocketCrafting);
+  if (cur != POCKET_SUP) { @PKG@.SackPool.warn("craft link: the pocket crafting window was replaced by another mod - left as it is"); return; }
+  if (POCKET_PREV != null) map.put(@WT@.PocketCrafting, POCKET_PREV);
+  else map.remove(@WT@.PocketCrafting);
+}'''), blink))
+# review fix 1: the bags.pocketCraft switch applied live (SackCfg.linkKeys after a reload, SackCfg.pocketChanged = the row's after= hook,
+# pocketCheck in the 300 ms link): ours in when on, the vanilla supplier back when off - only between start() and stop(). New pocket
+# windows (the inventory opened again) follow at once; an open one declines on its next refresh (PocketCraftWindow.refillFor)
+_POCKET_APPLY.setBody(jt(r'''{
+  if (!STARTED) return;
+  boolean want = @PKG@.SackCfg.POCKET_CRAFT;
+  if (want && !POCKET_ON) pocketStart();
+  else if (!want && POCKET_ON) pocketStop();
+}'''))
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void stop() {
+  STARTED = false;
+  try { if (OUT != null) @PAD@.deregisterOutbound(OUT); } catch (Throwable t) { }
+  OUT = null;
+  try { if (IN != null) @PAD@.deregisterInbound(IN); } catch (Throwable t) { }
+  IN = null;
+  try { pocketStop(); } catch (Throwable t) { }
+}'''), blink))
+# start() first undoes an earlier start (a second registration would merge the bags twice into every list)
+blink.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized void start() {
+  stop();
+  WARNED.clear();
+  FIELD = null;
+  try { OUT = @PAD@.registerOutbound(new @PKG@.CraftPacketFilter()); }
+  catch (Throwable t) { @PKG@.SackPool.warn("craft link: outbound filter not registered - benches show inventory materials only: " + t); }
+  try { IN = @PAD@.registerInbound(new @PKG@.CraftInFilter()); }
+  catch (Throwable t) { @PKG@.SackPool.warn("craft link: inbound filter not registered - a fast second craft click may miss the bags: " + t); }
+  STARTED = true;
+  try { pocketStart(); }
+  catch (Throwable t) { @PKG@.SackPool.warn("craft link: pocket crafting window not replaced - inventory crafting uses the inventory only: " + t); }
+  info("craft link: benches " + (POCKET_ON ? "and inventory crafting use" : "use") + " the bags you carry (outbound filter " + (OUT != null) + ", pre-craft filter " + (IN != null) + ", pocket window " + (POCKET_ON ? "ours" : (@PKG@.SackCfg.POCKET_CRAFT ? "not replaced" : "vanilla - Server Setup bags.pocketCraft is off")) + ")");
+}'''), blink))
+
+
+# ================= 0.7.11 SweepTask (continued): STACK AUTO-REFILL + the 2 s item tick =================
+# refill (Skyy R3 / R4 2026-10-02: "stacks you are using AUTO-REFILL from the bag every few seconds"): mode 0 = hotbar only, 1 = full
+# inventory (hotbar + main inventory + backpack); inUse = the item ids the player used since the last tick. Every existing stack of such
+# an item in those containers that is below its max stack size is topped up from the pool when the player carries a bag of its type
+# (homeOf, like withdraw) and the pool has more: never an empty slot, never a stack with metadata, never a non-stacking item (max stack
+# 1); ItemContainer.addItemStackToSlot merges into that slot only, the slot is read before and after and exactly what it gained leaves
+# the pool and adds to KEPT (the sweep never pulls it back; more than asked - impossible by the engine's code - is undone and logged).
+# Review fix 13: "metadata" = a document WITH entries; an empty document (nothing in it) counts as none - the stack is merged with a copy
+# of that empty document (isStackableWith compares documents with equals, so a plain stack would be refused).
+# skip = SweepTask.sweepLeft (bag full, spare items in the main inventory). done (optional) gets item id -> Long refilled. Returns items moved.
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int refill(@PLA@ p, String k, int mode, java.util.Set inUse, java.util.Set skip, java.util.HashMap done, java.util.HashMap capsIn) {
+  if (p == null || k == null || mode < 0 || mode > 1 || inUse == null || inUse.isEmpty()) return 0;
+  @INV@ inv = p.getInventory();
+  if (inv == null) return 0;
+  java.util.HashMap caps = capsIn != null ? capsIn : caps(inv);   // 0.7.18: the sweep's caps
+  @PKG@.BagMirror.beforeTake(k);   // 0.7.12 live-mirror rule: book what a crafting window took before the pool is read
+  @IC@[] conts = mode == 1 ? new @IC@[] { inv.getHotbar(), inv.getStorage(), inv.getBackpack() } : new @IC@[] { inv.getHotbar() };
+  int total = 0;
+  for (int c = 0; c < conts.length; c++) {
+    @IC@ cont = conts[c];
+    if (cont == null) continue;
+    short cap = cont.getCapacity();
+    for (short s = 0; s < cap; s++) {
+      @IS@ it = cont.getItemStack(s);
+      if (it == null || it.isEmpty()) continue;
+      String id = it.getItemId();
+      if (id == null || !inUse.contains(id)) continue;
+      if (skip != null && skip.contains(id)) continue;
+      String cat = @PKG@.SackDefs.homeOf(id);
+      if (cat == null || !caps.containsKey(cat)) continue;
+      long have = @PKG@.SackPool.get(k, id);
+      if (have <= 0L) continue;
+      org.bson.BsonDocument md = it.getMetadata();
+      if (md != null && !md.isEmpty()) continue;
+      @ITM@ item = it.getItem();
+      int max = item == null ? 0 : item.getMaxStack();
+      int q = it.getQuantity();
+      if (max <= 1 || q <= 0 || q >= max) continue;
+      int want = max - q;
+      if ((long) want > have) want = (int) have;
+      cont.addItemStackToSlot(s, md == null ? new @IS@(id, want) : new @IS@(id, want, md));
+      @IS@ after = cont.getItemStack(s);
+      int got = (after == null || after.isEmpty() || !id.equals(after.getItemId())) ? 0 : after.getQuantity() - q;
+      if (got > want) {
+        cont.setItemStackForSlot(s, it);
+        @PKG@.SackPool.warn("stack refill: slot " + s + " (" + id + ") gained " + got + " of " + want + " asked - undone");
+        continue;
+      }
+      if (got <= 0) continue;
+      @PKG@.SackPool.add(k, id, -(long) got);
+      @PKG@.BagMirror.afterTake(k, id);   // 0.7.12 live-mirror rule: the mirror never offers more than the pool now holds
+      @PKG@.SackPool.keep(k, id, (long) got);
+      total += got;
+      if (done != null) {
+        Long dv = (Long) done.get(id);
+        done.put(id, Long.valueOf((dv == null ? 0L : dv.longValue()) + (long) got));
+      }
+    }
+  }
+  return total;
+}'''), swp))
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int refill(@PLA@ p, String k, int mode, java.util.Set inUse, java.util.Set skip, java.util.HashMap done) {
+  return refill(p, k, mode, inUse, skip, done, (java.util.HashMap) null);
+}'''), swp))
+# ================= 0.7.17 REQUIP POCKET BLOCK SLOTS (tools/sacks_0_7_17_patch.py docstring item 1) =================
+# requip:pocket:<uuid> (SkyyWardrobe 0.2) = Map<Integer hotbar slot, String itemId>. Each reserved slot that is EMPTY or holds a smaller
+# plain stack of that item is filled up to its target (review fix 3) from the pool of key k (a carried bag of its home type or the Omni). Never
+# another item's slot, never a stack with metadata (an EMPTY document counts as none, the review fix 13 rule), never a slot not in the map,
+# never a non-stacking item. Read back: exactly what the slot gained leaves the pool and is KEPT. Master switch bags.refill (SackCfg.REFILL_ON)
+# only - the player's own refill mode does not apply (the Requip pick is the opt-in). Returns items moved.
+# FIX 2 (0.7.17 review): "plain" = no metadata AND the durability / max durability / quality of a fresh new ItemStack(id, n) - a damaged tool
+# or a quality stack is never copied, deposited or topped up (a refund or a fresh stack could otherwise repair it for free).
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static boolean plainFresh(@IS@ it) {
+  if (it == null || it.isEmpty() || it.getItemId() == null) return false;
+  org.bson.BsonDocument md = it.getMetadata();
+  if (md != null && !md.isEmpty()) return false;
+  try {
+    @IS@ f = new @IS@(it.getItemId(), 1);
+    return Double.compare(it.getDurability(), f.getDurability()) == 0 && Double.compare(it.getMaxDurability(), f.getMaxDurability()) == 0
+      && it.getQualityIndex() == f.getQualityIndex();
+  } catch (Throwable t) { return false; }
+}'''), swp))
+# FIX 3 (0.7.17 review, spec "up to the target (default = the item's max stack, Server Setup pocket.target)"): the target of a reserved slot =
+# requip:pocketN:<uuid> (Map<Integer slot, Number>, > 0; a contract ADDITION for per-pick amounts) else SkyyWardrobe's Server Setup
+# pocket.target (config:fn:SkyyWardrobe "get", > 0) else the item's max stack; never above the max stack.
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int wardrobeTarget() {
+  Object f = null;
+  try { f = @PKG@.SackPool.bridge().get("config:fn:SkyyWardrobe"); } catch (Throwable t) { return 0; }
+  if (!(f instanceof java.util.function.Function)) return 0;
+  try {
+    Object r = ((java.util.function.Function) f).apply(new Object[] { "get", "pocket.target" });
+    if (!(r instanceof String)) return 0;
+    long v = Long.parseLong(((String) r).trim());
+    return (v > 0L && v < 100000L) ? (int) v : 0;
+  } catch (Throwable t2) { return 0; }
+}'''), swp))
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int pocketFill(@PLA@ p, String k, java.util.UUID u, java.util.HashMap capsIn, java.util.HashMap done) {
+  if (p == null || k == null || u == null || !@PKG@.SackCfg.REFILL_ON) return 0;
+  Object mo = null;
+  try { mo = @PKG@.SackPool.bridge().get("requip:pocket:" + u.toString()); } catch (Throwable t0) { mo = null; }
+  if (!(mo instanceof java.util.Map)) return 0;
+  java.util.ArrayList ents = new java.util.ArrayList();
+  try { ents.addAll(((java.util.Map) mo).entrySet()); } catch (Throwable t1) { return 0; }
+  if (ents.isEmpty()) return 0;
+  @INV@ inv = p.getInventory();
+  if (inv == null) return 0;
+  @IC@ hb = inv.getHotbar();
+  if (hb == null) return 0;
+  java.util.HashMap caps = capsIn != null ? capsIn : caps(inv);   // 0.7.18: the sweep's caps
+  @PKG@.BagMirror.beforeTake(k);   // live-mirror rule: book what a crafting window took before the pool is read
+  short cap = hb.getCapacity();
+  int total = 0;
+  int gT = wardrobeTarget();
+  java.util.Map nm = null;
+  try { Object no = @PKG@.SackPool.bridge().get("requip:pocketN:" + u.toString()); if (no instanceof java.util.Map) nm = (java.util.Map) no; } catch (Throwable t2) { nm = null; }
+  for (int i = 0; i < ents.size(); i++) {
+    java.util.Map.Entry e = (java.util.Map.Entry) ents.get(i);
+    Object ko = e.getKey();
+    Object vo = e.getValue();
+    if (!(ko instanceof Number) || !(vo instanceof String)) continue;
+    int si = ((Number) ko).intValue();
+    if (si < 0 || si >= cap) continue;
+    String id = (String) vo;
+    if (id.startsWith("Skyy_Sack_")) continue;
+    String cat = @PKG@.SackDefs.homeOf(id);
+    if (cat == null || !caps.containsKey(cat)) continue;
+    long have = @PKG@.SackPool.get(k, id);
+    if (have <= 0L) continue;
+    short s = (short) si;
+    @IS@ it = hb.getItemStack(s);
+    boolean empty = it == null || it.isEmpty();
+    org.bson.BsonDocument md = null;
+    int q = 0;
+    if (!empty) {
+      if (!id.equals(it.getItemId())) continue;
+      md = it.getMetadata();
+      if (md != null && !md.isEmpty()) continue;
+      if (!plainFresh(it)) continue;
+      q = it.getQuantity();
+    }
+    @ITM@ item = empty ? @PKG@.ProcBench.item(id) : it.getItem();
+    int max = item == null ? 0 : item.getMaxStack();
+    int t = gT;
+    if (nm != null) {
+      Object tv = null;
+      try { tv = nm.get(ko); } catch (Throwable t5) { tv = null; }
+      if (tv instanceof Number && ((Number) tv).intValue() > 0) t = ((Number) tv).intValue();
+    }
+    int top = (t > 0 && t < max) ? t : max;
+    if (max <= 1 || q >= top) continue;
+    int want = top - q;
+    if ((long) want > have) want = (int) have;
+    hb.addItemStackToSlot(s, md == null ? new @IS@(id, want) : new @IS@(id, want, md));
+    @IS@ after = hb.getItemStack(s);
+    int got = (after == null || after.isEmpty() || !id.equals(after.getItemId())) ? 0 : after.getQuantity() - q;
+    if (got > want) {
+      if (empty) hb.removeItemStackFromSlot(s); else hb.setItemStackForSlot(s, it);
+      @PKG@.SackPool.warn("hotbar block refill: slot " + si + " (" + id + ") gained " + got + " of " + want + " asked - undone");
+      continue;
+    }
+    if (got <= 0) continue;
+    @PKG@.SackPool.add(k, id, -(long) got);
+    @PKG@.BagMirror.afterTake(k, id);   // live-mirror rule: the mirror never offers more than the pool now holds
+    @PKG@.SackPool.keep(k, id, (long) got);
+    total += got;
+    if (done != null) {   // 0.7.18: what the slot gained (the sweep's SEENQ snapshot is derived from it)
+      Long dv = (Long) done.get(id);
+      done.put(id, Long.valueOf((dv == null ? 0L : dv.longValue()) + (long) got));
+    }
+  }
+  return total;
+}'''), swp))
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int pocketFill(@PLA@ p, String k, java.util.UUID u) {
+  return pocketFill(p, k, u, (java.util.HashMap) null, (java.util.HashMap) null);
+}'''), swp))
+# 0.7.12: the 0.7.11 benchFed pause is gone - the live-mirror rule (BagMirror.beforeTake / afterTake inside refill) keeps a bench and the
+# refill from ever offering the same items twice, so the refill also runs while a bench or pocket crafting is open.
+# items(): the item work of one 2 s tick for a SETTLED key (world thread; run() below gets the key from SackPool.settledKey, the one gate:
+# nothing happens while a profile loads, switches or is busy): (1) "used" = the items the player now carries fewer of than at the end of
+# the last tick (SEENQ - our own moves happen before that snapshot, so they never count); (2) kept drops to what the player carries; (3)
+# the automatic sweep; (4) the stack refill of the used items (mode from RefillPref; off = nothing) - 0.7.12: also while a bench or pocket
+# crafting uses the bags (the live-mirror rule inside refill, no pending set any more); (5) the new SEENQ snapshot. Returns {swept, refilled}.
+# 0.7.18: a + sign (b < 0 = minus); entries at 0 or below go (carried() never holds them)
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.HashMap addCounts(java.util.HashMap a, java.util.HashMap b, long sign) {
+  java.util.HashMap out = new java.util.HashMap(a);
+  if (b == null) return out;
+  java.util.Iterator it = b.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    Long av = (Long) out.get(e.getKey());
+    long nv = (av == null ? 0L : av.longValue()) + sign * ((Long) e.getValue()).longValue();
+    if (nv <= 0L) out.remove(e.getKey()); else out.put(e.getKey(), Long.valueOf(nv));
+  }
+  return out;
+}'''), swp))
+# fixer 2: true when every item the sweep moved into the pool went back out at least as many times in the same tick (refill / top-up)
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static boolean covered(java.util.HashMap swept, java.util.HashMap done) {
+  java.util.Iterator it = swept.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    Long d = (Long) done.get(e.getKey());
+    if (d == null || d.longValue() < ((Long) e.getValue()).longValue()) return false;
+  }
+  return true;
+}'''), swp))
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int[] items(@PLA@ p, String k, java.util.UUID u, java.util.HashMap capsIn) {
+  int[] out = new int[] { 0, 0 };
+  if (p == null || k == null) return out;
+  @INV@ inv = p.getInventory();
+  if (inv == null) return out;
+  java.util.HashMap caps = capsIn != null ? capsIn : caps(inv);   // 0.7.18: ONE caps() per sweep (bags never move in it)
+  if (u != null) @PKG@.SackPool.KEPTKEY.put(u, k);
+  java.util.HashMap before = carried(inv);
+  java.util.HashSet used = new java.util.HashSet();
+  java.util.HashMap seen = u == null ? null : (java.util.HashMap) @PKG@.SackPool.SEENQ.get(u);
+  if (seen != null) {
+    java.util.Iterator si = seen.entrySet().iterator();
+    while (si.hasNext()) {
+      java.util.Map.Entry se = (java.util.Map.Entry) si.next();
+      Long now = (Long) before.get(se.getKey());
+      if ((now == null ? 0L : now.longValue()) < ((Long) se.getValue()).longValue()) used.add(se.getKey());
+    }
+  }
+  try { keptDrop(before, k); } catch (Throwable t1) { @PKG@.KnowSync.warnOnce("kept count update failed: " + t1); }
+  // 0.7.18: ONE carried() scan: the sweep gets it (its kept rule) and reports every removal (swept), the refill / Requip top-up report every
+  // gain (done) - the after-sweep counts and the SEENQ snapshot are derived; any failure in these steps falls back to a real scan
+  boolean exact = true;
+  boolean sfail = false;   // fixer 2: a sweep that failed half way may have moved items it never reported
+  java.util.HashMap swept = new java.util.HashMap();
+  try { out[0] = sweep(p, k, (String) null, false, swept, caps, before); } catch (Throwable t0) { exact = false; sfail = true; @PKG@.SackPool.warn("sweep failed: " + t0); }
+  java.util.HashMap now = exact ? addCounts(before, swept, -1L) : carried(inv);
+  java.util.HashMap done = new java.util.HashMap();
+  boolean rfail = false;   // fixer: a refill / top-up that failed half way may have moved items it never reported
+  int mode = @PKG@.RefillPref.mode(u);
+  if (mode != 2 && !used.isEmpty()) {
+    try { out[1] = refill(p, k, mode, used, sweepLeft(inv, k, caps, now), done, caps); }
+    catch (Throwable t2) { exact = false; rfail = true; @PKG@.KnowSync.warnOnce("stack refill failed: " + t2); }
+  }
+  // 0.7.17: Requip's reserved hotbar block slots (requip:pocket:<uuid>) - empty ones too; before the SEENQ snapshot (never "used")
+  try { int pf = pocketFill(p, k, u, caps, done); out[1] = out[1] + pf; }
+  catch (Throwable t3) { exact = false; rfail = true; @PKG@.KnowSync.warnOnce("hotbar block refill (Requip) failed: " + t3); }
+  if (exact) @PKG@.SweepTask.EXACT.incrementAndGet(); else @PKG@.SweepTask.RESCANS.incrementAndGet();
+  if (u != null) @PKG@.SackPool.SEENQ.put(u, exact ? addCounts(now, done, 1L) : carried(inv));
+  // 0.7.18 THE CRASH WINDOW, fixer (review): only pool -> inventory moves (refill / Requip top-up) save early - the pool's decrease on disk
+  // first means a crash before the engine's player save can never keep the items twice; sweep additions (inventory -> pool) stay dirty for
+  // the 10 s SackSaver like 0.7.17 (an early save would make a crash keep the swept items in both places). FIXER 2 (review): the save
+  // writes the WHOLE pool, so it may run only when nothing in it is an unsaved sweep: this tick's sweep fully offset per item by its own
+  // refill / top-up (covered), no earlier unsaved sweep (SWEPTQ), and a save that runs at once (quiet) - else 0.7.17's timing.
+  boolean moved = out[0] > 0 || !swept.isEmpty() || sfail;
+  boolean net = moved && (sfail || swept.isEmpty() || !covered(swept, done));   // a sweep the pool file must not get early
+  if (net) @PKG@.SackPool.SWEPTQ.put(k, Boolean.TRUE);
+  boolean refilled = out[1] > 0 || !done.isEmpty() || rfail;   // (also a refill step that failed half way)
+  if (refilled && !net && !@PKG@.SackPool.SWEPTQ.containsKey(k) && @PKG@.SackPool.quiet(k)) @PKG@.SackPool.saveSoon(k);
+  return out;
+}'''), swp))
+swp.addMethod(CtNewMethod.make(jt(r'''
+public static int[] items(@PLA@ p, String k, java.util.UUID u) {
+  return items(p, k, u, (java.util.HashMap) null);
+}'''), swp))
+swp.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{
+    if (pr == null || !pr.isValid()) return;
+    java.util.UUID nowWorld = pr.getWorldUuid();
+    if (nowWorld == null || !nowWorld.equals(this.expectedWorld)) return;
+    {REF} r = pr.getReference();
+    if (r == null) return;
+    {ST} st = r.getStore();
+    if (st == null) return;
+    {PLA} p = ({PLA}) st.getComponent(r, {PLA}.getComponentType());
+    if (p == null) return;
+    String k = {PKG}.SackPool.settledKey(pr.getUuid());
+    if (k == null) return;   // 0.7.18: the player stays dirty (no SIG stored) - retried on the next 2 s tick like before
+    // 0.7.7 (research/Bag-Restructure-Spec.md 5.2 / 5.6 / 5.8), settled key only, world thread: the bag recipe knowledge follows coll:recipes,
+    // carried bags get their rarity look, the one-time notice - each step on its own, so one failure never stops the sweep
+    java.util.UUID u = pr.getUuid();
+    INVDIRTY.remove(u);   // 0.7.18: cleared BEFORE the work - a change from here on marks the player again
+    try {{ {PKG}.KnowSync.sync(r, st, p, u); }} catch (Throwable t1) {{ {PKG}.KnowSync.warnOnce("bag recipe knowledge sync failed: " + t1); }}   // 0.8.0: forgets the 21 bag recipes once
+    // 0.8.0 (Bags v2 spec 4): the Void step - History copy first (until it is verified this sweep moves nothing and the player stays due),
+    // then old bags in storage / hotbar / backpack convert (journal + 30 s credit), the one-time welcome + Pocket item per profile
+    boolean go = true;
+    try {{ go = {PKG}.VoidStore.migrate(pr, p, u, k); }} catch (Throwable t3) {{ {PKG}.KnowSync.warnOnce("Void migration step failed (retried): " + t3); }}
+    if (!go) {{ INVDIRTY.put(u, Boolean.TRUE); return; }}
+    java.util.HashMap caps0 = {PKG}.VoidStore.capsK(u, k);   // 0.8.0: ONE capacity map per sweep (levels from SkyyCollections)
+    // 0.7.11: kept counts + the sweep + the stack refill (items above)
+    items(p, k, u, caps0);
+    SIG.put(u, sigOf(u));   // 0.7.18: what this sweep saw (incl. its own pool changes) - the 2 s tick skips the player until it changes
+    LASTSWEEP.put(u, Long.valueOf(System.nanoTime()));   // fixer: the heartbeat clock
+  }} catch (Throwable t) {{ {PKG}.SackPool.warn("sweep failed: " + t); }}
+}}""", swp))
+
+# ================= CraftLinkTask (world thread, every 300ms per player) =================
+# 0.7.2 review fix: the key comes from SackPool.settledKey. While a profile switch settles (null) the task only parks the mirror and returns.
+# 0.7.12 (research/Bag-Craft-Link-Fix.md C): BenchLink.link does the work - it books what crafting windows took and asks the vanilla code
+# for a refresh when a window is stale; it never marks a section valid or sends a window update itself (0.7.10's valid + updateWindow sent
+# no extra-materials list - the cause of "Stick 0/4").
+clt.addInterface(pool.get("java.lang.Runnable"))
+clt.addField(CtField.make(f"public {PR} pr;", clt))
+clt.addField(CtField.make("public java.util.UUID expectedWorld;", clt))
+clt.addConstructor(CtNewConstructor.make(f"public CraftLinkTask({PR} pr, java.util.UUID w) {{ this.pr = pr; this.expectedWorld = w; }}", clt))
+clt.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{
+    if (pr == null || !pr.isValid()) return;
+    java.util.UUID nowWorld = pr.getWorldUuid();
+    if (nowWorld == null || !nowWorld.equals(this.expectedWorld)) return;
+    {REF} r = pr.getReference();
+    if (r == null) return;
+    {ST} st = r.getStore();
+    if (st == null) return;
+    {PLA} p = ({PLA}) st.getComponent(r, {PLA}.getComponentType());
+    if (p == null) return;
+    {WM} wm = p.getWindowManager();
+    java.util.List wins = null;
+    if (wm != null) wins = wm.getWindows();
+    Object stamp = {PKG}.BenchLink.ACTIVE.get(pr.getUuid());   // 0.7.18
+    {PKG}.BenchLink.link(p, pr.getUuid(), wins, System.currentTimeMillis());
+    {PKG}.BenchLink.idle(pr.getUuid(), wins, stamp);   // 0.7.18: nothing open any more -> no more 300 ms visits
+  }} catch (Throwable t) {{ {PKG}.BenchLink.warnOnce("link", "craft link failed (logged once): " + t); }}
+}}""", clt))
+
+ctk.addInterface(pool.get("java.lang.Runnable"))
+ctk.addConstructor(CtNewConstructor.make("public CraftTick() { }", ctk))
+ctk.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{ {PKG}.BenchLink.pocketCheck(); }} catch (Throwable t0) {{ }}   // 0.7.18: the bags.pocketCraft backstop, once per tick
+  try {{
+    java.util.Iterator it = {UNI}.get().getPlayers().iterator();
+    while (it.hasNext()) {{
+      {PR} pr = ({PR}) it.next();
+      if (pr == null || !pr.isValid()) continue;
+      if (!{PKG}.BenchLink.needsLink(pr.getUuid())) {{ {PKG}.BenchLink.LSKIPS.incrementAndGet(); continue; }}   // 0.7.18 (audit 9b)
+      java.util.UUID wu = pr.getWorldUuid();
+      if (wu == null) continue;
+      {WLD} w = {UNI}.get().getWorld(wu);
+      if (w == null) continue;
+      {PKG}.BenchLink.LHOPS.incrementAndGet();
+      w.execute(new {PKG}.CraftLinkTask(pr, wu));
+    }}
+  }} catch (Throwable t) {{ }}
+}}""", ctk))
+
+# ================= 0.8.11 CRAFTING HUB + CRAFTER LOOK (tools/sacks_0_8_11_patch.py docstring A / B / D) =================
+# The kit's HubBar (kit 1.6 row) in THIS jar (cross-jar classes are not allowed); the craft page = a row shell in the Crafting hub (id
+# "smithing"; SkyyMenu 0.3.31 titles it Crafting), tab "recipes" ("Crafting"). Sky theme: buttons, rows, slot frames from the kit.
+assert SUI.HUB_THEME == "sky" and SUI.KIT_HUB_VERSION == "1.6" and ("smithing", "recipes", 20, "SkyySacks", "Recipes", "craft") in SUI.HUB_TABS
+# (0.8.15: HubBar is installed above the Void page now - kit 1.7 page17 / subTab / growSize, used by both pages)
+# 0.8.15 (kit 1.7): the 1600 x 980 hub page - row 1, row 2 (Crafting selected), the ONE sub-tab row (the crafter's tabs), the content (the old
+# body id SkyyCraftBody: every old appendInline keeps working), the footer (the result line, Craftable only, Refresh)
+CSH = SUI.hub_page("SkyyCraft", "smithing", sub=True, footer=True, body_id="SkyyCraftHB", content_id="SkyyCraftBody")
+CP_W, CP_H = CSH.w, CSH.h
+assert CSH.content == "SkyyCraftBody" and CSH.inner_w == 1552 and CSH.inner_h == 676 and CSH.sub == "SkyyCraftSub" and CSH.foot == "SkyyCraftFoot"
+CP_HUB_TAB, CP_HUB_LABEL, CP_HUB_ORDER, CP_HUB_ICON = "recipes", "Crafting", 5, "smithing_recipes"
+assert CP_HUB_ORDER < 10, "0.8.11: Crafting is the hub's first tab (before SkyyGear's Smithing / Gear, order 10)"
+CP_BODY_H = {  # 0.8.15: the tallest content of each view (the tabs are the sub-tab row, the foot is the footer) - every one fits CSH.inner_h
+    "craft": 40 + 22 + 6 * 98, "camp": 22 + 24 + 6 * 98,           # the search / materials (/ campfire) lines + about 6 rows of 98
+    "proc": 22 + 26 + 22 + 18 + 22 + 46 + 42 + 4 * 98,              # the materials line, the Furnace lines (+ fuel) + 4 rows
+    "pick": 22 + 26 + 22 + 18 + 22 + 46 + 42 + 40 + 132 + 2 * 100 + 8}   # ADD FUEL: + the title, the picked fuel's box, 2 big fuel rows
+assert all(_v <= CSH.inner_h for _v in CP_BODY_H.values()), CP_BODY_H
+_bst = lambda kind, **kw: SUI.theme_button_style(kind, "small", theme="sky", **kw)
+_lst = lambda size, col, bold=False, align=None: SUI.text_style(size, SUI.color(col), bold=bold, halign=align)
+CP_CONST = {
+    "B_PRI": _bst("primary"), "B_SEC": _bst("secondary"), "B_TER": _bst("tertiary"), "B_TERON": _bst("tertiary", selected=True),
+    "B_PRIDIS": _bst("primary", disabled=True), "B_SECDIS": _bst("secondary", disabled=True),
+    "BG_ROW": SUI.theme_bg("row", "sky"), "BG_ROWDIM": SUI.theme_bg("inset", "sky"), "BG_SLOT": SUI.theme_bg("slot", "sky"),
+    "BG_PANEL": SUI.theme_bg("panel", "sky"), "C_TRACK": SUI.color("progressTrack"), "C_FILL": SUI.color("progressFill"),
+    "L_NAME": _lst(16, "white", True), "L_NAMEDIM": _lst(16, "disabled", True), "L_HAVE": _lst(13, "have", True),
+    "L_OUT": _lst(13, "outOfStock", True), "L_TIER": _lst(13, "gold", True), "L_CAP": _lst(13, "caption"),
+    "L_CAPC": _lst(13, "caption", align="Center"), "L_INFO": _lst(15, "gold", True, "Center"), "L_STAT": _lst(16, "gold", True, "Center"),
+    "L_TEXTC": _lst(14, "value", align="Center"), "L_HEAD": _lst(15, "gold", True), "L_OUTL": _lst(14, "outOfStock"),
+    "L_TEXT": _lst(14, "value"),
+    # the inline text fields (kit): the search box and the ADD FUEL amount box
+    "SEARCH_MK": SUI.text_field("SkyyCSearchBox", "SkyyCSearch", w=420, h=32, placeholder="Search items - type a name and press Enter",
+                                max_length=40, size=14),
+    "FUEL_MK": SUI.text_field("SkyyCFuelBox", "SkyyCFuelAmt", w=240, h=32, placeholder="empty is all that fits", max_length=9, size=14),
+}
+# 0.8.14 (Skyy "scale up the actual items you craft, especially the names and the cost ... allow scroll instead of pages"): the bigger row
+# texts + the list (skyyui.scroll_list on the list well; its height is filled in at runtime: LIST_A + h + LIST_B)
+_CP_LIST = SUI.scroll_list("SkyyCList", h=4321, well=True)
+assert _CP_LIST.count("Height: 4321") == 1 and "TopScrolling" in _CP_LIST
+SUI.check_markup(_CP_LIST)
+CP_CONST.update({
+    "L_NAMEB": _lst(22, "white", True), "L_NAMEDIMB": _lst(22, "disabled", True), "L_TIERB": _lst(17, "gold", True),
+    "L_HAVEB": _lst(17, "have", True), "L_OUTB": _lst(17, "outOfStock", True), "L_CAPB": _lst(16, "caption"),
+    # Skyy 10-16 "i dont mind scrolling, but if there are only a few items try to scale them to all fit." -> two larger row sizes
+    "L_NAME2": _lst(28, "white", True), "L_NAMEDIM2": _lst(28, "disabled", True), "L_TIER2": _lst(20, "gold", True),
+    "L_HAVE2": _lst(19, "have", True), "L_OUT2": _lst(19, "outOfStock", True), "L_CAP2": _lst(18, "caption"),
+    "L_NAME3": _lst(32, "white", True), "L_NAMEDIM3": _lst(32, "disabled", True), "L_TIER3": _lst(22, "gold", True),
+    "L_HAVE3": _lst(21, "have", True), "L_OUT3": _lst(21, "outOfStock", True), "L_CAP3": _lst(20, "caption"),
+    "LIST_A": _CP_LIST.split("4321")[0], "LIST_B": _CP_LIST.split("4321")[1]})
+CP_ROW_H, CP_ROWS_MAX = 92, 150            # a row 92 high + 6 below; at most 150 rows drawn (packet size)
+CP_FIXED = {"tabs": 42, "search": 40, "note": 22, "camp": 24, "foot": 26 + 40,
+            "proc": 26 + 22 + 18 + 22 + 46, "fuel": 42}
+assert CSH.inner_h - (CP_FIXED["search"] + CP_FIXED["note"]) >= 6 * (CP_ROW_H + 6), "0.8.15: about 6 rows of 98 below the search + note lines"
+# 0.8.15: the footer's 48 px buttons + the ADD FUEL scroll list (kit pieces)
+_CP_FLIST = SUI.scroll_list("SkyyPFList", h=4321, well=True)
+assert _CP_FLIST.count("Height: 4321") == 1 and "TopScrolling" in _CP_FLIST
+SUI.check_markup(_CP_FLIST)
+_fbs = lambda kind, **kw: SUI.theme_button_style(kind, "normal", theme="sky", **kw)
+CP_CONST.update({"F_SEC": _fbs("secondary"), "F_TER": _fbs("tertiary"), "F_TERON": _fbs("tertiary", selected=True),
+                 "FLIST_A": _CP_FLIST.split("4321")[0], "FLIST_B": _CP_FLIST.split("4321")[1]})
+# Skyy rule 7 through the shared kit rule: the /craft rows keep 0.8.14's tuned 92 / 128 / 168 (drawRow's fonts / icons per size) - each
+# within skyyui.grow_row_sizes' caps for the smallest list (the Furnace tab with fuel); the ADD FUEL rows = grow_row_sizes of a 48 px row
+_cp_min_list = CSH.inner_h - (22 + 26 + 22 + 18 + 22 + 46 + 42) - 4
+_cp_cap = SUI.grow_row_sizes(_cp_min_list, CP_ROW_H, gap=6)
+assert 128 <= _cp_cap[1] and 168 <= _cp_cap[2] and 168 <= _cp_min_list // 2, (_cp_min_list, _cp_cap)
+CP_FUEL_HS = SUI.grow_row_sizes(CSH.inner_h - (22 + 26 + 22 + 18 + 22 + 46 + 42 + 40 + 132) - 4, 48, gap=4)
+assert CP_FUEL_HS == [48, 69, 96], CP_FUEL_HS
+for _n, _v in CP_CONST.items():
+    assert '\\' not in _v and "\n" not in _v, _n
+    cpg.addField(CtField.make("public static final String %s = %s;" % (_n, jlit(_v)), cpg))
+for _mk in (CP_CONST["SEARCH_MK"], CP_CONST["FUEL_MK"]):
+    SUI.check_markup(_mk)
+SUI.check_sky_paths([_m for _p, _m in CSH.appends] + [CP_CONST[_k] for _k in CP_CONST if _k.startswith(("B_", "BG_"))])
+CP_SHELL = CSH.java("b")
+CP_HUBBUILD = SUI.java_hub_page(CSH, CP_HUB_TAB, cls="@PKG@.HubBar")   # 0.8.15: HubBar.page17 (rows 1 + 2, the X)
+# 0.8.15: every look of the page shell + rows 1 + 2 + the widest sub-tab row, checked as one page (kit 1.7; the harness checks the REAL page)
+CP_SUBTABS_MAX = ["Crafting", "Gear", "Farming", "Campfire", "Furnace", "Tannery", "Collections"]   # buildTabs' most (ProcStore.BENCHES = 2)
+SUI.assert_sub_tabs_fit(CP_SUBTABS_MAX)
+_cpv = SUI.hub_page_preview(CSH, my_tab=CP_HUB_TAB)
+_cpv.extend(SUI.sub_tabs_preview("SkyyCraft", CP_SUBTABS_MAX, 0))
+_cpv.check("Skyy")
+SUI.assert_proven(_cpv, what="Crafting hub page")
+SUI.check_sky_paths(_cpv, tab_icons=True)
+SUI.assert_menu_page(_cpv, CSH)
+# 0.8.11 fields: the ADD FUEL picker state (per page instance)
+for _d in ("public boolean fuelPick;", "public String fuelSel;", "public int fuelPage;", "public String[] fuelList;"):
+    cpg.addField(CtField.make(_d, cpg))
+# a sky TextButton (small, 32 high; top = its offset in a taller row) and an empty Label (its Text by b.set: any character is safe)
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static String btn(String id, String text, int w, int top, String st) {
+  return "TextButton #" + id + " { Anchor: (Width: " + w + ", Height: 32" + (top > 0 ? ", Top: " + top : "") + "); Padding: (Horizontal: 10); Text: \"" + @PKG@.SacksPage.safe(text) + "\"; " + st + " }";
+}"""), cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static String lbl(String id, int w, int h, String st) {
+  return "Label #" + id + " { Anchor: (Width: " + w + ", Height: " + h + "); Text: \"\"; Style: " + st + "; }";
+}"""), cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static String gap(int w) {
+  return "Group { Anchor: (Width: " + w + "); }";
+}"""), cpg))
+# 0.8.14: the scroll list's height = the body minus what the view put above it (usedH) and the foot; at most CP_ROWS_MAX rows, then a line
+cpg.addField(CtField.make("public static final int BODYH = %d;" % CSH.inner_h, cpg))
+cpg.addField(CtField.make("public static final int MAXROWS = %d;" % CP_ROWS_MAX, cpg))
+cpg.addField(CtField.make("public int usedH;", cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static int listH(int used) {
+  int h = BODYH - used - 4;
+  return h < 200 ? 200 : h;
+}"""), cpg))
+# Skyy 10-16 "i dont mind scrolling, but if there are only a few items try to scale them to all fit.": three row sizes, picked per build by the
+# row count - 0 = normal (92 high, ~6 show, the list scrolls), 1 = 128 high, 2 = 168 high (~1.8x) when every row fits at that size
+cpg.addField(CtField.make("public static final int[] ROWHS = new int[] { 92, 128, 168 };", cpg))
+cpg.addField(CtField.make("public int rowSz;", cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static int rowSize(int n, int used) {
+  // 0.8.15: the shared kit rule (HubBar.growSize = skyyui.grow_pick): the biggest of ROWHS whose n rows all fit the list, else 0 (it scrolls)
+  return @PKG@.HubBar.growSize(n, listH(used) - 8, ROWHS, 6);
+}"""), cpg))
+cpg.addField(CtField.make("public static final int[] FUELHS = new int[] { %s };" % ", ".join(str(_h) for _h in CP_FUEL_HS), cpg))   # 0.8.15
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public String pick3(String a, String b2, String c) {
+  return this.rowSz == 2 ? c : (this.rowSz == 1 ? b2 : a);
+}"""), cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public int pickI(int a, int b2, int c) {
+  return this.rowSz == 2 ? c : (this.rowSz == 1 ? b2 : a);
+}"""), cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static void listOpen(@UCB@ b, int used) {
+  b.appendInline("#SkyyCraftBody", LIST_A + listH(used) + LIST_B);
+}"""), cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static void listMore(@UCB@ b, int shown, int total) {
+  if (total <= shown) return;
+  b.appendInline("#SkyyCList", lbl("SkyyCMoreRows", 1100, 40, L_TEXTC));
+  b.set("#SkyyCMoreRows.Text", "Showing the first " + shown + " of " + total + " - search or turn on Craftable only to see the rest.");
+}"""), cpg))
+
+# ================= CraftPage (inventory crafting v1: Fieldcraft + bench accessories + collection unlocks) =================
+
+cpg.addMethod(CtNewMethod.make("""
+public static String pretty(String id) {
+  if (id == null) return "?";
+  // 0.7.7: our bags by their rarity names ("Rare Mining Bag", "Mythic Omni Bag")
+  String bn = com.skyy.sacks.SackDefs.bagName(id);
+  if (bn != null) return bn;
+  // 0.8.8: the item's real (translated) name when the server has one
+  String dn = com.skyy.sacks.SackDefs.dname(id);
+  if (dn != null) return dn;
+  String s = id.replace('_', ' ');
+  int q = s.indexOf(':');
+  if (q >= 0 && q + 1 < s.length()) s = s.substring(q + 1);
+  return s;
+}""", cpg))
+# 0.7.3: bench accessories retired with the table-only Alchemy / Cooking call (orchestrator decision 4: the Campfire too - its 3 recipes
+# are cooked food). Their acc:has entries unlock nothing and their recipes never craft instantly.
+# 0.7.4: the Campfire STAYS retired here (Crafting / Smithing / Farming / search / Collections keep no cooked food); its accessory only
+# opens the separate Campfire tab (campfireTier / campRecipes below), where SkyyCooking grades the dish.
+cpg.addMethod(CtNewMethod.make("""
+public static boolean retiredBench(String id) {
+  return id != null && (id.equalsIgnoreCase("Alchemybench") || id.equalsIgnoreCase("Cookingbench") || id.equalsIgnoreCase("Campfire"));
+}""", cpg))
+# 0.7.3 search: lower-case words of letters and digits (max 40 chars); every word must appear in the item name or id
+cpg.addMethod(CtNewMethod.make("""
+public static String cleanQuery(String q) {
+  if (q == null) return "";
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < q.length() && sb.length() < 40; i++) {
+    char c = q.charAt(i);
+    if (Character.isLetterOrDigit(c)) sb.append(Character.toLowerCase(c));
+    else if (sb.length() > 0 && sb.charAt(sb.length() - 1) != ' ') sb.append(' ');
+  }
+  return sb.toString().trim();
+}""", cpg))
+cpg.addMethod(CtNewMethod.make("""
+public static boolean nameMatches(String q, String outId) {
+  if (q == null || q.length() == 0) return true;
+  if (outId == null) return false;
+  String name = pretty(outId).toLowerCase() + " " + outId.toLowerCase().replace('_', ' ');
+  String[] w = q.split(" ");
+  for (int i = 0; i < w.length; i++) {
+    String x = w[i].trim();
+    if (x.length() > 0 && name.indexOf(x) < 0) return false;
+  }
+  return true;
+}""", cpg))
+# 0.7.3: one string value out of the page event JSON (the TextField value arrives as "@SearchQuery": "..."); handles escaped quotes,
+# backslashes and unicode escapes (quote = char 34, backslash = char 92, so no escape sequences are needed here)
+cpg.addMethod(CtNewMethod.make("""
+public static String jsonStr(String data, String key) {
+  if (data == null || key == null) return "";
+  String qt = String.valueOf((char) 34);
+  int i = data.indexOf(qt + key + qt);
+  if (i < 0) return "";
+  i = data.indexOf(':', i + key.length() + 2);
+  if (i < 0) return "";
+  i++;
+  while (i < data.length() && Character.isWhitespace(data.charAt(i))) i++;
+  if (i >= data.length() || data.charAt(i) != 34) return "";
+  i++;
+  StringBuilder sb = new StringBuilder();
+  while (i < data.length() && sb.length() < 200) {
+    char c = data.charAt(i);
+    if (c == 34) break;
+    if (c == 92 && i + 1 < data.length()) {
+      char n = data.charAt(i + 1);
+      if (n == 'u' && i + 5 < data.length()) {
+        try { sb.append((char) Integer.parseInt(data.substring(i + 2, i + 6), 16)); } catch (Throwable t) { }
+        i += 6;
+        continue;
+      }
+      if (n == 'n' || n == 'r' || n == 't' || n == 'b' || n == 'f') sb.append(' '); else sb.append(n);
+      i += 2;
+      continue;
+    }
+    sb.append(c);
+    i++;
+  }
+  return sb.toString();
+}""", cpg))
+cpg.addMethod(CtNewMethod.make(f"""
+public static synchronized boolean knownBench(String bench) {{
+  if (bench == null) return false;
+  if (BENCHIDS == null) {{
+    java.util.HashSet s = new java.util.HashSet();
+    try {{
+      java.util.Iterator it = {CRR}.getAssetMap().getAssetMap().values().iterator();
+      while (it.hasNext()) {{
+        {CRR} r = ({CRR}) it.next();
+        {BRQ}[] br = r.getBenchRequirement();
+        for (int i = 0; br != null && i < br.length; i++) if (br[i] != null && br[i].id != null) s.add(br[i].id.toLowerCase());
+      }}
+    }} catch (Throwable t) {{ return true; }}
+    if (s.isEmpty()) return true;
+    BENCHIDS = s;
+  }}
+  return BENCHIDS.contains(bench.toLowerCase());
+}}""", cpg))
+# accessory item ids the player carries anywhere -> bench ids granted
+cpg.addMethod(CtNewMethod.make(f"""
+public static java.util.HashMap accessories({PLA} p, java.util.UUID u) {{
+  java.util.HashMap out = new java.util.HashMap();
+  java.util.ArrayList ids = new java.util.ArrayList();
+  // only accessories EQUIPPED in the SkyyAccessories bag count (Skyy: "when you have the accessory in your accessory bag")
+  try {{
+    Object b = System.getProperties().get("skyy.bridge");
+    Object v = b == null ? null : ((java.util.Map) b).get("acc:has:" + u.toString());
+    if (v != null) {{
+      String[] parts = String.valueOf(v).split(",");
+      for (int i = 0; i < parts.length; i++) if (parts[i].trim().length() > 0) ids.add(parts[i].trim());
+    }}
+  }} catch (Throwable t) {{ }}
+  for (int i = 0; i < ids.size(); i++) {{
+    String id = (String) ids.get(i);
+    if (id.equals("Skyy_Accessory_Bag") || !id.startsWith("Skyy_Accessory_")) continue;
+    String tail = id.substring("Skyy_Accessory_".length());
+    String bench = tail; int tier = 1;
+    int t = tail.lastIndexOf("_T");
+    if (t > 0 && t + 2 < tail.length()) {{
+      try {{ tier = Integer.parseInt(tail.substring(t + 2)); bench = tail.substring(0, t); }} catch (Throwable e) {{ }}
+    }}
+    if (bench.length() == 0) continue;
+    if (retiredBench(bench)) continue;  // 0.7.3: retired accessories (Alchemy, Cooking, Campfire) unlock nothing
+    if (!knownBench(bench) && ACCWARN.putIfAbsent(id, Boolean.TRUE) == null) {PKG}.SackPool.warn("accessory " + id + " in acc:has names no crafting bench (" + bench + ") - it unlocks nothing; the Omni must be published as one Skyy_Accessory_<Bench>_T<n> entry per bench");
+    Integer cur = (Integer) out.get(bench);
+    if (cur == null || cur.intValue() < tier) out.put(bench, Integer.valueOf(tier));
+  }}
+  return out;
+}}""", cpg))
+# ---- 0.7.4 Campfire accessory tab (Skyy 2026-09-24: the Campfire accessory comes back as an emergency cook; SkyyCooking 0.1.1 contract) ----
+cpg.addField(CtField.make("public static long CAMPWARN;", cpg))
+# highest Skyy_Accessory_Campfire tier listed in acc:has:<uuid> (0 = none). A separate parse on purpose: accessories() keeps skipping the
+# retired Campfire, so it never unlocks recipes in the merged tabs, search or Collections - it only opens the Campfire tab.
+cpg.addMethod(CtNewMethod.make("""
+public static int campfireTier(java.util.UUID u) {
+  int best = 0;
+  try {
+    Object b = System.getProperties().get("skyy.bridge");
+    Object v = (b instanceof java.util.Map) ? ((java.util.Map) b).get("acc:has:" + u.toString()) : null;
+    if (v == null) return 0;
+    String[] parts = String.valueOf(v).split(",");
+    for (int i = 0; i < parts.length; i++) {
+      String id = parts[i].trim();
+      if (!id.startsWith("Skyy_Accessory_")) continue;
+      String tail = id.substring("Skyy_Accessory_".length());
+      String bench = tail;
+      int tier = 1;
+      int ti = tail.lastIndexOf("_T");
+      if (ti > 0 && ti + 2 < tail.length()) {
+        try { tier = Integer.parseInt(tail.substring(ti + 2)); bench = tail.substring(0, ti); } catch (Throwable e) { }
+      }
+      if (bench.equalsIgnoreCase("Campfire") && tier > best) best = tier;
+    }
+  } catch (Throwable x) { }
+  return best;
+}""", cpg))
+# the dish ids SkyyCooking's cook:fn:campfire accepts (bridge String cook:campfire:ids, comma separated); null = SkyyCooking not loaded
+cpg.addMethod(CtNewMethod.make("""
+public static java.util.HashSet campIds() {
+  try {
+    Object b = System.getProperties().get("skyy.bridge");
+    Object v = (b instanceof java.util.Map) ? ((java.util.Map) b).get("cook:campfire:ids") : null;
+    if (!(v instanceof String)) return null;
+    java.util.HashSet s = new java.util.HashSet();
+    String[] parts = ((String) v).split(",");
+    for (int i = 0; i < parts.length; i++) if (parts[i].trim().length() > 0) s.add(parts[i].trim());
+    return s;
+  } catch (Throwable t) { return null; }
+}""", cpg))
+# a Campfire-bench recipe: the same test SkyyCooking's isCampfire makes ("Campfire".equals(BenchRequirement.id))
+cpg.addMethod(CtNewMethod.make(f"""
+public static boolean campfireRecipe({CRR} r) {{
+  if (r == null) return false;
+  {BRQ}[] br = r.getBenchRequirement();
+  for (int i = 0; br != null && i < br.length; i++) if (br[i] != null && "Campfire".equals(br[i].id)) return true;
+  return false;
+}}""", cpg))
+# the Campfire tab's recipe ids: Campfire-bench recipes up to the accessory tier whose primary output is in cook:campfire:ids (exactly the
+# dishes cook:fn:campfire accepts); without SkyyCooking every Campfire-bench recipe (the vanilla ones - plain output, no XP)
+cpg.addMethod(CtNewMethod.make(f"""
+public static java.util.TreeSet campRecipes(java.util.UUID u) {{
+  java.util.TreeSet ids = new java.util.TreeSet();
+  int tier = campfireTier(u);
+  if (tier <= 0) return ids;
+  java.util.HashSet ok = campIds();
+  java.util.Iterator it = {CRR}.getAssetMap().getAssetMap().values().iterator();
+  while (it.hasNext()) {{
+    {CRR} r = ({CRR}) it.next();
+    {BRQ}[] br = r.getBenchRequirement();
+    if (br == null) continue;
+    boolean fits = false;
+    for (int i = 0; i < br.length; i++) {{
+      if (br[i] == null || !"Campfire".equals(br[i].id)) continue;
+      int need = br[i].requiredTierLevel; if (need <= 0) need = 1;
+      if (need <= tier) fits = true;
+    }}
+    if (!fits) continue;
+    if (ok != null) {{
+      {MQ} po = r.getPrimaryOutput();
+      String oid = po == null ? null : po.getItemId();
+      if (oid == null || !ok.contains(oid)) continue;
+    }}
+    ids.add(r.getId());
+  }}
+  return ids;
+}}""", cpg))
+# Grade of a graded dish id (Skyy_Cook_<dish>_G<c>); 0 = plain / not a graded id
+cpg.addMethod(CtNewMethod.make("""
+public static int gradeOfId(String id) {
+  if (id == null || !id.startsWith("Skyy_Cook_")) return 0;
+  int g = id.lastIndexOf("_G");
+  if (g < 0 || g + 2 >= id.length()) return 0;
+  try { return Integer.parseInt(id.substring(g + 2)); } catch (Throwable t) { return 0; }
+}""", cpg))
+# THE bridge call (SkyyCooking 0.1.1 cook:fn:campfire, its suggested SkyySacks call): world thread, AFTER the materials were removed, once
+# per click with the finished crafts (crafts 0 = preview: no XP, no chat). Returns the item id to give INSTEAD of the primary output (same
+# quantity), or null = give the plain output (Function missing, null / non-String answer, an id that is not a loaded item, a throw).
+# SkyyCooking pays the Cooking XP (x campfire.xpFactor) inside the call and applies its own busy / profile-key / creative rules.
+cpg.addMethod(CtNewMethod.make(f"""
+public static String campCall({PLA} p, java.util.UUID u, String k, {CRR} r, int crafts) {{
+  try {{
+    Object f = {PKG}.SackPool.bridge().get("cook:fn:campfire");
+    if (!(f instanceof java.util.function.Function)) return null;
+    Boolean cr = null;
+    try {{ if (p != null) cr = Boolean.valueOf(p.getGameMode() == {GM}.Creative); }} catch (Throwable gm) {{ cr = null; }}
+    Object got = ((java.util.function.Function) f).apply(new Object[] {{ u, String.valueOf(r.getId()), Integer.valueOf(crafts), k, cr }});
+    if (!(got instanceof String)) return null;
+    String id = ((String) got).trim();
+    if (id.length() == 0 || {PKG}.ProcBench.item(id) == null) return null;
+    return id;
+  }} catch (Throwable t) {{
+    long now = System.currentTimeMillis();
+    if (now - CAMPWARN > 60000L) {{ CAMPWARN = now; {PKG}.SackPool.warn("campfire tab: cook:fn:campfire failed (plain output given): " + t); }}
+    return null;
+  }}
+}}""", cpg))
+# what a craft on this row gives right now (PREVIEW call, crafts 0) - appended to the row name
+cpg.addMethod(CtNewMethod.make(f"""
+public static String campRowNote({PLA} p, java.util.UUID u, String k, {CRR} r) {{
+  if (campIds() == null) return "  - plain food (SkyyCooking is not installed)";
+  int g = gradeOfId(campCall(p, u, k, r, 0));
+  return g > 0 ? ("  - comes out Grade " + g) : "  - comes out plain";
+}}""", cpg))
+# the tab's emergency-cook line (Skyy 2026-09-24: 50% XP, 75% of the buffs the Cooking skill adds; Skyy 2026-10-01: XP halved -> 25%,
+# SkyyCooking 0.1.3); shown with set(), so commas and colons are safe. The numbers are SkyyCooking's LIVE factors: (1) cook:fn:campfactors
+# (apply(anything) -> Object[]{Double buffFactor, Double xpFactor, Boolean enabled}, any thread, no I/O - so an edited cooking.properties +
+# /cookadmin reload or a Server Setup change shows at once), (2) 0.7.9: else config:fn:SkyyCooking get (the config kit's op), (3) else
+# CAMP_XP_PCT / CAMP_BUFF_PCT (SkyyCooking 0.1.3's defaults).
+cpg.addField(CtField.make("public static final int CAMPXPPCT = " + str(CAMP_XP_PCT) + ";", cpg))
+cpg.addField(CtField.make("public static final int CAMPBUFFPCT = " + str(CAMP_BUFF_PCT) + ";", cpg))
+# factor (0..1) -> whole percent; anything else -> def
+cpg.addMethod(CtNewMethod.make("""
+public static int campPct(Object v, int def) {
+  if (!(v instanceof Number)) return def;
+  double f = ((Number) v).doubleValue();
+  if (!(f >= 0.0 && f <= 1.0)) return def;
+  return (int) Math.round(f * 100.0);
+}""", cpg))
+# 0.7.9: a factor (0..1) the way the config kit carries it - canonical text ("0.25") -> whole percent; anything else -> -1
+cpg.addMethod(CtNewMethod.make("""
+public static int campPctText(Object v) {
+  if (!(v instanceof String)) return -1;
+  double f = -1.0;
+  try { f = Double.parseDouble(((String) v).trim()); } catch (Throwable t) { return -1; }
+  if (!(f >= 0.0 && f <= 1.0)) return -1;
+  return (int) Math.round(f * 100.0);
+}""", cpg))
+# 0.7.9: SkyyCooking's config kit (config:fn:SkyyCooking, SkyyCooking 0.1.2+; tools/CONFIG-CONTRACT.md op "get" -> the value as canonical
+# text, null = unknown key; any thread, never throws, no I/O): {xp %, buff %, enabled 1/0}, or null when the function is missing or either
+# factor does not read as a number 0..1. enabled = the "Graded cooking" part switch (only the text "false" counts as off)
+cpg.addMethod(CtNewMethod.make("""
+public static int[] campCfg() {
+  try {
+    Object f = {PKG}.SackPool.bridge().get("config:fn:SkyyCooking");
+    if (!(f instanceof java.util.function.Function)) return null;
+    java.util.function.Function fn = (java.util.function.Function) f;
+    int xp = campPctText(fn.apply(new Object[] { "get", "campfire.xpFactor" }));
+    int buff = campPctText(fn.apply(new Object[] { "get", "campfire.buffFactor" }));
+    if (xp < 0 || buff < 0) return null;
+    Object en = fn.apply(new Object[] { "get", "enabled" });
+    return new int[] { xp, buff, "false".equals(en) ? 0 : 1 };
+  } catch (Throwable t) { return null; }
+}""".replace("{PKG}", PKG), cpg))
+# {xp %, buff %, enabled 1/0}: (1) cook:fn:campfactors when present and well formed (an Object[] of >= 2 elements whose first two are numbers
+# 0..1 - the running values; a third FALSE = graded cooking off), (2) 0.7.9: else campCfg() (config:fn:SkyyCooking), (3) else the
+# defaults CAMPXPPCT / CAMPBUFFPCT (enabled)
+cpg.addMethod(CtNewMethod.make("""
+public static int[] campFactors() {
+  try {
+    Object f = {PKG}.SackPool.bridge().get("cook:fn:campfactors");
+    if (f instanceof java.util.function.Function) {
+      Object r = ((java.util.function.Function) f).apply((Object) null);
+      if (r instanceof Object[]) {
+        Object[] a = (Object[]) r;
+        if (a.length >= 2 && campPct(a[0], -1) >= 0 && campPct(a[1], -1) >= 0) {
+          int[] got = new int[] { campPct(a[1], CAMPXPPCT), campPct(a[0], CAMPBUFFPCT), 1 };
+          if (a.length > 2 && Boolean.FALSE.equals(a[2])) got[2] = 0;
+          return got;
+        }
+      }
+    }
+  } catch (Throwable t) { }
+  int[] c = campCfg();
+  if (c != null) return c;
+  return new int[] { CAMPXPPCT, CAMPBUFFPCT, 1 };
+}""".replace("{PKG}", PKG), cpg))
+cpg.addMethod(CtNewMethod.make("""
+public static String campNote() {
+  if (campIds() == null) return "Campfire accessory = quick emergency cooking: plain food and no Cooking XP (SkyyCooking is not installed).";
+  int[] cf = campFactors();
+  if (cf[2] == 0) return "Campfire accessory = quick emergency cooking: graded cooking is switched off on this server - plain food and no Cooking XP.";
+  return "Campfire accessory = emergency cook: " + cf[0] + "% Cooking XP, " + cf[1] + "% of your cooking bonus. A Cooking Bench gives the full Grade and XP.";
+}""", cpg))
+# review fix (finding 2): true when a craft of this recipe hands out at least one item - the exact test the give loop in handleDataEvent
+# makes (getOutputs() entries with an item id; an empty Outputs list falls back to the primary output). Checked BEFORE any material moves,
+# so a recipe without an item output can never eat ingredients (every tab). The vanilla Campfire recipes pass: Item.processConfig fills
+# outputs = [primaryOutput = the item itself, quantity 1] for an item-embedded Recipe without an Output list (bytecode 2026-09-24).
+cpg.addMethod(CtNewMethod.make(f"""
+public static boolean hasItemOutput({CRR} r) {{
+  if (r == null) return false;
+  {MQ}[] o = r.getOutputs();
+  if (o == null || o.length == 0) {{
+    {MQ} po = r.getPrimaryOutput();
+    return po != null && po.getItemId() != null && po.getQuantity() > 0;
+  }}
+  for (int i = 0; i < o.length; i++) if (o[i] != null && o[i].getItemId() != null && o[i].getQuantity() > 0) return true;
+  return false;
+}}""", cpg))
+# 0.7.7 SkyyGear /craft hook (research/SkyyGear-Stage1-Spec.md 5.2 / 7.1 / 7.3.3): gear:fn:roll =apply(Object[]{UUID player, String itemId, Integer count,
+# "craft", String recipeId}) -> Object[] of ItemStack (rolled, identified, Smithing odds), null = not gear / crafting rolls off. The answer
+# is only used when every element is a non-empty ItemStack of that same item and together they are never more than was crafted (anything
+# else = the plain output + one warning a minute); fewer = the rest plain. No Function = null = the 0.7.6 plain output.
+cpg.addMethod(CtNewMethod.make(jt(r'''
+public static Object[] gearRoll(java.util.UUID u, String itemId, int count, String recipeId) {
+  if (itemId == null || count <= 0) return null;
+  Object f = null;
+  try { f = @PKG@.SackPool.bridge().get("gear:fn:roll"); } catch (Throwable t) { return null; }
+  if (!(f instanceof java.util.function.Function)) return null;
+  Object got = null;
+  String bad = null;
+  try { got = ((java.util.function.Function) f).apply(new Object[] { u, itemId, Integer.valueOf(count), "craft", recipeId }); }
+  catch (Throwable t) { got = null; bad = "threw " + t; }
+  Object[] arr = null;
+  if (bad == null && got != null) {
+    if (got instanceof Object[]) arr = (Object[]) got;
+    else if (got instanceof java.util.List) arr = ((java.util.List) got).toArray();
+    else if (got instanceof @IS@) arr = new Object[] { got };
+    else bad = "answered " + got.getClass().getName();
+  }
+  if (bad == null && arr != null) {
+    long sum = 0L;
+    for (int i = 0; i < arr.length && bad == null; i++) {
+      if (!(arr[i] instanceof @IS@)) { bad = "a non-ItemStack element"; continue; }
+      @IS@ s = (@IS@) arr[i];
+      if (s.isEmpty() || !itemId.equals(s.getItemId())) bad = "a stack of another item (" + s.getItemId() + ")";
+      else sum += (long) s.getQuantity();
+    }
+    if (bad == null && (arr.length == 0 || sum <= 0L)) bad = "no items";
+    if (bad == null && sum > (long) count) bad = sum + " items for " + count + " crafted";
+  }
+  if (bad != null) {
+    long now = System.currentTimeMillis();
+    if (now - GEARWARN > 60000L) { GEARWARN = now; @PKG@.SackPool.warn("craft: gear:fn:roll for " + count + " x " + itemId + " " + bad + " - plain output given"); }
+    return null;
+  }
+  return arr;
+}'''), cpg))
+# collection unlocks published by SkyyCollections via the JVM bridge: "coll:recipes:<uuid>" -> "id,id,id"
+cpg.addMethod(CtNewMethod.make("""
+public static java.util.HashSet collectionRecipes(java.util.UUID u) {
+  java.util.HashSet out = new java.util.HashSet();
+  try {
+    Object b = System.getProperties().get("skyy.bridge");
+    if (b == null) return out;
+    Object v = ((java.util.Map) b).get("coll:recipes:" + u.toString());
+    if (v == null) return out;
+    String[] parts = String.valueOf(v).split(",");
+    for (int i = 0; i < parts.length; i++) if (parts[i].trim().length() > 0) out.add(parts[i].trim());
+  } catch (Throwable t) { }
+  return out;
+}""", cpg))
+# tabs: list of String[]{tabId, label} ; recipes for a tab: list of CraftingRecipe
+cpg.addMethod(CtNewMethod.make("""
+public static int accTier(java.util.HashMap acc, String bench) {
+  int best = 0;
+  if (acc == null || bench == null) return 0;
+  java.util.Iterator ki = acc.keySet().iterator();
+  while (ki.hasNext()) {
+    String k = (String) ki.next();
+    if (k.equalsIgnoreCase(bench)) { int t = ((Integer) acc.get(k)).intValue(); if (t > best) best = t; }
+  }
+  return best;
+}""", cpg))
+# benches with their own TIMED tab (0.7.3: Furnace and Tannery only - Alchemy is table only now)
+cpg.addMethod(CtNewMethod.make("""
+public static boolean separateBench(String id) {
+  return id != null && (id.equalsIgnoreCase("Furnace") || id.equalsIgnoreCase("Tannery"));
+}""", cpg))
+# 0.7.3 review fix: the one Processing (timed in vanilla) bench that crafts INSTANTLY in the merged tabs. Skyy's crafting layout lock
+# (HANDOFF "Crafting layout + OMNI"): Crafting = Fieldcraft + every equipped bench accessory except Alchemy, Furnace, Tannery -
+# "... Campfire, Salvage all merged, instant". The Campfire is retired since (orchestrator decision 4); Salvage is not.
+cpg.addMethod(CtNewMethod.make("""
+public static boolean instantProc(String id) {
+  return id != null && id.equalsIgnoreCase("Salvagebench");
+}""", cpg))
+# 0.7.3 (research/Smithing-Smelting-Spec.md 6.3): true when EVERY bench requirement of the recipe is a retired table-only bench or a timed
+# Processing bench other than Salvagebench (Furnace, Tannery, Campfire) - such a recipe is never crafted instantly (instant tabs, search,
+# Collections).
+cpg.addMethod(CtNewMethod.make(f"""
+public static boolean tableOnly({CRR} r) {{
+  {BRQ}[] br = r.getBenchRequirement();
+  if (br == null) return false;
+  boolean any = false;
+  for (int i = 0; i < br.length; i++) {{
+    if (br[i] == null) continue;
+    any = true;
+    if (!retiredBench(br[i].id) && (br[i].type != {BTP}.Processing || instantProc(br[i].id))) return false;
+  }}
+  return any;
+}}""", cpg))
+# only == null -> every equipped bench except the timed ones (Furnace, Tannery and any Processing requirement but Salvagebench) and the
+# retired ones (the merged Crafting / Smithing / Farming set); else just that bench. Up to the accessory tier.
+cpg.addMethod(CtNewMethod.make(f"""
+public static java.util.TreeSet benchRecipes(java.util.UUID u, String only) {{
+  java.util.TreeSet ids = new java.util.TreeSet();
+  java.util.HashMap acc = accessories(({PLA}) null, u);
+  if (acc.isEmpty()) return ids;
+  java.util.Iterator it = {CRR}.getAssetMap().getAssetMap().values().iterator();
+  while (it.hasNext()) {{
+    {CRR} r = ({CRR}) it.next();
+    {BRQ}[] br = r.getBenchRequirement();
+    if (br == null) continue;
+    for (int i = 0; i < br.length; i++) {{
+      if (br[i] == null || br[i].id == null) continue;
+      if (retiredBench(br[i].id)) continue;
+      if (only == null) {{ if (separateBench(br[i].id) || (br[i].type == {BTP}.Processing && !instantProc(br[i].id))) continue; }}
+      else if (!only.equalsIgnoreCase(br[i].id)) continue;
+      int tier = accTier(acc, br[i].id);
+      if (tier <= 0) continue;
+      int need = br[i].requiredTierLevel; if (need <= 0) need = 1;
+      if (need <= tier) {{ ids.add(r.getId()); break; }}
+    }}
+  }}
+  return ids;
+}}""", cpg))
+# 0.8.20: every recipe whose bench requirement id is SkyyAlloy (B1's standalone Alloy_<Name> files) - the Furnace tab lists them (locked rows
+# included; buildProc greys them, procQueue refuses them until the Furnace Charm tier is reached)
+cpg.addMethod(CtNewMethod.make(f"""
+public static java.util.TreeSet alloyRecipes() {{
+  java.util.TreeSet ids = new java.util.TreeSet();
+  try {{
+    java.util.Iterator it = {CRR}.getAssetMap().getAssetMap().values().iterator();
+    while (it.hasNext()) {{
+      Object o = it.next();
+      if (o instanceof {CRR} && {PKG}.ProcBench.alloyNeed(({CRR}) o) > 0) ids.add((({CRR}) o).getId());
+    }}
+  }} catch (Throwable t) {{ }}
+  return ids;
+}}""", cpg))
+# 0.7.3: tab ids are A:craft / A:smith / A:farm / P:<bench> / C: only (review fix: the legacy F: / B: ids are gone - buildTabs never emits
+# them and build() replaces an unknown tab id with the first tab).
+# 0.7.3: every recipe id the merged tabs can show (Fieldcraft + equipped non-timed benches); tabGroup() splits it into the three tabs
+cpg.addMethod(CtNewMethod.make(f"""
+public static java.util.TreeSet craftSet(java.util.UUID u) {{
+  java.util.TreeSet ids = new java.util.TreeSet();
+  java.util.Iterator fi = {FCC}.getAssetMap().getAssetMap().values().iterator();
+  while (fi.hasNext()) {{
+    {FCC} fc = ({FCC}) fi.next();
+    java.util.Set fs = {CRP}.getAvailableRecipesForCategory("Fieldcraft", fc.getId());
+    if (fs != null) ids.addAll(fs);
+  }}
+  ids.addAll(benchRecipes(u, (String) null));
+  return ids;
+}}""", cpg))
+# 0.7.3 (Skyy's craft-page call): 2 = Farming (every Farmingbench recipe, farm tools included), 1 = Smithing (primary output Tool_*,
+# Weapon_* or Armor_* - every material, wood and crude included), 0 = Crafting (everything else)
+cpg.addMethod(CtNewMethod.make(f"""
+public static int tabGroup({CRR} r) {{
+  {BRQ}[] br = r.getBenchRequirement();
+  for (int i = 0; br != null && i < br.length; i++) if (br[i] != null && "Farmingbench".equalsIgnoreCase(br[i].id)) return 2;
+  {MQ} po = r.getPrimaryOutput();
+  String id = po == null ? null : po.getItemId();
+  if (id != null && (id.startsWith("Tool_") || id.startsWith("Weapon_") || id.startsWith("Armor_"))) return 1;
+  return 0;
+}}""", cpg))
+# 0.8.7 ARTIFACTS tab (Skyy "and id add an artifacts tab"): the item ids SkyyAccessories lists in acc:defs ("<admin>:<family>:<rarity>:<id>:
+# <display>:<AP>:<source>" records, comma separated; every rarity of every line + the Lantern), parsed once per published value (the
+# bridge value object - SkyyAccessories puts it once in setup()); empty without SkyyAccessories / an unreadable value.
+cpg.addField(CtField.make("public static Object ACCDEFSRC;", cpg))
+cpg.addField(CtField.make("public static java.util.HashSet ACCDEFS = new java.util.HashSet();", cpg))
+cpg.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized java.util.HashSet accDefIds() {
+  Object v = null;
+  try { v = @PKG@.SackPool.bridge().get("acc:defs"); } catch (Throwable t) { v = null; }
+  if (v == ACCDEFSRC) return ACCDEFS;
+  java.util.HashSet s = new java.util.HashSet();
+  if (v instanceof String) {
+    String[] recs = ((String) v).split(",");
+    for (int i = 0; i < recs.length; i++) {
+      String[] f = recs[i].split(":");
+      if (f.length > 3 && f[3].trim().length() > 0) s.add(f[3].trim());
+    }
+  }
+  ACCDEFS = s;
+  ACCDEFSRC = v;
+  return s;
+}'''), cpg))
+# an accessory item id: Skyy_Talisman_* (booster lines + the Lantern line), Skyy_Acc* (the Accessory Bag, Skyy_Accessory_<Bench>_T<n>, the
+# Omni), or listed in SkyyAccessories' acc:defs
+cpg.addMethod(CtNewMethod.make(jt(r'''
+public static boolean artifactId(String id) {
+  if (id == null) return false;
+  if (id.startsWith("Skyy_Talisman_") || id.startsWith("Skyy_Acc")) return true;
+  return accDefIds().contains(id);
+}'''), cpg))
+# the recipe's primary output is an accessory -> the Artifacts tab (group 3) instead of tabGroup's Crafting / Smithing / Farming
+cpg.addMethod(CtNewMethod.make(jt(r'''
+public static boolean artifact(@CRR@ r) {
+  if (r == null) return false;
+  @MQ@ po = r.getPrimaryOutput();
+  return po != null && artifactId(po.getItemId());
+}'''), cpg))
+cpg.addMethod(CtNewMethod.make(f"""
+public java.util.ArrayList buildTabs({PLA} p, java.util.UUID u, String k) {{
+  java.util.ArrayList t = new java.util.ArrayList();
+  java.util.HashMap acc = accessories(p, u);
+  t.add(new String[] {{ "A:craft", "Crafting" }});
+  // 0.8.14: no Artifacts tab - accessories are crafted in the Accessory Bag only (SkyyAccessories 0.5.21)
+  t.add(new String[] {{ "A:smith", "Gear" }});   // 0.8.11 review fix B5: not "Smithing" (the hub tab of that name is /smithing)
+  if (accTier(acc, "Farmingbench") > 0) t.add(new String[] {{ "A:farm", "Farming" }});
+  // 0.7.4: the Campfire accessory (emergency cook through SkyyCooking) - its own tab, never merged
+  if (campfireTier(u) > 0) t.add(new String[] {{ "K:camp", "Campfire" }});
+  for (int i = 0; i < {PKG}.ProcStore.BENCHES.length; i++) {{
+    String bn = {PKG}.ProcStore.BENCHES[i];
+    if (accTier(acc, bn) > 0 || {PKG}.ProcStore.pending(k, bn)) t.add(new String[] {{ "P:" + bn, bn }});
+  }}
+  // 0.7.7: the Collections tab also shows while all five Legendary bags are carried (the Mythic Omni Bag recipe crafts there)
+  if (!collectionRecipes(u).isEmpty() || this.omniOk) t.add(new String[] {{ "C:", "Collections" }});
+  return t;
+}}""", cpg))
+# 0.7.17 (Skyy "we should give this, and the crafting thing a filter by class"): gear:fn:classShow (SkyyGear 0.2.23) =
+# apply(Object[]{UUID, String itemId}) -> Boolean. 1 = show, 0 = hide (Boolean.FALSE only), -1 = no answer (missing key, other type, an
+# exception - warned once a minute): shown. classHidden = how many the last recipesFor() hid (the materials line says so).
+cpg.addField(CtField.make("public int classHidden;", cpg))
+cpg.addField(CtField.make("public static long CLASSWARN;", cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static int classShow(java.util.UUID u, String itemId) {
+  if (u == null || itemId == null) return -1;
+  Object f = null;
+  try { f = @PKG@.SackPool.bridge().get("gear:fn:classShow"); } catch (Throwable t) { return -1; }
+  if (!(f instanceof java.util.function.Function)) return -1;
+  Object r = null;
+  try { r = ((java.util.function.Function) f).apply(new Object[] { u, itemId }); }
+  catch (Throwable t) {
+    long now = System.currentTimeMillis();
+    if (now - CLASSWARN > 60000L) { CLASSWARN = now; @PKG@.SackPool.warn("craft: gear:fn:classShow failed for " + itemId + " (shown): " + t); }
+    return -1;
+  }
+  if (r instanceof Boolean) return ((Boolean) r).booleanValue() ? 1 : 0;
+  return -1;
+}"""), cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static String smithNoteText(int hidden) {
+  return "Gear shows the gear for your class - " + hidden + " hidden (Show all is in Smithing). Materials: your inventory, then the Void.";
+}"""), cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public void smithNote(@UCB@ b, boolean searching) {
+  if (b == null || searching || this.classHidden <= 0 || !"A:smith".equals(this.tab)) return;
+  b.set("#SkyyCMatNote.Text", smithNoteText(this.classHidden));
+}"""), cpg))
+cpg.addMethod(CtNewMethod.make(f"""
+public java.util.ArrayList recipesFor(String tabId, java.util.UUID u) {{
+  java.util.ArrayList out = new java.util.ArrayList();
+  this.classHidden = 0;
+  java.util.TreeSet ids = new java.util.TreeSet();
+  int grp = -1;
+  if (tabId.equals("A:craft")) grp = 0;
+  else if (tabId.equals("A:smith")) grp = 1;
+  else if (tabId.equals("A:farm")) grp = 2;
+  // 0.8.14: no A:art (Artifacts) tab any more
+  if (grp >= 0) {{
+    ids.addAll(craftSet(u));
+  }} else if (tabId.startsWith("P:")) {{
+    ids.addAll(benchRecipes(u, tabId.substring(2)));
+    if (tabId.equalsIgnoreCase("P:Furnace")) ids.addAll(alloyRecipes());   // 0.8.20
+  }} else if (tabId.startsWith("C:")) {{
+    ids.addAll(collectionRecipes(u));
+    // 0.7.7 (spec 4): the Omni recipe joins this tab while all five Legendary bags are carried - inventory crafting (0.7.15: and unlocked)
+    if (this.omniOk) ids.add({PKG}.SackDefs.recipeOf({PKG}.SackDefs.OMNI));
+  }} else if (tabId.equals("K:camp")) {{
+    ids.addAll(campRecipes(u));
+  }}
+  boolean timed = tabId.startsWith("P:");
+  // 0.7.4: the Campfire tab is the ONE instant tab that shows Campfire (timed, retired-bench) recipes - campRecipes picked them
+  boolean camp = tabId.equals("K:camp");
+  java.util.Iterator ii = ids.iterator();
+  while (ii.hasNext()) {{
+    Object o = {CRR}.getAssetMap().getAsset(ii.next());
+    if (!(o instanceof {CRR})) continue;
+    {CRR} rc = ({CRR}) o;
+    if (!timed && !camp && tableOnly(rc)) continue;
+    // review fix (finding 5): Campfire-EXCLUSIVE recipes only (tableOnly = no live instant bench besides it), so no recipe is reachable
+    // both here (graded, SkyyCooking XP) and in Crafting / Smithing / Farming (plain, craftxp). The 3 vanilla ones are Campfire-only.
+    if (camp && !(campfireRecipe(rc) && tableOnly(rc))) continue;
+    // 0.8.14: an accessory recipe is never listed in /craft (any tab) - the Accessory Bag crafts them (SkyyAccessories 0.5.21)
+    if (artifact(rc)) continue;
+    if (grp >= 0 && tabGroup(rc) != grp) continue;
+    // 0.7.7 (spec 5.3): locked bags and unknown vanilla knowledge recipes stay off Crafting / Smithing / Farming
+    if (grp >= 0 && !{PKG}.KnowSync.allowed(rc, u, this.known, this.coll)) continue;
+    // 0.7.17: the Smithing tab hides what gear:fn:classShow says is not for your class (no SkyyGear 0.2.23 = everything shown)
+    if (grp == 1) {{
+      {MQ} cpo = rc.getPrimaryOutput();
+      if (cpo != null && classShow(u, cpo.getItemId()) == 0) {{ this.classHidden = this.classHidden + 1; continue; }}
+    }}
+    out.add(rc);
+  }}
+  return out;
+}}""", cpg))
+# 0.7.3 search: Crafting + Smithing + Farming together (the whole merged set), every typed word in the output item's name or id
+cpg.addMethod(CtNewMethod.make(f"""
+public java.util.ArrayList searchRecipes(java.util.UUID u, String q) {{
+  java.util.ArrayList out = new java.util.ArrayList();
+  java.util.Iterator ii = craftSet(u).iterator();
+  while (ii.hasNext()) {{
+    Object o = {CRR}.getAssetMap().getAsset(ii.next());
+    if (!(o instanceof {CRR})) continue;
+    {CRR} rc = ({CRR}) o;
+    if (tableOnly(rc)) continue;
+    if (artifact(rc)) continue;   // 0.8.14: no accessory recipe in /craft search either
+    if (!{PKG}.KnowSync.allowed(rc, u, this.known, this.coll)) continue;
+    {MQ} po = rc.getPrimaryOutput();
+    if (nameMatches(q, po == null ? String.valueOf(rc.getId()) : po.getItemId())) out.add(rc);
+  }}
+  return out;
+}}""", cpg))
+# 0.7.3 bench-aware mirror for the craft page: what the shown recipes (view), the clicked recipe (craft / queue) or the loaded fuel can use
+cpg.addMethod(CtNewMethod.make(f"""
+public static java.util.HashSet wantedOf(java.util.List recipes) {{
+  java.util.HashSet s = new java.util.HashSet();
+  for (int i = 0; recipes != null && i < recipes.size(); i++) {{
+    Object o = recipes.get(i);
+    if (o instanceof {CRR}) {PKG}.BagMirror.addInputs(s, (({CRR}) o).getInput());
+  }}
+  return s;
+}}""", cpg))
+cpg.addMethod(CtNewMethod.make(f"""
+public static java.util.HashSet wantedOne({CRR} r) {{
+  java.util.HashSet s = new java.util.HashSet();
+  if (r != null) {PKG}.BagMirror.addInputs(s, r.getInput());
+  return s;
+}}""", cpg))
+cpg.addMethod(CtNewMethod.make("""
+public static java.util.HashSet procWanted(java.util.List recipes) {
+  java.util.HashSet s = wantedOf(recipes);
+  s.add("Fuel");
+  return s;
+}""", cpg))
+cpg.addMethod(CtNewMethod.make(f"""
+public static {CIC} materialsFor({PLA} p, String k, java.util.Set wanted) {{
+  {PKG}.BagMirror m = {PKG}.BagMirror.of(k);
+  m.sync();
+  m.rebuild({PKG}.SweepTask.caps(p.getInventory()), wanted);
+  return new {CIC}(new {IC}[] {{ p.getInventory().getCombinedBackpackStorageHotbar(), m.cont }});
+}}""", cpg))
+cpg.addMethod(CtNewMethod.make(f"""
+public static {CIC} materials({PLA} p, String k) {{
+  return materialsFor(p, k, (java.util.Set) null);
+}}""", cpg))
+# 0.7.2 review fix: counts for the page VIEW. While a profile switch settles (this.settling, set by build() from
+# SackPool.settledKey) only the inventory is counted and no BagMirror is built or synced for the not-yet-settled key; every
+# click that moves items calls materialsFor(p, k, ...) itself with the one settled key it checked.
+cpg.addMethod(CtNewMethod.make(f"""
+public {CIC} viewMats({PLA} p, String k, java.util.Set wanted) {{
+  if (this.settling) return new {CIC}(new {IC}[] {{ p.getInventory().getCombinedBackpackStorageHotbar() }});
+  return materialsFor(p, k, wanted);
+}}""", cpg))
+cpg.addMethod(CtNewMethod.make(f"""
+public static int limit({CRR} r, {IC} c) {{
+  {MQ}[] in = r.getInput();
+  if (in == null || in.length == 0) return 0;
+  int lim = Integer.MAX_VALUE;
+  for (int i = 0; i < in.length; i++) {{
+    int q = in[i].getQuantity(); if (q <= 0) continue;
+    int have = c.countRemovableMaterial(in[i]);
+    int l = have / q;
+    if (l < lim) lim = l;
+  }}
+  return lim == Integer.MAX_VALUE ? 0 : lim;
+}}""", cpg))
+# ---- 0.7.0 processing helpers (Furnace / Tannery tabs) ----
+cpg.addMethod(CtNewMethod.make(f"""
+public static java.util.HashMap snapshot({IC} c) {{
+  java.util.HashMap m = new java.util.HashMap();
+  short cap = c.getCapacity();
+  for (short s = 0; s < cap; s++) {{
+    {IS} it = c.getItemStack(s);
+    if (it == null || it.isEmpty()) continue;
+    String id = it.getItemId();
+    if (id == null) continue;
+    Integer cur = (Integer) m.get(id);
+    m.put(id, Integer.valueOf((cur == null ? 0 : cur.intValue()) + it.getQuantity()));
+  }}
+  return m;
+}}""", cpg))
+cpg.addMethod(CtNewMethod.make(f"""
+public static int countItem({IC} c, String id) {{
+  int n = 0;
+  short cap = c.getCapacity();
+  for (short s = 0; s < cap; s++) {{
+    {IS} it = c.getItemStack(s);
+    if (it == null || it.isEmpty()) continue;
+    if (id.equals(it.getItemId())) n += it.getQuantity();
+  }}
+  return n;
+}}""", cpg))
+cpg.addMethod(CtNewMethod.make("""
+public static java.util.LinkedHashMap removedItems(java.util.HashMap before, java.util.HashMap after) {
+  java.util.LinkedHashMap d = new java.util.LinkedHashMap();
+  java.util.Iterator it = before.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    int b0 = ((Integer) e.getValue()).intValue();
+    Integer a = (Integer) after.get(e.getKey());
+    int a0 = a == null ? 0 : a.intValue();
+    if (b0 > a0) d.put(e.getKey(), Integer.valueOf(b0 - a0));
+  }
+  return d;
+}""", cpg))
+cpg.addMethod(CtNewMethod.make(f"""
+public static void giveBack({ST} st, {REF} ref, {PLA} p, String id, int n) {{
+  if (id == null || n <= 0) return;
+  {SIC}.addOrDropItemStack(st, ref, p.getInventory().getCombinedStorageHotbarBackpack(), new {IS}(id, n));
+}}""", cpg))
+# review fix: Furnace/Tannery clicks never touch the disk on the world thread. Mark dirty (cheap) and run the SackSaver the 10s timer uses
+# on the scheduler thread right away (ProcStore first, then SackPool - BagMirror.sync already marked the pool dirty); only when the
+# scheduler refuses the task (server shutting down) is it run inline.
+cpg.addMethod(CtNewMethod.make(f"""
+public static void saveSoon(String k) {{
+  {PKG}.ProcStore.markDirty(k);
+  {PKG}.SackPool.runOnWriter(new {PKG}.SackSaver());   // 0.7.18: the private writer (no file work on the engine's shared scheduler)
+}}""", cpg))
+# units of resource type `rt` one `id` item counts for (the engine's own ItemContainer.getMatchingResourceType + its quantity); 0 = not that type
+cpg.addMethod(CtNewMethod.make(f"""
+public static int rtUnits(String id, String rt) {{
+  if (id == null || rt == null) return 0;
+  try {{
+    {ITM} it = {PKG}.ProcBench.item(id);
+    if (it == null) return 0;
+    {IRT} m = {IC}.getMatchingResourceType(it, rt);
+    return m == null ? 0 : m.quantity;
+  }} catch (Throwable t) {{ return 0; }}
+}}""", cpg))
+# review fix (instant crafts): what is left of the literally removed items `took` after paying `done` crafts of `inputs` (per[i] each), or
+# null when they do not cover `done` crafts. Exact item ids first, then resource types (whole items, counted in the engine's units), then
+# any other material kind from what is left. Whatever is left is surplus and goes back as exactly those items - nothing is "LOST".
+cpg.addMethod(CtNewMethod.make(f"""
+public static java.util.LinkedHashMap reserve(java.util.LinkedHashMap took, java.util.List inputs, int[] per, int done) {{
+  java.util.LinkedHashMap left = new java.util.LinkedHashMap();
+  left.putAll(took);
+  int k = inputs.size();
+  long[] need = new long[k];
+  for (int i = 0; i < k; i++) need[i] = (long) per[i] * (long) done;
+  for (int pass = 0; pass < 3; pass++) {{
+    for (int i = 0; i < k; i++) {{
+      if (need[i] <= 0L) continue;
+      {MQ} mq = ({MQ}) inputs.get(i);
+      String iid = mq.getItemId();
+      String rt = mq.getResourceTypeId();
+      if (pass == 0 && iid == null) continue;
+      if (pass == 1 && (iid != null || rt == null)) continue;
+      if (pass == 2 && (iid != null || rt != null)) continue;
+      java.util.ArrayList keys = new java.util.ArrayList(left.keySet());
+      for (int j = 0; j < keys.size() && need[i] > 0L; j++) {{
+        String id = (String) keys.get(j);
+        long q = 1L;
+        if (pass == 0) {{ if (!id.equals(iid)) continue; }}
+        else {{
+          if (mq.isItemExcluded(id)) continue;
+          if (pass == 1) {{ q = (long) rtUnits(id, rt); if (q <= 0L) continue; }}
+        }}
+        int h = ((Integer) left.get(id)).intValue();
+        long want = (need[i] + q - 1L) / q;
+        int use = want < (long) h ? (int) want : h;
+        need[i] = need[i] - (long) use * q;
+        if (h - use <= 0) left.remove(id); else left.put(id, Integer.valueOf(h - use));
+      }}
+    }}
+  }}
+  for (int i = 0; i < k; i++) if (need[i] > 0L) return null;
+  return left;
+}}""", cpg))
+# queue up to `want` units (0 = all): inputs leave inventory + bags with counted removal (0.6.4 rule); resource-type inputs
+# (Sands, Rock_*) are taken one unit at a time so the exact items are recorded for Cancel.
+cpg.addMethod(CtNewMethod.make(f"""
+public static String procQueue({PLA} p, {ST} st, {REF} ref, String k, String bench, int tier, {CRR} r, int want) {{
+  if ({PKG}.ProcStore.BROKEN.containsKey(k)) return "your " + bench + " data could not be loaded - nothing was taken";
+  {PKG}.ProcBench pb = {PKG}.ProcStore.of(k, bench);
+  long now = System.currentTimeMillis();
+  pb.advance(now);
+  int aneed = {PKG}.ProcBench.alloyNeed(r);   // 0.8.20
+  if (aneed > 0 && !"Furnace".equalsIgnoreCase(bench)) return "alloys smelt in the Furnace only - nothing was taken";
+  if (aneed > {PKG}.ProcBench.smelt(k)[0]) return "Furnace Charm T" + aneed + " unlocks this - equip it in your Void Charms (nothing was taken)";
+  int room = {PKG}.ProcBench.QUEUE_CAP - pb.queued();
+  if (room <= 0) return "the " + bench + " queue is full (" + {PKG}.ProcBench.QUEUE_CAP + " units)";
+  {CIC} mats = materialsFor(p, k, wantedOne(r));
+  int lim = limit(r, mats);
+  int qty = want <= 0 ? lim : (want < lim ? want : lim);
+  if (qty > room) qty = room;
+  if (qty <= 0) return "not enough materials";
+  {MQ}[] rin = r.getInput();
+  boolean res = false;
+  for (int i = 0; rin != null && i < rin.length; i++) if (rin[i] != null && rin[i].getItemId() == null) res = true;
+  long unit = {PKG}.ProcBench.unitMs(r, bench, tier);
+  // 0.8.21 SMELTING FORTUNE: which smelt (sfKind), F read ONCE now (sfValue), the mined-ore budget per batch below (sfGrant)
+  int sfk = res ? 0 : {PKG}.ProcBench.sfKind(r, bench);
+  java.util.UUID su = null;
+  double sfv = 0.0;
+  if (sfk > 0) {{
+    try {{ su = java.util.UUID.fromString(k.substring(0, 36)); }} catch (Throwable tu) {{ su = null; }}
+    sfv = {PKG}.ProcBench.sfValue(su, k);
+  }}
+  int sfu = 0;
+  boolean sfm = {PKG}.SackCfg.SF_MINED;   // one reading for the whole click (the grant + the job's give-back flag)
+  int queuedN = 0; int guard = 0;
+  StringBuilder audit = new StringBuilder();
+  while (queuedN < qty && guard < 400) {{
+    guard++;
+    int n = res ? 1 : (qty - queuedN);
+    java.util.List inputs = {CRM}.getInputMaterials(r, n);
+    int k = inputs == null ? 0 : inputs.size();
+    if (k == 0) {{ audit.append(" no-inputs"); break; }}
+    if (!mats.canRemoveMaterials(inputs)) break;
+    java.util.HashMap snapB = snapshot(mats);
+    int[] before = new int[k]; int[] per = new int[k]; int[] removed = new int[k];
+    for (int i = 0; i < k; i++) {{
+      {MQ} mq = ({MQ}) inputs.get(i);
+      before[i] = mats.countRemovableMaterial(mq);
+      per[i] = mq.getQuantity() / n; if (per[i] <= 0) per[i] = 1;
+    }}
+    Object tx = mats.removeMaterials(inputs);
+    boolean flag = tx != null && ((com.hypixel.hytale.server.core.inventory.transaction.Transaction) tx).succeeded();
+    int done = n;
+    for (int i = 0; i < k; i++) {{
+      removed[i] = before[i] - mats.countRemovableMaterial(({MQ}) inputs.get(i)); if (removed[i] < 0) removed[i] = 0;
+      int c2 = removed[i] / per[i]; if (c2 < done) done = c2;
+    }}
+    if (done < 0) done = 0;
+    java.util.LinkedHashMap took = removedItems(snapB, snapshot(mats));
+    String unitInputs = "";
+    if (done > 0 && !res) {{
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < k; i++) {{
+        {MQ} mq = ({MQ}) inputs.get(i);
+        if (sb.length() > 0) sb.append(';');
+        sb.append(mq.getItemId()).append('*').append(per[i]);
+        int extra = removed[i] - done * per[i];
+        if (extra > 0) {{ giveBack(st, ref, p, mq.getItemId(), extra); audit.append(" returned ").append(mq.getItemId()).append('*').append(extra); }}
+      }}
+      unitInputs = sb.toString();
+    }} else if (done > 0) {{
+      unitInputs = {PKG}.ProcBench.ser(took);
+    }}
+    if (done <= 0 || unitInputs.length() == 0) {{
+      java.util.Iterator ti = took.entrySet().iterator();
+      while (ti.hasNext()) {{
+        java.util.Map.Entry e = (java.util.Map.Entry) ti.next();
+        giveBack(st, ref, p, (String) e.getKey(), ((Integer) e.getValue()).intValue());
+        audit.append(" refunded ").append(e.getKey()).append('*').append(e.getValue());
+      }}
+      audit.append(" flag=").append(flag);
+      break;
+    }}
+    int fu = sfv > 0.0 ? {PKG}.ProcBench.sfGrant(r, sfk, su, done, sfm) : 0;   // 0.8.21: after the items were taken, never before
+    sfu += fu;
+    pb.addJobF(String.valueOf(r.getId()), done, unit, unitInputs, now, sfv, fu, sfm);
+    queuedN += done;
+    audit.append(" [").append(done).append("x ").append(unitInputs).append(" flag=").append(flag).append("]");
+    if (done < n) break;
+  }}
+  {PKG}.BagMirror m = {PKG}.BagMirror.of(k);
+  int consumed = m.sync();
+  saveSoon(k);
+  {PKG}.CraftLog.line(k, "QUEUE " + bench + " " + r.getId() + " requested=" + qty + " queued=" + queuedN + " unitMs=" + unit + " tier=" + tier + " charm=" + pb.cTier + "/" + pb.cTime + "/" + pb.cFuel + (pb.cEternal ? "/eternal" : "") + " fromBags=" + consumed + audit);
+  if (sfk > 0 && sfv > 0.0 && queuedN > 0) {PKG}.CraftLog.line(k, "SMELT-FORTUNE queued " + r.getId() + " fortune units=" + sfu + "/" + queuedN + " F=" + Math.round(sfv * 100.0) + "% budget=" + (sfm ? "mined ore (skill:fn:oreBudget " + ({PKG}.SackPool.bridge().get("skill:fn:oreBudget") != null ? "found" : "MISSING - no Fortune") + ")" : "off - every unit"));
+  {MQ} outq = r.getPrimaryOutput();
+  String nm = pretty(outq == null ? String.valueOf(r.getId()) : outq.getItemId());
+  if (queuedN <= 0) return "could not take the materials - nothing was used";
+  String sfMsg = "";   // 0.8.21
+  if (sfu > 0) sfMsg = " - Smelting Fortune " + Math.round(sfv * 100.0) + " percent on " + sfu + (sfu < queuedN ? " of them (ore you mined yourself)" : "");
+  else if (sfk > 0 && sfv > 0.0) sfMsg = " - no Smelting Fortune (only ore you mined yourself counts)";
+  return "queued " + queuedN + " x " + nm + " in the " + bench + (queuedN < qty ? " (" + (qty - queuedN) + " fewer than asked - the rest was returned)" : "") + (consumed > 0 ? " - " + consumed + " from the Void" : "") + sfMsg;
+}}""", cpg))
+# 0.8.11 ADD FUEL: up to `want` items of one fuel into the fuel slot (room = FUEL_CAP - loaded), taken from the inventory + the Void through
+# materialsFor (counted before / after each removal, booked by BagMirror.sync), in rounds while the mirror offers less than asked
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static String procFuelN(@PLA@ p, @ST@ st, @REF@ ref, String k, String bench, String id, int want) {
+  if (@PKG@.ProcStore.BROKEN.containsKey(k)) return "your " + bench + " data could not be loaded - nothing was taken";
+  if (@PKG@.ProcBench.fuelQuality(id) <= 0.0) return pretty(id) + " does not burn";
+  @PKG@.ProcBench pb = @PKG@.ProcStore.of(k, bench);
+  pb.advance(System.currentTimeMillis());
+  int room = @PKG@.ProcBench.FUEL_CAP - pb.fuelCount();
+  if (room <= 0) return "the fuel slot is full (" + @PKG@.ProcBench.FUEL_CAP + " items)";
+  int goal = want < room ? want : room;
+  if (goal <= 0) return "nothing to load";
+  @MQ@ one = new @MQ@(id, (String) null, (String) null, 1, (org.bson.BsonDocument) null);
+  int loaded = 0; int consumed = 0; int rounds = 0;
+  StringBuilder audit = new StringBuilder();
+  while (loaded < goal && rounds < 200) {
+    rounds++;
+    @CIC@ mats = materialsFor(p, k, java.util.Collections.singleton(id));
+    int have = mats.countRemovableMaterial(one);
+    int n = goal - loaded;
+    if (n > have) n = have;
+    if (n <= 0) break;
+    java.util.ArrayList l = new java.util.ArrayList();
+    l.add(new @MQ@(id, (String) null, (String) null, n, (org.bson.BsonDocument) null));
+    if (!mats.canRemoveMaterials(l)) break;
+    int before = mats.countRemovableMaterial(one);
+    mats.removeMaterials(l);
+    int after = mats.countRemovableMaterial(one);
+    int took = before - after;
+    if (took < 0) took = 0;
+    if (took > n) took = n;
+    if (took > 0) pb.addFuel(id, took);
+    loaded += took;
+    consumed += @PKG@.BagMirror.of(k).sync();
+    audit.append(' ').append(before).append("->").append(after);
+    if (took <= 0) break;
+  }
+  saveSoon(k);
+  @PKG@.CraftLog.line(k, "FUEL " + bench + " " + id + " asked=" + want + " room=" + room + " loaded=" + loaded + " fromBags=" + consumed + " counts" + audit);
+  return loaded > 0 ? ("loaded " + loaded + " " + pretty(id) + " into the " + bench + (consumed > 0 ? " - " + consumed + " from the Void" : "")) : ("you have no " + pretty(id));
+}"""), cpg))
+# the quick-load bar (kept as it is, Skyy "but keep the quick load bar we currently have."): up to 64 of that fuel
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static String procFuel(@PLA@ p, @ST@ st, @REF@ ref, String k, String bench, String id) {
+  return procFuelN(p, st, ref, k, bench, id, 64);
+}"""), cpg))
+# how many of one fuel the player owns: the inventory + the Void (the settled key only)
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static long fuelHave(@PLA@ p, String k, String id) {
+  long n = (long) countItem(p.getInventory().getCombinedBackpackStorageHotbar(), id);
+  if (k != null) n += @PKG@.SackPool.get(k, id);
+  return n;
+}"""), cpg))
+# ADD FUEL's list (Skyy "sort it by how much you have. so if you have 1000 sticks they will show up first in the list."): every fuel the player
+# owns, Object[]{ id, Long have }, most first, then by name
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static java.util.ArrayList fuelsOwned(@PLA@ p, String k) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  java.util.ArrayList fl = @PKG@.ProcBench.fuels();
+  for (int i = 0; i < fl.size(); i++) {
+    String fid = (String) fl.get(i);
+    long h = fuelHave(p, k, fid);
+    if (h > 0L) out.add(new Object[] { fid, Long.valueOf(h), pretty(fid).toLowerCase() + " " + fid });
+  }
+  for (int i = 1; i < out.size(); i++) {
+    Object[] cur = (Object[]) out.get(i);
+    int j = i - 1;
+    while (j >= 0) {
+      Object[] pv = (Object[]) out.get(j);
+      long a = ((Long) pv[1]).longValue(); long b = ((Long) cur[1]).longValue();
+      boolean after = a < b || (a == b && ((String) pv[2]).compareTo((String) cur[2]) > 0);
+      if (!after) break;
+      out.set(j + 1, pv);
+      j--;
+    }
+    out.set(j + 1, cur);
+  }
+  return out;
+}"""), cpg))
+# collect: storage first (getCombinedStorageHotbarBackpack), only what fits, verified by counting; the rest stays in the output slot
+cpg.addMethod(CtNewMethod.make(f"""
+public static String procCollect({PLA} p, {ST} st, {REF} ref, String k, String bench) {{
+  {PKG}.ProcBench pb = {PKG}.ProcStore.get(k, bench);
+  if (pb == null) return "nothing to collect yet";
+  if (pb.advance(System.currentTimeMillis()) > 0) {PKG}.ProcStore.markDirty(k);
+  java.util.ArrayList l = pb.outList();
+  if (l.isEmpty()) return "nothing to collect yet";
+  {IC} dst = p.getInventory().getCombinedStorageHotbarBackpack();
+  int given = 0; int left = 0;
+  StringBuilder audit = new StringBuilder();
+  for (int i = 0; i < l.size(); i++) {{
+    Object[] e = (Object[]) l.get(i);
+    String id = (String) e[0];
+    int want = ((Integer) e[1]).intValue();
+    int max = 64;
+    try {{ {IS} probe = new {IS}(id, 1); if (probe.getItem() != null && probe.getItem().getMaxStack() > 0) max = probe.getItem().getMaxStack(); }} catch (Throwable t) {{ }}
+    int moved = 0; int guard = 0;
+    while (moved < want && guard < 2000) {{
+      guard++;
+      int n = want - moved; if (n > max) n = max;
+      int before = countItem(dst, id);
+      dst.addItemStack(new {IS}(id, n));
+      int added = countItem(dst, id) - before;
+      if (added < 0) added = 0;
+      if (added > n) added = n;
+      if (added > 0) pb.takeOut(id, added);
+      moved += added;
+      if (added < n) break;
+    }}
+    given += moved; left += want - moved;
+    audit.append(" ").append(id).append('=').append(moved).append('/').append(want);
+  }}
+  saveSoon(k);
+  {PKG}.CraftLog.line(k, "COLLECT " + bench + " given=" + given + " left=" + left + audit);
+  if (given == 0) return "your inventory is full - nothing collected";
+  return "collected " + given + " items" + (left > 0 ? " - inventory full, " + left + " still waiting in the " + bench : "");
+}}""", cpg))
+cpg.addMethod(CtNewMethod.make(f"""
+public static String procCancel({PLA} p, {ST} st, {REF} ref, String k, String bench) {{
+  {PKG}.ProcBench pb = {PKG}.ProcStore.get(k, bench);
+  if (pb == null) return "nothing queued";
+  pb.advance(System.currentTimeMillis());
+  if (pb.queued() <= 0) return "nothing queued";
+  int n = pb.cancel();
+  saveSoon(k);
+  {PKG}.CraftLog.line(k, "CANCEL " + bench + " units=" + n + " (their inputs went to the output slot)");
+  return "cancelled " + n + " units - " + procCollect(p, st, ref, k, bench);
+}}""", cpg))
+cpg.addMethod(CtNewMethod.make(f"""
+public static String procUnload({PLA} p, {ST} st, {REF} ref, String k, String bench) {{
+  {PKG}.ProcBench pb = {PKG}.ProcStore.get(k, bench);
+  if (pb == null) return "no fuel loaded";
+  pb.advance(System.currentTimeMillis());
+  int n = pb.unloadFuel();
+  if (n <= 0) return "no unburned fuel loaded";
+  saveSoon(k);
+  {PKG}.CraftLog.line(k, "UNLOAD " + bench + " fuel=" + n + " (to the output slot)");
+  return "unloaded " + n + " fuel - " + procCollect(p, st, ref, k, bench);
+}}""", cpg))
+# 0.8.11 (Skyy "upgrade the look of the crafter"): ONE recipe row - the output in a sky slot frame + its name (and the tier tag) over one chip
+# per input (its item icon + have / need, green / red; up to 4 inputs (3 on a timed tab) also name the input), then Craft / Queue (Primary),
+# x10, All N - the Disabled look and no binding when nothing can be made. Events unchanged: craft:<i>:<n> / pq:<i>:<n>.
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public void drawRow(@UCB@ b, @UEB@ ev, int i, @CRR@ r, @CIC@ mats, int lim, String note, int allN, boolean timed, String each) {
+  // 0.8.14 (Skyy "scale up the actual items you craft, especially the names and the cost"): 92 high (the larger sizes when only a few rows:
+  // rowSz, Skyy "if there are only a few items try to scale them to all fit."), into the scroll list #SkyyCList
+  int rh = ROWHS[this.rowSz];
+  int slot = pickI(80, 112, 148);
+  int ico = pickI(72, 104, 140);
+  int tw = pickI(1080, 1050, 1010);   // 0.8.15: the 1552 px hub page (680 / 650 / 610 in the old 1152 body)
+  int hh = pickI(34, 40, 46);
+  int inh = pickI(40, 48, 56);
+  int cic = pickI(36, 44, 52);
+  @MQ@ outq = r.getPrimaryOutput();
+  String outId = outq == null ? "?" : outq.getItemId();
+  String rid = "SkyyCRow" + i;
+  b.appendInline("#SkyyCList", "Group #" + rid + " { Anchor: (Height: " + rh + ", Bottom: 6); LayoutMode: Left; Padding: (Horizontal: 10); Background: " + (lim > 0 ? BG_ROW : BG_ROWDIM) + "; }");
+  b.appendInline("#" + rid, "Group { Anchor: (Width: " + slot + ", Height: " + slot + ", Top: " + ((rh - slot) / 2) + "); Padding: (Full: 4); Background: " + BG_SLOT + "; ItemIcon { Anchor: (Width: " + ico + ", Height: " + ico + "); ItemId: \"" + @PKG@.SacksPage.safe(outId) + "\"; } }");
+  b.appendInline("#" + rid, gap(14));
+  b.appendInline("#" + rid, "Group #SkyyCTxt" + i + " { Anchor: (Width: " + tw + ", Height: " + rh + "); LayoutMode: Top; Padding: (Top: " + ((rh - hh - inh - 4) / 2) + "); }");
+  b.appendInline("#SkyyCTxt" + i, "Group #SkyyCHd" + i + " { Anchor: (Height: " + hh + "); LayoutMode: Left; }");
+  b.appendInline("#SkyyCHd" + i, lbl("SkyyCName" + i, tw - 180, hh, lim > 0 ? pick3(L_NAMEB, L_NAME2, L_NAME3) : pick3(L_NAMEDIMB, L_NAMEDIM2, L_NAMEDIM3)));
+  b.set("#SkyyCName" + i + ".Text", pretty(outId) + (outq != null && outq.getQuantity() > 1 ? " x" + outq.getQuantity() : "") + (note == null ? "" : note));
+  String tt = @PKG@.RecipeCmp.tierText(outId);
+  if (tt.length() > 0) {
+    b.appendInline("#SkyyCHd" + i, lbl("SkyyCTier" + i, 180, hh, pick3(L_TIERB, L_TIER2, L_TIER3)));
+    b.set("#SkyyCTier" + i + ".Text", tt);
+  }
+  b.appendInline("#SkyyCTxt" + i, "Group #SkyyCIn" + i + " { Anchor: (Height: " + inh + ", Top: 4); LayoutMode: Left; }");
+  @MQ@[] in = r.getInput();
+  int n = 0;
+  for (int q = 0; in != null && q < in.length; q++) if (in[q] != null) n++;
+  boolean wide = n <= (timed ? 2 : (this.rowSz == 0 ? 3 : 2));
+  int max = wide ? n : (timed ? pickI(4, 3, 2) : pickI(5, 4, 3));
+  int lw = wide ? (timed ? pickI(200, 200, 190) : (n <= 2 ? pickI(250, 240, 220) : 180)) : pickI(86, 96, 104);
+  String sHave = pick3(L_HAVEB, L_HAVE2, L_HAVE3);
+  String sOut = pick3(L_OUTB, L_OUT2, L_OUT3);
+  String sCap = pick3(L_CAPB, L_CAP2, L_CAP3);
+  int shown = 0;
+  for (int q = 0; in != null && q < in.length && shown < max; q++) {
+    if (in[q] == null) continue;
+    int have = mats.countRemovableMaterial(in[q]);
+    int need = in[q].getQuantity();
+    String iid = in[q].getItemId();
+    String nm = iid != null ? pretty(iid) : (in[q].getResourceTypeId() != null ? @PKG@.SackDefs.rtName(in[q].getResourceTypeId()) : "?");
+    String cid = "SkyyCC" + i + "x" + q;
+    if (iid != null) b.appendInline("#SkyyCIn" + i, "ItemIcon { Anchor: (Width: " + cic + ", Height: " + cic + ", Top: " + ((inh - cic) / 2) + "); ItemId: \"" + @PKG@.SacksPage.safe(iid) + "\"; }");
+    b.appendInline("#SkyyCIn" + i, lbl(cid, lw + (iid == null ? cic : 0), inh, have >= need ? sHave : sOut));
+    b.set("#" + cid + ".Text", " " + ((wide || iid == null) ? nm + " " : "") + @PKG@.SacksPage.shortNum((long) have) + "/" + need);
+    b.appendInline("#SkyyCIn" + i, gap(6));
+    shown++;
+  }
+  if (shown < n) {
+    b.appendInline("#SkyyCIn" + i, lbl("SkyyCMore" + i, 40, inh, sCap));
+    b.set("#SkyyCMore" + i + ".Text", "+" + (n - shown));
+  }
+  if (timed) {
+    b.appendInline("#SkyyCIn" + i, lbl("SkyyCEach" + i, 110, inh, sCap));
+    b.set("#SkyyCEach" + i + ".Text", each == null ? "" : each);
+  }
+  b.appendInline("#" + rid, gap(8));
+  boolean ok = allN > 0;
+  String bid = timed ? "SkyyPQ" : "SkyyCCraft";
+  String tid = timed ? "SkyyPTen" : "SkyyCTen";
+  String aid = timed ? "SkyyPAll" : "SkyyCAll";
+  b.appendInline("#" + rid, btn(bid + i, timed ? "Queue" : "Craft", 120, (rh - 32) / 2, ok ? B_PRI : B_PRIDIS));
+  b.appendInline("#" + rid, gap(6));
+  b.appendInline("#" + rid, btn(tid + i, "x10", 70, (rh - 32) / 2, ok ? B_SEC : B_SECDIS));
+  b.appendInline("#" + rid, gap(6));
+  b.appendInline("#" + rid, btn(aid + i, "All " + allN, 110, (rh - 32) / 2, ok ? B_SEC : B_SECDIS));
+  if (ok) {
+    String a0 = timed ? "pq:" : "craft:";
+    String rk = ":" + String.valueOf(r.getId());   // 0.8.14: the recipe id rides along (resolved by id - rowOf)
+    ev.addEventBinding(@BT@.Activating, "#" + bid + i, @EVD@.of("a", a0 + i + ":1" + rk));
+    ev.addEventBinding(@BT@.Activating, "#" + tid + i, @EVD@.of("a", a0 + i + ":10" + rk));
+    ev.addEventBinding(@BT@.Activating, "#" + aid + i, @EVD@.of("a", a0 + i + ":0" + rk));
+  }
+}"""), cpg))
+# 0.8.15 (kit 1.7): a 48 px footer button (the kit's normal sky button art; foot_button's look with a runtime label)
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public static String fbtn(String id, String text, int w, String st) {
+  return "TextButton #" + id + " { Anchor: (Width: " + w + ", Height: 48); Padding: (Horizontal: 10); Text: \"" + @PKG@.SacksPage.safe(text) + "\"; " + st + " }";
+}"""), cpg))
+# the result line + the page's own toggles: every view ends with it. 0.8.15: into the page footer #SkyyCraftFoot (info left, buttons right);
+# no pager any more - every list scrolls (pageNo / pages are ignored)
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public void foot(@UCB@ b, @UEB@ ev, int pageNo, int pages, boolean only, boolean craftOnly, boolean refresh) {
+  int iw = 1552 - (craftOnly ? 240 : 0) - (refresh ? 150 : 0);
+  b.appendInline("#SkyyCraftFoot", lbl("SkyyCInfo", iw, 48, L_INFO));
+  b.set("#SkyyCInfo.Text", this.info == null ? "" : this.info);
+  if (craftOnly) {
+    b.appendInline("#SkyyCraftFoot", gap(10));
+    b.appendInline("#SkyyCraftFoot", fbtn("SkyyCOnly", "Craftable only " + (only ? "ON" : "OFF"), 230, only ? F_TERON : F_TER));
+    ev.addEventBinding(@BT@.Activating, "#SkyyCOnly", @EVD@.of("a", "onlyc"));
+  }
+  if (refresh) {
+    b.appendInline("#SkyyCraftFoot", gap(10));
+    b.appendInline("#SkyyCraftFoot", fbtn("SkyyPRefresh", "Refresh", 140, F_SEC));
+    ev.addEventBinding(@BT@.Activating, "#SkyyPRefresh", @EVD@.of("a", "prefresh"));
+  }
+}"""), cpg))
+# D. ADD FUEL (Skyy "id add an add fuel button which pops up a selector. you pick which fuel from the list of what you have. then type in a
+# number."): the list (most first, 7 a page, Pick) -> the amount (empty = all that fits; max = what you have / the room) -> LOAD
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public void fuelPicker(@UCB@ b, @UEB@ ev, @PLA@ p, String k, String bench, @PKG@.ProcBench view) {
+  // 0.8.15 (kit 1.7, Skyy "I never want to have to use a back button"): ONE in-page view - the picked fuel's amount box + Load on top, the
+  // fuel list below as ONE scroll list (few fuels = bigger rows, Skyy rule 7); Pick on another row switches; Add fuel (shown selected while
+  // open) or the bench's sub-tab closes it. No pages, no back / cancel button.
+  int room = @PKG@.ProcBench.FUEL_CAP - view.fuelCount();
+  if (room < 0) room = 0;
+  java.util.ArrayList owned = fuelsOwned(p, k);
+  long selHave = 0L;
+  for (int i = 0; this.fuelSel != null && i < owned.size(); i++) {
+    Object[] e = (Object[]) owned.get(i);
+    if (this.fuelSel.equals(e[0])) selHave = ((Long) e[1]).longValue();
+  }
+  if (this.fuelSel != null && selHave <= 0L) this.fuelSel = null;
+  int above = this.usedH + 26 + 22 + 18 + 22 + 46 + 42 + 40;
+  b.appendInline("#SkyyCraftBody", "Group #SkyyPFHead { Anchor: (Height: 36, Bottom: 4); LayoutMode: Left; }");
+  b.appendInline("#SkyyPFHead", lbl("SkyyPFTitle", 1500, 32, L_HEAD));
+  if (this.fuelSel != null) {
+    above = above + 132;
+    long max = selHave < (long) room ? selHave : (long) room;
+    b.set("#SkyyPFTitle.Text", "Add " + pretty(this.fuelSel) + " to the " + bench + " - or pick another fuel below");
+    b.appendInline("#SkyyCraftBody", "Group #SkyyPFSel { Anchor: (Height: 128, Bottom: 4); LayoutMode: Left; Padding: (Full: 12); Background: " + BG_PANEL + "; }");
+    b.appendInline("#SkyyPFSel", "Group { Anchor: (Width: 96, Height: 96); Padding: (Full: 6); Background: " + BG_SLOT + "; ItemIcon { Anchor: (Width: 84, Height: 84); ItemId: \"" + @PKG@.SacksPage.safe(this.fuelSel) + "\"; } }");
+    b.appendInline("#SkyyPFSel", gap(16));
+    b.appendInline("#SkyyPFSel", "Group #SkyyPFCol { Anchor: (Width: 980, Height: 104); LayoutMode: Top; }");
+    b.appendInline("#SkyyPFCol", lbl("SkyyPFName", 980, 28, L_NAME));
+    b.set("#SkyyPFName.Text", pretty(this.fuelSel));
+    b.appendInline("#SkyyPFCol", lbl("SkyyPFHave", 980, 26, L_TEXT));
+    b.set("#SkyyPFHave.Text", "You have " + @PKG@.SacksPage.num(selHave) + " (inventory + the Void). Room in the fuel slot: " + @PKG@.SacksPage.num((long) room) + ".");
+    b.appendInline("#SkyyPFCol", "Group #SkyyPFAmtRow { Anchor: (Height: 40, Top: 6); LayoutMode: Left; }");
+    b.appendInline("#SkyyPFAmtRow", FUEL_MK);
+    b.appendInline("#SkyyPFAmtRow", gap(10));
+    b.appendInline("#SkyyPFAmtRow", btn("SkyyPFLoad", "Load", 140, 0, max > 0L ? B_PRI : B_PRIDIS));
+    b.appendInline("#SkyyPFAmtRow", gap(12));
+    b.appendInline("#SkyyPFAmtRow", lbl("SkyyPFMax", 400, 32, L_CAP));
+    b.set("#SkyyPFMax.Text", max > 0L ? ("up to " + @PKG@.SacksPage.num(max) + " - empty loads all of them") : "the fuel slot is full");
+    if (max > 0L) {
+      ev.addEventBinding(@BT@.Activating, "#SkyyPFLoad", @EVD@.of("a", "pfload").append("@FuelAmt", "#SkyyCFuelAmt.Value"));
+      ev.addEventBinding(@BT@.Validating, "#SkyyCFuelAmt", @EVD@.of("a", "pfload").append("@FuelAmt", "#SkyyCFuelAmt.Value"), false);
+    }
+  } else {
+    b.set("#SkyyPFTitle.Text", "Pick a fuel - most first (your inventory + the Void). Add fuel closes this list.");
+  }
+  int lh = BODYH - above - 4;
+  if (lh < 120) lh = 120;
+  b.appendInline("#SkyyCraftBody", FLIST_A + lh + FLIST_B);
+  int n = owned.size() < 100 ? owned.size() : 100;
+  int fz = @PKG@.HubBar.growSize(n, lh - 8, FUELHS, 4);
+  int rh = FUELHS[fz];
+  int fr = fz == 2 ? 84 : (fz == 1 ? 60 : 42);
+  String sN = fz == 2 ? L_NAME2 : (fz == 1 ? L_NAMEB : L_NAME);
+  String sH = fz == 2 ? L_HAVE2 : (fz == 1 ? L_HAVEB : L_HAVE);
+  this.fuelList = new String[n];
+  for (int j = 0; j < n; j++) {
+    Object[] e = (Object[]) owned.get(j);
+    String fid = (String) e[0];
+    this.fuelList[j] = fid;
+    boolean on = fid.equals(this.fuelSel);
+    String rid = "SkyyPFRow" + j;
+    b.appendInline("#SkyyPFList", "Group #" + rid + " { Anchor: (Height: " + rh + ", Bottom: 4); LayoutMode: Left; Padding: (Horizontal: 8); Background: " + BG_ROW + "; }");
+    b.appendInline("#" + rid, "Group { Anchor: (Width: " + fr + ", Height: " + fr + ", Top: " + ((rh - fr) / 2) + "); Padding: (Full: 3); Background: " + BG_SLOT + "; ItemIcon { Anchor: (Width: " + (fr - 6) + ", Height: " + (fr - 6) + "); ItemId: \"" + @PKG@.SacksPage.safe(fid) + "\"; } }");
+    b.appendInline("#" + rid, gap(12));
+    b.appendInline("#" + rid, lbl("SkyyPFN" + j, 900, rh, sN));
+    b.set("#SkyyPFN" + j + ".Text", pretty(fid));
+    b.appendInline("#" + rid, lbl("SkyyPFC" + j, 300, rh, sH));
+    b.set("#SkyyPFC" + j + ".Text", "x " + @PKG@.SacksPage.num(((Long) e[1]).longValue()));
+    b.appendInline("#" + rid, btn("SkyyPFPick" + j, on ? "Picked" : "Pick", 120, (rh - 32) / 2, on ? B_TERON : B_SEC));
+    if (!on) ev.addEventBinding(@BT@.Activating, "#SkyyPFPick" + j, @EVD@.of("a", "pfpick:" + j));
+  }
+  if (owned.isEmpty()) {
+    b.appendInline("#SkyyPFList", lbl("SkyyPFNone", 1500, 40, L_TEXTC));
+    b.set("#SkyyPFNone.Text", "No fuel on you or in the Void - logs, planks, sticks and charcoal burn.");
+  } else if (owned.size() > n) {
+    b.appendInline("#SkyyPFList", lbl("SkyyPFMore", 1500, 40, L_TEXTC));
+    b.set("#SkyyPFMore.Text", "Showing the " + n + " fuels you have most of.");
+  }
+  foot(b, ev, 0, 0, false, false, false);
+}"""), cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public void buildProc(@UCB@ b, @UEB@ ev, @PLA@ p, java.util.UUID u, String k) {
+  String bench = this.tab.substring(2);
+  int tier = accTier(accessories(p, u), bench);
+  boolean broken = @PKG@.ProcStore.BROKEN.containsKey(k);
+  @PKG@.ProcBench pb = @PKG@.ProcStore.get(k, bench);
+  if (pb != null && pb.advance(System.currentTimeMillis()) > 0) @PKG@.ProcStore.markDirty(k);
+  @PKG@.ProcBench view = pb != null ? pb : new @PKG@.ProcBench(bench);
+  if (pb == null) { view.key = k; view.advance(System.currentTimeMillis()); }   // 0.8.20: the charm on the status line (an empty bench)
+  int ctier = "Furnace".equalsIgnoreCase(bench) ? @PKG@.ProcBench.smelt(k)[0] : 0;   // critic fix: the lock from a fresh read
+  String[] d = view.describe(tier, tier > 0);
+  String stat = broken ? ("Your " + bench + " file could not be read - it was left untouched. Tell an admin.") : d[0];
+  b.appendInline("#SkyyCraftBody", lbl("SkyyPStat", 1552, 26, L_STAT));   // 0.8.15: the 1552 px page (1152 / 1100 before)
+  b.set("#SkyyPStat.Text", stat);
+  b.appendInline("#SkyyCraftBody", lbl("SkyyPProg", 1552, 22, L_TEXTC));
+  b.set("#SkyyPProg.Text", d[1]);
+  int pct = 0;
+  try { pct = Integer.parseInt(d[4]); } catch (Throwable t) { }
+  if (pct < 0) pct = 0;
+  if (pct > 100) pct = 100;
+  int fw = pct * 1500 / 100;
+  b.appendInline("#SkyyCraftBody", "Group #SkyyPBarRow { Anchor: (Height: 18); LayoutMode: Left; Padding: (Left: 26, Top: 4); }");
+  b.appendInline("#SkyyPBarRow", "Group #SkyyPBar { Anchor: (Width: 1500, Height: 10); LayoutMode: Left; Background: " + C_TRACK + "; }");
+  if (fw > 0) b.appendInline("#SkyyPBar", "Group { Anchor: (Width: " + fw + ", Height: 10); Background: " + C_FILL + "; }");
+  b.appendInline("#SkyyCraftBody", lbl("SkyyPQueue", 1552, 22, L_CAPC));
+  b.set("#SkyyPQueue.Text", d[2]);
+  b.appendInline("#SkyyCraftBody", "Group #SkyyPOutRow { Anchor: (Height: 36, Bottom: 6, Top: 4); LayoutMode: Left; }");
+  b.appendInline("#SkyyPOutRow", lbl("SkyyPOut", 540, 32, L_HAVE));
+  b.set("#SkyyPOut.Text", d[3]);
+  b.appendInline("#SkyyPOutRow", btn("SkyyPCollect", "Collect", 140, 0, B_PRI));
+  b.appendInline("#SkyyPOutRow", gap(8));
+  b.appendInline("#SkyyPOutRow", btn("SkyyPCancel", "Cancel queue", 170, 0, B_SEC));
+  ev.addEventBinding(@BT@.Activating, "#SkyyPCollect", @EVD@.of("a", "pcollect"));
+  ev.addEventBinding(@BT@.Activating, "#SkyyPCancel", @EVD@.of("a", "pcancel"));
+  java.util.ArrayList raw = (tier > 0 && !broken) ? recipesFor(this.tab, u) : new java.util.ArrayList();
+  @CIC@ mats = viewMats(p, k, procWanted(raw));
+  this.fuelIds = new String[4];
+  if (view.needsFuel) {
+    b.appendInline("#SkyyPOutRow", gap(8));
+    b.appendInline("#SkyyPOutRow", btn("SkyyPUnload", "Unload fuel", 160, 0, B_SEC));
+    ev.addEventBinding(@BT@.Activating, "#SkyyPUnload", @EVD@.of("a", "punload"));
+    b.appendInline("#SkyyCraftBody", "Group #SkyyPFuelRow { Anchor: (Height: 36, Bottom: 6); LayoutMode: Left; }");
+    b.appendInline("#SkyyPFuelRow", lbl("SkyyPFuelLbl", 100, 32, L_HEAD));
+    b.set("#SkyyPFuelLbl.Text", "Load fuel");
+    java.util.ArrayList fl = @PKG@.ProcBench.fuels();
+    java.util.ArrayList have = new java.util.ArrayList();
+    for (int i = 0; i < fl.size(); i++) {
+      String fid = (String) fl.get(i);
+      int c = mats.countRemovableMaterial(new @MQ@(fid, (String) null, (String) null, 1, (org.bson.BsonDocument) null));
+      if (c > 0) have.add(new Object[] { fid, Integer.valueOf(c) });
+    }
+    boolean[] used = new boolean[have.size()];
+    int shown = 0;
+    for (int sI = 0; sI < 4; sI++) {
+      int bi = -1; int bc = 0;
+      for (int i = 0; i < have.size(); i++) {
+        if (used[i]) continue;
+        int c = ((Integer) ((Object[]) have.get(i))[1]).intValue();
+        if (c > bc) { bc = c; bi = i; }
+      }
+      if (bi < 0) break;
+      used[bi] = true;
+      String fid = (String) ((Object[]) have.get(bi))[0];
+      this.fuelIds[sI] = fid;
+      int n = bc < 64 ? bc : 64;
+      b.appendInline("#SkyyPFuelRow", btn("SkyyPFuel" + sI, pretty(fid) + " x" + n, 196, 0, B_SEC));
+      b.appendInline("#SkyyPFuelRow", gap(6));
+      ev.addEventBinding(@BT@.Activating, "#SkyyPFuel" + sI, @EVD@.of("a", "pfuel:" + sI));
+      shown++;
+    }
+    if (shown == 0) {
+      b.appendInline("#SkyyPFuelRow", lbl("SkyyPNoFuel", 640, 32, L_OUTL));
+      b.set("#SkyyPNoFuel.Text", "No fuel on you or in the Void - logs, planks, sticks and charcoal burn.");
+      b.appendInline("#SkyyPFuelRow", gap(194));
+    } else {
+      b.appendInline("#SkyyPFuelRow", gap(4 + 202 * (4 - shown)));
+    }
+    b.appendInline("#SkyyPFuelRow", btn("SkyyPAddF", "Add fuel", 150, 0, this.fuelPick ? B_TERON : B_PRI));
+    ev.addEventBinding(@BT@.Activating, "#SkyyPAddF", @EVD@.of("a", "paddf"));
+  }
+  if (this.fuelPick && view.needsFuel && !broken) { fuelPicker(b, ev, p, k, bench, view); return; }
+  this.usedH = this.usedH + 26 + 22 + 18 + 22 + 46 + (view.needsFuel ? 42 : 0);   // 0.8.14: status, progress, bar, queue, output (+ fuel) lines
+  this.fuelPick = false;
+  boolean only = Boolean.TRUE.equals(ONLY.get(u));
+  java.util.ArrayList ent = new java.util.ArrayList();
+  for (int i = 0; i < raw.size(); i++) {
+    @CRR@ r0 = (@CRR@) raw.get(i);
+    int l0 = limit(r0, mats);
+    if (@PKG@.ProcBench.alloyNeed(r0) > ctier) l0 = 0;   // 0.8.20: a locked alloy is never "can make"
+    if (only && l0 <= 0) continue;
+    @MQ@ o0 = r0.getPrimaryOutput();
+    String id0 = o0 == null ? String.valueOf(r0.getId()) : o0.getItemId();
+    ent.add(new Object[] { r0, Integer.valueOf(l0), Integer.valueOf(@PKG@.RecipeCmp.sortKey(id0)), @PKG@.RecipeCmp.sortName(id0) });   // 0.8.11: tier, then name
+  }
+  java.util.Collections.sort(ent, new @PKG@.RecipeCmp());
+  this.rows = new java.util.ArrayList();
+  for (int i = 0; i < ent.size(); i++) this.rows.add(((Object[]) ent.get(i))[0]);
+  int room = @PKG@.ProcBench.QUEUE_CAP - view.queued();
+  if (room < 0) room = 0;
+  listOpen(b, this.usedH);   // 0.8.14: one scrolling list, as the instant tabs
+  this.rowSz = rowSize(this.rows.size() < MAXROWS ? this.rows.size() : MAXROWS, this.usedH);
+  int drawn = 0;
+  for (int i = 0; i < this.rows.size() && i < MAXROWS; i++) {
+    @CRR@ r = (@CRR@) this.rows.get(i);
+    int lim = limit(r, mats);
+    int aneed = @PKG@.ProcBench.alloyNeed(r);
+    String lockNote = "";
+    if (aneed > ctier) { lim = 0; lockNote = " - Furnace Charm T" + aneed + " unlocks this"; }   // 0.8.20: greyed, no buttons
+    int allN = lim < room ? lim : room;
+    drawRow(b, ev, i, r, mats, lim, lockNote, allN, true, @PKG@.ProcBench.dur(@PKG@.ProcBench.charmMs(@PKG@.ProcBench.unitMs(r, bench, tier), view.cTime)) + " each");
+    drawn++;
+  }
+  listMore(b, drawn, this.rows.size());
+  if (this.rows.size() == 0) {
+    b.appendInline("#SkyyCList", lbl("SkyyCEmpty", 1100, 40, L_TEXTC));
+    b.set("#SkyyCEmpty.Text", tier > 0 ? "No recipes here yet." : ("Equip a " + bench + " accessory in your Void Charms to queue more."));
+  }
+  foot(b, ev, 0, 0, only, true, true);
+}"""), cpg))
+# 0.7.3: CraftPage.live() (the ~2 s Furnace / Tannery self-refresh from ProcTask) and its liveOn / liveSig / liveAt state are gone -
+# periodic page updates make PageManager drop clicks; the tab has a Refresh button (handleProc "prefresh").
+# 0.8.14 (critic fix): "<i>:<n>:<recipeId>" -> that recipe in the CURRENT list (place i if it still holds it, else a search by id); null =
+# the id is not listed any more (or an old two-part event) - the caller crafts nothing
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public @CRR@ rowOf(String rest) {
+  if (rest == null || this.rows == null) return null;
+  String[] parts = rest.split(":", 3);
+  if (parts.length < 3 || parts[2].length() == 0) return null;
+  int idx = -1;
+  try { idx = Integer.parseInt(parts[0]); } catch (Throwable t) { idx = -1; }
+  String rid = parts[2];
+  if (idx >= 0 && idx < this.rows.size()) {
+    @CRR@ r0 = (@CRR@) this.rows.get(idx);
+    if (r0 != null && rid.equals(String.valueOf(r0.getId()))) return r0;
+  }
+  for (int i = 0; i < this.rows.size(); i++) {
+    @CRR@ r1 = (@CRR@) this.rows.get(i);
+    if (r1 != null && rid.equals(String.valueOf(r1.getId()))) return r1;
+  }
+  return null;
+}"""), cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public boolean handleProc(@REF@ ref, @ST@ st, @PLA@ p, java.util.UUID u, String k, String data, String act) {
+  if (this.tab == null || !this.tab.startsWith("P:")) return false;
+  String bench = this.tab.substring(2);
+  if (act.equals("prefresh")) { this.info = ""; rebuild(); return true; }
+  if (act.equals("pcollect")) { this.info = procCollect(p, st, ref, k, bench); rebuild(); return true; }
+  if (act.equals("pcancel")) { this.info = procCancel(p, st, ref, k, bench); rebuild(); return true; }
+  if (act.equals("punload")) { this.info = procUnload(p, st, ref, k, bench); rebuild(); return true; }
+  // 0.8.11 ADD FUEL
+  if (act.equals("paddf")) { this.fuelPick = !this.fuelPick; this.fuelSel = null; this.fuelPage = 0; this.info = ""; rebuild(); return true; }
+  if (act.equals("pfcancel")) { this.fuelPick = false; this.fuelSel = null; this.info = ""; rebuild(); return true; }
+  if (act.equals("pfback")) { this.fuelSel = null; this.info = ""; rebuild(); return true; }
+  if (act.startsWith("pfpick:")) {
+    int i = -1;
+    try { i = Integer.parseInt(act.substring(7)); } catch (Throwable t) { i = -1; }
+    if (this.fuelList != null && i >= 0 && i < this.fuelList.length && this.fuelList[i] != null) { this.fuelSel = this.fuelList[i]; this.info = ""; }
+    rebuild();
+    return true;
+  }
+  if (act.equals("pfload")) {
+    String id = this.fuelSel;
+    if (id == null || !this.fuelPick) { rebuild(); return true; }
+    String amt = jsonStr(data, "@FuelAmt");
+    @PKG@.ProcBench pb = @PKG@.ProcStore.of(k, bench);
+    pb.advance(System.currentTimeMillis());
+    int room = @PKG@.ProcBench.FUEL_CAP - pb.fuelCount();
+    if (room < 0) room = 0;
+    long have = fuelHave(p, k, id);
+    long max = have < (long) room ? have : (long) room;
+    long n = @PKG@.SacksPage.parseAmt(amt, max);
+    if (n == -2L) { this.info = "type a number (or leave it empty for all that fits)"; rebuild(); return true; }
+    if (n > max) n = max;
+    if (n <= 0L) { this.info = room <= 0 ? ("the fuel slot is full (" + @PKG@.ProcBench.FUEL_CAP + " items)") : ("you have no " + pretty(id)); rebuild(); return true; }
+    this.info = procFuelN(p, st, ref, k, bench, id, (int) n);
+    this.fuelPick = false;
+    this.fuelSel = null;
+    rebuild();
+    return true;
+  }
+  if (act.startsWith("pfuel:")) {
+    int i = -1;
+    try { i = Integer.parseInt(act.substring(6)); } catch (Throwable t) { i = -1; }
+    if (this.fuelIds != null && i >= 0 && i < this.fuelIds.length && this.fuelIds[i] != null) this.info = procFuel(p, st, ref, k, bench, this.fuelIds[i]);
+    rebuild();
+    return true;
+  }
+  if (act.startsWith("pq:")) {
+    String[] parts = act.substring(3).split(":");
+    int want = 0;
+    try { want = Integer.parseInt(parts[1]); } catch (Throwable t) { want = -1; }
+    @CRR@ pr0 = want < 0 ? null : rowOf(act.substring(3));   // 0.8.14: by recipe id (critic fix)
+    if (pr0 == null) this.info = "That row changed - nothing was queued. Try again.";
+    else {
+      int tier = accTier(accessories(p, u), bench);
+      if (tier <= 0) this.info = "equip a " + bench + " accessory to queue";
+      else this.info = procQueue(p, st, ref, k, bench, tier, pr0, want);
+    }
+    rebuild();
+    return true;
+  }
+  return false;
+}"""), cpg))
+# 0.8.11: the page view's counts + the Accessory Bag's accessories the shown recipes use (a copy - never crafted from here)
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public @CIC@ viewMatsAcc(@PLA@ p, java.util.UUID u, String k, java.util.Set wanted) {
+  @CIC@ base = viewMats(p, k, wanted);
+  if (this.settling) return base;
+  @SIC@ ac = @PKG@.AccLink.cont(@PKG@.AccLink.list(u, k), wanted);
+  return ac == null ? base : new @CIC@(new @IC@[] { base, ac });
+}"""), cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public void renderPage(@UCB@ b, @UEB@ ev, @PLA@ p, java.util.UUID u) {
+@SHELL@
+  @HUBBUILD@
+  this.key = null;
+  this.settling = false;
+  if (p == null) return;
+  String k = @PKG@.SackPool.settledKey(u);
+  if (k == null) {
+    this.settling = true;
+    k = @PKG@.SackPool.pkey(u);
+    if (this.info == null || this.info.length() == 0) this.info = "the Void paused (profile loading or switching) - its counts come back in a moment";
+  } else if (this.info != null && this.info.startsWith("the Void paused")) this.info = "";
+  this.key = k;
+  // 0.7.7: what this build filters with (recipesFor / searchRecipes / buildTabs read these fields)
+  this.known = @PKG@.KnowSync.known(p);
+  this.coll = collectionRecipes(u);
+  // 0.7.15: the Omni joins the Collections tab only while it is unlocked (all five Legendary bag recipes) AND every Legendary bag is carried
+  this.omniOk = @PKG@.SweepTask.legendCount(p.getInventory()) >= @PKG@.SackDefs.CATS.length && @PKG@.KnowSync.omniUnlocked(this.coll);
+  this.tabs = buildTabs(p, u, k);
+  boolean known = false;
+  for (int i = 0; this.tab != null && i < this.tabs.size(); i++) if (this.tab.equals(((String[]) this.tabs.get(i))[0])) known = true;
+  if (!known && this.tabs.size() > 0) { this.tab = ((String[]) this.tabs.get(0))[0]; this.pageNo = 0; }
+  boolean searching = this.query != null && this.query.length() > 0 && this.tab != null && this.tab.startsWith("A:");
+  // 0.8.15 (kit 1.7): the crafter's own tabs = the page's ONE sub-tab row (small buttons, the open one Primary); no back button - row 1
+  // (Storage) leads to the Void
+  for (int i = 0; i < this.tabs.size(); i++) {
+    String[] t = (String[]) this.tabs.get(i);
+    @PKG@.HubBar.subTab(b, ev, "SkyyCraft", i, t[1], t[0].equals(this.tab) && !searching, "tab:" + i, 150);
+  }
+  // 0.7.3 search row (Crafting / Artifacts / Smithing / Farming): the kit TextField; Enter (Validating) or Search sends "@SearchQuery"
+  boolean srow = false;
+  if (this.tab != null && this.tab.startsWith("A:") && (@PKG@.SackCfg.SEARCH.get() || searching)) {
+    srow = true;
+    b.appendInline("#SkyyCraftBody", "Group #SkyyCSearchRow { Anchor: (Height: 34, Bottom: 6); LayoutMode: Left; }");
+    if (@PKG@.SackCfg.SEARCH.get()) {
+      b.appendInline("#SkyyCSearchRow", SEARCH_MK);
+      if (searching) b.set("#SkyyCSearch.Value", this.query);
+      b.appendInline("#SkyyCSearchRow", gap(8));
+      b.appendInline("#SkyyCSearchRow", btn("SkyyCSearchGo", "Search", 120, 0, B_SEC));
+      b.appendInline("#SkyyCSearchRow", gap(6));
+      ev.addEventBinding(@BT@.Validating, "#SkyyCSearch", @EVD@.of("a", "csearch").append("@SearchQuery", "#SkyyCSearch.Value"), false);
+      ev.addEventBinding(@BT@.Activating, "#SkyyCSearchGo", @EVD@.of("a", "csearch").append("@SearchQuery", "#SkyyCSearch.Value"));
+    }
+    b.appendInline("#SkyyCSearchRow", btn("SkyyCSearchClear", "Clear", 110, 0, B_TER));
+    ev.addEventBinding(@BT@.Activating, "#SkyyCSearchClear", @EVD@.of("a", "cclear"));
+    b.appendInline("#SkyyCSearchRow", gap(12));
+    b.appendInline("#SkyyCSearchRow", lbl("SkyyCSearchInfo", 460, 32, L_CAP));
+  }
+  b.appendInline("#SkyyCraftBody", lbl("SkyyCMatNote", 1552, 22, L_CAPC));
+  b.set("#SkyyCMatNote.Text", (@PKG@.SackPool.bridge().get("acc:fn:bag") instanceof java.util.function.Function) ? "Materials come from your inventory, the Void and your Void Charms - sorted by tier." : "Materials come from your inventory and the Void - sorted by tier.");
+  // 0.7.4 Campfire tab: the emergency-cook line
+  boolean campTab = this.tab != null && this.tab.equals("K:camp");
+  if (campTab) {
+    b.appendInline("#SkyyCraftBody", lbl("SkyyCCampNote", 1552, 24, L_STAT));
+    b.set("#SkyyCCampNote.Text", campNote());
+  }
+  // 0.8.14: the height above the scroll list (tab rows, the search row, the materials line, the campfire line) + the foot below it
+  this.usedH = (srow ? 40 : 0) + 22 + (campTab ? 24 : 0);   // 0.8.15: the tab rows / the foot are the sub-tab row / the footer now
+  if (this.tab != null && this.tab.startsWith("P:")) { buildProc(b, ev, p, u, k); return; }
+  this.fuelPick = false;
+  this.fuelSel = null;
+  java.util.ArrayList raw = this.tab == null ? new java.util.ArrayList() : (searching ? searchRecipes(u, this.query) : recipesFor(this.tab, u));
+  smithNote(b, searching);   // 0.7.17: "N hidden" on the Smithing tab when gear:fn:classShow hid some
+  @CIC@ mats = campTab ? viewMats(p, k, wantedOf(raw)) : viewMatsAcc(p, u, k, wantedOf(raw));   // 0.8.11: + the Accessory Bag
+  boolean only = Boolean.TRUE.equals(ONLY.get(u));
+  java.util.ArrayList ent = new java.util.ArrayList();
+  for (int i = 0; i < raw.size(); i++) {
+    @CRR@ r0 = (@CRR@) raw.get(i);
+    int l0 = limit(r0, mats);
+    if (only && l0 <= 0) continue;
+    @MQ@ o0 = r0.getPrimaryOutput();
+    String id0 = o0 == null ? String.valueOf(r0.getId()) : o0.getItemId();
+    ent.add(new Object[] { r0, Integer.valueOf(l0), Integer.valueOf(@PKG@.RecipeCmp.sortKey(id0)), @PKG@.RecipeCmp.sortName(id0) });   // 0.8.11: tier, then name
+  }
+  java.util.Collections.sort(ent, new @PKG@.RecipeCmp());
+  this.rows = new java.util.ArrayList();
+  for (int i = 0; i < ent.size(); i++) this.rows.add(((Object[]) ent.get(i))[0]);
+  // 0.8.14 (Skyy "reduce the items show on page to 6 and allow scroll instead of pages"): ONE scrolling list, every row (up to MAXROWS)
+  listOpen(b, this.usedH);
+  this.rowSz = rowSize(this.rows.size() < MAXROWS ? this.rows.size() : MAXROWS, this.usedH);   // few rows -> larger rows that all fit
+  int drawn = 0;
+  for (int i = 0; i < this.rows.size() && i < MAXROWS; i++) {
+    @CRR@ r = (@CRR@) this.rows.get(i);
+    int lim = limit(r, mats);
+    drawRow(b, ev, i, r, mats, lim, campTab ? campRowNote(p, u, k, r) : "", lim, false, "");
+    drawn++;
+  }
+  listMore(b, drawn, this.rows.size());
+  if (this.rows.size() == 0) {
+    b.appendInline("#SkyyCList", lbl("SkyyCEmpty", 1100, 40, L_TEXTC));
+    b.set("#SkyyCEmpty.Text", searching ? ("Nothing matches " + this.query + " in Crafting, Gear or Farming.") : (campTab ? "No campfire dishes are loaded." : "No recipes here yet."));
+  }
+  if (srow) b.set("#SkyyCSearchInfo.Text", searching ? (this.rows.size() + " found in Crafting, Gear and Farming") : "searches Crafting, Gear and Farming");
+  foot(b, ev, 0, 0, only, true, false);
+}""".replace("@SHELL@", CP_SHELL).replace("@HUBBUILD@", CP_HUBBUILD)), cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public void build(@REF@ ref, @UCB@ b, @UEB@ ev, @ST@ st) {
+  this.builtRef = ref;   // 0.7.15 page guard
+  java.util.UUID u = this.playerRef.getUuid();
+  if (u != null) @PKG@.ProcTask.PAGEOPEN.put(u, Boolean.TRUE);   // 0.7.18: the 1 s task keeps visiting (the profile notice)
+  @PLA@ p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+  renderPage(b, ev, p, u);   // 0.8.15: the page itself (kit 1.7 hub page)
+}"""), cpg))
+# 0.8.6: CraftRecipeEvent$Pre exactly as CraftingManager.craftItem fires it (store.invoke(ref, new Pre(recipe, quantity))); true = go on.
+# A throw counts as refused (craftItem would throw too) - one WARN, nothing is paid.
+cpg.addMethod(CtNewMethod.make(f"""
+public static boolean preCraft({ST} st, {REF} ref, {CRR} r, int qty) {{
+  try {{
+    com.hypixel.hytale.server.core.event.events.ecs.CraftRecipeEvent$Pre e = new com.hypixel.hytale.server.core.event.events.ecs.CraftRecipeEvent$Pre(r, qty);
+    st.invoke(ref, e);
+    return !e.isCancelled();
+  }} catch (Throwable t) {{ {PKG}.SackPool.warn("/craft: the CraftRecipeEvent check failed - the craft was refused, nothing was used: " + t); return false; }}
+}}""", cpg))
+# the craft of one /craft row (world thread, inside the click): the 0.7.x checks and booking unchanged; returns the result line.
+# 0.8.11: the Accessory Bag's accessories the recipe uses count through a COPY container (the limit); review fix B2: before the removal the
+# ones the craft needs leave the bag (AccLink.takeFor - refused = nothing used), the removal uses exactly those, the unused ones go back
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public String craftOne(@REF@ ref, @ST@ st, @PLA@ p, java.util.UUID u, String k, @CRR@ r, int want, boolean campTab) {
+  if (campTab && (campfireTier(u) <= 0 || !campfireRecipe(r) || !tableOnly(r))) return "equip the Campfire accessory in your Void Charms to cook here";
+  boolean okR = true;
+  if ("C:".equals(this.tab)) {
+    String rid = String.valueOf(r.getId());
+    okR = collectionRecipes(u).contains(rid) || (rid.equals(@PKG@.SackDefs.recipeOf(@PKG@.SackDefs.OMNI)) && @PKG@.SweepTask.legendCount(p.getInventory()) >= @PKG@.SackDefs.CATS.length && @PKG@.KnowSync.omniUnlocked(collectionRecipes(u)));
+  } else if (this.tab != null && this.tab.startsWith("A:")) {
+    okR = @PKG@.KnowSync.allowed(r, u, @PKG@.KnowSync.known(p), collectionRecipes(u));
+  }
+  if (!okR) return String.valueOf(r.getId()).equals(@PKG@.SackDefs.recipeOf(@PKG@.SackDefs.OMNI)) ? @PKG@.KnowSync.omniLockText(collectionRecipes(u), @PKG@.SweepTask.legendCount(p.getInventory())) : "You have not unlocked this recipe";
+  if (!hasItemOutput(r)) return "this recipe gives no item - nothing was used";
+  @SIC@ accC = campTab ? null : @PKG@.AccLink.cont(@PKG@.AccLink.list(u, k), wantedOne(r));
+  @CIC@ base = materialsFor(p, k, wantedOne(r));
+  @CIC@ mats = accC == null ? base : new @CIC@(new @IC@[] { base, accC });
+  int lim = limit(r, mats);
+  int qty = want == 0 ? lim : (want < lim ? want : lim);
+  if (qty <= 0) return "not enough materials";
+  java.util.List inputs = @CRM@.getInputMaterials(r, qty);
+  int n = inputs == null ? 0 : inputs.size();
+  if (n == 0) return "this recipe has no inputs";
+  if (!mats.canRemoveMaterials(inputs)) return "not enough materials";
+  if (!preCraft(st, ref, r, qty)) {
+    @PKG@.CraftLog.line(k, "CRAFT-REFUSED " + r.getId() + " x" + qty + " (CraftRecipeEvent$Pre cancelled - nothing used)");
+    return "this craft was refused - nothing was used";
+  }
+  // review fix B2: the accessories the craft needs leave the bag BEFORE anything is removed (a refused take = nothing used)
+  java.util.ArrayList taken = null;
+  @SIC@ accT = null;
+  if (accC != null) {
+    taken = @PKG@.AccLink.takeFor(u, k, inputs, base);
+    if (taken == null) return "your Void Charms changed - nothing was used";
+    accT = @PKG@.AccLink.contOf(taken);
+    mats = accT == null ? base : new @CIC@(new @IC@[] { base, accT });
+    if (!mats.canRemoveMaterials(inputs)) { @PKG@.AccLink.unused(st, ref, p, u, k, accT, taken); return "not enough materials"; }
+  }
+  java.util.HashMap snapB = snapshot(mats);
+  int[] before = new int[n]; int[] per = new int[n];
+  for (int i = 0; i < n; i++) {
+    @MQ@ mq = (@MQ@) inputs.get(i);
+    before[i] = mats.countRemovableMaterial(mq);
+    per[i] = mq.getQuantity() / qty; if (per[i] <= 0) per[i] = 1;
+  }
+  Object tx = mats.removeMaterials(inputs);
+  boolean flag = tx != null && ((com.hypixel.hytale.server.core.inventory.transaction.Transaction) tx).succeeded();
+  int[] after = new int[n]; int done = qty;
+  for (int i = 0; i < n; i++) {
+    after[i] = mats.countRemovableMaterial((@MQ@) inputs.get(i));
+    int removed = before[i] - after[i]; if (removed < 0) removed = 0;
+    int c2 = removed / per[i]; if (c2 < done) done = c2;
+  }
+  if (done < 0) done = 0;
+  java.util.LinkedHashMap took = removedItems(snapB, snapshot(mats));
+  StringBuilder audit = new StringBuilder();
+  String accNote = "";
+  if (taken != null && !taken.isEmpty()) {
+    int back = @PKG@.AccLink.unused(st, ref, p, u, k, accT, taken);
+    int fromBag = taken.size() - back;
+    audit.append(" accBagTaken=").append(taken.size()).append(" accBagBack=").append(back);
+    if (fromBag > 0) accNote = " (" + fromBag + " from your Void Charms)";
+  }
+  java.util.LinkedHashMap left = reserve(took, inputs, per, done);
+  if (left == null) {
+    int lo = 0; int hi = done - 1;
+    done = 0;
+    left = reserve(took, inputs, per, 0);
+    while (lo <= hi) {
+      int md = (lo + hi) / 2;
+      java.util.LinkedHashMap l2 = reserve(took, inputs, per, md);
+      if (l2 != null) { done = md; left = l2; lo = md + 1; } else hi = md - 1;
+    }
+  }
+  for (int i = 0; i < n; i++) {
+    @MQ@ mq = (@MQ@) inputs.get(i);
+    String mid = mq.getItemId() != null ? mq.getItemId() : ("res:" + mq.getResourceTypeId());
+    audit.append(" ").append(mid).append("=").append(before[i]).append("->").append(after[i]);
+  }
+  java.util.Iterator li = left.entrySet().iterator();
+  while (li.hasNext()) {
+    java.util.Map.Entry le = (java.util.Map.Entry) li.next();
+    int back = ((Integer) le.getValue()).intValue();
+    if (back <= 0) continue;
+    giveBack(st, ref, p, (String) le.getKey(), back);
+    audit.append(" returned ").append((String) le.getKey()).append('*').append(back);
+  }
+  @PKG@.BagMirror m = @PKG@.BagMirror.of(k);
+  int consumed = m.sync();
+  if (consumed > 0) @PKG@.SackPool.saveSoon(k);
+  @MQ@[] outs = r.getOutputs();
+  @MQ@ outq = r.getPrimaryOutput();
+  if ((outs == null || outs.length == 0) && outq != null) outs = new @MQ@[] { outq };
+  String campId = null;
+  if (campTab && done > 0) campId = campCall(p, u, k, r, done);
+  int campAt = -1;
+  if (campId != null && outq != null && outs != null) {
+    for (int pq = 0; pq < outs.length && campAt < 0; pq++) if (outs[pq] == outq) campAt = pq;
+    for (int pq = 0; pq < outs.length && campAt < 0; pq++) if (outs[pq] != null && outq.getItemId() != null && outq.getItemId().equals(outs[pq].getItemId())) campAt = pq;
+  }
+  int given = 0;
+  int gearN = 0;
+  int gearDrop = 0;
+  if (done > 0 && outs != null) {
+    for (int q = 0; q < outs.length; q++) {
+      if (outs[q] == null || outs[q].getItemId() == null) continue;
+      long total = (long) outs[q].getQuantity() * (long) done; if (total > 100000L) total = 100000L;
+      String gid = outs[q].getItemId();
+      if (q == campAt) gid = campId;
+      Object[] rolled = null;
+      if (!campTab) rolled = gearRoll(u, gid, (int) total, String.valueOf(r.getId()));
+      if (rolled != null) {
+        @IC@ dstC = p.getInventory().getCombinedStorageHotbarBackpack();
+        int beforeC = countItem(dstC, gid);
+        int gotN = 0;
+        for (int gi = 0; gi < rolled.length; gi++) {
+          @IS@ gs = (@IS@) rolled[gi];
+          @SIC@.addOrDropItemStack(st, ref, dstC, gs);
+          gotN += gs.getQuantity();
+        }
+        if (gotN < (int) total) @SIC@.addOrDropItemStack(st, ref, dstC, new @IS@(gid, (int) total - gotN));
+        int inInv = countItem(dstC, gid) - beforeC;
+        if (inInv < (int) total) gearDrop += (int) total - (inInv < 0 ? 0 : inInv);
+        gearN += gotN;
+      } else {
+        @SIC@.addOrDropItemStack(st, ref, p.getInventory().getCombinedStorageHotbarBackpack(), new @IS@(gid, (int) total));
+      }
+      given += (int) total;
+    }
+  }
+  if (campTab) audit.append(" campfire=").append(campId == null ? "plain" : campId);
+  if (gearN > 0) audit.append(" gear=").append(gearN);
+  if (gearDrop > 0) audit.append(" gearDropped=").append(gearDrop);
+  @PKG@.CraftLog.write(k, String.valueOf(r.getId()), qty, done, flag, given, audit.toString());
+  if (done > 0 && !campTab) {
+    try {
+      Object xf = @PKG@.SackPool.bridge().get("skill:fn:craftxp");
+      if (xf instanceof java.util.function.Function) ((java.util.function.Function) xf).apply(new Object[] { u, String.valueOf(r.getId()), Integer.valueOf(done), "sacks:craft", k });
+    } catch (Throwable t) { }
+  }
+  if (done > 0 && given == 0) @PKG@.SackPool.warn("craft: " + done + " crafts of " + r.getId() + " paid but the recipe has no item output (" + u + ")");
+  String nm = pretty(outq == null ? "?" : outq.getItemId());
+  if (campTab) { int cg = gradeOfId(campId); nm = nm + (cg > 0 ? " Grade " + cg : " (plain)"); }
+  if (done == qty) return "crafted " + qty + " x " + nm + (consumed > 0 ? " (" + consumed + " from the Void)" : "") + accNote;
+  if (done > 0) return "crafted " + done + " of " + qty + " x " + nm + " - extra materials were returned" + accNote;
+  return "could not remove the materials - nothing was used";
+}"""), cpg))
+# a hub click that left this page open on screen is answered with a no-op update (the client's "Loading..." ends); never to a replaced page
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public void hubAck(@REF@ ref, @ST@ st) {
+  try {
+    @PLA@ hp = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+    if (hp == null || hp.getPageManager() == null || hp.getPageManager().getCustomPage() != this) return;
+    @UCB@ c = new @UCB@();
+    c.set("#SkyyCInfo.Text", this.info == null ? "" : this.info);
+    sendUpdate(c, false);
+  } catch (Throwable t) { }
+}"""), cpg))
+cpg.addMethod(CtNewMethod.make(jt(r"""
+public void handleDataEvent(@REF@ ref, @ST@ st, String data) {
+  try {
+    if (data == null) return;
+    java.util.UUID u = this.playerRef.getUuid();
+    // 0.8.11 CRAFTING HUB (kit 1.6): row 1 (Home + the hubs), the X and the hub's tabs FIRST
+    String hr = null;
+    try { hr = @PKG@.HubBar.route(this.playerRef, data, "smithing", "recipes"); } catch (Throwable t) { hr = null; }
+    if ("close".equals(hr)) { close(); return; }
+    if (hr != null) {
+      if (hr.equals("self")) { rebuild(); return; }
+      if (hr.equals("back") || hr.equals("bridge") || hr.equals("command")) { hubAck(ref, st); return; }
+      this.info = "That tab could not open right now - try again.";
+      rebuild();
+      return;
+    }
+    String act = jsonStr(data, "a");
+    // 0.7.3 search: only the search bindings carry "@SearchQuery" (the typed text)
+    if (data.indexOf("\"@SearchQuery\"") >= 0) {
+      this.query = cleanQuery(jsonStr(data, "@SearchQuery"));
+      this.pageNo = 0;
+      this.info = this.query.length() == 0 ? "type a word (for example iron or sword) and press Enter or Search" : "";
+      rebuild();
+      return;
+    }
+    if (act.equals("cclear")) { this.query = ""; this.pageNo = 0; this.info = ""; rebuild(); return; }
+    if (act.equals("prev")) { if (this.fuelPick) this.fuelPage--; else this.pageNo--; rebuild(); return; }
+    if (act.equals("next")) { if (this.fuelPick) this.fuelPage++; else this.pageNo++; rebuild(); return; }
+    if (act.equals("onlyc")) { if (Boolean.TRUE.equals(ONLY.get(u))) ONLY.remove(u); else ONLY.put(u, Boolean.TRUE); this.pageNo = 0; rebuild(); return; }
+    @PLA@ p = (@PLA@) st.getComponent(ref, @PLA@.getComponentType());
+    if (p == null) return;
+    if (act.equals("bags")) { p.getPageManager().openCustomPage(ref, st, new @PKG@.SacksPage(this.playerRef, (String) null)); return; }
+    for (int i = 0; this.tabs != null && i < this.tabs.size(); i++) {
+      if (act.equals("tab:" + i)) { this.tab = ((String[]) this.tabs.get(i))[0]; this.pageNo = 0; this.info = ""; this.query = ""; this.fuelPick = false; this.fuelSel = null; rebuild(); return; }
+    }
+    String k = @PKG@.SackPool.settledKey(u);
+    if (k == null) { this.info = "the Void paused (profile loading or switching) - try again in a moment"; rebuild(); return; }
+    if (this.key != null && !this.key.equals(k)) { this.info = "your profile changed - this page now shows it"; this.pageNo = 0; this.fuelPick = false; this.fuelSel = null; rebuild(); return; }
+    if (handleProc(ref, st, p, u, k, data, act)) return;
+    if (!act.startsWith("craft:")) return;
+    String[] parts = act.substring(6).split(":");
+    int want = 0;
+    try { want = Integer.parseInt(parts[1]); } catch (Throwable t) { return; }
+    @CRR@ r = rowOf(act.substring(6));   // 0.8.14 (critic fix): by recipe id against the list shown now - never another row's recipe
+    if (r == null) { this.info = "That row changed - nothing was crafted. Try again."; rebuild(); return; }
+    this.info = craftOne(ref, st, p, u, k, r, want, "K:camp".equals(this.tab));
+    rebuild();
+  } catch (Throwable t) { @PKG@.SackPool.warn("craft page event failed: " + t); }
+}"""), cpg))
+
+# 0.7.2: the active profile changed while the craft page is open (ProcTask, world thread): one set() per profile change, never
+# periodic; the next click rebuilds the page for the new profile.
+cpg.addMethod(CtNewMethod.make(f"""
+public void profileNotice(String k) {{
+  if (this.key == null || k == null || k.equals(this.noticeKey)) return;
+  this.noticeKey = k;
+  {UCB} c = new {UCB}();
+  c.set("#SkyyCInfo.Text", "Your profile changed - click a tab to refresh this page");
+  sendUpdate(c, false);
+}}""", cpg))
+
+# ================= CraftCmd (/craft) =================
+ccmd.addConstructor(CtNewConstructor.make("""
+public CraftCmd() {
+  super("craft", "Open inventory crafting (materials from your inventory and the Void) - /craft <words> opens it searching");
+  setPermissionGroups(new String[] { "hytale:Adventurer" });
+  setAllowsExtraArguments(true);
+}""", ccmd))
+# 0.7.3: words after /craft (or /recipes) open the page already searching (SkyyRolls 0.1.2 pattern: extra arguments allowed, the words read
+# from ctx.getInputString(); a leading command word is dropped). Works when craftSearch=false hides the search box.
+ccmd.addMethod(CtNewMethod.make(f"""
+protected void execute({CTX} ctx, {ST} store, {REF} ref, {PR} pr, {WLD} world) {{
+  try {{
+    {PLA} player = ({PLA}) store.getComponent(ref, {PLA}.getComponentType());
+    if (player == null) return;
+    String line = "";
+    try {{ line = ctx.getInputString(); }} catch (Throwable t) {{ line = ""; }}
+    if (line == null) line = "";
+    String q = line.trim();
+    if (q.startsWith("/")) q = q.substring(1).trim();
+    int sp = q.indexOf(' ');
+    String head = (sp < 0 ? q : q.substring(0, sp)).toLowerCase();
+    if (head.equals("craft") || head.equals("recipes")) q = sp < 0 ? "" : q.substring(sp + 1);
+    {PKG}.CraftPage cp = new {PKG}.CraftPage(pr, (String) null);
+    cp.query = {PKG}.CraftPage.cleanQuery(q);
+    player.getPageManager().openCustomPage(ref, store, cp);
+  }} catch (Throwable t) {{ {PKG}.SackPool.warn("/craft failed: " + t); pr.sendMessage({MSG}.raw("[SkyyVoid] could not open crafting")); }}
+}}""", ccmd))
+
+# ================= CraftPageFactory (OpenCustomUI page ids -> craft page on a tab) =================
+cfac.addInterface(pool.get("java.util.function.Function"))
+cfac.addField(CtField.make("public String tab;", cfac))
+cfac.addConstructor(CtNewConstructor.make("public CraftPageFactory(String tab) { this.tab = tab; }", cfac))
+cfac.addMethod(CtNewMethod.make(f"""
+public Object apply(Object o) {{
+  return new {PKG}.CraftPage(({PR}) o, this.tab);
+}}""", cfac))
+
+# ================= 0.8.11 CraftHubOpen: hub:tab:smithing:recipes ("Crafting") - the craft page for the UUID on its world thread =================
+# FALSE = the bar runs /craft instead (HUBS-CONTRACT 1). Never close-then-open: openCustomPage replaces the page on screen.
+chop.addInterface(pool.get("java.util.function.Function"))
+chop.addConstructor(CtNewConstructor.make("public CraftHubOpen() { }", chop))
+chop.addMethod(CtNewMethod.make(jt(r"""
+public Object apply(Object o) {
+  if (!(o instanceof java.util.UUID)) return Boolean.FALSE;
+  try {
+    @PR@ pr = @UNI@.get().getPlayer((java.util.UUID) o);
+    if (pr == null || !pr.isValid()) return Boolean.FALSE;
+    @REF@ r = pr.getReference();
+    if (r == null || !r.isValid()) return Boolean.FALSE;
+    @ST@ st = r.getStore();
+    if (st == null) return Boolean.FALSE;
+    @PLA@ p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+    if (p == null) return Boolean.FALSE;
+    @PGM@ pm = p.getPageManager();
+    if (pm == null) return Boolean.FALSE;
+    pm.openCustomPage(r, st, new @PKG@.CraftPage(pr, (String) null));
+    return Boolean.TRUE;
+  } catch (Throwable t) {
+    @PKG@.SackPool.warn("the Crafting > Crafting tab could not open the craft page: " + t);
+    return Boolean.FALSE;
+  }
+}"""), chop))
+chop.addMethod(CtNewMethod.make(jt(r"""
+public static int register() {
+  Object[] e = @PKG@.HubBar.putIcon("smithing", "%s", "SkyySacks", "%s", %d, "craft", new @PKG@.CraftHubOpen(), null, "%s");
+  return e == null ? 0 : 1;
+}""" % (CP_HUB_TAB, CP_HUB_LABEL, CP_HUB_ORDER, CP_HUB_ICON)), chop))
+
+# ================= 0.8.15 VoidHubOpen: hub:tab:storage:pocket ("Pocket", the contract row of SUI.HUB_TABS) - the Void page for the UUID ======
+# The owner's own tab (SkyyMenu's stand-in steps aside: put before us = it skips, put after us = ours replaces it). FALSE = the bar runs /sacks.
+vho.addInterface(pool.get("java.util.function.Function"))
+vho.addConstructor(CtNewConstructor.make("public VoidHubOpen() { }", vho))
+vho.addMethod(CtNewMethod.make(jt(r"""
+public Object apply(Object o) {
+  if (!(o instanceof java.util.UUID)) return Boolean.FALSE;
+  try {
+    @PR@ pr = @UNI@.get().getPlayer((java.util.UUID) o);
+    if (pr == null || !pr.isValid()) return Boolean.FALSE;
+    @REF@ r = pr.getReference();
+    if (r == null || !r.isValid()) return Boolean.FALSE;
+    @ST@ st = r.getStore();
+    if (st == null) return Boolean.FALSE;
+    @PLA@ p = (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+    if (p == null) return Boolean.FALSE;
+    @PGM@ pm = p.getPageManager();
+    if (pm == null) return Boolean.FALSE;
+    pm.openCustomPage(r, st, new @PKG@.SacksPage(pr, (String) null));
+    return Boolean.TRUE;
+  } catch (Throwable t) {
+    @PKG@.SackPool.warn("the Storage > Pocket tab could not open the Void page: " + t);
+    return Boolean.FALSE;
+  }
+}"""), vho))
+vho.addMethod(CtNewMethod.make(jt(r"""
+public static int register() {
+  Object[] e = @PKG@.HubBar.putIcon("storage", "pocket", "SkyySacks", "Pocket", 10, "sacks", new @PKG@.VoidHubOpen(), null, "storage_pocket");
+  return e == null ? 0 : 1;
+}"""), vho))
+
+# ================= ProcTask (world thread, every 1s per player): advance Furnace/Tannery, notify, refresh an open Furnace/Tannery tab =================
+ptk.addInterface(pool.get("java.lang.Runnable"))
+ptk.addField(CtField.make(f"public {PR} pr;", ptk))
+ptk.addField(CtField.make("public java.util.UUID expectedWorld;", ptk))
+ptk.addField(CtField.make("public static long LASTWARN;", ptk))
+ptk.addField(CtField.make("public static long XPWARN;", ptk))
+ptk.addField(CtField.make("public static final int XP_CALL = 1000;", ptk))
+# 0.8.20: Charcoal collection credit (coll:fn:add, source sacks:furnace): at most COLL_CALL per call; a refused key waits COLLNEXT (30 s)
+ptk.addField(CtField.make("public static final int COLL_CALL = 256;", ptk))
+ptk.addField(CtField.make("public static long COLLWARN;", ptk))
+ptk.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap COLLNEXT = new java.util.concurrent.ConcurrentHashMap();", ptk))
+ptk.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap EPOCH = new java.util.concurrent.ConcurrentHashMap();", ptk))
+ptk.addConstructor(CtNewConstructor.make(f"public ProcTask({PR} pr, java.util.UUID w) {{ this.pr = pr; this.expectedWorld = w; }}", ptk))
+# 0.7.2 profile contract rule 3: remember the last profile:epoch:<uuid> seen per player. SkyySacks publishes no per-player bridge
+# values, so "republish" = flush every dirty pool/processing file (the old profile's included) off the world thread right away and
+# log the switch; an open page built for another key is told in run(). Without SkyyProfiles the epoch stays absent: never fires.
+# Integration fix: an absent epoch (-1) is not remembered, so the first published value is a baseline (contract 4.2), not a change.
+# Review fix: the log line is queued (CraftLog.later) BEFORE the SackSaver is scheduled, which writes it off the world thread.
+ptk.addMethod(CtNewMethod.make(f"""
+public static boolean epochCheck(java.util.UUID u, String k) {{
+  long ep = {PKG}.SackPool.epoch(u);
+  if (ep < 0L) return false;
+  Long last = (Long) EPOCH.put(u, Long.valueOf(ep));
+  if (last == null || last.longValue() == ep) return false;
+  {PKG}.CraftLog.later(k, "PROFILE epoch " + last + " -> " + ep + " - bags, furnace and tannery now use this key");
+  {PKG}.SackPool.runOnWriter(new {PKG}.SackSaver());   // 0.7.18: the private writer
+  return true;
+}}""", ptk))
+# 0.7.3 Smithing (research/Smithing-Smelting-Spec.md 4.1, research/Alchemy-Skill-Spec.md 7.2): pay the Furnace units ProcBench.finishUnit
+# counted, once per recipe per run, through SkyySkills' skill:fn:craftxp {uuid, recipeId, count, "sacks:furnace", expectKey}. Only when the
+# key this run advanced is the settled key (a switch has settled; the same gate as the bench link). A Number answer drains exactly the
+# reported count (units finished meanwhile stay); no function (SkyySkills missing or older than 0.4) or an error keeps the ledger.
+# At most XP_CALL units per call (the rest goes on the next 1 s run): SkyySkills answers 0 (= drop it) for a call over its
+# bridge.maxXpPerCall (500k base XP, checked before its multiplier), so a big ledger (up to XP_CAP = 10,000 units of a
+# 50 XP bar, or a raised smithing.xp.* value) must never go out in one call and be dropped.
+# The bridge call runs with no lock of ours held (xpList / takeXp are separate synchronized calls).
+ptk.addMethod(CtNewMethod.make(f"""
+public static void drainXp(java.util.UUID u, String k, {PKG}.ProcBench pb) {{
+  java.util.ArrayList l = pb.xpList();
+  if (l.isEmpty()) return;
+  if (!k.equals({PKG}.SackPool.settledKey(u))) return;
+  Object f = {PKG}.SackPool.bridge().get("skill:fn:craftxp");
+  if (!(f instanceof java.util.function.Function)) return;
+  for (int i = 0; i < l.size(); i++) {{
+    Object[] e = (Object[]) l.get(i);
+    String recipe = (String) e[0];
+    int n = ((Integer) e[1]).intValue();
+    if (n <= 0) continue;
+    if (n > XP_CALL) n = XP_CALL;
+    Object got = null;
+    try {{
+      got = ((java.util.function.Function) f).apply(new Object[] {{ u, recipe, Integer.valueOf(n), "sacks:furnace", k }});
+    }} catch (Throwable t) {{
+      long now = System.currentTimeMillis();
+      if (now - XPWARN > 60000L) {{ XPWARN = now; {PKG}.SackPool.warn("smithing xp: skill:fn:craftxp failed (ledger kept, retried): " + t); }}
+      return;
+    }}
+    if (got instanceof Number) {{
+      pb.takeXp(recipe, n);
+      {PKG}.ProcStore.markDirty(k);
+      {PKG}.CraftLog.later(k, "SMITHING " + recipe + " x" + n + " -> " + ((Number) got).longValue() + " xp");
+    }}
+  }}
+}}""", ptk))
+# 0.8.21: the Smelting Fortune extras of this bench since the last pass -> crafts.log (queued, written by the SackSaver)
+ptk.addMethod(CtNewMethod.make(f"""
+public static void drainSf(String k, {PKG}.ProcBench pb) {{
+  java.util.ArrayList l = pb.sfTake();
+  for (int i = 0; i < l.size(); i++) {{
+    Object[] e = (Object[]) l.get(i);
+    {PKG}.CraftLog.later(k, "SMELT-FORTUNE " + e[0] + " +" + e[1] + " extra bars");
+  }}
+}}""", ptk))
+# 0.8.20: one pass over the ledger with coll:fn:add `f` (no lock of ours held during the call); returns the count credited, -1 = refused /
+# failed (the ledger is kept as it is)
+ptk.addMethod(CtNewMethod.make(f"""
+public static int drainColl0(Object f, java.util.UUID u, String k, {PKG}.ProcBench pb) {{
+  if (!(f instanceof java.util.function.Function)) return -1;
+  java.util.ArrayList l = pb.collList();
+  int sent = 0;
+  for (int i = 0; i < l.size(); i++) {{
+    Object[] e = (Object[]) l.get(i);
+    String id = (String) e[0];
+    int n = ((Integer) e[1]).intValue();
+    if (n <= 0) continue;
+    if (n > COLL_CALL) n = COLL_CALL;
+    Object got = null;
+    try {{
+      got = ((java.util.function.Function) f).apply(new Object[] {{ u, id, Long.valueOf((long) n), "sacks:furnace", k }});
+    }} catch (Throwable t) {{
+      long now = System.currentTimeMillis();
+      if (now - COLLWARN > 60000L) {{ COLLWARN = now; {PKG}.SackPool.warn("charcoal collection: coll:fn:add failed (ledger kept, retried): " + t); }}
+      return -1;
+    }}
+    if (!Boolean.TRUE.equals(got)) return -1;
+    pb.takeColl(id, n);
+    {PKG}.ProcStore.markDirty(k);
+    {PKG}.CraftLog.later(k, "COLLECTION " + id + " x" + n + " credited (sacks:furnace)");
+    sent += n;
+  }}
+  return sent;
+}}""", ptk))
+ptk.addMethod(CtNewMethod.make(f"""
+public static void drainColl(java.util.UUID u, String k, {PKG}.ProcBench pb) {{
+  if (pb.collDone.isEmpty()) return;
+  long now = System.currentTimeMillis();
+  Object nx = COLLNEXT.get(k);
+  if (nx instanceof Long && now < ((Long) nx).longValue()) return;
+  if (!k.equals({PKG}.SackPool.settledKey(u))) return;
+  int r = drainColl0({PKG}.SackPool.bridge().get("coll:fn:add"), u, k, pb);
+  if (r < 0) COLLNEXT.put(k, Long.valueOf(now + 30000L)); else COLLNEXT.remove(k);
+}}""", ptk))
+# 0.7.15 PAGE GUARD (tools/sacks_0_7_15_patch.py docstring 2): PageManager keeps a page the client lost in a world move (customPage is only
+# cleared by setPage / a client Dismiss; World.onSetupPlayerJoining only resets the acknowledgements) and Store.removeEntity invalidates the
+# old entity Ref. sameEntry = the Ref a page was built for is still valid and is the player's current entity (same store + index).
+ptk.addMethod(CtNewMethod.make(f"""
+public static boolean sameEntry({REF} built, {REF} now) {{
+  if (built == null || now == null) return false;
+  if (built == now) return true;
+  try {{ return built.isValid() && now.isValid() && built.getStore() == now.getStore() && built.getIndex() == now.getIndex(); }} catch (Throwable t) {{ return false; }}
+}}""", ptk))
+# the profile notice (the only SkyySacks page update that is not a click answer): 0 = no notice due, 1 = sent, 2 = skipped (stale page)
+ptk.addMethod(CtNewMethod.make(f"""
+public static int notice(Object pg, String k, {REF} r) {{
+  if (pg instanceof {PKG}.CraftPage) {{
+    {PKG}.CraftPage cp = ({PKG}.CraftPage) pg;
+    if (cp.key == null || cp.key.equals(k)) return 0;
+    if (!sameEntry(cp.builtRef, r)) return 2;
+    cp.profileNotice(k);
+    return 1;
+  }}
+  if (pg instanceof {PKG}.SacksPage) {{
+    {PKG}.SacksPage sk = ({PKG}.SacksPage) pg;
+    if (sk.key == null || sk.key.equals(k)) return 0;
+    if (!sameEntry(sk.builtRef, r)) return 2;
+    sk.profileNotice(k);
+    return 1;
+  }}
+  return 0;
+}}""", ptk))
+ptk.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{
+    if (pr == null || !pr.isValid()) return;
+    java.util.UUID nowWorld = pr.getWorldUuid();
+    if (nowWorld == null || !nowWorld.equals(this.expectedWorld)) return;
+    java.util.UUID u = pr.getUuid();
+    String k = {PKG}.SackPool.pkey(u);
+    LASTK.put(u, k);   // 0.7.18: seen (the benches of k are loaded below)
+    epochCheck(u, k);
+    java.util.Map m = null;
+    if (!{PKG}.ProcStore.BROKEN.containsKey(k)) m = {PKG}.ProcStore.all(k);
+    long now = System.currentTimeMillis();
+    java.util.Iterator it = m == null ? java.util.Collections.EMPTY_LIST.iterator() : m.values().iterator();
+    while (it.hasNext()) {{
+      {PKG}.ProcBench pb = ({PKG}.ProcBench) it.next();
+      int had = pb.queued();
+      int d = pb.advance(now);
+      if (d > 0) {PKG}.ProcStore.markDirty(k);
+      if (had > 0 && pb.queued() == 0) {{
+        String[] ds = pb.describe(0, true);
+        // 0.7.6 player setting sacks.benchDone hides only this line; the DONE log line below always runs
+        if ({PKG}.SackPool.notifyOn(u, "sacks.benchDone")) pr.sendMessage({MSG}.raw("[SkyyVoid] Your " + pb.bench + " is done. " + ds[3] + " - open /craft to collect."));
+        {PKG}.CraftLog.line(k, "DONE " + pb.bench + " queue finished - " + ds[3]);
+      }} else if (pb.fuelWarnOnce()) {{
+        // 0.7.6 player setting sacks.benchFuel: the fuelWarnOnce() latch above is used either way, so a hidden warning is not replayed
+        if ({PKG}.SackPool.notifyOn(u, "sacks.benchFuel")) pr.sendMessage({MSG}.raw("[SkyyVoid] Your " + pb.bench + " ran out of fuel - load more in /craft."));
+      }}
+    }}
+    if (m != null) {{
+      Object fo = m.get("Furnace");
+      if (fo instanceof {PKG}.ProcBench) {{ drainXp(u, k, ({PKG}.ProcBench) fo); drainColl(u, k, ({PKG}.ProcBench) fo); drainSf(k, ({PKG}.ProcBench) fo); }}
+    }}
+    {REF} r = pr.getReference();
+    if (r == null) return;
+    {ST} st = r.getStore();
+    if (st == null) return;
+    {PLA} p = ({PLA}) st.getComponent(r, {PLA}.getComponentType());
+    if (p == null) return;
+    Object cp0 = p.getPageManager().getCustomPage();
+    notice(cp0, k, r);   // 0.7.15: only a page built for this entity Ref (never one lost in a world move)
+    if (!(cp0 instanceof {PKG}.CraftPage) && !(cp0 instanceof {PKG}.SacksPage)) PAGEOPEN.remove(u);   // 0.7.18
+  }} catch (Throwable t) {{
+    long now2 = System.currentTimeMillis();
+    if (now2 - LASTWARN > 60000L) {{ LASTWARN = now2; {PKG}.SackPool.warn("processing tick failed: " + t); }}
+  }}
+}}""", ptk))
+
+# 0.7.18 (audit 9b): should the 1 s task visit u? Not seen yet (first sight loads the benches: offline progress), an open bag / craft page
+# (the profile notice), a changed profile:epoch (epochCheck), a bench with a queued unit, or Smithing XP still to pay. An empty queue only
+# moved its clock (addJob resets it), so skipping it changes nothing.
+ptk.addMethod(CtNewMethod.make(f"""
+public static boolean needs(java.util.UUID u) {{
+  if (u == null) return false;
+  Object ko = LASTK.get(u);
+  if (!(ko instanceof String)) return true;
+  if (PAGEOPEN.containsKey(u)) return true;
+  long ep = {PKG}.SackPool.epoch(u);
+  if (ep >= 0L) {{
+    Long last = (Long) EPOCH.get(u);
+    if (last == null || last.longValue() != ep) return true;
+  }}
+  String k = (String) ko;
+  if ({PKG}.ProcStore.BROKEN.containsKey(k)) return false;
+  java.util.Map m = (java.util.Map) {PKG}.ProcStore.STATES.get(k);
+  if (m == null) return true;
+  java.util.Iterator it = m.values().iterator();
+  while (it.hasNext()) {{
+    {PKG}.ProcBench pb = ({PKG}.ProcBench) it.next();
+    if (pb.queued() > 0 || !pb.xpList().isEmpty()) return true;
+  }}
+  return false;
+}}""", ptk))
+ptick.addInterface(pool.get("java.lang.Runnable"))
+ptick.addConstructor(CtNewConstructor.make("public ProcTick() { }", ptick))
+ptick.addMethod(CtNewMethod.make(f"""
+public void run() {{
+  try {{
+    java.util.Iterator it = {UNI}.get().getPlayers().iterator();
+    while (it.hasNext()) {{
+      {PR} pr = ({PR}) it.next();
+      if (pr == null || !pr.isValid()) continue;
+      if (!{PKG}.ProcTask.needs(pr.getUuid())) {{ {PKG}.ProcTask.PSKIPS.incrementAndGet(); continue; }}   // 0.7.18 (audit 9b)
+      java.util.UUID wu = pr.getWorldUuid();
+      if (wu == null) continue;
+      {WLD} w = {UNI}.get().getWorld(wu);
+      if (w == null) continue;
+      {PKG}.ProcTask.PHOPS.incrementAndGet();
+      w.execute(new {PKG}.ProcTask(pr, wu));
+    }}
+  }} catch (Throwable t) {{ }}
+}}""", ptick))
+
+# ================= 0.7.18 SackInvSys: InventoryChangeEvent -> SweepTask.INVDIRTY (the 2 s sweep visits that player) =================
+# The engine's InventorySystems$InventoryChangeEventSystem turns every ItemContainer change of an entity's inventory components into one
+# InventoryChangeEvent on the entity (VERIFIED bytecode: InventoryComponent.getChangeEvents polled every tick, CommandBuffer.invoke); query
+# = the Player component (the proven SkyyGear GearInvSys query), so only players; the PlayerRef is read from the same chunk. Only a map write here (world thread, cheap). ONE registerSystem in setup().
+sinv.addConstructor(CtNewConstructor.make(jt("public SackInvSys() { super(@ICE@.class); }"), sinv))
+sinv.addMethod(CtNewMethod.make(jt("public @QRY@ getQuery() { return (@QRY@) @PLA@.getComponentType(); }"), sinv))   # players (SkyyGear's GearInvSys query)
+sinv.addMethod(CtNewMethod.make(jt(r'''
+public void handle(int idx, @ACH@ chunk, @ST@ st, @CBF@ buf, @EVE@ ev) {
+  try {
+    @PR@ pr = (@PR@) chunk.getComponent(idx, @PR@.getComponentType());
+    if (pr == null) return;
+    java.util.UUID u = pr.getUuid();
+    if (u == null) return;
+    @PKG@.SweepTask.INVDIRTY.put(u, Boolean.TRUE);
+    @PKG@.SweepTask.EVENTS.incrementAndGet();
+  } catch (Throwable t) { }
+}'''), sinv))
+
+# ================= 0.7.6 admin config kit (research/Server-Setup-Spec.md 4.12, tools/CONFIG-CONTRACT.md) =================
+# Skyy_SkyySacks/config.properties stays the file and craftSearch keeps its key. SkyyMenu 0.3 Server Setup lists it as "Bags and Crafting";
+# every change is validated, logged (Skyy_SkyySacks/config-changes.log), versioned (config-history) and written line by line. The bound
+# fields exist above (SackDefs.CAP_*, ProcBench.*_CAP); SackCfg.reload is the RELOAD (hand edits) and the craftSearch reload routine.
+_CAP_ROW = {
+    # 0.7.7 (research/Bag-Restructure-Spec.md 8.1): rarity labels; the keys stay (bag.small = Normal, bag.medium = Unique, bag.large = Legendary)
+    "bag.small":       ("Normal bag: most of each item", "bags", "live,adv,danger",
+                        "Most of EACH item a Normal bag (the old Small) holds. Lowering never deletes pooled items."),
+    "bag.medium":      ("Unique bag: most of each item", "bags", "live,adv,danger",
+                        "Most of each item a Unique bag (the old Medium) holds. Carried bags of a type add up."),
+    "bag.rare":        ("Rare bag: most of each item", "bags", "live,adv,danger",
+                        "Most of each item a Rare bag holds (between Unique and Legendary). Lowering only stops intake."),
+    "bag.large":       ("Legendary bag: most of each item", "bags", "live,adv,danger",
+                        "Most of each item a Legendary bag (the old Large) holds. Lowering only stops intake."),
+    "bag.omni":        ("Mythic Omni Bag: most of each item", "bags", "live,adv,danger",
+                        "Most of each item of EVERY bag type the Mythic Omni Bag holds. Lowering only stops intake."),
+    "bench.queueCap":  ("Queue size (units)", "benches", "live,adv",
+                        "Most units one player's Furnace or Tannery queue holds. Lowering keeps what is queued."),
+    "bench.fuelCap":   ("Fuel slot size (items)", "benches", "live,adv",
+                        "Most fuel items one player's bench fuel slot holds. Lowering keeps the fuel already loaded."),
+    "bench.outputCap": ("Output held before pausing", "benches", "live,adv",
+                        "Output a Furnace or Tannery keeps before it pauses until the player collects. Nothing is lost."),
+}
+assert set(_CAP_ROW) == set(k for (k, _f, _d, _lo, _hi) in SACK_CAPS)
+SACK_CFG_CATS = [("craft", "Craft page"), ("bags", "The Void"), ("void", "Void levels"), ("voidcost", "Upgrade costs"),
+                 ("benches", "Furnace and Tannery"), ("pickup", "Auto-pickup")]   # 0.8.3: + Auto-pickup   # 0.8.0: + the Void rows (the bag caps and free recipes rows are retired)
+SACK_CFG_ROWS = [  # (key, label, cat, type, default, min, max, opts, unit, flags, help, bind)
+    ("craftSearch", "Search box on /craft", "craft", "bool", "true", "", "", "", "", "live",
+     "Off hides the search box on /craft (for clients that cannot open it). /craft <words> still searches.",
+     "reload:SackCfg.reload@config.properties:craftSearch"),
+    # 0.8.0: bags.freeRecipes is retired (no bag recipes) - its line stays in the file, unread
+    # 0.7.8 (Skyy 2026-09-30, "id keep cooked food out"): default OFF = Skyy's lock; ON = the 0.7.7 routing. Live: catOf reads it on every
+    # sweep; cooked food already stored is never touched either way.
+    ("bags.cookedFood", "Cooked food in Farming", "bags", "bool", "false", "", "", "", "", "live",
+     "On: cooked and prepared food goes into Farming too. Off: raw produce only, cooked stays out.",
+     "field:SackDefs.COOKED_FARM@config.properties:bags.cookedFood;after=SackCfg.cookedChanged"),
+    # 0.7.11 review fix 8 (PROJECT-RULES 4): the owner's stack refill switches - live (RefillPref.mode reads them on every 2 s tick)
+    ("bags.refill", "Stack refill from the Void", "bags", "bool", "true", "", "", "", "", "live",
+     "On: each player picks Hotbar only, Full inventory or Off on the Void page. Off: no refill at all.",
+     "field:SackCfg.REFILL_ON@config.properties:bags.refill;after=SackCfg.refillChanged"),
+    ("bags.refillDefault", "Stack refill default", "bags", "choice", "hotbar", "", "", "hotbar|Hotbar only,full|Full inventory,off|Off", "",
+     "live", "Players who never picked a mode on the Void page get this one (Hotbar only is the default).",
+     "field:SackCfg.REFILL_DEF@config.properties:bags.refillDefault;after=SackCfg.refillChanged"),
+    # 0.7.12 (research/Bag-Craft-Link-Fix.md risk 2): live - BenchLink.chestFix reads it on every bench packet
+    ("bags.benchChests", "Bench chest count fallback", "bags", "bool", "false", "", "", "", "", "live", "On: an open bench reports 1 nearby chest so it uses the Void. Only if benches ignore Void items.",
+     "field:SackCfg.CHEST_FIX@config.properties:bags.benchChests"),
+    # 0.8.10 review fix: live - the 2 s sweep reads it (and SweepTask.cfgSig re-sweeps on a change)
+    ("bags.fishSweep", "Catches go into the Void", "bags", "bool", "true", "", "", "", "", "live",
+     "On: caught fish go from the hotbar into the Fishing bag (take out to sell). Off: main inventory only",
+     "field:SackCfg.FISH_SWEEP@config.properties:bags.fishSweep"),
+    # 0.7.12 review fix 1: live - SackCfg.pocketChanged swaps the vanilla pocket crafting window back / ours in (BenchLink.pocketApply)
+    ("bags.pocketCraft", "Void in inventory crafting", "bags", "bool", "true", "", "", "", "", "live", "On: inventory crafting also uses the Void. Off: inventory only (benches still use the Void).",
+     "field:SackCfg.POCKET_CRAFT@config.properties:bags.pocketCraft;after=SackCfg.pocketChanged"),
+    # 0.8.12: live - every PdOnce rule reads it (tools/skyyonce.py)
+    ("bags.pocketKeep", "Pocket Dimension stays with you", "bags", "bool", "true", "", "", "", "", "live",
+     "Never dropped, stored or sold; one per profile (extras removed); /pocket brings it back.",
+     "field:SackCfg.POCKET_KEEP@config.properties:bags.pocketKeep"),
+] + [(k, _CAP_ROW[k][0], _CAP_ROW[k][1], "int", str(d), str(lo), str(hi), "", "", _CAP_ROW[k][2], _CAP_ROW[k][3],
+      "field:%s@config.properties:%s" % (f, k))
+     for (k, f, d, lo, hi) in SACK_CAPS if k.startswith("bench.")]   # 0.8.0: the five bag.* cap rows are retired (lines kept, unread)
+# 0.8.0 (Bags v2 spec 2.4): the Void rows, all live (the next sweep / page uses them); lowering any of them never deletes anything
+def _pdrow(key, label, cat, typ, dflt, lo, hi, unit, flags, help_, field, extra=""):
+    assert len(label) <= 40 and len(help_) <= 100, (key, len(label), len(help_))
+    return (key, label, cat, typ, dflt, lo, hi, "", unit, flags, help_, "field:SackCfg.%s@config.properties:%s;after=SackCfg.pdChanged%s" % (field, key, extra))
+SACK_CFG_ROWS += [
+    _pdrow("pd.perLevel", "Space per storage level", "void", "int", str(PD_PER_LEVEL), "1", "100000", "", "live",
+           "Items each storage level adds to a category (x its rarity). Lowering never deletes items.", "PD_PER_LEVEL"),
+    _pdrow("pd.maxLevel", "Highest storage level", "void", "int", str(PD_MAX_LEVEL), "1", "10000", "", "live,adv",
+           "The storage level a category stops at. Lowering never deletes items.", "PD_MAX_LEVEL"),
+    _pdrow("pd.omniAuto", "Omni comes by itself", "void", "bool", "true", "", "", "", "live",
+           "On: all six categories at Legendary = Omni. Off: only /pdadmin omni gives it.", "PD_OMNI_AUTO"),
+    # 0.8.9 (Skyy "scale down how much each level cost goes up")
+    _pdrow("pd.curve", "Level curve", "void", "dec", "%g" % PD_CURVE, "%g" % PD_CURVE_LO, "%g" % PD_CURVE_HI, "", "live,adv",
+           "Level L needs pd.step x (L-1)^this items. 2 = the old steep curve, lower = cheaper later levels.", "PD_CURVE"),
+] + [_pdrow("pd.step." + c, "%s items per level step" % c, "void", "int", str(PD_STEP[c]), "1", "1000000", "", "live,adv",
+            "Level L needs this x (L-1)^pd.curve %s items collected. Higher = slower levels." % c, "PD_STEP_" + c.upper())
+     for c in PD_CATS
+] + [_pdrow("pd.mult." + r, "%s space multiplier" % r, "void", "dec", "%g" % m, "0.1", "100", "x", "live,adv,danger",
+            "Space x this at %s. Must not go down the ladder (asks first)." % r, "PD_MULT_" + r.upper(), ";check=SackCfg.checkMult;confirm=always")
+     for r, m in zip(PD_RAR, PD_MULT)
+] + [_pdrow("pd.gate." + PD_RAR[i + 1], "Level for %s (not used)" % PD_RAR[i + 1], "void", "int", str(g), "1", "10000", "", "live,adv",
+            "Not used since SkyySacks 0.8.14 - the %s upgrade needs only its items (Skyy: no level cap)." % PD_RAR[i + 1], "PD_GATE_" + PD_RAR[i + 1].upper(),
+            ";check=SackCfg.checkGate")
+     for i, g in enumerate(PD_GATE)
+] + [_pdrow("pd.cost.%s.%s" % (c, PD_RAR[r]), "%s to %s cost" % (c, PD_RAR[r]), "voidcost", "text", pd_cost_text(c, r), "", "400", "",
+            "live,adv", "Items it takes - itemId:amount pairs, commas between. A log id counts its whole wood tier.",
+            "PD_COST_%s_%s" % (c.upper(), PD_RAR[r].upper()), ";check=SackCfg.checkCost")
+     for c in PD_CATS for r in (1, 2, 3)]
+# 0.8.3 auto-pickup (all live: the Pick systems read the SackCfg fields on every break / spawn / death). The kill credit rule is the help
+# text of the share row (Skyy: "both. more loot to top damager.").
+PICK_ROWS = [
+    ("pickup.on", "Auto-pickup (master switch)", "pickup", "bool", "true", "", "", "", "", "live",
+     "On: block and mob drops go straight to the player - the Void first, then the inventory.",
+     "field:SackCfg.PICK_ON@config.properties:pickup.on"),
+    ("pickup.blocks", "Auto-pickup: block drops", "pickup", "bool", "true", "", "", "", "", "live",
+     "Mined, chopped, felled and harvested. Off: blocks drop on the ground, harvests go to the inventory.",
+     "field:SackCfg.PICK_BLOCKS@config.properties:pickup.blocks"),
+    ("pickup.mobs", "Auto-pickup: mob drops", "pickup", "bool", "true", "", "", "", "", "live",
+     "Mob drops go to the player who did the most damage. Off: they drop on the ground.",
+     "field:SackCfg.PICK_MOBS@config.properties:pickup.mobs"),
+    ("pickup.killerShare", "Killer's extra share", "pickup", "int", "50", "0", "100", "", "%", "live",
+     "Top damager gets the full drop. A different killer gets this % of a second roll. 0 = none.",
+     "field:SackCfg.PICK_SHARE@config.properties:pickup.killerShare"),
+    # 0.8.16 (Skyy "hide it."): live - the after= hook applies it at once, the 2 s tick keeps it applied
+    ("pickup.hidePopup", "Hide the vanilla pickup popup", "pickup", "bool", "true", "", "", "", "", "live",
+     "On: the game's own 'picked up' popups are hidden (the feed cards show pickups). Off: they show.",
+     "field:SackCfg.HIDE_POPUP@config.properties:pickup.hidePopup;after=SackCfg.popupChanged"),
+]
+for _r in PICK_ROWS:
+    assert len(_r[1]) <= 40 and len(_r[10]) <= 100, (_r[0], len(_r[1]), len(_r[10]))
+SACK_CFG_ROWS += PICK_ROWS
+# 0.8.21 Smelting Fortune (research/Metals-Tools-Fortune-Spec.md 2.4): all live - procQueue / finishUnit read the SackCfg fields
+SF_ROWS = [
+    ("smelt.fortune.enabled", "Smelting Fortune", "benches", "bool", "true", "", "", "", "", "live",
+     "On: the Smithing tree's Smelting Fortune gives extra bars in the /craft Furnace. Off: every bar 1:1.",
+     "field:SackCfg.SF_ON@config.properties:smelt.fortune.enabled;after=SackCfg.sfChanged"),
+    ("smelt.fortune.alloys", "Smelting Fortune on alloys", "benches", "bool", "true", "", "", "", "", "live",
+     "On: alloy bars (Bronze, Dusk ...) can roll extra bars too. Off: ore to bar only.",
+     "field:SackCfg.SF_ALLOYS@config.properties:smelt.fortune.alloys;after=SackCfg.sfChanged"),
+    ("smelt.fortune.minedOnly", "Only on ore you mined yourself", "benches", "bool", "true", "", "", "", "", "live",
+     "On: Fortune only for ore the player mined (blocks buy ore, smelt, sell). Off: any ore.",
+     "field:SackCfg.SF_MINED@config.properties:smelt.fortune.minedOnly;after=SackCfg.sfChanged"),
+    ("smelt.fortune.guard", "Most extra bars per unit", "benches", "int", "100", "0", "1000", "", "", "live,adv",
+     "Safety limit on extra bars one smelted unit can give. 0 = Smelting Fortune never gives any.",
+     "field:SackCfg.SF_GUARD@config.properties:smelt.fortune.guard;after=SackCfg.sfChanged"),
+]
+for _r in SF_ROWS:
+    assert len(_r[1]) <= 40 and len(_r[10]) <= 100, (_r[0], len(_r[1]), len(_r[10]))
+SACK_CFG_ROWS += SF_ROWS
+# 0.8.5 sound pass round 2: Server Setup -> SkyyVoid and Crafting -> Sounds (Skyy_SkyySacks/sounds.properties)
+SACK_CFG_CATS = SACK_CFG_CATS + [("sounds", "Sounds")]
+SACK_CFG_ROWS += [('sounds.enabled', 'Sounds', 'sounds', 'bool', 'true', '', '', '', '', 'live', 'Off = SkyySacks plays no sound at all. Players can also mute every sound in /settings.', 'field:SackSnd.ON@Skyy_SkyySacks/sounds.properties:sounds.enabled'), ('sound.full', 'Void full sound', 'sounds', 'bool', 'true', '', '', '', '', 'live', 'Auto-pickup: Void and inventory full, drops land at your feet. Once per 30 s. Off = silent.', 'field:SackSnd.S_FULL@Skyy_SkyySacks/sounds.properties:sound.full'), ('sound.full.id', 'Void full sound id', 'sounds', 'text', 'SFX_Generic_Crafting_Failed', '', '120', '', '', 'live', 'A vanilla sound event id (try it with /soundtest). Empty = no sound.', 'field:SackSnd.S_FULL_ID@Skyy_SkyySacks/sounds.properties:sound.full.id;check=SackSnd.check'), ('sound.upgrade', 'Void upgrade sound', 'sounds', 'bool', 'true', '', '', '', '', 'live', "The Void page's Upgrade went through (replaces the old craft click there). Off = silent.", 'field:SackSnd.S_UPGRADE@Skyy_SkyySacks/sounds.properties:sound.upgrade'), ('sound.upgrade.id', 'Void upgrade sound id', 'sounds', 'text', 'SFX_Workbench_Upgrade_Complete_Default', '', '120', '', '', 'live', 'A vanilla sound event id (try it with /soundtest). Empty = no sound.', 'field:SackSnd.S_UPGRADE_ID@Skyy_SkyySacks/sounds.properties:sound.upgrade.id;check=SackSnd.check')]
+# review fix: the bag rows ask before an order-breaking change (SackCfg.checkTierOrder; asks, never refuses, ignored on import)
+# 0.7.7: config history keeps 10 versions per file (OPEN-QUESTIONS server setup 3, LOCKED 2026-09-25: 10, was 20)
+kit = CFG.emit(pool, PKG, MOD="SkyySacks", TITLE="SkyyVoid and Crafting", VERSION=VERSION, NODE="skyysacks.admin", CATS=SACK_CFG_CATS,
+               ROWS=SACK_CFG_ROWS, FILES=["Skyy_SkyySacks/config.properties", "Skyy_SkyySacks/sounds.properties"],
+               NOTE="Hand edits of the file are also picked up by themselves within about 10 seconds.",
+               RELOAD="SackCfg.reload", KEEP=10, DEFAULTS={"config.properties": SACK_CFG_TEXT, "sounds.properties": "# SkyySacks sounds (SkyWynn sound pass). Change them in game: SkyWynn Menu -> Server Setup -> Sacks -> Sounds,\n# or edit here and press Reload there. Each id is a vanilla sound event id (try one in game with /soundtest <id>);\n# an empty id = that sound off. Every player can also switch all SkyWynn sounds off for themselves in /settings.\nsounds.enabled=true\n# Void full: Auto-pickup: Void and inventory full, drops land at your feet. Once per 30 s.\nsound.full=true\nsound.full.id=SFX_Generic_Crafting_Failed\n# Void upgrade: The Void page's Upgrade went through (replaces the old craft click there).\nsound.upgrade=true\nsound.upgrade.id=SFX_Workbench_Upgrade_Complete_Default\n"})
+print("config kit: %d rows, files %s" % (kit.info["rows"], ", ".join(kit.info["files"])))
+# ================= 0.8.9 SackMig089: the ONE-TIME update of an existing config.properties (PROJECT-RULES 4; SkyyTrees TreeMig317's pattern)
+# setup() only, BEFORE SackCfg.reload and CfgPub.start. The MIG089 lines move from the 0.8.8 default to the 0.8.9 one ONLY while they still
+# hold the old default (cost text without spaces, numbers by value); a value an admin changed, a doubled or continued line is kept and
+# named in an INFO line; a missing line = the new built-in value. The commented template lines holding the old default get the new one
+# too (no value changes). Only the VALUE part of a line changes - every other byte and each line's own ending stay; the marker comment
+# line is appended (a missing final newline added first, with the ending of the file's last ended line). Properties check, History copy verified before
+# the write, one change-log line per moved value (Server Setup -> Changes -> Undo). The marker = never again.
+for _k, _o, _n, _t in MIG089:
+    assert ("#%s=%s" % (_k, _n)) in SACK_CFG_LINES, _k                  # the new default file holds the new value
+assert sum(1 for l in SACK_CFG_LINES if MIG089_MK in l) == 1 and [l for l in SACK_CFG_LINES if MIG089_MK in l][0].startswith("# ")
+MIG089_LINE = "# ---------- SkyySacks 0.8.9 (marker %s, runs once): Smithing costs leather + metal bars, Combat costs fabric (not feathers), 150 space per level; only untouched old default lines were changed ----------" % MIG089_MK
+smig = pool.makeClass(PKG + ".SackMig089")
+for _d in ("public static final String MK = %s;" % jlit(MIG089_MK),
+           'public static final String WHO = "SkyySacks 0.8.9";',
+           "public static final String MARK_LINE = %s;" % jlit(MIG089_LINE),
+           "public static final String[] KEY = %s;" % _jarr([m[0] for m in MIG089]),
+           "public static final String[] OLDV = %s;" % _jarr([m[1] for m in MIG089]),
+           "public static final String[] NEWV = %s;" % _jarr([m[2] for m in MIG089]),
+           "public static final String[] KIND = %s;" % _jarr([m[3] for m in MIG089])):
+    smig.addField(CtField.make(_d, smig))
+smig.addMethod(CtNewMethod.make(jt(r'''
+public static boolean marked(java.util.ArrayList l) {
+  int k = 0;
+  while (k < l.size()) {
+    String s = (String) l.get(k);
+    if (@PKG@.CfgFile.isComment(s)) { if (s.indexOf(MK) >= 0) return true; k++; continue; }
+    k = @PKG@.CfgFile.end(l, k) + 1;
+  }
+  return false;
+}'''), smig))
+# a cost text without any spaces / a number by value ("100", "100.0")
+smig.addMethod(CtNewMethod.make(jt(r'''
+public static String squeeze(String a) {
+  StringBuilder sb = new StringBuilder();
+  for (int i = 0; i < a.length(); i++) { char c = a.charAt(i); if (c != ' ' && c != '\t') sb.append(c); }
+  return sb.toString();
+}'''), smig))
+smig.addMethod(CtNewMethod.make(jt(r'''
+public static boolean same(int j, String a, String b) {
+  if (a == null || b == null) return false;
+  if (squeeze(a).equals(squeeze(b))) return true;
+  if (!"n".equals(KIND[j])) return false;
+  try { return Double.parseDouble(a.trim()) == Double.parseDouble(b.trim()); } catch (Throwable t) { return false; }
+}'''), smig))
+# a commented template line "#<key>=<value>" (exactly as the default file writes it) -> the key's index, else -1
+smig.addMethod(CtNewMethod.make(jt(r'''
+public static int docKey(String s) {
+  String x = s.trim();
+  if (!x.startsWith("#")) return -1;
+  for (int j = 0; j < KEY.length; j++) if (x.startsWith("#" + KEY[j] + "=")) return j;
+  return -1;
+}'''), smig))
+# pure text step (ISO-8859-1 chars in and out). null = the marker is already in a comment line or the text cannot be read as Properties.
+# Else { new text, String[] { key, old, new }* (the change-log rows), String[] notes, String[] moved keys, Integer doc lines updated }.
+smig.addMethod(CtNewMethod.make(jt(r'''
+public static Object[] update(String text) {
+  try {
+    java.util.ArrayList l = @PKG@.CfgFile.split(text);
+    if (marked(l)) return null;
+    java.util.Properties p = new java.util.Properties();
+    p.load(new java.io.StringReader(text));
+    int n = l.size();
+    int[] st = new int[n + 1];
+    int pos = 0;
+    for (int i = 0; i < n; i++) { st[i] = pos; int e = text.indexOf('\n', pos); pos = e < 0 ? text.length() : e + 1; }
+    st[n] = text.length();
+    int[] cnt = new int[KEY.length];
+    int[] at = new int[KEY.length];
+    String[] repl = new String[n];
+    int docs = 0;
+    int k = 0;
+    while (k < n) {
+      String s = (String) l.get(k);
+      if (@PKG@.CfgFile.isComment(s)) {
+        int j = docKey(s);
+        if (j >= 0) {
+          int eq = s.indexOf('=');
+          String v = s.substring(eq + 1);
+          if (same(j, v, OLDV[j])) { repl[k] = s.substring(0, eq + 1) + NEWV[j]; docs++; }
+        }
+        k++;
+        continue;
+      }
+      int e = @PKG@.CfgFile.end(l, k);
+      String key = @PKG@.CfgFile.unesc(s.substring(@PKG@.CfgFile.lead(s), @PKG@.CfgFile.keyEnd(s)));
+      for (int j = 0; j < KEY.length; j++) if (KEY[j].equals(key)) { cnt[j]++; at[j] = e == k ? k : -1; }
+      k = e + 1;
+    }
+    java.util.ArrayList rows = new java.util.ArrayList();
+    java.util.ArrayList notes = new java.util.ArrayList();
+    java.util.ArrayList moved = new java.util.ArrayList();
+    for (int j = 0; j < KEY.length; j++) {
+      String v = p.getProperty(KEY[j]);
+      if (v == null) continue;   // no line: the new built-in value applies
+      String vt = v.trim();
+      if (same(j, vt, NEWV[j])) continue;
+      if (cnt[j] != 1 || at[j] < 0) { notes.add(KEY[j] + "=" + @PKG@.CfgRows.oneLine(vt) + " kept - the line is doubled or continues on the next line; the 0.8.9 default is " + NEWV[j] + " (Server Setup -> SkyyVoid and Crafting)"); continue; }
+      if (!same(j, vt, OLDV[j])) { notes.add(KEY[j] + "=" + @PKG@.CfgRows.oneLine(vt) + " kept - an admin changed it (the 0.8.8 default was " + OLDV[j] + ", the 0.8.9 default is " + NEWV[j] + ")"); continue; }
+      String s = (String) l.get(at[j]);
+      repl[at[j]] = s.substring(0, @PKG@.CfgFile.valStart(s)) + NEWV[j];
+      rows.add(KEY[j]); rows.add(vt); rows.add(NEWV[j]);
+      moved.add(KEY[j]);
+    }
+    StringBuilder sb = new StringBuilder(text.length() + 1024);
+    for (int i = 0; i < n; i++) {
+      String rawl = text.substring(st[i], st[i + 1]);
+      if (repl[i] == null) { sb.append(rawl); continue; }
+      sb.append(repl[i]).append(rawl.substring(((String) l.get(i)).length()));   // the line's own ending
+    }
+    int ln = text.lastIndexOf('\n');   // the ending of the file's last ended line (a mixed file: the one next to the marker)
+    String eol = (ln > 0 && text.charAt(ln - 1) == '\r') ? "\r\n" : "\n";
+    if (text.length() > 0 && !text.endsWith("\n")) sb.append(eol);
+    sb.append(MARK_LINE).append(eol);
+    return new Object[] { sb.toString(), (String[]) rows.toArray(new String[0]), (String[]) notes.toArray(new String[0]), (String[]) moved.toArray(new String[0]), Integer.valueOf(docs) };
+  } catch (Throwable t) { return null; }
+}'''), smig))
+# the update may change only the moved keys, each to exactly its new value: both texts as Properties, nothing added or removed
+smig.addMethod(CtNewMethod.make(jt(r'''
+public static boolean sameAfter(byte[] old, byte[] nb, String[] moved) {
+  try {
+    java.util.Properties a = new java.util.Properties();
+    java.util.Properties b = new java.util.Properties();
+    a.load(new java.io.ByteArrayInputStream(old));
+    b.load(new java.io.ByteArrayInputStream(nb));
+    if (a.size() != b.size()) return false;
+    java.util.Iterator it = a.stringPropertyNames().iterator();
+    while (it.hasNext()) {
+      String k = (String) it.next();
+      int m = -1;
+      for (int i = 0; i < moved.length; i++) if (moved[i].equals(k)) m = i;
+      if (m >= 0) {
+        int j = -1;
+        for (int q = 0; q < KEY.length; q++) if (KEY[q].equals(k)) j = q;
+        if (j < 0 || !NEWV[j].equals(b.getProperty(k))) return false;
+        continue;
+      }
+      if (!a.getProperty(k).equals(b.getProperty(k))) return false;
+    }
+    return true;
+  } catch (Throwable t) { return false; }
+}'''), smig))
+smig.addMethod(CtNewMethod.make(jt(r'''
+public static int fileIdx() {
+  for (int k = 0; k < @PKG@.CfgRows.FILES.length; k++) if (@PKG@.CfgRows.FILES[k].endsWith("/config.properties")) return k;
+  return -1;
+}'''), smig))
+# the config kit's own files for the update, before CfgPub.start (which sets the same values again): history + change log live in the
+# folder of config.properties (the kit's HOME, Skyy_SkyySacks)
+smig.addMethod(CtNewMethod.make(jt(r'''
+public static void kit(java.nio.file.Path home) {
+  @PKG@.CfgRows.HOME = home;
+  if (@PKG@.CfgRows.LOG == null) @PKG@.CfgRows.LOG = @PKG@.SackPool.LOG;
+  @PKG@.CfgHist.init();
+  @PKG@.CfgLog.init();
+}'''), smig))
+# CfgHist.snapshot swallows its own errors: config-history must really hold a copy with exactly these bytes (newest first)
+smig.addMethod(CtNewMethod.make(jt(r'''
+public static boolean saved(int f, byte[] old) {
+  String[] have = @PKG@.CfgHist.list(f);
+  for (int i = have.length - 1; i >= 0; i--) {
+    try {
+      if (java.util.Arrays.equals(java.nio.file.Files.readAllBytes(@PKG@.CfgHist.bak(f, have[i])), old)) return true;
+    } catch (Throwable x) { }
+  }
+  return false;
+}'''), smig))
+# "" = nothing done (no file - SackCfg.reload writes the 0.8.9 default with the marker -, marker already there, or a failure: WARN, file
+# untouched, retried at the next start); else the INFO lines joined by \n
+smig.addMethod(CtNewMethod.make(jt(r'''
+public static synchronized String run(java.nio.file.Path f) {
+  if (f == null) return "";
+  try {
+    if (!java.nio.file.Files.exists(f, new java.nio.file.LinkOption[0])) return "";
+    byte[] old = java.nio.file.Files.readAllBytes(f);
+    Object[] r = update(new String(old, "ISO-8859-1"));
+    if (r == null) return "";
+    byte[] data = ((String) r[0]).getBytes("ISO-8859-1");
+    String[] moved = (String[]) r[3];
+    if (!sameAfter(old, data, moved)) {
+      @PKG@.SackPool.warn("config.properties NOT updated for SkyySacks 0.8.9 (Void costs / space): the update would change more than those lines (the file is used as it is; the next start tries again)");
+      return "";
+    }
+    int fi = fileIdx();
+    if (fi < 0) return "";
+    kit(f.toAbsolutePath().getParent());
+    @PKG@.CfgHist.snapshot(fi, old, @PKG@.CfgHist.stamp(), WHO, "before the 0.8.9 Void costs / space update");
+    if (!saved(fi, old)) {
+      @PKG@.SackPool.warn("config.properties NOT updated for SkyySacks 0.8.9 (Void costs / space): the old file could not be kept in " + @PKG@.CfgHist.DIR + " (the file is used as it is; the next start tries again)");
+      return "";
+    }
+    @PKG@.CfgRows.atomicWrite(f, data);
+    String[] rows = (String[]) r[1];
+    StringBuilder ch = new StringBuilder();
+    for (int i = 0; i + 2 < rows.length; i += 3) {
+      @PKG@.CfgLog.enqueue(@PKG@.CfgLog.now() + "\t" + WHO + "\t-\tupdate\t" + rows[i] + "\t" + rows[i + 1] + "\t" + rows[i + 2] + "\tok");
+      ch.append(ch.length() == 0 ? "" : ", ").append(rows[i]).append(' ').append(rows[i + 1]).append(" -> ").append(rows[i + 2]);
+    }
+    if (rows.length > 0) @PKG@.CfgLog.flush();
+    int docs = ((Integer) r[4]).intValue();
+    String msg = "config.properties updated for SkyySacks 0.8.9 (Smithing costs leather + bars, Combat costs fabric, 150 space per level): " + (rows.length == 0 ? "no setting line held the old default" : ch.toString() + " (the old file is in config-history; Server Setup -> SkyyVoid and Crafting -> Changes can undo each)") + "; " + docs + " commented default line(s) refreshed [marker " + MK + " added, runs once]";
+    try { if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] " + msg); } catch (Throwable t2) { }
+    StringBuilder all = new StringBuilder(msg);
+    String[] notes = (String[]) r[2];
+    for (int i = 0; i < notes.length; i++) {
+      try { if (@PKG@.SackPool.LOG != null) @PKG@.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] config.properties: " + notes[i]); } catch (Throwable t3) { }
+      all.append('\n').append(notes[i]);
+    }
+    return all.toString();
+  } catch (Throwable t) {
+    @PKG@.SackPool.warn("could not update config.properties for SkyySacks 0.8.9 (Void costs / space; the file is used as it is): " + t);
+    return "";
+  }
+}'''), smig))
+
+# ================= 0.7.10: the Workbench tab (tools/skyywbtab.py; WB.probe stops the build when an engine fact it relies on changed)
+print(WB.probe(pool))
+WB_CLASSES = WB.emit(pool, CtField, CtNewMethod, CtNewConstructor, PKG, False, "SkyySacks")   # FALLBACK copy (SkyyAccessories owns it)
+
+# ================= SackBridge + SackFn (0.7.13): the bag take bridge for SkyyBazaar (tools/sacks_0_7_13_patch.py docstring) =================
+for _c, _m in ((UNI, "get"), (UNI, "getPlayer"), (PR, "getReference"), (REF, "getStore"), (ST, "isInThread"), (ST, "getComponent"),
+               (PLA, "getInventory"), (PLA, "getComponentType")):
+    B.probe(pool, _c, _m)
+# PLAYERS = the bare-JVM harness's UUID -> Player lookup (always null in the game: the player's own store, on its world thread only).
+sbr.addField(CtField.make("public static volatile java.util.function.Function PLAYERS;", sbr))
+# OWED = "<key>|<itemId>" -> long[] { amount a take removed and a put may still return, time of the last take } (memory only, 60 s)
+sbr.addField(CtField.make("public static final java.util.HashMap OWED = new java.util.HashMap();", sbr))
+sbr.addField(CtField.make("public static final long OWE_MS = 60000L;", sbr))
+# 0.8.17: FOWE = "<key>|<fishId>" -> ArrayList of the entries the owed fish took (take order; "" = a plain fish) - always as long as OWED's
+# amount for that key (SkyyFishing whole fish only; memory only, the same 60 s as OWED)
+sbr.addField(CtField.make("public static final java.util.HashMap FOWE = new java.util.HashMap();", sbr))
+# 0.8.17 token round: FTOK = "<key>|<fishId>|<entry>" -> ArrayList of the tokens of that entry's owed fishTakes (take order; memory only)
+sbr.addField(CtField.make("public static final java.util.HashMap FTOK = new java.util.HashMap();", sbr))
+# review fix: LASTKEY = "<uuid>|<itemId>" -> the profile key the last take of that player + item DEBITED (put / commit settle against it)
+sbr.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap LASTKEY = new java.util.concurrent.ConcurrentHashMap();", sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static @PLA@ playerOf(java.util.UUID u) {
+  if (u == null) return null;
+  java.util.function.Function f = PLAYERS;
+  if (f != null) {
+    Object o = f.apply(u);
+    return (o instanceof @PLA@) ? (@PLA@) o : null;
+  }
+  @PR@ pr = null;
+  try { pr = @UNI@.get().getPlayer(u); } catch (Throwable t) { pr = null; }
+  if (pr == null) return null;
+  @REF@ r = pr.getReference();
+  if (r == null) return null;
+  @ST@ st = r.getStore();
+  if (st == null) return null;
+  if (!st.isInThread()) {
+    @PKG@.KnowSync.warnOnce("bag bridge: a call came off the player's world thread - refused (nothing moved; logged once)");
+    return null;
+  }
+  return (@PLA@) st.getComponent(r, @PLA@.getComponentType());
+}"""), sbr))
+# the profile key whose bags this player can reach for itemId right now, or null (paused / no player on this thread / no such bag carried).
+# out[0] = 1 when the answer is "paused" (count -1), 0 when it is "none" (count 0).
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static String keyFor(java.util.UUID u, String id, int[] out) {
+  out[0] = 0;
+  if (u == null || id == null || id.startsWith("Skyy_Sack_")) return null;
+  String cat = @PKG@.SackDefs.homeOf(id);
+  if (cat == null) return null;
+  String k = @PKG@.SackPool.settledKey(u);
+  if (k == null) { out[0] = 1; return null; }
+  @PLA@ p = playerOf(u);
+  if (p == null) { out[0] = 1; return null; }
+  if (!@PKG@.SweepTask.caps(p.getInventory()).containsKey(cat)) return null;
+  return k;
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static long count(java.util.UUID u, String id) {
+  int[] why = new int[1];
+  String k = keyFor(u, id, why);
+  if (k == null) return why[0] == 1 ? -1L : 0L;
+  @PKG@.BagMirror.beforeTake(k);   // live-mirror rule: book an open bench's use first, else the pool reads too high
+  long have = @PKG@.SackPool.get(k, id);
+  return have < 0L ? 0L : have;
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static java.util.HashMap all(java.util.UUID u) {
+  java.util.HashMap out = new java.util.HashMap();
+  if (u == null) return out;
+  String k = @PKG@.SackPool.settledKey(u);
+  if (k == null) return null;
+  @PLA@ p = playerOf(u);
+  if (p == null) return null;
+  java.util.HashMap caps = @PKG@.SweepTask.caps(p.getInventory());
+  @PKG@.BagMirror.beforeTake(k);
+  java.util.Iterator it = @PKG@.SackPool.pool(k).entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    String id = (String) e.getKey();
+    long v = ((Long) e.getValue()).longValue();
+    if (v <= 0L || id.startsWith("Skyy_Sack_")) continue;
+    String cat = @PKG@.SackDefs.homeOf(id);
+    if (cat != null && caps.containsKey(cat)) out.put(id, Long.valueOf(v));
+  }
+  return out;
+}"""), sbr))
+# the read + debit, atomic with every other pool writer (SackPool.add is static synchronized on SackPool.class; reentrant)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static long debit0(String k, String id, long n) {
+  long have = @PKG@.SackPool.get(k, id);
+  long t = n < have ? n : have;
+  if (t <= 0L) return 0L;
+  @PKG@.SackPool.add(k, id, -t);
+  return t;
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static long debit(String k, String id, long n) {
+  synchronized (@PKG@.SackPool.class) { return debit0(k, id, n); }
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized void owe(String k, String id, long n, long now) {
+  String key = k + "|" + id;
+  long[] o = (long[]) OWED.get(key);
+  if (o == null || now - o[1] > OWE_MS) o = new long[] { 0L, now };
+  o[0] = o[0] + n;
+  o[1] = now;
+  OWED.put(key, o);
+}"""), sbr))
+# how much of n may go back (and is no longer owed): at most what takes of this key + item removed in the last OWE_MS
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized long unowe(String k, String id, long n, long now) {
+  String key = k + "|" + id;
+  long[] o = (long[]) OWED.get(key);
+  if (o == null) return 0L;
+  if (now - o[1] > OWE_MS) { OWED.remove(key); return 0L; }
+  long t = n < o[0] ? n : o[0];
+  if (t <= 0L) return 0L;
+  o[0] = o[0] - t;
+  if (o[0] <= 0L) OWED.remove(key);
+  return t;
+}"""), sbr))
+# 0.8.17 token round: the FTOK helpers (all on SackBridge.class like OWED / FOWE)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized void ftokClear(String kid) {
+  java.util.ArrayList ks = new java.util.ArrayList(FTOK.keySet());
+  for (int i = 0; i < ks.size(); i++) {
+    String s = (String) ks.get(i);
+    if (s.startsWith(kid + "|")) FTOK.remove(s);
+  }
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized void ftokPush(String fk, String tok) {
+  if (tok == null) return;
+  java.util.ArrayList l = (java.util.ArrayList) FTOK.get(fk);
+  if (l == null) { l = new java.util.ArrayList(); FTOK.put(fk, l); }
+  l.add(tok);
+}"""), sbr))
+# the token a put clears: tok given = it, only while an owed take of that entry carried it (else null = refuse); none given = the newest
+# owed take's token ("" = that take had none)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized String ftokFind(String fk, String tok) {
+  java.util.ArrayList l = (java.util.ArrayList) FTOK.get(fk);
+  if (tok != null) return (l != null && l.contains(tok)) ? tok : (String) null;
+  if (l == null || l.isEmpty()) return "";
+  return (String) l.get(l.size() - 1);
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized void ftokDrop(String fk, String tok) {
+  if (tok == null) return;
+  java.util.ArrayList l = (java.util.ArrayList) FTOK.get(fk);
+  if (l == null) return;
+  l.remove((Object) tok);
+  if (l.isEmpty()) FTOK.remove(fk);
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized void ftokTidy(String kid) { if (!OWED.containsKey(kid)) ftokClear(kid); }"""), sbr))
+# a commit: the oldest owed take of that entry is final (its token stays on disk until the 24 h prune)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized void ftokPopOld(String fk) {
+  java.util.ArrayList l = (java.util.ArrayList) FTOK.get(fk);
+  if (l == null) return;
+  if (!l.isEmpty()) l.remove(0);
+  if (l.isEmpty()) FTOK.remove(fk);
+}"""), sbr))
+# 0.8.17: owe t of id; a whole fish also books the entries it took (es, padded with "" to t). Other items = owe.
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized void oweE(String k, String id, long t, java.util.ArrayList es, long now) {
+  if (t <= 0L) return;
+  if (!@PKG@.SackDefs.isCatch(id)) { owe(k, id, t, now); return; }
+  String key = k + "|" + id;
+  long[] o = (long[]) OWED.get(key);
+  java.util.ArrayList l = (java.util.ArrayList) FOWE.get(key);
+  boolean live = o != null && now - o[1] <= OWE_MS;
+  if (!live || l == null) {
+    if (!live) ftokClear(key);
+    l = new java.util.ArrayList();
+    long pad = live ? o[0] : 0L;
+    for (long i = 0L; i < pad; i++) l.add("");
+  }
+  int m = es == null ? 0 : es.size();
+  for (int i = 0; i < m && (long) i < t; i++) l.add(es.get(i));
+  for (long i = (long) m; i < t; i++) l.add("");
+  FOWE.put(key, l);
+  owe(k, id, t, now);
+}"""), sbr))
+# 0.8.17: un-owe up to n of a whole fish -> the entries (lifo = a put: the newest taken first; else a commit: the oldest owed first)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized java.util.ArrayList unoweE(String k, String id, long n, long now, boolean lifo) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  String key = k + "|" + id;
+  long t = unowe(k, id, n, now);
+  java.util.ArrayList l = (java.util.ArrayList) FOWE.get(key);
+  for (long i = 0L; i < t; i++) {
+    if (l == null || l.isEmpty()) out.add("");
+    else if (lifo) out.add(l.remove(l.size() - 1));
+    else out.add(l.remove(0));
+  }
+  if (!OWED.containsKey(key)) FOWE.remove(key);   // FTOK: the caller reads the tokens first, then ftokTidy
+  return out;
+}"""), sbr))
+# 0.8.17: sacks:fn:fishPut's ledger check - exactly that entry is still owed (taken in the last OWE_MS, not committed / put back)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized boolean fishUnowe(String k, String id, String e, long now) {
+  String key = k + "|" + id;
+  long[] o = (long[]) OWED.get(key);
+  if (o == null) { FOWE.remove(key); ftokClear(key); return false; }
+  if (now - o[1] > OWE_MS) { OWED.remove(key); FOWE.remove(key); ftokClear(key); return false; }
+  java.util.ArrayList l = (java.util.ArrayList) FOWE.get(key);
+  if (l == null || o[0] <= 0L) return false;
+  int i = l.lastIndexOf(e);
+  if (i < 0) return false;
+  l.remove(i);
+  o[0] = o[0] - 1L;
+  if (o[0] <= 0L) { OWED.remove(key); FOWE.remove(key); ftokClear(key); }
+  return true;
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static long take(java.util.UUID u, String id, long n) {
+  if (n <= 0L) return 0L;
+  int[] why = new int[1];
+  String k = keyFor(u, id, why);
+  if (k == null) return 0L;
+  @PKG@.BagMirror.beforeTake(k);   // live-mirror rule: book what a bench / pocket craft already took BEFORE the pool is read
+  java.util.ArrayList fe = new java.util.ArrayList();   // 0.8.17 (B): a whole fish takes its weight entries with it, in the same lock
+  long t = @PKG@.SackDefs.isCatch(id) ? @PKG@.SackPool.fishDebit(k, id, n, fe) : debit(k, id, n);
+  if (t <= 0L) return 0L;
+  // from here on the items are gone from the pool: every later step is caught on its own so the caller always learns the real amount
+  try { @PKG@.BagMirror.afterTake(k, id); } catch (Throwable t1) { @PKG@.SackPool.warn("bag bridge: mirror trim failed after a take: " + t1); }
+  try { LASTKEY.put(u.toString() + "|" + id, k); oweE(k, id, t, fe, System.currentTimeMillis()); } catch (Throwable t2) { }
+  try { @PKG@.CraftLog.later(k, "BAG-TAKE " + id + " " + t + " (sacks:fn:take)"); } catch (Throwable t3) { }
+  try { @PKG@.SackPool.saveSoon(k); } catch (Throwable t4) { @PKG@.SackPool.DIRTY.put(k, Boolean.TRUE); }
+  return t;
+}"""), sbr))
+# review fix: the key a put / commit settles against = the pool the last take of this player + item debited (LASTKEY), else the settled
+# key; null while shutting down (SackPool.CLOSED: the pools are being flushed) or when that pool cannot be read. NOT the settle window /
+# profile:busy: those pause moves between the INVENTORY and a pool; a put only returns ledger items to the exact pool they left.
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static String refundKey(java.util.UUID u, String id) {
+  if (u == null || id == null || @PKG@.SackPool.CLOSED) return null;
+  String k = (String) LASTKEY.get(u.toString() + "|" + id);
+  if (k == null) k = @PKG@.SackPool.settledKey(u);
+  if (k == null || !@PKG@.SackPool.ready(k)) return null;
+  return k;
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static long commit(java.util.UUID u, String id, long n) {
+  if (u == null || id == null || n <= 0L) return 0L;
+  String k = (String) LASTKEY.get(u.toString() + "|" + id);
+  if (k == null) k = @PKG@.SackPool.settledKey(u);
+  if (k == null) return 0L;
+  if (@PKG@.SackDefs.isCatch(id)) {   // 0.8.17: the entries (and their fishTake tokens, oldest first) leave the ledger
+    java.util.ArrayList ce = unoweE(k, id, n, System.currentTimeMillis(), false);
+    for (int i = 0; i < ce.size(); i++) ftokPopOld(k + "|" + id + "|" + (String) ce.get(i));
+    ftokTidy(k + "|" + id);
+    return (long) ce.size();
+  }
+  return unowe(k, id, n, System.currentTimeMillis());
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static long put(java.util.UUID u, String id, long n) {
+  if (u == null || id == null || n <= 0L || id.startsWith("Skyy_Sack_")) return 0L;
+  String k = refundKey(u, id);
+  if (k == null) return 0L;
+  long t = 0L;
+  if (@PKG@.SackDefs.isCatch(id)) {   // 0.8.17 (B): the entries the take took go back with the count (newest taken first, at the oldest end)
+    long pn = System.currentTimeMillis();
+    java.util.ArrayList fe = unoweE(k, id, n, pn, true);
+    for (int i = 0; i < fe.size(); i++) {   // a fish a fishTake took comes back with its token cleared (fishTaken reads FALSE again)
+      String pe = (String) fe.get(i);
+      String pt = ftokFind(k + "|" + id + "|" + pe, (String) null);
+      String ptn = pt.length() == 0 ? (String) null : pt;
+      @PKG@.SackPool.fishAtTok(k, id, pe, 0, ptn, pn);
+      ftokDrop(k + "|" + id + "|" + pe, ptn);
+    }
+    ftokTidy(k + "|" + id);
+    t = (long) fe.size();
+  } else {
+    t = unowe(k, id, n, System.currentTimeMillis());
+    if (t > 0L) @PKG@.SackPool.add(k, id, t);
+  }
+  if (t <= 0L) return 0L;
+  try { @PKG@.CraftLog.later(k, "BAG-RETURN " + id + " " + t + " (sacks:fn:put)"); } catch (Throwable t3) { }
+  try { @PKG@.SackPool.saveSoon(k); } catch (Throwable t4) { @PKG@.SackPool.DIRTY.put(k, Boolean.TRUE); }
+  return t;
+}"""), sbr))
+# ================= 0.8.17 THE VOID'S WEIGHED FISH for SkyyFishing 0.1.10 (tools/sacks_0_8_17_patch.py A; world thread only) =================
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static String[] fishList(java.util.UUID u, String id) {
+  // token round: null whenever the Void cannot be read for this player now; String[0] only when it is readable and holds none
+  if (u == null || id == null || !@PKG@.SackDefs.isCatch(id)) return (String[]) null;
+  int[] why = new int[1];
+  String k = keyFor(u, id, why);
+  if (k == null) return (String[]) null;
+  @PKG@.BagMirror.beforeTake(k);
+  return @PKG@.SackPool.fishView(k, id);
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static long fishTake(java.util.UUID u, String id, String e, String tok) {
+  if (u == null || id == null || e == null || !@PKG@.SackDefs.isCatch(id) || e.indexOf(';') >= 0) return 0L;
+  if (tok != null && !@PKG@.SackPool.tokOk(tok)) return 0L;
+  int[] why = new int[1];
+  String k = keyFor(u, id, why);
+  if (k == null) return 0L;
+  @PKG@.BagMirror.beforeTake(k);
+  int at = @PKG@.SackPool.fishList(k, id).indexOf(e);   // where it sits (a failed write puts it back exactly there)
+  long now = System.currentTimeMillis();
+  if (!@PKG@.SackPool.fishPickTok(k, id, e, tok, now)) return 0L;   // token round: fish + entry + token in one lock; a known token = 0
+  String fk = k + "|" + id + "|" + e;
+  java.util.ArrayList es = new java.util.ArrayList();
+  es.add(e);
+  try { @PKG@.BagMirror.afterTake(k, id); } catch (Throwable t1) { @PKG@.SackPool.warn("bag bridge: mirror trim failed after a fish take: " + t1); }
+  LASTKEY.put(u.toString() + "|" + id, k);
+  oweE(k, id, 1L, es, now);
+  ftokPush(fk, tok);
+  if (!@PKG@.SackPool.saveOk(k)) {
+    // not on disk: undo in memory (the fish + entry back at their place, the token gone, nothing owed) - the caller pays nothing
+    if (fishUnowe(k, id, e, now)) @PKG@.SackPool.fishAtTok(k, id, e, at, tok, now);
+    ftokDrop(fk, tok);
+    @PKG@.SackPool.warn("fish take " + id + " (" + e + ") of " + k + " refused - the pool file could not be written (nothing moved)");
+    return 0L;
+  }
+  try { @PKG@.CraftLog.later(k, "BAG-FISH-TAKE " + id + " (" + e + ")" + (tok == null ? "" : " token " + tok) + " (sacks:fn:fishTake)"); } catch (Throwable t3) { }
+  return 1L;
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static long fishPut(java.util.UUID u, String id, String e, String tok) {
+  if (u == null || id == null || e == null || !@PKG@.SackDefs.isCatch(id)) return 0L;
+  if (tok != null && !@PKG@.SackPool.tokOk(tok)) return 0L;
+  String k = refundKey(u, id);
+  if (k == null) return 0L;
+  long now = System.currentTimeMillis();
+  String fk = k + "|" + id + "|" + e;
+  String ct = ftokFind(fk, tok);          // token round: the token this put clears (a token no owed take of that entry carried = refused)
+  if (ct == null) return 0L;
+  String ctn = ct.length() == 0 ? (String) null : ct;
+  if (!fishUnowe(k, id, e, now)) return 0L;
+  @PKG@.SackPool.fishAtTok(k, id, e, 0, ctn, now);   // the fish back at the oldest end + its token cleared, one lock, one write
+  ftokDrop(fk, ctn);
+  if (!@PKG@.SackPool.saveOk(k)) {
+    // not on disk: out again (token stored again) and still owed - the caller gets 0 and gives the fish another way (never twice)
+    if (@PKG@.SackPool.fishPickTok(k, id, e, ctn, now)) {
+      java.util.ArrayList es = new java.util.ArrayList();
+      es.add(e);
+      oweE(k, id, 1L, es, now);
+      ftokPush(fk, ctn);
+    } else @PKG@.SackPool.warn("fish put " + id + " (" + e + ") of " + k + ": could not take it out again after a failed write");
+    @PKG@.SackPool.warn("fish put " + id + " (" + e + ") of " + k + " refused - the pool file could not be written");
+    return 0L;
+  }
+  try { @PKG@.CraftLog.later(k, "BAG-FISH-RETURN " + id + " (" + e + ") (sacks:fn:fishPut)"); } catch (Throwable t3) { }
+  return 1L;
+}"""), sbr))
+# token round: sacks:fn:fishTaken - TRUE = that take is on disk in the active profile's pool, FALSE = definitely not, null = cannot tell now
+# (since = the caller's op time, -1 = not given: FALSE needs since after the prune cut, or no prune ever)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static Boolean fishTaken(java.util.UUID u, String tok, long since) {
+  if (u == null || !@PKG@.SackPool.tokOk(tok)) return (Boolean) null;
+  String k = @PKG@.SackPool.settledKey(u);
+  if (k == null || playerOf(u) == null) return (Boolean) null;
+  if (@PKG@.SackPool.tokHas(k, tok)) return Boolean.TRUE;
+  long cut = @PKG@.SackPool.tokCut(k);
+  if (since < 0L) { if (cut > 0L) return (Boolean) null; }
+  else if (since <= cut) return (Boolean) null;
+  return Boolean.FALSE;
+}"""), sbr))
+# SackFn modes 14 fishList + 17 fishTaken (bad arguments = null), 15 fishTake, 16 fishPut (bad arguments = 0); never throws to the caller
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static Object fishCall(int mode, Object o) {
+  try {
+    if (!(o instanceof Object[])) return (mode == 14 || mode == 17) ? null : Long.valueOf(0L);
+    Object[] a = (Object[]) o;
+    if (a.length < 2 || !(a[0] instanceof java.util.UUID) || !(a[1] instanceof String)) return (mode == 14 || mode == 17) ? null : Long.valueOf(0L);
+    java.util.UUID u = (java.util.UUID) a[0];
+    String id = (String) a[1];
+    if (mode == 14) return fishList(u, id);
+    if (mode == 17) {
+      if (a.length > 2 && a[2] != null && !(a[2] instanceof Number)) return null;
+      long since = (a.length > 2 && a[2] instanceof Number) ? ((Number) a[2]).longValue() : -1L;
+      return fishTaken(u, id, since);
+    }
+    if (a.length < 3 || !(a[2] instanceof String)) return Long.valueOf(0L);
+    if (a.length > 3 && a[3] != null && !(a[3] instanceof String)) return Long.valueOf(0L);
+    String tok = (a.length > 3 && a[3] instanceof String) ? (String) a[3] : (String) null;
+    if (mode == 15) return Long.valueOf(fishTake(u, id, (String) a[2], tok));
+    if (mode == 16) return Long.valueOf(fishPut(u, id, (String) a[2], tok));
+  } catch (Throwable t) {
+    @PKG@.KnowSync.warnOnce("bag bridge fish call failed (mode " + mode + "): " + t);
+  }
+  return (mode == 14 || mode == 17) ? null : Long.valueOf(0L);
+}"""), sbr))
+# ================= 0.7.17 (tools/sacks_0_7_17_patch.py docstring items 2 + 3): deposit, pocket refill now, the smithing craft bridges =================
+for _c, _m in ((IC, "removeItemStackFromSlot"), (IC, "setItemStackForSlot"), (IC, "addItemStackToSlot"), (CIC, "removeMaterials"),
+               (CIC, "canRemoveMaterials"), (CRM, "getInputMaterials"), (INV, "getCombinedBackpackStorageHotbar"), (SIC, "addOrDropItemStack")):
+    B.probe(pool, _c, _m)
+# RECEIPTS = receipt id -> Object[]{UUID, String key, LinkedHashMap inventory part, LinkedHashMap bag part, long[]{time, state}, String recipe}
+# (state 0 open, 1 refunded, 2 committed; memory only - a restart forgets them = the craft stands, like 0.7.13's OWED ledger)
+sbr.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap RECEIPTS = new java.util.concurrent.ConcurrentHashMap();", sbr))
+sbr.addField(CtField.make("public static final long RECEIPT_MS = 60000L;", sbr))
+sbr.addField(CtField.make("public static long RSEQ = 0L;", sbr))
+# sacks:fn:deposit (review fix 1): up to n of the plain stack IN THAT HOTBAR SLOT (4th argument, required) into the bags, never past the
+# bag room; whatever does not fit stays in the slot. The 3-argument form is REFUSED (0, warned): taking "any stack of that id" from the
+# inventory let a caller that had already lifted the slot's stack (SkyyWardrobe 0.2 giveBack) lose blocks. Only what really left the slot is
+# credited (read back). New items enter by catOf (cooked food stays out unless bags.cookedFood). Returns the amount accepted.
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static long deposit(java.util.UUID u, String id, long n, int slot) {
+  if (u == null || id == null || n <= 0L || id.startsWith("Skyy_Sack_")) return 0L;
+  if (slot < 0) {
+    @PKG@.KnowSync.warnOnce("sacks:fn:deposit called without its hotbar slot (4th argument, Integer) - nothing moved; the 3-argument form is refused (it could take other stacks than the caller's)");
+    return 0L;
+  }
+  String cat = @PKG@.SackDefs.catOf(id);
+  if (cat == null) return 0L;
+  if (@PKG@.SackPool.claimed(u, id, (java.util.HashMap) null)) return 0L;   // 0.8.18: the Flask / Pouch take it - it stays in the slot
+  String k = @PKG@.SackPool.settledKey(u);
+  if (k == null) return 0L;
+  @PLA@ p = playerOf(u);
+  if (p == null) return 0L;
+  @INV@ inv = p.getInventory();
+  if (inv == null) return 0L;
+  @IC@ hb = inv.getHotbar();
+  if (hb == null || slot >= (int) hb.getCapacity()) return 0L;
+  Integer cc = (Integer) @PKG@.VoidStore.capsK(u, k).get(cat);   // 0.8.0: the category capacity (one limit per category)
+  int dci = @PKG@.SackDefs.catIndex(cat);
+  if (cc == null || dci < 0) return 0L;
+  short s = (short) slot;
+  @IS@ it = hb.getItemStack(s);
+  if (it == null || it.isEmpty() || !id.equals(it.getItemId()) || !@PKG@.SweepTask.plainFresh(it)) return 0L;
+  @PKG@.BagMirror.beforeTake(k);
+  long room = (long) cc.intValue() - @PKG@.VoidStore.usedAll(k)[dci];   // 0.8.0: the room of the category
+  if (room <= 0L) return 0L;
+  long want = n < room ? n : room;
+  int qty = it.getQuantity();
+  int take = (long) qty < want ? qty : (int) want;
+  if (take <= 0) return 0L;
+  @ISS@ tx = hb.removeItemStackFromSlot(s, take);
+  if (tx == null || !tx.succeeded()) return 0L;
+  @IS@ rem = tx.getRemainder();
+  int removed = take - (rem == null ? 0 : rem.getQuantity());
+  if (removed <= 0) return 0L;
+  @PKG@.SackPool.add(k, id, (long) removed);
+  @PKG@.VoidStore.noteIntake(k, dci, (long) removed);
+  try { @PKG@.CraftLog.later(k, "BAG-DEPOSIT " + id + " " + removed + " (sacks:fn:deposit hotbar slot " + slot + ")"); } catch (Throwable t3) { }
+  try { @PKG@.SackPool.saveSoon(k); } catch (Throwable t4) { @PKG@.SackPool.DIRTY.put(k, Boolean.TRUE); }
+  return (long) removed;
+}""".replace("@ISS@", ISS)), sbr))
+# sacks:fn:pocketFill: the 2 s pocket refill of this player right now (Requip's Equip); same gates as the tick (settled key, world thread)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static long pocketNow(java.util.UUID u) {
+  if (u == null) return 0L;
+  String k = @PKG@.SackPool.settledKey(u);
+  if (k == null) return 0L;
+  @PLA@ p = playerOf(u);
+  if (p == null) return 0L;
+  int n = @PKG@.SweepTask.pocketFill(p, k, u);
+  if (n > 0) { try { @PKG@.SackPool.saveSoon(k); } catch (Throwable t4) { @PKG@.SackPool.DIRTY.put(k, Boolean.TRUE); } }
+  return (long) n;
+}"""), sbr))
+# the /craft allow rule for one recipe (null = allowed): not table-only / timed; a Collections-tab recipe (coll:recipes); else in the merged
+# Crafting / Smithing / Farming set (Fieldcraft + benches up to the accessory tier) and KnowSync.allowed (bag + vanilla knowledge rules)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static String craftWhy(java.util.UUID u, @PLA@ p, @CRR@ r) {
+  if (r == null) return "unknown recipe";
+  if (@PKG@.CraftPage.tableOnly(r)) return "only at its table (timed)";
+  String rid = String.valueOf(r.getId());
+  java.util.HashSet coll = @PKG@.CraftPage.collectionRecipes(u);
+  if (coll.contains(rid)) return null;
+  if (!@PKG@.CraftPage.craftSet(u).contains(rid)) return "needs its bench accessory in your Void Charms";
+  if (!@PKG@.KnowSync.allowed(r, u, @PKG@.KnowSync.known(p), coll)) return "you have not unlocked this recipe";
+  return null;
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static boolean smithOut(@CRR@ r) {
+  @MQ@ po = r == null ? null : r.getPrimaryOutput();
+  String id = po == null ? null : po.getItemId();
+  return id != null && (id.startsWith("Tool_") || id.startsWith("Weapon_") || id.startsWith("Armor_"));
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static boolean inGroup(@CRR@ r, int g) {
+  if (g == 3) return smithOut(r);
+  if (g < 0) return true;
+  return @PKG@.CraftPage.tabGroup(r) == g;
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static String[] craftList(java.util.UUID u, String group) {
+  if (u == null) return null;
+  @PLA@ p = playerOf(u);
+  if (p == null) return null;
+  int g = -1;
+  if ("smith".equals(group)) g = 3;
+  else if ("craft".equals(group)) g = 0;
+  else if ("farm".equals(group)) g = 2;
+  else if (group != null && !"all".equals(group)) return new String[0];
+  java.util.HashSet coll = @PKG@.CraftPage.collectionRecipes(u);
+  java.util.Set known = @PKG@.KnowSync.known(p);
+  java.util.TreeSet ids = new java.util.TreeSet();
+  java.util.Iterator it = @PKG@.CraftPage.craftSet(u).iterator();
+  while (it.hasNext()) {
+    String rid = (String) it.next();
+    Object o = @CRR@.getAssetMap().getAsset(rid);
+    if (!(o instanceof @CRR@)) continue;
+    @CRR@ r = (@CRR@) o;
+    if (@PKG@.CraftPage.tableOnly(r) || !inGroup(r, g)) continue;
+    if (!@PKG@.KnowSync.allowed(r, u, known, coll)) continue;
+    ids.add(rid);
+  }
+  it = coll.iterator();
+  while (it.hasNext()) {
+    String rid = (String) it.next();
+    Object o = @CRR@.getAssetMap().getAsset(rid);
+    if (!(o instanceof @CRR@)) continue;
+    @CRR@ r = (@CRR@) o;
+    if (@PKG@.CraftPage.tableOnly(r) || !inGroup(r, g)) continue;
+    ids.add(rid);
+  }
+  return (String[]) ids.toArray(new String[0]);
+}"""), sbr))
+# the containers materialsFor pays from (getCombinedBackpackStorageHotbar)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static @IC@[] payConts(@INV@ inv) {
+  return new @IC@[] { inv.getBackpack(), inv.getStorage(), inv.getHotbar() };
+}"""), sbr))
+# ENGINE FACT (found by the harness): removeMaterials takes a stack WITH metadata for a RESOURCE-TYPE input (an item-id input never does),
+# and a DelegateItemContainer that hides or locks those slots makes canRemoveMaterials refuse the whole payment. So the bridges count and pay
+# from a PLAIN COPY: plainCopy = a SimpleItemContainer holding a copy of every plain stack (SweepTask.plainFresh: no metadata - an EMPTY
+# document counts as none - and the durability / quality of a fresh stack, review fix 2)
+# of backpack, storage, hotbar in that order (the /craft order), plus where each came from; the engine pays from the copy + the bag mirror;
+# applyCopy then removes exactly what the copy lost from the real slots (read back) - the bag mirror's pattern.
+# answer: Object[]{SimpleItemContainer copy, int[] container index (-1 = not copied), short[] real slot, int[] quantity copied}
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static Object[] plainCopy(@IC@[] cs) {
+  int n = 0;
+  for (int c = 0; c < cs.length; c++) if (cs[c] != null) n += cs[c].getCapacity();
+  if (n < 1) n = 1;
+  @SIC@ copy = new @SIC@((short) n);
+  int[] ci = new int[n];
+  short[] si = new short[n];
+  int[] q0 = new int[n];
+  for (int i = 0; i < n; i++) ci[i] = -1;
+  int at = 0;
+  for (int c = 0; c < cs.length; c++) {
+    if (cs[c] == null) continue;
+    short cap = cs[c].getCapacity();
+    for (short s = 0; s < cap; s++) {
+      @IS@ it = cs[c].getItemStack(s);
+      int here = at;
+      at++;
+      if (it == null || it.isEmpty() || it.getItemId() == null) continue;
+      if (!@PKG@.SweepTask.plainFresh(it)) continue;   // review fix 2: no metadata, no damaged / quality stack (a refund is a fresh stack)
+      copy.setItemStackForSlot((short) here, new @IS@(it.getItemId(), it.getQuantity()));
+      ci[here] = c;
+      si[here] = s;
+      q0[here] = it.getQuantity();
+    }
+  }
+  return new Object[] { copy, ci, si, q0 };
+}"""), sbr))
+# what the copy lost -> removed from the real slot it came from (each read back); null = done, else the reason (craftPay rolls back)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static String applyCopy(Object[] pcp, @IC@[] cs) {
+  @SIC@ copy = (@SIC@) pcp[0];
+  int[] ci = (int[]) pcp[1];
+  short[] si = (short[]) pcp[2];
+  int[] q0 = (int[]) pcp[3];
+  for (int i = 0; i < ci.length; i++) {
+    if (ci[i] < 0) continue;
+    @IS@ now = copy.getItemStack((short) i);
+    int q1 = (now == null || now.isEmpty()) ? 0 : now.getQuantity();
+    int d = q0[i] - q1;
+    if (d == 0) continue;
+    if (d < 0) return "the payment grew a stack - nothing was taken";
+    @IC@ c = cs[ci[i]];
+    @IS@ real = c.getItemStack(si[i]);
+    if (real == null || real.isEmpty() || real.getQuantity() < d) return "your inventory changed during the payment - nothing was taken";
+    @ISS@ tx = c.removeItemStackFromSlot(si[i], d);
+    if (tx == null || !tx.succeeded()) return "a material could not be taken - nothing was taken";
+    @IS@ rem = tx.getRemainder();
+    int got = d - (rem == null ? 0 : rem.getQuantity());
+    if (got != d) return "a material could not be taken - nothing was taken";
+  }
+  return null;
+}""".replace("@ISS@", ISS)), sbr))
+# the view craftHave / craftPay count and pay from: the plain copy first, then the bag mirror (k == null: while the profile settles - the
+# copy only, no mirror built). materialsFor first: it books what a bench took (live-mirror rule) and rebuilds the mirror for this recipe.
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static @CIC@ payView(@PLA@ p, String k, @CRR@ r, @SIC@ copy) {
+  if (k == null) return new @CIC@(new @IC@[] { copy });
+  @PKG@.CraftPage.materialsFor(p, k, @PKG@.CraftPage.wantedOne(r));
+  return new @CIC@(new @IC@[] { copy, @PKG@.BagMirror.of(k).cont });
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static Object[] craftHave(java.util.UUID u, String rid) {
+  if (u == null || rid == null) return null;
+  @PLA@ p = playerOf(u);
+  if (p == null || p.getInventory() == null) return null;
+  Object o = @CRR@.getAssetMap().getAsset(rid);
+  if (!(o instanceof @CRR@)) return null;
+  @CRR@ r = (@CRR@) o;
+  String k = @PKG@.SackPool.settledKey(u);
+  @CIC@ mats = payView(p, k, r, (@SIC@) plainCopy(payConts(p.getInventory()))[0]);
+  @MQ@[] in = r.getInput();
+  int n = in == null ? 0 : in.length;
+  String[] ids = new String[n];
+  Long[] have = new Long[n];
+  Long[] need = new Long[n];
+  for (int i = 0; i < n; i++) {
+    if (in[i] == null) { ids[i] = "?"; have[i] = Long.valueOf(0L); need[i] = Long.valueOf(0L); continue; }
+    ids[i] = in[i].getItemId() != null ? in[i].getItemId() : ("res:" + in[i].getResourceTypeId());
+    have[i] = Long.valueOf((long) mats.countRemovableMaterial(in[i]));
+    need[i] = Long.valueOf((long) in[i].getQuantity());
+  }
+  return new Object[] { Long.valueOf((long) @PKG@.CraftPage.limit(r, mats)), ids, have, need };
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static Object[] payFail(String why) {
+  return new Object[] { Long.valueOf(0L), null, why };
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized String nextReceipt() {
+  RSEQ = RSEQ + 1L;
+  return "r" + Long.toHexString(System.currentTimeMillis()) + "-" + RSEQ;
+}"""), sbr))
+# (the rollback snapshot of each slot's stack before a payment)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static java.util.ArrayList slotSnap(@IC@[] cs) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  for (int c = 0; c < cs.length; c++) {
+    if (cs[c] == null) { out.add(null); continue; }
+    short cap = cs[c].getCapacity();
+    @IS@[] a = new @IS@[cap];
+    for (short s = 0; s < cap; s++) a[s] = cs[c].getItemStack(s);
+    out.add(a);
+  }
+  return out;
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static boolean sameStack(@IS@ a, @IS@ b) {
+  boolean ea = a == null || a.isEmpty();
+  boolean eb = b == null || b.isEmpty();
+  if (ea || eb) return ea && eb;
+  return a == b || (a.getQuantity() == b.getQuantity() && String.valueOf(a.getItemId()).equals(b.getItemId()));
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static void slotRestore(@IC@[] cs, java.util.ArrayList snap) {
+  for (int c = 0; c < cs.length; c++) {
+    @IS@[] a = (@IS@[]) snap.get(c);
+    if (a == null || cs[c] == null) continue;
+    for (short s = 0; s < a.length; s++) {
+      @IS@ was = a[s];
+      @IS@ now = cs[c].getItemStack(s);
+      if (was == now) continue;
+      if (was == null || was.isEmpty()) { if (now != null && !now.isEmpty()) cs[c].removeItemStackFromSlot(s); }
+      else cs[c].setItemStackForSlot(s, was);
+    }
+  }
+}"""), sbr))
+# true when a stack WITH metadata (rolled gear, a named item, a filled container) changed since the snapshot
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static boolean metaTouched(@IC@[] cs, java.util.ArrayList snap) {
+  for (int c = 0; c < cs.length; c++) {
+    @IS@[] a = (@IS@[]) snap.get(c);
+    if (a == null || cs[c] == null) continue;
+    for (short s = 0; s < a.length; s++) {
+      @IS@ was = a[s];
+      if (was == null || was.isEmpty()) continue;
+      org.bson.BsonDocument md = was.getMetadata();
+      if (md == null || md.isEmpty()) continue;
+      if (!sameStack(was, cs[c].getItemStack(s))) return true;
+    }
+  }
+  return false;
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static void addCount(java.util.LinkedHashMap m, String id, int n) {
+  if (id == null || n == 0) return;
+  Integer v = (Integer) m.get(id);
+  int nv = (v == null ? 0 : v.intValue()) + n;
+  if (nv <= 0) m.remove(id); else m.put(id, Integer.valueOf(nv));
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static void creditBags(String k, java.util.LinkedHashMap bag) {
+  java.util.Iterator it = bag.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    int v = ((Integer) e.getValue()).intValue();
+    if (v > 0) @PKG@.SackPool.add(k, (String) e.getKey(), (long) v);
+  }
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static void purgeReceipts(long now) {
+  java.util.Iterator it = RECEIPTS.entrySet().iterator();
+  while (it.hasNext()) {
+    java.util.Map.Entry e = (java.util.Map.Entry) it.next();
+    long[] t = (long[]) ((Object[]) e.getValue())[4];
+    if (now - t[0] > 600000L) it.remove();
+  }
+}"""), sbr))
+# surplus after a payment (whole resource-type items worth more than needed): back where it came from - the bags first, then the inventory;
+# invT / bagT shrink by what went back. null = done; else the reason (craftPay then rolls everything back)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static String giveSurplus(String k, @IC@ invC, java.util.LinkedHashMap left, java.util.LinkedHashMap invT, java.util.LinkedHashMap bagT) {
+  java.util.ArrayList ids = new java.util.ArrayList(left.keySet());
+  for (int i = 0; i < ids.size(); i++) {
+    String id = (String) ids.get(i);
+    int cnt = ((Integer) left.get(id)).intValue();
+    if (cnt <= 0) continue;
+    Integer bv = (Integer) bagT.get(id);
+    int back = bv == null ? 0 : (bv.intValue() < cnt ? bv.intValue() : cnt);
+    if (back > 0) { @PKG@.SackPool.add(k, id, (long) back); addCount(bagT, id, -back); cnt -= back; }
+    if (cnt > 0) {
+      int b0 = @PKG@.CraftPage.countItem(invC, id);
+      invC.addItemStack(new @IS@(id, cnt));
+      int got = @PKG@.CraftPage.countItem(invC, id) - b0;
+      if (got != cnt) return "the extra materials did not fit back - nothing was taken";
+      addCount(invT, id, -cnt);
+    }
+  }
+  return null;
+}"""), sbr))
+# a refused payment: every inventory slot back to its snapshot, the bag part credited back to the pool it left, one crafts.log line
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static Object[] refuse(String k, String rid, int times, String bad, @IC@[] cs, java.util.ArrayList snap, java.util.LinkedHashMap bagT) {
+  slotRestore(cs, snap);
+  creditBags(k, bagT);
+  try { @PKG@.CraftLog.later(k, "CRAFT-PAY-REFUSED " + rid + " x" + times + " (" + bad + ") inventory restored, bags " + bagT + " back (sacks:fn:craftPay)"); } catch (Throwable t3) { }
+  try { @PKG@.SackPool.saveSoon(k); } catch (Throwable t4) { @PKG@.SackPool.DIRTY.put(k, Boolean.TRUE); }
+  return payFail(bad);
+}"""), sbr))
+# sacks:fn:craftPay - the /craft payment (CraftPage.handleDataEvent), all or nothing, with a receipt
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static Object[] craftPay(java.util.UUID u, String rid, int times) {
+  if (u == null || rid == null || times <= 0 || times > 1000) return payFail("bad arguments");
+  @PLA@ p = playerOf(u);
+  if (p == null || p.getInventory() == null) return payFail("paused");
+  String k = @PKG@.SackPool.settledKey(u);
+  if (k == null) return payFail("paused");
+  Object o = @CRR@.getAssetMap().getAsset(rid);
+  if (!(o instanceof @CRR@)) return payFail("unknown recipe");
+  @CRR@ r = (@CRR@) o;
+  String why = craftWhy(u, p, r);
+  if (why != null) return payFail(why);
+  @INV@ inv = p.getInventory();
+  @IC@[] cs = payConts(inv);
+  java.util.ArrayList snap = slotSnap(cs);
+  Object[] pcp = plainCopy(cs);
+  @SIC@ copy = (@SIC@) pcp[0];
+  @CIC@ mats = payView(p, k, r, copy);
+  if (@PKG@.CraftPage.limit(r, mats) < times) return payFail("not enough materials");
+  java.util.List inputs = @CRM@.getInputMaterials(r, times);
+  int n = inputs == null ? 0 : inputs.size();
+  if (n == 0) return payFail("this recipe has no inputs");
+  if (!mats.canRemoveMaterials(inputs)) return payFail("not enough materials");
+  int[] per = new int[n];
+  for (int i = 0; i < n; i++) {
+    per[i] = ((@MQ@) inputs.get(i)).getQuantity() / times;
+    if (per[i] <= 0) per[i] = 1;
+  }
+  @PKG@.BagMirror m = @PKG@.BagMirror.of(k);
+  @IC@ invC = inv.getCombinedBackpackStorageHotbar();
+  java.util.HashMap invB = @PKG@.CraftPage.snapshot(copy);
+  java.util.HashMap bagB = @PKG@.CraftPage.snapshot(m.cont);
+  // review fix 4: anything thrown after the debit still rolls back (slots from the snapshot, the bag part credited back)
+  java.util.LinkedHashMap invT = new java.util.LinkedHashMap();
+  java.util.LinkedHashMap bagT = new java.util.LinkedHashMap();
+  String bad = null;
+  boolean synced = false;
+  try {
+    try { mats.removeMaterials(inputs); } catch (Throwable t0) { @PKG@.SackPool.warn("craft bridge: removeMaterials threw (checked below): " + t0); }
+    invT = @PKG@.CraftPage.removedItems(invB, @PKG@.CraftPage.snapshot(copy));
+    bagT = @PKG@.CraftPage.removedItems(bagB, @PKG@.CraftPage.snapshot(m.cont));
+    m.sync();   // the /craft rule: what left the mirror leaves the pool now
+    synced = true;
+    String moved = applyCopy(pcp, cs);   // the copy's losses -> the real inventory slots (read back)
+    java.util.LinkedHashMap took = new java.util.LinkedHashMap(invT);
+    java.util.Iterator bi = bagT.entrySet().iterator();
+    while (bi.hasNext()) { java.util.Map.Entry be = (java.util.Map.Entry) bi.next(); addCount(took, (String) be.getKey(), ((Integer) be.getValue()).intValue()); }
+    java.util.LinkedHashMap left = @PKG@.CraftPage.reserve(took, inputs, per, times);
+    bad = moved;
+    if (bad != null) { }
+    else if (metaTouched(cs, snap)) bad = "a stack with extra data (rolled gear or a named item) would be used - nothing was taken";
+    else if (left == null) bad = "could not take the materials - nothing was taken";
+    else bad = giveSurplus(k, invC, left, invT, bagT);
+  } catch (Throwable tx) {
+    @PKG@.SackPool.warn("craft bridge: the payment of " + rid + " failed and is rolled back: " + tx);
+    if (!synced) {
+      try { bagT = @PKG@.CraftPage.removedItems(bagB, @PKG@.CraftPage.snapshot(m.cont)); } catch (Throwable ty) { bagT = new java.util.LinkedHashMap(); }
+      try { m.sync(); } catch (Throwable tz) { }
+    }
+    bad = "internal error - nothing was taken";
+  }
+  if (bad != null) return refuse(k, rid, times, bad, cs, snap, bagT);
+  long now = System.currentTimeMillis();
+  purgeReceipts(now);
+  String rc = nextReceipt();
+  RECEIPTS.put(rc, new Object[] { u, k, invT, bagT, new long[] { now, 0L }, rid });
+  try { @PKG@.CraftLog.later(k, "CRAFT-PAY " + rid + " x" + times + " inventory " + invT + " bags " + bagT + " receipt " + rc + " (sacks:fn:craftPay)"); } catch (Throwable t3) { }
+  if (!bagT.isEmpty()) { try { @PKG@.SackPool.saveSoon(k); } catch (Throwable t4) { @PKG@.SackPool.DIRTY.put(k, Boolean.TRUE); } }
+  return new Object[] { Long.valueOf((long) times), rc, null };
+}"""), sbr))
+# one state change per receipt (st 1 = refund: open, same player, within RECEIPT_MS; st 2 = commit: open, same player) - atomic
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static synchronized Object[] claim(java.util.UUID u, String rc, long st, long now) {
+  Object[] e = (Object[]) RECEIPTS.get(rc);
+  if (e == null || !u.equals(e[0])) return null;
+  long[] t = (long[]) e[4];
+  if (t[1] != 0L) return null;
+  if (st == 1L && now - t[0] > RECEIPT_MS) return null;
+  t[1] = st;
+  RECEIPTS.remove(rc);
+  return e;
+}"""), sbr))
+# an item the inventory could not take back: into the bags when it has a bag home, else dropped at the player (never lost silently)
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static void spill(java.util.UUID u, String k, @PLA@ p, String id, int n) {
+  if (n <= 0) return;
+  if (@PKG@.SackDefs.homeOf(id) != null) {
+    @PKG@.SackPool.add(k, id, (long) n);
+    try { @PKG@.CraftLog.later(k, "CRAFT-REFUND-SPILL " + id + " " + n + " into the bags (inventory full)"); } catch (Throwable t3) { }
+    return;
+  }
+  try {
+    @PR@ pr = @UNI@.get().getPlayer(u);
+    @REF@ r = pr.getReference();
+    @SIC@.addOrDropItemStack(r.getStore(), r, p.getInventory().getCombinedStorageHotbarBackpack(), new @IS@(id, n));
+    try { @PKG@.CraftLog.later(k, "CRAFT-REFUND-SPILL " + id + " " + n + " dropped at the player (inventory full)"); } catch (Throwable t3) { }
+  } catch (Throwable t) {
+    @PKG@.SackPool.warn("craft refund: " + n + " x " + id + " did not fit and could not be dropped for " + u + " - LOST, give them back by hand: " + t);
+  }
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static long craftRefund(java.util.UUID u, String rc) {
+  if (u == null || rc == null || @PKG@.SackPool.CLOSED) return 0L;
+  Object[] e0 = (Object[]) RECEIPTS.get(rc);
+  if (e0 == null || !u.equals(e0[0])) return 0L;
+  String k = (String) e0[1];
+  @PLA@ p = playerOf(u);
+  if (p == null || p.getInventory() == null) return 0L;
+  String cur = @PKG@.SackPool.settledKey(u);
+  if (cur == null || !cur.equals(k)) {
+    @PKG@.SackPool.warn("craft refund " + rc + " refused: the player's profile is not the one that paid (" + k + ") - the materials stay paid (crafts.log CRAFT-PAY lists them)");
+    return 0L;
+  }
+  Object[] e = claim(u, rc, 1L, System.currentTimeMillis());
+  if (e == null) return 0L;
+  java.util.LinkedHashMap invT = (java.util.LinkedHashMap) e[2];
+  java.util.LinkedHashMap bagT = (java.util.LinkedHashMap) e[3];
+  long total = 0L;
+  java.util.Iterator bi = bagT.entrySet().iterator();
+  while (bi.hasNext()) {
+    java.util.Map.Entry be = (java.util.Map.Entry) bi.next();
+    int v = ((Integer) be.getValue()).intValue();
+    if (v <= 0) continue;
+    @PKG@.SackPool.add(k, (String) be.getKey(), (long) v);
+    total += (long) v;
+  }
+  @IC@ c = p.getInventory().getCombinedStorageHotbarBackpack();
+  java.util.Iterator ii = invT.entrySet().iterator();
+  while (ii.hasNext()) {
+    java.util.Map.Entry ie = (java.util.Map.Entry) ii.next();
+    String id = (String) ie.getKey();
+    int v = ((Integer) ie.getValue()).intValue();
+    if (v <= 0) continue;
+    int b0 = @PKG@.CraftPage.countItem(c, id);
+    c.addItemStack(new @IS@(id, v));
+    int got = @PKG@.CraftPage.countItem(c, id) - b0;
+    if (got < 0) got = 0;
+    if (got > v) got = v;
+    if (got < v) spill(u, k, p, id, v - got);
+    total += (long) v;
+  }
+  try { @PKG@.CraftLog.later(k, "CRAFT-REFUND receipt " + rc + " (" + e[5] + ") inventory " + invT + " bags " + bagT + " (sacks:fn:craftRefund)"); } catch (Throwable t3) { }
+  try { @PKG@.SackPool.saveSoon(k); } catch (Throwable t4) { @PKG@.SackPool.DIRTY.put(k, Boolean.TRUE); }
+  return total;
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static boolean craftCommit(java.util.UUID u, String rc) {
+  if (u == null || rc == null) return false;
+  Object[] e = claim(u, rc, 2L, System.currentTimeMillis());
+  if (e == null) return false;
+  try { @PKG@.CraftLog.later((String) e[1], "CRAFT-COMMIT receipt " + rc + " (" + e[5] + ") (sacks:fn:craftCommit)"); } catch (Throwable t3) { }
+  return true;
+}"""), sbr))
+# SackFn modes 5-11 (the answer when the arguments are wrong or the call fails: 5 / 6 / 10 -> 0, 7 / 8 -> null, 9 -> {0, null, reason},
+# 11 -> FALSE). Nothing here ever throws to the caller.
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static Object dflt(int mode) {
+  if (mode == 7 || mode == 8) return null;
+  if (mode == 9) return payFail("bad arguments");
+  if (mode == 11) return Boolean.FALSE;
+  return Long.valueOf(0L);
+}"""), sbr))
+sbr.addMethod(CtNewMethod.make(jt(r"""
+public static Object call2(int mode, Object o) {
+  try {
+    if (mode == 6) return (o instanceof java.util.UUID) ? Long.valueOf(pocketNow((java.util.UUID) o)) : Long.valueOf(0L);
+    if (!(o instanceof Object[])) return dflt(mode);
+    Object[] a = (Object[]) o;
+    if (a.length < 2 || !(a[0] instanceof java.util.UUID)) return dflt(mode);
+    java.util.UUID u = (java.util.UUID) a[0];
+    if (mode == 7) return craftList(u, (a[1] instanceof String) ? (String) a[1] : (String) null);
+    if (!(a[1] instanceof String)) return dflt(mode);
+    String s1 = (String) a[1];
+    if (mode == 8) return craftHave(u, s1);
+    if (mode == 10) return Long.valueOf(craftRefund(u, s1));
+    if (mode == 11) return craftCommit(u, s1) ? Boolean.TRUE : Boolean.FALSE;
+    if (a.length < 3 || !(a[2] instanceof Number)) return dflt(mode);
+    long n = ((Number) a[2]).longValue();
+    if (mode == 5) {
+      int slot = (a.length > 3 && a[3] instanceof Number) ? ((Number) a[3]).intValue() : -1;
+      if (a.length > 3 && a[3] != null && !(a[3] instanceof Number)) return dflt(mode);
+      return Long.valueOf(deposit(u, s1, n, slot < 0 ? -1 : slot));
+    }
+    if (mode == 9) return craftPay(u, s1, n > 1000L ? 1001 : (int) n);
+  } catch (Throwable t) {
+    @PKG@.KnowSync.warnOnce("bag bridge call failed (mode " + mode + "): " + t);
+  }
+  return dflt(mode);
+}"""), sbr))
+sfn.addInterface(pool.get("java.util.function.Function"))
+sfn.addField(CtField.make("public int mode;", sfn))
+sfn.addConstructor(CtNewConstructor.make("public SackFn(int mode) { this.mode = mode; }", sfn))
+# mode 0 count, 1 take, 2 put, 3 all, 4 commit (review fix); 0.7.17: 5 deposit, 6 pocketFill, 7 craftList, 8 craftHave, 9 craftPay,
+# 10 craftRefund, 11 craftCommit (SackBridge.call2). Bad arguments answer 0 (count -1, all null); nothing here ever throws to the caller.
+sfn.addMethod(CtNewMethod.make(jt(r"""
+public Object apply(Object o) {
+  try {
+    if (this.mode == 12) return @PKG@.VoidStore.pdInfo(o);   // 0.8.0 sacks:fn:pd
+    if (this.mode == 13) return (o instanceof String) ? @PKG@.SackDefs.catOf((String) o) : null;   // 0.8.0 sacks:fn:catOf (the 1.1 rule)
+    if (this.mode >= 14) return @PKG@.SackBridge.fishCall(this.mode, o);   // 0.8.17: fishList / fishTake / fishPut / fishTaken
+    if (this.mode >= 5) return @PKG@.SackBridge.call2(this.mode, o);   // 0.7.17: deposit, pocketFill, the craft bridges
+    if (this.mode == 3) return (o instanceof java.util.UUID) ? @PKG@.SackBridge.all((java.util.UUID) o) : null;
+    if (!(o instanceof Object[])) return Long.valueOf(this.mode == 0 ? -1L : 0L);
+    Object[] a = (Object[]) o;
+    if (a.length < 2 || !(a[0] instanceof java.util.UUID) || !(a[1] instanceof String)) return Long.valueOf(this.mode == 0 ? -1L : 0L);
+    java.util.UUID u = (java.util.UUID) a[0];
+    String id = (String) a[1];
+    if (this.mode == 0) return Long.valueOf(@PKG@.SackBridge.count(u, id));
+    if (a.length < 3 || !(a[2] instanceof Number)) return Long.valueOf(0L);
+    long n = ((Number) a[2]).longValue();
+    if (this.mode == 1) return Long.valueOf(@PKG@.SackBridge.take(u, id, n));
+    if (this.mode == 2) return Long.valueOf(@PKG@.SackBridge.put(u, id, n));
+    if (this.mode == 4) return Long.valueOf(@PKG@.SackBridge.commit(u, id, n));
+  } catch (Throwable t) {
+    @PKG@.KnowSync.warnOnce("bag bridge call failed (mode " + this.mode + "): " + t);
+  }
+  return (this.mode == 3 || this.mode == 12 || this.mode == 13 || this.mode == 14 || this.mode == 17) ? null : Long.valueOf(this.mode == 0 ? -1L : 0L);
+}"""), sfn))
+
+# ================= 0.8.3 AUTO-PICKUP (tools/sacks_0_8_3_patch.py docstring) =================
+for _c, _m in ((_JT["ITC"], "getItemStack"), (_JT["ITC"], "setItemStack"), (_JT["ITC"], "generateItemDrops"), (_JT["TC"], "teleportPosition"),
+               (_JT["TC"], "getPosition"), (_JT["BBE"], "getTargetBlock"), (_JT["INVU"], "getContainerForItemPickup"), (_JT["PSET"], "defaults"),
+               (_JT["ROLE"], "getDropListId"), (_JT["ROLE"], "hasDroppedDeathItems"), (_JT["ROLE"], "isDropDeathItemsInstantly"),
+               (_JT["IMOD"], "getRandomItemDrops"), (_JT["DTHC"], "getDeathInfo"), (_JT["DTHC"], "getItemsLossMode"), (_JT["DCR"], "shouldRemove"),
+               (_JT["RSYS"], "onEntityAdded"), (IC, "removeItemStack"), (IC, "addItemStack"), (IS, "withQuantity"), (ST, "removeEntity"),
+               (SNDU, "playSoundEvent2dToPlayer"), (_JT["I18N"], "getMessage"), (_JT["ITM"], "getTranslationKey"), (UNI, "getPlayer"),
+               (_JT["IMOD"], "isEnabled"), (_JT["IMOD"], "get")):
+    B.probe(pool, _c, _m)
+for _c in ("com.hypixel.hytale.server.npc.systems.NPCDamageSystems$DropDeathItems",
+           "com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems$TickCorpseRemoval",
+           "com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems$CorpseRemoval"):
+    pool.get(_c)   # the systems PickDeathMark / PickShareSys order against (looked up again at runtime with Class.forName)
+
+# ---- PickClaim: who gets the items spawning at one exact spot (kind 1 block, 2 mob drop, 3 the killer's share), until exp (nanoTime)
+pcl.addField(CtField.make("public java.util.UUID owner;", pcl))
+pcl.addField(CtField.make("public long exp;", pcl))
+pcl.addField(CtField.make("public int kind;", pcl))
+# review fix 3: true once an item matched this claim (its drops arrived) - an unused claim of another player at the same spot = contested
+pcl.addField(CtField.make("public volatile boolean used;", pcl))
+pcl.addConstructor(CtNewConstructor.make("public PickClaim(java.util.UUID o, long exp, int kind) { this.owner = o; this.exp = exp; this.kind = kind; this.used = false; }", pcl))
+
+# ---- PickDeliver (fields + constructor here: PickBook.mark queues it; accept() comes after PickGive): the cb.run job of one claimed item
+pdl.addInterface(pool.get("java.util.function.Consumer"))
+pdl.addField(CtField.make(jt("public @REF@ ref;"), pdl))
+pdl.addField(CtField.make("public java.util.UUID owner;", pdl))
+pdl.addField(CtField.make("public int kind;", pdl))
+pdl.addField(CtField.make("public int result;", pdl))
+# cb = the CommandBuffer this job was queued on: when it first runs it queues itself AGAIN at the tail of that buffer, so every operation
+# another system queued for this item during the same add (systems after ours in the order) runs BEFORE the item may be removed
+pdl.addField(CtField.make(jt("public @CBF@ cb;"), pdl))
+pdl.addConstructor(CtNewConstructor.make(jt("public PickDeliver(@REF@ ref, java.util.UUID owner, int kind, @CBF@ cb) { this.ref = ref; this.owner = owner; this.kind = kind; this.result = -9; this.cb = cb; }"), pdl))
+
+# ---- PickRing: the last 32 UNCLAIMED item spawns of one world (ref + exact position + nanoTime) - a death claim made after its drops
+# arrived (SkyyGear's extra roll when GearDeathMark ran first) takes them from here the same tick. World thread; synchronized methods.
+for _f in ("public Object[] refs;", "public double[] xs;", "public double[] ys;", "public double[] zs;", "public long[] at;", "public int pos;"):
+    prg.addField(CtField.make(_f, prg))
+prg.addField(CtField.make("public static final int SIZE = 32;", prg))
+prg.addField(CtField.make("public static final long FRESH_NS = 1000000000L;", prg))
+prg.addConstructor(CtNewConstructor.make("public PickRing() { this.refs = new Object[32]; this.xs = new double[32]; this.ys = new double[32]; this.zs = new double[32]; this.at = new long[32]; this.pos = 0; }", prg))
+prg.addMethod(CtNewMethod.make(jt(r'''
+public synchronized void push(Object ref, double x, double y, double z, long now) {
+  int i = this.pos;
+  this.refs[i] = ref;
+  this.xs[i] = x;
+  this.ys[i] = y;
+  this.zs[i] = z;
+  this.at[i] = now;
+  this.pos = (i + 1) % SIZE;
+}'''), prg))
+prg.addMethod(CtNewMethod.make(jt(r'''
+public synchronized java.util.ArrayList take(double x, double y, double z, long now) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  for (int i = 0; i < SIZE; i++) {
+    if (this.refs[i] == null) continue;
+    if (now - this.at[i] > FRESH_NS) { this.refs[i] = null; continue; }
+    if (this.xs[i] == x && this.ys[i] == y && this.zs[i] == z) { out.add(this.refs[i]); this.refs[i] = null; }
+  }
+  return out;
+}'''), prg))
+
+# ---- PickBook: the claims, the rings, the deaths already marked, the killer shares waiting, counters, the bridge reads
+for _f in ("public static final java.util.concurrent.ConcurrentHashMap CL = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.ConcurrentHashMap RINGS = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.ConcurrentHashMap DONE = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.ConcurrentHashMap SHARE = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.atomic.AtomicLongArray N = new java.util.concurrent.atomic.AtomicLongArray(16);",
+           "public static final long CLAIM_NS = 1500000000L;",
+           "public static final double SHARE_DY = 0.015625;",
+           "public static volatile boolean ITEM_OK = false;",
+           "public static volatile boolean BREAK_OK = false;",
+           "public static volatile boolean DEATH_OK = false;",
+           # harness seams (always null in the game): UUID -> Ref of that player; UUID -> the inventory container; dropListId -> List
+           "public static volatile java.util.function.Function PLAYERS;",
+           "public static volatile java.util.function.Function INVS;",
+           "public static volatile java.util.function.Function ROLLS;",
+           # harness seam: (List of stacks, Vector3d) -> Holder[] instead of ItemComponent.generateItemDrops (that one needs the world's
+           # GameplayConfig asset for the item lifetime); the engine call is used whenever this is null (always in the game)
+           "public static volatile java.util.function.BiFunction SPAWN;"):
+    pbk.addField(CtField.make(_f, pbk))
+# counters N: 0 block claims, 1 mob claims, 2 killer shares spawned, 3 drops delivered, 4 items to the Void, 5 items to the inventory,
+# 6 items left at the feet, 7 refused by island rules, 8 rolled back, 9 late matches (ring), 10 felled-log claims, 11 owner not here,
+# 12 contested claims (review fix 3), 13 skipped while item moves are paused for that player (review fix 1)
+# 0.8.4: 14 F-harvest items moved to the Void, 15 overflow items caught before the throw
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static void n(int i, long v) { N.addAndGet(i, v); }'''), pbk))
+# one log line per kind of failure (0.8.2's KnowSync.warnOnce is one line per MINUTE for all messages together); LAST = the newest
+pbk.addField(CtField.make("public static final java.util.concurrent.ConcurrentHashMap WARNED = new java.util.concurrent.ConcurrentHashMap();", pbk))
+pbk.addField(CtField.make("public static volatile String LAST = null;", pbk))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static void warnOnce(String key, String msg) {
+  LAST = msg;
+  if (WARNED.putIfAbsent(key, Boolean.TRUE) == null) @PKG@.SackPool.warn(msg);
+}'''), pbk))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static Class cls(String n) {
+  try { return Class.forName(n); } catch (Throwable t) { return null; }
+}'''), pbk))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static String world(Object ext) {
+  try {
+    if (!(ext instanceof @EST@)) return null;
+    @WLD@ w = ((@EST@) ext).getWorld();
+    return w == null ? null : w.getName();
+  } catch (Throwable t) { return null; }
+}'''), pbk))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static String key(String w, double x, double y, double z) { return w + "|" + x + "|" + y + "|" + z; }'''), pbk))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static void prune(long now) {
+  Object[] ks = CL.keySet().toArray();
+  for (int i = 0; i < ks.length; i++) {
+    @PKG@.PickClaim c = (@PKG@.PickClaim) CL.get(ks[i]);
+    if (c != null && now - c.exp > 0L) CL.remove(ks[i]);
+  }
+  if (DONE.size() > 512) DONE.clear();
+}'''), pbk))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static @PKG@.PickClaim claim(String w, double x, double y, double z, java.util.UUID o, int kind, long now) {
+  if (w == null || o == null) return null;
+  if (CL.size() > 256) prune(now);
+  String k = key(w, x, y, z);
+  @PKG@.PickClaim c = new @PKG@.PickClaim(o, now + CLAIM_NS, kind);
+  if (kind != 1) {
+    @PKG@.PickClaim old = (@PKG@.PickClaim) CL.get(k);
+    if (old != null && old.kind == kind && !old.used && now - old.exp <= 0L && (old.owner == null || !old.owner.equals(o))) {
+      c = new @PKG@.PickClaim(null, now + CLAIM_NS, kind);
+      n(12, 1L);
+    }
+  }
+  CL.put(k, c);
+  return c;
+}'''), pbk))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static @PKG@.PickClaim find(String w, double x, double y, double z, long now) {
+  if (w == null || CL.isEmpty()) return null;
+  String k = key(w, x, y, z);
+  @PKG@.PickClaim c = (@PKG@.PickClaim) CL.get(k);
+  if (c == null) return null;
+  if (now - c.exp > 0L) { CL.remove(k); return null; }
+  return c;
+}'''), pbk))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static @PKG@.PickRing ring(String w) {
+  if (w == null) return null;
+  @PKG@.PickRing r = (@PKG@.PickRing) RINGS.get(w);
+  if (r == null) {
+    r = new @PKG@.PickRing();
+    Object had = RINGS.putIfAbsent(w, r);
+    if (had != null) r = (@PKG@.PickRing) had;
+  }
+  return r;
+}'''), pbk))
+# a block drop spot: x and z at .5, y whole (spawnDrops = block + (0.5, 0, 0.5))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static boolean blockSpot(double x, double y, double z) {
+  return x - Math.floor(x) == 0.5 && z - Math.floor(z) == 0.5 && y == Math.floor(y);
+}'''), pbk))
+# a felled-tree drop: SkyySkills skill:fn:felledBy names the player whose cut is felling (or felled, within a minute) that block
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.UUID felled(String w, double x, double y, double z) {
+  Object f = @PKG@.SackPool.bridge().get("skill:fn:felledBy");
+  if (!(f instanceof java.util.function.Function) || w == null) return null;
+  try {
+    Object r = ((java.util.function.Function) f).apply(new Object[] { w, Integer.valueOf((int) Math.floor(x)), Integer.valueOf((int) Math.floor(y)), Integer.valueOf((int) Math.floor(z)) });
+    if (!(r instanceof Object[])) return null;
+    Object[] a = (Object[]) r;
+    if (a.length < 1 || !(a[0] instanceof java.util.UUID)) return null;
+    if (a.length > 2 && a[2] instanceof Long && System.currentTimeMillis() - ((Long) a[2]).longValue() > 60000L) return null;
+    return (java.util.UUID) a[0];
+  } catch (Throwable t) { return null; }
+}'''), pbk))
+# the Ref of an online player IN THIS store (null = offline / another world)
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static @REF@ here(java.util.UUID u, @ST@ st) {
+  if (u == null || st == null) return null;
+  try {
+    @REF@ r = null;
+    java.util.function.Function pf = PLAYERS;
+    if (pf != null) r = (@REF@) pf.apply(u);
+    else {
+      @PR@ pr = @UNI@.get().getPlayer(u);
+      r = pr == null ? null : pr.getReference();
+    }
+    if (r == null || !r.isValid() || r.getStore() != st) return null;
+    return r;
+  } catch (Throwable t) { return null; }
+}'''), pbk))
+# 0.8.4: the OWNER of a pet / summon creature (SkyyPets bridge pets:fn:ownerOf: entity UUID -> owner UUID or String) or null; no key =
+# null at once; a key that throws or answers anything but a UUID = null (never the wrong player)
+pbk.addField(CtField.make("public static volatile boolean HARV_OK = false;", pbk))
+pbk.addField(CtField.make("public static volatile boolean DROP_OK = false;", pbk))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.UUID petOwner(@ST@ st, @REF@ r) {
+  Object f = @PKG@.SackPool.bridge().get("pets:fn:ownerOf");
+  if (!(f instanceof java.util.function.Function) || st == null || r == null) return null;
+  try {
+    @UUIDC@ uc = (@UUIDC@) st.getComponent(r, @UUIDC@.getComponentType());
+    if (uc == null || uc.getUuid() == null) return null;
+    Object o = ((java.util.function.Function) f).apply(uc.getUuid());
+    if (o instanceof java.util.UUID) return (java.util.UUID) o;
+    if (o instanceof String) return java.util.UUID.fromString(((String) o).trim());
+    return null;
+  } catch (Throwable t) { return null; }
+}'''), pbk))
+# SkyyMobs 0.1.7 mob:fn:credit (take): Object[] { top, topDamage, total, killing blow, players } or null
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.UUID top(String mob) {
+  Object f = @PKG@.SackPool.bridge().get("mob:fn:credit");
+  if (!(f instanceof java.util.function.Function) || mob == null) return null;
+  try {
+    Object r = ((java.util.function.Function) f).apply(new Object[] { mob, Boolean.TRUE });
+    if (!(r instanceof Object[]) || ((Object[]) r).length < 1 || !(((Object[]) r)[0] instanceof String)) return null;
+    return java.util.UUID.fromString((String) ((Object[]) r)[0]);
+  } catch (Throwable t) { return null; }
+}'''), pbk))
+# THE KILL CREDIT RULE (pure): Object[] { owner of the whole drop, killer who gets the extra share or null }; null = nobody (vanilla)
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static Object[] split(java.util.UUID killer, java.util.UUID top, int sharePct) {
+  java.util.UUID owner = top != null ? top : killer;
+  if (owner == null) return null;
+  java.util.UUID extra = (killer != null && top != null && !killer.equals(top) && sharePct > 0) ? killer : null;
+  return new Object[] { owner, extra };
+}'''), pbk))
+# the killer's share of one roll: every stack x pct / 100, the fraction rounds up with that chance (u01 = one uniform draw per stack)
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.ArrayList scale(java.util.List rolled, int pct, java.util.Random rnd) {
+  java.util.ArrayList out = new java.util.ArrayList();
+  if (rolled == null || pct <= 0) return out;
+  for (int i = 0; i < rolled.size(); i++) {
+    Object o = rolled.get(i);
+    if (!(o instanceof @IS@)) continue;
+    @IS@ s = (@IS@) o;
+    if (s.isEmpty() || s.getItemId() == null || s.getQuantity() <= 0) continue;
+    double want = (double) s.getQuantity() * (double) (pct > 100 ? 100 : pct) / 100.0;
+    int q = (int) Math.floor(want);
+    if (rnd.nextDouble() < want - (double) q) q++;
+    if (q > 0) out.add(s.withQuantity(q));
+  }
+  return out;
+}'''), pbk))
+# the death mark (PickDeathMark, the tick DropDeathItems drops): claim position + (0, 1, 0) for the owner of the drop, take drops that
+# already arrived (the ring) and note the killer's share for PickShareSys. Returns the owner (null = none).
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.UUID mark(@ST@ st, @CBF@ cb, String w, double x, double y, double z, String mob, java.util.UUID killer, long now) {
+  if (w == null || mob == null) return null;
+  long ms = System.currentTimeMillis();
+  Long seen = (Long) DONE.get(mob);
+  if (seen != null && ms - seen.longValue() < 10000L) return null;
+  DONE.put(mob, Long.valueOf(ms));
+  java.util.UUID t = top(mob);
+  if (t != null && here(t, st) == null) t = null;
+  java.util.UUID k = killer != null && here(killer, st) != null ? killer : null;
+  Object[] sp = split(k, t, @PKG@.SackCfg.PICK_SHARE);
+  if (sp == null) return null;
+  java.util.UUID owner = (java.util.UUID) sp[0];
+  @PKG@.PickClaim cl = claim(w, x, y, z, owner, 2, now);
+  n(1, 1L);
+  if (sp[1] != null) SHARE.put(mob, sp[1]);
+  if (cl == null || cl.owner == null) return null;
+  @PKG@.PickRing r = (@PKG@.PickRing) RINGS.get(w);
+  if (r != null) {
+    java.util.ArrayList late = r.take(x, y, z, now);
+    if (!late.isEmpty()) cl.used = true;
+    for (int i = 0; i < late.size(); i++) { cb.run(new @PKG@.PickDeliver((@REF@) late.get(i), owner, 2, cb)); n(9, 1L); }
+  }
+  return owner;
+}'''), pbk))
+# the killer's share (PickShareSys, after DropDeathItems): a second roll of the drop list x pickup.killerShare %, spawned like vanilla at
+# position + (0, 1 + 1/64, 0) with the killer's claim (SkyyGear's GearDropSys converts its gear: within 2 blocks of its mark). Returns stacks.
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static int share(@ST@ st, @CBF@ cb, String w, double x, double y, double z, String mob, String dropList, long now) {
+  Object k = mob == null ? null : SHARE.remove(mob);
+  if (!(k instanceof java.util.UUID) || dropList == null || w == null) return 0;
+  java.util.List rolled = null;
+  java.util.function.Function rf = ROLLS;
+  if (rf != null) rolled = (java.util.List) rf.apply(dropList);
+  else if (@IMOD@.get() != null && @IMOD@.get().isEnabled()) rolled = @IMOD@.get().getRandomItemDrops(dropList);
+  java.util.ArrayList out = scale(rolled, @PKG@.SackCfg.PICK_SHARE, java.util.concurrent.ThreadLocalRandom.current());
+  if (out.isEmpty()) return 0;
+  double sy = y + SHARE_DY;
+  claim(w, x, sy, z, (java.util.UUID) k, 3, now);   // contested (another share at this spot this tick) = those items stay on the ground
+  java.util.function.BiFunction sf = SPAWN;
+  @HLDR@[] hs = sf != null ? (@HLDR@[]) sf.apply(out, new @VEC@(x, sy, z)) : @ITC@.generateItemDrops(st, out, new @VEC@(x, sy, z), @RTF@.IDENTITY);
+  if (hs == null || hs.length == 0) return 0;
+  cb.addEntities(hs, @ADDR@.SPAWN);
+  n(2, 1L);
+  return out.size();
+}'''), pbk))
+# ---- 0.8.6 PickLate (fields + constructor here: PickBook.late queues it; run() comes after PickGive.deliver): Runnable on the world thread
+plt.addInterface(pool.get("java.lang.Runnable"))
+for _f in (jt("public @REF@ ref;"), jt("public @ST@ st;"), "public String w;", "public double x;", "public double y;", "public double z;",
+           "public int result;"):
+    plt.addField(CtField.make(_f, plt))
+plt.addConstructor(CtNewConstructor.make(jt("public PickLate(@ST@ st, @REF@ ref, String w, double x, double y, double z) { this.st = st; this.ref = ref; this.w = w; this.x = x; this.y = y; this.z = z; this.result = -9; }"), plt))
+# a new item entity (PickItemSys.onEntityAdded): the claim at its exact spot (else a felled log), or into the ring
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static @PKG@.PickClaim match(String w, double x, double y, double z, @REF@ ref, long now) {
+  @PKG@.PickClaim c = find(w, x, y, z, now);
+  if (c == null && @PKG@.SackCfg.PICK_BLOCKS && blockSpot(x, y, z)) {
+    java.util.UUID f = felled(w, x, y, z);
+    if (f != null) { c = new @PKG@.PickClaim(f, now + CLAIM_NS, 1); n(10, 1L); }
+  }
+  if (c != null && c.owner == null) { n(12, 1L); return null; }   // contested spot: nobody gets it (review fix 3)
+  if (c != null && ((c.kind == 1 && !@PKG@.SackCfg.PICK_BLOCKS) || (c.kind != 1 && !@PKG@.SackCfg.PICK_MOBS))) return null;
+  if (c != null) c.used = true;
+  if (c == null && @PKG@.SackCfg.PICK_MOBS && ref != null) {
+    @PKG@.PickRing r = ring(w);
+    if (r != null) r.push(ref, x, y, z, now);
+  }
+  return c;
+}'''), pbk))
+# 0.8.6: match() gave null. NO claim at the spot + block pickup on + a block drop spot + SkyySkills' felledBy key present = felledBy just
+# answered null (a physics log falling before SkyySkills' BreakTask committed the tree) -> ONE PickLate on the world's FIFO task queue,
+# behind that BreakTask. EXEC = harness seam (always null in the game): Consumer of the PickLate instead of World.execute. Returns queued.
+pbk.addField(CtField.make("public static volatile java.util.function.Consumer EXEC;", pbk))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static boolean late(@ST@ st, @REF@ ref, String w, double x, double y, double z, long now) {
+  if (st == null || ref == null || w == null || !@PKG@.SackCfg.PICK_BLOCKS || !blockSpot(x, y, z)) return false;
+  if (!(@PKG@.SackPool.bridge().get("skill:fn:felledBy") instanceof java.util.function.Function)) return false;
+  if (find(w, x, y, z, now) != null) return false;   // a claim was there (contested / pickup kind off): match() decided, no retry
+  @PKG@.PickLate t = new @PKG@.PickLate(st, ref, w, x, y, z);
+  try {
+    java.util.function.Consumer ex = EXEC;
+    if (ex != null) ex.accept(t);
+    else ((@EST@) st.getExternalData()).getWorld().execute(t);
+    return true;
+  } catch (Throwable e) { warnOnce("pick11", "auto-pickup: could not queue the late felled-log check (logged once; that drop stays on the ground): " + e); return false; }
+}'''), pbk))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static String state() {
+  if (!@PKG@.SackCfg.PICK_ON) return "OFF (pickup.on)";
+  return "on (block drops " + (BREAK_OK && ITEM_OK && @PKG@.SackCfg.PICK_BLOCKS ? "on" : "OFF") + ", mob drops "
+    + (DEATH_OK && ITEM_OK && @PKG@.SackCfg.PICK_MOBS ? "on" : "OFF") + ", killer share " + @PKG@.SackCfg.PICK_SHARE + " %, kill credit "
+    + (@PKG@.SackPool.bridge().get("mob:fn:credit") instanceof java.util.function.Function ? "SkyyMobs" : "killer only (no mob:fn:credit yet)")
+    + ", pets " + (@PKG@.SackPool.bridge().get("pets:fn:ownerOf") instanceof java.util.function.Function ? "count for their owner" : "not fighting yet (no pets:fn:ownerOf)")
+    + ", F-harvest " + (HARV_OK && @PKG@.SackCfg.PICK_BLOCKS ? "Void first" : "OFF") + (DROP_OK ? "" : " (no overflow catch)") + ")";
+}'''), pbk))
+pbk.addMethod(CtNewMethod.make(jt(r'''
+public static String stats() {
+  return "claims " + N.get(0) + " block / " + N.get(1) + " mob / " + N.get(10) + " felled, " + N.get(3) + " drops delivered (" + N.get(4)
+    + " items to the Void, " + N.get(5) + " to inventories, " + N.get(6) + " at feet), " + N.get(2) + " killer shares, " + N.get(9)
+    + " late, " + N.get(7) + " refused by island rules, " + N.get(11) + " owner gone, " + N.get(13) + " paused (profile settling), "
+    + N.get(12) + " contested, " + N.get(8) + " rolled back; F-harvest " + N.get(14) + " items to the Void (+ " + N.get(15)
+    + " caught before a full inventory threw them)";
+}'''), pbk))
+
+# ---- PickGive: the split (Void -> inventory -> feet), its undo, the entity update, the feed card / sound
+for _f in ("public static volatile int FAULT = 0;",   # harness only: 1 after the Void booking, 2 after the inventory add, 3 before the entity update
+           "public static final java.util.concurrent.ConcurrentHashMap NAMES = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.ConcurrentHashMap PERM = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.ConcurrentHashMap SND = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.ConcurrentHashMap CHAT = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.ConcurrentHashMap FULL = new java.util.concurrent.ConcurrentHashMap();"):
+    pgv.addField(CtField.make(_f, pgv))
+# what the Void takes of this stack now (0 = none): the /pd Deposit rule - a plain stack, a category (catOf), the category's free space
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static long voidRoom(java.util.UUID u, String k, @IS@ s) {
+  if (u == null || k == null || s == null || s.isEmpty() || s.getItemId() == null) return 0L;
+  if (s.getItemId().startsWith("Skyy_Sack_") || !@PKG@.SweepTask.plainFresh(s)) return 0L;
+  String cat = @PKG@.SackDefs.intake(u, s.getItemId());   // 0.8.16: seeds / saplings stay in the inventory when the player switched them off
+  if (cat == null) return 0L;
+  int ci = @PKG@.SackDefs.catIndex(cat);
+  if (ci < 0) return 0L;
+  Integer cc = (Integer) @PKG@.VoidStore.capsK(u, k).get(cat);
+  if (cc == null) return 0L;
+  long room = cc.longValue() - @PKG@.VoidStore.usedAll(k)[ci];
+  return room > 0L ? room : 0L;
+}'''), pgv))
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static long countId(@IC@ inv, String id) {
+  long t = 0L;
+  if (inv == null || id == null) return 0L;
+  int cap = (int) inv.getCapacity();
+  for (int i = 0; i < cap; i++) {
+    @IS@ it = inv.getItemStack((short) i);
+    if (it != null && !it.isEmpty() && id.equals(it.getItemId())) t += (long) it.getQuantity();
+  }
+  return t;
+}'''), pgv))
+# take back what one split did (Throwable anywhere after it): the inventory part out again, the Void booking undone
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static void undo(String k, @IS@ s, @IC@ inv, long v, long i) {
+  if (i > 0L && inv != null) {
+    try { inv.removeItemStack(s.withQuantity((int) i)); }
+    catch (Throwable t) { @PKG@.SackPool.warn("auto-pickup rollback could not take " + i + " " + s.getItemId() + " back out of an inventory: " + t); }
+  }
+  if (v > 0L && k != null) @PKG@.SackPool.add(k, s.getItemId(), -v);
+  @PKG@.PickBook.n(8, 1L);
+}'''), pgv))
+# THE SPLIT: Void first (booked), then the inventory; long[] { to the Void, to the inventory, left over } or null = nothing moved
+# 0.8.18 (tools/sacks_0_8_18_patch.py A): an id the Flask / Pouch claim (supply:fn:claims) goes into stor (the player's storage; null =
+# inv) FIRST, then the Void takes what did not fit, then inv (the vanilla pickup container) the rest; every move counted, one undo
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static long[] split(java.util.UUID u, String k, @IS@ s, @IC@ inv, @IC@ stor) {
+  if (s == null || s.isEmpty() || s.getItemId() == null || s.getQuantity() <= 0) return null;
+  String id = s.getItemId();
+  int total = s.getQuantity();
+  long room = voidRoom(u, k, s);
+  boolean sup = room > 0L && (s.getMetadata() == null || s.getMetadata().isEmpty()) && @PKG@.SackPool.claimed(u, id, (java.util.HashMap) null);   // review: plain stacks only
+  @IC@ first = sup ? (stor != null ? stor : inv) : (@IC@) null;
+  long toVoid = (sup && first != null) ? 0L : (room < (long) total ? room : (long) total);   // review LOW 7: no container at all = the Void as before
+  long booked = 0L;
+  long toInv = 0L;
+  long toFirst = 0L;
+  try {
+    if (first != null) {
+      long b0 = countId(first, id);
+      try { first.addItemStack(s.withQuantity(total)); }
+      finally { toFirst = countId(first, id) - b0; }
+      if (toFirst < 0L) toFirst = 0L;
+      if (toFirst > (long) total) throw new IllegalStateException("the storage gained " + toFirst + " of " + id + " but only " + total + " were given");
+      long lo = (long) total - toFirst;
+      toVoid = room < lo ? room : lo;
+    }
+    if (toVoid > 0L) { @PKG@.SackPool.add(k, id, toVoid); booked = toVoid; }
+    if (FAULT == 1) throw new IllegalStateException("harness fault 1 (after the Void booking)");
+    long rest = (long) total - toFirst - toVoid;
+    if (rest > 0L && inv != null && inv != first) {
+      long before = countId(inv, id);
+      try { inv.addItemStack(s.withQuantity((int) rest)); }
+      finally { toInv = countId(inv, id) - before; }
+      if (toInv < 0L) toInv = 0L;
+      if (toInv > rest) throw new IllegalStateException("the inventory gained " + toInv + " of " + id + " but only " + rest + " were given");
+    }
+    if (FAULT == 2) throw new IllegalStateException("harness fault 2 (after the inventory add)");
+    return new long[] { toVoid, toFirst + toInv, (long) total - toVoid - toFirst - toInv };
+  } catch (Throwable t) {
+    undo(k, s, inv, booked, toInv);
+    if (toFirst > 0L && first != null) {
+      try { first.removeItemStack(s.withQuantity((int) (toFirst > (long) total ? (long) total : toFirst))); }   // review LOW 6: never more than the drop
+      catch (Throwable t2) { @PKG@.SackPool.warn("auto-pickup rollback could not take " + toFirst + " " + id + " back out of a storage: " + t2); }
+    }
+    @PKG@.SackPool.warn("auto-pickup of " + total + " " + id + " failed and was rolled back (the drop stays where it fell): " + t);
+    return null;
+  }
+}'''), pgv))
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static long[] split(java.util.UUID u, String k, @IS@ s, @IC@ inv) {
+  return split(u, k, s, inv, (@IC@) null);
+}'''), pgv))
+# the entity after the split - LAST and in one step: nothing left = removed; else moved to the feet, then the rest set
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static void settle(@ST@ st, @REF@ item, @ITC@ ic, @IS@ s, long left, @VEC@ feet) {
+  if (left <= 0L) { st.removeEntity(item, @REMR@.REMOVE); return; }
+  if (feet != null) {
+    @TC@ tc = (@TC@) st.getComponent(item, @TC@.getComponentType());
+    if (tc != null) tc.teleportPosition(feet);
+  }
+  if (left != (long) s.getQuantity()) ic.setItemStack(s.withQuantity((int) left));
+}'''), pgv))
+# SkyyIslands' pickup rule for this player in this world (island:perm:fn "pickup"; null / no SkyyIslands = allowed), cached 5 s
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static boolean denied(java.util.UUID u, String w) {
+  if (u == null || w == null) return false;
+  Object f = @PKG@.SackPool.bridge().get("island:perm:fn");
+  if (!(f instanceof java.util.function.Function)) return false;
+  String key = u.toString() + "|" + w;
+  long now = System.currentTimeMillis();
+  Object[] c = (Object[]) PERM.get(key);
+  if (c != null && now - ((Long) c[1]).longValue() < 5000L) return Boolean.FALSE.equals(c[0]);
+  Object r = null;
+  try { r = ((java.util.function.Function) f).apply(new Object[] { u, w, "pickup" }); } catch (Throwable t) { r = null; }
+  if (PERM.size() > 1024) PERM.clear();
+  PERM.put(key, new Object[] { r instanceof Boolean ? r : Boolean.TRUE, Long.valueOf(now) });
+  return Boolean.FALSE.equals(r);
+}'''), pgv))
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static String name(String id) {
+  if (id == null) return "";
+  Object c = NAMES.get(id);
+  if (c instanceof String) return (String) c;
+  String n = null;
+  try {
+    Object o = @ITM@.getAssetMap().getAsset(id);
+    if (o instanceof @ITM@) {
+      String tk = ((@ITM@) o).getTranslationKey();
+      @I18N@ m = @I18N@.get();
+      if (tk != null && m != null) {
+        n = m.getMessage("en-US", tk);
+        if ((n == null || n.length() == 0) && tk.startsWith("server.")) n = m.getMessage("en-US", tk.substring(7));
+      }
+    }
+  } catch (Throwable t) { n = null; }
+  if (n == null || n.length() == 0 || n.indexOf('.') > 0 && n.indexOf(' ') < 0) n = id.startsWith("Skyy_Unid") ? "Unidentified item" : @PKG@.SacksPage.pretty(id);
+  if (NAMES.size() < 4096) NAMES.put(id, n);
+  return n;
+}'''), pgv))
+# the card text: where it went
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static String text(String nm, long[] r, int qty) {
+  // 0.8.16 (Skyy "make our feed look more like the vanilla or better"): the item name alone, like the vanilla popup; a note only when
+  // something needs the player (the Void category full, the inventory full)
+  String t;
+  if (r[2] > 0L) t = nm + " - inventory full, on the ground";
+  else if (r[0] > 0L && r[0] < (long) qty) t = nm + " - Void full, rest in inventory";
+  else t = nm;
+  return t.length() > 48 ? t.substring(0, 48) : t;
+}'''), pgv))
+# feed card (SkyyHud feed:fn:push, kind "pickup" = the player's "Item pickups" route) / chat fallback / sound; never throws
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static int tell(java.util.UUID u, @PR@ pr, String id, int qty, long[] r) {
+  int how = 0;
+  try {
+    java.util.Map b = @PKG@.SackPool.bridge();
+    String route = "feed";
+    Object rf = b.get("msgroute:fn:get");
+    if (rf instanceof java.util.function.Function) {
+      Object v = ((java.util.function.Function) rf).apply(new Object[] { u, "pickup" });
+      if (v instanceof String) route = (String) v;
+    }
+    String txt = text(name(id), r, qty);
+    long now = System.currentTimeMillis();
+    if (route.equals("feed")) {
+      Object ff = b.get("feed:fn:push");
+      if (ff instanceof java.util.function.Function && Boolean.TRUE.equals(((java.util.function.Function) ff).apply(new Object[] { u, "pickup", id, txt, Long.valueOf((long) qty) }))) how = 1;
+      else route = "chat";   // review fix: no SkyyHud / the push refused -> the rate-limited chat line, never silent
+    }
+    if (route.equals("chat") && pr != null) {
+      Long last = (Long) CHAT.get(u);
+      if (last == null || now - last.longValue() >= 3000L) { CHAT.put(u, Long.valueOf(now)); pr.sendMessage(@MSG@.raw("+" + qty + " " + txt).color("#b7cedd")); how = 2; }
+    }
+    if (how != 1 && r[2] > 0L && pr != null) {
+      Long lf = (Long) FULL.get(u);
+      if (lf == null || now - lf.longValue() >= 30000L) { FULL.put(u, Long.valueOf(now)); pr.sendMessage(@MSG@.raw("Your Void and inventory are full - drops land at your feet.").color("#ffcc00")); how = how | 4; }
+    }
+    if (r[2] > 0L && pr != null) @PKG@.SackSnd.full(pr, now);   // 0.8.5 sound pass: Void full (card or chat; once per 30 s)
+    if (pr != null && !route.equals("off")) {   // review fix: "Item pickups: Off" = no sound either
+      Long ls = (Long) SND.get(u);
+      if (ls == null || now - ls.longValue() >= 120L) { SND.put(u, Long.valueOf(now)); @SNDU@.playSoundEvent2dToPlayer(pr, "SFX_Player_Pickup_Item", @SCAT@.UI); }
+    }
+  } catch (Throwable t) { @PKG@.PickBook.warnOnce("pick1", "auto-pickup feed / sound failed (logged once): " + t); }
+  return how;
+}'''), pgv))
+# the vanilla pickup container of that player for this item (= Player.giveItem's), else the storage
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static @IC@ pickInv(@ST@ st, @REF@ pref, @IS@ s) {
+  java.util.function.Function f = @PKG@.PickBook.INVS;
+  if (f != null) return (@IC@) f.apply(pref);
+  try {
+    @PSET@ ps = (@PSET@) st.getComponent(pref, @PSET@.getComponentType());
+    if (ps == null) ps = @PSET@.defaults();
+    @IC@ c = @INVU@.getContainerForItemPickup(pref, s.getItem(), ps, st);
+    if (c != null) return c;
+  } catch (Throwable t) { }
+  try {
+    @PLA@ p = (@PLA@) st.getComponent(pref, @PLA@.getComponentType());
+    return p == null || p.getInventory() == null ? null : p.getInventory().getStorage();
+  } catch (Throwable t2) { return null; }
+}'''), pgv))
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static @VEC@ feetOf(@ST@ st, @REF@ pref) {
+  try {
+    @TC@ tc = (@TC@) st.getComponent(pref, @TC@.getComponentType());
+    return tc == null || tc.getPosition() == null ? null : new @VEC@(tc.getPosition());
+  } catch (Throwable t) { return null; }
+}'''), pgv))
+# ONE claimed item entity -> its player (runs when the add's CommandBuffer is consumed; world thread). Returns 1 all delivered, 2 part at
+# the feet, 3 all at the feet, -1 refused (island rules), 0 nothing moved (the drop stays as it fell)
+pgv.addMethod(CtNewMethod.make(jt(r'''
+public static int deliver(@ST@ st, @REF@ item, java.util.UUID owner, int kind) {
+  try {
+    if (st == null || item == null || !item.isValid() || owner == null || !@PKG@.SackCfg.PICK_ON) return 0;
+    @ITC@ ic = (@ITC@) st.getComponent(item, @ITC@.getComponentType());
+    if (ic == null) return 0;
+    @IS@ s = ic.getItemStack();
+    if (s == null || s.isEmpty() || s.getItemId() == null || s.getQuantity() <= 0) return 0;
+    @REF@ pref = @PKG@.PickBook.here(owner, st);
+    if (pref == null) { @PKG@.PickBook.n(11, 1L); return 0; }
+    if (denied(owner, @PKG@.PickBook.world(st.getExternalData()))) { @PKG@.PickBook.n(7, 1L); return -1; }
+    String k = @PKG@.SackPool.settledKey(owner);
+    // review fix 1: item moves paused for this player (profile switch settling / crash recovery pending / pool unreadable / shutdown)
+    // -> move nothing: a snapshot reload could overwrite an inventory add; the drop stays where it fell
+    if (k == null) { @PKG@.PickBook.n(13, 1L); return 0; }
+    try { @PKG@.BagMirror.beforeTake(k); } catch (Throwable tb) { }
+    @IC@ inv = pickInv(st, pref, s);
+    @IC@ stor = null;   // 0.8.18: a claimed id (Flask / Pouch) goes into the storage first
+    try {
+      @PLA@ pp = (@PLA@) st.getComponent(pref, @PLA@.getComponentType());
+      stor = (pp == null || pp.getInventory() == null) ? (@IC@) null : pp.getInventory().getStorage();
+    } catch (Throwable ts0) { stor = null; }
+    long[] r = split(owner, k, s, inv, stor);
+    if (r == null) return 0;
+    @VEC@ feet = r[2] > 0L ? feetOf(st, pref) : null;
+    try {
+      if (FAULT == 3) throw new IllegalStateException("harness fault 3 (before the entity update)");
+      settle(st, item, ic, s, r[2], feet);
+    } catch (Throwable te) {
+      undo(k, s, inv, r[0], r[1]);
+      @PKG@.SackPool.warn("auto-pickup could not update the dropped " + s.getItemId() + " - rolled back, the drop stays where it fell: " + te);
+      return 0;
+    }
+    if (r[0] > 0L) {
+      @PKG@.VoidStore.noteIntake(k, @PKG@.SackDefs.catIndex(@PKG@.SackDefs.catOf(s.getItemId())), r[0]);
+      try { @PKG@.SackPool.saveSoon(k); } catch (Throwable ts) { @PKG@.SackPool.DIRTY.put(k, Boolean.TRUE); }
+    }
+    @PKG@.PickBook.n(3, 1L);
+    @PKG@.PickBook.n(4, r[0]);
+    @PKG@.PickBook.n(5, r[1]);
+    @PKG@.PickBook.n(6, r[2]);
+    @PR@ pr = null;
+    try { pr = (@PR@) st.getComponent(pref, @PR@.getComponentType()); } catch (Throwable tp) { pr = null; }
+    tell(owner, pr, s.getItemId(), s.getQuantity(), r);
+    if (r[2] <= 0L) return 1;
+    return r[0] + r[1] > 0L ? 2 : 3;
+  } catch (Throwable t) { @PKG@.PickBook.warnOnce("pick2", "auto-pickup failed (logged once; drops stay on the ground): " + t); return 0; }
+}'''), pgv))
+
+# ---- PickDeliver: the cb.run job of one claimed item (Consumer<Store>)
+pdl.addMethod(CtNewMethod.make(jt(r'''
+public void accept(Object o) {
+  @CBF@ c = this.cb;
+  if (c != null) {
+    this.cb = null;
+    try { c.run(this); return; } catch (Throwable t) { }
+  }
+  if (o instanceof @ST@) this.result = @PKG@.PickGive.deliver((@ST@) o, this.ref, this.owner, this.kind);
+}'''), pdl))
+# ---- 0.8.6 PickLate.run: the item still there + felledBy names a player NOW -> a felled-log claim, delivered like any claimed drop
+plt.addMethod(CtNewMethod.make(jt(r'''
+public void run() {
+  try {
+    if (this.st == null || this.ref == null || !this.ref.isValid()) { this.result = -2; return; }
+    if (!@PKG@.SackCfg.PICK_ON || !@PKG@.SackCfg.PICK_BLOCKS) { this.result = -3; return; }
+    java.util.UUID f = @PKG@.PickBook.felled(this.w, this.x, this.y, this.z);
+    if (f == null) { this.result = -4; return; }
+    @PKG@.PickBook.n(10, 1L);
+    this.result = @PKG@.PickGive.deliver(this.st, this.ref, f, 1);
+  } catch (Throwable t) { @PKG@.PickBook.warnOnce("pick12", "auto-pickup: late felled-log check failed (logged once; that drop stays on the ground): " + t); }
+}'''), plt))
+
+# ---- PickItemSys: RefSystem on ItemComponent + TransformComponent - a new item at a claimed spot -> ONE PickDeliver on the add's buffer
+pis.addField(CtField.make(jt("public @QRY@ query;"), pis))
+pis.addConstructor(CtNewConstructor.make("public PickItemSys() { super(); this.query = null; }", pis))
+pis.addMethod(CtNewMethod.make(jt(r'''
+public @QRY@ getQuery() {
+  if (this.query == null) this.query = @QRY@.and(new @QRY@[] { (@QRY@) @ITC@.getComponentType(), (@QRY@) @TC@.getComponentType() });
+  return this.query;
+}'''), pis))
+pis.addMethod(CtNewMethod.make(jt(r'''
+public void onEntityAdded(@REF@ ref, @ADDR@ reason, @ST@ st, @CBF@ cb) {
+  try {
+    if (!@PKG@.SackCfg.PICK_ON || reason != @ADDR@.SPAWN) return;
+    if (!@PKG@.SackCfg.PICK_BLOCKS && !@PKG@.SackCfg.PICK_MOBS) return;
+    if (st.getComponent(ref, @PIC@.getComponentType()) != null) return;
+    @TC@ tc = (@TC@) st.getComponent(ref, @TC@.getComponentType());
+    if (tc == null || tc.getPosition() == null) return;
+    @VEC@ p = tc.getPosition();
+    String wn = @PKG@.PickBook.world(st.getExternalData());
+    long now = System.nanoTime();
+    @PKG@.PickClaim c = @PKG@.PickBook.match(wn, p.x, p.y, p.z, ref, now);
+    if (c == null) { @PKG@.PickBook.late(st, ref, wn, p.x, p.y, p.z, now); return; }   // 0.8.6: one late felled-log check
+    cb.run(new @PKG@.PickDeliver(ref, c.owner, c.kind, cb));
+  } catch (Throwable t) { @PKG@.PickBook.warnOnce("pick3", "auto-pickup: item spawn check failed (logged once): " + t); }
+}'''), pis))
+pis.addMethod(CtNewMethod.make(jt("public void onEntityRemove(@REF@ ref, @REMR@ reason, @ST@ st, @CBF@ cb) { }"), pis))
+
+# ---- PickBreakSys: BreakBlockEvent on a player -> claim block + (0.5, 0, 0.5) for them (the drops spawn right after, same thread)
+pbs.addConstructor(CtNewConstructor.make(jt("public PickBreakSys() { super(@BBE@.class); }"), pbs))
+pbs.addMethod(CtNewMethod.make(jt("public @QRY@ getQuery() { return (@QRY@) @PLA@.getComponentType(); }"), pbs))
+pbs.addMethod(CtNewMethod.make(jt(r'''
+public void handle(int idx, @ACH@ chunk, @ST@ st, @CBF@ buf, @EVE@ ev) {
+  try {
+    if (!@PKG@.SackCfg.PICK_ON || !@PKG@.SackCfg.PICK_BLOCKS || !@PKG@.PickBook.ITEM_OK || !(ev instanceof @BBE@)) return;
+    @BBE@ e = (@BBE@) ev;
+    if (e.isCancelled()) return;
+    @V3I@ b = e.getTargetBlock();
+    if (b == null) return;
+    @PR@ pr = (@PR@) chunk.getComponent(idx, @PR@.getComponentType());
+    if (pr == null || pr.getUuid() == null) return;
+    @PKG@.PickBook.claim(@PKG@.PickBook.world(st.getExternalData()), (double) b.x() + 0.5, (double) b.y(), (double) b.z() + 0.5, pr.getUuid(), 1, System.nanoTime());
+    @PKG@.PickBook.n(0, 1L);
+  } catch (Throwable t) { @PKG@.PickBook.warnOnce("pick4", "auto-pickup: block break claim failed (logged once): " + t); }
+}'''), pbs))
+
+# ---- the two death systems (EntityTickingSystem NPCEntity + DeathComponent; only dying NPCs are visited)
+def _dsys(cls, name, first, second):
+    """first / second = (Order, static Class field) of the two SystemDependency edges"""
+    for f in ("public static Class DDI;", "public static Class TCR;", "public static Class CR;", "public java.util.Set deps;"):
+        cls.addField(CtField.make(f, cls))
+    cls.addConstructor(CtNewConstructor.make(jt(r'''
+public %s() {
+  super();
+  this.deps = new java.util.HashSet();
+  this.deps.add(new @SDEP@(@ORD@.%s, %s));
+  this.deps.add(new @SDEP@(@ORD@.%s, %s));
+}''' % (name, first[0], first[1], second[0], second[1])), cls))
+    cls.addMethod(CtNewMethod.make(jt("public @QRY@ getQuery() { return @QRY@.and(new @QRY@[] { (@QRY@) @NPCE@.getComponentType(), (@QRY@) @DTHC@.getComponentType() }); }"), cls))
+    cls.addMethod(CtNewMethod.make("public java.util.Set getDependencies() { return this.deps; }", cls))
+    cls.addMethod(CtNewMethod.make("public boolean isParallel(int a, int b) { return false; }", cls))
+_dsys(pdm, "PickDeathMark", ("AFTER", "TCR"), ("BEFORE", "DDI"))
+_dsys(pss, "PickShareSys", ("AFTER", "DDI"), ("BEFORE", "CR"))
+# the DropDeathItems condition, copied (0.7 bytecode; SkyyGear's GearDeathMark): items-loss mode ALL, a role that has not dropped yet,
+# dropping instantly or with a DeferredCorpseRemoval that is due (or none), not a player
+pdm.addMethod(CtNewMethod.make(jt(r'''
+public static boolean dropsNow(@ACH@ chunk, int idx) {
+  @DTHC@ dc = (@DTHC@) chunk.getComponent(idx, @DTHC@.getComponentType());
+  if (dc == null || dc.getItemsLossMode() != @ILM@.ALL) return false;
+  @NPCE@ npc = (@NPCE@) chunk.getComponent(idx, @NPCE@.getComponentType());
+  if (npc == null) return false;
+  @ROLE@ role = npc.getRole();
+  if (role == null || role.hasDroppedDeathItems()) return false;
+  if (!role.isDropDeathItemsInstantly()) {
+    @DCR@ dcr = (@DCR@) chunk.getComponent(idx, @DCR@.getComponentType());
+    if (dcr != null && !dcr.shouldRemove()) return false;
+  }
+  return chunk.getComponent(idx, @PLA@.getComponentType()) == null;
+}'''), pdm))
+# the killer: Damage$EntitySource (a projectile's = its shooter) whose ref is a player in the SAME store
+pdm.addMethod(CtNewMethod.make(jt(r'''
+public static java.util.UUID killer(@DTHC@ dc, @ST@ st) {
+  try {
+    @DMG@ d = dc == null ? null : dc.getDeathInfo();
+    if (d == null || !(d.getSource() instanceof @DENT@)) return null;
+    @REF@ r = ((@DENT@) d.getSource()).getRef();
+    if (r == null || !r.isValid() || r.getStore() != st) return null;
+    @PR@ pr = (@PR@) st.getComponent(r, @PR@.getComponentType());
+    if (pr != null) return pr.getUuid();
+    return @PKG@.PickBook.petOwner(st, r);   // 0.8.4: a pet's / summon's killing blow = its owner's
+  } catch (Throwable t) { return null; }
+}'''), pdm))
+pdm.addMethod(CtNewMethod.make(jt(r'''
+public void tick(float dt, int idx, @ACH@ chunk, @ST@ st, @CBF@ cb) {
+  try {
+    if (!@PKG@.SackCfg.PICK_ON || !@PKG@.SackCfg.PICK_MOBS || !@PKG@.PickBook.ITEM_OK || !dropsNow(chunk, idx)) return;
+    @TC@ tc = (@TC@) chunk.getComponent(idx, @TC@.getComponentType());
+    @UUIDC@ uc = (@UUIDC@) chunk.getComponent(idx, @UUIDC@.getComponentType());
+    if (tc == null || tc.getPosition() == null || uc == null || uc.getUuid() == null) return;
+    @VEC@ p = tc.getPosition();
+    @DTHC@ dc = (@DTHC@) chunk.getComponent(idx, @DTHC@.getComponentType());
+    @PKG@.PickBook.mark(st, cb, @PKG@.PickBook.world(st.getExternalData()), p.x, p.y + 1.0, p.z, uc.getUuid().toString(), killer(dc, st), System.nanoTime());
+  } catch (Throwable t) { @PKG@.PickBook.warnOnce("pick5", "auto-pickup: death mark failed (logged once; that mob's drops stay on the ground): " + t); }
+}'''), pdm))
+pss.addMethod(CtNewMethod.make(jt(r'''
+public void tick(float dt, int idx, @ACH@ chunk, @ST@ st, @CBF@ cb) {
+  try {
+    if (@PKG@.PickBook.SHARE.isEmpty()) return;
+    @UUIDC@ uc = (@UUIDC@) chunk.getComponent(idx, @UUIDC@.getComponentType());
+    if (uc == null || uc.getUuid() == null || !@PKG@.PickBook.SHARE.containsKey(uc.getUuid().toString())) return;
+    String mob = uc.getUuid().toString();
+    @NPCE@ npc = (@NPCE@) chunk.getComponent(idx, @NPCE@.getComponentType());
+    @TC@ tc = (@TC@) chunk.getComponent(idx, @TC@.getComponentType());
+    if (npc == null || npc.getRole() == null || tc == null || tc.getPosition() == null || !@PKG@.SackCfg.PICK_ON || !@PKG@.SackCfg.PICK_MOBS || !@PKG@.PickBook.ITEM_OK) { @PKG@.PickBook.SHARE.remove(mob); return; }
+    @VEC@ p = tc.getPosition();
+    @PKG@.PickBook.share(st, cb, @PKG@.PickBook.world(st.getExternalData()), p.x, p.y + 1.0, p.z, mob, npc.getRole().getDropListId(), System.nanoTime());
+  } catch (Throwable t) { @PKG@.PickBook.warnOnce("pick6", "auto-pickup: killer share failed (logged once): " + t); }
+}'''), pss))
+
+# ================= 0.8.4 F-HARVEST -> THE VOID FIRST (tools/sacks_0_8_4_patch.py docstring, point 2) =================
+for _c, _m in ((_JT["IPE"], "getItemStack"), (_JT["IPE"], "isCancelled"), (_JT["DIE"], "getItemStack"), (_JT["DIE"], "setItemStack"),
+               (_JT["DIE"], "setCancelled"), (_JT["DIE"], "isCancelled"), (WLD, "execute"), (IC, "removeItemStack"), (IC, "canAddItemStack")):
+    B.probe(pool, _c, _m)
+# PickHarvTask (fields + constructor first: PickHarv.note queues it; run() after PickHarv.flush): Runnable on the world thread
+pht.addInterface(pool.get("java.lang.Runnable"))
+pht.addField(CtField.make("public java.util.UUID u;", pht))
+pht.addField(CtField.make(jt("public @ST@ st;"), pht))
+pht.addField(CtField.make("public long moved;", pht))
+pht.addConstructor(CtNewConstructor.make(jt("public PickHarvTask(java.util.UUID u, @ST@ st) { this.u = u; this.st = st; this.moved = -1L; }"), pht))
+# PickHarv: HPEND = player UUID -> ArrayList of Object[] { event, item id, Long count before giveItem, the pickup container } (world thread);
+# HCUR = player UUID -> Object[] { item id, Long amount, Long nanoTime } = the overflow window of the newest pickup
+for _f in ("public static final java.util.concurrent.ConcurrentHashMap HPEND = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final java.util.concurrent.ConcurrentHashMap HCUR = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final long WINDOW_NS = 100000000L;",
+           # fix round: player UUID -> Long nanoTime the pending task was queued; a list older than HSTALE_NS is never appended to
+           "public static final java.util.concurrent.ConcurrentHashMap HPT = new java.util.concurrent.ConcurrentHashMap();",
+           "public static final long HSTALE_NS = 5000000000L;",
+           # harness seam (always null in the game): Consumer of the PickHarvTask instead of World.execute
+           "public static volatile java.util.function.Consumer EXEC;"):
+    phv.addField(CtField.make(_f, phv))
+# move up to want of s from cont into the Void (book first, then take out exactly; what really left = what stays booked). Returns moved.
+# Faults (harness): 4 after the booking, 5 after the removal -> the items go back into cont and the booking is undone.
+phv.addMethod(CtNewMethod.make(jt(r'''
+public static long move(java.util.UUID u, String k, @IS@ s, @IC@ cont, long want) {
+  if (u == null || k == null || s == null || cont == null || want <= 0L) return 0L;
+  long room = @PKG@.PickGive.voidRoom(u, k, s);
+  long m = room < want ? room : want;
+  if (m <= 0L) return 0L;
+  if ((s.getMetadata() == null || s.getMetadata().isEmpty()) && @PKG@.SackPool.claimed(u, s.getItemId(), (java.util.HashMap) null)) return 0L;   // 0.8.18: the Flask / Pouch take it - it stays (plain stacks only)
+  String id = s.getItemId();
+  long booked = 0L;
+  long removed = 0L;
+  try {
+    @PKG@.SackPool.add(k, id, m);
+    booked = m;
+    if (@PKG@.PickGive.FAULT == 4) throw new IllegalStateException("harness fault 4 (after the harvest booking)");
+    long c0 = @PKG@.PickGive.countId(cont, id);
+    try { cont.removeItemStack(s.withQuantity((int) m)); }
+    finally { removed = c0 - @PKG@.PickGive.countId(cont, id); }
+    if (removed < 0L) removed = 0L;
+    if (removed > m) throw new IllegalStateException("the inventory lost " + removed + " of " + id + " but only " + m + " were taken");
+    if (@PKG@.PickGive.FAULT == 5) throw new IllegalStateException("harness fault 5 (after the harvest removal)");
+    if (removed < m) @PKG@.SackPool.add(k, id, removed - m);
+    return removed;
+  } catch (Throwable t) {
+    if (removed > 0L) {
+      try { cont.addItemStack(s.withQuantity((int) removed)); }
+      catch (Throwable t2) { @PKG@.SackPool.warn("auto-pickup (harvest) rollback could not put " + removed + " " + id + " back: " + t2); }
+    }
+    if (booked > 0L) @PKG@.SackPool.add(k, id, -booked);
+    @PKG@.PickBook.n(8, 1L);
+    @PKG@.SackPool.warn("auto-pickup of a harvested " + id + " failed and was rolled back (it stays in the inventory): " + t);
+    return 0L;
+  }
+}'''), phv))
+# PickHarvSys (world thread, inside the engine's interactivelyPickupItem, BEFORE giveItem): note it, count before, open the window
+phv.addMethod(CtNewMethod.make(jt(r'''
+public static boolean note(@ST@ st, @REF@ pref, java.util.UUID u, Object ev, @IS@ s) {
+  if (st == null || pref == null || u == null || ev == null || s == null || s.isEmpty() || s.getItemId() == null) return false;
+  @IC@ cont = @PKG@.PickGive.pickInv(st, pref, s);
+  long before = cont == null ? 0L : @PKG@.PickGive.countId(cont, s.getItemId());
+  long now = System.nanoTime();
+  HCUR.put(u, new Object[] { s.getItemId(), Long.valueOf((long) s.getQuantity()), Long.valueOf(now), cont });
+  Object[] rec = new Object[] { ev, s.getItemId(), Long.valueOf(before), cont };
+  Object o = HPEND.get(u);
+  Object qt = HPT.get(u);
+  if (o instanceof java.util.ArrayList && qt instanceof Long && now - ((Long) qt).longValue() <= HSTALE_NS) { ((java.util.ArrayList) o).add(rec); return true; }
+  if (o != null) @PKG@.PickBook.warnOnce("pick10", "auto-pickup: a harvest move never ran (its world closed?) - dropped it, those items stay in the inventory (logged once)");
+  java.util.ArrayList l = new java.util.ArrayList();
+  l.add(rec);
+  HPEND.put(u, l);
+  HPT.put(u, Long.valueOf(now));
+  @PKG@.PickHarvTask task = new @PKG@.PickHarvTask(u, st);
+  try {
+    java.util.function.Consumer ex = EXEC;
+    if (ex != null) ex.accept(task);
+    else ((@EST@) st.getExternalData()).getWorld().execute(task);
+  } catch (Throwable t) { HPEND.remove(u); HPT.remove(u); HCUR.remove(u); throw new IllegalStateException("could not queue the harvest move: " + t); }
+  return true;
+}'''), phv))
+# PickDropSys: the giveItem remainder of a full inventory, thrown right after the pickup (same item, at most that amount, 100 ms window)
+# -> the Void takes what it can: all = the throw is cancelled, part = the thrown stack shrinks. Returns items taken (0 = untouched).
+phv.addMethod(CtNewMethod.make(jt(r'''
+public static long onDrop(@ST@ st, @REF@ pref, @PR@ pr, @DIE@ e) {
+  if (st == null || pr == null || e == null || e.isCancelled()) return 0L;
+  java.util.UUID u = pr.getUuid();
+  Object[] c = null;
+  if (u != null) c = (Object[]) HCUR.get(u);
+  if (c == null) return 0L;
+  if (System.nanoTime() - ((Long) c[2]).longValue() > WINDOW_NS) { HCUR.remove(u); return 0L; }
+  @IS@ s = e.getItemStack();
+  if (s == null || s.isEmpty() || s.getItemId() == null || !s.getItemId().equals(c[0])) return 0L;
+  long q = (long) s.getQuantity();
+  if (q <= 0L || q > ((Long) c[1]).longValue()) return 0L;
+  // fix round: only a real giveItem remainder - the pickup container cannot take even 1 more (a Q-drop has just made room)
+  if (c.length < 4 || !(c[3] instanceof @IC@) || ((@IC@) c[3]).canAddItemStack(s.withQuantity(1))) return 0L;
+  HCUR.remove(u);
+  if (!@PKG@.SackCfg.PICK_ON || !@PKG@.SackCfg.PICK_BLOCKS) return 0L;
+  String k = @PKG@.SackPool.settledKey(u);
+  if (k == null) { @PKG@.PickBook.n(13, 1L); return 0L; }
+  if (@PKG@.PickGive.denied(u, @PKG@.PickBook.world(st.getExternalData()))) { @PKG@.PickBook.n(7, 1L); return 0L; }
+  long room = @PKG@.PickGive.voidRoom(u, k, s);
+  long m = room < q ? room : q;
+  if (m <= 0L) return 0L;
+  @PKG@.SackPool.add(k, s.getItemId(), m);
+  try {
+    if (@PKG@.PickGive.FAULT == 6) throw new IllegalStateException("harness fault 6 (before the throw update)");
+    if (m >= q) e.setCancelled(true);
+    else e.setItemStack(s.withQuantity((int) (q - m)));
+  } catch (Throwable t) {
+    @PKG@.SackPool.add(k, s.getItemId(), -m);
+    @PKG@.PickBook.n(8, 1L);
+    @PKG@.SackPool.warn("auto-pickup (harvest overflow) failed and was rolled back (it is thrown as vanilla): " + t);
+    return 0L;
+  }
+  @PKG@.VoidStore.noteIntake(k, @PKG@.SackDefs.catIndex(@PKG@.SackDefs.catOf(s.getItemId())), m);
+  try { @PKG@.SackPool.saveSoon(k); } catch (Throwable ts) { @PKG@.SackPool.DIRTY.put(k, Boolean.TRUE); }
+  @PKG@.PickBook.n(15, m);
+  @PKG@.PickGive.tell(u, pr, s.getItemId(), (int) q, new long[] { m, 0L, q - m });
+  return m;
+}'''), phv))
+# PickHarvTask (World.execute, after the interaction and every listener): every NOT-cancelled pickup of this player -> the Void first.
+# Returns items moved.
+phv.addMethod(CtNewMethod.make(jt(r'''
+public static long flush(@ST@ st, java.util.UUID u) {
+  if (u == null || st == null) return 0L;
+  Object o = HPEND.remove(u);
+  HPT.remove(u);
+  HCUR.remove(u);
+  if (!(o instanceof java.util.ArrayList) || st == null) return 0L;
+  if (!@PKG@.SackCfg.PICK_ON || !@PKG@.SackCfg.PICK_BLOCKS) return 0L;
+  java.util.ArrayList l = (java.util.ArrayList) o;
+  @REF@ pref = @PKG@.PickBook.here(u, st);
+  if (pref == null) { @PKG@.PickBook.n(11, 1L); return 0L; }
+  String k = @PKG@.SackPool.settledKey(u);
+  if (k == null) { @PKG@.PickBook.n(13, 1L); return 0L; }
+  // one entry per item id: Object[] { sample stack, Long amount, Long count before (the first pickup's), container }
+  java.util.LinkedHashMap by = new java.util.LinkedHashMap();
+  for (int i = 0; i < l.size(); i++) {
+    Object[] rec = (Object[]) l.get(i);
+    if (!(rec[0] instanceof @IPE@) || rec[3] == null) continue;
+    @IPE@ e = (@IPE@) rec[0];
+    if (e.isCancelled()) continue;
+    @IS@ s = e.getItemStack();
+    if (s == null || s.isEmpty() || s.getItemId() == null || !s.getItemId().equals(rec[1]) || s.getQuantity() <= 0) continue;
+    Object[] a = (Object[]) by.get(rec[1]);
+    if (a == null) by.put(rec[1], new Object[] { s, Long.valueOf((long) s.getQuantity()), rec[2], rec[3] });
+    else a[1] = Long.valueOf(((Long) a[1]).longValue() + (long) s.getQuantity());
+  }
+  if (by.isEmpty()) return 0L;
+  try { @PKG@.BagMirror.beforeTake(k); } catch (Throwable tb) { }
+  @PR@ pr = null;
+  try { pr = (@PR@) st.getComponent(pref, @PR@.getComponentType()); } catch (Throwable tp) { pr = null; }
+  long total = 0L;
+  java.util.Iterator it = by.values().iterator();
+  while (it.hasNext()) {
+    Object[] a = (Object[]) it.next();
+    @IS@ s = (@IS@) a[0];
+    @IC@ cont = (@IC@) a[3];
+    long amount = ((Long) a[1]).longValue();
+    long arrived = @PKG@.PickGive.countId(cont, s.getItemId()) - ((Long) a[2]).longValue();
+    if (arrived > amount) arrived = amount;
+    if (arrived <= 0L) continue;
+    long moved = move(u, k, s, cont, arrived);
+    if (moved <= 0L) continue;
+    total += moved;
+    @PKG@.VoidStore.noteIntake(k, @PKG@.SackDefs.catIndex(@PKG@.SackDefs.catOf(s.getItemId())), moved);
+    @PKG@.PickBook.n(14, moved);
+    // vanilla's own pickup popup + sound already ran for these (giveItem): only our card, no second sound
+    if (u != null) @PKG@.PickGive.SND.put(u, Long.valueOf(System.currentTimeMillis()));
+    @PKG@.PickGive.tell(u, pr, s.getItemId(), (int) arrived, new long[] { moved, arrived - moved, 0L });
+  }
+  if (total > 0L) { try { @PKG@.SackPool.saveSoon(k); } catch (Throwable ts) { @PKG@.SackPool.DIRTY.put(k, Boolean.TRUE); } }
+  return total;
+}'''), phv))
+# PickHarvTask.run (fields + constructor above, before PickHarv.note queues it)
+pht.addMethod(CtNewMethod.make(jt(r'''
+public void run() {
+  try { this.moved = @PKG@.PickHarv.flush(this.st, this.u); }
+  catch (Throwable t) { @PKG@.PickHarv.HPEND.remove(this.u); @PKG@.PickHarv.HPT.remove(this.u); @PKG@.PickBook.warnOnce("pick7", "auto-pickup: harvest move failed (logged once; harvests stay in the inventory): " + t); }
+}'''), pht))
+# PickHarvSys: InteractivelyPickupItemEvent on a player (F-harvest, sickle swing, F-pickup of a loose block) - never cancels or changes it
+phs.addConstructor(CtNewConstructor.make(jt("public PickHarvSys() { super(@IPE@.class); }"), phs))
+phs.addMethod(CtNewMethod.make(jt("public @QRY@ getQuery() { return (@QRY@) @PLA@.getComponentType(); }"), phs))
+phs.addMethod(CtNewMethod.make(jt(r'''
+public void handle(int idx, @ACH@ chunk, @ST@ st, @CBF@ buf, @EVE@ ev) {
+  try {
+    if (!@PKG@.SackCfg.PICK_ON || !@PKG@.SackCfg.PICK_BLOCKS || !(ev instanceof @IPE@)) return;
+    @IPE@ e = (@IPE@) ev;
+    if (e.isCancelled()) return;
+    @IS@ s = e.getItemStack();
+    if (s == null || s.isEmpty() || s.getItemId() == null) return;
+    @PR@ pr = (@PR@) chunk.getComponent(idx, @PR@.getComponentType());
+    if (pr == null || pr.getUuid() == null) return;
+    @PKG@.PickHarv.note(st, chunk.getReferenceTo(idx), pr.getUuid(), e, s);
+  } catch (Throwable t) { @PKG@.PickBook.warnOnce("pick8", "auto-pickup: harvest note failed (logged once; harvests go to the inventory): " + t); }
+}'''), phs))
+# PickDropSys: DropItemEvent$Drop on a player - only the overflow of a pickup that just happened (PickHarv.onDrop)
+pds.addConstructor(CtNewConstructor.make(jt("public PickDropSys() { super(@DIE@.class); }"), pds))
+pds.addMethod(CtNewMethod.make(jt("public @QRY@ getQuery() { return (@QRY@) @PLA@.getComponentType(); }"), pds))
+pds.addMethod(CtNewMethod.make(jt(r'''
+public void handle(int idx, @ACH@ chunk, @ST@ st, @CBF@ buf, @EVE@ ev) {
+  try {
+    if (!(ev instanceof @DIE@) || @PKG@.PickHarv.HCUR.isEmpty()) return;
+    @PR@ pr = (@PR@) chunk.getComponent(idx, @PR@.getComponentType());
+    if (pr == null) return;
+    @PKG@.PickHarv.onDrop(st, chunk.getReferenceTo(idx), pr, (@DIE@) ev);
+  } catch (Throwable t) { @PKG@.PickBook.warnOnce("pick9", "auto-pickup: harvest overflow check failed (logged once; it is thrown as vanilla): " + t); }
+}'''), pds))
+
+# ================= plugin =================
+pl.addField(CtField.make("public java.util.concurrent.ScheduledFuture ticker;", pl))
+pl.addField(CtField.make("public java.util.concurrent.ScheduledFuture saver;", pl))
+pl.addField(CtField.make("public java.util.concurrent.ScheduledFuture crafter;", pl))
+pl.addField(CtField.make("public java.util.concurrent.ScheduledFuture procTicker;", pl))
+pl.addConstructor(CtNewConstructor.make(f"public SkyySacksPlugin({JPI} init) {{ super(init); }}", pl))
+pl.addMethod(CtNewMethod.make(f"""
+public void setup() {{
+  {PKG}.SackPool.LOG = getLogger();
+  {PKG}.SackPool.DIR = getDataDirectory().resolveSibling("Skyy_SkyySacks").resolve("pools");
+  {PKG}.CraftLog.FILE = getDataDirectory().resolveSibling("Skyy_SkyySacks").resolve("crafts.log");
+  {PKG}.ProcStore.DIR = getDataDirectory().resolveSibling("Skyy_SkyySacks").resolve("processing");
+  {PKG}.SackCfg.FILE = getDataDirectory().resolveSibling("Skyy_SkyySacks").resolve("config.properties");
+  {PKG}.SackMig089.run({PKG}.SackCfg.FILE);   // 0.8.9: untouched 0.8.8 cost / space defaults -> the new ones, once (History first; Undo)
+  {PKG}.SackCfg.reload();
+  // 0.7.7: the one-time rarity notice per player (research/Bag-Restructure-Spec.md 5.8) + the free-mode bridge value (republished every 10 s)
+  {PKG}.SackNotice.FILE = getDataDirectory().resolveSibling("Skyy_SkyySacks").resolve("notices.properties");
+  {PKG}.SackNotice.load();
+  // 0.7.11: the per-player stack refill mode (refill.properties, written by the SackSaver only after a player changed it) and the quit
+  // listener that forgets a leaving player's kept counts (a relog starts fresh, like the 10-minute exemption they replace)
+  {PKG}.RefillPref.FILE = getDataDirectory().resolveSibling("Skyy_SkyySacks").resolve("refill.properties");
+  {PKG}.RefillPref.load();
+  // 0.8.0 (Bags v2): the Void per profile key (pd/<key>.properties + .journal), the History copies, the migration log
+  {PKG}.VoidStore.DIR = getDataDirectory().resolveSibling("Skyy_SkyySacks").resolve("pd");
+  {PKG}.VoidStore.HDIR = getDataDirectory().resolveSibling("Skyy_SkyySacks").resolve("history");
+  {PKG}.VoidStore.MIGLOG = getDataDirectory().resolveSibling("Skyy_SkyySacks").resolve("migration.log");
+  {PKG}.VoidStore.loadHold();   // fix round: /pdadmin legacybags all survives a restart (pd/_legacybags-all.flag)
+  getEventRegistry().registerGlobal({PDE}.class, new {PKG}.KeptQuit());
+  {PKG}.SackPool.CLOSED = false;   // review fix 10: the shutdown latch opens again (a plugin started again in the same JVM)
+  {PKG}.SackCfg.pubFree();
+  getCommandRegistry().registerCommand(new {PKG}.SacksCmd());
+  getCommandRegistry().registerCommand(new {PKG}.CraftCmd());
+  getCommandRegistry().registerCommand(new {PKG}.PdAdminCmd());   // 0.8.0: /pdadmin legacybags | omni <player> (skyysacks.admin)
+  {OCU}.registerSimple(this, {PKG}.SkyySacksPlugin.class, "SkyySacks", new {PKG}.SacksPageFactory((String) null));
+  {OCU}.registerSimple(this, {PKG}.SkyySacksPlugin.class, "SkyySacksMining", new {PKG}.SacksPageFactory("Mining"));
+  {OCU}.registerSimple(this, {PKG}.SkyySacksPlugin.class, "SkyySacksForaging", new {PKG}.SacksPageFactory("Foraging"));
+  {OCU}.registerSimple(this, {PKG}.SkyySacksPlugin.class, "SkyySacksFarming", new {PKG}.SacksPageFactory("Farming"));
+  {OCU}.registerSimple(this, {PKG}.SkyySacksPlugin.class, "SkyySacksCombat", new {PKG}.SacksPageFactory("Combat"));
+  {OCU}.registerSimple(this, {PKG}.SkyySacksPlugin.class, "SkyySacksSmithing", new {PKG}.SacksPageFactory("Smithing"));
+  {OCU}.registerSimple(this, {PKG}.SkyySacksPlugin.class, "SkyySacksCraft", new {PKG}.CraftPageFactory((String) null));
+  {OCU}.registerSimple(this, {PKG}.SkyySacksPlugin.class, "SkyySacksAlchemy", new {PKG}.CraftPageFactory("A:craft"));
+  {OCU}.registerSimple(this, {PKG}.SkyySacksPlugin.class, "SkyySacksFurnace", new {PKG}.CraftPageFactory("P:Furnace"));
+  {OCU}.registerSimple(this, {PKG}.SkyySacksPlugin.class, "SkyySacksTannery", new {PKG}.CraftPageFactory("P:Tannery"));
+  // 0.7.18 (audit 9c): the private pool writer (daemon "SkyySacks-writer") - pool saves, the 10 s SackSaver, Furnace / Tannery saves
+  {PKG}.SackPool.WRITER = java.util.concurrent.Executors.newSingleThreadScheduledExecutor(new {PKG}.SackThreads());
+  // 0.7.18 (audit 9b): the inventory-change flag of the 2 s sweep (ONE registerSystem); without it every player is swept as in 0.7.17
+  try {{ getEntityStoreRegistry().registerSystem(new {PKG}.SackInvSys()); {PKG}.SweepTask.EVENTS_OK = true; }}
+  catch (Throwable te) {{ {PKG}.SweepTask.EVENTS_OK = false; {PKG}.SackPool.warn("inventory-change listener not registered - every player is swept every 2 s (0.7.17): " + te); }}
+""" + LIFE["setup"] + f"""  // 0.8.3 AUTO-PICKUP (tools/sacks_0_8_3_patch.py): ONE registerSystem per class; a system that cannot register leaves that kind of drop
+  // on the ground (vanilla) - never an unordered death system (it could miss the drop tick or claim another mob's spot)
+  try {{ getEntityStoreRegistry().registerSystem(new {PKG}.PickItemSys()); {PKG}.PickBook.ITEM_OK = true; }}
+  catch (Throwable tp1) {{ {PKG}.SackPool.warn("auto-pickup: the item spawn hook could not be registered - every drop stays on the ground this start: " + tp1); }}
+  try {{ getEntityStoreRegistry().registerSystem(new {PKG}.PickBreakSys()); {PKG}.PickBook.BREAK_OK = true; }}
+  catch (Throwable tp2) {{ {PKG}.SackPool.warn("auto-pickup: the block break claim could not be registered - block drops stay on the ground this start: " + tp2); }}
+  {PKG}.PickDeathMark.DDI = {PKG}.PickBook.cls("com.hypixel.hytale.server.npc.systems.NPCDamageSystems$DropDeathItems");
+  {PKG}.PickDeathMark.TCR = {PKG}.PickBook.cls("com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems$TickCorpseRemoval");
+  {PKG}.PickDeathMark.CR = {PKG}.PickBook.cls("com.hypixel.hytale.server.core.modules.entity.damage.DeathSystems$CorpseRemoval");
+  {PKG}.PickShareSys.DDI = {PKG}.PickDeathMark.DDI;
+  {PKG}.PickShareSys.TCR = {PKG}.PickDeathMark.TCR;
+  {PKG}.PickShareSys.CR = {PKG}.PickDeathMark.CR;
+  if ({PKG}.PickDeathMark.DDI == null || {PKG}.PickDeathMark.TCR == null || {PKG}.PickDeathMark.CR == null) {PKG}.SackPool.warn("auto-pickup: NPCDamageSystems$DropDeathItems / DeathSystems not found - mob drops stay on the ground this start");
+  else {{
+    try {{ getEntityStoreRegistry().registerSystem(new {PKG}.PickDeathMark()); {PKG}.PickBook.DEATH_OK = true; }}
+    catch (Throwable tp3) {{ {PKG}.SackPool.warn("auto-pickup: could not order the death mark before DropDeathItems - mob drops stay on the ground this start: " + tp3); }}
+    if ({PKG}.PickBook.DEATH_OK) {{
+      try {{ getEntityStoreRegistry().registerSystem(new {PKG}.PickShareSys()); }}
+      catch (Throwable tp4) {{ {PKG}.SackPool.warn("auto-pickup: the killer's share could not be ordered after DropDeathItems - the top damager still gets the drop, a different killer gets no extra share this start: " + tp4); }}
+    }}
+  }}
+  // 0.8.4: F-harvest -> the Void first (ONE registerSystem per class); the overflow catch only with the harvest note
+  try {{ getEntityStoreRegistry().registerSystem(new {PKG}.PickHarvSys()); {PKG}.PickBook.HARV_OK = true; }}
+  catch (Throwable tp5) {{ {PKG}.SackPool.warn("auto-pickup: the harvest hook could not be registered - F-harvests go to the inventory this start: " + tp5); }}
+  if ({PKG}.PickBook.HARV_OK) {{
+    try {{ getEntityStoreRegistry().registerSystem(new {PKG}.PickDropSys()); {PKG}.PickBook.DROP_OK = true; }}
+    catch (Throwable tp6) {{ {PKG}.SackPool.warn("auto-pickup: the harvest overflow catch could not be registered - a full inventory throws the rest as vanilla: " + tp6); }}
+  }}
+  this.ticker = {HSV}.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new {PKG}.SackTick(), 2L, 2L, java.util.concurrent.TimeUnit.SECONDS);
+  this.saver = {PKG}.SackPool.WRITER.scheduleAtFixedRate(new {PKG}.SackSaver(), 10L, 10L, java.util.concurrent.TimeUnit.SECONDS);
+  this.crafter = {HSV}.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new {PKG}.CraftTick(), 1000L, 300L, java.util.concurrent.TimeUnit.MILLISECONDS);
+  this.procTicker = {HSV}.SCHEDULED_EXECUTOR.scheduleAtFixedRate(new {PKG}.ProcTick(), 3L, 1L, java.util.concurrent.TimeUnit.SECONDS);
+  int hubTab = 0;   // 0.8.11: the Crafting hub's Crafting tab (hub:tab:smithing:recipes)
+  try {{ hubTab = {PKG}.CraftHubOpen.register(); }} catch (Throwable th) {{ {PKG}.SackPool.warn("the Crafting hub tab could not be registered - /craft still works: " + th); }}
+  int voidTab = 0;   // 0.8.15: the Storage hub's Pocket tab (hub:tab:storage:pocket)
+  try {{ voidTab = {PKG}.VoidHubOpen.register(); }} catch (Throwable th) {{ {PKG}.SackPool.warn("the Storage > Pocket tab could not be registered - /sacks still works: " + th); }}
+  getLogger().at(java.util.logging.Level.INFO).log("[SkyySacks] {VERSION} ready - SkyyVoid: /pd (/sacks, /bags) opens the Void = ONE Pocket Dimension, six categories (Mining, Foraging, Farming, Fishing, Combat, Smithing), each with a storage level from the items collected (SkyyCollections coll:fn:catTotal) and a rarity (Upgrade button: level gate + item cost; Omni with all six Legendary), one item limit per category = level x pd.perLevel x the rarity multiplier; old Magic Bags convert once per profile (History copy first, journal pd/<key>.journal, credit after 30 s); no bag needs to be carried; /craft, benches and inventory crafting use the Void; the Bazaar sells from it (sacks:fn:take), Requip refills from it; sacks:v2 + sacks:fn:pd + sacks:fn:catOf; /pdadmin legacybags | omni; storage per profile (pkey); settings: SkyWynn Menu -> Server Setup -> SkyyVoid and Crafting (skyysacks.admin); UI kit {KIT_ID}; auto-pickup " + {PKG}.PickBook.state() + "; Storage > Pocket tab " + (voidTab == 1 ? "on" : "OFF") + "; Crafting hub tab " + (hubTab == 1 ? "on" : "OFF") + " (/craft, sorted by tier, Furnace Add fuel); benches + /craft use Void Charms (SkyyAccessories 0.5.19 acc:fn:bag); the Void's Deposit all fills every bag; Smelting Fortune " + ({PKG}.SackCfg.SF_ON ? "on" : "OFF") + " (tree:fn:bonus Smithing.SSmelt, skill:fn:oreBudget " + ({PKG}.SackCfg.SF_MINED ? "required" : "off") + "); " + {PKG}.PdOnce.statusText());
+  // 0.7.6 player Settings (research/Settings-Spec.md 2.2 / 3.4): every switch registered here, default ON
+  {PKG}.SackPool.regSetting("sacks.benchDone", "Furnace and Tannery done", "sacks", true, "Your Furnace is done - open /craft to collect");
+  {PKG}.SackPool.regSetting("sacks.benchFuel", "Furnace out of fuel", "sacks", true, "Your Furnace ran out of fuel - once until you add more");
+  // 0.8.16 (Skyy "add a toggle for each. (seeds in farming. saplings in foraging where they belong. )"): ON = into the Void (as before)
+  {PKG}.SackPool.regSetting("sacks.seedsVoid", "Seeds go into the Void", "sacks", true, "Off: seeds you pick up stay in your inventory for replanting (Farming)");
+  {PKG}.SackPool.regSetting("sacks.saplingsVoid", "Saplings go into the Void", "sacks", true, "Off: saplings you pick up stay in your inventory for replanting (Foraging)");
+  // 0.7.13: the bag take bridge (SkyyBazaar 0.1.5 sells from the bags) - plain java types, world thread only, never removed
+  java.util.Map sbr0 = {PKG}.SackPool.bridgeW();
+  sbr0.put("sacks:fn:count", new {PKG}.SackFn(0));
+  sbr0.put("sacks:fn:take", new {PKG}.SackFn(1));
+  sbr0.put("sacks:fn:put", new {PKG}.SackFn(2));
+  sbr0.put("sacks:fn:all", new {PKG}.SackFn(3));
+  sbr0.put("sacks:fn:commit", new {PKG}.SackFn(4));   // review fix: a paid take leaves the refund ledger
+  // 0.7.17 (research/Requip-Smithing-Spec.md section 5): Requip + the /smithing hub
+  sbr0.put("sacks:fn:deposit", new {PKG}.SackFn(5));
+  sbr0.put("sacks:fn:pocketFill", new {PKG}.SackFn(6));
+  sbr0.put("sacks:fn:craftList", new {PKG}.SackFn(7));
+  sbr0.put("sacks:fn:craftHave", new {PKG}.SackFn(8));
+  sbr0.put("sacks:fn:craftPay", new {PKG}.SackFn(9));
+  sbr0.put("sacks:fn:craftRefund", new {PKG}.SackFn(10));
+  sbr0.put("sacks:fn:craftCommit", new {PKG}.SackFn(11));
+  // 0.8.0 (Bags v2 spec 5): sacks:v2 (SkyyCollections hides the bag rewards), the Void per category, the category rule
+  sbr0.put("sacks:fn:pd", new {PKG}.SackFn(12));
+  sbr0.put("sacks:fn:catOf", new {PKG}.SackFn(13));
+  // 0.8.17 (SkyyFishing 0.1.10's Fishing Bench sells / fillets the Void's weighed fish): the contract of tools/fishing_0_1_10_patch.py A
+  sbr0.put("sacks:fn:fishList", new {PKG}.SackFn(14));
+  sbr0.put("sacks:fn:fishTake", new {PKG}.SackFn(15));
+  sbr0.put("sacks:fn:fishPut", new {PKG}.SackFn(16));
+  sbr0.put("sacks:fn:fishTaken", new {PKG}.SackFn(17));   // token round: did that take reach the disk
+  sbr0.put("sacks:v2", Boolean.TRUE);
+  // 0.7.6 admin config (tools/CONFIG-CONTRACT.md): config:def:SkyySacks + config:fn:SkyySacks, last, after SackCfg.reload() loaded the file
+  @WBSETUP@
+  {PKG}.SackSnd.load(getDataDirectory().resolveSibling("Skyy_SkyySacks"));   // 0.8.5 sound pass: sounds.properties (before the kit)
+  {PKG}.CfgPub.start(getDataDirectory().getParent(), getLogger());
+}}""".replace("  @WBSETUP@\n", WB.setup_java(PKG)), pl))
+# 0.7.10: the Workbench tab once every asset pack is loaded. 0.7.12: + the bench / pocket crafting link (research/Bag-Craft-Link-Fix.md):
+# the packet filters and the pocket crafting window swap need every plugin set up (CraftingPlugin registers the vanilla pocket window in
+# its setup) - the shared tools/skyywbtab.py start() text gets one more statement here (the module itself stays unchanged)
+_START_JAVA = WB.start_java(PKG)
+assert _START_JAVA.endswith(chr(10) + "}") and _START_JAVA.count("protected void start()") == 1
+_START_JAVA = (_START_JAVA[:-1] + "  // 0.7.12: benches and inventory crafting use the bags you carry (BenchLink: packet filters + the pocket crafting window)" + chr(10)
+               + "  try { %s.BenchLink.start(); } catch (Throwable t2) { %s.SackPool.warn(\"craft link: could not start - benches and inventory crafting use the inventory only: \" + t2); }" % (PKG, PKG)
+               + chr(10) + "}")
+pl.addMethod(CtNewMethod.make(_START_JAVA, pl))
+pl.addMethod(CtNewMethod.make(f"""
+protected void shutdown() {{
+  {PKG}.SackPool.CLOSED = true;   // 0.7.11 review fix 10: the shutdown latch (SackPool.settledKey answers null from here on)
+  try {{ {PKG}.HubBar.removeAll(); }} catch (Throwable t) {{ }}   // 0.8.11: our hub tab only (keys that still hold our array)
+  try {{ {PKG}.BenchLink.stop(); }} catch (Throwable t) {{ }}   // 0.7.12: the packet filters off, the vanilla pocket window back
+  try {{ if (this.ticker != null) this.ticker.cancel(false); }} catch (Throwable t) {{ }}
+  try {{ if (this.saver != null) this.saver.cancel(false); }} catch (Throwable t) {{ }}
+  try {{ if (this.crafter != null) this.crafter.cancel(false); }} catch (Throwable t) {{ }}
+  try {{ if (this.procTicker != null) this.procTicker.cancel(false); }} catch (Throwable t) {{ }}
+  // 0.7.18: the private writer stops (scheduled pool saves still run, 3 s at most); everything still dirty is flushed inline below
+  try {{
+    java.util.concurrent.ScheduledExecutorService ex = {PKG}.SackPool.WRITER;
+    {PKG}.SackPool.WRITER = null;
+    if (ex != null) {{ ex.shutdown(); ex.awaitTermination(3L, java.util.concurrent.TimeUnit.SECONDS); }}
+  }} catch (Throwable t) {{ }}
+  {PKG}.SackPool.PENDING.clear();
+  try {{ int c = {PKG}.BagMirror.syncAll(); if (c > 0) {PKG}.SackPool.warn("shutdown: " + c + " bag items used by open benches debited"); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.ProcStore.flushDirty(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.VoidStore.flushDirty(); }} catch (Throwable t) {{ }}   // 0.8.0: levels / rarity (unsettled conversions stay in the journal)
+  try {{ {PKG}.SackPool.flushDirty(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.CraftLog.drain(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.SackNotice.save(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.RefillPref.save(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.CfgPub.shutdown(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.SackCfg.sfUnpub(); }} catch (Throwable t) {{ }}   // 0.8.21: tree:reads:SkyySacks
+  try {{ {PKG}.SackPool.LOG.at(java.util.logging.Level.INFO).log("[SkyySacks] auto-pickup this run: " + {PKG}.PickBook.stats()); }} catch (Throwable t) {{ }}   // 0.8.3
+  try {{ {PKG}.PickBook.CL.clear(); {PKG}.PickBook.RINGS.clear(); {PKG}.PickBook.SHARE.clear(); {PKG}.PickBook.DONE.clear(); }} catch (Throwable t) {{ }}
+  try {{ {PKG}.PickHarv.HPEND.clear(); {PKG}.PickHarv.HPT.clear(); {PKG}.PickHarv.HCUR.clear(); }} catch (Throwable t) {{ }}   // 0.8.4
+""" + LIFE["shutdown"] + f"""  super.shutdown();
+}}""", pl))
+
+for c in (defs, sp, scfg, ksync, snot, rfp, kq, pjob, pben, pst, swp, tick, sav, cmp, page, cmd, fac, mgd, mir, lrec, blink, mcl, cpf, pct, cif,
+          pcw, psu, clt, ctk, rcmp, clog, cpg, ccmd, cfac, ptk, ptick, sbr, sfn, pl, sthr, psj, sinv,   # 0.7.18: + SackThreads, PoolSaveJob, SackInvSys
+          vss, vst, vjob, vat, vac,    # 0.8.0: + VoidState, VoidStore, VoidJob, VoidAdminTask, PdAdminCmd
+          pcl, prg, pbk, pgv, pdl, pis, pbs, pdm, pss,   # 0.8.3: auto-pickup
+          phv, pht, phs, pds,   # 0.8.4: harvest -> Void first
+          plt,    # 0.8.6: PickLate
+          smig,   # 0.8.9: SackMig089
+          hubb, acl, aset, chop,   # 0.8.11: HubBar (kit 1.6), AccLink, AccSettle, CraftHubOpen
+          vho,    # 0.8.15: VoidHubOpen (HubBar is kit 1.7 now)
+          phd):   # 0.8.16: PopupHide
+    c.writeFile(OUT)   # 0.7.11: + RefillPref, KeptQuit. 0.7.12: + MirrorGuard, LinkRec, BenchLink, MirrorClose, the two filters, PreCraftTask,
+                       # PocketCraftWindow, PocketSupplier
+for c in WB_CLASSES:   # 0.7.10: WbRank, WbTab, WbAssetL
+    c.writeFile(OUT)
+for c in LIFE["classes"]:   # 0.8.12: the lifelong Pocket Dimension item (tools/skyyonce.py)
+    c.writeFile(OUT)
+kit.write(OUT)   # 0.7.6: deferred kit checks (SackCfg.reload exists, public static), then the 7 kit classes
+print("classes written (+ %d config kit classes)" % len(kit.classes))
+
+# ================= assets =================
+# ================= 0.7.14 THE NEW BAG LOOK (tools/sacks_0_7_14_patch.py docstring) =================
+# tools/art/make_bags.py (tracked, deterministic) runs IN MEMORY: its write() fills BAG_GEN instead of models-local/art/bags/, its
+# clean_old() does nothing - the build writes no art file anywhere but the jar (vanilla-derived: never committed).
+BAG_PARTS = {'anim': True, 'set': True, 'sparkle': True, 'lift': True}   # tools/sacks_0_7_14_patch.py PARTS (a part the engine validator refuses is off)
+def _bag_art():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("make_bags", os.path.join(HERE, "..", "tools", "art", "make_bags.py"))
+    mb = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mb)
+    got = {}
+    def _w(rel, data):
+        assert rel not in got, "make_bags wrote %s twice" % rel
+        got[rel] = bytes(data)
+        return rel
+    mb.write = _w
+    mb.clean_old = lambda: None
+    mb.main()
+    return mb, got
+BAG_MB, BAG_GEN = _bag_art()
+BAG_MAN = json.loads(BAG_GEN["manifest.json"].decode("utf-8"))
+_A = BAG_MAN["animations"]
+BAG_SET_ID, BAG_LIFT_KEY = _A["player_set_id"], _A["lift_key"]
+# ================= 0.7.16 THE HOLD POSE (tools/sacks_0_7_16_patch.py docstring) =================
+# Skyy 2026-10-09 "can we make the player hold it up a little higher, more infront of him?". An item JSON has no held transform, so the
+# set does it: for HOLD_KEYS the SkyySack set names our own copies of the vanilla Block animations (read from Assets.zip at build time,
+# written into BAG_GEN only - vanilla-derived, never committed) with these offsets. Ask for more / less here:
+HOLD_FPS_ARM_SHIFT = (12.0, 10.0, 0.0)  # FIRST PERSON: added to every R-Arm position key (x: toward the screen centre, y: up, z: forward)
+HOLD_3P_ARM_PITCH = -12.0               # THIRD PERSON: both upper arms rotated about their local X on every key (negative = up, the lift's sign)
+HOLD_KEYS = ("Idle", "Walk", "WalkBackward", "Run", "RunBackward", "Sprint", "Crouch", "CrouchWalk", "CrouchWalkBackward",
+             "Jump", "JumpWalk", "JumpRun", "Fall", "FallFar", "FluidIdle", "FluidWalk", "FluidWalkBackward", "FluidRun")
+HOLD_DIR = "Characters/Animations/Items/SkyySacks/Hold"
+HOLD_3P_NODES = ("R-Arm", "L-Arm")
+def _hold_fps(a, src):
+    """first person: every R-Arm position key + HOLD_FPS_ARM_SHIFT (the vanilla Rifle / Handgun approach)"""
+    ch = a["nodeAnimations"].get("R-Arm") or {}
+    keys = ch.get("position") or []
+    if not keys:
+        raise SystemExit("0.7.16 hold: %s has no R-Arm position key - cannot move the first-person hold" % src)
+    for k in keys:
+        d = k["delta"]
+        for i, c in enumerate("xyz"):
+            d[c] = BAG_MB.r6(d[c] + HOLD_FPS_ARM_SHIFT[i])
+    return a
+def _hold_3p(a, src):
+    """third person: both upper arms HOLD_3P_ARM_PITCH degrees about their local X on every orientation key (q * rotX)"""
+    rx = BAG_MB.axis_quat((1, 0, 0), HOLD_3P_ARM_PITCH)
+    for node in HOLD_3P_NODES:
+        keys = (a["nodeAnimations"].get(node) or {}).get("orientation") or []
+        if not keys:
+            raise SystemExit("0.7.16 hold: %s has no %s orientation key - cannot raise the third-person hold" % (src, node))
+        for k in keys:
+            k["delta"] = BAG_MB.qd(BAG_MB.qmul(BAG_MB._qn(k["delta"]), rx))
+    return a
+def _bag_hold():
+    import types
+    z = BAG_MB.SA.assets()
+    try:
+        blk = json.loads(z.read("Server/Item/Animations/Block.json").decode("utf-8-sig"))["Animations"]
+        made, entries = {}, {}
+        for hk in HOLD_KEYS:
+            if hk not in blk:
+                raise SystemExit("0.7.16 hold: the vanilla Block set has no %s key" % hk)
+            e = json.loads(json.dumps(blk[hk]))
+            for side in ("FirstPerson", "ThirdPerson"):
+                sp = e.get(side)
+                if not sp:
+                    continue
+                if sp not in made:
+                    a = json.loads(z.read("Common/" + sp).decode("utf-8-sig"))
+                    a = _hold_fps(a, sp) if side == "FirstPerson" else _hold_3p(a, sp)
+                    out = HOLD_DIR + "/SkyySack_Hold_" + sp.split("/")[-1]
+                    if out in made.values() or ("Common/" + out) in BAG_GEN:
+                        raise SystemExit("0.7.16 hold: two hold files would share " + out)
+                    BAG_GEN["Common/" + out] = BAG_MB.jbytes(a)
+                    made[sp] = out
+                e[side] = made[sp]
+            entries[hk] = e
+        # SackLift: make_bags' own lift_anim + plans, reading the NEW idle as its end pose (holdLastKeyframe = the set's Idle, no jump)
+        idle3, idlef = "Common/" + blk["Idle"]["ThirdPerson"], "Common/" + blk["Idle"]["FirstPerson"]
+        swap = {idle3: BAG_GEN["Common/" + made[blk["Idle"]["ThirdPerson"]]], idlef: BAG_GEN["Common/" + made[blk["Idle"]["FirstPerson"]]]}
+        zw = types.SimpleNamespace(read=lambda n: swap[n] if n in swap else z.read(n))
+        cur = types.SimpleNamespace(read=z.read)
+        dur = _A["durations"]
+        lifts = ((_A["player_lift_3p"], "Main_Handed/Item/Idle.blockyanim", idle3, dur["player_lift_3p"], BAG_MB.LIFT_PLAN_3P),
+                 (_A["player_lift_fps"], "Main_Handed/Item/Idle_FPS.blockyanim", idlef, dur["player_lift_fps"], BAG_MB.LIFT_PLAN_FPS))
+        for (lp, sa, sb, du, plan) in lifts:
+            sbr = sb[len("Common/Characters/Animations/Items/"):]
+            if BAG_MB.jbytes(BAG_MB.lift_anim(cur, sa, sbr, du, plan)) != BAG_GEN[lp]:
+                raise SystemExit("0.7.16 hold: re-running make_bags.lift_anim does not give make_bags' own %s - the lift call changed" % lp)
+            BAG_GEN[lp] = BAG_MB.jbytes(BAG_MB.lift_anim(zw, sa, sbr, du, plan))
+    finally:
+        z.close()
+    st = json.loads(BAG_GEN[_A["player_set_draft"]].decode("utf-8"))
+    if st.get("Parent") != "Block" or BAG_LIFT_KEY not in st["Animations"] or any(k in st["Animations"] for k in HOLD_KEYS):
+        raise SystemExit("0.7.16 hold: the generated SkyySack set is not Parent Block + %s only" % BAG_LIFT_KEY)
+    for hk in HOLD_KEYS:
+        st["Animations"][hk] = entries[hk]
+    st["$Comment"] = ("SkyWynn SkyySacks: the Magic Bag player animation set. Parent Block = the vanilla two-hand hold for every key not "
+                      "listed; the hold keys (idle / walk / run / sprint / crouch / jump / fall / fluid) are SkyySacks/Hold copies of "
+                      "Block's, held higher and more in front (0.7.16); SackLift = the one-shot lift played by the item's SwapTo.")
+    BAG_GEN[_A["player_set_draft"]] = BAG_MB.jbytes(st)
+    return made
+BAG_HOLD = _bag_hold()   # vanilla path -> our hold file path (22 files)
+_P = BAG_MAN["particles"]["item_fields"]
+def _nc(p):
+    assert p.startswith("Common/"), p
+    return p[len("Common/"):]
+BAG_LOOK = {}
+for _e in BAG_MAN["sacks"]:
+    for _it in _e["items"]:
+        _lk = {"Model": _nc(_e["model_path"]), "Texture": _nc(_it["texture_path"]), "Icon": _nc(_it["icon_path"]),
+               "IconProperties": _e["icon_properties"]}
+        if BAG_PARTS["anim"]:
+            _lk["Animation"] = _nc(_e["animation_path"])
+        if BAG_PARTS["set"]:
+            _lk["PlayerAnimationsId"] = _e["player_animations_id"]
+        if BAG_PARTS["sparkle"]:
+            _lk["Particles"] = _P["Particles"]
+            _lk["FirstPersonParticles"] = _P["FirstPersonParticles"]
+        BAG_LOOK[_it["item"]] = _lk
+assert sorted(BAG_LOOK) == sorted(MANAGED_IDS + [BAG_OMNI]), "the manifest maps exactly the 20 typed bags + the Omni: %s" % sorted(BAG_LOOK)
+BAG_SWAPTO = {"Interactions": [{"Type": "Simple", "RunTime": 0.5, "Effects": {"ItemAnimationId": BAG_LIFT_KEY}}]}
+# the generated files that ship in this jar (the Accessory Bag's go to SkyyAccessories; sheet / previews / manifest stay out)
+def _bag_ships(rel):
+    if rel.startswith("Common/Items/SkyySacks/"):
+        return BAG_PARTS["anim"] or not rel.endswith(".blockyanim")
+    if rel.startswith("Common/Icons/ItemsGenerated/SkyySacks_Bag_"):
+        return True
+    if rel.startswith("Common/Characters/Animations/Items/SkyySacks/") or rel == _A["player_set_draft"]:
+        return BAG_PARTS["set"]
+    if rel.startswith("Server/Particles/SkyySacks/"):
+        return BAG_PARTS["sparkle"]
+    return False
+BAG_FILES = {}
+for _rel in sorted(BAG_GEN):
+    if _bag_ships(_rel):
+        BAG_FILES[_rel] = BAG_GEN[_rel].decode("utf-8") if _rel.startswith("Server/") else BAG_GEN[_rel]
+def bag_look(item_id, node):
+    """0.7.14: the new look of a magic bag (only ids the manifest maps; anything else keeps its node unchanged)"""
+    lk = BAG_LOOK.get(item_id)
+    if lk is None:
+        return node
+    node.update(lk)
+    if BAG_PARTS["lift"]:
+        node["Interactions"]["SwapTo"] = BAG_SWAPTO
+    return node
+print("bag art: %d generated files in memory (tools/art/make_bags.py), %d ship in the jar; parts %s" % (
+    len(BAG_GEN), len(BAG_FILES), ", ".join(k for k in ("anim", "set", "sparkle", "lift") if BAG_PARTS[k]) or "none"))
+if BAG_PARTS["set"] and not all(("Common/" + p) in BAG_FILES for p in BAG_HOLD.values()):
+    raise SystemExit("0.7.16 hold: every hold file must ship with the set")
+print("hold pose (0.7.16): %d keys -> %d SkyySacks/Hold files; first person R-Arm %+g / %+g / %+g (centre / up / forward), third person "
+      "arms %g deg higher; SackLift ends on the new idle" % (len(HOLD_KEYS), len(BAG_HOLD), HOLD_FPS_ARM_SHIFT[0], HOLD_FPS_ARM_SHIFT[1],
+                                                          HOLD_FPS_ARM_SHIFT[2], -HOLD_3P_ARM_PITCH))
+
+# (0.7.3 review fix: the dead pre-inline bag page markup - underscore ids, never shipped - was deleted; every page is built inline)
+
+def sack_item(item_id, quality, page_id, look_of=None):
+    # 0.8.0 (Bags v2): no bag has a recipe any more. The 21 old ids stay defined (no unknown items anywhere), right-click still opens the
+    # Void; the Pocket Dimension (Skyy_Sack_Pocket) wears the Omni bag's look (look_of).
+    node = {
+      "TranslationProperties": {"Name": "server.items.%s.name" % item_id, "Description": "server.items.%s.description" % item_id},
+      "Categories": ["Items.Tools"],
+      "Icon": "Icons/ItemsGenerated/Utility_Bag_Seed.png",
+      "Quality": quality,
+      "Model": "Items/Back/BackpackBig.blockymodel",
+      "Texture": "Items/Back/BackpackBig_Texture.png",
+      "IconProperties": {"Scale": 0.455, "Translation": [1.19, 2.39], "Rotation": [0, 177.73, 0]},
+      "Tags": {"Family": ["Leather"], "Type": ["Utility"]},
+      "MaxStack": 1,
+      "Interactions": {"Secondary": {"Interactions": [{"Type": "OpenCustomUI", "Page": {"Id": page_id}}]}}
+    }
+    if look_of is None:
+        return bag_look(item_id, node)   # 0.7.14: the bag look (Model / Texture / Icon / IconProperties / Animation / set / particles / SwapTo)
+    node.update(BAG_LOOK[look_of])
+    if BAG_PARTS["lift"]:
+        node["Interactions"]["SwapTo"] = BAG_SWAPTO
+    return node
+files = {}  # pages are built inline (no .ui files: see memory hytale-ui-rules)
+lang = []
+_NUMW = {2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight"}
+# 0.7.5 / 0.7.7: the bag table (BAG_CATS / BAG_MAT / BAG_TIERS / BAG_HOLDS near the top). Normal = 20 Plant Fiber + 4 Sticks (0.7.15;
+# was 3 Bolt of Wool + 4 BAG_MAT), each next rarity = the previous bag + BAG_UP_QTY (placeholder 6) mob-dropped fabric scraps of its tier (Linen / Shadoweave /
+# Cindercloth); the item ids Small / Medium / Large are unchanged (owned bags keep working).
+_OLD_DESC = ("Old Magic Bag - it turns into Void rarity (or is refunded) when you pick it up. Everything that was in it is in the Void: "
+             "type /pd.")
+for cat in BAG_CATS:
+    for (suf, rar, qid, capk, bolt) in BAG_TIERS:
+        iid = "Skyy_Sack_%s_%s" % (cat, suf)
+        files["Server/Item/Items/Utility/%s.json" % iid] = json.dumps(sack_item(iid, qid, "SkyySacks" + cat), indent=2)
+        name = "Old %s %s Bag" % (rar, cat)
+        lang.append("items.%s.name=%s" % (iid, name))
+        lang.append("server.items.%s.name=%s" % (iid, name))
+        lang.append("items.%s.description=%s" % (iid, _OLD_DESC))
+        lang.append("server.items.%s.description=%s" % (iid, _OLD_DESC))
+files["Server/Item/Items/Utility/%s.json" % BAG_OMNI] = json.dumps(sack_item(BAG_OMNI, BAG_RARITY[-1][0], "SkyySacks"), indent=2)
+lang.append("items.%s.name=Old Mythic Omni Bag" % BAG_OMNI)
+lang.append("server.items.%s.name=Old Mythic Omni Bag" % BAG_OMNI)
+lang.append("items.%s.description=%s" % (BAG_OMNI, _OLD_DESC))
+lang.append("server.items.%s.description=%s" % (BAG_OMNI, _OLD_DESC))
+# 0.8.0: THE POCKET DIMENSION - the one bag item, only the opener (spec 1.2); its own quality "Void" (the Mythic texture set + colour)
+files["Server/Item/Items/Utility/%s.json" % POCKET] = json.dumps(sack_item(POCKET, POCKET_Q, "SkyySacks", look_of=BAG_OMNI), indent=2)
+_PDESC = ("SkyyVoid - right-click (or type /pd) to open the Void: one storage for everything you gather, six categories that level up as "
+          "you collect. This is only the opener and it stays with you: it can't be dropped, stored or sold - /pocket gives a new one if it is ever missing.")
+lang.append("items.%s.name=Pocket Dimension" % POCKET)
+lang.append("server.items.%s.name=Pocket Dimension" % POCKET)
+lang.append("items.%s.description=%s" % (POCKET, _PDESC))
+lang.append("server.items.%s.description=%s" % (POCKET, _PDESC))
+_QV = [r for r in BAG_RARITY if r[1] == "Mythic"][0]
+files["Server/Item/Qualities/%s.json" % POCKET_Q] = json.dumps({
+    "QualityValue": 5,
+    "ItemTooltipTexture": "UI/ItemQualities/Tooltips/ItemTooltip%s.png" % _QV[5],
+    "ItemTooltipArrowTexture": "UI/ItemQualities/Tooltips/ItemTooltip%sArrow.png" % _QV[5],
+    "SlotTexture": "UI/ItemQualities/Slots/Slot%s.png" % _QV[5],
+    "BlockSlotTexture": "UI/ItemQualities/Slots/Slot%s.png" % _QV[5],
+    "SpecialSlotTexture": "UI/ItemQualities/Slots/Slot%s.png" % _QV[5],
+    "TextColor": _QV[2],
+    "LocalizationKey": "server.general.qualities." + POCKET_Q,
+    "VisibleQualityLabel": True,
+    "RenderSpecialSlot": True,
+    "ItemEntityConfig": {"ParticleSystemId": _QV[6]}}, indent=2)
+lang.append("general.qualities.%s=Void" % POCKET_Q)
+lang.append("server.general.qualities.%s=Void" % POCKET_Q)
+# 0.7.7 own qualities (spec 3.2): the vanilla quality JSON shape with the texture set of the hue-matched vanilla rarity, Wynn TextColor
+for (qid, label, tip, _page, qv, tex, particle) in BAG_RARITY:
+    files["Server/Item/Qualities/%s.json" % qid] = json.dumps({
+        "QualityValue": qv,
+        "ItemTooltipTexture": "UI/ItemQualities/Tooltips/ItemTooltip%s.png" % tex,
+        "ItemTooltipArrowTexture": "UI/ItemQualities/Tooltips/ItemTooltip%sArrow.png" % tex,
+        "SlotTexture": "UI/ItemQualities/Slots/Slot%s.png" % tex,
+        "BlockSlotTexture": "UI/ItemQualities/Slots/Slot%s.png" % tex,
+        "SpecialSlotTexture": "UI/ItemQualities/Slots/Slot%s.png" % tex,
+        "TextColor": tip,
+        "LocalizationKey": "server.general.qualities." + qid,
+        "VisibleQualityLabel": True,
+        "RenderSpecialSlot": True,
+        "ItemEntityConfig": {"ParticleSystemId": particle}}, indent=2)
+    lang.append("general.qualities.%s=%s" % (qid, label))            # vanilla server.lang style (key without the server. prefix)
+    lang.append("server.general.qualities.%s=%s" % (qid, label))     # + the prefixed twin (the SkyyVault pattern)
+# 0.8.14: the Workbench tab name lines (WB.LANG_LINES) are SkyyAccessories' only (one writer per lang key, tools/ci/langdup.py)
+files["Server/Languages/en-US/server.lang"] = "\n".join(lang) + "\n"  # key items.<Id>.name in server.lang (pattern from Tamework)
+# 0.7.10: the tab icon of this mod's fallback copy = Assets.zip Utility_Bag_Seed.png (every bag's own icon), where tab icons live
+files["Common/" + WB.icon_path("SkyySacks")] = WB.icon_png(os.path.join(B.HYTALE, "install", "release", "package", "game", "latest", "Assets.zip"))
+# 0.7.14: the generated bag art (models, textures, icons, animations, the player set, the sparkles - BAG_FILES above)
+for _rel, _data in BAG_FILES.items():
+    assert _rel not in files, "bag art would replace " + _rel
+    files[_rel] = _data
+
+# ---- 0.7.7 asset build checks (spec 11): 21 bag JSONs + 5 qualities; every recipe input exists or is a bag made here; each tiered recipe
+# holds the previous tier; KnowledgeRequired true on all 21 bags (0.7.15: the Omni too); the Omni takes one Legendary bag of
+# each type; quality textures and drop particles exist in Assets.zip; QualityValue < 8; lang = 21 names, 21 descriptions, 5 labels.
+def _bag_assets_check():
+    """0.8.0: 22 bag JSONs (the 21 old ids + the Pocket), NONE with a recipe, 6 qualities (+ Void); lang names / descriptions / labels;
+    every Model / Texture / Icon in Assets.zip or the jar; the quality textures and drop particles in Assets.zip; QualityValue < 8"""
+    import zipfile
+    items = dict((p.rsplit("/", 1)[1][:-5], json.loads(t)) for p, t in files.items() if p.startswith("Server/Item/Items/"))
+    quals = dict((p.rsplit("/", 1)[1][:-5], json.loads(t)) for p, t in files.items() if p.startswith("Server/Item/Qualities/"))
+    if sorted(items) != sorted(MANAGED_IDS + [BAG_OMNI, POCKET]) or len(quals) != len(BAG_RARITY) + 1:
+        raise SystemExit("0.8.0 asset check: %d bag items, %d qualities" % (len(items), len(quals)))
+    if any("Recipe" in n for n in items.values()):
+        raise SystemExit("0.8.0 asset check: a bag item still has a recipe (Bags v2: no bag recipes)")
+    for iid, node in items.items():
+        if node["Quality"] not in quals:
+            raise SystemExit("0.8.0 asset check: %s uses quality %s that is not shipped" % (iid, node["Quality"]))
+    if any(q["QualityValue"] >= 8 for q in quals.values()):
+        raise SystemExit("0.8.0 asset check: a bag quality reaches SkyyAuctions' technical threshold (8)")
+    lt = files["Server/Languages/en-US/server.lang"]
+    for iid in items:
+        for k in ("server.items.%s.name=" % iid, "server.items.%s.description=" % iid, "\nitems.%s.name=" % iid):
+            if k not in "\n" + lt:
+                raise SystemExit("0.8.0 asset check: no lang line " + k.strip())
+    for qid in quals:
+        if ("server.general.qualities.%s=" % qid) not in lt or ("\ngeneral.qualities.%s=" % qid) not in "\n" + lt:
+            raise SystemExit("0.8.0 asset check: no quality label for " + qid)
+    za = os.path.join(B.HYTALE, "install", "release", "package", "game", "latest", "Assets.zip")
+    if not os.path.isfile(za):
+        print("note: Assets.zip not found - bag textures, quality textures and drop particles not cross-checked")
+        return
+    with zipfile.ZipFile(za) as z:
+        names = set(z.namelist())
+    parts = set(os.path.basename(n)[:-len(".particlesystem")] for n in names if n.endswith(".particlesystem"))
+    def exists(p):
+        q = "Common/" + p
+        return q in names or q in files or (q.endswith(".png") and q[:-4] + "@2x.png" in names)
+    for iid, node in items.items():
+        for k in ("Model", "Texture", "Icon"):
+            if not exists(node[k]):
+                raise SystemExit("0.8.0 asset check: %s %s %s is not in Assets.zip or the jar" % (iid, k, node[k]))
+    for qid, q in quals.items():
+        for k in ("ItemTooltipTexture", "ItemTooltipArrowTexture", "SlotTexture", "BlockSlotTexture", "SpecialSlotTexture"):
+            if not exists(q[k]):
+                raise SystemExit("0.8.0 asset check: quality %s %s %s is not in Assets.zip" % (qid, k, q[k]))
+        if q["ItemEntityConfig"]["ParticleSystemId"] not in parts:
+            raise SystemExit("0.8.0 asset check: quality %s drop particle %s is not in Assets.zip" % (qid, q["ItemEntityConfig"]["ParticleSystemId"]))
+    print("assets checked: %d bag items (21 old ids without recipes + the Pocket Dimension), %d qualities, %d lang lines" % (len(items), len(quals), len(lang)))
+_bag_assets_check()
+
+
+def _bag_look_check():
+    """0.7.14 build checks: exactly the 21 bag ids carry the new look, each = the manifest; every file a look names ships in the jar (and no
+    vanilla path is replaced); the set has the lift key; the open animation is 1200 frames; every Parallel in the jar has 2+ entries"""
+    import zipfile
+    items = dict((p.rsplit("/", 1)[1][:-5], json.loads(t)) for p, t in files.items() if p.startswith("Server/Item/Items/"))
+    for iid, n in items.items():
+        lk = BAG_LOOK[BAG_OMNI if iid == POCKET else iid]   # 0.8.0: the Pocket wears the Omni bag's look
+        for k, v in lk.items():
+            assert n[k] == v, (iid, k, n[k], v)
+        for k in ("Model", "Texture", "Icon"):
+            assert ("Common/" + n[k]) in files and isinstance(files["Common/" + n[k]], bytes), (iid, k, n[k])
+        if BAG_PARTS["anim"]:
+            assert ("Common/" + n["Animation"]) in files, (iid, n["Animation"])
+        assert n["Interactions"]["Secondary"]["Interactions"][0]["Type"] == "OpenCustomUI", iid
+        assert ("SwapTo" in n["Interactions"]) == BAG_PARTS["lift"], iid
+        assert "Recipe" not in n and n["Quality"] and n["MaxStack"] == 1, iid   # 0.8.0: no recipes
+    assert len(items) == 22 and len(set(n["Texture"] for n in items.values())) == 21 and len(set(n["Icon"] for n in items.values())) == 21, "21 looks (the Pocket = the Omni's)"
+    assert len(set(n["Model"] for n in items.values())) == 5, "one model per rarity"
+    if BAG_PARTS["set"]:
+        st = json.loads(files["Server/Item/Animations/%s.json" % BAG_SET_ID])
+        assert st["Parent"] == "Block" and BAG_LIFT_KEY in st["Animations"], st.get("Animations")
+        for k in ("ThirdPerson", "FirstPerson"):
+            assert ("Common/" + st["Animations"][BAG_LIFT_KEY][k]) in files, st["Animations"][BAG_LIFT_KEY][k]
+    if BAG_PARTS["sparkle"]:
+        ps = json.loads(files["Server/Particles/SkyySacks/SkyySack_PortalSparkle.particlesystem"])
+        assert [x["SpawnerId"] for x in ps["Spawners"]] == ["SkyySack_PortalSparkle"] and "Server/Particles/SkyySacks/SkyySack_PortalSparkle.particlespawner" in files
+    if BAG_PARTS["anim"]:
+        oa = json.loads(files["Common/Items/SkyySacks/SkyySacks_Bag_Open.blockyanim"].decode("utf-8"))
+        assert oa["duration"] == 1200 and oa["nodeAnimations"], "the always-open loop"
+    bad = []
+    def walk(p, x):
+        if isinstance(x, dict):
+            if x.get("Type") == "Parallel" and len(x.get("Interactions") or []) < 2:
+                bad.append(p)
+            for v in x.values():
+                walk(p, v)
+        elif isinstance(x, list):
+            for v in x:
+                walk(p, v)
+    nj = 0
+    for p, t in files.items():
+        if p.startswith("Server/") and p.endswith(".json"):
+            walk(p, json.loads(t))
+            nj += 1
+    assert not bad, "a Parallel with fewer than 2 entries (the engine refuses the whole pack): %s" % bad
+    za = os.path.join(B.HYTALE, "install", "release", "package", "game", "latest", "Assets.zip")
+    if os.path.isfile(za):
+        with zipfile.ZipFile(za) as z:
+            van = set(z.namelist())
+        clash = sorted(p for p in BAG_FILES if p in van)
+        assert not clash, "bag art must never replace a vanilla file: %s" % clash
+    print("bag look checked: %d bags (5 models, 21 textures + icons), %d generated files shipped, %d JSON files without a short Parallel"
+          % (len(items), len(BAG_FILES), nj))
+_bag_look_check()
+
+
+def _wbtab_checks():
+    """0.8.0: no bag recipe anywhere (Bags v2) - the Workbench tab "Accessories & Bags" (tools/skyywbtab.py) stays emitted as this mod's
+    fallback copy (SkyyAccessories owns it and its accessory recipes); its two lang lines ship as before"""
+    got = [p for p, t in files.items() if p.startswith("Server/Item/Items/") and '"Recipe"' in t]
+    assert not got, "0.8.0: bag item(s) with a recipe: %s" % got
+    for l in WB.LANG_LINES:
+        assert l not in lang, l   # 0.8.14: SkyyAccessories (the owner) writes the tab name
+    print("Workbench tab: no bag recipes any more (Bags v2); the tab definition '%s' is kept as SkyyAccessories' fallback" % WB.TAB_TEXT)
+_wbtab_checks()
+print("Void: %s | level L needs step %s x (L-1)^%g to %d | space = level x %d x %s | gates %s | Pocket %s" % (
+    "/".join(PD_CATS), "/".join(str(PD_STEP[c]) for c in PD_CATS), PD_CURVE, PD_MAX_LEVEL, PD_PER_LEVEL, "/".join("%s %g" % (r, m) for r, m in zip(PD_RAR, PD_MULT)),
+    "/".join(str(g) for g in PD_GATE), POCKET))
+print("old bag table: %s x %s + %s | caps %s | qualities %s" % (
+    "/".join(BAG_CATS), "/".join("%s=%s" % (t[1], t[0]) for t in BAG_TIERS), BAG_OMNI,
+    " / ".join(format(CAPD[k], ",") for k in ("bag.small", "bag.medium", "bag.rare", "bag.large", "bag.omni")),
+    ", ".join("%s %s" % (r[1], r[2]) for r in BAG_RARITY)))
+
+# 0.8.11: the Sky Window kit art (all 59, byte-identical in every hub jar - HUBS-CONTRACT 2.7) + the smithing_recipes tab icon pair at the kit
+# 1.6 hook path (the same bytes SkyyMenu 0.3.30+ ships: whichever jar loads last, the picture is the same)
+import hashlib as _hl
+_kit = SUI.kit_texture_files()
+assert len(_kit) == len(SUI.SKY_FILES) == 59 and all(p.startswith("Common/UI/Custom/SkyyKit/") and ".." not in p for p in _kit) and not set(_kit) & set(files)
+files.update(_kit)
+_TAM = json.load(open(os.path.join(HERE, "..", "art", "hub-tab-icons", "manifest.json"), encoding="utf8"))
+_pp = SUI.hub_tab_icon_paths("smithing", CP_HUB_TAB)
+for _fn, _jp in (("%s.png" % CP_HUB_ICON, _pp[2]), ("%s_on.png" % CP_HUB_ICON, _pp[3])):
+    _data = open(os.path.join(HERE, "..", "art", "hub-tab-icons", _fn), "rb").read()
+    _me = [f for f in _TAM["files"] if f["path"] == _fn]
+    assert len(_me) == 1 and _hl.sha256(_data).hexdigest() == _me[0]["sha256"] and len(_data) == _me[0]["bytes"], "0.8.11: %s = its manifest entry" % _fn
+    assert _jp.startswith("Common/UI/Custom/SkyyHubTabs/") and _jp not in files
+    files[_jp] = _data
+# 0.8.15: + the storage_pocket tab icon pair (the Storage > Pocket tab SkyySacks puts now; art/hub-tab-icons, sha256 = its manifest)
+_pv = SUI.hub_tab_icon_paths("storage", "pocket")
+for _fn, _jp in (("storage_pocket.png", _pv[2]), ("storage_pocket_on.png", _pv[3])):
+    _data = open(os.path.join(HERE, "..", "art", "hub-tab-icons", _fn), "rb").read()
+    _me = [f for f in _TAM["files"] if f["path"] == _fn]
+    assert len(_me) == 1 and _hl.sha256(_data).hexdigest() == _me[0]["sha256"] and len(_data) == _me[0]["bytes"], "0.8.15: %s = its manifest entry" % _fn
+    assert _jp.startswith("Common/UI/Custom/SkyyHubTabs/") and _jp not in files
+    files[_jp] = _data
+print("0.8.11 kit art: %d Sky Window files + the Crafting and Pocket tab icon pairs" % len(_kit))
+jar = os.path.join(HERE, "SkyySacks-%s.jar" % VERSION)
+B.assemble(jar, B.manifest("SkyySacks", VERSION, "SkyyVoid: one Pocket Dimension for everything you gather - six categories that level up as you collect, rarity upgrades, /pd to open it, /craft and benches use it. Old Magic Bags convert once. Zero dependencies.", PKG + ".SkyySacksPlugin"), OUT, files)
+if "--deploy" in sys.argv:
+    B.deploy(jar, "SkyySacks.jar")
+    B.enable_in_world("HUD mod", "Skyy:%s SkyySacks" % VERSION, disable_prefix="Skyy:")
+assert SUI.check_jar_kit(jar, need=("Header", "Frame_Smithing", "Row", "PanelInset", "SlotEmpty", "Primary", "Secondary", "Tertiary", "Close")) == 59

@@ -16,13 +16,13 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WORLD = "NewBetaTest"   # 2026-10-15 Skyy: "im starting a new world to test from scratch" (was "HUD mod" until 2026-10-15)
 # (mod, version) - keep in sync with HANDOFF section 3 "Versions"
 SET = [
-    ("SkyyCore", "1.0.0"),   # 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
+    ("SkyyCore", "1.0.1"),   # 2026-10-18 1.0.1 = Movement 2 MoveSync; 2026-10-15 merge phase 1: the shared library - MUST stay first while any pinned jar depends on it
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
-    ("SkyyHud", "0.3.31"), ("SkyySacks", "0.8.20"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.25"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.19"), ("SkyyBazaar", "0.1.20"), ("SkyyGear", "0.3.18"), ("SkyySkills", "0.4.49"),
-    ("SkyyAccessories", "0.5.25"), ("SkyyClasses", "0.1.37"), ("SkyyMenu", "0.3.38"), ("SkyyEssentials", "0.1.15"), ("SkyyProfiles", "0.1.17"),
-    ("SkyyCooking", "0.1.11"), ("SkyyTrees", "0.3.22"),
+    ("SkyyHud", "0.3.32"), ("SkyySacks", "0.8.22"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.27"), ("SkyyParty", "0.1.10"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.19"), ("SkyyBazaar", "0.1.21"), ("SkyyGear", "0.3.26"), ("SkyySkills", "0.4.51"),
+    ("SkyyAccessories", "0.5.26"), ("SkyyClasses", "0.1.38"), ("SkyyMenu", "0.3.39"), ("SkyyEssentials", "0.1.15"), ("SkyyProfiles", "0.1.17"),
+    ("SkyyCooking", "0.1.11"), ("SkyyTrees", "0.3.23"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
     # Acrobatics + Exploration trees; never go back to SkyySkills 0.4 once Exploration XP exists (0.4 drops the unknown Exploration
     # keys on its next save)
@@ -37,7 +37,7 @@ SET = [
     # kept as <key>.properties.v4bak). SkyyMenu 0.1.3 runs /island menu, /bank, /vault, /reforge, /party, /guild of the pins here.
     ("SkyyVault", "0.1.9"),
     # auction house (Skyy 2026-09-24, BIN only; research/Auction-House-Spec.md). Merges into SkyyEconomy 0.1 later (SkyyEconomy-Plan.md)
-    ("SkyyAuctions", "0.1.12"),
+    ("SkyyAuctions", "0.1.13"),
     # in-game server setup (research/Server-Setup-Spec.md): SkyyMenu 0.3 = player Settings (0.2) + admin Server Setup / Mods section;
     # SkyyRanks 0.1 = ranks + grants + per-player denies + chat prefix, made in game (never removes hytale:Adventurer).
     # SkyyIslands 0.5.1 = SECURITY hotfix (0.5 gave every player skyyislands.admin through /island reload) - never deploy 0.5 again.
@@ -69,7 +69,7 @@ SET = [
     # mob levels (Skyy 2026-10-02, Q&A round 5): NEW standalone mod, stage 1 - hostile mobs + neutral fighters get a level from the
     # zone / biome they spawn in, more health + damage per level (Difficulty), "[Lv 9] Name" plates, /mobs, mob:fn:level. No dependency,
     # no data migration, nothing else needs a bump.
-    ("SkyyMobs", "0.1.9"), ("SkyyWorldGen", "0.7.3"),
+    ("SkyyMobs", "0.1.10"), ("SkyyWorldGen", "0.7.4"),
     # Zone 1 town probe (2026-10-08, admin-only, test island only): REMOVE after Skyy's test - run /townprobe undo until "Nothing to undo" first.
     # key probe (2026-10-08, op only): which client keys reach the server -> class ability hotkeys. REMOVE after Skyy's test.
     # SkyyMerchants 0.1 (2026-10-09, roaming merchants): no dependency. Rollback: set part.merchants=false, let each zone world be visited
@@ -84,7 +84,7 @@ SET = [
     # SkyyQuests 0.2 (2026-10-13, quest answers: class gear rewards, skip, area lines, co-op, feed only). ROLLBACK FLOOR to 0.1: players with
     # "=gear|" in Skyy_SkyyQuests/players/*.properties run /quests claim first; Undo the reward lines in Server Setup > Changes
     # (defeat_mobs / mini_boss); optionally restore quests/tutorial.properties from tutorial.properties.0.1.bak.
-    ("SkyyQuests", "0.4.0"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
+    ("SkyyQuests", "0.4.1"),  # 2026-10-13 quest engine + tutorial line + quest widget (research/SkyyQuests-Tutorial-Spec.md Q1)
     ("SkyyRebirth", "0.3.5"),  # 2026-10-14 NEW rebirth R2 (OFF by default). Removing it drops rebirth counts + raised caps (skill XP past the base cap stays in the skill files); nothing else depends on it
     ("SkyyShards", "0.4.2"),  # 2026-10-14 NEW shard worlds (Gathering phase 5); deploy WITH Islands 0.5.8 + Menu 0.3.22. FLOOR: once a skyy-shard-<pkey> world exists, never drop Shards or roll Islands below 0.5.8
     # FLOOR (2026-10-15, SkyySkills 0.4.43): Battlemagic = class-skill slot 19 (saved key Combat.Spellblade). 0.4.42 reads such files but its save DROPS the key - never roll Skills below 0.4.43 once Spellblades played on it.
@@ -109,7 +109,7 @@ SET = [
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.30"),
+    ("SkyyArmory", "0.1.34"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
@@ -391,6 +391,16 @@ def main():
         print("STOP: SkyyMobs 0.1.4+ needs SkyySkills 0.4.17+ (kill XP by mob level through mob:fn:info) in the same deploy"); return 1
     if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 5) or _v(_p.get("SkyySkills", "0")) >= (0, 4, 17)) and not _mob:
         print("STOP: SkyyGear 0.2.5+ / SkyySkills 0.4.17+ deploy with SkyyMobs 0.1.4+ (the mob curve round) - pin all three or none"); return 1
+    # FLOOR SkyyGear 0.3.25 (2026-10-18, lifelong multitool merge): no rollback below 0.3.25 after the first merge (0.3.24 has no multitool kind and
+    # would hand merged players a Crude pickaxe) - restore recipe: mtmerge/history/<pk> + the hatchet document in mtmerge/<pk>.log.
+    # Movement 2 (2026-10-18): Gear 0.3.24 + Skills 0.4.51 + Accessories 0.5.26 + Core 1.0.1 share tools/skyymove.py - deploy / roll back TOGETHER, and set
+    # Server Setup move.armoryJump = yield BEFORE a rollback (the engine saves the skyy_move_jump modifier with the player).
+    # metals G2/A1 (2026-10-18): Gear 0.3.23 tools + Armory 0.1.33 weapons + Bazaar 0.1.21 deploy together; never roll Armory below 0.1.33 or Gear below
+    # 0.3.23 once the new-metal tools / weapons are in players' hands (they become unknown ids).
+    # renumber (2026-10-17, Skyy "Yes, full 15-step ladder"): tools/tier_tags.py TT_VERSION 2 - Gear 0.3.22 + Collections 0.2.26 + WorldGen 0.7.4 +
+    # Sacks 0.8.22 + Auctions 0.1.13 + Armory 0.1.32 show the new tier numbers; roll them back TOGETHER (mixed sets show mismatched T-numbers only).
+    # pack drops (2026-10-17, PR #17, research/Pack-Drops-Spec.md): Gear 0.3.19 + Mobs 0.1.10 may roll back alone, but OPEN or IDENTIFY all
+    # Mythic boss bags first (0.3.18 ignores the bag zone pz and would identify them from the normal pool).
     # ores (2026-10-17, research/Zone-Ores-Alloys-Spec.md): WorldGen 0.7.3 (new ores / ingots / alloys) + Collections 0.2.25 (their collections +
     # Enchanted ingot recipes) + Sacks 0.8.20 + Accessories 0.5.25 (acc:smelt with the profile-key field) deploy and roll back TOGETHER.
     _ores = [_v(_p.get("SkyyCollections", "0")) >= (0, 2, 25), _v(_p.get("SkyyWorldGen", "0")) >= (0, 7, 3),
