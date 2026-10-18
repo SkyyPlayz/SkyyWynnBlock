@@ -15,10 +15,10 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyBank | 0.1.16 | bank + interest; interest once a day, account brackets 2/1/0.5%; 0.7 port + back-pay 1 day; per-file payout lock, purse flush |
 | SkyyIslands | 0.5.19 | private islands, co-op, visitors, island settings, /hub; 0.7 port; private writer |
 | SkyyBazaar | 0.1.21 | Bazaar market (a tab per bag type + Smithing); progression prices x2 per tier; sells from Magic Bags, Hytale stack buttons; publish only changes; Fishing tab, crystal products; Enchanted products |
-| SkyyGear | 0.3.27 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
+| SkyyGear | 0.3.28 | gear rarity, item levels, identify, reforge, tooltips, crit popup, Smithing XP for crafted gear; traversal tooltip words; level curves, Reforge level-up (+6), vanilla armor box hidden; weapon speed tiers (weapons only); Charged trust for the _Wynn crossbows; 0.7 port, crit popup, 0.7 weapon numbers; stats snapshot; one Anvil tab |
 | SkyySkills | 0.4.52 | skills + class weapon skills, XP curves (Mining has its own list), Mana, Acrobatics; kill XP by mob level, Mana regen per class level; 8-way Dodge Roll; dodge move gate, no Acro XP cap; roll on a sprint-key tap; 0.7 assets: Mana.json, spell costs; Acro XP line; leaderboard index, private writer |
 | SkyyAccessories | 0.5.26 | Accessory Bag, booster accessories, Lantern (recipes known via SkyyCollections); lantern hide per helper |
-| SkyyClasses | 0.1.38 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
+| SkyyClasses | 0.1.39 | class pick, class kits, Priest heal; class:fn:heal (heal orb, party more) |
 | SkyyMenu | 0.3.39 | SkyWynn Menu, player Settings, Server Setup (admin); 0.7 port; hub hotkey double-tap crouch, private writer |
 | SkyyEssentials | 0.1.15 | /tpa, /trade and the few commands vanilla lacks; ess:fn:tpa bridge |
 | SkyyProfiles | 0.1.17 | profiles = full saves (default cap 6), delete + 6 h undo; 0.7 port; striped locks |
@@ -44,7 +44,7 @@ rules and the hard-won build rules. Where we are + what is next: `RESUME.md`. Wh
 | SkyyKeyProbe | 0.2 | key probe, op only: /keyprobe give, press keys, /keyprobe report (remove after Skyy's test) |
 | SkyyMobs | 0.1.11 | mob levels + difficulty; level curves + level gap (mob:fn:info); 0.7 port, 280 roles |
 | SkyyWorldGen | 0.7.4 | Zone 1 test island (/zone 1, admin); 0.7 port |
-| SkyyArmory | 0.1.34 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults; 0.7 SoulDrop port (jar recompile); built from source on 0.7, TravTick gating |
+| SkyyArmory | 0.1.35 | our own weapons: metal wands + the staff ladder; staff blink + trail, wand hop / burst / heal orb, pierce; crossbow Grapple Bolt; bow leap + blast, Copper / Onyxium crossbows; blink 16 + floorCheck 0 defaults; 0.7 SoulDrop port (jar recompile); built from source on 0.7, TravTick gating |
 | third-party (`PACK.md`) | - | More Crossbow Tiers (Serj), Saplings From Trees (Helios); SkyyRolls is RETIRED |
 
 Every version's notes: `docs/handoff/versions-history.md`. Every build / deploy / test: `docs/log/<YYYY-MM>.md`.
