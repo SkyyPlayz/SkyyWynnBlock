@@ -96,9 +96,11 @@ with zipfile.ZipFile(OLD_JAR) as _z:
 TAGGED = sorted(i for i in _NEWDESC if i in _OLDDESC and _NEWDESC[i] != _OLDDESC[i])
 with zipfile.ZipFile(JAR) as _zn, zipfile.ZipFile(OLD_JAR) as _zo:
     _ITEMDIFF = sorted(n for n in _zn.namelist() if n.startswith("Server/Item/Items/") and n in set(_zo.namelist()) and _zn.read(n) != _zo.read(n))
-    _BOOKDIFF = sorted(n for n in _zn.namelist() if n.endswith(".json") and n.startswith("Server/") and not n.startswith("Server/Item/Items/") and n in set(_zo.namelist())
-                       and _zn.read(n) != _zo.read(n))          # the book chains + Page Burst orbs (checked in phase B)
-NONCLASS = sorted(["manifest.json", LANG] + _ITEMDIFF + _BOOKDIFF)
+    _RTDIFF = sorted(n for n in _zn.namelist() if n.startswith("Server/Item/ResourceTypes/") and _zn.read(n) != _zo.read(n))          # phase R
+    _RTICONS = sorted(n for n in _zn.namelist() if n.startswith("Common/Icons/ResourceTypes/"))          # phase R (new files)
+    _BOOKDIFF = sorted(n for n in _zn.namelist() if n.endswith(".json") and n.startswith("Server/") and not n.startswith(("Server/Item/Items/", "Server/Item/ResourceTypes/"))
+                       and n in set(_zo.namelist()) and _zn.read(n) != _zo.read(n))          # the book chains + Page Burst orbs (checked in phase B)
+NONCLASS = sorted(["manifest.json", LANG] + _ITEMDIFF + _BOOKDIFF + _RTDIFF + _RTICONS)
 BOOK_METALS = ["Copper", "Iron", "Thorium", "Cobalt", "Adamantite", "Mithril", "Onyxium"] + [w + "_SkyWynn" for w in
                                                                                              ("Lead", "Dusk", "Chromium", "Azurvane", "Slag", "Cinder", "Titanium", "Lumen")]
 BOOK_COST = [10, 35, 70, 130, 190, 250, 310, 95, 115, 155, 175, 215, 235, 275, 295]          # 0.1.39 (main session 2026-10-18: 40 % rule at the new starts)
@@ -142,6 +144,12 @@ _l38 = H38.lang_of
 
 def _norm_jload(z, n):
     d = _j38(z, n)
+    if os.path.realpath(z.filename) == os.path.realpath(JAR) and n.startswith("Server/Item/ResourceTypes/SkyyArmory/"):
+        rt = os.path.basename(n)[:-5]
+        item = "Weapon_Wand_" + rt[len("SkyyArmory_Any_"):]
+        icon = _j38(z, "Server/Item/Items/Weapon/Wand/%s.json" % item)["Icon"]
+        assert d == {"Icon": "Icons/ResourceTypes/%s.png" % rt} and z.read("Common/" + d["Icon"]) == z.read("Common/" + icon), (n, d)
+        d = {"Icon": icon}          # put the 0.1.38 value back (phase R checks the 0.1.39 icon root)
     if os.path.realpath(z.filename) == os.path.realpath(JAR) and n.startswith("Server/Item/Items/") and os.path.basename(n)[:-5] in _GATED:
         assert d["Recipe"]["KnowledgeRequired"] is True, n
         d["Recipe"]["KnowledgeRequired"] = False          # put the 0.1.38 value back (the one intended 0.1.39 difference of a Soul Cage file)
@@ -375,6 +383,24 @@ def run_know(out, jar, scratch, _home):
     K.save()
 
 
+def run_rticons(out, jar, scratch, _home):
+    K = HK.Child(out)
+    bad, n_ = [], 0
+    with zipfile.ZipFile(jar) as z, zipfile.ZipFile(ASSETS) as az:
+        names = set(z.namelist())
+        for p in sorted(x for x in names if x.startswith("Server/Item/ResourceTypes/") and x.endswith(".json")):
+            n_ += 1
+            ic = jload(z, p).get("Icon")
+            if not (isinstance(ic, str) and ic.startswith("Icons/ResourceTypes/") and ("Common/" + ic) in names and z.read("Common/" + ic)[:4] == bytes([0x89, 0x50, 0x4E, 0x47])):
+                bad.append((p, ic))
+        van = [jload(az, x).get("Icon", "") for x in az.namelist() if x.startswith("Server/Item/ResourceTypes/") and x.endswith(".json")]
+    K.check(n_ == 16 and not bad, "R: every one of the %d ResourceType icons is under Icons/ResourceTypes/ and a PNG in the jar (bad: %s)" % (n_, bad))
+    K.check(len(van) > 100 and all(v.startswith("Icons/ResourceTypes/") for v in van if v), "R: control - every vanilla ResourceType icon uses that root (%d)" % len(van))
+    K.eq(sorted(_RTICONS), sorted("Common/Icons/ResourceTypes/SkyyArmory_Any_%s.png" % x for x in ["SoulOrb"] + ["SoulCage_" + m for m in BOOK_METALS]),
+         "R: the 16 icon copies, one per Soul type")
+    K.save()
+
+
 def run_mig(out, jar, scratch, _home):
     K = HK.Child(out)
     o = json.load(open(os.path.join(scratch, "old_defs.json")))["DEF_CFG"]
@@ -417,6 +443,6 @@ def run_live(out, jar, scratch, home):
 if __name__ == "__main__":
     HK.run_compare = _compare
     HK.run(name="SkyyArmory", version=VERSION, jar=JAR, old_jar=OLD_JAR, pkg=PKG, scratch=SCRATCH, expect=EXPECT, added=[],
-           phases=[("old", run_old), ("bands", run_bands), ("tags", run_tags), ("know", run_know), ("mig", run_mig), ("live", run_live),
+           phases=[("old", run_old), ("bands", run_bands), ("tags", run_tags), ("know", run_know), ("rticons", run_rticons), ("mig", run_mig), ("live", run_live),
                    ("static38", run_static38), ("engine38", run_engine38)],
            script=__file__, live=(LIVE_DIR, "Skyy_SkyyArmory"))

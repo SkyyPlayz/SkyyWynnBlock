@@ -47,6 +47,10 @@ WHAT CHANGES
      "T1 Crude - "), so every tiered Armory item shows its tier first (the standing rule). Left untagged: the Copper / Onyxium _Wynn crossbows, Bo Wood + Bo Bamboo (no description line at all - no new
      lang key added); no metal in the id: the 5 wraps (cloth
      rows - SkyyGear's cloth band and the wrap's metal column disagree for Cindercloth), Bo Bamboo, the Soul Orb, the 2 essences, the 3 Untiered.
+  7. SOUL RESOURCE TYPE ICONS (smoke test 2026-10-18: 16 SEVERE "[AssetStore|ResourceType] Failed to validate asset: SkyyArmory_Any_SoulOrb
+     ... Key: Icon ... must be within the root: [Icons/ResourceTypes/]" - the pinned 0.1.38 has the same bug): each of the 16 types now points
+     at a copy of its item's icon at Common/Icons/ResourceTypes/SkyyArmory_Any_<item>.png (the vanilla layout: Server/Item/ResourceTypes/Bone.json
+     -> Icons/ResourceTypes/Any_Bone.png).
   6. Kept as they are: the 0.1.38 Soul Cage resource types + hidden twins, the 0.1.36 / 0.1.37 wand guard + Soul controls (no code touched).
 No config row changes its default (Armory has no level-band row - spec 4.1 "Armory ... no band rows -> none"), so no migration: the harness
 proves the 0.1.38 and 0.1.39 default rows are identical and Skyy's live config (scratch copy) loads byte-identical.
@@ -173,6 +177,22 @@ assert all(BOOK[_m]["cost"] <= 0.40 * mage_pool(BANDS[_m][0]) for _m in BOOK_MET
 WS_REPROOF = [(MN(_w[0]), BANDS[_w[0]][0], _w[1], _s[1], int(round(100.0 * _w[1] / mage_pool(BANDS[_w[0]][0]))), int(round(100.0 * _s[1] / mage_pool(BANDS[_w[0]][0]))))
               for _w, _s in zip(WT, ST)]          # (metal, first level, wand cost, staff cost, wand %, staff %)
 assert [_w[0] for _w in WT] == [_s[0] for _s in ST]
+''')
+# ================================================================= 7. the Soul resource type icons (smoke test 2026-10-18, 16 SEVERE in 0.1.38 + 0.1.39:
+# "[AssetStore|ResourceType] Failed to validate asset: SkyyArmory_Any_SoulOrb ... Key: Icon ... must be within the root: [Icons/ResourceTypes/]"):
+# a ResourceType Icon must sit under Icons/ResourceTypes/ (vanilla: Server/Item/ResourceTypes/Bone.json -> "Icons/ResourceTypes/Any_Bone.png") ->
+# each type gets a copy of its item's icon at Common/Icons/ResourceTypes/<type id>.png and points at it
+rep('''    put(P_SRT % _rt, {"Icon": ICON_SOUL[_t]})
+''', '''    _rti = "Icons/ResourceTypes/%s.png" % _rt          # 0.1.39: the engine's ResourceType icon root (0.1.38 pointed at the item icon - SEVERE at load)
+    assert ("Common/" + _rti) not in ASSETS and not az_has("rtype", _rt)
+    ASSETS["Common/" + _rti] = ASSETS["Common/" + ICON_SOUL[_t]]
+    put(P_SRT % _rt, {"Icon": _rti})
+    SL38_FILES.append("Common/" + _rti)
+''')
+rep('''assert len(SL38_FILES) == 31 and all(("Common/" + ICON_SOUL[_t]) in ASSETS for _t in range(len(SOUL_RT)))
+''', '''assert len(SL38_FILES) == 47 and all(("Common/" + ICON_SOUL[_t]) in ASSETS for _t in range(len(SOUL_RT)))          # 0.1.39: + the 16 type icons
+assert all(json.loads(ASSETS[P_SRT % _rt])["Icon"].startswith("Icons/ResourceTypes/") and ("Common/" + json.loads(ASSETS[P_SRT % _rt])["Icon"]) in ASSETS
+           for _rt in SOUL_RT), "0.1.39: every ResourceType icon under Icons/ResourceTypes/ and in the jar"
 ''')
 # the kunai Crude row (was the literal 1-13 = SkyyGear's old Crude row)
 rep('''1 if _m == "Crude" else BANDS[_m][0], 13 if _m == "Crude" else BANDS[_m][1],''',

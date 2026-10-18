@@ -5046,14 +5046,20 @@ for _t, _sid in enumerate(SOUL_IDS):
 # 0.1.38: the 16 resource types (icon = the item's own) + the 15 hidden ladder twins + their names
 SL38_FILES = []
 for _t, _rt in enumerate(SOUL_RT):
-    put(P_SRT % _rt, {"Icon": ICON_SOUL[_t]})
+    _rti = "Icons/ResourceTypes/%s.png" % _rt          # 0.1.39: the engine's ResourceType icon root (0.1.38 pointed at the item icon - SEVERE at load)
+    assert ("Common/" + _rti) not in ASSETS and not az_has("rtype", _rt)
+    ASSETS["Common/" + _rti] = ASSETS["Common/" + ICON_SOUL[_t]]
+    put(P_SRT % _rt, {"Icon": _rti})
+    SL38_FILES.append("Common/" + _rti)
     SL38_FILES.append(P_SRT % _rt)
     SOUL_LANG.append("resourceType.%s.name = %s" % (_rt, SOUL_RT_NAMES[_t]))
 for _rid in SOUL_LADDER_IDS[1:]:
     put(P_SLAD % _rid, SOUL_LADDER[_rid])
     SL38_FILES.append(P_SLAD % _rid)
 SL38_FILES = sorted(SL38_FILES)
-assert len(SL38_FILES) == 31 and all(("Common/" + ICON_SOUL[_t]) in ASSETS for _t in range(len(SOUL_RT)))
+assert len(SL38_FILES) == 47 and all(("Common/" + ICON_SOUL[_t]) in ASSETS for _t in range(len(SOUL_RT)))          # 0.1.39: + the 16 type icons
+assert all(json.loads(ASSETS[P_SRT % _rt])["Icon"].startswith("Icons/ResourceTypes/") and ("Common/" + json.loads(ASSETS[P_SRT % _rt])["Icon"]) in ASSETS
+           for _rt in SOUL_RT), "0.1.39: every ResourceType icon under Icons/ResourceTypes/ and in the jar"
 for _n, (_src, _rgb, _k, _light, _nm, _ds) in sorted(ESS_NEW.items()):
     SOUL_LANG += ["items.SkyyArmory_Essence_%s.name = %s" % (_n, _nm), "items.SkyyArmory_Essence_%s.description = %s" % (_n, _ds)]
 for _l in SOUL_LANG:
