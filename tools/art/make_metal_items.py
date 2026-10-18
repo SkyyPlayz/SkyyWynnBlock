@@ -1,5 +1,6 @@
 """make_metal_items - SkyWynn NEW-METAL item art (Lead, Dusk, Chromium, Azurvane, Slag, Cinder, Titanium, Lumen + Electrum bar):
-ores, bars, Enchanted ingots, the 9 metal-ladder weapon families and the 5 forever tools. Art only - nothing here is wired into a mod.
+ores, bars, Enchanted ingots, the 9 metal-ladder weapon families, the 10 vanilla metal weapon families (sword, longsword, axe, battleaxe,
+mace, club, daggers, spear, shortbow, shield - round A2) and the 5 forever tools. Art only - nothing here is wired into a mod.
 
 Why a generator: the repo is PUBLIC and every output is a recolour / re-texture of vanilla art (or of Quirk's PRIVATE tool builds), so
 no pixels are committed. This file holds only code + palette numbers (the hex values of Quirk's approved palette cards,
@@ -20,6 +21,8 @@ How each family is made (the way the repo already makes the vanilla-metal versio
                  texel that changes is metal) and get the card's pattern (veins, Damascus bands, embers, strata, brushed edges ...).
                  Crossbow = the vanilla IRON crossbow, grey texels inside its metal nodes (SkyyArmory 0.1.30's own mask rule), nothing
                  from More Crossbow Tiers. Great Shield = the donor's vanilla shield (plates -> metal, frame -> trim, back kept).
+  * vanilla families (A2) - the donor tier's vanilla Weapon_<Family>_<donor> (model by path), texture + icon split into colour classes by
+                 hue (vw_rule: donor metal / accent metal / gem; wood, leather, rope and outlines kept) and re-coloured (recolor_item).
   * tools      - Quirk's approved Titanium (base ores) / Lumen (alloys) builds re-coloured per metal (Titanium + Lumen themselves are
                  Quirk's, untouched). Pickaxe / hatchet / can icons = the vanilla Mithril pickaxe / hatchet and the vanilla can icon
                  re-coloured; multitool / harvester icons = render_icon of Quirk's model (they have no vanilla icon).
@@ -750,6 +753,89 @@ def greatshields(z, items, out):
         out.sheet_icon("greatshield", "greatshield", m, i)
 
 
+# ===================================================================================================== batch 2b: the vanilla metal families
+# (round A2 = SkyyArmory 0.1.34, research/Metals-Tools-Fortune-Spec.md 4.1 Group B; Skyy 2026-10-17 "vanilla-style metal weapons (sword, axe,
+# daggers, bow...) in all 8 new metals too"): the 10 vanilla families with a metal ladder, each the zone's vanilla base-tier item (the shape
+# donor: model by path, texture + icon re-coloured the recolor_item way). Colour classes of the donor art by hue (numbers only): the donor
+# metal -> the card's metal, its light accent metal (Thorium tan, Cobalt / Mithril gold, Adamantite beige) -> the card's trim, the Adamantite
+# blue gem -> the card's gem; wood, leather, rope, cloth and outlines are kept. Shield = the Great Shield's SHIELD_REFS (same vanilla shield,
+# own seed so the two never share an icon).
+VW_FAMILIES = (("sword", "Sword"), ("longsword", "Longsword"), ("axe", "Axe"), ("battleaxe", "Battleaxe"), ("mace", "Mace"),
+               ("club", "Club"), ("daggers", "Daggers"), ("spear", "Spear"), ("shortbow", "Shortbow"), ("shield", "Shield"))
+
+
+VW_KEYS = frozenset(k_ for k_, _f in VW_FAMILIES)
+
+
+def _hsv(c):
+    mx, mn = max(c[:3]), min(c[:3])
+    v = mx / 255.0
+    s = 0.0 if mx <= 0 else (mx - mn) / float(mx)
+    if mx == mn:
+        return 0.0, s, v
+    r, g, b = c[0], c[1], c[2]
+    if mx == r:
+        h = ((g - b) / float(mx - mn)) % 6.0
+    elif mx == g:
+        h = (b - r) / float(mx - mn) + 2.0
+    else:
+        h = (r - g) / float(mx - mn) + 4.0
+    return h * 60.0, s, v
+
+
+def vw_rule(donor):
+    """the hue rule of a donor tier's vanilla weapon art: rgb -> 'metal' / 'trim' / 'gem' / None (kept)."""
+    def rule(c):
+        h, s, v = _hsv(c)
+        if v < 0.09:
+            return None
+        if donor == "Thorium":
+            if 65 <= h <= 170 and s >= 0.18:
+                return "metal"
+            if 30 <= h < 65 and s >= 0.12 and v >= 0.45:
+                return "trim"
+        elif donor == "Cobalt":
+            if (185 <= h <= 255 and s >= 0.08) or (s < 0.12 and v >= 0.28):
+                return "metal"
+            if 30 <= h < 70 and s >= 0.2 and v >= 0.55:
+                return "trim"
+        elif donor == "Adamantite":
+            if 180 <= h <= 225 and s >= 0.3:
+                return "gem"
+            if (h <= 32 or h >= 340) and s >= 0.5 and v >= 0.28:
+                return "metal"
+            if 15 <= h <= 50 and s < 0.5 and v >= 0.5:
+                return "trim"
+        elif donor == "Mithril":
+            if s < 0.16 and v >= 0.33:
+                return "metal"
+            if 33 <= h <= 62 and s >= 0.35 and v >= 0.45:
+                return "trim"
+        return None
+    return rule
+
+
+def vw_batch(key, fam):
+    def batch(z, items, out):
+        for m in METALS:
+            donor = SPEC[m]["donor"]
+            vid = "Weapon_%s_%s" % (fam, donor)
+            d, model, vtex, vicon = items.parts(vid)
+            rule = nearest_rule(SHIELD_REFS[donor]) if fam == "Shield" else vw_rule(donor)
+            t_cls = classify(SA._img(vtex), rule)
+            i_cls = classify(SA._img(vicon), rule, premul=True)
+            t, i = recolor_item(z, m, vtex, vicon, t_cls, i_cls, key)
+            folder = os.path.dirname(d["Texture"])
+            tp = out.put(P(key, "Common/%s/SkyyMetal_%s_%s_Texture.png" % (folder, fam, m)), t)
+            ip = out.put(P(key, ICON_DIR, "SkyyMetal_%s_%s.png" % (fam, m)), i)
+            out.item("weapons", key, m, "Weapon_%s_%s_SkyWynn" % (fam, m), "%s (vanilla family)" % fam,
+                     "vanilla %s (%s + texture + icon)" % (vid, d["Model"]), tp, ip, d["Model"] + " (vanilla, by path)",
+                     "classes: %s" % ", ".join("%s %d" % (k, len(v)) for k, v in sorted(t_cls.items())))
+            out.sheet_icon(key, fam, m, i)
+    batch.__name__ = "vw_" + key
+    return batch
+
+
 # ===================================================================================================== batch 3: the 5 forever tools
 TOOLS = ("Pickaxe", "Hatchet", "Multitool", "Harvester", "WateringCan")
 TOOL_ID = {"Pickaxe": "Tool_Pickaxe_%s", "Hatchet": "Tool_Hatchet_%s", "Multitool": "Tool_Multitool_%s_Wynn",
@@ -924,10 +1010,12 @@ SHEETS = {
     "ores-bars": "Ores bars Enchanted",
     "weapons-a": "Weapons wand crossbow spellbook kunai bo",
     "weapons-b": "Weapons gauntlets soulcage greatshield staff",
+    "weapons-c": "Weapons vanilla families",
     "tools": "Forever tools",
 }
 SHEET_OF = {"wand": "weapons-a", "crossbow": "weapons-a", "spellbook": "weapons-a", "kunai": "weapons-a", "bo": "weapons-a",
             "gauntlets": "weapons-b", "soulcage": "weapons-b", "greatshield": "weapons-b", "staff": "weapons-b"}
+SHEET_OF.update((k_, "weapons-c") for k_, _f in VW_FAMILIES)
 
 
 def make_sheets(out):
@@ -962,7 +1050,7 @@ def validate(out, z, items):
             if max(corners) > 127:                 # the vanilla staff / Bo view grazes a corner at alpha 49 (existing art too)
                 bad.append("%s: icon corners not transparent" % rel)
             op = sum(1 for y in range(64) for x in range(64) if img.get(x, y)[3] == 255)
-            if op < 150:
+            if op < (100 if rel.split("/")[0] in VW_KEYS else 150):          # A2: the vanilla Thorium spear icon itself has 136 (thin pole)
                 bad.append("%s: only %d opaque px" % (rel, op))
         else:
             if (w % 32) or (h % 32):
@@ -985,7 +1073,7 @@ def validate(out, z, items):
 # ===================================================================================================== main
 BATCHES = (("ores", batch_ores), ("bars", batch_bars), ("wand", wand), ("crossbow", crossbows), ("spellbook", spellbooks),
            ("kunai", kunai), ("bo", bo), ("gauntlets", gauntlets), ("soulcage", soulcages), ("greatshield", greatshields),
-           ("staff", staffs), ("tools", tools))
+           ("staff", staffs)) + tuple((k_, vw_batch(k_, f_)) for k_, f_ in VW_FAMILIES) + (("tools", tools),)
 
 
 def run(only=None):

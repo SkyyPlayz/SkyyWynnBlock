@@ -20,7 +20,7 @@ SET = [
     # SkyyGear 0.3.0 (2026-10-13, lifelong tools + tier gate): ROLLBACK to 0.2.26 is item-safe, but tools become droppable / sellable /
     # craftable again and the per-profile tool points (Skyy_SkyyGear lifelong data) are ignored until 0.3.x returns.
     ("SkyyHud", "0.3.32"), ("SkyySacks", "0.8.22"), ("SkyyCoins", "0.1.9"), ("SkyyCollections", "0.2.26"), ("SkyyParty", "0.1.10"),
-    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.19"), ("SkyyBazaar", "0.1.20"), ("SkyyGear", "0.3.22"), ("SkyySkills", "0.4.50"),
+    ("SkyyBank", "0.1.16"), ("SkyyIslands", "0.5.19"), ("SkyyBazaar", "0.1.21"), ("SkyyGear", "0.3.23"), ("SkyySkills", "0.4.50"),
     ("SkyyAccessories", "0.5.25"), ("SkyyClasses", "0.1.38"), ("SkyyMenu", "0.3.38"), ("SkyyEssentials", "0.1.15"), ("SkyyProfiles", "0.1.17"),
     ("SkyyCooking", "0.1.11"), ("SkyyTrees", "0.3.23"),
     # Exploration round (research/Exploration-Build-Spec.md section 5): SkyySkills 0.4.1+ has the Exploration row, SkyyTrees 0.2+ the
@@ -109,7 +109,7 @@ SET = [
     # SkyySkills to SkyyArmory; the wand heal caps read SkyyArmory).
     # 0.1.10 (2026-10-08 hotfix): the 7 spellbook Levitate interactions no longer use a one-entry Parallel (the server refused 0.1.6-0.1.9).
     # 0.1.11 (2026-10-08): Bo staffs lose the charged magic orb (one shared swing root); the vanilla Wood / Bamboo Bo stay SkyySkills' until 0.4.22 hands them over.
-    ("SkyyArmory", "0.1.32"),
+    ("SkyyArmory", "0.1.33"),
     # 2026-10-06 evening: SkyySkills 0.4.19 (dodge move gate, no Acrobatics XP cap - roll back only after Undo of acro.maxXpPerMinute 240 -> 0),
     # SkyyHud 0.3.14 (minimap widget, needs BetterMap), SkyyGear 0.2.6 (weapon speed tiers, weapons only).
     # Mob curve (2026-10-06, research/Mob-Curve-Spec.md): SkyyMobs 0.1.4 + SkyyGear 0.2.5 + SkyySkills 0.4.17 TOGETHER (STOP check below). Never roll
@@ -391,6 +391,8 @@ def main():
         print("STOP: SkyyMobs 0.1.4+ needs SkyySkills 0.4.17+ (kill XP by mob level through mob:fn:info) in the same deploy"); return 1
     if (_v(_p.get("SkyyGear", "0")) >= (0, 2, 5) or _v(_p.get("SkyySkills", "0")) >= (0, 4, 17)) and not _mob:
         print("STOP: SkyyGear 0.2.5+ / SkyySkills 0.4.17+ deploy with SkyyMobs 0.1.4+ (the mob curve round) - pin all three or none"); return 1
+    # metals G2/A1 (2026-10-18): Gear 0.3.23 tools + Armory 0.1.33 weapons + Bazaar 0.1.21 deploy together; never roll Armory below 0.1.33 or Gear below
+    # 0.3.23 once the new-metal tools / weapons are in players' hands (they become unknown ids).
     # renumber (2026-10-17, Skyy "Yes, full 15-step ladder"): tools/tier_tags.py TT_VERSION 2 - Gear 0.3.22 + Collections 0.2.26 + WorldGen 0.7.4 +
     # Sacks 0.8.22 + Auctions 0.1.13 + Armory 0.1.32 show the new tier numbers; roll them back TOGETHER (mixed sets show mismatched T-numbers only).
     # pack drops (2026-10-17, PR #17, research/Pack-Drops-Spec.md): Gear 0.3.19 + Mobs 0.1.10 may roll back alone, but OPEN or IDENTIFY all

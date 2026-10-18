@@ -78,17 +78,27 @@ ok(TT.described("Wood_Oak_Trunk", "  x  ") == "T1 Copper - x", "described trims"
 # metals (tools/skyyench.py TABLE_ORES, SkyyCollections 0.2.25) take their base's tier -> enchanted 55 + those rows
 ENCH_ORES = [t for t in getattr(EN, "TABLE_ORES", []) if t[2] in TT.ROWS]
 COUNTS = {"ore": 7, "bar": 8, "log": 34, "crop": 14, "seed": 28, "enchanted": 55 + len(ENCH_ORES), "tool": 34, "armory": 11,
-          "can": 6, "harvester": 4, "zone_ore_block": 4, "zone_ore": 4, "zone_bar": 4, "alloy": 5,
-          "mining_armor": 32}          # SkyyGear 0.3.21: the zone Mining sets (Lead .. Lumen x 4 slots, TT.OWN_IDS); tools01: enchanted 17 -> 18 (+ the Enchanted Stick); C1 (SkyyCollections 0.2.21): 18 -> 55 (37 own items on a tiered base); SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
+          "can": 6 + 10, "harvester": 4 + 12, "forever_tool": 27, "armory_metal": 76, "zone_ore_block": 4, "zone_ore": 4, "zone_bar": 4, "alloy": 5,
+          "mining_armor": 32}          # SkyyGear 0.3.23 (G2): + the forever tools of Bronze + the 8 zone metals (pickaxe / hatchet / multitool 27), cans Mithril + 9, Harvesters Cobalt / Adamantite / Mithril + 9 (TT.OWN_IDS); SkyyGear 0.3.21: the zone Mining sets (Lead .. Lumen x 4 slots, TT.OWN_IDS); tools01: enchanted 17 -> 18 (+ the Enchanted Stick); C1 (SkyyCollections 0.2.21): 18 -> 55 (37 own items on a tiered base); SkyyGear 0.3.12: its OWN watering can + Harvester ladders (TT.OWN_IDS, not in Assets.zip)
 for f, n in COUNTS.items():
     ok(len(TT.ids_in(f)) == n, "family %s has %d ids, want %d" % (f, len(TT.ids_in(f)), n))
 ok(set(TT.families()) == set(COUNTS), "families: %s" % TT.families())
 ok(len(TT.ids_for("SkyyCollections")) == 7 + 8 + 34 + 14 + 28 + 55 + len(ENCH_ORES), "SkyyCollections owns %d" % len(TT.ids_for("SkyyCollections")))
-ok(TT.ids_for("SkyyGear") == sorted(TT.ids_in("tool") + TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor")) and TT.ids_for("SkyyArmory") == TT.ids_in("armory"), "owners")
-ok(sorted(TT.OWN_IDS) == sorted(TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor")) and TT.tag_for("Tool_WaterCan_Crude") == "T1 Crude"
+ok(TT.ids_for("SkyyGear") == sorted(TT.ids_in("tool") + TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool")) and TT.ids_for("SkyyArmory") == sorted(TT.ids_in("armory") + TT.ids_in("armory_metal")), "owners")
+ok(sorted(TT.OWN_IDS) == sorted(TT.ids_in("can") + TT.ids_in("harvester") + TT.ids_in("mining_armor") + TT.ids_in("forever_tool")) and TT.tag_for("Tool_WaterCan_Crude") == "T1 Crude"
    and TT.tag_for("Tool_WaterCan_Copper") == "T1 Copper" and TT.tag_for("Tool_WaterCan_Iron") == "T2 Iron"
    and TT.tag_for("Tool_WaterCan_Adamantite") == "T10 Adamantite" and TT.tag_for("Tool_Sickle_Harvester_Crude") == "T1 Crude"
    and TT.tag_for("Tool_Sickle_Harvester_Thorium") == "T4 Thorium", "SkyyGear 0.3.12 own ids: the can T1 Crude .. T10 Adamantite, the Harvester .. T4 Thorium")
+# SkyyGear 0.3.23 (round G2): the new metals' forever tools at their metal's own step, every id of a non-vanilla tool metal ends _SkyWynn
+ok(TT.tag_for("Tool_Pickaxe_Bronze_SkyWynn") == "T3 Bronze" and TT.tag_for("Tool_Pickaxe_Lead_SkyWynn") == "T5 Lead"
+   and TT.tag_for("Tool_Hatchet_Pickaxe_Multitool_Lumen_SkyWynn") == "T15 Lumen" and TT.tag_for("Tool_Sickle_Harvester_Cobalt") == "T7 Cobalt"
+   and TT.tag_for("Tool_WaterCan_Mithril") == "T13 Mithril" and TT.tag_for("Tool_WaterCan_Azurvane_SkyWynn") == "T9 Azurvane"
+   and all(i.endswith("_SkyWynn") for i in TT.ids_in("forever_tool")) and "Tool_Pickaxe_Lead" not in TT.ROWS,
+   "SkyyGear 0.3.23 own forever tools: T3 Bronze .. T15 Lumen, _SkyWynn ids (never TerrariaToolsWeapons' Tool_Pickaxe_Lead)")
+# SkyyArmory 0.1.33 (round A1): its 76 new-metal weapons at their metal's step, owner SkyyArmory (its lang writes the tags)
+ok(sorted(TT.AR_IDS) == TT.ids_in("armory_metal") and TT.tag_for("Weapon_Wand_SoulCage_Lead_SkyWynn") == "T5 Lead"
+   and TT.tag_for("Weapon_Fist_Gauntlets_Lumen_SkyWynn") == "T15 Lumen" and TT.tag_for("Weapon_Crossbow_Thorium_Wynn") == "T4 Thorium"
+   and all(TT.combat_tag(i, 0) == TT.tag_for(i) for i in TT.AR_IDS), "SkyyArmory 0.1.33 rows = combat_tag of each id (T5 Lead .. T15 Lumen)")
 ok(all(r[2] in TT.OWNERS and 1 <= r[0] <= 16 for r in TT.ROWS.values()), "rows in range")
 ok(all(TT.word(i) == "Crude" for i in TT.ROWS if i.split("_")[2:3] and i.split("_")[2] in ("Crude", "Wood") and i.startswith(("Tool_", "Weapon_")))
    and all(TT.tier(i) == 1 for i in TT.ROWS if TT.word(i) == "Crude"), "every Crude / Wood tool or weapon says 'T1 Crude'")
@@ -189,7 +199,7 @@ except Exception as e:     # no cached copy / no game: the table checks above st
 if az:
     with zipfile.ZipFile(az) as z:
         ids = set(os.path.basename(n)[:-5] for n in z.namelist() if n.startswith("Server/Item/Items/") and n.endswith(".json"))
-    vanilla = [i for i in TT.ROWS if not i.startswith("Skyy_") and i not in TT.OWN_IDS and i not in TT.WG_IDS]   # OWN_IDS: SkyyGear's build; WG_IDS: SkyyWorldGen's
+    vanilla = [i for i in TT.ROWS if not i.startswith("Skyy_") and i not in TT.OWN_IDS and i not in TT.WG_IDS and i not in TT.AR_IDS]   # AR_IDS: SkyyArmory's build   # OWN_IDS: SkyyGear's build; WG_IDS: SkyyWorldGen's
     missing = sorted(i for i in vanilla if i not in ids)
     ok(not missing, "not in Assets.zip: %s" % missing)
     ok(not [i for i in TT.WG_IDS if i in ids], "ores01: no SkyyWorldGen id exists in Assets.zip")

@@ -297,6 +297,33 @@ for _m, _t in MINING_ARMOR:
         WORDS["Armor_Mining_%s_%s" % (_m, _sl)] = _m
 OWN_IDS = frozenset(["Tool_WaterCan_" + _w for _w in CAN_TIERS] + ["Tool_Sickle_Harvester_" + _w for _w in HARVESTER_TIERS]
                     + ["Armor_Mining_%s_%s" % (_m, _sl) for _m, _t in MINING_ARMOR for _sl in MINING_ARMOR_SLOTS])
+# SkyyGear 0.3.23 (round G2, research/Metals-Tools-Fortune-Spec.md 3.3; Skyy 2026-10-17 "Yes, full 15-step ladder (Recommended)" + "Yes, all
+# defaults (Recommended)"): the forever tools of the metals the vanilla tool ladder lacks - pickaxe / hatchet / multitool (family forever_tool)
+# of Bronze + the 8 zone metals and alloys, the Harvester from Cobalt up and the watering can from Mithril up. Tier + word = the metal's own
+# ladder step ("T3 Bronze", "T5 Lead"). Ids of a non-vanilla tool metal end "_SkyWynn" (TerrariaToolsWeapons owns Tool_Pickaxe_Lead; SkyyGear's
+# level.material.<Metal>_SkyWynn bands match only these). Made by SkyyGear's build (OWN_IDS, not in Assets.zip). Rows only: no number moves.
+G2_METALS = ("Bronze", "Lead", "Dusk", "Chromium", "Azurvane", "Slag", "Cinder", "Titanium", "Lumen")
+G2_FOREVER = tuple(_p % _g for _p in ("Tool_Pickaxe_%s_SkyWynn", "Tool_Hatchet_%s_SkyWynn", "Tool_Hatchet_Pickaxe_Multitool_%s_SkyWynn")
+                   for _g in G2_METALS)
+G2_HARVESTERS = tuple("Tool_Sickle_Harvester_" + _g for _g in ("Cobalt", "Adamantite", "Mithril")) + \
+    tuple("Tool_Sickle_Harvester_%s_SkyWynn" % _g for _g in G2_METALS)
+G2_CANS = ("Tool_WaterCan_Mithril",) + tuple("Tool_WaterCan_%s_SkyWynn" % _g for _g in G2_METALS)
+for _fam_g, _ids_g in (("forever_tool", G2_FOREVER), ("harvester", G2_HARVESTERS), ("can", G2_CANS)):
+    for _id_g in _ids_g:
+        _w_g = _id_g.split("_")[-2] if _id_g.endswith("_SkyWynn") else _id_g.split("_")[-1]
+        _add(_id_g, metal_tier(_w_g), _fam_g, "SkyyGear")
+OWN_IDS = OWN_IDS | frozenset(G2_FOREVER + G2_HARVESTERS + G2_CANS)
+# SkyyArmory 0.1.33 (round A1, spec 4.1 Group A; rows added by the SkyyGear 0.3.23 builder at the main session's request 2026-10-18): the 9
+# metal families in the 8 zone metals / alloys (Weapon_<Family>_<M>_SkyWynn; the Monk gauntlets Weapon_Fist_Gauntlets_*, the Priest soul cage
+# Weapon_Wand_SoulCage_*) + the Thorium / Cobalt / Adamantite / Mithril crossbows the Armory ladder lacked (Weapon_Crossbow_<M>_Wynn). Owner
+# SkyyArmory (its lang writes the "T5 Lead - " tags itself; one writer per key). Made by SkyyArmory's build (AR_IDS, not in Assets.zip).
+A1_FAMILIES = ("Wand", "Staff", "Spellbook", "Kunai", "Bo", "Fist_Gauntlets", "Wand_SoulCage", "GreatShield", "Crossbow")
+A1_WEAPONS = tuple("Weapon_%s_%s_SkyWynn" % (_f, _g) for _f in A1_FAMILIES for _g in G2_METALS[1:]) + \
+    tuple("Weapon_Crossbow_%s_Wynn" % _g for _g in ("Thorium", "Cobalt", "Adamantite", "Mithril"))
+for _id_g in A1_WEAPONS:
+    _w_g = _id_g.split("_")[-2]
+    _add(_id_g, metal_tier(_w_g), "armory_metal", "SkyyArmory")
+AR_IDS = frozenset(A1_WEAPONS)
 
 
 # ------------------------------------------------------------------------------------------------ rarity-tagged items (no T-number)
