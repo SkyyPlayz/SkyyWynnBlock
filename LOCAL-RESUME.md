@@ -26,7 +26,6 @@ Release a row when its PR is merged (or the job is dropped) and log it in docs/l
 | Mod(s) | Owner | Job | Branch / PR | Since | Status |
 |---|---|---|---|---|---|
 | SkyyGear (+ tools/tier_tags.py) | Local | Queue 1: mining armor Z2-Z5 = 8 new Mining sets (Lead, Dusk, Chromium, Azurvane, Slag, Cinder, Titanium, Lumen) in Gear 0.3.21 (no SkyyForaging mod exists; Mining sets live in Gear) | local, no PR | 2026-10-17 | Building |
-| tools/art/make_metal_items.py, models-local/art/metals/ (art only) | Local | Queue 2: metal volume art (ores, bars, 9 weapon families x 8 metals, other metal items) | local, no PR | 2026-10-17 | Building |
 
 Cobb holds no locks now. PR #17 merged + deployed 2026-10-17 (TEST-CHECKLIST 178); the Void Charms Gear texts went into Gear 0.3.19.
 
