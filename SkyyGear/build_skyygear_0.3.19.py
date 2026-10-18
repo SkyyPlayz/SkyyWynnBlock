@@ -12,8 +12,8 @@ random colour, crowns / amulets = Cloth, multiplicative pieces special sets only
 drops + Smithing step-up), 10% per kill (20% Challenge) per participant with 15% credit + own-class lean x3").
 LICENCE: SkyyGear only REACTS to The Armory's item ids (LadyPaladra, CC BY-NC 3.0: credit, never sold) at runtime - the id table, our own
 drop roll, our own modifiers. Nothing of theirs is copied, shipped, recoloured or overridden; a missing id (mod off / renamed) is skipped.
-  1. THE PACK TABLE (tools/pack_drops.py -> class GearPackId, ids as one packed string): 1,094 Armory ids in 50 sets (ROLE drop 29, ut 6,
-     mythic 15), each with its set, kind (armor / a weapon bag type), weight (Heavy / Light / Cloth), tier (a level.material row word) and
+  1. THE PACK TABLE (tools/pack_drops.py -> class GearPackId, ids as one packed string): 1,067 Armory ids in 49 sets (ROLE drop 29, ut 5,
+     mythic 15; Academy OFF since the critic round - item 10), each with its set, kind (armor / a weapon bag type), weight (Heavy / Light / Cloth), tier (a level.material row word) and
      zone (Crude / Copper / Iron 1, Thorium 2, Cobalt 3, Adamantite 4, Mithril 5). Void Armor rows wait for their ids, every other mod for
      its author's OK - none of their ids is in the jar.
   2. PACK IDS ARE GEAR (part.packDrops, default ON): GearData.isGear / isGearMs = true for a table id (not stacking), kind combat
@@ -26,7 +26,7 @@ drop roll, our own modifiers. Nothing of theirs is copied, shipped, recoloured o
      (Item.getWeapon; anything else = never a candidate). PICKED BY SET (Pack-Armor-Plan 2.3 / the 10-08
      lock): one pack set weighs loot.packWeight (1 = one vanilla item) in a bag of that slot, split over its live pieces of that slot, so 179
      Calvary colourways do not drown everything else. Random colour = any colourway of the set (10-08 default).
-  4. UT CANDIDATES (role ut: Ghost Rook, Ghost Calvary, Battlegrounds, Academy, Ghost Sword, Hepta Axe) never drop as normal gear; each
+  4. UT CANDIDATES (role ut: Ghost Rook, Ghost Calvary, Battlegrounds, Ghost Sword, Hepta Axe - none has a recipe in 1.23.0) never drop as normal gear; each
      becomes a real Untiered item the moment its ut.<id> + utfx.<id> rows exist (the existing Untiered table: fixed lines + one trade-off are
      Skyy's call; an id any loaded recipe makes is refused there).
   5. MYTHIC BOSS BAGS (role mythic; SkyyMobs 0.1.10 mob:fn:boss): when a BOSS role dies (SkyyMobs' bosses.roles), every player SkyyMobs
@@ -44,9 +44,55 @@ drop roll, our own modifiers. Nothing of theirs is copied, shipped, recoloured o
      is REFUSED while the player holds a rolled piece (rarity above Normal) of its gear input (it would erase the roll); with Normal pieces
      it runs and its output gets no fresh roll and no Smithing XP (no free re-roll / XP loop by swapping colours) - stamped Normal like any
      found item. Crafting pack pieces pays no Smithing XP at all (their recipes are their economy). gear.exclude applies to pack ids too.
+     Local rebuild (2026-10-17, bytecode of TheArmoryMod-1.23.0 AlterationTransaction.processFromInventory): the Alteration Table fires
+     CraftRecipeEvent$Pre (honours setCancelled) + $Post on the player and builds the new colour as new ItemStack(out, qty, durability,
+     the input's WHOLE metadata - EXCLUDED_METADATA_KEYS is empty) + withQuality(the input's) - so a rolled piece keeps its roll there.
+     The veto therefore skips recipes on The Armory's "ArmoryAlteration" bench (GearPackId.alter); it still guards every other pack
+     recipe that eats a gear piece (Elite Rook from Rook at a normal bench, where the engine makes a fresh stack).
   7. TIER TAG: a pack item's tooltip flavour line starts with its tier tag ("T3 Iron - ...", tools/tier_tags.py numbering) - only in our
      per-stack tooltip; their lang keys are never written.
   8. /gear loot (existing admin command) adds the pack lines: live sets / ids, missing ids, Mythic sets per zone, boss rolls / bags.
+  10. CRITIC FIXES (local rebuild 2026-10-17). Skyy's popup answer, word for word: Q "...almost every Armory set we planned as MYTHIC
+     (boss-only) or UT can also be CRAFTED at The Armory's own benches ... and The Armory's own chest loot drops some of them too..." ->
+     "Block craft, chest = plain (Recommended)".
+     a) CraftRecipeEvent$Pre (bench crafting AND SkyySacks /craft, which fires the same Pre) refuses a recipe whose output is a UT /
+        Mythic table row (chat line + CRAFT-BLOCK-PACK in gear.log; Creative still crafts). Only an Alteration Table colour swap inside
+        the SAME set passes (GearPackId.sameSet: it makes nothing new and keeps the piece's own document). Such a piece their chests /
+        mobs drop is a plain Normal piece (GearRoll.unidDoc / GearUnid.fromItem / GearTag.spread): real Mythic rolls only come from
+        boss bags. ACADEMY: all 27 of its pieces have a recipe, so it is OFF in tools/pack_drops.py (no longer a UT candidate; no
+        recipe-free Armory Cloth set exists to replace it - FOR SKYY: Zone 4 Cloth UT stays empty until you pick one).
+     b) gear:fn:roll mode 8 (SkyySacks /craft): no Smithing XP for pack pieces; a swap recipe (a[4] = the recipe id) or a UT / Mythic
+        row = a plain Normal piece; gear:fn:classShow answers false for a UT / Mythic row. Found: SkyySacks 0.8.20 lists Armor_Bench
+        and Weapon_Bench recipes (the bench accessories), so The Armory's base pieces + upgrades show in /craft; it never lists the
+        ArmoryAlteration bench (no accessory). Their ids have no Armor_ / Weapon_ prefix, so /craft puts them on the CRAFTING tab,
+        where classShow is not asked (Smithing tab only) - the Pre refusal is what blocks them there (the row still shows).
+     c) The swap guard reads ResourceTypeId inputs too (GearPackId.resSets / carries: a resource a live table item carries = gear;
+        the veto checks rolled pieces carrying it).
+     d) A boss family (role up to "_Phase") rolls once per credited player per 120 s (GearPack.FIGHT; BN[6] = "same fight"):
+        Assets.zip 0.7 has separate phase roles (Goblin_Duke + Phase_2 / Phase_3_*, Skeleton_Elite + Phase_2 in the encounter group
+        Skeleton_Elite_Encounter_Target) and no in-data role switch was found, so phases may be separate deaths.
+     e) Mythic boss bags are NOT under the hourly extra-bag cap any more (d limits them).
+     f) GearData.isGear's pack answer cached per row (GearPackId.GC, cleared on GearCfg.EPOCH); GearPool.table rebuilt on the config
+        epoch or the item count only; GearPackGive counts the bag before / after a write that throws (nothing landed = the next
+        container / the feet). SkyyMobs: DEAD evicts the oldest entry, never clears all.
+     g) Build-time coin-loop guard: when TheArmoryMod-*.jar is in the Mods folder, no table id may carry a top-level Value / Price /
+        Sell / Coin / Worth field (tools/pack_drops.py coin_keys, read-only).
+     h) SALVAGE (Skyy's popup, word for word: Q "...The Armory's own Salvagebench gives back 100% of the materials from its pieces ... Block
+        salvaging rolled (dropped / identified) pieces at their bench?" -> "Yes, Requip only (Recommended)"): CraftRecipeEvent$Pre refuses a
+        Salvagebench recipe while the player holds a pack piece of its input whose document is not a craft one (GearPack.salvVeto /
+        salvBlocked: src drop / chest / boss / legacy ...), pointing to Requip SALVAGE; crafted pieces still salvage. This catches SkyySacks
+        /craft (it lists Salvagebench recipes as an instant bench and fires the same Pre). NOT caught: the Salvagebench BLOCK itself - it is
+        a Processing bench (ProcessingBenchBlock.tryCompleteOneRecipe -> ItemContainer.removeMaterials in BenchSystems$ProcessingBenchTick,
+        VERIFIED bytecode 0.7): only CraftingManager.craftItem / queueCraft fire CraftRecipeEvent$Pre. Proposed hook (next round): a
+        ChunkStore ticking system ordered BEFORE BenchSystems$ProcessingBenchTick that, on a Salvagebench, moves a pack stack carrying a
+        non-craft document out of ProcessingBenchBlock.getInputContainer() into its output container (counted before / after, never lost),
+        plus a chat line to the player who has its ProcessingBenchWindow open.
+  9. VOID CHARMS WORDING (folded in by the local rebuild; Skyy 2026-10-17: "i noticed they are still called accessory's in the settings";
+     model tools/accessories_0_5_24_patch.py): player-visible "Accessory Bag" meaning the charm feature -> "Void Charms" - the bench-rule
+     line ("... accessory in your Void Charms - or craft it at a ..."), the Identify / Appraisal Tool lines ("... accessory in your Void
+     Charms.", "(Void Charms)", "Void Charms is not loaded"). Unchanged on purpose: ids, config keys, "Accessory Power", single items
+     "accessory", the retired item Skyy_Accessory_Bag (SkyyAccessories names it "Old Accessory Bag"; SkyyGear writes no name for it), code
+     comments.
 Commands: none new. Server Setup -> Gear -> Loot: part.packDrops, loot.packWeight, loot.boss.mythic, loot.boss.credit, loot.boss.classLean,
 loot.boss.armorShare (new keys: a missing line = its default, no one-time update). Classes: + GearPackId, GearPack, GearPackGive. SAVED DATA: a Mythic boss bag carries "pz" (int) in its
 SkyyUnid document and in the identified item's box sub-document; nothing else is new (pack items carry the normal SkyyGear document).
@@ -4483,6 +4529,15 @@ _MATW = set(_t.lower() for _t, _l in MATERIALS)
 assert set(_r[4] for _r in PACK_ROWS) <= _MATW, "a pack tier has no level.material row: %s" % (set(_r[4] for _r in PACK_ROWS) - _MATW)
 assert all(_r[0] for _r in PACK_ROWS) and all("," not in _r[0] and ";" not in _r[0] for _r in PACK_ROWS)
 PACK_TAGS = [PKD.tag_of(_s["tier"]) for _s in PACK_SETS]
+# critic fix 7 (coin-loop guard): when The Armory is installed, none of the table ids may carry a price field (read-only check of their jar)
+import glob as _glob
+_ARMJ = sorted(_glob.glob(os.path.join(B.HYTALE, "UserData", "Mods", "TheArmoryMod-*.jar")))
+if _ARMJ:
+    _CK = PKD.coin_keys(_ARMJ[-1])
+    assert not _CK, "a pack id carries a price field - check our Bazaar / Coins listings first: %s" % _CK[:5]
+    print("0.3.19 pack coin guard: %s - no table id carries a Value / Price / Sell / Coin / Worth field" % os.path.basename(_ARMJ[-1]))
+else:
+    print("0.3.19 pack coin guard: The Armory is not in the Mods folder - skipped")
 # GearPool rows after the vanilla ones: weapons carry their bag type, armor -1 (the LIVE ArmorSlot decides at run time)
 PACK_POOL = [(_r[0], (LOOT_TYPES.index(_r[2]) if _r[2] != "armor" else -1), _r[3], _r[5], _r[6], _r[1]) for _r in PACK_ROWS]
 print("0.3.19 pack drops: %d ids in %d sets (%s) - drop %d, ut %d, mythic %d sets; zones %s"
@@ -12159,8 +12214,73 @@ public static String tag(String id) {
   int k = idx(id);
   return k < 0 ? null : S_TAG[SET[k]];
 }""")
-# the swap guard: the output is a pack item and an input is gear-like (a pack item, or an Armor_ / Weapon_ id) - a colour swap at The
-# Armory's Alteration Table or an upgrade made from a piece: no fresh roll, no Smithing XP
+# critic fix 1 (Skyy 2026-10-17 popup "Block craft, chest = plain"): a UT or Mythic table row = boss / Untiered only - never crafted here,
+# and a copy their own chests / mobs drop stays a plain Normal piece
+M(gpid, r"""
+public static boolean special(String id) {
+  if (!has(id)) return false;
+  int k = idx(id);
+  return k >= 0 && ROLE[k] >= 1;
+}""")
+# critic fix 6: GearData.isGear's pack answer per row (MaxStack + gear.exclude), dropped when the config reloads (GearCfg.EPOCH); 0 = ask
+F(gpid, "public static volatile byte[] GC = null;")
+F(gpid, "public static volatile long GCE = -1L;")
+M(gpid, r"""
+public static int gc(int k) {
+  long e = @PKG@.GearCfg.EPOCH;
+  byte[] c = GC;
+  if (c == null || GCE != e) { GC = new byte[ID.length]; GCE = e; return 0; }
+  if (k < 0 || k >= c.length) return 0;
+  return c[k];
+}""")
+M(gpid, r"""
+public static void gcSet(int k, boolean g) {
+  byte[] c = GC;
+  if (c != null && k >= 0 && k < c.length) c[k] = (byte) (g ? 1 : 2);
+}""")
+# critic fix 3: recipe inputs by ResourceTypeId (The Armory's Alteration Table and upgrades: IronDragonHelm <- resource AntiqueDragonHelm,
+# EliteScorpianHelm <- 2 x resource ScorpianHelm): resource id -> the table SETS whose live items carry it (rebuilt when the item count moves)
+F(gpid, "public static volatile java.util.HashMap RES = null;")
+F(gpid, "public static volatile int RESN = -2;")
+M(gpid, r"""
+public static java.util.HashSet resSets(String rid) {
+  if (rid == null) return null;
+  int n = -1;
+  try { n = @ITM@.getAssetMap().getAssetMap().size(); } catch (Throwable t) { n = -1; }
+  java.util.HashMap m = RES;
+  if (m == null || n != RESN) {
+    m = new java.util.HashMap();
+    for (int i = 0; i < ID.length; i++) {
+      try {
+        @ITM@ it = @PKG@.Gear.item(ID[i]);
+        if (it == null) continue;
+        com.hypixel.hytale.protocol.ItemResourceType[] rs = it.getResourceTypes();
+        for (int j = 0; rs != null && j < rs.length; j++) {
+          if (rs[j] == null || rs[j].id == null) continue;
+          java.util.HashSet h = (java.util.HashSet) m.get(rs[j].id);
+          if (h == null) { h = new java.util.HashSet(); m.put(rs[j].id, h); }
+          h.add(Integer.valueOf(SET[i]));
+        }
+      } catch (Throwable t2) { }
+    }
+    RES = m;
+    RESN = n;
+  }
+  return (java.util.HashSet) m.get(rid);
+}""")
+M(gpid, r"""
+public static boolean carries(String itemId, String rid) {
+  if (itemId == null || rid == null) return false;
+  try {
+    @ITM@ it = @PKG@.Gear.item(itemId);
+    if (it == null) return false;
+    com.hypixel.hytale.protocol.ItemResourceType[] rs = it.getResourceTypes();
+    for (int j = 0; rs != null && j < rs.length; j++) if (rs[j] != null && rid.equals(rs[j].id)) return true;
+  } catch (Throwable t) { }
+  return false;
+}""")
+# the swap guard: the output is a pack item and an input is gear-like (a pack item, an Armor_ / Weapon_ id, or a resource type a table
+# item carries - critic fix 3) - a colour swap at The Armory's Alteration Table or an upgrade made from a piece: no fresh roll, no Smithing XP
 M(gpid, r"""
 public static boolean swap(@CRR@ rc, String out) {
   if (rc == null || !has(out)) return false;
@@ -12170,9 +12290,69 @@ public static boolean swap(@CRR@ rc, String out) {
     for (int i = 0; i < in.length; i++) {
       if (in[i] == null) continue;
       String q = in[i].getItemId();
-      if (q == null) continue;
+      if (q == null) {
+        String rid = in[i].getResourceTypeId();
+        if (rid != null && resSets(rid) != null) return true;
+        continue;
+      }
       if (idx(q) >= 0 || q.startsWith("Armor_") || q.startsWith("Weapon_")) return true;
     }
+  } catch (Throwable t) { }
+  return false;
+}""")
+# local rebuild: The Armory's Alteration Table recipes (bench "ArmoryAlteration", their AlterationTransaction.isAlterationRecipe rule) carry
+# the input's whole metadata + quality onto the new colour - the roll survives, so the swap veto never applies there
+M(gpid, r"""
+public static boolean alter(@CRR@ rc) {
+  if (rc == null) return false;
+  try {
+    com.hypixel.hytale.protocol.BenchRequirement[] b = rc.getBenchRequirement();
+    if (b == null) return false;
+    for (int i = 0; i < b.length; i++) if (b[i] != null && "ArmoryAlteration".equals(b[i].id)) return true;
+  } catch (Throwable t) { }
+  return false;
+}""")
+# critic fix 1: an Alteration Table recipe that only turns a piece of a set into another colour of the SAME set (every item input a row of
+# that set, every resource input carried by that set alone) - it makes nothing new (the input's whole document + quality carry over)
+M(gpid, r"""
+public static boolean sameSet(@CRR@ rc, String out) {
+  if (rc == null || !alter(rc)) return false;
+  int k = idx(out);
+  if (k < 0) return false;
+  int st = SET[k];
+  try {
+    @MQ@[] in = rc.getInput();
+    if (in == null || in.length == 0) return false;
+    for (int i = 0; i < in.length; i++) {
+      if (in[i] == null) continue;
+      String q = in[i].getItemId();
+      if (q != null) { int j = idx(q); if (j < 0 || SET[j] != st) return false; continue; }
+      java.util.HashSet h = resSets(in[i].getResourceTypeId());
+      if (h == null || h.size() != 1 || !h.contains(Integer.valueOf(st))) return false;
+    }
+    return true;
+  } catch (Throwable t) { return false; }
+}""")
+# critic fix 2: SkyySacks /craft (gear:fn:roll mode 8) - a UT / Mythic row or a swap recipe's output is a PLAIN Normal piece (no fresh roll)
+M(gpid, r"""
+public static boolean plainCraft(String id, Object rid) {
+  if (!has(id)) return false;
+  if (special(id)) return true;
+  if (!(rid instanceof String)) return false;
+  try {
+    Object o = @CRR@.getAssetMap().getAsset((String) rid);
+    return o instanceof @CRR@ && swap((@CRR@) o, id);
+  } catch (Throwable t) { return false; }
+}""")
+# critic round 2 (Skyy 2026-10-17 popup "Yes, Requip only"): a recipe of the vanilla Salvagebench (The Armory's Salvage_* recipes give back
+# 100% of a piece's materials)
+M(gpid, r"""
+public static boolean salvage(@CRR@ rc) {
+  if (rc == null) return false;
+  try {
+    com.hypixel.hytale.protocol.BenchRequirement[] b = rc.getBenchRequirement();
+    if (b == null) return false;
+    for (int i = 0; i < b.length; i++) if (b[i] != null && "Salvagebench".equalsIgnoreCase(b[i].id)) return true;
   } catch (Throwable t) { }
   return false;
 }""")
@@ -12261,7 +12441,15 @@ public static boolean isGearMs(String id, int ms) {
 M(gdt, r"""
 public static boolean isGear(String id) {
   if (id == null || id.length() == 0 || neverGear(id)) return false;
-  if (@PKG@.GearPackId.has(id)) return isGearMs(id, maxStack(id));          // 0.3.19
+  if (@PKG@.GearPackId.has(id)) {          // 0.3.19; critic fix 6: the answer cached per row until the config reloads
+    int pk = @PKG@.GearPackId.idx(id);
+    int pc = @PKG@.GearPackId.gc(pk);
+    if (pc != 0) return pc == 1;
+    int pms = maxStack(id);
+    boolean pg = isGearMs(id, pms);
+    if (pms >= 0) @PKG@.GearPackId.gcSet(pk, pg);          // an item not loaded yet is asked again
+    return pg;
+  }
   if (!included(id)) {
     if (skyyItem(id)) return false;
     if (id.startsWith("Armor_")) return true;
@@ -14236,7 +14424,7 @@ public static long[] payCraft(java.util.UUID u, String id, String got, String wh
   return res;
 }""")
 # PART B: the unidentified tag (col 1 = mob -> src drop, col 2 = chest -> src chest)
-M(grl, "public static @BD@ unidDoc(String id, int col, String src) { return newDoc(id, pickRarity(col), false, src); }")
+M(grl, "public static @BD@ unidDoc(String id, int col, String src) { if (@PKG@.GearPackId.special(id)) return newDoc(id, 0, true, src); return newDoc(id, pickRarity(col), false, src); }")          # critic fix 1: a UT / Mythic table piece found = plain Normal
 # 0.2 (spec 8): a document that is rewritten anyway (reforge, identify) gets its level stamped when it has none - the level it reads now, so
 # it keeps the level its modifiers roll at; an existing lvl is never changed (spec 4: reforge / identify never change a level)
 M(grl, r"""
@@ -20827,7 +21015,8 @@ F(gpool, "public static final boolean[] P_DROP = catZ(new boolean[] { %s }, @PKG
 F(gpool, "public static final int[] P_ZONE = fill(%d, 0, @PKG@.GearPackId.ZONE);" % len(LOOT_POOL))
 F(gpool, "public static final int[] P_ROLE = fill(%d, 0, @PKG@.GearPackId.ROLE);" % len(LOOT_POOL))
 F(gpool, "public static final int[] P_SET = fill(%d, -1, @PKG@.GearPackId.SET);" % len(LOOT_POOL))
-# boss bag counters: 0 boss kills seen, 1 rolls, 2 bags made, 3 nothing fits, 4 zone unknown, 5 bags opened from the zone's Mythic sets, 6 hourly cap
+# boss bag counters: 0 boss kills seen, 1 rolls, 2 bags made, 3 nothing fits, 4 zone unknown, 5 bags opened from the zone's Mythic sets,
+# 6 same fight (a phase / repeat death of a boss family within 120 s - critic fix 4; the hourly cap no longer applies to boss bags)
 F(gpool, "public static final long[] BN = new long[7];")
 F(gpool, "public static final String[] T_KEY = %s;" % jarr(LOOT_TYPES))
 F(gpool, "public static final String[] T_NAME = %s;" % jarr(LOOT_TNAME))
@@ -20875,8 +21064,10 @@ public static Object[] table() {
   long now = System.currentTimeMillis();
   int top = @PKG@.GearCfg.LOOT_TOP;
   String ex = String.valueOf(@PKG@.GearCfg.LOOT_EXCLUDE);
-  if (t != null && ((Long) t[0]).longValue() == ep && now - ((Long) t[1]).longValue() < 60000L && now >= ((Long) t[1]).longValue()
-      && ((Integer) t[5]).intValue() == top && ex.equals(t[6])) return t;
+  int ic = -1;
+  try { ic = @ITM@.getAssetMap().getAssetMap().size(); } catch (Throwable x0) { ic = -1; }
+  if (t != null && ((Long) t[0]).longValue() == ep && t.length > 9 && ((Integer) t[9]).intValue() == ic
+      && ((Integer) t[5]).intValue() == top && ex.equals(t[6])) return t;          // critic fix 6: the config epoch / the item count, no 60 s expiry
   int n = P_ID.length;
   boolean[] ok = new boolean[n];
   int[] lo = new int[n];
@@ -20911,7 +21102,7 @@ public static Object[] table() {
     Object o = cnt.get(P_SET[i] + ":" + lt[i]);
     pw[i] = o instanceof Integer ? 1.0 / (double) ((Integer) o).intValue() : 0.0;
   }
-  t = new Object[] { Long.valueOf(ep), Long.valueOf(now), ok, lo, hi, Integer.valueOf(top), ex, lt, pw };
+  t = new Object[] { Long.valueOf(ep), Long.valueOf(now), ok, lo, hi, Integer.valueOf(top), ex, lt, pw, Integer.valueOf(ic) };
   TAB = t;
   return t;
 }""")
@@ -21232,7 +21423,7 @@ public static synchronized String packText() {
     + " table ids (" + miss + " not installed / no slot, " + ut + " Untiered candidates wait for their ut rows); Mythic pieces by zone 1-5: "
     + zm[1] + " / " + zm[2] + " / " + zm[3] + " / " + zm[4] + " / " + zm[5] + "; boss Mythic bags " + @PKG@.GearCfg.BOSS_MY + "% (credit "
     + @PKG@.GearCfg.BOSS_CREDIT + "%): boss kills " + BN[0] + ", rolls " + BN[1] + ", bags " + BN[2] + ", nothing fit " + BN[3]
-    + ", zone unknown " + BN[4] + ", hourly cap " + BN[6] + ", opened from Mythic sets " + BN[5];
+    + ", zone unknown " + BN[4] + ", same fight " + BN[6] + ", opened from Mythic sets " + BN[5];
 }""")
 M(gpool, r"""
 public static String statusText() {
@@ -21595,6 +21786,7 @@ public static @IS@ fromItem(@IS@ s, int col, int L, String ls) {
   if (s == null || s.isEmpty() || s.getQuantity() != 1 || !@PKG@.GearCfg.UNID_BAGS) return null;
   String id = s.getItemId();
   if (@PKG@.GearMine.isPiece(id) || @PKG@.GearGArm.index(id) >= 0) return null;        // 0.2.15: gathering armor never drops unidentified (0.3.6: + the new sets)
+  if (@PKG@.GearPackId.special(id)) return null;          // critic fix 1: a UT / Mythic table piece = no bag (GearTag.unid -> GearRoll.unidDoc = plain Normal)
   if (!@PKG@.GearData.isGear(id) || @PKG@.GearData.hasAnyDoc(s.getMetadata())) return null;
   int ty = @PKG@.GearPool.typeOfId(id);
   if (ty < 0) return null;
@@ -22103,8 +22295,34 @@ public static @IS@ mythicBag(int z, String[] lean) {
   if (rg == null) return null;
   return @PKG@.GearUnid.makeZ(ty, at, @PKG@.GearDefs.R_MY, rg[0], rg[1], "boss", "zone" + z, 0, z);
 }""")
+# critic fix 4: a boss FAMILY (the role up to "_Phase", e.g. Goblin_Duke_Phase_2 -> Goblin_Duke) rolls once per credited player per fight
+# (FIGHT_MS): phase roles that die one after another (Goblin_Duke, Skeleton_Elite) cannot roll 3-4 times. Expired entries are swept.
+F(gpack, "public static final java.util.concurrent.ConcurrentHashMap FIGHT = new java.util.concurrent.ConcurrentHashMap();")
+F(gpack, "public static final long FIGHT_MS = 120000L;")
+M(gpack, r"""
+public static String family(String role) {
+  if (role == null) return "";
+  int k = role.indexOf("_Phase");
+  return k > 0 ? role.substring(0, k) : role;
+}""")
+M(gpack, r"""
+public static boolean firstOfFight(java.util.UUID u, String fam, long now) {
+  if (u == null) return false;
+  if (FIGHT.size() > 256) {
+    Object[] ks = FIGHT.keySet().toArray();
+    for (int i = 0; i < ks.length; i++) {
+      Object o = FIGHT.get(ks[i]);
+      if (!(o instanceof Long) || now - ((Long) o).longValue() >= FIGHT_MS || now < ((Long) o).longValue()) FIGHT.remove(ks[i]);
+    }
+  }
+  String k = fam + "|" + u;
+  Object o = FIGHT.get(k);
+  if (o instanceof Long && now - ((Long) o).longValue() < FIGHT_MS && now >= ((Long) o).longValue()) return false;
+  FIGHT.put(k, Long.valueOf(now));
+  return true;
+}""")
 # the players who roll: SkyyMobs' credit list (>= loot.boss.credit % of the damage); the killer only when nobody is credited at all (review
-# M4: credited players all under the bar = nobody); same store, not Creative; no head-count cap (fix round - the hourly cap limits abuse)
+# M4: credited players all under the bar = nobody); same store, not Creative; no head-count cap (fix round; critic fix 4: once per fight per player)
 M(gpack, r"""
 public static java.util.ArrayList rollers(Object[] a, @DTHC@ dc, @ST@ store) {
   java.util.ArrayList us = new java.util.ArrayList();
@@ -22138,22 +22356,60 @@ public static java.util.ArrayList rollers(Object[] a, @DTHC@ dc, @ST@ store) {
 # the output is a new piece, the roll would be lost; Normal pieces swap freely (null = allowed)
 M(gpack, r"""
 public static String swapVeto(@CRR@ rc, String out, @INV@ inv) {
-  if (inv == null || !@PKG@.GearPackId.swap(rc, out)) return null;
+  if (inv == null || !@PKG@.GearPackId.swap(rc, out) || @PKG@.GearPackId.alter(rc)) return null;          // local rebuild: the Alteration Table keeps the roll
   @MQ@[] in = rc.getInput();
   if (in == null) return null;
   @IC@[] cs = @PKG@.GearStamp.allOf(inv);
   for (int k = 0; k < in.length; k++) {
     if (in[k] == null) continue;
     String q = in[k].getItemId();
-    if (q == null || !@PKG@.GearData.isGear(q)) continue;
+    String rid = q == null ? in[k].getResourceTypeId() : null;          // critic fix 3: a resource input a table item carries
+    if (q == null && (rid == null || @PKG@.GearPackId.resSets(rid) == null)) continue;
+    if (q != null && !@PKG@.GearData.isGear(q)) continue;
     for (int c = 0; c < cs.length; c++) {
       if (cs[c] == null) continue;
       for (int i = 0; i < cs[c].getCapacity(); i++) {
         @IS@ s = cs[c].getItemStack((short) i);
-        if (s == null || s.isEmpty() || !q.equals(s.getItemId())) continue;
-        @BD@ d = @PKG@.GearData.effective(q, s.getMetadata());
+        if (s == null || s.isEmpty()) continue;
+        String sid = s.getItemId();
+        if (q != null ? !q.equals(sid) : !@PKG@.GearPackId.carries(sid, rid)) continue;
+        @BD@ d = @PKG@.GearData.effective(sid, s.getMetadata());
         if (d != null && @PKG@.GearData.rarity(d) > 0)
-          return @PKG@.Gear.itemName(q) + " in your inventory carries a rolled rarity - this recipe makes a new piece and would erase it. Store the rolled piece first; Normal pieces swap freely.";
+          return @PKG@.Gear.itemName(sid) + " in your inventory carries a rolled rarity - this recipe makes a new piece and would erase it. Store the rolled piece first; Normal pieces swap freely.";
+      }
+    }
+  }
+  return null;
+}""")
+# critic round 2 (Skyy 2026-10-17 "Yes, Requip only"): a pack piece whose SkyyGear document did not come from a craft (dropped, found in a
+# chest, a boss bag, identified) salvages only through Requip SALVAGE (gear:fn:salvage) - never for 100% at a Salvagebench recipe
+M(gpack, r"""
+public static boolean salvBlocked(String sid, @BD@ md) {
+  if (sid == null || !@PKG@.GearPackId.has(sid)) return false;
+  @BD@ d = @PKG@.GearData.effective(sid, md);
+  return d != null && @PKG@.GearData.hasAnyDoc(md) && !"craft".equals(@PKG@.GearData.str(d, "src", ""));
+}""")
+M(gpack, r"""
+public static String salvVeto(@CRR@ rc, @INV@ inv) {
+  if (inv == null || rc == null || !@PKG@.GearPackId.salvage(rc)) return null;
+  @MQ@[] in = rc.getInput();
+  if (in == null) return null;
+  @IC@[] cs = @PKG@.GearStamp.allOf(inv);
+  for (int k = 0; k < in.length; k++) {
+    if (in[k] == null) continue;
+    String q = in[k].getItemId();
+    String rid = q == null ? in[k].getResourceTypeId() : null;
+    if (q == null && (rid == null || @PKG@.GearPackId.resSets(rid) == null)) continue;
+    if (q != null && !@PKG@.GearPackId.has(q)) continue;
+    for (int c = 0; c < cs.length; c++) {
+      if (cs[c] == null) continue;
+      for (int i = 0; i < cs[c].getCapacity(); i++) {
+        @IS@ s = cs[c].getItemStack((short) i);
+        if (s == null || s.isEmpty()) continue;
+        String sid = s.getItemId();
+        if (q != null ? !q.equals(sid) : !@PKG@.GearPackId.carries(sid, rid)) continue;
+        if (salvBlocked(sid, s.getMetadata()))
+          return @PKG@.Gear.itemName(sid) + " in your inventory is a dropped / identified piece - salvage it with Requip's SALVAGE button, not at a Salvagebench. Store it first to salvage a crafted one here.";
       }
     }
   }
@@ -22167,6 +22423,16 @@ gpgv = mk("GearPackGive")
 gpgv.addInterface(pool.get("java.lang.Runnable"))
 for _f in ("public @PR@ pr;", "public @IS@ bag;", "public @ST@ store;", "public @VEC@ at;", "public @RTF@ rot;", "public int z;"):
     F(gpgv, _f)
+M(gpgv, r"""
+public static int cnt(@IC@ c, String id) {
+  int n = 0;
+  if (c == null || id == null) return 0;
+  for (int i = 0; i < c.getCapacity(); i++) {
+    @IS@ s = c.getItemStack((short) i);
+    if (s != null && !s.isEmpty() && id.equals(s.getItemId())) n = n + s.getQuantity();
+  }
+  return n;
+}""")
 C(gpgv, r"""
 public GearPackGive(@PR@ pr, @IS@ bag, @ST@ store, @VEC@ at, @RTF@ rot, int z) {
   this.pr = pr; this.bag = bag; this.store = store; this.at = at; this.rot = rot; this.z = z;
@@ -22184,10 +22450,14 @@ public void run() {
       @IC@[] cs = new @IC@[] { inv.getStorage(), inv.getHotbar(), inv.getBackpack() };
       for (int i = 0; i < cs.length && "lost".equals(how); i++) {
         if (cs[i] == null) continue;
+        int c0 = cnt(cs[i], this.bag.getItemId());
         try {
           Object tx = cs[i].addItemStack(this.bag);
           if (!(tx instanceof @TXN@) || ((@TXN@) tx).succeeded()) how = "inventory";
-        } catch (Throwable ta) { how = "error"; }          // never a second copy after a half-done write
+        } catch (Throwable ta) {          // critic fix 6: counted before and after - a write that landed = given (never a second copy); none = go on
+          if (cnt(cs[i], this.bag.getItemId()) != c0) how = "inventory";
+          @PKG@.Gear.warnOnce("bossgive-add", "boss Mythic bag: a container refused the write: " + ta);
+        }
       }
       if ("lost".equals(how) && r.isValid() && r.getStore() == this.store) { @ITU@.dropItem(r, this.bag, this.store); how = "feet"; }
     }
@@ -22239,13 +22509,15 @@ public static int bossRoll(@ACH@ chunk, int idx, @ST@ store, @CB@ cb, @DTHC@ dc,
   java.util.ArrayList l = new java.util.ArrayList();
   java.util.ArrayList lp = new java.util.ArrayList();
   StringBuilder sb = new StringBuilder();
+  String fam = family(role);
   for (int i = 0; i < prs.size(); i++) {
     @PR@ pr = (@PR@) prs.get(i);
+    if (!firstOfFight(pr.getUuid(), fam, now)) { @PKG@.GearPool.bcount(6, 1L); continue; }          // critic fix 4: one roll per fight (phases)
     @PKG@.GearPool.bcount(1, 1L);
     if (!(@PKG@.GearRoll.RNG.nextDouble() * 100.0 < @PKG@.GearCfg.BOSS_MY)) continue;
     @IS@ bag = mythicBag(z, @PKG@.GearLoot.lean(pr.getUuid()));
     if (bag == null) { @PKG@.GearPool.bcount(3, 1L); continue; }
-    if (!@PKG@.GearLoot.capOk(pr.getUuid(), now)) { @PKG@.GearPool.bcount(6, 1L); continue; }          // review M3: the hourly extra-bag cap (loot.mob.capPerHour) counts boss bags too (only a real bag uses a slot)
+    // critic fix 5: a Mythic boss bag is NOT under the hourly extra-bag cap (loot.mob.capPerHour) - the once-per-fight rule limits it
     l.add(bag);
     lp.add(pr);
     sb.append(' ').append(pr.getUsername()).append('=').append(@PKG@.GearUnid.logText(bag));
@@ -22858,15 +23130,17 @@ public Object apply(Object o) {
       }
       Object[] out = new Object[n];
       StringBuilder gx = new StringBuilder();
+      boolean plain = @PKG@.GearPackId.plainCraft(id, a.length > 4 ? a[4] : null);          // critic fix 2: no fresh roll for a swap / UT / Mythic output
       for (int i = 0; i < n; i++) {
-        @BD@ d = craft ? @PKG@.GearRoll.craftDoc(id, u, lv) : @PKG@.GearRoll.newDoc(id, @PKG@.GearData.isGear(id) ? @PKG@.GearRoll.pickRarity(0) : 0, true, src);
+        @BD@ d = plain ? (lv >= 0 ? @PKG@.GearRoll.newDoc(id, 0, true, src, lv) : @PKG@.GearRoll.newDoc(id, 0, true, src))
+          : (craft ? @PKG@.GearRoll.craftDoc(id, u, lv) : @PKG@.GearRoll.newDoc(id, @PKG@.GearData.isGear(id) ? @PKG@.GearRoll.pickRarity(0) : 0, true, src));
         out[i] = @PKG@.GearData.put(new @IS@(id, 1), d, u);
         gx.append(' ').append(@PKG@.GearDefs.R_ID[@PKG@.GearData.rarity(d)]);
       }
       @PKG@.GearLog.line("ROLL bridge " + src + " " + u + " " + id + " x" + n + (lv >= 0 ? " lv" + lv : "") + (a.length > 4 && a[4] != null ? " recipe " + a[4] : ""));
       if (craft) {
         // 0.2.3: SkyySacks /craft calls this after it removed the materials ("craft" only): every rolled item pays its Smithing XP once
-        @PKG@.GearRoll.payCraft(u, id, gx.toString(), "/craft");
+        if (!@PKG@.GearPackId.has(id)) @PKG@.GearRoll.payCraft(u, id, gx.toString(), "/craft");          // critic fix 2: no XP for pack pieces
         String note = @PKG@.GearRoll.craftNote(id, u);
         if (note != null && @PKG@.GearRoll.noteDue(u, id, System.currentTimeMillis())) @PKG@.Gear.tell(u, "[Gear] " + note, @PKG@.GearDefs.C_LABEL);
       }
@@ -23114,6 +23388,30 @@ event_system(gcrp, "GearCraftPreSys", CREPRE, "@ARC@.empty()", r"""
     @CRR@ rc0 = e.getCraftedRecipe();
     @MQ@ po0 = rc0 == null ? null : rc0.getPrimaryOutput();
     String id0 = po0 == null ? null : po0.getItemId();
+    if (rc0 != null && @PKG@.GearPackId.salvage(rc0)) {          // critic round 2 (Skyy 2026-10-17 "Yes, Requip only"): no Salvagebench recipe eats a dropped pack piece
+      @REF@ rv = chunk.getReferenceTo(idx);
+      @PLA@ pv = rv == null ? null : (@PLA@) st.getComponent(rv, @PLA@.getComponentType());
+      String vv = pv == null || pv.getGameMode() == @GM@.Creative ? null : @PKG@.GearPack.salvVeto(rc0, pv.getInventory());
+      if (vv != null) {
+        e.setCancelled(true);
+        @PR@ prv = (@PR@) st.getComponent(rv, @PR@.getComponentType());
+        if (prv != null) prv.sendMessage(@MSG@.raw("[Gear] " + vv).color(@PKG@.GearDefs.C_BAD));
+        @PKG@.GearLog.line("CRAFT-BLOCK-SALVAGE " + (prv == null ? "?" : prv.getUsername() + " " + prv.getUuid()) + " recipe " + rc0.getId());
+        return;
+      }
+    }
+    if (id0 != null && @PKG@.GearPackId.special(id0) && !@PKG@.GearPackId.sameSet(rc0, id0)) {          // critic fix 1 (Skyy 2026-10-17 "Block craft")
+      @REF@ rm = chunk.getReferenceTo(idx);
+      @PLA@ pm = rm == null ? null : (@PLA@) st.getComponent(rm, @PLA@.getComponentType());
+      if (pm == null || pm.getGameMode() != @GM@.Creative) {
+        e.setCancelled(true);
+        @PR@ prm = rm == null ? null : (@PR@) st.getComponent(rm, @PR@.getComponentType());
+        boolean myth = @PKG@.GearPackId.ROLE[@PKG@.GearPackId.idx(id0)] == 2;
+        if (prm != null) prm.sendMessage(@MSG@.raw("[Gear] " + @PKG@.Gear.itemName(id0) + (myth ? " is a Mythic boss drop - it is not crafted here. Bosses drop Mythic bags of their zone." : " is an Untiered piece - it is never crafted.")).color(@PKG@.GearDefs.C_BAD));
+        @PKG@.GearLog.line("CRAFT-BLOCK-PACK " + (prm == null ? "?" : prm.getUsername() + " " + prm.getUuid()) + " " + id0 + " recipe " + rc0.getId());
+        return;
+      }
+    }
     if (id0 != null && @PKG@.GearPackId.swap(rc0, id0)) {          // 0.3.19 review M1: never erase a rolled piece in a pack swap / upgrade
       @REF@ rs = chunk.getReferenceTo(idx);
       @PLA@ ps = null;
@@ -24207,6 +24505,7 @@ public static int spread(@IC@ c, int slot, int lvl, String ls) {
   @IS@ s0 = c.getItemStack((short) slot);
   if (s0 == null || s0.isEmpty() || s0.getQuantity() <= 1 || !@PKG@.GearData.isGear(s0.getItemId()) || @PKG@.GearData.hasAnyDoc(s0.getMetadata())) return 0;
   if (@PKG@.GearPool.typeOfId(s0.getItemId()) < 0) return 0;
+  if (@PKG@.GearPackId.special(s0.getItemId())) return 0;          // critic fix 1: no bags of a UT / Mythic table piece
   if (@PKG@.GearMine.isPiece(s0.getItemId()) || @PKG@.GearGArm.index(s0.getItemId()) >= 0) return 0;      // 0.2.15 (0.3.6: + the new sets)
   int q = s0.getQuantity();
   String gid = s0.getItemId();
@@ -29985,7 +30284,7 @@ public static String lockWhy(@CRR@ rc, boolean shortText) {
   int t = ((Integer) b[1]).intValue();
   if (((String) b[0]).equalsIgnoreCase("Fieldcraft")) return shortText ? "Locked - not learned yet" : "Not unlocked for you yet (a recipe you have not learned).";
   if (shortText) return "Locked - needs " + bn + " " + roman(t) + " accessory";
-  return "Needs the " + bn + " " + roman(t) + " accessory in your Accessory Bag - or craft it at a " + bn + (t > 1 ? " (tier " + t + ")" : "") + ".";
+  return "Needs the " + bn + " " + roman(t) + " accessory in your Void Charms - or craft it at a " + bn + (t > 1 ? " (tier " + t + ")" : "") + ".";
 }""")
 # the recipe ids SkyySacks allows this player to craft here (sacks:fn:craftList, group "smith"); null = no bridge
 M(gsm, r"""
@@ -31116,6 +31415,7 @@ public Object apply(Object o) {
       if (!(o instanceof Object[]) || ((Object[]) o).length < 2 || !(((Object[]) o)[1] instanceof String)) return null;
       Object[] a = (Object[]) o;
       java.util.UUID u = a[0] instanceof java.util.UUID ? (java.util.UUID) a[0] : null;
+      if (@PKG@.GearPackId.special((String) a[1])) return Boolean.FALSE;          // critic fix 2: a UT / Mythic table piece is never offered
       return Boolean.valueOf(@PKG@.GearSmith.shows(u, (String) a[1], u == null || @PKG@.GearSmith.showAll(u)));
     }
   } catch (Throwable t) { @PKG@.Gear.warnOnce("smithfn" + this.mode, "smithing bridge function " + this.mode + " failed: " + t); }
@@ -32181,8 +32481,8 @@ public static int tierFor(java.util.UUID u) {
 M(gav, r"""
 public static String toolWhy(int t) {
   if (t > 0) return null;
-  if (t < 0) return "Identifying needs an Appraisal Tool, but the Accessory Bag is not loaded.";
-  return "Identifying needs an Appraisal Tool accessory in your Accessory Bag.";
+  if (t < 0) return "Identifying needs an Appraisal Tool, but Void Charms is not loaded.";
+  return "Identifying needs an Appraisal Tool accessory in your Void Charms.";
 }""")
 # null = this player may identify on the Anvil now; else why not (identify.command off = at the identifier; the Appraisal Tool rule)
 M(gav, r"""
@@ -32197,8 +32497,8 @@ M(gav, r"""
 public static String toolLineT(int t) {
   if (!@PKG@.GearCfg.IDENTIFY_CMD) return "Identify: at the identifier on this server";
   if (!@PKG@.GearCfg.ID_TOOL) return "Identify: open to everyone";
-  if (t > 0) return "Identify: with your " + toolName(t) + " (Accessory Bag)";
-  if (t < 0) return "Identify: needs an Appraisal Tool (the Accessory Bag is not loaded)";
+  if (t > 0) return "Identify: with your " + toolName(t) + " (Void Charms)";
+  if (t < 0) return "Identify: needs an Appraisal Tool (Void Charms is not loaded)";
   return "Identify: needs an Appraisal Tool accessory";
 }""")
 M(gav, r"""

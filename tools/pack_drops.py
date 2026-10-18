@@ -16,8 +16,13 @@ never sold). Void Armor (Aipoc76, CC BY-NC 3.0) is allowed but its ids were neve
 its author's OK ("todo"): no id of a todo / needs-ids source is ever written into a jar.
 
 IDS: The Armory ids come from the read-only 2026-10-08 scan of TheArmoryMod-1.22.0.jar (research/Pack-Armor-Plan.md Appendix A / B,
-1.3) - UNVERIFIED against 1.23.0 (the version in Skyy's Mods folder now). A missing id is harmless: SkyyGear skips every id whose item
-is not in the live item map (The Armory switched off = no Armory drops, nothing breaks). Re-check with `--scan <jar>` (below).
+1.3). RE-CHECKED 2026-10-17 (local rebuild of PR #17) on TheArmoryMod-1.23.0.jar with `--scan` (Parent chain followed): all 1,286 table
+ids are still there, every armor row's ArmorSlot is a real slot, every weapon row's item has a Weapon part (most only through
+"Parent": "Template_Weapon_<Type>" - the vanilla template's Weapon part; longswords / flails / Elemental / Rune Blade carry their own),
+and the templates match the row kinds (Sword / Daggers / Mace / Battleaxe; Rune Blade stage 2 = Battleaxe, stage 3 = Mace, both off).
+New in 1.23.0, deliberately NOT in the table: KanohiHau + 8 colours (an Armor part with no ArmorSlot / ItemLevel - unfinished),
+EmptySign / HateKweebecSign / LoveKweebecSign (Lv 8 joke maces), TestBroom (a test item). A missing id is harmless: SkyyGear skips every
+id whose item is not in the live item map (The Armory switched off = no Armory drops, nothing breaks). Re-check with `--scan <jar>`.
 
 ROLES (spec section 2):
     drop    normal mob drop: joins SkyyGear's mystery-bag pool at its tier's level band (picked BY SET: a set weighs like one vanilla item,
@@ -57,9 +62,9 @@ WEAPON_TYPES = ["Weapon_Sword", "Weapon_Longsword", "Weapon_Daggers", "Weapon_Ma
 SOURCES = {
     "armory": dict(mod="The Armory", key="LadyPaladra:TheArmory", author="LadyPaladra (team: Larsonix, S3B4S5C, ScarForges)",
                    licence="CC BY-NC 3.0 (CurseForge FAQ): credit, never sold", status="on",
-                   note="PACK.md row; ids from the 2026-10-08 scan of 1.22.0 (UNVERIFIED on 1.23.0)"),
+                   note="PACK.md row; ids from the 2026-10-08 scan of 1.22.0, re-checked on 1.23.0 (2026-10-17)"),
     "voidarmor": dict(mod="Void Armor & Weapons", key="?", author="Aipoc76", licence="CC BY-NC 3.0: credit, never sold", status="needs-ids",
-                      note="allowed, but not in Skyy's Mods folder and never scanned: fill ids with --scan, add a PACK.md row, then status on"),
+                      note="allowed, but not in Skyy's Mods folder (checked 2026-10-17: the Void* mods there are Void Asylum, VoidProtect and Vort's Voidcloak Armory - other authors) and never scanned: fill ids with --scan, add a PACK.md row, then status on"),
     "slvr": dict(mod="SLVR Arcane Robes & Spells", key="?", author="SlverSkull", licence="none stated = All Rights Reserved",
                  status="todo", note="waits for SlverSkull's OK (ask list, RESUME NEXT 3)"),
     "fyrrage_fk": dict(mod="Fantastic Knight Armor Pack", key="?", author="Fyrrage", licence="All Rights Reserved", status="todo",
@@ -72,7 +77,7 @@ SOURCES = {
                          status="todo", note="waits for stonedturtle's OK (one message for all three); ids not scanned"),
 }
 
-# The Armory ids (read-only scan 2026-10-08 of TheArmoryMod-1.22.0.jar = research/Pack-Armor-Plan.md Appendix A + B; ids only, UNVERIFIED on 1.23.0)
+# The Armory ids (read-only scan 2026-10-08 of TheArmoryMod-1.22.0.jar = research/Pack-Armor-Plan.md Appendix A + B; ids only; all present in 1.23.0)
 ARMORY_IDS = {
     'Academy': [
         'AcademyHat', 'BlackAcademyHat', 'BlackWizenedJacket', 'BlackWizenedSleeves', 'BlueWizenedJacket', 'BlueWizenedSleeves',
@@ -492,8 +497,10 @@ SETS = [
          ids=_ids("Battlegrounds"), note="Tarnished Crown + Verdant Amulet: Legendary, no recipe (scan) - UT candidates"),
     dict(key="armory_priest", src="armory", name="Priest", kind="armor", weight="Cloth", tier="cobalt", role="mythic",
          ids=_ids("Priest"), note="+Mana - Zone 3 Cloth Mythic"),
-    dict(key="armory_academy", src="armory", name="Academy", kind="armor", weight="Cloth", tier="adamantite", role="ut",
-         ids=_ids("Academy"), note="no legs; multiplicative Mana = special only (LOCKED 2026-10-08) - a UT candidate"),
+    dict(key="armory_academy", src="armory", name="Academy", kind="armor", weight="Cloth", tier="adamantite", role="off",
+         ids=_ids("Academy"), note="OFF (local rebuild 2026-10-17): 27 of its 27 pieces have a recipe in 1.23.0 (Armor_Bench 3 + "
+         "Alteration 24), and a UT is never crafted - no longer a UT candidate. Multiplicative Mana = special only (LOCKED 2026-10-08), "
+         "so it is no normal drop either. No recipe-free Armory Cloth set exists to replace it (Zone 4 Cloth UT stays empty) - Skyy's call"),
     dict(key="armory_grand_lich", src="armory", name="Grand Lich", kind="armor", weight="Cloth", tier="adamantite", role="mythic",
          ids=_ids("Grand Lich Hood"), note="head + chest; Mana multiplier - Zone 4 Cloth Mythic"),
     # ---------------------------------------------------------------- The Armory: weapon recolours (normal drops at their metal)
@@ -534,11 +541,11 @@ SETS = [
     dict(key="armory_shields", src="armory", name="Armory shields", kind="Weapon_Sword", weight="-", tier="iron", role="off",
          ids=ARMORY_IDS["Shield (weapons)"] + ARMORY_IDS["Antique Shield (weapons)"],
          note="shields are never in mystery bags (no shield bag type) - off"),
-    # ---------------------------------------------------------------- The Armory: named specials (ids from the scan's 1.3 table, UNVERIFIED)
+    # ---------------------------------------------------------------- The Armory: named specials (ids from the scan's 1.3 table; all in 1.23.0)
     dict(key="armory_flails", src="armory", name="Armory flails", kind="Weapon_Club", weight="-", tier="iron", role="mythic",
          ids=["FireWhip", "ScorpianFlail"], note="their Lv 15 Club_Flail moveset; Berserker for now (flail class later) - Zone 1 Club Mythic"),
     dict(key="armory_ghost_sword", src="armory", name="Ghost Sword", kind="Weapon_Sword", weight="-", tier="iron", role="ut",
-         ids=["GhostSword"], note="no recipe (scan); its level was not in the scan - tier Iron is a guess (UNVERIFIED)"),
+         ids=["GhostSword"], note="no recipe (scan); ItemLevel 20 in 1.23.0 = the Iron recolours' level, so Iron (checked 2026-10-17)"),
     dict(key="armory_elemental", src="armory", name="Elemental longswords", kind="Weapon_Longsword", weight="-", tier="cobalt",
          role="mythic", ids=["Weapon_Elemental_Flame", "Weapon_Elemental_Ice", "Weapon_Elemental_Poison", "Weapon_Elemental_Gravity"],
          note="their Lv 35 Longsword moveset - Zone 3 Longsword Mythic (4 looks)"),
@@ -717,24 +724,79 @@ def grid(md=False):
     return "\n".join(lines)
 
 
-def scan(path):
-    """READ-ONLY: (id, armor slot or '-', item level or '-', weapon?) of every Server/Item/Items json in a mod archive"""
-    out = []
+AZ_PATH = os.path.join(os.environ.get("APPDATA", ""), "Hytale", "install", "release", "package", "game", "latest", "Assets.zip")
+
+
+def _items(z):
+    """{id: json} of every Server/Item/Items json in one open archive (read-only)"""
+    out = {}
+    for n in z.namelist():
+        if not (n.startswith("Server/Item/Items/") and n.endswith(".json")):
+            continue
+        try:
+            j = json.loads(z.read(n).decode("utf-8-sig"))
+        except Exception:
+            continue
+        if isinstance(j, dict):
+            out[os.path.basename(n)[:-5]] = j
+    return out
+
+
+def scan(path, az=AZ_PATH):
+    """READ-ONLY: (id, armor slot or '-', item level or '-', weapon?, weapon template) of every Server/Item/Items json in a mod archive.
+    Armor / Weapon / ItemLevel follow the Parent chain (inside the archive, then vanilla Assets.zip when present) - most Armory weapons
+    have only "Parent": "Template_Weapon_<Type>" (1.23.0 scan, 2026-10-17); the template = the first Template_Weapon_* parent."""
     with zipfile.ZipFile(path) as z:
-        for n in sorted(z.namelist()):
-            if not (n.startswith("Server/Item/Items/") and n.endswith(".json")):
-                continue
-            try:
-                j = json.loads(z.read(n).decode("utf-8-sig"))
-            except Exception:
-                continue
-            if not isinstance(j, dict):
-                continue
-            a = j.get("Armor") if isinstance(j.get("Armor"), dict) else None
-            w = isinstance(j.get("Weapon"), dict)
-            if a is None and not w:
-                continue
-            out.append((os.path.basename(n)[:-5], (a or {}).get("ArmorSlot", "-"), j.get("ItemLevel", "-"), w))
+        mine = _items(z)
+    base = {}
+    if az and os.path.isfile(az):
+        with zipfile.ZipFile(az) as z:
+            base = _items(z)
+
+    def field(i, f, d=0):
+        j = mine.get(i) or base.get(i)
+        if j is None or d > 12:
+            return None
+        if f in j:
+            return j[f]
+        return field(j.get("Parent"), f, d + 1) if j.get("Parent") else None
+
+    def tmpl(i, d=0):
+        j = mine.get(i) or base.get(i)
+        if j is None or d > 12:
+            return "-"
+        if i.startswith("Template_Weapon_"):
+            return i
+        return tmpl(j.get("Parent"), d + 1) if j.get("Parent") else "-"
+
+    out = []
+    for i in sorted(mine):
+        a = field(i, "Armor")
+        a = a if isinstance(a, dict) else None
+        w = isinstance(field(i, "Weapon"), dict)
+        if a is None and not w:
+            continue
+        lv = field(i, "ItemLevel")
+        out.append((i, (a or {}).get("ArmorSlot", "-"), "-" if lv is None else lv, w, tmpl(i) if w else "-"))
+    return out
+
+
+COIN_WORDS = ("value", "price", "sell", "coin", "worth")
+
+
+def coin_keys(path):
+    """READ-ONLY (the SkyyGear build's coin-loop guard, critic fix 7): [(id, key)] for every table id inside a mod archive whose item
+    json (or a Parent inside the archive) has a TOP-LEVEL key naming a price - none today (vanilla items have no such field either); a
+    future Armory update that adds one must be looked at before our Bazaar / Coins listings meet it"""
+    with zipfile.ZipFile(path) as z:
+        mine = _items(z)
+    ids = set(i for s in SETS for i in s["ids"])
+    out = []
+    for i in sorted(ids & set(mine)):
+        j, d = mine.get(i), 0
+        while isinstance(j, dict) and d < 12:
+            out += [(i, k) for k in j if any(w in k.lower() for w in COIN_WORDS)]
+            j, d = mine.get(j.get("Parent")), d + 1
     return out
 
 
@@ -743,8 +805,8 @@ def main(argv):
         have = dict((i, s["key"]) for s in SETS for i in s["ids"])
         for p in argv[argv.index("--scan") + 1:]:
             print("# %s" % os.path.basename(p))
-            for i, sl, lv, w in scan(p):
-                print("%s\t%s\t%s\t%s\t%s" % (i, sl, lv, "weapon" if w else "armor", have.get(i, "-")))
+            for i, sl, lv, w, t in scan(p):
+                print("%s\t%s\t%s\t%s\t%s\t%s" % (i, sl, lv, "weapon" if w else "armor", have.get(i, "-"), t))
         return 0
     if "--md" in argv:
         print(grid(md=True))

@@ -101,7 +101,12 @@ GEN318 = os.path.join(HERE, "build_skyygear_0.3.18.py")
 S319_NEW = {"GearPackId": "the pack table (tools/pack_drops.py as packed columns) + the swap guard",
             "GearPack": "the Mythic boss bags (mythicBag, rollers, swapVeto, bossRoll; SkyyMobs 0.1.10 mob:fn:boss)",
             "GearPackGive": "review H2: the world task that puts a won boss bag into its winner's inventory (else feet, else the boss)"}
-S319_MUST = {"GearData": "isGearMs / isGear / kindFor: a table id is combat gear while part.packDrops is on (gear.exclude still wins, review L2)",
+S319_MUST = {"GearAnvil": "local rebuild: the Identify / Appraisal Tool lines say Void Charms (patch item 9)",
+             "GearFn": "critic fix 2: gear:fn:roll mode 8 - a swap / UT / Mythic output plain, no Smithing XP for pack pieces",
+             "GearRoll": "critic fix 1: unidDoc - a UT / Mythic table piece found = plain Normal",
+             "GearTag": "critic fix 1: spread - no bags of a UT / Mythic table piece",
+             "SmithFn": "critic fix 2: gear:fn:classShow false for a UT / Mythic table piece",
+             "GearData": "isGearMs / isGear / kindFor: a table id is combat gear while part.packDrops is on (gear.exclude still wins, review L2)",
              "GearLevel": "level / entry: the table tier's level.material row first",
              "GearSmith": "armorType: the table weight",
              "GearView": "lines + descMsg: the tier tag in the flavour slot",
@@ -264,9 +269,10 @@ def run_assets319():
     check("mob:fn:boss" in cpk["str"] and has_ref(cpk, "M", "com/skyy/gear/Gear", "fn")
           and has_ref(cpk, "M", "/ItemComponent", "generateItemDrops") and has_ref(cpk, "MI", "/CommandBuffer", "addEntities")
           and has_ref(cpk, "F", "com/skyy/gear/GearLoot", "ROLLED") and has_ref(cpk, "M", "com/skyy/gear/GearUnid", "makeZ")
-          and has_ref(cpk, "M", "com/skyy/gear/GearLoot", "capOk") and has_ref(cpk, "M", "com/skyy/gear/GearPackGive", "<init>")
+          and not has_ref(cpk, "M", "com/skyy/gear/GearLoot", "capOk") and has_ref(cpk, "M", "com/skyy/gear/GearPack", "firstOfFight")
+          and has_ref(cpk, "M", "com/skyy/gear/GearPackGive", "<init>")
           and has_ref(cpk, "MI", "/World", "execute"),
-          "S319 C: GearPack.bossRoll asks mob:fn:boss through Gear.fn, once per death (GearLoot.ROLLED), the hourly cap (GearLoot.capOk), bags by "
+          "S319 C: GearPack.bossRoll asks mob:fn:boss through Gear.fn, once per death (GearLoot.ROLLED), once per fight (firstOfFight, no hourly cap - critic 4 / 5), bags by "
           "GearUnid.makeZ, delivered by a GearPackGive world task (World.execute), else ItemComponent.generateItemDrops + CommandBuffer.addEntities")
     try:
         cgv = cpool(eb["com/skyy/gear/GearPackGive.class"])
@@ -614,6 +620,39 @@ def _h319(L, K):
         kc(GPI.tag(RC) is None, "D: part.packDrops=false: no tier tag (GearView.lines refused the non-gear id: %s)" % str(e_)[:120])
     cfg()
 
+    # ============================================================== X: the critic fixes on the stand-ins (local rebuild)
+    ISj = JClass("com.hypixel.hytale.server.core.inventory.ItemStack")
+    kc(bool(GPI.special(ID)) and bool(GPI.special(GH)) and not bool(GPI.special(RC)) and not bool(GPI.special("Armor_Iron_Chest")),
+       "X1: special = a UT / Mythic table row (IronDragonChestplate, GhostCalvaryHelm), not a drop row / a vanilla id")
+    dm = Roll.unidDoc(ID, JInt(1), "drop")
+    dd = Roll.unidDoc(RC, JInt(1), "drop")
+    kc(int(Data.rarity(dm)) == 0 and bool(Data.identified(dm)) and not bool(Data.identified(dd)),
+       "X1: a Mythic-row piece their mobs / chests drop = an identified plain Normal piece; a drop row stays an unidentified roll")
+    kc(Unid.fromItem(ISj(ID, JInt(1)), JInt(1), JInt(10), "mob") is None and Unid.fromItem(ISj(GH, JInt(1)), JInt(2), JInt(10), "chest") is None
+       and Unid.fromItem(ISj(RC, JInt(1)), JInt(1), JInt(10), "mob") is not None,
+       "X1: no mystery bag of a UT / Mythic row (a drop row still becomes one)")
+    kc(bool(GPI.plainCraft(ID, None)) and bool(GPI.plainCraft(GH, None)) and not bool(GPI.plainCraft(RC, None)) and not bool(GPI.plainCraft(RC, "NoSuchRecipe")),
+       "X2: plainCraft: a UT / Mythic row always plain, a drop row only for a swap recipe")
+    cs_ = P("SmithFn")(JInt(1))
+    kc(cs_.apply(JArray(JObject)([U1, JString(ID)])) == False and cs_.apply(JArray(JObject)([U1, JString(RC)])) is not None,
+       "X2: gear:fn:classShow answers false for a Mythic row")
+    kc(GPI.resSets(None) is None and not bool(GPI.carries(RC, "NoSuchResource")) and not bool(GPI.carries(None, "x")),
+       "X3: resSets / carries answer safely for unknown resources")
+    def md_(i_, sr_):
+        return Data.put(ISj(i_, JInt(1)), Roll.newDoc(i_, JInt(0), True, sr_), None).getMetadata()
+    sb_ = [bool(Pack.salvBlocked(RC, md_(RC, sr_))) for sr_ in ("drop", "chest", "boss", "craft")]
+    kc(sb_ == [True, True, True, False] and not bool(Pack.salvBlocked(RC, None)) and not bool(Pack.salvBlocked("Armor_Iron_Chest", md_("Armor_Iron_Chest", "drop")))
+       and not bool(GPI.salvage(None)) and Pack.salvVeto(None, None) is None,
+       "X8: salvBlocked = a pack piece with a drop / chest / boss document (a crafted one, an undocumented one, a vanilla id: no): %s" % sb_)
+    cfg()
+    k_ = int(GPI.idx(RC))
+    g0 = bool(Data.isGear(RC))
+    kc(g0 and int(GPI.gc(k_)) == 1, "X6: isGear caches the pack answer per row (GC = 1 after the first ask)")
+    cfg(part__packDrops="false")
+    kc(not bool(Data.isGear(RC)), "X6: part.packDrops off = not gear at once (has() is asked before the cache)")
+    cfg()
+    kc(bool(Data.isGear(RC)) and int(GPI.gc(k_)) == 1, "X6: back on = gear again, cached under the new epoch")
+
     # ============================================================== E: /gear loot lines
     t = Pool.table()
     live = sum(1 for i_ in range(n0, len(Pool.P_ID)) if bool(t[2][i_]) and int(Pool.P_ROLE[i_]) == 0)
@@ -625,7 +664,7 @@ def _h319(L, K):
     K.notes.append("E packText: %s" % pt)
     kc(pt.startswith("pack drops on: %d normal + %d Mythic pieces live of %d table ids (%d not installed / no slot, %d Untiered candidates"
                      % (live, myth, len(ROWS), miss_n, utn))
-       and ("boss kills %d, rolls %d, bags %d, nothing fit %d, zone unknown %d, hourly cap %d, opened from Mythic sets %d"
+       and ("boss kills %d, rolls %d, bags %d, nothing fit %d, zone unknown %d, same fight %d, opened from Mythic sets %d"
             % (bn[0], bn[1], bn[2], bn[3], bn[4], bn[6], bn[5])) in pt and len(bn) == 7,
        "E: packText = the live / Mythic / missing / ut counts (%d / %d / %d / %d) and the counters %s: %s" % (live, myth, miss_n, utn, bn, pt[:220]))
     kc(pt in str(Loot.countsText()), "E: /gear loot (GearLoot.countsText) carries the pack line")
@@ -737,8 +776,10 @@ def _h319(L, K):
         cfg(**kv)
         Loot.HOUR.clear()
 
-    def roll(role="Test_Boss_Duke", u_=None, dc_=None):
+    def roll(role="Test_Boss_Duke", u_=None, dc_=None, fresh=True):
         u_ = u_ or UUIDJ.randomUUID()
+        if fresh:
+            Pack.FIGHT.clear()          # critic fix 4: every stand-in death is its own fight unless a test says otherwise
         del SP[:]
         n_ = int(Pack.bossRoll(mkchunk(u_), JInt(0), fst, buf, dc_, npc(role), pos, "w"))
         return n_, list(SP), u_
@@ -823,15 +864,17 @@ def _h319(L, K):
         n8, s8, _u = roll()
         jf(PLA, "gameMode").set(pl1, GM.Adventure)
         kc(n8 == 0, "F: a Creative player never rolls")
-        if not bool(Gear.admin(U1)):
-            fcfg(loot__boss__mythic="100", loot__mob__capPerHour="2")
-            b6 = int(Pool.BN[6])
-            cap3 = [roll()[0] for _ in range(3)]
-            kc(cap3 == [1, 1, 0] and int(Pool.BN[6]) == b6 + 1,
-               "F: the hourly cap (loot.mob.capPerHour 2) stops the third boss bag, counted in BN[6] (review M3): %s" % cap3)
-            fcfg(loot__boss__mythic="100")
-        else:
-            K.notes.append("F: the hourly cap test skipped - the stand-in player counts as an admin (capOk lets admins through)")
+        fcfg(loot__boss__mythic="100", loot__mob__capPerHour="2")
+        cap3 = [roll()[0] for _ in range(3)]
+        kc(cap3 == [1, 1, 1], "F: boss bags are not under the hourly cap (loot.mob.capPerHour 2, three fights = three bags; critic 5): %s" % cap3)
+        fcfg(loot__boss__mythic="100")
+        b6 = int(Pool.BN[6])
+        Pack.FIGHT.clear()
+        ph = [roll(role=r_, fresh=False)[0] for r_ in ("Test_Boss_Duke", "Test_Boss_Duke_Phase_2", "Test_Boss_Duke_Phase_3_Fast", "Test_Boss_Other")]
+        kc(ph == [1, 0, 0, 1] and int(Pool.BN[6]) == b6 + 2 and str(Pack.family("Goblin_Duke_Phase_3_Slow")) == "Goblin_Duke"
+           and str(Pack.family("Skeleton_Elite_Phase_2")) == "Skeleton_Elite" and str(Pack.family("Trork_Chieftain")) == "Trork_Chieftain",
+           "F: one roll per boss family per fight (critic 4): phase 1 rolls, its Phase_2 / Phase_3 deaths within 120 s do not (BN[6] +2), another "
+           "boss does: %s" % ph)
         nc = len(BOSS["calls"])
         fcfg(loot__boss__mythic="0")
         n9, _s, _u = roll()
@@ -906,6 +949,15 @@ def run_static():
         tops = dict(PKD.ZONES)
         badz = [s["key"] for s in PKD.SETS if s["role"] in ("ut", "mythic") and s["tier"] != tops[PKD.zone_of(s["tier"])] and s["tier"] != "onyxium"]
         check(not badz, "T: every ut / Mythic set sits at its zone's top tier (Skyy 2026-10-17): %s" % badz)
+        # ---------------------------------------------------------------- V: the Void Charms wording (patch item 9, local rebuild)
+        gsrc = open(os.path.join(HERE, "build_skyygear_%s.py" % VERSION), encoding="utf8").read()
+        vnew = ['accessory in your Void Charms - or craft it at a "', '"Identifying needs an Appraisal Tool, but Void Charms is not loaded."',
+                '"Identifying needs an Appraisal Tool accessory in your Void Charms."', '" (Void Charms)"',
+                '"Identify: needs an Appraisal Tool (Void Charms is not loaded)"']
+        vold = [l for l in gsrc.splitlines() if "Accessory Bag" in l and '"' in l and not l.lstrip().startswith("#")
+                and "Skyy_Accessory_Bag" not in l and "player-visible" not in l and "Old Accessory Bag" not in l]
+        check(all(gsrc.count(v) == 1 for v in vnew) and not vold,
+              "V: the player lines say Void Charms (5 lines), no quoted 'Accessory Bag' left: %s" % vold[:2])
         cell = {}
         for s in sets:
             if s["role"] == "mythic":
@@ -1026,12 +1078,13 @@ def run_static():
         check("if (us.isEmpty() && who.length == 0) {" in rob, "A: rollers: the killer only when SkyyMobs credited nobody (review M4)")
         i_br = s.index("public static int bossRoll(")
         brb = s[i_br:s.index('}""")', i_br)]
-        check(0 < brb.find("@PKG@.GearRoll.RNG.nextDouble() * 100.0 < @PKG@.GearCfg.BOSS_MY") < brb.find("mythicBag(z, ")
-              < brb.find("if (!@PKG@.GearLoot.capOk(pr.getUuid(), now)) { @PKG@.GearPool.bcount(6, 1L); continue; }")
+        check(0 < brb.find("if (!firstOfFight(pr.getUuid(), fam, now)) { @PKG@.GearPool.bcount(6, 1L); continue; }")
+              < brb.find("@PKG@.GearRoll.RNG.nextDouble() * 100.0 < @PKG@.GearCfg.BOSS_MY") < brb.find("mythicBag(z, ")
+              and "capOk" not in brb and "String fam = family(role);" in brb
               and "SkyyMobs credited nobody, the killer rolls" in brb
               and "if (seam != null) seam.apply(l.get(i), at);" in brb and "w.execute(new @PKG@.GearPackGive(" in brb
               and "cb.addEntities(hs, @ADDR@.SPAWN);" in brb,
-              "A: bossRoll: chance, then the bag, then the hourly cap (BN[6], review M3 - only a real bag uses a slot); the seam / a GearPackGive world task / a ground drop "
+              "A: bossRoll: once per fight per player (BN[6], critic 4), then the chance, then the bag - no hourly cap (critic 5); the seam / a GearPackGive world task / a ground drop "
               "without a world; the 'credited nobody' log line")
         check(s.index('gpgv = mk("GearPackGive")') < s.index("new @PKG@.GearPackGive(") and "public void run() {" in s[s.index('gpgv = mk("GearPackGive")'):i_br]
               and 'how = "inventory"' in s and "@ITU@.dropItem(r, this.bag, this.store); how = \"feet\";" in s
@@ -1058,14 +1111,61 @@ def run_static():
               and "int wt = @PKG@.GearPool.pickTypeM(false, z, lean, @PKG@.GearCfg.BOSS_LEAN);" in mbb and "pickTypeM(true" not in s
               and s.index("public static int pickTypeM(") < i_am < s.index('gpack = mk("GearPack")'),
               "A: Mythic armor = the weight evenly (pickArmM), then a slot of it; weapons keep pickTypeM's class lean; the other side when empty (fix round 2, Q13)")
-        check('F(gpool, "public static final long[] BN = new long[7];")' in s and '", hourly cap " + BN[6] + ", opened from Mythic sets " + BN[5]' in s,
-              "A: BN has 7 counters; packText prints the hourly cap")
+        check('F(gpool, "public static final long[] BN = new long[7];")' in s and '", same fight " + BN[6] + ", opened from Mythic sets " + BN[5]' in s,
+              "A: BN has 7 counters; packText prints the same-fight skips (critic 4)")
+        # ---------------------------------------------------------------- X: the critic fixes (local rebuild), by the generated source
+        i_pre = s.index('event_system(gcrp, "GearCraftPreSys"')
+        preb = s[i_pre:s.index('"""', s.index('r"""', i_pre) + 4)]
+        check(0 < preb.find("@PKG@.GearPackId.special(id0) && !@PKG@.GearPackId.sameSet(rc0, id0)") < preb.find("@PKG@.GearPackId.swap(rc0, id0)")
+              and '"CRAFT-BLOCK-PACK "' in preb and "pm.getGameMode() != @GM@.Creative" in preb and "is a Mythic boss drop - it is not crafted here." in preb,
+              "X1: CraftRecipeEvent$Pre refuses a UT / Mythic table output (benches + SkyySacks /craft), except a same-set Alteration swap; Creative crafts")
+        check("if (@PKG@.GearPackId.special(id)) return newDoc(id, 0, true, src); return newDoc(id, pickRarity(col), false, src);" in s
+              and "  if (@PKG@.GearPackId.special(id)) return null;          // critic fix 1" in s
+              and "  if (@PKG@.GearPackId.special(s0.getItemId())) return 0;          // critic fix 1" in s,
+              "X1: a UT / Mythic table piece found in chests / on mobs = plain Normal (unidDoc), never a bag (fromItem, spread)")
+        i_sm = s.index("public static boolean sameSet(@CRR@ rc, String out)")
+        smb = s[i_sm:s.index('}""")', i_sm)]
+        check("if (rc == null || !alter(rc)) return false;" in smb and "SET[j] != st" in smb and "h.size() != 1" in smb
+              and s.index("public static boolean alter(@CRR@ rc)") < i_sm < i_pre,
+              "X1: sameSet = an Alteration recipe whose item inputs are rows of the output's set and whose resources only that set carries")
+        check("boolean plain = @PKG@.GearPackId.plainCraft(id, a.length > 4 ? a[4] : null);" in s
+              and "if (!@PKG@.GearPackId.has(id)) @PKG@.GearRoll.payCraft(u, id, gx.toString(), \"/craft\");" in s
+              and "if (@PKG@.GearPackId.special((String) a[1])) return Boolean.FALSE;" in s,
+              "X2: gear:fn:roll mode 8: plain for a swap / UT / Mythic output, no XP for pack pieces; gear:fn:classShow hides UT / Mythic rows")
+        i_sw = s.index("public static boolean swap(@CRR@ rc, String out)")
+        swb = s[i_sw:s.index('}""")', i_sw)]
+        check("in[i].getResourceTypeId()" in swb and "resSets(rid) != null" in swb and s.index("public static java.util.HashSet resSets(") < i_sw
+              and "@PKG@.GearPackId.carries(sid, rid)" in s and "@PKG@.Gear.itemName(sid) + \" in your inventory carries a rolled rarity" in s,
+              "X3: the swap guard + veto read ResourceTypeId inputs (resSets / carries)")
+        check("public static String family(String role)" in s and 'role.indexOf("_Phase")' in s and "FIGHT_MS = 120000L" in s,
+              "X4: a boss family = the role up to _Phase, once per player per 120 s")
+        check("int pc = @PKG@.GearPackId.gc(pk);" in s and "long e = @PKG@.GearCfg.EPOCH;" in s
+              and "((Integer) t[9]).intValue() == ic" in s and "now - ((Long) t[1]).longValue() < 60000L" not in s
+              and "if (cnt(cs[i], this.bag.getItemId()) != c0) how = \"inventory\";" in s and 'how = "error"' not in s,
+              "X6: isGear pack cache (GearCfg.EPOCH), table on epoch / item count only, GearPackGive counts before / after a throwing write")
+        check(0 < preb.find("@PKG@.GearPackId.salvage(rc0)") < preb.find("@PKG@.GearPackId.special(id0)")
+              and "@PKG@.GearPack.salvVeto(rc0, pv.getInventory())" in preb and '"CRAFT-BLOCK-SALVAGE "' in preb
+              and "pv.getGameMode() == @GM@.Creative ? null" in preb,
+              "X8: CraftRecipeEvent$Pre refuses a Salvagebench recipe while a dropped / identified pack piece of its input is held (Skyy: Requip only); Creative salvages")
+        i_sv = s.index("public static String salvVeto(@CRR@ rc, @INV@ inv)")
+        svb = s[i_sv:s.index('}""")', i_sv)]
+        check("@PKG@.GearPackId.salvage(rc)" in svb and "@PKG@.GearPackId.carries(sid, rid)" in svb and "salvBlocked(sid, s.getMetadata())" in svb
+              and "Requip's SALVAGE button" in svb and s.index("public static boolean salvBlocked(") < i_sv < i_pre
+              and '"Salvagebench".equalsIgnoreCase(b[i].id)' in s,
+              "X8: salvVeto reads item + resource inputs, blocks a non-craft document, points to Requip SALVAGE")
+        check("PKD.coin_keys(_ARMJ[-1])" in s and "no table id carries a Value / Price / Sell / Coin / Worth field" in s,
+              "X7: the build's coin-loop guard (tools/pack_drops.py coin_keys on the installed Armory jar)")
         i_cp = s.index('event_system(gcrp, "GearCraftPreSys"')
         cpb = s[i_cp:s.index('"""', s.index('r"""', i_cp) + 4)]
         check("@PKG@.GearPackId.swap(rc0, id0)" in cpb and "@PKG@.GearPack.swapVeto(rc0, id0, ps.getInventory())" in cpb and "e.setCancelled(true);" in cpb
               and "ps.getGameMode() != @GM@.Creative" in cpb and s.index("public static String swapVeto(") < i_cp,
               "A: GearCraftPreSys cancels a pack swap while a rolled input piece is held (GearPack.swapVeto, not in Creative; review M1)")
         check("if (!@PKG@.GearPackId.has(this.id)) @PKG@.GearRoll.payCraft(" in s, "A: GearCraftTask: no Smithing craft XP for a pack piece (review M2)")
+        i_al = s.index("public static boolean alter(@CRR@ rc)")
+        alb = s[i_al:s.index('}""")', i_al)]
+        check('"ArmoryAlteration".equals(b[i].id)' in alb and "rc.getBenchRequirement()" in alb
+              and "|| @PKG@.GearPackId.alter(rc)) return null;" in s and i_al < s.index("public static String swapVeto("),
+              "A: the swap veto skips The Armory's Alteration Table (bench ArmoryAlteration keeps the input's metadata + quality - local rebuild)")
         i_gm = s.index("public static boolean isGearMs(String id, int ms)")
         gmb = s[i_gm:s.index('}""")', i_gm)]
         check(0 < gmb.find("@PKG@.GearPackId.has(id)") < gmb.find("@PKG@.GearCfg.excl()") < gmb.find("if (ms <= 1) return true;"),

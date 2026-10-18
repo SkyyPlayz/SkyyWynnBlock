@@ -27,7 +27,8 @@ tier. always make the UT and mythic the highest tier of that zone" (5 zones: Zon
      that player's credited damage / the total credited (0..1, sum 1); empty arrays when nobody is credited or npc is null. READ ONLY:
      the MobCredit entry stays (SkyySacks takes it later with mob:fn:credit). MobCredit.shares() is the new synchronized full list.
      Review H1: when SkyySacks' death mark took the entry first (same tick), MobCredit.read(take) keeps it in DEAD for 10 s, and
-     sharesOf still answers from there (DEAD holds at most 512 entries).
+     sharesOf still answers from there (DEAD holds at most 512 entries: expired ones go first, then the oldest - never all at once;
+     critic fix of the local rebuild).
   2. TWO NEW Server Setup rows, tab "Which mobs" (levels), live (an edit applies to the next boss kill), not danger:
        bosses.roles     "Boss roles" (text, max 2000) default "Goblin_Duke*, Trork_Chieftain, Dragon_*, Skeleton_Elite*, *_Boss*" (= the
                         built-in BOSSES list + the *_Boss* guard); matched with MobGlob (the levels.exclude / levels.roles matcher: any
@@ -317,7 +318,18 @@ rep('''  if (take) o = T.remove(mob); else o = T.get(mob);
         Object d = DEAD.get(ks[i]);
         if (!(d instanceof Object[]) || now - ((Long) ((Object[]) d)[0]).longValue() > DEAD_MS) DEAD.remove(ks[i]);
       }
-      if (DEAD.size() > 512) DEAD.clear();
+      while (DEAD.size() > 512) {          // critic fix (local rebuild): evict the OLDEST entry, never clear them all
+        Object[] k2 = DEAD.keySet().toArray();
+        Object old = null;
+        long ot = Long.MAX_VALUE;
+        for (int j = 0; j < k2.length; j++) {
+          Object d2 = DEAD.get(k2[j]);
+          long tt = d2 instanceof Object[] ? ((Long) ((Object[]) d2)[0]).longValue() : 0L;
+          if (tt < ot) { ot = tt; old = k2[j]; }
+        }
+        if (old == null) break;
+        DEAD.remove(old);
+      }
     }
     DEAD.put(mob, new Object[] { Long.valueOf(now), o });
   }

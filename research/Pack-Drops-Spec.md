@@ -56,7 +56,8 @@ mod's armor / weapon ids read-only (for filling rows). The SkyyGear build import
 | Gear rules | a table id = gear (single items only), kind combat (a `kind.prefix` row still wins), level band = its tier's `level.material` row (a `level.item` row still wins; never their ItemLevel), armor type = the table weight (not their sound set - The Armory gives robes Heavy sounds) |
 | Normal drops | pack rows are appended to the bag pool (`GearPool`); the bag slot = the LIVE item's ArmorSlot (a weapon row only while the live item is a weapon - `Item.getWeapon()`, fix round); weight = `loot.packWeight` per set, split over its live pieces of that slot; missing ids are skipped |
 | Mythic bags | `GearPack.bossRoll` from `GearDeathMark`: SkyyMobs' `mob:fn:boss` says boss + zone + credited players; each player with >= 15% credit (in the same world, not Creative) rolls 10% (the killer only when nobody is credited at all); a won bag counts against the hourly extra-bag cap and goes INTO the winner's inventory (`GearPackGive` world task: storage, hotbar, backpack; full = at their feet). The bag (`Skyy_Unid_Bag_Mythic` + `pz` = zone) identifies into one of the zone's Mythic pieces at their band (fix round: no head-count cap on rollers; armor = weight evenly, then a slot of it; a winner who changed worlds before the task = the bag lies at the boss); re-identify keeps the zone; no Mythic piece left (mod off / renamed) = the bag waits, it never becomes a vanilla item |
-| Swap guard | a pack recipe that consumes a gear piece (Alteration Table colour swap, Elite Rook from a Rook piece) is refused while you hold a ROLLED piece of that input; with Normal pieces it runs, no fresh roll, no Smithing XP. Crafting pack pieces pays no Smithing XP at all |
+| Craft block (Skyy 2026-10-17 "Block craft, chest = plain") | a recipe whose output is a UT / Mythic row is refused in CraftRecipeEvent$Pre (benches + SkyySacks /craft; only a same-set Alteration colour swap passes; Creative crafts); such a piece their chests / mobs drop is a plain Normal piece - real Mythic rolls only from boss bags. A boss family (role up to `_Phase`) rolls once per player per 120 s; boss bags are not under the hourly cap |
+| Swap guard | a pack recipe that consumes a gear piece (an item OR a resource type a table item carries) is refused while you hold a ROLLED piece of that input; with Normal pieces it runs, no fresh roll, no Smithing XP. The Alteration Table is exempt (it carries the piece's whole document + quality onto the new colour - bytecode of 1.23.0). Crafting pack pieces pays no Smithing XP at all (benches and SkyySacks /craft) |
 | Tier tag | our tooltip's flavour line starts with the tier tag (`T3 Iron - ...`, `tools/tier_tags.py` numbering); their lang keys are never written |
 | `/gear loot` | adds the pack line: live pieces, missing ids, UT candidates, Mythic pieces per zone, boss counters |
 
@@ -94,7 +95,7 @@ UT = UT candidate (waits for its lines), MYTHIC = boss drop, [TODO] = author's O
 | 1 (Iron) | Antique Dragon; Rook; Calvary; Void Copper [NEEDS-IDS]; Void Iron [NEEDS-IDS]; UT Ghost Rook; UT Ghost Calvary; MYTHIC Iron Dragon | Tribal Masks; Jester; Skull Masks; Bramblekin; Ninja [TODO]; MYTHIC Warden | Scarecrow; Crowns; Amulets; Potion Bandolier; SLVR Wool robes [TODO]; SLVR Linen robes [TODO]; UT Battlegrounds; MYTHIC SLVR Cotton robes [TODO] | Armory Iron Battleaxes | MYTHIC Armory flails | Armory Iron Daggers | Armory Iron Longswords | Armory Iron Maces | Armory Iron Swords; UT Ghost Sword |
 | 2 (Thorium) | Void Thorium [NEEDS-IDS]; Neptune's Elite [TODO]; Outlanders Berserker [TODO]; MYTHIC Elite Rook | Dune Walker [TODO]; Fen Stalker [TODO]; Outlanders Hunter [TODO]; MYTHIC Engineering Rig; MYTHIC Crystalwood [TODO] | Outlanders Priest [TODO]; MYTHIC SLVR Silk robes [TODO] | Armory Thorium Battleaxes | - | Armory Thorium Daggers | - | Armory Thorium Maces | Armory Thorium Swords |
 | 3 (Cobalt) | Frostbite Warden [TODO]; Outlanders Marauder [TODO]; MYTHIC Cobalt Dragon | MYTHIC Outlanders Stalker [TODO] | SLVR Raven robes [TODO]; Outlanders Sorcerer [TODO]; MYTHIC Priest | Armory Cobalt Battleaxes | - | Armory Cobalt Daggers | Armory Cobalt Longswords; MYTHIC Elemental longswords | Armory Cobalt Maces | Armory Cobalt Swords |
-| 4 (Adamantite) | Void Adamantite [NEEDS-IDS]; Scorched Heart [TODO]; Elemental Knights (4 sets) [TODO]; Blood Armor [TODO]; MYTHIC Daemon | Scorpion Helms; MYTHIC Elite Scorpion | SLVR Cindercloth robes [TODO]; UT Academy; MYTHIC Grand Lich | Armory Adamantite Battleaxes; UT Hepta Axe | MYTHIC Rune Blade | Armory Adamantite Daggers; MYTHIC Dual Rune Blade | - | MYTHIC Lahat Chereb | Armory Adamantite Swords |
+| 4 (Adamantite) | Void Adamantite [NEEDS-IDS]; Scorched Heart [TODO]; Elemental Knights (4 sets) [TODO]; Blood Armor [TODO]; MYTHIC Daemon | Scorpion Helms; MYTHIC Elite Scorpion | SLVR Cindercloth robes [TODO]; MYTHIC Grand Lich | Armory Adamantite Battleaxes; UT Hepta Axe | MYTHIC Rune Blade | Armory Adamantite Daggers; MYTHIC Dual Rune Blade | - | MYTHIC Lahat Chereb | Armory Adamantite Swords |
 | 5 (Mithril) | Soul Cage armor [TODO]; MYTHIC Void Mithril [NEEDS-IDS] | - | MYTHIC Magical Armor [TODO] | - | - | - | - | MYTHIC Zweihander | Void Mithril weapons [NEEDS-IDS] |
 
 Vanilla gear still drops in every cell through the existing bag pool. Off in the table (never used): Armory Iron recolours (vanilla Iron =
@@ -112,13 +113,21 @@ exactly the cells the TODO rows (and our own designs, last resort) fill.
 
 ## 5. Questions for Skyy (each with a recommended default)
 
-1. **UT lines for the 6 UT candidates** (Ghost Rook, Ghost Calvary, Battlegrounds, Academy, Ghost Sword, Hepta Axe) - each needs fixed lines +
+1. **UT lines for the 5 UT candidates** (Ghost Rook, Ghost Calvary, Battlegrounds, Ghost Sword, Hepta Axe - none has a recipe; Academy is OFF: all 27 pieces are craftable, and no recipe-free Armory Cloth set exists for Zone 4 Cloth UT) - each needs fixed lines +
    one trade-off, like the first UT batch. [Default: a UT design popup batch next; until then they never drop.]
 2. **"Enhanced" UT / Mythic looks** (glow, stylised) on The Armory's own models would be a derivative of their art. [Default: no enhancement
    now - Mythic uses their special sets as they are; ask LadyPaladra with the other asks.]
-3. **Their crafting vs "all combat gear is still drops only"** - The Armory's benches still make their normal pieces (10-08 lock "keep their
-   crafting"). Turning them off needs an override file (licence allows it, PROJECT-RULES 2 needs an exception). [Default: keep their
-   crafting for now; crafted pieces roll with our modifiers like any gear.]
+3. **Their crafting vs "all combat gear is still drops only"** - ANSWERED (Skyy 2026-10-17 popup, word for word: Q "...almost every Armory
+   set we planned as MYTHIC (boss-only) or UT can also be CRAFTED at The Armory's own benches ... and The Armory's own chest loot drops
+   some of them too..." -> "Block craft, chest = plain (Recommended)"): our code refuses recipes that make a UT / Mythic set piece; their
+   chests / mobs give plain unrolled pieces; normal (drop-role) pieces stay craftable and roll like any gear.
+15. **The Armory's Salvagebench refunds 100%** - ANSWERED (Skyy 2026-10-17 popup, word for word: Q "...The Armory's own Salvagebench gives
+   back 100% of the materials from its pieces ... Block salvaging rolled (dropped / identified) pieces at their bench?" -> "Yes, Requip only
+   (Recommended)"): dropped / identified pack pieces salvage only through Requip SALVAGE; crafted pieces still salvage at the bench. Built:
+   CraftRecipeEvent$Pre refuses a Salvagebench recipe while such a piece of its input is held (covers SkyySacks /craft, which lists
+   Salvagebench recipes as an instant bench). The Salvagebench BLOCK is a Processing bench and fires no CraftRecipeEvent (0.7 bytecode) -
+   it is NOT blocked yet; proposed: a ChunkStore tick system before BenchSystems$ProcessingBenchTick that moves such a stack from the
+   bench's input to its output container (patch docstring item 10 h).
 4. **Armory Iron recolours** (`Armor_Iron_<Slot>_<Colour>`, 97 pieces) look like the vanilla Iron Mining Set. [Default: off.]
 5. **Mythic bags go straight into the winner's inventory** (full = at their feet) instead of dropping at the boss (where SkyySacks'
    auto-pickup would give them all to the top damager). [Default: keep it that way.]
@@ -129,7 +138,7 @@ exactly the cells the TODO rows (and our own designs, last resort) fill.
 8. **Armory Fist = Monk boss drop** (10-08 lock) needs a fist bag type first. [Default: off this round; next weapon round adds the type.]
 9. **Challenge mode 20%** (10-08 lock) - no Challenge mode exists yet. [Default: later, with the boss round.]
 10. **Server Setup -> Mobs -> Which mobs** now has 8 rows (two pages). [Default: fine.]
-11. **Ghost Sword tier** - its level was not in the scan; guessed Iron (zone 1). [Default: Iron until the local scan shows its level.]
+11. **Ghost Sword tier** - ANSWERED by the 1.23.0 scan: ItemLevel 20 = the Iron recolours' level, so Iron (zone 1).
 12. **Class rules for Armory weapons**: their ids have no `Weapon_` prefix (`Sword_Iron_Red`, `LahatChereb`, `Zweihander`), so SkyyClasses'
     prefix rules never match them - every class can use them and no "Class Req" line shows (the 10-08 locks "Lahat Chereb = Berserker",
     "Zweihander = Warrior" are not enforced yet). [Default: a SkyyClasses class-weapon table round next (`research/Pack-Armor-Plan.md` 3.3 a).]
@@ -138,7 +147,7 @@ exactly the cells the TODO rows (and our own designs, last resort) fill.
 14. **Boss bags and the hourly cap**: a won Mythic bag counts against `loot.mob.capPerHour` (20). [Default: shared cap, a safety net
     against respawning bosses.]
 
-## 6. For the local session (everything UNVERIFIED here)
+## 6. For the local session (UNVERIFIED items answered by the local rebuild, 2026-10-17)
 
 Built on a Linux box with only `HytaleServer.jar` 0.7.2 (Maven) - no Assets.zip, no Hytale install, no Mods folder, no previous jars.
 
@@ -149,25 +158,24 @@ Built on a Linux box with only `HytaleServer.jar` 0.7.2 (Maven) - no Assets.zip,
 (`python tools/pack_drops.py --scan <Mods>/TheArmoryMod-1.23.0.jar`) and fix renamed ids -> smoke test -> pin both in `tools/deploy_set.py`
 (deploy together; either rolls back alone) -> deploy -> `PACK.md` Armory row to 1.23.0.
 
-**UNVERIFIED (could not run here):**
-- The full builds (both read Assets.zip); every Assets.zip build check, including the new pack asserts (no pack id is a vanilla id, every
-  weapon kind is a bag type key `Weapon_Sword` / `Weapon_Longsword` / `Weapon_Daggers` / `Weapon_Mace` / `Weapon_Battleaxe` / `Weapon_Club`,
-  every tier is a `level.material` row).
-- `tools/skyyui.py` / `tools/tier_tags.py` asset checks, `tools/ci/lint.py` asset-id checks, crosscheck.
-- The harness phases that need jars / Assets.zip (only `--static` ran).
-- Every Armory id (from the 2026-10-08 scan of 1.22.0, not re-checked on 1.23.0), every slot (read live at run time), the special
-  weapon ids (`FireWhip`, `ScorpianFlail`, `GhostSword`, `Weapon_Elemental_*`, `RuneBladeStage1`, `DualRuneBlade`, `LahatChereb`,
-  `Hepta_Axe`, `Zweihander`).
-- That the Alteration Table fires CraftRecipeEvent$Post with the swap recipe's inputs (the swap guard relies on it) and whether it keeps
-  our document on the swapped piece.
-- That MobCredit still holds the boss's credit when GearDeathMark runs (before DropDeathItems; SkyySacks' PickDeathMark may take it first -
-  the 10 s DEAD copy covers that); `NPCEntity.getRoleName()` returns the role id `bosses.roles` expects; `GearPackGive`'s
-  `ItemContainer.addItemStack` / `ItemUtils.dropItem` / `Store.addEntities` from a world task (compiled + verified, never run); that every
-  Armory weapon kind in the table (incl. staff / spellbook / wand / bows) has an `Item.getWeapon()` part - a weapon row without one is
-  never a candidate (fix round, fail closed).
-- Cross-pack: The Armory's multiplicative / own stats (Mana x, Move_Speed, Jump_Height, Arrow_Damage_Bonus) stay on top of ours (Mythic /
-  UT pieces only by the table; normal rows were picked without them - re-check per piece with the scan).
-- Smoke test and in-game behaviour.
+**Answers (local rebuild of PR #17, 2026-10-17, real install; nothing run in game yet):**
+- Builds + harnesses: both build on the real install; full harnesses pass (SkyyGear 1696 ok / 0 fail / 52 waived, SkyyMobs 152 ok);
+  crosscheck --baseline 0 fail, lint 0 fail, langdup OK.
+- The Armory 1.23.0 scan (`--scan` now follows the Parent chain): all 1,286 table ids present, every armor row has a real ArmorSlot, every
+  weapon row a Weapon part (most through `Template_Weapon_<Type>`; Item.getWeapon() non-null), templates match the row kinds. New in 1.23.0,
+  left out: KanohiHau + 8 colours (no ArmorSlot / level), three Lv 8 sign maces, TestBroom. Ghost Sword = ItemLevel 20 = Iron.
+- Alteration Table (their AlterationTransaction bytecode): fires CraftRecipeEvent$Pre (honours cancel) + $Post; the new colour = the input's
+  WHOLE metadata + quality - a rolled piece keeps its roll, so the swap veto skips the ArmoryAlteration bench. Its recipes use
+  ResourceTypeId inputs - the swap guard reads those too.
+- SkyySacks 0.8.20: PickDeathMark (after TickCorpseRemoval, before DropDeathItems) takes the credit; MobCredit's DEAD copy keeps it readable
+  10 s (oldest evicted past 512, never cleared). /craft fires CraftRecipeEvent$Pre (our refusals apply); it lists Armor_Bench /
+  Weapon_Bench recipes (bench accessories) on the CRAFTING tab (their ids have no Armor_ / Weapon_ prefix, so gear:fn:classShow is not
+  asked there); never the Alteration bench. gear:fn:roll mode 8: no XP for pack pieces, swap / UT / Mythic outputs plain.
+- Boss roles in Assets.zip 0.7: Goblin_Duke (+ Phase_2, Phase_3_Fast / Slow), Trork_Chieftain, Dragon_Fire / Frost, Skeleton_Elite
+  (+ Phase_2); no in-data phase switch found, so phases may be separate deaths -> one roll per boss family per player per 120 s.
+- Void Armor (Aipoc76): not in the Mods folder (the Void* mods there are other authors') - rows stay needs-ids.
+- Coin loop: no table id has a Value / Price / Sell / Coin / Worth field (build-time guard while the jar is installed).
+- Still open: in-game behaviour + smoke test; The Armory's own multiplicative stats on Mythic / UT pieces; the Salvagebench BLOCK (Q15: no Pre event - tick hook proposed).
 
 **TEST section draft (for `docs/tests/<month>.md` + a `TEST-CHECKLIST.md` line):**
 1. The Armory ON. Kill levelled mobs in zone 1 (or `/gear box random 18`): bags of Armory pieces drop; identify one - an Armory piece with

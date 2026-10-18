@@ -200,14 +200,15 @@ OLD_JAR = os.path.join(HERE, "SkyyMobs-0.1.9.jar")
 SCRATCH = os.path.abspath(HK.arg("--dir"))
 PKG = "com.skyy.mobs."
 T19["T18"]["OLD_JAR"] = OLD_JAR   # the 0.1.8 live phase compares the OLD jar (now 0.1.9) with this one
-EXPECT = {   # UNVERIFIED until the first local run (a cloud build trial could not build the jars)
+EXPECT = {   # local rebuild 2026-10-17: checked on the real jars (+ the review fix's MobCredit DEAD copy, CfgFile = the kit's fresh file text)
     "MobCfg": ["+f BOSS_ROLES_DEF", "+f BOSS_TOPS_DEF", "+f BOSS_ROLES", "+f BOSS_TOPS", "+f P_BOSS", "+f BOSS_TOP",
                "+m tops", "+m bosses", "+m isBoss", "+m bossText", "~<clinit>", "~m apply", "~m load", "~m reloadAll", "~m useDefaults"],
-    "MobCredit": ["+m shares", "+m sharesOf"],
+    "MobCredit": ["+f DEAD", "+f DEAD_MS", "+m shares", "+m sharesOf", "~<clinit>", "~m read"],
     "MobHooks": ["+m checkZoneTops"],
     "SkyyMobsPlugin": ["~m setup", "~m shutdown"],
     "CfgFn": ["~m opExport"],
     "CfgRows": ["~<clinit>", "~m header"],
+    "CfgFile": ["~<clinit>"],
 }
 ADDED = ["MobBossFn"]
 
@@ -312,6 +313,16 @@ def run_exec(out, jar, scratch, home):
     K.check(g is not None and int(g[0]) == 0 and [str(x) for x in g[2]] == pl and Cr.T.get(mob) is not None,
             "B10 ARGS a boss in an unknown world -> zone 0 + the credit list, the entry kept")
     Cr.T.remove(mob)
+    # ---- DEAD: taken entries stay readable; over 512 the OLDEST go, never all at once (critic fix, local rebuild)
+    Cr.DEAD.clear()
+    for k_ in range(520):
+        mk_ = "dead-%d" % k_
+        Cr.hit(mk_, "p-a", 5.0, 500.0, 0.0, 1000.0, 1000)
+        Cr.read(mk_, True)
+    K.check(512 <= int(Cr.DEAD.size()) <= 513 and Cr.DEAD.get("dead-519") is not None and Cr.sharesOf("dead-519") is not None
+            and Cr.T.get("dead-519") is None,
+            "B10 DEAD 520 taken entries: 512-513 kept (oldest evicted one by one, never all), the newest still readable (%d)" % int(Cr.DEAD.size()))
+    Cr.DEAD.clear()
     # ---- the bridge put / remove, by the class-file bytes
     pb_ = zipfile.ZipFile(jar).read("com/skyy/mobs/SkyyMobsPlugin.class")
     K.check(b"mob:fn:boss" in pb_ and b"MobBossFn" in pb_, "B10 BRIDGE SkyyMobsPlugin.class names mob:fn:boss + MobBossFn")
