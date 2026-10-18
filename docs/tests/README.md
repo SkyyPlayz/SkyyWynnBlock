@@ -307,3 +307,4 @@ What to test NEXT is in [TEST-CHECKLIST.md](../../TEST-CHECKLIST.md). New deploy
 | 5 Armory UT sets (Ghost Rook, Ghost Calvary, Battlegrounds, Ghost Sword, Hepta Axe) (DEPLOYED 2026-10-18, backup deploy-20261018-0735) | [2026-10](2026-10.md) |
 | UT bands, less Mana, one-hit cap, Void Charms hint (DEPLOYED 2026-10-18, backup deploy-20261018-0841) | [2026-10](2026-10.md) |
 | Fortune +3 no cap, skip fix, no hits through walls (DEPLOYED 2026-10-18, backup deploy-20261018-0857) | [2026-10](2026-10.md) |
+| Island respawn fixes, no sky snap, camp clear, island pond (DEPLOYED 2026-10-18, backup deploy-20261018-0906) | [2026-10](2026-10.md) |

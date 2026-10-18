@@ -218,3 +218,4 @@ tests always come first.
 190. 5 Armory UTs drop as orange Untiered items
 191. UT bands + less Mana + mob hit cap 35% + elite no Mythic + Void Charms hint
 192. Fortune +3 a level no cap + weapon bags typed at identify + Pole-Vault skip + no hits through walls
+193. Island respawn + sky snap + camp clear + island pond
