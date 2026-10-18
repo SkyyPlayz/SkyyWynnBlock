@@ -31,7 +31,8 @@ Skyy's tests: `TEST-CHECKLIST.md`. History: `docs/log/2026-10.md`. Decisions wor
 - Art to look at: models-local/art/metals/_sheets/weapons-c.png (sent in chat).
 
 ## NEXT (after Skyy's answers)
-1. UT lines for the 5 Armory UT sets + Zone 4 Cloth UT (research/UT-Lines-Draft.md) - ship when Skyy approves.
+1. UTs: the 5 Armory UTs ship in Gear 0.3.26 (Skyy approved 10-18). Target (gear.md 10-18): per zone 3 UT armor sets (Cloth / Light /
+   Heavy) + 1 UT weapon per class -> still to design: 12 armor sets (48 pieces, Zones 2-5) + 32 weapons (Spellblade Z1 + 8 x Z2-5, minus Hepta Axe).
 2. Aures dragon pet (research/Nestkeeper-Pack-Check.md section 5: needs an in-game look + ride probe first).
 3. Wynn elements (research/Wynn-Elements-Spec.md, 10 questions) - big round after answers.
 4. Zone gathering spots + seeds behind collections + crop islands: spec research/Zone-Gathering-Spec.md (10 questions) - build after answers.
